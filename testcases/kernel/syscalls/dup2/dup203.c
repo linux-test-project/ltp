@@ -142,7 +142,7 @@ int main(int ac, char **av)
 		}
 		if (fcntl(fd0, F_SETFD, 1) == -1) {
 			tst_brkm(TBROK, cleanup, "setting close on exec flag "
-				"on fd0 failed");
+				 "on fd0 failed");
 		}
 
 		if ((fd2 = creat(filename1, 0666)) == -1) {
@@ -164,15 +164,16 @@ int main(int ac, char **av)
 			}
 
 			if ((rval = fcntl(fd1, F_GETFD, 0)) != 0) {
-				tst_resm(TBROK|TERRNO,
-				    "fcntl F_GETFD on fd1 failed; expected a "
-				    "return value of 0x0, got %#x", rval);
+				tst_resm(TBROK | TERRNO,
+					 "fcntl F_GETFD on fd1 failed; expected a "
+					 "return value of 0x0, got %#x", rval);
 				break;
 			}
 			if ((rval = (fcntl(fd0, F_GETFL, 0) & O_ACCMODE)) !=
 			    O_WRONLY) {
 				tst_resm(TFAIL, "fctnl F_GETFL bad rval on fd0 "
-					"Expected %#x got %#x", O_WRONLY, rval);
+					 "Expected %#x got %#x", O_WRONLY,
+					 rval);
 			}
 			tst_resm(TPASS, "dup2 test 2 functionality is correct");
 		} else {

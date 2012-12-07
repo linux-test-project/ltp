@@ -72,7 +72,7 @@ char buf2[K_1];
 char *bad_addr = 0;
 
 struct iovec wr_iovec[MAX_IOVEC] = {
-	{(caddr_t) -1, CHUNK},
+	{(caddr_t) - 1, CHUNK},
 	{(caddr_t) NULL, 0},
 };
 
@@ -118,26 +118,29 @@ int main(int argc, char **argv)
 		fd[1] = -1;	/* Invalid file descriptor */
 
 		if (signal(SIGTERM, sighandler) == SIG_ERR)
-			tst_brkm(TFAIL|TERRNO, cleanup, "signal(SIGTERM, ..)");
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "signal(SIGTERM, ..)");
 
 		if (signal(SIGPIPE, sighandler) == SIG_ERR)
-			tst_brkm(TFAIL|TERRNO, cleanup, "signal(SIGPIPE, ..)");
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "signal(SIGPIPE, ..)");
 
-		if ((fd[0] = open(f_name, O_WRONLY|O_CREAT, 0666)) < 0)
-			tst_brkm(TFAIL|TERRNO, cleanup,
-			    "open(.., O_WRONLY|O_CREAT, ..) failed");
+		if ((fd[0] = open(f_name, O_WRONLY | O_CREAT, 0666)) < 0)
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "open(.., O_WRONLY|O_CREAT, ..) failed");
 		else {
 			l_seek(fd[0], K_1, 0);
 			if ((nbytes = write(fd[0], buf_list[1], K_1)) != K_1)
-				tst_brkm(TFAIL|TERRNO, cleanup, "write failed");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "write failed");
 		}
 
 		if (close(fd[0]) == -1)
-			tst_brkm(TFAIL|TERRNO, cleanup, "close failed");
+			tst_brkm(TFAIL | TERRNO, cleanup, "close failed");
 
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) < 0)
-			tst_brkm(TFAIL|TERRNO, cleanup,
-			    "open(.., O_RDWR, ..) failed");
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "open(.., O_RDWR, ..) failed");
 //block1:
 		/*
 		 * In this block we are trying to call writev() with invalid
@@ -191,9 +194,9 @@ void setup(void)
 	sprintf(f_name, "%s.%d", name, getpid());
 
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 	wr_iovec[0].iov_base = bad_addr;
 
 }
@@ -206,9 +209,9 @@ void cleanup(void)
 	close(fd[1]);
 
 	if (munmap(bad_addr, 1) == -1)
-		tst_resm(TWARN|TERRNO, "unmap failed");
+		tst_resm(TWARN | TERRNO, "unmap failed");
 	if (unlink(f_name) == -1)
-		tst_resm(TWARN|TERRNO, "unlink failed");
+		tst_resm(TWARN | TERRNO, "unlink failed");
 
 	tst_rmdir();
 
@@ -228,7 +231,7 @@ void sighandler(int sig)
 	}
 
 	if (unlink(f_name) == -1 && errno != ENOENT)
-		tst_resm(TFAIL|TERRNO, "unlink failed");
+		tst_resm(TFAIL | TERRNO, "unlink failed");
 }
 
 /*
@@ -238,5 +241,5 @@ void sighandler(int sig)
 void l_seek(int fdesc, off_t offset, int whence)
 {
 	if (lseek(fdesc, offset, whence) == -1)
-		tst_resm(TBROK|TERRNO, "lseek failed");
+		tst_resm(TBROK | TERRNO, "lseek failed");
 }

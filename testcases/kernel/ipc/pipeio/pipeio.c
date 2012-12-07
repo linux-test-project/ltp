@@ -53,25 +53,24 @@
 
 #include "test.h"
 
-char *TCID="pipeio"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "pipeio";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 
 #define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 
 /* To avoid extensive modifications to the code, use this bodge */
 #define exit(x) myexit(x)
-void
-myexit (int x)
+void myexit(int x)
 {
-  if (x)
-    tst_resm (TFAIL, "Test failed");
-  else
-    tst_resm (TPASS, "Test passed");
- tst_exit();
+	if (x)
+		tst_resm(TFAIL, "Test failed");
+	else
+		tst_resm(TPASS, "Test passed");
+	tst_exit();
 }
 
 #if defined(__linux__)
-# define NBPW sizeof(int)
+#define NBPW sizeof(int)
 #endif
 
 #define PPATH "tpipe"
@@ -108,34 +107,33 @@ int Nchildcomplete = 0;
 #endif /* ! MAXPATHLEN */
 #endif /* PATH_MAX */
 
-int
-main(ac,av)
+int main(ac, av)
 int ac;
 char *av[];
 {
-	int i,j,c,error = 0;
+	int i, j, c, error = 0;
 	int n;
 	int nb;			/* number of bytes read */
-	int num_wrters=1;	/* number of writers */
-	int num_writes=1;	/* number of writes per child */
-	int loop=0;		/* loop indefinitely */
+	int num_wrters = 1;	/* number of writers */
+	int num_writes = 1;	/* number of writes per child */
+	int loop = 0;		/* loop indefinitely */
 	int exit_error = 1;	/* exit on error #, zero means no exit */
-	int size=327;		/* default size */
+	int size = 327;		/* default size */
 	int unpipe = 0;		/* un-named pipe if non-zero */
-	int verbose=0;		/* verbose mode if set */
-	int quiet=0;		/* quiet mode if set */
-	int num_rpt=0;		/* ping number, how often to print message */
+	int verbose = 0;	/* verbose mode if set */
+	int quiet = 0;		/* quiet mode if set */
+	int num_rpt = 0;	/* ping number, how often to print message */
 	int chld_wait = 0;	/* max time to wait between writes, 1 == no wait */
-	int parent_wait = 0;	/* max time to wait between reads, 1 == no wait*/
+	int parent_wait = 0;	/* max time to wait between reads, 1 == no wait */
 	int ndelay = O_NDELAY;	/* additional flag to open */
 	long clock;
 	char *writebuf = NULL;
 	char *readbuf = NULL;
 	double d;
-	char   *cp;
-        extern char *optarg;
+	char *cp;
+	extern char *optarg;
 	char pname[PATH_MAX];	/* contains the name of the unamed pipe */
-	char dir[PATH_MAX];	/* directory to create pipe in		*/
+	char dir[PATH_MAX];	/* directory to create pipe in          */
 	char *blk_type;		/* blocking i/o or not */
 	char *pipe_type;	/* type of pipe under test */
 	int fds[2];		/* un-named pipe fds */
@@ -149,14 +147,14 @@ char *av[];
 	int format_size = -1;
 	int background = 0;	/* if set, put process in background */
 	struct stat stbuf;
-        int iotype = 0;		/* sync io */
+	int iotype = 0;		/* sync io */
 	char *toutput;		/* for getenv() */
 	int sem_id;
 	struct sembuf sem_op;
 	union semun {		/* for semctl() */
-	  int val;
-	  struct semid_ds *buf;
-	  unsigned short int *array;
+		int val;
+		struct semid_ds *buf;
+		unsigned short int *array;
 	} u;
 	unsigned int uwait_iter = 1000;
 	unsigned int uwait_total = 5000000;
@@ -165,16 +163,18 @@ char *av[];
 	format = HEX;
 	blk_type = NON_BLOCKING_IO;
 	dir[0] = '\0';
-	sprintf(pname,"%s.%d",PPATH,getpid());
+	sprintf(pname, "%s.%d", PPATH, getpid());
 
 	if ((toutput = getenv("TOUTPUT")) != NULL) {
-	    if (strcmp(toutput, "NOPASS") == 0) {
-		quiet=1;
-	    }
+		if (strcmp(toutput, "NOPASS") == 0) {
+			quiet = 1;
+		}
 	}
 
-        while ((c=getopt (ac, av, "T:BbCc:D:d:he:Ef:i:I:ln:p:qs:uvW:w:P:")) != EOF) {
-	    switch (c) {
+	while ((c =
+		getopt(ac, av,
+		       "T:BbCc:D:d:he:Ef:i:I:ln:p:qs:uvW:w:P:")) != EOF) {
+		switch (c) {
 		case 'T':
 			TCID = optarg;
 			break;
@@ -189,44 +189,44 @@ char *av[];
 			strcpy(pname, optarg);
 			break;
 		case 'B':	/* background */
-			background=1;
+			background = 1;
 			break;
 		case 'b':	/* blocked */
-			ndelay=0;
+			ndelay = 0;
 			blk_type = BLOCKING_IO;
 			break;
 		case 'C':
 			fprintf(stderr,
-			    "%s: --C option not supported on this architecture\n",
-			    TCID);
+				"%s: --C option not supported on this architecture\n",
+				TCID);
 			exit(1);
 			break;
 		case 'c':	/* number childern */
 			if (sscanf(optarg, "%d", &num_wrters) != 1) {
-				fprintf(stderr,"%s: --c option invalid arg '%s'.\n",
-					TCID,optarg);
+				fprintf(stderr,
+					"%s: --c option invalid arg '%s'.\n",
+					TCID, optarg);
 				usage();
 				exit(1);
-			}
-			else if (num_wrters <= 0) {
+			} else if (num_wrters <= 0) {
 				fprintf(stderr,
-				    "%s: --c option must be greater than zero.\n",
-				    TCID);
+					"%s: --c option must be greater than zero.\n",
+					TCID);
 				usage();
 				exit(1);
 			}
 			break;
 		case 'e':	/* exit on error # */
 			if (sscanf(optarg, "%d", &exit_error) != 1) {
-				fprintf(stderr,"%s: --e option invalid arg '%s'.\n",
-					TCID,optarg);
+				fprintf(stderr,
+					"%s: --e option invalid arg '%s'.\n",
+					TCID, optarg);
 				usage();
 				exit(1);
-			}
-			else if (exit_error < 0) {
+			} else if (exit_error < 0) {
 				fprintf(stderr,
-				    "%s: --e option must be greater than zero.\n",
-				    TCID);
+					"%s: --e option must be greater than zero.\n",
+					TCID);
 				usage();
 				exit(1);
 			}
@@ -237,7 +237,7 @@ char *av[];
 			exit(0);
 			break;
 		case 'f':	/* format of buffer on error */
-			switch(optarg[0]) {
+			switch (optarg[0]) {
 			case 'x':
 			case 'X':
 				format = HEX;
@@ -254,40 +254,42 @@ char *av[];
 			case 'A':
 				format = ASCII;
 				break;
-			case 'n':		/* not output */
+			case 'n':	/* not output */
 			case 'N':
 				format = NO_OUT;
 				break;
 
-			default :
-				fprintf(stderr,"%s: --f option invalid arg '%s'.\n",
-					TCID,optarg);
+			default:
 				fprintf(stderr,
-				    "\tIt must be x(hex), o(octal), d(decimal), a(ascii) or n(none) with opt sz\n");
+					"%s: --f option invalid arg '%s'.\n",
+					TCID, optarg);
+				fprintf(stderr,
+					"\tIt must be x(hex), o(octal), d(decimal), a(ascii) or n(none) with opt sz\n");
 				exit(1);
 				break;
 			}
 			cp = optarg;
 			cp++;
 			if (*cp) {
-			    if (sscanf(cp, "%i", &format_size) != 1) {
-				fprintf(stderr,"%s: --f option invalid arg '%s'.\n",
-					TCID,optarg);
-				fprintf(stderr,
-				    "\tIt must be x(hex), o(octal), d(decimal), a(ascii) or n(none) with opt sz\n");
-				exit(1);
-				break;
-			    }
+				if (sscanf(cp, "%i", &format_size) != 1) {
+					fprintf(stderr,
+						"%s: --f option invalid arg '%s'.\n",
+						TCID, optarg);
+					fprintf(stderr,
+						"\tIt must be x(hex), o(octal), d(decimal), a(ascii) or n(none) with opt sz\n");
+					exit(1);
+					break;
+				}
 			}
 			break;
 
-    		case 'I':
-     			if ((iotype=lio_parse_io_arg1(optarg)) == -1) {
-         		    fprintf(stderr,
-             			"%s: --I arg is invalid, must be s, p, f, a, l, L or r.\n",
-             			TCID);
-         		    exit(1);
-     			}
+		case 'I':
+			if ((iotype = lio_parse_io_arg1(optarg)) == -1) {
+				fprintf(stderr,
+					"%s: --I arg is invalid, must be s, p, f, a, l, L or r.\n",
+					TCID);
+				exit(1);
+			}
 			break;
 
 		case 'l':	/* loop forever */
@@ -297,15 +299,15 @@ char *av[];
 		case 'i':
 		case 'n':	/* number writes per child */
 			if (sscanf(optarg, "%d", &num_writes) != 1) {
-				fprintf(stderr,"%s: --i/n option invalid arg '%s'.\n",
-					TCID,optarg);
+				fprintf(stderr,
+					"%s: --i/n option invalid arg '%s'.\n",
+					TCID, optarg);
 				usage();
 				exit(1);
-			}
-			else if (num_writes < 0) {
+			} else if (num_writes < 0) {
 				fprintf(stderr,
-				    "%s: --i/n option must be greater than equal to zero.\n",
-				    TCID);
+					"%s: --i/n option must be greater than equal to zero.\n",
+					TCID);
 				usage();
 				exit(1);
 			}
@@ -315,18 +317,19 @@ char *av[];
 
 			break;
 		case 'P':	/* panic flag */
-			fprintf(stderr, "%s: --P not supported on this architecture\n",
-			    TCID);
+			fprintf(stderr,
+				"%s: --P not supported on this architecture\n",
+				TCID);
 			exit(1);
 			break;
 		case 'p':	/* ping */
 			if (sscanf(optarg, "%d", &num_rpt) != 1) {
-				fprintf(stderr,"%s: --p option invalid arg '%s'.\n",
-					TCID,optarg);
+				fprintf(stderr,
+					"%s: --p option invalid arg '%s'.\n",
+					TCID, optarg);
 				usage();
 				exit(1);
-			}
-			else if (num_rpt < 0) {
+			} else if (num_rpt < 0) {
 				fprintf(stderr,
 					"%s: --p option must be greater than equal to zero.\n",
 					TCID);
@@ -334,42 +337,42 @@ char *av[];
 				exit(1);
 			}
 			break;
-	        case 'q':	/* Quiet - NOPASS */
-			quiet=1;
+		case 'q':	/* Quiet - NOPASS */
+			quiet = 1;
 			break;
 		case 's':	/* size */
 			if (sscanf(optarg, "%d", &size) != 1) {
-				fprintf(stderr,"%s: --s option invalid arg '%s'.\n",
-					TCID,optarg);
+				fprintf(stderr,
+					"%s: --s option invalid arg '%s'.\n",
+					TCID, optarg);
 				usage();
 				exit(1);
-			}
-			else if (size <= 0) {
+			} else if (size <= 0) {
 				fprintf(stderr,
-				    "%s: --s option must be greater than zero.\n",
-				    TCID);
+					"%s: --s option must be greater than zero.\n",
+					TCID);
 				usage();
 				exit(1);
 			}
 			break;
 		case 'u':
-			unpipe=1;	/* un-named pipe */
+			unpipe = 1;	/* un-named pipe */
 			break;
 		case 'v':	/* verbose */
-			verbose=1;
+			verbose = 1;
 			break;
 		case 'W':	/* max wait time between writes */
 			d = strtod(optarg, &cp);
 			if (*cp != '\0') {
-				fprintf(stderr,"%s: --w option invalid arg '%s'.\n",
-					TCID,optarg);
+				fprintf(stderr,
+					"%s: --w option invalid arg '%s'.\n",
+					TCID, optarg);
 				usage();
 				exit(1);
-			}
-			else if (d < 0) {
+			} else if (d < 0) {
 				fprintf(stderr,
-				    "%s: --w option must be greater than zero.\n",
-				    TCID);
+					"%s: --w option must be greater than zero.\n",
+					TCID);
 				usage();
 				exit(1);
 			}
@@ -378,15 +381,15 @@ char *av[];
 		case 'w':	/* max wait time between writes */
 			d = strtod(optarg, &cp);
 			if (*cp != '\0') {
-				fprintf(stderr,"%s: --w option invalid arg '%s'.\n",
-					TCID,optarg);
+				fprintf(stderr,
+					"%s: --w option invalid arg '%s'.\n",
+					TCID, optarg);
 				usage();
 				exit(1);
-			}
-			else if (d < 0) {
+			} else if (d < 0) {
 				fprintf(stderr,
-				    "%s: --w option must be greater than zero.\n",
-				    TCID);
+					"%s: --w option must be greater than zero.\n",
+					TCID);
 				usage();
 				exit(1);
 			}
@@ -394,9 +397,9 @@ char *av[];
 			break;
 		case '?':
 			usage();
-			exit (1);
+			exit(1);
 			break;
-	    }
+		}
 	}
 
 	if (format_size == -1)
@@ -413,61 +416,65 @@ char *av[];
 	 * data is written.  This is the same as erroring and telling
 	 * the user the new cmd line to do the same thing.
 	 * Example:
-	 *	pipeio -s 5000 -n 10 -c 5
-	 *	(each child will write at least 50000 bytes, since all
-	 *	writes have to be in 4096 chuncks or 13*4096 (53248)
-	 *	bytes will be written.)  This is the same as:
+	 *      pipeio -s 5000 -n 10 -c 5
+	 *      (each child will write at least 50000 bytes, since all
+	 *      writes have to be in 4096 chuncks or 13*4096 (53248)
+	 *      bytes will be written.)  This is the same as:
 	 *      pipeio -s 4096 -n 13 -c 5
 	 */
 	if (size > PIPE_BUF && num_wrters > 1) {
-	    if (! loop) {
-	      /* we must set num_writes s.t. num_writes*num_wrters doesn't overflow later */
-		num_writes=MIN(((long long)num_writes*size+PIPE_BUF-1)/PIPE_BUF, INT_MAX/num_wrters);
-	        tst_resm (TINFO, "adjusting i/o size to %d, and # of writes to %d",
-		    PIPE_BUF, num_writes);
-	    }
-	    else {
-		tst_resm (TINFO, "adjusting i/o size to %d", PIPE_BUF);
-	    }
-	    size=PIPE_BUF;
+		if (!loop) {
+			/* we must set num_writes s.t. num_writes*num_wrters doesn't overflow later */
+			num_writes =
+			    MIN(((long long)num_writes * size + PIPE_BUF -
+				 1) / PIPE_BUF, INT_MAX / num_wrters);
+			tst_resm(TINFO,
+				 "adjusting i/o size to %d, and # of writes to %d",
+				 PIPE_BUF, num_writes);
+		} else {
+			tst_resm(TINFO, "adjusting i/o size to %d", PIPE_BUF);
+		}
+		size = PIPE_BUF;
 
 	}
 
-	if ((writebuf = (char *) malloc(size)) == NULL ||
-	    (readbuf = (char *) malloc(size)) == NULL) {
-		tst_resm (TFAIL|TERRNO, "malloc() failed");
-  		SAFE_FREE(writebuf);
+	if ((writebuf = (char *)malloc(size)) == NULL ||
+	    (readbuf = (char *)malloc(size)) == NULL) {
+		tst_resm(TFAIL | TERRNO, "malloc() failed");
+		SAFE_FREE(writebuf);
 		SAFE_FREE(readbuf);
 		exit(1);
 	}
 
-	memset(writebuf,'Z',size);
+	memset(writebuf, 'Z', size);
 
-	writebuf[size-1] = 'A';	/* to detect partial read/write problem */
+	writebuf[size - 1] = 'A';	/* to detect partial read/write problem */
 
-	if ((sem_id = semget(IPC_PRIVATE, 2, IPC_CREAT|S_IRWXU)) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "Couldn't allocate semaphore");
+	if ((sem_id = semget(IPC_PRIVATE, 2, IPC_CREAT | S_IRWXU)) == -1) {
+		tst_brkm(TBROK | TERRNO, NULL, "Couldn't allocate semaphore");
 	}
 
 	if (semctl(sem_id, 0, SETVAL, u) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "Couldn't initialize semaphore 0 value");
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "Couldn't initialize semaphore 0 value");
 
 	/* semaphore to hold off children from exiting until open() completes */
 	if (semctl(sem_id, 1, SETVAL, u) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "Couldn't initialize semaphore 1 value");
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "Couldn't initialize semaphore 1 value");
 
 	if (background) {
-	    if ((n=fork()) == -1) {
-		tst_resm (TFAIL|TERRNO, "fork() failed");
-		exit(1);
-	    }
-	    else if (n != 0) /* parent */
-		exit(0);
+		if ((n = fork()) == -1) {
+			tst_resm(TFAIL | TERRNO, "fork() failed");
+			exit(1);
+		} else if (n != 0)	/* parent */
+			exit(0);
 	}
 
 	if (unpipe) {
 		if (pipe(fds) == -1) {
-			tst_resm (TFAIL|TERRNO, "pipe() failed to create un-named pipe");
+			tst_resm(TFAIL | TERRNO,
+				 "pipe() failed to create un-named pipe");
 			exit(1);
 		}
 		read_fd = fds[0];
@@ -476,81 +483,84 @@ char *av[];
 		blk_type = UNNAMED_IO;
 	} else {
 		if (strlen(dir) && chdir(dir) == -1) {
-			tst_resm (TFAIL|TERRNO, "chdir(%s) failed", dir);
+			tst_resm(TFAIL | TERRNO, "chdir(%s) failed", dir);
 			exit(1);
 		}
 
 		if (stat(pname, &stbuf) == -1) {
 
-		    if (mkfifo(pname,0777) == -1) {
-			tst_resm (TFAIL|TERRNO, "mkfifo(%s,0777) failed", pname);
-			exit(1);
-		    }
+			if (mkfifo(pname, 0777) == -1) {
+				tst_resm(TFAIL | TERRNO,
+					 "mkfifo(%s,0777) failed", pname);
+				exit(1);
+			}
 		}
 		pipe_type = PIPE_NAMED;
 	}
 
-	start_time=time(0);
+	start_time = time(0);
 
 #if DEBUG
-printf("num_wrters = %d\n", num_wrters);
+	printf("num_wrters = %d\n", num_wrters);
 #endif
 
 #ifdef linux
-		signal(SIGCHLD, sig_child);
-		signal(SIGHUP, sig_handler);
-		signal(SIGINT, sig_handler);
-		signal(SIGQUIT, sig_handler);
+	signal(SIGCHLD, sig_child);
+	signal(SIGHUP, sig_handler);
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, sig_handler);
 #ifdef SIGRECOVERY
-		signal(SIGRECOVERY, sig_handler);
+	signal(SIGRECOVERY, sig_handler);
 #endif /* SIGRECOVERY */
 #else
-		sigset(SIGCHLD, sig_child);
-		sigset(SIGHUP, sig_handler);
-		sigset(SIGINT, sig_handler);
-		sigset(SIGQUIT, sig_handler);
+	sigset(SIGCHLD, sig_child);
+	sigset(SIGHUP, sig_handler);
+	sigset(SIGINT, sig_handler);
+	sigset(SIGQUIT, sig_handler);
 #ifdef SIGRECOVERY
-		sigset(SIGRECOVERY, sig_handler);
+	sigset(SIGRECOVERY, sig_handler);
 #endif /* SIGRECOVERY */
 #endif /* linux */
 
-	for (i=num_wrters; i > 0; --i) {
-		if ((c=fork()) < 0) {
-			tst_resm (TFAIL|TERRNO, "fork() failed");
+	for (i = num_wrters; i > 0; --i) {
+		if ((c = fork()) < 0) {
+			tst_resm(TFAIL | TERRNO, "fork() failed");
 			exit(1);
 		}
-		if (c == 0) break;	/* stop child from forking */
+		if (c == 0)
+			break;	/* stop child from forking */
 	}
 	if (c == 0) {	/***** if child *****/
 #if DEBUG
-printf("child after fork pid = %d\n", getpid());
+		printf("child after fork pid = %d\n", getpid());
 #endif
-		if (! unpipe) {
-			if ((write_fd = open(pname,O_WRONLY)) == -1) {
-				tst_resm (TFAIL|TERRNO, "child pipe open(%s, %#o) failed", pname, O_WRONLY|ndelay);
+		if (!unpipe) {
+			if ((write_fd = open(pname, O_WRONLY)) == -1) {
+				tst_resm(TFAIL | TERRNO,
+					 "child pipe open(%s, %#o) failed",
+					 pname, O_WRONLY | ndelay);
 				exit(1);
 			}
-			if (ndelay && fcntl(write_fd, F_SETFL, O_NONBLOCK) == -1) {
-				tst_brkm(TBROK|TERRNO, NULL, "Failed setting the pipe to nonblocking mode");
+			if (ndelay
+			    && fcntl(write_fd, F_SETFL, O_NONBLOCK) == -1) {
+				tst_brkm(TBROK | TERRNO, NULL,
+					 "Failed setting the pipe to nonblocking mode");
 			}
-		}
-		else {
+		} else {
 			close(read_fd);
 		}
 
 		sem_op = (struct sembuf) {
-			.sem_num = 0,
-			.sem_op = 1,
-			.sem_flg = 0
-		};
+		.sem_num = 0,.sem_op = 1,.sem_flg = 0};
 
 		if (semop(sem_id, &sem_op, 1) == -1)
-			tst_brkm(TBROK|TERRNO, NULL, "Couldn't raise the semaphore 0");
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "Couldn't raise the semaphore 0");
 
 		pid_word = (int *)&writebuf[0];
 		count_word = (int *)&writebuf[NBPW];
 
-		for (j=0; j < num_writes || loop; ++j) {
+		for (j = 0; j < num_writes || loop; ++j) {
 
 			/* writes are only in one unit when the size of the write
 			 * is <= PIPE_BUF.
@@ -567,27 +577,31 @@ printf("child after fork pid = %d\n", getpid());
 			*count_word = j;
 			*pid_word = getpid();
 
-                        if ((nb = lio_write_buffer(write_fd, iotype, writebuf, size,
-                                                        SIGUSR1, &cp, 0)) < 0 ) {
-			/*
-			 * If lio_write_buffer returns a negative number,
-			 * the return will be -errno.
-			 */
-				tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed; it returned %d: %s", j, cp, nb, strerror(-nb));
+			if ((nb =
+			     lio_write_buffer(write_fd, iotype, writebuf, size,
+					      SIGUSR1, &cp, 0)) < 0) {
+				/*
+				 * If lio_write_buffer returns a negative number,
+				 * the return will be -errno.
+				 */
+				tst_resm(TFAIL,
+					 "pass %d: lio_write_buffer(%s) failed; it returned %d: %s",
+					 j, cp, nb, strerror(-nb));
 				exit(1);
+			} else if (nb != size) {
+				tst_resm(TFAIL,
+					 "pass %d: lio_write_buffer(%s) failed, write count %d, but expected to write %d",
+					 j, cp, nb, size);
 			}
-			else if (nb != size) {
-				tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed, write count %d, but expected to write %d",
-				          j, cp, nb, size);
-			}
-		        if (verbose)
-				tst_resm (TINFO, "pass %d: pid %d: wrote %d bytes, expected %d bytes",
-				          j, getpid(), nb, size);
+			if (verbose)
+				tst_resm(TINFO,
+					 "pass %d: pid %d: wrote %d bytes, expected %d bytes",
+					 j, getpid(), nb, size);
 
 			if (chld_wait) {
-                		clock=time(0);
-               			srand48(clock);
-                		n = lrand48() % chld_wait;
+				clock = time(0);
+				srand48(clock);
+				n = lrand48() % chld_wait;
 				usleep(n);
 			}
 			fflush(stderr);
@@ -595,78 +609,79 @@ printf("child after fork pid = %d\n", getpid());
 
 		/* child waits until parent completes open() */
 		sem_op = (struct sembuf) {
-			.sem_num = 1,
-			.sem_op = -1,
-			.sem_flg = 0
-		};
+		.sem_num = 1,.sem_op = -1,.sem_flg = 0};
 		if (semop(sem_id, &sem_op, 1) == -1)
-			tst_brkm(TBROK|TERRNO, NULL, "Couldn't lower the semaphore 1");
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "Couldn't lower the semaphore 1");
 	}
 	if (c > 0) {	/***** if parent *****/
 
-		if (! unpipe) {
-			if ((read_fd = open(pname,O_RDONLY)) == -1) {
-				tst_resm (TFAIL|TERRNO, "parent pipe open(%s, %#o) failed", pname, O_RDONLY);
+		if (!unpipe) {
+			if ((read_fd = open(pname, O_RDONLY)) == -1) {
+				tst_resm(TFAIL | TERRNO,
+					 "parent pipe open(%s, %#o) failed",
+					 pname, O_RDONLY);
 				exit(1);
 			}
 			if (ndelay && fcntl(read_fd, F_SETFL, O_NONBLOCK) == -1) {
-				tst_brkm(TBROK|TERRNO, NULL, "Failed setting the pipe to nonblocking mode");
+				tst_brkm(TBROK | TERRNO, NULL,
+					 "Failed setting the pipe to nonblocking mode");
 			}
-		}
-		else {
+		} else {
 			close(write_fd);
 		}
 
 		/* raise semaphore so children can exit */
 		sem_op = (struct sembuf) {
-			.sem_num = 1,
-			.sem_op = num_wrters,
-			.sem_flg = 0
-		};
+		.sem_num = 1,.sem_op = num_wrters,.sem_flg = 0};
 		if (semop(sem_id, &sem_op, 1) == -1)
-			tst_brkm(TBROK|TERRNO, NULL, "Couldn't raise the semaphore 1");
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "Couldn't raise the semaphore 1");
 
 		sem_op = (struct sembuf) {
-			.sem_num = 0,
-			.sem_op = -num_wrters,
-			.sem_flg = 0
-		};
+		.sem_num = 0,.sem_op = -num_wrters,.sem_flg = 0};
 
-		while (Nchildcomplete < num_wrters && semop(sem_id, &sem_op, 1) == -1) {
+		while (Nchildcomplete < num_wrters
+		       && semop(sem_id, &sem_op, 1) == -1) {
 			if (errno == EINTR) {
 				continue;
 			}
-			tst_brkm(TBROK|TERRNO, NULL, "Couldn't wait on semaphore 0");
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "Couldn't wait on semaphore 0");
 		}
 
-		for (i=num_wrters*num_writes; i > 0 || loop; --i) {
+		for (i = num_wrters * num_writes; i > 0 || loop; --i) {
 			if (error >= MAX_ERRS || empty_read >= MAX_EMPTY)
-			  break;
+				break;
 			if (parent_wait) {
-                		clock=time(0);
-                		srand48(clock);
-                		n = lrand48() % parent_wait;
+				clock = time(0);
+				srand48(clock);
+				n = lrand48() % parent_wait;
 				usleep(n);
 			}
 			++count;
-			if ((nb = lio_read_buffer(read_fd, iotype, readbuf, size,
-                   					SIGUSR1, &cp, 0)) < 0 ) {
-                        /*
-                         * If lio_read_buffer returns a negative number,
-                         * the return will be -errno.
-                         */
-				tst_resm (TFAIL, "pass %d: lio_read_buffer(%s) failed; it returned %d: %s", i, cp, nb, strerror(-nb));
-			    ++i;
-			    count--;
-			    error++;
-			    continue;
+			if ((nb =
+			     lio_read_buffer(read_fd, iotype, readbuf, size,
+					     SIGUSR1, &cp, 0)) < 0) {
+				/*
+				 * If lio_read_buffer returns a negative number,
+				 * the return will be -errno.
+				 */
+				tst_resm(TFAIL,
+					 "pass %d: lio_read_buffer(%s) failed; it returned %d: %s",
+					 i, cp, nb, strerror(-nb));
+				++i;
+				count--;
+				error++;
+				continue;
 
- 			} else {
+			} else {
 				if (nb == 0) {
 					if (Nchildcomplete >= num_wrters) {
 						if (!loop)
-							tst_resm(TWARN, "The children have died prematurely");
-						break; /* All children have died */
+							tst_resm(TWARN,
+								 "The children have died prematurely");
+						break;	/* All children have died */
 					}
 					empty_read++;
 /*
@@ -679,18 +694,29 @@ printf("child after fork pid = %d\n", getpid());
 					count--;
 					continue;
 				} else if (nb < size && size <= PIPE_BUF) {
-					tst_resm (TFAIL, "pass %d: partial read from the pipe: read %d bytes, expected %d, read count %d",
-					          i, nb, size, count);
+					tst_resm(TFAIL,
+						 "pass %d: partial read from the pipe: read %d bytes, expected %d, read count %d",
+						 i, nb, size, count);
 					++error;
 				} else if (nb == size) {
-					for (j=2*NBPW;j < size; ++j) {
+					for (j = 2 * NBPW; j < size; ++j) {
 						if (writebuf[j] != readbuf[j]) {
 							++error;
-							tst_resm (TFAIL, "1 FAIL data error on byte %d; rd# %d, sz= %d, %s %s empty_reads= %d, err= %d",
-							          j, count, size, pipe_type, blk_type, empty_read, error);
-							prt_buf(&readbuf,readbuf,format_size,format);
+							tst_resm(TFAIL,
+								 "1 FAIL data error on byte %d; rd# %d, sz= %d, %s %s empty_reads= %d, err= %d",
+								 j, count, size,
+								 pipe_type,
+								 blk_type,
+								 empty_read,
+								 error);
+							prt_buf(&readbuf,
+								readbuf,
+								format_size,
+								format);
 							fflush(stdout);
-							if (exit_error && exit_error == error)
+							if (exit_error
+							    && exit_error ==
+							    error)
 								goto output;
 
 							else
@@ -701,26 +727,30 @@ printf("child after fork pid = %d\n", getpid());
 				if (verbose || (num_rpt && !(count % num_rpt))) {
 					current_time = time(0);
 					diff_time = current_time - start_time;	/* elapsed time */
-					tst_resm (TFAIL, "(%d) rd# %d, sz= %d, %s %s empty_reads= %d, err= %d\n",
-						(int)diff_time,count,size,pipe_type,blk_type,empty_read,error);
+					tst_resm(TFAIL,
+						 "(%d) rd# %d, sz= %d, %s %s empty_reads= %d, err= %d\n",
+						 (int)diff_time, count, size,
+						 pipe_type, blk_type,
+						 empty_read, error);
 					fflush(stdout);
 				}
 			}
 		}
-    if (empty_read)
-      tst_resm(TWARN, "%d empty reads", empty_read);
+		if (empty_read)
+			tst_resm(TWARN, "%d empty reads", empty_read);
 output:
 		if (error)
-			tst_resm(TFAIL, "1 FAIL %d data errors on pipe, read size = %d, %s %s",
-			         error,size,pipe_type,blk_type);
-		else
-			if (!quiet)
-				tst_resm(TPASS, "1 PASS %d pipe reads complete, read size = %d, %s %s",
-				          count+1,size,pipe_type,blk_type);
+			tst_resm(TFAIL,
+				 "1 FAIL %d data errors on pipe, read size = %d, %s %s",
+				 error, size, pipe_type, blk_type);
+		else if (!quiet)
+			tst_resm(TPASS,
+				 "1 PASS %d pipe reads complete, read size = %d, %s %s",
+				 count + 1, size, pipe_type, blk_type);
 
 		/* wait for all children to finish, timeout after uwait_total
 		   semtimedop might not be available everywhere */
-		for (i=0; i<uwait_total; i+=uwait_iter) {
+		for (i = 0; i < uwait_total; i += uwait_iter) {
 			if (semctl(sem_id, 1, GETVAL) == 0) {
 				break;
 			}
@@ -728,7 +758,8 @@ output:
 		}
 
 		if (i > uwait_total) {
-			tst_resm(TWARN, "Timed out waiting for child processes to exit");
+			tst_resm(TWARN,
+				 "Timed out waiting for child processes to exit");
 		}
 
 		semctl(sem_id, 0, IPC_RMID);
@@ -737,25 +768,25 @@ output:
 			unlink(pname);
 	}
 
- 	SAFE_FREE(writebuf);
+	SAFE_FREE(writebuf);
 	SAFE_FREE(readbuf);
 	return (error);
 }
 
-void
-usage ()
+void usage()
 {
-	fprintf(stderr, "Usage: %s [-BbCEv][-c #writers][-D pname][-d dir][-h][-e exit_num][-f fmt][-l][-i #writes][-n #writes][-p num_rpt]\n\t[-s size][-W max_wait][-w max_wait][-u]\n",TCID);
+	fprintf(stderr,
+		"Usage: %s [-BbCEv][-c #writers][-D pname][-d dir][-h][-e exit_num][-f fmt][-l][-i #writes][-n #writes][-p num_rpt]\n\t[-s size][-W max_wait][-w max_wait][-u]\n",
+		TCID);
 	fflush(stderr);
 
 }
 
-void
-help()
+void help()
 {
-        usage();
+	usage();
 
-    printf("  -B           - execute actions in background\n\
+	printf("  -B           - execute actions in background\n\
   -b           - blocking reads and writes. default non-block\n\
   -c #writers  - number of writers (childern)\n\
   -D pname     - name of fifo (def tpipe<pid>)\n\
@@ -787,138 +818,136 @@ help()
 
 }
 
-void
-prt_buf(long addr, char * buf, int length, int format)
+void prt_buf(long addr, char *buf, int length, int format)
 {
 
 	int i;
-	int num_words = length/NBPW;  /* given length in bytes, get length in words */
+	int num_words = length / NBPW;	/* given length in bytes, get length in words */
 	int width;		/* number of columns */
 	int extra_words = 0;	/* odd or even number of words */
 	char *a = buf;
 	char b[NBPW];
-	char c[NBPW*2];
+	char c[NBPW * 2];
 	char *p;
 	long *word;
 
-	if (format == NO_OUT)		/* if no output wanted, return */
+	if (format == NO_OUT)	/* if no output wanted, return */
 		return;
 
-	if (length % NBPW) ++num_words; /* is length in full words? */
+	if (length % NBPW)
+		++num_words;	/* is length in full words? */
 	if (format == ASCII) {
-	 	width = 3;
+		width = 3;
 	} else {
 		width = 2;
-	    /* do we have an odd number of words? */
-		extra_words = num_words%width;
+		/* do we have an odd number of words? */
+		extra_words = num_words % width;
 	}
-	for (i=0; i < num_words; ++i, a += NBPW, addr++) {
-		word = (long *) a;
-		if (!(i%width)) {
+	for (i = 0; i < num_words; ++i, a += NBPW, addr++) {
+		word = (long *)a;
+		if (!(i % width)) {
 			if (i > 0 && format != ASCII) {
-		   	  /*
-		    	   * print the ascii equivalent of the data
-			   * before beginning the next line of output.
-			   */
-				memset(c,0x00,width*NBPW);
-			   /*
-			    * get the last 2 words printed
-			    */
-				memcpy(c,a-(width*NBPW),width*NBPW);
-				for (p = c; (p-c) < width*NBPW; ++p) {
+				/*
+				 * print the ascii equivalent of the data
+				 * before beginning the next line of output.
+				 */
+				memset(c, 0x00, width * NBPW);
+				/*
+				 * get the last 2 words printed
+				 */
+				memcpy(c, a - (width * NBPW), width * NBPW);
+				for (p = c; (p - c) < width * NBPW; ++p) {
 					if (*p < '!' || *p > '~')
 						*p = '.';
 				}
-				printf("\t%16.16s",c);
+				printf("\t%16.16s", c);
 			}
-			printf("\n%7lo: ",addr);
+			printf("\n%7lo: ", addr);
 			/***printf("\n%7o (%d): ",addr,i);***/
 		}
 
 		switch (format) {
-			case HEX:
-				printf("%16.16lx ",*word);
-				break;
-			case DECIMAL:
-				printf("%10.10ld ",*word);
-				break;
-			case ASCII:
-				memcpy(b,a,NBPW);
-				for (p = b; (p-b) < NBPW; ++p) {
-					if (*p < '!' || *p > '~')
-						*p = '.';
-				}
-				printf("%8.8s ",b);
-				break;
-			default:
-				printf("%22.22lo ",*word);
-				break;
+		case HEX:
+			printf("%16.16lx ", *word);
+			break;
+		case DECIMAL:
+			printf("%10.10ld ", *word);
+			break;
+		case ASCII:
+			memcpy(b, a, NBPW);
+			for (p = b; (p - b) < NBPW; ++p) {
+				if (*p < '!' || *p > '~')
+					*p = '.';
+			}
+			printf("%8.8s ", b);
+			break;
+		default:
+			printf("%22.22lo ", *word);
+			break;
 		}
 	}
 	if (format != ASCII) {
-   	  /*
-    	   * print the ascii equivalent of the last words in the buffer
-	   * before returning.
-	   */
-		memset(c,0x00,width*NBPW);
-		if (extra_words) width = extra_words; /* odd number of words */
-		memcpy(c,a-(width*NBPW),width*NBPW);
-		for (p = c; (p-c) < width*NBPW; ++p) {
+		/*
+		 * print the ascii equivalent of the last words in the buffer
+		 * before returning.
+		 */
+		memset(c, 0x00, width * NBPW);
+		if (extra_words)
+			width = extra_words;	/* odd number of words */
+		memcpy(c, a - (width * NBPW), width * NBPW);
+		for (p = c; (p - c) < width * NBPW; ++p) {
 			if (*p < '!' || *p > '~')
 				*p = '.';
 		}
 		if (width == 2)
-			printf("\t%16.16s",c);
+			printf("\t%16.16s", c);
 		else
-			printf("\t\t%16.8s",c);
+			printf("\t\t%16.8s", c);
 	}
 	printf("\n");
 	fflush(stdout);
 }
 
-void
-prt_examples()
+void prt_examples()
 {
-    printf("%s -c 5 -i 0 -s 4090 -b\n", TCID);
-    printf("%s -c 5 -i 0 -s 4090 -b -u \n", TCID);
-    printf("%s -c 5 -i 0 -s 4090 -b -W 3 -w 3 \n", TCID);
+	printf("%s -c 5 -i 0 -s 4090 -b\n", TCID);
+	printf("%s -c 5 -i 0 -s 4090 -b -u \n", TCID);
+	printf("%s -c 5 -i 0 -s 4090 -b -W 3 -w 3 \n", TCID);
 
 }
 
-void
-sig_child(int sig)
+void sig_child(int sig)
 {
-    int status;
+	int status;
 
-    Nchildcomplete++;
+	Nchildcomplete++;
 #if DEBUG
-printf("parent: received SIGCHLD\n");
+	printf("parent: received SIGCHLD\n");
 #endif
-    waitpid(-1, &status, WNOHANG);
+	waitpid(-1, &status, WNOHANG);
 #if linux
-    signal(SIGCHLD, sig_child);
+	signal(SIGCHLD, sig_child);
 #else
-    sigset(SIGCHLD, sig_child);
+	sigset(SIGCHLD, sig_child);
 #endif
 }
 
-void
-sig_handler(int sig)
+void sig_handler(int sig)
 {
 #ifdef SIGRECOVERY
-    if (sig == SIGRECOVERY) {
-	printf("%s: received SIGRECOVERY, count = %d\n", TCID, count);
-        fflush(stdout);
+	if (sig == SIGRECOVERY) {
+		printf("%s: received SIGRECOVERY, count = %d\n", TCID, count);
+		fflush(stdout);
 #ifdef linux
-	signal(sig, sig_handler);
+		signal(sig, sig_handler);
 #else
-	sigset(sig, sig_handler);
+		sigset(sig, sig_handler);
 #endif
-	return;
-    }
+		return;
+	}
 #endif
-    printf("%s: received unexpected signal: %d\n", TCID, sig);
-    fflush(stdout);
-    exit(3);
+	printf("%s: received unexpected signal: %d\n", TCID, sig);
+	fflush(stdout);
+	exit(3);
 
 }

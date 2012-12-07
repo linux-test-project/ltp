@@ -42,7 +42,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <utime.h>
-#include <sys/utsname.h> /* for cpuset_would_crash_kernel() */
+#include <sys/utsname.h>	/* for cpuset_would_crash_kernel() */
 
 #include "bitmask.h"
 #include "cpuset.h"
@@ -281,7 +281,7 @@ static void chomp(char *s)
  * assuming that stat(2) on that file has a useful size.
  * Has side affect of leaving the file rewound to the beginnning.
  */
-static int filesize(FILE *fp)
+static int filesize(FILE * fp)
 {
 	int sz = 0;
 	rewind(fp);
@@ -452,26 +452,26 @@ static int samefile(const char *path1, const char *path2)
 /* In place path compression.  Remove extra dots and slashes. */
 static char *pathcomp(char *p)
 {
-	char *a=p;
-	char *b=p;
+	char *a = p;
+	char *b = p;
 
 	if (!p || !*p)
 		return p;
-	if (slash (p))
+	if (slash(p))
 		*b++ = *a++;
 	for (;;) {
-		if (slash (a))
-			while (slash (++a))
+		if (slash(a))
+			while (slash(++a))
 				continue;
 		if (!*a) {
-			if (b==p)
+			if (b == p)
 				*b++ = '.';
 			*b = '\0';
 			return (p);
-		} else if (dot1 (a)) {
+		} else if (dot1(a)) {
 			a++;
 		} else {
-			if ((b!=p) && !slash(b-1))
+			if ((b != p) && !slash(b - 1))
 				*b++ = '/';
 			while (!eocomp(a))
 				*b++ = *a++;
@@ -490,9 +490,9 @@ static char *pathcomp(char *p)
  */
 
 static char *pathcat2(char *buf, int buflen, const char *name1,
-					const char *name2)
+		      const char *name2)
 {
-	(void) snprintf(buf, buflen, "%s/%s", name1, name2);
+	(void)snprintf(buf, buflen, "%s/%s", name1, name2);
 	return pathcomp(buf);
 }
 
@@ -503,9 +503,9 @@ static char *pathcat2(char *buf, int buflen, const char *name1,
  */
 
 static char *pathcat3(char *buf, int buflen, const char *name1,
-					const char *name2, const char *name3)
+		      const char *name2, const char *name3)
 {
-	(void) snprintf(buf, buflen, "%s/%s/%s", name1, name2, name3);
+	(void)snprintf(buf, buflen, "%s/%s/%s", name1, name2, name3);
 	return pathcomp(buf);
 }
 
@@ -552,7 +552,7 @@ static int fullpath(char *buf, int buflen, const char *name)
  */
 
 static int fullpath2(char *buf, int buflen, const char *name1,
-							const char *name2)
+		     const char *name2)
 {
 	if (fullpath(buf, buflen, name1) < 0)
 		return -1;
@@ -699,39 +699,39 @@ int cpuset_setmems(struct cpuset *cp, const struct bitmask *mems)
 int cpuset_set_iopt(struct cpuset *cp, const char *optionname, int value)
 {
 	if (streq(optionname, "cpu_exclusive")) {
-		cp->cpu_exclusive = !!value;
+		cp->cpu_exclusive = ! !value;
 		cp->cpu_exclusive_valid = 1;
 		cp->cpu_exclusive_dirty = 1;
 	} else if (streq(optionname, "mem_exclusive")) {
-		cp->mem_exclusive = !!value;
+		cp->mem_exclusive = ! !value;
 		cp->mem_exclusive_valid = 1;
 		cp->mem_exclusive_dirty = 1;
 	} else if (streq(optionname, "mem_hardwall")) {
-		cp->mem_hardwall = !!value;
+		cp->mem_hardwall = ! !value;
 		cp->mem_hardwall_valid = 1;
 		cp->mem_hardwall_dirty = 1;
 	} else if (streq(optionname, "notify_on_release")) {
-		cp->notify_on_release = !!value;
+		cp->notify_on_release = ! !value;
 		cp->notify_on_release_valid = 1;
 		cp->notify_on_release_dirty = 1;
 	} else if (streq(optionname, "memory_pressure_enabled")) {
-		cp->memory_pressure_enabled = !!value;
+		cp->memory_pressure_enabled = ! !value;
 		cp->memory_pressure_enabled_valid = 1;
 		cp->memory_pressure_enabled_dirty = 1;
 	} else if (streq(optionname, "memory_migrate")) {
-		cp->memory_migrate = !!value;
+		cp->memory_migrate = ! !value;
 		cp->memory_migrate_valid = 1;
 		cp->memory_migrate_dirty = 1;
 	} else if (streq(optionname, "memory_spread_page")) {
-		cp->memory_spread_page = !!value;
+		cp->memory_spread_page = ! !value;
 		cp->memory_spread_page_valid = 1;
 		cp->memory_spread_page_dirty = 1;
 	} else if (streq(optionname, "memory_spread_slab")) {
-		cp->memory_spread_slab = !!value;
+		cp->memory_spread_slab = ! !value;
 		cp->memory_spread_slab_valid = 1;
 		cp->memory_spread_slab_dirty = 1;
 	} else if (streq(optionname, "sched_load_balance")) {
-		cp->sched_load_balance = !!value;
+		cp->sched_load_balance = ! !value;
 		cp->sched_load_balance_valid = 1;
 		cp->sched_load_balance_dirty = 1;
 	} else if (streq(optionname, "sched_relax_domain_level")) {
@@ -745,9 +745,9 @@ int cpuset_set_iopt(struct cpuset *cp, const char *optionname, int value)
 
 /* [optional] Set string value optname */
 int cpuset_set_sopt(UNUSED struct cpuset *cp, UNUSED const char *optionname,
-						UNUSED const char *value)
+		    UNUSED const char *value)
 {
-	return -2;	/* For now, all string options unrecognized */
+	return -2;		/* For now, all string options unrecognized */
 }
 
 /* Return handle for reading memory_pressure. */
@@ -786,7 +786,7 @@ void cpuset_close_memory_pressure(int han)
  * resolving the current tasks cpuset.
  */
 static const struct cpuset *resolve_cp(const struct cpuset *cp,
-			struct cpuset **cp_tofree)
+				       struct cpuset **cp_tofree)
 {
 	const struct cpuset *rcp;
 
@@ -917,14 +917,14 @@ int cpuset_get_iopt(const struct cpuset *cp, const char *optionname)
 
 /* [optional] Return string value of optname */
 const char *cpuset_get_sopt(UNUSED const struct cpuset *cp,
-				UNUSED const char *optionname)
+			    UNUSED const char *optionname)
 {
-	return NULL;	/* For now, all string options unrecognized */
+	return NULL;		/* For now, all string options unrecognized */
 }
 
 static int read_flag(const char *filepath, char *flagp)
 {
-	char buf[SMALL_BUFSZ];		/* buffer a "0" or "1" flag line */
+	char buf[SMALL_BUFSZ];	/* buffer a "0" or "1" flag line */
 	int fd = -1;
 
 	if ((fd = open(filepath, O_RDONLY)) < 0)
@@ -1015,7 +1015,7 @@ err:
 }
 
 static int load_mask(const char *path, struct bitmask **bmpp,
-						int nbits, const char *mask)
+		     int nbits, const char *mask)
 {
 	char buf[PATH_MAX];
 
@@ -1028,7 +1028,7 @@ static int write_string_file(const char *filepath, const char *str)
 {
 	int fd = -1;
 
-	if ((fd = open(filepath, O_WRONLY|O_CREAT, 0644)) < 0)
+	if ((fd = open(filepath, O_WRONLY | O_CREAT, 0644)) < 0)
 		goto err;
 	if (write(fd, str, strlen(str)) < 0)
 		goto err;
@@ -1087,7 +1087,7 @@ static int store_number(const char *path, const char *file, int val)
 }
 
 static int store_mask(const char *path, const char *mask,
-						const struct bitmask *bmp)
+		      const struct bitmask *bmp)
 {
 	char maskpath[PATH_MAX];
 	char *bp = NULL;
@@ -1114,8 +1114,8 @@ char cpu_online(unsigned int cpu)
 	char online;
 	char cpupath[PATH_MAX];
 
-	(void) snprintf(cpupath, sizeof(cpupath),
-		"/sys/devices/system/cpu/cpu%d/online", cpu);
+	(void)snprintf(cpupath, sizeof(cpupath),
+		       "/sys/devices/system/cpu/cpu%d/online", cpu);
 	if (read_flag(cpupath, &online) < 0)
 		return 0;	/* oops - guess that cpu's not there */
 	return online;
@@ -1184,8 +1184,8 @@ char cpu_online(unsigned int cpu)
  */
 
 static struct cpunodemap {
-	int *map;	/* map[cpumask_sz]: maps cpu to its node */
-	time_t mtime;	/* modtime of mapfile when last read */
+	int *map;		/* map[cpumask_sz]: maps cpu to its node */
+	time_t mtime;		/* modtime of mapfile when last read */
 } cpunodemap;
 
 /*
@@ -1223,7 +1223,7 @@ static void rebuild_map()
 			if (sscanf(dent2->d_name, "cpu%u", &cpu) < 1)
 				continue;
 			if (cpu >= (unsigned int)ncpus
-				|| mem >= (unsigned int)nmems)
+			    || mem >= (unsigned int)nmems)
 				continue;
 			cpunodemap.map[cpu] = mem;
 		}
@@ -1245,13 +1245,13 @@ static void rebuild_map()
 
 static void load_map()
 {
-	char buf[SMALL_BUFSZ];		/* buffer 1 line of mapfile */
-	FILE *mapfp;			/* File stream on mapfile */
+	char buf[SMALL_BUFSZ];	/* buffer 1 line of mapfile */
+	FILE *mapfp;		/* File stream on mapfile */
 	int ncpus = cpuset_cpus_nbits();
 	int nmems = cpuset_mems_nbits();
 	unsigned int cpu, mem;
 
-	if ((cpunodemap.map = calloc(ncpus, sizeof (int))) == NULL)
+	if ((cpunodemap.map = calloc(ncpus, sizeof(int))) == NULL)
 		return;
 	cpunodemap.mtime = get_mtime(mapfile);
 	if ((mapfp = fopen(mapfile, "r")) == NULL)
@@ -1302,7 +1302,7 @@ static void store_map()
 	if (rename(buf, mapfile) < 0)
 		goto err;
 	/* mkstemp() creates mode 0600 - change to world readable */
-	(void) chmod(mapfile, 0444);
+	(void)chmod(mapfile, 0444);
 	return;
 err:
 	if (mapfp != NULL) {
@@ -1311,7 +1311,7 @@ err:
 	}
 	if (fd >= 0)
 		close(fd);
-	(void) unlink(buf);
+	(void)unlink(buf);
 }
 
 /*
@@ -1417,9 +1417,9 @@ int cpuset_localmems(const struct bitmask *cpus, struct bitmask *mems)
 
 typedef unsigned char distmap_entry_t;	/* type of distmap[] entries */
 
-static distmap_entry_t *distmap;  	/* maps <cpu, mem> to distance */
+static distmap_entry_t *distmap;	/* maps <cpu, mem> to distance */
 
-#define DISTMAP_MAX UCHAR_MAX		/* maximum value in distmap[] */
+#define DISTMAP_MAX UCHAR_MAX	/* maximum value in distmap[] */
 
 #define I(i,j) ((i) * nmems + (j))	/* 2-D array index simulation */
 
@@ -1463,7 +1463,7 @@ static int parse_distmap_line(unsigned int node, char *buf)
 		if (p == q)
 			break;
 		if (d < DISTMAP_MAX)
-			dists[n] = (distmap_entry_t)d;
+			dists[n] = (distmap_entry_t) d;
 	}
 
 	if ((mems = bitmask_alloc(nmems)) == NULL)
@@ -1475,7 +1475,7 @@ static int parse_distmap_line(unsigned int node, char *buf)
 	cpuset_localcpus(mems, cpus);
 
 	for (c = bitmask_first(cpus); c < (unsigned int)ncpus;
-		c = bitmask_next(cpus, c + 1))
+	     c = bitmask_next(cpus, c + 1))
 		for (n = 0; n < (unsigned int)nmems; n++)
 			distmap[I(c, n)] = dists[n];
 	ret = 0;
@@ -1546,7 +1546,7 @@ static void build_distmap()
 		if (sscanf(dent->d_name, "node%u", &node) < 1)
 			continue;
 		pathcat3(buf, sizeof(buf), distance_directory, dent->d_name,
-								"distance");
+			 "distance");
 		if (parse_distance_file(node, buf) < 0)
 			goto err;
 	}
@@ -1609,7 +1609,7 @@ static void parse_distmap_line_sn(char *buf)
 		if (p == q)
 			break;
 		if (d < DISTMAP_MAX)
-			dists[n] = (distmap_entry_t)d;
+			dists[n] = (distmap_entry_t) d;
 	}
 
 	if ((mems = bitmask_alloc(nmems)) == NULL)
@@ -1621,7 +1621,7 @@ static void parse_distmap_line_sn(char *buf)
 	cpuset_localcpus(mems, cpus);
 
 	for (c = bitmask_first(cpus); c < (unsigned int)ncpus;
-			c = bitmask_next(cpus, c + 1))
+	     c = bitmask_next(cpus, c + 1))
 		for (n = 0; n < (unsigned int)nmems; n++)
 			distmap[I(c, n)] = dists[n];
 	/* fall into ... */
@@ -1753,13 +1753,13 @@ static int apply_cpuset_settings(const char *path, const struct cpuset *cp)
 	}
 
 	if (cp->notify_on_release_valid && cp->notify_on_release_dirty) {
-		if (store_flag(path, "notify_on_release", cp->notify_on_release) < 0)
+		if (store_flag(path, "notify_on_release", cp->notify_on_release)
+		    < 0)
 			goto err;
 	}
 
 	if (cp->memory_migrate_valid &&
-	    cp->memory_migrate_dirty &&
-	    exists_flag(path, "memory_migrate")) {
+	    cp->memory_migrate_dirty && exists_flag(path, "memory_migrate")) {
 		if (store_flag(path, "memory_migrate", cp->memory_migrate) < 0)
 			goto err;
 	}
@@ -1767,35 +1767,42 @@ static int apply_cpuset_settings(const char *path, const struct cpuset *cp)
 	if (cp->memory_pressure_enabled_valid &&
 	    cp->memory_pressure_enabled_dirty &&
 	    exists_flag(path, "memory_pressure_enabled")) {
-		if (store_flag(path, "memory_pressure_enabled", cp->memory_pressure_enabled) < 0)
+		if (store_flag
+		    (path, "memory_pressure_enabled",
+		     cp->memory_pressure_enabled) < 0)
 			goto err;
 	}
 
 	if (cp->memory_spread_page_valid &&
 	    cp->memory_spread_page_dirty &&
 	    exists_flag(path, "memory_spread_page")) {
-		if (store_flag(path, "memory_spread_page", cp->memory_spread_page) < 0)
+		if (store_flag
+		    (path, "memory_spread_page", cp->memory_spread_page) < 0)
 			goto err;
 	}
 
 	if (cp->memory_spread_slab_valid &&
 	    cp->memory_spread_slab_dirty &&
 	    exists_flag(path, "memory_spread_slab")) {
-		if (store_flag(path, "memory_spread_slab", cp->memory_spread_slab) < 0)
+		if (store_flag
+		    (path, "memory_spread_slab", cp->memory_spread_slab) < 0)
 			goto err;
 	}
 
 	if (cp->sched_load_balance_valid &&
 	    cp->sched_load_balance_dirty &&
 	    exists_flag(path, "sched_load_balance")) {
-		if (store_flag(path, "sched_load_balance", cp->sched_load_balance) < 0)
+		if (store_flag
+		    (path, "sched_load_balance", cp->sched_load_balance) < 0)
 			goto err;
 	}
 
 	if (cp->sched_relax_domain_level_valid &&
 	    cp->sched_relax_domain_level_dirty &&
 	    exists_flag(path, "sched_relax_domain_level")) {
-		if (store_number(path, "sched_relax_domain_level", cp->sched_relax_domain_level) < 0)
+		if (store_number
+		    (path, "sched_relax_domain_level",
+		     cp->sched_relax_domain_level) < 0)
 			goto err;
 	}
 
@@ -1970,8 +1977,7 @@ static void mark_dirty_variable(struct cpuset *cp1, const struct cpuset *cp2)
 	    cp1->mem_exclusive != cp2->mem_exclusive)
 		cp1->mem_exclusive_dirty = 1;
 
-	if (cp1->mem_hardwall_valid &&
-	    cp1->mem_hardwall != cp2->mem_hardwall)
+	if (cp1->mem_hardwall_valid && cp1->mem_hardwall != cp2->mem_hardwall)
 		cp1->mem_hardwall_dirty = 1;
 
 	if (cp1->notify_on_release_valid &&
@@ -2050,11 +2056,11 @@ static int cr_or_mod(const char *relpath, const struct cpuset *cp, int new)
 err:
 	sav_errno = errno;
 	if (do_restore_cp_sav_on_err)
-		(void) apply_cpuset_settings(buf, cp_sav);
+		(void)apply_cpuset_settings(buf, cp_sav);
 	if (cp_sav)
 		cpuset_free(cp_sav);
 	if (do_rmdir_on_err)
-		(void) rmdir(buf);
+		(void)rmdir(buf);
 	errno = sav_errno;
 	return -1;
 }
@@ -2117,31 +2123,38 @@ int cpuset_query(struct cpuset *cp, const char *relpath)
 	}
 
 	if (exists_flag(buf, "memory_pressure_enabled")) {
-		if (load_flag(buf, &cp->memory_pressure_enabled, "memory_pressure_enabled") < 0)
+		if (load_flag
+		    (buf, &cp->memory_pressure_enabled,
+		     "memory_pressure_enabled") < 0)
 			goto err;
 		cp->memory_pressure_enabled_valid = 1;
 	}
 
 	if (exists_flag(buf, "memory_spread_page")) {
-		if (load_flag(buf, &cp->memory_spread_page, "memory_spread_page") < 0)
+		if (load_flag
+		    (buf, &cp->memory_spread_page, "memory_spread_page") < 0)
 			goto err;
 		cp->memory_spread_page_valid = 1;
 	}
 
 	if (exists_flag(buf, "memory_spread_slab")) {
-		if (load_flag(buf, &cp->memory_spread_slab, "memory_spread_slab") < 0)
+		if (load_flag
+		    (buf, &cp->memory_spread_slab, "memory_spread_slab") < 0)
 			goto err;
 		cp->memory_spread_slab_valid = 1;
 	}
 
 	if (exists_flag(buf, "sched_load_balance")) {
-		if (load_flag(buf, &cp->sched_load_balance, "sched_load_balance") < 0)
+		if (load_flag
+		    (buf, &cp->sched_load_balance, "sched_load_balance") < 0)
 			goto err;
 		cp->sched_load_balance_valid = 1;
 	}
 
 	if (exists_flag(buf, "sched_relax_domain_level")) {
-		if (load_number(buf, &cp->sched_relax_domain_level, "sched_relax_domain_level") < 0)
+		if (load_number
+		    (buf, &cp->sched_relax_domain_level,
+		     "sched_relax_domain_level") < 0)
 			goto err;
 		cp->sched_relax_domain_level_valid = 1;
 	}
@@ -2168,8 +2181,8 @@ int cpuset_modify(const char *relpath, const struct cpuset *cp)
 /* Get cpuset path of pid into buf */
 char *cpuset_getcpusetpath(pid_t pid, char *buf, size_t size)
 {
-	int fd;		     /* dual use: cpuset file for pid and self */
-	int rc;		     /* dual use: snprintf and read return codes */
+	int fd;			/* dual use: cpuset file for pid and self */
+	int rc;			/* dual use: snprintf and read return codes */
 
 	if (check() < 0)
 		return NULL;
@@ -2425,8 +2438,8 @@ void cpuset_fts_reverse(struct cpuset_fts_tree *cs_tree);
 int cpuset_nuke(const char *relpath, unsigned int seconds)
 {
 	unsigned int secs_left = seconds;	/* total sleep seconds left */
-	unsigned int secs_loop = 1;		/* how much sleep next loop */
-	unsigned int secs_slept;		/* seconds slept in sleep() */
+	unsigned int secs_loop = 1;	/* how much sleep next loop */
+	unsigned int secs_slept;	/* seconds slept in sleep() */
 	struct cpuset_pidlist *pl = NULL;	/* pids in cpuset subtree */
 	struct cpuset_fts_tree *cs_tree;
 	const struct cpuset_fts_entry *cs_entry;
@@ -2633,15 +2646,15 @@ static void free_pidblocks(struct pidblock *pbhead)
 /* numeric comparison routine for qsort */
 static int numericsort(const void *m1, const void *m2)
 {
-	pid_t p1 = * (pid_t *) m1;
-	pid_t p2 = * (pid_t *) m2;
+	pid_t p1 = *(pid_t *) m1;
+	pid_t p2 = *(pid_t *) m2;
 
 	return p1 - p2;
 }
 
 /* Return list pids in cpuset 'path' */
 struct cpuset_pidlist *cpuset_init_pidlist(const char *relpath,
-							int recursiveflag)
+					   int recursiveflag)
 {
 	struct pidblock *pb = NULL;
 	struct cpuset_pidlist *pl = NULL;
@@ -2696,12 +2709,12 @@ int cpuset_pidlist_length(const struct cpuset_pidlist *pl)
 }
 
 /* Return i'th element of pidlist */
-pid_t cpuset_get_pidlist(const struct cpuset_pidlist *pl, int i)
+pid_t cpuset_get_pidlist(const struct cpuset_pidlist * pl, int i)
 {
 	if (pl && i >= 0 && i < pl->npids)
 		return pl->pids[i];
 	else
-		return (pid_t)-1;
+		return (pid_t) - 1;
 }
 
 /* Free pidlist */
@@ -2913,7 +2926,7 @@ int cpuset_migrate_all(struct cpuset_pidlist *pl, const char *relpath)
 	if (store_flag(buf2, "memory_migrate", 1) < 0)
 		return -1;
 
- 	fullpath2(buf, sizeof(buf), relpath, "tasks");
+	fullpath2(buf, sizeof(buf), relpath, "tasks");
 
 	ret = 0;
 	for (i = 0; i < pl->npids; i++)
@@ -3082,7 +3095,7 @@ static int sched_setaffinity(pid_t pid, unsigned len, unsigned long *mask)
 
 #if HAVE_DECL_MPOL_F_ADDR && HAVE_DECL_MPOL_F_NODE
 static int get_mempolicy(int *policy, unsigned long *nmask,
-			unsigned long maxnode, void *addr, int flags)
+			 unsigned long maxnode, void *addr, int flags)
 {
 	return syscall(__NR_get_mempolicy, policy, nmask, maxnode, addr, flags);
 }
@@ -3141,11 +3154,11 @@ err:
 
 /* Compare two placement structs - use to detect changes in placement */
 int cpuset_equal_placement(const struct cpuset_placement *plc1,
-					const struct cpuset_placement *plc2)
+			   const struct cpuset_placement *plc2)
 {
-	return	bitmask_equal(plc1->cpus, plc2->cpus) &&
-		bitmask_equal(plc1->mems, plc2->mems) &&
-		streq(plc1->path, plc2->path);
+	return bitmask_equal(plc1->cpus, plc2->cpus) &&
+	    bitmask_equal(plc1->mems, plc2->mems) &&
+	    streq(plc1->path, plc2->path);
 }
 
 /* Free a placement struct */
@@ -3193,13 +3206,13 @@ struct cpuset_fts_entry {
 /* Open a handle on a cpuset hierarchy.  All the real work is done here. */
 struct cpuset_fts_tree *cpuset_fts_open(const char *cpusetpath)
 {
-	FTS* fts = NULL;
+	FTS *fts = NULL;
 	FTSENT *ftsent;
 	char *path_argv[2];
 	char buf[PATH_MAX];
 	struct cpuset_fts_tree *cs_tree = NULL;
-	struct cpuset_fts_entry *ep;	  /* the latest new list entry */
-	struct cpuset_fts_entry **pnlep;  /* ptr to next list entry ptr */
+	struct cpuset_fts_entry *ep;	/* the latest new list entry */
+	struct cpuset_fts_entry **pnlep;	/* ptr to next list entry ptr */
 	char *relpath;
 	int fts_flags;
 
@@ -3263,7 +3276,7 @@ struct cpuset_fts_tree *cpuset_fts_open(const char *cpusetpath)
 		ep->info = CPUSET_FTS_CPUSET;
 	}
 
-	(void) fts_close(fts);
+	(void)fts_close(fts);
 	cpuset_fts_rewind(cs_tree);
 	return cs_tree;
 
@@ -3271,7 +3284,7 @@ err:
 	if (cs_tree)
 		cpuset_fts_close(cs_tree);
 	if (fts)
-		(void) fts_close(fts);
+		(void)fts_close(fts);
 	return NULL;
 }
 
@@ -3279,7 +3292,7 @@ err:
 const struct cpuset_fts_entry *cpuset_fts_read(struct cpuset_fts_tree *cs_tree)
 {
 	const struct cpuset_fts_entry *cs_entry = cs_tree->next;
-	if (cs_tree->next != NULL)		/* seek to next entry */
+	if (cs_tree->next != NULL)	/* seek to next entry */
 		cs_tree->next = cs_tree->next->next;
 	return cs_entry;
 }
@@ -3325,7 +3338,8 @@ const struct stat *cpuset_fts_get_stat(const struct cpuset_fts_entry *cs_entry)
 }
 
 /* Return pointer to cpuset structure of a cpuset entry */
-const struct cpuset *cpuset_fts_get_cpuset(const struct cpuset_fts_entry *cs_entry)
+const struct cpuset *cpuset_fts_get_cpuset(const struct cpuset_fts_entry
+					   *cs_entry)
 {
 	return cs_entry->cpuset;
 }
@@ -3414,11 +3428,8 @@ int cpuset_latestcpu(pid_t pid)
 
 	bp = strrchr(buf, ')');
 	if (bp)
-	     sscanf(bp + 1, "%*s %*u %*u %*u %*u %*u %*u %*u "
-		    "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u "
-		    "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u "
-		    "%*u %*u %*u %*u %*u %*u %*u %*u %u", /* 37th field past ')' */
-		    &cpu);
+		sscanf(bp + 1, "%*s %*u %*u %*u %*u %*u %*u %*u " "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u " "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u " "%*u %*u %*u %*u %*u %*u %*u %*u %u",	/* 37th field past ')' */
+		       &cpu);
 	if (cpu < 0)
 		errno = EINVAL;
 	return cpu;
@@ -3438,8 +3449,7 @@ int cpuset_membind(int mem)
 		return -1;
 	bitmask_setbit(bmp, mem);
 #if HAVE_DECL_MPOL_BIND
-	r = set_mempolicy(MPOL_BIND, bitmask_mask(bmp),
-		bitmask_nbits(bmp) + 1);
+	r = set_mempolicy(MPOL_BIND, bitmask_mask(bmp), bitmask_nbits(bmp) + 1);
 #else
 	r = -1;
 	errno = ENOSYS;
@@ -3454,7 +3464,7 @@ int cpuset_addr2node(void *addr)
 	int node = -1;
 
 #if HAVE_DECL_MPOL_F_ADDR && HAVE_DECL_MPOL_F_NODE
-	if (get_mempolicy(&node, NULL, 0, addr, MPOL_F_NODE|MPOL_F_ADDR)) {
+	if (get_mempolicy(&node, NULL, 0, addr, MPOL_F_NODE | MPOL_F_ADDR)) {
 		/* I realize this seems redundant, but I _want_ to make sure
 		 * that this value is -1. */
 		node = -1;
@@ -3484,23 +3494,22 @@ int cpuset_export(const struct cpuset *cp, char *buf, int buflen)
 
 	if (cp->notify_on_release)
 		n += snprintf(buf + n, max(buflen - n, 0),
-							"notify_on_release\n");
+			      "notify_on_release\n");
 
 	if (cp->memory_pressure_enabled)
 		n += snprintf(buf + n, max(buflen - n, 0),
-							"memory_pressure_enabled\n");
+			      "memory_pressure_enabled\n");
 
 	if (cp->memory_migrate)
-		n += snprintf(buf + n, max(buflen - n, 0),
-							"memory_migrate\n");
+		n += snprintf(buf + n, max(buflen - n, 0), "memory_migrate\n");
 
 	if (cp->memory_spread_page)
 		n += snprintf(buf + n, max(buflen - n, 0),
-							"memory_spread_page\n");
+			      "memory_spread_page\n");
 
 	if (cp->memory_spread_slab)
 		n += snprintf(buf + n, max(buflen - n, 0),
-							"memory_spread_slab\n");
+			      "memory_spread_slab\n");
 
 	if ((tmp = sprint_mask_buf(cp->cpus)) == NULL)
 		return -1;
@@ -3518,7 +3527,7 @@ int cpuset_export(const struct cpuset *cp, char *buf, int buflen)
 }
 
 static int import_list(UNUSED const char *tok, const char *arg,
-				struct bitmask *bmp, char *emsg, int elen)
+		       struct bitmask *bmp, char *emsg, int elen)
 {
 	if (bitmask_parselist(arg, bmp) < 0) {
 		if (emsg)
@@ -3539,7 +3548,7 @@ static void stolower(char *s)
 
 /* Import cpuset settings from a regular file */
 int cpuset_import(struct cpuset *cp, const char *buf, int *elinenum,
-							char *emsg, int elen)
+		  char *emsg, int elen)
 {
 	char *linebuf = NULL;
 	int linebuflen;
@@ -3555,7 +3564,7 @@ int cpuset_import(struct cpuset *cp, const char *buf, int *elinenum,
 
 	while (slgets(linebuf, linebuflen, buf, &offset)) {
 		char *tok, *arg;
-		char *ptr; 		/* for strtok_r */
+		char *ptr;	/* for strtok_r */
 
 		linenum++;
 		if ((tok = strchr(linebuf, '#')) != NULL)
@@ -3611,7 +3620,7 @@ eol:
 		if ((tok = strtok_r(0, " \t", &ptr)) != NULL) {
 			if (emsg)
 				snprintf(emsg, elen, "Surplus token: '%s'",
-							tok);
+					 tok);
 			goto err;
 		}
 		continue;
@@ -3677,7 +3686,7 @@ int cpuset_pin(int relcpu)
 	cpuset_free_placement(plc1);
 	cpuset_free_placement(plc2);
 	return r;
- }
+}
 
 /* Return number CPUs in current tasks cpuset */
 int cpuset_size()
@@ -3752,7 +3761,7 @@ int cpuset_unpin()
 		goto err;
 #if HAVE_DECL_MPOL_DEFAULT
 	if (set_mempolicy(MPOL_DEFAULT, bitmask_mask(mems),
-						bitmask_nbits(mems) + 1) < 0)
+			  bitmask_nbits(mems) + 1) < 0)
 		goto err;
 	r = 0;
 #endif
@@ -3768,96 +3777,111 @@ struct cpuset_function_list {
 	const char *fname;
 	void *func;
 } flist[] = {
-	{ "cpuset_version", cpuset_version },
-	{ "cpuset_alloc", cpuset_alloc },
-	{ "cpuset_free", cpuset_free },
-	{ "cpuset_cpus_nbits", cpuset_cpus_nbits },
-	{ "cpuset_mems_nbits", cpuset_mems_nbits },
-	{ "cpuset_setcpus", cpuset_setcpus },
-	{ "cpuset_setmems", cpuset_setmems },
-	{ "cpuset_set_iopt", cpuset_set_iopt },
-	{ "cpuset_set_sopt", cpuset_set_sopt },
-	{ "cpuset_getcpus", cpuset_getcpus },
-	{ "cpuset_getmems", cpuset_getmems },
-	{ "cpuset_cpus_weight", cpuset_cpus_weight },
-	{ "cpuset_mems_weight", cpuset_mems_weight },
-	{ "cpuset_get_iopt", cpuset_get_iopt },
-	{ "cpuset_get_sopt", cpuset_get_sopt },
-	{ "cpuset_localcpus", cpuset_localcpus },
-	{ "cpuset_localmems", cpuset_localmems },
-	{ "cpuset_cpumemdist", cpuset_cpumemdist },
-	{ "cpuset_cpu2node", cpuset_cpu2node },
-	{ "cpuset_addr2node", cpuset_addr2node },
-	{ "cpuset_create", cpuset_create },
-	{ "cpuset_delete", cpuset_delete },
-	{ "cpuset_query", cpuset_query },
-	{ "cpuset_modify", cpuset_modify },
-	{ "cpuset_getcpusetpath", cpuset_getcpusetpath },
-	{ "cpuset_cpusetofpid", cpuset_cpusetofpid },
-	{ "cpuset_mountpoint", cpuset_mountpoint },
-	{ "cpuset_collides_exclusive", cpuset_collides_exclusive },
-	{ "cpuset_nuke", cpuset_nuke },
-	{ "cpuset_init_pidlist", cpuset_init_pidlist },
-	{ "cpuset_pidlist_length", cpuset_pidlist_length },
-	{ "cpuset_get_pidlist", cpuset_get_pidlist },
-	{ "cpuset_freepidlist", cpuset_freepidlist },
-	{ "cpuset_move", cpuset_move },
-	{ "cpuset_move_all", cpuset_move_all },
-	{ "cpuset_move_cpuset_tasks", cpuset_move_cpuset_tasks },
-	{ "cpuset_migrate", cpuset_migrate },
-	{ "cpuset_migrate_all", cpuset_migrate_all },
-	{ "cpuset_reattach", cpuset_reattach },
-	{ "cpuset_open_memory_pressure", cpuset_open_memory_pressure },
-	{ "cpuset_read_memory_pressure", cpuset_read_memory_pressure },
-	{ "cpuset_close_memory_pressure", cpuset_close_memory_pressure },
-	{ "cpuset_c_rel_to_sys_cpu", cpuset_c_rel_to_sys_cpu },
-	{ "cpuset_c_sys_to_rel_cpu", cpuset_c_sys_to_rel_cpu },
-	{ "cpuset_c_rel_to_sys_mem", cpuset_c_rel_to_sys_mem },
-	{ "cpuset_c_sys_to_rel_mem", cpuset_c_sys_to_rel_mem },
-	{ "cpuset_p_rel_to_sys_cpu", cpuset_p_rel_to_sys_cpu },
-	{ "cpuset_p_sys_to_rel_cpu", cpuset_p_sys_to_rel_cpu },
-	{ "cpuset_p_rel_to_sys_mem", cpuset_p_rel_to_sys_mem },
-	{ "cpuset_p_sys_to_rel_mem", cpuset_p_sys_to_rel_mem },
-	{ "cpuset_get_placement", cpuset_get_placement },
-	{ "cpuset_equal_placement", cpuset_equal_placement },
-	{ "cpuset_free_placement", cpuset_free_placement },
-	{ "cpuset_fts_open", cpuset_fts_open },
-	{ "cpuset_fts_read", cpuset_fts_read },
-	{ "cpuset_fts_reverse", cpuset_fts_reverse },
-	{ "cpuset_fts_rewind", cpuset_fts_rewind },
-	{ "cpuset_fts_get_path", cpuset_fts_get_path },
-	{ "cpuset_fts_get_stat", cpuset_fts_get_stat },
-	{ "cpuset_fts_get_cpuset", cpuset_fts_get_cpuset },
-	{ "cpuset_fts_get_errno", cpuset_fts_get_errno },
-	{ "cpuset_fts_get_info", cpuset_fts_get_info },
-	{ "cpuset_fts_close", cpuset_fts_close },
-	{ "cpuset_cpubind", cpuset_cpubind },
-	{ "cpuset_latestcpu", cpuset_latestcpu },
-	{ "cpuset_membind", cpuset_membind },
-	{ "cpuset_export", cpuset_export },
-	{ "cpuset_import", cpuset_import },
-	{ "cpuset_function", cpuset_function },
-	{ "cpuset_pin", cpuset_pin },
-	{ "cpuset_size", cpuset_size },
-	{ "cpuset_where", cpuset_where },
-	{ "cpuset_unpin", cpuset_unpin },
-};
+	{
+	"cpuset_version", cpuset_version}, {
+	"cpuset_alloc", cpuset_alloc}, {
+	"cpuset_free", cpuset_free}, {
+	"cpuset_cpus_nbits", cpuset_cpus_nbits}, {
+	"cpuset_mems_nbits", cpuset_mems_nbits}, {
+	"cpuset_setcpus", cpuset_setcpus}, {
+	"cpuset_setmems", cpuset_setmems}, {
+	"cpuset_set_iopt", cpuset_set_iopt}, {
+	"cpuset_set_sopt", cpuset_set_sopt}, {
+	"cpuset_getcpus", cpuset_getcpus}, {
+	"cpuset_getmems", cpuset_getmems}, {
+	"cpuset_cpus_weight", cpuset_cpus_weight}, {
+	"cpuset_mems_weight", cpuset_mems_weight}, {
+	"cpuset_get_iopt", cpuset_get_iopt}, {
+	"cpuset_get_sopt", cpuset_get_sopt}, {
+	"cpuset_localcpus", cpuset_localcpus}, {
+	"cpuset_localmems", cpuset_localmems}, {
+	"cpuset_cpumemdist", cpuset_cpumemdist}, {
+	"cpuset_cpu2node", cpuset_cpu2node}, {
+	"cpuset_addr2node", cpuset_addr2node}, {
+	"cpuset_create", cpuset_create}, {
+	"cpuset_delete", cpuset_delete}, {
+	"cpuset_query", cpuset_query}, {
+	"cpuset_modify", cpuset_modify}, {
+	"cpuset_getcpusetpath", cpuset_getcpusetpath}, {
+	"cpuset_cpusetofpid", cpuset_cpusetofpid}, {
+	"cpuset_mountpoint", cpuset_mountpoint}, {
+	"cpuset_collides_exclusive", cpuset_collides_exclusive}, {
+	"cpuset_nuke", cpuset_nuke}, {
+	"cpuset_init_pidlist", cpuset_init_pidlist}, {
+	"cpuset_pidlist_length", cpuset_pidlist_length}, {
+	"cpuset_get_pidlist", cpuset_get_pidlist}, {
+	"cpuset_freepidlist", cpuset_freepidlist}, {
+	"cpuset_move", cpuset_move}, {
+	"cpuset_move_all", cpuset_move_all}, {
+	"cpuset_move_cpuset_tasks", cpuset_move_cpuset_tasks}, {
+	"cpuset_migrate", cpuset_migrate}, {
+	"cpuset_migrate_all", cpuset_migrate_all}, {
+	"cpuset_reattach", cpuset_reattach}, {
+	"cpuset_open_memory_pressure", cpuset_open_memory_pressure}, {
+	"cpuset_read_memory_pressure", cpuset_read_memory_pressure}, {
+	"cpuset_close_memory_pressure", cpuset_close_memory_pressure}, {
+	"cpuset_c_rel_to_sys_cpu", cpuset_c_rel_to_sys_cpu}, {
+	"cpuset_c_sys_to_rel_cpu", cpuset_c_sys_to_rel_cpu}, {
+	"cpuset_c_rel_to_sys_mem", cpuset_c_rel_to_sys_mem}, {
+	"cpuset_c_sys_to_rel_mem", cpuset_c_sys_to_rel_mem}, {
+	"cpuset_p_rel_to_sys_cpu", cpuset_p_rel_to_sys_cpu}, {
+	"cpuset_p_sys_to_rel_cpu", cpuset_p_sys_to_rel_cpu}, {
+	"cpuset_p_rel_to_sys_mem", cpuset_p_rel_to_sys_mem}, {
+	"cpuset_p_sys_to_rel_mem", cpuset_p_sys_to_rel_mem}, {
+	"cpuset_get_placement", cpuset_get_placement}, {
+	"cpuset_equal_placement", cpuset_equal_placement}, {
+	"cpuset_free_placement", cpuset_free_placement}, {
+	"cpuset_fts_open", cpuset_fts_open}, {
+	"cpuset_fts_read", cpuset_fts_read}, {
+	"cpuset_fts_reverse", cpuset_fts_reverse}, {
+	"cpuset_fts_rewind", cpuset_fts_rewind}, {
+	"cpuset_fts_get_path", cpuset_fts_get_path}, {
+	"cpuset_fts_get_stat", cpuset_fts_get_stat}, {
+	"cpuset_fts_get_cpuset", cpuset_fts_get_cpuset}, {
+	"cpuset_fts_get_errno", cpuset_fts_get_errno}, {
+	"cpuset_fts_get_info", cpuset_fts_get_info}, {
+	"cpuset_fts_close", cpuset_fts_close}, {
+	"cpuset_cpubind", cpuset_cpubind}, {
+	"cpuset_latestcpu", cpuset_latestcpu}, {
+	"cpuset_membind", cpuset_membind}, {
+	"cpuset_export", cpuset_export}, {
+	"cpuset_import", cpuset_import}, {
+	"cpuset_function", cpuset_function}, {
+	"cpuset_pin", cpuset_pin}, {
+	"cpuset_size", cpuset_size}, {
+	"cpuset_where", cpuset_where}, {
+"cpuset_unpin", cpuset_unpin},};
 
 /* Return pointer to a libcpuset.so function, or NULL */
-void *cpuset_function(const char * function_name)
+void *cpuset_function(const char *function_name)
 {
 	unsigned int i;
 
-	for (i = 0; i < sizeof(flist)/sizeof(flist[0]); i++)
+	for (i = 0; i < sizeof(flist) / sizeof(flist[0]); i++)
 		if (streq(function_name, flist[i].fname))
 			return flist[i].func;
 	return NULL;
 }
 
 /* Fortran interface to basic cpuset routines */
-int cpuset_pin_(int *ptr_relcpu) {return cpuset_pin(*ptr_relcpu);}
-int cpuset_size_(void) { return cpuset_size(); }
-int cpuset_where_(void) { return cpuset_where(); }
-int cpuset_unpin_(void) { return cpuset_unpin(); }
+int cpuset_pin_(int *ptr_relcpu)
+{
+	return cpuset_pin(*ptr_relcpu);
+}
+
+int cpuset_size_(void)
+{
+	return cpuset_size();
+}
+
+int cpuset_where_(void)
+{
+	return cpuset_where();
+}
+
+int cpuset_unpin_(void)
+{
+	return cpuset_unpin();
+}
 
 #endif /* HAVE_LINUX_MEMPOLICY_H */

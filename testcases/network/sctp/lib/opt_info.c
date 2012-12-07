@@ -20,8 +20,8 @@
  *   Ardelle Fan <ardelle.fan@intel.com>
  */
 
-#include <sys/socket.h>   /* struct sockaddr_storage, setsockopt() */
-#include <netinet/sctp.h> /* SCTP_SOCKOPT_BINDX_* */
+#include <sys/socket.h>		/* struct sockaddr_storage, setsockopt() */
+#include <netinet/sctp.h>	/* SCTP_SOCKOPT_BINDX_* */
 #include <errno.h>
 
 /* Support the sctp_opt_info() interface.
@@ -32,8 +32,7 @@
  * This is a new SCTP API described in the section 7 of the Sockets API
  * Extensions for SCTP. This is implemented using the getsockopt() interface.
  */
-int
-sctp_opt_info(int sd, sctp_assoc_t id, int opt, void *arg, socklen_t *size)
+int sctp_opt_info(int sd, sctp_assoc_t id, int opt, void *arg, socklen_t * size)
 {
 	switch (opt) {
 	case SCTP_RTOINFO:
@@ -50,10 +49,10 @@ sctp_opt_info(int sd, sctp_assoc_t id, int opt, void *arg, socklen_t *size)
 	case SCTP_MAXSEG:
 	case SCTP_STATUS:
 	case SCTP_GET_PEER_ADDR_INFO:
-		*(sctp_assoc_t *)arg = id;
+		*(sctp_assoc_t *) arg = id;
 		return getsockopt(sd, IPPROTO_SCTP, opt, arg, size);
 	default:
 		return ENOTSUP;
 	}
 
-} /* sctp_opt_info() */
+}				/* sctp_opt_info() */

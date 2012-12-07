@@ -40,17 +40,17 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 0; //Default test result set to PASSED
+	int test_status = 0;	//Default test result set to PASSED
 	int progNum = atoi(argc[2]);
-    int recVar = -1;
-    CLIENT *client = NULL;
+	int recVar = -1;
+	CLIENT *client = NULL;
 	struct netconfig *nconf = NULL;
 	struct timeval tv;
 	enum clnt_stat rslt;
@@ -69,33 +69,29 @@ int main(int argn, char *argc[])
 	//create client using intermediate level API
 	nconf = getnetconfigent("udp");
 
-    if ((struct netconfig *)nconf == NULL)
-    {
-    	//Test failed
-    	printf("5\n");
-    	return 5;
-    }
+	if ((struct netconfig *)nconf == NULL) {
+		//Test failed
+		printf("5\n");
+		return 5;
+	}
 
-    tv.tv_sec = 1;
+	tv.tv_sec = 1;
 	tv.tv_usec = 1;
 
-    client = clnt_tp_create_timed(argc[1], progNum,
-                                  VERSNUM, (struct netconfig *)nconf, &tv);
+	client = clnt_tp_create_timed(argc[1], progNum,
+				      VERSNUM, (struct netconfig *)nconf, &tv);
 
-    if (client == NULL)
-    {
-    	printf("5\n");
-    	return 5;
-    }
-
+	if (client == NULL) {
+		printf("5\n");
+		return 5;
+	}
 	//Call tested procedure several times
 	//Int test : call INTPROCNUM RPC
 	intSnd = -65536;
 
-	rslt = clnt_call(client, INTPROCNUM,
-					 (xdrproc_t)xdr_int, (char *)&intSnd, // xdr_in
-                     (xdrproc_t)xdr_int, (char *)&intRec, // xdr_out
-                     tv);
+	rslt = clnt_call(client, INTPROCNUM, (xdrproc_t) xdr_int, (char *)&intSnd,	// xdr_in
+			 (xdrproc_t) xdr_int, (char *)&intRec,	// xdr_out
+			 tv);
 
 	if (intSnd != intRec)
 		test_status = 1;
@@ -105,10 +101,9 @@ int main(int argn, char *argc[])
 	//Test positive number
 	intSnd = 16777216;
 
-	rslt = clnt_call(client, INTPROCNUM,
-					 (xdrproc_t)xdr_int, (char *)&intSnd, // xdr_in
-                     (xdrproc_t)xdr_int, (char *)&intRec, // xdr_out
-                     tv);
+	rslt = clnt_call(client, INTPROCNUM, (xdrproc_t) xdr_int, (char *)&intSnd,	// xdr_in
+			 (xdrproc_t) xdr_int, (char *)&intRec,	// xdr_out
+			 tv);
 
 	if (intSnd != intRec)
 		test_status = 1;
@@ -118,10 +113,9 @@ int main(int argn, char *argc[])
 	//Long test : call LNGPROCNUM RPC
 	lngSnd = -430000;
 
-	rslt = clnt_call(client, LNGPROCNUM,
-					 (xdrproc_t)xdr_long, (char *)&lngSnd, // xdr_in
-                     (xdrproc_t)xdr_long, (char *)&lngRec, // xdr_out
-                     tv);
+	rslt = clnt_call(client, LNGPROCNUM, (xdrproc_t) xdr_long, (char *)&lngSnd,	// xdr_in
+			 (xdrproc_t) xdr_long, (char *)&lngRec,	// xdr_out
+			 tv);
 
 	if (lngSnd != lngRec)
 		test_status = 1;
@@ -131,10 +125,9 @@ int main(int argn, char *argc[])
 	//Double test : call DBLPROCNUM RPC
 	dblSnd = -1735.63000f;
 
-	rslt = clnt_call(client, DBLPROCNUM,
-					 (xdrproc_t)xdr_double, (char *)&dblSnd, // xdr_in
-                     (xdrproc_t)xdr_double, (char *)&dblRec, // xdr_out
-                     tv);
+	rslt = clnt_call(client, DBLPROCNUM, (xdrproc_t) xdr_double, (char *)&dblSnd,	// xdr_in
+			 (xdrproc_t) xdr_double, (char *)&dblRec,	// xdr_out
+			 tv);
 
 	if (dblSnd != dblRec)
 		test_status = 1;
@@ -145,10 +138,9 @@ int main(int argn, char *argc[])
 	strSnd = "text to send.";
 	strRec = (char *)malloc(64 * sizeof(char));
 
-	rslt = clnt_call(client, STRPROCNUM,
-					 (xdrproc_t)xdr_wrapstring, (char *)&strSnd, // xdr_in
-                     (xdrproc_t)xdr_wrapstring, (char *)&strRec, // xdr_out
-                     tv);
+	rslt = clnt_call(client, STRPROCNUM, (xdrproc_t) xdr_wrapstring, (char *)&strSnd,	// xdr_in
+			 (xdrproc_t) xdr_wrapstring, (char *)&strRec,	// xdr_out
+			 tv);
 
 	if (strcmp(strSnd, strRec))
 		test_status = 1;

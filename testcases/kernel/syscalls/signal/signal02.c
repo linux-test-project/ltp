@@ -79,7 +79,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();		/* global setup */
 
@@ -102,7 +102,7 @@ int main(int ac, char **av)
 				tst_brkm(TFAIL, cleanup, "%s call failed - "
 					 "errno = %d : %s", TCID, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
-			 }
+			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 

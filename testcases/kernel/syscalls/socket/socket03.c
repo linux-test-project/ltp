@@ -58,7 +58,7 @@
 #include "usctest.h"
 
 #ifndef SOCK_NONBLOCK
-# define SOCK_NONBLOCK O_NONBLOCK
+#define SOCK_NONBLOCK O_NONBLOCK
 #endif
 
 /* Extern Global Variables */

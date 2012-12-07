@@ -20,7 +20,7 @@
  *
  */
 
-# define _XOPEN_SOURCE  600
+#define _XOPEN_SOURCE  600
 
 #include <pthread.h>
 #include <stdio.h>
@@ -35,17 +35,17 @@ int main()
 	int rc;
 
 	/* Initialize a cond attributes object */
-	if ((rc=pthread_condattr_init(&condattr)) != 0)
-	{
-		fprintf(stderr,"Error at pthread_condattr_init(), rc=%d\n",rc);
+	if ((rc = pthread_condattr_init(&condattr)) != 0) {
+		fprintf(stderr, "Error at pthread_condattr_init(), rc=%d\n",
+			rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	rc = pthread_condattr_setclock(&condattr, INVALID_CLOCKID);
-	if (rc != EINVAL)
-	{
-		printf("Test PASSED: *NOTE: Test passed while passing an invalid clockid, but the standard says 'may' fail\n");
+	if (rc != EINVAL) {
+		printf
+		    ("Test PASSED: *NOTE: Test passed while passing an invalid clockid, but the standard says 'may' fail\n");
 		return PTS_PASS;
 	}
 

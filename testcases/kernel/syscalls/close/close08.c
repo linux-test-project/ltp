@@ -144,26 +144,26 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		if ((fd = open(fname, O_RDWR|O_CREAT, 0700)) == -1) {
-			tst_brkm(TBROK|TTERRNO, cleanup,
-			    "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
+		if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
+			tst_brkm(TBROK | TTERRNO, cleanup,
+				 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 		}
 		TEST(close(fd));
 
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL|TTERRNO, "close(%s) failed", fname);
+			tst_resm(TFAIL | TTERRNO, "close(%s) failed", fname);
 		} else {
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS, "close(%s) returned %ld", fname,
-				    TEST_RETURN);
+					 TEST_RETURN);
 			}
 		}
 
 		if (unlink(fname) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "unlink(%s) failed", fname);
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "unlink(%s) failed", fname);
 		}
 	}
 

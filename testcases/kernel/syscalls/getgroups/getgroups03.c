@@ -112,14 +112,14 @@ int main(int ac, char **av)
 		TEST(getgroups(gidsetsize, groups_list));
 
 		if ((ret_val = TEST_RETURN) == -1) {
-			tst_resm(TFAIL|TTERRNO, "getgroups failed");
+			tst_resm(TFAIL | TTERRNO, "getgroups failed");
 			continue;
 		}
 		if (STD_FUNCTIONAL_TEST) {
 			fflag = verify_groups(ret_val);
 			if (fflag)
 				tst_resm(TPASS,
-				    "getgroups functionality correct");
+					 "getgroups functionality correct");
 		} else
 			tst_resm(TPASS, "call succeeded");
 	}
@@ -150,7 +150,7 @@ void setup()
 	 * getgroups()
 	 */
 	if (setgroups(ngroups, groups) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "setgroups failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "setgroups failed");
 
 }
 
@@ -279,13 +279,12 @@ int verify_groups(int ret_val)
 	 * Now, if ngroups matches ret_val, as above comparisons of the array
 	 * are successful, this implies that the array contents match.
 	 */
-	if (egid_flag == 0) 	/* If egid is not returned */
+	if (egid_flag == 0)	/* If egid is not returned */
 		ngroups--;
 	if (ngroups != ret_val) {
 		tst_resm(TFAIL,
 			 "getgroups(2) returned incorrect no. of gids %d "
-			 "(expected %d)",
-			 ret_val, ngroups);
+			 "(expected %d)", ret_val, ngroups);
 		fflag = 0;
 	}
 

@@ -51,43 +51,43 @@ void testfailed_handler(int signo)
 
 int main()
 {
-        char *msgptr=MSGSTR;
+	char *msgptr = MSGSTR;
 	struct timespec ts;
 	struct sigaction act;
 	time_t currsec;
 	struct mq_attr attr;
-	int failure=0, i, maxreached=0;
+	int failure = 0, i, maxreached = 0;
 
-        sprintf(gqname, "/mq_timedsend_20-1_%d", getpid());
+	sprintf(gqname, "/mq_timedsend_20-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;
-        gqueue = mq_open(gqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (gqueue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
+	gqueue = mq_open(gqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
+	if (gqueue == (mqd_t) - 1) {
+		perror("mq_open() did not return success");
 		printf("Test UNRESOLVED\n");
-                return PTS_UNRESOLVED;
-        }
+		return PTS_UNRESOLVED;
+	}
 
 	currsec = time(NULL);
 
-	ts.tv_sec=currsec+TIMEOUT;
-	ts.tv_nsec=0;
+	ts.tv_sec = currsec + TIMEOUT;
+	ts.tv_nsec = 0;
 
 	/*
 	 * If timeout never happens, set up an alarm that will go off
 	 * after TIMEOUT+1 seconds and call a handler to end the test
 	 */
-	act.sa_handler=testfailed_handler;
-	act.sa_flags=0;
+	act.sa_handler = testfailed_handler;
+	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaction(SIGALRM, &act, 0);
-	alarm(TIMEOUT+1);
+	alarm(TIMEOUT + 1);
 
-	for (i=0; i<MAXMSG+1; i++) {
-        	if (mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts)
-								== -1) {
-			maxreached=1;
+	for (i = 0; i < MAXMSG + 1; i++) {
+		if (mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts)
+		    == -1) {
+			maxreached = 1;
 			if (errno != ETIMEDOUT) {
 				printf("errno != ETIMEDOUT\n");
 				printf("Test FAILED\n");
@@ -96,28 +96,28 @@ int main()
 				return PTS_FAIL;
 			}
 			break;
-        	}
+		}
 	}
 
 	mq_close(gqueue);
 	mq_unlink(gqname);
 
-	if (maxreached==0) {
+	if (maxreached == 0) {
 		printf("Test UNRESOLVED:  Couldn't fill message queue\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (time(NULL) > ts.tv_sec+DELTA) {
+	if (time(NULL) > ts.tv_sec + DELTA) {
 		printf("Timeout lasted too long\n");
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	if (failure==1) {
+	if (failure == 1) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

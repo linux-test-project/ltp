@@ -30,7 +30,7 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-        if (sigset(SIGCHLD, SIG_HOLD) != SIG_HOLD) {
+	if (sigset(SIGCHLD, SIG_HOLD) != SIG_HOLD) {
 		printf("Test FAILED: sigset() didn't return SIG_HOLD\n");
 		return PTS_FAIL;
 	}

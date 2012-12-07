@@ -250,7 +250,7 @@ void setup5()
 	/* create a file */
 	if ((fileHandle2 = creat(tstfile5, PERMS)) == -1) {
 		tst_brkm(TBROK, cleanup, "creat a file failed");
-	 }
+	}
 }
 
 /*

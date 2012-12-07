@@ -26,8 +26,8 @@ int main()
 		perror("sigfillset failed -- test aborted");
 		return PTS_FAIL;
 	}
-	#ifdef DEBUG
-		printf("sigfillset passed\n");
-	#endif
+#ifdef DEBUG
+	printf("sigfillset passed\n");
+#endif
 	return PTS_PASS;
 }

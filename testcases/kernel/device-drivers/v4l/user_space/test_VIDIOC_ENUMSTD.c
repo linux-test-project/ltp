@@ -43,7 +43,8 @@
 
 #include "test_VIDIOC_ENUMSTD.h"
 
-void test_VIDIOC_ENUMSTD() {
+void test_VIDIOC_ENUMSTD()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_standard std;
 	struct v4l2_standard std2;
@@ -64,8 +65,9 @@ void test_VIDIOC_ENUMSTD() {
 			CU_ASSERT_EQUAL(std.index, i);
 			CU_ASSERT(valid_v4l2_std_id(std.id));
 
-			CU_ASSERT(0 < strlen( (char*)std.name ));
-			CU_ASSERT(valid_string((char*)std.name, sizeof(std.name)));
+			CU_ASSERT(0 < strlen((char *)std.name));
+			CU_ASSERT(valid_string
+				  ((char *)std.name, sizeof(std.name)));
 
 			//CU_ASSERT_EQUAL(std.frameperiod.numerator, ?);
 			//CU_ASSERT_EQUAL(std.frameperiod.denominator, ?);
@@ -82,9 +84,11 @@ void test_VIDIOC_ENUMSTD() {
 			memset(&std2, 0, sizeof(std2));
 			std2.index = std.index;
 			std2.id = std.id;
-			strncpy((char*)std2.name, (char*)std.name, sizeof(std2.name));
+			strncpy((char *)std2.name, (char *)std.name,
+				sizeof(std2.name));
 			std2.frameperiod.numerator = std.frameperiod.numerator;
-			std2.frameperiod.denominator = std.frameperiod.denominator;
+			std2.frameperiod.denominator =
+			    std.frameperiod.denominator;
 			std2.framelines = std.framelines;
 			CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
 
@@ -100,9 +104,8 @@ void test_VIDIOC_ENUMSTD() {
 				std.framelines,
 				std.reserved[0],
 				std.reserved[1],
-				std.reserved[2],
-				std.reserved[3]
-			);
+				std.reserved[2], std.reserved[3]
+			    );
 
 		} else {
 			CU_ASSERT_EQUAL(ret_enum, -1);
@@ -117,13 +120,14 @@ void test_VIDIOC_ENUMSTD() {
 	} while (ret_enum == 0);
 }
 
-void test_VIDIOC_ENUMSTD_S32_MAX() {
+void test_VIDIOC_ENUMSTD_S32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_standard std;
 	struct v4l2_standard std2;
 
 	memset(&std, 0xff, sizeof(std));
-	std.index = (__u32)S32_MAX;
+	std.index = (__u32) S32_MAX;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
 	errno_enum = errno;
 
@@ -131,17 +135,18 @@ void test_VIDIOC_ENUMSTD_S32_MAX() {
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&std2, 0xff, sizeof(std2));
-	std2.index = (__u32)S32_MAX;
+	std2.index = (__u32) S32_MAX;
 	CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
 }
 
-void test_VIDIOC_ENUMSTD_S32_MAX_1() {
+void test_VIDIOC_ENUMSTD_S32_MAX_1()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_standard std;
 	struct v4l2_standard std2;
 
 	memset(&std, 0xff, sizeof(std));
-	std.index = ((__u32)S32_MAX)+1;
+	std.index = ((__u32) S32_MAX) + 1;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
 	errno_enum = errno;
 
@@ -149,11 +154,12 @@ void test_VIDIOC_ENUMSTD_S32_MAX_1() {
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&std2, 0xff, sizeof(std2));
-	std2.index = ((__u32)S32_MAX)+1;
+	std2.index = ((__u32) S32_MAX) + 1;
 	CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
 }
 
-void test_VIDIOC_ENUMSTD_U32_MAX() {
+void test_VIDIOC_ENUMSTD_U32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_standard std;
 	struct v4l2_standard std2;
@@ -174,7 +180,8 @@ void test_VIDIOC_ENUMSTD_U32_MAX() {
 	CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
 }
 
-void test_VIDIOC_ENUMSTD_NULL() {
+void test_VIDIOC_ENUMSTD_NULL()
+{
 	int ret_enum, errno_enum;
 	int ret_null, errno_null;
 	struct v4l2_standard std;

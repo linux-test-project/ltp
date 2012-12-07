@@ -54,8 +54,7 @@ char *TCID = __FILE__;
 int TST_TOTAL = 5;
 int TST_CNT = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int svr_sk, clt_sk1, clt_sk2, peeloff_sk;
 	sctp_assoc_t svr_associd1, svr_associd2, clt_associd1, clt_associd2;
@@ -67,7 +66,7 @@ main(int argc, char *argv[])
 	char *big_buffer;
 	int flags;
 
-        /* Rather than fflush() throughout the code, set stdout to
+	/* Rather than fflush() throughout the code, set stdout to
 	 * be unbuffered.
 	 */
 	setvbuf(stdout, NULL, _IONBF, 0);
@@ -81,13 +80,13 @@ main(int argc, char *argv[])
 	clt_loop1.v4.sin_port = htons(SCTP_TESTPORT_2);
 	clt_loop2.v4.sin_family = AF_INET;
 	clt_loop2.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-	clt_loop2.v4.sin_port = htons(SCTP_TESTPORT_2+1);
+	clt_loop2.v4.sin_port = htons(SCTP_TESTPORT_2 + 1);
 	clt_loop3.v4.sin_family = AF_INET;
 	clt_loop3.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-	clt_loop3.v4.sin_port = htons(SCTP_TESTPORT_2+2);
+	clt_loop3.v4.sin_port = htons(SCTP_TESTPORT_2 + 2);
 
 	/* Create and bind the server socket.  */
-        svr_sk = test_socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
+	svr_sk = test_socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
 	test_bind(svr_sk, &svr_loop.sa, sizeof(svr_loop));
 
 	/* Mark server socket as being able to accept new associations.  */
@@ -133,7 +132,7 @@ main(int argc, char *argv[])
 		 "already established");
 
 	/* Initialize inmessage for all receives. */
-        memset(&inmessage, 0, sizeof(inmessage));
+	memset(&inmessage, 0, sizeof(inmessage));
 	big_buffer = test_malloc(REALLY_BIG);
 	iov.iov_base = big_buffer;
 	iov.iov_len = REALLY_BIG;
@@ -208,6 +207,6 @@ main(int argc, char *argv[])
 	close(clt_sk2);
 	close(peeloff_sk);
 
-        /* Indicate successful completion.  */
-       	tst_exit();
+	/* Indicate successful completion.  */
+	tst_exit();
 }

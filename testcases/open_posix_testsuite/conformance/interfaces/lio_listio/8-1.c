@@ -52,14 +52,11 @@ int main()
 		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_8_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-		  S_IRUSR | S_IWUSR);
-	if (fd == -1)
-	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -68,10 +65,8 @@ int main()
 	for (i = 0; i < BUF_SIZE; i++)
 		buf[i] = i;
 
-	if (write(fd, buf, BUF_SIZE) != BUF_SIZE)
-	{
-		printf(TNAME " Error at write(): %s\n",
-		       strerror(errno));
+	if (write(fd, buf, BUF_SIZE) != BUF_SIZE) {
+		printf(TNAME " Error at write(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -84,10 +79,8 @@ int main()
 
 	list[0] = &aiocb;
 
-	if (lio_listio(LIO_WAIT, list, 1, NULL) == -1)
-	{
-		printf(TNAME " Error at lio_listio(): %s\n",
-		       strerror(errno));
+	if (lio_listio(LIO_WAIT, list, 1, NULL) == -1) {
+		printf(TNAME " Error at lio_listio(): %s\n", strerror(errno));
 
 		close(fd);
 		exit(PTS_FAIL);
@@ -112,16 +105,14 @@ int main()
 	}
 
 	/* check it */
-	for (i = 0; i < BUF_SIZE; i++)
-	{
-		if (buf[i] != check[i])
-		{
+	for (i = 0; i < BUF_SIZE; i++) {
+		if (buf[i] != check[i]) {
 			printf(TNAME " read values are corrupted\n");
 			exit(PTS_FAIL);
 		}
 	}
 
 	close(fd);
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

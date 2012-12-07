@@ -60,8 +60,8 @@ record_t tmp;
 int num_of_chunks, chunk_size, test_num, limit;
 
 void cleanup();
-void signal_handler_sigusr1 (int signal);
-void signal_handler_sigusr2 (int signal);
+void signal_handler_sigusr1(int signal);
+void signal_handler_sigusr2(int signal);
 int allocate_memory(void);
 
 int main(int argc, char *argv[])
@@ -77,18 +77,18 @@ int main(int argc, char *argv[])
 	mygroup_p = getenv("MYGROUP");
 	script_pid_p = getenv("SCRIPT_PID");
 	chunk_size_p = getenv("CHUNK_SIZE");
-	num_chunks_p	= getenv("NUM_CHUNKS");
+	num_chunks_p = getenv("NUM_CHUNKS");
 
 	if (test_num_p != NULL && mygroup_p != NULL && script_pid_p != NULL &&
 	    chunk_size_p != NULL && num_chunks_p != NULL) {
-		scriptpid       = atoi(script_pid_p);
-		test_num        = atoi(test_num_p);
-		chunk_size	= atoi(chunk_size_p);
-		num_of_chunks	= atoi(num_chunks_p);
-		sprintf(mygroup,"%s", mygroup_p);
+		scriptpid = atoi(script_pid_p);
+		test_num = atoi(test_num_p);
+		chunk_size = atoi(chunk_size_p);
+		num_of_chunks = atoi(num_chunks_p);
+		sprintf(mygroup, "%s", mygroup_p);
 	} else {
 		tst_brkm(TBROK, cleanup,
-		    "invalid parameters recieved from script\n");
+			 "invalid parameters recieved from script\n");
 	}
 
 	/* XXX (garrcoop): this section really needs error handling. */
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	/* Signal handling for SIGUSR1 recieved from script */
 	sigemptyset(&newaction1.sa_mask);
 	newaction1.sa_handler = signal_handler_sigusr1;
-	newaction1.sa_flags=0;
+	newaction1.sa_flags = 0;
 	sigaction(SIGUSR1, &newaction1, &oldaction1);
 
 	/* Signal handling for SIGUSR2 recieved from script */
@@ -105,13 +105,12 @@ int main(int argc, char *argv[])
 	newaction2.sa_flags = 0;
 	sigaction(SIGUSR2, &newaction2, &oldaction2);
 
-
 	sprintf(mytaskfile, "%s", mygroup);
-	strcat (mytaskfile,"/tasks");
+	strcat(mytaskfile, "/tasks");
 	/* Assign the task to it's group */
-	write_to_file (mytaskfile, "a", getpid());    /* Assign the task to it's group*/
+	write_to_file(mytaskfile, "a", getpid());	/* Assign the task to it's group */
 
-	ret = allocate_memory();	/*should i check ret?*/
+	ret = allocate_memory();	/*should i check ret? */
 
 	cleanup();
 
@@ -125,7 +124,7 @@ int main(int argc, char *argv[])
 void cleanup()
 {
 	if (kill(scriptpid, SIGUSR1) == -1)
-		tst_resm(TWARN|TERRNO, "kill failed");
+		tst_resm(TWARN | TERRNO, "kill failed");
 }
 
 /*
@@ -133,13 +132,13 @@ void cleanup()
  * signal handler for the new action
  */
 
-void signal_handler_sigusr1 (int signal)
+void signal_handler_sigusr1(int signal)
 {
 	int i;
-	for (i=0; i< num_of_chunks; ++i)
+	for (i = 0; i < num_of_chunks; ++i)
 		free(array_of_chunks[i]);
 	free(array_of_chunks);
-	exit (0);
+	exit(0);
 }
 
 /*
@@ -147,10 +146,10 @@ void signal_handler_sigusr1 (int signal)
  * signal handler for the new action
  */
 
-void signal_handler_sigusr2 (int signal)
+void signal_handler_sigusr2(int signal)
 {
 	int i;
-	for (i=0; i< num_of_chunks; ++i)
+	for (i = 0; i < num_of_chunks; ++i)
 		free(array_of_chunks[i]);
 	free(array_of_chunks);
 	if (test_num == 4) {
@@ -169,16 +168,17 @@ int allocate_memory()
 	 */
 	array_of_chunks = malloc(sizeof(record_t *) * num_of_chunks);
 	if (array_of_chunks == NULL)
-		tst_brkm (TBROK, cleanup, "Memory allocation failed for array_of_chunks");
+		tst_brkm(TBROK, cleanup,
+			 "Memory allocation failed for array_of_chunks");
 	/*
 	 * Allocate chunks of memory
 	 */
 
-	for (i=0; i< num_of_chunks; ++i)
-	{
+	for (i = 0; i < num_of_chunks; ++i) {
 		array_of_chunks[i] = (record_t *) malloc(chunk_size);
 		if (array_of_chunks[i] == NULL)
-			tst_brkm (TBROK, cleanup, "Memory allocation failed for chunks. Try smaller chunk size");
+			tst_brkm(TBROK, cleanup,
+				 "Memory allocation failed for chunks. Try smaller chunk size");
 	}
 
 	/*
@@ -186,17 +186,16 @@ int allocate_memory()
 	 */
 	limit = chunk_size / sizeof(record_t);
 
-	for (i=0; i< num_of_chunks; ++i)
-		for (j=0; j< limit; ++j)
+	for (i = 0; i < num_of_chunks; ++i)
+		for (j = 0; j < limit; ++j)
 			array_of_chunks[i][j] = 0xaa;
 
 	/*
 	 * Just keep on accessing the allocated pages and do nothing relevant
 	 */
-	while (1)
-	{
-		for (i=0; i< num_of_chunks; ++i)
-			for (j=0; j< limit; ++j)
+	while (1) {
+		for (i = 0; i < num_of_chunks; ++i)
+			for (j = 0; j < limit; ++j)
 				tmp = array_of_chunks[i][j];
 	}
 	return 0;

@@ -45,7 +45,8 @@ int set_nonroot()
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
+			printf
+			    ("You don't have permission to change your UID.\n");
 			return 1;
 		}
 		perror("An error occurs when calling seteuid()");
@@ -57,18 +58,19 @@ int set_nonroot()
 	return 0;
 }
 
-int main() {
+int main()
+{
 	int fd;
 
-        /* This test should be run under standard user permissions */
-        if (getuid() == 0) {
-                if (set_nonroot() != 0) {
+	/* This test should be run under standard user permissions */
+	if (getuid() == 0) {
+		if (set_nonroot() != 0) {
 			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
-        }
+	}
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, 0);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, 0);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;

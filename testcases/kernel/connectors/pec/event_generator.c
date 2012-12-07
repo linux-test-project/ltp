@@ -40,7 +40,7 @@ const char *ltp_user = "nobody";
 
 char **exec_argv;
 
-void (*gen_event)(void);
+void (*gen_event) (void);
 
 /*
  * Show the usage
@@ -51,7 +51,8 @@ static void usage(int status)
 {
 	FILE *stream = (status ? stderr : stdout);
 
-	fprintf(stream, "Usage: event_generator -e fork|exit|exec|uid|gid [-n nr_event]\n");
+	fprintf(stream,
+		"Usage: event_generator -e fork|exit|exec|uid|gid [-n nr_event]\n");
 
 	exit(status);
 }
@@ -106,7 +107,7 @@ static inline void gen_fork(void)
 	} else if (pid < 0) {
 		fprintf(stderr, "fork() failed\n");
 		exit(1);
-	} else {  /* Parent should wait for the child */
+	} else {		/* Parent should wait for the child */
 		wait(&status);
 	}
 }
@@ -154,12 +155,12 @@ static inline void gen_gid(void)
  */
 static void process_options(int argc, char **argv)
 {
-	int  c;
+	int c;
 	char *end;
 
 	while ((c = getopt(argc, argv, "e:n:h")) != -1) {
 		switch (c) {
-		/* which event to generate */
+			/* which event to generate */
 		case 'e':
 			if (!strcmp(optarg, "exec"))
 				gen_event = gen_exec;
@@ -176,7 +177,7 @@ static void process_options(int argc, char **argv)
 				exit(1);
 			}
 			break;
-		/* number of event to generate */
+			/* number of event to generate */
 		case 'n':
 			nr_event = strtoul(optarg, &end, 10);
 			if (*end != '\0' || nr_event == 0) {
@@ -184,7 +185,7 @@ static void process_options(int argc, char **argv)
 				exit(1);
 			}
 			break;
-		/* help */
+			/* help */
 		case 'h':
 			usage(0);
 		default:

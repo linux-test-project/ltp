@@ -37,15 +37,17 @@ int read_fun(int ID)
 	printf("read the board, data=%d \n", data);
 	return 0;
 }
+
 int write_fun(int ID)
 {
-	data = 100*ID + ID;
+	data = 100 * ID + ID;
 	printf("write the board, data=%d \n", data);
 	return 0;
 }
+
 int *reader(void *ID)
 {
-	int ThID = *(int*)ID;
+	int ThID = *(int *)ID;
 	if (-1 == sem_wait(&r_lock)) {
 		perror("sem_wait didn't return success\n");
 		pthread_exit((void *)1);
@@ -79,14 +81,16 @@ int *reader(void *ID)
 		perror("sem_post didn't return success \n");
 		pthread_exit((void *)1);
 	}
-	printf("Reader Thread [%d] exit...reader_count=%d \n", ThID, reader_count);
+	printf("Reader Thread [%d] exit...reader_count=%d \n", ThID,
+	       reader_count);
 	pthread_exit((void *)0);
 }
+
 int *writer(void *ID)
 {
-	int ThID = *(int*)ID;
+	int ThID = *(int *)ID;
 /* When ThID is equal to WRITE_NUM/2, sleep 2 second and let reader read the data */
-	if (ThID >= WRITE_NUM/2)
+	if (ThID >= WRITE_NUM / 2)
 		sleep(2);
 	if (-1 == sem_wait(&w_lock)) {
 		perror("sem_wait didn't return success \n");
@@ -100,6 +104,7 @@ int *writer(void *ID)
 	printf("Writer Thread [%d] exit...\n", ThID);
 	pthread_exit((void *)0);
 }
+
 int main(int argc, char *argv[])
 {
 	pthread_t rea[READ_NUM], wri[WRITE_NUM];
@@ -107,7 +112,7 @@ int main(int argc, char *argv[])
 	int shared = 1;
 	int r_value = 1;
 	int w_value = 1;
-	int i ;
+	int i;
 
 #ifndef  _POSIX_SEMAPHORES
 	printf("_POSIX_SEMAPHORES is not defined \n");
@@ -122,18 +127,18 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	for (i = 0; i< WRITE_NUM; i++) {
+	for (i = 0; i < WRITE_NUM; i++) {
 		WriteID[i] = i;
 		pthread_create(&wri[i], NULL, (void *)writer, &WriteID[i]);
 	}
-	for (i = 0; i< READ_NUM; i++) {
+	for (i = 0; i < READ_NUM; i++) {
 		ReadID[i] = i;
 		pthread_create(&rea[i], NULL, (void *)reader, &ReadID[i]);
 	}
 
-	for (i = 0; i< READ_NUM; i++)
+	for (i = 0; i < READ_NUM; i++)
 		pthread_join(rea[i], NULL);
-	for (i = 0; i< WRITE_NUM; i++)
+	for (i = 0; i < WRITE_NUM; i++)
 		pthread_join(wri[i], NULL);
 
 	if (-1 == sem_destroy(&r_lock)) {

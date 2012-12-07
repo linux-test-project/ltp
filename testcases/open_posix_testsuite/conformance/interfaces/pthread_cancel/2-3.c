@@ -31,7 +31,7 @@
 
 int cleanup_flag = 0;
 int destructor_flag = 0;
-int sem = 0;				/* manual semaphore */
+int sem = 0;			/* manual semaphore */
 struct timespec destructor_time, cleanup_time;
 
 /*
@@ -56,8 +56,8 @@ void cleanup_function()
 void *a_thread_func(void *tmp)
 {
 	pthread_key_t key;
-	int           value = 1;
-	int           rc = 0;
+	int value = 1;
+	int rc = 0;
 
 	/* To enable thread immediate cancelation, since the default
 	 * is PTHREAD_CANCEL_DEFERRED. */
@@ -95,8 +95,8 @@ void *a_thread_func(void *tmp)
 int main()
 {
 	pthread_t new_th;
-	int       rc = 0;
-	double     diff;
+	int rc = 0;
+	double diff;
 	sem = 0;
 
 	/* Create a new thread. */
@@ -121,19 +121,24 @@ int main()
 	sleep(5);
 
 	if (cleanup_flag != 1) {
-		printf(ERROR_PREFIX "Test FAIL: Cleanup handler was not executed.\n");
+		printf(ERROR_PREFIX
+		       "Test FAIL: Cleanup handler was not executed.\n");
 		exit(PTS_FAIL);
 	}
 
 	if (destructor_flag != 1) {
-		printf(ERROR_PREFIX "Test FAIL: Destructor was not executed.\n");
+		printf(ERROR_PREFIX
+		       "Test FAIL: Destructor was not executed.\n");
 		exit(PTS_FAIL);
 	}
 
 	diff = destructor_time.tv_sec - cleanup_time.tv_sec;
-	diff += (double)(destructor_time.tv_nsec - cleanup_time.tv_nsec)/1000000000.0;
+	diff +=
+	    (double)(destructor_time.tv_nsec -
+		     cleanup_time.tv_nsec) / 1000000000.0;
 	if (diff < 0) {
-		printf(ERROR_PREFIX "Test FAIL: Destructor called before Cleanup Handler\n");
+		printf(ERROR_PREFIX
+		       "Test FAIL: Destructor called before Cleanup Handler\n");
 		exit(PTS_FAIL);
 	}
 

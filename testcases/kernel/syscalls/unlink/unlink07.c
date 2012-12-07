@@ -227,8 +227,8 @@ int main(int ac, char **av)
 						tst_resm(TFAIL,
 							 "unlink(<%s>) Failed, errno=%d, expected errno:%d",
 							 desc, TEST_ERRNO,
-							 Test_cases[ind].
-							 exp_errno);
+							 Test_cases
+							 [ind].exp_errno);
 				} else
 					Tst_count++;
 			} else {

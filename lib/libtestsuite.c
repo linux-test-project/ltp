@@ -43,8 +43,7 @@
 #include "test.h"
 #include "usctest.h"
 
-struct passwd *
-my_getpwnam(char *name)
+struct passwd *my_getpwnam(char *name)
 {
 	struct passwd *saved_pwent;
 	struct passwd *pwent;
@@ -57,15 +56,14 @@ my_getpwnam(char *name)
 
 	*saved_pwent = *pwent;
 
-	return(saved_pwent);
+	return (saved_pwent);
 }
 
-void
-do_file_setup(char *fname)
+void do_file_setup(char *fname)
 {
 	int fd;
 
-	if ((fd = open(fname,O_RDWR|O_CREAT,0700)) == -1) {
+	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
 		tst_resm(TBROK, "open(%s, O_RDWR|O_CREAT,0700) Failed, "
 			 "errno=%d : %s", fname, errno, strerror(errno));
 	}
@@ -84,7 +82,7 @@ void generate_pipe_name(const char *name)
 
 	p = strrchr(name, '/');
 	if (p == NULL)
-		p = (char *) name;
+		p = (char *)name;
 	else
 		p++;
 	snprintf(pipe_name, 255, "%s/ltp_fifo_%s", P_tmpdir, p);
@@ -118,9 +116,9 @@ int sync_pipe_close(int fd[], const char *name)
 	int r = 0;
 
 	if (fd[0] != -1)
-		r = close (fd[0]);
+		r = close(fd[0]);
 	if (fd[1] != -1)
-		r |= close (fd[1]);
+		r |= close(fd[1]);
 
 	if (name != NULL) {
 		generate_pipe_name(name);
@@ -135,11 +133,11 @@ int sync_pipe_wait(int fd[])
 	int r;
 
 	if (fd[1] != -1) {
-		close (fd[1]);
+		close(fd[1]);
 		fd[1] = -1;
 	}
 
-	r = read (fd[0], &buf, 1);
+	r = read(fd[0], &buf, 1);
 
 	if ((r != 1) || (buf != 'A'))
 		return -1;
@@ -152,11 +150,11 @@ int sync_pipe_notify(int fd[])
 	int r;
 
 	if (fd[0] != -1) {
-		close (fd[0]);
+		close(fd[0]);
 		fd[0] = -1;
 	}
 
-	r = write (fd[1], &buf, 1);
+	r = write(fd[1], &buf, 1);
 
 	if (r != 1)
 		return -1;

@@ -26,31 +26,31 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
- #include <semaphore.h>
- #include <errno.h>
- #include <signal.h>
+#include <semaphore.h>
+#include <errno.h>
+#include <signal.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "testfrmw.h"
- #include "testfrmw.c"
+#include "testfrmw.h"
+#include "testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -93,86 +93,96 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-char do_it=1;
-long long iterations=0;
+char do_it = 1;
+long long iterations = 0;
 
 /* Handler for user request to terminate */
 void sighdl(int sig)
 {
 	/* do_it = 0 */
-	do { do_it = 0; }
+	do {
+		do_it = 0;
+	}
 	while (do_it);
 }
 
 /* Protect concurrent access to the shared data */
-pthread_mutex_t m_synchro=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t m_synchro = PTHREAD_MUTEX_INITIALIZER;
 
 /* Signaled when all threads are running */
-pthread_cond_t c_synchro =PTHREAD_COND_INITIALIZER;
+pthread_cond_t c_synchro = PTHREAD_COND_INITIALIZER;
 int c_boolean;
 
 /* Thread ID returned by pthread_self  */
 pthread_t running[NSCENAR];
 
 /* Thread function */
-void * threaded(void * arg)
+void *threaded(void *arg)
 {
-	int ret=0;
+	int ret = 0;
 	int me = *(int *)arg;
 
-	#if VERBOSE > 6
+#if VERBOSE > 6
 	output("[child%d] starting\n", me);
-	#endif
+#endif
 	/* Wait for all threads being created */
 	ret = pthread_mutex_lock(&m_synchro);
-	if (ret != 0)  {  UNRESOLVED(ret, "Mutex lock failed");  }
-	#if VERBOSE > 6
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex lock failed");
+	}
+#if VERBOSE > 6
 	output("[child%d] got mutex\n", me);
-	#endif
+#endif
 
-	running[me]=pthread_self();
+	running[me] = pthread_self();
 
 	/* Signal we're running */
-	do { ret = sem_post(&scenarii[me].sem); }
+	do {
+		ret = sem_post(&scenarii[me].sem);
+	}
 	while ((ret == -1) && (errno == EINTR));
-	if (ret == -1)  {  UNRESOLVED(errno, "Failed to post the semaphore");  }
-	#if VERBOSE > 6
+	if (ret == -1) {
+		UNRESOLVED(errno, "Failed to post the semaphore");
+	}
+#if VERBOSE > 6
 	output("[child%d] posted semaphore %p\n", me, &scenarii[me].sem);
-	#endif
+#endif
 
-	while (!c_boolean)
-	{
+	while (!c_boolean) {
 		ret = pthread_cond_wait(&c_synchro, &m_synchro);
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to wait the condvar");  }
-		#if VERBOSE > 6
+		if (ret != 0) {
+			UNRESOLVED(ret, "Failed to wait the condvar");
+		}
+#if VERBOSE > 6
 		output("[child%d] awaken\n", me);
-		#endif
+#endif
 	}
 
 	ret = pthread_mutex_unlock(&m_synchro);
-	if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
-
-	#if VERBOSE > 6
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex unlock failed");
+	}
+#if VERBOSE > 6
 	output("[child%d] exiting\n", me);
-	#endif
+#endif
 
 	return arg;
 }
 
 /* Main function */
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int ret=0;
+	int ret = 0;
 	struct sigaction sa;
 
-	pthread_t creation[NSCENAR]; /* Thread ID returned in pthread_create */
-	int status[NSCENAR]; /* Status of thread creation */
+	pthread_t creation[NSCENAR];	/* Thread ID returned in pthread_create */
+	int status[NSCENAR];	/* Status of thread creation */
 	int ids[NSCENAR];
 
 	int i;
 
-	for (sc=0; sc<NSCENAR; sc++)
-		ids[sc]=sc;
+	for (sc = 0; sc < NSCENAR; sc++)
+		ids[sc] = sc;
 
 	/* Initialize output routine */
 	output_init();
@@ -181,129 +191,146 @@ int main (int argc, char *argv[])
 	scenar_init();
 
 	/* Register the signal handler for SIGUSR1 */
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = sighdl;
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register signal handler"); }
-	if ((ret = sigaction (SIGALRM, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register signal handler"); }
-	#if VERBOSE > 1
+	if ((ret = sigaction(SIGUSR1, &sa, NULL))) {
+		UNRESOLVED(ret, "Unable to register signal handler");
+	}
+	if ((ret = sigaction(SIGALRM, &sa, NULL))) {
+		UNRESOLVED(ret, "Unable to register signal handler");
+	}
+#if VERBOSE > 1
 	output("[parent] Signal handler registered\n");
-	#endif
+#endif
 
-	while (do_it)
-	{
+	while (do_it) {
 		/* Initialize the shared data */
 		c_boolean = 0;
 
 		/* Create all the threads */
-		for (sc=0; sc < NSCENAR; sc++)
-		{
+		for (sc = 0; sc < NSCENAR; sc++) {
 			/* Create the thread */
-			status[sc] = pthread_create(&creation[sc], &scenarii[sc].ta, threaded, &ids[sc]);
+			status[sc] =
+			    pthread_create(&creation[sc], &scenarii[sc].ta,
+					   threaded, &ids[sc]);
 
 			/* Check creation status */
-			switch (scenarii[sc].result)
-			{
-				case 0: /* Operation was expected to succeed */
-					if (status[sc] != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
-					break;
+			switch (scenarii[sc].result) {
+			case 0:	/* Operation was expected to succeed */
+				if (status[sc] != 0) {
+					UNRESOLVED(ret,
+						   "Failed to create this thread");
+				}
+				break;
 
-				case 1: /* Operation was expected to fail */
-					if (status[sc] == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
-					break;
+			case 1:	/* Operation was expected to fail */
+				if (status[sc] == 0) {
+					UNRESOLVED(-1,
+						   "An error was expected but the thread creation succeeded");
+				}
+				break;
 
-				case 2: /* We did not know the expected result */
-				default:
-					/* Nothing */
-					;
+			case 2:	/* We did not know the expected result */
+			default:
+				/* Nothing */
+				;
 			}
 		}
-		#if VERBOSE > 6
+#if VERBOSE > 6
 		output("[parent] threads created\n");
-		#endif
+#endif
 
 		/* Now wait that all threads are running */
-		for (sc=0; sc < NSCENAR; sc++)
-		{
-			if (status[sc] == 0) /* The new thread is running */
-			{
-				#if VERBOSE > 6
-				output("[parent] Waiting for thread %d: %p\n", sc, &scenarii[sc].sem);
-				#endif
-				do { ret = sem_wait(&scenarii[sc].sem); }
+		for (sc = 0; sc < NSCENAR; sc++) {
+			if (status[sc] == 0) {	/* The new thread is running */
+#if VERBOSE > 6
+				output("[parent] Waiting for thread %d: %p\n",
+				       sc, &scenarii[sc].sem);
+#endif
+				do {
+					ret = sem_wait(&scenarii[sc].sem);
+				}
 				while ((ret == -1) && (errno == EINTR));
-				if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
-			}
-		}
-
-		#if VERBOSE > 6
-		output("[parent] Locking the mutex\n");
-		#endif
-
-		ret = pthread_mutex_lock(&m_synchro);
-		if (ret != 0)  {  UNRESOLVED(ret, "Mutex lock failed");  }
-
-		/* Now, we've got all shared data set, so we can seek for duplicates */
-		for (sc=0; sc < NSCENAR; sc++)
-		{
-			if (status[sc] != 0) /* The new thread is running */
-				continue;
-
-			if (pthread_equal(creation[sc], running[sc]) == 0)
-			{
-				output("pthread_create returned an ID of %p\n", creation[sc]);
-				output("pthread_self in the thread returned %p\n", running[sc]);
-				FAILED("Error: Values mismatch");
-			}
-
-			for (i=sc+1; i<NSCENAR; i++)
-			{
-				if (status[i] != 0)
-					continue;
-
-				if (pthread_equal(creation[sc], creation[i]))
-				{
-					FAILED("Two different running threads have the same ID");
+				if (ret == -1) {
+					UNRESOLVED(errno,
+						   "Failed to wait for the semaphore");
 				}
 			}
 		}
-		#if VERBOSE > 6
+
+#if VERBOSE > 6
+		output("[parent] Locking the mutex\n");
+#endif
+
+		ret = pthread_mutex_lock(&m_synchro);
+		if (ret != 0) {
+			UNRESOLVED(ret, "Mutex lock failed");
+		}
+
+		/* Now, we've got all shared data set, so we can seek for duplicates */
+		for (sc = 0; sc < NSCENAR; sc++) {
+			if (status[sc] != 0)	/* The new thread is running */
+				continue;
+
+			if (pthread_equal(creation[sc], running[sc]) == 0) {
+				output("pthread_create returned an ID of %p\n",
+				       creation[sc]);
+				output
+				    ("pthread_self in the thread returned %p\n",
+				     running[sc]);
+				FAILED("Error: Values mismatch");
+			}
+
+			for (i = sc + 1; i < NSCENAR; i++) {
+				if (status[i] != 0)
+					continue;
+
+				if (pthread_equal(creation[sc], creation[i])) {
+					FAILED
+					    ("Two different running threads have the same ID");
+				}
+			}
+		}
+#if VERBOSE > 6
 		output("[parent] No duplicate found\n");
-		#endif
+#endif
 
 		/* We're done, we can terminate the threads */
 		c_boolean = 1;
 		ret = pthread_mutex_unlock(&m_synchro);
-		if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Mutex unlock failed");
+		}
 
 		ret = pthread_cond_broadcast(&c_synchro);
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to broadcast the cond");  }
-
-		#if VERBOSE > 6
+		if (ret != 0) {
+			UNRESOLVED(ret, "Failed to broadcast the cond");
+		}
+#if VERBOSE > 6
 		output("[parent] Cond broadcasted\n");
-		#endif
+#endif
 
 		/* Join the joinable threads */
-		for (sc=0; sc < NSCENAR; sc++)
-		{
-			if (status[sc] != 0) /* The new thread is running */
+		for (sc = 0; sc < NSCENAR; sc++) {
+			if (status[sc] != 0)	/* The new thread is running */
 				continue;
 
-			if (scenarii[sc].detached == 0)
-			{
-				#if VERBOSE > 6
+			if (scenarii[sc].detached == 0) {
+#if VERBOSE > 6
 				output("[parent] Joining %d\n", sc);
-				#endif
+#endif
 				ret = pthread_join(creation[sc], NULL);
-				if (ret != 0)  {  UNRESOLVED(ret, "Unalbe to join a thread");  }
-				#if VERBOSE > 6
+				if (ret != 0) {
+					UNRESOLVED(ret,
+						   "Unalbe to join a thread");
+				}
+#if VERBOSE > 6
 				output("[parent] Joined %d\n", sc);
-				#endif
+#endif
 			}
 
-	 	}
+		}
 		iterations++;
 	}
 
@@ -311,7 +338,8 @@ int main (int argc, char *argv[])
 
 	scenar_fini();
 
-	output("pthread_exit stress test PASSED -- %llu iterations\n",iterations);
+	output("pthread_exit stress test PASSED -- %llu iterations\n",
+	       iterations);
 
 	PASSED;
 }

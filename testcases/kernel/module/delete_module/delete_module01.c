@@ -72,23 +72,20 @@
 #include "test.h"
 #include "usctest.h"
 
-
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "delete_module01";		 /* Test program identifier.    */
-int TST_TOTAL = 1;			/* Total number of test cases. */
+char *TCID = "delete_module01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
 	char cmd[PATH_MAX];
 	char *module_name = "dummy_del_mod";
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-		(char *) NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -104,9 +101,9 @@ main(int argc, char **argv)
 			module_name);
 
 		/* Insmod the module */
- 		if ((system( cmd )) != 0) {
+		if ((system(cmd)) != 0) {
 			tst_resm(TBROK, "Failed to load %s module",
-					module_name);
+				 module_name);
 			printf("system() failed; cannot test init_module: "
 			       "errno=%i\n", errno);
 			goto EXIT;
@@ -118,13 +115,12 @@ main(int argc, char **argv)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "delete_module() failed to remove"
-		 			" module entry for %s, errno=%d : %s",
-		 		 	module_name, TEST_ERRNO,
-					strerror(TEST_ERRNO));
+				 " module entry for %s, errno=%d : %s",
+				 module_name, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "delete_module() successful, returned"
-	 				" %d", TEST_RETURN);
-	 	}
+				 " %d", TEST_RETURN);
+		}
 
 	}
 
@@ -135,8 +131,7 @@ EXIT:
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -150,7 +145,7 @@ setup(void)
 	/*
 	 * if (tst_kvercmp(2,5,48) >= 0)
 	 * tst_brkm(TCONF, NULL, "This test will not work on "
-	 *				"kernels after 2.5.48");
+	 *                              "kernels after 2.5.48");
 	 */
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -164,8 +159,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

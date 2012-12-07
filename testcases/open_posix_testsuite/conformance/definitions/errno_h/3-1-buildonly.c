@@ -9,7 +9,7 @@
 
 int dummy1 = E2BIG;
 int dummy2 = EACCES;
-int dummy3 = EADDRINUSE ;
+int dummy3 = EADDRINUSE;
 int dummy4 = EADDRNOTAVAIL;
 int dummy5 = EAFNOSUPPORT;
 int dummy6 = EAGAIN;

@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	 */
 	if (chown(path_name, user_uid, group_gid) == -1) {
 		fprintf(stderr, "chown(%s, ..) failed: %s",
-		    path_name, strerror(errno));
+			path_name, strerror(errno));
 		exit(1);
 	}
 

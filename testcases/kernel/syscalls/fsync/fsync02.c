@@ -105,37 +105,39 @@ int main(int ac, char **av)
 			offset = i * ((BLOCKSIZE * max_block) / data_blocks);
 			offset -= BUFSIZ;
 			if ((offsetret = lseek(fd, offset, SEEK_SET)) != offset)
-				tst_brkm(TBROK|TERRNO, cleanup, "lseek failed: %ld, %ld", offsetret, offset);
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "lseek failed: %ld, %ld", offsetret,
+					 offset);
 			if ((ret = write(fd, pbuf, BUFSIZ)) != BUFSIZ)
 				tst_brkm(TBROK, cleanup, "write failed");
 		}
 		if (time(&time_start) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "getting start time failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "getting start time failed");
 
 		TEST(fsync(fd));
 
 		if (time(&time_end) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "getting end time failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "getting end time failed");
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "fsync failed");
+			tst_resm(TFAIL | TTERRNO, "fsync failed");
 			continue;
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
 			if (time_end < time_start)
 				tst_resm(TBROK,
-				    "timer broken end %ld < start %ld",
-				    time_end, time_start);
+					 "timer broken end %ld < start %ld",
+					 time_end, time_start);
 
 			if ((time_delta =
 			     difftime(time_end, time_start)) > TIME_LIMIT)
 				tst_resm(TFAIL,
-				    "fsync took too long: %lf seconds; "
-				    "max_block: %d; data_blocks: %d",
-				    time_delta, max_block, data_blocks);
+					 "fsync took too long: %lf seconds; "
+					 "max_block: %d; data_blocks: %d",
+					 time_delta, max_block, data_blocks);
 			else
 				tst_resm(TPASS, "fsync succeeded in an "
 					 "acceptable amount of time");
@@ -181,11 +183,11 @@ void setup()
 
 #ifdef LARGEFILE
 	if ((fcntl(fd, F_SETFL, O_LARGEFILE)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "fcntl(.., O_LARGEFILE) failed");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "fcntl(.., O_LARGEFILE) failed");
 
 	if (write(fd, pbuf, BUFSIZ) != BUFSIZ)
-		tst_brkm(TBROK|TERRNO, cleanup, "write(fd, pbuf, ..) failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "write(fd, pbuf, ..) failed");
 #endif
 }
 
@@ -194,7 +196,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (close(fd) == -1)
-		tst_resm(TWARN|TERRNO, "close failed");
+		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
 

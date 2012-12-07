@@ -23,21 +23,22 @@
 #define FUNCTION "sem_unlink"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main() {
+int main()
+{
 	sem_t *mysemp;
 	char semname[28];
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	/* Initial value of Semaphore is 1 */
-	mysemp = sem_open(semname, O_CREAT,0,1);
+	mysemp = sem_open(semname, O_CREAT, 0, 1);
 	if (mysemp == SEM_FAILED || mysemp == NULL) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sem_unlink(semname) == 0) {
-	      	if ((sem_wait (mysemp)) == -1)  {
+		if ((sem_wait(mysemp)) == -1) {
 			puts("TEST FAILED: Couldn't remove named semaphore");
 			return PTS_FAIL;
 		} else {

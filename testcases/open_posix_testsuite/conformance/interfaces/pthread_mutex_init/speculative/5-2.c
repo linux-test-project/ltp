@@ -28,25 +28,25 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdio.h>
- #include <unistd.h>
- #include <stdlib.h>
- #include <errno.h>
- #include <stdarg.h>
- #include <sys/utsname.h>
- #include <string.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <sys/utsname.h>
+#include <string.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../../testfrmw/testfrmw.h"
- #include "../../testfrmw/testfrmw.c"
+#include "../../testfrmw/testfrmw.h"
+#include "../../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -82,23 +82,23 @@
 /********************************************************************************************/
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret;
 	struct utsname un;
 
 	output_init();
 	ret = uname(&un);
-	if (ret == -1)
-	{  UNRESOLVED(errno, "Unable to get Implementation name");  }
-
-	#if VERBOSE > 0
-	output("Implementation is: \n\t%s\n\t%s\n\t%s\n", un.sysname, un.release, un.version);
-	#endif
+	if (ret == -1) {
+		UNRESOLVED(errno, "Unable to get Implementation name");
+	}
+#if VERBOSE > 0
+	output("Implementation is: \n\t%s\n\t%s\n\t%s\n", un.sysname,
+	       un.release, un.version);
+#endif
 
 	/* If we are running Linux */
-	if (strcmp(un.sysname, "Linux") == 0)
-	{
+	if (strcmp(un.sysname, "Linux") == 0) {
 		/* Linux does not provide privilege access to pthread_mutex_init function */
 		ret = PTS_UNSUPPORTED;
 		output("Linux does not provide this feature\n");
@@ -107,13 +107,11 @@ int main(int argc, char * argv[])
 	}
 
 	/* If we are running AIX */
-	if (strcmp(un.sysname, "AIX") == 0)
-	{
+	if (strcmp(un.sysname, "AIX") == 0) {
 		;
 	}
 	/* If we are running Solaris */
-	if (strcmp(un.sysname, "SunOS") == 0)
-	{
+	if (strcmp(un.sysname, "SunOS") == 0) {
 		;
 	}
 

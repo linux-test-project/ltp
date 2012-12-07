@@ -44,7 +44,7 @@
 #define HIST_BUCKETS 100
 
 // define sane defaults
-#define DEFAULT_ITERATIONS 10000 /* 1000 is the min for 3 nines */
+#define DEFAULT_ITERATIONS 10000	/* 1000 is the min for 3 nines */
 #define DEFAULT_PERIOD 5
 #define DEFAULT_PRIO   90
 #define DEFAULT_CALC_LOOPS 1000
@@ -64,7 +64,8 @@ void usage(void)
 	printf("periodic_cpu_load_single specific options:\n");
 	printf("  -lCALC_LOOPS	loops per iteration\n");
 	printf("  -fFILENAME_PREFIX    filename prefix for plot output\n");
-	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
+	printf
+	    ("  -iITERATIONS  number of iterations to calculate the average over\n");
 	printf("  -r[0-99]	real-time priority\n");
 	printf("  -tPERIOD	period in ms\n");
 }
@@ -72,10 +73,10 @@ void usage(void)
 void *calc(int loops)
 {
 	int i, j;
-	for (i = 0; i < loops*LOOPS_MULTIPLIER; i++) {
+	for (i = 0; i < loops * LOOPS_MULTIPLIER; i++) {
 		for (j = 0; j < 125; j++) {
 			// Sum of the numbers up to J
-			volatile int temp = j * ( j + 1 ) / 2;
+			volatile int temp = j * (j + 1) / 2;
 			(void)temp;
 		}
 	}
@@ -100,12 +101,14 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 	stats_container_init(&hist, HIST_BUCKETS);
 	stats_quantiles_init(&quantiles, (int)log10(iterations));
 	if (asprintf(&samples_filename, "%s-samples", filename_prefix) == -1) {
-		fprintf(stderr, "Failed to allocate string for samples filename\n");
+		fprintf(stderr,
+			"Failed to allocate string for samples filename\n");
 		return -1;
 	}
 
 	if (asprintf(&hist_filename, "%s-hist", filename_prefix) == -1) {
-		fprintf(stderr, "Failed to allocate string for samples filename\n");
+		fprintf(stderr,
+			"Failed to allocate string for samples filename\n");
 		return -1;
 	}
 	next = rt_gettime();
@@ -113,7 +116,8 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 		next += period;
 		now = rt_gettime();
 		if (now > next) {
-			printf("Missed period, aborting (didn't get scheduled in time)\n");
+			printf
+			    ("Missed period, aborting (didn't get scheduled in time)\n");
 			fail = 1;
 			break;
 		}
@@ -122,23 +126,24 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 		exe_end = rt_gettime();
 		exe_time = exe_end - exe_start;
 		rec.x = i;
-		rec.y = exe_time/NS_PER_US;
+		rec.y = exe_time / NS_PER_US;
 		stats_container_append(&dat, rec);
 
 		i++;
 
 		now = rt_gettime();
 		if (now > next) {
-			printf("Missed period, aborting (calc took too long)\n");
+			printf
+			    ("Missed period, aborting (calc took too long)\n");
 			fail = 1;
 			break;
 		}
 		rt_nanosleep(next - now);
 	}
 
-	stats_container_save(samples_filename, "Periodic CPU Load Scatter Plot",\
+	stats_container_save(samples_filename, "Periodic CPU Load Scatter Plot",
 			     "Iteration", "Runtime (us)", &dat, "points");
-	stats_container_save(hist_filename, "Periodic CPU Load Histogram",\
+	stats_container_save(hist_filename, "Periodic CPU Load Histogram",
 			     "Runtime (us)", "Samples", &hist, "steps");
 
 	printf("  Execution Time Statistics:\n");
@@ -150,7 +155,7 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
 	printf("Criteria: no missed periods\n");
-	printf("Result: %s\n", fail ? "FAIL":"PASS");
+	printf("Result: %s\n", fail ? "FAIL" : "PASS");
 
 	free(samples_filename);
 	free(hist_filename);
@@ -162,34 +167,34 @@ int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
-		case 'l':
-			calc_loops = atoi(v);
-			break;
-		case 'f':
-			filename_prefix = v;
-			break;
-		case 'h':
-			usage();
-			exit(0);
-		case 'i':
-			iterations = atoi(v);
-			break;
-		case 'r':
-			prio = atoi(v);
-			break;
-		case 't':
-			period = atoi(v) * NS_PER_MS;
-			break;
-		default:
-			handled = 0;
-			break;
+	case 'l':
+		calc_loops = atoi(v);
+		break;
+	case 'f':
+		filename_prefix = v;
+		break;
+	case 'h':
+		usage();
+		exit(0);
+	case 'i':
+		iterations = atoi(v);
+		break;
+	case 'r':
+		prio = atoi(v);
+		break;
+	case 't':
+		period = atoi(v) * NS_PER_MS;
+		break;
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
 
 int main(int argc, char *argv[])
 {
-	period = DEFAULT_PERIOD*NS_PER_MS;
+	period = DEFAULT_PERIOD * NS_PER_MS;
 	prio = DEFAULT_PRIO;
 	calc_loops = DEFAULT_CALC_LOOPS;
 	setup();
@@ -213,7 +218,7 @@ int main(int argc, char *argv[])
 	printf("------------------------------------\n\n");
 	printf("Running %d iterations\n", iterations);
 	printf("priority: %d\n", prio);
-	printf("  period: %d ms\n", period/NS_PER_MS);
+	printf("  period: %d ms\n", period / NS_PER_MS);
 	printf("   loops: %d\n", calc_loops);
 	printf("    logs: %s*\n", filename_prefix);
 

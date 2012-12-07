@@ -20,7 +20,8 @@
 
 #define SHM_NAME "posixtest_41-1"
 
-int main() {
+int main()
+{
 	int fd, result;
 
 	result = shm_unlink(SHM_NAME);

@@ -96,26 +96,26 @@
 #include "test.h"
 #include "usctest.h"
 
-
 #define NULLMODNAME ""
 #define BASEMODNAME "dummy"
-#define LONGMODNAMECHAR 'm'			/* Arbitrarily selected */
+#define LONGMODNAMECHAR 'm'	/* Arbitrarily selected */
 #define EXP_RET_VAL -1
 
 /* Test case structure */
 struct test_case_t {
-	char 		 *modname;
+	char *modname;
 	/* Expected errno. */
-	int		 experrno;
-	char		 *desc;
+	int experrno;
+	char *desc;
 	/* Individual setup routine. */
-	int		 (*setup)(void);
+	int (*setup) (void);
 	/* Individual cleanup routine */
-	void		 (*cleanup)(void);
+	void (*cleanup) (void);
 };
 
 char *TCID = "delete_module02";
 static int exp_enos[] = { EPERM, EINVAL, ENOENT, EFAULT, ENAMETOOLONG, 0 };
+
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static char longmodname[MODULE_NAME_LEN];
@@ -123,7 +123,7 @@ static int testno;
 /* Name of the module */
 static char modname[20];
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 static void setup(void);
 static void cleanup(void);
@@ -132,24 +132,23 @@ static void cleanup1(void);
 
 struct test_case_t;
 
-static struct test_case_t  tdat[] = {
-		 { modname, ENOENT,
-		 	"nonexistent module", NULL, NULL},
-		 { NULLMODNAME, ENOENT,
-		 	"null terminated module name", NULL, NULL},
-		 { (char *) -1, EFAULT,
-			"module name outside program's "
-			"accessible address space", NULL, NULL},
-		 { longmodname, ENOENT,
-		 	"long module name", NULL, NULL},
-		 { modname, EPERM,
-		 	"non-superuser", setup1, cleanup1},
+static struct test_case_t tdat[] = {
+	{modname, ENOENT,
+	 "nonexistent module", NULL, NULL},
+	{NULLMODNAME, ENOENT,
+	 "null terminated module name", NULL, NULL},
+	{(char *)-1, EFAULT,
+	 "module name outside program's "
+	 "accessible address space", NULL, NULL},
+	{longmodname, ENOENT,
+	 "long module name", NULL, NULL},
+	{modname, EPERM,
+	 "non-superuser", setup1, cleanup1},
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
@@ -165,27 +164,26 @@ main(int argc, char **argv)
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			if ((tdat[testno].setup) && (tdat[testno].setup())) {
-		 		/* setup() failed, skip this test */
-		 		continue;
-		 	}
+				/* setup() failed, skip this test */
+				continue;
+			}
 			/* Test the system call */
-		 	TEST(delete_module(tdat[testno].modname));
-		 	TEST_ERROR_LOG(TEST_ERRNO);
-		 	printf("TEST_RETURN is %d, TEST_ERRNO is %d\n",
-				TEST_RETURN, TEST_ERRNO);
-		 	if ((TEST_RETURN == EXP_RET_VAL) &&
-		 	     (TEST_ERRNO == tdat[testno].experrno) ) {
-		 		tst_resm(TPASS, "Expected results for %s, "
-		 				"errno: %d", tdat[testno].desc,
-		 		 		TEST_ERRNO);
-		 	} else {
+			TEST(delete_module(tdat[testno].modname));
+			TEST_ERROR_LOG(TEST_ERRNO);
+			printf("TEST_RETURN is %d, TEST_ERRNO is %d\n",
+			       TEST_RETURN, TEST_ERRNO);
+			if ((TEST_RETURN == EXP_RET_VAL) &&
+			    (TEST_ERRNO == tdat[testno].experrno)) {
+				tst_resm(TPASS, "Expected results for %s, "
+					 "errno: %d", tdat[testno].desc,
+					 TEST_ERRNO);
+			} else {
 				tst_resm(TFAIL, "Unexpected results for %s ; "
-						"returned %d (expected %d), "
-						"errno %d (expected %d)",
-						tdat[testno].desc,
-						TEST_RETURN, EXP_RET_VAL,
-						TEST_ERRNO,
-						tdat[testno].experrno);
+					 "returned %d (expected %d), "
+					 "errno %d (expected %d)",
+					 tdat[testno].desc,
+					 TEST_RETURN, EXP_RET_VAL,
+					 TEST_ERRNO, tdat[testno].experrno);
 			}
 			if (tdat[testno].cleanup) {
 				tdat[testno].cleanup();
@@ -196,25 +194,23 @@ main(int argc, char **argv)
 	tst_exit();
 }
 
-int
-setup1(void)
+int setup1(void)
 {
 	/* Change effective user id to nodody */
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TBROK, "seteuid failed to set the effective"
-				" uid to %d", ltpuser->pw_uid);
+			 " uid to %d", ltpuser->pw_uid);
 		return 1;
 	}
 	return 0;
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
 	/* Change effective user id to root */
 	if (seteuid(0) == -1) {
 		tst_brkm(TBROK, NULL, "seteuid failed to set the effective"
-					  " uid to root");
+			 " uid to root");
 	}
 }
 
@@ -222,8 +218,7 @@ cleanup1(void)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -235,8 +230,8 @@ setup(void)
 	}
 
 	/*if (tst_kvercmp(2,5,48) >= 0)
-		tst_brkm(TCONF, NULL, "This test will not work on "
-					  "kernels after 2.5.48");
+	   tst_brkm(TCONF, NULL, "This test will not work on "
+	   "kernels after 2.5.48");
 	 */
 
 	/* Check for nobody_uid user id */
@@ -260,8 +255,8 @@ setup(void)
 	if (sprintf(modname, "%s_%d", BASEMODNAME, getpid()) <= 0) {
 		tst_brkm(TBROK, NULL, "Failed to initialize module name");
 	}
-        bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-        if (bad_addr == MAP_FAILED) {
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
 	tdat[2].modname = bad_addr;
@@ -273,8 +268,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

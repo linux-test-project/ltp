@@ -179,8 +179,8 @@ int main(int ac, char **av)
 					 "unlink(%s) returned %ld, but access says file still exists.",
 					 Fname, TEST_RETURN);
 			} else {
-				tst_resm(TPASS, "unlink(%s) returned %ld", Fname,
-					 TEST_RETURN);
+				tst_resm(TPASS, "unlink(%s) returned %ld",
+					 Fname, TEST_RETURN);
 			}
 		} else
 			Tst_count++;

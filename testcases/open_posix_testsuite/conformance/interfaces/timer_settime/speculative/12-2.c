@@ -29,8 +29,10 @@ int main(int argc, char *argv[])
 	timer_t tid;
 	struct itimerspec its;
 
-	its.it_interval.tv_sec = 0; its.it_interval.tv_nsec = 0;
-	its.it_value.tv_sec = 0; its.it_value.tv_nsec = 0;
+	its.it_interval.tv_sec = 0;
+	its.it_interval.tv_nsec = 0;
+	its.it_value.tv_sec = 0;
+	its.it_value.tv_nsec = 0;
 
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
@@ -40,7 +42,7 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	if (timer_settime(tid+1, 0, &its, NULL) == -1) {
+	if (timer_settime(tid + 1, 0, &its, NULL) == -1) {
 		if (EINVAL == errno) {
 			printf("fcn returned -1 and errno==EINVAL\n");
 			return PTS_PASS;

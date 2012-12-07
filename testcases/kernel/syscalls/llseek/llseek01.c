@@ -67,7 +67,7 @@
  */
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include <unistd.h>
@@ -121,7 +121,7 @@ int main(int ac, char **av)
 		 */
 		TEST(lseek64(fildes, (loff_t) (80 * BUFSIZ), SEEK_SET));
 
-		if (TEST_RETURN == (loff_t) -1) {
+		if (TEST_RETURN == (loff_t) - 1) {
 			tst_resm(TFAIL, "llseek on (%s) Failed, errno=%d : %s",
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
@@ -130,8 +130,8 @@ int main(int ac, char **av)
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN != (loff_t) (80 * BUFSIZ)) {
 				tst_resm(TFAIL, "llseek() returned incorrect "
-					 "value %"PRId64", expected %d",
-					 (int64_t)offset, BUFSIZ);
+					 "value %" PRId64 ", expected %d",
+					 (int64_t) offset, BUFSIZ);
 				continue;
 			}
 

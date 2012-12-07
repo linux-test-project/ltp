@@ -52,22 +52,23 @@ int main()
 {
 
 	/* Make sure there is process-shared capability. */
-	#ifndef PTHREAD_PROCESS_SHARED
-	  fprintf(stderr,"process-shared attribute is not available for testing\n");
-	  return PTS_UNSUPPORTED;
-	#endif
+#ifndef PTHREAD_PROCESS_SHARED
+	fprintf(stderr,
+		"process-shared attribute is not available for testing\n");
+	return PTS_UNSUPPORTED;
+#endif
 
-	static pthread_barrier_t* barrier;
+	static pthread_barrier_t *barrier;
 	pthread_barrierattr_t ba;
-	int	pshared = PTHREAD_PROCESS_SHARED;
+	int pshared = PTHREAD_PROCESS_SHARED;
 
-	char 	shm_name[] = "tmp_pthread_barrierattr_getpshared";
-	int 	shm_fd;
-	int 	pid;
-	int 	loop;
-	int	serial = 0;
-	int	rc;
-	int	status = 0;
+	char shm_name[] = "tmp_pthread_barrierattr_getpshared";
+	int shm_fd;
+	int pid;
+	int loop;
+	int serial = 0;
+	int rc;
+	int status = 0;
 	struct sigaction act;
 
 	/* Set up parent to handle SIGALRM */
@@ -77,150 +78,132 @@ int main()
 	sigaction(SIGALRM, &act, 0);
 
 	/* Initialize a barrier attributes object */
-	if (pthread_barrierattr_init(&ba) != 0)
-	{
+	if (pthread_barrierattr_init(&ba) != 0) {
 		printf("Error at pthread_barrierattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Set the pshard value to private to shared */
-	if (pthread_barrierattr_setpshared(&ba, pshared) != 0)
-	{
+	if (pthread_barrierattr_setpshared(&ba, pshared) != 0) {
 		printf("Error at pthread_barrierattr_setpshared()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_barrierattr_getpshared(&ba, &pshared) != 0)
-	{
-		printf("Test FAILED: Error at pthread_barrierattr_getpshared()\n");
+	if (pthread_barrierattr_getpshared(&ba, &pshared) != 0) {
+		printf
+		    ("Test FAILED: Error at pthread_barrierattr_getpshared()\n");
 		return PTS_FAIL;
 	}
 
-	if (pshared != PTHREAD_PROCESS_SHARED)
-	{
+	if (pshared != PTHREAD_PROCESS_SHARED) {
 		printf("Test FAILED: Incorrect pshared value %d\n", pshared);
 		return PTS_FAIL;
 	}
 
 	/* Create shared object */
 	shm_unlink(shm_name);
-	shm_fd = shm_open(shm_name, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-	if (shm_fd == -1)
-	{
+	shm_fd =
+	    shm_open(shm_name, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+	if (shm_fd == -1) {
 		perror("Error at shm_open()");
 		return PTS_UNRESOLVED;
 	}
 
-        if (ftruncate(shm_fd, sizeof(pthread_barrier_t)) != 0)
-	{
-                perror("Error at ftruncate()");
-                shm_unlink(shm_name);
-                return PTS_UNRESOLVED;
-        }
+	if (ftruncate(shm_fd, sizeof(pthread_barrier_t)) != 0) {
+		perror("Error at ftruncate()");
+		shm_unlink(shm_name);
+		return PTS_UNRESOLVED;
+	}
 
 	/* Map the shared memory object to my memory */
-	barrier = mmap(NULL, sizeof(pthread_barrier_t), PROT_READ|PROT_WRITE,
-				MAP_SHARED, shm_fd, 0);
+	barrier = mmap(NULL, sizeof(pthread_barrier_t), PROT_READ | PROT_WRITE,
+		       MAP_SHARED, shm_fd, 0);
 
-	if (barrier == MAP_FAILED)
-	{
+	if (barrier == MAP_FAILED) {
 		perror("Error at first mmap()");
-                shm_unlink(shm_name);
+		shm_unlink(shm_name);
 		return PTS_UNRESOLVED;
 	}
 
 	/* Initialize a barrier */
-	if ((pthread_barrier_init(barrier, &ba, 2)) != 0)
-	{
+	if ((pthread_barrier_init(barrier, &ba, 2)) != 0) {
 		printf("Error at pthread_barrier_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Cleanup */
-	if ((pthread_barrierattr_destroy(&ba)) != 0)
-	{
+	if ((pthread_barrierattr_destroy(&ba)) != 0) {
 		printf("Error at pthread_barrierattr_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Fork a child process */
 	pid = fork();
-	if (pid == -1)
-	{
+	if (pid == -1) {
 		perror("Error at fork()");
 		return PTS_UNRESOLVED;
-	}
-	else if (pid == 0)
-	{
+	} else if (pid == 0) {
 		/* Child */
 		/* Map the shared object to child's memory */
-		barrier = mmap(NULL, sizeof(pthread_barrier_t), PROT_READ|PROT_WRITE,
-				MAP_SHARED, shm_fd, 0);
+		barrier =
+		    mmap(NULL, sizeof(pthread_barrier_t),
+			 PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
 
-		if (barrier == MAP_FAILED)
-		{
+		if (barrier == MAP_FAILED) {
 			perror("child: Error at first mmap()");
 			return PTS_UNRESOLVED;
 		}
-	}
-	else
-	{
+	} else {
 		printf("parent pid : %d, child pid : %d\n", getpid(), pid);
-		printf("parent: send me SIGALRM 2 secs later in case I am blocked\n");
+		printf
+		    ("parent: send me SIGALRM 2 secs later in case I am blocked\n");
 		alarm(2);
 	}
 
-	for (loop = 0; loop < LOOP_NUM; loop++)
-	{
+	for (loop = 0; loop < LOOP_NUM; loop++) {
 		rc = pthread_barrier_wait(barrier);
-		if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
-		{
-			printf("Test FAILED: %d: pthread_barrier_wait() got unexpected "
-			"return code : %d\n" , getpid(), rc);
+		if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD) {
+			printf
+			    ("Test FAILED: %d: pthread_barrier_wait() got unexpected "
+			     "return code : %d\n", getpid(), rc);
 			exit(PTS_FAIL);
-		}
-		else if (rc == PTHREAD_BARRIER_SERIAL_THREAD)
-		{
+		} else if (rc == PTHREAD_BARRIER_SERIAL_THREAD) {
 			serial++;
-			printf("process %d: get PTHREAD_BARRIER_SERIAL_THREAD\n"
-				, getpid());
+			printf
+			    ("process %d: get PTHREAD_BARRIER_SERIAL_THREAD\n",
+			     getpid());
 		}
 
 	}
 
-	if (pid > 0)
-	{
+	if (pid > 0) {
 		/* parent */
-		if (wait(&status) != pid)
-		{
+		if (wait(&status) != pid) {
 			printf("parent: error at waitpid()\n");
 			return PTS_UNRESOLVED;
 		}
 
-		if (!WIFEXITED(status))
-		{
+		if (!WIFEXITED(status)) {
 			printf("Child exited abnormally\n");
 			return PTS_UNRESOLVED;
 		}
 
-		if ((WEXITSTATUS(status) + serial) != LOOP_NUM)
-		{
+		if ((WEXITSTATUS(status) + serial) != LOOP_NUM) {
 			printf("status = %d\n", status);
 			printf("serial = %d\n", serial);
-			printf("Test FAILED: One of the two processes should get "
-				"PTHREAD_BARRIER_SERIAL_THREAD\n");
+			printf
+			    ("Test FAILED: One of the two processes should get "
+			     "PTHREAD_BARRIER_SERIAL_THREAD\n");
 			return PTS_FAIL;
 		}
 
 		/* Cleanup */
-		if (pthread_barrier_destroy(barrier) != 0)
-		{
+		if (pthread_barrier_destroy(barrier) != 0) {
 			printf("Error at pthread_barrier_destroy()");
 			return PTS_UNRESOLVED;
 		}
 
-		if ((shm_unlink(shm_name)) != 0)
-		{
+		if ((shm_unlink(shm_name)) != 0) {
 			perror("Error at shm_unlink()");
 			return PTS_UNRESOLVED;
 		}
@@ -229,8 +212,7 @@ int main()
 		return PTS_PASS;
 	}
 
-	if (pid == 0)
-	{
+	if (pid == 0) {
 		exit(serial);
 	}
 

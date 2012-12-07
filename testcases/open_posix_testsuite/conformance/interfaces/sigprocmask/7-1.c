@@ -24,9 +24,9 @@
 int main()
 {
 	sigset_t oactl, tempset;
-	int i, j, test_failed=0;
+	int i, j, test_failed = 0;
 
-	int siglist[] = {SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
+	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
 		SIGPIPE, SIGQUIT, SIGSEGV,
 		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
@@ -38,15 +38,16 @@ int main()
 		SIGPROF,
 #endif
 		SIGSYS,
-		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
+		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
+	};
 
-	for (i=0; i<NUMSIGNALS; i++) {
+	for (i = 0; i < NUMSIGNALS; i++) {
 		sigemptyset(&oactl);
 		sigemptyset(&tempset);
 		sigaddset(&tempset, siglist[i]);
 		sigprocmask(SIG_BLOCK, &tempset, &oactl);
 		if (i > 0) {
-			for (j=0; j<i; j++) {
+			for (j = 0; j < i; j++) {
 				if (sigismember(&oactl, siglist[j]) != 1) {
 					test_failed = 1;
 				}
@@ -59,6 +60,7 @@ int main()
 		return PTS_FAIL;
 	}
 
-	printf("Test PASSED: oactl did contain all signals that were added to the signal mask.\n");
+	printf
+	    ("Test PASSED: oactl did contain all signals that were added to the signal mask.\n");
 	return PTS_PASS;
 }

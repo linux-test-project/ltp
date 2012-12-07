@@ -31,7 +31,8 @@ int main(void)
 	sem_t *mysemp;
 	int val;
 
-	snprintf(semname, sizeof(semname), "/" FUNCTION "_" TEST "_%d", getpid());
+	snprintf(semname, sizeof(semname), "/" FUNCTION "_" TEST "_%d",
+		 getpid());
 
 	mysemp = sem_open(semname, O_CREAT, 0777, 1);
 
@@ -46,8 +47,8 @@ int main(void)
 	}
 
 	/*
-	printf("Current value is: %d\n", val);
-	*/
+	   printf("Current value is: %d\n", val);
+	 */
 
 	if (val == 1) {
 		puts("TEST PASSED");

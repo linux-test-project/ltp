@@ -57,8 +57,7 @@ char *TCID = __FILE__;
 int TST_TOTAL = 1;
 int TST_CNT = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int sk1, sk2;
 	sockaddr_storage_t loop1, loop2;
@@ -112,11 +111,11 @@ main(int argc, char *argv[])
 	outmessage.msg_iovlen = 1;
 	outmessage.msg_iov->iov_base = message;
 	outmessage.msg_iov->iov_len = strlen(message) + 1;
-	bytes_sent = test_sendmsg(sk1, &outmessage, 0, strlen(message)+1);
+	bytes_sent = test_sendmsg(sk1, &outmessage, 0, strlen(message) + 1);
 
 	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-        memset(&inmessage, 0, sizeof(inmessage));
+	memset(&inmessage, 0, sizeof(inmessage));
 	iov.iov_base = big_buffer;
 	iov.iov_len = REALLY_BIG;
 	inmessage.msg_iov = &iov;
@@ -138,7 +137,7 @@ main(int argc, char *argv[])
 	/* Get the first message which was sent.  */
 	error = test_recvmsg(sk2, &inmessage, MSG_WAITALL);
 	test_check_msg_data(&inmessage, error, strlen(message) + 1,
-			    MSG_EOR|MSG_CTRUNC, 0, 0);
+			    MSG_EOR | MSG_CTRUNC, 0, 0);
 
 	tst_resm(TINFO, "Waiting for the associations to close automatically "
 		 "in 5 secs");

@@ -20,18 +20,19 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 	int result, i;
 	long name_max;
 	char *shm_name;
 
 	name_max = pathconf("/", _PC_NAME_MAX);
-	shm_name = malloc(name_max+3);
+	shm_name = malloc(name_max + 3);
 
 	shm_name[0] = '/';
-	for (i=1; i<name_max+2; i++)
+	for (i = 1; i < name_max + 2; i++)
 		shm_name[i] = 'a';
-	shm_name[name_max+2] = 0;
+	shm_name[name_max + 2] = 0;
 
 	result = shm_unlink(shm_name);
 

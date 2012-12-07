@@ -75,6 +75,7 @@ static void cleanup();
 
 char *TCID = "getrusage01";	/* Test program identifier.    */
 int who[2] = { RUSAGE_SELF, RUSAGE_CHILDREN };
+
 int TST_TOTAL = 2;
 
 int main(int ac, char **av)
@@ -99,7 +100,7 @@ int main(int ac, char **av)
 			if (TEST_RETURN == 0)
 				tst_resm(TPASS, "getrusage passed");
 			else
-				tst_resm(TFAIL|TTERRNO, "getrusage failed");
+				tst_resm(TFAIL | TTERRNO, "getrusage failed");
 		}
 	}
 

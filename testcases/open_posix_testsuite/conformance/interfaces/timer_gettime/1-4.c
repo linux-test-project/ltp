@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	ev.sigev_signo = SIGCONT;
 
 	itsset.it_interval.tv_sec = TIMERINTERVALSEC;
-	itsset.it_interval.tv_nsec = 2*RESOLUTION;
+	itsset.it_interval.tv_nsec = 2 * RESOLUTION;
 	itsset.it_value.tv_sec = TIMERVALSEC;
 	itsset.it_value.tv_nsec = 0;
 
@@ -75,13 +75,14 @@ int main(int argc, char *argv[])
 	 * Check interval first
 	 */
 	if ((itsget.it_interval.tv_sec != itsset.it_interval.tv_sec) ||
-	    (itsget.it_interval.tv_nsec/RESOLUTION != itsset.it_interval.tv_nsec/RESOLUTION)) {
+	    (itsget.it_interval.tv_nsec / RESOLUTION !=
+	     itsset.it_interval.tv_nsec / RESOLUTION)) {
 		printf("FAIL:  it_interval not correctly set\n");
 		printf("%d != (expected) %d or %d != (expected) %d\n",
-				(int) itsget.it_interval.tv_sec,
-				(int) itsset.it_interval.tv_sec,
-				(int) itsget.it_interval.tv_nsec,
-				(int) itsset.it_interval.tv_nsec);
+		       (int)itsget.it_interval.tv_sec,
+		       (int)itsset.it_interval.tv_sec,
+		       (int)itsget.it_interval.tv_nsec,
+		       (int)itsset.it_interval.tv_nsec);
 		return PTS_UNRESOLVED;
 	}
 
@@ -90,13 +91,12 @@ int main(int argc, char *argv[])
 	 * value should be < TIMERINTERVALSEC - (SLEEPSEC-TIMERVALSEC)
 	 */
 	expectedleft = itsset.it_interval.tv_sec -
-				(SLEEPSEC - itsset.it_value.tv_sec);
+	    (SLEEPSEC - itsset.it_value.tv_sec);
 	delta = expectedleft - itsget.it_value.tv_sec;
 
 	if (delta < 0) {
 		printf("FAIL:  timer_gettime() value > time expected left\n");
-		printf("%d > %d\n", (int) itsget.it_value.tv_sec,
-				expectedleft);
+		printf("%d > %d\n", (int)itsget.it_value.tv_sec, expectedleft);
 		return PTS_FAIL;
 	}
 
@@ -105,8 +105,8 @@ int main(int argc, char *argv[])
 		return PTS_PASS;
 	} else {
 		printf("FAIL:  timer_gettime() value !~= time expected left\n");
-		printf("%d !~= %d\n", (int) itsget.it_value.tv_sec,
-				(int) itsset.it_value.tv_sec - SLEEPSEC);
+		printf("%d !~= %d\n", (int)itsget.it_value.tv_sec,
+		       (int)itsset.it_value.tv_sec - SLEEPSEC);
 		return PTS_FAIL;
 	}
 

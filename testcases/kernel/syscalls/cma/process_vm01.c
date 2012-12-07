@@ -69,8 +69,8 @@ static option_t options[] = {
 static char TCID_readv[] = "process_vm_readv";
 static char TCID_writev[] = "process_vm_writev";
 char *TCID = "cma01";
-int  TST_TOTAL = 1;
-static void (*cma_test_params)(struct process_vm_params *params) = NULL;
+int TST_TOTAL = 1;
+static void (*cma_test_params) (struct process_vm_params * params) = NULL;
 
 static void setup(char *argv[]);
 static void cleanup(void);
@@ -104,14 +104,14 @@ static void setup(char *argv[])
 
 	if (rflag && wflag)
 		tst_brkm(TBROK, NULL, "Parameters -r -w can not be used"
-				" at the same time.");
+			 " at the same time.");
 	else if (rflag) {
 		TCID = TCID_readv;
 #if defined(__NR_process_vm_readv)
 		cma_test_params = cma_test_params_read;
 #else
 		tst_brkm(TCONF, NULL, "process_vm_readv does not"
-				" exist on your system.");
+			 " exist on your system.");
 #endif
 	} else if (wflag) {
 		TCID = TCID_writev;
@@ -119,7 +119,7 @@ static void setup(char *argv[])
 		cma_test_params = cma_test_params_write;
 #else
 		tst_brkm(TCONF, NULL, "process_vm_writev does not"
-				" exist on your system.");
+			 " exist on your system.");
 #endif
 	} else
 		tst_brkm(TBROK, NULL, "Parameter missing, required -r or -w.");
@@ -140,28 +140,28 @@ static void help(void)
 static void cma_test_params_read(struct process_vm_params *params)
 {
 	TEST(test_process_vm_readv(params->pid,
-				params->lvec, params->liovcnt,
-				params->rvec, params->riovcnt,
-				params->flags));
+				   params->lvec, params->liovcnt,
+				   params->rvec, params->riovcnt,
+				   params->flags));
 }
 
 static void cma_test_params_write(struct process_vm_params *params)
 {
 	TEST(test_process_vm_writev(params->pid,
-				params->lvec, params->liovcnt,
-				params->rvec, params->riovcnt,
-				params->flags));
+				    params->lvec, params->liovcnt,
+				    params->rvec, params->riovcnt,
+				    params->flags));
 }
 
 static int cma_check_ret(long expected_ret, long act_ret)
 {
 	if (expected_ret == act_ret) {
 		tst_resm(TPASS, "expected ret success - "
-				"returned value = %ld", act_ret);
+			 "returned value = %ld", act_ret);
 	} else {
 		tst_resm(TFAIL, "unexpected failure - "
-				"returned value = %ld, expected: %ld",
-				act_ret, expected_ret);
+			 "returned value = %ld, expected: %ld",
+			 act_ret, expected_ret);
 		return 1;
 	}
 	return 0;
@@ -170,14 +170,14 @@ static int cma_check_ret(long expected_ret, long act_ret)
 static int cma_check_errno(long expected_errno)
 {
 	if (TEST_ERRNO == expected_errno)
-		tst_resm(TPASS|TTERRNO, "expected failure");
+		tst_resm(TPASS | TTERRNO, "expected failure");
 	else if (TEST_ERRNO == 0) {
 		tst_resm(TFAIL, "call succeeded unexpectedly");
 		return 1;
 	} else {
-		tst_resm(TFAIL|TTERRNO, "unexpected failure - "
-				"expected = %ld : %s, actual",
-				expected_errno, strerror(expected_errno));
+		tst_resm(TFAIL | TTERRNO, "unexpected failure - "
+			 "expected = %ld : %s, actual",
+			 expected_errno, strerror(expected_errno));
 		return 2;
 	}
 	return 0;
@@ -236,7 +236,7 @@ static void cma_test_flags(void)
 {
 	struct process_vm_params *params;
 	long flags[] = { -INT_MAX, -1, 1, INT_MAX, 0 };
-	int flags_size = sizeof(flags)/sizeof(flags[0]);
+	int flags_size = sizeof(flags) / sizeof(flags[0]);
 	int i;
 
 	params = cma_alloc_sane_params();
@@ -312,7 +312,7 @@ static void cma_test_iov_invalid(void)
 
 static void cma_test_invalid_pid(void)
 {
-	const char pid_max[]="/proc/sys/kernel/pid_max";
+	const char pid_max[] = "/proc/sys/kernel/pid_max";
 	pid_t invalid_pid = -1;
 	struct process_vm_params *params;
 	FILE *fp;
@@ -328,11 +328,9 @@ static void cma_test_invalid_pid(void)
 
 	fp = fopen(pid_max, "r");
 	if (fp == NULL)
-		tst_brkm(TBROK, cleanup,
-				"Could not open %s", pid_max);
+		tst_brkm(TBROK, cleanup, "Could not open %s", pid_max);
 	if (!fgets(buff, sizeof(buff), fp))
-		tst_brkm(TBROK, cleanup,
-				"Could not read %s", pid_max);
+		tst_brkm(TBROK, cleanup, "Could not read %s", pid_max);
 	fclose(fp);
 	invalid_pid = atol(buff) + 1;
 
@@ -358,30 +356,29 @@ static void cma_test_invalid_perm(void)
 	parent_pid = getpid();
 	child_pid = fork();
 	switch (child_pid) {
-		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork");
-			break;
-		case 0:
-			ltpuser = getpwnam(nobody_uid);
-			if (ltpuser == NULL)
-				tst_brkm(TBROK|TERRNO, NULL,
-						"getpwnam failed");
-			if (setuid(ltpuser->pw_uid) == -1)
-				tst_brkm(TBROK|TERRNO, NULL,
-						"setuid(%u) failed", ltpuser->pw_uid);
+	case -1:
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
+		break;
+	case 0:
+		ltpuser = getpwnam(nobody_uid);
+		if (ltpuser == NULL)
+			tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
+		if (setuid(ltpuser->pw_uid) == -1)
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "setuid(%u) failed", ltpuser->pw_uid);
 
-			params = cma_alloc_sane_params();
-			params->pid = parent_pid;
-			cma_test_params(params);
-			ret |= cma_check_ret(-1, TEST_RETURN);
-			ret |= cma_check_errno(EPERM);
-			cma_free_params(params);
-			exit(ret);
-		default:
-			if (waitpid(child_pid, &status, 0) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
-			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-				tst_resm(TFAIL, "child returns %d", status);
+		params = cma_alloc_sane_params();
+		params->pid = parent_pid;
+		cma_test_params(params);
+		ret |= cma_check_ret(-1, TEST_RETURN);
+		ret |= cma_check_errno(EPERM);
+		cma_free_params(params);
+		exit(ret);
+	default:
+		if (waitpid(child_pid, &status, 0) == -1)
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+			tst_resm(TFAIL, "child returns %d", status);
 	}
 }
 
@@ -395,9 +392,9 @@ static void cma_test_invalid_protection(void)
 	/* make a shallow copy we can 'damage' */
 
 	p = mmap(NULL, getpagesize(), PROT_NONE,
-			MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+		 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	if (p == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 
 	params_copy = *sane_params;
 	params_copy.lvec->iov_base = p;
@@ -414,7 +411,7 @@ static void cma_test_invalid_protection(void)
 	cma_check_errno(EFAULT);
 
 	if (munmap(p, getpagesize()) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+		tst_brkm(TBROK | TERRNO, cleanup, "munmap");
 
 	cma_free_params(sane_params);
 }

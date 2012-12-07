@@ -45,12 +45,12 @@ int main()
 		act.sa_handler = handler;
 		act.sa_flags = 0;
 		sigemptyset(&act.sa_mask);
-		sigaction(SIGSEGV,  &act, 0);
+		sigaction(SIGSEGV, &act, 0);
 
 		while (wakeup == 1) {
 			tv.tv_sec = 3;
 			tv.tv_usec = 0;
-			if (select(0, NULL, NULL, NULL, &tv)== -1 &&
+			if (select(0, NULL, NULL, NULL, &tv) == -1 &&
 			    errno == EINTR) {
 				perror("select");
 				return PTS_PASS;
@@ -74,7 +74,7 @@ int main()
 		   problem is that it would be perfectly legal for a
 		   POSIX conformant OS to not schedule the child process
 		   for a long time.)
-		*/
+		 */
 		tv.tv_sec = 1;
 		tv.tv_usec = 0;
 		select(0, NULL, NULL, NULL, &tv);

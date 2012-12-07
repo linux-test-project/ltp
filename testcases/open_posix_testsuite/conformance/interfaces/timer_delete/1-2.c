@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	its.it_value.tv_nsec = 0;
 
 	if (timer_settime(tid, 0, &its, NULL) == -1) {
-		if (errno==EINVAL) {
+		if (errno == EINVAL) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		} else {

@@ -46,9 +46,11 @@
 #define DRIVER_DESC		"drm test mode"
 #define DRIVER_DATE		"20030903"
 
-static drm_pci_list_t DRM(idlist)[] = {
-	{ PCI_ANY_ID, PCI_ANY_ID },
-	{ 0, 0 }
+static drm_pci_list_t DRM(idlist)[] =
+{
+	{
+	PCI_ANY_ID, PCI_ANY_ID}, {
+	0, 0}
 };
 
 #define DRIVER_CARD_LIST DRM(idlist)
@@ -76,85 +78,85 @@ static struct file_operations	DRM(fops) = {			\
 static int minor = 0;
 static unsigned long alloc_pages_address = 0;
 
-int tdrm_test_stub_register(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_stub_register(struct inode *inode, struct file *filp,
+			    unsigned int cmd, unsigned long arg)
 {
 	drm_file_t *priv = filp->private_data;
 	drm_device_t *dev = priv->dev;
-	minor = DRM(stub_register)(DEVICE_NAME,&DRM(fops),dev);
-	printk("tdrm stub register : minor = %d\n",minor);
+	minor = DRM(stub_register) (DEVICE_NAME, &DRM(fops), dev);
+	printk("tdrm stub register : minor = %d\n", minor);
 	return 0;
 
 }
 
-int tdrm_test_stub_unregister(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_stub_unregister(struct inode *inode, struct file *filp,
+			      unsigned int cmd, unsigned long arg)
 {
-	DRM(stub_unregister)(minor);
+	DRM(stub_unregister) (minor);
 	return 0;
 }
 
-int tdrm_test_uninit_agp(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_uninit_agp(struct inode *inode, struct file *filp,
+			 unsigned int cmd, unsigned long arg)
 {
-	DRM(agp_uninit)();
+	DRM(agp_uninit) ();
 	return 0;
 }
 
-int tdrm_test_init_agp(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_init_agp(struct inode *inode, struct file *filp,
+		       unsigned int cmd, unsigned long arg)
 {
-	DRM(agp_init)();
+	DRM(agp_init) ();
 	return 0;
 }
 
-int tdrm_test_add_magic(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
-{
-	drm_file_t *priv = filp->private_data;
-	drm_device_t *dev = priv->dev;
-	int magic = 5;
-	return (DRM(add_magic)(dev,priv,magic));
-}
-
-int tdrm_test_remove_magic(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_add_magic(struct inode *inode, struct file *filp,
+			unsigned int cmd, unsigned long arg)
 {
 	drm_file_t *priv = filp->private_data;
 	drm_device_t *dev = priv->dev;
 	int magic = 5;
-	return (DRM(remove_magic)(dev,magic));
+	return (DRM(add_magic) (dev, priv, magic));
 }
 
-int tdrm_test_ctxbitmap_init(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_remove_magic(struct inode *inode, struct file *filp,
+			   unsigned int cmd, unsigned long arg)
 {
 	drm_file_t *priv = filp->private_data;
 	drm_device_t *dev = priv->dev;
-	return (DRM(ctxbitmap_init)(dev));
+	int magic = 5;
+	return (DRM(remove_magic) (dev, magic));
 }
 
-int tdrm_test_ctxbitmap_cleanup(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_ctxbitmap_init(struct inode *inode, struct file *filp,
+			     unsigned int cmd, unsigned long arg)
 {
 	drm_file_t *priv = filp->private_data;
 	drm_device_t *dev = priv->dev;
-	DRM(ctxbitmap_cleanup)(dev);
+	return (DRM(ctxbitmap_init) (dev));
+}
+
+int tdrm_test_ctxbitmap_cleanup(struct inode *inode, struct file *filp,
+				unsigned int cmd, unsigned long arg)
+{
+	drm_file_t *priv = filp->private_data;
+	drm_device_t *dev = priv->dev;
+	DRM(ctxbitmap_cleanup) (dev);
 	return 0;
 }
 
-int tdrm_test_alloc_pages(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_alloc_pages(struct inode *inode, struct file *filp,
+			  unsigned int cmd, unsigned long arg)
 {
-	alloc_pages_address =  DRM(alloc_pages)(1, 0);
-//	printk("address = %ld\n",alloc_pages_address);
+	alloc_pages_address = DRM(alloc_pages) (1, 0);
+//      printk("address = %ld\n",alloc_pages_address);
 	return 0;
 }
 
-int tdrm_test_free_pages(struct inode *inode,struct file *filp,
-		unsigned int cmd , unsigned long arg)
+int tdrm_test_free_pages(struct inode *inode, struct file *filp,
+			 unsigned int cmd, unsigned long arg)
 {
-	DRM(free_pages)(alloc_pages_address,1,0);
+	DRM(free_pages) (alloc_pages_address, 1, 0);
 	return 0;
 }
 
@@ -166,7 +168,7 @@ int tdrm_test_free_pages(struct inode *inode,struct file *filp,
  */
 static int __init tdrm_options(char *str)
 {
-	DRM(parse_options)(str);
+	DRM(parse_options) (str);
 	return 1;
 }
 

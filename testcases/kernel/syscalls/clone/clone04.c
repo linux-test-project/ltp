@@ -16,10 +16,10 @@
  *
  */
  /*
- *	Verify that,
- *      clone(2) returns -1 and sets errno to EINVAL if
- *	child stack is set to a zero value(NULL)
- */
+  *     Verify that,
+  *      clone(2) returns -1 and sets errno to EINVAL if
+  *     child stack is set to a zero value(NULL)
+  */
 
 #if defined UCLINUX && !__THROW
 /* workaround for libc bug */
@@ -47,7 +47,8 @@ static struct test_case_t {
 	int exp_errno;
 	char err_desc[10];
 } test_cases[] = {
-	{ child_fn, NULL, EINVAL, "EINVAL" },};
+	{
+child_fn, NULL, EINVAL, "EINVAL"},};
 
 char *TCID = "clone04";
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);

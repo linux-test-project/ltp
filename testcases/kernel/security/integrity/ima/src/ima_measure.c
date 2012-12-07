@@ -52,13 +52,13 @@ struct event {
 	} header;
 	char name[TCG_EVENT_NAME_LEN_MAX + 1];
 	struct {
-       		u_int8_t digest[SHA_DIGEST_LENGTH];
-     		char filename[TCG_EVENT_NAME_LEN_MAX + 1];
+		u_int8_t digest[SHA_DIGEST_LENGTH];
+		char filename[TCG_EVENT_NAME_LEN_MAX + 1];
 	} ima_data;
 	int filename_len;
 };
 
-static void display_sha1_digest(u_int8_t *digest)
+static void display_sha1_digest(u_int8_t * digest)
 {
 	int i;
 
@@ -69,7 +69,7 @@ static void display_sha1_digest(u_int8_t *digest)
 /*
  * Calculate the sha1 hash of data
  */
-static void calc_digest(u_int8_t *digest, int len, void *data )
+static void calc_digest(u_int8_t * digest, int len, void *data)
 {
 	SHA_CTX c;
 
@@ -90,7 +90,7 @@ static int verify_template_hash(struct event *template)
 
 		memset(digest, 0, sizeof digest);
 		calc_digest(digest, sizeof template->ima_data,
-				&template->ima_data);
+			    &template->ima_data);
 		rc = memcmp(digest, template->header.digest, sizeof digest);
 		return rc != 0 ? 1 : 0;
 	}
@@ -129,8 +129,7 @@ static int verify_template_hash(struct event *template)
  * Return code: if verification enabled, returns number of verification
  * 		errors.
  */
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 
 #if HAVE_OPENSSL_SHA_H
@@ -143,8 +142,8 @@ main(int argc, char *argv[])
 	int verify = 0;
 
 	if (argc < 2) {
-		printf("format: %s binary_runtime_measurements" \
-			 " [--validate] [--verbose] [--verify]\n", argv[0]);
+		printf("format: %s binary_runtime_measurements"
+		       " [--validate] [--verbose] [--verify]\n", argv[0]);
 		return 1;
 	}
 
@@ -167,8 +166,8 @@ main(int argc, char *argv[])
 	memset(zero, 0, SHA_DIGEST_LENGTH);
 	memset(fox, 0xff, SHA_DIGEST_LENGTH);
 
-	print_info( "### PCR HASH                                  " \
-		 	"TEMPLATE-NAME\n");
+	print_info("### PCR HASH                                  "
+		   "TEMPLATE-NAME\n");
 	while (fread(&template.header, sizeof template.header, 1, fp)) {
 		SHA_CTX c;
 
@@ -186,7 +185,7 @@ main(int argc, char *argv[])
 		display_sha1_digest(template.header.digest);
 		if (template.header.name_len > TCG_EVENT_NAME_LEN_MAX) {
 			printf("%d ERROR: event name too long!\n",
-				template.header.name_len);
+			       template.header.name_len);
 			exit(1);
 		}
 		memset(template.name, 0, sizeof template.name);
@@ -195,11 +194,11 @@ main(int argc, char *argv[])
 
 		memset(&template.ima_data, 0, sizeof template.ima_data);
 		fread(&template.ima_data.digest,
-			sizeof template.ima_data.digest, 1, fp);
+		      sizeof template.ima_data.digest, 1, fp);
 		display_sha1_digest(template.ima_data.digest);
 
 		fread(&template.filename_len,
-			sizeof template.filename_len, 1, fp);
+		      sizeof template.filename_len, 1, fp);
 		fread(template.ima_data.filename, template.filename_len, 1, fp);
 		print_info(" %s\n", template.ima_data.filename);
 
@@ -210,7 +209,7 @@ main(int argc, char *argv[])
 	}
 	fclose(fp);
 
-	verbose=1;
+	verbose = 1;
 	print_info("PCRAggr (re-calculated):");
 	display_sha1_digest(pcr);
 #else

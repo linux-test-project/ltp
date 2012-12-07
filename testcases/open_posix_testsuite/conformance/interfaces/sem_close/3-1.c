@@ -26,19 +26,19 @@
 
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[28];
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
-	mysemp = sem_open(semname, O_CREAT, 0444, 1) ;
+	mysemp = sem_open(semname, O_CREAT, 0444, 1);
 	if (mysemp == SEM_FAILED) {
-  		perror(ERROR_PREFIX "sem_open");
+		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
-		}
+	}
 
 	if ((sem_unlink(semname)) == 0) {
-		if (sem_close(mysemp) == -1)  {
+		if (sem_close(mysemp) == -1) {
 			perror(ERROR_PREFIX "sem_close");
 			return PTS_UNRESOLVED;
 		}

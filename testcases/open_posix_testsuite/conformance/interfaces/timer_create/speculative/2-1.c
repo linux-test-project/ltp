@@ -23,7 +23,7 @@
 
 int compare(const void *key, const void *amemb)
 {
-	if (*(timer_t *)key == *(timer_t *)amemb) {
+	if (*(timer_t *) key == *(timer_t *) amemb) {
 		return 0;
 	} else {
 		return 1;
@@ -41,19 +41,18 @@ int main(int argc, char *argv[])
 	ev.sigev_signo = SIGALRM;
 
 #if defined DEBUG && defined TIMER_MAX
-	printf("Max timers is %ld\n", (long) TIMER_MAX);
+	printf("Max timers is %ld\n", (long)TIMER_MAX);
 	int max = TIMER_MAX;
 #else
 	int max = 256;
 #endif
-	tids = (timer_t *) malloc (max * sizeof (timer_t));
-	if (tids == NULL)
-	{
+	tids = (timer_t *) malloc(max * sizeof(timer_t));
+	if (tids == NULL) {
 		perror("malloc failed\n");
 		return PTS_UNRESOLVED;
 	}
 
-	for (i=0; i<max;i++) {
+	for (i = 0; i < max; i++) {
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
 #ifndef TIMER_MAX
 			if (errno == EAGAIN)

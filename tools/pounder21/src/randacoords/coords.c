@@ -25,7 +25,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int seed_random(void) {
+int seed_random(void)
+{
 	int fp;
 	long seed;
 
@@ -46,7 +47,8 @@ int seed_random(void) {
 	return 1;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	unsigned long xmax, ymax;
 	unsigned long x, y;
 

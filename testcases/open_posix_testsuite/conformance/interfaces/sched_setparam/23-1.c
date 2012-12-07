@@ -16,7 +16,8 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 	int policy, invalid_priority, old_priority;
 	struct sched_param param;
 
@@ -41,7 +42,7 @@ int main() {
 	/* set an invalid priority */
 	invalid_priority++;
 	param.sched_priority = invalid_priority;
-	sched_setparam(0,&param);
+	sched_setparam(0, &param);
 
 	if (sched_getparam(0, &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");

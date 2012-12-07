@@ -50,24 +50,24 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="asapi_04";		/* Test program identifier.    */
+char *TCID = "asapi_04";	/* Test program identifier.    */
 
 pid_t pid;
 
 struct {
-	char	*prt_name;
-	int	prt_value;
+	char *prt_name;
+	int prt_value;
 } ptab[] = {
-	{ "hopopt", 0 },
-	{ "ipv6", 41 },
-	{ "ipv6-route", 43 },
-	{ "ipv6-frag", 44 },
-	{ "esp", 50 },
-	{ "ah", 51 },
-	{ "ipv6-icmp", 58 },
-	{ "ipv6-nonxt", 59 },
-	{ "ipv6-opts", 60},
-};
+	{
+	"hopopt", 0}, {
+	"ipv6", 41}, {
+	"ipv6-route", 43}, {
+	"ipv6-frag", 44}, {
+	"esp", 50}, {
+	"ah", 51}, {
+	"ipv6-icmp", 58}, {
+	"ipv6-nonxt", 59}, {
+"ipv6-opts", 60},};
 
 #define PTCOUNT	(sizeof(ptab)/sizeof(ptab[0]))
 
@@ -77,8 +77,7 @@ void do_tests(void);
 void setup(void), cleanup(void);
 int csum_test(char *rhost);
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char *msg;
 	int lc;
@@ -101,8 +100,7 @@ main(int argc, char *argv[])
 	tst_exit();
 }
 
-void
-do_tests(void)
+void do_tests(void)
 {
 	int i;
 
@@ -115,18 +113,19 @@ do_tests(void)
 	 * in the second address and check for equal. Covers all bits, all
 	 * combinations.
 	 */
-	{ struct in6_addr a1, a2;
-	  int word, bit;
-	  int rv = 1;
+	{
+		struct in6_addr a1, a2;
+		int word, bit;
+		int rv = 1;
 
 		memset(&a1, 0, sizeof(a1));
 		memset(&a2, 0, sizeof(a2));
 
 		rv = IN6_ARE_ADDR_EQUAL(&a1, &a2);
 
-		for (word=0; word<4; ++word)
-			for (bit=0; bit<32; ++bit) {
-				uint32_t newbit = 1<<bit;
+		for (word = 0; word < 4; ++word)
+			for (bit = 0; bit < 32; ++bit) {
+				uint32_t newbit = 1 << bit;
 
 				a1.s6_addr32[word] |= newbit;	/* unequal */
 				rv &= !IN6_ARE_ADDR_EQUAL(&a1, &a2);
@@ -138,14 +137,14 @@ do_tests(void)
 #endif /* IN6_ARE_ADDR_EQUAL */
 
 /* RFC 3542, Section 2.4 */
-	for (i=0; i < PTCOUNT; ++i) {
+	for (i = 0; i < PTCOUNT; ++i) {
 		struct protoent *pe;
-		int	pass;
+		int pass;
 
 		pe = getprotobyname(ptab[i].prt_name);
 		pass = pe && pe->p_proto == ptab[i].prt_value;
 		tst_resm(pass ? TPASS : TFAIL, "\"%s\" protocols entry",
-			ptab[i].prt_name);
+			 ptab[i].prt_name);
 	}
 /* RFC 3542, Section 3.1 */
 	csum_test("::1");
@@ -162,31 +161,35 @@ do_tests(void)
 #define	NH_TEST	0x9f
 
 struct tprot {
-	int		tp_pid;		/* sender PID */
-	int		tp_seq;		/* sequence # */
-	int		tp_offset;	/* offset of cksum */
-	int		tp_dlen;	/* tp_dat length */
-	unsigned char	tp_dat[0];	/* user data */
+	int tp_pid;		/* sender PID */
+	int tp_seq;		/* sequence # */
+	int tp_offset;		/* offset of cksum */
+	int tp_dlen;		/* tp_dat length */
+	unsigned char tp_dat[0];	/* user data */
 };
 
 unsigned char tpbuf[sizeof(struct tprot) + 2048];
 unsigned char rpbuf[sizeof(struct tprot) + 2048];
 
 struct csent {
-	int	 cs_offset;
-	int	 cs_dlen;
-	int	 cs_setresult;	/* setsockopt expected result */
-	int	 cs_seterrno;	/* setsockopt expected errno */
-	int	 cs_sndresult;	/* send expected result */
-	int	 cs_snderrno;	/* send expected errno */
+	int cs_offset;
+	int cs_dlen;
+	int cs_setresult;	/* setsockopt expected result */
+	int cs_seterrno;	/* setsockopt expected errno */
+	int cs_sndresult;	/* send expected result */
+	int cs_snderrno;	/* send expected errno */
 } cstab[] = {
-	{ 0, 5, 0, 0, 0, 0 },
-	{ 6, 30, 0, 0, 0, 0 },
-	{ 3, 20, -1, EINVAL, -1, -1 },	/* non-aligned offset */
-	{ 4, 5, 0, 0, -1, EINVAL },		/* not enough space */
-	{ 50, 5, 0, 0, -1, EINVAL },	/* outside of packet */
-	{ 22, 30, 0, 0, 0, 0 },
-	{ 2000, 2004, 0, 0, 0, 0 },	/* in a fragment (over Ethernet) */
+	{
+	0, 5, 0, 0, 0, 0}, {
+	6, 30, 0, 0, 0, 0}, {
+	3, 20, -1, EINVAL, -1, -1},	/* non-aligned offset */
+	{
+	4, 5, 0, 0, -1, EINVAL},	/* not enough space */
+	{
+	50, 5, 0, 0, -1, EINVAL},	/* outside of packet */
+	{
+	22, 30, 0, 0, 0, 0}, {
+	2000, 2004, 0, 0, 0, 0},	/* in a fragment (over Ethernet) */
 };
 
 #define CSCOUNT	(sizeof(cstab)/sizeof(cstab[0]))
@@ -206,7 +209,7 @@ static int recvtprot(int sd, unsigned char *packet, int psize)
 	if (cc <= 0)
 		return cc;
 	while (cc > 0 && total < expected) {
-		cc = recv(sd, &packet[total], expected-total, 0);
+		cc = recv(sd, &packet[total], expected - total, 0);
 		if (cc >= 0) {
 			total += cc;
 			if (!gothead && total >= sizeof(struct tprot)) {
@@ -228,10 +231,10 @@ unsigned short csum(unsigned short partial, unsigned char *packet, int len)
 	int i;
 
 	ps = (unsigned short *)packet;
-	for (i=0; i<len/2; ++i)
+	for (i = 0; i < len / 2; ++i)
 		sum += *ps++;
 	if (len & 1)
-		sum += htons(packet[len-1]<<8);
+		sum += htons(packet[len - 1] << 8);
 	sum = (sum >> 16) + (sum & 0xffff);
 	sum += (sum >> 16);
 	return ~sum;
@@ -267,7 +270,7 @@ static int client(int prot, int sfd)
 		tst_resm(TBROK, "can't create raw socket: %s", strerror(errno));
 		return -1;
 	}
-	for (i=0; i<CSCOUNT; ++i) {
+	for (i = 0; i < CSCOUNT; ++i) {
 		int offset, len, xlen;
 		int rv;
 		unsigned char *p, *pend;
@@ -286,41 +289,43 @@ static int client(int prot, int sfd)
 		TEST(setsockopt(sd, IPPROTO_IPV6, IPV6_CHECKSUM, &offset,
 				sizeof(offset)));
 		if (TEST_RETURN != cstab[i].cs_setresult) {
-			tst_resm(TFAIL|TTERRNO, "IPV6_CHECKSUM offset %d len %d "
-				"- result %ld != %d", offset, len,
-				TEST_RETURN, cstab[i].cs_setresult);
+			tst_resm(TFAIL | TTERRNO,
+				 "IPV6_CHECKSUM offset %d len %d "
+				 "- result %ld != %d", offset, len, TEST_RETURN,
+				 cstab[i].cs_setresult);
 			continue;
 		}
 		if (TEST_RETURN < 0) {
 			tst_resm(TPASS, "IPV6_CHECKSUM offset %d len %d",
-				offset, len);
+				 offset, len);
 			continue;
 		}
 		if (TEST_RETURN && TEST_ERRNO != cstab[i].cs_seterrno) {
 			tst_resm(TFAIL, "IPV6_CHECKSUM offset %d len %d "
-				"- errno %d != %d", offset, len,
-				TEST_ERRNO, cstab[i].cs_seterrno);
+				 "- errno %d != %d", offset, len,
+				 TEST_ERRNO, cstab[i].cs_seterrno);
 			continue;
 		}
 		/* send packet */
 		TEST(sendto(sd, pttp, len, 0, (struct sockaddr *)&rsin6,
-			sizeof(rsin6)));
+			    sizeof(rsin6)));
 		xlen = (cstab[i].cs_sndresult < 0) ? -1 : len;
 		if (TEST_RETURN != xlen) {
-			tst_resm(TFAIL|TTERRNO, "IPV6_CHECKSUM offset %d len %d "
-				"- sndresult %ld != %d",
-				offset, len, TEST_RETURN, xlen);
+			tst_resm(TFAIL | TTERRNO,
+				 "IPV6_CHECKSUM offset %d len %d "
+				 "- sndresult %ld != %d", offset, len,
+				 TEST_RETURN, xlen);
 			continue;
 		}
 		if (TEST_RETURN < 0 && TEST_ERRNO != cstab[i].cs_snderrno) {
 			tst_resm(TFAIL, "IPV6_CHECKSUM offset %d len %d "
-				"- snderrno %d != %d", offset, len,
-				TEST_ERRNO, cstab[i].cs_snderrno);
+				 "- snderrno %d != %d", offset, len,
+				 TEST_ERRNO, cstab[i].cs_snderrno);
 			continue;
 		}
 		if (TEST_RETURN < 0) {
 			tst_resm(TPASS, "IPV6_CHECKSUM offset %d len %d",
-				offset, len);
+				 offset, len);
 			continue;
 		}
 		while ((cc = recvtprot(sfd, rpbuf, sizeof(rpbuf)))) {
@@ -330,14 +335,13 @@ static int client(int prot, int sfd)
 		}
 		rv = 1;
 		pend = rpbuf + sizeof(struct tprot) + ntohl(prtp->tp_dlen);
-		for (p=&prtp->tp_dat[0]; p < pend; ++p) {
-			if (p == &rpbuf[offset] ||
-			    p == &rpbuf[offset+1])
+		for (p = &prtp->tp_dat[0]; p < pend; ++p) {
+			if (p == &rpbuf[offset] || p == &rpbuf[offset + 1])
 				continue;
 			if (*p != 0xa5) {
 				tst_resm(TFAIL, "IPV6_CHECKSUM corrupt data "
-					"0x%02x != 0xa5 at offset %d in packet",
-					*p, p - rpbuf);
+					 "0x%02x != 0xa5 at offset %d in packet",
+					 *p, p - rpbuf);
 				rv = 0;
 				break;
 			}
@@ -349,7 +353,7 @@ static int client(int prot, int sfd)
 		cs = csum(~cs, rpbuf, xlen);
 		if (!csum(0, rpbuf, xlen)) {
 			tst_resm(TFAIL, "IPV6_CHECKSUM offset %d len %d (bad "
-				"checksum)", offset, len);
+				 "checksum)", offset, len);
 			continue;
 		}
 		tst_resm(TPASS, "IPV6_CHECKSUM offset %d len %d", offset, len);
@@ -360,8 +364,7 @@ static int client(int prot, int sfd)
 static int listen_fd, connect_fd;
 sem_t ilsem;
 
-void *
-ilistener(void *arg)
+void *ilistener(void *arg)
 {
 	connect_fd = accept(listen_fd, 0, 0);
 	close(listen_fd);
@@ -369,10 +372,9 @@ ilistener(void *arg)
 	return NULL;
 }
 
-int
-isocketpair(int pf, int type, int proto, int fd[2])
+int isocketpair(int pf, int type, int proto, int fd[2])
 {
-	pthread_t	thid;
+	pthread_t thid;
 	struct sockaddr_in sin4;
 	socklen_t namelen;
 
@@ -426,11 +428,10 @@ isocketpair(int pf, int type, int proto, int fd[2])
 #define MAX(a, b) ((a) >= (b) ? (a) : (b))
 #endif /* MAX */
 
-int
-csum_test(char *rhost)
+int csum_test(char *rhost)
 {
 	fd_set rset, rset_save;
-	int csd[2];	/* control sockets */
+	int csd[2];		/* control sockets */
 	int sd, nfds, maxfd, cc;
 	struct timeval tv;
 
@@ -451,7 +452,7 @@ csum_test(char *rhost)
 			tst_resm(TBROK, "IPV6_CHECKSUM tests must run as root");
 		else
 			tst_resm(TBROK, "All IPv6_CHECKSUM tests broken: "
-				"socket: %s", strerror(saved_errno));
+				 "socket: %s", strerror(saved_errno));
 		return -1;
 	}
 	FD_ZERO(&rset_save);
@@ -462,13 +463,13 @@ csum_test(char *rhost)
 
 	/* server socket set; now start the client */
 	switch (fork()) {
-	case 0:	/* child */
+	case 0:		/* child */
 		close(csd[0]);
 		break;
 	case -1:
 		tst_resm(TBROK, "can't fork rserver");
 		return -1;
-	default: /* parent */
+	default:		/* parent */
 		close(sd);
 		close(csd[1]);
 		return client(pid, csd[0]);
@@ -476,7 +477,7 @@ csum_test(char *rhost)
 
 	tv.tv_sec = READ_TIMEOUT;
 	tv.tv_usec = 0;
-	while ((nfds = select(maxfd+1, &rset, 0, 0, &tv)) >= 0) {
+	while ((nfds = select(maxfd + 1, &rset, 0, 0, &tv)) >= 0) {
 		if (nfds < 0) {
 			if (errno == EINTR)
 				continue;
@@ -488,7 +489,7 @@ csum_test(char *rhost)
 		if (FD_ISSET(sd, &rset)) {
 			static char packet[2048];
 
-			cc = recv(sd, packet, sizeof(packet),0);
+			cc = recv(sd, packet, sizeof(packet), 0);
 			if (cc < 0) {
 				perror("server recvtprot");
 				exit(1);
@@ -520,14 +521,12 @@ csum_test(char *rhost)
 	return 0;
 }
 
-void
-setup(void)
+void setup(void)
 {
-	TEST_PAUSE;	/* if -P option specified */
+	TEST_PAUSE;		/* if -P option specified */
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 }

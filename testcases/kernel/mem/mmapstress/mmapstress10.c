@@ -111,23 +111,24 @@ void ok_exit();
 
 #define SIZE_MAX UINT_MAX
 
-extern time_t	time(time_t *);
-extern char	*ctime(const time_t *);
+extern time_t time(time_t *);
+extern char *ctime(const time_t *);
 extern void *malloc(size_t);
 extern void exit(int);
 extern long lrand48(void);
 extern void srand(unsigned);
 extern void srand48(long);
-extern int  rand(void);
-extern int  atoi(const char *);
+extern int rand(void);
+extern int atoi(const char *);
 
-char *usage="-p nprocs [-t minutes -w nbytes -s secs -f fsize -S sparseoffset -r -o -m -l -d]";
+char *usage =
+    "-p nprocs [-t minutes -w nbytes -s secs -f fsize -S sparseoffset -r -o -m -l -d]";
 
-typedef unsigned char uchar_t; //Ananda 12/17/02
+typedef unsigned char uchar_t;	//Ananda 12/17/02
 
 void child_mapper(char *file, unsigned procno, unsigned nprocs);
-void child_writer(char *file, uchar_t *buf);
-int fileokay(char *file, uchar_t *expbuf);
+void child_writer(char *file, uchar_t * buf);
+int fileokay(char *file, uchar_t * expbuf);
 unsigned int initrand(void);
 void finish(int sig);
 void clean_up_file(int sig);
@@ -159,8 +160,7 @@ size_t mapsize_mapper;
 
 int fd_writer = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char *progname;
 	int fd;
@@ -168,10 +168,10 @@ main(int argc, char *argv[])
 	extern char *optarg;
 	unsigned nprocs = 0;
 	unsigned procno;
-	pid_t *pidarray=NULL;
+	pid_t *pidarray = NULL;
 	pid_t pid;
 	pid_t wr_pid = 0;
-	uchar_t *buf=NULL;
+	uchar_t *buf = NULL;
 	unsigned int seed;
 	int pagesize = sysconf(_SC_PAGE_SIZE);
 	float alarmtime = 0;
@@ -213,16 +213,16 @@ main(int argc, char *argv[])
 			sleeptime = atoi(optarg);
 			if (sleeptime < 0) {
 				(void)fprintf(stderr, "error: negative "
-					"sleeptime\n");
-                	        anyfail();
+					      "sleeptime\n");
+				anyfail();
 			}
 			break;
 		case 'w':
 			growsize = atoi(optarg);
 			if (growsize < 0) {
 				(void)fprintf(stderr, "error: negative write "
-					"size\n");
-        	                anyfail();
+					      "size\n");
+				anyfail();
 			}
 			break;
 		case 'f':
@@ -233,8 +233,8 @@ main(int argc, char *argv[])
 #endif /* LARGE_FILE */
 			if (filesize < 0) {
 				(void)fprintf(stderr, "error: negative "
-					"filesize\n");
-                	        anyfail();
+					      "filesize\n");
+				anyfail();
 			}
 			break;
 		case 'r':
@@ -254,21 +254,21 @@ main(int argc, char *argv[])
 #endif /* LARGE_FILE */
 			if (sparseoffset % pagesize != 0) {
 				fprintf(stderr,
-				   "sparseoffset must be pagesize multiple\n");
-        	                anyfail();
+					"sparseoffset must be pagesize multiple\n");
+				anyfail();
 			}
 			break;
 		default:
 			(void)fprintf(stderr, "usage: %s %s\n", progname,
-				usage);
+				      usage);
 			anyfail();
 		}
 	}
 
 	if (nprocs > 255) {
 		(void)fprintf(stderr, "invalid nprocs %d - (range 0-255)\n",
-			nprocs);
-                anyfail();
+			      nprocs);
+		anyfail();
 	}
 	(void)time(&t);
 	//(void)printf("%s: Started %s", argv[0], ctime(&t)); LTP Port
@@ -280,13 +280,14 @@ main(int argc, char *argv[])
 	if (debug) {
 #ifdef LARGE_FILE
 		(void)printf("creating file <%s> with %Ld bytes, pattern %d\n",
-			filename, filesize, pattern);
+			     filename, filesize, pattern);
 #else /* LARGE_FILE */
 		(void)printf("creating file <%s> with %ld bytes, pattern %d\n",
-			filename, filesize, pattern);
+			     filename, filesize, pattern);
 #endif /* LARGE_FILE */
 		if (alarmtime)
-			(void)printf("running for %f minutes\n", alarmtime/60);
+			(void)printf("running for %f minutes\n",
+				     alarmtime / 60);
 		else
 			(void)printf("running with no time limit\n");
 	}
@@ -324,32 +325,31 @@ main(int argc, char *argv[])
 		perror("sigaction error SIGTERM");
 		goto cleanup;
 	}
-
 #ifdef LARGE_FILE
-	if ((fd = open64(filename, O_CREAT|O_TRUNC|O_RDWR, 0664)) == -1) {
+	if ((fd = open64(filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
 #else /* LARGE_FILE */
-	if ((fd = open(filename, O_CREAT|O_TRUNC|O_RDWR, 0664)) == -1) {
+	if ((fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
 #endif /* LARGE_FILE */
 		perror("open error");
-                anyfail();
+		anyfail();
 	}
 
-	if ((buf = (uchar_t *)malloc(pagesize+growsize)) == NULL
-	    || (pidarray = (pid_t *)malloc(nprocs*sizeof(pid_t))) == NULL) {
+	if ((buf = (uchar_t *) malloc(pagesize + growsize)) == NULL
+	    || (pidarray = (pid_t *) malloc(nprocs * sizeof(pid_t))) == NULL) {
 		perror("malloc error");
-                anyfail();
+		anyfail();
 	}
 
 	for (i = 0; i < nprocs; i++)
-		*(pidarray+i) = 0;
+		*(pidarray + i) = 0;
 
 	for (i = 0, data = 0; i < pagesize; i++) {
-		*(buf+i) = (data + pattern) & 0xff;
+		*(buf + i) = (data + pattern) & 0xff;
 		if (++data == nprocs)
 			data = 0;
 	}
-	for (data = 0; i < pagesize+growsize; i++) {
-		*(buf+i) = (data + pattern) & 0xff;
+	for (data = 0; i < pagesize + growsize; i++) {
+		*(buf + i) = (data + pattern) & 0xff;
 		if (++data == nprocs)
 			data = 0;
 	}
@@ -360,7 +360,7 @@ main(int argc, char *argv[])
 	if (lseek(fd, sparseoffset, SEEK_SET) < 0) {
 #endif /* LARGE_FILE */
 		perror("lseek");
-               anyfail();
+		anyfail();
 	}
 
 	for (bytes_left = filesize; bytes_left; bytes_left -= c) {
@@ -370,7 +370,7 @@ main(int argc, char *argv[])
 				perror("write error");
 			} else {
 				(void)fprintf(stderr, "write: wrote %d of %d "
-					"bytes\n", c, write_cnt);
+					      "bytes\n", c, write_cnt);
 			}
 			(void)close(fd);
 			(void)unlink(filename);
@@ -434,7 +434,7 @@ main(int argc, char *argv[])
 			if (!WIFEXITED(wait_stat)
 			    || WEXITSTATUS(wait_stat) != 0) {
 				(void)fprintf(stderr, "child exit with err "
-					"<x%x>\n", wait_stat);
+					      "<x%x>\n", wait_stat);
 				goto cleanup;
 			}
 			for (i = 0; i < nprocs; i++)
@@ -443,13 +443,13 @@ main(int argc, char *argv[])
 			if (i == nprocs) {
 				if (pid == wr_pid) {
 					(void)fprintf(stderr,
-					"writer child unexpected exit <x%x>\n",
-						wait_stat);
+						      "writer child unexpected exit <x%x>\n",
+						      wait_stat);
 					wr_pid = 0;
 				} else
 					(void)fprintf(stderr, "unknown child "
-						"pid %d, <x%x>\n",
-						pid, wait_stat);
+						      "pid %d, <x%x>\n",
+						      pid, wait_stat);
 				goto cleanup;
 			}
 
@@ -457,7 +457,7 @@ main(int argc, char *argv[])
 				perror("fork error");
 				pidarray[i] = 0;
 				goto cleanup;
-			} else if (pid == 0) {		/* child */
+			} else if (pid == 0) {	/* child */
 				child_mapper(filename, i, nprocs);
 				exit(0);
 			} else
@@ -499,7 +499,7 @@ cleanup:
 		if (!fileokay(filename, buf)) {
 			(void)fprintf(stderr, "file data incorrect!\n");
 			(void)printf("  leaving file <%s>\n", filename);
-                        anyfail();
+			anyfail();
 
 		} else {
 			(void)printf("file data okay\n");
@@ -510,7 +510,7 @@ cleanup:
 		(void)printf("  leaving file <%s>\n", filename);
 
 	(void)time(&t);
-//	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
+//      (void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
 	ok_exit();
 	tst_exit();
 }
@@ -522,8 +522,7 @@ cleanup:
  *  determined based on nprocs & procno).  After a specific number of
  *  iterations, it exits.
  */
-void
-child_mapper(char *file, unsigned procno, unsigned nprocs)
+void child_mapper(char *file, unsigned procno, unsigned nprocs)
 {
 #ifdef LARGE_FILE
 	struct stat64 statbuf;
@@ -548,44 +547,42 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 
 	mapflags = MAP_SHARED;
 
-	seed = initrand();		/* initialize random seed */
+	seed = initrand();	/* initialize random seed */
 
 	sa_mapper.sa_handler = clean_mapper;
 	sa_mapper.sa_flags = 0;
 	if (sigemptyset(&sa_mapper.sa_mask)) {
 		perror("sigempty error");
-                anyfail();
+		anyfail();
 	}
 
 	if (sigaction(SIGUSR1, &sa_mapper, 0) == -1) {
 		perror("sigaction error SIGUSR1");
-                anyfail();
+		anyfail();
 	}
-
 #ifdef LARGE_FILE
 	if ((fd_mapper = open64(file, O_RDWR)) == -1) {
 #else /* LARGE_FILE */
 	if ((fd_mapper = open(file, O_RDWR)) == -1) {
 #endif /* LARGE_FILE */
 		perror("open error");
-                anyfail();
+		anyfail();
 	}
-
 #ifdef LARGE_FILE
 	if (fstat64(fd_mapper, &statbuf) == -1) {
 #else /* LARGE_FILE */
 	if (fstat(fd_mapper, &statbuf) == -1) {
 #endif /* LARGE_FILE */
 		perror("stat error");
-                anyfail();
+		anyfail();
 	}
 	filesize = statbuf.st_size;
 
 	if (statbuf.st_size - sparseoffset > SIZE_MAX) {
 		fprintf(stderr, "size_t overflow when setting up map\n");
-                anyfail();
+		anyfail();
 	}
-	mapsize_mapper = (size_t)(statbuf.st_size - sparseoffset);
+	mapsize_mapper = (size_t) (statbuf.st_size - sparseoffset);
 	mappages = roundup(mapsize_mapper, pagesize) / pagesize;
 	offset = sparseoffset;
 	if (do_offset) {
@@ -595,16 +592,17 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 		mapsize_mapper -= byteoffset;
 		mappages -= pageoffset;
 	}
-
 #ifdef LARGE_FILE
-	if ((maddr_mapper = mmap64(0, mapsize_mapper, PROT_READ|PROT_WRITE,
-			mapflags, fd_mapper, offset)) == (caddr_t)-1) {
+	if ((maddr_mapper = mmap64(0, mapsize_mapper, PROT_READ | PROT_WRITE,
+				   mapflags, fd_mapper,
+				   offset)) == (caddr_t) - 1) {
 #else /* LARGE_FILE */
-	if ((maddr_mapper = mmap(0, mapsize_mapper, PROT_READ|PROT_WRITE,
-			mapflags, fd_mapper, offset)) == (caddr_t)-1) {
+	if ((maddr_mapper = mmap(0, mapsize_mapper, PROT_READ | PROT_WRITE,
+				 mapflags, fd_mapper,
+				 offset)) == (caddr_t) - 1) {
 #endif /* LARGE_FILE */
 		perror("mmap error");
-                anyfail();
+		anyfail();
 	}
 
 	(void)close(fd_mapper);
@@ -614,14 +612,14 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 	if (debug) {
 #ifdef LARGE_FILE
 		(void)printf("child %d (pid %ld): seed %d, fsize %Ld, "
-			"mapsize %d, off %Ld, loop %d\n",
-			procno, getpid(), seed, filesize, mapsize_mapper,
-			offset/pagesize, nloops);
+			     "mapsize %d, off %Ld, loop %d\n",
+			     procno, getpid(), seed, filesize, mapsize_mapper,
+			     offset / pagesize, nloops);
 #else /* LARGE_FILE */
 		(void)printf("child %d (pid %d): seed %d, fsize %ld, "
-			"mapsize %ld, off %ld, loop %d\n",
-			procno, getpid(), seed, filesize, (long)mapsize_mapper,
-			offset/pagesize, nloops);
+			     "mapsize %ld, off %ld, loop %d\n",
+			     procno, getpid(), seed, filesize,
+			     (long)mapsize_mapper, offset / pagesize, nloops);
 #endif /* LARGE_FILE */
 	}
 
@@ -630,10 +628,9 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 	 */
 	for (loopcnt = 0; loopcnt < nloops; loopcnt++) {
 		randpage = lrand48() % mappages;
-		paddr = maddr_mapper + (randpage * pagesize);	 /* page address */
+		paddr = maddr_mapper + (randpage * pagesize);	/* page address */
 
-		if (randpage < mappages - 1
-		    || !(mapsize_mapper % pagesize))
+		if (randpage < mappages - 1 || !(mapsize_mapper % pagesize))
 			validsize = pagesize;
 		else
 			validsize = mapsize_mapper % pagesize;
@@ -644,21 +641,23 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 		 * do an exact check -- accept known pattern OR zeros.
 		 */
 		for (i = procno; i < validsize; i += nprocs) {
-			if (*((unsigned char *)(paddr+i))
+			if (*((unsigned char *)(paddr + i))
 			    != ((procno + pattern) & 0xff)
-			    && *((unsigned char *)(paddr+i)) != 0) {
+			    && *((unsigned char *)(paddr + i)) != 0) {
 				(void)fprintf(stderr, "child %d: invalid data "
-				"<x%x>", procno, *((unsigned char *)(paddr+i)));
-				(void)fprintf(stderr, " at pg %d off %d, exp "
-					"<x%x>\n", randpage, i,
-					(procno+pattern)&0xff);
-                        anyfail();
+					      "<x%x>", procno,
+					      *((unsigned char *)(paddr + i)));
+				(void)fprintf(stderr,
+					      " at pg %d off %d, exp "
+					      "<x%x>\n", randpage, i,
+					      (procno + pattern) & 0xff);
+				anyfail();
 			}
 			/*
 			 *  Now write it.
 			 */
 
-			*(paddr+i) = (procno + pattern) & 0xff;
+			*(paddr + i) = (procno + pattern) & 0xff;
 		}
 	}
 	if (dosync) {
@@ -666,14 +665,14 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 		 * Exercise msync() as well!
 		 */
 		randpage = lrand48() % mappages;
-		paddr = maddr_mapper + (randpage * pagesize);	 /* page address */
-		if (msync(paddr, (mappages - randpage)*pagesize,
-		    MS_SYNC) == -1) {
+		paddr = maddr_mapper + (randpage * pagesize);	/* page address */
+		if (msync(paddr, (mappages - randpage) * pagesize,
+			  MS_SYNC) == -1) {
 			perror("msync error");
-                        anyfail();
+			anyfail();
 		}
 	}
-	if (munmap(maddr_mapper,mapsize_mapper) == -1) {
+	if (munmap(maddr_mapper, mapsize_mapper) == -1) {
 		perror("munmap failed");
 		anyfail();
 	}
@@ -689,23 +688,21 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
  *	This process executes until signalled (i.e. has no exit!)
  *	unless error.
  */
-void
-child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
-{
+void child_writer(char *file, uchar_t * buf)
+{				/* buf already set up in main */
 	struct sigaction sa_writer;
 
 	sa_writer.sa_handler = clean_writer;
 	sa_writer.sa_flags = 0;
 	if (sigemptyset(&sa_writer.sa_mask)) {
 		perror("sigempty error");
-                anyfail();
+		anyfail();
 	}
 
 	if (sigaction(SIGUSR1, &sa_writer, 0) == -1) {
 		perror("sigaction error SIGUSR1");
-                anyfail();
+		anyfail();
 	}
-
 #ifdef LARGE_FILE
 	struct stat64 statbuf;
 	off64_t off;
@@ -723,16 +720,15 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 	if ((fd_writer = open(file, O_RDWR)) == -1) {
 #endif /* LARGE_FILE */
 		perror("open error");
-                anyfail();
+		anyfail();
 	}
-
 #ifdef LARGE_FILE
 	if ((off = lseek64(fd_writer, 0, SEEK_END)) == -1) {
 #else /* LARGE_FILE */
 	if ((off = lseek(fd_writer, 0, SEEK_END)) == -1) {
 #endif /* LARGE_FILE */
 		perror("lseek error");
-                anyfail();
+		anyfail();
 	}
 
 	for (;;) {
@@ -742,16 +738,16 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 		if (fstat(fd_writer, &statbuf) == -1) {
 #endif /* LARGE_FILE */
 			perror("fstat error");
-                        anyfail();
+			anyfail();
 		}
 #ifdef LARGE_FILE
 		if (debug)
 			(void)printf("writer %d bytes at off %Ld, size %Ld\n",
-				growsize, off, statbuf.st_size);
+				     growsize, off, statbuf.st_size);
 #else /* LARGE_FILE */
 		if (debug)
 			(void)printf("writer %d bytes at off %ld, size %ld\n",
-				growsize, off, statbuf.st_size);
+				     growsize, off, statbuf.st_size);
 #endif /* LARGE_FILE */
 
 		/*
@@ -768,8 +764,8 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 				perror("write error");
 			else
 				(void)fprintf(stderr, "wrote %d of %d bytes\n",
-					cnt, growsize);
-                        anyfail();
+					      cnt, growsize);
+			anyfail();
 		}
 
 		off += growsize;
@@ -778,7 +774,7 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 		if (dosync) {
 			if (fsync(fd_writer) == -1) {
 				perror("fsync error");
-                                anyfail();
+				anyfail();
 			}
 		}
 	}
@@ -789,8 +785,7 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
  *  Make sure file has all the correct data.
 
  */
-int
-fileokay(char *file, uchar_t *expbuf)
+int fileokay(char *file, uchar_t * expbuf)
 {
 #ifdef LARGE_FILE
 	struct stat64 statbuf;
@@ -811,7 +806,7 @@ fileokay(char *file, uchar_t *expbuf)
 	if ((fd = open(file, O_RDONLY)) == -1) {
 #endif /* LARGE_FILE */
 		perror("open error");
-                anyfail();
+		anyfail();
 	}
 #ifdef LARGE_FILE
 	if (fstat64(fd, &statbuf) == -1) {
@@ -819,7 +814,7 @@ fileokay(char *file, uchar_t *expbuf)
 	if (fstat(fd, &statbuf) == -1) {
 #endif /* LARGE_FILE */
 		perror("stat error");
-                anyfail();
+		anyfail();
 	}
 #ifdef LARGE_FILE
 	if (lseek64(fd, sparseoffset, SEEK_SET) < 0) {
@@ -830,13 +825,13 @@ fileokay(char *file, uchar_t *expbuf)
 		exit(1);
 	}
 
-	readbuf = (uchar_t *)malloc(pagesize);
+	readbuf = (uchar_t *) malloc(pagesize);
 
 	if (statbuf.st_size - sparseoffset > SIZE_MAX) {
 		fprintf(stderr, "size_t overflow when setting up map\n");
 		exit(1);
 	}
-	mapsize = (size_t)(statbuf.st_size - sparseoffset);
+	mapsize = (size_t) (statbuf.st_size - sparseoffset);
 	mappages = roundup(mapsize, pagesize) / pagesize;
 
 	for (i = 0; i < mappages; i++) {
@@ -851,7 +846,8 @@ fileokay(char *file, uchar_t *expbuf)
 			 */
 			if ((i * pagesize) + cnt != mapsize) {
 				(void)fprintf(stderr, "read %d of %ld bytes\n",
-					(i*pagesize)+cnt, (long)mapsize);
+					      (i * pagesize) + cnt,
+					      (long)mapsize);
 				close(fd);
 				return 0;
 			}
@@ -863,14 +859,16 @@ fileokay(char *file, uchar_t *expbuf)
 		for (j = 0; j < cnt; j++) {
 			if (expbuf[j] != readbuf[j] && readbuf[j] != 0) {
 				(void)fprintf(stderr,
-					"read bad data: exp %c got %c",
-					expbuf[j], readbuf[j]);
+					      "read bad data: exp %c got %c",
+					      expbuf[j], readbuf[j]);
 #ifdef LARGE_FILE
 				(void)fprintf(stderr, ", pg %d off %d, "
-					"(fsize %Ld)\n", i, j, statbuf.st_size);
+					      "(fsize %Ld)\n", i, j,
+					      statbuf.st_size);
 #else /* LARGE_FILE */
 				(void)fprintf(stderr, ", pg %d off %d, "
-					"(fsize %ld)\n", i, j, statbuf.st_size);
+					      "(fsize %ld)\n", i, j,
+					      statbuf.st_size);
 #endif /* LARGE_FILE */
 				close(fd);
 				return 0;
@@ -881,17 +879,13 @@ fileokay(char *file, uchar_t *expbuf)
 	return 1;
 }
 
-/*ARGSUSED*/
-void
-finish(int sig)
+ /*ARGSUSED*/ void finish(int sig)
 {
 	finished++;
 	/* finish nicely and check the file contents */
 }
 
-/*ARGSUSED*/
-void
-clean_up_file(int sig)
+ /*ARGSUSED*/ void clean_up_file(int sig)
 {
 	if (!leavefile)
 		(void)unlink(filename);
@@ -902,8 +896,8 @@ void clean_mapper(int sig)
 {
 	if (fd_mapper)
 		close(fd_mapper);
-	munmap(maddr_mapper,mapsize_mapper);
-	exit (0);
+	munmap(maddr_mapper, mapsize_mapper);
+	exit(0);
 }
 
 void clean_writer(int sig)
@@ -913,22 +907,21 @@ void clean_writer(int sig)
 	exit(0);
 }
 
-unsigned int
-initrand(void)
+unsigned int initrand(void)
 {
 	unsigned int seed;
 
 	/*
 	 *  Initialize random seed...  Got this from a test written
 	 *  by scooter:
-	 *	Use srand/rand to diffuse the information from the
-	 *	time and pid.  If you start several processes, then
-	 *	the time and pid information don't provide much
-	 *	variation.
+	 *      Use srand/rand to diffuse the information from the
+	 *      time and pid.  If you start several processes, then
+	 *      the time and pid information don't provide much
+	 *      variation.
 	 */
 	srand((unsigned int)getpid());
 	seed = rand();
-	srand((unsigned int)time((time_t *)0));
+	srand((unsigned int)time((time_t *) 0));
 	seed = (seed ^ rand()) % 100000;
 	srand48((long int)seed);
 	return (seed);
@@ -937,17 +930,17 @@ initrand(void)
 /*****  LTP Port        *****/
 void ok_exit()
 {
-        tst_resm(TPASS, "Test passed\n");
+	tst_resm(TPASS, "Test passed\n");
 	tst_rmdir();
 	tst_exit();
 }
 
 int anyfail()
 {
-  tst_resm(TFAIL, "Test failed\n");
-  tst_rmdir();
-  tst_exit();
-        return 0;
+	tst_resm(TFAIL, "Test failed\n");
+	tst_rmdir();
+	tst_exit();
+	return 0;
 }
 
 /*****  **      **      *****/

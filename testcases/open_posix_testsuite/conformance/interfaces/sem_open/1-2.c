@@ -26,7 +26,7 @@
 
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[50];
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
@@ -35,15 +35,12 @@ int main()
 
 	/* Checking if mysemp has a value returned. From sem_open */
 
-	if (&mysemp != NULL)
-	{
+	if (&mysemp != NULL) {
 		puts("TEST PASSED");
 		sem_close(mysemp);
 		sem_unlink(semname);
 		return PTS_PASS;
-	}
-	else
-	{
+	} else {
 		puts("TEST FAILED");
 		return PTS_FAIL;
 	}

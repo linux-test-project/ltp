@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	ffsb_op_results_t total_results;
 	double totaltime = 0.0f, usertime = 0.0f, systime = 0.0f;
 	struct rusage before_self, before_children, after_self, after_children;
-	pthread_t *fs_pts; /* threads to do filesystem creates in parallel */
+	pthread_t *fs_pts;	/* threads to do filesystem creates in parallel */
 	char *callout = NULL;
 
 	char ctime_start_buf[32];
@@ -81,8 +81,7 @@ int main(int argc, char *argv[])
 	ffsb_unbuffer_stdout();
 
 	if (argc < 2) {
-		fprintf(stderr, "usage: %s <config file>\n",
-			argv[0]);
+		fprintf(stderr, "usage: %s <config file>\n", argv[0]);
 		exit(1);
 	}
 
@@ -94,7 +93,7 @@ int main(int argc, char *argv[])
 
 	if (fc.time)
 		printf("benchmark time = %u\n", fc.time);
-	 else
+	else
 		printf("Only creating the fileset, not running benchmark.\n");
 
 	pthread_attr_init(&attr);
@@ -160,7 +159,7 @@ int main(int argc, char *argv[])
 	ffsb_getrusage(&before_self, &before_children);
 	gettimeofday(&pdata.starttime, NULL);
 
-	ffsb_barrier_wait(&tg_barrier);  /* sync with tg's to start*/
+	ffsb_barrier_wait(&tg_barrier);	/* sync with tg's to start */
 	printf("Starting Actual Benchmark At: %s\n",
 	       ctime_r(&pdata.starttime.tv_sec, ctime_start_buf));
 	fflush(stdout);
@@ -218,32 +217,31 @@ int main(int argc, char *argv[])
 		printf("===============\n");
 		print_results(&total_results, totaltime);
 	}
-
 #define USEC_PER_SEC ((double)(1000000.0f))
 
 	/* sum up self and children after */
 	usertime = (after_self.ru_utime.tv_sec +
-		    ((after_self.ru_utime.tv_usec)/USEC_PER_SEC)) +
-		((after_children.ru_utime.tv_sec +
-		  ((after_children.ru_utime.tv_usec)/USEC_PER_SEC)));
+		    ((after_self.ru_utime.tv_usec) / USEC_PER_SEC)) +
+	    ((after_children.ru_utime.tv_sec +
+	      ((after_children.ru_utime.tv_usec) / USEC_PER_SEC)));
 
 	/* subtract away the before */
 	usertime -= (before_self.ru_utime.tv_sec +
-		     ((before_self.ru_utime.tv_usec)/USEC_PER_SEC)) +
-		((before_children.ru_utime.tv_sec +
-		  ((before_children.ru_utime.tv_usec)/USEC_PER_SEC)));
+		     ((before_self.ru_utime.tv_usec) / USEC_PER_SEC)) +
+	    ((before_children.ru_utime.tv_sec +
+	      ((before_children.ru_utime.tv_usec) / USEC_PER_SEC)));
 
 	/* sum up self and children after */
 	systime = (after_self.ru_stime.tv_sec +
-		   ((after_self.ru_stime.tv_usec)/USEC_PER_SEC)) +
-		((after_children.ru_stime.tv_sec +
-		  ((after_children.ru_stime.tv_usec)/USEC_PER_SEC)));
+		   ((after_self.ru_stime.tv_usec) / USEC_PER_SEC)) +
+	    ((after_children.ru_stime.tv_sec +
+	      ((after_children.ru_stime.tv_usec) / USEC_PER_SEC)));
 
 	/* subtract away the before */
 	systime -= (before_self.ru_stime.tv_sec +
-		    ((before_self.ru_stime.tv_usec)/USEC_PER_SEC)) +
-		((before_children.ru_stime.tv_sec +
-		  ((before_children.ru_stime.tv_usec)/USEC_PER_SEC)));
+		    ((before_self.ru_stime.tv_usec) / USEC_PER_SEC)) +
+	    ((before_children.ru_stime.tv_sec +
+	      ((before_children.ru_stime.tv_usec) / USEC_PER_SEC)));
 
 	printf("\n\n");
 	printf("%.1lf%% User   Time\n", 100 * usertime / totaltime);

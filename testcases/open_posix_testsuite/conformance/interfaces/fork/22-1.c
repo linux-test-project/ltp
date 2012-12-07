@@ -31,21 +31,21 @@
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
 #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <sys/wait.h>
- #include <errno.h>
+#include <errno.h>
 
 #include <time.h>
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -76,7 +76,7 @@
 /********************************************************************************************/
 
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -92,11 +92,10 @@ int main(int argc, char * argv[])
 	ctp = sysconf(_SC_CPUTIME);
 	ctt = sysconf(_SC_THREAD_CPUTIME);
 
-	if ((ctp == -1) && (ctt == -1))
-	{
-		UNTESTED("The testcase needs CPUTIME or THREAD_CPUTIME support");
+	if ((ctp == -1) && (ctt == -1)) {
+		UNTESTED
+		    ("The testcase needs CPUTIME or THREAD_CPUTIME support");
 	}
-
 #if VERBOSE > 0
 	output("System abilities:\n");
 
@@ -105,43 +104,39 @@ int main(int argc, char * argv[])
 	output("  _POSIX_THREAD_CPUTIME : %ld\n", ctt);
 
 #endif
-	if (ctp > 0)
-	{
+	if (ctp > 0) {
 		ret = clock_getcpuclockid(0, &clp);
 
-		if (ret != 0)
-		{
-			UNRESOLVED(ret, "Unable to get cpu-time clock id of the process");
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Unable to get cpu-time clock id of the process");
 		}
 
-		do
-		{
+		do {
 			ret = clock_gettime(clp, &tp);
 
-			if (ret != 0)
-			{
-				UNRESOLVED(errno, "Failed to read CPU time clock");
+			if (ret != 0) {
+				UNRESOLVED(errno,
+					   "Failed to read CPU time clock");
 			}
 		}
 		while (tp.tv_sec < 1);
 	}
 
-	if (ctt > 0)
-	{
+	if (ctt > 0) {
 		ret = pthread_getcpuclockid(pthread_self(), &clt);
 
-		if (ret != 0)
-		{
-			UNRESOLVED(ret, "Unable to get cpu-time clock id of the thread");
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Unable to get cpu-time clock id of the thread");
 		}
 
-		do
-		{
+		do {
 			ret = clock_gettime(clt, &tp);
 
-			if (ret != 0)
-			{
-				UNRESOLVED(errno, "Failed to read thread CPU time clock");
+			if (ret != 0) {
+				UNRESOLVED(errno,
+					   "Failed to read thread CPU time clock");
 			}
 		}
 		while (tp.tv_sec < 1);
@@ -150,55 +145,51 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-	if (child == -1)
-	{
+	if (child == -1) {
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == 0)
-	{
-		if (ctp > 0)
-		{
+	if (child == 0) {
+		if (ctp > 0) {
 			ret = clock_getcpuclockid(0, &clp);
 
-			if (ret != 0)
-			{
-				UNRESOLVED(ret, "Unable to get cpu-time clock id of the process");
+			if (ret != 0) {
+				UNRESOLVED(ret,
+					   "Unable to get cpu-time clock id of the process");
 			}
 
 			ret = clock_gettime(clp, &tp);
 
-			if (ret != 0)
-			{
-				UNRESOLVED(errno, "Failed to read CPU time clock");
+			if (ret != 0) {
+				UNRESOLVED(errno,
+					   "Failed to read CPU time clock");
 			}
 
-			if (tp.tv_sec > 0)
-			{
-				FAILED("The process CPU-time clock was not reset in child\n");
+			if (tp.tv_sec > 0) {
+				FAILED
+				    ("The process CPU-time clock was not reset in child\n");
 			}
 		}
 
-		if (ctt > 0)
-		{
+		if (ctt > 0) {
 			ret = pthread_getcpuclockid(pthread_self(), &clt);
 
-			if (ret != 0)
-			{
-				UNRESOLVED(ret, "Unable to get cpu-time clock id of the thread");
+			if (ret != 0) {
+				UNRESOLVED(ret,
+					   "Unable to get cpu-time clock id of the thread");
 			}
 
 			ret = clock_gettime(clt, &tp);
 
-			if (ret != 0)
-			{
-				UNRESOLVED(errno, "Failed to read thread CPU time clock");
+			if (ret != 0) {
+				UNRESOLVED(errno,
+					   "Failed to read thread CPU time clock");
 			}
 
-			if (tp.tv_sec > 0)
-			{
-				FAILED("The thread CPU-time clock was not reset in child\n");
+			if (tp.tv_sec > 0) {
+				FAILED
+				    ("The thread CPU-time clock was not reset in child\n");
 			}
 		}
 
@@ -209,13 +200,11 @@ int main(int argc, char * argv[])
 	/* Parent joins the child */
 	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child)
-	{
+	if (ctl != child) {
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
-	{
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS)) {
 		FAILED("Child exited abnormally");
 	}
 

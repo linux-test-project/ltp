@@ -103,7 +103,8 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "sched_rr_get_interval() returned %ld",
 				 TEST_RETURN);
 		} else {
-			tst_resm(TFAIL|TTERRNO, "Test Failed, sched_rr_get_interval()"
+			tst_resm(TFAIL | TTERRNO,
+				 "Test Failed, sched_rr_get_interval()"
 				 "returned %ld", TEST_RETURN);
 		}
 	}

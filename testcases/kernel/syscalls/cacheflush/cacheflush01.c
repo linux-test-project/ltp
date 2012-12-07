@@ -55,10 +55,10 @@
 /* Fake linux_syscall_numbers.h */
 #define __NR_cacheflush		0
 #ifndef   ICACHE
-#define   ICACHE   (1<<0)		/* flush instruction cache        */
+#define   ICACHE   (1<<0)	/* flush instruction cache        */
 #endif
 #ifndef   DCACHE
-#define   DCACHE   (1<<1)		/* writeback and flush data cache */
+#define   DCACHE   (1<<1)	/* writeback and flush data cache */
 #endif
 #ifndef   BCACHE
 #define   BCACHE   (ICACHE|DCACHE)	/* flush both caches              */
@@ -68,8 +68,8 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "cacheflush01";	/* Test program identifier.*/
-int  TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "cacheflush01";	/* Test program identifier. */
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -89,10 +89,11 @@ int  TST_TOTAL = 1;		/* total number of tests in this file.   */
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
-        TEST_CLEANUP;
-        tst_rmdir();
+	TEST_CLEANUP;
+	tst_rmdir();
 }
 
 /* Local  Functions */
@@ -113,11 +114,12 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
 int main(int ac, char **av)
@@ -126,12 +128,12 @@ int main(int ac, char **av)
 	char *addr = NULL;
 	char *msg;
 
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-        }
+	}
 
-        setup();
+	setup();
 
 	Tst_count = 0;
 	/* Create some user address range */
@@ -163,5 +165,5 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-        tst_exit();
+	tst_exit();
 }

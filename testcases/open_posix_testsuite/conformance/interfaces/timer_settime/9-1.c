@@ -30,8 +30,9 @@
 #define NUMTESTS 6
 
 static int timeroffsets[NUMTESTS][2] = { {0, 30000000}, {1, 0},
-					{1, 30000000}, {2, 0},
-					{1, 5000}, {1, 5} };
+{1, 30000000}, {2, 0},
+{1, 5000}, {1, 5}
+};
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +44,7 @@ int main(int argc, char *argv[])
 	int sig;
 	int i;
 	int failure = 0;
-	unsigned long totalnsecs, testnsecs; // so long was we are < 2.1 seconds, we should be safe
+	unsigned long totalnsecs, testnsecs;	// so long was we are < 2.1 seconds, we should be safe
 
 	/*
 	 * set up signal set containing SIGTOTEST that will be used
@@ -60,10 +61,10 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-        if (sigprocmask (SIG_BLOCK, &set, NULL) == -1) {
-                perror("sigprocmask() failed\n");
-                return PTS_UNRESOLVED;
-        }
+	if (sigprocmask(SIG_BLOCK, &set, NULL) == -1) {
+		perror("sigprocmask() failed\n");
+		return PTS_UNRESOLVED;
+	}
 
 	/*
 	 * set up timer to perform action SIGTOTEST on expiration
@@ -77,13 +78,13 @@ int main(int argc, char *argv[])
 	}
 
 	for (i = 0; i < NUMTESTS; i++) {
-		its.it_interval.tv_sec = 0; its.it_interval.tv_nsec = 0;
+		its.it_interval.tv_sec = 0;
+		its.it_interval.tv_nsec = 0;
 		its.it_value.tv_sec = timeroffsets[i][0];
 		its.it_value.tv_nsec = timeroffsets[i][1];
 
 		printf("Test for value %d sec %d nsec\n",
-				(int) its.it_value.tv_sec,
-				(int) its.it_value.tv_nsec);
+		       (int)its.it_value.tv_sec, (int)its.it_value.tv_nsec);
 
 		if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
 			perror("clock_gettime() did not return success\n");
@@ -105,15 +106,14 @@ int main(int argc, char *argv[])
 			return PTS_UNRESOLVED;
 		}
 
-		totalnsecs = (unsigned long) (tsafter.tv_sec-tsbefore.tv_sec)*
-					1000000000 +
-					(tsafter.tv_nsec-tsbefore.tv_nsec);
-		testnsecs = (unsigned long) its.it_value.tv_sec*1000000000 +
-					its.it_value.tv_nsec;
+		totalnsecs = (unsigned long)(tsafter.tv_sec - tsbefore.tv_sec) *
+		    1000000000 + (tsafter.tv_nsec - tsbefore.tv_nsec);
+		testnsecs = (unsigned long)its.it_value.tv_sec * 1000000000 +
+		    its.it_value.tv_nsec;
 		printf("total %lu test %lu\n", totalnsecs, testnsecs);
 		if (totalnsecs < testnsecs) {
 			printf("FAIL:  Expired %ld < %ld\n", totalnsecs,
-							testnsecs);
+			       testnsecs);
 			failure = 1;
 		}
 	}

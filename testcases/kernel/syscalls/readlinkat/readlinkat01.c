@@ -85,6 +85,7 @@ int dirfd, fd, ret;
 int fds[TEST_CASES];
 char *filenames[TEST_CASES];
 int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
+
 char expected_buff[TEST_CASES][256];
 char buffer[BUFF_SIZE];
 

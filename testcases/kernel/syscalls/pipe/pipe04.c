@@ -171,7 +171,7 @@ int main(int ac, char **av)
 		 * Set action for the alarm
 		 */
 		if (signal(SIGALRM, alarmfunc) == SIG_ERR)
-			tst_resm(TWARN|TERRNO, "call to signal failed");
+			tst_resm(TWARN | TERRNO, "call to signal failed");
 		/*
 		 * Set an alarm for 60 seconds just in case the child
 		 * processes don't die
@@ -179,8 +179,9 @@ int main(int ac, char **av)
 		alarm(60);
 		if (waitpid(c1pid, &wtstatus, 0) != -1) {
 			if (wtstatus != SIGKILL)
-				tst_resm(TFAIL|TERRNO, "unexpected wait status "
-				    "%d", wtstatus);
+				tst_resm(TFAIL | TERRNO,
+					 "unexpected wait status " "%d",
+					 wtstatus);
 			else
 				tst_resm(TPASS, "Child 1 killed while "
 					 "writing to a pipe");
@@ -188,8 +189,9 @@ int main(int ac, char **av)
 		if (waitpid(c2pid, &wtstatus, 0) != -1) {
 			if (!WIFSIGNALED(wtstatus) ||
 			    WTERMSIG(wtstatus) != SIGKILL)
-				tst_resm(TFAIL|TERRNO, "unexpected wait status "
-				    "%d", wtstatus);
+				tst_resm(TFAIL | TERRNO,
+					 "unexpected wait status " "%d",
+					 wtstatus);
 			else
 				tst_resm(TPASS, "Child 2 killed while "
 					 "writing to a pipe");
@@ -232,7 +234,7 @@ void c1func()
 		tst_resm(TWARN, "Could not close fildes[0] - errno %d", errno);
 	while (1)
 		if (write(fildes[1], "bbbbbbbbbbbbbbbbbbbbbbbbb", 25) == -1)
-			tst_resm(TBROK|TERRNO, "[child 1] pipe write failed");
+			tst_resm(TBROK | TERRNO, "[child 1] pipe write failed");
 }
 
 void c2func()
@@ -241,12 +243,12 @@ void c2func()
 		tst_resm(TWARN, "Could not close fildes[0] - errno %d", errno);
 	while (1)
 		if (write(fildes[1], "AAAAAAAAAAAAAAAAAAAAAAAAA", 25) == -1)
-			tst_resm(TBROK|TERRNO, "[child 2] pipe write failed");
+			tst_resm(TBROK | TERRNO, "[child 2] pipe write failed");
 }
 
 void alarmfunc(int sig)
 {
 	/* for some reason tst_brkm doesn't seem to work in a signal handler */
 	tst_brkm(TFAIL, cleanup, "one or more children did't die in 60 second "
-	    "time limit");
+		 "time limit");
 }

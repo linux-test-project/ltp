@@ -92,8 +92,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int exp_errno;
 	int (*setupfunc) ();
 } test_cases[] = {
-	{ -1, 1, "Size is < no. suppl. gids", EINVAL },
-};
+	{
+-1, 1, "Size is < no. suppl. gids", EINVAL},};
 
 int main(int ac, char **av)
 {
@@ -122,17 +122,18 @@ int main(int ac, char **av)
 
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == test_cases[i].exp_errno)
-					tst_resm(TPASS|TTERRNO,
-					    "getgroups failed as expected");
+					tst_resm(TPASS | TTERRNO,
+						 "getgroups failed as expected");
 				else
-					tst_resm(TFAIL|TTERRNO,
-					    "getgroups failed unexpectedly; "
-					    "expected: %d - %s",
-					    test_cases[i].exp_errno,
-					    strerror(test_cases[i].exp_errno));
+					tst_resm(TFAIL | TTERRNO,
+						 "getgroups failed unexpectedly; "
+						 "expected: %d - %s",
+						 test_cases[i].exp_errno,
+						 strerror(test_cases[i].
+							  exp_errno));
 			} else
 				tst_resm(TFAIL,
-				    "getgroups succeeded unexpectedly");
+					 "getgroups succeeded unexpectedly");
 		}
 
 	}

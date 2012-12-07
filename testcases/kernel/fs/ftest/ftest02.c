@@ -72,7 +72,7 @@ static void crfile(int, int);
 static void unlfile(int, int);
 static void fussdir(int, int);
 static void dotest(int, int);
-static void dowarn(int, char*, char*);
+static void dowarn(int, char *, char *);
 static void term(int sig);
 static void cleanup(void);
 
@@ -119,7 +119,7 @@ int main(void)
 
 	if (!startdir[0]) {
 		if (getcwd(startdir, MAXPATHLEN) == NULL) {
-			tst_resm(TBROK,"getcwd failed");
+			tst_resm(TBROK, "getcwd failed");
 
 		}
 	}
@@ -134,13 +134,13 @@ int main(void)
 	mkdir(dirname, 0755);
 	mkdir(homedir, 0755);
 	if (chdir(dirname) < 0) {
-		tst_resm(TBROK,"\tCan't chdir(%s), error %d.", dirname, errno);
+		tst_resm(TBROK, "\tCan't chdir(%s), error %d.", dirname, errno);
 		cleanup();
 
 	}
 	dirlen = strlen(dirname);
 	if (chdir(homedir) < 0) {
-		tst_resm(TBROK,"\tCan't chdir(%s), error %d.", homedir, errno);
+		tst_resm(TBROK, "\tCan't chdir(%s), error %d.", homedir, errno);
 		cleanup();
 
 	}
@@ -151,7 +151,7 @@ int main(void)
 			exit(0);
 		}
 		if (child < 0) {
-			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 		}
 		pidlist[k] = child;
 	}
@@ -164,7 +164,8 @@ int main(void)
 		//tst_resm(TINFO,"Test{%d} exited status = 0x%x", child, status);
 		//tst_resm(TINFO,"status is %d",status);
 		if (status) {
-			tst_resm(TFAIL,"Test{%d} failed, expected 0 exit.", child);
+			tst_resm(TFAIL, "Test{%d} failed, expected 0 exit.",
+				 child);
 			local_flag = FAILED;
 		}
 		++count;
@@ -174,7 +175,8 @@ int main(void)
 	 * Should have collected all children.
 	 */
 	if (count != nchild) {
-		tst_resm(TFAIL,"Wrong # children waited on, count = %d", count);
+		tst_resm(TFAIL, "Wrong # children waited on, count = %d",
+			 count);
 		local_flag = FAILED;
 	}
 
@@ -198,7 +200,7 @@ int main(void)
 	pid = fork();
 
 	if (pid < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 	}
 
 	if (pid == 0) {
@@ -208,13 +210,14 @@ int main(void)
 		wait(&status);
 
 	if (status)
-		tst_resm(TINFO,"CAUTION - ftest02, '%s' may not have been removed.",
-		  homedir);
+		tst_resm(TINFO,
+			 "CAUTION - ftest02, '%s' may not have been removed.",
+			 homedir);
 
 	pid = fork();
 
 	if (pid < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 	}
 
 	if (pid == 0) {
@@ -224,8 +227,9 @@ int main(void)
 		wait(&status);
 
 	if (status) {
-		tst_resm(TINFO,"CAUTION - ftest02, '%s' may not have been removed.",
-		  dirname);
+		tst_resm(TINFO,
+			 "CAUTION - ftest02, '%s' may not have been removed.",
+			 dirname);
 	}
 
 	sync();
@@ -242,7 +246,7 @@ int main(void)
  *	Create a file and write something into it.
  */
 
-char	crmsg[] = "Gee, let's write something in the file!\n";
+char crmsg[] = "Gee, let's write something in the file!\n";
 
 static void crfile(int me, int count)
 {
@@ -251,27 +255,27 @@ static void crfile(int me, int count)
 
 	ft_mkname(fname, dirname, me, count);
 
-	fd = open(fname, O_RDWR|O_CREAT|O_TRUNC, 0666);
+	fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (fd < 0 && errno == EISDIR) {
 		val = rmdir(fname);
 		warn(val, "rmdir", fname);
-		fd = open(fname, O_RDWR|O_CREAT|O_TRUNC, 0666);
+		fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	}
 	warn(fd, "creating", fname);
 
 	val = lseek(fd, (rand() % M), 0);
 	warn(val, "lseek", 0);
 
-	val = write(fd, crmsg, sizeof(crmsg)-1);
+	val = write(fd, crmsg, sizeof(crmsg) - 1);
 	warn(val, "write", 0);
 
-	val = lseek(fd, -(sizeof(crmsg)-1), 1);
+	val = lseek(fd, -(sizeof(crmsg) - 1), 1);
 	warn(val, "lseek", 0);
 
-	val = read(fd, buf, sizeof(crmsg)-1);
+	val = read(fd, buf, sizeof(crmsg) - 1);
 	warn(val, "read", 0);
 
-	if (strncmp(crmsg, buf, sizeof(crmsg)-1))
+	if (strncmp(crmsg, buf, sizeof(crmsg) - 1))
 		dowarn(me, "compare", 0);
 
 	val = close(fd);
@@ -284,9 +288,9 @@ static void crfile(int me, int count)
  */
 static void unlfile(int me, int count)
 {
-	int	i;
-	int	val;
-	char	fname[MAXPATHLEN];
+	int i;
+	int val;
+	char fname[MAXPATHLEN];
 
 	i = count - 10;
 
@@ -332,7 +336,7 @@ static void fussdir(int me, int count)
 	warn(val, "chdir", dir);
 
 	crfile(me, count);
-	crfile(me, count+1);
+	crfile(me, count + 1);
 
 	val = chdir("..");
 	warn(val, "chdir", "..");
@@ -340,7 +344,8 @@ static void fussdir(int me, int count)
 	val = rmdir(dir);
 
 	if (val >= 0) {
-		tst_resm(TFAIL,"Test[%d]: rmdir of non-empty %s succeeds!", me, dir);
+		tst_resm(TFAIL, "Test[%d]: rmdir of non-empty %s succeeds!", me,
+			 dir);
 		tst_exit();
 	}
 
@@ -351,7 +356,7 @@ static void fussdir(int me, int count)
 	val = unlink(fname);
 	warn(val, "unlink", fname);
 
-	ft_mkname(fname, dirname, me, count+1);
+	ft_mkname(fname, dirname, me, count + 1);
 	val = unlink(fname);
 	warn(val, "unlink", fname);
 
@@ -374,20 +379,16 @@ static void fussdir(int me, int count)
  */
 #define	THING(p)	{p, "p"}
 
-struct	ino_thing {
-	void	(*it_proc)();
-	char	*it_name;
-}	ino_thing[] = {
-	THING(crfile),
-	THING(unlfile),
-	THING(fussdir),
-	THING(sync),
-};
+struct ino_thing {
+	void (*it_proc) ();
+	char *it_name;
+} ino_thing[] = {
+THING(crfile), THING(unlfile), THING(fussdir), THING(sync),};
 
 #define	NTHING	(sizeof(ino_thing) / sizeof(ino_thing[0]))
 
-int	thing_cnt[NTHING];
-int	thing_last[NTHING];
+int thing_cnt[NTHING];
+int thing_last[NTHING];
 
 static void dotest(int me, int count)
 {
@@ -399,7 +400,7 @@ static void dotest(int me, int count)
 
 	for (i = 0; i < count; i++) {
 		thing = (rand() >> 3) % NTHING;
-		(*ino_thing[thing].it_proc)(me, i, ino_thing[thing].it_name);
+		(*ino_thing[thing].it_proc) (me, i, ino_thing[thing].it_name);
 		++thing_cnt[thing];
 	}
 
@@ -410,8 +411,8 @@ static void dowarn(int me, char *m1, char *m2)
 {
 	int err = errno;
 
-	tst_resm(TBROK,"Test[%d]: error %d on %s %s",
-		me, err, m1, (m2 ? m2 : ""));
+	tst_resm(TBROK, "Test[%d]: error %d on %s %s",
+		 me, err, m1, (m2 ? m2 : ""));
 	tst_exit();
 }
 
@@ -440,7 +441,7 @@ static void cleanup(void)
 	if (mnt == 1) {
 
 		if (chdir(startdir) < 0)
-			tst_resm(TBROK,"Could not change to %s ", startdir);
+			tst_resm(TBROK, "Could not change to %s ", startdir);
 
 		if (!strcmp(fstyp, "cfs")) {
 
@@ -448,20 +449,25 @@ static void cleanup(void)
 
 			if (system(mount_buffer) != 0) {
 
-				tst_resm(TBROK,"Unable to unmount %s from %s ", partition, mntpoint);
+				tst_resm(TBROK, "Unable to unmount %s from %s ",
+					 partition, mntpoint);
 
 				if (umount(partition))
-					tst_resm(TBROK,"Unable to unmount %s from %s ", partition, mntpoint);
+					tst_resm(TBROK,
+						 "Unable to unmount %s from %s ",
+						 partition, mntpoint);
 				else
-					tst_resm(TINFO, "Forced umount for %s, /etc/mtab now dirty", partition);
+					tst_resm(TINFO,
+						 "Forced umount for %s, /etc/mtab now dirty",
+						 partition);
 			}
 
-		} else
-			if (umount(partition))
-				tst_resm(TBROK,"Unable to unmount %s from %s ", partition, mntpoint);
+		} else if (umount(partition))
+			tst_resm(TBROK, "Unable to unmount %s from %s ",
+				 partition, mntpoint);
 
 		if (rmdir(mntpoint) != 0)
-			tst_resm(TBROK,"Unable to rmdir %s ", mntpoint);
+			tst_resm(TBROK, "Unable to rmdir %s ", mntpoint);
 
 	}
 

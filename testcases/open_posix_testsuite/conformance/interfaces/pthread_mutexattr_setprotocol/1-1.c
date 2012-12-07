@@ -25,40 +25,38 @@ int main()
 {
 
 	pthread_mutexattr_t mta;
-	int protocol, protcls[3],i;
+	int protocol, protcls[3], i;
 
 	/* Initialize a mutex attributes object */
-	if (pthread_mutexattr_init(&mta) != 0)
-	{
+	if (pthread_mutexattr_init(&mta) != 0) {
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	protcls[0]=PTHREAD_PRIO_NONE;
-	protcls[1]=PTHREAD_PRIO_INHERIT;
-	protcls[2]=PTHREAD_PRIO_PROTECT;
+	protcls[0] = PTHREAD_PRIO_NONE;
+	protcls[1] = PTHREAD_PRIO_INHERIT;
+	protcls[2] = PTHREAD_PRIO_PROTECT;
 
-	for (i=0;i<3;i++)
-	{
+	for (i = 0; i < 3; i++) {
 		/* Set the protocol to one of the 3 valid protocols. */
-		if (pthread_mutexattr_setprotocol(&mta,protcls[i]) != 0)
-		{
+		if (pthread_mutexattr_setprotocol(&mta, protcls[i]) != 0) {
 			printf("Error setting protocol to %d\n", protcls[i]);
 			return PTS_UNRESOLVED;
 		}
 
 		/* Get the protocol mutex attr. */
-		if (pthread_mutexattr_getprotocol(&mta, &protocol) != 0)
-		{
-			fprintf(stderr,"Error obtaining the protocol attribute.\n");
+		if (pthread_mutexattr_getprotocol(&mta, &protocol) != 0) {
+			fprintf(stderr,
+				"Error obtaining the protocol attribute.\n");
 			return PTS_UNRESOLVED;
 		}
 
 		/* Make sure that the protocol set is the protocl we get when calling
 		 * pthread_mutexattr_getprocol() */
-		if (protocol != protcls[i])
-		{
-			printf("Test FAILED: Set protocol %d, but instead got protocol %d.\n", protcls[i], protocol);
+		if (protocol != protcls[i]) {
+			printf
+			    ("Test FAILED: Set protocol %d, but instead got protocol %d.\n",
+			     protcls[i], protocol);
 			return PTS_FAIL;
 		}
 	}

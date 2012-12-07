@@ -38,19 +38,19 @@ int main(int argc, char *argv[])
 	fd = open(filename, O_CREAT | O_RDWR, S_IRWXU);
 	if (fd < 0) {
 		perror("open");
-		return(-1);
+		return (-1);
 	}
 
 	file = mmap(NULL, 1024, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (file == (void *) -1) {
+	if (file == (void *)-1) {
 		perror("mmap");
-		return(-1);
+		return (-1);
 	}
 	close(fd);
 	sleep(30);
 	if (munmap(file, 1024) < 0) {
 		perror("unmap");
-		return(-1);
+		return (-1);
 	}
 	tst_exit();
 }

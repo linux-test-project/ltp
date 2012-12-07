@@ -21,17 +21,18 @@
 
 #define SHM_NAME "posixtest_22-1"
 
-int main() {
+int main()
+{
 	int fd;
 
 	/* Create the shared memory object */
-	fd = shm_open(SHM_NAME, O_RDONLY|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 
-	fd = shm_open(SHM_NAME, O_RDONLY|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
 
 	if (fd == -1 && errno == EEXIST) {
 		printf("Test PASSED\n");

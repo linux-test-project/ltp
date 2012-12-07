@@ -65,8 +65,8 @@ static long ncpus;
 
 static void testcpuset(void);
 static void sighandler(int signo LTP_ATTRIBUTE_UNUSED);
-static int  mem_hog(void);
-static int  mem_hog_cpuset(int ntasks);
+static int mem_hog(void);
+static int mem_hog_cpuset(int ntasks);
 static long count_cpu(void);
 
 int main(int argc, char *argv[])
@@ -78,8 +78,8 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	ncpus = count_cpu();
-	if (get_allowed_nodes_arr(NH_MEMS|NH_CPUS, &nnodes, &nodes) < 0)
-		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes_arr");
+	if (get_allowed_nodes_arr(NH_MEMS | NH_CPUS, &nnodes, &nodes) < 0)
+		tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes_arr");
 	if (nnodes <= 1)
 		tst_brkm(TCONF, NULL, "requires a NUMA system.");
 
@@ -105,12 +105,12 @@ static void testcpuset(void)
 
 	switch (child = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
 		for (i = 0; i < nnodes; i++)
 			nmask += 1 << nodes[i];
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
+			tst_brkm(TBROK | TERRNO, cleanup, "set_mempolicy");
 		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -122,7 +122,7 @@ static void testcpuset(void)
 	}
 
 	if (waitpid(child, &status, WUNTRACED | WCONTINUED) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 	if (WEXITSTATUS(status) != 0)
 		tst_resm(TFAIL, "child exit status is %d", WEXITSTATUS(status));
 }
@@ -161,10 +161,10 @@ static int mem_hog(void)
 	pagesize = getpagesize();
 	while (!end) {
 		addr = mmap(NULL, pagesize * 10, PROT_READ | PROT_WRITE,
-			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+			    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 		if (addr == MAP_FAILED) {
 			ret = 1;
-			tst_resm(TFAIL|TERRNO, "mmap");
+			tst_resm(TFAIL | TERRNO, "mmap");
 			break;
 		}
 		memset(addr, 0xF7, pagesize * 10);
@@ -180,21 +180,21 @@ static int mem_hog_cpuset(int ntasks)
 	pid_t *pids;
 
 	if (ntasks <= 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "ntasks is small.");
+		tst_brkm(TBROK | TERRNO, cleanup, "ntasks is small.");
 	sa.sa_handler = sighandler;
 	if (sigemptyset(&sa.sa_mask) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "sigemptyset");
+		tst_brkm(TBROK | TERRNO, cleanup, "sigemptyset");
 	sa.sa_flags = 0;
 	if (sigaction(SIGUSR1, &sa, NULL) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "sigaction");
+		tst_brkm(TBROK | TERRNO, cleanup, "sigaction");
 
 	pids = malloc(sizeof(pid_t) * ntasks);
 	if (pids == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "malloc");
+		tst_brkm(TBROK | TERRNO, cleanup, "malloc");
 	for (i = 0; i < ntasks; i++) {
 		switch (pids[i] = fork()) {
 		case -1:
-			tst_resm(TFAIL|TERRNO, "fork %d", pids[i]);
+			tst_resm(TFAIL | TERRNO, "fork %d", pids[i]);
 			ret = 1;
 			break;
 		case 0:
@@ -204,11 +204,10 @@ static int mem_hog_cpuset(int ntasks)
 			break;
 		}
 	}
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		;
+	for (lc = 0; TEST_LOOPING(lc); lc++) ;
 	while (i--) {
 		if (kill(pids[i], SIGUSR1) == -1) {
-			tst_resm(TFAIL|TERRNO, "kill %d", pids[i]);
+			tst_resm(TFAIL | TERRNO, "kill %d", pids[i]);
 			ret = 1;
 		}
 	}
@@ -216,12 +215,12 @@ static int mem_hog_cpuset(int ntasks)
 		if (WIFEXITED(status)) {
 			if (WEXITSTATUS(status) != 0) {
 				tst_resm(TFAIL, "child exit status is %d",
-						WEXITSTATUS(status));
+					 WEXITSTATUS(status));
 				ret = 1;
 			}
 		} else if (WIFSIGNALED(status)) {
 			tst_resm(TFAIL, "child caught signal %d",
-					WTERMSIG(status));
+				 WTERMSIG(status));
 			ret = 1;
 		}
 	}

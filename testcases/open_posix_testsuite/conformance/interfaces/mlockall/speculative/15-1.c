@@ -28,8 +28,8 @@
 int set_nonroot()
 {
 	struct passwd *pw;
-        struct rlimit rlim;
-        int ret=0;
+	struct rlimit rlim;
+	int ret = 0;
 
 	setpwent();
 	/* search for the first user which is non root */
@@ -42,14 +42,15 @@ int set_nonroot()
 		return 1;
 	}
 
-        rlim.rlim_cur = 0;
-        rlim.rlim_max = 0;
-        if ((ret = setrlimit(RLIMIT_MEMLOCK,&rlim)) != 0)
-                printf("Failed at setrlimit() return %d \n", ret);
+	rlim.rlim_cur = 0;
+	rlim.rlim_max = 0;
+	if ((ret = setrlimit(RLIMIT_MEMLOCK, &rlim)) != 0)
+		printf("Failed at setrlimit() return %d \n", ret);
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
+			printf
+			    ("You don't have permission to change your UID.\n");
 			return 1;
 		}
 		perror("An error occurs when calling seteuid()");
@@ -61,16 +62,17 @@ int set_nonroot()
 	return 0;
 }
 
-int main() {
+int main()
+{
 	int result;
 
-        /* This test should be run under standard user permissions */
-        if (getuid() == 0) {
-                if (set_nonroot() != 0) {
+	/* This test should be run under standard user permissions */
+	if (getuid() == 0) {
+		if (set_nonroot() != 0) {
 			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
-        }
+	}
 
 	result = mlockall(MCL_CURRENT);
 

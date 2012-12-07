@@ -43,12 +43,12 @@
 #include "sfunc.h"
 
 /* Globals */
-unsigned int gbl_dbg_lvl;	/* the global debugging level	*/
-unsigned long glb_flags;    /* global flags GLB_FLG_xxx	*/
+unsigned int gbl_dbg_lvl;	/* the global debugging level   */
+unsigned long glb_flags;	/* global flags GLB_FLG_xxx */
 time_t global_start_time;	/* global start time */
 unsigned short glb_run = 1;	/* global run flag */
 
-void init_gbl_data(test_env_t *env)
+void init_gbl_data(test_env_t * env)
 {
 	env->kids = 0;
 	env->shared_mem = NULL;
@@ -57,8 +57,8 @@ void init_gbl_data(test_env_t *env)
 	env->pThreads = NULL;
 	env->bContinue = TRUE;
 	env->pass_count = 0;
-	env->start_time = time(NULL);	/*	overall start time of test	*/
-	env->end_time = 0;				/*	overall end time of test	*/
+	env->start_time = time(NULL);	/*      overall start time of test      */
+	env->end_time = 0;	/*      overall end time of test        */
 	memset(&env->global_stats, 0, sizeof(stats_t));
 	memset(&env->cycle_stats, 0, sizeof(stats_t));
 }
@@ -87,15 +87,11 @@ void PrintLastSystemError(unsigned long ulErrorNum)
 void GetSystemErrorString(unsigned long ulErrorNum, void *buffer)
 {
 	/* Use Default language */
-	FormatMessage(
-	    FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-	    NULL,
-		ulErrorNum,
-	    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR) &buffer,
-	    0,
-		NULL
-	);
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+		      FORMAT_MESSAGE_IGNORE_INSERTS,
+		      NULL,
+		      ulErrorNum,
+		      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		      (LPTSTR) & buffer, 0, NULL);
 }
 #endif

@@ -26,8 +26,7 @@ int main(int argc, char **argv)
 	result0 = sched_getscheduler(0);
 	result1 = sched_getscheduler(getpid());
 
-	if (result0 == result1 &&
-	   errno == 0) {
+	if (result0 == result1 && errno == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (result0 != result1) {

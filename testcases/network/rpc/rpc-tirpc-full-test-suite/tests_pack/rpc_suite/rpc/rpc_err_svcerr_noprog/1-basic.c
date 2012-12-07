@@ -37,22 +37,21 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	enum clnt_stat cs;
 	int var_snd = 0;
 
 	//Then call remote procedure
-	cs = callrpc (argc[1], 667, VERSNUM, PROCNUM,
-	              (xdrproc_t)xdr_int, (char *)&var_snd,  // xdr_in
-                  (xdrproc_t)xdr_int, (char *)&var_snd); // xdr_out
+	cs = callrpc(argc[1], 667, VERSNUM, PROCNUM, (xdrproc_t) xdr_int, (char *)&var_snd,	// xdr_in
+		     (xdrproc_t) xdr_int, (char *)&var_snd);	// xdr_out
 
 	test_status = (cs != RPC_PROGNOTREGISTERED);
 

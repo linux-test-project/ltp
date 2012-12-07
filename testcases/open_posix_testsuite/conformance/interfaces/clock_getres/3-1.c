@@ -20,29 +20,28 @@ int main(int argc, char *argv[])
 #ifdef CLOCK_MONOTONIC
 	struct timespec res;
 
-        /* Initialize res to a number much larger than the resolution
-         * could possibly be
-         */
-        res.tv_sec = LARGENUM;
-        res.tv_nsec = LARGENUM;
-        if (clock_getres(CLOCK_MONOTONIC, &res) == 0) {
-                if (res.tv_sec != LARGENUM) { //assume initialized
+	/* Initialize res to a number much larger than the resolution
+	 * could possibly be
+	 */
+	res.tv_sec = LARGENUM;
+	res.tv_nsec = LARGENUM;
+	if (clock_getres(CLOCK_MONOTONIC, &res) == 0) {
+		if (res.tv_sec != LARGENUM) {	//assume initialized
 #ifdef DEBUG
-                        printf("Resolution is %d sec %d nsec\n",
-                                        (int) res.tv_sec,
-                                        (int) res.tv_nsec);
+			printf("Resolution is %d sec %d nsec\n",
+			       (int)res.tv_sec, (int)res.tv_nsec);
 #endif
-                        printf("Test PASSED\n");
-                        return PTS_PASS;
-                } else {
-                        printf("clock_getres() success, but res not filled\n");
-                }
-        } else {
-                printf("clock_getres() failed\n");
-        }
+			printf("Test PASSED\n");
+			return PTS_PASS;
+		} else {
+			printf("clock_getres() success, but res not filled\n");
+		}
+	} else {
+		printf("clock_getres() failed\n");
+	}
 
-        printf("Test FAILED\n");
-        return PTS_FAIL;
+	printf("Test FAILED\n");
+	return PTS_FAIL;
 #else
 	printf("CLOCK_MONOTONIC unsupported\n");
 	return PTS_UNSUPPORTED;

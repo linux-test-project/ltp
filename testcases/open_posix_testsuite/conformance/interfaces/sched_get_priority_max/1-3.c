@@ -26,8 +26,9 @@ int main(int argc, char **argv)
 	result = sched_get_priority_max(SCHED_SPORADIC);
 
 	if (result != -1 && errno == 0) {
-		printf("The maximum priority for policy SCHED_SPORADIC is %i.\n",
-		       result);
+		printf
+		    ("The maximum priority for policy SCHED_SPORADIC is %i.\n",
+		     result);
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {
@@ -36,7 +37,7 @@ int main(int argc, char **argv)
 	}
 
 	printf("This code should not be executed.\n");
-        return PTS_UNRESOLVED;
+	return PTS_UNRESOLVED;
 }
 #else
 int main()

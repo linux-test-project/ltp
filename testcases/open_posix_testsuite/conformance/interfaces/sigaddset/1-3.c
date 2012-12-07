@@ -23,7 +23,7 @@ int main()
 	sigset_t signalset;
 	int signallist[SIGNALLISTSIZE];
 	int i;
-	int f=0;
+	int f = 0;
 
 	signallist[0] = SIGABRT;
 	signallist[1] = SIGALRM;
@@ -51,16 +51,16 @@ int main()
 		return -1;
 	}
 
-	for (i=0; i<SIGNALLISTSIZE; i++) {
+	for (i = 0; i < SIGNALLISTSIZE; i++) {
 		if (sigaddset(&signalset, signallist[i]) == 0) {
 			if (sigismember(&signalset, signallist[i]) == 1) {
 				// signal added
 			} else {
-				f=-1;
+				f = -1;
 				printf("Signal - %d\n", signallist[i]);
 			}
 		} else {
-			f=-1;
+			f = -1;
 			printf("Signal - %d\n", signallist[i]);
 		}
 	}

@@ -74,6 +74,7 @@ char *TCID = "pause02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { EINTR, 0 };
+
 pid_t cpid;			/* child process id */
 
 void do_child();		/* Function to run in child process */

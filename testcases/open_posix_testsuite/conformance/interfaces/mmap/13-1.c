@@ -83,8 +83,7 @@ int main(void)
 	printf("Time before mmap(): %ld\n", time(NULL));
 	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (pa == MAP_FAILED) {
-		printf("Error at mmap: %s\n",
-		       strerror(errno));
+		printf("Error at mmap: %s\n", strerror(errno));
 		unlink(tmpfname);
 		return PTS_FAIL;
 	}

@@ -45,7 +45,7 @@
 
 #define SIGNAL_PRIO 89
 #define HANDLER_PRIO 89
-#define DEFAULT_ITERATIONS 1000000 /* about 1 minute @ 2GHz */
+#define DEFAULT_ITERATIONS 1000000	/* about 1 minute @ 2GHz */
 #define HIST_BUCKETS 100
 #define PASS_US 100
 
@@ -68,7 +68,8 @@ void usage(void)
 {
 	rt_help();
 	printf("async_handler specific options:\n");
-	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
+	printf
+	    ("  -iITERATIONS  number of iterations to calculate the average over\n");
 }
 
 int parse_args(int c, char *v)
@@ -76,15 +77,15 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		case 'i':
-			iterations = atoi(v);
-			break;
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	case 'i':
+		iterations = atoi(v);
+		break;
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
@@ -138,7 +139,7 @@ void *signal_thread(void *arg)
 		/* wait for the event handler to schedule */
 		while (atomic_get(&step) != CHILD_HANDLED)
 			usleep(10);
-		delta = (long)((end - start)/NS_PER_US);
+		delta = (long)((end - start) / NS_PER_US);
 		if (delta > pass_criteria)
 			ret = 1;
 		rec.x = i;
@@ -150,7 +151,8 @@ void *signal_thread(void *arg)
 			min = MIN(min, delta);
 			max = MAX(max, delta);
 		}
-		atomic_set((i == iterations-1) ? CHILD_QUIT : CHILD_START, &step);
+		atomic_set((i == iterations - 1) ? CHILD_QUIT : CHILD_START,
+			   &step);
 	}
 	printf("recording statistics...\n");
 	printf("Min: %ld us\n", min);
@@ -158,9 +160,11 @@ void *signal_thread(void *arg)
 	printf("Avg: %.4f us\n", stats_avg(&dat));
 	printf("StdDev: %.4f us\n", stats_stddev(&dat));
 	stats_hist(&hist, &dat);
-	stats_container_save("samples", "Asynchronous Event Handling Latency Scatter Plot",\
+	stats_container_save("samples",
+			     "Asynchronous Event Handling Latency Scatter Plot",
 			     "Iteration", "Latency (us)", &dat, "points");
-	stats_container_save("hist", "Asynchronous Event Handling Latency Histogram",\
+	stats_container_save("hist",
+			     "Asynchronous Event Handling Latency Histogram",
 			     "Latency (us)", "Samples", &hist, "steps");
 	printf("signal thread exiting\n");
 
@@ -187,8 +191,9 @@ int main(int argc, char *argv[])
 		iterations = DEFAULT_ITERATIONS;
 	printf("Running %d iterations\n", iterations);
 
-	handler_id = create_fifo_thread(handler_thread, (void*)0, HANDLER_PRIO);
-	signal_id = create_fifo_thread(signal_thread, (void*)0, SIGNAL_PRIO);
+	handler_id =
+	    create_fifo_thread(handler_thread, (void *)0, HANDLER_PRIO);
+	signal_id = create_fifo_thread(signal_thread, (void *)0, SIGNAL_PRIO);
 
 	join_threads();
 

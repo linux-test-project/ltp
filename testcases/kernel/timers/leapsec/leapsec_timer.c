@@ -80,7 +80,7 @@ static inline int in_order(struct timespec a, struct timespec b)
 
 static void adjtimex_status(struct timex *tx, int status)
 {
-	const char * const msgs[6] = {
+	const char *const msgs[6] = {
 		"clock synchronized",
 		"insert leap second",
 		"delete leap second",
@@ -105,7 +105,7 @@ static void adjtimex_status(struct timex *tx, int status)
 		tst_resm(TINFO, "%s adjtimex: %s", strtime(&now), msgs[r]);
 	else
 		tst_resm(TINFO, "%s adjtimex: clock state %d",
-		    strtime(&now), r);
+			 strtime(&now), r);
 }
 
 static const char *strtime(const struct timespec *now)
@@ -145,12 +145,12 @@ static void test_hrtimer_early_expiration(void)
 
 	fail = !in_order(target, now);
 	tst_resm(fail ? TFAIL : TINFO, "hrtimer early expiration is %s.",
-	    fail ? "detected" : "not detected");
+		 fail ? "detected" : "not detected");
 }
 
 static void run_leapsec(void)
 {
-	const struct timespec sleeptime = {0, NSEC_PER_SEC / 2};
+	const struct timespec sleeptime = { 0, NSEC_PER_SEC / 2 };
 	struct timespec now, leap, start;
 	struct timex tx;
 

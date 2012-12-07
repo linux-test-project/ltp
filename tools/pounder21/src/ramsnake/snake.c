@@ -53,22 +53,27 @@ static unsigned long report_interval = 30;
  * part of the graph array.
  */
 
-static void print_help(const char *name) {
-	printf("Usage: %s [-p num_threads] [-d ram_divisor | -n num_nodes] [-s report_intrvl] [-a add_intrvl] [-t]\n",
-		name);
-	printf("-d ram_divisor:	Use (total_ram / ram_divisor) as a graph (16).\n");
+static void print_help(const char *name)
+{
+	printf
+	    ("Usage: %s [-p num_threads] [-d ram_divisor | -n num_nodes] [-s report_intrvl] [-a add_intrvl] [-t]\n",
+	     name);
+	printf
+	    ("-d ram_divisor:	Use (total_ram / ram_divisor) as a graph (16).\n");
 	printf("-p num_threads:	Start up some number of threads (1).\n");
 	printf("-n num_nodes:	Create a graph with some number of nodes.\n");
 	printf("-s report_intvl	Seconds between speed reports (30).\n");
 	printf("-a add_intrvl:	Seconds between adding children (never).\n");
 #ifdef __cpu_set_t_defined
-	printf("-t:		Assign each process to its own processor (no).\n");
+	printf
+	    ("-t:		Assign each process to its own processor (no).\n");
 #else
 	printf("-t:		Not enabled because you need kernel 2.5.8+.\n");
 #endif
 }
 
-static void populate_graph(void *graph, unsigned long long node_count) {
+static void populate_graph(void *graph, unsigned long long node_count)
+{
 	unsigned long i;
 	void **ptr;
 	unsigned long gunk;
@@ -82,7 +87,8 @@ static void populate_graph(void *graph, unsigned long long node_count) {
 	}
 }
 
-static int seed_random(void) {
+static int seed_random(void)
+{
 	int fp;
 	long seed;
 
@@ -103,13 +109,14 @@ static int seed_random(void) {
 	return 1;
 }
 
-static void alarm_func(int signum) {
+static void alarm_func(int signum)
+{
 	struct timeval now;
 	float time;
 
 	gettimeofday(&now, NULL);
 	time = (now.tv_usec + (now.tv_sec * 1000000))
-		- (last.tv_usec + (last.tv_sec * 1000000));
+	    - (last.tv_usec + (last.tv_sec * 1000000));
 	time /= 1000000;
 
 	printf("%d: %.0f nodes/sec.\n", getpid(), speed / time);
@@ -120,7 +127,8 @@ static void alarm_func(int signum) {
 	alarm(report_interval);
 }
 
-static void walk_graph(void *graph) {
+static void walk_graph(void *graph)
+{
 	void **curr = graph;
 
 	while (1) {
@@ -129,7 +137,8 @@ static void walk_graph(void *graph) {
 	}
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	unsigned long long num_nodes, ram_size;
 	unsigned long num_forks = 1;
 	struct sysinfo info;
@@ -156,53 +165,54 @@ int main(int argc, char *argv[]) {
 	/* Parse command line args */
 	while ((c = getopt(argc, argv, "a:p:n:d:s:t")) != -1) {
 		switch (c) {
-			case 'p':
-				num_forks = atoi(optarg);
-				break;
-			case 'd':
-				ram_size = info.totalram / atoi(optarg);
-				ram_size = ram_size & ~(getpagesize() - 1);
-				num_nodes = ram_size / sizeof(void *);
-				break;
-			case 'n':
-				num_nodes = atoi(optarg);
-				ram_size = num_nodes * sizeof(void *);
-				break;
-			case 's':
-				report_interval = atoi(optarg);
-				break;
-			case 'a':
-				add_wait = atoi(optarg);
-				break;
+		case 'p':
+			num_forks = atoi(optarg);
+			break;
+		case 'd':
+			ram_size = info.totalram / atoi(optarg);
+			ram_size = ram_size & ~(getpagesize() - 1);
+			num_nodes = ram_size / sizeof(void *);
+			break;
+		case 'n':
+			num_nodes = atoi(optarg);
+			ram_size = num_nodes * sizeof(void *);
+			break;
+		case 's':
+			report_interval = atoi(optarg);
+			break;
+		case 'a':
+			add_wait = atoi(optarg);
+			break;
 #ifdef __cpu_set_t_defined
-			case 't':
-				affinity = 1;
-				break;
+		case 't':
+			affinity = 1;
+			break;
 #endif
-			default:
-				print_help(argv[0]);
-				return 0;
+		default:
+			print_help(argv[0]);
+			return 0;
 		}
 	}
 
 	/* Will we exceed half the address space size?  Use 1/4 of it at most.  */
 	if (ram_size > ((unsigned long long)1 << ((sizeof(void *) * 8) - 1))) {
-		printf("Was going to use %lluKB (%llu nodes) but that's too big.\n",
-			ram_size / 1024, num_nodes);
+		printf
+		    ("Was going to use %lluKB (%llu nodes) but that's too big.\n",
+		     ram_size / 1024, num_nodes);
 		ram_size = ((unsigned long long)1 << (sizeof(void *) * 8));
 		ram_size /= 4;
 		num_nodes = ram_size / sizeof(void *);
 		printf("Clamping to %lluKB (%llu nodes) instead.\n",
-			ram_size / 1024, num_nodes);
+		       ram_size / 1024, num_nodes);
 	}
 
 	/* Talk about what we're going to do. */
 	printf("Going to use %lluKB (%llu nodes).\n", ram_size / 1024,
-		num_nodes);
+	       num_nodes);
 
 	/* Make a shared anonymous map of the RAM */
 	shm = mmap(NULL, ram_size, PROT_READ | PROT_WRITE,
-		MAP_SHARED | MAP_ANONYMOUS, 0, 0);
+		   MAP_SHARED | MAP_ANONYMOUS, 0, 0);
 	if (shm == MAP_FAILED) {
 		perror("mmap");
 		return 2;
@@ -211,7 +221,7 @@ int main(int argc, char *argv[]) {
 
 	/* Create an SHM condition variable.  Bogus, I know... */
 	cond = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
-		MAP_SHARED | MAP_ANONYMOUS, 0, 0);
+		    MAP_SHARED | MAP_ANONYMOUS, 0, 0);
 	if (cond == MAP_FAILED) {
 		perror("mmap");
 		return 4;
@@ -225,8 +235,7 @@ int main(int argc, char *argv[]) {
 	printf("done.\n");
 
 	printf("Creating %lu processes with reports every %lu seconds \
-and %d seconds between adding children.\n",
-		num_forks, report_interval, add_wait);
+and %d seconds between adding children.\n", num_forks, report_interval, add_wait);
 
 	/* Fork off separate processes.  The shared region is shared
 	 * across all children.  If we only wanted one thread, we shouldn't
@@ -239,7 +248,9 @@ and %d seconds between adding children.\n",
 			if (affinity) {
 				CPU_ZERO(&my_cpu_mask);
 				CPU_SET(c, &my_cpu_mask);
-				if (0 != sched_setaffinity(0,sizeof(cpu_set_t), &my_cpu_mask)) {
+				if (0 !=
+				    sched_setaffinity(0, sizeof(cpu_set_t),
+						      &my_cpu_mask)) {
 					perror("sched_setaffinity");
 				}
 			}
@@ -257,7 +268,9 @@ and %d seconds between adding children.\n",
 		if (affinity) {
 			CPU_ZERO(&my_cpu_mask);
 			CPU_SET(0, &my_cpu_mask);
-			if (0 != sched_setaffinity(0,sizeof(cpu_set_t), &my_cpu_mask)) {
+			if (0 !=
+			    sched_setaffinity(0, sizeof(cpu_set_t),
+					      &my_cpu_mask)) {
 				perror("sched_setaffinity");
 			}
 		}

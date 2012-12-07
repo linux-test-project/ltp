@@ -46,8 +46,8 @@
 /* The processes communicate by a shared memory object */
 #define SHM_RESULT_NAME "/result_23-1"
 
-#define NPROCESS 1000 /* Number of concurrent processes */
-#define NLOOP 1000   /* Number of shared memory object */
+#define NPROCESS 1000		/* Number of concurrent processes */
+#define NLOOP 1000		/* Number of shared memory object */
 
 char name[NAME_SIZE];
 int *create_cnt;
@@ -56,30 +56,31 @@ sem_t *sem;
 int child_func(void)
 {
 	int i, fd;
-	struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
+	struct timespec ts = {.tv_sec = 0,.tv_nsec = 0 };
 	int msec = 0;
 
 	sleep(1);
 	srand(time(NULL));
-	for (i=0; i<NLOOP; i++) {
+	for (i = 0; i < NLOOP; i++) {
 		sprintf(name, SHM_NAME, i);
-		fd = shm_open(name, O_RDONLY|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-		if (fd != -1)
-		{
+		fd = shm_open(name, O_RDONLY | O_CREAT | O_EXCL,
+			      S_IRUSR | S_IWUSR);
+		if (fd != -1) {
 			sem_wait(sem);
 			//fprintf(stderr, "%d: %d\n", getpid(), *create_cnt);
 			(*create_cnt)++;
 			sem_post(sem);
 		}
 		/* get a random number [0, 20] */
-		msec = (int) (20.0 * rand() / RAND_MAX) ;
+		msec = (int)(20.0 * rand() / RAND_MAX);
 		ts.tv_nsec = msec * 1000000;
 		nanosleep(&ts, NULL);
 	}
 	return 0;
 }
 
-int main() {
+int main()
+{
 	int i, pid, result_fd;
 	char semname[20];
 
@@ -92,8 +93,7 @@ int main() {
 	sem_unlink(semname);
 
 	result_fd = shm_open(SHM_RESULT_NAME,
-			     O_RDWR|O_CREAT,
-			     S_IRUSR|S_IWUSR);
+			     O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (result_fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -106,7 +106,7 @@ int main() {
 	}
 
 	create_cnt = mmap(NULL, sizeof(*create_cnt), PROT_WRITE,
-		MAP_SHARED, result_fd, 0);
+			  MAP_SHARED, result_fd, 0);
 	if (create_cnt == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_RESULT_NAME);
@@ -115,8 +115,8 @@ int main() {
 
 	*create_cnt = 0;
 
-	for (i=0; i<NPROCESS; i++) {
-	        pid = fork();
+	for (i = 0; i < NPROCESS; i++) {
+		pid = fork();
 		if (pid == -1) {
 			perror("An error occurs when calling fork()");
 			return PTS_UNRESOLVED;
@@ -126,9 +126,9 @@ int main() {
 		}
 	}
 
-	while (wait(NULL) > 0);
+	while (wait(NULL) > 0) ;
 
-	for (i=0; i<NLOOP; i++) {
+	for (i = 0; i < NLOOP; i++) {
 		sprintf(name, SHM_NAME, i);
 		shm_unlink(name);
 	}

@@ -56,9 +56,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "rt_sigaction03";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "rt_sigaction03";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -78,12 +78,13 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
-        TEST_CLEANUP;
-        tst_rmdir();
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        tst_exit();
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -104,87 +105,109 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-int test_flags[] = {SA_RESETHAND|SA_SIGINFO, SA_RESETHAND, SA_RESETHAND|SA_SIGINFO, SA_RESETHAND|SA_SIGINFO, SA_NOMASK};
-char *test_flags_list[] = {"SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND", "SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND|SA_SIGINFO", "SA_NOMASK"};
+int test_flags[] =
+    { SA_RESETHAND | SA_SIGINFO, SA_RESETHAND, SA_RESETHAND | SA_SIGINFO,
+SA_RESETHAND | SA_SIGINFO, SA_NOMASK };
+char *test_flags_list[] =
+    { "SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND", "SA_RESETHAND|SA_SIGINFO",
+"SA_RESETHAND|SA_SIGINFO", "SA_NOMASK" };
 
 struct test_case_t {
-        int exp_errno;
-        char *errdesc;
+	int exp_errno;
+	char *errdesc;
 } test_cases[] = {
-	{ EINVAL, "EINVAL" }
+	{
+	EINVAL, "EINVAL"}
 };
 
-void
-handler(int sig)
+void handler(int sig)
 {
-        tst_resm(TINFO,"Signal Handler Called with signal number %d\n",sig);
-        return;
+	tst_resm(TINFO, "Signal Handler Called with signal number %d\n", sig);
+	return;
 }
 
-int
-set_handler(int sig, int sig_to_mask, int mask_flags)
+int set_handler(int sig, int sig_to_mask, int mask_flags)
 {
-        struct sigaction sa, oldaction;
+	struct sigaction sa, oldaction;
 
-                sa.sa_sigaction = (void *)handler;
-                sa.sa_flags = mask_flags;
-                sigemptyset(&sa.sa_mask);
-                sigaddset(&sa.sa_mask, sig_to_mask);
+	sa.sa_sigaction = (void *)handler;
+	sa.sa_flags = mask_flags;
+	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, sig_to_mask);
 
-		/*   							        *
-		 * long sys_rt_sigaction (int sig, const struct sigaction *act, *
-		 * truct sigaction *oact, size_t sigsetsize);			*
-		 * EINVAL:							*
-        	 * sigsetsize was not equivalent to the size of a sigset_t type *
-		 */
+	/*                                                              *
+	 * long sys_rt_sigaction (int sig, const struct sigaction *act, *
+	 * truct sigaction *oact, size_t sigsetsize);                   *
+	 * EINVAL:                                                      *
+	 * sigsetsize was not equivalent to the size of a sigset_t type *
+	 */
 
-                TEST(syscall(__NR_rt_sigaction,sig, &sa , &oldaction,INVAL_SIGSETSIZE));
-                if (TEST_RETURN == 0) {
-                      return 0;
-                } else {
-                        return TEST_RETURN;
-                }
+	TEST(syscall
+	     (__NR_rt_sigaction, sig, &sa, &oldaction, INVAL_SIGSETSIZE));
+	if (TEST_RETURN == 0) {
+		return 0;
+	} else {
+		return TEST_RETURN;
+	}
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int signal, flag;
 	int lc;
 	char *msg;
 
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-             tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
-        setup();
+	setup();
 
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++) {//signal for 34 to 65
-			 	for (flag=0; flag<5;flag++) {
-	                        	 TEST(set_handler(signal, 0, test_flags[flag]));
-					if ((TEST_RETURN == -1) && (TEST_ERRNO == test_cases[0].exp_errno)) {
-        						tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
-                 	   				tst_resm(TPASS, "%s failure with sig: %d as expected errno  = %s : %s", TCID, signal,test_cases[0].errdesc, strerror(TEST_ERRNO));
-			                         } else {
-        					tst_resm(TFAIL, "rt_sigaction call succeeded: result = %ld got error %d:but expected  %d", TEST_RETURN, TEST_ERRNO, test_cases[0].exp_errno);
-        					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
-						}
-                			}
-		 	printf("\n");
-        		}
+			for (signal = SIGRTMIN; signal <= (SIGRTMAX); signal++) {	//signal for 34 to 65
+				for (flag = 0; flag < 5; flag++) {
+					TEST(set_handler
+					     (signal, 0, test_flags[flag]));
+					if ((TEST_RETURN == -1)
+					    && (TEST_ERRNO ==
+						test_cases[0].exp_errno)) {
+						tst_resm(TINFO,
+							 "sa.sa_flags = %s ",
+							 test_flags_list[flag]);
+						tst_resm(TPASS,
+							 "%s failure with sig: %d as expected errno  = %s : %s",
+							 TCID, signal,
+							 test_cases[0].errdesc,
+							 strerror(TEST_ERRNO));
+					} else {
+						tst_resm(TFAIL,
+							 "rt_sigaction call succeeded: result = %ld got error %d:but expected  %d",
+							 TEST_RETURN,
+							 TEST_ERRNO,
+							 test_cases[0].
+							 exp_errno);
+						tst_resm(TINFO,
+							 "sa.sa_flags = %s ",
+							 test_flags_list[flag]);
+					}
+				}
+				printf("\n");
+			}
 
-                }
-        }
+		}
+	}
 	cleanup();
-        tst_exit();
+	tst_exit();
 }

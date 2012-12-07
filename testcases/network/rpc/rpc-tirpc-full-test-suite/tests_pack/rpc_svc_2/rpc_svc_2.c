@@ -34,21 +34,19 @@
 //Complex procs
 #define CALCPROC   10000
 
-void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp);
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT * transp);
 
-struct datas
-{
+struct datas {
 	double a;
 	double b;
 	double c;
-}argument;
+} argument;
 
 //XDR Struct function
-bool_t xdr_datas(XDR *pt_xdr, struct datas* pt)
+bool_t xdr_datas(XDR * pt_xdr, struct datas *pt)
 {
-	return(xdr_double(pt_xdr, &(pt->a)) &&
-		   xdr_double(pt_xdr, &(pt->b)) &&
-		   xdr_double(pt_xdr, &(pt->c)));
+	return (xdr_double(pt_xdr, &(pt->a)) &&
+		xdr_double(pt_xdr, &(pt->b)) && xdr_double(pt_xdr, &(pt->c)));
 }
 
 //****************************************//
@@ -57,7 +55,7 @@ bool_t xdr_datas(XDR *pt_xdr, struct datas* pt)
 int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
-	//					    others arguments depend on server program
+	//                                          others arguments depend on server program
 	int run_mode = 1;
 	int progNum = atoi(argc[1]);
 	SVCXPRT *transpTCP = NULL;
@@ -68,37 +66,36 @@ int main(int argn, char *argc[])
 	pmap_unset(progNum, VERSNUM);
 	svc_unregister(progNum, VERSNUM);
 
-    //registerrpc(progNum, VERSNUM, PROCSIMPLEPING,
-    //    		simplePing, xdr_int, xdr_int);
-    transpTCP = svctcp_create(RPC_ANYSOCK, 1000, 1000);
-    transpUDP = svcudp_create(RPC_ANYSOCK);
+	//registerrpc(progNum, VERSNUM, PROCSIMPLEPING,
+	//                  simplePing, xdr_int, xdr_int);
+	transpTCP = svctcp_create(RPC_ANYSOCK, 1000, 1000);
+	transpUDP = svcudp_create(RPC_ANYSOCK);
 
-    if (run_mode)
-    {
-    	printf ("SVC TCP : %d\n", transpTCP);
-    	printf ("SVC UDP : %d\n", transpUDP);
-    }
+	if (run_mode) {
+		printf("SVC TCP : %d\n", transpTCP);
+		printf("SVC UDP : %d\n", transpUDP);
+	}
 
-	if (!svc_register(transpTCP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_TCP))
-	{
-    	fprintf(stderr, "svc_register: error (TCP)\n");
-    }
+	if (!svc_register
+	    (transpTCP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_TCP)) {
+		fprintf(stderr, "svc_register: error (TCP)\n");
+	}
 
-    if (!svc_register(transpUDP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_UDP))
-	{
-    	fprintf(stderr, "svc_register: error (UDP)\n");
-    }
+	if (!svc_register
+	    (transpUDP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_UDP)) {
+		fprintf(stderr, "svc_register: error (UDP)\n");
+	}
 
-    svc_run();
-    fprintf(stderr, "Error: svc_run returned!\n");
-    exit(1);
+	svc_run();
+	fprintf(stderr, "Error: svc_run returned!\n");
+	exit(1);
 }
 
 //****************************************//
 //***        Remotes Procedures        ***//
 //****************************************//
 
-char *calcProc(struct datas *dt, SVCXPRT *svc)
+char *calcProc(struct datas *dt, SVCXPRT * svc)
 {
 	//Makes a + b * c from structure dt and returns double
 	//printf("*** In calcProc ***\n");
@@ -111,46 +108,44 @@ char *calcProc(struct datas *dt, SVCXPRT *svc)
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT * transp)
 {
 	//printf("* in Dispatch Func.\n");
 
 	char *result;
 	xdrproc_t xdr_argument;
 	xdrproc_t xdr_result;
-	char *(*proc)(struct datas *, SVCXPRT *);
+	char *(*proc) (struct datas *, SVCXPRT *);
 	enum auth_stat why;
 
-    switch (rqstp->rq_proc)
-    {
-		case CALCPROC:
+	switch (rqstp->rq_proc) {
+	case CALCPROC:
 		{
 			//printf("** in CALCPROC dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_datas;
-			xdr_result   = (xdrproc_t)xdr_double;
-			proc         = (char *(*)(struct datas *, SVCXPRT *))calcProc;
+			xdr_argument = (xdrproc_t) xdr_datas;
+			xdr_result = (xdrproc_t) xdr_double;
+			proc = (char *(*)(struct datas *, SVCXPRT *))calcProc;
 			break;
 		}
-		default:
+	default:
 		{
 			//printf("** in NOT DEFINED dispatch Func.\n");
 			//Proc is unavaible
-      		svcerr_noproc(transp);
-      		return;
-      	}
-    }
+			svcerr_noproc(transp);
+			return;
+		}
+	}
 
-    memset((char *)&argument, (int)0, sizeof(argument));
-	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE)
-	{
+	memset((char *)&argument, (int)0, sizeof(argument));
+	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE) {
 		svcerr_decode(transp);
 		return;
 	}
 
-	result = (char *)(*proc)((struct datas *)&argument, transp);
+	result = (char *)(*proc) ((struct datas *)&argument, transp);
 
-	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
-	{
+	if ((result != NULL)
+	    && (svc_sendreply(transp, xdr_result, result) == FALSE)) {
 		svcerr_systemerr(transp);
 	}
 	if (svc_freeargs(transp, xdr_argument, (char *)&argument) == FALSE) {

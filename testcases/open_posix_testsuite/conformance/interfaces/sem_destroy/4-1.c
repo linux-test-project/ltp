@@ -24,9 +24,9 @@
 #define FUNCTION "sem_destroy"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main ()
+int main()
 {
-	sem_t   mysemp;
+	sem_t mysemp;
 
 	if (sem_init(&mysemp, 0, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
@@ -34,10 +34,10 @@ int main ()
 	}
 
 	if (sem_destroy(&mysemp) == 0) {
-                puts("TEST PASSED");
-                return PTS_PASS;
-        } else {
-                puts("TEST FAILED: couldn't destroy sempahore.");
-                return PTS_FAIL;
-        }
+		puts("TEST PASSED");
+		return PTS_PASS;
+	} else {
+		puts("TEST FAILED: couldn't destroy sempahore.");
+		return PTS_FAIL;
+	}
 }

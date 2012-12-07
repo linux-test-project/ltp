@@ -26,27 +26,23 @@
 int main()
 {
 	pthread_key_t key;
-	void* rc;
+	void *rc;
 
 	/* Verify that the value associated with "key" in a new thread is NULL */
 	rc = pthread_getspecific(key);
-	if (rc != NULL)
-	{
+	if (rc != NULL) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	if (pthread_key_create(&key, NULL) != 0)
-	{
+	if (pthread_key_create(&key, NULL) != 0) {
 		printf("Error: pthread_key_create() failed\n");
 		return PTS_UNRESOLVED;
-	} else
-	{
+	} else {
 		/* Verify that the value associated with "key" after it is newly created is
 		 * NULL */
 		rc = pthread_getspecific(key);
-		if (rc != NULL)
-		{
+		if (rc != NULL) {
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}

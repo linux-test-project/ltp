@@ -1,6 +1,6 @@
   /*
-  Test that the ILL_ILLADR macro is defined.
-  */
+     Test that the ILL_ILLADR macro is defined.
+   */
 
 #include <signal.h>
 

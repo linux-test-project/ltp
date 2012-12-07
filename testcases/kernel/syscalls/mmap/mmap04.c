@@ -123,7 +123,7 @@ int main(int ac, char **av)
 
 		/* Check for the return value of mmap() */
 		if (addr == MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO, "mmap of %s failed", TEMPFILE);
+			tst_resm(TFAIL | TERRNO, "mmap of %s failed", TEMPFILE);
 			continue;
 		}
 
@@ -138,7 +138,7 @@ int main(int ac, char **av)
 			 */
 			if (read(fildes, dummy, page_sz) < 0) {
 				tst_brkm(TFAIL, cleanup, "reading %s failed",
-					TEMPFILE);
+					 TEMPFILE);
 			}
 
 			/*
@@ -147,11 +147,11 @@ int main(int ac, char **av)
 			 */
 			if (memcmp(dummy, addr, page_sz)) {
 				tst_resm(TFAIL,
-					"mapped memory region contains invalid "
-					"data");
+					 "mapped memory region contains invalid "
+					 "data");
 			} else {
 				tst_resm(TPASS,
-					"Functionality of mmap() successful");
+					 "Functionality of mmap() successful");
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
@@ -232,7 +232,7 @@ void setup()
 	/* Open the temporary file again for reading */
 	if ((fildes = open(TEMPFILE, O_RDONLY)) < 0) {
 		tst_brkm(TFAIL, cleanup,
-			"opening %s read-only failed", TEMPFILE);
+			 "opening %s read-only failed", TEMPFILE);
 	}
 }
 

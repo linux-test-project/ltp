@@ -34,26 +34,26 @@
  * element 3 - value.it_interval.tv_nsec
  */
 static int testlist[NUMTESTS][4] = {
-	{1, -1, 0, 0},			// value.it_value.tv_nsec < 0
-	{1, -2147483647, 0, 0},		// value.it_value.tv_nsec < 0
-	{1, -1073743192, 0, 0},		// value.it_value.tv_nsec < 0
-	{1, 1000000000, 0, 0},		// value.it_value.tv_nsec >= 1K mi
-	{1, 1000000001, 0, 0},		// value.it_value.tv_nsec >= 1K mi
-	{1, 2147483647, 0, 0},		// value.it_value.tv_nsec >= 1K mi
-	{1, 1075002478, 0, 0},		// value.it_value.tv_nsec >= 1K mi
-	{1, -1, 0, -1},			// value.it_interval.tv_nsec < 0
-	{1, 0, 0, -2147483647},		// value.it_interval.tv_nsec < 0
-	{1, 0, 0, -1073743192},		// value.it_interval.tv_nsec < 0
-	{1, 0, 0, 1000000000},		// value.it_interval.tv_nsec >= 1K mi
-	{1, 0, 0, 1000000001},		// value.it_interval.tv_nsec >= 1K mi
-	{1, 0, 0, 2147483647},		// value.it_interval.tv_nsec >= 1K mi
-	{1, 0, 0, 1075002478},		// value.it_interval.tv_nsec >= 1K mi
-	{-1, 0, 0, 0},			// value.it_value.tv_sec < 0
-	{-2147483647, 0, 0, 0},		// value.it_value.tv_sec < 0
-	{-1073743192, 0, 0, 0},		// value.it_value.tv_sec < 0
-	{1, 0, -1, 0},			// value.it_interval.tv_sec < 0
-	{1, 0, -2147483647, 0},		// value.it_interval.tv_sec < 0
-	{1, 0, -1073743192, 0},		// value.it_interval.tv_sec < 0
+	{1, -1, 0, 0},		// value.it_value.tv_nsec < 0
+	{1, -2147483647, 0, 0},	// value.it_value.tv_nsec < 0
+	{1, -1073743192, 0, 0},	// value.it_value.tv_nsec < 0
+	{1, 1000000000, 0, 0},	// value.it_value.tv_nsec >= 1K mi
+	{1, 1000000001, 0, 0},	// value.it_value.tv_nsec >= 1K mi
+	{1, 2147483647, 0, 0},	// value.it_value.tv_nsec >= 1K mi
+	{1, 1075002478, 0, 0},	// value.it_value.tv_nsec >= 1K mi
+	{1, -1, 0, -1},		// value.it_interval.tv_nsec < 0
+	{1, 0, 0, -2147483647},	// value.it_interval.tv_nsec < 0
+	{1, 0, 0, -1073743192},	// value.it_interval.tv_nsec < 0
+	{1, 0, 0, 1000000000},	// value.it_interval.tv_nsec >= 1K mi
+	{1, 0, 0, 1000000001},	// value.it_interval.tv_nsec >= 1K mi
+	{1, 0, 0, 2147483647},	// value.it_interval.tv_nsec >= 1K mi
+	{1, 0, 0, 1075002478},	// value.it_interval.tv_nsec >= 1K mi
+	{-1, 0, 0, 0},		// value.it_value.tv_sec < 0
+	{-2147483647, 0, 0, 0},	// value.it_value.tv_sec < 0
+	{-1073743192, 0, 0, 0},	// value.it_value.tv_sec < 0
+	{1, 0, -1, 0},		// value.it_interval.tv_sec < 0
+	{1, 0, -2147483647, 0},	// value.it_interval.tv_sec < 0
+	{1, 0, -1073743192, 0},	// value.it_interval.tv_sec < 0
 };
 
 int main(int argc, char *argv[])
@@ -79,11 +79,10 @@ int main(int argc, char *argv[])
 		its.it_interval.tv_nsec = testlist[i][3];
 
 		printf("it_value: %d sec %d nsec\n",
-				(int) its.it_value.tv_sec,
-				(int) its.it_value.tv_nsec);
+		       (int)its.it_value.tv_sec, (int)its.it_value.tv_nsec);
 		printf("it_interval: %d sec %d nsec\n",
-				(int) its.it_interval.tv_sec,
-				(int) its.it_interval.tv_nsec);
+		       (int)its.it_interval.tv_sec,
+		       (int)its.it_interval.tv_nsec);
 
 		if (timer_settime(tid, 0, &its, NULL) == -1) {
 			if (EINVAL != errno) {

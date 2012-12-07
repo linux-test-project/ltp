@@ -79,7 +79,7 @@ int main(int ac, char **av)
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();		/* global setup for test */
 
@@ -98,7 +98,7 @@ int main(int ac, char **av)
 		exno = sig = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
 
 		if (pid == 0) {	/* child */
 			sleep(1);

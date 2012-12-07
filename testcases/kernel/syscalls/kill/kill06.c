@@ -70,7 +70,6 @@ void do_child(void);
 char *TCID = "kill06";
 int TST_TOTAL = 1;
 
-
 #define TEST_SIG SIGKILL
 
 int main(int ac, char **av)
@@ -125,8 +124,8 @@ int main(int ac, char **av)
 			TEST(kill(-getpgrp(), TEST_SIG));
 			sleep(300);
 
-			    tst_resm(TINFO, "%d never recieved a"
-				     " signal", getpid());
+			tst_resm(TINFO, "%d never recieved a"
+				 " signal", getpid());
 			exit(exno);
 		} else {
 			waitpid(pid1, &status, 0);
@@ -169,7 +168,7 @@ void do_child()
 
 	sleep(299);
 
-	    tst_resm(TINFO, "%d never recieved a" " signal", getpid());
+	tst_resm(TINFO, "%d never recieved a" " signal", getpid());
 	exit(exno);
 }
 

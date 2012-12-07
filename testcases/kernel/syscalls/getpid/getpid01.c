@@ -142,11 +142,9 @@ int main(int ac, char **av)
 		TEST(getpid());
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "getpid failed");
-		else
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "getpid returned %ld",
-				    TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO, "getpid failed");
+		else if (STD_FUNCTIONAL_TEST)
+			tst_resm(TPASS, "getpid returned %ld", TEST_RETURN);
 
 	}
 

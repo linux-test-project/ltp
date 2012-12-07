@@ -72,8 +72,7 @@ int main(int argc, char **argv)
 
 	struct passwd *nobody;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -87,7 +86,7 @@ int main(int argc, char **argv)
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "fork failed");
-		 } else if (pid > 0) {	/* parent */
+		} else if (pid > 0) {	/* parent */
 			waitpid(pid, &status, 0);
 			_exit(0);	/*
 					 * Exit here and let the child clean up.
@@ -102,12 +101,12 @@ int main(int argc, char **argv)
 			if (retval < 0) {
 				perror("setreuid");
 				tst_brkm(TFAIL, cleanup, "setreuid failed");
-			 }
+			}
 			TEST(vhangup());
 			if (TEST_RETURN != -1) {
 				tst_brkm(TFAIL, cleanup, "vhangup() failed to "
 					 "fail");
-			 } else if (TEST_ERRNO == EPERM) {
+			} else if (TEST_ERRNO == EPERM) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TPASS, "Got EPERM as expected.");
 			} else {
@@ -150,4 +149,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}

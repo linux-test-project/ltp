@@ -30,7 +30,8 @@
 
 #include "test_VIDIOC_FREQUENCY.h"
 
-void test_VIDIOC_G_FREQUENCY() {
+void test_VIDIOC_G_FREQUENCY()
+{
 	int ret_get, errno_get;
 	__u32 tuner;
 	struct v4l2_frequency freq;
@@ -75,10 +76,8 @@ void test_VIDIOC_G_FREQUENCY() {
 			freq.reserved[2],
 			freq.reserved[3],
 			freq.reserved[4],
-			freq.reserved[5],
-			freq.reserved[6],
-			freq.reserved[7]
-		);
+			freq.reserved[5], freq.reserved[6], freq.reserved[7]
+		    );
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
 		CU_ASSERT_EQUAL(errno_get, EINVAL);
@@ -86,12 +85,13 @@ void test_VIDIOC_G_FREQUENCY() {
 
 }
 
-void test_VIDIOC_G_FREQUENCY_S32_MAX() {
+void test_VIDIOC_G_FREQUENCY_S32_MAX()
+{
 	int ret_get, errno_get;
 	__u32 tuner;
 	struct v4l2_frequency freq;
 
-	tuner = (__u32)S32_MAX;
+	tuner = (__u32) S32_MAX;
 
 	memset(&tuner, 0xff, sizeof(tuner));
 	freq.tuner = tuner;
@@ -105,12 +105,13 @@ void test_VIDIOC_G_FREQUENCY_S32_MAX() {
 	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
-void test_VIDIOC_G_FREQUENCY_S32_MAX_1() {
+void test_VIDIOC_G_FREQUENCY_S32_MAX_1()
+{
 	int ret_get, errno_get;
 	__u32 tuner;
 	struct v4l2_frequency freq;
 
-	tuner = (__u32)S32_MAX+1;
+	tuner = (__u32) S32_MAX + 1;
 
 	memset(&tuner, 0xff, sizeof(tuner));
 	freq.tuner = tuner;
@@ -124,7 +125,8 @@ void test_VIDIOC_G_FREQUENCY_S32_MAX_1() {
 	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
-void test_VIDIOC_G_FREQUENCY_U32_MAX() {
+void test_VIDIOC_G_FREQUENCY_U32_MAX()
+{
 	int ret_get, errno_get;
 	__u32 tuner;
 	struct v4l2_frequency freq;
@@ -143,7 +145,8 @@ void test_VIDIOC_G_FREQUENCY_U32_MAX() {
 	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
-void test_VIDIOC_G_FREQUENCY_NULL() {
+void test_VIDIOC_G_FREQUENCY_NULL()
+{
 	int ret_get, errno_get;
 	int ret_null, errno_null;
 	struct v4l2_frequency freq;
@@ -178,7 +181,8 @@ void test_VIDIOC_G_FREQUENCY_NULL() {
 	}
 }
 
-void test_VIDIOC_S_FREQUENCY() {
+void test_VIDIOC_S_FREQUENCY()
+{
 	int ret_get, errno_get;
 	int ret_set, errno_set;
 	__u32 tuner;
@@ -208,8 +212,9 @@ void test_VIDIOC_S_FREQUENCY() {
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &orig_freq);
 		errno_set = errno;
 
-		dprintf("\t%s:%u: VIDIOC_S_FREQUENCY, ret_set=%i, errno_set=%i\n",
-			__FILE__, __LINE__, ret_set, errno_set);
+		dprintf
+		    ("\t%s:%u: VIDIOC_S_FREQUENCY, ret_set=%i, errno_set=%i\n",
+		     __FILE__, __LINE__, ret_set, errno_set);
 
 		CU_ASSERT_EQUAL(ret_set, 0);
 		if (ret_set == 0) {
@@ -217,18 +222,23 @@ void test_VIDIOC_S_FREQUENCY() {
 			/* check wheteher the frequency has not been changed */
 			memset(&new_freq, 0xff, sizeof(new_freq));
 			new_freq.tuner = tuner;
-			ret_get = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+			ret_get =
+			    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+				  &new_freq);
 			errno_get = errno;
 
-			dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret_get=%i, errno_get=%i\n",
-				__FILE__, __LINE__, ret_get, errno_get);
+			dprintf
+			    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret_get=%i, errno_get=%i\n",
+			     __FILE__, __LINE__, ret_get, errno_get);
 
 			CU_ASSERT_EQUAL(ret_get, 0);
 			if (ret_get == 0) {
-				dprintf("\t%s:%u: current frequency=%u (expected %u)\n",
-					__FILE__, __LINE__,
-					new_freq.frequency, orig_freq.frequency);
-				CU_ASSERT_EQUAL(new_freq.frequency, orig_freq.frequency);
+				dprintf
+				    ("\t%s:%u: current frequency=%u (expected %u)\n",
+				     __FILE__, __LINE__, new_freq.frequency,
+				     orig_freq.frequency);
+				CU_ASSERT_EQUAL(new_freq.frequency,
+						orig_freq.frequency);
 			}
 
 		}
@@ -246,8 +256,9 @@ void test_VIDIOC_S_FREQUENCY() {
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 		errno_set = errno;
 
-		dprintf("\t%s:%u: VIDIOC_S_FREQUENCY, ret_set=%i, errno_set=%i\n",
-			__FILE__, __LINE__, ret_set, errno_set);
+		dprintf
+		    ("\t%s:%u: VIDIOC_S_FREQUENCY, ret_set=%i, errno_set=%i\n",
+		     __FILE__, __LINE__, ret_set, errno_set);
 
 		CU_ASSERT_EQUAL(ret_set, -1);
 		CU_ASSERT_EQUAL(errno_set, EINVAL);
@@ -256,7 +267,8 @@ void test_VIDIOC_S_FREQUENCY() {
 
 }
 
-void test_VIDIOC_S_FREQUENCY_boundaries() {
+void test_VIDIOC_S_FREQUENCY_boundaries()
+{
 	int ret_g_tuner = 0;
 	int ret_g_freq = 0;
 	int errno_g_tuner = 0;
@@ -278,9 +290,9 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 	ret_g_tuner = ioctl(get_video_fd(), VIDIOC_G_TUNER, &tuner);
 	errno_g_tuner = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_TUNER, ret=%i, tuner.rangelow=%u, tuner.rangehigh=%u\n",
-		__FILE__, __LINE__,
-		ret_g_tuner, tuner.rangelow, tuner.rangehigh);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_TUNER, ret=%i, tuner.rangelow=%u, tuner.rangehigh=%u\n",
+	     __FILE__, __LINE__, ret_g_tuner, tuner.rangelow, tuner.rangehigh);
 	CU_ASSERT_EQUAL(tuner.index, index);
 
 	/* fetch the current frequency setting */
@@ -289,9 +301,9 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 	ret_g_freq = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &orig_freq);
 	errno_g_freq = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret_g_freq=%i, orig_freq.frequency=%u\n",
-		__FILE__, __LINE__,
-		ret_g_freq, orig_freq.frequency);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret_g_freq=%i, orig_freq.frequency=%u\n",
+	     __FILE__, __LINE__, ret_g_freq, orig_freq.frequency);
 	CU_ASSERT_EQUAL(orig_freq.tuner, index);
 
 	if (ret_g_tuner == 0 && ret_g_freq == 0) {
@@ -304,8 +316,7 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 		freq.frequency = 0;
 		ret = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 		dprintf("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
-			__FILE__, __LINE__,
-			0, ret);
+			__FILE__, __LINE__, 0, ret);
 
 		CU_ASSERT_EQUAL(ret, 0);
 		if (ret == 0) {
@@ -315,15 +326,18 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 			 */
 			memset(&new_freq, 0xff, sizeof(new_freq));
 			new_freq.tuner = index;
-			ret = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+			ret =
+			    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+				  &new_freq);
 
-			dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
-				__FILE__, __LINE__,
-				ret, new_freq.frequency);
+			dprintf
+			    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
+			     __FILE__, __LINE__, ret, new_freq.frequency);
 
 			CU_ASSERT_EQUAL(ret, 0);
 			if (ret == 0) {
-				CU_ASSERT_EQUAL(new_freq.frequency, tuner.rangelow);
+				CU_ASSERT_EQUAL(new_freq.frequency,
+						tuner.rangelow);
 			}
 		}
 
@@ -332,12 +346,12 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 			memset(&freq, 0xff, sizeof(freq));
 			freq.tuner = index;
 			freq.type = orig_freq.type;
-			freq.frequency = tuner.rangelow-1;
+			freq.frequency = tuner.rangelow - 1;
 			ret = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 
-			dprintf("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
-				__FILE__, __LINE__,
-				tuner.rangelow-1, ret);
+			dprintf
+			    ("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
+			     __FILE__, __LINE__, tuner.rangelow - 1, ret);
 
 			CU_ASSERT_EQUAL(ret, 0);
 			if (ret == 0) {
@@ -347,17 +361,23 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 				 */
 				memset(&new_freq, 0xff, sizeof(new_freq));
 				new_freq.tuner = index;
-				ret = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+				ret =
+				    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+					  &new_freq);
 
-				dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
-					__FILE__, __LINE__,
-					ret, new_freq.frequency);
+				dprintf
+				    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
+				     __FILE__, __LINE__, ret,
+				     new_freq.frequency);
 				CU_ASSERT_EQUAL(ret, 0);
 				if (ret == 0) {
-					dprintf("\t%s:%u: current frequency=%u (expected %u)\n",
-						__FILE__, __LINE__,
-						new_freq.frequency, tuner.rangelow);
-					CU_ASSERT_EQUAL(new_freq.frequency, tuner.rangelow);
+					dprintf
+					    ("\t%s:%u: current frequency=%u (expected %u)\n",
+					     __FILE__, __LINE__,
+					     new_freq.frequency,
+					     tuner.rangelow);
+					CU_ASSERT_EQUAL(new_freq.frequency,
+							tuner.rangelow);
 				}
 			}
 		}
@@ -370,8 +390,7 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 		ret = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 
 		dprintf("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
-			__FILE__, __LINE__,
-			tuner.rangelow, ret);
+			__FILE__, __LINE__, tuner.rangelow, ret);
 
 		CU_ASSERT_EQUAL(ret, 0);
 		if (ret == 0) {
@@ -381,18 +400,22 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 			 */
 			memset(&new_freq, 0xff, sizeof(new_freq));
 			new_freq.tuner = index;
-			ret = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+			ret =
+			    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+				  &new_freq);
 
-			dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
-				__FILE__, __LINE__,
-				ret, new_freq.frequency);
+			dprintf
+			    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
+			     __FILE__, __LINE__, ret, new_freq.frequency);
 
 			CU_ASSERT_EQUAL(ret, 0);
 			if (ret == 0) {
-				dprintf("\t%s:%u: current frequency=%u (expected %u)\n",
-					__FILE__, __LINE__,
-					new_freq.frequency, tuner.rangelow);
-				CU_ASSERT_EQUAL(new_freq.frequency, tuner.rangelow);
+				dprintf
+				    ("\t%s:%u: current frequency=%u (expected %u)\n",
+				     __FILE__, __LINE__, new_freq.frequency,
+				     tuner.rangelow);
+				CU_ASSERT_EQUAL(new_freq.frequency,
+						tuner.rangelow);
 			}
 		}
 
@@ -404,8 +427,7 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 		ret = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 
 		dprintf("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
-			__FILE__, __LINE__,
-			tuner.rangehigh, ret);
+			__FILE__, __LINE__, tuner.rangehigh, ret);
 
 		CU_ASSERT_EQUAL(ret, 0);
 		if (ret == 0) {
@@ -415,18 +437,22 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 			 */
 			memset(&new_freq, 0xff, sizeof(new_freq));
 			new_freq.tuner = index;
-			ret = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+			ret =
+			    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+				  &new_freq);
 
-			dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
-				__FILE__, __LINE__,
-				ret, new_freq.frequency);
+			dprintf
+			    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
+			     __FILE__, __LINE__, ret, new_freq.frequency);
 
 			CU_ASSERT_EQUAL(ret, 0);
 			if (ret == 0) {
-				dprintf("\t%s:%u: current frequency=%u (expected %u)\n",
-					__FILE__, __LINE__,
-					new_freq.frequency, tuner.rangehigh);
-				CU_ASSERT_EQUAL(new_freq.frequency, tuner.rangehigh);
+				dprintf
+				    ("\t%s:%u: current frequency=%u (expected %u)\n",
+				     __FILE__, __LINE__, new_freq.frequency,
+				     tuner.rangehigh);
+				CU_ASSERT_EQUAL(new_freq.frequency,
+						tuner.rangehigh);
 			}
 		}
 
@@ -435,12 +461,12 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 			memset(&freq, 0xff, sizeof(freq));
 			freq.tuner = index;
 			freq.type = orig_freq.type;
-			freq.frequency = tuner.rangehigh+1;
+			freq.frequency = tuner.rangehigh + 1;
 			ret = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 
-			dprintf("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
-				__FILE__, __LINE__,
-				tuner.rangehigh+1, ret);
+			dprintf
+			    ("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
+			     __FILE__, __LINE__, tuner.rangehigh + 1, ret);
 
 			CU_ASSERT_EQUAL(ret, 0);
 			if (ret == 0) {
@@ -450,18 +476,24 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 				 */
 				memset(&new_freq, 0xff, sizeof(new_freq));
 				new_freq.tuner = index;
-				ret = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+				ret =
+				    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+					  &new_freq);
 
-				dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
-					__FILE__, __LINE__,
-					ret, new_freq.frequency);
+				dprintf
+				    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
+				     __FILE__, __LINE__, ret,
+				     new_freq.frequency);
 
 				CU_ASSERT_EQUAL(ret, 0);
 				if (ret == 0) {
-				dprintf("\t%s:%u: current frequency=%u (expected %u)\n",
-					__FILE__, __LINE__,
-					new_freq.frequency, tuner.rangehigh);
-					CU_ASSERT_EQUAL(new_freq.frequency, tuner.rangehigh);
+					dprintf
+					    ("\t%s:%u: current frequency=%u (expected %u)\n",
+					     __FILE__, __LINE__,
+					     new_freq.frequency,
+					     tuner.rangehigh);
+					CU_ASSERT_EQUAL(new_freq.frequency,
+							tuner.rangehigh);
 				}
 			}
 		}
@@ -474,8 +506,7 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 		ret = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 
 		dprintf("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
-			__FILE__, __LINE__,
-			U32_MAX, ret);
+			__FILE__, __LINE__, U32_MAX, ret);
 		CU_ASSERT_EQUAL(ret, 0);
 		if (ret == 0) {
 
@@ -484,18 +515,22 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 			 */
 			memset(&new_freq, 0xff, sizeof(new_freq));
 			new_freq.tuner = index;
-			ret = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+			ret =
+			    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+				  &new_freq);
 
-			dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
-				__FILE__, __LINE__,
-				ret, new_freq.frequency);
+			dprintf
+			    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
+			     __FILE__, __LINE__, ret, new_freq.frequency);
 
 			CU_ASSERT_EQUAL(ret, 0);
 			if (ret == 0) {
-				dprintf("\t%s:%u: current frequency=%u (expected %u)\n",
-					__FILE__, __LINE__,
-					new_freq.frequency, tuner.rangehigh);
-				CU_ASSERT_EQUAL(new_freq.frequency, tuner.rangehigh);
+				dprintf
+				    ("\t%s:%u: current frequency=%u (expected %u)\n",
+				     __FILE__, __LINE__, new_freq.frequency,
+				     tuner.rangehigh);
+				CU_ASSERT_EQUAL(new_freq.frequency,
+						tuner.rangehigh);
 			}
 		}
 
@@ -507,8 +542,7 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 		ret = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 
 		dprintf("\t%s:%u: set to %u: VIDIOC_S_FREQUENCY, ret=%i\n",
-			__FILE__, __LINE__,
-			orig_freq.frequency, ret);
+			__FILE__, __LINE__, orig_freq.frequency, ret);
 
 		CU_ASSERT_EQUAL(ret, 0);
 		if (ret == 0) {
@@ -516,39 +550,48 @@ void test_VIDIOC_S_FREQUENCY_boundaries() {
 			/* check wheteher the frequency has been restored */
 			memset(&new_freq, 0xff, sizeof(new_freq));
 			new_freq.tuner = index;
-			ret = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+			ret =
+			    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+				  &new_freq);
 
-			dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
-				__FILE__, __LINE__,
-				ret, new_freq.frequency);
+			dprintf
+			    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret=%i, new_freq.frequency=%u\n",
+			     __FILE__, __LINE__, ret, new_freq.frequency);
 
 			CU_ASSERT_EQUAL(ret, 0);
 			if (ret == 0) {
-				dprintf("\t%s:%u: current frequency=%u (expected %u)\n",
-					__FILE__, __LINE__,
-					new_freq.frequency, orig_freq.frequency);
-				CU_ASSERT_EQUAL(new_freq.frequency, orig_freq.frequency);
+				dprintf
+				    ("\t%s:%u: current frequency=%u (expected %u)\n",
+				     __FILE__, __LINE__, new_freq.frequency,
+				     orig_freq.frequency);
+				CU_ASSERT_EQUAL(new_freq.frequency,
+						orig_freq.frequency);
 			}
 		}
 	}
 
 	if (ret_g_freq != 0) {
-		dprintf("\t%s:%u: ret_g_freq=%d (expected %d)\n", __FILE__, __LINE__, ret_g_freq, -1);
-		dprintf("\t%s:%u: errno_g_freq=%d (expected %d)\n", __FILE__, __LINE__, errno_g_freq, EINVAL);
+		dprintf("\t%s:%u: ret_g_freq=%d (expected %d)\n", __FILE__,
+			__LINE__, ret_g_freq, -1);
+		dprintf("\t%s:%u: errno_g_freq=%d (expected %d)\n", __FILE__,
+			__LINE__, errno_g_freq, EINVAL);
 		CU_ASSERT_EQUAL(ret_g_freq, -1);
 		CU_ASSERT_EQUAL(errno, EINVAL);
 	}
 
 	if (ret_g_tuner != 0) {
-		dprintf("\t%s:%u: ret_g_tuner=%d (expected %d)\n", __FILE__, __LINE__, ret_g_tuner, -1);
-		dprintf("\t%s:%u: errno_g_tuner=%d (expected %d)\n", __FILE__, __LINE__, errno_g_tuner, EINVAL);
+		dprintf("\t%s:%u: ret_g_tuner=%d (expected %d)\n", __FILE__,
+			__LINE__, ret_g_tuner, -1);
+		dprintf("\t%s:%u: errno_g_tuner=%d (expected %d)\n", __FILE__,
+			__LINE__, errno_g_tuner, EINVAL);
 		CU_ASSERT_EQUAL(ret_g_tuner, -1);
 		CU_ASSERT_EQUAL(errno, EINVAL);
 	}
 
 }
 
-void test_VIDIOC_S_FREQUENCY_scan() {
+void test_VIDIOC_S_FREQUENCY_scan()
+{
 	int ret_g_tuner, errno_g_tuner;
 	int ret_g_freq, errno_g_freq;
 	int ret_get, errno_get;
@@ -581,16 +624,16 @@ void test_VIDIOC_S_FREQUENCY_scan() {
 	ret_g_freq = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &orig_freq);
 	errno_g_freq = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret_g_freq=%i, errno_g_freq=%i, orig_freq.frequency=%u\n",
-		__FILE__, __LINE__, ret_g_freq, errno_g_freq, orig_freq.frequency);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret_g_freq=%i, errno_g_freq=%i, orig_freq.frequency=%u\n",
+	     __FILE__, __LINE__, ret_g_freq, errno_g_freq, orig_freq.frequency);
 	CU_ASSERT_EQUAL(orig_freq.tuner, index);
 
 	if (ret_g_freq == 0) {
 		CU_ASSERT_EQUAL(orig_freq.tuner, index);
 
 		dprintf("\t%s:%u: tuner.rangelow=%u, tuner.rangehigh=%u\n",
-			__FILE__, __LINE__,
-			tuner.rangelow, tuner.rangehigh);
+			__FILE__, __LINE__, tuner.rangelow, tuner.rangehigh);
 
 		i = tuner.rangelow;
 		prev_freq.frequency = 0;
@@ -601,33 +644,41 @@ void test_VIDIOC_S_FREQUENCY_scan() {
 			freq.type = orig_freq.type;
 
 			freq.frequency = i;
-			ret_set = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
+			ret_set =
+			    ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 			errno_set = errno;
-			dprintf("\t%s:%u: VIDIOC_S_FREQUENCY, ret_set=%i, errno_set=%i, freq.frequency=%u\n",
-				__FILE__, __LINE__,
-				ret_set, errno_set, i);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FREQUENCY, ret_set=%i, errno_set=%i, freq.frequency=%u\n",
+			     __FILE__, __LINE__, ret_set, errno_set, i);
 
 			CU_ASSERT_EQUAL(ret_set, 0);
 			if (ret_set == 0) {
 
 				memset(&new_freq, 0xff, sizeof(new_freq));
 				new_freq.tuner = index;
-				ret_get = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+				ret_get =
+				    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+					  &new_freq);
 				errno_get = errno;
 
-				dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret_get=%i, errno_get=%i, new_freq.frequency=%u\n",
-					__FILE__, __LINE__,
-					ret_get, errno_get, new_freq.frequency);
+				dprintf
+				    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret_get=%i, errno_get=%i, new_freq.frequency=%u\n",
+				     __FILE__, __LINE__, ret_get, errno_get,
+				     new_freq.frequency);
 
 				CU_ASSERT_EQUAL(ret_get, 0);
 				if (ret_get == 0) {
-					CU_ASSERT(prev_freq.frequency <= new_freq.frequency);
-					CU_ASSERT(tuner.rangelow <= new_freq.frequency);
-					CU_ASSERT(new_freq.frequency <= tuner.rangehigh);
+					CU_ASSERT(prev_freq.frequency <=
+						  new_freq.frequency);
+					CU_ASSERT(tuner.rangelow <=
+						  new_freq.frequency);
+					CU_ASSERT(new_freq.frequency <=
+						  tuner.rangehigh);
 					prev_freq = new_freq;
 				}
 			} else {
-				printf("\tError %i while setting to %u\n", errno_set, i);
+				printf("\tError %i while setting to %u\n",
+				       errno_set, i);
 			}
 			i++;
 		} while (i <= tuner.rangehigh);
@@ -640,8 +691,9 @@ void test_VIDIOC_S_FREQUENCY_scan() {
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_FREQUENCY, &freq);
 		errno_set = errno;
 
-		dprintf("\t%s:%u: VIDIOC_S_FREQUENCY, ret_set=%i, errno_set=%i\n",
-			__FILE__, __LINE__, ret_set, errno_set);
+		dprintf
+		    ("\t%s:%u: VIDIOC_S_FREQUENCY, ret_set=%i, errno_set=%i\n",
+		     __FILE__, __LINE__, ret_set, errno_set);
 
 		CU_ASSERT_EQUAL(ret_set, 0);
 		if (ret_set == 0) {
@@ -649,16 +701,20 @@ void test_VIDIOC_S_FREQUENCY_scan() {
 			/* check wheteher the frequency has been restored */
 			memset(&new_freq, 0xff, sizeof(new_freq));
 			new_freq.tuner = index;
-			ret_get = ioctl(get_video_fd(), VIDIOC_G_FREQUENCY, &new_freq);
+			ret_get =
+			    ioctl(get_video_fd(), VIDIOC_G_FREQUENCY,
+				  &new_freq);
 			errno_get = errno;
 
-			dprintf("\t%s:%u: VIDIOC_G_FREQUENCY, ret_get=%i, errno_get=%i, new_freq.frequency=%u\n",
-				__FILE__, __LINE__,
-				ret_get, errno_get, new_freq.frequency);
+			dprintf
+			    ("\t%s:%u: VIDIOC_G_FREQUENCY, ret_get=%i, errno_get=%i, new_freq.frequency=%u\n",
+			     __FILE__, __LINE__, ret_get, errno_get,
+			     new_freq.frequency);
 
 			CU_ASSERT_EQUAL(ret_get, 0);
 			if (ret_get == 0) {
-				CU_ASSERT_EQUAL(new_freq.frequency, orig_freq.frequency);
+				CU_ASSERT_EQUAL(new_freq.frequency,
+						orig_freq.frequency);
 			}
 		}
 	}
@@ -675,7 +731,8 @@ void test_VIDIOC_S_FREQUENCY_scan() {
 
 }
 
-void test_VIDIOC_S_FREQUENCY_NULL() {
+void test_VIDIOC_S_FREQUENCY_NULL()
+{
 	int ret_get, errno_get;
 	int ret_set, errno_set;
 	int ret_null, errno_null;

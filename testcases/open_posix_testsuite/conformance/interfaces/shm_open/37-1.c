@@ -34,13 +34,15 @@ char *shm_name[] = {
 	"/",
 	"//",
 	"/abc",
-	NULL};
+	NULL
+};
 
-int main() {
-	int fd, i=0, result = PTS_PASS;
+int main()
+{
+	int fd, i = 0, result = PTS_PASS;
 
 	while (shm_name[i]) {
-	        fflush(stderr);
+		fflush(stderr);
 		printf("Name: '%s'\n", shm_name[i]);
 		fflush(stdout);
 

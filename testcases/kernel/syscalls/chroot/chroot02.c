@@ -127,7 +127,7 @@ void setup()
 	tst_tmpdir();
 	if ((fileHandle = creat(TMP_FILENAME, 0777)) == -1)
 		tst_brkm(TBROK, cleanup, "failed to create temporary file "
-		    TMP_FILENAME);
+			 TMP_FILENAME);
 	if (stat(TMP_FILENAME, &buf) != 0)
 		tst_brkm(TBROK, cleanup, TMP_FILENAME " does not exist");
 

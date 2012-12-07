@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigprocmask (SIG_BLOCK, &set, NULL) == -1) {
+	if (sigprocmask(SIG_BLOCK, &set, NULL) == -1) {
 		perror("sigprocmask() failed\n");
 		return PTS_UNRESOLVED;
 	}
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 	 */
 
 	for (i = 0; i < NUMREPS; i++) {
-		printf("Test for value %d\n", (int) its.it_value.tv_sec);
+		printf("Test for value %d\n", (int)its.it_value.tv_sec);
 		if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
 			perror("clock_gettime() did not return success\n");
 			return PTS_UNRESOLVED;
@@ -110,17 +110,17 @@ int main(int argc, char *argv[])
 			return PTS_UNRESOLVED;
 		}
 
-		timeelapsed = tsafter.tv_sec-tsbefore.tv_sec;
+		timeelapsed = tsafter.tv_sec - tsbefore.tv_sec;
 
 		if (timeelapsed < 0) {
 			perror("clock_gettime inconsistent\n");
 			return PTS_UNRESOLVED;
 		}
 
-		delta = timeelapsed-its.it_value.tv_sec;
+		delta = timeelapsed - its.it_value.tv_sec;
 		if ((delta > ACCEPTABLEDELTA) || (delta < 0)) {
 			printf("FAIL:  timer_settime() invalid on %d\n",
-					(int) its.it_value.tv_sec);
+			       (int)its.it_value.tv_sec);
 			failure = 1;
 		}
 

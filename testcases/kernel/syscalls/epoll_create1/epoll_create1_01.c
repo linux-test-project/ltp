@@ -66,7 +66,7 @@
 #include "linux_syscall_numbers.h"
 
 #ifndef O_CLOEXEC
-# define O_CLOEXEC 02000000
+#define O_CLOEXEC 02000000
 #endif
 
 #define EPOLL_CLOEXEC O_CLOEXEC
@@ -134,8 +134,8 @@ int main(int argc, char *argv[])
 
 	if ((tst_kvercmp(2, 6, 27)) < 0)
 		tst_brkm(TCONF, NULL,
-		    "This test can only run on kernels that are 2.6.27 and "
-		    "higher");
+			 "This test can only run on kernels that are 2.6.27 and "
+			 "higher");
 
 	setup();
 
@@ -149,13 +149,12 @@ int main(int argc, char *argv[])
 	}
 	if (coe & FD_CLOEXEC) {
 		tst_brkm(TFAIL, cleanup,
-		    "epoll_create1(0) set close-on-exec flag");
+			 "epoll_create1(0) set close-on-exec flag");
 	}
 	close(fd);
 	fd = syscall(__NR_epoll_create1, EPOLL_CLOEXEC);
 	if (fd == -1) {
-		tst_brkm(TFAIL, cleanup,
-		    "epoll_create1(EPOLL_CLOEXEC) failed");
+		tst_brkm(TFAIL, cleanup, "epoll_create1(EPOLL_CLOEXEC) failed");
 	}
 	coe = fcntl(fd, F_GETFD);
 	if (coe == -1) {
@@ -163,7 +162,7 @@ int main(int argc, char *argv[])
 	}
 	if ((coe & FD_CLOEXEC) == 0) {
 		tst_brkm(TFAIL, cleanup,
-		    "epoll_create1(EPOLL_CLOEXEC) set close-on-exec flag");
+			 "epoll_create1(EPOLL_CLOEXEC) set close-on-exec flag");
 	}
 	close(fd);
 	tst_resm(TPASS, "epoll_create1(EPOLL_CLOEXEC) PASSED");

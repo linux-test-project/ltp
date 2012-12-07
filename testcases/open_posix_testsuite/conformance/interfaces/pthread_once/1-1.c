@@ -39,17 +39,16 @@ int main()
 {
 	pthread_once_t once_control = PTHREAD_ONCE_INIT;
 
-	init_flag=0;
+	init_flag = 0;
 
 	/* Call pthread_once, passing it the once_control */
-	pthread_once(&once_control, (void*)an_init_func);
+	pthread_once(&once_control, (void *)an_init_func);
 
 	/* Call pthread_once again. The init function should not be
 	 * called. */
-	pthread_once(&once_control, (void*)an_init_func);
+	pthread_once(&once_control, (void *)an_init_func);
 
-	if (init_flag != 1)
-	{
+	if (init_flag != 1) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

@@ -55,20 +55,20 @@ int main()
 {
 	int pid;
 	char msgrcd[BUFFER];
-        const char *msgptr = MSGSTR;
+	const char *msgptr = MSGSTR;
 	struct mq_attr attr;
-	int unresolved=0;
+	int unresolved = 0;
 	unsigned pri;
 
-        sprintf(gqname, "/mq_timedsend_5-1_%d", getpid());
+	sprintf(gqname, "/mq_timedsend_5-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;
-        gqueue = mq_open(gqname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (gqueue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-                return PTS_UNRESOLVED;
-        }
+	gqueue = mq_open(gqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
+	if (gqueue == (mqd_t) - 1) {
+		perror("mq_open() did not return success");
+		return PTS_UNRESOLVED;
+	}
 
 	if ((pid = fork()) == 0) {
 		/* child here */
@@ -76,12 +76,12 @@ int main()
 		struct timespec ts;
 
 		/* set up timeout to be as long as possible */
-		ts.tv_sec=INT32_MAX;
-		ts.tv_nsec=0;
+		ts.tv_sec = INT32_MAX;
+		ts.tv_nsec = 0;
 
-		sleep(1);  // give parent time to set up handler
-		for (i=0; i<MAXMSG+1; i++) {
-        		mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts);
+		sleep(1);	// give parent time to set up handler
+		for (i = 0; i < MAXMSG + 1; i++) {
+			mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts);
 			/* make sure parent enter the final sleep */
 			if (i == MAXMSG)
 				sleep(1);
@@ -96,22 +96,22 @@ int main()
 		int j;
 
 		/* parent runs stopsleep_handler when sleep is interrupted
-                   by child */
-		act.sa_handler=stopsleep_handler;
-		act.sa_flags=0;
+		   by child */
+		act.sa_handler = stopsleep_handler;
+		act.sa_flags = 0;
 		sigemptyset(&act.sa_mask);
 		sigaction(SIGABRT, &act, 0);
 
-		for (j=0; j<MAXMSG+1; j++) {
+		for (j = 0; j < MAXMSG + 1; j++) {
 			if (sleep(3) == 0) {
-			/* If sleep finished, child is probably blocking */
+				/* If sleep finished, child is probably blocking */
 				break;
 			}
 		}
 
-		if (j == MAXMSG+1) {
+		if (j == MAXMSG + 1) {
 			printf("Child never blocked\n");
-			kill(pid, SIGKILL); //kill child
+			kill(pid, SIGKILL);	//kill child
 			return PTS_FAIL;
 		}
 
@@ -126,7 +126,7 @@ int main()
 			 * mq_send didn't succeed and interrupt sleep()
 			 * with a signal
 			 */
-			kill(pid, SIGKILL); //kill child
+			kill(pid, SIGKILL);	//kill child
 			mq_close(gqueue);
 			mq_unlink(gqname);
 			printf("mq_send() didn't appear to complete\n");

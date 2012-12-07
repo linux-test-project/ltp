@@ -14,7 +14,8 @@
 #include <signal.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 
 	sigset_t signalset;
 
@@ -24,9 +25,10 @@ int main() {
 	}
 
 	if (sigismember(&signalset, SIGABRT) != 0) {
-		#ifdef DEBUG
-			printf("sigismember did not return a 0 even though sigemptyset was just called\n");
-		#endif
+#ifdef DEBUG
+		printf
+		    ("sigismember did not return a 0 even though sigemptyset was just called\n");
+#endif
 		return PTS_FAIL;
 	}
 

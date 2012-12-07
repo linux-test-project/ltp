@@ -37,13 +37,13 @@ int main()
 	act.sa_handler = handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGCHLD,  &act, 0) == -1) {
+	if (sigaction(SIGCHLD, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaction(SIGCHLD,  0, &oact) == -1) {
+	if (sigaction(SIGCHLD, 0, &oact) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;

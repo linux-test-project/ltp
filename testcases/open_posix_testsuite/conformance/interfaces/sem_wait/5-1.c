@@ -23,7 +23,8 @@
 #define FUNCTION "sem_trywait"
 #define ERROR_PREFIX "unexpected errno: " FUNCTION " " TEST ": "
 
-int main() {
+int main()
+{
 	sem_t *mysemp;
 	char semname[28];
 
@@ -36,7 +37,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	/* Lock Semaphore by sem_trywait*/
+	/* Lock Semaphore by sem_trywait */
 	if ((sem_trywait(mysemp) == -1) && (errno == EAGAIN)) {
 		puts("TEST PASSED");
 		sem_close(mysemp);

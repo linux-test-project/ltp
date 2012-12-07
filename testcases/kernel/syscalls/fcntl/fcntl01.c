@@ -64,8 +64,9 @@ int main(int ac, char **av)
 		mypid = getpid();
 		for (i = 0; i < 8; i++) {
 			sprintf(fname, "./fcntl%d.%d", i, mypid);
-			if ((fd[i] = open(fname, O_WRONLY|O_CREAT, 0666)) == -1)
-				tst_resm(TBROK|TERRNO, "open failed");
+			if ((fd[i] =
+			     open(fname, O_WRONLY | O_CREAT, 0666)) == -1)
+				tst_resm(TBROK | TERRNO, "open failed");
 			fd2[i] = fd[i];
 		}
 
@@ -75,21 +76,21 @@ int main(int ac, char **av)
 		close(fd[5]);
 
 		if ((fd[2] = fcntl(fd[1], F_DUPFD, 1)) == -1)
-			tst_resm(TFAIL|TERRNO, "fcntl(.., 1) failed");
+			tst_resm(TFAIL | TERRNO, "fcntl(.., 1) failed");
 
 		if (fd[2] < fd2[2])
 			tst_resm(TFAIL, "new fd has unexpected value: "
 				 "got %d, expected greater than %d", fd[2], 5);
 
 		if ((fd[4] = fcntl(fd[1], F_DUPFD, fd2[3])) < 0)
-			tst_resm(TFAIL|TERRNO, "fcntl(.., fd2[3]) failed");
+			tst_resm(TFAIL | TERRNO, "fcntl(.., fd2[3]) failed");
 
 		if (fd[4] < fd2[3])
 			tst_resm(TFAIL, "new fd has unexpected value, got %d, "
 				 "expect greater than %d", fd[4], fd2[3]);
 
 		if ((fd[8] = fcntl(fd[1], F_DUPFD, fd2[5])) < 0)
-			tst_resm(TFAIL|TERRNO, "fcntl(.., fd2[5]) failed");
+			tst_resm(TFAIL | TERRNO, "fcntl(.., fd2[5]) failed");
 
 		if (fd[8] != fd2[5])
 			tst_resm(TFAIL, "new fd has unexpected value: "
@@ -102,30 +103,31 @@ int main(int ac, char **av)
 
 		/* Check setting of no_delay flag */
 		if (fcntl(fd[2], F_SETFL, O_NDELAY) == -1)
-			tst_resm(TBROK|TERRNO, "fcntl(.., O_NDELAY) failed");
+			tst_resm(TBROK | TERRNO, "fcntl(.., O_NDELAY) failed");
 
 		flags = fcntl(fd[2], F_GETFL, 0);
-		if ((flags & (O_NDELAY|O_WRONLY)) == 0)
+		if ((flags & (O_NDELAY | O_WRONLY)) == 0)
 			tst_resm(TFAIL, "unexpected flag 0x%x, expected 0x%x",
-				 flags, O_NDELAY|O_WRONLY);
+				 flags, O_NDELAY | O_WRONLY);
 
 		/* Check of setting append flag */
 		if (fcntl(fd[2], F_SETFL, O_APPEND) == -1)
-			tst_resm(TFAIL|TERRNO, "fcntl(.., O_APPEND) failed");
+			tst_resm(TFAIL | TERRNO, "fcntl(.., O_APPEND) failed");
 
 		flags = fcntl(fd[2], F_GETFL, 0);
-		if ((flags & (O_APPEND|O_WRONLY)) == 0)
+		if ((flags & (O_APPEND | O_WRONLY)) == 0)
 			tst_resm(TFAIL, "unexpected flag ox%x, expected 0x%x",
 				 flags, O_APPEND | O_WRONLY);
 
 		/* Check setting flags together */
-		if (fcntl(fd[2], F_SETFL, O_NDELAY|O_APPEND) < 0)
+		if (fcntl(fd[2], F_SETFL, O_NDELAY | O_APPEND) < 0)
 			tst_resm(TFAIL, "fcntl(.., O_NDELAY|O_APPEND) failed");
 
 		flags = fcntl(fd[2], F_GETFL, 0);
 		if ((flags & (O_NDELAY | O_APPEND | O_WRONLY)) == 0)
 			tst_resm(TFAIL, "unexpected flag 0x%x, expected 0x%x",
-				 flags, O_NDELAY|O_APPEND|O_SYNC|O_WRONLY);
+				 flags,
+				 O_NDELAY | O_APPEND | O_SYNC | O_WRONLY);
 
 		/* Check that flags are not cummulative */
 		if (fcntl(fd[2], F_SETFL, 0) == -1)
@@ -141,16 +143,16 @@ int main(int ac, char **av)
 		 * Check ability to set (F_SETFD) the close on exec flag
 		 */
 		if ((flags = fcntl(fd[2], F_GETFD, 0)) < 0)
-			tst_resm(TFAIL|TERRNO,
-			    "fcntl(.., F_GETFD, ..) #1 failed");
+			tst_resm(TFAIL | TERRNO,
+				 "fcntl(.., F_GETFD, ..) #1 failed");
 		if (flags != 0)
 			tst_resm(TFAIL, "unexpected flags got 0x%x expected "
 				 "0x%x", flags, 0);
 		if ((flags = fcntl(fd[2], F_SETFD, 1)) == -1)
 			tst_resm(TFAIL, "fcntl(.., F_SETFD, ..) failed");
 		if ((flags = fcntl(fd[2], F_GETFD, 0)) == -1)
-			tst_resm(TFAIL|TERRNO,
-			    "fcntl(.., F_GETFD, ..) #2 failed");
+			tst_resm(TFAIL | TERRNO,
+				 "fcntl(.., F_GETFD, ..) #2 failed");
 		if (flags != 1)
 			tst_resm(TFAIL, "unexpected flags, got 0x%x, "
 				 "expected 0x%x", flags, 1);
@@ -160,8 +162,8 @@ int main(int ac, char **av)
 		for (i = 0; i < 8; i++) {
 			sprintf(fname, "./fcntl%d.%d", i, mypid);
 			if ((unlink(fname)) == -1)
-				tst_resm(TFAIL|TERRNO,
-				    "unlinking %s failed", fname);
+				tst_resm(TFAIL | TERRNO,
+					 "unlinking %s failed", fname);
 		}
 	}
 	cleanup();

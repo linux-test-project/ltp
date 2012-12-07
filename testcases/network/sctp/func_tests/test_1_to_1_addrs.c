@@ -63,7 +63,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>         /* for sockaddr_in */
+#include <netinet/in.h>		/* for sockaddr_in */
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/sctp.h>
@@ -74,107 +74,106 @@ char *TCID = __FILE__;
 int TST_TOTAL = 10;
 int TST_CNT = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-        int error;
+	int error;
 	socklen_t len;
-	int sk,lstn_sk,clnt_sk,acpt_sk,pf_class,sk1;
+	int sk, lstn_sk, clnt_sk, acpt_sk, pf_class, sk1;
 	struct msghdr outmessage;
-        struct msghdr inmessage;
-        char *message = "hello, world!\n";
-        struct iovec iov;
-        struct iovec iov_rcv;
-        struct sctp_sndrcvinfo *sinfo;
-        int msg_count;
-        char outcmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
-        struct cmsghdr *cmsg;
-        struct iovec out_iov;
-        char * buffer_snd;
-        char * buffer_rcv;
+	struct msghdr inmessage;
+	char *message = "hello, world!\n";
+	struct iovec iov;
+	struct iovec iov_rcv;
+	struct sctp_sndrcvinfo *sinfo;
+	int msg_count;
+	char outcmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
+	struct cmsghdr *cmsg;
+	struct iovec out_iov;
+	char *buffer_snd;
+	char *buffer_rcv;
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
 	struct sockaddr *laddrs, *paddrs;
 
-        struct sockaddr_in conn_addr,lstn_addr,acpt_addr;
+	struct sockaddr_in conn_addr, lstn_addr, acpt_addr;
 	struct sockaddr_in *addr;
 
 	/* Rather than fflush() throughout the code, set stdout to
-         * be unbuffered.
-         */
-        setvbuf(stdout, NULL, _IONBF, 0);
-        setvbuf(stderr, NULL, _IONBF, 0);
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
 
-        pf_class = PF_INET;
+	pf_class = PF_INET;
 
-        sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-	/*Creating a regular socket*/
+	/*Creating a regular socket */
 	clnt_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-	/*Creating a listen socket*/
-        lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	/*Creating a listen socket */
+	lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
 	conn_addr.sin_family = AF_INET;
-        conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        conn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	conn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
 	lstn_addr.sin_family = AF_INET;
-        lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
-	/*Binding the listen socket*/
-	test_bind(lstn_sk, (struct sockaddr *) &lstn_addr, sizeof(lstn_addr));
+	/*Binding the listen socket */
+	test_bind(lstn_sk, (struct sockaddr *)&lstn_addr, sizeof(lstn_addr));
 
-	/*Listening many sockets as we are calling too many connect here*/
+	/*Listening many sockets as we are calling too many connect here */
 	test_listen(lstn_sk, 1);
 
 	len = sizeof(struct sockaddr_in);
 
-	test_connect(clnt_sk, (struct sockaddr *) &conn_addr, len);
+	test_connect(clnt_sk, (struct sockaddr *)&conn_addr, len);
 
-	acpt_sk = test_accept(lstn_sk, (struct sockaddr *) &acpt_addr, &len);
+	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&acpt_addr, &len);
 
 	memset(&inmessage, 0, sizeof(inmessage));
-        buffer_rcv = malloc(REALLY_BIG);
+	buffer_rcv = malloc(REALLY_BIG);
 
-        iov_rcv.iov_base = buffer_rcv;
-        iov_rcv.iov_len = REALLY_BIG;
-        inmessage.msg_iov = &iov_rcv;
-        inmessage.msg_iovlen = 1;
-        inmessage.msg_control = incmsg;
-        inmessage.msg_controllen = sizeof(incmsg);
+	iov_rcv.iov_base = buffer_rcv;
+	iov_rcv.iov_len = REALLY_BIG;
+	inmessage.msg_iov = &iov_rcv;
+	inmessage.msg_iovlen = 1;
+	inmessage.msg_control = incmsg;
+	inmessage.msg_controllen = sizeof(incmsg);
 
-        msg_count = strlen(message) + 1;
+	msg_count = strlen(message) + 1;
 
 	memset(&outmessage, 0, sizeof(outmessage));
-        buffer_snd = malloc(REALLY_BIG);
+	buffer_snd = malloc(REALLY_BIG);
 
-        outmessage.msg_name = &lstn_addr;
-        outmessage.msg_namelen = sizeof(lstn_addr);
-        outmessage.msg_iov = &out_iov;
-        outmessage.msg_iovlen = 1;
-        outmessage.msg_control = outcmsg;
-        outmessage.msg_controllen = sizeof(outcmsg);
-        outmessage.msg_flags = 0;
+	outmessage.msg_name = &lstn_addr;
+	outmessage.msg_namelen = sizeof(lstn_addr);
+	outmessage.msg_iov = &out_iov;
+	outmessage.msg_iovlen = 1;
+	outmessage.msg_control = outcmsg;
+	outmessage.msg_controllen = sizeof(outcmsg);
+	outmessage.msg_flags = 0;
 
-        cmsg = CMSG_FIRSTHDR(&outmessage);
-        cmsg->cmsg_level = IPPROTO_SCTP;
-        cmsg->cmsg_type = SCTP_SNDRCV;
-        cmsg->cmsg_len = CMSG_LEN(sizeof(struct sctp_sndrcvinfo));
-        outmessage.msg_controllen = cmsg->cmsg_len;
-        sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
-        memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
+	cmsg = CMSG_FIRSTHDR(&outmessage);
+	cmsg->cmsg_level = IPPROTO_SCTP;
+	cmsg->cmsg_type = SCTP_SNDRCV;
+	cmsg->cmsg_len = CMSG_LEN(sizeof(struct sctp_sndrcvinfo));
+	outmessage.msg_controllen = cmsg->cmsg_len;
+	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
+	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
 
-        iov.iov_base = buffer_snd;
+	iov.iov_base = buffer_snd;
 	iov.iov_len = REALLY_BIG;
-        outmessage.msg_iov->iov_base = message;
+	outmessage.msg_iov->iov_base = message;
 
-        outmessage.msg_iov->iov_len = msg_count;
+	outmessage.msg_iov->iov_len = msg_count;
 	test_sendmsg(clnt_sk, &outmessage, MSG_NOSIGNAL, msg_count);
 
 	test_recvmsg(acpt_sk, &inmessage, MSG_NOSIGNAL);
 
-	/*sctp_getladdrs() TEST1: Bad socket descriptor, EBADF Expected error*/
+	/*sctp_getladdrs() TEST1: Bad socket descriptor, EBADF Expected error */
 	error = sctp_getladdrs(-1, 0, &laddrs);
 	if (error != -1 || errno != EBADF)
 		tst_brkm(TBROK, NULL, "sctp_getladdrs with a bad socket "
@@ -183,7 +182,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "sctp_getladdrs() with a bad socket descriptor - "
 		 "EBADF");
 
-	/*sctp_getladdrs() TEST2: Invalid socket, ENOTSOCK Expected error*/
+	/*sctp_getladdrs() TEST2: Invalid socket, ENOTSOCK Expected error */
 	error = sctp_getladdrs(0, 0, &laddrs);
 	if (error != -1 || errno != ENOTSOCK)
 		tst_brkm(TBROK, NULL, "sctp_getladdrs with invalid socket "
@@ -192,8 +191,8 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "sctp_getladdrs() with invalid socket - ENOTSOCK");
 
 	/*sctp_getladdrs() TEST3: socket of different protocol
-	EOPNOTSUPP Expected error*/
-        sk1 = socket(pf_class, SOCK_STREAM, IPPROTO_IP);
+	   EOPNOTSUPP Expected error */
+	sk1 = socket(pf_class, SOCK_STREAM, IPPROTO_IP);
 	error = sctp_getladdrs(sk1, 0, &laddrs);
 	if (error != -1 || errno != EOPNOTSUPP)
 		tst_brkm(TBROK, NULL, "sctp_getladdrs with socket of "
@@ -202,7 +201,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "sctp_getladdrs() with socket of different protocol - "
 		 "EOPNOTSUPP");
 
-	/*sctp_getladdrs() TEST4: Getting the local addresses*/
+	/*sctp_getladdrs() TEST4: Getting the local addresses */
 	error = sctp_getladdrs(lstn_sk, 0, &laddrs);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "sctp_getladdrs with valid socket "
@@ -216,14 +215,14 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "sctp_getladdrs() - SUCCESS");
 
-	/*sctp_freealddrs() TEST5: freeing the local address*/
+	/*sctp_freealddrs() TEST5: freeing the local address */
 	if ((sctp_freeladdrs(laddrs)) < 0)
 		tst_brkm(TBROK, NULL, "sctp_freeladdrs "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_freeladdrs() - SUCCESS");
 
-	/*sctp_getpaddrs() TEST6: Bad socket descriptor, EBADF Expected error*/
+	/*sctp_getpaddrs() TEST6: Bad socket descriptor, EBADF Expected error */
 	error = sctp_getpaddrs(-1, 0, &paddrs);
 	if (error != -1 || errno != EBADF)
 		tst_brkm(TBROK, NULL, "sctp_getpaddrs with a bad socket "
@@ -232,7 +231,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "sctp_getpaddrs() with a bad socket descriptor - "
 		 "EBADF");
 
-	/*sctp_getpaddrs() TEST7: Invalid socket, ENOTSOCK Expected error*/
+	/*sctp_getpaddrs() TEST7: Invalid socket, ENOTSOCK Expected error */
 	error = sctp_getpaddrs(0, 0, &paddrs);
 	if (error != -1 || errno != ENOTSOCK)
 		tst_brkm(TBROK, NULL, "sctp_getpaddrs with invalid socket "
@@ -241,7 +240,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "sctp_getpaddrs() with invalid socket - ENOTSOCK");
 
 	/*sctp_getpaddrs() TEST8: socket of different protocol
-	EOPNOTSUPP Expected error*/
+	   EOPNOTSUPP Expected error */
 	error = sctp_getpaddrs(sk1, 0, &laddrs);
 	if (error != -1 || errno != EOPNOTSUPP)
 		tst_brkm(TBROK, NULL, "sctp_getpaddrs with socket of "
@@ -250,7 +249,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "sctp_getpaddrs() with socket of different protocol - "
 		 "EOPNOTSUPP");
 
-	/*sctp_getpaddrs() TEST9: Getting the peer addresses*/
+	/*sctp_getpaddrs() TEST9: Getting the peer addresses */
 	error = sctp_getpaddrs(acpt_sk, 0, &paddrs);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "sctp_getpaddrs with valid socket "
@@ -258,13 +257,13 @@ main(int argc, char *argv[])
 
 	addr = (struct sockaddr_in *)paddrs;
 	if (addr->sin_port != acpt_addr.sin_port ||
-            addr->sin_family != acpt_addr.sin_family ||
-            addr->sin_addr.s_addr != acpt_addr.sin_addr.s_addr)
+	    addr->sin_family != acpt_addr.sin_family ||
+	    addr->sin_addr.s_addr != acpt_addr.sin_addr.s_addr)
 		tst_brkm(TBROK, NULL, "sctp_getpaddrs comparision failed");
 
 	tst_resm(TPASS, "sctp_getpaddrs() - SUCCESS");
 
-	/*sctp_freeapddrs() TEST10: freeing the peer address*/
+	/*sctp_freeapddrs() TEST10: freeing the peer address */
 	if ((sctp_freepaddrs(paddrs)) < 0)
 		tst_brkm(TBROK, NULL, "sctp_freepaddrs "
 			 "error:%d, errno:%d", error, errno);

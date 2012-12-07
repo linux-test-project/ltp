@@ -45,8 +45,7 @@ int main(int argc, char *argv[])
 		return PTS_PASS;
 	} else {
 		printf("Test FAILED:  tv_sec %d tv_nsec %d\n",
-				(int) its.it_value.tv_sec,
-				(int) its.it_value.tv_nsec);
+		       (int)its.it_value.tv_sec, (int)its.it_value.tv_nsec);
 		return PTS_FAIL;
 	}
 

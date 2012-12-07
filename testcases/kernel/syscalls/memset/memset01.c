@@ -59,7 +59,6 @@ int local_flag = PASSED;
 int block_number;
 int TST_TOTAL = 1;
 
-
 int anyfail();
 void setup();
 int blenter();

@@ -58,9 +58,9 @@ static unsigned long count_sig;
 static sigset_t usersigs;
 
 struct thestruct {
-	int	sig;
+	int sig;
 #ifdef WITH_SYNCHRO
-	sem_t	*sem;
+	sem_t *sem;
 #endif
 };
 
@@ -82,15 +82,15 @@ static void *sendsig(void *arg)
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
 		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 "
-				"in signal thread");
+			   "in signal thread");
 
 	while (do_it) {
-		#ifdef WITH_SYNCHRO
+#ifdef WITH_SYNCHRO
 		ret = sem_wait(thearg->sem);
 		if (ret)
 			UNRESOLVED(errno, "Sem_wait in sendsig");
 		count_sig++;
-		#endif
+#endif
 
 		ret = kill(process, thearg->sig);
 		if (ret != 0)
@@ -110,6 +110,7 @@ static void sighdl1(int sig)
 		UNRESOLVED(errno, "Sem_post in signal handler 1");
 #endif
 }
+
 /* This one is registered for signal SIGUSR2 */
 static void sighdl2(int sig)
 {
@@ -129,7 +130,7 @@ static void *waiter(void *arg)
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
 		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 "
-				"in signal thread");
+			   "in signal thread");
 
 	ret = pthread_mutex_lock(&(data.mtx));
 	if (ret != 0)
@@ -160,7 +161,7 @@ static void *worker(void *arg)
 	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
 	if (ret != 0)
 		UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2 "
-				"in worker thread");
+			   "in worker thread");
 
 	while (woken < 5) {
 		ret = pthread_cond_broadcast(&(data.cnd));
@@ -206,14 +207,14 @@ int main(int argc, char *argv[])
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
 		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 "
-				"in main thread");
+			   "in main thread");
 
-	#ifdef WITH_SYNCHRO
+#ifdef WITH_SYNCHRO
 	if (sem_init(&semsig1, 0, 1))
 		UNRESOLVED(errno, "Semsig1  init");
 	if (sem_init(&semsig2, 0, 1))
 		UNRESOLVED(errno, "Semsig2  init");
-	#endif
+#endif
 
 	for (i = 0; i < 5; i++) {
 		ret = pthread_create(&th_waiter[i], NULL, waiter, NULL);
@@ -262,13 +263,13 @@ int main(int argc, char *argv[])
 	if (ret)
 		UNRESOLVED(ret, "Worker thread join failed");
 
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Test executed successfully.\n");
 	output("  Condition was signaled %d times.\n", count_cnd_sig);
 	output("  pthread_cond_wait exited %d times.\n", count_cnd_wup);
-	#ifdef WITH_SYNCHRO
+#ifdef WITH_SYNCHRO
 	output("  %d signals were sent meanwhile.\n", count_sig);
-	#endif
-	#endif
+#endif
+#endif
 	PASSED;
 }

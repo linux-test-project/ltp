@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
 	itsset.it_interval.tv_sec = 0;
 	itsset.it_interval.tv_nsec = 0;
-	itsset.it_value.tv_sec = ts.tv_sec+TIMERSEC;
+	itsset.it_value.tv_sec = ts.tv_sec + TIMERSEC;
 	itsset.it_value.tv_nsec = ts.tv_nsec;
 
 	flags |= TIMER_ABSTIME;
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
 
 	if (delta < 0) {
 		printf("FAIL:  timer_gettime() value > timer_settime()\n");
-		printf("%d > %d\n", (int) itsget.it_value.tv_sec,
-			(int) itsset.it_value.tv_sec);
+		printf("%d > %d\n", (int)itsget.it_value.tv_sec,
+		       (int)itsset.it_value.tv_sec);
 		return PTS_FAIL;
 	}
 
@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
 		return PTS_PASS;
 	} else {
 		printf("FAIL:  timer_gettime() value !~= timer_settime()\n");
-		printf("%d !~= %d\n", (int) itsget.it_value.tv_sec,
-			(int) itsset.it_value.tv_sec);
+		printf("%d !~= %d\n", (int)itsget.it_value.tv_sec,
+		       (int)itsset.it_value.tv_sec);
 		return PTS_FAIL;
 	}
 

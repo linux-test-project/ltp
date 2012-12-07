@@ -138,12 +138,12 @@ int main(int ac, char **av)
 		if (stat(tstdir1, &buf1) != -1) {
 			tst_brkm(TBROK, cleanup,
 				 "tmp directory %s found!", tstdir1);
-		 }
+		}
 		/* create a directory */
 		if (mkdir(tstdir1, PERMS) == -1) {
 			tst_brkm(TBROK, cleanup,
 				 "Couldnot create directory %s", tstdir1);
-		 }
+		}
 		if (stat(tstdir1, &buf1) == -1) {
 			perror("stat");
 			tst_brkm(TBROK, cleanup, "failed to stat directory %s "
@@ -165,7 +165,7 @@ int main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 }
+		}
 
 		if (pid == 0) {	/* first child */
 #ifdef UCLINUX
@@ -183,16 +183,16 @@ int main(int ac, char **av)
 		if (mkdir(tstdir3, 0700) == -1) {
 			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
 				 tstdir3, PERMS);
-		 }
+		}
 		/* create the a directory with 0700 permits */
 		if (mkdir(tstdir4, 0777) == -1) {
 			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
 				 tstdir4, PERMS);
-		 }
+		}
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 }
+		}
 
 		if (pid == 0) {	/* child */
 #ifdef UCLINUX
@@ -250,7 +250,7 @@ void dochild1()
 		retval = 1;
 		tst_brkm(TBROK, cleanup, "setreuid failed to "
 			 "set effective uid to %d", nobody->pw_uid);
-	 }
+	}
 
 	/* rmdir tstdir2 */
 	TEST(rmdir(tstdir2));
@@ -290,7 +290,7 @@ void dochild2()
 		retval = 1;
 		tst_brkm(TBROK, cleanup, "setreuid failed to "
 			 "set effective uid to %d", nobody->pw_uid);
-	 }
+	}
 
 	/* rmdir tstdir4 */
 	TEST(rmdir(tstdir4));

@@ -75,7 +75,7 @@ int do_test(int argc, char **argv)
 		printf("Failed to init mutexattr\n");
 
 	if (pthread_mutexattr_setprotocol(&mutexattr,
-	    PTHREAD_PRIO_INHERIT) != 0)
+					  PTHREAD_PRIO_INHERIT) != 0)
 		printf("Can't set protocol prio inherit\n");
 
 	if (pthread_mutexattr_getprotocol(&mutexattr, &protocol) != 0)

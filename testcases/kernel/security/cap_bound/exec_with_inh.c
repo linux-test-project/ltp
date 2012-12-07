@@ -36,7 +36,7 @@
 #include "test.h"
 
 char *TCID = "exec_with_inh";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 int main(int argc, char *argv[])
 {
@@ -49,13 +49,16 @@ int main(int argc, char *argv[])
 	/* Make sure CAP_SYS_ADMIN is in pI */
 	cur = cap_from_text("all=eip");
 	if (!cur) {
-		tst_resm(TBROK, "Failed to create cap_sys_admin+i cap_t (errno %d)\n", errno);
+		tst_resm(TBROK,
+			 "Failed to create cap_sys_admin+i cap_t (errno %d)\n",
+			 errno);
 		tst_exit();
 	}
 	ret = cap_set_proc(cur);
 	if (ret) {
-		tst_resm(TBROK, "Failed to cap_set_proc with cap_sys_admin+i (ret %d errno %d)\n",
-			ret, errno);
+		tst_resm(TBROK,
+			 "Failed to cap_set_proc with cap_sys_admin+i (ret %d errno %d)\n",
+			 ret, errno);
 		tst_exit();
 	}
 	cap_free(cur);
@@ -70,7 +73,8 @@ int main(int argc, char *argv[])
 	/* drop the capability from bounding set */
 	ret = prctl(PR_CAPBSET_DROP, CAP_SYS_ADMIN);
 	if (ret) {
-		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from bounding set.\n");
+		tst_resm(TFAIL,
+			 "Failed to drop CAP_SYS_ADMIN from bounding set.\n");
 		tst_resm(TINFO, "(ret=%d, errno %d)\n", ret, errno);
 		tst_exit();
 	}

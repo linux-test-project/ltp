@@ -69,7 +69,6 @@ void do_child(void);
 char *TCID = "kill03";
 int TST_TOTAL = 1;
 
-
 int exp_enos[] = { EINVAL, 0 };
 
 #define TEST_SIG 2000
@@ -122,7 +121,7 @@ int main(int ac, char **av)
 				 "Expected a return value of -1 got %ld",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO),
 				 TEST_RETURN);
-		 }
+		}
 
 		if (STD_FUNCTIONAL_TEST) {
 			/*
@@ -155,7 +154,7 @@ void do_child()
 	int exno = 1;
 
 	pause();
-	  exit(exno);
+	exit(exno);
 }
 
 /*

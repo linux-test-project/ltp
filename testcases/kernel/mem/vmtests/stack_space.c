@@ -48,52 +48,52 @@
 int local_flag = PASSED;
 int block_number;
 
-char *TCID="stack_space";              /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
+char *TCID = "stack_space";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 /**************/
 
-#define MAXCHILD	100		/* max # kids */
+#define MAXCHILD	100	/* max # kids */
 #define K_1		1024
 #define K_2		2048
 #define K_4		4096
 #define MAXSIZE         10*K_1
 
-int	nchild;				/* # kids */
-int	csize;				/* chunk size */
-int	iterations;			/* # total iterations */
-int	parent_pid;
+int nchild;			/* # kids */
+int csize;			/* chunk size */
+int iterations;			/* # total iterations */
+int parent_pid;
 
-int     usage(char*);
-int     bd_arg(char *);
-int     runtest();
-int     dotest(int,int);
-int     bfill(char*,char,int);
-int     dumpbuf(char*);
-void    dumpbits(char*,int);
+int usage(char *);
+int bd_arg(char *);
+int runtest();
+int dotest(int, int);
+int bfill(char *, char, int);
+int dumpbuf(char *);
+void dumpbits(char *, int);
 
-char	*prog;				/* invoked name */
+char *prog;			/* invoked name */
 
-int usage(char* prog)
+int usage(char *prog)
 {
-	tst_resm(TCONF,"Usage: %s <nchild> <chunk_size> <iterations>",prog);
-        tst_resm(TCONF,"DEFAULTS: 20 1024 50");
-        tst_exit();
-      return 0;
+	tst_resm(TCONF, "Usage: %s <nchild> <chunk_size> <iterations>", prog);
+	tst_resm(TCONF, "DEFAULTS: 20 1024 50");
+	tst_exit();
+	return 0;
 }
 
 int main(argc, argv)
-	int	argc;
-	char	*argv[];
+int argc;
+char *argv[];
 {
 	register int i;
-	void	term();
+	void term();
 
 	prog = argv[0];
 	parent_pid = getpid();
 
-	if (signal(SIGTERM,term) == SIG_ERR) {
-		tst_resm(TBROK,"first sigset failed");
-                tst_exit();
+	if (signal(SIGTERM, term) == SIG_ERR) {
+		tst_resm(TBROK, "first sigset failed");
+		tst_exit();
 
 	}
 
@@ -104,55 +104,59 @@ int main(argc, argv)
 	} else if (argc == 4) {
 		i = 1;
 		if (sscanf(argv[i++], "%d", &nchild) != 1)
-			bd_arg(argv[i-1]);
+			bd_arg(argv[i - 1]);
 		if (nchild > MAXCHILD) {
-			tst_resm(TBROK,"Too many children, max is %d\n", MAXCHILD);
+			tst_resm(TBROK, "Too many children, max is %d\n",
+				 MAXCHILD);
 			tst_exit();
 		}
 		if (sscanf(argv[i++], "%d", &csize) != 1)
-			bd_arg(argv[i-1]);
+			bd_arg(argv[i - 1]);
 		if (csize > MAXSIZE) {
-			tst_resm(TBROK,"Chunk size too large , max is %d\n", MAXSIZE);
+			tst_resm(TBROK, "Chunk size too large , max is %d\n",
+				 MAXSIZE);
 			tst_exit();
 		}
 		if (sscanf(argv[i++], "%d", &iterations) != 1)
-			bd_arg(argv[i-1]);
+			bd_arg(argv[i - 1]);
 	} else
 		usage(prog);
 
 	tst_tmpdir();
 	runtest();
 	/**NOT REACHED**/
-      return 0;
+	return 0;
 
 }
 
 int bd_arg(str)
-	char *str;
+char *str;
 {
-	tst_resm(TCONF,"Bad argument - %s - could not parse as number.\n", str);
-        tst_exit();
-      return 0;
+	tst_resm(TCONF, "Bad argument - %s - could not parse as number.\n",
+		 str);
+	tst_exit();
+	return 0;
 }
 
 int runtest()
 {
 	register int i;
-	int	child;
-	int	status;
-	int	count;
+	int child;
+	int status;
+	int count;
 
 	for (i = 0; i < nchild; i++) {
-		if ((child = fork()) == 0) {		/* child */
-			dotest(nchild, i);		/* do it! */
-			exit(0);			/* when done, exit */
+		if ((child = fork()) == 0) {	/* child */
+			dotest(nchild, i);	/* do it! */
+			exit(0);	/* when done, exit */
 		}
 		if (child < 0) {
-			tst_resm(TBROK,"Fork failed (may be OK if under stress)");
-                        tst_resm(TINFO, "System resource may be too low.\n");
-                        tst_resm(TBROK, "Reason: %s\n", strerror(errno));
-                        tst_rmdir();
-                        tst_exit();
+			tst_resm(TBROK,
+				 "Fork failed (may be OK if under stress)");
+			tst_resm(TINFO, "System resource may be too low.\n");
+			tst_resm(TBROK, "Reason: %s\n", strerror(errno));
+			tst_rmdir();
+			tst_exit();
 
 		}
 	}
@@ -164,7 +168,8 @@ int runtest()
 	count = 0;
 	while ((child = wait(&status)) > 0) {
 #ifdef DEBUG
-		tst_resm(TINFO, "\t%s[%d] exited status = 0x%x\n", prog, child, status);
+		tst_resm(TINFO, "\t%s[%d] exited status = 0x%x\n", prog, child,
+			 status);
 #endif
 		if (status) {
 			tst_resm(TINFO, "\tFailed - expected 0 exit status.\n");
@@ -178,18 +183,19 @@ int runtest()
 	 */
 
 	if (count != nchild) {
-		tst_resm(TINFO, "\tWrong # children waited on, count = %d\n", count);
+		tst_resm(TINFO, "\tWrong # children waited on, count = %d\n",
+			 count);
 		local_flag = FAILED;
 	}
 
-        (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
-                : tst_resm(TPASS, "Test passed");
-        sync();                         /* safeness */
-        tst_rmdir();
-        tst_exit();
+	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
+	    : tst_resm(TPASS, "Test passed");
+	sync();			/* safeness */
+	tst_rmdir();
+	tst_exit();
 
-        /**NOT REACHED**/
-      return 0;
+	/**NOT REACHED**/
+	return 0;
 
 }
 
@@ -201,29 +207,29 @@ int runtest()
  * When fill sectors, iterate.
  */
 
-int	nchunks;
+int nchunks;
 
 #define	CHUNK(i)	((i) * csize)
 
 int dotest(int testers, int me)
 {
-	char	*bits;
-	char	*val_buf;
-	char	*zero_buf;
-	char	*buf;
-	int	count;
-	int	collide;
-	char	val;
-	int	chunk;
-	char	mondobuf[MAXSIZE];
+	char *bits;
+	char *val_buf;
+	char *zero_buf;
+	char *buf;
+	int count;
+	int collide;
+	char val;
+	int chunk;
+	char mondobuf[MAXSIZE];
 
 	nchunks = MAXSIZE / csize;
-	bits = (char*)malloc((nchunks+7)/8);
-	val_buf = (char*)(malloc(csize));
-	zero_buf = (char*)(malloc(csize));
+	bits = (char *)malloc((nchunks + 7) / 8);
+	val_buf = (char *)(malloc(csize));
+	zero_buf = (char *)(malloc(csize));
 
 	if (bits == 0 || val_buf == 0 || zero_buf == 0) {
-		tst_resm(TFAIL, "\tmalloc failed, pid: %d\n",getpid());
+		tst_resm(TFAIL, "\tmalloc failed, pid: %d\n", getpid());
 		tst_exit();
 	}
 
@@ -231,22 +237,22 @@ int dotest(int testers, int me)
 	 * No init sectors; allow file to be sparse.
 	 */
 
-	val = (64/testers) * me + 1;
+	val = (64 / testers) * me + 1;
 
 	/*
 	 * For each iteration:
-	 *	zap bits array
-	 *	loop:
-	 *		pick random chunk.
-	 *		if corresponding bit off {
-	 *			verify == 0. (sparse file)
-	 *			++count;
-	 *		} else
-	 *			verify == val.
-	 *		write "val" on it.
-	 *		repeat until count = nchunks.
-	 *	++val.
-	 *	Fill-in those chunks not yet seen.
+	 *      zap bits array
+	 *      loop:
+	 *              pick random chunk.
+	 *              if corresponding bit off {
+	 *                      verify == 0. (sparse file)
+	 *                      ++count;
+	 *              } else
+	 *                      verify == val.
+	 *              write "val" on it.
+	 *              repeat until count = nchunks.
+	 *      ++val.
+	 *      Fill-in those chunks not yet seen.
 	 */
 
 	bfill(zero_buf, 0, csize);
@@ -254,7 +260,7 @@ int dotest(int testers, int me)
 
 	srand(getpid());
 	while (iterations-- > 0) {
-		bfill(bits, 0, (nchunks+7)/8);
+		bfill(bits, 0, (nchunks + 7) / 8);
 		bfill(val_buf, val, csize);
 		count = 0;
 		collide = 0;
@@ -267,27 +273,35 @@ int dotest(int testers, int me)
 			 * Else, have.  Verify values.
 			 */
 
-			if ((bits[chunk/8] & (1<<(chunk%8))) == 0) {
+			if ((bits[chunk / 8] & (1 << (chunk % 8))) == 0) {
 				if (memcmp(buf, zero_buf, csize)) {
-					tst_resm(TFAIL,"%s[%d] bad verify @ %d (%p) for val %d count %d, should be 0.\n",
-						prog, me, chunk, buf, val, count);
-					tst_resm(TINFO,"Prev "); dumpbuf(buf-csize);
+					tst_resm(TFAIL,
+						 "%s[%d] bad verify @ %d (%p) for val %d count %d, should be 0.\n",
+						 prog, me, chunk, buf, val,
+						 count);
+					tst_resm(TINFO, "Prev ");
+					dumpbuf(buf - csize);
 					dumpbuf(buf);
-					tst_resm(TINFO,"Next "); dumpbuf(buf+csize);
-					dumpbits(bits, (nchunks+7)/8);
+					tst_resm(TINFO, "Next ");
+					dumpbuf(buf + csize);
+					dumpbits(bits, (nchunks + 7) / 8);
 					tst_exit();
 				}
-				bits[chunk/8] |= (1<<(chunk%8));
+				bits[chunk / 8] |= (1 << (chunk % 8));
 				++count;
 			} else {
 				++collide;
 				if (memcmp(buf, val_buf, csize)) {
-					tst_resm(TFAIL,"%s[%d] bad verify @ %d (%p) for val %d count %d.\n",
-						prog, me, chunk, buf, val, count);
-					tst_resm(TINFO,"Prev "); dumpbuf(buf-csize);
+					tst_resm(TFAIL,
+						 "%s[%d] bad verify @ %d (%p) for val %d count %d.\n",
+						 prog, me, chunk, buf, val,
+						 count);
+					tst_resm(TINFO, "Prev ");
+					dumpbuf(buf - csize);
 					dumpbuf(buf);
-					tst_resm(TINFO,"Next "); dumpbuf(buf+csize);
-					dumpbits(bits, (nchunks+7)/8);
+					tst_resm(TINFO, "Next ");
+					dumpbuf(buf + csize);
+					dumpbits(bits, (nchunks + 7) / 8);
 					tst_exit();
 				}
 			}
@@ -307,8 +321,8 @@ int dotest(int testers, int me)
 		 */
 
 		for (chunk = 0; chunk < nchunks; chunk++) {
-			if ((bits[chunk/8] & (1<<(chunk%8))) == 0)
-				bfill(mondobuf+CHUNK(chunk), val, csize);
+			if ((bits[chunk / 8] & (1 << (chunk % 8))) == 0)
+				bfill(mondobuf + CHUNK(chunk), val, csize);
 		}
 		bfill(zero_buf, val, csize);
 		++val;
@@ -321,9 +335,9 @@ int dotest(int testers, int me)
 }
 
 int bfill(buf, val, size)
-	register char *buf;
-	char	val;
-	register int size;
+register char *buf;
+char val;
+register int size;
 {
 	register int i;
 
@@ -338,51 +352,50 @@ int bfill(buf, val, size)
  */
 
 int dumpbuf(buf)
-	register char *buf;
+register char *buf;
 {
 	register int i;
-	char	val;
-	int	idx;
-	int	nout;
+	char val;
+	int idx;
+	int nout;
 
 #ifdef DEBUG
-        tst_resm(TINFO, "Buf: ... ");
-        for (i = -10; i < 0; i++) tst_resm(TINFO, "%x, ", buf[i]);
-        tst_resm(TINFO, "\n");
+	tst_resm(TINFO, "Buf: ... ");
+	for (i = -10; i < 0; i++)
+		tst_resm(TINFO, "%x, ", buf[i]);
+	tst_resm(TINFO, "\n");
 #endif
 
-        nout = 0;
-        idx = 0;
-        val = buf[0];
-        for (i = 0; i < csize; i++)
-        {
-                if (buf[i] != val)
-                {
+	nout = 0;
+	idx = 0;
+	val = buf[0];
+	for (i = 0; i < csize; i++) {
+		if (buf[i] != val) {
 #ifdef DEBUG
-                        if (i == idx+1)
-                                tst_resm(TINFO, "%x, ", buf[idx] & 0xff);
-                        else
-                                tst_resm(TINFO, "%d*%x, ", i-idx, buf[idx] & 0xff);
+			if (i == idx + 1)
+				tst_resm(TINFO, "%x, ", buf[idx] & 0xff);
+			else
+				tst_resm(TINFO, "%d*%x, ", i - idx,
+					 buf[idx] & 0xff);
 #endif
-                        idx = i;
-                        val = buf[i];
-                        ++nout;
-                }
-                if (nout > 10)
-                {
+			idx = i;
+			val = buf[i];
+			++nout;
+		}
+		if (nout > 10) {
 #ifdef DEBUG
-                        tst_resm(TINFO, " ... more\n");
+			tst_resm(TINFO, " ... more\n");
 #endif
-                      return 0;
-                }
-        }
+			return 0;
+		}
+	}
 #ifdef DEBUG
-        if (i == idx+1)
-                tst_resm(TINFO, "%x\n", buf[idx] & 0xff);
-        else
-                tst_resm(TINFO, "%d*%x\n", i-idx, buf[idx]);
+	if (i == idx + 1)
+		tst_resm(TINFO, "%x\n", buf[idx] & 0xff);
+	else
+		tst_resm(TINFO, "%d*%x\n", i - idx, buf[idx]);
 #endif
-      return 0;
+	return 0;
 
 }
 
@@ -392,20 +405,19 @@ int dumpbuf(buf)
  */
 
 void dumpbits(bits, size)
-	char	*bits;
-	register int size;
+char *bits;
+register int size;
 {
 #ifdef DEBUG
-        register char *buf;
+	register char *buf;
 
-        tst_resm(TINFO, "Bits array:");
-        for (buf = bits; size > 0; --size, ++buf)
-        {
-                if ((buf-bits) % 16 == 0)
-                        tst_resm(TINFO, "\n%04x:\t", 8*(buf-bits));
-                tst_resm(TINFO, "%02x ", (int)*buf & 0xff);
-        }
-        tst_resm(TINFO, "\n");
+	tst_resm(TINFO, "Bits array:");
+	for (buf = bits; size > 0; --size, ++buf) {
+		if ((buf - bits) % 16 == 0)
+			tst_resm(TINFO, "\n%04x:\t", 8 * (buf - bits));
+		tst_resm(TINFO, "%02x ", (int)*buf & 0xff);
+	}
+	tst_resm(TINFO, "\n");
 #endif
 
 }
@@ -415,11 +427,11 @@ void term()
 
 	if (getpid() == parent_pid) {
 #ifdef DEBUG
-		tst_resm(TINFO,"term - parent - got SIGTERM.\n");
+		tst_resm(TINFO, "term - parent - got SIGTERM.\n");
 #endif
 	} else {
 #ifdef DEBUG
-		tst_resm(TINFO,"term1 - child - exiting\n");
+		tst_resm(TINFO, "term1 - child - exiting\n");
 #endif
 		exit(0);
 	}

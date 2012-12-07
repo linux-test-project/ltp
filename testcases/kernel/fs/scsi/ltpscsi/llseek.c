@@ -17,12 +17,12 @@
 #include <linux/unistd.h>	/* for __NR_llseek */
 
 #if defined(__GNUC__) || defined(HAS_LONG_LONG)
-typedef long long       llse_loff_t;
+typedef long long llse_loff_t;
 #else
-typedef long            llse_loff_t;
+typedef long llse_loff_t;
 #endif
 
-extern llse_loff_t llse_llseek (unsigned int, llse_loff_t, unsigned int);
+extern llse_loff_t llse_llseek(unsigned int, llse_loff_t, unsigned int);
 
 #ifdef __linux__
 
@@ -45,48 +45,47 @@ static off_t my_lseek(int fd, off_t off, int whence)
 
 #else /* !__alpha__ && !__ia64__ */
 
-static int _llseek (unsigned int, unsigned long,
+static int _llseek(unsigned int, unsigned long,
 		   unsigned long, llse_loff_t *, unsigned int);
 
 #ifndef __NR_llseek
 /* no __NR_llseek on compilation machine - might give it explicitly */
-static int _llseek (unsigned int fd, unsigned long oh,
-		    unsigned long ol, llse_loff_t *result,
-		    unsigned int origin) {
+static int _llseek(unsigned int fd, unsigned long oh,
+		   unsigned long ol, llse_loff_t * result, unsigned int origin)
+{
 	errno = ENOSYS;
 	return -1;
 }
 #else
-static int _llseek (unsigned int fd, unsigned long oh,
-		    unsigned long ol, llse_loff_t *result,
-		    unsigned int origin)
+static int _llseek(unsigned int fd, unsigned long oh,
+		   unsigned long ol, llse_loff_t * result, unsigned int origin)
 {
 	return syscall(__NR_llseek, fd, oh, ol, result, origin);
 }
 #endif
 
-static llse_loff_t my_llseek (unsigned int fd, llse_loff_t offset,
-		unsigned int origin)
+static llse_loff_t my_llseek(unsigned int fd, llse_loff_t offset,
+			     unsigned int origin)
 {
 	llse_loff_t result;
 	int retval;
 
-	retval = _llseek (fd, ((unsigned long long) offset) >> 32,
-			((unsigned long long) offset) & 0xffffffff,
-			&result, origin);
+	retval = _llseek(fd, ((unsigned long long)offset) >> 32,
+			 ((unsigned long long)offset) & 0xffffffff,
+			 &result, origin);
 	return (retval == -1 ? (llse_loff_t) retval : result);
 }
 
 #endif /* __alpha__ */
 
-llse_loff_t llse_llseek (unsigned int fd, llse_loff_t offset,
-			 unsigned int origin)
+llse_loff_t llse_llseek(unsigned int fd, llse_loff_t offset,
+			unsigned int origin)
 {
 	llse_loff_t result;
 	static int do_compat = 0;
 
 	if (!do_compat) {
-		result = my_llseek (fd, offset, origin);
+		result = my_llseek(fd, offset, origin);
 		if (!(result == -1 && errno == ENOSYS))
 			return result;
 
@@ -101,7 +100,7 @@ llse_loff_t llse_llseek (unsigned int fd, llse_loff_t offset,
 	}
 
 	if ((sizeof(off_t) >= sizeof(llse_loff_t)) ||
-	    (offset < ((llse_loff_t) 1 << ((sizeof(off_t)*8) -1))))
+	    (offset < ((llse_loff_t) 1 << ((sizeof(off_t) * 8) - 1))))
 		return lseek(fd, (off_t) offset, origin);
 
 	errno = EINVAL;
@@ -110,15 +109,15 @@ llse_loff_t llse_llseek (unsigned int fd, llse_loff_t offset,
 
 #else /* !linux */
 
-llse_loff_t llse_llseek (unsigned int fd, llse_loff_t offset,
-			 unsigned int origin)
+llse_loff_t llse_llseek(unsigned int fd, llse_loff_t offset,
+			unsigned int origin)
 {
 	if ((sizeof(off_t) < sizeof(llse_loff_t)) &&
-	    (offset >= ((llse_loff_t) 1 << ((sizeof(off_t)*8) -1)))) {
+	    (offset >= ((llse_loff_t) 1 << ((sizeof(off_t) * 8) - 1)))) {
 		errno = EINVAL;
 		return -1;
 	}
-	return lseek (fd, (off_t) offset, origin);
+	return lseek(fd, (off_t) offset, origin);
 }
 
-#endif 	/* linux */
+#endif /* linux */

@@ -52,68 +52,71 @@ int TST_TOTAL = 1;
 
 int main()
 {
-    int pid, status=0, ret ;
-    long int flags = 0;
-    char *ltproot, *par, *child;
+	int pid, status = 0, ret;
+	long int flags = 0;
+	char *ltproot, *par, *child;
 
-    flags |= CLONE_NEWNS;
-    flags |= CLONE_NEWNET;
+	flags |= CLONE_NEWNS;
+	flags |= CLONE_NEWNET;
 
-    if (tst_kvercmp(2,6,19) < 0)
-	return 1;
+	if (tst_kvercmp(2, 6, 19) < 0)
+		return 1;
 
-    ltproot = getenv("LTPROOT");
+	ltproot = getenv("LTPROOT");
 
-    if (! ltproot) {
-        tst_resm(TINFO,"LTPROOT env variable is not set\n");
-        tst_resm(TINFO,"Please set LTPROOT and re-run the test.. Thankyou\n");
-        return -1;
-    }
+	if (!ltproot) {
+		tst_resm(TINFO, "LTPROOT env variable is not set\n");
+		tst_resm(TINFO,
+			 "Please set LTPROOT and re-run the test.. Thankyou\n");
+		return -1;
+	}
 
-    par = malloc (FILENAME_MAX);
-    child = malloc (FILENAME_MAX);
+	par = malloc(FILENAME_MAX);
+	child = malloc(FILENAME_MAX);
 
-    if (par == NULL || child == NULL) {
-        tst_resm(TFAIL, "error while allocating mem");
-        exit(1);
-    }
-    sprintf(par, "%s/testcases/bin/paripv6.sh", ltproot);
-    sprintf(child, "%s/testcases/bin/childipv6.sh", ltproot);
+	if (par == NULL || child == NULL) {
+		tst_resm(TFAIL, "error while allocating mem");
+		exit(1);
+	}
+	sprintf(par, "%s/testcases/bin/paripv6.sh", ltproot);
+	sprintf(child, "%s/testcases/bin/childipv6.sh", ltproot);
 
-    if ((pid = fork()) == 0) {
+	if ((pid = fork()) == 0) {
 
-        // Child.
+		// Child.
 #if HAVE_UNSHARE
-        ret = unshare(flags);
-        if (ret < 0) {
-            perror("unshare");
-	    tst_resm(TFAIL, "Error:Unshare syscall failed for network namespace\n");
-            return 1;
-        }
+		ret = unshare(flags);
+		if (ret < 0) {
+			perror("unshare");
+			tst_resm(TFAIL,
+				 "Error:Unshare syscall failed for network namespace\n");
+			return 1;
+		}
 #else
-	tst_resm(TCONF, "System doesn't have unshare support");
+		tst_resm(TCONF, "System doesn't have unshare support");
 #endif
-    return crtchild(child);
-    }
-    else{
+		return crtchild(child);
+	} else {
 
-        //parent
-        ret = system(par);
-        status = WEXITSTATUS(ret);
-        if (ret == -1 || status != 0) {
-            tst_resm(TFAIL, "Error: While running the IPv6 tests between \
+		//parent
+		ret = system(par);
+		status = WEXITSTATUS(ret);
+		if (ret == -1 || status != 0) {
+			tst_resm(TFAIL,
+				 "Error: While running the IPv6 tests between \
 parent & child NS\n");
-            fflush(stdout);
-            exit(1);
-        }
-    fflush(stdout);
+			fflush(stdout);
+			exit(1);
+		}
+		fflush(stdout);
 
-    ret = waitpid(pid, &status, __WALL);
-    status = WEXITSTATUS(status);
-    if (status != 0 || ret == -1) {
-        tst_resm(TFAIL, "waitpid() returns %d, errno %d\n", ret, errno);
-        status =  errno;
-    }
-    return status;
-    }
+		ret = waitpid(pid, &status, __WALL);
+		status = WEXITSTATUS(status);
+		if (status != 0 || ret == -1) {
+			tst_resm(TFAIL, "waitpid() returns %d, errno %d\n", ret,
+				 errno);
+			status = errno;
+		}
+		return status;
+	}
 }

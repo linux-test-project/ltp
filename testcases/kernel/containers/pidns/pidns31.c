@@ -142,7 +142,7 @@ void cleanup_mqueue(int result, int step, mqd_t mqd)
 	if (step != NO_STEP)
 		cleanup_resources(step, mqd);
 
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 
 	tst_exit();
@@ -178,17 +178,16 @@ int child_fn(void *arg)
 	tst_resm(TINFO, "cinit: my father is ready to receive a message");
 
 	mqd = syscall(__NR_mq_open, mqname, O_WRONLY);
-	if (mqd == (mqd_t)-1) {
+	if (mqd == (mqd_t) - 1) {
 		tst_resm(TBROK, "cinit: mq_open() failed (%s)",
-			strerror(errno));
+			 strerror(errno));
 		cleanup_mqueue(TBROK, NO_STEP, 0);
 	}
 	tst_resm(TINFO, "cinit: mq_open succeeded");
 
-	if (mq_send(mqd, MSG, strlen(MSG), MSG_PRIO) ==
-		(mqd_t)-1) {
+	if (mq_send(mqd, MSG, strlen(MSG), MSG_PRIO) == (mqd_t) - 1) {
 		tst_resm(TBROK, "cinit: mq_send() failed (%s)",
-			strerror(errno));
+			 strerror(errno));
 		cleanup_mqueue(TBROK, C_STEP_0, mqd);
 	}
 	tst_resm(TINFO, "cinit: mq_send() succeeded");
@@ -201,7 +200,7 @@ int child_fn(void *arg)
 /*
  * father_signal_handler()
  */
-static void father_signal_handler(int sig, siginfo_t *si, void *unused)
+static void father_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	char buf[256];
 	struct mq_attr attr;
@@ -209,13 +208,13 @@ static void father_signal_handler(int sig, siginfo_t *si, void *unused)
 
 	if (si->si_signo != SIGUSR1) {
 		tst_resm(TBROK, "father: received %s unexpectedly",
-			strsignal(si->si_signo));
+			 strsignal(si->si_signo));
 		return;
 	}
 
 	if (si->si_code != SI_MESGQ) {
 		tst_resm(TBROK, "father: expected signal code SI_MESGQ - "
-			"Got %d", si->si_code);
+			 "Got %d", si->si_code);
 		return;
 	}
 
@@ -228,8 +227,8 @@ static void father_signal_handler(int sig, siginfo_t *si, void *unused)
 
 	if (si->si_pid != info->pid) {
 		tst_resm(TFAIL,
-			"father: expected signal originator PID = %d - Got %d",
-			info->pid, si->si_pid);
+			 "father: expected signal originator PID = %d - Got %d",
+			 info->pid, si->si_pid);
 		return;
 	}
 
@@ -263,16 +262,18 @@ int main(int argc, char *argv[])
 	}
 
 	syscall(__NR_mq_unlink, mqname);
-	mqd = syscall(__NR_mq_open, mqname, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
-	if (mqd == (mqd_t)-1) {
+	mqd =
+	    syscall(__NR_mq_open, mqname, O_RDWR | O_CREAT | O_EXCL, 0777,
+		    NULL);
+	if (mqd == (mqd_t) - 1) {
 		tst_resm(TBROK, "parent: mq_open() failed (%s)",
-			strerror(errno));
+			 strerror(errno));
 		cleanup_mqueue(TBROK, F_STEP_0, 0);
 	}
 	tst_resm(TINFO, "parent: successfully created posix mqueue");
 
 	/* container creation on PID namespace */
-	cpid = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
+	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
 	if (cpid < 0) {
 		tst_resm(TBROK, "parent: clone() failed(%s)", strerror(errno));
 		cleanup_mqueue(TBROK, F_STEP_1, mqd);
@@ -285,9 +286,9 @@ int main(int argc, char *argv[])
 	info.mqd = mqd;
 	info.pid = cpid;
 	notif.sigev_value.sival_ptr = &info;
-	if (syscall(__NR_mq_notify, mqd, &notif) == (mqd_t)-1) {
+	if (syscall(__NR_mq_notify, mqd, &notif) == (mqd_t) - 1) {
 		tst_resm(TBROK, "parent: mq_notify() failed (%s)",
-			strerror(errno));
+			 strerror(errno));
 		cleanup_mqueue(TBROK, F_STEP_1, mqd);
 	}
 	tst_resm(TINFO, "parent: successfully registered for notification");
@@ -298,7 +299,7 @@ int main(int argc, char *argv[])
 	sa.sa_sigaction = father_signal_handler;
 	if (sigaction(SIGUSR1, &sa, NULL) == -1) {
 		tst_resm(TBROK, "parent: sigaction() failed(%s)",
-			strerror(errno));
+			 strerror(errno));
 		cleanup_mqueue(TBROK, F_STEP_2, mqd);
 	}
 	tst_resm(TINFO, "parent: successfully registered handler for SIGUSR1");

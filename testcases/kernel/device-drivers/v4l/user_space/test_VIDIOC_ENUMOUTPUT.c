@@ -34,7 +34,8 @@
 
 #include "test_VIDIOC_ENUMOUTPUT.h"
 
-void test_VIDIOC_ENUMOUTPUT() {
+void test_VIDIOC_ENUMOUTPUT()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_output output;
 	struct v4l2_output output2;
@@ -47,15 +48,17 @@ void test_VIDIOC_ENUMOUTPUT() {
 		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMOUTPUT, &output);
 		errno_enum = errno;
 
-		dprintf("\t%s:%u: VIDIOC_ENUMOUTPUT, ret_enum=%i, errno_enum=%i\n",
-			__FILE__, __LINE__, ret_enum, errno_enum);
+		dprintf
+		    ("\t%s:%u: VIDIOC_ENUMOUTPUT, ret_enum=%i, errno_enum=%i\n",
+		     __FILE__, __LINE__, ret_enum, errno_enum);
 
 		if (ret_enum == 0) {
 			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(output.index, i);
 
-			CU_ASSERT(0 < strlen( (char*)output.name ));
-			CU_ASSERT(valid_string((char*)output.name, sizeof(output.name)));
+			CU_ASSERT(0 < strlen((char *)output.name));
+			CU_ASSERT(valid_string
+				  ((char *)output.name, sizeof(output.name)));
 
 			//CU_ASSERT_EQUAL(output.type, ?);
 			//CU_ASSERT_EQUAL(output.audioset, ?);
@@ -73,12 +76,14 @@ void test_VIDIOC_ENUMOUTPUT() {
 			 */
 			memset(&output2, 0, sizeof(output2));
 			output2.index = output.index;
-			strncpy((char*)output2.name, (char*)output.name, sizeof(output2.name));
+			strncpy((char *)output2.name, (char *)output.name,
+				sizeof(output2.name));
 			output2.type = output.type;
 			output2.audioset = output.audioset;
 			output2.modulator = output.modulator;
 			output2.std = output.std;
-			CU_ASSERT_EQUAL(memcmp(&output, &output2, sizeof(output)), 0);
+			CU_ASSERT_EQUAL(memcmp
+					(&output, &output2, sizeof(output)), 0);
 
 			dprintf("\toutput = {.index=%u, .name=\"%s\", "
 				".type=0x%X, .audioset=0x%X, .modulator=0x%X, "
@@ -92,9 +97,8 @@ void test_VIDIOC_ENUMOUTPUT() {
 				output.std,
 				output.reserved[0],
 				output.reserved[1],
-				output.reserved[2],
-				output.reserved[3]
-				);
+				output.reserved[2], output.reserved[3]
+			    );
 
 		} else {
 			CU_ASSERT_EQUAL(ret_enum, -1);
@@ -102,7 +106,8 @@ void test_VIDIOC_ENUMOUTPUT() {
 
 			memset(&output2, 0xff, sizeof(output2));
 			output2.index = i;
-			CU_ASSERT_EQUAL(memcmp(&output, &output2, sizeof(output)), 0);
+			CU_ASSERT_EQUAL(memcmp
+					(&output, &output2, sizeof(output)), 0);
 
 			dprintf("\terrno=%i\n", errno);
 
@@ -112,13 +117,14 @@ void test_VIDIOC_ENUMOUTPUT() {
 
 }
 
-void test_VIDIOC_ENUMOUTPUT_S32_MAX() {
+void test_VIDIOC_ENUMOUTPUT_S32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_output output;
 	struct v4l2_output output2;
 
 	memset(&output, 0xff, sizeof(output));
-	output.index = (__u32)S32_MAX;
+	output.index = (__u32) S32_MAX;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMOUTPUT, &output);
 	errno_enum = errno;
 
@@ -126,17 +132,18 @@ void test_VIDIOC_ENUMOUTPUT_S32_MAX() {
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&output2, 0xff, sizeof(output2));
-	output2.index = (__u32)S32_MAX;
+	output2.index = (__u32) S32_MAX;
 	CU_ASSERT_EQUAL(memcmp(&output, &output2, sizeof(output)), 0);
 }
 
-void test_VIDIOC_ENUMOUTPUT_S32_MAX_1() {
+void test_VIDIOC_ENUMOUTPUT_S32_MAX_1()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_output output;
 	struct v4l2_output output2;
 
 	memset(&output, 0xff, sizeof(output));
-	output.index = ((__u32)S32_MAX)+1;
+	output.index = ((__u32) S32_MAX) + 1;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMOUTPUT, &output);
 	errno_enum = errno;
 
@@ -144,11 +151,12 @@ void test_VIDIOC_ENUMOUTPUT_S32_MAX_1() {
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&output2, 0xff, sizeof(output2));
-	output2.index = ((__u32)S32_MAX)+1;
+	output2.index = ((__u32) S32_MAX) + 1;
 	CU_ASSERT_EQUAL(memcmp(&output, &output2, sizeof(output)), 0);
 }
 
-void test_VIDIOC_ENUMOUTPUT_U32_MAX() {
+void test_VIDIOC_ENUMOUTPUT_U32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_output output;
 	struct v4l2_output output2;
@@ -166,7 +174,8 @@ void test_VIDIOC_ENUMOUTPUT_U32_MAX() {
 	CU_ASSERT_EQUAL(memcmp(&output, &output2, sizeof(output)), 0);
 }
 
-void test_VIDIOC_ENUMOUTPUT_NULL() {
+void test_VIDIOC_ENUMOUTPUT_NULL()
+{
 	int ret_enum, errno_enum;
 	int ret_null, errno_null;
 	struct v4l2_output output;

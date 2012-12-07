@@ -34,17 +34,19 @@
 // Globals
 
 char wbuf[MAXFSIZE];
-int startc=0;
-int showchar[]={124,47,45,92,124,47,45,92};
+int startc = 0;
+int showchar[] = { 124, 47, 45, 92, 124, 47, 45, 92 };
+
 int nullFileHandle;
-int openlog[2]={0,0};
+int openlog[2] = { 0, 0 };
+
 int cFileCount, dFileCount, errorCount;
 static int disk_space_pool = 0;
 char rootPath[BUFFSIZE];
 
 int LTP_fs_open_block_device(void);
-int do_fs_thump_tests(char * path);
-int do_create_file_test(char * path);
+int do_fs_thump_tests(char *path);
+int do_create_file_test(char *path);
 int makedir(char *dir1);
 int changedir(char *dir);
 int do_random_access_test(int maxNum);
@@ -55,562 +57,591 @@ int gen_random_file_size(int min, int max);
 int open_read_close(char *fname);
 int create_or_delete(char *fname);
 int do_tree_cleanup(char *path, int flag);
-int cleanup_files(char * file, struct stat * statBuff, int flag);
-int cleanup_dirs(char * file, struct stat * statBuff, int flag);
+int cleanup_files(char *file, struct stat *statBuff, int flag);
+int cleanup_dirs(char *file, struct stat *statBuff, int flag);
 
-int ltp_block_dev_handle = 0;      /* handle to LTP Test block device */
+int ltp_block_dev_handle = 0;	/* handle to LTP Test block device */
 int ltp_fileHandle = 0;
-char * fileBuf;
+char *fileBuf;
 
 int main(int argc, char **argv)
 {
 
-    ltpdev_cmd_t  cmd = {0,0};
-    int rc, i, tmpHandle;
-    struct stat statBuf;
+	ltpdev_cmd_t cmd = { 0, 0 };
+	int rc, i, tmpHandle;
+	struct stat statBuf;
 
-    printf("[%s] - Running test program\n", argv[0]);
+	printf("[%s] - Running test program\n", argv[0]);
 
-    rc = LTP_fs_open_block_device();
+	rc = LTP_fs_open_block_device();
 
-    if (!rc) {
+	if (!rc) {
 
-        ltp_block_dev_handle = open(LTP_FS_DEVICE_NAME, O_RDWR);
+		ltp_block_dev_handle = open(LTP_FS_DEVICE_NAME, O_RDWR);
 
-        if (ltp_block_dev_handle < 0) {
-            printf("ERROR: Open of device %s failed %d errno = %d\n", LTP_FS_DEVICE_NAME,ltp_block_dev_handle, errno);
-        }
-        else {
-            rc = ioctl (ltp_block_dev_handle, LTPAIODEV_CMD, &cmd);
+		if (ltp_block_dev_handle < 0) {
+			printf
+			    ("ERROR: Open of device %s failed %d errno = %d\n",
+			     LTP_FS_DEVICE_NAME, ltp_block_dev_handle, errno);
+		} else {
+			rc = ioctl(ltp_block_dev_handle, LTPAIODEV_CMD, &cmd);
 
-            printf("return from AIO ioctl %d \n", rc);
+			printf("return from AIO ioctl %d \n", rc);
 
-            rc = ioctl (ltp_block_dev_handle, LTPBIODEV_CMD, &cmd);
+			rc = ioctl(ltp_block_dev_handle, LTPBIODEV_CMD, &cmd);
 
-            printf("return from BIO ioctl %d \n", rc);
-        }
+			printf("return from BIO ioctl %d \n", rc);
+		}
 
-    } else {
-        printf("ERROR: Create/open block device failed\n");
-    }
+	} else {
+		printf("ERROR: Create/open block device failed\n");
+	}
 
-    ltp_fileHandle = open("/tmp/testfile", O_CREAT | O_RDWR | O_SYNC | FASYNC,
-			  S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	ltp_fileHandle =
+	    open("/tmp/testfile", O_CREAT | O_RDWR | O_SYNC | FASYNC,
+		 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
-    if (ltp_fileHandle > 0) {
+	if (ltp_fileHandle > 0) {
 
-        tmpHandle = open("/usr/include/ctype.h", O_RDONLY);
+		tmpHandle = open("/usr/include/ctype.h", O_RDONLY);
 
-        if (tmpHandle > 0) {
+		if (tmpHandle > 0) {
 
-            rc = fstat(tmpHandle, &statBuf);
+			rc = fstat(tmpHandle, &statBuf);
 
-            if (!rc) {
-                fileBuf = malloc(statBuf.st_size);
+			if (!rc) {
+				fileBuf = malloc(statBuf.st_size);
 
-                if (fileBuf) {
+				if (fileBuf) {
 
-                    read (tmpHandle, fileBuf, statBuf.st_size);
-                    close(tmpHandle);
-                    write(ltp_fileHandle, fileBuf, statBuf.st_size);
+					read(tmpHandle, fileBuf,
+					     statBuf.st_size);
+					close(tmpHandle);
+					write(ltp_fileHandle, fileBuf,
+					      statBuf.st_size);
 
-                    for (i = 0 ; i < 100; i++) {
-                        read(ltp_fileHandle, fileBuf, statBuf.st_size*i);
-                        write(ltp_fileHandle, fileBuf, statBuf.st_size*i);
-                    }
-                }
+					for (i = 0; i < 100; i++) {
+						read(ltp_fileHandle, fileBuf,
+						     statBuf.st_size * i);
+						write(ltp_fileHandle, fileBuf,
+						      statBuf.st_size * i);
+					}
+				}
 
-            }
+			}
 
-        } else {
-            printf("ERROR: Create/open file failed\n");
-        }
-    }
+		} else {
+			printf("ERROR: Create/open file failed\n");
+		}
+	}
 
-    printf("*** Starting FileSystem thump tests....****\n");
-    printf("*** Please be patient, this may take a little while... ***\n");
+	printf("*** Starting FileSystem thump tests....****\n");
+	printf("*** Please be patient, this may take a little while... ***\n");
 
-    for (i = 1; i < argc; i++) {
-        printf("Running test %d of %d on FileSystem %s \n", i, argc-1, argv[i]);
-        if (strcmp(argv[i], "|") != 0) {
-            strcpy(rootPath, argv[i]);
-            rc = do_fs_thump_tests(argv[i]);
-            if (rc != 0 && rc != ENOSPC) {
-                printf("ERROR: Failed on FileSystem %s with errno %d \n", argv[i], rc);
-            }
-        }
-        else {
-            printf("Test Program complete..\n");
-            break;
-        }
+	for (i = 1; i < argc; i++) {
+		printf("Running test %d of %d on FileSystem %s \n", i, argc - 1,
+		       argv[i]);
+		if (strcmp(argv[i], "|") != 0) {
+			strcpy(rootPath, argv[i]);
+			rc = do_fs_thump_tests(argv[i]);
+			if (rc != 0 && rc != ENOSPC) {
+				printf
+				    ("ERROR: Failed on FileSystem %s with errno %d \n",
+				     argv[i], rc);
+			}
+		} else {
+			printf("Test Program complete..\n");
+			break;
+		}
 
-    }
+	}
 
-    printf("Test Program complete..\n");
+	printf("Test Program complete..\n");
 
-  return 0;
+	return 0;
 }
-int do_fs_thump_tests(char * path)
+
+int do_fs_thump_tests(char *path)
 {
-    int rc = 0;
+	int rc = 0;
 
-    printf("Changing to directory %s \n", path);
+	printf("Changing to directory %s \n", path);
 
-    changedir(path);
+	changedir(path);
 
-    cFileCount = 0;
-    dFileCount = 0;
+	cFileCount = 0;
+	dFileCount = 0;
 
-    rc |= do_create_file_test(path);
-    rc |= do_random_access_test(MAXNUM);
-    rc |= do_tree_cleanup(path, FILES_ONLY);
-    rc |= do_random_create_delete(MAXNUM);
-    rc |= do_tree_cleanup(path, ALL);
+	rc |= do_create_file_test(path);
+	rc |= do_random_access_test(MAXNUM);
+	rc |= do_tree_cleanup(path, FILES_ONLY);
+	rc |= do_random_create_delete(MAXNUM);
+	rc |= do_tree_cleanup(path, ALL);
 
-    return rc;
+	return rc;
 
 }
+
 int do_tree_cleanup(char *path, int flag)
 {
 
-  if (flag == FILES_ONLY) {
-      printf("Cleaning up test files...\n");
-      ftw(path, (void *)cleanup_files, MAXNUM);
-  }
-  else {
-      printf("Cleaning up everything in the test directory...\n");
-      ftw(path, (void *)cleanup_files, MAXNUM);
-      ftw(path, (void *)cleanup_dirs, MAXNUM);
-  }
+	if (flag == FILES_ONLY) {
+		printf("Cleaning up test files...\n");
+		ftw(path, (void *)cleanup_files, MAXNUM);
+	} else {
+		printf("Cleaning up everything in the test directory...\n");
+		ftw(path, (void *)cleanup_files, MAXNUM);
+		ftw(path, (void *)cleanup_dirs, MAXNUM);
+	}
 
-        return 0;
-}
-int cleanup_files(char * file, struct stat * statBuff, int flag)
-{
-    int rc = 0;
-
-    if (flag == FTW_F) {
-        if (unlink(file)) {
-            printf("ERROR:%d removing file %s\n", errno, file);
-        }
-    }
-
-    return rc;
+	return 0;
 }
 
-int cleanup_dirs(char * file, struct stat * statBuff, int flag)
+int cleanup_files(char *file, struct stat *statBuff, int flag)
 {
-    int rc = 0;
+	int rc = 0;
 
-    //printf("%s:Cleaning up directory %s \n", __FUNCTION__, file);
+	if (flag == FTW_F) {
+		if (unlink(file)) {
+			printf("ERROR:%d removing file %s\n", errno, file);
+		}
+	}
 
-    if (strcmp(rootPath, file) == 0) {
-      return 0;
-    }
-
-    if (flag == FTW_F) {
-        if (unlink(file)) {
-            printf("ERROR:%d removing file %s\n", errno, file);
-        }
-    }
-    else if (flag == FTW_D) {
-        changedir(file);
-        ftw(file, (void *)cleanup_dirs, MAXNUM);
-        rmdir(file);
-
-    }
-    else {
-        printf("No idea what we found here\n");
-    }
-
-    return rc;
+	return rc;
 }
 
-int do_create_file_test(char * path)
+int cleanup_dirs(char *file, struct stat *statBuff, int flag)
 {
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    int l = 0;
-    int rc = 0;
+	int rc = 0;
 
-    char dir1[MAXN];
-    char dir2[MAXN];
-    char dir3[MAXN];
-    char filename[MAXN];
+	//printf("%s:Cleaning up directory %s \n", __FUNCTION__, file);
 
-    time_t t;
+	if (strcmp(rootPath, file) == 0) {
+		return 0;
+	}
 
-    int maxfiles=0xFFFFFF;
+	if (flag == FTW_F) {
+		if (unlink(file)) {
+			printf("ERROR:%d removing file %s\n", errno, file);
+		}
+	} else if (flag == FTW_D) {
+		changedir(file);
+		ftw(file, (void *)cleanup_dirs, MAXNUM);
+		rmdir(file);
 
-    time(&t);
+	} else {
+		printf("No idea what we found here\n");
+	}
 
-    srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
+	return rc;
+}
 
-    printf("Creating files...\n");
+int do_create_file_test(char *path)
+{
+	int i = 0;
+	int j = 0;
+	int k = 0;
+	int l = 0;
+	int rc = 0;
 
-    for (i = 0 ; i < FILE_CREATE_COUNT; i++) {
+	char dir1[MAXN];
+	char dir2[MAXN];
+	char dir3[MAXN];
+	char filename[MAXN];
 
-        sprintf(dir1,"%2.2x",i);
+	time_t t;
 
-        makedir(dir1);
+	int maxfiles = 0xFFFFFF;
 
-        changedir(dir1);
+	time(&t);
 
-        for (j = 0 ; j < FILE_CREATE_COUNT ; j++) {
+	srandom((unsigned int)getpid() ^
+		(((unsigned int)t << 16) | (unsigned int)t >> 16));
 
-            sprintf(dir2,"%2.2x",j);
+	printf("Creating files...\n");
 
-            makedir(dir2);
+	for (i = 0; i < FILE_CREATE_COUNT; i++) {
 
-            changedir(dir2);
+		sprintf(dir1, "%2.2x", i);
 
-            for (k = 0 ; k < FILE_CREATE_COUNT ; k++) {
+		makedir(dir1);
 
-                sprintf(dir3,"%2.2x",k);
-                makedir(dir3);
-                changedir(dir3);
+		changedir(dir1);
 
-                for (l = 0 ; l < FILE_CREATE_COUNT ; l++) {
-                    sprintf(filename,"%s%s%s%2.2x",dir1,dir2,dir3,l);
-                    rc = create_file(filename);
-                    if (rc != 0 || maxfiles < dFileCount++) {
-                        if (rc != ENOSPC) {
-                            printf("ERROR: failed error:%d creating all the test files ! \n", errno);
-                            printf("ERROR2: rc:%d -- dFileCount:%d \n", rc, dFileCount);
-                        }
-                        goto end;
-                    }
-                }
-                changedir("../");
-            }
-            changedir("../");
-        }
-        changedir("../");
-    }
-    end:
-    fprintf(stderr,"\nTotal create files: %d\n",cFileCount);
-    printf("Done\n");
-    return rc;
+		for (j = 0; j < FILE_CREATE_COUNT; j++) {
+
+			sprintf(dir2, "%2.2x", j);
+
+			makedir(dir2);
+
+			changedir(dir2);
+
+			for (k = 0; k < FILE_CREATE_COUNT; k++) {
+
+				sprintf(dir3, "%2.2x", k);
+				makedir(dir3);
+				changedir(dir3);
+
+				for (l = 0; l < FILE_CREATE_COUNT; l++) {
+					sprintf(filename, "%s%s%s%2.2x", dir1,
+						dir2, dir3, l);
+					rc = create_file(filename);
+					if (rc != 0 || maxfiles < dFileCount++) {
+						if (rc != ENOSPC) {
+							printf
+							    ("ERROR: failed error:%d creating all the test files ! \n",
+							     errno);
+							printf
+							    ("ERROR2: rc:%d -- dFileCount:%d \n",
+							     rc, dFileCount);
+						}
+						goto end;
+					}
+				}
+				changedir("../");
+			}
+			changedir("../");
+		}
+		changedir("../");
+	}
+end:
+	fprintf(stderr, "\nTotal create files: %d\n", cFileCount);
+	printf("Done\n");
+	return rc;
 }
 
 int makedir(char *dir1)
 {
-  if (mkdir(dir1, S_IRWXU) < 0) {
-    perror(dir1);
-    return(errno);
-  }
-        return 0;
+	if (mkdir(dir1, S_IRWXU) < 0) {
+		perror(dir1);
+		return (errno);
+	}
+	return 0;
 }
 
-int changedir(char *dir) {
-  if (chdir(dir) < 0) {
-    perror(dir);
-    return (errno);
-  }
+int changedir(char *dir)
+{
+	if (chdir(dir) < 0) {
+		perror(dir);
+		return (errno);
+	}
 
-        return 0;
+	return 0;
 }
 
 int create_file(char *filename)
 {
-  int fileHandle;
-  int randomsize;
+	int fileHandle;
+	int randomsize;
 
-  if ((fileHandle=creat(filename, S_IRWXU)) < 0) {
+	if ((fileHandle = creat(filename, S_IRWXU)) < 0) {
 
-    fprintf(stderr,"\nERROR line %d: Total create files: %d\n",__LINE__,cFileCount);
-    perror(filename);
-    return (errno);
-  }
+		fprintf(stderr, "\nERROR line %d: Total create files: %d\n",
+			__LINE__, cFileCount);
+		perror(filename);
+		return (errno);
+	}
 
-  if ((randomsize = gen_random_file_size(0,MAXFSIZE)) < 0) {
-    randomsize = MAXFSIZE;
-  }
-  if (write(fileHandle,wbuf,randomsize) < 0) {
+	if ((randomsize = gen_random_file_size(0, MAXFSIZE)) < 0) {
+		randomsize = MAXFSIZE;
+	}
+	if (write(fileHandle, wbuf, randomsize) < 0) {
 
-    fprintf(stderr,"\nERROR:%d line%d: Total create files: %d\n",errno,__LINE__,cFileCount);
-    close(fileHandle);
+		fprintf(stderr, "\nERROR:%d line%d: Total create files: %d\n",
+			errno, __LINE__, cFileCount);
+		close(fileHandle);
 
-    perror(filename);
-    return (errno);
-  }
+		perror(filename);
+		return (errno);
+	}
 
-  cFileCount++;
-  close(fileHandle);
-        return 0;
+	cFileCount++;
+	close(fileHandle);
+	return 0;
 }
 
 int delete_file(char *filename)
 {
-    struct stat buf;
-    int st;
+	struct stat buf;
+	int st;
 
-    st = stat(filename, &buf);
+	st = stat(filename, &buf);
 
-    if (st < 0) {
-        errorCount++;
-        printf("ERROR line %d: Getting file stats %s \n", __LINE__, filename);
-        return(-1);
-    }
+	if (st < 0) {
+		errorCount++;
+		printf("ERROR line %d: Getting file stats %s \n", __LINE__,
+		       filename);
+		return (-1);
+	}
 
-    disk_space_pool += buf.st_size;
+	disk_space_pool += buf.st_size;
 
-    if (unlink(filename) < 0) {
-        errorCount++;
-        printf("ERROR line %d: Removing file %s \n", __LINE__, filename);
-        return(-1);
-    }
+	if (unlink(filename) < 0) {
+		errorCount++;
+		printf("ERROR line %d: Removing file %s \n", __LINE__,
+		       filename);
+		return (-1);
+	}
 
-    dFileCount++;
-  return 0;
+	dFileCount++;
+	return 0;
 }
 
 int LTP_fs_open_block_device()
 {
-    dev_t devt;
-    struct stat statbuf;
-    int rc;
+	dev_t devt;
+	struct stat statbuf;
+	int rc;
 
-    if (ltp_block_dev_handle == 0) {
+	if (ltp_block_dev_handle == 0) {
 
-        /* check for the /dev/LTPFSTest subdir, and create if it does not exist.
-         *
-         * If devfs is running and mounted on /dev, these checks will all pass,
-         * so a new node will not be created.
-         */
-        devt = makedev(LTPMAJOR, 0);
+		/* check for the /dev/LTPFSTest subdir, and create if it does not exist.
+		 *
+		 * If devfs is running and mounted on /dev, these checks will all pass,
+		 * so a new node will not be created.
+		 */
+		devt = makedev(LTPMAJOR, 0);
 
-        rc = stat(LTP_FS_DEV_NODE_PATH, &statbuf);
+		rc = stat(LTP_FS_DEV_NODE_PATH, &statbuf);
 
-        if (rc) {
-            if (errno == ENOENT) {
-                /* dev node does not exist. */
-                rc = mkdir(LTP_FS_DEV_NODE_PATH, (S_IFDIR | S_IRWXU |
-                                                    S_IRGRP | S_IXGRP |
-                                                    S_IROTH | S_IXOTH));
-            } else {
-                printf("ERROR: Problem with LTP FS dev directory.  Error code from stat() is %d\n\n", errno);
-            }
+		if (rc) {
+			if (errno == ENOENT) {
+				/* dev node does not exist. */
+				rc = mkdir(LTP_FS_DEV_NODE_PATH,
+					   (S_IFDIR | S_IRWXU | S_IRGRP |
+					    S_IXGRP | S_IROTH | S_IXOTH));
+			} else {
+				printf
+				    ("ERROR: Problem with LTP FS dev directory.  Error code from stat() is %d\n\n",
+				     errno);
+			}
 
-        } else {
-            if (!(statbuf.st_mode & S_IFDIR)) {
-                rc = unlink(LTP_FS_DEV_NODE_PATH);
-                if (!rc) {
-                    rc = mkdir(LTP_FS_DEV_NODE_PATH, (S_IFDIR | S_IRWXU |
-                                                    S_IRGRP | S_IXGRP |
-                                                    S_IROTH | S_IXOTH));
-                }
-            }
-        }
+		} else {
+			if (!(statbuf.st_mode & S_IFDIR)) {
+				rc = unlink(LTP_FS_DEV_NODE_PATH);
+				if (!rc) {
+					rc = mkdir(LTP_FS_DEV_NODE_PATH,
+						   (S_IFDIR | S_IRWXU | S_IRGRP
+						    | S_IXGRP | S_IROTH |
+						    S_IXOTH));
+				}
+			}
+		}
 
-        /*
-         * Check for the /dev/ltp-fs/block_device node, and create if it does not
-         * exist.
-         */
-        rc = stat(LTP_FS_DEVICE_NAME, &statbuf);
-        if (rc) {
-            if (errno == ENOENT) {
-                /* dev node does not exist */
-                rc = mknod(LTP_FS_DEVICE_NAME, (S_IFBLK | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
-            } else {
-                printf("ERROR:Problem with LTP FS block device node directory.  Error code form stat() is %d\n\n", errno);
-            }
+		/*
+		 * Check for the /dev/ltp-fs/block_device node, and create if it does not
+		 * exist.
+		 */
+		rc = stat(LTP_FS_DEVICE_NAME, &statbuf);
+		if (rc) {
+			if (errno == ENOENT) {
+				/* dev node does not exist */
+				rc = mknod(LTP_FS_DEVICE_NAME,
+					   (S_IFBLK | S_IRUSR | S_IWUSR |
+					    S_IRGRP | S_IWGRP), devt);
+			} else {
+				printf
+				    ("ERROR:Problem with LTP FS block device node directory.  Error code form stat() is %d\n\n",
+				     errno);
+			}
 
-        } else {
-            /*
-             * /dev/ltp-fs/block_device exists.  Check to make sure it is for a
-             * block device and that it has the right major and minor.
-             */
-            if ((!(statbuf.st_mode & S_IFBLK)) ||
-                 (statbuf.st_rdev != devt)) {
+		} else {
+			/*
+			 * /dev/ltp-fs/block_device exists.  Check to make sure it is for a
+			 * block device and that it has the right major and minor.
+			 */
+			if ((!(statbuf.st_mode & S_IFBLK)) ||
+			    (statbuf.st_rdev != devt)) {
 
-                /* Recreate the dev node. */
-                rc = unlink(LTP_FS_DEVICE_NAME);
-                if (!rc) {
-                    rc = mknod(LTP_FS_DEVICE_NAME, (S_IFBLK | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
-                }
-            }
-        }
+				/* Recreate the dev node. */
+				rc = unlink(LTP_FS_DEVICE_NAME);
+				if (!rc) {
+					rc = mknod(LTP_FS_DEVICE_NAME,
+						   (S_IFBLK | S_IRUSR | S_IWUSR
+						    | S_IRGRP | S_IWGRP), devt);
+				}
+			}
+		}
 
-    }
+	}
 
-    return rc;
+	return rc;
 }
 
 int gen_random_file_size(int min, int max)
 {
-  double u1,u2,z;
-  int i;
-  int ave;
-  int range;
-  int ZZ;
-  if (min >= max) {
-    return (-1);
-  }
-  range = max - min;
-  ave = range/2;
-  for (i = 0 ; i< 10 ; i++) {
-    u1 =  ((double)(random() % 1000000))/ 1000000;
-    u2 =  ((double)(random() % 1000000))/ 1000000;
-    z = sqrt( -2.0 * log(u1) ) * cos ( M_2PI * u2 );
-    ZZ = min + (ave + (z*(ave/4)));
-    if (ZZ >= min && ZZ < max) {
-        return (ZZ);
-    }
-  }
-  return (-1);
+	double u1, u2, z;
+	int i;
+	int ave;
+	int range;
+	int ZZ;
+	if (min >= max) {
+		return (-1);
+	}
+	range = max - min;
+	ave = range / 2;
+	for (i = 0; i < 10; i++) {
+		u1 = ((double)(random() % 1000000)) / 1000000;
+		u2 = ((double)(random() % 1000000)) / 1000000;
+		z = sqrt(-2.0 * log(u1)) * cos(M_2PI * u2);
+		ZZ = min + (ave + (z * (ave / 4)));
+		if (ZZ >= min && ZZ < max) {
+			return (ZZ);
+		}
+	}
+	return (-1);
 }
 
 int do_random_access_test(int maxNum)
 {
-    int r;
-    char fname[1024];
-    time_t t;
-    int i;
+	int r;
+	char fname[1024];
+	time_t t;
+	int i;
 
-    printf("Running random access test...\n");
-    changedir(rootPath);
+	printf("Running random access test...\n");
+	changedir(rootPath);
 
-    if (maxNum < 1 || maxNum > MAXNUM) {
-        printf("out of size %d\n",maxNum);
-        return 1;
-    }
+	if (maxNum < 1 || maxNum > MAXNUM) {
+		printf("out of size %d\n", maxNum);
+		return 1;
+	}
 
-    time(&t);
-    srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
+	time(&t);
+	srandom((unsigned int)getpid() ^
+		(((unsigned int)t << 16) | (unsigned int)t >> 16));
 
-    if ((nullFileHandle = open("/dev/null",O_WRONLY)) < 0) {
-        perror("/dev/null");
-        return(errno);
-    }
+	if ((nullFileHandle = open("/dev/null", O_WRONLY)) < 0) {
+		perror("/dev/null");
+		return (errno);
+	}
 
-    /* 00/00/00/00 */
-    for (i = 0 ; i < maxNum ; i++) {
+	/* 00/00/00/00 */
+	for (i = 0; i < maxNum; i++) {
 
-        r = random() % maxNum;
+		r = random() % maxNum;
 
-        sprintf(fname,"00/%2.2x/%2.2x/00%2.2x%2.2x%2.2x",
-                ((r>>16)&0xFF),
-                ((r>>8)&0xFF),
-                ((r>>16)&0xFF),
-                ((r>>8)&0xFF),
-                (r&0xFF));
+		sprintf(fname, "00/%2.2x/%2.2x/00%2.2x%2.2x%2.2x",
+			((r >> 16) & 0xFF),
+			((r >> 8) & 0xFF),
+			((r >> 16) & 0xFF), ((r >> 8) & 0xFF), (r & 0xFF));
 
-        open_read_close(fname);
-    }
-    close(nullFileHandle);
-    printf("Success:\t%d\nFail:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
-  return 0;
+		open_read_close(fname);
+	}
+	close(nullFileHandle);
+	printf("Success:\t%d\nFail:\t%d\n", openlog[SUCCESS], openlog[FAIL]);
+	return 0;
 }
 
 int open_read_close(char *fname)
 {
-    int fileHandle, fileHandle2;
-    char buffer[BUFFSIZE];
-    int c;
+	int fileHandle, fileHandle2;
+	char buffer[BUFFSIZE];
+	int c;
 
-    if ((fileHandle = open(fname, O_RDONLY | O_SYNC | O_ASYNC)) < 0) {
-        openlog[FAIL]++;
-        printf("ERROR:opening file %s failed %d \n", fname, errno);
-        return (errno);
-    }
+	if ((fileHandle = open(fname, O_RDONLY | O_SYNC | O_ASYNC)) < 0) {
+		openlog[FAIL]++;
+		printf("ERROR:opening file %s failed %d \n", fname, errno);
+		return (errno);
+	}
 
-    if ((fileHandle2 = open(fname, O_RDONLY |  O_SYNC | O_ASYNC)) < 0) {
-        openlog[FAIL]++;
-        printf("ERROR:2nd opening file %s failed %d \n", fname, errno);
-        return (errno);
-    }
+	if ((fileHandle2 = open(fname, O_RDONLY | O_SYNC | O_ASYNC)) < 0) {
+		openlog[FAIL]++;
+		printf("ERROR:2nd opening file %s failed %d \n", fname, errno);
+		return (errno);
+	}
 
-    openlog[SUCCESS]++;
+	openlog[SUCCESS]++;
 
-    while ((c = read(fileHandle, buffer, BUFFSIZE)) > 0) {
-        if (write(nullFileHandle, buffer, c) < 0) {
-            perror("/dev/null");
-            printf("Opened\t %d\nUnopend:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
-            close(fileHandle2);
-            close(fileHandle);
-            return(errno);
-        }
-        if ((c = read(fileHandle2, buffer, BUFFSIZE)) > 0) {
-            if (write(nullFileHandle, buffer, c) < 0) {
-                perror("/dev/null");
-                printf("Opened\t %d\nUnopend:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
-                close(fileHandle2);
-                close(fileHandle);
-                return(errno);
-            }
-        }
-    }
+	while ((c = read(fileHandle, buffer, BUFFSIZE)) > 0) {
+		if (write(nullFileHandle, buffer, c) < 0) {
+			perror("/dev/null");
+			printf("Opened\t %d\nUnopend:\t%d\n", openlog[SUCCESS],
+			       openlog[FAIL]);
+			close(fileHandle2);
+			close(fileHandle);
+			return (errno);
+		}
+		if ((c = read(fileHandle2, buffer, BUFFSIZE)) > 0) {
+			if (write(nullFileHandle, buffer, c) < 0) {
+				perror("/dev/null");
+				printf("Opened\t %d\nUnopend:\t%d\n",
+				       openlog[SUCCESS], openlog[FAIL]);
+				close(fileHandle2);
+				close(fileHandle);
+				return (errno);
+			}
+		}
+	}
 
-    if (c < 0) {
-        perror(fname);
-        printf("Opened\t %d\nUnopend:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
-        return(errno);
-    }
+	if (c < 0) {
+		perror(fname);
+		printf("Opened\t %d\nUnopend:\t%d\n", openlog[SUCCESS],
+		       openlog[FAIL]);
+		return (errno);
+	}
 
-    close(fileHandle2);
-    close(fileHandle);
-  return 0;
+	close(fileHandle2);
+	close(fileHandle);
+	return 0;
 }
 
 int create_or_delete(char *fname)
 {
-    int r, rc;
+	int r, rc;
 
-    r = (random() & 1);
+	r = (random() & 1);
 
-        /* create */
-    if ((create_file(fname) == 0)) {
-        rc = delete_file(fname);
-    }
-    else{
-        printf("Error: %d creating random file \n", errno);
-    }
+	/* create */
+	if ((create_file(fname) == 0)) {
+		rc = delete_file(fname);
+	} else {
+		printf("Error: %d creating random file \n", errno);
+	}
 
-    if ((errorCount > dFileCount ||  errorCount > cFileCount) && (errorCount > MAXERROR)) {
-        fprintf(stderr,"Too many errors -- Aborting test\n");
-        fprintf(stderr,"Total create files: %d\n",cFileCount);
-        fprintf(stderr,"Total delete files: %d\n",dFileCount);
-        fprintf(stderr,"Total error       : %d\n",errorCount);
-        return(MAXERROR);
-    }
+	if ((errorCount > dFileCount || errorCount > cFileCount)
+	    && (errorCount > MAXERROR)) {
+		fprintf(stderr, "Too many errors -- Aborting test\n");
+		fprintf(stderr, "Total create files: %d\n", cFileCount);
+		fprintf(stderr, "Total delete files: %d\n", dFileCount);
+		fprintf(stderr, "Total error       : %d\n", errorCount);
+		return (MAXERROR);
+	}
 
-  return 0;
+	return 0;
 }
 
 int do_random_create_delete(int maxNum)
 {
-  int r, rc = 0;
-  char fname[1024];
-  time_t t;
-  int i;
+	int r, rc = 0;
+	char fname[1024];
+	time_t t;
+	int i;
 
-  printf("Running random create/delete test...\n");
+	printf("Running random create/delete test...\n");
 
-  if (maxNum < 1 || maxNum > MAXNUM) {
-    printf("MAX out of size %d\n",maxNum);
-    return(maxNum);
-  }
+	if (maxNum < 1 || maxNum > MAXNUM) {
+		printf("MAX out of size %d\n", maxNum);
+		return (maxNum);
+	}
 
-  time(&t);
-  srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
+	time(&t);
+	srandom((unsigned int)getpid() ^
+		(((unsigned int)t << 16) | (unsigned int)t >> 16));
 
-  /* 00/00/00/00 */
-  for (i = 0 ; i < maxNum && rc != MAXERROR; i++) {
-    r = random() % maxNum;
-    sprintf(fname,"00/%2.2x/%2.2x/00%2.2x%2.2x%2.2x",
-	   ((r>>16)&0xFF),
-	   ((r>>8)&0xFF),
-	   ((r>>16)&0xFF),
-	   ((r>>8)&0xFF),
-	   (r&0xFF));
+	/* 00/00/00/00 */
+	for (i = 0; i < maxNum && rc != MAXERROR; i++) {
+		r = random() % maxNum;
+		sprintf(fname, "00/%2.2x/%2.2x/00%2.2x%2.2x%2.2x",
+			((r >> 16) & 0xFF),
+			((r >> 8) & 0xFF),
+			((r >> 16) & 0xFF), ((r >> 8) & 0xFF), (r & 0xFF));
 
-    rc = create_or_delete(fname);
-  }
+		rc = create_or_delete(fname);
+	}
 
-  fprintf(stderr,"Total create files: %d\n",cFileCount);
-  fprintf(stderr,"Total delete files: %d\n",dFileCount);
-  fprintf(stderr,"Total error       : %d\n",errorCount);
-  return(rc);
+	fprintf(stderr, "Total create files: %d\n", cFileCount);
+	fprintf(stderr, "Total delete files: %d\n", dFileCount);
+	fprintf(stderr, "Total error       : %d\n", errorCount);
+	return (rc);
 }

@@ -34,7 +34,7 @@ int main()
 	sprintf(qname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
-	if (queue == (mqd_t)-1) {
+	if (queue == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		return PTS_UNRESOLVED;
 	}

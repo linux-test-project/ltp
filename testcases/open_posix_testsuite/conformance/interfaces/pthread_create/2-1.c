@@ -38,22 +38,19 @@ int main()
 
 	/* Create a new thread.  The default attribute should be that
 	 * it is joinable. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* The new thread should be able to be joined. */
-	if (pthread_join(new_th, NULL) == EINVAL)
-	{
+	if (pthread_join(new_th, NULL) == EINVAL) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	/* The new thread should be able to be detached. */
-	if (pthread_detach(new_th) == EINVAL)
-	{
+	if (pthread_detach(new_th) == EINVAL) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

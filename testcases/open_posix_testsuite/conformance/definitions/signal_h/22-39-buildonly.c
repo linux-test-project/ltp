@@ -1,6 +1,6 @@
   /*
-  Test that the SI_ASYNCIO macro is defined.
-  */
+     Test that the SI_ASYNCIO macro is defined.
+   */
 
 #include <signal.h>
 

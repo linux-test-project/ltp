@@ -46,7 +46,7 @@ int main(void)
 	off_t off = 0;
 
 	/* check for 64 bit arch */
-	if (sizeof(void*) == 8) {
+	if (sizeof(void *) == 8) {
 		printf("USUPPORTED: Cannot be tested on 64 bit architecture\n");
 		return PTS_UNSUPPORTED;
 	}
@@ -63,7 +63,7 @@ int main(void)
 	unlink(tmpfname);
 
 	/* Set lenght to maximal multiple of page size */
-	len = ~((size_t)0) & (~(page_size - 1));
+	len = ~((size_t) 0) & (~(page_size - 1));
 
 	/*
 	 * Now we need offset that fits into 32 bit
@@ -71,10 +71,11 @@ int main(void)
 	 * enough so that offset + PAGE_ALIGN(len) / page_size
 	 * overflows 32 bits.
 	 */
-	off = ((off_t)~((size_t)0)) * page_size;
+	off = ((off_t) ~ ((size_t) 0)) * page_size;
 	off &= ~(page_size - 1);
 
-	printf("off: %llx, len: %llx\n", (unsigned long long)off, (unsigned long long)len);
+	printf("off: %llx, len: %llx\n", (unsigned long long)off,
+	       (unsigned long long)len);
 
 	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, off);
 	if (pa == MAP_FAILED && errno == EOVERFLOW) {

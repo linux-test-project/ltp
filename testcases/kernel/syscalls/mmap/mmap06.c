@@ -124,9 +124,9 @@ int main(int ac, char **av)
 
 		/* Check for the return value of mmap() */
 		if (addr != MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO,
-				"mmap() returned invalid value, expected: %p",
-				MAP_FAILED);
+			tst_resm(TFAIL | TERRNO,
+				 "mmap() returned invalid value, expected: %p",
+				 MAP_FAILED);
 			/* Unmap the mapped memory */
 			if (munmap(addr, page_sz) != 0) {
 				tst_resm(TBROK, "munmap() failed");
@@ -138,8 +138,8 @@ int main(int ac, char **av)
 		if (TEST_ERRNO == EACCES) {
 			tst_resm(TPASS, "mmap failed with EACCES");
 		} else {
-			tst_resm(TFAIL|TERRNO,
-				"mmap failed with unexpected errno");
+			tst_resm(TFAIL | TERRNO,
+				 "mmap failed with unexpected errno");
 		}
 	}
 	cleanup();
@@ -164,7 +164,7 @@ void setup()
 	/* Get the system page size */
 	if ((page_sz = getpagesize()) < 0) {
 		tst_brkm(TFAIL, NULL,
-			"getpagesize() fails to get system page size");
+			 "getpagesize() fails to get system page size");
 	}
 
 	/* Allocate space for the test buffer */

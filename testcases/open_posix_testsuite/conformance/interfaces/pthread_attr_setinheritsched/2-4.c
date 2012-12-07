@@ -34,9 +34,9 @@ int priority_correct = -1;
 
 void *thread(void *tmp)
 {
-	struct sched_param         param;
-	int                        policy;
-	int                        rc = 0;
+	struct sched_param param;
+	int policy;
+	int rc = 0;
 
 	rc = pthread_getschedparam(pthread_self(), &policy, &param);
 	if (rc != 0) {
@@ -55,10 +55,10 @@ void *thread(void *tmp)
 
 int main()
 {
-	pthread_attr_t             attr;
-	pthread_t                  thread_id;
-	struct sched_param         param;
-	int                        rc = 0;
+	pthread_attr_t attr;
+	pthread_t thread_id;
+	struct sched_param param;
+	int rc = 0;
 
 	param.sched_priority = PRIORITY;
 

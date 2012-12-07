@@ -100,9 +100,9 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int exp_errno;
 	void (*setupfunc) ();
 } test_cases[] = {
-	{ 1, EPERM, setup1 },
-	{ 2, EBADF, setup2 },
-};
+	{
+	1, EPERM, setup1}, {
+2, EBADF, setup2},};
 
 char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
 char *TCID = "fchown04";	/* Test program identifier.    */
@@ -151,14 +151,15 @@ int main(int ac, char **av)
 
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO == test_cases[i].exp_errno)
-					tst_resm(TPASS|TTERRNO,
-					    "fchown failed as expected");
+					tst_resm(TPASS | TTERRNO,
+						 "fchown failed as expected");
 				else
-					tst_resm(TFAIL|TTERRNO,
-					    "fchown failed unexpectedly; "
-					    "expected %d - %s",
-					    test_cases[i].exp_errno,
-					    strerror(test_cases[i].exp_errno));
+					tst_resm(TFAIL | TTERRNO,
+						 "fchown failed unexpectedly; "
+						 "expected %d - %s",
+						 test_cases[i].exp_errno,
+						 strerror(test_cases[i].
+							  exp_errno));
 			} else
 				tst_resm(TFAIL, "fchown passed unexpectedly");
 		}
@@ -201,7 +202,7 @@ void setup1()
 	int old_uid;
 	struct passwd *nobody;
 
-	fd1 = SAFE_OPEN(cleanup, TEST_FILE1, O_RDWR|O_CREAT, 0666);
+	fd1 = SAFE_OPEN(cleanup, TEST_FILE1, O_RDWR | O_CREAT, 0666);
 
 	old_uid = geteuid();
 
@@ -210,14 +211,14 @@ void setup1()
 	nobody = SAFE_GETPWNAM(cleanup, "nobody");
 
 	if (fchown(fd1, nobody->pw_uid, nobody->pw_gid) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchown failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fchown failed");
 
 	SAFE_SETEUID(cleanup, old_uid);
 }
 
 void setup2()
 {
-	fd2 = SAFE_OPEN(cleanup, TEST_FILE2, O_RDWR|O_CREAT, 0666);
+	fd2 = SAFE_OPEN(cleanup, TEST_FILE2, O_RDWR | O_CREAT, 0666);
 	SAFE_CLOSE(cleanup, fd2);
 }
 

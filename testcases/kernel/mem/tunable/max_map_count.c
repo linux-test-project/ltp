@@ -136,8 +136,8 @@ static long count_maps(pid_t pid)
 	while (getline(&line, &len, fp) != -1) {
 		/* exclude vdso and vsyscall */
 		if (sscanf(line, "%*p-%*p %*4s %*p %*2d:%*2d %*d %s", buf) ==
-			    1 && ((strcmp(buf, "[vdso]") == 0) ||
-				  (strcmp(buf, "[vsyscall]") == 0)))
+		    1 && ((strcmp(buf, "[vdso]") == 0) ||
+			  (strcmp(buf, "[vsyscall]") == 0)))
 			continue;
 		map_count++;
 	}
@@ -187,35 +187,33 @@ static void max_map_count_test(void)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
 			while (mmap(NULL, 1, PROT_READ,
-				    MAP_SHARED|MAP_ANONYMOUS, -1, 0)
-					!= MAP_FAILED)
-				;
+				    MAP_SHARED | MAP_ANONYMOUS, -1, 0)
+			       != MAP_FAILED) ;
 			if (raise(SIGSTOP) != 0)
-				tst_brkm(TBROK|TERRNO, tst_exit, "raise");
+				tst_brkm(TBROK | TERRNO, tst_exit, "raise");
 			exit(0);
 		default:
 			break;
 		}
 		/* wait child done mmap and stop */
 		if (waitpid(pid, &status, WUNTRACED) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFSTOPPED(status))
 			tst_brkm(TBROK, cleanup, "child did not stopped");
 
 		map_count = count_maps(pid);
 		if (map_count == max_maps)
 			tst_resm(TPASS, "%ld map entries in total "
-					"as expected.", max_maps);
+				 "as expected.", max_maps);
 		else
 			tst_resm(TFAIL, "%ld map entries in total, but "
-					"expected %ld entries", map_count,
-					max_maps);
+				 "expected %ld entries", map_count, max_maps);
 
 		/* make child continue to exit */
 		if (kill(pid, SIGCONT) != 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "kill");
+			tst_brkm(TBROK | TERRNO, cleanup, "kill");
 		if (waitpid(pid, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 
 		max_maps = max_maps << 2;
 	}

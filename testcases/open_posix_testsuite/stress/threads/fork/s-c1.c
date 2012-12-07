@@ -30,7 +30,7 @@
 
 /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
@@ -54,7 +54,7 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "testfrmw.h"
- #include "testfrmw.c"
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -96,15 +96,12 @@
 
 /* The next structure is used to save the tests measures */
 
-typedef struct __mes_t
-{
+typedef struct __mes_t {
 	int nprocess;
-	long _data; /* As we store µsec values, a long type should be enough. */
+	long _data;		/* As we store µsec values, a long type should be enough. */
 
 	struct __mes_t *next;
-}
-
-mes_t;
+} mes_t;
 
 /* Forward declaration */
 int parse_measure(mes_t * measures);
@@ -112,7 +109,7 @@ int parse_measure(mes_t * measures);
 sem_t *sem_synchro;
 sem_t *sem_ending;
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
 	pid_t pidctl;
@@ -126,7 +123,7 @@ int main (int argc, char *argv[])
 	mes_t *m_cur, *m_tmp;
 
 	long CHILD_MAX = sysconf(_SC_CHILD_MAX);
-	long my_max = 1000 * SCALABILITY_FACTOR ;
+	long my_max = 1000 * SCALABILITY_FACTOR;
 
 	/* Initialize the measure list */
 	m_cur = &sentinel;
@@ -140,11 +137,9 @@ int main (int argc, char *argv[])
 
 	pr = (pid_t *) calloc(1 + my_max, sizeof(pid_t));
 
-	if (pr == NULL)
-	{
+	if (pr == NULL) {
 		UNRESOLVED(errno, "Not enough memory for process IDs storage");
 	}
-
 #if VERBOSE > 1
 	output("CHILD_MAX: %d\n", CHILD_MAX);
 
@@ -158,8 +153,7 @@ int main (int argc, char *argv[])
 	/* Initilaize the semaphores */
 	sem_synchro = sem_open("/fork_scal_sync", O_CREAT, O_RDWR, 0);
 
-	if (sem_synchro == SEM_FAILED)
-	{
+	if (sem_synchro == SEM_FAILED) {
 		UNRESOLVED(errno, "Failed to open a named semaphore\n");
 	}
 
@@ -167,8 +161,7 @@ int main (int argc, char *argv[])
 
 	sem_ending = sem_open("/fork_scal_end", O_CREAT, O_RDWR, 0);
 
-	if (sem_ending == SEM_FAILED)
-	{
+	if (sem_ending == SEM_FAILED) {
 		UNRESOLVED(errno, "Failed to open a named semaphore\n");
 	}
 
@@ -177,25 +170,23 @@ int main (int argc, char *argv[])
 	nprocesses = 0;
 	m_cur = &sentinel;
 
-	while (1)                                      /* we will break */
-	{
+	while (1) {		/* we will break */
 		/* read clock */
 		ret = clock_gettime(CLOCK_REALTIME, &ts_ref);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Unable to read clock");
 		}
 
 		/* create a new child */
 		pr[nprocesses] = fork();
 
-		if (pr[nprocesses] == -1)
-		{
+		if (pr[nprocesses] == -1) {
 			if (errno == EAGAIN || errno == ENOMEM)
 				break;
 
-			FAILED("Failed to fork and received an unexpected error");
+			FAILED
+			    ("Failed to fork and received an unexpected error");
 			/* Post the semaphore so running processes will terminate */
 
 			do {
@@ -203,22 +194,24 @@ int main (int argc, char *argv[])
 			} while (ret != 0 && errno == EINTR);
 
 			if (ret != 0)
-				output("Failed to post the semaphore on termination: error %d\n", errno);
+				output
+				    ("Failed to post the semaphore on termination: error %d\n",
+				     errno);
 
 		}
 
 		if (pr[nprocesses] == 0) {
 			/* Child */
-			/* Post the synchro semaphore*/
+			/* Post the synchro semaphore */
 
 			do {
 				ret = sem_post(sem_synchro);
 			} while ((ret != 0) && (errno == EINTR));
 
-			if (ret != 0)
-			{
+			if (ret != 0) {
 				/* In this case the test will hang... */
-				UNRESOLVED(errno, "Failed post the sync semaphore");
+				UNRESOLVED(errno,
+					   "Failed post the sync semaphore");
 			}
 
 			/* Wait the end semaphore */
@@ -226,20 +219,19 @@ int main (int argc, char *argv[])
 				ret = sem_wait(sem_ending);
 			} while ((ret != 0) && (errno == EINTR));
 
-			if (ret != 0)
-			{
-				UNRESOLVED(errno, "Failed wait for the end semaphore");
+			if (ret != 0) {
+				UNRESOLVED(errno,
+					   "Failed wait for the end semaphore");
 			}
 
 			/* Cascade-post the end semaphore */
-			do
-			{
+			do {
 				ret = sem_post(sem_ending);
 			} while ((ret != 0) && (errno == EINTR));
 
-			if (ret != 0)
-			{
-				UNRESOLVED(errno, "Failed post the end semaphore");
+			if (ret != 0) {
+				UNRESOLVED(errno,
+					   "Failed post the end semaphore");
 			}
 
 			/* Exit */
@@ -250,14 +242,13 @@ int main (int argc, char *argv[])
 		nprocesses++;
 
 		/* FAILED if nprocesses > CHILD_MAX */
-		if (nprocesses > my_max)
-		{
+		if (nprocesses > my_max) {
 			errno = 0;
 
-			if (CHILD_MAX > 0)
-			{
+			if (CHILD_MAX > 0) {
 #if VERBOSE > 0
-				output("WARNING! We were able to create more than CHILD_MAX processes\n");
+				output
+				    ("WARNING! We were able to create more than CHILD_MAX processes\n");
 #endif
 
 			}
@@ -270,30 +261,28 @@ int main (int argc, char *argv[])
 			ret = sem_wait(sem_synchro);
 		} while ((ret == -1) && (errno == EINTR));
 
-		if (ret == -1)
-		{
+		if (ret == -1) {
 			sem_post(sem_ending);
-			UNRESOLVED(errno, "Failed to wait for the sync semaphore");
+			UNRESOLVED(errno,
+				   "Failed to wait for the sync semaphore");
 		}
 
 		/* read clock */
 		ret = clock_gettime(CLOCK_REALTIME, &ts_fin);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Unable to read clock");
 		}
 
 		/* add to the measure list if nprocesses % resolution == 0 */
-		if (((nprocesses % RESOLUTION) == 0) && (nprocesses != 0))
-		{
+		if (((nprocesses % RESOLUTION) == 0) && (nprocesses != 0)) {
 			/* Create an empty new element */
 			m_tmp = (mes_t *) malloc(sizeof(mes_t));
 
-			if (m_tmp == NULL)
-			{
+			if (m_tmp == NULL) {
 				sem_post(sem_ending);
-				UNRESOLVED(errno, "Unable to alloc memory for measure saving");
+				UNRESOLVED(errno,
+					   "Unable to alloc memory for measure saving");
 			}
 
 			m_tmp->nprocess = nprocesses;
@@ -303,10 +292,13 @@ int main (int argc, char *argv[])
 
 			m_cur = m_cur->next;
 
-			m_cur->_data = ((ts_fin.tv_sec - ts_ref.tv_sec) * 1000000) + ((ts_fin.tv_nsec - ts_ref.tv_nsec) / 1000) ;
+			m_cur->_data =
+			    ((ts_fin.tv_sec - ts_ref.tv_sec) * 1000000) +
+			    ((ts_fin.tv_nsec - ts_ref.tv_nsec) / 1000);
 
 #if VERBOSE > 5
-			output("Added the following measure: n=%i, v=%li\n", nprocesses, m_cur->_data);
+			output("Added the following measure: n=%i, v=%li\n",
+			       nprocesses, m_cur->_data);
 #endif
 
 		}
@@ -315,41 +307,39 @@ int main (int argc, char *argv[])
 #if VERBOSE > 3
 
 	if (errno)
-		output("Could not create anymore processes. Current count is %i\n", nprocesses);
+		output
+		    ("Could not create anymore processes. Current count is %i\n",
+		     nprocesses);
 	else
-		output("Should not create anymore processes. Current count is %i\n", nprocesses);
+		output
+		    ("Should not create anymore processes. Current count is %i\n",
+		     nprocesses);
 
 #endif
 
 	/* Unblock every created children: post once, then cascade signaling */
 
-	do
-	{
+	do {
 		ret = sem_post(sem_ending);
 	}
 	while ((ret != 0) && (errno == EINTR));
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed post the end semaphore");
 	}
-
 #if VERBOSE > 3
 	output("Waiting children termination\n");
 
 #endif
 
-	for (i = 0; i < nprocesses; i++)
-	{
-		pidctl = waitpid(pr[ i ], &status, 0);
+	for (i = 0; i < nprocesses; i++) {
+		pidctl = waitpid(pr[i], &status, 0);
 
-		if (pidctl != pr[ i ])
-		{
+		if (pidctl != pr[i]) {
 			UNRESOLVED(errno, "Waitpid returned the wrong PID");
 		}
 
-		if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
-		{
+		if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS)) {
 			FAILED("Child exited abnormally");
 		}
 
@@ -369,11 +359,11 @@ int main (int argc, char *argv[])
 	output("  nproc  |  dur  \n");
 
 #endif
-	while (sentinel.next != NULL)
-	{
+	while (sentinel.next != NULL) {
 		m_cur = sentinel.next;
 #if (VERBOSE > 5) || defined(PLOT_OUTPUT)
-		output("%8.8i %1.1li.%6.6li\n", m_cur->nprocess, m_cur->_data / 1000000, m_cur->_data % 1000000);
+		output("%8.8i %1.1li.%6.6li\n", m_cur->nprocess,
+		       m_cur->_data / 1000000, m_cur->_data % 1000000);
 
 #endif
 		sentinel.next = m_cur->next;
@@ -381,11 +371,10 @@ int main (int argc, char *argv[])
 		free(m_cur);
 	}
 
-	if (ret != 0)
-	{
-		FAILED("The function is not scalable, add verbosity for more information");
+	if (ret != 0) {
+		FAILED
+		    ("The function is not scalable, add verbosity for more information");
 	}
-
 #if VERBOSE > 0
 	output("-----\n");
 
@@ -415,16 +404,15 @@ int main (int argc, char *argv[])
  * The function returns 0 when r1 is the best for all cases (latency is constant) and !0 otherwise.
  */
 
-struct row
-{
-	long X;  /* the X values -- copied from function argument */
-	long Y;  /* the Y values -- copied from function argument */
-	long _x; /* Value X - Xavg */
-	long _y; /* Value Y - Yavg */
-	double LnX; /* Natural logarithm of X values */
-	double LnY; /* Natural logarithm of Y values */
-	double _lnx; /* Value LnX - LnXavg */
-	double _lny; /* Value LnY - LnYavg */
+struct row {
+	long X;			/* the X values -- copied from function argument */
+	long Y;			/* the Y values -- copied from function argument */
+	long _x;		/* Value X - Xavg */
+	long _y;		/* Value Y - Yavg */
+	double LnX;		/* Natural logarithm of X values */
+	double LnY;		/* Natural logarithm of Y values */
+	double _lnx;		/* Value LnX - LnXavg */
+	double _lny;		/* Value LnY - LnYavg */
 };
 
 int parse_measure(mes_t * measures)
@@ -441,10 +429,10 @@ int parse_measure(mes_t * measures)
 	double r1, r2, r3, r4;
 
 	/* Some more intermediate vars */
-	long double _q[ 3 ];
-	long double _d[ 3 ];
+	long double _q[3];
+	long double _d[3];
 
-	long double t; /* temp value */
+	long double t;		/* temp value */
 
 	struct row *Table = NULL;
 
@@ -453,7 +441,7 @@ int parse_measure(mes_t * measures)
 
 	/* Initialize the datas */
 
-	array_max = -1; /* means no data */
+	array_max = -1;		/* means no data */
 	Xavg = 0.0;
 	LnXavg = 0.0;
 	Yavg = 0.0;
@@ -462,12 +450,12 @@ int parse_measure(mes_t * measures)
 	r2 = 0.0;
 	r3 = 0.0;
 	r4 = 0.0;
-	_q[ 0 ] = 0.0;
-	_q[ 1 ] = 0.0;
-	_q[ 2 ] = 0.0;
-	_d[ 0 ] = 0.0;
-	_d[ 1 ] = 0.0;
-	_d[ 2 ] = 0.0;
+	_q[0] = 0.0;
+	_q[1] = 0.0;
+	_q[2] = 0.0;
+	_d[0] = 0.0;
+	_d[1] = 0.0;
+	_d[2] = 0.0;
 
 	N = 0;
 	cur = measures;
@@ -481,31 +469,27 @@ int parse_measure(mes_t * measures)
 	 * -> average values
 	 */
 
-	while (cur->next != NULL)
-	{
+	while (cur->next != NULL) {
 		cur = cur->next;
 
 		N++;
 
-		if (cur->_data != 0)
-		{
+		if (cur->_data != 0) {
 			array_max = N;
-			Xavg += (double) cur->nprocess;
-			LnXavg += log((double) cur->nprocess);
-			Yavg += (double) cur->_data;
-			LnYavg += log((double) cur->_data);
+			Xavg += (double)cur->nprocess;
+			LnXavg += log((double)cur->nprocess);
+			Yavg += (double)cur->_data;
+			LnYavg += log((double)cur->_data);
 		}
 	}
 
 	/* We have the sum; we can divide to obtain the average values */
-	if (array_max != -1)
-	{
+	if (array_max != -1) {
 		Xavg /= array_max;
 		LnXavg /= array_max;
 		Yavg /= array_max;
 		LnYavg /= array_max;
 	}
-
 #if VERBOSE > 1
 	output(" Found %d rows\n", N);
 
@@ -515,8 +499,7 @@ int parse_measure(mes_t * measures)
 
 	Table = calloc(N, sizeof(struct row));
 
-	if (Table == NULL)
-	{
+	if (Table == NULL) {
 		UNRESOLVED(errno, "Unable to alloc space for results parsing");
 	}
 
@@ -525,21 +508,19 @@ int parse_measure(mes_t * measures)
 
 	cur = measures;
 
-	while (cur->next != NULL)
-	{
+	while (cur->next != NULL) {
 		cur = cur->next;
 
-		Table[ N ].X = (long) cur->nprocess;
-		Table[ N ].LnX = log((double) cur->nprocess);
+		Table[N].X = (long)cur->nprocess;
+		Table[N].LnX = log((double)cur->nprocess);
 
-		if (array_max > N)
-		{
-			Table[ N ]._x = Table[ N ].X - Xavg ;
-			Table[ N ]._lnx = Table[ N ].LnX - LnXavg;
-			Table[ N ].Y = cur->_data;
-			Table[ N ]._y = Table[ N ].Y - Yavg ;
-			Table[ N ].LnY = log((double) cur->_data);
-			Table[ N ]._lny = Table[ N ].LnY - LnYavg;
+		if (array_max > N) {
+			Table[N]._x = Table[N].X - Xavg;
+			Table[N]._lnx = Table[N].LnX - LnXavg;
+			Table[N].Y = cur->_data;
+			Table[N]._y = Table[N].Y - Yavg;
+			Table[N].LnY = log((double)cur->_data);
+			Table[N]._lny = Table[N].LnY - LnYavg;
 		}
 
 		N++;
@@ -561,18 +542,17 @@ int parse_measure(mes_t * measures)
 	output("Starting first pass...\n");
 
 #endif
-	for (r = 0; r < array_max; r++)
-	{
-		r1 += ((double) Table[ r ]._y / array_max) * (double) Table[ r ]._y;
+	for (r = 0; r < array_max; r++) {
+		r1 += ((double)Table[r]._y / array_max) * (double)Table[r]._y;
 
-		_q[ 0 ] += Table[ r ]._y * Table[ r ]._x;
-		_d[ 0 ] += Table[ r ]._x * Table[ r ]._x;
+		_q[0] += Table[r]._y * Table[r]._x;
+		_d[0] += Table[r]._x * Table[r]._x;
 
-		_q[ 1 ] += Table[ r ]._lny * Table[ r ]._lnx;
-		_d[ 1 ] += Table[ r ]._lnx * Table[ r ]._lnx;
+		_q[1] += Table[r]._lny * Table[r]._lnx;
+		_d[1] += Table[r]._lnx * Table[r]._lnx;
 
-		_q[ 2 ] += Table[ r ]._lny * Table[ r ]._x;
-		_d[ 2 ] += Table[ r ]._x * Table[ r ]._x;
+		_q[2] += Table[r]._lny * Table[r]._x;
+		_d[2] += Table[r]._x * Table[r]._x;
 	}
 
 	/* First pass is terminated; a2 = _q[0]/_d[0]; a3 = _q[1]/_d[1]; a4 = _q[2]/_d[2] */
@@ -585,30 +565,27 @@ int parse_measure(mes_t * measures)
 	output("Starting second pass...\n");
 
 #endif
-	for (r = 0; r < array_max; r++)
-	{
+	for (r = 0; r < array_max; r++) {
 		/* r2 = avg((y - ax -b)²);  t = (y - ax - b) = (y - yavg) - a (x - xavg); */
-		t = (Table[ r ]._y - ((_q[ 0 ] * Table[ r ]._x) / _d[ 0 ]));
-		r2 += t * t / array_max ;
+		t = (Table[r]._y - ((_q[0] * Table[r]._x) / _d[0]));
+		r2 += t * t / array_max;
 
 		/* r3 = avg((y - c.x^a) ²);
-		    t = y - c * x ^ a
-		      = y - log (LnYavg - (_q[1]/_d[1]) * LnXavg) * x ^ (_q[1]/_d[1])
-		*/
-		t = (Table[ r ].Y
-		      - (logl (LnYavg - (_q[ 1 ] / _d[ 1 ]) * LnXavg)
-		          * powl(Table[ r ].X, (_q[ 1 ] / _d[ 1 ]))
-		        ));
-		r3 += t * t / array_max ;
+		   t = y - c * x ^ a
+		   = y - log (LnYavg - (_q[1]/_d[1]) * LnXavg) * x ^ (_q[1]/_d[1])
+		 */
+		t = (Table[r].Y - (logl(LnYavg - (_q[1] / _d[1]) * LnXavg)
+				   * powl(Table[r].X, (_q[1] / _d[1]))
+		     ));
+		r3 += t * t / array_max;
 
 		/* r4 = avg((y - exp(ax+b))²);
-		    t = y - exp(ax+b)
-		      = y - exp(_q[2]/_d[2] * x + (LnYavg - (_q[2]/_d[2] * Xavg)));
-		      = y - exp(_q[2]/_d[2] * (x - Xavg) + LnYavg);
-		*/
-		t = (Table[ r ].Y
-		      - expl((_q[ 2 ] / _d[ 2 ]) * Table[ r ]._x + LnYavg));
-		r4 += t * t / array_max ;
+		   t = y - exp(ax+b)
+		   = y - exp(_q[2]/_d[2] * x + (LnYavg - (_q[2]/_d[2] * Xavg)));
+		   = y - exp(_q[2]/_d[2] * (x - Xavg) + LnYavg);
+		 */
+		t = (Table[r].Y - expl((_q[2] / _d[2]) * Table[r]._x + LnYavg));
+		r4 += t * t / array_max;
 
 	}
 
@@ -629,32 +606,31 @@ int parse_measure(mes_t * measures)
 
 	output("  Model: Y = a * X + b\n");
 
-	output("       a = %Lg\n", _q[ 0 ] / _d[ 0 ]);
+	output("       a = %Lg\n", _q[0] / _d[0]);
 
-	output("       b = %Lg\n", Yavg - ((_q[ 0 ] / _d[ 0 ]) * Xavg));
+	output("       b = %Lg\n", Yavg - ((_q[0] / _d[0]) * Xavg));
 
 	output("    Divergence %g\n", r2);
 
 	output("  Model: Y = c * X ^ a\n");
 
-	output("       a = %Lg\n", _q[ 1 ] / _d[ 1 ]);
+	output("       a = %Lg\n", _q[1] / _d[1]);
 
-	output("       c = %Lg\n", logl (LnYavg - (_q[ 1 ] / _d[ 1 ]) * LnXavg));
+	output("       c = %Lg\n", logl(LnYavg - (_q[1] / _d[1]) * LnXavg));
 
 	output("    Divergence %g\n", r2);
 
 	output("  Model: Y = exp(a * X + b)\n");
 
-	output("       a = %Lg\n", _q[ 2 ] / _d[ 2 ]);
+	output("       a = %Lg\n", _q[2] / _d[2]);
 
-	output("       b = %Lg\n", LnYavg - ((_q[ 2 ] / _d[ 2 ]) * Xavg));
+	output("       b = %Lg\n", LnYavg - ((_q[2] / _d[2]) * Xavg));
 
 	output("    Divergence %g\n", r2);
 
 #endif
 
-	if (array_max != -1)
-	{
+	if (array_max != -1) {
 		/* Compare r1 to other values, with some ponderations */
 
 		if ((r1 > 1.1 * r2) || (r1 > 1.2 * r3) || (r1 > 1.3 * r4))

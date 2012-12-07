@@ -36,7 +36,7 @@ static int thread_state;
 #define EXITING_THREAD 3
 
 /* child thread */
-static void* fn_chld(void *arg)
+static void *fn_chld(void *arg)
 {
 	int rc = 0;
 
@@ -46,14 +46,11 @@ static void* fn_chld(void *arg)
 
 	printf("thread: barrier wait\n");
 	rc = pthread_barrier_wait(&barrier);
-	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
-	{
+	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD) {
 		printf("Error: thread: pthread_barrier_wait() got unexpected "
-			"return code : %d\n" , rc);
+		       "return code : %d\n", rc);
 		exit(PTS_UNRESOLVED);
-	}
-	else if (rc == PTHREAD_BARRIER_SERIAL_THREAD)
-	{
+	} else if (rc == PTHREAD_BARRIER_SERIAL_THREAD) {
 		printf("thread: got PTHREAD_BARRIER_SERIAL_THREAD\n");
 	}
 
@@ -83,35 +80,30 @@ int main()
 	sigaction(SIGALRM, &act, 0);
 
 	printf("main: Initialize barrier with count = 2\n");
-	if (pthread_barrier_init(&barrier, NULL, 2) != 0)
-	{
+	if (pthread_barrier_init(&barrier, NULL, 2) != 0) {
 		printf("main: Error at pthread_barrier_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	printf("main: create child thread\n");
 	thread_state = NOT_CREATED_THREAD;
-	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
-	{
+	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0) {
 		printf("main: Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Expect the child to block*/
+	/* Expect the child to block */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 2);
+	} while (thread_state != EXITING_THREAD && cnt++ < 2);
 
-	if (thread_state == EXITING_THREAD)
-	{
+	if (thread_state == EXITING_THREAD) {
 		/* child thread did not block */
 		printf("Test FAILED: child thread did not block on "
-			"pthread_barrier_wait()\n");
+		       "pthread_barrier_wait()\n");
 		exit(PTS_FAIL);
-	}
-	else if (thread_state != ENTERED_THREAD)
-	{
+	} else if (thread_state != ENTERED_THREAD) {
 		printf("Unexpected thread state\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -122,15 +114,13 @@ int main()
 	printf("main: reinitilize barrier while thread is blocking on it\n");
 	rc = pthread_barrier_init(&barrier, NULL, 2);
 
-	if (rc == EBUSY)
-	{
+	if (rc == EBUSY) {
 		printf("main: pthread_barrier_init() correctly got EBUSY");
 		printf("Test PASSED\n");
-	}
-	else
-	{
+	} else {
 		printf("main: got return code: %d, %s\n", rc, strerror(rc));
-		printf("Test PASSED: Note*: Expected EBUSY, but standard says 'may' fail.\n");
+		printf
+		    ("Test PASSED: Note*: Expected EBUSY, but standard says 'may' fail.\n");
 	}
 
 	/* Cancel thread in case it is still blocked */

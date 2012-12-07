@@ -31,32 +31,32 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
- #include <sched.h>
- #include <semaphore.h>
- #include <errno.h>
- #include <assert.h>
+#include <sched.h>
+#include <semaphore.h>
+#include <errno.h>
+#include <assert.h>
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -99,7 +99,7 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-void * threaded (void * arg)
+void *threaded(void *arg)
 {
 	pthread_exit(NULL + 1);
 
@@ -108,10 +108,10 @@ void * threaded (void * arg)
 	return NULL;
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int ret=0;
-	void * rval;
+	int ret = 0;
+	void *rval;
 	pthread_t child;
 	int i;
 
@@ -119,54 +119,66 @@ int main (int argc, char *argv[])
 
 	scenar_init();
 
-	for (i=0; i < NSCENAR; i++)
-	{
-		if (scenarii[i].detached == 0)
-		{
-			#if VERBOSE > 0
+	for (i = 0; i < NSCENAR; i++) {
+		if (scenarii[i].detached == 0) {
+#if VERBOSE > 0
 			output("-----\n");
-			output("Starting test with scenario (%i): %s\n", i, scenarii[i].descr);
-			#endif
+			output("Starting test with scenario (%i): %s\n", i,
+			       scenarii[i].descr);
+#endif
 
-			ret = pthread_create(&child, &scenarii[i].ta, threaded, NULL);
-			switch (scenarii[i].result)
-			{
-				case 0: /* Operation was expected to succeed */
-					if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
-					break;
+			ret =
+			    pthread_create(&child, &scenarii[i].ta, threaded,
+					   NULL);
+			switch (scenarii[i].result) {
+			case 0:	/* Operation was expected to succeed */
+				if (ret != 0) {
+					UNRESOLVED(ret,
+						   "Failed to create this thread");
+				}
+				break;
 
-				case 1: /* Operation was expected to fail */
-					if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
-					break;
+			case 1:	/* Operation was expected to fail */
+				if (ret == 0) {
+					UNRESOLVED(-1,
+						   "An error was expected but the thread creation succeeded");
+				}
+				break;
 
-				case 2: /* We did not know the expected result */
-				default:
-					#if VERBOSE > 0
-					if (ret == 0)
-						{ output("Thread has been created successfully for this scenario\n"); }
-					else
-						{ output("Thread creation failed with the error: %s\n", strerror(ret)); }
-					#endif
+			case 2:	/* We did not know the expected result */
+			default:
+#if VERBOSE > 0
+				if (ret == 0) {
+					output
+					    ("Thread has been created successfully for this scenario\n");
+				} else {
+					output
+					    ("Thread creation failed with the error: %s\n",
+					     strerror(ret));
+				}
+#endif
 			}
-			if (ret == 0) /* The new thread is running */
-			{
+			if (ret == 0) {	/* The new thread is running */
 				ret = pthread_join(child, &rval);
-				if (ret != 0)  {  UNRESOLVED(ret, "Unable to join a thread");  }
+				if (ret != 0) {
+					UNRESOLVED(ret,
+						   "Unable to join a thread");
+				}
 
-				if (rval != (NULL+1))
-				{
-					FAILED("pthread_join() did not retrieve the pthread_exit() param");
+				if (rval != (NULL + 1)) {
+					FAILED
+					    ("pthread_join() did not retrieve the pthread_exit() param");
 				}
 			}
 		}
 	}
 
 	scenar_fini();
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("-----\n");
 	output("All test data destroyed\n");
 	output("Test PASSED\n");
-	#endif
+#endif
 
 	PASSED;
 }

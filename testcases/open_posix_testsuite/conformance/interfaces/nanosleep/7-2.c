@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
 		/* child here */
 		int sleptplusremaining;
 
-		act.sa_handler=handler;
-		act.sa_flags=0;
+		act.sa_handler = handler;
+		act.sa_flags = 0;
 		if (sigemptyset(&act.sa_mask) == -1) {
 			perror("Error calling sigemptyset\n");
 			return CHILDFAILURE;
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
 			perror("Error calling sigaction\n");
 			return CHILDFAILURE;
 		}
-		tssleepfor.tv_sec=sleepsec;
-		tssleepfor.tv_nsec=0;
+		tssleepfor.tv_sec = sleepsec;
+		tssleepfor.tv_nsec = 0;
 		if (nanosleep(&tssleepfor, &tsstorage) != -1) {
 			printf("nanosleep() was not interrupted\n");
 			return CHILDFAILURE;
@@ -65,16 +65,16 @@ int main(int argc, char *argv[])
 			return CHILDFAILURE;
 		}
 
-		sleptplusremaining = (tsafter.tv_sec-tsbefore.tv_sec) +
-			tsstorage.tv_sec;
+		sleptplusremaining = (tsafter.tv_sec - tsbefore.tv_sec) +
+		    tsstorage.tv_sec;
 
 		if (abs(sleptplusremaining - sleepsec) <= OKDELTA) {
 			printf("PASS - within %d difference\n",
-				abs(sleptplusremaining - sleepsec));
+			       abs(sleptplusremaining - sleepsec));
 			return CHILDSUCCESS;
 		} else {
 			printf("FAIL - within %d difference\n",
-				abs(sleptplusremaining - sleepsec));
+			       abs(sleptplusremaining - sleepsec));
 			return CHILDFAILURE;
 		}
 

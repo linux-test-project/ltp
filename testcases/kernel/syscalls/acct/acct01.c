@@ -59,11 +59,10 @@ static void cleanup(void)
 {
 
 	if (acct(NULL) == -1)
-		tst_resm(TBROK|TERRNO, "acct(NULL) failed");
+		tst_resm(TBROK | TERRNO, "acct(NULL) failed");
 
 	tst_rmdir();
 }
-
 
 static void setup(void)
 {
@@ -83,10 +82,10 @@ static void setup(void)
 	if (acct(NULL) == -1) {
 		if (errno == ENOSYS)
 			tst_brkm(TCONF, cleanup,
-			    "BSD process accounting is not configured in this "
-			    "kernel");
+				 "BSD process accounting is not configured in this "
+				 "kernel");
 		else
-			tst_brkm(TBROK|TERRNO, cleanup, "acct(NULL) failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "acct(NULL) failed");
 	}
 }
 
@@ -100,29 +99,29 @@ int main(int argc, char *argv[])
 	if (acct("/") == -1 && errno == EISDIR)
 		tst_resm(TPASS, "Failed with EISDIR as expected");
 	else
-		tst_brkm(TFAIL|TERRNO, cleanup,
-		    "didn't fail as expected; expected EISDIR");
+		tst_brkm(TFAIL | TERRNO, cleanup,
+			 "didn't fail as expected; expected EISDIR");
 
 	/* EACCES */
 	if (acct("/dev/null") == -1 && errno == EACCES)
 		tst_resm(TPASS, "Failed with EACCES as expected");
 	else
-		tst_brkm(TFAIL|TERRNO, cleanup,
-		    "didn't fail as expected; expected EACCES");
+		tst_brkm(TFAIL | TERRNO, cleanup,
+			 "didn't fail as expected; expected EACCES");
 
 	/* ENOENT */
 	if (acct("/tmp/does/not/exist") == -1 && errno == ENOENT)
 		tst_resm(TPASS, "Failed with ENOENT as expected");
 	else
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "didn't fail as expected; expected ENOENT");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "didn't fail as expected; expected ENOENT");
 
 	/* ENOTDIR */
 	if (acct("/etc/fstab/") == -1 && errno == ENOTDIR)
 		tst_resm(TPASS, "Failed with ENOTDIR as expected");
 	else
-		tst_brkm(TFAIL|TERRNO, cleanup,
-		    "didn't fail as expected; expected ENOTDIR");
+		tst_brkm(TFAIL | TERRNO, cleanup,
+			 "didn't fail as expected; expected ENOTDIR");
 
 	/* EPERM */
 	sprintf(tmpbuf, "./%s.%d", TCID, getpid());
@@ -130,7 +129,7 @@ int main(int argc, char *argv[])
 	SAFE_CLOSE(cleanup, fd);
 
 	if (acct(tmpbuf) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "acct failed unexpectedly");
+		tst_brkm(TBROK | TERRNO, cleanup, "acct failed unexpectedly");
 
 	pwent = SAFE_GETPWNAM(cleanup, "nobody");
 	SAFE_SETEUID(cleanup, pwent->pw_uid);
@@ -138,8 +137,8 @@ int main(int argc, char *argv[])
 	if (acct(tmpbuf) == -1 && errno == EPERM)
 		tst_resm(TPASS, "Failed with EPERM as expected");
 	else
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "didn't fail as expected; expected EPERM");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "didn't fail as expected; expected EPERM");
 
 	SAFE_SETEUID(cleanup, 0);
 	SAFE_UNLINK(cleanup, tmpbuf);

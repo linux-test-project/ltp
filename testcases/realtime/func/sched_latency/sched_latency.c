@@ -61,7 +61,7 @@
 #define DEF_LOAD_MS 1
 #define PASS_US 100
 #define HIST_BUCKETS 100
-#define OVERHEAD 50000 // allow for 50 us of periodic overhead (context switch, etc.)
+#define OVERHEAD 50000		// allow for 50 us of periodic overhead (context switch, etc.)
 
 nsec_t start;
 nsec_t end;
@@ -92,24 +92,24 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		case 'd':
-			load_ms = atoi(v);
-			break;
-		case 'i':
-			iterations = atoi(v);
-			break;
-		case 'l':
-			latency_threshold = strtoull(v, NULL, 0);
-			break;
-		case 't':
-			period = strtoull(v, NULL, 0)*NS_PER_MS;
-			break;
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	case 'd':
+		load_ms = atoi(v);
+		break;
+	case 'i':
+		iterations = atoi(v);
+		break;
+	case 'l':
+		latency_threshold = strtoull(v, NULL, 0);
+		break;
+	case 't':
+		period = strtoull(v, NULL, 0) * NS_PER_MS;
+		break;
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
@@ -117,15 +117,17 @@ int parse_args(int c, char *v)
 void *periodic_thread(void *arg)
 {
 	int i;
-	nsec_t delay, avg_delay = 0, start_delay, min_delay = -1ULL, max_delay = 0;
+	nsec_t delay, avg_delay = 0, start_delay, min_delay = -1ULL, max_delay =
+	    0;
 	int failures = 0;
-	nsec_t next = 0, now = 0, sched_delta = 0, delta = 0, prev = 0, iter_start;
+	nsec_t next = 0, now = 0, sched_delta = 0, delta = 0, prev =
+	    0, iter_start;
 
- 	/* wait for the specified start time */
- 	rt_nanosleep_until(start);
+	/* wait for the specified start time */
+	rt_nanosleep_until(start);
 
 	now = rt_gettime();
-	start_delay = (now - start)/NS_PER_US;
+	start_delay = (now - start) / NS_PER_US;
 	iter_start = next = now;
 
 	debug(DBG_INFO, "ITERATION DELAY(US) MAX_DELAY(US) FAILURES\n");
@@ -143,31 +145,38 @@ void *periodic_thread(void *arg)
 
 		if (next < now) {
 			printf("\nPERIOD MISSED!\n");
-			printf("     scheduled delta: %8llu us\n", sched_delta/1000);
-			printf("	actual delta: %8llu us\n", delta/1000);
-			printf("	     latency: %8llu us\n", (delta-sched_delta)/1000);
+			printf("     scheduled delta: %8llu us\n",
+			       sched_delta / 1000);
+			printf("	actual delta: %8llu us\n",
+			       delta / 1000);
+			printf("	     latency: %8llu us\n",
+			       (delta - sched_delta) / 1000);
 			printf("---------------------------------------\n");
-			printf("      previous start: %8llu us\n", (prev-iter_start)/1000);
-			printf("		 now: %8llu us\n", (now-iter_start)/1000);
-			printf("     scheduled start: %8llu us\n", (next-iter_start)/1000);
+			printf("      previous start: %8llu us\n",
+			       (prev - iter_start) / 1000);
+			printf("		 now: %8llu us\n",
+			       (now - iter_start) / 1000);
+			printf("     scheduled start: %8llu us\n",
+			       (next - iter_start) / 1000);
 			printf("next scheduled start is in the past!\n");
 			ret = 1;
 			break;
 		}
 
-		sched_delta = next - now; /* how long we should sleep */
+		sched_delta = next - now;	/* how long we should sleep */
 		delta = 0;
 		do {
 			nsec_t new_now;
 
 			rt_nanosleep(next - now);
 			new_now = rt_gettime();
-			delta += new_now - now; /* how long we did sleep */
+			delta += new_now - now;	/* how long we did sleep */
 			now = new_now;
 		} while (now < next);
 
 		/* start of period */
-		delay = (now - iter_start - (nsec_t)(i+1)*period)/NS_PER_US;
+		delay =
+		    (now - iter_start - (nsec_t) (i + 1) * period) / NS_PER_US;
 		rec.x = i;
 		rec.y = delay;
 		stats_container_append(&dat, rec);
@@ -185,7 +194,8 @@ void *periodic_thread(void *arg)
 			break;
 
 		/* continuous status ticker */
-		debug(DBG_INFO, "%9i %9llu %13llu %8i\r", i, delay, max_delay, failures);
+		debug(DBG_INFO, "%9i %9llu %13llu %8i\r", i, delay, max_delay,
+		      failures);
 		fflush(stdout);
 
 		busy_work_ms(load_ms);
@@ -193,30 +203,32 @@ void *periodic_thread(void *arg)
 	if (latency_threshold) {
 		latency_trace_stop();
 		if (i != iterations) {
-			printf("Latency threshold (%lluus) exceeded at iteration %d\n",
-				latency_threshold, i);
+			printf
+			    ("Latency threshold (%lluus) exceeded at iteration %d\n",
+			     latency_threshold, i);
 			latency_trace_print();
-			stats_container_resize(&dat, i+1);
+			stats_container_resize(&dat, i + 1);
 		}
 	}
 
 	/* save samples before the quantile calculation messes things up! */
 	stats_hist(&hist, &dat);
-	stats_container_save("samples", "Periodic Scheduling Latency Scatter Plot",\
+	stats_container_save("samples",
+			     "Periodic Scheduling Latency Scatter Plot",
 			     "Iteration", "Latency (us)", &dat, "points");
-	stats_container_save("hist", "Periodic Scheduling Latency Histogram",\
- 			     "Latency (us)", "Samples", &hist, "steps");
+	stats_container_save("hist", "Periodic Scheduling Latency Histogram",
+			     "Latency (us)", "Samples", &hist, "steps");
 
 	avg_delay /= i;
 	printf("\n\n");
 	printf("Start: %4llu us: %s\n", start_delay,
-		start_delay < pass_criteria ? "PASS" : "FAIL");
+	       start_delay < pass_criteria ? "PASS" : "FAIL");
 	printf("Min:   %4llu us: %s\n", min_delay,
-		min_delay < pass_criteria ? "PASS" : "FAIL");
+	       min_delay < pass_criteria ? "PASS" : "FAIL");
 	printf("Max:   %4llu us: %s\n", max_delay,
-		max_delay < pass_criteria ? "PASS" : "FAIL");
+	       max_delay < pass_criteria ? "PASS" : "FAIL");
 	printf("Avg:   %4llu us: %s\n", avg_delay,
-		avg_delay < pass_criteria ? "PASS" : "FAIL");
+	       avg_delay < pass_criteria ? "PASS" : "FAIL");
 	printf("StdDev: %.4f us\n", stats_stddev(&dat));
 	printf("Quantiles:\n");
 	stats_quantiles_calc(&dat, &quantiles);
@@ -238,24 +250,26 @@ int main(int argc, char *argv[])
 	printf("Scheduling Latency\n");
 	printf("-------------------------------\n\n");
 
-	if (load_ms*NS_PER_MS >= period-OVERHEAD) {
-		printf("ERROR: load must be < period - %d us\n", OVERHEAD/NS_PER_US);
+	if (load_ms * NS_PER_MS >= period - OVERHEAD) {
+		printf("ERROR: load must be < period - %d us\n",
+		       OVERHEAD / NS_PER_US);
 		exit(1);
 	}
 
 	if (iterations == 0)
 		iterations = DEFAULT_ITERATIONS;
 	if (iterations < MIN_ITERATIONS) {
-		printf("Too few iterations (%d), use min iteration instead (%d)\n",
-		       iterations, MIN_ITERATIONS);
+		printf
+		    ("Too few iterations (%d), use min iteration instead (%d)\n",
+		     iterations, MIN_ITERATIONS);
 		iterations = MIN_ITERATIONS;
 	}
 
 	printf("Running %d iterations with a period of %llu ms\n", iterations,
-	       period/NS_PER_MS);
+	       period / NS_PER_MS);
 	printf("Periodic load duration: %d ms\n", load_ms);
 	printf("Expected running time: %d s\n",
-	       (int)(iterations*((float)period / NS_PER_SEC)));
+	       (int)(iterations * ((float)period / NS_PER_SEC)));
 
 	if (stats_container_init(&dat, iterations))
 		exit(1);
@@ -274,7 +288,7 @@ int main(int argc, char *argv[])
 
 	/* wait one quarter second to execute */
 	start = rt_gettime() + 250 * NS_PER_MS;
-	per_id = create_fifo_thread(periodic_thread, (void*)0, PRIO);
+	per_id = create_fifo_thread(periodic_thread, (void *)0, PRIO);
 
 	join_thread(per_id);
 	join_threads();

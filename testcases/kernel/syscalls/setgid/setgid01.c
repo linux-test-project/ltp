@@ -124,6 +124,7 @@ TCID_DEFINE(setgid01);		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { 0, 0 };
+
 GID_T gid;
 
 int main(int ac, char **av)

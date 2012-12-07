@@ -15,7 +15,8 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 	int result;
 
 	result = mlockall(MCL_CURRENT);
@@ -26,7 +27,8 @@ int main() {
 		printf("mlockall did not return a value of zero\n");
 		return PTS_FAIL;
 	} else if (errno == EPERM) {
-		printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
+		printf
+		    ("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		return PTS_UNRESOLVED;
 	}
 

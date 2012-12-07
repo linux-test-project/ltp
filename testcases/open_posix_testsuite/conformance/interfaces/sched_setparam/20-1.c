@@ -19,13 +19,16 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void * runner(void * arg) {
+void *runner(void *arg)
+{
 
-	while (1) sleep(1);
+	while (1)
+		sleep(1);
 	return NULL;
 }
 
-int main() {
+int main()
+{
 	int new_priority, max_priority, policy, result;
 	struct sched_param param;
 	pthread_t tid;
@@ -33,15 +36,14 @@ int main() {
 
 	if (sched_getparam(getpid(), &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
-		pthread_exit((void*)-1);
+		pthread_exit((void *)-1);
 	}
 
 	/* Make sure new_priority != old priority */
 	policy = sched_getscheduler(getpid());
 	max_priority = sched_get_priority_max(policy);
 	new_priority = (param.sched_priority == max_priority) ?
-		sched_get_priority_min(policy) :
-		max_priority;
+	    sched_get_priority_min(policy) : max_priority;
 
 	if (pthread_attr_init(&attr) != 0) {
 		printf("An error occurs when calling pthread_attr_init()");
@@ -66,7 +68,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_getschedparam(tid , &policy, &param) != 0) {
+	if (pthread_getschedparam(tid, &policy, &param) != 0) {
 		printf("An error occurs when calling pthread_getschedparam()");
 		return PTS_UNRESOLVED;
 	}

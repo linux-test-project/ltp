@@ -47,7 +47,6 @@ int main(void)
 	size_t size = 1024;
 	int fd;
 
-
 	pid_t child;
 	int status;
 	int sig_num;
@@ -66,27 +65,25 @@ int main(void)
 	switch (child) {
 	case 0:
 		if (ftruncate(fd, size) == -1) {
-			printf("Error at ftruncate(): %s\n",
-			       strerror(errno));
+			printf("Error at ftruncate(): %s\n", strerror(errno));
 			return PTS_UNRESOLVED;
 		}
 
 		pa = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, 0);
 		if (pa == MAP_FAILED) {
-			printf("Error at mmap: %s\n",
-			       strerror(errno));
+			printf("Error at mmap: %s\n", strerror(errno));
 			return PTS_FAIL;
 		}
 
 		*(char *)pa = 'b';
 		return 0;
-	break;
+		break;
 	case -1:
 		printf("Error at fork(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
-	break;
+		break;
 	default:
-	break;
+		break;
 	}
 
 	waitpid(child, &status, WUNTRACED);
@@ -97,17 +94,16 @@ int main(void)
 		printf("Child process terminated by signal %d\n", sig_num);
 		if (sig_num == SIGSEGV) {
 			printf("Got SIGSEGV when writing to the mapped memory, "
-			       "without setting PROT_WRITE\n"
-			       "Test PASSED\n");
+			       "without setting PROT_WRITE\n" "Test PASSED\n");
 			return PTS_PASS;
 		}
 	}
 
 	if (WIFEXITED(status)) {
 		if (WEXITSTATUS(status) == 0) {
-			printf("Did not got SIGSEGV when writing to the mapped memory,"
-			       " without setting PROT_WRITE\n"
-			       "Test FAILED\n");
+			printf
+			    ("Did not got SIGSEGV when writing to the mapped memory,"
+			     " without setting PROT_WRITE\n" "Test FAILED\n");
 			return PTS_FAIL;
 		}
 	}

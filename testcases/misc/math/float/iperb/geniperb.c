@@ -55,12 +55,12 @@ int create_file(char *func_name, int NbVal)
 	switch (myproc = fork()) {
 	case -1:
 		err(1, "fork failed");
-	case 0: {
-		char *arglist[] = { func_name, NULL};
-	     	execvp(arglist[0], arglist);
+	case 0:{
+			char *arglist[] = { func_name, NULL };
+			execvp(arglist[0], arglist);
 
-		err(1, "execvp failed");
-	}
+			err(1, "execvp failed");
+		}
 	default:
 		;
 	}
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 
 	bin_path = argv[1];
 
-	funct = malloc(strlen (bin_path) + MAX_FNAME_LEN);
+	funct = malloc(strlen(bin_path) + MAX_FNAME_LEN);
 	sprintf(funct, "%s/gencosh", bin_path);
 	child = create_file(funct, 0);
 	waitpid(child, NULL, 0);

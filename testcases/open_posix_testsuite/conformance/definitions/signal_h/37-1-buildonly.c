@@ -1,14 +1,14 @@
   /*
-  Test that the function:
-   int siginterrupt(int, int);
-  is declared.
-  */
+     Test that the function:
+     int siginterrupt(int, int);
+     is declared.
+   */
 
 #include <signal.h>
 
-typedef int (*siginterrupt_test)(int, int);
+typedef int (*siginterrupt_test) (int, int);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	siginterrupt_test dummyvar;
 	dummyvar = siginterrupt;

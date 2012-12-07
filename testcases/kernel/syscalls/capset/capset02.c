@@ -118,12 +118,13 @@ struct test_case_t {
 } test_cases[] = {
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
-	{ (cap_user_header_t) -1, &data, EFAULT, "EFAULT" },
-	{ &header, (cap_user_data_t) -1, EFAULT, "EFAULT" },
+	{
+	(cap_user_header_t) - 1, &data, EFAULT, "EFAULT"}, {
+	&header, (cap_user_data_t) - 1, EFAULT, "EFAULT"},
 #endif
-	{ &header, &data, EINVAL, "EINVAL" },
-	{ &header, &data, EPERM, "EPERM" },
-};
+	{
+	&header, &data, EINVAL, "EINVAL"}, {
+&header, &data, EPERM, "EPERM"},};
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
@@ -151,20 +152,20 @@ int main(int ac, char **av)
 		i = 0;
 #endif
 
-		for ( ; i < TST_TOTAL; i++) {
+		for (; i < TST_TOTAL; i++) {
 
 			test_setup(i, av[0]);
 			TEST(syscall(__NR_capset, test_cases[i].headerp,
-				    test_cases[i].datap));
+				     test_cases[i].datap));
 
 			if (TEST_RETURN == -1 &&
 			    TEST_ERRNO == test_cases[i].exp_errno) {
 				tst_resm(TPASS, "capset() returned -1,"
 					 " errno: %s", test_cases[i].errdesc);
 			} else {
-				tst_resm(TFAIL|TTERRNO,
-				    "Test Failed, capset() returned %ld",
-				    TEST_RETURN);
+				tst_resm(TFAIL | TTERRNO,
+					 "Test Failed, capset() returned %ld",
+					 TEST_RETURN);
 			}
 		}
 	}
@@ -188,7 +189,7 @@ void setup()
 	 */
 	header.version = _LINUX_CAPABILITY_VERSION;
 	if (syscall(__NR_capget, &header, &data) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "capget failed");
+		tst_brkm(TBROK | TERRNO, NULL, "capget failed");
 	}
 
 }
@@ -242,7 +243,7 @@ void test_setup(int i, char *argv0)
 		 */
 		child_pid = FORK_OR_VFORK();
 		if (child_pid == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 		else if (child_pid == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv0, "") < 0) {
@@ -256,11 +257,11 @@ void test_setup(int i, char *argv0)
 			header.pid = child_pid;
 			ltpuser = getpwnam(nobody_uid);
 			if (ltpuser == NULL)
-				tst_brkm(TBROK|TERRNO, cleanup,
-				    "getpwnam failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "getpwnam failed");
 			if (seteuid(ltpuser->pw_uid) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup,
-				    "seteuid failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "seteuid failed");
 
 		}
 		break;

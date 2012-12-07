@@ -31,7 +31,6 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-
 /* $Id: tst_res.c,v 1.14 2009/12/01 08:57:20 yaberauneya Exp $ */
 
 /**********************************************************
@@ -105,15 +104,15 @@
 
 /* Break bad habits. */
 #ifdef GARRETT_IS_A_PEDANTIC_BASTARD
-pid_t		spawned_program_pid;
+pid_t spawned_program_pid;
 #endif
 
-#define VERBOSE      1     /* flag values for the T_mode variable */
+#define VERBOSE      1		/* flag values for the T_mode variable */
 #define NOPASS       3
 #define DISCARD      4
 
-#define MAXMESG      80    /* max length of internal messages */
-#define USERMESG     2048  /* max length of user message */
+#define MAXMESG      80		/* max length of internal messages */
+#define USERMESG     2048	/* max length of user message */
 #define TRUE         1
 #define FALSE        0
 
@@ -144,37 +143,36 @@ static void cat_file(char *filename);
 /*
  * Define some static/global variables.
  */
-static FILE *T_out = NULL;    /* tst_res() output file descriptor */
-static char *File;            /* file whose contents is part of result */
-static int  T_exitval = 0;    /* exit value used by tst_exit() */
-static int  T_mode = VERBOSE; /* flag indicating print mode: VERBOSE, */
-                              /* NOPASS, DISCARD */
+static FILE *T_out = NULL;	/* tst_res() output file descriptor */
+static char *File;		/* file whose contents is part of result */
+static int T_exitval = 0;	/* exit value used by tst_exit() */
+static int T_mode = VERBOSE;	/* flag indicating print mode: VERBOSE, */
+			      /* NOPASS, DISCARD */
 
-static char Warn_mesg[MAXMESG];  /* holds warning messages */
+static char Warn_mesg[MAXMESG];	/* holds warning messages */
 
 /*
  * These are used for condensing output when NOT in verbose mode.
  */
-static int  Buffered = FALSE; /* TRUE if condensed output is currently */
-                              /* buffered (i.e. not yet printed) */
-static char *Last_tcid;       /* previous test case id */
-static int  Last_num;         /* previous test case number */
-static int  Last_type;        /* previous test result type */
-static char *Last_mesg;       /* previous test result message */
-
+static int Buffered = FALSE;	/* TRUE if condensed output is currently */
+			      /* buffered (i.e. not yet printed) */
+static char *Last_tcid;		/* previous test case id */
+static int Last_num;		/* previous test case number */
+static int Last_type;		/* previous test result type */
+static char *Last_mesg;		/* previous test result message */
 
 /*
  * These globals may be externed by the test.
  */
-int Tst_count = 0;      /* current count of test cases executed; NOTE: */
-                        /* Tst_count may be externed by other programs */
+int Tst_count = 0;		/* current count of test cases executed; NOTE: */
+			/* Tst_count may be externed by other programs */
 
 /*
  * These globals must be defined in the test.
  */
-extern char *TCID;      /* Test case identifier from the test source */
-extern int  TST_TOTAL;  /* Total number of test cases from the test */
-                        /* source */
+extern char *TCID;		/* Test case identifier from the test source */
+extern int TST_TOTAL;		/* Total number of test cases from the test */
+			/* source */
 
 struct pair {
 	const char *name;
@@ -187,6 +185,7 @@ const char *pair_lookup(struct pair *pair, int pair_size, int idx)
 		return "???";
 	return pair[idx].name;
 }
+
 #define pair_lookup(pair, idx) pair_lookup(pair, ARRAY_SIZE(pair), idx)
 
 /*
@@ -196,12 +195,12 @@ const char *strttype(int ttype)
 {
 	struct pair ttype_pairs[] = {
 		PAIR(TPASS)
-		PAIR(TFAIL)
-		PAIR(TBROK)
-		PAIR(TRETR)
-		PAIR(TCONF)
-		PAIR(TWARN)
-		PAIR(TINFO)
+		    PAIR(TFAIL)
+		    PAIR(TBROK)
+		    PAIR(TRETR)
+		    PAIR(TCONF)
+		    PAIR(TWARN)
+		    PAIR(TINFO)
 	};
 	return pair_lookup(ttype_pairs, TTYPE_RESULT(ttype));
 }
@@ -213,40 +212,40 @@ static const char *strerrnodef(int err)
 {
 	struct pair errno_pairs[] = {
 		PAIR(EPERM)
-		PAIR(ENOENT)
-		PAIR(ESRCH)
-		PAIR(EINTR)
-		PAIR(EIO)
-		PAIR(ENXIO)
-		PAIR(E2BIG)
-		PAIR(ENOEXEC)
-		PAIR(EBADF)
-		PAIR(ECHILD)
-		PAIR(EAGAIN)
-		PAIR(ENOMEM)
-		PAIR(EACCES)
-		PAIR(EFAULT)
-		PAIR(ENOTBLK)
-		PAIR(EBUSY)
-		PAIR(EEXIST)
-		PAIR(EXDEV)
-		PAIR(ENODEV)
-		PAIR(ENOTDIR)
-		PAIR(EISDIR)
-		PAIR(EINVAL)
-		PAIR(ENFILE)
-		PAIR(EMFILE)
-		PAIR(ENOTTY)
-		PAIR(ETXTBSY)
-		PAIR(EFBIG)
-		PAIR(ENOSPC)
-		PAIR(ESPIPE)
-		PAIR(EROFS)
-		PAIR(EMLINK)
-		PAIR(EPIPE)
-		PAIR(EDOM)
-		PAIR(ERANGE)
-		PAIR(ENAMETOOLONG)
+		    PAIR(ENOENT)
+		    PAIR(ESRCH)
+		    PAIR(EINTR)
+		    PAIR(EIO)
+		    PAIR(ENXIO)
+		    PAIR(E2BIG)
+		    PAIR(ENOEXEC)
+		    PAIR(EBADF)
+		    PAIR(ECHILD)
+		    PAIR(EAGAIN)
+		    PAIR(ENOMEM)
+		    PAIR(EACCES)
+		    PAIR(EFAULT)
+		    PAIR(ENOTBLK)
+		    PAIR(EBUSY)
+		    PAIR(EEXIST)
+		    PAIR(EXDEV)
+		    PAIR(ENODEV)
+		    PAIR(ENOTDIR)
+		    PAIR(EISDIR)
+		    PAIR(EINVAL)
+		    PAIR(ENFILE)
+		    PAIR(EMFILE)
+		    PAIR(ENOTTY)
+		    PAIR(ETXTBSY)
+		    PAIR(EFBIG)
+		    PAIR(ENOSPC)
+		    PAIR(ESPIPE)
+		    PAIR(EROFS)
+		    PAIR(EMLINK)
+		    PAIR(EPIPE)
+		    PAIR(EDOM)
+		    PAIR(ERANGE)
+		    PAIR(ENAMETOOLONG)
 	};
 	return pair_lookup(errno_pairs, err);
 }
@@ -301,7 +300,7 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	} else {
 		if (Tst_count < 0)
 			tst_print(TCID, 0, TWARN,
-			    "tst_res(): Tst_count < 0 is not valid");
+				  "tst_res(): Tst_count < 0 is not valid");
 
 		/*
 		 * Process each display type.
@@ -309,11 +308,11 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 		switch (T_mode) {
 		case DISCARD:
 			break;
-		case NOPASS: /* filtered by tst_print() */
-			tst_condense(Tst_count+1, ttype, tmesg);
+		case NOPASS:	/* filtered by tst_print() */
+			tst_condense(Tst_count + 1, ttype, tmesg);
 			break;
-		default:      /* VERBOSE */
-			tst_print(TCID, Tst_count+1, ttype, tmesg);
+		default:	/* VERBOSE */
+			tst_print(TCID, Tst_count + 1, ttype, tmesg);
 			break;
 		}
 
@@ -321,7 +320,6 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	}
 
 }
-
 
 /*
  * tst_condense() - Handle test cases in NOPASS mode (i.e.
@@ -336,9 +334,8 @@ static void tst_condense(int tnum, int ttype, char *tmesg)
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
-	printf( "IN tst_condense: tcid = %s, tnum = %d, ttype = %d, "
-		"tmesg = %s\n",
-		TCID, tnum, ttype, tmesg);
+	printf("IN tst_condense: tcid = %s, tnum = %d, ttype = %d, "
+	       "tmesg = %s\n", TCID, tnum, ttype, tmesg);
 	fflush(stdout);
 #endif
 
@@ -381,7 +378,6 @@ static void tst_condense(int tnum, int ttype, char *tmesg)
 	}
 }
 
-
 /*
  * tst_flush() - Print any messages pending because due to tst_condense,
  *               and flush T_out.
@@ -403,7 +399,6 @@ void tst_flush(void)
 
 	fflush(T_out);
 }
-
 
 /*
  * tst_print() - Print a line to the output stream.
@@ -443,7 +438,7 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 
 #if DEBUG
 	printf("IN tst_print: tnum = %d, ttype = %d, tmesg = %s\n",
-	    tnum, ttype, tmesg);
+	       tnum, ttype, tmesg);
 	fflush(stdout);
 #endif
 
@@ -463,7 +458,8 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 	 * through tst_res() (e.g. internal TWARN messages).
 	 */
 	if (T_mode == DISCARD || (T_mode == NOPASS && ttype_result != TFAIL &&
-	    ttype_result != TBROK && ttype_result != TWARN))
+				  ttype_result != TBROK
+				  && ttype_result != TWARN))
 		return;
 
 	/*
@@ -472,12 +468,11 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 	type = strttype(ttype);
 	if (T_mode == VERBOSE) {
 		size = snprintf(message, sizeof(message),
-		                "%-8s %4d  %s  :  %s",
-				tcid, tnum, type, tmesg);
+				"%-8s %4d  %s  :  %s", tcid, tnum, type, tmesg);
 	} else {
 		size = snprintf(message, sizeof(message),
-		                "%-8s %4d       %s  :  %s",
-			        tcid, tnum, type, tmesg);
+				"%-8s %4d       %s  :  %s",
+				tcid, tnum, type, tmesg);
 	}
 
 	if (size >= sizeof(message)) {
@@ -487,8 +482,8 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 
 	if (ttype & TERRNO) {
 		size += snprintf(message + size, sizeof(message) - size,
-		                 ": errno=%s(%i): %s", strerrnodef(err),
-		                 err, strerror(err));
+				 ": errno=%s(%i): %s", strerrnodef(err),
+				 err, strerror(err));
 	}
 
 	if (size >= sizeof(message)) {
@@ -498,9 +493,9 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 
 	if (ttype & TTERRNO) {
 		size += snprintf(message + size, sizeof(message) - size,
-		                 ": TEST_ERRNO=%s(%i): %s",
-		                 strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
-		                 strerror(TEST_ERRNO));
+				 ": TEST_ERRNO=%s(%i): %s",
+				 strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
+				 strerror(TEST_ERRNO));
 	}
 
 	if (size + 1 >= sizeof(message)) {
@@ -508,8 +503,8 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 		abort();
 	}
 
-	message[size]   = '\n';
-	message[size+1] = '\0';
+	message[size] = '\n';
+	message[size + 1] = '\0';
 
 	fputs(message, T_out);
 
@@ -523,7 +518,6 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 	File = NULL;
 }
 
-
 /*
  * check_env() - Check the value of the environment variable TOUTPUT and
  *               set the global variable T_mode.  The TOUTPUT environment
@@ -534,7 +528,7 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 static void check_env(void)
 {
 	static int first_time = 1;
-	char      *value;
+	char *value;
 
 #if DEBUG
 	printf("IN check_env\n");
@@ -547,7 +541,7 @@ static void check_env(void)
 	first_time = 0;
 
 	/* BTOUTPUT not defined, use default */
-  	if ((value = getenv(TOUTPUT)) == NULL) {
+	if ((value = getenv(TOUTPUT)) == NULL) {
 		T_mode = VERBOSE;
 		return;
 	}
@@ -567,7 +561,6 @@ static void check_env(void)
 	return;
 }
 
-
 /*
  * tst_exit() - Call exit() with the value T_exitval, set up by
  *              tst_res().  T_exitval has a bit set for most of the
@@ -578,7 +571,8 @@ static void check_env(void)
 void tst_exit(void)
 {
 #if DEBUG
-	printf("IN tst_exit\n"); fflush(stdout);
+	printf("IN tst_exit\n");
+	fflush(stdout);
 	fflush(stdout);
 #endif
 
@@ -588,7 +582,6 @@ void tst_exit(void)
 	/* Mask out TRETR, TINFO, and TCONF results from the exit status. */
 	exit(T_exitval & ~(TRETR | TINFO | TCONF));
 }
-
 
 /*
  * tst_environ() - Preserve the tst_res() output location, despite any
@@ -602,7 +595,6 @@ int tst_environ(void)
 		return 0;
 }
 
-
 /*
  * Make tst_brk reentrant so that one can call the SAFE_* macros from within
  * user-defined cleanup functions.
@@ -613,13 +605,14 @@ static int tst_brk_entered = 0;
  * tst_brk() - Fail or break current test case, and break the remaining
  *             tests cases.
  */
-void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
+void tst_brk(int ttype, char *fname, void (*func) (void), char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
-	printf("IN tst_brk\n"); fflush(stdout);
+	printf("IN tst_brk\n");
+	fflush(stdout);
 	fflush(stdout);
 #endif
 
@@ -641,8 +634,8 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	if (tst_brk_entered == 0) {
 		if (ttype_result == TCONF)
 			tst_res(ttype, NULL,
-			    "Remaining cases not appropriate for "
-			    "configuration");
+				"Remaining cases not appropriate for "
+				"configuration");
 		else if (ttype_result == TRETR)
 			tst_res(ttype, NULL, "Remaining cases retired");
 		else if (ttype_result == TBROK)
@@ -655,7 +648,7 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	 */
 	if (func != NULL) {
 		tst_brk_entered++;
-		(*func)();
+		(*func) ();
 		tst_brk_entered--;
 	}
 	if (tst_brk_entered == 0)
@@ -671,7 +664,8 @@ void tst_resm(int ttype, char *arg_fmt, ...)
 	char tmesg[USERMESG];
 
 #if DEBUG
-	printf("IN tst_resm\n"); fflush(stdout);
+	printf("IN tst_resm\n");
+	fflush(stdout);
 	fflush(stdout);
 #endif
 
@@ -680,16 +674,16 @@ void tst_resm(int ttype, char *arg_fmt, ...)
 	tst_res(ttype, NULL, "%s", tmesg);
 }
 
-
 /*
  * tst_brkm() - Interface to tst_brk(), with no filename.
  */
-void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
+void tst_brkm(int ttype, void (*func) (void), char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 
 #if DEBUG
-	printf("IN tst_brkm\n"); fflush(stdout);
+	printf("IN tst_brkm\n");
+	fflush(stdout);
 	fflush(stdout);
 #endif
 
@@ -698,16 +692,14 @@ void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
 	tst_brk(ttype, NULL, func, "%s", tmesg);
 }
 
-
 /*
  * tst_require_root() - Test for root permissions and abort if not.
  */
-void tst_require_root(void (*func)(void))
+void tst_require_root(void (*func) (void))
 {
 	if (geteuid() != 0)
 		tst_brkm(TCONF, func, "Test needs to be run as root");
 }
-
 
 /*
  * cat_file() - Print the contents of a file to standard out.
@@ -715,18 +707,19 @@ void tst_require_root(void (*func)(void))
 static void cat_file(char *filename)
 {
 	FILE *fp;
-	int  b_read, b_written;
+	int b_read, b_written;
 	char buffer[BUFSIZ];
 
 #if DEBUG
-	printf("IN cat_file\n"); fflush(stdout);
+	printf("IN cat_file\n");
+	fflush(stdout);
 #endif
 
 	if ((fp = fopen(filename, "r")) == NULL) {
 		sprintf(Warn_mesg,
 			"tst_res(): fopen(%s, \"r\") failed; errno = %d: %s",
 			filename, errno, strerror(errno));
-			tst_print(TCID, 0, TWARN, Warn_mesg);
+		tst_print(TCID, 0, TWARN, Warn_mesg);
 		return;
 	}
 
@@ -760,14 +753,13 @@ static void cat_file(char *filename)
 	}
 }
 
-
 #ifdef UNIT_TEST
 /****************************************************************************
  * Unit test code: Takes input from stdin and can make the following
  *                 calls: tst_res(), tst_resm(), tst_brk(), tst_brkm(),
  *                 tst_flush_buf(), tst_exit().
  ****************************************************************************/
-int  TST_TOTAL = 10;
+int TST_TOTAL = 10;
 char *TCID = "TESTTCID";
 
 #define RES  "tst_res.c UNIT TEST message; ttype = %d; contents of \"%s\":"
@@ -775,7 +767,7 @@ char *TCID = "TESTTCID";
 
 int main(void)
 {
-	int  ttype;
+	int ttype;
 	char chr;
 	char fname[MAXMESG];
 
@@ -790,12 +782,11 @@ int main(void)
 	       %2i : call tst_res(TWARN, ...)\n\
 	       %2i : call tst_res(TRETR, ...)\n\
 	       %2i : call tst_res(TINFO, ...)\n\
-	       %2i : call tst_res(TCONF, ...)\n\n",
-		TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
+	       %2i : call tst_res(TCONF, ...)\n\n", TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
 
 	while (1) {
 		printf("Enter ttype (-5,-4,-3,-2,-1,%i,%i,%i,%i,%i,%i,%i): ",
-			TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
+		       TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
 		scanf("%d%c", &ttype, &chr);
 
 		switch (ttype) {
@@ -808,20 +799,23 @@ int main(void)
 			break;
 
 		case -3:
-			printf("Enter the current type (%i=FAIL, %i=BROK, %i=RETR, %i=CONF): ",
-				TFAIL, TBROK, TRETR, TCONF);
+			printf
+			    ("Enter the current type (%i=FAIL, %i=BROK, %i=RETR, %i=CONF): ",
+			     TFAIL, TBROK, TRETR, TCONF);
 			scanf("%d%c", &ttype, &chr);
 			printf("Enter file name (<cr> for none): ");
 			gets(fname);
 			if (strcmp(fname, "") == 0)
 				tst_brkm(ttype, tst_exit, RESM, ttype);
 			else
-				tst_brk(ttype, fname, tst_exit, RES, ttype, fname);
-		break;
+				tst_brk(ttype, fname, tst_exit, RES, ttype,
+					fname);
+			break;
 
 		case -4:
-			printf("Enter the current type (%i,%i,%i,%i,%i,%i,%i): ",
-				TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
+			printf
+			    ("Enter the current type (%i,%i,%i,%i,%i,%i,%i): ",
+			     TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
 			scanf("%d%c", &ttype, &chr);
 		default:
 			printf("Enter file name (<cr> for none): ");

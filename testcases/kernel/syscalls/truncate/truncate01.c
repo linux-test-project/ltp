@@ -141,7 +141,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "stat(2) of "
 						 "%s failed, error:%d",
 						 TESTFILE, errno);
-				 }
+				}
 				stat_buf.st_mode &= ~S_IFREG;
 				file_length = stat_buf.st_size;
 
@@ -151,8 +151,9 @@ int main(int ac, char **av)
 				 */
 				if (file_length != TRUNC_LEN) {
 					tst_resm(TFAIL, "%s: Incorrect file "
-						 "size %"PRId64", Expected %d",
-						 TESTFILE, (int64_t)file_length,
+						 "size %" PRId64
+						 ", Expected %d", TESTFILE,
+						 (int64_t) file_length,
 						 TRUNC_LEN);
 				} else {
 					tst_resm(TPASS, "Functionality of "
@@ -206,7 +207,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	 }
+	}
 
 	/* Write to the file 1k data from the buffer */
 	while (c_total < FILE_SIZE) {
@@ -214,7 +215,7 @@ void setup()
 			tst_brkm(TBROK, cleanup,
 				 "write(2) on %s Failed, errno=%d : %s",
 				 TESTFILE, errno, strerror(errno));
-		 } else {
+		} else {
 			c_total += c;
 		}
 	}
@@ -224,7 +225,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TESTFILE, errno, strerror(errno));
-	 }
+	}
 }
 
 /*

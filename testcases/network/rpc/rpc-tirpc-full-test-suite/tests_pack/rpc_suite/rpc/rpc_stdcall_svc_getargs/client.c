@@ -37,27 +37,26 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	enum clnt_stat cs;
 	int varSnd = 1;
 
 	//Initialization
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("progNum : %d\n", progNum);
 	}
 
 	cs = callrpc(argc[1], progNum, VERSNUM, PROCNUM,
-				   (xdrproc_t)xdr_int, (char *)&varSnd,
-				   (xdrproc_t)xdr_int, (char *)&varSnd);
+		     (xdrproc_t) xdr_int, (char *)&varSnd,
+		     (xdrproc_t) xdr_int, (char *)&varSnd);
 
 	//test_status = varSnd;
 
@@ -68,5 +67,5 @@ int main(int argn, char *argc[])
 	//normally should be 0: test has passed or 1: test has failed
 	//printf("%d\n", test_status);
 
-	tst_exit();//test_status;
+	tst_exit();		//test_status;
 }

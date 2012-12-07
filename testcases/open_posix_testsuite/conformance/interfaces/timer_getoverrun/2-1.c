@@ -72,7 +72,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	sleep(VALUESEC+2*INTERVALSEC+1);
+	sleep(VALUESEC + 2 * INTERVALSEC + 1);
 
 	if (sigprocmask(SIG_UNBLOCK, &set, NULL) != 0) {
 		perror("sigprocmask() did not return success\n");
@@ -85,7 +85,7 @@ int main()
 		return PTS_PASS;
 	} else {
 		printf("FAIL:  %d overruns sent; expected %d\n",
-				overruns, EXPECTEDOVERRUNS);
+		       overruns, EXPECTEDOVERRUNS);
 		return PTS_FAIL;
 	}
 

@@ -96,10 +96,10 @@
  * error (): Error message function
  * cleanup (): Cleanup function for the test
  */
-static void parse_args (int, char **);
-static void sys_error (const char *, int);
-static void error (const char *, int);
-static void cleanup (int qnum);
+static void parse_args(int, char **);
+static void sys_error(const char *, int);
+static void error(const char *, int);
+static void cleanup(int qnum);
 /*
  * Global variables
  *
@@ -107,9 +107,9 @@ static void cleanup (int qnum);
  * msqid_array: array containing the unique message queue identifiers
  * debug: debugging flag, set with [-d] command line option
  */
-int	max_queues = DEFAULT_MESSAGE_QUEUES;
-int	msqid_array [MAX_MESSAGE_QUEUES];
-int	debug = 0;
+int max_queues = DEFAULT_MESSAGE_QUEUES;
+int msqid_array[MAX_MESSAGE_QUEUES];
+int debug = 0;
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -121,28 +121,28 @@ int	debug = 0;
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int	nqueues = 0;	/* Current number of message queues */
-	int	i;		/* Loop index */
-	int	mode = 0777;	/* Misc mode bits */
+	int nqueues = 0;	/* Current number of message queues */
+	int i;			/* Loop index */
+	int mode = 0777;	/* Misc mode bits */
 
 	/*
 	 * Parse command line arguments and print out program header
 	 */
-	parse_args (argc, argv);
-	printf ("%s: IPC Message Queue TestSuite program\n", *argv);
+	parse_args(argc, argv);
+	printf("%s: IPC Message Queue TestSuite program\n", *argv);
 
-	printf ("\n\tCreating %d message queues ...\n", max_queues);
+	printf("\n\tCreating %d message queues ...\n", max_queues);
 	while (nqueues < max_queues) {
 
-		for (i=0; i<3; i++) {
-			if (debug) printf ("\tcreating queue [%d]\n", nqueues);
-			if ((msqid_array [nqueues++]
-				= msgget (IPC_PRIVATE, IPC_CREAT|mode)) < 0)
-			{
+		for (i = 0; i < 3; i++) {
+			if (debug)
+				printf("\tcreating queue [%d]\n", nqueues);
+			if ((msqid_array[nqueues++]
+			     = msgget(IPC_PRIVATE, IPC_CREAT | mode)) < 0) {
 				cleanup(nqueues);
-				sys_error ("msgget failed", __LINE__);
+				sys_error("msgget failed", __LINE__);
 			}
 
 			if (nqueues > MAX_MESSAGE_QUEUES)
@@ -152,14 +152,15 @@ int main (int argc, char **argv)
 		/*
 		 * Delete the last message queue...
 		 */
-		if (msgctl (msqid_array [--nqueues], IPC_RMID, 0) < 0)
-			sys_error ("msgctl (IPC_RMID) failed", __LINE__);
-		if (debug) printf ("\tremoved queue  [%d]\n", nqueues);
+		if (msgctl(msqid_array[--nqueues], IPC_RMID, 0) < 0)
+			sys_error("msgctl (IPC_RMID) failed", __LINE__);
+		if (debug)
+			printf("\tremoved queue  [%d]\n", nqueues);
 	}
-	printf ("\n\tAll message queues created successfully\n");
+	printf("\n\tAll message queues created successfully\n");
 
-        cleanup(nqueues);
-	printf ("\nsuccessful!\n");
+	cleanup(nqueues);
+	printf("\nsuccessful!\n");
 	return (0);
 }
 
@@ -175,35 +176,35 @@ int main (int argc, char **argv)
 |            [-n] num:   number of message queues to create            |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void parse_args (int argc, char **argv)
+static void parse_args(int argc, char **argv)
 {
-	int	opt;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int opt;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	/*
 	 * Parse command line options.
 	 */
 	while ((opt = getopt(argc, argv, "n:d")) != EOF) {
 		switch (opt) {
-			case 'n':	/* number of queues to create */
-				max_queues = atoi (optarg);
-				break;
-			case 'd':	/* debug */
-				debug++;
-				break;
-			default:
-				errflag++;
-				break;
+		case 'n':	/* number of queues to create */
+			max_queues = atoi(optarg);
+			break;
+		case 'd':	/* debug */
+			debug++;
+			break;
+		default:
+			errflag++;
+			break;
 		}
 	}
 	if (max_queues > MAX_MESSAGE_QUEUES)
 		errflag++;
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -214,12 +215,12 @@ static void parse_args (int argc, char **argv)
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void sys_error (const char *msg, int line)
+static void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -229,10 +230,10 @@ static void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void error (const char *msg, int line)
+static void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	exit (-1);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	exit(-1);
 }
 
 /*---------------------------------------------------------------------+
@@ -245,14 +246,15 @@ static void error (const char *msg, int line)
 +---------------------------------------------------------------------*/
 void cleanup(int qnum)
 {
-        /*
-         *  Remove the allocated message queues.
-         */
-        while (qnum > 0) {
-		if (msqid_array [--qnum] < 0)
+	/*
+	 *  Remove the allocated message queues.
+	 */
+	while (qnum > 0) {
+		if (msqid_array[--qnum] < 0)
 			continue;
-                if (msgctl (msqid_array [qnum], IPC_RMID, 0) < 0)
-                        sys_error ("msgctl (IPC_RMID) failed", __LINE__);
-                if (debug) printf ("\tremoved queue  [%d]\n", qnum);
-        }
+		if (msgctl(msqid_array[qnum], IPC_RMID, 0) < 0)
+			sys_error("msgctl (IPC_RMID) failed", __LINE__);
+		if (debug)
+			printf("\tremoved queue  [%d]\n", qnum);
+	}
 }

@@ -21,10 +21,9 @@
 #define LOG_PERROR 0
 #endif
 
-int
-main(argc, argv)
-	int argc;
-	char **argv;
+int main(argc, argv)
+int argc;
+char **argv;
 {
 	u_char b_addr[IN6ADDRSZ];
 	struct hostent *host;
@@ -35,11 +34,12 @@ main(argc, argv)
 	int force = 0;
 
 	if (argc < 1) {
- usage:
+usage:
 		printf("usage:  %s [-d] [-6] [-f] (hostname|ipaddr)\n", prog);
 		exit(1);
 	}
-	prog = *argv++; argc--;
+	prog = *argv++;
+	argc--;
 #ifdef LOG_USER
 	openlog(prog, LOG_PERROR, LOG_USER);
 #else
@@ -63,13 +63,14 @@ main(argc, argv)
 
 	if (argc < 1)
 		goto usage;
-	arg = *argv++; argc--;
+	arg = *argv++;
+	argc--;
 
 	if (inet_pton(af, arg, b_addr)) {
 		char p[sizeof "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"];
 
 		printf("[%s]\n", inet_ntop(af, b_addr, p, sizeof p));
-		if (!(host = gethostbyaddr((char*)b_addr, size, af))) {
+		if (!(host = gethostbyaddr((char *)b_addr, size, af))) {
 			herror("gethostbyaddr");
 			exit(1);
 		}
@@ -87,7 +88,7 @@ main(argc, argv)
 	printf("name: %s\n", host->h_name);
 	if (host->h_aliases && *host->h_aliases) {
 		printf("aliases:");
-		for (cp = (char **) host->h_aliases; *cp; cp++)
+		for (cp = (char **)host->h_aliases; *cp; cp++)
 			printf(" %s", *cp);
 		printf("\n");
 	}
@@ -95,13 +96,12 @@ main(argc, argv)
 		printf("addresses:");
 		for (ap = host->h_addr_list; *ap; ap++) {
 			char p[sizeof
-			       "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
-			      ];
+			       "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"];
 
 			printf(" %s", inet_ntop(host->h_addrtype,
 						*ap, p, sizeof p));
 		}
 		printf("\n");
 	}
-exit(0);
+	exit(0);
 }

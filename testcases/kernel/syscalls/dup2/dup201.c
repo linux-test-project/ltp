@@ -89,13 +89,17 @@ struct test_case_t {
 	void (*setupfunc) ();
 } TC[] = {
 	/* First fd argument is less than 0 - EBADF */
-	{ &badfd, &goodfd, EBADF, NULL},
-	/* First fd argument is getdtablesize() - EBADF */
-	{ &maxfd, &goodfd, EBADF, NULL},
-	/* Second fd argument is less than 0 - EBADF */
-	{ &mystdout, &badfd, EBADF, NULL},
-	/* Second fd argument is getdtablesize() - EBADF */
-	{ &mystdout, &maxfd, EBADF, NULL},};
+	{
+	&badfd, &goodfd, EBADF, NULL},
+	    /* First fd argument is getdtablesize() - EBADF */
+	{
+	&maxfd, &goodfd, EBADF, NULL},
+	    /* Second fd argument is less than 0 - EBADF */
+	{
+	&mystdout, &badfd, EBADF, NULL},
+	    /* Second fd argument is getdtablesize() - EBADF */
+	{
+&mystdout, &maxfd, EBADF, NULL},};
 
 int main(int ac, char **av)
 {
@@ -121,7 +125,7 @@ int main(int ac, char **av)
 
 			/* call the test case setup routine if necessary */
 			if (TC[i].setupfunc != NULL)
-				(*TC[i].setupfunc)();
+				(*TC[i].setupfunc) ();
 
 			TEST(dup2(*TC[i].ofd, *TC[i].nfd));
 
@@ -134,12 +138,13 @@ int main(int ac, char **av)
 
 			if (TEST_ERRNO == TC[i].error) {
 				tst_resm(TPASS,
-				    "failed as expected - errno = %d : %s",
-				    TEST_ERRNO, strerror(TEST_ERRNO));
+					 "failed as expected - errno = %d : %s",
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 			} else {
-				tst_resm(TFAIL|TTERRNO, "failed unexpectedly; "
-				    "expected %d: %s", TC[i].error,
-				    strerror(TC[i].error));
+				tst_resm(TFAIL | TTERRNO,
+					 "failed unexpectedly; "
+					 "expected %d: %s", TC[i].error,
+					 strerror(TC[i].error));
 			}
 		}
 		/* cleanup things in case we are looping */

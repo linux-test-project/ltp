@@ -58,111 +58,110 @@
 #define NUMTHREADS 2
 
 void *retval[NUMTHREADS];
-void * waiter(void *);
-void * poster(void *);
+void *waiter(void *);
+void *poster(void *);
 void cleanup(void);
 
 char *TCID = "sem02";
 int TST_TOTAL = 1;
 
-struct sembuf Psembuf = {0, -1, SEM_UNDO};
-struct sembuf Vsembuf = {0, 1, SEM_UNDO};
+struct sembuf Psembuf = { 0, -1, SEM_UNDO };
+struct sembuf Vsembuf = { 0, 1, SEM_UNDO };
 
 union semun {
-        int val;                        /* value for SETVAL */
-        struct semid_ds *buf;           /* buffer for IPC_STAT & IPC_SET */
-        unsigned short *array;          /* array for GETALL & SETALL */
-        struct seminfo *ipc_buf;        /* buffer for IPC_INFO */
+	int val;		/* value for SETVAL */
+	struct semid_ds *buf;	/* buffer for IPC_STAT & IPC_SET */
+	unsigned short *array;	/* array for GETALL & SETALL */
+	struct seminfo *ipc_buf;	/* buffer for IPC_INFO */
 };
 
 int sem_id;
-int err_ret;  /* This is used to determine PASS/FAIL status */
+int err_ret;			/* This is used to determine PASS/FAIL status */
 int main(int argc, char **argv)
 {
-    int i, rc;
-    char *msg;
-    union semun semunion;
+	int i, rc;
+	char *msg;
+	union semun semunion;
 
-    pthread_t pt[NUMTHREADS];
-    pthread_attr_t attr;
+	pthread_t pt[NUMTHREADS];
+	pthread_attr_t attr;
 
-    if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *) NULL) {
-	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-    }
-    /* Create the semaphore set */
-    sem_id = semget(KEY, 1, 0666 | IPC_CREAT);
-    if (sem_id < 0)
-    {
-		 printf ("semget failed, errno = %d\n", errno);
-		 exit (1);
-    }
-    /* initialize data  structure associated to the semaphore */
-    semunion.val = 1;
-    semctl(sem_id, 0, SETVAL, semunion);
+	if ((msg =
+	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
+	/* Create the semaphore set */
+	sem_id = semget(KEY, 1, 0666 | IPC_CREAT);
+	if (sem_id < 0) {
+		printf("semget failed, errno = %d\n", errno);
+		exit(1);
+	}
+	/* initialize data  structure associated to the semaphore */
+	semunion.val = 1;
+	semctl(sem_id, 0, SETVAL, semunion);
 
-    /* setup the attributes of the thread        */
-    /* set the scope to be system to make sure the threads compete on a  */
-    /* global scale for cpu   */
-    pthread_attr_init(&attr);
-    pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+	/* setup the attributes of the thread        */
+	/* set the scope to be system to make sure the threads compete on a  */
+	/* global scale for cpu   */
+	pthread_attr_init(&attr);
+	pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 
-    err_ret=1;  /* Set initial error value to 1 */
-    /* Create the threads */
-    for (i=0; i<NUMTHREADS; i++)
-    {
-		 if (i == 0)
-		     rc = pthread_create(&pt[i], &attr, waiter, retval[i]);
-		 else
-		     rc = pthread_create(&pt[i], &attr, poster, retval[i]);
-    }
+	err_ret = 1;		/* Set initial error value to 1 */
+	/* Create the threads */
+	for (i = 0; i < NUMTHREADS; i++) {
+		if (i == 0)
+			rc = pthread_create(&pt[i], &attr, waiter, retval[i]);
+		else
+			rc = pthread_create(&pt[i], &attr, poster, retval[i]);
+	}
 
-    /* Sleep long enough to see that the other threads do what they are supposed to do */
-    sleep(20);
-    semunion.val = 1;
-    semctl(sem_id, 0, IPC_RMID, semunion);
-    if (err_ret == 1)
-	tst_resm(TFAIL, "failed");
-    else
-	tst_resm(TPASS, "passed");
-    cleanup();
+	/* Sleep long enough to see that the other threads do what they are supposed to do */
+	sleep(20);
+	semunion.val = 1;
+	semctl(sem_id, 0, IPC_RMID, semunion);
+	if (err_ret == 1)
+		tst_resm(TFAIL, "failed");
+	else
+		tst_resm(TPASS, "passed");
+	cleanup();
 
-    tst_exit();
+	tst_exit();
 }
 
 /* This thread sleeps 10 seconds then waits on the semaphore.  As long
    as someone has posted on the semaphore, and no undo has taken
    place, the semop should complete and we'll print "Waiter done
    waiting." */
-void * waiter(void * foo)
+void *waiter(void *foo)
 {
-    int pid;
-    pid = getpid();
+	int pid;
+	pid = getpid();
 
-    tst_resm(TINFO, "Waiter, pid = %d", pid);
-    sleep(10);
+	tst_resm(TINFO, "Waiter, pid = %d", pid);
+	sleep(10);
 
-    tst_resm(TINFO, "Waiter waiting, pid = %d", pid);
-    semop(sem_id, &Psembuf, 1);
-    tst_resm(TINFO, "Waiter done waiting");
-    err_ret=0; /* If the message above is displayed, the test is a PASS */
-    pthread_exit(0);
+	tst_resm(TINFO, "Waiter waiting, pid = %d", pid);
+	semop(sem_id, &Psembuf, 1);
+	tst_resm(TINFO, "Waiter done waiting");
+	err_ret = 0;		/* If the message above is displayed, the test is a PASS */
+	pthread_exit(0);
 }
 
 /* This thread immediately posts on the semaphore and then immediately
    exits.  If the *thread* exits, the undo should not happen, and the
    waiter thread which will start waiting on it in 10 seconds, should
    still get it.   */
-void * poster(void * foo)
+void *poster(void *foo)
 {
-    int pid;
+	int pid;
 
-    pid = getpid();
-    tst_resm(TINFO, "Poster, pid = %d, posting", pid);
-    semop(sem_id, &Vsembuf, 1);
-    tst_resm(TINFO, "Poster posted");
-    tst_resm(TINFO, "Poster exiting");
+	pid = getpid();
+	tst_resm(TINFO, "Poster, pid = %d, posting", pid);
+	semop(sem_id, &Vsembuf, 1);
+	tst_resm(TINFO, "Poster posted");
+	tst_resm(TINFO, "Poster exiting");
 
-    pthread_exit(0);
+	pthread_exit(0);
 }
 
 void cleanup(void)

@@ -46,7 +46,7 @@ static void exm_proc();
 int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
-	//					    others arguments depend on server program
+	//                                          others arguments depend on server program
 	int run_mode = 0;
 	int progNum = atoi(argc[1]);
 	bool_t rslt;
@@ -58,26 +58,21 @@ int main(int argn, char *argc[])
 	//Initialization
 	svc_unreg(progNum, VERSNUM);
 
-	if ((nconf = getnetconfigent("udp")) == NULL)
-    {
-    	fprintf(stderr, "Cannot get netconfig entry for UDP\n");
-    	exit(1);
+	if ((nconf = getnetconfigent("udp")) == NULL) {
+		fprintf(stderr, "Cannot get netconfig entry for UDP\n");
+		exit(1);
 	}
 
-	transp = svc_tli_create(RPC_ANYFD, nconf,
-                            (struct t_bind *)NULL,
-                            0, 0);
+	transp = svc_tli_create(RPC_ANYFD, nconf, (struct t_bind *)NULL, 0, 0);
 
-	if (transp == NULL)
-	{
-    	fprintf(stderr, "Cannot create service.\n");
-    	exit(1);
+	if (transp == NULL) {
+		fprintf(stderr, "Cannot create service.\n");
+		exit(1);
 	}
 
-	if (!svc_reg(transp, progNum, VERSNUM, exm_proc, nconf))
-	{
-    	fprintf(stderr, "svc_reg failed!!\n");
-    	exit(1);
+	if (!svc_reg(transp, progNum, VERSNUM, exm_proc, nconf)) {
+		fprintf(stderr, "svc_reg failed!!\n");
+		exit(1);
 	}
 
 	svc_run();
@@ -103,7 +98,7 @@ char *simplePing(char *in)
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
+static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
 {
 	//printf("* in Dispatch Func.\n");
 	union {
@@ -113,30 +108,28 @@ static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 	char *result;
 	xdrproc_t xdr_argument;
 	xdrproc_t xdr_result;
-	char *(*proc)(char *);
+	char *(*proc) (char *);
 
-	switch (rqstp->rq_proc)
-	{
-		case PROCSIMPLEPING:
+	switch (rqstp->rq_proc) {
+	case PROCSIMPLEPING:
 		{
 			//printf("** in PROCPONG dispatch Func.\n");
 			xdr_argument = (xdrproc_t) xdr_int;
-			xdr_result   = (xdrproc_t) xdr_int;
-			proc         = (char *(*)(char *))simplePing;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc = (char *(*)(char *))simplePing;
 			break;
 		}
 	}
 	memset((char *)&argument, (int)0, sizeof(argument));
-	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE)
-	{
+	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE) {
 		svcerr_decode(transp);
 		return;
 	}
 
-	result = (char *)(*proc)((char *)&argument);
+	result = (char *)(*proc) ((char *)&argument);
 
-	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
-	{
+	if ((result != NULL)
+	    && (svc_sendreply(transp, xdr_result, result) == FALSE)) {
 		svcerr_systemerr(transp);
 	}
 	if (svc_freeargs(transp, xdr_argument, (char *)&argument) == FALSE) {

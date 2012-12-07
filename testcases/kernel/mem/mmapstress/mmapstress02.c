@@ -35,9 +35,9 @@
 #include <errno.h>
 #include <stdio.h>
 
-extern time_t	time(time_t *);
-extern char	*ctime(const time_t *);
-extern void     exit(int);
+extern time_t time(time_t *);
+extern char *ctime(const time_t *);
+extern void exit(int);
 
 #define	ERROR(M)	(void)fprintf(stderr, "%s: errno = %d; " M "\n", \
 				argv[0], errno)
@@ -49,7 +49,7 @@ extern void     exit(int);
         }
 
 static char tmpname[] = "fileXXXXXX";
-static int	fd;
+static int fd;
 /*****  LTP Port        *****/
 #include "test.h"
 #include "usctest.h"
@@ -57,7 +57,7 @@ static int	fd;
 #define PASSED 1
 
 int local_flag = PASSED;
-char *TCID = "mmapstress02"; //uiomove_phys_fail
+char *TCID = "mmapstress02";	//uiomove_phys_fail
 FILE *temp;
 int TST_TOTAL = 1;
 
@@ -65,28 +65,26 @@ int anyfail();
 void ok_exit();
 /*****  **      **      *****/
 
-/*ARGSUSED*/
-static
-void
-cleanup(int sig)
+ /*ARGSUSED*/ static
+void cleanup(int sig)
 {
-        /*
-         * Don't check error codes - we could be signaled before the file is
-         * created.
-         */
-        (void)close(fd);
-        (void)unlink(tmpname);
+	/*
+	 * Don't check error codes - we could be signaled before the file is
+	 * created.
+	 */
+	(void)close(fd);
+	(void)unlink(tmpname);
 	tst_rmdir();
-        tst_exit();
+	tst_exit();
 }
 
-int
-main(int argc, char *argv[]) {
-	caddr_t			mmapaddr;
-	size_t			pagesize = sysconf(_SC_PAGE_SIZE);
-	time_t			t;
-	int			i;
-        struct sigaction        sa;
+int main(int argc, char *argv[])
+{
+	caddr_t mmapaddr;
+	size_t pagesize = sysconf(_SC_PAGE_SIZE);
+	time_t t;
+	int i;
+	struct sigaction sa;
 
 	tst_tmpdir();
 	if (!argc) {
@@ -102,20 +100,21 @@ main(int argc, char *argv[]) {
 		ERROR("mkstemp failed");
 		anyfail();
 	}
-        sa.sa_handler = cleanup;
-        sa.sa_flags = 0;
-        if (sigemptyset(&sa.sa_mask)) {
-                ERROR("sigemptyset failed");
+	sa.sa_handler = cleanup;
+	sa.sa_flags = 0;
+	if (sigemptyset(&sa.sa_mask)) {
+		ERROR("sigemptyset failed");
 		anyfail();
-        }
-        CATCH_SIG(SIGINT);
-        CATCH_SIG(SIGQUIT);
-        CATCH_SIG(SIGTERM);
-	if (sbrk(2*pagesize - ((ulong)sbrk(0) & (pagesize-1))) == (char *)-1) {
+	}
+	CATCH_SIG(SIGINT);
+	CATCH_SIG(SIGQUIT);
+	CATCH_SIG(SIGTERM);
+	if (sbrk(2 * pagesize - ((ulong) sbrk(0) & (pagesize - 1))) ==
+	    (char *)-1) {
 		CLEANERROR("couldn't round up brk");
 		anyfail();
 	}
-	if ((mmapaddr = sbrk(0)) == (caddr_t)-1) {
+	if ((mmapaddr = sbrk(0)) == (caddr_t) - 1) {
 		CLEANERROR("couldn't find top of brk");
 		anyfail();
 	}
@@ -123,14 +122,13 @@ main(int argc, char *argv[]) {
 	 * asking for PROT_WRITE.
 	 */
 	for (i = pagesize; i; i--)
-		*(mmapaddr-i) = 'a';
-	if (write(fd, (char *)mmapaddr-pagesize, pagesize) != pagesize) {
+		*(mmapaddr - i) = 'a';
+	if (write(fd, (char *)mmapaddr - pagesize, pagesize) != pagesize) {
 		CLEANERROR("write failed");
 		anyfail();
 	}
 	if (mmap(mmapaddr, pagesize, PROT_NONE,
-		MAP_FIXED|MAP_PRIVATE|MAP_FILE, fd, 0) != mmapaddr)
-	{
+		 MAP_FIXED | MAP_PRIVATE | MAP_FILE, fd, 0) != mmapaddr) {
 		CLEANERROR("couldn't mmap file");
 		anyfail();
 	}
@@ -171,25 +169,25 @@ main(int argc, char *argv[]) {
 		anyfail();
 	}
 	(void)time(&t);
-//	(void)printf("%s: Finished %s", argv[0], ctime(&t));
-	ok_exit(); /* LTP Port */
+//      (void)printf("%s: Finished %s", argv[0], ctime(&t));
+	ok_exit();		/* LTP Port */
 	tst_exit();
 }
 
 /*****  LTP Port        *****/
 void ok_exit()
 {
-        tst_resm(TPASS, "Test passed\n");
-  	tst_rmdir();
+	tst_resm(TPASS, "Test passed\n");
+	tst_rmdir();
 	tst_exit();
 }
 
 int anyfail()
 {
-  tst_resm(TFAIL, "Test failed");
-  tst_rmdir();
-  tst_exit();
-        return 0;
+	tst_resm(TFAIL, "Test failed");
+	tst_rmdir();
+	tst_exit();
+	return 0;
 }
 
 /*****  **      **      *****/

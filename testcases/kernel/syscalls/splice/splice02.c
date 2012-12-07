@@ -45,16 +45,15 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "splice02";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "splice02";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
-static inline long ltp_splice(int fd_in, loff_t *off_in,
-				int fd_out, loff_t *off_out,
-				size_t len, unsigned int flags)
+static inline long ltp_splice(int fd_in, loff_t * off_in,
+			      int fd_out, loff_t * off_out,
+			      size_t len, unsigned int flags)
 {
-			return syscall(__NR_splice, fd_in, off_in, fd_out,
-					off_out, len, flags);
+	return syscall(__NR_splice, fd_in, off_in, fd_out, off_out, len, flags);
 }
 
 /* Extern Global Functions */
@@ -75,12 +74,13 @@ static inline long ltp_splice(int fd_in, loff_t *off_in,
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
-        TEST_CLEANUP;
-        tst_rmdir();
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        tst_exit();
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -101,16 +101,18 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
 #define SPLICE_SIZE (64*1024)
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int fd = 0;
 	int results = 0;
 
@@ -121,31 +123,32 @@ int main(int ac, char **av) {
 		exit(0);
 	}
 
-        setup();
+	setup();
 
-        if (ac < 2) {
-            tst_resm(TFAIL, "%s failed - Usage: %s outfile", TCID, av[0]);
-            tst_exit();
-	}
-	fd=open(av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd < 0) {
-		tst_resm(TFAIL, "open(%s) failed - errno = %d : %s", av[1], errno, strerror(errno));
-	   cleanup();
-	   tst_exit();
-	}
-
-        do {
-		TEST(ltp_splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
-	    if (TEST_RETURN < 0) {
-            	tst_resm(TFAIL, "splice failed - errno = %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-	        cleanup();
+	if (ac < 2) {
+		tst_resm(TFAIL, "%s failed - Usage: %s outfile", TCID, av[0]);
 		tst_exit();
-	    } else
-            if (TEST_RETURN == 0) {
-							tst_resm(TPASS, "splice() system call Passed");
-		close(fd);
-	        cleanup();
-	        tst_exit();
-	    }
+	}
+	fd = open(av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0) {
+		tst_resm(TFAIL, "open(%s) failed - errno = %d : %s", av[1],
+			 errno, strerror(errno));
+		cleanup();
+		tst_exit();
+	}
+
+	do {
+		TEST(ltp_splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
+		if (TEST_RETURN < 0) {
+			tst_resm(TFAIL, "splice failed - errno = %d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+			cleanup();
+			tst_exit();
+		} else if (TEST_RETURN == 0) {
+			tst_resm(TPASS, "splice() system call Passed");
+			close(fd);
+			cleanup();
+			tst_exit();
+		}
 	} while (1);
 }

@@ -20,7 +20,7 @@
 /* 11/05/2002	Port to LTP	robbiew@us.ibm.com */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
-                           /* page02.c */
+			   /* page02.c */
 /*======================================================================
 	=================== TESTPLAN SEGMENT ===================
 CALLS:	malloc(3)
@@ -58,17 +58,17 @@ CALLS:	malloc(3)
 int local_flag = PASSED;
 int block_number;
 
-char *TCID="page02";            /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
+char *TCID = "page02";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 /**************/
 
-int bd_arg(char*);
+int bd_arg(char *);
 int chld_flag;
 int parent_pid;
 
 int main(argc, argv)
-	int argc;
-	char *argv[];
+int argc;
+char *argv[];
 {
 	int nchild;
 	int memory_size, half_memory_size;
@@ -79,10 +79,10 @@ int main(argc, argv)
 	int chld();
 
 	parent_pid = getpid();
-        tst_tmpdir();
+	tst_tmpdir();
 
 	if (signal(SIGUSR1, (void (*)())chld) == SIG_ERR) {
-		tst_resm(TBROK,"signal failed");
+		tst_resm(TBROK, "signal failed");
 		exit(1);
 	}
 
@@ -99,61 +99,68 @@ int main(argc, argv)
 		tst_resm(TCONF, "\tBad arg count.\n");
 		exit(1);
 	}
-	half_memory_size = memory_size/2;
+	half_memory_size = memory_size / 2;
 
 	error_count = 0;
 
 	/****************************************/
-	/*					*/
-	/*	attempt to fork a number of 	*/
-	/*	identical processes		*/
-	/*					*/
+	/*                                      */
+	/*      attempt to fork a number of     */
+	/*      identical processes             */
+	/*                                      */
 	/****************************************/
 
 	for (i = 1; i <= nchild; i++) {
 		chld_flag = 0;
 		if ((pid = fork()) == -1) {
-			tst_resm(TBROK,"Fork failed (may be OK if under stress)");
+			tst_resm(TBROK,
+				 "Fork failed (may be OK if under stress)");
 			tst_resm(TINFO, "System resource may be too low.\n");
 			local_flag = PASSED;
 			tst_resm(TBROK, "Reason: %s\n", strerror(errno));
-		        tst_rmdir();
-		        tst_exit();
-		}
-		else if (pid == 0) {
+			tst_rmdir();
+			tst_exit();
+		} else if (pid == 0) {
 			/********************************/
-			/*				*/
-			/*   allocate memory  of size	*/
-			/*    "memory_size"		*/
-			/*				*/
+			/*                              */
+			/*   allocate memory  of size   */
+			/*    "memory_size"             */
+			/*                              */
 			/********************************/
 
-			memory_pointer = (int*)malloc(memory_size*sizeof(int));
+			memory_pointer =
+			    (int *)malloc(memory_size * sizeof(int));
 			if (memory_pointer == 0) {
 				tst_resm(TBROK, "\tCannot malloc memory.\n");
 				if (i < 2) {
-					tst_resm(TBROK, "\tThis should not happen to first two children.\n");
-					tst_resm(TBROK, "\tChild %d - fail.\n", i);
+					tst_resm(TBROK,
+						 "\tThis should not happen to first two children.\n");
+					tst_resm(TBROK, "\tChild %d - fail.\n",
+						 i);
 				} else {
-					tst_resm(TBROK, "\tThis is ok for all but first two children.\n");
-					tst_resm(TBROK, "\tChild %d - ok.\n", i);
+					tst_resm(TBROK,
+						 "\tThis is ok for all but first two children.\n");
+					tst_resm(TBROK, "\tChild %d - ok.\n",
+						 i);
 					kill(parent_pid, SIGUSR1);
 					_exit(0);
 				}
-				tst_resm(TBROK,"malloc fail");
-				tst_resm(TFAIL, "\t\nImpossible to allocate memory of size %d in process %d\n", memory_size, i);
+				tst_resm(TBROK, "malloc fail");
+				tst_resm(TFAIL,
+					 "\t\nImpossible to allocate memory of size %d in process %d\n",
+					 memory_size, i);
 				kill(parent_pid, SIGUSR1);
 				tst_exit();
 			}
 			kill(parent_pid, SIGUSR1);
 
 			down_pointer = up_pointer = memory_pointer +
-			  (memory_size / 2);
+			    (memory_size / 2);
 
 			/********************************/
-			/*				*/
-			/*         write to it		*/
-			/*				*/
+			/*                              */
+			/*         write to it          */
+			/*                              */
 			/********************************/
 
 			for (j = 1; j <= half_memory_size; j++) {
@@ -163,19 +170,21 @@ int main(argc, argv)
 			sleep(1);
 
 			/********************************/
-			/*				*/
-			/*      and read from it to	*/
-			/*  check that what was written	*/
-			/*       is still there		*/
-			/*				*/
+			/*                              */
+			/*      and read from it to     */
+			/*  check that what was written */
+			/*       is still there         */
+			/*                              */
 			/********************************/
 
 			down_pointer = up_pointer = memory_pointer +
-			  (memory_size / 2);
+			    (memory_size / 2);
 
 			for (j = 1; j <= half_memory_size; j++) {
-				if (*(up_pointer++) != j) error_count++;
-				if (*(down_pointer--) != j) error_count++;
+				if (*(up_pointer++) != j)
+					error_count++;
+				if (*(down_pointer--) != j)
+					error_count++;
 			}
 			exit(error_count);
 		}
@@ -184,17 +193,18 @@ int main(argc, argv)
 	}
 
 	/****************************************/
-	/*					*/
-	/*	wait for the child processes 	*/
-	/*      to teminate and report the #	*/
-	/*	of deviations recognized	*/
-	/*					*/
+	/*                                      */
+	/*      wait for the child processes    */
+	/*      to teminate and report the #    */
+	/*      of deviations recognized        */
+	/*                                      */
 	/****************************************/
 
 	count = 0;
 	while ((child = wait(&status)) > 0) {
 #ifdef DEBUG
-		tst_resm(TINFO, "\tTest {%d} exited status %d\n", child, status);
+		tst_resm(TINFO, "\tTest {%d} exited status %d\n", child,
+			 status);
 #endif
 		if (status)
 			local_flag = FAILED;
@@ -204,20 +214,20 @@ int main(argc, argv)
 	if (count != nchild) {
 		tst_resm(TFAIL, "\tWrong number of children waited on.\n");
 		tst_resm(TFAIL, "\tCount = %d, expected = %d.\n",
-			count, nchild);
+			 count, nchild);
 	}
 
-    	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
-           	: tst_resm(TPASS, "Test passed");
-    	tst_rmdir();
-    	tst_exit();
+	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
+	    : tst_resm(TPASS, "Test passed");
+	tst_rmdir();
+	tst_exit();
 	/**NOT REACHED**/
 	tst_exit();
 
 }
 
 int bd_arg(str)
-	char *str;
+char *str;
 {
 	tst_resm(TCONF, "\tCannot parse %s as a number.\n", str);
 	tst_exit();
@@ -228,7 +238,7 @@ int bd_arg(str)
 int chld()
 {
 	if (signal(SIGUSR1, (void (*)())chld) == SIG_ERR) {
-		tst_resm(TBROK,"signal failed");
+		tst_resm(TBROK, "signal failed");
 		tst_exit();
 	}
 	chld_flag++;

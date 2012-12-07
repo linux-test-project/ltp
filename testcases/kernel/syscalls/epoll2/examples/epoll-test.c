@@ -681,7 +681,7 @@ static void *eph_http_session(void *data)
 				goto sess_out;
 		}
 	}
-      sess_out:
+sess_out:
 	eph_exit_conn(conn);
 	return data;
 }
@@ -814,7 +814,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-      main_exit:
+main_exit:
 	eph_cleanup();
 	return 0;
 }

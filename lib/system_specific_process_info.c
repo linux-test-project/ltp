@@ -26,7 +26,6 @@
  *			 of pids currently used ('ps -eT') from max_pids
  */
 
-
 #include <fcntl.h>
 #include <limits.h>
 #include <sys/types.h>
@@ -58,7 +57,6 @@ int get_max_pids(void)
 #endif
 }
 
-
 int get_free_pids(void)
 {
 	FILE *f;
@@ -66,8 +64,7 @@ int get_free_pids(void)
 
 	f = popen("ps -eT | wc -l", "r");
 	if (!f) {
-		tst_resm(TBROK, "Could not run 'ps' to calculate used "
-				"pids");
+		tst_resm(TBROK, "Could not run 'ps' to calculate used " "pids");
 		return -1;
 	}
 	rc = fscanf(f, "%i", &used_pids);
@@ -75,7 +72,7 @@ int get_free_pids(void)
 
 	if (rc != 1 || used_pids < 0) {
 		tst_resm(TBROK, "Could not read output of 'ps' to "
-				"calculate used pids");
+			 "calculate used pids");
 		return -1;
 	}
 

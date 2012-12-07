@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
 	struct timespec tssleepfor, tsstorage;
 	int sleepnsec = -1;
 
-	tssleepfor.tv_sec=0;
-	tssleepfor.tv_nsec=sleepnsec;
+	tssleepfor.tv_sec = 0;
+	tssleepfor.tv_nsec = sleepnsec;
 	if (nanosleep(&tssleepfor, &tsstorage) == -1) {
 		printf("Test PASSED\n");
 		return PTS_PASS;

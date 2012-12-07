@@ -97,32 +97,32 @@
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 
-
-#define MODSIZE 10000			/* Arbitrarily selected MODSIZE */
+#define MODSIZE 10000		/* Arbitrarily selected MODSIZE */
 #define NULLMODNAME ""
 #define MAXMODSIZE  0xffffffffffffffff	/* Max size of size_t */
-#define SMALLMODSIZE  1			/* Arbitrarily selected SMALLMODSIZE */
+#define SMALLMODSIZE  1		/* Arbitrarily selected SMALLMODSIZE */
 #define BASEMODNAME "dummy"
-#define LONGMODNAMECHAR 'm'		/* Arbitrarily selected the alphabet */
+#define LONGMODNAMECHAR 'm'	/* Arbitrarily selected the alphabet */
 #define MODNAMEMAX (PAGE_SIZE + 1)
 
-struct test_case_t {			/* test case structure */
-	char 	*modname;
-	size_t  size;
-	caddr_t retval;			/* syscall return value */
-	int	experrno;		/* expected errno */
+struct test_case_t {		/* test case structure */
+	char *modname;
+	size_t size;
+	caddr_t retval;		/* syscall return value */
+	int experrno;		/* expected errno */
 	char *desc;
-	int	(*setup)(void);		/* Individual setup routine */
-	void	(*cleanup)(void);	/* Individual cleanup routine */
+	int (*setup) (void);	/* Individual setup routine */
+	void (*cleanup) (void);	/* Individual cleanup routine */
 };
 
 char *TCID = "create_module02";
-static int exp_enos[]={EFAULT, EPERM, EEXIST, EINVAL, ENOMEM, ENAMETOOLONG, 0};
+static int exp_enos[] =
+    { EFAULT, EPERM, EEXIST, EINVAL, ENOMEM, ENAMETOOLONG, 0 };
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static char longmodname[MODNAMEMAX];
 static int testno;
-static char modname[20];		/* Name of the module */
+static char modname[20];	/* Name of the module */
 
 static void setup(void);
 static void cleanup(void);
@@ -131,40 +131,39 @@ static void cleanup1(void);
 static int setup2(void);
 static void cleanup2(void);
 
-static struct test_case_t  tdat[] = {
-	{ modname, MODSIZE, (caddr_t)-1, EPERM,
-		"non-superuser", setup1, cleanup1},
-	{ (char *)-1, MODSIZE, (caddr_t)-1, EFAULT,
-		"module name outside the  program's  accessible  address space",	 NULL, NULL},
-	{ NULL, MODSIZE, (caddr_t)-1, EFAULT,
-		"NULL module name", NULL, NULL},
-	{ NULLMODNAME, MODSIZE, (caddr_t)-1, EINVAL,
-		"null terminated module name", NULL, NULL},
-	{ modname, MODSIZE, (caddr_t)-1, EEXIST,
-		"already existing module", setup2, cleanup2},
-	{ modname, SMALLMODSIZE, (caddr_t)-1, EINVAL,
-		"insufficient module size", NULL, NULL},
-	{ longmodname, MODSIZE, (caddr_t)-1, ENAMETOOLONG,
-		"long module name", NULL, NULL},
+static struct test_case_t tdat[] = {
+	{modname, MODSIZE, (caddr_t) - 1, EPERM,
+	 "non-superuser", setup1, cleanup1},
+	{(char *)-1, MODSIZE, (caddr_t) - 1, EFAULT,
+	 "module name outside the  program's  accessible  address space", NULL,
+	 NULL},
+	{NULL, MODSIZE, (caddr_t) - 1, EFAULT,
+	 "NULL module name", NULL, NULL},
+	{NULLMODNAME, MODSIZE, (caddr_t) - 1, EINVAL,
+	 "null terminated module name", NULL, NULL},
+	{modname, MODSIZE, (caddr_t) - 1, EEXIST,
+	 "already existing module", setup2, cleanup2},
+	{modname, SMALLMODSIZE, (caddr_t) - 1, EINVAL,
+	 "insufficient module size", NULL, NULL},
+	{longmodname, MODSIZE, (caddr_t) - 1, ENAMETOOLONG,
+	 "long module name", NULL, NULL},
 
 	/*
 	 *This test case is giving segmentation fault on
 	 * 2.4.* series, but works as expected with 2.5.* series of kernel.
 	 */
-	{ modname, MAXMODSIZE, (caddr_t)-1, ENOMEM,
-		"large module size", NULL, NULL},
+	{modname, MAXMODSIZE, (caddr_t) - 1, ENOMEM,
+	 "large module size", NULL, NULL},
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -181,19 +180,19 @@ main(int argc, char **argv)
 			}
 
 			TEST(create_module(tdat[testno].modname,
-				tdat[testno].size));
+					   tdat[testno].size));
 			TEST_ERROR_LOG(TEST_ERRNO);
-			if ((TEST_RETURN == (int) tdat[testno].retval) &&
-				(TEST_ERRNO == tdat[testno].experrno) ) {
+			if ((TEST_RETURN == (int)tdat[testno].retval) &&
+			    (TEST_ERRNO == tdat[testno].experrno)) {
 				tst_resm(TPASS, "Expected results for %s, "
-					"errno: %d",
-					tdat[testno].desc, TEST_ERRNO);
+					 "errno: %d",
+					 tdat[testno].desc, TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Unexpected results for %s ; "
-					"returned %d (expected %d), errno %d "
-					"(expected %d)", tdat[testno].desc,
-					TEST_RETURN, tdat[testno].retval,
-					TEST_ERRNO, tdat[testno].experrno);
+					 "returned %d (expected %d), errno %d "
+					 "(expected %d)", tdat[testno].desc,
+					 TEST_RETURN, tdat[testno].retval,
+					 TEST_ERRNO, tdat[testno].experrno);
 			}
 			if (tdat[testno].cleanup) {
 				tdat[testno].cleanup();
@@ -204,47 +203,43 @@ main(int argc, char **argv)
 	tst_exit();
 }
 
-int
-setup1(void)
+int setup1(void)
 {
 	/* Change effective user id to nodody */
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TBROK, "seteuid failed to set the effective"
-				" uid to %d", ltpuser->pw_uid);
+			 " uid to %d", ltpuser->pw_uid);
 		return 1;
 	}
 	return 0;
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
-	 /* Change effective user id to root */
-         if (seteuid(0) == -1) {
+	/* Change effective user id to root */
+	if (seteuid(0) == -1) {
 		tst_brkm(TBROK, NULL, "seteuid failed to set the effective"
-			" uid to root");
-         }
+			 " uid to root");
+	}
 }
 
-int
-setup2(void)
+int setup2(void)
 {
 	/* Create a loadable module entry */
 	if (create_module(modname, MODSIZE) == -1) {
 		tst_resm(TBROK, "Failed to create module entry"
-			" for %s", modname);
+			 " for %s", modname);
 		return 1;
 	}
 	return 0;
 }
 
-void
-cleanup2(void)
+void cleanup2(void)
 {
-	 /* Remove loadable module entry */
+	/* Remove loadable module entry */
 	if (delete_module(modname) == -1) {
 		tst_brkm(TBROK, NULL, "Failed to delete module entry"
-			" for %s", modname);
+			 " for %s", modname);
 	}
 }
 
@@ -252,23 +247,22 @@ cleanup2(void)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
 
-	if (tst_kvercmp(2,5,48) >= 0)
+	if (tst_kvercmp(2, 5, 48) >= 0)
 		tst_brkm(TCONF, NULL, "This test will not work on "
-				"kernels after 2.5.48");
+			 "kernels after 2.5.48");
 
-        /* Check for nobody_uid user id */
-	 if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
+	/* Check for nobody_uid user id */
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, NULL, "Required user %s doesn't exists",
-				nobody_uid);
-	 }
+			 nobody_uid);
+	}
 
 	/* Initialize longmodname to LONGMODNAMECHAR character */
 	memset(longmodname, LONGMODNAMECHAR, MODNAMEMAX - 1);
@@ -282,7 +276,7 @@ setup(void)
 	TEST_PAUSE;
 
 	/* Get unique module name for each child process */
-	if (sprintf(modname, "%s_%d",BASEMODNAME, getpid()) == -1) {
+	if (sprintf(modname, "%s_%d", BASEMODNAME, getpid()) == -1) {
 		tst_brkm(TBROK, NULL, "Failed to initialize module name");
 	}
 }
@@ -292,8 +286,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

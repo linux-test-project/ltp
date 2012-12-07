@@ -67,10 +67,9 @@ int main(int argc, char **argv)
 	int uret = 0, i, mskval = 0000;
 	int failcnt = 0;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();
 
@@ -125,4 +124,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}

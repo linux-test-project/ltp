@@ -32,7 +32,7 @@ typedef struct {
 	sem_t full;
 	sem_t empty;
 	sem_t lock;
-}buf_t;
+} buf_t;
 
 buf_t *buf;
 int in, out;
@@ -45,7 +45,7 @@ int *producer(void *ID)
 	int full_value;
 
 	printf("Enter into Producer Thread %d... \n", ThreadID);
-	for (i = 0; i< Max_Num - 1; i++) {
+	for (i = 0; i < Max_Num - 1; i++) {
 		if (-1 == sem_wait(&buf->full)) {
 			perror("sem_wait didn't return success \n");
 			pthread_exit((void *)1);
@@ -59,9 +59,10 @@ int *producer(void *ID)
 			perror("sem_wait didn't return success \n");
 			pthread_exit((void *)1);
 		}
-		data = 100*ThreadID + i;
+		data = 100 * ThreadID + i;
 		buf->buffer[in] = data;
-		printf("[%d] producer has added %d to the buffer[%d] \n", ThreadID, data, in);
+		printf("[%d] producer has added %d to the buffer[%d] \n",
+		       ThreadID, data, in);
 		in = (in + 1) % BUF_SIZE;
 		if (-1 == sem_post(&buf->lock)) {
 			perror("sem_wait didn't return success \n");
@@ -87,7 +88,8 @@ int *producer(void *ID)
 	}
 	data = -1;
 	buf->buffer[in] = data;
-	printf("[%d] producer has added %d to the buffer[%d] \n", ThreadID, data, in);
+	printf("[%d] producer has added %d to the buffer[%d] \n", ThreadID,
+	       data, in);
 	in = (in + 1) % BUF_SIZE;
 	if (-1 == sem_post(&buf->lock)) {
 		perror("sem_wait didn't return success \n");
@@ -100,6 +102,7 @@ int *producer(void *ID)
 	printf("Producer %d exit... \n", ThreadID);
 	pthread_exit((void *)0);
 }
+
 int *consumer(void *ID)
 {
 	int data;
@@ -107,8 +110,7 @@ int *consumer(void *ID)
 	int full_value;
 
 	printf("Enter into Consumer Thread %d... \n", ThreadID);
-	do
-	{
+	do {
 		if (-1 == sem_wait(&buf->empty)) {
 			perror("sem_wait didn't return success \n");
 			pthread_exit((void *)1);
@@ -118,7 +120,8 @@ int *consumer(void *ID)
 			pthread_exit((void *)1);
 		}
 		data = buf->buffer[out];
-		printf("[%d] consumer has taken %d from buffer[%d] \n", ThreadID, data, out);
+		printf("[%d] consumer has taken %d from buffer[%d] \n",
+		       ThreadID, data, out);
 		out = (out + 1) % BUF_SIZE;
 		if (-1 == sem_post(&buf->lock)) {
 			perror("sem_wait didn't return success \n");
@@ -139,12 +142,13 @@ int *consumer(void *ID)
 	printf("Consumer %d exit... \n", ThreadID);
 	pthread_exit((void *)0);
 }
+
 int main(int argc, char *argv[])
 {
 	int shared = 1;
 	int full_value = BUF_SIZE;
 	int empty_value = 0;
-	int lock_value=1;
+	int lock_value = 1;
 	int num;
 	int i;
 	pthread_t con[Max_Threads], pro[Max_Threads];
@@ -155,15 +159,17 @@ int main(int argc, char *argv[])
 	return PTS_UNRESOLVED;
 #endif
 
-	buf = (buf_t *)malloc(sizeof(buf_t));
+	buf = (buf_t *) malloc(sizeof(buf_t));
 
 	if ((2 != argc) || ((num = atoi(argv[1])) <= 0)) {
 		fprintf(stderr, "Usage: %s number_of_threads\n", argv[0]);
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 	if (num > Max_Threads) {
-        	printf("The num of producers/consumers threads are too large.  Reset to %d\n", Max_Threads);
-        	num = Max_Threads;
+		printf
+		    ("The num of producers/consumers threads are too large.  Reset to %d\n",
+		     Max_Threads);
+		num = Max_Threads;
 	}
 
 	if (-1 == sem_init(&buf->full, shared, full_value)) {
@@ -187,11 +193,13 @@ int main(int argc, char *argv[])
 
 	for (i = 0; i < num; i++) {
 		ThreadID[i] = i;
-		pthread_create(&con[i], NULL, (void *)consumer, (void *)&ThreadID[i]);
+		pthread_create(&con[i], NULL, (void *)consumer,
+			       (void *)&ThreadID[i]);
 	}
 	for (i = 0; i < num; i++) {
 		ThreadID[i] = i;
-		pthread_create(&pro[i], NULL, (void *)producer, (void *)&ThreadID[i]);
+		pthread_create(&pro[i], NULL, (void *)producer,
+			       (void *)&ThreadID[i]);
 	}
 	for (i = 0; i < num; i++)
 		pthread_join(con[i], NULL);

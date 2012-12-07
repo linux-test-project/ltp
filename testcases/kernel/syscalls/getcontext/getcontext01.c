@@ -74,7 +74,7 @@ int main(int ac, char **av)
 		TEST(getcontext(&ptr));
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "getcontext failed");
+			tst_resm(TFAIL | TTERRNO, "getcontext failed");
 		else if (TEST_RETURN >= 0)
 			tst_resm(TPASS, "getcontext passed");
 

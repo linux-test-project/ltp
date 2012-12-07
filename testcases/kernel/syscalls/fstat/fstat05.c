@@ -104,6 +104,7 @@ extern struct passwd *my_getpwnam(char *);
 char *TCID = "fstat05";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 int exp_enos[] = { EFAULT, 0 };
+
 int fildes;			/* testfile descriptor */
 
 void setup();			/* Main setup function for the tests */
@@ -167,9 +168,10 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EFAULT)
 				tst_resm(TPASS,
-				    "fstat failed with EFAULT as expected");
+					 "fstat failed with EFAULT as expected");
 			else
-				tst_resm(TFAIL|TTERRNO, "fstat failed unexpectedly");
+				tst_resm(TFAIL | TTERRNO,
+					 "fstat failed unexpectedly");
 		} else
 			tst_resm(TFAIL, "fstat() returned %ld but we wanted -1",
 				 TEST_RETURN);
@@ -214,14 +216,15 @@ void setup()
 
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "setuid(%d) failed", ltpuser->pw_uid);
+		tst_brkm(TBROK | TERRNO, NULL, "setuid(%d) failed",
+			 ltpuser->pw_uid);
 
 	tst_tmpdir();
 
 	/* Create a testfile under temporary directory */
 	fildes = open(TEST_FILE, O_RDWR | O_CREAT, 0666);
 	if (fildes == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE);
 
 	TEST_PAUSE;
@@ -245,7 +248,8 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (close(fildes) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TEST_FILE);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed",
+			 TEST_FILE);
 
 	tst_rmdir();
 

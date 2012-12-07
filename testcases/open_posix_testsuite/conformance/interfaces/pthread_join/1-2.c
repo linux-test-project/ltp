@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 #if VERBOSE > 0
 		output("-----\n");
 		output("Starting test with scenario (%i): %s\n",
-			sc, scenarii[sc].descr);
+		       sc, scenarii[sc].descr);
 #endif
 		ret = clock_gettime(CLOCK_REALTIME, &ts_pre);
 		if (ret != 0)
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 		case 0:
 			if (ret != 0)
 				UNRESOLVED(ret, "Failed to create this thread");
-				break;
+			break;
 		case 1:
 			if (ret == 0)
 				UNRESOLVED(-1, "An error was expected but the "
@@ -129,11 +129,11 @@ int main(int argc, char *argv[])
 			    ((ts_th.tv_sec == ts_pre.tv_sec) &&
 			     (ts_th.tv_nsec < ts_pre.tv_nsec))) {
 				output("Pre  : %d.%09d\n", ts_pre.tv_sec,
-					ts_pre.tv_nsec);
+				       ts_pre.tv_nsec);
 				output("child: %d.%09d\n", ts_th.tv_sec,
-					ts_th.tv_nsec);
+				       ts_th.tv_nsec);
 				output("Post : %d.%09d\n", ts_post.tv_sec,
-					ts_post.tv_nsec);
+				       ts_post.tv_nsec);
 				FAILED("Child returned before its creation ??");
 			}
 
@@ -141,11 +141,11 @@ int main(int argc, char *argv[])
 			    ((ts_post.tv_sec == ts_th.tv_sec) &&
 			     (ts_post.tv_nsec < ts_th.tv_nsec))) {
 				output("Pre  : %d.%09d\n", ts_pre.tv_sec,
-					ts_pre.tv_nsec);
+				       ts_pre.tv_nsec);
 				output("child: %d.%09d\n", ts_th.tv_sec,
-					ts_th.tv_nsec);
+				       ts_th.tv_nsec);
 				output("Post : %d.%09d\n", ts_post.tv_sec,
-					ts_post.tv_nsec);
+				       ts_post.tv_nsec);
 				FAILED("pthread_join returned before child "
 				       "terminated");
 			}

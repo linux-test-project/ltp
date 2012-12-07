@@ -27,18 +27,16 @@ int main()
 	int ret_val, invalid_val;
 
 	/* Initialize attribute */
-	if (pthread_attr_init(&new_attr) != 0)
-	{
+	if (pthread_attr_init(&new_attr) != 0) {
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Set the attribute object to an invalid value of 1000000. */
-	invalid_val=1000000;
-	ret_val=pthread_attr_setdetachstate(&new_attr, invalid_val);
+	invalid_val = 1000000;
+	ret_val = pthread_attr_setdetachstate(&new_attr, invalid_val);
 
-	if (ret_val != EINVAL)
-	{
+	if (ret_val != EINVAL) {
 		printf("Test FAILED: Returned %d instead of EINVAL\n", ret_val);
 		return PTS_FAIL;
 	}

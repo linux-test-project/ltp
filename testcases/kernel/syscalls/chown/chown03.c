@@ -118,31 +118,32 @@ int main(int ac, char **av)
 		TEST(chown(TESTFILE, -1, group_id));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "chown(%s, ..) failed",
-			    TESTFILE);
+			tst_resm(TFAIL | TTERRNO, "chown(%s, ..) failed",
+				 TESTFILE);
 			continue;
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
 			if (stat(TESTFILE, &stat_buf) == -1)
-				tst_brkm(TFAIL|TERRNO, cleanup, "stat failed");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "stat failed");
 
 			if (stat_buf.st_uid != user_id ||
 			    stat_buf.st_gid != group_id)
 				tst_resm(TFAIL, "%s: Incorrect ownership"
-				    "set to %d %d, Expected %d %d",
-				    TESTFILE, stat_buf.st_uid,
-				    stat_buf.st_gid, user_id, group_id);
+					 "set to %d %d, Expected %d %d",
+					 TESTFILE, stat_buf.st_uid,
+					 stat_buf.st_gid, user_id, group_id);
 
 			if (stat_buf.st_mode !=
 			    (NEW_PERMS & ~(S_ISUID | S_ISGID)))
 				tst_resm(TFAIL, "%s: incorrect mode permissions"
-				    " %#o, Expected %#o", TESTFILE,
-				    stat_buf.st_mode,
-				    NEW_PERMS & ~(S_ISUID | S_ISGID));
+					 " %#o, Expected %#o", TESTFILE,
+					 stat_buf.st_mode,
+					 NEW_PERMS & ~(S_ISUID | S_ISGID));
 			else
 				tst_resm(TPASS, "chown(%s, ..) was successful",
-				    TESTFILE);
+					 TESTFILE);
 		} else
 			tst_resm(TPASS, "call succeeded");
 	}
@@ -161,7 +162,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	int fd;				/* file handler for testfile */
+	int fd;			/* file handler for testfile */
 
 	TEST_PAUSE;
 
@@ -173,33 +174,35 @@ void setup()
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getpwnam(\"nobody\") failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpwnam(\"nobody\") failed");
 	if (setegid(ltpuser->pw_gid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "setegid(%d) failed",
-		    ltpuser->pw_gid);
+		tst_brkm(TBROK | TERRNO, NULL, "setegid(%d) failed",
+			 ltpuser->pw_gid);
 	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "seteuid(%d) failed",
-		    ltpuser->pw_uid);
+		tst_brkm(TBROK | TERRNO, NULL, "seteuid(%d) failed",
+			 ltpuser->pw_uid);
 
 	/* Create a test file under temporary directory */
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_RDWR|O_CREAT, %o) failed", TESTFILE, FILE_MODE);
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed", TESTFILE,
+			 FILE_MODE);
 
 	if (seteuid(0) == -1)
-		 tst_brkm(TBROK|TERRNO, cleanup, "seteuid(0) failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "seteuid(0) failed");
 
 	if (fchown(fd, -1, 0) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchown failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fchown failed");
 
 	if (fchmod(fd, NEW_PERMS) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchmod failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fchmod failed");
 
 	if (seteuid(ltpuser->pw_uid) == -1)
-		 tst_brkm(TBROK|TERRNO, cleanup, "seteuid to nobody failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "seteuid to nobody failed");
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "closing %s failed", TESTFILE);
+		tst_brkm(TBROK | TERRNO, cleanup, "closing %s failed",
+			 TESTFILE);
 }
 
 void cleanup()
@@ -207,9 +210,9 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (setegid(0) == -1)
-		tst_resm(TWARN|TERRNO, "setegid(0) failed");
+		tst_resm(TWARN | TERRNO, "setegid(0) failed");
 	if (seteuid(0) == -1)
-		tst_resm(TWARN|TERRNO, "seteuid(0) failed");
+		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 
 	tst_rmdir();
 

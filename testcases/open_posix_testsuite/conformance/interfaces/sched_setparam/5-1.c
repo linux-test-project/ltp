@@ -17,8 +17,9 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main() {
-        int result, new_priority, old_priority, max_prio, policy;
+int main()
+{
+	int result, new_priority, old_priority, max_prio, policy;
 	struct sched_param param;
 
 	if (sched_getparam(getpid(), &param) != 0) {
@@ -36,8 +37,7 @@ int main() {
 	max_prio = sched_get_priority_max(policy);
 	old_priority = param.sched_priority;
 	new_priority = (old_priority == max_prio) ?
-		sched_get_priority_min(policy) :
-		max_prio;
+	    sched_get_priority_min(policy) : max_prio;
 	param.sched_priority = new_priority;
 
 	result = sched_setparam(0, &param);
@@ -54,7 +54,8 @@ int main() {
 		printf("The param does not change\n");
 		return PTS_FAIL;
 	} else if (result == -1 && errno == EPERM) {
-		printf("The process have not permission to change its own param.\n");
+		printf
+		    ("The process have not permission to change its own param.\n");
 		return PTS_UNRESOLVED;
 	}
 

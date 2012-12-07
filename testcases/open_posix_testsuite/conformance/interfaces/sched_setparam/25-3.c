@@ -22,7 +22,8 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main() {
+int main()
+{
 	int policy, result;
 	struct sched_param param;
 
@@ -38,7 +39,7 @@ int main() {
 	param.sched_ss_init_budget.tv_sec = 2;
 	param.sched_ss_init_budget.tv_nsec = 0;
 
-	result = sched_setparam(0,&param);
+	result = sched_setparam(0, &param);
 
 	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
@@ -47,17 +48,17 @@ int main() {
 		printf("The returned code is not -1.\n");
 		return PTS_FAIL;
 	} else if (errno == EPERM) {
-		printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root\n");
+		printf
+		    ("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root\n");
 		return PTS_UNRESOLVED;
 	} else {
-	        perror("Unknown error");
-       	        return PTS_FAIL;
+		perror("Unknown error");
+		return PTS_FAIL;
 	}
 }
 
 #elif _POSIX_SPORADIC_SERVER == -1
-int
-main (void)
+int main(void)
 {
 	printf("_POSIX_SPORADIC_SERVER support not available\n");
 	return PTS_UNSUPPORTED;

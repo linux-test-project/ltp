@@ -41,14 +41,15 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-# define INTHREAD 0
-# define INMAIN 1
-# define SIGTOTEST SIGABRT
+#define INTHREAD 0
+#define INMAIN 1
+#define SIGTOTEST SIGABRT
 
-int sem1;		/* Manual semaphore */
+int sem1;			/* Manual semaphore */
 int handler_called = 0;
 
-void handler() {
+void handler()
+{
 	printf("signal was called\n");
 	handler_called = 1;
 	return;
@@ -62,14 +63,14 @@ void *a_thread_func()
 	sigemptyset(&act.sa_mask);
 	sigaction(SIGTOTEST, &act, 0);
 
-	sem1=INMAIN;
+	sem1 = INMAIN;
 
-	while (sem1==INMAIN)
+	while (sem1 == INMAIN)
 		sleep(1);
 
 	sleep(5);
 
-	handler_called=-1;
+	handler_called = -1;
 	pthread_exit(0);
 	return NULL;
 }
@@ -78,26 +79,24 @@ int main()
 {
 	pthread_t new_th;
 
-	sem1=INTHREAD;
+	sem1 = INTHREAD;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
-	while (sem1==INTHREAD)
+	while (sem1 == INTHREAD)
 		sleep(1);
 
-	if (pthread_kill(new_th, SIGTOTEST) != 0)
-	{
+	if (pthread_kill(new_th, SIGTOTEST) != 0) {
 		printf("Test FAILED: Couldn't send signal to thread\n");
 		return PTS_FAIL;
 	}
 
-	sem1=INTHREAD;
+	sem1 = INTHREAD;
 
-	while (handler_called==0)
+	while (handler_called == 0)
 		sleep(1);
 
 	if (handler_called == -1) {

@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		fd = open(filename, O_RDWR|O_CREAT, 0664);
+		fd = open(filename, O_RDWR | O_CREAT, 0664);
 		if (fd < 0)
 			tst_brkm(TBROK, cleanup, "open failed");
 #ifdef MM_DEBUG
@@ -144,14 +144,15 @@ int main(int argc, char *argv[])
 		/* Writing 16 pages of random data into this file */
 		for (i = 0; i < (pagesize / 2); i++)
 			if (write(fd, str_for_file, strlen(str_for_file)) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "write failed");
 
 		if (fstat(fd, &stat) == -1)
 			tst_brkm(TBROK, cleanup, "fstat failed");
 
 		file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
 		if (file == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 #ifdef MM_DEBUG
 		tst_resm(TINFO, "The Page size is %d", pagesize);
 #endif
@@ -173,7 +174,7 @@ int main(int argc, char *argv[])
 		check_and_print(EINVAL);
 
 		if (munmap(file, stat.st_size) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "munmap failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "munmap failed");
 #endif /* if !defined(UCLINUX) */
 
 		/* Test Case 4 */
@@ -207,7 +208,8 @@ int main(int argc, char *argv[])
 		len = (high - low) + pagesize;
 
 		if (munmap(high, stat.st_size / 2) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "munmap [high] failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "munmap [high] failed");
 
 		TEST(madvise(low, len, MADV_NORMAL));
 		check_and_print(ENOMEM);
@@ -215,7 +217,8 @@ int main(int argc, char *argv[])
 		/* Test Case 5 */
 		/* Unmap the file map from low */
 		if (munmap(low, stat.st_size / 2) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "munmap [low] failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "munmap [low] failed");
 		/* Create one memory segment using malloc */
 		ptr_memory_allocated = (char *)malloc(5 * pagesize);
 		/*
@@ -224,8 +227,8 @@ int main(int argc, char *argv[])
 		 */
 		tmp_memory_allocated = ptr_memory_allocated;
 		tmp_memory_allocated =
-			(char *)(((unsigned long)tmp_memory_allocated +
-				pagesize - 1) & ~(pagesize - 1));
+		    (char *)(((unsigned long)tmp_memory_allocated +
+			      pagesize - 1) & ~(pagesize - 1));
 
 		TEST(madvise
 		     (tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
@@ -260,11 +263,11 @@ static void check_and_print(int expected_errno)
 {
 	if (TEST_RETURN == -1) {
 		if (TEST_ERRNO == expected_errno)
-			tst_resm(TPASS|TTERRNO, "failed as expected");
+			tst_resm(TPASS | TTERRNO, "failed as expected");
 		else
-			tst_resm(TFAIL|TTERRNO,
-			    "failed unexpectedly; expected - %d : %s",
-			    expected_errno, strerror(expected_errno));
+			tst_resm(TFAIL | TTERRNO,
+				 "failed unexpectedly; expected - %d : %s",
+				 expected_errno, strerror(expected_errno));
 	} else {
 		tst_resm(TFAIL, "madvise succeeded unexpectedly");
 	}

@@ -44,27 +44,27 @@ void randcleanup(void)
 /* We fill up the array with random bits from RANDSRC here and set index */
 /* to 0 */
 /* pre: state->size must be set and state->mt must be allocated! */
-static void sgenrand(randdata_t *state)
+static void sgenrand(randdata_t * state)
 {
 	int got = 0;
 	got = read(randfd, state->mt, state->size);
 	if (got != state->size) {
-		int i ;
+		int i;
 		/* fall back on lrand48 */
 		/* printf("fallback_rand\n"); */
 
-		for (i = got ; i < state->size ; i += 4) {
-			long int  rand = 0;
+		for (i = got; i < state->size; i += 4) {
+			long int rand = 0;
 #ifdef HAVE_LRAND48
 			lrand48_r(&(state->data), &rand);
 #else
 			rand = random();
 #endif
 			assert(rand != 0);
-			state->mt[i]   = (rand >> 24) & (512 - 1);
-			state->mt[i+1] = (rand >> 16) & (512 - 1);
-			state->mt[i+2] = (rand >>  8) & (512 - 1);
-			state->mt[i+3] = (rand) & (512 - 1);
+			state->mt[i] = (rand >> 24) & (512 - 1);
+			state->mt[i + 1] = (rand >> 16) & (512 - 1);
+			state->mt[i + 2] = (rand >> 8) & (512 - 1);
+			state->mt[i + 3] = (rand) & (512 - 1);
 		}
 
 	}
@@ -72,7 +72,7 @@ static void sgenrand(randdata_t *state)
 }
 
 /* returns 8 random bits */
-static uint8_t genrand8(randdata_t *state)
+static uint8_t genrand8(randdata_t * state)
 {
 	unsigned long ret = 0;
 	if (state->mti >= state->size) {
@@ -85,7 +85,7 @@ static uint8_t genrand8(randdata_t *state)
 }
 
 /* returns 32 random bits */
-static uint32_t genrand32(randdata_t *state)
+static uint32_t genrand32(randdata_t * state)
 {
 	uint8_t bytes[4];
 	uint32_t ret = 0;
@@ -95,11 +95,11 @@ static uint32_t genrand32(randdata_t *state)
 	bytes[2] = genrand8(state);
 	bytes[3] = genrand8(state);
 
-	ret = *((uint32_t *)bytes); /* !!! hack */
+	ret = *((uint32_t *) bytes);	/* !!! hack */
 	return ret;
 }
 
-void init_random(randdata_t *state, uint32_t iter)
+void init_random(randdata_t * state, uint32_t iter)
 {
 	struct timeval time;
 	if (iter == 0)
@@ -123,7 +123,7 @@ void init_random(randdata_t *state, uint32_t iter)
 #endif
 }
 
-void destroy_random(randdata_t *rd)
+void destroy_random(randdata_t * rd)
 {
 	free(rd->mt);
 }
@@ -135,51 +135,51 @@ void destroy_random(randdata_t *rd)
  * we should only get byte-sized chunks of random bits and
  * construct our random number that way with less wasteage - SR
  */
-uint32_t getrandom(randdata_t *state, uint32_t mod)
+uint32_t getrandom(randdata_t * state, uint32_t mod)
 {
 
-    uint8_t bytes[4] = { 0, 0, 0, 0 };
-    uint32_t ret;
-    int num_bytes = 4;
-    int i;
+	uint8_t bytes[4] = { 0, 0, 0, 0 };
+	uint32_t ret;
+	int num_bytes = 4;
+	int i;
 
-    if ((mod == 0) || (mod == 1))
-	  return 0;
+	if ((mod == 0) || (mod == 1))
+		return 0;
 
-    if (!(mod >> 8))
-	    num_bytes = 1;
-    else if (!(mod >> 16))
-	    num_bytes = 2;
-    else if (!(mod >> 24))
-	    num_bytes = 3;
+	if (!(mod >> 8))
+		num_bytes = 1;
+	else if (!(mod >> 16))
+		num_bytes = 2;
+	else if (!(mod >> 24))
+		num_bytes = 3;
 
-    for (i = 0; i < num_bytes; i++)
-	    bytes[i] = genrand8(state);
+	for (i = 0; i < num_bytes; i++)
+		bytes[i] = genrand8(state);
 
-    ret = (bytes[3] << 24) + (bytes[2] << 16) + (bytes[1] << 8) + bytes[0];
+	ret = (bytes[3] << 24) + (bytes[2] << 16) + (bytes[1] << 8) + bytes[0];
 
-    return ret % mod;
+	return ret % mod;
 }
 
-uint64_t getllrandom(randdata_t *state, uint64_t mod)
+uint64_t getllrandom(randdata_t * state, uint64_t mod)
 {
 	uint64_t result = 0;
-	uint64_t high   = 0;
-	uint32_t low    = 0;
+	uint64_t high = 0;
+	uint32_t low = 0;
 
 	if (mod == 0)
 		return 0;
 
 	/* ULONG_MAX comes from limits.h */
 	if (mod < ULONG_MAX)
-		return (uint64_t)getrandom(state, (uint32_t)mod);
+		return (uint64_t) getrandom(state, (uint32_t) mod);
 
 	high = genrand32(state);
 
-	low  = genrand32(state);
+	low = genrand32(state);
 
 	result = high << 32;
-	result |= (uint64_t)low;
+	result |= (uint64_t) low;
 
 	assert(result != 0);
 	assert(result > 0);

@@ -35,7 +35,8 @@
 
 #include "test_VIDIOC_ENUMAUDIO.h"
 
-void test_VIDIOC_ENUMAUDIO() {
+void test_VIDIOC_ENUMAUDIO()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
@@ -48,15 +49,17 @@ void test_VIDIOC_ENUMAUDIO() {
 		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
 		errno_enum = errno;
 
-		dprintf("\t%s:%u: VIDIOC_ENUMAUDIO, ret_enum=%i, errno_enum=%i\n",
-			__FILE__, __LINE__, ret_enum, errno_enum);
+		dprintf
+		    ("\t%s:%u: VIDIOC_ENUMAUDIO, ret_enum=%i, errno_enum=%i\n",
+		     __FILE__, __LINE__, ret_enum, errno_enum);
 
 		if (ret_enum == 0) {
 			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(audio.index, i);
 
-			CU_ASSERT(0 < strlen( (char*)audio.name ));
-			CU_ASSERT(valid_string((char*)audio.name, sizeof(audio.name)));
+			CU_ASSERT(0 < strlen((char *)audio.name));
+			CU_ASSERT(valid_string
+				  ((char *)audio.name, sizeof(audio.name)));
 
 			//CU_ASSERT_EQUAL(audio.capability, ?);
 			//CU_ASSERT_EQUAL(audio.mode, ?);
@@ -70,10 +73,12 @@ void test_VIDIOC_ENUMAUDIO() {
 			 */
 			memset(&audio2, 0, sizeof(audio2));
 			audio2.index = audio.index;
-			strncpy((char*)audio2.name, (char*)audio.name, sizeof(audio2.name));
+			strncpy((char *)audio2.name, (char *)audio.name,
+				sizeof(audio2.name));
 			audio2.capability = audio.capability;
 			audio2.mode = audio.mode;
-			CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
+			CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)),
+					0);
 
 			dprintf("\taudio = {.index=%u, .name=\"%s\", "
 				".capability=0x%X, .mode=0x%X, "
@@ -81,10 +86,8 @@ void test_VIDIOC_ENUMAUDIO() {
 				audio.index,
 				audio.name,
 				audio.capability,
-				audio.mode,
-				audio.reserved[0],
-				audio.reserved[1]
-				);
+				audio.mode, audio.reserved[0], audio.reserved[1]
+			    );
 
 		} else {
 			CU_ASSERT_EQUAL(ret_enum, -1);
@@ -92,7 +95,8 @@ void test_VIDIOC_ENUMAUDIO() {
 
 			memset(&audio2, 0xff, sizeof(audio2));
 			audio2.index = i;
-			CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
+			CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)),
+					0);
 
 		}
 		i++;
@@ -100,13 +104,14 @@ void test_VIDIOC_ENUMAUDIO() {
 
 }
 
-void test_VIDIOC_ENUMAUDIO_S32_MAX() {
+void test_VIDIOC_ENUMAUDIO_S32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
 
 	memset(&audio, 0xff, sizeof(audio));
-	audio.index = (__u32)S32_MAX;
+	audio.index = (__u32) S32_MAX;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
 	errno_enum = errno;
 
@@ -115,17 +120,18 @@ void test_VIDIOC_ENUMAUDIO_S32_MAX() {
 
 	/* Check whether the original audio struct is untouched */
 	memset(&audio2, 0xff, sizeof(audio2));
-	audio2.index = (__u32)S32_MAX;
+	audio2.index = (__u32) S32_MAX;
 	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
 }
 
-void test_VIDIOC_ENUMAUDIO_S32_MAX_1() {
+void test_VIDIOC_ENUMAUDIO_S32_MAX_1()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
 
 	memset(&audio, 0xff, sizeof(audio));
-	audio.index = ((__u32)S32_MAX)+1;
+	audio.index = ((__u32) S32_MAX) + 1;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
 	errno_enum = errno;
 
@@ -134,11 +140,12 @@ void test_VIDIOC_ENUMAUDIO_S32_MAX_1() {
 
 	/* Check whether the original audio struct is untouched */
 	memset(&audio2, 0xff, sizeof(audio2));
-	audio2.index = ((__u32)S32_MAX)+1;
+	audio2.index = ((__u32) S32_MAX) + 1;
 	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
 }
 
-void test_VIDIOC_ENUMAUDIO_U32_MAX() {
+void test_VIDIOC_ENUMAUDIO_U32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
@@ -157,7 +164,8 @@ void test_VIDIOC_ENUMAUDIO_U32_MAX() {
 	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
 }
 
-void test_VIDIOC_ENUMAUDIO_NULL() {
+void test_VIDIOC_ENUMAUDIO_NULL()
+{
 	int ret_enum, errno_enum;
 	int ret_null, errno_null;
 	struct v4l2_audio audio;

@@ -18,7 +18,8 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 	exit(PTS_UNSUPPORTED);
 #else

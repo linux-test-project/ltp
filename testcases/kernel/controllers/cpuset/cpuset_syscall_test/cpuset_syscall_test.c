@@ -60,20 +60,22 @@ int ret;
 
 #if HAVE_DECL_MPOL_F_MEMS_ALLOWED
 static int get_mempolicy(int *policy, unsigned long *nmask,
-			unsigned long maxnode, void *addr, int flags)
+			 unsigned long maxnode, void *addr, int flags)
 {
 	return syscall(__NR_get_mempolicy, policy, nmask, maxnode, addr, flags);
 }
 #endif
 
 #if HAVE_DECL_MPOL_BIND
-static int mbind(void *start, unsigned long len, int policy, unsigned long *nodemask,
-		unsigned long maxnode, unsigned flags)
+static int mbind(void *start, unsigned long len, int policy,
+		 unsigned long *nodemask, unsigned long maxnode, unsigned flags)
 {
-	return syscall(__NR_mbind, start, len, policy, nodemask, maxnode, flags);
+	return syscall(__NR_mbind, start, len, policy, nodemask, maxnode,
+		       flags);
 }
 
-static int set_mempolicy(int policy, unsigned long *nodemask, unsigned long maxnode)
+static int set_mempolicy(int policy, unsigned long *nodemask,
+			 unsigned long maxnode)
 {
 	return syscall(__NR_set_mempolicy, policy, nodemask, maxnode);
 }
@@ -86,12 +88,12 @@ static int set_mempolicy(int policy, unsigned long *nodemask, unsigned long maxn
 #define OPT_get_mempolicy	(SCHAR_MAX + 5)
 
 const struct option long_opts[] = {
-	{ "setaffinity",	1, NULL, OPT_setaffinity	},
-	{ "getaffinity",	0, NULL, OPT_getaffinity	},
-	{ "mbind",		1, NULL, OPT_mbind		},
-	{ "set_mempolicy",	1, NULL, OPT_set_mempolicy	},
-	{ "get_mempolicy",	0, NULL, OPT_get_mempolicy	},
-	{ NULL,			0, NULL, 0			},
+	{"setaffinity", 1, NULL, OPT_setaffinity},
+	{"getaffinity", 0, NULL, OPT_getaffinity},
+	{"mbind", 1, NULL, OPT_mbind},
+	{"set_mempolicy", 1, NULL, OPT_set_mempolicy},
+	{"get_mempolicy", 0, NULL, OPT_get_mempolicy},
+	{NULL, 0, NULL, 0},
 };
 
 void process_options(int argc, char *argv[])
@@ -136,7 +138,7 @@ void process_options(int argc, char *argv[])
 	}
 }
 
-void sigint_handler(int __attribute__((unused)) signo)
+void sigint_handler(int __attribute__ ((unused)) signo)
 {
 	flag_exit = 1;
 }
@@ -212,7 +214,7 @@ void test_get_mempolicy(void)
 	}
 #if HAVE_DECL_MPOL_F_MEMS_ALLOWED
 	ret = get_mempolicy(NULL, bitmask_mask(nmask), bitmask_nbits(nmask), 0,
-				MPOL_F_MEMS_ALLOWED);
+			    MPOL_F_MEMS_ALLOWED);
 #else
 	ret = -1;
 #endif
@@ -221,14 +223,24 @@ void test_get_mempolicy(void)
 	puts(str);
 }
 
-void sigusr_handler(int __attribute__((unused)) signo)
+void sigusr_handler(int __attribute__ ((unused)) signo)
 {
 	switch (test) {
-	case 0: test_setaffinity(); break;
-	case 1: test_getaffinity(); break;
-	case 2: test_mbind(); break;
-	case 3: test_set_mempolicy(); break;
-	case 4: test_get_mempolicy(); break;
+	case 0:
+		test_setaffinity();
+		break;
+	case 1:
+		test_getaffinity();
+		break;
+	case 2:
+		test_mbind();
+		break;
+	case 3:
+		test_set_mempolicy();
+		break;
+	case 4:
+		test_get_mempolicy();
+		break;
 	default:;
 	}
 	test = -1;
@@ -255,7 +267,8 @@ int main(int argc, char *argv[])
 	return ret;
 }
 #else
-int main (void) {
+int main(void)
+{
 	printf("System doesn't have required mempolicy support\n");
 	tst_exit();
 }

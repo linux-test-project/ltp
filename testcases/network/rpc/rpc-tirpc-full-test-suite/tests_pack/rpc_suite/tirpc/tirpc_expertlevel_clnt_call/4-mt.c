@@ -48,20 +48,19 @@ int progNum;
 char *hostname;
 int callNb;
 
-void *my_thread_process (void * arg)
+void *my_thread_process(void *arg)
 {
 	CLIENT *client = NULL;
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
-    char addrbuf[ADDRBUFSIZE];
+	char addrbuf[ADDRBUFSIZE];
 	enum clnt_stat cs;
 	int var_snd = 0;
 	int var_rec = -1;
 	struct timeval tv;
 	int i;
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 
@@ -69,78 +68,70 @@ void *my_thread_process (void * arg)
 	tv.tv_usec = 100;
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *) NULL)
-	{
+	if (nconf == (struct netconfig *)NULL) {
 		printf("err nconf\n");
-		pthread_exit (1);
+		pthread_exit(1);
 	}
 
 	svcaddr.len = 0;
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 
-	if (svcaddr.buf == NULL)
-	{
-  		pthread_exit (1);
-    }
-
-	if (!rpcb_getaddr(progNum + atoi(arg), VERSNUM, nconf,
-                               &svcaddr, hostname))
-    {
-    	fprintf(stderr, "rpcb_getaddr failed!!\n");
-    	pthread_exit (1);
-    }
-
-	client = clnt_tli_create(RPC_ANYFD, nconf, &svcaddr,
-	                         progNum + atoi(arg), VERSNUM, 0, 0);
-
-	if (client == NULL)
-	{
-		clnt_pcreateerror("ERR");
-		pthread_exit (1);
+	if (svcaddr.buf == NULL) {
+		pthread_exit(1);
 	}
 
-	for (i = 0; i < callNb; i++)
-	{
+	if (!rpcb_getaddr(progNum + atoi(arg), VERSNUM, nconf,
+			  &svcaddr, hostname)) {
+		fprintf(stderr, "rpcb_getaddr failed!!\n");
+		pthread_exit(1);
+	}
+
+	client = clnt_tli_create(RPC_ANYFD, nconf, &svcaddr,
+				 progNum + atoi(arg), VERSNUM, 0, 0);
+
+	if (client == NULL) {
+		clnt_pcreateerror("ERR");
+		pthread_exit(1);
+	}
+
+	for (i = 0; i < callNb; i++) {
 		cs = clnt_call(client, PROCNUM,
-	               		(xdrproc_t)xdr_int, (char *)&var_snd,
-	               		(xdrproc_t)xdr_int, (char *)&var_rec,
-	               		tv);
+			       (xdrproc_t) xdr_int, (char *)&var_snd,
+			       (xdrproc_t) xdr_int, (char *)&var_rec, tv);
 
 		thread_array_result[atoi(arg)] += (cs == RPC_SUCCESS);
-    }
+	}
 
-    pthread_exit (0);
+	pthread_exit(0);
 }
 
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   argc[3] : Number of threads
-	//					   argc[4] : Number of calls per thread
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         argc[3] : Number of threads
+	//                                         argc[4] : Number of calls per thread
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int threadNb = atoi(argc[3]);
 	int i;
 	pthread_t *pThreadArray;
-    void *ret;
+	void *ret;
 
 	progNum = atoi(argc[2]);
 	hostname = argc[1];
 	callNb = atoi(argc[4]);
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("Server #%d\n", progNum);
 		printf("Thread to create %d\n", threadNb);
 	}
-
 	//Initialization : create threads results array, init elements to 0
 	//Each thread will put function result (pas/fail) into array
 	thread_array_result = (int *)malloc(threadNb * sizeof(int));
@@ -148,43 +139,37 @@ int main(int argn, char *argc[])
 
 	//Create all threads
 	//Run all threads
-	pThreadArray = (pthread_t *)malloc(threadNb * sizeof(pthread_t));
-	for (i = 0; i < threadNb; i++)
-	{
+	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
+	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
-			fprintf (stderr, "Try to create thread %d\n", i);
-		if (pthread_create (&pThreadArray[i], NULL, my_thread_process, i) < 0)
-	    {
-	        fprintf (stderr, "pthread_create error for thread 1\n");
-	        exit(1);
-	    }
+			fprintf(stderr, "Try to create thread %d\n", i);
+		if (pthread_create(&pThreadArray[i], NULL, my_thread_process, i)
+		    < 0) {
+			fprintf(stderr, "pthread_create error for thread 1\n");
+			exit(1);
+		}
 	}
 
 	//Clean threads
-	for (i = 0; i < threadNb; i++)
-	{
-		(void)pthread_join (pThreadArray[i], &ret);
+	for (i = 0; i < threadNb; i++) {
+		(void)pthread_join(pThreadArray[i], &ret);
 	}
 
 	//Check if all threads results are ok
 	test_status = 0;
-	for (i = 0; i < threadNb; i++)
-	{
-		if (thread_array_result[i] != callNb)
-		{
+	for (i = 0; i < threadNb; i++) {
+		if (thread_array_result[i] != callNb) {
 			test_status = 1;
 			break;
 		}
 	}
 
-	if (run_mode == 1)
-	{
-		for (i = 0; i < threadNb; i++)
-		{
-			fprintf(stderr, "Result[%d]=%d\n", i, thread_array_result[i]);
+	if (run_mode == 1) {
+		for (i = 0; i < threadNb; i++) {
+			fprintf(stderr, "Result[%d]=%d\n", i,
+				thread_array_result[i]);
 		}
 	}
-
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);

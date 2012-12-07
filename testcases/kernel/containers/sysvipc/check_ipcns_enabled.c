@@ -22,18 +22,19 @@
 
 int dummy(void *v)
 {
-      return 0;
+	return 0;
 }
+
 int main()
 {
-        int pid;
+	int pid;
 
-        if (tst_kvercmp(2,6,19) < 0)
-                return 1;
+	if (tst_kvercmp(2, 6, 19) < 0)
+		return 1;
 
 	pid = ltp_clone_quick(CLONE_NEWIPC, dummy, NULL);
 
-        if (pid == -1)
-                return 3;
-      return 0;
+	if (pid == -1)
+		return 3;
+	return 0;
 }

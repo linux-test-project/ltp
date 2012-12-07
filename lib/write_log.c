@@ -86,14 +86,14 @@
 /*#define PATH_MAX pathconf("/", _PC_PATH_MAX)*/
 #endif
 
-char	Wlog_Error_String[256];
+char Wlog_Error_String[256];
 
 #if __STDC__
-static int	wlog_rec_pack(struct wlog_rec *wrec, char *buf, int flag);
-static int	wlog_rec_unpack(struct wlog_rec *wrec, char *buf);
+static int wlog_rec_pack(struct wlog_rec *wrec, char *buf, int flag);
+static int wlog_rec_unpack(struct wlog_rec *wrec, char *buf);
 #else
-static int	wlog_rec_pack();
-static int	wlog_rec_unpack();
+static int wlog_rec_pack();
+static int wlog_rec_unpack();
 #endif
 
 /*
@@ -110,13 +110,12 @@ static int	wlog_rec_unpack();
  * umask.
  */
 
-int
-wlog_open(wfile, trunc, mode)
-struct wlog_file	*wfile;
-int			trunc;
-int			mode;
+int wlog_open(wfile, trunc, mode)
+struct wlog_file *wfile;
+int trunc;
+int mode;
 {
-	int	omask, oflags;
+	int omask, oflags;
 
 	if (trunc)
 		trunc = O_TRUNC;
@@ -128,8 +127,7 @@ int			mode;
 	 */
 
 	oflags = O_WRONLY | O_APPEND | O_CREAT | trunc;
-	wfile->w_afd =
-		open(wfile->w_file, oflags, mode);
+	wfile->w_afd = open(wfile->w_file, oflags, mode);
 	umask(omask);
 
 	if (wfile->w_afd == -1) {
@@ -161,9 +159,8 @@ int			mode;
  * with the wlog_open() call.
  */
 
-int
-wlog_close(wfile)
-struct wlog_file	*wfile;
+int wlog_close(wfile)
+struct wlog_file *wfile;
 {
 	close(wfile->w_afd);
 	close(wfile->w_rfd);
@@ -196,67 +193,67 @@ struct wlog_file	*wfile;
  * place before the record is written.
  */
 
-int
-wlog_record_write(wfile, wrec, offset)
-struct wlog_file	*wfile;
-struct wlog_rec		*wrec;
-long			offset;
+int wlog_record_write(wfile, wrec, offset)
+struct wlog_file *wfile;
+struct wlog_rec *wrec;
+long offset;
 {
-    int		reclen;
-    char	wbuf[WLOG_REC_MAX_SIZE + 2];
+	int reclen;
+	char wbuf[WLOG_REC_MAX_SIZE + 2];
 
-    /*
-     * If offset is -1, we append the record at the end of file
-     *
-     * Otherwise, we overlay wrec at the file offset indicated and assume
-     * that the caller passed us the correct offset.  We do not record the
-     * fname in this case.
-     */
-
-    reclen = wlog_rec_pack(wrec, wbuf, (offset < 0));
-
-    if (offset < 0) {
 	/*
-	 * Since we're writing a complete new record, we must also tack
-	 * its length onto the end so that wlog_scan_backward() will work.
-	 * Length is asumed to fit into 2 bytes.
+	 * If offset is -1, we append the record at the end of file
+	 *
+	 * Otherwise, we overlay wrec at the file offset indicated and assume
+	 * that the caller passed us the correct offset.  We do not record the
+	 * fname in this case.
 	 */
 
-	    wbuf[reclen] = reclen / 256;
-	    wbuf[reclen+1] = reclen % 256;
-	    reclen += 2;
+	reclen = wlog_rec_pack(wrec, wbuf, (offset < 0));
 
-            if (write(wfile->w_afd, wbuf, reclen) == -1) {
-                  sprintf(Wlog_Error_String,
-                          "Could not write log - write(%s, %s, %d) failed:  %s\n",
-                           wfile->w_file, wbuf, reclen, strerror(errno));
-                  return -1;
-            } else {
-                 offset = lseek(wfile->w_afd, 0, SEEK_CUR) - reclen;
-                 if (offset == -1) {
-                       sprintf(Wlog_Error_String,
-                               "Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
-                                wfile->w_file, strerror(errno));
-                       return -1;
-                 }
-            }
-    } else {
-            if ((lseek(wfile->w_rfd, offset, SEEK_SET)) == -1) {
-                  sprintf(Wlog_Error_String,
-                          "Could not reposition file pointer - lseek(%s, %ld, SEEK_SET) failed:  %s\n",
-                           wfile->w_file, offset, strerror(errno));
-                  return -1;
-            } else {
-                  if ((write(wfile->w_rfd, wbuf, reclen)) == -1) {
-                        sprintf(Wlog_Error_String,
-                                "Could not write log - write(%s, %s, %d) failed:  %s\n",
-                                 wfile->w_file, wbuf, reclen, strerror(errno));
-                        return -1;
-                  }
-            }
-    }
+	if (offset < 0) {
+		/*
+		 * Since we're writing a complete new record, we must also tack
+		 * its length onto the end so that wlog_scan_backward() will work.
+		 * Length is asumed to fit into 2 bytes.
+		 */
 
-    return offset;
+		wbuf[reclen] = reclen / 256;
+		wbuf[reclen + 1] = reclen % 256;
+		reclen += 2;
+
+		if (write(wfile->w_afd, wbuf, reclen) == -1) {
+			sprintf(Wlog_Error_String,
+				"Could not write log - write(%s, %s, %d) failed:  %s\n",
+				wfile->w_file, wbuf, reclen, strerror(errno));
+			return -1;
+		} else {
+			offset = lseek(wfile->w_afd, 0, SEEK_CUR) - reclen;
+			if (offset == -1) {
+				sprintf(Wlog_Error_String,
+					"Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
+					wfile->w_file, strerror(errno));
+				return -1;
+			}
+		}
+	} else {
+		if ((lseek(wfile->w_rfd, offset, SEEK_SET)) == -1) {
+			sprintf(Wlog_Error_String,
+				"Could not reposition file pointer - lseek(%s, %ld, SEEK_SET) failed:  %s\n",
+				wfile->w_file, offset, strerror(errno));
+			return -1;
+		} else {
+			if ((write(wfile->w_rfd, wbuf, reclen)) == -1) {
+				sprintf(Wlog_Error_String,
+					"Could not write log - write(%s, %s, %d) failed:  %s\n",
+					wfile->w_file, wbuf, reclen,
+					strerror(errno));
+				return -1;
+			}
+		}
+	}
+
+	return offset;
 }
 
 /*
@@ -267,17 +264,16 @@ long			offset;
  * will be passed a single parameter - a wlog_rec structure .
  */
 
-int
-wlog_scan_backward(wfile, nrecs, func, data)
-struct wlog_file	*wfile;
-int 			nrecs;
-int 			(*func)();
-long			data;
+int wlog_scan_backward(wfile, nrecs, func, data)
+struct wlog_file *wfile;
+int nrecs;
+int (*func) ();
+long data;
 {
-	int		fd, leftover, nbytes, offset, recnum, reclen, rval;
-	char   		buf[BSIZE*32], *bufend, *cp, *bufstart;
-	char		albuf[WLOG_REC_MAX_SIZE];
-	struct wlog_rec	wrec;
+	int fd, leftover, nbytes, offset, recnum, reclen, rval;
+	char buf[BSIZE * 32], *bufend, *cp, *bufstart;
+	char albuf[WLOG_REC_MAX_SIZE];
+	struct wlog_rec wrec;
 
 	fd = wfile->w_rfd;
 
@@ -285,19 +281,19 @@ long			data;
 	 * Move to EOF.  offset will always hold the current file offset
 	 */
 
-        if ((lseek(fd, 0, SEEK_END)) == -1) {
-              sprintf(Wlog_Error_String,
-                      "Could not reposition file pointer - lseek(%s, 0, SEEK_END) failed:  %s\n",
-                       wfile->w_file, strerror(errno));
-              return -1;
-        }
+	if ((lseek(fd, 0, SEEK_END)) == -1) {
+		sprintf(Wlog_Error_String,
+			"Could not reposition file pointer - lseek(%s, 0, SEEK_END) failed:  %s\n",
+			wfile->w_file, strerror(errno));
+		return -1;
+	}
 	offset = lseek(fd, 0, SEEK_CUR);
-        if ((offset == -1)) {
-              sprintf(Wlog_Error_String,
-                      "Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
-                       wfile->w_file, strerror(errno));
-              return -1;
-        }
+	if ((offset == -1)) {
+		sprintf(Wlog_Error_String,
+			"Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
+			wfile->w_file, strerror(errno));
+		return -1;
+	}
 
 	bufend = buf + sizeof(buf);
 	bufstart = buf;
@@ -320,12 +316,12 @@ long			data;
 		/*
 		 * Move to the proper file offset, and read into buf
 		 */
-                if ((lseek(fd, offset, SEEK_SET)) ==-1) {
-                      sprintf(Wlog_Error_String,
-                              "Could not reposition file pointer - lseek(%s, %d, SEEK_SET) failed:  %s\n",
-                               wfile->w_file, offset, strerror(errno));
-                       return -1;
-                }
+		if ((lseek(fd, offset, SEEK_SET)) == -1) {
+			sprintf(Wlog_Error_String,
+				"Could not reposition file pointer - lseek(%s, %d, SEEK_SET) failed:  %s\n",
+				wfile->w_file, offset, strerror(errno));
+			return -1;
+		}
 
 		nbytes = read(fd, bufstart, bufend - bufstart - leftover);
 
@@ -333,7 +329,8 @@ long			data;
 			sprintf(Wlog_Error_String,
 				"Could not read history file at offset %d - read(%d, %p, %d) failed:  %s\n",
 				offset, fd, bufstart,
-				(int)(bufend - bufstart - leftover), strerror(errno));
+				(int)(bufend - bufstart - leftover),
+				strerror(errno));
 			return -1;
 		}
 
@@ -360,7 +357,7 @@ long			data;
 			 * not be word aligned.
 			 */
 
-			reclen = (*(cp-2) * 256) + *(cp -1);
+			reclen = (*(cp - 2) * 256) + *(cp - 1);
 
 			/*
 			 * If cp-bufstart isn't large enough to hold a
@@ -392,7 +389,7 @@ long			data;
 			 * stop if instructed to.
 			 */
 
-			if ((rval = (*func)(&wrec, data)) == WLOG_STOP_SCAN) {
+			if ((rval = (*func) (&wrec, data)) == WLOG_STOP_SCAN) {
 				break;
 			}
 
@@ -413,27 +410,27 @@ long			data;
  * these routines must be reflected in the other.
  */
 
-static int
-wlog_rec_pack(wrec, buf, flag)
-struct wlog_rec	*wrec;
-char		*buf;
-int             flag;
+static int wlog_rec_pack(wrec, buf, flag)
+struct wlog_rec *wrec;
+char *buf;
+int flag;
 {
-	char			*file, *host, *pattern;
-	struct wlog_rec_disk	*wrecd;
+	char *file, *host, *pattern;
+	struct wlog_rec_disk *wrecd;
 
 	wrecd = (struct wlog_rec_disk *)buf;
 
-	wrecd->w_pid = (uint)wrec->w_pid;
-	wrecd->w_offset = (uint)wrec->w_offset;
-	wrecd->w_nbytes = (uint)wrec->w_nbytes;
-	wrecd->w_oflags = (uint)wrec->w_oflags;
-	wrecd->w_done = (uint)wrec->w_done;
-	wrecd->w_async = (uint)wrec->w_async;
+	wrecd->w_pid = (uint) wrec->w_pid;
+	wrecd->w_offset = (uint) wrec->w_offset;
+	wrecd->w_nbytes = (uint) wrec->w_nbytes;
+	wrecd->w_oflags = (uint) wrec->w_oflags;
+	wrecd->w_done = (uint) wrec->w_done;
+	wrecd->w_async = (uint) wrec->w_async;
 
-	wrecd->w_pathlen = (wrec->w_pathlen > 0) ? (uint)wrec->w_pathlen : 0;
-	wrecd->w_hostlen = (wrec->w_hostlen > 0) ? (uint)wrec->w_hostlen : 0;
-	wrecd->w_patternlen = (wrec->w_patternlen > 0) ? (uint)wrec->w_patternlen : 0;
+	wrecd->w_pathlen = (wrec->w_pathlen > 0) ? (uint) wrec->w_pathlen : 0;
+	wrecd->w_hostlen = (wrec->w_hostlen > 0) ? (uint) wrec->w_hostlen : 0;
+	wrecd->w_patternlen =
+	    (wrec->w_patternlen > 0) ? (uint) wrec->w_patternlen : 0;
 
 	/*
 	 * If flag is true, we should also pack the variable length parts
@@ -456,19 +453,19 @@ int             flag;
 			memcpy(pattern, wrec->w_pattern, wrecd->w_patternlen);
 
 		return (sizeof(struct wlog_rec_disk) +
-			wrecd->w_pathlen + wrecd->w_hostlen + wrecd->w_patternlen);
+			wrecd->w_pathlen + wrecd->w_hostlen +
+			wrecd->w_patternlen);
 	} else {
 		return sizeof(struct wlog_rec_disk);
 	}
 }
 
-static int
-wlog_rec_unpack(wrec, buf)
-struct wlog_rec	*wrec;
-char		*buf;
+static int wlog_rec_unpack(wrec, buf)
+struct wlog_rec *wrec;
+char *buf;
 {
-	char			*file, *host, *pattern;
-	struct wlog_rec_disk	*wrecd;
+	char *file, *host, *pattern;
+	struct wlog_rec_disk *wrecd;
 
 	memset((char *)wrec, 0x00, sizeof(struct wlog_rec));
 	wrecd = (struct wlog_rec_disk *)buf;
@@ -495,7 +492,7 @@ char		*buf;
 
 	if (wrec->w_patternlen > 0) {
 		pattern = buf + sizeof(struct wlog_rec_disk) +
-			wrec->w_pathlen + wrec->w_hostlen;
+		    wrec->w_pathlen + wrec->w_hostlen;
 		memcpy(wrec->w_pattern, pattern, wrec->w_patternlen);
 	}
 

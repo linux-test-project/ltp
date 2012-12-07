@@ -17,8 +17,9 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main() {
-        int result, new_priority, old_priority, max_prio;
+int main()
+{
+	int result, new_priority, old_priority, max_prio;
 	int old_policy, new_policy, test_policy;
 	struct sched_param param;
 
@@ -40,8 +41,8 @@ int main() {
 	max_prio = sched_get_priority_max(new_policy);
 	old_priority = param.sched_priority;
 	new_priority = (old_priority == max_prio) ?
-		(param.sched_priority = sched_get_priority_min(new_policy)) :
-		(param.sched_priority = max_prio);
+	    (param.sched_priority = sched_get_priority_min(new_policy)) :
+	    (param.sched_priority = max_prio);
 
 	result = sched_setscheduler(0, new_policy, &param);
 
@@ -57,12 +58,12 @@ int main() {
 	}
 
 	if (result != -1 && param.sched_priority == new_priority &&
-	   test_policy == new_policy) {
+	    test_policy == new_policy) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (result != -1 &&
-		  (param.sched_priority == old_priority ||
-		   test_policy == old_policy)) {
+		   (param.sched_priority == old_priority ||
+		    test_policy == old_policy)) {
 		if (param.sched_priority == old_priority) {
 			printf("The param does not change\n");
 		}
@@ -71,7 +72,8 @@ int main() {
 		}
 		return PTS_FAIL;
 	} else if (result == -1 && errno == EPERM) {
-		printf("The process have not permission to change its own policy.\nTry to launch this test as root.\n");
+		printf
+		    ("The process have not permission to change its own policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	}
 

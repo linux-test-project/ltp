@@ -90,8 +90,8 @@ int main(int ac, char **av)
 		if (TEST_ERRNO == EBADF)
 			tst_resm(TPASS, "failed as expected with EBADF");
 		else
-			tst_brkm(TFAIL|TTERRNO, cleanup,
-			    "call failed unexpectedly");
+			tst_brkm(TFAIL | TTERRNO, cleanup,
+				 "call failed unexpectedly");
 	}
 
 	cleanup();

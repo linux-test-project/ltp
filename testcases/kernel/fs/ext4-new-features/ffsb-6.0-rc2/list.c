@@ -13,8 +13,7 @@ void INIT_LIST_HEAD(struct list_head *list)
 }
 
 void __list_add(struct list_head *new,
-		struct list_head *prev,
-		struct list_head *next)
+		struct list_head *prev, struct list_head *next)
 {
 	next->prev = new;
 	new->next = next;
@@ -45,8 +44,7 @@ void list_del(struct list_head *entry)
 	entry->prev = NULL;
 }
 
-void list_replace(struct list_head *old,
-		  struct list_head *new)
+void list_replace(struct list_head *old, struct list_head *new)
 {
 	new->next = old->next;
 	new->next->prev = new;

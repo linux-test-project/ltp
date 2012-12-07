@@ -26,31 +26,29 @@ int main()
 	pthread_rwlock_t rwlock;
 	int rc;
 
-	if (pthread_rwlock_init(&rwlock, NULL) != 0)
-	{
+	if (pthread_rwlock_init(&rwlock, NULL) != 0) {
 		printf("Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_rwlock_rdlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_rdlock(&rwlock) != 0) {
 		printf("Error at pthread_rwlock_rdlock()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Attempt to destroy an already locked rwlock */
 	rc = pthread_rwlock_destroy(&rwlock);
-	if (rc == EBUSY)
-	{
+	if (rc == EBUSY) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if (rc == 0)
-	{
-		printf("Test PASSED: Note*: pthread_rwlock_destroy() returned 0 instead of EBUSY, but standard specifies _may_ fail\n");
+	} else if (rc == 0) {
+		printf
+		    ("Test PASSED: Note*: pthread_rwlock_destroy() returned 0 instead of EBUSY, but standard specifies _may_ fail\n");
 		return PTS_PASS;
-	} else
-	{
-		printf("Test FAILED: Error at pthread_rwlock_destroy(), should return 0 or EBUSY, but returns %d\n", rc);
+	} else {
+		printf
+		    ("Test FAILED: Error at pthread_rwlock_destroy(), should return 0 or EBUSY, but returns %d\n",
+		     rc);
 		return PTS_FAIL;
 	}
 

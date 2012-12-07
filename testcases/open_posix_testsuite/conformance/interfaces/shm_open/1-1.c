@@ -35,12 +35,13 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_1-1"
 
-int main() {
+int main()
+{
 	int fd;
 	char str[BUF_SIZE] = "qwerty";
 	char *buf;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -61,7 +62,7 @@ int main() {
 
 	strcpy(buf, str);
 
-	fd = shm_open(SHM_NAME, O_RDONLY, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDONLY, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		shm_unlink(SHM_NAME);

@@ -30,10 +30,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int
-main(void)
+int main(void)
 {
-    close(1);
-    printf("U are running Linux Memory Management Stress Tests.\n");
-    exit(0);
+	close(1);
+	printf("U are running Linux Memory Management Stress Tests.\n");
+	exit(0);
 }

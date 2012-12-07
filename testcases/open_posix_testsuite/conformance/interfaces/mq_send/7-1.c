@@ -35,74 +35,74 @@
 #define MESSAGESIZE 50
 #define MSGSTR "0123456789"
 #define BUFFER 40
-#define MAXMSG 10 	// send should end after MAXMSG
+#define MAXMSG 10		// send should end after MAXMSG
 
 int main()
 {
-        char qname[NAMESIZE], msgrcd[BUFFER];
-        char msgptr[MESSAGESIZE];
-        mqd_t queue;
+	char qname[NAMESIZE], msgrcd[BUFFER];
+	char msgptr[MESSAGESIZE];
+	mqd_t queue;
 	struct mq_attr attr;
-	int unresolved=0, failure=0, spri=1, i, maxreached=0;
+	int unresolved = 0, failure = 0, spri = 1, i, maxreached = 0;
 	unsigned pri;
 
-        sprintf(qname, "/mq_send_7-1_%d", getpid());
+	sprintf(qname, "/mq_send_7-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;
-        queue = mq_open(qname, O_CREAT | O_RDWR | O_NONBLOCK,
+	queue = mq_open(qname, O_CREAT | O_RDWR | O_NONBLOCK,
 			S_IRUSR | S_IWUSR, &attr);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-                return PTS_UNRESOLVED;
-        }
-
-	for (i=0; i<MQ_PRIO_MAX; i++) { // assuming MAXMSG < MQ_PRIO_MAX
-		sprintf(msgptr, "message %d", i);
-        	if (mq_send(queue, msgptr, strlen(msgptr), spri++) == -1) {
-			maxreached=1;
-			if (errno != EAGAIN) {
-				printf("mq_send() did not fail on EAGAIN\n");
-				failure=1;
-			}
-			break;
-        	}
+	if (queue == (mqd_t) - 1) {
+		perror("mq_open() did not return success");
+		return PTS_UNRESOLVED;
 	}
 
-        if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
+	for (i = 0; i < MQ_PRIO_MAX; i++) {	// assuming MAXMSG < MQ_PRIO_MAX
+		sprintf(msgptr, "message %d", i);
+		if (mq_send(queue, msgptr, strlen(msgptr), spri++) == -1) {
+			maxreached = 1;
+			if (errno != EAGAIN) {
+				printf("mq_send() did not fail on EAGAIN\n");
+				failure = 1;
+			}
+			break;
+		}
+	}
+
+	if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
 		perror("mq_receive() returned failure");
-		unresolved=1;
+		unresolved = 1;
 	} else {
-		if ((strcmp(msgptr, msgrcd) == 0) && (maxreached!=0)) {
+		if ((strcmp(msgptr, msgrcd) == 0) && (maxreached != 0)) {
 			printf("Error: Received message that caused EAGAIN\n");
 			failure = 1;
 		}
 	}
 
-        if (mq_close(queue) != 0) {
+	if (mq_close(queue) != 0) {
 		perror("mq_close() did not return success");
-		unresolved=1;
-        }
+		unresolved = 1;
+	}
 
-        if (mq_unlink(qname) != 0) {
+	if (mq_unlink(qname) != 0) {
 		perror("mq_unlink() did not return success");
-		unresolved=1;
-        }
+		unresolved = 1;
+	}
 
-	if (maxreached==0) {
+	if (maxreached == 0) {
 		printf("Test inconclusive:  Couldn't fill message queue\n");
 		return PTS_UNRESOLVED;
 	}
-	if (failure==1) {
+	if (failure == 1) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	if (unresolved==1) {
+	if (unresolved == 1) {
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
 	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

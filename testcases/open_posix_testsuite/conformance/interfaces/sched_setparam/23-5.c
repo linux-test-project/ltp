@@ -20,7 +20,8 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main() {
+int main()
+{
 	int old_priority;
 	struct sched_param param;
 
@@ -30,9 +31,9 @@ int main() {
 	}
 	old_priority = param.sched_priority;
 
-	param.sched_ss_max_repl = SS_REPL_MAX+1;
+	param.sched_ss_max_repl = SS_REPL_MAX + 1;
 	param.sched_priority++;
-        sched_setparam(0,&param);
+	sched_setparam(0, &param);
 
 	if (sched_getparam(0, &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");

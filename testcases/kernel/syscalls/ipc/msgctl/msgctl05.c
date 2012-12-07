@@ -99,7 +99,7 @@ int main(int ac, char **av)
 		do_child();
 	} else {		/* parent */
 		if (waitpid(pid, NULL, 0) == -1) {
-			tst_resm(TBROK|TERRNO, "waitpid() failed");
+			tst_resm(TBROK | TERRNO, "waitpid() failed");
 		}
 
 		/* if it exists, remove the message queue */

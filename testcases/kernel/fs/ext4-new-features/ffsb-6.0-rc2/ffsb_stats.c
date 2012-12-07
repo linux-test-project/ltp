@@ -16,7 +16,7 @@ char *syscall_names[] = {
 };
 
 /* yuck, just for the parser anyway.. */
-int ffsb_stats_str2syscall(char *str, syscall_t *sys)
+int ffsb_stats_str2syscall(char *str, syscall_t * sys)
 {
 	int i;
 	int ret;
@@ -27,7 +27,7 @@ int ffsb_stats_str2syscall(char *str, syscall_t *sys)
 		 * syscall_names[i],i,str,ret);
 		 */
 		if (0 == ret) {
-			*sys = (syscall_t)i; /* ewww */
+			*sys = (syscall_t) i;	/* ewww */
 			/* printf("matched syscall %s\n",syscall_names[i]); */
 			return 1;
 		}
@@ -36,14 +36,14 @@ int ffsb_stats_str2syscall(char *str, syscall_t *sys)
 	return 0;
 }
 
-void  ffsb_statsc_init(ffsb_statsc_t *fsc)
+void ffsb_statsc_init(ffsb_statsc_t * fsc)
 {
 	fsc->num_buckets = 0;
 	fsc->buckets = NULL;
 	fsc->ignore_stats = 0;
 }
 
-void ffsb_statsc_addbucket(ffsb_statsc_t *fsc, uint32_t min, uint32_t max)
+void ffsb_statsc_addbucket(ffsb_statsc_t * fsc, uint32_t min, uint32_t max)
 {
 	struct stat_bucket *temp;
 	fsc->num_buckets++;
@@ -55,16 +55,16 @@ void ffsb_statsc_addbucket(ffsb_statsc_t *fsc, uint32_t min, uint32_t max)
 	fsc->buckets = temp;
 
 	/* Convert to micro-secs from milli-secs */
-	fsc->buckets[fsc->num_buckets-1].min = min ;
-	fsc->buckets[fsc->num_buckets-1].max = max ;
+	fsc->buckets[fsc->num_buckets - 1].min = min;
+	fsc->buckets[fsc->num_buckets - 1].max = max;
 }
 
-void ffsb_statsc_destroy(ffsb_statsc_t *fsc)
+void ffsb_statsc_destroy(ffsb_statsc_t * fsc)
 {
 	free(fsc->buckets);
 }
 
-void ffsb_statsc_ignore_sys(ffsb_statsc_t *fsc, syscall_t s)
+void ffsb_statsc_ignore_sys(ffsb_statsc_t * fsc, syscall_t s)
 {
 	/* printf("fsis: oring 0x%x with 0x%x\n",
 	 *      fsc->ignore_stats,
@@ -73,12 +73,12 @@ void ffsb_statsc_ignore_sys(ffsb_statsc_t *fsc, syscall_t s)
 	fsc->ignore_stats |= (1 << s);
 }
 
-int fsc_ignore_sys(ffsb_statsc_t *fsc, syscall_t s)
+int fsc_ignore_sys(ffsb_statsc_t * fsc, syscall_t s)
 {
 	return fsc->ignore_stats & (1 << s);
 }
 
-void ffsb_statsd_init(ffsb_statsd_t *fsd, ffsb_statsc_t *fsc)
+void ffsb_statsd_init(ffsb_statsd_t * fsd, ffsb_statsc_t * fsc)
 {
 	int i;
 	memset(fsd, 0, sizeof(*fsd));
@@ -91,20 +91,19 @@ void ffsb_statsd_init(ffsb_statsd_t *fsd, ffsb_statsc_t *fsc)
 					      fsc->num_buckets);
 		assert(fsd->buckets[i] != NULL);
 
-		memset(fsd->buckets[i], 0, sizeof(uint32_t) *
-		       fsc->num_buckets);
+		memset(fsd->buckets[i], 0, sizeof(uint32_t) * fsc->num_buckets);
 	}
 	fsd->config = fsc;
 }
 
-void ffsb_statsd_destroy(ffsb_statsd_t *fsd)
+void ffsb_statsd_destroy(ffsb_statsd_t * fsd)
 {
-	int i ;
-	for (i = 0 ; i < FFSB_NUM_SYSCALLS; i++)
+	int i;
+	for (i = 0; i < FFSB_NUM_SYSCALLS; i++)
 		free(fsd->buckets[i]);
 }
 
-void ffsb_add_data(ffsb_statsd_t *fsd, syscall_t s, uint32_t value)
+void ffsb_add_data(ffsb_statsd_t * fsd, syscall_t s, uint32_t value)
 {
 	unsigned num_buckets, i;
 	struct stat_bucket *bucket_defs;
@@ -136,12 +135,12 @@ void ffsb_add_data(ffsb_statsd_t *fsd, syscall_t s, uint32_t value)
 	}
 }
 
-void ffsb_statsc_copy(ffsb_statsc_t *dest, ffsb_statsc_t *src)
+void ffsb_statsc_copy(ffsb_statsc_t * dest, ffsb_statsc_t * src)
 {
 	memcpy(dest, src, sizeof(*src));
 }
 
-void ffsb_statsd_add(ffsb_statsd_t *dest, ffsb_statsd_t *src)
+void ffsb_statsd_add(ffsb_statsd_t * dest, ffsb_statsd_t * src)
 {
 	int i, j;
 	unsigned num_buckets;
@@ -165,7 +164,7 @@ void ffsb_statsd_add(ffsb_statsd_t *dest, ffsb_statsd_t *src)
 	}
 }
 
-static void print_buckets_helper(ffsb_statsc_t *fsc, uint32_t *buckets)
+static void print_buckets_helper(ffsb_statsc_t * fsc, uint32_t * buckets)
 {
 	int i;
 	if (fsc->num_buckets == 0) {
@@ -175,13 +174,13 @@ static void print_buckets_helper(ffsb_statsc_t *fsc, uint32_t *buckets)
 	for (i = 0; i < fsc->num_buckets; i++) {
 		struct stat_bucket *sb = &fsc->buckets[i];
 		printf("\t\t msec_range[%d]\t%f - %f : %8u\n",
-		       i, (double)sb->min/1000.0f, (double)sb->max/1000.0f,
+		       i, (double)sb->min / 1000.0f, (double)sb->max / 1000.0f,
 		       buckets[i]);
 	}
 	printf("\n");
 }
 
-void ffsb_statsd_print(ffsb_statsd_t *fsd)
+void ffsb_statsd_print(ffsb_statsd_t * fsd)
 {
 	int i;
 	printf("\nSystem Call Latency statistics in millisecs\n" "=====\n");
@@ -198,7 +197,7 @@ void ffsb_statsd_print(ffsb_statsd_t *fsd)
 		}
 }
 
-#if 0 /* Testing */
+#if 0				/* Testing */
 
 void *ffsb_malloc(size_t s)
 {
@@ -211,7 +210,7 @@ int main(int arc, char *argv[])
 {
 	ffsb_statsc_t fsc;
 	ffsb_statsd_t fsd;
-	int i ;
+	int i;
 
 	printf("init\n");
 

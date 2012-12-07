@@ -108,13 +108,13 @@
  * setup_signal_handlers (): Sets up signal catching functions
  * handler (): Signal catching function
  */
-void setup (int, char **);
-void child (int [], int []);
-void cleanup ();
-void sys_error (const char *, int);
-void error (const char *, int);
-void setup_signal_handlers ();
-void handler (int, int, struct sigcontext *);
+void setup(int, char **);
+void child(int[], int[]);
+void cleanup();
+void sys_error(const char *, int);
+void error(const char *, int);
+void setup_signal_handlers();
+void handler(int, int, struct sigcontext *);
 
 /*
  * Structures & Global variables
@@ -137,26 +137,26 @@ void handler (int, int, struct sigcontext *);
 enum { READ, WRITE };		/* Pipe read & write end indices */
 
 struct data_packet {
-	pid_t		pid;		/* Child process id */
-	int 		last;		/* Indicates last packet when set */
-	long 		valid;		/* Insure packet was not garbled */
-	long 		seq_number;	/* Packet sequence number */
-	unsigned long	checksum;	/* Cumulative checksum so far */
-	unsigned char	data;		/* Data sent in packet */
+	pid_t pid;		/* Child process id */
+	int last;		/* Indicates last packet when set */
+	long valid;		/* Insure packet was not garbled */
+	long seq_number;	/* Packet sequence number */
+	unsigned long checksum;	/* Cumulative checksum so far */
+	unsigned char data;	/* Data sent in packet */
 };
 typedef struct data_packet data_packet;
 
-int     num_children = DEFAULT_NUM_CHILDREN;
-long	num_packets  = DEFAULT_PACKETS_TO_SEND;
-int	non_blocking_flag = 0;	/* Uses NON-BLOCKING pipes when set */
-int	bflg = 0;		/* Data quantity flag (MB) */
-int	mflg = 0;		/* Data quantity flag (bytes) */
+int num_children = DEFAULT_NUM_CHILDREN;
+long num_packets = DEFAULT_PACKETS_TO_SEND;
+int non_blocking_flag = 0;	/* Uses NON-BLOCKING pipes when set */
+int bflg = 0;			/* Data quantity flag (MB) */
+int mflg = 0;			/* Data quantity flag (bytes) */
 
-pid_t	parent_pid;		/* Parent's process id */
-pid_t	pid [MAXCHILD];		/* Process id's of spawned processes */
-int	p2child [MAXCHILD][2]; 	/* Pipes from parent to child processes */
-int	p2parent [2];  		/* Pipe from child processes to parent */
-char	err_msg [256];		/* Generic error message buffer */
+pid_t parent_pid;		/* Parent's process id */
+pid_t pid[MAXCHILD];		/* Process id's of spawned processes */
+int p2child[MAXCHILD][2];	/* Pipes from parent to child processes */
+int p2parent[2];		/* Pipe from child processes to parent */
+char err_msg[256];		/* Generic error message buffer */
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -168,23 +168,23 @@ char	err_msg [256];		/* Generic error message buffer */
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int 	i;
-	int 	n;		/* Number of bytes written */
-	int	status;		/* Child's exit status */
-	long	packets_sent;
-	unsigned char 	data;
-	unsigned long 	cksum_parent = 0;
-	data_packet	packet;
+	int i;
+	int n;			/* Number of bytes written */
+	int status;		/* Child's exit status */
+	long packets_sent;
+	unsigned char data;
+	unsigned long cksum_parent = 0;
+	data_packet packet;
 
 	/*
 	 * Parse command line arguments, initialize global variables and
 	 * print program header
 	 */
-	setup (argc, argv);
-	printf ("%s: IPC Pipe TestSuite program\n", *argv);
-	fflush (stdout);
+	setup(argc, argv);
+	printf("%s: IPC Pipe TestSuite program\n", *argv);
+	fflush(stdout);
 
 	/*
 	 * Create two sets of half duplex pipes:
@@ -199,25 +199,27 @@ int main (int argc, char **argv)
 	 * prevent reads & and writes from blocking if the data is not yet
 	 * available
 	 */
-	printf ("\n\tCreating pipes...\n");
-	fflush (stdout);
+	printf("\n\tCreating pipes...\n");
+	fflush(stdout);
 
-	if (pipe (p2parent) < 0)
-		sys_error ("pipe failed", __LINE__);
+	if (pipe(p2parent) < 0)
+		sys_error("pipe failed", __LINE__);
 
 	if (non_blocking_flag) {
-		printf ("\n\tSending data NON-BLOCKING!\n");
-		fflush (stdout);
+		printf("\n\tSending data NON-BLOCKING!\n");
+		fflush(stdout);
 	}
 
-	for (i=0; i<num_children; i++) {
-		if (pipe (&p2child [i][0]) < 0)
-			sys_error ("pipe failed", __LINE__);
+	for (i = 0; i < num_children; i++) {
+		if (pipe(&p2child[i][0]) < 0)
+			sys_error("pipe failed", __LINE__);
 		if (non_blocking_flag) {
-			if (fcntl (p2child [i][READ], F_SETFL, O_NONBLOCK) < 0)
-				sys_error ("fcntl (O_NONBLOCK) failed", __LINE__);
-			if (fcntl (p2child [i][WRITE], F_SETFL, O_NONBLOCK) < 0)
-				sys_error ("fcntl (O_NONBLOCK) failed", __LINE__);
+			if (fcntl(p2child[i][READ], F_SETFL, O_NONBLOCK) < 0)
+				sys_error("fcntl (O_NONBLOCK) failed",
+					  __LINE__);
+			if (fcntl(p2child[i][WRITE], F_SETFL, O_NONBLOCK) < 0)
+				sys_error("fcntl (O_NONBLOCK) failed",
+					  __LINE__);
 		}
 	}
 
@@ -232,25 +234,25 @@ int main (int argc, char **argv)
 	 * Also close the WRITE end of the p2parent pipe, for just the
 	 * the reverse reasons...
 	 */
-	printf ("\n\tSpawning %d child processes ... \n", num_children);
-	fflush (stdout);
+	printf("\n\tSpawning %d child processes ... \n", num_children);
+	fflush(stdout);
 
-	for (i=0; i<num_children; i++) {
+	for (i = 0; i < num_children; i++) {
 
-		if ((pid [i] = fork()) == 0) {
+		if ((pid[i] = fork()) == 0) {
 
 			/* Child process */
-			child (&p2child[i][0], p2parent);
-			exit (0);
+			child(&p2child[i][0], p2parent);
+			exit(0);
 
-		} else if (pid [i] < (pid_t)0)
-			sys_error ("fork failed", __LINE__);
+		} else if (pid[i] < (pid_t) 0)
+			sys_error("fork failed", __LINE__);
 
-		if (close (p2child [i][READ]) < 0)
-			sys_error ("close failed", __LINE__);
+		if (close(p2child[i][READ]) < 0)
+			sys_error("close failed", __LINE__);
 	}
-	if (close (p2parent [WRITE]) < 0)
-		sys_error ("close failed", __LINE__);
+	if (close(p2parent[WRITE]) < 0)
+		sys_error("close failed", __LINE__);
 
 	/*
 	 * Send data packets to the child processes
@@ -261,8 +263,9 @@ int main (int argc, char **argv)
 	 * Might have to make several attempts with the NON-BLOCKING writes
 	 * if the resource is not immediately available.
 	 */
-	printf ("\n\tParent: sending %ld packets (%ld bytes) to child processes ...\n",
-		num_packets, num_packets * sizeof (struct data_packet));
+	printf
+	    ("\n\tParent: sending %ld packets (%ld bytes) to child processes ...\n",
+	     num_packets, num_packets * sizeof(struct data_packet));
 
 	packet.last = 0;
 	packet.valid = VALID_PACKET;
@@ -271,17 +274,17 @@ int main (int argc, char **argv)
 
 		packet.seq_number = ++packets_sent;
 		packet.data = data++;
-		packet.pid = pid [i];
+		packet.pid = pid[i];
 		packet.checksum = cksum_parent += packet.data;
 
-		for (i=0; i<num_children; i++) {
-			try_write_ETXN_again:
-			if ((n = write (p2child [i][WRITE], &packet,
-					sizeof (packet))) < 0) {
+		for (i = 0; i < num_children; i++) {
+try_write_ETXN_again:
+			if ((n = write(p2child[i][WRITE], &packet,
+				       sizeof(packet))) < 0) {
 				if (non_blocking_flag && errno == EAGAIN) {
 					goto try_write_ETXN_again;
 				} else {
-					sys_error ("write failed", __LINE__);
+					sys_error("write failed", __LINE__);
 				}
 			}
 		}
@@ -308,38 +311,39 @@ int main (int argc, char **argv)
 	 * receiving checksums from the child.
 	 */
 	packet.last = 1;
-	printf ("\n\tParent: done sending packets & waiting for children to complete!\n");
-	for (i=0; i<num_children; i++) {
-		try_read_again:
-		if (write (p2child [i][WRITE], &packet, sizeof (packet)) < 0) {
+	printf
+	    ("\n\tParent: done sending packets & waiting for children to complete!\n");
+	for (i = 0; i < num_children; i++) {
+try_read_again:
+		if (write(p2child[i][WRITE], &packet, sizeof(packet)) < 0) {
 			if (non_blocking_flag && errno == EAGAIN) {
 				goto try_read_again;
 			} else {
-				sys_error ("write failed", __LINE__);
+				sys_error("write failed", __LINE__);
 			}
 		}
-		if (close (p2child [i][WRITE]) < 0)
-			sys_error ("close failed", __LINE__);
+		if (close(p2child[i][WRITE]) < 0)
+			sys_error("close failed", __LINE__);
 
-		if (read (p2parent [READ], &packet, sizeof (packet)) <= 0)
-			sys_error ("read failed", __LINE__);
+		if (read(p2parent[READ], &packet, sizeof(packet)) <= 0)
+			sys_error("read failed", __LINE__);
 
 		if (packet.valid != VALID_PACKET)
-			error ("received packet with corrupted data from child!",
-				__LINE__);
+			error("received packet with corrupted data from child!",
+			      __LINE__);
 
 		if (cksum_parent != packet.checksum) {
-			sprintf (err_msg, "checksum of data sent by parent " \
-				"does not match checksum of data received by " \
-				"child [pid %d]\n"	\
-				"\tchild's checksum: %08lx\n" \
+			sprintf(err_msg, "checksum of data sent by parent "
+				"does not match checksum of data received by "
+				"child [pid %d]\n"
+				"\tchild's checksum: %08lx\n"
 				"\tparent's checksum: %08lx\n",
 				packet.pid, packet.checksum, cksum_parent);
-			error (err_msg, __LINE__);
+			error(err_msg, __LINE__);
 		}
 	}
-	if (close (p2parent [READ]) < 0)
-		sys_error ("close failed", __LINE__);
+	if (close(p2parent[READ]) < 0)
+		sys_error("close failed", __LINE__);
 
 	/*
 	 * Wait for all of the child processes to complete & check their
@@ -347,17 +351,18 @@ int main (int argc, char **argv)
 	 *
 	 * Upon completion of the child proccesses, exit program with success.
 	 */
-	for (i=0; i<num_children; i++) {
-		waitpid (pid [i], &status, 0);
+	for (i = 0; i < num_children; i++) {
+		waitpid(pid[i], &status, 0);
 
-		if (!WIFEXITED (status))
-			sys_error ("child process terminated abnormally",
-				__LINE__);
+		if (!WIFEXITED(status))
+			sys_error("child process terminated abnormally",
+				  __LINE__);
 	}
-	printf ("\n\tParent: children received all packets & exited successfully\n");
+	printf
+	    ("\n\tParent: children received all packets & exited successfully\n");
 
 	/* Program completed successfully -- exit */
-	printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 
 	return (0);
 }
@@ -377,17 +382,17 @@ int main (int argc, char **argv)
 | Returns:   Exits with (-1) if an error occurs                        |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void child (int p2child [], int p2parent [])
+void child(int p2child[], int p2parent[])
 {
-	int	n;			/* Bytes read */
-	pid_t	pid = getpid ();	/* Process id of child */
-	int	end_of_transmission = 0;
-	long	packets_received = 0;	/* Number of packets received
+	int n;			/* Bytes read */
+	pid_t pid = getpid();	/* Process id of child */
+	int end_of_transmission = 0;
+	long packets_received = 0;	/* Number of packets received
 					 * from parent
 					 */
 
-	data_packet 	packet;		/* Packet used to transmiting data */
-	unsigned long 	cksum_child = 0;/* Checksum of data fields received */
+	data_packet packet;	/* Packet used to transmiting data */
+	unsigned long cksum_child = 0;	/* Checksum of data fields received */
 
 	/*
 	 * Close the WRITE end of the p2child pipe, since the child
@@ -395,10 +400,10 @@ void child (int p2child [], int p2parent [])
 	 * Also close the READ end of the p2parent pipe, for just the
 	 * the reverse reasons...
 	 */
-	if (close (p2child [WRITE]) < 0)
-		sys_error ("close failed", __LINE__);
-	if (close (p2parent [READ]) < 0)
-		sys_error ("close failed", __LINE__);
+	if (close(p2child[WRITE]) < 0)
+		sys_error("close failed", __LINE__);
+	if (close(p2parent[READ]) < 0)
+		sys_error("close failed", __LINE__);
 
 	/*
 	 * Receive packets from parent & insure packets are valid
@@ -416,22 +421,22 @@ void child (int p2child [], int p2parent [])
 	 * from the parent.
 	 */
 	while (!end_of_transmission) {
-		try_write_again:
-		n = read (p2child [READ], &packet, sizeof (packet));
+try_write_again:
+		n = read(p2child[READ], &packet, sizeof(packet));
 		if (n < 0) {
 			/* Resource not available */
 			if (non_blocking_flag && errno == EAGAIN)
 				goto try_write_again;
 			else
-				sys_error ("read failed", __LINE__);
+				sys_error("read failed", __LINE__);
 		} else if (n > 0) {
 			/* Insure packet is valid */
 			if (packet.valid != VALID_PACKET) {
-				sprintf (err_msg,
-					"child received invalid packet " \
+				sprintf(err_msg,
+					"child received invalid packet "
 					"from parent:\n\tpacket #: %ld\n",
 					packets_received);
-				error (err_msg, __LINE__);
+				error(err_msg, __LINE__);
 			}
 			/* Received last packet */
 			if (packet.last) {
@@ -441,30 +446,32 @@ void child (int p2child [], int p2parent [])
 				/* Insure packet was not received out of sequence */
 				packets_received++;
 				if (packets_received != packet.seq_number) {
-					sprintf (err_msg,
-						"child received packet out of sequence\n" \
-						"\texpecting packet: %ld\n" \
+					sprintf(err_msg,
+						"child received packet out of sequence\n"
+						"\texpecting packet: %ld\n"
 						"\treceived packet:  %ld\n",
-						packets_received, packet.seq_number);
-					error (err_msg, __LINE__);
+						packets_received,
+						packet.seq_number);
+					error(err_msg, __LINE__);
 				}
 
 				/* Insure checksums still match */
 				cksum_child += packet.data;
 				if (cksum_child != packet.checksum) {
-					sprintf (err_msg,
-						"child & parent checksums do not match\n" \
-						"\tchild checksum:  %08lx\n" \
-						"\tparent checksum: %08lx\n" \
+					sprintf(err_msg,
+						"child & parent checksums do not match\n"
+						"\tchild checksum:  %08lx\n"
+						"\tparent checksum: %08lx\n"
 						"\tpacket number:   %ld\n",
-						cksum_child, packet.checksum, packets_received);
-					error (err_msg, __LINE__);
+						cksum_child, packet.checksum,
+						packets_received);
+					error(err_msg, __LINE__);
 				}
 			}
 		}
 	}
-	if (close (p2child [READ]) < 0)
-		sys_error ("close failed", __LINE__);
+	if (close(p2child[READ]) < 0)
+		sys_error("close failed", __LINE__);
 
 	/*
 	 * Send parent packet containing child's checksum
@@ -475,17 +482,17 @@ void child (int p2child [], int p2parent [])
 	 * Then close the WRITE p2parent pipe as we have finished sending packets
 	 * to the parent.
 	 */
-	printf ("\t\tChild:  pid [%d] received %ld packets from parent\n",
-		pid, packets_received);
+	printf("\t\tChild:  pid [%d] received %ld packets from parent\n",
+	       pid, packets_received);
 
 	packet.pid = pid;
 	packet.valid = VALID_PACKET;
 	packet.checksum = cksum_child;
 
-	if (write (p2parent [WRITE], &packet, sizeof (packet)) < 0)
-		sys_error ("write failed", __LINE__);
-	if (close (p2parent [WRITE]) < 0)
-		sys_error ("close failed", __LINE__);
+	if (write(p2parent[WRITE], &packet, sizeof(packet)) < 0)
+		sys_error("write failed", __LINE__);
+	if (close(p2parent[WRITE]) < 0)
+		sys_error("close failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -505,59 +512,59 @@ void child (int p2child [], int p2parent [])
 |            [-c] num_children: number of child processes to spawn ... |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void setup (int argc, char **argv)
+void setup(int argc, char **argv)
 {
-	int	i;
-	int	errflag = 0;
-	int 	bytes = 0, megabytes = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int i;
+	int errflag = 0;
+	int bytes = 0, megabytes = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	while ((i = getopt(argc, argv, "nm:b:p:?")) != EOF) {
 		switch (i) {
-			case 'n':		/* NON-BLOCKING flag */
-				non_blocking_flag++;
-				break;
-			case 'm':		/* MB */
-				mflg++;
-				megabytes = atoi (optarg);
-				break;
-			case 'b':		/* bytes */
-				bflg++;
-				bytes = atoi (optarg);
-				break;
-			case 'p':		/* number of child procs */
-				num_children = atoi (optarg);
-				break;
-			case '?':
-				errflag++;
-				break;
+		case 'n':	/* NON-BLOCKING flag */
+			non_blocking_flag++;
+			break;
+		case 'm':	/* MB */
+			mflg++;
+			megabytes = atoi(optarg);
+			break;
+		case 'b':	/* bytes */
+			bflg++;
+			bytes = atoi(optarg);
+			break;
+		case 'p':	/* number of child procs */
+			num_children = atoi(optarg);
+			break;
+		case '?':
+			errflag++;
+			break;
 		}
 	}
 	if (mflg) {
-		num_packets = megabytes * MB / sizeof (struct data_packet);
+		num_packets = megabytes * MB / sizeof(struct data_packet);
 	} else if (bflg) {
-		num_packets = bytes / sizeof (struct data_packet);
+		num_packets = bytes / sizeof(struct data_packet);
 	}
 
 	if (num_packets == 0 || num_children == 0 || num_children > MAXCHILD)
 		errflag++;
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name, MAXCHILD);
-		exit (2);
+		fprintf(stderr, USAGE, program_name, MAXCHILD);
+		exit(2);
 	}
 	/*
 	 * Setup signal catching function for SIGPIPE & SIGINT, record
 	 * the process id of the parent and initialize the child process
 	 * id array.
 	 */
-	setup_signal_handlers ();
+	setup_signal_handlers();
 
-	parent_pid = getpid ();
+	parent_pid = getpid();
 
-	for (i=0; i<num_children; i++) {
-		pid [i] = (pid_t)0;
+	for (i = 0; i < num_children; i++) {
+		pid[i] = (pid_t) 0;
 	}
 }
 
@@ -568,19 +575,19 @@ void setup (int argc, char **argv)
 | Function:  Setup the signal handler for SIGPIPE.                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void setup_signal_handlers ()
+void setup_signal_handlers()
 {
 	struct sigaction invec;
 
-	invec.sa_handler = (void (*)(int)) handler;
-	sigemptyset (&invec.sa_mask);
+	invec.sa_handler = (void (*)(int))handler;
+	sigemptyset(&invec.sa_mask);
 	invec.sa_flags = 0;
 
-	if (sigaction (SIGINT, &invec, (struct sigaction *) NULL) < 0)
-		sys_error ("sigaction failed", __LINE__);
+	if (sigaction(SIGINT, &invec, (struct sigaction *)NULL) < 0)
+		sys_error("sigaction failed", __LINE__);
 
-	if (sigaction (SIGPIPE, &invec, (struct sigaction *) NULL) < 0)
-		sys_error ("sigaction failed", __LINE__);
+	if (sigaction(SIGPIPE, &invec, (struct sigaction *)NULL) < 0)
+		sys_error("sigaction failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -597,25 +604,24 @@ void setup_signal_handlers ()
 |            o  Other:   Print message and abort program...            |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void handler (int sig, int code, struct sigcontext *scp)
+void handler(int sig, int code, struct sigcontext *scp)
 {
-	char 	msg [100];	/* Buffer for error message */
+	char msg[100];		/* Buffer for error message */
 
 	if (sig == SIGPIPE) {
-		error ("wrote to pipe with closed read end", __LINE__);
+		error("wrote to pipe with closed read end", __LINE__);
 	} else if (sig == SIGINT) {
-		if (getpid () == parent_pid) {
+		if (getpid() == parent_pid) {
 
-			fprintf (stderr, "Received SIGINT -- cleaning up...\n");
-			fflush (stderr);
+			fprintf(stderr, "Received SIGINT -- cleaning up...\n");
+			fflush(stderr);
 
-			cleanup ();
-		}
-		else
-			exit (-1);
+			cleanup();
+		} else
+			exit(-1);
 	} else {
-		sprintf (msg, "Received an unexpected signal (%d)", sig);
-		error (msg, __LINE__);
+		sprintf(msg, "Received an unexpected signal (%d)", sig);
+		error(msg, __LINE__);
 	}
 }
 
@@ -627,23 +633,23 @@ void handler (int sig, int code, struct sigcontext *scp)
 |            processes and exits the program...                        |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void cleanup ()
+void cleanup()
 {
 	int i;
 
-	if (getpid () == parent_pid) {
-		for (i=0; i<num_children; i++) {
-			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0)
-				sys_error ("signal failed", __LINE__);
+	if (getpid() == parent_pid) {
+		for (i = 0; i < num_children; i++) {
+			if (pid[i] > (pid_t) 0 && kill(pid[i], SIGKILL) < 0)
+				sys_error("signal failed", __LINE__);
 
-			close (p2child [i][READ]);
-			close (p2child [i][WRITE]);
-			close (p2parent [READ]);
-			close (p2parent [WRITE]);
+			close(p2child[i][READ]);
+			close(p2child[i][WRITE]);
+			close(p2parent[READ]);
+			close(p2parent[WRITE]);
 		}
 	}
 
-	exit (-1);
+	exit(-1);
 }
 
 /*---------------------------------------------------------------------+
@@ -653,12 +659,12 @@ void cleanup ()
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void sys_error (const char *msg, int line)
+void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -668,9 +674,9 @@ void sys_error (const char *msg, int line)
 | Function:  Prints out message and calls cleanup...                   |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void error (const char *msg, int line)
+void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	fflush (stderr);
-	cleanup ();
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	fflush(stderr);
+	cleanup();
 }

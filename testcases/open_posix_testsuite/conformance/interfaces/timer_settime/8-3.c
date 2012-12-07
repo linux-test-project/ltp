@@ -37,7 +37,8 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGCONT;
 
-	its.it_interval.tv_sec = 0; its.it_interval.tv_nsec = 0;
+	its.it_interval.tv_sec = 0;
+	its.it_interval.tv_nsec = 0;
 	its.it_value.tv_sec = TIMERSEC;
 	its.it_value.tv_nsec = 0;
 
@@ -51,19 +52,19 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	sleep(TIMERSEC-TIMELEFT);
+	sleep(TIMERSEC - TIMELEFT);
 
 	if (timer_settime(tid, 0, &its, &oits) != 0) {
 		perror("timer_settime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (abs(oits.it_value.tv_sec-TIMELEFT) <= ACCEPTABLEDELTA) {
+	if (abs(oits.it_value.tv_sec - TIMELEFT) <= ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {
 		printf("Test FAILED:  time left %d oits.it_value.tv_sec %d\n",
-				TIMELEFT, (int) oits.it_value.tv_sec);
+		       TIMELEFT, (int)oits.it_value.tv_sec);
 		return PTS_FAIL;
 	}
 

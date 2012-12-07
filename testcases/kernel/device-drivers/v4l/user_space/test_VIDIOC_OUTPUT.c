@@ -29,7 +29,8 @@
 
 #include "test_VIDIOC_OUTPUT.h"
 
-int valid_output_index(int f, __u32 index) {
+int valid_output_index(int f, __u32 index)
+{
 	__u32 i;
 	struct v4l2_output output;
 	int ret_enum, errno_enum;
@@ -55,7 +56,8 @@ int valid_output_index(int f, __u32 index) {
 	return valid;
 }
 
-void test_VIDIOC_G_OUTPUT() {
+void test_VIDIOC_G_OUTPUT()
+{
 	int ret_get, errno_get;
 	__u32 index;
 	int f;
@@ -66,7 +68,8 @@ void test_VIDIOC_G_OUTPUT() {
 	ret_get = ioctl(f, VIDIOC_G_OUTPUT, &index);
 	errno_get = errno;
 
-	dprintf("\tVIDIOC_G_OUTPUT, ret_get=%i, errno_get=%i\n", ret_get, errno_get);
+	dprintf("\tVIDIOC_G_OUTPUT, ret_get=%i, errno_get=%i\n", ret_get,
+		errno_get);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
@@ -81,7 +84,8 @@ void test_VIDIOC_G_OUTPUT() {
 
 }
 
-void test_VIDIOC_S_OUTPUT_from_enum() {
+void test_VIDIOC_S_OUTPUT_from_enum()
+{
 	int ret_get, errno_get;
 	int ret_set, errno_set;
 	int ret_enum, errno_enum;
@@ -105,14 +109,19 @@ void test_VIDIOC_S_OUTPUT_from_enum() {
 			ret_enum = ioctl(f, VIDIOC_ENUMOUTPUT, &output);
 			errno_enum = errno;
 
-			dprintf("\tENUMOUTPUT: i=%u, ret_enum=%i, errno_enum=%i\n", i, ret_enum, errno_enum);
+			dprintf
+			    ("\tENUMOUTPUT: i=%u, ret_enum=%i, errno_enum=%i\n",
+			     i, ret_enum, errno_enum);
 
 			if (ret_enum == 0) {
-				ret_set = ioctl(f, VIDIOC_S_OUTPUT, &output.index);
+				ret_set =
+				    ioctl(f, VIDIOC_S_OUTPUT, &output.index);
 				errno_set = errno;
 				CU_ASSERT_EQUAL(ret_set, 0);
 
-				dprintf("\toutput.index=0x%X, ret_set=%i, errno_set=%i\n", output.index, ret_set, errno_set);
+				dprintf
+				    ("\toutput.index=0x%X, ret_set=%i, errno_set=%i\n",
+				     output.index, ret_set, errno_set);
 
 			}
 			i++;
@@ -128,13 +137,15 @@ void test_VIDIOC_S_OUTPUT_from_enum() {
 	}
 }
 
-static void do_set_output(int f, __u32 first_wrong_output, __u32 index) {
+static void do_set_output(int f, __u32 first_wrong_output, __u32 index)
+{
 	struct v4l2_output output;
 	int ret_set, errno_set;
 
 	if (first_wrong_output <= index) {
 
-		dprintf("\tdo_set_output(f, 0x%X, 0x%X)\n", first_wrong_output, index);
+		dprintf("\tdo_set_output(f, 0x%X, 0x%X)\n", first_wrong_output,
+			index);
 
 		memset(&output, 0xff, sizeof(output));
 		output.index = index;
@@ -144,13 +155,15 @@ static void do_set_output(int f, __u32 first_wrong_output, __u32 index) {
 		CU_ASSERT_EQUAL(ret_set, -1);
 		CU_ASSERT_EQUAL(errno_set, EINVAL);
 
-		dprintf("\toutput.index=0x%X, ret_set=%i, errno_set=%i\n", output.index, ret_set, errno_set);
+		dprintf("\toutput.index=0x%X, ret_set=%i, errno_set=%i\n",
+			output.index, ret_set, errno_set);
 
 	}
 
 }
 
-void test_VIDIOC_S_OUTPUT_invalid_outputs() {
+void test_VIDIOC_S_OUTPUT_invalid_outputs()
+{
 	int ret_get, errno_get;
 	int ret_set, errno_set;
 	int ret_enum, errno_enum;
@@ -173,7 +186,9 @@ void test_VIDIOC_S_OUTPUT_invalid_outputs() {
 			ret_enum = ioctl(f, VIDIOC_ENUMOUTPUT, &output);
 			errno_enum = errno;
 
-			dprintf("\tENUMOUTPUT: i=%u, ret_enum=%i, errno_enum=%i\n", i, ret_enum, errno_enum);
+			dprintf
+			    ("\tENUMOUTPUT: i=%u, ret_enum=%i, errno_enum=%i\n",
+			     i, ret_enum, errno_enum);
 
 			i++;
 		} while (ret_enum == 0 && i != 0);
@@ -184,14 +199,15 @@ void test_VIDIOC_S_OUTPUT_invalid_outputs() {
 			/* The output index range 0..(i-1) are valid outputs. */
 			/* Try index values from range i..U32_MAX */
 			do_set_output(f, first_wrong_output, i);
-			do_set_output(f, first_wrong_output, i+1);
+			do_set_output(f, first_wrong_output, i + 1);
 
 			/* Check for signed/unsigned mismatch near S32_MAX */
-			for (i = 0; i <= first_wrong_output+1; i++) {
-				do_set_output(f, first_wrong_output, ((__u32)S32_MAX) + i);
+			for (i = 0; i <= first_wrong_output + 1; i++) {
+				do_set_output(f, first_wrong_output,
+					      ((__u32) S32_MAX) + i);
 			}
 
-			i = (U32_MAX-1)-first_wrong_output;
+			i = (U32_MAX - 1) - first_wrong_output;
 			do {
 				do_set_output(f, first_wrong_output, i);
 				i++;
@@ -208,7 +224,8 @@ void test_VIDIOC_S_OUTPUT_invalid_outputs() {
 	}
 }
 
-void test_VIDIOC_G_OUTPUT_NULL() {
+void test_VIDIOC_G_OUTPUT_NULL()
+{
 	int ret_get, errno_get;
 	int ret_null, errno_null;
 	__u32 index;
@@ -239,7 +256,8 @@ void test_VIDIOC_G_OUTPUT_NULL() {
 
 }
 
-void test_VIDIOC_S_OUTPUT_NULL() {
+void test_VIDIOC_S_OUTPUT_NULL()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	int ret_null, errno_null;

@@ -79,18 +79,18 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		case 'n':
-			rt_threads = atoi(v);
-			break;
-		case 'l':
-			locked_broadcast = atoi(v);
-			break;
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	case 'n':
+		rt_threads = atoi(v);
+		break;
+	case 'l':
+		locked_broadcast = atoi(v);
+		break;
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
@@ -99,23 +99,24 @@ struct array {
 	int *arr;
 	int counter;
 };
-struct array wakeup = { NULL , 0 };
+struct array wakeup = { NULL, 0 };
 
-void *master_thread(void* arg)
+void *master_thread(void *arg)
 {
 	int rc;
 	nsec_t start;
 
 	/* make sure children are started */
 	while (running_threads < rt_threads)
-	    usleep(1000);
+		usleep(1000);
 	/* give the worker threads a chance to get to sleep in the kernel
 	 * in the unlocked broadcast case. */
 	usleep(1000);
 
 	start = rt_gettime() - beginrun;
 
-	printf("%08lld us: Master thread about to wake the workers\n", start/NS_PER_US);
+	printf("%08lld us: Master thread about to wake the workers\n",
+	       start / NS_PER_US);
 	/* start the children threads */
 	if (locked_broadcast)
 		rc = pthread_mutex_lock(&mutex);
@@ -126,7 +127,7 @@ void *master_thread(void* arg)
 	return NULL;
 }
 
-void *worker_thread(void* arg)
+void *worker_thread(void *arg)
 {
 	struct sched_param sched_param;
 	int policy;
@@ -134,17 +135,19 @@ void *worker_thread(void* arg)
 	int mypri;
 	int j;
 	nsec_t start, wake;
-	j = (intptr_t)arg;
+	j = (intptr_t) arg;
 
-	if (pthread_getschedparam(pthread_self(), &policy, &sched_param) != 0)  {
-		printf("ERR: Couldn't get pthread info. Priority value wrong\n");
+	if (pthread_getschedparam(pthread_self(), &policy, &sched_param) != 0) {
+		printf
+		    ("ERR: Couldn't get pthread info. Priority value wrong\n");
 		mypri = -1;
 	} else {
 		mypri = sched_param.sched_priority;
 	}
 
 	start = rt_gettime() - beginrun;
-	debug(0, "%08lld us: RealtimeThread-%03d pri %03d started\n", start/NS_PER_US, j, mypri);
+	debug(0, "%08lld us: RealtimeThread-%03d pri %03d started\n",
+	      start / NS_PER_US, j, mypri);
 
 	rc = pthread_mutex_lock(&mutex);
 	running_threads++;
@@ -153,14 +156,15 @@ void *worker_thread(void* arg)
 	wake = rt_gettime() - beginrun;
 	running_threads--;
 	wakeup.arr[wakeup.counter++] = mypri;
-	debug(0, "%08lld us: RealtimeThread-%03d pri %03d awake\n", wake/NS_PER_US, j, mypri);
+	debug(0, "%08lld us: RealtimeThread-%03d pri %03d awake\n",
+	      wake / NS_PER_US, j, mypri);
 
 	rc = pthread_mutex_unlock(&mutex);
 
 	return NULL;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	int threads_per_prio;
 	int numcpus;
@@ -191,9 +195,9 @@ int main(int argc, char* argv[])
 	/* calculate the number of threads per priority */
 	/* we get num numprios -1 for the workers, leaving one for the master */
 	numprios = sched_get_priority_max(SCHED_FIFO) -
-		   sched_get_priority_min(SCHED_FIFO);
+	    sched_get_priority_min(SCHED_FIFO);
 
-	threads_per_prio = rt_threads /	numprios;
+	threads_per_prio = rt_threads / numprios;
 	if (rt_threads % numprios)
 		threads_per_prio++;
 
@@ -202,11 +206,11 @@ int main(int argc, char* argv[])
 	for (i = rt_threads; i > 0; i--) {
 		if ((i != rt_threads && (i % threads_per_prio) == 0))
 			prio++;
-		create_fifo_thread(worker_thread, (void*)(intptr_t)i, prio);
+		create_fifo_thread(worker_thread, (void *)(intptr_t) i, prio);
 	}
 
 	/* start the master thread */
-	create_fifo_thread(master_thread, (void*)(intptr_t)i, ++prio);
+	create_fifo_thread(master_thread, (void *)(intptr_t) i, ++prio);
 
 	/* wait for threads to complete */
 	join_threads();
@@ -215,9 +219,10 @@ int main(int argc, char* argv[])
 
 	printf("\nCriteria: Threads should be woken up in priority order\n");
 
-	for (i = 0; i < (wakeup.counter-1); i++) {
-		if (wakeup.arr[i] < wakeup.arr[i+1]) {
-			printf("FAIL: Thread %d woken before %d\n", wakeup.arr[i], wakeup.arr[i+1]);
+	for (i = 0; i < (wakeup.counter - 1); i++) {
+		if (wakeup.arr[i] < wakeup.arr[i + 1]) {
+			printf("FAIL: Thread %d woken before %d\n",
+			       wakeup.arr[i], wakeup.arr[i + 1]);
 			ret++;
 		}
 	}

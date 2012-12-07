@@ -31,36 +31,36 @@ int main(int argc, char *argv[])
 	}
 
 	if (argc < 2) {
-        	printf("Usage:  %s [1|2|3|4]\n", argv[0]);
+		printf("Usage:  %s [1|2|3|4]\n", argv[0]);
 		return PTS_UNRESOLVED;
 	}
 
 	/*
-		Various error conditions
-	*/
+	   Various error conditions
+	 */
 	switch (argv[1][0]) {
-		case '1':
-			signo=-1;
-			break;
-		case '2':
-			signo=-10000;
-			break;
-		case '3':
-			signo=INT32_MIN + 1;
-			break;
-		case '4':
-			signo=INT32_MIN;
-			break;
-		default:
-			printf("Usage:  %s [1|2|3|4]\n", argv[0]);
-			return -1;
+	case '1':
+		signo = -1;
+		break;
+	case '2':
+		signo = -10000;
+		break;
+	case '3':
+		signo = INT32_MIN + 1;
+		break;
+	case '4':
+		signo = INT32_MIN;
+		break;
+	default:
+		printf("Usage:  %s [1|2|3|4]\n", argv[0]);
+		return -1;
 	}
 
 	if (sigdelset(&signalset, signo) == -1) {
 		if (EINVAL == errno) {
-			printf ("errno set to EINVAL\n");
+			printf("errno set to EINVAL\n");
 			if ((sigismember(&signalset, signo) == 0) ||
-				sigismember(&signalset, signo) == -1) {
+			    sigismember(&signalset, signo) == -1) {
 				printf("signal was not removed\n");
 				return PTS_PASS;
 			} else {
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 				return PTS_UNRESOLVED;
 			}
 		} else {
-			printf ("errno not set to EINVAL\n");
+			printf("errno not set to EINVAL\n");
 			return PTS_FAIL;
 		}
 	}

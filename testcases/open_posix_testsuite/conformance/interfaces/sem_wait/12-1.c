@@ -23,7 +23,8 @@
 #define FUNCTION "sem_trywait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main() {
+int main()
+{
 	sem_t *mysemp;
 	char semname[28];
 
@@ -36,7 +37,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	/* Try to Lock Semaphore by sem_trywait*/
+	/* Try to Lock Semaphore by sem_trywait */
 	if (sem_trywait(mysemp) == -1) {
 		puts("TEST PASSED");
 		sem_unlink(semname);

@@ -148,8 +148,8 @@ int main(int ac, char **av)
 		TEST(chown(fname, uid, gid));
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "chown(%s, %d,%d) failed",
-			    fname, uid, gid);
+			tst_resm(TFAIL | TTERRNO, "chown(%s, %d,%d) failed",
+				 fname, uid, gid);
 		else {
 			if (STD_FUNCTIONAL_TEST)
 				tst_resm(TPASS, "chown(%s, %d,%d) returned %ld",
@@ -177,13 +177,13 @@ void setup()
 
 	sprintf(fname, "t_%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		   "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 	else if (write(fd, &buf, strlen(buf)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "write(%s, &buf, strlen(buf)) failed", fname);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "write(%s, &buf, strlen(buf)) failed", fname);
 	else if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", fname);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed", fname);
 }
 
 void cleanup()

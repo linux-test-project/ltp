@@ -30,32 +30,32 @@
   */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
- #include <sched.h>
- #include <semaphore.h>
- #include <errno.h>
- #include <assert.h>
+#include <sched.h>
+#include <semaphore.h>
+#include <errno.h>
+#include <assert.h>
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -98,7 +98,7 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-int global=0;
+int global = 0;
 int tab[4];
 pthread_key_t tld[3];
 
@@ -110,31 +110,37 @@ pthread_key_t tld[3];
 
 /* Cancelation cleanup handlers */
 CLEANUP(1)
-CLEANUP(2)
-CLEANUP(3)
+    CLEANUP(2)
+    CLEANUP(3)
 
 /* TLD destructor */
-void destructor(void * arg)
+void destructor(void *arg)
 {
-	*(int *) arg += global;
+	*(int *)arg += global;
 }
 
 /* Thread routine */
-void * threaded (void * arg)
+void *threaded(void *arg)
 {
 	int ret = 0;
 
 	ret = pthread_setspecific(tld[0], (void *)&tab[3]);
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to set TLD data");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to set TLD data");
+	}
 
 	pthread_cleanup_push(clnp3, NULL);
 	pthread_cleanup_push(clnp2, NULL);
 	ret = pthread_setspecific(tld[1], (void *)&tab[3]);
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to set TLD data");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to set TLD data");
+	}
 
 	pthread_cleanup_push(clnp1, NULL);
 	ret = pthread_setspecific(tld[2], (void *)&tab[3]);
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to set TLD data");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to set TLD data");
+	}
 
 	pthread_exit(NULL + 1);
 
@@ -146,90 +152,106 @@ void * threaded (void * arg)
 	return NULL;
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int ret=0;
-	void * rval;
+	int ret = 0;
+	void *rval;
 	pthread_t child;
-	int i,j;
+	int i, j;
 
 	output_init();
 
 	scenar_init();
 
-	for (j=0; j<3; j++)
-	{
+	for (j = 0; j < 3; j++) {
 		ret = pthread_key_create(&tld[j], destructor);
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to create a TLD key");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Failed to create a TLD key");
+		}
 	}
 
-	for (i=0; i < NSCENAR; i++)
-	{
-		if (scenarii[i].detached == 0)
-		{
-			#if VERBOSE > 0
+	for (i = 0; i < NSCENAR; i++) {
+		if (scenarii[i].detached == 0) {
+#if VERBOSE > 0
 			output("-----\n");
-			output("Starting test with scenario (%i): %s\n", i, scenarii[i].descr);
-			#endif
+			output("Starting test with scenario (%i): %s\n", i,
+			       scenarii[i].descr);
+#endif
 
-			for (j=0; j<4; j++)
-				tab[j]=0;
-			global=0;
+			for (j = 0; j < 4; j++)
+				tab[j] = 0;
+			global = 0;
 
-			ret = pthread_create(&child, &scenarii[i].ta, threaded, NULL);
-			switch (scenarii[i].result)
-			{
-				case 0: /* Operation was expected to succeed */
-					if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
-					break;
+			ret =
+			    pthread_create(&child, &scenarii[i].ta, threaded,
+					   NULL);
+			switch (scenarii[i].result) {
+			case 0:	/* Operation was expected to succeed */
+				if (ret != 0) {
+					UNRESOLVED(ret,
+						   "Failed to create this thread");
+				}
+				break;
 
-				case 1: /* Operation was expected to fail */
-					if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
-					break;
+			case 1:	/* Operation was expected to fail */
+				if (ret == 0) {
+					UNRESOLVED(-1,
+						   "An error was expected but the thread creation succeeded");
+				}
+				break;
 
-				case 2: /* We did not know the expected result */
-				default:
-					#if VERBOSE > 0
-					if (ret == 0)
-						{ output("Thread has been created successfully for this scenario\n"); }
-					else
-						{ output("Thread creation failed with the error: %s\n", strerror(ret)); }
-					#endif
+			case 2:	/* We did not know the expected result */
+			default:
+#if VERBOSE > 0
+				if (ret == 0) {
+					output
+					    ("Thread has been created successfully for this scenario\n");
+				} else {
+					output
+					    ("Thread creation failed with the error: %s\n",
+					     strerror(ret));
+				}
+#endif
 			}
-			if (ret == 0) /* The new thread is running */
-			{
+			if (ret == 0) {	/* The new thread is running */
 				ret = pthread_join(child, &rval);
-				if (ret != 0)  {  UNRESOLVED(ret, "Unable to join a thread");  }
-
-				if (rval != (NULL+1))
-				{
-					FAILED("pthread_join() did not retrieve the pthread_exit() param");
+				if (ret != 0) {
+					UNRESOLVED(ret,
+						   "Unable to join a thread");
 				}
 
-				for (j=0; j<3; j++)
-				{
-					if ((tab[j] != j+1) || (tab[3] != 9))
-					{
-						output("dump:\ntab[0]=%i\ntab[1]=%i\ntab[2]=%i\ntab[3]=%i\n", tab[0], tab[1], tab[2], tab[3]);
-						FAILED("The cleanup handlers were not called as expected");
+				if (rval != (NULL + 1)) {
+					FAILED
+					    ("pthread_join() did not retrieve the pthread_exit() param");
+				}
+
+				for (j = 0; j < 3; j++) {
+					if ((tab[j] != j + 1) || (tab[3] != 9)) {
+						output
+						    ("dump:\ntab[0]=%i\ntab[1]=%i\ntab[2]=%i\ntab[3]=%i\n",
+						     tab[0], tab[1], tab[2],
+						     tab[3]);
+						FAILED
+						    ("The cleanup handlers were not called as expected");
 					}
 				}
 			}
 		}
 	}
 
-	for (j=0; j<3; j++)
-	{
+	for (j = 0; j < 3; j++) {
 		ret = pthread_key_delete(tld[j]);
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to delete a TLD key");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Failed to delete a TLD key");
+		}
 	}
 
 	scenar_fini();
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("-----\n");
 	output("All test data destroyed\n");
 	output("Test PASSED\n");
-	#endif
+#endif
 
 	PASSED;
 }

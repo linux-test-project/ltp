@@ -40,7 +40,8 @@
 
 #include "test_VIDIOC_ENUMAUDOUT.h"
 
-void test_VIDIOC_ENUMAUDOUT() {
+void test_VIDIOC_ENUMAUDOUT()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audioout audioout;
 	struct v4l2_audioout audioout2;
@@ -53,14 +54,17 @@ void test_VIDIOC_ENUMAUDOUT() {
 		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDOUT, &audioout);
 		errno_enum = errno;
 
-		dprintf("\tVIDIOC_ENUMAUDOUT, ret_enum=%i, errno_enum=%i\n", ret_enum, errno_enum);
+		dprintf("\tVIDIOC_ENUMAUDOUT, ret_enum=%i, errno_enum=%i\n",
+			ret_enum, errno_enum);
 
 		if (ret_enum == 0) {
 			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(audioout.index, i);
 
-			CU_ASSERT(0 < strlen( (char*)audioout.name ));
-			CU_ASSERT(valid_string((char*)audioout.name, sizeof(audioout.name)));
+			CU_ASSERT(0 < strlen((char *)audioout.name));
+			CU_ASSERT(valid_string
+				  ((char *)audioout.name,
+				   sizeof(audioout.name)));
 
 			//CU_ASSERT_EQUAL(audioout.capability, ?);
 			//CU_ASSERT_EQUAL(audioout.mode, ?);
@@ -74,10 +78,13 @@ void test_VIDIOC_ENUMAUDOUT() {
 			 */
 			memset(&audioout2, 0, sizeof(audioout2));
 			audioout2.index = audioout.index;
-			strncpy((char*)audioout2.name, (char*)audioout.name, sizeof(audioout2.name));
+			strncpy((char *)audioout2.name, (char *)audioout.name,
+				sizeof(audioout2.name));
 			audioout2.capability = audioout.capability;
 			audioout2.mode = audioout.mode;
-			CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
+			CU_ASSERT_EQUAL(memcmp
+					(&audioout, &audioout2,
+					 sizeof(audioout)), 0);
 
 			dprintf("\taudioout = {.index=%u, .name=\"%s\", "
 				".capability=0x%X, .mode=0x%X, "
@@ -86,9 +93,8 @@ void test_VIDIOC_ENUMAUDOUT() {
 				audioout.name,
 				audioout.capability,
 				audioout.mode,
-				audioout.reserved[0],
-				audioout.reserved[1]
-				);
+				audioout.reserved[0], audioout.reserved[1]
+			    );
 
 		} else {
 			CU_ASSERT_EQUAL(ret_enum, -1);
@@ -97,7 +103,9 @@ void test_VIDIOC_ENUMAUDOUT() {
 			/* check whether the structure is untouched */
 			memset(&audioout2, 0xff, sizeof(audioout2));
 			audioout2.index = i;
-			CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
+			CU_ASSERT_EQUAL(memcmp
+					(&audioout, &audioout2,
+					 sizeof(audioout)), 0);
 
 		}
 		i++;
@@ -105,13 +113,14 @@ void test_VIDIOC_ENUMAUDOUT() {
 
 }
 
-void test_VIDIOC_ENUMAUDOUT_S32_MAX() {
+void test_VIDIOC_ENUMAUDOUT_S32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audioout audioout;
 	struct v4l2_audioout audioout2;
 
 	memset(&audioout, 0xff, sizeof(audioout));
-	audioout.index = (__u32)S32_MAX;
+	audioout.index = (__u32) S32_MAX;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDOUT, &audioout);
 	errno_enum = errno;
 
@@ -120,17 +129,18 @@ void test_VIDIOC_ENUMAUDOUT_S32_MAX() {
 
 	/* Check whether the original audioout struct is untouched */
 	memset(&audioout2, 0xff, sizeof(audioout2));
-	audioout2.index = (__u32)S32_MAX;
+	audioout2.index = (__u32) S32_MAX;
 	CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
 }
 
-void test_VIDIOC_ENUMAUDOUT_S32_MAX_1() {
+void test_VIDIOC_ENUMAUDOUT_S32_MAX_1()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audioout audioout;
 	struct v4l2_audioout audioout2;
 
 	memset(&audioout, 0xff, sizeof(audioout));
-	audioout.index = ((__u32)S32_MAX)+1;
+	audioout.index = ((__u32) S32_MAX) + 1;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDOUT, &audioout);
 	errno_enum = errno;
 
@@ -139,11 +149,12 @@ void test_VIDIOC_ENUMAUDOUT_S32_MAX_1() {
 
 	/* Check whether the original audioout struct is untouched */
 	memset(&audioout2, 0xff, sizeof(audioout2));
-	audioout2.index = ((__u32)S32_MAX)+1;
+	audioout2.index = ((__u32) S32_MAX) + 1;
 	CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
 }
 
-void test_VIDIOC_ENUMAUDOUT_U32_MAX() {
+void test_VIDIOC_ENUMAUDOUT_U32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audioout audioout;
 	struct v4l2_audioout audioout2;
@@ -162,7 +173,8 @@ void test_VIDIOC_ENUMAUDOUT_U32_MAX() {
 	CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
 }
 
-void test_VIDIOC_ENUMAUDOUT_NULL() {
+void test_VIDIOC_ENUMAUDOUT_NULL()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_audioout audioout;
 	int ret_null, errno_null;

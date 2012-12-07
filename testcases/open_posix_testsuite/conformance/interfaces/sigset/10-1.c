@@ -20,13 +20,15 @@
 
 int main()
 {
-        if (sigset(SIGKILL,SIG_IGN) == SIG_ERR) {
+	if (sigset(SIGKILL, SIG_IGN) == SIG_ERR) {
 		if (errno != EINVAL) {
-			printf("Test FAILED: sigset() returned SIG_ERR but didn't set errno to EINVAL\n");
+			printf
+			    ("Test FAILED: sigset() returned SIG_ERR but didn't set errno to EINVAL\n");
 			return PTS_FAIL;
 		}
 	} else {
-		printf("Test FAILED: sigset() didn't return SIG_ERROR even though SIGKILL was passed to it\n");
+		printf
+		    ("Test FAILED: sigset() didn't return SIG_ERROR even though SIGKILL was passed to it\n");
 		return PTS_FAIL;
 	}
 

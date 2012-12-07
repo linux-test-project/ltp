@@ -72,8 +72,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="diotest4";		 		 /* Test program identifier.    */
-int TST_TOTAL=17;		 		 /* Total number of test conditions */
+char *TCID = "diotest4";	/* Test program identifier.    */
+int TST_TOTAL = 17;		/* Total number of test conditions */
 
 #ifdef O_DIRECT
 
@@ -82,9 +82,9 @@ int TST_TOTAL=17;		 		 /* Total number of test conditions */
 #define LEN	30
 
 #ifdef __GNUC__
-# define ADDRESS_OF_MAIN __builtin_extract_return_addr(__builtin_return_address(0))
+#define ADDRESS_OF_MAIN __builtin_extract_return_addr(__builtin_return_address(0))
 #else
-# define ADDRESS_OF_MAIN main
+#define ADDRESS_OF_MAIN main
 #endif
 
 /*
@@ -92,7 +92,8 @@ int TST_TOTAL=17;		 		 /* Total number of test conditions */
  *	running read or write with the expected error value (errnum).
 */
 int
-runtest_f(int fd, char *buf, int   offset, int count, int errnum, int testnum, char *msg)
+runtest_f(int fd, char *buf, int offset, int count, int errnum, int testnum,
+	  char *msg)
 {
 	int ret;
 	int l_fail = 0;
@@ -100,80 +101,74 @@ runtest_f(int fd, char *buf, int   offset, int count, int errnum, int testnum, c
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		if (errno != errnum) {
 			tst_resm(TFAIL, "lseek before read failed: %s",
-				strerror(errno));
+				 strerror(errno));
 			l_fail = TRUE;
 		}
-	}
-	else {
-		ret=read(fd, buf, count);
+	} else {
+		ret = read(fd, buf, count);
 		if (ret >= 0 || errno != errnum) {
 			tst_resm(TFAIL, "read allows %s. returns %d: %s",
-				msg, ret, strerror(errno));
+				 msg, ret, strerror(errno));
 			l_fail = TRUE;
 		}
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		if (errno != errnum) {
 			tst_resm(TFAIL, "lseek before write failed: %s",
-				strerror(errno));
+				 strerror(errno));
 			l_fail = TRUE;
 		}
-	}
-	else {
-		ret=write(fd, buf, count);
+	} else {
+		ret = write(fd, buf, count);
 		if (ret >= 0 || errno != errnum) {
 			tst_resm(TFAIL, "write allows %s.returns %d: %s",
-				msg, ret, strerror(errno));
+				 msg, ret, strerror(errno));
 			l_fail = TRUE;
 		}
 	}
-	return(l_fail);
+	return (l_fail);
 }
 
 /*
  * runtest_s: Do read, writes. Verify the they run successfully.
 */
-int
-runtest_s(int fd, char *buf, int   offset, int count, int testnum, char *msg)
+int runtest_s(int fd, char *buf, int offset, int count, int testnum, char *msg)
 {
 	int ret;
 	int l_fail = 0;
 
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek before read failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		l_fail = TRUE;
-	}
-	else {
-		if ((ret=read(fd, buf, count)) < 0) {
+	} else {
+		if ((ret = read(fd, buf, count)) < 0) {
 			tst_resm(TFAIL, "read failed for %s. returns %d: %s",
-				msg, ret, strerror(errno));
+				 msg, ret, strerror(errno));
 			l_fail = TRUE;
 		}
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek before write failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		l_fail = TRUE;
-	}
-	else {
-		if ((ret=write(fd, buf, count)) < 0) {
+	} else {
+		if ((ret = write(fd, buf, count)) < 0) {
 			tst_resm(TFAIL, "write failed for %s. returns %d: %s",
-				msg, ret, strerror(errno));
+				 msg, ret, strerror(errno));
 			l_fail = TRUE;
 		}
 	}
-	return(l_fail);
+	return (l_fail);
 }
 
 /*
  * prg_usage - Display the program usage
 */
-void
-prg_usage()
+void prg_usage()
 {
-        fprintf(stderr, "Usage: diotest4 [-b filesize_in_blocks]\n");
-        exit(1);
+	fprintf(stderr, "Usage: diotest4 [-b filesize_in_blocks]\n");
+	exit(1);
 }
 
 static void setup(void);
@@ -181,24 +176,23 @@ static void cleanup(void);
 static int fd1 = -1;
 static char filename[LEN];
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int	fblocks = 1;		/* Iterations. Default 1 */
-        int     bufsize = BUFSIZE;
-        int     count, ret;
-	int     offset;
-        int     fd, newfd;
-        int     i, l_fail = 0, fail_count = 0, total = 0;
-	int	failed = 0;
-	int	shmsz = SHMLBA;
-	int	pagemask = ~(sysconf(_SC_PAGE_SIZE) - 1);
-        char    *buf0, *buf1, *buf2;
-	caddr_t	shm_base;
+	int fblocks = 1;	/* Iterations. Default 1 */
+	int bufsize = BUFSIZE;
+	int count, ret;
+	int offset;
+	int fd, newfd;
+	int i, l_fail = 0, fail_count = 0, total = 0;
+	int failed = 0;
+	int shmsz = SHMLBA;
+	int pagemask = ~(sysconf(_SC_PAGE_SIZE) - 1);
+	char *buf0, *buf1, *buf2;
+	caddr_t shm_base;
 
 	/* Options */
 	while ((i = getopt(argc, argv, "b:")) != -1) {
-		switch(i) {
+		switch (i) {
 		case 'b':
 			if ((fblocks = atoi(optarg)) <= 0) {
 				fprintf(stderr, "fblocks must be > 0\n");
@@ -213,28 +207,30 @@ main(int argc, char *argv[])
 	setup();
 
 	/* Open file and fill, allocate for buffer */
-        if ((fd = open(filename, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
+	if ((fd = open(filename, O_DIRECT | O_RDWR | O_CREAT, 0666)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed for %s: %s",
-			filename, strerror(errno));
-        }
-        if ((buf0 = valloc(BUFSIZE)) == NULL) {
-		tst_brkm(TBROK, cleanup, "valloc() buf0 failed: %s", strerror(errno));
-        }
-        for (i = 1; i < fblocks; i++) {
-                fillbuf(buf0, BUFSIZE, (char)i);
-                if (write(fd, buf0, BUFSIZE) < 0) {
+			 filename, strerror(errno));
+	}
+	if ((buf0 = valloc(BUFSIZE)) == NULL) {
+		tst_brkm(TBROK, cleanup, "valloc() buf0 failed: %s",
+			 strerror(errno));
+	}
+	for (i = 1; i < fblocks; i++) {
+		fillbuf(buf0, BUFSIZE, (char)i);
+		if (write(fd, buf0, BUFSIZE) < 0) {
 			tst_brkm(TBROK, cleanup, "write failed for %s: %s",
-				filename, strerror(errno));
-                }
-        }
+				 filename, strerror(errno));
+		}
+	}
 	close(fd);
-        if ((buf2 = valloc(BUFSIZE)) == NULL) {
-		tst_brkm(TBROK, cleanup, "valloc() buf2 failed: %s", strerror(errno));
-        }
-        if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
+	if ((buf2 = valloc(BUFSIZE)) == NULL) {
+		tst_brkm(TBROK, cleanup, "valloc() buf2 failed: %s",
+			 strerror(errno));
+	}
+	if ((fd = open(filename, O_DIRECT | O_RDWR)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed for %s: %s",
-				filename, strerror(errno));
-        }
+			 filename, strerror(errno));
+	}
 
 	/* Test-1: Negative Offset */
 	offset = -1;
@@ -242,32 +238,30 @@ main(int argc, char *argv[])
 	ret = lseek(fd, offset, SEEK_SET);
 	if ((ret >= 0) || (errno != EINVAL)) {
 		tst_resm(TFAIL, "lseek allows negative offset. returns %d:%s",
-			ret, strerror(errno));
+			 ret, strerror(errno));
 		failed = TRUE;
 		fail_count++;
-	}
-	else
-		tst_resm (TPASS, "Negative Offset");
+	} else
+		tst_resm(TPASS, "Negative Offset");
 	total++;
 
 	/* Test-2: Removed */
-	tst_resm (TPASS, "removed");
+	tst_resm(TPASS, "removed");
 
 	/* Test-3: Odd count of read and write */
 	offset = 0;
 	count = 1;
 	lseek(fd, 0, SEEK_SET);
 	if (write(fd, buf2, 4096) == -1) {
-		tst_resm(TFAIL,"can't write to file %d",ret);
+		tst_resm(TFAIL, "can't write to file %d", ret);
 	}
 	ret = runtest_f(fd, buf2, offset, count, EINVAL, 3, "odd count");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "Odd count of read and write");
-	}
-	else
-		tst_resm (TPASS, "Odd count of read and write");
+		tst_resm(TFAIL, "Odd count of read and write");
+	} else
+		tst_resm(TPASS, "Odd count of read and write");
 	total++;
 
 	/* Test-4: Read beyond the file size */
@@ -277,18 +271,17 @@ main(int argc, char *argv[])
 		tst_resm(TFAIL, "lseek failed: %s", strerror(errno));
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "Read beyond the file size");
-	}
-	else {
-        	ret = read(fd, buf2, count);
-        	if (ret > 0 || (ret < 0 && errno != EINVAL)) {
-                	tst_resm(TFAIL,"allows read beyond file size. returns %d: %s",
-				ret, strerror(errno));
-                	failed = TRUE;
+		tst_resm(TFAIL, "Read beyond the file size");
+	} else {
+		ret = read(fd, buf2, count);
+		if (ret > 0 || (ret < 0 && errno != EINVAL)) {
+			tst_resm(TFAIL,
+				 "allows read beyond file size. returns %d: %s",
+				 ret, strerror(errno));
+			failed = TRUE;
 			fail_count++;
-		}
-		else
-			tst_resm (TPASS, "Read beyond the file size");
+		} else
+			tst_resm(TPASS, "Read beyond the file size");
 	}
 	total++;
 
@@ -300,10 +293,9 @@ main(int argc, char *argv[])
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "Invalid file descriptor");
-	}
-	else
-		tst_resm (TPASS, "Invalid file descriptor");
+		tst_resm(TFAIL, "Invalid file descriptor");
+	} else
+		tst_resm(TPASS, "Invalid file descriptor");
 	total++;
 
 	/* Test-6: Out of range file descriptor */
@@ -311,18 +303,18 @@ main(int argc, char *argv[])
 	offset = 4096;
 	if ((newfd = getdtablesize()) < 0) {
 		tst_resm(TFAIL, "getdtablesize() failed: %s", strerror(errno));
-                failed = TRUE;
-		tst_resm (TFAIL, "Out of range file descriptor");
-	}
-	else {
-		ret = runtest_f(newfd, buf2, offset, count, EBADF, 6,"out of range fd");
+		failed = TRUE;
+		tst_resm(TFAIL, "Out of range file descriptor");
+	} else {
+		ret =
+		    runtest_f(newfd, buf2, offset, count, EBADF, 6,
+			      "out of range fd");
 		if (ret != 0) {
 			failed = TRUE;
 			fail_count++;
-			tst_resm (TFAIL, "Out of range file descriptor");
-		}
-		else
-			tst_resm (TPASS, "Out of range file descriptor");
+			tst_resm(TFAIL, "Out of range file descriptor");
+		} else
+			tst_resm(TPASS, "Out of range file descriptor");
 	}
 	close(newfd);
 	total++;
@@ -330,103 +322,101 @@ main(int argc, char *argv[])
 	/* Test-7: Closed file descriptor */
 	offset = 4096;
 	count = bufsize;
-        if (close(fd) < 0) {
-		tst_brkm(TBROK, cleanup, "can't close fd %d: %s", fd, strerror(errno));
-        }
+	if (close(fd) < 0) {
+		tst_brkm(TBROK, cleanup, "can't close fd %d: %s", fd,
+			 strerror(errno));
+	}
 	ret = runtest_f(fd, buf2, offset, count, EBADF, 7, "closed fd");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "Closed file descriptor");
-	}
-	else
-		tst_resm (TPASS, "Closed file descriptor");
+		tst_resm(TFAIL, "Closed file descriptor");
+	} else
+		tst_resm(TPASS, "Closed file descriptor");
 	total++;
 
 	/* Test-9: removed */
-	tst_resm (TPASS, "removed");
+	tst_resm(TPASS, "removed");
 
 	/* Test-9: Character device (/dev/null) read, write */
 	offset = 0;
 	count = bufsize;
-	if ((newfd = open("/dev/null", O_DIRECT|O_RDWR)) < 0) {
+	if ((newfd = open("/dev/null", O_DIRECT | O_RDWR)) < 0) {
 		tst_resm(TCONF, "Direct I/O on /dev/null is not supported");
 	} else {
 		ret = runtest_s(newfd, buf2, offset, count, 9, "/dev/null");
 		if (ret != 0) {
 			failed = TRUE;
 			fail_count++;
-			tst_resm (TFAIL, "character device read, write");
-		}
-		else
-			tst_resm (TPASS, "character device read, write");
+			tst_resm(TFAIL, "character device read, write");
+		} else
+			tst_resm(TPASS, "character device read, write");
 	}
 	close(newfd);
 	total++;
 
 	/* Test-10: read, write to a mmaped file */
-	shm_base = (char *)(((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1));
-        if (shm_base == NULL) {
+	shm_base = (char *)(((long)sbrk(0) + (shmsz - 1)) & ~(shmsz - 1));
+	if (shm_base == NULL) {
 		tst_brkm(TBROK, cleanup, "sbrk failed: %s", strerror(errno));
-        }
+	}
 	offset = 4096;
 	count = bufsize;
-	if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
+	if ((fd = open(filename, O_DIRECT | O_RDWR)) < 0) {
 		tst_brkm(TBROK, cleanup, "can't open %s: %s",
-			filename, strerror(errno));
-        }
-	shm_base = mmap(shm_base, 0x100000, PROT_READ|PROT_WRITE,
-		        MAP_SHARED|MAP_FIXED, fd, 0);
-        if (shm_base == (caddr_t)-1) {
-		tst_brkm(TBROK, cleanup, "can't mmap file: %s", strerror(errno));
-        }
+			 filename, strerror(errno));
+	}
+	shm_base = mmap(shm_base, 0x100000, PROT_READ | PROT_WRITE,
+			MAP_SHARED | MAP_FIXED, fd, 0);
+	if (shm_base == (caddr_t) - 1) {
+		tst_brkm(TBROK, cleanup, "can't mmap file: %s",
+			 strerror(errno));
+	}
 	ret = runtest_s(fd, buf2, offset, count, 10, "mmapped file");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "read, write to a mmaped file");
-	}
-	else
-		tst_resm (TPASS, "read, write to a mmaped file");
+		tst_resm(TFAIL, "read, write to a mmaped file");
+	} else
+		tst_resm(TPASS, "read, write to a mmaped file");
 	total++;
 
 	/* Test-11: read, write to an unmaped file with munmap */
 	if ((ret = munmap(shm_base, 0x100000)) < 0) {
-		tst_brkm(TBROK, cleanup, "can't unmap file: %s", strerror(errno));
-        }
+		tst_brkm(TBROK, cleanup, "can't unmap file: %s",
+			 strerror(errno));
+	}
 	ret = runtest_s(fd, buf2, offset, count, 11, "unmapped file");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "read, write to an unmapped file");
-	}
-	else
-		tst_resm (TPASS, "read, write to an unmapped file");
+		tst_resm(TFAIL, "read, write to an unmapped file");
+	} else
+		tst_resm(TPASS, "read, write to an unmapped file");
 	close(fd);
 	total++;
 
 	/* Test-12: read from file not open for reading */
 	offset = 4096;
 	count = bufsize;
-        if ((fd = open(filename, O_DIRECT|O_WRONLY)) < 0) {
+	if ((fd = open(filename, O_DIRECT | O_WRONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "can't open %s: %s",
-			filename, strerror(errno));
-        }
+			 filename, strerror(errno));
+	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek failed: %s", strerror(errno));
 		failed = TRUE;
 		fail_count++;
-	}
-	else {
+	} else {
 		ret = read(fd, buf2, count);
 		if (ret >= 0 || errno != EBADF) {
-			tst_resm(TFAIL, "allows read on file not open for reading. returns %d: %s",
-				ret, strerror(errno));
+			tst_resm(TFAIL,
+				 "allows read on file not open for reading. returns %d: %s",
+				 ret, strerror(errno));
 			failed = TRUE;
 			fail_count++;
-		}
-		else
-			tst_resm (TPASS, "read from file not open for reading");
+		} else
+			tst_resm(TPASS, "read from file not open for reading");
 	}
 	close(fd);
 	total++;
@@ -434,25 +424,24 @@ main(int argc, char *argv[])
 	/* Test-13: write to file not open for writing */
 	offset = 4096;
 	count = bufsize;
-	if ((fd = open(filename, O_DIRECT|O_RDONLY)) < 0) {
+	if ((fd = open(filename, O_DIRECT | O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "can't open %s: %s",
-			filename, strerror(errno));
+			 filename, strerror(errno));
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek failed: %s", strerror(errno));
 		failed = TRUE;
 		fail_count++;
-	}
-	else {
+	} else {
 		ret = write(fd, buf2, count);
-        	if (ret >= 0 || errno != EBADF) {
-			tst_resm(TFAIL, "allows write on file not open for writing. returns %d: %s",
-				ret, strerror(errno));
+		if (ret >= 0 || errno != EBADF) {
+			tst_resm(TFAIL,
+				 "allows write on file not open for writing. returns %d: %s",
+				 ret, strerror(errno));
 			failed = TRUE;
 			fail_count++;
-		}
-		else
-			tst_resm (TPASS, "write to file not open for writing");
+		} else
+			tst_resm(TPASS, "write to file not open for writing");
 	}
 	close(fd);
 	total++;
@@ -461,41 +450,40 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
 	l_fail = 0;
-        if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
+	if ((fd = open(filename, O_DIRECT | O_RDWR)) < 0) {
 		tst_brkm(TBROK, cleanup, "can't open %s: %s",
-			filename, strerror(errno));
-        }
-	if (lseek(fd, offset, SEEK_SET) < 0) {
-		tst_resm(TFAIL, "lseek before read failed: %s",
-			strerror(errno));
-		l_fail = TRUE;
-	}
-	else {
-		if ((ret = read(fd, buf2+1, count)) != -1) {
-                	tst_resm(TFAIL,"allows read nonaligned buf. returns %d: %s",
-				ret, strerror(errno));
-                	l_fail = TRUE;
-        	}
+			 filename, strerror(errno));
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek before read failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		l_fail = TRUE;
+	} else {
+		if ((ret = read(fd, buf2 + 1, count)) != -1) {
+			tst_resm(TFAIL,
+				 "allows read nonaligned buf. returns %d: %s",
+				 ret, strerror(errno));
+			l_fail = TRUE;
+		}
 	}
-	else {
-		if ((ret = write(fd, buf2+1, count)) != -1) {
-			tst_resm(TFAIL,"allows write nonaligned buf. returns %d: %s",
-				ret, strerror(errno));
-                	l_fail = TRUE;
-        	}
+	if (lseek(fd, offset, SEEK_SET) < 0) {
+		tst_resm(TFAIL, "lseek before read failed: %s",
+			 strerror(errno));
+		l_fail = TRUE;
+	} else {
+		if ((ret = write(fd, buf2 + 1, count)) != -1) {
+			tst_resm(TFAIL,
+				 "allows write nonaligned buf. returns %d: %s",
+				 ret, strerror(errno));
+			l_fail = TRUE;
+		}
 	}
 	if (l_fail) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "read, write with non-aligned buffer");
-	}
-	else
-		tst_resm (TPASS, "read, write with non-aligned buffer");
+		tst_resm(TFAIL, "read, write with non-aligned buffer");
+	} else
+		tst_resm(TPASS, "read, write with non-aligned buffer");
 	total++;
 	close(fd);
 
@@ -503,92 +491,94 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
 	l_fail = 0;
-        if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-                tst_brkm(TBROK, cleanup, "can't open %s: %s",
-			filename, strerror(errno));
-        }
+	if ((fd = open(filename, O_DIRECT | O_RDWR)) < 0) {
+		tst_brkm(TBROK, cleanup, "can't open %s: %s",
+			 filename, strerror(errno));
+	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek before read failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		l_fail = TRUE;
-	}
-	else {
-		ret = read(fd, (char*)((ulong)ADDRESS_OF_MAIN & pagemask), count);
+	} else {
+		ret =
+		    read(fd, (char *)((ulong) ADDRESS_OF_MAIN & pagemask),
+			 count);
 		if (ret >= 0 || errno != EFAULT) {
-			tst_resm(TFAIL,"read to read-only space. returns %d: %s",
-				ret, strerror(errno));
+			tst_resm(TFAIL,
+				 "read to read-only space. returns %d: %s", ret,
+				 strerror(errno));
 			l_fail = TRUE;
-        	}
+		}
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek before write failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		l_fail = TRUE;
-	}
-	else {
-		ret = write(fd, (char *)((ulong)ADDRESS_OF_MAIN & pagemask), count);
+	} else {
+		ret =
+		    write(fd, (char *)((ulong) ADDRESS_OF_MAIN & pagemask),
+			  count);
 		if (ret < 0) {
-			tst_resm(TFAIL,"write to read-only space. returns %d: %s",
-				ret, strerror(errno));
+			tst_resm(TFAIL,
+				 "write to read-only space. returns %d: %s",
+				 ret, strerror(errno));
 			l_fail = TRUE;
 		}
 	}
 	if (l_fail) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "read, write buffer in read-only space");
-	}
-	else
-		tst_resm (TPASS, "read, write buffer in read-only space");
+		tst_resm(TFAIL, "read, write buffer in read-only space");
+	} else
+		tst_resm(TPASS, "read, write buffer in read-only space");
 	close(fd);
 	total++;
 
 	/* Test-16: read, write in non-existant space */
 	offset = 4096;
 	count = bufsize;
-	if ((buf1 = (char *) (((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1))) == NULL) {
-                tst_brkm(TBROK|TERRNO, cleanup, "sbrk failed");
-        }
-        if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_DIRECT|O_RDWR) failed", filename);
-        }
-	ret = runtest_f(fd, buf1, offset, count, EFAULT, 16, " nonexistant space");
+	if ((buf1 =
+	     (char *)(((long)sbrk(0) + (shmsz - 1)) & ~(shmsz - 1))) == NULL) {
+		tst_brkm(TBROK | TERRNO, cleanup, "sbrk failed");
+	}
+	if ((fd = open(filename, O_DIRECT | O_RDWR)) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_DIRECT|O_RDWR) failed", filename);
+	}
+	ret =
+	    runtest_f(fd, buf1, offset, count, EFAULT, 16,
+		      " nonexistant space");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "read, write in non-existant space");
-	}
-	else
-		tst_resm (TPASS, "read, write in non-existant space");
+		tst_resm(TFAIL, "read, write in non-existant space");
+	} else
+		tst_resm(TPASS, "read, write in non-existant space");
 	total++;
 	close(fd);
 
 	/* Test-17: read, write for file with O_SYNC */
 	offset = 4096;
 	count = bufsize;
-        if ((fd = open(filename,O_DIRECT|O_RDWR|O_SYNC)) < 0) {
+	if ((fd = open(filename, O_DIRECT | O_RDWR | O_SYNC)) < 0) {
 		tst_brkm(TBROK, cleanup,
-		    "open(%s, O_DIRECT|O_RDWR|O_SYNC failed)", filename);
-        }
+			 "open(%s, O_DIRECT|O_RDWR|O_SYNC failed)", filename);
+	}
 	ret = runtest_s(fd, buf2, offset, count, 17, "opened with O_SYNC");
 	if (ret != 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "read, write for file with O_SYNC");
-	}
-	else
-		tst_resm (TPASS, "read, write for file with O_SYNC");
+		tst_resm(TFAIL, "read, write for file with O_SYNC");
+	} else
+		tst_resm(TPASS, "read, write for file with O_SYNC");
 	total++;
 	close(fd);
 
 	unlink(filename);
 	if (failed)
-		tst_resm(TINFO, "%d/%d test blocks failed",
-			fail_count, total);
+		tst_resm(TINFO, "%d/%d test blocks failed", fail_count, total);
 	else
-		tst_resm(TINFO, "%d testblocks completed",
-		 		 total);
+		tst_resm(TINFO, "%d testblocks completed", total);
 	cleanup();
 
 	tst_exit();
@@ -596,22 +586,25 @@ main(int argc, char *argv[])
 
 static void setup(void)
 {
-	struct	sigaction act;
+	struct sigaction act;
 
 	tst_tmpdir();
 
 	act.sa_handler = SIG_IGN;
-	(void) sigaction(SIGXFSZ, &act, NULL);
-	sprintf(filename,"testdata-4.%ld", syscall(__NR_gettid));
+	(void)sigaction(SIGXFSZ, &act, NULL);
+	sprintf(filename, "testdata-4.%ld", syscall(__NR_gettid));
 
-	if ((fd1 = open(filename, O_CREAT|O_EXCL, 0600)) < 0) {
-		tst_brkm(TBROK, cleanup, "Couldn't create test file %s: %s", filename, strerror(errno));
+	if ((fd1 = open(filename, O_CREAT | O_EXCL, 0600)) < 0) {
+		tst_brkm(TBROK, cleanup, "Couldn't create test file %s: %s",
+			 filename, strerror(errno));
 	}
 	close(fd1);
 
 	/* Test for filesystem support of O_DIRECT */
 	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0) {
-		tst_brkm(TCONF, cleanup, "O_DIRECT is not supported by this filesystem. %s", strerror(errno));
+		tst_brkm(TCONF, cleanup,
+			 "O_DIRECT is not supported by this filesystem. %s",
+			 strerror(errno));
 	}
 	close(fd1);
 }
@@ -627,8 +620,8 @@ static void cleanup(void)
 
 #else /* O_DIRECT */
 
-int
-main() {
+int main()
+{
 	tst_brkm(TCONF, NULL, "O_DIRECT is not defined.");
 }
 #endif /* O_DIRECT */

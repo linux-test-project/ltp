@@ -16,9 +16,9 @@
 
 #include <sys/mman.h>
 
-typedef int (*munlockall_test)(void);
+typedef int (*munlockall_test) (void);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	munlockall_test dummyvar;
 	dummyvar = munlockall;

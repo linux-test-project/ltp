@@ -63,19 +63,19 @@
 #define NTHREADS (100)
 
 #ifndef WITHOUT_ALTCLK
-#define USE_ALTCLK  /* make tests with MONOTONIC CLOCK if supported */
+#define USE_ALTCLK		/* make tests with MONOTONIC CLOCK if supported */
 #endif
 
 #ifndef WITHOUT_XOPEN
 
 struct _td {
-	pthread_mutex_t mtx1, mtx2; /* The two mutex m1 and m2 */
-	pthread_cond_t cnd;         /* The cond var c */
-	char boolcnd;               /* The boolean predicate b associated with c */
-	int type;                   /* Type of mutex */
-	clockid_t cid;              /* Clock used by cond c */
-	int started;                /* # of threads which are already waiting */
-	int stopped;                /* # of threads which are terminated */
+	pthread_mutex_t mtx1, mtx2;	/* The two mutex m1 and m2 */
+	pthread_cond_t cnd;	/* The cond var c */
+	char boolcnd;		/* The boolean predicate b associated with c */
+	int type;		/* Type of mutex */
+	clockid_t cid;		/* Clock used by cond c */
+	int started;		/* # of threads which are already waiting */
+	int stopped;		/* # of threads which are terminated */
 } data;
 
 void *threaded(void *arg)
@@ -113,7 +113,8 @@ void *threaded(void *arg)
 	if (data.type == PTHREAD_MUTEX_RECURSIVE) {
 		ret = pthread_mutex_trylock(&(data.mtx1));
 		if (ret != 0)
-			FAILED("Unable to re-lock recursive mutex after cond wait");
+			FAILED
+			    ("Unable to re-lock recursive mutex after cond wait");
 		ret = pthread_mutex_unlock(&(data.mtx1));
 		if (ret != 0)
 			UNRESOLVED(ret, "Mutex unlock failed");
@@ -146,11 +147,12 @@ void *threaded(void *arg)
 	/* Mark the thread as terminated while we are protected by m2 */
 	data.stopped++;
 
-	/* Test ownership and unlock m2*/
+	/* Test ownership and unlock m2 */
 	if (data.type == PTHREAD_MUTEX_RECURSIVE) {
 		ret = pthread_mutex_trylock(&(data.mtx2));
 		if (ret != 0)
-			FAILED("Unable to re-lock recursive mutex after cond wait");
+			FAILED
+			    ("Unable to re-lock recursive mutex after cond wait");
 		ret = pthread_mutex_unlock(&(data.mtx2));
 		if (ret != 0)
 			UNRESOLVED(ret, "Mutex unlock failed");
@@ -182,17 +184,24 @@ int main(int argc, char *argv[])
 		char *descr;	/* Description of the case */
 
 	} scenar[] = {
-	{0, 0, PTHREAD_MUTEX_RECURSIVE , "Recursive mutex"},
-	{0, 0, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck mutex"},
-	#ifdef USE_ALTCLK
-	{1, 0, PTHREAD_MUTEX_RECURSIVE , "Recursive mutex + altclock cond"},
-	{1, 0, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck mutex + altclock cond"},
-	{1, 1, PTHREAD_MUTEX_RECURSIVE , "Recursive pshared mutex + altclock cond"},
-	{1, 1, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck pshared mutex + altclock cond"},
-	#endif
-	{0, 1, PTHREAD_MUTEX_RECURSIVE , "Recursive pshared mutex"},
-	{0, 1, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck pshared mutex"},
-	};
+		{
+		0, 0, PTHREAD_MUTEX_RECURSIVE, "Recursive mutex"}, {
+		0, 0, PTHREAD_MUTEX_ERRORCHECK, "Errorcheck mutex"},
+#ifdef USE_ALTCLK
+		{
+		1, 0, PTHREAD_MUTEX_RECURSIVE,
+			    "Recursive mutex + altclock cond"}, {
+		1, 0, PTHREAD_MUTEX_ERRORCHECK,
+			    "Errorcheck mutex + altclock cond"}, {
+		1, 1, PTHREAD_MUTEX_RECURSIVE,
+			    "Recursive pshared mutex + altclock cond"}, {
+		1, 1, PTHREAD_MUTEX_ERRORCHECK,
+			    "Errorcheck pshared mutex + altclock cond"},
+#endif
+		{
+		0, 1, PTHREAD_MUTEX_RECURSIVE, "Recursive pshared mutex"}, {
+	0, 1, PTHREAD_MUTEX_ERRORCHECK,
+			    "Errorcheck pshared mutex"},};
 
 	output_init();
 
@@ -209,18 +218,18 @@ int main(int argc, char *argv[])
 
 	pshared_ok = sysconf(_SC_THREAD_PROCESS_SHARED);
 
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Test starting\n");
 	output(" Process-shared primitive %s be tested\n",
 	       (pshared_ok > 0) ? "will" : "won't");
 	output(" Alternative clock for cond %s be tested\n",
 	       (altclk_ok > 0) ? "will" : "won't");
-	#endif
+#endif
 
 	for (i = 0; i < (sizeof(scenar) / sizeof(scenar[0])); i++) {
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Starting test for %s\n", scenar[i].descr);
-		#endif
+#endif
 
 		/* Initialize the data structure */
 		ret = pthread_mutexattr_init(&ma);
@@ -232,9 +241,12 @@ int main(int argc, char *argv[])
 			UNRESOLVED(ret, "Unable to set mutex type");
 
 		if ((pshared_ok > 0) && (scenar[i].pshared != 0)) {
-			ret = pthread_mutexattr_setpshared(&ma, PTHREAD_PROCESS_SHARED);
+			ret =
+			    pthread_mutexattr_setpshared(&ma,
+							 PTHREAD_PROCESS_SHARED);
 			if (ret != 0)
-				UNRESOLVED(ret, "Unable to set mutex process-shared");
+				UNRESOLVED(ret,
+					   "Unable to set mutex process-shared");
 		}
 
 		ret = pthread_condattr_init(&ca);
@@ -242,18 +254,21 @@ int main(int argc, char *argv[])
 			UNRESOLVED(ret, "Cond attribute object init failed");
 
 		if ((pshared_ok > 0) && (scenar[i].pshared != 0)) {
-			ret = pthread_condattr_setpshared(&ca, PTHREAD_PROCESS_SHARED);
+			ret =
+			    pthread_condattr_setpshared(&ca,
+							PTHREAD_PROCESS_SHARED);
 			if (ret != 0)
-				UNRESOLVED(ret, "Unable to set cond process-shared");
+				UNRESOLVED(ret,
+					   "Unable to set cond process-shared");
 		}
-
-		#ifdef USE_ALTCLK
+#ifdef USE_ALTCLK
 		if ((altclk_ok > 0) && (scenar[i].altclk != 0)) {
 			ret = pthread_condattr_setclock(&ca, CLOCK_MONOTONIC);
 			if (ret != 0)
-				UNRESOLVED(ret, "Unable to set alternative (monotonic) clock for cond");
+				UNRESOLVED(ret,
+					   "Unable to set alternative (monotonic) clock for cond");
 		}
-		#endif
+#endif
 
 		ret = pthread_mutex_init(&(data.mtx1), &ma);
 		if (ret != 0)
@@ -273,23 +288,26 @@ int main(int argc, char *argv[])
 		if (ret != 0)
 			UNRESOLVED(ret, "Unable to get type from mutex attr");
 
-		#ifdef USE_ALTCLK
+#ifdef USE_ALTCLK
 		ret = pthread_condattr_getclock(&ca, &(data.cid));
 		if (ret != 0)
-			UNRESOLVED(ret, "Unable to get clock ID from cond attr");
-		#else
+			UNRESOLVED(ret,
+				   "Unable to get clock ID from cond attr");
+#else
 		data.cid = CLOCK_REALTIME;
-		#endif
+#endif
 
 		data.started = 0;
 		data.stopped = 0;
 
 		/* Start the threads */
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Initialization OK, starting threads\n");
-		#endif
+#endif
 		for (j = 0; j < NTHREADS; j++) {
-			ret = pthread_create(&th[j], NULL, threaded, (void *)(long)(j & 1));
+			ret =
+			    pthread_create(&th[j], NULL, threaded,
+					   (void *)(long)(j & 1));
 			if (ret != 0)
 				UNRESOLVED(ret, "Thread creation failed");
 		}
@@ -302,7 +320,8 @@ int main(int argc, char *argv[])
 			loc_started = data.started;
 			ret = pthread_mutex_unlock(&(data.mtx1));
 			if (ret != 0)
-				UNRESOLVED(ret, "Unable to unlock m1 in parent");
+				UNRESOLVED(ret,
+					   "Unable to unlock m1 in parent");
 		} while (loc_started < NTHREADS);
 
 		/* Broadcast the condition until all threads are terminated */
@@ -318,7 +337,8 @@ int main(int argc, char *argv[])
 			loc_stopped = data.stopped;
 			ret = pthread_mutex_unlock(&(data.mtx2));
 			if (ret != 0)
-				UNRESOLVED(ret, "Unable to unlock m2 in parent");
+				UNRESOLVED(ret,
+					   "Unable to unlock m2 in parent");
 		} while (loc_stopped < NTHREADS);
 
 		/* Join the threads */
@@ -328,9 +348,9 @@ int main(int argc, char *argv[])
 				UNRESOLVED(ret, "Thread join failed");
 		}
 
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Test passed for %s\n", scenar[i].descr);
-		#endif
+#endif
 
 		/* Destroy data */
 		ret = pthread_cond_destroy(&(data.cnd));
@@ -352,7 +372,7 @@ int main(int argc, char *argv[])
 		ret = pthread_mutexattr_destroy(&ma);
 		if (ret != 0)
 			UNRESOLVED(ret, "Mutex attr destroy failed");
-	} /* Proceed to next case */
+	}			/* Proceed to next case */
 
 	PASSED;
 }

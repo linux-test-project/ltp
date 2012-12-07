@@ -57,13 +57,12 @@
 /*                                                                            */
 /******************************************************************************/
 
-int
-main()
+int main()
 {
-    int fdcdrom = -1;
+	int fdcdrom = -1;
 
-	if ((fdcdrom = open("/dev/cdrom", O_RDONLY|O_NONBLOCK)) == -1)
+	if ((fdcdrom = open("/dev/cdrom", O_RDONLY | O_NONBLOCK)) == -1)
 		exit(-2);
 
-	exit (ioctl(fdcdrom, CDROM_DRIVE_STATUS));
+	exit(ioctl(fdcdrom, CDROM_DRIVE_STATUS));
 }

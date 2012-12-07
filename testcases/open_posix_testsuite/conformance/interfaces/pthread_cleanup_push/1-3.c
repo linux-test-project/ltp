@@ -30,8 +30,8 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-# define CLEANUP_NOTCALLED 0
-# define CLEANUP_CALLED 1
+#define CLEANUP_NOTCALLED 0
+#define CLEANUP_CALLED 1
 
 int cleanup_flag;
 
@@ -45,7 +45,7 @@ void a_cleanup_func(void *flag_val)
 /* Function that the thread executes upon its creation */
 void *a_thread_func()
 {
-	pthread_cleanup_push(a_cleanup_func, (void*) CLEANUP_CALLED);
+	pthread_cleanup_push(a_cleanup_func, (void *)CLEANUP_CALLED);
 	pthread_cleanup_pop(1);
 
 	pthread_exit(0);
@@ -60,22 +60,19 @@ int main()
 	cleanup_flag = CLEANUP_NOTCALLED;
 
 	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to end execution */
-	if (pthread_join(new_th, NULL) != 0)
-	{
+	if (pthread_join(new_th, NULL) != 0) {
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Check to verify that the cleanup handler was called */
-	if (cleanup_flag != CLEANUP_CALLED)
-	{
+	if (cleanup_flag != CLEANUP_CALLED) {
 		printf("Test FAILED: Cleanup handler not called\n");
 		return PTS_FAIL;
 	}

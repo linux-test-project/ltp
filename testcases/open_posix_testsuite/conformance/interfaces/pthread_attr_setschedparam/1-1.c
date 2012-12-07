@@ -31,18 +31,18 @@ void *thread_func()
 {
 	thread_created = 1;
 	pthread_exit(0);
-	return (void*)(0);
+	return (void *)(0);
 }
 
 int main()
 {
-	pthread_t              thread;
-	pthread_attr_t         attr;
- 	void                   *status;
- 	int                    rc=0;
-	int                    policy = FIFOPOLICY;
-	struct sched_param     param;
-	int                    priority;
+	pthread_t thread;
+	pthread_attr_t attr;
+	void *status;
+	int rc = 0;
+	int policy = FIFOPOLICY;
+	struct sched_param param;
+	int priority;
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
@@ -59,19 +59,21 @@ int main()
 	priority = sched_get_priority_max(policy);
 	if (priority == -1) {
 		printf(ERROR_PREFIX "sched_priority_get_max\n");
- 		exit(PTS_FAIL);
+		exit(PTS_FAIL);
 	}
 	param.sched_priority = priority;
 	rc = pthread_attr_setschedparam(&attr, &param);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedparam\n");
- 		exit(PTS_FAIL);
+		exit(PTS_FAIL);
 	}
 
 	rc = pthread_create(&thread, &attr, thread_func, NULL);
 	if (rc != 0) {
 		if (rc == EPERM) {
-			printf(ERROR_PREFIX "Permission Denied when creating thread with policy %d\n", policy);
+			printf(ERROR_PREFIX
+			       "Permission Denied when creating thread with policy %d\n",
+			       policy);
 			exit(PTS_UNRESOLVED);
 		} else {
 			printf(ERROR_PREFIX "pthread_create()\n");

@@ -35,7 +35,7 @@ int main()
 	const char *msgptr = "test message";
 	mqd_t mqdes;
 	unsigned rvprio, sdprio = 1;
-	struct timespec	ts;
+	struct timespec ts;
 	struct mq_attr attr;
 	int unresolved = 0, failure = 0;
 
@@ -44,7 +44,7 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
 	}

@@ -60,8 +60,8 @@ int main(int argc, char *argv[])
 	struct itimerspec its;
 	int pid;
 
-	actp.sa_handler=parenthandler;
-	actp.sa_flags=0;
+	actp.sa_handler = parenthandler;
+	actp.sa_flags = 0;
 
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = 0;
@@ -91,8 +91,8 @@ int main(int argc, char *argv[])
 		/* child here */
 		struct sigaction act;
 		struct timespec ts, tsleft;
-		act.sa_handler=handler;
-		act.sa_flags=0;
+		act.sa_handler = handler;
+		act.sa_flags = 0;
 
 		if (sigemptyset(&act.sa_mask) == -1) {
 			perror("Error calling sigemptyset\n");
@@ -103,14 +103,13 @@ int main(int argc, char *argv[])
 			return CHILDFAILURE;
 		}
 
-		ts.tv_sec=TIMERSEC+SLEEPDELTA;
-		ts.tv_nsec=0;
+		ts.tv_sec = TIMERSEC + SLEEPDELTA;
+		ts.tv_nsec = 0;
 
 		if (nanosleep(&ts, &tsleft) == -1) {
 			printf("child nanosleep() interrupted\n");
 			return CHILDFAILURE;
 		}
-
 		//nanosleep() not interrupted
 		return CHILDSUCCESS;
 
@@ -122,8 +121,8 @@ int main(int argc, char *argv[])
 		/*
 		 * parent also sleeps to allow timer to expire
 		 */
-		tsp.tv_sec=TIMERSEC;
-		tsp.tv_nsec=0;
+		tsp.tv_sec = TIMERSEC;
+		tsp.tv_nsec = 0;
 		if (nanosleep(&tsp, &rem) == -1) {
 			tsp = rem;
 			if (nanosleep(&tsp, &rem) == -1) {

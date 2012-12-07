@@ -75,7 +75,7 @@ int do_test(int argc, char **argv)
 		printf("Failed to init mutexattr\n");
 
 	if (pthread_mutexattr_setrobust_np(&mutexattr,
-	    PTHREAD_MUTEX_ROBUST_NP) != 0)
+					   PTHREAD_MUTEX_ROBUST_NP) != 0)
 		printf("Can't set robust mutex\n");
 
 	if (pthread_mutexattr_getrobust_np(&mutexattr, &robust) != 0)

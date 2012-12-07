@@ -86,9 +86,9 @@
  * sys_error (): System error message function
  * error (): Error message function
  */
-void parse_args (int, char **);
-void sys_error (const char *, int);
-void error (const char *, int);
+void parse_args(int, char **);
+void sys_error(const char *, int);
+void error(const char *, int);
 
 /*
  * Global variables
@@ -108,18 +108,18 @@ int shmem_size = DEFAULT_SHMEM_SIZE;
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int	shmid;		/* (Unique) Shared memory identifier */
-	char	*shmptr,	/* Shared memory segment address */
-		*ptr,		/* Index into shared memory segment */
-		value = 0;	/* Value written into shared memory segment */
+	int shmid;		/* (Unique) Shared memory identifier */
+	char *shmptr,		/* Shared memory segment address */
+	*ptr,			/* Index into shared memory segment */
+	 value = 0;		/* Value written into shared memory segment */
 
 	/*
 	 * Parse command line arguments and print out program header
 	 */
-	parse_args (argc, argv);
-	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
+	parse_args(argc, argv);
+	printf("%s: IPC Shared Memory TestSuite program\n", *argv);
 
 	/*
 	 * Obtain a unique shared memory identifier with shmget ().
@@ -127,26 +127,26 @@ int main (int argc, char **argv)
 	 * index through the shared memory segment, and then release the
 	 * shared memory segment with shmctl ().
 	 */
-	printf ("\n\tGet shared memory segment (%d bytes)\n", shmem_size);
-	if ((shmid = shmget (IPC_PRIVATE, shmem_size, SHMEM_MODE)) < 0)
-		sys_error ("shmget failed", __LINE__);
+	printf("\n\tGet shared memory segment (%d bytes)\n", shmem_size);
+	if ((shmid = shmget(IPC_PRIVATE, shmem_size, SHMEM_MODE)) < 0)
+		sys_error("shmget failed", __LINE__);
 
-	printf ("\n\tAttach shared memory segment to process\n");
-	if ((shmptr = shmat (shmid, 0, 0)) < 0)
-		sys_error ("shmat failed", __LINE__);
+	printf("\n\tAttach shared memory segment to process\n");
+	if ((shmptr = shmat(shmid, 0, 0)) < 0)
+		sys_error("shmat failed", __LINE__);
 
-	printf ("\n\tIndex through shared memory segment ...\n");
-	for (ptr=shmptr; ptr < (shmptr + shmem_size); ptr++)
+	printf("\n\tIndex through shared memory segment ...\n");
+	for (ptr = shmptr; ptr < (shmptr + shmem_size); ptr++)
 		*ptr = value++;
 
-	printf ("\n\tRelease shared memory\n");
-	if (shmctl (shmid, IPC_RMID, 0) < 0)
-		sys_error ("shmctl failed", __LINE__);
+	printf("\n\tRelease shared memory\n");
+	if (shmctl(shmid, IPC_RMID, 0) < 0)
+		sys_error("shmctl failed", __LINE__);
 
 	/*
 	 * Program completed successfully -- exit
 	 */
-	printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 
 	return (0);
 }
@@ -163,21 +163,21 @@ int main (int argc, char **argv)
 |            [-s] size: shared memory segment size                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	i;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int i;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	while ((i = getopt(argc, argv, "s:?")) != EOF) {
 		switch (i) {
-			case 's':
-				shmem_size = atoi (optarg);
-				break;
-			case '?':
-				errflag++;
-				break;
+		case 's':
+			shmem_size = atoi(optarg);
+			break;
+		case '?':
+			errflag++;
+			break;
 		}
 	}
 
@@ -185,8 +185,8 @@ void parse_args (int argc, char **argv)
 		errflag++;
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -197,12 +197,12 @@ void parse_args (int argc, char **argv)
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void sys_error (const char *msg, int line)
+void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -212,8 +212,8 @@ void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void error (const char *msg, int line)
+void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	exit (-1);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	exit(-1);
 }

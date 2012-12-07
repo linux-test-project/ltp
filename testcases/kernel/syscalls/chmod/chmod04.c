@@ -120,7 +120,7 @@ int main(int ac, char **av)
 		TEST(chmod(TESTDIR, PERMS));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "chmod(%s, %#o) failed",
+			tst_resm(TFAIL | TTERRNO, "chmod(%s, %#o) failed",
 				 TESTDIR, PERMS);
 			continue;
 		}
@@ -173,7 +173,7 @@ void setup()
 	tst_require_root(NULL);
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_resm(TINFO|TERRNO, "setuid(%u) failed", ltpuser->pw_uid);
+		tst_resm(TINFO | TERRNO, "setuid(%u) failed", ltpuser->pw_uid);
 
 	TEST_PAUSE;
 

@@ -23,10 +23,10 @@ int main()
 {
 	if (sigignore(SIGSTOP) == -1) {
 		if (EINVAL == errno) {
-			printf ("errno set to EINVAL\n");
+			printf("errno set to EINVAL\n");
 			return PTS_PASS;
 		} else {
-			printf ("errno not set to EINVAL\n");
+			printf("errno not set to EINVAL\n");
 			return PTS_FAIL;
 		}
 	}

@@ -55,7 +55,7 @@ int TST_TOTAL = 1;
 
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 }
 
@@ -75,7 +75,7 @@ static int kill_pid_in_childfun(void *vtest)
 	/* Checking the values to make sure pidns is created correctly */
 	if (cpid != CINIT_PID || ppid != PARENT_PID) {
 		printf("Unexpected result for Container: init "
-		    "pid=%d ppid=%d\n", cpid, ppid);
+		       "pid=%d ppid=%d\n", cpid, ppid);
 		exit(1);
 	}
 
@@ -86,12 +86,12 @@ static int kill_pid_in_childfun(void *vtest)
 	ret = kill(*par_pid, SIGKILL);
 	if (ret == -1 && errno == ESRCH) {
 		printf("Container: killing parent pid=%d failed as expected "
-		    "with ESRCH\n", *par_pid);
+		       "with ESRCH\n", *par_pid);
 	} else {
 		printf("Container: killing parent pid=%d, didn't fail as "
-		    "expected with ESRCH (%d) and a return value of -1. Got "
-		    "%d (\"%s\") and a return value of %d instead.\n",
-		    *par_pid, ESRCH, errno, strerror(errno), ret);
+		       "expected with ESRCH (%d) and a return value of -1. Got "
+		       "%d (\"%s\") and a return value of %d instead.\n",
+		       *par_pid, ESRCH, errno, strerror(errno), ret);
 		exit(1);
 	}
 	/*
@@ -101,12 +101,12 @@ static int kill_pid_in_childfun(void *vtest)
 	ret = kill(FAKE_PID, SIGKILL);
 	if (ret == -1 && errno == ESRCH) {
 		printf("Container: killing non-existent pid failed as expected "
-		    "with ESRCH\n");
+		       "with ESRCH\n");
 	} else {
 		printf("Container: killing non-existent pid, didn't fail as "
-		    "expected with ESRCH (%d) and a return value of -1. Got "
-		    "%d (\"%s\") and a return value of %d instead.\n",
-		    ESRCH, errno, strerror(errno), ret);
+		       "expected with ESRCH (%d) and a return value of -1. Got "
+		       "%d (\"%s\") and a return value of %d instead.\n",
+		       ESRCH, errno, strerror(errno), ret);
 		exit(1);
 	}
 
@@ -120,11 +120,11 @@ int main()
 
 	tst_resm(TINFO, "Parent: Passing the pid of the process %d", pid);
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, kill_pid_in_childfun,
-	    (void *) &pid));
+				   (void *)&pid));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "clone failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "clone failed");
 	} else if (wait(&status) == -1) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "wait failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "wait failed");
 	}
 
 	cleanup();

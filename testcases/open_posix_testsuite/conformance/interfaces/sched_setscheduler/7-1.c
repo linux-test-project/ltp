@@ -17,6 +17,7 @@
 
 int main()
 {
-        printf("Will not test if implementation-defined restrictions apply as to the\nappropriate privileges required to set a process' own scheduling policy, or\nanother process' scheduling policy, to a particular value.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test if implementation-defined restrictions apply as to the\nappropriate privileges required to set a process' own scheduling policy, or\nanother process' scheduling policy, to a particular value.\n");
+	return PTS_UNTESTED;
 }

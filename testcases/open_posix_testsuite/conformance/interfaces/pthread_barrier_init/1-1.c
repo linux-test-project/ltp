@@ -37,48 +37,42 @@ int main()
 	/* Intilized barrier with NULL attribute, check that this can be done. */
 	rc = pthread_barrier_init(&barrier, NULL, COUNT);
 
-	if (rc !=0)
-	{
+	if (rc != 0) {
 		printf("Test FAILED: Error at pthread_barrier_init() "
-			"return code %d, %s\n", rc, strerror(rc));
+		       "return code %d, %s\n", rc, strerror(rc));
 		return PTS_FAIL;
 	}
 
 	/* Cleanup */
-	if (pthread_barrier_destroy(&barrier) != 0)
-	{
+	if (pthread_barrier_destroy(&barrier) != 0) {
 		printf("Error at pthread_barrier_destroy() "
-			" return code: %d, %s\n", rc, strerror(rc));
+		       " return code: %d, %s\n", rc, strerror(rc));
 		return PTS_UNRESOLVED;
 	}
 
 	/* Initialize a barrier attribute object */
-	if (pthread_barrierattr_init(&ba) != 0)
-	{
+	if (pthread_barrierattr_init(&ba) != 0) {
 		printf("Error at pthread_barrierattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Initialize barrier with this barrier attribute object */
 	rc = pthread_barrier_init(&barrier, &ba, COUNT);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		printf("Test FAILED: Error at 2nd pthread_barrier_init() "
-			"return code %d, %s\n", rc, strerror(rc));
+		       "return code %d, %s\n", rc, strerror(rc));
 		return PTS_FAIL;
 	}
 
 	/* Cleanup */
-	if (pthread_barrierattr_destroy(&ba) != 0)
-	{
+	if (pthread_barrierattr_destroy(&ba) != 0) {
 		printf("Error at pthread_barrierattr_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_barrier_destroy(&barrier) != 0)
-	{
+	if (pthread_barrier_destroy(&barrier) != 0) {
 		printf("Error at pthread_barrier_destroy() "
-			" return code: %d, %s\n", rc, strerror(rc));
+		       " return code: %d, %s\n", rc, strerror(rc));
 		return PTS_UNRESOLVED;
 	}
 

@@ -173,8 +173,8 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "setgroups(%d, list) returned %ld", len,
-					 TEST_RETURN);
+					 "setgroups(%d, list) returned %ld",
+					 len, TEST_RETURN);
 			}
 		}
 

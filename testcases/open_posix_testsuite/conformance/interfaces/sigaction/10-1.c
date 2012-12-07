@@ -22,19 +22,19 @@ int child_stopped = 0;
 int child_continued = 0;
 int notification;
 
-void handler(int signo, siginfo_t *info, void *context)
+void handler(int signo, siginfo_t * info, void *context)
 {
-		if (!info)
+	if (!info)
 		return;
 
-		notification = info->si_code;
+	notification = info->si_code;
 
-		switch (notification) {
-		case CLD_STOPPED:
+	switch (notification) {
+	case CLD_STOPPED:
 		printf("Child has been stopped\n");
 		child_stopped++;
 		break;
-		case CLD_CONTINUED:
+	case CLD_CONTINUED:
 		printf("Child has been continued\n");
 		child_continued++;
 		break;
@@ -43,14 +43,14 @@ void handler(int signo, siginfo_t *info, void *context)
 
 void wait_for_notification(int val)
 {
- struct timeval tv;
+	struct timeval tv;
 
- while (notification != val) {
- tv.tv_sec = 1;
- tv.tv_usec = 0;
- if (!select(0, NULL, NULL, NULL, &tv))
- break;
- }
+	while (notification != val) {
+		tv.tv_sec = 1;
+		tv.tv_usec = 0;
+		if (!select(0, NULL, NULL, NULL, &tv))
+			break;
+	}
 }
 
 int main(void)
@@ -62,7 +62,7 @@ int main(void)
 	act.sa_sigaction = handler;
 	act.sa_flags = SA_SIGINFO;
 	sigemptyset(&act.sa_mask);
-	sigaction(SIGCHLD,  &act, 0);
+	sigaction(SIGCHLD, &act, 0);
 
 	if ((pid = fork()) == 0) {
 		/* child */
@@ -85,9 +85,9 @@ int main(void)
 			kill(pid, SIGSTOP);
 
 			/*
-			  Don't let the kernel optimize away queued
-			  SIGSTOP/SIGCONT signals.
-			*/
+			   Don't let the kernel optimize away queued
+			   SIGSTOP/SIGCONT signals.
+			 */
 
 			wait_for_notification(CLD_STOPPED);
 
@@ -95,10 +95,10 @@ int main(void)
 			notification = 0;
 			kill(pid, SIGCONT);
 			/*
-			 SIGCHLD doesn't queue, make sure CLD_CONTINUED
-			 doesn't mask the next CLD_STOPPED
+			   SIGCHLD doesn't queue, make sure CLD_CONTINUED
+			   doesn't mask the next CLD_STOPPED
 			 */
-			 wait_for_notification(CLD_CONTINUED);
+			wait_for_notification(CLD_CONTINUED);
 		}
 
 		/* POSIX specifies default action to be abnormal termination */

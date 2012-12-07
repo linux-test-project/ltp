@@ -87,23 +87,22 @@ int main(int argc, char *argv[])
 	 * The bussy loop is intentional. The signal is send after
 	 * two seconds of CPU time has been accumulated.
 	 */
-	while (!caught_signal);
+	while (!caught_signal) ;
 
 	if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts_end) != 0) {
 		perror("clock_gettime() failed");
 		return PTS_UNRESOLVED;
 	}
 
-	if (abs(ts_end.tv_sec - ts_start.tv_sec - TIMERSEC) <=
-	    ACCEPTABLEDELTA) {
+	if (abs(ts_end.tv_sec - ts_start.tv_sec - TIMERSEC) <= ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 
 	printf("Timer did not last for correct amount of time\n"
-		"stop - start = %d - %d > %d\n",
-		(int) ts_end.tv_sec, (int) ts_start.tv_sec,
-		TIMERSEC + ACCEPTABLEDELTA);
+	       "stop - start = %d - %d > %d\n",
+	       (int)ts_end.tv_sec, (int)ts_start.tv_sec,
+	       TIMERSEC + ACCEPTABLEDELTA);
 	return PTS_FAIL;
 #endif
 }

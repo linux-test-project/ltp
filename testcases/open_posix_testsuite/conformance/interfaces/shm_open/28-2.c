@@ -35,12 +35,13 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_28-2"
 
-int main() {
+int main()
+{
 	int fd;
 	char str[BUF_SIZE] = "qwerty";
 	char *buf;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -52,7 +53,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	buf = mmap(NULL, BUF_SIZE, PROT_WRITE|PROT_READ, MAP_SHARED, fd, 0);
+	buf = mmap(NULL, BUF_SIZE, PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
 	if (buf == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_NAME);
@@ -61,17 +62,17 @@ int main() {
 
 	strcpy(buf, str);
 
-       	if (close(fd) != 0) {
+	if (close(fd) != 0) {
 		perror("An error occurs when calling close()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
 	}
 
-	if (shm_unlink(SHM_NAME) !=0) {
+	if (shm_unlink(SHM_NAME) != 0) {
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
 	}
-        /* Now, SHM_NAME is unlinked and there are no more open references on
+	/* Now, SHM_NAME is unlinked and there are no more open references on
 	   it but a mapping reference remain */
 
 	if (strcmp(buf, str) == 0) {

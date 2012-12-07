@@ -28,8 +28,8 @@
 
 int main()
 {
-	int                   rc=0;
-	pthread_attr_t        attr;
+	int rc = 0;
+	pthread_attr_t attr;
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
@@ -37,12 +37,12 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 
-  	rc = pthread_attr_setscope(&attr, INVALIDSCOPE);
+	rc = pthread_attr_setscope(&attr, INVALIDSCOPE);
 	if ((rc != EINVAL)) {
 		perror(ERROR_PREFIX "pthread_attr_setscope");
 		exit(PTS_FAIL);
 	}
-  	rc = pthread_attr_destroy(&attr);
+	rc = pthread_attr_destroy(&attr);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);

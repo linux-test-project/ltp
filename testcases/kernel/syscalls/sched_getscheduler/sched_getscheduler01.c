@@ -62,11 +62,14 @@ struct test_case_t {
 	int policy;
 } TC[] = {
 	/* set scheduling policy to SCHED_RR */
-	{ 1, SCHED_RR},
-	/* set scheduling policy to SCHED_OTHER */
-	{ 0, SCHED_OTHER},
-	/* set scheduling policy to SCHED_FIFO */
-	{ 1, SCHED_FIFO}
+	{
+	1, SCHED_RR},
+	    /* set scheduling policy to SCHED_OTHER */
+	{
+	0, SCHED_OTHER},
+	    /* set scheduling policy to SCHED_FIFO */
+	{
+	1, SCHED_FIFO}
 };
 
 int main(int ac, char **av)
@@ -92,7 +95,7 @@ int main(int ac, char **av)
 
 			if (sched_setscheduler(0, TC[i].policy, &param) == -1)
 				tst_brkm(TBROK, cleanup,
-				    "sched_setscheduler failed");
+					 "sched_setscheduler failed");
 
 			TEST(sched_getscheduler(0));
 
@@ -104,11 +107,11 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				if (TEST_RETURN != TC[i].policy)
 					tst_resm(TFAIL,
-					    "policy value returned is not "
-					    "correct");
+						 "policy value returned is not "
+						 "correct");
 				else
 					tst_resm(TPASS,
-					    "policy value returned is correct");
+						 "policy value returned is correct");
 			} else
 				tst_resm(TPASS, "call succeeded");
 		}

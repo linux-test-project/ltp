@@ -37,8 +37,7 @@ int main()
 	/* Set the action for SIGALRM to generate an error if it is
 	 * reached. This is because if SIGALRM was sent, then the
 	 * test timed out. */
-	if (signal(SIGALRM, alarm_handler) == SIG_ERR)
-	{
+	if (signal(SIGALRM, alarm_handler) == SIG_ERR) {
 		printf("Error in signal()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -47,8 +46,7 @@ int main()
 	alarm(5);
 
 	/* Create a new thread. */
-	if (pthread_create(&a, NULL, a_thread_function, NULL) != 0)
-	{
+	if (pthread_create(&a, NULL, a_thread_function, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}

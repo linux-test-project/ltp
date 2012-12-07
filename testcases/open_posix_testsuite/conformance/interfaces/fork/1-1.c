@@ -72,7 +72,7 @@
 #define SEM_NAME "/semfork1_1"
 
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -88,7 +88,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Unable to read CLOCK_REALTIME clock");
 
 	/* Set temporary value in tsfin for semaphore timeout */
-	tsfin.tv_sec  = tsini.tv_sec + 3;
+	tsfin.tv_sec = tsini.tv_sec + 3;
 	tsfin.tv_nsec = tsini.tv_nsec;
 
 	/* Create the child */
@@ -100,7 +100,7 @@ int main(int argc, char * argv[])
 	sem = sem_open(SEM_NAME, O_CREAT, O_RDWR, 0);
 	if (sem == SEM_FAILED)
 		UNRESOLVED(errno, "Failed to open the semaphore (try executing "
-		    "as root)");
+			   "as root)");
 
 	/* sleep 1 second */
 	sleep(1);

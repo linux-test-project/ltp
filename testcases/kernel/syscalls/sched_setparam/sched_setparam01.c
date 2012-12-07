@@ -100,8 +100,9 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "sched_setparam() returned %ld",
 				 TEST_RETURN);
 		} else {
-			tst_resm(TFAIL|TTERRNO, "Test Failed, sched_setparam()"
-				 "returned %ld", TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO,
+				 "Test Failed, sched_setparam()" "returned %ld",
+				 TEST_RETURN);
 		}
 	}
 

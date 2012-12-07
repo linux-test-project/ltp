@@ -33,18 +33,19 @@ int main()
 	int rc;
 
 	rc = pthread_rwlock_unlock(&rwlock);
-	if (rc != 0)
-	{
-		if (rc == EINVAL)
-		{
+	if (rc != 0) {
+		if (rc == EINVAL) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		}
 
-		printf("Test FAILED: Incorrect error code, expected 0 or EINVAL, got %d\n", rc);
+		printf
+		    ("Test FAILED: Incorrect error code, expected 0 or EINVAL, got %d\n",
+		     rc);
 		return PTS_FAIL;
 	}
 
-	printf("Test PASSED: Note*: Returned 0 instead of EINVAL, but standard specified _may_ fail.\n");
+	printf
+	    ("Test PASSED: Note*: Returned 0 instead of EINVAL, but standard specified _may_ fail.\n");
 	return PTS_PASS;
 }

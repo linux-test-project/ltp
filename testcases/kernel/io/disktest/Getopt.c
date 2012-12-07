@@ -90,10 +90,11 @@
 int optind;
 char *optarg;
 
-int getopt (int argc, char** argv, char* pszValidOpts) {
+int getopt(int argc, char **argv, char *pszValidOpts)
+{
 	char chOpt;
-	char* psz = NULL;
-	char* pszParam = NULL;
+	char *psz = NULL;
+	char *pszParam = NULL;
 	static int iArg = 1;
 
 	if (iArg < argc) {
@@ -111,19 +112,32 @@ int getopt (int argc, char** argv, char* pszValidOpts) {
 						psz = &(argv[iArg][2]);
 						if (*psz == '\0') {
 							/* must look at next argv for param */
-							if (iArg+1 < argc) {
-								psz = &(argv[iArg+1][0]);
-								if (*psz == '-' || *psz == '/') {
+							if (iArg + 1 < argc) {
+								psz =
+								    &(argv
+								      [iArg +
+								       1][0]);
+								if (*psz == '-'
+								    || *psz ==
+								    '/') {
 									/* next argv is a new option, so param
 									 * not given for current option
-									*/
-									fprintf(stderr, "-%c option requires an argument.\n", chOpt);
-									chOpt = '?';
-									pszParam = NULL;
+									 */
+									fprintf
+									    (stderr,
+									     "-%c option requires an argument.\n",
+									     chOpt);
+									chOpt =
+									    '?';
+									pszParam
+									    =
+									    NULL;
 								} else {
 									/* next argv is the param */
 									iArg++;
-									pszParam = psz;
+									pszParam
+									    =
+									    psz;
 								}
 							} else {
 								/* reached end of args looking for param */
@@ -137,7 +151,9 @@ int getopt (int argc, char** argv, char* pszValidOpts) {
 					}
 				} else {
 					/* option specified is not in list of valid options */
-					fprintf(stderr, "Invalid option -- %c\n", chOpt);
+					fprintf(stderr,
+						"Invalid option -- %c\n",
+						chOpt);
 					chOpt = '?';
 					pszParam = NULL;
 				}

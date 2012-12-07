@@ -30,7 +30,7 @@
 
 int main()
 {
-    int status;
-    status = create_net_namespace("parent.sh", "child.sh");
-    return status;
+	int status;
+	status = create_net_namespace("parent.sh", "child.sh");
+	return status;
 }

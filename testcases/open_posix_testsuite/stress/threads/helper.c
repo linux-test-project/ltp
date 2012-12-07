@@ -67,17 +67,16 @@ the moment the stress test terminates and
 when the timeout expires. As this is highly
 improbable, we don't care... */
 
-void * timer(void * arg)
+void *timer(void *arg)
 {
-	int ret=0;
+	int ret = 0;
 
-	unsigned remaining = timeout  * 3600;
+	unsigned remaining = timeout * 3600;
 	do {
 		remaining = sleep(remaining);
 	} while (remaining);
 	ret = kill(child, SIGUSR1);
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		perror("Failed to kill the stress test");
 		exit(2);
 	}
@@ -85,39 +84,39 @@ void * timer(void * arg)
 	return NULL;
 }
 
-int main (int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret;
 	pthread_t th;
 	pid_t chk;
 	int status;
-	char *ts="[??:??:??]";
-	struct tm * now;
+	char *ts = "[??:??:??]";
+	struct tm *now;
 	time_t nw;
 
 	/* check args */
-	if (argc < 3)
-	{
+	if (argc < 3) {
 		printf("\nUsage: \n");
 		printf("  $ %s n exe arglist\n", argv[0]);
 		printf("\nWhere:\n");
 		printf("  n       is the timeout duration in hours,\n");
 		printf("  exe     is the stress test executable to monitor,\n");
-		printf("  arglist is the arguments to be passed to executable.\n\n");
+		printf
+		    ("  arglist is the arguments to be passed to executable.\n\n");
 		return 2;
 	}
 
 	timeout = atoi(argv[1]);
-	if (timeout < 1)
-	{
-		fprintf(stderr, "Invalid timeout value \"%s\". Timeout must be a positive integer.\n", argv[1]);
+	if (timeout < 1) {
+		fprintf(stderr,
+			"Invalid timeout value \"%s\". Timeout must be a positive integer.\n",
+			argv[1]);
 		return 2;
 	}
 
 	/* create the timer thread */
 	ret = pthread_create(&th, NULL, timer, NULL);
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		perror("Failed to create the timeout thread\n");
 		return 2;
 	}
@@ -125,20 +124,17 @@ int main (int argc, char * argv[])
 	/* Create the new process for the stress test */
 	child = fork();
 
-	if (child == (pid_t)-1)
-	{
+	if (child == (pid_t) - 1) {
 		perror("Failed to create a new process");
 		exit(2);
 	}
 
 	/* The child process executes the test */
-	if (child == (pid_t)0)
-	{
+	if (child == (pid_t) 0) {
 
 		/* Execute the command */
 		ret = execvp(argv[2], &argv[2]);
-		if (ret == -1)
-		{
+		if (ret == -1) {
 			/* Application was not launched */
 			perror("Unable to run child application");
 			return 2;
@@ -152,18 +148,16 @@ int main (int argc, char * argv[])
 
 	/* wait for the child process to terminate */
 	chk = waitpid(child, &status, 0);
-	if (chk != child)
-	{
+	if (chk != child) {
 		perror("Got the wrong process image status");
 		return 2;
 	}
 
 	/* Cancel the timer thread in case the process returned by itself */
-	(void) pthread_cancel(th);
+	(void)pthread_cancel(th);
 
 	ret = pthread_join(th, NULL);
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		perror("Unable to join the timer thread");
 		return 2;
 	}
@@ -174,26 +168,21 @@ int main (int argc, char * argv[])
 	if (now == NULL)
 		printf(ts);
 	else
-		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec);
-	if (! WIFEXITED(status))
-	{
+		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min,
+		       now->tm_sec);
+	if (!WIFEXITED(status)) {
 		printf("The stress sample did not exit\n");
-		if (WIFSIGNALED(status))
-		{
-			printf("It was killed with signal %i\n",  WTERMSIG(status));
-		}
-		else
-		{
+		if (WIFSIGNALED(status)) {
+			printf("It was killed with signal %i\n",
+			       WTERMSIG(status));
+		} else {
 			printf("and it was not killed...\n");
 		}
 		exit(1);
 	}
-	if (WEXITSTATUS(status) == 0)
-	{
+	if (WEXITSTATUS(status) == 0) {
 		printf("Test %s PASSED\n", argv[2]);
-	}
-	else
-	{
+	} else {
 		printf("Test %s: returned %d\n", argv[2], WEXITSTATUS(status));
 	}
 	exit(WEXITSTATUS(status));

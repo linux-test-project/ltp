@@ -42,29 +42,30 @@
 #include <sys/ioctl.h>
 #include "../tbase/tbase.h"
 
-int ki_generic(int fd, int flag) {
-        int                     rc;
-        tmod_interface_t        tif;
+int ki_generic(int fd, int flag)
+{
+	int rc;
+	tmod_interface_t tif;
 
-        /*
-         * build interface structure
-         */
-        tif.in_len = 0;
-        tif.in_data = 0;
-        tif.out_len = 0;
-        tif.out_data = 0;
-        tif.out_rc = 0;
+	/*
+	 * build interface structure
+	 */
+	tif.in_len = 0;
+	tif.in_data = 0;
+	tif.out_len = 0;
+	tif.out_data = 0;
+	tif.out_rc = 0;
 
-        /*
-         * ioctl call for flag
-         */
-        rc = ioctl(fd, flag, &tif);
-        if (rc) {
-                printf("Ioctl error\n");
-                return rc;
-        }
-        if (tif.out_rc)
-                return tif.out_rc;
+	/*
+	 * ioctl call for flag
+	 */
+	rc = ioctl(fd, flag, &tif);
+	if (rc) {
+		printf("Ioctl error\n");
+		return rc;
+	}
+	if (tif.out_rc)
+		return tif.out_rc;
 
-        return rc;
+	return rc;
 }

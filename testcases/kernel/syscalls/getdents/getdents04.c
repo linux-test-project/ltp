@@ -109,7 +109,8 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "sprintf failed");
 
 		if ((fd = open(newfile, O_CREAT | O_RDWR, 0777)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open of file failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "open of file failed");
 
 		/* set up some space for the stat buffer */
 		if ((sbuf = malloc(sizeof(struct stat))) == NULL)
@@ -135,11 +136,11 @@ int main(int ac, char **av)
 			switch (errno) {
 			case ENOTDIR:
 				tst_resm(TPASS,
-				    "getdents failed as expected with ENOTDIR");
+					 "getdents failed as expected with ENOTDIR");
 				break;
 			default:
-				tst_resm(TFAIL|TERRNO,
-				    "getdents failed unexpectedly");
+				tst_resm(TFAIL | TERRNO,
+					 "getdents failed unexpectedly");
 				break;
 			}
 		} else

@@ -48,8 +48,8 @@ int main()
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	/*
 	 * set up handler for SIGTOTEST
@@ -97,7 +97,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if (sleep(2*TIMERINTERVAL + TIMERVAL) != 0) {
+	if (sleep(2 * TIMERINTERVAL + TIMERVAL) != 0) {
 		perror("Could not sleep for correct amount of time\n");
 		return PTS_UNRESOLVED;
 	}

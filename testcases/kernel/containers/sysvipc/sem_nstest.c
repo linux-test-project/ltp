@@ -58,7 +58,7 @@ int check_semaphore(void *vtest)
 	else {
 		write(p2[1], "exists", 7);
 		tst_resm(TINFO, "PID %d: Fetched existing semaphore..id = %d\n",
-						getpid(), id );
+			 getpid(), id);
 	}
 	tst_exit();
 
@@ -74,13 +74,19 @@ int main(int argc, char *argv[])
 	if (argc != 2) {
 		tst_resm(TFAIL, "Usage: %s <clone| unshare| none>\n", argv[0]);
 		tst_resm(TFAIL, " where clone, unshare, or fork specifies"
-				" unshare method.");
+			 " unshare method.");
 		tst_exit();
 	}
 
 	/* Using PIPE's to sync between container and Parent */
-	if (pipe(p1) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
-	if (pipe(p2) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
+	if (pipe(p1) == -1) {
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+	if (pipe(p2) == -1) {
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
 
 	if (strcmp(argv[1], "clone") == 0) {
 		use_clone = T_CLONE;
@@ -93,7 +99,7 @@ int main(int argc, char *argv[])
 	/* 1. Create (or fetch if existing) the binary semaphore */
 	id = semget(MY_KEY, 1, IPC_CREAT | IPC_EXCL | 0666);
 	if (id == -1) {
-		perror( "Semaphore create" );
+		perror("Semaphore create");
 		if (errno != EEXIST) {
 			perror("semget failure");
 			tst_resm(TBROK, "Semaphore creation failed\n");
@@ -101,7 +107,7 @@ int main(int argc, char *argv[])
 		}
 		id = semget(MY_KEY, 1, 0);
 		if (id == -1) {
-			perror( "Semaphore create" );
+			perror("Semaphore create");
 			tst_resm(TBROK, "Semaphore operation failed\n");
 			tst_exit();
 		}
@@ -109,7 +115,9 @@ int main(int argc, char *argv[])
 
 	tst_resm(TINFO, "Semaphore namespaces Isolation test : %s\n", tsttype);
 	/* fire off the test */
-	ret = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_semaphore, NULL);
+	ret =
+	    do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_semaphore,
+				  NULL);
 	if (ret < 0) {
 		tst_resm(TFAIL, "%s failed\n", tsttype);
 		tst_exit();
@@ -123,15 +131,18 @@ int main(int argc, char *argv[])
 	if (strcmp(buf, "exists") == 0) {
 		if (use_clone == T_NONE)
 			tst_resm(TPASS, "Plain cloned process found semaphore "
-						    "inside container\n");
+				 "inside container\n");
 		else
-			tst_resm(TFAIL, "%s: Container init process found semaphore\n",
-							tsttype);
+			tst_resm(TFAIL,
+				 "%s: Container init process found semaphore\n",
+				 tsttype);
 	} else {
 		if (use_clone == T_NONE)
-			tst_resm(TFAIL, "Plain cloned process didn't find semaphore\n");
+			tst_resm(TFAIL,
+				 "Plain cloned process didn't find semaphore\n");
 		else
-			tst_resm(TPASS, "%s: Container didn't find semaphore", tsttype);
+			tst_resm(TPASS, "%s: Container didn't find semaphore",
+				 tsttype);
 	}
 
 	/* Delete the semaphore */

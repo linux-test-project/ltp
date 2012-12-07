@@ -42,13 +42,13 @@ clockid_t clocks[] = {
 };
 
 int testcases[] = {
-	EFAULT,	/* tp bad		*/
-	EINVAL,	/* CLOCK_MONOTONIC	*/
-	EINVAL,	/* MAX_CLOCKS		*/
-	EINVAL,	/* MAX_CLOCKS + 1	*/
-	EINVAL,	/* Invalid timespec	*/
-	EINVAL,	/* NSEC_PER_SEC + 1	*/
-	EPERM,	/* non-root user	*/
+	EFAULT,			/* tp bad               */
+	EINVAL,			/* CLOCK_MONOTONIC      */
+	EINVAL,			/* MAX_CLOCKS           */
+	EINVAL,			/* MAX_CLOCKS + 1       */
+	EINVAL,			/* Invalid timespec     */
+	EINVAL,			/* NSEC_PER_SEC + 1     */
+	EPERM,			/* non-root user        */
 	0,
 	0,
 };
@@ -57,6 +57,7 @@ char *TCID = "clock_settime03";
 int TST_TOTAL = sizeof(testcases) / sizeof(*testcases);
 
 static int exp_enos[] = { EINVAL, EFAULT, EPERM, 0 };
+
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static struct timespec spec, *temp, saved;
@@ -68,7 +69,6 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
 
 	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
 	 * kernel versions lower than 2.6.12 and changed back in 2.6.38
@@ -98,28 +98,29 @@ int main(int ac, char **av)
 			if (i == TST_TOTAL - 1) {
 				if (seteuid(0) == -1) {
 					tst_brkm(TBROK | TERRNO, cleanup,
-						"Failed to set the effective "
-						"uid to root");
+						 "Failed to set the effective "
+						 "uid to root");
 				}
 			}
 
 			/* check return code */
 			if (TEST_RETURN == -1 && TEST_ERRNO == testcases[i]) {
 				tst_resm(TPASS | TTERRNO,
-					"clock_settime(2) got expected "
-					"failure.");
+					 "clock_settime(2) got expected "
+					 "failure.");
 			} else {
 				tst_resm(TFAIL | TTERRNO,
-					"clock_settime(2) failed to produce "
-					"expected error (return code = %ld)",
-					TEST_RETURN);
+					 "clock_settime(2) failed to produce "
+					 "expected error (return code = %ld)",
+					 TEST_RETURN);
 				/* Restore the clock to its previous state. */
 				if (TEST_RETURN == 0) {
 					if (syscall(__NR_clock_settime,
-						CLOCK_REALTIME,	&saved) < 0) {
+						    CLOCK_REALTIME,
+						    &saved) < 0) {
 						tst_resm(TWARN | TERRNO,
-							"FATAL: could not set "
-							"the clock!");
+							 "FATAL: could not set "
+							 "the clock!");
 					}
 				}
 			}
@@ -142,7 +143,7 @@ static int setup_test(int option)
 	switch (option) {
 	case 0:
 		/* Make tp argument bad pointer */
-		temp = (struct timespec *) -1;
+		temp = (struct timespec *)-1;
 		break;
 	case 4:
 		/* Make the parameter of timespec invalid */
@@ -157,14 +158,13 @@ static int setup_test(int option)
 		spec.tv_nsec = 0;
 		if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 			tst_resm(TWARN, "user \"nobody\" not present; "
-					"skipping test");
+				 "skipping test");
 			return -1;
 		}
 		if (seteuid(ltpuser->pw_uid) == -1) {
 			tst_resm(TWARN | TERRNO,
-				"seteuid failed to set the effective "
-				"uid to %d (nobody)",
-				ltpuser->pw_uid);
+				 "seteuid failed to set the effective "
+				 "uid to %d (nobody)", ltpuser->pw_uid);
 			return -1;
 		}
 		break;
@@ -172,7 +172,7 @@ static int setup_test(int option)
 	case 8:
 		/* Make tp argument bad pointer */
 		if (tst_kvercmp(2, 6, 12) >= 0)
-			temp = (struct timespec *) -1;
+			temp = (struct timespec *)-1;
 	}
 	return 0;
 }

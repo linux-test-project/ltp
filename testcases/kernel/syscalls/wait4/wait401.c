@@ -59,14 +59,14 @@ int main(int ac, char **av)
 		switch (pid) {
 		case -1:
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		break;
+			break;
 		case 0:
 			sleep(1);
 			exit(0);
-		break;
+			break;
 		default:
 			TEST(wait4(pid, &status, 0, &rusage));
-		break;
+			break;
 		}
 
 		if (TEST_RETURN == -1) {
@@ -83,8 +83,8 @@ int main(int ac, char **av)
 					 "- %d", TCID, WIFEXITED(status));
 			} else if (TEST_RETURN != pid) {
 				tst_resm(TFAIL, "%s did not return the "
-					 "expected value (%d), actual: %ld", TCID,
-					 pid, TEST_RETURN);
+					 "expected value (%d), actual: %ld",
+					 TCID, pid, TEST_RETURN);
 			} else {
 
 				tst_resm(TPASS,

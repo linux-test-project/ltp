@@ -61,7 +61,7 @@ static size_t pgsz;
 static int fd;
 
 static void *mmap2(void *addr, size_t length, int prot,
-		int flags, int fd, off_t pgoffset);
+		   int flags, int fd, off_t pgoffset);
 static void setup(void);
 static void cleanup(void);
 
@@ -87,20 +87,20 @@ int main(int argc, char *argv[])
 
 		fd = open(TESTFILE, O_RDWR);
 		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, NULL, "open %s", TESTFILE);
+			tst_brkm(TBROK | TERRNO, NULL, "open %s", TESTFILE);
 
 		pgoff = ULONG_MAX - 1;
-		map = mmap2(NULL, pgsz, PROT_READ|PROT_WRITE, MAP_PRIVATE,
-				fd, pgoff);
+		map = mmap2(NULL, pgsz, PROT_READ | PROT_WRITE, MAP_PRIVATE,
+			    fd, pgoff);
 		if (map == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, cleanup, "mmap2");
+			tst_brkm(TBROK | TERRNO, cleanup, "mmap2");
 
 		remap = mremap(map, pgsz, 2 * pgsz, 0);
 		if (remap == MAP_FAILED) {
 			if (errno == EINVAL)
-				tst_resm(TPASS,	"mremap failed as expected.");
+				tst_resm(TPASS, "mremap failed as expected.");
 			else
-				tst_resm(TFAIL|TERRNO, "mremap");
+				tst_resm(TFAIL | TERRNO, "mremap");
 		} else {
 			tst_resm(TFAIL, "mremap succeeded unexpectedly.");
 		}
@@ -113,10 +113,10 @@ int main(int argc, char *argv[])
 }
 
 static void *mmap2(void *addr, size_t length, int prot,
-		int flags, int fd, off_t pgoffset)
+		   int flags, int fd, off_t pgoffset)
 {
 	return (void *)syscall(SYS_mmap2, addr, length, prot,
-			flags, fd, pgoffset);
+			       flags, fd, pgoffset);
 }
 
 static void setup(void)
@@ -127,7 +127,7 @@ static void setup(void)
 
 	fd = creat(TESTFILE, 0644);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "creat %s", TESTFILE);
+		tst_brkm(TBROK | TERRNO, NULL, "creat %s", TESTFILE);
 	close(fd);
 
 	TEST_PAUSE;

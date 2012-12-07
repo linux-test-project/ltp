@@ -42,25 +42,28 @@ void output_init()
 	/* do nothing */
 	return;
 }
-void output(char * string, ...)
-{
-   va_list ap;
-   char *ts="[??:??:??]";
-   struct tm * now;
-   time_t nw;
 
-   pthread_mutex_lock(&m_trace);
-   nw = time(NULL);
-   now = localtime(&nw);
-   if (now == NULL)
-      printf(ts);
-   else
-      printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec);
-   va_start(ap, string);
-   vprintf(string, ap);
-   va_end(ap);
-   pthread_mutex_unlock(&m_trace);
+void output(char *string, ...)
+{
+	va_list ap;
+	char *ts = "[??:??:??]";
+	struct tm *now;
+	time_t nw;
+
+	pthread_mutex_lock(&m_trace);
+	nw = time(NULL);
+	now = localtime(&nw);
+	if (now == NULL)
+		printf(ts);
+	else
+		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min,
+		       now->tm_sec);
+	va_start(ap, string);
+	vprintf(string, ap);
+	va_end(ap);
+	pthread_mutex_unlock(&m_trace);
 }
+
 void output_fini()
 {
 	/*do nothing */

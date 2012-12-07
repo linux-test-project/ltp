@@ -26,7 +26,8 @@
 #include "v4l2_show.h"
 #include "v4l2_foreach.h"
 
-void foreach_input(V4L2InputTestFunc pFunc) {
+void foreach_input(V4L2InputTestFunc pFunc)
+{
 	__u32 input_index_orig;
 	struct v4l2_input input;
 	int ret_input_get, errno_input_get;
@@ -41,8 +42,10 @@ void foreach_input(V4L2InputTestFunc pFunc) {
 	memset(&input_index_orig, 0xff, sizeof(input_index_orig));
 	ret_input_get = ioctl(f, VIDIOC_G_INPUT, &input_index_orig);
 	errno_input_get = errno;
-	dprintf("\t%s:%u: VIDIOC_G_INPUT, ret_input_get=%i, errno_input_get=%i, input_index_orig=0x%X\n",
-		__FILE__, __LINE__, ret_input_get, errno_input_get, input_index_orig);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_INPUT, ret_input_get=%i, errno_input_get=%i, input_index_orig=0x%X\n",
+	     __FILE__, __LINE__, ret_input_get, errno_input_get,
+	     input_index_orig);
 
 	i = 0;
 	do {
@@ -51,15 +54,18 @@ void foreach_input(V4L2InputTestFunc pFunc) {
 		ret_input_enum = ioctl(f, VIDIOC_ENUMINPUT, &input);
 		errno_input_enum = errno;
 
-		dprintf("\t%s:%u: VIDIOC_ENUMINPUT: i=%u, ret_input_enum=%i, errno_input_enum=%i\n",
-			__FILE__, __LINE__, i, ret_input_enum, errno_input_enum);
+		dprintf
+		    ("\t%s:%u: VIDIOC_ENUMINPUT: i=%u, ret_input_enum=%i, errno_input_enum=%i\n",
+		     __FILE__, __LINE__, i, ret_input_enum, errno_input_enum);
 
 		if (ret_input_enum == 0) {
 			show_v4l2_input(&input);
 			ret_input_set = ioctl(f, VIDIOC_S_INPUT, &input.index);
 			errno_input_set = errno;
-			dprintf("\t%s:%u: VIDIOC_S_INPUT: input.index=0x%X, ret_input_set=%i, errno_input_set=%i\n",
-				__FILE__, __LINE__, input.index, ret_input_set, errno_input_set);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_INPUT: input.index=0x%X, ret_input_set=%i, errno_input_set=%i\n",
+			     __FILE__, __LINE__, input.index, ret_input_set,
+			     errno_input_set);
 			CU_ASSERT_EQUAL(ret_input_set, 0);
 		}
 

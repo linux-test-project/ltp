@@ -55,7 +55,7 @@ int main(void)
 				write(fd, buf, 10);
 				fsync(fd);
 
-				p = mmap(NULL, size, PROT_READ|PROT_WRITE,
+				p = mmap(NULL, size, PROT_READ | PROT_WRITE,
 					 MAP_FLAGS, 0, 0);
 
 				if (p == MAP_FAILED) {

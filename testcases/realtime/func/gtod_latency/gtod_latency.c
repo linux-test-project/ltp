@@ -71,16 +71,19 @@
 #define HIST_LABELX		2
 #define HIST_LABELY		3
 
-char *titles[] = {"scatter plot",
-		  "histogram"};
+char *titles[] = { "scatter plot",
+	"histogram"
+};
 
-char *filenames[] = {"scatter",
-		     "hist"};
+char *filenames[] = { "scatter",
+	"hist"
+};
 
-char *labels[] = {"scatter plot x-axis",
-		  "scatter plot y-axis",
-		  "histogram x-axis",
-		  "histogram y-axis"};
+char *labels[] = { "scatter plot x-axis",
+	"scatter plot y-axis",
+	"histogram x-axis",
+	"histogram y-axis"
+};
 
 static unsigned long long latency_threshold = 0;
 static unsigned int iterations = ITERATIONS;
@@ -88,11 +91,11 @@ static unsigned int iterations = ITERATIONS;
 void stats_cmdline_help(void)
 {
 	printf("Usage: ./gtod_latency {-[so|scatter-output] -[ho|hist-output]"
-		" -[st|scatter-title] -[ht|hist-title] -[sxl|scatter-xlabel]"
-		" -[syl|scatter-ylabel] -[hxl|hist-xlabel] -[hyl|hist-ylabel]"
-		" -[lt|latency-trace] -[i|iterations]}"
-		" -[help] \n");
-	printf("**command-line options are not supported yet for this testcase\n");
+	       " -[st|scatter-title] -[ht|hist-title] -[sxl|scatter-xlabel]"
+	       " -[syl|scatter-ylabel] -[hxl|hist-xlabel] -[hyl|hist-ylabel]"
+	       " -[lt|latency-trace] -[i|iterations]}" " -[help] \n");
+	printf
+	    ("**command-line options are not supported yet for this testcase\n");
 }
 
 int stats_cmdline(int argc, char *argv[])
@@ -134,7 +137,7 @@ int stats_cmdline(int argc, char *argv[])
 			continue;
 		}
 
-		if (!strcmp(flag, "st") || !strcmp (flag, "scatter-title")) {
+		if (!strcmp(flag, "st") || !strcmp(flag, "scatter-title")) {
 			if (i + 1 == argc) {
 				printf("flag has missing argument\n");
 				return -1;
@@ -143,7 +146,7 @@ int stats_cmdline(int argc, char *argv[])
 			continue;
 		}
 
-		if (!strcmp(flag, "ht") || !strcmp (flag, "hist-title")) {
+		if (!strcmp(flag, "ht") || !strcmp(flag, "hist-title")) {
 			if (i + 1 == argc) {
 				printf("flag has missing argument\n");
 				return -1;
@@ -213,7 +216,7 @@ int stats_cmdline(int argc, char *argv[])
 	return 0;
 }
 
-long long timespec_subtract(struct timespec * a, struct timespec *b)
+long long timespec_subtract(struct timespec *a, struct timespec *b)
 {
 	long long ns;
 	ns = (b->tv_sec - a->tv_sec) * 1000000000LL;
@@ -240,9 +243,9 @@ int main(int argc, char *argv[])
 	}
 
 	if (iterations < MIN_ITERATION) {
-		iterations = MIN_ITERATION ;
+		iterations = MIN_ITERATION;
 		printf("user \"iterations\" value is too small (use: %d)\n",
-			iterations);
+		       iterations);
 	}
 
 	stats_container_init(&dat, iterations);
@@ -250,18 +253,18 @@ int main(int argc, char *argv[])
 	stats_quantiles_init(&quantiles, (int)log10(iterations));
 	setup();
 
-	mlockall(MCL_CURRENT|MCL_FUTURE);
+	mlockall(MCL_CURRENT | MCL_FUTURE);
 
 	start_data = calloc(iterations, sizeof(struct timespec));
 	if (start_data == NULL) {
 		printf("Memory allocation Failed (too many Iteration: %d)\n",
-			iterations);
+		       iterations);
 		exit(1);
 	}
 	stop_data = calloc(iterations, sizeof(struct timespec));
 	if (stop_data == NULL) {
 		printf("Memory allocation Failed (too many Iteration: %d)\n",
-			iterations);
+		       iterations);
 		free(start_data);
 		exit(1);
 	}
@@ -273,10 +276,14 @@ int main(int argc, char *argv[])
 	/* Check that the user has the appropriate privileges */
 	if (err) {
 		if (errno == EPERM) {
-			fprintf(stderr, "This program runs with a scheduling policy of SCHED_FIFO at priority %d\n", param.sched_priority);
-			fprintf(stderr, "You don't have the necessary privileges to create such a real-time process.\n");
+			fprintf(stderr,
+				"This program runs with a scheduling policy of SCHED_FIFO at priority %d\n",
+				param.sched_priority);
+			fprintf(stderr,
+				"You don't have the necessary privileges to create such a real-time process.\n");
 		} else {
-			fprintf(stderr, "Failed to set scheduler, errno %d\n", errno);
+			fprintf(stderr, "Failed to set scheduler, errno %d\n",
+				errno);
 		}
 		exit(1);
 	}
@@ -294,11 +301,11 @@ int main(int argc, char *argv[])
 	}
 	/* This loop runs for a long time, hence can cause soft lockups.
 	   Calling sleep periodically avoids this. */
-	for (i = 0; i < (iterations/10000); i++) {
-		for (j=0; j < 10000; j++) {
+	for (i = 0; i < (iterations / 10000); i++) {
+		for (j = 0; j < 10000; j++) {
 			k = (i * 10000) + j;
-			clock_gettime(CLOCK_MONOTONIC,&start_data[k]);
-			clock_gettime(CLOCK_MONOTONIC,&stop_data[k]);
+			clock_gettime(CLOCK_MONOTONIC, &start_data[k]);
+			clock_gettime(CLOCK_MONOTONIC, &stop_data[k]);
 		}
 		usleep(1000);
 	}
@@ -307,16 +314,19 @@ int main(int argc, char *argv[])
 		rec.x = i;
 		rec.y = delta;
 		stats_container_append(&dat, rec);
-		if (i == 0 || delta < min) min = delta;
-		if (delta > max) max = delta;
+		if (i == 0 || delta < min)
+			min = delta;
+		if (delta > max)
+			max = delta;
 		if (latency_threshold && delta > latency_threshold)
 			break;
 	}
 	if (latency_threshold) {
 		latency_trace_stop();
 		if (i != iterations) {
-			printf("Latency threshold (%lluus) exceeded at iteration %d\n",
-				latency_threshold, i);
+			printf
+			    ("Latency threshold (%lluus) exceeded at iteration %d\n",
+			     latency_threshold, i);
 			latency_trace_print();
 			stats_container_resize(&dat, i + 1);
 		}
@@ -324,9 +334,11 @@ int main(int argc, char *argv[])
 
 	stats_hist(&hist, &dat);
 	stats_container_save(filenames[SCATTER_FILENAME], titles[SCATTER_TITLE],
-				labels[SCATTER_LABELX], labels[SCATTER_LABELY], &dat, "points");
+			     labels[SCATTER_LABELX], labels[SCATTER_LABELY],
+			     &dat, "points");
 	stats_container_save(filenames[HIST_FILENAME], titles[HIST_TITLE],
-				labels[HIST_LABELX], labels[HIST_LABELY], &hist, "steps");
+			     labels[HIST_LABELX], labels[HIST_LABELY], &hist,
+			     "steps");
 
 	/* report on deltas */
 	printf("Min: %llu ns\n", min);

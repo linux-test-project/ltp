@@ -40,19 +40,24 @@
 	 exp_return and exp_errno, resp., and cond is true. If cond is not
 	 true, report condition_errmsg
 */
-static void report_success_cond(const char *func, const char* file, int line,
-		long exp_return, int exp_errno, int condition, char* condition_errmsg)
+static void report_success_cond(const char *func, const char *file, int line,
+				long exp_return, int exp_errno, int condition,
+				char *condition_errmsg)
 {
-	if (exp_return == TEST_RETURN && (exp_return != -1 || exp_errno == TEST_ERRNO))
+	if (exp_return == TEST_RETURN
+	    && (exp_return != -1 || exp_errno == TEST_ERRNO))
 		if (condition)
 			tst_resm(TPASS, "Test passed");
 		else
-			tst_resm(TFAIL, "%s (%s: %d): %s", func, file, line, condition_errmsg);
+			tst_resm(TFAIL, "%s (%s: %d): %s", func, file, line,
+				 condition_errmsg);
 	else if (TEST_RETURN != -1)
-		tst_resm(TFAIL, "%s (%s: %d): Unexpected return value; expected %ld, got %ld",
-						 func, file, line, exp_return, TEST_RETURN);
+		tst_resm(TFAIL,
+			 "%s (%s: %d): Unexpected return value; expected %ld, got %ld",
+			 func, file, line, exp_return, TEST_RETURN);
 	else
-		tst_resm(TFAIL|TTERRNO, "%s (%s: %d): Unexpected failure", func, file, line);
+		tst_resm(TFAIL | TTERRNO, "%s (%s: %d): Unexpected failure",
+			 func, file, line);
 }
 
 #define REPORT_SUCCESS_COND(exp_return, exp_errno, condition, condition_errmsg)	\
@@ -86,14 +91,16 @@ static void cleanup(void)
 	TEST_CLEANUP;
 }
 
-typedef int (*swi_func)(const sigset_t* set, siginfo_t* info, struct timespec* timeout);
-typedef void (*test_func)(swi_func, int);
+typedef int (*swi_func) (const sigset_t * set, siginfo_t * info,
+			 struct timespec * timeout);
+typedef void (*test_func) (swi_func, int);
 
 #ifdef TEST_SIGWAIT
-static int my_sigwait(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
+static int my_sigwait(const sigset_t * set, siginfo_t * info,
+		      struct timespec *timeout)
 {
 	int ret;
-	int err=sigwait(set, &ret);
+	int err = sigwait(set, &ret);
 
 	if (err == 0)
 		return ret;
@@ -103,7 +110,8 @@ static int my_sigwait(const sigset_t* set, siginfo_t* info, struct timespec* tim
 #endif
 
 #ifdef TEST_SIGWAITINFO
-static int my_sigwaitinfo(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
+static int my_sigwaitinfo(const sigset_t * set, siginfo_t * info,
+			  struct timespec *timeout)
 {
 
 	return sigwaitinfo(set, info);
@@ -111,7 +119,8 @@ static int my_sigwaitinfo(const sigset_t* set, siginfo_t* info, struct timespec*
 #endif
 
 #ifdef TEST_SIGTIMEDWAIT
-static int my_sigtimedwait(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
+static int my_sigtimedwait(const sigset_t * set, siginfo_t * info,
+			   struct timespec *timeout)
 {
 
 	return sigtimedwait(set, info, timeout);
@@ -119,7 +128,8 @@ static int my_sigtimedwait(const sigset_t* set, siginfo_t* info, struct timespec
 #endif
 
 #ifdef TEST_RT_SIGTIMEDWAIT
-static int my_rt_sigtimedwait(const sigset_t* set, siginfo_t* info, struct timespec* timeout)
+static int my_rt_sigtimedwait(const sigset_t * set, siginfo_t * info,
+			      struct timespec *timeout)
 {
 
 	/* The last argument is (number_of_signals)/(bits_per_byte), which are 64 and 8, resp. */
@@ -135,7 +145,7 @@ void test_empty_set(swi_func sigwaitinfo, int signo)
 
 	SUCCEED_OR_DIE(sigemptyset, "sigemptyset failed", &sigs);
 	/* Run a child that will wake us up */
-	child=create_sig_proc(100000, signo, UINT_MAX);
+	child = create_sig_proc(100000, signo, UINT_MAX);
 
 	TEST(sigwaitinfo(&sigs, &si, NULL));
 	REPORT_SUCCESS(-1, EINTR);
@@ -148,12 +158,12 @@ void test_timeout(swi_func sigwaitinfo, int signo)
 	sigset_t sigs;
 	siginfo_t si;
 	pid_t child;
-	struct timespec ts = { .tv_sec = 1 };
+	struct timespec ts = {.tv_sec = 1 };
 
 	SUCCEED_OR_DIE(sigemptyset, "sigemptyset failed", &sigs);
 
 	/* Run a child that will wake us up */
-	child=create_sig_proc(100000, signo, UINT_MAX);
+	child = create_sig_proc(100000, signo, UINT_MAX);
 
 	TEST(sigwaitinfo(&sigs, &si, &ts));
 	REPORT_SUCCESS(-1, EAGAIN);
@@ -174,10 +184,12 @@ void test_unmasked_matching(swi_func sigwaitinfo, int signo)
 	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, signo);
 
 	/* Run a child that will wake us up */
-	child=create_sig_proc(100000, signo, UINT_MAX);
+	child = create_sig_proc(100000, signo, UINT_MAX);
 
 	TEST(sigwaitinfo(&sigs, &si, NULL));
-	REPORT_SUCCESS_COND(signo, 0, si.si_pid==child && si.si_code==SI_USER && si.si_signo==signo, "Struct siginfo mismatch");
+	REPORT_SUCCESS_COND(signo, 0, si.si_pid == child
+			    && si.si_code == SI_USER
+			    && si.si_signo == signo, "Struct siginfo mismatch");
 
 	kill(child, SIGTERM);
 }
@@ -190,7 +202,7 @@ void test_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo)
 	SUCCEED_OR_DIE(sigemptyset, "sigemptyset failed", &sigs);
 	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, signo);
 	/* Run a child that will wake us up */
-	child=create_sig_proc(100000, signo, UINT_MAX);
+	child = create_sig_proc(100000, signo, UINT_MAX);
 
 	TEST(sigwaitinfo(&sigs, NULL, NULL));
 	REPORT_SUCCESS(signo, 0);
@@ -209,25 +221,30 @@ void test_masked_matching(swi_func sigwaitinfo, int signo)
 	/* let's not get interrupted by our dying child */
 	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, SIGCHLD);
 
-	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &sigs, &oldmask);
+	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &sigs,
+		       &oldmask);
 
 	/* don't wait on a SIGCHLD */
 	SUCCEED_OR_DIE(sigdelset, "sigaddset failed", &sigs, SIGCHLD);
 
 	/* Run a child that will wake us up */
-	child=create_sig_proc(0, signo, 1);
+	child = create_sig_proc(0, signo, 1);
 
 	TEST(sigwaitinfo(&sigs, &si, NULL));
-	REPORT_SUCCESS_COND(signo, 0, si.si_pid==child && si.si_code==SI_USER && si.si_signo==signo, "Struct siginfo mismatch");
+	REPORT_SUCCESS_COND(signo, 0, si.si_pid == child
+			    && si.si_code == SI_USER
+			    && si.si_signo == signo, "Struct siginfo mismatch");
 
-	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed", SIG_SETMASK, &oldmask, &oldmask);
+	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed",
+		       SIG_SETMASK, &oldmask, &oldmask);
 
 	Tst_count--;
 
 	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
 	else
-		tst_resm(TFAIL, "sigwaitinfo failed to restore the original mask");
+		tst_resm(TFAIL,
+			 "sigwaitinfo failed to restore the original mask");
 }
 
 void test_masked_matching_rt(swi_func sigwaitinfo, int signo)
@@ -236,39 +253,47 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo)
 	siginfo_t si;
 	pid_t child[2];
 
-	signo = SIGRTMIN+1;
+	signo = SIGRTMIN + 1;
 
 	SUCCEED_OR_DIE(sigemptyset, "sigemptyset failed", &sigs);
 	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, signo);
-	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, signo+1);
+	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, signo + 1);
 	/* let's not get interrupted by our dying child */
 	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, SIGCHLD);
 
-	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &sigs, &oldmask);
+	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &sigs,
+		       &oldmask);
 
 	/* don't wait on a SIGCHLD */
 	SUCCEED_OR_DIE(sigdelset, "sigdelset failed", &sigs, SIGCHLD);
 
 	/* Run a child that will wake us up */
-	child[0]=create_sig_proc(0, signo, 1);
-	child[1]=create_sig_proc(0, signo+1, 1);
+	child[0] = create_sig_proc(0, signo, 1);
+	child[1] = create_sig_proc(0, signo + 1, 1);
 
 	TEST(sigwaitinfo(&sigs, &si, NULL));
-	REPORT_SUCCESS_COND(signo, 0, si.si_pid==child[0] && si.si_code==SI_USER && si.si_signo==signo, "Struct siginfo mismatch");
+	REPORT_SUCCESS_COND(signo, 0, si.si_pid == child[0]
+			    && si.si_code == SI_USER
+			    && si.si_signo == signo, "Struct siginfo mismatch");
 
 	/* eat the other signal */
 	Tst_count--;
 	TEST(sigwaitinfo(&sigs, &si, NULL));
-	REPORT_SUCCESS_COND(signo+1, 0, si.si_pid==child[1] && si.si_code==SI_USER && si.si_signo==signo+1, "Struct siginfo mismatch");
+	REPORT_SUCCESS_COND(signo + 1, 0, si.si_pid == child[1]
+			    && si.si_code == SI_USER
+			    && si.si_signo == signo + 1,
+			    "Struct siginfo mismatch");
 
-	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed", SIG_SETMASK, &oldmask, &oldmask);
+	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed",
+		       SIG_SETMASK, &oldmask, &oldmask);
 
 	Tst_count--;
 
 	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
 	else
-		tst_resm(TFAIL, "sigwaitinfo failed to restore the original mask");
+		tst_resm(TFAIL,
+			 "sigwaitinfo failed to restore the original mask");
 }
 
 void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo)
@@ -281,25 +306,28 @@ void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo)
 	/* let's not get interrupted by our dying child */
 	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, SIGCHLD);
 
-	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &sigs, &oldmask);
+	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &sigs,
+		       &oldmask);
 
 	/* don't wait on a SIGCHLD */
 	SUCCEED_OR_DIE(sigdelset, "sigaddset failed", &sigs, SIGCHLD);
 
 	/* Run a child that will wake us up */
-	child=create_sig_proc(0, signo, 1);
+	child = create_sig_proc(0, signo, 1);
 
 	TEST(sigwaitinfo(&sigs, NULL, NULL));
 	REPORT_SUCCESS(signo, 0);
 
-	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed", SIG_SETMASK, &oldmask, &oldmask);
+	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed",
+		       SIG_SETMASK, &oldmask, &oldmask);
 
 	Tst_count--;
 
 	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
 	else
-		tst_resm(TFAIL, "sigwaitinfo failed to restore the original mask");
+		tst_resm(TFAIL,
+			 "sigwaitinfo failed to restore the original mask");
 
 }
 
@@ -313,25 +341,27 @@ void test_bad_address(swi_func sigwaitinfo, int signo)
 	/* let's not get interrupted by our dying child */
 	SUCCEED_OR_DIE(sigaddset, "sigaddset failed", &sigs, SIGCHLD);
 
-	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &sigs, &oldmask);
+	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &sigs,
+		       &oldmask);
 
 	/* don't wait on a SIGCHLD */
 	SUCCEED_OR_DIE(sigdelset, "sigaddset failed", &sigs, SIGCHLD);
 
 	/* Run a child that will wake us up */
-	child=create_sig_proc(0, signo, 1);
+	child = create_sig_proc(0, signo, 1);
 
-	TEST(sigwaitinfo(&sigs, (void*)1, NULL));
+	TEST(sigwaitinfo(&sigs, (void *)1, NULL));
 	REPORT_SUCCESS(-1, EFAULT);
 
-	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &oldmask, &oldmask);
+	SUCCEED_OR_DIE(sigprocmask, "sigprocmask failed", SIG_SETMASK, &oldmask,
+		       &oldmask);
 
 	kill(child, SIGTERM);
 }
 
 void test_bad_address2(swi_func sigwaitinfo, int signo)
 {
-	TEST(sigwaitinfo((void*)1, NULL, NULL));
+	TEST(sigwaitinfo((void *)1, NULL, NULL));
 	REPORT_SUCCESS(-1, EFAULT);
 }
 
@@ -340,7 +370,7 @@ void test_bad_address3(swi_func sigwaitinfo, int signo)
 	sigset_t sigs;
 	SUCCEED_OR_DIE(sigemptyset, "sigemptyset failed", &sigs);
 
-	TEST(sigwaitinfo(&sigs, NULL, (void*)1));
+	TEST(sigwaitinfo(&sigs, NULL, (void *)1));
 	REPORT_SUCCESS(-1, EFAULT);
 }
 
@@ -350,73 +380,76 @@ struct test_desc {
 	int signo;
 } tests[] = {
 #ifdef TEST_RT_SIGTIMEDWAIT
-	{ test_empty_set, my_rt_sigtimedwait, SIGUSR1 },
-	{ test_unmasked_matching, my_rt_sigtimedwait, SIGUSR1 },
-	{ test_masked_matching, my_rt_sigtimedwait, SIGUSR1 },
-	{ test_unmasked_matching_noinfo, my_rt_sigtimedwait, SIGUSR1 },
-	{ test_masked_matching_noinfo, my_rt_sigtimedwait, SIGUSR1 },
-	{ test_bad_address, my_rt_sigtimedwait, SIGUSR1 },
-	{ test_bad_address2, my_rt_sigtimedwait, SIGUSR1 },
-	{ test_bad_address3, my_rt_sigtimedwait, SIGUSR1 },
-	{ test_timeout, my_rt_sigtimedwait, 0 },
-
-	/* Special cases */
-	/* 1: sigwaitinfo does respond to ignored signal */
-	{ test_masked_matching, my_rt_sigtimedwait, SIGUSR2 },
-
-	/* 2: An ignored signal doesn't cause sigwaitinfo to return EINTR */
-	{ test_timeout, my_rt_sigtimedwait, SIGUSR2 },
-
-	/* 3: The handler is not called when the signal is waited for by sigwaitinfo */
-	{ test_masked_matching, my_rt_sigtimedwait, SIGTERM },
-
-	/* 4: Simultaneous realtime signals are delivered in the order of increasing signal number */
-	{ test_masked_matching_rt, my_rt_sigtimedwait, -1 },
+	{
+	test_empty_set, my_rt_sigtimedwait, SIGUSR1}, {
+	test_unmasked_matching, my_rt_sigtimedwait, SIGUSR1}, {
+	test_masked_matching, my_rt_sigtimedwait, SIGUSR1}, {
+	test_unmasked_matching_noinfo, my_rt_sigtimedwait, SIGUSR1}, {
+	test_masked_matching_noinfo, my_rt_sigtimedwait, SIGUSR1}, {
+	test_bad_address, my_rt_sigtimedwait, SIGUSR1}, {
+	test_bad_address2, my_rt_sigtimedwait, SIGUSR1}, {
+	test_bad_address3, my_rt_sigtimedwait, SIGUSR1}, {
+	test_timeout, my_rt_sigtimedwait, 0},
+	    /* Special cases */
+	    /* 1: sigwaitinfo does respond to ignored signal */
+	{
+	test_masked_matching, my_rt_sigtimedwait, SIGUSR2},
+	    /* 2: An ignored signal doesn't cause sigwaitinfo to return EINTR */
+	{
+	test_timeout, my_rt_sigtimedwait, SIGUSR2},
+	    /* 3: The handler is not called when the signal is waited for by sigwaitinfo */
+	{
+	test_masked_matching, my_rt_sigtimedwait, SIGTERM},
+	    /* 4: Simultaneous realtime signals are delivered in the order of increasing signal number */
+	{
+	test_masked_matching_rt, my_rt_sigtimedwait, -1},
 #endif
 #if defined TEST_SIGWAIT
-	{ test_unmasked_matching_noinfo, my_sigwait, SIGUSR1 },
-	{ test_masked_matching_noinfo, my_sigwait, SIGUSR1 },
+	{
+	test_unmasked_matching_noinfo, my_sigwait, SIGUSR1}, {
+	test_masked_matching_noinfo, my_sigwait, SIGUSR1},
 #endif
 #if defined TEST_SIGWAITINFO
-	{ test_empty_set, my_sigwaitinfo, SIGUSR1 },
-	{ test_unmasked_matching, my_sigwaitinfo, SIGUSR1 },
-	{ test_masked_matching, my_sigwaitinfo, SIGUSR1 },
-	{ test_unmasked_matching_noinfo, my_sigwaitinfo, SIGUSR1 },
-	{ test_masked_matching_noinfo, my_sigwaitinfo, SIGUSR1 },
-	{ test_bad_address, my_sigwaitinfo, SIGUSR1 },
-	{ test_bad_address2, my_sigwaitinfo, SIGUSR1 },
+	{
+	test_empty_set, my_sigwaitinfo, SIGUSR1}, {
+	test_unmasked_matching, my_sigwaitinfo, SIGUSR1}, {
+	test_masked_matching, my_sigwaitinfo, SIGUSR1}, {
+	test_unmasked_matching_noinfo, my_sigwaitinfo, SIGUSR1}, {
+	test_masked_matching_noinfo, my_sigwaitinfo, SIGUSR1}, {
+	test_bad_address, my_sigwaitinfo, SIGUSR1}, {
+	test_bad_address2, my_sigwaitinfo, SIGUSR1},
 #endif
 #if defined TEST_SIGTIMEDWAIT
-	{ test_empty_set, my_sigtimedwait, SIGUSR1 },
-	{ test_unmasked_matching, my_sigtimedwait, SIGUSR1 },
-	{ test_masked_matching, my_sigtimedwait, SIGUSR1 },
-	{ test_unmasked_matching_noinfo, my_sigtimedwait, SIGUSR1 },
-	{ test_masked_matching_noinfo, my_sigtimedwait, SIGUSR1 },
-	{ test_bad_address, my_sigtimedwait, SIGUSR1 },
-	{ test_bad_address2, my_sigtimedwait, SIGUSR1 },
-	{ test_bad_address3, my_sigtimedwait, SIGUSR1 },
-	{ test_timeout, my_sigtimedwait, 0 },
+	{
+	test_empty_set, my_sigtimedwait, SIGUSR1}, {
+	test_unmasked_matching, my_sigtimedwait, SIGUSR1}, {
+	test_masked_matching, my_sigtimedwait, SIGUSR1}, {
+	test_unmasked_matching_noinfo, my_sigtimedwait, SIGUSR1}, {
+	test_masked_matching_noinfo, my_sigtimedwait, SIGUSR1}, {
+	test_bad_address, my_sigtimedwait, SIGUSR1}, {
+	test_bad_address2, my_sigtimedwait, SIGUSR1}, {
+	test_bad_address3, my_sigtimedwait, SIGUSR1}, {
+	test_timeout, my_sigtimedwait, 0},
 #endif
 };
 
 #if defined TEST_SIGWAITINFO
-const char* TCID="sigwaitinfo01";
+const char *TCID = "sigwaitinfo01";
 #elif defined TEST_RT_SIGTIMEDWAIT
-const char* TCID="rt_sigtimedwait01";
+const char *TCID = "rt_sigtimedwait01";
 #elif defined TEST_SIGTIMEDWAIT
-const char* TCID="sigtimedwait01";
+const char *TCID = "sigtimedwait01";
 #elif defined TEST_SIGWAIT
-const char* TCID="sigwait01";
+const char *TCID = "sigwait01";
 #endif
 
+int TST_TOTAL = sizeof(tests) / sizeof(*tests);
 
-int TST_TOTAL = sizeof(tests)/sizeof(*tests);
-
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	unsigned i;
 	int lc;
-	char* msg;
+	char *msg;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -426,8 +459,8 @@ int main(int argc, char** argv)
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 
-		for (i=0; i<sizeof(tests)/sizeof(*tests); i++) {
-			alarm(10); /* arrange a 10 second timeout */
+		for (i = 0; i < sizeof(tests) / sizeof(*tests); i++) {
+			alarm(10);	/* arrange a 10 second timeout */
 			tst_resm(TINFO, "%p, %d", tests[i].swi, tests[i].signo);
 			tests[i].tf(tests[i].swi, tests[i].signo);
 		}

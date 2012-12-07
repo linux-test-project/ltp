@@ -46,8 +46,8 @@ int main(int argc, char **argv)
 
 	if (argc != 3) {
 		fprintf(stderr,
-		    "This is a helper binary meant for internal LTP usage "
-		    "only\n");
+			"This is a helper binary meant for internal LTP usage "
+			"only\n");
 		exit(1);
 	}
 

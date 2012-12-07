@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	if (sigemptyset(&act.sa_mask) == -1) {
 		perror("Error calling sigemptyset\n");
@@ -87,13 +87,13 @@ int main(int argc, char *argv[])
 			perror("timer_settime() did not return success");
 			printf("Error is %s\n", strerror(errno));
 			printf("its.it_value.tv_sec was %d\n",
-					(int) its.it_value.tv_sec);
+			       (int)its.it_value.tv_sec);
 		} else {
 			sleep(LONGSLEEPTIME);
 		}
 		its.it_value.tv_sec -= SUBTRACTAMOUNT;
 	}
-	fails = NUMTESTS-passes;
+	fails = NUMTESTS - passes;
 
 	printf("passes %d, fails %d\n", passes, fails);
 

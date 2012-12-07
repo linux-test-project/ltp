@@ -42,7 +42,7 @@
 /*
  * global context
  */
-glctx_t glctx;	/* global context */
+glctx_t glctx;			/* global context */
 
 /*
  * command line options:
@@ -56,8 +56,7 @@ glctx_t glctx;	/* global context */
 /*
  * usage/help message
  */
-char *USAGE =
-"\nUsage:  %s [-v] [-V] [-{h|x}]\n\n\
+char *USAGE = "\nUsage:  %s [-v] [-V] [-{h|x}]\n\n\
 Where:\n\
 \t-v            enable verbosity\n\
 \t-V            display version info\n\
@@ -72,8 +71,7 @@ More info - TODO\n\
  *	   error string.  Print error string after app error message.
  *	   Then exit with abs(exit_code).
  */
-void
-die(int exit_code, char *format, ... )
+void die(int exit_code, char *format, ...)
 {
 	va_list ap;
 	char *errstr;
@@ -86,17 +84,17 @@ die(int exit_code, char *format, ... )
 		errstr = strerror(errno);
 	}
 
-	(void) vfprintf(stderr, format, ap);
+	(void)vfprintf(stderr, format, ap);
 	va_end(ap);
 
 	if (exit_code < 0)
-		fprintf(stderr,"Error = (%d) %s\n", saverrno, errstr);
+		fprintf(stderr, "Error = (%d) %s\n", saverrno, errstr);
 
 	exit(abs(exit_code));
 }
 
-void
-usage(char *mesg) {
+void usage(char *mesg)
+{
 	if (mesg != NULL) {
 		fprintf(stderr, "%s\n", mesg);
 	}
@@ -110,8 +108,7 @@ usage(char *mesg) {
  * can use the DPRINTF(<flag>, (<[f]printf arguments>)) macro for debug
  * prints.  See the definition of DPRINTF in XXX.h
  */
-int
-_dvprintf(char *format, ...)
+int _dvprintf(char *format, ...)
 {
 	va_list ap;
 	int retval;
@@ -123,12 +120,11 @@ _dvprintf(char *format, ...)
 	va_end(ap);
 
 	fflush(stderr);
-	return(retval);
+	return (retval);
 }
 #endif
 
-void
-vprint(char *format, ...)
+void vprint(char *format, ...)
 {
 	va_list ap;
 	glctx_t *gcp = &glctx;
@@ -150,15 +146,13 @@ out:
 /*
  * =========================================================================
  */
-static int signals_to_handle[] =
-{
-	SIGINT,  SIGQUIT, SIGSEGV, SIGBUS,
+static int signals_to_handle[] = {
+	SIGINT, SIGQUIT, SIGSEGV, SIGBUS,
 	SIGUSR1, SIGUSR2, 0
 };
 
-static char *sig_names[] =
-{
-	"SIGINT",  "SIGQUIT", "SIGSEGV", "SIGBUS",
+static char *sig_names[] = {
+	"SIGINT", "SIGQUIT", "SIGSEGV", "SIGBUS",
 	"SIGUSR1", "SIGUSR2", "unknown", 0
 };
 
@@ -167,11 +161,10 @@ static char *sig_names[] =
  *
  * save siginfo and name in global context
  */
-void
-signal_handler(int sig, siginfo_t *info, void *vcontext)
+void signal_handler(int sig, siginfo_t * info, void *vcontext)
 {
 	glctx_t *gcp = &glctx;
-	int isig=0, *sigp = signals_to_handle;
+	int isig = 0, *sigp = signals_to_handle;
 	static siginfo_t infocopy;
 
 	/*
@@ -179,14 +172,15 @@ signal_handler(int sig, siginfo_t *info, void *vcontext)
 	 * Note, additional signals, before use, can overwrite
 	 */
 	infocopy = *info;
-	gcp->siginfo   = &infocopy;
+	gcp->siginfo = &infocopy;
 
 	while (*sigp) {
 		if (*sigp == sig)
 			break;
-		++isig; ++sigp;
+		++isig;
+		++sigp;
 	}
-	gcp->signame   = sig_names[isig];
+	gcp->signame = sig_names[isig];
 
 	vprint("signal hander entered for sig %s\n", gcp->signame);
 
@@ -199,7 +193,7 @@ signal_handler(int sig, siginfo_t *info, void *vcontext)
 		}
 
 		die(8, "\n%s:  signal %s, but siglongjmp not armed\n",
-		       gcp->program_name, gcp->signame);
+		    gcp->program_name, gcp->signame);
 		break;
 
 	case SIGINT:
@@ -208,7 +202,7 @@ signal_handler(int sig, siginfo_t *info, void *vcontext)
 
 	default:
 		die(8, "\n%s:  Unexpected signal:  %d\n",
-		        gcp->program_name, sig);
+		    gcp->program_name, sig);
 		break;
 	}
 }
@@ -218,8 +212,7 @@ signal_handler(int sig, siginfo_t *info, void *vcontext)
  *
  * Setup signal dispositions to catch selected signals
  */
-void
-set_signals()
+void set_signals()
 {
 	glctx_t *gcp = &glctx;
 	int *sigp = signals_to_handle;
@@ -227,7 +220,7 @@ set_signals()
 
 	struct sigaction act = {
 		.sa_sigaction = signal_handler,
-		.sa_flags	 = SA_SIGINFO
+		.sa_flags = SA_SIGINFO
 	};
 
 	(void)sigfillset(&(act.sa_mask));
@@ -238,38 +231,37 @@ set_signals()
 
 		if (0 != sigaction(sig, &act, NULL)) {
 			die(-1, "%s: Failed to set sigaction for %s\n",
-			        gcp->program_name, sig_name);
+			    gcp->program_name, sig_name);
 		} else
 #if 0
 			vprint("%s: established handler for %s\n",
-			        gcp->program_name, sig_name)
+			       gcp->program_name, sig_name)
 #endif
-			;
+			    ;
 	}
 
-		return;
+	return;
 }
 
-void
-reset_signal(void)
+void reset_signal(void)
 {
 //TODO:  free siginfo if/when malloc'd
 	glctx.siginfo = NULL;
-	glctx.sigjmp  = false;
+	glctx.sigjmp = false;
 }
 
-void
-wait_for_signal(const char *mesg)
+void wait_for_signal(const char *mesg)
 {
-	printf("%s ... ", mesg); fflush(stdout);
+	printf("%s ... ", mesg);
+	fflush(stdout);
 	pause();
 	vprint("%s: wakened by signal %s\n", __FUNCTION__, glctx.signame);
 	reset_signal();
-	printf("\n"); fflush(stdout);
+	printf("\n");
+	fflush(stdout);
 }
 
-void
-show_siginfo()
+void show_siginfo()
 {
 	glctx_t *gcp = &glctx;
 	siginfo_t *info = gcp->siginfo;
@@ -324,19 +316,18 @@ show_siginfo()
  * =========================================================================
  */
 
-void
-touch_memory(bool rw, unsigned long *memp, size_t memlen)
+void touch_memory(bool rw, unsigned long *memp, size_t memlen)
 {
 	glctx_t *gcp = &glctx;
 
-	unsigned long  *memend, *pp, sink;
-	unsigned long longs_in_page = gcp->pagesize / sizeof (unsigned long);
+	unsigned long *memend, *pp, sink;
+	unsigned long longs_in_page = gcp->pagesize / sizeof(unsigned long);
 
-	memend = memp + memlen/sizeof(unsigned long);
+	memend = memp + memlen / sizeof(unsigned long);
 	vprint("!!!%s from 0x%lx thru 0x%lx\n",
-		rw ? "Writing" : "Reading", memp, memend);
+	       rw ? "Writing" : "Reading", memp, memend);
 
-	for (pp = memp; pp < memend;  pp += longs_in_page) {
+	for (pp = memp; pp < memend; pp += longs_in_page) {
 		// vprint("%s:  touching 0x%lx\n", __FUNCTION__, pp);
 		if (!sigsetjmp(gcp->sigjmp_env, true)) {
 			gcp->sigjmp = true;
@@ -370,13 +361,12 @@ touch_memory(bool rw, unsigned long *memp, size_t memlen)
  * =========================================================================
  */
 
-void
-init_glctx(glctx_t *gcp)
+void init_glctx(glctx_t * gcp)
 {
 
 	bzero(gcp, sizeof(glctx_t));
 
-	gcp->pagesize = (size_t)sysconf(_SC_PAGESIZE);
+	gcp->pagesize = (size_t) sysconf(_SC_PAGESIZE);
 
 	if (numa_available() >= 0) {
 		gcp->numa_max_node = numa_max_node();
@@ -393,23 +383,21 @@ init_glctx(glctx_t *gcp)
 /*
  * cleanup() - at exit cleanup routine
  */
-static void
-cleanup()
+static void cleanup()
 {
 	glctx_t *gcp = &glctx;
 
 	segment_cleanup(gcp);
-} /* cleanup() */
+}				/* cleanup() */
 
-int
-parse_command_line_args(int argc, char *argv[])
+int parse_command_line_args(int argc, char *argv[])
 {
 	extern int optind;
 	extern char *optarg;
 
 	glctx_t *gcp = &glctx;
-	int  argval;
-	int  error = 0;
+	int argval;
+	int error = 0;
 
 	char c;
 
@@ -434,8 +422,8 @@ parse_command_line_args(int argc, char *argv[])
 			break;
 
 		case 'V':
-			printf ("memtoy " MEMTOY_VERSION " built "
-			         __DATE__ " @ " __TIME__  "\n");
+			printf("memtoy " MEMTOY_VERSION " built "
+			       __DATE__ " @ " __TIME__ "\n");
 			exit(0);
 			break;
 
@@ -444,7 +432,7 @@ parse_command_line_args(int argc, char *argv[])
 			argval = strtoul(optarg, &next, 0);
 			if (*next != '\0') {
 				fprintf(stderr,
-				    "-D <debug-mask> must be unsigned hex/decimal integer\n");
+					"-D <debug-mask> must be unsigned hex/decimal integer\n");
 				++error;
 			} else
 				gcp->debug = argval;
@@ -452,17 +440,16 @@ parse_command_line_args(int argc, char *argv[])
 #endif
 
 		default:
-			error=1;
+			error = 1;
 			break;
 		}
 	}
 done:
 
-	return(error);
+	return (error);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	glctx_t *gcp = &glctx;
 	bool user_is_super;
@@ -483,7 +470,7 @@ main(int argc, char *argv[])
 
 	error = parse_command_line_args(argc, argv);
 
-	if (error /* || argc==1 */) {
+	if (error /* || argc==1 */ ) {
 		usage(NULL);
 
 	}
@@ -495,7 +482,7 @@ main(int argc, char *argv[])
 	vprint("%s:  pagesize = %d\n", gcp->program_name, gcp->pagesize);
 	if (gcp->numa_max_node >= 0)
 		vprint("%s:  NUMA available - max node: %d\n",
-			gcp->program_name, gcp->numa_max_node);
+		       gcp->program_name, gcp->numa_max_node);
 
 	set_signals();
 
@@ -504,9 +491,10 @@ main(int argc, char *argv[])
 	return 0;
 
 }
-#else	/* ! (HAVE_NUMA_H && HAVE_NUMAIF_H) */
-int main(void) {
+#else /* ! (HAVE_NUMA_H && HAVE_NUMAIF_H) */
+int main(void)
+{
 	printf("System doesn't have required numa support.\n");
 	return 0;
 }
-#endif	/* HAVE_NUMA_H && HAVE_NUMAIF_H */
+#endif /* HAVE_NUMA_H && HAVE_NUMAIF_H */

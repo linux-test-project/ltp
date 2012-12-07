@@ -31,42 +31,42 @@ int main()
 {
 
 	/* Make sure there is process-shared capability. */
-	#ifndef PTHREAD_PROCESS_SHARED
-	  fprintf(stderr,"process-shared attribute is not available for testing\n");
-	  return PTS_UNRESOLVED;
-	#endif
+#ifndef PTHREAD_PROCESS_SHARED
+	fprintf(stderr,
+		"process-shared attribute is not available for testing\n");
+	return PTS_UNRESOLVED;
+#endif
 
 	pthread_condattr_t attr;
 	int ret;
 
 	/* Initialize a cond attributes object */
-	if (pthread_condattr_init(&attr) != 0)
-	{
+	if (pthread_condattr_init(&attr) != 0) {
 		perror("Error at pthread_condattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Set 'pshared' to INVALID_PSHARED_VALUE. */
-	ret=pthread_condattr_setpshared(&attr, INVALID_PSHARED_VALUE);
-	if (ret != 0)
-	{
-		if (ret == EINVAL)
-		{
+	ret = pthread_condattr_setpshared(&attr, INVALID_PSHARED_VALUE);
+	if (ret != 0) {
+		if (ret == EINVAL) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		}
 
-		printf("Test FAILED: Invalid return code, expected 0 or EINVAL, but got: %d\n", ret);
+		printf
+		    ("Test FAILED: Invalid return code, expected 0 or EINVAL, but got: %d\n",
+		     ret);
 		return PTS_FAIL;
 	}
 
 	/* Destory the cond attributes object */
-	if (pthread_condattr_destroy(&attr) != 0)
-	{
+	if (pthread_condattr_destroy(&attr) != 0) {
 		perror("Error at pthread_condattr_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	printf("Test PASSED: NOTE*: Returned 0 when passed an invalid 'pshared', but standard says 'may' fail.\n");
+	printf
+	    ("Test PASSED: NOTE*: Returned 0 when passed an invalid 'pshared', but standard says 'may' fail.\n");
 	return PTS_PASS;
 }

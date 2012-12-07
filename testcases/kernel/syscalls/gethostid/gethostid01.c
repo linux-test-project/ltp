@@ -164,7 +164,7 @@ int main(int ac, char **av)
 		TEST(gethostid());
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "gethostid failed");
+			tst_resm(TFAIL | TTERRNO, "gethostid failed");
 			continue;	/* next loop for MTKERNEL */
 		}
 		sprintf(hostid, "%08lx", TEST_RETURN);
@@ -186,8 +186,8 @@ int main(int ac, char **av)
 
 			if (strcmp(name, hostid) == 0) {
 				tst_resm(TPASS,
-				    "Hostid command and gethostid both report "
-				    "hostid is %s", hostid);
+					 "Hostid command and gethostid both report "
+					 "hostid is %s", hostid);
 			} else {
 
 				/*
@@ -232,14 +232,12 @@ int main(int ac, char **av)
 					tst_resm(TPASS,
 						 "Hostid command reports "
 						 "hostid is %s, and gethostid "
-						 "reports %s",
-						 name2, hostid3);
+						 "reports %s", name2, hostid3);
 				} else
 					tst_resm(TFAIL,
 						 "Hostid command reports "
 						 "hostid is %s, but gethostid "
-						 "reports %s",
-						 name2, hostid2);
+						 "reports %s", name2, hostid2);
 			}
 		}
 	}

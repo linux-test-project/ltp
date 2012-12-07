@@ -29,9 +29,11 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-void myhandler (int signo, siginfo_t *info, void *context) {
+void myhandler(int signo, siginfo_t * info, void *context)
+{
 	if ((signo == SIGTOTEST) && (info->si_value.sival_int == VALTOTEST)) {
-		printf("sigqueue()'s signo and value parameters were passed to the child process.\n");
+		printf
+		    ("sigqueue()'s signo and value parameters were passed to the child process.\n");
 		exit(1);
 	}
 }
@@ -43,8 +45,8 @@ int main()
 	if ((pid = fork()) == 0) {
 		/* child here */
 		struct sigaction act;
-		act.sa_flags=SA_SIGINFO;
-		act.sa_sigaction=myhandler;
+		act.sa_flags = SA_SIGINFO;
+		act.sa_sigaction = myhandler;
 		sigemptyset(&act.sa_mask);
 		sigaction(SIGTOTEST, &act, 0);
 

@@ -79,7 +79,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	pa = mmap(pa, len/2, PROT_READ, MAP_SHARED | MAP_FIXED, fd, 0);
+	pa = mmap(pa, len / 2, PROT_READ, MAP_SHARED | MAP_FIXED, fd, 0);
 
 	if (pa == MAP_FAILED) {
 		if (errno != ENOTSUP) {

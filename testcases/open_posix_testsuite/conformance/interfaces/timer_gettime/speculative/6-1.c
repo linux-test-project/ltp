@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 {
 	timer_t tid;
 	struct itimerspec its;
-    int tval=BOGUSTID;
-	tid = (timer_t) &tval;
+	int tval = BOGUSTID;
+	tid = (timer_t) & tval;
 	if (timer_gettime(tid, &its) == -1) {
 		if (EINVAL == errno) {
 			printf("fcn returned -1 and errno==EINVAL\n");

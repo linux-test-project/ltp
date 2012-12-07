@@ -181,12 +181,12 @@
  * error (): Error message function
  * release (): Release the shared memory segments
  */
-static void parse_args (int, char **);
-static void *reader (void *);
-static void *writer (void *);
-static void sys_error (const char *, int);
-static void error (const char *, int);
-static void release ();
+static void parse_args(int, char **);
+static void *reader(void *);
+static void *writer(void *);
+static void sys_error(const char *, int);
+static void error(const char *, int);
+static void release();
 
 /*
  * Global Variables:
@@ -199,27 +199,27 @@ static void release ();
  * buffer_size: size of "scratch" shared memory segment
  * parent_pid: Process id of the parent
  */
-pthread_t * writer_th;
-pthread_t * reader_th;
+pthread_t *writer_th;
+pthread_t *reader_th;
 
 pthread_mutex_t mutex_r[MAX_WRITER_NUMBER];
 pthread_mutex_t cond_mutex[MAX_WRITER_NUMBER];
-int 		thread_hold[MAX_WRITER_NUMBER];
-pthread_cond_t  cond_var[MAX_WRITER_NUMBER];
+int thread_hold[MAX_WRITER_NUMBER];
+pthread_cond_t cond_var[MAX_WRITER_NUMBER];
 
-int	 *read_count[MAX_WRITER_NUMBER];    /* Shared memory segment address */
-unsigned long *checksum[MAX_WRITER_NUMBER]; /* Shared memory segment address */
-unsigned char *shmptr[MAX_WRITER_NUMBER];   /* Shared memory segment address */
-unsigned long cksum[MAX_WRITER_NUMBER];     /* Shared memory segment checksum */
+int *read_count[MAX_WRITER_NUMBER];	/* Shared memory segment address */
+unsigned long *checksum[MAX_WRITER_NUMBER];	/* Shared memory segment address */
+unsigned char *shmptr[MAX_WRITER_NUMBER];	/* Shared memory segment address */
+unsigned long cksum[MAX_WRITER_NUMBER];	/* Shared memory segment checksum */
 
-int 	 shmem_size = DEFAULT_SHMEM_SIZE;
-pid_t	 parent_pid;			    /* process id of parent */
+int shmem_size = DEFAULT_SHMEM_SIZE;
+pid_t parent_pid;		/* process id of parent */
 
-int      num_readers = DEFAULT_NUM_READERS;
-int 	 buffer_size = DEFAULT_SHMEM_SIZE;
-int 	 num_writers = DEFAULT_NUM_WRITERS;
+int num_readers = DEFAULT_NUM_READERS;
+int buffer_size = DEFAULT_SHMEM_SIZE;
+int num_writers = DEFAULT_NUM_WRITERS;
 
-int 	 shmid[MAX_THREAD_NUMBER + MAX_WRITER_NUMBER];
+int shmid[MAX_THREAD_NUMBER + MAX_WRITER_NUMBER];
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -231,211 +231,213 @@ int 	 shmid[MAX_THREAD_NUMBER + MAX_WRITER_NUMBER];
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	pthread_attr_t	newattr;
+	pthread_attr_t newattr;
 
-	int	i; 		/* Misc loop index */
-	int	j; 		/* Misc loop index */
-	int	k; 		/* Misc loop index */
-	size_t Size;		/* Size (in bytes) of shared memory segment*/
+	int i;			/* Misc loop index */
+	int j;			/* Misc loop index */
+	int k;			/* Misc loop index */
+	size_t Size;		/* Size (in bytes) of shared memory segment */
 
 	unsigned long *ulptr;	/* Misc pointer */
-				/* Index into shared memory segment */
+	/* Index into shared memory segment */
 
 	/*
 	 * Parse command line arguments and print out program header
 	 */
-	parse_args (argc, argv);
+	parse_args(argc, argv);
 
-	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
-        /*
-         * Show options in effect.
-         */
-        printf ("\tNumber of writers    = %d\n", num_writers);
-        printf ("\tNumber of readers    = %d\n", num_readers);
-        printf ("\tBytes per writer	= %d\n", buffer_size);
+	printf("%s: IPC Shared Memory TestSuite program\n", *argv);
+	/*
+	 * Show options in effect.
+	 */
+	printf("\tNumber of writers    = %d\n", num_writers);
+	printf("\tNumber of readers    = %d\n", num_readers);
+	printf("\tBytes per writer	= %d\n", buffer_size);
 
 /*---------------------------------------------------------------------+
 |			shared memory segments                         |
 +---------------------------------------------------------------------*/
 
-	for (i=0; i<num_writers; i++) {
-        /*
-         * Obtain a unique shared memory identifier with shmget ().
-	 * Attach the shared memory segment to the process with shmat ().
-         */
+	for (i = 0; i < num_writers; i++) {
+		/*
+		 * Obtain a unique shared memory identifier with shmget ().
+		 * Attach the shared memory segment to the process with shmat ().
+		 */
 
-	j=i*3;
-	Size=sizeof (int);
-        /*
-         * Create a shared memory segment for storing the read count
-         * (number of reader threads reading shared data)
-         * After creating the shared memory segment, initialize it.
-         */
+		j = i * 3;
+		Size = sizeof(int);
+		/*
+		 * Create a shared memory segment for storing the read count
+		 * (number of reader threads reading shared data)
+		 * After creating the shared memory segment, initialize it.
+		 */
 
-        if ((shmid[j] = shmget (IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
-                sys_error ("read_count shmget failed", __LINE__);
+		if ((shmid[j] = shmget(IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
+			sys_error("read_count shmget failed", __LINE__);
 
-        if ((long)(read_count[i] = (int *) shmat (shmid[j], 0, 0)) == -1)
-		sys_error ("shmat failed", __LINE__);
+		if ((long)(read_count[i] = (int *)shmat(shmid[j], 0, 0)) == -1)
+			sys_error("shmat failed", __LINE__);
 
-        *(read_count[i]) = 0;
+		*(read_count[i]) = 0;
 
-        /*
-         * Create a shared memory segment for storing the checksums of readers.
-         * After creating the shared memory segment, initialize it.
-         */
+		/*
+		 * Create a shared memory segment for storing the checksums of readers.
+		 * After creating the shared memory segment, initialize it.
+		 */
 
-	j++;
-	Size=sizeof (unsigned long) * num_readers;
+		j++;
+		Size = sizeof(unsigned long) * num_readers;
 
-        if ((shmid[j] = shmget (IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
-                sys_error ("checksum shmget failed", __LINE__);
+		if ((shmid[j] = shmget(IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
+			sys_error("checksum shmget failed", __LINE__);
 
-        if ((long)(checksum[i] = (unsigned long *) shmat (shmid[j], 0, 0)) == -1)
-                sys_error ("shmat failed", __LINE__);
+		if ((long)(checksum[i] = (unsigned long *)shmat(shmid[j], 0, 0))
+		    == -1)
+			sys_error("shmat failed", __LINE__);
 
-	ulptr=checksum[i];
+		ulptr = checksum[i];
 
-        for (k=0; k < num_readers; k++)
-	{
-	*ulptr = 0;
-	ulptr++;
+		for (k = 0; k < num_readers; k++) {
+			*ulptr = 0;
+			ulptr++;
+		}
+
+		/*
+		 * Create the "scratch" shared memory segment for storing
+		 * a series of values .
+		 */
+
+		Size = buffer_size;
+		j++;
+
+		if ((shmid[j] = shmget(IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
+			sys_error("shmptr shmget failed", __LINE__);
+
+		if ((long)(shmptr[i] = shmat(shmid[j], 0, 0)) == -1)
+			sys_error("shmat failed", __LINE__);
+
 	}
-
-        /*
-         * Create the "scratch" shared memory segment for storing
-         * a series of values .
-         */
-
-	Size=buffer_size;
-	j++;
-
-        if ((shmid[j] = shmget (IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
-                sys_error ("shmptr shmget failed", __LINE__);
-
-        if ((long)(shmptr[i] = shmat (shmid[j], 0, 0)) == -1)
-                sys_error ("shmat failed", __LINE__);
-
-        }
 /*---------------------------------------------------------------------+
 |			Threads                                        |
 +---------------------------------------------------------------------*/
 
-        /*
-         * Create threads array...
-         */
-       writer_th = (pthread_t *) malloc ((size_t) (num_writers * sizeof (pthread_t)));
-       reader_th = (pthread_t *) malloc ((size_t) (num_writers * num_readers * sizeof (pthread_t)));
+	/*
+	 * Create threads array...
+	 */
+	writer_th =
+	    (pthread_t *) malloc((size_t) (num_writers * sizeof(pthread_t)));
+	reader_th =
+	    (pthread_t *)
+	    malloc((size_t) (num_writers * num_readers * sizeof(pthread_t)));
 	/*
 	 * Initializes mutexes and sets their attributes
 	 */
-        for (i=0; i<num_writers; i++) {
+	for (i = 0; i < num_writers; i++) {
 
-	if (pthread_mutex_init(&mutex_r[i] , NULL) != 0)
-		sys_error ("Can't initialize mutex_r", __LINE__);
+		if (pthread_mutex_init(&mutex_r[i], NULL) != 0)
+			sys_error("Can't initialize mutex_r", __LINE__);
 
-	if (pthread_mutex_init (&cond_mutex[i], NULL))
-		sys_error ("Can't initialize cond_mutex", __LINE__);
-	if (pthread_cond_init (&cond_var[i], NULL))
-		sys_error ("cond_init(&cond_var) failed", __LINE__);
-        /*
-         * lock the access to the shared memory data segment --
-         * get lock now to insure the writer gets first access to the segment.
-         *
-         */
+		if (pthread_mutex_init(&cond_mutex[i], NULL))
+			sys_error("Can't initialize cond_mutex", __LINE__);
+		if (pthread_cond_init(&cond_var[i], NULL))
+			sys_error("cond_init(&cond_var) failed", __LINE__);
+		/*
+		 * lock the access to the shared memory data segment --
+		 * get lock now to insure the writer gets first access to the segment.
+		 *
+		 */
 
-	thread_hold[i]=1;
+		thread_hold[i] = 1;
 
 	}
 
 	/*
 	 * Creates a thread attributes object and initializes it
 	 * with default values.
-	*/
-        if (pthread_attr_init(&newattr))
-                sys_error ("attr_init(&newattr) failed", __LINE__);
+	 */
+	if (pthread_attr_init(&newattr))
+		sys_error("attr_init(&newattr) failed", __LINE__);
 	/*
 	 * Sets the value of the detachstate attribute of a thread attributes
 	 * object :
-	 * PTHREAD_CREATE_UNDETACHED	Specifies that the thread will be
+	 * PTHREAD_CREATE_UNDETACHED    Specifies that the thread will be
 	 * created in undetached state.
-	*/
+	 */
 #ifdef _LINUX_
 	// the DEFAULT state for linux pthread_create is to be "undetatched" or joinable
 	/* if (pthread_attr_setdetachstate (&newattr, PTHREAD_CREATE_JOINABLE))
-                sys_error ("attr_setdetachstate(&newattr) failed", __LINE__);*/
+	   sys_error ("attr_setdetachstate(&newattr) failed", __LINE__); */
 #else
-        if (pthread_attr_setdetachstate (&newattr, PTHREAD_CREATE_UNDETACHED))
-                sys_error ("attr_setdetachstate(&newattr) failed", __LINE__);
+	if (pthread_attr_setdetachstate(&newattr, PTHREAD_CREATE_UNDETACHED))
+		sys_error("attr_setdetachstate(&newattr) failed", __LINE__);
 #endif
 
-        /*
-         * Create all num_writers threads .  Each writer thread will fill
+	/*
+	 * Create all num_writers threads .  Each writer thread will fill
 	 * the "scratch" shared memory segment (shmptr) up with data and
-         * will store the result in cksum array accessible by the main.
-         */
-
-        for (i = 0; i < num_writers; i++)
-        {
-                if (pthread_create (&writer_th[i], &newattr, writer, (void *) (long)i))
-                        sys_error ("writer: pthread_create failed", __LINE__);
-
-        /*
-         * Create all num_readers threads .  Each reader thread will compute
-         * the checksum of the shared memory segment (shmptr) and will store
-         * the result in the other shared memory segment (checksum)accessible
-         * by the writer.
-         */
-
-	k=i*num_readers;
-        for (j = k; j < (k + num_readers) ; j++)
-        {
-                if (pthread_create (&reader_th[j], &newattr, reader, (void *) (long)j))
-                        sys_error ("reader: pthread_create failed", __LINE__);
-	}
-	}
-
-        for (i = 0; i < num_writers; i++)
-        {
-               if (pthread_join( writer_th[i], NULL)) {
-                        printf("writer_th: pthread_join return: %d\n",i);
-                        sys_error("pthread_join bad status", __LINE__);
-                }
-
-        /*
-         * Wait for the reader threads to compute the checksums and complete.
+	 * will store the result in cksum array accessible by the main.
 	 */
-	k=i*num_readers;
-	for (j = k; j < (k + num_readers) ; j++)
-        {
-               if (pthread_join( reader_th[j], NULL)) {
-                        printf("reader_th: pthread_join return: %d\n",j);
-                        sys_error("pthread_join bad status", __LINE__);
-                }
-        }
-        }
+
+	for (i = 0; i < num_writers; i++) {
+		if (pthread_create
+		    (&writer_th[i], &newattr, writer, (void *)(long)i))
+			sys_error("writer: pthread_create failed", __LINE__);
+
+		/*
+		 * Create all num_readers threads .  Each reader thread will compute
+		 * the checksum of the shared memory segment (shmptr) and will store
+		 * the result in the other shared memory segment (checksum)accessible
+		 * by the writer.
+		 */
+
+		k = i * num_readers;
+		for (j = k; j < (k + num_readers); j++) {
+			if (pthread_create
+			    (&reader_th[j], &newattr, reader, (void *)(long)j))
+				sys_error("reader: pthread_create failed",
+					  __LINE__);
+		}
+	}
+
+	for (i = 0; i < num_writers; i++) {
+		if (pthread_join(writer_th[i], NULL)) {
+			printf("writer_th: pthread_join return: %d\n", i);
+			sys_error("pthread_join bad status", __LINE__);
+		}
+
+		/*
+		 * Wait for the reader threads to compute the checksums and complete.
+		 */
+		k = i * num_readers;
+		for (j = k; j < (k + num_readers); j++) {
+			if (pthread_join(reader_th[j], NULL)) {
+				printf("reader_th: pthread_join return: %d\n",
+				       j);
+				sys_error("pthread_join bad status", __LINE__);
+			}
+		}
+	}
 
 	/*
 	 * After the threads complete, check their exit status to insure
 	 * that they ran to completion and then verify the corresponding
 	 * checksum.
 	 */
-        for (i = 0; i < num_writers; i++)
-        {
-	ulptr=checksum[i];
-	for (j=0; j<num_readers; j++) {
+	for (i = 0; i < num_writers; i++) {
+		ulptr = checksum[i];
+		for (j = 0; j < num_readers; j++) {
 
-		if (cksum[i] != *ulptr)
-			error ("checksums do not match", __LINE__);
+			if (cksum[i] != *ulptr)
+				error("checksums do not match", __LINE__);
 
 		}
 	}
-	printf ("\n\tMain: readers calculated segment successfully\n");
+	printf("\n\tMain: readers calculated segment successfully\n");
 
 	release();
-	printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 
 	return (0);
 }
@@ -453,38 +455,40 @@ int main (int argc, char **argv)
 |	     data shared memory segment filled up.                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void *writer (void *parm)
+void *writer(void *parm)
 {
-	int num_w = (int) (long)parm;
+	int num_w = (int)(long)parm;
 	unsigned long cksum_w = 0;	/* Shared memory regions checksum */
-        unsigned char data = 0; /* Value written into shared memory segment */
-        unsigned char *ptr;     /* Misc pointer */
+	unsigned char data = 0;	/* Value written into shared memory segment */
+	unsigned char *ptr;	/* Misc pointer */
 
-        /*
-         * Fill the "scratch" shared memory segment up with data and
-         * compute the segments checksum.  Release "write" lock after
-         * completing so that the reader threads may begin to read the
-         * data.
-         */
-        data = num_w;
+	/*
+	 * Fill the "scratch" shared memory segment up with data and
+	 * compute the segments checksum.  Release "write" lock after
+	 * completing so that the reader threads may begin to read the
+	 * data.
+	 */
+	data = num_w;
 
-        for (ptr=shmptr[num_w]; ptr < (shmptr[num_w]+buffer_size); ptr++) {
-                *ptr = (data++) % (UCHAR_MAX + 1);
-                cksum_w += *ptr;
-        }
-        if (pthread_mutex_lock (&cond_mutex[num_w]))
-                sys_error ("mutex_lock(&cond_mutex) failed", __LINE__);
-        thread_hold[num_w]=0;
-        if (pthread_cond_broadcast (&cond_var[num_w]))
-                sys_error ("cond_signal(&cond_var) failed", __LINE__);
-        if (pthread_mutex_unlock (&cond_mutex[num_w]))
-                sys_error ("mutex_unlock(&cond_mutex) failed", __LINE__);
+	for (ptr = shmptr[num_w]; ptr < (shmptr[num_w] + buffer_size); ptr++) {
+		*ptr = (data++) % (UCHAR_MAX + 1);
+		cksum_w += *ptr;
+	}
+	if (pthread_mutex_lock(&cond_mutex[num_w]))
+		sys_error("mutex_lock(&cond_mutex) failed", __LINE__);
+	thread_hold[num_w] = 0;
+	if (pthread_cond_broadcast(&cond_var[num_w]))
+		sys_error("cond_signal(&cond_var) failed", __LINE__);
+	if (pthread_mutex_unlock(&cond_mutex[num_w]))
+		sys_error("mutex_unlock(&cond_mutex) failed", __LINE__);
 
 	cksum[num_w] = cksum_w;
-        printf ("\t\twriter (%03d): shared memory checksum %08lx\n", num_w, cksum_w);
+	printf("\t\twriter (%03d): shared memory checksum %08lx\n", num_w,
+	       cksum_w);
 
 	return NULL;
 }
+
 /*---------------------------------------------------------------------+
 |                               reader ()                              |
 | ==================================================================== |
@@ -497,64 +501,64 @@ void *writer (void *parm)
 |                       computed by reader threads                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void *reader (void *parm)
+void *reader(void *parm)
 {
-	int num_p = (int) (long)parm;
+	int num_p = (int)(long)parm;
 	unsigned long cksum_r = 0;	/* Shared memory regions checksum */
-	int	i;			/* Misc index */
-	int	num_r;			/* Misc index */
-	int	num_w;			/* Misc index */
-	unsigned char * ptr;	  /* Misc pointer */
-	unsigned long *ulptr_r;   /* Misc pointer */
+	int i;			/* Misc index */
+	int num_r;		/* Misc index */
+	int num_w;		/* Misc index */
+	unsigned char *ptr;	/* Misc pointer */
+	unsigned long *ulptr_r;	/* Misc pointer */
 
 	/*
 	 * Wait for a READ_COUNT lock on the shared memory segment, then
 	 * compute the checksum and release the READ_COUNT lock.
 	 */
 
-	num_r=num_p % num_readers;
-	num_w=num_p - num_r;
-	num_w=num_w / num_readers;
-	ptr=shmptr[num_w];
-	ulptr_r=checksum[num_w];
+	num_r = num_p % num_readers;
+	num_w = num_p - num_r;
+	num_w = num_w / num_readers;
+	ptr = shmptr[num_w];
+	ulptr_r = checksum[num_w];
 
-	if (pthread_mutex_lock (&cond_mutex[num_w]))
-		sys_error ("Can't take cond lock", __LINE__);
-        /*
-         * Check to see if we need to wait: if yes, wait for the condition
-         * variable (blocking wait).
-         */
-	while (thread_hold[num_w])
-	{
-		if (pthread_cond_wait (&cond_var[num_w], &cond_mutex[num_w]))
-			sys_error ("cond_wait failed", __LINE__);
+	if (pthread_mutex_lock(&cond_mutex[num_w]))
+		sys_error("Can't take cond lock", __LINE__);
+	/*
+	 * Check to see if we need to wait: if yes, wait for the condition
+	 * variable (blocking wait).
+	 */
+	while (thread_hold[num_w]) {
+		if (pthread_cond_wait(&cond_var[num_w], &cond_mutex[num_w]))
+			sys_error("cond_wait failed", __LINE__);
 	}
-	if (pthread_mutex_unlock (&cond_mutex[num_w]))
-		sys_error ("Can't release cond lock", __LINE__);
+	if (pthread_mutex_unlock(&cond_mutex[num_w]))
+		sys_error("Can't release cond lock", __LINE__);
 
-        if (pthread_mutex_lock(&mutex_r[num_w]))
-                sys_error ("Can't take read lock", __LINE__);
+	if (pthread_mutex_lock(&mutex_r[num_w]))
+		sys_error("Can't take read lock", __LINE__);
 
-	(*(read_count [num_w]))++;
+	(*(read_count[num_w]))++;
 
-        if (pthread_mutex_unlock(&mutex_r[num_w]))
-                sys_error ("Can't release read lock", __LINE__);
+	if (pthread_mutex_unlock(&mutex_r[num_w]))
+		sys_error("Can't release read lock", __LINE__);
 
-	for (i=0; i<buffer_size; i++)
+	for (i = 0; i < buffer_size; i++)
 		cksum_r += *ptr++;
 
-        if (pthread_mutex_lock(&mutex_r[num_w]))
-                sys_error ("Can't take read lock", __LINE__);
+	if (pthread_mutex_lock(&mutex_r[num_w]))
+		sys_error("Can't take read lock", __LINE__);
 	(*(read_count[num_w]))--;
-        if (pthread_mutex_unlock(&mutex_r[num_w]))
-                sys_error ("Can't release 1 read lock", __LINE__);
+	if (pthread_mutex_unlock(&mutex_r[num_w]))
+		sys_error("Can't release 1 read lock", __LINE__);
 
 	/*
 	 * Store the resulting checksum and print out a message
 	 */
 
 	*ulptr_r = cksum_r;
-	printf ("\t\treader (%03d) of writer (%03d): checksum %08lx\n", num_r, num_w, cksum_r);
+	printf("\t\treader (%03d) of writer (%03d): checksum %08lx\n", num_r,
+	       num_w, cksum_r);
 	return NULL;
 }
 
@@ -574,48 +578,50 @@ void *reader (void *parm)
 |            [-g] num_writers: number of writer threads                |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	i;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int i;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	while ((i = getopt(argc, argv, "c:s:g:?")) != EOF) {
 		switch (i) {
-			case 'c':
-				num_readers = atoi (optarg);
-				break;
-			case 's':
-				buffer_size = atoi (optarg);
-				break;
-                        case 'g':               /* number of group */
-                                num_writers = atoi (optarg);
-                                break;
-			case '?':
-				errflag++;
-				break;
+		case 'c':
+			num_readers = atoi(optarg);
+			break;
+		case 's':
+			buffer_size = atoi(optarg);
+			break;
+		case 'g':	/* number of group */
+			num_writers = atoi(optarg);
+			break;
+		case '?':
+			errflag++;
+			break;
 		}
 	}
 	if (num_writers >= MAX_WRITER_NUMBER) {
 		errflag++;
-		fprintf (stderr, "ERROR: num_writers must be less than %d\n",
+		fprintf(stderr, "ERROR: num_writers must be less than %d\n",
 			MAX_WRITER_NUMBER);
 	}
 	if (num_readers >= MAX_READER_NUMBER) {
 		errflag++;
-		fprintf (stderr, "ERROR: num_readers must be less than %d\n",
+		fprintf(stderr, "ERROR: num_readers must be less than %d\n",
 			MAX_READER_NUMBER);
 	}
-	i=num_readers*num_writers;
+	i = num_readers * num_writers;
 	if (i >= MAX_THREAD_NUMBER) {
 		errflag++;
-		fprintf (stderr, "ERROR: maximun threads number must be less than %d\n", MAX_THREAD_NUMBER);
+		fprintf(stderr,
+			"ERROR: maximun threads number must be less than %d\n",
+			MAX_THREAD_NUMBER);
 	}
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -626,32 +632,32 @@ void parse_args (int argc, char **argv)
 | Function:  Release shared memory regions.                            |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void release ()
+void release()
 {
-        int i;
-        int j;
-        for (i=0; i<num_writers; i++) {
-        if (pthread_mutex_destroy(&cond_mutex[i]) != 0)
-                sys_error ("Can't destroy cond_mutex", __LINE__);
-        if (pthread_mutex_destroy(&mutex_r[i]) != 0)
-                sys_error ("Can't destroy mutex_r", __LINE__);
-        }
+	int i;
+	int j;
+	for (i = 0; i < num_writers; i++) {
+		if (pthread_mutex_destroy(&cond_mutex[i]) != 0)
+			sys_error("Can't destroy cond_mutex", __LINE__);
+		if (pthread_mutex_destroy(&mutex_r[i]) != 0)
+			sys_error("Can't destroy mutex_r", __LINE__);
+	}
 
-        for (i=0; i<num_writers; i++) {
-        /*
-         * Release shared memory regions
-         */
-	j=i*3;
-        if (shmctl (shmid[j], IPC_RMID, 0) < 0)
-                sys_error ("read_count shmctl failed", __LINE__);
-	j++;
-        if (shmctl (shmid[j], IPC_RMID, 0) < 0)
-                sys_error ("checksum shmctl failed", __LINE__);
-	j++;
-        if (shmctl (shmid[j], IPC_RMID, 0) < 0)
-                sys_error ("shmptr shmctl failed", __LINE__);
+	for (i = 0; i < num_writers; i++) {
+		/*
+		 * Release shared memory regions
+		 */
+		j = i * 3;
+		if (shmctl(shmid[j], IPC_RMID, 0) < 0)
+			sys_error("read_count shmctl failed", __LINE__);
+		j++;
+		if (shmctl(shmid[j], IPC_RMID, 0) < 0)
+			sys_error("checksum shmctl failed", __LINE__);
+		j++;
+		if (shmctl(shmid[j], IPC_RMID, 0) < 0)
+			sys_error("shmptr shmctl failed", __LINE__);
 
-        }
+	}
 }
 
 /*---------------------------------------------------------------------+
@@ -661,12 +667,12 @@ void release ()
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void sys_error (const char *msg, int line)
+void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -676,10 +682,10 @@ void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void error (const char *msg, int line)
+void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
 	if (line >= 260)
-	release ();
-	exit (-1);
+		release();
+	exit(-1);
 }

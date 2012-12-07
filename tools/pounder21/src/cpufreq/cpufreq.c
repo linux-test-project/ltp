@@ -32,7 +32,8 @@
 
 static unsigned int cpunum = 0;
 
-static int check_writable(const char *fname) {
+static int check_writable(const char *fname)
+{
 	int fd;
 
 	fd = open(fname, O_WRONLY);
@@ -42,7 +43,8 @@ static int check_writable(const char *fname) {
 	return fd >= 0;
 }
 
-static int seed_random(void) {
+static int seed_random(void)
+{
 	int fp;
 	long seed;
 
@@ -63,11 +65,13 @@ static int seed_random(void) {
 	return 1;
 }
 
-static unsigned int get_randnum(unsigned int max) {
+static unsigned int get_randnum(unsigned int max)
+{
 	return (unsigned int)((float)max * (rand() / (RAND_MAX + 1.0)));
 }
 
-static int set_cpuspeed(const char *ctrlfile, unsigned int speed) {
+static int set_cpuspeed(const char *ctrlfile, unsigned int speed)
+{
 	int fd, x;
 	unsigned int y;
 	char buf[256];
@@ -112,7 +116,8 @@ static int set_cpuspeed(const char *ctrlfile, unsigned int speed) {
 
 	y = atoi(buf);
 	if (y != speed) {
-		printf("ERROR: Set CPU %d speed to %u but speed is now %u!\n", cpunum, speed, y);
+		printf("ERROR: Set CPU %d speed to %u but speed is now %u!\n",
+		       cpunum, speed, y);
 		fflush(stdout);
 		return -1;
 	}
@@ -120,8 +125,8 @@ static int set_cpuspeed(const char *ctrlfile, unsigned int speed) {
 	return 1;
 }
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	const char *ctrl;
 	unsigned int rounds;
 	unsigned int *frequencies;
@@ -131,15 +136,19 @@ int main(int argc, char *argv[]) {
 
 	/* Usage: cpufreq control_file rounds [frequencies...] */
 	if (argc < 6) {
-		printf("Usage: %s control_file rounds cpunum [frequencies...]\n", argv[0]);
-		ret = 1; goto out;
+		printf
+		    ("Usage: %s control_file rounds cpunum [frequencies...]\n",
+		     argv[0]);
+		ret = 1;
+		goto out;
 	}
 
 	/* copy command line args */
 	ctrl = argv[1];
 	if (!check_writable(ctrl)) {
 		perror(ctrl);
-		ret = 2; goto out;
+		ret = 2;
+		goto out;
 	}
 
 	rounds = atoi(argv[2]);
@@ -149,7 +158,8 @@ int main(int argc, char *argv[]) {
 	frequencies = calloc(num_freqs, sizeof(unsigned int));
 	if (frequencies == NULL) {
 		perror("Error allocating memory");
-		ret = 3; goto out;
+		ret = 3;
+		goto out;
 	}
 
 	for (x = 4; x < argc; x++) {
@@ -157,7 +167,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* Now run program. */
-	printf("Running %u loops with these %d frequencies:\n", rounds, num_freqs);
+	printf("Running %u loops with these %d frequencies:\n", rounds,
+	       num_freqs);
 	for (x = 0; x < num_freqs; x++) {
 		printf("%u KHz\n", frequencies[x]);
 	}
@@ -170,7 +181,8 @@ int main(int argc, char *argv[]) {
 		y = get_randnum(num_freqs);
 		y = set_cpuspeed(ctrl, frequencies[y]);
 		if (y != 1) {
-			ret = 4; goto out;
+			ret = 4;
+			goto out;
 		}
 	}
 

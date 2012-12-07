@@ -37,8 +37,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="hangup01";            /* Test program identifier.    */
-int TST_TOTAL=5;                /* Total number of test cases. */
+char *TCID = "hangup01";	/* Test program identifier.    */
+int TST_TOTAL = 5;		/* Total number of test cases. */
 /**************/
 
 /*
@@ -54,12 +54,11 @@ int TST_TOTAL=5;                /* Total number of test cases. */
 
 #define BUFSZ 4096
 
-void	cleanup(void);
+void cleanup(void);
 
 pid_t childpid;
 
-void
-cleanup(void)
+void cleanup(void)
 {
 
 	int status;
@@ -70,12 +69,12 @@ cleanup(void)
 		if (kill(childpid, 0) == 0 || errno == ESRCH) {
 
 			/* KILL IT! */
-			(void) kill(childpid, 15);
+			(void)kill(childpid, 15);
 
 			/* And take care of any leftover zombies. */
 			if (waitpid(childpid, &status, WNOHANG) < 0) {
-				tst_resm(TWARN|TERRNO,
-					"waitpid(%d, ...) failed", childpid);
+				tst_resm(TWARN | TERRNO,
+					 "waitpid(%d, ...) failed", childpid);
 			}
 
 		}
@@ -87,8 +86,7 @@ cleanup(void)
 /*
  * parent process for hangup test
  */
-void
-parent(int masterfd, int childpid)
+void parent(int masterfd, int childpid)
 {
 	char buf[BUFSZ];
 	struct pollfd pollfds[1];
@@ -101,13 +99,13 @@ parent(int masterfd, int childpid)
 	pollfds[0].fd = masterfd;
 	pollfds[0].events = POLLIN;
 
-        sleep(1);
+	sleep(1);
 
 	while ((i = poll(pollfds, 1, -1)) == 1) {
 		if (read(masterfd, buf, len) == -1) {
 			++hangupcount;
 #ifdef DEBUG
-			tst_resm(TINFO,"hangup %d", hangupcount);
+			tst_resm(TINFO, "hangup %d", hangupcount);
 #endif
 			if (hangupcount == NUMMESSAGES) {
 				break;
@@ -117,30 +115,30 @@ parent(int masterfd, int childpid)
 			switch (datacount) {
 			case 1:
 				if (strncmp(buf, MESSAGE1,
-				    strlen(MESSAGE1)) != 0) {
+					    strlen(MESSAGE1)) != 0) {
 					tst_brkm(TFAIL, cleanup,
-						"unexpected message 1");
+						 "unexpected message 1");
 				}
 				len = strlen(MESSAGE2);
 				break;
 			case 2:
 				if (strncmp(buf, MESSAGE2,
-				    strlen(MESSAGE2)) != 0) {
+					    strlen(MESSAGE2)) != 0) {
 					tst_brkm(TFAIL, cleanup,
-						"unexpected message 2");
+						 "unexpected message 2");
 				}
 				len = strlen(MESSAGE3);
 				break;
 			case 3:
 				if (strncmp(buf, MESSAGE3,
-				    strlen(MESSAGE3)) != 0) {
+					    strlen(MESSAGE3)) != 0) {
 					tst_brkm(TFAIL, cleanup,
-						"unexpected message 3");
+						 "unexpected message 3");
 				}
 				break;
 			default:
 				tst_brkm(TFAIL, cleanup,
-					"unexpected data message");
+					 "unexpected data message");
 
 			}
 		}
@@ -151,15 +149,14 @@ parent(int masterfd, int childpid)
 	while (waitpid(childpid, &status, WNOHANG) < 0 && errno != ESRCH) ;
 
 	tst_resm((status == 0 ? TPASS : TFAIL),
-		"child process exited with status %d", status);
+		 "child process exited with status %d", status);
 }
 
 /*
  * Child process for hangup test.  Write three messages to the slave
  * pty, with a hangup after each.
  */
-int
-child(int masterfd)
+int child(int masterfd)
 {
 	int slavefd;
 	char *slavename;
@@ -219,21 +216,21 @@ int main(int argc, char **argv)
 /*--------------------------------------------------------------------*/
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0)
-		tst_brkm(TBROK|TERRNO, NULL, "open %s", MASTERCLONE);
+		tst_brkm(TBROK | TERRNO, NULL, "open %s", MASTERCLONE);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "ptsname");
+		tst_brkm(TBROK | TERRNO, NULL, "ptsname");
 
 	if (grantpt(masterfd) != 0)
-		tst_brkm(TBROK|TERRNO, NULL, "grantpt");
+		tst_brkm(TBROK | TERRNO, NULL, "grantpt");
 
 	if (unlockpt(masterfd) != 0)
-		tst_brkm(TBROK|TERRNO, NULL, "unlockpt");
+		tst_brkm(TBROK | TERRNO, NULL, "unlockpt");
 
 	childpid = fork();
 	if (childpid == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "fork");
+		tst_brkm(TBROK | TERRNO, NULL, "fork");
 	else if (childpid == 0)
 		exit(child(masterfd));
 	else

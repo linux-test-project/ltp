@@ -54,7 +54,7 @@ void process_options(int argc, char **argv)
 
 	opterr = 0;
 	while ((c = getopt(argc, argv, "pm:")) != -1) {
-		switch(c) {
+		switch (c) {
 		case 'm':
 			memsize = strtoul(optarg, &end, 10);
 			if (*end != '\0')
@@ -65,8 +65,8 @@ void process_options(int argc, char **argv)
 			exit(0);
 		default:
 			errx(2, "invalid option specifed");
-        	}
-    	}
+		}
+	}
 
 	if (memsize <= 0)
 		errx(3, "invalid usage");
@@ -92,8 +92,8 @@ void mem_map()
 		if (munmap(p, memsize) == -1)
 			err(5, "munmap failed");
 	} else {
-		p = mmap(NULL, memsize, PROT_READ|PROT_WRITE,
-		    MAP_SHARED|MAP_ANONYMOUS, 0, 0);
+		p = mmap(NULL, memsize, PROT_READ | PROT_WRITE,
+			 MAP_SHARED | MAP_ANONYMOUS, 0, 0);
 		if (p == MAP_FAILED)
 			err(4, "mmap failed");
 		touch_memory(p);

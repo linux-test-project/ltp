@@ -142,7 +142,7 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "alarm(1) failed");
+			tst_resm(TFAIL | TTERRNO, "alarm(1) failed");
 		else {
 
 			if (STD_FUNCTIONAL_TEST) {

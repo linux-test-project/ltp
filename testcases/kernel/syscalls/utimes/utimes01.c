@@ -63,9 +63,9 @@
 #include "linux_syscall_numbers.h"
 
 /* Global Variables */
-char *TCID = "utimes01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+char *TCID = "utimes01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -85,7 +85,8 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -110,7 +111,8 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	tst_require_root(NULL);
 
 	/* Capture signals if any */
@@ -156,41 +158,41 @@ struct test_case {
  */
 
 static struct test_case tcase[] = {
-	{ // case00
-		.ttype	  = NORMAL,
-		.a_sec	  = 0,
-		.m_sec	  = 1000,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case01
-		.ttype	  = NORMAL,
-		.a_sec	  = 1000,
-		.m_sec	  = 0,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case02
-		.ttype	  = NORMAL,
-		.user	   = "nobody",
-		.ret	    = -1,
-		.err	    = EACCES, // RHEL4U1 + 2.6.18 returns EPERM
-	},
-	{ // case03
-		.ttype	  = FILE_NOT_EXIST,
-		.a_sec	  = 1000,
-		.m_sec	  = 2000,
-		.ret	    = -1,
-		.err	    = ENOENT,
-	},
+	{			// case00
+	 .ttype = NORMAL,
+	 .a_sec = 0,
+	 .m_sec = 1000,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case01
+	 .ttype = NORMAL,
+	 .a_sec = 1000,
+	 .m_sec = 0,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case02
+	 .ttype = NORMAL,
+	 .user = "nobody",
+	 .ret = -1,
+	 .err = EACCES,		// RHEL4U1 + 2.6.18 returns EPERM
+	 },
+	{			// case03
+	 .ttype = FILE_NOT_EXIST,
+	 .a_sec = 1000,
+	 .m_sec = 2000,
+	 .ret = -1,
+	 .err = ENOENT,
+	 },
 
-	{ // case04
-		.ttype	  = NO_FNAME,
-		.a_sec	  = 1000,
-		.m_sec	  = 2000,
-		.ret	    = -1,
-		.err	    = EFAULT,
-	},
+	{			// case04
+	 .ttype = NO_FNAME,
+	 .a_sec = 1000,
+	 .m_sec = 2000,
+	 .ret = -1,
+	 .err = EFAULT,
+	 },
 };
 
 /*
@@ -251,23 +253,22 @@ static int do_test(struct test_case *tc)
 		 **/
 		const char *dummy = NULL;
 		TEST(sys_ret = utimes(dummy, tv));
-	}
-	else {
+	} else {
 		if (tc->user == NULL)
 			TEST(sys_ret = utimes(fpath, tv));
 		else
 			TEST(sys_ret = utimes(fpath, NULL));
 	}
-        tv[0].tv_sec = tc->a_sec;
-        tv[1].tv_sec = tc->m_sec;
-        TEST(len = strlen(fpath));
-        if (tc->ttype == FILE_NOT_EXIST) {
-                c = fpath[len - 1];
-                fpath[len - 1] = '\0';
-        }
-        errno = 0;
-        if (tc->ttype == NO_FNAME) {
-                /**
+	tv[0].tv_sec = tc->a_sec;
+	tv[1].tv_sec = tc->m_sec;
+	TEST(len = strlen(fpath));
+	if (tc->ttype == FILE_NOT_EXIST) {
+		c = fpath[len - 1];
+		fpath[len - 1] = '\0';
+	}
+	errno = 0;
+	if (tc->ttype == NO_FNAME) {
+		/**
                  * Note (garrcoop):
                  *
                  * If you do NULL directly, then gcc [4.3] will complain when
@@ -275,15 +276,14 @@ static int do_test(struct test_case *tc)
                  * test, but let's not allow the compiler to complain about
                  * something trivial like this.
                  **/
-                const char *dummy = NULL;
-                TEST(sys_ret = utimes(dummy, tv));
-        }
-        else {
-                if (tc->user == NULL)
-                        TEST(sys_ret = utimes(fpath, tv));
-                else
-                        TEST(sys_ret = utimes(fpath, NULL));
-        }
+		const char *dummy = NULL;
+		TEST(sys_ret = utimes(dummy, tv));
+	} else {
+		if (tc->user == NULL)
+			TEST(sys_ret = utimes(fpath, tv));
+		else
+			TEST(sys_ret = utimes(fpath, NULL));
+	}
 	sys_errno = errno;
 	if (tc->ttype == FILE_NOT_EXIST)
 		fpath[len - 1] = c;
@@ -299,7 +299,8 @@ static int do_test(struct test_case *tc)
 		result = 1;
 		goto EXIT1;
 	}
-	tst_resm(TINFO,"E:%ld,%ld <=> R:%ld,%ld",tv[0].tv_sec, tv[1].tv_sec, st.st_atime, st.st_mtime);
+	tst_resm(TINFO, "E:%ld,%ld <=> R:%ld,%ld", tv[0].tv_sec, tv[1].tv_sec,
+		 st.st_atime, st.st_mtime);
 	cmp_ok = st.st_atime == tv[0].tv_sec && st.st_mtime == tv[1].tv_sec;
 
 	/*
@@ -307,7 +308,8 @@ static int do_test(struct test_case *tc)
 	 */
 TEST_END:
 	result |= (sys_errno != tc->err) || !cmp_ok;
-	PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno,cmp_ok);
+	PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno,
+			 cmp_ok);
 
 	/*
 	 * Restore effective user id
@@ -328,14 +330,15 @@ EXIT2:
  * main()
  */
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int result = RESULT_OK;
 	int i;
 	int lc;
 	char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-	     tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
@@ -343,16 +346,17 @@ int main(int ac, char **av) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0]));
+			     i++) {
 				int ret;
 				tst_resm(TINFO, "(case%02d) START", i);
 				ret = do_test(&tcase[i]);
 				tst_resm(TINFO, "(case%02d) END => %s",
-					i, (ret == 0) ? "OK" : "NG");
+					 i, (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
 
-        	}
+		}
 	}
 	cleanup();
 	tst_exit();

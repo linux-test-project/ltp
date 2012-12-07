@@ -36,7 +36,8 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_26-2"
 
-int main() {
+int main()
+{
 	int fd;
 	struct stat stat_buf;
 	struct passwd *pw;
@@ -44,8 +45,9 @@ int main() {
 	gid_t old_gid;
 
 	umask(0);
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT,
-		      S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT,
+		      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH |
+		      S_IWOTH);
 
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
@@ -80,7 +82,8 @@ int main() {
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
+			printf
+			    ("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
 		} else {
 			perror("An error occurs when calling seteuid()");
 		}
@@ -88,10 +91,9 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	printf("Testing with user '%s' (uid: %i)\n",
-	       pw->pw_name, pw->pw_uid);
+	printf("Testing with user '%s' (uid: %i)\n", pw->pw_name, pw->pw_uid);
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_TRUNC, 0);
+	fd = shm_open(SHM_NAME, O_RDWR | O_TRUNC, 0);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		seteuid(getuid());

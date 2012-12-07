@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
 	if ((pid = fork()) == 0) {
 		/* child here */
 
-		act.sa_handler=handler;
-		act.sa_flags=0;
+		act.sa_handler = handler;
+		act.sa_flags = 0;
 		if (sigemptyset(&act.sa_mask) == -1) {
 			perror("Error calling sigemptyset\n");
 			return CHILDFAILURE;
@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 			perror("Error calling sigaction\n");
 			return CHILDFAILURE;
 		}
-		tssleepfor.tv_sec=sleepsec;
-		tssleepfor.tv_nsec=0;
+		tssleepfor.tv_sec = sleepsec;
+		tssleepfor.tv_nsec = 0;
 		if (nanosleep(&tssleepfor, &tsstorage) == -1) {
 			return CHILDSUCCESS;
 		} else {

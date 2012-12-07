@@ -42,7 +42,7 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	woqueue = mq_open(qname, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR, &attr);
-	if (woqueue == (mqd_t) -1) {
+	if (woqueue == (mqd_t) - 1) {
 		perror("mq_open() for write-only queue did not return success");
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
@@ -73,7 +73,7 @@ int main()
 #endif
 
 	woqueue2 = mq_open(qname, O_WRONLY, S_IRUSR | S_IWUSR, &attr);
-	if (woqueue2 == (mqd_t) -1) {
+	if (woqueue2 == (mqd_t) - 1) {
 		perror("mq_open() did not return success");
 		printf("Test UNRESOLVED\n");
 		/* close woqueue and exit */

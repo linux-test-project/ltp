@@ -39,12 +39,11 @@
 int currentAnswer;
 int maxAnswer;
 
-bool_t eachResult (char *out, struct sockaddr_in *addr)
+bool_t eachResult(char *out, struct sockaddr_in *addr)
 {
 	//printf("in each result\n");
 	currentAnswer++;
-	if (currentAnswer >= maxAnswer)
-	{
+	if (currentAnswer >= maxAnswer) {
 		return (1);
 	}
 	return (0);
@@ -53,37 +52,35 @@ bool_t eachResult (char *out, struct sockaddr_in *addr)
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   argc[3] : Number of host ready to answer to broadcast
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         argc[3] : Number of host ready to answer to broadcast
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	enum clnt_stat cs;
 	char nettype[16] = "visible";
 	int varSnd = 0;
 	int varRec;
 
-	bool_t eachResult (char *out, struct sockaddr_in *addr);
+	bool_t eachResult(char *out, struct sockaddr_in *addr);
 	maxAnswer = atoi(argc[3]);
 	currentAnswer = 0;
 
 	//Show information in debug mode...
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("progNum : %d\n", progNum);
 		printf("Max SVC : %d\n", maxAnswer);
 	}
-
 	//Call broadcast routine
 	cs = rpc_broadcast(progNum, VERSNUM, PINGPROC,
-						  (xdrproc_t)xdr_int, (char *)&varSnd,
-						  (xdrproc_t)xdr_int, (char *)&varRec,
-						  (resultproc_t) eachResult, nettype);
+			   (xdrproc_t) xdr_int, (char *)&varSnd,
+			   (xdrproc_t) xdr_int, (char *)&varRec,
+			   (resultproc_t) eachResult, nettype);
 
 	if (currentAnswer == maxAnswer)
 		test_status = 0;

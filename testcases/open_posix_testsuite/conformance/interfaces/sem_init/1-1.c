@@ -24,25 +24,25 @@ and then check the value of the semaphore.
 #define FUNCTION "sem_init"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main ()
+int main()
 {
-	sem_t   mysemp;
+	sem_t mysemp;
 	int sts;
 	int val;
 
 	sts = sem_init(&mysemp, 0, 1);
 
-        if (sem_getvalue(&mysemp, &val) == -1) {
-                perror(ERROR_PREFIX "sem_getvalue");
-                return PTS_UNRESOLVED;
-        }
+	if (sem_getvalue(&mysemp, &val) == -1) {
+		perror(ERROR_PREFIX "sem_getvalue");
+		return PTS_UNRESOLVED;
+	}
 
 	if ((sts == -1) && (val != 1)) {
-                puts("TEST FAILED");
-                return PTS_FAIL;
-        } else {
-                puts("TEST PASSED");
-                sem_destroy(&mysemp);
-                return PTS_PASS;
-        }
+		puts("TEST FAILED");
+		return PTS_FAIL;
+	} else {
+		puts("TEST PASSED");
+		sem_destroy(&mysemp);
+		return PTS_PASS;
+	}
 }

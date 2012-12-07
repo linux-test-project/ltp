@@ -64,11 +64,11 @@ static void _test_sysconf(long name, const char *strname)
 			break;
 		case 0:
 			tst_resm(TCONF, "Not supported sysconf resource: %s",
-					strname);
+				 strname);
 			break;
 		default:
 			tst_resm(TFAIL | TERRNO, "Unexpected errno value for "
-						 "%s", strname);
+				 "%s", strname);
 			break;
 		}
 	} else
@@ -164,7 +164,7 @@ int main(void)
 				 "errno (%i) != actual (%i)", EINVAL, actual);
 		} else
 			tst_resm(TPASS, "The invalid sysconf key was trapped "
-					"appropriately");
+				 "appropriately");
 	}
 
 	tst_exit();

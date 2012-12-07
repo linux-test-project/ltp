@@ -69,7 +69,6 @@
 #include "usctest.h"
 #include <errno.h>
 
-
 char *TCID = "setreuid02";
 uid_t nobody_pw_uid, root_pw_uid, daemon_pw_uid, bin_pw_uid;
 uid_t neg_one = -1;
@@ -114,7 +113,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	 }
+	}
 
 	setup();
 
@@ -166,12 +165,12 @@ void setup(void)
 	if (getpwnam("nobody") == NULL) {
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 		tst_exit();
-	 }
+	}
 
 	if (getpwnam("daemon") == NULL) {
 		tst_brkm(TBROK, NULL, "daemon must be a valid user.");
 		tst_exit();
-	 }
+	}
 
 	/* Check that the test process id is root  */
 	if (geteuid() != 0) {
@@ -213,7 +212,7 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}
 
 void uid_verify(struct passwd *ru, struct passwd *eu, char *when)
 {

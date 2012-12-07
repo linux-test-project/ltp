@@ -19,16 +19,15 @@
  *  Sridhar Samudrala     <sri@us.ibm.com>
  */
 
-#include <sys/socket.h>   /* struct sockaddr_storage, setsockopt() */
-#include <netinet/sctp.h> /* SCTP_SOCKOPT_BINDX_* */
+#include <sys/socket.h>		/* struct sockaddr_storage, setsockopt() */
+#include <netinet/sctp.h>	/* SCTP_SOCKOPT_BINDX_* */
 #include <errno.h>
 
 /* Branch off an association into a seperate socket.  This is a new SCTP API
  * described in the section 8.2 of the Sockets API Extensions for SCTP.
  * This is implemented using the getsockopt() interface.
  */
-int
-sctp_peeloff(int fd, sctp_assoc_t associd)
+int sctp_peeloff(int fd, sctp_assoc_t associd)
 {
 	sctp_peeloff_arg_t peeloff;
 	socklen_t peeloff_size = sizeof(peeloff);
@@ -44,4 +43,4 @@ sctp_peeloff(int fd, sctp_assoc_t associd)
 
 	return peeloff.sd;
 
-} /* sctp_peeloff() */
+}				/* sctp_peeloff() */

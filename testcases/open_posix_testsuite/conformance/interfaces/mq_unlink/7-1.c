@@ -33,8 +33,7 @@ int main()
 	if (ENOENT == errno) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	}
-	else {
+	} else {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

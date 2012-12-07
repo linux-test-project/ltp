@@ -72,12 +72,12 @@ int print_task_context_switch_counts;
 /* Maximum number of cpus expected to be specified in a cpumask */
 #define MAX_CPUS	32
 
-char cpumask[100+6*MAX_CPUS];
+char cpumask[100 + 6 * MAX_CPUS];
 
 static void usage(void)
 {
 	fprintf(stderr, "getdelays [-dilv] [-w logfile] [-r bufsize] "
-			"[-m cpumask] [-t tgid] [-p pid]\n");
+		"[-m cpumask] [-t tgid] [-p pid]\n");
 	fprintf(stderr, "  -d: print delayacct stats\n");
 	fprintf(stderr, "  -i: print IO accounting (works only with -p)\n");
 	fprintf(stderr, "  -l: listen forever\n");
@@ -105,17 +105,16 @@ static int create_nl_socket(int protocol)
 
 	if (rcvbufsz)
 		if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF,
-				&rcvbufsz, sizeof(rcvbufsz)) < 0) {
+			       &rcvbufsz, sizeof(rcvbufsz)) < 0) {
 			fprintf(stderr, "Unable to set socket rcv buf size "
-					"to %d\n",
-				rcvbufsz);
+				"to %d\n", rcvbufsz);
 			return -1;
 		}
 
 	memset(&local, 0, sizeof(local));
 	local.nl_family = AF_NETLINK;
 
-	if (bind(fd, (struct sockaddr *) &local, sizeof(local)) < 0)
+	if (bind(fd, (struct sockaddr *)&local, sizeof(local)) < 0)
 		goto error;
 
 	return fd;
@@ -125,8 +124,7 @@ error:
 }
 
 int send_cmd(int sd, __u16 nlmsg_type, __u32 nlmsg_pid,
-	     __u8 genl_cmd, __u16 nla_type,
-	     void *nla_data, int nla_len)
+	     __u8 genl_cmd, __u16 nla_type, void *nla_data, int nla_len)
 {
 	struct nlattr *na;
 	struct sockaddr_nl nladdr;
@@ -142,17 +140,17 @@ int send_cmd(int sd, __u16 nlmsg_type, __u32 nlmsg_pid,
 	msg.n.nlmsg_pid = nlmsg_pid;
 	msg.g.cmd = genl_cmd;
 	msg.g.version = 0x1;
-	na = (struct nlattr *) GENLMSG_DATA(&msg);
+	na = (struct nlattr *)GENLMSG_DATA(&msg);
 	na->nla_type = nla_type;
 	na->nla_len = nla_len + 1 + NLA_HDRLEN;
 	memcpy(NLA_DATA(na), nla_data, nla_len);
 	msg.n.nlmsg_len += NLMSG_ALIGN(na->nla_len);
 
-	buf = (char *) &msg;
-	buflen = msg.n.nlmsg_len ;
+	buf = (char *)&msg;
+	buflen = msg.n.nlmsg_len;
 	memset(&nladdr, 0, sizeof(nladdr));
 	nladdr.nl_family = AF_NETLINK;
-	while ((r = sendto(sd, buf, buflen, 0, (struct sockaddr *) &nladdr,
+	while ((r = sendto(sd, buf, buflen, 0, (struct sockaddr *)&nladdr,
 			   sizeof(nladdr))) < buflen) {
 		if (r > 0) {
 			buf += r;
@@ -181,16 +179,16 @@ int get_family_id(int sd)
 
 	strcpy(name, TASKSTATS_GENL_NAME);
 	rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY,
-			CTRL_ATTR_FAMILY_NAME, (void *)name,
-			strlen(TASKSTATS_GENL_NAME)+1);
+		      CTRL_ATTR_FAMILY_NAME, (void *)name,
+		      strlen(TASKSTATS_GENL_NAME) + 1);
 
 	rep_len = recv(sd, &ans, sizeof(ans), 0);
 	if (ans.n.nlmsg_type == NLMSG_ERROR ||
 	    (rep_len < 0) || !NLMSG_OK((&ans.n), rep_len))
 		return 0;
 
-	na = (struct nlattr *) GENLMSG_DATA(&ans);
-	na = (struct nlattr *) ((char *) na + NLA_ALIGN(na->nla_len));
+	na = (struct nlattr *)GENLMSG_DATA(&ans);
+	na = (struct nlattr *)((char *)na + NLA_ALIGN(na->nla_len));
 	if (na->nla_type == CTRL_ATTR_FAMILY_ID) {
 		id = *(__u16 *) NLA_DATA(na);
 	}
@@ -200,41 +198,38 @@ int get_family_id(int sd)
 void print_delayacct(struct taskstats *t)
 {
 	printf("\n\nCPU   %15s%15s%15s%15s\n"
-		"      %15llu%15llu%15llu%15llu\n"
-		"IO    %15s%15s\n"
-		"      %15llu%15llu\n"
-		"SWAP  %15s%15s\n"
-		"      %15llu%15llu\n"
-		"RECLAIM  %12s%15s\n"
+	       "      %15llu%15llu%15llu%15llu\n"
+	       "IO    %15s%15s\n"
+	       "      %15llu%15llu\n"
+	       "SWAP  %15s%15s\n" "      %15llu%15llu\n" "RECLAIM  %12s%15s\n"
 #ifdef HAVE_STRUCT_TASKSTATS_FREEPAGES_COUNT
-		 "      %15llu%15llu\n"
+	       "      %15llu%15llu\n"
 #endif
-		, "count", "real total", "virtual total", "delay total",
-		(unsigned long long)t->cpu_count,
-		(unsigned long long)t->cpu_run_real_total,
-		(unsigned long long)t->cpu_run_virtual_total,
-		(unsigned long long)t->cpu_delay_total,
-		"count", "delay total",
-		(unsigned long long)t->blkio_count,
-		(unsigned long long)t->blkio_delay_total,
-		"count", "delay total",
-		(unsigned long long)t->swapin_count,
-		(unsigned long long)t->swapin_delay_total,
-		"count", "delay total"
+	       , "count", "real total", "virtual total", "delay total",
+	       (unsigned long long)t->cpu_count,
+	       (unsigned long long)t->cpu_run_real_total,
+	       (unsigned long long)t->cpu_run_virtual_total,
+	       (unsigned long long)t->cpu_delay_total,
+	       "count", "delay total",
+	       (unsigned long long)t->blkio_count,
+	       (unsigned long long)t->blkio_delay_total,
+	       "count", "delay total",
+	       (unsigned long long)t->swapin_count,
+	       (unsigned long long)t->swapin_delay_total, "count", "delay total"
 #ifdef HAVE_STRUCT_TASKSTATS_FREEPAGES_COUNT
-		, (unsigned long long)t->freepages_count,
-		(unsigned long long)t->freepages_delay_total
+	       , (unsigned long long)t->freepages_count,
+	       (unsigned long long)t->freepages_delay_total
 #endif
-		);
+	    );
 }
 
 void task_context_switch_counts(struct taskstats *t)
 {
 #ifdef HAVE_STRUCT_TASKSTATS_NVCSW
 	printf("\n\nTask   %15s%15s\n"
-		"	%15llu%15llu\n",
-		"voluntary", "nonvoluntary",
-		(unsigned long long)t->nvcsw, (unsigned long long)t->nivcsw);
+	       "	%15llu%15llu\n",
+	       "voluntary", "nonvoluntary",
+	       (unsigned long long)t->nvcsw, (unsigned long long)t->nivcsw);
 #endif
 }
 
@@ -242,11 +237,11 @@ void task_context_switch_counts(struct taskstats *t)
 void print_cgroupstats(struct cgroupstats *c)
 {
 	printf("sleeping %llu, blocked %llu, running %llu, stopped %llu, "
-		"uninterruptible %llu\n", (unsigned long long)c->nr_sleeping,
-		(unsigned long long)c->nr_io_wait,
-		(unsigned long long)c->nr_running,
-		(unsigned long long)c->nr_stopped,
-		(unsigned long long)c->nr_uninterruptible);
+	       "uninterruptible %llu\n", (unsigned long long)c->nr_sleeping,
+	       (unsigned long long)c->nr_io_wait,
+	       (unsigned long long)c->nr_running,
+	       (unsigned long long)c->nr_stopped,
+	       (unsigned long long)c->nr_uninterruptible);
 }
 #endif
 
@@ -254,10 +249,10 @@ void print_ioacct(struct taskstats *t)
 {
 #ifdef HAVE_STRUCT_TASKSTATS_READ_BYTES
 	printf("%s: read=%llu, write=%llu, cancelled_write=%llu\n",
-		t->ac_comm,
-		(unsigned long long)t->read_bytes,
-		(unsigned long long)t->write_bytes,
-		(unsigned long long)t->cancelled_write_bytes);
+	       t->ac_comm,
+	       (unsigned long long)t->read_bytes,
+	       (unsigned long long)t->write_bytes,
+	       (unsigned long long)t->cancelled_write_bytes);
 #endif
 }
 
@@ -438,11 +433,11 @@ int main(int argc, char *argv[])
 		}
 
 		PRINTF("nlmsghdr size=%zu, nlmsg_len=%d, rep_len=%d\n",
-			sizeof(struct nlmsghdr), msg.n.nlmsg_len, rep_len);
+		       sizeof(struct nlmsghdr), msg.n.nlmsg_len, rep_len);
 
 		rep_len = GENLMSG_PAYLOAD(&msg.n);
 
-		na = (struct nlattr *) GENLMSG_DATA(&msg);
+		na = (struct nlattr *)GENLMSG_DATA(&msg);
 		len = 0;
 		i = 0;
 		while (len < rep_len) {
@@ -454,31 +449,46 @@ int main(int argc, char *argv[])
 				aggr_len = NLA_PAYLOAD(na->nla_len);
 				len2 = 0;
 				/* For nested attributes, na follows */
-				na = (struct nlattr *) NLA_DATA(na);
+				na = (struct nlattr *)NLA_DATA(na);
 				done = 0;
 				while (len2 < aggr_len) {
 					switch (na->nla_type) {
 					case TASKSTATS_TYPE_PID:
-						rtid = *(int *) NLA_DATA(na);
+						rtid = *(int *)NLA_DATA(na);
 						if (print_delays)
-							printf("PID\t%d\n", rtid);
+							printf("PID\t%d\n",
+							       rtid);
 						break;
 					case TASKSTATS_TYPE_TGID:
-						rtid = *(int *) NLA_DATA(na);
+						rtid = *(int *)NLA_DATA(na);
 						if (print_delays)
-							printf("TGID\t%d\n", rtid);
+							printf("TGID\t%d\n",
+							       rtid);
 						break;
 					case TASKSTATS_TYPE_STATS:
 						count++;
 						if (print_delays)
-							print_delayacct((struct taskstats *) NLA_DATA(na));
+							print_delayacct((struct
+									 taskstats
+									 *)
+									NLA_DATA
+									(na));
 						if (print_io_accounting)
-							print_ioacct((struct taskstats *) NLA_DATA(na));
+							print_ioacct((struct
+								      taskstats
+								      *)
+								     NLA_DATA
+								     (na));
 						if (print_task_context_switch_counts)
-							task_context_switch_counts((struct taskstats *) NLA_DATA(na));
+							task_context_switch_counts
+							    ((struct taskstats
+							      *)NLA_DATA(na));
 						if (fd) {
-							if (write(fd, NLA_DATA(na), na->nla_len) < 0) {
-								err(1,"write error\n");
+							if (write
+							    (fd, NLA_DATA(na),
+							     na->nla_len) < 0) {
+								err(1,
+								    "write error\n");
 							}
 						}
 						if (!loop)
@@ -491,7 +501,8 @@ int main(int argc, char *argv[])
 						break;
 					}
 					len2 += NLA_ALIGN(na->nla_len);
-					na = (struct nlattr *) ((char *) na + len2);
+					na = (struct nlattr *)((char *)na +
+							       len2);
 				}
 				break;
 #if HAVE_LINUX_CGROUPSTATS_H
@@ -504,7 +515,7 @@ int main(int argc, char *argv[])
 					na->nla_type);
 				exit(1);
 			}
-			na = (struct nlattr *) (GENLMSG_DATA(&msg) + len);
+			na = (struct nlattr *)(GENLMSG_DATA(&msg) + len);
 		}
 	} while (loop);
 done:
@@ -525,7 +536,8 @@ done:
 	return 0;
 }
 #else
-int main (void) {
+int main(void)
+{
 	printf("System doesn't have needed netlink / taskstats support.\n");
 	return 1;
 }

@@ -17,8 +17,8 @@
 #include "libclone.h"
 
 int do_clone_tests(unsigned long clone_flags,
-			int(*fn1)(void *arg), void *arg1,
-			int(*fn2)(void *arg), void *arg2)
+		   int (*fn1) (void *arg), void *arg1,
+		   int (*fn2) (void *arg), void *arg2)
 {
 	int ret;
 
@@ -36,8 +36,8 @@ int do_clone_tests(unsigned long clone_flags,
 }
 
 int do_unshare_tests(unsigned long clone_flags,
-			int (*fn1)(void *arg), void *arg1,
-			int (*fn2)(void *arg), void *arg2)
+		     int (*fn1) (void *arg), void *arg1,
+		     int (*fn2) (void *arg), void *arg2)
 {
 	int pid, ret = 0;
 	int retpipe[2];
@@ -86,8 +86,8 @@ int do_unshare_tests(unsigned long clone_flags,
 	return ret;
 }
 
-int do_plain_tests(int (*fn1)(void *arg), void *arg1,
-			int (*fn2)(void *arg), void *arg2)
+int do_plain_tests(int (*fn1) (void *arg), void *arg1,
+		   int (*fn2) (void *arg), void *arg2)
 {
 	int ret = 0, pid;
 
@@ -104,7 +104,7 @@ int do_plain_tests(int (*fn1)(void *arg), void *arg1,
 }
 
 int do_clone_unshare_test(int use_clone, unsigned long clone_flags,
-			int (*fn1)(void *arg), void *arg1)
+			  int (*fn1) (void *arg), void *arg1)
 {
 	switch (use_clone) {
 	case T_NONE:
@@ -115,7 +115,7 @@ int do_clone_unshare_test(int use_clone, unsigned long clone_flags,
 		return do_unshare_tests(clone_flags, fn1, arg1, NULL, NULL);
 	default:
 		printf("%s: bad use_clone option: %d\n", __FUNCTION__,
-							use_clone);
+		       use_clone);
 		return -1;
 	}
 }
@@ -124,8 +124,8 @@ int do_clone_unshare_test(int use_clone, unsigned long clone_flags,
  * Run fn1 in a unshared environmnent, and fn2 in the original context
  */
 int do_clone_unshare_tests(int use_clone, unsigned long clone_flags,
-			int (*fn1)(void *arg), void *arg1,
-			int (*fn2)(void *arg), void *arg2)
+			   int (*fn1) (void *arg), void *arg1,
+			   int (*fn2) (void *arg), void *arg2)
 {
 	switch (use_clone) {
 	case T_NONE:
@@ -136,7 +136,7 @@ int do_clone_unshare_tests(int use_clone, unsigned long clone_flags,
 		return do_unshare_tests(clone_flags, fn1, arg1, fn2, arg2);
 	default:
 		printf("%s: bad use_clone option: %d\n", __FUNCTION__,
-							use_clone);
+		       use_clone);
 		return -1;
 	}
 }

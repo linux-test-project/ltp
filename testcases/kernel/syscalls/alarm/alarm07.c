@@ -108,7 +108,7 @@ int main(int ac, char **av)
 		/* Now, fork a child process */
 		cpid = FORK_OR_VFORK();
 		if (cpid < 0) {
-			tst_resm(TFAIL|TERRNO, "fork() failed");
+			tst_resm(TFAIL | TERRNO, "fork() failed");
 		}
 
 		sleep(sleep_time);
@@ -119,19 +119,19 @@ int main(int ac, char **av)
 					exit(0);
 				else {
 					printf("alarm request not cleared in "
-					    "child; alarms received:%d\n",
-					    alarms_received);
+					       "child; alarms received:%d\n",
+					       alarms_received);
 					exit(1);
 				}
 			} else {
 				/* Wait for child to complete execution */
 				if (wait(&status) == -1)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "wait failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "wait failed");
 				if (!WIFEXITED(status) ||
 				    WEXITSTATUS(status) != 0)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "child exited abnormally");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "child exited abnormally");
 			}
 		} else
 			tst_resm(TPASS, "call returned %ld", TEST_RETURN);
@@ -155,7 +155,7 @@ void setup()
 
 	/* Set the signal catching function */
 	if (signal(SIGALRM, sigproc) == SIG_ERR) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "signal(SIGALRM, ..) failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "signal(SIGALRM, ..) failed");
 	}
 }
 

@@ -93,8 +93,8 @@ int main(int argc, char **argv)
 	int ret;
 
 	ret = get_allowed_nodes(NH_MEMS, 2, &from_node, &to_node);
-	if (ret	< 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes: %d", ret);
+	if (ret < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "get_allowed_nodes: %d", ret);
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -125,7 +125,8 @@ int main(int argc, char **argv)
 				      status, MPOL_MF_MOVE);
 		TEST_ERRNO = errno;
 		if (ret == -1) {
-			tst_resm(TFAIL | TERRNO, "move_pages unexpectedly failed");
+			tst_resm(TFAIL | TERRNO,
+				 "move_pages unexpectedly failed");
 			goto err_free_pages;
 		}
 
@@ -136,11 +137,11 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "status[%d] is %d", UNTOUCHED_PAGE,
 				 status[UNTOUCHED_PAGE]);
 
-		err_free_pages:
-		    /* This is capable of freeing both the touched and
-		     * untouched pages.
-		     */
-		    free_pages(pages, TEST_PAGES);
+err_free_pages:
+		/* This is capable of freeing both the touched and
+		 * untouched pages.
+		 */
+		free_pages(pages, TEST_PAGES);
 	}
 #else
 	tst_resm(TCONF, "move_pages support not found.");
@@ -178,4 +179,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}

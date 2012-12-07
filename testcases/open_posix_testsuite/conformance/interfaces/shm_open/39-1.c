@@ -21,7 +21,8 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 	int fd, i;
 	long name_max;
 	char *shm_name;
@@ -30,15 +31,15 @@ int main() {
 	if (name_max == -1) {
 		perror("An error occurs when calling pathconf()");
 		return PTS_UNRESOLVED;
-        }
-	shm_name = malloc(name_max+3);
+	}
+	shm_name = malloc(name_max + 3);
 
 	shm_name[0] = '/';
-	for (i=1; i<name_max+2; i++)
+	for (i = 1; i < name_max + 2; i++)
 		shm_name[i] = 'a';
-	shm_name[name_max+2] = 0;
+	shm_name[name_max + 2] = 0;
 
-	fd = shm_open(shm_name, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(shm_name, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 
 	if (fd == -1 && errno == ENAMETOOLONG) {
 		printf("Test PASSED\n");

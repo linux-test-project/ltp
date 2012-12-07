@@ -43,123 +43,128 @@
 #include <sys/sem.h>
 
 union semun {
-  int val;
-  struct semid_ds *buf;
-  unsigned short *array;
+	int val;
+	struct semid_ds *buf;
+	unsigned short *array;
 };
 
 int verbose = 0;
 int loops = 100;
 int errors = 0;
 
-int semup(int semid) {
-  struct sembuf semops;
-  semops.sem_num = 0;
-  semops.sem_op = 1;
-  semops.sem_flg = SEM_UNDO;
-  if (semop(semid, &semops, 1) == -1) {
-    perror("semup");
-    errors++;
-    return 1;
-  }
-        return 0;
+int semup(int semid)
+{
+	struct sembuf semops;
+	semops.sem_num = 0;
+	semops.sem_op = 1;
+	semops.sem_flg = SEM_UNDO;
+	if (semop(semid, &semops, 1) == -1) {
+		perror("semup");
+		errors++;
+		return 1;
+	}
+	return 0;
 }
 
-int semdown(int semid) {
-  struct sembuf semops;
-  semops.sem_num = 0;
-  semops.sem_op = -1;
-  semops.sem_flg = SEM_UNDO;
-  if (semop(semid, &semops, 1) == -1) {
-    perror("semdown");
-    errors++;
-    return 1;
-  }
-        return 0;
+int semdown(int semid)
+{
+	struct sembuf semops;
+	semops.sem_num = 0;
+	semops.sem_op = -1;
+	semops.sem_flg = SEM_UNDO;
+	if (semop(semid, &semops, 1) == -1) {
+		perror("semdown");
+		errors++;
+		return 1;
+	}
+	return 0;
 }
 
-void delayloop() {
-  int delay;
-  delay = 1+((100.0*rand())/RAND_MAX);
-  if (verbose)
-    printf("in delay function for %d microseconds\n",delay);
-  usleep(delay);
+void delayloop()
+{
+	int delay;
+	delay = 1 + ((100.0 * rand()) / RAND_MAX);
+	if (verbose)
+		printf("in delay function for %d microseconds\n", delay);
+	usleep(delay);
 }
 
-void mainloop(int semid) {
-  int i;
-  for (i=0;i<loops;i++) {
-    if (semdown(semid)) {
-      printf("semdown failed\n");
-    }
-    if (verbose)
-      printf("sem is down\n");
-    delayloop();
-    if (semup(semid)) {
-      printf("semup failed\n");
-    }
-    if (verbose)
-      printf("sem is up\n");
-  }
+void mainloop(int semid)
+{
+	int i;
+	for (i = 0; i < loops; i++) {
+		if (semdown(semid)) {
+			printf("semdown failed\n");
+		}
+		if (verbose)
+			printf("sem is down\n");
+		delayloop();
+		if (semup(semid)) {
+			printf("semup failed\n");
+		}
+		if (verbose)
+			printf("sem is up\n");
+	}
 }
 
-int main(int argc, char *argv[]) {
-  int semid, opt;
-  union semun semunion;
-  extern char *optarg;
-  pid_t pid;
-  int chstat;
+int main(int argc, char *argv[])
+{
+	int semid, opt;
+	union semun semunion;
+	extern char *optarg;
+	pid_t pid;
+	int chstat;
 
-  while ((opt=getopt(argc, argv, "l:vh")) !=EOF) {
-    switch((char)opt) {
-      case 'l':
-        loops = atoi(optarg);
-        break;
-      case 'v':
-        verbose = 1;
-        break;
-      case 'h':
-      default:
-        printf("Usage: -l loops [-v]\n");
-        exit(1);
-    }
-  }
+	while ((opt = getopt(argc, argv, "l:vh")) != EOF) {
+		switch ((char)opt) {
+		case 'l':
+			loops = atoi(optarg);
+			break;
+		case 'v':
+			verbose = 1;
+			break;
+		case 'h':
+		default:
+			printf("Usage: -l loops [-v]\n");
+			exit(1);
+		}
+	}
 
-  /* set up the semaphore */
-  if ((semid = semget((key_t)9142, 1, 0666 | IPC_CREAT)) < 0) {
-    printf("error in semget()\n");
-    exit(-1);
-  }
-  semunion.val = 1;
-  if (semctl(semid, 0, SETVAL, semunion) == -1) {
-    printf("error in semctl\n");
-  }
+	/* set up the semaphore */
+	if ((semid = semget((key_t) 9142, 1, 0666 | IPC_CREAT)) < 0) {
+		printf("error in semget()\n");
+		exit(-1);
+	}
+	semunion.val = 1;
+	if (semctl(semid, 0, SETVAL, semunion) == -1) {
+		printf("error in semctl\n");
+	}
 
-  if ((pid = fork()) < 0) {
-    printf("fork error\n");
-    exit(-1);
-  }
-  if (pid) {
-    /* parent */
-    srand(pid);
-    mainloop(semid);
-    waitpid(pid, &chstat, 0);
-    if (!WIFEXITED(chstat)) {
-      printf("child exited with status\n");
-      exit(-1);
-    }
-    if (semctl(semid, 0, IPC_RMID, semunion) == -1) {
-      printf("error in semctl\n");
-    }
-    if (errors) {
-      printf("FAIL: there were %d errors\n",errors);
-    } else {
-      printf("PASS: error count is 0\n");
-    }
-    exit(errors);
-  } else {
-    /* child */
-    mainloop(semid);
-  }
-  exit(0);
+	if ((pid = fork()) < 0) {
+		printf("fork error\n");
+		exit(-1);
+	}
+	if (pid) {
+		/* parent */
+		srand(pid);
+		mainloop(semid);
+		waitpid(pid, &chstat, 0);
+		if (!WIFEXITED(chstat)) {
+			printf("child exited with status\n");
+			exit(-1);
+		}
+		if (semctl(semid, 0, IPC_RMID, semunion) == -1) {
+			printf("error in semctl\n");
+		}
+		if (errors) {
+			printf("FAIL: there were %d errors\n", errors);
+		} else {
+			printf("PASS: error count is 0\n");
+		}
+		exit(errors);
+	} else {
+		/* child */
+		mainloop(semid);
+	}
+	exit(0);
 }

@@ -62,8 +62,8 @@ struct test_case_t {		/* test case structure */
 	int tolen;		/* length of "to" buffer */
 	int retval;
 	int experrno;
-	void (*setup)(void);
-	void (*cleanup)(void);
+	void (*setup) (void);
+	void (*cleanup) (void);
 	char *desc;
 };
 
@@ -91,7 +91,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EBADF,
 	 .setup = setup0,
 	 .cleanup = cleanup0,
-	 .desc = "bad file descriptor"},
+	 .desc = "bad file descriptor"}
+	,
 	{.domain = 0,
 	 .type = 0,
 	 .proto = 0,
@@ -104,7 +105,8 @@ struct test_case_t tdat[] = {
 	 .experrno = ENOTSOCK,
 	 .setup = setup0,
 	 .cleanup = cleanup0,
-	 .desc = "invalid socket"},
+	 .desc = "invalid socket"}
+	,
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
 	{.domain = PF_INET,
@@ -119,7 +121,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EFAULT,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "invalid send buffer"},
+	 .desc = "invalid send buffer"}
+	,
 #endif
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
@@ -133,7 +136,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EFAULT,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "connected TCP"},
+	 .desc = "connected TCP"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -146,7 +150,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EPIPE,
 	 .setup = setup3,
 	 .cleanup = cleanup1,
-	 .desc = "not connected TCP"},
+	 .desc = "not connected TCP"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -159,7 +164,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EINVAL,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "invalid to buffer length"},
+	 .desc = "invalid to buffer length"}
+	,
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
 	{.domain = PF_INET,
@@ -174,7 +180,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EFAULT,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "invalid to buffer"},
+	 .desc = "invalid to buffer"}
+	,
 #endif
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,
@@ -188,7 +195,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EMSGSIZE,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "UDP message too big"},
+	 .desc = "UDP message too big"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -201,7 +209,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EPIPE,
 	 .setup = setup2,
 	 .cleanup = cleanup1,
-	 .desc = "local endpoint shutdown"},
+	 .desc = "local endpoint shutdown"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -234,29 +243,29 @@ static pid_t start_server(struct sockaddr_in *sin0)
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "server socket failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "server socket failed");
 		return -1;
 	}
 	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "server bind failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "server bind failed");
 		return -1;
 	}
 	if (listen(sfd, 10) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "server listen failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "server listen failed");
 		return -1;
 	}
 	switch ((pid = FORK_OR_VFORK())) {
 	case 0:
 #ifdef UCLINUX
 		if (self_exec(argv0, "d", sfd) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			         "server self_exec failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "server self_exec failed");
 #else
 		do_child();
 #endif
 		break;
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "server fork failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");
 	default:
 		(void)close(sfd);
 		return pid;
@@ -383,10 +392,8 @@ static void setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
 		s = 400;
-	else
-		if ((s = open("/dev/null", O_WRONLY)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			         "open(/dev/null) failed");
+	else if ((s = open("/dev/null", O_WRONLY)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "open(/dev/null) failed");
 }
 
 static void cleanup0(void)
@@ -398,9 +405,9 @@ static void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "socket setup failed");
 	if (connect(s, (const struct sockaddr *)&sin1, sizeof(sin1)) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "connect failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "connect failed");
 }
 
 static void cleanup1(void)
@@ -413,7 +420,7 @@ static void setup2(void)
 {
 	setup1();
 	if (shutdown(s, 1) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed connect "
+		tst_brkm(TBROK | TERRNO, cleanup, "socket setup failed connect "
 			 "test %d", testno);
 }
 
@@ -421,7 +428,7 @@ static void setup3(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "socket setup failed");
 }
 
 static void setup4(void)

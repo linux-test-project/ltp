@@ -31,7 +31,7 @@ int main()
 {
 	pthread_attr_t attr;
 	void *stack_addr;
-        size_t stack_size;
+	size_t stack_size;
 	size_t ssize;
 	void *saddr;
 	int rc;
@@ -53,34 +53,32 @@ int main()
 
 	stack_size = PTHREAD_STACK_MIN;
 
-	if (posix_memalign (&stack_addr, sysconf(_SC_PAGE_SIZE),
-            stack_size) != 0)
-    	{
-      		perror (ERROR_PREFIX "out of memory while "
-                        "allocating the stack memory");
-      		exit(PTS_UNRESOLVED);
-    	}
+	if (posix_memalign(&stack_addr, sysconf(_SC_PAGE_SIZE),
+			   stack_size) != 0) {
+		perror(ERROR_PREFIX "out of memory while "
+		       "allocating the stack memory");
+		exit(PTS_UNRESOLVED);
+	}
 	printf("stack_addr = %p, stack_size = %zu\n", stack_addr, stack_size);
 
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != 0) {
-                perror(ERROR_PREFIX "pthread_attr_setstack");
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_setstack");
+		exit(PTS_UNRESOLVED);
+	}
 
 	rc = pthread_attr_getstack(&attr, &saddr, &ssize);
-        if (rc != 0) {
-                perror(ERROR_PREFIX "pthread_attr_getstack");
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_getstack");
+		exit(PTS_UNRESOLVED);
+	}
 	printf("saddr = %p, ssize = %zu\n", saddr, ssize);
 
 	rc = pthread_attr_destroy(&attr);
-	if (rc != 0)
-        {
-                perror(ERROR_PREFIX "pthread_attr_destroy");
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

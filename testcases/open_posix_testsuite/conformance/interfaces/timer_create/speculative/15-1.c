@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGALRM;
 
-	for (i=0; i<TIMER_MAX+1;i++) {
+	for (i = 0; i < TIMER_MAX + 1; i++) {
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) == -1) {
 			printf("Stopped after %d timers.\n", i);
 			if (EAGAIN == errno) {

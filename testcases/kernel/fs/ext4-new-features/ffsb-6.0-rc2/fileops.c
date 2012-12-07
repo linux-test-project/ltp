@@ -32,7 +32,7 @@
 #include "ffsb_op.h"
 
 static void do_stats(struct timeval *start, struct timeval *end,
-		     ffsb_thread_t *ft, ffsb_fs_t *fs, syscall_t sys)
+		     ffsb_thread_t * ft, ffsb_fs_t * fs, syscall_t sys)
 {
 	struct timeval diff;
 	uint32_t value = 0;
@@ -50,18 +50,18 @@ static void do_stats(struct timeval *start, struct timeval *end,
 		fs_add_stat(fs, sys, value);
 }
 
-void fop_bench(ffsb_fs_t *fs, unsigned opnum)
+void fop_bench(ffsb_fs_t * fs, unsigned opnum)
 {
 	fs_set_opdata(fs, fs_get_datafiles(fs), opnum);
 }
 
-void fop_age(ffsb_fs_t *fs, unsigned opnum)
+void fop_age(ffsb_fs_t * fs, unsigned opnum)
 {
 	fs_set_opdata(fs, fs_get_agefiles(fs), opnum);
 }
 
 static unsigned readfile_helper(int fd, uint64_t size, uint32_t blocksize,
-				char *buf, ffsb_thread_t *ft, ffsb_fs_t *fs)
+				char *buf, ffsb_thread_t * ft, ffsb_fs_t * fs)
 {
 	int iterations, a;
 	int last;
@@ -76,7 +76,7 @@ static unsigned readfile_helper(int fd, uint64_t size, uint32_t blocksize,
 	return iterations;
 }
 
-static uint64_t get_random_offset(randdata_t *rd, uint64_t filesize,
+static uint64_t get_random_offset(randdata_t * rd, uint64_t filesize,
 				  int aligned)
 {
 	if (!aligned)
@@ -86,7 +86,7 @@ static uint64_t get_random_offset(randdata_t *rd, uint64_t filesize,
 	return getllrandom(rd, filesize) * 4096;
 }
 
-void ffsb_readfile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_readfile(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
 	struct ffsb_file *curfile = NULL;
@@ -128,30 +128,29 @@ void ffsb_readfile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 			 */
 			if (last)
 				minfilesize = last + iterations *
-					(read_blocksize + read_skipsize);
+				    (read_blocksize + read_skipsize);
 			else
 				minfilesize = read_blocksize + iterations - 1 *
-					(read_blocksize + read_skipsize);
+				    (read_blocksize + read_skipsize);
 
 			if (minfilesize > filesize) {
-				  printf("Error: read size %llu bytes too big "
-					 "w/ skipsize %u and blocksize %u,"
-					 " for file of size %llu bytes\n"
-					 " aborting\n\n", read_size,
-					 read_skipsize, read_blocksize,
-					 filesize);
-				  printf("minimum file size must be at least "
-					 " %llu bytes\n", minfilesize);
-					 exit(1);
+				printf("Error: read size %llu bytes too big "
+				       "w/ skipsize %u and blocksize %u,"
+				       " for file of size %llu bytes\n"
+				       " aborting\n\n", read_size,
+				       read_skipsize, read_blocksize, filesize);
+				printf("minimum file size must be at least "
+				       " %llu bytes\n", minfilesize);
+				exit(1);
 			}
 
 			for (i = 0; i < iterations; i++) {
 				fhread(fd, buf, read_blocksize, ft, fs);
-				fhseek(fd, (uint64_t)read_skipsize, SEEK_CUR,
+				fhseek(fd, (uint64_t) read_skipsize, SEEK_CUR,
 				       ft, fs);
 			}
 			if (last) {
-				fhread(fd, buf, (uint64_t)last, ft, fs);
+				fhread(fd, buf, (uint64_t) last, ft, fs);
 				iterations++;
 			}
 		} else {
@@ -190,7 +189,7 @@ void ffsb_readfile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 /* Just like ffsb_readfile but we read the whole file from start to
  * finish regardless of file size.
  */
-void ffsb_readall(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_readall(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
 	struct ffsb_file *curfile = NULL;
@@ -218,8 +217,8 @@ void ffsb_readall(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 
 /* Shared core between ffsb_writefile and ffsb_writefile_fsync.*/
 
-static unsigned ffsb_writefile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
-				    unsigned opnum, uint64_t *filesize_ret,
+static unsigned ffsb_writefile_core(ffsb_thread_t * ft, ffsb_fs_t * fs,
+				    unsigned opnum, uint64_t * filesize_ret,
 				    int fsync_file)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
@@ -280,7 +279,7 @@ static unsigned ffsb_writefile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
 	return iterations;
 }
 
-void ffsb_writefile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_writefile(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	unsigned iterations;
 	uint64_t filesize;
@@ -290,7 +289,7 @@ void ffsb_writefile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_add_writebytes(ft, filesize);
 }
 
-void ffsb_writefile_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_writefile_fsync(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	unsigned iterations;
 	uint64_t filesize;
@@ -302,8 +301,8 @@ void ffsb_writefile_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 
 /* Shared core between ffsb_writeall and ffsb_writeall_fsync.*/
 
-static unsigned ffsb_writeall_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
-				   unsigned opnum, uint64_t *filesize_ret,
+static unsigned ffsb_writeall_core(ffsb_thread_t * ft, ffsb_fs_t * fs,
+				   unsigned opnum, uint64_t * filesize_ret,
 				   int fsync_file)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
@@ -339,7 +338,7 @@ static unsigned ffsb_writeall_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
 /* Just like ffsb_writefile but we write the whole file from start to
  * finish regardless of file size
  */
-void ffsb_writeall(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_writeall(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	unsigned iterations;
 	uint64_t filesize;
@@ -349,7 +348,7 @@ void ffsb_writeall(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_add_writebytes(ft, filesize);
 }
 
-void ffsb_writeall_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_writeall_fsync(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	unsigned iterations;
 	uint64_t filesize;
@@ -359,9 +358,9 @@ void ffsb_writeall_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_add_writebytes(ft, filesize);
 }
 
-static unsigned ffsb_appendfile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
-				unsigned opnum, uint64_t *filesize_ret,
-				int fsync_file)
+static unsigned ffsb_appendfile_core(ffsb_thread_t * ft, ffsb_fs_t * fs,
+				     unsigned opnum, uint64_t * filesize_ret,
+				     int fsync_file)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
 	struct ffsb_file *curfile;
@@ -379,23 +378,23 @@ static unsigned ffsb_appendfile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
 
 	unlock_file_reader(curfile);
 
-	curfile->size += (uint64_t)write_size;
+	curfile->size += (uint64_t) write_size;
 
 	iterations = writefile_helper(fd, write_size, write_blocksize, buf,
 				      ft, fs);
 	if (fsync_file)
- 		if (fsync(fd)) {
- 			perror("fsync");
- 			printf("aborting\n");
- 			exit(1);
- 		}
+		if (fsync(fd)) {
+			perror("fsync");
+			printf("aborting\n");
+			exit(1);
+		}
 
 	fhclose(fd, ft, fs);
- 	*filesize_ret = write_size;
+	*filesize_ret = write_size;
 	return iterations;
 }
 
-void ffsb_appendfile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_appendfile(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	unsigned iterations;
 	uint64_t filesize;
@@ -405,7 +404,7 @@ void ffsb_appendfile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_add_writebytes(ft, filesize);
 }
 
-void ffsb_appendfile_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_appendfile_fsync(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	unsigned iterations;
 	uint64_t filesize;
@@ -415,8 +414,8 @@ void ffsb_appendfile_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_add_writebytes(ft, filesize);
 }
 
-static unsigned ffsb_createfile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
-				     unsigned opnum, uint64_t *filesize_ret,
+static unsigned ffsb_createfile_core(ffsb_thread_t * ft, ffsb_fs_t * fs,
+				     unsigned opnum, uint64_t * filesize_ret,
 				     int fsync_file)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
@@ -439,9 +438,9 @@ static unsigned ffsb_createfile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
 			curop++;
 		}
 		size = fs->size_weights[curop].size;
-	}
-	else {
-		uint64_t range = fs_get_max_filesize(fs) - fs_get_min_filesize(fs);
+	} else {
+		uint64_t range =
+		    fs_get_max_filesize(fs) - fs_get_min_filesize(fs);
 		size = fs_get_min_filesize(fs);
 		if (range != 0)
 			size += getllrandom(rd, range);
@@ -452,19 +451,19 @@ static unsigned ffsb_createfile_core(ffsb_thread_t *ft, ffsb_fs_t *fs,
 	iterations = writefile_helper(fd, size, write_blocksize, buf, ft, fs);
 
 	if (fsync_file)
- 		if (fsync(fd)) {
- 			perror("fsync");
- 			printf("aborting\n");
- 			exit(1);
- 		}
+		if (fsync(fd)) {
+			perror("fsync");
+			printf("aborting\n");
+			exit(1);
+		}
 
 	fhclose(fd, ft, fs);
 	unlock_file_writer(newfile);
- 	*filesize_ret = size;
+	*filesize_ret = size;
 	return iterations;
 }
 
-void ffsb_createfile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_createfile(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	unsigned iterations;
 	uint64_t filesize;
@@ -474,7 +473,7 @@ void ffsb_createfile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_add_writebytes(ft, filesize);
 }
 
-void ffsb_createfile_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_createfile_fsync(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	unsigned iterations;
 	uint64_t filesize;
@@ -484,14 +483,14 @@ void ffsb_createfile_fsync(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_add_writebytes(ft, filesize);
 }
 
-void ffsb_deletefile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_deletefile(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
 	struct ffsb_file *curfile = NULL;
 	randdata_t *rd = ft_get_randdata(ft);
 	struct timeval start, end;
 	int need_stats = ft_needs_stats(ft, SYS_UNLINK) ||
-		fs_needs_stats(fs, SYS_UNLINK);
+	    fs_needs_stats(fs, SYS_UNLINK);
 
 	curfile = choose_file_writer(bf, rd);
 	remove_file(bf, curfile);
@@ -515,7 +514,7 @@ void ffsb_deletefile(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_incr_op(ft, opnum, 1, 0);
 }
 
-void ffsb_open_close(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_open_close(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
 	struct ffsb_file *curfile = NULL;
@@ -529,7 +528,7 @@ void ffsb_open_close(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
 	ft_incr_op(ft, opnum, 1, 0);
 }
 
-void ffsb_stat(ffsb_thread_t *ft, ffsb_fs_t *fs, unsigned opnum)
+void ffsb_stat(ffsb_thread_t * ft, ffsb_fs_t * fs, unsigned opnum)
 {
 	struct benchfiles *bf = (struct benchfiles *)fs_get_opdata(fs, opnum);
 	struct ffsb_file *curfile = NULL;

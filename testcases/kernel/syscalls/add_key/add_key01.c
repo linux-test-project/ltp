@@ -48,8 +48,8 @@
 #include "linux_syscall_numbers.h"
 
 /* Global Variables */
-char *TCID = "add_key01";	/* Test program identifier.*/
-int  TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "add_key01";	/* Test program identifier. */
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -69,7 +69,8 @@ int  TST_TOTAL = 1;		/* total number of tests in this file.   */
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -93,14 +94,16 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -109,9 +112,11 @@ int main(int ac, char **av) {
 	setup();
 
 	/* Call add_key. */
-	TEST(syscall(__NR_add_key, "keyring", "wjkey", NULL, 0, KEY_SPEC_THREAD_KEYRING));
+	TEST(syscall
+	     (__NR_add_key, "keyring", "wjkey", NULL, 0,
+	      KEY_SPEC_THREAD_KEYRING));
 	if (TEST_RETURN == -1)
-		tst_resm(TFAIL|TTERRNO, "add_key call failed");
+		tst_resm(TFAIL | TTERRNO, "add_key call failed");
 	else
 		tst_resm(TPASS, "add_key call succeeded");
 

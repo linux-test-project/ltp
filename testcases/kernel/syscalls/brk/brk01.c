@@ -190,7 +190,7 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 
 			aft_brk_val = (long)sbrk(0);
-			tst_resm(TFAIL|TTERRNO,
+			tst_resm(TFAIL | TTERRNO,
 				 "brk(%ld) failed (size before %ld, after %ld)",
 				 nbrkpt, cur_brk_val, aft_brk_val);
 
@@ -234,13 +234,13 @@ void setup()
 	   tst_brkm(TBROK|TERRNO, cleanup, "ulimit(3,0) failed"); */
 
 	if (getrlimit(RLIMIT_DATA, &lim) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "getrlimit(RLIMIT_DATA,%p) failed", &lim);
 	ulim_sz = lim.rlim_cur;
 
 #ifdef CRAY
 	if ((usr_mem_sz = sysconf(_SC_CRAY_USRMEM)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "sysconf(_SC_CRAY_USRMEM) failed");
 
 	usr_mem_sz *= 8;	/* convert to bytes */
@@ -256,7 +256,8 @@ void setup()
 #define _SC_NPROC_ONLN _SC_NPROCESSORS_ONLN
 #endif
 	if ((ncpus = sysconf(_SC_NPROC_ONLN)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "sysconf(_SC_NPROC_ONLN) failed");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "sysconf(_SC_NPROC_ONLN) failed");
 
 	/*
 	 * allow 2*ncpus copies to run.

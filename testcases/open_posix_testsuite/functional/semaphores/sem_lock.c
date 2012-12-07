@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
 #endif
 	if ((2 != argc) || ((num = atoi(argv[1])) <= 0)) {
 		printf("Setting num_of_processes to default value: %d\n",
-		    DEFAULT_THREADS);
+		       DEFAULT_THREADS);
 		num = DEFAULT_THREADS;
 	}
-	if ((sem_lock = (sem_t *)malloc(sizeof(sem_t))) == NULL) {
+	if ((sem_lock = (sem_t *) malloc(sizeof(sem_t))) == NULL) {
 		perror("malloc");
 		return PTS_UNRESOLVED;
 	}
@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
 		}
 
 	sprintf(buf, "%d process_ID: %ld parent_process_ID: %ld "
-	    "child_process_ID: %ld\n", i, (long)getpid(),
-	    (long)getppid(), (long)pid);
+		"child_process_ID: %ld\n", i, (long)getpid(),
+		(long)getppid(), (long)pid);
 
 	if (sem_wait(sem_lock) == -1) {
 		perror("sem_wait didn't return success\n");
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 		while (*c != '\n') {
 			fputc(*c, stdout);
 			c++;
-	 	}
+		}
 		fputc('\n', stdout);
 	}
 

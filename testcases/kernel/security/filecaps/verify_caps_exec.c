@@ -86,7 +86,8 @@ void drop_root(int keep_perms)
 		cap_t cap = cap_from_text("=eip");
 		int ret;
 		if (!cap)
-			tst_brkm(TBROK | TERRNO, NULL, "cap_from_text failed\n");
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "cap_from_text failed\n");
 		ret = cap_set_proc(cap);
 		if (ret < 0)
 			tst_brkm(TBROK | TERRNO, NULL, "cap_set_proc failed\n");
@@ -125,7 +126,8 @@ void create_fifo(void)
 
 	ret = mkfifo(FIFOFILE, S_IRWXU | S_IRWXG | S_IRWXO);
 	if (ret == -1 && errno != EEXIST)
-		tst_brkm(TFAIL | TERRNO, NULL, "failed creating %s\n", FIFOFILE);
+		tst_brkm(TFAIL | TERRNO, NULL, "failed creating %s\n",
+			 FIFOFILE);
 }
 
 void write_to_fifo(char *buf)
@@ -180,18 +182,21 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 			c = sscanf(buf, "%d", &s);
 			if (c == 1 && s == seqno)
 				break;
-			tst_resm(TINFO, "got a bad seqno (c=%d, s=%d, seqno=%d)",
-				 c, s, seqno);
+			tst_resm(TINFO,
+				 "got a bad seqno (c=%d, s=%d, seqno=%d)", c, s,
+				 seqno);
 		}
 		p = index(buf, '.');
 		if (!p)
-			tst_brkm(TFAIL, NULL, "got a bad message from print_caps\n");
+			tst_brkm(TFAIL, NULL,
+				 "got a bad message from print_caps\n");
 		p += 1;
 		actual_caps = cap_from_text(p);
 		if (cap_compare(actual_caps, expected_caps) != 0) {
 			capstxt = cap_to_text(expected_caps, NULL);
-			tst_resm(TINFO, "Expected to run as .%s., ran as .%s..\n",
-				capstxt, p);
+			tst_resm(TINFO,
+				 "Expected to run as .%s., ran as .%s..\n",
+				 capstxt, p);
 			tst_resm(TINFO, "those are not the same\n");
 			cap_free(capstxt);
 			ret = -1;
@@ -204,7 +209,7 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 
 int caps_actually_set_test(void)
 {
-	int  whichcap, finalret = 0, ret;
+	int whichcap, finalret = 0, ret;
 	cap_t fcap, pcap, cap_fullpi;
 	cap_value_t capvalue[1];
 	int i;
@@ -220,7 +225,7 @@ int caps_actually_set_test(void)
 
 	int num_caps;
 
-	for (num_caps = 0; ; num_caps++) {
+	for (num_caps = 0;; num_caps++) {
 		ret = prctl(PR_CAPBSET_READ, num_caps);
 		/*
 		 * Break from the loop in this manner to avoid incrementing,
@@ -246,8 +251,9 @@ int caps_actually_set_test(void)
 		}
 		ret = fork_drop_and_exec(DROP_PERMS, fcap);
 		if (ret) {
-			tst_resm(TINFO, "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=0\n",
-					whichcap);
+			tst_resm(TINFO,
+				 "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=0\n",
+				 whichcap);
 			if (!finalret)
 				finalret = ret;
 		}
@@ -267,8 +273,9 @@ int caps_actually_set_test(void)
 		}
 		ret = fork_drop_and_exec(DROP_PERMS, fcap);
 		if (ret) {
-			tst_resm(TINFO, "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=1\n",
-				whichcap);
+			tst_resm(TINFO,
+				 "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=1\n",
+				 whichcap);
 			if (!finalret)
 				finalret = ret;
 		}
@@ -321,10 +328,10 @@ int caps_actually_set_test(void)
 			tst_resm(TINFO, "%d\n", whichcap);
 			continue;
 		}
-		ret = fork_drop_and_exec(KEEP_PERMS,  pcap);
+		ret = fork_drop_and_exec(KEEP_PERMS, pcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
-					"CAP_EFFECTIVE=0\n", whichcap);
+				 "CAP_EFFECTIVE=0\n", whichcap);
 			if (!finalret)
 				finalret = ret;
 		}
@@ -354,7 +361,7 @@ int caps_actually_set_test(void)
 		cap_free(cmpcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
-					"CAP_EFFECTIVE=1\n", whichcap);
+				 "CAP_EFFECTIVE=1\n", whichcap);
 			if (!finalret)
 				finalret = ret;
 		}
@@ -367,8 +374,9 @@ int caps_actually_set_test(void)
 		cap_clear(pcap);
 		ret = fork_drop_and_exec(DROP_PERMS, pcap);
 		if (ret) {
-			tst_resm(TINFO, "Failed without_perms CAP_INHERITABLE=%d",
-					whichcap);
+			tst_resm(TINFO,
+				 "Failed without_perms CAP_INHERITABLE=%d",
+				 whichcap);
 			if (!finalret)
 				finalret = ret;
 		}

@@ -32,7 +32,8 @@
 
 int counter = 0;
 
-void myhandler(int signo) {
+void myhandler(int signo)
+{
 	counter++;
 }
 
@@ -52,24 +53,28 @@ int main()
 
 	sighold(SIGTOTEST);
 
-	for (i=0; i<NUMCALLS; i++) {
+	for (i = 0; i < NUMCALLS; i++) {
 		if (sigqueue(pid, SIGTOTEST, value) != 0) {
-			printf("Test UNRESOLVED: call to sigqueue did not return success\n");
+			printf
+			    ("Test UNRESOLVED: call to sigqueue did not return success\n");
 			return PTS_UNRESOLVED;
 		}
 	}
 
 	if (0 != counter) {
-		printf("Test UNRESOLVED: handler called even though %d has not been removed from the signal mask\n", SIGTOTEST);
+		printf
+		    ("Test UNRESOLVED: handler called even though %d has not been removed from the signal mask\n",
+		     SIGTOTEST);
 		return PTS_UNRESOLVED;
 	}
 
 	sigrelse(SIGTOTEST);
 
 	if (counter < 1) {
-		printf("Test FAILED: %d was not received even once\n", SIGTOTEST);
+		printf("Test FAILED: %d was not received even once\n",
+		       SIGTOTEST);
 		return PTS_FAIL;
 	}
-	printf ("Test PASSED: %d was received %d times.\n", SIGTOTEST, counter);
+	printf("Test PASSED: %d was received %d times.\n", SIGTOTEST, counter);
 	return PTS_PASS;
 }

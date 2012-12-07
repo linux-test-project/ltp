@@ -1,6 +1,6 @@
   /*
-  Test that the signals below are supported.
-  */
+     Test that the signals below are supported.
+   */
 
 #include <signal.h>
 

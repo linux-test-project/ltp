@@ -247,7 +247,8 @@ int main(int ac, char **av)
 						tst_resm(TWARN,
 							 "Child process may not have been killed.");
 					}
-					tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "fork failed");
 				}
 #else
 				(void)child2_rout();
@@ -260,7 +261,8 @@ int main(int ac, char **av)
 					tst_resm(TWARN,
 						 "Child process may not have been killed.");
 				}
-				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "fork failed");
 			}
 
 		} else if (pid1 == 0) {
@@ -272,7 +274,8 @@ int main(int ac, char **av)
 			    (argv0, "ndddddd", 3, pipe1_fd[1], pipe2_fd[1],
 			     pipeA_fd[0], pipeA_fd[1], pipeB_fd[0],
 			     pipeB_fd[1]) < 0) {
-				tst_brkm(TBROK|TERRNO, cleanup, "self_exec() failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "self_exec() failed");
 			}
 #else
 			(void)child1_rout();
@@ -281,7 +284,7 @@ int main(int ac, char **av)
 			/*
 			 * Fork failed.
 			 */
-			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 		}
 	}
 
@@ -352,7 +355,7 @@ void parent_rout()
 	TEST(kill(0, SIGUSR1));
 
 	if (TEST_RETURN == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "kill() failed");
+		tst_brkm(TBROK | TERRNO, NULL, "kill() failed");
 		(void)par_kill();
 		cleanup();
 	}
@@ -385,7 +388,7 @@ void parent_rout()
 		/*
 		 * The read system call failed.
 		 */
-		tst_brkm(TBROK|TERRNO, NULL, "read() failed");
+		tst_brkm(TBROK | TERRNO, NULL, "read() failed");
 		(void)par_kill();
 		cleanup();
 	}
@@ -469,7 +472,8 @@ void child1_rout()
 			/* This is child B. */
 #ifdef UCLINUX
 			if (self_exec(argv0, "nd", 2, pipeB_fd[1]) < 0) {
-				tst_brkm(TBROK|TERRNO, NULL, "self_exec() failed");
+				tst_brkm(TBROK | TERRNO, NULL,
+					 "self_exec() failed");
 				(void)write(pipe1_fd[1], CHAR_SET_FAILED, 1);
 				exit(0);
 			}
@@ -485,7 +489,7 @@ void child1_rout()
 			if (kill(pidA, SIGKILL) == -1)
 				tst_resm(TWARN,
 					 "Child process may not have been killed.");
-			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
+			tst_brkm(TBROK | TERRNO, NULL, "fork failed");
 			(void)write(pipe2_fd[1], CHAR_SET_FAILED, 1);
 			exit(0);
 		}
@@ -495,7 +499,7 @@ void child1_rout()
 		/* This is child A. */
 #ifdef UCLINUX
 		if (self_exec(argv0, "nd", 1, pipeA_fd[1]) < 0) {
-			tst_brkm(TBROK|TERRNO, NULL, "self_exec() failed");
+			tst_brkm(TBROK | TERRNO, NULL, "self_exec() failed");
 			(void)write(pipe1_fd[1], CHAR_SET_FAILED, 1);
 			exit(0);
 		}
@@ -509,7 +513,7 @@ void child1_rout()
 		/*
 		 *  The fork of child A failed.
 		 */
-		tst_brkm(TBROK|TERRNO, NULL, "fork failed");
+		tst_brkm(TBROK | TERRNO, NULL, "fork failed");
 		(void)write(pipe1_fd[1], CHAR_SET_FAILED, 1);
 		exit(0);
 	}
@@ -717,12 +721,14 @@ void setup()
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	if (signal(SIGUSR1, SIG_IGN) == SIG_ERR) {
-		tst_brkm(TBROK|TFAIL, NULL, "signal(SIGUSR1, SIG_IGN) failed");
+		tst_brkm(TBROK | TFAIL, NULL,
+			 "signal(SIGUSR1, SIG_IGN) failed");
 		tst_exit();
 	}
 
 	if (signal(SIGCLD, SIG_IGN) == SIG_ERR) {
-		tst_brkm(TBROK|TERRNO, NULL, "signal(SIGCLD, SIG_IGN) failed");
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "signal(SIGCLD, SIG_IGN) failed");
 		tst_exit();
 	}
 
@@ -762,7 +768,7 @@ void setup()
 	 *  Check for errors.
 	 */
 	if (err_flag == TRUE) {
-		tst_brkm(TBROK|TERRNO, NULL, "pipe() failed");
+		tst_brkm(TBROK | TERRNO, NULL, "pipe() failed");
 		tst_exit();
 	}
 	return;
@@ -797,8 +803,8 @@ void usr1_rout()
 		break;
 	default:
 		tst_resm(TWARN,
-			"Unexpected value %d for who_am_i in usr1_rout()",
-			who_am_i);
+			 "Unexpected value %d for who_am_i in usr1_rout()",
+			 who_am_i);
 		break;
 	}
 
@@ -827,8 +833,9 @@ void par_kill()
 	 *  Indicate to child1 that it can remove it's children and itself now.
 	 */
 	if (kill(pid1, SIGUSR2) == -1 && errno != ESRCH) {
-		tst_resm(TWARN|TERRNO, "kill() failed");
-		tst_resm(TWARN, "Child 1 and it's children may still be alive.");
+		tst_resm(TWARN | TERRNO, "kill() failed");
+		tst_resm(TWARN,
+			 "Child 1 and it's children may still be alive.");
 	}
 
 	/*
@@ -852,12 +859,16 @@ void chld1_kill()
 	 *  Remove children A & B.
 	 */
 	if (kill(pidA, SIGKILL) == -1 && errno != ESRCH)
-		tst_resm(TWARN|TERRNO, "kill(%d) failed; child 1's(A) child may still be alive", pidA);
+		tst_resm(TWARN | TERRNO,
+			 "kill(%d) failed; child 1's(A) child may still be alive",
+			 pidA);
 
 	(void)write(pipe1_fd[1], CHAR_SET_PASSED, 1);
 
 	if (kill(pidB, SIGKILL) == -1 && errno != ESRCH)
-		tst_resm(TWARN|TERRNO, "kill(%d) failed; child 1's(B) child may still be alive", pidB);
+		tst_resm(TWARN | TERRNO,
+			 "kill(%d) failed; child 1's(B) child may still be alive",
+			 pidB);
 
 	exit(0);
 

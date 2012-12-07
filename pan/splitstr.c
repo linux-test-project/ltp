@@ -52,96 +52,88 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>        /* for string functions */
+#include <string.h>		/* for string functions */
 #ifdef UNIT_TEST
 #include <assert.h>
 #endif /* UNIT_TEST */
 #include "splitstr.h"
 
-const char **
-splitstr(const char *str, const char *separator, int *argcount)
+const char **splitstr(const char *str, const char *separator, int *argcount)
 {
-    char *arg_string =NULL,
-         **arg_array =NULL,
-         *cur_tok    =NULL;
+	char *arg_string = NULL, **arg_array = NULL, *cur_tok = NULL;
 
-    int  num_toks    =0,
-         max_toks    =20,
-         i;
+	int num_toks = 0, max_toks = 20, i;
 
-    /*
-     * In most recoverable errors, if argcount is not NULL,
-     * set argcount to 0. Then return NULL.
-     */
-    if (str == NULL)
-    {
-      if (argcount != NULL)
-        *argcount = 0;
-      return(NULL);
-    }
+	/*
+	 * In most recoverable errors, if argcount is not NULL,
+	 * set argcount to 0. Then return NULL.
+	 */
+	if (str == NULL) {
+		if (argcount != NULL)
+			*argcount = 0;
+		return (NULL);
+	}
 
-    /*
-     * set aside temporary space to work on the string.
-     */
-    arg_string = strdup( str );
+	/*
+	 * set aside temporary space to work on the string.
+	 */
+	arg_string = strdup(str);
 
-    if (arg_string == NULL)
-    {
-      if (argcount != NULL)
-        *argcount = 0;
-      return(NULL);
-    }
+	if (arg_string == NULL) {
+		if (argcount != NULL)
+			*argcount = 0;
+		return (NULL);
+	}
 
-    /*
-     * set aside an initial char ** array for string array.
-     */
-    arg_array = (char **)malloc( sizeof(char *) * max_toks );
+	/*
+	 * set aside an initial char ** array for string array.
+	 */
+	arg_array = (char **)malloc(sizeof(char *) * max_toks);
 
-    if (arg_array == NULL)
-    {
-      if (argcount != NULL)
-        *argcount = 0;
-      return(NULL);
-    }
+	if (arg_array == NULL) {
+		if (argcount != NULL)
+			*argcount = 0;
+		return (NULL);
+	}
 
-    if (separator==NULL)
-      separator = " \t";
+	if (separator == NULL)
+		separator = " \t";
 
-    /*
-     * Use strtok() to parse 'arg_string', placing pointers to the
-     * individual tokens into the elements of 'arg_array'.  Expand
-     * 'arg_array' if necessary.
-     */
-    cur_tok = strtok(arg_string, separator);
-    while (cur_tok != NULL)
-    {
-      arg_array[num_toks++] = cur_tok;
-      cur_tok = strtok(NULL, separator);
-      if (num_toks == max_toks)
-      {
-        max_toks += 20;
-        arg_array = (char **)realloc((void *)arg_array, sizeof(char *)*max_toks );
-      }
-    }
-    arg_array[num_toks] = NULL;
+	/*
+	 * Use strtok() to parse 'arg_string', placing pointers to the
+	 * individual tokens into the elements of 'arg_array'.  Expand
+	 * 'arg_array' if necessary.
+	 */
+	cur_tok = strtok(arg_string, separator);
+	while (cur_tok != NULL) {
+		arg_array[num_toks++] = cur_tok;
+		cur_tok = strtok(NULL, separator);
+		if (num_toks == max_toks) {
+			max_toks += 20;
+			arg_array =
+			    (char **)realloc((void *)arg_array,
+					     sizeof(char *) * max_toks);
+		}
+	}
+	arg_array[num_toks] = NULL;
 
-    /*
-     * If there are any spaces left in our array, make them NULL
-     */
-    for (i=num_toks+1;i<max_toks;i++)
-      arg_array[i] = NULL;
+	/*
+	 * If there are any spaces left in our array, make them NULL
+	 */
+	for (i = num_toks + 1; i < max_toks; i++)
+		arg_array[i] = NULL;
 
-    /* This seems nice, but since memory is allocated on a page basis, this
-     * isn't really helpful:
-     * arg_array = (char **)realloc((void *)arg_array, sizeof(char *)*num_toks+1 );*/
+	/* This seems nice, but since memory is allocated on a page basis, this
+	 * isn't really helpful:
+	 * arg_array = (char **)realloc((void *)arg_array, sizeof(char *)*num_toks+1 );*/
 
-    if (argcount != NULL)
-      *argcount = num_toks;
+	if (argcount != NULL)
+		*argcount = num_toks;
 
-    /*
-     * Return the argument array.
-     */
-    return((const char **)arg_array);
+	/*
+	 * Return the argument array.
+	 */
+	return ((const char **)arg_array);
 }
 
 /*
@@ -152,46 +144,43 @@ splitstr(const char *str, const char *separator, int *argcount)
  * requires that ret and *ret returned from splitster() have not
  * been modified.
  */
-void splitstr_free( const char **p_return )
+void splitstr_free(const char **p_return)
 {
-  if (*p_return != NULL)
-    free( (char *)*p_return );
-  if (p_return != NULL)
-    free( (char **)p_return );
+	if (*p_return != NULL)
+		free((char *)*p_return);
+	if (p_return != NULL)
+		free((char **)p_return);
 }
 
 #ifdef UNIT_TEST
 
 int main()
 {
-  int i,y,test_size=1000,size_ret;
-  char test_str[32768];
-  char buf[16];
-  char *test_str_array[test_size];
-  const char **ret;
+	int i, y, test_size = 1000, size_ret;
+	char test_str[32768];
+	char buf[16];
+	char *test_str_array[test_size];
+	const char **ret;
 
-  for (i=0;i<test_size;i++)
-  {
-    snprintf(buf,16,"arg%d",i);
-    test_str_array[i] = strdup(buf);
-  }
+	for (i = 0; i < test_size; i++) {
+		snprintf(buf, 16, "arg%d", i);
+		test_str_array[i] = strdup(buf);
+	}
 
-  for (i=0;i<test_size;i++)
-  {
-    test_str[0]='\0';
-    for (y=0;y<i;y++)
-    {
-      snprintf(buf,16,"arg%d ",y);
-      strncat(test_str,buf,16);
-    }
-    ret = splitstr(test_str,NULL,&size_ret);
-    assert(size_ret == i);
-    for (y=0;y<i;y++)
-      assert( strcmp(ret[y],test_str_array[y])==0 );
+	for (i = 0; i < test_size; i++) {
+		test_str[0] = '\0';
+		for (y = 0; y < i; y++) {
+			snprintf(buf, 16, "arg%d ", y);
+			strncat(test_str, buf, 16);
+		}
+		ret = splitstr(test_str, NULL, &size_ret);
+		assert(size_ret == i);
+		for (y = 0; y < i; y++)
+			assert(strcmp(ret[y], test_str_array[y]) == 0);
 
-    splitstr_free(ret);
-  }
-  return 0;
+		splitstr_free(ret);
+	}
+	return 0;
 }
 
 #endif

@@ -45,7 +45,8 @@ int set_nonroot()
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
+			printf
+			    ("You don't have permission to change your UID.\n");
 			return 1;
 		}
 		perror("An error occurs when calling seteuid()");
@@ -56,13 +57,14 @@ int set_nonroot()
 	       pw->pw_name, (int)geteuid());
 	return 0;
 }
+
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[50];
 
 	if (getuid() == 0) {
-                if (set_nonroot() != 0) {
+		if (set_nonroot() != 0) {
 			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
@@ -74,15 +76,14 @@ int main()
 	mysemp = sem_open(semname, O_CREAT, 0444, 1);
 
 	/* Opening the same existance SEM with write mode */
-	mysemp = sem_open(semname, O_CREAT, 0222 , 1);
+	mysemp = sem_open(semname, O_CREAT, 0222, 1);
 
-	if (mysemp  != SEM_FAILED)
-	{
-  		perror(ERROR_PREFIX "sem_open");
+	if (mysemp != SEM_FAILED) {
+		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
-	if (errno == EACCES)  {
+	if (errno == EACCES) {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		return PTS_PASS;

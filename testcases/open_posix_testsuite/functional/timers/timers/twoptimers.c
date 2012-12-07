@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	}
 
 	if ((pid = fork()) == 0) {
-		/*child*/
+		/*child */
 		struct sigevent ev;
 		timer_t tid;
 		struct itimerspec its;
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 		sleep(LONGTIME);
 		return CHILDPASS;
 	} else {
-		/*parent*/
+		/*parent */
 		struct sigevent ev;
 		timer_t tid;
 		struct itimerspec its;

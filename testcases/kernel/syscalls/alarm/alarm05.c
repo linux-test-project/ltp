@@ -78,7 +78,7 @@
 
 char *TCID = "alarm05";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-int alarms_received = 0;		/* flag to indicate SIGALRM received or not */
+int alarms_received = 0;	/* flag to indicate SIGALRM received or not */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */

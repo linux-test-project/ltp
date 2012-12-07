@@ -43,14 +43,17 @@ dm_sessid_t sid;
 dm_extent_t Extents[NUM_EXTENTS];
 dm_extent_t bigExtents[20];
 
-void LogExtents(dm_extent_t *pext, u_int nelem)
+void LogExtents(dm_extent_t * pext, u_int nelem)
 {
 
 	int i;
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Extents:\n");
 	for (i = 0; i < nelem; i++, pext++) {
-		DMLOG_PRINT(DMLVL_DEBUG, "  extent %d: type %d, offset %lld, length %lld\n", i + 1, pext->ex_type, pext->ex_offset, pext->ex_length);
+		DMLOG_PRINT(DMLVL_DEBUG,
+			    "  extent %d: type %d, offset %lld, length %lld\n",
+			    i + 1, pext->ex_type, pext->ex_offset,
+			    pext->ex_length);
 	}
 
 }
@@ -60,8 +63,8 @@ int main(int argc, char **argv)
 
 	char *szFuncName;
 	char *varstr;
-	int   i;
-	int   rc;
+	int i;
+	int rc;
 	char *szSessionInfo = "dm_test session info";
 
 	DMOPT_PARSE(argc, argv);
@@ -69,18 +72,25 @@ int main(int argc, char **argv)
 
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_init_service failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		DM_EXIT();
-	} else if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &sid)) != 0) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_create_session failed! (rc = %d, errno = %d)\n", rc, errno);
+	} else if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &sid))
+		   != 0) {
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_create_session failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		DM_EXIT();
 	} else {
 		int fd;
 
-		fd = open(DUMMY_TMP, O_RDWR | O_CREAT | O_TRUNC, DUMMY_FILE_RW_MODE);
+		fd = open(DUMMY_TMP, O_RDWR | O_CREAT | O_TRUNC,
+			  DUMMY_FILE_RW_MODE);
 		if (fd != -1) {
-			for (i = 0; i < (TMP_FILELEN/DUMMY_STRLEN); i++) {
-				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
+			for (i = 0; i < (TMP_FILELEN / DUMMY_STRLEN); i++) {
+				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+				    DUMMY_STRLEN) {
 					rc = -1;
 					break;
 				}
@@ -92,13 +102,15 @@ int main(int argc, char **argv)
 			rc = close(fd);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_ERR, "creating dummy file failed! (rc = %d, errno = %d)\n", rc, errno);
+			DMLOG_PRINT(DMLVL_ERR,
+				    "creating dummy file failed! (rc = %d, errno = %d)\n",
+				    rc, errno);
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
 	}
 
-	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI file hole tests\n") ;
+	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI file hole tests\n");
 
 	szFuncName = "dm_get_allocinfo";
 
@@ -124,19 +136,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
-			rc = dm_get_allocinfo(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(INVALID_ADDR, hanp, hlen,
+					      DM_NO_TOKEN, &off, NUM_EXTENTS,
+					      Extents, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -164,19 +183,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, (void *)INVALID_ADDR, hlen,
+					      DM_NO_TOKEN, &off, NUM_EXTENTS,
+					      Extents, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -198,22 +224,30 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen))
+			   == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -241,19 +275,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, INVALID_ADDR,
+					      DM_NO_TOKEN, &off, NUM_EXTENTS,
+					      Extents, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -281,19 +322,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, INVALID_ADDR, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, INVALID_ADDR,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -320,19 +368,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid offp)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, (dm_off_t *)INVALID_ADDR, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid offp)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      (dm_off_t *) INVALID_ADDR,
+					      NUM_EXTENTS, Extents, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -360,19 +415,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned offp)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned offp)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -386,7 +448,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = TMP_FILELEN+1;
+		dm_off_t off = TMP_FILELEN + 1;
 		u_int nelem;
 
 		/* Variation set up */
@@ -400,19 +462,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(off past EOF)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(off past EOF)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -440,19 +509,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(nelem zero)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, 0, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(nelem zero)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, 0, Extents, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -480,19 +555,27 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid extentp)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, (dm_extent_t *)INVALID_ADDR, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid extentp)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS,
+					      (dm_extent_t *) INVALID_ADDR,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -519,19 +602,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, (u_int *)INVALID_ADDR);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      (u_int *) INVALID_ADDR);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -549,31 +639,44 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
+		if ((fd =
+		     open(DUMMY_FILE, O_RDWR | O_CREAT,
+			  DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(zero-length file)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMLOG_PRINT(DMLVL_DEBUG, "dm_get_allocinfo returned %d\n", rc);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(zero-length file)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "dm_get_allocinfo returned %d\n", rc);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "  off = %lld\n", off);
 				if (nelem == 0) {
-					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  nelem = %d\n", nelem);
 					DMVAR_PASS();
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s nelem NOT correct! (%d vs %d)\n",
+						    szFuncName, nelem, 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -581,7 +684,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -609,31 +714,50 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(file all resident)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMLOG_PRINT(DMLVL_DEBUG, "dm_get_allocinfo returned %d\n", rc);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(file all resident)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "dm_get_allocinfo returned %d\n", rc);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "  off = %lld\n", off);
 				if (nelem == 1) {
-					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((Extents[0].ex_length == TMP_FILELEN) && (Extents[0].ex_offset == 0) && (Extents[0].ex_type == DM_EXTENT_RES)) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
+					if ((Extents[0].ex_length ==
+					     TMP_FILELEN)
+					    && (Extents[0].ex_offset == 0)
+					    && (Extents[0].ex_type ==
+						DM_EXTENT_RES)) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s extent information correct\n",
+							    szFuncName);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s extent information NOT correct!\n", szFuncName);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s extent information NOT correct!\n",
+							    szFuncName);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s nelem NOT correct! (%d vs %d)\n",
+						    szFuncName, nelem, 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -641,7 +765,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -659,42 +785,74 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
+		if ((fd =
+		     open(DUMMY_FILE, O_RDWR | O_CREAT,
+			  DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if (((off = lseek(fd, TMP_FILELEN-DUMMY_STRLEN, SEEK_SET)) != TMP_FILELEN-DUMMY_STRLEN) ||
-			   ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-			   ((rc = ftruncate(fd, ((TMP_FILELEN/2)&(~(BLK_SIZE-1))))) == -1) ||
-			   ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
+		} else
+		    if (((off =
+			  lseek(fd, TMP_FILELEN - DUMMY_STRLEN,
+				SEEK_SET)) != TMP_FILELEN - DUMMY_STRLEN)
+			||
+			((rc =
+			  (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+			   DUMMY_STRLEN) ? -1 : 0) == -1)
+			||
+			((rc =
+			  ftruncate(fd,
+				    ((TMP_FILELEN / 2) & (~(BLK_SIZE - 1))))) ==
+			 -1)
+			|| ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
 			close(fd);
 			remove(DUMMY_FILE);
 		}
-		if (fd == -1 || off != (TMP_FILELEN-DUMMY_STRLEN) || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+		if (fd == -1 || off != (TMP_FILELEN - DUMMY_STRLEN) || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			off = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(file all hole)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMLOG_PRINT(DMLVL_DEBUG, "dm_get_allocinfo returned %d\n", rc);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(file all hole)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "dm_get_allocinfo returned %d\n", rc);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "  off = %lld\n", off);
 				if (nelem == 1) {
-					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((Extents[0].ex_length == ((TMP_FILELEN/2)&(~(BLK_SIZE-1)))) && (Extents[0].ex_offset == 0) && (Extents[0].ex_type == DM_EXTENT_HOLE)) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
+					if ((Extents[0].ex_length ==
+					     ((TMP_FILELEN /
+					       2) & (~(BLK_SIZE - 1))))
+					    && (Extents[0].ex_offset == 0)
+					    && (Extents[0].ex_type ==
+						DM_EXTENT_HOLE)) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s extent information correct\n",
+							    szFuncName);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s extent information NOT correct!\n", szFuncName);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s extent information NOT correct!\n",
+							    szFuncName);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s nelem NOT correct! (%d vs %d)\n",
+						    szFuncName, nelem, 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -702,7 +860,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -720,48 +880,78 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
+		if ((fd =
+		     open(DUMMY_FILE, O_RDWR | O_CREAT,
+			  DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if (((off = lseek(fd, TMP_FILELEN-DUMMY_STRLEN, SEEK_SET)) != TMP_FILELEN-DUMMY_STRLEN) ||
-			   ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-			   ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
+		} else
+		    if (((off =
+			  lseek(fd, TMP_FILELEN - DUMMY_STRLEN,
+				SEEK_SET)) != TMP_FILELEN - DUMMY_STRLEN)
+			||
+			((rc =
+			  (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+			   DUMMY_STRLEN) ? -1 : 0) == -1)
+			|| ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
 			close(fd);
 			remove(DUMMY_FILE);
 		}
-		if (fd == -1 || off != (TMP_FILELEN-DUMMY_STRLEN) || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+		if (fd == -1 || off != (TMP_FILELEN - DUMMY_STRLEN) || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			off = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(hole, resident)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(hole, resident)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "  off = %lld\n", off);
 				if (nelem == 2) {
 					int i;
 
-					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length == TMP_FILELEN) &&
-					    (i=2) && (Extents[0].ex_offset == 0) &&
-					    (i=3) && (Extents[0].ex_length == Extents[1].ex_offset) &&
-					    (i=4) && (Extents[0].ex_type == DM_EXTENT_HOLE) &&
-					    (i=5) && (Extents[1].ex_type == DM_EXTENT_RES)
-					   ) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
+					if ((i = 1)
+					    && (Extents[0].ex_length +
+						Extents[1].ex_length ==
+						TMP_FILELEN) && (i = 2)
+					    && (Extents[0].ex_offset == 0)
+					    && (i = 3)
+					    && (Extents[0].ex_length ==
+						Extents[1].ex_offset) && (i = 4)
+					    && (Extents[0].ex_type ==
+						DM_EXTENT_HOLE) && (i = 5)
+					    && (Extents[1].ex_type ==
+						DM_EXTENT_RES)
+					    ) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s extent information correct\n",
+							    szFuncName);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s extent information NOT correct! (test %d failed)\n", szFuncName, i);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s extent information NOT correct! (test %d failed)\n",
+							    szFuncName, i);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 2);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s nelem NOT correct! (%d vs %d)\n",
+						    szFuncName, nelem, 2);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -769,7 +959,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -787,50 +979,89 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
+		if ((fd =
+		     open(DUMMY_FILE, O_RDWR | O_CREAT,
+			  DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if (((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-			   ((off = lseek(fd, TMP_FILELEN-DUMMY_STRLEN, SEEK_SET)) != TMP_FILELEN-DUMMY_STRLEN) ||
-			   ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-			   ((rc = ftruncate(fd, ((TMP_FILELEN/2)&(~(BLK_SIZE-1))))) == -1) ||
-			   ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
+		} else
+		    if (((rc =
+			  (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+			   DUMMY_STRLEN) ? -1 : 0) == -1)
+			||
+			((off =
+			  lseek(fd, TMP_FILELEN - DUMMY_STRLEN,
+				SEEK_SET)) != TMP_FILELEN - DUMMY_STRLEN)
+			||
+			((rc =
+			  (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+			   DUMMY_STRLEN) ? -1 : 0) == -1)
+			||
+			((rc =
+			  ftruncate(fd,
+				    ((TMP_FILELEN / 2) & (~(BLK_SIZE - 1))))) ==
+			 -1)
+			|| ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
 			close(fd);
 			remove(DUMMY_FILE);
 		}
-		if (fd == -1 || off != (TMP_FILELEN-DUMMY_STRLEN) || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+		if (fd == -1 || off != (TMP_FILELEN - DUMMY_STRLEN) || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			off = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(resident, hole)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(resident, hole)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "  off = %lld\n", off);
 				if (nelem == 2) {
 					int i;
 
-					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length == ((TMP_FILELEN/2)&(~(BLK_SIZE-1)))) &&
-					    (i=2) && (Extents[0].ex_offset == 0) &&
-					    (i=3) && (Extents[0].ex_length == Extents[1].ex_offset) &&
-					    (i=4) && (Extents[0].ex_type == DM_EXTENT_RES) &&
-					    (i=5) && (Extents[1].ex_type == DM_EXTENT_HOLE)
-					   ) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
+					if ((i = 1)
+					    && (Extents[0].ex_length +
+						Extents[1].ex_length ==
+						((TMP_FILELEN /
+						  2) & (~(BLK_SIZE - 1))))
+					    && (i = 2)
+					    && (Extents[0].ex_offset == 0)
+					    && (i = 3)
+					    && (Extents[0].ex_length ==
+						Extents[1].ex_offset) && (i = 4)
+					    && (Extents[0].ex_type ==
+						DM_EXTENT_RES) && (i = 5)
+					    && (Extents[1].ex_type ==
+						DM_EXTENT_HOLE)
+					    ) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s extent information correct\n",
+							    szFuncName);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s extent information NOT correct! (test %d failed)\n", szFuncName, i);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s extent information NOT correct! (test %d failed)\n",
+							    szFuncName, i);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 2);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s nelem NOT correct! (%d vs %d)\n",
+						    szFuncName, nelem, 2);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -838,7 +1069,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -856,51 +1089,89 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-		if ((fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE)) == -1) {
+		if ((fd =
+		     open(DUMMY_FILE, O_RDWR | O_CREAT,
+			  DUMMY_FILE_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if (((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-			   ((off = lseek(fd, TMP_FILELEN-DUMMY_STRLEN, SEEK_SET)) != TMP_FILELEN-DUMMY_STRLEN) ||
-			   ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-			   ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
+		} else
+		    if (((rc =
+			  (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+			   DUMMY_STRLEN) ? -1 : 0) == -1)
+			||
+			((off =
+			  lseek(fd, TMP_FILELEN - DUMMY_STRLEN,
+				SEEK_SET)) != TMP_FILELEN - DUMMY_STRLEN)
+			||
+			((rc =
+			  (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+			   DUMMY_STRLEN) ? -1 : 0) == -1)
+			|| ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1)) {
 			close(fd);
 			remove(DUMMY_FILE);
 		}
-		if (fd == -1 || off != (TMP_FILELEN-DUMMY_STRLEN) || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+		if (fd == -1 || off != (TMP_FILELEN - DUMMY_STRLEN) || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			off = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(resident, hole, resident)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(resident, hole, resident)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 0) {
 				int i;
 				DMLOG_PRINT(DMLVL_DEBUG, "  off = %lld\n", off);
 
 				if (nelem == 3) {
-					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length + Extents[2].ex_length == TMP_FILELEN) &&
-					    (i=2) && (Extents[0].ex_offset == 0) &&
-					    (i=3) && (Extents[0].ex_length == Extents[1].ex_offset) &&
-					    (i=4) && (Extents[1].ex_length + Extents[1].ex_offset == Extents[2].ex_offset) &&
-					    (i=5) && (Extents[0].ex_type == DM_EXTENT_RES) &&
-					    (i=6) && (Extents[1].ex_type == DM_EXTENT_HOLE) &&
-					    (i=7) && (Extents[2].ex_type == DM_EXTENT_RES)
-					   ) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
+					if ((i = 1)
+					    && (Extents[0].ex_length +
+						Extents[1].ex_length +
+						Extents[2].ex_length ==
+						TMP_FILELEN) && (i = 2)
+					    && (Extents[0].ex_offset == 0)
+					    && (i = 3)
+					    && (Extents[0].ex_length ==
+						Extents[1].ex_offset) && (i = 4)
+					    && (Extents[1].ex_length +
+						Extents[1].ex_offset ==
+						Extents[2].ex_offset) && (i = 5)
+					    && (Extents[0].ex_type ==
+						DM_EXTENT_RES) && (i = 6)
+					    && (Extents[1].ex_type ==
+						DM_EXTENT_HOLE) && (i = 7)
+					    && (Extents[2].ex_type ==
+						DM_EXTENT_RES)
+					    ) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s extent information correct\n",
+							    szFuncName);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s extent information NOT correct! (test %d failed)\n", szFuncName, i);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s extent information NOT correct! (test %d failed)\n",
+							    szFuncName, i);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 3);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s nelem NOT correct! (%d vs %d)\n",
+						    szFuncName, nelem, 3);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -908,7 +1179,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -928,82 +1201,160 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
-		for (i = 0, rc = 0; rc == 0 && i < TMP_FILELEN; i += TMP_FILELEN/(NUM_EXTENTS+2)) {
-			if ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) != -1) {
+		for (i = 0, rc = 0; rc == 0 && i < TMP_FILELEN;
+		     i += TMP_FILELEN / (NUM_EXTENTS + 2)) {
+			if ((rc =
+			     (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+			      DUMMY_STRLEN) ? -1 : 0) != -1) {
 				if ((off = lseek(fd, i, SEEK_SET)) != off) {
 					rc = -1;
 				}
 			}
 		}
 		if ((rc == -1) ||
-		    ((off = lseek(fd, TMP_FILELEN-DUMMY_STRLEN, SEEK_SET)) != off) ||
-		    ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) == -1) ||
-		    ((rc = dm_fd_to_handle(fd, &hanp, &hlen)))) {
+		    ((off =
+		      lseek(fd, TMP_FILELEN - DUMMY_STRLEN, SEEK_SET)) != off)
+		    ||
+		    ((rc =
+		      (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+		       DUMMY_STRLEN) ? -1 : 0) == -1)
+		    || ((rc = dm_fd_to_handle(fd, &hanp, &hlen)))) {
 			close(fd);
 			remove(DUMMY_FILE);
 		}
-		if (fd == -1 || off != TMP_FILELEN-DUMMY_STRLEN || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+		if (fd == -1 || off != TMP_FILELEN - DUMMY_STRLEN || rc == -1) {
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			off = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(resident, hole, resident, hole, etc.)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(resident, hole, resident, hole, etc.)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 1) {
 				int i;
 				DMLOG_PRINT(DMLVL_DEBUG, "  off = %lld\n", off);
 
 				if (nelem == NUM_EXTENTS) {
-					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_offset == 0) &&
-					    (i=2) && (Extents[0].ex_length == Extents[1].ex_offset) &&
-					    (i=3) && (Extents[1].ex_length + Extents[1].ex_offset == Extents[2].ex_offset) &&
-					    (i=4) && (Extents[2].ex_length + Extents[2].ex_offset == Extents[3].ex_offset) &&
-					    (i=5) && (Extents[3].ex_length + Extents[3].ex_offset == Extents[4].ex_offset) &&
-					    (i=6) && (Extents[4].ex_length + Extents[4].ex_offset == Extents[5].ex_offset) &&
-					    (i=7) && (Extents[5].ex_length + Extents[5].ex_offset == Extents[6].ex_offset) &&
-					    (i=8) && (Extents[6].ex_length + Extents[6].ex_offset == Extents[7].ex_offset) &&
-					    (i=9) && (Extents[7].ex_length + Extents[7].ex_offset == off) &&
-					    (i=10) && (Extents[0].ex_type == DM_EXTENT_RES) &&
-					    (i=11) && (Extents[1].ex_type == DM_EXTENT_HOLE) &&
-					    (i=12) && (Extents[2].ex_type == DM_EXTENT_RES) &&
-					    (i=13) && (Extents[3].ex_type == DM_EXTENT_HOLE) &&
-					    (i=14) && (Extents[4].ex_type == DM_EXTENT_RES) &&
-					    (i=15) && (Extents[5].ex_type == DM_EXTENT_HOLE) &&
-					    (i=16) && (Extents[6].ex_type == DM_EXTENT_RES) &&
-					    (i=17) && (Extents[7].ex_type == DM_EXTENT_HOLE)
-					   ) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
+					if ((i = 1)
+					    && (Extents[0].ex_offset == 0)
+					    && (i = 2)
+					    && (Extents[0].ex_length ==
+						Extents[1].ex_offset) && (i = 3)
+					    && (Extents[1].ex_length +
+						Extents[1].ex_offset ==
+						Extents[2].ex_offset) && (i = 4)
+					    && (Extents[2].ex_length +
+						Extents[2].ex_offset ==
+						Extents[3].ex_offset) && (i = 5)
+					    && (Extents[3].ex_length +
+						Extents[3].ex_offset ==
+						Extents[4].ex_offset) && (i = 6)
+					    && (Extents[4].ex_length +
+						Extents[4].ex_offset ==
+						Extents[5].ex_offset) && (i = 7)
+					    && (Extents[5].ex_length +
+						Extents[5].ex_offset ==
+						Extents[6].ex_offset) && (i = 8)
+					    && (Extents[6].ex_length +
+						Extents[6].ex_offset ==
+						Extents[7].ex_offset) && (i = 9)
+					    && (Extents[7].ex_length +
+						Extents[7].ex_offset == off)
+					    && (i = 10)
+					    && (Extents[0].ex_type ==
+						DM_EXTENT_RES) && (i = 11)
+					    && (Extents[1].ex_type ==
+						DM_EXTENT_HOLE) && (i = 12)
+					    && (Extents[2].ex_type ==
+						DM_EXTENT_RES) && (i = 13)
+					    && (Extents[3].ex_type ==
+						DM_EXTENT_HOLE) && (i = 14)
+					    && (Extents[4].ex_type ==
+						DM_EXTENT_RES) && (i = 15)
+					    && (Extents[5].ex_type ==
+						DM_EXTENT_HOLE) && (i = 16)
+					    && (Extents[6].ex_type ==
+						DM_EXTENT_RES) && (i = 17)
+					    && (Extents[7].ex_type ==
+						DM_EXTENT_HOLE)
+					    ) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s extent information correct\n",
+							    szFuncName);
 
-					    	rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, sizeof(bigExtents)/sizeof(dm_extent_t), bigExtents, &nelem);
-						DMLOG_PRINT(DMLVL_DEBUG, "second %s returned %d\n", szFuncName, rc);
+						rc = dm_get_allocinfo(sid, hanp,
+								      hlen,
+								      DM_NO_TOKEN,
+								      &off,
+								      sizeof
+								      (bigExtents)
+								      /
+								      sizeof
+								      (dm_extent_t),
+								      bigExtents,
+								      &nelem);
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "second %s returned %d\n",
+							    szFuncName, rc);
 						if (rc == 0) {
-							DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
-							LogExtents(bigExtents, nelem);
-							if (bigExtents[nelem-1].ex_offset + bigExtents[nelem-1].ex_length == TMP_FILELEN) {
-								DMLOG_PRINT(DMLVL_DEBUG, "second %s extent information correct\n", szFuncName);
+							DMLOG_PRINT(DMLVL_DEBUG,
+								    "  nelem = %d\n",
+								    nelem);
+							LogExtents(bigExtents,
+								   nelem);
+							if (bigExtents
+							    [nelem -
+							     1].ex_offset +
+							    bigExtents[nelem -
+								       1].
+							    ex_length ==
+							    TMP_FILELEN) {
+								DMLOG_PRINT
+								    (DMLVL_DEBUG,
+								     "second %s extent information correct\n",
+								     szFuncName);
 								DMVAR_PASS();
 							} else {
-								DMLOG_PRINT(DMLVL_ERR, "second %s extent information NOT correct!\n", szFuncName);
+								DMLOG_PRINT
+								    (DMLVL_ERR,
+								     "second %s extent information NOT correct!\n",
+								     szFuncName);
 								DMVAR_FAIL();
 							}
 						} else {
-							DMLOG_PRINT(DMLVL_ERR, "second %s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+							DMLOG_PRINT(DMLVL_ERR,
+								    "second %s failed with unexpected rc = %d (errno = %d)\n",
+								    szFuncName,
+								    rc, errno);
 							DMVAR_FAIL();
 						}
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s extent information NOT correct! (test %d failed)\n", szFuncName, i);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s extent information NOT correct! (test %d failed)\n",
+							    szFuncName, i);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 3);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s nelem NOT correct! (%d vs %d)\n",
+						    szFuncName, nelem, 3);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -1011,7 +1362,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1039,19 +1392,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
-			rc = dm_get_allocinfo(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(DM_NO_SESSION, hanp, hlen,
+					      DM_NO_TOKEN, &off, NUM_EXTENTS,
+					      Extents, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1070,22 +1430,31 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
+		} else
+		    if ((rc =
+			 dm_path_to_fshandle(DUMMY_SUBDIR, &hanp,
+					     &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1103,7 +1472,9 @@ int main(int argc, char **argv)
 
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
-		rc = dm_get_allocinfo(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+		rc = dm_get_allocinfo(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN,
+				      DM_NO_TOKEN, &off, NUM_EXTENTS, Extents,
+				      &nelem);
 		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
@@ -1136,12 +1507,17 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
-			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n",
+				    szFuncName);
+			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN,
+					      &off, NUM_EXTENTS, Extents,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
@@ -1173,19 +1549,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
-			rc = dm_probe_hole(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n",
+				    szFuncName);
+			rc = dm_probe_hole(INVALID_ADDR, hanp, hlen,
+					   DM_NO_TOKEN, inoff, inlen, &outoff,
+					   &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1213,19 +1596,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
-			rc = dm_probe_hole(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, (void *)INVALID_ADDR, hlen,
+					   DM_NO_TOKEN, inoff, inlen, &outoff,
+					   &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1243,23 +1633,30 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
-			/* No clean up*/
-		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
+			/* No clean up */
+		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen))
+			   == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1287,19 +1684,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, INVALID_ADDR, DM_NO_TOKEN,
+					   inoff, inlen, &outoff, &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1327,19 +1730,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, INVALID_ADDR, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, INVALID_ADDR, inoff,
+					   inlen, &outoff, &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1353,7 +1762,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t inoff = TMP_FILELEN+1, outoff;
+		dm_off_t inoff = TMP_FILELEN + 1, outoff;
 		dm_size_t inlen = 0, outlen;
 
 		/* Variation set up */
@@ -1367,19 +1776,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid off)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid off)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1397,7 +1812,7 @@ int main(int argc, char **argv)
 		void *hanp;
 		size_t hlen;
 		dm_off_t inoff = 0, outoff;
-		dm_size_t inlen = TMP_FILELEN+1, outlen;
+		dm_size_t inlen = TMP_FILELEN + 1, outlen;
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
@@ -1410,19 +1825,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid len)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid len)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1450,19 +1871,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid roffp)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, (dm_off_t *)INVALID_ADDR, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid roffp)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, (dm_off_t *) INVALID_ADDR,
+					   &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1490,19 +1918,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, (dm_size_t *)INVALID_ADDR);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff,
+					   (dm_size_t *) INVALID_ADDR);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1530,29 +1965,47 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(entire file)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(entire file)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			if (rc == 0) {
-				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
-				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "In -> offset %lld, length %lld\n",
+					    inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Out <- offset %lld, length %lld\n",
+					    outoff, outlen);
 				if (outoff == inoff) {
 					if (outlen == inlen) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc %d\n",
+							    szFuncName, rc);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n", szFuncName, rc, outlen, inlen);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n",
+							    szFuncName, rc,
+							    outlen, inlen);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n", szFuncName, rc, outoff, inoff);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n",
+						    szFuncName, rc, outoff,
+						    inoff);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -1560,7 +2013,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1588,29 +2043,48 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(end of file without rounding)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(end of file without rounding)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			if (rc == 0) {
-				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
-				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "In -> offset %lld, length %lld\n",
+					    inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Out <- offset %lld, length %lld\n",
+					    outoff, outlen);
 				if (outoff == inoff) {
 					if (outlen == inlen) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc %d\n",
+							    szFuncName, rc);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n", szFuncName, rc, outlen, inlen);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n",
+							    szFuncName, rc,
+							    outlen, inlen);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n", szFuncName, rc, outoff, inoff);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n",
+						    szFuncName, rc, outoff,
+						    inoff);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -1618,7 +2092,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1646,29 +2122,48 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(end of file with rounding)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(end of file with rounding)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			if (rc == 0) {
-				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
-				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
-				if ((outoff >= inoff) && (!(outoff & (BLK_SIZE-1)))) {
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "In -> offset %lld, length %lld\n",
+					    inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Out <- offset %lld, length %lld\n",
+					    outoff, outlen);
+				if ((outoff >= inoff)
+				    && (!(outoff & (BLK_SIZE - 1)))) {
 					if (outlen == 0) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc %d\n",
+							    szFuncName, rc);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n", szFuncName, rc, outlen, 0);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n",
+							    szFuncName, rc,
+							    outlen, 0);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff %d\n", szFuncName, rc, outoff);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc %d but unexpected outoff %d\n",
+						    szFuncName, rc, outoff);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -1676,7 +2171,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1692,7 +2189,9 @@ int main(int argc, char **argv)
 		void *hanp;
 		size_t hlen;
 		dm_off_t inoff = BLKALIGN(UNALIGNED_BLK_OFF), outoff;
-		dm_size_t inlen = BLKALIGN(TMP_FILELEN - BLK_SIZE - UNALIGNED_BLK_OFF), outlen;
+		dm_size_t inlen =
+		    BLKALIGN(TMP_FILELEN - BLK_SIZE - UNALIGNED_BLK_OFF),
+		    outlen;
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
@@ -1705,29 +2204,48 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file without rounding)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(middle of file without rounding)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			if (rc == 0) {
-				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
-				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
-				if (outoff == inoff)  {
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "In -> offset %lld, length %lld\n",
+					    inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Out <- offset %lld, length %lld\n",
+					    outoff, outlen);
+				if (outoff == inoff) {
 					if (outlen == inlen) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc %d\n",
+							    szFuncName, rc);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n", szFuncName, rc, outlen, inlen);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc %d but unexpected outlen (%d vs %d)\n",
+							    szFuncName, rc,
+							    outlen, inlen);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n", szFuncName, rc, outoff, inoff);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc %d but unexpected outoff (%d vs %d)\n",
+						    szFuncName, rc, outoff,
+						    inoff);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -1735,12 +2253,15 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
 #else
-		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMLOG_PRINT(DMLVL_WARN,
+			    "Test case not built with INTERIOR_HOLES defined\n");
 		DMVAR_SKIP();
 #endif
 	}
@@ -1755,7 +2276,8 @@ int main(int argc, char **argv)
 		void *hanp;
 		size_t hlen;
 		dm_off_t inoff = UNALIGNED_BLK_OFF, outoff;
-		dm_size_t inlen = TMP_FILELEN - BLK_SIZE - UNALIGNED_BLK_OFF, outlen;
+		dm_size_t inlen =
+		    TMP_FILELEN - BLK_SIZE - UNALIGNED_BLK_OFF, outlen;
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
@@ -1768,29 +2290,49 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file with rounding, large)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(middle of file with rounding, large)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			if (rc == 0) {
-				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
-				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
-				if ((outoff >= inoff) && (!(outoff & (BLK_SIZE-1)))) {
-					if ((outlen <= inlen) && (!(outlen & (BLK_SIZE-1)))) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "In -> offset %lld, length %lld\n",
+					    inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Out <- offset %lld, length %lld\n",
+					    outoff, outlen);
+				if ((outoff >= inoff)
+				    && (!(outoff & (BLK_SIZE - 1)))) {
+					if ((outlen <= inlen)
+					    && (!(outlen & (BLK_SIZE - 1)))) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc %d\n",
+							    szFuncName, rc);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen %d\n", szFuncName, rc, outlen);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc %d but unexpected outlen %d\n",
+							    szFuncName, rc,
+							    outlen);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff %d\n", szFuncName, rc, outoff);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc %d but unexpected outoff %d\n",
+						    szFuncName, rc, outoff);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -1798,12 +2340,15 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
 #else
-		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMLOG_PRINT(DMLVL_WARN,
+			    "Test case not built with INTERIOR_HOLES defined\n");
 		DMVAR_SKIP();
 #endif
 	}
@@ -1817,8 +2362,8 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t inoff = TMP_FILELEN/2 - BLK_SIZE, outoff;
-		dm_size_t inlen = 5*BLK_SIZE, outlen;
+		dm_off_t inoff = TMP_FILELEN / 2 - BLK_SIZE, outoff;
+		dm_size_t inlen = 5 * BLK_SIZE, outlen;
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
@@ -1831,29 +2376,49 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file with rounding, small)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(middle of file with rounding, small)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			if (rc == 0) {
-				DMLOG_PRINT(DMLVL_DEBUG, "In -> offset %lld, length %lld\n", inoff, inlen);
-				DMLOG_PRINT(DMLVL_DEBUG, "Out <- offset %lld, length %lld\n", outoff, outlen);
-				if ((outoff >= inoff) && (!(outoff & (BLK_SIZE-1)))) {
-					if ((outlen <= inlen) && (!(outlen & (BLK_SIZE-1)))) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc %d\n", szFuncName, rc);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "In -> offset %lld, length %lld\n",
+					    inoff, inlen);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Out <- offset %lld, length %lld\n",
+					    outoff, outlen);
+				if ((outoff >= inoff)
+				    && (!(outoff & (BLK_SIZE - 1)))) {
+					if ((outlen <= inlen)
+					    && (!(outlen & (BLK_SIZE - 1)))) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc %d\n",
+							    szFuncName, rc);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outlen %d\n", szFuncName, rc, outlen);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc %d but unexpected outlen %d\n",
+							    szFuncName, rc,
+							    outlen);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc %d but unexpected outoff %d\n", szFuncName, rc, outoff);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc %d but unexpected outoff %d\n",
+						    szFuncName, rc, outoff);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -1861,12 +2426,15 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
 #else
-		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMLOG_PRINT(DMLVL_WARN,
+			    "Test case not built with INTERIOR_HOLES defined\n");
 		DMVAR_SKIP();
 #endif
 	}
@@ -1880,7 +2448,8 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t inoff = ((TMP_FILELEN/2) & ~(BLK_SIZE-1)) + 1, outoff;
+		dm_off_t inoff =
+		    ((TMP_FILELEN / 2) & ~(BLK_SIZE - 1)) + 1, outoff;
 		dm_size_t inlen = BLK_SIZE, outlen;
 
 		/* Variation set up */
@@ -1894,24 +2463,32 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file with rounding, no hole)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(middle of file with rounding, no hole)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
 #else
-		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMLOG_PRINT(DMLVL_WARN,
+			    "Test case not built with INTERIOR_HOLES defined\n");
 		DMVAR_SKIP();
 #endif
 	}
@@ -1938,19 +2515,26 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
-			rc = dm_probe_hole(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n",
+				    szFuncName);
+			rc = dm_probe_hole(DM_NO_SESSION, hanp, hlen,
+					   DM_NO_TOKEN, inoff, inlen, &outoff,
+					   &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1969,22 +2553,30 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
+		} else
+		    if ((rc =
+			 dm_path_to_fshandle(DUMMY_SUBDIR, &hanp,
+					     &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2002,7 +2594,8 @@ int main(int argc, char **argv)
 
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
-		rc = dm_probe_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+		rc = dm_probe_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN,
+				   DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
 		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
@@ -2035,12 +2628,16 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
-			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n",
+				    szFuncName);
+			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff,
+					   inlen, &outoff, &outlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
@@ -2072,19 +2669,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
-			rc = dm_punch_hole(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n",
+				    szFuncName);
+			rc = dm_punch_hole(INVALID_ADDR, hanp, hlen,
+					   DM_NO_TOKEN, off, len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2112,19 +2715,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
-			rc = dm_punch_hole(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, (void *)INVALID_ADDR, hlen,
+					   DM_NO_TOKEN, off, len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2143,22 +2752,29 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen))
+			   == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2186,19 +2802,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, INVALID_ADDR, DM_NO_TOKEN,
+					   off, len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2226,19 +2848,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, INVALID_ADDR, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, INVALID_ADDR, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2252,7 +2880,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = TMP_FILELEN+1;
+		dm_off_t off = TMP_FILELEN + 1;
 		dm_size_t len = 0;
 
 		/* Variation set up */
@@ -2266,19 +2894,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid off)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid off)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2293,7 +2927,7 @@ int main(int argc, char **argv)
 		void *hanp;
 		size_t hlen;
 		dm_off_t off = 0;
-		dm_size_t len = TMP_FILELEN+1;
+		dm_size_t len = TMP_FILELEN + 1;
 
 		/* Variation set up */
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
@@ -2306,19 +2940,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid len)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid len)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2346,19 +2986,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned off)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned off)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2386,19 +3032,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned len)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned len)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2426,19 +3078,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned off and len)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned off and len)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2467,31 +3125,50 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(truncate entire file)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(truncate entire file)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 0) {
 				off = 0;
-				rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-				DMLOG_PRINT(DMLVL_DEBUG, "dm_get_allocinfo returned %d\n", rc);
+				rc = dm_get_allocinfo(sid, hanp, hlen,
+						      DM_NO_TOKEN, &off,
+						      NUM_EXTENTS, Extents,
+						      &nelem);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "dm_get_allocinfo returned %d\n",
+					    rc);
 				if (rc == 0) {
-				       	if (nelem == 0) {
-						DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					if (nelem == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "  nelem = %d\n",
+							    nelem);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 0);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s nelem NOT correct! (%d vs %d)\n",
+							    szFuncName, nelem,
+							    0);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n", rc, errno);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n",
+						    rc, errno);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -2499,7 +3176,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2528,32 +3207,52 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(truncate part of file, len 0)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(truncate part of file, len 0)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 0) {
 				off = 0;
-				rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-				DMLOG_PRINT(DMLVL_DEBUG, "dm_get_allocinfo returned %d\n", rc);
+				rc = dm_get_allocinfo(sid, hanp, hlen,
+						      DM_NO_TOKEN, &off,
+						      NUM_EXTENTS, Extents,
+						      &nelem);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "dm_get_allocinfo returned %d\n",
+					    rc);
 				if (rc == 0) {
-				       	if (nelem == 1) {
-						DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					if (nelem == 1) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "  nelem = %d\n",
+							    nelem);
 						LogExtents(Extents, nelem);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 1);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s nelem NOT correct! (%d vs %d)\n",
+							    szFuncName, nelem,
+							    1);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n", rc, errno);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n",
+						    rc, errno);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -2561,7 +3260,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2576,7 +3277,7 @@ int main(int argc, char **argv)
 		void *hanp;
 		size_t hlen;
 		dm_off_t off = BLK_SIZE;
-		dm_size_t len = TMP_FILELEN-BLK_SIZE;
+		dm_size_t len = TMP_FILELEN - BLK_SIZE;
 		u_int nelem;
 
 		/* Variation set up */
@@ -2590,32 +3291,52 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(truncate part of file, len non-0)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(truncate part of file, len non-0)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 0) {
 				off = 0;
-				rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-				DMLOG_PRINT(DMLVL_DEBUG, "dm_get_allocinfo returned %d\n", rc);
+				rc = dm_get_allocinfo(sid, hanp, hlen,
+						      DM_NO_TOKEN, &off,
+						      NUM_EXTENTS, Extents,
+						      &nelem);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "dm_get_allocinfo returned %d\n",
+					    rc);
 				if (rc == 0) {
-				       	if (nelem == 1) {
-						DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					if (nelem == 1) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "  nelem = %d\n",
+							    nelem);
 						LogExtents(Extents, nelem);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 1);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s nelem NOT correct! (%d vs %d)\n",
+							    szFuncName, nelem,
+							    1);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n", rc, errno);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n",
+						    rc, errno);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -2623,7 +3344,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2638,8 +3361,8 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = (TMP_FILELEN/2) & (~(BLK_SIZE-1));
-		dm_size_t len = 2*BLK_SIZE;
+		dm_off_t off = (TMP_FILELEN / 2) & (~(BLK_SIZE - 1));
+		dm_size_t len = 2 * BLK_SIZE;
 		u_int nelem;
 		char buf[DUMMY_STRLEN];
 
@@ -2654,38 +3377,73 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(small hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(small hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 0) {
 				off = 0;
-				rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-				DMLOG_PRINT(DMLVL_DEBUG, "dm_get_allocinfo returned %d\n", rc);
+				rc = dm_get_allocinfo(sid, hanp, hlen,
+						      DM_NO_TOKEN, &off,
+						      NUM_EXTENTS, Extents,
+						      &nelem);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "dm_get_allocinfo returned %d\n",
+					    rc);
 				if (rc == 0) {
-				       	if (nelem == 3) {
-						DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					if (nelem == 3) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "  nelem = %d\n",
+							    nelem);
 						LogExtents(Extents, nelem);
-						if ((lseek(fd, TMP_FILELEN/2, SEEK_SET) == (TMP_FILELEN/2)) && (read(fd, buf, DUMMY_STRLEN) == DUMMY_STRLEN)) {
-							DMLOG_PRINT(DMLVL_DEBUG, "buffer from hole: [%s]\n", buf);
+						if ((lseek
+						     (fd, TMP_FILELEN / 2,
+						      SEEK_SET) ==
+						     (TMP_FILELEN / 2))
+						    &&
+						    (read(fd, buf, DUMMY_STRLEN)
+						     == DUMMY_STRLEN)) {
+							DMLOG_PRINT(DMLVL_DEBUG,
+								    "buffer from hole: [%s]\n",
+								    buf);
 						}
-						if ((lseek(fd, TMP_FILELEN-10, SEEK_SET) == (TMP_FILELEN-10)) && (read(fd, buf, DUMMY_STRLEN) == DUMMY_STRLEN)) {
-							DMLOG_PRINT(DMLVL_DEBUG, "buffer from resident extent: [%s]\n", buf);
+						if ((lseek
+						     (fd, TMP_FILELEN - 10,
+						      SEEK_SET) ==
+						     (TMP_FILELEN - 10))
+						    &&
+						    (read(fd, buf, DUMMY_STRLEN)
+						     == DUMMY_STRLEN)) {
+							DMLOG_PRINT(DMLVL_DEBUG,
+								    "buffer from resident extent: [%s]\n",
+								    buf);
 						}
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 3);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s nelem NOT correct! (%d vs %d)\n",
+							    szFuncName, nelem,
+							    3);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n", rc, errno);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n",
+						    rc, errno);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -2693,12 +3451,15 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
 #else
-		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMLOG_PRINT(DMLVL_WARN,
+			    "Test case not built with INTERIOR_HOLES defined\n");
 		DMVAR_SKIP();
 #endif
 	}
@@ -2713,7 +3474,8 @@ int main(int argc, char **argv)
 		void *hanp;
 		size_t hlen;
 		dm_off_t off = BLK_SIZE;
-		dm_size_t len = (TMP_FILELEN-(2*BLK_SIZE)) & (~(BLK_SIZE-1));
+		dm_size_t len =
+		    (TMP_FILELEN - (2 * BLK_SIZE)) & (~(BLK_SIZE - 1));
 		u_int nelem;
 
 		/* Variation set up */
@@ -2727,32 +3489,51 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(large hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName, rc);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(large hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s returned %d\n", szFuncName,
+				    rc);
 			if (rc == 0) {
 				off = 0;
-				rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-				DMLOG_PRINT(DMLVL_DEBUG, "dm_get_allocinfo returned %d\n", rc);
+				rc = dm_get_allocinfo(sid, hanp, hlen,
+						      DM_NO_TOKEN, &off,
+						      NUM_EXTENTS, Extents,
+						      &nelem);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "dm_get_allocinfo returned %d\n",
+					    rc);
 				if (rc == 0) {
-				       	if (nelem == 3) {
-						DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
+					if (nelem == 3) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "  nelem = %d\n",
+							    nelem);
 						LogExtents(Extents, nelem);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s nelem NOT correct! (%d vs %d)\n", szFuncName, nelem, 3);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s nelem NOT correct! (%d vs %d)\n",
+							    szFuncName, nelem,
+							    3);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n", rc, errno);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "dm_get_allocinfo failed with unexpected rc = %d (errno = %d)\n",
+						    rc, errno);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -2760,12 +3541,15 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
 #else
-		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
+		DMLOG_PRINT(DMLVL_WARN,
+			    "Test case not built with INTERIOR_HOLES defined\n");
 		DMVAR_SKIP();
 #endif
 	}
@@ -2792,19 +3576,25 @@ int main(int argc, char **argv)
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
-			rc = dm_punch_hole(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n",
+				    szFuncName);
+			rc = dm_punch_hole(DM_NO_SESSION, hanp, hlen,
+					   DM_NO_TOKEN, off, len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2823,22 +3613,30 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		if ((rc = mkdir(DUMMY_SUBDIR, DUMMY_DIR_RW_MODE)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
+		} else
+		    if ((rc =
+			 dm_path_to_fshandle(DUMMY_SUBDIR, &hanp,
+					     &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2856,7 +3654,8 @@ int main(int argc, char **argv)
 
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
-		rc = dm_punch_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, off, len);
+		rc = dm_punch_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN,
+				   DM_NO_TOKEN, off, len);
 		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
@@ -2889,12 +3688,16 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 		if (fd == -1 || rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
@@ -2923,18 +3726,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_READ, MAP_PRIVATE, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(private read mmap overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(private read mmap overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -2942,7 +3753,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2969,18 +3782,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_PRIVATE, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(private write mmap overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(private write mmap overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -2988,7 +3809,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3015,18 +3838,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_PRIVATE, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(private exec mmap overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(private exec mmap overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -3034,7 +3865,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3061,18 +3894,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE,
+			      MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(private r/w mmap overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(private r/w mmap overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -3080,7 +3921,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3107,18 +3950,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared read mmap overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(shared read mmap overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -3126,7 +3977,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3153,18 +4006,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_SHARED, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared write mmap overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(shared write mmap overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -3172,7 +4033,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3199,18 +4062,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_SHARED, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared exec mmap overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(shared exec mmap overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -3218,7 +4089,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3245,18 +4118,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE,
+			      MAP_SHARED, fd, 0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared r/w mmap overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(shared r/w mmap overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -3264,7 +4145,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3278,7 +4161,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_off_t off = BLKALIGN(TMP_FILELEN / 2);
 		dm_size_t len = 0;
 		void *memmap;
 
@@ -3291,18 +4174,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_READ, MAP_PRIVATE, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(private read mmap not overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(private read mmap not overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
@@ -3310,7 +4201,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3324,7 +4217,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_off_t off = BLKALIGN(TMP_FILELEN / 2);
 		dm_size_t len = 0;
 		void *memmap;
 
@@ -3337,18 +4230,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_PRIVATE, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(private write mmap not overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(private write mmap not overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
@@ -3356,7 +4257,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3370,7 +4273,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_off_t off = BLKALIGN(TMP_FILELEN / 2);
 		dm_size_t len = 0;
 		void *memmap;
 
@@ -3383,18 +4286,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_PRIVATE, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(private exec mmap not overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(private exec mmap not overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -3402,7 +4313,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3416,7 +4329,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_off_t off = BLKALIGN(TMP_FILELEN / 2);
 		dm_size_t len = 0;
 		void *memmap;
 
@@ -3429,18 +4342,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE,
+			      MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(private r/w mmap not overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(private r/w mmap not overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
@@ -3448,7 +4369,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3462,7 +4385,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_off_t off = BLKALIGN(TMP_FILELEN / 2);
 		dm_size_t len = 0;
 		void *memmap;
 
@@ -3475,18 +4398,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared read mmap not overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(shared read mmap not overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
@@ -3494,7 +4425,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3508,7 +4441,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_off_t off = BLKALIGN(TMP_FILELEN / 2);
 		dm_size_t len = 0;
 		void *memmap;
 
@@ -3521,18 +4454,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_WRITE, MAP_SHARED, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared write mmap not overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(shared write mmap not overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
@@ -3540,7 +4481,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3554,7 +4497,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_off_t off = BLKALIGN(TMP_FILELEN / 2);
 		dm_size_t len = 0;
 		void *memmap;
 
@@ -3567,18 +4510,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_EXEC, MAP_SHARED, fd,
+			      0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared exec mmap not overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(shared exec mmap not overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
@@ -3586,7 +4537,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3600,7 +4553,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		dm_off_t off = BLKALIGN(TMP_FILELEN/2);
+		dm_off_t off = BLKALIGN(TMP_FILELEN / 2);
 		dm_size_t len = 0;
 		void *memmap;
 
@@ -3613,18 +4566,26 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DUMMY_FILE);
-		} else if ((memmap = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) == MAP_FAILED) {
+		} else
+		    if ((memmap =
+			 mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE,
+			      MAP_SHARED, fd, 0)) == MAP_FAILED) {
 			dm_handle_free(hanp, hlen);
 			close(fd);
 			remove(DUMMY_FILE);
 		}
 		if (fd == -1 || rc == -1 || memmap == MAP_FAILED) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared r/w mmap not overlap hole)\n", szFuncName);
-			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(shared r/w mmap not overlap hole)\n",
+				    szFuncName);
+			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off,
+					   len);
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
@@ -3632,7 +4593,9 @@ int main(int argc, char **argv)
 			rc = close(fd);
 			rc |= remove(DUMMY_FILE);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -3640,7 +4603,9 @@ int main(int argc, char **argv)
 
 	rc = dm_destroy_session(sid);
 	if (rc == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_destroy_session failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_destroy_session failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 	}
 
 	remove(DUMMY_TMP);

@@ -31,25 +31,19 @@ struct unique {
 } sym[] = {
 
 	{
-		SCHED_FIFO, "SCHED_FIFO"
-	},
-	{
-		SCHED_RR, "SCHED_RR"
-	},
+	SCHED_FIFO, "SCHED_FIFO"}, {
+	SCHED_RR, "SCHED_RR"},
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1) || defined(_POSIX_THREAD_SPORADIC_SERVER)&&(_POSIX_THREAD_SPORADIC_SERVER != -1)
 	{
-		SCHED_SPORADIC,"SCHED_SPORADIC"
-	},
+	SCHED_SPORADIC, "SCHED_SPORADIC"},
 #endif
 	{
-		SCHED_OTHER, "SCHED_OTHER"
-	},
-	{
-		0, 0
-	}
+	SCHED_OTHER, "SCHED_OTHER"}, {
+	0, 0}
 };
 
-int main() {
+int main()
+{
 	int policy, invalid_priority, result = PTS_PASS;
 	int old_priority, old_policy, new_policy;
 	struct sched_param param;
@@ -71,13 +65,15 @@ int main() {
 
 		old_policy = sched_getscheduler(getpid());
 		if (old_policy == -1) {
-			perror("An error occurs when calling sched_getscheduler()");
+			perror
+			    ("An error occurs when calling sched_getscheduler()");
 			return PTS_UNRESOLVED;
 		}
 
 		invalid_priority = sched_get_priority_max(policy);
 		if (invalid_priority == -1) {
-			perror("An error occurs when calling sched_get_priority_max()");
+			perror
+			    ("An error occurs when calling sched_get_priority_max()");
 			return PTS_UNRESOLVED;
 		}
 
@@ -94,12 +90,13 @@ int main() {
 
 		new_policy = sched_getscheduler(getpid());
 		if (new_policy == -1) {
-			perror("An error occurs when calling sched_getscheduler()");
+			perror
+			    ("An error occurs when calling sched_getscheduler()");
 			return PTS_UNRESOLVED;
 		}
 
 		if (old_policy == new_policy &&
-		   old_priority == param.sched_priority) {
+		    old_priority == param.sched_priority) {
 			printf("  OK\n");
 		} else {
 			if (param.sched_priority != old_priority) {

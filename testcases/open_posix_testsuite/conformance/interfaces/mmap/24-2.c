@@ -71,8 +71,7 @@ int main(void)
 	len = shm_size;
 	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (pa == MAP_FAILED) {
-		printf("Error at first mmap(): %s\n",
-		       strerror(errno));
+		printf("Error at first mmap(): %s\n", strerror(errno));
 		exit(PTS_FAIL);
 	}
 
@@ -92,10 +91,10 @@ int main(void)
 	}
 	printf("addr: %lx, len: %lx\n", (unsigned long)addr,
 	       (unsigned long)len);
-	pa = mmap(addr, len, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, fd, 0);
+	pa = mmap(addr, len, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, fd,
+		  0);
 	if (pa == MAP_FAILED && errno == ENOMEM) {
-		printf("Got ENOMEM: %s\nTest PASSED\n",
-		       strerror(errno));
+		printf("Got ENOMEM: %s\nTest PASSED\n", strerror(errno));
 		exit(PTS_PASS);
 	}
 

@@ -23,34 +23,48 @@
 #include "fileops.h"
 #include "metaops.h"
 
-ffsb_op_t ffsb_op_list[] =
-{{0, "read", ffsb_readfile, READ, fop_bench, NULL},
- {1, "readall",	ffsb_readall, READ, fop_bench, NULL},
- {2, "write", ffsb_writefile, WRITE, fop_bench, NULL},
- {3, "create", ffsb_createfile, WRITE, fop_bench, fop_age},
- {4, "append", ffsb_appendfile, WRITE, fop_bench, fop_age},
- {5, "delete", ffsb_deletefile, NA, fop_bench, fop_age},
- {6, "metaop", ffsb_metaops, NA, metaops_metadir, NULL},
- {7, "createdir", ffsb_createdir, NA, fop_bench, NULL},
- {8, "stat", ffsb_stat, NA, fop_bench, NULL},
- {9, "writeall", ffsb_writeall, WRITE, fop_bench, NULL},
- {10, "writeall_fsync", ffsb_writeall_fsync, WRITE, fop_bench, NULL},
- {11, "open_close", ffsb_open_close, NA, fop_bench, NULL},
- {12, "write_fsync", ffsb_writefile_fsync, WRITE, fop_bench, NULL},
- {13, "create_fsync", ffsb_createfile_fsync, WRITE, fop_bench, fop_age},
- {14, "append_fsync", ffsb_appendfile_fsync, WRITE, fop_bench, fop_age},
+ffsb_op_t ffsb_op_list[] = { {0, "read", ffsb_readfile, READ, fop_bench, NULL}
+,
+{1, "readall", ffsb_readall, READ, fop_bench, NULL}
+,
+{2, "write", ffsb_writefile, WRITE, fop_bench, NULL}
+,
+{3, "create", ffsb_createfile, WRITE, fop_bench, fop_age}
+,
+{4, "append", ffsb_appendfile, WRITE, fop_bench, fop_age}
+,
+{5, "delete", ffsb_deletefile, NA, fop_bench, fop_age}
+,
+{6, "metaop", ffsb_metaops, NA, metaops_metadir, NULL}
+,
+{7, "createdir", ffsb_createdir, NA, fop_bench, NULL}
+,
+{8, "stat", ffsb_stat, NA, fop_bench, NULL}
+,
+{9, "writeall", ffsb_writeall, WRITE, fop_bench, NULL}
+,
+{10, "writeall_fsync", ffsb_writeall_fsync, WRITE, fop_bench, NULL}
+,
+{11, "open_close", ffsb_open_close, NA, fop_bench, NULL}
+,
+{12, "write_fsync", ffsb_writefile_fsync, WRITE, fop_bench, NULL}
+,
+{13, "create_fsync", ffsb_createfile_fsync, WRITE, fop_bench, fop_age}
+,
+{14, "append_fsync", ffsb_appendfile_fsync, WRITE, fop_bench, fop_age}
+,
 };
 
-void init_ffsb_op_results(ffsb_op_results_t *results)
+void init_ffsb_op_results(ffsb_op_results_t * results)
 {
 	memset(results, 0, sizeof(ffsb_op_results_t));
 }
 
-static int exclusive_op(ffsb_op_results_t *results, unsigned int op_num)
+static int exclusive_op(ffsb_op_results_t * results, unsigned int op_num)
 {
 	int i;
 	int ret = 0;
-	for (i = 0; i < FFSB_NUMOPS ; i++) {
+	for (i = 0; i < FFSB_NUMOPS; i++) {
 		if (i == op_num)
 			continue;
 		ret += results->ops[i];
@@ -65,32 +79,30 @@ static void generic_op_print(char *name, unsigned num, double op_pcnt,
 			     double weigth_pcnt, double runtime, char *tput)
 {
 	printf("%20s : %12u\t%10.2lf\t%6.3lf%%\t\t%6.3lf%%\t  %11s\n",
-	       name, num, num/runtime, op_pcnt, weigth_pcnt, tput);
+	       name, num, num / runtime, op_pcnt, weigth_pcnt, tput);
 }
 
-static void print_op_results(unsigned int op_num, ffsb_op_results_t *results,
+static void print_op_results(unsigned int op_num, ffsb_op_results_t * results,
 			     double runtime, unsigned total_ops,
 			     unsigned total_weight)
 {
 	char buf[256];
 
-	double op_pcnt = 100 * (double)results->ops[op_num] /
-		(double)total_ops;
+	double op_pcnt = 100 * (double)results->ops[op_num] / (double)total_ops;
 	double weight_pcnt = 100 * (double)results->op_weight[op_num] /
-		(double)total_weight;
+	    (double)total_weight;
 	if (ffsb_op_list[op_num].throughput) {
-		ffsb_printsize (buf, results->bytes[op_num] / runtime, 256);
+		ffsb_printsize(buf, results->bytes[op_num] / runtime, 256);
 		sprintf(buf, "%s/sec\0", buf);
-	}
-	else
+	} else
 		sprintf(buf, "NA\0");
 	generic_op_print(ffsb_op_list[op_num].op_name, results->ops[op_num],
 			 op_pcnt, weight_pcnt, runtime, buf);
 }
 
 #if 0
-static void print_op_throughput(unsigned int op_num, ffsb_op_results_t *results,
-				double runtime)
+static void print_op_throughput(unsigned int op_num,
+				ffsb_op_results_t * results, double runtime)
 {
 	if (ffsb_op_list[op_num].op_exl_print_fn != NULL)
 		ffsb_op_list[op_num].op_exl_print_fn(results, runtime, op_num);
@@ -104,18 +116,21 @@ void print_results(struct ffsb_op_results *results, double runtime)
 	uint64_t total_weight = 0;
 	char buf[256];
 
-	for (i = 0; i < FFSB_NUMOPS ; i++) {
+	for (i = 0; i < FFSB_NUMOPS; i++) {
 		total_ops += results->ops[i];
 		total_weight += results->op_weight[i];
 	}
 
-	printf("             Op Name   Transactions\t Trans/sec\t% Trans\t    % Op Weight\t   Throughput\n");
-	printf("             =======   ============\t =========\t=======\t    ===========\t   ==========\n");
-	for (i = 0; i < FFSB_NUMOPS ; i++)
+	printf
+	    ("             Op Name   Transactions\t Trans/sec\t% Trans\t    % Op Weight\t   Throughput\n");
+	printf
+	    ("             =======   ============\t =========\t=======\t    ===========\t   ==========\n");
+	for (i = 0; i < FFSB_NUMOPS; i++)
 		if (results->ops[i] != 0)
 			print_op_results(i, results, runtime, total_ops,
 					 total_weight);
-	printf("-\n%.2lf Transactions per Second\n\n", (double)total_ops / runtime);
+	printf("-\n%.2lf Transactions per Second\n\n",
+	       (double)total_ops / runtime);
 
 	if (results->write_bytes || results->read_bytes)
 		printf("Throughput Results\n===================\n");
@@ -134,19 +149,19 @@ char *op_get_name(int opnum)
 	return ffsb_op_list[opnum].op_name;
 }
 
-void ops_setup_bench(ffsb_fs_t *fs)
+void ops_setup_bench(ffsb_fs_t * fs)
 {
 	int i;
 	for (i = 0; i < FFSB_NUMOPS; i++)
 		ffsb_op_list[i].op_bench(fs, i);
 }
 
-void ops_setup_age(ffsb_fs_t *fs)
+void ops_setup_age(ffsb_fs_t * fs)
 {
 	int i;
 	for (i = 0; i < FFSB_NUMOPS; i++)
 		if (ffsb_op_list[i].op_age)
-		    ffsb_op_list[i].op_age(fs, i);
+			ffsb_op_list[i].op_age(fs, i);
 }
 
 int ops_find_op(char *opname)

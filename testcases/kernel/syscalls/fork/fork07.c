@@ -210,8 +210,7 @@ static void cleanup()
 	TEST_CLEANUP;
 
 	/* collect our zombies */
-	while (wait(&waitstatus) > 0)
-		;
+	while (wait(&waitstatus) > 0) ;
 
 	unlink(fnamebuf);
 	tst_rmdir();

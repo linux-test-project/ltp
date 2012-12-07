@@ -40,33 +40,31 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   argc[3] : Number of testes function calls
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         argc[3] : Number of testes function calls
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int sock = 600;
 	SVCXPRT *svcr = NULL;
-    int nbCall = atoi(argc[3]);
+	int nbCall = atoi(argc[3]);
 	int nbOk = 0;
 	int i;
 
 	//create a server
 	sock = socket(AF_UNIX, SOCK_DGRAM, IPPROTO_TCP);
-	for (i = 0; i < nbCall; i++)
-	{
+	for (i = 0; i < nbCall; i++) {
 		svcr = svctcp_create(sock, 0, 0);
 		if (svcr != NULL)
 			nbOk++;
 	}
 
 	//If we are here, macro call was successful
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("Aimed : %d\n", nbCall);
 		printf("Got : %d\n", nbOk);
 	}

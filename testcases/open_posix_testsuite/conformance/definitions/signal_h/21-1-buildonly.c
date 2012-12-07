@@ -1,6 +1,6 @@
   /*
-  Test the definition of siginfo_t.
-  */
+     Test the definition of siginfo_t.
+   */
 
 #include <signal.h>
 #include <sys/types.h>
@@ -16,7 +16,7 @@ int tstatus;
 long tband;
 union sigval tvalue;
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	tsigno = t.si_signo;
 	terrno = t.si_errno;

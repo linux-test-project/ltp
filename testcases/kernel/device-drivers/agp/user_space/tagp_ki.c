@@ -42,39 +42,38 @@
 #include <sys/ioctl.h>
 #include "../kernel_space/tagp.h"
 
-int ki_generic(int fd, int flag) {
-        int                     rc;
-        tagp_interface_t        tif;
+int ki_generic(int fd, int flag)
+{
+	int rc;
+	tagp_interface_t tif;
 
-        /*
-         * build interface structure
-         */
-        tif.in_len = 0;
-        tif.in_data = 0;
-        tif.out_len = 0;
-        tif.out_data = 0;
-        tif.out_rc = 0;
+	/*
+	 * build interface structure
+	 */
+	tif.in_len = 0;
+	tif.in_data = 0;
+	tif.out_len = 0;
+	tif.out_data = 0;
+	tif.out_rc = 0;
 
-        /*
-         * ioctl call for flag
-         */
-        rc = ioctl(fd, flag, &tif);
-        if (rc) {
-                printf("Ioctl error\n");
-                return rc;
-        }
-        if (tif.out_rc) {
-                printf("Specific errorr: ");
-                return tif.out_rc;
-        }
+	/*
+	 * ioctl call for flag
+	 */
+	rc = ioctl(fd, flag, &tif);
+	if (rc) {
+		printf("Ioctl error\n");
+		return rc;
+	}
+	if (tif.out_rc) {
+		printf("Specific errorr: ");
+		return tif.out_rc;
+	}
 
-        return rc;
+	return rc;
 }
 
 #if 0
-An example of using in_data to pass in a structure:
-
-ki_write_t      wif;
+An example of using in_data to pass in a structure:ki_write_t wif;
 tagp_interface_t tif;
 
 //fill out wif structure
@@ -82,29 +81,27 @@ tagp_interface_t tif;
 /*
  * build interface structure
  */
-tif.in_len = sizeof (ki_write_t);
-tif.in_data = (caddr_t) &wif;
+tif.in_len = sizeof(ki_write_t);
+tif.in_data = (caddr_t) & wif;
 tif.out_len = 0;
 tif.out_data = 0;
 tif.out_rc = 0;
 
 //make ioctl call
 
-An example of using out_data to get back a structure:
-
-ki_read_t       rif;
+An example of using out_data to get back a structure:ki_read_t rif;
 tagp_interface_t tif;
 
 //fill out rif structure
 rif.len = p_test->data[0];
 rif.handle = open_handle;
-rif.data = (caddr_t)p_test->data[1];
+rif.data = (caddr_t) p_test->data[1];
 
 /*
  * build interface structure
  */
-tif.in_len = sizeof (ki_read_t);
-tif.in_data = (caddr_t) &rif;
+tif.in_len = sizeof(ki_read_t);
+tif.in_data = (caddr_t) & rif;
 tif.out_len = 0;
 tif.out_data = 0;
 tif.out_rc = 0;

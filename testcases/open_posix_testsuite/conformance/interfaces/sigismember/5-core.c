@@ -32,29 +32,29 @@ int main(int argc, char *argv[])
 	}
 
 	if (argc < 2) {
-        	printf("Usage:  %s [1|2|3|4]\n", argv[0]);
+		printf("Usage:  %s [1|2|3|4]\n", argv[0]);
 		return PTS_UNRESOLVED;
 	}
 
 	/*
-		Various error conditions
-	*/
+	   Various error conditions
+	 */
 	switch (argv[1][0]) {
-		case '1':
-			signo=-1;
-			break;
-		case '2':
-			signo=-10000;
-			break;
-		case '3':
-			signo=INT32_MIN+1;
-			break;
-		case '4':
-			signo=INT32_MIN;
-			break;
-		default:
-			printf("Usage:  %s [1|2|3|4]\n", argv[0]);
-			return PTS_UNRESOLVED;
+	case '1':
+		signo = -1;
+		break;
+	case '2':
+		signo = -10000;
+		break;
+	case '3':
+		signo = INT32_MIN + 1;
+		break;
+	case '4':
+		signo = INT32_MIN;
+		break;
+	default:
+		printf("Usage:  %s [1|2|3|4]\n", argv[0]);
+		return PTS_UNRESOLVED;
 	}
 
 	if (sigismember(&signalset, signo) != -1) {
@@ -65,6 +65,6 @@ int main(int argc, char *argv[])
 		return PTS_FAIL;
 	}
 
-	printf ("errno set to EINVAL and sigismember returned -1\n");
+	printf("errno set to EINVAL and sigismember returned -1\n");
 	return PTS_PASS;
 }

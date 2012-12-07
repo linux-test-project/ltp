@@ -38,10 +38,9 @@
 #define NUM_AIOCBS	10
 #define BUF_SIZE	1024*1024
 
-int received_all	= 0;
+int received_all = 0;
 
-void
-sigrt1_handler(int signum, siginfo_t *info, void *context)
+void sigrt1_handler(int signum, siginfo_t * info, void *context)
 {
 	received_all = 1;
 }
@@ -64,28 +63,27 @@ int main()
 		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_1_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
 
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	bufs = (char *) malloc (NUM_AIOCBS*BUF_SIZE);
+	bufs = (char *)malloc(NUM_AIOCBS * BUF_SIZE);
 
 	if (bufs == NULL) {
-		printf (TNAME " Error at malloc(): %s\n", strerror (errno));
-		close (fd);
+		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
-	aiocbs = (struct aiocb**)malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
+	aiocbs = (struct aiocb **)malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
 
 	/* Queue up a bunch of aio writes */
 	for (i = 0; i < NUM_AIOCBS; i++) {
@@ -95,7 +93,7 @@ int main()
 
 		aiocbs[i]->aio_fildes = fd;
 		aiocbs[i]->aio_offset = 0;
-		aiocbs[i]->aio_buf = &bufs[i*BUF_SIZE];
+		aiocbs[i]->aio_buf = &bufs[i * BUF_SIZE];
 		aiocbs[i]->aio_nbytes = BUF_SIZE;
 		aiocbs[i]->aio_lio_opcode = LIO_WRITE;
 
@@ -103,61 +101,62 @@ int main()
 
 	/* Use SIGRTMIN+1 for list completion */
 	event.sigev_notify = SIGEV_SIGNAL;
-	event.sigev_signo = SIGRTMIN+1;
+	event.sigev_signo = SIGRTMIN + 1;
 	event.sigev_value.sival_ptr = NULL;
 
 	/* Setup handler for list completion */
 	action.sa_sigaction = sigrt1_handler;
 	sigemptyset(&action.sa_mask);
-	action.sa_flags = SA_SIGINFO|SA_RESTART;
-	sigaction(SIGRTMIN+1, &action, NULL);
+	action.sa_flags = SA_SIGINFO | SA_RESTART;
+	sigaction(SIGRTMIN + 1, &action, NULL);
 
 	/* Submit request list */
 	ret = lio_listio(LIO_WAIT, aiocbs, NUM_AIOCBS, &event);
 
 	if (ret) {
-		printf(TNAME " Error at lio_listio() %d: %s\n", errno, strerror(errno));
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+		printf(TNAME " Error at lio_listio() %d: %s\n", errno,
+		       strerror(errno));
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
-	if (received_all != 0)
-	{
+	if (received_all != 0) {
 		printf(TNAME " lio_listio() did not ignore the sig argument\n");
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* Check return code and free things */
 	for (i = 0; i < NUM_AIOCBS; i++) {
-	  	err = aio_error(aiocbs[i]);
+		err = aio_error(aiocbs[i]);
 		ret = aio_return(aiocbs[i]);
 
 		if ((err != 0) && (ret != BUF_SIZE)) {
-			printf(TNAME " req %d: error = %d - return = %d\n", i, err, ret);
+			printf(TNAME " req %d: error = %d - return = %d\n", i,
+			       err, ret);
 			errors++;
 		}
 
-		free (aiocbs[i]);
+		free(aiocbs[i]);
 	}
 
-	free (bufs);
-	free (aiocbs);
+	free(bufs);
+	free(aiocbs);
 
 	close(fd);
 
 	if (errors != 0)
-		exit (PTS_FAIL);
+		exit(PTS_FAIL);
 
-	printf (TNAME " PASSED\n");
+	printf(TNAME " PASSED\n");
 
 	return PTS_PASS;
 }

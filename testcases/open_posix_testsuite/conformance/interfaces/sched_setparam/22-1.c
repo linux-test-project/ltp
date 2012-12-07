@@ -15,7 +15,8 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 	int result;
 	struct sched_param param;
 
@@ -30,7 +31,8 @@ int main() {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == EPERM) {
-		printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root.\n");
+		printf
+		    ("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {
 		printf("returned code is not 0.\n");

@@ -48,7 +48,7 @@ int enter_handler = 0;
 
 void msg_handler()
 {
-        enter_handler = 1;
+	enter_handler = 1;
 }
 
 void mqclean(mqd_t queue, const char *qname)
@@ -65,7 +65,7 @@ int main()
 	char r_msg_ptr[MSG_SIZE];
 	struct sigevent notification;
 	struct sigaction sa;
-        unsigned int prio = 1;
+	unsigned int prio = 1;
 	int pid;
 	struct mq_attr attr;
 
@@ -74,44 +74,43 @@ int main()
 	attr.mq_maxmsg = BUFFER;
 
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		mqclean(mqdes, mqname);
 		return PTS_UNRESOLVED;
 	}
 
 	pid = fork();
-        if (pid == -1) {
-                perror(ERROR_PREFIX "fork");
+	if (pid == -1) {
+		perror(ERROR_PREFIX "fork");
 		mqclean(mqdes, mqname);
-                return PTS_UNRESOLVED;
-        }
-        if (pid == 0) {
-                /* child process */
+		return PTS_UNRESOLVED;
+	}
+	if (pid == 0) {
+		/* child process */
 		mq_receive(mqdes, r_msg_ptr, MSG_SIZE, NULL);
 		return 0;
-	}
-	else {
+	} else {
 		/* parent process */
-		sleep(2); /* after 2 seconds,
-			      assume that child with block on mq_receive. */
+		sleep(2);	/* after 2 seconds,
+				   assume that child with block on mq_receive. */
 		notification.sigev_notify = SIGEV_SIGNAL;
 		notification.sigev_signo = SIGUSR1;
 		sa.sa_handler = msg_handler;
-       	 	sa.sa_flags = 0;
-        	sigaction(SIGUSR1, &sa, NULL);
+		sa.sa_flags = 0;
+		sigaction(SIGUSR1, &sa, NULL);
 		if (mq_notify(mqdes, &notification) != 0) {
 			perror(ERROR_PREFIX "mq_notify");
 			return PTS_UNRESOLVED;
 		}
 		if (mq_send(mqdes, s_msg_ptr, MSG_SIZE, prio) == -1) {
-	                perror(ERROR_PREFIX "mq_send");
-	                return PTS_UNRESOLVED;
-	        }
+			perror(ERROR_PREFIX "mq_send");
+			return PTS_UNRESOLVED;
+		}
 		sleep(1);
 		if (mq_unlink(mqname) != 0) {
-	                perror(ERROR_PREFIX "mq_unlink");
-	                return PTS_UNRESOLVED;
+			perror(ERROR_PREFIX "mq_unlink");
+			return PTS_UNRESOLVED;
 		}
 		if (enter_handler) {
 			printf("Test FAILED \n");

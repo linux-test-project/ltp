@@ -150,7 +150,7 @@ void setup()
 
 	/* Set the signal catching function */
 	if (signal(SIGALRM, sigproc) == SIG_ERR)
-		tst_brkm(TFAIL|TERRNO, cleanup, "signal(SIGALRM, ..) failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "signal(SIGALRM, ..) failed");
 }
 
 void sigproc(int sig)

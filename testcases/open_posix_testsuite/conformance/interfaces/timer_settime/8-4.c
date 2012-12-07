@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
 
 	its.it_interval.tv_sec = RELOADVAL;
 	its.it_value.tv_sec = TIMERSEC;
-	its.it_interval.tv_nsec = 0; its.it_value.tv_nsec = 0;
+	its.it_interval.tv_nsec = 0;
+	its.it_value.tv_nsec = 0;
 
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
 		perror("timer_create() did not return success\n");
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
 		return PTS_PASS;
 	} else {
 		printf("Test FAILED:  correct %d oits.it_interval %d\n",
-				RELOADVAL, (int) oits.it_interval.tv_sec);
+		       RELOADVAL, (int)oits.it_interval.tv_sec);
 		return PTS_FAIL;
 	}
 

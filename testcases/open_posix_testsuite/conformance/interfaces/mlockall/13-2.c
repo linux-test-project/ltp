@@ -16,10 +16,11 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 	int result;
 
-	result = mlockall(~(MCL_CURRENT|MCL_FUTURE));
+	result = mlockall(~(MCL_CURRENT | MCL_FUTURE));
 
 	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");

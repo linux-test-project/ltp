@@ -204,7 +204,6 @@ realloc:
 		tst_resm(TFAIL, "CPU_ALLOC:errno:%d", errno);
 		tst_exit();
 	}
-
 #if __GLIBC_PREREQ(2, 7)
 	size = CPU_ALLOC_SIZE(nrcpus);
 	CPU_ZERO_S(size, set);
@@ -221,7 +220,8 @@ realloc:
 		}
 #else
 		if (errno == EINVAL)
-			tst_resm(TFAIL, "NR_CPUS of the kernel is more than 1024, so we'd better use a newer glibc(>= 2.7)");
+			tst_resm(TFAIL,
+				 "NR_CPUS of the kernel is more than 1024, so we'd better use a newer glibc(>= 2.7)");
 		else
 #endif
 			tst_resm(TFAIL, "sched_getaffinity:errno:%d", errno);
@@ -274,10 +274,10 @@ unsigned int get_nodeid(unsigned int cpu_id)
 
 	directory_parent = opendir("/sys/devices/system/node");
 	if (!directory_parent) {
-                tst_resm(TCONF,
-                    "/sys not mounted or not a numa system. Assuming one node");
-                tst_resm(TCONF,
-                    "Error opening: /sys/devices/system/node :%s",
+		tst_resm(TCONF,
+			 "/sys not mounted or not a numa system. Assuming one node");
+		tst_resm(TCONF,
+			 "Error opening: /sys/devices/system/node :%s",
 			 strerror(errno));
 		return 0;	//By Default assume it to belong to node Zero
 	} else {

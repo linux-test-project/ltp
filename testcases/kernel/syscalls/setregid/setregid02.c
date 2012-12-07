@@ -72,11 +72,11 @@
 #include "usctest.h"
 #include <errno.h>
 
-
 char *TCID = "setregid02";
 gid_t users_gr_gid, root_gr_gid, bin_gr_gid;
 gid_t neg_one = -1;
 int exp_enos[] = { EPERM, 0 };
+
 gid_t inval_user = (USHRT_MAX);
 char nobody_uid[] = "nobody";
 struct passwd *nobody;
@@ -205,14 +205,14 @@ void setup(void)
 	}
 
 	if (setgid(nobody->pw_gid) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL,
-		    "setgid failed to set the effective gid to %d",
-		    nobody->pw_gid);
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "setgid failed to set the effective gid to %d",
+			 nobody->pw_gid);
 	}
 	if (setuid(nobody->pw_uid) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL,
-		    "setuid failed to to set the effective uid to %d",
-		    nobody->pw_uid);
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "setuid failed to to set the effective uid to %d",
+			 nobody->pw_uid);
 	}
 
 	/* set the expected errnos... */
@@ -248,7 +248,7 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
- }
+}
 
 void gid_verify(struct group *rg, struct group *eg, char *when)
 {

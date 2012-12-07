@@ -41,8 +41,9 @@
 #include "debug.h"
 
 // List of subprocesses to wait upon
-struct proclist_t wait_ons = {NULL};
-struct proclist_t daemons = {NULL};
+struct proclist_t wait_ons = { NULL };
+struct proclist_t daemons = { NULL };
+
 static int is_leader = 0;
 static char *pidfile = "";
 
@@ -68,7 +69,8 @@ static char *progname;
 /**
  * Kill everything upon ^C.
  */
-static void jump_out(int signum) {
+static void jump_out(int signum)
+{
 	pounder_fprintf(stdout, "Control-C received; aborting!\n");
 	//unlink("pounder_pgrp");
 	kill_tests();
@@ -82,7 +84,8 @@ static void jump_out(int signum) {
 /**
  * Kills tests launched from within.
  */
-static void kill_tests(void) {
+static void kill_tests(void)
+{
 	struct proclist_item_t *curr;
 
 	curr = wait_ons.head;
@@ -95,7 +98,8 @@ static void kill_tests(void) {
 /**
  * Kills daemons launched from within.
  */
-static void kill_daemons(void) {
+static void kill_daemons(void)
+{
 	struct proclist_item_t *curr;
 
 	curr = daemons.head;
@@ -108,7 +112,8 @@ static void kill_daemons(void) {
 /**
  * Record the pounder leader's PID in a file.
  */
-static void record_pid(void) {
+static void record_pid(void)
+{
 	FILE *fp;
 
 	pidfile = getenv("POUNDER_PIDFILE");
@@ -128,7 +133,8 @@ static void record_pid(void) {
  * Main program.  Returns 1 if all programs run successfully, 0 if
  * something failed and -1 if there was an error running programs.
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	int retcode;
 	struct sigaction zig;
 	pid_t pid;
@@ -141,8 +147,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (argc > 2 && strcmp(argv[2], "--leader") == 0) {
-		pounder_fprintf(stdout, "Logging this test output to %s/POUNDERLOG.\n",
-			getenv("POUNDER_LOGDIR"));
+		pounder_fprintf(stdout,
+				"Logging this test output to %s/POUNDERLOG.\n",
+				getenv("POUNDER_LOGDIR"));
 		is_leader = 1;
 		record_pid();
 	}
@@ -170,7 +177,6 @@ int main(int argc, char *argv[]) {
 				retcode = -1;
 				goto out;
 			}
-
 			// Track the test
 			note_process(pid, argv[1]);
 			if (wait_for_pids() == 0) {
@@ -179,8 +185,9 @@ int main(int argc, char *argv[]) {
 				retcode = 0;
 			}
 		} else {
-			pounder_fprintf(stderr, "%s: Not a directory or a test.\n",
-				argv[1]);
+			pounder_fprintf(stderr,
+					"%s: Not a directory or a test.\n",
+					argv[1]);
 			retcode = -1;
 		}
 	}
@@ -193,10 +200,10 @@ out:
 			pounder_fprintf(stdout, "%s: %s.\n", argv[1], pass_msg);
 		} else if (retcode < 0 || retcode == 255) {
 			pounder_fprintf(stdout, "%s: %s with code %d.\n",
-				argv[1], abort_msg, retcode);
+					argv[1], abort_msg, retcode);
 		} else {
 			pounder_fprintf(stdout, "%s: %s with code %d.\n",
-				argv[1], fail_msg, retcode);
+					argv[1], fail_msg, retcode);
 		}
 		unlink(pidfile);
 	}
@@ -207,7 +214,8 @@ out:
  * Helper function to determine if a file is executable.
  * Returns 1 if yes, 0 if no and -1 if error.
  */
-static inline int is_executable(const char *fname) {
+static inline int is_executable(const char *fname)
+{
 	struct stat tmp;
 
 	if (stat(fname, &tmp) < 0) {
@@ -229,7 +237,8 @@ static inline int is_executable(const char *fname) {
  * Helper function to determine if a file is a directory.
  * Returns 1 if yes, 0 if no and -1 if error.
  */
-static inline int is_directory(const char *fname) {
+static inline int is_directory(const char *fname)
+{
 	struct stat tmp;
 
 	if (stat(fname, &tmp) < 0) {
@@ -242,7 +251,8 @@ static inline int is_directory(const char *fname) {
 /**
  * Returns 1 if the directory entry's filename fits the test name pattern.
  */
-static inline int test_filter(const struct dirent *p) {
+static inline int test_filter(const struct dirent *p)
+{
 	return ((p->d_name[0] == 'T' || p->d_name[0] == 'D')
 		&& isdigit(p->d_name[1]) && isdigit(p->d_name[2]));
 }
@@ -252,7 +262,8 @@ static inline int test_filter(const struct dirent *p) {
  * are considered "lesser" values.
  */
 //static inline int test_sort(const struct dirent **a, const struct dirent **b) {
-static inline int test_sort(const struct dirent **a, const struct dirent **b) {
+static inline int test_sort(const struct dirent **a, const struct dirent **b)
+{
 	return strcmp(&(*b)->d_name[1], &(*a)->d_name[1]);
 }
 
@@ -260,12 +271,13 @@ static inline int test_sort(const struct dirent **a, const struct dirent **b) {
  * Takes the wait() status integer and prints a log message.
  * Returns 1 if there was a failure.
  */
-static int child_finished(const char *name, int stat) {
+static int child_finished(const char *name, int stat)
+{
 	int x;
 	// did we sig-exit?
 	if (WIFSIGNALED(stat)) {
 		pounder_fprintf(stdout, "%s: %s on signal %d.\n",
-			name, fail_msg, WTERMSIG(stat));
+				name, fail_msg, WTERMSIG(stat));
 		return 1;
 	} else {
 		x = WEXITSTATUS(stat);
@@ -274,12 +286,12 @@ static int child_finished(const char *name, int stat) {
 			return 0;
 		} else if (x < 0 || x == 255) {
 			pounder_fprintf(stdout, "%s: %s with code %d.\n",
-				name, abort_msg, x);
+					name, abort_msg, x);
 			return 1;
 			// FIXME: add test to blacklist
 		} else {
 			pounder_fprintf(stdout, "%s: %s with code %d.\n",
-				name, fail_msg, x);
+					name, fail_msg, x);
 			return 1;
 		}
 	}
@@ -290,7 +302,8 @@ static int child_finished(const char *name, int stat) {
  * assume that there was some kind of failure and return 0.  Otherwise,
  * we return 1 to indicate success.
  */
-static int wait_for_pids(void) {
+static int wait_for_pids(void)
+{
 	struct proclist_item_t *curr;
 	int i, stat, res, nprocs;
 	pid_t pid;
@@ -313,12 +326,13 @@ static int wait_for_pids(void) {
 			perror("wait");
 			return 0;
 		}
-
 		// go find the child
 		curr = wait_ons.head;
 		while (curr != NULL) {
 			if (curr->pid == pid) {
-				res = (child_finished(curr->name, stat) ? 0 : res);
+				res =
+				    (child_finished(curr->name, stat) ? 0 :
+				     res);
 
 				// one less pid to wait for
 				i++;
@@ -351,7 +365,8 @@ static int wait_for_pids(void) {
 /**
  * Wait for daemons to finish.  This function does NOT wait for wait_ons.
  */
-static void wait_for_daemons(void) {
+static void wait_for_daemons(void)
+{
 	struct proclist_item_t *curr;
 	int i, stat, res, nprocs;
 	pid_t pid;
@@ -395,7 +410,8 @@ static void wait_for_daemons(void) {
 /**
  * Creates a record of processes that we want to watch for.
  */
-static void note_process(pid_t pid, char *name) {
+static void note_process(pid_t pid, char *name)
+{
 	struct proclist_item_t *it;
 
 	it = calloc(1, sizeof(struct proclist_item_t));
@@ -419,7 +435,8 @@ static void note_process(pid_t pid, char *name) {
 /**
  * Creates a record of daemons that should be killed on exit.
  */
-static void note_daemon(pid_t pid, char *name) {
+static void note_daemon(pid_t pid, char *name)
+{
 	struct proclist_item_t *it;
 
 	it = calloc(1, sizeof(struct proclist_item_t));
@@ -444,7 +461,8 @@ static void note_daemon(pid_t pid, char *name) {
  * Starts a test, with the stdin/out/err fd's redirected to logs.
  * The 'fname' parameter should be a relative path from $POUNDER_HOME.
  */
-static pid_t spawn_test(char *fname) {
+static pid_t spawn_test(char *fname)
+{
 	pid_t pid;
 	int fd, tmp;
 	char buf[TEST_PATH_LEN], buf2[TEST_PATH_LEN];
@@ -474,11 +492,10 @@ static pid_t spawn_test(char *fname) {
 
 		// generate log name-- '/' -> '-'.
 		snprintf(buf2, TEST_PATH_LEN, "%s|%s",
-			getenv("POUNDER_LOGDIR"), fname);
+			 getenv("POUNDER_LOGDIR"), fname);
 
 		fd = strlen(buf2);
-		for (tmp = (index(buf2, '|') - buf2); tmp < fd;
-			tmp++) {
+		for (tmp = (index(buf2, '|') - buf2); tmp < fd; tmp++) {
 			if (buf2[tmp] == '/') {
 				buf2[tmp] = '-';
 			} else if (buf2[tmp] == '|') {
@@ -493,10 +510,9 @@ static pid_t spawn_test(char *fname) {
 			perror("dup(stdout, 3)");
 			exit(-1);
 		}
-
 		// reroute stdout/stderr
 		fd = open(buf2, O_RDWR | O_CREAT | O_TRUNC | O_SYNC,
-			S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH);
+			  S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH);
 		if (fd < 0) {
 			perror(buf2);
 			exit(-1);
@@ -521,7 +537,6 @@ static pid_t spawn_test(char *fname) {
 			perror("getcwd");
 			exit(-1);
 		}
-
 		// then splice cwd + fname
 		snprintf(buf2, TEST_PATH_LEN, "%s/%s", buf, fname);
 
@@ -540,11 +555,9 @@ static pid_t spawn_test(char *fname) {
 				perror(buf2);
 				exit(-1);
 			}
-
 			// reassign variables
 			fname = buf;
 		}
-
 		// spawn the process
 		execlp(fname, fname, NULL);
 
@@ -567,16 +580,18 @@ static pid_t spawn_test(char *fname) {
  * Adds a child process to either the running-test or running-daemon
  * list.
  */
-static void note_child(pid_t pid, char *fname, char type) {
+static void note_child(pid_t pid, char *fname, char type)
+{
 	if (type == 'T') {
 		note_process(pid, fname);
 	} else if (type == 'D') {
 		note_daemon(pid, fname);
 	} else {
-		pounder_fprintf(stdout, "Don't know what to do with child `%s' of type %c.\n", fname, type);
+		pounder_fprintf(stdout,
+				"Don't know what to do with child `%s' of type %c.\n",
+				fname, type);
 	}
 }
-
 
 /**
  * Process a directory--for each entry in a directory, execute files or spawn
@@ -590,7 +605,8 @@ static void note_child(pid_t pid, char *fname, char type) {
  * If a the fork fails, bit 1 of the return code is set.  If a
  * program runs but fails, bit 2 is set.
  */
-static int process_dir(const char *fname) {
+static int process_dir(const char *fname)
+{
 	struct dirent **namelist;
 	int i, result = 0;
 	char buf[TEST_PATH_LEN];
@@ -602,7 +618,7 @@ static int process_dir(const char *fname) {
 	pounder_fprintf(stdout, "%s: Entering directory.\n", fname);
 
 	i = scandir(fname, &namelist, test_filter,
-		(int (*) (const void *, const void *))test_sort);
+		    (int (*)(const void *, const void *))test_sort);
 	if (i < 0) {
 		perror(fname);
 		return -1;
@@ -611,7 +627,7 @@ static int process_dir(const char *fname) {
 	while (i--) {
 		/* determine level number */
 		test_level_num = ((namelist[i]->d_name[1] - '0') * 10)
-			+ (namelist[i]->d_name[2] - '0');
+		    + (namelist[i]->d_name[2] - '0');
 
 		if (curr_level_num == -1) {
 			curr_level_num = test_level_num;
@@ -623,14 +639,13 @@ static int process_dir(const char *fname) {
 		}
 
 		snprintf(buf, TEST_PATH_LEN, "%s/%s", fname,
-			namelist[i]->d_name);
+			 namelist[i]->d_name);
 		if (is_directory(buf)) {
 			pid = fork();
 			if (pid == 0) {
 				if (setpgrp() < 0) {
 					perror("setpgid");
 				}
-
 				// spawn a new copy of ourself.
 				execl(progname, progname, buf, NULL);
 

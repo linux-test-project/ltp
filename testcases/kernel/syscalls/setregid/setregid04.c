@@ -69,7 +69,6 @@
 #include "usctest.h"
 #include <errno.h>
 
-
 char *TCID = "setregid04";
 gid_t users_gr_gid, root_gr_gid, daemon_gr_gid, bin_gr_gid;
 gid_t neg_one = -1;
@@ -91,33 +90,24 @@ struct test_data_t {
 	const char *test_msg;
 } test_data[] = {
 	{
-		&root_gr_gid, &root_gr_gid, &root_gr, &root_gr,
-		"After setregid(root, root),"
-	}, {
-		&users_gr_gid, &neg_one, &users_gr, &root_gr,
-		"After setregid(users, -1)"
-	}, {
-		&root_gr_gid, &neg_one, &root_gr, &root_gr,
-		"After setregid(root,-1),"
-	}, {
-		&neg_one, &neg_one, &root_gr, &root_gr,
-		"After setregid(-1, -1),"
-	}, {
-		&neg_one, &root_gr_gid, &root_gr, &root_gr,
-		"After setregid(-1, root)"
-	}, {
-		&root_gr_gid, &neg_one, &root_gr, &root_gr,
-		"After setregid(root, -1),"
-	}, {
-		&daemon_gr_gid, &users_gr_gid, &daemon_gr, &users_gr,
-		"After setregid(daemon, users)"
-	}, {
-		&neg_one, &neg_one, &daemon_gr, &users_gr,
-		"After setregid(-1, -1)"
-	}, {
-		&neg_one, &users_gr_gid, &daemon_gr, &users_gr,
-		"After setregid(-1, users)"
-	}
+	&root_gr_gid, &root_gr_gid, &root_gr, &root_gr,
+		    "After setregid(root, root),"}, {
+	&users_gr_gid, &neg_one, &users_gr, &root_gr,
+		    "After setregid(users, -1)"}, {
+	&root_gr_gid, &neg_one, &root_gr, &root_gr,
+		    "After setregid(root,-1),"}, {
+	&neg_one, &neg_one, &root_gr, &root_gr,
+		    "After setregid(-1, -1),"}, {
+	&neg_one, &root_gr_gid, &root_gr, &root_gr,
+		    "After setregid(-1, root)"}, {
+	&root_gr_gid, &neg_one, &root_gr, &root_gr,
+		    "After setregid(root, -1),"}, {
+	&daemon_gr_gid, &users_gr_gid, &daemon_gr, &users_gr,
+		    "After setregid(daemon, users)"}, {
+	&neg_one, &neg_one, &daemon_gr, &users_gr,
+		    "After setregid(-1, -1)"}, {
+	&neg_one, &users_gr_gid, &daemon_gr, &users_gr,
+		    "After setregid(-1, users)"}
 };
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);

@@ -383,262 +383,231 @@ static struct test_struct {
 	const char *name;
 	const char *policy;
 } tests[] = {
-	{ NULL, test_read_etc_fstab, cleanup_file_open, "file::open",
-	  "allow_read /etc/fstab" },
-	{ NULL, test_read_etc_fstab, cleanup_file_open, "file::open",
-	  "allow_read /etc/fstab" },
-	{ NULL, test_read_etc_fstab, cleanup_file_open, "file::open",
-	  "allow_read /etc/fstab" },
-	{ setup_open_group, test_read_etc_fstab, cleanup_open_group,
-	  "file::open", "allow_read @READABLE" },
-	{ NULL, test_write_dev_null, cleanup_file_open, "file::open",
-	  "allow_write /dev/null" },
-	{ NULL, test_write_dev_null, cleanup_file_open, "file::open",
-	  "allow_write /dev/null" },
-	{ NULL, test_write_dev_null, cleanup_file_open, "file::open",
-	  "allow_write /dev/null" },
-	{ cleanup_mkdir_testdir, test_mkdir_testdir, cleanup_mkdir_testdir,
-	  "file::mkdir", "allow_mkdir /tmp/testdir/ 0755" },
-	{ cleanup_mkdir_testdir, test_mkdir_testdir, cleanup_mkdir_testdir,
-	  "file::mkdir", "allow_mkdir /tmp/testdir/ 0755" },
-	{ cleanup_mkdir_testdir, test_mkdir_testdir, cleanup_mkdir_testdir,
-	  "file::mkdir", "allow_mkdir /tmp/testdir/ 0755" },
-	{ setup_mkdir_testdir, test_rmdir_testdir, cleanup_mkdir_testdir,
-	  "file::rmdir", "allow_rmdir /tmp/testdir/" },
-	{ setup_mkdir_testdir, test_rmdir_testdir, cleanup_mkdir_testdir,
-	  "file::rmdir", "allow_rmdir /tmp/testdir/" },
-	{ setup_mkdir_testdir, test_rmdir_testdir, cleanup_mkdir_testdir,
-	  "file::rmdir", "allow_rmdir /tmp/testdir/" },
-	{ setup_execute_bin_true, test_execute_bin_true,
-	  cleanup_execute_bin_true, "file::execute",
-	  "allow_execute /bin/true" },
-	{ setup_execute_bin_true, test_execute_bin_true,
-	  cleanup_execute_bin_true, "file::execute", "allow_execute /bin/true" },
-	{ setup_execute_bin_true, test_execute_bin_true,
-	  cleanup_execute_bin_true, "file::execute", "allow_execute /bin/true"
-	},
-	{ NULL, test_chmod_dev_null, NULL, "file::chmod",
-	  "allow_chmod /dev/null 0666"
-	},
-	{ NULL, test_chown_dev_null, NULL, "file::chown",
-	  "allow_chown /dev/null 0" },
-	{ NULL, test_chgrp_dev_null, NULL, "file::chgrp",
-	  "allow_chgrp /dev/null 0" },
-	{ NULL, test_ioctl_dev_null, NULL, "file::ioctl",
-	  "allow_ioctl /dev/null 0x5451" },
-	{ setup_chmod_group, test_chmod_dev_null, cleanup_chmod_group,
-	  "file::chmod", "allow_chmod @CHMOD_TARGET @CHMOD_MODES" },
-	{ setup_chown_group, test_chown_dev_null, cleanup_chown_group,
-	  "file::chown", "allow_chown @CHOWN_TARGET @CHOWN_IDS" },
-	{ setup_chown_group, test_chgrp_dev_null, cleanup_chown_group,
-	  "file::chgrp", "allow_chgrp @CHOWN_TARGET @CHOWN_IDS" },
-	{ setup_ioctl_group, test_ioctl_dev_null, cleanup_ioctl_group,
-	  "file::ioctl", "allow_ioctl @IOCTL_TARGET @IOCTL_NUMBERS" },
-	{ setup_test_file, test_file_open_0, cleanup_test_file, "file::open",
-	  "allow_read /tmp/testfile0" },
-	{ setup_test_file, test_file_open_1, cleanup_test_file, "file::open",
-	  "allow_read /tmp/testfile1" },
-	{ setup_test_file, test_file_open_1, cleanup_test_file, "file::create",
-	  "allow_create /tmp/testfile1 0600" },
-	{ setup_test_file, test_file_open_2, cleanup_test_file, "file::open",
-	  "allow_read /tmp/testfile2" },
-	{ setup_test_file, test_file_open_2, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile2"
-	},
-	{ setup_test_file_truncate, test_file_open_2,
-	  cleanup_test_file_truncate, "file::rewrite",
-	  "allow_rewrite /tmp/testfile2" },
-	{ setup_test_file, test_file_open_3, cleanup_test_file,
-	  "file::open", "allow_read /tmp/testfile3" },
-	{ setup_test_file, test_file_open_3, cleanup_test_file,
-	  "file::create", "allow_create /tmp/testfile3 0600"
-	},
-	{ setup_test_file, test_file_open_4, cleanup_test_file, "file::open",
-	  "allow_read /tmp/testfile4" },
-	{ setup_test_file, test_file_open_5, cleanup_test_file, "file::open",
-	  "allow_read /tmp/testfile5" },
-	{ setup_test_file, test_file_open_5, cleanup_test_file, "file::create",
-	  "allow_create /tmp/testfile5 0600" },
-	{ setup_test_file, test_file_open_6, cleanup_test_file, "file::open",
-	  "allow_read /tmp/testfile6" },
-	{ setup_test_file, test_file_open_6, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile6"
-	},
-	{ setup_test_file_truncate, test_file_open_6,
-	  cleanup_test_file_truncate, "file::rewrite",
-	  "allow_rewrite /tmp/testfile6" },
-	{ setup_test_file, test_file_open_7, cleanup_test_file, "file::open",
-	  "allow_read /tmp/testfile7" },
-	{ setup_test_file, test_file_open_7, cleanup_test_file, "file::create",
-	  "allow_create /tmp/testfile7 0600" },
-	{ setup_test_file, test_file_open_8, cleanup_test_file, "file::open",
-	  "allow_write /tmp/testfile8" },
-	{ setup_test_file, test_file_open_8, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile8"
-	},
-	{ setup_test_file, test_file_open_9, cleanup_test_file, "file::open",
-	  "allow_write /tmp/testfile9" },
-	{ setup_test_file, test_file_open_9, cleanup_test_file, "file::create",
-	  "allow_create /tmp/testfile9 0600" },
-	{ setup_test_file, test_file_open_9, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile9"
-	},
-	{ setup_test_file, test_file_open_10, cleanup_test_file, "file::open",
-	  "allow_write /tmp/testfile10" },
-	{ setup_test_file, test_file_open_10, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile10"
-	},
-	{ setup_test_file, test_file_open_10, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile10"
-	},
-	{ setup_test_file, test_file_open_11, cleanup_test_file, "file::open",
-	  "allow_write /tmp/testfile11" },
-	{ setup_test_file, test_file_open_11, cleanup_test_file,
-	  "file::create", "allow_create /tmp/testfile11 0600"
-	},
-	{ setup_test_file, test_file_open_11, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile11"
-	},
-	{ setup_test_file, test_file_open_12, cleanup_test_file, "file::open",
-	  "allow_write /tmp/testfile12" },
-	{ setup_test_file, test_file_open_13, cleanup_test_file, "file::open",
-	  "allow_write /tmp/testfile13" },
-	{ setup_test_file, test_file_open_13, cleanup_test_file,
-	  "file::create", "allow_create /tmp/testfile13 0600"
-	},
-	{ setup_test_file, test_file_open_14, cleanup_test_file, "file::open",
-	  "allow_write /tmp/testfile14" },
-	{ setup_test_file, test_file_open_14, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile14"
-	},
-	{ setup_test_file_truncate, test_file_open_14,
-	  cleanup_test_file_truncate, "file::rewrite",
-	  "allow_rewrite /tmp/testfile14" },
-	{ setup_test_file, test_file_open_15, cleanup_test_file, "file::open",
-	  "allow_write /tmp/testfile15" },
-	{ setup_test_file, test_file_open_15, cleanup_test_file,
-	  "file::create", "allow_create /tmp/testfile15 0600"
-	},
-	{ setup_test_file, test_file_open_16, cleanup_test_file, "file::open",
-	  "allow_read/write /tmp/testfile16" },
-	{ setup_test_file, test_file_open_16, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile16"
-	},
-	{ setup_test_file, test_file_open_17, cleanup_test_file, "file::open",
-	  "allow_read/write /tmp/testfile17" },
-	{ setup_test_file, test_file_open_17, cleanup_test_file,
-	  "file::create", "allow_create /tmp/testfile17 0600"
-	},
-	{ setup_test_file, test_file_open_17, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile17"
-	},
-	{ setup_test_file, test_file_open_18, cleanup_test_file, "file::open",
-	  "allow_read/write /tmp/testfile18" },
-	{ setup_test_file, test_file_open_18, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile18"
-	},
-	{ setup_test_file, test_file_open_18, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile18"
-	},
-	{ setup_test_file, test_file_open_19, cleanup_test_file, "file::open",
-	  "allow_read/write /tmp/testfile19" },
-	{ setup_test_file, test_file_open_19, cleanup_test_file,
-	  "file::create", "allow_create /tmp/testfile19 0600"
-	},
-	{ setup_test_file, test_file_open_19, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile19"
-	},
-	{ setup_test_file, test_file_open_20, cleanup_test_file, "file::open",
-	  "allow_read/write /tmp/testfile20" },
-	{ setup_test_file, test_file_open_21, cleanup_test_file, "file::open",
-	  "allow_read/write /tmp/testfile21" },
-	{ setup_test_file, test_file_open_21, cleanup_test_file,
-	  "file::create", "allow_create /tmp/testfile21 0600"
-	},
-	{ setup_test_file, test_file_open_22, cleanup_test_file, "file::open",
-	  "allow_read/write /tmp/testfile22" },
-	{ setup_test_file, test_file_open_22, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile22"
-	},
-	{ setup_test_file_truncate, test_file_open_22,
-	  cleanup_test_file_truncate, "file::rewrite",
-	  "allow_rewrite /tmp/testfile22" },
-	{ setup_test_file, test_file_open_23, cleanup_test_file, "file::open",
-	  "allow_read/write /tmp/testfile23" },
-	{ setup_test_file, test_file_open_23, cleanup_test_file,
-	  "file::create", "allow_create /tmp/testfile23 0600"
-	},
-	{ setup_all_test_file, test_file_open_0, cleanup_test_file,
-	  "file::open", "allow_read /tmp/testfile0" },
-	{ setup_all_test_file, test_file_open_2, cleanup_test_file,
-	  "file::open", "allow_read /tmp/testfile2" },
-	{ setup_all_test_file, test_file_open_2, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile2"
-	},
-	{ setup_all_test_file_truncate, test_file_open_2,
-	  cleanup_test_file_truncate, "file::rewrite",
-	  "allow_rewrite /tmp/testfile2" },
-	{ setup_all_test_file, test_file_open_4, cleanup_test_file,
-	  "file::open", "allow_read /tmp/testfile4" },
-	{ setup_all_test_file, test_file_open_6, cleanup_test_file,
-	  "file::open", "allow_read /tmp/testfile6" },
-	{ setup_all_test_file, test_file_open_6, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile6"
-	},
-	{ setup_all_test_file_truncate, test_file_open_6,
-	  cleanup_test_file_truncate, "file::rewrite",
-	  "allow_rewrite /tmp/testfile6" },
-	{ setup_all_test_file, test_file_open_8, cleanup_test_file,
-	  "file::open", "allow_write /tmp/testfile8" },
-	{ setup_all_test_file, test_file_open_8, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile8"
-	},
-	{ setup_all_test_file, test_file_open_10, cleanup_test_file,
-	  "file::open", "allow_write /tmp/testfile10" },
-	{ setup_all_test_file, test_file_open_10, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile10"
-	},
-	{ setup_all_test_file, test_file_open_10, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile10"
-	},
-	{ setup_all_test_file, test_file_open_12, cleanup_test_file,
-	  "file::open", "allow_write /tmp/testfile12" },
-	{ setup_all_test_file, test_file_open_14, cleanup_test_file,
-	  "file::open", "allow_write /tmp/testfile14" },
-	{ setup_all_test_file, test_file_open_14, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile14"
-	},
-	{ setup_all_test_file_truncate, test_file_open_14,
-	  cleanup_test_file_truncate, "file::rewrite",
-	  "allow_rewrite /tmp/testfile14" },
-	{ setup_all_test_file, test_file_open_16, cleanup_test_file,
-	  "file::open", "allow_read/write /tmp/testfile16"
-	},
-	{ setup_all_test_file, test_file_open_16, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile16"
-	},
-	{ setup_all_test_file, test_file_open_18, cleanup_test_file,
-	  "file::open", "allow_read/write /tmp/testfile18"
-	},
-	{ setup_all_test_file, test_file_open_18, cleanup_test_file,
-	  "file::truncate", "allow_truncate /tmp/testfile18"
-	},
-	{ setup_all_test_file, test_file_open_18, cleanup_test_file,
-	  "file::rewrite", "allow_rewrite /tmp/testfile18"
-	},
-	{ setup_all_test_file, test_file_open_20, cleanup_test_file,
-	  "file::open",
-	  "allow_read/write /tmp/testfile20" },
-	{ setup_all_test_file, test_file_open_22, cleanup_test_file,
-	  "file::open",
-	  "allow_read/write /tmp/testfile22" },
-	{ setup_all_test_file, test_file_open_22, cleanup_test_file,
-	  "file::truncate",
-	  "allow_truncate /tmp/testfile22" },
-	{ setup_all_test_file_truncate, test_file_open_22,
-	  cleanup_test_file_truncate, "file::rewrite",
-	  "allow_rewrite /tmp/testfile22" },
-	{ NULL }
+	{
+	NULL, test_read_etc_fstab, cleanup_file_open, "file::open",
+		    "allow_read /etc/fstab"}, {
+	NULL, test_read_etc_fstab, cleanup_file_open, "file::open",
+		    "allow_read /etc/fstab"}, {
+	NULL, test_read_etc_fstab, cleanup_file_open, "file::open",
+		    "allow_read /etc/fstab"}, {
+	setup_open_group, test_read_etc_fstab, cleanup_open_group,
+		    "file::open", "allow_read @READABLE"}, {
+	NULL, test_write_dev_null, cleanup_file_open, "file::open",
+		    "allow_write /dev/null"}, {
+	NULL, test_write_dev_null, cleanup_file_open, "file::open",
+		    "allow_write /dev/null"}, {
+	NULL, test_write_dev_null, cleanup_file_open, "file::open",
+		    "allow_write /dev/null"}, {
+	cleanup_mkdir_testdir, test_mkdir_testdir,
+		    cleanup_mkdir_testdir, "file::mkdir",
+		    "allow_mkdir /tmp/testdir/ 0755"}, {
+	cleanup_mkdir_testdir, test_mkdir_testdir,
+		    cleanup_mkdir_testdir, "file::mkdir",
+		    "allow_mkdir /tmp/testdir/ 0755"}, {
+	cleanup_mkdir_testdir, test_mkdir_testdir,
+		    cleanup_mkdir_testdir, "file::mkdir",
+		    "allow_mkdir /tmp/testdir/ 0755"}, {
+	setup_mkdir_testdir, test_rmdir_testdir, cleanup_mkdir_testdir,
+		    "file::rmdir", "allow_rmdir /tmp/testdir/"}, {
+	setup_mkdir_testdir, test_rmdir_testdir, cleanup_mkdir_testdir,
+		    "file::rmdir", "allow_rmdir /tmp/testdir/"}, {
+	setup_mkdir_testdir, test_rmdir_testdir, cleanup_mkdir_testdir,
+		    "file::rmdir", "allow_rmdir /tmp/testdir/"}, {
+	setup_execute_bin_true, test_execute_bin_true,
+		    cleanup_execute_bin_true, "file::execute",
+		    "allow_execute /bin/true"}, {
+	setup_execute_bin_true, test_execute_bin_true,
+		    cleanup_execute_bin_true, "file::execute",
+		    "allow_execute /bin/true"}, {
+	setup_execute_bin_true, test_execute_bin_true,
+		    cleanup_execute_bin_true, "file::execute",
+		    "allow_execute /bin/true"}, {
+	NULL, test_chmod_dev_null, NULL, "file::chmod",
+		    "allow_chmod /dev/null 0666"}, {
+	NULL, test_chown_dev_null, NULL, "file::chown",
+		    "allow_chown /dev/null 0"}, {
+	NULL, test_chgrp_dev_null, NULL, "file::chgrp",
+		    "allow_chgrp /dev/null 0"}, {
+	NULL, test_ioctl_dev_null, NULL, "file::ioctl",
+		    "allow_ioctl /dev/null 0x5451"}, {
+	setup_chmod_group, test_chmod_dev_null, cleanup_chmod_group,
+		    "file::chmod", "allow_chmod @CHMOD_TARGET @CHMOD_MODES"}, {
+	setup_chown_group, test_chown_dev_null, cleanup_chown_group,
+		    "file::chown", "allow_chown @CHOWN_TARGET @CHOWN_IDS"}, {
+	setup_chown_group, test_chgrp_dev_null, cleanup_chown_group,
+		    "file::chgrp", "allow_chgrp @CHOWN_TARGET @CHOWN_IDS"}, {
+	setup_ioctl_group, test_ioctl_dev_null, cleanup_ioctl_group,
+		    "file::ioctl", "allow_ioctl @IOCTL_TARGET @IOCTL_NUMBERS"},
+	{
+	setup_test_file, test_file_open_0, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile0"}, {
+	setup_test_file, test_file_open_1, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile1"}, {
+	setup_test_file, test_file_open_1, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile1 0600"}, {
+	setup_test_file, test_file_open_2, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile2"}, {
+	setup_test_file, test_file_open_2, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile2"}, {
+	setup_test_file_truncate, test_file_open_2,
+		    cleanup_test_file_truncate, "file::rewrite",
+		    "allow_rewrite /tmp/testfile2"}, {
+	setup_test_file, test_file_open_3, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile3"}, {
+	setup_test_file, test_file_open_3, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile3 0600"}, {
+	setup_test_file, test_file_open_4, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile4"}, {
+	setup_test_file, test_file_open_5, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile5"}, {
+	setup_test_file, test_file_open_5, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile5 0600"}, {
+	setup_test_file, test_file_open_6, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile6"}, {
+	setup_test_file, test_file_open_6, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile6"}, {
+	setup_test_file_truncate, test_file_open_6,
+		    cleanup_test_file_truncate, "file::rewrite",
+		    "allow_rewrite /tmp/testfile6"}, {
+	setup_test_file, test_file_open_7, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile7"}, {
+	setup_test_file, test_file_open_7, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile7 0600"}, {
+	setup_test_file, test_file_open_8, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile8"}, {
+	setup_test_file, test_file_open_8, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile8"}, {
+	setup_test_file, test_file_open_9, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile9"}, {
+	setup_test_file, test_file_open_9, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile9 0600"}, {
+	setup_test_file, test_file_open_9, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile9"}, {
+	setup_test_file, test_file_open_10, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile10"}, {
+	setup_test_file, test_file_open_10, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile10"}, {
+	setup_test_file, test_file_open_10, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile10"}, {
+	setup_test_file, test_file_open_11, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile11"}, {
+	setup_test_file, test_file_open_11, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile11 0600"}, {
+	setup_test_file, test_file_open_11, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile11"}, {
+	setup_test_file, test_file_open_12, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile12"}, {
+	setup_test_file, test_file_open_13, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile13"}, {
+	setup_test_file, test_file_open_13, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile13 0600"}, {
+	setup_test_file, test_file_open_14, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile14"}, {
+	setup_test_file, test_file_open_14, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile14"}, {
+	setup_test_file_truncate, test_file_open_14,
+		    cleanup_test_file_truncate, "file::rewrite",
+		    "allow_rewrite /tmp/testfile14"}, {
+	setup_test_file, test_file_open_15, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile15"}, {
+	setup_test_file, test_file_open_15, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile15 0600"}, {
+	setup_test_file, test_file_open_16, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile16"}, {
+	setup_test_file, test_file_open_16, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile16"}, {
+	setup_test_file, test_file_open_17, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile17"}, {
+	setup_test_file, test_file_open_17, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile17 0600"}, {
+	setup_test_file, test_file_open_17, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile17"}, {
+	setup_test_file, test_file_open_18, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile18"}, {
+	setup_test_file, test_file_open_18, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile18"}, {
+	setup_test_file, test_file_open_18, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile18"}, {
+	setup_test_file, test_file_open_19, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile19"}, {
+	setup_test_file, test_file_open_19, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile19 0600"}, {
+	setup_test_file, test_file_open_19, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile19"}, {
+	setup_test_file, test_file_open_20, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile20"}, {
+	setup_test_file, test_file_open_21, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile21"}, {
+	setup_test_file, test_file_open_21, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile21 0600"}, {
+	setup_test_file, test_file_open_22, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile22"}, {
+	setup_test_file, test_file_open_22, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile22"}, {
+	setup_test_file_truncate, test_file_open_22,
+		    cleanup_test_file_truncate, "file::rewrite",
+		    "allow_rewrite /tmp/testfile22"}, {
+	setup_test_file, test_file_open_23, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile23"}, {
+	setup_test_file, test_file_open_23, cleanup_test_file,
+		    "file::create", "allow_create /tmp/testfile23 0600"}, {
+	setup_all_test_file, test_file_open_0, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile0"}, {
+	setup_all_test_file, test_file_open_2, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile2"}, {
+	setup_all_test_file, test_file_open_2, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile2"}, {
+	setup_all_test_file_truncate, test_file_open_2,
+		    cleanup_test_file_truncate, "file::rewrite",
+		    "allow_rewrite /tmp/testfile2"}, {
+	setup_all_test_file, test_file_open_4, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile4"}, {
+	setup_all_test_file, test_file_open_6, cleanup_test_file,
+		    "file::open", "allow_read /tmp/testfile6"}, {
+	setup_all_test_file, test_file_open_6, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile6"}, {
+	setup_all_test_file_truncate, test_file_open_6,
+		    cleanup_test_file_truncate, "file::rewrite",
+		    "allow_rewrite /tmp/testfile6"}, {
+	setup_all_test_file, test_file_open_8, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile8"}, {
+	setup_all_test_file, test_file_open_8, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile8"}, {
+	setup_all_test_file, test_file_open_10, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile10"}, {
+	setup_all_test_file, test_file_open_10, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile10"}, {
+	setup_all_test_file, test_file_open_10, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile10"}, {
+	setup_all_test_file, test_file_open_12, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile12"}, {
+	setup_all_test_file, test_file_open_14, cleanup_test_file,
+		    "file::open", "allow_write /tmp/testfile14"}, {
+	setup_all_test_file, test_file_open_14, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile14"}, {
+	setup_all_test_file_truncate, test_file_open_14,
+		    cleanup_test_file_truncate, "file::rewrite",
+		    "allow_rewrite /tmp/testfile14"}, {
+	setup_all_test_file, test_file_open_16, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile16"}, {
+	setup_all_test_file, test_file_open_16, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile16"}, {
+	setup_all_test_file, test_file_open_18, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile18"}, {
+	setup_all_test_file, test_file_open_18, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile18"}, {
+	setup_all_test_file, test_file_open_18, cleanup_test_file,
+		    "file::rewrite", "allow_rewrite /tmp/testfile18"}, {
+	setup_all_test_file, test_file_open_20, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile20"}, {
+	setup_all_test_file, test_file_open_22, cleanup_test_file,
+		    "file::open", "allow_read/write /tmp/testfile22"}, {
+	setup_all_test_file, test_file_open_22, cleanup_test_file,
+		    "file::truncate", "allow_truncate /tmp/testfile22"}, {
+	setup_all_test_file_truncate, test_file_open_22,
+		    cleanup_test_file_truncate, "file::rewrite",
+		    "allow_rewrite /tmp/testfile22"}, {
+	NULL}
 };
 
 int main(int argc, char *argv[])

@@ -37,88 +37,78 @@
 
 int main()
 {
-  int rc;
+	int rc;
 
-  char tmpfname[256];
-  char* data;
-  int total_size = 1024;
+	char tmpfname[256];
+	char *data;
+	int total_size = 1024;
 
-  void *pa = NULL;
-  void *addr = NULL;
-  size_t size = total_size;
-  int flag;
-  int fd;
-  off_t off = 0;
-  int prot;
+	void *pa = NULL;
+	void *addr = NULL;
+	size_t size = total_size;
+	int flag;
+	int fd;
+	off_t off = 0;
+	int prot;
 
-  char * ch;
+	char *ch;
 
-  snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_munmap_4_1_%d",
-           getpid());
-  unlink(tmpfname);
-  fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-            S_IRUSR | S_IWUSR);
-  if (fd == -1)
-  {
-    printf(TNAME " Error at open(): %s\n",
-           strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  unlink(tmpfname);
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_munmap_4_1_%d",
+		 getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
+		exit(PTS_UNRESOLVED);
+	}
+	unlink(tmpfname);
 
-  data = (char *) malloc(total_size);
-  memset(data, 'a', total_size);
-  if (write(fd, data, total_size) != total_size)
-  {
-    printf(TNAME "Error at write(): %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
-  free(data);
+	data = (char *)malloc(total_size);
+	memset(data, 'a', total_size);
+	if (write(fd, data, total_size) != total_size) {
+		printf(TNAME "Error at write(): %s\n", strerror(errno));
+		exit(PTS_UNRESOLVED);
+	}
+	free(data);
 
-  prot = PROT_READ | PROT_WRITE;
-  flag = MAP_PRIVATE;
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-    printf("Test Fail: " TNAME " Error at mmap: %s\n",
-           strerror(errno));
-    exit(PTS_FAIL);
-  }
+	prot = PROT_READ | PROT_WRITE;
+	flag = MAP_PRIVATE;
+	pa = mmap(addr, size, prot, flag, fd, off);
+	if (pa == MAP_FAILED) {
+		printf("Test Fail: " TNAME " Error at mmap: %s\n",
+		       strerror(errno));
+		exit(PTS_FAIL);
+	}
 
-  ch = pa;
-  *ch = 'b';
+	ch = pa;
+	*ch = 'b';
 
-  /* Flush changes back to the file */
+	/* Flush changes back to the file */
 
-  if ((rc =msync(pa, size, MS_SYNC)) != 0)
-  {
-    printf(TNAME " Error at msync(): %s\n",
-           strerror(rc));
-    exit(PTS_UNRESOLVED);
-  }
+	if ((rc = msync(pa, size, MS_SYNC)) != 0) {
+		printf(TNAME " Error at msync(): %s\n", strerror(rc));
+		exit(PTS_UNRESOLVED);
+	}
 
-  munmap(pa, size);
+	munmap(pa, size);
 
-  /* Mmap again */
+	/* Mmap again */
 
-  pa = mmap(addr, size, prot, flag, fd, off);
-  if (pa == MAP_FAILED)
-  {
-    printf("Test Fail: " TNAME " Error at 2nd mmap: %s\n",
-           strerror(errno));
-    exit(PTS_FAIL);
-  }
+	pa = mmap(addr, size, prot, flag, fd, off);
+	if (pa == MAP_FAILED) {
+		printf("Test Fail: " TNAME " Error at 2nd mmap: %s\n",
+		       strerror(errno));
+		exit(PTS_FAIL);
+	}
 
-  ch = pa;
-  if (*ch == 'b')
-  {
-    printf("Test FAIL\n");
-    exit(PTS_FAIL);
-  }
+	ch = pa;
+	if (*ch == 'b') {
+		printf("Test FAIL\n");
+		exit(PTS_FAIL);
+	}
 
-  close (fd);
-  printf ("Write referece is discarded when setting MAP_RPIVATE\n");
-  printf("Test PASSED\n");
-  return PTS_PASS;
+	close(fd);
+	printf("Write referece is discarded when setting MAP_RPIVATE\n");
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

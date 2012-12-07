@@ -49,8 +49,7 @@ int main(int argc, char *argv[])
 	sigset_t set;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if (getuid() != 0)
-	{
+	if (getuid() != 0) {
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
 	}
@@ -63,8 +62,8 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	if (sigemptyset(&set) != 0 || sigemptyset(&act.sa_mask) != 0) {
 		perror("sigemptyset() was not successful\n");
@@ -81,13 +80,15 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
- 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
+	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
 		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
-	its.it_interval.tv_sec = 0; its.it_interval.tv_nsec = 0;
-	its.it_value.tv_sec = TIMERSEC; its.it_value.tv_nsec = 0;
+	its.it_interval.tv_sec = 0;
+	its.it_interval.tv_nsec = 0;
+	its.it_value.tv_sec = TIMERSEC;
+	its.it_value.tv_nsec = 0;
 
 	if (timer_settime(tid, 0, &its, NULL) != 0) {
 		perror("timer_settime() did not return success\n");
@@ -106,15 +107,15 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	ts.tv_sec=TIMERSEC+SLEEPDELTA;
-	ts.tv_nsec=0;
+	ts.tv_sec = TIMERSEC + SLEEPDELTA;
+	ts.tv_nsec = 0;
 
 	if (nanosleep(&ts, &tsleft) != -1) {
 		printf("nanosleep() not interrupted\n");
 		return PTS_FAIL;
 	}
 
-	if (abs(tsleft.tv_sec-SLEEPDELTA) <= ACCEPTABLEDELTA) {
+	if (abs(tsleft.tv_sec - SLEEPDELTA) <= ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
 		tsreset.tv_sec += TIMERSEC;
 		setBackTime(tsreset);
@@ -122,8 +123,7 @@ int main(int argc, char *argv[])
 	} else {
 		printf("Timer did not last for correct amount of time\n");
 		printf("timer: %d != correct %d\n",
-					(int) ts.tv_sec- (int) tsleft.tv_sec,
-					TIMERSEC);
+		       (int)ts.tv_sec - (int)tsleft.tv_sec, TIMERSEC);
 		return PTS_FAIL;
 	}
 

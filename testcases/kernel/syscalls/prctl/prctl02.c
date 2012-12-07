@@ -136,11 +136,12 @@ int main(int ac, char **av)
 				TEST(prctl(test_cases[i].option,
 					   test_cases[i].arg2));
 				if ((TEST_RETURN == -1) && (TEST_ERRNO ==
-							    test_cases[i].
-							    exp_errno)) {
+							    test_cases
+							    [i].exp_errno)) {
 					exit(TEST_ERRNO);
 				} else {
-					tst_resm(TWARN|TTERRNO, "prctl() returned %ld",
+					tst_resm(TWARN | TTERRNO,
+						 "prctl() returned %ld",
 						 TEST_RETURN);
 					exit(TEST_ERRNO);
 				}
@@ -153,8 +154,9 @@ int main(int ac, char **av)
 				}
 
 				if ((WIFEXITED(status)) && (WEXITSTATUS(status)
-							    == test_cases[i].
-							    exp_errno)) {
+							    ==
+							    test_cases
+							    [i].exp_errno)) {
 					tst_resm(TPASS, "Test Passed");
 				} else {
 					tst_resm(TFAIL, "Test Failed");

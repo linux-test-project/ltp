@@ -42,84 +42,92 @@
 #include "user_tagp.h"
 #include "../kernel_space/tagp.h"
 
-static int tagp_fd = -1;		/* file descriptor */
+static int tagp_fd = -1;	/* file descriptor */
 
-int tagpopen() {
+int tagpopen()
+{
 
-    dev_t devt;
-	struct stat     st;
-    int    rc = 0;
+	dev_t devt;
+	struct stat st;
+	int rc = 0;
 
-    devt = makedev(TAGP_MAJOR, 0);
+	devt = makedev(TAGP_MAJOR, 0);
 
-    if (rc) {
-        if (errno == ENOENT) {
-            /* dev node does not exist. */
-            rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-                                                S_IRGRP | S_IXGRP |
-                                                S_IROTH | S_IXOTH));
-        } else {
-            printf("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n", errno);
-        }
+	if (rc) {
+		if (errno == ENOENT) {
+			/* dev node does not exist. */
+			rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
+						 S_IRGRP | S_IXGRP |
+						 S_IROTH | S_IXOTH));
+		} else {
+			printf
+			    ("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n",
+			     errno);
+		}
 
-    } else {
-        if (!(st.st_mode & S_IFDIR)) {
-            rc = unlink(DEVICE_NAME);
-            if (!rc) {
-                rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-                                                S_IRGRP | S_IXGRP |
-                                                S_IROTH | S_IXOTH));
-            }
-        }
-    }
+	} else {
+		if (!(st.st_mode & S_IFDIR)) {
+			rc = unlink(DEVICE_NAME);
+			if (!rc) {
+				rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
+							 S_IRGRP | S_IXGRP |
+							 S_IROTH | S_IXOTH));
+			}
+		}
+	}
 
-    /*
-     * Check for the /dev/tbase node, and create if it does not
-     * exist.
-     */
-    rc = stat(DEVICE_NAME, &st);
-    if (rc) {
-        if (errno == ENOENT) {
-            /* dev node does not exist */
-            rc = mknod(DEVICE_NAME, (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
-        } else {
-            printf("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n", errno);
-        }
+	/*
+	 * Check for the /dev/tbase node, and create if it does not
+	 * exist.
+	 */
+	rc = stat(DEVICE_NAME, &st);
+	if (rc) {
+		if (errno == ENOENT) {
+			/* dev node does not exist */
+			rc = mknod(DEVICE_NAME,
+				   (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP |
+				    S_IWGRP), devt);
+		} else {
+			printf
+			    ("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n",
+			     errno);
+		}
 
-    } else {
-        /*
-         * /dev/tbase CHR device exists.  Check to make sure it is for a
-         * block device and that it has the right major and minor.
-         */
-        if ((!(st.st_mode & S_IFCHR)) ||
-             (st.st_rdev != devt)) {
+	} else {
+		/*
+		 * /dev/tbase CHR device exists.  Check to make sure it is for a
+		 * block device and that it has the right major and minor.
+		 */
+		if ((!(st.st_mode & S_IFCHR)) || (st.st_rdev != devt)) {
 
-            /* Recreate the dev node. */
-            rc = unlink(DEVICE_NAME);
-            if (!rc) {
-                rc = mknod(DEVICE_NAME, (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
-            }
-        }
-    }
+			/* Recreate the dev node. */
+			rc = unlink(DEVICE_NAME);
+			if (!rc) {
+				rc = mknod(DEVICE_NAME,
+					   (S_IFCHR | S_IRUSR | S_IWUSR |
+					    S_IRGRP | S_IWGRP), devt);
+			}
+		}
+	}
 
-    tagp_fd = open(DEVICE_NAME, O_RDWR);
+	tagp_fd = open(DEVICE_NAME, O_RDWR);
 
-    if (tagp_fd < 0) {
-        printf("ERROR: Open of device %s failed %d errno = %d\n", DEVICE_NAME,tagp_fd, errno);
-        return errno;
-    }
-    else {
-        printf("Device opened successfully \n");
-      return 0;
-    }
+	if (tagp_fd < 0) {
+		printf("ERROR: Open of device %s failed %d errno = %d\n",
+		       DEVICE_NAME, tagp_fd, errno);
+		return errno;
+	} else {
+		printf("Device opened successfully \n");
+		return 0;
+	}
 
 }
 
-int
-tagpclose() {
+int tagpclose()
+{
 
 	if (tagp_fd != -1) {
-		close (tagp_fd);
+		close(tagp_fd);
 		tagp_fd = -1;
 	}
 
@@ -132,16 +140,17 @@ int agpgart_io_test()
 	char read_buf[BUFFER_LEN];
 
 	if ((tagp_fd = open("/dev/agpgart", O_RDWR)) < 0) {
-                printf("Open /dev/agpgart failed \n");
+		printf("Open /dev/agpgart failed \n");
 		return -1;
-        }
+	}
 
 	close(tagp_fd);
 
 	return 0;
 }
 
-int main() {
+int main()
+{
 	int rc;
 
 	if (agpgart_io_test())
@@ -156,7 +165,7 @@ int main() {
 		exit(1);
 	}
 
-	/* make test calls for pci_find_device*/
+	/* make test calls for pci_find_device */
 	if (ki_generic(tagp_fd, TEST_PCI_FIND_DEV))
 		printf("Success: Expected failure for pci_find_dev test\n");
 	else
@@ -195,8 +204,8 @@ int main() {
 	if (ki_generic(tagp_fd, TEST_FREE_MEMORY))
 		printf("Fail on agp_free_memory\n");
 	else
-		printf("Success on agp_free_memory\n");
-*/	///////////////////////////////////////////////////////////////////////
+			printf("Success on agp_free_memory\n");
+*////////////////////////////////////////////////////////////////////////
 	/* make test calls for agp_num_entries */
 	if (ki_generic(tagp_fd, TEST_NUM_ENTRIES))
 		printf("Fail on agp_num_entries\n");
@@ -210,10 +219,10 @@ int main() {
 		printf("Success on agp_copy_info\n");
 
 	/* make test calls for agp_alloc_memory */
-//	if (ki_generic(tagp_fd, TEST_ALLOC_MEMORY_AND_BAND_UNBAND))
-//		printf("Fail on agp_alloc_memory_and_band_unband\n");
-//	else
-//		printf("Success on agp_alloc_memory_and_band_unband\n");
+//      if (ki_generic(tagp_fd, TEST_ALLOC_MEMORY_AND_BAND_UNBAND))
+//              printf("Fail on agp_alloc_memory_and_band_unband\n");
+//      else
+//              printf("Success on agp_alloc_memory_and_band_unband\n");
 
 	/* make test calls for agp_get_version */
 	if (ki_generic(tagp_fd, TEST_GET_VERSION))
@@ -284,9 +293,9 @@ int main() {
 	/* close the module */
 	rc = tagpclose();
 	if (rc) {
-                printf("Test AGP Driver may not be closed\n");
-                exit(1);
-        }
+		printf("Test AGP Driver may not be closed\n");
+		exit(1);
+	}
 
-      return 0;
+	return 0;
 }

@@ -20,7 +20,7 @@
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 /* 11/01/2002	Port to LTP  	robbiew@us.ibm.com */
 
-                           /* page01.c */
+			   /* page01.c */
 /*======================================================================
 	=================== TESTPLAN SEGMENT ===================
 CALLS:	malloc(3)
@@ -42,7 +42,7 @@ CALLS:	malloc(3)
 #include <stdio.h>
 #include <stdlib.h>
 
-int bd_arg(char*);
+int bd_arg(char *);
 
 /** LTP Port **/
 #include "test.h"
@@ -53,7 +53,7 @@ void setup(void);
 void anyfail(void);
 void ok_exit(void);
 void forkfail(void);
-void terror(char*);
+void terror(char *);
 int instress(void);
 
 #define FAILED 0
@@ -63,13 +63,13 @@ int local_flag = PASSED;
 int block_number;
 FILE *temp;
 
-char *TCID="page01";           /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
+char *TCID = "page01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 /**************/
 
 int main(argc, argv)
-	int argc;
-	char *argv[];
+int argc;
+char *argv[];
 {
 	int nchild;
 	int memory_size;
@@ -99,10 +99,10 @@ int main(argc, argv)
 	error_count = 0;
 
 	/****************************************/
-	/*					*/
-	/*	attempt to fork a number of 	*/
-	/*	identical processes		*/
-	/*					*/
+	/*                                      */
+	/*      attempt to fork a number of     */
+	/*      identical processes             */
+	/*                                      */
 	/****************************************/
 
 	for (i = 1; i <= nchild; i++) {
@@ -111,24 +111,28 @@ int main(argc, argv)
 			if (instress())
 				ok_exit();
 			forkfail();
-		}
-		else if (pid == 0) {
+		} else if (pid == 0) {
 			/********************************/
-			/*				*/
-			/*   allocate memory  of size	*/
-			/*    "memory_size"		*/
-			/*				*/
+			/*                              */
+			/*   allocate memory  of size   */
+			/*    "memory_size"             */
+			/*                              */
 			/********************************/
 
-			memory_pointer = (int*)malloc(memory_size*sizeof(int));
+			memory_pointer =
+			    (int *)malloc(memory_size * sizeof(int));
 			if (memory_pointer == 0) {
-					tst_resm(TBROK, "Cannot allocate memory - malloc failed.\n");
+				tst_resm(TBROK,
+					 "Cannot allocate memory - malloc failed.\n");
 				if (i < 2) {
-					tst_resm(TBROK, "This should not happen for first two children.\n");
-					tst_resm(TFAIL, "Child %d - fail.\n", i);
+					tst_resm(TBROK,
+						 "This should not happen for first two children.\n");
+					tst_resm(TFAIL, "Child %d - fail.\n",
+						 i);
 					tst_exit();
 				} else {
-					tst_resm(TCONF, "This is ok for all but first two children.\n");
+					tst_resm(TCONF,
+						 "This is ok for all but first two children.\n");
 					tst_resm(TCONF, "Child %d - ok.\n", i);
 					tst_exit();
 				}
@@ -136,9 +140,9 @@ int main(argc, argv)
 			number_pointer = memory_pointer;
 
 			/********************************/
-			/*				*/
-			/*         write to it		*/
-			/*				*/
+			/*                              */
+			/*         write to it          */
+			/*                              */
 			/********************************/
 
 			for (j = 1; j <= memory_size; j++)
@@ -146,27 +150,28 @@ int main(argc, argv)
 			sleep(1);
 
 			/********************************/
-			/*				*/
-			/*      and read from it to	*/
-			/*  check that what was written	*/
-			/*       is still there		*/
-			/*				*/
+			/*                              */
+			/*      and read from it to     */
+			/*  check that what was written */
+			/*       is still there         */
+			/*                              */
 			/********************************/
 
 			number_pointer = memory_pointer;
 			for (j = 1; j <= memory_size; j++) {
-				if (*(number_pointer++) != j) error_count++;
+				if (*(number_pointer++) != j)
+					error_count++;
 			}
 			exit(error_count);
 		}
 	}
 
 	/****************************************/
-	/*					*/
-	/*	wait for the child processes 	*/
-	/*      to teminate and report the #	*/
-	/*	of deviations recognized	*/
-	/*					*/
+	/*                                      */
+	/*      wait for the child processes    */
+	/*      to teminate and report the #    */
+	/*      of deviations recognized        */
+	/*                                      */
 	/****************************************/
 
 	count = 0;
@@ -181,8 +186,7 @@ int main(argc, argv)
 
 	if (count != nchild) {
 		tst_resm(TWARN, "Wrong number of children waited on.\n");
-		tst_resm(TWARN, "Count = %d, expected = %d.\n",
-			count, nchild);
+		tst_resm(TWARN, "Count = %d, expected = %d.\n", count, nchild);
 	}
 
 	anyfail();
@@ -191,7 +195,7 @@ int main(argc, argv)
 }
 
 int bd_arg(str)
-	char *str;
+char *str;
 {
 	tst_resm(TCONF, "\tCannot parse %s as a number.\n", str);
 	exit(1);
@@ -203,11 +207,10 @@ int bd_arg(str)
  *
  * Do set up - here its a dummy function
  */
-void
-setup()
+void setup()
 {
-    tst_tmpdir();
-    temp = stderr;
+	tst_tmpdir();
+	temp = stderr;
 }
 
 /*
@@ -215,11 +218,10 @@ setup()
  *
  * Description: Print message on entering a new block
  */
-void
-blenter()
+void blenter()
 {
-    local_flag = PASSED;
-        return;
+	local_flag = PASSED;
+	return;
 }
 
 /*
@@ -228,13 +230,12 @@ blenter()
  *
  * Description: Exit a test.
  */
-void
-anyfail()
+void anyfail()
 {
-    (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
-           : tst_resm(TPASS, "Test passed");
-    tst_rmdir();
-    tst_exit();
+	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed")
+	    : tst_resm(TPASS, "Test passed");
+	tst_rmdir();
+	tst_exit();
 }
 
 /*
@@ -242,11 +243,10 @@ anyfail()
  *
  * Calling block passed the test
  */
-void
-ok_exit()
+void ok_exit()
 {
-        local_flag = PASSED;
-        return;
+	local_flag = PASSED;
+	return;
 }
 
 /*
@@ -254,12 +254,11 @@ ok_exit()
  *
  * exit on failure
  */
-void
-forkfail()
+void forkfail()
 {
-        tst_resm(TBROK, "Reason: %s\n", strerror(errno));
-        tst_rmdir();
-        tst_exit();
+	tst_resm(TBROK, "Reason: %s\n", strerror(errno));
+	tst_rmdir();
+	tst_exit();
 }
 
 /*
@@ -269,11 +268,10 @@ forkfail()
  *              test case failed, for example fork() failed. We will log this
  *              failure as TBROK instead of TFAIL.
  */
-void
-terror(char *message)
+void terror(char *message)
 {
-    tst_resm(TBROK, "Reason: %s:%s\n", message, strerror(errno));
-        return;
+	tst_resm(TBROK, "Reason: %s:%s\n", message, strerror(errno));
+	return;
 }
 
 /*
@@ -282,10 +280,9 @@ terror(char *message)
  * Assume that we are always running under stress, so this function will
  * return > 0 value always.
  */
-int
-instress()
+int instress()
 {
-        tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-                                " etc are likely to fail.\n");
-        return 1;
+	tst_resm(TINFO, "System resource may be too low, fork() malloc()"
+		 " etc are likely to fail.\n");
+	return 1;
 }

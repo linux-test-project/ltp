@@ -48,37 +48,33 @@ int main()
 	int ret;
 
 	/* Initialize attribute */
-	if (pthread_attr_init(&new_attr) != 0)
-	{
+	if (pthread_attr_init(&new_attr) != 0) {
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Set the attribute object to be detached */
-	if (pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED) != 0)
-	{
+	if (pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED) !=
+	    0) {
 		perror("Error in pthread_attr_setdetachstate()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Create the thread */
-	if (pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Detach the thread. */
-	ret=pthread_detach(new_th);
+	ret = pthread_detach(new_th);
 
 	/* Cleanup and cancel the thread */
 	pthread_cancel(new_th);
 
 	/* Check return value of pthread_detach() */
-	if (ret != EINVAL)
-	{
-		if (ret == ESRCH)
-		{
+	if (ret != EINVAL) {
+		if (ret == ESRCH) {
 			perror("Error detaching thread\n");
 			return PTS_UNRESOLVED;
 		}

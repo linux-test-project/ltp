@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 	if ((pid = fork()) == 0) {
 		/* child here */
 
-		act.sa_handler=handler;
-		act.sa_flags=0;
+		act.sa_handler = handler;
+		act.sa_flags = 0;
 		if (sigemptyset(&act.sa_mask) != 0) {
 			perror("sigemptyset() did not return success\n");
 			return PTS_UNRESOLVED;
@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
 			perror("sigaction() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
-		tssleep.tv_sec=SLEEPSEC;
-		tssleep.tv_nsec=0;
+		tssleep.tv_sec = SLEEPSEC;
+		tssleep.tv_nsec = 0;
 		clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL);
 	} else {
 		/* parent here */
@@ -81,13 +81,13 @@ int main(int argc, char *argv[])
 		 * pass if we slept for less than the (large) sleep time
 		 * allotted
 		 */
-		if ((tsafter.tv_sec-tsbefore.tv_sec) < SLEEPSEC) {
+		if ((tsafter.tv_sec - tsbefore.tv_sec) < SLEEPSEC) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		} else {
 			printf("Slept for too long: %d >= %d\n",
-				(int)tsafter.tv_sec-(int)tsbefore.tv_sec,
-				SLEEPSEC);
+			       (int)tsafter.tv_sec - (int)tsbefore.tv_sec,
+			       SLEEPSEC);
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}

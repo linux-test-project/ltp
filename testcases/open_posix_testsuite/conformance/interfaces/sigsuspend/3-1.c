@@ -37,17 +37,18 @@ int main()
 	if (pid == 0) {
 		/* child */
 
-	        sigset_t tempmask;
+		sigset_t tempmask;
 
-	        sigemptyset(&tempmask);
+		sigemptyset(&tempmask);
 
 		printf("suspending child\n");
-	        if (sigsuspend(&tempmask) != -1) {
-	                perror("sigsuspend error");
+		if (sigsuspend(&tempmask) != -1) {
+			perror("sigsuspend error");
 			return 1;
 		}
 
-	        printf("Test FAILED: Should not have returned from sigsuspend\n");
+		printf
+		    ("Test FAILED: Should not have returned from sigsuspend\n");
 		return 2;
 
 	} else {
@@ -58,7 +59,7 @@ int main()
 		sleep(1);
 
 		printf("parent sending child a SIGABRT signal\n");
-		kill (pid, SIGABRT);
+		kill(pid, SIGABRT);
 
 		if (wait(&s) == -1) {
 			perror("Unexpected error while setting up test "
@@ -70,15 +71,17 @@ int main()
 
 		printf("Exit status from child is %d\n", exit_status);
 
-                if (exit_status == 1) {
-                        printf("Test UNRESOLVED: sigsuspend in child process was not successful\n");
-                        return PTS_UNRESOLVED;
-                }
+		if (exit_status == 1) {
+			printf
+			    ("Test UNRESOLVED: sigsuspend in child process was not successful\n");
+			return PTS_UNRESOLVED;
+		}
 
-                if (exit_status == 2) {
-                        printf("Test FAILED: sigsuspend did not suspend the child\n");
-                        return PTS_FAIL;
-                }
+		if (exit_status == 2) {
+			printf
+			    ("Test FAILED: sigsuspend did not suspend the child\n");
+			return PTS_FAIL;
+		}
 
 		printf("Test PASSED\n");
 		return PTS_PASS;

@@ -14,16 +14,16 @@
 #include <time.h>
 #include <posixtest.h>
 
-int main ()
+int main()
 {
 	struct tm *tm_ptr;
 	time_t the_time;
 
-	(void) time(&the_time);
+	(void)time(&the_time);
 	tm_ptr = NULL;
 	tm_ptr = gmtime(&the_time);
 
-	if (tm_ptr !=  NULL) {
+	if (tm_ptr != NULL) {
 		puts("Test PASSED");
 		return PTS_PASS;
 	} else {

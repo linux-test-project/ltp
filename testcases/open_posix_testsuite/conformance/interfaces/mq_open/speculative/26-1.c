@@ -52,7 +52,7 @@ int main()
 
 		queue[i] = mq_open(qname, O_CREAT | O_RDWR,
 				   S_IRUSR | S_IWUSR, NULL);
-		if (queue[i] == (mqd_t) -1) {
+		if (queue[i] == (mqd_t) - 1) {
 			printf("mq_open() failed before expected\n");
 			unresolved = 1;
 			break;
@@ -61,7 +61,7 @@ int main()
 
 	queue[numqueues] = mq_open(qname, O_CREAT | O_RDWR,
 				   S_IRUSR | S_IWUSR, NULL);
-	if (queue[numqueues] != (mqd_t) -1) {
+	if (queue[numqueues] != (mqd_t) - 1) {
 		printf("mq_open() did not fail on > ");
 		printf("_POSIX_OPEN_MAX  or _POSIX_MQ_OPEN_MAX queues\n");
 	} else {

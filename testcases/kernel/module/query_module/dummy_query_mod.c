@@ -33,22 +33,19 @@
 void dummy_func_test(void);
 
 /* Initialization routine of module */
-int
-init_module (void)
+int init_module(void)
 {
 	return 0;
 }
 
 /* Cleanup routine of module */
-void
-cleanup_module (void)
+void cleanup_module(void)
 {
 	return;
 }
 
 /* Dummy function used by dependent module */
-void
-dummy_func_test(void)
+void dummy_func_test(void)
 {
 	return;
 }

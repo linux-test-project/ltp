@@ -34,27 +34,28 @@
  * input tests
  */
 static int sleepvalid[NUMVALID][2] = { {0, 30000000}, {1, 0},
-					{1, 30000000}, {2, 0},
-					{10, 5000}, {13, 5} };
+{1, 30000000}, {2, 0},
+{10, 5000}, {13, 5}
+};
 static int sleepinvalid[NUMINVALID][2] = { {-1, -1}, {0, -1},
-					{1, 1000000000}, {2, 1000000000},
-					{-2147483647, -2147483647},
-					{1, 2147483647},
-					{0, 1075002478} };
+{1, 1000000000}, {2, 1000000000},
+{-2147483647, -2147483647},
+{1, 2147483647},
+{0, 1075002478}
+};
 
 int main(int argc, char *argv[])
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int i;
 	int failure = 0;
-	int slepts=0, sleptns=0;
+	int slepts = 0, sleptns = 0;
 
-	for (i=0; i<NUMVALID;i++) {
-		tssleepfor.tv_sec=sleepvalid[i][0];
-		tssleepfor.tv_nsec=sleepvalid[i][1];
+	for (i = 0; i < NUMVALID; i++) {
+		tssleepfor.tv_sec = sleepvalid[i][0];
+		tssleepfor.tv_nsec = sleepvalid[i][1];
 		printf("sleep %d sec %d nsec\n",
-				(int) tssleepfor.tv_sec,
-				(int) tssleepfor.tv_nsec);
+		       (int)tssleepfor.tv_sec, (int)tssleepfor.tv_nsec);
 		if (clock_gettime(CLOCK_REALTIME, &tsbefore) == -1) {
 			perror("Error in clock_gettime()\n");
 			return PTS_UNRESOLVED;
@@ -68,24 +69,22 @@ int main(int argc, char *argv[])
 			/*
 			 * Generic alg for calculating slept time.
 			 */
-			slepts=tsafter.tv_sec-tsbefore.tv_sec;
-			sleptns=tsafter.tv_nsec-tsbefore.tv_nsec;
+			slepts = tsafter.tv_sec - tsbefore.tv_sec;
+			sleptns = tsafter.tv_nsec - tsbefore.tv_nsec;
 			if (sleptns < 0) {
-				sleptns = sleptns+1000000000;
-				slepts = slepts-1;
+				sleptns = sleptns + 1000000000;
+				slepts = slepts - 1;
 			}
 
-			if ((slepts-tssleepfor.tv_sec) > OKSECERR) {
+			if ((slepts - tssleepfor.tv_sec) > OKSECERR) {
 				printf("FAIL - slept %lds%ldns >> %lds%ldns\n",
-						slepts, sleptns,
-						tssleepfor.tv_sec,
-						tssleepfor.tv_nsec);
+				       slepts, sleptns,
+				       tssleepfor.tv_sec, tssleepfor.tv_nsec);
 				failure = 1;
 			} else {
 				printf("PASS - slept %lds%ldns ~= %lds%ldns\n",
-						slepts, sleptns,
-						tssleepfor.tv_sec,
-						tssleepfor.tv_nsec);
+				       slepts, sleptns,
+				       tssleepfor.tv_sec, tssleepfor.tv_nsec);
 			}
 		} else {
 			printf("nanosleep() did not return 0 on success\n");
@@ -93,12 +92,11 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	for (i=0; i<NUMINVALID;i++) {
-		tssleepfor.tv_sec=sleepinvalid[i][0];
-		tssleepfor.tv_nsec=sleepinvalid[i][1];
+	for (i = 0; i < NUMINVALID; i++) {
+		tssleepfor.tv_sec = sleepinvalid[i][0];
+		tssleepfor.tv_nsec = sleepinvalid[i][1];
 		printf("sleep %d sec %d nsec\n",
-				(int) tssleepfor.tv_sec,
-				(int) tssleepfor.tv_nsec);
+		       (int)tssleepfor.tv_sec, (int)tssleepfor.tv_nsec);
 		if (nanosleep(&tssleepfor, &tsstorage) == -1) {
 			if (EINVAL != errno) {
 				printf("errno != EINVAL\n");

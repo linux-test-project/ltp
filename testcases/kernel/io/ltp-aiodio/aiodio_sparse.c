@@ -48,15 +48,16 @@ static void setup(void);
 static void cleanup(void);
 static void usage(void);
 
-char *TCID="aiodio_sparse";
-int TST_TOTAL=1;
+char *TCID = "aiodio_sparse";
+int TST_TOTAL = 1;
 
 #include "common_sparse.h"
 
 /*
  * do async DIO writes to a sparse file
  */
-int aiodio_sparse(char *filename, int align, int writesize, int filesize, int num_aio)
+int aiodio_sparse(char *filename, int align, int writesize, int filesize,
+		  int num_aio)
 {
 	int fd;
 	int i, w;
@@ -75,15 +76,15 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 	iocbs = malloc(sizeof(struct iocb *) * num_aio);
 	for (i = 0; i < num_aio; i++) {
 		if ((iocbs[i] = malloc(sizeof(struct iocb))) == 0) {
-			tst_resm(TBROK|TERRNO, "malloc()");
+			tst_resm(TBROK | TERRNO, "malloc()");
 			return 1;
 		}
 	}
 
-	fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT|O_EXCL, 0600);
+	fd = open(filename, O_DIRECT | O_WRONLY | O_CREAT | O_EXCL, 0600);
 
 	if (fd < 0) {
-		tst_resm(TBROK|TERRNO, "open()");
+		tst_resm(TBROK | TERRNO, "open()");
 		return 1;
 	}
 
@@ -97,7 +98,7 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 		void *bufptr;
 
 		if (posix_memalign(&bufptr, align, writesize)) {
-			tst_resm(TBROK|TERRNO, "posix_memalign()");
+			tst_resm(TBROK | TERRNO, "posix_memalign()");
 			close(fd);
 			unlink(filename);
 			return 1;
@@ -125,22 +126,25 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 	 */
 	aio_inflight = num_aio;
 
-	while (offset < filesize)  {
+	while (offset < filesize) {
 		int n;
 		struct iocb *iocbp;
 
 		if (debug)
-			tst_resm(TINFO, "aiodio_sparse: offset %p filesize %d inflight %d",
-				&offset, filesize, aio_inflight);
+			tst_resm(TINFO,
+				 "aiodio_sparse: offset %p filesize %d inflight %d",
+				 &offset, filesize, aio_inflight);
 
 		if ((n = io_getevents(myctx, 1, 1, &event, 0)) != 1) {
 			if (-n != EINTR)
-				tst_resm(TBROK, "io_getevents() returned %d", n);
+				tst_resm(TBROK, "io_getevents() returned %d",
+					 n);
 			break;
 		}
 
 		if (debug)
-			tst_resm(TINFO, "aiodio_sparse: io_getevent() returned %d", n);
+			tst_resm(TINFO,
+				 "aiodio_sparse: io_getevent() returned %d", n);
 
 		aio_inflight--;
 
@@ -150,15 +154,16 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 		iocbp = (struct iocb *)event.obj;
 		if (event.res2 != 0 || event.res != iocbp->u.c.nbytes) {
 			tst_resm(TBROK,
-			         "AIO write offset %lld expected %ld got %ld",
-			         iocbp->u.c.offset, iocbp->u.c.nbytes,
-			         event.res);
+				 "AIO write offset %lld expected %ld got %ld",
+				 iocbp->u.c.offset, iocbp->u.c.nbytes,
+				 event.res);
 			break;
 		}
 
 		if (debug)
-			tst_resm(TINFO, "aiodio_sparse: io_getevent() res %ld res2 %ld",
-				        event.res, event.res2);
+			tst_resm(TINFO,
+				 "aiodio_sparse: io_getevent() res %ld res2 %ld",
+				 event.res, event.res2);
 
 		/* start next write */
 		io_prep_pwrite(iocbp, fd, iocbp->u.c.buf, writesize, offset);
@@ -193,9 +198,9 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize, int nu
 		iocbp = (struct iocb *)event.obj;
 		if (event.res2 != 0 || event.res != iocbp->u.c.nbytes) {
 			tst_resm(TBROK,
-			         "AIO write offset %lld expected %ld got %ld",
-			         iocbp->u.c.offset, iocbp->u.c.nbytes,
-			         event.res);
+				 "AIO write offset %lld expected %ld got %ld",
+				 iocbp->u.c.offset, iocbp->u.c.nbytes,
+				 event.res);
 		}
 	}
 
@@ -220,7 +225,7 @@ int main(int argc, char **argv)
 	int i;
 	long alignment = 512;
 	int writesize = 65536;
-	int filesize = 100*1024*1024;
+	int filesize = 100 * 1024 * 1024;
 	int num_aio = 16;
 	int children_errors = 0;
 	int c;
@@ -238,15 +243,17 @@ int main(int argc, char **argv)
 		case 'a':
 			alignment = strtol(optarg, &endp, 0);
 			alignment = (int)scale_by_kmg((long long)alignment,
-                                                        *endp);
+						      *endp);
 			break;
 		case 'w':
 			writesize = strtol(optarg, &endp, 0);
-			writesize = (int)scale_by_kmg((long long)writesize, *endp);
+			writesize =
+			    (int)scale_by_kmg((long long)writesize, *endp);
 			break;
 		case 's':
 			filesize = strtol(optarg, &endp, 0);
-			filesize = (int)scale_by_kmg((long long)filesize, *endp);
+			filesize =
+			    (int)scale_by_kmg((long long)filesize, *endp);
 			break;
 		case 'n':
 			num_children = atoi(optarg);
@@ -273,12 +280,12 @@ int main(int argc, char **argv)
 		switch (pid[i] = fork()) {
 		case 0:
 			read_sparse(filename, filesize);
-		break;
+			break;
 		case -1:
 			while (i-- > 0)
 				kill(pid[i], SIGTERM);
 
-			tst_brkm(TBROK|TERRNO, cleanup, "fork()");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork()");
 		default:
 			continue;
 		}
@@ -298,7 +305,7 @@ int main(int argc, char **argv)
 
 		p = waitpid(pid[i], &status, 0);
 		if (p < 0) {
-			tst_resm(TBROK|TERRNO, "waitpid()");
+			tst_resm(TBROK | TERRNO, "waitpid()");
 		} else {
 			if (WIFEXITED(status) && WEXITSTATUS(status) == 10)
 				children_errors++;
@@ -307,7 +314,7 @@ int main(int argc, char **argv)
 
 	if (children_errors)
 		tst_resm(TFAIL, "%i children(s) exited abnormally",
-		         children_errors);
+			 children_errors);
 
 	if (!children_errors && !ret)
 		tst_resm(TPASS, "Test passed");

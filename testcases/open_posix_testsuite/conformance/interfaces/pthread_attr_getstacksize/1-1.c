@@ -52,34 +52,31 @@ int main()
 
 	stack_size = PTHREAD_STACK_MIN;
 
-	if (posix_memalign (&saddr, sysconf(_SC_PAGE_SIZE),
-            stack_size) != 0)
-    	{
-      		perror (ERROR_PREFIX "out of memory while "
-                        "allocating the stack memory");
-      		exit(PTS_UNRESOLVED);
-    	}
+	if (posix_memalign(&saddr, sysconf(_SC_PAGE_SIZE), stack_size) != 0) {
+		perror(ERROR_PREFIX "out of memory while "
+		       "allocating the stack memory");
+		exit(PTS_UNRESOLVED);
+	}
 	/* printf("stack_size = %lu\n", stack_size); */
 
 	rc = pthread_attr_setstacksize(&attr, stack_size);
-        if (rc != 0) {
-                perror(ERROR_PREFIX "pthread_attr_setstacksize");
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_setstacksize");
+		exit(PTS_UNRESOLVED);
+	}
 
 	rc = pthread_attr_getstacksize(&attr, &ssize);
-        if (rc != 0) {
-                perror(ERROR_PREFIX "pthread_attr_getstacksize");
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_getstacksize");
+		exit(PTS_UNRESOLVED);
+	}
 	/* printf("ssize = %lu\n", ssize); */
 
 	rc = pthread_attr_destroy(&attr);
-	if (rc != 0)
-        {
-                perror(ERROR_PREFIX "pthread_attr_destroy");
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

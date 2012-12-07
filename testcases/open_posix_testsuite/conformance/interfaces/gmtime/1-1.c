@@ -14,13 +14,13 @@
 #include <time.h>
 #include <posixtest.h>
 
-int main ()
+int main()
 {
 	struct tm *tm_ptr;
 	time_t the_time;
 	int total_years;
 
-	(void) time(&the_time);
+	(void)time(&the_time);
 	tm_ptr = gmtime(&the_time);
 	printf("Raw time is %ld \n", the_time);
 	printf("gmtime gives:\n");
@@ -67,7 +67,7 @@ int main ()
 
 	/* Checking the Year */
 	total_years = (tm_ptr->tm_year + 1900);
-	if (total_years >= 1900)  {
+	if (total_years >= 1900) {
 		printf("year %d\n", total_years);
 	} else {
 		printf("year %d\n", total_years);

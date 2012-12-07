@@ -19,9 +19,9 @@
  *   Frank Filz     <ffilz@us.ibm.com>
  */
 
-#include <sys/socket.h>   /* struct sockaddr_storage, setsockopt() */
+#include <sys/socket.h>		/* struct sockaddr_storage, setsockopt() */
 #include <netinet/in.h>
-#include <netinet/sctp.h> /* SCTP_SOCKOPT_CONNECTX_* */
+#include <netinet/sctp.h>	/* SCTP_SOCKOPT_CONNECTX_* */
 #include <errno.h>
 
 /* Support the sctp_connectx() interface.
@@ -31,8 +31,7 @@
  * Instead of implementing through a socket call in sys_socketcall(),
  * tunnel the request through setsockopt().
  */
-int
-sctp_connectx(int fd, struct sockaddr *addrs, int addrcnt)
+int sctp_connectx(int fd, struct sockaddr *addrs, int addrcnt)
 {
 	void *addrbuf;
 	struct sockaddr *sa_addr;
@@ -57,5 +56,6 @@ sctp_connectx(int fd, struct sockaddr *addrs, int addrcnt)
 		}
 	}
 
-	return setsockopt(fd, SOL_SCTP, SCTP_SOCKOPT_CONNECTX, addrs, addrs_size);
+	return setsockopt(fd, SOL_SCTP, SCTP_SOCKOPT_CONNECTX, addrs,
+			  addrs_size);
 }

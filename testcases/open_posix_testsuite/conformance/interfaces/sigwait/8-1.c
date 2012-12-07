@@ -50,7 +50,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	/* Call sigwait and test if it passed/failed*/
+	/* Call sigwait and test if it passed/failed */
 	if (sigwait(&newmask, &sig) != 0) {
 		printf("Error in sigwait()\n");
 		printf("Test FAILED\n");

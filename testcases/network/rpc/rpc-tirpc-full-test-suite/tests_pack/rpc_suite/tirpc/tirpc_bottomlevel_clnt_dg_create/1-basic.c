@@ -43,32 +43,30 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
-    CLIENT *client = NULL;
+	CLIENT *client = NULL;
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
-    char addrbuf[ADDRBUFSIZE];
+	char addrbuf[ADDRBUFSIZE];
 	bool_t rpcb_rslt;
 
 	//Initialization
-    if (run_mode)
-    {
-    	printf("Before creation\n");
+	if (run_mode) {
+		printf("Before creation\n");
 		printf("client : %d\n", client);
 		printf("nconf : %d\n", nconf);
 	}
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *) NULL)
-	{
+	if (nconf == (struct netconfig *)NULL) {
 		//syslog(LOG_ERR, "getnetconfigent for udp failed");
 		fprintf(stderr, "err nconf\n");
 		printf("5\n");
@@ -79,28 +77,23 @@ int main(int argn, char *argc[])
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 
-	if (svcaddr.buf == NULL)
-	{
-    	/* if malloc() failed, print error messages and exit */
-    	printf("5\n");
-  		return 1;
-    }
+	if (svcaddr.buf == NULL) {
+		/* if malloc() failed, print error messages and exit */
+		printf("5\n");
+		return 1;
+	}
+	//printf("svcaddr reserved (%s)\n", argc[1]);
 
-    //printf("svcaddr reserved (%s)\n", argc[1]);
+	if (!rpcb_getaddr(progNum, VERSNUM, nconf, &svcaddr, argc[1])) {
+		fprintf(stderr, "rpcb_getaddr failed!!\n");
+		printf("5\n");
+		exit(1);
+	}
+	//printf("svc get\n");
 
-	if (!rpcb_getaddr(progNum, VERSNUM, nconf,
-                               &svcaddr, argc[1]))
-    {
-    	fprintf(stderr, "rpcb_getaddr failed!!\n");
-    	printf("5\n");
-    	exit(1);
-    }
-    //printf("svc get\n");
-
-	client =  clnt_dg_create(RPC_ANYFD, &svcaddr,
-			 				 progNum, VERSNUM, 1024, 1024);/**/
-
-	test_status = ((CLIENT *)client != NULL) ? 0 : 1;
+	client = clnt_dg_create(RPC_ANYFD, &svcaddr,
+				progNum, VERSNUM, 1024, 1024);
+	/**/ test_status = ((CLIENT *) client != NULL) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

@@ -37,7 +37,7 @@
 #include "test.h"
 
 char *TCID = "check_pe";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 int main(int argc, char *argv[])
 {

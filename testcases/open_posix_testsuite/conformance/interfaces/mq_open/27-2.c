@@ -38,7 +38,7 @@ int main()
 		strcat(qname, "0");
 
 	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
-	if (queue != (mqd_t) -1) {
+	if (queue != (mqd_t) - 1) {
 		printf("mq_open() should have failed with queue name %s\n",
 		       qname);
 		printf("Test FAILED\n");

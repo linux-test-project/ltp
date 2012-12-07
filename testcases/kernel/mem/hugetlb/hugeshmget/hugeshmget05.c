@@ -74,8 +74,8 @@ static char *ltp_user = "nobody";
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 static void do_child(void);
@@ -96,17 +96,17 @@ int main(int ac, char **av)
 
 	switch (pid = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
 		/* set the user ID of the child to the non root user */
 		if (setuid(ltp_uid) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "setuid");
+			tst_brkm(TBROK | TERRNO, cleanup, "setuid");
 		do_child();
 		tst_exit();
 	default:
 		/* wait for the child to return */
 		if (waitpid(pid, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 	}
 	cleanup();
 	tst_exit();
@@ -119,16 +119,16 @@ static void do_child(void)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		TEST(shmget(shmkey, shm_size, SHM_HUGETLB|SHM_RW));
+		TEST(shmget(shmkey, shm_size, SHM_HUGETLB | SHM_RW));
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "shmget succeeded unexpectedly");
 			continue;
 		}
 		if (TEST_ERRNO == EACCES)
-			tst_resm(TPASS|TTERRNO, "shmget failed as expected");
+			tst_resm(TPASS | TTERRNO, "shmget failed as expected");
 		else
-			tst_resm(TFAIL|TTERRNO, "shmget failed unexpectedly "
-				    "- expect errno=EACCES, got");
+			tst_resm(TFAIL | TTERRNO, "shmget failed unexpectedly "
+				 "- expect errno=EACCES, got");
 	}
 }
 
@@ -148,9 +148,9 @@ void setup(void)
 	update_shm_size(&shm_size);
 	shmkey = getipckey();
 	shm_id_1 = shmget(shmkey, shm_size,
-		    SHM_HUGETLB|SHM_RW|IPC_CREAT|IPC_EXCL);
+			  SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL);
 	if (shm_id_1 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget #setup");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget #setup");
 
 	/* get the userid for a non-root user */
 	ltp_uid = getuserid(ltp_user);

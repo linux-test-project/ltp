@@ -43,7 +43,8 @@ char *check_zero(unsigned char *buf, int size)
 
 	while (size > 0) {
 		if (*buf != 0) {
-			fprintf(stderr, "non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
+			fprintf(stderr,
+				"non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
 				buf - p, (unsigned int)buf[0],
 				size > 1 ? (unsigned int)buf[1] : 0,
 				size > 2 ? (unsigned int)buf[2] : 0,
@@ -54,7 +55,7 @@ char *check_zero(unsigned char *buf, int size)
 		buf++;
 		size--;
 	}
-	return 0;	/* all zeros */
+	return 0;		/* all zeros */
 }
 
 int read_eof(char *filename)
@@ -68,20 +69,21 @@ int read_eof(char *filename)
 		sleep(1);	/* wait for file to be created */
 	}
 
-	for (i = 0 ; i < 1000000; i++) {
+	for (i = 0; i < 1000000; i++) {
 		off_t offset;
-		char * bufoff;
+		char *bufoff;
 
 		offset = lseek(fd, SEEK_END, 0);
 		r = read(fd, buf, 4096);
 		if (r > 0) {
 			if ((bufoff = check_zero(buf, r))) {
-				fprintf(stderr, "non-zero read at offset %p\n",offset + bufoff);
+				fprintf(stderr, "non-zero read at offset %p\n",
+					offset + bufoff);
 				exit(1);
 			}
 		}
 	}
-  return 0;
+	return 0;
 }
 
 #define NUM_AIO 16
@@ -101,9 +103,9 @@ void aiodio_append(char *filename)
 	off_t offset = 0;
 	io_context_t myctx;
 	struct io_event event;
-    struct timespec timeout;
+	struct timespec timeout;
 
-	fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666);
+	fd = open(filename, O_DIRECT | O_WRONLY | O_CREAT, 0666);
 	if (fd < 0) {
 		perror("cannot create file");
 		return;
@@ -138,16 +140,18 @@ void aiodio_append(char *filename)
 		struct iocb *iocbp;
 
 		n = io_getevents(myctx, 1, 1, &event, &timeout);
-                if (n > 0) {
-		  iocbp = (struct iocb *)event.obj;
-
 		if (n > 0) {
-		io_prep_pwrite(iocbp, fd, iocbp->u.c.buf, AIO_SIZE, offset);
-		offset += AIO_SIZE;
-		if ((w = io_submit(myctx, 1, &iocbp)) < 0) {
-			fprintf(stderr, "write %d returned %d\n", i, w);
-		  }
-		 }
+			iocbp = (struct iocb *)event.obj;
+
+			if (n > 0) {
+				io_prep_pwrite(iocbp, fd, iocbp->u.c.buf,
+					       AIO_SIZE, offset);
+				offset += AIO_SIZE;
+				if ((w = io_submit(myctx, 1, &iocbp)) < 0) {
+					fprintf(stderr,
+						"write %d returned %d\n", i, w);
+				}
+			}
 		}
 	}
 }
@@ -159,7 +163,7 @@ int main(int argc, char **argv)
 	int i;
 	char *filename = argv[1];
 
-    printf("Starting aio/dio append test...\n");
+	printf("Starting aio/dio append test...\n");
 
 	for (i = 0; i < num_children; i++) {
 		if ((pid[i] = fork()) == 0) {
@@ -185,5 +189,5 @@ int main(int argc, char **argv)
 		kill(pid[i], SIGTERM);
 	}
 
-  return 0;
+	return 0;
 }

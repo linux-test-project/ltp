@@ -39,9 +39,9 @@
 
 int main()
 {
-        char mqname[NAMESIZE], msgrv[BUFFER];
-        const char *msgptr = "test message ";
-        mqd_t mqdes;
+	char mqname[NAMESIZE], msgrv[BUFFER];
+	const char *msgptr = "test message ";
+	mqd_t mqdes;
 	int prio = 1;
 	int pid;
 	struct mq_attr attr;
@@ -52,49 +52,47 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (mqdes == (mqd_t)-1) {
-                perror(ERROR_PREFIX "mq_open");
+	if (mqdes == (mqd_t) - 1) {
+		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
-        }
+	}
 
 	if ((pid = fork()) != 0) {
 		/* Parent process */
 		int status;
-        	if (mq_receive(mqdes, msgrv, BUFFER, NULL) > 0) {
+		if (mq_receive(mqdes, msgrv, BUFFER, NULL) > 0) {
 			wait(&status);
 			if (status) {
 				printf("mq_send error \n");
 				unresolved = 1;
 			}
-		}
-		else {
-			wait(NULL); /* wait for child to exit */
+		} else {
+			wait(NULL);	/* wait for child to exit */
 			perror(ERROR_PREFIX "mq_receive");
 			failure = 1;
 		}
-        	if (mq_close(mqdes) != 0) {
+		if (mq_close(mqdes) != 0) {
 			perror(ERROR_PREFIX "mq_close");
 			unresolved = 1;
-        	}
-       	 	if (mq_unlink(mqname) != 0) {
+		}
+		if (mq_unlink(mqname) != 0) {
 			perror(ERROR_PREFIX "mq_unlink");
 			unresolved = 1;
 		}
-		if (failure==1) {
-               		printf("Test FAILED\n");
-	                return PTS_FAIL;
-       		}
-	        if (unresolved==1) {
-                	printf("Test UNRESOLVED\n");
-	                return PTS_UNRESOLVED;
-       		}
-	        printf("Test PASSED\n");
-       		return PTS_PASS;
-	}
-	else {
+		if (failure == 1) {
+			printf("Test FAILED\n");
+			return PTS_FAIL;
+		}
+		if (unresolved == 1) {
+			printf("Test UNRESOLVED\n");
+			return PTS_UNRESOLVED;
+		}
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	} else {
 		/*  Child Process */
-		sleep(2); /* sleep 2 seconds,
-			      assume that child will block on waiting then */
+		sleep(2);	/* sleep 2 seconds,
+				   assume that child will block on waiting then */
 		if (mq_send(mqdes, msgptr, strlen(msgptr), prio) == -1) {
 			perror(ERROR_PREFIX "mq_send");
 			return PTS_UNRESOLVED;

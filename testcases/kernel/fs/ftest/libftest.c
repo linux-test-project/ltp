@@ -34,17 +34,19 @@ void ft_dumpiov(struct iovec *iov)
 	tst_resm(TINFO, "\tBuf:");
 
 	nout = 0;
-	idx  = 0;
-	buf  = (char*)iov->iov_base;
-	val  = *((char*) buf);
+	idx = 0;
+	buf = (char *)iov->iov_base;
+	val = *((char *)buf);
 
 	for (i = 0; (unsigned int)i < iov->iov_len; i++) {
 
 		if (buf[i] != val) {
-			if (i == idx+1)
-				tst_resm(TINFO, "\t%"PRIx32"x,", buf[idx] & 0xff);
+			if (i == idx + 1)
+				tst_resm(TINFO, "\t%" PRIx32 "x,",
+					 buf[idx] & 0xff);
 			else
-				tst_resm(TINFO, "\t%d*%"PRIx32"x, ", i-idx, buf[idx] & 0xff);
+				tst_resm(TINFO, "\t%d*%" PRIx32 "x, ", i - idx,
+					 buf[idx] & 0xff);
 			idx = i;
 			++nout;
 		}
@@ -55,10 +57,10 @@ void ft_dumpiov(struct iovec *iov)
 		}
 	}
 
-	if (i == idx+1)
-		tst_resm(TINFO, "\t%"PRIx32"x", buf[idx] & 0xff);
+	if (i == idx + 1)
+		tst_resm(TINFO, "\t%" PRIx32 "x", buf[idx] & 0xff);
 	else
-		tst_resm(TINFO, "\t%d*%"PRIx32"x", i-idx, buf[idx]);
+		tst_resm(TINFO, "\t%d*%" PRIx32 "x", i - idx, buf[idx]);
 }
 
 /*
@@ -71,12 +73,12 @@ void ft_dumpbits(void *bits, size_t size)
 	tst_resm(TINFO, "\tBits array:");
 
 	for (buf = bits; size > 0; --size, ++buf) {
-		tst_resm(TINFO, "\t%td:\t", 8*(buf-bits));
-		if ((buf-bits) % 16 == 0) {
-			assert (0 < (buf-bits));
-			tst_resm(TINFO, "\t%td:\t", 8*(buf-bits));
+		tst_resm(TINFO, "\t%td:\t", 8 * (buf - bits));
+		if ((buf - bits) % 16 == 0) {
+			assert(0 < (buf - bits));
+			tst_resm(TINFO, "\t%td:\t", 8 * (buf - bits));
 		}
-		tst_resm(TINFO, "\t%02"PRIx32"x ", *((char*) buf) & 0xff);
+		tst_resm(TINFO, "\t%02" PRIx32 "x ", *((char *)buf) & 0xff);
 	}
 
 	tst_resm(TINFO, "\t");
@@ -107,10 +109,11 @@ void ft_dumpbuf(char *buf, int csize)
 
 	for (i = 0; i < csize; i++) {
 		if (buf[i] != val) {
-			if (i == idx+1)
+			if (i == idx + 1)
 				tst_resm(TINFO, "\t%x, ", buf[idx] & 0xff);
 			else
-				tst_resm(TINFO, "\t%d*%x, ", i-idx, buf[idx] & 0xff);
+				tst_resm(TINFO, "\t%d*%x, ", i - idx,
+					 buf[idx] & 0xff);
 			idx = i;
 			++nout;
 		}
@@ -120,10 +123,10 @@ void ft_dumpbuf(char *buf, int csize)
 		}
 	}
 
-	if (i == idx+1)
+	if (i == idx + 1)
 		tst_resm(TINFO, "\t%x", buf[idx] & 0xff);
 	else
-		tst_resm(TINFO, "\t%d*%x", i-idx, buf[idx]);
+		tst_resm(TINFO, "\t%d*%x", i - idx, buf[idx]);
 }
 
 /*

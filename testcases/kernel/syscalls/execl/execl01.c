@@ -135,7 +135,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -161,23 +160,23 @@ int main(int ac, char **av)
 			 */
 			exit(errno);
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 			break;
 		default:
 			if (waitpid(pid, &status, 0) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup,
-				    "waitpid failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "waitpid failed");
 			if (WIFEXITED(status)) {
 				if (STD_FUNCTIONAL_TEST) {
 					/* No Verification test, yet... */
 					tst_resm(TPASS,
-					    "execl - properly exec's a simple "
-					    "program..");
+						 "execl - properly exec's a simple "
+						 "program..");
 				}
 			} else {
 				tst_resm(TFAIL,
-				    "child exited abnormally; wait status=%d",
-				    status);
+					 "child exited abnormally; wait status=%d",
+					 status);
 			}
 		}
 
@@ -195,9 +194,9 @@ void setup()
 
 	if (STD_TIMING_ON)
 		tst_resm(TINFO,
-		    "There are NO timing statistics produced by this test.\n"
-		    "This is because the test forks to create a child process "
-		    "which then calls execl.\nThe TEST macro is NOT used.");
+			 "There are NO timing statistics produced by this test.\n"
+			 "This is because the test forks to create a child process "
+			 "which then calls execl.\nThe TEST macro is NOT used.");
 
 	TEST_PAUSE;
 

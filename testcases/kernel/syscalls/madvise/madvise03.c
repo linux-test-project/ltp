@@ -88,27 +88,28 @@ int main(int argc, char *argv[])
 		   [32 * 1280 = 40960] */
 		for (i = 0; i < 1280; i++)
 			if (write(fd, str_for_file, strlen(str_for_file)) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "write failed");
 
 		if (fstat(fd, &stat) == -1)
 			tst_brkm(TBROK, cleanup, "fstat failed");
 
 		file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
 		if (file == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 
 		/* Allocate shared memory segment */
 		shm_size = get_shmmax();
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
-		shmid1 = shmget(IPC_PRIVATE, min(1024*1024, shm_size),
-				IPC_CREAT|IPC_EXCL|0701);
+		shmid1 = shmget(IPC_PRIVATE, min(1024 * 1024, shm_size),
+				IPC_CREAT | IPC_EXCL | 0701);
 		if (shmid1 == -1)
 			tst_brkm(TBROK, cleanup, "shmget failed");
 
 		/* Attach shared memory segment to an address selected by the system */
 		addr1 = shmat(shmid1, NULL, 0);
-		if (addr1 == (void *) -1)
+		if (addr1 == (void *)-1)
 			tst_brkm(TBROK, cleanup, "shmat error");
 
 		/* (1) Test case for MADV_REMOVE */
@@ -125,7 +126,7 @@ int main(int argc, char *argv[])
 
 		/* Finally Unmapping the whole file */
 		if (munmap(file, stat.st_size) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "munmap failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "munmap failed");
 
 		close(fd);
 	}
@@ -148,8 +149,8 @@ static void cleanup(void)
 {
 	if (shmid1 != -1)
 		if (shmctl(shmid1, IPC_RMID, 0) < 0)
-			tst_resm(TBROK|TERRNO,
-			    "shmctl(.., IPC_RMID, ..) failed");
+			tst_resm(TBROK | TERRNO,
+				 "shmctl(.., IPC_RMID, ..) failed");
 
 	TEST_CLEANUP;
 
@@ -171,7 +172,7 @@ static void check_and_print(char *advice)
 static long get_shmmax(void)
 {
 	long maxsize;
-	
+
 	SAFE_FILE_SCANF(cleanup, "/proc/sys/kernel/shmmax", "%ld", &maxsize);
 
 	return maxsize;
@@ -181,6 +182,6 @@ int main(void)
 {
 	/* "Requires 2.6.16+" were the original comments */
 	tst_brkm(TCONF, NULL,
-	    "this system doesn't have required madvise support");
+		 "this system doesn't have required madvise support");
 }
 #endif

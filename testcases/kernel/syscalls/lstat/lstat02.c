@@ -189,7 +189,8 @@ int main(int ac, char **av)
 
 			/* Check return code from lstat(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "lstat(2) returned %ld, expected"
+				tst_resm(TFAIL,
+					 "lstat(2) returned %ld, expected"
 					 " -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 				continue;

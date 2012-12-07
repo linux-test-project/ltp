@@ -69,9 +69,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "mq_open01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+char *TCID = "mq_open01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -91,7 +91,8 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-void cleanup(void) {
+void cleanup(void)
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -115,7 +116,8 @@ void cleanup(void) {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
@@ -141,7 +143,7 @@ struct test_case {
 	char *user;
 	char *qname;
 	int oflag;
-	long mq_maxmsg;	 // Maximum numebr of messages.
+	long mq_maxmsg;		// Maximum numebr of messages.
 	long mq_msgsize;	// Maximum message size.
 	int ret;
 	int err;
@@ -169,86 +171,86 @@ struct test_case {
 
 static struct test_case tcase[] = {
 #if 1
-	{ // case00
-		.ttype	  = NORMAL,
-		.qname	  = QUEUE_NAME,
-		.oflag	  = O_CREAT,
-		.mq_maxmsg      = 20,
-		.mq_msgsize     = 16384,
-		.ret	    = 0,
-		.err	    = 0,
-	},
+	{			// case00
+	 .ttype = NORMAL,
+	 .qname = QUEUE_NAME,
+	 .oflag = O_CREAT,
+	 .mq_maxmsg = 20,
+	 .mq_msgsize = 16384,
+	 .ret = 0,
+	 .err = 0,
+	 },
 #else
-	{ // case00
-		.ttype	  = NORMAL,
-		.qname	  = QUEUE_NAME,
-		.oflag	  = O_CREAT,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case01
-		.ttype	  = NORMAL,
-				//  0	 1	 2	 3
-				//  0123456789012345678901234567890123456789
-				   "aaaaaaaaaaaaaaa",
-		.oflag	  = O_CREAT,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case02
-		.ttype	  = NORMAL,
-				//  0	 1	 2	 3
-				//  0123456789012345678901234567890123456789
-				   "aaaaaaaaaaaaaaaa",
-		.oflag	  = O_CREAT,
-		.ret	    = -1,
-		.err	    = ENAMETOOLONG,
-	},
+	{			// case00
+	 .ttype = NORMAL,
+	 .qname = QUEUE_NAME,
+	 .oflag = O_CREAT,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case01
+	 .ttype = NORMAL,
+	 //  0    1       2       3
+	 //  0123456789012345678901234567890123456789
+	 "aaaaaaaaaaaaaaa",
+	 .oflag = O_CREAT,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case02
+	 .ttype = NORMAL,
+	 //  0    1       2       3
+	 //  0123456789012345678901234567890123456789
+	 "aaaaaaaaaaaaaaaa",
+	 .oflag = O_CREAT,
+	 .ret = -1,
+	 .err = ENAMETOOLONG,
+	 },
 
-	{ // case03
-		.ttype	  = NORMAL,
-		.qname	  = "",
-		.oflag	  = O_CREAT,
-		.ret	    = -1,
-		.err	    = EINVAL,
-	},
-	{ // case04
-		.ttype	  = NORMAL,
-		.user	   = "nobody",
-		.qname	  = QUEUE_NAME,
-		.ret	    = -1,
-		.err	    = EACCES,
-	},
-	{ // case05
-		.ttype	  = NORMAL,
-		.qname	  = QUEUE_NAME,
-		.oflag	  = O_CREAT|O_EXCL,
-		.ret	    = -1,
-		.err	    = EEXIST,
-	},
-	{ // case06
-		.ttype	  = NO_FILE,
-		.qname	  = QUEUE_NAME,
-		.oflag	  = O_CREAT,
-		.ret	    = -1,
-		.err	    = EMFILE,
-	},
-	{ // case07
-		.ttype	  = NORMAL,
-		.qname	  = "/notexist",
-		.oflag	  = 0,
-		.ret	    = -1,
-		.err	    = ENOENT,
-	},
+	{			// case03
+	 .ttype = NORMAL,
+	 .qname = "",
+	 .oflag = O_CREAT,
+	 .ret = -1,
+	 .err = EINVAL,
+	 },
+	{			// case04
+	 .ttype = NORMAL,
+	 .user = "nobody",
+	 .qname = QUEUE_NAME,
+	 .ret = -1,
+	 .err = EACCES,
+	 },
+	{			// case05
+	 .ttype = NORMAL,
+	 .qname = QUEUE_NAME,
+	 .oflag = O_CREAT | O_EXCL,
+	 .ret = -1,
+	 .err = EEXIST,
+	 },
+	{			// case06
+	 .ttype = NO_FILE,
+	 .qname = QUEUE_NAME,
+	 .oflag = O_CREAT,
+	 .ret = -1,
+	 .err = EMFILE,
+	 },
+	{			// case07
+	 .ttype = NORMAL,
+	 .qname = "/notexist",
+	 .oflag = 0,
+	 .ret = -1,
+	 .err = ENOENT,
+	 },
 
-	{ // case08
-		.ttype	  = NO_SPACE,
-		.user	   = "nobody",
-		.qname	  = QUEUE_NAME,
-		.oflag	  = O_CREAT,
-		.ret	    = -1,
-		.err	    = ENOSPC,
-	},
+	{			// case08
+	 .ttype = NO_SPACE,
+	 .user = "nobody",
+	 .qname = QUEUE_NAME,
+	 .oflag = O_CREAT,
+	 .ret = -1,
+	 .err = ENOSPC,
+	 },
 #endif
 };
 
@@ -271,7 +273,7 @@ static int do_test(struct test_case *tc)
 	int oldval = -1;
 	struct mq_attr new, old, *p_attr;
 
-	 /*
+	/*
 	 * When test ended with SIGTERM etc, mq discriptor is left remains.
 	 * So we delete it first.
 	 */
@@ -283,7 +285,9 @@ static int do_test(struct test_case *tc)
 
 	if (tc->ttype != NO_SPACE && !(tc->oflag & O_CREAT)) {
 		errno = 0;
-		TEST(sys_ret = mq_open(QUEUE_NAME, O_CREAT|O_EXCL|O_RDWR, S_IRWXU, NULL));
+		TEST(sys_ret =
+		     mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU,
+			     NULL));
 		sys_errno = errno;
 		if (sys_ret < 0)
 			goto TEST_END;
@@ -319,7 +323,7 @@ static int do_test(struct test_case *tc)
 		}
 	}
 
-	 /*
+	/*
 	 * Execute system call
 	 */
 	//tst_resm(TINFO,"PATH_MAX: %d\n", PATH_MAX);
@@ -343,14 +347,18 @@ static int do_test(struct test_case *tc)
 	if (p_attr) {
 		TEST(rc = syscall(__NR_mq_getsetattr, fd2, NULL, &old));
 		if (TEST_RETURN < 0) {
-		 	tst_resm(TFAIL, "mq_getsetattr failed - errno = %d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL,
+				 "mq_getsetattr failed - errno = %d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
 			result = 1;
 			goto EXIT;
 		}
-		tst_resm(TINFO,"mq_maxmsg E:%ld,\tR:%ld",new.mq_maxmsg, old.mq_maxmsg);
-		tst_resm(TINFO,"mq_msgsize E:%ld,\tR:%ld",new.mq_msgsize, old.mq_msgsize);
-		cmp_ok = old.mq_maxmsg == new.mq_maxmsg &&
-			 old.mq_msgsize == new.mq_msgsize;
+		tst_resm(TINFO, "mq_maxmsg E:%ld,\tR:%ld", new.mq_maxmsg,
+			 old.mq_maxmsg);
+		tst_resm(TINFO, "mq_msgsize E:%ld,\tR:%ld", new.mq_msgsize,
+			 old.mq_msgsize);
+		cmp_ok = old.mq_maxmsg == new.mq_maxmsg
+		    && old.mq_msgsize == new.mq_msgsize;
 	}
 
 TEST_END:
@@ -358,7 +366,8 @@ TEST_END:
 	 * Check results
 	 */
 	result |= (sys_errno != tc->err) || !cmp_ok;
-	PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno,cmp_ok);
+	PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno,
+			 cmp_ok);
 
 EXIT:
 	if (tc->user != NULL && old_uid != -1)
@@ -385,7 +394,8 @@ EXIT:
  * main()
  */
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int result = RESULT_OK;
 	int i;
 	int lc;
@@ -402,27 +412,28 @@ int main(int ac, char **av) {
 
 			/*
 			 * Execute test
-	 		 */
-			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+			 */
+			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0]));
+			     i++) {
 				int ret;
 				tst_resm(TINFO, "(case%02d) START", i);
 				ret = do_test(&tcase[i]);
 				tst_resm(TINFO, "(case%02d) END => %s", i,
-					(ret == 0) ? "OK" : "NG");
+					 (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
 
 			/*
 			 * Check results
-	 		 */
-			switch(result) {
+			 */
+			switch (result) {
 			case RESULT_OK:
 				tst_resm(TPASS, "mq_open call succeeded ");
 				break;
 
 			default:
-			   	tst_brkm(TFAIL|TTERRNO, cleanup,
-					"mq_open failed");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "mq_open failed");
 				break;
 			}
 

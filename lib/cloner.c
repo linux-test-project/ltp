@@ -23,24 +23,24 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <unistd.h> /* fork, getpid, sleep */
+#include <unistd.h>		/* fork, getpid, sleep */
 #include <string.h>
-#include <stdlib.h> /* exit */
-#include <sched.h> /* clone */
+#include <stdlib.h>		/* exit */
+#include <sched.h>		/* clone */
 #include "test.h"
 
-#undef clone /* we want to use clone() */
+#undef clone			/* we want to use clone() */
 
 /* copied from several other files under ltp */
 #if defined (__s390__) || (__s390x__)
 #define clone __clone
-extern int __clone(int(void*),void*,int,void*);
+extern int __clone(int (void *), void *, int, void *);
 #elif defined(__ia64__)
 #define clone2 __clone2
 /* Prototype provided by David Mosberger				*/
-extern int  __clone2(int (*fn) (void *arg), void *child_stack_base,
-		size_t child_stack_size, int flags, void *arg,
-		pid_t *parent_tid, void *tls, pid_t *child_tid);
+extern int __clone2(int (*fn) (void *arg), void *child_stack_base,
+		    size_t child_stack_size, int flags, void *arg,
+		    pid_t * parent_tid, void *tls, pid_t * child_tid);
 #endif
 
 /***********************************************************************
@@ -50,8 +50,8 @@ extern int  __clone2(int (*fn) (void *arg), void *child_stack_base,
  *   3. all others take top of stack (stack grows down)
  ***********************************************************************/
 int
-ltp_clone(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
-		size_t stack_size, void *stack)
+ltp_clone(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
+	  size_t stack_size, void *stack)
 {
 	int ret;
 
@@ -64,8 +64,7 @@ ltp_clone(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
 	 * For archs where stack grows downwards, stack points to the topmost
 	 * address of the memory space set up for the child stack.
 	 */
-	ret = clone(fn, (stack ? stack + stack_size : NULL),
-			clone_flags, arg);
+	ret = clone(fn, (stack ? stack + stack_size : NULL), clone_flags, arg);
 #endif
 
 	return ret;
@@ -76,8 +75,8 @@ ltp_clone(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
  * caller-specified size.
  ***********************************************************************/
 int
-ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
-		size_t stack_size)
+ltp_clone_malloc(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
+		 size_t stack_size)
 {
 	void *stack;
 	int ret;
@@ -102,8 +101,7 @@ ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
  * Experience thus far suggests that one page is often insufficient,
  * while 6*getpagesize() seems adequate.
  ***********************************************************************/
-int
-ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg), void *arg)
+int ltp_clone_quick(unsigned long clone_flags, int (*fn) (void *arg), void *arg)
 {
 	size_t stack_size = getpagesize() * 6;
 

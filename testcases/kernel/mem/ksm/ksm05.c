@@ -98,23 +98,23 @@ int main(int argc, char *argv[])
 
 		switch (pid = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
 			if (posix_memalign(&ptr, ps, ps) < 0)
-				tst_brkm(TBROK|TERRNO, cleanup,
-						"posix_memalign");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "posix_memalign");
 			if (madvise(ptr, ps, MADV_MERGEABLE) < 0)
-				tst_brkm(TBROK|TERRNO, cleanup, "madvise");
-			*(char *)NULL = 0; /* SIGSEGV occurs as expected. */
+				tst_brkm(TBROK | TERRNO, cleanup, "madvise");
+			*(char *)NULL = 0;	/* SIGSEGV occurs as expected. */
 			exit(0);
 		default:
 			break;
 		}
-		if (waitpid(pid, &status, WUNTRACED|WCONTINUED) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+		if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_brkm(TBROK, cleanup,
-					"invalid signal received: %d", status);
+				 "invalid signal received: %d", status);
 	}
 
 	tst_resm(TPASS, "still alive.");
@@ -135,9 +135,9 @@ static void write_ksm_run(int val)
 	sprintf(buf, "%d", val);
 	fd = open(PATH_KSM "run", O_WRONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
+		tst_brkm(TBROK | TERRNO, cleanup, "open");
 	if (write(fd, buf, 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "write");
+		tst_brkm(TBROK | TERRNO, cleanup, "write");
 	close(fd);
 }
 
@@ -157,9 +157,9 @@ void setup(void)
 	/* save original /sys/kernel/mm/ksm/run value */
 	fd = open(PATH_KSM "run", O_RDONLY);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
+		tst_brkm(TBROK | TERRNO, cleanup, "open");
 	if (read(fd, buf, 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "read");
+		tst_brkm(TBROK | TERRNO, cleanup, "read");
 	close(fd);
 	ksm_run_orig = atoi(buf);
 

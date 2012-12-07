@@ -68,11 +68,17 @@ void usage(void)
 {
 	rt_help();
 	printf("hrtimer-prio specific options:\n");
-	printf("  -t#	   #:busy work time in ms, defaults to %d ms\n", DEF_BUSY_TIME);
-	printf("  -i#	   #:number of iterations, defaults to %d\n", DEF_ITERATIONS);
+	printf("  -t#	   #:busy work time in ms, defaults to %d ms\n",
+	       DEF_BUSY_TIME);
+	printf("  -i#	   #:number of iterations, defaults to %d\n",
+	       DEF_ITERATIONS);
 	printf("  -n#	   #:number of busy threads, defaults to NR_CPUS*2\n");
-	printf("  -f#	   #:rt fifo priority of busy threads (1,98), defaults to %d\n", DEF_MED_PRIO);
-	printf("  -m#	   #:maximum timer latency in microseconds, defaults to %d\n", DEF_CRITERIA);
+	printf
+	    ("  -f#	   #:rt fifo priority of busy threads (1,98), defaults to %d\n",
+	     DEF_MED_PRIO);
+	printf
+	    ("  -m#	   #:maximum timer latency in microseconds, defaults to %d\n",
+	     DEF_CRITERIA);
 }
 
 int parse_args(int c, char *v)
@@ -80,30 +86,31 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		case 't':
-			busy_time = atoi(v);
-			break;
-		case 'n':
-			busy_threads = atoi(v);
-			break;
-		case 'f':
-			med_prio = MIN(atoi(v), 98);
-			break;
-		case 'i':
-			iterations = atoi(v);
-			if (iterations < 100) {
-				fprintf(stderr, "Number of iterations cannot be less than 100.\n");
-				exit(1);
-			}
+	case 'h':
+		usage();
+		exit(0);
+	case 't':
+		busy_time = atoi(v);
+		break;
+	case 'n':
+		busy_threads = atoi(v);
+		break;
+	case 'f':
+		med_prio = MIN(atoi(v), 98);
+		break;
+	case 'i':
+		iterations = atoi(v);
+		if (iterations < 100) {
+			fprintf(stderr,
+				"Number of iterations cannot be less than 100.\n");
+			exit(1);
+		}
 		break;
 	default:
 		handled = 0;
 		break;
-}
-return handled;
+	}
+	return handled;
 }
 
 void *busy_thread(void *thread)
@@ -121,18 +128,17 @@ void *timer_thread(void *thread)
 	int i;
 	nsec_t start, end;
 	unsigned long delta_us;
-	while (atomic_get(&busy_threads_started) < busy_threads)
-	{
+	while (atomic_get(&busy_threads_started) < busy_threads) {
 		rt_nanosleep(10000);
 	}
-	printf("All Busy Threads started, commencing test\n"); // FIXME: use debug infrastructure
+	printf("All Busy Threads started, commencing test\n");	// FIXME: use debug infrastructure
 	max_delta = 0;
-	for (i = 0; i < iterations; i++)
-	{
+	for (i = 0; i < iterations; i++) {
 		start = rt_gettime();
 		rt_nanosleep(DEF_SLEEP_TIME);
 		end = rt_gettime();
-		delta_us = ((unsigned long)(end - start) - DEF_SLEEP_TIME)/NS_PER_US;
+		delta_us =
+		    ((unsigned long)(end - start) - DEF_SLEEP_TIME) / NS_PER_US;
 		rec.x = i;
 		rec.y = delta_us;
 		stats_container_append(&dat, rec);
@@ -149,16 +155,16 @@ int main(int argc, char *argv[])
 	float avg_delta;
 	int t_id;
 	setup();
-	busy_threads = 2 * sysconf(_SC_NPROCESSORS_ONLN); // default busy_threads
+	busy_threads = 2 * sysconf(_SC_NPROCESSORS_ONLN);	// default busy_threads
 	pass_criteria = DEF_CRITERIA;
 	rt_init("f:i:jhn:t:", parse_args, argc, argv);
 	high_prio = med_prio + 1;
 
 	// Set main()'s prio to one above the timer_thread so it is sure to not
 	// be starved
-	if (set_priority(high_prio+1) < 0)
-	{
-		printf("Failed to set main()'s priority to %d\n", high_prio+1);
+	if (set_priority(high_prio + 1) < 0) {
+		printf("Failed to set main()'s priority to %d\n",
+		       high_prio + 1);
 		exit(1);
 	}
 
@@ -191,8 +197,7 @@ int main(int argc, char *argv[])
 		printf("Failed to create timer thread\n");
 		exit(1);
 	}
-	for (b = 0; b < busy_threads; b++)
-	{
+	for (b = 0; b < busy_threads; b++) {
 		if (create_fifo_thread(busy_thread, NULL, med_prio) < 0) {
 			printf("Failed to create a busy thread\n");
 			exit(1);
@@ -202,10 +207,11 @@ int main(int argc, char *argv[])
 
 	avg_delta = stats_avg(&dat);
 	stats_hist(&hist, &dat);
-	stats_container_save("samples", "High Resolution Timer Latency Scatter Plot",\
-			"Iteration", "Latency (us)", &dat, "points");
-	stats_container_save("hist", "High Resolution Timer Latency Histogram",\
-			"Latency (us)", "Samples", &hist, "steps");
+	stats_container_save("samples",
+			     "High Resolution Timer Latency Scatter Plot",
+			     "Iteration", "Latency (us)", &dat, "points");
+	stats_container_save("hist", "High Resolution Timer Latency Histogram",
+			     "Latency (us)", "Samples", &hist, "steps");
 
 	if (max_delta <= pass_criteria)
 		ret = 0;
@@ -217,7 +223,8 @@ int main(int argc, char *argv[])
 	printf("Quantiles:\n");
 	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
-	printf("\nCriteria: Maximum wakeup latency < %lu us\n", (unsigned long)pass_criteria);
+	printf("\nCriteria: Maximum wakeup latency < %lu us\n",
+	       (unsigned long)pass_criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
 
 	return ret;

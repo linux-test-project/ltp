@@ -75,8 +75,8 @@ static char *ltp_user = "nobody";
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 struct test_case_t {
@@ -86,14 +86,14 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EACCES - child has no read permission for segment */
-	{ &shm_id_1,	IPC_STAT,	&buf,	EACCES },
-
-	/* EPERM - IPC_SET - child doesn't have permission to change segment */
-	{ &shm_id_1,	IPC_SET,	&buf,	EPERM },
-
-	/* EPERM - IPC_RMID - child can not remove the segment */
-	{ &shm_id_1,	IPC_RMID,	&buf,	EPERM },
-};
+	{
+	&shm_id_1, IPC_STAT, &buf, EACCES},
+	    /* EPERM - IPC_SET - child doesn't have permission to change segment */
+	{
+	&shm_id_1, IPC_SET, &buf, EPERM},
+	    /* EPERM - IPC_RMID - child can not remove the segment */
+	{
+&shm_id_1, IPC_RMID, &buf, EPERM},};
 
 static void do_child(void);
 
@@ -113,16 +113,16 @@ int main(int ac, char **av)
 
 	switch (pid = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
 		/* set  the user ID of the child to the non root user */
 		if (setuid(ltp_uid) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "setuid");
+			tst_brkm(TBROK | TERRNO, cleanup, "setuid");
 		do_child();
 		tst_exit();
 	default:
 		if (waitpid(pid, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 	}
 	cleanup();
 	tst_exit();
@@ -139,16 +139,16 @@ static void do_child(void)
 			TEST(shmctl(*(TC[i].shmid), TC[i].cmd, TC[i].sbuf));
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "shmctl succeeded "
-						"unexpectedly");
+					 "unexpectedly");
 				continue;
 			}
 			if (TEST_ERRNO == TC[i].error)
-				tst_resm(TPASS|TTERRNO, "shmctl failed "
-					    "as expected");
+				tst_resm(TPASS | TTERRNO, "shmctl failed "
+					 "as expected");
 			else
-				tst_resm(TFAIL|TTERRNO, "shmctl failed "
-					    "unexpectedly - expect errno = "
-					    "%d, got", TC[i].error);
+				tst_resm(TFAIL | TTERRNO, "shmctl failed "
+					 "unexpectedly - expect errno = "
+					 "%d, got", TC[i].error);
 		}
 	}
 }
@@ -169,9 +169,9 @@ void setup(void)
 	update_shm_size(&shm_size);
 	shmkey = getipckey();
 	shm_id_1 = shmget(shmkey, shm_size,
-		    SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW);
+			  SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
 	if (shm_id_1 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget");
 
 	/* get the userid for a non root user */
 	ltp_uid = getuserid(ltp_user);

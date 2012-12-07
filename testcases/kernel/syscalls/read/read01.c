@@ -134,6 +134,7 @@ char *TCID = "read01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { 0, 0 };
+
 char fname[255];
 int fd, i;
 int offset = 0;

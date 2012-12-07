@@ -32,9 +32,10 @@ int main()
 
 	/* Initialize the rwlock */
 	rc = pthread_rwlock_init(&rwlock, NULL);
-	if (rc != 0)
-	{
-		printf("Test FAILED: Error at pthread_rwlock_init(), returns %d\n", rc);
+	if (rc != 0) {
+		printf
+		    ("Test FAILED: Error at pthread_rwlock_init(), returns %d\n",
+		     rc);
 		return PTS_FAIL;
 	}
 
@@ -42,23 +43,22 @@ int main()
 	rc = pthread_rwlock_init(&rwlock, NULL);
 
 	/* Cleanup */
-	if (pthread_rwlock_destroy(&rwlock) != 0)
-	{
+	if (pthread_rwlock_destroy(&rwlock) != 0) {
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (rc == EBUSY)
-	{
+	if (rc == EBUSY) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if (rc == 0)
-	{
-		printf("Test PASSED: Note*: pthread_rwlock_init() returned 0 instead of EBUSY, but standard specifies _may_ fail\n");
+	} else if (rc == 0) {
+		printf
+		    ("Test PASSED: Note*: pthread_rwlock_init() returned 0 instead of EBUSY, but standard specifies _may_ fail\n");
 		return PTS_PASS;
-	} else
-	{
-		printf("Test FAILED: Error at pthread_rwlock_init(), should return 0 or EBUSY, but returns %d\n", rc);
+	} else {
+		printf
+		    ("Test FAILED: Error at pthread_rwlock_init(), should return 0 or EBUSY, but returns %d\n",
+		     rc);
 		return PTS_FAIL;
 	}
 

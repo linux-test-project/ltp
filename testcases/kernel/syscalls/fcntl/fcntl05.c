@@ -151,11 +151,11 @@ int main(int ac, char **av)
 		TEST(fcntl(fd, F_GETLK, &flocks));
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "fcntl failed");
+			tst_resm(TFAIL | TTERRNO, "fcntl failed");
 		else {
 			if (STD_FUNCTIONAL_TEST)
 				tst_resm(TPASS, "fcntl returned %ld",
-				    TEST_RETURN);
+					 TEST_RETURN);
 		}
 
 	}
@@ -176,7 +176,7 @@ void setup()
 
 	sprintf(fname, "tfile_%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
 	/* set needed flags in the flocks structure */
 	flocks.l_whence = 1;
@@ -190,7 +190,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (close(fd) == -1)
-		tst_resm(TWARN|TERRNO, "close failed");
+		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
 

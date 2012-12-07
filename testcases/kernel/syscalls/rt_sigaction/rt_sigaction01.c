@@ -60,9 +60,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "rt_sigaction01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "rt_sigaction01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -82,7 +82,8 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-void cleanup() {
+void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -107,25 +108,28 @@ void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-int test_flags[] = {SA_RESETHAND|SA_SIGINFO, SA_RESETHAND, SA_RESETHAND|SA_SIGINFO, SA_RESETHAND|SA_SIGINFO, SA_NOMASK};
-char *test_flags_list[] = {"SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND", "SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND|SA_SIGINFO", "SA_NOMASK"};
+int test_flags[] =
+    { SA_RESETHAND | SA_SIGINFO, SA_RESETHAND, SA_RESETHAND | SA_SIGINFO,
+SA_RESETHAND | SA_SIGINFO, SA_NOMASK };
+char *test_flags_list[] =
+    { "SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND", "SA_RESETHAND|SA_SIGINFO",
+"SA_RESETHAND|SA_SIGINFO", "SA_NOMASK" };
 
-void
-handler(int sig)
+void handler(int sig)
 {
 	tst_resm(TINFO, "Signal Handler Called with signal number %d\n", sig);
 	return;
 }
 
-int
-set_handler(int sig, int sig_to_mask, int mask_flags)
+int set_handler(int sig, int sig_to_mask, int mask_flags)
 {
 #ifdef __x86_64__
 	struct kernel_sigaction sa, oldaction;
@@ -140,11 +144,12 @@ set_handler(int sig, int sig_to_mask, int mask_flags)
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, sig);
 
-	return syscall(__NR_rt_sigaction, sig, &sa, &oldaction,SIGSETSIZE);
+	return syscall(__NR_rt_sigaction, sig, &sa, &oldaction, SIGSETSIZE);
 
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int signal, flag;
 	int lc;
 	char *msg;
@@ -161,32 +166,41 @@ int main(int ac, char **av) {
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++) {//signal for 34 to 65
+			for (signal = SIGRTMIN; signal <= (SIGRTMAX); signal++) {	//signal for 34 to 65
 
 #ifdef __x86_64__
 				sig_initial(signal);
 #endif
 
-				for (flag = 0; flag < (sizeof(test_flags) / sizeof(test_flags[0])); flag++) {
+				for (flag = 0;
+				     flag <
+				     (sizeof(test_flags) /
+				      sizeof(test_flags[0])); flag++) {
 
-					TEST(set_handler(signal, 0, test_flags[flag]));
+					TEST(set_handler
+					     (signal, 0, test_flags[flag]));
 
 					if (TEST_RETURN == 0) {
-						tst_resm(TINFO,"signal: %d ", signal);
-						tst_resm(TPASS, "rt_sigaction call succeeded: result = %ld ",TEST_RETURN );
-						tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
-						kill(getpid(),signal);
+						tst_resm(TINFO, "signal: %d ",
+							 signal);
+						tst_resm(TPASS,
+							 "rt_sigaction call succeeded: result = %ld ",
+							 TEST_RETURN);
+						tst_resm(TINFO,
+							 "sa.sa_flags = %s ",
+							 test_flags_list[flag]);
+						kill(getpid(), signal);
 					} else {
-	         	   			tst_resm(TFAIL | TTERRNO,
-							"rt_sigaction call "
-							"failed");
-	               			}
+						tst_resm(TFAIL | TTERRNO,
+							 "rt_sigaction call "
+							 "failed");
+					}
 
-	        		}
+				}
 
 			}
 
-	        }
+		}
 
 	}
 	cleanup();

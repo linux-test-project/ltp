@@ -130,9 +130,10 @@ int main(int ac, char **av)
 			if ((TEST_RETURN == 0) && (verify_priority(i))) {
 				tst_resm(TPASS, "%s Passed", testcases[i].desc);
 			} else {
-				tst_resm(TFAIL|TTERRNO, "%s Failed. sched_setparam()"
-					 " returned %ld",
-					 testcases[i].desc, TEST_RETURN);
+				tst_resm(TFAIL | TTERRNO,
+					 "%s Failed. sched_setparam()"
+					 " returned %ld", testcases[i].desc,
+					 TEST_RETURN);
 			}
 		}
 	}

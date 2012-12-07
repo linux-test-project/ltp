@@ -172,7 +172,7 @@ void setup()
 		tst_brkm(TBROK, cleanup, "getpwname(nobody_uid) failed ");
 	}
 	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "seteuid to nobody failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "seteuid to nobody failed");
 	}
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -182,19 +182,19 @@ void setup()
 	tst_tmpdir();
 
 	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
 			 TESTFILE, FILE_MODE);
 	}
 
 	if (close(fd) == -1) {
-		tst_resm(TWARN|TERRNO, "close(%s) failed", TESTFILE);
+		tst_resm(TWARN | TERRNO, "close(%s) failed", TESTFILE);
 	}
 
 	/* Create a symlink of testfile under temporary directory */
 	if (symlink(TESTFILE, SYMFILE) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "symlink(%s, %s) failed",
-		    TESTFILE, SYMFILE);
+		tst_brkm(TBROK | TERRNO, cleanup, "symlink(%s, %s) failed",
+			 TESTFILE, SYMFILE);
 	}
 
 	/* Get the strlen of testfile */

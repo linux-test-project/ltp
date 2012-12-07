@@ -23,7 +23,8 @@
 #define FUNCTION "sem_post"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main() {
+int main()
+{
 	sem_t *mysemp;
 	char semname[28];
 

@@ -36,7 +36,7 @@ int main()
 	attr.mq_maxmsg = MAXMSG;
 	attr.mq_msgsize = MSGSIZE;
 	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (queue == (mqd_t) -1) {
+	if (queue == (mqd_t) - 1) {
 		perror("mq_open() did not return success");
 		printf("Test FAILED\n");
 		return PTS_FAIL;

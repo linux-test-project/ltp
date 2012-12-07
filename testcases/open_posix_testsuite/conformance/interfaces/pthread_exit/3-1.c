@@ -39,9 +39,9 @@ void destructor(void *tmp)
 /* Thread's function. */
 void *a_thread_func(void *tmp)
 {
-	pthread_key_t    key;
-	int              value = 1;
-	int              rc = 0;
+	pthread_key_t key;
+	int value = 1;
+	int rc = 0;
 
 	rc = pthread_key_create(&key, destructor);
 	if (rc != 0) {
@@ -62,7 +62,7 @@ void *a_thread_func(void *tmp)
 int main()
 {
 	pthread_t new_th;
-	int       rc = 0;
+	int rc = 0;
 
 	/* Create a new thread. */
 	rc = pthread_create(&new_th, NULL, a_thread_func, NULL);

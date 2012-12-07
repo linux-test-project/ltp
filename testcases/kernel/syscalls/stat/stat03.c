@@ -296,25 +296,25 @@ int setup1()
 	/* Creat a test directory */
 	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-	 }
+	}
 
 	/* Creat a test file under above test directory */
 	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 }
+	}
 	/* Close the test file */
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 }
+	}
 
 	/* Modify mode permissions on test directory */
 	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	 }
+	}
 	return 0;
 }
 
@@ -336,13 +336,13 @@ int setup2()
 		tst_brkm(TBROK, cleanup,
 			 "open(2) on t_file failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 }
+	}
 	/* Close the test file created above */
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(t_file) Failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 }
+	}
 	return 0;
 }
 

@@ -63,8 +63,7 @@ int TST_CNT = 0;
 	((unsigned char *)&addr)[2], \
 	((unsigned char *)&addr)[3]
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int svr_sk, clt_sk1, clt_sk2, peeloff_sk;
 	sctp_assoc_t svr_associd1, svr_associd2, clt_associd1, clt_associd2;
@@ -79,7 +78,8 @@ main(int argc, char *argv[])
 	struct sockaddr_in clt_loop1[NUMADDR];
 	struct sockaddr_in clt_loop2[NUMADDR];
 	struct sockaddr_in clt_loop3[NUMADDR];
-	sockaddr_storage_t svr_test[NUMADDR], clt_test1[NUMADDR], clt_test2[NUMADDR];
+	sockaddr_storage_t svr_test[NUMADDR], clt_test1[NUMADDR],
+	    clt_test2[NUMADDR];
 
 	/* Rather than fflush() throughout the code, set stdout to
 	 * be unbuffered.
@@ -95,11 +95,12 @@ main(int argc, char *argv[])
 		svr_test[i].v4.sin_addr.s_addr = SCTP_IP_LOOPBACK_I(i);
 		svr_test[i].v4.sin_port = htons(SCTP_TESTPORT_1);
 		svr_try[i].sin_family = AF_INET;
-		if (i < (NUMADDR-1)) {
+		if (i < (NUMADDR - 1)) {
 			svr_try[i].sin_addr.s_addr = SCTP_IP_LOOPBACK_I(i);
 		} else {
 			/* Make last address invalid. */
-			svr_try[i].sin_addr.s_addr = SCTP_IP_LOOPBACK_I(i + 0x400);
+			svr_try[i].sin_addr.s_addr =
+			    SCTP_IP_LOOPBACK_I(i + 0x400);
 		}
 		svr_try[i].sin_port = htons(SCTP_TESTPORT_1);
 		clt_loop1[i].sin_family = AF_INET;
@@ -110,19 +111,19 @@ main(int argc, char *argv[])
 		clt_test1[i].v4.sin_port = htons(SCTP_TESTPORT_2);
 		clt_loop2[i].sin_family = AF_INET;
 		clt_loop2[i].sin_addr.s_addr = SCTP_IP_LOOPBACK_I(i + 0x200);
-		clt_loop2[i].sin_port = htons(SCTP_TESTPORT_2+1);
+		clt_loop2[i].sin_port = htons(SCTP_TESTPORT_2 + 1);
 		clt_test2[i].v4.sin_family = AF_INET;
 		clt_test2[i].v4.sin_addr.s_addr = SCTP_IP_LOOPBACK_I(i + 0x200);
-		clt_test2[i].v4.sin_port = htons(SCTP_TESTPORT_2+1);
+		clt_test2[i].v4.sin_port = htons(SCTP_TESTPORT_2 + 1);
 		clt_loop3[i].sin_family = AF_INET;
 		clt_loop3[i].sin_addr.s_addr = SCTP_IP_LOOPBACK_I(i + 0x300);
-		clt_loop3[i].sin_port = htons(SCTP_TESTPORT_2+2);
+		clt_loop3[i].sin_port = htons(SCTP_TESTPORT_2 + 2);
 	}
 
 	/* Create and bind the server socket.  */
 	svr_sk = test_socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
 	test_bind(svr_sk, (struct sockaddr *)&svr_loop[0], sizeof(svr_loop[0]));
-	test_bindx_add(svr_sk, (struct sockaddr *)&svr_loop[1], NUMADDR-1);
+	test_bindx_add(svr_sk, (struct sockaddr *)&svr_loop[1], NUMADDR - 1);
 
 	/* Mark server socket as being able to accept new associations.  */
 	test_listen(svr_sk, 1);
@@ -130,10 +131,10 @@ main(int argc, char *argv[])
 	/* Create and bind the client sockets.  */
 	clt_sk1 = test_socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
 	test_bind(clt_sk1, (struct sockaddr *)&clt_loop1[0], sizeof(clt_loop1));
-	test_bindx_add(clt_sk1, (struct sockaddr *)&clt_loop1[1], NUMADDR-1);
+	test_bindx_add(clt_sk1, (struct sockaddr *)&clt_loop1[1], NUMADDR - 1);
 	clt_sk2 = test_socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
 	test_bind(clt_sk2, (struct sockaddr *)&clt_loop2[0], sizeof(clt_loop2));
-	test_bindx_add(clt_sk2, (struct sockaddr *)&clt_loop2[1], NUMADDR-1);
+	test_bindx_add(clt_sk2, (struct sockaddr *)&clt_loop2[1], NUMADDR - 1);
 
 	/* Enable ASSOC_CHANGE and SNDRCVINFO notifications. */
 	test_enable_assoc_change(svr_sk);
@@ -220,7 +221,8 @@ main(int argc, char *argv[])
 	peeloff_sk = test_sctp_peeloff(svr_sk, svr_associd1);
 
 	/* Doing a connectx on a peeled off socket should fail. */
-	error = sctp_connectx(peeloff_sk, (struct sockaddr *)clt_loop3, NUMADDR);
+	error =
+	    sctp_connectx(peeloff_sk, (struct sockaddr *)clt_loop3, NUMADDR);
 	if ((error != -1) || (EISCONN != errno))
 		tst_brkm(TBROK, NULL, "connectx on a peeled off socket "
 			 "error:%d, errno:%d", error, errno);

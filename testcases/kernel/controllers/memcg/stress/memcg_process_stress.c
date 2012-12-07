@@ -45,7 +45,7 @@ void touch_memory()
 		pages[i][0] = 0xef;
 }
 
-void sigusr_handler(int __attribute__((unused)) signo)
+void sigusr_handler(int __attribute__ ((unused)) signo)
 {
 	int i;
 	int pagesize;
@@ -68,7 +68,7 @@ void sigusr_handler(int __attribute__((unused)) signo)
 	flag_ready = 1;
 }
 
-void sigint_handler(int __attribute__((unused)) signo)
+void sigint_handler(int __attribute__ ((unused)) signo)
 {
 	flag_exit = 1;
 }

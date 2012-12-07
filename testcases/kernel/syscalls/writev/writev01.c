@@ -151,27 +151,26 @@ int main(int argc, char **argv)
 		fd[1] = -1;	/* Invalid file descriptor  */
 
 		if (signal(SIGTERM, sighandler) == SIG_ERR)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "signal(SIGTERM, ..) failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "signal(SIGTERM, ..) failed");
 
 		if (signal(SIGPIPE, sighandler) == SIG_ERR)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "signal(SIGPIPE, ..) failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "signal(SIGPIPE, ..) failed");
 
 		init_buffs(buf_list);
 
 		if ((fd[0] = open(f_name, O_WRONLY | O_CREAT, 0666)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "open(.., O_WRONLY|O_CREAT, ..) failed");
-		else
-			if ((nbytes = write(fd[0], buf_list[2], K_1)) != K_1)
-				tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "open(.., O_WRONLY|O_CREAT, ..) failed");
+		else if ((nbytes = write(fd[0], buf_list[2], K_1)) != K_1)
+			tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 
 		if (close(fd[0]) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "close failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "close failed");
 
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 //block1: /* given vector length -1, writev return EINVAL. */
 		tst_resm(TPASS, "Enter Block 1");
 
@@ -194,31 +193,29 @@ int main(int argc, char **argv)
 		tst_resm(TPASS, "Enter block 2");
 
 		if (lseek(fd[0], CHUNK * 6, 0) == -1)
-			tst_resm(TBROK|TERRNO, "block2: 1st lseek failed");
+			tst_resm(TBROK | TERRNO, "block2: 1st lseek failed");
 
 		if ((ret = writev(fd[0], (wr_iovec + 6), 3)) == CHUNK) {
 			if (lseek(fd[0], CHUNK * 6, 0) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup,
-				    "block2: 2nd lseek failed");
-			if ((nbytes = read(fd[0], buf_list[0], CHUNK)) !=
-			    CHUNK)
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "block2: 2nd lseek failed");
+			if ((nbytes = read(fd[0], buf_list[0], CHUNK)) != CHUNK)
 				tst_resm(TFAIL, "read failed; expected nbytes "
-				    "= 1024, got = %d", nbytes);
+					 "= 1024, got = %d", nbytes);
 			else if (memcmp((buf_list[0] + CHUNK * 6),
-					  (buf_list[2] + CHUNK * 6),
-					  CHUNK) != 0)
+					(buf_list[2] + CHUNK * 6), CHUNK) != 0)
 				tst_resm(TFAIL, "writev over "
 					 "wrote %s", f_name);
 		} else
-			tst_resm(TFAIL|TERRNO, "writev failed unexpectedly");
+			tst_resm(TFAIL | TERRNO, "writev failed unexpectedly");
 		tst_resm(TINFO, "Exit block 2");
 
 //block3: /* given 1 bad vector buffer with good ones, writev success */
 		tst_resm(TPASS, "Enter block 3");
 
 		if (lseek(fd[0], CHUNK * 6, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "block3: 1st lseek failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "block3: 1st lseek failed");
 		if ((nbytes = writev(fd[0], (wr_iovec + 6), 3)) == -1) {
 			if (errno == EFAULT)
 				tst_resm(TFAIL, "Got EFAULT");
@@ -226,9 +223,9 @@ int main(int argc, char **argv)
 		if (lseek(fd[0], 0, 0) == -1)
 			tst_brkm(TBROK, cleanup, "block3: 2nd lseek failed");
 		if ((nbytes = read(fd[0], buf_list[0], K_1)) != K_1) {
-			tst_resm(TFAIL|TERRNO,
-			    "read failed; expected nbytes = 1024, got = %d",
-			    nbytes);
+			tst_resm(TFAIL | TERRNO,
+				 "read failed; expected nbytes = 1024, got = %d",
+				 nbytes);
 		} else if (memcmp((buf_list[0] + CHUNK * 6),
 				  (buf_list[2] + CHUNK * 6), CHUNK * 3) != 0)
 			tst_resm(TFAIL, "writev overwrote file");
@@ -246,8 +243,7 @@ int main(int argc, char **argv)
 				tst_resm(TFAIL, "expected errno = EBADF, "
 					 "got %d", TEST_ERRNO);
 		} else
-			tst_resm(TFAIL, "writev returned a "
-				 "positive value");
+			tst_resm(TFAIL, "writev returned a " "positive value");
 
 		tst_resm(TINFO, "Exit block 4");
 
@@ -262,8 +258,7 @@ int main(int argc, char **argv)
 				tst_resm(TFAIL, "expected errno = EINVAL, "
 					 "got %d", TEST_ERRNO);
 		} else
-			tst_resm(TFAIL, "writev returned a "
-				 "positive value");
+			tst_resm(TFAIL, "writev returned a " "positive value");
 
 		tst_resm(TINFO, "Exit block 5");
 
@@ -272,7 +267,7 @@ int main(int argc, char **argv)
 
 		TEST(writev(fd[0], (wr_iovec + 11), 0));
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "writev failed");
+			tst_resm(TFAIL | TTERRNO, "writev failed");
 		else
 			tst_resm(TPASS, "writev wrote 0 iovectors");
 
@@ -299,21 +294,21 @@ int main(int argc, char **argv)
 		tst_resm(TPASS, "Enter block 8");
 
 		if (pipe(pfd) == -1)
-			tst_resm(TFAIL|TERRNO, "pipe failed");
+			tst_resm(TFAIL | TERRNO, "pipe failed");
 		else {
 			if (close(pfd[0]) == -1)
-				tst_resm(TFAIL|TERRNO, "close failed");
+				tst_resm(TFAIL | TERRNO, "close failed");
 			else if (writev(pfd[1], (wr_iovec + 12), 1) == -1 &&
-			    in_sighandler) {
+				 in_sighandler) {
 				if (errno == EPIPE)
 					tst_resm(TPASS, "Received EPIPE as "
 						 "expected");
 				else
-					tst_resm(TFAIL|TERRNO,
-					    "didn't get EPIPE");
+					tst_resm(TFAIL | TERRNO,
+						 "didn't get EPIPE");
 			} else
 				tst_resm(TFAIL, "writev returned a positive "
-						"value");
+					 "value");
 		}
 		tst_resm(TINFO, "Exit block 8");
 	}
@@ -338,7 +333,7 @@ void setup(void)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 	wr_iovec[7].iov_base = bad_addr;
 
 }
@@ -348,13 +343,13 @@ void cleanup(void)
 	TEST_CLEANUP;
 
 	if (munmap(bad_addr, 1) == -1)
-		tst_resm(TBROK|TERRNO, "munmap failed");
+		tst_resm(TBROK | TERRNO, "munmap failed");
 
 	close(fd[0]);
 	close(fd[1]);
 
 	if (unlink(f_name) == -1)
-		tst_resm(TBROK|TERRNO, "unlink failed");
+		tst_resm(TBROK | TERRNO, "unlink failed");
 
 	tst_rmdir();
 

@@ -34,7 +34,7 @@
 #include "test.h"
 
 char *TCID = "cap_bounds_r";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 int main(int argc, char *argv[])
 {
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	int ret = 1;
 	int i;
 
-	for (i=0; i<=CAP_LAST_CAP; i++) {
+	for (i = 0; i <= CAP_LAST_CAP; i++) {
 #if HAVE_DECL_PR_CAPBSET_READ
 		ret = prctl(PR_CAPBSET_READ, i);
 #else
@@ -50,7 +50,9 @@ int main(int argc, char *argv[])
 		ret = -1;
 #endif
 		if (ret != 1) {
-			tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, %d) returned %d\n", i, ret);
+			tst_resm(TFAIL,
+				 "prctl(PR_CAPBSET_READ, %d) returned %d\n", i,
+				 ret);
 			if (ret == -1)
 				tst_resm(TINFO, "errno was %d\n", errno);
 			tst_exit();
@@ -63,7 +65,8 @@ int main(int argc, char *argv[])
 	ret = -1;
 #endif
 	if (ret != -1) {
-		tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, -1) returned %d\n", ret);
+		tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, -1) returned %d\n",
+			 ret);
 		tst_exit();
 	}
 
@@ -74,14 +77,16 @@ int main(int argc, char *argv[])
 #define INSANE 63
 #define max(x,y) (x > y ? x : y)
 #if HAVE_DECL_PR_CAPBSET_READ
-	ret = prctl(PR_CAPBSET_READ, max(INSANE,CAP_LAST_CAP+1));
+	ret = prctl(PR_CAPBSET_READ, max(INSANE, CAP_LAST_CAP + 1));
 #else
 	errno = ENOSYS;
 	ret = -1;
 #endif
 	if (ret != -1) {
-		tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, %d) returned %d\n", CAP_LAST_CAP+1, ret);
-		tst_resm(TINFO, " %d is CAP_LAST_CAP+1 and should not exist\n", CAP_LAST_CAP+1);
+		tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, %d) returned %d\n",
+			 CAP_LAST_CAP + 1, ret);
+		tst_resm(TINFO, " %d is CAP_LAST_CAP+1 and should not exist\n",
+			 CAP_LAST_CAP + 1);
 		tst_exit();
 	}
 	tst_resm(TPASS, "PR_CAPBSET_READ tests passed\n");

@@ -28,11 +28,12 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_3-1"
 
-int main() {
+int main()
+{
 	int fd;
 	char *buf;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -48,7 +49,7 @@ int main() {
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
 	}
-        /* Now, SHM_NAME is unlinked but there are open references on it */
+	/* Now, SHM_NAME is unlinked but there are open references on it */
 
 	buf = mmap(NULL, BUF_SIZE, PROT_READ, MAP_SHARED, fd, 0);
 	if (buf == MAP_FAILED && errno == EBADF) {

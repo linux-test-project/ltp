@@ -47,7 +47,7 @@ int opt_mmap_lock2;
 int opt_shm;
 int opt_hugepage;
 
-int key_id;		/* used with opt_shm */
+int key_id;			/* used with opt_shm */
 unsigned long memsize;
 
 #define FILE_HUGEPAGE	"/hugetlb/hugepagefile"
@@ -60,15 +60,15 @@ unsigned long memsize;
 #define HUGEPAGE	(SCHAR_MAX + 6)
 
 const struct option long_opts[] = {
-	{ "mmap-anon",	0, NULL, MMAP_ANON	},
-	{ "mmap-file",	0, NULL, MMAP_FILE	},
-	{ "mmap-lock1",	0, NULL, MMAP_LOCK1	},
-	{ "mmap-lock2",	0, NULL, MMAP_LOCK2	},
-	{ "shm",	0, NULL, SHM		},
-	{ "hugepage",	0, NULL, HUGEPAGE	},
-	{ "size",	1, NULL, 's'		},
-	{ "key",	1, NULL, 'k'		},
-	{ NULL,		0, NULL, 0		},
+	{"mmap-anon", 0, NULL, MMAP_ANON},
+	{"mmap-file", 0, NULL, MMAP_FILE},
+	{"mmap-lock1", 0, NULL, MMAP_LOCK1},
+	{"mmap-lock2", 0, NULL, MMAP_LOCK2},
+	{"shm", 0, NULL, SHM},
+	{"hugepage", 0, NULL, HUGEPAGE},
+	{"size", 1, NULL, 's'},
+	{"key", 1, NULL, 'k'},
+	{NULL, 0, NULL, 0},
 };
 
 /*
@@ -132,7 +132,7 @@ void mmap_anon()
 
 	if (!flag_allocated) {
 		p = mmap(NULL, memsize, PROT_WRITE | PROT_READ,
-			 MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+			 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 		if (p == MAP_FAILED)
 			err(1, "mmap(anonymous) failed");
 		touch_memory(p, memsize);
@@ -253,7 +253,7 @@ void shm()
 /*
  * sigint_handler: handle SIGINT by set the exit flag.
  */
-void sigint_handler(int __attribute__((unused)) signo)
+void sigint_handler(int __attribute__ ((unused)) signo)
 {
 	flag_exit = 1;
 }
@@ -267,7 +267,7 @@ void sigint_handler(int __attribute__((unused)) signo)
  * When we receive SIGUSR again, we will free all the allocated
  * memory.
  */
-void sigusr_handler(int __attribute__((unused)) signo)
+void sigusr_handler(int __attribute__ ((unused)) signo)
 {
 	if (opt_mmap_anon)
 		mmap_anon();

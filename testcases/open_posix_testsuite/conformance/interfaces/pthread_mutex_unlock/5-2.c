@@ -33,26 +33,26 @@
   */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* We enable the following line to have mutex attributes defined */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <unistd.h>
- #include <stdlib.h>
- #include <stdio.h>
- #include <stdarg.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -83,7 +83,7 @@
 /********************************************************************************************/
 
 /** parent thread function **/
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret;
 	pthread_mutexattr_t ma;
@@ -91,60 +91,68 @@ int main(int argc, char * argv[])
 
 	output_init();
 
-	#if VERBOSE >1
+#if VERBOSE >1
 	output("Initialize the PTHREAD_MUTEX_RECURSIVE mutex\n");
-	#endif
+#endif
 
 	ret = pthread_mutexattr_init(&ma);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex attribute init failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex attribute init failed");
+	}
 
 	ret = pthread_mutexattr_settype(&ma, PTHREAD_MUTEX_RECURSIVE);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Set type recursive failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Set type recursive failed");
+	}
 
 	ret = pthread_mutex_init(&m, &ma);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex init failed");  }
-
-	#if VERBOSE >1
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex init failed");
+	}
+#if VERBOSE >1
 	output("Unlock unlocked mutex\n");
-	#endif
+#endif
 
 	ret = pthread_mutex_unlock(&m);
-	if (ret == 0)
-	{  FAILED("Unlocking an unlocked recursive mutex succeeded");  }
-
-	#if VERBOSE >1
+	if (ret == 0) {
+		FAILED("Unlocking an unlocked recursive mutex succeeded");
+	}
+#if VERBOSE >1
 	output("Lock and unlock the mutex\n");
-	#endif
+#endif
 
 	ret = pthread_mutex_lock(&m);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex lock failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex lock failed");
+	}
 	ret = pthread_mutex_lock(&m);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex recursive lock failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex recursive lock failed");
+	}
 	ret = pthread_mutex_unlock(&m);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex unlock failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex unlock failed");
+	}
 	ret = pthread_mutex_unlock(&m);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex recursive unlock failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex recursive unlock failed");
+	}
 
 	/* destroy the mutex attribute object */
 	ret = pthread_mutexattr_destroy(&ma);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex attribute destroy failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex attribute destroy failed");
+	}
 
 	ret = pthread_mutex_unlock(&m);
-	if (ret == 0)
-	{  FAILED("Unlocking an unlocked recursive mutex succeeded");  }
+	if (ret == 0) {
+		FAILED("Unlocking an unlocked recursive mutex succeeded");
+	}
 
 	PASSED;
 }
 #else /* WITHOUT_XOPEN */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

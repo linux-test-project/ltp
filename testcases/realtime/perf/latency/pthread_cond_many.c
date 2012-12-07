@@ -74,10 +74,9 @@ double d_gettimeofday(void)
 	return (tv.tv_sec + ((double)tv.tv_usec) / 1000000.);
 }
 
-void *
-childfunc(void *arg)
+void *childfunc(void *arg)
 {
-	int myid = (intptr_t)arg;
+	int myid = (intptr_t) arg;
 	pthread_cond_t *cp;
 	volatile int *cw;
 
@@ -100,8 +99,7 @@ childfunc(void *arg)
 	pthread_exit(NULL);
 }
 
-pthread_t
-create_thread_(int itsid)
+pthread_t create_thread_(int itsid)
 {
 	pthread_attr_t attr;
 	pthread_t childid;
@@ -133,7 +131,7 @@ create_thread_(int itsid)
 			exit(-1);
 		}
 	}
-	if (pthread_attr_setstacksize(&attr, (size_t)(32*1024)) != 0) {
+	if (pthread_attr_setstacksize(&attr, (size_t) (32 * 1024)) != 0) {
 		perror("pthread_attr_setstacksize");
 		exit(-1);
 	}
@@ -141,15 +139,15 @@ create_thread_(int itsid)
 		perror("pthread_cond_init");
 		exit(-1);
 	}
-	if (pthread_create(&childid, &attr, childfunc, (void *)(intptr_t)itsid) != 0) {
+	if (pthread_create(&childid, &attr, childfunc, (void *)(intptr_t) itsid)
+	    != 0) {
 		perror("pthread_create");
 		exit(-1);
 	}
 	return (childid);
 }
 
-void
-wake_child(int itsid, int broadcast_flag)
+void wake_child(int itsid, int broadcast_flag)
 {
 	double starttime;
 
@@ -185,8 +183,7 @@ wake_child(int itsid, int broadcast_flag)
 	pthread_mutex_unlock(&child_mutex);
 }
 
-void
-test_signal(long iter, long nthreads)
+void test_signal(long iter, long nthreads)
 {
 	int i;
 	int j;
@@ -197,9 +194,9 @@ test_signal(long iter, long nthreads)
 	stats_container_t dat;
 	stats_record_t rec;
 
-	stats_container_init(&dat,iter * nthreads);
+	stats_container_init(&dat, iter * nthreads);
 
-	pt = (pthread_t *)malloc(sizeof(*pt) * nthreads);
+	pt = (pthread_t *) malloc(sizeof(*pt) * nthreads);
 	if (pt == NULL) {
 		fprintf(stderr, "Out of memory\n");
 		exit(-1);
@@ -208,8 +205,8 @@ test_signal(long iter, long nthreads)
 		child_waiting[j] = 0;
 		pt[j] = create_thread_(j);
 	}
-	for (i = 0; i < (iter - 1) * nthreads; i+=nthreads) {
-		for (j = 0 , k = i; j < nthreads; j++ , k++) {
+	for (i = 0; i < (iter - 1) * nthreads; i += nthreads) {
+		for (j = 0, k = i; j < nthreads; j++, k++) {
 			wake_child(j, broadcast_flag);
 			rec.x = k;
 			rec.y = latency;
@@ -261,30 +258,29 @@ int parse_args(int c, char *v)
 {
 	int handled;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		case 'a':
-			broadcast_flag = 1;
-			break;
-		case 'i':
-			iterations = atoi(v);
-			break;
-		case 'n':
-			nthreads = atoi(v);
-			break;
-		case 'r':
-			realtime = 1;
-			break;
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	case 'a':
+		broadcast_flag = 1;
+		break;
+	case 'i':
+		iterations = atoi(v);
+		break;
+	case 'n':
+		nthreads = atoi(v);
+		break;
+	case 'r':
+		realtime = 1;
+		break;
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	struct option longopts[] = {
 		{"broadcast", 0, NULL, 'a'},
@@ -309,7 +305,7 @@ main(int argc, char *argv[])
 	}
 
 	child_waiting = (int *)malloc(sizeof(*child_waiting) * nthreads);
-	condlist = (pthread_cond_t *)malloc(sizeof(*condlist) * nthreads);
+	condlist = (pthread_cond_t *) malloc(sizeof(*condlist) * nthreads);
 	if ((child_waiting == NULL) || (condlist == NULL)) {
 		fprintf(stderr, "Out of memory\n");
 		exit(-1);

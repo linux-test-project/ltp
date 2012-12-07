@@ -101,34 +101,31 @@ int main()
 	sa.sa_handler = handler;
 	ret = sigemptyset(&sa.sa_mask);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	/* Install the signal handler for SIGHUP */
 	ret = sigaction(SIGNAL, &sa, 0);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
-	if (called)
-	{
-		FAILED("The signal handler has been called when no signal was raised");
+	if (called) {
+		FAILED
+		    ("The signal handler has been called when no signal was raised");
 	}
 
 	ret = raise(SIGNAL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to raise SIGHUP");
 	}
 
-	if (!called)
-	{
-		FAILED("the sa_handler was not called whereas SA_SIGINFO was not set");
+	if (!called) {
+		FAILED
+		    ("the sa_handler was not called whereas SA_SIGINFO was not set");
 	}
 
 	/* Test passed */

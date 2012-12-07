@@ -17,7 +17,8 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int main() {
+int main()
+{
 
 	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
@@ -31,22 +32,24 @@ int main() {
 		SIGPROF,
 #endif
 		SIGSYS,
-		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
+		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
+	};
 
 	sigset_t signalset;
-	int i, test_failed=0;
+	int i, test_failed = 0;
 
 	if (sigemptyset(&signalset) == -1) {
 		perror("sigemptyset failed -- test aborted");
 		return -1;
 	}
 
-	for (i=NUMSIGNALS-1; i>=0; i--) {
+	for (i = NUMSIGNALS - 1; i >= 0; i--) {
 		if (sigismember(&signalset, siglist[i]) == 1) {
-			#ifdef DEBUG
-				printf("sigemptyset did not clear set of signal %s\n", siglist[i]);
-			#endif
-			test_failed=1;
+#ifdef DEBUG
+			printf("sigemptyset did not clear set of signal %s\n",
+			       siglist[i]);
+#endif
+			test_failed = 1;
 		}
 	}
 

@@ -38,7 +38,8 @@ int main()
 		return 1;
 
 	mq_unlink("/checkmqnsenabled");
-	mqd = mq_open("/checkmqnsenabled", O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
+	mqd =
+	    mq_open("/checkmqnsenabled", O_RDWR | O_CREAT | O_EXCL, 0777, NULL);
 	if (mqd == -1) {
 		perror("mq_open");
 		return 3;

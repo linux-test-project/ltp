@@ -1,14 +1,14 @@
   /*
-  Test that the function:
-   int sigemptyset(sigset_t *);
-  is declared.
-  */
+     Test that the function:
+     int sigemptyset(sigset_t *);
+     is declared.
+   */
 
 #include <signal.h>
 
-typedef int (*sigemptyset_test)(sigset_t *);
+typedef int (*sigemptyset_test) (sigset_t *);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	sigemptyset_test dummyvar;
 	dummyvar = sigemptyset;

@@ -92,7 +92,7 @@ static int clear_counter(int fd)
 	ret = read(fd, &dummy, sizeof(dummy));
 	if (ret == -1) {
 		if (errno != EAGAIN) {
-			tst_resm(TINFO|TERRNO, "error clearing counter");
+			tst_resm(TINFO | TERRNO, "error clearing counter");
 			return -1;
 		}
 	}
@@ -120,7 +120,7 @@ static int set_counter(int fd, uint64_t val)
 
 	ret = write(fd, &val, sizeof(val));
 	if (ret == -1) {
-		tst_resm(TINFO|TERRNO, "error setting counter value");
+		tst_resm(TINFO | TERRNO, "error setting counter value");
 		return -1;
 	}
 
@@ -137,7 +137,7 @@ static void read_test(int fd, uint64_t required)
 
 	ret = read(fd, &val, sizeof(val));
 	if (ret == -1) {
-		tst_resm(TBROK|TERRNO, "error reading eventfd");
+		tst_resm(TBROK | TERRNO, "error reading eventfd");
 		return;
 	}
 
@@ -145,7 +145,7 @@ static void read_test(int fd, uint64_t required)
 		tst_resm(TPASS, "counter value matches required");
 	else
 		tst_resm(TFAIL, "counter value mismatch: "
-			 "required: %"PRIu64", got: %"PRIu64, required, val);
+			 "required: %" PRIu64 ", got: %" PRIu64, required, val);
 }
 
 /*
@@ -167,7 +167,7 @@ static void read_eagain_test(int fd)
 		if (errno == EAGAIN)
 			tst_resm(TPASS, "read failed with EAGAIN as expected");
 		else
-			tst_resm(TFAIL|TERRNO, "read failed (wanted EAGAIN)");
+			tst_resm(TFAIL | TERRNO, "read failed (wanted EAGAIN)");
 	} else
 		tst_resm(TFAIL, "read returned with %d", ret);
 }
@@ -184,7 +184,7 @@ static void write_test(int fd)
 
 	ret = set_counter(fd, val);
 	if (ret == -1) {
-		tst_resm(TBROK, "error setting counter value to %"PRIu64, val);
+		tst_resm(TBROK, "error setting counter value to %" PRIu64, val);
 		return;
 	}
 
@@ -231,7 +231,7 @@ static void read_einval_test(int fd)
 		if (errno == EINVAL)
 			tst_resm(TPASS, "read failed with EINVAL as expected");
 		else
-			tst_resm(TFAIL|TERRNO, "read failed (wanted EINVAL)");
+			tst_resm(TFAIL | TERRNO, "read failed (wanted EINVAL)");
 	} else
 		tst_resm(TFAIL, "read returned with %d", ret);
 }
@@ -250,7 +250,8 @@ static void write_einval_test(int fd)
 		if (errno == EINVAL)
 			tst_resm(TPASS, "write failed with EINVAL as expected");
 		else
-			tst_resm(TFAIL|TERRNO, "write failed (wanted EINVAL)");
+			tst_resm(TFAIL | TERRNO,
+				 "write failed (wanted EINVAL)");
 	} else
 		tst_resm(TFAIL, "write returned with %d", ret);
 }
@@ -276,7 +277,8 @@ static void write_einval2_test(int fd)
 		if (errno == EINVAL)
 			tst_resm(TPASS, "write failed with EINVAL as expected");
 		else
-			tst_resm(TFAIL|TERRNO, "write failed (wanted EINVAL)");
+			tst_resm(TFAIL | TERRNO,
+				 "write failed (wanted EINVAL)");
 	} else {
 		tst_resm(TFAIL, "write returned with %d", ret);
 	}
@@ -298,7 +300,7 @@ static void readfd_set_test(int fd)
 
 	ret = set_counter(fd, non_zero);
 	if (ret == -1) {
-		tst_resm(TBROK, "error setting counter value to %"PRIu64,
+		tst_resm(TBROK, "error setting counter value to %" PRIu64,
 			 non_zero);
 		return;
 	}
@@ -306,7 +308,7 @@ static void readfd_set_test(int fd)
 	ret = select(fd + 1, &readfds, NULL, NULL, &timeout);
 	if (ret == -1) {
 		/* EINTR cannot occur, since we don't block. */
-		tst_resm(TBROK|TERRNO, "select() failed");
+		tst_resm(TBROK | TERRNO, "select() failed");
 		return;
 	}
 
@@ -338,7 +340,7 @@ static void readfd_not_set_test(int fd)
 	ret = select(fd + 1, &readfds, NULL, NULL, &timeout);
 	if (ret == -1) {
 		/* EINTR cannot occur, since we don't block. */
-		tst_resm(TBROK|TERRNO, "select() failed");
+		tst_resm(TBROK | TERRNO, "select() failed");
 		return;
 	}
 
@@ -364,14 +366,15 @@ static void writefd_set_test(int fd)
 
 	ret = set_counter(fd, non_max);
 	if (ret == -1) {
-		tst_resm(TBROK, "error setting counter value to %"PRIu64, non_max);
+		tst_resm(TBROK, "error setting counter value to %" PRIu64,
+			 non_max);
 		return;
 	}
 
 	ret = select(fd + 1, NULL, &writefds, NULL, &timeout);
 	if (ret == -1) {
 		/* EINTR cannot occur, since we don't block. */
-		tst_resm(TBROK|TERRNO, "select: error getting fd status");
+		tst_resm(TBROK | TERRNO, "select: error getting fd status");
 		return;
 	}
 
@@ -403,7 +406,7 @@ static void writefd_not_set_test(int fd)
 	ret = select(fd + 1, NULL, &writefds, NULL, &timeout);
 	if (ret == -1) {
 		/* EINTR cannot occur, since we don't block. */
-		tst_resm(TBROK|TERRNO, "select: error getting fd status");
+		tst_resm(TBROK | TERRNO, "select: error getting fd status");
 		return;
 	}
 
@@ -427,7 +430,7 @@ static void child_inherit_test(int fd)
 
 	cpid = fork();
 	if (cpid == -1)
-		tst_resm(TBROK|TERRNO, "fork failed");
+		tst_resm(TBROK | TERRNO, "fork failed");
 	else if (cpid != 0) {
 		ret = wait(&status);
 		if (ret == -1) {
@@ -443,7 +446,7 @@ static void child_inherit_test(int fd)
 
 		ret = read(fd, &val, sizeof(val));
 		if (ret == -1) {
-			tst_resm(TBROK|TERRNO, "error reading eventfd");
+			tst_resm(TBROK | TERRNO, "error reading eventfd");
 			return;
 		}
 
@@ -457,13 +460,13 @@ static void child_inherit_test(int fd)
 		/* Child */
 		ret = read(fd, &dummy, sizeof(dummy));
 		if (ret == -1 && errno != EAGAIN) {
-			tst_resm(TWARN|TERRNO, "error clearing counter");
+			tst_resm(TWARN | TERRNO, "error clearing counter");
 			exit(1);
 		}
 
 		ret = write(fd, &to_parent, sizeof(to_parent));
 		if (ret == -1) {
-			tst_resm(TWARN|TERRNO, "error writing eventfd");
+			tst_resm(TWARN | TERRNO, "error writing eventfd");
 			exit(1);
 		}
 
@@ -508,13 +511,13 @@ static int trigger_eventfd_overflow(int evfd, int *fd, io_context_t * ctx)
 	ret = io_setup(16, ctx);
 	if (ret < 0) {
 		errno = -ret;
-		tst_resm(TINFO|TERRNO, "io_setup error");
+		tst_resm(TINFO | TERRNO, "io_setup error");
 		return -1;
 	}
 
 	*fd = open("testfile", O_RDWR | O_CREAT, 0644);
 	if (*fd == -1) {
-		tst_resm(TINFO|TERRNO, "open(testfile) failed");
+		tst_resm(TINFO | TERRNO, "open(testfile) failed");
 		goto err_io_destroy;
 	}
 
@@ -531,7 +534,7 @@ static int trigger_eventfd_overflow(int evfd, int *fd, io_context_t * ctx)
 	ret = io_submit(*ctx, 1, iocbap);
 	if (ret < 0) {
 		errno = -ret;
-		tst_resm(TINFO|TERRNO, "error submitting iocb");
+		tst_resm(TINFO | TERRNO, "error submitting iocb");
 		goto err_close_file;
 	}
 
@@ -570,7 +573,8 @@ static void overflow_select_test(int evfd)
 	FD_SET(evfd, &readfds);
 	ret = select(evfd + 1, &readfds, NULL, NULL, &timeout);
 	if (ret == -1)
-		tst_resm(TBROK|TERRNO, "error getting evfd status with select");
+		tst_resm(TBROK | TERRNO,
+			 "error getting evfd status with select");
 	else {
 		if (FD_ISSET(evfd, &readfds))
 			tst_resm(TPASS, "read fd set as expected");
@@ -598,7 +602,7 @@ static void overflow_poll_test(int evfd)
 	pollfd.revents = 0;
 	ret = poll(&pollfd, 1, 10000);
 	if (ret == -1)
-		tst_resm(TBROK|TERRNO, "error getting evfd status with poll");
+		tst_resm(TBROK | TERRNO, "error getting evfd status with poll");
 	else {
 		if (pollfd.revents & POLLERR)
 			tst_resm(TPASS, "POLLERR occurred as expected");
@@ -623,7 +627,7 @@ static void overflow_read_test(int evfd)
 
 	ret = read(evfd, &count, sizeof(count));
 	if (ret == -1)
-		tst_resm(TBROK|TERRNO, "error reading eventfd");
+		tst_resm(TBROK | TERRNO, "error reading eventfd");
 	else {
 
 		if (count == UINT64_MAX)
@@ -669,11 +673,13 @@ int main(int argc, char **argv)
 
 		fd = myeventfd(einit, 0);
 		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, CLEANUP, "error creating eventfd");
+			tst_brkm(TBROK | TERRNO, CLEANUP,
+				 "error creating eventfd");
 
 		ret = fcntl(fd, F_SETFL, O_NONBLOCK);
 		if (ret == -1)
-			tst_brkm(TBROK|TERRNO, CLEANUP, "error setting non-block mode");
+			tst_brkm(TBROK | TERRNO, CLEANUP,
+				 "error setting non-block mode");
 
 		read_test(fd, einit);
 		read_eagain_test(fd);

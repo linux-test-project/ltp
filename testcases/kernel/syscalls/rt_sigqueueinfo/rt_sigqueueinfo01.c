@@ -54,23 +54,26 @@
 #include "linux_syscall_numbers.h"
 
 /* Global Variables */
-char *TCID = "rt_sigqueueinfo01"; /* Test program identifier.*/
+char *TCID = "rt_sigqueueinfo01";	/* Test program identifier. */
 int testno;
-int TST_TOTAL = 2; /* total number of tests in this file.   */
+int TST_TOTAL = 2;		/* total number of tests in this file.   */
 
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
 
 }
 
-void setup() {
+void setup()
+{
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int status;
 	pid_t pid;
 	pid = getpid();
@@ -81,12 +84,12 @@ int main(int ac, char **av) {
 		TEST(pid = fork());
 		setup();
 		if (TEST_RETURN < 0)
-			tst_brkm(TFAIL|TTERRNO, cleanup, "fork failed");
+			tst_brkm(TFAIL | TTERRNO, cleanup, "fork failed");
 		else if (TEST_RETURN == 0) {
 			uinfo.si_errno = 0;
 			uinfo.si_code = SI_QUEUE;
 			TEST(syscall(__NR_rt_sigqueueinfo, getpid(), SIGCHLD,
-			    &uinfo));
+				     &uinfo));
 			if (TEST_RETURN != 0)
 				err(1, "rt_sigqueueinfo");
 			exit(0);

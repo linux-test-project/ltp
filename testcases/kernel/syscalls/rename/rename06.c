@@ -149,10 +149,10 @@ void setup()
 	/* create "old" directory */
 	if (stat(fdir, &buf1) != -1) {
 		tst_brkm(TBROK, cleanup, "tmp directory %s found!", fdir);
-	 }
+	}
 	if (mkdir(fdir, 00770) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
-	 }
+	}
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s "
 			 "in rename()", fdir);
@@ -165,10 +165,10 @@ void setup()
 	/* create another directory */
 	if (stat(mdir, &buf2) != -1) {
 		tst_brkm(TBROK, cleanup, "tmp directory %s found!", mdir);
-	 }
+	}
 	if (mkdir(mdir, 00770) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", mdir);
-	 }
+	}
 
 	if (stat(mdir, &buf2) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s "

@@ -94,10 +94,10 @@ int main(int ac, char **av)
 
 		switch (TEST_ERRNO) {
 		case EFAULT:
-			tst_resm(TPASS|TTERRNO, "uname failed as expected");
+			tst_resm(TPASS | TTERRNO, "uname failed as expected");
 			break;
 		default:
-			tst_resm(TFAIL|TTERRNO, "uname failed unexpectedly");
+			tst_resm(TFAIL | TTERRNO, "uname failed unexpectedly");
 		}
 	}
 

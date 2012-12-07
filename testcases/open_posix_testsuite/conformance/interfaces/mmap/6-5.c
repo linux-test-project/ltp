@@ -71,7 +71,6 @@ int main(void)
 	close(fd);
 
 	printf("Succesfully mapped readonly file with "
-	       "PROT_WRITE, MAP_PRIVATE\n"
-	       "Test PASSED\n");
+	       "PROT_WRITE, MAP_PRIVATE\n" "Test PASSED\n");
 	return PTS_PASS;
 }

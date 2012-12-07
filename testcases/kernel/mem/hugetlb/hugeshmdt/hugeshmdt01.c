@@ -74,8 +74,8 @@ static sigjmp_buf env;
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 static void check_functionality(void);
@@ -98,7 +98,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		if (shmdt(shared) == -1) {
-			tst_resm(TFAIL|TERRNO, "shmdt");
+			tst_resm(TFAIL | TERRNO, "shmdt");
 		} else {
 			if (STD_FUNCTIONAL_TEST)
 				check_functionality();
@@ -109,7 +109,7 @@ int main(int ac, char **av)
 		/* reattach the shared memory segment in case we are looping */
 		shared = shmat(shm_id_1, 0, 0);
 		if (shared == (void *)-1)
-			tst_brkm(TBROK|TERRNO, cleanup, "shmat #2: reattach");
+			tst_brkm(TBROK | TERRNO, cleanup, "shmat #2: reattach");
 
 		/* also reset pass */
 		pass = 0;
@@ -122,7 +122,7 @@ static void check_functionality(void)
 {
 	/* stat the shared memory segment */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmctl");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmctl");
 
 	if (buf.shm_nattch != 0) {
 		tst_resm(TFAIL, "# of attaches is incorrect");
@@ -150,7 +150,7 @@ static void check_functionality(void)
 		tst_resm(TPASS, "huge shared memory detached correctly");
 	else
 		tst_resm(TFAIL, "huge shared memory was not detached "
-				"correctly");
+			 "correctly");
 }
 
 static void sighandler(int sig)
@@ -161,8 +161,7 @@ static void sighandler(int sig)
 		pass = 1;
 		siglongjmp(env, 1);
 	} else {
-		tst_brkm(TBROK, cleanup, "unexpected signal received: %d",
-			    sig);
+		tst_brkm(TBROK, cleanup, "unexpected signal received: %d", sig);
 	}
 }
 
@@ -184,14 +183,14 @@ void setup(void)
 
 	/* create a shared memory resource with read and write permissions */
 	shm_id_1 = shmget(shmkey, shm_size,
-		    SHM_HUGETLB|SHM_RW|IPC_CREAT|IPC_EXCL);
+			  SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL);
 	if (shm_id_1 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget");
 
 	/* attach the shared memory segment */
 	shared = shmat(shm_id_1, 0, 0);
 	if (shared == (void *)-1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmat #1");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmat #1");
 
 	/* give a value to the shared memory integer */
 	*shared = 4;

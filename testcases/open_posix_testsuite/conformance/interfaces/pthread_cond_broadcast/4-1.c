@@ -22,7 +22,7 @@
 
 struct testdata {
 	pthread_mutex_t mutex;
-	pthread_cond_t  cond;
+	pthread_cond_t cond;
 } td;
 
 static int start_num;

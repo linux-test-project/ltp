@@ -40,7 +40,7 @@ int enter_handler = 0;
 
 void msg_handler()
 {
-        enter_handler = 1;
+	enter_handler = 1;
 }
 
 void mqclean(mqd_t queue, const char *qname)
@@ -52,49 +52,48 @@ void mqclean(mqd_t queue, const char *qname)
 int main()
 {
 	char mqname[NAMESIZE];
-        mqd_t mqdes;
-        const char s_msg_ptr[MSG_SIZE] = "test message \n";
-        struct sigevent notification;
-        struct sigaction sa;
-        unsigned int prio = 1;
+	mqd_t mqdes;
+	const char s_msg_ptr[MSG_SIZE] = "test message \n";
+	struct sigevent notification;
+	struct sigaction sa;
+	unsigned int prio = 1;
 
-        sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
-        mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
-        if (mqdes == (mqd_t)-1) {
-                perror(ERROR_PREFIX "mq_open");
-                return PTS_UNRESOLVED;
-        }
+	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
+	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
+	if (mqdes == (mqd_t) - 1) {
+		perror(ERROR_PREFIX "mq_open");
+		return PTS_UNRESOLVED;
+	}
 	notification.sigev_notify = SIGEV_SIGNAL;
-        notification.sigev_signo = SIGUSR1;
-        sa.sa_handler = msg_handler;
-        sa.sa_flags = 0;
-        sigaction(SIGUSR1, &sa, NULL);
-        if (mq_notify(mqdes, &notification) != 0) {
-                perror(ERROR_PREFIX "mq_notify");
+	notification.sigev_signo = SIGUSR1;
+	sa.sa_handler = msg_handler;
+	sa.sa_flags = 0;
+	sigaction(SIGUSR1, &sa, NULL);
+	if (mq_notify(mqdes, &notification) != 0) {
+		perror(ERROR_PREFIX "mq_notify");
 		mqclean(mqdes, mqname);
-                return PTS_UNRESOLVED;
-        }
+		return PTS_UNRESOLVED;
+	}
 	if (mq_notify(mqdes, NULL) != 0) {
 		printf("Test FAILED \n");
 		mqclean(mqdes, mqname);
 		return PTS_FAIL;
 	}
-        if (mq_send(mqdes, s_msg_ptr, MSG_SIZE, prio) == -1) {
-        	perror(ERROR_PREFIX "mq_send");
+	if (mq_send(mqdes, s_msg_ptr, MSG_SIZE, prio) == -1) {
+		perror(ERROR_PREFIX "mq_send");
 		mqclean(mqdes, mqname);
-        	return PTS_UNRESOLVED;
-        }
+		return PTS_UNRESOLVED;
+	}
 	sleep(1);
 	if (mq_unlink(mqname) != 0) {
-               perror(ERROR_PREFIX "mq_unlink");
-               return PTS_UNRESOLVED;
+		perror(ERROR_PREFIX "mq_unlink");
+		return PTS_UNRESOLVED;
 	}
-        if (!enter_handler) {
+	if (!enter_handler) {
 		printf("Test PASSED \n");
 		mqclean(mqdes, mqname);
 		return PTS_PASS;
-	}
-	else {
+	} else {
 		printf("Test FAILED \n");
 		mqclean(mqdes, mqname);
 		return PTS_FAIL;

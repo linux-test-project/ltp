@@ -78,19 +78,19 @@
  * sys_error (): System error message function
  * error (): Error message function
  */
-static void parse_args (int, char **);
-static void sys_error (const char *, int);
-static void error (const char *, int);
+static void parse_args(int, char **);
+static void sys_error(const char *, int);
+static void error(const char *, int);
 
 /*
  * Global variables
  *
  * log_filename: Name of log file
  */
-int	verbose	= 0;
-int	logit	= 0;
-FILE	*logfile;
-char	*log_filename = NULL;
+int verbose = 0;
+int logit = 0;
+FILE *logfile;
+char *log_filename = NULL;
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -102,42 +102,43 @@ char	*log_filename = NULL;
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct msqid_ds info;	/* Message queue info */
 	struct msgbuf buf;	/* Message queue buffer */
-	int	mode = 0777;	/* Default mode bits */
-	int	msqid;		/* Message queue identifier */
-	size_t 	max_bytes;	/* Num bytes sent to message queue */
-	size_t 	msg_size;	/* Num bytes sent to message queue */
-	unsigned long	bytes_sent;	/* Num bytes sent to message queue */
+	int mode = 0777;	/* Default mode bits */
+	int msqid;		/* Message queue identifier */
+	size_t max_bytes;	/* Num bytes sent to message queue */
+	size_t msg_size;	/* Num bytes sent to message queue */
+	unsigned long bytes_sent;	/* Num bytes sent to message queue */
 
 	/*
 	 * Parse command line options
 	 */
-	parse_args (argc, argv);
+	parse_args(argc, argv);
 	if (logit) {
-		if ((logfile = fopen (log_filename, "w")) == NULL)
-			sys_error ("msgget failed", __LINE__);
+		if ((logfile = fopen(log_filename, "w")) == NULL)
+			sys_error("msgget failed", __LINE__);
 	}
 
 	/*
 	 * Print out program header
 	 */
-	printf ("%s: IPC Message Queue TestSuite program\n\n", *argv);
+	printf("%s: IPC Message Queue TestSuite program\n\n", *argv);
 	if (logit)
-		fprintf (logfile, "%s: IPC Message Queue TestSuite program\n\n", *argv);
+		fprintf(logfile, "%s: IPC Message Queue TestSuite program\n\n",
+			*argv);
 
 	/*
 	 * Obtain a unique message queue identifier using msgget()
 	 */
-	if ((msqid = msgget (IPC_PRIVATE, IPC_CREAT|mode)) < 0)
-		sys_error ("msgget failed", __LINE__);
+	if ((msqid = msgget(IPC_PRIVATE, IPC_CREAT | mode)) < 0)
+		sys_error("msgget failed", __LINE__);
 
 	if (verbose)
-		printf ("\tCreated message queue: %d\n\n", msqid);
+		printf("\tCreated message queue: %d\n\n", msqid);
 	if (logit)
-		fprintf (logfile, "\tCreated message queue: %d\n\n", msqid);
+		fprintf(logfile, "\tCreated message queue: %d\n\n", msqid);
 
 	/*
 	 * Determine message queue limits
@@ -146,8 +147,8 @@ int main (int argc, char **argv)
 	 * queue will hold.  Then determine the message size
 	 * (Max num of bytes per queue / maximum num of messages per queue)
 	 */
-	if (msgctl (msqid, IPC_STAT, &info) < 0)
-		sys_error ("msgctl (IPC_STAT) failed", __LINE__);
+	if (msgctl(msqid, IPC_STAT, &info) < 0)
+		sys_error("msgctl (IPC_STAT) failed", __LINE__);
 
 	max_bytes = info.msg_qbytes;
 
@@ -156,17 +157,21 @@ int main (int argc, char **argv)
 	 * problem, but here is not the right place to test floating point...
 	 * msg_size  = (size_t) (0.5 + ((float) max_bytes / MAX_MSGS));
 	 */
-	msg_size  = (size_t)((max_bytes + MAX_MSGS - 1) / MAX_MSGS);
+	msg_size = (size_t) ((max_bytes + MAX_MSGS - 1) / MAX_MSGS);
 
 	if (verbose) {
-		printf ("\tMax num of bytes per queue:  %ld\n", (long)max_bytes);
-		printf ("\tMax messages per queue:      %d\n",  MAX_MSGS);
-		printf ("\tCorresponding message size:  %ld\n\n", (long)msg_size);
+		printf("\tMax num of bytes per queue:  %ld\n", (long)max_bytes);
+		printf("\tMax messages per queue:      %d\n", MAX_MSGS);
+		printf("\tCorresponding message size:  %ld\n\n",
+		       (long)msg_size);
 	}
 	if (logit) {
-		fprintf (logfile, "\tMax num of bytes per queue:  %ld\n",  (long)max_bytes);
-		fprintf (logfile, "\tMax messages per queue:      %d\n",  MAX_MSGS);
-		fprintf (logfile, "\tCorresponding message size:  %ld\n\n", (long)msg_size);
+		fprintf(logfile, "\tMax num of bytes per queue:  %ld\n",
+			(long)max_bytes);
+		fprintf(logfile, "\tMax messages per queue:      %d\n",
+			MAX_MSGS);
+		fprintf(logfile, "\tCorresponding message size:  %ld\n\n",
+			(long)msg_size);
 	}
 
 	/*
@@ -174,40 +179,42 @@ int main (int argc, char **argv)
 	 *
 	 * Send bytes to the message queue until it fills up
 	 */
-	//	buf = (struct msgbuf *) calloc (msg_size + sizeof(struct msgbuf), sizeof (char));
+	//      buf = (struct msgbuf *) calloc (msg_size + sizeof(struct msgbuf), sizeof (char));
 
 	buf.mtype = 1L;
 
 	bytes_sent = 0;
 	while (bytes_sent < max_bytes - msg_size) {
-		if (msgsnd (msqid, &buf, msg_size, 0) < 0)
-			sys_error ("msgsnd failed", __LINE__);
+		if (msgsnd(msqid, &buf, msg_size, 0) < 0)
+			sys_error("msgsnd failed", __LINE__);
 		bytes_sent += msg_size;
 		//usleep(5000);
 		if (verbose) {
-			printf ("\r\tBytes sent: %ld", (long)bytes_sent);
+			printf("\r\tBytes sent: %ld", (long)bytes_sent);
 			fflush(stdout);
-		  }
+		}
 	}
-	if (verbose) puts ("\n");
-	if (logit) fprintf (logfile, "\tBytes sent: %ld\n", (long)bytes_sent);
+	if (verbose)
+		puts("\n");
+	if (logit)
+		fprintf(logfile, "\tBytes sent: %ld\n", (long)bytes_sent);
 	//free (buf);
 
 	/*
 	 * Remove the message queue
 	 */
-	if (msgctl (msqid, IPC_RMID, 0) < 0)
-		sys_error ("msgctl (IPC_RMID) failed", __LINE__);
+	if (msgctl(msqid, IPC_RMID, 0) < 0)
+		sys_error("msgctl (IPC_RMID) failed", __LINE__);
 	if (verbose)
-		printf ("\n\tRemoved message queue: %d\n", msqid);
+		printf("\n\tRemoved message queue: %d\n", msqid);
 	if (logit)
-		fprintf (logfile, "\n\tRemoved message queue: %d\n", msqid);
+		fprintf(logfile, "\n\tRemoved message queue: %d\n", msqid);
 
 	/* Program completed successfully -- exit */
-	printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 	if (logit) {
-		fprintf (logfile, "\nsuccessful!\n");
-		fclose (logfile);
+		fprintf(logfile, "\nsuccessful!\n");
+		fclose(logfile);
 	}
 
 	return (0);
@@ -227,33 +234,33 @@ int main (int argc, char **argv)
 |            [-l] logfile: log file name                               |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void parse_args (int argc, char **argv)
+static void parse_args(int argc, char **argv)
 {
-	int	opt;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int opt;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	/*
 	 * Parse command line options.
 	 */
 	while ((opt = getopt(argc, argv, "vl:")) != EOF) {
 		switch (opt) {
-			case 'v':	/* verbose */
-				verbose++;
-				break;
-			case 'l':	/* log file */
-				logit++;
-				log_filename = optarg;
-				break;
-			default:
-				errflag++;
-				break;
+		case 'v':	/* verbose */
+			verbose++;
+			break;
+		case 'l':	/* log file */
+			logit++;
+			log_filename = optarg;
+			break;
+		default:
+			errflag++;
+			break;
 		}
 	}
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -264,12 +271,12 @@ static void parse_args (int argc, char **argv)
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void sys_error (const char *msg, int line)
+static void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -279,10 +286,10 @@ static void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void error (const char *msg, int line)
+static void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
 	if (logit)
-		fprintf (logfile, "ERROR [line: %d] %s\n", line, msg);
-	exit (-1);
+		fprintf(logfile, "ERROR [line: %d] %s\n", line, msg);
+	exit(-1);
 }

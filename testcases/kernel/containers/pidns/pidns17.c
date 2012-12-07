@@ -116,9 +116,9 @@ int child_fn(void *arg)
 			 * WTERMSIG.
 			 */
 			printf("cinit: found a child alive still "
-			    "%d exit: %d, %d, signal %d, %d", i,
-			    WIFEXITED(status), WEXITSTATUS(status),
-			    WIFSIGNALED(status), WTERMSIG(status));
+			       "%d exit: %d, %d, signal %d, %d", i,
+			       WIFEXITED(status), WEXITSTATUS(status),
+			       WIFSIGNALED(status), WTERMSIG(status));
 			exit_val = 1;
 		}
 	}
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 	/* Container creation on PID namespace */
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, NULL));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TBROK|TERRNO, CLEANUP, "clone failed");
+		tst_brkm(TBROK | TERRNO, CLEANUP, "clone failed");
 	}
 
 	sleep(1);
@@ -149,8 +149,8 @@ int main(int argc, char *argv[])
 		tst_resm(TFAIL, "container exited abnormally");
 	else if (WIFSIGNALED(status))
 		tst_resm(TFAIL,
-		    "container was signaled with signal = %d",
-		    WTERMSIG(status));
+			 "container was signaled with signal = %d",
+			 WTERMSIG(status));
 
 	CLEANUP();
 	tst_exit();
@@ -163,6 +163,6 @@ int main(int argc, char *argv[])
  */
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 }

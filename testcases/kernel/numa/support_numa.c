@@ -47,16 +47,16 @@
 #define barrier() __asm__ __volatile__("": : :"memory")
 
 /* Extern Global Variables */
-extern int  Tst_count;               /* to avoid compilation errors. */
-extern char *TESTDIR;                /* to avoid compilation errors. */
+extern int Tst_count;		/* to avoid compilation errors. */
+extern char *TESTDIR;		/* to avoid compilation errors. */
 
 /* Global Variables */
-char *TCID     = "support_numa"; /* to avoid compilation errors. */
-int  TST_TOTAL = 1;                  /* to avoid compilation errors. */
+char *TCID = "support_numa";	/* to avoid compilation errors. */
+int TST_TOTAL = 1;		/* to avoid compilation errors. */
 
 void sigfunc(int sig)
 {
-        tst_resm(TINFO, "#Caught signal signum=%d", sig);
+	tst_resm(TINFO, "#Caught signal signum=%d", sig);
 }
 
 /******************************************************************************/
@@ -75,46 +75,43 @@ void sigfunc(int sig)
 /*                                                                            */
 /******************************************************************************/
 
-int main( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
 	int i;
 	char *buf = NULL;
-	int count=0;
+	int count = 0;
 	struct sigaction sa;
 
-        switch(atoi(argv[1]))
-	{
-	case 1: printf("%d", PAGE_SIZE);
+	switch (atoi(argv[1])) {
+	case 1:
+		printf("%d", PAGE_SIZE);
 		tst_exit();
 	case 2:
-		buf = (char*) malloc(MB);
-               	if (!buf)
-		{
+		buf = (char *)malloc(MB);
+		if (!buf) {
 			tst_resm(TINFO, "#Memory is not available\n");
 			tst_exit();
 			exit(2);
 		}
-       		for (i=0; i<MB; i+= PAGE_SIZE)
-		{
+		for (i = 0; i < MB; i += PAGE_SIZE) {
 			count++;
-               		buf[i] = 'a';
-               		barrier();
-       		}
+			buf[i] = 'a';
+			barrier();
+		}
 		free(buf);
 		tst_exit();
 	case 3:
-                /* Trap SIGINT */
-                sa.sa_handler = sigfunc;
-                sa.sa_flags = SA_RESTART;
-                sigemptyset(&sa.sa_mask);
-                if (sigaction(SIGINT, &sa, 0) < 0)
-		{
+		/* Trap SIGINT */
+		sa.sa_handler = sigfunc;
+		sa.sa_flags = SA_RESTART;
+		sigemptyset(&sa.sa_mask);
+		if (sigaction(SIGINT, &sa, 0) < 0) {
 			tst_brkm(TBROK, NULL, "#Sigaction SIGINT failed\n");
 			tst_exit();
 			exit(1);
 		}
-                /* wait for signat Int */
-                pause();
+		/* wait for signat Int */
+		pause();
 		tst_exit();
 	default:
 		exit(1);

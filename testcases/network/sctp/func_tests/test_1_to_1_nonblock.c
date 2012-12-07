@@ -48,7 +48,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>         /* for sockaddr_in */
+#include <netinet/in.h>		/* for sockaddr_in */
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/sctp.h>
@@ -60,92 +60,91 @@ char *TCID = __FILE__;
 int TST_TOTAL = 5;
 int TST_CNT = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-        int error,msg_count;
+	int error, msg_count;
 	socklen_t len;
-	int sk,pf_class,lstn_sk,acpt_sk,flag,cflag,sflag;
+	int sk, pf_class, lstn_sk, acpt_sk, flag, cflag, sflag;
 	struct msghdr outmessage;
 	struct msghdr inmessage;
-        char *message = "hello, world!\n";
-        struct iovec iov;
-        struct iovec iov_rcv;
+	char *message = "hello, world!\n";
+	struct iovec iov;
+	struct iovec iov_rcv;
 	struct sctp_sndrcvinfo *sinfo;
-        int count;
+	int count;
 	char outcmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
 	struct cmsghdr *cmsg;
-        struct iovec out_iov;
-        char * buffer_snd;
-	char * buffer_rcv;
+	struct iovec out_iov;
+	char *buffer_snd;
+	char *buffer_rcv;
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
 
-        struct sockaddr_in conn_addr,lstn_addr,svr_addr;
+	struct sockaddr_in conn_addr, lstn_addr, svr_addr;
 
 	/* Rather than fflush() throughout the code, set stdout to
-         * be unbufferd
-         */
-        setvbuf(stdout, NULL, _IONBF, 0);
-        setvbuf(stderr, NULL, _IONBF, 0);
+	 * be unbufferd
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
 
-        pf_class = PF_INET;
+	pf_class = PF_INET;
 
-        sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-        lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
 	conn_addr.sin_family = AF_INET;
-        conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        conn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	conn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
 	lstn_addr.sin_family = AF_INET;
-        lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
-	/*Binding the listen socket*/
-        test_bind(lstn_sk, (struct sockaddr *) &lstn_addr, sizeof(lstn_addr));
+	/*Binding the listen socket */
+	test_bind(lstn_sk, (struct sockaddr *)&lstn_addr, sizeof(lstn_addr));
 
-        /*Listening the socket*/
-        test_listen(lstn_sk, 10);
+	/*Listening the socket */
+	test_listen(lstn_sk, 10);
 
 	len = sizeof(struct sockaddr_in);
 	flag = MSG_NOSIGNAL;
 
-	/*Setting server socket non-blocking*/
+	/*Setting server socket non-blocking */
 	sflag = fcntl(lstn_sk, F_GETFL, 0);
 	if (sflag < 0)
 		tst_brkm(TBROK, NULL, "fcnt F_GETFL failed "
-                         "sflag:%d, errno:%d", sflag, errno);
+			 "sflag:%d, errno:%d", sflag, errno);
 
 	error = fcntl(lstn_sk, F_SETFL, sflag | O_NONBLOCK);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "fcnt F_SETFL failed "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	/* TEST1: accept should return EAGAIN instead blocking. */
 	error = accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
 	if (error != -1 || errno != EAGAIN)
 		tst_brkm(TBROK, NULL, "non-blocking accept "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking accept() - EAGAIN");
 
 	/* TEST2: Non Block connect should return EINPROGRESS */
-	/*Set client socket as non-blocking*/
+	/*Set client socket as non-blocking */
 	cflag = fcntl(sk, F_GETFL, 0);
 	if (cflag < 0)
 		tst_brkm(TBROK, NULL, "fcnt F_GETFL failed "
-                         "cflag:%d, errno:%d", cflag, errno);
+			 "cflag:%d, errno:%d", cflag, errno);
 
 	error = fcntl(sk, F_SETFL, sflag | O_NONBLOCK);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "fcnt F_SETFL failed "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
-	error = connect(sk, (const struct sockaddr *) &conn_addr, len);
+	error = connect(sk, (const struct sockaddr *)&conn_addr, len);
 	if (error != -1 || errno != EINPROGRESS)
 		tst_brkm(TBROK, NULL, "non-blocking connect "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking connect() - EINPROGRESS");
 
@@ -153,44 +152,44 @@ main(int argc, char *argv[])
 	acpt_sk = accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
 	if (acpt_sk < 0)
 		tst_brkm(TBROK, NULL, "accept after a non-blocking connect "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "accept() after a non-blocking connect - SUCCESS");
 
 	memset(&outmessage, 0, sizeof(outmessage));
-        buffer_snd = malloc(REALLY_BIG);
+	buffer_snd = malloc(REALLY_BIG);
 
-        outmessage.msg_name = &svr_addr;
-        outmessage.msg_namelen = sizeof(svr_addr);
-        outmessage.msg_iov = &out_iov;
-        outmessage.msg_iovlen = 1;
-        outmessage.msg_control = outcmsg;
-        outmessage.msg_controllen = sizeof(outcmsg);
-        outmessage.msg_flags = 0;
+	outmessage.msg_name = &svr_addr;
+	outmessage.msg_namelen = sizeof(svr_addr);
+	outmessage.msg_iov = &out_iov;
+	outmessage.msg_iovlen = 1;
+	outmessage.msg_control = outcmsg;
+	outmessage.msg_controllen = sizeof(outcmsg);
+	outmessage.msg_flags = 0;
 
 	cmsg = CMSG_FIRSTHDR(&outmessage);
-        cmsg->cmsg_level = IPPROTO_SCTP;
-        cmsg->cmsg_type = SCTP_SNDRCV;
-        cmsg->cmsg_len = CMSG_LEN(sizeof(struct sctp_sndrcvinfo));
-        outmessage.msg_controllen = cmsg->cmsg_len;
+	cmsg->cmsg_level = IPPROTO_SCTP;
+	cmsg->cmsg_type = SCTP_SNDRCV;
+	cmsg->cmsg_len = CMSG_LEN(sizeof(struct sctp_sndrcvinfo));
+	outmessage.msg_controllen = cmsg->cmsg_len;
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
-        memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
+	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
 
 	iov.iov_base = buffer_snd;
-        iov.iov_len = REALLY_BIG;
-        outmessage.msg_iov->iov_base = message;
+	iov.iov_len = REALLY_BIG;
+	outmessage.msg_iov->iov_base = message;
 
-        outmessage.msg_iov->iov_len = strlen(message) + 1;
+	outmessage.msg_iov->iov_len = strlen(message) + 1;
 
 	memset(&inmessage, 0, sizeof(inmessage));
-        buffer_rcv = malloc(REALLY_BIG);
+	buffer_rcv = malloc(REALLY_BIG);
 
-        iov_rcv.iov_base = buffer_rcv;
-        iov_rcv.iov_len = REALLY_BIG;
-        inmessage.msg_iov = &iov_rcv;
-        inmessage.msg_iovlen = 1;
-        inmessage.msg_control = incmsg;
-        inmessage.msg_controllen = sizeof(incmsg);
+	iov_rcv.iov_base = buffer_rcv;
+	iov_rcv.iov_len = REALLY_BIG;
+	inmessage.msg_iov = &iov_rcv;
+	inmessage.msg_iovlen = 1;
+	inmessage.msg_control = incmsg;
+	inmessage.msg_controllen = sizeof(incmsg);
 
 	msg_count = strlen(message) + 1;
 
@@ -198,7 +197,7 @@ main(int argc, char *argv[])
 	error = recvmsg(sk, &inmessage, MSG_WAITALL);
 	if (error != -1 || errno != EAGAIN)
 		tst_brkm(TBROK, NULL, "non-blocking recvmsg "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking recvmsg() - EAGAIN");
 
@@ -206,7 +205,7 @@ main(int argc, char *argv[])
 
 	/* TEST5: recvmsg() should succeed now as data is available. */
 	error = test_recvmsg(sk, &inmessage, flag);
-        test_check_msg_data(&inmessage, error, msg_count, MSG_EOR, 0, 0);
+	test_check_msg_data(&inmessage, error, msg_count, MSG_EOR, 0, 0);
 
 	tst_resm(TPASS, "non-blocking recvmsg() when data is available - "
 		 "SUCCESS");

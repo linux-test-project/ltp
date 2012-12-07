@@ -113,8 +113,8 @@ int main(int ac, char **av)
 		TEST(lseek(fildes, 0, SEEK_END));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO,
-			    "lseek of %s failed", TEMP_FILE);
+			tst_resm(TFAIL | TTERRNO,
+				 "lseek of %s failed", TEMP_FILE);
 			continue;
 		}
 		/*
@@ -178,20 +178,20 @@ void setup()
 
 	/* Creat/open a temporary file under above directory */
 	if ((fildes = open(TEMP_FILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
 			 TEMP_FILE, FILE_MODE);
 	}
 
 	/* Write data into temporary file */
 	if (write(fildes, write_buf, strlen(write_buf)) <= 0) {
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "writing to %s failed", TEMP_FILE);
 	}
 
 	/* Get the size of the file using fstat */
 	if (fstat(fildes, &stat_buf) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "fstat of %s failed", TEMP_FILE);
 	}
 

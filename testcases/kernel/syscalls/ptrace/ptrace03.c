@@ -167,11 +167,12 @@ int main(int ac, char **av)
 				TEST(ptrace(test_cases[i].request,
 					    test_cases[i].pid, NULL, NULL));
 				if ((TEST_RETURN == -1) && (TEST_ERRNO ==
-							    test_cases[i].
-							    exp_errno)) {
+							    test_cases
+							    [i].exp_errno)) {
 					exit(TEST_ERRNO);
 				} else {
-					tst_resm(TWARN|TTERRNO, "ptrace() returned %ld",
+					tst_resm(TWARN | TTERRNO,
+						 "ptrace() returned %ld",
 						 TEST_RETURN);
 					exit(TEST_ERRNO);
 				}

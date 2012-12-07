@@ -88,20 +88,20 @@ int main(int argc, char *argv[])
 		switch (TEST_RETURN) {
 		case 0:
 			tst_resm(TFAIL, "call succeeded unexpectedly");
-		break;
+			break;
 		case EXP_RET:
 			tst_resm(TPASS, "expected failure - "
 				 "returned value = %ld : %s", TEST_RETURN,
 				 strerror(-TEST_RETURN));
-		break;
+			break;
 		case -ENOSYS:
 			tst_resm(TCONF, "io_cancel returned ENOSYS");
-		break;
+			break;
 		default:
 			tst_resm(TFAIL, "unexpected returned value - %s (%i) - "
 				 "expected %s (%i)", strerror(-TEST_RETURN),
 				 (int)TEST_RETURN, strerror(-EXP_RET), EXP_RET);
-		break;
+			break;
 		}
 	}
 

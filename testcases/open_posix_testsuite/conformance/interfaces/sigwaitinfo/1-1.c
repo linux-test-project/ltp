@@ -27,7 +27,8 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-void myhandler (int signo) {
+void myhandler(int signo)
+{
 	printf("Inside handler\n");
 }
 
@@ -37,8 +38,8 @@ int main()
 	struct sigaction act;
 	sigset_t pendingset, selectset;
 
-	act.sa_flags=0;
-	act.sa_handler=myhandler;
+	act.sa_flags = 0;
+	act.sa_handler = myhandler;
 
 	sigemptyset(&pendingset);
 	sigemptyset(&selectset);
@@ -65,7 +66,9 @@ int main()
 	sigpending(&pendingset);
 
 	if (sigismember(&pendingset, SIGTOTEST) != 0) {
-		printf("Test FAILED: Signal %d still pending even after call to sigwaitinfo()\n", SIGTOTEST);
+		printf
+		    ("Test FAILED: Signal %d still pending even after call to sigwaitinfo()\n",
+		     SIGTOTEST);
 		return PTS_FAIL;
 	}
 

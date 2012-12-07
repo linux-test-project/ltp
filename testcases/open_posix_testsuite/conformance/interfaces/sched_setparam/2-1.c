@@ -39,20 +39,20 @@
 #include "posixtest.h"
 
 #ifdef BSD
-# include <sys/types.h>
-# include <sys/param.h>
-# include <sys/sysctl.h>
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
 #endif
 
 #ifdef HPUX
-# include <sys/param.h>
-# include <sys/pstat.h>
+#include <sys/param.h>
+#include <sys/pstat.h>
 #endif
 
 #include <affinity.h>
 
 #define NB_LOOP         20000000
-#define NB_LOOP_CHILD  200000000 /* shall be much greater than NB_LOOP */
+#define NB_LOOP_CHILD  200000000	/* shall be much greater than NB_LOOP */
 
 #define ACCEPTABLE_RATIO 2.0
 
@@ -60,54 +60,57 @@
 #define STDOUT 1
 #define STDERR 2
 
-int nb_child;   /* Number of child processes == number of CPUs */
+int nb_child;			/* Number of child processes == number of CPUs */
 int count = 0;
 int the_pipe[2];
 
 /* Get the number of CPUs */
-int get_ncpu() {
+int get_ncpu()
+{
 	int ncpu = -1;
 
 	/* This syscall is not POSIX but it should work on many system */
 #ifdef _SC_NPROCESSORS_ONLN
 	ncpu = sysconf(_SC_NPROCESSORS_ONLN);
 #else
-# ifdef BSD
+#ifdef BSD
 	int mib[2];
 	size_t len = sizeof(ncpu);
 	mib[0] = CTL_HW;
 	mib[1] = HW_NCPU;
 	sysctl(mib, 2, &ncpu, &len, NULL, 0);
-# else
-#  ifdef HPUX
+#else
+#ifdef HPUX
 	struct pst_dynamic psd;
 	pstat_getdynamic(&psd, sizeof(psd), 1, 0);
 	ncpu = (int)psd.psd_proc_cnt;
-#  endif /* HPUX */
-# endif /* BSD */
+#endif /* HPUX */
+#endif /* BSD */
 #endif /* _SC_NPROCESSORS_ONLN */
 
 	return ncpu;
 }
 
-void child_process(int id) {
+void child_process(int id)
+{
 	int i;
 	struct sched_param param;
 
-	if (id == nb_child-1) {
+	if (id == nb_child - 1) {
 		param.sched_priority = sched_get_priority_min(SCHED_FIFO);
 		sched_setparam(getpid(), &param);
 	}
 
-	for (i=0; i<NB_LOOP_CHILD; i++) {
-		count ++;
+	for (i = 0; i < NB_LOOP_CHILD; i++) {
+		count++;
 	}
 }
 
-void sigterm_handler(int signum) {
+void sigterm_handler(int signum)
+{
 	close(STDOUT);
 	close(the_pipe[0]);
-	dup2(the_pipe[1],STDOUT);
+	dup2(the_pipe[1], STDOUT);
 	close(the_pipe[1]);
 
 	printf("*%i*", count);
@@ -116,24 +119,25 @@ void sigterm_handler(int signum) {
 	exit(0);
 }
 
-int main() {
-        int child_count, i;
+int main()
+{
+	int child_count, i;
 	struct sched_param param;
 	int *child_pid;
 	float ratio;
 
 	/* Only use a single CPU and one child process
-	when set_affinity is availaible.It's because
-	no matter what value of the counter is set to,
-	There is no guarantee that the LOOP of the child
-	can be certainly big enough on any device at any time.
-	*/
+	   when set_affinity is availaible.It's because
+	   no matter what value of the counter is set to,
+	   There is no guarantee that the LOOP of the child
+	   can be certainly big enough on any device at any time.
+	 */
 	int rc = set_affinity(0);
 	if (rc) {
 		nb_child = get_ncpu();
 		if (nb_child == -1) {
 			printf("Can not get the number of"
-				"CPUs of your machine.\n");
+			       "CPUs of your machine.\n");
 			return PTS_UNRESOLVED;
 		}
 	} else {
@@ -143,13 +147,15 @@ int main() {
 	child_pid = malloc(nb_child * sizeof(int));
 
 	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
-				 sched_get_priority_max(SCHED_FIFO)) / 2;
+				sched_get_priority_max(SCHED_FIFO)) / 2;
 
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
 		if (errno == EPERM) {
-			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root\n");
+			printf
+			    ("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root\n");
 		} else {
-			perror("An error occurs when calling sched_setscheduler()");
+			perror
+			    ("An error occurs when calling sched_setscheduler()");
 		}
 		return PTS_UNRESOLVED;
 	}
@@ -157,11 +163,11 @@ int main() {
 	if (signal(SIGTERM, sigterm_handler) == SIG_ERR) {
 		perror("An error occurs when calling signal()");
 		return PTS_UNRESOLVED;
-        }
+	}
 
 	pipe(the_pipe);
 
-	for (i=0; i<nb_child; i++) {
+	for (i = 0; i < nb_child; i++) {
 		child_pid[i] = fork();
 		if (child_pid[i] == -1) {
 			perror("An error occurs when calling fork()");
@@ -182,14 +188,14 @@ int main() {
 
 	close(STDIN);
 	close(the_pipe[1]);
-	dup2(the_pipe[0],STDIN);
+	dup2(the_pipe[0], STDIN);
 	close(the_pipe[0]);
 
-	for (i=0; i<NB_LOOP; i++) {
+	for (i = 0; i < NB_LOOP; i++) {
 		count++;
 	}
 
-	if (kill(child_pid[nb_child-1], SIGTERM) != 0) {
+	if (kill(child_pid[nb_child - 1], SIGTERM) != 0) {
 		perror("An error occurs when calling kill()");
 		return PTS_UNRESOLVED;
 	}
@@ -200,10 +206,10 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	while (scanf("*%i*",&child_count) == 0)
+	while (scanf("*%i*", &child_count) == 0)
 		sched_yield();
 
-	for (i=0; i<nb_child-1; i++) {
+	for (i = 0; i < nb_child - 1; i++) {
 		if (kill(child_pid[i], SIGKILL) != 0) {
 			perror("An error occurs when calling kill()");
 			return PTS_UNRESOLVED;
@@ -216,11 +222,13 @@ int main() {
 	if (child_count == 0 || ratio >= ACCEPTABLE_RATIO) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if (ratio <= (1/ACCEPTABLE_RATIO)) {
-		printf("Higher numerical values for the priority represent the lower priorities.\n");
+	} else if (ratio <= (1 / ACCEPTABLE_RATIO)) {
+		printf
+		    ("Higher numerical values for the priority represent the lower priorities.\n");
 		return PTS_FAIL;
 	} else {
-		printf("The difference between the processes is not representative.\n");
+		printf
+		    ("The difference between the processes is not representative.\n");
 		return PTS_UNRESOLVED;
 	}
 

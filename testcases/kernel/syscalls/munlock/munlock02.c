@@ -173,8 +173,9 @@ void setup()
 
 	/* check return code */
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL|TTERRNO, cleanup, "mlock(%p, %d) Failed with return=%ld",
-			 address, TC[0].len, TEST_RETURN);
+		tst_brkm(TFAIL | TTERRNO, cleanup,
+			 "mlock(%p, %d) Failed with return=%ld", address,
+			 TC[0].len, TEST_RETURN);
 	}
 	TC[0].addr = address;
 	/*

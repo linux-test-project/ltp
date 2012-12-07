@@ -28,7 +28,8 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main() {
+int main()
+{
 	int max_priority, old_priority, old_policy, new_policy;
 	struct sched_param param;
 
@@ -47,8 +48,7 @@ int main() {
 	/* Make sure that param.sched_priority != old_priority */
 	max_priority = sched_get_priority_max(SCHED_SPORADIC);
 	param.sched_priority = (old_priority == max_priority) ?
-		sched_get_priority_min(SCHED_SPORADIC) :
-		max_priority;
+	    sched_get_priority_min(SCHED_SPORADIC) : max_priority;
 
 	param.sched_ss_max_repl = 0;
 
@@ -65,8 +65,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if (old_policy == new_policy &&
-	   old_priority == param.sched_priority) {
+	if (old_policy == new_policy && old_priority == param.sched_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

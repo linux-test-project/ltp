@@ -24,13 +24,14 @@ int main()
 {
 	int failure = 0;
 	union sigval value;
-	value.sival_int = 0; /* 0 is just an arbitrary value */
+	value.sival_int = 0;	/* 0 is just an arbitrary value */
 
 	if (-1 == sigqueue(999999, 0, value)) {
 		if (ESRCH == errno) {
 			printf("ESRCH error received\n");
 		} else {
-			printf("sigqueue() failed on ESRCH but errno not set correctly\n");
+			printf
+			    ("sigqueue() failed on ESRCH but errno not set correctly\n");
 			failure = 1;
 		}
 	} else {

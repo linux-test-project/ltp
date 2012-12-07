@@ -85,6 +85,7 @@ int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
 	SIGUNUSED
 #endif
 };
+
 int pass = 0;
 
 int main(int ac, char **av)
@@ -96,7 +97,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();		/* global setup */
 
@@ -132,7 +133,7 @@ int main(int ac, char **av)
 				if ((rval = kill(pid, siglist[i])) != 0) {
 					tst_brkm(TBROK, cleanup,
 						 "call to kill failed");
-				 }
+				}
 
 				if (siglist[i] == pass) {
 					tst_resm(TPASS,

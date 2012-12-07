@@ -115,9 +115,9 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		fd = open(filename, O_RDWR|O_CREAT, 0664);
+		fd = open(filename, O_RDWR | O_CREAT, 0664);
 		if (fd < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 #ifdef MM_DEBUG
 		tst_resm(TINFO, "filename = %s opened successfully", filename);
 #endif
@@ -126,7 +126,8 @@ int main(int argc, char *argv[])
 		   [32 * 1280 = 40960] */
 		for (i = 0; i < 1280; i++)
 			if (write(fd, str_for_file, strlen(str_for_file)) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "write failed");
 
 		if (fstat(fd, &stat) == -1)
 			tst_brkm(TBROK, cleanup, "fstat failed");
@@ -157,7 +158,7 @@ int main(int argc, char *argv[])
 		check_and_print("MADV_DONTNEED");
 
 		if (munmap(file, stat.st_size) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "munmap failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "munmap failed");
 
 		close(fd);
 	}
@@ -187,7 +188,7 @@ static void cleanup(void)
 static void check_and_print(char *advice)
 {
 	if (TEST_RETURN == -1)
-		tst_resm(TFAIL|TTERRNO, "madvise test for %s failed", advice);
+		tst_resm(TFAIL | TTERRNO, "madvise test for %s failed", advice);
 	else if (STD_FUNCTIONAL_TEST)
 		tst_resm(TPASS, "madvise test for %s PASSED", advice);
 }

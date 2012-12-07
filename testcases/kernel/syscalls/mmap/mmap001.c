@@ -67,7 +67,7 @@ void setup()
 	snprintf(buf, 1024, "testfile.%d", getpid());
 
 	if ((filename = strdup(buf)) == NULL) {
-		tst_brkm(TBROK|TERRNO, cleanup, "strdup failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "strdup failed");
 	}
 
 }
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 
 		if (memsize < 1) {
 			tst_brkm(TBROK, cleanup, "Invalid arg for -m: %s",
-				m_copt);
+				 m_copt);
 		}
 
 		memsize *= getpagesize();	/* N PAGES */
@@ -115,37 +115,37 @@ int main(int argc, char *argv[])
 	}
 
 	tst_resm(TINFO, "mmap()ing file of %u pages or %u bytes", pages,
-		memsize);
+		 memsize);
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		fd = open(filename, O_RDWR|O_CREAT, 0666);
+		fd = open(filename, O_RDWR | O_CREAT, 0666);
 		if ((fd == -1))
-			tst_brkm(TBROK|TERRNO, cleanup,
-				"opening %s failed", filename);
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "opening %s failed", filename);
 
 		if (lseek(fd, memsize, SEEK_SET) != memsize) {
 			TEST_ERRNO = errno;
 			close(fd);
-			tst_brkm(TBROK|TTERRNO, cleanup, "lseek failed");
+			tst_brkm(TBROK | TTERRNO, cleanup, "lseek failed");
 		}
 
 		if (write(fd, "\0", 1) != 1) {
 			TEST_ERRNO = errno;
 			close(fd);
-			tst_brkm(TBROK|TTERRNO, cleanup,
-				"writing to %s failed", filename);
+			tst_brkm(TBROK | TTERRNO, cleanup,
+				 "writing to %s failed", filename);
 		}
 
 		array = mmap(0, memsize, PROT_WRITE, MAP_SHARED, fd, 0);
 		if (array == (char *)MAP_FAILED) {
 			TEST_ERRNO = errno;
 			close(fd);
-			tst_brkm(TBROK|TTERRNO, cleanup,
-				"mmapping %s failed", filename);
+			tst_brkm(TBROK | TTERRNO, cleanup,
+				 "mmapping %s failed", filename);
 		} else {
 			tst_resm(TPASS, "mmap() completed successfully.");
 		}
@@ -168,11 +168,11 @@ int main(int argc, char *argv[])
 			TEST(msync(array, memsize, MS_SYNC));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL|TTERRNO,
-					"synchronizing mmapped page failed");
+				tst_resm(TFAIL | TTERRNO,
+					 "synchronizing mmapped page failed");
 			} else {
 				tst_resm(TPASS,
-					"synchronizing mmapped page passed");
+					 "synchronizing mmapped page passed");
 			}
 
 		}
@@ -180,11 +180,10 @@ int main(int argc, char *argv[])
 		TEST(munmap(array, memsize));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO,
-				"munmapping %s failed", filename);
+			tst_resm(TFAIL | TTERRNO,
+				 "munmapping %s failed", filename);
 		} else {
-			tst_resm(TPASS,
-				"munmapping %s successful", filename);
+			tst_resm(TPASS, "munmapping %s successful", filename);
 		}
 
 		close(fd);

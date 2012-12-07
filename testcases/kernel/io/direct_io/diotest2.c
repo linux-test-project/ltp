@@ -58,8 +58,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="diotest02";				/* Test program identifier.    */
-int TST_TOTAL=3;				/* Total number of test conditions */
+char *TCID = "diotest02";	/* Test program identifier.    */
+int TST_TOTAL = 3;		/* Total number of test conditions */
 
 #ifdef O_DIRECT
 
@@ -75,47 +75,46 @@ int TST_TOTAL=3;				/* Total number of test conditions */
  *	For each iteration, write data starting at offse+iter*bufsize
  *	location in the file and read from there.
 */
-int
-runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
+int runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 {
-	char	*buf1;
-	char	*buf2;
-	int	i, bufsize = BUFSIZE;
+	char *buf1;
+	char *buf2;
+	int i, bufsize = BUFSIZE;
 
 	/* Allocate for buffers */
 	if ((buf1 = valloc(bufsize)) == 0) {
 		tst_resm(TFAIL, "valloc() buf1 failed: %s", strerror(errno));
-		return(-1);
+		return (-1);
 	}
 	if ((buf2 = valloc(bufsize)) == 0) {
 		tst_resm(TFAIL, "valloc() buf2 failed: %s", strerror(errno));
-		return(-1);
+		return (-1);
 	}
 
 	/* seek bufsize*iteration and write. seek and read. verify. */
 	for (i = 0; i < iter; i++) {
 		fillbuf(buf1, bufsize, i);
-		if (lseek(fd_w, offset+iter*bufsize, SEEK_SET) < 0)  {
+		if (lseek(fd_w, offset + iter * bufsize, SEEK_SET) < 0) {
 			tst_resm(TFAIL, "lseek before write failed: %s",
-				strerror(errno));
-			return(-1);
+				 strerror(errno));
+			return (-1);
 		}
 		if (write(fd_w, buf1, bufsize) < bufsize) {
 			tst_resm(TFAIL, "write failed: %s", strerror(errno));
-			return(-1);
+			return (-1);
 		}
-		if (lseek(fd_r, offset+iter*bufsize, SEEK_SET) < 0) {
+		if (lseek(fd_r, offset + iter * bufsize, SEEK_SET) < 0) {
 			tst_resm(TFAIL, "lseek before read failed: %s",
-				strerror(errno));
-			return(-1);
+				 strerror(errno));
+			return (-1);
 		}
 		if (read(fd_r, buf2, bufsize) < bufsize) {
 			tst_resm(TFAIL, "read failed: %s", strerror(errno));
-			return(-1);
+			return (-1);
 		}
 		if (bufcmp(buf1, buf2, bufsize) != 0) {
 			tst_resm(TFAIL, "read/write comparision failed");
-			return(-1);
+			return (-1);
 		}
 	}
 	return 0;
@@ -124,38 +123,38 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 /*
  * prg_usage: display the program usage.
 */
-void
-prg_usage()
+void prg_usage()
 {
-	fprintf(stderr, "Usage: diotest2 [-b bufsize] [-o offset] [-i iterations] [-f filename]\n");
+	fprintf(stderr,
+		"Usage: diotest2 [-b bufsize] [-o offset] [-i iterations] [-f filename]\n");
 	exit(1);
 }
 
 int fd1 = -1;
-char	filename[LEN];
+char filename[LEN];
 static void setup(void);
 static void cleanup(void);
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int	iter = 100;		/* Iterations. Default 100 */
-	int	bufsize = BUFSIZE;	/* Buffer size. Default 4k */
-	off64_t	offset = 0;		/* Offset. Default 0 */
-	int	i, action, fd_r, fd_w;
-	int	fail_count = 0, total = 0, failed = 0;
+	int iter = 100;		/* Iterations. Default 100 */
+	int bufsize = BUFSIZE;	/* Buffer size. Default 4k */
+	off64_t offset = 0;	/* Offset. Default 0 */
+	int i, action, fd_r, fd_w;
+	int fail_count = 0, total = 0, failed = 0;
 
 	/* Options */
-	sprintf(filename,"testdata-2.%ld", syscall(__NR_gettid));
+	sprintf(filename, "testdata-2.%ld", syscall(__NR_gettid));
 	while ((i = getopt(argc, argv, "b:o:i:f:")) != -1) {
-		switch(i) {
+		switch (i) {
 		case 'b':
 			if ((bufsize = atoi(optarg)) <= 0) {
 				fprintf(stderr, "bufsize must be > 0\n");
 				prg_usage();
 			}
 			if (bufsize % 4096 != 0) {
-				fprintf(stderr, "bufsize must be multiple of 4k\n");
+				fprintf(stderr,
+					"bufsize must be multiple of 4k\n");
 				prg_usage();
 			}
 			break;
@@ -183,18 +182,18 @@ main(int argc, char *argv[])
 
 	/* Testblock-1: Read with Direct IO, Write without */
 	action = READ_DIRECT;
-	if ((fd_w = open(filename, O_WRONLY|O_CREAT, 0666)) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_WRONLY..) failed", filename);
-	if ((fd_r = open(filename, O_DIRECT|O_RDONLY, 0666)) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_DIRECT|O_RDONLY..) failed", filename);
+	if ((fd_w = open(filename, O_WRONLY | O_CREAT, 0666)) < 0)
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_WRONLY..) failed", filename);
+	if ((fd_r = open(filename, O_DIRECT | O_RDONLY, 0666)) < 0)
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_DIRECT|O_RDONLY..) failed", filename);
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "Read with Direct IO, Write without");
+		tst_resm(TFAIL, "Read with Direct IO, Write without");
 	} else
-		tst_resm (TPASS, "Read with Direct IO, Write without");
+		tst_resm(TPASS, "Read with Direct IO, Write without");
 	close(fd_w);
 	close(fd_r);
 	unlink(filename);
@@ -202,18 +201,17 @@ main(int argc, char *argv[])
 
 	/* Testblock-2: Write with Direct IO, Read without */
 	action = WRITE_DIRECT;
-	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_DIRECT|O_WRONLY..) failed", filename);
-	if ((fd_r = open(filename, O_RDONLY|O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_RDONLY..) failed", filename);
+	if ((fd_w = open(filename, O_DIRECT | O_WRONLY | O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_DIRECT|O_WRONLY..) failed", filename);
+	if ((fd_r = open(filename, O_RDONLY | O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDONLY..) failed", filename);
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
 		failed = TRUE;
 		fail_count++;
-		tst_resm (TFAIL, "Write with Direct IO, Read without");
-	}
-	else
+		tst_resm(TFAIL, "Write with Direct IO, Read without");
+	} else
 		tst_resm(TPASS, "Write with Direct IO, Read without");
 	close(fd_w);
 	close(fd_r);
@@ -222,29 +220,30 @@ main(int argc, char *argv[])
 
 	/* Testblock-3: Read, Write with Direct IO. */
 	action = RDWR_DIRECT;
-	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_DIRECT|O_WRONLY|O_CREAT, ..) failed", filename);
-	if ((fd_r = open(filename, O_DIRECT|O_RDONLY|O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_DIRECT|O_RDONLY|O_CREAT, ..) failed", filename);
+	if ((fd_w = open(filename, O_DIRECT | O_WRONLY | O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_DIRECT|O_WRONLY|O_CREAT, ..) failed",
+			 filename);
+	if ((fd_r = open(filename, O_DIRECT | O_RDONLY | O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_DIRECT|O_RDONLY|O_CREAT, ..) failed",
+			 filename);
 	if (runtest(fd_r, fd_w, iter, offset, action) < 0) {
 		failed = TRUE;
 		fail_count++;
 		tst_resm(TFAIL, "Read, Write with Direct IO");
 	} else
-		tst_resm (TPASS, "Read, Write with Direct IO");
+		tst_resm(TPASS, "Read, Write with Direct IO");
 	close(fd_w);
 	close(fd_r);
 	unlink(filename);
 	total++;
 
 	if (failed)
-		tst_resm(TINFO, "%d/%d testblocks failed",
-			fail_count, total);
+		tst_resm(TINFO, "%d/%d testblocks failed", fail_count, total);
 	else
 		tst_resm(TINFO, "%d testblocks %d iterations completed",
-			total, iter);
+			 total, iter);
 	cleanup();
 
 	tst_exit();
@@ -255,15 +254,15 @@ static void setup(void)
 {
 	tst_tmpdir();
 
-	if ((fd1 = open(filename, O_CREAT|O_EXCL, 0600)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		   "open(%s, O_CREAT|O_EXCL, ..) failed", filename);
+	if ((fd1 = open(filename, O_CREAT | O_EXCL, 0600)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_CREAT|O_EXCL, ..) failed", filename);
 	close(fd1);
 
 	/* Test for filesystem support of O_DIRECT */
 	if ((fd1 = open(filename, O_DIRECT, 0600)) == -1)
-		tst_brkm(TCONF|TERRNO, cleanup,
-		    "open(%s, O_DIRECT, ..) failed", filename);
+		tst_brkm(TCONF | TERRNO, cleanup,
+			 "open(%s, O_DIRECT, ..) failed", filename);
 	close(fd1);
 
 }
@@ -278,8 +277,8 @@ static void cleanup(void)
 }
 
 #else /* O_DIRECT */
-int
-main() {
+int main()
+{
 	tst_brkm(TCONF, NULL, "O_DIRECT is not defined.");
 }
 #endif /* O_DIRECT */

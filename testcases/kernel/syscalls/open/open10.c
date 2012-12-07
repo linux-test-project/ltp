@@ -123,7 +123,7 @@ int main(int ac, char *av[])
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	tst_tmpdir();
 
@@ -176,17 +176,17 @@ int main(int ac, char *av[])
 		 * and with no setgid bit.
 		 */
 		if ((ret = mkdir(DIR_A, MODE_RWX)) < 0) {
-			tst_resm(TFAIL|TERRNO, "mkdir(%s) failed", DIR_A);
+			tst_resm(TFAIL | TERRNO, "mkdir(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
 
 		if ((ret = chown(DIR_A, user1_uid, group2_gid)) < 0) {
-			tst_resm(TFAIL|TERRNO, "chown(%s) failed", DIR_A);
+			tst_resm(TFAIL | TERRNO, "chown(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(DIR_A, &buf)) < 0) {
-			tst_resm(TFAIL|TERRNO, "stat(%s) failed", DIR_A);
+			tst_resm(TFAIL | TERRNO, "stat(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
 
@@ -209,22 +209,22 @@ int main(int ac, char *av[])
 		 * this process and with the setgid bit set.
 		 */
 		if ((ret = mkdir(DIR_B, MODE_RWX)) < 0) {
-			tst_resm(TFAIL|TERRNO, "mkdir(%s) failed", DIR_B);
+			tst_resm(TFAIL | TERRNO, "mkdir(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = chown(DIR_B, user1_uid, group2_gid)) < 0) {
-			tst_resm(TFAIL|TERRNO, "chown(%s) failed", DIR_B);
+			tst_resm(TFAIL | TERRNO, "chown(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = chmod(DIR_B, MODE_SGID)) < 0) {
-			tst_resm(TFAIL|TERRNO, "chmod(%s) failed", DIR_B);
+			tst_resm(TFAIL | TERRNO, "chmod(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(DIR_B, &buf)) < 0) {
-			tst_resm(TFAIL|TERRNO, "stat(%s) failed", DIR_B);
+			tst_resm(TFAIL | TERRNO, "stat(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
@@ -265,7 +265,8 @@ int main(int ac, char *av[])
 		 * Now become user1, group1
 		 */
 		if ((ret = setgid(group1_gid)) < 0) {
-			tst_resm(TINFO, "Unable to set process group ID to group1");
+			tst_resm(TINFO,
+				 "Unable to set process group ID to group1");
 		}
 
 		if ((ret = setreuid(-1, user1_uid)) < 0) {
@@ -278,13 +279,13 @@ int main(int ac, char *av[])
 		 */
 		ret = open(nosetgid_A, O_CREAT | O_EXCL | O_RDWR, MODE_RWX);
 		if (ret < 0) {
-			tst_resm(TFAIL|TERRNO, "open(%s) failed", nosetgid_A);
+			tst_resm(TFAIL | TERRNO, "open(%s) failed", nosetgid_A);
 			local_flag = FAILED;
 		}
 		close(ret);
 
 		if ((ret = stat(nosetgid_A, &buf)) < 0) {
-			tst_resm(TFAIL|TERRNO, "stat(%s) failed", nosetgid_A);
+			tst_resm(TFAIL | TERRNO, "stat(%s) failed", nosetgid_A);
 			local_flag = FAILED;
 		}
 
@@ -307,13 +308,13 @@ int main(int ac, char *av[])
 		 */
 		ret = open(setgid_A, O_CREAT | O_EXCL | O_RDWR, MODE_SGID);
 		if (ret < 0) {
-			tst_resm(TFAIL|TERRNO, "open(%s) failed", setgid_A);
+			tst_resm(TFAIL | TERRNO, "open(%s) failed", setgid_A);
 			local_flag = FAILED;
 		}
 		close(ret);
 
 		if ((ret = stat(setgid_A, &buf)) < 0) {
-			tst_resm(TFAIL|TERRNO, "stat(%s) failed", setgid_A);
+			tst_resm(TFAIL | TERRNO, "stat(%s) failed", setgid_A);
 			local_flag = FAILED;
 		}
 
@@ -355,13 +356,13 @@ int main(int ac, char *av[])
 		 */
 		ret = open(nosetgid_B, O_CREAT | O_EXCL | O_RDWR, MODE_RWX);
 		if (ret < 0) {
-			tst_resm(TFAIL|TERRNO, "open(%s) failed", nosetgid_B);
+			tst_resm(TFAIL | TERRNO, "open(%s) failed", nosetgid_B);
 			local_flag = FAILED;
 		}
 		close(ret);
 
 		if ((ret = stat(nosetgid_B, &buf)) < 0) {
-			tst_resm(TFAIL|TERRNO, "stat(%s) failed", nosetgid_B);
+			tst_resm(TFAIL | TERRNO, "stat(%s) failed", nosetgid_B);
 			local_flag = FAILED;
 		}
 
@@ -385,13 +386,13 @@ int main(int ac, char *av[])
 		 */
 		ret = open(setgid_B, O_CREAT | O_EXCL | O_RDWR, MODE_SGID);
 		if (ret < 0) {
-			tst_resm(TFAIL|TERRNO, "open(%s) failed", setgid_B);
+			tst_resm(TFAIL | TERRNO, "open(%s) failed", setgid_B);
 			local_flag = FAILED;
 		}
 		close(ret);
 
 		if ((ret = stat(setgid_B, &buf)) < 0) {
-			tst_resm(TFAIL|TERRNO, "stat(%s) failed", setgid_B);
+			tst_resm(TFAIL | TERRNO, "stat(%s) failed", setgid_B);
 			local_flag = FAILED;
 		}
 
@@ -429,20 +430,23 @@ int main(int ac, char *av[])
 
 		/* Become root again */
 		if ((ret = setreuid(-1, save_myuid)) < 0) {
-			tst_resm(TFAIL|TERRNO, "Changing back to root failed");
+			tst_resm(TFAIL | TERRNO,
+				 "Changing back to root failed");
 			local_flag = FAILED;
 		}
 
 		/* Create the file with setgid set */
 		if ((ret = open(root_setgid_B, O_CREAT | O_EXCL | O_RDWR,
 				MODE_SGID)) < 0) {
-			tst_resm(TFAIL|TERRNO, "open(%s) failed", root_setgid_B);
+			tst_resm(TFAIL | TERRNO, "open(%s) failed",
+				 root_setgid_B);
 			local_flag = FAILED;
 		}
 		close(ret);
 
 		if ((ret = stat(root_setgid_B, &buf)) < 0) {
-			tst_resm(TFAIL|TERRNO, "stat(%s) failed", root_setgid_B);
+			tst_resm(TFAIL | TERRNO, "stat(%s) failed",
+				 root_setgid_B);
 			local_flag = FAILED;
 		}
 
@@ -473,20 +477,23 @@ int main(int ac, char *av[])
 		/* Remove the directories.                                      */
 	/*--------------------------------------------------------------*/
 		if ((ret = unlink(setgid_A)) < 0)
-			tst_resm(TWARN|TERRNO, "unlink(%s) failed", setgid_A);
+			tst_resm(TWARN | TERRNO, "unlink(%s) failed", setgid_A);
 		if ((ret = unlink(nosetgid_A)) < 0)
-			tst_resm(TWARN|TERRNO, "unlink(%s) failed", nosetgid_A);
+			tst_resm(TWARN | TERRNO, "unlink(%s) failed",
+				 nosetgid_A);
 		if ((ret = rmdir(DIR_A)) < 0)
-			tst_resm(TWARN|TERRNO, "rmdir(%s) failed", DIR_A);
+			tst_resm(TWARN | TERRNO, "rmdir(%s) failed", DIR_A);
 
 		if ((ret = unlink(setgid_B)) < 0)
-			tst_resm(TWARN|TERRNO, "unlink(%s) failed", setgid_B);
+			tst_resm(TWARN | TERRNO, "unlink(%s) failed", setgid_B);
 		if ((ret = unlink(root_setgid_B)) < 0)
-			tst_resm(TWARN|TERRNO, "unlink(%s) failed", root_setgid_B);
+			tst_resm(TWARN | TERRNO, "unlink(%s) failed",
+				 root_setgid_B);
 		if ((ret = unlink(nosetgid_B)) < 0)
-			tst_resm(TWARN|TERRNO, "unlink(%s) failed", nosetgid_B);
+			tst_resm(TWARN | TERRNO, "unlink(%s) failed",
+				 nosetgid_B);
 		if ((ret = rmdir(DIR_B)) < 0)
-			tst_resm(TWARN|TERRNO, "rmdir(%s) failed", DIR_B);
+			tst_resm(TWARN | TERRNO, "rmdir(%s) failed", DIR_B);
 
 		if (fail_count == 0) {
 			tst_resm(TPASS, "Test passed.");

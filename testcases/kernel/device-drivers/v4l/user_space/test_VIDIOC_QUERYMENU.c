@@ -40,17 +40,13 @@ static void do_check_menu(__u32 id, __u32 index,
 
 		dprintf("\tmenu = {.id=%u, .index=%i, .name=\"%s\", "
 			".reserved=0x%X }\n",
-			menu->id,
-			menu->index,
-			menu->name,
-			menu->reserved
-			);
+			menu->id, menu->index, menu->name, menu->reserved);
 
 		CU_ASSERT_EQUAL(menu->id, id);
 		CU_ASSERT_EQUAL(menu->index, index);
 
-		CU_ASSERT(0 < strlen((char*)menu->name));
-		CU_ASSERT(valid_string((char*)menu->name, sizeof(menu->name)));
+		CU_ASSERT(0 < strlen((char *)menu->name));
+		CU_ASSERT(valid_string((char *)menu->name, sizeof(menu->name)));
 
 		CU_ASSERT_EQUAL(menu->reserved, 0);
 
@@ -62,7 +58,8 @@ static void do_check_menu(__u32 id, __u32 index,
 		memset(&menu2, 0, sizeof(menu2));
 		menu2.id = id;
 		menu2.index = index;
-		strncpy((char*)menu2.name, (char*)menu->name, sizeof(menu2.name));
+		strncpy((char *)menu2.name, (char *)menu->name,
+			sizeof(menu2.name));
 		CU_ASSERT_EQUAL(memcmp(menu, &menu2, sizeof(*menu)), 0);
 
 	} else {
@@ -76,7 +73,8 @@ static void do_check_menu(__u32 id, __u32 index,
 	}
 }
 
-static void do_query_menu(__u32 id) {
+static void do_query_menu(__u32 id)
+{
 	int ret_query, errno_query;
 	__u32 i;
 	struct v4l2_querymenu menu;
@@ -90,8 +88,10 @@ static void do_query_menu(__u32 id) {
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYMENU, &menu);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYMENU, id=%u, (V4L2_CID_BASE+%i), index=%u, ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, id, id-V4L2_CID_BASE, i, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYMENU, id=%u, (V4L2_CID_BASE+%i), index=%u, ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, id, id - V4L2_CID_BASE, i, ret_query,
+		     errno_query);
 
 		do_check_menu(id, i, ret_query, errno_query, &menu);
 
@@ -100,20 +100,21 @@ static void do_query_menu(__u32 id) {
 
 }
 
-static void do_query_menu_invalid(__u32 id) {
+static void do_query_menu_invalid(__u32 id)
+{
 	int ret_query, errno_query;
 	unsigned int i;
 	struct v4l2_querymenu menu;
 	const __u32 test_index[] = {
 		U32_MIN,
-		U32_MIN+1,
-		(__u32)S32_MIN,
-		(__u32)S32_MAX,
-		U32_MAX-1,
+		U32_MIN + 1,
+		(__u32) S32_MIN,
+		(__u32) S32_MAX,
+		U32_MAX - 1,
 		U32_MAX
 	};
 
-	for (i = 0; i < sizeof(test_index)/sizeof(*test_index); i++) {
+	for (i = 0; i < sizeof(test_index) / sizeof(*test_index); i++) {
 		memset(&menu, 0xff, sizeof(menu));
 		menu.id = id;
 		menu.index = test_index[i];
@@ -121,8 +122,10 @@ static void do_query_menu_invalid(__u32 id) {
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYMENU, &menu);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYMENU, id=%u, (V4L2_CID_BASE+%i), index=%u, ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, id, id-V4L2_CID_BASE, test_index[i], ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYMENU, id=%u, (V4L2_CID_BASE+%i), index=%u, ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, id, id - V4L2_CID_BASE, test_index[i],
+		     ret_query, errno_query);
 
 		CU_ASSERT_EQUAL(ret_query, -1);
 		CU_ASSERT_EQUAL(errno_query, EINVAL);
@@ -133,7 +136,8 @@ static void do_query_menu_invalid(__u32 id) {
 
 }
 
-void test_VIDIOC_QUERYMENU() {
+void test_VIDIOC_QUERYMENU()
+{
 	int ret_query, errno_query;
 	struct v4l2_queryctrl queryctrl;
 	__u32 i;
@@ -145,29 +149,25 @@ void test_VIDIOC_QUERYMENU() {
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, i, i-V4L2_CID_BASE, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, i, i - V4L2_CID_BASE, ret_query,
+		     errno_query);
 
 		if (ret_query == 0) {
 			CU_ASSERT_EQUAL(ret_query, 0);
 			CU_ASSERT_EQUAL(queryctrl.id, i);
 
-			dprintf("\tqueryctrl = {.id=%u, .type=%i, .name=\"%s\", "
-				".minimum=%i, .maximum=%i, .step=%i, "
-				".default_value=%i, "
-				".flags=0x%X, "
-				".reserved[]={ 0x%X, 0x%X } }\n",
-				queryctrl.id,
-				queryctrl.type,
-				queryctrl.name,
-				queryctrl.minimum,
-				queryctrl.maximum,
-				queryctrl.step,
-				queryctrl.default_value,
-				queryctrl.flags,
-				queryctrl.reserved[0],
-				queryctrl.reserved[1]
-				);
+			dprintf
+			    ("\tqueryctrl = {.id=%u, .type=%i, .name=\"%s\", "
+			     ".minimum=%i, .maximum=%i, .step=%i, "
+			     ".default_value=%i, " ".flags=0x%X, "
+			     ".reserved[]={ 0x%X, 0x%X } }\n", queryctrl.id,
+			     queryctrl.type, queryctrl.name, queryctrl.minimum,
+			     queryctrl.maximum, queryctrl.step,
+			     queryctrl.default_value, queryctrl.flags,
+			     queryctrl.reserved[0], queryctrl.reserved[1]
+			    );
 
 			switch (queryctrl.type) {
 			case V4L2_CTRL_TYPE_MENU:
@@ -194,15 +194,17 @@ void test_VIDIOC_QUERYMENU() {
 
 }
 
-void test_VIDIOC_QUERYMENU_invalid() {
+void test_VIDIOC_QUERYMENU_invalid()
+{
 	do_query_menu_invalid(0);
-	do_query_menu_invalid(V4L2_CID_BASE-1);
+	do_query_menu_invalid(V4L2_CID_BASE - 1);
 	do_query_menu_invalid(V4L2_CID_LASTP1);
-	do_query_menu_invalid(V4L2_CID_LASTP1+1);
-	do_query_menu_invalid(V4L2_CID_PRIVATE_BASE-1);
+	do_query_menu_invalid(V4L2_CID_LASTP1 + 1);
+	do_query_menu_invalid(V4L2_CID_PRIVATE_BASE - 1);
 }
 
-void test_VIDIOC_QUERYMENU_private() {
+void test_VIDIOC_QUERYMENU_private()
+{
 	int ret_query, errno_query;
 	struct v4l2_queryctrl queryctrl;
 	__u32 i;
@@ -214,29 +216,25 @@ void test_VIDIOC_QUERYMENU_private() {
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, i, i-V4L2_CID_BASE, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, i, i - V4L2_CID_BASE, ret_query,
+		     errno_query);
 
 		if (ret_query == 0) {
 			CU_ASSERT_EQUAL(ret_query, 0);
 			CU_ASSERT_EQUAL(queryctrl.id, i);
 
-			dprintf("\tqueryctrl = {.id=%u, .type=%i, .name=\"%s\", "
-				".minimum=%i, .maximum=%i, .step=%i, "
-				".default_value=%i, "
-				".flags=0x%X, "
-				".reserved[]={ 0x%X, 0x%X } }\n",
-				queryctrl.id,
-				queryctrl.type,
-				queryctrl.name,
-				queryctrl.minimum,
-				queryctrl.maximum,
-				queryctrl.step,
-				queryctrl.default_value,
-				queryctrl.flags,
-				queryctrl.reserved[0],
-				queryctrl.reserved[1]
-				);
+			dprintf
+			    ("\tqueryctrl = {.id=%u, .type=%i, .name=\"%s\", "
+			     ".minimum=%i, .maximum=%i, .step=%i, "
+			     ".default_value=%i, " ".flags=0x%X, "
+			     ".reserved[]={ 0x%X, 0x%X } }\n", queryctrl.id,
+			     queryctrl.type, queryctrl.name, queryctrl.minimum,
+			     queryctrl.maximum, queryctrl.step,
+			     queryctrl.default_value, queryctrl.flags,
+			     queryctrl.reserved[0], queryctrl.reserved[1]
+			    );
 
 			switch (queryctrl.type) {
 			case V4L2_CTRL_TYPE_MENU:
@@ -246,7 +244,7 @@ void test_VIDIOC_QUERYMENU_private() {
 			case V4L2_CTRL_TYPE_INTEGER:
 			case V4L2_CTRL_TYPE_BOOLEAN:
 			case V4L2_CTRL_TYPE_BUTTON:
-			case V4L2_CTRL_TYPE_INTEGER64: /* fallthrough */
+			case V4L2_CTRL_TYPE_INTEGER64:	/* fallthrough */
 			case V4L2_CTRL_TYPE_CTRL_CLASS:
 			default:
 				do_query_menu_invalid(i);
@@ -264,7 +262,8 @@ void test_VIDIOC_QUERYMENU_private() {
 
 }
 
-void test_VIDIOC_QUERYMENU_private_last_1() {
+void test_VIDIOC_QUERYMENU_private_last_1()
+{
 	int ret_query, errno_query;
 	struct v4l2_queryctrl queryctrl;
 	__u32 i;
@@ -282,7 +281,8 @@ void test_VIDIOC_QUERYMENU_private_last_1() {
 	do_query_menu_invalid(i);
 }
 
-void test_VIDIOC_QUERYMENU_NULL() {
+void test_VIDIOC_QUERYMENU_NULL()
+{
 	int ret_query, errno_query;
 	int ret_menu, errno_menu;
 	int ret_null, errno_null;
@@ -300,8 +300,10 @@ void test_VIDIOC_QUERYMENU_NULL() {
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, i, i-V4L2_CID_BASE, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, i, i - V4L2_CID_BASE, ret_query,
+		     errno_query);
 
 		if (ret_query == 0) {
 			CU_ASSERT_EQUAL(ret_query, 0);
@@ -311,11 +313,15 @@ void test_VIDIOC_QUERYMENU_NULL() {
 				menu.id = i;
 				menu.index = 0;
 
-				ret_menu = ioctl(get_video_fd(), VIDIOC_QUERYMENU, &menu);
+				ret_menu =
+				    ioctl(get_video_fd(), VIDIOC_QUERYMENU,
+					  &menu);
 				errno_menu = errno;
 
-				dprintf("\t%s:%u: VIDIOC_QUERYMENU, id=%u, (V4L2_CID_BASE+%i), index=%u, ret_query=%i, errno_query=%i\n",
-					__FILE__, __LINE__, i, i-V4L2_CID_BASE, 0, ret_query, errno_query);
+				dprintf
+				    ("\t%s:%u: VIDIOC_QUERYMENU, id=%u, (V4L2_CID_BASE+%i), index=%u, ret_query=%i, errno_query=%i\n",
+				     __FILE__, __LINE__, i, i - V4L2_CID_BASE,
+				     0, ret_query, errno_query);
 
 				if (ret_menu == 0) {
 					CU_ASSERT_EQUAL(ret_menu, 0);
@@ -338,8 +344,10 @@ void test_VIDIOC_QUERYMENU_NULL() {
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_PRIVATE_BASE+%i), ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, i, i-V4L2_CID_PRIVATE_BASE, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_PRIVATE_BASE+%i), ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, i, i - V4L2_CID_PRIVATE_BASE,
+		     ret_query, errno_query);
 
 		if (ret_query == 0) {
 			CU_ASSERT_EQUAL(ret_query, 0);
@@ -349,11 +357,15 @@ void test_VIDIOC_QUERYMENU_NULL() {
 				menu.id = i;
 				menu.index = 0;
 
-				ret_menu = ioctl(get_video_fd(), VIDIOC_QUERYMENU, &menu);
+				ret_menu =
+				    ioctl(get_video_fd(), VIDIOC_QUERYMENU,
+					  &menu);
 				errno_menu = errno;
 
-				dprintf("\t%s:%u: VIDIOC_QUERYMENU, id=%u, (V4L2_CID_BASE+%i), index=%u, ret_query=%i, errno_query=%i\n",
-					__FILE__, __LINE__, i, i-V4L2_CID_BASE, 0, ret_query, errno_query);
+				dprintf
+				    ("\t%s:%u: VIDIOC_QUERYMENU, id=%u, (V4L2_CID_BASE+%i), index=%u, ret_query=%i, errno_query=%i\n",
+				     __FILE__, __LINE__, i, i - V4L2_CID_BASE,
+				     0, ret_query, errno_query);
 
 				if (ret_menu == 0) {
 					CU_ASSERT_EQUAL(ret_menu, 0);

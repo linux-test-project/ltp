@@ -67,7 +67,7 @@ int TST_TOTAL = 1;
 static void setup(void);
 static void runtest(void);
 static void dotest(int, int, int);
-static void domisc(int, int, char*);
+static void domisc(int, int, char *);
 static void cleanup(void);
 static void term(int sig);
 
@@ -79,18 +79,18 @@ static void term(int sig);
 #define K_2		2048
 #define K_4		4096
 
-static int csize;             /* chunk size */
-static int iterations;        /* # total iterations */
-static int max_size;          /* max file size */
-static int misc_intvl;        /* for doing misc things; 0 ==> no */
-static int nchild;            /* how many children */
-static int fd;                /* file descriptor used by child */
+static int csize;		/* chunk size */
+static int iterations;		/* # total iterations */
+static int max_size;		/* max file size */
+static int misc_intvl;		/* for doing misc things; 0 ==> no */
+static int nchild;		/* how many children */
+static int fd;			/* file descriptor used by child */
 static int parent_pid;
 static int pidlist[MAXCHILD];
 static char test_name[2];
 
-static char fuss[MAXPATHLEN];         /* directory to do this in */
-static char homedir[MAXPATHLEN];     /* where we started */
+static char fuss[MAXPATHLEN];	/* directory to do this in */
+static char homedir[MAXPATHLEN];	/* where we started */
 
 static int local_flag;
 
@@ -132,19 +132,19 @@ static void setup(void)
 	mkdir(fuss, 0755);
 
 	if (chdir(fuss) < 0)
-		tst_brkm(TBROK|TERRNO, NULL, "chdir failed");
+		tst_brkm(TBROK | TERRNO, NULL, "chdir failed");
 
 	/*
 	 * Default values for run conditions.
 	 */
 	iterations = 10;
 	nchild = 5;
-	csize = K_2;            /* should run with 1, 2, and 4 K sizes */
+	csize = K_2;		/* should run with 1, 2, and 4 K sizes */
 	max_size = K_1 * K_1;
 	misc_intvl = 10;
 
 	if (sigset(SIGTERM, term) == SIG_ERR) {
-		tst_brkm(TBROK|TERRNO, NULL, "sigset failed");
+		tst_brkm(TBROK | TERRNO, NULL, "sigset failed");
 	}
 
 	local_flag = PASSED;
@@ -161,11 +161,11 @@ static void runtest(void)
 
 		test_name[0] = 'a' + i;
 		test_name[1] = '\0';
-		fd = open(test_name, O_RDWR|O_CREAT|O_TRUNC, 0666);
+		fd = open(test_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
 
 		if (fd < 0)
-			tst_brkm(TBROK|TERRNO, NULL, "Can't create %s/%s",
-				fuss, test_name);
+			tst_brkm(TBROK | TERRNO, NULL, "Can't create %s/%s",
+				 fuss, test_name);
 
 		if ((child = fork()) == 0) {
 			dotest(nchild, i, fd);
@@ -175,7 +175,7 @@ static void runtest(void)
 		close(fd);
 
 		if (child < 0) {
-			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
+			tst_brkm(TBROK | TERRNO, NULL, "fork failed");
 		} else {
 			pidlist[i] = child;
 			nwait++;
@@ -189,7 +189,9 @@ static void runtest(void)
 	while (1) {
 		if ((child = wait(&status)) >= 0) {
 			if (status) {
-				tst_resm(TFAIL, "Test{%d} failed, expected 0 exit", child);
+				tst_resm(TFAIL,
+					 "Test{%d} failed, expected 0 exit",
+					 child);
 				local_flag = FAILED;
 			}
 			++count;
@@ -203,7 +205,8 @@ static void runtest(void)
 	 * Should have collected all children.
 	 */
 	if (count != nwait) {
-		tst_resm(TFAIL, "Wrong # children waited on, count = %d", count);
+		tst_resm(TFAIL, "Wrong # children waited on, count = %d",
+			 count);
 		local_flag = FAILED;
 	}
 
@@ -216,7 +219,7 @@ static void runtest(void)
 	pid = fork();
 
 	if (pid < 0) {
-		tst_brkm(TBROK|TERRNO, sync, "fork failed");
+		tst_brkm(TBROK | TERRNO, sync, "fork failed");
 		tst_exit();
 	}
 
@@ -228,7 +231,8 @@ static void runtest(void)
 	wait(&status);
 
 	if (status)
-		tst_resm(TINFO, "CAUTION - ftest1, '%s' may not be removed", fuss);
+		tst_resm(TINFO, "CAUTION - ftest1, '%s' may not be removed",
+			 fuss);
 
 	sync();
 }
@@ -242,15 +246,15 @@ static void runtest(void)
  */
 
 #define	NMISC	4
-enum	m_type { m_fsync, m_trunc, m_sync, m_fstat };
-char	*m_str[] = { "fsync", "trunc", "sync", "fstat" };
+enum m_type { m_fsync, m_trunc, m_sync, m_fstat };
+char *m_str[] = { "fsync", "trunc", "sync", "fstat" };
 
-int	misc_cnt[NMISC];		/* counts # of each kind of misc */
-int	file_max;			/* file-max size */
-int	nchunks;
-int	last_trunc = -1;
-int	tr_flag;
-enum	m_type type = m_fsync;
+int misc_cnt[NMISC];		/* counts # of each kind of misc */
+int file_max;			/* file-max size */
+int nchunks;
+int last_trunc = -1;
+int tr_flag;
+enum m_type type = m_fsync;
 
 #define	CHUNK(i)	((i) * csize)
 #define	NEXTMISC	((rand() % misc_intvl) + 5)
@@ -264,13 +268,15 @@ static void dotest(int testers, int me, int fd)
 
 	nchunks = max_size / csize;
 
-	if ((bits = calloc((nchunks+7)/8, 1)) == 0) {
-		tst_resm(TBROK, "Test broken due to inability of malloc(bits).");
+	if ((bits = calloc((nchunks + 7) / 8, 1)) == 0) {
+		tst_resm(TBROK,
+			 "Test broken due to inability of malloc(bits).");
 		tst_exit();
 	}
 
-	if ((hold_bits = calloc((nchunks+7)/8, 1)) == 0) {
-		tst_resm(TBROK, "Test broken due to inability of malloc(hold_bits).");
+	if ((hold_bits = calloc((nchunks + 7) / 8, 1)) == 0) {
+		tst_resm(TBROK,
+			 "Test broken due to inability of malloc(hold_bits).");
 		tst_exit();
 	}
 
@@ -280,33 +286,35 @@ static void dotest(int testers, int me, int fd)
 	}
 
 	if ((val_buf = (calloc(csize, 1))) == 0) {
-		tst_resm(TBROK, "Test broken due to inability of malloc(val_buf).");
+		tst_resm(TBROK,
+			 "Test broken due to inability of malloc(val_buf).");
 		tst_exit();
 	}
 
 	if ((zero_buf = (calloc(csize, 1))) == 0) {
-		tst_resm(TBROK, "Test broken due to inability of malloc(zero_buf).");
+		tst_resm(TBROK,
+			 "Test broken due to inability of malloc(zero_buf).");
 		tst_exit();
 	}
 
 	/*
 	 * No init sectors; allow file to be sparse.
 	 */
-	val = (64/testers) * me + 1;
+	val = (64 / testers) * me + 1;
 
 	/*
 	 * For each iteration:
-	 *	zap bits array
-	 *	loop:
-	 *		pick random chunk, read it.
-	 *		if corresponding bit off {
-	 *			verify == 0. (sparse file)
-	 *			++count;
-	 *		} else
-	 *			verify == val.
-	 *		write "val" on it.
-	 *		repeat until count = nchunks.
-	 *	++val.
+	 *      zap bits array
+	 *      loop:
+	 *              pick random chunk, read it.
+	 *              if corresponding bit off {
+	 *                      verify == 0. (sparse file)
+	 *                      ++count;
+	 *              } else
+	 *                      verify == val.
+	 *              write "val" on it.
+	 *              repeat until count = nchunks.
+	 *      ++val.
 	 */
 	srand(getpid());
 
@@ -318,8 +326,8 @@ static void dotest(int testers, int me, int fd)
 			misc_cnt[i] = 0;
 		ftruncate(fd, 0);
 		file_max = 0;
-		memset(bits, 0, (nchunks+7)/8);
-		memset(hold_bits, 0, (nchunks+7)/8);
+		memset(bits, 0, (nchunks + 7) / 8);
+		memset(hold_bits, 0, (nchunks + 7) / 8);
 		memset(val_buf, val, csize);
 		memset(zero_buf, 0, csize);
 		count = 0;
@@ -330,14 +338,16 @@ static void dotest(int testers, int me, int fd)
 			 * Read it.
 			 */
 			if (lseek(fd, CHUNK(chunk), 0) < 0) {
-				tst_resm(TFAIL, "Test[%d]: lseek(0) fail at %x, errno = %d.",
-				         me, CHUNK(chunk), errno);
+				tst_resm(TFAIL,
+					 "Test[%d]: lseek(0) fail at %x, errno = %d.",
+					 me, CHUNK(chunk), errno);
 
 				tst_exit();
 			}
 			if ((xfr = read(fd, buf, csize)) < 0) {
-				tst_resm(TFAIL, "Test[%d]: read fail at %x, errno = %d.",
-					me, CHUNK(chunk), errno);
+				tst_resm(TFAIL,
+					 "Test[%d]: read fail at %x, errno = %d.",
+					 me, CHUNK(chunk), errno);
 				tst_exit();
 			}
 			/*
@@ -346,69 +356,84 @@ static void dotest(int testers, int me, int fd)
 			 * Else, have.  Verify values.
 			 */
 			if (CHUNK(chunk) >= file_max) {
-				bits[chunk/8] |= (1<<(chunk%8));
+				bits[chunk / 8] |= (1 << (chunk % 8));
 				++count;
-			} else if ((bits[chunk/8] & (1<<(chunk%8))) == 0) {
+			} else if ((bits[chunk / 8] & (1 << (chunk % 8))) == 0) {
 				if (xfr != csize) {
-					tst_resm(TFAIL, "Test[%d]: xfr=%d != %d, zero read.",
-						me, xfr, csize);
+					tst_resm(TFAIL,
+						 "Test[%d]: xfr=%d != %d, zero read.",
+						 me, xfr, csize);
 					tst_exit();
 				}
 				if (memcmp(buf, zero_buf, csize)) {
-					tst_resm(TFAIL, "Test[%d] bad verify @ 0x%x for val %d "
-						"count %d xfr %d file_max 0x%x, should be %d.",
-						me, CHUNK(chunk), val, count, xfr, file_max,
-						zero_buf[0]);
-					tst_resm(TFAIL, "Test[%d]: last_trunc = 0x%x.",
-						me, last_trunc);
+					tst_resm(TFAIL,
+						 "Test[%d] bad verify @ 0x%x for val %d "
+						 "count %d xfr %d file_max 0x%x, should be %d.",
+						 me, CHUNK(chunk), val, count,
+						 xfr, file_max, zero_buf[0]);
+					tst_resm(TFAIL,
+						 "Test[%d]: last_trunc = 0x%x.",
+						 me, last_trunc);
 					sync();
 					ft_dumpbuf(buf, csize);
-					ft_dumpbits(bits, (nchunks+7)/8);
-					ft_orbits(hold_bits, bits, (nchunks+7)/8);
+					ft_dumpbits(bits, (nchunks + 7) / 8);
+					ft_orbits(hold_bits, bits,
+						  (nchunks + 7) / 8);
 					tst_resm(TINFO, "Hold ");
-					ft_dumpbits(hold_bits, (nchunks+7)/8);
+					ft_dumpbits(hold_bits,
+						    (nchunks + 7) / 8);
 					tst_exit();
 				}
-				bits[chunk/8] |= (1<<(chunk%8));
+				bits[chunk / 8] |= (1 << (chunk % 8));
 				++count;
 			} else {
 				if (xfr != csize) {
-					tst_resm(TFAIL, "\tTest[%d]: xfr=%d != %d, val read.",
-						me, xfr, csize);
+					tst_resm(TFAIL,
+						 "\tTest[%d]: xfr=%d != %d, val read.",
+						 me, xfr, csize);
 					tst_exit();
 				}
 				++collide;
 				if (memcmp(buf, val_buf, csize)) {
-					tst_resm(TFAIL, "Test[%d] bad verify @ 0x%x for val %d "
-							"count %d xfr %d file_max 0x%x.",
-						me, CHUNK(chunk), val, count, xfr, file_max);
-					tst_resm(TFAIL, "Test[%d]: last_trunc = 0x%x.",
-						me, last_trunc);
+					tst_resm(TFAIL,
+						 "Test[%d] bad verify @ 0x%x for val %d "
+						 "count %d xfr %d file_max 0x%x.",
+						 me, CHUNK(chunk), val, count,
+						 xfr, file_max);
+					tst_resm(TFAIL,
+						 "Test[%d]: last_trunc = 0x%x.",
+						 me, last_trunc);
 					sync();
 					ft_dumpbuf(buf, csize);
-					ft_dumpbits(bits, (nchunks+7)/8);
-					ft_orbits(hold_bits, bits, (nchunks+7)/8);
+					ft_dumpbits(bits, (nchunks + 7) / 8);
+					ft_orbits(hold_bits, bits,
+						  (nchunks + 7) / 8);
 					tst_resm(TINFO, "Hold ");
-					ft_dumpbits(hold_bits, (nchunks+7)/8);
+					ft_dumpbits(hold_bits,
+						    (nchunks + 7) / 8);
 					tst_exit();
 				}
 			}
 			/*
 			 * Write it.
 			 */
-			if (lseek(fd, -xfr, 1) <  0) {
-				tst_resm(TFAIL, "Test[%d]: lseek(1) fail at %x, errno = %d.",
-					me, CHUNK(chunk), errno);
+			if (lseek(fd, -xfr, 1) < 0) {
+				tst_resm(TFAIL,
+					 "Test[%d]: lseek(1) fail at %x, errno = %d.",
+					 me, CHUNK(chunk), errno);
 				tst_exit();
 			}
 			if ((xfr = write(fd, val_buf, csize)) < csize) {
 				if (errno == ENOSPC) {
-					tst_resm(TFAIL, "Test[%d]: no space, exiting.", me);
+					tst_resm(TFAIL,
+						 "Test[%d]: no space, exiting.",
+						 me);
 					fsync(fd);
 					tst_exit();
 				}
-				tst_resm(TFAIL, "Test[%d]: write fail at %x xfr %d, errno = %d.",
-					me, CHUNK(chunk), xfr, errno);
+				tst_resm(TFAIL,
+					 "Test[%d]: write fail at %x xfr %d, errno = %d.",
+					 me, CHUNK(chunk), xfr, errno);
 				tst_exit();
 			}
 			if (CHUNK(chunk) + csize > file_max)
@@ -417,7 +442,7 @@ static void dotest(int testers, int me, int fd)
 			 * If hit "misc" interval, do it.
 			 */
 			if (misc_intvl && --whenmisc <= 0) {
-				ft_orbits(hold_bits, bits, (nchunks+7)/8);
+				ft_orbits(hold_bits, bits, (nchunks + 7) / 8);
 				domisc(me, fd, bits);
 				whenmisc = NEXTMISC;
 			}
@@ -431,9 +456,9 @@ static void dotest(int testers, int me, int fd)
 		fsync(fd);
 		++misc_cnt[m_fsync];
 		//tst_resm(TINFO, "Test{%d} val %d done, count = %d, collide = {%d}",
-		//		me, val, count, collide);
+		//              me, val, count, collide);
 		//for (i = 0; i < NMISC; i++)
-		//	tst_resm(TINFO, "Test{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
+		//      tst_resm(TINFO, "Test{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
 		++val;
 	}
 }
@@ -452,7 +477,8 @@ static void domisc(int me, int fd, char *bits)
 	switch (type) {
 	case m_fsync:
 		if (fsync(fd) < 0) {
-			tst_brkm(TFAIL|TERRNO, NULL, "Test[%d]: fsync failed.", me);
+			tst_brkm(TFAIL | TERRNO, NULL,
+				 "Test[%d]: fsync failed.", me);
 		}
 		break;
 	case m_trunc:
@@ -461,34 +487,35 @@ static void domisc(int me, int fd, char *bits)
 		last_trunc = file_max;
 		if (tr_flag) {
 			if (ftruncate(fd, file_max) < 0) {
-				tst_brkm(TFAIL|TERRNO, NULL, "Test[%d]: ftruncate failed @ 0x%x.",
-						me, file_max);
+				tst_brkm(TFAIL | TERRNO, NULL,
+					 "Test[%d]: ftruncate failed @ 0x%x.",
+					 me, file_max);
 			}
 			tr_flag = 0;
 		} else {
 			if (truncate(test_name, file_max) < 0) {
-				tst_brkm(TFAIL|TERRNO, NULL, "Test[%d]: truncate failed @ 0x%x.",
-						me, file_max);
+				tst_brkm(TFAIL | TERRNO, NULL,
+					 "Test[%d]: truncate failed @ 0x%x.",
+					 me, file_max);
 			}
 			tr_flag = 1;
 		}
-		for (; chunk%8 != 0; chunk++)
-			bits[chunk/8] &= ~(1<<(chunk%8));
+		for (; chunk % 8 != 0; chunk++)
+			bits[chunk / 8] &= ~(1 << (chunk % 8));
 		for (; chunk < nchunks; chunk += 8)
-			bits[chunk/8] = 0;
+			bits[chunk / 8] = 0;
 		break;
 	case m_sync:
 		sync();
 		break;
 	case m_fstat:
 		if (fstat(fd, &sb) < 0)
-			tst_brkm(TFAIL|TERRNO, NULL,
-			    "\tTest[%d]: fstat failed", me);
+			tst_brkm(TFAIL | TERRNO, NULL,
+				 "\tTest[%d]: fstat failed", me);
 		if (sb.st_size != file_max)
 			tst_brkm(TFAIL, NULL,
-			    "\tTest[%d]: fstat() mismatch; st_size=%lu, "
-			    "file_max=%x.",
-			    me, sb.st_size, file_max);
+				 "\tTest[%d]: fstat() mismatch; st_size=%lu, "
+				 "file_max=%x.", me, sb.st_size, file_max);
 		break;
 	}
 
@@ -521,7 +548,7 @@ static void term(int sig LTP_ATTRIBUTE_UNUSED)
 	close(fd);
 
 	if (unlink(test_name) == -1)
-		tst_resm(TBROK|TERRNO, "unlink failed");
+		tst_resm(TBROK | TERRNO, "unlink failed");
 
 	tst_exit();
 }

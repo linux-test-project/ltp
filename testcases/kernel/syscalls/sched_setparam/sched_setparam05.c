@@ -86,6 +86,7 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 
 static struct sched_param param = { 0 };
 static int exp_enos[] = { EPERM, 0 };
+
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -138,9 +139,9 @@ int main(int ac, char **av)
 				exit(0);
 			}
 
-			tst_resm(TWARN|TTERRNO, "Test failed, sched_setparam()"
-				 " returned : %ld",
-				 TEST_RETURN);
+			tst_resm(TWARN | TTERRNO,
+				 "Test failed, sched_setparam()"
+				 " returned : %ld", TEST_RETURN);
 			TEST_ERROR_LOG(TEST_ERRNO);
 			exit(1);
 

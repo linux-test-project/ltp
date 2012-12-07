@@ -24,8 +24,8 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-# define CLEANUP_NOTCALLED 0
-# define CLEANUP_CALLED 1
+#define CLEANUP_NOTCALLED 0
+#define CLEANUP_CALLED 1
 
 int cleanup_flag[3];		/* Array to hold the cleanup flags for the 3 cleanup handlers */
 int i;
@@ -71,30 +71,30 @@ int main()
 	pthread_t new_th;
 
 	/* Initializing values */
-	for (i = 0;i < 3;i++)
+	for (i = 0; i < 3; i++)
 		cleanup_flag[i] = 0;
 	i = 0;
 
 	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to end execution */
-	if (pthread_join(new_th, NULL) != 0)
-	{
+	if (pthread_join(new_th, NULL) != 0) {
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Verify that the cancellation handlers are popped in order, that is:
 	 * 3, 2, then 1. */
-	if ((cleanup_flag[0] != 3) || (cleanup_flag[1] != 2) || (cleanup_flag[2] != 1))
-	{
-		printf("Test FAILED: Cleanup handlers not popped in order, expected 3,2,1, but got:\n");
-		printf("%d, %d, %d\n", cleanup_flag[0], cleanup_flag[1], cleanup_flag[2]);
+	if ((cleanup_flag[0] != 3) || (cleanup_flag[1] != 2)
+	    || (cleanup_flag[2] != 1)) {
+		printf
+		    ("Test FAILED: Cleanup handlers not popped in order, expected 3,2,1, but got:\n");
+		printf("%d, %d, %d\n", cleanup_flag[0], cleanup_flag[1],
+		       cleanup_flag[2]);
 		return PTS_FAIL;
 	}
 

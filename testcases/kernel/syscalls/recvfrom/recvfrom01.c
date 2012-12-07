@@ -123,7 +123,6 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. *
 
 int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, EINVAL, 0 };
 
-
 #ifdef UCLINUX
 static char *argv0;
 #endif
@@ -202,7 +201,7 @@ void setup0(void)
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
 	else if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open(/dev/null) failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open(/dev/null) failed");
 	fromlen = sizeof(from);
 }
 
@@ -219,10 +218,10 @@ void setup1(void)
 
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "socket() failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "socket() failed");
 	if (tdat[testno].type == SOCK_STREAM &&
 	    connect(s, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "connect failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "connect failed");
 	}
 	/* Wait for something to be readable, else we won't detect EFAULT on recv */
 	FD_ZERO(&rdfds);
@@ -255,15 +254,15 @@ pid_t start_server(struct sockaddr_in *sin0)
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "server socket failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "server socket failed");
 		return -1;
 	}
 	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "server bind failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "server bind failed");
 		return -1;
 	}
 	if (listen(sfd, 10) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "server listen failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "server listen failed");
 		return -1;
 	}
 	switch ((pid = FORK_OR_VFORK())) {
@@ -277,14 +276,14 @@ pid_t start_server(struct sockaddr_in *sin0)
 #endif
 		break;
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "server fork failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");
 		/* fall through */
 	default:		/* parent */
 		(void)close(sfd);
 		return pid;
 	}
 
-	  exit(1);
+	exit(1);
 }
 
 void do_child()

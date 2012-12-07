@@ -194,12 +194,12 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				if (Scenarios[i].exp_fail) {
 					if (STD_FUNCTIONAL_TEST) {
-						tst_resm(TPASS|TTERRNO,
+						tst_resm(TPASS | TTERRNO,
 							 "ulimit(%d, %ld) Failed expectedly",
 							 cmd, limit);
 					}
 				} else {
-					tst_resm(TFAIL|TTERRNO,
+					tst_resm(TFAIL | TTERRNO,
 						 "ulimit(%d, %ld) Failed",
 						 cmd, limit);
 				}
@@ -223,15 +223,13 @@ int main(int ac, char **av)
 					     tmp++) {
 						if (Scenarios[tmp].nlim_flag ==
 						    1) {
-							Scenarios[tmp].
-							    newlimit =
-							    TEST_RETURN;
+							Scenarios[tmp].newlimit
+							    = TEST_RETURN;
 						}
 						if (Scenarios[tmp].nlim_flag ==
 						    2) {
-							Scenarios[tmp].
-							    newlimit =
-							    TEST_RETURN - 1;
+							Scenarios[tmp].newlimit
+							    = TEST_RETURN - 1;
 						}
 					}
 				}

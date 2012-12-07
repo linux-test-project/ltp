@@ -116,15 +116,15 @@ int main(int ac, char **av)
 		TEST(chmod(TESTFILE, PERMS));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "chmod(%s, %#o) failed",
+			tst_resm(TFAIL | TTERRNO, "chmod(%s, %#o) failed",
 				 TESTFILE, PERMS);
 			continue;
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
 			if (stat(TESTFILE, &stat_buf) < 0) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-				    "stat(%s) failed", TESTFILE);
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "stat(%s) failed", TESTFILE);
 			}
 			file_mode = stat_buf.st_mode;
 
@@ -155,9 +155,10 @@ void setup()
 	tst_require_root(NULL);
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "setuid(%u) failed", ltpuser->pw_uid);
+		tst_brkm(TBROK | TERRNO, NULL, "setuid(%u) failed",
+			 ltpuser->pw_uid);
 
 	TEST_PAUSE;
 
@@ -168,15 +169,14 @@ void setup()
 	 * mode permissios and set the ownership of the test file to the
 	 * uid/gid of guest user.
 	 */
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
 			 TESTFILE, FILE_MODE);
 	}
 
 	if (close(fd) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed",
-			 TESTFILE);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed", TESTFILE);
 	}
 }
 

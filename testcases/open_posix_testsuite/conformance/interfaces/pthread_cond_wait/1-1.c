@@ -19,13 +19,12 @@
 #include <signal.h>
 #include "posixtest.h"
 
-struct testdata
-{
+struct testdata {
 	pthread_mutex_t mutex;
-	pthread_cond_t  cond;
+	pthread_cond_t cond;
 } td;
 
-pthread_t  thread1;
+pthread_t thread1;
 
 int t1_start = 0;
 int signaled = 0;
@@ -43,24 +42,24 @@ void *t1_func(void *arg)
 	int rc;
 
 	if (pthread_mutex_lock(&td.mutex) != 0) {
-		fprintf(stderr,"Thread1 failed to acquire mutex\n");
+		fprintf(stderr, "Thread1 failed to acquire mutex\n");
 		exit(PTS_UNRESOLVED);
 	}
-	fprintf(stderr,"Thread1 started\n");
-	t1_start = 1;	/* let main thread continue */
+	fprintf(stderr, "Thread1 started\n");
+	t1_start = 1;		/* let main thread continue */
 
-	fprintf(stderr,"Thread1 is waiting for the cond\n");
+	fprintf(stderr, "Thread1 is waiting for the cond\n");
 	rc = pthread_cond_wait(&td.cond, &td.mutex);
 	if (rc != 0) {
-		fprintf(stderr,"pthread_cond_wait return %d\n", rc);
-                exit(PTS_UNRESOLVED);
+		fprintf(stderr, "pthread_cond_wait return %d\n", rc);
+		exit(PTS_UNRESOLVED);
 	}
 
-	fprintf(stderr,"Thread1 wakened\n");
+	fprintf(stderr, "Thread1 wakened\n");
 	if (signaled == 0) {
-		fprintf(stderr,"Thread1 did not block on the cond at all\n");
-                printf("Test FAILED\n");
-                exit(PTS_FAIL);
+		fprintf(stderr, "Thread1 did not block on the cond at all\n");
+		printf("Test FAILED\n");
+		exit(PTS_FAIL);
 	}
 	pthread_mutex_unlock(&td.mutex);
 	return NULL;
@@ -71,16 +70,16 @@ int main()
 	struct sigaction act;
 
 	if (pthread_mutex_init(&td.mutex, NULL) != 0) {
-		fprintf(stderr,"Fail to initialize mutex\n");
+		fprintf(stderr, "Fail to initialize mutex\n");
 		return PTS_UNRESOLVED;
 	}
 	if (pthread_cond_init(&td.cond, NULL) != 0) {
-		fprintf(stderr,"Fail to initialize cond\n");
+		fprintf(stderr, "Fail to initialize cond\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (pthread_create(&thread1, NULL, t1_func, NULL) != 0) {
-		fprintf(stderr,"Fail to create thread 1\n");
+		fprintf(stderr, "Fail to create thread 1\n");
 		return PTS_UNRESOLVED;
 	}
 	while (!t1_start)	/* wait for thread1 started */
@@ -88,26 +87,26 @@ int main()
 
 	/* acquire the mutex released by pthread_cond_wait() within thread 1 */
 	if (pthread_mutex_lock(&td.mutex) != 0) {
-		fprintf(stderr,"Main: Fail to acquire mutex\n");
+		fprintf(stderr, "Main: Fail to acquire mutex\n");
 		return PTS_UNRESOLVED;
 	}
 	if (pthread_mutex_unlock(&td.mutex) != 0) {
-		fprintf(stderr,"Main: Fail to release mutex\n");
+		fprintf(stderr, "Main: Fail to release mutex\n");
 		return PTS_UNRESOLVED;
 	}
 	sleep(2);
 
 	/* Setup alarm handler */
-	act.sa_handler=alarm_handler;
-	act.sa_flags=0;
+	act.sa_handler = alarm_handler;
+	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaction(SIGALRM, &act, 0);
 	alarm(5);
 
-	fprintf(stderr,"Time to wake up thread1 by signaling a condition\n");
+	fprintf(stderr, "Time to wake up thread1 by signaling a condition\n");
 	signaled = 1;
 	if (pthread_cond_signal(&td.cond) != 0) {
-		fprintf(stderr,"Main: Fail to signal cond\n");
+		fprintf(stderr, "Main: Fail to signal cond\n");
 		return PTS_UNRESOLVED;
 	}
 

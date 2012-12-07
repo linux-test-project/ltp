@@ -77,7 +77,7 @@
  */
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include <stdio.h>
@@ -103,10 +103,10 @@
 #define TEST_FILE2	"testdir_1/tfile_2"
 #define TEST_FILE3	"t_file/tfile_3"
 
-int setup1();		/* setup function to test chmod for EPERM */
-int setup2();		/* setup function to test chmod for EACCES */
-int setup3();		/* setup function to test chmod for ENOTDIR */
-int longpath_setup();	/* setup function to test chmod for ENAMETOOLONG */
+int setup1();			/* setup function to test chmod for EPERM */
+int setup2();			/* setup function to test chmod for EACCES */
+int setup3();			/* setup function to test chmod for ENOTDIR */
+int longpath_setup();		/* setup function to test chmod for ENAMETOOLONG */
 
 char *test_home;		/* variable to hold TESTHOME env. */
 char Longpathname[PATH_MAX + 2];
@@ -119,22 +119,29 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int (*setupfunc) ();
 } test_cases[] = {
 	/* Process not owner/root */
-	{ TEST_FILE1, FILE_MODE, EPERM, setup1},
-	/* No search permissions to process */
-	{ TEST_FILE2, FILE_MODE, EACCES, setup2},
-	/* Address beyond address space */
-	{ High_address_node, FILE_MODE, EFAULT, NULL },
-	/* Negative address #1 */
-	{ (char *)-1, FILE_MODE, EFAULT, NULL },
-	/* Negative address #2 */
-	{ (char *)-2, FILE_MODE, EFAULT, NULL },
-	/* Pathname too long. */
-	{ Longpathname, FILE_MODE, ENAMETOOLONG, longpath_setup},
-	/* Pathname empty. */
-	{ "", FILE_MODE, ENOENT, NULL },
-	/* Pathname contains a regular file. */
-	{ TEST_FILE3, FILE_MODE, ENOTDIR, setup3 },
-};
+	{
+	TEST_FILE1, FILE_MODE, EPERM, setup1},
+	    /* No search permissions to process */
+	{
+	TEST_FILE2, FILE_MODE, EACCES, setup2},
+	    /* Address beyond address space */
+	{
+	High_address_node, FILE_MODE, EFAULT, NULL},
+	    /* Negative address #1 */
+	{
+	(char *)-1, FILE_MODE, EFAULT, NULL},
+	    /* Negative address #2 */
+	{
+	(char *)-2, FILE_MODE, EFAULT, NULL},
+	    /* Pathname too long. */
+	{
+	Longpathname, FILE_MODE, ENAMETOOLONG, longpath_setup},
+	    /* Pathname empty. */
+	{
+	"", FILE_MODE, ENOENT, NULL},
+	    /* Pathname contains a regular file. */
+	{
+TEST_FILE3, FILE_MODE, ENOTDIR, setup3},};
 
 char *TCID = "chmod06";
 int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
@@ -176,11 +183,11 @@ int main(int ac, char **av)
 			if (i < 2) {
 				ltpuser = getpwnam(nobody_uid);
 				if (ltpuser == NULL)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "getpwnam failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "getpwnam failed");
 				if (seteuid(ltpuser->pw_uid) == -1)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "seteuid failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "seteuid failed");
 			}
 			if (i >= 2)
 				seteuid(0);
@@ -194,14 +201,14 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == test_cases[i].exp_errno)
-				tst_resm(TPASS|TTERRNO,
-				    "chmod failed as expected");
+				tst_resm(TPASS | TTERRNO,
+					 "chmod failed as expected");
 			else
-				tst_resm(TFAIL|TTERRNO,
-				    "chmod failed unexpectedly; "
-				    "expected %d - %s",
-				    test_cases[i].exp_errno,
-				    strerror(test_cases[i].exp_errno));
+				tst_resm(TFAIL | TTERRNO,
+					 "chmod failed unexpectedly; "
+					 "expected %d - %s",
+					 test_cases[i].exp_errno,
+					 strerror(test_cases[i].exp_errno));
 		}
 
 	}
@@ -234,9 +241,9 @@ void setup()
 	tst_tmpdir();
 
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 	test_cases[3].pathname = bad_addr;
 
 	for (i = 0; i < TST_TOTAL; i++)
@@ -260,18 +267,16 @@ int setup1()
 	/* open/creat a test file and close it */
 	fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed",
-			 TEST_FILE1);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE1);
 
 	if (fchown(fd, 0, 0) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchown(%s) failed",
-			TEST_FILE1);
+		tst_brkm(TBROK | TERRNO, cleanup, "fchown(%s) failed",
+			 TEST_FILE1);
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "close(%s) failed",
-			 TEST_FILE1);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "close(%s) failed", TEST_FILE1);
 
 	return 0;
 }
@@ -293,18 +298,19 @@ int setup2()
 
 	/* Creat a test directory and a file under it */
 	if (mkdir(DIR_TEMP, MODE_RWX) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s) failed", DIR_TEMP);
+		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s) failed", DIR_TEMP);
 
 	fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE2);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE2);
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TEST_FILE2);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed",
+			 TEST_FILE2);
 
 	if (chmod(DIR_TEMP, FILE_MODE) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s) failed", DIR_TEMP);
+		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s) failed", DIR_TEMP);
 
 	return 0;
 }
@@ -323,12 +329,12 @@ int setup3()
 	int fd;
 
 	/* Create a test file under temporary directory and close it */
-	fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX);
+	fd = open("t_file", O_RDWR | O_CREAT, MODE_RWX);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open(t_file) failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open(t_file) failed");
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(t_file) failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "close(t_file) failed");
 
 	return 0;
 }
@@ -347,7 +353,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (chmod(DIR_TEMP, MODE_RWX) == -1)
-		tst_resm(TBROK|TERRNO, "chmod(%s) failed", DIR_TEMP);
+		tst_resm(TBROK | TERRNO, "chmod(%s) failed", DIR_TEMP);
 
 	tst_rmdir();
 }

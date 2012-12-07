@@ -52,10 +52,10 @@ int opt_mmap_lock1;
 int opt_mmap_lock2;
 int opt_shm;
 int opt_hugepage;
-int opt_check; /* check node when munmap memory (only for mmap_anon()) */
+int opt_check;			/* check node when munmap memory (only for mmap_anon()) */
 int opt_thread;
 
-int key_id; /* used with opt_shm */
+int key_id;			/* used with opt_shm */
 unsigned long memsize;
 
 #define FILE_HUGEPAGE	"/hugetlb/hugepagefile"
@@ -70,17 +70,17 @@ unsigned long memsize;
 #define THREAD		(SCHAR_MAX + 8)
 
 const struct option long_opts[] = {
-	{ "mmap-anon",	0, NULL, MMAP_ANON	},
-	{ "mmap-file",	0, NULL, MMAP_FILE	},
-	{ "mmap-lock1",	0, NULL, MMAP_LOCK1	},
-	{ "mmap-lock2",	0, NULL, MMAP_LOCK2	},
-	{ "shm",	0, NULL, SHM		},
-	{ "hugepage",	0, NULL, HUGEPAGE	},
-	{ "check",	0, NULL, CHECK		},
-	{ "thread",	0, NULL, THREAD		},
-	{ "size",	1, NULL, 's'		},
-	{ "key",	1, NULL, 'k'		},
-	{ NULL,		0, NULL, 0		},
+	{"mmap-anon", 0, NULL, MMAP_ANON},
+	{"mmap-file", 0, NULL, MMAP_FILE},
+	{"mmap-lock1", 0, NULL, MMAP_LOCK1},
+	{"mmap-lock2", 0, NULL, MMAP_LOCK2},
+	{"shm", 0, NULL, SHM},
+	{"hugepage", 0, NULL, HUGEPAGE},
+	{"check", 0, NULL, CHECK},
+	{"thread", 0, NULL, THREAD},
+	{"size", 1, NULL, 's'},
+	{"key", 1, NULL, 'k'},
+	{NULL, 0, NULL, 0},
 };
 
 /*
@@ -284,7 +284,7 @@ void shm(int flag_allocated)
 /*
  * sigint_handler: handle SIGINT by set the exit flag.
  */
-void sigint_handler(int __attribute__((unused)) signo)
+void sigint_handler(int __attribute__ ((unused)) signo)
 {
 	flag_exit = 1;
 }
@@ -298,7 +298,7 @@ void sigint_handler(int __attribute__((unused)) signo)
  * When we recive SIGUSR again, we will free all the allocated
  * memory.
  */
-void sigusr_handler(int __attribute__((unused)) signo)
+void sigusr_handler(int __attribute__ ((unused)) signo)
 {
 	static int flag_allocated = 0;
 
@@ -320,14 +320,14 @@ void sigusr_handler(int __attribute__((unused)) signo)
 	flag_allocated = !flag_allocated;
 }
 
-void sigusr2(int __attribute__((unused)) signo)
+void sigusr2(int __attribute__ ((unused)) signo)
 {
 	static int flag_allocated = 0;
 	mmap_anon(flag_allocated);
 	flag_allocated = !flag_allocated;
 }
 
-void *thread2_routine(void __attribute__((unused)) *arg)
+void *thread2_routine(void __attribute__ ((unused)) * arg)
 {
 	sigset_t set;
 	struct sigaction sigusr2_action;
@@ -392,7 +392,8 @@ int main(int argc, char *argv[])
 }
 
 #else
-int main (void) {
+int main(void)
+{
 	printf("System doesn't have required mempolicy support\n");
 	return 1;
 }

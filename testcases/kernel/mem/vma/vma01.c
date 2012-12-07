@@ -96,18 +96,18 @@ static void check_vma(void)
 	void *t, *u, *x;
 
 	create_bighole();
-	t = mmap(p, 3*ps, PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	t = mmap(p, 3 * ps, PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 	if (t == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 	memset(t, 1, ps);
 
 	switch (fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
 		memset(t, 2, ps);
-		u = mmap(t + 3*ps, 3*ps, PROT_WRITE,
-			    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+		u = mmap(t + 3 * ps, 3 * ps, PROT_WRITE,
+			 MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 		if (u == MAP_FAILED) {
 			perror("mmap");
 			exit(255);
@@ -120,22 +120,22 @@ static void check_vma(void)
 		if (topdown) {
 			x = get_end_addr(u);
 			printf("child : x = %p\n", x);
-			if (x == t + 3*ps)
+			if (x == t + 3 * ps)
 				exit(1);
-			else if (x == t && get_end_addr(x) == t + 3*ps)
+			else if (x == t && get_end_addr(x) == t + 3 * ps)
 				exit(0);
 		} else {
 			x = get_end_addr(t);
 			printf("child : x = %p\n", x);
-			if (x == t + 6*ps)
+			if (x == t + 6 * ps)
 				exit(1);
-			else if (x == u && get_end_addr(x) == t + 6*ps)
+			else if (x == u && get_end_addr(x) == t + 6 * ps)
 				exit(0);
 		}
 		exit(255);
 	default:
 		if (waitpid(-1, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status))
 			tst_brkm(TBROK, cleanup, "child exited abnormally.");
 		check_status(WEXITSTATUS(status));
@@ -154,13 +154,13 @@ static void create_bighole(void)
 	 * |======|------|        top-down alloc
 	 *        |------|======| bottom-up alloc
 	 */
-	t = mmap(NULL, 9*ps, PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	t = mmap(NULL, 9 * ps, PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 	if (t == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 	memset(t, 'a', ps);
-	p = t + 3*ps;
-	if (munmap(t, 9*ps) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+	p = t + 3 * ps;
+	if (munmap(t, 9 * ps) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "munmap");
 }
 
 static void *get_end_addr(void *addr_s)
@@ -171,7 +171,7 @@ static void *get_end_addr(void *addr_s)
 
 	fp = fopen(MAPS_FILE, "r");
 	if (fp == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "fopen");
+		tst_brkm(TBROK | TERRNO, cleanup, "fopen");
 	while (fgets(buf, BUFSIZ, fp) != NULL) {
 		if (sscanf(buf, "%p-%p ", &s, &t) != 2)
 			continue;

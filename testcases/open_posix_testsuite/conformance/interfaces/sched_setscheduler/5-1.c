@@ -17,6 +17,7 @@
 
 int main()
 {
-        printf("Will not test the condition under which one process has the appropriate\nprivilege to change the scheduling parameters of another process because \nthey are implementation-defined.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test the condition under which one process has the appropriate\nprivilege to change the scheduling parameters of another process because \nthey are implementation-defined.\n");
+	return PTS_UNTESTED;
 }

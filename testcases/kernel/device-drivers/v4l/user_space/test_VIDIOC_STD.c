@@ -39,7 +39,9 @@
 
 #include "test_VIDIOC_STD.h"
 
-static void do_test_VIDIOC_G_STD(int ret_input_enum, int errno_input_enum, struct v4l2_input* input) {
+static void do_test_VIDIOC_G_STD(int ret_input_enum, int errno_input_enum,
+				 struct v4l2_input *input)
+{
 	v4l2_std_id std_id;
 	int ret_std_get, errno_std_get;
 	int f;
@@ -70,8 +72,9 @@ static void do_test_VIDIOC_G_STD(int ret_input_enum, int errno_input_enum, struc
 	ret_std_get = ioctl(f, VIDIOC_G_STD, &std_id);
 	errno_std_get = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_STD, ret_std_get=%i, errno_std_get=%i, std_id=0x%llX\n",
-		__FILE__, __LINE__, ret_std_get, errno_std_get, std_id);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_STD, ret_std_get=%i, errno_std_get=%i, std_id=0x%llX\n",
+	     __FILE__, __LINE__, ret_std_get, errno_std_get, std_id);
 
 	if (ret_input_enum == 0) {
 		CU_ASSERT_EQUAL(ret_input_enum, 0);
@@ -100,7 +103,8 @@ static void do_test_VIDIOC_G_STD(int ret_input_enum, int errno_input_enum, struc
 	}
 }
 
-void test_VIDIOC_G_STD() {
+void test_VIDIOC_G_STD()
+{
 
 	/* Iterate trough all inputs with VIDIOC_ENUMINPUT.
 	 * Also ensure tahat VIDIC_G_STD is called at least
@@ -127,7 +131,9 @@ void test_VIDIOC_G_STD() {
 }
 
 static int do_set_video_standard(int f, v4l2_std_id id,
-		int ret_input_enum, int errno_input_enum, struct v4l2_input* input) {
+				 int ret_input_enum, int errno_input_enum,
+				 struct v4l2_input *input)
+{
 	int ret_std_set, errno_std_set;
 	int ret_std_get, errno_std_get;
 	v4l2_std_id std_id;
@@ -136,15 +142,17 @@ static int do_set_video_standard(int f, v4l2_std_id id,
 	ret_std_set = ioctl(f, VIDIOC_S_STD, &std_id);
 	errno_std_set = errno;
 
-	dprintf("\t%s:%u: VIDIOC_S_STD: ret_std_set=%i, errno_std_set=%i, std_id=0x%llX, id=0x%llX\n",
-		__FILE__, __LINE__, ret_std_set, errno_std_set, std_id, id);
+	dprintf
+	    ("\t%s:%u: VIDIOC_S_STD: ret_std_set=%i, errno_std_set=%i, std_id=0x%llX, id=0x%llX\n",
+	     __FILE__, __LINE__, ret_std_set, errno_std_set, std_id, id);
 
 	memset(&std_id, 0xff, sizeof(std_id));
 	ret_std_get = ioctl(f, VIDIOC_G_STD, &std_id);
 	errno_std_get = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_STD: ret_std_get=%i, errno_std_get=%i, std_id=0x%llX\n",
-		__FILE__, __LINE__, ret_std_get, errno_std_get, std_id);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_STD: ret_std_get=%i, errno_std_get=%i, std_id=0x%llX\n",
+	     __FILE__, __LINE__, ret_std_get, errno_std_get, std_id);
 
 	if (ret_input_enum == 0) {
 		CU_ASSERT_EQUAL(ret_input_enum, 0);
@@ -166,20 +174,22 @@ static int do_set_video_standard(int f, v4l2_std_id id,
 	} else {
 		CU_ASSERT_EQUAL(ret_input_enum, -1);
 		CU_ASSERT_EQUAL(errno_input_enum, EINVAL);
-			if (ret_std_set == 0) {
-				CU_ASSERT_EQUAL(ret_std_set, 0);
-				CU_ASSERT_EQUAL(ret_std_get, 0);
-				CU_ASSERT(valid_v4l2_std_id(std_id));
-			} else {
-				CU_ASSERT_EQUAL(ret_std_set, -1);
-				CU_ASSERT_EQUAL(errno_std_set, EINVAL);
-			}
+		if (ret_std_set == 0) {
+			CU_ASSERT_EQUAL(ret_std_set, 0);
+			CU_ASSERT_EQUAL(ret_std_get, 0);
+			CU_ASSERT(valid_v4l2_std_id(std_id));
+		} else {
+			CU_ASSERT_EQUAL(ret_std_set, -1);
+			CU_ASSERT_EQUAL(errno_std_set, EINVAL);
+		}
 	}
 
 	return ret_std_set;
 }
 
-static void do_test_VIDIOC_S_STD(int ret_input_enum, int errno_input_enum, struct v4l2_input* input) {
+static void do_test_VIDIOC_S_STD(int ret_input_enum, int errno_input_enum,
+				 struct v4l2_input *input)
+{
 	int ret_get, errno_get;
 	int ret_set, errno_set;
 	v4l2_std_id std_id_orig;
@@ -191,40 +201,95 @@ static void do_test_VIDIOC_S_STD(int ret_input_enum, int errno_input_enum, struc
 	ret_get = ioctl(f, VIDIOC_G_STD, &std_id_orig);
 	errno_get = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_STD: ret_get=%i, errno_get=%i, std_id_orig=0x%llX\n",
-		__FILE__, __LINE__, ret_get, errno_get, std_id_orig);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_STD: ret_get=%i, errno_get=%i, std_id_orig=0x%llX\n",
+	     __FILE__, __LINE__, ret_get, errno_get, std_id_orig);
 
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_B, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_B1, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_G, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_H, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_I, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_D, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_D1, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_K, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_M, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_N, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_Nc, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_PAL_60, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_NTSC_M, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_NTSC_M_JP, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_NTSC_443, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_NTSC_M_KR, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_SECAM_B, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_SECAM_D, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_SECAM_G, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_SECAM_H, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_SECAM_K, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_SECAM_K1, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_SECAM_L, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_SECAM_LC, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_ATSC_8_VSB, ret_input_enum, errno_input_enum, input);
-	ret_set = do_set_video_standard(f, V4L2_STD_ATSC_16_VSB, ret_input_enum, errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_B, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_B1, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_G, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_H, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_I, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_D, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_D1, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_K, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_M, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_N, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_Nc, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_PAL_60, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_NTSC_M, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_NTSC_M_JP, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_NTSC_443, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_NTSC_M_KR, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_SECAM_B, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_SECAM_D, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_SECAM_G, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_SECAM_H, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_SECAM_K, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_SECAM_K1, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_SECAM_L, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_SECAM_LC, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_ATSC_8_VSB, ret_input_enum,
+				  errno_input_enum, input);
+	ret_set =
+	    do_set_video_standard(f, V4L2_STD_ATSC_16_VSB, ret_input_enum,
+				  errno_input_enum, input);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
 		/* Setting the original std_id should not fail */
-		ret_set = do_set_video_standard(f, std_id_orig, ret_input_enum, errno_input_enum, input);
+		ret_set =
+		    do_set_video_standard(f, std_id_orig, ret_input_enum,
+					  errno_input_enum, input);
 		errno_set = errno;
 
 		CU_ASSERT_EQUAL(ret_set, 0);
@@ -235,11 +300,15 @@ static void do_test_VIDIOC_S_STD(int ret_input_enum, int errno_input_enum, struc
 
 }
 
-void test_VIDIOC_S_STD() {
+void test_VIDIOC_S_STD()
+{
 	foreach_input(do_test_VIDIOC_S_STD);
 }
 
-static void do_test_VIDIOC_S_STD_from_enum(int ret_input_enum, int errno_input_enum, struct v4l2_input* input) {
+static void do_test_VIDIOC_S_STD_from_enum(int ret_input_enum,
+					   int errno_input_enum,
+					   struct v4l2_input *input)
+{
 	int ret_get, errno_get;
 	int ret_enum, errno_enum;
 	int ret_set, errno_set;
@@ -254,8 +323,9 @@ static void do_test_VIDIOC_S_STD_from_enum(int ret_input_enum, int errno_input_e
 	ret_get = ioctl(f, VIDIOC_G_STD, &std_id_orig);
 	errno_get = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_STD: ret_get=%i, errno_get=%i, std_id_orig=0x%llX\n",
-		__FILE__, __LINE__, ret_get, errno_get, std_id_orig);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_STD: ret_get=%i, errno_get=%i, std_id_orig=0x%llX\n",
+	     __FILE__, __LINE__, ret_get, errno_get, std_id_orig);
 
 	/* Try to continue even if VIDIOC_G_STD returned error */
 	i = 0;
@@ -265,11 +335,14 @@ static void do_test_VIDIOC_S_STD_from_enum(int ret_input_enum, int errno_input_e
 		ret_enum = ioctl(f, VIDIOC_ENUMSTD, &std);
 		errno_enum = errno;
 
-		dprintf("\t%s:%u: VIDIOC_ENUMSTD: i=%u, ret_enum=%i, errno_enum=%i, std.id=0x%llX\n",
-			__FILE__, __LINE__, i, ret_enum, errno_enum, std.id);
+		dprintf
+		    ("\t%s:%u: VIDIOC_ENUMSTD: i=%u, ret_enum=%i, errno_enum=%i, std.id=0x%llX\n",
+		     __FILE__, __LINE__, i, ret_enum, errno_enum, std.id);
 
 		if (ret_enum == 0) {
-			ret_set = do_set_video_standard(f, std.id, ret_input_enum, errno_input_enum, input);
+			ret_set =
+			    do_set_video_standard(f, std.id, ret_input_enum,
+						  errno_input_enum, input);
 			CU_ASSERT_EQUAL(ret_set, 0);
 		}
 		i++;
@@ -279,10 +352,13 @@ static void do_test_VIDIOC_S_STD_from_enum(int ret_input_enum, int errno_input_e
 		CU_ASSERT_EQUAL(ret_get, 0);
 
 		/* Setting the original std_id should not fail */
-		ret_set = do_set_video_standard(f, std_id_orig, ret_input_enum, errno_input_enum, input);
+		ret_set =
+		    do_set_video_standard(f, std_id_orig, ret_input_enum,
+					  errno_input_enum, input);
 		errno_set = errno;
-		dprintf("\t%s:%u: VIDIOC_S_STD: ret_set=%i (expected %i), errno=%i\n",
-			__FILE__, __LINE__, ret_set, 0, errno);
+		dprintf
+		    ("\t%s:%u: VIDIOC_S_STD: ret_set=%i (expected %i), errno=%i\n",
+		     __FILE__, __LINE__, ret_set, 0, errno);
 		CU_ASSERT_EQUAL(ret_set, 0);
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
@@ -291,11 +367,15 @@ static void do_test_VIDIOC_S_STD_from_enum(int ret_input_enum, int errno_input_e
 
 }
 
-void test_VIDIOC_S_STD_from_enum() {
+void test_VIDIOC_S_STD_from_enum()
+{
 	foreach_input(do_test_VIDIOC_S_STD_from_enum);
 }
 
-static void do_test_VIDIOC_S_STD_invalid_standard(int ret_input_enum, int errno_input_enum, struct v4l2_input* input) {
+static void do_test_VIDIOC_S_STD_invalid_standard(int ret_input_enum,
+						  int errno_input_enum,
+						  struct v4l2_input *input)
+{
 	int ret_get, errno_get;
 	int ret_set, errno_set;
 	v4l2_std_id std_id_orig;
@@ -308,33 +388,40 @@ static void do_test_VIDIOC_S_STD_invalid_standard(int ret_input_enum, int errno_
 	ret_get = ioctl(f, VIDIOC_G_STD, &std_id_orig);
 	errno_get = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_STD: ret_get=%i, errno_get=%i, std_id_orig=0x%llX\n",
-		__FILE__, __LINE__, ret_get, errno_get, std_id_orig);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_STD: ret_get=%i, errno_get=%i, std_id_orig=0x%llX\n",
+	     __FILE__, __LINE__, ret_get, errno_get, std_id_orig);
 
 	/* Try to continue even if VIDIOC_G_STD retunred with error */
 	std_id = 1;
 	while (std_id != 0) {
 		if (!valid_v4l2_std_id(std_id)) {
-			ret_set = do_set_video_standard(f, std_id, ret_input_enum, errno_input_enum, input);
+			ret_set =
+			    do_set_video_standard(f, std_id, ret_input_enum,
+						  errno_input_enum, input);
 			errno_set = errno;
 
 			CU_ASSERT_EQUAL(ret_set, -1);
 			CU_ASSERT_EQUAL(errno_set, EINVAL);
-			dprintf("\t%s:%u: VIDIOC_S_STD: ret_set=%i, errno_set=%i\n",
-				__FILE__, __LINE__, ret_set, errno_set);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_STD: ret_set=%i, errno_set=%i\n",
+			     __FILE__, __LINE__, ret_set, errno_set);
 		}
-		std_id = std_id<<1;
+		std_id = std_id << 1;
 	}
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
 
 		/* Setting the original std_id should not fail */
-		ret_set = do_set_video_standard(f, std_id_orig, ret_input_enum, errno_input_enum, input);
+		ret_set =
+		    do_set_video_standard(f, std_id_orig, ret_input_enum,
+					  errno_input_enum, input);
 		errno_set = errno;
 
-		dprintf("\t%s:%u: VIDIOC_S_STD: ret_set=%i (expected 0), errno=%i\n",
-			__FILE__, __LINE__, ret_set, errno_set);
+		dprintf
+		    ("\t%s:%u: VIDIOC_S_STD: ret_set=%i (expected 0), errno=%i\n",
+		     __FILE__, __LINE__, ret_set, errno_set);
 		CU_ASSERT_EQUAL(ret_set, 0);
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
@@ -342,11 +429,14 @@ static void do_test_VIDIOC_S_STD_invalid_standard(int ret_input_enum, int errno_
 	}
 }
 
-void test_VIDIOC_S_STD_invalid_standard() {
+void test_VIDIOC_S_STD_invalid_standard()
+{
 	foreach_input(do_test_VIDIOC_S_STD_invalid_standard);
 }
 
-static void do_test_VIDIOC_G_STD_NULL(int ret_input_enum, int errno_input_enum, struct v4l2_input* input) {
+static void do_test_VIDIOC_G_STD_NULL(int ret_input_enum, int errno_input_enum,
+				      struct v4l2_input *input)
+{
 	int ret_get, errno_get;
 	int ret_null, errno_null;
 	v4l2_std_id std_id;
@@ -400,11 +490,14 @@ static void do_test_VIDIOC_G_STD_NULL(int ret_input_enum, int errno_input_enum, 
 
 }
 
-void test_VIDIOC_G_STD_NULL() {
+void test_VIDIOC_G_STD_NULL()
+{
 	foreach_input(do_test_VIDIOC_G_STD_NULL);
 }
 
-static void do_test_VIDIOC_S_STD_NULL(int ret_input_enum, int errno_input_enum, struct v4l2_input* input) {
+static void do_test_VIDIOC_S_STD_NULL(int ret_input_enum, int errno_input_enum,
+				      struct v4l2_input *input)
+{
 	int ret_null, errno_null;
 
 	/* TODO: check whether VIDIOC_S_STD is supported at all or not */
@@ -430,8 +523,9 @@ static void do_test_VIDIOC_S_STD_NULL(int ret_input_enum, int errno_input_enum, 
 	}
 }
 
-void test_VIDIOC_S_STD_NULL() {
-    foreach_input(do_test_VIDIOC_S_STD_NULL);
+void test_VIDIOC_S_STD_NULL()
+{
+	foreach_input(do_test_VIDIOC_S_STD_NULL);
 }
 
 /* TODO: VIDIOC_S_STD while STREAM_ON */

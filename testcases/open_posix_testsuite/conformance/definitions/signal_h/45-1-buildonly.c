@@ -1,14 +1,14 @@
   /*
-  Test that the function:
-   void (*sigset(int, void (*)(int)))(int);
-  is declared.
-  */
+     Test that the function:
+     void (*sigset(int, void (*)(int)))(int);
+     is declared.
+   */
 
 #include <signal.h>
 
-typedef void (*(*sigset_test)(int, void (*)(int)))(int);
+typedef void (*(*sigset_test) (int, void (*)(int))) (int);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	sigset_test dummyvar;
 	dummyvar = sigset;

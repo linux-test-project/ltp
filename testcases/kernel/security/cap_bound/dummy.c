@@ -8,7 +8,7 @@
 #endif
 
 char *TCID = "dummy";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 int main(void)
 {

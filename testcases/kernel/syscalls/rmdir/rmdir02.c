@@ -133,6 +133,7 @@ struct test_case_t {
 	{
 	NULL, EFAULT, NULL}
 };
+
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 int main(int ac, char **av)
@@ -228,7 +229,7 @@ void set_condition(int num)
 		if (mkdir(tstdir1, PERMS) == -1) {
 			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
 				 tstdir1, PERMS);
-		 }
+		}
 
 		/* create a file under tstdir1 */
 		do_file_setup(tstfile);
@@ -249,7 +250,7 @@ void set_condition(int num)
 		/* create a file */
 		if ((fd = creat(tstfile, PERMS)) == -1) {
 			tst_brkm(TBROK, cleanup, "creat() failed");
-		 }
+		}
 		close(fd);
 		break;
 	default:

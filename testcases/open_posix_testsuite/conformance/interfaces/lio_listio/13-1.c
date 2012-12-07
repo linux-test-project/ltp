@@ -52,24 +52,23 @@ int main()
 		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_13_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
 
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	bufs = (char *) malloc (NUM_AIOCBS*BUF_SIZE);
+	bufs = (char *)malloc(NUM_AIOCBS * BUF_SIZE);
 
 	if (bufs == NULL) {
-		printf (TNAME " Error at malloc(): %s\n", strerror (errno));
-		close (fd);
+		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -81,7 +80,7 @@ int main()
 
 		aiocbs[i]->aio_fildes = fd;
 		aiocbs[i]->aio_offset = 0;
-		aiocbs[i]->aio_buf = &bufs[i*BUF_SIZE];
+		aiocbs[i]->aio_buf = &bufs[i * BUF_SIZE];
 		aiocbs[i]->aio_nbytes = BUF_SIZE;
 
 		if (i == 2)
@@ -96,18 +95,19 @@ int main()
 	if (ret == 0) {
 		printf(TNAME " Error lio_listio() should have returned -1\n");
 
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		close (fd);
-		exit (PTS_FAIL);
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	if (errno != EIO) {
-		printf(TNAME " lio_listio() sould set errno to EIO %d\n", errno);
+		printf(TNAME " lio_listio() sould set errno to EIO %d\n",
+		       errno);
 
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
 
 		close(fd);
 		exit(PTS_FAIL);
@@ -118,25 +118,26 @@ int main()
 		if (i == 2)
 			continue;
 
-	  	err = aio_error(aiocbs[i]);
+		err = aio_error(aiocbs[i]);
 		ret = aio_return(aiocbs[i]);
 
 		if ((err != 0) && (ret != BUF_SIZE)) {
-			printf(TNAME " req %d: error = %d - return = %d\n", i, err, ret);
+			printf(TNAME " req %d: error = %d - return = %d\n", i,
+			       err, ret);
 			errors++;
 		}
 
-		free (aiocbs[i]);
+		free(aiocbs[i]);
 	}
 
-	free (bufs);
+	free(bufs);
 
 	close(fd);
 
 	if (errors != 0)
-		exit (PTS_FAIL);
+		exit(PTS_FAIL);
 
-	printf (TNAME " PASSED\n");
+	printf(TNAME " PASSED\n");
 
 	return PTS_PASS;
 }

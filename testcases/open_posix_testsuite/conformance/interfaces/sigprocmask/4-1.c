@@ -35,25 +35,27 @@ int main()
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 
-	if (sigaction(SIGABRT,  &act, 0) == -1) {
+	if (sigaction(SIGABRT, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaction(SIGUSR2,  &act, 0) == -1) {
+	if (sigaction(SIGUSR2, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigprocmask(SIG_SETMASK, &blocked_set1, NULL) == -1) {
-		perror("Unexpected error while attempting to use sigprocmask.\n");
+		perror
+		    ("Unexpected error while attempting to use sigprocmask.\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigprocmask(SIG_BLOCK, &blocked_set2, NULL) == -1) {
-		perror("Unexpected error while attempting to use sigprocmask.\n");
+		perror
+		    ("Unexpected error while attempting to use sigprocmask.\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -73,7 +75,8 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if ((sigismember(&pending_set, SIGABRT) != 1) | (sigismember(&pending_set, SIGUSR2) != 1)) {
+	if ((sigismember(&pending_set, SIGABRT) !=
+	     1) | (sigismember(&pending_set, SIGUSR2) != 1)) {
 		perror("FAIL: sigismember did not return 1\n");
 		return PTS_UNRESOLVED;
 	}

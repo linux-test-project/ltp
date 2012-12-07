@@ -63,19 +63,17 @@ static int wr_thread_state_1, wr_thread_state_2;
 
 static int set_priority(pthread_t pid, unsigned policy, unsigned prio)
 {
-        struct sched_param sched_param;
-        memset(&sched_param, 0, sizeof(sched_param));
-        sched_param.sched_priority = prio;
-        if (pthread_setschedparam(pid, policy, &sched_param) == -1)
-        {
-                printf("Can't set policy to %d and prio to %d\n",
-                        policy, prio);
-                exit(PTS_UNRESOLVED);
-        }
-      return 0;
+	struct sched_param sched_param;
+	memset(&sched_param, 0, sizeof(sched_param));
+	sched_param.sched_priority = prio;
+	if (pthread_setschedparam(pid, policy, &sched_param) == -1) {
+		printf("Can't set policy to %d and prio to %d\n", policy, prio);
+		exit(PTS_UNRESOLVED);
+	}
+	return 0;
 }
 
-static void* fn_rd(void *arg)
+static void *fn_rd(void *arg)
 {
 	int rc = 0;
 	int priority;
@@ -86,10 +84,10 @@ static void* fn_rd(void *arg)
 
 	printf("reader: attempt read lock\n");
 	rc = pthread_rwlock_rdlock(&rwlock);
-	if (rc != 0)
-	{
-		printf("Error: rd_thread failed to get read lock, Error code:%d\n"
-			, rc);
+	if (rc != 0) {
+		printf
+		    ("Error: rd_thread failed to get read lock, Error code:%d\n",
+		     rc);
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -97,13 +95,12 @@ static void* fn_rd(void *arg)
 	printf("reader: acquired read lock\n");
 
 	/* Wait for main to wake us up */
-	do{
+	do {
 		sleep(1);
-	}while (rd_thread_state != EXITING_THREAD);
+	} while (rd_thread_state != EXITING_THREAD);
 
 	printf("reader: unlock read lock\n");
-	if (pthread_rwlock_unlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_unlock(&rwlock) != 0) {
 		printf("rd_thread: Error at pthread_rwlock_unlock()\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -111,7 +108,7 @@ static void* fn_rd(void *arg)
 	return NULL;
 }
 
-static void* fn_wr_1(void *arg)
+static void *fn_wr_1(void *arg)
 {
 	int rc = 0;
 	int priority;
@@ -122,10 +119,10 @@ static void* fn_wr_1(void *arg)
 
 	printf("writer1: attempt write lock\n");
 	rc = pthread_rwlock_wrlock(&rwlock);
-	if (rc != 0)
-	{
-		printf("Error: wr_thread failed to get write lock, Error code:%d\n"
-			, rc);
+	if (rc != 0) {
+		printf
+		    ("Error: wr_thread failed to get write lock, Error code:%d\n",
+		     rc);
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -134,13 +131,12 @@ static void* fn_wr_1(void *arg)
 
 	/* Wait for main to wake us up */
 
-	do{
+	do {
 		sleep(1);
-	}while (wr_thread_state_1 != EXITING_THREAD);
+	} while (wr_thread_state_1 != EXITING_THREAD);
 
 	printf("writer1: unlock write lock\n");
-	if (pthread_rwlock_unlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_unlock(&rwlock) != 0) {
 		printf("wr_thread: Error at pthread_rwlock_unlock()\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -149,7 +145,7 @@ static void* fn_wr_1(void *arg)
 	return NULL;
 }
 
-static void* fn_wr_2(void *arg)
+static void *fn_wr_2(void *arg)
 {
 	int rc = 0;
 	int priority;
@@ -160,10 +156,10 @@ static void* fn_wr_2(void *arg)
 
 	printf("writer2: attempt write lock\n");
 	rc = pthread_rwlock_wrlock(&rwlock);
-	if (rc != 0)
-	{
-		printf("Error: wr_thread failed to get write lock, Error code:%d\n"
-			, rc);
+	if (rc != 0) {
+		printf
+		    ("Error: wr_thread failed to get write lock, Error code:%d\n",
+		     rc);
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -171,13 +167,12 @@ static void* fn_wr_2(void *arg)
 	printf("writer2: acquired writer lock\n");
 
 	/* Wait for main to wake us up */
-	do{
+	do {
 		sleep(1);
-	}while (wr_thread_state_2 != EXITING_THREAD);
+	} while (wr_thread_state_2 != EXITING_THREAD);
 
 	printf("writer2: unlock writer lock\n");
-	if (pthread_rwlock_unlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_unlock(&rwlock) != 0) {
 		printf("wr_thread: Error at pthread_rwlock_unlock()\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -188,30 +183,29 @@ static void* fn_wr_2(void *arg)
 
 int main()
 {
-	#ifndef _POSIX_THREAD_PRIORITY_SCHEDULING
-  		printf("Posix Thread Execution Scheduling not supported\n");
-  		return PTS_UNSUPPORTED;
-	#endif
+#ifndef _POSIX_THREAD_PRIORITY_SCHEDULING
+	printf("Posix Thread Execution Scheduling not supported\n");
+	return PTS_UNSUPPORTED;
+#endif
 
 	int cnt = 0;
 	pthread_t writer1, reader, writer2;
 	int priority;
 
-	/* main thread needs to have the highest priority*/
+	/* main thread needs to have the highest priority */
 	priority = sched_get_priority_min(TRD_POLICY) + 3;
 	set_priority(pthread_self(), TRD_POLICY, priority);
 
-	if (pthread_rwlock_init(&rwlock, NULL) != 0)
-	{
+	if (pthread_rwlock_init(&rwlock, NULL) != 0) {
 		printf("main: Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	printf("main: write lock\n");
 	/* We have no lock, this read lock should succeed */
-	if (pthread_rwlock_wrlock(&rwlock) != 0)
-	{
-		printf("Error: main cannot get write lock when no one owns the lock\n");
+	if (pthread_rwlock_wrlock(&rwlock) != 0) {
+		printf
+		    ("Error: main cannot get write lock when no one owns the lock\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -220,8 +214,8 @@ int main()
 	wr_thread_state_1 = NOT_CREATED_THREAD;
 	priority = sched_get_priority_min(TRD_POLICY) + 2;
 	printf("main: create writer1, with priority: %d\n", priority);
-	if (pthread_create(&writer1, NULL, fn_wr_1, (void*)(long)priority) != 0)
-	{
+	if (pthread_create(&writer1, NULL, fn_wr_1, (void *)(long)priority) !=
+	    0) {
 		printf("main: Error creating writer1\n");
 		return PTS_UNRESOLVED;
 	}
@@ -231,17 +225,15 @@ int main()
 
 	/* We expect the writer1 to block */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (wr_thread_state_1 != 3 && cnt++ < 3);
+	} while (wr_thread_state_1 != 3 && cnt++ < 3);
 
-	if (wr_thread_state_1 == 3)
-	{
-		printf("writer1 did not block on write lock, when main owns the lock\n");
+	if (wr_thread_state_1 == 3) {
+		printf
+		    ("writer1 did not block on write lock, when main owns the lock\n");
 		exit(PTS_UNRESOLVED);
-	}
-	else if (wr_thread_state_1 != 2)
-	{
+	} else if (wr_thread_state_1 != 2) {
 		printf("Unexpected writer1 state\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -249,27 +241,23 @@ int main()
 	/* Reader thread same priority as Writer1 thread */
 
 	rd_thread_state = 1;
-	priority = sched_get_priority_min(TRD_POLICY)+2;
+	priority = sched_get_priority_min(TRD_POLICY) + 2;
 	printf("main: create reader, with priority: %d\n", priority);
-	if (pthread_create(&reader, NULL, fn_rd, (void*)(long)priority) != 0)
-	{
+	if (pthread_create(&reader, NULL, fn_rd, (void *)(long)priority) != 0) {
 		printf("main: failed at creating reader\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* We expect the reader to block*/
+	/* We expect the reader to block */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (rd_thread_state != 3 && cnt++ < 2);
+	} while (rd_thread_state != 3 && cnt++ < 2);
 
-	if (rd_thread_state == 3)
-	{
+	if (rd_thread_state == 3) {
 		printf("Test Fail: reader did not block on read lock\n");
 		exit(PTS_FAIL);
-	}
-	else if (rd_thread_state != 2)
-	{
+	} else if (rd_thread_state != 2) {
 		printf("Unexpected reader state\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -279,8 +267,8 @@ int main()
 	wr_thread_state_2 = 1;
 	priority = sched_get_priority_min(TRD_POLICY);
 	printf("main: create writer2, with priority: %d\n", priority);
-	if (pthread_create(&writer2, NULL, fn_wr_2, (void*)(long)priority) != 0)
-	{
+	if (pthread_create(&writer2, NULL, fn_wr_2, (void *)(long)priority) !=
+	    0) {
 		printf("main: Error creating writer2\n");
 		return PTS_UNRESOLVED;
 	}
@@ -290,67 +278,59 @@ int main()
 
 	/* We expect the writer2 to block */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (wr_thread_state_2 != 3 && cnt++ < 2);
+	} while (wr_thread_state_2 != 3 && cnt++ < 2);
 
-	if (wr_thread_state_2 == 3)
-	{
-		printf("writer2 did not block on write lock, when main owns the lock\n");
+	if (wr_thread_state_2 == 3) {
+		printf
+		    ("writer2 did not block on write lock, when main owns the lock\n");
 		exit(PTS_UNRESOLVED);
-	}
-	else if (wr_thread_state_2 != 2)
-	{
+	} else if (wr_thread_state_2 != 2) {
 		printf("Unexpected writer1 state\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	printf("main: release write lock\n");
-	if (pthread_rwlock_unlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_unlock(&rwlock) != 0) {
 		printf("main: failed to release write lock\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* we expect writer1 get the lock */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (wr_thread_state_1 != 3 && cnt++ < 3);
+	} while (wr_thread_state_1 != 3 && cnt++ < 3);
 
-	if (wr_thread_state_1 == 2)
-	{
-		printf("Test fail: writer did not get write lock, when main release the lock\n");
+	if (wr_thread_state_1 == 2) {
+		printf
+		    ("Test fail: writer did not get write lock, when main release the lock\n");
 		exit(PTS_FAIL);
-	}
-	else if (wr_thread_state_1 != 3)
-	{
+	} else if (wr_thread_state_1 != 3) {
 		printf("Unexpected writer1 state\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* Let writer1 release the lock*/
+	/* Let writer1 release the lock */
 	wr_thread_state_1 = 4;
 
-	if (pthread_join(writer1, NULL) != 0)
-	{
+	if (pthread_join(writer1, NULL) != 0) {
 		printf("main: Error joining writer1\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* we expect the reader get the lock when writer1 has release the lock*/
+	/* we expect the reader get the lock when writer1 has release the lock */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (rd_thread_state !=3 && cnt++ < 3);
+	} while (rd_thread_state != 3 && cnt++ < 3);
 
-	if (rd_thread_state == 2)
-	{
-		printf("Test failed: reader did not get the lock when writer1 release the lock\n");
+	if (rd_thread_state == 2) {
+		printf
+		    ("Test failed: reader did not get the lock when writer1 release the lock\n");
 		exit(PTS_FAIL);
-	}
-	else if (rd_thread_state != 3)
-	{
+	} else if (rd_thread_state != 3) {
 		printf("Unexpected reader state\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -358,39 +338,34 @@ int main()
 	/* Inform reader release the lock */
 	rd_thread_state = 4;
 
-	if (pthread_join(reader, NULL) != 0)
-	{
+	if (pthread_join(reader, NULL) != 0) {
 		printf("main: Error joining reader\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* we expect writer2 get the lock */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (wr_thread_state_2 !=3 && cnt++ < 3);
+	} while (wr_thread_state_2 != 3 && cnt++ < 3);
 
-	if (wr_thread_state_2 == 2)
-	{
-		printf("Test fail: writer2 still blocked on write lock, when main release the lock\n");
+	if (wr_thread_state_2 == 2) {
+		printf
+		    ("Test fail: writer2 still blocked on write lock, when main release the lock\n");
 		exit(PTS_FAIL);
-	}
-	else if (wr_thread_state_2 != 3)
-	{
+	} else if (wr_thread_state_2 != 3) {
 		printf("Unexpected writer2 state\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	wr_thread_state_2 = 4;
 
-	if (pthread_join(writer2, NULL) != 0)
-	{
+	if (pthread_join(writer2, NULL) != 0) {
 		printf("main: Error joining writer1\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (pthread_rwlock_destroy(&rwlock) != 0)
-	{
+	if (pthread_rwlock_destroy(&rwlock) != 0) {
 		printf("Error at pthread_rwlockattr_destroy()");
 		return PTS_UNRESOLVED;
 	}

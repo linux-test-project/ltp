@@ -74,7 +74,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();		/* global setup */
 
@@ -83,7 +83,7 @@ int main(int ac, char **av)
 	if ((buf = (struct utsname *)malloc((size_t)
 					    sizeof(struct utsname))) == NULL) {
 		tst_brkm(TBROK, cleanup, "malloc failed for buf");
-	 }
+	}
 
 	/* The following loop checks looping state if -i option given */
 

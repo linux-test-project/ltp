@@ -153,20 +153,20 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "dup(%s) Failed, errno=%d : %s", filename,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL, "dup(%s) Failed, errno=%d : %s",
+				 filename, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS, "dup(%s) returned %ld",
-				    filename, TEST_RETURN);
+					 filename, TEST_RETURN);
 			}
 
 			/* close the new file so loops do not open too many files */
 			if (close(TEST_RETURN) == -1) {
-				tst_brkm(TBROK|TERRNO, cleanup,
-				    "closing %s failed", filename);
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "closing %s failed", filename);
 			}
 		}
 
@@ -189,7 +189,7 @@ void setup()
 
 	sprintf(filename, "dupfile");
 	if ((fd = open(filename, O_RDWR | O_CREAT, 0700)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 }
 
 void cleanup()
@@ -198,7 +198,7 @@ void cleanup()
 
 	if (fd != -1)
 		if (close(fd) == -1)
-			tst_resm(TWARN|TERRNO, "closing %s failed", filename);
+			tst_resm(TWARN | TERRNO, "closing %s failed", filename);
 
 	tst_rmdir();
 

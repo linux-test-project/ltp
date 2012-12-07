@@ -1,15 +1,15 @@
   /*
-   @:pt:XSI
-  Test that the function:
-   int sighold(int);
-  is declared.
-  */
+     @:pt:XSI
+     Test that the function:
+     int sighold(int);
+     is declared.
+   */
 
 #include <signal.h>
 
-typedef int (*sighold_test)(int);
+typedef int (*sighold_test) (int);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	sighold_test dummyvar;
 	dummyvar = sighold;

@@ -1,6 +1,6 @@
   /*
-  Test the definition of sigset_t.
-  */
+     Test the definition of sigset_t.
+   */
 
 #include <signal.h>
 

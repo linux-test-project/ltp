@@ -36,12 +36,13 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_28-3"
 
-int main() {
+int main()
+{
 	int fd;
 	char str[BUF_SIZE] = "qwerty";
 	char *buf;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -62,17 +63,17 @@ int main() {
 
 	strcpy(buf, str);
 
-       	if (munmap(buf, BUF_SIZE) != 0) {
+	if (munmap(buf, BUF_SIZE) != 0) {
 		perror("An error occurs when calling munmap()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
 	}
 
-	if (shm_unlink(SHM_NAME) !=0) {
+	if (shm_unlink(SHM_NAME) != 0) {
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
 	}
-        /* Now, SHM_NAME is unlinked and there are no more mapping references
+	/* Now, SHM_NAME is unlinked and there are no more mapping references
 	   on it but an open reference remain */
 
 	buf = mmap(NULL, BUF_SIZE, PROT_READ, MAP_SHARED, fd, 0);

@@ -112,29 +112,28 @@ int main(int argc, char **argv)
 		fd[1] = -1;	/* Invalid file descriptor */
 
 		if (signal(SIGTERM, sighandler) == SIG_ERR)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "signal(SIGTERM, ..) failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "signal(SIGTERM, ..) failed");
 
 		if (signal(SIGPIPE, sighandler) == SIG_ERR)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "signal(SIGPIPE, ..) failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "signal(SIGPIPE, ..) failed");
 
 		memset(buf_list[0], 0, K_1);
 		memset(buf_list[1], 0, K_1);
 
-		if ((fd[0] = open(f_name, O_WRONLY|O_CREAT, 0666)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "open(.., O_WRONLY|O_CREAT, ..) failed");
-		else
-			if ((nbytes = write(fd[0], buf_list[1], K_1)) != K_1)
-				tst_brkm(TFAIL|TERRNO, cleanup, "write failed");
+		if ((fd[0] = open(f_name, O_WRONLY | O_CREAT, 0666)) == -1)
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "open(.., O_WRONLY|O_CREAT, ..) failed");
+		else if ((nbytes = write(fd[0], buf_list[1], K_1)) != K_1)
+			tst_brkm(TFAIL | TERRNO, cleanup, "write failed");
 
 		if (close(fd[0]) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "close failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "close failed");
 
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "open(.., O_RDWR, ..) failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "open(.., O_RDWR, ..) failed");
 //block1:
 		tst_resm(TINFO, "Enter block 1");
 
@@ -280,5 +279,5 @@ void sighandler(int sig)
 void l_seek(int fdesc, off_t offset, int whence)
 {
 	if (lseek(fdesc, offset, whence) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "lseek failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "lseek failed");
 }

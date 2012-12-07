@@ -79,7 +79,7 @@ int lfd;
 
 int numcpus;
 static int mark_fd = -1;
-static __thread char buff[BUFSIZ+1];
+static __thread char buff[BUFSIZ + 1];
 
 static void setup_ftrace_marker(void)
 {
@@ -186,8 +186,7 @@ static void usage()
 	       "-r time     Run time (ms) to busy loop the threads (20)\n"
 	       "-t time     Sleep time (ms) between intervals (100)\n"
 	       "-e time     Max allowed error (microsecs)\n"
-	       "-l loops    Number of iterations to run (50)\n"
-	      );
+	       "-l loops    Number of iterations to run (50)\n");
 }
 
 /*
@@ -249,9 +248,9 @@ static void print_results(void)
 	unsigned long long tasks_min[nr_tasks];
 	unsigned long long tasks_avg[nr_tasks];
 
-	memset(tasks_max, 0, sizeof(tasks_max[0])*nr_tasks);
-	memset(tasks_min, 0xff, sizeof(tasks_min[0])*nr_tasks);
-	memset(tasks_avg, 0, sizeof(tasks_avg[0])*nr_tasks);
+	memset(tasks_max, 0, sizeof(tasks_max[0]) * nr_tasks);
+	memset(tasks_min, 0xff, sizeof(tasks_min[0]) * nr_tasks);
+	memset(tasks_avg, 0, sizeof(tasks_avg[0]) * nr_tasks);
 
 	printf("Iter: ");
 	for (t = 0; t < nr_tasks; t++)
@@ -286,7 +285,7 @@ static void print_results(void)
 
 	for (t = 0; t < nr_tasks; t++) {
 		printf(" Task %d (prio %d) (pid %ld):\n", t, t + prio_start,
-			thread_pids[t]);
+		       thread_pids[t]);
 		printf("   Max: %lld us\n", tasks_max[t]);
 		printf("   Min: %lld us\n", tasks_min[t]);
 		printf("   Tot: %lld us\n", tasks_avg[t] * nr_runs);
@@ -313,7 +312,7 @@ static unsigned long busy_loop(unsigned long long start_time)
 void *start_task(void *data)
 {
 	struct thread *thr = (struct thread *)data;
-	long id = (long) thr->arg;
+	long id = (long)thr->arg;
 	thread_pids[id] = gettid();
 	unsigned long long start_time;
 	int ret;
@@ -331,7 +330,7 @@ void *start_task(void *data)
 	pid = gettid();
 
 	/* Check if we are the highest prio task */
-	if (id == nr_tasks-1)
+	if (id == nr_tasks - 1)
 		high = 1;
 
 	while (!done) {
@@ -340,7 +339,8 @@ void *start_task(void *data)
 			if (!CPU_ISSET(cpu, &save_cpumask))
 				cpu = 0;
 			CPU_ZERO(&cpumask);
-			CPU_SET(cpu, &cpumask); cpu++;
+			CPU_SET(cpu, &cpumask);
+			cpu++;
 			sched_setaffinity(0, sizeof(cpumask), &cpumask);
 		}
 		pthread_barrier_wait(&start_barrier);
@@ -434,7 +434,7 @@ int main(int argc, char **argv)
 	ret = pthread_barrier_init(&end_barrier, NULL, nr_tasks + 1);
 	if (ret < 0)
 		debug(DBG_ERR, "pthread_barrier_init failed: %s\n",
-				strerror(ret));
+		      strerror(ret));
 
 	for (i = 0; i < nr_tasks; i++) {
 		stats_container_init(&intervals[i], nr_runs);
@@ -463,7 +463,7 @@ int main(int argc, char **argv)
 	param.sched_priority = nr_tasks + prio_start;
 	if (sched_setscheduler(0, SCHED_FIFO, &param))
 		debug(DBG_WARN, "Warning, can't set priority of"
-				"main thread !\n");
+		      "main thread !\n");
 	intv.tv_sec = INTERVAL / NS_PER_SEC;
 	intv.tv_nsec = INTERVAL % (1 * NS_PER_SEC);
 
@@ -487,7 +487,7 @@ int main(int argc, char **argv)
 
 		end = rt_gettime() / NS_PER_US;
 		ftrace_write("Loop %d end now=%lld diff=%lld\n",
-				loop, end, end - now);
+			     loop, end, end - now);
 		ret = pthread_barrier_wait(&end_barrier);
 
 		if (stop || (check && check_times(loop))) {

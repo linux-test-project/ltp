@@ -88,7 +88,7 @@ enum ctype {
 	OVERFLOW
 };
 
-static char* cp_name[] = {
+static char *cp_name[] = {
 	"INT_HARDWARE_ENTRY",
 	"INT_HW_IRQ_EN",
 	"INT_TASKLET_ENTRY",
@@ -99,7 +99,7 @@ static char* cp_name[] = {
 	"IDE_CORE_CP"
 };
 
-static char* cp_type[] = {
+static char *cp_type[] = {
 	"PANIC",
 	"BUG",
 	"EXCEPTION",
@@ -112,8 +112,8 @@ static struct jprobe lkdtm;
 static int lkdtm_parse_commandline(void);
 static void lkdtm_handler(void);
 
-static char* cpoint_name = INVALID;
-static char* cpoint_type = NONE;
+static char *cpoint_name = INVALID;
+static char *cpoint_type = NONE;
 static int cpoint_count = DEFAULT_COUNT;
 static int recur_count = REC_NUM_DEFAULT;
 
@@ -122,16 +122,16 @@ static enum ctype cptype = NONE;
 static int count = DEFAULT_COUNT;
 
 module_param(recur_count, int, 0644);
-MODULE_PARM_DESC(recur_count, " Recursion level for the stack overflow test, "\
-				 "default is 10");
+MODULE_PARM_DESC(recur_count, " Recursion level for the stack overflow test, "
+		 "default is 10");
 module_param(cpoint_name, charp, 0644);
 MODULE_PARM_DESC(cpoint_name, " Crash Point, where kernel is to be crashed");
 module_param(cpoint_type, charp, 0644);
-MODULE_PARM_DESC(cpoint_type, " Crash Point Type, action to be taken on "\
-				"hitting the crash point");
+MODULE_PARM_DESC(cpoint_type, " Crash Point Type, action to be taken on "
+		 "hitting the crash point");
 module_param(cpoint_count, int, 0644);
-MODULE_PARM_DESC(cpoint_count, " Crash Point Count, number of times the "\
-				"crash point is to be hit to trigger action");
+MODULE_PARM_DESC(cpoint_count, " Crash Point Count, number of times the "
+		 "crash point is to be hit to trigger action");
 
 unsigned int jp_do_irq(unsigned int irq)
 {
@@ -140,7 +140,7 @@ unsigned int jp_do_irq(unsigned int irq)
 	return 0;
 }
 
-irqreturn_t jp_handle_irq_event(unsigned int irq, struct irqaction *action)
+irqreturn_t jp_handle_irq_event(unsigned int irq, struct irqaction * action)
 {
 	lkdtm_handler();
 	jprobe_return();
@@ -162,7 +162,7 @@ void jp_ll_rw_block(int rw, int nr, struct buffer_head *bhs[])
 struct scan_control;
 
 unsigned long jp_shrink_page_list(struct list_head *page_list,
-                                        struct scan_control *sc)
+				  struct scan_control *sc)
 {
 	lkdtm_handler();
 	jprobe_return();
@@ -170,7 +170,7 @@ unsigned long jp_shrink_page_list(struct list_head *page_list,
 }
 
 int jp_hrtimer_start(struct hrtimer *timer, ktime_t tim,
-				const enum hrtimer_mode mode)
+		     const enum hrtimer_mode mode)
 {
 	lkdtm_handler();
 	jprobe_return();
@@ -185,9 +185,9 @@ int jp_scsi_dispatch_cmd(struct scsi_cmnd *cmd)
 }
 
 #ifdef CONFIG_IDE
-int jp_generic_ide_ioctl(ide_drive_t *drive, struct file *file,
-			struct block_device *bdev, unsigned int cmd,
-			unsigned long arg)
+int jp_generic_ide_ioctl(ide_drive_t * drive, struct file *file,
+			 struct block_device *bdev, unsigned int cmd,
+			 unsigned long arg)
 {
 	lkdtm_handler();
 	jprobe_return();
@@ -200,7 +200,7 @@ static int lkdtm_parse_commandline(void)
 	int i;
 
 	if (cpoint_name == INVALID || cpoint_type == NONE ||
-					cpoint_count < 1 || recur_count < 1)
+	    cpoint_count < 1 || recur_count < 1)
 		return -EINVAL;
 
 	for (i = 0; i < NUM_CPOINTS; ++i) {
@@ -218,7 +218,7 @@ static int lkdtm_parse_commandline(void)
 	}
 
 	if (cpoint == INVALID || cptype == NONE)
-                return -EINVAL;
+		return -EINVAL;
 
 	count = cpoint_count;
 
@@ -229,22 +229,22 @@ static int recursive_loop(int a)
 {
 	char buf[1024];
 
-	memset(buf,0xFF,1024);
+	memset(buf, 0xFF, 1024);
 	recur_count--;
 	if (!recur_count)
 		return 0;
 	else
-        	return recursive_loop(a);
+		return recursive_loop(a);
 }
 
 void lkdtm_handler(void)
 {
-  /* Escape endless loop. */
-  if (count < 0)
-    return;
+	/* Escape endless loop. */
+	if (count < 0)
+		return;
 
 	printk(KERN_INFO "lkdtm : Crash point %s of type %s hit\n",
-					 cpoint_name, cpoint_type);
+	       cpoint_name, cpoint_type);
 	--count;
 
 	if (count == 0) {
@@ -261,15 +261,15 @@ void lkdtm_handler(void)
 			break;
 		case EXCEPTION:
 			printk(KERN_INFO "lkdtm : EXCEPTION\n");
-			*((int *) 0) = 0;
+			*((int *)0) = 0;
 			break;
 		case LOOP:
 			printk(KERN_INFO "lkdtm : LOOP\n");
-			for (;;);
+			for (;;) ;
 			break;
 		case OVERFLOW:
 			printk(KERN_INFO "lkdtm : OVERFLOW\n");
-			(void) recursive_loop(0);
+			(void)recursive_loop(0);
 			break;
 		default:
 			break;
@@ -279,23 +279,23 @@ void lkdtm_handler(void)
 }
 
 #ifdef USE_SYMBOL_NAME
-void lkdtm_symbol_name(char *name, void (*entry)(void))
+void lkdtm_symbol_name(char *name, void (*entry) (void))
 {
-  lkdtm.kp.symbol_name = name;
-  lkdtm.entry = (kprobe_opcode_t*) entry;
+	lkdtm.kp.symbol_name = name;
+	lkdtm.entry = (kprobe_opcode_t *) entry;
 }
 
 #else
-void lkdtm_lookup_name(char *name, void (*entry)(void))
+void lkdtm_lookup_name(char *name, void (*entry) (void))
 {
-  unsigned long addr;
+	unsigned long addr;
 
-  addr = kallsyms_lookup_name(name);
-  if (addr) {
-    *(lkdtm.kp.addr) = addr;
-    lkdtm.entry = JPROBE_ENTRY(entry);
-  } else
-    printk(KERN_INFO "lkdtm : Crash point not available\n");
+	addr = kallsyms_lookup_name(name);
+	if (addr) {
+		*(lkdtm.kp.addr) = addr;
+		lkdtm.entry = JPROBE_ENTRY(entry);
+	} else
+		printk(KERN_INFO "lkdtm : Crash point not available\n");
 }
 #endif
 
@@ -314,13 +314,13 @@ int lkdtm_module_init(void)
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
-          lkdtm_symbol_name(".__do_IRQ", (void (*)(void)) jp_do_irq);
+		lkdtm_symbol_name(".__do_IRQ", (void (*)(void))jp_do_irq);
 #else
-          lkdtm_symbol_name("__do_IRQ", (void (*)(void)) jp_do_irq);
+		lkdtm_symbol_name("__do_IRQ", (void (*)(void))jp_do_irq);
 #endif /*__powerpc__*/
 
 #else /* USE_SYMBOL_NAME */
-          lkdtm_lookup_name("__do_IRQ", (void (*)(void)) jp_do_irq);
+		lkdtm_lookup_name("__do_IRQ", (void (*)(void))jp_do_irq);
 
 #endif /* USE_SYMBOL_NAME */
 		break;
@@ -330,13 +330,16 @@ int lkdtm_module_init(void)
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
-          lkdtm_symbol_name(".handle_IRQ_event", (void (*)(void)) jp_handle_irq_event);
+		lkdtm_symbol_name(".handle_IRQ_event",
+				  (void (*)(void))jp_handle_irq_event);
 #else
-          lkdtm_symbol_name("handle_IRQ_event", (void (*)(void)) jp_handle_irq_event);
+		lkdtm_symbol_name("handle_IRQ_event",
+				  (void (*)(void))jp_handle_irq_event);
 #endif /*__powerpc__*/
 
 #else /* USE_SYMBOL_NAME */
-          lkdtm_lookup_name("handle_IRQ_event", (void (*)(void)) jp_handle_irq_event);
+		lkdtm_lookup_name("handle_IRQ_event",
+				  (void (*)(void))jp_handle_irq_event);
 
 #endif /* USE_SYMBOL_NAME */
 		break;
@@ -346,13 +349,16 @@ int lkdtm_module_init(void)
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
-          lkdtm_symbol_name(".tasklet_action", (void (*)(void)) jp_tasklet_action);
+		lkdtm_symbol_name(".tasklet_action",
+				  (void (*)(void))jp_tasklet_action);
 #else
-          lkdtm_symbol_name("tasklet_action", (void (*)(void)) jp_tasklet_action);
+		lkdtm_symbol_name("tasklet_action",
+				  (void (*)(void))jp_tasklet_action);
 #endif /*__powerpc__*/
 
 #else /* USE_SYMBOL_NAME */
-          lkdtm_lookup_name("tasklet_action", (void (*)(void)) jp_tasklet_action);
+		lkdtm_lookup_name("tasklet_action",
+				  (void (*)(void))jp_tasklet_action);
 
 #endif /* USE_SYMBOL_NAME */
 		break;
@@ -362,13 +368,16 @@ int lkdtm_module_init(void)
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
-          lkdtm_symbol_name(".ll_rw_block", (void (*)(void)) jp_ll_rw_block);
+		lkdtm_symbol_name(".ll_rw_block",
+				  (void (*)(void))jp_ll_rw_block);
 #else
-          lkdtm_symbol_name("ll_rw_block", (void (*)(void)) jp_ll_rw_block);
+		lkdtm_symbol_name("ll_rw_block",
+				  (void (*)(void))jp_ll_rw_block);
 #endif /*__powerpc__*/
 
 #else /* USE_SYMBOL_NAME */
-          lkdtm_lookup_name("ll_rw_block", (void (*)(void)) jp_ll_rw_block);
+		lkdtm_lookup_name("ll_rw_block",
+				  (void (*)(void))jp_ll_rw_block);
 
 #endif /* USE_SYMBOL_NAME */
 		break;
@@ -378,13 +387,16 @@ int lkdtm_module_init(void)
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
-          lkdtm_symbol_name(".shrink_inactive_list", (void (*)(void)) jp_shrink_page_list);
+		lkdtm_symbol_name(".shrink_inactive_list",
+				  (void (*)(void))jp_shrink_page_list);
 #else
-          lkdtm_symbol_name("shrink_inactive_list", (void (*)(void)) jp_shrink_page_list);
+		lkdtm_symbol_name("shrink_inactive_list",
+				  (void (*)(void))jp_shrink_page_list);
 #endif /*__powerpc__*/
 
 #else /* USE_SYMBOL_NAME */
-          lkdtm_lookup_name("shrink_inactive_list", (void (*)(void)) jp_shrink_page_list);
+		lkdtm_lookup_name("shrink_inactive_list",
+				  (void (*)(void))jp_shrink_page_list);
 
 #endif /* USE_SYMBOL_NAME */
 		break;
@@ -394,13 +406,16 @@ int lkdtm_module_init(void)
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
-          lkdtm_symbol_name(".hrtimer_start", (void (*)(void)) jp_hrtimer_start);
+		lkdtm_symbol_name(".hrtimer_start",
+				  (void (*)(void))jp_hrtimer_start);
 #else
-          lkdtm_symbol_name("hrtimer_start", (void (*)(void)) jp_hrtimer_start);
+		lkdtm_symbol_name("hrtimer_start",
+				  (void (*)(void))jp_hrtimer_start);
 #endif /*__powerpc__*/
 
 #else /* USE_SYMBOL_NAME */
-          lkdtm_lookup_name("hrtimer_start", (void (*)(void)) jp_hrtimer_start);
+		lkdtm_lookup_name("hrtimer_start",
+				  (void (*)(void))jp_hrtimer_start);
 
 #endif /* USE_SYMBOL_NAME */
 		break;
@@ -410,13 +425,16 @@ int lkdtm_module_init(void)
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
-          lkdtm_symbol_name(".scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+		lkdtm_symbol_name(".scsi_dispatch_cmd",
+				  (void (*)(void))jp_scsi_dispatch_cmd);
 #else
-          lkdtm_symbol_name("scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+		lkdtm_symbol_name("scsi_dispatch_cmd",
+				  (void (*)(void))jp_scsi_dispatch_cmd);
 #endif /*__powerpc__*/
 
 #else /* USE_SYMBOL_NAME */
-          lkdtm_lookup_name("scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+		lkdtm_lookup_name("scsi_dispatch_cmd",
+				  (void (*)(void))jp_scsi_dispatch_cmd);
 
 #endif /* USE_SYMBOL_NAME */
 		break;
@@ -427,13 +445,16 @@ int lkdtm_module_init(void)
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
-          lkdtm_symbol_name(".scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+		lkdtm_symbol_name(".scsi_dispatch_cmd",
+				  (void (*)(void))jp_scsi_dispatch_cmd);
 #else
-          lkdtm_symbol_name("scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+		lkdtm_symbol_name("scsi_dispatch_cmd",
+				  (void (*)(void))jp_scsi_dispatch_cmd);
 #endif /*__powerpc__*/
 
 #else /* USE_SYMBOL_NAME */
-          lkdtm_lookup_name("scsi_dispatch_cmd", (void (*)(void)) jp_scsi_dispatch_cmd);
+		lkdtm_lookup_name("scsi_dispatch_cmd",
+				  (void (*)(void))jp_scsi_dispatch_cmd);
 
 #endif /* USE_SYMBOL_NAME */
 #endif /* CONFIG_IDE */
@@ -445,19 +466,19 @@ int lkdtm_module_init(void)
 	}
 
 	if ((ret = register_jprobe(&lkdtm)) < 0) {
-                printk(KERN_INFO "lkdtm : Couldn't register jprobe\n");
-                return ret;
+		printk(KERN_INFO "lkdtm : Couldn't register jprobe\n");
+		return ret;
 	}
 
 	printk(KERN_INFO "lkdtm : Crash point %s of type %s registered\n",
-						cpoint_name, cpoint_type);
+	       cpoint_name, cpoint_type);
 	return 0;
 }
 
 void lkdtm_module_exit(void)
 {
-        unregister_jprobe(&lkdtm);
-        printk(KERN_INFO "lkdtm : Crash point unregistered\n");
+	unregister_jprobe(&lkdtm);
+	printk(KERN_INFO "lkdtm : Crash point unregistered\n");
 }
 
 module_init(lkdtm_module_init);

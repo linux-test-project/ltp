@@ -25,14 +25,15 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int is_empty(sigset_t *set) {
+int is_empty(sigset_t * set)
+{
 
-        int i;
-        int siglist[] = {SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
-                SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
-                SIGPIPE, SIGQUIT, SIGSEGV,
-                SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
-                SIGUSR1, SIGUSR2,
+	int i;
+	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
+		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
+		SIGPIPE, SIGQUIT, SIGSEGV,
+		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
+		SIGUSR1, SIGUSR2,
 #ifdef SIGPOLL
 		SIGPOLL,
 #endif
@@ -40,13 +41,14 @@ int is_empty(sigset_t *set) {
 		SIGPROF,
 #endif
 		SIGSYS,
-                SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
+		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
+	};
 
-        for (i=0; i<NUMSIGNALS; i++) {
+	for (i = 0; i < NUMSIGNALS; i++) {
 		if (sigismember(set, siglist[i]) != 0)
 			return 0;
-        }
-        return 1;
+	}
+	return 1;
 }
 
 void myhandler(int signo)
@@ -64,9 +66,9 @@ int main()
 	}
 
 	if (sigset(SIGCHLD, myhandler) == SIG_ERR) {
-                perror("Unexpected error while using sigset()");
-               	return PTS_UNRESOLVED;
-        }
+		perror("Unexpected error while using sigset()");
+		return PTS_UNRESOLVED;
+	}
 
 	raise(SIGCHLD);
 	sigprocmask(SIG_SETMASK, NULL, &mask);

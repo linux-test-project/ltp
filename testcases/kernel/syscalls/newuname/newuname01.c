@@ -52,9 +52,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "newuname01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "newuname01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -74,12 +74,13 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
-        TEST_CLEANUP;
-        tst_rmdir();
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        tst_exit();
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -100,56 +101,73 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
-        struct utsname name;
+int main(int ac, char **av)
+{
+	struct utsname name;
 	int lc;
 	char *msg;
 
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-             tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
-        setup();
+	setup();
 
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     TEST(syscall(__NR_uname,&name));     //call newuname()
-                     if (TEST_RETURN == -1) {
-                 	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-                           cleanup();
-	  	           tst_exit();
-                     }else {
-	   		tst_resm(TPASS, "newuname call succeed: return value = %ld ",TEST_RETURN);
-			TEST(strcmp(name.sysname,"Linux")); //Linux ?
-			if (TEST_RETURN == 0) {
-				tst_resm(TINFO,"This system is %s",name.sysname);
-				tst_resm(TINFO,"The system infomation is :");
-				tst_resm(TINFO,"System is %s on %s hardware",name.sysname,name.machine);
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+			TEST(syscall(__NR_uname, &name));	//call newuname()
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL, "%s failed - errno = %d : %s",
+					 TCID, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+				cleanup();
+				tst_exit();
+			} else {
+				tst_resm(TPASS,
+					 "newuname call succeed: return value = %ld ",
+					 TEST_RETURN);
+				TEST(strcmp(name.sysname, "Linux"));	//Linux ?
+				if (TEST_RETURN == 0) {
+					tst_resm(TINFO, "This system is %s",
+						 name.sysname);
+					tst_resm(TINFO,
+						 "The system infomation is :");
+					tst_resm(TINFO,
+						 "System is %s on %s hardware",
+						 name.sysname, name.machine);
 
-				tst_resm(TINFO,"Nodename is %s",name.nodename);
-				tst_resm(TINFO,"Version is %s, %s",name.release,name.version);
-				tst_resm(TINFO,"Domainname is %s ",*(&name.machine+1));
-                           	cleanup();
-	  	           	tst_exit();
-	                }else{
-                 	  	tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-			   	tst_resm(TINFO,"This system is not Linux");
-                           	cleanup();
-	  	           	tst_exit();
+					tst_resm(TINFO, "Nodename is %s",
+						 name.nodename);
+					tst_resm(TINFO, "Version is %s, %s",
+						 name.release, name.version);
+					tst_resm(TINFO, "Domainname is %s ",
+						 *(&name.machine + 1));
+					cleanup();
+					tst_exit();
+				} else {
+					tst_resm(TFAIL,
+						 "%s failed - errno = %d : %s",
+						 TCID, TEST_ERRNO,
+						 strerror(TEST_ERRNO));
+					tst_resm(TINFO,
+						 "This system is not Linux");
+					cleanup();
+					tst_exit();
+				}
+
 			}
 
-     		   }
-
+		}
 	}
-     }
-        tst_exit();
+	tst_exit();
 }

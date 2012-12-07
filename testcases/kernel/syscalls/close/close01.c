@@ -78,9 +78,11 @@ struct test_case_t {
 	char *type;
 } TC[] = {
 	/* file descriptor for a regular file */
-	{ &newfd, "file"},
-	/* file descriptor for a pipe */
-	{ &pipefildes[0], "pipe"}
+	{
+	&newfd, "file"},
+	    /* file descriptor for a pipe */
+	{
+	&pipefildes[0], "pipe"}
 };
 
 int main(int ac, char **av)
@@ -100,16 +102,15 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		if ((fild = creat(fname, 0777)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "can't open file %s",
-			    fname);
+			tst_brkm(TBROK | TERRNO, cleanup, "can't open file %s",
+				 fname);
 
 		if ((newfd = dup(fild)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "can't dup the file des");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "can't dup the file des");
 
 		if (pipe(pipefildes) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "can't open pipe");
+			tst_brkm(TBROK | TERRNO, cleanup, "can't open pipe");
 		}
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -138,7 +139,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	tst_exit();
- }
+}
 
 void setup(void)
 {

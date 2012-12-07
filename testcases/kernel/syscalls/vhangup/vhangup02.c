@@ -64,8 +64,7 @@ int main(int argc, char **argv)
 	pid_t pid, pid1;
 	int status;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -79,14 +78,14 @@ int main(int argc, char **argv)
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "fork failed");
-		 } else if (pid > 0) {	/* parent */
+		} else if (pid > 0) {	/* parent */
 			waitpid(pid, &status, 0);
 			_exit(0);
 		} else {	/* child */
 			pid1 = setsid();
 			if (pid1 < 0) {
 				tst_brkm(TFAIL, cleanup, "setsid failed");
-			 }
+			}
 			TEST(vhangup());
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL, "vhangup() failed, errno:%d",
@@ -126,4 +125,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}

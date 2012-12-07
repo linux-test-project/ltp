@@ -71,7 +71,6 @@
 #include "test.h"
 #include "usctest.h"
 
-
 static void cleanup(void);
 static void setup(void);
 

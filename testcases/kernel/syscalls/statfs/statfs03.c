@@ -62,6 +62,7 @@ int TST_TOTAL = 1;
 int fileHandle = 0;
 
 int exp_enos[] = { EACCES, 0 };
+
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -129,7 +130,7 @@ void setup()
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 	if (chmod(get_tst_tmpdir(), S_IRWXU) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, 700) failed",
+		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, 700) failed",
 			 get_tst_tmpdir());
 
 	/* create a test file */
@@ -139,14 +140,14 @@ void setup()
 	} else {
 		sprintf(path, "%s/%s", fname, fname);
 		if ((fileHandle = creat(path, 0444)) == -1)
-			tst_brkm(TFAIL|TERRNO, cleanup, "creat failed");
+			tst_brkm(TFAIL | TERRNO, cleanup, "creat failed");
 	}
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "getpwnam failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "getpwnam failed");
 	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO|TERRNO, "seteuid failed to "
+		tst_resm(TINFO | TERRNO, "seteuid failed to "
 			 "to set the effective uid to %d", ltpuser->pw_uid);
 	}
 

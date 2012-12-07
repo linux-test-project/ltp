@@ -36,7 +36,7 @@ int main()
 	sprintf(qname, "/mq_open_11-1_%d", getpid());
 
 	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
-	if (queue == (mqd_t) -1) {
+	if (queue == (mqd_t) - 1) {
 		perror("mq_open() did not return success");
 		printf("Test FAILED\n");
 		return PTS_FAIL;
@@ -54,7 +54,7 @@ int main()
 	 * Second call should have no effect
 	 */
 	queue2 = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
-	if (queue2 == (mqd_t) -1) {
+	if (queue2 == (mqd_t) - 1) {
 		perror("mq_open() second time did not return success");
 		printf("Test FAILED\n");
 		mq_close(queue);

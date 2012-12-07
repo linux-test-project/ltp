@@ -313,8 +313,7 @@ void setup()
 	}
 
 	data = mmap((void *)WINDOW_START,
-		    cache_sz,
-		    PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		    cache_sz, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if (data == MAP_FAILED) {
 		tst_resm(TFAIL, "mmap Error, errno=%d : %s", errno,

@@ -65,8 +65,8 @@ int TST_TOTAL = 0;		/* Total number of test cases. */
 #define errExit(msg)    do { perror(msg); exit(EXIT_failed_syscall); \
                         } while (0)
 
-# define UTIME_NOW      ((1l << 30) - 1l)
-# define UTIME_OMIT     ((1l << 30) - 2l)
+#define UTIME_NOW      ((1l << 30) - 1l)
+#define UTIME_OMIT     ((1l << 30) - 2l)
 
 static inline int
 utimensat_sc(int dirfd, const char *pathname,

@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigprocmask (SIG_BLOCK, &set, NULL) == -1) {
+	if (sigprocmask(SIG_BLOCK, &set, NULL) == -1) {
 		perror("sigprocmask() failed\n");
 		return PTS_UNRESOLVED;
 	}
@@ -105,13 +105,13 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	timeelapsed = tsafter.tv_sec-tsbefore.tv_sec;
+	timeelapsed = tsafter.tv_sec - tsbefore.tv_sec;
 	if (timeelapsed < 0) {
 		perror("clock_gettime inconsistent\n");
 		return PTS_UNRESOLVED;
 	}
 
-	delta = timeelapsed-TIMERVALUESEC;
+	delta = timeelapsed - TIMERVALUESEC;
 
 	if ((delta > ACCEPTABLEDELTA) || (delta < 0)) {
 		perror("timer_settime() did not expire after value.it_value\n");
@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
 	}
 
 	for (i = 0; i < 2; i++) {
-		tsbefore.tv_sec=tsafter.tv_sec;
-		tsbefore.tv_nsec=tsafter.tv_nsec;
+		tsbefore.tv_sec = tsafter.tv_sec;
+		tsbefore.tv_nsec = tsafter.tv_nsec;
 		if (sigwait(&set, &sig) == -1) {
 			perror("sigwait() failed\n");
 			return PTS_UNRESOLVED;
@@ -130,13 +130,13 @@ int main(int argc, char *argv[])
 			perror("clock_gettime() did not return success\n");
 			return PTS_UNRESOLVED;
 		}
-		timeelapsed = tsafter.tv_sec-tsbefore.tv_sec;
+		timeelapsed = tsafter.tv_sec - tsbefore.tv_sec;
 		if (timeelapsed < 0) {
 			perror("clock_gettime inconsistent\n");
 			return PTS_UNRESOLVED;
 		}
 
-		delta = timeelapsed-TIMERINTERVALSEC;
+		delta = timeelapsed - TIMERINTERVALSEC;
 
 		if ((delta > ACCEPTABLEDELTA) || (delta < 0)) {
 			printf("timer did not wait for correct interval\n");

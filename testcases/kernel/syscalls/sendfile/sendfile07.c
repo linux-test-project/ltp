@@ -81,7 +81,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();
 
@@ -136,20 +136,20 @@ void setup()
 	if ((in_fd = creat(in_file, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat failed in setup, errno: %d",
 			 errno);
-	 }
+	}
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
 	if (write(in_fd, buf, strlen(buf)) < 0) {
 		tst_brkm(TBROK, cleanup, "write failed, errno: %d", errno);
-	 }
+	}
 	close(in_fd);
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
-	 }
+	}
 
 	/* Make fulfilled out_fd. */
 	if (socketpair(PF_UNIX, SOCK_DGRAM, 0, p) < 0) {
 		tst_brkm(TBROK, cleanup, "socketpair failed, errno: %d", errno);
-	 }
+	}
 
 	/* Don't close.
 	   You cannot write nothing on out_fd if ignored_fd is closed. */

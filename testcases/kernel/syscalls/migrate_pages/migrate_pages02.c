@@ -64,7 +64,7 @@
 #define NODE_MIN_FREEMEM (32*1024*1024)
 
 char *TCID = "migrate_pages02";
-int  TST_TOTAL = 1;
+int TST_TOTAL = 1;
 
 #if defined(__NR_migrate_pages) && HAVE_NUMA_H && HAVE_NUMAIF_H
 static const char nobody_uid[] = "nobody";
@@ -76,7 +76,7 @@ static void setup(void);
 static void cleanup(void);
 
 option_t options[] = {
-	{ NULL, NULL, NULL }
+	{NULL, NULL, NULL}
 };
 
 static void print_mem_stats(pid_t pid, int node)
@@ -98,7 +98,7 @@ static void print_mem_stats(pid_t pid, int node)
 	/* dump node free mem */
 	node_size = numa_node_size64(node, &freep);
 	tst_resm(TINFO, "Node id: %d, size: %lld, free: %lld",
-		node, node_size, freep);
+		 node, node_size, freep);
 }
 
 static int migrate_to_node(pid_t pid, int node)
@@ -108,9 +108,9 @@ static int migrate_to_node(pid_t pid, int node)
 	int i;
 
 	tst_resm(TINFO, "pid(%d) migrate pid %d to node -> %d",
-		getpid(), pid, node);
+		 getpid(), pid, node);
 	max_node = get_max_node();
-	nodemask_size = max_node/8+1;
+	nodemask_size = max_node / 8 + 1;
 	old_nodes = SAFE_MALLOC(NULL, nodemask_size);
 	new_nodes = SAFE_MALLOC(NULL, nodemask_size);
 
@@ -123,11 +123,11 @@ static int migrate_to_node(pid_t pid, int node)
 	TEST(syscall(__NR_migrate_pages, pid, max_node, old_nodes, new_nodes));
 	if (TEST_RETURN != 0) {
 		if (TEST_RETURN < 0)
-			tst_resm(TFAIL|TERRNO, "migrate_pages failed "
-					"ret: %ld, ", TEST_RETURN);
+			tst_resm(TFAIL | TERRNO, "migrate_pages failed "
+				 "ret: %ld, ", TEST_RETURN);
 		else
 			tst_resm(TWARN, "migrate_pages could not migrate all "
-				"pages, not migrated: %ld", TEST_RETURN);
+				 "pages, not migrated: %ld", TEST_RETURN);
 		print_mem_stats(pid, node);
 	}
 	free(old_nodes);
@@ -141,10 +141,10 @@ static int addr_on_node(void *addr)
 	int ret;
 
 	ret = syscall(__NR_get_mempolicy, &node, NULL, (unsigned long)0,
-			(unsigned long) addr, MPOL_F_NODE | MPOL_F_ADDR);
+		      (unsigned long)addr, MPOL_F_NODE | MPOL_F_ADDR);
 	if (ret == -1) {
 		tst_resm(TBROK | TERRNO, "error getting memory policy "
-				"for page %p", addr);
+			 "for page %p", addr);
 	}
 	return node;
 }
@@ -156,19 +156,17 @@ static int check_addr_on_node(void *addr, int exp_node)
 	node = addr_on_node(addr);
 	if (node == exp_node) {
 		tst_resm(TPASS, "pid(%d) addr %p is on expected node: %d",
-				getpid(), addr, exp_node);
+			 getpid(), addr, exp_node);
 		return 0;
 	} else {
 		tst_resm(TFAIL, "pid(%d) addr %p not on expected node: %d "
-				", expected %d", getpid(), addr, node,
-				exp_node);
+			 ", expected %d", getpid(), addr, node, exp_node);
 		print_mem_stats(0, exp_node);
 		return 1;
 	}
 }
 
-static void test_migrate_current_process(int node1, int node2,
-	int cap_sys_nice)
+static void test_migrate_current_process(int node1, int node2, int cap_sys_nice)
 {
 	char *testp, *testp2;
 	int ret, status;
@@ -186,10 +184,10 @@ static void test_migrate_current_process(int node1, int node2,
 	free(testp);
 
 	/* parent can migrate shared memory with CAP_SYS_NICE */
-	testp2 = mmap(NULL, getpagesize(), PROT_READ|PROT_WRITE,
-		MAP_ANONYMOUS|MAP_SHARED, 0, 0);
+	testp2 = mmap(NULL, getpagesize(), PROT_READ | PROT_WRITE,
+		      MAP_ANONYMOUS | MAP_SHARED, 0, 0);
 	if (testp2 == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 	testp2[0] = 1;
 	tst_resm(TINFO, "shared anonymous: %p", testp2);
 	migrate_to_node(0, node2);
@@ -200,17 +198,18 @@ static void test_migrate_current_process(int node1, int node2,
 	child = fork();
 	switch (child) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		break;
 	case 0:
 		tst_resm(TINFO, "child shared anonymous, cap_sys_nice: %d",
-			cap_sys_nice);
+			 cap_sys_nice);
 		testp = SAFE_MALLOC(NULL, getpagesize());
 		testp[0] = 1;
 		testp2[0] = 1;
 		if (!cap_sys_nice)
 			if (seteuid(ltpuser->pw_uid) == -1)
-				tst_brkm(TBROK|TERRNO, NULL, "seteuid failed");
+				tst_brkm(TBROK | TERRNO, NULL,
+					 "seteuid failed");
 
 		migrate_to_node(0, node1);
 		/* child can migrate non-shared memory */
@@ -221,7 +220,7 @@ static void test_migrate_current_process(int node1, int node2,
 		exit(ret);
 	default:
 		if (waitpid(child, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child returns %d", status);
 		if (cap_sys_nice)
@@ -234,8 +233,7 @@ static void test_migrate_current_process(int node1, int node2,
 	}
 }
 
-static void test_migrate_other_process(int node1, int node2,
-	int cap_sys_nice)
+static void test_migrate_other_process(int node1, int node2, int cap_sys_nice)
 {
 	char *testp;
 	int status, ret, tmp;
@@ -255,7 +253,7 @@ static void test_migrate_other_process(int node1, int node2,
 	child = fork();
 	switch (child) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		break;
 	case 0:
 		close(child_ready[0]);
@@ -269,13 +267,13 @@ static void test_migrate_other_process(int node1, int node2,
 		check_addr_on_node(testp, node1);
 
 		if (seteuid(ltpuser->pw_uid) == -1)
-			tst_brkm(TBROK|TERRNO, NULL, "seteuid failed");
+			tst_brkm(TBROK | TERRNO, NULL, "seteuid failed");
 
 		/* signal parent it's OK to migrate child and wait */
 		if (write(child_ready[1], &tmp, 1) != 1)
-			tst_brkm(TBROK|TERRNO, NULL, "write #1 failed");
+			tst_brkm(TBROK | TERRNO, NULL, "write #1 failed");
 		if (read(pages_migrated[0], &tmp, 1) != 1)
-			tst_brkm(TBROK|TERRNO, NULL, "read #1 failed");
+			tst_brkm(TBROK | TERRNO, NULL, "read #1 failed");
 
 		/* parent can migrate child process with same euid */
 		/* parent can migrate child process with CAP_SYS_NICE */
@@ -291,18 +289,19 @@ static void test_migrate_other_process(int node1, int node2,
 
 		if (!cap_sys_nice)
 			if (seteuid(ltpuser->pw_uid) == -1)
-				tst_brkm(TBROK|TERRNO, NULL, "seteuid failed");
+				tst_brkm(TBROK | TERRNO, NULL,
+					 "seteuid failed");
 
 		/* wait until child is ready on node1, then migrate and
 		 * signal to check current node */
 		if (read(child_ready[0], &tmp, 1) != 1)
-			tst_brkm(TBROK|TERRNO, NULL, "read #2 failed");
+			tst_brkm(TBROK | TERRNO, NULL, "read #2 failed");
 		migrate_to_node(child, node2);
 		if (write(pages_migrated[1], &tmp, 1) != 1)
-			tst_brkm(TBROK|TERRNO, NULL, "write #2 failed");
+			tst_brkm(TBROK | TERRNO, NULL, "write #2 failed");
 
 		if (waitpid(child, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child returns %d", status);
 		close(child_ready[0]);
@@ -311,7 +310,8 @@ static void test_migrate_other_process(int node1, int node2,
 		/* reset euid, so this testcase can be used in loop */
 		if (!cap_sys_nice)
 			if (seteuid(0) == -1)
-				tst_brkm(TBROK|TERRNO, NULL, "seteuid failed");
+				tst_brkm(TBROK | TERRNO, NULL,
+					 "seteuid failed");
 	}
 }
 
@@ -350,11 +350,11 @@ static void setup(void)
 
 	ret = get_allowed_nodes_arr(NH_MEMS, &num_nodes, &nodes);
 	if (ret < 0)
-		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes(): %d", ret);
+		tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes(): %d", ret);
 
 	if (num_nodes < 2)
 		tst_brkm(TCONF, NULL, "at least 2 allowed NUMA nodes"
-				" are required");
+			 " are required");
 	else if (tst_kvercmp(2, 6, 18) < 0)
 		tst_brkm(TCONF, NULL, "2.6.18 or greater kernel required");
 
@@ -376,7 +376,7 @@ static void setup(void)
 
 		j = 0;
 		while (j < NODE_MIN_FREEMEM) {
-			if (addr_on_node(p+j) != nodes[i])
+			if (addr_on_node(p + j) != nodes[i])
 				break;
 			j += pagesize;
 		}
@@ -394,12 +394,12 @@ static void setup(void)
 
 	if (nodeA == -1 || nodeB == -1)
 		tst_brkm(TCONF, NULL, "at least 2 NUMA nodes with "
-			"free mem > %d are needed", NODE_MIN_FREEMEM);
+			 "free mem > %d are needed", NODE_MIN_FREEMEM);
 	tst_resm(TINFO, "Using nodes: %d %d", nodeA, nodeB);
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
 
 	TEST_PAUSE;
 }
@@ -414,6 +414,6 @@ static void cleanup(void)
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "System doesn't support __NR_migrate_pages"
-			" or libnuma is not available");
+		 " or libnuma is not available");
 }
 #endif

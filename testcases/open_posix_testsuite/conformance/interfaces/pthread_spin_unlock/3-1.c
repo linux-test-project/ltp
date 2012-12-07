@@ -36,13 +36,12 @@ volatile static int sem;
 #define INTHREAD 0
 #define INMAIN 1
 
-static void* fn_chld(void *arg)
+static void *fn_chld(void *arg)
 {
 	int rc = 0;
 
 	/* Initialize spin lock */
-	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
-	{
+	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0) {
 		printf("main: Error at pthread_spin_init()\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -50,9 +49,9 @@ static void* fn_chld(void *arg)
 	/* Lock the spinlock */
 	printf("thread: attempt spin lock\n");
 	rc = pthread_spin_lock(&spinlock);
-	if (rc != 0)
-	{
-		printf("Error: thread failed to get spin lock error code:%d\n" , rc);
+	if (rc != 0) {
+		printf("Error: thread failed to get spin lock error code:%d\n",
+		       rc);
 		exit(PTS_UNRESOLVED);
 	}
 	printf("thread: acquired spin lock\n");
@@ -65,8 +64,7 @@ static void* fn_chld(void *arg)
 	/* Cleanup just in case */
 	pthread_spin_unlock(&spinlock);
 
-	if (pthread_spin_destroy(&spinlock) != 0)
-	{
+	if (pthread_spin_destroy(&spinlock) != 0) {
 		printf("Error at pthread_spin_destroy()");
 		exit(PTS_UNRESOLVED);
 	}
@@ -84,8 +82,7 @@ int main()
 
 	/* Create a thread that will initialize and lock a spinlock */
 	printf("main: create thread\n");
-	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
-	{
+	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0) {
 		printf("main: Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
@@ -96,8 +93,7 @@ int main()
 
 	printf("main: attempt to unlock a spinlock that we don't own\n");
 	rc = pthread_spin_unlock(&spinlock);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		printf("main: Error at pthread_spin_unlock()\n");
 		return PTS_FAIL;
 	}
@@ -106,22 +102,20 @@ int main()
 	sem = INTHREAD;
 
 	/* Wait for thread to end execution */
-	if (pthread_join(child_thread, NULL) != 0)
-	{
+	if (pthread_join(child_thread, NULL) != 0) {
 		printf("main: Error at pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Test to see the return code of pthread_spin_unlock */
-	if (rc == EPERM)
-	{
-		printf("main: correctly got EPERM when unlocking a spinlock we didn't have permission to unlock\n");
+	if (rc == EPERM) {
+		printf
+		    ("main: correctly got EPERM when unlocking a spinlock we didn't have permission to unlock\n");
 		printf("Test PASSED\n");
-	}
-	else
-	{
+	} else {
 		printf("main: got return code :%d\n", rc);
-		printf("Test PASSED: *Note: Did not return EPERM when unlocking a spinlock it does not have a lock on, but standard says 'may' fail\n");
+		printf
+		    ("Test PASSED: *Note: Did not return EPERM when unlocking a spinlock it does not have a lock on, but standard says 'may' fail\n");
 	}
 
 	return PTS_PASS;

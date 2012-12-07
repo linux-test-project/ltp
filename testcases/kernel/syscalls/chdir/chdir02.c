@@ -144,8 +144,8 @@ int main(int ac, char **av)
 		TEST(chdir(dirs[lc % 2]));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "chdir(%s) failed",
-			    dirs[lc % 2]);
+			tst_resm(TFAIL | TTERRNO, "chdir(%s) failed",
+				 dirs[lc % 2]);
 		} else {
 
 			if (STD_FUNCTIONAL_TEST) {

@@ -1,6 +1,6 @@
   /*
-  Test that the POLL_OUT macro is defined.
-  */
+     Test that the POLL_OUT macro is defined.
+   */
 
 #include <signal.h>
 

@@ -56,7 +56,7 @@ double atof();
 
 /*char progname[]= "atof1()"; */
 /**	LTP Port	**/
-char *TCID = "atof01"; /* Test program identifier*/
+char *TCID = "atof01";		/* Test program identifier */
 
 int local_flag = PASSED;
 int block_number;
@@ -67,29 +67,28 @@ int TST_TOTAL = 1;
 void setup();
 void blenter();
 void blexit();
-int numin(char*, double*);
-int checkbuf(char*, int, int);
+int numin(char *, double *);
+int checkbuf(char *, int, int);
 
 /*--------------------------------------------------------------*/
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	register int i, j;
 	double r1, r2, x;
 	char buf[100];
 
-	setup();		/* temp file is now open	*/
+	setup();		/* temp file is now open        */
 	pi = 4.0 * atan(1.0);
 
 /*--------------------------------------------------------------*/
 	blenter();
 
-	for (i=0; i < 30; i++)
-		for (j=0; j < 30; j++) {
+	for (i = 0; i < 30; i++)
+		for (j = 0; j < 30; j++) {
 			sprintf(buf, "%*.*f", i, j, pi);
 			if (checkbuf(buf, i, j)) {
 				fprintf(temp, "output conversion incorrect.");
-				fprintf(temp, "%*.*f = '%s'",
-				  i, j, pi,buf);
+				fprintf(temp, "%*.*f = '%s'", i, j, pi, buf);
 				local_flag = FAILED;
 			}
 			r1 = atof(buf);
@@ -100,7 +99,7 @@ int main (int argc, char *argv[])
 			x = fabs(r1 - r2);
 			if (x > ERR) {
 				fprintf(temp, "\tcompare fails, %f vs %f\n",
-				  r1, r2);
+					r1, r2);
 				fprintf(temp, "\terr value is %f\n", x);
 				local_flag = FAILED;
 			}
@@ -125,8 +124,8 @@ int main (int argc, char *argv[])
 /*--------------------------------------------------------------*/
 	blenter();
 
-	for (i=1; i < 200; i++) {
-		x = 100.0 / (double) i;
+	for (i = 1; i < 200; i++) {
+		x = 100.0 / (double)i;
 		sprintf(buf, "%f", x);
 		r1 = atof(buf);
 		if (numin(buf, &r2)) {
@@ -146,10 +145,9 @@ int main (int argc, char *argv[])
 		if (x > 0.0) {
 			fprintf(temp, "\tx = %.15f = %e\n", x, x);
 			fprintf(temp, "\titeration %d\n", i);
-			fprintf(temp, "\tcompare fails, %f vs %f\n",
-			  r1, r2);
+			fprintf(temp, "\tcompare fails, %f vs %f\n", r1, r2);
 			fprintf(temp, "\tcompare fails, %.15f vs %.15f\n",
-			  r1, r2);
+				r1, r2);
 			fprintf(temp, "\tbuf = '%s'\n", buf);
 			x = r1 - r2;
 			if (x == 0.0)
@@ -167,8 +165,8 @@ int main (int argc, char *argv[])
 /*--------------------------------------------------------------*/
 	blenter();
 
-	for (i= -1; i > -200; i--) {
-		x = 100.0 / (double) i;
+	for (i = -1; i > -200; i--) {
+		x = 100.0 / (double)i;
 		sprintf(buf, "%f", x);
 		r1 = atof(buf);
 		if (numin(buf, &r2)) {
@@ -183,10 +181,9 @@ int main (int argc, char *argv[])
 		else
 			x = r2 - r1 - 1e-10;
 		if (x > 0.0) {
-			fprintf(temp, "\tcompare fails, %f vs %f\n",
-			  r1, r2);
+			fprintf(temp, "\tcompare fails, %f vs %f\n", r1, r2);
 			fprintf(temp, "\tcompare fails, %.15f vs %.15f\n",
-			  r1, r2);
+				r1, r2);
 			x = r1 - r2;
 			if (x == 0.0)
 				fprintf(temp, "\tx == 0.0)\n");
@@ -203,12 +200,12 @@ int main (int argc, char *argv[])
 /*--------------------------------------------------------------*/
 	tst_exit();
 }
+
 /* FUNCTIONS GO HERE */
 
-int
-numin(str, rval)
-	char *str;
-	double *rval;
+int numin(str, rval)
+char *str;
+double *rval;
 {
 	register int i, v3, e_flag;
 	register char c;
@@ -232,7 +229,7 @@ numin(str, rval)
 		if (!isdigit(c))
 			break;
 		v1 *= 10.0;
-		v1 += (double) (c - '0');
+		v1 += (double)(c - '0');
 		str++;
 	}
 
@@ -248,13 +245,12 @@ numin(str, rval)
 			c = *str;
 			if (!isdigit(c))
 				break;
-			v2+= k * (double) (c - '0');
+			v2 += k * (double)(c - '0');
 			k /= 10.0;
 			str++;
 		}
 		val += v2;
 	}
-
 #ifdef DEBUG
 	printf("Second conversion, val = %f = %e\n", val, val);
 #endif
@@ -271,24 +267,24 @@ numin(str, rval)
 		default:
 			fprintf(temp, "\tbad char '%c' after 'e'\n", *str);
 			printf("bad char '%c' after 'e'\n", *str);
-			return(-1);
+			return (-1);
 		}
 		str++;
 		if (!isdigit(*str)) {
 			fprintf(temp, "\tbad exponent field\n");
 			printf("bad exponent field\n");
-			return(-1);
+			return (-1);
 		}
-		v3 = 10 * (int) (*str - '0');
+		v3 = 10 * (int)(*str - '0');
 		str++;
 		if (!isdigit(*str)) {
 			fprintf(temp, "\tbad exponent field\n");
 			printf("bad exponent field\n");
-			return(-1);
+			return (-1);
 		}
-		v3 += (int) (*str - '0');
+		v3 += (int)(*str - '0');
 		str++;
-		for (i=0; i < v3; i++) {
+		for (i = 0; i < v3; i++) {
 			if (e_flag > 0)
 				val *= 10.0;
 			else
@@ -312,17 +308,17 @@ numin(str, rval)
 		break;
 	default:
 		printf("unexpected char '%c'\n", *str);
-		return(-1);
+		return (-1);
 	}
 
 	*rval = val;
-	return(0);
+	return (0);
 }
 
 int checkbuf(str, n1, n2)
-	char *str;
-	int n1;
-	int n2;
+char *str;
+int n1;
+int n2;
 {
 	register int bd;	/* before decimal point */
 	register int ad;	/* after decimal point */
@@ -369,7 +365,7 @@ int checkbuf(str, n1, n2)
 		return (-1);
 	}
 
-	return(0);
+	return (0);
 }
 
 /**	LTP Port	**/

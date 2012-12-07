@@ -1,14 +1,14 @@
   /*
-  Test that the function:
-   int sigrelse(int);
-  is declared.
-  */
+     Test that the function:
+     int sigrelse(int);
+     is declared.
+   */
 
 #include <signal.h>
 
-typedef int (*sigrelse_test)(int);
+typedef int (*sigrelse_test) (int);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	sigrelse_test dummyvar;
 	dummyvar = sigrelse;

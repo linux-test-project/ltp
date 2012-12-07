@@ -45,7 +45,8 @@ int set_nonroot()
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
+			printf
+			    ("You don't have permission to change your UID.\n");
 			return 1;
 		}
 		perror("An error occurs when calling seteuid()");
@@ -57,19 +58,20 @@ int set_nonroot()
 	return 0;
 }
 
-int main() {
+int main()
+{
 	int max_priority, old_priority, old_policy, new_policy, policy;
-        struct sched_param param;
+	struct sched_param param;
 
-        /* We assume process Number 1 is created by root */
-        /* and can only be accessed by root */
-        /* This test should be run under standard user permissions */
-        if (getuid() == 0) {
-	  	if (set_nonroot() != 0) {
+	/* We assume process Number 1 is created by root */
+	/* and can only be accessed by root */
+	/* This test should be run under standard user permissions */
+	if (getuid() == 0) {
+		if (set_nonroot() != 0) {
 			printf("Cannot run this test as non-root user\n");
-                return PTS_UNTESTED;
-        }
-        }
+			return PTS_UNTESTED;
+		}
+	}
 
 	if (sched_getparam(getpid(), &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
@@ -89,8 +91,7 @@ int main() {
 	/* Make sure that param.sched_priority != old_priority */
 	max_priority = sched_get_priority_max(policy);
 	param.sched_priority = (old_priority == max_priority) ?
-		sched_get_priority_min(policy) :
-		max_priority;
+	    sched_get_priority_min(policy) : max_priority;
 
 	sched_setscheduler(1, policy, &param);
 
@@ -105,8 +106,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if (old_policy == new_policy &&
-	   old_priority == param.sched_priority) {
+	if (old_policy == new_policy && old_priority == param.sched_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

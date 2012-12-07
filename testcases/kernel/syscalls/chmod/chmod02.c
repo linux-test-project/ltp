@@ -153,9 +153,8 @@ int main(int ac, char **av)
 			TEST(chmod(fname, mode));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL|TTERRNO,
-					 "chmod(%s, %#o) failed",
-					 fname, mode);
+				tst_resm(TFAIL | TTERRNO,
+					 "chmod(%s, %#o) failed", fname, mode);
 			} else {
 
 				if (STD_FUNCTIONAL_TEST) {
@@ -186,17 +185,13 @@ void setup()
 
 	strcat(fname, "tfile");
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) failed",
-			 fname);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 	} else if (write(fd, &buf, strlen(buf)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "write(%s, &buf, strlen(buf)) failed",
-			 fname);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "write(%s, &buf, strlen(buf)) failed", fname);
 	} else if (close(fd) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "close(%s) failed",
-			 fname);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed", fname);
 	}
 }
 

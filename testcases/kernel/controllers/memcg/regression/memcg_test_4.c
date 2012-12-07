@@ -31,12 +31,12 @@
 
 #define MEM_SIZE	(1024 * 1024 * 100)
 
-void sigusr_handler(int __attribute__((unused)) signo)
+void sigusr_handler(int __attribute__ ((unused)) signo)
 {
 	char *p;
 
-	p = mmap(NULL, MEM_SIZE, PROT_READ|PROT_WRITE,
-	    MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+	p = mmap(NULL, MEM_SIZE, PROT_READ | PROT_WRITE,
+		 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	if (p == MAP_FAILED) {
 		err(1, "failed to allocate memory!");
 	}

@@ -84,6 +84,7 @@ int TST_TOTAL = 1;
 static char ltpthost[] = "ltphost";
 static char hname[MAX_LENGTH];
 static int exp_enos[] = { EPERM, 0 };
+
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 

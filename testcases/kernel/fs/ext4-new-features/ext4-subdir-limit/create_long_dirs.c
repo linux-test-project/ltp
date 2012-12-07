@@ -39,7 +39,7 @@
 
 /* valid characters for the directory name */
 char chars[NCHARS + 1] =
-	"0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+    "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
 
 /* to store the generated directory name */
 char name[NAME_LEN + 1];

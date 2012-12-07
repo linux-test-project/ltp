@@ -49,12 +49,12 @@ int main(int argc, char **argv)
 
 	if (argc != 2 && argc != 3) {
 		fprintf(stderr, "usage: %s STRING [ostream]\n",
-		    basename(argv[0]));
+			basename(argv[0]));
 		exit(1);
 	}
 
 	if (argc == 3)
-		if ((fd = open(argv[2], O_RDWR|O_SYNC)) == -1)
+		if ((fd = open(argv[2], O_RDWR | O_SYNC)) == -1)
 			err(errno, "%s", argv[2]);
 
 	if (write(fd, argv[1], strlen(argv[1])) == -1)

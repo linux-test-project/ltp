@@ -89,9 +89,9 @@ int main(int ac, char **av)
 	int sflag = 0;
 
 	option_t options[] = {
-		{ "H:", &Hflag, &Hopt },
-		{ "s:", &sflag, &nr_opt },
-		{ NULL, NULL, NULL }
+		{"H:", &Hflag, &Hopt},
+		{"s:", &sflag, &nr_opt},
+		{NULL, NULL, NULL}
 	};
 
 	msg = parse_opts(ac, av, options, &help);
@@ -112,7 +112,7 @@ int main(int ac, char **av)
 		/* Creat a temporary file used for mapping */
 		fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666);
 		if (fildes < 0)
-			tst_brkm(TFAIL|TERRNO, cleanup, "open %s failed",
+			tst_brkm(TFAIL | TERRNO, cleanup, "open %s failed",
 				 TEMPFILE);
 
 		Tst_count = 0;
@@ -126,7 +126,8 @@ int main(int ac, char **av)
 		addr = mmap(NULL, page_sz, PROT_READ | PROT_WRITE,
 			    MAP_SHARED, fildes, 0);
 		if (addr == MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO, "mmap() Failed on %s", TEMPFILE);
+			tst_resm(TFAIL | TERRNO, "mmap() Failed on %s",
+				 TEMPFILE);
 			close(fildes);
 			continue;
 		} else {
@@ -150,7 +151,7 @@ int main(int ac, char **av)
 		/* Clean up things in case we are looping */
 		/* Unmap the mapped memory */
 		if (munmap(addr, page_sz) != 0)
-			tst_brkm(TFAIL|TERRNO, NULL, "munmap failed");
+			tst_brkm(TFAIL | TERRNO, NULL, "munmap failed");
 
 		close(fildes);
 	}
@@ -164,13 +165,11 @@ void setup(void)
 	TEST_PAUSE;
 	tst_require_root(NULL);
 	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
-		tst_brkm(TBROK|TERRNO, NULL,
-			 "mount failed on %s", Hopt);
+		tst_brkm(TBROK | TERRNO, NULL, "mount failed on %s", Hopt);
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
-	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d",
-		 Hopt, getpid());
+	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d", Hopt, getpid());
 }
 
 void cleanup(void)

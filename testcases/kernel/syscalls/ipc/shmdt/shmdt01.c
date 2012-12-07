@@ -133,7 +133,8 @@ void check_functionality()
 {
 	/* stat the shared memory segment */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "could not stat in signal handler");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "could not stat in signal handler");
 
 	if (buf.shm_nattch != 0) {
 		tst_resm(TFAIL, "# of attaches is incorrect");
@@ -174,7 +175,7 @@ void sighandler(sig)
 		siglongjmp(env, 1);
 	} else
 		tst_brkm(TBROK, cleanup,
-		    "received an unexpected signal: %d", sig);
+			 "received an unexpected signal: %d", sig);
 }
 
 /*

@@ -80,8 +80,7 @@ char *TCID = "timer_create02";	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
 static struct sigevent evp, *evp_ptr;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc, i, j;		/* loop counter */
 	char *msg;
@@ -109,7 +108,7 @@ main(int ac, char **av)
 			for (j = 0; j < CLOCKS_DEFINED; ++j) {
 
 				if (strstr(get_clock_str(clock_list[j]),
-						"CPUTIME_ID")) {
+					   "CPUTIME_ID")) {
 					/* (PROCESS_CPUTIME_ID &
 					 *  THREAD_CPUTIME_ID)
 					 * is not supported on kernel versions
@@ -123,17 +122,15 @@ main(int ac, char **av)
 					continue;
 
 				TEST(syscall(__NR_timer_create, clock_list[j],
-						evp_ptr, &created_timer_id));
+					     evp_ptr, &created_timer_id));
 
 				tst_resm((TEST_RETURN == 0 ?
-							TPASS :
-							TFAIL | TTERRNO),
-					"%s %s with notification type = %s",
-					get_clock_str(clock_list[j]),
-					(TEST_RETURN == 0 ?
-							"passed" :
-							"failed"),
-					message[i]);
+					  TPASS :
+					  TFAIL | TTERRNO),
+					 "%s %s with notification type = %s",
+					 get_clock_str(clock_list[j]),
+					 (TEST_RETURN == 0 ?
+					  "passed" : "failed"), message[i]);
 			}
 		}
 	}
@@ -143,8 +140,7 @@ main(int ac, char **av)
 }
 
 /* setup_test() - sets up individual test */
-void
-setup_test(int option)
+void setup_test(int option)
 {
 	switch (option) {
 	case 0:
@@ -157,8 +153,8 @@ setup_test(int option)
 		evp_ptr = NULL;
 		break;
 	case 2:
-		evp.sigev_value =  (sigval_t) 0;
-		evp.sigev_signo = SIGALRM; /* any will do */
+		evp.sigev_value = (sigval_t) 0;
+		evp.sigev_signo = SIGALRM;	/* any will do */
 		evp.sigev_notify = SIGEV_NONE;
 		evp_ptr = &evp;
 		break;
@@ -166,8 +162,7 @@ setup_test(int option)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -179,12 +174,11 @@ setup(void)
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 }

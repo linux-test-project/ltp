@@ -40,24 +40,22 @@
 #include "test.h"
 #include "usctest.h"
 
-char	*TCID		= "ptrace05";
-int	TST_TOTAL	= 0;
+char *TCID = "ptrace05";
+int TST_TOTAL = 0;
 
-int usage(const char*);
+int usage(const char *);
 
-int
-usage(const char *argv0)
+int usage(const char *argv0)
 {
 	fprintf(stderr, "usage: %s [start-signum] [end-signum]\n", argv0);
 	return 1;
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 
 	int end_signum = -1;
-       	int signum;
+	int signum;
 	int start_signum = -1;
 	int status;
 
@@ -66,20 +64,20 @@ main(int argc, char **argv)
 	/* Parse the CLI args appropriately. */
 	switch (argc) {
 	case 3:
-		end_signum = (int) strtol((const char*) *(argv+2), NULL, 10);
+		end_signum = (int)strtol((const char *)*(argv + 2), NULL, 10);
 		/* Parse the signal value. */
 		if (end_signum == 0 && errno != 0) {
 			tst_resm(TBROK, "argument (%s) isn't a valid number.\n",
-					*(argv+2));
+				 *(argv + 2));
 			tst_exit();
 		}
 		/* FALLTHROUGH */
 	case 2:
-		start_signum = (int) strtol((const char*) *(argv+1), NULL, 10);
+		start_signum = (int)strtol((const char *)*(argv + 1), NULL, 10);
 		/* Parse the signal value. */
 		if (end_signum == 0 && errno != 0) {
 			tst_resm(TBROK, "argument (%s) isn't a valid number.\n",
-					*(argv+1) );
+				 *(argv + 1));
 			tst_exit();
 		}
 		break;
@@ -107,11 +105,11 @@ main(int argc, char **argv)
 
 			if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) != -1) {
 				tst_resm(TINFO, "[child] Sending kill(.., %d)",
-						signum);
+					 signum);
 				if (kill(getpid(), signum) < 0) {
 					tst_resm(TINFO | TERRNO,
-						"[child] kill(.., %d) failed.",
-						signum);
+						 "[child] kill(.., %d) failed.",
+						 signum);
 				}
 			} else {
 
@@ -121,8 +119,8 @@ main(int argc, char **argv)
 				 * nonetheless.
 				 */
 				tst_resm(TFAIL | TERRNO,
-					"Failed to ptrace(PTRACE_TRACEME, ...) "
-					"properly");
+					 "Failed to ptrace(PTRACE_TRACEME, ...) "
+					 "properly");
 
 			}
 			/* Shouldn't get here if signum == 0. */
@@ -133,14 +131,17 @@ main(int argc, char **argv)
 
 			waitpid(child, &status, 0);
 
-			switch(signum) {
+			switch (signum) {
 			case 0:
-				if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-					tst_resm(TPASS, "kill(.., 0) exited "
-							"with 0, as expected.");
+				if (WIFEXITED(status)
+				    && WEXITSTATUS(status) == 0) {
+					tst_resm(TPASS,
+						 "kill(.., 0) exited "
+						 "with 0, as expected.");
 				} else {
-					tst_resm(TFAIL, "kill(.., 0) didn't exit "
-							"with 0.");
+					tst_resm(TFAIL,
+						 "kill(.., 0) didn't exit "
+						 "with 0.");
 				}
 				break;
 			case SIGKILL:
@@ -148,41 +149,41 @@ main(int argc, char **argv)
 					/* SIGKILL must be uncatchable. */
 					if (WTERMSIG(status) == SIGKILL) {
 						tst_resm(TPASS,
-							"Killed with SIGKILL, "
-							"as expected.");
+							 "Killed with SIGKILL, "
+							 "as expected.");
 					} else {
 						tst_resm(TPASS,
-							"Didn't die with "
-							"SIGKILL (?!) ");
+							 "Didn't die with "
+							 "SIGKILL (?!) ");
 					}
 				} else if (WIFEXITED(status)) {
 					tst_resm(TFAIL,
-						"Exited unexpectedly instead "
-						"of dying with SIGKILL.");
+						 "Exited unexpectedly instead "
+						 "of dying with SIGKILL.");
 				} else if (WIFSTOPPED(status)) {
 					tst_resm(TFAIL,
-						"Stopped instead of dying "
-						"with SIGKILL.");
+						 "Stopped instead of dying "
+						 "with SIGKILL.");
 				}
 				break;
-			/* All other processes should be stopped. */
+				/* All other processes should be stopped. */
 			default:
 				if (WIFSTOPPED(status)) {
 					tst_resm(TPASS, "Stopped as expected");
 				} else {
 					tst_resm(TFAIL, "Didn't stop as "
-							"expected.");
-					if (kill (child, 0)) {
+						 "expected.");
+					if (kill(child, 0)) {
 						tst_resm(TINFO,
-							"Is still alive!?");
+							 "Is still alive!?");
 					} else if (WIFEXITED(status)) {
 						tst_resm(TINFO,
-							"Exited normally");
+							 "Exited normally");
 					} else if (WIFSIGNALED(status)) {
 						tst_resm(TINFO,
-							"Was signaled with "
-							"signum=%d",
-							WTERMSIG(status));
+							 "Was signaled with "
+							 "signum=%d",
+							 WTERMSIG(status));
 					}
 
 				}

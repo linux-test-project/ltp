@@ -61,20 +61,19 @@
 #include <unistd.h>
 
 #include "../libcontrollers/libcontrollers.h"
-#include "test.h"		/* LTP harness APIs*/
+#include "test.h"		/* LTP harness APIs */
 
-#define TIME_INTERVAL	100	/* Time interval in seconds*/
-#define NUM_INTERVALS	2       /* How many iterations of TIME_INTERVAL */
+#define TIME_INTERVAL	100	/* Time interval in seconds */
+#define NUM_INTERVALS	2	/* How many iterations of TIME_INTERVAL */
 
 char *TCID = "cpu_controller_test06";
 int TST_TOTAL = 2;
 pid_t scriptpid;
 char path[] = "/dev/cpuctl";
-extern void
-cleanup()
+extern void cleanup()
 {
-	kill(scriptpid, SIGUSR1);/* Inform the shell to do cleanup*/
-		  /* Report exit status*/
+	kill(scriptpid, SIGUSR1);	/* Inform the shell to do cleanup */
+	/* Report exit status */
 }
 
 volatile int timer_expired = 0;
@@ -88,16 +87,16 @@ int main(int argc, char *argv[])
 	int num_cpus;
 	char mygroup[FILENAME_MAX], mytaskfile[FILENAME_MAX];
 	char mysharesfile[FILENAME_MAX], ch;
-	/* Following variables are to capture parameters from script*/
+	/* Following variables are to capture parameters from script */
 	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p;
 	char *test_num_p, *task_num_p;
-	gid_t mygroup_num;	        /* A number attached with a group*/
-	int fd;          	        /* to open a fifo to synchronize*/
-	int counter = 0; 	 	/* To take n number of readings*/
-	double total_cpu_time;  	/* Accumulated cpu time*/
-	double delta_cpu_time;  	/* Time the task could run on cpu(s)*/
+	gid_t mygroup_num;	/* A number attached with a group */
+	int fd;			/* to open a fifo to synchronize */
+	int counter = 0;	/* To take n number of readings */
+	double total_cpu_time;	/* Accumulated cpu time */
+	double delta_cpu_time;	/* Time the task could run on cpu(s) */
 	double prev_cpu_time = 0;
-	double exp_cpu_time;            /* Exp time in % by shares calculation*/
+	double exp_cpu_time;	/* Exp time in % by shares calculation */
 
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
@@ -110,33 +109,33 @@ int main(int argc, char *argv[])
 	task_num = 0;
 	test_num = 0;
 
-	/* Signal handling for alarm*/
+	/* Signal handling for alarm */
 	sigemptyset(&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;
 	newaction.sa_flags = 0;
 	sigaction(SIGALRM, &newaction, &oldaction);
 
 	/* Collect the parameters passed by the script */
-	group_num_p	= getenv("GROUP_NUM");
-	mygroup_p	= getenv("MYGROUP");
-	script_pid_p 	= getenv("SCRIPT_PID");
-	num_cpus_p 	= getenv("NUM_CPUS");
-	test_num_p 	= getenv("TEST_NUM");
-	task_num_p 	= getenv("TASK_NUM");
+	group_num_p = getenv("GROUP_NUM");
+	mygroup_p = getenv("MYGROUP");
+	script_pid_p = getenv("SCRIPT_PID");
+	num_cpus_p = getenv("NUM_CPUS");
+	test_num_p = getenv("TEST_NUM");
+	task_num_p = getenv("TASK_NUM");
 	/* Check if all of them are valid */
-	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) <= 10) && \
-					((test_num = atoi(test_num_p)) >= 9))) {
-		if ((group_num_p != NULL) && (mygroup_p != NULL) && \
-			(script_pid_p != NULL) && (num_cpus_p != NULL) && \
-				 (task_num_p != NULL)) {
-			mygroup_num	 = atoi(group_num_p);
-			scriptpid	 = atoi(script_pid_p);
-			num_cpus	 = atoi(num_cpus_p);
-			task_num	 = atoi(task_num_p);
+	if ((test_num_p != NULL) && (((test_num = atoi(test_num_p)) <= 10) &&
+				     ((test_num = atoi(test_num_p)) >= 9))) {
+		if ((group_num_p != NULL) && (mygroup_p != NULL) &&
+		    (script_pid_p != NULL) && (num_cpus_p != NULL) &&
+		    (task_num_p != NULL)) {
+			mygroup_num = atoi(group_num_p);
+			scriptpid = atoi(script_pid_p);
+			num_cpus = atoi(num_cpus_p);
+			task_num = atoi(task_num_p);
 			sprintf(mygroup, "%s", mygroup_p);
 		} else {
 			tst_brkm(TBROK, cleanup,
-					 "Invalid other input parameters\n");
+				 "Invalid other input parameters\n");
 		}
 	} else {
 		tst_brkm(TBROK, cleanup, "Invalid test number passed\n");
@@ -177,7 +176,7 @@ int main(int argc, char *argv[])
 
 	if (scan_shares_files(shares_pointer) != 0)
 		tst_brkm(TBROK, cleanup,
-		 "From function scan_shares_files in %s ", fullpath);
+			 "From function scan_shares_files in %s ", fullpath);
 
 	/* return val -1 in case of function error, else 2 is min share value */
 	if ((fmyshares = read_shares_file(mysharesfile)) < 2)
@@ -190,14 +189,14 @@ int main(int argc, char *argv[])
 
 	exp_cpu_time = (double)(fmyshares * 100) / (total_shares * num_tasks);
 
-	prev_time = time(NULL);	 /* Note down the time*/
+	prev_time = time(NULL);	/* Note down the time */
 
 	while (1) {
 		/*
 		 * Need to run some cpu intensive task, which also
 		 * frequently checks the timer value
 		 */
-		double f = 274.345, mytime;	/*just a float number for sqrt*/
+		double f = 274.345, mytime;	/*just a float number for sqrt */
 		alarm(TIME_INTERVAL);
 		timer_expired = 0;
 		/*
@@ -209,15 +208,15 @@ int main(int argc, char *argv[])
 			f = sqrt(f * f);
 
 		current_time = time(NULL);
-		/* Duration in case its not exact TIME_INTERVAL*/
+		/* Duration in case its not exact TIME_INTERVAL */
 		delta_time = current_time - prev_time;
 
 		getrusage(0, &cpu_usage);
 		/* total_cpu_time = total user time + total sys time */
 		total_cpu_time = (cpu_usage.ru_utime.tv_sec +
-				cpu_usage.ru_utime.tv_usec * 1e-6 +
-				cpu_usage.ru_stime.tv_sec +
-				cpu_usage.ru_stime.tv_usec * 1e-6) ;
+				  cpu_usage.ru_utime.tv_usec * 1e-6 +
+				  cpu_usage.ru_stime.tv_sec +
+				  cpu_usage.ru_stime.tv_usec * 1e-6);
 		delta_cpu_time = total_cpu_time - prev_cpu_time;
 
 		prev_cpu_time = total_cpu_time;
@@ -226,24 +225,24 @@ int main(int argc, char *argv[])
 		/* calculate % cpu time each task gets */
 		if (delta_time > TIME_INTERVAL)
 			mytime = (delta_cpu_time * 100) /
-					 (delta_time * num_cpus);
+			    (delta_time * num_cpus);
 		else
 			mytime = (delta_cpu_time * 100) /
-					 (TIME_INTERVAL * num_cpus);
+			    (TIME_INTERVAL * num_cpus);
 
 		/* No neeed to print the results */
 		fprintf(stdout, "Grp:-%3d task-%3d:CPU TIME{calc:-%6.2f(s) i.e."
 			"  %6.2f(%%) exp:-%6.2f(%%)} with %3u shares in %lu (s)"
 			" INTERVAL\n", mygroup_num, task_num, delta_cpu_time,
-			 mytime, exp_cpu_time, fmyshares, delta_time);
+			mytime, exp_cpu_time, fmyshares, delta_time);
 
 		counter++;
 
 		if (counter >= NUM_INTERVALS) {
 			switch (test_num) {
 
-			case 9:			/* Test 09 */
-			case 10:		/* Test 10 */
+			case 9:	/* Test 09 */
+			case 10:	/* Test 10 */
 				exit(0);	/* This task is done */
 				break;
 			default:
@@ -251,7 +250,7 @@ int main(int argc, char *argv[])
 					 "Invalid test number passed\n");
 				break;
 
-			}	/* end switch*/
-		}	/* end if*/
-	}	/* end while*/
-}	/* end main*/
+			}	/* end switch */
+		}		/* end if */
+	}			/* end while */
+}				/* end main */

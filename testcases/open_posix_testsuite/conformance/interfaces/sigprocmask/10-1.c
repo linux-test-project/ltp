@@ -15,7 +15,8 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 
 	sigset_t set1, set2;
 	int sigprocmask_return_val = 1;
@@ -36,7 +37,8 @@ int main() {
 		return PTS_FAIL;
 	}
 	if (sigprocmask_return_val == -1) {
-		printf("FAIL: sigprocmask returned -1. System should be able to enforce blocking un-ignorable signals without causing sigprocmask() to return -1.\n");
+		printf
+		    ("FAIL: sigprocmask returned -1. System should be able to enforce blocking un-ignorable signals without causing sigprocmask() to return -1.\n");
 		return PTS_FAIL;
 	}
 

@@ -35,8 +35,7 @@
 extern void dummy_func_test(void);
 
 /* Initialization routine of module */
-int
-init_module (void)
+int init_module(void)
 {
 	/*
 	 * Call function of other module, does nothing, used to create
@@ -47,8 +46,7 @@ init_module (void)
 }
 
 /* Cleanup routine of module */
-void
-cleanup_module (void)
+void cleanup_module(void)
 {
 	return;
 }

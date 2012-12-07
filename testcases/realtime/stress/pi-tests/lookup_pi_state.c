@@ -46,9 +46,9 @@ pthread_cond_t CM;
 pthread_cond_t CS;
 pthread_cond_t CT;
 
-atomic_t slave_order_a = {0};
-atomic_t slave_order_b = {0};
-atomic_t slave_order_c = {0};
+atomic_t slave_order_a = { 0 };
+atomic_t slave_order_b = { 0 };
+atomic_t slave_order_c = { 0 };
 
 void usage(void)
 {
@@ -71,22 +71,22 @@ int parse_args(int c, char *v)
 	return handled;
 }
 
-void *slave_thread(void* arg)
+void *slave_thread(void *arg)
 {
 	struct thread *t = (struct thread *)arg;
-	int id = (intptr_t)t->arg;
+	int id = (intptr_t) t->arg;
 // 3
 	pthread_mutex_lock(&MS);
 // 4,5
 	if (atomic_inc(&slave_order_a) == NUM_SLAVES) {
 		printf("Slave thread %d notifying master\n", id);
-		pthread_mutex_lock(&MM); // make sure the master thread is waiting
+		pthread_mutex_lock(&MM);	// make sure the master thread is waiting
 		pthread_cond_signal(&CM);
 		pthread_mutex_unlock(&MM);
 	}
 	printf("Slave thread %d waiting on CS,MS\n", id);
-	pthread_cond_wait(&CS, &MS); // docs are contradictory on if this
-																		 // should be MS or MM
+	pthread_cond_wait(&CS, &MS);	// docs are contradictory on if this
+	// should be MS or MM
 
 	if (atomic_inc(&slave_order_b) <= 6) {
 // 10,11
@@ -103,7 +103,7 @@ void *slave_thread(void* arg)
 	return NULL;
 }
 
-void *master_thread(void* arg)
+void *master_thread(void *arg)
 {
 	int i;
 	struct timespec ts_abs_timeout;
@@ -111,7 +111,8 @@ void *master_thread(void* arg)
 // 1
 	pthread_mutex_lock(&MM);
 	for (i = 0; i < NUM_SLAVES; i++) {
-		create_fifo_thread(slave_thread, (void *)(intptr_t)i, SLAVE_PRIO);
+		create_fifo_thread(slave_thread, (void *)(intptr_t) i,
+				   SLAVE_PRIO);
 	}
 // 2
 	printf("Master waiting till slaves wait()\n");

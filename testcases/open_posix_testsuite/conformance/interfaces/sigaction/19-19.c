@@ -73,10 +73,9 @@
 /******************************************************************************/
 
 int called = 0;
-void handler(int sig, siginfo_t *info, void *context)
+void handler(int sig, siginfo_t * info, void *context)
 {
-	if (info->si_signo != SIGNAL)
-	{
+	if (info->si_signo != SIGNAL) {
 		FAILED("Wrong signal generated?");
 	}
 
@@ -97,8 +96,7 @@ int main()
 	/* Test the RTS extension */
 	rts = sysconf(_SC_REALTIME_SIGNALS);
 
-	if (rts < 0L)
-	{
+	if (rts < 0L) {
 		UNTESTED("This test needs the RTS extension");
 	}
 
@@ -109,34 +107,31 @@ int main()
 
 	ret = sigemptyset(&sa.sa_mask);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	/* Install the signal handler for SIGALRM */
 	ret = sigaction(SIGNAL, &sa, 0);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
-	if (called)
-	{
-		FAILED("The signal handler has been called when no signal was raised");
+	if (called) {
+		FAILED
+		    ("The signal handler has been called when no signal was raised");
 	}
 
 	ret = raise(SIGNAL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to raise SIGALRM");
 	}
 
-	if (!called)
-	{
-		FAILED("the sa_handler was not called whereas SA_SIGINFO was not set");
+	if (!called) {
+		FAILED
+		    ("the sa_handler was not called whereas SA_SIGINFO was not set");
 	}
 
 	/* Test passed */

@@ -14,5 +14,5 @@ int main()
 	file4();
 	file5();
 	printf("All Functions Executed\n");
-        return 0;
+	return 0;
 }

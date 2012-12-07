@@ -11,12 +11,12 @@
  */
 #include <sys/vfs.h>
 
-int
-tst_cwd_has_free(int required_kib)
+int tst_cwd_has_free(int required_kib)
 {
 	struct statfs sf;
 	statfs(".", &sf);
 
 	/* check that we have enough blocks to create swap file */
-	return ((float)sf.f_bfree)/(1024/sf.f_bsize) >= required_kib?1:0;
+	return ((float)sf.f_bfree) / (1024 / sf.f_bsize) >=
+	    required_kib ? 1 : 0;
 }

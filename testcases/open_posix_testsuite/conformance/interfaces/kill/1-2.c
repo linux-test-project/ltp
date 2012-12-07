@@ -33,7 +33,8 @@
 
 #define SIGTOTEST SIGUSR1
 
-void myhandler (int signo) {
+void myhandler(int signo)
+{
 	exit(1);
 }
 
@@ -55,18 +56,19 @@ int main()
 	if ((pid = fork()) == 0) {
 		/* child here */
 		struct sigaction act;
-		act.sa_handler=myhandler;
-		act.sa_flags=0;
+		act.sa_handler = myhandler;
+		act.sa_flags = 0;
 		sigemptyset(&act.sa_mask);
 		sigaction(SIGTOTEST, &act, 0);
 
 		if (0 != sigwait(&set, &sig)) {
-			printf("Sigwait did not return 0. Possible problem with sigwait function\n");
-			return 0; /* FAIL */
+			printf
+			    ("Sigwait did not return 0. Possible problem with sigwait function\n");
+			return 0;	/* FAIL */
 		}
 
 		if (sig != SIGTOTEST)
-			return 0; /* FAIL */
+			return 0;	/* FAIL */
 
 		return 1;
 	} else {

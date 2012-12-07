@@ -78,10 +78,10 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 
-sem_t * sem;
+sem_t *sem;
 
 /* Thread function */
-void * threaded(void *arg)
+void *threaded(void *arg)
 {
 	int ret = 0;
 
@@ -99,7 +99,7 @@ void * threaded(void *arg)
 }
 
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
 	pid_t child, ctl;

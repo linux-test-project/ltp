@@ -85,8 +85,7 @@ int main(int argc, char *argv[])
 #ifdef UCLINUX
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -99,7 +98,7 @@ int main(int argc, char *argv[])
 
 	key = getipckey();
 	if ((msqid = msgget(key, IPC_CREAT | IPC_EXCL)) == -1) {
-		tst_resm(TFAIL|TERRNO, "msgget() failed");
+		tst_resm(TFAIL | TERRNO, "msgget() failed");
 		tst_exit();
 
 	}
@@ -126,7 +125,7 @@ int main(int argc, char *argv[])
 		sigemptyset(&act.sa_mask);
 		sigaddset(&act.sa_mask, SIGALRM);
 		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
-			tst_resm(TFAIL|TERRNO, "signal failed");
+			tst_resm(TFAIL | TERRNO, "signal failed");
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
@@ -139,7 +138,7 @@ int main(int argc, char *argv[])
 			p1_msgp.text[i] = 'i';
 		p1_msgp.type = 1;
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
-			tst_resm(TFAIL|TERRNO, "msgsnd() failed");
+			tst_resm(TFAIL | TERRNO, "msgsnd() failed");
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
@@ -174,7 +173,7 @@ int main(int argc, char *argv[])
 		sigemptyset(&act.sa_mask);
 		sigaddset(&act.sa_mask, SIGALRM);
 		if ((sigaction(SIGALRM, &act, NULL)) < 0) {
-			tst_resm(TFAIL|TERRNO, "signal failed");
+			tst_resm(TFAIL | TERRNO, "signal failed");
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
@@ -187,7 +186,7 @@ int main(int argc, char *argv[])
 			p1_msgp.text[i] = 'i';
 		p1_msgp.type = 1;
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
-			tst_resm(TFAIL|TERRNO, "msgsnd() failed");
+			tst_resm(TFAIL | TERRNO, "msgsnd() failed");
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
@@ -196,7 +195,7 @@ int main(int argc, char *argv[])
 			p2_msgp.text[j] = 'j';
 		p2_msgp.type = 2;
 		if (msgsnd(msqid, &p2_msgp, BYTES, 0) == -1) {
-			tst_resm(TFAIL|TERRNO, "msgsnd() failed");
+			tst_resm(TFAIL | TERRNO, "msgsnd() failed");
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
@@ -205,7 +204,7 @@ int main(int argc, char *argv[])
 			p3_msgp.text[k] = 'k';
 		p3_msgp.type = 3;
 		if (msgsnd(msqid, &p3_msgp, BYTES, 0) == -1) {
-			tst_resm(TFAIL|TERRNO, "msgsnd() failed");
+			tst_resm(TFAIL | TERRNO, "msgsnd() failed");
 			kill(pid, SIGKILL);
 			(void)msgctl(msqid, IPC_RMID, NULL);
 			tst_exit();
@@ -255,7 +254,7 @@ void do_child_1()
 	int size;
 
 	if ((size = msgrcv(msqid, &c1_msgp, BYTES, 0, 0)) == -1) {
-		tst_resm(TFAIL|TERRNO, "msgrcv() failed");
+		tst_resm(TFAIL | TERRNO, "msgrcv() failed");
 		tst_exit();
 	}
 	if (size != BYTES) {
@@ -277,7 +276,7 @@ void do_child_2()
 	int size;
 
 	if ((size = msgrcv(msqid, &c3_msgp, BYTES, 3, 0)) == -1) {
-		tst_resm(TFAIL|TERRNO, "msgrcv() failed");
+		tst_resm(TFAIL | TERRNO, "msgrcv() failed");
 		tst_exit();
 	}
 	if (size != BYTES) {
@@ -291,7 +290,7 @@ void do_child_2()
 			tst_exit();
 		}
 	if ((size = msgrcv(msqid, &c2_msgp, BYTES, 2, 0)) == -1) {
-		tst_resm(TFAIL|TERRNO, "msgrcv() failed");
+		tst_resm(TFAIL | TERRNO, "msgrcv() failed");
 		tst_exit();
 	}
 	if (size != BYTES) {
@@ -305,7 +304,7 @@ void do_child_2()
 			tst_exit();
 		}
 	if ((size = msgrcv(msqid, &c1_msgp, BYTES, 1, 0)) == -1) {
-		tst_resm(TFAIL|TERRNO, "msgrcv() failed");
+		tst_resm(TFAIL | TERRNO, "msgrcv() failed");
 		tst_exit();
 	}
 	if (size != BYTES) {

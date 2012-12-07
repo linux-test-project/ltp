@@ -1,6 +1,6 @@
   /*
-  Test that the FPE_INTDIV macro is defined.
-  */
+     Test that the FPE_INTDIV macro is defined.
+   */
 
 #include <signal.h>
 

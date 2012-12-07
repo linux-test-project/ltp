@@ -82,7 +82,6 @@ PF_INET, SOCK_STREAM, 1, -1, ESOCKTNOSUPPORT, "ICMP stream"},};
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
-
 int main(int argc, char *argv[])
 {
 	int lc;

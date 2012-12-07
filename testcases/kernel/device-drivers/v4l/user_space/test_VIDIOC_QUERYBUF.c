@@ -29,7 +29,9 @@
 #include "test_VIDIOC_REQBUFS.h"
 
 static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
-		enum v4l2_buf_type type, __u32 count, int expected_ret_req) {
+			       enum v4l2_buf_type type, __u32 count,
+			       int expected_ret_req)
+{
 	int ret_req, errno_req;
 	int ret_query, errno_query;
 	struct v4l2_requestbuffers reqbuf;
@@ -46,12 +48,12 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 		V4L2_BUF_TYPE_SLICED_VBI_CAPTURE,
 		V4L2_BUF_TYPE_SLICED_VBI_OUTPUT,
 		V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY,
-		V4L2_BUF_TYPE_PRIVATE-1,
+		V4L2_BUF_TYPE_PRIVATE - 1,
 		V4L2_BUF_TYPE_PRIVATE,
-		V4L2_BUF_TYPE_PRIVATE+1,
+		V4L2_BUF_TYPE_PRIVATE + 1,
 		S32_MAX,
-		(__s32)((__u32)S32_MAX+1),
-		U32_MAX-1,
+		(__s32) ((__u32) S32_MAX + 1),
+		U32_MAX - 1,
 		U32_MAX
 	};
 
@@ -70,8 +72,9 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 		CU_ASSERT_EQUAL(errno_req, EINVAL);
 	}
 
-	dprintf("\t%s:%u: VIDIOC_REQBUF, count=%u, type=%i, memory=%i, ret_req=%i, errno_req=%i\n",
-		__FILE__, __LINE__, count, type, memory, ret_req, errno_req);
+	dprintf
+	    ("\t%s:%u: VIDIOC_REQBUF, count=%u, type=%i, memory=%i, ret_req=%i, errno_req=%i\n",
+	     __FILE__, __LINE__, count, type, memory, ret_req, errno_req);
 
 	if (ret_req == 0) {
 		show_v4l2_requestbuffers(&reqbuf);
@@ -92,7 +95,10 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 		CU_ASSERT_EQUAL(buf.index, i);
 		CU_ASSERT_EQUAL(buf.type, type);
 		//CU_ASSERT_EQUAL(buf.bytesused, ???);
-		CU_ASSERT_EQUAL(buf.flags & ~(V4L2_BUF_FLAG_MAPPED | V4L2_BUF_FLAG_QUEUED | V4L2_BUF_FLAG_DONE), 0);
+		CU_ASSERT_EQUAL(buf.
+				flags & ~(V4L2_BUF_FLAG_MAPPED |
+					  V4L2_BUF_FLAG_QUEUED |
+					  V4L2_BUF_FLAG_DONE), 0);
 		//CU_ASSERT_EQUAL(buf.field, ???);
 		//CU_ASSERT_EQUAL(buf.timestamp.tv_sec, ???);
 		//CU_ASSERT_EQUAL(buf.timestamp.tv_usec, ???);
@@ -114,8 +120,10 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 		//CU_ASSERT_EQUAL(buf.input, ???);
 		CU_ASSERT_EQUAL(buf.reserved, 0);
 
-		dprintf("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, buf.type, buf.index, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, buf.type, buf.index, ret_query,
+		     errno_query);
 		if (ret_query == 0)
 			show_v4l2_buffer(&buf);
 
@@ -125,20 +133,25 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 	 * buffer type
 	 */
 	for (i = 0; i < reqbuf.count; i++) {
-		for (j = 0; j < sizeof(buffer_types)/sizeof(*buffer_types); j++) {
+		for (j = 0; j < sizeof(buffer_types) / sizeof(*buffer_types);
+		     j++) {
 			if (buffer_types[j] != type) {
 				memset(&buf, 0xff, sizeof(buf));
 				buf.type = buffer_types[j];
 				buf.index = i;
 
-				ret_query = ioctl(get_video_fd(), VIDIOC_QUERYBUF, &buf);
+				ret_query =
+				    ioctl(get_video_fd(), VIDIOC_QUERYBUF,
+					  &buf);
 				errno_query = errno;
 
 				CU_ASSERT_EQUAL(ret_query, -1);
 				CU_ASSERT_EQUAL(errno_query, EINVAL);
 
-				dprintf("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
-					__FILE__, __LINE__, buf.type, buf.index, ret_query, errno_query);
+				dprintf
+				    ("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
+				     __FILE__, __LINE__, buf.type, buf.index,
+				     ret_query, errno_query);
 				if (ret_query == 0)
 					show_v4l2_buffer(&buf);
 			}
@@ -152,37 +165,42 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 	ret_query = ioctl(get_video_fd(), VIDIOC_QUERYBUF, &buf);
 	errno_query = errno;
 
-	dprintf("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
-		__FILE__, __LINE__, buf.type, buf.index, ret_query, errno_query);
+	dprintf
+	    ("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
+	     __FILE__, __LINE__, buf.type, buf.index, ret_query, errno_query);
 
 	CU_ASSERT_EQUAL(ret_query, -1);
 	CU_ASSERT_EQUAL(errno_query, EINVAL);
 
-	if (reqbuf.count < (__u32)S16_MIN) {
+	if (reqbuf.count < (__u32) S16_MIN) {
 		memset(&buf, 0xff, sizeof(buf));
 		buf.type = type;
-		buf.index = (__u32)S16_MIN;
+		buf.index = (__u32) S16_MIN;
 
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYBUF, &buf);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, buf.type, buf.index, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, buf.type, buf.index, ret_query,
+		     errno_query);
 
 		CU_ASSERT_EQUAL(ret_query, -1);
 		CU_ASSERT_EQUAL(errno_query, EINVAL);
 	}
 
-	if (reqbuf.count < (__u32)S16_MAX) {
+	if (reqbuf.count < (__u32) S16_MAX) {
 		memset(&buf, 0xff, sizeof(buf));
 		buf.type = type;
-		buf.index = (__u32)S16_MAX;
+		buf.index = (__u32) S16_MAX;
 
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYBUF, &buf);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, buf.type, buf.index, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, buf.type, buf.index, ret_query,
+		     errno_query);
 
 		CU_ASSERT_EQUAL(ret_query, -1);
 		CU_ASSERT_EQUAL(errno_query, EINVAL);
@@ -196,8 +214,10 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 		ret_query = ioctl(get_video_fd(), VIDIOC_QUERYBUF, &buf);
 		errno_query = errno;
 
-		dprintf("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
-			__FILE__, __LINE__, buf.type, buf.index, ret_query, errno_query);
+		dprintf
+		    ("\t%s:%u: VIDIOC_QUERYBUF, type=%i, index=%u, ret_query=%i, errno_query=%i\n",
+		     __FILE__, __LINE__, buf.type, buf.index, ret_query,
+		     errno_query);
 
 		CU_ASSERT_EQUAL(ret_query, -1);
 		CU_ASSERT_EQUAL(errno_query, EINVAL);
@@ -225,7 +245,8 @@ static void do_VIDIOC_QUERYBUF(enum v4l2_memory memory,
 	}
 }
 
-void test_VIDIOC_QUERYBUF_capture_mmap() {
+void test_VIDIOC_QUERYBUF_capture_mmap()
+{
 	int ret_cap, errno_cap;
 	struct v4l2_capability cap;
 	int expected_ret_req;
@@ -243,17 +264,26 @@ void test_VIDIOC_QUERYBUF_capture_mmap() {
 		expected_ret_req = -1;
 	}
 
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 0, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 1, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 3, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 4, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, (__u32)S16_MIN, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, (__u32)S16_MAX, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, U32_MAX, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 0,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 1,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 3,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE, 4,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE,
+			   (__u32) S16_MIN, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE,
+			   (__u32) S16_MAX, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_CAPTURE,
+			   U32_MAX, expected_ret_req);
 }
 
-void test_VIDIOC_QUERYBUF_capture_userptr() {
+void test_VIDIOC_QUERYBUF_capture_userptr()
+{
 	int ret_cap, errno_cap;
 	int ret_req, errno_req;
 	struct v4l2_capability cap;
@@ -278,25 +308,34 @@ void test_VIDIOC_QUERYBUF_capture_userptr() {
 
 	if (ret_cap == 0 &&
 	    (cap.capabilities & V4L2_CAP_STREAMING) &&
-	    (cap.capabilities & V4L2_CAP_VIDEO_CAPTURE) &&
-	    ret_req == 0) {
+	    (cap.capabilities & V4L2_CAP_VIDEO_CAPTURE) && ret_req == 0) {
 		expected_ret_req = 0;
 	} else {
 		expected_ret_req = -1;
 	}
 
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 0, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 1, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 3, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 4, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, (__u32)S16_MIN, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, (__u32)S16_MAX, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, U32_MAX, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 0, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 0,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 1,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 3,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 4,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE,
+			   (__u32) S16_MIN, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE,
+			   (__u32) S16_MAX, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE,
+			   U32_MAX, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_CAPTURE, 0,
+			   expected_ret_req);
 }
 
-void test_VIDIOC_QUERYBUF_output_mmap() {
+void test_VIDIOC_QUERYBUF_output_mmap()
+{
 	int ret_cap, errno_cap;
 	struct v4l2_capability cap;
 	int expected_ret_req;
@@ -314,18 +353,28 @@ void test_VIDIOC_QUERYBUF_output_mmap() {
 		expected_ret_req = -1;
 	}
 
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 0, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 1, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 3, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 4, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, (__u32)S16_MIN, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, (__u32)S16_MAX, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, U32_MAX, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 0, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 0,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 1,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 3,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 4,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT,
+			   (__u32) S16_MIN, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT,
+			   (__u32) S16_MAX, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT,
+			   U32_MAX, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT, 0,
+			   expected_ret_req);
 }
 
-void test_VIDIOC_QUERYBUF_output_userptr() {
+void test_VIDIOC_QUERYBUF_output_userptr()
+{
 	int ret_cap, errno_cap;
 	int ret_req, errno_req;
 	struct v4l2_capability cap;
@@ -350,76 +399,108 @@ void test_VIDIOC_QUERYBUF_output_userptr() {
 
 	if (ret_cap == 0 &&
 	    (cap.capabilities & V4L2_CAP_STREAMING) &&
-	    (cap.capabilities & V4L2_CAP_VIDEO_OUTPUT) &&
-	    ret_req == 0) {
+	    (cap.capabilities & V4L2_CAP_VIDEO_OUTPUT) && ret_req == 0) {
 		expected_ret_req = 0;
 	} else {
 		expected_ret_req = -1;
 	}
 
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 0, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 1, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 3, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 4, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, (__u32)S16_MIN, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, (__u32)S16_MAX, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, U32_MAX, expected_ret_req);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 0, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 0,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 1,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 3,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 4,
+			   expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT,
+			   (__u32) S16_MIN, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT,
+			   (__u32) S16_MAX, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT,
+			   U32_MAX, expected_ret_req);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT, 0,
+			   expected_ret_req);
 }
 
-void test_VIDIOC_QUERYBUF_overlay_capture() {
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_OVERLAY, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2, -1);
+void test_VIDIOC_QUERYBUF_overlay_capture()
+{
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_OVERLAY, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2,
+			   -1);
 }
 
-void test_VIDIOC_QUERYBUF_overlay_output() {
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_OVERLAY, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2, -1);
+void test_VIDIOC_QUERYBUF_overlay_output()
+{
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_OVERLAY, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2,
+			   -1);
 }
 
-void test_VIDIOC_QUERYBUF_invalid_memory_capture() {
+void test_VIDIOC_QUERYBUF_invalid_memory_capture()
+{
 	do_VIDIOC_QUERYBUF(SINT_MIN, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2, -1);
 	do_VIDIOC_QUERYBUF(0, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_OVERLAY+1, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_OVERLAY + 1, V4L2_BUF_TYPE_VIDEO_CAPTURE,
+			   2, -1);
 	do_VIDIOC_QUERYBUF(SINT_MAX, V4L2_BUF_TYPE_VIDEO_CAPTURE, 2, -1);
 }
 
-void test_VIDIOC_QUERYBUF_invalid_memory_output() {
+void test_VIDIOC_QUERYBUF_invalid_memory_output()
+{
 	do_VIDIOC_QUERYBUF(SINT_MIN, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2, -1);
 	do_VIDIOC_QUERYBUF(0, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_OVERLAY+1, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_OVERLAY + 1, V4L2_BUF_TYPE_VIDEO_OUTPUT,
+			   2, -1);
 	do_VIDIOC_QUERYBUF(SINT_MAX, V4L2_BUF_TYPE_VIDEO_OUTPUT, 2, -1);
 }
 
-void test_VIDIOC_QUERYBUF_invalid_type_mmap() {
+void test_VIDIOC_QUERYBUF_invalid_type_mmap()
+{
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, 0, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OVERLAY, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OVERLAY, 2,
+			   -1);
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VBI_CAPTURE, 2, -1);
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VBI_OUTPUT, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_SLICED_VBI_CAPTURE, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_SLICED_VBI_OUTPUT, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_PRIVATE-1, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_SLICED_VBI_CAPTURE,
+			   2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_SLICED_VBI_OUTPUT, 2,
+			   -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY,
+			   2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_PRIVATE - 1, 2, -1);
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_PRIVATE, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_PRIVATE+1, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, V4L2_BUF_TYPE_PRIVATE + 1, 2, -1);
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, S32_MAX, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, (__s32)((__u32)S32_MAX+1), 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, U32_MAX-1, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, (__s32) ((__u32) S32_MAX + 1), 2,
+			   -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, U32_MAX - 1, 2, -1);
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_MMAP, U32_MAX, 2, -1);
 }
 
-void test_VIDIOC_QUERYBUF_invalid_type_userptr() {
+void test_VIDIOC_QUERYBUF_invalid_type_userptr()
+{
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, 0, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OVERLAY, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VBI_CAPTURE, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VBI_OUTPUT, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_SLICED_VBI_CAPTURE, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_SLICED_VBI_OUTPUT, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_PRIVATE-1, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VIDEO_OVERLAY, 2,
+			   -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VBI_CAPTURE, 2,
+			   -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_VBI_OUTPUT, 2,
+			   -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR,
+			   V4L2_BUF_TYPE_SLICED_VBI_CAPTURE, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_SLICED_VBI_OUTPUT,
+			   2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR,
+			   V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_PRIVATE - 1, 2,
+			   -1);
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_PRIVATE, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_PRIVATE+1, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, V4L2_BUF_TYPE_PRIVATE + 1, 2,
+			   -1);
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, S32_MAX, 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, (__s32)((__u32)S32_MAX+1), 2, -1);
-	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, U32_MAX-1, 2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, (__s32) ((__u32) S32_MAX + 1),
+			   2, -1);
+	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, U32_MAX - 1, 2, -1);
 	do_VIDIOC_QUERYBUF(V4L2_MEMORY_USERPTR, U32_MAX, 2, -1);
 }

@@ -39,7 +39,7 @@ int main()
 	act.sa_handler = handler1;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGBUS,  &act, 0) == -1) {
+	if (sigaction(SIGBUS, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
@@ -47,15 +47,15 @@ int main()
 
 	act.sa_handler = handler2;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGBUS,  &act, &oact) == -1) {
+	if (sigaction(SIGBUS, &act, &oact) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	if (oact.sa_handler == handler1) {
-	  printf("Test PASSED\n");
-	  return PTS_PASS;
+		printf("Test PASSED\n");
+		return PTS_PASS;
 	}
 
 	printf("Test Failed\n");

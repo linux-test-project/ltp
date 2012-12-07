@@ -40,13 +40,13 @@
 
 char *TCID = "stream04";
 int TST_TOTAL = 1;
-int     local_flag;
+int local_flag;
 
 #define PASSED 1
 #define FAILED 0
 
-char progname[] = "stream04()" ;
-char tempfile1[40]="";
+char progname[] = "stream04()";
+char tempfile1[40] = "";
 long ftell();
 
 /* XXX: add setup and cleanup */
@@ -55,16 +55,16 @@ long ftell();
 int main(int ac, char *av[])
 {
 	FILE *stream;
-	char *junk="abcdefghijklmnopqrstuvwxyz";
+	char *junk = "abcdefghijklmnopqrstuvwxyz";
 	char *inbuf;
 	int ret;
 
 	int lc;
 	char *msg;
 
-	 /*
-	  * parse standard options
-	  */
+	/*
+	 * parse standard options
+	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_tmpdir();
@@ -74,42 +74,51 @@ int main(int ac, char *av[])
 
 		sprintf(tempfile1, "stream04.%d", getpid());
 	/*--------------------------------------------------------------------*/
-	//block0:
-		if ((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL|TERRNO,"fopen(%s) a+ failed", tempfile1);
+		//block0:
+		if ((stream = fopen(tempfile1, "a+")) == NULL) {
+			tst_resm(TFAIL | TERRNO, "fopen(%s) a+ failed",
+				 tempfile1);
 			tst_rmdir();
 			tst_exit();
 		}
 		/* write something and check */
-		if ((ret=fwrite(junk,sizeof(*junk),strlen(junk),stream)) == 0) {
-			tst_resm(TFAIL,"fwrite failed: %s", strerror(errno));
+		if ((ret =
+		     fwrite(junk, sizeof(*junk), strlen(junk), stream)) == 0) {
+			tst_resm(TFAIL, "fwrite failed: %s", strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
 
-		if ((size_t)ret != strlen(junk)) {
-			tst_resm(TFAIL,"strlen(junk) = %zi != return value from fwrite = %zi", strlen(junk), ret);
+		if ((size_t) ret != strlen(junk)) {
+			tst_resm(TFAIL,
+				 "strlen(junk) = %zi != return value from fwrite = %zi",
+				 strlen(junk), ret);
 			local_flag = FAILED;
 		}
 
 		fclose(stream);
-		if ((stream=fopen(tempfile1,"r+")) == NULL) {
-			tst_resm(TFAIL,"fopen(%s) r+ failed: %s", tempfile1, strerror(errno));
+		if ((stream = fopen(tempfile1, "r+")) == NULL) {
+			tst_resm(TFAIL, "fopen(%s) r+ failed: %s", tempfile1,
+				 strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
-		if ((inbuf=(char *)malloc(strlen(junk))) == 0) {
-			tst_resm(TBROK, "test failed because of malloc: %s", strerror(errno));
+		if ((inbuf = (char *)malloc(strlen(junk))) == 0) {
+			tst_resm(TBROK, "test failed because of malloc: %s",
+				 strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
-		if ((ret=fread(inbuf,sizeof(*junk),strlen(junk),stream)) == 0) {
-			tst_resm(TFAIL,"fread failed: %s", strerror(errno));
+		if ((ret =
+		     fread(inbuf, sizeof(*junk), strlen(junk), stream)) == 0) {
+			tst_resm(TFAIL, "fread failed: %s", strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
-		if ((size_t)ret != strlen(junk)) {
-			tst_resm(TFAIL,"strlen(junk) = %zi != return value from fread = %zi", strlen(junk), ret);
+		if ((size_t) ret != strlen(junk)) {
+			tst_resm(TFAIL,
+				 "strlen(junk) = %zi != return value from fread = %zi",
+				 strlen(junk), ret);
 			local_flag = FAILED;
 		}
 		fclose(stream);
@@ -120,7 +129,7 @@ int main(int ac, char *av[])
 		}
 	/*--------------------------------------------------------------------*/
 		unlink(tempfile1);
-	} /* end for */
+	}			/* end for */
 	tst_rmdir();
 	tst_exit();
 }

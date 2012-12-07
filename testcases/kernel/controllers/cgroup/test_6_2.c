@@ -29,7 +29,7 @@
 
 #define DEFAULT_USEC	30000
 
-int foo(void __attribute__((unused)) *arg)
+int foo(void __attribute__ ((unused)) * arg)
 {
 	return 0;
 }

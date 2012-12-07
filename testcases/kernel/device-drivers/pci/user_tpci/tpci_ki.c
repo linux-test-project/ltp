@@ -40,40 +40,42 @@
 #include <sys/ioctl.h>
 #include "../tpci/tpci.h"
 
-int ki_generic(int fd, int flag) {
-        int                     rc;
-        tpci_interface_t        tif;
+int ki_generic(int fd, int flag)
+{
+	int rc;
+	tpci_interface_t tif;
 
-        /*
-         * build interface structure
-         */
-        tif.in_len = 0;
-        tif.in_data = 0;
-        tif.out_len = 0;
-        tif.out_data = 0;
-        tif.out_rc = 0;
+	/*
+	 * build interface structure
+	 */
+	tif.in_len = 0;
+	tif.in_data = 0;
+	tif.out_len = 0;
+	tif.out_data = 0;
+	tif.out_rc = 0;
 
-        /*
-         * ioctl call for flag
-         */
-        rc = ioctl(fd, flag, &tif);
-        if (rc) {
-                printf("Ioctl error\n");
-                return rc;
-        }
+	/*
+	 * ioctl call for flag
+	 */
+	rc = ioctl(fd, flag, &tif);
+	if (rc) {
+		printf("Ioctl error\n");
+		return rc;
+	}
 	if (tif.out_rc) {
 		printf("Specific errorr: ");
 		return tif.out_rc;
 	}
 
-        return rc;
+	return rc;
 }
 
 #if 0
-int ki_probe_pci_dev(int fd) {
+int ki_probe_pci_dev(int fd)
+{
 
-	int 			rc;
-	tpci_interface_t	tif;
+	int rc;
+	tpci_interface_t tif;
 
 	/*
 	 * build interface structure
@@ -100,49 +102,51 @@ int ki_probe_pci_dev(int fd) {
 	return rc;
 }
 
-int ki_enable_pci(int fd) {
+int ki_enable_pci(int fd)
+{
 
-	int 			rc;
-	tpci_interface_t	tif;
+	int rc;
+	tpci_interface_t tif;
 
 	/*
 	 * build interface structure
 	 */
 	tif.in_len = 0;
-        tif.in_data =0;
-        tif.out_len = 0;
-        tif.out_data = 0;
-        tif.out_rc = 0;
+	tif.in_data = 0;
+	tif.out_len = 0;
+	tif.out_data = 0;
+	tif.out_rc = 0;
 
 	/*
 	 * ioctl call for PCI_ENABLE
 	 */
 	rc = ioctl(fd, PCI_ENABLE, &tif);
 	if (rc) {
-                printf("Ioctl error\n");
-                return rc;
-        }
-        if (tif.out_rc) {
-                printf("Specific error in ioctl call\n");
-                return tif.out_rc;
-        }
+		printf("Ioctl error\n");
+		return rc;
+	}
+	if (tif.out_rc) {
+		printf("Specific error in ioctl call\n");
+		return tif.out_rc;
+	}
 
-        return rc;
+	return rc;
 }
 
-int ki_disable_pci(int fd) {
+int ki_disable_pci(int fd)
+{
 
-	int 			rc;
-	tpci_interface_t	tif;
+	int rc;
+	tpci_interface_t tif;
 
 	/*
 	 * build interface structure
 	 */
 	tif.in_len = 0;
-        tif.in_data =0;
-        tif.out_len = 0;
-        tif.out_data = 0;
-        tif.out_rc = 0;
+	tif.in_data = 0;
+	tif.out_len = 0;
+	tif.out_data = 0;
+	tif.out_rc = 0;
 
 	/*
 	 * ioctl call for PCI_DISABLE
@@ -160,34 +164,35 @@ int ki_disable_pci(int fd) {
 	return rc;
 }
 
-int ki_find_bus(int fd) {
+int ki_find_bus(int fd)
+{
 
-        int                     rc;
-        tpci_interface_t        tif;
+	int rc;
+	tpci_interface_t tif;
 
-        /*
-         * build interface structure
-         */
-        tif.in_len = 0;
-        tif.in_data =0;
-        tif.out_len = 0;
-        tif.out_data = 0;
-        tif.out_rc = 0;
+	/*
+	 * build interface structure
+	 */
+	tif.in_len = 0;
+	tif.in_data = 0;
+	tif.out_len = 0;
+	tif.out_data = 0;
+	tif.out_rc = 0;
 
-        /*
-         * ioctl call for PCI_DISABLE
-         */
-        rc = ioctl(fd, FIND_BUS, &tif);
-        if (rc) {
-                printf("Ioctl error\n");
-                return rc;
-        }
-        if (tif.out_rc) {
-                printf("Specific error in ioctl call\n");
-                return tif.out_rc;
-        }
+	/*
+	 * ioctl call for PCI_DISABLE
+	 */
+	rc = ioctl(fd, FIND_BUS, &tif);
+	if (rc) {
+		printf("Ioctl error\n");
+		return rc;
+	}
+	if (tif.out_rc) {
+		printf("Specific error in ioctl call\n");
+		return tif.out_rc;
+	}
 
-        return rc;
+	return rc;
 }
 
 #endif

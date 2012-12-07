@@ -21,10 +21,11 @@
 
 int main()
 {
-        setuid(1); /* this is added incase user is root. If user is normal user, then it has no effect on the tests*/
+	setuid(1);		/* this is added incase user is root. If user is normal user, then it has no effect on the tests */
 
 	if (kill(1, 0) != -1) {
-		printf("Test FAILED: kill() succeeded even though this program's user id did not match the recieving process's user id\n");
+		printf
+		    ("Test FAILED: kill() succeeded even though this program's user id did not match the recieving process's user id\n");
 		return PTS_FAIL;
 	}
 

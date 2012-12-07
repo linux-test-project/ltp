@@ -26,33 +26,33 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
- #include <sched.h>
- #include <semaphore.h>
- #include <errno.h>
- #include <assert.h>
+#include <sched.h>
+#include <semaphore.h>
+#include <errno.h>
+#include <assert.h>
 
  /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -98,14 +98,18 @@
 /********************************************************************************************/
 
 /* Thread routine */
-void * threaded (void * arg)
+void *threaded(void *arg)
 {
 	int ret = 0;
 
 	/* Signal we're done (especially in case of a detached thread) */
-	do { ret = sem_post(&scenarii[sc].sem); }
+	do {
+		ret = sem_post(&scenarii[sc].sem);
+	}
 	while ((ret == -1) && (errno == EINTR));
-	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
+	if (ret == -1) {
+		UNRESOLVED(errno, "Failed to wait for the semaphore");
+	}
 
 	pthread_exit(arg);
 

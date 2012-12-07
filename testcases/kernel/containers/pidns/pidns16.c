@@ -62,25 +62,25 @@ pid_t globalpid;
  */
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 
 }
 
-void child_signal_handler(int sig, siginfo_t *si, void *unused)
+void child_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	static int c = 1;
 	/* Verifying from which process the signal handler is signalled */
 
 	if ((c == 1) && (si->si_pid == globalpid))
-		tst_resm(TINFO, "sig_handler is signalled from pid  %d" ,
-				globalpid);
+		tst_resm(TINFO, "sig_handler is signalled from pid  %d",
+			 globalpid);
 	else if ((c == 2) && (si->si_pid == CHILD_PID))
-		tst_resm(TINFO, "sig_handler is signalled from pid  %d" ,
-				CHILD_PID);
+		tst_resm(TINFO, "sig_handler is signalled from pid  %d",
+			 CHILD_PID);
 	else
 		tst_resm(TBROK, "Unexpected value for Sending-ProcessID"
-				" when signal handler called %d\n", si->si_pid);
+			 " when signal handler called %d\n", si->si_pid);
 	c++;
 }
 
@@ -108,13 +108,13 @@ int child_fn(void *ttype)
 
 	pause();
 	tst_resm(TINFO, "Container: Resumed after receiving SIGUSR1 "
-			"from parentNS ");
+		 "from parentNS ");
 	if (kill(pid, SIGUSR1) != 0) {
 		tst_resm(TFAIL, "kill(SIGUSR1) fails.");
 		cleanup();
 	}
 	tst_resm(TINFO, "Container: Resumed after sending SIGUSR1 "
-			"from container itself");
+		 "from container itself");
 	_exit(10);
 }
 
@@ -146,10 +146,10 @@ int main(int argc, char *argv[])
 
 	if ((WIFEXITED(status)) && (WEXITSTATUS(status) == 10))
 		tst_resm(TPASS, "container init continued successfuly, "
-			"after handling signal -USR1\n");
-	 else
+			 "after handling signal -USR1\n");
+	else
 		tst_resm(TFAIL, "c-init failed to continue after "
-				"passing kill -USR1");
+			 "passing kill -USR1");
 	cleanup();
 	tst_exit();
 }

@@ -74,7 +74,7 @@ int main()
 		attr.mq_msgsize = BUFFER;
 		attr.mq_maxmsg = BUFFER;
 		woqueue = mq_open(qname, O_WRONLY, S_IRUSR | S_IWUSR, &attr);
-		if (woqueue == (mqd_t) -1) {
+		if (woqueue == (mqd_t) - 1) {
 			perror("mq_open() read only failed in child");
 			return CHILDFAIL;
 		}
@@ -114,7 +114,7 @@ int main()
 		attr.mq_maxmsg = BUFFER;
 		woqueue = mq_open(qname, O_CREAT | O_WRONLY,
 				  S_IRUSR | S_IWUSR, &attr);
-		if (woqueue == (mqd_t) -1) {
+		if (woqueue == (mqd_t) - 1) {
 			perror("mq_open() did not return success");
 			printf("Test UNRESOLVED\n");
 			/* kill child and exit */

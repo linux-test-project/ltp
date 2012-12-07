@@ -39,7 +39,7 @@ int TST_TOTAL = 1;
 static void cleanup(void);
 static void setup(void);
 
-static int exp_enos[] = {ECHILD, 0};
+static int exp_enos[] = { ECHILD, 0 };
 
 static long get_pid_max(void)
 {

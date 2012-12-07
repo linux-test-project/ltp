@@ -51,7 +51,7 @@ int main()
 
 	queue = mq_open(qname, O_CREAT | O_RDWR | O_NONBLOCK,
 			S_IRUSR | S_IWUSR, &attr);
-	if (queue == (mqd_t) -1) {
+	if (queue == (mqd_t) - 1) {
 		perror("mq_open() did not return success");
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
@@ -73,7 +73,7 @@ int main()
 	}
 
 	queue = mq_open(qname, O_RDWR | O_NONBLOCK, S_IRUSR | S_IWUSR, NULL);
-	if (queue == (mqd_t) -1) {
+	if (queue == (mqd_t) - 1) {
 		perror("mq_open() second time did not return success");
 		printf("Test UNRESOLVED\n");
 		/* close queue and exit */

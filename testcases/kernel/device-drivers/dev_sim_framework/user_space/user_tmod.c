@@ -46,100 +46,108 @@
 #include "user_tmod.h"
 #include "../kernel_space/tmod.h"
 
-static int tmod_fd = -1;		/* file descriptor */
+static int tmod_fd = -1;	/* file descriptor */
 
-int
-tmodopen() {
+int tmodopen()
+{
 
-    dev_t devt;
-	struct stat     st;
-    int    rc = 0;
+	dev_t devt;
+	struct stat st;
+	int rc = 0;
 
-    devt = makedev(TMOD_MAJOR, 0);
+	devt = makedev(TMOD_MAJOR, 0);
 
-    if (rc) {
-        if (errno == ENOENT) {
-            /* dev node does not exist. */
-            rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-                                                S_IRGRP | S_IXGRP |
-                                                S_IROTH | S_IXOTH));
-        } else {
-            printf("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n", errno);
-        }
+	if (rc) {
+		if (errno == ENOENT) {
+			/* dev node does not exist. */
+			rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
+						 S_IRGRP | S_IXGRP |
+						 S_IROTH | S_IXOTH));
+		} else {
+			printf
+			    ("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n",
+			     errno);
+		}
 
-    } else {
-        if (!(st.st_mode & S_IFDIR)) {
-            rc = unlink(DEVICE_NAME);
-            if (!rc) {
-                rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-                                                S_IRGRP | S_IXGRP |
-                                                S_IROTH | S_IXOTH));
-            }
-        }
-    }
+	} else {
+		if (!(st.st_mode & S_IFDIR)) {
+			rc = unlink(DEVICE_NAME);
+			if (!rc) {
+				rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
+							 S_IRGRP | S_IXGRP |
+							 S_IROTH | S_IXOTH));
+			}
+		}
+	}
 
-    /*
-     * Check for the /dev/tmod node, and create if it does not
-     * exist.
-     */
-    rc = stat(DEVICE_NAME, &st);
-    if (rc) {
-        if (errno == ENOENT) {
-            /* dev node does not exist */
-            rc = mknod(DEVICE_NAME, (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
-        } else {
-            printf("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n", errno);
-        }
+	/*
+	 * Check for the /dev/tmod node, and create if it does not
+	 * exist.
+	 */
+	rc = stat(DEVICE_NAME, &st);
+	if (rc) {
+		if (errno == ENOENT) {
+			/* dev node does not exist */
+			rc = mknod(DEVICE_NAME,
+				   (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP |
+				    S_IWGRP), devt);
+		} else {
+			printf
+			    ("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n",
+			     errno);
+		}
 
-    } else {
-        /*
-         * /dev/tbase CHR device exists.  Check to make sure it is for a
-         * block device and that it has the right major and minor.
-         */
-        if ((!(st.st_mode & S_IFCHR)) ||
-             (st.st_rdev != devt)) {
+	} else {
+		/*
+		 * /dev/tbase CHR device exists.  Check to make sure it is for a
+		 * block device and that it has the right major and minor.
+		 */
+		if ((!(st.st_mode & S_IFCHR)) || (st.st_rdev != devt)) {
 
-            /* Recreate the dev node. */
-            rc = unlink(DEVICE_NAME);
-            if (!rc) {
-                rc = mknod(DEVICE_NAME, (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
-            }
-        }
-    }
+			/* Recreate the dev node. */
+			rc = unlink(DEVICE_NAME);
+			if (!rc) {
+				rc = mknod(DEVICE_NAME,
+					   (S_IFCHR | S_IRUSR | S_IWUSR |
+					    S_IRGRP | S_IWGRP), devt);
+			}
+		}
+	}
 
-    tmod_fd = open(DEVICE_NAME, O_RDWR);
+	tmod_fd = open(DEVICE_NAME, O_RDWR);
 
-    if (tmod_fd < 0) {
-        printf("ERROR: Open of device %s failed %d errno = %d\n", DEVICE_NAME,tmod_fd, errno);
-        return errno;
-    }
-    else {
-        printf("Device opened successfully \n");
-      return 0;
-    }
+	if (tmod_fd < 0) {
+		printf("ERROR: Open of device %s failed %d errno = %d\n",
+		       DEVICE_NAME, tmod_fd, errno);
+		return errno;
+	} else {
+		printf("Device opened successfully \n");
+		return 0;
+	}
 
 }
 
-int
-tmodclose() {
+int tmodclose()
+{
 
 	if (tmod_fd != -1) {
-		close (tmod_fd);
+		close(tmod_fd);
 		tmod_fd = -1;
 	}
 
 	return 0;
 }
 
-int main() {
+int main()
+{
 	int rc;
 
 	/* open the module */
 	rc = tmodopen();
-        if (rc) {
-                printf("Test MOD Driver may not be loaded\n");
-                exit(1);
-        }
+	if (rc) {
+		printf("Test MOD Driver may not be loaded\n");
+		exit(1);
+	}
 
 	/* make test calls */
 	if (ki_generic(tmod_fd, LTP_OPTION1))
@@ -150,9 +158,9 @@ int main() {
 	/* close the module */
 	rc = tmodclose();
 	if (rc) {
-                printf("Test MOD Driver may not be closed\n");
-                exit(1);
-        }
+		printf("Test MOD Driver may not be closed\n");
+		exit(1);
+	}
 
-      return 0;
+	return 0;
 }

@@ -90,7 +90,6 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-
 		if ((dir_name = getcwd(dir_name, size)) == NULL)
 			tst_brkm(TBROK, cleanup, "Can not get current "
 				 "directory name");
@@ -117,11 +116,11 @@ int main(int ac, char **av)
 			switch (errno) {
 			case EINVAL:
 				tst_resm(TPASS,
-				    "getdents failed with EINVAL as expected");
+					 "getdents failed with EINVAL as expected");
 				break;
 			default:
-				tst_resm(TFAIL|TERRNO,
-				    "getdents call failed unexpectedly");
+				tst_resm(TFAIL | TERRNO,
+					 "getdents call failed unexpectedly");
 				break;
 			}
 		} else

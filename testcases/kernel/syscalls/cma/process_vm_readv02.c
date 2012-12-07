@@ -61,14 +61,14 @@ int main(int argc, char **argv)
 		len = strlen(tst_string);
 
 		if (pipe(pipe_fd) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "pipe");
+			tst_brkm(TBROK | TERRNO, cleanup, "pipe");
 
 		/* the start of child_alloc and child_invoke is already
 		 * synchronized via pipe */
 		pids[0] = fork();
 		switch (pids[0]) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork #0");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork #0");
 		case 0:
 			child_alloc();
 			exit(0);
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 		pids[1] = fork();
 		switch (pids[1]) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork #1");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork #1");
 		case 0:
 			child_invoke();
 			exit(0);
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
 		/* wait until child_invoke reads from child_alloc's VM */
 		if (waitpid(pids[1], &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 1 returns %d", status);
 
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 		safe_semop(semid, 0, 1);
 
 		if (waitpid(pids[0], &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 0 returns %d", status);
 	}
@@ -133,21 +133,21 @@ static void child_invoke(void)
 	SAFE_READ(tst_exit, 0, pipe_fd[0], buf, BUFSIZ);
 	SAFE_CLOSE(tst_exit, pipe_fd[0]);
 	if (sscanf(buf, "%p", &rp) != 1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "sscanf");
+		tst_brkm(TBROK | TERRNO, tst_exit, "sscanf");
 
 	lp = SAFE_MALLOC(tst_exit, len + 1);
-	local.iov_base  = lp;
-	local.iov_len   = len;
+	local.iov_base = lp;
+	local.iov_len = len;
 	remote.iov_base = rp;
-	remote.iov_len  = len;
+	remote.iov_len = len;
 
 	tst_resm(TINFO, "child 1: reading string from same memory location.");
 	TEST(test_process_vm_readv(pids[0], &local, 1, &remote, 1, 0));
 	if (TEST_RETURN != len)
-		tst_brkm(TFAIL|TERRNO, tst_exit, "process_vm_readv");
+		tst_brkm(TFAIL | TERRNO, tst_exit, "process_vm_readv");
 	if (strncmp(lp, tst_string, len) != 0)
 		tst_brkm(TFAIL, tst_exit, "child 1: expected string: %s, "
-			    "received string: %256s", tst_string, lp);
+			 "received string: %256s", tst_string, lp);
 	else
 		tst_resm(TPASS, "expected string received.");
 }
@@ -158,7 +158,7 @@ static void setup(void)
 
 #if !defined(__NR_process_vm_readv)
 	tst_brkm(TCONF, NULL, "process_vm_readv does not exist "
-		    "on your system");
+		 "on your system");
 #endif
 	semid = init_sem(1);
 

@@ -8,7 +8,7 @@
 
 int errno_test;
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	errno_test = errno;
 	return 0;

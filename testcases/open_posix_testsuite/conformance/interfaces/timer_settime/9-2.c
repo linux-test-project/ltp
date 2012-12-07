@@ -37,8 +37,9 @@
 #define NUMTESTS 6
 
 static int timeroffsets[NUMTESTS][2] = { {0, 90000000}, {1, 0},
-					{1, 30000000}, {2, 0},
-					{3, 5000}, {4, 5} };
+{1, 30000000}, {2, 0},
+{3, 5000}, {4, 5}
+};
 
 int main(int argc, char *argv[])
 {
@@ -67,10 +68,10 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-        if (sigprocmask (SIG_BLOCK, &set, NULL) == -1) {
-                perror("sigprocmask() failed\n");
-                return PTS_UNRESOLVED;
-        }
+	if (sigprocmask(SIG_BLOCK, &set, NULL) == -1) {
+		perror("sigprocmask() failed\n");
+		return PTS_UNRESOLVED;
+	}
 
 	/*
 	 * set up timer to perform action SIGTOTEST on expiration
@@ -84,7 +85,8 @@ int main(int argc, char *argv[])
 	}
 
 	flags |= TIMER_ABSTIME;
-	its.it_interval.tv_sec = 0; its.it_interval.tv_nsec = 0;
+	its.it_interval.tv_sec = 0;
+	its.it_interval.tv_nsec = 0;
 	for (i = 0; i < NUMTESTS; i++) {
 		if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
 			perror("clock_gettime() did not return success\n");
@@ -93,20 +95,18 @@ int main(int argc, char *argv[])
 
 		if (tsbefore.tv_nsec + timeroffsets[i][1] < 1000000000) {
 			its.it_value.tv_sec = tsbefore.tv_sec +
-						timeroffsets[i][0];
+			    timeroffsets[i][0];
 			its.it_value.tv_nsec = tsbefore.tv_nsec +
-						timeroffsets[i][1];
+			    timeroffsets[i][1];
 		} else {
 			its.it_value.tv_sec = tsbefore.tv_sec +
-						timeroffsets[i][0] + 1;
+			    timeroffsets[i][0] + 1;
 			its.it_value.tv_nsec = tsbefore.tv_nsec +
-						timeroffsets[i][1] -
-						1000000000;
+			    timeroffsets[i][1] - 1000000000;
 		}
 
 		printf("Test for value %d sec %d nsec\n",
-				(int) its.it_value.tv_sec,
-				(int) its.it_value.tv_nsec);
+		       (int)its.it_value.tv_sec, (int)its.it_value.tv_nsec);
 
 		if (timer_settime(tid, flags, &its, NULL) != 0) {
 			perror("timer_settime() did not return success\n");
@@ -124,21 +124,20 @@ int main(int argc, char *argv[])
 		}
 
 		printf("Timer expired %d sec %d nsec\n",
-				(int) tsafter.tv_sec,
-				(int) tsafter.tv_nsec);
+		       (int)tsafter.tv_sec, (int)tsafter.tv_nsec);
 		if (tsafter.tv_sec < its.it_value.tv_sec) {
 			printf("FAIL:  Timer expired %d sec < %d sec\n",
-					(int) tsafter.tv_sec,
-					(int) its.it_value.tv_sec);
+			       (int)tsafter.tv_sec, (int)its.it_value.tv_sec);
 			failure = 1;
 		} else if (tsafter.tv_sec == its.it_value.tv_sec) {
-				if (tsafter.tv_nsec < its.it_value.tv_nsec) {
-			printf("FAIL:  Timer expired %d nsec < %d nsec\n",
-						(int) tsafter.tv_nsec,
-						(int) its.it_value.tv_nsec);
-					failure = 1;
-				}
+			if (tsafter.tv_nsec < its.it_value.tv_nsec) {
+				printf
+				    ("FAIL:  Timer expired %d nsec < %d nsec\n",
+				     (int)tsafter.tv_nsec,
+				     (int)its.it_value.tv_nsec);
+				failure = 1;
 			}
+		}
 	}
 
 	if (timer_delete(tid) != 0) {

@@ -193,8 +193,7 @@ void setup()
 	}
 
 	if (close(fd) == -1) {
-		tst_resm(TWARN|TERRNO, "close(%s) failed",
-			 fname);
+		tst_resm(TWARN | TERRNO, "close(%s) failed", fname);
 	}
 }
 

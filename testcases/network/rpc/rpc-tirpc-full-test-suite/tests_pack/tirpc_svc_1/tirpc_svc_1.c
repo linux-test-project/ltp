@@ -48,22 +48,22 @@ char *simplePing_proc(char *i_var)
 int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
-	//					    others arguments depend on server program
+	//                                          others arguments depend on server program
 	int run_mode = 0;
 	int progNum = atoi(argc[1]);
 	char *simplePing_proc();
 	bool_t rslt;
-    char nettype[16] = "visible";
+	char nettype[16] = "visible";
 
-	if (run_mode)
-	{
+	if (run_mode) {
 		printf("Prog Num : %d\n", progNum);
 	}
 
 	svc_unreg(progNum, VERSNUM);
 
-	rslt = rpc_reg(progNum, VERSNUM, PROCSIMPLEPING, (void *)simplePing_proc,
-					(xdrproc_t)xdr_int, (xdrproc_t)xdr_int, nettype);
+	rslt =
+	    rpc_reg(progNum, VERSNUM, PROCSIMPLEPING, (void *)simplePing_proc,
+		    (xdrproc_t) xdr_int, (xdrproc_t) xdr_int, nettype);
 
 	svc_run();
 

@@ -109,7 +109,8 @@ int main(int ac, char **av)
 			}
 
 			if ((red = safe_read(fildes[0], rebuf, written)) == -1) {
-				tst_brkm(TBROK|TERRNO, cleanup, "read() failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "read() failed");
 			}
 
 			if (red < 0 || red > written) {

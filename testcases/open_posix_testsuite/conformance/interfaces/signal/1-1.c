@@ -33,19 +33,20 @@ void myhandler(int signo)
 int main()
 {
 	if (signal(SIGCHLD, myhandler) == SIG_ERR) {
-                perror("Unexpected error while using signal()");
-               	return PTS_UNRESOLVED;
-        }
+		perror("Unexpected error while using signal()");
+		return PTS_UNRESOLVED;
+	}
 
-        if (signal(SIGCHLD,SIG_DFL) != myhandler) {
-                perror("Unexpected error while using signal()");
-               	return PTS_UNRESOLVED;
-        }
+	if (signal(SIGCHLD, SIG_DFL) != myhandler) {
+		perror("Unexpected error while using signal()");
+		return PTS_UNRESOLVED;
+	}
 
 	raise(SIGCHLD);
 
 	if (handler_called == 1) {
-		printf("Test FAILED: handler was called even though default was expected\n");
+		printf
+		    ("Test FAILED: handler was called even though default was expected\n");
 		return PTS_FAIL;
 	}
 	return PTS_PASS;

@@ -37,14 +37,14 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	char proto[8] = "udp";
 	CLIENT *clnt = NULL;
@@ -60,24 +60,21 @@ int main(int argn, char *argc[])
 	//First of all, create a client
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("CLIENT : %d\n", clnt);
 		printf("progNum : %d\n", progNum);
 		printf("Proto : %s\n", proto);
 	}
 
-	if (clnt == NULL)
-	{
+	if (clnt == NULL) {
 		clnt_pcreateerror("err");
 		printf("1\n");
 		return 1;
 	}
 
 	cs = clnt_call(clnt, PROCNUM,
-				   (xdrproc_t)xdr_int, (char *)&varSnd,
-				   (xdrproc_t)xdr_int, (char *)&varRec,
-				   to);
+		       (xdrproc_t) xdr_int, (char *)&varSnd,
+		       (xdrproc_t) xdr_int, (char *)&varRec, to);
 
 	test_status = (cs == RPC_SUCCESS) ? 0 : 1;
 

@@ -87,20 +87,17 @@ unsigned long count_sig = 0;
 
 sigset_t usersigs;
 
-typedef struct
-{
+typedef struct {
 	int sig;
 #ifdef WITH_SYNCHRO
 	sem_t *sem;
 #endif
-}
-
-thestruct;
+} thestruct;
 
 /* the following function keeps on sending the signal to the process */
-void * sendsig (void * arg)
+void *sendsig(void *arg)
 {
-	thestruct * thearg = (thestruct *) arg;
+	thestruct *thearg = (thestruct *) arg;
 	int ret;
 	pid_t process;
 
@@ -109,17 +106,15 @@ void * sendsig (void * arg)
 	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in signal thread");
+	if (ret != 0) {
+		UNRESOLVED(ret,
+			   "Unable to block SIGUSR1 and SIGUSR2 in signal thread");
 	}
 
-	while (do_it)
-	{
+	while (do_it) {
 #ifdef WITH_SYNCHRO
 
-		if ((ret = sem_wait(thearg->sem)))
-		{
+		if ((ret = sem_wait(thearg->sem))) {
 			UNRESOLVED(errno, "Sem_wait in sendsig");
 		}
 
@@ -128,8 +123,7 @@ void * sendsig (void * arg)
 
 		ret = kill(process, thearg->sig);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Kill in sendsig");
 		}
 
@@ -144,11 +138,9 @@ void sighdl1(int sig)
 {
 #ifdef WITH_SYNCHRO
 
-	if (sem_post(&semsig1))
-	{
+	if (sem_post(&semsig1)) {
 		UNRESOLVED(errno, "Sem_post in signal handler 1");
 	}
-
 #endif
 }
 
@@ -157,11 +149,9 @@ void sighdl2(int sig)
 {
 #ifdef WITH_SYNCHRO
 
-	if (sem_post(&semsig2))
-	{
+	if (sem_post(&semsig2)) {
 		UNRESOLVED(errno, "Sem_post in signal handler 2");
 	}
-
 #endif
 }
 
@@ -170,63 +160,59 @@ int init_ctl;
 void initializer(void)
 {
 	init_ctl++;
-	return ;
+	return;
 }
 
 /* Test function -- calls pthread_sigmask() and checks that EINTR is never returned. */
-void * test(void * arg)
+void *test(void *arg)
 {
 	int ret = 0;
 	sigset_t set;
-	int i, j=0;
+	int i, j = 0;
 	int signals[] = { SIGBUS, SIGKILL, SIGABRT, SIGCHLD, SIGHUP };
 #define NSIG (sizeof(signals)/sizeof(int))
-	int operation[] = {SIG_SETMASK, SIG_BLOCK, SIG_UNBLOCK};
+	int operation[] = { SIG_SETMASK, SIG_BLOCK, SIG_UNBLOCK };
 
 	ret = sigemptyset(&set);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to initialize signal set");
 	}
 
 	/* We don't block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2 in worker thread");
+	if (ret != 0) {
+		UNRESOLVED(ret,
+			   "Unable to unblock SIGUSR1 and SIGUSR2 in worker thread");
 	}
 
-	while (do_it)
-	{
+	while (do_it) {
 		count_ope++;
 
-		for (i = 0; i < 3; i++)
-		{
+		for (i = 0; i < 3; i++) {
 			j++;
 			j %= 2 * NSIG;
 
 			if (j >= NSIG)
-				ret = sigdelset(&set, signals[j-NSIG]);
+				ret = sigdelset(&set, signals[j - NSIG]);
 			else
 				ret = sigaddset(&set, signals[j]);
 
-			if (ret != 0)
-			{
-				UNRESOLVED(errno, "Failed to initialize signal set");
+			if (ret != 0) {
+				UNRESOLVED(errno,
+					   "Failed to initialize signal set");
 			}
 
-			ret = pthread_sigmask(operation[ i ], &set, NULL);
+			ret = pthread_sigmask(operation[i], &set, NULL);
 
-			if (ret == EINTR)
-			{
+			if (ret == EINTR) {
 				FAILED("pthread_sigmask returned EINTR");
 			}
 
-			if (ret != 0)
-			{
-				UNRESOLVED(ret, "Failed to initialize signal set");
+			if (ret != 0) {
+				UNRESOLVED(ret,
+					   "Failed to initialize signal set");
 			}
 		}
 	}
@@ -235,7 +221,7 @@ void * test(void * arg)
 }
 
 /* Main function */
-int main (int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret;
 	pthread_t th_work, th_sig1, th_sig2;
@@ -247,19 +233,17 @@ int main (int argc, char * argv[])
 	output_init();
 
 	/* We need to register the signal handlers for the PROCESS */
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = sighdl1;
 
-	if ((ret = sigaction(SIGUSR1, &sa, NULL)))
-	{
+	if ((ret = sigaction(SIGUSR1, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler1");
 	}
 
 	sa.sa_handler = sighdl2;
 
-	if ((ret = sigaction(SIGUSR2, &sa, NULL)))
-	{
+	if ((ret = sigaction(SIGUSR2, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler2");
 	}
 
@@ -270,34 +254,28 @@ int main (int argc, char * argv[])
 
 	ret |= sigaddset(&usersigs, SIGUSR2);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Unable to add SIGUSR1 or 2 to a signal set");
 	}
 
 	/* We now block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 in main thread");
+	if (ret != 0) {
+		UNRESOLVED(ret,
+			   "Unable to block SIGUSR1 and SIGUSR2 in main thread");
 	}
-
 #ifdef WITH_SYNCHRO
-	if (sem_init(&semsig1, 0, 1))
-	{
+	if (sem_init(&semsig1, 0, 1)) {
 		UNRESOLVED(errno, "Semsig1  init");
 	}
 
-	if (sem_init(&semsig2, 0, 1))
-	{
+	if (sem_init(&semsig2, 0, 1)) {
 		UNRESOLVED(errno, "Semsig2  init");
 	}
-
 #endif
 
-	if ((ret = pthread_create(&th_work, NULL, test, NULL)))
-	{
+	if ((ret = pthread_create(&th_work, NULL, test, NULL))) {
 		UNRESOLVED(ret, "Worker thread creation failed");
 	}
 
@@ -308,13 +286,11 @@ int main (int argc, char * argv[])
 	arg2.sem = &semsig2;
 #endif
 
-	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *) & arg1)))
-	{
+	if ((ret = pthread_create(&th_sig1, NULL, sendsig, (void *)&arg1))) {
 		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
 	}
 
-	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *) & arg2)))
-	{
+	if ((ret = pthread_create(&th_sig2, NULL, sendsig, (void *)&arg2))) {
 		UNRESOLVED(ret, "Signal 2 sender thread creation failed");
 	}
 
@@ -322,27 +298,22 @@ int main (int argc, char * argv[])
 	sleep(1);
 
 	/* Now stop the threads and join them */
-	do
-	{
+	do {
 		do_it = 0;
 	}
 	while (do_it);
 
-	if ((ret = pthread_join(th_sig1, NULL)))
-	{
+	if ((ret = pthread_join(th_sig1, NULL))) {
 		UNRESOLVED(ret, "Signal 1 sender thread join failed");
 	}
 
-	if ((ret = pthread_join(th_sig2, NULL)))
-	{
+	if ((ret = pthread_join(th_sig2, NULL))) {
 		UNRESOLVED(ret, "Signal 2 sender thread join failed");
 	}
 
-	if ((ret = pthread_join(th_work, NULL)))
-	{
+	if ((ret = pthread_join(th_work, NULL))) {
 		UNRESOLVED(ret, "Worker thread join failed");
 	}
-
 #if VERBOSE > 0
 	output("Test executed successfully.\n");
 

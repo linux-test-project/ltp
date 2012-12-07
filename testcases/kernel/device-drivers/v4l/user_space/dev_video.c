@@ -28,7 +28,8 @@
 static int f;
 static int dev_video_state;
 
-static int try_ASUS_camera(char *path, char* value) {
+static int try_ASUS_camera(char *path, char *value)
+{
 	int ASUS_camera;
 	size_t s;
 	int ret;
@@ -60,7 +61,8 @@ static int try_ASUS_camera(char *path, char* value) {
 	return f;
 }
 
-int open_video() {
+int open_video()
+{
 	int error = 0;
 
 	fflush(stdout);
@@ -71,7 +73,8 @@ int open_video() {
 		fprintf(stderr, "Retrying with ASUS camera...\n");
 		f = try_ASUS_camera("/proc/acpi/asus/camera", "1");
 		if (f < 0) {
-			f = try_ASUS_camera("/sys/devices/platform/eeepc/camera", "1");
+			f = try_ASUS_camera
+			    ("/sys/devices/platform/eeepc/camera", "1");
 			if (f < 0) {
 				error = 1;
 			} else {
@@ -86,7 +89,8 @@ int open_video() {
 	return error;
 }
 
-int close_video() {
+int close_video()
+{
 	int ret;
 
 	fflush(stdout);
@@ -98,19 +102,20 @@ int close_video() {
 		return 1;
 	}
 	switch (dev_video_state) {
-		case DEV_VIDEO_STATE_NORMAL:
-			break;
-		case DEV_VIDEO_STATE_ASUS:
-			try_ASUS_camera("/proc/acpi/asus/camera", "0");
-			break;
-		case DEV_VIDEO_STATE_EEEPC:
-			try_ASUS_camera("/sys/devices/platform/eeepc/camera", "0");
-			break;
+	case DEV_VIDEO_STATE_NORMAL:
+		break;
+	case DEV_VIDEO_STATE_ASUS:
+		try_ASUS_camera("/proc/acpi/asus/camera", "0");
+		break;
+	case DEV_VIDEO_STATE_EEEPC:
+		try_ASUS_camera("/sys/devices/platform/eeepc/camera", "0");
+		break;
 	}
 
 	return 0;
 }
 
-int get_video_fd() {
+int get_video_fd()
+{
 	return f;
 }

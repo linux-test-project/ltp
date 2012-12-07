@@ -30,8 +30,8 @@ void init_rwlock(struct rwlock *rw)
 	pthread_cond_init(&rw->pcond, NULL);
 #ifdef RWDEBUG
 	rw->n_write_waiting = 0;
-	rw->n_read_waiting  = 0;
-	rw->writer_tid      = -1;
+	rw->n_read_waiting = 0;
+	rw->writer_tid = -1;
 #endif
 }
 
@@ -70,7 +70,7 @@ void rw_lock_write(struct rwlock *rw)
 void rw_unlock_read(struct rwlock *rw)
 {
 	pthread_mutex_lock(&rw->plock);
-	rw->n_readers -= 1 ;
+	rw->n_readers -= 1;
 	pthread_cond_signal(&rw->pcond);
 	pthread_mutex_unlock(&rw->plock);
 }
@@ -78,7 +78,7 @@ void rw_unlock_read(struct rwlock *rw)
 void rw_unlock_write(struct rwlock *rw)
 {
 	pthread_mutex_lock(&rw->plock);
-	rw->n_readers = 0 ;
+	rw->n_readers = 0;
 	pthread_cond_broadcast(&rw->pcond);
 	pthread_mutex_unlock(&rw->plock);
 }

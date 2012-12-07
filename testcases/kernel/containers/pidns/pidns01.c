@@ -81,7 +81,7 @@ int child_fn1(void *ttype)
 		exit_val = 0;
 	} else {
 		printf("Got unexpected result of cpid=%d ppid=%d\n",
-		    cpid, ppid);
+		       cpid, ppid);
 		exit_val = 1;
 	}
 
@@ -95,16 +95,16 @@ int main(int argc, char *argv[])
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
 
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL|TTERRNO, cleanup, "clone failed");
+		tst_brkm(TFAIL | TTERRNO, cleanup, "clone failed");
 	} else if ((wait(&status)) == -1) {
-		tst_brkm(TWARN|TERRNO, cleanup, "wait failed");
+		tst_brkm(TWARN | TERRNO, cleanup, "wait failed");
 	}
 
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		tst_resm(TFAIL, "child exited abnormally");
 	else if (WIFSIGNALED(status)) {
 		tst_resm(TFAIL, "child was killed with signal = %d",
-		    WTERMSIG(status));
+			 WTERMSIG(status));
 	}
 
 	cleanup();

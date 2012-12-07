@@ -27,16 +27,15 @@ int main(int argc, char *argv[])
 	int i;
 
 	c1 = clock();
-	sec1 = c1/CLOCKS_PER_SEC;
+	sec1 = c1 / CLOCKS_PER_SEC;
 
-	for (i = 0; i < LARGENUMBER; i++)
-	{
+	for (i = 0; i < LARGENUMBER; i++) {
 		// keep busy so CPU time increases
 		clock();
 	}
 
 	c2 = clock();
-	sec2 = c2/CLOCKS_PER_SEC;
+	sec2 = c2 / CLOCKS_PER_SEC;
 
 	if (sec2 > sec1) {
 		printf("Times T1=%.2f, T2=%.2f\n", sec1, sec2);
@@ -45,15 +44,15 @@ int main(int argc, char *argv[])
 	} else {
 		if (sec2 < sec1) {
 			/*
-		 	* probably wrapping happened; however, since
-		 	* we do not know the wrap value, results are
-		 	* undefined
-		 	*/
+			 * probably wrapping happened; however, since
+			 * we do not know the wrap value, results are
+			 * undefined
+			 */
 			printf("TEST AGAIN:  Times probably wrapped\n");
 			return PTS_UNRESOLVED;
 		} else {
 			printf("Error with processor times T1=%.2f, T2=%.2f\n",
-					sec1, sec2);
+			       sec1, sec2);
 			return PTS_FAIL;
 		}
 	}

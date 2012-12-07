@@ -60,7 +60,7 @@ int pipefd[2];
  */
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 
 }
@@ -68,15 +68,15 @@ void cleanup()
 /*
  * child_signal_handler() - dummy function for sigaction()
  */
-static void child_signal_handler(int sig, siginfo_t *si, void *unused)
+static void child_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	/* Recieved SIGUSR1. Check sender pid */
 	if (si->si_pid == 0)
-		tst_resm(TPASS, "cinit: signalling PID (from other namespace)"\
-				" is 0 as expected");
+		tst_resm(TPASS, "cinit: signalling PID (from other namespace)"
+			 " is 0 as expected");
 	else
-		tst_resm(TFAIL, "cinit: signalling PID (from other namespace)"\
-				" is not 0, but %d.", si->si_pid);
+		tst_resm(TFAIL, "cinit: signalling PID (from other namespace)"
+			 " is not 0, but %d.", si->si_pid);
 }
 
 /*
@@ -103,8 +103,8 @@ int child_fn(void *arg)
 	sigfillset(&sa.sa_mask);
 	sa.sa_sigaction = child_signal_handler;
 	if (sigaction(SIGUSR1, &sa, NULL) == -1) {
-		tst_resm(TBROK, "cinit: sigaction() failed(%s).",\
-				strerror(errno));
+		tst_resm(TBROK, "cinit: sigaction() failed(%s).",
+			 strerror(errno));
 		cleanup();
 	}
 
@@ -143,10 +143,9 @@ int main(int argc, char *argv[])
 		cleanup();
 	}
 
-	cpid = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
+	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
 	if (cpid < 0) {
-		tst_resm(TBROK, "parent: clone() failed(%s).",\
-				strerror(errno));
+		tst_resm(TBROK, "parent: clone() failed(%s).", strerror(errno));
 		cleanup();
 	}
 
@@ -167,12 +166,12 @@ int main(int argc, char *argv[])
 	}
 
 	if (waitpid(cpid, &status, 0) < 0)
-		tst_resm(TWARN, "parent: waitpid() failed(%s).",\
-				strerror(errno));
+		tst_resm(TWARN, "parent: waitpid() failed(%s).",
+			 strerror(errno));
 
 	if (WIFSIGNALED(status) && WTERMSIG(status))
-		tst_resm(TBROK, "child is terminated by signal(%s)",\
-				strsignal(WTERMSIG(status)));
+		tst_resm(TBROK, "child is terminated by signal(%s)",
+			 strsignal(WTERMSIG(status)));
 
 	/* Cleanup and exit */
 	close(pipefd[0]);

@@ -48,8 +48,8 @@ int main()
 {
 	struct sigaction parentact;
 
-	parentact.sa_handler=parenthandler;
-	parentact.sa_flags=0;
+	parentact.sa_handler = parenthandler;
+	parentact.sa_flags = 0;
 	if (sigemptyset(&parentact.sa_mask) == -1) {
 		perror("Error calling sigemptyset\n");
 		return PTS_UNRESOLVED;
@@ -63,8 +63,8 @@ int main()
 		/* child here */
 		struct sigaction childact;
 
-		childact.sa_handler=childhandler;
-		childact.sa_flags=0;
+		childact.sa_handler = childhandler;
+		childact.sa_flags = 0;
 		if (sigemptyset(&childact.sa_mask) == -1) {
 			perror("Error calling sigemptyset\n");
 			return PTS_UNRESOLVED;
@@ -92,8 +92,7 @@ int main()
 			printf("Child exited normally\n");
 			printf("Test PASSED\n");
 			return PTS_PASS;
-		}
-		else {
+		} else {
 			printf("Child did not exit normally.\n");
 			printf("Test FAILED\n");
 			return PTS_FAIL;

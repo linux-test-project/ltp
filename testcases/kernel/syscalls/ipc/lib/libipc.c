@@ -202,7 +202,7 @@ int get_used_msgqueues()
 
 	f = popen("ipcs -q", "r");
 	if (!f) {
-		tst_brkm(TBROK|TERRNO, NULL, "pipe failed");
+		tst_brkm(TBROK | TERRNO, NULL, "pipe failed");
 	}
 	/* FIXME: Start at -4 because ipcs prints four lines of header */
 	for (used_queues = -4; fgets(buff, BUFSIZE, f); used_queues++) ;

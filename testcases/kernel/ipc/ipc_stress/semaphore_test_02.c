@@ -83,10 +83,10 @@
  *
  * NUM_SEMAPHORES: number of semaphores to create
  */
-# define MAX_SEMAPHORES	250
-# define MAX_CHILDREN		200
-# define DEFAULT_NUM_SEMAPHORES	96
-# define DEFAULT_NUM_CHILDREN	0
+#define MAX_SEMAPHORES	250
+#define MAX_CHILDREN		200
+#define DEFAULT_NUM_SEMAPHORES	96
+#define DEFAULT_NUM_CHILDREN	0
 
 #define USAGE	"\nUsage: %s [-s nsems] [-p nproc]\n\n" \
 		"\t-s nsems  number of semaphores (per process)\n\n"	\
@@ -101,10 +101,10 @@
  * sys_error (): System error message function
  * error (): Error message function
  */
-static void test_commands (pid_t);
-static void sys_error (const char *, int);
-static void error (const char *, int);
-static void parse_args (int, char **);
+static void test_commands(pid_t);
+static void sys_error(const char *, int);
+static void error(const char *, int);
+static void parse_args(int, char **);
 
 /*
  * Structures and Global variables:
@@ -114,17 +114,17 @@ static void parse_args (int, char **);
  * childpid: array containing process id's of the child processes
  * parent_pid: process id of parent process
  */
-int	nsems = DEFAULT_NUM_SEMAPHORES;
-int	nprocs = DEFAULT_NUM_CHILDREN;
-int     childpid [MAX_CHILDREN];
-int	errors = 0;
-pid_t   parent_pid;
+int nsems = DEFAULT_NUM_SEMAPHORES;
+int nprocs = DEFAULT_NUM_CHILDREN;
+int childpid[MAX_CHILDREN];
+int errors = 0;
+pid_t parent_pid;
 
 union semun {
-	      int val;
-	      struct semid_ds *buf;
-	      unsigned short *array;
-	    } arg;
+	int val;
+	struct semid_ds *buf;
+	unsigned short *array;
+} arg;
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -136,66 +136,67 @@ union semun {
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int	proc;			/* fork loop index */
-	pid_t	pid;			/* Process id */
-	int	status;			/* Child's exit status */
+	int proc;		/* fork loop index */
+	pid_t pid;		/* Process id */
+	int status;		/* Child's exit status */
 
-        /*
-         * Parse command line arguments and print out program header
-         */
-        parse_args (argc, argv);
-        printf ("%s: IPC Semaphore TestSuite program\n", *argv);
-	fflush (stdout);
-	parent_pid = getpid ();
+	/*
+	 * Parse command line arguments and print out program header
+	 */
+	parse_args(argc, argv);
+	printf("%s: IPC Semaphore TestSuite program\n", *argv);
+	fflush(stdout);
+	parent_pid = getpid();
 
 	/*
 	 * Fork off the additional processes.
 	 */
 	if (nprocs > 0) {
-		printf ("\n\tParent: spawning %d child processes\n", nprocs);
-		fflush (stdout);
+		printf("\n\tParent: spawning %d child processes\n", nprocs);
+		fflush(stdout);
 	}
 	for (proc = 1; proc < nprocs; proc++) {
 		/*
 		 * Child leaves loop, parent continues to fork.
 		 */
-	if ((pid = fork ()) < 0)
-			error ("fork failed", __LINE__);
+		if ((pid = fork()) < 0)
+			error("fork failed", __LINE__);
 		else if (pid == 0)
 			break;
 		else
-			childpid [proc] = pid;
+			childpid[proc] = pid;
 	}
 	pid = getpid();
 
-        /*
-         * Test the semget () and semctl () commands
-         */
-	test_commands (pid);
+	/*
+	 * Test the semget () and semctl () commands
+	 */
+	test_commands(pid);
 
-        /*
-         * Finished testing commands, only parent process needs to continue
-         */
-        if (pid != parent_pid) exit (0);
+	/*
+	 * Finished testing commands, only parent process needs to continue
+	 */
+	if (pid != parent_pid)
+		exit(0);
 
-        /*
-         * Wait for all of the child processes to complete & check their
-         * exit status.
-         *
-         * Upon completion of the child proccesses, exit program with success.
-         */
-        for (proc = 1; proc < nprocs; proc++) {
-                waitpid (childpid [proc], &status, 0);
+	/*
+	 * Wait for all of the child processes to complete & check their
+	 * exit status.
+	 *
+	 * Upon completion of the child proccesses, exit program with success.
+	 */
+	for (proc = 1; proc < nprocs; proc++) {
+		waitpid(childpid[proc], &status, 0);
 
-                if (!WIFEXITED (status))
-                        error ("child process terminated abnormally",
-                                __LINE__);
-        }
+		if (!WIFEXITED(status))
+			error("child process terminated abnormally", __LINE__);
+	}
 	if (nprocs > 0)
-		printf ("\n\tAll child processes verified commands successfully\n");
-        printf ("\nsuccessful!\n");
+		printf
+		    ("\n\tAll child processes verified commands successfully\n");
+	printf("\nsuccessful!\n");
 	return (errors);
 }
 
@@ -206,16 +207,16 @@ int main (int argc, char **argv)
 | Function:  test semget() and semctl()                                |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void test_commands (pid_t pid)
+static void test_commands(pid_t pid)
 {
-	int	i;			/* loop index */
-	int	semid;			/* Unique semaphore id */
-	int	val;			/* Misc value */
-	gid_t	gid = getgid ();	/* User's group id */
-	mode_t	mode = 0666;		/* User's mode value */
-	uid_t	uid = getuid ();	/* User's user id */
+	int i;			/* loop index */
+	int semid;		/* Unique semaphore id */
+	int val;		/* Misc value */
+	gid_t gid = getgid();	/* User's group id */
+	mode_t mode = 0666;	/* User's mode value */
+	uid_t uid = getuid();	/* User's user id */
 	struct sembuf sops;
-	union  semun semunptr;		/* This union has struct semid_ds *buf*/
+	union semun semunptr;	/* This union has struct semid_ds *buf */
 	/*
 	 * Test semget () with IPC_PRIVATE command
 	 *
@@ -223,9 +224,9 @@ static void test_commands (pid_t pid)
 	 * semaphore identifier as semid.
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (IPC_SET) command operation\n");
-	if ((semid = semget (IPC_PRIVATE, nsems, IPC_CREAT|0666)) < 0)
-		error ("semget failed", __LINE__);
+		printf("\n\tTesting semctl (IPC_SET) command operation\n");
+	if ((semid = semget(IPC_PRIVATE, nsems, IPC_CREAT | 0666)) < 0)
+		error("semget failed", __LINE__);
 
 	/*
 	 * Test semctl () with IPC_SET command
@@ -233,9 +234,9 @@ static void test_commands (pid_t pid)
 	 * Set the uid, gid and mode fields
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (IPC_SET) command operation\n");
+		printf("\n\tTesting semctl (IPC_SET) command operation\n");
 
-	semunptr.buf = (struct semid_ds *) calloc(1, sizeof (struct semid_ds));
+	semunptr.buf = (struct semid_ds *)calloc(1, sizeof(struct semid_ds));
 	if (!semunptr.buf)
 		error("calloc failed", __LINE__);
 
@@ -243,8 +244,8 @@ static void test_commands (pid_t pid)
 	semunptr.buf->sem_perm.gid = gid;
 	semunptr.buf->sem_perm.mode = mode;
 
-	if (semctl (semid, 0, IPC_SET, semunptr) < 0)
-		sys_error ("semctl failed", __LINE__);
+	if (semctl(semid, 0, IPC_SET, semunptr) < 0)
+		sys_error("semctl failed", __LINE__);
 
 	/*
 	 * Test semctl () with IPC_STAT command
@@ -252,19 +253,19 @@ static void test_commands (pid_t pid)
 	 * Get the semid_ds structure and verify it's fields.
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (IPC_STAT) command operation\n");
+		printf("\n\tTesting semctl (IPC_STAT) command operation\n");
 
-	if (semctl (semid, 0, IPC_STAT, semunptr) < 0)
-		sys_error ("semctl failed", __LINE__);
+	if (semctl(semid, 0, IPC_STAT, semunptr) < 0)
+		sys_error("semctl failed", __LINE__);
 	if (semunptr.buf->sem_perm.uid != uid)
-		sys_error ("semctl: uid was not set", __LINE__);
+		sys_error("semctl: uid was not set", __LINE__);
 	if (semunptr.buf->sem_perm.gid != gid)
-		sys_error ("semctl: gid was not set", __LINE__);
+		sys_error("semctl: gid was not set", __LINE__);
 	if ((semunptr.buf->sem_perm.mode & 0777) != mode)
-		sys_error ("semctl: mode was not set", __LINE__);
+		sys_error("semctl: mode was not set", __LINE__);
 	if (semunptr.buf->sem_nsems != nsems)
-		sys_error ("semctl: nsems (number of semaphores) was not set",
-			__LINE__);
+		sys_error("semctl: nsems (number of semaphores) was not set",
+			  __LINE__);
 	SAFE_FREE(semunptr.buf);
 
 	/*
@@ -274,11 +275,11 @@ static void test_commands (pid_t pid)
 	 * to the loop index (i).
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (SETVAL) command operation\n");
+		printf("\n\tTesting semctl (SETVAL) command operation\n");
 	for (i = 0; i < nsems; i++) {
-	      arg.val=i;
-		if (semctl (semid, i, SETVAL, arg) < 0)
-			sys_error ("semctl failed", __LINE__);
+		arg.val = i;
+		if (semctl(semid, i, SETVAL, arg) < 0)
+			sys_error("semctl failed", __LINE__);
 	}
 
 	/*
@@ -288,38 +289,38 @@ static void test_commands (pid_t pid)
 	 * and compare with the expected value, the loop index (i).
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (GETVAL) command operation\n");
+		printf("\n\tTesting semctl (GETVAL) command operation\n");
 	for (i = 0; i < nsems; i++) {
-		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
-			sys_error ("semctl failed", __LINE__);
+		if ((val = semctl(semid, i, GETVAL, arg)) < 0)
+			sys_error("semctl failed", __LINE__);
 		if (val != i)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+			sys_error("semctl (GETVAL) failed", __LINE__);
 	}
 
 	// testing in linux.  before semctl(GETPID) works, we must call semop
 	if (pid == parent_pid)
-		printf ("\n\tTesting semop (signal and wait) operations\n");
+		printf("\n\tTesting semop (signal and wait) operations\n");
 	sops.sem_flg = 0;
 	for (i = 0; i < nsems; i++) {
-	        sops.sem_num = i;
+		sops.sem_num = i;
 		sops.sem_op = 1;
-	        if ((val = semop (semid, &sops, 1)) < 0)
-		        sys_error ("semop signal failed", __LINE__);
+		if ((val = semop(semid, &sops, 1)) < 0)
+			sys_error("semop signal failed", __LINE__);
 		sops.sem_op = -1;
-		if ((val = semop (semid, &sops, 1)) < 0)
-		        sys_error ("semop wait failed", __LINE__);
+		if ((val = semop(semid, &sops, 1)) < 0)
+			sys_error("semop wait failed", __LINE__);
 	}
 
 	/*
 	 * Test semctl () with GETPID command
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (GETPID) command operation\n");
+		printf("\n\tTesting semctl (GETPID) command operation\n");
 	for (i = 0; i < nsems; i++) {
-		if ((val = semctl (semid, i, GETPID, arg)) < 0)
-			sys_error ("semctl failed", __LINE__);
+		if ((val = semctl(semid, i, GETPID, arg)) < 0)
+			sys_error("semctl failed", __LINE__);
 		if (val != pid)
-			sys_error ("semctl (GETPID) failed", __LINE__);
+			sys_error("semctl (GETPID) failed", __LINE__);
 	}
 
 	/*
@@ -332,13 +333,13 @@ static void test_commands (pid_t pid)
 	 *       waits for the semaphore so that semncnt would be nonzero.
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (GETNCNT) command operation\n");
+		printf("\n\tTesting semctl (GETNCNT) command operation\n");
 	for (i = 0; i < nsems; i++) {
-		if ((val = semctl (semid, i, GETNCNT, arg)) < 0)
-			sys_error ("semctl failed", __LINE__);
+		if ((val = semctl(semid, i, GETNCNT, arg)) < 0)
+			sys_error("semctl failed", __LINE__);
 		if (val != 0)
-			sys_error ("semctl (GETNCNT) returned wrong value",
-				__LINE__);
+			sys_error("semctl (GETNCNT) returned wrong value",
+				  __LINE__);
 	}
 
 	/*
@@ -351,13 +352,13 @@ static void test_commands (pid_t pid)
 	 *       waits for the semaphore so that semzcnt would be nonzero.
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (GETZCNT) command operation\n");
+		printf("\n\tTesting semctl (GETZCNT) command operation\n");
 	for (i = 0; i < nsems; i++) {
-		if ((val = semctl (semid, i, GETZCNT, arg)) < 0)
-			sys_error ("semctl failed", __LINE__);
+		if ((val = semctl(semid, i, GETZCNT, arg)) < 0)
+			sys_error("semctl failed", __LINE__);
 		if (val != 0)
-			sys_error ("semctl (GETZCNT) returned wrong value",
-				__LINE__);
+			sys_error("semctl (GETZCNT) returned wrong value",
+				  __LINE__);
 	}
 
 	/*
@@ -367,13 +368,13 @@ static void test_commands (pid_t pid)
 	 */
 	arg.array = malloc(sizeof(int) * nsems);
 	if (!arg.array)
-		error ("malloc failed", __LINE__);
+		error("malloc failed", __LINE__);
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (SETALL) command operation\n");
+		printf("\n\tTesting semctl (SETALL) command operation\n");
 	for (i = 0; i < nsems; i++)
 		arg.array[i] = i;
-	if (semctl (semid, 0, SETALL, arg) < 0)
-		sys_error ("semctl failed", __LINE__);
+	if (semctl(semid, 0, SETALL, arg) < 0)
+		sys_error("semctl failed", __LINE__);
 
 	/*
 	 * Test semctl () with GETALL command
@@ -382,13 +383,13 @@ static void test_commands (pid_t pid)
 	 * they are all correct.
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (GETALL) command operation\n");
-	if (semctl (semid, nsems, GETALL, arg) < 0)
-		sys_error ("semctl failed", __LINE__);
+		printf("\n\tTesting semctl (GETALL) command operation\n");
+	if (semctl(semid, nsems, GETALL, arg) < 0)
+		sys_error("semctl failed", __LINE__);
 	for (i = 0; i < nsems; i++) {
-		if (arg.array [i] != i)
-			sys_error ("semaphore does not match expected value",
-				__LINE__);
+		if (arg.array[i] != i)
+			sys_error("semaphore does not match expected value",
+				  __LINE__);
 	}
 
 	/*
@@ -397,10 +398,10 @@ static void test_commands (pid_t pid)
 	 * Remove the semaphores
 	 */
 	if (pid == parent_pid)
-		printf ("\n\tTesting semctl (IPC_RMID) command operation\n");
-	if (semctl (semid, nsems, IPC_RMID, arg) < 0)
-		sys_error ("semctl failed", __LINE__);
-        SAFE_FREE(arg.array);
+		printf("\n\tTesting semctl (IPC_RMID) command operation\n");
+	if (semctl(semid, nsems, IPC_RMID, arg) < 0)
+		sys_error("semctl failed", __LINE__);
+	SAFE_FREE(arg.array);
 
 }
 
@@ -416,40 +417,40 @@ static void test_commands (pid_t pid)
 |            [-p] nproc: number of child processes                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	opt;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int opt;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	while ((opt = getopt(argc, argv, "s:p:")) != EOF) {
 		switch (opt) {
-			case 's':
-				nsems = atoi (optarg);
-				break;
-			case 'p':
-				nprocs = atoi (optarg);
-				break;
-			default:
-				errflag++;
-				break;
+		case 's':
+			nsems = atoi(optarg);
+			break;
+		case 'p':
+			nprocs = atoi(optarg);
+			break;
+		default:
+			errflag++;
+			break;
 		}
 	}
 	if (nsems >= MAX_SEMAPHORES) {
 		errflag++;
-		fprintf (stderr, "ERROR: nsems must be less than %d\n",
+		fprintf(stderr, "ERROR: nsems must be less than %d\n",
 			MAX_SEMAPHORES);
 	}
 	if (nprocs >= MAX_CHILDREN) {
 		errflag++;
-		fprintf (stderr, "ERROR: nproc must be less than %d\n",
+		fprintf(stderr, "ERROR: nproc must be less than %d\n",
 			MAX_CHILDREN);
 	}
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -460,12 +461,12 @@ void parse_args (int argc, char **argv)
 | Function:  Creates system error message and increments errors	       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void sys_error (const char *msg, int line)
+static void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, syserr_msg);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, syserr_msg);
 	errors++;
 	/* error (syserr_msg, line); */
 }
@@ -477,8 +478,8 @@ static void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void error (const char *msg, int line)
+static void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	exit (-1);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	exit(-1);
 }

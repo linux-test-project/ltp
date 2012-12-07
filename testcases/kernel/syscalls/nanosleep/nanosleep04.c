@@ -142,11 +142,11 @@ int main(int ac, char **av)
 		wait(&status);
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			tst_resm(TPASS, "nanosleep() failed, when provided "
-					"invalid pause time, with expected "
-					"errno: %d", EINVAL);
+				 "invalid pause time, with expected "
+				 "errno: %d", EINVAL);
 		} else if (WEXITSTATUS(status) == 1) {
 			tst_resm(TFAIL, "child process exited abnormally; "
-					"status = %d", status);
+				 "status = %d", status);
 		}
 	}
 

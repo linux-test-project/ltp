@@ -30,28 +30,28 @@
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main() {
+int main()
+{
 
-    struct timespec ts;
-    sem_t mysemp;
-    int i=0;
-    int val;
+	struct timespec ts;
+	sem_t mysemp;
+	int i = 0;
+	int val;
 
-	if (sem_init (&mysemp, 0, 0) == -1) {
+	if (sem_init(&mysemp, 0, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
 		return PTS_UNRESOLVED;
 	}
 
-	ts.tv_sec=time(NULL);
-	ts.tv_nsec=0;
+	ts.tv_sec = time(NULL);
+	ts.tv_nsec = 0;
 
-	while (sem_timedwait(&mysemp, &ts) == -1)
-	{
+	while (sem_timedwait(&mysemp, &ts) == -1) {
 		ts.tv_sec += 1;
-//		printf("%s \n", asctime(localtime(&ts.tv_sec)));
+//              printf("%s \n", asctime(localtime(&ts.tv_sec)));
 		i++;
-//		printf("i=%d\n",i);
-		if (i==5) {
+//              printf("i=%d\n",i);
+		if (i == 5) {
 			sem_post(&mysemp);
 		}
 	}
@@ -63,7 +63,7 @@ int main() {
 	}
 
 	/* Checking if the value of the Semaphore after lock & unlock */
-	if (val == 0)  {
+	if (val == 0) {
 		puts("TEST PASSED: Sem unlocked after 5 timeouts");
 		sem_destroy(&mysemp);
 		return PTS_PASS;

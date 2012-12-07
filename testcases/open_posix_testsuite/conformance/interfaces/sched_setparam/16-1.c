@@ -19,13 +19,16 @@
 #include "posixtest.h"
 
 #ifdef _POSIX_SPORADIC_SERVER
-int main() {
-	printf(" Will not test the result of sched_setparam when the scheduling policy of the\ntarget process is not SCHED_FIFO, SCHED_RR, or SCHED_SPORADIC.\nIt is implementation-defined.\n");
+int main()
+{
+	printf
+	    (" Will not test the result of sched_setparam when the scheduling policy of the\ntarget process is not SCHED_FIFO, SCHED_RR, or SCHED_SPORADIC.\nIt is implementation-defined.\n");
 	return PTS_UNTESTED;
 }
 
 #else
-int main() {
+int main()
+{
 	printf("Does not support SS (SPORADIC SERVER)\n");
 	return PTS_UNSUPPORTED;
 }

@@ -87,7 +87,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "fork #1 failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork #1 failed");
 
 		if (pid == 0) {
 			char *av[2];
@@ -123,7 +123,7 @@ int main(int ac, char **av)
 			exit(retval);
 		}
 		if (wait(&status) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "wait failed");
 		if (WIFEXITED(status) || WEXITSTATUS(status) == 0)
 			tst_resm(TPASS, "creat functionality correct");
 		else
@@ -141,21 +141,20 @@ void setup(char *app)
 
 	if (app[0] == '/')
 		snprintf(test_path, sizeof(test_path), "%s/%s",
-				dirname(app), test_app);
+			 dirname(app), test_app);
 	else {
 		if ((pwd = get_current_dir_name()) == NULL)
-			tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
+			tst_brkm(TBROK | TERRNO, NULL, "getcwd failed");
 
-		snprintf(test_path, sizeof(test_path), "%s/%s",
-		    pwd, test_app);
+		snprintf(test_path, sizeof(test_path), "%s/%s", pwd, test_app);
 
 		free(pwd);
 	}
 
 	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") +
-	    1);
+		     1);
 	if (cmd == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
+		tst_brkm(TBROK | TERRNO, NULL, "Cannot alloc command string");
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

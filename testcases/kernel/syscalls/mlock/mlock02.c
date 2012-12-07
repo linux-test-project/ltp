@@ -72,7 +72,8 @@ struct test_case_t {
 	 * range pointed to by addr and len are not valid mapped pages
 	 * in the address space of the process
 	 */
-	{ &addr1, 1024, ENOMEM, setup1 }
+	{
+	&addr1, 1024, ENOMEM, setup1}
 };
 
 #if !defined(UCLINUX)
@@ -102,16 +103,17 @@ int main(int ac, char **av)
 
 			if (TEST_RETURN == -1) {
 				if (TEST_ERRNO != TC[i].error)
-					tst_brkm(TFAIL|TTERRNO, cleanup,
-					    "mlock didn't fail as expected; "
-					    "expected - %d : %s",
-					    TC[i].error, strerror(TC[i].error));
+					tst_brkm(TFAIL | TTERRNO, cleanup,
+						 "mlock didn't fail as expected; "
+						 "expected - %d : %s",
+						 TC[i].error,
+						 strerror(TC[i].error));
 				else
-					tst_resm(TPASS|TTERRNO,
-					    "mlock failed as expected");
+					tst_resm(TPASS | TTERRNO,
+						 "mlock failed as expected");
 			} else
 				tst_brkm(TFAIL, cleanup,
-				    "mlock succeeded unexpectedly");
+					 "mlock succeeded unexpectedly");
 		}
 	}
 

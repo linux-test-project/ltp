@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
 		/* child here */
 		struct timespec tssleep;
 
-		tssleep.tv_sec=SLEEPSEC;
-		tssleep.tv_nsec=0;
+		tssleep.tv_sec = SLEEPSEC;
+		tssleep.tv_nsec = 0;
 		if (clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL) == 0) {
 			printf("clock_nanosleep() returned success\n");
 			return CHILDPASS;
@@ -79,11 +79,11 @@ int main(int argc, char *argv[])
 			return PTS_UNRESOLVED;
 		}
 
-		slepts=tsafter.tv_sec-tsbefore.tv_sec;
+		slepts = tsafter.tv_sec - tsbefore.tv_sec;
 
 #ifdef DEBUG
-		printf("Start %d sec; End %d sec\n", (int) tsbefore.tv_sec,
-				(int) tsafter.tv_sec);
+		printf("Start %d sec; End %d sec\n", (int)tsbefore.tv_sec,
+		       (int)tsafter.tv_sec);
 #endif
 		if (slepts >= SLEEPSEC) {
 			printf("Test PASSED\n");
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 			return PTS_FAIL;
 		}
 
-	} //end fork
+	}			//end fork
 
 	return PTS_UNRESOLVED;
 }

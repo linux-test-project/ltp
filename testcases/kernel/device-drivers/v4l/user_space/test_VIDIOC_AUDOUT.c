@@ -35,11 +35,12 @@
 
 #include "test_VIDIOC_AUDOUT.h"
 
-int valid_audioout_mode(__u32 mode) {
+int valid_audioout_mode(__u32 mode)
+{
 	int valid = 0;
 
 	if ((mode & ~(V4L2_AUDMODE_AVL))
-		== 0) {
+	    == 0) {
 		valid = 1;
 	} else {
 		valid = 0;
@@ -47,7 +48,8 @@ int valid_audioout_mode(__u32 mode) {
 	return valid;
 }
 
-void test_VIDIOC_G_AUDOUT() {
+void test_VIDIOC_G_AUDOUT()
+{
 	int ret_get, errno_get;
 	struct v4l2_audioout audioout;
 	struct v4l2_audioout audioout2;
@@ -56,15 +58,17 @@ void test_VIDIOC_G_AUDOUT() {
 	ret_get = ioctl(get_video_fd(), VIDIOC_G_AUDOUT, &audioout);
 	errno_get = errno;
 
-	dprintf("\tVIDIOC_AUDIOOUT, ret_get=%i, errno_get=%i\n", ret_get, errno_get);
+	dprintf("\tVIDIOC_AUDIOOUT, ret_get=%i, errno_get=%i\n", ret_get,
+		errno_get);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
 
 		//CU_ASSERT_EQUAL(audioout.index, ?);
 
-		CU_ASSERT(0 < strlen( (char*)audioout.name ));
-		CU_ASSERT(valid_string((char*)audioout.name, sizeof(audioout.name)));
+		CU_ASSERT(0 < strlen((char *)audioout.name));
+		CU_ASSERT(valid_string
+			  ((char *)audioout.name, sizeof(audioout.name)));
 
 		CU_ASSERT_EQUAL(audioout.capability, 0);
 		CU_ASSERT_EQUAL(audioout.mode, 0);
@@ -78,10 +82,12 @@ void test_VIDIOC_G_AUDOUT() {
 		 */
 		memset(&audioout2, 0, sizeof(audioout2));
 		audioout2.index = audioout.index;
-		strncpy((char*)audioout2.name, (char*)audioout.name, sizeof(audioout2.name));
+		strncpy((char *)audioout2.name, (char *)audioout.name,
+			sizeof(audioout2.name));
 		audioout2.capability = audioout.capability;
 		audioout2.mode = audioout.mode;
-		CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
+		CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)),
+				0);
 
 		dprintf("\taudioout = {.index=%u, .name=\"%s\", "
 			".capability=0x%X, .mode=0x%X, "
@@ -90,9 +96,8 @@ void test_VIDIOC_G_AUDOUT() {
 			audioout.name,
 			audioout.capability,
 			audioout.mode,
-			audioout.reserved[0],
-			audioout.reserved[1]
-			);
+			audioout.reserved[0], audioout.reserved[1]
+		    );
 
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
@@ -100,13 +105,15 @@ void test_VIDIOC_G_AUDOUT() {
 
 		/* check if the audioout structure is untouched */
 		memset(&audioout2, 0xff, sizeof(audioout2));
-		CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
+		CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)),
+				0);
 
 	}
 
 }
 
-void test_VIDIOC_G_AUDOUT_ignore_index() {
+void test_VIDIOC_G_AUDOUT_ignore_index()
+{
 	int reg_get1, errno1;
 	int reg_get2, errno2;
 	struct v4l2_audioout audioout;
@@ -118,18 +125,21 @@ void test_VIDIOC_G_AUDOUT_ignore_index() {
 	reg_get1 = ioctl(get_video_fd(), VIDIOC_G_AUDOUT, &audioout);
 	errno1 = errno;
 
-	dprintf("\tVIDIOC_G_AUDOUT, reg_get1=%i, errno1=%i\n", reg_get1, errno1);
+	dprintf("\tVIDIOC_G_AUDOUT, reg_get1=%i, errno1=%i\n", reg_get1,
+		errno1);
 
 	memset(&audioout2, 0, sizeof(audioout2));
 	audioout2.index = U32_MAX;
 	reg_get2 = ioctl(get_video_fd(), VIDIOC_G_AUDOUT, &audioout2);
 	errno2 = errno;
 
-	dprintf("\tVIDIOC_G_AUDOUT, reg_get2=%i, errno2=%i\n", reg_get2, errno2);
+	dprintf("\tVIDIOC_G_AUDOUT, reg_get2=%i, errno2=%i\n", reg_get2,
+		errno2);
 
 	if (reg_get1 == 0) {
 		CU_ASSERT_EQUAL(reg_get2, 0);
-		CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
+		CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)),
+				0);
 	} else {
 		CU_ASSERT_EQUAL(reg_get1, -1);
 		CU_ASSERT_EQUAL(errno1, EINVAL);
@@ -139,7 +149,8 @@ void test_VIDIOC_G_AUDOUT_ignore_index() {
 
 }
 
-void test_VIDIOC_G_AUDOUT_NULL() {
+void test_VIDIOC_G_AUDOUT_NULL()
+{
 	int ret_get, errno_get;
 	int ret_null, errno_null;
 	struct v4l2_audioout audioout;
@@ -174,7 +185,8 @@ void test_VIDIOC_G_AUDOUT_NULL() {
  *       - try with STREAM_ON
  */
 
-void test_VIDIOC_S_AUDOUT() {
+void test_VIDIOC_S_AUDOUT()
+{
 	int ret_orig, errno_orig;
 	int ret_enum, errno_enum;
 	int ret_set, errno_set;
@@ -196,7 +208,8 @@ void test_VIDIOC_S_AUDOUT() {
 	ret_orig = ioctl(get_video_fd(), VIDIOC_G_AUDOUT, &audioout_orig);
 	errno_orig = errno;
 
-	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig, errno_orig);
+	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig,
+		errno_orig);
 
 	if (ret_orig == 0) {
 		CU_ASSERT_EQUAL(ret_orig, 0);
@@ -211,13 +224,16 @@ void test_VIDIOC_S_AUDOUT() {
 	do {
 		memset(&audioout_enum, 0, sizeof(audioout_enum));
 		audioout_enum.index = index;
-		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDOUT, &audioout_enum);
+		ret_enum =
+		    ioctl(get_video_fd(), VIDIOC_ENUMAUDOUT, &audioout_enum);
 		errno_enum = errno;
 
 		if (ret_enum == 0) {
 			memset(&audioout_set, 0xff, sizeof(audioout_set));
 			audioout_set.index = index;
-			ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audioout_set);
+			ret_set =
+			    ioctl(get_video_fd(), VIDIOC_S_AUDOUT,
+				  &audioout_set);
 			errno_set = errno;
 
 			/* It shall be always possible to set the audio output to the
@@ -233,7 +249,7 @@ void test_VIDIOC_S_AUDOUT() {
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* try to set audio output to beyond the enumerated values */
-	for (i=0; i<=32; i++) {
+	for (i = 0; i <= 32; i++) {
 		memset(&audioout_set, 0xff, sizeof(audioout_set));
 		audioout_set.index = index;
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audioout_set);
@@ -266,7 +282,8 @@ void test_VIDIOC_S_AUDOUT() {
 
 }
 
-void test_VIDIOC_S_AUDOUT_S32_MAX() {
+void test_VIDIOC_S_AUDOUT_S32_MAX()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	struct v4l2_audioout audioout;
@@ -279,11 +296,12 @@ void test_VIDIOC_S_AUDOUT_S32_MAX() {
 	ret_orig = ioctl(get_video_fd(), VIDIOC_G_AUDOUT, &audioout_orig);
 	errno_orig = errno;
 
-	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig, errno_orig);
+	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig,
+		errno_orig);
 
 	/* test invalid index */
 	memset(&audioout, 0xff, sizeof(audioout));
-	audioout.index = (__u32)S32_MAX;
+	audioout.index = (__u32) S32_MAX;
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audioout);
 	errno_set = errno;
 
@@ -292,7 +310,7 @@ void test_VIDIOC_S_AUDOUT_S32_MAX() {
 
 	/* Check whether the original audioout struct is untouched */
 	memset(&audioout2, 0xff, sizeof(audioout2));
-	audioout2.index = (__u32)S32_MAX;
+	audioout2.index = (__u32) S32_MAX;
 	CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
 
 	/* restore the original audio output settings */
@@ -301,7 +319,8 @@ void test_VIDIOC_S_AUDOUT_S32_MAX() {
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audioout_set);
 	errno_set = errno;
 
-	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set, errno_set);
+	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set,
+		errno_set);
 
 	if (ret_orig == 0) {
 		/* If it was possible at the beginning to get the audio output then
@@ -317,7 +336,8 @@ void test_VIDIOC_S_AUDOUT_S32_MAX() {
 	}
 }
 
-void test_VIDIOC_S_AUDOUT_S32_MAX_1() {
+void test_VIDIOC_S_AUDOUT_S32_MAX_1()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	struct v4l2_audioout audioout;
@@ -330,11 +350,12 @@ void test_VIDIOC_S_AUDOUT_S32_MAX_1() {
 	ret_orig = ioctl(get_video_fd(), VIDIOC_G_AUDOUT, &audioout_orig);
 	errno_orig = errno;
 
-	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig, errno_orig);
+	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig,
+		errno_orig);
 
 	/* test invalid index */
 	memset(&audioout, 0xff, sizeof(audioout));
-	audioout.index = ((__u32)S32_MAX)+1;
+	audioout.index = ((__u32) S32_MAX) + 1;
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audioout);
 	errno_set = errno;
 
@@ -343,7 +364,7 @@ void test_VIDIOC_S_AUDOUT_S32_MAX_1() {
 
 	/* Check whether the original audioout struct is untouched */
 	memset(&audioout2, 0xff, sizeof(audioout2));
-	audioout2.index = ((__u32)S32_MAX)+1;
+	audioout2.index = ((__u32) S32_MAX) + 1;
 	CU_ASSERT_EQUAL(memcmp(&audioout, &audioout2, sizeof(audioout)), 0);
 
 	/* restore the original audio output settings */
@@ -352,7 +373,8 @@ void test_VIDIOC_S_AUDOUT_S32_MAX_1() {
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audioout_set);
 	errno_set = errno;
 
-	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set, errno_set);
+	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set,
+		errno_set);
 
 	if (ret_orig == 0) {
 		/* If it was possible at the beginning to get the audio output then
@@ -368,7 +390,8 @@ void test_VIDIOC_S_AUDOUT_S32_MAX_1() {
 	}
 }
 
-void test_VIDIOC_S_AUDOUT_U32_MAX() {
+void test_VIDIOC_S_AUDOUT_U32_MAX()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	struct v4l2_audioout audioout;
@@ -381,7 +404,8 @@ void test_VIDIOC_S_AUDOUT_U32_MAX() {
 	ret_orig = ioctl(get_video_fd(), VIDIOC_G_AUDOUT, &audioout_orig);
 	errno_orig = errno;
 
-	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig, errno_orig);
+	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig,
+		errno_orig);
 	/* test invalid index */
 	memset(&audioout, 0xff, sizeof(audioout));
 	audioout.index = U32_MAX;
@@ -402,7 +426,8 @@ void test_VIDIOC_S_AUDOUT_U32_MAX() {
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audioout_set);
 	errno_set = errno;
 
-	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set, errno_set);
+	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set,
+		errno_set);
 
 	if (ret_orig == 0) {
 		/* If it was possible at the beginning to get the audio output then
@@ -418,7 +443,8 @@ void test_VIDIOC_S_AUDOUT_U32_MAX() {
 	}
 }
 
-void test_VIDIOC_S_AUDOUT_NULL() {
+void test_VIDIOC_S_AUDOUT_NULL()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	int ret_get, errno_get;
@@ -430,18 +456,21 @@ void test_VIDIOC_S_AUDOUT_NULL() {
 	ret_orig = ioctl(get_video_fd(), VIDIOC_G_AUDOUT, &audio_orig);
 	errno_orig = errno;
 
-	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig, errno_orig);
+	dprintf("\tVIDIOC_G_AUDOUT, ret_orig=%i, errno_orig=%i\n", ret_orig,
+		errno_orig);
 
 	memset(&audio_set, 0, sizeof(audio_set));
 	ret_get = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audio_set);
 	errno_get = errno;
 
-	dprintf("\tVIDIOC_S_AUDOUT, ret_get=%i, errno_get=%i\n", ret_get, errno_get);
+	dprintf("\tVIDIOC_S_AUDOUT, ret_get=%i, errno_get=%i\n", ret_get,
+		errno_get);
 
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, NULL);
 	errno_set = errno;
 
-	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set, errno_set);
+	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set,
+		errno_set);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
@@ -460,7 +489,8 @@ void test_VIDIOC_S_AUDOUT_NULL() {
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDOUT, &audio_set);
 	errno_set = errno;
 
-	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set, errno_set);
+	dprintf("\tVIDIOC_S_AUDOUT, ret_set=%i, errno_set=%i\n", ret_set,
+		errno_set);
 
 	if (ret_orig == 0) {
 		/* If it was possible at the beginning to get the audio input then

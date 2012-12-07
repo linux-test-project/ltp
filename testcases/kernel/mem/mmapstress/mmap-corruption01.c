@@ -56,126 +56,131 @@
 #include "usctest.h"
 
 /* Extern Global Variables */
-extern int  Tst_count;
+extern int Tst_count;
 
 /* Global Variables */
-char *TCID     = "mmap-corruption01"; /* test program identifier.          */
-int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
+char *TCID = "mmap-corruption01";	/* test program identifier.          */
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
-long kMemSize  = 128 << 20;
+long kMemSize = 128 << 20;
 int kPageSize = 4096;
 
-char *usage="-h hours -m minutes -s secs\n";
+char *usage = "-h hours -m minutes -s secs\n";
 
 int anyfail()
 {
-  tst_resm(TFAIL, "Test failed\n");
-  tst_rmdir();
-  tst_exit();
+	tst_resm(TFAIL, "Test failed\n");
+	tst_rmdir();
+	tst_exit();
 }
 
-int main(int argc, char **argv) {
-       char *progname;
-       int status;
-       int count = 0;
-       int i, c;
-       char *fname = "test.mmap-corruption";
-       char *mem;
-       unsigned long alarmtime = 0;
-       struct sigaction sa;
-       void finish(int sig);
+int main(int argc, char **argv)
+{
+	char *progname;
+	int status;
+	int count = 0;
+	int i, c;
+	char *fname = "test.mmap-corruption";
+	char *mem;
+	unsigned long alarmtime = 0;
+	struct sigaction sa;
+	void finish(int sig);
 
-       progname = *argv;
-       while ((c = getopt(argc, argv, ":h:m:s:")) != -1) {
-                switch (c) {
-                case 'h':
-                         alarmtime += atoi(optarg) * 60 * 60;
-                         break;
-                case 'm':
-                         alarmtime += atoi(optarg) * 60;
-                         break;
-                case 's':
-                         alarmtime += atoi(optarg);
-                         break;
-                default:
-                        (void)fprintf(stderr, "usage: %s %s\n", progname,
-                                usage);
-                        anyfail();
-                }
-       }
+	progname = *argv;
+	while ((c = getopt(argc, argv, ":h:m:s:")) != -1) {
+		switch (c) {
+		case 'h':
+			alarmtime += atoi(optarg) * 60 * 60;
+			break;
+		case 'm':
+			alarmtime += atoi(optarg) * 60;
+			break;
+		case 's':
+			alarmtime += atoi(optarg);
+			break;
+		default:
+			(void)fprintf(stderr, "usage: %s %s\n", progname,
+				      usage);
+			anyfail();
+		}
+	}
 
-        /*
-         *  Plan for death by signal.  User may have specified
-         *  a time limit, in which case set an alarm and catch SIGALRM.
-         *  Also catch and cleanup with SIGINT, SIGQUIT, and SIGTERM.
-         */
-        sa.sa_handler = finish;
-        sa.sa_flags = 0;
-        if (sigemptyset(&sa.sa_mask)) {
-                perror("sigempty error");
-                exit(1);
-        }
+	/*
+	 *  Plan for death by signal.  User may have specified
+	 *  a time limit, in which case set an alarm and catch SIGALRM.
+	 *  Also catch and cleanup with SIGINT, SIGQUIT, and SIGTERM.
+	 */
+	sa.sa_handler = finish;
+	sa.sa_flags = 0;
+	if (sigemptyset(&sa.sa_mask)) {
+		perror("sigempty error");
+		exit(1);
+	}
 
-        if (sigaction(SIGINT, &sa, 0) == -1) {
-                perror("sigaction error SIGINT");
-                exit(1);
-        }
-        if (alarmtime) {
-                if (sigaction(SIGALRM, &sa, 0) == -1) {
-                        perror("sigaction error");
-                        exit(1);
-                }
-                (void)alarm(alarmtime);
-                printf("mmap-corruption will run for=> %ld, seconds\n",alarmtime);
-        } else { //Run for 5 secs only
-                if (sigaction(SIGALRM, &sa, 0) == -1) {
-                        perror("sigaction error");
-                        exit(1);
-                }
-                (void)alarm(5);
-                printf("mmap-corruption will run for=> 5, seconds\n");
-        }
-        /* If we get a SIGQUIT or SIGTERM, clean up and exit immediately. */
-        sa.sa_handler = finish;
-        if (sigaction(SIGQUIT, &sa, 0) == -1) {
-                perror("sigaction error SIGQUIT");
-                exit(1);
-        }
-        if (sigaction(SIGTERM, &sa, 0) == -1) {
-                perror("sigaction error SIGTERM");
-                exit(1);
-        }
+	if (sigaction(SIGINT, &sa, 0) == -1) {
+		perror("sigaction error SIGINT");
+		exit(1);
+	}
+	if (alarmtime) {
+		if (sigaction(SIGALRM, &sa, 0) == -1) {
+			perror("sigaction error");
+			exit(1);
+		}
+		(void)alarm(alarmtime);
+		printf("mmap-corruption will run for=> %ld, seconds\n",
+		       alarmtime);
+	} else {		//Run for 5 secs only
+		if (sigaction(SIGALRM, &sa, 0) == -1) {
+			perror("sigaction error");
+			exit(1);
+		}
+		(void)alarm(5);
+		printf("mmap-corruption will run for=> 5, seconds\n");
+	}
+	/* If we get a SIGQUIT or SIGTERM, clean up and exit immediately. */
+	sa.sa_handler = finish;
+	if (sigaction(SIGQUIT, &sa, 0) == -1) {
+		perror("sigaction error SIGQUIT");
+		exit(1);
+	}
+	if (sigaction(SIGTERM, &sa, 0) == -1) {
+		perror("sigaction error SIGTERM");
+		exit(1);
+	}
 
-       tst_tmpdir();
-       while (1) {
-             unlink(fname);
-             int fd = open(fname, O_CREAT | O_EXCL | O_RDWR, 0600);
-             status = ftruncate(fd, kMemSize);
+	tst_tmpdir();
+	while (1) {
+		unlink(fname);
+		int fd = open(fname, O_CREAT | O_EXCL | O_RDWR, 0600);
+		status = ftruncate(fd, kMemSize);
 
-             mem = mmap(0, kMemSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-             // Fill the memory with 1s.
-             memset(mem, 1, kMemSize);
+		mem =
+		    mmap(0, kMemSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd,
+			 0);
+		// Fill the memory with 1s.
+		memset(mem, 1, kMemSize);
 
-             for (i = 0; i < kMemSize; i++) {
-                  int byte_good = mem[i] != 0;
-                  if (!byte_good && ((i % kPageSize) == 0)) {
-                       //printf("%d ", i / kPageSize);
-                       count++;
-                  }
-             }
-             munmap(mem, kMemSize);
-             close(fd);
-             unlink(fname);
-             if (count > 0) {
-                 printf("Running %d bad page\n", count);
-                 return 1;
-             }
-             count=0;
-       }
-     return 0;
+		for (i = 0; i < kMemSize; i++) {
+			int byte_good = mem[i] != 0;
+			if (!byte_good && ((i % kPageSize) == 0)) {
+				//printf("%d ", i / kPageSize);
+				count++;
+			}
+		}
+		munmap(mem, kMemSize);
+		close(fd);
+		unlink(fname);
+		if (count > 0) {
+			printf("Running %d bad page\n", count);
+			return 1;
+		}
+		count = 0;
+	}
+	return 0;
 }
 
-void finish(int sig) {
-     printf("mmap-corruption PASSED\n");
-     exit(0);
+void finish(int sig)
+{
+	printf("mmap-corruption PASSED\n");
+	exit(0);
 }

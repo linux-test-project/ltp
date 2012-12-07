@@ -31,34 +31,31 @@ int main()
 #endif
 	/* Initialize a read-write lock attributes object */
 	rc = pthread_rwlockattr_init(&rwa);
-	if (rc != 0)
-	{
-		printf("Test FAILED, pthread_rwlockattr_init() returns %d\n", rc);
+	if (rc != 0) {
+		printf("Test FAILED, pthread_rwlockattr_init() returns %d\n",
+		       rc);
 		return PTS_FAIL;
 	}
-
 #ifdef PTHREAD_PROCESS_SHARED
 	/* If the symbol {PTHREAD_PROCESS_SHARED} is defined, the attribute
 	 * process-shared should be provided and its default value should be
 	 * PTHREAD_PROCESS_PRIVATE  */
-	if (pthread_rwlockattr_getpshared(&rwa, &pshared) != 0)
-	{
+	if (pthread_rwlockattr_getpshared(&rwa, &pshared) != 0) {
 		printf("Error obtaining the attribute process-shared\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pshared == PTHREAD_PROCESS_PRIVATE)
-	{
+	if (pshared == PTHREAD_PROCESS_PRIVATE) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	}
-	else
-	{
-		printf("Test FAILED, the default process-shared attribute is not PTHREAD_PROCESS_PRIVATE\n");
+	} else {
+		printf
+		    ("Test FAILED, the default process-shared attribute is not PTHREAD_PROCESS_PRIVATE\n");
 		return PTS_FAIL;
 	}
 #endif
 
-	fprintf(stderr,"process-shared attribute is not available for testing\n");
+	fprintf(stderr,
+		"process-shared attribute is not available for testing\n");
 	return PTS_UNSUPPORTED;
 }

@@ -51,9 +51,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "exit_group01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "exit_group01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -73,10 +73,11 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
-        TEST_CLEANUP;
-        tst_rmdir();
+	TEST_CLEANUP;
+	tst_rmdir();
 }
 
 /* Local  Functions */
@@ -97,36 +98,38 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
-        int status;
-        pid_t cpid, w;
+int main(int ac, char **av)
+{
+	int status;
+	pid_t cpid, w;
 
-        setup();
+	setup();
 
-	cpid = fork();     //call exit_group()
+	cpid = fork();		//call exit_group()
 	if (cpid == -1) {
-        	tst_brkm(TFAIL|TERRNO, cleanup, "fork failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "fork failed");
 	} else if (cpid == 0) {
 		sleep(5);
-		TEST(syscall(__NR_exit_group,4));
+		TEST(syscall(__NR_exit_group, 4));
 	} else {
 		w = wait(&status);
 		if (w == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "wait failed");
 		if (WIFEXITED(status) && (WEXITSTATUS(status) == 4))
 			tst_resm(TPASS, "exit_group succeeded");
 		else {
-			tst_resm(TFAIL|TERRNO,
-			    "exit_group failed (wait status = %d)", w);
-                }
-        }
+			tst_resm(TFAIL | TERRNO,
+				 "exit_group failed (wait status = %d)", w);
+		}
+	}
 	cleanup();
-        tst_exit();
+	tst_exit();
 }

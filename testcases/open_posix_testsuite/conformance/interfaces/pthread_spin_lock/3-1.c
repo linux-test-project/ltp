@@ -27,8 +27,9 @@
 static void sig_handler()
 {
 	printf("main: interrupted by SIGALARM\n");
-	printf("Test PASSED: *Note: Did not return EDEADLK when re-locking a spinlock already in  use, but standard says 'may' fail\n");
-	pthread_exit((void*)PTS_PASS);
+	printf
+	    ("Test PASSED: *Note: Did not return EDEADLK when re-locking a spinlock already in  use, but standard says 'may' fail\n");
+	pthread_exit((void *)PTS_PASS);
 }
 
 int main()
@@ -43,8 +44,7 @@ int main()
 	sigfillset(&act.sa_mask);
 	sigaction(SIGALRM, &act, 0);
 
-	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
-	{
+	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0) {
 		printf("main: Error at pthread_spin_init()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -52,9 +52,9 @@ int main()
 	printf("main: attempt spin lock\n");
 
 	/* We should get the lock */
-	if (pthread_spin_lock(&spinlock) != 0)
-	{
-		printf("Test FAILED: main cannot get spin lock when no one owns the lock\n");
+	if (pthread_spin_lock(&spinlock) != 0) {
+		printf
+		    ("Test FAILED: main cannot get spin lock when no one owns the lock\n");
 		return PTS_FAIL;
 	}
 	printf("main: acquired spin lock\n");
@@ -65,15 +65,14 @@ int main()
 	printf("main: re-lock spin lock\n");
 	rc = pthread_spin_lock(&spinlock);
 
-	if (rc == EDEADLK)
-	{
-		printf("main: correctly got EDEADLK when re-locking the spin lock\n");
+	if (rc == EDEADLK) {
+		printf
+		    ("main: correctly got EDEADLK when re-locking the spin lock\n");
 		printf("Test PASSED\n");
-	}
-	else
-	{
+	} else {
 		printf("main: get return code: %d , %s\n", rc, strerror(rc));
-		printf("Test PASSED: *Note: Did not return EDEADLK when re-locking a spinlock already in  use, but standard says 'may' fail\n");
+		printf
+		    ("Test PASSED: *Note: Did not return EDEADLK when re-locking a spinlock already in  use, but standard says 'may' fail\n");
 	}
 
 	/* Unlock spinlock */

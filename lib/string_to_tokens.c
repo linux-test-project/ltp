@@ -73,37 +73,38 @@
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 #include <stdio.h>
-#include <string.h>        /* for string functions */
+#include <string.h>		/* for string functions */
 #include "string_to_tokens.h"
 
 int
-string_to_tokens(char *arg_string, char *arg_array[], int array_size, char *separator)
+string_to_tokens(char *arg_string, char *arg_array[], int array_size,
+		 char *separator)
 {
-   int num_toks = 0;  /* number of tokens found */
-   char *strtok();
+	int num_toks = 0;	/* number of tokens found */
+	char *strtok();
 
-   if (arg_array == NULL || array_size <= 1 || separator == NULL)
-	return -1;
+	if (arg_array == NULL || array_size <= 1 || separator == NULL)
+		return -1;
 
-   /*
-    * Use strtok() to parse 'arg_string', placing pointers to the
-    * individual tokens into the elements of 'arg_array'.
-    */
-   if ((arg_array[num_toks] = strtok(arg_string, separator)) == NULL) {
-	return 0;
-   }
+	/*
+	 * Use strtok() to parse 'arg_string', placing pointers to the
+	 * individual tokens into the elements of 'arg_array'.
+	 */
+	if ((arg_array[num_toks] = strtok(arg_string, separator)) == NULL) {
+		return 0;
+	}
 
-   for (num_toks=1;num_toks<array_size; num_toks++) {
-	if ((arg_array[num_toks] = strtok(NULL, separator)) == NULL)
-	    break;
-   }
+	for (num_toks = 1; num_toks < array_size; num_toks++) {
+		if ((arg_array[num_toks] = strtok(NULL, separator)) == NULL)
+			break;
+	}
 
-   if (num_toks == array_size)
-	arg_array[num_toks] = NULL;
+	if (num_toks == array_size)
+		arg_array[num_toks] = NULL;
 
-   /*
-    * Return the number of tokens that were found in 'arg_string'.
-    */
-   return(num_toks);
+	/*
+	 * Return the number of tokens that were found in 'arg_string'.
+	 */
+	return (num_toks);
 
-} /* end of string_to_tokens */
+}				/* end of string_to_tokens */

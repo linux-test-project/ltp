@@ -32,7 +32,7 @@
 
 static int child(void *arg)
 {
-	char **argv = (char **) arg;
+	char **argv = (char **)arg;
 	argv++;
 	mount("/tmp/", "/tmp/", "tmpfs", 0, NULL);
 	execvp(argv[0], argv);
@@ -42,8 +42,8 @@ static int child(void *arg)
 int main(int argc, char *argv[])
 {
 	char c = 0;
-	const pid_t pid = ltp_clone_quick(CLONE_NEWNS, child, (void *) argv);
+	const pid_t pid = ltp_clone_quick(CLONE_NEWNS, child, (void *)argv);
 	while (waitpid(pid, NULL, __WALL) == EOF && errno == EINTR)
-		c++; /* Dummy. */
+		c++;		/* Dummy. */
 	return 0;
 }

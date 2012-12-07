@@ -81,7 +81,7 @@ void sighdl(int sig)
 }
 
 /* Thread function */
-void* threaded(void *arg)
+void *threaded(void *arg)
 {
 	int ret = 0;
 
@@ -108,7 +108,7 @@ void* threaded(void *arg)
 }
 
 /* Main function */
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int ret = 0, value;
 
@@ -116,26 +116,25 @@ int main (int argc, char *argv[])
 
 	pthread_t child1, child2;
 
-	sem_t unnamed, * named;
+	sem_t unnamed, *named;
 
 	/* Initialize output routine */
 	output_init();
 
 	/* Register the signal handler for SIGUSR1 */
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 
 	sa.sa_flags = 0;
 
 	sa.sa_handler = sighdl;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL))) {
+	if ((ret = sigaction(SIGUSR1, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGALRM, &sa, NULL))) {
+	if ((ret = sigaction(SIGALRM, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
-
 #if VERBOSE > 1
 	output("[parent] Signal handler registered\n");
 
@@ -144,67 +143,61 @@ int main (int argc, char *argv[])
 	/* Initialize the semaphores */
 	named = sem_open(SEM_NAME, O_CREAT, 0777, INIT_VAL);
 
-	if (named == SEM_FAILED)
-	{
+	if (named == SEM_FAILED) {
 		UNRESOLVED(errno, "Failed to sem_open");
 	}
 
 	ret = sem_unlink(SEM_NAME);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to sem_unlink");
 	}
 
 	ret = sem_init(&unnamed, 0, INIT_VAL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to sem_init");
 	}
 
 	/* Create the threads */
 	ret = pthread_create(&child1, NULL, threaded, named);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to create a thread");
 	}
 
 	ret = pthread_create(&child2, NULL, threaded, &unnamed);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to create a thread");
 	}
 
 	/* loop */
-	while (do_it)
-	{
+	while (do_it) {
 		ret = sem_getvalue(named, &value);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Failed to get sem value");
 		}
 
 		if ((value != INIT_VAL) && (value != INIT_VAL + 1)) {
 			output("Got value %d, expected %d or %d only\n",
-			        value, INIT_VAL, INIT_VAL + 1);
-			FAILED("sem_getvalue returned an invalid value for the named semaphore");
+			       value, INIT_VAL, INIT_VAL + 1);
+			FAILED
+			    ("sem_getvalue returned an invalid value for the named semaphore");
 		}
 
 		ret = sem_getvalue(&unnamed, &value);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Failed to get sem value");
 		}
 
 		if ((value != INIT_VAL) && (value != INIT_VAL + 1)) {
 			output("Got value %d, expected %d or %d only\n",
-			        value, INIT_VAL, INIT_VAL + 1);
-			FAILED("sem_getvalue returned an invalid value for the unnamed semaphore");
+			       value, INIT_VAL, INIT_VAL + 1);
+			FAILED
+			    ("sem_getvalue returned an invalid value for the unnamed semaphore");
 		}
 
 		iterations++;
@@ -213,35 +206,32 @@ int main (int argc, char *argv[])
 	/* Join the threads */
 	ret = pthread_join(child1, NULL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to join a thread");
 	}
 
 	ret = pthread_join(child2, NULL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to join a thread");
 	}
 
 	/* Destroy the semaphores */
 	ret = sem_close(named);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to close the semaphore");
 	}
 
 	ret = sem_destroy(&unnamed);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to destroy the semaphore");
 	}
 
 	/* Passed */
-	output("pthread_exit stress test PASSED -- %llu iterations\n", iterations);
+	output("pthread_exit stress test PASSED -- %llu iterations\n",
+	       iterations);
 
 	PASSED;
 }

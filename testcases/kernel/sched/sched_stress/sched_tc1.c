@@ -69,9 +69,9 @@
  *
  * parse_args: parse command line arguments
  */
-void process_file (char *);
-void parse_args (int, char **);
-void signal_handler ();
+void process_file(char *);
+void parse_args(int, char **);
+void signal_handler();
 
 /*
  * Global variables:
@@ -84,10 +84,10 @@ void signal_handler ();
  *
  * priority: process type (fixed priority, variable priority)
  */
-int	verbose   = 0;
-int	debug     = 0;
-int	signaled  = 0;
-char 	*priority = DEFAULT_PRIORITY_TYPE;
+int verbose = 0;
+int debug = 0;
+int signaled = 0;
+char *priority = DEFAULT_PRIORITY_TYPE;
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -96,41 +96,42 @@ char 	*priority = DEFAULT_PRIORITY_TYPE;
 | Function:  ...                                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	char	*filename = NULL;
+	char *filename = NULL;
 
-	if ((filename=getenv("KERNEL"))==NULL)
-	{
-	   errno = ENODATA;
-	   sys_error("environment variable KERNEL not set", __FILE__,__LINE__);
+	if ((filename = getenv("KERNEL")) == NULL) {
+		errno = ENODATA;
+		sys_error("environment variable KERNEL not set", __FILE__,
+			  __LINE__);
 	}
 	/*
 	 * Setup signal handler & setup alarm so we do not loop forever...
 	 */
-	signal (SIGUSR1, signal_handler);
-	signal (SIGALRM, signal_handler);
-	alarm  (600);	/* wait 10 minutes before aborting */
+	signal(SIGUSR1, signal_handler);
+	signal(SIGALRM, signal_handler);
+	alarm(600);		/* wait 10 minutes before aborting */
 
 	/*
 	 * Process command line arguments...
 	 */
-	parse_args (argc, argv);
-	if (verbose) printf ("%s: Scheduler TestSuite program\n\n", *argv);
+	parse_args(argc, argv);
+	if (verbose)
+		printf("%s: Scheduler TestSuite program\n\n", *argv);
 	if (debug) {
-		printf ("\tpriority:       %s\n", priority);
+		printf("\tpriority:       %s\n", priority);
 	}
 
 	/*
 	 * Adjust the priority of this process if the real time flag is set
 	 */
-	if (!strcmp (priority, "fixed")) {
+	if (!strcmp(priority, "fixed")) {
 #ifndef __linux__
-                if (setpri (0, DEFAULT_PRIORITY) < 0)
-                        sys_error ("setpri failed", __FILE__, __LINE__);
+		if (setpri(0, DEFAULT_PRIORITY) < 0)
+			sys_error("setpri failed", __FILE__, __LINE__);
 #else
-                if (setpriority(PRIO_PROCESS, 0, 0) < 0)
-                        sys_error ("setpri failed", __FILE__, __LINE__);
+		if (setpriority(PRIO_PROCESS, 0, 0) < 0)
+			sys_error("setpri failed", __FILE__, __LINE__);
 #endif
 	}
 
@@ -138,12 +139,13 @@ int main (int argc, char **argv)
 	 * Continuously read through file until interrupted...
 	 */
 	while (!signaled)
-		process_file (filename);
+		process_file(filename);
 
 	/*
 	 * Exit with success!
 	 */
-	if (verbose) printf ("\nsuccessful!\n");
+	if (verbose)
+		printf("\nsuccessful!\n");
 	return (0);
 }
 
@@ -155,29 +157,30 @@ int main (int argc, char **argv)
 |            end-of-file and then closes the file..                    |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void process_file (char *filename)
+void process_file(char *filename)
 {
-	char   record[100];   /* holds each record of the file read */
-	FILE   *datafile;     /* file pointer to the open file */
+	char record[100];	/* holds each record of the file read */
+	FILE *datafile;		/* file pointer to the open file */
 
 	/*
 	 * Try and open the datafile
 	 */
-	if ((datafile = fopen (filename, "r")) == NULL)
-		sys_error ("fopen failed", __FILE__, __LINE__);
+	if ((datafile = fopen(filename, "r")) == NULL)
+		sys_error("fopen failed", __FILE__, __LINE__);
 
 	/*
 	 * Read the first record of the datafile, then read until end-of-file
 	 */
-	while (fgets (record, 80, datafile)) {
-		if (feof (datafile)) break;
+	while (fgets(record, 80, datafile)) {
+		if (feof(datafile))
+			break;
 	}
 
 	/*
 	 * Close the datafile
 	 */
-	if (fclose (datafile))
-		sys_error ("fclose failed", __FILE__, __LINE__);
+	if (fclose(datafile))
+		sys_error("fclose failed", __FILE__, __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -187,17 +190,18 @@ void process_file (char *filename)
 | Function:  ...                                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void signal_handler (int signal)
+void signal_handler(int signal)
 {
 	printf("signal recieved is %d\n", signal);
 	if (signal == SIGUSR1) {
 		signaled++;
-		if (debug) printf ("\n\t<< caught SIGUSR1 interrupt>>\n");
+		if (debug)
+			printf("\n\t<< caught SIGUSR1 interrupt>>\n");
 	} else if (signal == SIGALRM) {
-		error ("Failed to receive SIGUSR1 signal before timeout!",
-			__FILE__, __LINE__);
+		error("Failed to receive SIGUSR1 signal before timeout!",
+		      __FILE__, __LINE__);
 	} else
-		error ("received unexpected signal", __FILE__, __LINE__);
+		error("received unexpected signal", __FILE__, __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -215,26 +219,24 @@ void signal_handler (int signal)
 |            [-d]           enable debugging messages                  |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	opt;
-	int 	pflg = 0;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int opt;
+	int pflg = 0;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	/*
 	 * Parse command line options.
 	 */
-        if (argc < 2) {
-                fprintf (stderr, USAGE, program_name);
-                exit (0);
-        }
+	if (argc < 2) {
+		fprintf(stderr, USAGE, program_name);
+		exit(0);
+	}
 
-	while ((opt = getopt(argc, argv, "p:t:vd")) != EOF)
-	{
-		switch (opt)
-		{
+	while ((opt = getopt(argc, argv, "p:t:vd")) != EOF) {
+		switch (opt) {
 		case 'p':	/* process type */
 			pflg++;
 			priority = optarg;
@@ -254,13 +256,13 @@ void parse_args (int argc, char **argv)
 
 	/*
 	 * Check percentage, execution time and process slots...
- 	 */
+	 */
 	if (pflg) {
-		if (strcmp (priority, "fixed") && strcmp (priority, "variable"))
+		if (strcmp(priority, "fixed") && strcmp(priority, "variable"))
 			errflag++;
 	}
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }

@@ -111,12 +111,14 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(errno);
 
-			tst_resm(TFAIL|TERRNO, "getdents failed unexpectedly");
+			tst_resm(TFAIL | TERRNO,
+				 "getdents failed unexpectedly");
 			continue;
 		}
 
 		if (rval == 0) {
-			tst_resm(TFAIL, "getdents failed - returned end of directory");
+			tst_resm(TFAIL,
+				 "getdents failed - returned end of directory");
 			continue;
 		}
 

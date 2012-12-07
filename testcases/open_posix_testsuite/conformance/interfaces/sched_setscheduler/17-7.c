@@ -28,9 +28,10 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 	int max_priority, old_priority, old_policy, new_policy, policy;
-        int child_pid, stat_loc;
+	int child_pid, stat_loc;
 	struct sched_param param;
 
 	if (sched_getparam(getpid(), &param) == -1) {
@@ -51,25 +52,24 @@ int main() {
 	/* Make sure that param.sched_priority != old_priority */
 	max_priority = sched_get_priority_max(policy);
 	param.sched_priority = (old_priority == max_priority) ?
-		sched_get_priority_min(policy) :
-		max_priority;
+	    sched_get_priority_min(policy) : max_priority;
 
-        /* Create a child process which exit immediately */
-        child_pid = fork();
-        if (child_pid == -1) {
+	/* Create a child process which exit immediately */
+	child_pid = fork();
+	if (child_pid == -1) {
 		perror("An error occurs when calling fork()");
 		return PTS_UNRESOLVED;
-        } else if (child_pid == 0) {
+	} else if (child_pid == 0) {
 		exit(0);
-        }
+	}
 
-        /* Wait for the child process to exit */
-        if (wait(&stat_loc) == -1) {
+	/* Wait for the child process to exit */
+	if (wait(&stat_loc) == -1) {
 		perror("An error occurs when calling wait()");
 		return PTS_UNRESOLVED;
-        }
+	}
 
-        /* Assume the pid is not yet reatributed to an other process */
+	/* Assume the pid is not yet reatributed to an other process */
 	sched_setscheduler(child_pid, policy, &param);
 
 	if (sched_getparam(getpid(), &param) != 0) {
@@ -83,8 +83,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if (old_policy == new_policy &&
-	   old_priority == param.sched_priority) {
+	if (old_policy == new_policy && old_priority == param.sched_priority) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

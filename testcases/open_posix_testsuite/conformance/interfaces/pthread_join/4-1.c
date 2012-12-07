@@ -69,7 +69,7 @@ void *threaded(void *arg)
 /* Canceled thread */
 void *joiner_func(void *arg)
 {
-	(void) pthread_join(*(pthread_t *) arg, NULL);
+	(void)pthread_join(*(pthread_t *) arg, NULL);
 
 	FAILED("The joiner thread was not canceled");
 
@@ -105,18 +105,17 @@ int main(int argc, char *argv[])
 		if (ret != 0)
 			UNRESOLVED(ret, "failed to lock the mutex");
 
-		ret = pthread_create(&child, &scenarii[sc].ta,
-				     threaded, NULL);
+		ret = pthread_create(&child, &scenarii[sc].ta, threaded, NULL);
 
 		switch (scenarii[sc].result) {
-		/* Operation was expected to succeed */
+			/* Operation was expected to succeed */
 		case 0:
 
 			if (ret != 0)
 				UNRESOLVED(ret, "Failed to create this thread");
 
 			break;
-		/* Operation was expected to fail */
+			/* Operation was expected to fail */
 		case 1:
 
 			if (ret == 0)
@@ -124,7 +123,7 @@ int main(int argc, char *argv[])
 					   "but the thread creation succeeded");
 
 			break;
-		/* We did not know the expected result */
+			/* We did not know the expected result */
 		case 2:
 		default:
 #if VERBOSE > 0

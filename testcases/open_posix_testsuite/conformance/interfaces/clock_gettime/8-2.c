@@ -26,8 +26,8 @@
 #define NUMINVALIDTESTS 8
 
 static int invalid_tests[NUMINVALIDTESTS] = {
-		INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
-		1073743192, -1, 17
+	INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
+	1073743192, -1, 17
 };
 
 int main(int argc, char *argv[])
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	for (i = 0; i < NUMINVALIDTESTS; i++) {
 		if (clock_gettime(invalid_tests[i], &tp) == 0) {
 			printf("failure: clock_gettime() using %d succeeded\n",
-					invalid_tests[i]);
+			       invalid_tests[i]);
 			failure = 1;
 		} else {
 			if (EINVAL != errno) {

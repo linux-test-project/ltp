@@ -164,10 +164,10 @@ void setup(void)
 	ltpuser = getpwnam(nobody_uid);
 	if (setgid(ltpuser->pw_gid) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL, "setgid(%d) failed",
-			ltpuser->pw_gid);
+			 ltpuser->pw_gid);
 	} else if (setuid(ltpuser->pw_uid) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL, "setuid(%d) failed",
-			ltpuser->pw_uid);
+			 ltpuser->pw_uid);
 	}
 
 	tst_tmpdir();

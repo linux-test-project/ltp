@@ -26,26 +26,26 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* We need the XSI extention for the mutex attributes */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
  /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -76,31 +76,37 @@
 /********************************************************************************************/
 #ifndef WITHOUT_XOPEN
 
-struct _scenar
-{
-	int m_type; /* Mutex type to use */
-	int m_pshared; /* 0: mutex is process-private (default) ~ !0: mutex is process-shared, if supported */
-	char * descr; /* Case description */
-}
-scenarii[] =
-{
-	 {PTHREAD_MUTEX_DEFAULT,    0, "Default mutex"}
-	,{PTHREAD_MUTEX_NORMAL,     0, "Normal mutex"}
-	,{PTHREAD_MUTEX_ERRORCHECK, 0, "Errorcheck mutex"}
-	,{PTHREAD_MUTEX_RECURSIVE,  0, "Recursive mutex"}
+struct _scenar {
+	int m_type;		/* Mutex type to use */
+	int m_pshared;		/* 0: mutex is process-private (default) ~ !0: mutex is process-shared, if supported */
+	char *descr;		/* Case description */
+} scenarii[] = {
+	{
+	PTHREAD_MUTEX_DEFAULT, 0, "Default mutex"}
+	, {
+	PTHREAD_MUTEX_NORMAL, 0, "Normal mutex"}
+	, {
+	PTHREAD_MUTEX_ERRORCHECK, 0, "Errorcheck mutex"}
+	, {
+	PTHREAD_MUTEX_RECURSIVE, 0, "Recursive mutex"}
 
-	,{PTHREAD_MUTEX_DEFAULT,    1, "Pshared mutex"}
-	,{PTHREAD_MUTEX_NORMAL,     1, "Pshared Normal mutex"}
-	,{PTHREAD_MUTEX_ERRORCHECK, 1, "Pshared Errorcheck mutex"}
-	,{PTHREAD_MUTEX_RECURSIVE,  1, "Pshared Recursive mutex"}
+	, {
+	PTHREAD_MUTEX_DEFAULT, 1, "Pshared mutex"}
+	, {
+	PTHREAD_MUTEX_NORMAL, 1, "Pshared Normal mutex"}
+	, {
+	PTHREAD_MUTEX_ERRORCHECK, 1, "Pshared Errorcheck mutex"}
+	, {
+	PTHREAD_MUTEX_RECURSIVE, 1, "Pshared Recursive mutex"}
 };
+
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
 /* Main function */
-int main (int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret;
-	int i,j;
+	int i, j;
 	pthread_mutex_t mtx;
 	pthread_mutexattr_t ma[NSCENAR + 1];
 	pthread_mutexattr_t *pma[NSCENAR + 2];
@@ -113,93 +119,115 @@ int main (int argc, char * argv[])
 	pshared = sysconf(_SC_THREAD_PROCESS_SHARED);
 
 	/* Initialize the mutex attributes objects */
-	for (i=0; i<NSCENAR; i++)
-	{
+	for (i = 0; i < NSCENAR; i++) {
 		ret = pthread_mutexattr_init(&ma[i]);
-		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to initialize the mutex attribute object");  }
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "[parent] Unable to initialize the mutex attribute object");
+		}
 
 		/* Set the mutex type */
 		ret = pthread_mutexattr_settype(&ma[i], scenarii[i].m_type);
-		if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to set mutex type");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "[parent] Unable to set mutex type");
+		}
 
 		/* Set the pshared attributes, if supported */
-		if ((pshared > 0) && (scenarii[i].m_pshared != 0))
-		{
-			ret = pthread_mutexattr_setpshared(&ma[i], PTHREAD_PROCESS_SHARED);
-			if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to set the mutex process-shared");  }
+		if ((pshared > 0) && (scenarii[i].m_pshared != 0)) {
+			ret =
+			    pthread_mutexattr_setpshared(&ma[i],
+							 PTHREAD_PROCESS_SHARED);
+			if (ret != 0) {
+				UNRESOLVED(ret,
+					   "[parent] Unable to set the mutex process-shared");
+			}
 		}
 	}
-	 /* Default mutexattr object */
+	/* Default mutexattr object */
 	ret = pthread_mutexattr_init(&ma[i]);
-	if (ret != 0)  {  UNRESOLVED(ret, "[parent] Unable to initialize the mutex attribute object");  }
+	if (ret != 0) {
+		UNRESOLVED(ret,
+			   "[parent] Unable to initialize the mutex attribute object");
+	}
 
 	/* Initialize the pointer array */
-	for (i=0; i<NSCENAR+1; i++)
-		pma[i]=&ma[i];
+	for (i = 0; i < NSCENAR + 1; i++)
+		pma[i] = &ma[i];
 
 	/* NULL pointer */
 	pma[i] = NULL;
 
 	/* Ok, we can now proceed to the test */
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Attributes are ready, proceed to the test\n");
-	#endif
+#endif
 
-	for (i=0; i<NSCENAR + 2; i++)
-	{
-		for (j=0; j<NSCENAR + 2; j++)
-		{
-			#if VERBOSE > 1
-			char * nul="NULL";
-			char * def ="Default";
-			char * stri;
-			char * strj;
-			if (i<NSCENAR)
+	for (i = 0; i < NSCENAR + 2; i++) {
+		for (j = 0; j < NSCENAR + 2; j++) {
+#if VERBOSE > 1
+			char *nul = "NULL";
+			char *def = "Default";
+			char *stri;
+			char *strj;
+			if (i < NSCENAR)
 				stri = scenarii[i].descr;
-			if (i==NSCENAR)
+			if (i == NSCENAR)
 				stri = def;
-			if (i==NSCENAR+1)
+			if (i == NSCENAR + 1)
 				stri = nul;
-			if (j<NSCENAR)
+			if (j < NSCENAR)
 				strj = scenarii[j].descr;
-			if (j==NSCENAR)
+			if (j == NSCENAR)
 				strj = def;
-			if (j==NSCENAR+1)
+			if (j == NSCENAR + 1)
 				strj = nul;
 
-			output("Init with: %s, \nreinit with: %s\n", stri, strj);
-			#endif
+			output("Init with: %s, \nreinit with: %s\n", stri,
+			       strj);
+#endif
 
 			ret = pthread_mutex_init(&mtx, pma[i]);
-			if (ret != 0)  {   UNRESOLVED(ret, "Failed to init the mutex");  }
+			if (ret != 0) {
+				UNRESOLVED(ret, "Failed to init the mutex");
+			}
 
 			ret = pthread_mutex_destroy(&mtx);
-			if (ret != 0)  {  FAILED("Failed to destroy an initialized unlocked mutex");  }
+			if (ret != 0) {
+				FAILED
+				    ("Failed to destroy an initialized unlocked mutex");
+			}
 
 			ret = pthread_mutex_init(&mtx, pma[j]);
-			if (ret != 0)  {   FAILED("Failed to re-init the mutex");  }
+			if (ret != 0) {
+				FAILED("Failed to re-init the mutex");
+			}
 
 			ret = pthread_mutex_destroy(&mtx);
-			if (ret != 0)  {  FAILED("Failed to destroy an initialized unlocked mutex");  }
+			if (ret != 0) {
+				FAILED
+				    ("Failed to destroy an initialized unlocked mutex");
+			}
 
 		}
 	}
 
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Test passed; destroying the test data\n");
-	#endif
+#endif
 
-	for (i=0; i<NSCENAR + 1; i++)
-	{
+	for (i = 0; i < NSCENAR + 1; i++) {
 		ret = pthread_mutexattr_destroy(&ma[i]);
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to destroy a mutex attribute object");  }
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Failed to destroy a mutex attribute object");
+		}
 	}
 
 	PASSED;
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

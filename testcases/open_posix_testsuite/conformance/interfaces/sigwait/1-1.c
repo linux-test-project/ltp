@@ -26,70 +26,59 @@ int main()
 
 	/* Empty set of blocked signals */
 
-	if ((sigemptyset(&newmask) == -1) ||
-	    (sigemptyset(&pendingset) == -1))
-	{
+	if ((sigemptyset(&newmask) == -1) || (sigemptyset(&pendingset) == -1)) {
 		printf("Error in sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Add SIGUSR2 to the set of blocked signals */
-	if (sigaddset(&newmask, SIGUSR2) == -1)
-	{
+	if (sigaddset(&newmask, SIGUSR2) == -1) {
 		perror("Error in sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Block SIGUSR2 */
-	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1)
-	{
+	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1) {
 		printf("Error in sigprocmask()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Send SIGUSR2 signal to this process.  Since it is blocked,
 	 * it should be pending */
-	if (raise(SIGUSR2) != 0)
-	{
+	if (raise(SIGUSR2) != 0) {
 		printf("Could not raise SIGUSR2\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Test that SIGUSR2 is pending */
-	if (sigpending(&pendingset) == -1)
-	{
+	if (sigpending(&pendingset) == -1) {
 		printf("Could not get pending signal set\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGUSR2) != 1)
-	{
+	if (sigismember(&pendingset, SIGUSR2) != 1) {
 		printf("Signal SIGUSR2 is not pending!\n");
 		return PTS_FAIL;
 	}
 
-	/* Call sigwait and test if it passed/failed*/
-	if (sigwait(&newmask, &sig) != 0)
-	{
+	/* Call sigwait and test if it passed/failed */
+	if (sigwait(&newmask, &sig) != 0) {
 		printf("Error in sigwait()\n");
 		return PTS_FAIL;
 	}
 
-	if (sig != SIGUSR2)
-	{
+	if (sig != SIGUSR2) {
 		printf("sigwait selected another signal\n");
 		return PTS_FAIL;
 	}
 
 	/* Test that SIGUSR2 is not pending anymore */
-	if (sigpending(&pendingset) == -1)
-	{
+	if (sigpending(&pendingset) == -1) {
 		printf("Could not get pending signal set\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGUSR2) != 0)
-	{
+	if (sigismember(&pendingset, SIGUSR2) != 0) {
 		printf("Signal SIGUSR2 is not pending!\n");
 		return PTS_FAIL;
 	}

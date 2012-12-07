@@ -75,16 +75,16 @@ int main(int argc, char *argv[])
 
 	if (itsget.it_value.tv_sec) {
 		printf("FAIL:  timer_gettime tv_sec: %lu seconds > 0 seconds\n",
-			itsget.it_value.tv_sec);
+		       itsget.it_value.tv_sec);
 		return PTS_FAIL;
 	}
 
 	deltans = (itsset.it_value.tv_nsec - ts.tv_nsec) -
-					itsget.it_value.tv_nsec;
+	    itsget.it_value.tv_nsec;
 
 	if (deltans < 0 || deltans > ACCEPTABLEDELTA) {
 		printf("FAIL:  timer_gettime() deltans: %d allowed: %u\n",
-			deltans, ACCEPTABLEDELTA);
+		       deltans, ACCEPTABLEDELTA);
 		return PTS_FAIL;
 	}
 

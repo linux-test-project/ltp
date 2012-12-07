@@ -1,6 +1,6 @@
   /*
-  Test that the ILL_PRVOPC macro is defined.
-  */
+     Test that the ILL_PRVOPC macro is defined.
+   */
 
 #include <signal.h>
 

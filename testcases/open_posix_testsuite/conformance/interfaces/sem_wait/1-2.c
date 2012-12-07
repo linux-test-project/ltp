@@ -24,7 +24,8 @@
 #define FUNCTION "sem_wait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main() {
+int main()
+{
 	sem_t *mysemp;
 	char semname[28];
 	int value = 10;
@@ -39,8 +40,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	while (value)
-	{ // checking the value if zero yet.
+	while (value) {		// checking the value if zero yet.
 		if (sem_wait(mysemp) == -1) {
 			perror(ERROR_PREFIX "sem_getvalue");
 			return PTS_UNRESOLVED;

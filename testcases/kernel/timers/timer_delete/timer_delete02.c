@@ -78,15 +78,13 @@ void setup(void);
 char *TCID = "timer_delete02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 	kernel_timer_t timer_id;
 
-	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) !=
-			(char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -97,16 +95,16 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Create a Posix timer */
-		if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer_id) < 0) {
+		if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer_id)
+		    < 0) {
 			Tst_count = TST_TOTAL;
 			tst_brkm(TBROK | TERRNO, cleanup,
-				"timer_delete can't be tested because "
-				"timer_create failed");
+				 "timer_delete can't be tested because "
+				 "timer_create failed");
 		}
 		TEST(syscall(__NR_timer_delete, timer_id));
 		tst_resm((TEST_RETURN == 0 ? TPASS : TFAIL | TTERRNO),
-			"%s",
-			(TEST_RETURN == 0 ? "passed" : "failed"));
+			 "%s", (TEST_RETURN == 0 ? "passed" : "failed"));
 	}
 
 	cleanup();
@@ -114,8 +112,7 @@ main(int ac, char **av)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -127,12 +124,11 @@ setup(void)
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 }

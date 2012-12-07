@@ -28,22 +28,15 @@ struct unique {
 } sym[] = {
 
 	{
-		SCHED_FIFO, "SCHED_FIFO"
-	},
-	{
-		SCHED_RR, "SCHED_RR"
-	},
+	SCHED_FIFO, "SCHED_FIFO"}, {
+	SCHED_RR, "SCHED_RR"},
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1) || defined(_POSIX_THREAD_SPORADIC_SERVER)&&(_POSIX_THREAD_SPORADIC_SERVER != -1)
 	{
-		SCHED_SPORADIC,"SCHED_SPORADIC"
-	},
+	SCHED_SPORADIC, "SCHED_SPORADIC"},
 #endif
 	{
-		SCHED_OTHER, "SCHED_OTHER"
-	},
-	{
-		0, 0
-	}
+	SCHED_OTHER, "SCHED_OTHER"}, {
+	0, 0}
 };
 
 int main(int argc, char **argv)
@@ -54,24 +47,28 @@ int main(int argc, char **argv)
 
 	tst = sym;
 	while (tst->name) {
-	        fflush(stderr);
+		fflush(stderr);
 		printf("Policy: %s\n", tst->name);
 		fflush(stdout);
 
 		policy = tst->value;
 		priority = (sched_get_priority_min(policy) +
-			     sched_get_priority_max(policy)) / 2;
+			    sched_get_priority_max(policy)) / 2;
 		param.sched_priority = priority;
 
 		tmp = sched_setscheduler(getpid(), policy, &param);
 
 		if (tmp == -1 || errno != 0) {
 			if (errno == EPERM) {
-				printf("  The process do not have permission to change its own scheduler\n  Try to run this test as root.\n");
+				printf
+				    ("  The process do not have permission to change its own scheduler\n  Try to run this test as root.\n");
 			} else {
-				printf("  Error calling sched_setscheduler() for %s policy\n", tst->name);
+				printf
+				    ("  Error calling sched_setscheduler() for %s policy\n",
+				     tst->name);
 			}
-			if (result != PTS_FAIL) result = PTS_UNRESOLVED;
+			if (result != PTS_FAIL)
+				result = PTS_UNRESOLVED;
 			tst++;
 			continue;
 		}
@@ -82,11 +79,15 @@ int main(int argc, char **argv)
 		}
 
 		if (policy != sched_getscheduler(getpid())) {
-			printf("  sched_setscheduler() does not set the policy to %s.\n", tst->name);
+			printf
+			    ("  sched_setscheduler() does not set the policy to %s.\n",
+			     tst->name);
 			result = PTS_FAIL;
 		}
-	        if (priority != param.sched_priority) {
-			printf("  sched_setscheduler() does not set the right param for %s policy.\n", tst->name);
+		if (priority != param.sched_priority) {
+			printf
+			    ("  sched_setscheduler() does not set the right param for %s policy.\n",
+			     tst->name);
 			result = PTS_FAIL;
 		}
 
@@ -95,5 +96,5 @@ int main(int argc, char **argv)
 
 	if (result == PTS_PASS)
 		printf("Test PASSED\n");
-        return result;
+	return result;
 }

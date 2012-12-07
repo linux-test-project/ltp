@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
 	ret = get_allowed_nodes(NH_MEMS, 1, &from_node);
 	if (ret < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes: %d", ret);
+		tst_brkm(TBROK | TERRNO, cleanup, "get_allowed_nodes: %d", ret);
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -117,13 +117,13 @@ int main(int argc, char **argv)
 			if (ret == 0)
 				tst_resm(TPASS, "move_pages succeeded");
 			else
-				tst_resm(TFAIL|TERRNO, "move_pages");
+				tst_resm(TFAIL | TERRNO, "move_pages");
 		} else {
 			if (ret == -1 && errno == ENOENT)
 				tst_resm(TPASS, "move_pages failed with "
 					 "ENOENT as expected");
 			else
-				tst_resm(TFAIL|TERRNO, "move_pages");
+				tst_resm(TFAIL | TERRNO, "move_pages");
 		}
 
 		free_pages(pages, TEST_PAGES);

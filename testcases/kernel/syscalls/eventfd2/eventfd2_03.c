@@ -40,32 +40,37 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-char *TCID = "eventfd2_03";     /* test program identifier*/
-int TST_TOTAL = 1;	        	/* total number of tests in this file */
+char *TCID = "eventfd2_03";	/* test program identifier */
+int TST_TOTAL = 1;		/* total number of tests in this file */
 
 #ifndef EFD_SEMLIKE
 #define EFD_SEMLIKE (1 << 0)
 #endif
 
 /* Dummy function as syscall from linux_syscall_numbers.h uses cleanup(). */
-void cleanup() { }
+void cleanup()
+{
+}
 
-static int eventfd2(int count, int flags) {
+static int eventfd2(int count, int flags)
+{
 	return syscall(__NR_eventfd2, count, flags);
 }
 
-static void xsem_wait(int fd) {
+static void xsem_wait(int fd)
+{
 	u_int64_t cntr;
 
 	if (read(fd, &cntr, sizeof(cntr)) != sizeof(cntr)) {
 		perror("reading eventfd");
 		exit(1);
 	}
-	fprintf(stdout, "[%u] wait completed on %d: count=%"PRIu64"\n",
+	fprintf(stdout, "[%u] wait completed on %d: count=%" PRIu64 "\n",
 		getpid(), fd, cntr);
 }
 
-static void xsem_post(int fd, int count) {
+static void xsem_post(int fd, int count)
+{
 	u_int64_t cntr = count;
 
 	if (write(fd, &cntr, sizeof(cntr)) != sizeof(cntr)) {
@@ -74,7 +79,8 @@ static void xsem_post(int fd, int count) {
 	}
 }
 
-static void sem_player(int fd1, int fd2) {
+static void sem_player(int fd1, int fd2)
+{
 	fprintf(stdout, "[%u] posting 1 on %d\n", getpid(), fd1);
 	xsem_post(fd1, 1);
 
@@ -98,11 +104,13 @@ static void sem_player(int fd1, int fd2) {
 	xsem_wait(fd2);
 }
 
-static void usage(char const *prg) {
+static void usage(char const *prg)
+{
 	fprintf(stderr, "use: %s [-h]\n", prg);
 }
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	int c, fd1, fd2, status;
 	pid_t cpid_poster, cpid_waiter;
 

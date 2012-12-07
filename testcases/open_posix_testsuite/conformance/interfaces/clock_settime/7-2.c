@@ -38,8 +38,7 @@ int main(int argc, char *argv[])
 	int pid;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if (getuid() != 0)
-	{
+	if (getuid() != 0) {
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
 	}
@@ -49,8 +48,8 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	tsT1.tv_sec=tsT0.tv_sec + SLEEPOFFSET;
-	tsT1.tv_nsec=tsT0.tv_nsec;
+	tsT1.tv_sec = tsT0.tv_sec + SLEEPOFFSET;
+	tsT1.tv_nsec = tsT0.tv_nsec;
 
 	tsT2.tv_sec = tsT1.tv_sec + SMALLTIME;
 	tsT2.tv_nsec = tsT1.tv_nsec;
@@ -72,17 +71,16 @@ int main(int argc, char *argv[])
 		}
 
 		if (tsT3.tv_sec >= tsT2.tv_sec) {
-			if ((tsT3.tv_sec-tsT2.tv_sec) <= ACCEPTABLEDELTA) {
+			if ((tsT3.tv_sec - tsT2.tv_sec) <= ACCEPTABLEDELTA) {
 				return CHILDPASS;
 			} else {
 				printf("Ended too late.  %d >> %d\n",
-						(int) tsT3.tv_sec,
-						(int) tsT2.tv_sec);
+				       (int)tsT3.tv_sec, (int)tsT2.tv_sec);
 				return CHILDFAIL;
 			}
 		} else {
 			printf("Did not sleep for long enough %d < %d\n",
-					(int) tsT3.tv_sec, (int) tsT2.tv_sec);
+			       (int)tsT3.tv_sec, (int)tsT2.tv_sec);
 			return CHILDFAIL;
 		}
 
@@ -105,7 +103,7 @@ int main(int argc, char *argv[])
 			return PTS_UNRESOLVED;
 		}
 
-		setBackTime(tsreset); //should be ~= before time
+		setBackTime(tsreset);	//should be ~= before time
 
 		if (WIFEXITED(i) && WEXITSTATUS(i)) {
 			printf("Test PASSED\n");

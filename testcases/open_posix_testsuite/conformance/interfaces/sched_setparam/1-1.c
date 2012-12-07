@@ -20,7 +20,8 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-void child_proc() {
+void child_proc()
+{
 	sigset_t sigset;
 	int sig;
 
@@ -28,7 +29,7 @@ void child_proc() {
 		perror("An error occurs when calling sigemptyset()");
 		exit(1);
 	}
-	if (sigaddset(&sigset,SIGUSR1) != 0) {
+	if (sigaddset(&sigset, SIGUSR1) != 0) {
 		perror("An error occurs when calling sigaddset()");
 		exit(1);
 	}
@@ -40,19 +41,20 @@ void child_proc() {
 	exit(0);
 }
 
-int main() {
-        int result, child_pid, tmp_errno, policy;
+int main()
+{
+	int result, child_pid, tmp_errno, policy;
 	int min_priority, new_priority, old_priority;
 	struct sched_param param;
 
-        /* Create a child process which wait SIGUSR1 */
-        child_pid = fork();
-        if (child_pid == -1) {
+	/* Create a child process which wait SIGUSR1 */
+	child_pid = fork();
+	if (child_pid == -1) {
 		perror("An error occurs when calling fork()");
 		return PTS_UNRESOLVED;
-        } else if (child_pid == 0) {
+	} else if (child_pid == 0) {
 		child_proc();
-        }
+	}
 
 	if (sched_getparam(child_pid, &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
@@ -72,8 +74,8 @@ int main() {
 	min_priority = sched_get_priority_min(policy);
 
 	new_priority = param.sched_priority == min_priority ?
-		(param.sched_priority = sched_get_priority_max(policy)) :
-		(param.sched_priority = min_priority);
+	    (param.sched_priority = sched_get_priority_max(policy)) :
+	    (param.sched_priority = min_priority);
 
 	result = sched_setparam(child_pid, &param);
 	tmp_errno = errno;
@@ -93,7 +95,8 @@ int main() {
 		kill(child_pid, SIGUSR1);
 		return PTS_FAIL;
 	} else if (result == -1 && tmp_errno == EPERM) {
-		printf("The process have not permission to change the param of its child.\n");
+		printf
+		    ("The process have not permission to change the param of its child.\n");
 		kill(child_pid, SIGUSR1);
 		return PTS_UNRESOLVED;
 	} else if (result == -1 && tmp_errno == EINVAL) {

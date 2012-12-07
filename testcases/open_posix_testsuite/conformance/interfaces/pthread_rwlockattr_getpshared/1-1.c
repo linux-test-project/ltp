@@ -25,29 +25,29 @@ int main()
 	int pshared;
 	int rc = 0;
 
-	#ifndef PTHREAD_PROCESS_SHARED
-	  printf("process-shared attribute is not available for testing\n");
-	  return PTS_UNSUPPORTED;
-	#endif
+#ifndef PTHREAD_PROCESS_SHARED
+	printf("process-shared attribute is not available for testing\n");
+	return PTS_UNSUPPORTED;
+#endif
 
 	/* Initialize a rwlock attributes object */
-	if (pthread_rwlockattr_init(&rwla) != 0)
-	{
+	if (pthread_rwlockattr_init(&rwla) != 0) {
 		printf("Error at pthread_rwlockattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	 /* The default 'pshared' attribute should be PTHREAD_PROCESS_PRIVATE  */
+	/* The default 'pshared' attribute should be PTHREAD_PROCESS_PRIVATE  */
 	rc = pthread_rwlockattr_getpshared(&rwla, &pshared);
-	if (rc != 0)
-	{
-		printf("Test FAILED: Error at pthread_rwlockattr_getpshared(): %d\n", rc);
+	if (rc != 0) {
+		printf
+		    ("Test FAILED: Error at pthread_rwlockattr_getpshared(): %d\n",
+		     rc);
 		return PTS_FAIL;
 	}
 
-	if (pshared != PTHREAD_PROCESS_PRIVATE)
-	{
-		printf("Test FAILED: Incorrect default pshared value: %d\n", pshared);
+	if (pshared != PTHREAD_PROCESS_PRIVATE) {
+		printf("Test FAILED: Incorrect default pshared value: %d\n",
+		       pshared);
 		return PTS_FAIL;
 	}
 

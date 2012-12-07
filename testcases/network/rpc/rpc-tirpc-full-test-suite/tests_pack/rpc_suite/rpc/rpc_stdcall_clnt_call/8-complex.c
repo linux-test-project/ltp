@@ -38,24 +38,21 @@
 
 #define MAXCALC 100
 
-struct RES
-{
+struct RES {
 	double locRes;
 	double svcRes;
 };
 
-struct datas
-{
+struct datas {
 	double a;
 	double b;
 	double c;
 };
 
-bool_t xdr_datas(XDR *pt_xdr, struct datas* pt)
+bool_t xdr_datas(XDR * pt_xdr, struct datas *pt)
 {
-	return(xdr_double(pt_xdr, &(pt->a)) &&
-		   xdr_double(pt_xdr, &(pt->b)) &&
-		   xdr_double(pt_xdr, &(pt->c)));
+	return (xdr_double(pt_xdr, &(pt->a)) &&
+		xdr_double(pt_xdr, &(pt->b)) && xdr_double(pt_xdr, &(pt->c)));
 }
 
 double getRand()
@@ -66,14 +63,14 @@ double getRand()
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 0; //Default test result set to FAILED
+	int test_status = 0;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	char proto[8] = "udp";
 	CLIENT *clnt = NULL;
@@ -91,22 +88,19 @@ int main(int argn, char *argc[])
 	//First of all, create a client
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("CLIENT : %d\n", clnt);
 		printf("progNum : %d\n", progNum);
 		printf("Proto : %s\n", proto);
 	}
 
-	if ((CLIENT *)clnt == NULL)
-	{
+	if ((CLIENT *) clnt == NULL) {
 		clnt_pcreateerror("err");
 		printf("1\n");
 		return 1;
 	}
 
-	for (i = 0; i < MAXCALC; i++)
-	{
+	for (i = 0; i < MAXCALC; i++) {
 		vars.a = getRand();
 		vars.b = getRand();
 		vars.c = getRand();
@@ -114,21 +108,22 @@ int main(int argn, char *argc[])
 		resTbl[i].locRes = vars.a + (vars.b * vars.c);
 
 		cs = clnt_call(clnt, CALCPROC,
-				   		(xdrproc_t)xdr_datas, (char *)&vars,
-				   		(xdrproc_t)xdr_double, (char *)&resTbl[i].svcRes,
-				   		to);
+			       (xdrproc_t) xdr_datas, (char *)&vars,
+			       (xdrproc_t) xdr_double,
+			       (char *)&resTbl[i].svcRes, to);
 
-		if (resTbl[i].locRes != resTbl[i].svcRes)
-		{
+		if (resTbl[i].locRes != resTbl[i].svcRes) {
 			test_status = 1;
 			break;
 		}
 
-		if (run_mode == 1)
-		{
-			fprintf(stderr, "value sent : %lf, %lf, %lf\n", vars.a, vars.b, vars.c);
-			fprintf(stderr, "value localy calculated : %lf\n", resTbl[i].locRes);
-			fprintf(stderr, "value from server : %lf\n", resTbl[i].svcRes);
+		if (run_mode == 1) {
+			fprintf(stderr, "value sent : %lf, %lf, %lf\n", vars.a,
+				vars.b, vars.c);
+			fprintf(stderr, "value localy calculated : %lf\n",
+				resTbl[i].locRes);
+			fprintf(stderr, "value from server : %lf\n",
+				resTbl[i].svcRes);
 		}
 	}
 

@@ -45,8 +45,8 @@ static void cleanup(void);
 static void usage(void);
 static int debug = 0;
 
-char *TCID="dio_sparse";
-int TST_TOTAL=1;
+char *TCID = "dio_sparse";
+int TST_TOTAL = 1;
 
 #include "common_sparse.h"
 
@@ -59,10 +59,10 @@ int dio_sparse(char *filename, int align, int writesize, int filesize)
 	void *bufptr;
 	int i, w;
 
-	fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT|O_EXCL, 0600);
+	fd = open(filename, O_DIRECT | O_WRONLY | O_CREAT | O_EXCL, 0600);
 
 	if (fd < 0) {
-		tst_resm(TBROK|TERRNO, "open()");
+		tst_resm(TBROK | TERRNO, "open()");
 		return 1;
 	}
 
@@ -70,14 +70,14 @@ int dio_sparse(char *filename, int align, int writesize, int filesize)
 
 	if (posix_memalign(&bufptr, align, writesize)) {
 		close(fd);
-		tst_resm(TBROK|TERRNO, "posix_memalign()");
+		tst_resm(TBROK | TERRNO, "posix_memalign()");
 		return 1;
 	}
 
 	memset(bufptr, 0, writesize);
-	for (i = 0; i < filesize;)  {
+	for (i = 0; i < filesize;) {
 		if ((w = write(fd, bufptr, writesize)) != writesize) {
-			tst_resm(TBROK|TERRNO, "write() returned %d", w);
+			tst_resm(TBROK | TERRNO, "write() returned %d", w);
 			close(fd);
 			return 1;
 		}
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	int i;
 	long alignment = 512;
 	int writesize = 65536;
-	int filesize = 100*1024*1024;
+	int filesize = 100 * 1024 * 1024;
 	int c;
 	int children_errors = 0;
 	int ret;
@@ -116,19 +116,19 @@ int main(int argc, char **argv)
 		switch (c) {
 		case 'd':
 			debug++;
-		break;
+			break;
 		case 'a':
 			alignment = strtol(optarg, &endp, 0);
 			alignment = scale_by_kmg(alignment, *endp);
-		break;
+			break;
 		case 'w':
 			writesize = strtol(optarg, &endp, 0);
 			writesize = scale_by_kmg(writesize, *endp);
-		break;
+			break;
 		case 's':
 			filesize = strtol(optarg, &endp, 0);
 			filesize = scale_by_kmg(filesize, *endp);
-		break;
+			break;
 		case 'n':
 			num_children = atoi(optarg);
 			if (num_children > NUM_CHILDREN) {
@@ -137,10 +137,10 @@ int main(int argc, char **argv)
 					NUM_CHILDREN);
 				num_children = NUM_CHILDREN;
 			}
-		break;
+			break;
 		case '?':
 			usage();
-		break;
+			break;
 		}
 	}
 
@@ -154,12 +154,12 @@ int main(int argc, char **argv)
 		switch (pid[i] = fork()) {
 		case 0:
 			read_sparse(filename, filesize);
-		break;
+			break;
 		case -1:
 			while (i-- > 0)
 				kill(pid[i], SIGTERM);
 
-			tst_brkm(TBROK|TERRNO, cleanup, "fork()");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork()");
 		default:
 			continue;
 		}
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 
 		p = waitpid(pid[i], &status, 0);
 		if (p < 0) {
-			tst_resm(TBROK|TERRNO, "waitpid()");
+			tst_resm(TBROK | TERRNO, "waitpid()");
 		} else {
 			if (WIFEXITED(status) && WEXITSTATUS(status) == 10)
 				children_errors++;
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
 
 	if (children_errors)
 		tst_resm(TFAIL, "%i children(s) exited abnormally",
-		         children_errors);
+			 children_errors);
 
 	if (!children_errors && !ret)
 		tst_resm(TPASS, "Test passed");

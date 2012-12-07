@@ -11,7 +11,7 @@
 
 #include <sys/vfs.h>
 
-#define TMPFS_MAGIC 0x01021994 /* man 2 statfs */
+#define TMPFS_MAGIC 0x01021994	/* man 2 statfs */
 int tst_is_cwd_tmpfs(void)
 {
 	struct statfs sf;
@@ -21,7 +21,7 @@ int tst_is_cwd_tmpfs(void)
 	return (sf.f_type == TMPFS_MAGIC);
 }
 
-#define NFS_MAGIC 0x6969 /* man 2 statfs */
+#define NFS_MAGIC 0x6969	/* man 2 statfs */
 int tst_is_cwd_nfs(void)
 {
 	struct statfs sf;
@@ -31,14 +31,14 @@ int tst_is_cwd_nfs(void)
 	return (sf.f_type == NFS_MAGIC);
 }
 
-#define V9FS_MAGIC 0x01021997 /* kernel-source/include/linux/magic.h */
+#define V9FS_MAGIC 0x01021997	/* kernel-source/include/linux/magic.h */
 int tst_is_cwd_v9fs(void)
 {
-        struct statfs sf;
-        statfs(".", &sf);
+	struct statfs sf;
+	statfs(".", &sf);
 
-        /*  Verify that the file is not on a nfs filesystem */
-        return (sf.f_type == V9FS_MAGIC);
+	/*  Verify that the file is not on a nfs filesystem */
+	return (sf.f_type == V9FS_MAGIC);
 }
 
 #define RAMFS_MAGIC 0x858458f6

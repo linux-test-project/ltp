@@ -17,7 +17,8 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main() {
+int main()
+{
 	int policy, invalid_priority, result;
 	struct sched_param param;
 
@@ -37,7 +38,7 @@ int main() {
 
 	param.sched_priority = invalid_priority;
 
-	result = sched_setparam(0,&param);
+	result = sched_setparam(0, &param);
 
 	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
@@ -46,10 +47,11 @@ int main() {
 		printf("The returned code is not -1.\n");
 		return PTS_FAIL;
 	} else if (errno == EPERM) {
-		printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root\n");
+		printf
+		    ("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root\n");
 		return PTS_UNRESOLVED;
 	} else {
-	        perror("Unknow error");
+		perror("Unknow error");
 		return PTS_FAIL;
 	}
 }

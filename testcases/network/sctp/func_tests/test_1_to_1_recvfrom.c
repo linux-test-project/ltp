@@ -48,7 +48,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>         /* for sockaddr_in */
+#include <netinet/in.h>		/* for sockaddr_in */
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/sctp.h>
@@ -60,59 +60,58 @@ char *TCID = __FILE__;
 int TST_TOTAL = 7;
 int TST_CNT = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-        int ret, msg_count;
+	int ret, msg_count;
 	socklen_t len;
-	int sk,pf_class,lstn_sk,acpt_sk, flag;
-        char *message = "hello, world!\n";
+	int sk, pf_class, lstn_sk, acpt_sk, flag;
+	char *message = "hello, world!\n";
 	char *message_rcv;
-        int count;
+	int count;
 
-        struct sockaddr_in conn_addr,lstn_addr,svr_addr;
+	struct sockaddr_in conn_addr, lstn_addr, svr_addr;
 
 	/* Rather than fflush() throughout the code, set stdout to
-         * be unbuffered.
-         */
-        setvbuf(stdout, NULL, _IONBF, 0);
-        setvbuf(stderr, NULL, _IONBF, 0);
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
 
 	message_rcv = malloc(512);
 
-        pf_class = PF_INET;
+	pf_class = PF_INET;
 
-        sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-        lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
 	conn_addr.sin_family = AF_INET;
-        conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        conn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	conn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
 	lstn_addr.sin_family = AF_INET;
-        lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
-	/*Binding the listen socket*/
-        test_bind(lstn_sk, (struct sockaddr *) &lstn_addr, sizeof(lstn_addr));
+	/*Binding the listen socket */
+	test_bind(lstn_sk, (struct sockaddr *)&lstn_addr, sizeof(lstn_addr));
 
-        /*Listening the socket*/
-        test_listen(lstn_sk, 10);
+	/*Listening the socket */
+	test_listen(lstn_sk, 10);
 
 	len = sizeof(struct sockaddr_in);
 
-	test_connect(sk, (struct sockaddr *) &conn_addr, len);
+	test_connect(sk, (struct sockaddr *)&conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
 
 	msg_count = (strlen(message) + 1);
 
 	flag = MSG_NOSIGNAL;
-	/*Sending the message*/
+	/*Sending the message */
 	count = test_send(sk, message, msg_count, flag);
 
-	/*recvfrom () TEST1: Bad socket descriptor, EBADF Expected error*/
+	/*recvfrom () TEST1: Bad socket descriptor, EBADF Expected error */
 	count = recvfrom(-1, message_rcv, msg_count, flag,
 			 (struct sockaddr *)&svr_addr, &len);
 	if (count != -1 || errno != EBADF)
@@ -121,7 +120,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "recvfrom() with a bad socket descriptor - EBADF");
 
-	/*recvfrom () TEST2: Invalid socket , ENOTSOCK Expected error*/
+	/*recvfrom () TEST2: Invalid socket , ENOTSOCK Expected error */
 	count = recvfrom(0, message_rcv, msg_count, flag,
 			 (struct sockaddr *)&svr_addr, &len);
 	if (count != -1 || errno != ENOTSOCK)
@@ -130,7 +129,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "recvfrom() with invalid socket - ENOTSOCK");
 
-	/*recvfrom () TEST3: Invalid message pointer EFAULT, Expected error*/
+	/*recvfrom () TEST3: Invalid message pointer EFAULT, Expected error */
 	count = recvfrom(acpt_sk, (char *)-1, msg_count, flag,
 			 (struct sockaddr *)&svr_addr, &len);
 	if (count != -1 || errno != EFAULT)
@@ -139,7 +138,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "recvfrom() with invalid message ptr - EFAULT");
 
-	/*TEST4: recvfrom on listening socket,ENOTCONN Expected error*/
+	/*TEST4: recvfrom on listening socket,ENOTCONN Expected error */
 	count = recvfrom(lstn_sk, message_rcv, msg_count, flag,
 			 (struct sockaddr *)&svr_addr, &len);
 	if (count != -1 || errno != ENOTCONN)
@@ -152,7 +151,7 @@ main(int argc, char *argv[])
 
 	ret = test_shutdown(sk, SHUT_WR);
 
-	/*recvfrom () TEST5:reading on a socket that received SHUTDOWN*/
+	/*recvfrom () TEST5:reading on a socket that received SHUTDOWN */
 	count = recvfrom(acpt_sk, message_rcv, msg_count, flag,
 			 (struct sockaddr *)&svr_addr, &len);
 	if (count < 0)
@@ -163,7 +162,7 @@ main(int argc, char *argv[])
 		 "EOF");
 
 	/*recvfrom () TEST6:reading the pending message on socket that sent
-	SHUTDOWN*/
+	   SHUTDOWN */
 	count = recvfrom(sk, message_rcv, msg_count, flag,
 			 (struct sockaddr *)&svr_addr, &len);
 	if (count < 0)
@@ -175,7 +174,7 @@ main(int argc, char *argv[])
 		 "sent shutdown - SUCCESS");
 
 	/*recvfrom () TEST7: No more message and association is shutdown,
-	ENOTCONN Expected error*/
+	   ENOTCONN Expected error */
 	count = recvfrom(sk, message_rcv, msg_count, flag,
 			 (struct sockaddr *)&svr_addr, &len);
 	if (count != -1 || errno != ENOTCONN)

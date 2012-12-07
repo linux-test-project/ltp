@@ -21,10 +21,11 @@
 
 #define SHM_NAME "posixtest_5-1"
 
-int main() {
+int main()
+{
 	int fd;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -35,7 +36,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1 && errno == EEXIST) {
 		printf("shm_open() can not create a new object.\n");
 		return PTS_FAIL;

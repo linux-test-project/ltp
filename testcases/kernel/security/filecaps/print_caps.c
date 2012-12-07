@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	}
 
 	snprintf(buf, 2000, "%d.%s", seqno, cap_to_text(cap, NULL));
-	write(fd, buf, strlen(buf)+1);
+	write(fd, buf, strlen(buf) + 1);
 	close(fd);
 
 	cap_free(cap);

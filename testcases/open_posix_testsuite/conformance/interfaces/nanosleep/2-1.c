@@ -17,9 +17,10 @@
 int main(int argc, char *argv[])
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
-	int sleepnsec[NUMINTERVALS] = {1, 2, 10, 100, 1000, 10000, 1000000,
+	int sleepnsec[NUMINTERVALS] = { 1, 2, 10, 100, 1000, 10000, 1000000,
 		10000000, 100000000, 200000000, 500000000, 750000000,
-		999999900};
+		999999900
+	};
 	int i;
 	int failure = 0;
 	int slepts, sleptns;
@@ -29,9 +30,9 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	tssleepfor.tv_sec=0;
-	for (i=0; i<NUMINTERVALS;i++) {
-		tssleepfor.tv_nsec=sleepnsec[i];
+	tssleepfor.tv_sec = 0;
+	for (i = 0; i < NUMINTERVALS; i++) {
+		tssleepfor.tv_nsec = sleepnsec[i];
 		if (nanosleep(&tssleepfor, &tsstorage) != 0) {
 			printf("nanosleep() did not return success\n");
 			return PTS_UNRESOLVED;
@@ -43,21 +44,21 @@ int main(int argc, char *argv[])
 		}
 
 		/*
- 		 * Generic alg for calculating slept time.
+		 * Generic alg for calculating slept time.
 		 */
-		slepts=tsafter.tv_sec-tsbefore.tv_sec;
-		sleptns=tsafter.tv_nsec-tsbefore.tv_nsec;
+		slepts = tsafter.tv_sec - tsbefore.tv_sec;
+		sleptns = tsafter.tv_nsec - tsbefore.tv_nsec;
 		if (sleptns < 0) {
-			sleptns = sleptns+1000000000;
-			slepts = slepts-1;
+			sleptns = sleptns + 1000000000;
+			slepts = slepts - 1;
 		}
 
 		if (slepts >= 1 || sleptns > sleepnsec[i]) {
 			printf("PASS slept %ds %dns >= %d\n",
-				slepts, sleptns, sleepnsec[i]);
+			       slepts, sleptns, sleepnsec[i]);
 		} else {
 			printf("FAIL slept %ds %dns < %d\n",
-				slepts, sleptns, sleepnsec[i]);
+			       slepts, sleptns, sleepnsec[i]);
 			failure = 1;
 		}
 	}

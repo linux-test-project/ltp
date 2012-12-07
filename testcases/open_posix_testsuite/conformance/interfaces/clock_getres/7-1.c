@@ -32,11 +32,10 @@ int main(int argc, char *argv[])
 	res.tv_sec = LARGENUM;
 	res.tv_nsec = LARGENUM;
 	if (clock_getres(CLOCK_PROCESS_CPUTIME_ID, &res) == 0) {
-		if (res.tv_sec != LARGENUM) { //assume initialized
+		if (res.tv_sec != LARGENUM) {	//assume initialized
 #ifdef DEBUG
 			printf("Resolution is %d sec %d nsec\n",
-					(int) res.tv_sec,
-					(int) res.tv_nsec);
+			       (int)res.tv_sec, (int)res.tv_nsec);
 #endif
 			printf("Test PASSED\n");
 			return PTS_PASS;

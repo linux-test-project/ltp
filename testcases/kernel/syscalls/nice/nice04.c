@@ -126,7 +126,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "nice(2) returned %ld for %s",
 					 TEST_RETURN, test_desc);
 			} else {
-				tst_resm(TFAIL|TTERRNO,
+				tst_resm(TFAIL | TTERRNO,
 					 "nice() returned %ld for %s",
 					 TEST_RETURN, test_desc);
 			}

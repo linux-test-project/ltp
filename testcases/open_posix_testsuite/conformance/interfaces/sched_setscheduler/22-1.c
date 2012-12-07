@@ -19,13 +19,16 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void * runner(void * arg) {
+void *runner(void *arg)
+{
 
-	while (1) sleep(1);
+	while (1)
+		sleep(1);
 	return NULL;
 }
 
-int main() {
+int main()
+{
 	int new_policy, policy, result;
 	struct sched_param param;
 	pthread_t tid;
@@ -33,18 +36,18 @@ int main() {
 
 	if (sched_getparam(getpid(), &param) != 0) {
 		perror("An error occurs when calling sched_getparam()");
-		pthread_exit((void*)-1);
+		pthread_exit((void *)-1);
 	}
 
 	/* Make sure new policy != old policy */
 	new_policy = (sched_getscheduler(getpid()) == SCHED_FIFO) ?
-		SCHED_RR :
-		SCHED_FIFO;
+	    SCHED_RR : SCHED_FIFO;
 
 	param.sched_priority = sched_get_priority_min(new_policy);
 	if (sched_setscheduler(getpid(), new_policy, &param) != 0) {
 		if (errno == EPERM) {
-			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
+			printf
+			    ("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 			return PTS_UNRESOLVED;
 		}
 		perror("An error occurs when calling sched_setscheduler()");
@@ -68,7 +71,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_getschedparam(tid , &policy, &param) != 0) {
+	if (pthread_getschedparam(tid, &policy, &param) != 0) {
 		printf("An error occurs when calling pthread_getschedparam()");
 		return PTS_UNRESOLVED;
 	}

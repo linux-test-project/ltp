@@ -54,10 +54,9 @@
 #include "sctputil.h"
 
 /* This function prints the cmsg data. */
-void
-test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t *data)
+void test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t * data)
 {
-	switch(type) {
+	switch (type) {
 	case SCTP_INIT:
 		printf("INIT\n");
 		printf("   sinit_num_ostreams %d\n",
@@ -72,13 +71,13 @@ test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t *data)
 		break;
 	case SCTP_SNDRCV:
 		printf("SNDRCV\n");
-		printf("   sinfo_stream %u\n",	data->sndrcv.sinfo_stream);
-		printf("   sinfo_ssn %u\n",	data->sndrcv.sinfo_ssn);
-		printf("   sinfo_flags 0x%x\n",	data->sndrcv.sinfo_flags);
-		printf("   sinfo_ppid %u\n",	data->sndrcv.sinfo_ppid);
-		printf("   sinfo_context %x\n",	data->sndrcv.sinfo_context);
-		printf("   sinfo_tsn     %u\n",    data->sndrcv.sinfo_tsn);
-		printf("   sinfo_cumtsn  %u\n",    data->sndrcv.sinfo_cumtsn);
+		printf("   sinfo_stream %u\n", data->sndrcv.sinfo_stream);
+		printf("   sinfo_ssn %u\n", data->sndrcv.sinfo_ssn);
+		printf("   sinfo_flags 0x%x\n", data->sndrcv.sinfo_flags);
+		printf("   sinfo_ppid %u\n", data->sndrcv.sinfo_ppid);
+		printf("   sinfo_context %x\n", data->sndrcv.sinfo_context);
+		printf("   sinfo_tsn     %u\n", data->sndrcv.sinfo_tsn);
+		printf("   sinfo_cumtsn  %u\n", data->sndrcv.sinfo_cumtsn);
 		printf("   sinfo_assoc_id  %u\n", data->sndrcv.sinfo_assoc_id);
 
 		break;
@@ -90,8 +89,7 @@ test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t *data)
 }
 
 /* This function prints the message. */
-void
-test_print_message(int sk, struct msghdr *msg, size_t msg_len)
+void test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 {
 	sctp_cmsg_data_t *data;
 	struct cmsghdr *cmsg;
@@ -101,10 +99,9 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 	union sctp_notification *sn;
 
 	for (cmsg = CMSG_FIRSTHDR(msg);
-	     cmsg != NULL;
-	     cmsg = CMSG_NXTHDR(msg, cmsg)) {
-		     data = (sctp_cmsg_data_t *)CMSG_DATA(cmsg);
-		     test_print_cmsg(cmsg->cmsg_type, data);
+	     cmsg != NULL; cmsg = CMSG_NXTHDR(msg, cmsg)) {
+		data = (sctp_cmsg_data_t *) CMSG_DATA(cmsg);
+		test_print_cmsg(cmsg->cmsg_type, data);
 	}
 
 	if (!(MSG_NOTIFICATION & msg->msg_flags)) {
@@ -120,21 +117,26 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 			text = msg->msg_iov[index].iov_base;
 			len = msg->msg_iov[index].iov_len;
 
-                        save = text[msg_len-1];
+			save = text[msg_len - 1];
 			if (len > msg_len) {
-                                text[(len = msg_len) - 1] = '\0';
-                        }
+				text[(len = msg_len) - 1] = '\0';
+			}
 
-			if ((msg_len -= len) > 0) { index++; }
+			if ((msg_len -= len) > 0) {
+				index++;
+			}
 
 			for (i = 0; i < len - 1; ++i) {
-                                if (!isprint(text[i])) text[i] = '.';
-                        }
+				if (!isprint(text[i]))
+					text[i] = '.';
+			}
 
 			printf("%s", text);
-			text[msg_len-1] = save;
+			text[msg_len - 1] = save;
 
-			if ((done = !strcmp(text, "exit"))) { break; }
+			if ((done = !strcmp(text, "exit"))) {
+				break;
+			}
 		}
 	} else {
 		printf("NOTIFICATION: ");
@@ -197,14 +199,14 @@ test_check_buf_notification(void *buf, int datalen, int msg_flags,
 	if (sn->sn_header.sn_type != expected_sn_type)
 		tst_brkm(TBROK, NULL, "Unexpected notification:%d "
 			 "expected:%d", sn->sn_header.sn_type,
-			  expected_sn_type);
+			 expected_sn_type);
 
-	switch(sn->sn_header.sn_type) {
+	switch (sn->sn_header.sn_type) {
 	case SCTP_ASSOC_CHANGE:
 		if (sn->sn_assoc_change.sac_state != expected_additional)
 			tst_brkm(TBROK, NULL, "Unexpected sac_state:%d "
 				 "expected:%d", sn->sn_assoc_change.sac_state,
-				  expected_additional);
+				 expected_additional);
 		break;
 	default:
 		break;
@@ -278,11 +280,11 @@ test_check_msg_data(struct msghdr *msg, int datalen, int expected_datalen,
 
 	/* Receive auxiliary data in msgh. */
 	for (cmsg = CMSG_FIRSTHDR(msg); cmsg != NULL;
-				 cmsg = CMSG_NXTHDR(msg, cmsg)) {
+	     cmsg = CMSG_NXTHDR(msg, cmsg)) {
 		if (IPPROTO_SCTP == cmsg->cmsg_level &&
 		    SCTP_SNDRCV == cmsg->cmsg_type)
 			break;
-	} /* for (all cmsgs) */
+	}			/* for (all cmsgs) */
 
 	if ((!cmsg) ||
 	    (cmsg->cmsg_len < CMSG_LEN(sizeof(struct sctp_sndrcvinfo))))
@@ -297,13 +299,12 @@ test_check_msg_data(struct msghdr *msg, int datalen, int expected_datalen,
 }
 
 /* Allocate a buffer of requested len and fill in with data. */
-void *
-test_build_msg(int len)
+void *test_build_msg(int len)
 {
 	int i = len - 1;
 	int n;
 	unsigned char msg[] =
-		"012345678901234567890123456789012345678901234567890";
+	    "012345678901234567890123456789012345678901234567890";
 	char *msg_buf, *p;
 
 	msg_buf = (char *)malloc(len);
@@ -313,15 +314,15 @@ test_build_msg(int len)
 	p = msg_buf;
 
 	do {
-		n = ((i > 50)?50:i);
-		memcpy(p, msg, ((i > 50)?50:i));
+		n = ((i > 50) ? 50 : i);
+		memcpy(p, msg, ((i > 50) ? 50 : i));
 		p += n;
 		i -= n;
 	} while (i > 0);
 
-	msg_buf[len-1] = '\0';
+	msg_buf[len - 1] = '\0';
 
-	return(msg_buf);
+	return (msg_buf);
 }
 
 /* Enable ASSOC_CHANGE and SNDRCVINFO notifications. */
@@ -332,11 +333,10 @@ void test_enable_assoc_change(int fd)
 	memset(&subscribe, 0, sizeof(subscribe));
 	subscribe.sctp_data_io_event = 1;
 	subscribe.sctp_association_event = 1;
-	test_setsockopt(fd, SCTP_EVENTS, (char *)&subscribe,
-		        sizeof(subscribe));
+	test_setsockopt(fd, SCTP_EVENTS, (char *)&subscribe, sizeof(subscribe));
 }
 
-static int cmp_addr(sockaddr_storage_t *addr1, sockaddr_storage_t *addr2)
+static int cmp_addr(sockaddr_storage_t * addr1, sockaddr_storage_t * addr2)
 {
 	if (addr1->sa.sa_family != addr2->sa.sa_family)
 		return 0;
@@ -359,14 +359,15 @@ static int cmp_addr(sockaddr_storage_t *addr1, sockaddr_storage_t *addr2)
 }
 
 /* Test peer addresses for association. */
-int test_peer_addr(int sk, sctp_assoc_t asoc, sockaddr_storage_t *peers, int count)
+int test_peer_addr(int sk, sctp_assoc_t asoc, sockaddr_storage_t * peers,
+		   int count)
 {
 	struct sockaddr *addrs;
 	int error, i, j;
 	struct sockaddr *sa_addr;
 	socklen_t addrs_size = 0;
 	void *addrbuf;
-	char *found = (char *) malloc(count);
+	char *found = (char *)malloc(count);
 	memset(found, 0, count);
 
 	error = sctp_getpaddrs(sk, asoc, &addrs);
@@ -394,11 +395,12 @@ int test_peer_addr(int sk, sctp_assoc_t asoc, sockaddr_storage_t *peers, int cou
 		default:
 			errno = EINVAL;
 			sctp_freepaddrs(addrs);
-			tst_brkm(TBROK, NULL, "sctp_getpaddrs: %s", strerror(errno));
+			tst_brkm(TBROK, NULL, "sctp_getpaddrs: %s",
+				 strerror(errno));
 			return -1;
 		}
 		for (j = 0; j < count; j++) {
-			if (cmp_addr((sockaddr_storage_t *)sa_addr,
+			if (cmp_addr((sockaddr_storage_t *) sa_addr,
 				     &peers[j]) == 0) {
 				found[j] = 1;
 			}

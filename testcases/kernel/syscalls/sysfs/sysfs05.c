@@ -92,6 +92,7 @@ static struct test_case_t {
 	"Invalid filesystem name", EINVAL, "EINVAL "}, {
 	"Address is out of your address space", EFAULT, "EFAULT "}
 };
+
 int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);
 
 int main(int ac, char **av)

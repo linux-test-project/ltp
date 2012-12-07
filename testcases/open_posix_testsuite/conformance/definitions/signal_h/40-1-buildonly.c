@@ -1,15 +1,15 @@
   /*
-   @:pt:XSI
-  Test that the function:
-   int sigpause(int);
-  is declared.
-  */
+     @:pt:XSI
+     Test that the function:
+     int sigpause(int);
+     is declared.
+   */
 
 #include <signal.h>
 
-typedef int (*sigpause_test)(int);
+typedef int (*sigpause_test) (int);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	sigpause_test dummyvar;
 	dummyvar = sigpause;

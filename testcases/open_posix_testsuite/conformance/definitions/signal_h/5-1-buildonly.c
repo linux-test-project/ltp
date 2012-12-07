@@ -1,6 +1,6 @@
   /*
-  Test the definition of pid_t.
-  */
+     Test the definition of pid_t.
+   */
 
 #include <sys/types.h>
 

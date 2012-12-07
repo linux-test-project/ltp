@@ -96,7 +96,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "ddddd", &fd[0], &fd[1], &kidid,
 			&ncperchild, &szcharbuf);
@@ -126,13 +126,13 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "write to pipe failed");
 		}
 
-	      refork:
+refork:
 		++kidid;
 		fork_ret = FORK_OR_VFORK();
 
 		if (fork_ret < 0) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 }
+		}
 
 		if ((fork_ret != 0) && (fork_ret != -1) && (kidid < numchild)) {
 			goto refork;
@@ -143,7 +143,7 @@ int main(int ac, char **av)
 			if (self_exec(av[0], "ddddd", fd[0], fd[1], kidid,
 				      ncperchild, szcharbuf) < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
-			 }
+			}
 #else
 			do_child();
 #endif
@@ -197,7 +197,7 @@ void do_child_uclinux()
 {
 	if ((rdbuf = (char *)malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc of rdbuf failed");
-	 }
+	}
 
 	do_child();
 }
@@ -229,11 +229,11 @@ void setup()
 
 	if ((wrbuf = (char *)malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc failed");
-	 }
+	}
 
 	if ((rdbuf = (char *)malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc of rdbuf failed");
-	 }
+	}
 
 	/* initialize wrbuf */
 	j = 0;

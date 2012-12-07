@@ -30,14 +30,15 @@ int main()
 	sigemptyset(&act.sa_mask);
 
 	if (sigaction(SIGUSR1, &act, 0) != 0) {
-                perror("Unexpected error while using sigaction()");
-               	return PTS_UNRESOLVED;
-        }
+		perror("Unexpected error while using sigaction()");
+		return PTS_UNRESOLVED;
+	}
 
-        if (sigset(SIGUSR1,SIG_DFL) != myhandler) {
-		printf("Test FAILED: sigset didn't return myhandler even though it was SIGUSR1's original disposition\n");
-               	return PTS_FAIL;
-        }
+	if (sigset(SIGUSR1, SIG_DFL) != myhandler) {
+		printf
+		    ("Test FAILED: sigset didn't return myhandler even though it was SIGUSR1's original disposition\n");
+		return PTS_FAIL;
+	}
 
 	return PTS_PASS;
 }

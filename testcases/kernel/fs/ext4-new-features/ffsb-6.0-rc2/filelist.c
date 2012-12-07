@@ -70,8 +70,7 @@ void build_dirs(struct benchfiles *bf)
 		}
 	for (i = 0; i < bf->numsubdirs; i++) {
 		snprintf(buf, FILENAME_MAX, "%s/%s%s%d",
-			 bf->basedir, bf->basename,
-			 SUBDIRNAME_BASE, i);
+			 bf->basedir, bf->basename, SUBDIRNAME_BASE, i);
 		if (mkdir(buf, S_IRWXU) == -1)
 			if (errno != EEXIST) {
 				perror(buf);
@@ -119,7 +118,7 @@ void destroy_filelist(struct benchfiles *bf)
 	free(bf->files);
 }
 
-struct ffsb_file *add_file(struct benchfiles *b, uint64_t size, randdata_t *rd)
+struct ffsb_file *add_file(struct benchfiles *b, uint64_t size, randdata_t * rd)
 {
 	struct ffsb_file *newfile, *oldfile = NULL;
 	int filenum = 0;
@@ -156,7 +155,7 @@ struct ffsb_file *add_file(struct benchfiles *b, uint64_t size, randdata_t *rd)
 
 	if (oldfile == NULL) {
 		char buf[FILENAME_MAX];
-		int randdir = getrandom(rd, b->numsubdirs+1);
+		int randdir = getrandom(rd, b->numsubdirs + 1);
 		int namesize = 0;
 		if (randdir == 0)
 			namesize = snprintf(buf, FILENAME_MAX, "%s/%s%s%d",
@@ -179,7 +178,7 @@ struct ffsb_file *add_file(struct benchfiles *b, uint64_t size, randdata_t *rd)
 	}
 }
 
-struct ffsb_file *add_dir(struct benchfiles *b, uint64_t size, randdata_t *rd)
+struct ffsb_file *add_dir(struct benchfiles *b, uint64_t size, randdata_t * rd)
 {
 	struct ffsb_file *newdir, *olddir = NULL;
 	int dirnum = 0;
@@ -217,7 +216,7 @@ struct ffsb_file *add_dir(struct benchfiles *b, uint64_t size, randdata_t *rd)
 				    SUBDIRNAME_BASE, dirnum);
 		if (namesize >= FILENAME_MAX)
 			printf("warning: filename \"%s\" too long\n", buf);
-			/* TODO: take action here... */
+		/* TODO: take action here... */
 		newdir->name = ffsb_strdup(buf);
 		return newdir;
 	} else {
@@ -230,7 +229,7 @@ struct ffsb_file *add_dir(struct benchfiles *b, uint64_t size, randdata_t *rd)
  * fileset.
  */
 static struct ffsb_file *add_file_named(struct benchfiles *b, uint64_t size,
-					 char *name)
+					char *name)
 {
 	struct ffsb_file *newfile = NULL;
 
@@ -258,7 +257,7 @@ static struct ffsb_file *add_file_named(struct benchfiles *b, uint64_t size,
 }
 
 #if 0
-static void print_rb_helper(rb_node *cur)
+static void print_rb_helper(rb_node * cur)
 {
 	if (cur != NULL) {
 		print_rb_helper(cur->left);
@@ -267,7 +266,7 @@ static void print_rb_helper(rb_node *cur)
 	}
 }
 
-static void print_rb(rb_tree *tree)
+static void print_rb(rb_tree * tree)
 {
 	print_rb_helper(tree->root);
 }
@@ -284,7 +283,7 @@ void remove_file(struct benchfiles *b, struct ffsb_file *entry)
 	rw_unlock_write(&b->fileslock);
 }
 
-static struct ffsb_file *choose_file(struct benchfiles *b, randdata_t *rd)
+static struct ffsb_file *choose_file(struct benchfiles *b, randdata_t * rd)
 {
 	rb_node *cur = NULL;
 	int chosen = 0;
@@ -293,8 +292,8 @@ static struct ffsb_file *choose_file(struct benchfiles *b, randdata_t *rd)
 
 	if (b->listsize == 0) {
 		fprintf(stderr, "No more files to operate on,"
-			  " try making more initial files "
-			  "or fewer delete operations\n");
+			" try making more initial files "
+			"or fewer delete operations\n");
 		exit(0);
 	}
 
@@ -306,7 +305,7 @@ static struct ffsb_file *choose_file(struct benchfiles *b, randdata_t *rd)
 	return cur->object;
 }
 
-struct ffsb_file *choose_file_reader(struct benchfiles *bf, randdata_t *rd)
+struct ffsb_file *choose_file_reader(struct benchfiles *bf, randdata_t * rd)
 {
 	struct ffsb_file *ret;
 
@@ -326,9 +325,9 @@ struct ffsb_file *choose_file_reader(struct benchfiles *bf, randdata_t *rd)
 	return ret;
 }
 
-struct ffsb_file *choose_file_writer(struct benchfiles *bf, randdata_t *rd)
+struct ffsb_file *choose_file_writer(struct benchfiles *bf, randdata_t * rd)
 {
-	struct ffsb_file *ret ;
+	struct ffsb_file *ret;
 
 	rw_lock_read(&bf->fileslock);
 	assert(bf->holes->count != bf->listsize);
@@ -345,12 +344,12 @@ struct ffsb_file *choose_file_writer(struct benchfiles *bf, randdata_t *rd)
 
 void unlock_file_reader(struct ffsb_file *file)
 {
-	rw_unlock_read(&file->lock) ;
+	rw_unlock_read(&file->lock);
 }
 
 void unlock_file_writer(struct ffsb_file *file)
 {
-	rw_unlock_write(&file->lock) ;
+	rw_unlock_write(&file->lock);
 }
 
 void rename_file(struct ffsb_file *file)
@@ -365,7 +364,7 @@ int validate_filename(struct benchfiles *bf, char *name)
 	int retval = -1;
 	char fmt_str[FILENAME_MAX];
 	if (FILENAME_MAX <= snprintf(fmt_str, FILENAME_MAX,
-				 "%s%s%%d", bf->basename, FILENAME_BASE)) {
+				     "%s%s%%d", bf->basename, FILENAME_BASE)) {
 		printf("filename is too long declaring it invalid\n");
 		return -1;
 	}
@@ -393,7 +392,7 @@ int validate_dirname(struct benchfiles *bf, char *name)
  * Note it does not check filesizes !!!, it doesn't know anything
  * about them
  */
-static int add_dir_to_filelist(struct benchfiles *bf, DIR *subdir,
+static int add_dir_to_filelist(struct benchfiles *bf, DIR * subdir,
 			       char *subdir_path, fl_validation_func_t vfunc,
 			       void *vf_data)
 {
@@ -402,7 +401,7 @@ static int add_dir_to_filelist(struct benchfiles *bf, DIR *subdir,
 
 	while ((d_ent = readdir(subdir)) != NULL) {
 		DIR *tmp = NULL;
-		char filename_buf[FILENAME_MAX*2];
+		char filename_buf[FILENAME_MAX * 2];
 
 		if (FILENAME_MAX < snprintf(filename_buf, FILENAME_MAX, "%s/%s",
 					    subdir_path, d_ent->d_name)) {
@@ -426,8 +425,9 @@ static int add_dir_to_filelist(struct benchfiles *bf, DIR *subdir,
 				return -1;
 			}
 			/* Add file to data structure */
-			ffsb_file = add_file_named(bf, ffsb_get_filesize(filename_buf),
-				       filename_buf);
+			ffsb_file =
+			    add_file_named(bf, ffsb_get_filesize(filename_buf),
+					   filename_buf);
 			unlock_file_writer(ffsb_file);
 		} else {
 			/* Check for the usual suspects and skip them */
@@ -463,14 +463,13 @@ static int add_dir_to_filelist(struct benchfiles *bf, DIR *subdir,
 }
 
 int grab_old_fileset(struct benchfiles *bf, char *basename,
-		      fl_validation_func_t vfunc, void *vfunc_data)
+		     fl_validation_func_t vfunc, void *vfunc_data)
 {
 	int retval = 0;
-	char buf[FILENAME_MAX*2];
+	char buf[FILENAME_MAX * 2];
 	DIR *lc_dir = NULL;
 
-	if (FILENAME_MAX < snprintf(buf, FILENAME_MAX, "%s",
-				    bf->basedir)) {
+	if (FILENAME_MAX < snprintf(buf, FILENAME_MAX, "%s", bf->basedir)) {
 		printf("filename \"%s\" is too long aborting\n", buf);
 		return -1;
 	}
@@ -484,17 +483,17 @@ int grab_old_fileset(struct benchfiles *bf, char *basename,
 	retval = add_dir_to_filelist(bf, lc_dir, buf, vfunc, vfunc_data);
 
 	closedir(lc_dir);
-	return retval ;
+	return retval;
 }
 
 /* Get the number of files */
-uint32_t get_listsize(struct benchfiles *bf)
+uint32_t get_listsize(struct benchfiles * bf)
 {
 	return bf->listsize;
 }
 
 /* Get the number of subdirectories */
-uint32_t get_numsubdirs(struct benchfiles *bf)
+uint32_t get_numsubdirs(struct benchfiles * bf)
 {
 	return bf->numsubdirs;
 }

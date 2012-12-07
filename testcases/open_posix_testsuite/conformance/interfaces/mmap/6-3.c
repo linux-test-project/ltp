@@ -73,13 +73,13 @@ int main(void)
 		/* Write acess */
 		*(char *)pa = 'b';
 		return 0;
-	break;
+		break;
 	case -1:
 		perror("fork()");
 		return PTS_UNRESOLVED;
-	break;
+		break;
 	default:
-	break;
+		break;
 	}
 
 	waitpid(child, &status, 0);
@@ -90,17 +90,16 @@ int main(void)
 		printf("Child process terminated by signal %d\n", sig_num);
 		if (sig_num == SIGSEGV) {
 			printf("Got SIGSEGV when writing to the mapped memory, "
-			       "setting PROT_NOTE\n"
-			       "Test PASSED\n");
+			       "setting PROT_NOTE\n" "Test PASSED\n");
 			return PTS_PASS;
 		}
 	}
 
 	if (WIFEXITED(status)) {
 		if (WEXITSTATUS(status) == 0) {
-			printf("Did not got SIGSEGV when writing to the mapped memory, "
-			       "setting PROT_NOTE\n"
-			       "Test FAILED\n");
+			printf
+			    ("Did not got SIGSEGV when writing to the mapped memory, "
+			     "setting PROT_NOTE\n" "Test FAILED\n");
 			return PTS_FAIL;
 		}
 

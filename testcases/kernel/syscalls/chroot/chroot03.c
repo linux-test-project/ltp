@@ -146,12 +146,12 @@ int main(int ac, char **av)
 			}
 
 			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS|TTERRNO, "failed as expected");
+				tst_resm(TPASS | TTERRNO, "failed as expected");
 			} else {
-				tst_resm(TFAIL|TTERRNO,
-				    "didn't fail as expected (expected errno "
-				    "= %d : %s)",
-				    TC[i].error, strerror(TC[i].error));
+				tst_resm(TFAIL | TTERRNO,
+					 "didn't fail as expected (expected errno "
+					 "= %d : %s)",
+					 TC[i].error, strerror(TC[i].error));
 			}
 		}
 	}

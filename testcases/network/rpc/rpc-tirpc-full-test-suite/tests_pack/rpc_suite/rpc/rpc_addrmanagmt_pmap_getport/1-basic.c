@@ -39,37 +39,35 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	u_int getPort;
 	struct hostent *hp = NULL;
 	struct sockaddr_in sin;
 
 	//Initialization
-	if ((hp = gethostbyname(argc[1])) == NULL)
-	{
+	if ((hp = gethostbyname(argc[1])) == NULL) {
 		fprintf(stderr, "gethostbyname failed\n");
 		exit(1);
 	}
 	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = *(u_int *)hp->h_addr;
+	sin.sin_addr.s_addr = *(u_int *) hp->h_addr;
 
-    getPort = pmap_getport(&sin, progNum, VERSNUM, IPPROTO_UDP);
+	getPort = pmap_getport(&sin, progNum, VERSNUM, IPPROTO_UDP);
 
-	if (run_mode)
-	{
+	if (run_mode) {
 		printf("Port got. %u\n", getPort);
 		printf("Addr. %u\n", sin.sin_addr.s_addr);
-    }
+	}
 
-    test_status = (getPort == 0);
+	test_status = (getPort == 0);
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

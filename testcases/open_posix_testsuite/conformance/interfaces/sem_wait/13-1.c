@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 	if (timespec_nsec_diff(&ts_fin, &ts_ref) < NSEC_IN_SEC) {
 		output("Ts: %d.%9.9d  ->  %d.%9.9d\n",
 		       ts_ref.tv_sec, ts_ref.tv_nsec,
-                       ts_fin.tv_sec, ts_fin.tv_nsec);
+		       ts_fin.tv_sec, ts_fin.tv_nsec);
 		FAILED("The sem_wait call did not block");
 	}
 

@@ -170,15 +170,15 @@ void do_child()
 		tst_resm(TPASS, "got EINTR as expected");
 		break;
 	default:
-		tst_resm(TFAIL|TTERRNO, "call failed with an unexpected error");
+		tst_resm(TFAIL | TTERRNO,
+			 "call failed with an unexpected error");
 		break;
 	}
 
 	exit(0);
 }
 
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
 	if (sig == SIGHUP)
 		return;
@@ -224,7 +224,7 @@ void setup(void)
 	msgkey = getipckey();
 
 	/* create a message queue with read/write permission */
-	if ((msg_q_1 = msgget(msgkey, IPC_CREAT|IPC_EXCL|MSG_RW)) == -1)
+	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW)) == -1)
 		tst_brkm(TBROK, cleanup, "Can't create message queue");
 }
 

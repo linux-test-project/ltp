@@ -116,8 +116,8 @@ int main(int ac, char **av)
 
 	if ((tst_kvercmp(2, 6, 16)) < 0)
 		tst_brkm(TCONF, NULL,
-		    "This test can only run on kernels that are 2.6.16 and "
-		    "higher");
+			 "This test can only run on kernels that are 2.6.16 and "
+			 "higher");
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -136,10 +136,10 @@ int main(int ac, char **av)
 			if (TEST_ERRNO == expected_errno[i]) {
 
 				if (STD_FUNCTIONAL_TEST)
-					tst_resm(TPASS|TTERRNO,
+					tst_resm(TPASS | TTERRNO,
 						 "fstatat failed as expected");
 			} else
-				tst_resm(TFAIL|TTERRNO, "fstatat failed");
+				tst_resm(TFAIL | TTERRNO, "fstatat failed");
 		}
 
 	}

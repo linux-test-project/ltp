@@ -53,16 +53,14 @@ void ok_exit();
 #define GRAN_NUMBER	(1<<8)
 	/* == 256 @ 4MB per mmap(2), we span a total of 1 GB */
 
-extern time_t	time(time_t *);
-extern char	*ctime(const time_t *);
-extern long	sysconf(int name);
+extern time_t time(time_t *);
+extern char *ctime(const time_t *);
+extern long sysconf(int name);
 
 #define ERROR(M) (void)fprintf(stderr, "%s: errno = %d: " M "\n", argv[0], \
 			errno)
 
-/*ARGSUSED*/
-int
-main(int argc, char *argv[])
+ /*ARGSUSED*/ int main(int argc, char *argv[])
 {
 	caddr_t mmapaddr, munmap_begin;
 	long pagesize = sysconf(_SC_PAGE_SIZE);
@@ -71,36 +69,36 @@ main(int argc, char *argv[])
 
 	(void)time(&t);
 	//(void)printf("%s: Started %s", argv[0], ctime(&t));
-	if (sbrk(pagesize - ((u_long)sbrk(0)%(u_long)pagesize))==(char *)-1) {
+	if (sbrk(pagesize - ((u_long) sbrk(0) % (u_long) pagesize)) ==
+	    (char *)-1) {
 		ERROR("couldn't round up brk to a page boundary");
-                local_flag = FAILED;
-                anyfail();
+		local_flag = FAILED;
+		anyfail();
 	}
 	/* The brk is now at the begining of a page. */
 
-	if ((munmap_begin = mmapaddr = (caddr_t)sbrk(0)) == (caddr_t)-1) {
+	if ((munmap_begin = mmapaddr = (caddr_t) sbrk(0)) == (caddr_t) - 1) {
 		ERROR("couldn't find top of brk");
-                local_flag = FAILED;
-                anyfail();
+		local_flag = FAILED;
+		anyfail();
 	}
 	mmapaddr = 0;
 	/* burn level 2 ptes by spacing mmaps 4Meg apart */
 	/* This should switch to large anonymous swap space granularity */
 	for (i = 0; i < GRAN_NUMBER; i++) {
-		if (mmap(mmapaddr, pagesize, PROT_READ|PROT_WRITE,
-			MAP_ANONYMOUS|MAP_PRIVATE, 0, 0)==(caddr_t)-1)
-		{
+		if (mmap(mmapaddr, pagesize, PROT_READ | PROT_WRITE,
+			 MAP_ANONYMOUS | MAP_PRIVATE, 0, 0) == (caddr_t) - 1) {
 			ERROR("mmap failed");
-                	local_flag = FAILED;
-                	anyfail();
+			local_flag = FAILED;
+			anyfail();
 		}
-		mmapaddr += NPTEPG*pagesize;
+		mmapaddr += NPTEPG * pagesize;
 	}
 	/* Free bizillion level2 ptes to switch to small granularity */
-	if (munmap(munmap_begin, (size_t)(mmapaddr-munmap_begin))) {
+	if (munmap(munmap_begin, (size_t) (mmapaddr - munmap_begin))) {
 		ERROR("munmap failed");
-                local_flag = FAILED;
-                anyfail();
+		local_flag = FAILED;
+		anyfail();
 	}
 	(void)time(&t);
 	//(void)printf("%s: Finished %s", argv[0], ctime(&t));
@@ -111,23 +109,22 @@ main(int argc, char *argv[])
 /*****  LTP Port        *****/
 void ok_exit()
 {
-        tst_resm(TPASS, "Test passed\n");
+	tst_resm(TPASS, "Test passed\n");
 	tst_exit();
 }
 
 int anyfail()
 {
-  tst_resm(TFAIL, "Test failed\n");
-  tst_exit();
-        return 0;
+	tst_resm(TFAIL, "Test failed\n");
+	tst_exit();
+	return 0;
 }
 
 #else /* defined(__i386__) || defined(__x86_64__) */
-int
-main (void)
+int main(void)
 {
-  tst_resm (TCONF, "Test is only applicable for IA-32 and x86-64.");
-  tst_exit ();
+	tst_resm(TCONF, "Test is only applicable for IA-32 and x86-64.");
+	tst_exit();
 }
 #endif
 /*****  **      **      *****/

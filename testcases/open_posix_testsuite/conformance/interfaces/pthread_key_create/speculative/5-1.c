@@ -40,29 +40,26 @@ int main()
 {
 	int i, rc;
 
-	for (i = 0; i<= PTHREAD_KEYS_MAX; i++)
-	{
+	for (i = 0; i <= PTHREAD_KEYS_MAX; i++) {
 		rc = pthread_key_create(&keys[i], NULL);
 		pthread_key_t key;
 		rc = pthread_key_create(&key, NULL);
-		if (i == PTHREAD_KEYS_MAX)
-		{
-			if (rc != EAGAIN)
-			{
-				printf("Test FAILED: Expected EAGAIN when exceeded the limit of keys in a single process, but got: %d\n", rc);
+		if (i == PTHREAD_KEYS_MAX) {
+			if (rc != EAGAIN) {
+				printf
+				    ("Test FAILED: Expected EAGAIN when exceeded the limit of keys in a single process, but got: %d\n",
+				     rc);
 				return PTS_FAIL;
 			}
 		}
 
-		else if (rc != 0)
-		{
-			if (rc != EAGAIN)
-			{
+		else if (rc != 0) {
+			if (rc != EAGAIN) {
 				printf("Error: pthread_key_create() failed\n");
 				return PTS_UNRESOLVED;
-			} else
-			{
-				printf("Test FAILED: EAGAIN was returned before the key limit was exceeded\n");
+			} else {
+				printf
+				    ("Test FAILED: EAGAIN was returned before the key limit was exceeded\n");
 				return PTS_FAIL;
 			}
 		}

@@ -246,8 +246,7 @@ static void stage_file_test(void)
 	memset(&sbuf, 0, sizeof(sbuf));
 	filename = "/dev/null";
 	stat(filename, &sbuf);
-	snprintf(pbuffer, sizeof(pbuffer) - 1,
-		 "allow_write %s", filename);
+	snprintf(pbuffer, sizeof(pbuffer) - 1, "allow_write %s", filename);
 	policy = pbuffer;
 	write_domain_policy(policy, 0);
 	fd = open(filename, O_WRONLY);
@@ -536,15 +535,13 @@ static void stage_file_test(void)
 	addr.sun_family = AF_UNIX;
 	strncpy(addr.sun_path, filename, sizeof(addr.sun_path) - 1);
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	show_result(bind(fd, (struct sockaddr *) &addr, sizeof(addr)),
-		    1);
+	show_result(bind(fd, (struct sockaddr *)&addr, sizeof(addr)), 1);
 	if (fd != EOF)
 		close(fd);
 	write_domain_policy(policy, 1);
 	unlink2(filename);
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	show_result(bind(fd, (struct sockaddr *) &addr, sizeof(addr)),
-		    0);
+	show_result(bind(fd, (struct sockaddr *)&addr, sizeof(addr)), 0);
 	if (fd != EOF)
 		close(fd);
 
@@ -588,8 +585,7 @@ static void stage_file_test(void)
 	set_profile(3, "file::open");
 	show_result(ftruncate(fd, 0), 0);
 
-	show_result(fcntl(fd, F_SETFL,
-			  fcntl(fd, F_GETFL) & ~O_APPEND), 0);
+	show_result(fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_APPEND), 0);
 	if (fd != EOF)
 		close(fd);
 
@@ -602,16 +598,14 @@ static void stage_file_test(void)
 	unlink2(filename);
 
 	policy = "allow_ioctl socket:[family=2:type=2:protocol=17] "
-		"35122-35124";
+	    "35122-35124";
 	write_domain_policy(policy, 0);
 	fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
 	memset(&ifreq, 0, sizeof(ifreq));
-	snprintf(ifreq.ifr_name, sizeof(ifreq.ifr_name) - 1,
-		 "lo");
+	snprintf(ifreq.ifr_name, sizeof(ifreq.ifr_name) - 1, "lo");
 	show_result(ioctl(fd, 35123, &ifreq), 1);
 	write_domain_policy(policy, 1);
-	policy = "allow_ioctl "
-		"socket:[family=2:type=2:protocol=17] 0-35122";
+	policy = "allow_ioctl " "socket:[family=2:type=2:protocol=17] 0-35122";
 	write_domain_policy(policy, 0);
 	show_result(ioctl(fd, 35123, &ifreq), 0);
 	write_domain_policy(policy, 1);

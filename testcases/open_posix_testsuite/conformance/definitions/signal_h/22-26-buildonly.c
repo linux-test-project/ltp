@@ -1,6 +1,6 @@
   /*
-  Test that the CLD_DUMPED macro is defined.
-  */
+     Test that the CLD_DUMPED macro is defined.
+   */
 
 #include <signal.h>
 

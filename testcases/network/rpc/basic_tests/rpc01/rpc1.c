@@ -29,8 +29,7 @@ int xdr_send_data(XDR *, struct data *);
 void do_compare(int, char *, struct data *, char *);
 void usage_error(char *program_name);
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	struct hostent *hp;
 	struct data buffer, *return_buffer;
@@ -43,7 +42,7 @@ main(int argc, char *argv[])
 	int sock;
 	struct timeval timeout;
 
-	for (i=1; i<argc; i++) {
+	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-s")) {
 			if (++i >= argc) {
 				fprintf(stderr, "-s requires a host name\n");
@@ -69,7 +68,8 @@ main(int argc, char *argv[])
 			}
 			n = sscanf(argv[i], "%d", &program);
 			if (n != 1) {
-				fprintf(stderr, "-p requires an numeric argument\n");
+				fprintf(stderr,
+					"-p requires an numeric argument\n");
 				usage_error(argv[0]);
 			}
 			continue;
@@ -82,7 +82,8 @@ main(int argc, char *argv[])
 			}
 			n = sscanf(argv[i], "%d", &version);
 			if (n != 1) {
-				fprintf(stderr, "-v requires an numeric argument\n");
+				fprintf(stderr,
+					"-v requires an numeric argument\n");
 				usage_error(argv[0]);
 			}
 			continue;
@@ -94,13 +95,13 @@ main(int argc, char *argv[])
 		usage_error(argv[0]);
 	}
 	hp = gethostbyname(server);
-	if (hp == (struct hostent *) NULL) {
+	if (hp == (struct hostent *)NULL) {
 		fprintf(stderr, "server %s unknown\n", server);
 		usage_error(argv[0]);
 	}
 	memset(&server_sin, 0x00, sizeof(server_sin));
 	server_sin.sin_family = AF_INET;
-	memcpy((char *) &server_sin.sin_addr, hp->h_addr, sizeof(hp->h_addr));
+	memcpy((char *)&server_sin.sin_addr, hp->h_addr, sizeof(hp->h_addr));
 
 	if (!file_name) {
 		fprintf(stderr, "file name not given\n");
@@ -108,8 +109,8 @@ main(int argc, char *argv[])
 	}
 
 	gethostname(host_name, 100);
-	if ((hp=gethostbyname(host_name)) != NULL)
-		host_address = (long) *((int *) hp->h_addr_list[0]);
+	if ((hp = gethostbyname(host_name)) != NULL)
+		host_address = (long)*((int *)hp->h_addr_list[0]);
 	buffer.address = host_address;
 	buffer.request_id = getpid();
 
@@ -119,20 +120,21 @@ main(int argc, char *argv[])
 		usage_error(argv[0]);
 	}
 	if (stat(file_name, &stat_buffer))
-		fprintf(stderr, "stat() failed for %s, errno %d\n", file_name, errno);
-		buffer.data_length = stat_buffer.st_size;
+		fprintf(stderr, "stat() failed for %s, errno %d\n", file_name,
+			errno);
+	buffer.data_length = stat_buffer.st_size;
 	if (buffer.data_length > 2187) {
 		fprintf(stderr, "file too large (2187 max)\n");
 		usage_error(argv[0]);
 	}
 
-	buffer.data = (char *) malloc(buffer.data_length);
-	for (i=0, p=buffer.data; i < buffer.data_length; i++, p++)
-	*p = getc(fp);
+	buffer.data = (char *)malloc(buffer.data_length);
+	for (i = 0, p = buffer.data; i < buffer.data_length; i++, p++)
+		*p = getc(fp);
 	fclose(fp);
 
 	rc = callrpc(server, program, version, 1, xdr_send_data, &buffer,
-		 xdr_receive_data, &return_buffer);
+		     xdr_receive_data, &return_buffer);
 	do_compare(rc, "callrpc", &buffer, return_buffer->data);
 
 	server_sin.sin_port = 0;
@@ -141,13 +143,13 @@ main(int argc, char *argv[])
 	timeout.tv_sec = 10;
 	clnt = clntudp_create(&server_sin, program, version, timeout, &sock);
 	if (clnt == (CLIENT *) NULL) {
-	fprintf(stderr, "clntudp_create failed\n");
-	exit(1);
+		fprintf(stderr, "clntudp_create failed\n");
+		exit(1);
 	}
 	timeout.tv_usec = 0;
 	timeout.tv_sec = 30;
-	rc = (int) clnt_call(clnt, 1, xdr_send_data, &buffer,
-			 xdr_receive_data, &return_buffer, timeout);
+	rc = (int)clnt_call(clnt, 1, xdr_send_data, &buffer,
+			    xdr_receive_data, &return_buffer, timeout);
 	clnt_destroy(clnt);
 	do_compare(rc, "udp transport", &buffer, return_buffer->data);
 
@@ -160,16 +162,15 @@ main(int argc, char *argv[])
 	}
 	timeout.tv_usec = 0;
 	timeout.tv_sec = 30;
-	rc = (int) clnt_call(clnt, 1, xdr_send_data, &buffer,
-						 xdr_receive_data, &return_buffer, timeout);
+	rc = (int)clnt_call(clnt, 1, xdr_send_data, &buffer,
+			    xdr_receive_data, &return_buffer, timeout);
 	clnt_destroy(clnt);
 	do_compare(rc, "tcp transport", &buffer, return_buffer->data);
 
 	exit(0);
 }
 
-void
-do_compare(int rpc_rc, char *msg, struct data *buffer, char *ret_data)
+void do_compare(int rpc_rc, char *msg, struct data *buffer, char *ret_data)
 {
 	int rc;
 
@@ -186,25 +187,23 @@ do_compare(int rpc_rc, char *msg, struct data *buffer, char *ret_data)
 	}
 }
 
-int
-xdr_receive_data(XDR *xdrs, struct data **buffer)
+int xdr_receive_data(XDR * xdrs, struct data **buffer)
 {
 	struct data *bp;
 	int i, rc;
 	char *p;
 
-	bp = *buffer = (struct data *) malloc(sizeof(struct data));
+	bp = *buffer = (struct data *)malloc(sizeof(struct data));
 	rc = xdr_long(xdrs, &(bp->address));
 	rc = rc && xdr_long(xdrs, &bp->request_id);
 	rc = rc && xdr_long(xdrs, &bp->data_length);
-	p = (*buffer)->data = (char *) malloc(bp->data_length);
-	for (i=0; rc && i < bp->data_length; p++, i++)
+	p = (*buffer)->data = (char *)malloc(bp->data_length);
+	for (i = 0; rc && i < bp->data_length; p++, i++)
 		rc = xdr_char(xdrs, p);
-	return(rc);
+	return (rc);
 }
 
-int
-xdr_send_data(XDR *xdrs, struct data *buffer)
+int xdr_send_data(XDR * xdrs, struct data *buffer)
 {
 	int i, rc;
 	char *p;
@@ -212,15 +211,15 @@ xdr_send_data(XDR *xdrs, struct data *buffer)
 	rc = xdr_long(xdrs, &buffer->address);
 	rc = rc && xdr_long(xdrs, &buffer->request_id);
 	rc = rc && xdr_long(xdrs, &buffer->data_length);
-	for (i=0, p=buffer->data; rc && i < buffer->data_length; i++, p++)
+	for (i = 0, p = buffer->data; rc && i < buffer->data_length; i++, p++)
 		rc = xdr_char(xdrs, p);
-	return(rc);
+	return (rc);
 }
 
-void
-usage_error(char *program_name)
+void usage_error(char *program_name)
 {
-	fprintf(stderr, "Usage: %s -s server -f file [-p program-number] [-v version]\n",
+	fprintf(stderr,
+		"Usage: %s -s server -f file [-p program-number] [-v version]\n",
 		program_name);
 	exit(2);
 }

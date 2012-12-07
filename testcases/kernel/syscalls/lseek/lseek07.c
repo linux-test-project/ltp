@@ -120,8 +120,8 @@ int main(int ac, char **av)
 		TEST(lseek(fildes, offset, SEEK_SET));
 
 		if (TEST_RETURN == (off_t) - 1) {
-			tst_resm(TFAIL|TTERRNO, "lseek on (%s) failed",
-			    TEMP_FILE);
+			tst_resm(TFAIL | TTERRNO, "lseek on (%s) failed",
+				 TEMP_FILE);
 			continue;
 		}
 		/*
@@ -136,7 +136,8 @@ int main(int ac, char **av)
 			if (TEST_RETURN != offset) {
 				tst_resm(TFAIL, "lseek() returned "
 					 "incorrect value %ld, expected "
-					 "%"PRId64, TEST_RETURN, (int64_t)offset);
+					 "%" PRId64, TEST_RETURN,
+					 (int64_t) offset);
 				continue;
 			}
 			/*
@@ -145,8 +146,8 @@ int main(int ac, char **av)
 			 */
 			if (write(fildes, write_buf2, strlen(write_buf2)) !=
 			    strlen(write_buf2)) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-				    "write() failed to write additional data");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "write() failed to write additional data");
 			}
 
 			/*

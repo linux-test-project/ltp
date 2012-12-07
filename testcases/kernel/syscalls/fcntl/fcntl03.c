@@ -149,12 +149,11 @@ int main(int ac, char **av)
 		TEST(fcntl(fd, F_GETFD, 0));
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "fcntl failed");
-		else
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS,
-					 "fcntl(%s, F_GETFD, 0) returned %ld",
-					 fname, TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO, "fcntl failed");
+		else if (STD_FUNCTIONAL_TEST)
+			tst_resm(TPASS,
+				 "fcntl(%s, F_GETFD, 0) returned %ld",
+				 fname, TEST_RETURN);
 
 	}
 
@@ -174,7 +173,7 @@ void setup()
 
 	sprintf(fname, "tfile_%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 }
 
 void cleanup()
@@ -182,7 +181,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (close(fd) == -1)
-		tst_resm(TWARN|TERRNO, "close failed");
+		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
 }

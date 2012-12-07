@@ -30,20 +30,21 @@
 
 #include "test_VIDIOC_PRIORITY.h"
 
-int valid_priority(enum v4l2_priority priority) {
+int valid_priority(enum v4l2_priority priority)
+{
 	int valid = 0;
 
 	CU_ASSERT_EQUAL(V4L2_PRIORITY_DEFAULT, V4L2_PRIORITY_INTERACTIVE);
 
 	switch (priority) {
-		case V4L2_PRIORITY_UNSET:
-		case V4L2_PRIORITY_BACKGROUND:
-		case V4L2_PRIORITY_INTERACTIVE:
-		case V4L2_PRIORITY_RECORD:
-			valid = 1;
-			break;
-		default:
-			valid = 0;
+	case V4L2_PRIORITY_UNSET:
+	case V4L2_PRIORITY_BACKGROUND:
+	case V4L2_PRIORITY_INTERACTIVE:
+	case V4L2_PRIORITY_RECORD:
+		valid = 1;
+		break;
+	default:
+		valid = 0;
 	}
 	return valid;
 }
@@ -64,7 +65,8 @@ static void do_set_priority(enum v4l2_priority priority)
 	CU_ASSERT_EQUAL(ret_set, 0);
 	if (ret_set == 0) {
 		memset(&new_priority, 0xff, sizeof(new_priority));
-		ret_get = ioctl(get_video_fd(), VIDIOC_G_PRIORITY, &new_priority);
+		ret_get =
+		    ioctl(get_video_fd(), VIDIOC_G_PRIORITY, &new_priority);
 		errno_get = errno;
 
 		CU_ASSERT_EQUAL(ret_get, 0);
@@ -81,7 +83,8 @@ static void do_set_invalid_priority(enum v4l2_priority orig_priority,
 	int ret_get, errno_get;
 	enum v4l2_priority new_priority;
 
-	dprintf("\t%s:%u: try to set priority to %i\n", __FILE__, __LINE__, priority);
+	dprintf("\t%s:%u: try to set priority to %i\n", __FILE__, __LINE__,
+		priority);
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_PRIORITY, &priority);
 	errno_set = errno;
 
@@ -92,7 +95,8 @@ static void do_set_invalid_priority(enum v4l2_priority orig_priority,
 	CU_ASSERT_EQUAL(errno_set, EINVAL);
 	if (ret_set == -1 && errno_set == EINVAL) {
 		memset(&new_priority, 0xff, sizeof(new_priority));
-		ret_get = ioctl(get_video_fd(), VIDIOC_G_PRIORITY, &new_priority);
+		ret_get =
+		    ioctl(get_video_fd(), VIDIOC_G_PRIORITY, &new_priority);
 		errno_get = errno;
 
 		CU_ASSERT_EQUAL(ret_get, 0);
@@ -111,8 +115,9 @@ void test_VIDIOC_G_PRIORITY()
 	ret_get = ioctl(get_video_fd(), VIDIOC_G_PRIORITY, &orig_priority);
 	errno_get = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_PRIORITY, ret_get=%i, errno_get=%i, orig_priority=%i\n",
-		__FILE__, __LINE__, ret_get, errno_get, orig_priority);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_PRIORITY, ret_get=%i, errno_get=%i, orig_priority=%i\n",
+	     __FILE__, __LINE__, ret_get, errno_get, orig_priority);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
@@ -181,7 +186,8 @@ void test_VIDIOC_S_PRIORITY()
 		do_set_priority(V4L2_PRIORITY_INTERACTIVE);
 		do_set_priority(V4L2_PRIORITY_RECORD);
 
-		CU_ASSERT_EQUAL(V4L2_PRIORITY_DEFAULT, V4L2_PRIORITY_INTERACTIVE);
+		CU_ASSERT_EQUAL(V4L2_PRIORITY_DEFAULT,
+				V4L2_PRIORITY_INTERACTIVE);
 
 		do_set_priority(orig_priority);
 
@@ -212,7 +218,7 @@ void test_VIDIOC_S_PRIORITY_invalid()
 
 		do_set_invalid_priority(orig_priority, 4);
 		do_set_invalid_priority(orig_priority, S32_MAX);
-		do_set_invalid_priority(orig_priority, ((__u32)S32_MAX)+1);
+		do_set_invalid_priority(orig_priority, ((__u32) S32_MAX) + 1);
 		do_set_invalid_priority(orig_priority, U32_MAX);
 
 		do_set_priority(orig_priority);

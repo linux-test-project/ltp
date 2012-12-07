@@ -37,7 +37,7 @@ int main(void)
 		exit(PTS_UNRESOLVED);
 	}
 
-  	rc = pthread_attr_setschedpolicy(&attr, INVALIDPOLICY);
+	rc = pthread_attr_setschedpolicy(&attr, INVALIDPOLICY);
 	if (rc != EINVAL) {
 		ERR_MSG("pthread_attr_setschedpolicy()", rc);
 		status = PTS_FAIL;

@@ -1,6 +1,6 @@
   /*
-  Test that the ILL_PRVREG macro is defined.
-  */
+     Test that the ILL_PRVREG macro is defined.
+   */
 
 #include <signal.h>
 

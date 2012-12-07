@@ -54,7 +54,7 @@
 #include "linux_syscall_numbers.h"
 
 char *TCID = "sched_getaffinity01";
-int  TST_TOTAL = 1;
+int TST_TOTAL = 1;
 
 static long num;
 static void do_test(void);
@@ -81,7 +81,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	setup();
 
-
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 
@@ -103,11 +102,11 @@ static void do_test(void)
 #if __GLIBC_PREREQ(2, 7)
 realloc:
 	mask = CPU_ALLOC(nrcpus);
-# else
+#else
 	mask = malloc(sizeof(cpu_set_t));
 #endif
 	if (mask == NULL)
-		tst_brkm(TFAIL|TTERRNO, cleanup, "fail to get enough memory");
+		tst_brkm(TFAIL | TTERRNO, cleanup, "fail to get enough memory");
 #if __GLIBC_PREREQ(2, 7)
 	len = CPU_ALLOC_SIZE(nrcpus);
 	CPU_ZERO_S(len, mask);
@@ -127,10 +126,10 @@ realloc:
 #else
 		if (errno == EINVAL)
 			tst_resm(TFAIL, "NR_CPUS > 1024, we'd better use a "
-					"newer glibc(>= 2.7)");
+				 "newer glibc(>= 2.7)");
 		else
 #endif
-			tst_resm(TFAIL|TTERRNO, "fail to get cpu affinity");
+			tst_resm(TFAIL | TTERRNO, "fail to get cpu affinity");
 		cleanup();
 	} else {
 		tst_resm(TINFO, "cpusetsize is %d", len);
@@ -143,8 +142,8 @@ realloc:
 #endif
 			if (TEST_RETURN != -1)
 				tst_resm(TPASS, "sched_getaffinity() succeed, "
-						"this process %d is running "
-						"processor: %d", getpid(), i);
+					 "this process %d is running "
+					 "processor: %d", getpid(), i);
 		}
 	}
 
@@ -154,7 +153,7 @@ realloc:
 	CPU_ZERO(mask);
 #endif
 	/* negative tests */
-	QUICK_TEST(sched_getaffinity(0, len, (cpu_set_t *)-1));
+	QUICK_TEST(sched_getaffinity(0, len, (cpu_set_t *) - 1));
 	QUICK_TEST(sched_getaffinity(0, 0, mask));
 	/*
 	 * pid_t -> int -- the actual kernel limit is lower
@@ -188,7 +187,7 @@ static void setup(void)
 
 	num = sysconf(_SC_NPROCESSORS_CONF);
 	if (num == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "sysconf");
+		tst_brkm(TBROK | TERRNO, NULL, "sysconf");
 	tst_resm(TINFO, "system has %ld processor(s).", num);
 }
 

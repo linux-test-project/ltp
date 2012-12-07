@@ -47,13 +47,14 @@ char *methods[] = {
 	"\"__int64 *\"",
 	"\"double *\"",
 };
-int nmethods = sizeof(methods)/sizeof(methods[0]);
 
-int fflag = 0;	// if 0, then just Malloc once; else malloc/free each time
-int wflag		= 0; // if 1, call SetProcessWorkingSetSize() (WINDOWS ONLY)
-int sflag	= 0; // if 1, only print averages.
-int pflag		= 0;
-int csvflag	= 0; // Print Comma separated list for spreadsheet input.
+int nmethods = sizeof(methods) / sizeof(methods[0]);
+
+int fflag = 0;			// if 0, then just Malloc once; else malloc/free each time
+int wflag = 0;			// if 1, call SetProcessWorkingSetSize() (WINDOWS ONLY)
+int sflag = 0;			// if 1, only print averages.
+int pflag = 0;
+int csvflag = 0;		// Print Comma separated list for spreadsheet input.
 char *progname;
 
 double tottim = 0.0;
@@ -67,7 +68,7 @@ int main(int ac, char *av[])
 	unsigned cnt;
 	int method = 0;
 	char *p1, *p2;
-	char *p,*q;
+	char *p, *q;
 	short *sp, *sq;
 	int *ip, *iq;
 	long *lp, *lq;
@@ -76,61 +77,64 @@ int main(int ac, char *av[])
 	double t;
 
 	progname = av[0];
-	if (strrchr(progname,SLASHC))
-		progname = strrchr(progname,SLASHC) + 1;
+	if (strrchr(progname, SLASHC))
+		progname = strrchr(progname, SLASHC) + 1;
 
 	while (ac > 1) {
 		if (equal(av[1], "-f")) {
 			ac--;
 			fflag = 1;
 			av++;
-		}
-		else if (equal(av[1], "-w")) {
+		} else if (equal(av[1], "-w")) {
 			ac--;
 			wflag = 1;
 			av++;
-		}
-		else if (equal(av[1], "-s")) {
+		} else if (equal(av[1], "-s")) {
 			ac--;
 			sflag = 1;
 			av++;
-		}
-		else if (equal(av[1], "-p")) {
+		} else if (equal(av[1], "-p")) {
 			ac--;
 			pflag = 1;
 			av++;
-		}
-		else if (equal(av[1], "-csv")) {
+		} else if (equal(av[1], "-csv")) {
 			ac--;
 			csvflag++;
 			av++;
-		}
-		else
+		} else
 			break;
 	}
 	if (ac < 3) {
-		(void)printf("Usage: %s [-f] [-w] [-s] [-p] size cnt [method]\n",progname);
-		(void)printf("\t-f flag says to malloc and free of the \"cnt\" times.\n");
-		(void)printf("\t-w = set process min and max working set size to \"size\"\n");
+		(void)
+		    printf("Usage: %s [-f] [-w] [-s] [-p] size cnt [method]\n",
+			   progname);
+		(void)
+		    printf
+		    ("\t-f flag says to malloc and free of the \"cnt\" times.\n");
+		(void)
+		    printf
+		    ("\t-w = set process min and max working set size to \"size\"\n");
 		(void)printf("\t-s = silent; only print averages\n");
-		(void)printf("\t-p = prep; \"freshen\" cache before; -w disables\n");
+		(void)
+		    printf
+		    ("\t-p = prep; \"freshen\" cache before; -w disables\n");
 		(void)printf("\t-csv = print output in CSV format\n");
 
 		(void)printf("\tmethods:\n");
 		for (i = 0; i < nmethods; i++)
-			printf("\t%2d:\t%s\n",i,methods[i]);
+			printf("\t%2d:\t%s\n", i, methods[i]);
 		return 0;
 	}
 
-	size	= atoik(av[1]);
+	size = atoik(av[1]);
 
 	//
 	// Round size up to 4*sizeof(double) bytes.
 	//
-	if (size != ((size/ (4*sizeof(double)) ) * (4*sizeof(double)) )) {
-		size += (4*sizeof(double));
-		size /= (4*sizeof(double));
-		size *= (4*sizeof(double));
+	if (size != ((size / (4 * sizeof(double))) * (4 * sizeof(double)))) {
+		size += (4 * sizeof(double));
+		size /= (4 * sizeof(double));
+		size *= (4 * sizeof(double));
 	}
 	cnt = (unsigned)atoik(av[2]);
 
@@ -138,15 +142,20 @@ int main(int ac, char *av[])
 		p1 = (char *)Malloc(size);
 		p2 = (char *)Malloc(size);
 		if (pflag)
-			memcpy(p1,p2,size);
+			memcpy(p1, p2, size);
 	}
 
-	printf("%s ",progname);
-	if (fflag) printf("-f ");
-	if (wflag) printf("-w ");
-	if (sflag) printf("-s ");
-	if (pflag) printf("-p ");
-	if (csvflag) printf("-csv ");
+	printf("%s ", progname);
+	if (fflag)
+		printf("-f ");
+	if (wflag)
+		printf("-w ");
+	if (sflag)
+		printf("-s ");
+	if (pflag)
+		printf("-p ");
+	if (csvflag)
+		printf("-csv ");
 	printf("%u %u ", size, cnt);
 	if (csvflag) {
 		printf("Linux");
@@ -159,7 +168,8 @@ int main(int ac, char *av[])
 	}
 
 	for (; ac > 3; ac--, av++) {
-		if (isdigit(*av[3])) method = *av[3] - '0';
+		if (isdigit(*av[3]))
+			method = *av[3] - '0';
 		if (method < 0 || method >= nmethods)
 			method = 0;
 		if (sflag)
@@ -167,14 +177,15 @@ int main(int ac, char *av[])
 		for (ui = 0; ui < cnt; ui++) {
 			if (!sflag) {
 				(void)printf("%s %d %d %-18.18s\t",
-						progname, size, cnt, methods[method]);
+					     progname, size, cnt,
+					     methods[method]);
 				tstart();
 			}
 			if (fflag == 1) {
 				p1 = (char *)Malloc(size);
 				p2 = (char *)Malloc(size);
 			}
-			switch(method) {
+			switch (method) {
 			case 0:
 				(void)memcpy(p1, p2, size);
 				break;
@@ -203,15 +214,15 @@ int main(int ac, char *av[])
 					*lp++ = *lq++;
 				break;
 			case 5:
-				llp = (__int64 *)p1;
-				llq = (__int64 *)p2;
+				llp = (__int64 *) p1;
+				llq = (__int64 *) p2;
 				for (j = 0; j < size; j += sizeof(__int64))
 					*llp++ = *llq++;
 				break;
 			case 6:
 				dp = (double *)p1;
 				dq = (double *)p2;
-				for (j = 0; j < size; j += 4*sizeof(double)) {
+				for (j = 0; j < size; j += 4 * sizeof(double)) {
 					*dp++ = *dq++;
 					*dp++ = *dq++;
 					*dp++ = *dq++;
@@ -231,8 +242,7 @@ int main(int ac, char *av[])
 				if (t == 0.0)
 					t = .0001;
 				printf(" %8.6f seconds %8.3f MB/s\n",
-					t,
-					(double)size/t/1000000.);
+				       t, (double)size / t / 1000000.);
 			}
 		}
 		if (sflag) {
@@ -241,17 +251,18 @@ int main(int ac, char *av[])
 		}
 		if (csvflag) {
 			printf("%s,%u,%u,%8.3f,%8.3f\n",
-				methods[method],size,size*cnt,tottim,(double)size/(tottim/cnt)/1000000.);
-		}
-		else {
-			(void)printf("\tAVG: %d %-18.18s\t", size, methods[method]);
-			(void)printf(" %8.3f MB/s\n", (double)size/(tottim/cnt)/1000000.);
+			       methods[method], size, size * cnt, tottim,
+			       (double)size / (tottim / cnt) / 1000000.);
+		} else {
+			(void)printf("\tAVG: %d %-18.18s\t", size,
+				     methods[method]);
+			(void)printf(" %8.3f MB/s\n",
+				     (double)size / (tottim / cnt) / 1000000.);
 		}
 		tottim = 0.0;
 	}
 	return 0;
 }
-
 
 size_t atoik(char *s)
 {
@@ -264,38 +275,42 @@ size_t atoik(char *s)
 			base = 16;
 			s++;
 		}
-	}
-	else
+	} else
 		base = 10;
 
 	for (; isxdigit(*s); s++) {
 		if (base == 16)
 			if (isalpha(*s))
-				ret = base*ret + (toupper(*s) - 'A');
+				ret = base * ret + (toupper(*s) - 'A');
 			else
-				ret = base*ret + (*s - '0');
+				ret = base * ret + (*s - '0');
 		else if (isdigit(*s))
-				ret = base*ret + (*s - '0');
+			ret = base * ret + (*s - '0');
 		else
 			break;
 	}
 	for (; isalpha(*s); s++) {
-		switch(toupper(*s)) {
-		case 'K': ret *= 1024; break;
-		case 'M': ret *= 1024*1024; break;
+		switch (toupper(*s)) {
+		case 'K':
+			ret *= 1024;
+			break;
+		case 'M':
+			ret *= 1024 * 1024;
+			break;
 		default:
 			return ret;
 		}
 	}
 	return ret;
 }
+
 void *Malloc(size_t sz)
 {
 	char *p;
 
 	p = (char *)malloc(sz);
 	if (p == NULL) {
-		(void)printf("malloc(%d) failed\n",sz);
+		(void)printf("malloc(%d) failed\n", sz);
 		exit(1);
 	}
 	return (void *)p;
@@ -307,6 +322,7 @@ void tstart(void)
 {
 	gettimeofday(&_tstart, NULL);
 }
+
 void tend(void)
 {
 	gettimeofday(&_tend, NULL);
@@ -316,7 +332,7 @@ double tval()
 {
 	double t1, t2;
 
-	t1 =	(double)_tstart.tv_sec + (double)_tstart.tv_usec/(1000*1000);
-	t2 =	(double)_tend.tv_sec + (double)_tend.tv_usec/(1000*1000);
-	return t2-t1;
+	t1 = (double)_tstart.tv_sec + (double)_tstart.tv_usec / (1000 * 1000);
+	t2 = (double)_tend.tv_sec + (double)_tend.tv_usec / (1000 * 1000);
+	return t2 - t1;
 }

@@ -29,15 +29,14 @@
 int main(int argc, char *argv[])
 {
 	struct timespec tpset, tpget, tpreset, tpres;
-	int delta,nsdelta;
+	int delta, nsdelta;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if (getuid() != 0)
-	{
+	if (getuid() != 0) {
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
 	}
-        if (clock_getres(CLOCK_REALTIME, &tpres) != 0) {
+	if (clock_getres(CLOCK_REALTIME, &tpres) != 0) {
 		printf("Time resolution is not provided\n");
 		tpres.tv_sec = 0;
 		tpres.tv_nsec = 10000000;
@@ -53,7 +52,7 @@ int main(int argc, char *argv[])
 			setBackTime(tpreset);
 			return PTS_UNRESOLVED;
 		}
-		delta = tpget.tv_sec-tpset.tv_sec;
+		delta = tpget.tv_sec - tpset.tv_sec;
 		nsdelta = PR_NSEC_PER_SEC - tpget.tv_nsec;
 		if ((delta <= ACCEPTABLEDELTA) && (delta >= 0)) {
 			printf("Test PASSED\n");

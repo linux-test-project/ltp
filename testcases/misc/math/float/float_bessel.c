@@ -26,16 +26,16 @@
 #include "tfloat.h"
 
 const TH_FUNC th_func[] = {
-	{FUNC_NORMAL, 30, j0,    "j0",    "j0_inp.ref",    "j0_out.ref2",
-		""},
-	{FUNC_NORMAL, 30, j1,    "j1",    "j1_inp.ref",    "j1_out.ref2",
-		""},
-	{FUNC_NORMAL, 30, y0,    "y0",    "y0_inp.ref",    "y0_out.ref2",
-		""},
-	{FUNC_NORMAL, 30, y1,    "y1",    "y1_inp.ref",    "y1_out.ref2",
-		""},
-	{FUNC_GAM,  30, lgamma,"lgamma","gamma_inp.ref","gamma_out.ref",
-		"gamma_sign.ref"}
+	{FUNC_NORMAL, 30, j0, "j0", "j0_inp.ref", "j0_out.ref2",
+	 ""},
+	{FUNC_NORMAL, 30, j1, "j1", "j1_inp.ref", "j1_out.ref2",
+	 ""},
+	{FUNC_NORMAL, 30, y0, "y0", "y0_inp.ref", "y0_out.ref2",
+	 ""},
+	{FUNC_NORMAL, 30, y1, "y1", "y1_inp.ref", "y1_out.ref2",
+	 ""},
+	{FUNC_GAM, 30, lgamma, "lgamma", "gamma_inp.ref", "gamma_out.ref",
+	 "gamma_sign.ref"}
 };
 
 #define NB_FUNC  (sizeof(th_func)/sizeof(TH_FUNC))

@@ -26,12 +26,11 @@
 
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[50];
 	int counter = SEM_VALUE_MAX;
 
-	if (counter >= INT_MAX)
-	{
+	if (counter >= INT_MAX) {
 		return PTS_PASS;
 	}
 
@@ -39,7 +38,7 @@ int main()
 
 	++counter;
 	mysemp = sem_open(semname, O_CREAT, 0444, counter);
-	if ((mysemp  == SEM_FAILED) && (errno == EINVAL))  {
+	if ((mysemp == SEM_FAILED) && (errno == EINVAL)) {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		return PTS_PASS;

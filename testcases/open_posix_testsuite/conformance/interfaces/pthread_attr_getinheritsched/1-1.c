@@ -26,7 +26,8 @@
 #define EXPLICIT PTHREAD_EXPLICIT_SCHED
 #define INHERIT PTHREAD_INHERIT_SCHED
 
-int verify_inheritsched(pthread_attr_t *attr, int schedtype) {
+int verify_inheritsched(pthread_attr_t * attr, int schedtype)
+{
 	int rc;
 	int inheritsched;
 
@@ -35,27 +36,27 @@ int verify_inheritsched(pthread_attr_t *attr, int schedtype) {
 		perror(ERROR_PREFIX "pthread_attr_getinheritsched");
 		exit(PTS_UNRESOLVED);
 	}
-	switch(schedtype) {
+	switch (schedtype) {
 	case INHERIT:
-  		if (inheritsched != INHERIT) {
-    			perror(ERROR_PREFIX "got wrong inheritsched param");
-    			exit(PTS_FAIL);
-  		}
+		if (inheritsched != INHERIT) {
+			perror(ERROR_PREFIX "got wrong inheritsched param");
+			exit(PTS_FAIL);
+		}
 		break;
 	case EXPLICIT:
-  		if (inheritsched != EXPLICIT) {
-    			perror(ERROR_PREFIX "got wrong inheritsched param");
-    			exit(PTS_FAIL);
-  		}
+		if (inheritsched != EXPLICIT) {
+			perror(ERROR_PREFIX "got wrong inheritsched param");
+			exit(PTS_FAIL);
+		}
 		break;
 	}
-      return 0;
+	return 0;
 }
 
 int main()
 {
-	int                   rc=0;
-	pthread_attr_t        attr;
+	int rc = 0;
+	pthread_attr_t attr;
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
@@ -63,21 +64,21 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 
-  	rc = pthread_attr_setinheritsched(&attr, INHERIT);
+	rc = pthread_attr_setinheritsched(&attr, INHERIT);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_setinheritsched");
 		exit(PTS_UNRESOLVED);
 	}
-  	verify_inheritsched(&attr, INHERIT);
+	verify_inheritsched(&attr, INHERIT);
 
-  	rc = pthread_attr_setinheritsched(&attr, EXPLICIT);
+	rc = pthread_attr_setinheritsched(&attr, EXPLICIT);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_setinheritsched");
 		exit(PTS_UNRESOLVED);
 	}
-  	verify_inheritsched(&attr, EXPLICIT);
+	verify_inheritsched(&attr, EXPLICIT);
 
-  	rc = pthread_attr_destroy(&attr);
+	rc = pthread_attr_destroy(&attr);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);

@@ -29,32 +29,28 @@ int main()
 
 	/* Initialize the barrier attribute object */
 	rc = pthread_barrierattr_init(&ba);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		printf("Error while initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Get pshared */
-	if (pthread_barrierattr_getpshared(&ba, &pshared) != 0)
-	{
+	if (pthread_barrierattr_getpshared(&ba, &pshared) != 0) {
 		printf("Error at pthread_barrierattr_getpshared()\n");
 		return PTS_FAIL;
 	}
 
-	if (pshared != PTHREAD_PROCESS_PRIVATE)
-	{
+	if (pshared != PTHREAD_PROCESS_PRIVATE) {
 		printf("The process shared attribute was not set to "
-			"default value of PTHREAD_PROCESS_PRIVATE\n");
+		       "default value of PTHREAD_PROCESS_PRIVATE\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Cleanup */
 	rc = pthread_barrierattr_destroy(&ba);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		printf("Error at pthread_barrierattr_destroy() "
-			"return code: %d, %s", rc, strerror(rc));
+		       "return code: %d, %s", rc, strerror(rc));
 		return PTS_UNRESOLVED;
 	}
 

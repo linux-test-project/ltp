@@ -23,7 +23,8 @@
 #define FUNCTION "sem_trywait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main() {
+int main()
+{
 	sem_t *mysemp;
 	char semname[28];
 	int val;
@@ -37,7 +38,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	/* Lock Semaphore by sem_trywait*/
+	/* Lock Semaphore by sem_trywait */
 	if (sem_trywait(mysemp) == -1) {
 		perror(ERROR_PREFIX "sem_wait");
 		return PTS_UNRESOLVED;
@@ -48,7 +49,7 @@ int main() {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 
-	/* Checking if the value of the Semaphore decremented by one */
+		/* Checking if the value of the Semaphore decremented by one */
 	} else if (val == 0) {
 		puts("TEST PASSED");
 		sem_unlink(semname);

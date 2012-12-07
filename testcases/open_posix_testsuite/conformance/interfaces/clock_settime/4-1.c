@@ -50,8 +50,7 @@ int main(int argc, char *argv[])
 	int flags = 0;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if (geteuid() != 0)
-	{
+	if (geteuid() != 0) {
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
 	}
@@ -83,7 +82,7 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
- 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
+	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
 		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
@@ -127,8 +126,7 @@ int main(int argc, char *argv[])
 		return PTS_PASS;
 	} else {
 		printf("FAIL:  Ended %d, not %d\n",
-				(int) tpT2.tv_sec,
-				(int) its.it_value.tv_sec);
+		       (int)tpT2.tv_sec, (int)its.it_value.tv_sec);
 		return PTS_FAIL;
 	}
 

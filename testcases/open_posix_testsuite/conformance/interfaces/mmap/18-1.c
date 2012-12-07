@@ -77,7 +77,7 @@ int main(void)
 	int fd;
 
 	size_t memlock_size;
-	struct rlimit rlim = {.rlim_max = RLIM_INFINITY};
+	struct rlimit rlim = {.rlim_max = RLIM_INFINITY };
 
 	/* Lock all memory page to be mapped */
 	if (mlockall(MCL_FUTURE) == -1) {

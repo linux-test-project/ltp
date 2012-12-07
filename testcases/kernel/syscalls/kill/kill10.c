@@ -221,28 +221,24 @@ int main(int ac, char **av)
 	char *msg;
 	int cnt;
 
-
 	if ((msg = parse_opts(ac, av, options, &help))) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	if (nflag) {
 		if (sscanf(narg, "%i", &num_procs) != 1) {
-			tst_brkm(TBROK, NULL,
-			    "-n option arg is not a number");
+			tst_brkm(TBROK, NULL, "-n option arg is not a number");
 		}
 	}
 	if (gflag) {
 		if (sscanf(garg, "%i", &num_pgrps) != 1) {
-			tst_brkm(TBROK, NULL,
-			    "-g option arg is not a number");
+			tst_brkm(TBROK, NULL, "-g option arg is not a number");
 		}
 	}
 
 	if (dflag) {
 		if (sscanf(darg, "%i", &debug_flag) != 1) {
-			tst_brkm(TBROK, NULL,
-			    "-d option arg is not a number");
+			tst_brkm(TBROK, NULL, "-d option arg is not a number");
 		}
 	}
 
@@ -398,7 +394,7 @@ void ack_ready(int sig, siginfo_t * si, void *data)
 		}
 	} else {
 		printf("received unexpected signal %d from %d",
-		    sig, si->si_pid);
+		       sig, si->si_pid);
 	}
 }
 
@@ -425,7 +421,7 @@ void ack_done(int sig, siginfo_t * si, void *data)
 		}
 	} else {
 		printf("received unexpected signal %d from %d",
-		    sig, si->si_pid);
+		       sig, si->si_pid);
 	}
 }
 
@@ -469,7 +465,7 @@ void fork_pgrps(int pgrps_left)
 			printf("%d: forking new Manager\n", mypid);
 		switch (child = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup,
+			tst_brkm(TBROK | TERRNO, cleanup,
 				 "fork() failed in fork_pgrps(%d)", pgrps_left);
 			break;
 		case 0:
@@ -587,8 +583,8 @@ void manager(int num_procs)
 			       getppid());
 		if (kill(getppid(), SIGUSR1) == -1) {
 			printf("%d: Couldn't signal master (%d) that we're "
-			    "ready. %d: %s",
-			    mypid, getppid(), errno, strerror(errno));
+			       "ready. %d: %s",
+			       mypid, getppid(), errno, strerror(errno));
 			exit(errno);
 		}
 		usleep(100);
@@ -604,16 +600,16 @@ void manager(int num_procs)
 		if (child_signal_counter >= num_procs) {
 			confirmed_ready_flag = 0;
 			printf("%d: All %d children reported in\n",
-			    mypid, child_signal_counter);
+			       mypid, child_signal_counter);
 			while (child_signal_counter) {
 				if (debug_flag >= 3)
 					printf("%d: Manager, SIGUSR2 -> %d\n",
 					       mypid, getppid());
 				if (kill(getppid(), SIGUSR2) == -1) {
 					printf("%d: Couldn't signal master "
-					    "(%d) that we're ready. %d: %s\n",
-					    mypid, getppid(), errno,
-					    strerror(errno));
+					       "(%d) that we're ready. %d: %s\n",
+					       mypid, getppid(), errno,
+					       strerror(errno));
 					exit(errno);
 				}
 				usleep(100);
@@ -627,18 +623,21 @@ void graceful_exit(int sig)
 {
 	exit(0);
 }
+
 void set_signal_parents(int sig)
 {
 	if (debug_flag >= 8)
 		printf("%d: Child start signaling\n", mypid);
 	signal_parents_flag = 1;
 }
+
 void clear_signal_parents(int sig)
 {
 	if (debug_flag >= 8)
 		printf("%d: Child stop signaling\n", mypid);
 	signal_parents_flag = 0;
 }
+
 void set_confirmed_ready(int sig)
 {
 
@@ -646,6 +645,7 @@ void set_confirmed_ready(int sig)
 		printf("%d: Manager confirmed ready\n", mypid);
 	confirmed_ready_flag = 1;
 }
+
 void reset_counter(int sig)
 {
 	checklist_reset(0xFF);
@@ -708,9 +708,8 @@ void fork_procs(int procs_left)
 			printf("%d: forking new child\n", mypid);
 		switch (child = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup,
-				 "fork() failed in fork_procs(%d)",
-				 procs_left);
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "fork() failed in fork_procs(%d)", procs_left);
 			break;
 		case 0:
 			mypid = getpid();
@@ -731,14 +730,14 @@ void fork_procs(int procs_left)
 				while (signal_parents_flag) {
 					if (debug_flag >= 6)
 						printf("%d: child, SIGUSR2 "
-						    "-> %d\n",
-						    mypid, getppid());
+						       "-> %d\n",
+						       mypid, getppid());
 					if (kill(getppid(), SIGUSR2) == -1) {
 						/* something went wrong */
 						printf("%d: kill(ppid:%d, "
-						    "SIGUSR2) failed. %d: %s",
-						    mypid, getppid(), errno,
-						    strerror(errno));
+						       "SIGUSR2) failed. %d: %s",
+						       mypid, getppid(), errno,
+						       strerror(errno));
 						exit(errno);
 					}
 					usleep(100);
@@ -775,8 +774,8 @@ inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa)
 {
 	int ret;
 	if ((ret = sigaction(sig, sa, osa)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "sigaction(%d, ...) failed",
-		    sig);
+		tst_brkm(TBROK | TERRNO, cleanup, "sigaction(%d, ...) failed",
+			 sig);
 	}
 	return ret;
 }

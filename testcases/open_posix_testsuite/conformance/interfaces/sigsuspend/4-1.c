@@ -39,10 +39,11 @@ void handler(int signo)
 {
 }
 
-int is_changed(sigset_t set, int sig) {
+int is_changed(sigset_t set, int sig)
+{
 
 	int i;
-	int siglist[] = {SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
+	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
 		SIGPIPE, SIGQUIT, SIGSEGV,
 		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
@@ -54,12 +55,13 @@ int is_changed(sigset_t set, int sig) {
 		SIGPROF,
 #endif
 		SIGSYS,
-		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
+		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
+	};
 
 	if (sigismember(&set, sig) != 1) {
 		return 1;
 	}
-	for (i=0; i<NUMSIGNALS; i++) {
+	for (i = 0; i < NUMSIGNALS; i++) {
 		if ((siglist[i] != sig)) {
 			if (sigismember(&set, siglist[i]) != 0) {
 				return 1;
@@ -77,36 +79,38 @@ int main()
 	if (pid == 0) {
 		/* child */
 
-	        sigset_t tempmask, originalmask, currentmask;
+		sigset_t tempmask, originalmask, currentmask;
 
-	        struct sigaction act;
+		struct sigaction act;
 
-	        act.sa_handler = handler;
-	        act.sa_flags=0;
-	        sigemptyset(&act.sa_mask);
+		act.sa_handler = handler;
+		act.sa_flags = 0;
+		sigemptyset(&act.sa_mask);
 
-	        sigemptyset(&tempmask);
+		sigemptyset(&tempmask);
 		sigaddset(&tempmask, SIGUSR2);
 
-	        if (sigaction(SIGUSR1, &act, 0) == -1) {
-	                perror("Unexpected error while attempting to pre-conditions");
-                	return PTS_UNRESOLVED;
-	        }
+		if (sigaction(SIGUSR1, &act, 0) == -1) {
+			perror
+			    ("Unexpected error while attempting to pre-conditions");
+			return PTS_UNRESOLVED;
+		}
 
-	        sigemptyset(&originalmask);
+		sigemptyset(&originalmask);
 		sigaddset(&originalmask, SIGUSR1);
 		sigprocmask(SIG_SETMASK, &originalmask, NULL);
 
 		printf("suspending child\n");
-	        if (sigsuspend(&tempmask) != -1)
-	                perror("sigsuspend error");
+		if (sigsuspend(&tempmask) != -1)
+			perror("sigsuspend error");
 
-	        printf("returned from suspend\n");
+		printf("returned from suspend\n");
 
 		sigprocmask(SIG_SETMASK, NULL, &currentmask);
 
 		if (is_changed(currentmask, SIGUSR1) != 0) {
-			printf("signal mask was not restored properly after sigsuspend returned\n");
+			printf
+			    ("signal mask was not restored properly after sigsuspend returned\n");
 			return 1;
 		}
 		return 0;
@@ -119,7 +123,7 @@ int main()
 		sleep(1);
 
 		printf("parent sending child a SIGUSR1 signal\n");
-		kill (pid, SIGUSR1);
+		kill(pid, SIGUSR1);
 
 		if (wait(&s) == -1) {
 			perror("Unexpected error while setting up test "
@@ -136,9 +140,9 @@ int main()
 
 		printf("Exit status from child is %d\n", exit_status);
 
-                if (exit_status == 1) {
-                        return PTS_FAIL;
-                }
+		if (exit_status == 1) {
+			return PTS_FAIL;
+		}
 
 		printf("Test PASSED\n");
 		return PTS_PASS;

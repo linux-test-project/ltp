@@ -180,7 +180,7 @@ void c_timeout_handler();
 void catchsig();
 
 #if defined(linux)
-# define SIG_PF sig_t		/* This might need to be sighandler_t on some systems */
+#define SIG_PF sig_t		/* This might need to be sighandler_t on some systems */
 #endif
 
 #define SIG_CAUGHT	1
@@ -239,8 +239,7 @@ char **argv;
     /***************************************************************
     * parse standard options
     ***************************************************************/
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -302,7 +301,7 @@ int tst_count;
 	 * Create a pipe of ipc
 	 */
 	if (pipe(fd1) == -1) {
-		tst_resm(TBROK|TERRNO, "pipe() failed");
+		tst_resm(TBROK | TERRNO, "pipe() failed");
 		return;
 	}
 
@@ -312,7 +311,8 @@ int tst_count;
 	 */
 
 	if (fcntl(fd1[0], F_SETFL, O_NONBLOCK) == -1) {
-		tst_resm(TBROK|TERRNO, "fcntl(fd1[0], F_SETFL, O_NONBLOCK) failed");
+		tst_resm(TBROK | TERRNO,
+			 "fcntl(fd1[0], F_SETFL, O_NONBLOCK) failed");
 		close(fd1[0]);
 		close(fd1[1]);
 		return;
@@ -342,7 +342,8 @@ int tst_count;
 			}
 
 			if (rd_sz == 0) {	/* if EOF encountered */
-				tst_resm(TBROK, "child's pipe is closed before 'go' message received");
+				tst_resm(TBROK,
+					 "child's pipe is closed before 'go' message received");
 				close(fd1[0]);
 				return;
 			}
@@ -379,7 +380,7 @@ int tst_count;
 		 * Send the signal SIGKILL to the child.
 		 */
 		if (kill(Pid, SIGKILL) == -1) {
-			tst_resm(TBROK|TERRNO, "kill(%d) failed", Pid);
+			tst_resm(TBROK | TERRNO, "kill(%d) failed", Pid);
 			close(fd1[0]);
 			return;
 		}
@@ -391,7 +392,7 @@ int tst_count;
 			/*
 			 * The wait system call failed.
 			 */
-			tst_resm(TBROK|TERRNO, "wait() failed");
+			tst_resm(TBROK | TERRNO, "wait() failed");
 			close(fd1[0]);
 			return;
 		} else if (STD_FUNCTIONAL_TEST) {
@@ -403,18 +404,21 @@ int tst_count;
 				tst_resm(TPASS,
 					 "The child was killed by SIGKILL.");
 			} else if ((term_stat >> 8) == TIMED_OUT) {
-				tst_resm(TBROK, "child exited with a timed out exit status");
+				tst_resm(TBROK,
+					 "child exited with a timed out exit status");
 			} else {
 				if ((term_stat >> 8) == SIG_IGNORED
 				    && test_case == IGNORE_TEST) {
-					tst_resm(TFAIL, "SIGKILL was ignored by child after sent by parent.");
+					tst_resm(TFAIL,
+						 "SIGKILL was ignored by child after sent by parent.");
 				} else if ((term_stat >> 8) == SIG_CAUGHT
 					   && test_case == CATCH_TEST) {
-					tst_resm(TFAIL, "SIGKILL was caught by child after sent by parent.");
+					tst_resm(TFAIL,
+						 "SIGKILL was caught by child after sent by parent.");
 				} else {
 					tst_resm(TFAIL,
-						"Child's termination status is unexpected. Status: %d (%#o).",
-						term_stat, term_stat);
+						 "Child's termination status is unexpected. Status: %d (%#o).",
+						 term_stat, term_stat);
 				}
 			}
 		} else {
@@ -422,15 +426,14 @@ int tst_count;
 		}
 		close(fd1[0]);
 
-	}
-	else if (Pid == 0) {
+	} else if (Pid == 0) {
 		/*
 		 * This is the child.
 		 * Set up to ignore/catch SIGKILL and check the return values.
 		 */
 #ifdef UCLINUX
 		if (self_exec(argv0, "dd", test_case, fd1[1]) < 0) {
-			tst_resm(TBROK|TERRNO, "self_exec() failed");
+			tst_resm(TBROK | TERRNO, "self_exec() failed");
 			close(fd1[0]);
 			close(fd1[1]);
 			return;
@@ -439,9 +442,8 @@ int tst_count;
 		do_child(test_case);
 #endif
 
-	}
-	else {
-		tst_resm(TBROK|TERRNO, "fork() failed");
+	} else {
+		tst_resm(TBROK | TERRNO, "fork() failed");
 		close(fd1[0]);
 		close(fd1[1]);
 		return;
@@ -545,20 +547,20 @@ void sigdfl_test()
 	if (Tret == SIG_ERR) {
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_ERRNO != EINVAL) {
-				tst_resm(TFAIL|TTERRNO,
-					"signal(SIGKILL,SIG_DFL) expected ret:-1, errno:EINVAL, got ret:%p",
-					Tret);
+				tst_resm(TFAIL | TTERRNO,
+					 "signal(SIGKILL,SIG_DFL) expected ret:-1, errno:EINVAL, got ret:%p",
+					 Tret);
 			} else {
 				tst_resm(TPASS,
-					"signal(SIGKILL,SIG_DFL) ret:%p, errno EINVAL as expected",
-					Tret);
+					 "signal(SIGKILL,SIG_DFL) ret:%p, errno EINVAL as expected",
+					 Tret);
 			}
 		} else
 			Tst_count++;
 	} else {
 		tst_resm(TFAIL,
-			"signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",
-			Tret, TEST_ERRNO, EINVAL);
+			 "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",
+			 Tret, TEST_ERRNO, EINVAL);
 	}
 
 }

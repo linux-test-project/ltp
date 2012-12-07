@@ -60,15 +60,16 @@
 #define START_MAX	3000
 #define REPORT_MIN	1000000
 
-static unsigned int max_window = 0; /* infinite, don't use a window */
-static unsigned int test_duration = 0; /* infinite duration */
-static int test_stop = 0; /* 1 to stop */
+static unsigned int max_window = 0;	/* infinite, don't use a window */
+static unsigned int test_duration = 0;	/* infinite duration */
+static int test_stop = 0;	/* 1 to stop */
 
 void usage(void)
 {
 	rt_help();
 	printf("gtod_infinite specific options:\n");
-	printf("  -wWINDOW      iterations in max value window (default inf)\n");
+	printf
+	    ("  -wWINDOW      iterations in max value window (default inf)\n");
 	printf("  -tDURATION    test duration in finite hours (default inf)\n");
 }
 
@@ -76,18 +77,18 @@ int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		case 'w':
-			max_window = atoi(v);
-			break;
-		case 't':
-			test_duration = atoi(v);
-			break;
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	case 'w':
+		max_window = atoi(v);
+		break;
+	case 't':
+		test_duration = atoi(v);
+		break;
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
@@ -100,11 +101,11 @@ void alarm_handler(int sig)
 
 int main(int argc, char *argv[])
 {
-	int/* i,*/ rc;
+	int /* i, */ rc;
 	struct timespec ts, p_ts;
 	nsec_t s_time, e_time, diff_time;
 	nsec_t max_time = START_MAX;
-//	cpu_set_t mask;
+//      cpu_set_t mask;
 	struct sched_param param;
 	time_t tt;
 	unsigned int wi;
@@ -130,11 +131,10 @@ int main(int argc, char *argv[])
 */
 	rt_init("hw:t:", parse_args, argc, argv);
 
-	mlockall(MCL_CURRENT|MCL_FUTURE);
+	mlockall(MCL_CURRENT | MCL_FUTURE);
 
 	if (max_window > 0) {
-		printf("%d iterations in max calculation window\n",
-			max_window);
+		printf("%d iterations in max calculation window\n", max_window);
 	}
 
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 
 	/* Set alarm for test duration, if specified */
 	if (test_duration > 0) {
-		rc = alarm(test_duration * 60 * 60 );
+		rc = alarm(test_duration * 60 * 60);
 		if (rc) {
 			perror("alarm");
 			exit(1);
@@ -174,13 +174,12 @@ int main(int argc, char *argv[])
 		diff_time = e_time - s_time;
 
 		if (max_window > 0 ||
-			((diff_time > max_time) ||
-			   (diff_time > REPORT_MIN))) {
+		    ((diff_time > max_time) || (diff_time > REPORT_MIN))) {
 			if (diff_time > max_time)
 				max_time = diff_time;
 
 			if (max_window == 0 || ++wi == max_window) {
-				tt = (time_t)ts.tv_sec;
+				tt = (time_t) ts.tv_sec;
 				printf("Task delayed for %lld nsec!!! %s",
 				       max_time, ctime(&tt));
 				fflush(stdout);

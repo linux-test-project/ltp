@@ -22,7 +22,7 @@ int main()
 
 	main_thread = pthread_self();
 
- 	if (pthread_kill(main_thread, 0) != 0) {
+	if (pthread_kill(main_thread, 0) != 0) {
 		printf("pthread_kill did not return success.\n");
 		return PTS_UNRESOLVED;
 	}

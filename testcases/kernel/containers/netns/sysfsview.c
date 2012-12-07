@@ -40,33 +40,33 @@
 
 int main()
 {
-    int ret, status = 0;
-    char *script, *ltproot;
+	int ret, status = 0;
+	char *script, *ltproot;
 
-    ltproot = getenv("LTPROOT");
-    if (! ltproot) {
-        printf("LTPROOT env variable is not set\n");
-        printf("Please set LTPROOT and re-run the test.. Thankyou\n");
-        return -1;
-    }
+	ltproot = getenv("LTPROOT");
+	if (!ltproot) {
+		printf("LTPROOT env variable is not set\n");
+		printf("Please set LTPROOT and re-run the test.. Thankyou\n");
+		return -1;
+	}
 
-    script = malloc (FILENAME_MAX);
-    if (script == NULL) {
-        printf("FAIL: error while allocating mem");
-        exit(1);
-    }
+	script = malloc(FILENAME_MAX);
+	if (script == NULL) {
+		printf("FAIL: error while allocating mem");
+		exit(1);
+	}
 
-    sprintf(script, "%s/testcases/bin/parent_share.sh" , ltproot);
+	sprintf(script, "%s/testcases/bin/parent_share.sh", ltproot);
 
-    /* Parent should be able to view child sysfs and vice versa */
-    ret = system(script);
-    status = WEXITSTATUS(ret);
-    if (ret == -1 || status != 0) {
-        printf("Error while executing the script %s\n", script);
-        fflush(stdout);
-        exit(1);
-    }
+	/* Parent should be able to view child sysfs and vice versa */
+	ret = system(script);
+	status = WEXITSTATUS(ret);
+	if (ret == -1 || status != 0) {
+		printf("Error while executing the script %s\n", script);
+		fflush(stdout);
+		exit(1);
+	}
 
-    status = create_net_namespace("parent_view.sh","child_propagate.sh");
-    return status;
+	status = create_net_namespace("parent_view.sh", "child_propagate.sh");
+	return status;
 }

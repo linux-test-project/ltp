@@ -114,19 +114,21 @@ struct test_case_t {		/* test case structure */
 	char *pathname;
 	int a_mode;
 	int exp_errno;
-	void (*setupfunc)(void);
+	void (*setupfunc) (void);
 } test_cases[] = {
-	{ TEST_FILE1, R_OK, EACCES, setup1 },
-	{ TEST_FILE2, W_OK, EACCES, setup2 },
-	{ TEST_FILE3, X_OK, EACCES, setup3 },
-	{ TEST_FILE4, INV_OK, EINVAL, setup4 },
+	{
+	TEST_FILE1, R_OK, EACCES, setup1}, {
+	TEST_FILE2, W_OK, EACCES, setup2}, {
+	TEST_FILE3, X_OK, EACCES, setup3}, {
+	TEST_FILE4, INV_OK, EINVAL, setup4},
 #if !defined(UCLINUX)
-	{ (char *)-1, R_OK, EFAULT, NULL },
-	{ high_address_node, R_OK, EFAULT, NULL },
+	{
+	(char *)-1, R_OK, EFAULT, NULL}, {
+	high_address_node, R_OK, EFAULT, NULL},
 #endif
-	{ "", W_OK, ENOENT, NULL },
-	{ Longpathname, R_OK, ENAMETOOLONG, longpath_setup },
-};
+	{
+	"", W_OK, ENOENT, NULL}, {
+Longpathname, R_OK, ENAMETOOLONG, longpath_setup},};
 
 char *TCID = "access05";	/* Test program identifier.    */
 int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
@@ -177,20 +179,20 @@ int main(int ac, char **av)
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL,
-				    "access(%s, %#o) succeeded unexpectedly",
-				    file_name, access_mode);
+					 "access(%s, %#o) succeeded unexpectedly",
+					 file_name, access_mode);
 				continue;
 			}
 
 			if (TEST_ERRNO == test_cases[i].exp_errno)
-				tst_resm(TPASS|TTERRNO,
-				    "access failed as expected");
+				tst_resm(TPASS | TTERRNO,
+					 "access failed as expected");
 			else
-				tst_resm(TFAIL|TTERRNO,
-				    "access failed unexpectedly; expected: "
-				    "%d - %s",
-				    test_cases[i].exp_errno,
-				    strerror(test_cases[i].exp_errno));
+				tst_resm(TFAIL | TTERRNO,
+					 "access failed unexpectedly; expected: "
+					 "%d - %s",
+					 test_cases[i].exp_errno,
+					 strerror(test_cases[i].exp_errno));
 		}
 	}
 
@@ -210,17 +212,17 @@ void setup()
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
+		tst_brkm(TBROK | TERRNO, NULL, "setuid failed");
 
 	TEST_PAUSE;
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, NULL, "mmap failed");
+		tst_brkm(TBROK | TERRNO, NULL, "mmap failed");
 	test_cases[5].pathname = bad_addr;
 #endif
 
@@ -233,18 +235,18 @@ void setup()
 
 void setup_file(const char *file, mode_t perms)
 {
-	int fd;		/* file handle for testfile */
+	int fd;			/* file handle for testfile */
 
 	if ((fd = open(file, O_RDWR | O_CREAT, FILE_MODE)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
 			 file, FILE_MODE);
 
 	if (fchmod(fd, perms) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, %#o) failed",
+		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, %#o) failed",
 			 file, perms);
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", file);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed", file);
 }
 
 /*

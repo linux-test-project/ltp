@@ -97,7 +97,6 @@ int alloc_pages_on_nodes(void **pages, unsigned int num, int *nodes)
 	return -1;
 }
 
-
 /*
  * alloc_pages_linear() - allocate pages in each NUMA node
  * @pages: array in which the page pointers will be stored
@@ -121,9 +120,9 @@ int alloc_pages_linear(void **pages, unsigned int num)
 	int ret;
 
 	ret = get_allowed_nodes_arr(NH_MEMS, &num_allowed_nodes,
-		&allowed_nodes);
+				    &allowed_nodes);
 	if (ret < 0)
-		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes(): %d", ret);
+		tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes(): %d", ret);
 
 	for (i = 0; i < num; i++) {
 		nodes[i] = allowed_nodes[n];
@@ -191,7 +190,7 @@ verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
 				    pages[i], MPOL_F_NODE | MPOL_F_ADDR);
 		if (ret == -1) {
 			tst_resm(TBROK | TERRNO, "error getting memory policy "
-				 		 "for page %p", pages[i]);
+				 "for page %p", pages[i]);
 			return;
 		}
 
@@ -225,9 +224,9 @@ void verify_pages_linear(void **pages, int *status, unsigned int num)
 	int ret;
 
 	ret = get_allowed_nodes_arr(NH_MEMS, &num_allowed_nodes,
-		&allowed_nodes);
+				    &allowed_nodes);
 	if (ret < 0)
-		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes(): %d", ret);
+		tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes(): %d", ret);
 
 	for (i = 0; i < num; i++) {
 		nodes[i] = allowed_nodes[n];
@@ -349,7 +348,7 @@ sem_t *alloc_sem(int num)
 		ret = sem_init(&sem[i], 1, 0);
 		if (ret == -1) {
 			tst_resm(TBROK | TERRNO, "semaphore initialization "
-						 "failed");
+				 "failed");
 			goto err_free_mem;
 		}
 	}
@@ -400,13 +399,13 @@ void check_config(unsigned int min_nodes)
 
 	ret = get_allowed_nodes_arr(NH_MEMS, &num_allowed_nodes, NULL);
 	if (ret < 0)
-		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes(): %d", ret);
+		tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes(): %d", ret);
 
 	if (numa_available() < 0) {
 		tst_brkm(TCONF, NULL, "NUMA support is not available");
 	} else if (num_allowed_nodes < min_nodes) {
 		tst_brkm(TCONF, NULL, "at least %d allowed NUMA nodes"
-		    " are required", min_nodes);
+			 " are required", min_nodes);
 	} else if (tst_kvercmp(2, 6, 18) < 0) {
 		tst_brkm(TCONF, NULL, "2.6.18 or greater kernel required");
 	}

@@ -21,7 +21,7 @@
 
 int handler_called = 0;
 
-void handler(int signo, siginfo_t *info, void *context)
+void handler(int signo, siginfo_t * info, void *context)
 {
 	handler_called = 1;
 }
@@ -34,7 +34,7 @@ int main()
 	act.sa_flags = SA_SIGINFO;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGSTOP);
-	if (sigaction(SIGTERM,  &act, 0) == -1) {
+	if (sigaction(SIGTERM, &act, 0) == -1) {
 		printf("Unexpected error while attempting to setup test "
 		       "pre-conditions\n");
 		return PTS_UNRESOLVED;

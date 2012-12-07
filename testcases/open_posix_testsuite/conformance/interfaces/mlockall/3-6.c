@@ -29,7 +29,8 @@
 #define BUF_SIZE 8
 #define SHM_NAME "/posixtest_3-6"
 
-int main() {
+int main()
+{
 	void *page_ptr;
 	size_t page_size;
 	int result, fd;
@@ -41,7 +42,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -62,21 +63,23 @@ int main() {
 
 	if (mlockall(MCL_CURRENT) == -1) {
 		if (errno == EPERM) {
-			printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
+			printf
+			    ("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		} else {
 			perror("An error occurs when calling mlockall()");
 		}
 		return PTS_UNRESOLVED;
 	}
 
-	page_ptr = (void*) ((long)foo - ((long)foo % page_size));
+	page_ptr = (void *)((long)foo - ((long)foo % page_size));
 
-	result = msync(page_ptr, page_size, MS_SYNC|MS_INVALIDATE);
+	result = msync(page_ptr, page_size, MS_SYNC | MS_INVALIDATE);
 	if (result == -1 && errno == EBUSY) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (result == 0) {
-		printf("The shared memory pages of the process are not locked.\n");
+		printf
+		    ("The shared memory pages of the process are not locked.\n");
 		return PTS_FAIL;
 	}
 	perror("Unexpected error");

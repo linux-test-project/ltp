@@ -24,14 +24,14 @@
 
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[50];
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mysemp = sem_open(semname, 0);
 
-	if ((mysemp  == SEM_FAILED) && (errno == ENOENT))  {
+	if ((mysemp == SEM_FAILED) && (errno == ENOENT)) {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		return PTS_PASS;

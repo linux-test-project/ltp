@@ -49,10 +49,11 @@
 int save_stats = 0;
 
 /* static helper functions */
-static int stats_record_compare(const void * a, const void * b) {
+static int stats_record_compare(const void *a, const void *b)
+{
 	int ret = 0;
-	stats_record_t * rec_a = (stats_record_t *)a;
-	stats_record_t * rec_b = (stats_record_t *)b;
+	stats_record_t *rec_a = (stats_record_t *) a;
+	stats_record_t *rec_b = (stats_record_t *) b;
 	if (rec_a->y < rec_b->y)
 		ret = -1;
 	else if (rec_a->y > rec_b->y)
@@ -61,7 +62,7 @@ static int stats_record_compare(const void * a, const void * b) {
 }
 
 /* function implementations */
-int stats_container_init(stats_container_t *data, long size)
+int stats_container_init(stats_container_t * data, long size)
 {
 	data->size = size;
 	data->index = -1;
@@ -71,12 +72,12 @@ int stats_container_init(stats_container_t *data, long size)
 	return 0;
 }
 
-int stats_container_append(stats_container_t *data, stats_record_t rec)
+int stats_container_append(stats_container_t * data, stats_record_t rec)
 {
 	int myindex = ++data->index;
 	if (myindex >= data->size) {
 		debug(DBG_ERR, "Number of elements cannot be more than %ld\n",
-				data->size);
+		      data->size);
 		data->index--;
 		return -1;
 	}
@@ -84,9 +85,10 @@ int stats_container_append(stats_container_t *data, stats_record_t rec)
 	return myindex;
 }
 
-int stats_container_resize(stats_container_t *data, long size)
+int stats_container_resize(stats_container_t * data, long size)
 {
-	stats_record_t *newrecords = realloc(data->records, size*sizeof(stats_record_t));
+	stats_record_t *newrecords =
+	    realloc(data->records, size * sizeof(stats_record_t));
 	if (!newrecords)
 		return -1;
 	data->records = newrecords;
@@ -96,21 +98,21 @@ int stats_container_resize(stats_container_t *data, long size)
 	return 0;
 }
 
-int stats_container_free(stats_container_t *data)
+int stats_container_free(stats_container_t * data)
 {
 	free(data->records);
 	return 0;
 }
 
-int stats_sort(stats_container_t *data, enum stats_sort_method method)
+int stats_sort(stats_container_t * data, enum stats_sort_method method)
 {
 	/* method not implemented, always ascending on y atm */
 	qsort(data->records, data->index + 1, sizeof(stats_record_t),
-		  stats_record_compare);
+	      stats_record_compare);
 	return 0;
 }
 
-float stats_stddev(stats_container_t *data)
+float stats_stddev(stats_container_t * data)
 {
 	long i;
 	float sd, avg, sum, delta;
@@ -130,7 +132,7 @@ float stats_stddev(stats_container_t *data)
 	sum = 0.0;
 	for (i = 0; i < n; i++) {
 		delta = (data->records[i].y - avg);
-		sum += delta*delta;
+		sum += delta * delta;
 	}
 	sum /= n;
 
@@ -139,7 +141,7 @@ float stats_stddev(stats_container_t *data)
 	return sd;
 }
 
-float stats_avg(stats_container_t *data)
+float stats_avg(stats_container_t * data)
 {
 	long i;
 	float avg, sum;
@@ -157,7 +159,7 @@ float stats_avg(stats_container_t *data)
 	return avg;
 }
 
-long stats_min(stats_container_t *data)
+long stats_min(stats_container_t * data)
 {
 	long i;
 	long min;
@@ -176,7 +178,7 @@ long stats_min(stats_container_t *data)
 	return min;
 }
 
-long stats_max(stats_container_t *data)
+long stats_max(stats_container_t * data)
 {
 	long i;
 	long max;
@@ -195,27 +197,28 @@ long stats_max(stats_container_t *data)
 	return max;
 }
 
-int stats_quantiles_init(stats_quantiles_t *quantiles, int nines)
+int stats_quantiles_init(stats_quantiles_t * quantiles, int nines)
 {
 	if (nines < 2) {
 		return -1;
 	}
 	quantiles->nines = nines;
 	/* allocate space for quantiles, starting with 0.99 (two nines) */
-	quantiles->quantiles = calloc(sizeof(long), (nines-1));
+	quantiles->quantiles = calloc(sizeof(long), (nines - 1));
 	if (!quantiles->quantiles) {
 		return -1;
 	}
 	return 0;
 }
 
-int stats_quantiles_free(stats_quantiles_t *quantiles)
+int stats_quantiles_free(stats_quantiles_t * quantiles)
 {
 	free(quantiles->quantiles);
 	return 0;
 }
 
-int stats_quantiles_calc(stats_container_t *data, stats_quantiles_t *quantiles)
+int stats_quantiles_calc(stats_container_t * data,
+			 stats_quantiles_t * quantiles)
 {
 	int i;
 	int size;
@@ -232,24 +235,23 @@ int stats_quantiles_calc(stats_container_t *data, stats_quantiles_t *quantiles)
 
 	for (i = 2; i <= quantiles->nines; i++) {
 		index = size - size / exp10(i);
-		quantiles->quantiles[i-2] = data->records[index].y;
+		quantiles->quantiles[i - 2] = data->records[index].y;
 	}
 	return 0;
 }
 
-void stats_quantiles_print(stats_quantiles_t *quantiles)
+void stats_quantiles_print(stats_quantiles_t * quantiles)
 {
 	int i;
 	int fraction = 0;
-	for (i = 0; i <= quantiles->nines-2; i++)
-	{
+	for (i = 0; i <= quantiles->nines - 2; i++) {
 		if (i > 0)
 			fraction += 9 * exp10(i - 1);
 		printf("99.%d%% < %ld\n", fraction, quantiles->quantiles[i]);
 	}
 }
 
-int stats_hist(stats_container_t *hist, stats_container_t *data)
+int stats_hist(stats_container_t * hist, stats_container_t * data)
 {
 	int i;
 	int ret;
@@ -266,41 +268,44 @@ int stats_hist(stats_container_t *hist, stats_container_t *data)
 	min = max = data->records[0].y;
 	for (i = 0; i <= data->index; i++) {
 		y = data->records[i].y;
-		if (y > max) max = y;
-		if (y < min) min = y;
+		if (y > max)
+			max = y;
+		if (y < min)
+			min = y;
 	}
 
 	/* define the bucket ranges */
-	width = MAX((max-min)/hist->size, 1);
+	width = MAX((max - min) / hist->size, 1);
 	hist->records[0].x = min;
 	for (i = 1; i < (hist->size); i++) {
-		hist->records[i].x = min + i*width;
+		hist->records[i].x = min + i * width;
 	}
 
 	/* fill in the counts */
 	for (i = 0; i <= data->index; i++) {
 		y = data->records[i].y;
-		b = MIN((y-min)/width, hist->size-1);
+		b = MIN((y - min) / width, hist->size - 1);
 		hist->records[b].y++;
 	}
 
 	return 0;
 }
 
-void stats_hist_print(stats_container_t *hist)
+void stats_hist_print(stats_container_t * hist)
 {
 	long i, x;
 	for (i = 0; i < hist->size; i++) {
 		x = hist->records[i].x;
-		if (i < hist->size-1)
+		if (i < hist->size - 1)
 			printf("[%ld,%ld) = %ld\n", x,
-				hist->records[i+1].x, hist->records[i].y);
+			       hist->records[i + 1].x, hist->records[i].y);
 		else
 			printf("[%ld,-) = %ld\n", x, hist->records[i].y);
 	}
 }
 
-int stats_container_save(char *filename, char *title, char *xlabel, char *ylabel, stats_container_t *data, char *mode)
+int stats_container_save(char *filename, char *title, char *xlabel,
+			 char *ylabel, stats_container_t * data, char *mode)
 {
 	int i;
 	int minx = 0, maxx = 0, miny = 0, maxy = 0;
@@ -311,15 +316,17 @@ int stats_container_save(char *filename, char *title, char *xlabel, char *ylabel
 	stats_record_t *rec;
 
 	if (!save_stats)
-	  return 0;
+		return 0;
 
 	/* generate the filenames */
 	if (asprintf(&datfile, "%s.dat", filename) == -1) {
-		fprintf(stderr, "Failed to allocate string for data filename\n");
+		fprintf(stderr,
+			"Failed to allocate string for data filename\n");
 		return -1;
 	}
 	if (asprintf(&pltfile, "%s.plt", filename) == -1) {
-		fprintf(stderr, "Failed to allocate string for plot filename\n");
+		fprintf(stderr,
+			"Failed to allocate string for plot filename\n");
 		return -1;
 	}
 
@@ -329,8 +336,8 @@ int stats_container_save(char *filename, char *title, char *xlabel, char *ylabel
 		return -1;
 	} else {
 		minx = maxx = data->records[0].x;
-	miny = maxy = data->records[0].y;
-	for (i = 0; i <= data->index; i++) {
+		miny = maxy = data->records[0].y;
+		for (i = 0; i <= data->index; i++) {
 			rec = &data->records[i];
 			minx = MIN(minx, rec->x);
 			maxx = MAX(maxx, rec->x);
@@ -352,7 +359,7 @@ int stats_container_save(char *filename, char *title, char *xlabel, char *ylabel
 		fprintf(plt_fd, "set xlabel \"%s\"\n", xlabel);
 		fprintf(plt_fd, "set ylabel \"%s\"\n", ylabel);
 		fprintf(plt_fd, "plot [0:%d] [0:%d] \"%s\" with %s\n",
-				maxx+1, maxy+1, datfile, mode);
+			maxx + 1, maxy + 1, datfile, mode);
 		fclose(plt_fd);
 	}
 

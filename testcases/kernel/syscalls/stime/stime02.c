@@ -81,6 +81,7 @@
 char *TCID = "stime02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 int exp_enos[] = { EPERM, 0 };
+
 time_t curr_time;		/* system's current time in seconds */
 time_t new_time;		/* system's new time */
 time_t tloc;			/* argument var. for time() */
@@ -166,7 +167,7 @@ void setup()
 	if ((curr_time = time(&tloc)) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "time() failed to get current time, errno=%d", errno);
-	 }
+	}
 
 	/* Get the system's new time */
 	new_time = curr_time + INCR_TIME;

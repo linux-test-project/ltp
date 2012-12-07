@@ -28,7 +28,7 @@
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 int cleanup_flag = 0;
-int sem = 0;				/* manual semaphore */
+int sem = 0;			/* manual semaphore */
 
 void destructor(void *tmp)
 {
@@ -39,8 +39,8 @@ void destructor(void *tmp)
 void *a_thread_func(void *tmp)
 {
 	pthread_key_t key;
-	int           value = 1;
-	int           rc = 0;
+	int value = 1;
+	int rc = 0;
 
 	/* To enable thread immediate cancelation, since the default
 	 * is PTHREAD_CANCEL_DEFERRED. */
@@ -74,7 +74,7 @@ void *a_thread_func(void *tmp)
 int main()
 {
 	pthread_t new_th;
-	int       rc = 0;
+	int rc = 0;
 	sem = 0;
 
 	/* Create a new thread. */
@@ -99,7 +99,8 @@ int main()
 	sleep(5);
 
 	if (cleanup_flag != 1) {
-		printf(ERROR_PREFIX "Test FAIL: Destructor was not executed.\n");
+		printf(ERROR_PREFIX
+		       "Test FAIL: Destructor was not executed.\n");
 		exit(PTS_FAIL);
 	}
 

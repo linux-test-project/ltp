@@ -62,7 +62,7 @@
 #include "linux_syscall_numbers.h"
 
 #ifndef O_CLOEXEC
-# define O_CLOEXEC 02000000
+#define O_CLOEXEC 02000000
 #endif
 
 #define EFD_NONBLOCK O_NONBLOCK
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 
 	if ((tst_kvercmp(2, 6, 27)) < 0) {
 		tst_brkm(TCONF, NULL,
-		    "This test can only run on kernels that are 2.6.27 and higher");
+			 "This test can only run on kernels that are 2.6.27 and higher");
 	}
 	setup();
 
@@ -145,8 +145,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, cleanup, "fcntl failed");
 	}
 	if (fl & O_NONBLOCK) {
-		tst_brkm(TFAIL, cleanup,
-		    "eventfd2(0) sets non-blocking mode");
+		tst_brkm(TFAIL, cleanup, "eventfd2(0) sets non-blocking mode");
 	}
 	close(fd);
 

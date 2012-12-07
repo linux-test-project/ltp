@@ -26,7 +26,7 @@
 #define TESTTIME 1037128358
 #define DELTA 5
 #define ACCEPTABLEDELTA 1
-#define LONGTIME 3	//== long enough for both clocks to be set
+#define LONGTIME 3		//== long enough for both clocks to be set
 
 int main(int argc, char *argv[])
 {
@@ -39,10 +39,10 @@ int main(int argc, char *argv[])
 	}
 
 	if ((pid = fork()) == 0) {
-		/*child*/
+		/*child */
 		struct timespec tschild;
 
-		tschild.tv_sec = TESTTIME+DELTA;
+		tschild.tv_sec = TESTTIME + DELTA;
 		tschild.tv_nsec = 0;
 		if (clock_settime(CLOCK_REALTIME, &tschild) != 0) {
 			printf("Note:  clock_settime() failed\n");
@@ -52,11 +52,11 @@ int main(int argc, char *argv[])
 		}
 
 	} else {
-		/*parent*/
+		/*parent */
 		struct timespec tsparent;
 		int pass = 0;
 
-		tsparent.tv_sec = TESTTIME-DELTA;
+		tsparent.tv_sec = TESTTIME - DELTA;
 		tsparent.tv_nsec = 0;
 		if (clock_settime(CLOCK_REALTIME, &tsparent) != 0) {
 			printf("Note:  clock_settime() failed\n");
@@ -65,19 +65,19 @@ int main(int argc, char *argv[])
 		sleep(LONGTIME);
 
 		/*
-	 	 * Ensure we set clock to TESTTIME-DELTA or TESTTIME+DELTA.
-	 	 * Assume that clock increased monotonically and clock_gettime,
-	 	 * clock_settime return correct values.
-	 	 */
+		 * Ensure we set clock to TESTTIME-DELTA or TESTTIME+DELTA.
+		 * Assume that clock increased monotonically and clock_gettime,
+		 * clock_settime return correct values.
+		 */
 
 		if (clock_gettime(CLOCK_REALTIME, &tpget) == -1) {
 			printf("Note:  Error in clock_gettime()\n");
 		}
 
-		delta = (tpget.tv_sec-LONGTIME) - TESTTIME;
+		delta = (tpget.tv_sec - LONGTIME) - TESTTIME;
 
-		if ((delta <= ACCEPTABLEDELTA-DELTA) ||
-		    (delta <= ACCEPTABLEDELTA+DELTA)) {
+		if ((delta <= ACCEPTABLEDELTA - DELTA) ||
+		    (delta <= ACCEPTABLEDELTA + DELTA)) {
 			pass = 1;
 		}
 

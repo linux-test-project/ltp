@@ -40,26 +40,23 @@ static int serial;
 static int normal_rt;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static void* fn_chld(void *arg)
+static void *fn_chld(void *arg)
 {
 	int rc = 0;
-	int thread_num = *(int*)arg;
+	int thread_num = *(int *)arg;
 
 	printf("child[%d]: barrier wait\n", thread_num);
 	rc = pthread_barrier_wait(&barrier);
-	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
-	{
-		printf("Test FAILED: child[%d]: pthread_barrier_wait() get unexpected "
-			"return code : %d\n" , thread_num, rc);
+	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD) {
+		printf
+		    ("Test FAILED: child[%d]: pthread_barrier_wait() get unexpected "
+		     "return code : %d\n", thread_num, rc);
 		exit(PTS_FAIL);
-	}
-	else if (rc == PTHREAD_BARRIER_SERIAL_THREAD)
-	{
+	} else if (rc == PTHREAD_BARRIER_SERIAL_THREAD) {
 		serial++;
-		printf("child[%d]: get PTHREAD_BARRIER_SERIAL_THREAD\n", thread_num);
-	}
-	else
-	{
+		printf("child[%d]: get PTHREAD_BARRIER_SERIAL_THREAD\n",
+		       thread_num);
+	} else {
 		pthread_mutex_lock(&mutex);
 		normal_rt++;
 		pthread_mutex_unlock(&mutex);
@@ -76,49 +73,46 @@ int main()
 	int loop;
 
 	printf("Initialize barrier with count = %d\n", THREAD_NUM);
-	if (pthread_barrier_init(&barrier, NULL, THREAD_NUM) != 0)
-	{
+	if (pthread_barrier_init(&barrier, NULL, THREAD_NUM) != 0) {
 		printf("main: Error at pthread_barrier_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	for (loop = 0; loop < LOOP_NUM; loop++)
-	{
+	for (loop = 0; loop < LOOP_NUM; loop++) {
 		serial = 0;
 		normal_rt = 0;
 		printf("\n-Loop %d-\n", loop);
 
 		printf("main: create %d child threads\n", THREAD_NUM);
-		for (cnt = 0; cnt < THREAD_NUM; cnt++)
-		{
-			if (pthread_create(&child_threads[cnt], NULL, fn_chld, &cnt) != 0)
-			{
-				printf("main: Error at %dth pthread_create()\n", cnt);
+		for (cnt = 0; cnt < THREAD_NUM; cnt++) {
+			if (pthread_create
+			    (&child_threads[cnt], NULL, fn_chld, &cnt) != 0) {
+				printf("main: Error at %dth pthread_create()\n",
+				       cnt);
 				return PTS_UNRESOLVED;
 			}
 
 		}
 		printf("main: wait for child threads to end\n");
-		for (cnt = 0; cnt < THREAD_NUM; cnt++)
-		{
-			if (pthread_join(child_threads[cnt], NULL) != 0)
-			{
-				printf("main: Error at %dth pthread_join()\n", cnt);
+		for (cnt = 0; cnt < THREAD_NUM; cnt++) {
+			if (pthread_join(child_threads[cnt], NULL) != 0) {
+				printf("main: Error at %dth pthread_join()\n",
+				       cnt);
 				exit(PTS_UNRESOLVED);
 			}
 		}
 
-		if (serial != 1 || (serial + normal_rt) != THREAD_NUM)
-		{
-			printf("Test FAILED: On %d loop, PTHREAD_BARRIER_SERIAL_THREAD "
-				"should be returned to one unspecified thread\n", loop);
+		if (serial != 1 || (serial + normal_rt) != THREAD_NUM) {
+			printf
+			    ("Test FAILED: On %d loop, PTHREAD_BARRIER_SERIAL_THREAD "
+			     "should be returned to one unspecified thread\n",
+			     loop);
 			return PTS_FAIL;
 		}
 
 	}
 
-	if (pthread_barrier_destroy(&barrier) != 0)
-	{
+	if (pthread_barrier_destroy(&barrier) != 0) {
 		printf("Error at pthread_barrier_destroy()");
 		return PTS_UNRESOLVED;
 	}

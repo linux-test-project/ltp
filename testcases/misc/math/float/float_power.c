@@ -26,18 +26,18 @@
 #include "tfloat.h"
 
 const TH_FUNC th_func[] = {
-	{FUNC_NORMAL, 50, ceil,  "ceil",  "ceil_inp.ref",  "ceil_out.ref",
-		""},
-	{FUNC_NORMAL, 50, fabs,  "fabs",  "fabs_inp.ref",  "fabs_out.ref",
-		""},
+	{FUNC_NORMAL, 50, ceil, "ceil", "ceil_inp.ref", "ceil_out.ref",
+	 ""},
+	{FUNC_NORMAL, 50, fabs, "fabs", "fabs_inp.ref", "fabs_out.ref",
+	 ""},
 	{FUNC_NORMAL, 50, floor, "floor", "floor_inp.ref", "floor_out.ref",
-		""},
-	{FUNC_FMOD,   50, fmod,  "fmod",  "fmod_inp.ref",  "fmod_out.ref",
-		"1fmod_inp.ref"},
-	{FUNC_POW,    47, pow,   "pow",   "pow_inp.ref",   "pow_out.ref",
-		"1pow_inp.ref"},
-	{FUNC_NORMAL, 50, sqrt,  "sqrt",  "sqrt_inp.ref",  "sqrt_out.ref",
-		""}
+	 ""},
+	{FUNC_FMOD, 50, fmod, "fmod", "fmod_inp.ref", "fmod_out.ref",
+	 "1fmod_inp.ref"},
+	{FUNC_POW, 47, pow, "pow", "pow_inp.ref", "pow_out.ref",
+	 "1pow_inp.ref"},
+	{FUNC_NORMAL, 50, sqrt, "sqrt", "sqrt_inp.ref", "sqrt_out.ref",
+	 ""}
 };
 
 #define NB_FUNC  (sizeof(th_func)/sizeof(TH_FUNC))

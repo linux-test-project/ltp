@@ -54,11 +54,11 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	fd = open(TESTFILE, O_CREAT|O_RDWR, 0755);
+	fd = open(TESTFILE, O_CREAT | O_RDWR, 0755);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
+		tst_brkm(TBROK | TERRNO, cleanup, "open");
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close");
+		tst_brkm(TBROK | TERRNO, cleanup, "close");
 }
 
 static void check_result(long exp, long act)
@@ -66,27 +66,25 @@ static void check_result(long exp, long act)
 	if (exp >= 0) {
 		if (act == exp)
 			tst_resm(TPASS, "expected success - "
-					"returned value = %ld", act);
+				 "returned value = %ld", act);
 		else
 			tst_resm(TFAIL, "unexpected failure - "
-					"returned value = %ld : %s",
-					act, strerror(-1 * act));
+				 "returned value = %ld : %s",
+				 act, strerror(-1 * act));
 		return;
 	}
 
 	/* if return value is expected to be < 0 */
 	if (act == exp)
 		tst_resm(TPASS, "expected failure - "
-				"returned value = %ld : %s",
-				act, strerror(-1 * act));
+			 "returned value = %ld : %s", act, strerror(-1 * act));
 	else if (act == 0)
 		tst_resm(TFAIL, "call succeeded unexpectedly");
 	else
 		tst_resm(TFAIL, "unexpected failure - "
-				"returned value = %ld : %s, "
-				"expected value = %ld : %s",
-				act, strerror(-1 * act),
-				exp, strerror(-1 * exp));
+			 "returned value = %ld : %s, "
+			 "expected value = %ld : %s",
+			 act, strerror(-1 * act), exp, strerror(-1 * exp));
 }
 
 int main(int argc, char *argv[])
@@ -126,19 +124,19 @@ int main(int argc, char *argv[])
 		/* 1.3 - EINVAL: uninitialized iocb */
 		iocbs[0] = &iocb;
 		TEST(io_submit(ctx, 1, iocbs));
-		switch(TEST_RETURN) {
+		switch (TEST_RETURN) {
 		case -EINVAL:
 		case -EBADF:
 		case -EFAULT:
 			tst_resm(TPASS, "expected failure - "
-					"returned value = %ld : %s",
-					TEST_RETURN, strerror(-1 * TEST_RETURN));
+				 "returned value = %ld : %s",
+				 TEST_RETURN, strerror(-1 * TEST_RETURN));
 			break;
 		default:
 			tst_resm(TFAIL, "unexpected failure - "
-					"returned value = %ld : %s, "
-					"expected one of -EINVAL, -EBADF, -EFAULT",
-					TEST_RETURN, strerror(-1 * TEST_RETURN));
+				 "returned value = %ld : %s, "
+				 "expected one of -EINVAL, -EBADF, -EFAULT",
+				 TEST_RETURN, strerror(-1 * TEST_RETURN));
 		}
 
 		/* 2 - EFAULT: iocb points to invalid data */
@@ -155,18 +153,17 @@ int main(int argc, char *argv[])
 		TEST(io_submit(ctx, -1, (struct iocb **)-1));
 		if (TEST_RETURN == 0)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
-		else if (TEST_RETURN == -EFAULT
-				|| TEST_RETURN == -EINVAL)
+		else if (TEST_RETURN == -EFAULT || TEST_RETURN == -EINVAL)
 			tst_resm(TPASS, "expected failure - "
-					"returned value = %ld : %s",
-					TEST_RETURN, strerror(-1 * TEST_RETURN));
+				 "returned value = %ld : %s",
+				 TEST_RETURN, strerror(-1 * TEST_RETURN));
 		else
 			tst_resm(TFAIL, "unexpected failure - "
-					"returned value = %ld : %s, "
-					"expected = %d : %s or %d : %s",
-					TEST_RETURN, strerror(-1 * TEST_RETURN),
-					-EFAULT, strerror(EFAULT),
-					-EINVAL, strerror(EINVAL));
+				 "returned value = %ld : %s, "
+				 "expected = %d : %s or %d : %s",
+				 TEST_RETURN, strerror(-1 * TEST_RETURN),
+				 -EFAULT, strerror(EFAULT),
+				 -EINVAL, strerror(EINVAL));
 
 		/*
 		 * 4 - EBADF: fd in iocb is invalid
@@ -183,13 +180,13 @@ int main(int argc, char *argv[])
 		/* 6 - Positive test: valid fd */
 		fd = open(TESTFILE, O_RDONLY);
 		if (fd == -1)
-			tst_resm(TBROK|TERRNO, "open");
+			tst_resm(TBROK | TERRNO, "open");
 		io_prep_pread(&iocb, fd, buf, sizeof(buf), 0);
 		iocbs[0] = &iocb;
 		TEST(io_submit(ctx, 1, iocbs));
 		check_result(1, TEST_RETURN);
 		if (close(fd) == -1)
-			tst_resm(TBROK|TERRNO, "close");
+			tst_resm(TBROK | TERRNO, "close");
 
 	}
 	cleanup();

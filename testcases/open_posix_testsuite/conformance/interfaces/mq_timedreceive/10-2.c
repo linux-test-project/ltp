@@ -40,7 +40,7 @@ int main()
 	mqd_t mqdes;
 	unsigned int rvprio;
 	int sdprio = 1;
-	struct timespec	ts;
+	struct timespec ts;
 	struct mq_attr attr;
 	int unresolved = 0, failure = 0;
 
@@ -49,7 +49,7 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
 	}
@@ -59,8 +59,8 @@ int main()
 		unresolved = 1;
 	}
 
-	sleep(1); /* wait for a while */
-	ts.tv_sec = time(NULL) - 1; /* Past time */
+	sleep(1);		/* wait for a while */
+	ts.tv_sec = time(NULL) - 1;	/* Past time */
 	ts.tv_nsec = 0;
 	if (mq_timedreceive(mqdes, msgrv, BUFFER, &rvprio, &ts) == -1) {
 		if (errno == ETIMEDOUT)

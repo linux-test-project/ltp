@@ -32,22 +32,22 @@
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
- #include <errno.h>
- #include <sys/wait.h>
- #include <sys/mman.h>
+#include <errno.h>
+#include <sys/wait.h>
+#include <sys/mman.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -78,27 +78,27 @@
 /********************************************************************************************/
 #ifndef WITHOUT_XOPEN
 
-pid_t * sharedpid;
+pid_t *sharedpid;
 
 /* This will be executed by the child process */
 void child(void)
 {
-	*sharedpid=getpid();
+	*sharedpid = getpid();
 	exit(0);
 }
 
 /* This will be executed by the child thread */
-void * threaded(void * arg)
+void *threaded(void *arg)
 {
-	*(pid_t *)arg = getpid();
+	*(pid_t *) arg = getpid();
 	return NULL;
 }
 
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
-	long mf; /* Is memory mapping supported? */
+	long mf;		/* Is memory mapping supported? */
 	pid_t mypid, hispid, ctlpid;
 	pthread_t child_thread;
 
@@ -106,111 +106,129 @@ int main(int argc, char * argv[])
 	output_init();
 
 	/* Get self PID */
-	mypid=getpid();
-	#if VERBOSE > 1
+	mypid = getpid();
+#if VERBOSE > 1
 	output("Main pid: %d\n", mypid);
-	#endif
+#endif
 
 	/* Get a child thread PID */
 	ret = pthread_create(&child_thread, NULL, threaded, &hispid);
-	if (ret != 0)  {  UNRESOLVED(ret, "Thread creation failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Thread creation failed");
+	}
 	ret = pthread_join(child_thread, NULL);
-	if (ret != 0)  {  UNRESOLVED(ret, "Thread join failed");  }
-
-	#if VERBOSE > 1
+	if (ret != 0) {
+		UNRESOLVED(ret, "Thread join failed");
+	}
+#if VERBOSE > 1
 	output("Thread pid: %d\n", hispid);
-	#endif
+#endif
 
 	/* Compare threads PIDs */
-	if (mypid != hispid)
-	{
-		FAILED("Child thread got a different return value from getpid()\n");
+	if (mypid != hispid) {
+		FAILED
+		    ("Child thread got a different return value from getpid()\n");
 	}
 
 	/* Test system abilities */
-	mf =sysconf(_SC_MAPPED_FILES);
+	mf = sysconf(_SC_MAPPED_FILES);
 
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Test starting\n");
 	output("System abilities:\n");
 	output(" MF  : %li\n", mf);
 	if (mf <= 0)
 		output("Unable to test without shared data\n");
-	#endif
+#endif
 
 	/* We need MF support for the process-cross testing */
-	if (mf > 0)
-	{
+	if (mf > 0) {
 		/* We will place the child pid in a mmaped file */
 		char filename[] = "/tmp/getpid-1-XXXXXX";
-		void * mmaped;
+		void *mmaped;
 		int fd;
 
 		/* We now create the temp files */
 		fd = mkstemp(filename);
-		if (fd == -1)
-		{ UNRESOLVED(errno, "Temporary file could not be created"); }
+		if (fd == -1) {
+			UNRESOLVED(errno,
+				   "Temporary file could not be created");
+		}
 
 		/* and make sure the file will be deleted when closed */
 		unlink(filename);
 
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Temp file created (%s).\n", filename);
-		#endif
+#endif
 
 		/* Fill the file up to 1 pagesize */
 		ret = ftruncate(fd, sysconf(_SC_PAGESIZE));
-		if (ret != 0)  {  UNRESOLVED(errno, "ftruncate operation failed");  }
+		if (ret != 0) {
+			UNRESOLVED(errno, "ftruncate operation failed");
+		}
 
 		/* Now we can map the file in memory */
-		mmaped = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-		if (mmaped == MAP_FAILED)
-		{ UNRESOLVED(errno, "mmap failed"); }
+		mmaped =
+		    mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ | PROT_WRITE,
+			 MAP_SHARED, fd, 0);
+		if (mmaped == MAP_FAILED) {
+			UNRESOLVED(errno, "mmap failed");
+		}
 
 		/* Set the sharedpid pointer to this mmaped area */
 		sharedpid = (pid_t *) mmaped;
 
 		/* Our data is now in shared memory */
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Shared memory is ready.\n");
-		#endif
+#endif
 
 		/* Okay, let's create the child process */
-		hispid=fork();
-		if (hispid == (pid_t)-1) {  UNRESOLVED(errno, "Fork failed");  }
+		hispid = fork();
+		if (hispid == (pid_t) - 1) {
+			UNRESOLVED(errno, "Fork failed");
+		}
 
 		/* Child process : */
-		if (hispid == (pid_t)0)
+		if (hispid == (pid_t) 0)
 			child();
 
 		/* Otherwise, we're the parent */
 		ctlpid = waitpid(hispid, &status, 0);
-		if (ctlpid != hispid)  {  UNRESOLVED(errno, "waitpid waited for the wrong process");  }
-		if (!WIFEXITED(status) || WEXITSTATUS(status))
-		{  UNRESOLVED(status, "The child process did not terminate as expected");  }
-
-		#if VERBOSE > 1
+		if (ctlpid != hispid) {
+			UNRESOLVED(errno,
+				   "waitpid waited for the wrong process");
+		}
+		if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+			UNRESOLVED(status,
+				   "The child process did not terminate as expected");
+		}
+#if VERBOSE > 1
 		output("Child process pid: %d\n", hispid);
-		#endif
+#endif
 
 		/* Check the child pid is the same as fork returned */
-		if (hispid != *sharedpid)
-		{  FAILED("getpid() in the child returned a different value than fork() in the parent");  }
+		if (hispid != *sharedpid) {
+			FAILED
+			    ("getpid() in the child returned a different value than fork() in the parent");
+		}
 
 		/* Check the child pid is different than the parent pid */
-		if (hispid == mypid)
-		{  FAILED("Both child and parent getpid() return values are equal");  }
+		if (hispid == mypid) {
+			FAILED
+			    ("Both child and parent getpid() return values are equal");
+		}
 	}
-
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Test passed\n");
-	#endif
+#endif
 
 	PASSED;
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

@@ -45,45 +45,44 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="in6_01";		/* Test program identifier.    */
+char *TCID = "in6_01";		/* Test program identifier.    */
 
 void setup(void), cleanup(void);
 
 struct {
-	char	*addr;
-	int	ismap;
+	char *addr;
+	int ismap;
 } maptab[] = {
-	{"2002::1", 0 },
-	{"::ffff:10.0.0.1", 1 },
-	{"::fffe:10.0.0.1", 0 },
-	{"::7fff:10.0.0.1", 0 },
-	{"0:0:0:0:0:0:ffff:0a001", 1 },
-	{"0:0:1:0:0:0:ffff:0a001", 0 },
-};
+	{
+	"2002::1", 0}, {
+	"::ffff:10.0.0.1", 1}, {
+	"::fffe:10.0.0.1", 0}, {
+	"::7fff:10.0.0.1", 0}, {
+	"0:0:0:0:0:0:ffff:0a001", 1}, {
+"0:0:1:0:0:0:ffff:0a001", 0},};
 
 #define MAPSIZE (sizeof(maptab)/sizeof(maptab[0]))
 
 struct {
 	char *addr;
 } sstab[] = {
-	{ "2002::1" },
-	{ "10.0.0.1" },
-	{ "::ffff:10.0.0.1" },
-	{ "::1" },
-	{ "::" },
-};
+	{
+	"2002::1"}, {
+	"10.0.0.1"}, {
+	"::ffff:10.0.0.1"}, {
+	"::1"}, {
+"::"},};
 
 #define SSSIZE (sizeof(sstab)/sizeof(sstab[0]))
 
 int TST_TOTAL = 9 + MAPSIZE + SSSIZE;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	uint8_t	ui8 = 1;
+	uint8_t ui8 = 1;
 	uint32_t ui16 = 2;
 	uint32_t ui32 = 3;
-	struct in6_addr	in6;
+	struct in6_addr in6;
 	struct in6_addr ina6 = IN6ADDR_ANY_INIT;
 	struct in6_addr inl6 = IN6ADDR_LOOPBACK_INIT;
 	struct sockaddr_in6 sin6;
@@ -135,17 +134,17 @@ main(int argc, char *argv[])
 
 	/* IN6_IS_ADDR_V4MAPPED tests */
 
-	for (i=0; i<MAPSIZE; ++i) {
+	for (i = 0; i < MAPSIZE; ++i) {
 		if (inet_pton(AF_INET6, maptab[i].addr, &in6) <= 0) {
 			tst_resm(TBROK, "\"%s\" is not a valid IPv6 address",
-				maptab[i].addr);
+				 maptab[i].addr);
 			continue;
 		}
 		TEST(IN6_IS_ADDR_V4MAPPED(in6.s6_addr));
 		if (TEST_RETURN == maptab[i].ismap)
-		tst_resm(TEST_RETURN == maptab[i].ismap ? TPASS : TFAIL,
-			"IN6_IS_ADDR_V4MAPPED(\"%s\") %ld",
-			maptab[i].addr, TEST_RETURN);
+			tst_resm(TEST_RETURN == maptab[i].ismap ? TPASS : TFAIL,
+				 "IN6_IS_ADDR_V4MAPPED(\"%s\") %ld",
+				 maptab[i].addr, TEST_RETURN);
 	}
 
 	/* sockaddr_storage tests */
@@ -155,7 +154,7 @@ main(int argc, char *argv[])
 		tst_resm(TFAIL, "sockaddr_storage too small");
 	else
 		tst_resm(TPASS, "sockaddr_storage size ok");
-	for (i=0; i<SSSIZE; ++i) {
+	for (i = 0; i < SSSIZE; ++i) {
 		struct sockaddr_in *psin = (struct sockaddr_in *)&ss;
 		struct sockaddr_in6 *psin6 = (struct sockaddr_in6 *)&ss;
 		int rv;
@@ -166,36 +165,34 @@ main(int argc, char *argv[])
 		if (rv == 0) {
 			af = psin6->sin6_family = AF_INET6;
 			rv = inet_pton(AF_INET6, sstab[i].addr,
-				&psin6->sin6_addr);
+				       &psin6->sin6_addr);
 		}
 		if (rv <= 0) {
 			tst_resm(TBROK, "\"%s\" is not a valid address",
-				sstab[i].addr);
+				 sstab[i].addr);
 			continue;
 		}
 		if (ss.ss_family == af)
 			tst_resm(TPASS, "\"%s\" is AF_INET%s",
-				sstab[i].addr, af == AF_INET ? "" : "6");
+				 sstab[i].addr, af == AF_INET ? "" : "6");
 		else
 			tst_resm(TFAIL, "\"%s\" ss_family (%d) != AF_INET%s",
-				sstab[i].addr, af, af == AF_INET ? "" : "6");
+				 sstab[i].addr, af, af == AF_INET ? "" : "6");
 	}
 
 	cleanup();
 
-	return(0);
+	return (0);
 }
 
 pid_t pid;
 
-void
-setup(void)
+void setup(void)
 {
-	TEST_PAUSE;	/* if -P option specified */
+	TEST_PAUSE;		/* if -P option specified */
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

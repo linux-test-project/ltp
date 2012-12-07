@@ -133,21 +133,21 @@ int main(int ac, char **av)
 			alarm(0);
 			if (TEST_RETURN != 0)
 				tst_resm(TFAIL,
-				    "alarm(%lu) returned %ld, when %u was "
-				    "expected for value %s",
-				    sec[i], TEST_RETURN, exp[i], buf[i]);
+					 "alarm(%lu) returned %ld, when %u was "
+					 "expected for value %s",
+					 sec[i], TEST_RETURN, exp[i], buf[i]);
 			else if (STD_FUNCTIONAL_TEST) {
 				if (received_alarm == 1) {
 					tst_resm(TFAIL,
-					    "alarm(%lu) returned %ldu but an "
-					    "alarm signal was received for "
-					    "value %s",
-					    sec[i], TEST_RETURN, buf[i]);
+						 "alarm(%lu) returned %ldu but an "
+						 "alarm signal was received for "
+						 "value %s",
+						 sec[i], TEST_RETURN, buf[i]);
 				} else {
 					tst_resm(TPASS,
-					    "alarm(%lu) returned %ld as "
-					    "expected for value %s",
-					    sec[i], TEST_RETURN, buf[i]);
+						 "alarm(%lu) returned %ld as "
+						 "expected for value %s",
+						 sec[i], TEST_RETURN, buf[i]);
 				}
 
 			}

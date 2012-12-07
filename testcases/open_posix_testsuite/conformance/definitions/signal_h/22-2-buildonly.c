@@ -1,6 +1,6 @@
   /*
-  Test that the ILL_ILLOPN macro is defined.
-  */
+     Test that the ILL_ILLOPN macro is defined.
+   */
 
 #include <signal.h>
 

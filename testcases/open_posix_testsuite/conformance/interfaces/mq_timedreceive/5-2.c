@@ -42,6 +42,7 @@ void exit_handler(int signo)
 	blocking = 1;
 	return;
 }
+
 int main()
 {
 	char mqname[NAMESIZE], msgrv[BUFFER];
@@ -57,7 +58,7 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
 	}
@@ -102,8 +103,8 @@ int main()
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {
-		sleep(TIMEOUT + 3); /* Parent is probably blocking
-				       send a signal to let it abort */
+		sleep(TIMEOUT + 3);	/* Parent is probably blocking
+					   send a signal to let it abort */
 		kill(getppid(), SIGABRT);
 		return 0;
 	}

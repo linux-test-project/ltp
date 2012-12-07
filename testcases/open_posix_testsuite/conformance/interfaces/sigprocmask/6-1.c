@@ -38,25 +38,27 @@ int main()
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 
-	if (sigaction(SIGABRT,  &act, 0) == -1) {
+	if (sigaction(SIGABRT, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaction(SIGUSR2,  &act, 0) == -1) {
+	if (sigaction(SIGUSR2, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigprocmask(SIG_SETMASK, &set1, NULL) == -1) {
-		perror("Unexpected error while attempting to use sigprocmask.\n");
+		perror
+		    ("Unexpected error while attempting to use sigprocmask.\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigprocmask(SIG_UNBLOCK, &set2, NULL) == -1) {
-		perror("Unexpected error while attempting to use sigprocmask.\n");
+		perror
+		    ("Unexpected error while attempting to use sigprocmask.\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -67,7 +69,8 @@ int main()
 	}
 
 	if (!handler_called) {
-		printf("FAIL: Handler was not called for even though signal was removed from the signal mask\n");
+		printf
+		    ("FAIL: Handler was not called for even though signal was removed from the signal mask\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -79,7 +82,8 @@ int main()
 	}
 
 	if (handler_called) {
-		printf("FAIL: Hanlder was called for even though signal should have been in the signal mask\n");
+		printf
+		    ("FAIL: Hanlder was called for even though signal should have been in the signal mask\n");
 		return PTS_FAIL;
 	}
 

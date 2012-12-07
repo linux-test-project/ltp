@@ -101,67 +101,68 @@
 #define DUMMY_MOD	"dummy_query_mod"
 #define SMALLBUFSIZE	1
 
-
-struct test_case_t {			/* test case structure */
-	char 	*modname;
-	int	which;
-	void	*buf;
-	size_t	bufsize;
-	size_t	*ret_size;
-	int	experrno;		/* expected errno */
-	char	*desc;
-	int     (*setup)(void);
-	void    (*cleanup)(void);
+struct test_case_t {		/* test case structure */
+	char *modname;
+	int which;
+	void *buf;
+	size_t bufsize;
+	size_t *ret_size;
+	int experrno;		/* expected errno */
+	char *desc;
+	int (*setup) (void);
+	void (*cleanup) (void);
 };
 
 char *TCID = "query_module03";
-static int exp_enos[]={ENOSPC, EFAULT, 0};
+static int exp_enos[] = { ENOSPC, EFAULT, 0 };
+
 static int testno;
 static char out_buf[PAGE_SIZE];
 static size_t ret_size;
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 static void setup(void);
 static void cleanup(void);
 static int setup1(void);
 static void cleanup1(void);
 
-static struct test_case_t  tdat[] = {
+static struct test_case_t tdat[] = {
 
-	{ (char *)-1, QM_MODULES, (void *)out_buf, sizeof(out_buf), &ret_size,
-		EFAULT, "results for module name argument outside program's "
-		"accessible address space", NULL, NULL },
+	{(char *)-1, QM_MODULES, (void *)out_buf, sizeof(out_buf), &ret_size,
+	 EFAULT, "results for module name argument outside program's "
+	 "accessible address space", NULL, NULL}
+	,
 
-	{ NULL, QM_MODULES, (void *)out_buf, sizeof(out_buf), (size_t *)-1,
-		EFAULT, "results for return size argument outside program's "
-		"accessible address space", NULL, NULL },
+	{NULL, QM_MODULES, (void *)out_buf, sizeof(out_buf), (size_t *) - 1,
+	 EFAULT, "results for return size argument outside program's "
+	 "accessible address space", NULL, NULL}
+	,
 
-	{ NULL, QM_MODULES, (void *)-1, sizeof(out_buf), &ret_size, EFAULT,
-		"results for output buffer argument outside program's "
-		"accessible address space", setup1, cleanup1 },
+	{NULL, QM_MODULES, (void *)-1, sizeof(out_buf), &ret_size, EFAULT,
+	 "results for output buffer argument outside program's "
+	 "accessible address space", setup1, cleanup1}
+	,
 
-	{ NULL, QM_MODULES, (void *)out_buf, SMALLBUFSIZE, &ret_size, ENOSPC,
-		"results for too small buffer size", setup1, cleanup1 },
+	{NULL, QM_MODULES, (void *)out_buf, SMALLBUFSIZE, &ret_size, ENOSPC,
+	 "results for too small buffer size", setup1, cleanup1},
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
-			"doesn't allow running more than one instance "
-			"at a time");
+			 "doesn't allow running more than one instance "
+			 "at a time");
 		STD_COPIES = 1;
 	}
 
@@ -179,19 +180,20 @@ main(int argc, char **argv)
 				continue;
 			}
 			TEST(query_module(tdat[testno].modname,
-				tdat[testno].which, tdat[testno].buf,
-				tdat[testno].bufsize, tdat[testno].ret_size));
+					  tdat[testno].which, tdat[testno].buf,
+					  tdat[testno].bufsize,
+					  tdat[testno].ret_size));
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if ((TEST_RETURN == EXP_RET_VAL) &&
-				(TEST_ERRNO == tdat[testno].experrno) ) {
+			    (TEST_ERRNO == tdat[testno].experrno)) {
 				tst_resm(TPASS, "Expected %s, errno: %d",
-					tdat[testno].desc, TEST_ERRNO);
+					 tdat[testno].desc, TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Unexpected %s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
-					TEST_RETURN, EXP_RET_VAL,
-					TEST_ERRNO, tdat[testno].experrno);
+					 " %d (expected %d), errno %d (expected"
+					 " %d)", tdat[testno].desc,
+					 TEST_RETURN, EXP_RET_VAL,
+					 TEST_ERRNO, tdat[testno].experrno);
 			}
 			if (tdat[testno].cleanup) {
 				tdat[testno].cleanup();
@@ -202,24 +204,24 @@ main(int argc, char **argv)
 	tst_exit();
 }
 
-int
-setup1(void)
+int setup1(void)
 {
 	char cmd[80];
 
-        if (sprintf(cmd, "cp `which %s.o` ./", DUMMY_MOD) == -1) {
-                tst_resm(TBROK, "sprintf failed");
-                return 1;
-        }
-        if (system(cmd) != 0) {
-                tst_resm(TBROK, "Failed to copy %s module", DUMMY_MOD);
-                return 1;
-        }
+	if (sprintf(cmd, "cp `which %s.o` ./", DUMMY_MOD) == -1) {
+		tst_resm(TBROK, "sprintf failed");
+		return 1;
+	}
+	if (system(cmd) != 0) {
+		tst_resm(TBROK, "Failed to copy %s module", DUMMY_MOD);
+		return 1;
+	}
 
 	/* Should use force to ignore kernel version & insure loading  */
-        /* -RW                                                         */
-        /* if (sprintf(cmd, "insmod %s.o", DUMMY_MOD) == -1) {         */
-	if (sprintf(cmd, "insmod --force -q %s.o >/dev/null 2>&1", DUMMY_MOD) == -1) {
+	/* -RW                                                         */
+	/* if (sprintf(cmd, "insmod %s.o", DUMMY_MOD) == -1) {         */
+	if (sprintf(cmd, "insmod --force -q %s.o >/dev/null 2>&1", DUMMY_MOD) ==
+	    -1) {
 		tst_resm(TBROK, "sprintf failed");
 		return 1;
 	}
@@ -230,13 +232,12 @@ setup1(void)
 	return 0;
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
 	/* Remove the loadable module - DUMMY_MOD */
-	if (system("rmmod "DUMMY_MOD) != 0) {
+	if (system("rmmod " DUMMY_MOD) != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to unload module %s",
-			DUMMY_MOD);
+			 DUMMY_MOD);
 	}
 }
 
@@ -244,17 +245,16 @@ cleanup1(void)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
 
-	if (tst_kvercmp(2,5,48) >= 0)
+	if (tst_kvercmp(2, 5, 48) >= 0)
 		tst_brkm(TCONF, NULL, "This test will not work on "
-				"kernels after 2.5.48");
+			 "kernels after 2.5.48");
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -264,12 +264,12 @@ setup(void)
 	 */
 	TEST_PAUSE;
 
-        bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
-        if (bad_addr == MAP_FAILED) {
-                tst_brkm(TBROK, cleanup, "mmap failed");
-        }
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
 	tdat[0].modname = bad_addr;
-	tdat[2].buf = (void *) bad_addr;
+	tdat[2].buf = (void *)bad_addr;
 
 }
 
@@ -278,8 +278,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

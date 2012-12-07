@@ -144,7 +144,7 @@ int main(int ac, char **av)
 		TEST(GETEGID());
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "getegid failed");
+			tst_resm(TFAIL | TTERRNO, "getegid failed");
 			continue;	/* next loop for MTKERNEL */
 		}
 

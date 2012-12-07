@@ -80,18 +80,23 @@ static struct test_case_t {
 	int error;
 } TC[] = {
 	/* file descriptor is invalid */
-	{&bfd, TCGETA, &termio, EBADF},
-	/* termio address is invalid */
-	{&fd, TCGETA, (struct termio *)-1, EFAULT},
-	/* command is invalid */
-	/* This errno value was changed from EINVAL to ENOTTY
-	 * by kernel commit 07d106d0 and bbb63c51
-	 */
-	{&fd, INVAL_IOCTL, &termio, ENOTTY},
-	/* file descriptor is for a regular file */
-	{&fd1, TCGETA, &termio, ENOTTY},
-	/* termio is NULL */
-	{&fd, TCGETA, NULL, EFAULT}
+	{
+	&bfd, TCGETA, &termio, EBADF},
+	    /* termio address is invalid */
+	{
+	&fd, TCGETA, (struct termio *)-1, EFAULT},
+	    /* command is invalid */
+	    /* This errno value was changed from EINVAL to ENOTTY
+	     * by kernel commit 07d106d0 and bbb63c51
+	     */
+	{
+	&fd, INVAL_IOCTL, &termio, ENOTTY},
+	    /* file descriptor is for a regular file */
+	{
+	&fd1, TCGETA, &termio, ENOTTY},
+	    /* termio is NULL */
+	{
+	&fd, TCGETA, NULL, EFAULT}
 };
 
 static int Devflag;
@@ -123,7 +128,7 @@ int main(int ac, char **av)
 
 	fd = open(devname, O_RDWR, 0777);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't open %s", devname);
+		tst_brkm(TBROK | TERRNO, cleanup, "Couldn't open %s", devname);
 
 	TEST_EXP_ENOS(exp_enos);
 
@@ -144,11 +149,11 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error)
-				tst_resm(TPASS|TTERRNO, "failed as expected");
+				tst_resm(TPASS | TTERRNO, "failed as expected");
 			else
-				tst_resm(TFAIL|TTERRNO,
-				    "failed unexpectedly; expected %d - %s",
-				    TC[i].error, strerror(TC[i].error));
+				tst_resm(TFAIL | TTERRNO,
+					 "failed unexpectedly; expected %d - %s",
+					 TC[i].error, strerror(TC[i].error));
 		}
 	}
 	cleanup();
@@ -178,7 +183,7 @@ static void setup(void)
 	/* create a temporary file */
 	fd1 = open("x", O_CREAT, 0777);
 	if (fd1 == -1)
-		tst_resm(TFAIL|TERRNO, "Could not open test file");
+		tst_resm(TFAIL | TERRNO, "Could not open test file");
 }
 
 static void cleanup(void)

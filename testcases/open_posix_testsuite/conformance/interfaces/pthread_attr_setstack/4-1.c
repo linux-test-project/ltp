@@ -34,12 +34,14 @@
 static void *stack_addr;
 size_t stack_size;
 
-int teststack() {
+int teststack()
+{
 	return 0;
 }
+
 void *thread_func()
 {
-	/* execute a function to test the read/right of the stack*/
+	/* execute a function to test the read/right of the stack */
 	if (teststack() != 0) {
 		perror(ERROR_PREFIX "stack wrong");
 		exit(PTS_FAIL);
@@ -47,6 +49,7 @@ void *thread_func()
 	pthread_exit(0);
 	return NULL;
 }
+
 int main()
 {
 	pthread_t new_th;
@@ -72,53 +75,49 @@ int main()
 
 	stack_size = PTHREAD_STACK_MIN;
 
-	if (posix_memalign (&stack_addr, sysconf(_SC_PAGE_SIZE),
-            stack_size) != 0)
-    	{
-      		perror (ERROR_PREFIX "out of memory while "
-                        "allocating the stack memory");
-      		exit(PTS_UNRESOLVED);
-    	}
+	if (posix_memalign(&stack_addr, sysconf(_SC_PAGE_SIZE),
+			   stack_size) != 0) {
+		perror(ERROR_PREFIX "out of memory while "
+		       "allocating the stack memory");
+		exit(PTS_UNRESOLVED);
+	}
 	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != 0) {
-                perror(ERROR_PREFIX "pthread_attr_setstack");
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_setstack");
+		exit(PTS_UNRESOLVED);
+	}
 
 	rc = pthread_attr_getstack(&attr, &saddr, &ssize);
-        if (rc != 0) {
-                perror(ERROR_PREFIX "pthread_attr_getstack");
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_getstack");
+		exit(PTS_UNRESOLVED);
+	}
 	/* printf("saddr = %p, ssize = %u\n", saddr, ssize); */
 
-	if (ssize != stack_size || saddr != stack_addr)
-	{
+	if (ssize != stack_size || saddr != stack_addr) {
 		perror(ERROR_PREFIX "got the wrong stacksize or stackaddr");
 		exit(PTS_FAIL);
 	}
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
-	if (rc !=0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "failed to create a thread");
-                exit(PTS_FAIL);
-        }
+		exit(PTS_FAIL);
+	}
 
 	rc = pthread_join(new_th, NULL);
-	if (rc != 0)
-        {
-                perror(ERROR_PREFIX "pthread_join");
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_join");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	rc = pthread_attr_destroy(&attr);
-	if (rc != 0)
-        {
-                perror(ERROR_PREFIX "pthread_attr_destroy");
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

@@ -100,7 +100,7 @@ int parent_process(char *qname, int read_pipe, int write_pipe, int child_pid)
 	char reply;
 
 	queue = open_queue(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	if (queue == (mqd_t)-1) {
+	if (queue == (mqd_t) - 1) {
 		return PTS_UNRESOLVED;
 	}
 
@@ -113,7 +113,6 @@ int parent_process(char *qname, int read_pipe, int write_pipe, int child_pid)
 		mq_unlink(qname);
 		return PTS_UNRESOLVED;
 	}
-
 	// send 'a' - signal child to verify it can't call notify
 	rval = send_receive(read_pipe, write_pipe, 'a', &reply);
 	if (rval) {
@@ -123,13 +122,11 @@ int parent_process(char *qname, int read_pipe, int write_pipe, int child_pid)
 	}
 
 	if (reply != 'b') {
-		puts(ERROR_PREFIX "send_receive: "
-		     "expected a 'b'");
+		puts(ERROR_PREFIX "send_receive: " "expected a 'b'");
 		mq_close(queue);
 		mq_unlink(qname);
 		return PTS_UNRESOLVED;
 	}
-
 	// close the queue to perform test
 	rval = mq_close(queue);
 	mq_unlink(qname);
@@ -169,25 +166,20 @@ int child_process(char *qname, int read_pipe, int write_pipe)
 	}
 
 	if (reply != 'a') {
-		puts(ERROR_PREFIX "send_receive: "
-		     "expected an 'a'");
+		puts(ERROR_PREFIX "send_receive: " "expected an 'a'");
 		return PTS_UNRESOLVED;
 	}
-
 	// open the queue and attempt to set up notification
 	queue = open_queue(qname, O_RDWR, 0);
-	if (queue == (mqd_t)-1) {
+	if (queue == (mqd_t) - 1) {
 		return PTS_UNRESOLVED;
 	}
-
 	// try notify while parent still has queue open - should fail
 	se.sigev_notify = SIGEV_SIGNAL;
 	if (!mq_notify(queue, &se)) {
-		puts(ERROR_PREFIX "mq_notify (2): "
-		     "should have failed");
+		puts(ERROR_PREFIX "mq_notify (2): " "should have failed");
 		return PTS_UNRESOLVED;
 	}
-
 	// send 'b' - signal parent to close queue
 	rval = send_receive(read_pipe, write_pipe, 'b', &reply);
 	if (rval) {
@@ -195,34 +187,34 @@ int child_process(char *qname, int read_pipe, int write_pipe)
 	}
 
 	if (reply != 'c') {
-		puts(ERROR_PREFIX "send_receive: "
-		     "expected a 'c'");
+		puts(ERROR_PREFIX "send_receive: " "expected a 'c'");
 		return PTS_UNRESOLVED;
 	}
-
 	// try notify after parent closed queue - should succeed
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = 0;
 	rval = mq_notify(queue, &se);
 
 	// send 'd' for success and 'e' for failure
-	send_receive(read_pipe, write_pipe, rval ? 'e':'d', NULL);
+	send_receive(read_pipe, write_pipe, rval ? 'e' : 'd', NULL);
 
 	return 0;
 }
 
-mqd_t open_queue(char *qname, int oflag, int mode) {
+mqd_t open_queue(char *qname, int oflag, int mode)
+{
 	mqd_t queue;
 
 	queue = mq_open(qname, oflag, mode, NULL);
-	if (queue == (mqd_t)-1) {
+	if (queue == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 	}
 
 	return queue;
 }
 
-int send_receive(int read_pipe, int write_pipe, char send, char *reply) {
+int send_receive(int read_pipe, int write_pipe, char send, char *reply)
+{
 	ssize_t bytes;
 
 	if (send) {

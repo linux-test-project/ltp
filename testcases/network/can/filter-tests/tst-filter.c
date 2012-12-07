@@ -60,10 +60,12 @@
 #include <linux/can/raw.h>
 
 #define ID 0x123
-#define TC 18 /* # of testcases */
+#define TC 18			/* # of testcases */
 
-const int rx_res[TC] = {4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1};
-const int rxbits_res[TC] = {4369, 4369, 4369, 4369, 17, 4352, 17, 4352, 257, 257, 4112, 4112, 1, 256, 16, 4096, 1, 256};
+const int rx_res[TC] = { 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
+const int rxbits_res[TC] =
+    { 4369, 4369, 4369, 4369, 17, 4352, 17, 4352, 257, 257, 4112, 4112, 1, 256,
+16, 4096, 1, 256 };
 
 canid_t calc_id(int testcase)
 {
@@ -95,7 +97,7 @@ canid_t calc_mask(int testcase)
 int main(int argc, char **argv)
 {
 	fd_set rdfs;
-        struct timeval tv;
+	struct timeval tv;
 	int s;
 	struct sockaddr_can addr;
 	struct can_filter rfilter;
@@ -139,13 +141,14 @@ int main(int argc, char **argv)
 
 	for (testcase = 0; testcase < TC; testcase++) {
 
-		rfilter.can_id   = calc_id(testcase);
+		rfilter.can_id = calc_id(testcase);
 		rfilter.can_mask = calc_mask(testcase);
 		setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER,
 			   &rfilter, sizeof(rfilter));
 
-		printf("testcase %2d filters : can_id = 0x%08X can_mask = 0x%08X\n",
-		       testcase, rfilter.can_id, rfilter.can_mask);
+		printf
+		    ("testcase %2d filters : can_id = 0x%08X can_mask = 0x%08X\n",
+		     testcase, rfilter.can_id, rfilter.can_mask);
 
 		printf("testcase %2d sending patterns ... ", testcase);
 
@@ -185,9 +188,9 @@ int main(int argc, char **argv)
 			FD_ZERO(&rdfs);
 			FD_SET(s, &rdfs);
 			tv.tv_sec = 0;
-			tv.tv_usec = 50000; /* 50ms timeout */
+			tv.tv_usec = 50000;	/* 50ms timeout */
 
-			ret = select(s+1, &rdfs, NULL, NULL, &tv);
+			ret = select(s + 1, &rdfs, NULL, NULL, &tv);
 			if (ret < 0) {
 				perror("select");
 				exit(1);
@@ -201,37 +204,48 @@ int main(int argc, char **argv)
 					exit(1);
 				}
 				if ((frame.can_id & CAN_SFF_MASK) != ID) {
-					fprintf(stderr, "received wrong can_id!\n");
+					fprintf(stderr,
+						"received wrong can_id!\n");
 					exit(1);
 				}
 				if (frame.data[0] != testcase) {
-					fprintf(stderr, "received wrong testcase!\n");
+					fprintf(stderr,
+						"received wrong testcase!\n");
 					exit(1);
 				}
 
 				/* test & calc rxbits */
-				rxbitval = 1 << ((frame.can_id & (CAN_EFF_FLAG|CAN_RTR_FLAG|CAN_ERR_FLAG)) >> 28);
+				rxbitval =
+				    1 <<
+				    ((frame.
+				      can_id & (CAN_EFF_FLAG | CAN_RTR_FLAG |
+						CAN_ERR_FLAG)) >> 28);
 
 				/* only receive a rxbitval once */
 				if ((rxbits & rxbitval) == rxbitval) {
-					fprintf(stderr, "received rxbitval %d twice!\n", rxbitval);
+					fprintf(stderr,
+						"received rxbitval %d twice!\n",
+						rxbitval);
 					exit(1);
 				}
 				rxbits |= rxbitval;
 				rx++;
 
-				printf("testcase %2d rx : can_id = 0x%08X rx = %d rxbits = %d\n",
-				       testcase, frame.can_id, rx, rxbits);
+				printf
+				    ("testcase %2d rx : can_id = 0x%08X rx = %d rxbits = %d\n",
+				     testcase, frame.can_id, rx, rxbits);
 			}
 		}
 		/* rx timed out -> check the received results */
 		if (rx_res[testcase] != rx) {
-			fprintf(stderr, "wrong rx value in testcase %d : %d (expected %d)\n",
+			fprintf(stderr,
+				"wrong rx value in testcase %d : %d (expected %d)\n",
 				testcase, rx, rx_res[testcase]);
 			exit(1);
 		}
 		if (rxbits_res[testcase] != rxbits) {
-			fprintf(stderr, "wrong rxbits value in testcase %d : %d (expected %d)\n",
+			fprintf(stderr,
+				"wrong rxbits value in testcase %d : %d (expected %d)\n",
 				testcase, rxbits, rxbits_res[testcase]);
 			exit(1);
 		}

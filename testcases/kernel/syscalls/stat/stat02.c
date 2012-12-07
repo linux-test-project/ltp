@@ -89,6 +89,7 @@
 char *TCID = "stat02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 int exp_enos[] = { 0 };
+
 uid_t user_id;			/* eff. user id/group id of test process */
 gid_t group_id;
 char nobody_uid[] = "nobody";
@@ -204,7 +205,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	 }
+	}
 
 	/* Fill the test buffer with the known data */
 	for (i = 0; i < BUF_SIZE; i++) {
@@ -214,20 +215,22 @@ void setup()
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {
 		if ((wbytes = write(fd, tst_buff, sizeof(tst_buff))) <= 0) {
-			tst_brkm(TBROK|TERRNO, cleanup, "write to %s failed", TESTFILE);
+			tst_brkm(TBROK | TERRNO, cleanup, "write to %s failed",
+				 TESTFILE);
 		} else {
 			write_len += wbytes;
 		}
 	}
 
 	if (close(fd) == -1) {
-		tst_resm(TWARN|TERRNO, "closing %s failed", TESTFILE);
+		tst_resm(TWARN | TERRNO, "closing %s failed", TESTFILE);
 	}
 
 	/* Modify mode permissions on the testfile */
 	if (chmod(TESTFILE, NEW_MODE) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "chmodding %s failed", TESTFILE);
-	 }
+		tst_brkm(TBROK | TERRNO, cleanup, "chmodding %s failed",
+			 TESTFILE);
+	}
 
 	/* Get the uid/gid of the process */
 	user_id = getuid();

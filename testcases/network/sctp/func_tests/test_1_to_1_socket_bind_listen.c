@@ -65,7 +65,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>         /* for sockaddr_in */
+#include <netinet/in.h>		/* for sockaddr_in */
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/sctp.h>
@@ -79,92 +79,91 @@ char *TCID = __FILE__;
 int TST_TOTAL = 15;
 int TST_CNT = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-        int sk,pf_class;
+	int sk, pf_class;
 	int error = 0;
 	int uid;
 
-        struct sockaddr_in bind_addr;
+	struct sockaddr_in bind_addr;
 
 	/* Rather than fflush() throughout the code, set stdout to
-         * be unbuffered.
-         */
-        setvbuf(stdout, NULL, _IONBF, 0);
-        setvbuf(stderr, NULL, _IONBF, 0);
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
 
-        pf_class = PF_INET;
+	pf_class = PF_INET;
 
-        /* socket() TEST1: Invalid domain, EAFNOSUPPORT Expected error */
-        sk = socket(-1, SOCK_STREAM, IPPROTO_SCTP);
-        if (sk != -1 || errno != EAFNOSUPPORT)
+	/* socket() TEST1: Invalid domain, EAFNOSUPPORT Expected error */
+	sk = socket(-1, SOCK_STREAM, IPPROTO_SCTP);
+	if (sk != -1 || errno != EAFNOSUPPORT)
 		tst_brkm(TBROK, NULL, "socket() with invalid domain "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "socket() with invalid domain - EAFNOSUPPORT");
 
-	/*socket() TEST2 : Invalid type, EINVAL Expected error*/
-        sk = socket(pf_class, -1, IPPROTO_SCTP);
-        if (sk != -1 || errno != EINVAL)
+	/*socket() TEST2 : Invalid type, EINVAL Expected error */
+	sk = socket(pf_class, -1, IPPROTO_SCTP);
+	if (sk != -1 || errno != EINVAL)
 		tst_brkm(TBROK, NULL, "socket() with invalid type "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "socket() with invalid type - EINVAL");
 
-	/*socket() TEST3: opening a socket*/
-        sk = socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
-        if (sk < 0)
+	/*socket() TEST3: opening a socket */
+	sk = socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	if (sk < 0)
 		tst_brkm(TBROK, NULL, "valid socket() call "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "socket() - SUCCESS");
 
 	/*bind() TEST4: Invalid structure, EFAULT Expected error */
-        error = bind(sk, (struct sockaddr *)-1, sizeof(struct sockaddr_in));
-        if (error != -1 || errno != EFAULT)
+	error = bind(sk, (struct sockaddr *)-1, sizeof(struct sockaddr_in));
+	if (error != -1 || errno != EFAULT)
 		tst_brkm(TBROK, NULL, "bind() with invalid address ptr "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with invalid address ptr - EFAULT");
 
-	/*bind() TEST5: Invalid address length, EINVAL Expect error*/
+	/*bind() TEST5: Invalid address length, EINVAL Expect error */
 	bind_addr.sin_family = AF_INET;
-        bind_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        bind_addr.sin_port = htons(SCTP_TESTPORT_1);
+	bind_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	bind_addr.sin_port = htons(SCTP_TESTPORT_1);
 
-	error = bind(sk, (struct sockaddr *) &bind_addr, sizeof(bind_addr)-2);
-        if (error != -1 || errno != EINVAL)
+	error = bind(sk, (struct sockaddr *)&bind_addr, sizeof(bind_addr) - 2);
+	if (error != -1 || errno != EINVAL)
 		tst_brkm(TBROK, NULL, "bind() with invalid address length "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with invalid address length - EINVAL");
 
-	/*bind() TEST6: Invalid socket descriptor, ENOTSOCK Expect Error*/
-	error = bind(0, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
+	/*bind() TEST6: Invalid socket descriptor, ENOTSOCK Expect Error */
+	error = bind(0, (struct sockaddr *)&bind_addr, sizeof(bind_addr));
 	if (error != -1 || errno != ENOTSOCK)
 		tst_brkm(TBROK, NULL, "bind() with invalid socket "
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with invalid socket descriptor - ENOTSOCK");
 
-	/*bind() TEST7: Invalid host name, EADDRNOTAVAIL Expect Error*/
-	/*Assigning invalid host name*/
+	/*bind() TEST7: Invalid host name, EADDRNOTAVAIL Expect Error */
+	/*Assigning invalid host name */
 	bind_addr.sin_addr.s_addr = inet_addr(SCTP_INV_LOOPBACK);
-	error = bind(sk, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
-        if (error != -1 || errno != EADDRNOTAVAIL)
+	error = bind(sk, (struct sockaddr *)&bind_addr, sizeof(bind_addr));
+	if (error != -1 || errno != EADDRNOTAVAIL)
 		tst_brkm(TBROK, NULL, "bind() with invalid local "
 			 "address error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "bind() with invalid local address - EADDRNOTAVAIL");
 
 	/*bind() TEST8: Bind on a socket that has already called bind
-	EINAVL, Expected error*/
+	   EINAVL, Expected error */
 	bind_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-	/*Calling bind first time, it should pass*/
-	test_bind(sk, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
+	/*Calling bind first time, it should pass */
+	test_bind(sk, (struct sockaddr *)&bind_addr, sizeof(bind_addr));
 
-	error = bind(sk, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
+	error = bind(sk, (struct sockaddr *)&bind_addr, sizeof(bind_addr));
 	if (error != -1 || errno != EINVAL)
 		tst_brkm(TBROK, NULL, "bind() on an already bound socket "
 			 "error:%d, errno:%d", error, errno);
@@ -174,28 +173,28 @@ main(int argc, char *argv[])
 	/*Closing the socket which succeed in bind() */
 	close(sk);
 
-	/*Opening the socket again for further test*/
+	/*Opening the socket again for further test */
 	sk = socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-	/*bind() TEST9: Bind on reserved ports EACCES, Expected error*/
-	/*Assigning a reserved port*/
+	/*bind() TEST9: Bind on reserved ports EACCES, Expected error */
+	/*Assigning a reserved port */
 	uid = getuid();
 	if (uid != 0) {
 		bind_addr.sin_port = htons(SCTP_RESERVED_PORT);
-		error = bind(sk, (struct sockaddr *) &bind_addr,
+		error = bind(sk, (struct sockaddr *)&bind_addr,
 			     sizeof(bind_addr));
 		if (error != -1 || errno != EACCES)
 			tst_brkm(TBROK, NULL, "bind() on reserverd port "
-			 "error:%d, errno:%d", error, errno);
+				 "error:%d, errno:%d", error, errno);
 
 		tst_resm(TPASS, "bind() on reserved port - EACCESS");
 	}
 
 	/*bind() TEST10: INADDR_ANY address and non-zero port, bind() should
-	succeed*/
+	   succeed */
 	bind_addr.sin_addr.s_addr = INADDR_ANY;
-        bind_addr.sin_port = htons(SCTP_TESTPORT_1);
-	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
+	bind_addr.sin_port = htons(SCTP_TESTPORT_1);
+	error = bind(sk, (struct sockaddr *)&bind_addr, sizeof(bind_addr));
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "bind() with INADDR_ANY address and "
 			 "non-zero port error:%d, errno:%d", error, errno);
@@ -206,13 +205,13 @@ main(int argc, char *argv[])
 	/*Closing the socket which succeed in bind() */
 	close(sk);
 
-	/*Opening the socket again for further test*/
+	/*Opening the socket again for further test */
 	sk = socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
 	/*bind() TEST11: INADDR_ANY address and zero port, bind() should
-	succeed*/
-        bind_addr.sin_port = 0;
-	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
+	   succeed */
+	bind_addr.sin_port = 0;
+	error = bind(sk, (struct sockaddr *)&bind_addr, sizeof(bind_addr));
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "bind() with INADDR_ANY address and "
 			 "zero port error:%d, errno:%d", error, errno);
@@ -223,22 +222,21 @@ main(int argc, char *argv[])
 	/*Closing the socket which succeed in bind() */
 	close(sk);
 
-	/*Opening the socket again for further test*/
+	/*Opening the socket again for further test */
 	sk = socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
 	/*bind() TEST12: local address and zero port, bind() should
-	succeed*/
-        bind_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        bind_addr.sin_port = 0;
-	error = bind(sk, (struct sockaddr *) &bind_addr,sizeof(bind_addr));
+	   succeed */
+	bind_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	bind_addr.sin_port = 0;
+	error = bind(sk, (struct sockaddr *)&bind_addr, sizeof(bind_addr));
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "bind() with local address and "
 			 "zero port error:%d, errno:%d", error, errno);
 
-	tst_resm(TPASS, "bind() with local address and zero port - "
-		 "SUCCESS");
+	tst_resm(TPASS, "bind() with local address and zero port - " "SUCCESS");
 
-	/*listen() TEST13: Bad socket descriptor EBADF, Expected error*/
+	/*listen() TEST13: Bad socket descriptor EBADF, Expected error */
 	error = listen(-1, 3);
 	if (error != -1 || errno != EBADF)
 		tst_brkm(TBROK, NULL, "listen() with bad socket descriptor "
@@ -246,7 +244,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "listen() with bad socket descriptor - EBADF");
 
-	/*listen() TEST14: Invalid socket ENOTSOCK, Expected error*/
+	/*listen() TEST14: Invalid socket ENOTSOCK, Expected error */
 	error = listen(0, 3);
 	if (error != -1 || errno != ENOTSOCK)
 		tst_brkm(TBROK, NULL, "listen() with invalid socket "
@@ -254,7 +252,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "listen() with invalid socket - ENOTSOCK");
 
-	/*listen() TEST15:listen on a bound socket, should succeed*/
+	/*listen() TEST15:listen on a bound socket, should succeed */
 	error = listen(sk, 3);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "listen() on a bound socket "

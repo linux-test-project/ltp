@@ -45,7 +45,7 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -82,11 +82,11 @@ void my_init(void)
 
 	control = 1;
 
-	return ;
+	return;
 }
 
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret;
 
@@ -100,13 +100,11 @@ int main(int argc, char * argv[])
 	/* Call the initializer */
 	ret = pthread_once(&myctl, my_init);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "pthread_once failed");
 	}
 
-	if (control != 1)
-	{
+	if (control != 1) {
 		FAILED("The initializer function did not execute");
 	}
 

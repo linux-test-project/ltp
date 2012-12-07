@@ -1,6 +1,6 @@
   /*
-  Test the definition of stack_t.
-  */
+     Test the definition of stack_t.
+   */
 
 #include <sys/types.h>
 #include <signal.h>

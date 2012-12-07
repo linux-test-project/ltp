@@ -45,23 +45,27 @@ int main()
 	int ret;
 
 	/* Initialize a mutex attributes object */
-	if (pthread_mutexattr_init(&mta) != 0)
-	{
+	if (pthread_mutexattr_init(&mta) != 0) {
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Set the 'pshared' attribute to PTHREAD_PROCESS_PRIVATE */
-	if ((ret=pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_PRIVATE)) != 0)
-	{
-		printf("Test FAILED: Cannot set pshared attribute to PTHREAD_PROCESS_PRIVATE. Error: %d\n", ret);
+	if ((ret =
+	     pthread_mutexattr_setpshared(&mta,
+					  PTHREAD_PROCESS_PRIVATE)) != 0) {
+		printf
+		    ("Test FAILED: Cannot set pshared attribute to PTHREAD_PROCESS_PRIVATE. Error: %d\n",
+		     ret);
 		return PTS_FAIL;
 	}
 
 	/* Set the 'pshared' attribute to PTHREAD_PROCESS_SHARED */
-	if ((ret=pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_SHARED)) != 0)
-	{
-		printf("Test FAILED: Cannot set pshared attribute to PTHREAD_PROCESS_SHARED. Error code: %d\n", ret);
+	if ((ret =
+	     pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_SHARED)) != 0) {
+		printf
+		    ("Test FAILED: Cannot set pshared attribute to PTHREAD_PROCESS_SHARED. Error code: %d\n",
+		     ret);
 		return PTS_FAIL;
 	}
 

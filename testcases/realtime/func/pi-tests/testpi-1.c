@@ -73,7 +73,7 @@ int gettid(void)
 	return syscall(__NR_gettid);
 }
 
-typedef void *(*entrypoint_t)(void *);
+typedef void *(*entrypoint_t) (void *);
 pthread_mutex_t glob_mutex;
 static pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
@@ -83,11 +83,11 @@ void *func_nonrt(void *arg)
 	struct thread *pthr = (struct thread *)arg;
 	int i, tid = gettid();
 
-	printf("Thread %d started running with priority %d\n", tid,\
-		pthr->priority);
+	printf("Thread %d started running with priority %d\n", tid,
+	       pthr->priority);
 	pthread_mutex_lock(&glob_mutex);
-	printf("Thread %d at start pthread pol %d pri %d - Got global lock\n",\
-		tid, pthr->policy, pthr->priority);
+	printf("Thread %d at start pthread pol %d pri %d - Got global lock\n",
+	       tid, pthr->policy, pthr->priority);
 	/* Wait for other RT threads to start up */
 	pthread_barrier_wait(&barrier);
 
@@ -97,9 +97,9 @@ void *func_nonrt(void *arg)
 	pthread_mutex_unlock(&cond_mutex);
 
 	for (i = 0; i < 10000; i++) {
-		if (i%100 == 0) {
-			printf("Thread %d loop %d pthread pol %d pri %d\n",\
-				tid, i,  pthr->policy, pthr->priority);
+		if (i % 100 == 0) {
+			printf("Thread %d loop %d pthread pol %d pri %d\n",
+			       tid, i, pthr->policy, pthr->priority);
 			fflush(NULL);
 		}
 		busy_work_ms(1);
@@ -117,7 +117,7 @@ void *func_rt(void *arg)
 	pthread_barrier_wait(&barrier);
 	pthread_mutex_lock(&glob_mutex);
 	printf("Thread %d at start pthread pol %d pri %d - Got global lock\n",
-		tid, pthr->policy, pthr->priority);
+	       tid, pthr->policy, pthr->priority);
 
 	/* We just use the mutex as something to slow things down,
 	 * say who we are and then do nothing for a while.  The aim
@@ -125,9 +125,9 @@ void *func_rt(void *arg)
 	 * progress than lower priority threads..
 	 */
 	for (i = 0; i < 1000; i++) {
-		if (i%100 == 0) {
-			printf("Thread %d loop %d pthread pol %d pri %d\n",\
-				tid, i, pthr->policy, pthr->priority);
+		if (i % 100 == 0) {
+			printf("Thread %d loop %d pthread pol %d pri %d\n",
+			       tid, i, pthr->policy, pthr->priority);
 			fflush(NULL);
 		}
 		busy_work_ms(1);
@@ -142,7 +142,7 @@ void *func_noise(void *arg)
 	int i, tid = gettid();
 
 	printf("Noise Thread %d started running with prio %d\n", tid,
-		pthr->priority);
+	       pthr->priority);
 	pthread_barrier_wait(&barrier);
 
 	/* Let others wait at conditional variable */
@@ -154,10 +154,10 @@ void *func_noise(void *arg)
 	pthread_mutex_unlock(&cond_mutex);
 
 	for (i = 0; i < 10000; i++) {
-		if (i%100 == 0) {
-			printf("Noise Thread %d loop %d pthread pol %d "\
-				"pri %d\n", tid, i, pthr->policy,\
-				pthr->priority);
+		if (i % 100 == 0) {
+			printf("Noise Thread %d loop %d pthread pol %d "
+			       "pri %d\n", tid, i, pthr->policy,
+			       pthr->priority);
 			fflush(NULL);
 		}
 		busy_work_ms(1);
@@ -186,8 +186,8 @@ int main(int argc, char *argv[])
 
 	retc = sched_setaffinity(0, sizeof(mask), &mask);
 	if (retc < 0) {
-		printf("Main Thread: Can't set affinity: %d %s\n", retc,\
-			strerror(retc));
+		printf("Main Thread: Can't set affinity: %d %s\n", retc,
+		       strerror(retc));
 		exit(-1);
 	}
 
@@ -210,8 +210,8 @@ int main(int argc, char *argv[])
 	printf("Joining threads\n");
 	join_threads();
 	printf("Done\n");
-	printf("Criteria:Low Priority Thread should Preempt Higher Priority "\
-		"Noise Thread\n");
+	printf("Criteria:Low Priority Thread should Preempt Higher Priority "
+	       "Noise Thread\n");
 
 	pthread_mutex_destroy(&glob_mutex);
 	pthread_mutex_destroy(&cond_mutex);

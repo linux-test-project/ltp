@@ -154,7 +154,7 @@ int main(int ac, char **av)
 		TEST(FSTATFSCALL);
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "fstatfs failed");
+			tst_resm(TFAIL | TTERRNO, "fstatfs failed");
 		else {
 			if (STD_FUNCTIONAL_TEST)
 				tst_resm(TPASS,
@@ -180,7 +180,7 @@ void setup()
 
 	sprintf(fname, "tfile_%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 }
 
 void cleanup()
@@ -188,7 +188,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (close(fd) == -1)
-		tst_resm(TWARN|TERRNO, "close failed");
+		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
 

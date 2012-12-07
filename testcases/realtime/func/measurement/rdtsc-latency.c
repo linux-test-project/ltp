@@ -60,12 +60,12 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
@@ -92,7 +92,8 @@ unsigned long long tsc_period_ps(void)
 	rdtscll(tsc_end);
 	gettimeofday(&tv_end, NULL);
 
-	return (1000*tv_minus(&tv_start, &tv_end)) / tsc_minus(tsc_start, tsc_end);
+	return (1000 * tv_minus(&tv_start, &tv_end)) / tsc_minus(tsc_start,
+								 tsc_end);
 }
 
 int main(int argc, char *argv[])
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	rt_init("h",parse_args,argc,argv);
+	rt_init("h", parse_args, argc, argv);
 
 	/* no arguments */
 	if (argc > 1) {
@@ -124,10 +125,14 @@ int main(int argc, char *argv[])
 	/* Check that the user has the appropriate privileges */
 	if (err) {
 		if (errno == EPERM) {
-			fprintf(stderr, "This program runs with a scheduling policy of SCHED_FIFO at priority %d\n", param.sched_priority);
-			fprintf(stderr, "You don't have the necessary privileges to create such a real-time process.\n");
+			fprintf(stderr,
+				"This program runs with a scheduling policy of SCHED_FIFO at priority %d\n",
+				param.sched_priority);
+			fprintf(stderr,
+				"You don't have the necessary privileges to create such a real-time process.\n");
 		} else {
-			fprintf(stderr, "Failed to set scheduler, errno %d\n", errno);
+			fprintf(stderr, "Failed to set scheduler, errno %d\n",
+				errno);
 		}
 		exit(1);
 	}
@@ -140,9 +145,11 @@ int main(int argc, char *argv[])
 	for (i = 0; i < ITERATIONS; i++) {
 		rdtscll(tsc_a);
 		rdtscll(tsc_b);
-		deltas[i] = (tsc_minus(tsc_a, tsc_b) * tsc_period) / 1000; /* tsc period is in ps */
-		if (i == 0 || deltas[i] < min) min = deltas[i];
-		if (deltas[i] > max) max = deltas[i];
+		deltas[i] = (tsc_minus(tsc_a, tsc_b) * tsc_period) / 1000;	/* tsc period is in ps */
+		if (i == 0 || deltas[i] < min)
+			min = deltas[i];
+		if (deltas[i] > max)
+			max = deltas[i];
 		avg += deltas[i];
 	}
 	avg /= ITERATIONS;

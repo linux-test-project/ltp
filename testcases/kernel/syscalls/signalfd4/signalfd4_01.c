@@ -68,7 +68,7 @@
 #include "ltp_signal.h"
 
 #ifndef O_CLOEXEC
-# define O_CLOEXEC 02000000
+#define O_CLOEXEC 02000000
 #endif
 
 #define SFD_CLOEXEC O_CLOEXEC
@@ -176,7 +176,8 @@ int main(int argc, char *argv[])
 			}
 			close(fd);
 
-			fd = syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE, SFD_CLOEXEC);
+			fd = syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE,
+				     SFD_CLOEXEC);
 			if (fd == -1) {
 				tst_resm(TFAIL,
 					 "signalfd4(SFD_CLOEXEC) failed");

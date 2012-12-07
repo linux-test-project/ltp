@@ -102,7 +102,7 @@ int main(int ac, char **av)
 	else if (TEST_ERRNO == EINVAL)
 		tst_resm(TPASS, "msync failed with EINVAL as expected");
 	else
-		tst_resm(TFAIL|TTERRNO, "msync failed unexpectedly");
+		tst_resm(TFAIL | TTERRNO, "msync failed unexpectedly");
 
 	cleanup();
 
@@ -117,7 +117,7 @@ void setup()
 	TEST_PAUSE;
 
 	if ((page_sz = getpagesize()) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "getpagesize failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpagesize failed");
 
 	tst_tmpdir();
 
@@ -125,7 +125,7 @@ void setup()
 
 	/* Creat a temporary file used for mapping */
 	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
 	/* Write one page size of char data into temporary file */
 	while (c_total < page_sz) {
@@ -135,12 +135,12 @@ void setup()
 			c_total += nwrite;
 	}
 
-	addr = mmap(0, page_sz, PROT_READ|PROT_WRITE, MAP_FILE|MAP_PRIVATE,
+	addr = mmap(0, page_sz, PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE,
 		    fildes, 0);
 
 	/* Check for the return value of mmap() */
 	if (addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 }
 
 void cleanup()

@@ -22,7 +22,8 @@
 #include <malloc.h>
 #include "proclist.h"
 
-void add_to_proclist(struct proclist_t *list, struct proclist_item_t *item) {
+void add_to_proclist(struct proclist_t *list, struct proclist_item_t *item)
+{
 	struct proclist_item_t *curr;
 
 	if (list->head == NULL) {
@@ -40,7 +41,8 @@ void add_to_proclist(struct proclist_t *list, struct proclist_item_t *item) {
 	curr->next = item;
 }
 
-void remove_from_proclist(struct proclist_t *list, struct proclist_item_t *item) {
+void remove_from_proclist(struct proclist_t *list, struct proclist_item_t *item)
+{
 	struct proclist_item_t *curr, *prev;
 
 	if (list->head == NULL) {

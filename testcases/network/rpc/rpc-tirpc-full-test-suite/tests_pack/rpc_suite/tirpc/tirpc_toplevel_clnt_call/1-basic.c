@@ -43,49 +43,43 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	char nettype[16] = "visible";
 	CLIENT *clnt = NULL;
 	enum clnt_stat rslt;
 	int sndVar = 10;
-    int recVar = -1;
-    struct timeval total_timeout;
+	int recVar = -1;
+	struct timeval total_timeout;
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("Server : %s\n", argc[1]);
 		printf("Server # %d\n", progNum);
 		printf("Net : %s\n", nettype);
 	}
-
 	//Initialisation
 	total_timeout.tv_sec = 1;
-	total_timeout.tv_usec = 1;/**/
+	total_timeout.tv_usec = 1;
+	/**/
+	    //First of all, create client using top level API
+	    clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
 
-	//First of all, create client using top level API
-	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
-
-	if (clnt == NULL)
-	{
+	if (clnt == NULL) {
 		printf("5\n");
 		return 5;
 	}
-
 	//Then call remote procedure
-	rslt = clnt_call((CLIENT *)clnt, PROCNUM,
-						    (xdrproc_t)xdr_int, (char *)&sndVar, // xdr_in
-                    		(xdrproc_t)xdr_int, (char *)&recVar, // xdr_out
-						    total_timeout);	/**/
-
-	test_status = (rslt == RPC_SUCCESS) ? 0 : 1;
+	rslt = clnt_call((CLIENT *) clnt, PROCNUM, (xdrproc_t) xdr_int, (char *)&sndVar,	// xdr_in
+			 (xdrproc_t) xdr_int, (char *)&recVar,	// xdr_out
+			 total_timeout);
+	/**/ test_status = (rslt == RPC_SUCCESS) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

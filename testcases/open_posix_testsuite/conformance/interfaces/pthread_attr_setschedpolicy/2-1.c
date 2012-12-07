@@ -76,7 +76,6 @@ static void *thread_func(void *data)
 	else
 		priorities[2] = sp.sched_priority;
 
-
 	rc = pthread_mutex_unlock(&mutex);
 	if (rc) {
 		ERR_MSG("pthread_mutex_unlock()", rc);
@@ -84,10 +83,10 @@ static void *thread_func(void *data)
 	}
 
 done:
-	return (void *) (long) rc;
+	return (void *)(long)rc;
 }
 
-static int create_thread(int prio, pthread_t *tid)
+static int create_thread(int prio, pthread_t * tid)
 {
 	int rc;
 	char *func;
@@ -145,7 +144,7 @@ static int create_thread(int prio, pthread_t *tid)
 	return 0;
 
 unlock:
-	(void) pthread_mutex_unlock(&c_mutex);
+	(void)pthread_mutex_unlock(&c_mutex);
 error:
 	pthread_attr_destroy(&attr);
 done:
@@ -207,20 +206,20 @@ int main(void)
 	}
 
 	/* Threads fail? */
-	if ((long) r1 || (long) r2 || (long) r2)
+	if ((long)r1 || (long)r2 || (long)r2)
 		goto done;
 
 	/* priorities must be high to low */
 	status = PTS_FAIL;
 	if (priorities[0] != PRIO_HIGH)
 		printf("Failed: first is prio: %u, should be: %u\n",
-				priorities[0], PRIO_HIGH);
+		       priorities[0], PRIO_HIGH);
 	else if (priorities[1] != PRIO_MED)
 		printf("Failed: second is prio: %u, should be: %u\n",
-				priorities[1], PRIO_MED);
+		       priorities[1], PRIO_MED);
 	else if (priorities[2] != PRIO_LOW)
 		printf("Failed: third is prio: %u, should be: %u\n",
-				priorities[2], PRIO_LOW);
+		       priorities[2], PRIO_LOW);
 	else
 		status = PTS_PASS;
 

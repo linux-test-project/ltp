@@ -98,10 +98,9 @@ int main(int argc, char **argv)
 	/* loop counter */
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	/* global setup */
 	setup();
@@ -199,4 +198,4 @@ void cleanup(void)
 	unlink(filename);
 	tst_rmdir();
 
- }
+}

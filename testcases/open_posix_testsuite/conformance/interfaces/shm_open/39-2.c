@@ -27,7 +27,8 @@
 /* Ensure that each component length is short enough */
 #define COMPONENT_SIZE _POSIX_NAME_MAX
 
-int main() {
+int main()
+{
 	int fd, i, path_max;
 	char *shm_name;
 
@@ -35,14 +36,14 @@ int main() {
 	if (path_max == -1) {
 		perror("An error occurs when calling pathconf()");
 		return PTS_UNRESOLVED;
-        }
-	shm_name = malloc(path_max+1);
+	}
+	shm_name = malloc(path_max + 1);
 
-	for (i=0; i<path_max; i++)
-		shm_name[i] = (i+1)%COMPONENT_SIZE ? 'a' : '/';
+	for (i = 0; i < path_max; i++)
+		shm_name[i] = (i + 1) % COMPONENT_SIZE ? 'a' : '/';
 	shm_name[path_max] = 0;
 
-	fd = shm_open(shm_name, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(shm_name, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 
 	if (fd == -1 && errno == ENAMETOOLONG) {
 		printf("Test PASSED\n");

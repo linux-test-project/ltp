@@ -19,7 +19,7 @@
 int main(void)
 {
 	sigset_t signalset;
-	int i, test_failed=0;
+	int i, test_failed = 0;
 
 	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
@@ -33,19 +33,21 @@ int main(void)
 		SIGPROF,
 #endif
 		SIGSYS,
-		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
+		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
+	};
 
 	if (sigfillset(&signalset) == -1) {
 		perror("sigfillset failed -- test aborted");
 		return PTS_FAIL;
 	}
 
-	for (i=NUMSIGNALS-1; i>=0; i--) {
+	for (i = NUMSIGNALS - 1; i >= 0; i--) {
 		if (sigismember(&signalset, siglist[i]) == 0) {
-			#ifdef DEBUG
-				printf("sigfillset did not insert signal %s\n in set", siglist[i]);
- 			#endif
-			test_failed=1;
+#ifdef DEBUG
+			printf("sigfillset did not insert signal %s\n in set",
+			       siglist[i]);
+#endif
+			test_failed = 1;
 		}
 	}
 

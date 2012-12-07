@@ -36,14 +36,14 @@
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
 #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <sys/wait.h>
- #include <errno.h>
+#include <errno.h>
 
 #include <sched.h>
 
@@ -51,7 +51,7 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -83,7 +83,7 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, param, status;
 	pid_t child, ctl;
@@ -96,52 +96,46 @@ int main(int argc, char * argv[])
 	/* Change process policy and parameters */
 	sp.sched_priority = param = sched_get_priority_max(POLICY);
 
-	if (sp.sched_priority == -1)
-	{
+	if (sp.sched_priority == -1) {
 		UNRESOLVED(errno, "Failed to get max priority value");
 	}
 
 	ret = sched_setscheduler(0, POLICY, &sp);
 
-	if (ret == -1)
-	{
+	if (ret == -1) {
 		UNRESOLVED(errno, "Failed to change process scheduling policy");
 	}
 
 	/* Create the child */
 	child = fork();
 
-	if (child == -1)
-	{
+	if (child == -1) {
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == 0)
-	{
+	if (child == 0) {
 
 		/* Check the scheduling policy */
 		ret = sched_getscheduler(0);
 
-		if (ret == -1)
-		{
-			UNRESOLVED(errno, "Failed to read scheduling policy in child");
+		if (ret == -1) {
+			UNRESOLVED(errno,
+				   "Failed to read scheduling policy in child");
 		}
 
-		if (ret != POLICY)
-		{
+		if (ret != POLICY) {
 			FAILED("The scheduling policy was not inherited");
 		}
 
 		ret = sched_getparam(0, &sp);
 
-		if (ret != 0)
-		{
-			UNRESOLVED(errno, "Failed to read scheduling parameter in child");
+		if (ret != 0) {
+			UNRESOLVED(errno,
+				   "Failed to read scheduling parameter in child");
 		}
 
-		if (sp.sched_priority != param)
-		{
+		if (sp.sched_priority != param) {
 			FAILED("The scheduling parameter was not inherited");
 		}
 
@@ -152,13 +146,11 @@ int main(int argc, char * argv[])
 	/* Parent joins the child */
 	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child)
-	{
+	if (ctl != child) {
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
-	{
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS)) {
 		FAILED("Child exited abnormally");
 	}
 

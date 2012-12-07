@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Ensure ch1 is properly allocated when ch == 2 or ch == 8. */
-	assert (!((ch == 2 || ch == 8) && ch1 == -1));
+	assert(!((ch == 2 || ch == 8) && ch1 == -1));
 
 	/*
 	 * Send syslog messages according to the case number, which

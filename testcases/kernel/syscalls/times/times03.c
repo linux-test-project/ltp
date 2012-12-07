@@ -58,6 +58,7 @@
 char *TCID = "times03";
 int TST_TOTAL = 1;
 int exp_enos[] = { 0 };
+
 volatile int timeout;		/* Did we timeout in alarm() ? */
 
 void work(void);
@@ -91,7 +92,7 @@ int main(int argc, char **argv)
 	sa.sa_flags = SA_SIGINFO;
 
 	if (sigaction(SIGALRM, &sa, NULL) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "Sigaction failed !\n");
+		tst_brkm(TBROK | TERRNO, cleanup, "Sigaction failed !\n");
 
 	timeout = 0;
 	alarm(3);
@@ -107,14 +108,14 @@ int main(int argc, char **argv)
 	start_time = time(NULL);
 	for (;;) {
 		if (times(&buf1) == -1)
-			tst_resm(TFAIL|TERRNO, "times failed");
+			tst_resm(TFAIL | TERRNO, "times failed");
 		end_time = time(NULL);
 		if ((end_time - start_time) > 5) {
 			break;
 		}
 	}
 	if (times(&buf1) == -1)
-		tst_resm(TFAIL|TERRNO, "times failed");
+		tst_resm(TFAIL | TERRNO, "times failed");
 	else {
 		/*
 		 * Perform functional verification if test
@@ -122,8 +123,7 @@ int main(int argc, char **argv)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			if (buf1.tms_utime == 0)
-				tst_resm(TFAIL, "times report "
-					 "0 user time");
+				tst_resm(TFAIL, "times report " "0 user time");
 			if (buf1.tms_stime == 0)
 				tst_resm(TFAIL, "times report "
 					 "0 system time");
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 			pid2 = FORK_OR_VFORK();
 			if (pid2 < 0) {
 				tst_brkm(TFAIL, cleanup, "Fork failed");
-			 } else if (pid2 == 0) {
+			} else if (pid2 == 0) {
 
 				/* Spend some cycles in userspace */
 
@@ -181,7 +181,7 @@ int main(int argc, char **argv)
 			}
 			if (times(&buf2) == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL|TTERRNO, "times failed");
+				tst_resm(TFAIL | TTERRNO, "times failed");
 			}
 			if (buf1.tms_utime > buf2.tms_utime)
 				tst_resm(TFAIL, "Error: parents's "
@@ -267,4 +267,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}

@@ -62,10 +62,10 @@
 #include <math.h>
 
 static LIST_HEAD(_threads);
-static atomic_t _thread_count = {-1};
+static atomic_t _thread_count = { -1 };
 
 pthread_mutex_t _buffer_mutex;
-char * _print_buffer = NULL;
+char *_print_buffer = NULL;
 int _print_buffer_offset = 0;
 int _dbg_lvl = 0;
 double pass_criteria;
@@ -76,10 +76,12 @@ static int _use_pi = 1;
 void rt_help(void)
 {
 	printf("librt standard options:\n");
-	printf("  -b(0,1)	1:enable buffered output, 0:diable buffered output\n");
+	printf
+	    ("  -b(0,1)	1:enable buffered output, 0:diable buffered output\n");
 	printf("  -p(0,1)	0:don't use pi mutexes, 1:use pi mutexes\n");
 	printf("  -m		use mlockall\n");
-	printf("  -v[0-4]	0:no debug, 1:DBG_ERR, 2:DBG_WARN, 3:DBG_INFO, 4:DBG_DEBUG\n");
+	printf
+	    ("  -v[0-4]	0:no debug, 1:DBG_ERR, 2:DBG_WARN, 3:DBG_INFO, 4:DBG_DEBUG\n");
 	printf("  -s		Enable saving stats data (default disabled)\n");
 	printf("  -c		Set pass criteria\n");
 }
@@ -96,11 +98,11 @@ void calibrate_busyloop(void)
 	}
 	end = rt_gettime();
 
-	iters_per_us = (CALIBRATE_LOOPS * NS_PER_US) / (end-start);
+	iters_per_us = (CALIBRATE_LOOPS * NS_PER_US) / (end - start);
 }
 
 int rt_init_long(const char *options, const struct option *longopts,
-		 int (*parse_arg)(int option, char *value), int argc,
+		 int (*parse_arg) (int option, char *value), int argc,
 		 char *argv[])
 {
 	const struct option *cur_opt;
@@ -113,20 +115,23 @@ int rt_init_long(const char *options, const struct option *longopts,
 	char *all_options;
 
 	if (asprintf(&all_options, ":b:mp:v:sc:%s", options) == -1) {
-		fprintf(stderr, "Failed to allocate string for option string\n");
+		fprintf(stderr,
+			"Failed to allocate string for option string\n");
 		exit(1);
 	}
 
 	/* Check for duplicate options in optstring */
-	for (i=0; i<strlen(all_options); i++) {
+	for (i = 0; i < strlen(all_options); i++) {
 		char opt = all_options[i];
 
 		if (opt == ':')
 			continue;
 
 		/* Search ahead */
-		if (strchr(&all_options[i+1], opt)) {
-			fprintf(stderr, "Programmer error -- argument -%c already used at least twice\n", opt);
+		if (strchr(&all_options[i + 1], opt)) {
+			fprintf(stderr,
+				"Programmer error -- argument -%c already used at least twice\n",
+				opt);
 			exit(1);
 		}
 	}
@@ -152,7 +157,8 @@ int rt_init_long(const char *options, const struct option *longopts,
 				cur_opt->name, cur_opt->val);
 			exit(1);
 		}
-		if (asprintf(&longopt_vals, "%s%c", longopt_vals, cur_opt->val) < 0) {
+		if (asprintf(&longopt_vals, "%s%c", longopt_vals, cur_opt->val)
+		    < 0) {
 			perror("asprintf");
 			exit(2);
 		}
@@ -183,30 +189,35 @@ int rt_init_long(const char *options, const struct option *longopts,
 			if (optopt == '-')
 				fprintf(stderr, "long option missing arg\n");
 			else
-				fprintf(stderr, "option -%c: missing arg\n", optopt);
-			parse_arg('h', optarg); /* Just to display usage */
-			exit (1); /* Just in case. (should normally be done by usage()) */
+				fprintf(stderr, "option -%c: missing arg\n",
+					optopt);
+			parse_arg('h', optarg);	/* Just to display usage */
+			exit(1);	/* Just in case. (should normally be done by usage()) */
 		case '?':
 			if (optopt == '-')
 				fprintf(stderr, "unrecognized long option\n");
 			else
-				fprintf(stderr, "option -%c not recognized\n", optopt);
-			parse_arg('h', optarg); /* Just to display usage */
-			exit (1); /* Just in case. (should normally be done by usage()) */
+				fprintf(stderr, "option -%c not recognized\n",
+					optopt);
+			parse_arg('h', optarg);	/* Just to display usage */
+			exit(1);	/* Just in case. (should normally be done by usage()) */
 		default:
 			if (parse_arg && parse_arg(c, optarg))
-				break; /* Application option */
+				break;	/* Application option */
 
-			fprintf(stderr, "Programmer error -- option -%c defined but not handled\n", c);
+			fprintf(stderr,
+				"Programmer error -- option -%c defined but not handled\n",
+				c);
 			exit(1);
 		}
 	}
 	if (!_use_pi)
-		printf("Priority Inheritance has been disabled for this run.\n");
+		printf
+		    ("Priority Inheritance has been disabled for this run.\n");
 	if (use_buffer)
 		buffer_init();
 	if (mlock) {
-		if (mlockall(MCL_CURRENT|MCL_FUTURE)) {
+		if (mlockall(MCL_CURRENT | MCL_FUTURE)) {
 			perror("failed to lock memory\n");
 			exit(1);
 		}
@@ -223,7 +234,7 @@ int rt_init_long(const char *options, const struct option *longopts,
 	return 0;
 }
 
-int rt_init(const char *options, int (*parse_arg)(int option, char *value),
+int rt_init(const char *options, int (*parse_arg) (int option, char *value),
 	    int argc, char *argv[])
 {
 	return rt_init_long(options, NULL, parse_arg, argc, argv);
@@ -233,7 +244,8 @@ void buffer_init(void)
 {
 	_print_buffer = (char *)malloc(PRINT_BUFFER_SIZE);
 	if (!_print_buffer)
-		fprintf(stderr, "insufficient memory for print buffer - printing directly to stderr\n");
+		fprintf(stderr,
+			"insufficient memory for print buffer - printing directly to stderr\n");
 	else
 		memset(_print_buffer, 0, PRINT_BUFFER_SIZE);
 }
@@ -254,22 +266,23 @@ void buffer_fini(void)
 	_print_buffer = NULL;
 }
 
-void cleanup(int i) {
+void cleanup(int i)
+{
 	printf("Test terminated with asynchronous signal\n");
 	buffer_print();
 	buffer_fini();
 	if (i)
-		exit (i);
+		exit(i);
 }
 
 void setup()
 {
 	signal(SIGINT, cleanup);
-	signal(SIGQUIT,cleanup);
+	signal(SIGQUIT, cleanup);
 	signal(SIGTERM, cleanup);
 }
 
-int create_thread(void*(*func)(void*), void *arg, int prio, int policy)
+int create_thread(void *(*func) (void *), void *arg, int prio, int policy)
 {
 	struct sched_param param;
 	int id, ret;
@@ -297,7 +310,9 @@ int create_thread(void*(*func)(void*), void *arg, int prio, int policy)
 	pthread_attr_setschedpolicy(&thread->attr, thread->policy);
 	pthread_attr_setschedparam(&thread->attr, &param);
 
-	if ((ret = pthread_create(&thread->pthread, &thread->attr, func, (void*)thread))) {
+	if ((ret =
+	     pthread_create(&thread->pthread, &thread->attr, func,
+			    (void *)thread))) {
 		printf("pthread_create failed: %d (%s)\n", ret, strerror(ret));
 		list_del(&thread->_threads);
 		pthread_attr_destroy(&thread->attr);
@@ -309,15 +324,17 @@ int create_thread(void*(*func)(void*), void *arg, int prio, int policy)
 	return id;
 }
 
-int create_fifo_thread(void*(*func)(void*), void *arg, int prio)
+int create_fifo_thread(void *(*func) (void *), void *arg, int prio)
 {
 	return create_thread(func, arg, prio, SCHED_FIFO);
 }
-int create_rr_thread(void*(*func)(void*), void *arg, int prio)
+
+int create_rr_thread(void *(*func) (void *), void *arg, int prio)
 {
 	return create_thread(func, arg, prio, SCHED_RR);
 }
-int create_other_thread(void*(*func)(void*), void *arg)
+
+int create_other_thread(void *(*func) (void *), void *arg)
 {
 	return create_thread(func, arg, 0, SCHED_OTHER);
 }
@@ -367,7 +384,7 @@ void all_threads_quit(void)
 {
 	struct thread *p;
 	list_for_each_entry(p, &_threads, _threads) {
-			p->flags |= THREAD_QUIT;
+		p->flags |= THREAD_QUIT;
 	}
 }
 
@@ -382,7 +399,8 @@ void join_threads(void)
 	}
 }
 
-struct thread *get_thread(int i) {
+struct thread *get_thread(int i)
+{
 	struct thread *p;
 	list_for_each_entry(p, &_threads, _threads) {
 		if (p->id == i) {
@@ -392,10 +410,12 @@ struct thread *get_thread(int i) {
 	return NULL;
 }
 
-void ts_minus(struct timespec *ts_end, struct timespec *ts_start, struct timespec *ts_delta)
+void ts_minus(struct timespec *ts_end, struct timespec *ts_start,
+	      struct timespec *ts_delta)
 {
 	if (ts_end == NULL || ts_start == NULL || ts_delta == NULL) {
-		printf("ERROR in %s: one or more of the timespecs is NULL", __FUNCTION__);
+		printf("ERROR in %s: one or more of the timespecs is NULL",
+		       __FUNCTION__);
 		return;
 	}
 
@@ -404,10 +424,12 @@ void ts_minus(struct timespec *ts_end, struct timespec *ts_start, struct timespe
 	ts_normalize(ts_delta);
 }
 
-void ts_plus(struct timespec *ts_a, struct timespec *ts_b, struct timespec *ts_sum)
+void ts_plus(struct timespec *ts_a, struct timespec *ts_b,
+	     struct timespec *ts_sum)
 {
 	if (ts_a == NULL || ts_b == NULL || ts_sum == NULL) {
-		printf("ERROR in %s: one or more of the timespecs is NULL", __FUNCTION__);
+		printf("ERROR in %s: one or more of the timespecs is NULL",
+		       __FUNCTION__);
 		return;
 	}
 
@@ -445,7 +467,7 @@ void ts_normalize(struct timespec *ts)
 	}
 }
 
-int ts_to_nsec(struct timespec *ts, nsec_t *ns)
+int ts_to_nsec(struct timespec *ts, nsec_t * ns)
 {
 	struct timespec t;
 	if (ts == NULL) {
@@ -462,7 +484,7 @@ int ts_to_nsec(struct timespec *ts, nsec_t *ns)
 		return -1;
 	}
 
-	*ns = (nsec_t)ts->tv_sec*NS_PER_SEC + ts->tv_nsec;
+	*ns = (nsec_t) ts->tv_sec * NS_PER_SEC + ts->tv_nsec;
 	return 0;
 }
 
@@ -473,12 +495,13 @@ void nsec_to_ts(nsec_t ns, struct timespec *ts)
 		printf("ERROR in %s: ts is NULL\n", __FUNCTION__);
 		return;
 	}
-	ts->tv_sec = ns/NS_PER_SEC;
-	ts->tv_nsec = ns%NS_PER_SEC;
+	ts->tv_sec = ns / NS_PER_SEC;
+	ts->tv_nsec = ns % NS_PER_SEC;
 }
 
 /* return difference in microseconds */
-unsigned long long tsc_minus(unsigned long long tsc_start, unsigned long long tsc_end)
+unsigned long long tsc_minus(unsigned long long tsc_start,
+			     unsigned long long tsc_end)
 {
 	unsigned long long delta;
 	if (tsc_start <= tsc_end)
@@ -490,19 +513,22 @@ unsigned long long tsc_minus(unsigned long long tsc_start, unsigned long long ts
 	return delta;
 }
 
-void rt_nanosleep_until(nsec_t ns) {
+void rt_nanosleep_until(nsec_t ns)
+{
 	struct timespec ts_sleep, ts_rem;
 	int rc;
 	nsec_to_ts(ns, &ts_sleep);
-	rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts_sleep, &ts_rem);
+	rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts_sleep,
+			     &ts_rem);
 	/* FIXME: when should we display the remainder ? */
 	if (rc != 0) {
 		printf("WARNING: rt_nanosleep() returned early by %d s %d ns\n",
-			(int)ts_rem.tv_sec, (int)ts_rem.tv_nsec);
+		       (int)ts_rem.tv_sec, (int)ts_rem.tv_nsec);
 	}
 }
 
-void rt_nanosleep(nsec_t ns) {
+void rt_nanosleep(nsec_t ns)
+{
 	struct timespec ts_sleep, ts_rem;
 	int rc;
 	nsec_to_ts(ns, &ts_sleep);
@@ -510,18 +536,20 @@ void rt_nanosleep(nsec_t ns) {
 	/* FIXME: when should we display the remainder ? */
 	if (rc != 0) {
 		printf("WARNING: rt_nanosleep() returned early by %d s %d ns\n",
-			(int)ts_rem.tv_sec, (int)ts_rem.tv_nsec);
+		       (int)ts_rem.tv_sec, (int)ts_rem.tv_nsec);
 	}
 }
 
-nsec_t rt_gettime(void) {
+nsec_t rt_gettime(void)
+{
 	struct timespec ts;
 	nsec_t ns;
 	int rc;
 
 	rc = clock_gettime(CLOCK_MONOTONIC, &ts);
 	if (rc != 0) {
-		printf("ERROR in %s: clock_gettime() returned %d\n", __FUNCTION__, rc);
+		printf("ERROR in %s: clock_gettime() returned %d\n",
+		       __FUNCTION__, rc);
 		perror("clock_gettime() failed");
 		return 0;
 	}
@@ -532,7 +560,7 @@ nsec_t rt_gettime(void) {
 
 void *busy_work_ms(int ms)
 {
-	busy_work_us(ms*US_PER_MS);
+	busy_work_us(ms * US_PER_MS);
 	return NULL;
 }
 
@@ -540,7 +568,7 @@ void *busy_work_us(int us)
 {
 	volatile int i;
 	nsec_t start, now;
-	int delta; /* time in us */
+	int delta;		/* time in us */
 
 	i = us * iters_per_us;
 
@@ -550,13 +578,13 @@ void *busy_work_us(int us)
 	}
 	now = rt_gettime();
 
-	delta = (now - start)/NS_PER_US;
+	delta = (now - start) / NS_PER_US;
 	/* uncomment to tune to your machine */
 	/* printf("busy_work_us requested: %dus  actual: %dus\n", us, delta); */
 	return NULL;
 }
 
-void init_pi_mutex(pthread_mutex_t *m)
+void init_pi_mutex(pthread_mutex_t * m)
 {
 #if HAVE_DECL_PTHREAD_PRIO_INHERIT
 	pthread_mutexattr_t attr;
@@ -564,13 +592,19 @@ void init_pi_mutex(pthread_mutex_t *m)
 	int protocol;
 
 	if ((ret = pthread_mutexattr_init(&attr)) != 0) {
-		printf("Failed to init mutexattr: %d (%s)\n", ret, strerror(ret));
+		printf("Failed to init mutexattr: %d (%s)\n", ret,
+		       strerror(ret));
 	};
-	if (_use_pi && (ret = pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT)) != 0) {
-		printf("Can't set protocol prio inherit: %d (%s)\n", ret, strerror(ret));
+	if (_use_pi
+	    && (ret =
+		pthread_mutexattr_setprotocol(&attr,
+					      PTHREAD_PRIO_INHERIT)) != 0) {
+		printf("Can't set protocol prio inherit: %d (%s)\n", ret,
+		       strerror(ret));
 	}
 	if ((ret = pthread_mutexattr_getprotocol(&attr, &protocol)) != 0) {
-		printf("Can't get mutexattr protocol: %d (%s)\n", ret, strerror(ret));
+		printf("Can't get mutexattr protocol: %d (%s)\n", ret,
+		       strerror(ret));
 	}
 	if ((ret = pthread_mutex_init(m, &attr)) != 0) {
 		printf("Failed to init mutex: %d (%s)\n", ret, strerror(ret));
@@ -639,8 +673,9 @@ static void read_and_print(const char *pathname, int output_fd)
 		ssize_t ret = read(fd, data, sizeof(data));
 		if (ret < 0) {
 			if (errno != EAGAIN && errno != EINTR) {
-				printf("Failed to read from file \"%s\": %d (%s)\n",
-					pathname, errno, strerror(errno));
+				printf
+				    ("Failed to read from file \"%s\": %d (%s)\n",
+				     pathname, errno, strerror(errno));
 				break;
 			}
 		} else if (ret == 0)
@@ -651,7 +686,7 @@ static void read_and_print(const char *pathname, int output_fd)
 
 	if (close(fd) < 0) {
 		printf("Failed to close file \"%s\": %d (%s)\n",
-			pathname, errno, strerror(errno));
+		       pathname, errno, strerror(errno));
 	}
 }
 

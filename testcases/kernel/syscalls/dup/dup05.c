@@ -148,15 +148,16 @@ int main(int ac, char **av)
 		TEST(dup(fd));
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "dup failed");
+			tst_resm(TFAIL | TTERRNO, "dup failed");
 		else {
 
 			if (STD_FUNCTIONAL_TEST)
 				tst_resm(TPASS, "dup returned %ld",
-				    TEST_RETURN);
+					 TEST_RETURN);
 
 			if (close(TEST_RETURN) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "close failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "close failed");
 		}
 
 	}
@@ -189,7 +190,7 @@ void cleanup()
 
 	if (fd != -1)
 		if (close(fd) == -1)
-			tst_resm(TWARN|TERRNO, "close failed");
+			tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
 

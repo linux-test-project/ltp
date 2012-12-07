@@ -168,8 +168,7 @@ static void test_nonlinear(int fd)
 	}
 
 	data = mmap((void *)WINDOW_START,
-		    window_sz,
-		    PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		    window_sz, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if (data == MAP_FAILED) {
 		tst_resm(TFAIL, "mmap Error, errno=%d : %s", errno,
@@ -177,13 +176,13 @@ static void test_nonlinear(int fd)
 		cleanup(NULL);
 	}
 
-      again:
+again:
 	for (i = 0; i < window_pages; i += 2) {
 		char *page = data + i * page_sz;
 
 		if (remap_file_pages(page, page_sz * 2, 0,
 				     (window_pages - i - 2), 0) == -1) {
-			tst_resm(TFAIL|TERRNO,
+			tst_resm(TFAIL | TERRNO,
 				 "remap_file_pages error for page=%p, page_sz=%zu, window_pages=%zu",
 				 page, (page_sz * 2), (window_pages - i - 2));
 			cleanup(data);

@@ -46,7 +46,7 @@ static void cleanup(void);
 
 static char fname[255];
 static int fd;
-static int whences[] = {5, -1, 7};
+static int whences[] = { 5, -1, 7 };
 
 char *TCID = "lseek03";
 int TST_TOTAL = sizeof(whences) / sizeof(*whences);
@@ -69,7 +69,7 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* Call lseek(2) */
-			TEST(lseek(fd, (off_t)1, whences[i]));
+			TEST(lseek(fd, (off_t) 1, whences[i]));
 
 			/* check return code */
 			if (TEST_RETURN == -1) {

@@ -40,25 +40,24 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
-    CLIENT *client = NULL;
+	CLIENT *client = NULL;
 	enum clnt_stat cs;
 	int var_snd = 0;
 	struct timeval tv;
 	char nettype[8] = "udp";
 
 	//Initialization
-    if (run_mode)
-    {
-    	printf("Before creation\n");
+	if (run_mode) {
+		printf("Before creation\n");
 		printf("client : %d\n", client);
 	}
 
@@ -68,10 +67,9 @@ int main(int argn, char *argc[])
 	client = clnt_create(argc[1], progNum, VERSNUM, nettype);
 
 	//Then call remote procedure
-	cs = clnt_call((CLIENT *)client, PROCNUM,
-				   (xdrproc_t)xdr_int, (char *)&var_snd,  // xdr_in
-                   (xdrproc_t)xdr_int, (char *)&var_snd,  // xdr_out
-				   tv);
+	cs = clnt_call((CLIENT *) client, PROCNUM, (xdrproc_t) xdr_int, (char *)&var_snd,	// xdr_in
+		       (xdrproc_t) xdr_int, (char *)&var_snd,	// xdr_out
+		       tv);
 
 	test_status = (cs == RPC_PROCUNAVAIL) ? 0 : 1;
 

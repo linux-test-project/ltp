@@ -47,12 +47,12 @@ void *thread_func()
 	}
 	if ((rc = pthread_attr_getstacksize(&attr, &ssize)) != 0) {
 		printf(ERROR_PREFIX "pthread_attr_getstacksize: %s\n",
-			strerror(rc));
+		       strerror(rc));
 		exit(PTS_FAIL);
 	}
 	if (ssize < stack_size) {
 		printf(ERROR_PREFIX "stack size is lesser than minimal "
-			"size (%u < %u)\n", ssize, stack_size);
+		       "size (%u < %u)\n", ssize, stack_size);
 		exit(PTS_FAIL);
 	}
 
@@ -82,44 +82,43 @@ int main(void)
 	 */
 	stack_size = 4 * PTHREAD_STACK_MIN;
 
-	if ((rc = posix_memalign (&stack_addr, sysconf(_SC_PAGE_SIZE),
-	    stack_size)) != 0) {
-      		printf (ERROR_PREFIX "posix_memalign: %s", strerror(rc));
-      		exit(PTS_UNRESOLVED);
-    	}
+	if ((rc = posix_memalign(&stack_addr, sysconf(_SC_PAGE_SIZE),
+				 stack_size)) != 0) {
+		printf(ERROR_PREFIX "posix_memalign: %s", strerror(rc));
+		exit(PTS_UNRESOLVED);
+	}
 
 	rc = pthread_attr_setstacksize(&attr, stack_size);
-        if (rc != 0) {
-                printf(ERROR_PREFIX "pthread_attr_setstacksize: %s\n",
-			strerror(rc));
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		printf(ERROR_PREFIX "pthread_attr_setstacksize: %s\n",
+		       strerror(rc));
+		exit(PTS_UNRESOLVED);
+	}
 
 	rc = pthread_attr_getstacksize(&attr, &ssize);
-        if (rc != 0) {
-                printf(ERROR_PREFIX "pthread_attr_getstacksize: %s\n",
-			strerror(rc));
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		printf(ERROR_PREFIX "pthread_attr_getstacksize: %s\n",
+		       strerror(rc));
+		exit(PTS_UNRESOLVED);
+	}
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
 	if (rc != 0) {
-                printf(ERROR_PREFIX "pthread_create: %s\n", strerror(rc));
-                exit(PTS_FAIL);
-        }
+		printf(ERROR_PREFIX "pthread_create: %s\n", strerror(rc));
+		exit(PTS_FAIL);
+	}
 
 	rc = pthread_join(new_th, NULL);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_join: %s\n", strerror(rc));
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	rc = pthread_attr_destroy(&attr);
 	if (rc != 0) {
-                printf(ERROR_PREFIX "pthread_attr_destroy :%s\n",
-			strerror(rc));
+		printf(ERROR_PREFIX "pthread_attr_destroy :%s\n", strerror(rc));
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

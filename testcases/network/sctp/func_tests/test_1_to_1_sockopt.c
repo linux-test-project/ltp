@@ -77,101 +77,101 @@ char *TCID = __FILE__;
 int TST_TOTAL = 22;
 int TST_CNT = 0;
 
-int
-main(void)
+int main(void)
 {
 	int error;
 	socklen_t len;
 	int sk, sk1, sk2, acpt_sk, pf_class;
 	struct sctp_rtoinfo grtinfo;
 	struct sockaddr_in lstn_addr, conn_addr;
-	struct sctp_initmsg ginmsg; /*get the value for SCTP_INITMSG*/
-	struct sctp_initmsg sinmsg; /*set the value for SCTP_INITMSG*/
-	struct linger slinger; /*SO_LINGER structure*/
-	struct linger glinger; /*SO_LINGER structure*/
+	struct sctp_initmsg ginmsg;	/*get the value for SCTP_INITMSG */
+	struct sctp_initmsg sinmsg;	/*set the value for SCTP_INITMSG */
+	struct linger slinger;	/*SO_LINGER structure */
+	struct linger glinger;	/*SO_LINGER structure */
 	struct sockaddr_in addr;
 	struct sockaddr_in *gaddr;
-	struct sctp_status gstatus; /*SCTP_STATUS option*/
-	int rcvbuf_val_get, rcvbuf_val_set; /*get and set var for SO_RCVBUF*/
-	int sndbuf_val_get, sndbuf_val_set;/*get and set var for SO_SNDBUF*/
-	struct sctp_prim gprimaddr;/*SCTP_PRIMARY_ADDR get*/
-	struct sctp_prim sprimaddr;/*SCTP_PRIMARY_ADDR set*/
-	struct sctp_assocparams sassocparams;  /* SCTP_ASSOCPARAMS set */
-	struct sctp_assocparams gassocparams;  /* SCTP_ASSOCPARAMS get */
+	struct sctp_status gstatus;	/*SCTP_STATUS option */
+	int rcvbuf_val_get, rcvbuf_val_set;	/*get and set var for SO_RCVBUF */
+	int sndbuf_val_get, sndbuf_val_set;	/*get and set var for SO_SNDBUF */
+	struct sctp_prim gprimaddr;	/*SCTP_PRIMARY_ADDR get */
+	struct sctp_prim sprimaddr;	/*SCTP_PRIMARY_ADDR set */
+	struct sctp_assocparams sassocparams;	/* SCTP_ASSOCPARAMS set */
+	struct sctp_assocparams gassocparams;	/* SCTP_ASSOCPARAMS get */
 
 	/* Rather than fflush() throughout the code, set stdout to
-         * be unbuffered.
-         */
-        setvbuf(stdout, NULL, _IONBF, 0);
-        setvbuf(stderr, NULL, _IONBF, 0);
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
 
 	pf_class = PF_INET;
 
 	sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-	/*setsockopt() TEST1: Bad socket descriptor EBADF, Expected error*/
-        error = setsockopt(-1, IPPROTO_SCTP, 0, 0, 0);
+	/*setsockopt() TEST1: Bad socket descriptor EBADF, Expected error */
+	error = setsockopt(-1, IPPROTO_SCTP, 0, 0, 0);
 	if (error != -1 || errno != EBADF)
 		tst_brkm(TBROK, NULL, "setsockopt with a bad socket "
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() with a bad socket descriptor - EBADF");
 
-	/*setsockopt() TEST2: Invalid socket ENOTSOCK, Expected error*/
-        error = setsockopt(0, IPPROTO_SCTP, 0, 0, 0);
+	/*setsockopt() TEST2: Invalid socket ENOTSOCK, Expected error */
+	error = setsockopt(0, IPPROTO_SCTP, 0, 0, 0);
 	if (error != -1 || errno != ENOTSOCK)
 		tst_brkm(TBROK, NULL, "setsockopt with an invalid socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() with an invalid socket - ENOTSOCK");
 
-	/*setsockopt() TEST3: Invalid level ENOPROTOOPT, Expected error*/
-        error = setsockopt(sk, -1, SCTP_RTOINFO, 0, 0);
+	/*setsockopt() TEST3: Invalid level ENOPROTOOPT, Expected error */
+	error = setsockopt(sk, -1, SCTP_RTOINFO, 0, 0);
 	if (error != -1 || errno != ENOPROTOOPT)
 		tst_brkm(TBROK, NULL, "setsockopt with invalid level "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() with an invalid level - ENOPROTOOPT");
 
-	/*setsockopt() TEST4: Invalid option buffer EFAULT, Expected error*/
-        error = setsockopt(sk, IPPROTO_SCTP, SCTP_RTOINFO,
-		(const struct sctp_rtoinfo *)-1, sizeof(struct sctp_rtoinfo));
+	/*setsockopt() TEST4: Invalid option buffer EFAULT, Expected error */
+	error = setsockopt(sk, IPPROTO_SCTP, SCTP_RTOINFO,
+			   (const struct sctp_rtoinfo *)-1,
+			   sizeof(struct sctp_rtoinfo));
 	if (error != -1 || errno != EFAULT)
 		tst_brkm(TBROK, NULL, "setsockopt with invalid option "
 			 "buffer error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() with invalid option buffer - EFAULT");
 
-	/*setsockopt() TEST5: Invalid option Name EOPNOTSUPP, Expected error*/
-        error = setsockopt(sk, IPPROTO_SCTP, SCTP_AUTOCLOSE, 0, 0);
+	/*setsockopt() TEST5: Invalid option Name EOPNOTSUPP, Expected error */
+	error = setsockopt(sk, IPPROTO_SCTP, SCTP_AUTOCLOSE, 0, 0);
 	if (error != -1 || errno != EOPNOTSUPP)
 		tst_brkm(TBROK, NULL, "setsockopt with invalid option "
 			 "name error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() with invalid option name - EOPNOTSUPP");
 
-	/*getsockopt() TEST6: Bad socket descriptor EBADF, Expected error*/
-        error = getsockopt(-1, IPPROTO_SCTP, 0, 0, 0);
+	/*getsockopt() TEST6: Bad socket descriptor EBADF, Expected error */
+	error = getsockopt(-1, IPPROTO_SCTP, 0, 0, 0);
 	if (error != -1 || errno != EBADF)
 		tst_brkm(TBROK, NULL, "getsockopt with a bad socket "
 			 "descriptor error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt() with a bad socket descriptor - EBADF");
 
-	/*getsockopt() TEST7: Invalid socket ENOTSOCK, Expected error*/
-        error = getsockopt(0, IPPROTO_SCTP, 0, 0, 0);
+	/*getsockopt() TEST7: Invalid socket ENOTSOCK, Expected error */
+	error = getsockopt(0, IPPROTO_SCTP, 0, 0, 0);
 	if (error != -1 || errno != ENOTSOCK)
 		tst_brkm(TBROK, NULL, "getsockopt with an invalid socket "
 			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt() with an invalid socket - ENOTSOCK");
 #if 0
-	/*getsockopt() TEST3: Invalid level ENOPROTOOPT, Expected error*/
+	/*getsockopt() TEST3: Invalid level ENOPROTOOPT, Expected error */
 	/*I have commented this test case because it is returning EOPNOTSUPP.
-	When I checked the code there also it is returning EOPNOTSUPP. As this
-	is not specific to TCP style, I do not want to do the code change*/
+	   When I checked the code there also it is returning EOPNOTSUPP. As this
+	   is not specific to TCP style, I do not want to do the code change */
 
-        error = getsockopt(sk, -1, SCTP_RTOINFO, 0, 0);
+	error = getsockopt(sk, -1, SCTP_RTOINFO, 0, 0);
 	if (error != -1 || errno != ENOPROTOOPT)
 		tst_brkm(TBROK, NULL, "getsockopt with invalid level "
 			 "error:%d, errno:%d", error, errno);
@@ -180,8 +180,8 @@ main(void)
 #endif
 	len = sizeof(struct sctp_rtoinfo);
 
-	/*getsockopt() TEST8: Invalid option buffer EFAULT, Expected error*/
-        error = getsockopt(sk, IPPROTO_SCTP, SCTP_RTOINFO,
+	/*getsockopt() TEST8: Invalid option buffer EFAULT, Expected error */
+	error = getsockopt(sk, IPPROTO_SCTP, SCTP_RTOINFO,
 			   (struct sctp_rtoinfo *)-1, &len);
 	if (error != -1 || errno != EFAULT)
 		tst_brkm(TBROK, NULL, "getsockopt with invalid option "
@@ -189,8 +189,8 @@ main(void)
 
 	tst_resm(TPASS, "getsockopt() with invalid option buffer - EFAULT");
 
-	/*getsockopt() TEST9: Invalid option Name EOPNOTSUPP, Expected error*/
-        error = getsockopt(sk, IPPROTO_SCTP, SCTP_AUTOCLOSE, &grtinfo, &len);
+	/*getsockopt() TEST9: Invalid option Name EOPNOTSUPP, Expected error */
+	error = getsockopt(sk, IPPROTO_SCTP, SCTP_AUTOCLOSE, &grtinfo, &len);
 	if (error != -1 || errno != EOPNOTSUPP)
 		tst_brkm(TBROK, NULL, "getsockopt with invalid option "
 			 "name error:%d, errno:%d", error, errno);
@@ -203,14 +203,14 @@ main(void)
 	sk2 = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
 	lstn_addr.sin_family = AF_INET;
-        lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
 	conn_addr.sin_family = AF_INET;
-        conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        conn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	conn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
-        len = sizeof(struct sctp_initmsg);
+	len = sizeof(struct sctp_initmsg);
 
 	/* TEST10: Test cases for getsockopt SCTP_INITMSG */
 	test_getsockopt(sk1, SCTP_INITMSG, &ginmsg, &len);
@@ -218,9 +218,9 @@ main(void)
 	tst_resm(TPASS, "getsockopt() SCTP_INITMSG - SUCCESS");
 
 	sinmsg.sinit_num_ostreams = 5;
-        sinmsg.sinit_max_instreams = 5;
-        sinmsg.sinit_max_attempts = 3;
-        sinmsg.sinit_max_init_timeo = 30;
+	sinmsg.sinit_max_instreams = 5;
+	sinmsg.sinit_max_attempts = 3;
+	sinmsg.sinit_max_init_timeo = 30;
 	/* TEST11: Test case for setsockopt SCTP_INITMSG */
 	test_setsockopt(sk1, SCTP_INITMSG, &sinmsg, sizeof(sinmsg));
 
@@ -235,10 +235,10 @@ main(void)
 
 	tst_resm(TPASS, "setsockopt() SCTP_INITMSG - SUCCESS");
 
-	/*Now get the values on different endpoint*/
+	/*Now get the values on different endpoint */
 	test_getsockopt(sk2, SCTP_INITMSG, &ginmsg, &len);
 
-	/*Comparison should not succeed here*/
+	/*Comparison should not succeed here */
 	if (sinmsg.sinit_num_ostreams == ginmsg.sinit_num_ostreams &&
 	    sinmsg.sinit_max_instreams == ginmsg.sinit_max_instreams &&
 	    sinmsg.sinit_max_attempts == ginmsg.sinit_max_attempts &&
@@ -249,19 +249,19 @@ main(void)
 	/* SO_LINGER Test with l_onff = 0 and l_linger = 0 */
 	slinger.l_onoff = 0;
 	slinger.l_linger = 0;
-	test_bind(sk1, (struct sockaddr *) &lstn_addr, sizeof(lstn_addr));
-	test_listen(sk1, 10 );
+	test_bind(sk1, (struct sockaddr *)&lstn_addr, sizeof(lstn_addr));
+	test_listen(sk1, 10);
 	len = sizeof(struct sockaddr_in);
-	test_connect(sk2, (struct sockaddr *) &conn_addr, len);
+	test_connect(sk2, (struct sockaddr *)&conn_addr, len);
 
 	acpt_sk = test_accept(sk1, (struct sockaddr *)&addr, &len);
 
-        len = sizeof(struct linger);
+	len = sizeof(struct linger);
 	/* TEST12: Test case for setsockopt SO_LINGER */
 	error = setsockopt(sk2, SOL_SOCKET, SO_LINGER, &slinger, len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "setsockopt SO_LINGER "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() SO_LINGER - SUCCESS");
 
@@ -269,7 +269,7 @@ main(void)
 	error = getsockopt(sk2, SOL_SOCKET, SO_LINGER, &glinger, &len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "getsockopt SO_LINGER "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt() SO_LINGER - SUCCESS");
 
@@ -279,13 +279,13 @@ main(void)
 			 "compare failed");
 
 	/*First gets the default SO_RCVBUF value and comapres with the
-	value obtained from SCTP_STATUS*/
+	   value obtained from SCTP_STATUS */
 	len = sizeof(int);
 	/* TEST14: Test case for getsockopt SO_RCVBUF */
 	error = getsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &rcvbuf_val_get, &len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "getsockopt SO_RCVBUF "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt() SO_RCVBUF - SUCCESS");
 
@@ -294,38 +294,38 @@ main(void)
 	error = getsockopt(sk2, IPPROTO_SCTP, SCTP_STATUS, &gstatus, &len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "getsockopt SCTP_STATUS "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt() SCTP_STATUS - SUCCESS");
 
 	/* Reducing the SO_RCVBUF value using setsockopt() */
-	/*Minimum value is 128 and hence I am using it*/
+	/*Minimum value is 128 and hence I am using it */
 	len = sizeof(int);
 	rcvbuf_val_set = 128;
 	/* TEST16: Test case for setsockopt SO_RCVBUF */
 	error = setsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &rcvbuf_val_set, len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "setsockopt SO_RCVBUF "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() SO_RCVBUF - SUCCESS");
 
 	error = getsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &rcvbuf_val_get, &len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "getsockopt SO_RCVBUF "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	if ((2 * rcvbuf_val_set) != rcvbuf_val_get)
 		tst_brkm(TBROK, NULL, "Comparison failed:Set value and "
 			 "got value differs Set Value=%d Get Value=%d",
-			 (2*rcvbuf_val_set), rcvbuf_val_get);
+			 (2 * rcvbuf_val_set), rcvbuf_val_get);
 
-	sndbuf_val_set=1024;
+	sndbuf_val_set = 1024;
 	/* TEST17: Test case for setsockopt SO_SNDBUF */
 	error = setsockopt(sk2, SOL_SOCKET, SO_SNDBUF, &sndbuf_val_set, len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "setsockopt SO_SNDBUF "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() SO_SNDBUF - SUCCESS");
 
@@ -333,52 +333,52 @@ main(void)
 	error = getsockopt(sk2, SOL_SOCKET, SO_SNDBUF, &sndbuf_val_get, &len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "getsockopt SO_SNDBUF "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt() SO_SNDBUF - SUCCESS");
 
 	if ((2 * sndbuf_val_set) != sndbuf_val_get)
 		tst_brkm(TBROK, NULL, "Comparison failed:Set value and "
 			 "got value differs Set Value=%d Get Value=%d\n",
-			 (2*sndbuf_val_set), sndbuf_val_get);
+			 (2 * sndbuf_val_set), sndbuf_val_get);
 
 	/* Getting the primary address using SCTP_PRIMARY_ADDR */
-        len = sizeof(struct sctp_prim);
+	len = sizeof(struct sctp_prim);
 	/* TEST19: Test case for getsockopt SCTP_PRIMARY_ADDR */
-	error = getsockopt(sk2,IPPROTO_SCTP, SCTP_PRIMARY_ADDR, &gprimaddr,
+	error = getsockopt(sk2, IPPROTO_SCTP, SCTP_PRIMARY_ADDR, &gprimaddr,
 			   &len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "getsockopt SCTP_PRIMARY_ADDR "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt() SCTP_PRIMARY_ADDR - SUCCESS");
 
-	gaddr = (struct sockaddr_in *) &gprimaddr.ssp_addr;
+	gaddr = (struct sockaddr_in *)&gprimaddr.ssp_addr;
 	if (htons(gaddr->sin_port) != lstn_addr.sin_port &&
-	   gaddr->sin_family != lstn_addr.sin_family &&
-	   gaddr->sin_addr.s_addr != lstn_addr.sin_addr.s_addr)
+	    gaddr->sin_family != lstn_addr.sin_family &&
+	    gaddr->sin_addr.s_addr != lstn_addr.sin_addr.s_addr)
 		tst_brkm(TBROK, NULL, "getsockopt SCTP_PRIMARY_ADDR value "
 			 "mismatch");
 
 	memcpy(&sprimaddr, &gprimaddr, sizeof(struct sctp_prim));
 
 	/* TEST20: Test case for setsockopt SCTP_PRIMARY_ADDR */
-	error = setsockopt(sk2,IPPROTO_SCTP, SCTP_PRIMARY_ADDR, &sprimaddr,
+	error = setsockopt(sk2, IPPROTO_SCTP, SCTP_PRIMARY_ADDR, &sprimaddr,
 			   len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "setsockopt SCTP_PRIMARY_ADDR "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "setsockopt() SCTP_PRIMARY_ADDR - SUCCESS");
 
 	/* TEST21: Test case for getsockopt SCTP_PRIMARY_ADDR */
 	/* Getting the association info using SCTP_ASSOCINFO */
-        len = sizeof(struct sctp_assocparams);
+	len = sizeof(struct sctp_assocparams);
 	error = getsockopt(sk2, IPPROTO_SCTP, SCTP_ASSOCINFO, &gassocparams,
 			   &len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "getsockopt SCTP_ASSOCINFO "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt() SCTP_ASSOCINFO - SUCCESS");
 
@@ -391,13 +391,13 @@ main(void)
 			   len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "setsockopt SCTP_ASSOCINFO "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	error = getsockopt(sk2, IPPROTO_SCTP, SCTP_ASSOCINFO, &gassocparams,
 			   &len);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "getsockopt SCTP_ASSOCINFO "
-                         "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, errno);
 
 	if (sassocparams.sasoc_asocmaxrxt != gassocparams.sasoc_asocmaxrxt ||
 	    sassocparams.sasoc_cookie_life != gassocparams.sasoc_cookie_life)

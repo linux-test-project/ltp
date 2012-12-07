@@ -62,7 +62,7 @@ int TST_TOTAL = 4;		/* Total number of test cases. */
 #elif defined (__mips__)  ||  defined (__hppa__) || defined (__sparc__)
 #define INCREMENT		262144	/* 256Kb */
 #elif defined __sh__ || defined (__arm__)
-#define INCREMENT 		16384   /* 16kb */
+#define INCREMENT 		16384	/* 16kb */
 #else
 #define INCREMENT 		SHMLBA
 #endif

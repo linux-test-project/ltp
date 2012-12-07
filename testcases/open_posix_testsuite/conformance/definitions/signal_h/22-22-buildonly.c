@@ -1,6 +1,6 @@
   /*
-  Test that the TRAP_BRKPT macro is defined.
-  */
+     Test that the TRAP_BRKPT macro is defined.
+   */
 
 #include <signal.h>
 

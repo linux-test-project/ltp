@@ -33,36 +33,42 @@ int main()
 	act.sa_handler = handler;
 	sigemptyset(&act.sa_mask);
 
-	if (sigaction(SIGUSR1,  &act, 0) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+	if (sigaction(SIGUSR1, &act, 0) == -1) {
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	if ((alternate_s.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	alternate_s.ss_flags = 0;
 	alternate_s.ss_size = SIGSTKSZ;
 
-	if (sigaltstack(&alternate_s, (stack_t *)0) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+	if (sigaltstack(&alternate_s, (stack_t *) 0) == -1) {
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaltstack((stack_t *)0, &current_s) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+	if (sigaltstack((stack_t *) 0, &current_s) == -1) {
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	if (current_s.ss_sp != alternate_s.ss_sp) {
-		printf("Test FAILED: ss_sp of the alternate stack is not same as the defined one\n");
+		printf
+		    ("Test FAILED: ss_sp of the alternate stack is not same as the defined one\n");
 		exit(PTS_FAIL);
 	}
 
 	if (current_s.ss_size != alternate_s.ss_size) {
-		printf("Test FAILED: ss_size of the alternate stack is not same as the defined one\n");
+		printf
+		    ("Test FAILED: ss_size of the alternate stack is not same as the defined one\n");
 		exit(PTS_FAIL);
 	}
 

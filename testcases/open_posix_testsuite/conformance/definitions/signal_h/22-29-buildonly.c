@@ -1,6 +1,6 @@
   /*
-  Test that the CLD_CONTINUED macro is defined.
-  */
+     Test that the CLD_CONTINUED macro is defined.
+   */
 
 #include <signal.h>
 

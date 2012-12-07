@@ -26,7 +26,8 @@
 
 #include "test_VIDIOC_EXT_CTRLS.h"
 
-void test_VIDIOC_G_EXT_CTRLS_zero() {
+void test_VIDIOC_G_EXT_CTRLS_zero()
+{
 	struct v4l2_ext_controls controls;
 	int ret_get, errno_get;
 
@@ -57,7 +58,8 @@ void test_VIDIOC_G_EXT_CTRLS_zero() {
 	}
 }
 
-void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count() {
+void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count()
+{
 	struct v4l2_ext_controls controls;
 	int ret_get, errno_get;
 	int ret_get_invalid, errno_get_invalid;
@@ -72,8 +74,9 @@ void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count() {
 	ret_get = ioctl(get_video_fd(), VIDIOC_G_EXT_CTRLS, &controls);
 	errno_get = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_EXT_CTRLS, count=0%x, ret_get=%i, errno_get=%i\n",
-		__FILE__, __LINE__, count, ret_get, errno_get);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_EXT_CTRLS, count=0%x, ret_get=%i, errno_get=%i\n",
+	     __FILE__, __LINE__, count, ret_get, errno_get);
 
 	count = 1;
 	/* Note: this loop also covers ((__u32)S32_MAX)+1 = 0x80000000 */
@@ -83,11 +86,14 @@ void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count() {
 		controls.count = count;
 		controls.controls = NULL;
 
-		ret_get_invalid = ioctl(get_video_fd(), VIDIOC_G_EXT_CTRLS, &controls);
+		ret_get_invalid =
+		    ioctl(get_video_fd(), VIDIOC_G_EXT_CTRLS, &controls);
 		errno_get_invalid = errno;
 
-		dprintf("\t%s:%u: VIDIOC_G_EXT_CTRLS, count=0x%x, ret_get_invalid=%i, errno_get_invalid=%i\n",
-			__FILE__, __LINE__, count, ret_get_invalid, errno_get_invalid);
+		dprintf
+		    ("\t%s:%u: VIDIOC_G_EXT_CTRLS, count=0x%x, ret_get_invalid=%i, errno_get_invalid=%i\n",
+		     __FILE__, __LINE__, count, ret_get_invalid,
+		     errno_get_invalid);
 
 		if (ret_get == 0) {
 			CU_ASSERT_EQUAL(ret_get, 0);
@@ -98,7 +104,8 @@ void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count() {
 			 * controls.count value
 			 */
 			CU_ASSERT_EQUAL(ret_get_invalid, -1);
-			CU_ASSERT(errno_get_invalid == EFAULT || errno_get_invalid == ENOMEM);
+			CU_ASSERT(errno_get_invalid == EFAULT
+				  || errno_get_invalid == ENOMEM);
 
 		} else {
 			CU_ASSERT_EQUAL(ret_get, -1);
@@ -110,7 +117,7 @@ void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count() {
 		count <<= 1;
 	} while (count != 0);
 
-	count = (__u32)S32_MAX;
+	count = (__u32) S32_MAX;
 	memset(&controls, 0xff, sizeof(controls));
 	controls.ctrl_class = V4L2_CTRL_CLASS_USER;
 	controls.count = count;
@@ -119,14 +126,16 @@ void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count() {
 	ret_get_invalid = ioctl(get_video_fd(), VIDIOC_G_EXT_CTRLS, &controls);
 	errno_get_invalid = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_EXT_CTRLS, count=0x%x, ret_get_invalid=%i, errno_get_invalid=%i\n",
-		__FILE__, __LINE__, count, ret_get_invalid, errno_get_invalid);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_EXT_CTRLS, count=0x%x, ret_get_invalid=%i, errno_get_invalid=%i\n",
+	     __FILE__, __LINE__, count, ret_get_invalid, errno_get_invalid);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
 
 		CU_ASSERT_EQUAL(ret_get_invalid, -1);
-		CU_ASSERT(errno_get_invalid == EFAULT || errno_get_invalid == ENOMEM);
+		CU_ASSERT(errno_get_invalid == EFAULT
+			  || errno_get_invalid == ENOMEM);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
@@ -145,14 +154,16 @@ void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count() {
 	ret_get_invalid = ioctl(get_video_fd(), VIDIOC_G_EXT_CTRLS, &controls);
 	errno_get_invalid = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_EXT_CTRLS, count=0x%x, ret_get_invalid=%i, errno_get_invalid=%i\n",
-		__FILE__, __LINE__, count, ret_get_invalid, errno_get_invalid);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_EXT_CTRLS, count=0x%x, ret_get_invalid=%i, errno_get_invalid=%i\n",
+	     __FILE__, __LINE__, count, ret_get_invalid, errno_get_invalid);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
 
 		CU_ASSERT_EQUAL(ret_get_invalid, -1);
-		CU_ASSERT(errno_get_invalid == EFAULT || errno_get_invalid == ENOMEM);
+		CU_ASSERT(errno_get_invalid == EFAULT
+			  || errno_get_invalid == ENOMEM);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
@@ -164,7 +175,8 @@ void test_VIDIOC_G_EXT_CTRLS_zero_invalid_count() {
 
 }
 
-static int do_get_ext_control_one(__u32 ctrl_class, __u32 id) {
+static int do_get_ext_control_one(__u32 ctrl_class, __u32 id)
+{
 	int ret_query, errno_query;
 	int ret_get, errno_get;
 	struct v4l2_queryctrl queryctrl;
@@ -180,26 +192,27 @@ static int do_get_ext_control_one(__u32 ctrl_class, __u32 id) {
 	ret_query = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
 	errno_query = errno;
 
-	dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
-		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_query, errno_query);
+	dprintf
+	    ("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
+	     __FILE__, __LINE__, id, id - V4L2_CID_BASE, ret_query,
+	     errno_query);
 	if (ret_query == 0) {
 		dprintf("\t%s:%u: queryctrl = {.id=%u, .type=%i, .name=\"%s\", "
-		".minimum=%i, .maximum=%i, .step=%i, "
-		".default_value=%i, "
-		".flags=0x%X, "
-		".reserved[]={ 0x%X, 0x%X } }\n",
-		__FILE__, __LINE__,
-		queryctrl.id,
-		queryctrl.type,
-		queryctrl.name,
-		queryctrl.minimum,
-		queryctrl.maximum,
-		queryctrl.step,
-		queryctrl.default_value,
-		queryctrl.flags,
-		queryctrl.reserved[0],
-		queryctrl.reserved[1]
-		);
+			".minimum=%i, .maximum=%i, .step=%i, "
+			".default_value=%i, "
+			".flags=0x%X, "
+			".reserved[]={ 0x%X, 0x%X } }\n",
+			__FILE__, __LINE__,
+			queryctrl.id,
+			queryctrl.type,
+			queryctrl.name,
+			queryctrl.minimum,
+			queryctrl.maximum,
+			queryctrl.step,
+			queryctrl.default_value,
+			queryctrl.flags,
+			queryctrl.reserved[0], queryctrl.reserved[1]
+		    );
 	}
 
 	memset(&control, 0xff, sizeof(control));
@@ -213,9 +226,9 @@ static int do_get_ext_control_one(__u32 ctrl_class, __u32 id) {
 	ret_get = ioctl(get_video_fd(), VIDIOC_G_EXT_CTRLS, &controls);
 	errno_get = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_EXT_CTRLS, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i\n",
-		__FILE__, __LINE__,
-		id, id-V4L2_CID_BASE, ret_get, errno_get);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_EXT_CTRLS, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i\n",
+	     __FILE__, __LINE__, id, id - V4L2_CID_BASE, ret_get, errno_get);
 
 	if (ret_query == 0) {
 		CU_ASSERT_EQUAL(ret_query, 0);
@@ -246,7 +259,7 @@ static int do_get_ext_control_one(__u32 ctrl_class, __u32 id) {
 			CU_ASSERT_EQUAL(errno_get, EINVAL);
 			break;
 
-		case V4L2_CTRL_TYPE_INTEGER64: /* TODO: what about this case? */
+		case V4L2_CTRL_TYPE_INTEGER64:	/* TODO: what about this case? */
 		case V4L2_CTRL_TYPE_CTRL_CLASS:
 		default:
 			CU_ASSERT_EQUAL(ret_get, -1);
@@ -264,7 +277,8 @@ static int do_get_ext_control_one(__u32 ctrl_class, __u32 id) {
 	return ret_query;
 }
 
-void test_VIDIOC_G_EXT_CTRLS_one() {
+void test_VIDIOC_G_EXT_CTRLS_one()
+{
 	int ret1;
 	__u32 i;
 
@@ -272,9 +286,11 @@ void test_VIDIOC_G_EXT_CTRLS_one() {
 		ret1 = do_get_ext_control_one(V4L2_CTRL_CLASS_USER, i);
 	}
 
-	ret1 = do_get_ext_control_one(V4L2_CTRL_CLASS_USER, V4L2_CID_BASE-1);
+	ret1 = do_get_ext_control_one(V4L2_CTRL_CLASS_USER, V4L2_CID_BASE - 1);
 	ret1 = do_get_ext_control_one(V4L2_CTRL_CLASS_USER, V4L2_CID_LASTP1);
-	ret1 = do_get_ext_control_one(V4L2_CTRL_CLASS_USER, V4L2_CID_PRIVATE_BASE-1);
+	ret1 =
+	    do_get_ext_control_one(V4L2_CTRL_CLASS_USER,
+				   V4L2_CID_PRIVATE_BASE - 1);
 
 	i = V4L2_CID_PRIVATE_BASE;
 	do {
@@ -285,7 +301,8 @@ void test_VIDIOC_G_EXT_CTRLS_one() {
 	ret1 = do_get_ext_control_one(V4L2_CTRL_CLASS_USER, i);
 }
 
-void test_VIDIOC_G_EXT_CTRLS_NULL() {
+void test_VIDIOC_G_EXT_CTRLS_NULL()
+{
 	struct v4l2_ext_controls controls;
 	int ret_get, errno_get;
 	int ret_null, errno_null;
@@ -322,7 +339,8 @@ void test_VIDIOC_G_EXT_CTRLS_NULL() {
 	}
 }
 
-void test_VIDIOC_S_EXT_CTRLS_zero() {
+void test_VIDIOC_S_EXT_CTRLS_zero()
+{
 	struct v4l2_ext_controls controls;
 	int ret_set, errno_set;
 
@@ -353,7 +371,8 @@ void test_VIDIOC_S_EXT_CTRLS_zero() {
 	}
 }
 
-void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count() {
+void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count()
+{
 	struct v4l2_ext_controls controls;
 	int ret_set, errno_set;
 	int ret_set_invalid, errno_set_invalid;
@@ -368,8 +387,9 @@ void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count() {
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_EXT_CTRLS, &controls);
 	errno_set = errno;
 
-	dprintf("\t%s:%u: VIDIOC_S_EXT_CTRLS, count=0%x, ret_set=%i, errno_set=%i\n",
-		__FILE__, __LINE__, count, ret_set, errno_set);
+	dprintf
+	    ("\t%s:%u: VIDIOC_S_EXT_CTRLS, count=0%x, ret_set=%i, errno_set=%i\n",
+	     __FILE__, __LINE__, count, ret_set, errno_set);
 
 	count = 1;
 	/* Note: this loop also covers ((__u32)S32_MAX)+1 = 0x80000000 */
@@ -379,11 +399,14 @@ void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count() {
 		controls.count = count;
 		controls.controls = NULL;
 
-		ret_set_invalid = ioctl(get_video_fd(), VIDIOC_S_EXT_CTRLS, &controls);
+		ret_set_invalid =
+		    ioctl(get_video_fd(), VIDIOC_S_EXT_CTRLS, &controls);
 		errno_set_invalid = errno;
 
-		dprintf("\t%s:%u: VIDIOC_S_EXT_CTRLS, count=0x%x, ret_set_invalid=%i, errno_set_invalid=%i\n",
-			__FILE__, __LINE__, count, ret_set_invalid, errno_set_invalid);
+		dprintf
+		    ("\t%s:%u: VIDIOC_S_EXT_CTRLS, count=0x%x, ret_set_invalid=%i, errno_set_invalid=%i\n",
+		     __FILE__, __LINE__, count, ret_set_invalid,
+		     errno_set_invalid);
 
 		if (ret_set == 0) {
 			CU_ASSERT_EQUAL(ret_set, 0);
@@ -394,7 +417,8 @@ void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count() {
 			 * controls.count value
 			 */
 			CU_ASSERT_EQUAL(ret_set_invalid, -1);
-			CU_ASSERT(errno_set_invalid == EFAULT || errno_set_invalid == ENOMEM);
+			CU_ASSERT(errno_set_invalid == EFAULT
+				  || errno_set_invalid == ENOMEM);
 
 		} else {
 			CU_ASSERT_EQUAL(ret_set, -1);
@@ -406,7 +430,7 @@ void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count() {
 		count <<= 1;
 	} while (count != 0);
 
-	count = (__u32)S32_MAX;
+	count = (__u32) S32_MAX;
 	memset(&controls, 0xff, sizeof(controls));
 	controls.ctrl_class = V4L2_CTRL_CLASS_USER;
 	controls.count = count;
@@ -415,14 +439,16 @@ void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count() {
 	ret_set_invalid = ioctl(get_video_fd(), VIDIOC_S_EXT_CTRLS, &controls);
 	errno_set_invalid = errno;
 
-	dprintf("\t%s:%u: VIDIOC_S_EXT_CTRLS, count=0x%x, ret_set_invalid=%i, errno_set_invalid=%i\n",
-		__FILE__, __LINE__, count, ret_set_invalid, errno_set_invalid);
+	dprintf
+	    ("\t%s:%u: VIDIOC_S_EXT_CTRLS, count=0x%x, ret_set_invalid=%i, errno_set_invalid=%i\n",
+	     __FILE__, __LINE__, count, ret_set_invalid, errno_set_invalid);
 
 	if (ret_set == 0) {
 		CU_ASSERT_EQUAL(ret_set, 0);
 
 		CU_ASSERT_EQUAL(ret_set_invalid, -1);
-		CU_ASSERT(errno_set_invalid == EFAULT || errno_set_invalid == ENOMEM);
+		CU_ASSERT(errno_set_invalid == EFAULT
+			  || errno_set_invalid == ENOMEM);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_set, -1);
@@ -441,14 +467,16 @@ void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count() {
 	ret_set_invalid = ioctl(get_video_fd(), VIDIOC_S_EXT_CTRLS, &controls);
 	errno_set_invalid = errno;
 
-	dprintf("\t%s:%u: VIDIOC_S_EXT_CTRLS, count=0x%x, ret_set_invalid=%i, errno_set_invalid=%i\n",
-		__FILE__, __LINE__, count, ret_set_invalid, errno_set_invalid);
+	dprintf
+	    ("\t%s:%u: VIDIOC_S_EXT_CTRLS, count=0x%x, ret_set_invalid=%i, errno_set_invalid=%i\n",
+	     __FILE__, __LINE__, count, ret_set_invalid, errno_set_invalid);
 
 	if (ret_set == 0) {
 		CU_ASSERT_EQUAL(ret_set, 0);
 
 		CU_ASSERT_EQUAL(ret_set_invalid, -1);
-		CU_ASSERT(errno_set_invalid == EFAULT || errno_set_invalid == ENOMEM);
+		CU_ASSERT(errno_set_invalid == EFAULT
+			  || errno_set_invalid == ENOMEM);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_set, -1);
@@ -460,7 +488,8 @@ void test_VIDIOC_S_EXT_CTRLS_zero_invalid_count() {
 
 }
 
-void test_VIDIOC_S_EXT_CTRLS_NULL() {
+void test_VIDIOC_S_EXT_CTRLS_NULL()
+{
 	struct v4l2_ext_controls controls;
 	int ret_set, errno_set;
 	int ret_null, errno_null;
@@ -497,7 +526,8 @@ void test_VIDIOC_S_EXT_CTRLS_NULL() {
 	}
 }
 
-void test_VIDIOC_TRY_EXT_CTRLS_zero() {
+void test_VIDIOC_TRY_EXT_CTRLS_zero()
+{
 	struct v4l2_ext_controls controls;
 	int ret_try, errno_try;
 
@@ -528,7 +558,8 @@ void test_VIDIOC_TRY_EXT_CTRLS_zero() {
 	}
 }
 
-void test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count() {
+void test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count()
+{
 	struct v4l2_ext_controls controls;
 	int ret_try, errno_try;
 	int ret_try_invalid, errno_try_invalid;
@@ -543,8 +574,9 @@ void test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count() {
 	ret_try = ioctl(get_video_fd(), VIDIOC_TRY_EXT_CTRLS, &controls);
 	errno_try = errno;
 
-	dprintf("\t%s:%u: VIDIOC_TRY_EXT_CTRLS, count=0x%x, ret_try=%i, errno_try=%i\n",
-		__FILE__, __LINE__, count, ret_try, errno_try);
+	dprintf
+	    ("\t%s:%u: VIDIOC_TRY_EXT_CTRLS, count=0x%x, ret_try=%i, errno_try=%i\n",
+	     __FILE__, __LINE__, count, ret_try, errno_try);
 
 	count = 1;
 	/* Note: this loop also covers ((__u32)S32_MAX)+1 = 0x80000000 */
@@ -554,11 +586,14 @@ void test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count() {
 		controls.count = count;
 		controls.controls = NULL;
 
-		ret_try_invalid = ioctl(get_video_fd(), VIDIOC_TRY_EXT_CTRLS, &controls);
+		ret_try_invalid =
+		    ioctl(get_video_fd(), VIDIOC_TRY_EXT_CTRLS, &controls);
 		errno_try_invalid = errno;
 
-		dprintf("\t%s:%u: VIDIOC_TRY_EXT_CTRLS, count=0x%x, ret_try_invalid=%i, errno_try_invalid=%i\n",
-			__FILE__, __LINE__, count, ret_try_invalid, errno_try_invalid);
+		dprintf
+		    ("\t%s:%u: VIDIOC_TRY_EXT_CTRLS, count=0x%x, ret_try_invalid=%i, errno_try_invalid=%i\n",
+		     __FILE__, __LINE__, count, ret_try_invalid,
+		     errno_try_invalid);
 
 		if (ret_try == 0) {
 			CU_ASSERT_EQUAL(ret_try, 0);
@@ -569,7 +604,8 @@ void test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count() {
 			 * controls.count value
 			 */
 			CU_ASSERT_EQUAL(ret_try_invalid, -1);
-			CU_ASSERT(errno_try_invalid == EFAULT || errno_try_invalid == ENOMEM);
+			CU_ASSERT(errno_try_invalid == EFAULT
+				  || errno_try_invalid == ENOMEM);
 
 		} else {
 			CU_ASSERT_EQUAL(ret_try, -1);
@@ -581,23 +617,26 @@ void test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count() {
 		count <<= 1;
 	} while (count != 0);
 
-	count = (__u32)S32_MAX;
+	count = (__u32) S32_MAX;
 	memset(&controls, 0xff, sizeof(controls));
 	controls.ctrl_class = V4L2_CTRL_CLASS_USER;
 	controls.count = count;
 	controls.controls = NULL;
 
-	ret_try_invalid = ioctl(get_video_fd(), VIDIOC_TRY_EXT_CTRLS, &controls);
+	ret_try_invalid =
+	    ioctl(get_video_fd(), VIDIOC_TRY_EXT_CTRLS, &controls);
 	errno_try_invalid = errno;
 
-	dprintf("\t%s:%u: VIDIOC_TRY_EXT_CTRLS, count=0x%x, ret_try_invalid=%i, errno_try_invalid=%i\n",
-		__FILE__, __LINE__, count, ret_try_invalid, errno_try_invalid);
+	dprintf
+	    ("\t%s:%u: VIDIOC_TRY_EXT_CTRLS, count=0x%x, ret_try_invalid=%i, errno_try_invalid=%i\n",
+	     __FILE__, __LINE__, count, ret_try_invalid, errno_try_invalid);
 
 	if (ret_try == 0) {
 		CU_ASSERT_EQUAL(ret_try, 0);
 
 		CU_ASSERT_EQUAL(ret_try_invalid, -1);
-		CU_ASSERT(errno_try_invalid == EFAULT || errno_try_invalid == ENOMEM);
+		CU_ASSERT(errno_try_invalid == EFAULT
+			  || errno_try_invalid == ENOMEM);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_try, -1);
@@ -613,17 +652,20 @@ void test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count() {
 	controls.count = count;
 	controls.controls = NULL;
 
-	ret_try_invalid = ioctl(get_video_fd(), VIDIOC_TRY_EXT_CTRLS, &controls);
+	ret_try_invalid =
+	    ioctl(get_video_fd(), VIDIOC_TRY_EXT_CTRLS, &controls);
 	errno_try_invalid = errno;
 
-	dprintf("\t%s:%u: VIDIOC_TRY_EXT_CTRLS, count=0x%x, ret_try_invalid=%i, errno_try_invalid=%i\n",
-		__FILE__, __LINE__, count, ret_try_invalid, errno_try_invalid);
+	dprintf
+	    ("\t%s:%u: VIDIOC_TRY_EXT_CTRLS, count=0x%x, ret_try_invalid=%i, errno_try_invalid=%i\n",
+	     __FILE__, __LINE__, count, ret_try_invalid, errno_try_invalid);
 
 	if (ret_try == 0) {
 		CU_ASSERT_EQUAL(ret_try, 0);
 
 		CU_ASSERT_EQUAL(ret_try_invalid, -1);
-		CU_ASSERT(errno_try_invalid == EFAULT || errno_try_invalid == ENOMEM);
+		CU_ASSERT(errno_try_invalid == EFAULT
+			  || errno_try_invalid == ENOMEM);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_try, -1);
@@ -635,7 +677,8 @@ void test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count() {
 
 }
 
-void test_VIDIOC_TRY_EXT_CTRLS_NULL() {
+void test_VIDIOC_TRY_EXT_CTRLS_NULL()
+{
 	struct v4l2_ext_controls controls;
 	int ret_try, errno_try;
 	int ret_null, errno_null;

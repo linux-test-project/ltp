@@ -18,7 +18,8 @@
 
 #define SHM_NAME "posixtest_11-1"
 
-int main() {
+int main()
+{
 	int result;
 
 	/* Ensure that the name SHM_NAME is removed */

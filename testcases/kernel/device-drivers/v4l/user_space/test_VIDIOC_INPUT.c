@@ -31,7 +31,8 @@
 
 #include "test_VIDIOC_INPUT.h"
 
-int valid_input_index(int f, __u32 index) {
+int valid_input_index(int f, __u32 index)
+{
 	__u32 i;
 	struct v4l2_input input;
 	int ret_enum, errno_enum;
@@ -57,7 +58,8 @@ int valid_input_index(int f, __u32 index) {
 	return valid;
 }
 
-void test_VIDIOC_G_INPUT() {
+void test_VIDIOC_G_INPUT()
+{
 	int ret_get, errno_get;
 	__u32 index;
 	int f;
@@ -68,7 +70,8 @@ void test_VIDIOC_G_INPUT() {
 	ret_get = ioctl(f, VIDIOC_G_INPUT, &index);
 	errno_get = errno;
 
-	dprintf("\tVIDIOC_G_INPUT, ret_get=%i, errno_get=%i\n", ret_get, errno_get);
+	dprintf("\tVIDIOC_G_INPUT, ret_get=%i, errno_get=%i\n", ret_get,
+		errno_get);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
@@ -83,7 +86,8 @@ void test_VIDIOC_G_INPUT() {
 
 }
 
-void test_VIDIOC_S_INPUT_from_enum() {
+void test_VIDIOC_S_INPUT_from_enum()
+{
 	int ret_get, errno_get;
 	int ret_enum, errno_enum;
 	int ret_set, errno_set;
@@ -107,14 +111,18 @@ void test_VIDIOC_S_INPUT_from_enum() {
 			ret_enum = ioctl(f, VIDIOC_ENUMINPUT, &input);
 			errno_enum = errno;
 
-			dprintf("\tENUMINPUT: i=%u, ret_enum=%i, errno=%i\n", i, ret_enum, errno);
+			dprintf("\tENUMINPUT: i=%u, ret_enum=%i, errno=%i\n", i,
+				ret_enum, errno);
 
 			if (ret_enum == 0) {
-				ret_set = ioctl(f, VIDIOC_S_INPUT, &input.index);
+				ret_set =
+				    ioctl(f, VIDIOC_S_INPUT, &input.index);
 				errno_set = errno;
 				CU_ASSERT_EQUAL(ret_set, 0);
 
-				dprintf("\tinput.index=0x%X, ret_set=%i, errno_set=%i\n", input.index, ret_set, errno_set);
+				dprintf
+				    ("\tinput.index=0x%X, ret_set=%i, errno_set=%i\n",
+				     input.index, ret_set, errno_set);
 
 			}
 			i++;
@@ -129,13 +137,15 @@ void test_VIDIOC_S_INPUT_from_enum() {
 	}
 }
 
-static void do_set_input(int f, __u32 first_wrong_input, __u32 index) {
+static void do_set_input(int f, __u32 first_wrong_input, __u32 index)
+{
 	struct v4l2_input input;
 	int ret_set, errno_set;
 
 	if (first_wrong_input <= index) {
 
-		dprintf("\tdo_set_input(f, 0x%X, 0x%X)\n", first_wrong_input, index);
+		dprintf("\tdo_set_input(f, 0x%X, 0x%X)\n", first_wrong_input,
+			index);
 
 		memset(&input, 0xff, sizeof(input));
 		input.index = index;
@@ -152,7 +162,8 @@ static void do_set_input(int f, __u32 first_wrong_input, __u32 index) {
 
 }
 
-void test_VIDIOC_S_INPUT_invalid_inputs() {
+void test_VIDIOC_S_INPUT_invalid_inputs()
+{
 	int ret_get, errno_get;
 	int ret_enum, errno_enum;
 	int ret_set, errno_set;
@@ -176,8 +187,9 @@ void test_VIDIOC_S_INPUT_invalid_inputs() {
 			ret_enum = ioctl(f, VIDIOC_ENUMINPUT, &input);
 			errno_enum = errno;
 
-			dprintf("\t%s:%u: ENUMINPUT: i=%u, ret_enum=%i, errno_enum=%i\n",
-				__FILE__, __LINE__, i, ret_enum, errno_enum);
+			dprintf
+			    ("\t%s:%u: ENUMINPUT: i=%u, ret_enum=%i, errno_enum=%i\n",
+			     __FILE__, __LINE__, i, ret_enum, errno_enum);
 
 			i++;
 		} while (ret_enum == 0 && i != 0);
@@ -188,14 +200,15 @@ void test_VIDIOC_S_INPUT_invalid_inputs() {
 			/* The input index range 0..(i-1) are valid inputs. */
 			/* Try index values from range i..U32_MAX */
 			do_set_input(f, first_wrong_input, i);
-			do_set_input(f, first_wrong_input, i+1);
+			do_set_input(f, first_wrong_input, i + 1);
 
 			/* Check for signed/unsigned mismatch near S32_MAX */
-			for (i = 0; i <= first_wrong_input+1; i++) {
-				do_set_input(f, first_wrong_input, ((__u32)S32_MAX) + i);
+			for (i = 0; i <= first_wrong_input + 1; i++) {
+				do_set_input(f, first_wrong_input,
+					     ((__u32) S32_MAX) + i);
 			}
 
-			i = (U32_MAX-1)-first_wrong_input;
+			i = (U32_MAX - 1) - first_wrong_input;
 			do {
 				do_set_input(f, first_wrong_input, i);
 				i++;
@@ -213,7 +226,8 @@ void test_VIDIOC_S_INPUT_invalid_inputs() {
 	}
 }
 
-void test_VIDIOC_G_INPUT_NULL() {
+void test_VIDIOC_G_INPUT_NULL()
+{
 	int ret_get, errno_get;
 	int ret_null, errno_null;
 	__u32 index;
@@ -244,7 +258,8 @@ void test_VIDIOC_G_INPUT_NULL() {
 
 }
 
-void test_VIDIOC_S_INPUT_NULL() {
+void test_VIDIOC_S_INPUT_NULL()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	int ret_null, errno_null;

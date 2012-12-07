@@ -70,7 +70,6 @@
 #include "test.h"
 #include "usctest.h"
 
-
 #define MODSIZE 10000		/* Arbitrarily selected MODSIZE */
 #define BASEMODNAME "dummy"
 
@@ -78,17 +77,15 @@ static void setup(void);
 static void cleanup(void);
 
 char *TCID = "create_module01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 static char modname[20];	/* Name of the module */
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-			(char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -100,19 +97,19 @@ main(int argc, char **argv)
 		Tst_count = 0;
 
 		/* Test the system call */
-		TEST(create_module(modname,MODSIZE));
+		TEST(create_module(modname, MODSIZE));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "create_module() failed errno=%d : %s",
-				TEST_ERRNO, strerror(TEST_ERRNO));
+				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "create_module() returned 0x%x",
-				TEST_RETURN);
+				 TEST_RETURN);
 			if (delete_module(modname) != 0) {
 				tst_brkm(TBROK, NULL, "Failed to delete"
-					"loadable module entry for %s",
-					modname);
+					 "loadable module entry for %s",
+					 modname);
 			}
 		}
 	}
@@ -123,17 +120,16 @@ main(int argc, char **argv)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
 
-	if (tst_kvercmp(2,5,48) >= 0)
+	if (tst_kvercmp(2, 5, 48) >= 0)
 		tst_brkm(TCONF, NULL, "This test will not work on "
-				"kernels after 2.5.48");
+			 "kernels after 2.5.48");
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -141,7 +137,7 @@ setup(void)
 	TEST_PAUSE;
 
 	/* Initialize unique module name for each child process */
-	if (sprintf(modname, "%s_%d",BASEMODNAME, getpid()) == -1) {
+	if (sprintf(modname, "%s_%d", BASEMODNAME, getpid()) == -1) {
 		tst_brkm(TBROK, NULL, "Failed to initialize module name");
 	}
 }
@@ -151,8 +147,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * If module entry is not removed (possible if create_module()
@@ -163,8 +158,8 @@ cleanup(void)
 		/* With errno, check module exists, if so send msg */
 		if (errno != ENOENT) {
 			tst_resm(TWARN, "Failed to delete loadable module"
-				"entry for %s errno returned %d", modname,
-				errno);
+				 "entry for %s errno returned %d", modname,
+				 errno);
 		}
 	}
 

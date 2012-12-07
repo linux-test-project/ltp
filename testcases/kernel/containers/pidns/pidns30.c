@@ -124,7 +124,7 @@ static void cleanup_child(void)
  * XXX (garrcoop): add calls to cleanup_child() -- or should this be handled
  * from the libltp signal handler?
  */
-static void child_signal_handler(int sig, siginfo_t *si, void *unused)
+static void child_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	char buf[256];
 	struct mq_attr attr;
@@ -136,13 +136,13 @@ static void child_signal_handler(int sig, siginfo_t *si, void *unused)
 
 	if (si->si_code != SI_MESGQ) {
 		printf("expected signal code SI_MESGQ; got %d instead\n",
-		    si->si_code);
+		       si->si_code);
 		return;
 	}
 
 	if (si->si_pid) {
 		printf("expected signal originator PID = 0; got %d instead\n",
-		    si->si_pid);
+		       si->si_pid);
 		return;
 	} else {
 		printf("signal originator PID = 0\n");
@@ -241,24 +241,26 @@ int main(int argc, char *argv[])
 	pid_t cpid;
 
 	if (pipe(child_to_father) == -1 || pipe(father_to_child) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "pipe failed");
 	}
 
 	syscall(__NR_mq_unlink, mqname);
 
 	/* container creation on PID namespace */
-	cpid = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
+	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
 	if (cpid == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "clone failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "clone failed");
 
-	mqd = syscall(__NR_mq_open, mqname, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
+	mqd =
+	    syscall(__NR_mq_open, mqname, O_RDWR | O_CREAT | O_EXCL, 0777,
+		    NULL);
 	if (mqd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mq_open failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mq_open failed");
 	else
 		tst_resm(TINFO, "successfully created posix mqueue");
 
 	if (write(father_to_child[1], buf, 1) != 1)
-		tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 
 	/* Close the appropriate end of each pipe */
 	close(child_to_father[1]);
@@ -267,21 +269,22 @@ int main(int argc, char *argv[])
 	/* Is container ready */
 	read(child_to_father[0], buf, 5);
 	if (strcmp(buf, "c:ok") != 0)
-		tst_brkm(TBROK, cleanup, "container did not respond as expected!");
+		tst_brkm(TBROK, cleanup,
+			 "container did not respond as expected!");
 
 	rc = mq_send(mqd, MSG, strlen(MSG), MSG_PRIO);
 	if (rc == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mq_send failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mq_send failed");
 	else
 		tst_resm(TINFO, "mq_send succeeded");
 
 	/* Tell the child the message has been sent */
 	if (write(father_to_child[1], "f:ok", 5) != 5)
-		tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 
 	/* Wait for child to finish */
 	if (wait(&status) == -1)
-		tst_resm(TBROK|TERRNO, "wait failed");
+		tst_resm(TBROK | TERRNO, "wait failed");
 
 	cleanup();
 

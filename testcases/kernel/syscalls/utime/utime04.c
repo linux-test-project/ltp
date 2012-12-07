@@ -89,6 +89,7 @@
 char *TCID = "utime04";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 int exp_enos[] = { 0 };
+
 struct utimbuf times;		/* struct. buffer for utime() */
 
 void setup();			/* Main setup function of test */
@@ -144,7 +145,7 @@ int main(int ac, char **av)
 						 "stat(2) of %s failed, "
 						 "error:%d", TEMP_FILE,
 						 TEST_ERRNO);
-				 }
+				}
 				modf_time = stat_buf.st_mtime;
 				access_time = stat_buf.st_atime;
 

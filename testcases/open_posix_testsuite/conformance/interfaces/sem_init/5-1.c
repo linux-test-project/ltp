@@ -24,16 +24,16 @@
 #define FUNCTION "sem_init"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main ()
+int main()
 {
-	sem_t   mysemp;
+	sem_t mysemp;
 
-	if (sem_init (&mysemp, 0, 1) == -1) {
-                puts("TEST FAILED");
-                return PTS_FAIL;
-        } else {
-                puts("TEST PASSED");
+	if (sem_init(&mysemp, 0, 1) == -1) {
+		puts("TEST FAILED");
+		return PTS_FAIL;
+	} else {
+		puts("TEST PASSED");
 		sem_destroy(&mysemp);
-                return PTS_PASS;
+		return PTS_PASS;
 	}
 }

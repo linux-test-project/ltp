@@ -127,6 +127,7 @@ char *TCID = "rmdir04";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { 0, 0 };
+
 char *cwd;
 char fname[255];
 

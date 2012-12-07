@@ -35,7 +35,7 @@
 
 void handler(int signo)
 {
-        sigset_t pendingset;
+	sigset_t pendingset;
 
 	if (sigemptyset(&pendingset) == -1) {
 		printf("Could not call sigemptyset()\n");
@@ -59,8 +59,8 @@ void handler(int signo)
 	    sigismember(&pendingset, SIGCONT) == 1) {
 		printf("All pending signals found\n");
 		if ((sigismember(&pendingset, SIGHUP) == 0) &&
-			(sigismember(&pendingset, SIGABRT) == 0) &&
-			(sigismember(&pendingset, SIGUSR1) == 0)) {
+		    (sigismember(&pendingset, SIGABRT) == 0) &&
+		    (sigismember(&pendingset, SIGUSR1) == 0)) {
 			printf("Unsent signals not found\n");
 			printf("Test PASSED\n");
 			exit(0);
@@ -80,45 +80,45 @@ int main()
 {
 	sigset_t blockset;
 	sigset_t prevset;
-        struct sigaction act;
+	struct sigaction act;
 
-        act.sa_handler = handler;
-        act.sa_flags = 0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	if ((sigemptyset(&blockset) == -1) ||
-		(sigemptyset(&prevset) == -1) ||
-		(sigemptyset(&act.sa_mask) == -1)) {
+	    (sigemptyset(&prevset) == -1) ||
+	    (sigemptyset(&act.sa_mask) == -1)) {
 		printf("Could not call sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}
 
-        if ((sigaddset(&blockset, SIGUSR2) == -1) ||
-            (sigaddset(&blockset, SIGHUP) == -1)) {
-                perror("Error calling sigaddset()\n");
-                return PTS_UNRESOLVED;
-        }
-
-        if (sigprocmask(SIG_SETMASK, &blockset, &prevset) == -1) {
-                printf("Could not call sigprocmask()\n");
-                return PTS_UNRESOLVED;
-        }
-
-	if ((sigaddset(&act.sa_mask, SIGCONT) == -1) ||
-		(sigaddset(&act.sa_mask, SIGABRT) == -1) ||
-		(sigaddset(&act.sa_mask, SIGUSR1) == -1)) {
+	if ((sigaddset(&blockset, SIGUSR2) == -1) ||
+	    (sigaddset(&blockset, SIGHUP) == -1)) {
 		perror("Error calling sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
-        if (sigaction(SIGTTOU, &act, 0) == -1) {
-                perror("Could not call sigaction()");
-                return PTS_UNRESOLVED;
-        }
+	if (sigprocmask(SIG_SETMASK, &blockset, &prevset) == -1) {
+		printf("Could not call sigprocmask()\n");
+		return PTS_UNRESOLVED;
+	}
 
-        if (raise(SIGTTOU) == -1) {
-                perror("Could not raise SIGTTOU");
-                return PTS_UNRESOLVED;
-        }
+	if ((sigaddset(&act.sa_mask, SIGCONT) == -1) ||
+	    (sigaddset(&act.sa_mask, SIGABRT) == -1) ||
+	    (sigaddset(&act.sa_mask, SIGUSR1) == -1)) {
+		perror("Error calling sigaddset()\n");
+		return PTS_UNRESOLVED;
+	}
+
+	if (sigaction(SIGTTOU, &act, 0) == -1) {
+		perror("Could not call sigaction()");
+		return PTS_UNRESOLVED;
+	}
+
+	if (raise(SIGTTOU) == -1) {
+		perror("Could not raise SIGTTOU");
+		return PTS_UNRESOLVED;
+	}
 	printf("This code should not be reachable\n");
 	return PTS_UNRESOLVED;
 }

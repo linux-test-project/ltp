@@ -73,13 +73,13 @@ static void check_policy_common(const int found_expected, const int id)
 	}
 }
 
-static inline void check_policy_written(FILE *fp, const int id)
+static inline void check_policy_written(FILE * fp, const int id)
 {
 	fflush(fp);
 	check_policy_common(1, id);
 }
 
-static inline void check_policy_deleted(FILE *fp, const int id)
+static inline void check_policy_deleted(FILE * fp, const int id)
 {
 	fflush(fp);
 	check_policy_common(0, id);
@@ -257,9 +257,9 @@ static const char *exception_testcases[] = {
 	"initialize_domain /usr/sbin/sshd from /bin/bash",
 	"no_initialize_domain /usr/sbin/sshd from /bin/bash",
 	"initialize_domain /usr/sbin/sshd from "
-	"<kernel> /bin/mingetty/bin/bash",
+	    "<kernel> /bin/mingetty/bin/bash",
 	"no_initialize_domain /usr/sbin/sshd from "
-	"<kernel> /bin/mingetty/bin/bash",
+	    "<kernel> /bin/mingetty/bin/bash",
 	"keep_domain <kernel> /usr/sbin/sshd /bin/bash",
 	"no_keep_domain <kernel> /usr/sbin/sshd /bin/bash",
 	"keep_domain /bin/pwd from <kernel> /usr/sbin/sshd /bin/bash",

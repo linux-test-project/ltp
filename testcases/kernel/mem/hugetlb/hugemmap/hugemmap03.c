@@ -53,18 +53,18 @@ int TST_TOTAL = 1;
 #define HIGH_ADDR	(void *)(0x1000000000000)
 
 static unsigned long *addr;
-static int  fildes;
+static int fildes;
 static long hugepages = 128;
 static long orig_hugepages;
 static long map_sz;
 static char TEMPFILE[MAXPATHLEN];
 
 static char *Hopt, *nr_opt;
-static int  Hflag, sflag;
+static int Hflag, sflag;
 static option_t options[] = {
-	{ "H:",	&Hflag,	&Hopt },
-	{ "s:",	&sflag,	&nr_opt },
-	{ NULL,	NULL,	NULL }
+	{"H:", &Hflag, &Hopt},
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 static void help(void);
@@ -96,7 +96,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666);
 		if (fildes < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "open %s", TEMPFILE);
+			tst_brkm(TBROK | TERRNO, cleanup, "open %s", TEMPFILE);
 
 		Tst_count = 0;
 
@@ -105,16 +105,16 @@ int main(int ac, char **av)
 			    MAP_SHARED | MAP_FIXED, fildes, 0);
 		if (addr != MAP_FAILED) {
 			tst_resm(TFAIL, "mmap into high region "
-					"succeeded unexpectedly");
+				 "succeeded unexpectedly");
 			goto fail;
 		}
 		if (errno != ENOMEM)
-			tst_resm(TFAIL|TERRNO, "mmap into high region "
-					"failed unexpectedly - expect "
-					"errno=ENOMEM, got");
+			tst_resm(TFAIL | TERRNO, "mmap into high region "
+				 "failed unexpectedly - expect "
+				 "errno=ENOMEM, got");
 		else
-			tst_resm(TPASS|TERRNO, "mmap into high region "
-					"failed as expected");
+			tst_resm(TPASS | TERRNO, "mmap into high region "
+				 "failed as expected");
 fail:
 		close(fildes);
 	}
@@ -127,14 +127,12 @@ void setup(void)
 	tst_require_root(NULL);
 
 	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
-		tst_brkm(TBROK|TERRNO, NULL,
-			 "mount failed on %s", Hopt);
+		tst_brkm(TBROK | TERRNO, NULL, "mount failed on %s", Hopt);
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
 
-	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d",
-		 Hopt, getpid());
+	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d", Hopt, getpid());
 
 	TEST_PAUSE;
 }

@@ -142,7 +142,7 @@ static void setup(void)
 
 	/* Backup pid_max value. */
 	SAFE_FILE_SCANF(NULL, PID_MAX_PATH, "%lu", &pid_max);
-	
+
 	SAFE_FILE_PRINTF(NULL, PID_MAX_PATH, "%d", PID_MAX);
 }
 

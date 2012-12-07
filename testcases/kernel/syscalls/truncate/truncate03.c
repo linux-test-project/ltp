@@ -134,6 +134,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	"", "Pathname is empty", ENOENT, no_setup}, {
 	NULL, NULL, 0, no_setup}
 };
+
 int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);
 
 void setup();			/* Main setup function for the test */
@@ -258,7 +259,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TEST_FILE1, FILE_MODE, errno, strerror(errno));
-	 }
+	}
 
 	/* Write to the file 1k data from the buffer */
 	while (c_total < FILE_SIZE) {
@@ -266,7 +267,7 @@ void setup()
 			tst_brkm(TBROK, cleanup,
 				 "write(2) on %s Failed, errno=%d : %s",
 				 TEST_FILE1, errno, strerror(errno));
-		 } else {
+		} else {
 			c_total += c;
 		}
 	}
@@ -276,7 +277,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 }
+	}
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
@@ -317,7 +318,7 @@ int setup1()
 	/* Change mode permissions on test file */
 	if (chmod(TEST_FILE1, NEW_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", TEST_FILE1);
-	 }
+	}
 
 	return 0;
 }
@@ -340,13 +341,13 @@ int setup2()
 		tst_brkm(TBROK, cleanup,
 			 "open(2) on t_file failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 }
+	}
 	/* Close the file created above */
 	if (close(fildes) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(t_file) Failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 }
+	}
 	return 0;
 }
 

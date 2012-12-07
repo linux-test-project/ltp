@@ -64,7 +64,7 @@
 static char *filename;
 
 /*****	LTP Port	*****/
-char *TCID = "mmapstress04";//weave
+char *TCID = "mmapstress04";	//weave
 int local_flag = PASSED;
 int block_number;
 FILE *temp;
@@ -80,43 +80,40 @@ void fail_exit();
 void ok_exit();
 /*****	**	**	*****/
 
-extern time_t	time(time_t *);
-extern char	*ctime(const time_t *);
-extern void     exit(int);
-static int	rofd, rwfd;
+extern time_t time(time_t *);
+extern char *ctime(const time_t *);
+extern void exit(int);
+static int rofd, rwfd;
 
-/*ARGSUSED*/
-static
-void
-cleanup(int sig)
+ /*ARGSUSED*/ static
+void cleanup(int sig)
 {
-        /*
-         * Don't check error codes - we could be signaled before the file is
-         * created.
-         */
-        (void)close(rofd);
-        (void)close(rwfd);
-        (void)unlink(filename);
-        exit(1);
+	/*
+	 * Don't check error codes - we could be signaled before the file is
+	 * created.
+	 */
+	(void)close(rofd);
+	(void)close(rwfd);
+	(void)unlink(filename);
+	exit(1);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	char 			*buf;
-	size_t			pagesize = (size_t)sysconf(_SC_PAGE_SIZE);
-	caddr_t 		mmapaddr;
-	time_t			t;
-	int			i, j;
-        struct sigaction        sa;
+	char *buf;
+	size_t pagesize = (size_t) sysconf(_SC_PAGE_SIZE);
+	caddr_t mmapaddr;
+	time_t t;
+	int i, j;
+	struct sigaction sa;
 #ifdef LARGE_FILE
-	off64_t			startoffset;
-	off64_t			seekoff;
-	off64_t			mapoff;
+	off64_t startoffset;
+	off64_t seekoff;
+	off64_t mapoff;
 #else /* LARGE_FILE */
-	off_t			startoffset;
-	off_t			seekoff;
-	off_t			mapoff;
+	off_t startoffset;
+	off_t seekoff;
+	off_t mapoff;
 #endif /* LARGE_FILE */
 
 	if (argc < 2 || argc > 3) {
@@ -132,26 +129,25 @@ main(int argc, char *argv[])
 #else /* LARGE_FILE */
 		startoffset = atoi(argv[2]);
 #endif /* LARGE_FILE */
-	}
-	else
+	} else
 		startoffset = pagesize;
 
 	if (startoffset % pagesize != 0) {
 		fprintf(stderr, "pagesize=%ld\n", (long)pagesize);
 		fprintf(stderr, "startoffset must be a pagesize multiple\n");
-		anyfail();  //LTP Port
+		anyfail();	//LTP Port
 	}
 	(void)time(&t);
-//	(void)printf("%s: Started %s", argv[0], ctime(&t));
-	if ((buf = sbrk(6*pagesize)) == (char *)-1) {
+//      (void)printf("%s: Started %s", argv[0], ctime(&t));
+	if ((buf = sbrk(6 * pagesize)) == (char *)-1) {
 		ERROR("couldn't allocate buf");
 		anyfail();	//LTP Port
 	}
-	if (sbrk(pagesize-((ulong)sbrk(0)&(pagesize-1))) == (char *)-1) {
+	if (sbrk(pagesize - ((ulong) sbrk(0) & (pagesize - 1))) == (char *)-1) {
 		ERROR("couldn't round up brk");
 		anyfail();	//LTP Port
 	}
-	if ((mmapaddr = (caddr_t)sbrk(0)) == (caddr_t)-1) {
+	if ((mmapaddr = (caddr_t) sbrk(0)) == (caddr_t) - 1) {
 		ERROR("couldn't find top of brk");
 		anyfail();	//LTP Port
 	}
@@ -166,9 +162,9 @@ main(int argc, char *argv[])
 	CATCH_SIG(SIGTERM);
 	tst_tmpdir();
 #ifdef LARGE_FILE
-	if ((rofd = open64(filename, O_RDONLY|O_CREAT, 0777)) == -1) {
+	if ((rofd = open64(filename, O_RDONLY | O_CREAT, 0777)) == -1) {
 #else /* LARGE_FILE */
-	if ((rofd = open(filename, O_RDONLY|O_CREAT, 0777)) == -1) {
+	if ((rofd = open(filename, O_RDONLY | O_CREAT, 0777)) == -1) {
 #endif /* LARGE_FILE */
 		ERROR("read only open failed");
 		anyfail();	//LTP Port
@@ -184,10 +180,10 @@ main(int argc, char *argv[])
 		anyfail();	//LTP Port
 	}
 #ifdef LARGE_FILE
-	seekoff = startoffset + (off64_t)64 * (off64_t)6 * (off64_t)pagesize;
+	seekoff = startoffset + (off64_t) 64 *(off64_t) 6 *(off64_t) pagesize;
 	if (lseek64(rwfd, seekoff, SEEK_SET) != seekoff) {
 #else /* LARGE_FILE */
-	seekoff = startoffset + (off_t)64 * (off_t)6 * (off_t)pagesize;
+	seekoff = startoffset + (off_t) 64 *(off_t) 6 *(off_t) pagesize;
 	if (lseek(rwfd, seekoff, SEEK_SET) != seekoff) {
 #endif /* LARGE_FILE */
 		CLEANERROR("first lseek failed");
@@ -213,23 +209,23 @@ main(int argc, char *argv[])
 	 */
 	for (i = 0; i < 64; i++) {
 		for (j = 0; j < 6; j++) {
-			if (i & (1<<j)) {
+			if (i & (1 << j)) {
 #ifdef LARGE_FILE
 				mapoff = startoffset +
-					 (off64_t)pagesize * (off64_t)(6+i+j);
-				if (mmap64(mmapaddr+pagesize*(6*i+j),
-					pagesize, PROT_READ,
-					MAP_FILE|MAP_PRIVATE|MAP_FIXED, rofd,
-					mapoff)
-				        == (caddr_t)-1) {
+				    (off64_t) pagesize *(off64_t) (6 + i + j);
+				if (mmap64(mmapaddr + pagesize * (6 * i + j),
+					   pagesize, PROT_READ,
+					   MAP_FILE | MAP_PRIVATE | MAP_FIXED,
+					   rofd, mapoff)
+				    == (caddr_t) - 1) {
 #else /* LARGE_FILE */
 				mapoff = startoffset +
-					 (off_t)pagesize * (off_t)(6+i+j);
-				if (mmap(mmapaddr+pagesize*(6*i+j),
-					pagesize, PROT_READ,
-					MAP_FILE|MAP_PRIVATE|MAP_FIXED, rofd,
-					mapoff)
-				        == (caddr_t)-1) {
+				    (off_t) pagesize *(off_t) (6 + i + j);
+				if (mmap(mmapaddr + pagesize * (6 * i + j),
+					 pagesize, PROT_READ,
+					 MAP_FILE | MAP_PRIVATE | MAP_FIXED,
+					 rofd, mapoff)
+				    == (caddr_t) - 1) {
 #endif /* LARGE_FILE */
 					CLEANERROR("mmap failed");
 					anyfail();	//LTP Port
@@ -238,11 +234,11 @@ main(int argc, char *argv[])
 		}
 	}
 	/* done mapping */
-	for (i = 0; i < 6*pagesize; i++)
+	for (i = 0; i < 6 * pagesize; i++)
 		buf[i] = 'a';
 	/* write out 6 pages of stuff into each of the 64 six page sections */
 #ifdef LARGE_FILE
-	if (lseek64(rwfd, startoffset,  SEEK_SET) != startoffset) {
+	if (lseek64(rwfd, startoffset, SEEK_SET) != startoffset) {
 #else /* LARGE_FILE */
 	if (lseek(rwfd, startoffset, SEEK_SET) != startoffset) {
 #endif /* LARGE_FILE */
@@ -250,7 +246,7 @@ main(int argc, char *argv[])
 		anyfail();	//LTP Port
 	}
 	for (i = 0; i < 64; i++) {
-		if (write(rwfd, buf, 6*pagesize) != 6*pagesize) {
+		if (write(rwfd, buf, 6 * pagesize) != 6 * pagesize) {
 			CLEANERROR("write failed");
 			anyfail();	//LTP Port
 		}
@@ -261,12 +257,14 @@ main(int argc, char *argv[])
 	for (i = 0; i < 64; i++) {
 		for (j = 0; j < 6; j++) {
 			/* if mmaped && not updated */
-			if ((i & (1<<j)) && *(mmapaddr+pagesize*(6*i+j))!='a')
-			{
+			if ((i & (1 << j))
+			    && *(mmapaddr + pagesize * (6 * i + j)) != 'a') {
 				CLEANERROR("'a' missing from mmap");
 				(void)fprintf(stderr, "i=%d\nj=%d\n"
-					"val=0x%x\n", i, j,
-					(int)(*(mmapaddr+pagesize*(6*i+j))));
+					      "val=0x%x\n", i, j,
+					      (int)(*
+						    (mmapaddr +
+						     pagesize * (6 * i + j))));
 				anyfail();	//LTP Port
 			}
 		}
@@ -276,10 +274,10 @@ main(int argc, char *argv[])
 	 */
 	CLEAN;
 	(void)time(&t);
-//	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
-   	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n") : tst_resm(TPASS, "Test passed\n"); //LTP Port
-  	tst_rmdir();
-   	tst_exit();	//LTP Port
+//      (void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
+	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed\n") : tst_resm(TPASS, "Test passed\n");	//LTP Port
+	tst_rmdir();
+	tst_exit();		//LTP Port
 
 	tst_exit();
 }
@@ -287,10 +285,10 @@ main(int argc, char *argv[])
 /*****	LTP Port	*****/
 int anyfail()
 {
-  tst_resm(TFAIL, "Test failed\n");
-  tst_rmdir();
-  tst_exit();
-        return 0;
+	tst_resm(TFAIL, "Test failed\n");
+	tst_rmdir();
+	tst_exit();
+	return 0;
 }
 
 /*****	**	**	*****/

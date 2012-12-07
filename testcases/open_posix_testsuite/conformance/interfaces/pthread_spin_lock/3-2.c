@@ -28,15 +28,13 @@ int rc;
 static void sig_handler()
 {
 	printf("main: interrupted by SIGALARM\n");
-	if (rc == EINVAL)
-	{
+	if (rc == EINVAL) {
 		printf("main: correctly got EINVAL\n");
 		printf("Test PASSED\n");
-	}
-	else
-	{
+	} else {
 		printf("main: get return code: %d, %s\n", rc, strerror(rc));
-		printf("Test PASSED: *Note: Did not return EINVAL when attempting to lock an uninitialized spinlock, but standard says 'may' fail\n");
+		printf
+		    ("Test PASSED: *Note: Did not return EINVAL when attempting to lock an uninitialized spinlock, but standard says 'may' fail\n");
 	}
 
 	exit(PTS_PASS);

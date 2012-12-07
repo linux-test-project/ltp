@@ -70,8 +70,8 @@ static int shm_id_1 = -1;
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 int main(int ac, char **av)
@@ -92,27 +92,27 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		shm_id_1 = shmget(shmkey, shm_size,
-			    SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW);
+				  SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
 		if (shm_id_1 == -1) {
-			tst_resm(TFAIL|TERRNO, "shmget");
+			tst_resm(TFAIL | TERRNO, "shmget");
 		} else {
 			if (STD_FUNCTIONAL_TEST) {
 				/* do a STAT and check some info */
 				if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
-					tst_resm(TBROK|TERRNO,
-						    "shmctl(IPC_STAT)");
+					tst_resm(TBROK | TERRNO,
+						 "shmctl(IPC_STAT)");
 					continue;
 				}
 				/* check the seqment size */
 				if (buf.shm_segsz != shm_size) {
 					tst_resm(TFAIL, "seqment size is not "
-							"correct");
+						 "correct");
 					continue;
 				}
 				/* check the pid of the creator */
 				if (buf.shm_cpid != getpid()) {
 					tst_resm(TFAIL, "creator pid is not "
-							"correct");
+						 "correct");
 					continue;
 				}
 				/*
@@ -120,9 +120,9 @@ int main(int ac, char **av)
 				 * mask out all but the lower 9 bits
 				 */
 				if ((buf.shm_perm.mode & MODE_MASK) !=
-					    ((SHM_RW) & MODE_MASK)) {
+				    ((SHM_RW) & MODE_MASK)) {
 					tst_resm(TFAIL, "segment mode is not "
-							"correct");
+						 "correct");
 					continue;
 				}
 				/* if we get here, everything looks good */
@@ -136,7 +136,7 @@ int main(int ac, char **av)
 		 * clean up things in case we are looping
 		 */
 		if (shmctl(shm_id_1, IPC_RMID, NULL) == -1)
-			tst_resm(TBROK|TERRNO, "shmctl(IPC_RMID)");
+			tst_resm(TBROK | TERRNO, "shmctl(IPC_RMID)");
 		else
 			shm_id_1 = -1;
 	}

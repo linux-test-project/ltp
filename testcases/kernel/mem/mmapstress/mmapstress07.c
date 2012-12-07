@@ -57,10 +57,10 @@ static char *tmpname;
                 exit(1); \
         }
 
-extern time_t	time(time_t *);
-extern char	*ctime(const time_t *);
-extern void	exit(int);
-static int	checkchars(int fd, char val, int n);
+extern time_t time(time_t *);
+extern char *ctime(const time_t *);
+extern void exit(int);
+static int checkchars(int fd, char val, int n);
 
 char *TCID = "mmapstress07";
 
@@ -72,48 +72,48 @@ int TST_TOTAL = 1;
 int anyfail();
 void ok_exit();
 
-/*ARGSUSED*/
-static
-void
-cleanup(int sig)
+ /*ARGSUSED*/ static
+void cleanup(int sig)
 {
-        /*
-         * Don't check error codes - we could be signaled before the file is
-         * created.
-         */
-        (void)unlink(tmpname);
-        exit(1);
+	/*
+	 * Don't check error codes - we could be signaled before the file is
+	 * created.
+	 */
+	(void)unlink(tmpname);
+	exit(1);
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	size_t			pagesize = (size_t)sysconf(_SC_PAGE_SIZE);
-	caddr_t			mapaddr;
-	time_t			t;
-	int			rofd, rwfd, i;
-        struct sigaction        sa;
-	int			e_pageskip;
+	size_t pagesize = (size_t) sysconf(_SC_PAGE_SIZE);
+	caddr_t mapaddr;
+	time_t t;
+	int rofd, rwfd, i;
+	struct sigaction sa;
+	int e_pageskip;
 #ifdef LARGE_FILE
-	off64_t			holesize;
-	off64_t			sparseoff;
+	off64_t holesize;
+	off64_t sparseoff;
 #else /* LARGE_FILE */
-	off_t			holesize;
-	off_t			sparseoff;
+	off_t holesize;
+	off_t sparseoff;
 #endif /* LARGE_FILE */
 
 	(void)time(&t);
-//	(void)printf("%s: Started %s", argv[0], ctime(&t));
+//      (void)printf("%s: Started %s", argv[0], ctime(&t));
 	/* Test fsync & mmap over a hole in a sparse file & extend fragment */
 	if (argc < 2 || argc > 5) {
-		fprintf(stderr, "Usage: mmapstress07 filename holesize e_pageskip sparseoff\n");
+		fprintf(stderr,
+			"Usage: mmapstress07 filename holesize e_pageskip sparseoff\n");
 		/*****	**	LTP Port 02/01/03	**	**** */
-		fprintf(stderr, "\t*holesize should be a multiple of pagesize\n");
+		fprintf(stderr,
+			"\t*holesize should be a multiple of pagesize\n");
 		fprintf(stderr, "\t*e_pageskip should be 1 always \n");
-		fprintf(stderr, "\t*sparseoff should be a multiple of pagesize\n");
+		fprintf(stderr,
+			"\t*sparseoff should be a multiple of pagesize\n");
 		fprintf(stderr, "Example: mmapstress07 myfile 4096 1 8192\n");
 		/*****	**	******	*****	*****	**	02/01/03 */
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	tst_tmpdir();
 	tmpname = argv[1];
@@ -124,8 +124,7 @@ main(int argc, char **argv)
 #else /* LARGE_FILE */
 		holesize = atoi(argv[2]);
 #endif /* LARGE_FILE */
-	}
-	else
+	} else
 		holesize = pagesize;
 
 	if (argc >= 4)
@@ -139,26 +138,25 @@ main(int argc, char **argv)
 #else /* LARGE_FILE */
 		sparseoff = atoi(argv[4]);
 #endif /* LARGE_FILE */
-	}
-	else
-		sparseoff = pagesize*2;
+	} else
+		sparseoff = pagesize * 2;
 
-        sa.sa_handler = cleanup;
-        sa.sa_flags = 0;
-        if (sigemptyset(&sa.sa_mask)) {
-                ERROR("sigemptyset failed");
-                return 1;
-        }
-        CATCH_SIG(SIGINT);
-        CATCH_SIG(SIGQUIT);
-        CATCH_SIG(SIGTERM);
+	sa.sa_handler = cleanup;
+	sa.sa_flags = 0;
+	if (sigemptyset(&sa.sa_mask)) {
+		ERROR("sigemptyset failed");
+		return 1;
+	}
+	CATCH_SIG(SIGINT);
+	CATCH_SIG(SIGQUIT);
+	CATCH_SIG(SIGTERM);
 #ifdef LARGE_FILE
-	if ((rofd = open64(tmpname, O_RDONLY|O_CREAT, 0777)) == -1) {
+	if ((rofd = open64(tmpname, O_RDONLY | O_CREAT, 0777)) == -1) {
 #else /* LARGE_FILE */
-	if ((rofd = open(tmpname, O_RDONLY|O_CREAT, 0777)) == -1) {
+	if ((rofd = open(tmpname, O_RDONLY | O_CREAT, 0777)) == -1) {
 #endif /* LARGE_FILE */
 		ERROR("couldn't reopen rofd for reading");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 #ifdef LARGE_FILE
 	if ((rwfd = open64(tmpname, O_RDWR)) == -1) {
@@ -166,7 +164,7 @@ main(int argc, char **argv)
 	if ((rwfd = open(tmpname, O_RDWR)) == -1) {
 #endif /* LARGE_FILE */
 		CLEANERROR("couldn't reopen rwfd for read/write");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 #ifdef LARGE_FILE
 	if (lseek64(rwfd, sparseoff, SEEK_SET) < 0) {
@@ -174,7 +172,7 @@ main(int argc, char **argv)
 	if (lseek(rwfd, sparseoff, SEEK_SET) < 0) {
 #endif /* LARGE_FILE */
 		perror("lseek");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	/* fill file with junk. */
 	i = 0;
@@ -182,7 +180,7 @@ main(int argc, char **argv)
 		i++;
 	if (i != pagesize) {
 		CLEANERROR("couldn't fill first part of file with junk");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 #ifdef LARGE_FILE
 	if (lseek64(rwfd, holesize, SEEK_CUR) == -1) {
@@ -190,41 +188,43 @@ main(int argc, char **argv)
 	if (lseek(rwfd, holesize, SEEK_CUR) == -1) {
 #endif /* LARGE_FILE */
 		CLEANERROR("couldn't create hole in file");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	/* create fragment */
 	i = 0;
-	while (i < (pagesize>>1) && write(rwfd, "b", 1) == 1)
+	while (i < (pagesize >> 1) && write(rwfd, "b", 1) == 1)
 		i++;
-	if (i != (pagesize>>1)) {
+	if (i != (pagesize >> 1)) {
 		CLEANERROR("couldn't fill second part of file with junk");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	/* At this point fd contains 1 page of a's, holesize bytes skipped,
 	 * 1/2 page of b's.
 	 */
 
 #ifdef LARGE_FILE
-	if ((mapaddr = mmap64((caddr_t)0, pagesize*2 + holesize, PROT_READ,
-		MAP_SHARED|MAP_FILE, rofd, sparseoff)) == (caddr_t)-1) {
+	if ((mapaddr = mmap64((caddr_t) 0, pagesize * 2 + holesize, PROT_READ,
+			      MAP_SHARED | MAP_FILE, rofd,
+			      sparseoff)) == (caddr_t) - 1) {
 #else /* LARGE_FILE */
-	if ((mapaddr = mmap((caddr_t)0, pagesize*2 + holesize, PROT_READ,
-		MAP_SHARED|MAP_FILE, rofd, sparseoff)) == (caddr_t)-1) {
+	if ((mapaddr = mmap((caddr_t) 0, pagesize * 2 + holesize, PROT_READ,
+			    MAP_SHARED | MAP_FILE, rofd,
+			    sparseoff)) == (caddr_t) - 1) {
 #endif /* LARGE_FILE */
 		CLEANERROR("mmap tmp file failed");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	/* fill out remainder of page + one more page to extend mmapped flag */
-	while (i < 2*pagesize && write(rwfd, "c", 1) == 1)
+	while (i < 2 * pagesize && write(rwfd, "c", 1) == 1)
 		i++;
-	if (i != 2*pagesize) {
+	if (i != 2 * pagesize) {
 		CLEANERROR("couldn't fill second part of file with junk");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	/* fiddle with mmapped hole */
-	if (*(mapaddr + pagesize + (holesize>>1)) != 0) {
+	if (*(mapaddr + pagesize + (holesize >> 1)) != 0) {
 		CLEANERROR("hole not filled with 0's");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 #ifdef LARGE_FILE
 	if (lseek64(rwfd, sparseoff + e_pageskip * pagesize, SEEK_SET) == -1) {
@@ -232,18 +232,18 @@ main(int argc, char **argv)
 	if (lseek(rwfd, sparseoff + e_pageskip * pagesize, SEEK_SET) == -1) {
 #endif /* LARGE_FILE */
 		CLEANERROR("couldn't lseek back to put e's in hole");
-		anyfail(); /*LTP Port */
+		anyfail();	/*LTP Port */
 	}
 	i = 0;
 	while (i < pagesize && write(rwfd, "e", 1) == 1)
 		i++;
 	if (i != pagesize) {
 		CLEANERROR("couldn't part of hole with e's");
-		anyfail(); /*LTP Port */
+		anyfail();	/*LTP Port */
 	}
 	if (fsync(rwfd) == -1) {
 		CLEANERROR("fsync failed");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 #ifdef LARGE_FILE
 	if (lseek64(rofd, sparseoff, SEEK_SET) == -1) {
@@ -251,47 +251,47 @@ main(int argc, char **argv)
 	if (lseek(rofd, sparseoff, SEEK_SET) == -1) {
 #endif /* LARGE_FILE */
 		CLEANERROR("couldn't lseek to begining to verify contents");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
-	if (munmap(mapaddr, holesize + 2*pagesize) == -1) {
+	if (munmap(mapaddr, holesize + 2 * pagesize) == -1) {
 		CLEANERROR("munmap of tmp file failed");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	/* check file's contents */
 	if (checkchars(rofd, 'a', pagesize)) {
 		CLEANERROR("first page not filled with a's");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	if (checkchars(rofd, '\0', (e_pageskip - 1) * pagesize)) {
 		CLEANERROR("e_skip not filled with 0's");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	if (checkchars(rofd, 'e', pagesize)) {
 		CLEANERROR("part after first 0's not filled with e's");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	if (checkchars(rofd, '\0', holesize - e_pageskip * pagesize)) {
 		CLEANERROR("second hole section not filled with 0's");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
-	if (checkchars(rofd, 'b', (pagesize>>1))) {
+	if (checkchars(rofd, 'b', (pagesize >> 1))) {
 		CLEANERROR("next to last half page not filled with b's");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
-	if (checkchars(rofd, 'c', pagesize + (pagesize>>1))) {
+	if (checkchars(rofd, 'c', pagesize + (pagesize >> 1))) {
 		CLEANERROR("extended fragment not filled with c's");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	if (close(rofd) == -1) {
 		CLEANERROR("second close of rofd failed");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	if (unlink(tmpname) == -1) {
 		CLEANERROR("unlink failed");
-		anyfail(); /* LTP Port */
+		anyfail();	/* LTP Port */
 	}
 	(void)time(&t);
-//	(void)printf("%s: Finished %s", argv[0], ctime(&t));
+//      (void)printf("%s: Finished %s", argv[0], ctime(&t));
 	ok_exit();
 	tst_exit();
 }
@@ -300,8 +300,7 @@ main(int argc, char **argv)
  * 	verrify that the next n characters of file fd are of value val.
  *	0 = success; -1 = failure
  */
-static int
-checkchars(int fd, char val, int n)
+static int checkchars(int fd, char val, int n)
 {
 	int i;
 	char buf;
@@ -315,17 +314,17 @@ checkchars(int fd, char val, int n)
 /*****	**	LTP Port	**	*****/
 int anyfail()
 {
-  tst_resm(TFAIL, "Test failed\n");
-  tst_rmdir();
-  tst_exit();
-        return 0;
+	tst_resm(TFAIL, "Test failed\n");
+	tst_rmdir();
+	tst_exit();
+	return 0;
 }
 
 void ok_exit()
 {
-        tst_resm(TPASS, "Test passed\n");
+	tst_resm(TPASS, "Test passed\n");
 	tst_rmdir();
-        tst_exit();
+	tst_exit();
 }
 
 /*****	**	******		**	*****/

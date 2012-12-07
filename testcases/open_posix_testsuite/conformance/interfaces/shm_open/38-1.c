@@ -20,11 +20,12 @@
 
 #define SHM_NAME "posixtest_38-1"
 
-int main() {
+int main()
+{
 	int fd = 0, count = 0;
 
 	while (fd != -1) {
-		fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+		fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 		count++;
 	}
 	if (errno == EMFILE) {

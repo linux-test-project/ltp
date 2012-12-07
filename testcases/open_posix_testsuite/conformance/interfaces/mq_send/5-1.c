@@ -66,22 +66,24 @@ int main()
 {
 	int pid;
 	char msgrcd[BUFFER];
-        const char *msgptr = MSGSTR;
+	const char *msgptr = MSGSTR;
 	struct mq_attr attr;
-	int unresolved=0;
+	int unresolved = 0;
 	unsigned pri;
 
-        sprintf(gqname, "/mq_send_5-1_%d", getpid());
+	sprintf(gqname, "/mq_send_5-1_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;
 
 	/* Use O_CREAT + O_EXCL to avoid using a previously created queue */
-        gqueue = mq_open(gqname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR, &attr);
-        if (gqueue == (mqd_t)-1) {
+	gqueue =
+	    mq_open(gqname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR,
+		    &attr);
+	if (gqueue == (mqd_t) - 1) {
 		perror("mq_open() did not return success");
-                return PTS_UNRESOLVED;
-        }
+		return PTS_UNRESOLVED;
+	}
 
 	if (sync_pipe_create(sync_pipes) == -1) {
 		perror("sync_pipe_create() did not return success");
@@ -92,12 +94,14 @@ int main()
 		/* child here */
 		int i;
 
-		for (i=0; i<MAXMSG+1; i++) {
+		for (i = 0; i < MAXMSG + 1; i++) {
 			mq_send(gqueue, msgptr, strlen(msgptr), 1);
 
 			if (sync_pipe_notify(sync_pipes) < 0) {
-				perror("sync_pipe_notify() did not return success");
-				return cleanup_for_exit(gqueue, gqname, PTS_UNRESOLVED);
+				perror
+				    ("sync_pipe_notify() did not return success");
+				return cleanup_for_exit(gqueue, gqname,
+							PTS_UNRESOLVED);
 			}
 		}
 	} else {
@@ -109,14 +113,15 @@ int main()
 			/* set a long timeout since we are expecting success */
 			if (sync_pipe_wait_select(sync_pipes, 60) != 0) {
 				printf("sync_pipe_wait\n");
-				return cleanup_for_exit(gqueue, gqname, PTS_FAIL);
+				return cleanup_for_exit(gqueue, gqname,
+							PTS_FAIL);
 			}
 		}
 
 		/* if we don't timeout here then we got too many messages, child never blocked */
 		if (sync_pipe_wait_select(sync_pipes, 1) != -ETIMEDOUT) {
 			printf("Child never blocked\n");
-			kill(pid, SIGKILL); //kill child
+			kill(pid, SIGKILL);	//kill child
 			return cleanup_for_exit(gqueue, gqname, PTS_FAIL);
 		}
 
@@ -128,13 +133,13 @@ int main()
 
 		/* child has 5 seconds to call mq_send() again and notify us */
 		if (sync_pipe_wait_select(sync_pipes, 5) == -ETIMEDOUT) {
-                        /*
-                         * mq_send didn't unblock
-                         */
-                        kill(pid, SIGKILL); //kill child
-                        printf("mq_send() didn't appear to complete\n");
+			/*
+			 * mq_send didn't unblock
+			 */
+			kill(pid, SIGKILL);	//kill child
+			printf("mq_send() didn't appear to complete\n");
 			return cleanup_for_exit(gqueue, gqname, PTS_FAIL);
-                }
+		}
 
 		return cleanup_for_exit(gqueue, gqname, PTS_PASS);
 	}

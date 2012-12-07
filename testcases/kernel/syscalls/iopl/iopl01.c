@@ -131,7 +131,7 @@ void setup()
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
-	 }
+	}
 
 	TEST_PAUSE;
 

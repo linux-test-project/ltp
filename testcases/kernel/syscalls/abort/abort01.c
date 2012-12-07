@@ -118,14 +118,15 @@ int main(int argc, char *argv[])
 		}
 		if (kidpid < 0)
 			if (!instress())
-				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "fork failed");
 		count = 0;
 		while ((child = wait(&status)) > 0)
 			count++;
 		if (count != 1) {
 			tst_brkm(TBROK, cleanup,
-			    "wrong # children waited on; got %d, expected 1",
-			    count);
+				 "wrong # children waited on; got %d, expected 1",
+				 count);
 		}
 		if (WIFSIGNALED(status)) {
 
@@ -141,8 +142,8 @@ int main(int argc, char *argv[])
 #ifdef WCOREDUMP
 		if (core == 0) {
 			tst_brkm(TFAIL, cleanup,
-			    "Child did not dump core; exit code = %d, "
-			    "signal = %d", ex, sig);
+				 "Child did not dump core; exit code = %d, "
+				 "signal = %d", ex, sig);
 		} else if (core != -1)
 			tst_resm(TPASS, "abort dumped core");
 #endif
@@ -151,8 +152,8 @@ int main(int argc, char *argv[])
 			tst_resm(TPASS, "abort raised SIGIOT");
 		else {
 			tst_brkm(TFAIL, cleanup,
-			    "Child did not raise SIGIOT (%d); exit code = %d, "
-			    "signal = %d", SIGIOT, ex, sig);
+				 "Child did not raise SIGIOT (%d); exit code = %d, "
+				 "signal = %d", SIGIOT, ex, sig);
 		}
 
 	}

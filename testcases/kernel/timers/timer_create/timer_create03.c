@@ -84,18 +84,16 @@ static struct sigevent evp, *evp_ptr;
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 }
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc, i;
 	char *msg;
@@ -106,8 +104,7 @@ main(int ac, char **av)
 		"SIGEV_NONE"
 	};
 
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
-			(char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -121,12 +118,12 @@ main(int ac, char **av)
 
 			setup_test(i);
 			TEST(syscall(__NR_timer_create, CLOCK_MONOTONIC,
-					evp_ptr, &created_timer_id));
+				     evp_ptr, &created_timer_id));
 
 			tst_resm((TEST_RETURN == 0 ? TPASS : TFAIL | TTERRNO),
-				"%s with notification type = %s",
-				(TEST_RETURN == 0 ? "passed" : "failed"),
-				message[i]);
+				 "%s with notification type = %s",
+				 (TEST_RETURN == 0 ? "passed" : "failed"),
+				 message[i]);
 
 		}
 
@@ -137,8 +134,7 @@ main(int ac, char **av)
 }
 
 /* setup_test() - sets up individual test */
-void
-setup_test(int option)
+void setup_test(int option)
 {
 	switch (option) {
 	case 0:
@@ -151,8 +147,8 @@ setup_test(int option)
 		evp_ptr = NULL;
 		break;
 	case 2:
-		evp.sigev_value =  (sigval_t) 0;
-		evp.sigev_signo = SIGALRM; /* any will do */
+		evp.sigev_value = (sigval_t) 0;
+		evp.sigev_signo = SIGALRM;	/* any will do */
 		evp.sigev_notify = SIGEV_NONE;
 		evp_ptr = &evp;
 		break;
@@ -160,8 +156,7 @@ setup_test(int option)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

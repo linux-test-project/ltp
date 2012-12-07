@@ -36,14 +36,14 @@
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
 #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <sys/wait.h>
- #include <errno.h>
+#include <errno.h>
 
 #include <signal.h>
 
@@ -51,7 +51,7 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -82,7 +82,7 @@
 /********************************************************************************************/
 
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -95,70 +95,62 @@ int main(int argc, char * argv[])
 	/* block SIGUSR1 and SIGUSR2 */
 	ret = sigemptyset(&mask);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to initialize signal set");
 	}
 
 	ret = sigaddset(&mask, SIGUSR1);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to add SIGUSR1 to signal set");
 	}
 
 	ret = sigaddset(&mask, SIGUSR2);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to add SIGUSR2 to signal set");
 	}
 
 	ret = sigprocmask(SIG_BLOCK, &mask, NULL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Sigprocmask failed");
 	}
 
 	/* Make the signals pending */
 	ret = kill(getpid(), SIGUSR1);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "failed to kill with SIGUSR1");
 	}
 
 	ret = kill(getpid(), SIGUSR2);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "failed to kill with SIGUSR2");
 	}
 
-	do
-	{
+	do {
 		ret = sigpending(&pending);
 
-		if (ret != 0)
-		{
-			UNRESOLVED(errno, "failed to examine pending signal set");
+		if (ret != 0) {
+			UNRESOLVED(errno,
+				   "failed to examine pending signal set");
 		}
 
 		ret = sigismember(&pending, SIGUSR1);
 
-		if (ret < 0)
-		{
-			UNRESOLVED(errno, "Unable to check signal USR1 presence");
+		if (ret < 0) {
+			UNRESOLVED(errno,
+				   "Unable to check signal USR1 presence");
 		}
 
-		if (ret == 1)
-		{
+		if (ret == 1) {
 			ret = sigismember(&pending, SIGUSR2);
 
-			if (ret < 0)
-			{
-				UNRESOLVED(errno, "Unable to check signal USR2 presence");
+			if (ret < 0) {
+				UNRESOLVED(errno,
+					   "Unable to check signal USR2 presence");
 			}
 		}
 	}
@@ -173,46 +165,42 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-	if (child == -1)
-	{
+	if (child == -1) {
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == 0)
-	{
+	if (child == 0) {
 		/* Examine the current blocked signal set. USR1 & USR2 shall be present */
 		ret = sigprocmask(0, NULL, &mask);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Sigprocmask failed in child");
 		}
 
 		ret = sigismember(&mask, SIGUSR1);
 
-		if (ret < 0)
-		{
-			UNRESOLVED(errno, "Unable to check signal USR1 presence");
+		if (ret < 0) {
+			UNRESOLVED(errno,
+				   "Unable to check signal USR1 presence");
 		}
 
-		if (ret == 0)
-		{
-			FAILED("The new process does not mask SIGUSR1 as its parent");
+		if (ret == 0) {
+			FAILED
+			    ("The new process does not mask SIGUSR1 as its parent");
 		}
 
 		ret = sigismember(&mask, SIGUSR2);
 
-		if (ret < 0)
-		{
-			UNRESOLVED(errno, "Unable to check signal USR2 presence");
+		if (ret < 0) {
+			UNRESOLVED(errno,
+				   "Unable to check signal USR2 presence");
 		}
 
-		if (ret == 0)
-		{
-			FAILED("The new process does not mask SIGUSR2 as its parent");
+		if (ret == 0) {
+			FAILED
+			    ("The new process does not mask SIGUSR2 as its parent");
 		}
-
 #if VERBOSE > 0
 		output("SIGUSR1 and SIGUSR2 are blocked in child\n");
 
@@ -221,35 +209,34 @@ int main(int argc, char * argv[])
 		/* Examine pending signals */
 		ret = sigpending(&pending);
 
-		if (ret != 0)
-		{
-			UNRESOLVED(errno, "failed to examine pending signal set in child");
+		if (ret != 0) {
+			UNRESOLVED(errno,
+				   "failed to examine pending signal set in child");
 		}
 
 		ret = sigismember(&pending, SIGUSR1);
 
-		if (ret < 0)
-		{
-			UNRESOLVED(errno, "Unable to check signal USR1 presence");
+		if (ret < 0) {
+			UNRESOLVED(errno,
+				   "Unable to check signal USR1 presence");
 		}
 
-		if (ret != 0)
-		{
-			FAILED("The new process was created with SIGUSR1 pending");
+		if (ret != 0) {
+			FAILED
+			    ("The new process was created with SIGUSR1 pending");
 		}
 
 		ret = sigismember(&pending, SIGUSR2);
 
-		if (ret < 0)
-		{
-			UNRESOLVED(errno, "Unable to check signal USR2 presence");
+		if (ret < 0) {
+			UNRESOLVED(errno,
+				   "Unable to check signal USR2 presence");
 		}
 
-		if (ret != 0)
-		{
-			FAILED("The new process was created with SIGUSR2 pending");
+		if (ret != 0) {
+			FAILED
+			    ("The new process was created with SIGUSR2 pending");
 		}
-
 #if VERBOSE > 0
 		output("SIGUSR1 and SIGUSR2 are not pending in child\n");
 
@@ -262,13 +249,11 @@ int main(int argc, char * argv[])
 	/* Parent joins the child */
 	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child)
-	{
+	if (ctl != child) {
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
-	{
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS)) {
 		FAILED("Child exited abnormally");
 	}
 

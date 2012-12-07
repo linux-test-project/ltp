@@ -76,9 +76,9 @@
  *
  * parse_args: parse command line arguments
  */
-void parse_args (int, char **);
-void multiply_matrices ();
-void signal_handler ();
+void parse_args(int, char **);
+void multiply_matrices();
+void signal_handler();
 
 /*
  * Global variables:
@@ -91,10 +91,10 @@ void signal_handler ();
  *
  * priority: process type (fixed priority, variable priority)
  */
-int	verbose   = 0;
-int	debug     = 0;
-int	signaled  = 0;
-char 	*priority = DEFAULT_PRIORITY_TYPE;
+int verbose = 0;
+int debug = 0;
+int signaled = 0;
+char *priority = DEFAULT_PRIORITY_TYPE;
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -103,37 +103,38 @@ char 	*priority = DEFAULT_PRIORITY_TYPE;
 | Function:  ...                                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	long	start_time;      /* time at start of testcase */
-	int	i;
+	long start_time;	/* time at start of testcase */
+	int i;
 
 	/*
 	 * Setup signal handler & setup alarm so we do not loop forever...
 	 */
-	signal (SIGUSR1, signal_handler);
-	signal (SIGALRM, signal_handler);
-	alarm  (600);	/* wait 10 minutes before aborting */
+	signal(SIGUSR1, signal_handler);
+	signal(SIGALRM, signal_handler);
+	alarm(600);		/* wait 10 minutes before aborting */
 
 	/*
 	 * Process command line arguments...
 	 */
-	parse_args (argc, argv);
-	if (verbose) printf ("%s: Scheduler TestSuite program\n\n", *argv);
+	parse_args(argc, argv);
+	if (verbose)
+		printf("%s: Scheduler TestSuite program\n\n", *argv);
 	if (debug) {
-		printf ("\tpriority:       %s\n", priority);
+		printf("\tpriority:       %s\n", priority);
 	}
 
 	/*
 	 * Adjust the priority of this process if the real time flag is set
 	 */
-	if (!strcmp (priority, "fixed")) {
+	if (!strcmp(priority, "fixed")) {
 #ifndef __linux__
-                if (setpri (0, DEFAULT_PRIORITY) < 0)
-                        sys_error ("setpri failed", __FILE__, __LINE__);
+		if (setpri(0, DEFAULT_PRIORITY) < 0)
+			sys_error("setpri failed", __FILE__, __LINE__);
 #else
-                if (setpriority(PRIO_PROCESS, 0, 0) < 0)
-                        sys_error ("setpri failed", __FILE__, __LINE__);
+		if (setpriority(PRIO_PROCESS, 0, 0) < 0)
+			sys_error("setpri failed", __FILE__, __LINE__);
 #endif
 	}
 
@@ -141,25 +142,28 @@ int main (int argc, char **argv)
 	 * Continuously multiply matrix as time permits...
 	 */
 	i = 0;
-	start_time = time ((long *) 0);
+	start_time = time((long *)0);
 
 	/*
 	 * Continuously read through file until interrupted...
 	 */
-	if (debug) printf ("\n");
+	if (debug)
+		printf("\n");
 	while (!signaled) {
 		if (debug) {
-			printf ("\r\tmultiplying matrix [%d]", i++);
-			fflush (stdout);
+			printf("\r\tmultiplying matrix [%d]", i++);
+			fflush(stdout);
 		}
-		multiply_matrices ();
+		multiply_matrices();
 	}
-	if (debug) printf ("\n");
+	if (debug)
+		printf("\n");
 
 	/*
 	 * Exit with success!
 	 */
-	if (verbose) printf ("\nsuccessful!\n");
+	if (verbose)
+		printf("\nsuccessful!\n");
 	return (0);
 }
 
@@ -171,31 +175,31 @@ int main (int argc, char **argv)
 |            them together.                                            |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void multiply_matrices ()
+void multiply_matrices()
 {
-	int     i, j, k; /* various indeces to access the arrays */
-	float   matrix_1 [MATRIX_SIZE] [MATRIX_SIZE];
-	float   matrix_2 [MATRIX_SIZE] [MATRIX_SIZE];
-	float   matrix_3 [MATRIX_SIZE] [MATRIX_SIZE];
+	int i, j, k;		/* various indeces to access the arrays */
+	float matrix_1[MATRIX_SIZE][MATRIX_SIZE];
+	float matrix_2[MATRIX_SIZE][MATRIX_SIZE];
+	float matrix_3[MATRIX_SIZE][MATRIX_SIZE];
 
 	/* first, fill the two matrices to be multiplied with random values */
 
-	for (i=0; i < MATRIX_SIZE; i++) {
-		for (j=0; j < MATRIX_SIZE; j++) {
-			matrix_1 [i][j] = (float) (rand() % 100);
-			matrix_2 [i][j] = (float) (rand() % 100);
+	for (i = 0; i < MATRIX_SIZE; i++) {
+		for (j = 0; j < MATRIX_SIZE; j++) {
+			matrix_1[i][j] = (float)(rand() % 100);
+			matrix_2[i][j] = (float)(rand() % 100);
 		}
 	}
 
 	/*
 	 * Now multiply the two matrices
 	 */
-	for (i=0; i < MATRIX_SIZE; i++) {
-		for (j=0; j < MATRIX_SIZE; j++) {
-			matrix_3 [i][j] = 0.0;	/* clear the element first */
-			for (k=0; k < MATRIX_SIZE; k++)
-				matrix_3 [i][j] +=
-					matrix_1 [i][k] * matrix_2 [k][j];
+	for (i = 0; i < MATRIX_SIZE; i++) {
+		for (j = 0; j < MATRIX_SIZE; j++) {
+			matrix_3[i][j] = 0.0;	/* clear the element first */
+			for (k = 0; k < MATRIX_SIZE; k++)
+				matrix_3[i][j] +=
+				    matrix_1[i][k] * matrix_2[k][j];
 		}
 	}
 }
@@ -207,16 +211,17 @@ void multiply_matrices ()
 | Function:  ...                                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void signal_handler (int signal)
+void signal_handler(int signal)
 {
 	if (signal == SIGUSR1) {
 		signaled++;
-		if (debug) printf ("\n\t<< caught SIGUSR1 interrupt>>\n");
+		if (debug)
+			printf("\n\t<< caught SIGUSR1 interrupt>>\n");
 	} else if (signal == SIGALRM) {
-		error ("Failed to receive SIGUSR1 signal before timeout!",
-			__FILE__, __LINE__);
+		error("Failed to receive SIGUSR1 signal before timeout!",
+		      __FILE__, __LINE__);
 	} else
-		error ("received unexpected signal", __FILE__, __LINE__);
+		error("received unexpected signal", __FILE__, __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -234,26 +239,24 @@ void signal_handler (int signal)
 |            [-d]           enable debugging messages                  |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	opt;
-	int 	pflg = 0;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int opt;
+	int pflg = 0;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	/*
 	 * Parse command line options.
 	 */
-        if (argc < 2) {
-                fprintf (stderr, USAGE, program_name);
-                exit (0);
-        }
+	if (argc < 2) {
+		fprintf(stderr, USAGE, program_name);
+		exit(0);
+	}
 
-	while ((opt = getopt(argc, argv, "p:vd")) != EOF)
-	{
-		switch (opt)
-		{
+	while ((opt = getopt(argc, argv, "p:vd")) != EOF) {
+		switch (opt) {
 		case 'p':	/* process type */
 			pflg++;
 			priority = optarg;
@@ -273,13 +276,13 @@ void parse_args (int argc, char **argv)
 
 	/*
 	 * Check percentage, execution time and process slots...
- 	 */
+	 */
 	if (pflg) {
-		if (strcmp (priority, "fixed") && strcmp (priority, "variable"))
+		if (strcmp(priority, "fixed") && strcmp(priority, "variable"))
 			errflag++;
 	}
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }

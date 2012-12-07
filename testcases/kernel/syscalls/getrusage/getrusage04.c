@@ -65,8 +65,8 @@ static char *factor_str;
 static long factor_nr = 1;
 
 option_t child_options[] = {
-	{ "m:", &opt_factor, &factor_str },
-	{ NULL, NULL,         NULL }
+	{"m:", &opt_factor, &factor_str},
+	{NULL, NULL, NULL}
 };
 
 static void fusage(void);
@@ -99,10 +99,11 @@ int main(int argc, char *argv[])
 		 "increment (1000+%ldus)!", factor_nr, BIAS_MAX * factor_nr);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0; i = 0;
+		Tst_count = 0;
+		i = 0;
 		SAFE_GETRUSAGE(cleanup, RUSAGE_THREAD, &usage);
 		tst_resm(TINFO, "utime:%12luus; stime:%12luus",
-			usage.ru_utime.tv_usec, usage.ru_stime.tv_usec);
+			 usage.ru_utime.tv_usec, usage.ru_stime.tv_usec);
 		ulast = usage.ru_utime.tv_usec;
 		slast = usage.ru_stime.tv_usec;
 
@@ -113,21 +114,21 @@ int main(int argc, char *argv[])
 			if (udelta > 0 || sdelta > 0) {
 				i++;
 				tst_resm(TINFO, "utime:%12luus; stime:%12luus",
-					    usage.ru_utime.tv_usec,
-					    usage.ru_stime.tv_usec);
-				if (udelta > 1000+(BIAS_MAX * factor_nr)) {
+					 usage.ru_utime.tv_usec,
+					 usage.ru_stime.tv_usec);
+				if (udelta > 1000 + (BIAS_MAX * factor_nr)) {
 					sprintf(msg_string,
 						"utime increased > %ldus:",
 						1000 + BIAS_MAX * factor_nr);
 					tst_brkm(TFAIL, cleanup, msg_string,
-						    " delta = %luus", udelta);
+						 " delta = %luus", udelta);
 				}
-				if (sdelta > 1000+(BIAS_MAX * factor_nr)) {
+				if (sdelta > 1000 + (BIAS_MAX * factor_nr)) {
 					sprintf(msg_string,
 						"stime increased > %ldus:",
 						1000 + BIAS_MAX * factor_nr);
 					tst_brkm(TFAIL, cleanup, msg_string,
-						    " delta = %luus", sdelta);
+						 " delta = %luus", sdelta);
 				}
 			}
 			ulast = usage.ru_utime.tv_usec;
@@ -147,8 +148,7 @@ static void fusage(void)
 
 static void busyloop(long wait)
 {
-	while (wait--)
-		;
+	while (wait--) ;
 }
 
 static void setup(void)

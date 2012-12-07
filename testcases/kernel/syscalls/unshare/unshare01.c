@@ -97,9 +97,9 @@
 #include "config.h"
 
 /* Global Variables */
-char *TCID = "unshare01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+char *TCID = "unshare01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 #ifdef HAVE_UNSHARE
 
@@ -121,7 +121,8 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -145,14 +146,16 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	pid_t pid1;
 	int lc;
 	int rval;
@@ -167,14 +170,15 @@ int main(int ac, char **av) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			pid1 = fork();    //call to fork()
+			pid1 = fork();	//call to fork()
 			if (pid1 == -1) {
-				tst_brkm(TFAIL|TERRNO, cleanup, "fork failed");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "fork failed");
 			} else if (pid1 == 0) {
 				switch (unshare(CLONE_FILES)) {
 				case 0:
 					printf("unshare with CLONE_FILES call "
-					    "succeeded\n");
+					       "succeeded\n");
 					rval = 0;
 					break;
 				case -1:
@@ -188,31 +192,31 @@ int main(int ac, char **av) {
 				exit(rval);
 			} else {
 				if (wait(&rval) == -1)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "wait failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "wait failed");
 				if (rval != 0 && WIFEXITED(rval)) {
 					switch (WEXITSTATUS(rval)) {
 					case 1:
 						tst_brkm(TCONF, cleanup,
-						    "unshare not supported in "
-						    "kernel");
+							 "unshare not supported in "
+							 "kernel");
 						break;
 					default:
 						tst_brkm(TFAIL, cleanup,
-						    "unshare failed");
+							 "unshare failed");
 					}
 				}
 			}
 
 			pid1 = fork();
 			if (pid1 == -1) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-				    "fork failed");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "fork failed");
 			} else if (pid1 == 0) {
 				switch (unshare(CLONE_FS)) {
 				case 0:
 					printf("unshare with CLONE_FS call "
-					    "succeeded\n");
+					       "succeeded\n");
 					rval = 0;
 					break;
 				case -1:
@@ -226,31 +230,31 @@ int main(int ac, char **av) {
 				exit(rval);
 			} else {
 				if (wait(&rval) == -1)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "wait failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "wait failed");
 				if (rval != 0 && WIFEXITED(rval)) {
 					switch (WEXITSTATUS(rval)) {
 					case 1:
 						tst_brkm(TCONF, cleanup,
-						    "unshare not supported in "
-						    "kernel");
+							 "unshare not supported in "
+							 "kernel");
 						break;
 					default:
 						tst_brkm(TFAIL, cleanup,
-						    "unshare failed");
+							 "unshare failed");
 					}
 				}
 			}
 
 			pid1 = fork();
 			if (pid1 == -1) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-				    "fork() failed.");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "fork() failed.");
 			} else if (pid1 == 0) {
 				switch (unshare(CLONE_NEWNS)) {
 				case 0:
 					printf("unshare call with CLONE_NEWNS "
-					    "succeeded\n");
+					       "succeeded\n");
 					rval = 0;
 					break;
 				case -1:
@@ -264,18 +268,18 @@ int main(int ac, char **av) {
 				exit(rval);
 			} else {
 				if (wait(&rval) == -1)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "wait failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "wait failed");
 				if (rval != 0 && WIFEXITED(rval)) {
 					switch (WEXITSTATUS(rval)) {
 					case 1:
 						tst_brkm(TCONF, cleanup,
-						    "unshare not supported in "
-						    "kernel");
+							 "unshare not supported in "
+							 "kernel");
 						break;
 					default:
 						tst_brkm(TFAIL, cleanup,
-						    "unshare failed");
+							 "unshare failed");
 					}
 
 				}

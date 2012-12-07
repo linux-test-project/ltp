@@ -34,23 +34,23 @@
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
 #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <sys/wait.h>
- #include <errno.h>
+#include <errno.h>
 
 #include <signal.h>
- #include <time.h>
+#include <time.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -86,17 +86,16 @@ int notified;
 /* Notification routine */
 void notification(union sigval sv)
 {
-	if (sv.sival_int != SIGUSR1)
-	{
+	if (sv.sival_int != SIGUSR1) {
 		output("Got signal %d, expected %d\n", sv.sival_int, SIGUSR1);
 		UNRESOLVED(1, "Unexpected notification");
 	}
 
-	notified = (int) getpid();
+	notified = (int)getpid();
 }
 
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -117,12 +116,11 @@ int main(int argc, char * argv[])
 	se.sigev_signo = 0;
 	se.sigev_value.sival_int = SIGUSR1;
 	se.sigev_notify_function = &notification;
-	se.sigev_notify_attributes = NULL; /* default detached thread */
+	se.sigev_notify_attributes = NULL;	/* default detached thread */
 
 	ret = timer_create(CLOCK_REALTIME, &se, &tmr);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to create a timer");
 	}
 
@@ -133,33 +131,29 @@ int main(int argc, char * argv[])
 
 	it.it_value.tv_sec = 0;
 
-	it.it_value.tv_nsec = 500000000; /* 0.5 sec */
+	it.it_value.tv_nsec = 500000000;	/* 0.5 sec */
 
 	ret = timer_settime(tmr, 0, &it, NULL);
 
 	/* Create the child */
 	child = fork();
 
-	if (child == -1)
-	{
+	if (child == -1) {
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == 0)
-	{
+	if (child == 0) {
 
 		sleep(1);
 
-		if (notified != 0)
-		{
-			if (notified == (int) getpid())
-			{
-				FAILED("Per-Process Timer was inherited in child");
-			}
-			else
-			{
-				output("Notification occured before the child forked");
+		if (notified != 0) {
+			if (notified == (int)getpid()) {
+				FAILED
+				    ("Per-Process Timer was inherited in child");
+			} else {
+				output
+				    ("Notification occured before the child forked");
 			}
 		}
 
@@ -170,20 +164,18 @@ int main(int argc, char * argv[])
 	/* Parent joins the child */
 	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child)
-	{
+	if (ctl != child) {
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
-	{
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS)) {
 		FAILED("Child exited abnormally");
 	}
 
-	if (notified != (int) getpid())
-	{
+	if (notified != (int)getpid()) {
 		output("Notified value: %d\n", notified);
-		UNRESOLVED(-1, "No notification occured -- per process timers do not work?");
+		UNRESOLVED(-1,
+			   "No notification occured -- per process timers do not work?");
 	}
 
 	/* Test passed */

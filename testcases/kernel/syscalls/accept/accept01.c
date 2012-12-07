@@ -103,7 +103,6 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. *
 
 int exp_enos[] = { EBADF, ENOTSOCK, EINVAL, EOPNOTSUPP, 0 };
 
-
 int main(int ac, char *av[])
 {
 	int lc;
@@ -167,7 +166,7 @@ void setup0(void)
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
 	else if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "error opening /dev/null");
+		tst_brkm(TBROK | TERRNO, cleanup, "error opening /dev/null");
 }
 
 void cleanup0(void)

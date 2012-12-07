@@ -26,8 +26,10 @@ int rc;
 
 void sig_handler()
 {
-	printf("main: blocked on barrier wait with an un-initializied barrier object.\n");
-	printf("Test PASSED: Note*: Expected EINVAL when calling this funtion with an un-initialized barrier object, but standard says 'may' fail.\n");
+	printf
+	    ("main: blocked on barrier wait with an un-initializied barrier object.\n");
+	printf
+	    ("Test PASSED: Note*: Expected EINVAL when calling this funtion with an un-initialized barrier object, but standard says 'may' fail.\n");
 	exit(PTS_PASS);
 }
 
@@ -52,14 +54,12 @@ int main()
 
 	rc = pthread_barrier_wait(&barrier);
 
-	if (rc == EINVAL)
-	{
+	if (rc == EINVAL) {
 		printf("Test PASSED\n");
-	}
-	else
-	{
-		printf("return code : %d, %s\n" , rc, strerror(rc));
-		printf("Test PASSED: Note*: Expected EINVAL when calling this funtion with an un-initialized barrier object, but standard says 'may' fail.\n");
+	} else {
+		printf("return code : %d, %s\n", rc, strerror(rc));
+		printf
+		    ("Test PASSED: Note*: Expected EINVAL when calling this funtion with an un-initialized barrier object, but standard says 'may' fail.\n");
 	}
 
 	return PTS_PASS;

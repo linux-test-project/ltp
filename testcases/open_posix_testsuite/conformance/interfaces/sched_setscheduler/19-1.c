@@ -26,25 +26,19 @@ struct unique {
 } sym[] = {
 
 	{
-		SCHED_FIFO, "SCHED_FIFO"
-	},
-	{
-		SCHED_RR, "SCHED_RR"
-	},
+	SCHED_FIFO, "SCHED_FIFO"}, {
+	SCHED_RR, "SCHED_RR"},
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1) || defined(_POSIX_THREAD_SPORADIC_SERVER)&&(_POSIX_THREAD_SPORADIC_SERVER != -1)
 	{
-		SCHED_SPORADIC,"SCHED_SPORADIC"
-	},
+	SCHED_SPORADIC, "SCHED_SPORADIC"},
 #endif
 	{
-		SCHED_OTHER, "SCHED_OTHER"
-	},
-	{
-		0, 0
-	}
+	SCHED_OTHER, "SCHED_OTHER"}, {
+	0, 0}
 };
 
-int main() {
+int main()
+{
 	int policy, invalid_priority, tmp, result = PTS_PASS;
 	struct sched_param param;
 
@@ -59,7 +53,8 @@ int main() {
 
 		invalid_priority = sched_get_priority_max(policy);
 		if (invalid_priority == -1) {
-			perror("An error occurs when calling sched_get_priority_max()");
+			perror
+			    ("An error occurs when calling sched_get_priority_max()");
 			return PTS_UNRESOLVED;
 		}
 
@@ -75,7 +70,8 @@ int main() {
 			printf("  The returned code is not -1.\n");
 			result = PTS_FAIL;
 		} else if (errno == EPERM) {
-			printf("  This process does not have the permission to set its own scheduling policy.\n  Try to launch this test as root.\n");
+			printf
+			    ("  This process does not have the permission to set its own scheduling policy.\n  Try to launch this test as root.\n");
 			if (result != PTS_FAIL) {
 				result = PTS_UNRESOLVED;
 			}

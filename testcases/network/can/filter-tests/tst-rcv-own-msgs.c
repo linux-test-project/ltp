@@ -59,7 +59,6 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-
 #define max(a,b) (a > b ? a : b)
 
 struct rxs {
@@ -71,7 +70,7 @@ struct rxs test_sockets(int s, int t, canid_t can_id)
 {
 	fd_set rdfs;
 	struct timeval tv;
-	int m = max(s,t)+1;
+	int m = max(s, t) + 1;
 	int have_rx = 1;
 	struct can_frame frame;
 	struct rxs rx;
@@ -92,7 +91,7 @@ struct rxs test_sockets(int s, int t, canid_t can_id)
 		FD_SET(s, &rdfs);
 		FD_SET(t, &rdfs);
 		tv.tv_sec = 0;
-		tv.tv_usec = 50000; /* 50ms timeout */
+		tv.tv_usec = 50000;	/* 50ms timeout */
 		have_rx = 0;
 
 		ret = select(m, &rdfs, NULL, NULL, &tv);
@@ -147,7 +146,6 @@ void setopts(int s, int loopback, int recv_own_msgs)
 	printf("check loopback %d recv_own_msgs %d ... ",
 	       loopback, recv_own_msgs);
 }
-
 
 int main(int argc, char **argv)
 {

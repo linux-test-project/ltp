@@ -162,7 +162,7 @@ int main(int ac, char **av)
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	 }
+	}
 
 	/*
 	 * Invoke setup function to call individual test setup functions
@@ -249,7 +249,7 @@ void setup()
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
+		tst_resm(TINFO | TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
 	tst_tmpdir();
 
@@ -296,23 +296,23 @@ int setup1()
 
 	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-	 }
+	}
 
 	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 }
+	}
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 }
+	}
 
 	/* Modify mode permissions on test directory */
 	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	 }
+	}
 	return 0;
 }
 
@@ -328,18 +328,18 @@ int setup2()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-	 }
+	}
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE2, errno, strerror(errno));
-	 }
+	}
 
 	if (symlink(TEST_FILE2, SYM_FILE2) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "symlink() Fails to create %s in setup2, error=%d",
 			 SYM_FILE2, errno);
-	 }
+	}
 	return 0;
 }
 
@@ -377,11 +377,11 @@ int setup3()
 		tst_brkm(TBROK, cleanup,
 			 "open(2) on t_file failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 }
+	}
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup, "close(t_file) Failed, errno=%d : %s",
 			 errno, strerror(errno));
-	 }
+	}
 	return 0;
 }
 

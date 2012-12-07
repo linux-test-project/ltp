@@ -9,41 +9,44 @@
 #include <stdio.h>
 #include "alloc.h"
 
-void *xcalloc(void *pointer, int size) {
-    void * ret;
-    if (pointer)
-        free(pointer);
-    if (!(ret = calloc(1, size))) {
-        fprintf(stderr, "xcalloc: allocation error, size = %d\n", size);
-        exit(1);
-    }
-    return ret;
+void *xcalloc(void *pointer, int size)
+{
+	void *ret;
+	if (pointer)
+		free(pointer);
+	if (!(ret = calloc(1, size))) {
+		fprintf(stderr, "xcalloc: allocation error, size = %d\n", size);
+		exit(1);
+	}
+	return ret;
 }
 
-void *xmalloc(unsigned int size) {
-    void *p;
+void *xmalloc(unsigned int size)
+{
+	void *p;
 
-    if (size == 0)
-        ++size;
-    p = malloc(size);
-    if (!p) {
-	fprintf(stderr, "xmalloc: malloc(%d) failed", size);
-	perror(NULL);
-	exit(1);
-    }
-    return(p);
+	if (size == 0)
+		++size;
+	p = malloc(size);
+	if (!p) {
+		fprintf(stderr, "xmalloc: malloc(%d) failed", size);
+		perror(NULL);
+		exit(1);
+	}
+	return (p);
 }
 
-void *xrealloc(void *oldp, unsigned int size) {
-    void *p;
+void *xrealloc(void *oldp, unsigned int size)
+{
+	void *p;
 
-    if (size == 0)
-        ++size;
-    p = realloc(oldp, size);
-    if (!p) {
-	fprintf(stderr, "xrealloc: realloc(%d) failed", size);
-	perror(NULL);
-	exit(1);
-    }
-    return(p);
+	if (size == 0)
+		++size;
+	p = realloc(oldp, size);
+	if (!p) {
+		fprintf(stderr, "xrealloc: realloc(%d) failed", size);
+		perror(NULL);
+		exit(1);
+	}
+	return (p);
 }

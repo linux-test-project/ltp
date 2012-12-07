@@ -81,22 +81,22 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'l':
-			latency_threshold = strtoull(v, NULL, 0);
-			break;
-		case 'h':
-			usage();
-			exit(0);
-		default:
-			handled = 0;
-			break;
+	case 'l':
+		latency_threshold = strtoull(v, NULL, 0);
+		break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
 
 #if 0
 /* Set up a signal handler */
-int rt_setsighandler(int signum, void(*handler)(int))
+int rt_setsighandler(int signum, void (*handler) (int))
 {
 	struct sigaction sa;
 	memset(&sa, 0, sizeof(sa));
@@ -159,7 +159,7 @@ void *signal_receiving_thread(void *arg)
 	for (i = 0; i < ITERATIONS; i++) {
 		sigwait(&set, &sig);
 		end = rt_gettime();
-		delta = (end - begin)/NS_PER_US;
+		delta = (end - begin) / NS_PER_US;
 		rec.x = i;
 		rec.y = delta;
 		stats_container_append(&dat, rec);
@@ -170,7 +170,8 @@ void *signal_receiving_thread(void *arg)
 		if (delta > max)
 			max = delta;
 
-		if (delta > pass_criteria) fail++;
+		if (delta > pass_criteria)
+			fail++;
 
 		debug(DBG_INFO, "Iteration %d: Took %ld us. Max = %ld us, "
 		      "Min = %ld us\n", i, delta, max, min);
@@ -190,8 +191,9 @@ void *signal_receiving_thread(void *arg)
 		latency_trace_stop();
 
 		if (i != ITERATIONS) {
-			printf("Latency threshold (%luus) exceeded at iteration %d\n",
-			       latency_threshold, i);
+			printf
+			    ("Latency threshold (%luus) exceeded at iteration %d\n",
+			     latency_threshold, i);
 			fflush(stdout);
 			buffer_print();
 			latency_trace_print();
@@ -223,35 +225,41 @@ void *signal_receiving_thread(void *arg)
 
 void *signal_sending_thread(void *arg)
 {
-	int target_thread = (intptr_t)((struct thread *)arg)->arg;
+	int target_thread = (intptr_t) ((struct thread *)arg)->arg;
 	int i, ret;
 
 	debug(DBG_INFO, "Signal sending thread: target thread id =%d\n",
 	      (int)PTHREADOF(target_thread));
 
 	/* Wait for the receiving thread to initialize */
-	while (!atomic_get(&flag)) {usleep(100);};
+	while (!atomic_get(&flag)) {
+		usleep(100);
+	};
 	atomic_set(0, &flag);
 
 	/* Warm up */
-	for (i=0; i<5; i++) {
+	for (i = 0; i < 5; i++) {
 
 		debug(DBG_DEBUG, "Sending signal (Warm up). Loopcnt = %d\n", i);
 
-		if ((ret = pthread_kill(PTHREADOF(target_thread), SIGNALNUMBER))) {
+		if ((ret =
+		     pthread_kill(PTHREADOF(target_thread), SIGNALNUMBER))) {
 			printf("pthread_kill returned %d\n", ret);
 		}
 		/* Wait till the receiving thread processes the signal */
-		while (!atomic_get(&flag)) {usleep(100);};
+		while (!atomic_get(&flag)) {
+			usleep(100);
+		};
 		atomic_set(0, &flag);
 	}
-	for (i=0; i<ITERATIONS; i++) {
+	for (i = 0; i < ITERATIONS; i++) {
 
 		debug(DBG_DEBUG, "Sending signal. Loopcnt = %d\n", i);
 
 		/* Record the time just before sending the signal */
 		begin = rt_gettime();
-		if ((ret = pthread_kill(PTHREADOF(target_thread), SIGNALNUMBER))) {
+		if ((ret =
+		     pthread_kill(PTHREADOF(target_thread), SIGNALNUMBER))) {
 			printf("pthread_kill returned %d\n", ret);
 		}
 		/* Wait till the receiving thread processes the signal */
@@ -271,7 +279,7 @@ int main(int argc, char *argv[])
 {
 	int thr_id1, thr_id2;
 
-	atomic_set(0,&flag);
+	atomic_set(0, &flag);
 	setup();
 
 	pass_criteria = THRESHOLD;
@@ -286,9 +294,11 @@ int main(int argc, char *argv[])
 	debug(DBG_DEBUG, "Main creating threads\n");
 	fflush(stdout);
 
-	thr_id1 = create_fifo_thread(signal_receiving_thread, (void*)0, PRIO);
-	thr_id2 = create_fifo_thread(signal_sending_thread, (void*)(intptr_t)thr_id1, PRIO-1);
-//	thr_id2 = create_other_thread(signal_sending_thread, (void*)(intptr_t)thr_id1);
+	thr_id1 = create_fifo_thread(signal_receiving_thread, (void *)0, PRIO);
+	thr_id2 =
+	    create_fifo_thread(signal_sending_thread,
+			       (void *)(intptr_t) thr_id1, PRIO - 1);
+//      thr_id2 = create_other_thread(signal_sending_thread, (void*)(intptr_t)thr_id1);
 
 	debug(DBG_DEBUG, "Main joining threads debug\n");
 	join_thread(thr_id1);

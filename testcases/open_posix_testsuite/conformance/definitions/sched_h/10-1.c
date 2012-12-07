@@ -23,22 +23,15 @@ struct unique {
 } sym[] = {
 
 	{
-		 SCHED_FIFO, "SCHED_FIFO"
-	},
-	{
-		 SCHED_RR, "SCHED_RR"
-	},
+	SCHED_FIFO, "SCHED_FIFO"}, {
+	SCHED_RR, "SCHED_RR"},
 #if defined(_POSIX_SPORADIC_SERVER) && _POSIX_THREAD_SPORADIC_SERVER == 200112L
 	{
-	  SCHED_SPORADIC,"SCHED_SPORADIC"
-	},
+	SCHED_SPORADIC, "SCHED_SPORADIC"},
 #endif
 	{
-		 SCHED_OTHER, "SCHED_OTHER"
-	},
-	{
-		 0, 0
-	}
+	SCHED_OTHER, "SCHED_OTHER"}, {
+	0, 0}
 };
 
 int main()

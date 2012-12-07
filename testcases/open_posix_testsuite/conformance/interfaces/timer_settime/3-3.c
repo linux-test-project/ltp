@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
 	 * Second, set value.it_value = 0 and set up handler to catch
 	 * signal.
 	 */
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	if (sigemptyset(&act.sa_mask) == -1) {
 		perror("Error calling sigemptyset\n");
@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
 	/*
 	 * Ensure sleep for TIMEREXPIRE seconds not interrupted
 	 */
-	ts.tv_sec=SLEEPTIME;
-	ts.tv_nsec=0;
+	ts.tv_sec = SLEEPTIME;
+	ts.tv_nsec = 0;
 
 	printf("sleep again\n");
 	if (nanosleep(&ts, NULL) == -1) {

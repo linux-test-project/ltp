@@ -129,9 +129,9 @@ void cleanup()
 {
 
 	if (close(fd_mode1) == -1)
-		tst_resm(TWARN|TERRNO, "close(%s) failed", fname_mode1);
+		tst_resm(TWARN | TERRNO, "close(%s) failed", fname_mode1);
 	if (close(fd_mode2) == -1)
-		tst_resm(TWARN|TERRNO, "close(%s) failed", fname_mode2);
+		tst_resm(TWARN | TERRNO, "close(%s) failed", fname_mode2);
 	tst_rmdir();
 }
 
@@ -150,16 +150,16 @@ void setup()
 	sprintf(fname_mode1, "tfile_mode1_%d", getpid());
 	fd_mode1 = open(fname_mode1, O_RDWR | O_CREAT, 0700);
 	if (fd_mode1 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open(%s, O_RDWR) failed",
-		    fname_mode1);
+		tst_brkm(TBROK | TERRNO, cleanup, "open(%s, O_RDWR) failed",
+			 fname_mode1);
 	get_blocksize(fd_mode1);
 	populate_files(fd_mode1);
 
 	sprintf(fname_mode2, "tfile_mode2_%d", getpid());
-	fd_mode2 = open(fname_mode2, O_RDWR|O_CREAT, 0700);
+	fd_mode2 = open(fname_mode2, O_RDWR | O_CREAT, 0700);
 	if (fd_mode2 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open(%s, O_RDWR) failed",
-		    fname_mode2);
+		tst_brkm(TBROK | TERRNO, cleanup, "open(%s, O_RDWR) failed",
+			 fname_mode2);
 	populate_files(fd_mode2);
 }
 
@@ -171,7 +171,8 @@ void get_blocksize(int fd)
 	struct stat file_stat;
 
 	if (fstat(fd, &file_stat) < 0)
-		tst_resm(TFAIL|TERRNO, "fstat failed while getting block_size");
+		tst_resm(TFAIL | TERRNO,
+			 "fstat failed while getting block_size");
 
 	block_size = file_stat.st_blksize;
 	buf_size = block_size;
@@ -199,7 +200,7 @@ void populate_files(int fd)
 			buf[index] = 'A' + (index % 26);
 		buf[buf_size] = '\0';
 		if ((data = write(fd, buf, buf_size)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 	}
 }
 
@@ -243,9 +244,11 @@ int main(int ac, char **av)
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
 #if __WORDSIZE == 32
-	return (long) syscall(__NR_fallocate, fd, mode,
-	    __LONG_LONG_PAIR((off_t)(offset >> 32), (off_t)offset),
-	    __LONG_LONG_PAIR((off_t)(len >> 32), (off_t)len));
+	return (long)syscall(__NR_fallocate, fd, mode,
+			     __LONG_LONG_PAIR((off_t) (offset >> 32),
+					      (off_t) offset),
+			     __LONG_LONG_PAIR((off_t) (len >> 32),
+					      (off_t) len));
 #else
 	return syscall(__NR_fallocate, fd, mode, offset, len);
 #endif
@@ -271,33 +274,34 @@ void runtest(int mode, int fd, loff_t expected_size)
 				 "fallocate system call is not implemented");
 		}
 		TEST_ERROR_LOG(TEST_ERRNO);
-		tst_resm(TFAIL|TTERRNO,
-			 "fallocate(%d, %d, %"PRId64", %"PRId64") failed",
+		tst_resm(TFAIL | TTERRNO,
+			 "fallocate(%d, %d, %" PRId64 ", %" PRId64 ") failed",
 			 fd, mode, offset, len);
 		return;
 	} else {
 		if (STD_FUNCTIONAL_TEST) {
 			/* No Verification test, yet... */
 			tst_resm(TPASS,
-				 "fallocate(%d, %d, %"PRId64", %"PRId64") returned %ld",
-				 fd, mode, offset, len, TEST_RETURN);
+				 "fallocate(%d, %d, %" PRId64 ", %" PRId64
+				 ") returned %ld", fd, mode, offset, len,
+				 TEST_RETURN);
 		}
 	}
 
 	if (fstat(fd, &file_stat) < 0)
-		tst_resm(TFAIL|TERRNO, "fstat failed after fallocate()");
+		tst_resm(TFAIL | TERRNO, "fstat failed after fallocate()");
 
 	if (file_stat.st_size != expected_size)
-		tst_resm(TFAIL|TTERRNO,
-			 "fstat test fails on fallocate (%d, %d, %"PRId64", %"PRId64") Failed on mode",
-			 fd, mode, offset, len);
+		tst_resm(TFAIL | TTERRNO,
+			 "fstat test fails on fallocate (%d, %d, %" PRId64 ", %"
+			 PRId64 ") Failed on mode", fd, mode, offset, len);
 
 	write_offset = random() % len;
 	lseek_offset = lseek(fd, write_offset, SEEK_CUR);
 	if (lseek_offset != offset + write_offset) {
-		tst_resm(TFAIL|TTERRNO,
-			 "lseek fails in fallocate(%d, %d, %"PRId64", %"PRId64") failed on mode",
-			 fd, mode, offset, len);
+		tst_resm(TFAIL | TTERRNO,
+			 "lseek fails in fallocate(%d, %d, %" PRId64 ", %"
+			 PRId64 ") failed on mode", fd, mode, offset, len);
 		return;
 	}
 	//Write a character to file at random location
@@ -305,15 +309,16 @@ void runtest(int mode, int fd, loff_t expected_size)
 	/* check return code */
 	if (TEST_RETURN == -1) {
 		TEST_ERROR_LOG(TEST_ERRNO);
-		tst_resm(TFAIL|TTERRNO,
-			 "write fails in fallocate(%d, %d, %"PRId64", %"PRId64") failed",
-			 fd, mode, offset, len);
+		tst_resm(TFAIL | TTERRNO,
+			 "write fails in fallocate(%d, %d, %" PRId64 ", %"
+			 PRId64 ") failed", fd, mode, offset, len);
 	} else {
 		if (STD_FUNCTIONAL_TEST) {
 			/* No Verification test, yet... */
 			tst_resm(TPASS,
-				 "write operation on fallocated(%d, %d, %"PRId64", %"PRId64") returned %ld",
-				 fd, mode, offset, len, TEST_RETURN);
+				 "write operation on fallocated(%d, %d, %"
+				 PRId64 ", %" PRId64 ") returned %ld", fd, mode,
+				 offset, len, TEST_RETURN);
 		}
 	}
 }

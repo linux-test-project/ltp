@@ -25,13 +25,14 @@
 #include "posixtest.h"
 
 int handler_called = 0;
-int pthread_sigmask_return_val = 1; /* some value that's not a 1 or 0 */
+int pthread_sigmask_return_val = 1;	/* some value that's not a 1 or 0 */
 
 void handler(int signo)
 {
 	handler_called = 1;
 	if (pthread_sigmask_return_val != 1) {
-		printf("FAIL: pthread_sigmask() returned before signal was delivered.\n");
+		printf
+		    ("FAIL: pthread_sigmask() returned before signal was delivered.\n");
 		exit(PTS_FAIL);
 	}
 }
@@ -47,71 +48,75 @@ void *a_thread_func()
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 
-	if (sigaction(SIGABRT,  &act, 0) == -1) {
+	if (sigaction(SIGABRT, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
-		pthread_exit((void*)1);
+		pthread_exit((void *)1);
 	}
 
 	if (pthread_sigmask(SIG_SETMASK, &blocked_set1, NULL) == -1) {
-		perror("Unexpected error while attempting to use pthread_sigmask.\n");
-		pthread_exit((void*)1);
+		perror
+		    ("Unexpected error while attempting to use pthread_sigmask.\n");
+		pthread_exit((void *)1);
 	}
 
 	if ((raise(SIGABRT) == -1)) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
-		pthread_exit((void*)1);
+		pthread_exit((void *)1);
 	}
 
-	pthread_sigmask_return_val = pthread_sigmask(SIG_UNBLOCK, &blocked_set1, NULL);
+	pthread_sigmask_return_val =
+	    pthread_sigmask(SIG_UNBLOCK, &blocked_set1, NULL);
 
 	if (pthread_sigmask_return_val != 0) {
-		perror("Unexpected error while attempting to use pthread_sigmask.\n");
-		pthread_exit((void*)1);
+		perror
+		    ("Unexpected error while attempting to use pthread_sigmask.\n");
+		pthread_exit((void *)1);
 	}
 
 	if (handler_called != 1) {
-		perror("Handler wasn't called, implying signal was not delivered.\n");
-		pthread_exit((void*)1);
+		perror
+		    ("Handler wasn't called, implying signal was not delivered.\n");
+		pthread_exit((void *)1);
 	}
 
-	printf("Test PASSED: signal was delivered before the call to pthread_sigmask returned.\n");
-	pthread_exit((void*)0);
+	printf
+	    ("Test PASSED: signal was delivered before the call to pthread_sigmask returned.\n");
+	pthread_exit((void *)0);
 
-        /* To please some compilers */
+	/* To please some compilers */
 	return NULL;
 }
 
-int main() {
+int main()
+{
 
-        int *thread_return_value;
+	int *thread_return_value;
 
-        pthread_t new_thread;
+	pthread_t new_thread;
 
-        if (pthread_create(&new_thread, NULL, a_thread_func, NULL) != 0) {
-                perror("Error creating new thread\n");
-                return PTS_UNRESOLVED;
-        }
+	if (pthread_create(&new_thread, NULL, a_thread_func, NULL) != 0) {
+		perror("Error creating new thread\n");
+		return PTS_UNRESOLVED;
+	}
 
-        if (pthread_join(new_thread, (void*)&thread_return_value) != 0) {
-                perror("Error in pthread_join()\n");
-                return PTS_UNRESOLVED;
-        }
+	if (pthread_join(new_thread, (void *)&thread_return_value) != 0) {
+		perror("Error in pthread_join()\n");
+		return PTS_UNRESOLVED;
+	}
 
-        if ((long)thread_return_value != 0) {
-                if ((long)thread_return_value == 1) {
-                        printf ("Test UNRESOLVED\n");
-                        return PTS_UNRESOLVED;
-                }
-                else if ((long)thread_return_value == -1) {
-                        printf ("Test FAILED\n");
-                        return PTS_FAIL;
-                }
-                else {
-                        printf ("Test UNRESOLVED\n");
-                        return PTS_UNRESOLVED;
-                }
-        }
-        return PTS_PASS;
+	if ((long)thread_return_value != 0) {
+		if ((long)thread_return_value == 1) {
+			printf("Test UNRESOLVED\n");
+			return PTS_UNRESOLVED;
+		} else if ((long)thread_return_value == -1) {
+			printf("Test FAILED\n");
+			return PTS_FAIL;
+		} else {
+			printf("Test UNRESOLVED\n");
+			return PTS_UNRESOLVED;
+		}
+	}
+	return PTS_PASS;
 }

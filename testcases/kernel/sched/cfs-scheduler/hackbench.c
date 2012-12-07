@@ -61,9 +61,9 @@
 
 #define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 #define DATASIZE 100
-static struct sender_context ** snd_ctx_tab;      /*Table for sender context pointers.*/
-static struct receiver_context ** rev_ctx_tab;    /*Table for receiver context pointers.*/
-static int gr_num = 0;                            /*For group calculation */
+static struct sender_context **snd_ctx_tab;	/*Table for sender context pointers. */
+static struct receiver_context **rev_ctx_tab;	/*Table for receiver context pointers. */
+static int gr_num = 0;		/*For group calculation */
 static unsigned int loops = 100;
 /*
  * 0 means thread mode and others mean process (default)
@@ -94,7 +94,8 @@ static void barf(const char *msg)
 
 static void print_usage_exit()
 {
-	printf("Usage: hackbench [-pipe] <num groups> [process|thread] [loops]\n");
+	printf
+	    ("Usage: hackbench [-pipe] <num groups> [process|thread] [loops]\n");
 	exit(1);
 }
 
@@ -114,7 +115,7 @@ static void fdpair(int fds[2])
 static void ready(int ready_out, int wakefd)
 {
 	char dummy;
-	struct pollfd pollfd = { .fd = wakefd, .events = POLLIN };
+	struct pollfd pollfd = {.fd = wakefd,.events = POLLIN };
 
 	/* Tell them we're ready. */
 	if (write(ready_out, &dummy, 1) != 1)
@@ -139,7 +140,9 @@ static void *sender(struct sender_context *ctx)
 			int ret, done = 0;
 
 again:
-			ret = write(ctx->out_fds[j], data + done, sizeof(data)-done);
+			ret =
+			    write(ctx->out_fds[j], data + done,
+				  sizeof(data) - done);
 			if (ret < 0)
 				barf("SENDER: write");
 			done += ret;
@@ -152,7 +155,7 @@ again:
 }
 
 /* One receiver per fd */
-static void *receiver(struct receiver_context* ctx)
+static void *receiver(struct receiver_context *ctx)
 {
 	unsigned int i;
 
@@ -179,7 +182,7 @@ again:
 	return NULL;
 }
 
-pthread_t create_worker(void *ctx, void *(*func)(void *))
+pthread_t create_worker(void *ctx, void *(*func) (void *))
 {
 	pthread_attr_t attr;
 	pthread_t childid;
@@ -189,10 +192,11 @@ pthread_t create_worker(void *ctx, void *(*func)(void *))
 		/* process mode */
 		/* Fork the receiver. */
 		switch (fork()) {
-			case -1: barf("fork()");
-			case 0:
-				(*func) (ctx);
-				exit(0);
+		case -1:
+			barf("fork()");
+		case 0:
+			(*func) (ctx);
+			exit(0);
 		}
 
 		return (pthread_t) 0;
@@ -206,8 +210,9 @@ pthread_t create_worker(void *ctx, void *(*func)(void *))
 		barf("pthread_attr_setstacksize");
 #endif
 
-	if ((err=pthread_create(&childid, &attr, func, ctx)) != 0) {
-		fprintf(stderr, "pthread_create failed: %s (%d)\n", strerror(err), err);
+	if ((err = pthread_create(&childid, &attr, func, ctx)) != 0) {
+		fprintf(stderr, "pthread_create failed: %s (%d)\n",
+			strerror(err), err);
 		exit(-1);
 	}
 	return (childid);
@@ -230,32 +235,30 @@ void reap_worker(pthread_t id)
 }
 
 /* One group of senders and receivers */
-static unsigned int group(pthread_t *pth,
-		unsigned int num_fds,
-		int ready_out,
-		int wakefd)
+static unsigned int group(pthread_t * pth,
+			  unsigned int num_fds, int ready_out, int wakefd)
 {
 	unsigned int i;
-	struct sender_context* snd_ctx = malloc (sizeof(struct sender_context)
-			+num_fds*sizeof(int));
+	struct sender_context *snd_ctx = malloc(sizeof(struct sender_context)
+						+ num_fds * sizeof(int));
 	if (!snd_ctx)
-	    barf("malloc()");
-        else
-            snd_ctx_tab[gr_num] = snd_ctx;
+		barf("malloc()");
+	else
+		snd_ctx_tab[gr_num] = snd_ctx;
 
 	for (i = 0; i < num_fds; i++) {
 		int fds[2];
-		struct receiver_context* ctx = malloc (sizeof(*ctx));
+		struct receiver_context *ctx = malloc(sizeof(*ctx));
 
 		if (!ctx)
 			barf("malloc()");
-                else
-                	rev_ctx_tab[gr_num * num_fds + i] = ctx;
+		else
+			rev_ctx_tab[gr_num * num_fds + i] = ctx;
 
 		/* Create the pipe between client and server */
 		fdpair(fds);
 
-		ctx->num_packets = num_fds*loops;
+		ctx->num_packets = num_fds * loops;
 		ctx->in_fds[0] = fds[0];
 		ctx->in_fds[1] = fds[1];
 		ctx->ready_out = ready_out;
@@ -274,7 +277,8 @@ static unsigned int group(pthread_t *pth,
 		snd_ctx->wakefd = wakefd;
 		snd_ctx->num_fds = num_fds;
 
-		pth[num_fds+i] = create_worker(snd_ctx, (void *)(void *)sender);
+		pth[num_fds + i] =
+		    create_worker(snd_ctx, (void *)(void *)sender);
 	}
 
 	/* Close the fds we have left */
@@ -282,14 +286,14 @@ static unsigned int group(pthread_t *pth,
 		for (i = 0; i < num_fds; i++)
 			close(snd_ctx->out_fds[i]);
 
-        gr_num++;
+	gr_num++;
 	/* Return number of children to reap */
 	return num_fds * 2;
 }
 
 int main(int argc, char *argv[])
 {
-	unsigned int i, j,num_groups = 10, total_children;
+	unsigned int i, j, num_groups = 10, total_children;
 	struct timeval start, stop, diff;
 	unsigned int num_fds = 20;
 	int readyfds[2], wakefds[2];
@@ -306,7 +310,7 @@ int main(int argc, char *argv[])
 		print_usage_exit();
 
 	printf("Running with %d*40 (== %d) tasks.\n",
-		num_groups, num_groups*40);
+	       num_groups, num_groups * 40);
 
 	fflush(NULL);
 
@@ -323,9 +327,9 @@ int main(int argc, char *argv[])
 		loops = atoi(argv[3]);
 
 	pth_tab = malloc(num_fds * 2 * num_groups * sizeof(pthread_t));
-        snd_ctx_tab = malloc(num_groups * sizeof(void*));
-        rev_ctx_tab = malloc(num_groups * num_fds * sizeof(void*));
- 	if (!pth_tab || !snd_ctx_tab || !rev_ctx_tab)
+	snd_ctx_tab = malloc(num_groups * sizeof(void *));
+	rev_ctx_tab = malloc(num_groups * num_fds * sizeof(void *));
+	if (!pth_tab || !snd_ctx_tab || !rev_ctx_tab)
 		barf("main:malloc()");
 
 	fdpair(readyfds);
@@ -333,7 +337,9 @@ int main(int argc, char *argv[])
 
 	total_children = 0;
 	for (i = 0; i < num_groups; i++)
-		total_children += group(pth_tab+total_children, num_fds, readyfds[1], wakefds[0]);
+		total_children +=
+		    group(pth_tab + total_children, num_fds, readyfds[1],
+			  wakefds[0]);
 
 	/* Wait for everyone to be ready */
 	for (i = 0; i < total_children; i++)
@@ -354,17 +360,17 @@ int main(int argc, char *argv[])
 
 	/* Print time... */
 	timersub(&stop, &start, &diff);
-        printf("Time: %lu.%03lu\n", diff.tv_sec, diff.tv_usec/1000);
+	printf("Time: %lu.%03lu\n", diff.tv_sec, diff.tv_usec / 1000);
 
-        /* free the memory */
-        for (i = 0; i < num_groups; i++) {
-            for (j = 0; j < num_fds; j++) {
-                SAFE_FREE(rev_ctx_tab[i*num_fds+j])
-            }
-            SAFE_FREE(snd_ctx_tab[i]);
-        }
-        SAFE_FREE(pth_tab);
-        SAFE_FREE(snd_ctx_tab);
-        SAFE_FREE(rev_ctx_tab);
-        exit(0);
+	/* free the memory */
+	for (i = 0; i < num_groups; i++) {
+		for (j = 0; j < num_fds; j++) {
+			SAFE_FREE(rev_ctx_tab[i * num_fds + j])
+		}
+		SAFE_FREE(snd_ctx_tab[i]);
+	}
+	SAFE_FREE(pth_tab);
+	SAFE_FREE(snd_ctx_tab);
+	SAFE_FREE(rev_ctx_tab);
+	exit(0);
 }

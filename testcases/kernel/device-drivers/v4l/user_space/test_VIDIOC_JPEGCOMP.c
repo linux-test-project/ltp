@@ -29,15 +29,15 @@
 
 #include "test_VIDIOC_JPEGCOMP.h"
 
-static int valid_jpeg_markers(__u32 jpeg_markers) {
+static int valid_jpeg_markers(__u32 jpeg_markers)
+{
 	int valid = 0;
 
-	if ( (jpeg_markers & ~(V4L2_JPEG_MARKER_DHT |
-			       V4L2_JPEG_MARKER_DQT |
-			       V4L2_JPEG_MARKER_DRI |
-			       V4L2_JPEG_MARKER_COM |
-			       V4L2_JPEG_MARKER_APP))
-		== 0) {
+	if ((jpeg_markers & ~(V4L2_JPEG_MARKER_DHT |
+			      V4L2_JPEG_MARKER_DQT |
+			      V4L2_JPEG_MARKER_DRI |
+			      V4L2_JPEG_MARKER_COM | V4L2_JPEG_MARKER_APP))
+	    == 0) {
 		valid = 1;
 	} else {
 		valid = 0;
@@ -45,7 +45,8 @@ static int valid_jpeg_markers(__u32 jpeg_markers) {
 	return valid;
 }
 
-void test_VIDIOC_G_JPEGCOMP() {
+void test_VIDIOC_G_JPEGCOMP()
+{
 	struct v4l2_jpegcompression jpegcomp;
 	int ret_get, errno_get;
 
@@ -53,7 +54,8 @@ void test_VIDIOC_G_JPEGCOMP() {
 	ret_get = ioctl(get_video_fd(), VIDIOC_G_JPEGCOMP, &jpegcomp);
 	errno_get = errno;
 
-	dprintf("\tVIDIOC_G_JPEGCOMP, ret_get=%i, errno_get=%i\n", ret_get, errno_get);
+	dprintf("\tVIDIOC_G_JPEGCOMP, ret_get=%i, errno_get=%i\n", ret_get,
+		errno_get);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);
@@ -75,14 +77,11 @@ void test_VIDIOC_G_JPEGCOMP() {
 			".COM_len=%i, "
 			".COM_data=..., "
 			".jpeg_markers=0x%x ",
-			jpegcomp.quality,
-			jpegcomp.APPn,
-			jpegcomp.APP_len,
+			jpegcomp.quality, jpegcomp.APPn, jpegcomp.APP_len,
 			//jpegcomp.APP_data,
 			jpegcomp.COM_len,
 			//jpegcomp.COM_data,
-			jpegcomp.jpeg_markers
-		);
+			jpegcomp.jpeg_markers);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
@@ -91,7 +90,8 @@ void test_VIDIOC_G_JPEGCOMP() {
 
 }
 
-void test_VIDIOC_G_JPEGCOMP_NULL() {
+void test_VIDIOC_G_JPEGCOMP_NULL()
+{
 	struct v4l2_jpegcompression jpegcomp;
 	int ret_get, errno_get;
 	int ret_null, errno_null;
@@ -100,12 +100,14 @@ void test_VIDIOC_G_JPEGCOMP_NULL() {
 	ret_get = ioctl(get_video_fd(), VIDIOC_G_JPEGCOMP, &jpegcomp);
 	errno_get = errno;
 
-	dprintf("\tVIDIOC_G_JPEGCOMP, ret_get=%i, errno_get=%i\n", ret_get, errno_get);
+	dprintf("\tVIDIOC_G_JPEGCOMP, ret_get=%i, errno_get=%i\n", ret_get,
+		errno_get);
 
 	ret_null = ioctl(get_video_fd(), VIDIOC_G_JPEGCOMP, NULL);
 	errno_null = errno;
 
-	dprintf("\tVIDIOC_G_JPEGCOMP, ret_null=%i, errno_null=%i\n", ret_null, errno_null);
+	dprintf("\tVIDIOC_G_JPEGCOMP, ret_null=%i, errno_null=%i\n", ret_null,
+		errno_null);
 
 	if (ret_get == 0) {
 		CU_ASSERT_EQUAL(ret_get, 0);

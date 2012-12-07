@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGCONT;
 
-	its.it_interval.tv_sec = 0; its.it_interval.tv_nsec = 0;
+	its.it_interval.tv_sec = 0;
+	its.it_interval.tv_nsec = 0;
 	its.it_value.tv_sec = TIMERSEC;
 	its.it_value.tv_nsec = 0;
 
@@ -46,18 +47,16 @@ int main(int argc, char *argv[])
 	}
 
 	if ((0 == oits.it_value.tv_sec) &&
-		(0 == oits.it_value.tv_nsec) &&
-		(0 == oits.it_interval.tv_sec) &&
-	  	(0 == oits.it_interval.tv_nsec)) {
+	    (0 == oits.it_value.tv_nsec) &&
+	    (0 == oits.it_interval.tv_sec) && (0 == oits.it_interval.tv_nsec)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {
 		printf("Test FAILED:  value: tv_sec %d tv_nsec %d\n",
-				(int) oits.it_value.tv_sec,
-				(int) oits.it_value.tv_nsec);
+		       (int)oits.it_value.tv_sec, (int)oits.it_value.tv_nsec);
 		printf("Test FAILED:  interval: tv_sec %d tv_nsec %d\n",
-				(int) oits.it_interval.tv_sec,
-				(int) oits.it_interval.tv_nsec);
+		       (int)oits.it_interval.tv_sec,
+		       (int)oits.it_interval.tv_nsec);
 		return PTS_FAIL;
 	}
 

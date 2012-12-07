@@ -126,14 +126,18 @@ struct test_data_t {
 	{
 	DEFAULT_MODE, 2, 1, TRUE}, {
 	DEFAULT_MODE, BLOCKS_WRITTEN, 1, TRUE}, {
-	DEFAULT_MODE, BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS / 2 - 1, 1, TRUE}, {
+	DEFAULT_MODE, BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS / 2 - 1, 1, TRUE},
+	{
 	DEFAULT_MODE, BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS + 1, 1, TRUE}, {
 	FALLOC_FL_KEEP_SIZE, 2, 1, TRUE}, {
 	FALLOC_FL_KEEP_SIZE, BLOCKS_WRITTEN, 1, TRUE}, {
-	FALLOC_FL_KEEP_SIZE, BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS / 2 + 1, 1, TRUE}, {
-	FALLOC_FL_KEEP_SIZE, BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS + 2, 1, TRUE}
+	FALLOC_FL_KEEP_SIZE,
+		    BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS / 2 + 1, 1, TRUE}, {
+	FALLOC_FL_KEEP_SIZE, BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS + 2,
+		    1, TRUE}
 };
-int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]); /* total number of tests in this file.   */
+
+int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);	/* total number of tests in this file.   */
 int block_size;
 int buf_size;
 
@@ -147,7 +151,7 @@ extern void cleanup()
 {
 	/* Close all open file descriptors. */
 	if (close(fd) == -1)
-		tst_resm(TWARN|TERRNO, "close(%s) failed", fname);
+		tst_resm(TWARN | TERRNO, "close(%s) failed", fname);
 
 	tst_rmdir();
 
@@ -169,8 +173,7 @@ void setup()
 	sprintf(fname, "tfile_sparse_%d", getpid());
 	fd = open(fname, O_RDWR | O_CREAT, 0700);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s) failed", fname);
+		tst_brkm(TBROK | TERRNO, cleanup, "open(%s) failed", fname);
 	get_blocksize(fd);
 	populate_file();
 	file_seek(BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS);	/* create holes */
@@ -186,7 +189,7 @@ void get_blocksize(int fd)
 	struct stat file_stat;
 
 	if (fstat(fd, &file_stat) < 0)
-		tst_resm(TFAIL|TERRNO,
+		tst_resm(TFAIL | TERRNO,
 			 "fstat failed while getting block_size");
 
 	block_size = (int)file_stat.st_blksize;
@@ -216,7 +219,7 @@ void populate_file()
 			buf[index] = 'A' + (index % 26);
 		buf[buf_size] = '\0';
 		if ((data = write(fd, buf, buf_size)) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup,
+			tst_brkm(TBROK | TERRNO, cleanup,
 				 "Unable to write to %s", fname);
 	}
 }
@@ -227,9 +230,11 @@ void populate_file()
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
 #if __WORDSIZE == 32
-	return (long) syscall(__NR_fallocate, fd, mode,
-	    __LONG_LONG_PAIR((off_t)(offset >> 32), (off_t)offset),
-	    __LONG_LONG_PAIR((off_t)(len >> 32), (off_t)len));
+	return (long)syscall(__NR_fallocate, fd, mode,
+			     __LONG_LONG_PAIR((off_t) (offset >> 32),
+					      (off_t) offset),
+			     __LONG_LONG_PAIR((off_t) (len >> 32),
+					      (off_t) len));
 #else
 	return syscall(__NR_fallocate, fd, mode, offset, len);
 #endif
@@ -266,22 +271,26 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN != test_data[test_index].error) {
-				if (TEST_ERRNO == EOPNOTSUPP || TEST_ERRNO == ENOSYS) {
+				if (TEST_ERRNO == EOPNOTSUPP
+				    || TEST_ERRNO == ENOSYS) {
 					tst_brkm(TCONF, cleanup,
 						 "fallocate system call is not implemented");
 				}
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL|TTERRNO,
-					 "fallocate(%s, %d, %"PRId64", %"PRId64") failed",
-					 fname, test_data[test_index].mode,
+				tst_resm(TFAIL | TTERRNO,
+					 "fallocate(%s, %d, %" PRId64 ", %"
+					 PRId64 ") failed", fname,
+					 test_data[test_index].mode,
 					 test_data[test_index].offset *
 					 block_size,
-					 test_data[test_index].len * block_size);
+					 test_data[test_index].len *
+					 block_size);
 			} else {
 				if (STD_FUNCTIONAL_TEST) {
 					/* No Verification test, yet... */
 					tst_resm(TPASS,
-						 "fallocate(%s, %d, %"PRId64", %"PRId64") returned %ld",
+						 "fallocate(%s, %d, %" PRId64
+						 ", %" PRId64 ") returned %ld",
 						 fname,
 						 test_data[test_index].mode,
 						 test_data[test_index].offset *

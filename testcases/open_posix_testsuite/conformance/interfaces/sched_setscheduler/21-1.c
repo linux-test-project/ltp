@@ -22,28 +22,29 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-int main() {
-        int result, child_pid, stat_loc;
+int main()
+{
+	int result, child_pid, stat_loc;
 	struct sched_param param;
 
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);
 
-        /* Create a child process which exit immediately */
-        child_pid = fork();
-        if (child_pid == -1) {
+	/* Create a child process which exit immediately */
+	child_pid = fork();
+	if (child_pid == -1) {
 		perror("An error occurs when calling fork()");
 		return PTS_UNRESOLVED;
-        } else if (child_pid == 0) {
+	} else if (child_pid == 0) {
 		exit(0);
-        }
+	}
 
-        /* Wait for the child process to exit */
-        if (wait(&stat_loc) == -1) {
+	/* Wait for the child process to exit */
+	if (wait(&stat_loc) == -1) {
 		perror("An error occurs when calling wait()");
 		return PTS_UNRESOLVED;
-        }
+	}
 
-        /* Assume the pid is not yet reatributed to an other process */
+	/* Assume the pid is not yet reatributed to an other process */
 	result = sched_setscheduler(child_pid, SCHED_FIFO, &param);
 
 	if (result == -1 && errno == ESRCH) {
@@ -53,10 +54,11 @@ int main() {
 		printf("The returned code is not -1.\n");
 		return PTS_FAIL;
 	} else if (errno == EPERM) {
-		printf("This process does not have the permission to invoke sched_setscheduler().\nTry to launch this test as root.\n");
+		printf
+		    ("This process does not have the permission to invoke sched_setscheduler().\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {
-	        perror("errno is not ESRCH");
+		perror("errno is not ESRCH");
 		return PTS_FAIL;
 	}
 }

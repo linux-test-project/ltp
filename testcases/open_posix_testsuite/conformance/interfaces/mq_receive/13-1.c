@@ -37,10 +37,11 @@ void stopreceive(int signo)
 {
 	return;
 }
+
 int main()
 {
-        char mqname[NAMESIZE], msgrv[BUFFER];
-        mqd_t mqdes;
+	char mqname[NAMESIZE], msgrv[BUFFER];
+	mqd_t mqdes;
 	int pid;
 	struct mq_attr attr;
 	int unresolved = 0, failure = 0;
@@ -50,10 +51,10 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (mqdes == (mqd_t)-1) {
-                perror(ERROR_PREFIX "mq_open");
+	if (mqdes == (mqd_t) - 1) {
+		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
-        }
+	}
 
 	if ((pid = fork()) != 0) {
 		/* Parent process */
@@ -63,41 +64,39 @@ int main()
 		sigemptyset(&act.sa_mask);
 		sigaction(SIGABRT, &act, 0);
 
-        	if (mq_receive(mqdes, msgrv, BUFFER, NULL) == -1) {
+		if (mq_receive(mqdes, msgrv, BUFFER, NULL) == -1) {
 			wait(NULL);
 			if (EINTR != errno) {
 				printf("errno != EINVAL \n");
 				failure = 1;
 			}
-		}
-		else {
+		} else {
 			wait(NULL);
 			printf("mq_receive() succeed unexpectly \n");
 			failure = 1;
 		}
 		if (mq_close(mqdes) != 0) {
-               		perror("mq_close() did not return success");
-	                unresolved=1;
-       		}
-	        if (mq_unlink(mqname) != 0) {
-       		        perror("mq_unlink() did not return success");
-                	unresolved=1;
-        	}
-        	if (failure==1) {
-                	printf("Test FAILED\n");
-                	return PTS_FAIL;
-        	}
-        	if (unresolved==1) {
-                	printf("Test UNRESOLVED\n");
-                	return PTS_UNRESOLVED;
+			perror("mq_close() did not return success");
+			unresolved = 1;
+		}
+		if (mq_unlink(mqname) != 0) {
+			perror("mq_unlink() did not return success");
+			unresolved = 1;
+		}
+		if (failure == 1) {
+			printf("Test FAILED\n");
+			return PTS_FAIL;
+		}
+		if (unresolved == 1) {
+			printf("Test UNRESOLVED\n");
+			return PTS_UNRESOLVED;
 		}
 		printf("Test PASSED\n");
 		return PTS_PASS;
 
-	}
-	else {
+	} else {
 		/*  Child Process */
-		sleep(2); /* give time to parent to set up handler */
+		sleep(2);	/* give time to parent to set up handler */
 		/* send signal to parent */
 		kill(getppid(), SIGABRT);
 	}

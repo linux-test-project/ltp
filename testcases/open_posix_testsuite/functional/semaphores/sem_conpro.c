@@ -31,16 +31,16 @@ typedef struct {
 	sem_t occupied;
 	sem_t empty;
 	sem_t lock;
-}buf_t;
+} buf_t;
 
 int in, out;
 
-int *producer(buf_t *buf)
+int *producer(buf_t * buf)
 {
 	int data;
 	int i;
 
-	for (i = 0; i< Max_Num; i++) {
+	for (i = 0; i < Max_Num; i++) {
 		if (-1 == sem_wait(&buf->occupied)) {
 			perror("sem_wait didn't return success \n");
 			pthread_exit((void *)1);
@@ -49,7 +49,7 @@ int *producer(buf_t *buf)
 			perror("sem_wait didn't return success \n");
 			pthread_exit((void *)1);
 		}
-		data = 100*i;
+		data = 100 * i;
 		buf->buffer[in] = data;
 		printf("producer has added %d to the buffer[%d] \n", data, in);
 		in = (in + 1) % BUF_SIZE;
@@ -64,7 +64,8 @@ int *producer(buf_t *buf)
 	}
 	pthread_exit((void *)0);
 }
-int *consumer(buf_t *buf)
+
+int *consumer(buf_t * buf)
 {
 	int data;
 	int i;
@@ -92,15 +93,16 @@ int *consumer(buf_t *buf)
 	}
 	pthread_exit(0);
 }
+
 int main(int argc, char *argv[])
 {
 	int shared = 1;
 	int occupied_value = BUF_SIZE;
 	int empty_value = 0;
-	int lock_value=1;
+	int lock_value = 1;
 	buf_t *buf;
 	pthread_t con, pro;
-	buf = (buf_t *)malloc(sizeof(buf_t));
+	buf = (buf_t *) malloc(sizeof(buf_t));
 
 #ifndef  _POSIX_SEMAPHORES
 	printf("_POSIX_SEMAPHORES is not defined \n");

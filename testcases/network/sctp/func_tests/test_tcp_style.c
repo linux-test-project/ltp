@@ -57,8 +57,7 @@ int TST_CNT = 0;
 
 #define MAX_CLIENTS 10
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int clt_sk[MAX_CLIENTS], accept_sk[MAX_CLIENTS];
 	int listen_sk, clt2_sk, accept2_sk;
@@ -66,7 +65,7 @@ main(int argc, char *argv[])
 	sockaddr_storage_t svr_loop, accept_loop, clt2_loop;
 	socklen_t addrlen;
 	int error, i;
-        char *message = "hello, world!\n";
+	char *message = "hello, world!\n";
 	char msgbuf[100];
 	int pf_class;
 	struct pollfd poll_fd;
@@ -81,7 +80,7 @@ main(int argc, char *argv[])
 	char *big_buffer;
 	struct iovec iov;
 
-        /* Rather than fflush() throughout the code, set stdout to
+	/* Rather than fflush() throughout the code, set stdout to
 	 * be unbuffered.
 	 */
 	setvbuf(stdout, NULL, _IONBF, 0);
@@ -89,17 +88,17 @@ main(int argc, char *argv[])
 	/* Initialize the server and client addresses. */
 #if TEST_V6
 	pf_class = PF_INET6;
-        svr_loop.v6.sin6_family = AF_INET6;
-        svr_loop.v6.sin6_addr = in6addr_loopback;
-        svr_loop.v6.sin6_port = htons(SCTP_TESTPORT_1);
+	svr_loop.v6.sin6_family = AF_INET6;
+	svr_loop.v6.sin6_addr = in6addr_loopback;
+	svr_loop.v6.sin6_port = htons(SCTP_TESTPORT_1);
 	for (i = 0; i < MAX_CLIENTS; i++) {
-        	clt_loop[i].v6.sin6_family = AF_INET6;
-        	clt_loop[i].v6.sin6_addr = in6addr_loopback;
-        	clt_loop[i].v6.sin6_port = htons(SCTP_TESTPORT_2 + i);
+		clt_loop[i].v6.sin6_family = AF_INET6;
+		clt_loop[i].v6.sin6_addr = in6addr_loopback;
+		clt_loop[i].v6.sin6_port = htons(SCTP_TESTPORT_2 + i);
 	}
-        clt2_loop.v6.sin6_family = AF_INET6;
-        clt2_loop.v6.sin6_addr = in6addr_loopback;
-        clt2_loop.v6.sin6_port = htons(SCTP_TESTPORT_2 + i);
+	clt2_loop.v6.sin6_family = AF_INET6;
+	clt2_loop.v6.sin6_addr = in6addr_loopback;
+	clt2_loop.v6.sin6_port = htons(SCTP_TESTPORT_2 + i);
 #else
 	pf_class = PF_INET;
 	svr_loop.v4.sin_family = AF_INET;
@@ -116,11 +115,11 @@ main(int argc, char *argv[])
 #endif
 
 	/* Create and bind the listening server socket.  */
-        listen_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	listen_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 	test_bind(listen_sk, &svr_loop.sa, sizeof(svr_loop));
 
 	/* Mark listen_sk as being able to accept new associations.  */
-	test_listen(listen_sk, MAX_CLIENTS-1);
+	test_listen(listen_sk, MAX_CLIENTS - 1);
 
 	/* Create and bind the client sockets.  */
 	for (i = 0; i < MAX_CLIENTS; i++) {
@@ -448,7 +447,7 @@ main(int argc, char *argv[])
 	out_iov.iov_base = message;
 	out_iov.iov_len = strlen(message) + 1;
 	sinfo->sinfo_flags = 0;
-	test_sendmsg(clt2_sk, &outmessage, 0, strlen(message)+1);
+	test_sendmsg(clt2_sk, &outmessage, 0, strlen(message) + 1);
 
 	test_recv(accept2_sk, msgbuf, 100, 0);
 
@@ -458,6 +457,6 @@ main(int argc, char *argv[])
 	close(accept2_sk);
 	close(listen_sk);
 
-        /* Indicate successful completion.  */
+	/* Indicate successful completion.  */
 	tst_exit();
 }

@@ -150,7 +150,7 @@ int main(int ac, char **av)
 
 	Type = malloc(FSTYPE_LEN);
 	if (Type == NULL) {
-		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
+		tst_brkm(TBROK | TERRNO, NULL, "malloc failed");
 	}
 
 	if (Tflag == 1) {
@@ -189,17 +189,17 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1 && TEST_ERRNO == exp_enos[i]) {
-				tst_resm(TPASS|TERRNO,
-				    "mount got expected failure");
+				tst_resm(TPASS | TERRNO,
+					 "mount got expected failure");
 			} else {
 				if (umount(mntpoint) == -1) {
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "umount of %s failed", Mntpoint);
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "umount of %s failed",
+						 Mntpoint);
 				}
-				tst_resm(TFAIL|TERRNO,
-				    "mount(2) failed to produce expected "
-				    "error (%d)",
-				    exp_enos[i]);
+				tst_resm(TFAIL | TERRNO,
+					 "mount(2) failed to produce expected "
+					 "error (%d)", exp_enos[i]);
 			}
 
 			(void)cleanup_test(i);
@@ -243,7 +243,7 @@ int setup_test(int i, int cnt)
 			return 0;
 		} else {
 			tst_resm(TWARN, "mknod(2) failed to create device: %s",
-			    Path);
+				 Path);
 			return 1;
 		}
 	case 2:
@@ -251,9 +251,8 @@ int setup_test(int i, int cnt)
 
 		TEST(mount(Device, Mntpoint, Fstype, 0, NULL));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN|TTERRNO,
-			    "mount(2) failed to mount device %s",
-			    device);
+			tst_resm(TWARN | TTERRNO,
+				 "mount(2) failed to mount device %s", device);
 			return 1;
 		}
 		return 0;
@@ -262,19 +261,19 @@ int setup_test(int i, int cnt)
 
 		TEST(mount(Device, Mntpoint, Fstype, 0, NULL));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN|TTERRNO,
-			    "mount(2) failed to mount device %s", device);
+			tst_resm(TWARN | TTERRNO,
+				 "mount(2) failed to mount device %s", device);
 			return 1;
 		}
 		if (getcwd(Path, PATH_MAX) == NULL) {
-			tst_resm(TWARN|TERRNO, "getcwd failed");
+			tst_resm(TWARN | TERRNO, "getcwd failed");
 			return 1;
 		}
 		sprintf(temp, "/%s/t3_%d", mntpoint, cnt);
 		strcat(Path, temp);
 		if ((fd = open(Path, O_CREAT | O_RDWR, S_IRWXU)) == -1) {
-			tst_resm(TWARN|TERRNO, "open() failed to create %s",
-			    Path);
+			tst_resm(TWARN | TERRNO, "open() failed to create %s",
+				 Path);
 			return 1;
 		}
 		Flag = MS_REMOUNT | MS_RDONLY;
@@ -356,8 +355,8 @@ int cleanup_test(int i)
 		if (Tflag) {
 			/* Avoid buffer overflow */
 			strncpy(Type, fstype,
-				(FSTYPE_LEN < strlen(fstype)+1) ? FSTYPE_LEN :
-				strlen(fstype)+1);
+				(FSTYPE_LEN < strlen(fstype) + 1) ? FSTYPE_LEN :
+				strlen(fstype) + 1);
 		} else {
 			strcpy(Type, "ext2");
 		}
@@ -368,7 +367,7 @@ int cleanup_test(int i)
 	case 2:
 		TEST(umount(mntpoint));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN|TTERRNO, "umount failed");
+			tst_resm(TWARN | TTERRNO, "umount failed");
 		}
 		break;
 	case 12:
@@ -392,8 +391,8 @@ void setup()
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
-		    mntpoint, DIR_MODE);
+		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",
+			 mntpoint, DIR_MODE);
 	}
 
 	/* set up expected error numbers */

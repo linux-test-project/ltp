@@ -84,8 +84,8 @@
 
 static int mkfile(int size)
 {
-	int  fd;
-	int  index = 0;
+	int fd;
+	int index = 0;
 	char buff[4096];
 	char template[PATH_MAX];
 
@@ -108,7 +108,7 @@ static int mkfile(int size)
 		}
 	}
 	fprintf(stdout, "created file of size %d\n"
-			"content of the file is 'a'\n", index);
+		"content of the file is 'a'\n", index);
 
 	if (fsync(fd) == -1) {
 		perror("mkfile(): fsync()");
@@ -121,7 +121,7 @@ static void sig_handler(int signal)
 {
 	if (signal != SIGALRM) {
 		fprintf(stderr, "sig_handlder(): unexpected signal caught"
-				"[%d]\n", signal);
+			"[%d]\n", signal);
 		exit(-1);
 	} else
 		fprintf(stdout, "Test ended, success\n");
@@ -131,85 +131,82 @@ static void sig_handler(int signal)
 static void usage(char *progname)
 {
 	fprintf(stderr,
-			"Usage: %s -h -s -x\n"
-			"\t -a set map_flags to MAP_ANONYMOUS\n"
-			"\t -h help, usage message.\n"
-			"\t -p set map_flag to MAP_PRIVATE.\tdefault:"
-			"MAP_SHARED\n"
-			"\t -s size of the file/memory to be mmaped.\tdefault:"
-			"1GB\n"
-			"\t -x time for which test is to be run.\tdefault:"
-			"24 Hrs\n",
-			progname);
+		"Usage: %s -h -s -x\n"
+		"\t -a set map_flags to MAP_ANONYMOUS\n"
+		"\t -h help, usage message.\n"
+		"\t -p set map_flag to MAP_PRIVATE.\tdefault:"
+		"MAP_SHARED\n"
+		"\t -s size of the file/memory to be mmaped.\tdefault:"
+		"1GB\n"
+		"\t -x time for which test is to be run.\tdefault:"
+		"24 Hrs\n", progname);
 	exit(-1);
 }
 
 int main(int argc, char **argv)
 {
-	int   fd;
-	int   fsize = 1;
+	int fd;
+	int fsize = 1;
 	float exec_time = 24;
-	int   c;
-	int   sig_ndx;
-	int   map_flags =  MAP_SHARED;
-	int   map_anon =  FALSE;
-	int   run_once = TRUE;
-	char  *memptr;
+	int c;
+	int sig_ndx;
+	int map_flags = MAP_SHARED;
+	int map_anon = FALSE;
+	int run_once = TRUE;
+	char *memptr;
 	struct sigaction sigptr;
 
-	static struct signal_info
-	{
-		int  signum;
+	static struct signal_info {
+		int signum;
 		char *signame;
 	} sig_info[] = {
-		{SIGHUP, "SIGHUP"},
-		{SIGINT, "SIGINT"},
-		{SIGQUIT, "SIGQUIT"},
-		{SIGABRT, "SIGABRT"},
-		{SIGBUS, "SIGBUS"},
-		{SIGSEGV, "SIGSEGV"},
-		{SIGALRM, "SIGALRM"},
-		{SIGUSR1, "SIGUSR1"},
-		{SIGUSR2, "SIGUSR2"},
-		{-1,     "ENDSIG"}
+		{
+		SIGHUP, "SIGHUP"}, {
+		SIGINT, "SIGINT"}, {
+		SIGQUIT, "SIGQUIT"}, {
+		SIGABRT, "SIGABRT"}, {
+		SIGBUS, "SIGBUS"}, {
+		SIGSEGV, "SIGSEGV"}, {
+		SIGALRM, "SIGALRM"}, {
+		SIGUSR1, "SIGUSR1"}, {
+		SIGUSR2, "SIGUSR2"}, {
+		-1, "ENDSIG"}
 	};
 
-	while ((c =  getopt(argc, argv, "ahps:x:")) != -1) {
-			switch (c) {
-			case 'a':
-				map_anon = TRUE;
-				break;
-			case 'h':
-				usage(argv[0]);
-				exit(-1);
-				break;
-			case 'p':
-				map_flags = MAP_PRIVATE;
-				break;
-			case 's':
-				fsize = atoi(optarg);
-				if (fsize == 0)
-					fprintf(stderr, "Using default "
-						"fsize %d GB\n", fsize = 1);
-				break;
-			case 'x':
-				exec_time = atof(optarg);
-				if (exec_time == 0)
-					fprintf(stderr, "Using default exec "
-						"time %f hrs",
-						exec_time = (float)24);
-				run_once = FALSE;
-				break;
-			default:
-				usage(argv[0]);
-				break;
+	while ((c = getopt(argc, argv, "ahps:x:")) != -1) {
+		switch (c) {
+		case 'a':
+			map_anon = TRUE;
+			break;
+		case 'h':
+			usage(argv[0]);
+			exit(-1);
+			break;
+		case 'p':
+			map_flags = MAP_PRIVATE;
+			break;
+		case 's':
+			fsize = atoi(optarg);
+			if (fsize == 0)
+				fprintf(stderr, "Using default "
+					"fsize %d GB\n", fsize = 1);
+			break;
+		case 'x':
+			exec_time = atof(optarg);
+			if (exec_time == 0)
+				fprintf(stderr, "Using default exec "
+					"time %f hrs", exec_time = (float)24);
+			run_once = FALSE;
+			break;
+		default:
+			usage(argv[0]);
+			break;
 		}
 	}
 
 	fprintf(stdout, "MM Stress test, map/write/unmap large file\n"
-			"\tTest scheduled to run for:       %f\n"
-			"\tSize of temp file in GB:         %d\n",
-			exec_time, fsize);
+		"\tTest scheduled to run for:       %f\n"
+		"\tSize of temp file in GB:         %d\n", exec_time, fsize);
 
 	alarm(exec_time * 3600.00);
 
@@ -219,10 +216,10 @@ int main(int argc, char **argv)
 	for (sig_ndx = 0; sig_info[sig_ndx].signum != -1; sig_ndx++) {
 		sigaddset(&sigptr.sa_mask, sig_info[sig_ndx].signum);
 		if (sigaction(sig_info[sig_ndx].signum, &sigptr,
-					(struct sigaction *)NULL) == -1) {
+			      (struct sigaction *)NULL) == -1) {
 			perror("man(): sigaction()");
 			fprintf(stderr, "could not set handler for SIGALRM,"
-				"errno = %d\n",	errno);
+				"errno = %d\n", errno);
 			exit(-1);
 		}
 	}
@@ -237,26 +234,26 @@ int main(int argc, char **argv)
 			}
 		} else {
 			fd = -1;
-			map_flags = map_flags|MAP_ANONYMOUS;
+			map_flags = map_flags | MAP_ANONYMOUS;
 		}
-		memptr = mmap(0, (fsize * GB), PROT_READ|PROT_WRITE,
-					map_flags, fd, 0);
-		if (memptr  == MAP_FAILED) {
+		memptr = mmap(0, (fsize * GB), PROT_READ | PROT_WRITE,
+			      map_flags, fd, 0);
+		if (memptr == MAP_FAILED) {
 			perror("main(): mmap()");
 			exit(-1);
 		} else
 			fprintf(stdout, "file mapped at %p\n"
 				"changing file content to 'A'\n", memptr);
 
-		memset(memptr, 'A', ((fsize * GB)/sizeof(char)));
+		memset(memptr, 'A', ((fsize * GB) / sizeof(char)));
 
-		if (msync(memptr, ((fsize * GB)/sizeof(char)),
-					MS_SYNC|MS_INVALIDATE) == -1) {
+		if (msync(memptr, ((fsize * GB) / sizeof(char)),
+			  MS_SYNC | MS_INVALIDATE) == -1) {
 			perror("main(): msync()");
 			exit(-1);
 		}
 
-		if (munmap(memptr, (fsize * GB)/sizeof(char)) == -1) {
+		if (munmap(memptr, (fsize * GB) / sizeof(char)) == -1) {
 			perror("main(): munmap()");
 			exit(-1);
 		} else

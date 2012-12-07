@@ -35,15 +35,16 @@ pthread_once_t once_control = PTHREAD_ONCE_INIT;
 void *an_init_func()
 {
 	/* Indicate to main() that the init function has been reached */
-	init_flag=1;
+	init_flag = 1;
 
 	/* Stay in a continuous loop until the thread that called
 	 * this function gets canceled */
 	sleep(10);
 
 	/* The thread could not be canceled, timeout after 10 secs */
-	perror("Init function timed out (10 secs), thread could not be canceled\n");
-	init_flag=-1;
+	perror
+	    ("Init function timed out (10 secs), thread could not be canceled\n");
+	init_flag = -1;
 	return NULL;
 }
 
@@ -53,7 +54,7 @@ void *a_thread_func()
 	/* Make the thread cancelable immediately */
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
-	pthread_once(&once_control, (void*)an_init_func);
+	pthread_once(&once_control, (void *)an_init_func);
 	return NULL;
 }
 
@@ -61,29 +62,27 @@ void *a_thread_func()
 void *an_init_func2()
 {
 	/* Indicate to main() that this init function has been reached */
-	init_flag=1;
+	init_flag = 1;
 	return NULL;
 }
 
 int main()
 {
 	pthread_t new_th;
-	init_flag=0;
+	init_flag = 0;
 
 	/* Create a thread that will execute the first call to pthread_once() */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait until the init function is reached to cancel the thread */
-	while (init_flag==0)
+	while (init_flag == 0)
 		sleep(1);
 
-	/* Send cancel request to the thread*/
-	if (pthread_cancel(new_th) != 0)
-	{
+	/* Send cancel request to the thread */
+	if (pthread_cancel(new_th) != 0) {
 		perror("Could send cancel request to thread\n");
 		return PTS_UNRESOLVED;
 	}
@@ -93,22 +92,20 @@ int main()
 
 	/* If the thread could not be canceled and timed out, send
 	 * an error */
-	if (init_flag == -1)
-	{
+	if (init_flag == -1) {
 		perror("Error: could not cancel thread\n");
 		return PTS_UNRESOLVED;
 	}
 
-	init_flag=0;
+	init_flag = 0;
 
 	/* Should be able to call pthread_once() again with the same
 	 * pthread_once_t object. */
-	pthread_once(&once_control, (void*)an_init_func2);
+	pthread_once(&once_control, (void *)an_init_func2);
 
 	/* If the init function from the 2nd call to pthread_once() was not
- 	 * reached, the test fails. */
-	if (init_flag != 1)
-	{
+	 * reached, the test fails. */
+	if (init_flag != 1) {
 		printf("Test FAILED\n: %d", init_flag);
 		return PTS_FAIL;
 	}

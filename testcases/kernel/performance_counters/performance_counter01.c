@@ -43,11 +43,11 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int  Tst_count;
-extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
+extern int Tst_count;
+extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 /* Global Variables */
-char *TCID     = "performance_counter01"; /* test program identifier.          */
-int  TST_TOTAL = 1;
+char *TCID = "performance_counter01";	/* test program identifier.          */
+int TST_TOTAL = 1;
 
 enum hw_event_types {
 	PERF_COUNT_CYCLES,
@@ -58,25 +58,27 @@ enum hw_event_types {
 	PERF_COUNT_BRANCH_MISSES,
 };
 
-void cleanup(void) { /* Stub function. */ }
+void cleanup(void)
+{				/* Stub function. */
+}
 
-int
-main(void) {
+int main(void)
+{
 
 	unsigned long long count1, count2;
 	int fd1, fd2, ret;
 
 	fd1 = syscall(__NR_perf_event_open,
-			PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
+		      PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
 	if (fd1 < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
-			"Failed to create PERF_COUNT_INSTRUCTIONS fd");
+			 "Failed to create PERF_COUNT_INSTRUCTIONS fd");
 	}
 	fd2 = syscall(__NR_perf_event_open,
-			PERF_COUNT_CACHE_MISSES, 0, 0, 0, -1);
+		      PERF_COUNT_CACHE_MISSES, 0, 0, 0, -1);
 	if (fd2 < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
-			"Failed to create PERF_COUNT_CACHE_MISSES fd");
+			 "Failed to create PERF_COUNT_CACHE_MISSES fd");
 	}
 
 	do {
@@ -89,11 +91,11 @@ main(void) {
 
 			if (ret == sizeof(count2)) {
 				tst_resm(TINFO,
-					"counter1 value: %Ld instructions",
-					count1);
+					 "counter1 value: %Ld instructions",
+					 count1);
 				tst_resm(TINFO,
-					"counter2 value: %Ld cachemisses",
-					count2);
+					 "counter2 value: %Ld cachemisses",
+					 count2);
 				sleep(1);
 			}
 

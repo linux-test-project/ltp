@@ -96,13 +96,11 @@ int main(int ac, char **av)
 	TEST(msync(addr, page_sz, MS_INVALIDATE));
 
 	if (TEST_RETURN == -1)
-		tst_resm(TFAIL|TTERRNO, "msync failed");
-	else if (memcmp(addr+100, write_buf, strlen(write_buf)) != 0)
-		tst_resm(TFAIL,
-			 "memory region contains invalid data");
+		tst_resm(TFAIL | TTERRNO, "msync failed");
+	else if (memcmp(addr + 100, write_buf, strlen(write_buf)) != 0)
+		tst_resm(TFAIL, "memory region contains invalid data");
 	else
-		tst_resm(TPASS,
-			 "Functionality of msync successful");
+		tst_resm(TPASS, "Functionality of msync successful");
 
 	cleanup();
 
@@ -119,17 +117,17 @@ void setup()
 	TEST_PAUSE;
 
 	if ((page_sz = getpagesize()) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "getpagesize failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpagesize failed");
 
 	tst_tmpdir();
 
-	if ((fildes = open(TEMPFILE, O_RDWR|O_CREAT, 0666)) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
 	/* Write one page size of char data into temporary file */
 	while (c_total < page_sz) {
 		if ((nwrite = write(fildes, tst_buf, sizeof(tst_buf))) <= 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 		else
 			c_total += nwrite;
 	}
@@ -138,15 +136,15 @@ void setup()
 		    fildes, 0);
 
 	if (addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 
 	/* Again, Seek to the specified byte offset (100) position */
 	if (lseek(fildes, 100, SEEK_SET) != 100)
-		tst_brkm(TBROK|TERRNO, cleanup, "lseek failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "lseek failed");
 
 	/* Write the string in write_buf at the 100 byte offset */
 	if (write(fildes, write_buf, strlen(write_buf)) != strlen(write_buf))
-		tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 }
 
 void cleanup()
@@ -154,11 +152,11 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (munmap(addr, page_sz) == -1)
-		tst_resm(TBROK|TERRNO, "munmap failed");
+		tst_resm(TBROK | TERRNO, "munmap failed");
 
 	/* Close the temporary file */
 	if (close(fildes) == -1)
-		tst_resm(TWARN|TERRNO, "close failed");
+		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
 }

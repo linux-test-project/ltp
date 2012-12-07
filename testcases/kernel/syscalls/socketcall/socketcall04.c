@@ -123,9 +123,8 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "socketcall() Failed "
-				 " with return=%ld",
-				 TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO, "socketcall() Failed "
+				 " with return=%ld", TEST_RETURN);
 		} else {
 			tst_resm(TPASS, "socketcall() passed "
 				 "for %s with return=%ld ",

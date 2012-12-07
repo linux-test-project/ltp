@@ -41,46 +41,43 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	struct hostent *hp = NULL;
 	struct sockaddr_in sin;
 	enum clnt_stat cs;
-    u_long port;
+	u_long port;
 	struct timeval tv;
 	int var_snd = 10;
 	int var_rec = -1;
 
 	//Initialization
-	if ((hp = gethostbyname(argc[1])) == NULL)
-	{
+	if ((hp = gethostbyname(argc[1])) == NULL) {
 		fprintf(stderr, "gethostbyname failed\n");
 		exit(1);
 	}
 
 	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = *(u_int *)hp->h_addr;
-    port = pmap_getport(&sin, progNum, VERSNUM, IPPROTO_UDP);
+	sin.sin_addr.s_addr = *(u_int *) hp->h_addr;
+	port = pmap_getport(&sin, progNum, VERSNUM, IPPROTO_UDP);
 
 	tv.tv_sec = 0;
 	tv.tv_usec = 100;
 
-    if (run_mode)
-    {
+	if (run_mode) {
 		printf("port : %d\n", port);
 	}
 
 	cs = pmap_rmtcall(&sin, progNum, VERSNUM, PROCNUM,
-	                  (xdrproc_t)xdr_int, (char *)&var_snd,
-	                  (xdrproc_t)xdr_int, (char *)&var_rec,
-	                  tv, &port);
+			  (xdrproc_t) xdr_int, (char *)&var_snd,
+			  (xdrproc_t) xdr_int, (char *)&var_rec, tv, &port);
 
 	test_status = (cs == RPC_SUCCESS) ? 0 : 1;
 

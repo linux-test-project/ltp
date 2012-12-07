@@ -195,7 +195,7 @@ void setup()
 	if (link(fname, mname) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "link from %s to %s failed!", fname, mname);
-	 }
+	}
 }
 
 /*

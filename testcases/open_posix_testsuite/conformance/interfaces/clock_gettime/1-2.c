@@ -28,15 +28,15 @@ int main(int argc, char *argv[])
 
 	if (clock_gettime(CLOCK_REALTIME, &tpundertest) == 0) {
 		if (gettimeofday(&tvstandard, NULL) == 0) {
-			delta = (int) tvstandard.tv_sec -
-				(int) tpundertest.tv_sec;
+			delta = (int)tvstandard.tv_sec -
+			    (int)tpundertest.tv_sec;
 			if (abs(delta) <= ACCEPTABLEDELTA) {
 				printf("Test PASSED\n");
 				return PTS_PASS;
 			} else {
 				printf("FAIL:  expected %d, received %d\n",
-					(int) tvstandard.tv_sec,
-					(int) tpundertest.tv_sec);
+				       (int)tvstandard.tv_sec,
+				       (int)tpundertest.tv_sec);
 				return PTS_FAIL;
 			}
 		} else {

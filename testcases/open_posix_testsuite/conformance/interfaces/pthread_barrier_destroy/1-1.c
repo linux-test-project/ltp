@@ -32,19 +32,18 @@ int main()
 	int cnt;
 	int rc;
 
-	for (cnt = 0; cnt < LOOP_NUM; cnt++)
-	{
-		if (pthread_barrier_init(&barrier, NULL, 2) != 0)
-		{
-			printf("Test FAILED: Error at pthread_barrier_init()\n");
+	for (cnt = 0; cnt < LOOP_NUM; cnt++) {
+		if (pthread_barrier_init(&barrier, NULL, 2) != 0) {
+			printf
+			    ("Test FAILED: Error at pthread_barrier_init()\n");
 			return PTS_FAIL;
 		}
 
 		rc = pthread_barrier_destroy(&barrier);
-		if (rc != 0)
-		{
-			printf("Test FAILED: Error at pthread_barrier_destroy() "
-				" return code: %d, %s\n", rc, strerror(rc));
+		if (rc != 0) {
+			printf
+			    ("Test FAILED: Error at pthread_barrier_destroy() "
+			     " return code: %d, %s\n", rc, strerror(rc));
 			return PTS_FAIL;
 		}
 	}

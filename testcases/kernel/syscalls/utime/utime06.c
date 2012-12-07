@@ -151,11 +151,11 @@ int main(int ac, char **av)
 
 	if (pid == -1) {
 		tst_brkm(TBROK, cleanup, "fork() failed");
-	 } else if (pid == 0) {
+	} else if (pid == 0) {
 		if ((ltpuser = getpwnam(LTPUSER1)) == NULL) {
 			tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
 				 LTPUSER1);
-		 }
+		}
 
 		/* get uid of user */
 		user_uid = ltpuser->pw_uid;
@@ -190,11 +190,12 @@ int main(int ac, char **av)
 							 "fails, %s, errno:%d, "
 							 "expected errno:%d",
 							 test_desc, TEST_ERRNO,
-							 Test_cases[ind].
-							 exp_errno);
+							 Test_cases
+							 [ind].exp_errno);
 					}
 				} else {
-					tst_resm(TFAIL, "utime(2) returned %ld, "
+					tst_resm(TFAIL,
+						 "utime(2) returned %ld, "
 						 "expected -1, errno:%d",
 						 TEST_RETURN,
 						 Test_cases[ind].exp_errno);
@@ -285,7 +286,7 @@ int setup1()
 	if ((ltpuser = getpwnam(LTPUSER2)) == NULL) {
 		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
 			 LTPUSER2);
-	 }
+	}
 
 	/* get uid/gid of user accordingly */
 	user_uid = ltpuser->pw_uid;
@@ -294,7 +295,7 @@ int setup1()
 	if (chown(TEMP_FILE, user_uid, group_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d",
 			 TEMP_FILE, errno);
-	 }
+	}
 
 	return 0;
 }

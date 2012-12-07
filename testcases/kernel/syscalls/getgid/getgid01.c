@@ -149,7 +149,7 @@ int main(int ac, char **av)
 		else {
 			if (STD_FUNCTIONAL_TEST)
 				tst_resm(TPASS, "getgid returned %ld",
-				    TEST_RETURN);
+					 TEST_RETURN);
 		}
 
 	}

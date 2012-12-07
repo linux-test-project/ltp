@@ -127,8 +127,9 @@ int main(int ac, char **av)
 					 "errno = %d : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else if (TEST_ERRNO == ENOSYS) {
-				tst_resm(TCONF, "You may need to make CONFIG_SYSCTL_SYSCALL=y"
-						" to your kernel config.");
+				tst_resm(TCONF,
+					 "You may need to make CONFIG_SYSCTL_SYSCALL=y"
+					 " to your kernel config.");
 			} else {
 				tst_resm(TFAIL, "unexpected error - %d : %s - "
 					 "expected %d", TEST_ERRNO,

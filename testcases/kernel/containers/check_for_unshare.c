@@ -43,9 +43,9 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	dlerror();    /* Clear any existing error */
+	dlerror();		/* Clear any existing error */
 	ret = dlsym(handle, "unshare");
-	if ((error = dlerror()) != NULL)  {
+	if ((error = dlerror()) != NULL) {
 		fprintf(stderr, "Error: %s\n", error);
 		exit(1);
 	}

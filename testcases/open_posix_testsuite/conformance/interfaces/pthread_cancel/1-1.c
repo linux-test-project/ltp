@@ -30,17 +30,17 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-# define INTHREAD 0 	/* Control going to or is already for Thread */
-# define INMAIN 1	/* Control going to or is already for Main */
+#define INTHREAD 0		/* Control going to or is already for Thread */
+#define INMAIN 1		/* Control going to or is already for Main */
 
-int sem1;		/* Manual semaphore */
+int sem1;			/* Manual semaphore */
 int cleanup_flag;
 
 /* Cleanup function that the thread executes when it is canceled.  So if
  * cleanup_flag is -1, it means that the thread was canceled. */
 void a_cleanup_func()
 {
-	cleanup_flag=1;
+	cleanup_flag = 1;
 	return;
 }
 
@@ -50,14 +50,14 @@ void *a_thread_func()
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
-	pthread_cleanup_push(a_cleanup_func,NULL);
+	pthread_cleanup_push(a_cleanup_func, NULL);
 
 	/* Indicate to main() that the thread has been created. */
-	sem1=INMAIN;
+	sem1 = INMAIN;
 
 	/* Wait until main() has sent out a cancel request, meaning until it
 	 * sets sem1==0 */
-	while (sem1==1)
+	while (sem1 == 1)
 		sleep(1);
 
 	/* Give thread 10 seconds to time out.  If the cancel request was not
@@ -66,7 +66,7 @@ void *a_thread_func()
 
 	/* Shouldn't get here if the cancel request was honored immediately
 	 * like it should have been. */
-	cleanup_flag=-1;
+	cleanup_flag = -1;
 	pthread_cleanup_pop(0);
 	pthread_exit(0);
 	return NULL;
@@ -77,40 +77,37 @@ int main()
 	pthread_t new_th;
 
 	/* Initializing values */
-	sem1=INTHREAD;
-	cleanup_flag=0;
+	sem1 = INTHREAD;
+	cleanup_flag = 0;
 
 	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure thread is created before we cancel it. (wait for
 	 * a_thread_func() to set sem1=1.) */
-	while (sem1==INTHREAD)
+	while (sem1 == INTHREAD)
 		sleep(1);
 
-	if (pthread_cancel(new_th) != 0)
-	{
+	if (pthread_cancel(new_th) != 0) {
 		printf("Test FAILED: Couldn't cancel thread\n");
 		return PTS_FAIL;
 	}
 
 	/* Indicate to the thread function that the thread cancel request
 	 * has been sent to it. */
-	sem1=INTHREAD;
+	sem1 = INTHREAD;
 
 	/* Wait for thread to return. (i.e. either canceled correctly and
 	 * called the cleanup function, or timed out after 10 seconds. */
-	while (cleanup_flag==INTHREAD)
+	while (cleanup_flag == INTHREAD)
 		sleep(1);
 
 	/* This means that the cleanup function wasn't called, so the cancel
 	 * request was not honord immediately like it should have been. */
-	if (cleanup_flag < 0)
-	{
+	if (cleanup_flag < 0) {
 		printf("Test FAILED: Cancel request timed out\n");
 		return PTS_FAIL;
 	}

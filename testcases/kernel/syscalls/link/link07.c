@@ -102,6 +102,7 @@ char *TCID = "link07";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { EACCES, 0 };
+
 char *file1, *file2;		/* oldpath and newpath */
 
 /***********************************************************************
@@ -219,15 +220,15 @@ void setup()
 	file2 = NEW_TEST_FILE2;
 
 	if ((nobody_pwd = getpwnam("nobody")) == NULL) {
-		tst_brkm(TCONF|TERRNO, cleanup,
-			"couldn't determine login information for nobody");
+		tst_brkm(TCONF | TERRNO, cleanup,
+			 "couldn't determine login information for nobody");
 	}
 
 	/* set effective user ID to "nobody"'s UID using seteuid */
 	if (seteuid(nobody_pwd->pw_uid) != 0) {
-		tst_brkm(TCONF|TERRNO, cleanup,
-			"seteuid to %d for %s failed",
-			nobody_pwd->pw_uid, nobody_pwd->pw_name);
+		tst_brkm(TCONF | TERRNO, cleanup,
+			 "seteuid to %d for %s failed",
+			 nobody_pwd->pw_uid, nobody_pwd->pw_name);
 	}
 
 }
@@ -240,7 +241,7 @@ void cleanup()
 {
 	/* set back effective user ID to ROOT_USER using seteuid */
 	if (seteuid(ROOT_USER) != 0) {
-		tst_resm(TFAIL|TERRNO, "seteuid(%d) failed", ROOT_USER);
+		tst_resm(TFAIL | TERRNO, "seteuid(%d) failed", ROOT_USER);
 	}
 
 	/*

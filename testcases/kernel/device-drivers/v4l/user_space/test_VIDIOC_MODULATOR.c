@@ -31,17 +31,17 @@
 
 #include "test_VIDIOC_MODULATOR.h"
 
-int valid_modulator_sub(__u32 tuner_sub) {
+int valid_modulator_sub(__u32 tuner_sub)
+{
 	int valid = 0;
 
 	CU_ASSERT_EQUAL(V4L2_TUNER_SUB_SAP, V4L2_TUNER_SUB_LANG2);
 
-	if ( (tuner_sub & ~(V4L2_TUNER_SUB_MONO |
-			    V4L2_TUNER_SUB_STEREO |
-			    V4L2_TUNER_SUB_LANG1 |
-			    V4L2_TUNER_SUB_LANG2 |
-			    V4L2_TUNER_SUB_SAP))
-		== 0) {
+	if ((tuner_sub & ~(V4L2_TUNER_SUB_MONO |
+			   V4L2_TUNER_SUB_STEREO |
+			   V4L2_TUNER_SUB_LANG1 |
+			   V4L2_TUNER_SUB_LANG2 | V4L2_TUNER_SUB_SAP))
+	    == 0) {
 		valid = 1;
 	} else {
 		valid = 0;
@@ -49,7 +49,8 @@ int valid_modulator_sub(__u32 tuner_sub) {
 	return valid;
 }
 
-static int do_get_modulator(int f, __u32 index) {
+static int do_get_modulator(int f, __u32 index)
+{
 	int ret_get, errno_get;
 	struct v4l2_modulator modulator;
 	struct v4l2_modulator modulator2;
@@ -67,8 +68,9 @@ static int do_get_modulator(int f, __u32 index) {
 
 		CU_ASSERT_EQUAL(modulator.index, index);
 
-		CU_ASSERT(0 < strlen( (char*)modulator.name ));
-		CU_ASSERT(valid_string((char*)modulator.name, sizeof(modulator.name)));
+		CU_ASSERT(0 < strlen((char *)modulator.name));
+		CU_ASSERT(valid_string
+			  ((char *)modulator.name, sizeof(modulator.name)));
 
 		CU_ASSERT(valid_modulator_capability(modulator.capability));
 
@@ -88,12 +90,15 @@ static int do_get_modulator(int f, __u32 index) {
 		 */
 		memset(&modulator2, 0, sizeof(modulator2));
 		modulator2.index = modulator.index;
-		strncpy((char*)modulator2.name, (char*)modulator.name, sizeof(modulator2.name));
+		strncpy((char *)modulator2.name, (char *)modulator.name,
+			sizeof(modulator2.name));
 		modulator2.capability = modulator.capability;
 		modulator2.rangelow = modulator.rangelow;
 		modulator2.rangehigh = modulator.rangehigh;
 		modulator2.txsubchans = modulator.txsubchans;
-		CU_ASSERT_EQUAL(memcmp(&modulator, &modulator2, sizeof(modulator)), 0);
+		CU_ASSERT_EQUAL(memcmp
+				(&modulator, &modulator2, sizeof(modulator)),
+				0);
 
 		dprintf("\tmodulator = { "
 			".index = %u, "
@@ -111,13 +116,14 @@ static int do_get_modulator(int f, __u32 index) {
 			modulator.txsubchans,
 			modulator.reserved[0],
 			modulator.reserved[1],
-			modulator.reserved[2],
-			modulator.reserved[3]
-		);
+			modulator.reserved[2], modulator.reserved[3]
+		    );
 
 	} else {
-		dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__, ret_get, -1);
-		dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__, errno_get, EINVAL);
+		dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__,
+			__LINE__, ret_get, -1);
+		dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__,
+			__LINE__, errno_get, EINVAL);
 		CU_ASSERT_EQUAL(ret_get, -1);
 		CU_ASSERT_EQUAL(errno_get, EINVAL);
 	}
@@ -125,7 +131,8 @@ static int do_get_modulator(int f, __u32 index) {
 	return ret_get;
 }
 
-void test_VIDIOC_G_MODULATOR() {
+void test_VIDIOC_G_MODULATOR()
+{
 	int ret;
 	__u32 index;
 	int f;
@@ -140,12 +147,13 @@ void test_VIDIOC_G_MODULATOR() {
 
 }
 
-void test_VIDIOC_G_MODULATOR_S32_MAX() {
+void test_VIDIOC_G_MODULATOR_S32_MAX()
+{
 	int ret_get, errno_get;
 	__u32 index;
 	struct v4l2_modulator modulator;
 
-	index = (__u32)S32_MAX;
+	index = (__u32) S32_MAX;
 
 	memset(&modulator, 0xff, sizeof(modulator));
 	modulator.index = index;
@@ -155,18 +163,21 @@ void test_VIDIOC_G_MODULATOR_S32_MAX() {
 	dprintf("\t%s:%u: VIDIOC_G_MODULATOR, ret_get=%i, errno_get=%i\n",
 		__FILE__, __LINE__, ret_get, errno_get);
 
-	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__, ret_get, -1);
-	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__, errno_get, EINVAL);
+	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__,
+		ret_get, -1);
+	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__,
+		errno_get, EINVAL);
 	CU_ASSERT_EQUAL(ret_get, -1);
 	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
-void test_VIDIOC_G_MODULATOR_S32_MAX_1() {
+void test_VIDIOC_G_MODULATOR_S32_MAX_1()
+{
 	int ret_get, errno_get;
 	__u32 index;
 	struct v4l2_modulator modulator;
 
-	index = (__u32)S32_MAX+1;
+	index = (__u32) S32_MAX + 1;
 
 	memset(&modulator, 0xff, sizeof(modulator));
 	modulator.index = index;
@@ -175,13 +186,16 @@ void test_VIDIOC_G_MODULATOR_S32_MAX_1() {
 
 	dprintf("VIDIOC_G_MODULATOR, ret_get=%i\n", ret_get);
 
-	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__, ret_get, -1);
-	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__, errno_get, EINVAL);
+	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__,
+		ret_get, -1);
+	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__,
+		errno_get, EINVAL);
 	CU_ASSERT_EQUAL(ret_get, -1);
 	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
-void test_VIDIOC_G_MODULATOR_U32_MAX() {
+void test_VIDIOC_G_MODULATOR_U32_MAX()
+{
 	int ret_get, errno_get;
 	__u32 index;
 	struct v4l2_modulator modulator;
@@ -196,13 +210,16 @@ void test_VIDIOC_G_MODULATOR_U32_MAX() {
 	dprintf("\t%s:%u: VIDIOC_G_MODULATOR, ret_get=%i, errno_get=%i\n",
 		__FILE__, __LINE__, ret_get, errno_get);
 
-	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__, ret_get, -1);
-	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__, errno_get, EINVAL);
+	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__,
+		ret_get, -1);
+	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__,
+		errno_get, EINVAL);
 	CU_ASSERT_EQUAL(ret_get, -1);
 	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
-void test_VIDIOC_G_MODULATOR_NULL() {
+void test_VIDIOC_G_MODULATOR_NULL()
+{
 	int ret_get, errno_get;
 	int ret_null, errno_null;
 	struct v4l2_modulator modulator;

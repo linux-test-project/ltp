@@ -45,7 +45,8 @@ int set_nonroot()
 
 	if (setuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
+			printf
+			    ("You don't have permission to change your UID.\n");
 			return 1;
 		}
 		perror("An error occurs when calling seteuid()");
@@ -63,18 +64,19 @@ int main()
 	union sigval value;
 	value.sival_int = 0;	/* 0 is just an arbitrary value */
 
-        /* We assume process Number 1 is created by root */
-        /* and can only be accessed by root */
-        /* This test should be run under standard user permissions */
-        if (getuid() == 0) {
-                if (set_nonroot() != 0) {
+	/* We assume process Number 1 is created by root */
+	/* and can only be accessed by root */
+	/* This test should be run under standard user permissions */
+	if (getuid() == 0) {
+		if (set_nonroot() != 0) {
 			printf("Cannot run this test as non-root user\n");
 			return PTS_UNTESTED;
 		}
-        }
+	}
 
 	if (sigqueue(1, 0, value) != -1) {
-		printf("Test FAILED: sigqueue() succeeded even though this program's user id did not match the recieving process's user id\n");
+		printf
+		    ("Test FAILED: sigqueue() succeeded even though this program's user id did not match the recieving process's user id\n");
 		return PTS_FAIL;
 	}
 

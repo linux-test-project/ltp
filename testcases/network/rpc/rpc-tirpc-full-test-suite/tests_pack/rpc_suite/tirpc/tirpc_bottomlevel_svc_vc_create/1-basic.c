@@ -40,19 +40,18 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	SVCXPRT *transp = NULL;
 
-	transp = svc_vc_create(RPC_ANYFD, 0, 0);/**/
-
-	test_status = ((SVCXPRT *)transp != NULL) ? 0 : 1;
+	transp = svc_vc_create(RPC_ANYFD, 0, 0);
+	/**/ test_status = ((SVCXPRT *) transp != NULL) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

@@ -35,12 +35,12 @@
 #include "posixtest.h"
 
 static stack_t a;
-static char path[PATH_MAX+1];
+static char path[PATH_MAX + 1];
 
 int main(int argc, char **argv)
 {
 	int rc;
-	char path[PATH_MAX+1];
+	char path[PATH_MAX + 1];
 
 	/* Called with no args, do the exec, otherwise check.  */
 	if (argc == 1) {
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 		rc = sigaltstack(&a, NULL);
 		if (rc) {
 			printf("Failed: sigaltstack() rc: %d errno: %s\n",
-						rc, strerror(errno));
+			       rc, strerror(errno));
 			exit(PTS_UNRESOLVED);
 		}
 
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
 	} else if (strcmp(argv[1], "verify")) {
 		printf("Failed: %s called with unexpected argument: %s\n",
-						argv[0], argv[1]);
+		       argv[0], argv[1]);
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	rc = sigaltstack(NULL, &a);
 	if (rc || a.ss_flags != SS_DISABLE) {
 		printf("Failed: sigaltstack() rc: %d ss_flags: %u\n",
-					rc, a.ss_flags);
+		       rc, a.ss_flags);
 		exit(PTS_FAIL);
 	}
 

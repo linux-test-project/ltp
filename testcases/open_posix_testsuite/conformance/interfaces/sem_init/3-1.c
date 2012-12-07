@@ -30,60 +30,60 @@ int n;
 
 int main()
 {
-    pthread_t prod, cons;
-   void *producer(void *);
-   void *consumer(void *);
-   long cnt = 3;
+	pthread_t prod, cons;
+	void *producer(void *);
+	void *consumer(void *);
+	long cnt = 3;
 
-   n = 0;
-   if (sem_init(&csem, 0, 0) < 0) {
-        perror("sem_init");
-        return PTS_UNRESOLVED;
-   }
-    if (sem_init(&psem, 0, 1) < 0) {
-        perror("sem_init");
-        return PTS_UNRESOLVED;
-   }
-   if (pthread_create(&prod, NULL, producer, (void *)cnt) != 0) {
-        perror("pthread_create");
-        return PTS_UNRESOLVED;
-   }
-   if (pthread_create(&cons, NULL, consumer, (void *)cnt) != 0) {
-        perror("pthread_create");
-        return PTS_UNRESOLVED;
-   }
+	n = 0;
+	if (sem_init(&csem, 0, 0) < 0) {
+		perror("sem_init");
+		return PTS_UNRESOLVED;
+	}
+	if (sem_init(&psem, 0, 1) < 0) {
+		perror("sem_init");
+		return PTS_UNRESOLVED;
+	}
+	if (pthread_create(&prod, NULL, producer, (void *)cnt) != 0) {
+		perror("pthread_create");
+		return PTS_UNRESOLVED;
+	}
+	if (pthread_create(&cons, NULL, consumer, (void *)cnt) != 0) {
+		perror("pthread_create");
+		return PTS_UNRESOLVED;
+	}
 
-   if ((pthread_join(prod, NULL) == 0) && (pthread_join(cons, NULL) == 0)) {
-	   puts("TEST PASS");
-	   	pthread_exit(NULL);
-   		sem_destroy(&psem);
+	if ((pthread_join(prod, NULL) == 0) && (pthread_join(cons, NULL) == 0)) {
+		puts("TEST PASS");
+		pthread_exit(NULL);
+		sem_destroy(&psem);
 		sem_destroy(&csem);
-	   return PTS_PASS;
-   } else {
-	   puts("TEST FAILED");
-	   return PTS_FAIL;
-   }
+		return PTS_PASS;
+	} else {
+		puts("TEST FAILED");
+		return PTS_FAIL;
+	}
 }
 
-void * producer(void *arg)
+void *producer(void *arg)
 {
-    int i, cnt;
-    cnt = (long)arg;
-    for (i=0; i<cnt; i++) {
-            sem_wait(&psem);
-            n++;
-            sem_post(&csem);
-    }
-    return NULL;
+	int i, cnt;
+	cnt = (long)arg;
+	for (i = 0; i < cnt; i++) {
+		sem_wait(&psem);
+		n++;
+		sem_post(&csem);
+	}
+	return NULL;
 }
 
-void * consumer(void *arg)
+void *consumer(void *arg)
 {
-    int i, cnt;
-    cnt = (long)arg;
-    for (i=0; i<cnt; i++) {
-           sem_wait(&csem);
-           sem_post(&psem);
-    }
-    return NULL;
+	int i, cnt;
+	cnt = (long)arg;
+	for (i = 0; i < cnt; i++) {
+		sem_wait(&csem);
+		sem_post(&psem);
+	}
+	return NULL;
 }

@@ -61,9 +61,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "unshare02";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 2;		   /* total number of tests in this file.   */
+char *TCID = "unshare02";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 2;		/* total number of tests in this file.   */
 
 #ifdef HAVE_UNSHARE
 
@@ -85,7 +85,8 @@ int  TST_TOTAL = 2;		   /* total number of tests in this file.   */
 /*	      On success - Exits calling tst_exit(). With '0' TEST_RETURNurn code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -112,21 +113,23 @@ extern void cleanup() {
 /*	      On success - TEST_RETURNurns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	pid_t pid1;
 	int lc;
 	int rval;
-	char *msg;	      /* message TEST_RETURNurned from parse_opts */
+	char *msg;		/* message TEST_RETURNurned from parse_opts */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-	     tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
@@ -134,10 +137,10 @@ int main(int ac, char **av) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			TEST(pid1 = fork());    //call to fork()
+			TEST(pid1 = fork());	//call to fork()
 			if (TEST_RETURN == -1) {
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-					"fork() failed.");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "fork() failed.");
 			} else if (TEST_RETURN == 0) {
 				TEST_RETURN = unshare(-1);
 				if (TEST_RETURN == 0) {
@@ -157,28 +160,28 @@ int main(int ac, char **av) {
 				exit(rval);
 			} else {
 				if (wait(&rval) == -1) {
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "wait failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "wait failed");
 				}
 				if (rval != 0 && WIFEXITED(rval)) {
 					switch (WEXITSTATUS(rval)) {
 					case 1:
 						tst_brkm(TBROK, cleanup,
-						    "unshare call unsupported "
-						    "in kernel");
+							 "unshare call unsupported "
+							 "in kernel");
 						break;
 					case 2:
 						tst_brkm(TFAIL, cleanup,
-						    "unshare call failed");
+							 "unshare call failed");
 						break;
 					}
 				}
 			}
 
-			TEST(pid1=fork());    //call to fork()
+			TEST(pid1 = fork());	//call to fork()
 			if (pid1 == -1) {
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-					"fork() failed.");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "fork() failed.");
 			} else if (TEST_RETURN == 0) {
 				TEST_RETURN = unshare(0);
 				if (TEST_RETURN == 0) {
@@ -195,19 +198,19 @@ int main(int ac, char **av) {
 				exit(rval);
 			} else {
 				if (wait(&rval) == -1) {
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "wait failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "wait failed");
 				}
 				if (rval != 0 && WIFEXITED(rval)) {
 					switch (WEXITSTATUS(rval)) {
 					case 1:
 						tst_brkm(TBROK, cleanup,
-						    "unshare call unsupported "
-						    "in kernel");
+							 "unshare call unsupported "
+							 "in kernel");
 						break;
 					case 2:
 						tst_brkm(TFAIL, cleanup,
-						    "unshare call failed");
+							 "unshare call failed");
 						break;
 					}
 				}

@@ -113,7 +113,7 @@ void setup()
 
 	sprintf(fname, "%s.%d", fname, getpid());
 
-	if (mknod(fname, S_IFIFO|0644, 0) == -1)
+	if (mknod(fname, S_IFIFO | 0644, 0) == -1)
 		tst_brkm(TBROK, cleanup, "mknod FAILED");
 }
 

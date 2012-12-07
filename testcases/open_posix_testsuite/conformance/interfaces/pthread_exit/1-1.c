@@ -22,19 +22,19 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-#define RETURN_CODE 100	/* Set a random return code number. This shall be the return code of the
-			 thread when using pthread_exit().*/
+#define RETURN_CODE 100		/* Set a random return code number. This shall be the return code of the
+				   thread when using pthread_exit(). */
 
-# define INTHREAD 0 	/* Control going to or is already for Thread */
-# define INMAIN 1	/* Control going to or is already for Main */
+#define INTHREAD 0		/* Control going to or is already for Thread */
+#define INMAIN 1		/* Control going to or is already for Main */
 
-int sem;	/* Manual semaphore used to indicate when the thread has been created. */
+int sem;			/* Manual semaphore used to indicate when the thread has been created. */
 
 /* Thread's function. */
 void *a_thread_func()
 {
-	sem=INMAIN;
-	pthread_exit((void*)RETURN_CODE);
+	sem = INMAIN;
+	pthread_exit((void *)RETURN_CODE);
 	return NULL;
 }
 
@@ -44,32 +44,30 @@ int main()
 	int *value_ptr;
 
 	/* Initializing variables. */
-	value_ptr=0;
-	sem=INTHREAD;
+	value_ptr = 0;
+	sem = INTHREAD;
 
 	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure the thread was created before we join it. */
-	while (sem==INTHREAD)
+	while (sem == INTHREAD)
 		sleep(1);
 
 	/* Wait for thread to return */
-	if (pthread_join(new_th, (void*)&value_ptr) != 0)
-	{
+	if (pthread_join(new_th, (void *)&value_ptr) != 0) {
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Check to make sure that 'value_ptr' that was passed to pthread_join() and the
 	 * pthread_exit() return code that was used in the thread funciton are the same. */
-	if ((long)value_ptr != RETURN_CODE)
-	{
-		printf("Test FAILED: pthread_exit() could not pass the return value of the thread in 'value_ptr' to pthread_join().\n");
+	if ((long)value_ptr != RETURN_CODE) {
+		printf
+		    ("Test FAILED: pthread_exit() could not pass the return value of the thread in 'value_ptr' to pthread_join().\n");
 		return PTS_FAIL;
 	}
 

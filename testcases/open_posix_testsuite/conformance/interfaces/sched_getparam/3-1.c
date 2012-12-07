@@ -25,9 +25,7 @@ int main(int argc, char **argv)
 
 	result = sched_getparam(0, &param);
 
-	if (result == 0 &&
-	   param.sched_priority != -1 &&
-	   errno == 0) {
+	if (result == 0 && param.sched_priority != -1 && errno == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

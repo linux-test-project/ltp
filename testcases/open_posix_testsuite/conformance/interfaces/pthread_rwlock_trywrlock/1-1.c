@@ -43,15 +43,14 @@ static int get_ebusy;
 #define ENTERED_THREAD 2
 #define EXITING_THREAD 3
 
-static void* fn_wr(void *arg)
+static void *fn_wr(void *arg)
 {
 	thread_state = ENTERED_THREAD;
 	int rc;
 
 	printf("thread: attempt pthread_rwlock_trywrlock()\n");
 	rc = pthread_rwlock_trywrlock(&rwlock);
-	if (rc != EBUSY)
-	{
+	if (rc != EBUSY) {
 		printf("Test FAILED: thread: Expected EBUSY, got %d\n", rc);
 		exit(PTS_FAIL);
 	}
@@ -70,16 +69,14 @@ int main()
 
 	get_ebusy = 0;
 
-	if (pthread_rwlock_init(&rwlock, NULL) != 0)
-	{
+	if (pthread_rwlock_init(&rwlock, NULL) != 0) {
 		printf("main: Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	printf("main: attempt read lock\n");
 	/* We have no lock, this read lock should succeed */
-	if (pthread_rwlock_rdlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_rdlock(&rwlock) != 0) {
 		printf("main: Error at pthread_rwlock_rdlock()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -87,8 +84,7 @@ int main()
 	printf("main: acquired read lock\n");
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread1\n");
-	if (pthread_create(&thread1, NULL, fn_wr, NULL) != 0)
-	{
+	if (pthread_create(&thread1, NULL, fn_wr, NULL) != 0) {
 		printf("Error creating thread1\n");
 		return PTS_UNRESOLVED;
 	}
@@ -97,47 +93,44 @@ int main()
 	   we regard it as blocked */
 	/* We do no expect thread1 to block */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 3);
+	} while (thread_state != EXITING_THREAD && cnt++ < 3);
 
-	if (thread_state == ENTERED_THREAD)
-	{
+	if (thread_state == ENTERED_THREAD) {
 		/* the child thread blocked */
-		printf("Test FAILED: thread1 should not block on pthread_rwlock_trywrlock()\n");
+		printf
+		    ("Test FAILED: thread1 should not block on pthread_rwlock_trywrlock()\n");
 		exit(PTS_FAIL);
-	}
-	else if (thread_state != EXITING_THREAD)
-	{
-		printf("Unexpected thread state for thread1: %d\n", thread_state);
+	} else if (thread_state != EXITING_THREAD) {
+		printf("Unexpected thread state for thread1: %d\n",
+		       thread_state);
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (get_ebusy != 1)
-	{
+	if (get_ebusy != 1) {
 		printf("Test FAILED: thread1 should get EBUSY\n");
 		exit(PTS_FAIL);
 	}
 
 	printf("main: unlock read lock\n");
-	if (pthread_rwlock_unlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_unlock(&rwlock) != 0) {
 		printf("main: Error releasing read lock\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (pthread_join(thread1, NULL) != 0)
-	{
+	if (pthread_join(thread1, NULL) != 0) {
 		printf("main: Error joining thread1\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	printf("main: attempt pthread_rwlock_trywrlock()\n");
-	/* Should get the write lock*/
+	/* Should get the write lock */
 	rc = pthread_rwlock_trywrlock(&rwlock);
-	if (rc != 0)
-	{
-		printf("Test FAILED: main failed at pthread_rwlock_trywrlock(), error code: %d\n", rc);
+	if (rc != 0) {
+		printf
+		    ("Test FAILED: main failed at pthread_rwlock_trywrlock(), error code: %d\n",
+		     rc);
 		return PTS_FAIL;
 	}
 
@@ -147,50 +140,43 @@ int main()
 	thread_state = NOT_CREATED_THREAD;
 	cnt = 0;
 	printf("main: create thread2\n");
-	if (pthread_create(&thread2, NULL, fn_wr, NULL) != 0)
-	{
+	if (pthread_create(&thread2, NULL, fn_wr, NULL) != 0) {
 		printf("main: Error creating thread2\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* We do not expect thread2 to block */
-	do{
+	do {
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 3);
+	} while (thread_state != EXITING_THREAD && cnt++ < 3);
 
-	if (thread_state == ENTERED_THREAD)
-	{
-		printf("Test FAILED: thread2 should not block on pthread_rwlock_trywrlock()\n");
+	if (thread_state == ENTERED_THREAD) {
+		printf
+		    ("Test FAILED: thread2 should not block on pthread_rwlock_trywrlock()\n");
 		exit(PTS_FAIL);
-	}
-	else if (thread_state != EXITING_THREAD)
-	{
+	} else if (thread_state != EXITING_THREAD) {
 		printf("Unexpected thread state: %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (get_ebusy != 1)
-	{
+	if (get_ebusy != 1) {
 		printf("Test FAILED: thread2 should get EBUSY\n");
 		exit(PTS_FAIL);
 	}
 
 	printf("main: unlock write lock\n");
 	thread_state = 1;
-	if (pthread_rwlock_unlock(&rwlock) != 0)
-	{
+	if (pthread_rwlock_unlock(&rwlock) != 0) {
 		printf("main: Error at 2nd pthread_rwlock_unlock()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (pthread_join(thread2, NULL) != 0)
-	{
+	if (pthread_join(thread2, NULL) != 0) {
 		printf("main: Error at 2cn pthread_join()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (pthread_rwlock_destroy(&rwlock) != 0)
-	{
+	if (pthread_rwlock_destroy(&rwlock) != 0) {
 		printf("Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;
 	}

@@ -105,7 +105,8 @@ int main(int ac, char **av)
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS, "capget() returned %ld", TEST_RETURN);
 		} else {
-			tst_resm(TFAIL|TTERRNO, "Test Failed, capget() returned %ld",
+			tst_resm(TFAIL | TTERRNO,
+				 "Test Failed, capget() returned %ld",
 				 TEST_RETURN);
 		}
 	}

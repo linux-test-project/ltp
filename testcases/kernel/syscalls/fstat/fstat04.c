@@ -118,7 +118,7 @@ int main(int ac, char **av)
 		TEST(fstat(fildes, &stat_buf));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "fstat failed");
+			tst_resm(TFAIL | TTERRNO, "fstat failed");
 			continue;
 		}
 		/*
@@ -134,7 +134,8 @@ int main(int ac, char **av)
 			    stat_buf.st_gid != group_id ||
 			    stat_buf.st_size != FILE_SIZE ||
 			    (stat_buf.st_mode & MASK) != FILE_MODE) {
-				tst_resm(TFAIL, "fstat functionality incorrect");
+				tst_resm(TFAIL,
+					 "fstat functionality incorrect");
 			} else
 				tst_resm(TPASS, "fstat functionality correct");
 		} else
@@ -163,9 +164,9 @@ void setup()
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
+		tst_brkm(TBROK | TERRNO, NULL, "setuid failed");
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -175,13 +176,13 @@ void setup()
 
 	fildes = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
 	if (fildes == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
-	memset(tst_buff, 'a', BUF_SIZE-1);
+	memset(tst_buff, 'a', BUF_SIZE - 1);
 
 	while (write_len < FILE_SIZE) {
 		if ((wbytes = write(fildes, tst_buff, sizeof(tst_buff))) <= 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 		else
 			write_len += wbytes;
 	}
@@ -196,7 +197,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (close(fildes) == -1)
-		tst_resm(TWARN|TERRNO, "close failed");
+		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
 

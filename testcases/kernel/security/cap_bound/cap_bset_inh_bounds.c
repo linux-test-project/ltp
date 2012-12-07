@@ -36,7 +36,7 @@
 #include "test.h"
 
 char *TCID = "cap_bounds_r";
-int TST_TOTAL=2;
+int TST_TOTAL = 2;
 
 int main(int argc, char *argv[])
 {
@@ -59,13 +59,16 @@ int main(int argc, char *argv[])
 	/* Make sure it's in pI */
 	cur = cap_from_text("all=eip");
 	if (!cur) {
-		tst_resm(TBROK, "Failed to create cap_sys_admin+i cap_t (errno %d)\n", errno);
+		tst_resm(TBROK,
+			 "Failed to create cap_sys_admin+i cap_t (errno %d)\n",
+			 errno);
 		tst_exit();
 	}
 	ret = cap_set_proc(cur);
 	if (ret) {
-		tst_resm(TBROK, "Failed to cap_set_proc with cap_sys_admin+i (ret %d errno %d)\n",
-			ret, errno);
+		tst_resm(TBROK,
+			 "Failed to cap_set_proc with cap_sys_admin+i (ret %d errno %d)\n",
+			 ret, errno);
 		tst_exit();
 	}
 	cap_free(cur);
@@ -80,7 +83,8 @@ int main(int argc, char *argv[])
 	/* drop the capability from bounding set */
 	ret = prctl(PR_CAPBSET_DROP, CAP_SYS_ADMIN);
 	if (ret) {
-		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from bounding set.\n");
+		tst_resm(TFAIL,
+			 "Failed to drop CAP_SYS_ADMIN from bounding set.\n");
 		tst_resm(TINFO, "(ret=%d, errno %d)\n", ret, errno);
 		tst_exit();
 	}
@@ -89,10 +93,12 @@ int main(int argc, char *argv[])
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_INHERITABLE, &f);
 	if (ret || f != CAP_SET) {
-		tst_resm(TFAIL, "CAP_SYS_ADMIN not in pI after dropping from bounding set\n");
+		tst_resm(TFAIL,
+			 "CAP_SYS_ADMIN not in pI after dropping from bounding set\n");
 		tst_exit();
 	}
-	tst_resm(TPASS, "CAP_SYS_ADMIN remains in pI after removing from bounding set\n");
+	tst_resm(TPASS,
+		 "CAP_SYS_ADMIN remains in pI after removing from bounding set\n");
 
 	tmpcap = cap_dup(cur);
 	v[0] = CAP_SYS_ADMIN;
@@ -109,13 +115,15 @@ int main(int argc, char *argv[])
 	cap_free(tmpcap);
 	/* test 2: can we put it back in pI? */
 	ret = cap_set_proc(cur);
-	if (ret == 0) { /* success means pI was not bounded by X */
-		tst_resm(TFAIL, "Managed to put CAP_SYS_ADMIN back into pI though not in X\n");
+	if (ret == 0) {		/* success means pI was not bounded by X */
+		tst_resm(TFAIL,
+			 "Managed to put CAP_SYS_ADMIN back into pI though not in X\n");
 		tst_exit();
 	}
 	cap_free(cur);
 
-	tst_resm(TPASS, "Couldn't put CAP_SYS_ADMIN back into pI when not in bounding set\n");
+	tst_resm(TPASS,
+		 "Couldn't put CAP_SYS_ADMIN back into pI when not in bounding set\n");
 #else /* HAVE_LIBCAP */
 	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
 #endif

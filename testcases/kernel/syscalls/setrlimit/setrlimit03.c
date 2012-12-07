@@ -53,7 +53,7 @@ int TST_TOTAL = 1;
 
 #if !defined(NR_OPEN)
 //Taken from definition in /usr/include/linux/fs.h
-# define NR_OPEN (1024*1024)
+#define NR_OPEN (1024*1024)
 #endif
 
 void setup();
@@ -69,7 +69,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();
 

@@ -78,6 +78,7 @@ char *TCID = "msgctl11";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { 0 };		/* List must end with 0 */
+
 int maxnkids = MAXNKIDS;	/* Used if pid_max is exceeded */
 
 key_t keyarray[MAXNPROCS];
@@ -126,8 +127,7 @@ char *argv[];
 
 	argv0 = argv[0];
 
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -312,7 +312,7 @@ void cleanup_msgqueue(int i, int tid)
 	}
 
 	if (msgctl(tid, IPC_RMID, 0) < 0) {
-		tst_resm(TFAIL|TERRNO, "Msgctl error in cleanup");
+		tst_resm(TFAIL | TERRNO, "Msgctl error in cleanup");
 		tst_exit();
 	}
 }
@@ -326,7 +326,7 @@ int child_process;
 
 	sighold(SIGTERM);
 	if ((id = msgget(key, IPC_CREAT | S_IRUSR | S_IWUSR)) < 0) {
-		tst_resm(TFAIL|TERRNO, "Msgget error in child %d",
+		tst_resm(TFAIL | TERRNO, "Msgget error in child %d",
 			 child_process);
 		tst_exit();
 	}
@@ -407,7 +407,7 @@ int child_process;
 					kill(wkidarray[i], SIGTERM);
 				}
 				if (msgctl(tid, IPC_RMID, 0) < 0) {
-					tst_resm(TFAIL|TERRNO,
+					tst_resm(TFAIL | TERRNO,
 						 "Msgctl error");
 				}
 				tst_exit();
@@ -425,12 +425,12 @@ int child_process;
 			 "Wrong number of children exited in child group %d, Saw %d Expected %d",
 			 child_process, count, (nkids * 2));
 		if (msgctl(tid, IPC_RMID, 0) < 0) {
-			tst_resm(TFAIL|TERRNO, "Msgctl error");
+			tst_resm(TFAIL | TERRNO, "Msgctl error");
 		}
 		tst_exit();
 	}
 	if (msgctl(id, IPC_RMID, 0) < 0) {
-		tst_resm(TFAIL|TERRNO, "Msgctl failure in child group %d",
+		tst_resm(TFAIL | TERRNO, "Msgctl failure in child group %d",
 			 child_process);
 		tst_exit();
 	}
@@ -445,9 +445,8 @@ long key;
 	int id;
 
 	if ((id = msgget(key, 0)) < 0) {
-		tst_resm(TFAIL|TERRNO,
-			 "Msgget error in reader of child group %d",
-			 child);
+		tst_resm(TFAIL | TERRNO,
+			 "Msgget error in reader of child group %d", child);
 		tst_exit();
 	}
 	if (id != tid) {
@@ -458,7 +457,7 @@ long key;
 	}
 	for (i = 0; i < nreps; i++) {
 		if ((size = msgrcv(id, &buffer, 100, type, 0)) < 0) {
-			tst_resm(TFAIL|TERRNO,
+			tst_resm(TFAIL | TERRNO,
 				 "Msgrcv error in child %d, read # = %d",
 				 (i + 1), child);
 			tst_exit();
@@ -496,9 +495,8 @@ long key;
 	int id;
 
 	if ((id = msgget(key, 0)) < 0) {
-		tst_resm(TFAIL|TERRNO,
-			 "Msgget error in writer of child group %d",
-			 child);
+		tst_resm(TFAIL | TERRNO,
+			 "Msgget error in writer of child group %d", child);
 		tst_exit();
 	}
 	if (id != tid) {
@@ -518,7 +516,7 @@ long key;
 		buffer.data.len = size;
 		buffer.type = type;
 		if (msgsnd(id, &buffer, size + 1, 0) < 0) {
-			tst_resm(TFAIL|TERRNO,
+			tst_resm(TFAIL | TERRNO,
 				 "Msgsnd error in child %d, key =   %lx",
 				 child, key);
 			tst_exit();

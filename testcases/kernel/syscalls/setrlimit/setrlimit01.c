@@ -80,7 +80,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();		/* set "tstdir", and "fname" vars */
 
@@ -169,7 +169,7 @@ void test2()
 	}
 
 	if (pid == 0) {
-		close(pipefd[0]); /* close unused read end */
+		close(pipefd[0]);	/* close unused read end */
 		rlim.rlim_cur = 10;
 		rlim.rlim_max = 10;
 		if ((setrlimit(RLIMIT_FSIZE, &rlim)) == -1) {
@@ -182,10 +182,10 @@ void test2()
 
 		if ((bytes = write(fd, buf, 26)) != 10) {
 			if (write(pipefd[1], &bytes, sizeof(bytes))
-				< sizeof(bytes)) {
+			    < sizeof(bytes)) {
 				perror("child: write to pipe failed");
 			}
-			close(pipefd[1]); /* EOF */
+			close(pipefd[1]);	/* EOF */
 			exit(3);
 		}
 		exit(0);	/* success */
@@ -207,7 +207,7 @@ void test2()
 		tst_resm(TFAIL, "creating testfile failed");
 		break;
 	case 3:
-		close(pipefd[1]); /* close unused write end */
+		close(pipefd[1]);	/* close unused write end */
 		if (read(pipefd[0], &bytes, sizeof(bytes)) < sizeof(bytes)) {
 			tst_resm(TFAIL, "parent: reading pipe failed");
 		}
@@ -286,7 +286,7 @@ void test4()
 	TEST(setrlimit(RLIMIT_CORE, &rlim));
 
 	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL|TERRNO, "setrlimit failed to set RLIMIT_CORE");
+		tst_resm(TFAIL | TERRNO, "setrlimit failed to set RLIMIT_CORE");
 		return;
 	}
 
@@ -310,7 +310,7 @@ void test4()
 		tst_resm(TFAIL, "core dump dumped unexpectedly");
 		return;
 	} else if (errno != ENOENT) {
-		tst_resm(TFAIL|TERRNO, "access failed unexpectedly");
+		tst_resm(TFAIL | TERRNO, "access failed unexpectedly");
 		return;
 	}
 

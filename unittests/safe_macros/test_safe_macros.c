@@ -6,16 +6,14 @@ int TST_TOTAL = 1;
 
 int fd = -1;
 
-void
-cleanup(void)
+void cleanup(void)
 {
 	SAFE_CLOSE(NULL, fd);
 	SAFE_UNLINK(NULL, __FILE__ "~");
 	tst_resm(TINFO, "got here");
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	char buf[10];
 	int fds[2];

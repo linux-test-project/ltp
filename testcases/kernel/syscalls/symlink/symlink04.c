@@ -100,7 +100,7 @@ int main(int ac, char **av)
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	 }
+	}
 
 	setup();
 
@@ -136,7 +136,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "lstat(2) of "
 						 "%s failed, error:%d", SYMFILE,
 						 errno);
-				 }
+				}
 
 				/* Check if the st_mode contains a link  */
 				if (!S_ISLNK(stat_buf.st_mode)) {
@@ -158,7 +158,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup,
 				 "unlink(%s) Failed, errno=%d : %s",
 				 SYMFILE, errno, strerror(errno));
-		 }
+		}
 		Tst_count++;	/* incr TEST_LOOP counter */
 	}
 
@@ -193,7 +193,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	 }
+	}
 
 	/* Close the temporary file created above */
 	if (close(fd) == -1) {

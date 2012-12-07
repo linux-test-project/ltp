@@ -116,7 +116,7 @@ int main(int ac, char **av)
 	tst_exit();
 	tst_exit();
 
- }
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.

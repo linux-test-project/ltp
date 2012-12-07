@@ -152,18 +152,18 @@ int main(int ac, char **av)
 				if (STD_FUNCTIONAL_TEST) {
 					if (TEST_ERRNO == EBADF)
 						tst_resm(TPASS,
-						    "dup failed as expected "
-						    "with EBADF");
+							 "dup failed as expected "
+							 "with EBADF");
 					else
-						tst_resm(TFAIL|TTERRNO,
-						    "dup failed unexpectedly");
+						tst_resm(TFAIL | TTERRNO,
+							 "dup failed unexpectedly");
 				}
 			} else {
 				tst_resm(TFAIL, "dup succeeded unexpectedly");
 
 				if (close(TEST_RETURN) == -1)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "close failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "close failed");
 			}
 		}
 	}

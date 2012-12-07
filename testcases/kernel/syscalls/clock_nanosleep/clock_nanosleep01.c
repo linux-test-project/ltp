@@ -65,9 +65,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "clock_nanosleep01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+char *TCID = "clock_nanosleep01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 struct sigaction act;
 
 /*
@@ -99,7 +99,8 @@ void sighandler(int sig)
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -124,7 +125,8 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	act.sa_handler = sighandler;
 	sigfillset(&act.sa_mask);
@@ -141,9 +143,9 @@ void setup() {
 #define SYSCALL_NAME    "clock_nanosleep"
 
 enum test_type {
-		NORMAL,
-		NULL_POINTER,
-		SEND_SIGINT,
+	NORMAL,
+	NULL_POINTER,
+	SEND_SIGINT,
 };
 
 /*
@@ -170,70 +172,70 @@ struct test_case {
  */
 
 static struct test_case tcase[] = {
-	{ // case00
-		.clk_id	 = CLOCK_REALTIME,
-		.ttype	  = NORMAL,
-		.flags	  = 0,
-		.sec	    = 0,
-		.nsec	   = 500000000, // 500msec
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case01
-		.clk_id	 = CLOCK_MONOTONIC,
-		.ttype	  = NORMAL,
-		.flags	  = 0,
-		.sec	    = 0,
-		.nsec	   = 500000000, // 500msec
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case02
-		.ttype	  = NORMAL,
-		.clk_id	 = CLOCK_REALTIME,
-		.flags	  = 0,
-		.sec	    = 0,
-		.nsec	   = -1,   // invalid
-		.ret	    = EINVAL,
-		.err	    = 0,
-	},
-	{ // case03
-		.ttype	  = NORMAL,
-		.clk_id	 = CLOCK_REALTIME,
-		.flags	  = 0,
-		.sec	    = 0,
-		.nsec	   = 1000000000,   // invalid
-		.ret	    = EINVAL,
-		.err	    = 0,
-	},
-	{ // case04
-		.ttype	  = NORMAL,
-		.clk_id	 = CLOCK_THREAD_CPUTIME_ID, // not supported
-		.flags	  = 0,
-		.sec	    = 0,
-		.nsec	   = 500000000, // 500msec
-		.ret	    = EINVAL, // RHEL4U1 + 2.6.18 returns EINVAL
-		.err	    = 0,
-	},
-	{ // case05
-		.ttype	  = SEND_SIGINT,
-		.clk_id	 = CLOCK_REALTIME,
-		.flags	  = 0,
-		.sec	    = 10,
-		.nsec	   = 0,
-		.ret	    = EINTR,
-		.err	    = 0,
-	},
-#if 0   // glibc generates SEGV error (RHEL4U1 + 2.6.18)
-	{ // caseXX
-		.ttype	  = NULL_POINTER,
-		.clk_id	 = CLOCK_REALTIME,
-		.flags	  = 0,
-		.sec	    = 0,
-		.nsec	   = 500000000, // 500msec
-		.ret	    = EFAULT,
-		.err	    = 0,
-	},
+	{			// case00
+	 .clk_id = CLOCK_REALTIME,
+	 .ttype = NORMAL,
+	 .flags = 0,
+	 .sec = 0,
+	 .nsec = 500000000,	// 500msec
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case01
+	 .clk_id = CLOCK_MONOTONIC,
+	 .ttype = NORMAL,
+	 .flags = 0,
+	 .sec = 0,
+	 .nsec = 500000000,	// 500msec
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case02
+	 .ttype = NORMAL,
+	 .clk_id = CLOCK_REALTIME,
+	 .flags = 0,
+	 .sec = 0,
+	 .nsec = -1,		// invalid
+	 .ret = EINVAL,
+	 .err = 0,
+	 },
+	{			// case03
+	 .ttype = NORMAL,
+	 .clk_id = CLOCK_REALTIME,
+	 .flags = 0,
+	 .sec = 0,
+	 .nsec = 1000000000,	// invalid
+	 .ret = EINVAL,
+	 .err = 0,
+	 },
+	{			// case04
+	 .ttype = NORMAL,
+	 .clk_id = CLOCK_THREAD_CPUTIME_ID,	// not supported
+	 .flags = 0,
+	 .sec = 0,
+	 .nsec = 500000000,	// 500msec
+	 .ret = EINVAL,		// RHEL4U1 + 2.6.18 returns EINVAL
+	 .err = 0,
+	 },
+	{			// case05
+	 .ttype = SEND_SIGINT,
+	 .clk_id = CLOCK_REALTIME,
+	 .flags = 0,
+	 .sec = 10,
+	 .nsec = 0,
+	 .ret = EINTR,
+	 .err = 0,
+	 },
+#if 0				// glibc generates SEGV error (RHEL4U1 + 2.6.18)
+	{			// caseXX
+	 .ttype = NULL_POINTER,
+	 .clk_id = CLOCK_REALTIME,
+	 .flags = 0,
+	 .sec = 0,
+	 .nsec = 500000000,	// 500msec
+	 .ret = EFAULT,
+	 .err = 0,
+	 },
 #endif
 };
 
@@ -258,7 +260,8 @@ static int chk_difftime(struct timespec *bef, struct timespec *aft,
 	}
 	expect = (sec * 1000) + (nsec / 1000000);
 	result = (t.tv_sec * 1000) + (t.tv_nsec / 1000000);
-	tst_resm(TINFO,"check sleep time: (min:%ld) < %ld < (max:%ld) (msec)",expect - MAX_MSEC_DIFF, result, expect + MAX_MSEC_DIFF);
+	tst_resm(TINFO, "check sleep time: (min:%ld) < %ld < (max:%ld) (msec)",
+		 expect - MAX_MSEC_DIFF, result, expect + MAX_MSEC_DIFF);
 	if (result < expect - MAX_MSEC_DIFF || result > expect + MAX_MSEC_DIFF)
 		return -1;
 	return 0;
@@ -280,7 +283,7 @@ static int do_test(struct test_case *tc)
 	int rc, range_ok = 1, remain_ok = 1;
 	pid_t pid = 0;
 
-	 /*
+	/*
 	 * Check before sleep time
 	 */
 	if (tc->ttype == SEND_SIGINT) {
@@ -294,11 +297,11 @@ static int do_test(struct test_case *tc)
 	 */
 	TEST(rc = clock_gettime(tc->clk_id, &beftp));
 	if (rc < 0) {
-		tst_resm(TFAIL|TTERRNO, "iclock_gettime failed");
+		tst_resm(TFAIL | TTERRNO, "iclock_gettime failed");
 		result = 1;
 		goto EXIT;
 	}
-	 /*
+	/*
 	 * Execute system call
 	 */
 	rq.tv_sec = tc->sec;
@@ -306,14 +309,16 @@ static int do_test(struct test_case *tc)
 	// !!!CAUTION: 'clock_gettime' returns errno itself
 	errno = 0;
 	if (tc->ttype == NULL_POINTER)
-		TEST(sys_ret = clock_nanosleep(tc->clk_id, tc->flags, NULL, &rm));
+		TEST(sys_ret =
+		     clock_nanosleep(tc->clk_id, tc->flags, NULL, &rm));
 	else
-		TEST(sys_ret = clock_nanosleep(tc->clk_id, tc->flags, &rq, &rm));
+		TEST(sys_ret =
+		     clock_nanosleep(tc->clk_id, tc->flags, &rq, &rm));
 	sys_errno = errno;
 	if (sys_ret != 0)
 		goto TEST_END;
 
-	 /*
+	/*
 	 * Check after sleep time
 	 */
 	TEST(rc = clock_gettime(tc->clk_id, &afttp));
@@ -328,7 +333,7 @@ static int do_test(struct test_case *tc)
 	 */
 TEST_END:
 	if (tc->ttype == NORMAL || tc->ttype == SEND_SIGINT) {
-		tst_resm(TINFO,"remain time: %ld %ld", rm.tv_sec, rm.tv_nsec);
+		tst_resm(TINFO, "remain time: %ld %ld", rm.tv_sec, rm.tv_nsec);
 		if (tc->ttype == NORMAL)
 			remain_ok = 1;
 		else
@@ -341,10 +346,10 @@ TEST_END:
 	result |= (sys_ret != tc->ret) || !range_ok || !remain_ok;
 	if (!range_ok)
 		PRINT_RESULT_EXTRA(0, tc->ret, tc->err, sys_ret, sys_errno,
-			"time range check", range_ok);
+				   "time range check", range_ok);
 	else
 		PRINT_RESULT_EXTRA(0, tc->ret, tc->err, sys_ret, sys_errno,
-			"remain time check", remain_ok);
+				   "remain time check", remain_ok);
 EXIT:
 	if (pid > 0) {
 		int st;
@@ -358,7 +363,8 @@ EXIT:
  * main()
  */
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int result = RESULT_OK;
 	int i;
 	int lc;
@@ -375,22 +381,25 @@ int main(int ac, char **av) {
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0]));
+			     i++) {
 				int ret;
-				tst_resm(TINFO,"(case%02d) START", i);
+				tst_resm(TINFO, "(case%02d) START", i);
 				ret = do_test(&tcase[i]);
-				tst_resm(TINFO,"(case%02d) END => %s",
-					i, (ret == 0) ? "OK" : "NG");
+				tst_resm(TINFO, "(case%02d) END => %s",
+					 i, (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
 
 			switch (result) {
 			case RESULT_OK:
-				tst_resm(TPASS, "clock_nanosleep call succeeded");
+				tst_resm(TPASS,
+					 "clock_nanosleep call succeeded");
 				break;
 
 			default:
-	 	   		tst_brkm(TFAIL|TERRNO, cleanup, "clock_nanosleep failed");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "clock_nanosleep failed");
 				break;
 			}
 

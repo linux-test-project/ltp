@@ -64,13 +64,13 @@
  * or if a timed run, the run time is exceeded.
  */
 #ifdef WINDOWS
-DWORD WINAPI ChildTimer(test_ll_t *test)
+DWORD WINAPI ChildTimer(test_ll_t * test)
 #else
 void *ChildTimer(void *vtest)
 #endif
 {
 #ifndef WINDOWS
-	test_ll_t *test = (test_ll_t *)vtest;
+	test_ll_t *test = (test_ll_t *) vtest;
 #endif
 	time_t ioTimeoutCount = 0;
 	time_t total_time = 0;
@@ -95,10 +95,12 @@ void *ChildTimer(void *vtest)
 		Sleep(1000);
 		run_time++;
 #ifdef _DEBUG
-		PDBG3(DBUG, args, "Continue timing %lu, %lu, %d\n", time(NULL), run_time, env->bContinue);
+		PDBG3(DBUG, args, "Continue timing %lu, %lu, %d\n", time(NULL),
+		      run_time, env->bContinue);
 #endif
 		if (args->flags & CLD_FLG_W) {
-			if ((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+			if ((args->flags & CLD_FLG_LINEAR)
+			    && !(args->flags & CLD_FLG_NTRLVD)) {
 				if (TST_OPER(args->test_state) == WRITER) {
 					env->hbeat_stats.wtime++;
 				}
@@ -107,7 +109,8 @@ void *ChildTimer(void *vtest)
 			}
 		}
 		if (args->flags & CLD_FLG_R) {
-			if ((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+			if ((args->flags & CLD_FLG_LINEAR)
+			    && !(args->flags & CLD_FLG_NTRLVD)) {
 				if (TST_OPER(args->test_state) == READER) {
 					env->hbeat_stats.rtime++;
 				}
@@ -120,12 +123,11 @@ void *ChildTimer(void *vtest)
 		 * Check to see if we have made any IO progress in the last interval,
 		 * if not incremment the ioTimeout timer, otherwise, clear it
 		 */
-		cur_total_io_count = env->global_stats.wcount	\
-						+ env->cycle_stats.wcount		\
-						+ env->hbeat_stats.wcount		\
-						+ env->global_stats.rcount		\
-						+ env->cycle_stats.rcount		\
-						+ env->hbeat_stats.rcount;
+		cur_total_io_count = env->global_stats.wcount
+		    + env->cycle_stats.wcount
+		    + env->hbeat_stats.wcount
+		    + env->global_stats.rcount
+		    + env->cycle_stats.rcount + env->hbeat_stats.rcount;
 
 		if (cur_total_io_count == 0) {
 			tmp_io_count = 1;
@@ -133,28 +135,32 @@ void *ChildTimer(void *vtest)
 			tmp_io_count = cur_total_io_count;
 		}
 
-		total_time = env->global_stats.rtime	\
-					+ env->cycle_stats.rtime	\
-					+ env->hbeat_stats.rtime	\
-					+ env->global_stats.wtime	\
-					+ env->cycle_stats.wtime	\
-					+ env->hbeat_stats.wtime;
+		total_time = env->global_stats.rtime
+		    + env->cycle_stats.rtime
+		    + env->hbeat_stats.rtime
+		    + env->global_stats.wtime
+		    + env->cycle_stats.wtime + env->hbeat_stats.wtime;
 
 #ifdef _DEBUG
-		PDBG3(DBUG, args, "average number of seconds per IO: %0.8lf\n", ((double)(total_time)/(double)(tmp_io_count)));
+		PDBG3(DBUG, args, "average number of seconds per IO: %0.8lf\n",
+		      ((double)(total_time) / (double)(tmp_io_count)));
 #endif
 
-		if (cur_total_io_count == last_total_io_count) { /* no IOs completed in interval */
+		if (cur_total_io_count == last_total_io_count) {	/* no IOs completed in interval */
 			if (0 == (++ioTimeoutCount % args->ioTimeout)) {	/* no progress after modulo ioTimeout interval */
 				if (args->flags & CLD_FLG_TMO_ERROR) {
-					args->test_state = SET_STS_FAIL(args->test_state);
+					args->test_state =
+					    SET_STS_FAIL(args->test_state);
 					env->bContinue = FALSE;
 					msg_level = ERR;
 				}
-				pMsg(msg_level, args, "Possible IO hang condition, IO timeout reached, %lu seconds\n", args->ioTimeout);
+				pMsg(msg_level, args,
+				     "Possible IO hang condition, IO timeout reached, %lu seconds\n",
+				     args->ioTimeout);
 			}
 #ifdef _DEBUG
-			PDBG3(DBUG, args, "io timeout count: %lu\n", ioTimeoutCount);
+			PDBG3(DBUG, args, "io timeout count: %lu\n",
+			      ioTimeoutCount);
 #endif
 		} else {
 			ioTimeoutCount = 0;
@@ -164,37 +170,44 @@ void *ChildTimer(void *vtest)
 #endif
 		}
 
-		if (((args->hbeat > 0) && ((run_time % args->hbeat) == 0)) || (signal_action & SIGNAL_STAT)) {
+		if (((args->hbeat > 0) && ((run_time % args->hbeat) == 0))
+		    || (signal_action & SIGNAL_STAT)) {
 			print_stats(args, env, HBEAT);
 			update_cyc_stats(env);
 			clear_stat_signal();
 		}
 
-		if (glb_run == 0) { break; }					/* global run flag cleared */
-		if (signal_action & SIGNAL_STOP) { break; }	/* user request to stop */
-
-		if (args->flags & CLD_FLG_TMD) {			/* if timing */
+		if (glb_run == 0) {
+			break;
+		}		/* global run flag cleared */
+		if (signal_action & SIGNAL_STOP) {
+			break;
+		}
+		/* user request to stop */
+		if (args->flags & CLD_FLG_TMD) {	/* if timing */
 			if (run_time >= args->run_time) {	/* and run time exceeded */
 				break;
 			}
-		} else {					/* if not timing */
+		} else {	/* if not timing */
 			if (env->kids <= 1) {	/* and the timer is the only child */
 				break;
 			}
 		}
 	} while (TRUE);
 #ifdef _DEBUG
-	PDBG3(DBUG, args, "Out of timer %lu, %lu, %d, %d\n", time(NULL), run_time, env->bContinue, env->kids);
+	PDBG3(DBUG, args, "Out of timer %lu, %lu, %d, %d\n", time(NULL),
+	      run_time, env->bContinue, env->kids);
 #endif
 
-	if (args->flags & CLD_FLG_TMD) { /* timed test, timer exit needs to stop io threads */
+	if (args->flags & CLD_FLG_TMD) {	/* timed test, timer exit needs to stop io threads */
 #ifdef _DEBUG
-		PDBG3(DBUG, args, "Setting bContinue to FALSE, timed test & timer exit\n");
+		PDBG3(DBUG, args,
+		      "Setting bContinue to FALSE, timed test & timer exit\n");
 #endif
 		env->bContinue = FALSE;
 	}
 
-	TEXIT((uintptr_t)GETLASTERROR());
+	TEXIT((uintptr_t) GETLASTERROR());
 }
 
 #ifdef _DEBUG
@@ -202,30 +215,37 @@ void *ChildTimer(void *vtest)
 DWORD startTime;
 DWORD endTime;
 
-void setStartTime(void) {
+void setStartTime(void)
+{
 	startTime = GetTickCount();
 }
 
-void setEndTime(void) {
+void setEndTime(void)
+{
 	endTime = GetTickCount();
 }
 
-unsigned long getTimeDiff(void) {
-	return((endTime - startTime) * 1000); /* since we report in usecs, and windows is msec, multiply by 1000 */
+unsigned long getTimeDiff(void)
+{
+	return ((endTime - startTime) * 1000);	/* since we report in usecs, and windows is msec, multiply by 1000 */
 }
 #else
-struct timeval tv_start; struct timeval tv_end;
+struct timeval tv_start;
+struct timeval tv_end;
 
-void setStartTime(void) {
+void setStartTime(void)
+{
 	gettimeofday(&tv_start, NULL);
 }
 
-void setEndTime(void) {
+void setEndTime(void)
+{
 	gettimeofday(&tv_end, NULL);
 }
 
-unsigned long getTimeDiff(void) {
-	return(tv_end.tv_usec - tv_start.tv_usec);
+unsigned long getTimeDiff(void)
+{
+	return (tv_end.tv_usec - tv_start.tv_usec);
 }
 
 #endif

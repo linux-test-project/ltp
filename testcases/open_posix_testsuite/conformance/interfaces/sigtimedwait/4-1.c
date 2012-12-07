@@ -27,7 +27,8 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-void myhandler (int signo) {
+void myhandler(int signo)
+{
 	printf("Inside handler\n");
 }
 
@@ -36,13 +37,13 @@ int main()
 
 	struct sigaction act;
 	sigset_t pendingset, selectset;
-        struct timespec ts;
+	struct timespec ts;
 
-	act.sa_flags=0;
-	act.sa_handler=myhandler;
+	act.sa_flags = 0;
+	act.sa_handler = myhandler;
 
-        ts.tv_sec=0;
-        ts.tv_nsec=0;
+	ts.tv_sec = 0;
+	ts.tv_nsec = 0;
 
 	sigemptyset(&pendingset);
 	sigemptyset(&selectset);

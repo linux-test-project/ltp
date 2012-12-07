@@ -62,8 +62,8 @@ int main(int argc, char **argv)
 {
 
 	char *varstr;
-	int   rc;
-	int   i;
+	int rc;
+	int i;
 	char *szSessionInfo = "dm_test session info";
 	dm_eventset_t events;
 
@@ -75,21 +75,35 @@ int main(int argc, char **argv)
 
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_init_service failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		DM_EXIT();
-	} else if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &sid)) == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_create_session failed! (rc = %d, errno = %d)\n", rc, errno);
+	} else if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &sid))
+		   == -1) {
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_create_session failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		DM_EXIT();
-	} else if ((rc = dm_set_disp(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &events, DM_EVENT_MAX)) == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_set_disp failed! (rc = %d, errno = %d)\n", rc, errno);
+	} else
+	    if ((rc =
+		 dm_set_disp(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN,
+			     &events, DM_EVENT_MAX)) == -1) {
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_set_disp failed! (rc = %d, errno = %d)\n", rc,
+			    errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	} else if ((rc = pthread_create(&tid, NULL, Thread, NULL)) != 0) {
-		DMLOG_PRINT(DMLVL_ERR, "pthread_create failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "pthread_create failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	} else if ((rc = dmimpl_mount(&mountPt, &deviceNm)) == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dmimpl_mount failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dmimpl_mount failed! (rc = %d, errno = %d)\n", rc,
+			    errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	} else {
@@ -103,8 +117,9 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		fd = open(DummyTmp, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd != -1) {
-			for (i = 0; i < TMP_FILELEN/DUMMY_STRLEN; i++) {
-				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
+			for (i = 0; i < TMP_FILELEN / DUMMY_STRLEN; i++) {
+				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+				    DUMMY_STRLEN) {
 					rc = -1;
 					break;
 				}
@@ -119,13 +134,16 @@ int main(int argc, char **argv)
 			rc = close(fd);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_ERR, "creating dummy file failed! (rc = %d, errno = %d)\n", rc, errno);
+			DMLOG_PRINT(DMLVL_ERR,
+				    "creating dummy file failed! (rc = %d, errno = %d)\n",
+				    rc, errno);
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
 	}
 
-	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI memory mapped file synchronous event data tests\n") ;
+	DMLOG_PRINT(DMLVL_DEBUG,
+		    "Starting DMAPI memory mapped file synchronous event data tests\n");
 
 	/*
 	 * TEST    : mmap - no regions
@@ -156,20 +174,26 @@ int main(int argc, char **argv)
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -206,26 +230,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -262,26 +295,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -322,26 +364,38 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
+			if ((varStatus =
+			     DMVAR_CHKPASSEXP(0, rc, eventExpected,
+					      eventReceived)) == DMSTAT_PASS) {
 				if (inoff != offset) {
-					DMLOG_PRINT(DMLVL_ERR, "Offset NOT correct! (%d vs %d)\n", inoff, offset);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Offset NOT correct! (%d vs %d)\n",
+						    inoff, offset);
 					varStatus = DMSTAT_FAIL;
 				} else if (inlen != length) {
-					DMLOG_PRINT(DMLVL_ERR, "Length NOT correct! (%d vs %d)\n", inlen, length);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Length NOT correct! (%d vs %d)\n",
+						    inlen, length);
 					varStatus = DMSTAT_FAIL;
 				}
 			}
@@ -350,7 +404,9 @@ int main(int argc, char **argv)
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -388,26 +444,38 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 0);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 0);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
+			if ((varStatus =
+			     DMVAR_CHKPASSEXP(0, rc, eventExpected,
+					      eventReceived)) == DMSTAT_PASS) {
 				if (inoff != offset) {
-					DMLOG_PRINT(DMLVL_ERR, "Offset NOT correct! (%d vs %d)\n", inoff, offset);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Offset NOT correct! (%d vs %d)\n",
+						    inoff, offset);
 					varStatus = DMSTAT_FAIL;
 				} else if (inlen != length) {
-					DMLOG_PRINT(DMLVL_ERR, "Length NOT correct! (%d vs %d)\n", inlen, length);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Length NOT correct! (%d vs %d)\n",
+						    inlen, length);
 					varStatus = DMSTAT_FAIL;
 				}
 			}
@@ -416,7 +484,9 @@ int main(int argc, char **argv)
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -441,7 +511,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		numRegions = 1;
-		Regions[0].rg_offset = TMP_FILELEN/2;
+		Regions[0].rg_offset = TMP_FILELEN / 2;
 		Regions[0].rg_size = 0;
 		Regions[0].rg_flags = DM_REGION_READ;
 
@@ -453,26 +523,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -486,7 +565,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		off_t inoff = PAGEALIGN(TMP_FILELEN/4);
+		off_t inoff = PAGEALIGN(TMP_FILELEN / 4);
 		size_t inlen = PAGEALIGN(DUMMY_STRLEN);
 		dm_boolean_t exactflag;
 		int numRegions;
@@ -497,7 +576,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		numRegions = 1;
-		Regions[0].rg_offset = TMP_FILELEN/2;
+		Regions[0].rg_offset = TMP_FILELEN / 2;
 		Regions[0].rg_size = 0;
 		Regions[0].rg_flags = DM_REGION_READ;
 
@@ -509,26 +588,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -542,7 +630,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		off_t inoff = PAGEALIGN(TMP_FILELEN/4);
+		off_t inoff = PAGEALIGN(TMP_FILELEN / 4);
 		size_t inlen = PAGEALIGN(DUMMY_STRLEN);
 		dm_boolean_t exactflag;
 		int varStatus;
@@ -554,7 +642,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		numRegions = 1;
-		Regions[0].rg_offset = TMP_FILELEN/4;
+		Regions[0].rg_offset = TMP_FILELEN / 4;
 		Regions[0].rg_size = 0;
 		Regions[0].rg_flags = DM_REGION_READ;
 
@@ -566,26 +654,38 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
+			if ((varStatus =
+			     DMVAR_CHKPASSEXP(0, rc, eventExpected,
+					      eventReceived)) == DMSTAT_PASS) {
 				if (inoff != offset) {
-					DMLOG_PRINT(DMLVL_ERR, "Offset NOT correct! (%d vs %d)\n", inoff, offset);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Offset NOT correct! (%d vs %d)\n",
+						    inoff, offset);
 					varStatus = DMSTAT_FAIL;
 				} else if (inlen != length) {
-					DMLOG_PRINT(DMLVL_ERR, "Length NOT correct! (%d vs %d)\n", inlen, length);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Length NOT correct! (%d vs %d)\n",
+						    inlen, length);
 					varStatus = DMSTAT_FAIL;
 				}
 			}
@@ -594,7 +694,9 @@ int main(int argc, char **argv)
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -608,7 +710,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		off_t inoff = PAGEALIGN(TMP_FILELEN/4);
+		off_t inoff = PAGEALIGN(TMP_FILELEN / 4);
 		size_t inlen = PAGEALIGN(DUMMY_STRLEN);
 		dm_boolean_t exactflag;
 		int numRegions;
@@ -631,26 +733,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDONLY, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDONLY, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -685,20 +796,26 @@ int main(int argc, char **argv)
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -735,26 +852,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -791,26 +917,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -848,26 +983,38 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
+			if ((varStatus =
+			     DMVAR_CHKPASSEXP(0, rc, eventExpected,
+					      eventReceived)) == DMSTAT_PASS) {
 				if (inoff != offset) {
-					DMLOG_PRINT(DMLVL_ERR, "Offset NOT correct! (%d vs %d)\n", inoff, offset);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Offset NOT correct! (%d vs %d)\n",
+						    inoff, offset);
 					varStatus = DMSTAT_FAIL;
 				} else if (inlen != length) {
-					DMLOG_PRINT(DMLVL_ERR, "Length NOT correct! (%d vs %d)\n", inlen, length);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Length NOT correct! (%d vs %d)\n",
+						    inlen, length);
 					varStatus = DMSTAT_FAIL;
 				}
 			}
@@ -876,7 +1023,9 @@ int main(int argc, char **argv)
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -914,26 +1063,38 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 0);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 0);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
+			if ((varStatus =
+			     DMVAR_CHKPASSEXP(0, rc, eventExpected,
+					      eventReceived)) == DMSTAT_PASS) {
 				if (inoff != offset) {
-					DMLOG_PRINT(DMLVL_ERR, "Offset NOT correct! (%d vs %d)\n", inoff, offset);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Offset NOT correct! (%d vs %d)\n",
+						    inoff, offset);
 					varStatus = DMSTAT_FAIL;
 				} else if (inlen != length) {
-					DMLOG_PRINT(DMLVL_ERR, "Length NOT correct! (%d vs %d)\n", inlen, length);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Length NOT correct! (%d vs %d)\n",
+						    inlen, length);
 					varStatus = DMSTAT_FAIL;
 				}
 			}
@@ -942,7 +1103,9 @@ int main(int argc, char **argv)
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -967,7 +1130,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		numRegions = 1;
-		Regions[0].rg_offset = TMP_FILELEN/2;
+		Regions[0].rg_offset = TMP_FILELEN / 2;
 		Regions[0].rg_size = 0;
 		Regions[0].rg_flags = DM_REGION_WRITE;
 
@@ -979,26 +1142,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1012,7 +1184,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		off_t inoff = PAGEALIGN(TMP_FILELEN/4);
+		off_t inoff = PAGEALIGN(TMP_FILELEN / 4);
 		size_t inlen = PAGEALIGN(DUMMY_STRLEN);
 		dm_boolean_t exactflag;
 		int numRegions;
@@ -1023,7 +1195,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		numRegions = 1;
-		Regions[0].rg_offset = TMP_FILELEN/2;
+		Regions[0].rg_offset = TMP_FILELEN / 2;
 		Regions[0].rg_size = 0;
 		Regions[0].rg_flags = DM_REGION_WRITE;
 
@@ -1035,26 +1207,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1068,7 +1249,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		off_t inoff = PAGEALIGN(TMP_FILELEN/4);
+		off_t inoff = PAGEALIGN(TMP_FILELEN / 4);
 		size_t inlen = PAGEALIGN(DUMMY_STRLEN);
 		dm_boolean_t exactflag;
 		int varStatus;
@@ -1080,7 +1261,7 @@ int main(int argc, char **argv)
 		eventReceived = DM_EVENT_INVALID;
 		eventResponse = DM_RESP_CONTINUE;
 		numRegions = 1;
-		Regions[0].rg_offset = TMP_FILELEN/4;
+		Regions[0].rg_offset = TMP_FILELEN / 4;
 		Regions[0].rg_size = 0;
 		Regions[0].rg_flags = DM_REGION_WRITE;
 
@@ -1092,26 +1273,38 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
+			if ((varStatus =
+			     DMVAR_CHKPASSEXP(0, rc, eventExpected,
+					      eventReceived)) == DMSTAT_PASS) {
 				if (inoff != offset) {
-					DMLOG_PRINT(DMLVL_ERR, "Offset NOT correct! (%d vs %d)\n", inoff, offset);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Offset NOT correct! (%d vs %d)\n",
+						    inoff, offset);
 					varStatus = DMSTAT_FAIL;
 				} else if (inlen != length) {
-					DMLOG_PRINT(DMLVL_ERR, "Length NOT correct! (%d vs %d)\n", inlen, length);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Length NOT correct! (%d vs %d)\n",
+						    inlen, length);
 					varStatus = DMSTAT_FAIL;
 				}
 			}
@@ -1120,7 +1313,9 @@ int main(int argc, char **argv)
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1134,7 +1329,7 @@ int main(int argc, char **argv)
 		int fd;
 		void *hanp;
 		size_t hlen;
-		off_t inoff = PAGEALIGN(TMP_FILELEN/4);
+		off_t inoff = PAGEALIGN(TMP_FILELEN / 4);
 		size_t inlen = PAGEALIGN(DUMMY_STRLEN);
 		dm_boolean_t exactflag;
 		int numRegions;
@@ -1157,26 +1352,35 @@ int main(int argc, char **argv)
 		} else if ((rc = dm_fd_to_handle(fd, &hanp, &hlen)) == -1) {
 			close(fd);
 			remove(DummyFile);
-		} else if (((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, Regions, &exactflag)) == -1) ||
-			   ((rc = close(fd)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_region(sid, hanp, hlen, DM_NO_TOKEN,
+					numRegions, Regions, &exactflag)) == -1)
+			|| ((rc = close(fd)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE, DummyFile, O_RDWR, inoff, (long)inlen, 1);
+			sprintf(command, "./%s %s %d %ld %ld %d", MMAPFILE_EXE,
+				DummyFile, O_RDWR, inoff, (long)inlen, 1);
 			DMLOG_PRINT(DMLVL_DEBUG, "invoking %s\n", command);
 			rc = system(command);
 			EVENT_DELIVERY_DELAY;
-			DMVAR_END(DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived));
+			DMVAR_END(DMVAR_CHKPASSEXP
+				  (0, rc, eventExpected, eventReceived));
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1187,14 +1391,17 @@ int main(int argc, char **argv)
 
 	rc = umount(mountPt);
 	if (rc == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 	}
 
 	pthread_join(tid, NULL);
 
 	rc = dm_destroy_session(sid);
 	if (rc == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_destroy_session failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_destroy_session failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 	}
 
 	DMLOG_STOP();
@@ -1219,16 +1426,21 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "Waiting for event...\n");
 			dmMsgBufLen = 0;
 
-			rc = dm_get_events(sid, 1, DM_EV_WAIT, sizeof(dmMsgBuf), dmMsgBuf, &dmMsgBufLen);
-			DMLOG_PRINT(DMLVL_DEBUG, "... dm_get_events returned %d (errno %d)\n", rc, errno);
+			rc = dm_get_events(sid, 1, DM_EV_WAIT, sizeof(dmMsgBuf),
+					   dmMsgBuf, &dmMsgBufLen);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "... dm_get_events returned %d (errno %d)\n",
+				    rc, errno);
 		} while ((rc == -1) && (errno == EINTR) && (dmMsgBufLen == 0));
 
 		if (rc) {
-			DMLOG_PRINT(DMLVL_ERR, "dm_get_events failed with rc = %d, errno = %d\n", rc, errno);
+			DMLOG_PRINT(DMLVL_ERR,
+				    "dm_get_events failed with rc = %d, errno = %d\n",
+				    rc, errno);
 			dm_destroy_session(sid);
 			DM_EXIT();
 		} else {
-			dmMsg = (dm_eventmsg_t *)dmMsgBuf;
+			dmMsg = (dm_eventmsg_t *) dmMsgBuf;
 			token = dmMsg->ev_token;
 			type = dmMsg->ev_type;
 
@@ -1237,26 +1449,39 @@ void *Thread(void *parm)
 
 		if (type == DM_EVENT_MOUNT) {
 			/* SPECIAL CASE: need to set disposition, events and response */
-			dm_mount_event_t *me = DM_GET_VALUE(dmMsg, ev_data, dm_mount_event_t *);
+			dm_mount_event_t *me =
+			    DM_GET_VALUE(dmMsg, ev_data, dm_mount_event_t *);
 			void *lhanp = DM_GET_VALUE(me, me_handle1, void *);
 			size_t lhlen = DM_GET_LEN(me, me_handle1);
 
 			DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_MOUNT\n");
 			DMLOG_PRINT(DMLVL_DEBUG, "  Mode: %x\n", me->me_mode);
-			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n", lhanp);
-			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle length: %d\n", lhlen);
-			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint handle: %p\n", DM_GET_VALUE(me, me_handle2, void *));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint handle length: %d\n", DM_GET_LEN(me, me_handle2));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint path: %s\n", DM_GET_VALUE(me, me_name1, char *));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
+			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n",
+				    lhanp);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "  File system handle length: %d\n", lhlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint handle: %p\n",
+				    DM_GET_VALUE(me, me_handle2, void *));
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "  Mountpoint handle length: %d\n",
+				    DM_GET_LEN(me, me_handle2));
+			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint path: %s\n",
+				    DM_GET_VALUE(me, me_name1, char *));
+			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n",
+				    DM_GET_VALUE(me, me_name2, char *));
+			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n",
+				    DM_GET_VALUE(me, me_roothandle, void *));
+			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n",
+				    DM_GET_LEN(me, me_roothandle));
 
-    			bMounted = dm_handle_is_valid(lhanp, lhlen);
+			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
-    			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);
+			rc = dm_request_right(sid, lhanp, lhlen, token,
+					      DM_RR_WAIT, DM_RIGHT_EXCL);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_ERR, "dm_request_right failed! (rc = %d, errno = %d)\n", rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "dm_request_right failed! (rc = %d, errno = %d)\n",
+					    rc, errno);
 				dm_destroy_session(sid);
 				DM_EXIT();
 			}
@@ -1266,9 +1491,12 @@ void *Thread(void *parm)
 			DMEV_SET(DM_EVENT_UNMOUNT, events);
 			DMEV_SET(DM_EVENT_READ, events);
 			DMEV_SET(DM_EVENT_WRITE, events);
-			rc = dm_set_disp(sid, lhanp, lhlen, token, &events, DM_EVENT_MAX);
+			rc = dm_set_disp(sid, lhanp, lhlen, token, &events,
+					 DM_EVENT_MAX);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_ERR, "dm_set_disp failed! (rc = %d, errno = %d)\n", rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "dm_set_disp failed! (rc = %d, errno = %d)\n",
+					    rc, errno);
 				dm_destroy_session(sid);
 				DM_EXIT();
 			}
@@ -1276,23 +1504,29 @@ void *Thread(void *parm)
 			DMEV_ZERO(events);
 			DMEV_SET(DM_EVENT_PREUNMOUNT, events);
 			DMEV_SET(DM_EVENT_UNMOUNT, events);
-			rc = dm_set_eventlist(sid, lhanp, lhlen, token, &events, DM_EVENT_MAX);
+			rc = dm_set_eventlist(sid, lhanp, lhlen, token, &events,
+					      DM_EVENT_MAX);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_ERR, "dm_set_eventlist failed! (rc = %d, errno = %d)\n", rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "dm_set_eventlist failed! (rc = %d, errno = %d)\n",
+					    rc, errno);
 				dm_destroy_session(sid);
 				DM_EXIT();
 			}
 
-    			rc = dm_release_right(sid, lhanp, lhlen, token);
+			rc = dm_release_right(sid, lhanp, lhlen, token);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_ERR, "dm_request_right failed! (rc = %d, errno = %d)\n", rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "dm_request_right failed! (rc = %d, errno = %d)\n",
+					    rc, errno);
 				dm_destroy_session(sid);
 				DM_EXIT();
 			}
 
 			response = DM_RESP_CONTINUE;
 		} else if (type == DM_EVENT_UNMOUNT) {
-			dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
+			dm_namesp_event_t *nse =
+			    DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
 			if (nse->ne_retcode == 0) {
 				bMounted = DM_FALSE;
 			}
@@ -1307,53 +1541,77 @@ void *Thread(void *parm)
 				break;
 
 			case DM_EVENT_READ:
-			{
-				dm_data_event_t *de = DM_GET_VALUE(dmMsg, ev_data, dm_data_event_t *);
-				hanp1 = DM_GET_VALUE(de, de_handle, void *);
-				hlen1 = DM_GET_LEN(de, de_handle);
-				offset = de->de_offset;
-				length = de->de_length;
+				{
+					dm_data_event_t *de =
+					    DM_GET_VALUE(dmMsg, ev_data,
+							 dm_data_event_t *);
+					hanp1 =
+					    DM_GET_VALUE(de, de_handle, void *);
+					hlen1 = DM_GET_LEN(de, de_handle);
+					offset = de->de_offset;
+					length = de->de_length;
 
-				DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_READ\n");
-				DMLOG_PRINT(DMLVL_DEBUG, "  Handle: %p\n", hanp1);
-				DMLOG_PRINT(DMLVL_DEBUG, "  Handle length: %d\n", hlen1);
-				DMLOG_PRINT(DMLVL_DEBUG, "  Offset: %d\n", offset);
-				DMLOG_PRINT(DMLVL_DEBUG, "  Length: %d\n", length);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "Message is DM_EVENT_READ\n");
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  Handle: %p\n", hanp1);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  Handle length: %d\n",
+						    hlen1);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  Offset: %d\n", offset);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  Length: %d\n", length);
 
-				response = eventResponse;
-				break;
-			}
+					response = eventResponse;
+					break;
+				}
 
 			case DM_EVENT_WRITE:
-			{
-				dm_data_event_t *de = DM_GET_VALUE(dmMsg, ev_data, dm_data_event_t *);
-				hanp1 = DM_GET_VALUE(de, de_handle, void *);
-				hlen1 = DM_GET_LEN(de, de_handle);
-				offset = de->de_offset;
-				length = de->de_length;
+				{
+					dm_data_event_t *de =
+					    DM_GET_VALUE(dmMsg, ev_data,
+							 dm_data_event_t *);
+					hanp1 =
+					    DM_GET_VALUE(de, de_handle, void *);
+					hlen1 = DM_GET_LEN(de, de_handle);
+					offset = de->de_offset;
+					length = de->de_length;
 
-				DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_WRITE\n");
-				DMLOG_PRINT(DMLVL_DEBUG, "  Handle: %p\n", hanp1);
-				DMLOG_PRINT(DMLVL_DEBUG, "  Handle length: %d\n", hlen1);
-				DMLOG_PRINT(DMLVL_DEBUG, "  Offset: %d\n", offset);
-				DMLOG_PRINT(DMLVL_DEBUG, "  Length: %d\n", length);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "Message is DM_EVENT_WRITE\n");
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  Handle: %p\n", hanp1);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  Handle length: %d\n",
+						    hlen1);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  Offset: %d\n", offset);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "  Length: %d\n", length);
 
-				response = eventResponse;
-				break;
-			}
+					response = eventResponse;
+					break;
+				}
 
 			default:
-			{
-				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");
-				response = DM_RESP_ABORT;
-				break;
-			}
+				{
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Message is unexpected!\n");
+					response = DM_RESP_ABORT;
+					break;
+				}
 			}
 		}
 
 		if (response != DM_RESP_INVALID) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Responding to message %d with %d\n", type, response);
-			rc = dm_respond_event(sid, token, response, response == DM_RESP_ABORT ? ABORT_ERRNO : 0, 0, NULL);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Responding to message %d with %d\n", type,
+				    response);
+			rc = dm_respond_event(sid, token, response,
+					      response ==
+					      DM_RESP_ABORT ? ABORT_ERRNO : 0,
+					      0, NULL);
 		}
 	} while (bMounted);
 

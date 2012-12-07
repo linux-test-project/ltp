@@ -292,7 +292,8 @@ int main(int argc, char *argv[])
 				fp = popen(buf, "w");
 			if (fp) {
 				if (fwrite(compressed_ext2_image_sample, 1,
-				    sizeof(compressed_ext2_image_sample), fp) !=
+					   sizeof(compressed_ext2_image_sample),
+					   fp) !=
 				    sizeof(compressed_ext2_image_sample))
 					err(1, "fwrite");
 				pclose(fp);
@@ -369,7 +370,7 @@ int main(int argc, char *argv[])
 
 		set_profile(0, "file::mount");
 		while (umount("/tmp/mount/") == 0)
-			c++; /* Dummy. */
+			c++;	/* Dummy. */
 	}
 
 	/* Test mount(). */
@@ -419,8 +420,7 @@ int main(int argc, char *argv[])
 			printf("BUG: %s\n", strerror(errno));
 
 		/* Test remount case */
-		fprintf(domain_fp,
-			"allow_mount any /tmp/mount/ --remount 0\n");
+		fprintf(domain_fp, "allow_mount any /tmp/mount/ --remount 0\n");
 		show_prompt("mount('/tmp/mount/', MS_REMOUNT)", 0);
 		if (mount("none", "/tmp/mount/", "tmpfs", MS_REMOUNT, NULL)
 		    == 0)
@@ -464,7 +464,7 @@ int main(int argc, char *argv[])
 			"/tmp/mount_move/ --move 0\n");
 
 		while (umount("/tmp/mount/") == 0)
-			c++; /* Dummy. */
+			c++;	/* Dummy. */
 	}
 
 	/* Test umount(). */
@@ -508,7 +508,7 @@ int main(int argc, char *argv[])
 
 		set_profile(0, "file::umount");
 		while (umount("/tmp/mount/") == 0)
-			c++; /* Dummy. */
+			c++;	/* Dummy. */
 	}
 
 	/* Test chroot(). */
@@ -568,7 +568,7 @@ int main(int argc, char *argv[])
 		static char stack[8192];
 		set_profile(3, "file::pivot_root");
 		fprintf(domain_fp, "allow_pivot_root %s %s\n",
-			 pivot_root_dir, proc_policy_dir);
+			pivot_root_dir, proc_policy_dir);
 		snprintf(stack, 8191, "pivot_root('%s', '%s')", pivot_root_dir,
 			 proc_policy_dir);
 		show_prompt(stack, 0);
@@ -577,7 +577,7 @@ int main(int argc, char *argv[])
 							  NULL);
 			while (waitpid(pid, &error, __WALL) == EOF &&
 			       errno == EINTR)
-				c++; /* Dummy. */
+				c++;	/* Dummy. */
 		}
 		errno = WIFEXITED(error) ? WEXITSTATUS(error) : -1;
 		if (errno == 0)
@@ -595,7 +595,7 @@ int main(int argc, char *argv[])
 							  NULL);
 			while (waitpid(pid, &error, __WALL) == EOF &&
 			       errno == EINTR)
-				c++; /* Dummy. */
+				c++;	/* Dummy. */
 		}
 		errno = WIFEXITED(error) ? WEXITSTATUS(error) : -1;
 		if (errno == EPERM)
@@ -612,7 +612,7 @@ int main(int argc, char *argv[])
 							  NULL);
 			while (waitpid(pid, &error, __WALL) == EOF &&
 			       errno == EINTR)
-				c++; /* Dummy. */
+				c++;	/* Dummy. */
 		}
 		errno = WIFEXITED(error) ? WEXITSTATUS(error) : -1;
 		if (errno == 0)

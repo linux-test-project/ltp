@@ -37,7 +37,8 @@ int set_nonroot()
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\n");
+			printf
+			    ("You don't have permission to change your UID.\n");
 			return 1;
 		}
 		perror("An error occurs when calling seteuid()");
@@ -49,19 +50,20 @@ int set_nonroot()
 	return 0;
 }
 
-int main() {
+int main()
+{
 	int result;
-        struct sched_param param;
+	struct sched_param param;
 
-        /* We assume process Number 1 is created by root */
-        /* and can only be accessed by root */
-        /* This test should be run under standard user permissions */
-        if (getuid() == 0) {
-	  	if (set_nonroot() != 0) {
-			  printf("Cannot run this test as non-root user\n");
-                return PTS_UNTESTED;
-        }
-        }
+	/* We assume process Number 1 is created by root */
+	/* and can only be accessed by root */
+	/* This test should be run under standard user permissions */
+	if (getuid() == 0) {
+		if (set_nonroot() != 0) {
+			printf("Cannot run this test as non-root user\n");
+			return PTS_UNTESTED;
+		}
+	}
 
 	if (sched_getparam(0, &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
@@ -74,7 +76,7 @@ int main() {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno != EPERM) {
-	        perror("errno is not EPERM");
+		perror("errno is not EPERM");
 		return PTS_FAIL;
 	} else {
 		printf("The returned code is not -1.\n");

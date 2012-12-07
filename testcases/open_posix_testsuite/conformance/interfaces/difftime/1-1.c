@@ -29,7 +29,8 @@ int main()
 	time_diff = difftime(time1, time0);
 
 	if (time_diff != WAIT_DURATION) {
-		perror("Test FAILED: difftime did not return the correct value\n");
+		perror
+		    ("Test FAILED: difftime did not return the correct value\n");
 		return PTS_FAIL;
 	}
 

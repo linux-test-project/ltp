@@ -74,7 +74,7 @@ char *TCID = "ioperm01";	/* Test program identifier.    */
 #include "test.h"
 #include "usctest.h"
 
-unsigned long io_addr;			/*kernel version dependant io start address */
+unsigned long io_addr;		/*kernel version dependant io start address */
 #define NUM_BYTES 3		/* number of bytes from start address */
 #define TURN_ON 1
 #define TURN_OFF 0
@@ -133,7 +133,7 @@ void setup()
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
-	 }
+	}
 
 	/*
 	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed

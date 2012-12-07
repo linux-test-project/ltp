@@ -33,7 +33,8 @@ int main(int argc, char *argv[])
 	struct timespec res;
 	int invalid_tests[NUMINVALIDTESTS] = {
 		INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
-		1073743192, -1, 17};
+		1073743192, -1, 17
+	};
 	int i;
 	int failure = 0;
 

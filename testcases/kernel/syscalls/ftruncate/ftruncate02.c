@@ -123,8 +123,9 @@ int main(int ac, char **av)
 		TEST(ftruncate(fd, TRUNC_LEN1));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "ftruncate(%s) to size %d failed",
-				 TESTFILE, TRUNC_LEN1);
+			tst_resm(TFAIL | TTERRNO,
+				 "ftruncate(%s) to size %d failed", TESTFILE,
+				 TRUNC_LEN1);
 			continue;
 		}
 		/*
@@ -301,7 +302,7 @@ void cleanup()
 
 	/* Close the testfile after writing data into it */
 	if (close(fd) == -1)
-		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TESTFILE);
+		tst_brkm(TFAIL | TERRNO, NULL, "close(%s) failed", TESTFILE);
 
 	tst_rmdir();
 

@@ -37,132 +37,130 @@
  * with/against a known pattern.
  */
 
-int
-pattern_check(buf, buflen, pat, patlen, patshift)
-char	*buf;
-int	buflen;
-char	*pat;
-int	patlen;
-int	patshift;
+int pattern_check(buf, buflen, pat, patlen, patshift)
+char *buf;
+int buflen;
+char *pat;
+int patlen;
+int patshift;
 {
-    int		nb, ncmp, nleft;
-    char	*cp;
+	int nb, ncmp, nleft;
+	char *cp;
 
-    if (patlen)
-	patshift = patshift % patlen;
+	if (patlen)
+		patshift = patshift % patlen;
 
-    cp = buf;
-    nleft = buflen;
+	cp = buf;
+	nleft = buflen;
 
-    /*
-     * The following 2 blocks of code are to compare the first patlen
-     * bytes of buf.  We need 2 checks if patshift is > 0 since we
-     * must check the last (patlen - patshift) bytes, and then the
-     * first (patshift) bytes.
-     */
+	/*
+	 * The following 2 blocks of code are to compare the first patlen
+	 * bytes of buf.  We need 2 checks if patshift is > 0 since we
+	 * must check the last (patlen - patshift) bytes, and then the
+	 * first (patshift) bytes.
+	 */
 
-    nb = patlen - patshift;
-    if (nleft < nb) {
-	return (memcmp(cp, pat + patshift, nleft) ? -1 : 0);
-    } else {
-        if (memcmp(cp, pat + patshift, nb))
-	    return -1;
-
-	nleft -= nb;
-	cp += nb;
-    }
-
-    if (patshift > 0) {
-	nb = patshift;
+	nb = patlen - patshift;
 	if (nleft < nb) {
-	    return (memcmp(cp, pat, nleft) ? -1 : 0);
+		return (memcmp(cp, pat + patshift, nleft) ? -1 : 0);
 	} else {
-	    if (memcmp(cp, pat, nb))
-		return -1;
+		if (memcmp(cp, pat + patshift, nb))
+			return -1;
 
-	    nleft -= nb;
-	    cp += nb;
+		nleft -= nb;
+		cp += nb;
 	}
-    }
 
-    /*
-     * Now, verify the rest of the buffer using the algorithm described
-     * in the function header.
-     */
+	if (patshift > 0) {
+		nb = patshift;
+		if (nleft < nb) {
+			return (memcmp(cp, pat, nleft) ? -1 : 0);
+		} else {
+			if (memcmp(cp, pat, nb))
+				return -1;
 
-    ncmp = cp - buf;
-    while (ncmp < buflen) {
-	nb = (ncmp < nleft) ? ncmp : nleft;
-	if (memcmp(buf, cp, nb))
-	    return -1;
+			nleft -= nb;
+			cp += nb;
+		}
+	}
 
-	cp += nb;
-	ncmp += nb;
-	nleft -= nb;
-    }
+	/*
+	 * Now, verify the rest of the buffer using the algorithm described
+	 * in the function header.
+	 */
 
-    return 0;
+	ncmp = cp - buf;
+	while (ncmp < buflen) {
+		nb = (ncmp < nleft) ? ncmp : nleft;
+		if (memcmp(buf, cp, nb))
+			return -1;
+
+		cp += nb;
+		ncmp += nb;
+		nleft -= nb;
+	}
+
+	return 0;
 }
 
-int
-pattern_fill(buf, buflen, pat, patlen, patshift)
-char	*buf;
-int	buflen;
-char	*pat;
-int	patlen;
-int	patshift;
+int pattern_fill(buf, buflen, pat, patlen, patshift)
+char *buf;
+int buflen;
+char *pat;
+int patlen;
+int patshift;
 {
-    int		trans, ncopied, nleft;
-    char	*cp;
+	int trans, ncopied, nleft;
+	char *cp;
 
-    if (patlen)
-	patshift = patshift % patlen;
+	if (patlen)
+		patshift = patshift % patlen;
 
-    cp = buf;
-    nleft = buflen;
+	cp = buf;
+	nleft = buflen;
 
-    /*
-     * The following 2 blocks of code are to fill the first patlen
-     * bytes of buf.  We need 2 sections if patshift is > 0 since we
-     * must first copy the last (patlen - patshift) bytes into buf[0]...,
-     * and then the first (patshift) bytes of pattern following them.
-     */
+	/*
+	 * The following 2 blocks of code are to fill the first patlen
+	 * bytes of buf.  We need 2 sections if patshift is > 0 since we
+	 * must first copy the last (patlen - patshift) bytes into buf[0]...,
+	 * and then the first (patshift) bytes of pattern following them.
+	 */
 
-    trans = patlen - patshift;
-    if (nleft < trans) {
-	memcpy(cp, pat + patshift, nleft);
-	return 0;
-    } else {
-	memcpy(cp, pat + patshift, trans);
-	nleft -= trans;
-	cp += trans;
-    }
-
-    if (patshift > 0) {
-        trans = patshift;
+	trans = patlen - patshift;
 	if (nleft < trans) {
-	    memcpy(cp, pat, nleft);
-	    return 0;
+		memcpy(cp, pat + patshift, nleft);
+		return 0;
 	} else {
-	    memcpy(cp, pat, trans);
-	    nleft -= trans;
-	    cp += trans;
+		memcpy(cp, pat + patshift, trans);
+		nleft -= trans;
+		cp += trans;
 	}
-    }
 
-    /*
-     * Now, fill the rest of the buffer using the algorithm described
-     * in the function header comment.
-     */
+	if (patshift > 0) {
+		trans = patshift;
+		if (nleft < trans) {
+			memcpy(cp, pat, nleft);
+			return 0;
+		} else {
+			memcpy(cp, pat, trans);
+			nleft -= trans;
+			cp += trans;
+		}
+	}
 
-    ncopied = cp - buf;
-    while (ncopied < buflen) {
-	trans = (ncopied < nleft) ? ncopied : nleft;
-	memcpy(cp, buf, trans);
-	cp += trans;
-	ncopied += trans;
-	nleft -= trans;
-    }
+	/*
+	 * Now, fill the rest of the buffer using the algorithm described
+	 * in the function header comment.
+	 */
 
-    return(0);
+	ncopied = cp - buf;
+	while (ncopied < buflen) {
+		trans = (ncopied < nleft) ? ncopied : nleft;
+		memcpy(cp, buf, trans);
+		cp += trans;
+		ncopied += trans;
+		nleft -= trans;
+	}
+
+	return (0);
 }

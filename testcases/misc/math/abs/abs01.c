@@ -36,7 +36,7 @@
  */
 #define _GNU_SOURCE 1
 
-#include <stdio.h>		/* needed by testhead.h		*/
+#include <stdio.h>		/* needed by testhead.h         */
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -55,8 +55,8 @@ char *TCID = "abs01";
 int local_flag = PASSED;
 int block_number;
 int errno;
-FILE * temp;
-int TST_TOTAL =1;
+FILE *temp;
+int TST_TOTAL = 1;
 
 void setup();
 int blenter();
@@ -65,14 +65,14 @@ int blexit();
 /********************************/
 
 /*--------------------------------------------------------------*/
-int main (argc, argv)
-	int  argc;
-	char *argv[];
+int main(argc, argv)
+int argc;
+char *argv[];
 {
 	register long long i;
-	register int j, k, l,m;
+	register int j, k, l, m;
 
-	setup();		/* temp file is now open	*/
+	setup();		/* temp file is now open        */
 /*--------------------------------------------------------------*/
 	blenter();
 
@@ -97,7 +97,7 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 	blenter();
 
-	for (m = 1; m >= 0 ; m <<= 1) {
+	for (m = 1; m >= 0; m <<= 1) {
 		j = ~m;
 		k = j + 1;
 		l = abs(k);
@@ -111,24 +111,27 @@ int main (argc, argv)
 
 	tst_exit();
 }
+
 /*--------------------------------------------------------------*/
 
 /*****  LTP Port	*****/
 void setup()
 {
-  temp = stderr;
+	temp = stderr;
 }
 
 int blenter()
 {
-  local_flag = PASSED;
-  return(0);
+	local_flag = PASSED;
+	return (0);
 }
 
 int blexit()
 {
-  (local_flag == PASSED ) ? tst_resm(TPASS, "Test passed") : tst_resm(TFAIL, "Test failed");
-  return(0);
+	(local_flag == PASSED) ? tst_resm(TPASS,
+					  "Test passed") : tst_resm(TFAIL,
+								    "Test failed");
+	return (0);
 }
 
 /******			*****/

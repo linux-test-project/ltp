@@ -33,7 +33,7 @@
 
 int main()
 {
-    int status;
-    status = create_net_namespace("delchild.sh", "rename_net.sh");
-    return status;
+	int status;
+	status = create_net_namespace("delchild.sh", "rename_net.sh");
+	return status;
 }

@@ -104,11 +104,11 @@ int main(int ac, char **av)
 		if ((fin = popen(pwd, "r")) == NULL) {
 			tst_resm(TINFO, "%s: can't run %s", TCID, pwd);
 			tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
-		 }
+		}
 		while (fgets(pwd_buf, sizeof(pwd_buf), fin) != NULL) {
 			if ((cp = strchr(pwd_buf, '\n')) == NULL) {
 				tst_brkm(TBROK, cleanup, "pwd output too long");
-			 }
+			}
 			*cp = 0;
 			cp_cur = pwd_buf;
 		}

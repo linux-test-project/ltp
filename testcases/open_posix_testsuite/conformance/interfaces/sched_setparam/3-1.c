@@ -16,6 +16,7 @@
 
 int main()
 {
-        printf("Will not test the behavior of sched_setparam() when pid is negative because\nit is unspecified.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test the behavior of sched_setparam() when pid is negative because\nit is unspecified.\n");
+	return PTS_UNTESTED;
 }

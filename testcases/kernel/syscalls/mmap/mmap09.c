@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL|TTERRNO, "%s", TC[i].desc);
+				tst_resm(TFAIL | TTERRNO, "%s", TC[i].desc);
 			} else {
 				tst_resm(TPASS, "%s", TC[i].desc);
 			}
@@ -121,16 +121,16 @@ void setup()
 	tst_tmpdir();
 
 	if ((fd = open("mmaptest", O_RDWR | O_CREAT, 0666)) < 0)
-		tst_brkm(TFAIL|TERRNO, cleanup, "opening mmaptest failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "opening mmaptest failed");
 
 	/* ftruncate the file to 16k */
 	if (ftruncate(fd, mapsize) < 0)
-		tst_brkm(TFAIL|TERRNO, cleanup, "ftruncate file failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "ftruncate file failed");
 
 	maddr = mmap(0, (size_t) mapsize, PROT_READ | PROT_WRITE,
-		    MAP_FILE | MAP_SHARED, fd, (off_t) 0);
+		     MAP_FILE | MAP_SHARED, fd, (off_t) 0);
 	if (maddr == MAP_FAILED)
-		tst_brkm(TFAIL|TERRNO, cleanup, "mmapping mmaptest failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "mmapping mmaptest failed");
 
 	/* fill up the file with A's */
 	memset(maddr, 'A', mapsize);

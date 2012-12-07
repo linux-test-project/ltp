@@ -35,7 +35,8 @@
 
 unsigned long callnum, args[6];
 
-int seed_random(void) {
+int seed_random(void)
+{
 	int fp;
 	long seed;
 
@@ -56,20 +57,24 @@ int seed_random(void) {
 	return 1;
 }
 
-void get_big_randnum(void *buf, unsigned int size) {
+void get_big_randnum(void *buf, unsigned int size)
+{
 	uint32_t *x = buf;
 	int i;
 
 	for (i = 0; i < size; i += 4, x++) {
-		*x = (unsigned long)((float)UINT_MAX * (rand() / (RAND_MAX + 1.0)));
+		*x = (unsigned long)((float)UINT_MAX *
+				     (rand() / (RAND_MAX + 1.0)));
 	}
 }
 
-unsigned long get_randnum(unsigned long min, unsigned long max) {
+unsigned long get_randnum(unsigned long min, unsigned long max)
+{
 	return min + (unsigned long)((float)max * (rand() / (RAND_MAX + 1.0)));
 }
 
-int find_syscall(void) {
+int find_syscall(void)
+{
 	int x;
 
 badcall:
@@ -79,115 +84,119 @@ badcall:
 	switch (x) {
 		/* don't screw with signal handling */
 #ifdef SYS_signal
-		case SYS_signal:
+	case SYS_signal:
 #endif
 #ifdef SYS_sigaction
-		case SYS_sigaction:
+	case SYS_sigaction:
 #endif
 #ifdef SYS_sigsuspend
-		case SYS_sigsuspend:
+	case SYS_sigsuspend:
 #endif
 #ifdef SYS_sigpending
-		case SYS_sigpending:
+	case SYS_sigpending:
 #endif
 #ifdef SYS_sigreturn
-		case SYS_sigreturn:
+	case SYS_sigreturn:
 #endif
 #ifdef SYS_sigprocmask
-		case SYS_sigprocmask:
+	case SYS_sigprocmask:
 #endif
 #ifdef SYS_rt_sigreturn
-		case SYS_rt_sigreturn:
+	case SYS_rt_sigreturn:
 #endif
 #ifdef SYS_rt_sigaction
-		case SYS_rt_sigaction:
+	case SYS_rt_sigaction:
 #endif
 #ifdef SYS_rt_sigprocmask
-		case SYS_rt_sigprocmask:
+	case SYS_rt_sigprocmask:
 #endif
 #ifdef SYS_rt_sigpending
-		case SYS_rt_sigpending:
+	case SYS_rt_sigpending:
 #endif
 #ifdef SYS_rt_sigtimedwait
-		case SYS_rt_sigtimedwait:
+	case SYS_rt_sigtimedwait:
 #endif
 #ifdef SYS_rt_sigqueueinfo
-		case SYS_rt_sigqueueinfo:
+	case SYS_rt_sigqueueinfo:
 #endif
 #ifdef SYS_rt_sigsuspend
-		case SYS_rt_sigsuspend:
+	case SYS_rt_sigsuspend:
 #endif
 #ifdef SYS_sigaltstack
-		case SYS_sigaltstack:
+	case SYS_sigaltstack:
 #endif
 #ifdef SYS_settimeofday
-		case SYS_settimeofday:
+	case SYS_settimeofday:
 #endif
 
 		/* don't exit the program :P */
 #ifdef SYS_exit
-		case SYS_exit:
+	case SYS_exit:
 #endif
 #ifdef SYS_exit_group
-		case SYS_exit_group:
+	case SYS_exit_group:
 #endif
 
 		/* don't put it to sleep either */
 #ifdef SYS_pause
-		case SYS_pause:
+	case SYS_pause:
 #endif
 #ifdef SYS_select
-		case SYS_select:
+	case SYS_select:
 #endif
 #ifdef SYS_read
-		case SYS_read:
+	case SYS_read:
 #endif
 #ifdef SYS_write
-		case SYS_write:
+	case SYS_write:
 #endif
 
 		/* these can fill the process table */
 #ifdef SYS_fork
-		case SYS_fork:
+	case SYS_fork:
 #endif
 #ifdef SYS_vfork
-		case SYS_vfork:
+	case SYS_vfork:
 #endif
 #ifdef SYS_clone
-		case SYS_clone:
+	case SYS_clone:
 #endif
 
 		/* This causes OOM conditions */
 #if 1
 #ifdef SYS_brk
-		case SYS_brk:
+	case SYS_brk:
 #endif
 #endif
 
 		/* these get our program killed */
 #ifdef SYS_vm86
-		case SYS_vm86:
+	case SYS_vm86:
 #endif
 #ifdef SYS_vm86old
-		case SYS_vm86old:
+	case SYS_vm86old:
 #endif
-			goto badcall;
+		goto badcall;
 	}
 
 	return x;
 }
 
-void bogus_signal_handler(int signum) {
-	fprintf(stderr, "                                    Signal %d on syscall(%lu, 0x%lX, 0x%lX, 0x%lX, 0x%lX, 0x%lX, 0x%lX).\n",
-			signum, callnum, args[0], args[1], args[2], args[3],
-			args[4], args[5]);
+void bogus_signal_handler(int signum)
+{
+	fprintf(stderr,
+		"                                    Signal %d on syscall(%lu, 0x%lX, 0x%lX, 0x%lX, 0x%lX, 0x%lX, 0x%lX).\n",
+		signum, callnum, args[0], args[1], args[2], args[3], args[4],
+		args[5]);
 }
 
-void real_signal_handler(int signum) {
+void real_signal_handler(int signum)
+{
 	exit(0);
 }
 
-void install_signal_handlers(void) {
+void install_signal_handlers(void)
+{
 	int x;
 	struct sigaction zig;
 
@@ -202,7 +211,8 @@ void install_signal_handlers(void) {
 	sigaction(SIGTERM, &zig, NULL);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	int i;
 	int debug = 0, zero_mode = 0;
 
@@ -229,13 +239,13 @@ int main(int argc, char *argv[]) {
 		if (debug) {
 			printf("syscall(%lu, 0x%lX, 0x%lX, 0x%lX, 0x%lX, "
 			       "0x%lX, 0x%lX);       \n",
-				callnum, args[0], args[1], args[2], args[3],
-				args[4], args[5]);
+			       callnum, args[0], args[1], args[2], args[3],
+			       args[4], args[5]);
 			fflush(stdout);
 		}
 
 		syscall(callnum, args[0], args[1], args[2],
-				args[3], args[4], args[5]);
+			args[3], args[4], args[5]);
 	}
 
 	return 0;

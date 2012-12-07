@@ -109,7 +109,7 @@
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "access03";	/* Test program identifier.	*/
+char *TCID = "access03";	/* Test program identifier.     */
 int TST_TOTAL = 8;		/* Total number of test cases. */
 
 int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
@@ -178,12 +178,12 @@ void setup()
 	TEST_PAUSE;
 
 	low_addr = mmap(0, 1, PROT_NONE,
-	    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (low_addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, NULL, "mmap failed");
+		tst_brkm(TBROK | TERRNO, NULL, "mmap failed");
 	high_addr = get_high_address();
 	if (high_addr == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "get_high_address failed");
+		tst_brkm(TBROK | TERRNO, NULL, "get_high_address failed");
 	high_addr++;
 
 	tst_tmpdir();

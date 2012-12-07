@@ -52,123 +52,125 @@ int pass = 0;
 
 void assert(const char *what, int assertion)
 {
-		 if (assertion)
-		 		 return;
-		 perror(what);
-		 exit(1);
+	if (assertion)
+		return;
+	perror(what);
+	exit(1);
 }
 
 void do_buffered_writes(int fd, int pattern)
 {
-		 int rc;
-		 int offset;
+	int rc;
+	int offset;
 
-		 memset(iobuf, pattern, WRITESIZE);
-		 for (offset = 0; offset+WRITESIZE <= BIGSIZE; offset += WRITESIZE) {
-		 		 rc = pwrite(fd, iobuf, WRITESIZE, offset);
-		 		 assert("pwrite", rc >= 0);
-		 		 if (rc != WRITESIZE) {
-		 		 		 fprintf(stderr, "Pass %d: short write (%d out of %d)\n",
-		 		 		 		 pass, rc, WRITESIZE);
-		 		 		 exit(1);
-		 		 }
-		 		 fsync(fd);
-		 }
+	memset(iobuf, pattern, WRITESIZE);
+	for (offset = 0; offset + WRITESIZE <= BIGSIZE; offset += WRITESIZE) {
+		rc = pwrite(fd, iobuf, WRITESIZE, offset);
+		assert("pwrite", rc >= 0);
+		if (rc != WRITESIZE) {
+			fprintf(stderr, "Pass %d: short write (%d out of %d)\n",
+				pass, rc, WRITESIZE);
+			exit(1);
+		}
+		fsync(fd);
+	}
 }
 
 int do_direct_reads(char *filename)
 {
-		 int fd;
-		 int offset;
-		 int rc, i;
-		 int *p;
+	int fd;
+	int offset;
+	int rc, i;
+	int *p;
 
-		 fd = open(filename, O_DIRECT|O_RDONLY, 0);
-		 assert("open", fd >= 0);
+	fd = open(filename, O_DIRECT | O_RDONLY, 0);
+	assert("open", fd >= 0);
 
-		 for (offset = 0; offset+READSIZE <= BIGSIZE; offset += READSIZE) {
-		 		 rc = pread(fd, iobuf, READSIZE, offset);
-		 		 assert("pread", rc >= 0);
-		 		 if (rc != READSIZE) {
-		 		 		 fprintf(stderr, "Pass: %d short read (%d out of %d)\n",
-		 		 		 		 pass, rc, READSIZE);
-		 		 		 exit(1);
-		 		 }
-		 		 for (i=0, p=(int *)iobuf; i<READSIZE; i+=4) {
-		 		 		 if (*p) {
-		 		 		 		 fprintf(stderr,
-		 		 		 		 		 "Pass: %d Found data (%08x) at offset %d+%d\n",
-		 		 		 		 		 pass, *p, offset, i);
-                                 close(fd);
-		 		 		 		 return 1;
-		 		 		 }
-		 		 		 p++;
-		 		 }
-		 }
-		 close(fd);
-		 return 0;
+	for (offset = 0; offset + READSIZE <= BIGSIZE; offset += READSIZE) {
+		rc = pread(fd, iobuf, READSIZE, offset);
+		assert("pread", rc >= 0);
+		if (rc != READSIZE) {
+			fprintf(stderr, "Pass: %d short read (%d out of %d)\n",
+				pass, rc, READSIZE);
+			exit(1);
+		}
+		for (i = 0, p = (int *)iobuf; i < READSIZE; i += 4) {
+			if (*p) {
+				fprintf(stderr,
+					"Pass: %d Found data (%08x) at offset %d+%d\n",
+					pass, *p, offset, i);
+				close(fd);
+				return 1;
+			}
+			p++;
+		}
+	}
+	close(fd);
+	return 0;
 }
 
 int main(int argc, char *argv[])
 {
-		 char *filename;
-		 int fd;
-		 int pid;
-		 int err;
-		 int bufsize;
+	char *filename;
+	int fd;
+	int pid;
+	int err;
+	int bufsize;
 
-		 if (argc != 2) {
-		 		 fprintf(stderr, "Needs a filename as an argument.\n");
-		 		 exit(1);
-		 }
+	if (argc != 2) {
+		fprintf(stderr, "Needs a filename as an argument.\n");
+		exit(1);
+	}
 
-		 filename = argv[1];
+	filename = argv[1];
 
-		 pagesize = getpagesize();
-		 bufsize = READSIZE;
-		 if (WRITESIZE > READSIZE)
-		 		 bufsize = WRITESIZE;
-		 err = posix_memalign((void**) &iobuf, pagesize, bufsize);
-		 if (err) {
-		 		 fprintf(stderr, "Error allocating %d aligned bytes.\n", bufsize);
-		 		 exit(1);
-		 }
+	pagesize = getpagesize();
+	bufsize = READSIZE;
+	if (WRITESIZE > READSIZE)
+		bufsize = WRITESIZE;
+	err = posix_memalign((void **)&iobuf, pagesize, bufsize);
+	if (err) {
+		fprintf(stderr, "Error allocating %d aligned bytes.\n",
+			bufsize);
+		exit(1);
+	}
 
-		 fd = open(filename, O_CREAT|O_TRUNC|O_RDWR, 0666);
-		 assert("open", fd >= 0);
+	fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0666);
+	assert("open", fd >= 0);
 
-		 do {
+	do {
 
-		 		 assert("ftruncate", ftruncate(fd, BIGSIZE) == 0);
-		 		 fsync(fd);
+		assert("ftruncate", ftruncate(fd, BIGSIZE) == 0);
+		fsync(fd);
 
-		 		 pid = fork();
-		 		 assert("fork", pid >= 0);
+		pid = fork();
+		assert("fork", pid >= 0);
 
-		 		 if (!pid) {
-		 		 		 do_buffered_writes(fd, 0);
-		 		 		 exit(0);
-		 		 }
+		if (!pid) {
+			do_buffered_writes(fd, 0);
+			exit(0);
+		}
 
-		 		 err = do_direct_reads(filename);
+		err = do_direct_reads(filename);
 
-		 		 wait4(pid, NULL, WNOHANG, 0);
+		wait4(pid, NULL, WNOHANG, 0);
 
-		 		 if (err)
-		 		 		 break;
+		if (err)
+			break;
 
-		 		 /* Fill the file with a known pattern so that the blocks
-		 		  * on disk can be detected if they become exposed. */
-		 		 do_buffered_writes(fd, 1);
-		 		 fsync(fd);
+		/* Fill the file with a known pattern so that the blocks
+		 * on disk can be detected if they become exposed. */
+		do_buffered_writes(fd, 1);
+		fsync(fd);
 
-		 		 assert("ftruncate", ftruncate(fd, 0) == 0);
-		 		 fsync(fd);
-		 } while (pass++ < MAX_ITERATIONS);
+		assert("ftruncate", ftruncate(fd, 0) == 0);
+		fsync(fd);
+	} while (pass++ < MAX_ITERATIONS);
 
-         if (!err) {
-             fprintf(stdout, "ltp-diorh: Completed %d iterations OK \n", pass);
-         }
+	if (!err) {
+		fprintf(stdout, "ltp-diorh: Completed %d iterations OK \n",
+			pass);
+	}
 
-		 return err;
+	return err;
 }

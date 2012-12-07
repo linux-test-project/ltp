@@ -26,7 +26,8 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-void myhandler (int signo, siginfo_t *info, void *context) {
+void myhandler(int signo, siginfo_t * info, void *context)
+{
 	printf("Inside handler\n");
 }
 
@@ -38,8 +39,8 @@ int main()
 	sigset_t selectset;
 	siginfo_t info;
 
-	act.sa_flags=SA_SIGINFO;
-	act.sa_sigaction=myhandler;
+	act.sa_flags = SA_SIGINFO;
+	act.sa_sigaction = myhandler;
 
 	sigemptyset(&selectset);
 	sigaddset(&selectset, SIGTOTEST);
@@ -57,7 +58,7 @@ int main()
 
 	if (info.si_signo != SIGTOTEST) {
 		printf("Test FAILED: The selected signal number hasn't been"
-			"stored in the si_signo member.\n");
+		       "stored in the si_signo member.\n");
 		return PTS_FAIL;
 	}
 

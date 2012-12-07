@@ -61,7 +61,7 @@ int page_cache_hog(void)
 		return -1;
 	}
 
-	while ((ret = read(fd, buff, sizeof(buff))) > 0);
+	while ((ret = read(fd, buff, sizeof(buff))) > 0) ;
 	if (ret == -1)
 		warn("read %s failed", path);
 
@@ -84,7 +84,7 @@ int mem_hog(void)
 
 		fd = open("./myfifo", O_WRONLY);
 		if (fd == -1)
-			err(1,"open fifo failed");
+			err(1, "open fifo failed");
 
 		if (ret) {
 			if (write(fd, "0", 1) == -1)

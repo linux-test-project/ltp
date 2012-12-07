@@ -57,8 +57,8 @@ int main(int argc, char **argv)
 
 	char *szFuncName;
 	char *varstr;
-	int   i;
-	int   rc;
+	int i;
+	int rc;
 	char *szSessionInfo = "dm_test session info";
 	dm_eventset_t events, maxEvents, minEvents;
 	void *fshanp;
@@ -73,21 +73,35 @@ int main(int argc, char **argv)
 
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_init_service failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		DM_EXIT();
-	} else if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &sid)) == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_create_session failed! (rc = %d, errno = %d)\n", rc, errno);
+	} else if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &sid))
+		   == -1) {
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_create_session failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		DM_EXIT();
-	} else if ((rc = dm_set_disp(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &events, DM_EVENT_MAX)) == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_set_disp failed! (rc = %d, errno = %d)\n", rc, errno);
+	} else
+	    if ((rc =
+		 dm_set_disp(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN,
+			     &events, DM_EVENT_MAX)) == -1) {
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_set_disp failed! (rc = %d, errno = %d)\n", rc,
+			    errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	} else if ((rc = pthread_create(&tid, NULL, Thread, NULL)) != 0) {
-		DMLOG_PRINT(DMLVL_ERR, "pthread_create failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "pthread_create failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	} else if ((rc = dmimpl_mount(&mountPt, &deviceNm)) == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dmimpl_mount failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dmimpl_mount failed! (rc = %d, errno = %d)\n", rc,
+			    errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	} else {
@@ -104,8 +118,9 @@ int main(int argc, char **argv)
 		EVENT_DELIVERY_DELAY;
 		fd = open(DummyFile, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
 		if (fd != -1) {
-			for (i = 0; i < TMP_FILELEN/DUMMY_STRLEN; i++) {
-				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
+			for (i = 0; i < TMP_FILELEN / DUMMY_STRLEN; i++) {
+				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) !=
+				    DUMMY_STRLEN) {
 					rc = -1;
 					break;
 				}
@@ -120,14 +135,18 @@ int main(int argc, char **argv)
 			rc = close(fd);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_ERR, "creating dummy file failed! (rc = %d, errno = %d)\n", rc, errno);
+			DMLOG_PRINT(DMLVL_ERR,
+				    "creating dummy file failed! (rc = %d, errno = %d)\n",
+				    rc, errno);
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
 
 		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_ERR, "creating dummy dir failed! (rc = %d, errno = %d)\n", rc, errno);
+			DMLOG_PRINT(DMLVL_ERR,
+				    "creating dummy dir failed! (rc = %d, errno = %d)\n",
+				    rc, errno);
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
@@ -155,7 +174,8 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_UNMOUNT, minEvents);
 	}
 
-	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI disposition/eventlist tests\n") ;
+	DMLOG_PRINT(DMLVL_DEBUG,
+		    "Starting DMAPI disposition/eventlist tests\n");
 
 	szFuncName = "dm_get_config_events";
 
@@ -172,12 +192,17 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
-			rc = dm_get_config_events((void *)INVALID_ADDR, hlen, DM_EVENT_MAX, &eventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n",
+				    szFuncName);
+			rc = dm_get_config_events((void *)INVALID_ADDR, hlen,
+						  DM_EVENT_MAX, &eventset,
+						  &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
@@ -198,12 +223,17 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
-			rc = dm_get_config_events(hanp, INVALID_ADDR, DM_EVENT_MAX, &eventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n",
+				    szFuncName);
+			rc = dm_get_config_events(hanp, INVALID_ADDR,
+						  DM_EVENT_MAX, &eventset,
+						  &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
@@ -226,27 +256,42 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelem)\n", szFuncName);
-			rc = dm_get_config_events(hanp, hlen, 0, &eventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelem)\n",
+				    szFuncName);
+			rc = dm_get_config_events(hanp, hlen, 0, &eventset,
+						  &nelem);
 			if (rc == -1) {
 				if (errno == E2BIG) {
 					if (nelem == DM_EVENT_MAX) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and expected errno = %d (nelem = %d)\n", szFuncName, rc, errno, nelem);
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d and expected errno = %d (nelem = %d)\n",
+							    szFuncName, rc,
+							    errno, nelem);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, rc, nelem, DM_EVENT_MAX);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+							    szFuncName, rc,
+							    nelem,
+							    DM_EVENT_MAX);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected errno = %d\n", szFuncName, rc, errno);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected errno = %d\n",
+						    szFuncName, rc, errno);
 					DMVAR_FAIL();
 				}
 			} else {
-	  			DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d\n", szFuncName, rc);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d\n",
+					    szFuncName, rc);
 				DMVAR_FAIL();
 			}
 
@@ -267,12 +312,17 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n", szFuncName);
-			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, (dm_eventset_t *)INVALID_ADDR, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n",
+				    szFuncName);
+			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX,
+						  (dm_eventset_t *)
+						  INVALID_ADDR, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
@@ -292,12 +342,17 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n", szFuncName);
-			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, &eventset, (u_int *)INVALID_ADDR);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n",
+				    szFuncName);
+			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX,
+						  &eventset,
+						  (u_int *) INVALID_ADDR);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
@@ -320,28 +375,44 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
-			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, &eventset, &nelem);
+			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX,
+						  &eventset, &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
 				if (nelem == DM_EVENT_MAX) {
-					if (memcmp(&eventset, &dmimpl_eventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+					if (memcmp
+					    (&eventset, &dmimpl_eventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, eventset, dmimpl_eventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    eventset,
+							    dmimpl_eventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_DESTROY+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_DESTROY + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -363,28 +434,45 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_path_to_handle(DummyFile, &hanp, &hlen);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(file handle)\n", szFuncName);
-			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, &eventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(file handle)\n",
+				    szFuncName);
+			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX,
+						  &eventset, &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
 				if (nelem == DM_EVENT_MAX) {
-					if (memcmp(&eventset, &dmimpl_eventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+					if (memcmp
+					    (&eventset, &dmimpl_eventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, eventset, dmimpl_eventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    eventset,
+							    dmimpl_eventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_DESTROY+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_DESTROY + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -406,28 +494,45 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_path_to_handle(DummySubdir, &hanp, &hlen);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
-			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, &eventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n",
+				    szFuncName);
+			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX,
+						  &eventset, &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
 				if (nelem == DM_EVENT_MAX) {
-					if (memcmp(&eventset, &dmimpl_eventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+					if (memcmp
+					    (&eventset, &dmimpl_eventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, eventset, dmimpl_eventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    eventset,
+							    dmimpl_eventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_DESTROY+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_DESTROY + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
@@ -448,7 +553,8 @@ int main(int argc, char **argv)
 
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
-		rc = dm_get_config_events(DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_EVENT_MAX, &eventset, &nelem);
+		rc = dm_get_config_events(DM_GLOBAL_HANP, DM_GLOBAL_HLEN,
+					  DM_EVENT_MAX, &eventset, &nelem);
 		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
@@ -468,18 +574,23 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DummyFile, DummyFile2);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile2, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile2, &hanp, &hlen)) ==
+			   -1) {
 			remove(DummyFile2);
 		} else if ((rc = remove(DummyFile2)) == -1) {
 			dm_handle_free(hanp, hlen);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated handle)\n", szFuncName);
-			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, &eventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated handle)\n",
+				    szFuncName);
+			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX,
+						  &eventset, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
@@ -500,24 +611,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
-			rc = dm_set_disp(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n",
+				    szFuncName);
+			rc = dm_set_disp(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN,
+					 &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -534,24 +654,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
-			rc = dm_set_disp(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n",
+				    szFuncName);
+			rc = dm_set_disp(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN,
+					 &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -568,24 +697,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
-			rc = dm_set_disp(newsid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, (void *)INVALID_ADDR, hlen,
+					 DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -602,24 +740,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
-			rc = dm_set_disp(newsid, hanp, INVALID_ADDR, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, hanp, INVALID_ADDR,
+					 DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -636,24 +783,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
-			rc = dm_set_disp(newsid, hanp, hlen, INVALID_ADDR, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, hanp, hlen, INVALID_ADDR,
+					 &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -669,24 +825,34 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n", szFuncName);
-			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, (dm_eventset_t *)INVALID_ADDR, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+					 (dm_eventset_t *) INVALID_ADDR,
+					 DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -703,24 +869,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid maxevent)\n", szFuncName);
-			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX+1);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid maxevent)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+					 &eventset, DM_EVENT_MAX + 1);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -737,24 +912,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(file handle)\n", szFuncName);
-			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(file handle)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+					 &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -771,24 +955,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
-			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+					 &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -807,18 +1000,25 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_POSTCREATE, eventset);
 		rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid global handle event)\n", szFuncName);
-			rc = dm_set_disp(newsid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(invalid global handle event)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN,
+					 DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 		}
 	}
@@ -836,24 +1036,34 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		DMEV_ZERO(eventset);
 		DMEV_SET(DM_EVENT_MOUNT, eventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid fs handle event)\n", szFuncName);
-			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(invalid fs handle event)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+					 &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -872,18 +1082,25 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_MOUNT, eventset);
 		rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(valid global handle event)\n", szFuncName);
-			rc = dm_set_disp(newsid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(valid global handle event)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN,
+					 DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 		}
 	}
@@ -901,24 +1118,33 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		DMEV_ZERO(eventset);
 		DMEV_SET(DM_EVENT_POSTCREATE, eventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(valid fs handle event)\n", szFuncName);
-			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(valid fs handle event)\n",
+				    szFuncName);
+			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+					 &eventset, DM_EVENT_MAX);
 			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -974,22 +1200,31 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &maxEvents, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+				     &maxEvents, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		} else if ((rc = dm_destroy_session(newsid)) == -1) {
 			dm_handle_free(hanp, hlen);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated sid)\n", szFuncName);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated sid)\n",
+				    szFuncName);
 			rc = dm_getall_disp(newsid, sizeof(buf), buf, &rlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
@@ -1010,16 +1245,24 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &maxEvents, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+				     &maxEvents, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
@@ -1030,7 +1273,9 @@ int main(int argc, char **argv)
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1048,27 +1293,39 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &maxEvents, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+				     &maxEvents, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n", szFuncName);
-			rc = dm_getall_disp(newsid, sizeof(buf), (void *)INVALID_ADDR, &rlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n",
+				    szFuncName);
+			rc = dm_getall_disp(newsid, sizeof(buf),
+					    (void *)INVALID_ADDR, &rlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1085,27 +1342,38 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &maxEvents, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+				     &maxEvents, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(NULL rlenp)\n", szFuncName);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(NULL rlenp)\n",
+				    szFuncName);
 			rc = dm_getall_disp(newsid, sizeof(buf), buf, NULL);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1122,27 +1390,39 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &maxEvents, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+				     &maxEvents, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n", szFuncName);
-			rc = dm_getall_disp(newsid, sizeof(buf), buf, (size_t *)INVALID_ADDR);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n",
+				    szFuncName);
+			rc = dm_getall_disp(newsid, sizeof(buf), buf,
+					    (size_t *) INVALID_ADDR);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1160,20 +1440,29 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &maxEvents, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+				     &maxEvents, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(buflen zero)\n", szFuncName);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(buflen zero)\n",
+				    szFuncName);
 			rc = dm_getall_disp(newsid, 0, buf, &rlen);
 			if (rc == -1 && errno == E2BIG) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d\n", rlen);
@@ -1183,7 +1472,9 @@ int main(int argc, char **argv)
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1201,16 +1492,24 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &maxEvents, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN,
+				     &maxEvents, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
@@ -1218,33 +1517,64 @@ int main(int argc, char **argv)
 			rc = dm_getall_disp(newsid, sizeof(buf), buf, &rlen);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d\n", rlen);
-				dm_dispinfo_t *di = (dm_dispinfo_t *)buf;
+				dm_dispinfo_t *di = (dm_dispinfo_t *) buf;
 				if (rlen == sizeof(dm_dispinfo_t) + hlen) {
-					if (dm_handle_cmp(hanp, hlen, DM_GET_VALUE(di, di_fshandle, void *), DM_GET_LEN(di, di_fshandle)) == 0) {
-						if (di->di_eventset == maxEvents) {
-						  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+					if (dm_handle_cmp
+					    (hanp, hlen,
+					     DM_GET_VALUE(di, di_fshandle,
+							  void *),
+					     DM_GET_LEN(di,
+							di_fshandle)) == 0) {
+						if (di->di_eventset ==
+						    maxEvents) {
+							DMLOG_PRINT(DMLVL_DEBUG,
+								    "%s passed with expected rc = %d\n",
+								    szFuncName,
+								    0);
 							DMVAR_PASS();
 						} else {
-						  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected eventset (%llx vs %llx)\n", szFuncName, 0, di->di_eventset, maxEvents);
+							DMLOG_PRINT(DMLVL_ERR,
+								    "%s failed with expected rc = %d but unexpected eventset (%llx vs %llx)\n",
+								    szFuncName,
+								    0,
+								    di->
+								    di_eventset,
+								    maxEvents);
 							DMVAR_FAIL();
 						}
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected fs handle (%llx vs %llx)\n", szFuncName, 0, *(__u64 *)hanp, *(__u64 *)DM_GET_VALUE(di, di_fshandle, void *));
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but unexpected fs handle (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    *(__u64 *) hanp,
+							    *(__u64 *)
+							    DM_GET_VALUE(di,
+									 di_fshandle,
+									 void
+									 *));
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected rlen (%d vs %d)\n", szFuncName, 0, rlen, sizeof(dm_dispinfo_t) + hlen);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected rlen (%d vs %d)\n",
+						    szFuncName, 0, rlen,
+						    sizeof(dm_dispinfo_t) +
+						    hlen);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1263,24 +1593,34 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
-			rc = dm_set_eventlist(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(DM_NO_SESSION, hanp, hlen,
+					      DM_NO_TOKEN, &eventset,
+					      DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1297,24 +1637,34 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
-			rc = dm_set_eventlist(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(INVALID_ADDR, hanp, hlen,
+					      DM_NO_TOKEN, &eventset,
+					      DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1331,24 +1681,34 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
-			rc = dm_set_eventlist(newsid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(newsid, (void *)INVALID_ADDR,
+					      hlen, DM_NO_TOKEN, &eventset,
+					      DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1365,24 +1725,34 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
-			rc = dm_set_eventlist(newsid, hanp, INVALID_ADDR, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(newsid, hanp, INVALID_ADDR,
+					      DM_NO_TOKEN, &eventset,
+					      DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1399,24 +1769,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
-			rc = dm_set_eventlist(newsid, hanp, hlen, INVALID_ADDR, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(newsid, hanp, hlen, INVALID_ADDR,
+					      &eventset, DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1432,24 +1811,34 @@ int main(int argc, char **argv)
 		size_t hlen;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n", szFuncName);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, (dm_eventset_t *)INVALID_ADDR, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      (dm_eventset_t *) INVALID_ADDR,
+					      DM_EVENT_MAX);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1466,24 +1855,33 @@ int main(int argc, char **argv)
 		dm_eventset_t eventset = minEvents;
 
 		/* Variation set up */
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid maxevent)\n", szFuncName);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX+1);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid maxevent)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &eventset, DM_EVENT_MAX + 1);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1503,39 +1901,64 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		DMEV_ZERO(eventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, eventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &eventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			eventset = minEvents;
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(maxevent < high set event)\n", szFuncName);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_ATTRIBUTE);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(maxevent < high set event)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &eventset, DM_EVENT_ATTRIBUTE);
 			if (rc == 0) {
-				if ((dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &eventset, &nelem) == 0) && (nelem == DM_EVENT_ATTRIBUTE+1) && (DMEV_ISSET(DM_EVENT_ATTRIBUTE, eventset))) {
-				  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if ((dm_get_eventlist
+				     (newsid, hanp, hlen, DM_NO_TOKEN,
+				      DM_EVENT_MAX, &eventset, &nelem) == 0)
+				    && (nelem == DM_EVENT_ATTRIBUTE + 1)
+				    &&
+				    (DMEV_ISSET(DM_EVENT_ATTRIBUTE, eventset)))
+				{
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "%s passed with expected rc = %d\n",
+						    szFuncName, 0);
 					DMVAR_PASS();
 				} else {
-				  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but high set event cleared\n", szFuncName, 0);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but high set event cleared\n",
+						    szFuncName, 0);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1555,39 +1978,64 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		DMEV_ZERO(eventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, eventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &eventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 			eventset = minEvents;
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(maxevent > high set event)\n", szFuncName);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(maxevent > high set event)\n",
+				    szFuncName);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &eventset, DM_EVENT_MAX);
 			if (rc == 0) {
-				if ((dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &eventset, &nelem) == 0) && (nelem == DM_EVENT_UNMOUNT+1) && (!DMEV_ISSET(DM_EVENT_ATTRIBUTE, eventset))) {
-				  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if ((dm_get_eventlist
+				     (newsid, hanp, hlen, DM_NO_TOKEN,
+				      DM_EVENT_MAX, &eventset, &nelem) == 0)
+				    && (nelem == DM_EVENT_UNMOUNT + 1)
+				    &&
+				    (!DMEV_ISSET(DM_EVENT_ATTRIBUTE, eventset)))
+				{
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "%s passed with expected rc = %d\n",
+						    szFuncName, 0);
 					DMVAR_PASS();
 				} else {
-				  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but high set event still set\n", szFuncName, 0);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but high set event still set\n",
+						    szFuncName, 0);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1599,7 +2047,8 @@ int main(int argc, char **argv)
 	 * This variation uncovered XFS BUG #15 (EBADF errno returned instead
 	 * of EINVAL)
 	 */
-	for (i = 0, varNum = SET_EVENTLIST_BASE + 10; i < DM_EVENT_MAX; i++, varNum++) {
+	for (i = 0, varNum = SET_EVENTLIST_BASE + 10; i < DM_EVENT_MAX;
+	     i++, varNum++) {
 		if (DMVAR_EXEC(varNum)) {
 			dm_sessid_t newsid;
 			dm_eventset_t eventset;
@@ -1607,20 +2056,31 @@ int main(int argc, char **argv)
 			/* Variation set up */
 			DMEV_ZERO(eventset);
 			DMEV_SET(i, eventset);
-			rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid);
+			rc = dm_create_session(DM_NO_SESSION, szSessionInfo,
+					       &newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to set up variation! (errno = %d)\n",
+					    errno);
 				DMVAR_SKIP();
 			} else {
 				/* Variation */
-				DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle, %s)\n", szFuncName, dmimpl_validEvents[i].name);
-				rc = dm_set_eventlist(newsid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "%s(global handle, %s)\n",
+					    szFuncName,
+					    dmimpl_validEvents[i].name);
+				rc = dm_set_eventlist(newsid, DM_GLOBAL_HANP,
+						      DM_GLOBAL_HLEN,
+						      DM_NO_TOKEN, &eventset,
+						      DM_EVENT_MAX);
 				DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 				/* Variation clean up */
 				rc = dm_destroy_session(newsid);
 				if (rc == -1) {
-					DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "Unable to clean up variation! (errno = %d)\n",
+						    errno);
 				}
 			}
 		}
@@ -1639,27 +2099,41 @@ int main(int argc, char **argv)
 			/* Variation set up */
 			DMEV_ZERO(eventset);
 			DMEV_SET(i, eventset);
-			if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+			if ((rc =
+			     dm_create_session(DM_NO_SESSION, szSessionInfo,
+					       &newsid)) == -1) {
 				/* No clean up */
-			} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+			} else
+			    if ((rc =
+				 dm_path_to_fshandle(DummyFile, &hanp,
+						     &hlen)) == -1) {
 				dm_destroy_session(newsid);
 			}
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to set up variation! (errno = %d)\n",
+					    errno);
 				DMVAR_SKIP();
 			} else {
 				/* Variation */
-				DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle, %s)\n", szFuncName, dmimpl_validEvents[i].name);
-				rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+				DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle, %s)\n",
+					    szFuncName,
+					    dmimpl_validEvents[i].name);
+				rc = dm_set_eventlist(newsid, hanp, hlen,
+						      DM_NO_TOKEN, &eventset,
+						      DM_EVENT_MAX);
 				if (dmimpl_validEvents[i].bFSHandle)
 					DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 				else
-					DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
+					DMVAR_ENDFAILEXP(szFuncName, -1, rc,
+							 EINVAL);
 
 				/* Variation clean up */
 				rc = dm_destroy_session(newsid);
 				if (rc == -1) {
-					DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "Unable to clean up variation! (errno = %d)\n",
+						    errno);
 				}
 				dm_handle_free(hanp, hlen);
 			}
@@ -1679,27 +2153,41 @@ int main(int argc, char **argv)
 			/* Variation set up */
 			DMEV_ZERO(eventset);
 			DMEV_SET(i, eventset);
-			if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+			if ((rc =
+			     dm_create_session(DM_NO_SESSION, szSessionInfo,
+					       &newsid)) == -1) {
 				/* No clean up */
-			} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
+			} else
+			    if ((rc =
+				 dm_path_to_handle(DummySubdir, &hanp,
+						   &hlen)) == -1) {
 				dm_destroy_session(newsid);
 			}
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to set up variation! (errno = %d)\n",
+					    errno);
 				DMVAR_SKIP();
 			} else {
 				/* Variation */
-				DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle, %s)\n", szFuncName, dmimpl_validEvents[i].name);
-				rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+				DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle, %s)\n",
+					    szFuncName,
+					    dmimpl_validEvents[i].name);
+				rc = dm_set_eventlist(newsid, hanp, hlen,
+						      DM_NO_TOKEN, &eventset,
+						      DM_EVENT_MAX);
 				if (dmimpl_validEvents[i].bDirHandle)
 					DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 				else
-					DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
+					DMVAR_ENDFAILEXP(szFuncName, -1, rc,
+							 EINVAL);
 
 				/* Variation clean up */
 				rc = dm_destroy_session(newsid);
 				if (rc == -1) {
-					DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "Unable to clean up variation! (errno = %d)\n",
+						    errno);
 				}
 				dm_handle_free(hanp, hlen);
 			}
@@ -1719,27 +2207,41 @@ int main(int argc, char **argv)
 			/* Variation set up */
 			DMEV_ZERO(eventset);
 			DMEV_SET(i, eventset);
-			if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+			if ((rc =
+			     dm_create_session(DM_NO_SESSION, szSessionInfo,
+					       &newsid)) == -1) {
 				/* No clean up */
-			} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+			} else
+			    if ((rc =
+				 dm_path_to_handle(DummyFile, &hanp,
+						   &hlen)) == -1) {
 				dm_destroy_session(newsid);
 			}
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to set up variation! (errno = %d)\n",
+					    errno);
 				DMVAR_SKIP();
 			} else {
 				/* Variation */
-				DMLOG_PRINT(DMLVL_DEBUG, "%s(file handle, %s)\n", szFuncName, dmimpl_validEvents[i].name);
-				rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "%s(file handle, %s)\n", szFuncName,
+					    dmimpl_validEvents[i].name);
+				rc = dm_set_eventlist(newsid, hanp, hlen,
+						      DM_NO_TOKEN, &eventset,
+						      DM_EVENT_MAX);
 				if (dmimpl_validEvents[i].bFileHandle)
 					DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 				else
-					DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
+					DMVAR_ENDFAILEXP(szFuncName, -1, rc,
+							 EINVAL);
 
 				/* Variation clean up */
 				rc = dm_destroy_session(newsid);
 				if (rc == -1) {
-					DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+					DMLOG_PRINT(DMLVL_DEBUG,
+						    "Unable to clean up variation! (errno = %d)\n",
+						    errno);
 				}
 				dm_handle_free(hanp, hlen);
 			}
@@ -1763,29 +2265,43 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
-			rc = dm_get_eventlist(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(DM_NO_SESSION, hanp, hlen,
+					      DM_NO_TOKEN, DM_EVENT_MAX,
+					      &outeventset, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1806,29 +2322,43 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
-			rc = dm_get_eventlist(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(INVALID_ADDR, hanp, hlen,
+					      DM_NO_TOKEN, DM_EVENT_MAX,
+					      &outeventset, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1849,29 +2379,43 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, (void *)INVALID_ADDR,
+					      hlen, DM_NO_TOKEN, DM_EVENT_MAX,
+					      &outeventset, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1892,29 +2436,43 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, INVALID_ADDR, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, INVALID_ADDR,
+					      DM_NO_TOKEN, DM_EVENT_MAX,
+					      &outeventset, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1935,29 +2493,43 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, INVALID_ADDR, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, INVALID_ADDR,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -1981,29 +2553,43 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummySubdir, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2027,45 +2613,71 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelem, fs handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, 0, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(invalid nelem, fs handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      0, &outeventset, &nelem);
 			if (rc == -1) {
 				if (errno == E2BIG) {
-					if (nelem == DM_EVENT_ATTRIBUTE+1) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and expected errno = %d (nelem = %d)\n", szFuncName, rc, errno, nelem);
+					if (nelem == DM_EVENT_ATTRIBUTE + 1) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d and expected errno = %d (nelem = %d)\n",
+							    szFuncName, rc,
+							    errno, nelem);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, rc, nelem, DM_EVENT_ATTRIBUTE+1);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+							    szFuncName, rc,
+							    nelem,
+							    DM_EVENT_ATTRIBUTE +
+							    1);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected errno = %d\n", szFuncName, rc, errno);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected errno = %d\n",
+						    szFuncName, rc, errno);
 					DMVAR_FAIL();
 				}
 			} else {
-	  			DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d\n", szFuncName, rc);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d\n",
+					    szFuncName, rc);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2086,45 +2698,71 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelem, file handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, 0, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(invalid nelem, file handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      0, &outeventset, &nelem);
 			if (rc == -1) {
 				if (errno == E2BIG) {
-					if (nelem == DM_EVENT_ATTRIBUTE+1) {
-						DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and expected errno = %d (nelem = %d)\n", szFuncName, rc, errno, nelem);
+					if (nelem == DM_EVENT_ATTRIBUTE + 1) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d and expected errno = %d (nelem = %d)\n",
+							    szFuncName, rc,
+							    errno, nelem);
 						DMVAR_PASS();
 					} else {
-						DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, rc, nelem, DM_EVENT_ATTRIBUTE+1);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+							    szFuncName, rc,
+							    nelem,
+							    DM_EVENT_ATTRIBUTE +
+							    1);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected errno = %d\n", szFuncName, rc, errno);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected errno = %d\n",
+						    szFuncName, rc, errno);
 					DMVAR_FAIL();
 				}
 			} else {
-	  			DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d\n", szFuncName, rc);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d\n",
+					    szFuncName, rc);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2145,29 +2783,44 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, (dm_eventset_t *)INVALID_ADDR, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX,
+					      (dm_eventset_t *) INVALID_ADDR,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2187,29 +2840,43 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, (u_int *)INVALID_ADDR);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      (u_int *) INVALID_ADDR);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2229,41 +2896,63 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(zero event, fs handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(zero event, fs handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
 				if (nelem == 0) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, 0);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem, 0);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2283,41 +2972,64 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(zero event, file handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(zero event, file handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
 				if (nelem == 0) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, 0);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem, 0);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2338,46 +3050,73 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(one event, fs handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(one event, fs handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-				if (nelem == DM_EVENT_ATTRIBUTE+1) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if (nelem == DM_EVENT_ATTRIBUTE + 1) {
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_ATTRIBUTE+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_ATTRIBUTE + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2398,46 +3137,73 @@ int main(int argc, char **argv)
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(one event, file handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(one event, file handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-				if (nelem == DM_EVENT_ATTRIBUTE+1) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if (nelem == DM_EVENT_ATTRIBUTE + 1) {
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_ATTRIBUTE+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_ATTRIBUTE + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2460,46 +3226,73 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_CLOSE, ineventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
 		DMEV_SET(DM_EVENT_DESTROY, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_fshandle(DummyFile, &hanp, &hlen))
+			   == -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(multi event, fs handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(multi event, fs handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-				if (nelem == DM_EVENT_DESTROY+1) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if (nelem == DM_EVENT_DESTROY + 1) {
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_DESTROY+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_DESTROY + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2522,46 +3315,74 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_CLOSE, ineventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
 		DMEV_SET(DM_EVENT_DESTROY, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					  &ineventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(multi event, file handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(multi event, file handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-				if (nelem == DM_EVENT_DESTROY+1) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if (nelem == DM_EVENT_DESTROY + 1) {
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_DESTROY+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_DESTROY + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2577,53 +3398,80 @@ int main(int argc, char **argv)
 		size_t hlen;
 		dm_eventset_t ineventset, outeventset;
 		u_int nelem;
-		dm_region_t region = {0, 0, DM_REGION_READ};
+		dm_region_t region = { 0, 0, DM_REGION_READ };
 		dm_boolean_t exactflag;
 
 		/* Variation set up */
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_READ, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1, &region, &exactflag)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1,
+				       &region, &exactflag)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(read event)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(read event)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-				if (nelem == DM_EVENT_READ+1) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if (nelem == DM_EVENT_READ + 1) {
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_READ+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_READ + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2639,53 +3487,80 @@ int main(int argc, char **argv)
 		size_t hlen;
 		dm_eventset_t ineventset, outeventset;
 		u_int nelem;
-		dm_region_t region = {0, 10, DM_REGION_WRITE};
+		dm_region_t region = { 0, 10, DM_REGION_WRITE };
 		dm_boolean_t exactflag;
 
 		/* Variation set up */
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_WRITE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1, &region, &exactflag)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1,
+				       &region, &exactflag)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(write event)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(write event)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-				if (nelem == DM_EVENT_WRITE+1) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if (nelem == DM_EVENT_WRITE + 1) {
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_WRITE+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_WRITE + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2701,53 +3576,81 @@ int main(int argc, char **argv)
 		size_t hlen;
 		dm_eventset_t ineventset, outeventset;
 		u_int nelem;
-		dm_region_t region = {TMP_FILELEN-10, 0, DM_REGION_TRUNCATE};
+		dm_region_t region =
+		    { TMP_FILELEN - 10, 0, DM_REGION_TRUNCATE };
 		dm_boolean_t exactflag;
 
 		/* Variation set up */
 		DMEV_ZERO(ineventset);
 		DMEV_ZERO(outeventset);
 		DMEV_SET(DM_EVENT_TRUNCATE, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
-		} else if ((rc = dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1, &region, &exactflag)) == -1) {
+		} else
+		    if ((rc =
+			 dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1,
+				       &region, &exactflag)) == -1) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(truncate event)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(truncate event)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-				if (nelem == DM_EVENT_TRUNCATE+1) {
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+				if (nelem == DM_EVENT_TRUNCATE + 1) {
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_TRUNCATE+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_TRUNCATE + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2763,7 +3666,8 @@ int main(int argc, char **argv)
 		size_t hlen;
 		dm_eventset_t ineventset, outeventset;
 		u_int nelem;
-		dm_region_t region = {TMP_FILELEN-10, 0, DM_REGION_TRUNCATE};
+		dm_region_t region =
+		    { TMP_FILELEN - 10, 0, DM_REGION_TRUNCATE };
 		dm_boolean_t exactflag;
 
 		/* Variation set up */
@@ -2772,48 +3676,79 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_CLOSE, ineventset);
 		DMEV_SET(DM_EVENT_ATTRIBUTE, ineventset);
 		DMEV_SET(DM_EVENT_DESTROY, ineventset);
-		if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		if ((rc =
+		     dm_create_session(DM_NO_SESSION, szSessionInfo,
+				       &newsid)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
-		} else if (((rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1, &region, &exactflag)) == -1)) {
+		} else
+		    if (((rc =
+			  dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					   &ineventset, DM_EVENT_MAX)) == -1)
+			||
+			((rc =
+			  dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1,
+					&region, &exactflag)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(event union, file handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(event union, file handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "nelem = %d\n", nelem);
-				if (nelem == DM_EVENT_DESTROY+1) {
+				if (nelem == DM_EVENT_DESTROY + 1) {
 					DMEV_SET(DM_EVENT_TRUNCATE, ineventset);
-					if (memcmp(&ineventset, &outeventset, sizeof(dm_eventset_t)) == 0) {
-					  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d\n", szFuncName, 0);
+					if (memcmp
+					    (&ineventset, &outeventset,
+					     sizeof(dm_eventset_t)) == 0) {
+						DMLOG_PRINT(DMLVL_DEBUG,
+							    "%s passed with expected rc = %d\n",
+							    szFuncName, 0);
 						DMVAR_PASS();
 					} else {
-					  	DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n", szFuncName, 0, ineventset, outeventset);
+						DMLOG_PRINT(DMLVL_ERR,
+							    "%s failed with expected rc = %d but eventsets not same (%llx vs %llx)\n",
+							    szFuncName, 0,
+							    ineventset,
+							    outeventset);
 						DMVAR_FAIL();
 					}
 				} else {
-					DMLOG_PRINT(DMLVL_ERR, "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n", szFuncName, 0, nelem, DM_EVENT_DESTROY+1);
+					DMLOG_PRINT(DMLVL_ERR,
+						    "%s failed with expected rc = %d but unexpected nelem (%d vs %d)\n",
+						    szFuncName, 0, nelem,
+						    DM_EVENT_DESTROY + 1);
 					DMVAR_FAIL();
 				}
 			} else {
-				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "%s failed with unexpected rc = %d (errno = %d)\n",
+					    szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
-			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
+			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      &ineventset, DM_EVENT_MAX);
 			rc |= dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2831,19 +3766,27 @@ int main(int argc, char **argv)
 		/* Variation set up */
 		rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid);
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
 
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, DM_GLOBAL_HANP,
+					      DM_GLOBAL_HLEN, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 		}
 	}
@@ -2866,9 +3809,13 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DummyFile, DummyFile2);
 		if ((rc = system(command)) == -1) {
 			/* No clean up */
-		} else if ((rc = dm_create_session(DM_NO_SESSION, szSessionInfo, &newsid)) == -1) {
+		} else
+		    if ((rc =
+			 dm_create_session(DM_NO_SESSION, szSessionInfo,
+					   &newsid)) == -1) {
 			remove(DummyFile2);
-		} else if ((rc = dm_path_to_handle(DummyFile2, &hanp, &hlen)) == -1) {
+		} else if ((rc = dm_path_to_handle(DummyFile2, &hanp, &hlen)) ==
+			   -1) {
 			dm_destroy_session(newsid);
 			remove(DummyFile2);
 		} else if ((rc = remove(DummyFile2)) == -1) {
@@ -2876,18 +3823,26 @@ int main(int argc, char **argv)
 			dm_destroy_session(newsid);
 		}
 		if (rc == -1) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Unable to set up variation! (errno = %d)\n",
+				    errno);
 			DMVAR_SKIP();
 		} else {
 			/* Variation */
-			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated file handle)\n", szFuncName);
-			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "%s(invalidated file handle)\n",
+				    szFuncName);
+			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN,
+					      DM_EVENT_MAX, &outeventset,
+					      &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
+				DMLOG_PRINT(DMLVL_DEBUG,
+					    "Unable to clean up variation! (errno = %d)\n",
+					    errno);
 			}
 			dm_handle_free(hanp, hlen);
 		}
@@ -2899,21 +3854,29 @@ int main(int argc, char **argv)
 	DMEV_SET(DM_EVENT_UNMOUNT, events);
 	rc = dm_path_to_fshandle(DummyFile, &fshanp, &fshlen);
 	if (rc == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_path_to_fshandle failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_path_to_fshandle failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	}
 
-	rc = dm_set_disp(sid, fshanp, fshlen, DM_NO_TOKEN, &events, DM_EVENT_MAX);
+	rc = dm_set_disp(sid, fshanp, fshlen, DM_NO_TOKEN, &events,
+			 DM_EVENT_MAX);
 	if (rc == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_set_disp failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_set_disp failed! (rc = %d, errno = %d)\n", rc,
+			    errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	}
 
-	rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &events, DM_EVENT_MAX);
+	rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &events,
+			      DM_EVENT_MAX);
 	if (rc == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_set_eventlist failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_set_eventlist failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 		dm_destroy_session(sid);
 		DM_EXIT();
 	}
@@ -2924,14 +3887,17 @@ int main(int argc, char **argv)
 
 	rc = umount(mountPt);
 	if (rc == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 	}
 
 	pthread_join(tid, NULL);
 
 	rc = dm_destroy_session(sid);
 	if (rc == -1) {
-		DMLOG_PRINT(DMLVL_ERR, "dm_destroy_session failed! (rc = %d, errno = %d)\n", rc, errno);
+		DMLOG_PRINT(DMLVL_ERR,
+			    "dm_destroy_session failed! (rc = %d, errno = %d)\n",
+			    rc, errno);
 	}
 
 	DMLOG_STOP();
@@ -2956,16 +3922,21 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "Waiting for event...\n");
 			dmMsgBufLen = 0;
 
-			rc = dm_get_events(sid, 1, DM_EV_WAIT, sizeof(dmMsgBuf), dmMsgBuf, &dmMsgBufLen);
-			DMLOG_PRINT(DMLVL_DEBUG, "... dm_get_events returned %d (errno %d)\n", rc, errno);
+			rc = dm_get_events(sid, 1, DM_EV_WAIT, sizeof(dmMsgBuf),
+					   dmMsgBuf, &dmMsgBufLen);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "... dm_get_events returned %d (errno %d)\n",
+				    rc, errno);
 		} while ((rc == -1) && (errno == EINTR) && (dmMsgBufLen == 0));
 
 		if (rc) {
-			DMLOG_PRINT(DMLVL_ERR, "dm_get_events failed with rc = %d, errno = %d\n", rc, errno);
+			DMLOG_PRINT(DMLVL_ERR,
+				    "dm_get_events failed with rc = %d, errno = %d\n",
+				    rc, errno);
 			dm_destroy_session(sid);
 			DM_EXIT();
 		} else {
-			dmMsg = (dm_eventmsg_t *)dmMsgBuf;
+			dmMsg = (dm_eventmsg_t *) dmMsgBuf;
 			token = dmMsg->ev_token;
 			type = dmMsg->ev_type;
 
@@ -2974,26 +3945,39 @@ void *Thread(void *parm)
 
 		if (type == DM_EVENT_MOUNT) {
 			/* SPECIAL CASE: need to set disposition, events and response */
-			dm_mount_event_t *me = DM_GET_VALUE(dmMsg, ev_data, dm_mount_event_t *);
+			dm_mount_event_t *me =
+			    DM_GET_VALUE(dmMsg, ev_data, dm_mount_event_t *);
 			void *lhanp = DM_GET_VALUE(me, me_handle1, void *);
 			size_t lhlen = DM_GET_LEN(me, me_handle1);
 
 			DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_MOUNT\n");
 			DMLOG_PRINT(DMLVL_DEBUG, "  Mode: %x\n", me->me_mode);
-			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n", lhanp);
-			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle length: %d\n", lhlen);
-			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint handle: %p\n", DM_GET_VALUE(me, me_handle2, void *));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint handle length: %d\n", DM_GET_LEN(me, me_handle2));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint path: %s\n", DM_GET_VALUE(me, me_name1, char *));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
-			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
+			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n",
+				    lhanp);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "  File system handle length: %d\n", lhlen);
+			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint handle: %p\n",
+				    DM_GET_VALUE(me, me_handle2, void *));
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "  Mountpoint handle length: %d\n",
+				    DM_GET_LEN(me, me_handle2));
+			DMLOG_PRINT(DMLVL_DEBUG, "  Mountpoint path: %s\n",
+				    DM_GET_VALUE(me, me_name1, char *));
+			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n",
+				    DM_GET_VALUE(me, me_name2, char *));
+			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n",
+				    DM_GET_VALUE(me, me_roothandle, void *));
+			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n",
+				    DM_GET_LEN(me, me_roothandle));
 
-    			bMounted = dm_handle_is_valid(lhanp, lhlen);
+			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
-    			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);
+			rc = dm_request_right(sid, lhanp, lhlen, token,
+					      DM_RR_WAIT, DM_RIGHT_EXCL);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_ERR, "dm_request_right failed! (rc = %d, errno = %d)\n", rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "dm_request_right failed! (rc = %d, errno = %d)\n",
+					    rc, errno);
 				dm_destroy_session(sid);
 				DM_EXIT();
 			}
@@ -3001,23 +3985,29 @@ void *Thread(void *parm)
 			DMEV_ZERO(events);
 			DMEV_SET(DM_EVENT_PREUNMOUNT, events);
 			DMEV_SET(DM_EVENT_UNMOUNT, events);
-			rc = dm_set_eventlist(sid, lhanp, lhlen, token, &events, DM_EVENT_MAX);
+			rc = dm_set_eventlist(sid, lhanp, lhlen, token, &events,
+					      DM_EVENT_MAX);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_ERR, "dm_set_eventlist failed! (rc = %d, errno = %d)\n", rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "dm_set_eventlist failed! (rc = %d, errno = %d)\n",
+					    rc, errno);
 				dm_destroy_session(sid);
 				DM_EXIT();
 			}
 
-    			rc = dm_release_right(sid, lhanp, lhlen, token);
+			rc = dm_release_right(sid, lhanp, lhlen, token);
 			if (rc == -1) {
-				DMLOG_PRINT(DMLVL_ERR, "dm_request_right failed! (rc = %d, errno = %d)\n", rc, errno);
+				DMLOG_PRINT(DMLVL_ERR,
+					    "dm_request_right failed! (rc = %d, errno = %d)\n",
+					    rc, errno);
 				dm_destroy_session(sid);
 				DM_EXIT();
 			}
 
 			response = DM_RESP_CONTINUE;
 		} else if (type == DM_EVENT_UNMOUNT) {
-			dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
+			dm_namesp_event_t *nse =
+			    DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
 			if (nse->ne_retcode == 0) {
 				bMounted = DM_FALSE;
 			}
@@ -3048,17 +4038,23 @@ void *Thread(void *parm)
 				break;
 
 			default:
-			{
-				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");
-				response = DM_RESP_ABORT;
-				break;
-			}
+				{
+					DMLOG_PRINT(DMLVL_ERR,
+						    "Message is unexpected!\n");
+					response = DM_RESP_ABORT;
+					break;
+				}
 			}
 		}
 
 		if (response != DM_RESP_INVALID) {
-			DMLOG_PRINT(DMLVL_DEBUG, "Responding to message %d with %d\n", type, response);
-			rc = dm_respond_event(sid, token, response, response == DM_RESP_ABORT ? ABORT_ERRNO : 0, 0, NULL);
+			DMLOG_PRINT(DMLVL_DEBUG,
+				    "Responding to message %d with %d\n", type,
+				    response);
+			rc = dm_respond_event(sid, token, response,
+					      response ==
+					      DM_RESP_ABORT ? ABORT_ERRNO : 0,
+					      0, NULL);
 		}
 	} while (bMounted);
 

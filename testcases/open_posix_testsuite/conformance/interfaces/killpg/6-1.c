@@ -23,18 +23,20 @@ int main()
 {
 	int pgrp;
 
- 	if ((pgrp = getpgrp()) == -1) {
+	if ((pgrp = getpgrp()) == -1) {
 		printf("Could not get process group number\n");
 		return PTS_UNRESOLVED;
 	}
 
- 	if (killpg(pgrp, -1) != -1) {
-		printf("killpg did not return -1 even though it was passed an invalid signal number.");
+	if (killpg(pgrp, -1) != -1) {
+		printf
+		    ("killpg did not return -1 even though it was passed an invalid signal number.");
 		return PTS_UNRESOLVED;
 	}
 
 	if (errno != EINVAL) {
-		printf("killpg did not set errno to EINVAL even though it was passed an invalid signal number.");
+		printf
+		    ("killpg did not set errno to EINVAL even though it was passed an invalid signal number.");
 		return PTS_FAIL;
 	}
 

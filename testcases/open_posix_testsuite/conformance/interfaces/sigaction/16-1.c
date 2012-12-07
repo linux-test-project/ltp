@@ -40,7 +40,6 @@
 #include <errno.h>
 #include <posixtest.h>
 
-
 /*
  * Define an array of signals we want to test against.
  * Add more if desired.
@@ -82,7 +81,7 @@ static struct sig_info sigs[] = {
 	{SIGPROF, "SIGPROF", 0},
 	{SIGWINCH, "SIGWINCH", 0},
 	{SIGPOLL, "SIGPOLL", 0},
-	{-1, NULL, 0}  /* add  real time sigs? */
+	{-1, NULL, 0}		/* add  real time sigs? */
 };
 
 static int ready;
@@ -116,7 +115,7 @@ void *threaded(void *arg)
 {
 	int rc;
 	int status = PTS_PASS;
-	struct sched_param sp = {10};
+	struct sched_param sp = { 10 };
 	struct sig_info *s = arg;
 
 	/*
@@ -139,12 +138,12 @@ void *threaded(void *arg)
 	if (rc) {
 		status = PTS_UNRESOLVED;
 		printf("Failed: sem_wait(): errno: %s signal: %s\n",
-				strerror(errno), s->sig_name);
+		       strerror(errno), s->sig_name);
 		if (errno == EINTR)
 			status = PTS_FAIL;
 	}
 
-	return (void *)((long) status);
+	return (void *)((long)status);
 }
 
 int test_sig(struct sig_info *s)
@@ -199,13 +198,13 @@ int test_sig(struct sig_info *s)
 
 	sem_destroy(&sem);
 
-	status = ((long) thread_status) & 0xFFFFFFFF;
+	status = ((long)thread_status) & 0xFFFFFFFF;
 
 	return status;
 
 done:
 	printf("Failed: func: %s, rc: %d errno: %s signal: %s\n",
-			label, rc, strerror(errno), s->sig_name);
+	       label, rc, strerror(errno), s->sig_name);
 	return status;
 }
 
@@ -240,6 +239,6 @@ int main(void)
 
 done:
 	printf("Failed: sigaction(): errno: %s, signal: %s\n",
-			strerror(errno), s->sig_name);
+	       strerror(errno), s->sig_name);
 	return PTS_FAIL;
 }

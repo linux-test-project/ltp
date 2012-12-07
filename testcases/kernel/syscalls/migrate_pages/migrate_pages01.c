@@ -50,10 +50,10 @@
 #include "migrate_pages_common.h"
 
 char *TCID = "migrate_pages01";
-int  TST_TOTAL = 1;
+int TST_TOTAL = 1;
 
 option_t options[] = {
-	{ NULL, NULL, NULL }
+	{NULL, NULL, NULL}
 };
 
 #if defined(__NR_migrate_pages) && HAVE_NUMA_H && HAVE_NUMAIF_H
@@ -69,7 +69,7 @@ static void test_sane_nodes(void)
 {
 	tst_resm(TINFO, "test_empty_mask");
 	TEST(syscall(__NR_migrate_pages, 0, sane_max_node,
-		sane_old_nodes, sane_new_nodes));
+		     sane_old_nodes, sane_new_nodes));
 	check_ret(0);
 }
 
@@ -82,22 +82,20 @@ static void test_invalid_pid(void)
 
 	tst_resm(TINFO, "test_invalid_pid -1");
 	TEST(syscall(__NR_migrate_pages, invalid_pid, sane_max_node,
-		sane_old_nodes, sane_new_nodes));
+		     sane_old_nodes, sane_new_nodes));
 	check_ret(-1);
 	check_errno(ESRCH);
 
 	tst_resm(TINFO, "test_invalid_pid pid_max+1");
 	fp = fopen(pid_max, "r");
 	if (fp == NULL)
-		tst_brkm(TBROK, cleanup,
-			"Could not open %s", pid_max);
+		tst_brkm(TBROK, cleanup, "Could not open %s", pid_max);
 	if (!fgets(buff, sizeof(buff), fp))
-		tst_brkm(TBROK, cleanup,
-			"Could not read %s", pid_max);
+		tst_brkm(TBROK, cleanup, "Could not read %s", pid_max);
 	fclose(fp);
 	invalid_pid = atol(buff) + 1;
 	TEST(syscall(__NR_migrate_pages, invalid_pid, sane_max_node,
-		sane_old_nodes, sane_new_nodes));
+		     sane_old_nodes, sane_new_nodes));
 	check_ret(-1);
 	check_errno(ESRCH);
 }
@@ -106,7 +104,7 @@ static void test_invalid_masksize(void)
 {
 	tst_resm(TINFO, "test_invalid_masksize");
 	TEST(syscall(__NR_migrate_pages, 0, -1, sane_old_nodes,
-		sane_new_nodes));
+		     sane_new_nodes));
 	check_ret(-1);
 	check_errno(EINVAL);
 }
@@ -122,15 +120,15 @@ static void test_invalid_mem(void)
 
 	tst_resm(TINFO, "test_invalid_mem invalid prot");
 	p = mmap(NULL, getpagesize(), PROT_NONE,
-		MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
+		 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	if (p == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 	TEST(syscall(__NR_migrate_pages, 0, sane_max_node, p, p));
 	check_ret(-1);
 	check_errno(EFAULT);
 
 	if (munmap(p, getpagesize()) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+		tst_brkm(TBROK | TERRNO, cleanup, "munmap");
 	tst_resm(TINFO, "test_invalid_mem unmmaped");
 	TEST(syscall(__NR_migrate_pages, 0, sane_max_node, p, p));
 	check_ret(-1);
@@ -147,8 +145,8 @@ static void test_invalid_nodes(void)
 	tst_resm(TINFO, "test_invalid_nodes");
 	ret = get_allowed_nodes_arr(NH_MEMS, &num_nodes, &nodes);
 	if (ret < 0)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			"get_allowed_nodes_arr: %d", ret);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "get_allowed_nodes_arr: %d", ret);
 
 	/* get first node which is not in nodes */
 	for (i = 0; i < num_nodes; i++, invalid_node++)
@@ -162,7 +160,7 @@ static void test_invalid_nodes(void)
 		set_bit(new_nodes, invalid_node, 1);
 
 		TEST(syscall(__NR_migrate_pages, 0, sane_max_node,
-			old_nodes, new_nodes));
+			     old_nodes, new_nodes));
 		check_ret(-1);
 		check_errno(EINVAL);
 		free(old_nodes);
@@ -189,26 +187,23 @@ static void test_invalid_perm(void)
 	child_pid = fork();
 	switch (child_pid) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		break;
 	case 0:
 		ltpuser = getpwnam(nobody_uid);
 		if (ltpuser == NULL)
-			tst_brkm(TBROK|TERRNO, NULL,
-					"getpwnam failed");
+			tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
 		if (setuid(ltpuser->pw_uid) == -1)
-			tst_brkm(TBROK|TERRNO, NULL,
-					"setuid(%u) failed",
-					ltpuser->pw_uid);
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "setuid(%u) failed", ltpuser->pw_uid);
 		TEST(syscall(__NR_migrate_pages, parent_pid,
-			sane_max_node, sane_old_nodes,
-			sane_new_nodes));
+			     sane_max_node, sane_old_nodes, sane_new_nodes));
 		ret |= check_ret(-1);
 		ret |= check_errno(EPERM);
 		exit(ret);
 	default:
 		if (waitpid(child_pid, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child returns %d", status);
 	}
@@ -249,10 +244,11 @@ static void setup(void)
 
 	ret = get_allowed_nodes(NH_MEMS, 1, &node);
 	if (ret < 0)
-		tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes_arr: %d", ret);
+		tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes_arr: %d",
+			 ret);
 
 	sane_max_node = get_max_node();
-	sane_nodemask_size = sane_max_node/8+1;
+	sane_nodemask_size = sane_max_node / 8 + 1;
 	sane_old_nodes = SAFE_MALLOC(NULL, sane_nodemask_size);
 	sane_new_nodes = SAFE_MALLOC(NULL, sane_nodemask_size);
 	memset(sane_old_nodes, 0, sane_nodemask_size);
@@ -275,6 +271,6 @@ static void cleanup(void)
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "System doesn't support __NR_migrate_pages"
-			" or libnuma is not available");
+		 " or libnuma is not available");
 }
 #endif

@@ -86,13 +86,13 @@
 /******************************************************************************/
 
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
 	int fd;
 	void *buf;
-	sem_t * sem;
+	sem_t *sem;
 
 	/* Initialize output */
 	output_init();
@@ -100,24 +100,23 @@ int main(int argc, char * argv[])
 	/* Create the shared memory segment */
 	fd = shm_open("/sem_init_3-2", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 
-	if (fd == -1)
-	{
+	if (fd == -1) {
 		UNRESOLVED(errno, "Failed to open shared memory segment");
 	}
 
 	/* Size the memory segment to 1 page size. */
 	ret = ftruncate(fd, sysconf(_SC_PAGESIZE));
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to size the shared memory segment");
 	}
 
 	/* Map these sengments in the process memory space */
-	buf = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	buf =
+	    mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ | PROT_WRITE,
+		 MAP_SHARED, fd, 0);
 
-	if (buf == MAP_FAILED)
-	{
+	if (buf == MAP_FAILED) {
 		UNRESOLVED(errno, "Failed to mmap the shared memory segment");
 	}
 
@@ -126,27 +125,23 @@ int main(int argc, char * argv[])
 	/* Initialize the semaphore */
 	ret = sem_init(sem, 1, 0);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to init the semaphore");
 	}
 
 	/* Create the child */
 	child = fork();
 
-	if (child == -1)
-	{
+	if (child == -1) {
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == 0)
-	{
+	if (child == 0) {
 		/* Post the sempahore */
 		ret = sem_post(sem);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(errno, "Failed to post the semaphore");
 		}
 
@@ -159,36 +154,31 @@ int main(int argc, char * argv[])
 		ret = sem_wait(sem);
 	} while (ret != 0 && errno == EINTR);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to wait for the semaphore");
 	}
 
 	/* Parent joins the child */
 	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child)
-	{
+	if (ctl != child) {
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
-	{
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS)) {
 		FAILED("Child exited abnormally");
 	}
 
 	/* Clean things */
 	ret = sem_destroy(sem);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to destroy the semaphore");
 	}
 
 	ret = shm_unlink("/sem_init_3-2");
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(errno, "Failed to unlink shared memory");
 	}
 

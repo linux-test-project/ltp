@@ -26,30 +26,27 @@
 
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[50];
 	int lock_status;
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mysemp = sem_open(semname, O_CREAT, 0777, 1);
-        if (mysemp == SEM_FAILED || mysemp == NULL) {
-                perror(ERROR_PREFIX "sem_open");
-                return PTS_UNRESOLVED;
-        }
+	if (mysemp == SEM_FAILED || mysemp == NULL) {
+		perror(ERROR_PREFIX "sem_open");
+		return PTS_UNRESOLVED;
+	}
 
 	lock_status = sem_wait(mysemp);
 
 	/* Checking if sem_wait has a value returned. From sem_open */
-	if (lock_status == 0)
-	{
+	if (lock_status == 0) {
 		puts("TEST PASSED");
 		sem_close(mysemp);
 		sem_unlink(semname);
 		return PTS_PASS;
-	}
-	else
-	{
+	} else {
 		puts("TEST FAILED");
 		return PTS_FAIL;
 	}

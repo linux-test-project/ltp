@@ -1,6 +1,6 @@
   /*
-  Test that the SEGV_MAPERR macro is defined.
-  */
+     Test that the SEGV_MAPERR macro is defined.
+   */
 
 #include <signal.h>
 

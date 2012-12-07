@@ -34,7 +34,6 @@
 
 #include <affinity.h>
 
-
 #define ERR_LOG(l, rc)   printf("Failed: %s rc: %d errno: %s\n", \
 					l, rc, strerror(errno))
 
@@ -119,12 +118,12 @@ int main(void)
 		s = WTERMSIG(s);
 		if (s != SIGTERM) {
 			printf("Failed: kill signal: %d, should be: %d\n",
-					s, SIGTERM);
+			       s, SIGTERM);
 			status = PTS_FAIL;
 		}
 	} else if (WIFEXITED(s)) {
 		printf("Failed: child prematurely exited with: %d\n",
-				WEXITSTATUS(s));
+		       WEXITSTATUS(s));
 		status = PTS_FAIL;
 	}
 

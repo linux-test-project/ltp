@@ -79,12 +79,11 @@
 #define POLLRDHUP 0x2000
 #endif
 
-char *TCID = "ppoll01"; /* Test program identifier.*/
+char *TCID = "ppoll01";		/* Test program identifier. */
 int testno;
-int TST_TOTAL = 1; /* total number of tests in this file.   */
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
 	if (sig == SIGINT)
 		return;
@@ -92,13 +91,15 @@ sighandler(int sig)
 		tst_brkm(TBROK, NULL, "received unexpected signal %d", sig);
 }
 
-void cleanup() {
+void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
 }
 
-void setup() {
+void setup()
+{
 	tst_sig(FORK, sighandler, cleanup);
 
 	TEST_PAUSE;
@@ -151,61 +152,61 @@ struct test_case {
  */
 
 static struct test_case tcase[] = {
-		{ // case00
-			.ttype = NORMAL,
-			.expect_revents = POLLIN | POLLOUT,
-			.ret = 0,
-			.err = 0,
-		},
-		{ // case01
-			.ttype = MASK_SIGNAL,
-			.expect_revents = 0, // don't care
-			.ret = 0,
-			.err = 0,
-		},
-		{ // case02
-			.ttype = TIMEOUT,
-			.expect_revents = 0, // don't care
-			.ret = 0,
-			.err = 0,
-		},
-		{ // case03
-			.ttype = FD_ALREADY_CLOSED,
-			.expect_revents = POLLNVAL,
-			.ret = 0, .err = 0,
-		},
-		{ // case04
-			.ttype = SEND_SIGINT,
-			.ret = -1,
-			.err = EINTR,
-		},
-		{ // case05
-			.ttype = SEND_SIGINT_RACE_TEST,
-			.ret = -1,
-			.err = EINTR,
-		},
-		{ // case06
-			.ttype = INVALID_NFDS,
-			.ret = -1,
-			.err = EINVAL,
-		},
-		{ // case07
-			.ttype = INVALID_FDS,
-			.ret = -1,
-			.err = EFAULT, },
+	{			// case00
+	 .ttype = NORMAL,
+	 .expect_revents = POLLIN | POLLOUT,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case01
+	 .ttype = MASK_SIGNAL,
+	 .expect_revents = 0,	// don't care
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case02
+	 .ttype = TIMEOUT,
+	 .expect_revents = 0,	// don't care
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case03
+	 .ttype = FD_ALREADY_CLOSED,
+	 .expect_revents = POLLNVAL,
+	 .ret = 0,.err = 0,
+	 },
+	{			// case04
+	 .ttype = SEND_SIGINT,
+	 .ret = -1,
+	 .err = EINTR,
+	 },
+	{			// case05
+	 .ttype = SEND_SIGINT_RACE_TEST,
+	 .ret = -1,
+	 .err = EINTR,
+	 },
+	{			// case06
+	 .ttype = INVALID_NFDS,
+	 .ret = -1,
+	 .err = EINVAL,
+	 },
+	{			// case07
+	 .ttype = INVALID_FDS,
+	 .ret = -1,
+	 .err = EFAULT,},
 #if 0
-		{ // case08
-			.ttype = MINUS_NSEC,
-			.ret = -1,
-			.err = EINVAL, // RHEL4U1 + 2.6.18 returns SUCCESS
-		},
-		{ // case09
-			.ttype = TOO_LARGE_NSEC,
-			.ret = -1,
-			.err = EINVAL, // RHEL4U1 + 2.6.18 returns SUCCESS
-		},
+	{			// case08
+	 .ttype = MINUS_NSEC,
+	 .ret = -1,
+	 .err = EINVAL,		// RHEL4U1 + 2.6.18 returns SUCCESS
+	 },
+	{			// case09
+	 .ttype = TOO_LARGE_NSEC,
+	 .ret = -1,
+	 .err = EINVAL,		// RHEL4U1 + 2.6.18 returns SUCCESS
+	 },
 #endif
-		};
+};
 
 #define NUM_TEST_FDS    1
 
@@ -217,7 +218,8 @@ static struct test_case tcase[] = {
  *
  */
 
-static int do_test(struct test_case *tc) {
+static int do_test(struct test_case *tc)
+{
 	int sys_ret, sys_errno;
 	int result = RESULT_OK;
 	int fd = -1, cmp_ok = 1;
@@ -242,7 +244,7 @@ static int do_test(struct test_case *tc) {
 	case TIMEOUT:
 		nfds = 0;
 		ts.tv_sec = 0;
-		ts.tv_nsec = 50000000; // 50msec
+		ts.tv_nsec = 50000000;	// 50msec
 		p_ts = &ts;
 		break;
 	case FD_ALREADY_CLOSED:
@@ -256,13 +258,13 @@ static int do_test(struct test_case *tc) {
 		p_sigmask = &sigmask;
 		nfds = 0;
 		ts.tv_sec = 0;
-		ts.tv_nsec = 300000000; // 300msec => need to be enough for
+		ts.tv_nsec = 300000000;	// 300msec => need to be enough for
 		//   waiting the signal
 		p_ts = &ts;
 		// fallthrough
 	case SEND_SIGINT:
 		nfds = 0;
-		pid = create_sig_proc(100000, SIGINT, UINT_MAX); // 100msec
+		pid = create_sig_proc(100000, SIGINT, UINT_MAX);	// 100msec
 		if (pid < 0)
 			return 1;
 		break;
@@ -277,7 +279,7 @@ static int do_test(struct test_case *tc) {
 		p_sigmask = &sigmask;
 		nfds = 0;
 		ts.tv_sec = 0;
-		ts.tv_nsec = 300000000; // 300msec => need to be enough for
+		ts.tv_nsec = 300000000;	// 300msec => need to be enough for
 		//   waiting the signal
 		p_ts = &ts;
 		nfds = 0;
@@ -292,7 +294,7 @@ static int do_test(struct test_case *tc) {
 		nfds = -1;
 		break;
 	case INVALID_FDS:
-		p_fds = (void*) 0xc0000000;
+		p_fds = (void *)0xc0000000;
 		break;
 	case MINUS_NSEC:
 		ts.tv_sec = 0;
@@ -328,17 +330,20 @@ TEST_END:
 		sigprocmask(SIG_SETMASK, NULL, &sigmask);
 		for (sig = 1; sig < SIGRTMAX; sig++) {
 			TEST(sigismember(&sigmask, sig));
-			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL && sig != SIGINT)
-				continue; /* let's ignore errors if they are for other signal than SIGINT that we set */
+			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL
+			    && sig != SIGINT)
+				continue;	/* let's ignore errors if they are for other signal than SIGINT that we set */
 			if ((sig == SIGINT) != (TEST_RETURN != 0)) {
-				tst_resm(TFAIL, "Bad value of signal mask, signal %d is %s",
-						sig, TEST_RETURN ? "on" : "off");
+				tst_resm(TFAIL,
+					 "Bad value of signal mask, signal %d is %s",
+					 sig, TEST_RETURN ? "on" : "off");
 				cmp_ok |= 1;
 			}
 		}
 	}
 	result |= (sys_errno != tc->err) || !cmp_ok;
-	PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno, cmp_ok);
+	PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno,
+			 cmp_ok);
 cleanup:
 	if (fd >= 0) {
 		close(fd);
@@ -359,7 +364,8 @@ cleanup:
  * main()
  */
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int i;
 	int ret;
 
@@ -367,12 +373,11 @@ int main(int ac, char **av) {
 
 	ret = 0;
 
-	for (i = 0; ret == 0 &&
-	    i < (sizeof(tcase) / sizeof(tcase[0])); i++) {
+	for (i = 0; ret == 0 && i < (sizeof(tcase) / sizeof(tcase[0])); i++) {
 		tst_resm(TINFO, "(case%02d) START", i);
 		ret = do_test(&tcase[i]);
 		tst_resm(TINFO, "(case%02d) END => %s", i, (ret == 0) ? "OK"
-				: "NG");
+			 : "NG");
 	}
 	cleanup();
 	tst_exit();

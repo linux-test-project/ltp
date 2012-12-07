@@ -114,7 +114,8 @@ int main(int ac, char **av)
 
 		/* Get the uid of user1 */
 		if ((user1 = getpwnam("nobody")) == NULL) {
-			tst_brkm(TBROK|TERRNO, NULL, "getpwnam(\"nobody\") failed");
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "getpwnam(\"nobody\") failed");
 		}
 
 		user1_uid = user1->pw_uid;
@@ -124,15 +125,15 @@ int main(int ac, char **av)
 		 */
 		if ((group = getgrnam("nobody")) == NULL) {
 			if ((group = getgrnam("nogroup")) == NULL) {
-				tst_brkm(TBROK|TERRNO, cleanup,
-					"getgrnam(\"nobody\") and "
-					"getgrnam(\"nogroup\") failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "getgrnam(\"nobody\") and "
+					 "getgrnam(\"nogroup\") failed");
 			}
 		}
 		group1_gid = group->gr_gid;
 		if ((group = getgrnam("bin")) == NULL) {
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "getgrnam(\"bin\") failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "getgrnam(\"bin\") failed");
 		}
 		group2_gid = group->gr_gid;
 
@@ -244,7 +245,7 @@ int main(int ac, char **av)
 		/*
 		 * Create the file with setgid not set
 		 */
-		fd = open(nosetgid_A, O_CREAT|O_EXCL|O_RDWR, MODE_RWX);
+		fd = open(nosetgid_A, O_CREAT | O_EXCL | O_RDWR, MODE_RWX);
 		if (fd == -1) {
 			tst_resm(TFAIL, "Creation of %s failed", nosetgid_A);
 			local_flag = FAILED;
@@ -388,7 +389,8 @@ int main(int ac, char **av)
 /*--------------------------------------------------------------*/
 		/* Become root again */
 		if (setreuid(-1, save_myuid) == -1) {
-			tst_resm(TFAIL|TERRNO, "Changing back to root failed");
+			tst_resm(TFAIL | TERRNO,
+				 "Changing back to root failed");
 			local_flag = FAILED;
 		}
 
@@ -446,19 +448,20 @@ static void cleanup(void)
 		tst_resm(TBROK, "unlink %s failed", nosetgid_A);
 	}
 	if (rmdir(DIR_A) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "rmdir %s failed", DIR_A);
+		tst_brkm(TBROK | TERRNO, NULL, "rmdir %s failed", DIR_A);
 	}
 	if (unlink(setgid_B) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "unlink %s failed", setgid_B);
+		tst_brkm(TBROK | TERRNO, NULL, "unlink %s failed", setgid_B);
 	}
 	if (unlink(root_setgid_B) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "unlink %s failed", root_setgid_B);
+		tst_brkm(TBROK | TERRNO, NULL, "unlink %s failed",
+			 root_setgid_B);
 	}
 	if (unlink(nosetgid_B) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "unlink %s failed", nosetgid_B);
+		tst_brkm(TBROK | TERRNO, NULL, "unlink %s failed", nosetgid_B);
 	}
 	if (rmdir(DIR_B) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "rmdir %s failed", DIR_B);
+		tst_brkm(TBROK | TERRNO, NULL, "rmdir %s failed", DIR_B);
 	}
 
 	tst_rmdir();

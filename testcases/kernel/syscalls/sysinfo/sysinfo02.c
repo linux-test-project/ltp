@@ -91,7 +91,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();		/* Global setup */
 
@@ -105,13 +105,14 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN != 0 && TEST_ERRNO == EFAULT) {
 			/* Test succeeded as it was supposed to return -1 */
-			tst_resm(TPASS, "Test to check the error code %d PASSED",
+			tst_resm(TPASS,
+				 "Test to check the error code %d PASSED",
 				 TEST_ERRNO);
 		} else {
 			/* Test Failed */
 			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, Expected -1"
 				 "returned %d/n", TEST_ERRNO);
-		 }
+		}
 	}
 	cleanup();
 	tst_exit();

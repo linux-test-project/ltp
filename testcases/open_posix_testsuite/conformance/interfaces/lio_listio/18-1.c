@@ -50,24 +50,23 @@ int main()
 		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_18_1_%d",
-		  getpid());
+		 getpid());
 	unlink(tmpfname);
 
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 
 	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		exit(PTS_UNRESOLVED);
 	}
 
 	unlink(tmpfname);
 
-	bufs = (char *) malloc (NUM_AIOCBS*BUF_SIZE);
+	bufs = (char *)malloc(NUM_AIOCBS * BUF_SIZE);
 
 	if (bufs == NULL) {
-		printf (TNAME " Error at malloc(): %s\n", strerror (errno));
-		close (fd);
+		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -84,30 +83,32 @@ int main()
 	ret = lio_listio(-1, aiocbs, NUM_AIOCBS, NULL);
 
 	if (ret != -1) {
-		printf(TNAME " Error lio_listio() should have returned -1: %d\n",
+		printf(TNAME
+		       " Error lio_listio() should have returned -1: %d\n",
 		       ret);
 
-		free (aiocbs[0]);
-		free (bufs);
-		close (fd);
-		exit (PTS_FAIL);
+		free(aiocbs[0]);
+		free(bufs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	if (errno != EINVAL) {
-		printf(TNAME " Error lio_listio() should have set errno to EINVAL: %d (%s)\n",
+		printf(TNAME
+		       " Error lio_listio() should have set errno to EINVAL: %d (%s)\n",
 		       errno, strerror(errno));
 
-		free (aiocbs[0]);
-		free (bufs);
-		close (fd);
-		exit (PTS_FAIL);
+		free(aiocbs[0]);
+		free(bufs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
-	free (aiocbs[0]);
-	free (bufs);
-	close (fd);
+	free(aiocbs[0]);
+	free(bufs);
+	close(fd);
 
-	printf (TNAME " PASSED\n");
+	printf(TNAME " PASSED\n");
 
 	return PTS_PASS;
 }

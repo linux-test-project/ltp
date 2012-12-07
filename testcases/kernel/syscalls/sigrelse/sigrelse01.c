@@ -128,7 +128,7 @@ static void child();
 static void timeout();
 static int setup_sigs();
 static void handler();
-static void wait_a_while ();
+static void wait_a_while();
 static char *read_pipe();
 static int write_pipe();
 static int set_timeout();
@@ -193,8 +193,7 @@ int main(int argc, char **argv)
 	/*
 	 * parse standard options
 	 */
-	if ((msg =
-	     parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	}
@@ -215,7 +214,7 @@ int main(int argc, char **argv)
 		 * fork off a child process
 		 */
 		if ((pid = FORK_OR_VFORK()) < 0) {
-			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
 
 		} else if (pid > 0) {
 			parent();
@@ -224,7 +223,8 @@ int main(int argc, char **argv)
 #ifdef UCLINUX
 			if (self_exec(argv[0], "dd", pipe_fd[1], pipe_fd2[0]) <
 			    0) {
-				tst_brkm(TBROK|TERRNO, cleanup, "self_exec() failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "self_exec() failed");
 			}
 #else
 			child();
@@ -273,31 +273,37 @@ static void parent()
 			if (kill(pid, sig) < 0) {
 				if (errno == ESRCH) {
 					if (kill(pid, SIGTERM) < 0)
-						tst_brkm(TBROK|TERRNO, getout,
-							"kill(%d, %d) and kill(%d, SIGTERM) failed", pid, sig, pid);
+						tst_brkm(TBROK | TERRNO, getout,
+							 "kill(%d, %d) and kill(%d, SIGTERM) failed",
+							 pid, sig, pid);
 					else
-						tst_brkm(TBROK|TERRNO, getout,
-							"kill(%d, %d) failed, but kill(%d, SIGTERM) worked", pid, sig, pid);
+						tst_brkm(TBROK | TERRNO, getout,
+							 "kill(%d, %d) failed, but kill(%d, SIGTERM) worked",
+							 pid, sig, pid);
 				} else
-					tst_brkm(TBROK|TERRNO, getout, "kill(%d, %d) failed", pid, sig);
+					tst_brkm(TBROK | TERRNO, getout,
+						 "kill(%d, %d) failed", pid,
+						 sig);
 			}
 		}
 	}
 
 	if (write_pipe(pipe_fd2[1], READY) < 0) {
-		tst_brkm(TBROK|TERRNO, getout, "Unable to tell child to go, write to pipe failed");
+		tst_brkm(TBROK | TERRNO, getout,
+			 "Unable to tell child to go, write to pipe failed");
 	}
 
 	/*
 	 * child is now releasing signals, wait and check exit value
 	 */
 	if (wait(&term_stat) < 0)
-		tst_brkm(TBROK|TERRNO, getout, "wait() failed");
+		tst_brkm(TBROK | TERRNO, getout, "wait() failed");
 
 	/* check child's signal exit value */
 	if ((sig = CHILD_SIG(term_stat)) != 0)
 		/* the child was zapped by a signal */
-		tst_brkm(TBROK, cleanup, "Unexpected signal %d killed child", sig);
+		tst_brkm(TBROK, cleanup, "Unexpected signal %d killed child",
+			 sig);
 
 	/* get child exit value */
 
@@ -488,7 +494,7 @@ static void child()
 			}
 
 			/* give signal handler some time to process signal */
-			wait_a_while ();
+			wait_a_while();
 		}
 
 	}			/* endfor */
@@ -691,7 +697,7 @@ static void timeout()
 /*****************************************************************************
  *  wait_a_while () : wait a while before returning.
  ****************************************************************************/
-static void wait_a_while ()
+static void wait_a_while()
 {
 	long btime;
 
@@ -774,8 +780,8 @@ void setup()
 	 * read to return -1 if pipe is empty.
 	 */
 	if (fcntl(pipe_fd[0], F_SETFL, O_NONBLOCK) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed");
 
 	/* set up pipe for parent/child communications */
 	SAFE_PIPE(cleanup, pipe_fd2);
@@ -785,8 +791,8 @@ void setup()
 	 * read to return -1 if pipe is empty.
 	 */
 	if (fcntl(pipe_fd2[0], F_SETFL, O_NONBLOCK) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed");
 }
 
 void cleanup()

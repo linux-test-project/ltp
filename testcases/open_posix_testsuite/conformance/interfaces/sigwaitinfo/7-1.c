@@ -33,7 +33,8 @@
 
 int counter = 0;
 
-void myhandler(int signo, siginfo_t *info, void *context) {
+void myhandler(int signo, siginfo_t * info, void *context)
+{
 	counter++;
 }
 
@@ -54,28 +55,31 @@ int main()
 
 	sighold(SIGTOTEST);
 
-	for (i=NUMCALLS; i>0; i--) {
+	for (i = NUMCALLS; i > 0; i--) {
 		value.sival_int = i;
 		if (sigqueue(pid, SIGTOTEST, value) != 0) {
-			printf("Test FAILED: call to sigqueue did not return success\n");
+			printf
+			    ("Test FAILED: call to sigqueue did not return success\n");
 			return PTS_FAIL;
 		}
 	}
 
-        sigemptyset(&selectset);
-        sigaddset(&selectset, SIGTOTEST);
+	sigemptyset(&selectset);
+	sigaddset(&selectset, SIGTOTEST);
 
-	for (i=NUMCALLS; i>0; i--) {
-	        if (sigwaitinfo(&selectset, &info) != SIGTOTEST) {
-	                perror("sigwaitinfo() returned signal other than SIGTOTEST\n");
-	                return PTS_UNRESOLVED;
-	        }
-	        if (info.si_value.sival_int != i) {
-	                printf("Test FAILED: The queued value %d was dequeued before "
-                        "the queued value %d even though %d was queued first.\n",
-			info.si_value.sival_int, i, i);
-	                return PTS_FAIL;
-	        }
+	for (i = NUMCALLS; i > 0; i--) {
+		if (sigwaitinfo(&selectset, &info) != SIGTOTEST) {
+			perror
+			    ("sigwaitinfo() returned signal other than SIGTOTEST\n");
+			return PTS_UNRESOLVED;
+		}
+		if (info.si_value.sival_int != i) {
+			printf
+			    ("Test FAILED: The queued value %d was dequeued before "
+			     "the queued value %d even though %d was queued first.\n",
+			     info.si_value.sival_int, i, i);
+			return PTS_FAIL;
+		}
 	}
 
 	return PTS_PASS;

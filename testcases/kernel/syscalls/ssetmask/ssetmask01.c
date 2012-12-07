@@ -125,13 +125,13 @@ int main(int ac, char **av)
 			syscall(__NR_ssetmask, SIGALRM);
 			TEST(syscall(__NR_sgetmask));	//call ssetmask()
 			if (TEST_RETURN != SIGALRM) {
-				tst_resm(TFAIL|TTERRNO, "sgetmask() failed");
+				tst_resm(TFAIL | TTERRNO, "sgetmask() failed");
 				cleanup();
 				tst_exit();
 			}
 			TEST(syscall(__NR_ssetmask, SIGUSR1));	//call ssetmask()
 			if (TEST_RETURN != SIGALRM) {
-				tst_resm(TFAIL|TTERRNO, "ssetmask() failed");
+				tst_resm(TFAIL | TTERRNO, "ssetmask() failed");
 				cleanup();
 				tst_exit();
 			}

@@ -43,8 +43,7 @@ double average(double *tbl)
 	int i;
 	double rslt = 0;
 
-	for (i = 0; i < maxIter; i++)
-	{
+	for (i = 0; i < maxIter; i++) {
 		rslt += tbl[i];
 	}
 	rslt = rslt / maxIter;
@@ -54,21 +53,21 @@ double average(double *tbl)
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   argc[3] : Number of test call
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         argc[3] : Number of test call
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 0; //Default test result set to FAILED
+	int test_status = 0;	//Default test result set to FAILED
 	int i;
 	double *resultTbl;
-	struct timeval tv1,tv2;
-    struct timezone tz;
-    long long diff;
-    double rslt;
+	struct timeval tv1, tv2;
+	struct timezone tz;
+	long long diff;
+	double rslt;
 	int progNum = atoi(argc[2]);
 	char proto[8] = "udp";
 	CLIENT *clnt = NULL;
@@ -78,55 +77,49 @@ int main(int argn, char *argc[])
 	int varRec = -1;
 
 	//Test initialisation
-    maxIter = atoi(argc[3]);
-    resultTbl = (double *)malloc(maxIter * sizeof(double));
+	maxIter = atoi(argc[3]);
+	resultTbl = (double *)malloc(maxIter * sizeof(double));
 	to.tv_sec = 1;
 	to.tv_usec = 100;
 
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
-	if (clnt == NULL)
-	{
+	if (clnt == NULL) {
 		clnt_pcreateerror("err");
 		printf("5\n");
 		return 5;
 	}
-
 	//Call tested function several times
-	for (i = 0; i < maxIter; i++)
-	{
+	for (i = 0; i < maxIter; i++) {
 		//Tic
 		gettimeofday(&tv1, &tz);
 
 		//Call function
 		cs = clnt_call(clnt, PROCNUM,
-				   		(xdrproc_t)xdr_int, (char *)&varSnd,
-				   		(xdrproc_t)xdr_int, (char *)&varRec,
-				   		to);
+			       (xdrproc_t) xdr_int, (char *)&varSnd,
+			       (xdrproc_t) xdr_int, (char *)&varRec, to);
 
-    	if (cs != RPC_SUCCESS)
+		if (cs != RPC_SUCCESS)
 			clnt_perrno(cs);
 
 		//Toc
 		gettimeofday(&tv2, &tz);
 
 		//Add function execution time (toc-tic)
-		diff = (tv2.tv_sec-tv1.tv_sec) * 1000000L + (tv2.tv_usec-tv1.tv_usec);
+		diff =
+		    (tv2.tv_sec - tv1.tv_sec) * 1000000L + (tv2.tv_usec -
+							    tv1.tv_usec);
 		rslt = (double)diff / 1000;
 
-    	if (cs == RPC_SUCCESS)
-    	{
-    		resultTbl[i] = rslt;
-    	}
-    	else
-    	{
-    		test_status = 1;
-    		break;
-    	}
+		if (cs == RPC_SUCCESS) {
+			resultTbl[i] = rslt;
+		} else {
+			test_status = 1;
+			break;
+		}
 
-    	if (run_mode)
-    	{
-    		fprintf(stderr, "lf time  = %lf usecn\n", resultTbl[i]);
-    	}
+		if (run_mode) {
+			fprintf(stderr, "lf time  = %lf usecn\n", resultTbl[i]);
+		}
 	}
 
 	//This last printf gives the result status to the tests suite

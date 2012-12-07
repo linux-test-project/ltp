@@ -44,16 +44,18 @@ static int dummy_func_test()
 	return 0;
 }
 
-static int __init dummy_init(void) {
-        struct proc_dir_entry *proc_dummy;
+static int __init dummy_init(void)
+{
+	struct proc_dir_entry *proc_dummy;
 
-        proc_dummy = proc_mkdir("dummy", 0);
-      return 0;
+	proc_dummy = proc_mkdir("dummy", 0);
+	return 0;
 }
 
-static void __exit dummy_exit(void) {
+static void __exit dummy_exit(void)
+{
 
-        remove_proc_entry("dummy", 0);
+	remove_proc_entry("dummy", 0);
 }
 
 module_init(dummy_init);

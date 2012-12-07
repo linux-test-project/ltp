@@ -55,7 +55,7 @@ struct cb {
 /* Global Variables */
 int numthreads = 10, numfiles = 10;
 int debug = 0;
-char * filename = "FILETOOPEN";
+char *filename = "FILETOOPEN";
 
 void setup(void)
 {
@@ -69,7 +69,7 @@ void cleanup(void)
 }
 
 /* Procedures */
-void *threads(void* thread_id);
+void *threads(void *thread_id);
 
 /* **************************************************************************
  *                              MAIN PROCEDURE                            *
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 	extern char *optarg;
 
 	while ((opt = getopt(argc, argv, "df:t:h")) != EOF) {
-		switch ((char) opt) {
+		switch ((char)opt) {
 		case 'd':
 			debug = 1;
 			break;
@@ -150,8 +150,9 @@ int main(int argc, char *argv[])
 	/* Create threads */
 	for (i = 0; i < numthreads; i++)
 		if (pthread_create(&th_id, (pthread_attr_t *) NULL, threads,
-				(void *) (uintptr_t) i)) {
-			tst_resm(TFAIL, "failed creating a pthread; increase limits");
+				   (void *)(uintptr_t) i)) {
+			tst_resm(TFAIL,
+				 "failed creating a pthread; increase limits");
 			fclose(fd);
 			unlink(filename);
 			cleanup();
@@ -160,7 +161,8 @@ int main(int argc, char *argv[])
 	/* Sleep until all threads are created */
 	while (c.thr_sleeping != numthreads)
 		if (pthread_cond_wait(&c.init_cv, &c.m)) {
-			tst_resm(TFAIL, "error while waiting for reading threads");
+			tst_resm(TFAIL,
+				 "error while waiting for reading threads");
 			fclose(fd);
 			unlink(filename);
 			cleanup();
@@ -193,7 +195,8 @@ int main(int argc, char *argv[])
  *				OTHER PROCEDURES			    *
  ************************************************************************** */
 
-void close_files(FILE *fd_list[], int len) {
+void close_files(FILE * fd_list[], int len)
+{
 	int i;
 	for (i = 0; i < len; i++) {
 		fclose(fd_list[i]);
@@ -201,7 +204,8 @@ void close_files(FILE *fd_list[], int len) {
 }
 
 /* threads: Each thread opens the files specified */
-void * threads(void* thread_id_) {
+void *threads(void *thread_id_)
+{
 	int thread_id = (uintptr_t) thread_id_;
 	char errmsg[80];
 	FILE *fd_list[MAXFILES];
@@ -210,15 +214,16 @@ void * threads(void* thread_id_) {
 	/* Open files */
 	for (i = 0; i < numfiles; i++) {
 		if (debug)
-			printf("Thread  %d : Opening file number %d \n", thread_id, i);
+			printf("Thread  %d : Opening file number %d \n",
+			       thread_id, i);
 		if ((fd_list[i] = fopen(filename, "rw")) == NULL) {
 			sprintf(errmsg, "FAIL - Couldn't open file #%d", i);
 			perror(errmsg);
 			if (i > 0) {
-				close_files(fd_list, i-1);
+				close_files(fd_list, i - 1);
 			}
 			unlink(filename);
-			pthread_exit((void*) 1);
+			pthread_exit((void *)1);
 		}
 	}
 
@@ -227,7 +232,7 @@ void * threads(void* thread_id_) {
 		perror("FAIL - failed to grab mutex lock");
 		close_files(fd_list, numfiles);
 		unlink(filename);
-		pthread_exit((void*) 1);
+		pthread_exit((void *)1);
 	}
 
 	/* Check if you should wake up main thread */
@@ -236,7 +241,7 @@ void * threads(void* thread_id_) {
 			perror("FAIL - failed to signal main thread");
 			close_files(fd_list, numfiles);
 			unlink(filename);
-			pthread_exit((void*) 1);
+			pthread_exit((void *)1);
 		}
 
 	/* Sleep until woken up */
@@ -244,7 +249,7 @@ void * threads(void* thread_id_) {
 		perror("FAIL - failed to wake up correctly");
 		close_files(fd_list, numfiles);
 		unlink(filename);
-		pthread_exit((void*) 1);
+		pthread_exit((void *)1);
 	}
 
 	/* Release mutex lock */
@@ -252,11 +257,11 @@ void * threads(void* thread_id_) {
 		perror("FAIL - failed to release mutex lock");
 		close_files(fd_list, numfiles);
 		unlink(filename);
-		pthread_exit((void*) 1);
+		pthread_exit((void *)1);
 	}
 
 	/* Close file handles and exit */
 	close_files(fd_list, numfiles);
 	unlink(filename);
-	pthread_exit((void*) 0);
+	pthread_exit((void *)0);
 }

@@ -25,22 +25,19 @@ int main()
 	int rc;
 
 	/* Initialize a mutex attributes object */
-	if ((rc=pthread_mutexattr_init(&mta)) == 0)
-	{
+	if ((rc = pthread_mutexattr_init(&mta)) == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 
 	/* Insufficient memory exists to initialize the mutex attributes object */
-	else if (rc == ENOMEM)
-	{
-		fprintf(stderr,"pthread_mutexattr_init() returns ENOMEM\n");
+	else if (rc == ENOMEM) {
+		fprintf(stderr, "pthread_mutexattr_init() returns ENOMEM\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Any other returned value means the test failed */
-	else
-	{
+	else {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

@@ -26,20 +26,20 @@
 #include "tfloat.h"
 
 const TH_FUNC th_func[] = {
-	{FUNC_NORMAL, 50, exp,   "exp",   "exp_inp.ref",   "exp_out.ref",
-		""},
-	{FUNC_NORMAL, 50, log,   "log",   "log_inp.ref",   "log_out.ref2",
-		""},
+	{FUNC_NORMAL, 50, exp, "exp", "exp_inp.ref", "exp_out.ref",
+	 ""},
+	{FUNC_NORMAL, 50, log, "log", "log_inp.ref", "log_out.ref2",
+	 ""},
 	{FUNC_NORMAL, 50, log10, "log10", "log10_inp.ref", "log10_out.ref",
-		""},
-	{FUNC_FREXP,  50, frexp, "frexp", "frexp_inp.ref", "frexp_out.ref",
-		"frexp1_out.ref"},
-	{FUNC_HYPOT,  50, hypot, "hypot", "hypot_inp.ref", "hypot_out.ref",
-		""},
-	{FUNC_LDEXP,  50, ldexp, "ldexp", "ldexp_inp.ref", "ldexp_out.ref",
-		"ildexp_inp.ref"},
-	{FUNC_MODF,   50, modf,  "modf",  "modf_inp.ref",  "modf_out.ref",
-		"modf1_out.ref"}
+	 ""},
+	{FUNC_FREXP, 50, frexp, "frexp", "frexp_inp.ref", "frexp_out.ref",
+	 "frexp1_out.ref"},
+	{FUNC_HYPOT, 50, hypot, "hypot", "hypot_inp.ref", "hypot_out.ref",
+	 ""},
+	{FUNC_LDEXP, 50, ldexp, "ldexp", "ldexp_inp.ref", "ldexp_out.ref",
+	 "ildexp_inp.ref"},
+	{FUNC_MODF, 50, modf, "modf", "modf_inp.ref", "modf_out.ref",
+	 "modf1_out.ref"}
 };
 
 #define NB_FUNC  (sizeof(th_func)/sizeof(TH_FUNC))

@@ -29,36 +29,35 @@
 
 #define SLEEP_SEC 1
 
-int main() {
+int main()
+{
 	sem_t mysemp;
 	struct timespec ts, ts_2;
 	int rc;
 
 	/* Init the value to 0 */
-        if (sem_init (&mysemp, 0, 0) == -1) {
-                perror(ERROR_PREFIX "sem_init");
-                return PTS_UNRESOLVED;
-        }
+	if (sem_init(&mysemp, 0, 0) == -1) {
+		perror(ERROR_PREFIX "sem_init");
+		return PTS_UNRESOLVED;
+	}
 
 	/* Set the abs timeout */
 #ifdef CLOCK_REALTIME
 	printf("Test CLOCK_REALTIME\n");
-	if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
-	{
+	if (clock_gettime(CLOCK_REALTIME, &ts) != 0) {
 		perror("clock_gettime()");
 		return PTS_UNRESOLVED;
 	}
 	ts.tv_sec += SLEEP_SEC;
-        ts.tv_nsec=0;
+	ts.tv_nsec = 0;
 #else
-	ts.tv_sec=time(NULL);
+	ts.tv_sec = time(NULL);
 	ts.tv_sec += SLEEP_SEC;
-        ts.tv_nsec=0;
+	ts.tv_nsec = 0;
 #endif
 	/* Lock Semaphore */
 	rc = sem_timedwait(&mysemp, &ts);
-        if (rc != -1 || (rc == -1 && errno != ETIMEDOUT))
-	{
+	if (rc != -1 || (rc == -1 && errno != ETIMEDOUT)) {
 		perror(ERROR_PREFIX "sem_timedwait");
 		printf("Expect timedout\n");
 		return PTS_UNRESOLVED;
@@ -66,8 +65,7 @@ int main() {
 
 	/* Check the time */
 #ifdef CLOCK_REALTIME
-	if (clock_gettime(CLOCK_REALTIME, &ts_2) != 0)
-	{
+	if (clock_gettime(CLOCK_REALTIME, &ts_2) != 0) {
 		perror("clock_gettime()");
 		return PTS_UNRESOLVED;
 	}

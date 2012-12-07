@@ -136,7 +136,7 @@ int main(int ac, char **av)
 
 		if ((fork_2 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
-		 }
+		}
 
 		if (fork_2 == 0) {	/* 2nd child */
 			if (close(pipefd[0]) != 0) {
@@ -163,8 +163,8 @@ int main(int ac, char **av)
 		}
 
 		if (close(pipefd[1]) != 0) {
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "pipefd[1] close failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "pipefd[1] close failed");
 		}
 
 		while ((red = safe_read(pipefd[0], rebuf, 100)) > 0) {
@@ -184,8 +184,8 @@ int main(int ac, char **av)
 		}
 
 		if (red == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "reading pipefd pipe failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "reading pipefd pipe failed");
 		}
 
 		if (Bcnt == Acnt && Bcnt == (PIPEWRTCNT / 2)) {

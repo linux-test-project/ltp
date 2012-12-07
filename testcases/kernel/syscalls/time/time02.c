@@ -124,12 +124,12 @@ int main(int ac, char **av)
 				if (tloc == TEST_RETURN) {
 					tst_resm(TPASS, "time() returned value "
 						 "%ld, stored value %jd are same",
-						 TEST_RETURN, (intmax_t)tloc);
+						 TEST_RETURN, (intmax_t) tloc);
 				} else {
 					tst_resm(TFAIL, "time() returned value "
 						 "%ld, stored value %jd are "
 						 "different", TEST_RETURN,
-						 (intmax_t)tloc);
+						 (intmax_t) tloc);
 				}
 			} else {
 				tst_resm(TPASS, "call succeeded");

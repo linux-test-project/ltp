@@ -1,6 +1,6 @@
   /*
-  Test that the BUS_ADRERR macro is defined.
-  */
+     Test that the BUS_ADRERR macro is defined.
+   */
 
 #include <signal.h>
 

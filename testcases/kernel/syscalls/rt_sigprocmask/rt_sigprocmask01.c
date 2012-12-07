@@ -67,9 +67,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "rt_sigprocmask01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 8;                   /* total number of tests in this file.   */
+char *TCID = "rt_sigprocmask01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 8;		/* total number of tests in this file.   */
 
 #define TEST_SIG SIGRTMIN+1
 
@@ -91,7 +91,8 @@ int  TST_TOTAL = 8;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-void cleanup() {
+void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -116,7 +117,8 @@ void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
@@ -130,7 +132,8 @@ void sig_handler(int sig)
 	sig_count++;
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 #if __x86_64
 	struct kernel_sigaction act, oact;
 	sig_initial(TEST_SIG);
@@ -139,8 +142,8 @@ int main(int ac, char **av) {
 	act.k_sa_handler = sig_handler;
 #else
 	struct sigaction act, oact;
-	memset(&act,0,sizeof(act));
-	memset(&oact,0,sizeof(oact));
+	memset(&act, 0, sizeof(act));
+	memset(&oact, 0, sizeof(oact));
 	act.sa_handler = sig_handler;
 #endif
 	sigset_t set, oset;
@@ -148,86 +151,87 @@ int main(int ac, char **av) {
 	char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-	     tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-	        Tst_count = 0;
-	        for (testno = 0; testno < TST_TOTAL; ++testno) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 			if (sigemptyset(&set) < 0) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-					"sigemptyset call failed");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "sigemptyset call failed");
 			}
 			if (sigaddset(&set, TEST_SIG) < 0) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-					"sigaddset call failed");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "sigaddset call failed");
 			}
 
 			/* call rt_sigaction() */
 			TEST(syscall(__NR_rt_sigaction, TEST_SIG, &act, &oact,
-			    SIGSETSIZE));
+				     SIGSETSIZE));
 			if (TEST_RETURN < 0) {
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-					"rt_sigaction call failed");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "rt_sigaction call failed");
 			}
 			/* call rt_sigprocmask() to block signal#TEST_SIG */
-	                TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK, &set,
-					&oset, SIGSETSIZE));
+			TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK, &set,
+				     &oset, SIGSETSIZE));
 			if (TEST_RETURN == -1) {
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-					"rt_sigprocmask call failed");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "rt_sigprocmask call failed");
 			}
 			/* Make sure that the masked process is indeed
 			 * masked. */
 			if (kill(getpid(), TEST_SIG) < 0) {
 				tst_brkm(TFAIL | TERRNO, cleanup,
-					"call to kill() failed");
+					 "call to kill() failed");
 			}
 			if (sig_count) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-					"rt_sigprocmask() failed to change "
-					"the process's signal mask");
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "rt_sigprocmask() failed to change "
+					 "the process's signal mask");
 			} else {
 				/* call rt_sigpending() */
 				TEST(syscall(__NR_rt_sigpending, &oset,
-				    SIGSETSIZE));
+					     SIGSETSIZE));
 				if (TEST_RETURN == -1) {
-					tst_brkm(TFAIL|TTERRNO,	cleanup,
-						"rt_sigpending call failed");
+					tst_brkm(TFAIL | TTERRNO, cleanup,
+						 "rt_sigpending call failed");
 				}
 				TEST(sigismember(&oset, TEST_SIG));
 				if (TEST_RETURN == 0) {
-					tst_brkm(TFAIL|TTERRNO,
-						cleanup,
-						"sigismember call failed");
+					tst_brkm(TFAIL | TTERRNO,
+						 cleanup,
+						 "sigismember call failed");
 				}
 				/* call rt_sigprocmask() to unblock
 				 * signal#TEST_SIG */
 				TEST(syscall(__NR_rt_sigprocmask,
-					SIG_UNBLOCK, &set, &oset, SIGSETSIZE));
+					     SIG_UNBLOCK, &set, &oset,
+					     SIGSETSIZE));
 				if (TEST_RETURN == -1) {
-					tst_brkm(TFAIL|TTERRNO,
-						cleanup,
-						"rt_sigprocmask call failed");
+					tst_brkm(TFAIL | TTERRNO,
+						 cleanup,
+						 "rt_sigprocmask call failed");
 				}
 				if (sig_count) {
 					tst_resm(TPASS,
-						"rt_sigprocmask "
-						"functionality passed");
+						 "rt_sigprocmask "
+						 "functionality passed");
 					break;
 				} else {
-					tst_brkm(TFAIL|TERRNO,
-						cleanup,
-						"rt_sigprocmask "
-						"functionality failed");
+					tst_brkm(TFAIL | TERRNO,
+						 cleanup,
+						 "rt_sigprocmask "
+						 "functionality failed");
 				}
 
 			}
 
-	        }
+		}
 
 		Tst_count++;
 

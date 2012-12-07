@@ -157,9 +157,11 @@ int main(int ac, char **av)
 
 		/* close and remove file, possibly for next loop */
 		if (close(TEST_RETURN) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup, "closing %s failed", fname);
+			tst_brkm(TBROK | TERRNO, cleanup, "closing %s failed",
+				 fname);
 		} else if (unlink(fname) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup, "unlinking %s failed", fname);
+			tst_brkm(TBROK | TERRNO, cleanup, "unlinking %s failed",
+				 fname);
 		}
 
 	}

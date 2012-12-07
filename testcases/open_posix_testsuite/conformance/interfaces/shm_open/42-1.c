@@ -16,6 +16,7 @@
 
 int main()
 {
-        printf("Will not test that the shm_open() function sets errno to ENOSPC if there is\ninsufficient space for the creation of the new shared memory object.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test that the shm_open() function sets errno to ENOSPC if there is\ninsufficient space for the creation of the new shared memory object.\n");
+	return PTS_UNTESTED;
 }

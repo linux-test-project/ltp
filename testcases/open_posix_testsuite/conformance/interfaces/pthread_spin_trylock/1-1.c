@@ -39,19 +39,17 @@ int rc;
 
 static void sig_handler()
 {
-	if (thread_state == ENTERED_THREAD)
-	{
+	if (thread_state == ENTERED_THREAD) {
 		printf("Test FAILED: thread incorrectly spins on trylock\n");
 		exit(PTS_FAIL);
-	}
-	else
-	{
-		printf("UNRESOLVED: Unexpected child thread state %d\n", thread_state);
+	} else {
+		printf("UNRESOLVED: Unexpected child thread state %d\n",
+		       thread_state);
 		exit(PTS_UNRESOLVED);
 	}
 }
 
-static void* fn_chld(void *arg)
+static void *fn_chld(void *arg)
 {
 	rc = 0;
 
@@ -78,8 +76,7 @@ int main()
 {
 	pthread_t child_thread;
 
-	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
-	{
+	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0) {
 		printf("main: Error at pthread_spin_init()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -87,17 +84,16 @@ int main()
 	printf("main: attempt to trylock\n");
 
 	/* We should get the lock */
-	if (pthread_spin_trylock(&spinlock) != 0)
-	{
-		printf("Test FAILED: main cannot get spin lock when no one owns the lock\n");
+	if (pthread_spin_trylock(&spinlock) != 0) {
+		printf
+		    ("Test FAILED: main cannot get spin lock when no one owns the lock\n");
 		return PTS_FAIL;
 	}
 	printf("main: acquired spin lock\n");
 
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread\n");
-	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
-	{
+	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0) {
 		printf("main: Error creating child thread\n");
 		return PTS_UNRESOLVED;
 	}
@@ -106,9 +102,10 @@ int main()
 	pthread_join(child_thread, NULL);
 
 	/* Check the return code of pthread_spin_trylock */
-	if (rc != EBUSY)
-	{
-		printf("Test FAILED: pthread_spin_trylock should return EBUSY, instead got error code:%d\n" , rc);
+	if (rc != EBUSY) {
+		printf
+		    ("Test FAILED: pthread_spin_trylock should return EBUSY, instead got error code:%d\n",
+		     rc);
 		return PTS_FAIL;
 	}
 

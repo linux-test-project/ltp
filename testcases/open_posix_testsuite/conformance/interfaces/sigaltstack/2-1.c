@@ -36,18 +36,21 @@ void handler(int signo)
 
 	stack_t handler_s;
 
-	if (sigaltstack((stack_t *)0, &handler_s) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+	if (sigaltstack((stack_t *) 0, &handler_s) == -1) {
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		exit(PTS_UNRESOLVED);
 	}
 
 	if (handler_s.ss_sp != original_s.ss_sp) {
-		printf("Test FAILED: ss_sp of the handler's stack changed even though SS_DISABLE was set\n");
+		printf
+		    ("Test FAILED: ss_sp of the handler's stack changed even though SS_DISABLE was set\n");
 		exit(PTS_FAIL);
 	}
 
 	if (handler_s.ss_size != original_s.ss_size) {
-		printf("Test FAILED: ss_size of the handler's stack changed even though SS_DISABLE was set\n");
+		printf
+		    ("Test FAILED: ss_size of the handler's stack changed even though SS_DISABLE was set\n");
 		exit(PTS_FAIL);
 	}
 
@@ -62,30 +65,35 @@ int main()
 	sigemptyset(&act.sa_mask);
 
 	if (sigaction(SIGUSR1, &act, 0) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaltstack((stack_t *)0, &original_s) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+	if (sigaltstack((stack_t *) 0, &original_s) == -1) {
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	if ((alternate_s.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	alternate_s.ss_flags = SS_DISABLE;
 	alternate_s.ss_size = SIGSTKSZ;
 
-	if (sigaltstack(&alternate_s, (stack_t *)0) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+	if (sigaltstack(&alternate_s, (stack_t *) 0) == -1) {
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	if (raise(SIGUSR1) == -1) {
-		perror("Unexpected error while attempting to setup test pre-conditions");
+		perror
+		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 

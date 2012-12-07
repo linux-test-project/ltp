@@ -111,11 +111,11 @@ int main(int ac, char **av)
 			switch (errno) {
 			case EBADF:
 				tst_resm(TPASS,
-				    "failed as expected with EBADF");
+					 "failed as expected with EBADF");
 				break;
 			default:
-				tst_resm(TFAIL|TERRNO,
-				    "getdents failed unexpectedly");
+				tst_resm(TFAIL | TERRNO,
+					 "getdents failed unexpectedly");
 				break;
 			}
 		} else

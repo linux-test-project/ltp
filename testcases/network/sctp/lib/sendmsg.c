@@ -20,7 +20,7 @@
  */
 
 #include <string.h>
-#include <sys/socket.h>   /* struct sockaddr_storage, setsockopt() */
+#include <sys/socket.h>		/* struct sockaddr_storage, setsockopt() */
 #include <netinet/sctp.h>
 
 /* This library function assists the user with the advanced features
@@ -72,7 +72,7 @@ sctp_sendmsg(int s, const void *msg, size_t len, struct sockaddr *to,
  */
 int
 sctp_send(int s, const void *msg, size_t len,
-          const struct sctp_sndrcvinfo *sinfo, int flags)
+	  const struct sctp_sndrcvinfo *sinfo, int flags)
 {
 	struct msghdr outmsg;
 	struct iovec iov;

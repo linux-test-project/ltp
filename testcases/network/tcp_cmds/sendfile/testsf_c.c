@@ -26,8 +26,7 @@ char *TCID = "sendfile6_client";
 char *TCID = "sendfile_client";
 #endif
 
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	sai_t sai;
 	int s, fd;
@@ -35,18 +34,19 @@ main (int argc, char *argv[])
 	char *serv_fname, *clnt_fname;
 	char rbuf[PATH_MAX];
 	int nlen, gai;
-	struct  addrinfo *hp;
-	struct  addrinfo hints;
+	struct addrinfo *hp;
+	struct addrinfo hints;
 	int port;
 
 	if (argc != 6) {
-		tst_resm(TBROK, "usage: server-ip port client-file server-file file-len");
+		tst_resm(TBROK,
+			 "usage: server-ip port client-file server-file file-len");
 		tst_exit();
 	}
 
 	int i;
-	for (i = 0;  i < argc; i++)
-		printf("i=%d: %s\n", i, *(argv+i));
+	for (i = 0; i < argc; i++)
+		printf("i=%d: %s\n", i, *(argv + i));
 
 	/* open socket to server */
 	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0) {
@@ -54,8 +54,8 @@ main (int argc, char *argv[])
 		tst_exit();
 	}
 
-	clnt_fname = argv[3]; /* filename to create */
-	serv_fname = argv[4]; /* filename to request */
+	clnt_fname = argv[3];	/* filename to create */
+	serv_fname = argv[4];	/* filename to request */
 
 	/* prepare to copy file from server to local machine */
 	if ((fd = open(clnt_fname, O_CREAT | O_TRUNC | O_WRONLY, 0777)) < 0) {
@@ -73,7 +73,7 @@ main (int argc, char *argv[])
 	hints.ai_family = PFI;
 	if ((gai = getaddrinfo(argv[1], NULL, &hints, &hp)) != 0) {
 		tst_resm(TBROK, "Unknown subject address %s: %s\n",
-				argv[1], gai_strerror(gai));
+			 argv[1], gai_strerror(gai));
 	}
 	if (!hp || !hp->ai_addr || hp->ai_addr->sa_family != AFI) {
 		tst_resm(TBROK, "getaddrinfo failed");
@@ -91,7 +91,7 @@ main (int argc, char *argv[])
 	sai.sin_port = htons(port);
 #endif
 
-	if (connect(s, (sa_t*) &sai, sizeof(sai) ) < 0) {
+	if (connect(s, (sa_t *) & sai, sizeof(sai)) < 0) {
 		tst_resm(TBROK, "connect error = %d\n", errno);
 		close(s);
 		exit(1);
@@ -105,16 +105,16 @@ main (int argc, char *argv[])
 	}
 
 	tst_resm(TINFO, "client write %d bytes to server with contents %s\n",
-			nbyte, rbuf);
+		 nbyte, rbuf);
 
-	nlen = 0; /* init size of info received */
+	nlen = 0;		/* init size of info received */
 	rbuf[0] = '\0';
 	/* read until an EOF is encountered. */
 	while ((nbyte = read(s, rbuf, PATH_MAX)) > 0) {
 		nlen += nbyte;
 		if (write(fd, rbuf, nbyte) != nbyte) {
 			tst_resm(TBROK, "Error writing to file %s on client\n",
-					clnt_fname);
+				 clnt_fname);
 			tst_exit();
 		}
 	}

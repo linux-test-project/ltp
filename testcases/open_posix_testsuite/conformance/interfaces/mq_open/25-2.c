@@ -43,7 +43,7 @@ int main()
 		attr.mq_maxmsg = invalid_values[i];
 		queue = mq_open(qname, O_CREAT | O_RDWR,
 				S_IRUSR | S_IWUSR, &attr);
-		if (queue != (mqd_t) -1) {
+		if (queue != (mqd_t) - 1) {
 			printf("mq_open() succeeded w/invalid mq_maxmsg %ld\n",
 			       attr.mq_maxmsg);
 			mq_close(queue);
@@ -73,7 +73,7 @@ int main()
 		attr.mq_msgsize = invalid_values[i];
 		queue = mq_open(qname, O_CREAT | O_RDWR,
 				S_IRUSR | S_IWUSR, &attr);
-		if (queue != (mqd_t) -1) {
+		if (queue != (mqd_t) - 1) {
 			printf("mq_open() succeeded w/invalid mq_msgsize %ld\n",
 			       attr.mq_msgsize);
 			mq_close(queue);

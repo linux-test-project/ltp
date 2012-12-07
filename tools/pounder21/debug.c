@@ -30,7 +30,8 @@
 
 #define BUF_LEN 256
 
-int pounder_fprintf(FILE *stream, const char *format, ...) {
+int pounder_fprintf(FILE * stream, const char *format, ...)
+{
 	struct timeval tv;
 	struct tm *time;
 	char buf[BUF_LEN];
@@ -67,7 +68,7 @@ int pounder_fprintf(FILE *stream, const char *format, ...) {
 	return ret;
 }
 
-const char *fail_msg  = "\e[33;1mFAIL\e[0m";
-const char *pass_msg  = "\e[32;1mPASS\e[0m";
+const char *fail_msg = "\e[33;1mFAIL\e[0m";
+const char *pass_msg = "\e[32;1mPASS\e[0m";
 const char *abort_msg = "\e[31;1mABORT\e[0m";
 const char *start_msg = "\e[36;1mSTART\e[0m";

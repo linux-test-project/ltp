@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
 	ret = get_allowed_nodes(NH_MEMS, 1, &from_node);
 	if (ret < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "get_allowed_nodes: %d", ret);
+		tst_brkm(TBROK | TERRNO, cleanup, "get_allowed_nodes: %d", ret);
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -155,4 +155,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}

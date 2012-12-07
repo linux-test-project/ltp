@@ -60,7 +60,7 @@ void blexit();
 int main()
 {
 	double answer;
-	double check;		 /* tmp variable */
+	double check;		/* tmp variable */
 
 	setup();		/* temp file is now open */
 /*--------------------------------------------------------------*/
@@ -70,37 +70,38 @@ int main()
 	check = (answer + 1.0) / 2;
 	if ((check != answer) && ((float)check != 1.0)) {
 		fprintf(temp, "nextafter returned %e, expected answer or 1.0\n",
-				answer);
+			answer);
 		local_flag = FAILED;
 	}
 
-        blexit();
+	blexit();
 /*--------------------------------------------------------------*/
 	blenter();
 
 	answer = nextafter(1.0, 0.9);
 	if ((check != answer) && (check != 1.0)) {
 		fprintf(temp, "nextafter returned %e, expected answer or 1.0\n",
-				answer);
+			answer);
 		local_flag = FAILED;
 	}
 
-        blexit();
+	blexit();
 /*--------------------------------------------------------------*/
 	blenter();
 
 	answer = nextafter(1.0, 1.0);
 	if (answer != 1.0) {
 		fprintf(temp, "nextafter 3 returned %e, expected 1.0\n",
-				answer);
+			answer);
 		local_flag = FAILED;
 	}
 
-        blexit();
+	blexit();
 /*--------------------------------------------------------------*/
 
 	tst_exit();
 }
+
 /*--------------------------------------------------------------*/
 
 /*****	*****	LTP Port	*****/

@@ -71,27 +71,27 @@ struct test_case {
 	int exp_err;
 };
 struct test_case tc[] = {
-	{	/* case 00, get non-existing attribute */
-		.fname = filename,
-		.key = "user.nosuchkey",
-		.value = NULL,
-		.size = BUFFSIZE - 1,
-		.exp_err = ENOATTR,
-	},
-	{	/* case 01, small value buffer */
-		.fname = filename,
-		.key = XATTR_TEST_KEY,
-		.value = NULL,
-		.size = 1,
-		.exp_err = ERANGE,
-	},
-	{	/* case 02, get existing attribute */
-		.fname = filename,
-		.key = XATTR_TEST_KEY,
-		.value = NULL,
-		.size = BUFFSIZE - 1,
-		.exp_err = 0,
-	},
+	{			/* case 00, get non-existing attribute */
+	 .fname = filename,
+	 .key = "user.nosuchkey",
+	 .value = NULL,
+	 .size = BUFFSIZE - 1,
+	 .exp_err = ENOATTR,
+	 },
+	{			/* case 01, small value buffer */
+	 .fname = filename,
+	 .key = XATTR_TEST_KEY,
+	 .value = NULL,
+	 .size = 1,
+	 .exp_err = ERANGE,
+	 },
+	{			/* case 02, get existing attribute */
+	 .fname = filename,
+	 .key = XATTR_TEST_KEY,
+	 .value = NULL,
+	 .size = BUFFSIZE - 1,
+	 .exp_err = 0,
+	 },
 };
 
 int TST_TOTAL = sizeof(tc) / sizeof(tc[0]) + 1;
@@ -113,19 +113,20 @@ int main(int argc, char *argv[])
 
 		for (i = 0; i < (sizeof(tc) / sizeof(tc[0])); i++) {
 			TEST(getxattr(tc[i].fname, tc[i].key, tc[i].value,
-			    tc[i].size));
+				      tc[i].size));
 
 			if (TEST_ERRNO == tc[i].exp_err) {
 				tst_resm(TPASS | TTERRNO, "expected behavior");
 			} else {
 				tst_resm(TFAIL | TTERRNO, "unexpected behavior"
-				    "- expected errno %d - Got", tc[i].exp_err);
+					 "- expected errno %d - Got",
+					 tc[i].exp_err);
 			}
 		}
 
 		if (strcmp(tc[i - 1].value, XATTR_TEST_VALUE))
 			tst_resm(TFAIL, "Wrong value, expect \"%s\" got \"%s\"",
-			    XATTR_TEST_VALUE, tc[i - 1].value);
+				 XATTR_TEST_VALUE, tc[i - 1].value);
 		else
 			tst_resm(TPASS, "Got the right value");
 	}
@@ -148,13 +149,13 @@ static void setup(void)
 	fd = creat(filename, 0644);
 	if (fd == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create test file(%s) failed",
-		    filename);
+			 filename);
 	close(fd);
 	if (setxattr(filename, XATTR_TEST_KEY, XATTR_TEST_VALUE,
-	    strlen(XATTR_TEST_VALUE), XATTR_CREATE) == -1) {
+		     strlen(XATTR_TEST_VALUE), XATTR_CREATE) == -1) {
 		if (errno == ENOTSUP) {
 			tst_brkm(TCONF, cleanup, "No xattr support in fs or "
-			    "mount without user_xattr option");
+				 "mount without user_xattr option");
 		}
 	}
 
@@ -163,7 +164,7 @@ static void setup(void)
 		tc[i].value = malloc(BUFFSIZE);
 		if (tc[i].value == NULL) {
 			tst_brkm(TBROK | TERRNO, cleanup,
-			    "Cannot allocate memory");
+				 "Cannot allocate memory");
 		}
 	}
 

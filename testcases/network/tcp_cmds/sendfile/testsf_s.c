@@ -27,8 +27,7 @@ char *TCID = "sendfile6_server";
 char *TCID = "sendfile_server";
 #endif
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	sai_t sa, *ap;
 	sa_t from;
@@ -37,9 +36,9 @@ main(int argc, char *argv[])
 	int as, fd, gai, rc, s;
 	char *lp;
 	char *number;
-	int pid, nbytes, flen,count;
+	int pid, nbytes, flen, count;
 	char rbuf[PATH_MAX];
-	int chunks=0;
+	int chunks = 0;
 	off_t *offset;
 	char nbuf[PATH_MAX];
 	int port;
@@ -55,7 +54,7 @@ main(int argc, char *argv[])
 		tst_exit();
 	}
 
-	signal(SIGCHLD, SIG_IGN); /* ignore signals from children */
+	signal(SIGCHLD, SIG_IGN);	/* ignore signals from children */
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = PFI;
@@ -78,7 +77,7 @@ main(int argc, char *argv[])
 #endif
 
 	/* bind IP and port to socket */
-	if (bind(s, (sa_t*) &sa, sizeof(sa) ) < 0) {
+	if (bind(s, (sa_t *) & sa, sizeof(sa)) < 0) {
 		tst_resm(TBROK, "bind error = %d\n", errno);
 		close(s);
 		tst_exit();
@@ -105,7 +104,7 @@ main(int argc, char *argv[])
 			tst_exit();
 		}
 
-		ap = (sai_t*) &from;
+		ap = (sai_t *) & from;
 
 		/* create a process to manage the connection */
 		if ((pid = fork()) < 0) {
@@ -120,7 +119,7 @@ main(int argc, char *argv[])
 
 		/* child process to manage a connection */
 
-		close(s); /* close service socket */
+		close(s);	/* close service socket */
 
 		/* get client request information */
 		if ((nbytes = read(as, rbuf, PATH_MAX)) <= 0) {
@@ -128,13 +127,13 @@ main(int argc, char *argv[])
 			close(as);
 			tst_exit();
 		}
-		rbuf[nbytes] = '\0'; /* null terminate the info */
+		rbuf[nbytes] = '\0';	/* null terminate the info */
 		lp = &rbuf[0];
 
 		/* start with file length, '=' will start the filename */
 		count = flen = 0;
 		number = &nbuf[0];
-		while (*lp != '=') { /* convert ascii to integer */
+		while (*lp != '=') {	/* convert ascii to integer */
 			nbuf[count] = *lp;
 			count++;
 			lp++;
@@ -154,10 +153,12 @@ main(int argc, char *argv[])
 		}
 		offset = NULL;
 		errno = 0;
-		do { /* send file parts until EOF */
+		do {		/* send file parts until EOF */
 			if ((rc = sendfile(as, fd, offset, flen)) != flen) {
 				if ((errno != EWOULDBLOCK) && (errno != EAGAIN)) {
-					tst_resm(TBROK, "sendfile error = %d, rc = %d\n", errno, rc);
+					tst_resm(TBROK,
+						 "sendfile error = %d, rc = %d\n",
+						 errno, rc);
 					close(as);
 					close(fd);
 					tst_exit();
@@ -167,14 +168,14 @@ main(int argc, char *argv[])
 		} while (rc != 0);
 		tst_resm(TINFO, "File %s sent in %d parts\n", lp, chunks);
 
-		close(as); /* close connection */
-		close(fd); /* close requested file */
+		close(as);	/* close connection */
+		close(fd);	/* close requested file */
 
 		exit(0);
 
 	}
 
-	close(s); /* close parent socket (never reached because of the while (1)) */
+	close(s);		/* close parent socket (never reached because of the while (1)) */
 
 	tst_exit();
 

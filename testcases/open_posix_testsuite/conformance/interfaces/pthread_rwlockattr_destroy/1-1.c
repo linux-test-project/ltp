@@ -27,17 +27,18 @@ int main()
 
 	/* Initialize a rwlock attributes object */
 	rc = pthread_rwlockattr_init(&rwla);
-	if (rc != 0)
-	{
-		printf("Error at pthread_rwlockattr_init(), error code: %d\n", rc);
+	if (rc != 0) {
+		printf("Error at pthread_rwlockattr_init(), error code: %d\n",
+		       rc);
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy the rwlock attributes object */
 	rc = pthread_rwlockattr_destroy(&rwla);
-	if (rc != 0)
-	{
-		printf("Error at pthread_rwlockattr_destroy(), error code: %d\n", rc);
+	if (rc != 0) {
+		printf
+		    ("Error at pthread_rwlockattr_destroy(), error code: %d\n",
+		     rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

@@ -35,7 +35,6 @@
 #include <string.h>
 #include "reporter.h"
 
-
 #ifdef DEBUGGING
 int Debug[MAXDEBUG];		/* Debug level in their areas */
 #endif
@@ -45,42 +44,41 @@ int Debug[MAXDEBUG];		/* Debug level in their areas */
  *
  * Syntax:   area[,area]:level[,area[,area]:level]...
  */
-int
-set_debug(char *optarg)
+int set_debug(char *optarg)
 {
 #ifdef DEBUGGING
-    /* pointers to the debug area and level in the option's arguments */
-    char *d_area, *d_level;
-    /* debug area and level after converted to integers */
-    int db_area, db_level;
+	/* pointers to the debug area and level in the option's arguments */
+	char *d_area, *d_level;
+	/* debug area and level after converted to integers */
+	int db_area, db_level;
 
-    d_area = optarg;
+	d_area = optarg;
 
-    while (*d_area) {
-	d_level= strchr(d_area,':');
-	*d_level++ = '\0';
-	db_level= atoi(d_level);
-	db_area=atoi(d_area);
+	while (*d_area) {
+		d_level = strchr(d_area, ':');
+		*d_level++ = '\0';
+		db_level = atoi(d_level);
+		db_area = atoi(d_area);
 
-	if (db_area > MAXDEBUG) {
-	    printf("Error - Debug area %s > maximum of %d\n", d_area,
-		   MAXDEBUG);
-	    exit(-1);
+		if (db_area > MAXDEBUG) {
+			printf("Error - Debug area %s > maximum of %d\n",
+			       d_area, MAXDEBUG);
+			exit(-1);
+		}
+
+		while (d_area != NULL) {
+			db_area = atoi(d_area);
+			printf("Debug area %d set to %d\n", db_area, db_level);
+			Debug[db_area] = db_level;
+			if ((d_area = strchr(d_area, ',')) != NULL)
+				d_area++;
+		}
+		if ((d_area = strchr(d_level, ',')) == NULL)
+			break;
 	}
-
-	while (d_area != NULL) {
-	    db_area = atoi(d_area);
-	    printf("Debug area %d set to %d\n", db_area, db_level);
-	    Debug[db_area] = db_level;
-	    if ((d_area = strchr(d_area, ',')) != NULL)
-		d_area++;
-	}
-	if ((d_area = strchr(d_level, ',')) == NULL)
-	    break;
-    }
 #else
-    printf("Debugging is not enabled.  -D has been ignored\n");
+	printf("Debugging is not enabled.  -D has been ignored\n");
 #endif
 
-    return 0;
+	return 0;
 }

@@ -65,15 +65,15 @@ char *TCID = "hugeshmat03";
 int TST_TOTAL = 1;
 
 static size_t shm_size;
-static int    shm_id_1 = -1;
-static void   *addr;
-static uid_t  ltp_uid;
-static char   *ltp_user = "nobody";
+static int shm_id_1 = -1;
+static void *addr;
+static uid_t ltp_uid;
+static char *ltp_user = "nobody";
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 static void do_child(void);
@@ -95,15 +95,15 @@ int main(int ac, char **av)
 
 	switch (pid = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
 		if (setuid(ltp_uid) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "setuid");
+			tst_brkm(TBROK | TERRNO, cleanup, "setuid");
 		do_child();
 		tst_exit();
 	default:
 		if (waitpid(pid, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 	}
 	cleanup();
 	tst_exit();
@@ -122,10 +122,10 @@ static void do_child(void)
 			continue;
 		}
 		if (errno == EACCES)
-			tst_resm(TPASS|TERRNO, "shmat failed as expected");
+			tst_resm(TPASS | TERRNO, "shmat failed as expected");
 		else
-			tst_resm(TFAIL|TERRNO, "shmat failed unexpectedly "
-				    "- expect errno=EACCES, got");
+			tst_resm(TFAIL | TERRNO, "shmat failed unexpectedly "
+				 "- expect errno=EACCES, got");
 	}
 }
 
@@ -145,9 +145,9 @@ void setup(void)
 	update_shm_size(&shm_size);
 	shmkey = getipckey();
 	shm_id_1 = shmget(shmkey, shm_size,
-		    SHM_HUGETLB|SHM_RW|IPC_CREAT|IPC_EXCL);
+			  SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL);
 	if (shm_id_1 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget");
 
 	ltp_uid = getuserid(ltp_user);
 

@@ -95,12 +95,12 @@ struct test_case_t {
 
 static struct test_case_t test_cases[] = {
 	{"Change Owner/Group ids", 700, 701},
-	{"Change Owner id only",   702,  -1},
+	{"Change Owner id only", 702, -1},
 	{"Change Owner/Group ids", 703, 701},
-	{"Change Group id only",    -1, 704},
+	{"Change Group id only", -1, 704},
 	{"Change Group/Group ids", 703, 705},
-	{"Change none",             -1,  -1},
-	{NULL,                       0,   0}
+	{"Change none", -1, -1},
+	{NULL, 0, 0}
 };
 
 void setup(void);
@@ -151,18 +151,20 @@ int main(int argc, char *argv[])
 				 */
 				if (lstat(SFILE, &stat_buf) < 0) {
 					tst_brkm(TFAIL, cleanup, "lstat(2) "
-					         "%s failed, errno %d",
+						 "%s failed, errno %d",
 						 SFILE, TEST_ERRNO);
 				}
 				if (user_id == -1) {
 					if (i > 0)
-						user_id = test_cases[i-1].user_id;
+						user_id =
+						    test_cases[i - 1].user_id;
 					else
 						user_id = geteuid();
 				}
 				if (group_id == -1) {
 					if (i > 0)
-						group_id = test_cases[i-1].group_id;
+						group_id =
+						    test_cases[i - 1].group_id;
 					else
 						group_id = getegid();
 				}
@@ -208,15 +210,15 @@ void setup(void)
 	TEST_PAUSE;
 	tst_tmpdir();
 
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup, "open failed");
 	}
 	if (close(fd) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "close failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "close failed");
 	}
 
 	if (symlink(TESTFILE, SFILE) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "symlink failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "symlink failed");
 	}
 }
 

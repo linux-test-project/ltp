@@ -127,7 +127,8 @@ int main(int ac, char **av)
 
 		/* Check for the return value of mmap() */
 		if (addr == MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO, "mmap() failed on %s", TEMPFILE);
+			tst_resm(TFAIL | TERRNO, "mmap() failed on %s",
+				 TEMPFILE);
 			continue;
 		}
 
@@ -162,7 +163,7 @@ int main(int ac, char **av)
 
 		/* Unmap mapped memory and reset pass in case we are looping */
 		if (munmap((void *)addr, page_sz) != 0) {
-			tst_brkm(TFAIL|TERRNO, cleanup, "munmap failed");
+			tst_brkm(TFAIL | TERRNO, cleanup, "munmap failed");
 		}
 		pass = 0;
 
@@ -207,14 +208,14 @@ void setup(void)
 	/* Creat a temporary file used for mapping */
 	if ((fildes = open(TEMPFILE, O_WRONLY | O_CREAT, 0666)) < 0) {
 		free(tst_buff);
-		tst_brkm(TFAIL|TERRNO, cleanup, "opening %s failed", TEMPFILE);
+		tst_brkm(TFAIL | TERRNO, cleanup, "opening %s failed",
+			 TEMPFILE);
 	}
 
 	/* Write test buffer contents into temporary file */
 	if (write(fildes, tst_buff, page_sz) != page_sz) {
 		free(tst_buff);
-		tst_brkm(TFAIL, cleanup, "writing to %s failed",
-			 TEMPFILE);
+		tst_brkm(TFAIL, cleanup, "writing to %s failed", TEMPFILE);
 	}
 
 	/* Free the memory allocated for test buffer */
@@ -222,20 +223,20 @@ void setup(void)
 
 	/* Make sure proper permissions set on file */
 	if (fchmod(fildes, 0444) < 0) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "fchmod of %s failed",
+		tst_brkm(TFAIL | TERRNO, cleanup, "fchmod of %s failed",
 			 TEMPFILE);
 	}
 
 	/* Close the temporary file opened for write */
 	if (close(fildes) < 0) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "closing %s failed",
+		tst_brkm(TFAIL | TERRNO, cleanup, "closing %s failed",
 			 TEMPFILE);
 	}
 
 	/* Open the temporary file again for reading */
 	if ((fildes = open(TEMPFILE, O_RDONLY)) < 0) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "opening %s readonly failed",
-			TEMPFILE);
+		tst_brkm(TFAIL | TERRNO, cleanup, "opening %s readonly failed",
+			 TEMPFILE);
 	}
 }
 
@@ -253,7 +254,7 @@ void sig_handler(sig)
 		siglongjmp(env, 1);
 	} else
 		tst_brkm(TBROK, cleanup, "received an unexpected signal: %d",
-			sig);
+			 sig);
 }
 
 /*

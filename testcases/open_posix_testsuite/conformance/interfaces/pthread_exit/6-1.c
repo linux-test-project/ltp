@@ -32,35 +32,35 @@
   */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
- #include <sched.h>
- #include <semaphore.h>
- #include <errno.h>
- #include <assert.h>
- #include <sys/wait.h>
- #include <sys/mman.h>
+#include <sched.h>
+#include <semaphore.h>
+#include <errno.h>
+#include <assert.h>
+#include <sys/wait.h>
+#include <sys/mman.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -104,7 +104,7 @@
 /********************************************************************************************/
 
 /* This will be used to control that atexit() has been called */
-int * ctl;
+int *ctl;
 long mf;
 
 void clnp(void)
@@ -113,7 +113,7 @@ void clnp(void)
 }
 
 /* Thread routine */
-void * threaded (void * arg)
+void *threaded(void *arg)
 {
 	int ret = 0;
 
@@ -124,175 +124,193 @@ void * threaded (void * arg)
 		*ctl = 0;
 
 	pid = fork();
-	if (pid == (pid_t)-1)
-	{
+	if (pid == (pid_t) - 1) {
 		UNRESOLVED(errno, "Failed to fork()");
 	}
-	if (pid == 0)
-	{
+	if (pid == 0) {
 		/* children */
-		if (mf > 0)
-		{
+		if (mf > 0) {
 			ret = atexit(clnp);
-			if (ret != 0)  {  UNRESOLVED(ret, "Failed to register atexit function");  }
+			if (ret != 0) {
+				UNRESOLVED(ret,
+					   "Failed to register atexit function");
+			}
 		}
 
 		/* exit the last (and only) thread */
 		pthread_exit(&ret);
 
-		FAILED("pthread_exit() did not terminate the process when there was only 1 thread");
+		FAILED
+		    ("pthread_exit() did not terminate the process when there was only 1 thread");
 	}
 
 	/* Only the parent process goes this far */
 	chk = waitpid(pid, &status, 0);
-	if (chk != pid)
-	{
+	if (chk != pid) {
 		output("Expected pid: %i. Got %i\n", (int)pid, (int)chk);
 		UNRESOLVED(errno, "Waitpid failed");
 	}
 
-	if (WIFSIGNALED(status))
-	{
-		output("Child process killed with signal %d\n",WTERMSIG(status));
-		UNRESOLVED(-1 , "Child process was killed");
+	if (WIFSIGNALED(status)) {
+		output("Child process killed with signal %d\n",
+		       WTERMSIG(status));
+		UNRESOLVED(-1, "Child process was killed");
 	}
 
-	if (WIFEXITED(status))
-	{
+	if (WIFEXITED(status)) {
 		ret = WEXITSTATUS(status);
-	}
-	else
-	{
+	} else {
 		UNRESOLVED(-1, "Child process was neither killed nor exited");
 	}
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		output("Exit status was: %i\n", ret);
 		FAILED("The child process did not exit with 0 status.");
 	}
 
 	if (mf > 0)
 		if (*ctl != 1)
-			FAILED("pthread_exit() in the last thread did not execute atexit() routines");
+			FAILED
+			    ("pthread_exit() in the last thread did not execute atexit() routines");
 
 	/* Signal we're done (especially in case of a detached thread) */
-	do { ret = sem_post(&scenarii[sc].sem); }
+	do {
+		ret = sem_post(&scenarii[sc].sem);
+	}
 	while ((ret == -1) && (errno == EINTR));
-	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
+	if (ret == -1) {
+		UNRESOLVED(errno, "Failed to wait for the semaphore");
+	}
 
 	return NULL;
 }
 
 /* Main routine */
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int ret=0;
+	int ret = 0;
 	pthread_t child;
 
-	mf =sysconf(_SC_MAPPED_FILES);
+	mf = sysconf(_SC_MAPPED_FILES);
 
 	output_init();
 
 	scenar_init();
 
 	/* We want to share some memory with the child process */
-	if (mf> 0)
-	{
+	if (mf > 0) {
 		/* We will place the test data in a mmaped file */
 		char filename[] = "/tmp/pthread_exit_6-1-XXXXXX";
 		size_t sz;
-		void * mmaped;
+		void *mmaped;
 		int fd;
-		char * tmp;
+		char *tmp;
 
 		/* We now create the temp files */
 		fd = mkstemp(filename);
-		if (fd == -1)
-		{ UNRESOLVED(errno, "Temporary file could not be created"); }
+		if (fd == -1) {
+			UNRESOLVED(errno,
+				   "Temporary file could not be created");
+		}
 
 		/* and make sure the file will be deleted when closed */
 		unlink(filename);
 
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Temp file created (%s).\n", filename);
-		#endif
+#endif
 
-		sz= (size_t)sysconf(_SC_PAGESIZE);
+		sz = (size_t) sysconf(_SC_PAGESIZE);
 
 		tmp = calloc(1, sz);
-		if (tmp == NULL)
-		{ UNRESOLVED(errno, "Memory allocation failed"); }
+		if (tmp == NULL) {
+			UNRESOLVED(errno, "Memory allocation failed");
+		}
 
 		/* Write the data to the file.  */
-		if (write (fd, tmp, sz) != (ssize_t) sz)
-		{ UNRESOLVED(sz, "Writting to the file failed"); }
+		if (write(fd, tmp, sz) != (ssize_t) sz) {
+			UNRESOLVED(sz, "Writting to the file failed");
+		}
 
 		free(tmp);
 
 		/* Now we can map the file in memory */
-		mmaped = mmap(NULL, sz, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-		if (mmaped == MAP_FAILED)
-		{ UNRESOLVED(errno, "mmap failed"); }
+		mmaped =
+		    mmap(NULL, sz, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		if (mmaped == MAP_FAILED) {
+			UNRESOLVED(errno, "mmap failed");
+		}
 
-		ctl = (int *) mmaped;
+		ctl = (int *)mmaped;
 
 		/* Our datatest structure is now in shared memory */
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Testdata allocated in shared memory.\n");
-		#endif
+#endif
 	}
 
-	for (sc=0; sc < NSCENAR; sc++)
-	{
-		#if VERBOSE > 0
+	for (sc = 0; sc < NSCENAR; sc++) {
+#if VERBOSE > 0
 		output("-----\n");
-		output("Starting test with scenario (%i): %s\n", sc, scenarii[sc].descr);
-		#endif
+		output("Starting test with scenario (%i): %s\n", sc,
+		       scenarii[sc].descr);
+#endif
 
 		ret = pthread_create(&child, &scenarii[sc].ta, threaded, &ctl);
-		switch (scenarii[sc].result)
-		{
-			case 0: /* Operation was expected to succeed */
-				if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
-				break;
-
-			case 1: /* Operation was expected to fail */
-				if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
-				break;
-
-			case 2: /* We did not know the expected result */
-			default:
-				#if VERBOSE > 0
-				if (ret == 0)
-					{ output("Thread has been created successfully for this scenario\n"); }
-				else
-					{ output("Thread creation failed with the error: %s\n", strerror(ret)); }
-				#endif
-		}
-		if (ret == 0) /* The new thread is running */
-		{
-			if (scenarii[sc].detached == 0)
-			{
-				ret = pthread_join(child, NULL);
-				if (ret != 0)  {  UNRESOLVED(ret, "Unable to join a thread");  }
+		switch (scenarii[sc].result) {
+		case 0:	/* Operation was expected to succeed */
+			if (ret != 0) {
+				UNRESOLVED(ret, "Failed to create this thread");
 			}
-			else
-			{
+			break;
+
+		case 1:	/* Operation was expected to fail */
+			if (ret == 0) {
+				UNRESOLVED(-1,
+					   "An error was expected but the thread creation succeeded");
+			}
+			break;
+
+		case 2:	/* We did not know the expected result */
+		default:
+#if VERBOSE > 0
+			if (ret == 0) {
+				output
+				    ("Thread has been created successfully for this scenario\n");
+			} else {
+				output
+				    ("Thread creation failed with the error: %s\n",
+				     strerror(ret));
+			}
+#endif
+		}
+		if (ret == 0) {	/* The new thread is running */
+			if (scenarii[sc].detached == 0) {
+				ret = pthread_join(child, NULL);
+				if (ret != 0) {
+					UNRESOLVED(ret,
+						   "Unable to join a thread");
+				}
+			} else {
 				/* Just wait for the thread to terminate */
-				do { ret = sem_wait(&scenarii[sc].sem); }
+				do {
+					ret = sem_wait(&scenarii[sc].sem);
+				}
 				while ((ret == -1) && (errno == EINTR));
-				if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
+				if (ret == -1) {
+					UNRESOLVED(errno,
+						   "Failed to wait for the semaphore");
+				}
 			}
 		}
 	}
 
 	scenar_fini();
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("-----\n");
 	output("All test data destroyed\n");
 	output("Test PASSED\n");
-	#endif
+#endif
 
 	PASSED;
 }

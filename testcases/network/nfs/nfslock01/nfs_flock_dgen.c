@@ -6,15 +6,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int i, j, k, nlines, nchars, ctype;
 	char c, buf[BUFSIZ];
 	FILE *fp;
 
 	if (argc != 5) {
-		printf("usage: <nfs_flock_dgen> <file> <char/line> <lines> <ctype>\n");
+		printf
+		    ("usage: <nfs_flock_dgen> <file> <char/line> <lines> <ctype>\n");
 		exit(2);
 	}
 
@@ -22,7 +22,8 @@ main (int argc, char **argv)
 
 	nchars = atoi(argv[2]);
 	if (nchars > BUFSIZ) {
-		printf("Exceeded the maximum limit of the buffer (%d)\n", BUFSIZ);
+		printf("Exceeded the maximum limit of the buffer (%d)\n",
+		       BUFSIZ);
 		exit(3);
 	}
 	nlines = atoi(argv[3]);
@@ -36,9 +37,9 @@ main (int argc, char **argv)
 		else
 			c = 'A' + k;
 
-	for (j = 0; j < nchars; j++)
+		for (j = 0; j < nchars; j++)
 
-		buf[j] = c;
+			buf[j] = c;
 
 		fprintf(fp, "%s\n", buf);
 
@@ -52,5 +53,5 @@ main (int argc, char **argv)
 	}
 
 	fclose(fp);
-	return(0);
+	return (0);
 }

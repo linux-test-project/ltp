@@ -111,7 +111,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "%s Passed",
 					 test_cases[ind].desc);
 			} else {
-				tst_resm(TFAIL|TTERRNO, "%s Failed,"
+				tst_resm(TFAIL | TTERRNO, "%s Failed,"
 					 "sched_get_priority_max() returned %ld",
 					 test_cases[ind].desc, TEST_RETURN);
 			}

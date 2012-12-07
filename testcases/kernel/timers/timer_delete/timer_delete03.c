@@ -77,23 +77,22 @@
 
 void setup(void);
 
-char *TCID = "timer_delete03"; 	/* Test program identifier.    */
-int TST_TOTAL;		       	/* Total number of test cases. */
+char *TCID = "timer_delete03";	/* Test program identifier.    */
+int TST_TOTAL;			/* Total number of test cases. */
 
-static int exp_enos[] = {EINVAL, 0};
+static int exp_enos[] = { EINVAL, 0 };
 
 int testcase[] = {
-	EINVAL /* Invalid timer ID */
+	EINVAL			/* Invalid timer ID */
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc, i;
 	char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL))
-		!= NULL) {
+	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -112,26 +111,24 @@ main(int ac, char **av)
 			/* check return code */
 			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
 				tst_resm(TPASS | TTERRNO,
-					"failed as expected failure");
+					 "failed as expected failure");
 			} else {
 				tst_resm(TFAIL | TTERRNO,
-					"didn't fail as expected [expected "
-					"errno = %d (%s)]",
-					testcase[i],
-					strerror(testcase[i]));
-			} /* end of else */
+					 "didn't fail as expected [expected "
+					 "errno = %d (%s)]",
+					 testcase[i], strerror(testcase[i]));
+			}	/* end of else */
 
-		}	/* End of TEST CASE LOOPING*/
+		}		/* End of TEST CASE LOOPING */
 
-	}	/* End for TEST_LOOPING*/
+	}			/* End for TEST_LOOPING */
 
 	cleanup();
 	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -146,12 +143,11 @@ setup(void)
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 }

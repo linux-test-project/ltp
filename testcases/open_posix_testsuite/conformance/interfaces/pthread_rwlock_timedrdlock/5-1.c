@@ -38,15 +38,14 @@ static int thread_state;
 static int currsec1;
 static int expired;
 
-static void* fn_rd_1(void *arg)
+static void *fn_rd_1(void *arg)
 {
 	thread_state = ENTERED_THREAD;
 	struct timespec abs_timeout;
 	int rc;
 	pthread_rwlock_t rwlock;
 
-	if (pthread_rwlock_init(&rwlock, NULL) != 0)
-	{
+	if (pthread_rwlock_init(&rwlock, NULL) != 0) {
 		printf("thread1: Error at pthread_rwlock_init\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -59,30 +58,23 @@ static void* fn_rd_1(void *arg)
 
 	printf("thread1: attempt timed read-lock\n");
 	rc = pthread_rwlock_timedrdlock(&rwlock, &abs_timeout);
-	if (rc  == ETIMEDOUT)
-	{
+	if (rc == ETIMEDOUT) {
 		printf("thread1: timed read-lock expired\n");
 		expired = 1;
-	}
-	else if (rc == 0)
-	{
+	} else if (rc == 0) {
 		printf("thread1: acquired read lock\n");
 		expired = 0;
 		printf("thread1: unlock read lock\n");
-		if (pthread_rwlock_unlock(&rwlock) != 0)
-		{
+		if (pthread_rwlock_unlock(&rwlock) != 0) {
 			printf("thread1: failed to release read lock\n");
 			exit(PTS_UNRESOLVED);
 		}
-	}
-	else
-	{
+	} else {
 		printf("thread1: Error in pthread_rwlock_timedrdlock().\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (pthread_rwlock_destroy(&rwlock) != 0)
-	{
+	if (pthread_rwlock_destroy(&rwlock) != 0) {
 		printf("thread1: Error at pthread_rwlockattr_destroy()");
 		exit(PTS_UNRESOLVED);
 	}
@@ -91,15 +83,14 @@ static void* fn_rd_1(void *arg)
 	return NULL;
 }
 
-static void* fn_rd_2(void *arg)
+static void *fn_rd_2(void *arg)
 {
 	thread_state = ENTERED_THREAD;
 	struct timespec abs_timeout;
 	int rc;
 	pthread_rwlock_t rwlock;
 
-	if (pthread_rwlock_init(&rwlock, NULL) != 0)
-	{
+	if (pthread_rwlock_init(&rwlock, NULL) != 0) {
 		printf("thread2: Error at pthread_rwlock_init\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -112,30 +103,23 @@ static void* fn_rd_2(void *arg)
 
 	printf("thread2: attempt timed read-lock\n");
 	rc = pthread_rwlock_timedrdlock(&rwlock, &abs_timeout);
-	if (rc  == ETIMEDOUT)
-	{
+	if (rc == ETIMEDOUT) {
 		printf("thread2: timed read-lock expired\n");
 		expired = 1;
-	}
-	else if (rc == 0)
-	{
+	} else if (rc == 0) {
 		printf("thread2: acquired read lock\n");
 		expired = 0;
 		printf("thread2: unlock read lock\n");
-		if (pthread_rwlock_unlock(&rwlock) != 0)
-		{
+		if (pthread_rwlock_unlock(&rwlock) != 0) {
 			printf("thread2: failed to release read lock\n");
 			exit(PTS_UNRESOLVED);
 		}
-	}
-	else
-	{
+	} else {
 		printf("thread2: Error in pthread_rwlock_timedrdlock().\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (pthread_rwlock_destroy(&rwlock) != 0)
-	{
+	if (pthread_rwlock_destroy(&rwlock) != 0) {
 		printf("thread2: Error at pthread_rwlockattr_destroy()\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -152,8 +136,7 @@ int main()
 
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread1\n");
-	if (pthread_create(&thread1, NULL, fn_rd_1, NULL) != 0)
-	{
+	if (pthread_create(&thread1, NULL, fn_rd_1, NULL) != 0) {
 		printf("Error when creating thread1\n");
 		return PTS_UNRESOLVED;
 	}
@@ -163,40 +146,34 @@ int main()
 
 	/* we expect thread1 NOT to block, but rather for the timed read-lock to expire */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 5);
+	} while (thread_state != EXITING_THREAD && cnt++ < 5);
 
-	if (thread_state == EXITING_THREAD)
-	{
+	if (thread_state == EXITING_THREAD) {
 		/* the child thread does not block, check the time expired or not */
-		if (expired == 1)
-		{
-			printf("Test FAILED: thread1 incorrectly received ETIMEDOUT\n");
+		if (expired == 1) {
+			printf
+			    ("Test FAILED: thread1 incorrectly received ETIMEDOUT\n");
 			return PTS_FAIL;
 		}
-	}
-	else if (thread_state == ENTERED_THREAD)
-	{
-		printf("Test FAILED: thread1 incorrectly blocked for reading rwlock\n");
+	} else if (thread_state == ENTERED_THREAD) {
+		printf
+		    ("Test FAILED: thread1 incorrectly blocked for reading rwlock\n");
 		return PTS_FAIL;
-	}
-	else
-	{
+	} else {
 		printf("Unexpected state for thread1 %d\n", thread_state);
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_join(thread1, NULL) != 0)
-	{
+	if (pthread_join(thread1, NULL) != 0) {
 		printf("Error when joining thread1\n");
 		return PTS_UNRESOLVED;
 	}
 
 	printf("main: create thread2\n");
 	thread_state = NOT_CREATED_THREAD;
-	if (pthread_create(&thread2, NULL, fn_rd_2, NULL) != 0)
-	{
+	if (pthread_create(&thread2, NULL, fn_rd_2, NULL) != 0) {
 		printf("Error when creating thread2\n");
 		return PTS_UNRESOLVED;
 	}
@@ -206,32 +183,27 @@ int main()
 
 	/* we expect thread2 NOT to block */
 	cnt = 0;
-	do{
+	do {
 		sleep(1);
-	}while (thread_state !=EXITING_THREAD && cnt++ < 5);
+	} while (thread_state != EXITING_THREAD && cnt++ < 5);
 
-	if (thread_state == EXITING_THREAD)
-	{
+	if (thread_state == EXITING_THREAD) {
 		/* the child thread does not block, check the time expired or not */
-		if (expired == 1)
-		{
-			printf("Test FAILED: thread2 incorrectly received ETIMEDOUT\n");
+		if (expired == 1) {
+			printf
+			    ("Test FAILED: thread2 incorrectly received ETIMEDOUT\n");
 			return PTS_FAIL;
 		}
-	}
-	else if (thread_state == ENTERED_THREAD)
-	{
-		printf("Test FAILED: thread2 incorrectly blocked for reading rwlock\n");
+	} else if (thread_state == ENTERED_THREAD) {
+		printf
+		    ("Test FAILED: thread2 incorrectly blocked for reading rwlock\n");
 		return PTS_FAIL;
-	}
-	else
-	{
+	} else {
 		printf("Unexpected state for thread2 %d\n", thread_state);
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_join(thread2, NULL) != 0)
-	{
+	if (pthread_join(thread2, NULL) != 0) {
 		printf("Error when join thread2\n");
 		return PTS_UNRESOLVED;
 	}

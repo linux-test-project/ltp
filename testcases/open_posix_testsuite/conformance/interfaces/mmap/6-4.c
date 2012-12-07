@@ -65,13 +65,11 @@ int main(void)
 	pa = mmap(NULL, size, PROT_WRITE, MAP_SHARED, fd, 0);
 	if (pa == MAP_FAILED && errno == EACCES) {
 		printf("EACCES on attempt to map readonly file as "
-		       "PROT_WRITE, MAP_SHARED\n"
-		       "Test PASSED\n");
+		       "PROT_WRITE, MAP_SHARED\n" "Test PASSED\n");
 		return PTS_PASS;
 	}
 
 	printf("Maping readonly file with PROT_WRITE, MAP_SHARED have not "
-	       "returned EACCES\n"
-	       "Test FAILED\n");
+	       "returned EACCES\n" "Test FAILED\n");
 	return PTS_FAIL;
 }

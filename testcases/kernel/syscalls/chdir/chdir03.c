@@ -151,14 +151,15 @@ int main(int ac, char **av)
 
 		} else {
 			if (wait(&status) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "wait failed");
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_brkm(TBROK, cleanup,
-				    "child exited abnormally");
+					 "child exited abnormally");
 		}
 		if (rmdir(good_dir) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup,
-			    "rmdir(%s) failed", good_dir);
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "rmdir(%s) failed", good_dir);
 		}
 	}
 
@@ -180,7 +181,7 @@ void setup()
 	tst_tmpdir();
 
 	if ((cur_dir = getcwd(cur_dir, 0)) == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "getcwd failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "getcwd failed");
 
 	sprintf(good_dir, "%s/%d", cur_dir, getpid());
 

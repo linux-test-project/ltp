@@ -101,26 +101,27 @@ void check(void)
 
 	ret = pthread_attr_init(&attr);
 	if (ret)
-		tst_brkm(TBROK|TERRNO, cleanup, "pthread_attr_init");
+		tst_brkm(TBROK | TERRNO, cleanup, "pthread_attr_init");
 	ret = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	if (ret)
-		tst_brkm(TBROK|TERRNO, cleanup, "pthread_attr_setdetachstate");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "pthread_attr_setdetachstate");
 	thread = malloc(STD_LOOP_COUNT * sizeof(pthread_t));
 	if (thread == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "malloc");
+		tst_brkm(TBROK | TERRNO, cleanup, "malloc");
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 		ret = pthread_create(&th, &attr, wait_thread, NULL);
 		if (ret) {
 			tst_resm(TINFO, "[%d] ", count);
-			tst_brkm(TBROK|TERRNO, cleanup, "pthread_create");
+			tst_brkm(TBROK | TERRNO, cleanup, "pthread_create");
 		}
 		count++;
 		ret = pthread_create(&thread[lc], &attr, wait_thread2, NULL);
 		if (ret) {
 			tst_resm(TINFO, "[%d] ", count);
-			tst_brkm(TBROK|TERRNO, cleanup, "pthread_create");
+			tst_brkm(TBROK | TERRNO, cleanup, "pthread_create");
 		}
 		count++;
 	}

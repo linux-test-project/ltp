@@ -29,8 +29,9 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void myhandler(int signo, siginfo_t *info, void *context) {
-	printf ("Inside dummy handler\n");
+void myhandler(int signo, siginfo_t * info, void *context)
+{
+	printf("Inside dummy handler\n");
 }
 
 int main()
@@ -45,7 +46,7 @@ int main()
 	sigemptyset(&act.sa_mask);
 	sigemptyset(&selectset);
 
-	for (rtsig=SIGRTMAX; rtsig>=SIGRTMIN; rtsig--) {
+	for (rtsig = SIGRTMAX; rtsig >= SIGRTMIN; rtsig--) {
 		sigaddset(&act.sa_mask, rtsig);
 		sighold(rtsig);
 		sigaddset(&selectset, rtsig);
@@ -54,18 +55,20 @@ int main()
 	pid = getpid();
 	value.sival_int = 5;	/* 5 is just an arbitrary value */
 
-	for (rtsig=SIGRTMAX; rtsig>=SIGRTMIN; rtsig--) {
+	for (rtsig = SIGRTMAX; rtsig >= SIGRTMIN; rtsig--) {
 		sigaction(rtsig, &act, 0);
 		if (sigqueue(pid, rtsig, value) != 0) {
-			printf("Test UNRESOLVED: call to sigqueue did not return success\n");
+			printf
+			    ("Test UNRESOLVED: call to sigqueue did not return success\n");
 			return PTS_UNRESOLVED;
 		}
 	}
 
-        if (sigwaitinfo(&selectset, NULL) != SIGRTMIN) {
-		printf("Test FAILED: sigwaitinfo() did not return the lowest of the multiple pending signals between SIGRTMIN and SIGRTMAX\n");
-                return PTS_FAIL;
-        }
+	if (sigwaitinfo(&selectset, NULL) != SIGRTMIN) {
+		printf
+		    ("Test FAILED: sigwaitinfo() did not return the lowest of the multiple pending signals between SIGRTMIN and SIGRTMAX\n");
+		return PTS_FAIL;
+	}
 
 	return PTS_PASS;
 }

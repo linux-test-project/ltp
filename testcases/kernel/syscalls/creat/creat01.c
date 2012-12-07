@@ -78,10 +78,11 @@ int fd;
 struct test_case_t {
 	char *fname;
 	int mode;
-	void (*functest)();
+	void (*functest) ();
 } TC[] = {
-	{ filename, MODE1, functest1},
-	{ filename, MODE2, functest2}
+	{
+	filename, MODE1, functest1}, {
+	filename, MODE2, functest2}
 };
 
 int main(int ac, char **av)
@@ -103,12 +104,12 @@ int main(int ac, char **av)
 			TEST(fd = creat(filename, TC[i].mode));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL|TTERRNO, "creat failed");
+				tst_resm(TFAIL | TTERRNO, "creat failed");
 				continue;
 			}
 
 			if (STD_FUNCTIONAL_TEST)
-				(*TC[i].functest)();
+				(*TC[i].functest) ();
 			else
 				tst_resm(TPASS, "call succeeded");
 			close(fd);
@@ -132,7 +133,7 @@ void functest2()
 	struct stat buf;
 
 	if (stat(filename, &buf) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "stat failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "stat failed");
 	if (buf.st_size == 0)
 		tst_resm(TPASS, "creat truncated existing file to 0 bytes");
 	else
@@ -147,9 +148,9 @@ void setup()
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getpwnam failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
 	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "setuid failed");
+		tst_brkm(TBROK | TERRNO, NULL, "setuid failed");
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

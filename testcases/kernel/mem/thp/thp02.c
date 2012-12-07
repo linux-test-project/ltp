@@ -92,11 +92,11 @@ static void do_mremap(void)
 
 	for (i = 0; i < 4; i++) {
 		if (posix_memalign(&p, hps, size))
-			tst_brkm(TBROK|TERRNO, cleanup, "memalign p");
+			tst_brkm(TBROK | TERRNO, cleanup, "memalign p");
 		if (posix_memalign(&p2, hps, size))
-			tst_brkm(TBROK|TERRNO, cleanup, "memalign p2");
+			tst_brkm(TBROK | TERRNO, cleanup, "memalign p2");
 		if (posix_memalign(&p3, hps, size))
-			tst_brkm(TBROK|TERRNO, cleanup, "memalign p3");
+			tst_brkm(TBROK | TERRNO, cleanup, "memalign p3");
 
 		memset(p, 0xff, size);
 		memset(p2, 0xff, size);
@@ -113,11 +113,11 @@ static void do_mremap(void)
 		new_addr = p3 + ps * (i & 1);
 		tst_resm(TINFO, "mremap %p to %p", old_addr, new_addr);
 
-		p4 = mremap(old_addr, size-ps, size-ps,
-				MREMAP_FIXED|MREMAP_MAYMOVE, new_addr);
+		p4 = mremap(old_addr, size - ps, size - ps,
+			    MREMAP_FIXED | MREMAP_MAYMOVE, new_addr);
 		if (p4 == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, cleanup, "mremap");
-		if (memcmp(p4, p2, size-ps))
+			tst_brkm(TBROK | TERRNO, cleanup, "mremap");
+		if (memcmp(p4, p2, size - ps))
 			tst_brkm(TBROK, cleanup, "mremap bug");
 	}
 }
@@ -127,8 +127,8 @@ void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
-	ps   = sysconf(_SC_PAGESIZE);
-	hps  = read_meminfo("Hugepagesize:") * 1024;
+	ps = sysconf(_SC_PAGESIZE);
+	hps = read_meminfo("Hugepagesize:") * 1024;
 	size = hps * 4;
 }
 

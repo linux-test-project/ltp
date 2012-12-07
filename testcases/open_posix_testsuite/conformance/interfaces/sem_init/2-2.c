@@ -23,32 +23,32 @@
 #define FUNCTION "sem_init"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main ()
+int main()
 {
-	sem_t   mysemp;
+	sem_t mysemp;
 	int val;
 
-	if (sem_init (&mysemp, 0, 0) == -1) {
+	if (sem_init(&mysemp, 0, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sem_post(&mysemp) == -1) {
 		perror(ERROR_PREFIX "trywait");
-                return PTS_UNRESOLVED;
-        }
+		return PTS_UNRESOLVED;
+	}
 
-        if (sem_getvalue(&mysemp, &val) < 0) {
-                perror(ERROR_PREFIX "sem_getvalue");
-                return PTS_UNRESOLVED;
-        }
+	if (sem_getvalue(&mysemp, &val) < 0) {
+		perror(ERROR_PREFIX "sem_getvalue");
+		return PTS_UNRESOLVED;
+	}
 
-        if (val == 1) {
-                puts("TEST PASSED");
+	if (val == 1) {
+		puts("TEST PASSED");
 		sem_destroy(&mysemp);
-                return PTS_PASS;
-        } else {
-                puts("TEST FAILED");
-                return PTS_FAIL;
+		return PTS_PASS;
+	} else {
+		puts("TEST FAILED");
+		return PTS_FAIL;
 	}
 }

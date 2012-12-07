@@ -74,9 +74,9 @@ static unsigned long sleep_time;
 static sigset_t usersigs;
 
 struct thestruct {
-	int	sig;
+	int sig;
 #ifdef WITH_SYNCHRO
-	sem_t	*sem;
+	sem_t *sem;
 #endif
 };
 
@@ -183,18 +183,18 @@ static void *test(void *arg)
 
 		ret = pthread_create(&child, &scenarii[sc].ta, threaded, NULL);
 		switch (scenarii[sc].result) {
-		case 0: /* Operation was expected to succeed */
+		case 0:	/* Operation was expected to succeed */
 			if (ret != 0)
 				UNRESOLVED(ret, "Failed to create this thread");
 			break;
 
-		case 1: /* Operation was expected to fail */
+		case 1:	/* Operation was expected to fail */
 			if (ret == 0)
 				UNRESOLVED(-1, "An error was expected but the"
 					   " thread creation succeeded");
 			break;
 
-		case 2: /* We did not know the expected result */
+		case 2:	/* We did not know the expected result */
 		default:
 #if VERBOSE > 5
 			if (ret == 0)
@@ -304,7 +304,7 @@ void main_loop()
 			close(stat_pipe[0]);
 			do_child();
 			SAFE(write(stat_pipe[1], &count_sig,
-				sizeof(count_sig)));
+				   sizeof(count_sig)));
 			close(stat_pipe[1]);
 			pthread_exit(0);
 			UNRESOLVED(0, "Should not be reached");

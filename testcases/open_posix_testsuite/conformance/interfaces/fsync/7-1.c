@@ -30,29 +30,25 @@
 
 int main()
 {
-  int fd[2];
+	int fd[2];
 
-  if (pipe(fd) == -1)
-  {
-    printf(TNAME " Test UNRESOLVED: Error at pipe: %s\n",
-            strerror(errno));
-    exit(PTS_UNRESOLVED);
-  }
+	if (pipe(fd) == -1) {
+		printf(TNAME " Test UNRESOLVED: Error at pipe: %s\n",
+		       strerror(errno));
+		exit(PTS_UNRESOLVED);
+	}
 
-  if (fsync(fd[1]) == -1 && errno == EINVAL)
-  {
-    printf("Got EINVAL when fsync on pipe\n");
-    printf("Test PASSED\n");
-    close(fd[0]);
-    close(fd[1]);
-    exit(PTS_PASS);
-  }
-  else
-  {
-    printf(TNAME " Test Fail: Expect EINVAL, get: %s\n",
-            strerror(errno));
-    close(fd[0]);
-    close(fd[1]);
-    exit(PTS_FAIL);
-  }
+	if (fsync(fd[1]) == -1 && errno == EINVAL) {
+		printf("Got EINVAL when fsync on pipe\n");
+		printf("Test PASSED\n");
+		close(fd[0]);
+		close(fd[1]);
+		exit(PTS_PASS);
+	} else {
+		printf(TNAME " Test Fail: Expect EINVAL, get: %s\n",
+		       strerror(errno));
+		close(fd[0]);
+		close(fd[1]);
+		exit(PTS_FAIL);
+	}
 }

@@ -27,12 +27,13 @@
 #define CREATION_MODE S_IRUSR|S_IWUSR
 #define OPEN_MODE     S_IRGRP
 
-int main() {
+int main()
+{
 	int fd;
 	struct stat stat_buf;
 	mode_t old_mode;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, CREATION_MODE);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, CREATION_MODE);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -45,7 +46,7 @@ int main() {
 	}
 	old_mode = stat_buf.st_mode;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_TRUNC, OPEN_MODE);
+	fd = shm_open(SHM_NAME, O_RDWR | O_TRUNC, OPEN_MODE);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		shm_unlink(SHM_NAME);

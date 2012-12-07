@@ -33,7 +33,7 @@ static unsigned long pid_max;
 static void cleanup(void);
 static void setup(void);
 
-int exp_enos[] = {ESRCH, 0};
+int exp_enos[] = { ESRCH, 0 };
 
 int main(int ac, char **av)
 {
@@ -77,7 +77,7 @@ void setup(void)
 	SAFE_FILE_SCANF(NULL, "/proc/sys/kernel/pid_max", "%lu", &pid_max);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	
+
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;

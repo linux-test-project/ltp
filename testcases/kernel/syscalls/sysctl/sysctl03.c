@@ -103,8 +103,7 @@ int main(int ac, char **av)
 	pid_t pid;
 	struct passwd *ltpuser;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -114,7 +113,8 @@ int main(int ac, char **av)
 		exp_eno = EPERM;
 	} else {
 		/* ^^ Look above this warning. ^^ */
-		tst_resm(TWARN, "this test's results are based on potentially undocumented behavior in the kernel. read the NOTE in the source file for more details");
+		tst_resm(TWARN,
+			 "this test's results are based on potentially undocumented behavior in the kernel. read the NOTE in the source file for more details");
 		exp_eno = EACCES;
 		exp_enos[0] = EACCES;
 	}
@@ -137,12 +137,14 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == exp_eno) {
-				tst_resm(TPASS|TTERRNO, "Got expected error");
+				tst_resm(TPASS | TTERRNO, "Got expected error");
 			} else if (errno == ENOSYS) {
-				tst_resm(TCONF, "You may need to make CONFIG_SYSCTL_SYSCALL=y"
-						" to your kernel config.");
+				tst_resm(TCONF,
+					 "You may need to make CONFIG_SYSCTL_SYSCALL=y"
+					 " to your kernel config.");
 			} else {
-				tst_resm(TFAIL|TTERRNO, "Got unexpected error");
+				tst_resm(TFAIL | TTERRNO,
+					 "Got unexpected error");
 			}
 		}
 
@@ -170,14 +172,15 @@ int main(int ac, char **av)
 				TEST_ERROR_LOG(TEST_ERRNO);
 
 				if (TEST_ERRNO == exp_eno) {
-					tst_resm(TPASS|TTERRNO,
-						"Got expected error");
+					tst_resm(TPASS | TTERRNO,
+						 "Got expected error");
 				} else if (TEST_ERRNO == ENOSYS) {
-					tst_resm(TCONF, "You may need to make CONFIG_SYSCTL_SYSCALL=y"
-							" to your kernel config.");
+					tst_resm(TCONF,
+						 "You may need to make CONFIG_SYSCTL_SYSCALL=y"
+						 " to your kernel config.");
 				} else {
-					tst_resm(TFAIL|TTERRNO,
-						"Got unexpected error");
+					tst_resm(TFAIL | TTERRNO,
+						 "Got unexpected error");
 				}
 			}
 

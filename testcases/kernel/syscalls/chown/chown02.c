@@ -100,10 +100,12 @@ struct test_case_t {
 	int (*setupfunc) ();
 } test_cases[] = {
 	/* setuid/setgid bits cleared */
-	{ TESTFILE1, 700, 701, 1, setup1 },
-	/* setgid bit not cleared */
-	{ TESTFILE2, 700, 701, 2, setup2 },
-};
+	{
+	TESTFILE1, 700, 701, 1, setup1},
+	    /* setgid bit not cleared */
+	{
+TESTFILE2, 700, 701, 2, setup2},};
+
 int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 
 void setup();			/* setup function for the test */
@@ -144,8 +146,8 @@ int main(int ac, char **av)
 			TEST(chown(file_name, user_id, group_id));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL|TTERRNO,
-				    "chown(%s, ..) failed", file_name);
+				tst_resm(TFAIL | TTERRNO,
+					 "chown(%s, ..) failed", file_name);
 				continue;
 			}
 
@@ -181,21 +183,24 @@ int main(int ac, char **av)
 				 * chown().
 				 */
 				if (test_flag == 1 &&
-				    (stat_buf.st_mode & (S_ISUID|S_ISGID)) != 0)
-					tst_resm(TFAIL, "%s: incorrect mode "
+				    (stat_buf.st_mode & (S_ISUID | S_ISGID)) !=
+				    0)
+					tst_resm(TFAIL,
+						 "%s: incorrect mode "
 						 "permissions %#o, Expected "
 						 "%#o", file_name, NEW_PERMS1,
 						 EXP_PERMS);
-				else if (test_flag == 2 &&
-					   (stat_buf.st_mode & S_ISGID) == 0)
-					tst_resm(TFAIL, "%s: Incorrect mode "
+				else if (test_flag == 2
+					 && (stat_buf.st_mode & S_ISGID) == 0)
+					tst_resm(TFAIL,
+						 "%s: Incorrect mode "
 						 "permissions %#o, Expected "
 						 "%#o", file_name,
 						 stat_buf.st_mode, NEW_PERMS2);
 				else
 					tst_resm(TPASS,
-					    "chown(%s, ..) succeeded",
-					    file_name);
+						 "chown(%s, ..) succeeded",
+						 file_name);
 			} else
 				tst_resm(TPASS, "call succeeded");
 		}
@@ -241,16 +246,17 @@ int setup1()
 
 	/* Creat a testfile and close it */
 	if ((fd = open(TESTFILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_RDWR|O_CREAT, %o) failed",
-		    TESTFILE1, FILE_MODE);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE1, FILE_MODE);
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE1);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed",
+			 TESTFILE1);
 
 	/* Set setuid/setgid bits on the test file created */
 	if (chmod(TESTFILE1, NEW_PERMS1) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, ..) failed",
-		    TESTFILE1);
+		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, ..) failed",
+			 TESTFILE1);
 	return 0;
 }
 
@@ -266,15 +272,16 @@ int setup2()
 
 	/* Creat a testfile and close it */
 	if ((fd = open(TESTFILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "open(%s, O_RDWR|O_CREAT, %o) failed",
-		    TESTFILE2, FILE_MODE);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE2, FILE_MODE);
 	}
 	/* Set setgid bit on the test file created */
 	if (fchmod(fd, NEW_PERMS2) != 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchmod failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fchmod failed");
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE2);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed",
+			 TESTFILE2);
 	return 0;
 }
 

@@ -92,6 +92,7 @@ int TST_TOTAL = 1;		/* Total number of test conditions */
 
 char test_desc[] = "File is a directory";
 int exp_enos[] = { EISDIR, 0 };
+
 int r_val;
 int fd;
 

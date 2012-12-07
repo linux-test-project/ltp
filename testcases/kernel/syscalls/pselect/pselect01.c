@@ -100,27 +100,26 @@ int main()
 
 		tst_resm(TINFO,
 			 "Testing basic pselect sanity,Sleeping for %jd secs",
-			 (intmax_t)tv.tv_sec);
+			 (intmax_t) tv.tv_sec);
 		clock_gettime(CLOCK_REALTIME, &tv_start);
-		retval =
-		    pselect(0, &readfds, NULL, NULL, &tv,
-			    NULL);
+		retval = pselect(0, &readfds, NULL, NULL, &tv, NULL);
 		clock_gettime(CLOCK_REALTIME, &tv_end);
 
 		real_sec = (0.5 + (tv_end.tv_sec - tv_start.tv_sec +
-			    1e-9 * (tv_end.tv_nsec - tv_start.tv_nsec)));
+				   1e-9 * (tv_end.tv_nsec - tv_start.tv_nsec)));
 		if (abs(real_sec - total_sec) < 0.2 * total_sec)
 			tst_resm(TPASS, "Sleep time was correct "
-				"(%lf/%d < 20 %%)", real_sec, total_sec);
+				 "(%lf/%d < 20 %%)", real_sec, total_sec);
 		else
 			tst_resm(TFAIL, "Sleep time was incorrect (%d/%lf "
-				">= 20%%)", total_sec, real_sec);
+				 ">= 20%%)", total_sec, real_sec);
 	}
 
 #ifdef DEBUG
 	tst_resm(TINFO, "Now checking nsec sleep precision");
 #endif
-	for (total_nsec = 1e8; total_nsec <= LOOP_COUNT * 1e8; total_nsec += 1e8) {
+	for (total_nsec = 1e8; total_nsec <= LOOP_COUNT * 1e8;
+	     total_nsec += 1e8) {
 		FD_ZERO(&readfds);
 		FD_SET(0, &readfds);
 
@@ -131,17 +130,15 @@ int main()
 			 "Testing basic pselect sanity,Sleeping for %ld nano secs",
 			 tv.tv_nsec);
 		clock_gettime(CLOCK_REALTIME, &tv_start);
-		retval =
-		    pselect(0, &readfds, NULL, NULL, &tv,
-			    NULL);
+		retval = pselect(0, &readfds, NULL, NULL, &tv, NULL);
 		clock_gettime(CLOCK_REALTIME, &tv_end);
 
 		/* Changed total_sec compare to an at least vs an exact compare */
 
 		real_nsec = (tv_end.tv_sec - tv_start.tv_sec) * 1e9 +
-			tv_end.tv_nsec - tv_start.tv_nsec;
+		    tv_end.tv_nsec - tv_start.tv_nsec;
 
-		/* allow 20% error*/
+		/* allow 20% error */
 		if (abs(real_nsec - tv.tv_nsec) < 0.2 * total_nsec)
 			tst_resm(TPASS, "Sleep time was correct");
 		else {
@@ -151,7 +148,7 @@ int main()
 				 "due to the limitation of the way it calculates the");
 			tst_resm(TWARN, "system call execution time.");
 			tst_resm(TFAIL,
-				"Sleep time was incorrect:%ld nsec vs expected %ld nsec",
+				 "Sleep time was incorrect:%ld nsec vs expected %ld nsec",
 				 real_nsec, total_nsec);
 		}
 	}

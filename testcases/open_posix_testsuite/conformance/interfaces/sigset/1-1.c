@@ -41,19 +41,20 @@ int main()
 	sigemptyset(&act.sa_mask);
 
 	if (sigaction(SIGCHLD, &act, 0) != 0) {
-                perror("Unexpected error while using sigaction()");
-               	return PTS_UNRESOLVED;
-        }
+		perror("Unexpected error while using sigaction()");
+		return PTS_UNRESOLVED;
+	}
 
-        if (sigset(SIGCHLD,SIG_DFL) != myhandler) {
-                perror("Unexpected error while using signal()");
-               	return PTS_UNRESOLVED;
-        }
+	if (sigset(SIGCHLD, SIG_DFL) != myhandler) {
+		perror("Unexpected error while using signal()");
+		return PTS_UNRESOLVED;
+	}
 
 	raise(SIGCHLD);
 
 	if (handler_called == 1) {
-		printf("Test FAILED: handler was called even though default was expected\n");
+		printf
+		    ("Test FAILED: handler was called even though default was expected\n");
 		return PTS_FAIL;
 	}
 	return PTS_PASS;

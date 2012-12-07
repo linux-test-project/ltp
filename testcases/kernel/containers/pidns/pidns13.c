@@ -62,7 +62,7 @@ int pipe_fd[2];
  */
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 
 }
@@ -70,11 +70,11 @@ void cleanup()
 /*
  * child_signal_handler() - dummy function for sigaction()
  */
-static void child_signal_handler(int sig, siginfo_t *si, void *unused)
+static void child_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	/* sigtimedwait() traps siginfo details, so this wont be called */
-	tst_resm(TWARN, "cinit(pid %d): control should have not reached here!",\
-			getpid());
+	tst_resm(TWARN, "cinit(pid %d): control should have not reached here!",
+		 getpid());
 }
 
 /*
@@ -93,8 +93,7 @@ int child_fn(void *arg)
 	pid = getpid();
 	ppid = getppid();
 	if (pid != CHILD_PID || ppid != PARENT_PID) {
-		tst_resm(TBROK, "cinit%d: pidns is not created.",\
-				cinit_no);
+		tst_resm(TBROK, "cinit%d: pidns is not created.", cinit_no);
 		cleanup();
 	}
 
@@ -117,8 +116,8 @@ int child_fn(void *arg)
 			cleanup();
 		}
 
-		if (fcntl(pipe_fd[0], F_SETFL,\
-				fcntl(pipe_fd[0], F_GETFL)|O_ASYNC) == -1) {
+		if (fcntl(pipe_fd[0], F_SETFL,
+			  fcntl(pipe_fd[0], F_GETFL) | O_ASYNC) == -1) {
 			tst_resm(TBROK, "cinit1: fcntl(F_SETFL) failed");
 			cleanup();
 		}
@@ -150,11 +149,11 @@ int child_fn(void *arg)
 
 		/* Recieved SIGUSR1. Check details. */
 		if (info.si_fd == pipe_fd[0] && info.si_code == POLL_IN)
-			tst_resm(TPASS, "cinit1: si_fd is %d, si_code is %d",\
-					info.si_fd, info.si_code);
+			tst_resm(TPASS, "cinit1: si_fd is %d, si_code is %d",
+				 info.si_fd, info.si_code);
 		else
-			tst_resm(TFAIL, "cinit1: si_fd is %d, si_code is %d",\
-					info.si_fd, info.si_code);
+			tst_resm(TFAIL, "cinit1: si_fd is %d, si_code is %d",
+				 info.si_fd, info.si_code);
 
 		/* all done, close the descriptors opened */
 		close(pipe_fd[0]);
@@ -210,11 +209,11 @@ int main(int argc, char *argv[])
 
 	/* Create container 1 */
 	*cinit_no = 1;
-	cpid1 = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, cinit_no);
+	cpid1 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, cinit_no);
 
 	/* Create container 2 */
 	*cinit_no = 2;
-	cpid2 = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, cinit_no);
+	cpid2 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, cinit_no);
 	if (cpid1 < 0 || cpid2 < 0) {
 		tst_resm(TBROK, "parent: clone() failed.");
 		cleanup();
@@ -229,15 +228,15 @@ int main(int argc, char *argv[])
 		tst_resm(TWARN, "parent: waitpid(cpid2) failed.");
 
 	if (WIFSIGNALED(status) && WTERMSIG(status))
-		tst_resm(TWARN, "parent: cinit2 is terminated by signal(%s)",\
-				strsignal(WTERMSIG(status)));
+		tst_resm(TWARN, "parent: cinit2 is terminated by signal(%s)",
+			 strsignal(WTERMSIG(status)));
 
 	if (waitpid(cpid1, &status, 0) < 0)
 		tst_resm(TWARN, "parent: waitpid(cpid1) failed.");
 
 	if (WIFSIGNALED(status) && WTERMSIG(status))
-		tst_resm(TWARN, "parent: cinit1 is terminated by signal(%s)",\
-				strsignal(WTERMSIG(status)));
+		tst_resm(TWARN, "parent: cinit1 is terminated by signal(%s)",
+			 strsignal(WTERMSIG(status)));
 
 	/* Cleanup and exit */
 	cleanup();

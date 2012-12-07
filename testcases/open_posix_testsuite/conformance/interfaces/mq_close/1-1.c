@@ -30,7 +30,7 @@ int main()
 	sprintf(qname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
-	if (queue == (mqd_t)-1) {
+	if (queue == (mqd_t) - 1) {
 		perror("mq_open() did not return success");
 		return PTS_UNRESOLVED;
 	}

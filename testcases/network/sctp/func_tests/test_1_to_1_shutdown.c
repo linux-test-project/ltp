@@ -59,19 +59,18 @@ int TST_CNT = 0;
 
 #define MAX_CLIENTS 10
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int clnt_sk[MAX_CLIENTS], acpt_sk[MAX_CLIENTS],sk;
+	int clnt_sk[MAX_CLIENTS], acpt_sk[MAX_CLIENTS], sk;
 	int lstn_sk;
 	struct sockaddr_in lstn_addr, acpt_addr;
 	socklen_t addrlen;
 	int error, i;
-        char *message = "hello, world!\n";
+	char *message = "hello, world!\n";
 	char msgbuf[100];
 	int pf_class;
 
-        /* Rather than fflush() throughout the code, set stdout to
+	/* Rather than fflush() throughout the code, set stdout to
 	 * be unbuffered.
 	 */
 	setvbuf(stdout, NULL, _IONBF, 0);
@@ -84,10 +83,10 @@ main(int argc, char *argv[])
 	lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
 	lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
-        sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
-        lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-	test_bind(lstn_sk, (struct sockaddr *) &lstn_addr, sizeof(lstn_addr));
+	test_bind(lstn_sk, (struct sockaddr *)&lstn_addr, sizeof(lstn_addr));
 
 	test_listen(lstn_sk, MAX_CLIENTS);
 
@@ -103,7 +102,7 @@ main(int argc, char *argv[])
 					 &addrlen);
 	}
 
-	/*shutdown() TEST1: Bad socket descriptor, EBADF Expected error*/
+	/*shutdown() TEST1: Bad socket descriptor, EBADF Expected error */
 	error = shutdown(-1, SHUT_WR);
 	if (error != -1 || errno != EBADF)
 		tst_brkm(TBROK, NULL, "shutdown with a bad socket "
@@ -111,8 +110,8 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "shutdown() with a bad socket descriptor - EBADF");
 
-	/*shutdown() TEST2: Invalid socket, ENOTSOCK Expected error*/
-        error = shutdown(0, SHUT_WR);
+	/*shutdown() TEST2: Invalid socket, ENOTSOCK Expected error */
+	error = shutdown(0, SHUT_WR);
 	if (error != -1 || errno != ENOTSOCK)
 		tst_brkm(TBROK, NULL, "shutdown with an invalid socket "
 			 "error:%d, errno:%d", error, errno);
@@ -120,10 +119,10 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "shutdown() with an invalid socket - ENOTSOCK");
 
 	errno = 0;
-	/*Do a send first before doing shutdown*/
+	/*Do a send first before doing shutdown */
 	test_send(acpt_sk[0], message, strlen(message), 0);
 
-	/*shutdown() TEST3: shutdown with SHUT_WR flag to disable new send*/
+	/*shutdown() TEST3: shutdown with SHUT_WR flag to disable new send */
 	error = shutdown(clnt_sk[0], SHUT_WR);
 	if (error < 0)
 		tst_brkm(TBROK, NULL, "shutdown with SHUT_WR flag "
@@ -152,7 +151,7 @@ main(int argc, char *argv[])
 
 	errno = 0;
 
-	/*shutdown() TEST4: shutdown with SHUT_RD flag to disable new receive*/
+	/*shutdown() TEST4: shutdown with SHUT_RD flag to disable new receive */
 	test_shutdown(clnt_sk[1], SHUT_RD);
 
 	error = recv(clnt_sk[1], msgbuf, 100, 0);
@@ -181,8 +180,8 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "shutdown() with SHUT_RD flag - SUCCESS");
 
 	/*shutdown() TEST5: shutdown with SHUT_RDWR flag to disable new
-	receive/send*/
-        test_shutdown(clnt_sk[2], SHUT_RDWR);
+	   receive/send */
+	test_shutdown(clnt_sk[2], SHUT_RDWR);
 
 	error = recv(acpt_sk[2], msgbuf, 100, 0);
 	if ((error != 0) || (errno != 0))
@@ -196,7 +195,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "shutdown() with SHUT_RDWR flag - SUCCESS");
 
-	/*shutdown() TEST6: Unconnected socket, ENOTCONN Expected error*/
+	/*shutdown() TEST6: Unconnected socket, ENOTCONN Expected error */
 	error = shutdown(sk, SHUT_RD);
 	if ((error != -1) || (errno != ENOTCONN))
 		tst_brkm(TBROK, NULL, "shutdown on an unconnected socket "

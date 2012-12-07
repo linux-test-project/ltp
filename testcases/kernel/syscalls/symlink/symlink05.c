@@ -100,7 +100,7 @@ int main(int ac, char **av)
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	 }
+	}
 
 	setup();
 
@@ -137,7 +137,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "lstat(2) of "
 						 "%s failed, error:%d",
 						 SYMFILE, errno);
-				 }
+				}
 
 				/* Check if the st_mode contains a link  */
 				if (!S_ISLNK(stat_buf.st_mode)) {

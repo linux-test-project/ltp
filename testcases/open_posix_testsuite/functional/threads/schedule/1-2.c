@@ -49,7 +49,7 @@ volatile int low_done = -1;
 float timediff(struct timespec t2, struct timespec t1)
 {
 	float diff = t2.tv_sec - t1.tv_sec;
-	diff += (t2.tv_nsec - t1.tv_nsec)/1000000000.0;
+	diff += (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
 	return diff;
 }
 
@@ -58,7 +58,7 @@ float timediff(struct timespec t2, struct timespec t1)
  */
 void signal_handler(int sig)
 {
-	int	 rc = 0;
+	int rc = 0;
 
 	rc = pthread_cond_signal(&cond);
 	if (rc != 0) {
@@ -69,9 +69,9 @@ void signal_handler(int sig)
 
 void *hi_priority_thread(void *tmp)
 {
-	struct sched_param        param;
-	int                       policy;
-	int                       rc = 0;
+	struct sched_param param;
+	int policy;
+	int rc = 0;
 
 	param.sched_priority = HIGH_PRIORITY;
 	rc = pthread_setschedparam(pthread_self(), SCHED_RR, &param);
@@ -111,15 +111,15 @@ void *hi_priority_thread(void *tmp)
 		printf(ERROR_PREFIX "pthread_mutex_unlock\n");
 		exit(PTS_UNRESOLVED);
 	}
-	pthread_exit((void *) 0);
+	pthread_exit((void *)0);
 }
 
 void *low_priority_thread(void *tmp)
 {
-	struct timespec           current_time, start_time;
-	struct sched_param        param;
-	int                       rc = 0;
-	int                       policy;
+	struct timespec current_time, start_time;
+	struct sched_param param;
+	int rc = 0;
+	int policy;
 
 	param.sched_priority = LOW_PRIORITY;
 	rc = pthread_setschedparam(pthread_self(), SCHED_RR, &param);
@@ -149,19 +149,19 @@ void *low_priority_thread(void *tmp)
 			break;
 	}
 	low_done = 1;
-	pthread_exit((void *) 0);
+	pthread_exit((void *)0);
 }
 
 int main()
 {
-	pthread_t                high_id, low_id;
-	pthread_attr_t           low_attr, high_attr;
-	struct sched_param       param;
-	int                      rc = 0;
-	int                      policy;
+	pthread_t high_id, low_id;
+	pthread_attr_t low_attr, high_attr;
+	struct sched_param param;
+	int rc = 0;
+	int policy;
 
 	param.sched_priority = MID_PRIORITY;
-	rc =  pthread_setschedparam(pthread_self(), SCHED_RR, &param);
+	rc = pthread_setschedparam(pthread_self(), SCHED_RR, &param);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_setschedparam\n");
 		exit(PTS_UNRESOLVED);

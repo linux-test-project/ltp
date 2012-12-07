@@ -135,12 +135,12 @@ int ident_ttype(char *tstype)
  */
 int main(int argc, char *argv[])
 {
-	int trestype;	/* test result type TFAIL, TPASS, TINFO etc */
-	char *arg_fmt;	/* message string printed along with test type */
-	char *cmd_name;	/* name by which this program is invoked tst_brk etc */
-	char *tst_total;/* total number of tests in the file. */
-	char *tst_count;/* sets the value of Tst_count with this value */
-	char *file_name;/* contents of this file are printed; see tst_res() */
+	int trestype;		/* test result type TFAIL, TPASS, TINFO etc */
+	char *arg_fmt;		/* message string printed along with test type */
+	char *cmd_name;		/* name by which this program is invoked tst_brk etc */
+	char *tst_total;	/* total number of tests in the file. */
+	char *tst_count;	/* sets the value of Tst_count with this value */
+	char *file_name;	/* contents of this file are printed; see tst_res() */
 
 	arg_fmt = SAFE_MALLOC(NULL, 1024);
 	cmd_name = SAFE_MALLOC(NULL, 1024);

@@ -25,43 +25,43 @@ passed to this program. There are currently 4 invalid signals.
 int main(int argc, char *argv[])
 {
 	int signo;
-	int r=rand();
+	int r = rand();
 	sigset_t set;
 
 	if (argc < 2) {
-        	printf("Usage:  %s [1|2|3|4]\n", argv[0]);
+		printf("Usage:  %s [1|2|3|4]\n", argv[0]);
 		return PTS_UNRESOLVED;
 	}
 
 	/*
-		Various error conditions
-	*/
+	   Various error conditions
+	 */
 	switch (argv[1][0]) {
-		case '1':
-			signo=-1;
-			break;
-		case '2':
-			signo=-10000;
-			break;
-		case '3':
-			signo=INT32_MIN+1;
-			break;
-		case '4':
-			signo=INT32_MIN;
-			break;
-		default:
-			printf("Usage:  %s [1|2|3|4]\n", argv[0]);
-			return PTS_UNRESOLVED;
+	case '1':
+		signo = -1;
+		break;
+	case '2':
+		signo = -10000;
+		break;
+	case '3':
+		signo = INT32_MIN + 1;
+		break;
+	case '4':
+		signo = INT32_MIN;
+		break;
+	default:
+		printf("Usage:  %s [1|2|3|4]\n", argv[0]);
+		return PTS_UNRESOLVED;
 	}
 
 	sigaddset(&set, SIGABRT);
 
 	if (sigprocmask(r, &set, NULL) == -1) {
 		if (EINVAL == errno) {
-			printf ("errno set to EINVAL\n");
+			printf("errno set to EINVAL\n");
 			return PTS_PASS;
 		} else {
-			printf ("errno not set to EINVAL\n");
+			printf("errno not set to EINVAL\n");
 			return PTS_FAIL;
 		}
 	}

@@ -139,9 +139,12 @@ size_t get_memsize(void)
  * memory size (MB) to allocate.
  */
 option_t options[] = {
-	{"m:", &m_opt, &m_copt},
-	{"r", &r_opt, NULL},
-	{"v", &v_opt, NULL},
+	{"m:", &m_opt, &m_copt}
+	,
+	{"r", &r_opt, NULL}
+	,
+	{"v", &v_opt, NULL}
+	,
 	{NULL, NULL, NULL}
 };
 

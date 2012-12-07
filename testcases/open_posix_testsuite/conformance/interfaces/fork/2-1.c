@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	pid_t child, ctl;
 	void *malloced;
 	struct sigaction sa_ori, sa_child;
-	struct test_struct mystruct = {1, 2, 3, (void *) 4};
+	struct test_struct mystruct = { 1, 2, 3, (void *)4 };
 	size_t page_size = sysconf(_SC_PAGESIZE);
 
 	malloced = malloc(page_size);
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 	if (child == 0) {
 		/* Check the struct was copied */
 		if ((mystruct.one != 1) || (mystruct.two != 2) ||
-		    (mystruct.three != 3) || (mystruct.four != (void *) 4)) {
+		    (mystruct.three != 3) || (mystruct.four != (void *)4)) {
 			printf("On-the-stack structure not copied correctly\n");
 			return PTS_FAIL;
 		}
@@ -178,14 +178,14 @@ int main(int argc, char *argv[])
 
 		if (((sa_child.sa_flags & SA_NOCLDSTOP) != SA_NOCLDSTOP)
 #ifndef WITHOUT_XOPEN
-			|| ((sa_child.sa_flags & SA_ONSTACK) != 0)
-			|| ((sa_child.sa_flags & SA_RESETHAND) != 0)
-			|| ((sa_child.sa_flags & SA_RESTART) != 0)
-			|| ((sa_child.sa_flags & SA_SIGINFO) != 0)
-			|| ((sa_child.sa_flags & SA_NOCLDWAIT) != 0)
-			|| ((sa_child.sa_flags & SA_NODEFER) != 0)
+		    || ((sa_child.sa_flags & SA_ONSTACK) != 0)
+		    || ((sa_child.sa_flags & SA_RESETHAND) != 0)
+		    || ((sa_child.sa_flags & SA_RESTART) != 0)
+		    || ((sa_child.sa_flags & SA_SIGINFO) != 0)
+		    || ((sa_child.sa_flags & SA_NOCLDWAIT) != 0)
+		    || ((sa_child.sa_flags & SA_NODEFER) != 0)
 #endif
-		   ) {
+		    ) {
 			printf("The sigaction flags are different\n");
 			return PTS_FAIL;
 		}

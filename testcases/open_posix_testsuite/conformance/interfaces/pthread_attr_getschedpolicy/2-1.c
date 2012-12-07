@@ -27,7 +27,8 @@
 #define RRPOLICY SCHED_RR
 #define OTHERPOLICY SCHED_OTHER
 
-int verify_policy(pthread_attr_t *attr, int policytype) {
+int verify_policy(pthread_attr_t * attr, int policytype)
+{
 	int rc;
 	int policy;
 
@@ -36,33 +37,33 @@ int verify_policy(pthread_attr_t *attr, int policytype) {
 		printf(ERROR_PREFIX "pthread_attr_getschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
-	switch(policytype) {
+	switch (policytype) {
 	case SCHED_FIFO:
-  		if (policy != FIFOPOLICY) {
-    			printf(ERROR_PREFIX "got wrong policy param\n");
-    			exit(PTS_FAIL);
-  		}
+		if (policy != FIFOPOLICY) {
+			printf(ERROR_PREFIX "got wrong policy param\n");
+			exit(PTS_FAIL);
+		}
 		break;
 	case SCHED_RR:
-  		if (policy != RRPOLICY) {
-    			printf(ERROR_PREFIX "got wrong policy param\n");
-    			exit(PTS_FAIL);
-  		}
+		if (policy != RRPOLICY) {
+			printf(ERROR_PREFIX "got wrong policy param\n");
+			exit(PTS_FAIL);
+		}
 		break;
 	case SCHED_OTHER:
-  		if (policy != OTHERPOLICY) {
-    			printf(ERROR_PREFIX "got wrong policy param\n");
-    			exit(PTS_FAIL);
-  		}
+		if (policy != OTHERPOLICY) {
+			printf(ERROR_PREFIX "got wrong policy param\n");
+			exit(PTS_FAIL);
+		}
 		break;
 	}
-      return 0;
+	return 0;
 }
 
 int main()
 {
-	int                   rc=0;
-	pthread_attr_t        attr;
+	int rc = 0;
+	pthread_attr_t attr;
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
@@ -70,28 +71,28 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 
-  	rc = pthread_attr_setschedpolicy(&attr, FIFOPOLICY);
+	rc = pthread_attr_setschedpolicy(&attr, FIFOPOLICY);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
-  	verify_policy(&attr, FIFOPOLICY);
+	verify_policy(&attr, FIFOPOLICY);
 
-  	rc = pthread_attr_setschedpolicy(&attr, RRPOLICY);
+	rc = pthread_attr_setschedpolicy(&attr, RRPOLICY);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
-  	verify_policy(&attr, RRPOLICY);
+	verify_policy(&attr, RRPOLICY);
 
-  	rc = pthread_attr_setschedpolicy(&attr, OTHERPOLICY);
+	rc = pthread_attr_setschedpolicy(&attr, OTHERPOLICY);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
-  	verify_policy(&attr, OTHERPOLICY);
+	verify_policy(&attr, OTHERPOLICY);
 
-  	rc = pthread_attr_destroy(&attr);
+	rc = pthread_attr_destroy(&attr);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_destroy\n");
 		exit(PTS_UNRESOLVED);

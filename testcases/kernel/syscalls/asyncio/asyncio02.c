@@ -123,6 +123,7 @@ char *TCID = "asyncio02";	/* Test program identifier.    */
 int TST_TOTAL = 6;		/* Total number of test cases. */
 
 int exp_enos[] = { 0 };		/* Array of expected errnos */
+
 char *filename;			/* name of the temporary file */
 
 char *Progname;
@@ -198,7 +199,7 @@ int main(int ac, char **av)
 				if ((ret_val =
 				     testrun(Flags[flag_cnt], i, 3)) != OK) {
 					tst_resm(TFAIL, ERR_MSG2, ret_val,
-						      i * WRITES);
+						 i * WRITES);
 				}
 			}
 
@@ -224,7 +225,7 @@ int testrun(int flag, int bytes, int ti)
 	 */
 
 	if ((fildes = open(filename, flag, MODE)) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "open(%s) failed", filename);
+		tst_brkm(TBROK | TERRNO, cleanup, "open(%s) failed", filename);
 	}
 
 	/*
@@ -235,7 +236,7 @@ int testrun(int flag, int bytes, int ti)
 		TEST(write(fildes, dp, (unsigned)bytes));
 
 		if (TEST_RETURN == -1) {
-			tst_brkm(TBROK|TTERRNO, cleanup, "write() failed");
+			tst_brkm(TBROK | TTERRNO, cleanup, "write() failed");
 		}
 	}			/* end for () */
 
@@ -244,7 +245,7 @@ int testrun(int flag, int bytes, int ti)
 	 */
 
 	if (close(fildes) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "close() failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "close() failed");
 	}
 
 	ret = OK;
@@ -256,7 +257,7 @@ int testrun(int flag, int bytes, int ti)
 		 */
 
 		if (stat(filename, &buffer) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup, "stat() failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "stat() failed");
 		}
 
 		if (buffer.st_size != (off_t) (bytes * WRITES)) {
@@ -265,7 +266,8 @@ int testrun(int flag, int bytes, int ti)
 	}
 
 	if (unlink(filename) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "unlink(%s) failed", filename);
+		tst_brkm(TBROK | TERRNO, cleanup, "unlink(%s) failed",
+			 filename);
 	}
 
 	return ret;
@@ -293,7 +295,7 @@ void setup()
 	 */
 
 	if ((dp = (char *)malloc((unsigned)BUFSIZ + 1)) == NULL) {
-		tst_brkm(TBROK|TERRNO, cleanup, "malloc() failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "malloc() failed");
 	}
 
 }

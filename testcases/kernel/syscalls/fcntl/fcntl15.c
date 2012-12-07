@@ -466,8 +466,8 @@ int run_test(int file_flag, int file_mode, int dup_flag)
 	} else if (child2 == 0) {	/* child */
 #ifdef UCLINUX
 		if (self_exec(argv0, "ndddds", 2, file_flag, file_mode,
-		    dup_flag, parent, tmpname) < 0)
-			tst_brkm(TBROK|TERRNO, NULL, "self_exec failed");
+			      dup_flag, parent, tmpname) < 0)
+			tst_brkm(TBROK | TERRNO, NULL, "self_exec failed");
 #else
 		dochild2(file_flag, file_mode, dup_flag);
 #endif

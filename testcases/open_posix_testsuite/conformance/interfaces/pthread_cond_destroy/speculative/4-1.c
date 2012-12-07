@@ -33,18 +33,18 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 /* cond used by the two threads */
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void * thread(void *tmp)
+void *thread(void *tmp)
 {
-	int    rc = 0;
+	int rc = 0;
 
 	/* acquire the mutex */
-	rc  = pthread_mutex_lock(&mutex);
+	rc = pthread_mutex_lock(&mutex);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_mutex_lock\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	/* Wait on the cond var. This will not return, as nobody signals*/
+	/* Wait on the cond var. This will not return, as nobody signals */
 	rc = pthread_cond_wait(&cond, &mutex);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_cond_wait\n");
@@ -62,7 +62,7 @@ void * thread(void *tmp)
 int main()
 {
 	pthread_t low_id;
-	int       rc = 0;
+	int rc = 0;
 
 	/* Create a new thread with default attributes */
 	rc = pthread_create(&low_id, NULL, thread, NULL);
@@ -78,7 +78,7 @@ int main()
 	rc = pthread_cond_destroy(&cond);
 	if (rc != EBUSY) {
 		printf(ERROR_PREFIX "Test PASS: Expected %d(EBUSY) got %d, "
-			"though the standard states 'may' fail\n", EBUSY, rc);
+		       "though the standard states 'may' fail\n", EBUSY, rc);
 
 		exit(PTS_PASS);
 	}

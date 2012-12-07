@@ -73,9 +73,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "mq_timedreceive01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+char *TCID = "mq_timedreceive01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 struct sigaction act;
 
 /*
@@ -107,7 +107,8 @@ void sighandler(int sig)
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -132,7 +133,8 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	act.sa_handler = sighandler;
 	sigfillset(&act.sa_mask);
@@ -187,102 +189,102 @@ struct test_case {
  *   EBADMSG	    can't check because this error never occur
  */
 static struct test_case tcase[] = {
-	{ // case00
-		.ttype	    = NORMAL,
-		.len	    = 0,    // also success when size equals zero
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case01
-		.ttype	  = NORMAL,
-		.len	    = 1,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case02
-		.ttype	  = NORMAL,
-		.len	    = MAX_MSGSIZE,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case03
-		.ttype	  = NORMAL,
-		.len	    = 1,
-		.prio	   = 32767, // max priority
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case04
-		.ttype	  = INVALID_MSG_LEN,
-		.len	    = 0,
-		.ret	    = -1,
-		.err	    = EMSGSIZE,
-	},
-	{ // case05
-		.ttype	  = FD_NONE,
-		.len	    = 0,
-		.ret	    = -1,
-		.err	    = EBADF,
-	},
-	{ // case06
-		.ttype	  = FD_NOT_EXIST,
-		.len	    = 0,
-		.ret	    = -1,
-		.err	    = EBADF,
-	},
-	{ // case07
-		.ttype	  = FD_FILE,
-		.len	    = 0,
-		.ret	    = -1,
-		.err	    = EBADF,
-	},
-	{ // case08
-		.ttype	  = EMPTY_QUEUE,
-		.non_block      = 1,
-		.len	    = 16,
-		.ret	    = -1,
-		.err	    = EAGAIN,
-	},
-	{ // case09
-		.ttype	  = EMPTY_QUEUE,
-		.len	    = 16,
-		.sec	    = -1,
-		.nsec	   = 0,
-		.ret	    = -1,
-		.err	    = EINVAL,
-	},
-	{ // case10
-		.ttype	  = EMPTY_QUEUE,
-		.len	    = 16,
-		.sec	    = 0,
-		.nsec	   = -1,
-		.ret	    = -1,
-		.err	    = EINVAL,
-	},
-	{ // case11
-		.ttype	  = EMPTY_QUEUE,
-		.len	    = 16,
-		.sec	    = 0,
-		.nsec	   = 1000000000,
-		.ret	    = -1,
-		.err	    = EINVAL,
-	},
-	{ // case12
-		.ttype	  = EMPTY_QUEUE,
-		.len	    = 16,
-		.sec	    = 0,
-		.nsec	   = 999999999,
-		.ret	    = -1,
-		.err	    = ETIMEDOUT,
-	},
-	{ // case13
-		.ttype	  = SEND_SIGINT,
-		.len	    = 16,
-		.sec	    = 3,
-		.nsec	   = 0,
-		.ret	    = -1,
-		.err	    = EINTR,
-	},
+	{			// case00
+	 .ttype = NORMAL,
+	 .len = 0,		// also success when size equals zero
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case01
+	 .ttype = NORMAL,
+	 .len = 1,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case02
+	 .ttype = NORMAL,
+	 .len = MAX_MSGSIZE,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case03
+	 .ttype = NORMAL,
+	 .len = 1,
+	 .prio = 32767,		// max priority
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case04
+	 .ttype = INVALID_MSG_LEN,
+	 .len = 0,
+	 .ret = -1,
+	 .err = EMSGSIZE,
+	 },
+	{			// case05
+	 .ttype = FD_NONE,
+	 .len = 0,
+	 .ret = -1,
+	 .err = EBADF,
+	 },
+	{			// case06
+	 .ttype = FD_NOT_EXIST,
+	 .len = 0,
+	 .ret = -1,
+	 .err = EBADF,
+	 },
+	{			// case07
+	 .ttype = FD_FILE,
+	 .len = 0,
+	 .ret = -1,
+	 .err = EBADF,
+	 },
+	{			// case08
+	 .ttype = EMPTY_QUEUE,
+	 .non_block = 1,
+	 .len = 16,
+	 .ret = -1,
+	 .err = EAGAIN,
+	 },
+	{			// case09
+	 .ttype = EMPTY_QUEUE,
+	 .len = 16,
+	 .sec = -1,
+	 .nsec = 0,
+	 .ret = -1,
+	 .err = EINVAL,
+	 },
+	{			// case10
+	 .ttype = EMPTY_QUEUE,
+	 .len = 16,
+	 .sec = 0,
+	 .nsec = -1,
+	 .ret = -1,
+	 .err = EINVAL,
+	 },
+	{			// case11
+	 .ttype = EMPTY_QUEUE,
+	 .len = 16,
+	 .sec = 0,
+	 .nsec = 1000000000,
+	 .ret = -1,
+	 .err = EINVAL,
+	 },
+	{			// case12
+	 .ttype = EMPTY_QUEUE,
+	 .len = 16,
+	 .sec = 0,
+	 .nsec = 999999999,
+	 .ret = -1,
+	 .err = ETIMEDOUT,
+	 },
+	{			// case13
+	 .ttype = SEND_SIGINT,
+	 .len = 16,
+	 .sec = 3,
+	 .nsec = 0,
+	 .ret = -1,
+	 .err = EINTR,
+	 },
 };
 
 #define MEM_LENGTH	      (4 * 1024 * 1024)
@@ -302,7 +304,7 @@ static int do_test(struct test_case *tc)
 	int oflag;
 	int i, rc, cmp_ok = 1, fd = -1;
 	char smsg[MAX_MSGSIZE], rmsg[MAX_MSGSIZE];
-	struct timespec ts = {0,0};
+	struct timespec ts = { 0, 0 };
 	pid_t pid = 0;
 	unsigned prio;
 	size_t msg_len;
@@ -322,7 +324,7 @@ static int do_test(struct test_case *tc)
 	case FD_FILE:
 		TEST(fd = open("/", O_RDONLY));
 		if (TEST_RETURN < 0) {
-		 	tst_resm(TFAIL|TTERRNO, "can't open \"/\".");
+			tst_resm(TFAIL | TTERRNO, "can't open \"/\".");
 			result = 1;
 			goto EXIT;
 		}
@@ -331,13 +333,13 @@ static int do_test(struct test_case *tc)
 		/*
 		 * Open message queue
 		 */
-		oflag = O_CREAT|O_EXCL|O_RDWR;
+		oflag = O_CREAT | O_EXCL | O_RDWR;
 		if (tc->non_block)
 			oflag |= O_NONBLOCK;
 
 		TEST(fd = mq_open(QUEUE_NAME, oflag, S_IRWXU, NULL));
 		if (TEST_RETURN < 0) {
-		 	tst_resm(TFAIL|TTERRNO, "mq_open failed");
+			tst_resm(TFAIL | TTERRNO, "mq_open failed");
 			result = 1;
 			goto EXIT;
 		}
@@ -371,7 +373,7 @@ static int do_test(struct test_case *tc)
 	default:
 		TEST(rc = mq_timedsend(fd, smsg, tc->len, tc->prio, &ts));
 		if (TEST_RETURN < 0) {
-		 	tst_resm(TFAIL|TTERRNO, "mq_timedsend failed");
+			tst_resm(TFAIL | TTERRNO, "mq_timedsend failed");
 			result = 1;
 			goto EXIT;
 		}
@@ -398,7 +400,7 @@ static int do_test(struct test_case *tc)
 	if (sys_ret < 0)
 		goto TEST_END;
 
-	 /*
+	/*
 	 * Compare received message
 	 */
 	if (sys_ret != tc->len || tc->prio != prio)
@@ -411,12 +413,13 @@ static int do_test(struct test_case *tc)
 			}
 	}
 
-	TEST_END:
+TEST_END:
 	/*
 	 * Check results
 	 */
 	result |= (sys_errno != tc->err) || !cmp_ok;
-	PRINT_RESULT_CMP(0, tc->ret == 0 ? tc->len : tc->ret, tc->err,sys_ret, sys_errno, cmp_ok);
+	PRINT_RESULT_CMP(0, tc->ret == 0 ? tc->len : tc->ret, tc->err, sys_ret,
+			 sys_errno, cmp_ok);
 
 EXIT:
 	if (fd >= 0) {
@@ -435,7 +438,8 @@ EXIT:
  * main()
  */
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int result = RESULT_OK;
 	int i;
 	int lc;
@@ -452,26 +456,29 @@ int main(int ac, char **av) {
 
 			/*
 			 * Execute test
-		 	 */
-			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+			 */
+			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0]));
+			     i++) {
 				int ret;
-				tst_resm(TINFO,"(case%02d) START", i);
+				tst_resm(TINFO, "(case%02d) START", i);
 				ret = do_test(&tcase[i]);
-				tst_resm(TINFO,"(case%02d) END => %s",
-					i, (ret == 0) ? "OK" : "NG");
+				tst_resm(TINFO, "(case%02d) END => %s",
+					 i, (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
 
 			/*
 			 * Check results
-	 		 */
-			switch(result) {
+			 */
+			switch (result) {
 			case RESULT_OK:
-				tst_resm(TPASS, "mq_timedreceive call succeeded");
-			break;
+				tst_resm(TPASS,
+					 "mq_timedreceive call succeeded");
+				break;
 
 			default:
-				tst_brkm(TFAIL|TTERRNO, cleanup, "mq_timedreceive failed");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "mq_timedreceive failed");
 			}
 		}
 	}

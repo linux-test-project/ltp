@@ -30,7 +30,7 @@ void handler(int signo)
 
 	printf("Caught SIGTTOU\n");
 
-	if (sigaltstack((stack_t *)0, &oss) == -1) {
+	if (sigaltstack((stack_t *) 0, &oss) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		exit(-1);
@@ -49,13 +49,13 @@ int main()
 	act.sa_handler = handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGTTOU,  &act, 0) == -1) {
+	if (sigaction(SIGTTOU, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigaltstack((stack_t *)0, &current) == -1) {
+	if (sigaltstack((stack_t *) 0, &current) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;

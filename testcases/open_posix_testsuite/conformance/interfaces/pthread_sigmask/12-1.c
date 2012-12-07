@@ -27,10 +27,11 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int is_changed(sigset_t set, int sig) {
+int is_changed(sigset_t set, int sig)
+{
 
 	int i;
-	int siglist[] = {SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
+	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
 		SIGPIPE, SIGQUIT, SIGSEGV,
 		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
@@ -42,12 +43,13 @@ int is_changed(sigset_t set, int sig) {
 		SIGPROF,
 #endif
 		SIGSYS,
-		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
+		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
+	};
 
 	if (sigismember(&set, sig) != 1) {
 		return 1;
 	}
-	for (i=0; i<NUMSIGNALS; i++) {
+	for (i = 0; i < NUMSIGNALS; i++) {
 		if ((siglist[i] != sig)) {
 			if (sigismember(&set, siglist[i]) != 0) {
 				return 1;
@@ -57,19 +59,21 @@ int is_changed(sigset_t set, int sig) {
 	return 0;
 }
 
-int get_rand() {
+int get_rand()
+{
 
 	int r;
-	r=rand();
+	r = rand();
 	if ((r == SIG_BLOCK) || (r == SIG_SETMASK) || (r == SIG_UNBLOCK)) {
 		r = get_rand();
 	}
 	return r;
 }
 
-void *a_thread_func() {
+void *a_thread_func()
+{
 
-	int r=get_rand();
+	int r = get_rand();
 	sigset_t actl, oactl;
 /*
 	printf("SIG_SETMASK=%d\n", SIG_SETMASK);
@@ -85,15 +89,16 @@ void *a_thread_func() {
 
 	sigaddset(&actl, SIGALRM);
 	if (pthread_sigmask(r, &actl, NULL) != EINVAL) {
-		perror("pthread_sigmask() did not fail even though invalid how parameter was passed to it.\n");
-		pthread_exit((void*)1);
+		perror
+		    ("pthread_sigmask() did not fail even though invalid how parameter was passed to it.\n");
+		pthread_exit((void *)1);
 	}
 
 	pthread_sigmask(SIG_SETMASK, NULL, &oactl);
 
 	if (is_changed(oactl, SIGABRT)) {
 		printf("FAIL: signal mask was changed. \n");
-		pthread_exit((void*)-1);
+		pthread_exit((void *)-1);
 	}
 
 /*
@@ -102,41 +107,40 @@ void *a_thread_func() {
 */
 
 	printf("PASS: signal mask was not changed.\n");
-	pthread_exit((void*)0);
+	pthread_exit((void *)0);
 
-        /* To please some compilers */
+	/* To please some compilers */
 	return NULL;
 }
 
-int main() {
+int main()
+{
 
-        int *thread_return_value;
+	int *thread_return_value;
 
-        pthread_t new_thread;
+	pthread_t new_thread;
 
-        if (pthread_create(&new_thread, NULL, a_thread_func, NULL) != 0) {
-                perror("Error creating new thread\n");
-                return PTS_UNRESOLVED;
-        }
+	if (pthread_create(&new_thread, NULL, a_thread_func, NULL) != 0) {
+		perror("Error creating new thread\n");
+		return PTS_UNRESOLVED;
+	}
 
-        if (pthread_join(new_thread, (void*)&thread_return_value) != 0) {
-                perror("Error in pthread_join()\n");
-                return PTS_UNRESOLVED;
-        }
+	if (pthread_join(new_thread, (void *)&thread_return_value) != 0) {
+		perror("Error in pthread_join()\n");
+		return PTS_UNRESOLVED;
+	}
 
-        if ((long)thread_return_value != 0) {
-                if ((long)thread_return_value == 1) {
-                        printf ("Test UNRESOLVED\n");
-                        return PTS_UNRESOLVED;
-                }
-                else if ((long)thread_return_value == -1) {
-                        printf ("Test FAILED\n");
-                        return PTS_FAIL;
-                }
-                else {
-                        printf ("Test UNRESOLVED\n");
-                        return PTS_UNRESOLVED;
-                }
-        }
-        return PTS_PASS;
+	if ((long)thread_return_value != 0) {
+		if ((long)thread_return_value == 1) {
+			printf("Test UNRESOLVED\n");
+			return PTS_UNRESOLVED;
+		} else if ((long)thread_return_value == -1) {
+			printf("Test FAILED\n");
+			return PTS_FAIL;
+		} else {
+			printf("Test UNRESOLVED\n");
+			return PTS_UNRESOLVED;
+		}
+	}
+	return PTS_PASS;
 }

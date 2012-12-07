@@ -45,13 +45,12 @@ static void exm_proc();
 int progNum;
 int run_mode;
 
-void *server_thread_process (void * arg)
+void *server_thread_process(void *arg)
 {
 	//Server process in a thread
-	int err=0;
+	int err = 0;
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("Server #%d launched\n", atoi(arg));
 		printf("Server Nb : %d\n", progNum + atoi(arg));
 	}
@@ -60,10 +59,9 @@ void *server_thread_process (void * arg)
 
 	err = svc_create(exm_proc, progNum + atoi(arg), VERSNUM, "VISIBLE");
 
-	if (err == 0)
-	{
-    		fprintf(stderr, "Cannot create service.\n");
-    		exit(1);
+	if (err == 0) {
+		fprintf(stderr, "Cannot create service.\n");
+		exit(1);
 	}
 
 	svc_run();
@@ -71,7 +69,7 @@ void *server_thread_process (void * arg)
 	fprintf(stderr, "svc_run() returned.  ERROR has occurred.\n");
 	svc_unreg(progNum, VERSNUM);
 
-    pthread_exit (0);
+	pthread_exit(0);
 }
 
 //****************************************//
@@ -80,33 +78,31 @@ void *server_thread_process (void * arg)
 int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
-	//					    argc[2] : Number of threads
-	//					    others arguments depend on server program
+	//                                          argc[2] : Number of threads
+	//                                          others arguments depend on server program
 	run_mode = 0;
 	int threadNb = atoi(argc[2]);
 	int i;
 	//Thread declaration
 	pthread_t *pThreadArray;
-    void *ret;
+	void *ret;
 
 	progNum = atoi(argc[1]);
 
-	pThreadArray = (pthread_t *)malloc(threadNb * sizeof(pthread_t));
-	for (i = 0; i < threadNb; i++)
-	{
+	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
+	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
-			fprintf (stderr, "Try to create Thread Server %d\n", i);
-		if (pthread_create (&pThreadArray[i], NULL, server_thread_process, i) < 0)
-	    {
-	        fprintf (stderr, "pthread_create error for thread 1\n");
-	        exit (1);
-	    }
+			fprintf(stderr, "Try to create Thread Server %d\n", i);
+		if (pthread_create
+		    (&pThreadArray[i], NULL, server_thread_process, i) < 0) {
+			fprintf(stderr, "pthread_create error for thread 1\n");
+			exit(1);
+		}
 	}
 
 	//Clean threads
-	for (i = 0; i < threadNb; i++)
-	{
-		(void)pthread_join (pThreadArray[i], &ret);
+	for (i = 0; i < threadNb; i++) {
+		(void)pthread_join(pThreadArray[i], &ret);
 	}
 
 	return 1;
@@ -119,16 +115,16 @@ char *simplePing(char *in)
 {
 	//printf("*** in Ping Func.\n");
 	//Simple function, returns what received
-        static int result = 0;
-        result = *in;
-        return (char *)&result;
+	static int result = 0;
+	result = *in;
+	return (char *)&result;
 
 }
 
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
+static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
 {
 	//printf("* in Dispatch Func.\n");
 	union {
@@ -138,52 +134,49 @@ static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 	char *result;
 	xdrproc_t xdr_argument;
 	xdrproc_t xdr_result;
-	int *(*proc)(int *);
+	int *(*proc) (int *);
 
-	switch (rqstp->rq_proc)
-	{
-		case PROCSIMPLEPING:
+	switch (rqstp->rq_proc) {
+	case PROCSIMPLEPING:
 		{
 			//printf("** in PROCPONG dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_int;
-			xdr_result   = (xdrproc_t)xdr_int;
-			proc         = (int *(*)(int *))simplePing;
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc = (int *(*)(int *))simplePing;
 			break;
 		}
-		case PROGSYSERROR:
+	case PROGSYSERROR:
 		{
 			//Simulate an error
 			svcerr_systemerr(transp);
 			return;
 		}
-		case PROGAUTHERROR:
+	case PROGAUTHERROR:
 		{
 			//Simulate an authentification error
 			svcerr_weakauth(transp);
 			return;
 		}
-		default:
+	default:
 		{
 			//Proc is unavaible
-      		svcerr_noproc(transp);
-      		return;
-      	}
+			svcerr_noproc(transp);
+			return;
+		}
 	}
 	memset((int *)&argument, (int)0, sizeof(argument));
-	if (svc_getargs(transp, xdr_argument, (int *)&argument) == FALSE)
-	{
+	if (svc_getargs(transp, xdr_argument, (int *)&argument) == FALSE) {
 		svcerr_decode(transp);
 		return;
 	}
 
-	result = (char *)(*proc)((int *)&argument);
+	result = (char *)(*proc) ((int *)&argument);
 
-	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
-	{
+	if ((result != NULL)
+	    && (svc_sendreply(transp, xdr_result, result) == FALSE)) {
 		svcerr_systemerr(transp);
 	}
-	if (svc_freeargs(transp, xdr_argument, (int *)&argument) == FALSE)
-	{
+	if (svc_freeargs(transp, xdr_argument, (int *)&argument) == FALSE) {
 		(void)fprintf(stderr, "unable to free arguments\n");
 		exit(1);
 	}

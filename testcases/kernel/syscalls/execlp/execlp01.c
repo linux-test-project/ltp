@@ -136,7 +136,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -153,7 +152,7 @@ int main(int ac, char **av)
 			execlp("/usr/bin/test", "/usr/bin/test", NULL);
 			exit(errno);
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 			break;
 		default:
 			waitpid(pid, &status, 0);
@@ -165,8 +164,8 @@ int main(int ac, char **av)
 				}
 			} else
 				tst_resm(TFAIL,
-				    "child process exited abnormally; wait "
-				    "status = %d", status);
+					 "child process exited abnormally; wait "
+					 "status = %d", status);
 			break;
 		}		/* switch */
 

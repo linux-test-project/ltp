@@ -20,7 +20,7 @@
 #include "ffsb_op.h"
 #include "util.h"
 
-void init_ffsb_thread(ffsb_thread_t *ft, struct ffsb_tg *tg, unsigned bufsize,
+void init_ffsb_thread(ffsb_thread_t * ft, struct ffsb_tg *tg, unsigned bufsize,
 		      unsigned tg_num, unsigned thread_num)
 {
 	memset(ft, 0, sizeof(ffsb_thread_t));
@@ -35,7 +35,7 @@ void init_ffsb_thread(ffsb_thread_t *ft, struct ffsb_tg *tg, unsigned bufsize,
 	init_random(&ft->rd, MAX_RANDBUF_SIZE);
 }
 
-void destroy_ffsb_thread(ffsb_thread_t *ft)
+void destroy_ffsb_thread(ffsb_thread_t * ft)
 {
 	free(ft->mallocbuf);
 	destroy_random(&ft->rd);
@@ -43,14 +43,14 @@ void destroy_ffsb_thread(ffsb_thread_t *ft)
 		ffsb_statsd_destroy(&ft->fsd);
 }
 
-void ft_set_statsc(ffsb_thread_t *ft, ffsb_statsc_t *fsc)
+void ft_set_statsc(ffsb_thread_t * ft, ffsb_statsc_t * fsc)
 {
 	ffsb_statsd_init(&ft->fsd, fsc);
 }
 
 void *ft_run(void *data)
 {
-	ffsb_thread_t *ft = (ffsb_thread_t *)data;
+	ffsb_thread_t *ft = (ffsb_thread_t *) data;
 	tg_op_params_t params;
 	unsigned wait_time = tg_get_waittime(ft->tg);
 	int stopval = tg_get_stopval(ft->tg);
@@ -65,7 +65,7 @@ void *ft_run(void *data)
 	return NULL;
 }
 
-void ft_alter_bufsize(ffsb_thread_t *ft, unsigned bufsize)
+void ft_alter_bufsize(ffsb_thread_t * ft, unsigned bufsize)
 {
 	if (ft->mallocbuf != NULL)
 		free(ft->mallocbuf);
@@ -73,84 +73,85 @@ void ft_alter_bufsize(ffsb_thread_t *ft, unsigned bufsize)
 	ft->alignedbuf = ffsb_align_4k(ft->mallocbuf + (4096 - 1));
 }
 
-char *ft_getbuf(ffsb_thread_t *ft)
+char *ft_getbuf(ffsb_thread_t * ft)
 {
 	return ft->alignedbuf;
 }
 
-int ft_get_read_random(ffsb_thread_t *ft)
+int ft_get_read_random(ffsb_thread_t * ft)
 {
 	return tg_get_read_random(ft->tg);
 }
 
-uint32_t ft_get_read_size(ffsb_thread_t *ft)
+uint32_t ft_get_read_size(ffsb_thread_t * ft)
 {
 	return tg_get_read_size(ft->tg);
 }
 
-uint32_t ft_get_read_blocksize(ffsb_thread_t *ft)
+uint32_t ft_get_read_blocksize(ffsb_thread_t * ft)
 {
 	return tg_get_read_blocksize(ft->tg);
 }
 
-int ft_get_write_random(ffsb_thread_t *ft)
+int ft_get_write_random(ffsb_thread_t * ft)
 {
 	return tg_get_write_random(ft->tg);
 }
 
-uint32_t ft_get_write_size(ffsb_thread_t *ft)
+uint32_t ft_get_write_size(ffsb_thread_t * ft)
 {
 	return tg_get_write_size(ft->tg);
 }
 
-uint32_t ft_get_write_blocksize(ffsb_thread_t *ft)
+uint32_t ft_get_write_blocksize(ffsb_thread_t * ft)
 {
 	return tg_get_write_blocksize(ft->tg);
 }
 
-int ft_get_fsync_file(ffsb_thread_t *ft)
+int ft_get_fsync_file(ffsb_thread_t * ft)
 {
 	return tg_get_fsync_file(ft->tg);
 }
 
-randdata_t *ft_get_randdata(ffsb_thread_t *ft)
+randdata_t *ft_get_randdata(ffsb_thread_t * ft)
 {
 	return &ft->rd;
 }
 
-void ft_incr_op(ffsb_thread_t *ft, unsigned opnum, unsigned increment, uint64_t bytes)
+void ft_incr_op(ffsb_thread_t * ft, unsigned opnum, unsigned increment,
+		uint64_t bytes)
 {
 	ft->results.ops[opnum] += increment;
 	ft->results.op_weight[opnum]++;
 	ft->results.bytes[opnum] += bytes;
 }
 
-void ft_add_readbytes(ffsb_thread_t *ft, uint32_t bytes)
+void ft_add_readbytes(ffsb_thread_t * ft, uint32_t bytes)
 {
 	ft->results.read_bytes += bytes;
 }
 
-void ft_add_writebytes(ffsb_thread_t *ft, uint32_t bytes)
+void ft_add_writebytes(ffsb_thread_t * ft, uint32_t bytes)
 {
 	ft->results.write_bytes += bytes;
 }
 
-ffsb_op_results_t *ft_get_results(ffsb_thread_t *ft)
+ffsb_op_results_t *ft_get_results(ffsb_thread_t * ft)
 {
 	return &ft->results;
 }
 
-int ft_get_read_skip(ffsb_thread_t *ft)
+int ft_get_read_skip(ffsb_thread_t * ft)
 {
 	return tg_get_read_skip(ft->tg);
 }
 
-uint32_t ft_get_read_skipsize(ffsb_thread_t *ft)
+uint32_t ft_get_read_skipsize(ffsb_thread_t * ft)
 {
 	return tg_get_read_skipsize(ft->tg);
 }
 
-int ft_needs_stats(ffsb_thread_t *ft, syscall_t sys)
+int ft_needs_stats(ffsb_thread_t * ft, syscall_t sys)
 {
 	int ret = 0;
 	if (ft && ft->fsd.config && !fsc_ignore_sys(ft->fsd.config, sys))
@@ -158,13 +159,13 @@ int ft_needs_stats(ffsb_thread_t *ft, syscall_t sys)
 	return ret;
 }
 
-void ft_add_stat(ffsb_thread_t *ft, syscall_t sys, uint32_t val)
+void ft_add_stat(ffsb_thread_t * ft, syscall_t sys, uint32_t val)
 {
 	if (ft)
 		ffsb_add_data(&ft->fsd, sys, val);
 }
 
-ffsb_statsd_t *ft_get_stats_data(ffsb_thread_t *ft)
+ffsb_statsd_t *ft_get_stats_data(ffsb_thread_t * ft)
 {
 	return &ft->fsd;
 }

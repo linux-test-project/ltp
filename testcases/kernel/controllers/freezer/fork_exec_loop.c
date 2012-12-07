@@ -22,18 +22,18 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    int count = argc > 1 ? atoi(argv[1]) : 20;
+	int count = argc > 1 ? atoi(argv[1]) : 20;
 
-    while (1) {
-        int i, s;
+	while (1) {
+		int i, s;
 
-        for (i = 0; i < count; i++)
-            if (fork() == 0)
-		execlp("/bin/true", "true", NULL);
+		for (i = 0; i < count; i++)
+			if (fork() == 0)
+				execlp("/bin/true", "true", NULL);
 
-        for (i = 0; i < count; i++)
-            wait(&s);
-    }
+		for (i = 0; i < count; i++)
+			wait(&s);
+	}
 }

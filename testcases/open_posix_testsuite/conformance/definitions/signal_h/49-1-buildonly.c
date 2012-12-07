@@ -1,14 +1,15 @@
   /*
-  Test that the function:
-   int sigwaitinfo(const sigset_t *restrict, siginfo_t *restrict);
-  is declared.
-  */
+     Test that the function:
+     int sigwaitinfo(const sigset_t *restrict, siginfo_t *restrict);
+     is declared.
+   */
 
 #include <signal.h>
 
-typedef int (*sigwaitinfo_test)(const sigset_t *restrict, siginfo_t *restrict);
+typedef int (*sigwaitinfo_test) (const sigset_t * restrict,
+				 siginfo_t * restrict);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	sigwaitinfo_test dummyvar;
 	dummyvar = sigwaitinfo;

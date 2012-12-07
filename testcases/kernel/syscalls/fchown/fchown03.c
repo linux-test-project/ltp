@@ -180,7 +180,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	  return (0);
+	return (0);
 }
 
 /*
@@ -201,8 +201,8 @@ void setup()
 	ltpuser = getpwnam(nobody_uid);
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_brkm(TBROK, cleanup, "seteuid failed to "
-			"to set the effective uid to %d: %s", ltpuser->pw_uid,
-				strerror(errno));
+			 "to set the effective uid to %d: %s", ltpuser->pw_uid,
+			 strerror(errno));
 	}
 
 	TEST_PAUSE;
@@ -218,11 +218,11 @@ void setup()
 	seteuid(0);
 	if (fchown(fildes, -1, 0) < 0)
 		tst_brkm(TBROK, cleanup, "Fail to modify Ownership of %s: %s",
-				TESTFILE, strerror(errno));
+			 TESTFILE, strerror(errno));
 
 	if (fchmod(fildes, NEW_PERMS) < 0)
 		tst_brkm(TBROK, cleanup, "Fail to modify Mode of %s: %s",
-				TESTFILE, strerror(errno));
+			 TESTFILE, strerror(errno));
 
 	setegid(ltpuser->pw_gid);
 	seteuid(ltpuser->pw_uid);

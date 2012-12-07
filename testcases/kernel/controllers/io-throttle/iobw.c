@@ -44,10 +44,9 @@
 #define kb(x)			((x) >> 10)
 
 const char usage[] = "Usage: iobw [-direct] threads chunk_size data_size\n";
-const char child_fmt[] =
-		"(%s) task %3d: time %4lu.%03lu bw %7lu KiB/s (%s)\n";
+const char child_fmt[] = "(%s) task %3d: time %4lu.%03lu bw %7lu KiB/s (%s)\n";
 const char parent_fmt[] =
-		"(%s) parent %d: time %4lu.%03lu bw %7lu KiB/s (%s)\n";
+    "(%s) parent %d: time %4lu.%03lu bw %7lu KiB/s (%s)\n";
 
 static int directio = 0;
 static size_t data_size = 0;
@@ -121,8 +120,8 @@ static void thread(int id)
 		}
 		n += i;
 	}
-        gettimeofday(&stop, NULL);
-        timersub(&stop, &start, &diff);
+	gettimeofday(&stop, NULL);
+	timersub(&stop, &start, &diff);
 	print_results(id + 1, OP_WRITE, data_size, &diff);
 
 	/* Read */
@@ -139,8 +138,8 @@ static void thread(int id)
 		}
 		n += i;
 	}
-        gettimeofday(&stop, NULL);
-        timersub(&stop, &start, &diff);
+	gettimeofday(&stop, NULL);
+	timersub(&stop, &start, &diff);
 	print_results(id + 1, OP_READ, data_size, &diff);
 out:
 	close(fd);
@@ -178,7 +177,7 @@ void signal_handler(int sig)
 		struct stat mystat;
 
 		snprintf(filename, sizeof(filename), "%s-%d-iobw.tmp",
-				mygroup,i);
+			 mygroup, i);
 		if (stat(filename, &mystat) < 0)
 			continue;
 		unlink(filename);
@@ -262,21 +261,21 @@ int main(int argc, char *argv[])
 		kb(chunk_size), kb(data_size));
 	fflush(stdout);
 
-        gettimeofday(&start, NULL);
-        for (i = 0; i < threads ; i++)
-                spawn(i);
-        for (i = 0; i < threads; i++) {
-                int status;
-                wait(&status);
-                if (!WIFEXITED(status))
-                        exit(1);
-        }
-        gettimeofday(&stop, NULL);
+	gettimeofday(&start, NULL);
+	for (i = 0; i < threads; i++)
+		spawn(i);
+	for (i = 0; i < threads; i++) {
+		int status;
+		wait(&status);
+		if (!WIFEXITED(status))
+			exit(1);
+	}
+	gettimeofday(&stop, NULL);
 
-        timersub(&stop, &start, &diff);
+	timersub(&stop, &start, &diff);
 	print_results(0, NUM_IOPS, data_size * threads * NUM_IOPS, &diff);
 	fflush(stdout);
 	free(children);
 
-        exit(0);
+	exit(0);
 }

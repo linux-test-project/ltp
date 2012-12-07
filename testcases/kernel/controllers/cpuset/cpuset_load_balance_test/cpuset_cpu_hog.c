@@ -136,7 +136,7 @@ void checkopt(int argc, char **argv)
 				nprocs = atoi(optarg);
 			}
 			break;
-		case 'h':   /* usage message */
+		case 'h':	/* usage message */
 			usage(argv[0], 0);
 			break;
 		default:
@@ -208,7 +208,7 @@ int cpu_hog(void)
 			char str[50];
 			bitmask_displaylist(str, 50, cpumask);
 			warn("the task(%d) is running on the cpu(%d) excluded"
-				" by cpuset(cpus: %s)\n", getpid(), cpu, str);
+			     " by cpuset(cpus: %s)\n", getpid(), cpu, str);
 			ret = 1;
 			goto err2;
 		}
@@ -253,7 +253,7 @@ int main(int argc, char **argv)
 	int status = 0;
 	int ret = 0;
 
-	checkopt(argc,argv);
+	checkopt(argc, argv);
 	if (initialize()) {
 		warn("initialize failed");
 		report_result("2\n");
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	childpids = (pid_t *)malloc((nprocs) * sizeof(pid_t));
+	childpids = (pid_t *) malloc((nprocs) * sizeof(pid_t));
 	if (childpids == NULL) {
 		warn("alloc for child pids failed");
 		report_result("2\n");
@@ -320,7 +320,8 @@ int main(int argc, char **argv)
 }
 
 #else /* ! HAVE_LINUX_MEMPOLICY_H */
-int main(void) {
+int main(void)
+{
 	printf("System doesn't have required mempolicy support\n");
 	return 1;
 }

@@ -52,9 +52,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "rt_sigsuspend01"; /* Test program identifier.		 */
-int  testno;
-int  TST_TOTAL = 1;	      /* total number of tests in this file.	 */
+char *TCID = "rt_sigsuspend01";	/* Test program identifier.              */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.     */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -74,7 +74,8 @@ int  TST_TOTAL = 1;	      /* total number of tests in this file.	 */
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-void cleanup() {
+void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -99,7 +100,8 @@ void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
@@ -110,14 +112,15 @@ void sig_handler(int sig)
 {
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 
 	sigset_t set, set1, set2;
 	int lc;
 	char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-	     tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();
@@ -127,33 +130,34 @@ int main(int ac, char **av) {
 		Tst_count = 0;
 
 		if (sigemptyset(&set) < 0) {
-			tst_brkm(TFAIL|TERRNO, cleanup, "sigemptyset failed");
+			tst_brkm(TFAIL | TERRNO, cleanup, "sigemptyset failed");
 		}
 #ifdef __x86_64__
 		struct kernel_sigaction act, oact;
 		sig_initial(SIGALRM);
-		memset(&act,0,sizeof(act));
-		memset(&oact,0,sizeof(oact));
+		memset(&act, 0, sizeof(act));
+		memset(&oact, 0, sizeof(oact));
 		act.sa_flags |= SA_RESTORER;
 		act.sa_restorer = restore_rt;
 		act.k_sa_handler = sig_handler;
 #else
 		struct sigaction act, oact;
-		memset(&act,0,sizeof(act));
-		memset(&oact,0,sizeof(oact));
+		memset(&act, 0, sizeof(act));
+		memset(&oact, 0, sizeof(oact));
 		act.sa_handler = sig_handler;
 #endif
 
 		TEST(syscall(__NR_rt_sigaction, SIGALRM, &act, &oact,
-				SIGSETSIZE));
+			     SIGSETSIZE));
 		if (TEST_RETURN == -1) {
-			tst_brkm(TFAIL|TTERRNO, cleanup, "rt_sigaction failed");
+			tst_brkm(TFAIL | TTERRNO, cleanup,
+				 "rt_sigaction failed");
 		}
 		TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0,
-				&set1, SIGSETSIZE));
+			     &set1, SIGSETSIZE));
 		if (TEST_RETURN == -1) {
-			tst_brkm(TFAIL|TTERRNO,	cleanup,
-				"rt_sigprocmask failed");
+			tst_brkm(TFAIL | TTERRNO, cleanup,
+				 "rt_sigprocmask failed");
 		}
 
 		TEST(alarm(5));
@@ -162,19 +166,19 @@ int main(int ac, char **av) {
 		TEST(alarm(0));
 		if (result == -1 && TEST_ERRNO != EINTR) {
 			TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0, &set2,
-					SIGSETSIZE));
+				     SIGSETSIZE));
 			if (TEST_RETURN == -1) {
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-					"rt_sigprocmask failed");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "rt_sigprocmask failed");
 			} else if (set1.__val[0] != set2.__val[0]) {
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-					"rt_sigsuspend failed to "
-					"preserve signal mask");
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "rt_sigsuspend failed to "
+					 "preserve signal mask");
 			} else {
-				tst_resm(TPASS,	"rt_sigsuspend PASSED");
+				tst_resm(TPASS, "rt_sigsuspend PASSED");
 			}
 		} else {
-			tst_resm(TFAIL|TTERRNO,	"rt_sigsuspend failed");
+			tst_resm(TFAIL | TTERRNO, "rt_sigsuspend failed");
 		}
 
 	}

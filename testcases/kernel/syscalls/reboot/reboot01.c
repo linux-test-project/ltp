@@ -83,6 +83,7 @@ char *TCID = "reboot01";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
 
 static int flag[2] = { LINUX_REBOOT_CMD_CAD_ON, LINUX_REBOOT_CMD_CAD_OFF };
+
 static const char *option_message[] = { "LINUX_REBOOT_CMD_CAD_ON",
 	"LINUX_REBOOT_CMD_CAD_OFF"
 };

@@ -69,8 +69,8 @@
 
 int ki_generic(int fd, int flag)
 {
-	int                     rc;
-	tbio_interface_t        bif;
+	int rc;
+	tbio_interface_t bif;
 
 	rc = ioctl(fd, flag, &bif);
 	if (rc) {

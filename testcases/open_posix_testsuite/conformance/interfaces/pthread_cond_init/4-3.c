@@ -33,7 +33,6 @@
 #define ERR_MSG(f, rc)	printf("Failed: function: %s status: %s(%u)\n", \
 						f, strerror(rc), rc)
 
-
 int main(void)
 {
 	int status;

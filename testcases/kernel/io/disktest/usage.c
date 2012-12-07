@@ -37,13 +37,16 @@ void usage(void)
 	printf("\t-A action\tSpecifies modified actions during runtime.\n");
 	printf("\t-B lblk[:hblk]\tSet the block transfer size.\n");
 	printf("\t-c\t\tUse a counting sequence as the data pattern.\n");
-	printf("\t-C cycles\tRun until cycles disk access cycles are complete.\n");
+	printf
+	    ("\t-C cycles\tRun until cycles disk access cycles are complete.\n");
 	printf("\t-d\t\tDump data to standard out and exit.\n");
 	printf("\t-D r%%:w%%\tDuty cycle used while reading and/or writing.\n");
-	printf("\t-E cmp_len\tTurn on error checking comparing <cmp_len> bytes.\n");
+	printf
+	    ("\t-E cmp_len\tTurn on error checking comparing <cmp_len> bytes.\n");
 	printf("\t-f byte\t\tUse a fixed data pattern up to 8 bytes.\n");
 	printf("\t-F \t\tfilespec is a file describing a list of targets\n");
-	printf("\t-h hbeat\tDisplays performance statistic every <hbeat> seconds.\n");
+	printf
+	    ("\t-h hbeat\tDisplays performance statistic every <hbeat> seconds.\n");
 	printf("\t-I IO_type\tSet the data transfer type to IO_type.\n");
 	printf("\t-K threads\tSet the number of test threads.\n");
 	printf("\t-L seeks\tTotal number of seeks to occur.\n");
@@ -57,7 +60,8 @@ void usage(void)
 	printf("\t-q\t\tSuppress INFO level messages.\n");
 	printf("\t-Q\t\tSuppress header information on messages.\n");
 	printf("\t-r\t\tRead data from disk.\n");
-	printf("\t-R rty[:dly]\tNumber of retries / retry delay after failure.\n");
+	printf
+	    ("\t-R rty[:dly]\tNumber of retries / retry delay after failure.\n");
 	printf("\t-s sLBA[:eLBA]\tSet the start [and stop] test LBA.\n");
 	printf("\t-S sblk[:eblk]\tSet the start [and stop] test block.\n");
 	printf("\t-t dMin[:dMax][:ioTMO] set IO timing /timeout operations.\n");

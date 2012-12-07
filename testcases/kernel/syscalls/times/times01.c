@@ -146,11 +146,10 @@ int main(int ac, char **av)
 		TEST(times(&mytimes));
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "times failed");
-		else
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "times(&mytimes) returned %ld",
-					 TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO, "times failed");
+		else if (STD_FUNCTIONAL_TEST)
+			tst_resm(TPASS, "times(&mytimes) returned %ld",
+				 TEST_RETURN);
 
 	}
 

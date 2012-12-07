@@ -34,13 +34,13 @@ int main(int argc, char *argv[])
 	int i;
 	int failure = 0;
 
-	tssleep.tv_sec=0;
+	tssleep.tv_sec = 0;
 
-	for (i=0; i<NUMINVALIDTESTS;i++) {
-		tssleep.tv_nsec=invalid_tests[i];
+	for (i = 0; i < NUMINVALIDTESTS; i++) {
+		tssleep.tv_nsec = invalid_tests[i];
 		printf("sleep %d\n", invalid_tests[i]);
 		if (clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL) !=
-			EINVAL) {
+		    EINVAL) {
 			printf("errno != EINVAL\n");
 			failure = 1;
 		}

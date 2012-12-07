@@ -52,9 +52,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "clock_nanosleep2_01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "clock_nanosleep2_01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -74,12 +74,13 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
-        TEST_CLEANUP;
-        tst_rmdir();
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        tst_exit();
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -100,48 +101,55 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-const clockid_t CLOCK_TO_USE=CLOCK_MONOTONIC;
-static int clock_nanosleep2(clockid_t clock_id, int flags, const struct timespec *req,struct timespec *rem)
+const clockid_t CLOCK_TO_USE = CLOCK_MONOTONIC;
+static int clock_nanosleep2(clockid_t clock_id, int flags,
+			    const struct timespec *req, struct timespec *rem)
 {
 	return syscall(__NR_clock_nanosleep, clock_id, flags, req, rem);
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int i;
 	int lc;
 	char *msg;
 	struct timespec ts;
 
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-             tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
-        setup();
+	setup();
 
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			TEST(clock_gettime(CLOCK_TO_USE, &ts));
-			for (i=0; i<=50; i++) {
+			for (i = 0; i <= 50; i++) {
 				ts.tv_sec++;
-				TEST(clock_nanosleep2(CLOCK_TO_USE, TIMER_ABSTIME, &ts, NULL));
-                                if (TEST_ERRNO) {
-                                    tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-                                    cleanup();
-                                    tst_exit();
-                                }
-				tst_resm(TINFO,"Iteration = %i",i);
+				TEST(clock_nanosleep2
+				     (CLOCK_TO_USE, TIMER_ABSTIME, &ts, NULL));
+				if (TEST_ERRNO) {
+					tst_resm(TFAIL,
+						 "%s failed - errno = %d : %s",
+						 TCID, TEST_ERRNO,
+						 strerror(TEST_ERRNO));
+					cleanup();
+					tst_exit();
+				}
+				tst_resm(TINFO, "Iteration = %i", i);
 			}
-                        tst_resm(TPASS, "clock_nanosleep2() passed");
+			tst_resm(TPASS, "clock_nanosleep2() passed");
 		}
-        }
-        tst_exit();
+	}
+	tst_exit();
 }

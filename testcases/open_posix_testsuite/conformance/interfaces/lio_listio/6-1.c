@@ -53,6 +53,6 @@ int main()
 	exit(PTS_FAIL);
 #endif
 
-	printf ("Test PASSED\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

@@ -87,12 +87,13 @@ struct test_case_t {
 	uid_t user_id;
 	gid_t group_id;
 } test_cases[] = {
-	{ 700, 701 },
-	{ 702, -1 },
-	{ 703, 701 },
-	{ -1, 704 },
-	{ 703, 705 },
-};
+	{
+	700, 701}, {
+	702, -1}, {
+	703, 701}, {
+	-1, 704}, {
+703, 705},};
+
 int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 
 void setup();			/* setup function for the test */
@@ -123,7 +124,7 @@ int main(int ac, char **av)
 			TEST(chown(TESTFILE, user_id, group_id));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL|TTERRNO, "chown failed");
+				tst_resm(TFAIL | TTERRNO, "chown failed");
 				continue;
 			}
 			if (STD_FUNCTIONAL_TEST) {
@@ -164,8 +165,9 @@ void setup()
 
 	tst_tmpdir();
 
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "opening %s failed", TESTFILE);
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "opening %s failed",
+			 TESTFILE);
 	if (close(fd) == -1)
 		tst_brkm(TBROK, cleanup, "closing %s failed", TESTFILE);
 

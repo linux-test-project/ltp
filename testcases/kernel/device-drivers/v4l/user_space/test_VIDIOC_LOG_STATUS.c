@@ -28,7 +28,8 @@
 
 #include "test_VIDIOC_LOG_STATUS.h"
 
-void test_VIDIOC_LOG_STATUS() {
+void test_VIDIOC_LOG_STATUS()
+{
 	int ret_log, errno_log;
 
 	ret_log = ioctl(get_video_fd(), VIDIOC_LOG_STATUS);

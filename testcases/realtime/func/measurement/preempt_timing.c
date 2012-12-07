@@ -68,12 +68,12 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
@@ -81,7 +81,7 @@ int parse_args(int c, char *v)
 unsigned long long sample_list[ITERATIONS];
 int main(int argc, char *argv[])
 {
-	unsigned long long i,j, delta, min, max, avg;
+	unsigned long long i, j, delta, min, max, avg;
 	struct sched_param param;
 	cpu_set_t mask;
 	int err;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 	min = -1;
 	setup();
 
-	rt_init("h",parse_args,argc,argv);
+	rt_init("h", parse_args, argc, argv);
 
 	/* switch to SCHED_FIFO 99 */
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);
@@ -104,10 +104,14 @@ int main(int argc, char *argv[])
 	/* Check that the user has the appropriate privileges */
 	if (err) {
 		if (errno == EPERM) {
-			fprintf(stderr, "This program runs with a scheduling policy of SCHED_FIFO at priority %d\n", param.sched_priority);
-			fprintf(stderr, "You don't have the necessary privileges to create such a real-time process.\n");
+			fprintf(stderr,
+				"This program runs with a scheduling policy of SCHED_FIFO at priority %d\n",
+				param.sched_priority);
+			fprintf(stderr,
+				"You don't have the necessary privileges to create such a real-time process.\n");
 		} else {
-			fprintf(stderr, "Failed to set scheduler, errno %d\n", errno);
+			fprintf(stderr, "Failed to set scheduler, errno %d\n",
+				errno);
 		}
 		exit(1);
 	}
@@ -121,27 +125,30 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	for (j=0; j < INTERVALS; j++) {
+	for (j = 0; j < INTERVALS; j++) {
 		/* Collect samples */
 		for (i = 0; i < ITERATIONS; i++)
 			rdtscll(sample_list[i]);
 
 		/* Process samples */
-		for (i = 0; i < (ITERATIONS-1); i++) {
-			delta = sample_list[i+1] - sample_list[i];
-			if (delta < min) min = delta;
-			if (delta > max) max = delta;
+		for (i = 0; i < (ITERATIONS - 1); i++) {
+			delta = sample_list[i + 1] - sample_list[i];
+			if (delta < min)
+				min = delta;
+			if (delta > max)
+				max = delta;
 			if (delta > 100000)
-				printf("maxd(%llu:%llu): %llu %llu = %llu\n", j, i,
-					sample_list[i], sample_list[i+1],
-					delta);
+				printf("maxd(%llu:%llu): %llu %llu = %llu\n", j,
+				       i, sample_list[i], sample_list[i + 1],
+				       delta);
 			avg += delta;
 		}
-		usleep(100); /*let necessary things happen*/
+		usleep(100);	/*let necessary things happen */
 	}
 	avg /= (ITERATIONS * INTERVALS);
 
-	printf("%lld pairs of gettimeofday() calls completed\n", ITERATIONS*INTERVALS);
+	printf("%lld pairs of gettimeofday() calls completed\n",
+	       ITERATIONS * INTERVALS);
 	printf("Time between calls:\n");
 	printf("Minimum: %llu \n", min);
 	printf("Maximum: %llu \n", max);

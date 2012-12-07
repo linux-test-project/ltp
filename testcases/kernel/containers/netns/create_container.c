@@ -37,8 +37,8 @@ int main()
 	 * child network namespace container respectively
 	 */
 	status = create_net_namespace("runallnetworktests_parent.sh",
-						"runallnetworktests_child.sh");
+				      "runallnetworktests_child.sh");
 	printf("Execution of all the network testcases under network"
-			" namespace done. return value is %d\n", status);
+	       " namespace done. return value is %d\n", status);
 	return status;
 }

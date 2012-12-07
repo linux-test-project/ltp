@@ -55,12 +55,12 @@ int create_file(char *func_name, int NbVal)
 	switch (myproc = fork()) {
 	case -1:
 		err(1, "fork failed");
-	case 0: {
-		char *arglist[] = { func_name, NULL };
-	     	execvp(arglist[0], arglist);
+	case 0:{
+			char *arglist[] = { func_name, NULL };
+			execvp(arglist[0], arglist);
 
-	     	err(1, "execvp failed");
-	}
+			err(1, "execvp failed");
+		}
 	default:
 		;
 	}

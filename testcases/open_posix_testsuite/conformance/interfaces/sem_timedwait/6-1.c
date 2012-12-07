@@ -27,17 +27,18 @@
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main() {
+int main()
+{
 	sem_t mysemp;
 	struct timespec ts;
 	int sts;
 
-        if (sem_init (&mysemp, 0, 0) == -1) {
-                perror(ERROR_PREFIX "sem_init");
-                return PTS_UNRESOLVED;
-        }
-	ts.tv_sec=time(NULL);
-        ts.tv_nsec= -3;
+	if (sem_init(&mysemp, 0, 0) == -1) {
+		perror(ERROR_PREFIX "sem_init");
+		return PTS_UNRESOLVED;
+	}
+	ts.tv_sec = time(NULL);
+	ts.tv_nsec = -3;
 
 	sts = sem_timedwait(&mysemp, &ts);
 

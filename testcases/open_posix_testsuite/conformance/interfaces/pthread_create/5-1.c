@@ -23,7 +23,7 @@
 #define NUM_THREADS 5
 
 /* The thread start routine. */
-void *a_thread_func(void* num)
+void *a_thread_func(void *num)
 {
 	intptr_t i = (intptr_t) num;
 	printf("Passed argument for thread: %d\n", (int)i);
@@ -37,10 +37,9 @@ int main()
 	pthread_t new_th;
 	long i;
 
-	for (i=1;i<NUM_THREADS+1;i++)
-	{
-		if (pthread_create(&new_th, NULL, a_thread_func, (void*)i) != 0)
-		{
+	for (i = 1; i < NUM_THREADS + 1; i++) {
+		if (pthread_create(&new_th, NULL, a_thread_func, (void *)i) !=
+		    0) {
 			printf("Error creating thread\n");
 			return PTS_FAIL;
 		}

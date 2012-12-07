@@ -34,15 +34,19 @@ static char *progname;
 static pid_t test_pgrp;
 static FILE *tty_fp;
 
-static void int_func(int signum) {
-	pounder_fprintf(tty_fp, "%s: Killed by interrupt.  Last exit code = %d.\n",
-		progname, res);
+static void int_func(int signum)
+{
+	pounder_fprintf(tty_fp,
+			"%s: Killed by interrupt.  Last exit code = %d.\n",
+			progname, res);
 	kill(-test_pgrp, SIGTERM);
 	exit(res);
 }
-static void alarm_func(int signum) {
+
+static void alarm_func(int signum)
+{
 	pounder_fprintf(tty_fp, "%s: Killed by timer.  Last exit code = %d.\n",
-		progname, res);
+			progname, res);
 	kill(-test_pgrp, SIGTERM);
 	exit(res);
 }
@@ -53,7 +57,8 @@ static void term_func(int signum) {
 }
 */
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	int secs, stat;
 	pid_t pid;
 	unsigned int revs = 0;
@@ -63,23 +68,26 @@ int main(int argc, char *argv[]) {
 	int fail_counter = 1;
 
 	if (argc < 3) {
-		printf("Usage: %s [-m max_failures] time_in_sec command [args]\n", argv[0]);
+		printf
+		    ("Usage: %s [-m max_failures] time_in_sec command [args]\n",
+		     argv[0]);
 		exit(1);
 	}
-
 	//by default, set max_failures to whatever the env variable $MAX_FAILURES is
-        char *max_failures_env = getenv("MAX_FAILURES");
-        max_failures = atoi(max_failures_env);
+	char *max_failures_env = getenv("MAX_FAILURES");
+	max_failures = atoi(max_failures_env);
 
 	//if the -m option is used when calling timed_loop, override max_failures
 	//specified by $MAX_FAILURES with the given argument instead
 	if (argc > 4 && strcmp(argv[1], "-m") == 0) {
 		if ((max_failures = atoi(argv[2])) >= 0) {
 			use_max_failures = 1;
-		}
-		else {
-			printf("Usage: %s [-m max_failures] time_in_sec command [args]\n", argv[0]);
-			printf("max_failures should be a nonnegative integer\n");
+		} else {
+			printf
+			    ("Usage: %s [-m max_failures] time_in_sec command [args]\n",
+			     argv[0]);
+			printf
+			    ("max_failures should be a nonnegative integer\n");
 			exit(1);
 		}
 	}
@@ -100,8 +108,7 @@ int main(int argc, char *argv[]) {
 		} else {
 			progname++;
 		}
-	}
-	else {
+	} else {
 		progname = rindex(argv[2], '/');
 		if (progname == NULL) {
 			progname = argv[2];
@@ -123,20 +130,19 @@ int main(int argc, char *argv[]) {
 
 	if (use_max_failures) {
 		secs = atoi(argv[3]);
-	}
-	else {
+	} else {
 		secs = atoi(argv[1]);
 	}
 	alarm(secs);
 
 	while (1) {
-		pounder_fprintf(tty_fp, "%s: %s loop #%d.\n", progname, start_msg, revs++);
+		pounder_fprintf(tty_fp, "%s: %s loop #%d.\n", progname,
+				start_msg, revs++);
 		pid = fork();
 		if (pid == 0) {
 			if (setpgrp() < 0) {
 				perror("setpgid");
 			}
-
 			// run the program
 			if (use_max_failures) {
 				if (argc > 5) {
@@ -146,8 +152,7 @@ int main(int argc, char *argv[]) {
 				}
 
 				perror(argv[4]);
-			}
-			else {
+			} else {
 				if (argc > 3) {
 					stat = execvp(argv[2], &argv[2]);
 				} else {
@@ -168,24 +173,26 @@ int main(int argc, char *argv[]) {
 			perror("waitpid");
 			exit(1);
 		}
-
 		// interrogate it
 		if (WIFSIGNALED(stat)) {
 			pounder_fprintf(tty_fp, "%s: %s on signal %d.\n",
-				progname, fail_msg, WTERMSIG(stat));
+					progname, fail_msg, WTERMSIG(stat));
 			res = 255;
 		} else {
 			res = WEXITSTATUS(stat);
 			if (res == 0) {
-				pounder_fprintf(tty_fp, "%s: %s.\n", progname, pass_msg);
+				pounder_fprintf(tty_fp, "%s: %s.\n", progname,
+						pass_msg);
 			} else if (res < 0 || res == 255) {
-				pounder_fprintf(tty_fp, "CHECK %s: %s with code %d.\n",
-					progname, abort_msg, res);
+				pounder_fprintf(tty_fp,
+						"CHECK %s: %s with code %d.\n",
+						progname, abort_msg, res);
 				exit(-1);
 				// FIXME: add test to blacklist
 			} else {
-				pounder_fprintf(tty_fp, "%s: %s with code %d.\n",
-					progname, fail_msg, res);
+				pounder_fprintf(tty_fp,
+						"%s: %s with code %d.\n",
+						progname, fail_msg, res);
 				if (max_failures > 0) {
 					if (++fail_counter > max_failures) {
 						exit(-1);

@@ -16,9 +16,9 @@
 
 #include <sys/mman.h>
 
-typedef int (*shm_open_test)(const char *, int, mode_t);
+typedef int (*shm_open_test) (const char *, int, mode_t);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	shm_open_test dummyvar;
 	dummyvar = shm_open;

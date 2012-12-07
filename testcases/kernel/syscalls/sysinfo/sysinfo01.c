@@ -92,7 +92,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();		/* Global setup */
 
@@ -108,7 +108,7 @@ int main(int ac, char **av)
 			/* To gather stats on errnos returned, log the errno */
 			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, errno=%d"
 				 " : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-		 } else {
+		} else {
 			/* Test succeeded */
 
 			/* This portion of the code generates information
@@ -145,7 +145,8 @@ int main(int ac, char **av)
 				printf("procs %lu\n",
 				       (unsigned long)sys_buf->procs);
 			} else {
-				tst_resm(TPASS, "Test to check the return code PASSED");
+				tst_resm(TPASS,
+					 "Test to check the return code PASSED");
 			}
 		}
 	}

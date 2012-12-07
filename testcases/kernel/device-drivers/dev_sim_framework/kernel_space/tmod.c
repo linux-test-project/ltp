@@ -44,7 +44,7 @@ MODULE_DESCRIPTION(TMOD_DRIVER_NAME);
 MODULE_LICENSE("GPL");
 
 static int tmod_ioctl(struct inode *, struct file *, unsigned int,
-		       unsigned long);
+		      unsigned long);
 static int tmod_open(struct inode *, struct file *);
 static int tmod_close(struct inode *, struct file *);
 
@@ -58,9 +58,9 @@ static int Major = TMOD_MAJOR;
  * correct file descriptor
  */
 static struct file_operations tmod_fops = {
-        open : tmod_open,
-        release: tmod_close,
-        ioctl: tmod_ioctl,
+open:	tmod_open,
+release:tmod_close,
+ioctl:	tmod_ioctl,
 };
 
 /*
@@ -68,12 +68,14 @@ static struct file_operations tmod_fops = {
  * your test modules, need them for the file
  * operations structure
  */
-static int tmod_open(struct inode *ino, struct file *f) {
-      return 0;
+static int tmod_open(struct inode *ino, struct file *f)
+{
+	return 0;
 }
 
-static int tmod_close(struct inode *ino, struct file *f) {
-      return 0;
+static int tmod_close(struct inode *ino, struct file *f)
+{
+	return 0;
 }
 
 /*
@@ -90,11 +92,12 @@ static int tmod_close(struct inode *ino, struct file *f) {
  *
  */
 static int tmod_ioctl(struct inode *ino, struct file *f,
-                        unsigned int cmd, unsigned long l) {
-	int 			rc;
-	tmod_interface_t	tif;
-	caddr_t			*inparms;
-	caddr_t			*outparms;
+		      unsigned int cmd, unsigned long l)
+{
+	int rc;
+	tmod_interface_t tif;
+	caddr_t *inparms;
+	caddr_t *outparms;
 
 	printk("Enter tmod_ioctl\n");
 
@@ -111,31 +114,32 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	 *
 	 */
 	if (copy_from_user(&tif, (void *)l, sizeof(tif))) {
-                /* Bad address */
-                return(-EFAULT);
-        }
+		/* Bad address */
+		return (-EFAULT);
+	}
 
 	/*
-         * Setup inparms and outparms as needed
-         */
-        if (tif.in_len > 0) {
-                inparms = (caddr_t *)kmalloc(tif.in_len, GFP_KERNEL);                if (!inparms) {
-                        return(-ENOMEM);
-                }
+	 * Setup inparms and outparms as needed
+	 */
+	if (tif.in_len > 0) {
+		inparms = (caddr_t *) kmalloc(tif.in_len, GFP_KERNEL);
+		if (!inparms) {
+			return (-ENOMEM);
+		}
 
-                rc = copy_from_user(inparms, tif.in_data, tif.in_len);
-                if (rc) {
-                        kfree(inparms);
-                        return(-EFAULT);
-                }
-        }
-        if (tif.out_len > 0) {
-                outparms = (caddr_t *)kmalloc(tif.out_len, GFP_KERNEL);
-                if (!outparms) {
-                        kfree(inparms);
-                        return(-ENOMEM);
-                }
-        }
+		rc = copy_from_user(inparms, tif.in_data, tif.in_len);
+		if (rc) {
+			kfree(inparms);
+			return (-EFAULT);
+		}
+	}
+	if (tif.out_len > 0) {
+		outparms = (caddr_t *) kmalloc(tif.out_len, GFP_KERNEL);
+		if (!outparms) {
+			kfree(inparms);
+			return (-ENOMEM);
+		}
+	}
 
 	/*
 	 * Use a switch statement to determine which function
@@ -144,12 +148,14 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	 * needed
 	 *
 	 */
- 	switch(cmd) {
-		case LTP_OPTION1:	rc = test_option(); break;
-		default:
-			printk("Mismatching ioctl command\n");
-                        break;
-        }
+	switch (cmd) {
+	case LTP_OPTION1:
+		rc = test_option();
+		break;
+	default:
+		printk("Mismatching ioctl command\n");
+		break;
+	}
 
 	/*
 	 * copy in the test return code, the reason we
@@ -166,28 +172,28 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	 */
 
 	/* if outparms then copy outparms into tif.out_data */
-        if (outparms) {
-                if (copy_to_user(tif.out_data, outparms, tif.out_len)) {
-                        printk("tpci: Unsuccessful copy_to_user of outparms\n");
-                        rc = -EFAULT;
-                }
-        }
+	if (outparms) {
+		if (copy_to_user(tif.out_data, outparms, tif.out_len)) {
+			printk("tpci: Unsuccessful copy_to_user of outparms\n");
+			rc = -EFAULT;
+		}
+	}
 
-        /* copy tif structure into l so that can be used by user program */
-        if (copy_to_user((void*)l, &tif, sizeof(tif))) {
-                printk("tpci: Unsuccessful copy_to_user of tif\n");
-                rc = -EFAULT;
-        }
+	/* copy tif structure into l so that can be used by user program */
+	if (copy_to_user((void *)l, &tif, sizeof(tif))) {
+		printk("tpci: Unsuccessful copy_to_user of tif\n");
+		rc = -EFAULT;
+	}
 
-        /*
-         * free inparms and outparms
-         */
-        if (inparms) {
-                kfree(inparms);
-        }
-        if (outparms) {
-                kfree(outparms);
-        }
+	/*
+	 * free inparms and outparms
+	 */
+	if (inparms) {
+		kfree(inparms);
+	}
+	if (outparms) {
+		kfree(outparms);
+	}
 
 	return rc;
 }
@@ -207,14 +213,15 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
  *
  */
 
-static int test_option() {
+static int test_option()
+{
 
 	/* setup test parameters and make the call here */
 
 	printk("tmod: this is option1 example\n");
 
 	/* remember that printk does not show up on the console,
-	check /var/log/messages to see your what is printed */
+	   check /var/log/messages to see your what is printed */
 
 	return 0;
 }
@@ -225,24 +232,25 @@ static int test_option() {
  *      as a char device, and perform any necessary
  *      initialization for pci devices
  */
-static int tmod_init_module(void) {
+static int tmod_init_module(void)
+{
 	int rc;
 
 	SET_MODULE_OWNER(&tmod_fops);
 
 	rc = register_chrdev(Major, DEVICE_NAME, &tmod_fops);
-        if (rc < 0) {
-                printk("tmod: Failed to register device.\n");
-                return rc;
-        }
+	if (rc < 0) {
+		printk("tmod: Failed to register device.\n");
+		return rc;
+	}
 
-        if (Major == 0)
-                Major = rc;
+	if (Major == 0)
+		Major = rc;
 
 	/* call any other init functions you might use here */
 
 	printk("tmod: Registration success.\n");
-      return 0;
+	return 0;
 }
 
 /*
@@ -250,16 +258,17 @@ static int tmod_init_module(void) {
  *      unregister the device and any necessary
  *      operations to close devices
  */
-static void tmod_exit_module(void) {
-        int rc;
+static void tmod_exit_module(void)
+{
+	int rc;
 
-	/* free any pointers still allocated, using kfree*/
+	/* free any pointers still allocated, using kfree */
 
 	rc = unregister_chrdev(Major, DEVICE_NAME);
-        if (rc < 0)
-                printk("tmod: unregister failed\n");
-        else
-                printk("tmod: unregister success\n");
+	if (rc < 0)
+		printk("tmod: unregister failed\n");
+	else
+		printk("tmod: unregister success\n");
 
 }
 
@@ -267,4 +276,4 @@ static void tmod_exit_module(void) {
 loaded and that exit is run when it is removed */
 
 module_init(tmod_init_module)
-module_exit(tmod_exit_module)
+    module_exit(tmod_exit_module)

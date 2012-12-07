@@ -108,12 +108,14 @@ struct test_case_t {
 } test_cases[] = {
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
-	{ (cap_user_header_t) - 1, &data, EFAULT, "EFAULT"},
-	{ &header, (cap_user_data_t) - 1, EFAULT, "EFAULT"},
+	{
+	(cap_user_header_t) - 1, &data, EFAULT, "EFAULT"}, {
+	&header, (cap_user_data_t) - 1, EFAULT, "EFAULT"},
 #endif
-	{ &header, &data, EINVAL, "EINVAL"},
-	{ &header, &data, EINVAL, "EINVAL"},
-	{ &header, &data, ESRCH, "ESRCH"}
+	{
+	&header, &data, EINVAL, "EINVAL"}, {
+	&header, &data, EINVAL, "EINVAL"}, {
+	&header, &data, ESRCH, "ESRCH"}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
@@ -136,16 +138,16 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; ++i) {
 			test_setup(i);
 			TEST(syscall(__NR_capget, test_cases[i].headerp,
-				    test_cases[i].datap));
+				     test_cases[i].datap));
 
 			if (TEST_RETURN == -1 &&
 			    TEST_ERRNO == test_cases[i].exp_errno) {
-				tst_resm(TPASS|TTERRNO,
-				    "capget failed as expected");
+				tst_resm(TPASS | TTERRNO,
+					 "capget failed as expected");
 			} else {
-				tst_resm(TFAIL|TTERRNO,
-				    "capget failed unexpectedly (%ld)",
-				    TEST_RETURN);
+				tst_resm(TFAIL | TTERRNO,
+					 "capget failed unexpectedly (%ld)",
+					 TEST_RETURN);
 			}
 		}
 	}

@@ -79,7 +79,7 @@
  *****************************************************************************/
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include <sys/types.h>
@@ -153,21 +153,21 @@ int main(int ac, char **av)
 	/* Check for mandatory option of the testcase */
 	if (!Dflag) {
 		tst_brkm(TBROK, NULL,
-		    "you must specify the device used for mounting with -D "
-		    "option");
+			 "you must specify the device used for mounting with -D "
+			 "option");
 	}
 
 	if (Tflag) {
-		Fstype = (char *)malloc(strlen(fstype)+1);
+		Fstype = (char *)malloc(strlen(fstype) + 1);
 		if (Fstype == NULL) {
-			tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
+			tst_brkm(TBROK | TERRNO, NULL, "malloc failed");
 		}
 		Fstype[strlen(fstype)] = '\0';
 		strncpy(Fstype, fstype, strlen(fstype));
 	} else {
-		Fstype = (char *)malloc(strlen(DEFAULT_FSTYPE)+1);
+		Fstype = (char *)malloc(strlen(DEFAULT_FSTYPE) + 1);
 		if (Fstype == NULL) {
-			tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
+			tst_brkm(TBROK | TERRNO, NULL, "malloc failed");
 		}
 		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE));
 		Fstype[strlen(DEFAULT_FSTYPE)] = '\0';
@@ -193,22 +193,22 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN != 0) {
-				tst_resm(TFAIL|TTERRNO, "mount(2) failed");
+				tst_resm(TFAIL | TTERRNO, "mount(2) failed");
 				continue;
 			}
 
 			/* Validate the rwflag */
 			if (test_rwflag(i, lc) == 1) {
 				tst_resm(TFAIL, "mount(2) failed while"
-				    " validating %ld", rwflags[i]);
+					 " validating %ld", rwflags[i]);
 			} else {
 				tst_resm(TPASS, "mount(2) passed with "
-				    "rwflag = %ld", rwflags[i]);
+					 "rwflag = %ld", rwflags[i]);
 			}
 			TEST(umount(mntpoint));
 			if (TEST_RETURN != 0) {
-				tst_brkm(TBROK|TTERRNO, cleanup,
-				    "umount(2) failed for %s", mntpoint);
+				tst_brkm(TBROK | TTERRNO, cleanup,
+					 "umount(2) failed for %s", mntpoint);
 			}
 		}
 	}
@@ -239,8 +239,8 @@ int test_rwflag(int i, int cnt)
 			if (errno == EROFS) {
 				return 0;
 			} else {
-				tst_resm(TWARN|TERRNO,
-				    "open didn't fail with EROFS");
+				tst_resm(TWARN | TERRNO,
+					 "open didn't fail with EROFS");
 				return 1;
 			}
 		}
@@ -250,21 +250,21 @@ int test_rwflag(int i, int cnt)
 		/* Validate MS_NODEV flag of mount call */
 
 		snprintf(file, PATH_MAX, "%smynod_%d_%d", Path_name, getpid(),
-			       cnt);
+			 cnt);
 		if (mknod(file, S_IFBLK | 0777, 0) == 0) {
 			if ((fd = open(file, O_RDWR, S_IRWXU)) == -1) {
 				if (errno == EACCES) {
 					return 0;
 				} else {
-					tst_resm(TWARN|TERRNO,
-					    "open didn't fail with EACCES");
+					tst_resm(TWARN | TERRNO,
+						 "open didn't fail with EACCES");
 					return 1;
 				}
 			}
 			close(fd);
 		} else {
-			tst_resm(TWARN|TERRNO, "mknod(2) failed to create %s",
-			    file);
+			tst_resm(TWARN | TERRNO, "mknod(2) failed to create %s",
+				 file);
 			return 1;
 		}
 		return 1;
@@ -273,7 +273,7 @@ int test_rwflag(int i, int cnt)
 
 		snprintf(file, PATH_MAX, "%stmp1", Path_name);
 		if ((fd = open(file, O_CREAT | O_RDWR, S_IRWXU)) == -1) {
-			tst_resm(TWARN|TERRNO, "opening %s failed", file);
+			tst_resm(TWARN | TERRNO, "opening %s failed", file);
 		} else {
 			close(fd);
 			execlp(file, basename(file), NULL);
@@ -291,16 +291,16 @@ int test_rwflag(int i, int cnt)
 		snprintf(file, PATH_MAX, "%s%s", Path_name, TEMP_FILE);
 		if ((fildes = open(file, O_RDWR | O_CREAT, FILE_MODE))
 		    == -1) {
-			tst_resm(TWARN|TERRNO,
-			    "open(%s, O_RDWR|O_CREAT, %#o) failed",
-			    file, FILE_MODE);
+			tst_resm(TWARN | TERRNO,
+				 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+				 file, FILE_MODE);
 			return 1;
 		}
 
 		/* Write the buffer data into file */
 		if (write(fildes, write_buffer, strlen(write_buffer)) !=
 		    strlen(write_buffer)) {
-			tst_resm(TWARN|TERRNO, "writing to %s failed", file);
+			tst_resm(TWARN | TERRNO, "writing to %s failed", file);
 			close(fildes);
 			return 1;
 		}
@@ -317,7 +317,7 @@ int test_rwflag(int i, int cnt)
 		if (read(fildes, read_buffer, sizeof(read_buffer)) > 0) {
 			if (strcmp(read_buffer, write_buffer)) {
 				tst_resm(TWARN, "Data read from %s and written "
-				    "mismatch", file);
+					 "mismatch", file);
 				close(fildes);
 				return 1;
 			} else {
@@ -325,7 +325,7 @@ int test_rwflag(int i, int cnt)
 				return 0;
 			}
 		} else {
-			tst_resm(TWARN|TERRNO, "read() Fails on %s", file);
+			tst_resm(TWARN | TERRNO, "read() Fails on %s", file);
 			close(fildes);
 			return 1;
 		}
@@ -335,7 +335,7 @@ int test_rwflag(int i, int cnt)
 
 		TEST(mount(device, mntpoint, Fstype, MS_REMOUNT, NULL));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN|TTERRNO, "mount(2) failed to remount");
+			tst_resm(TWARN | TTERRNO, "mount(2) failed to remount");
 			return 1;
 		} else {
 			snprintf(file, PATH_MAX, "%stmp2", Path_name);
@@ -353,25 +353,25 @@ int test_rwflag(int i, int cnt)
 		/* Validate MS_NOSUID flag of mount call */
 
 		if (setup_uid() != 0) {
-			tst_resm(TBROK|TERRNO, "setup_uid failed");
+			tst_resm(TBROK | TERRNO, "setup_uid failed");
 			return 1;
 		}
 		switch (pid = fork()) {
 		case -1:
-			tst_resm(TBROK|TERRNO, "fork failed");
+			tst_resm(TBROK | TERRNO, "fork failed");
 			return 1;
 		case 0:
 			snprintf(file, PATH_MAX, "%ssetuid_test", Path_name);
 			if (chmod(file, SUID_MODE) != 0) {
 				tst_resm(TWARN, "chmod(%s, %#o) failed",
-				    file, SUID_MODE);
+					 file, SUID_MODE);
 			}
 
 			ltpuser = getpwnam(nobody_uid);
 			if (setreuid(ltpuser->pw_uid, ltpuser->pw_uid) == -1) {
-				tst_resm(TWARN|TERRNO,
-				    "seteuid() failed to change euid to %d",
-				    ltpuser->pw_uid);
+				tst_resm(TWARN | TERRNO,
+					 "seteuid() failed to change euid to %d",
+					 ltpuser->pw_uid);
 			}
 			execlp(file, basename(file), NULL);
 			exit(1);
@@ -397,7 +397,7 @@ int setup_uid()
 
 	switch (pid = fork()) {
 	case -1:
-		tst_resm(TWARN|TERRNO, "fork failed");
+		tst_resm(TWARN | TERRNO, "fork failed");
 		return 1;
 	case 0:
 		Cmd_buffer[0] = cmd;
@@ -422,7 +422,7 @@ int setup_uid()
 			return WTERMSIG(status);
 		} else {
 			/* Should be 0. */
-			assert (status == 0);
+			assert(status == 0);
 			return 0;
 		}
 	}
@@ -452,8 +452,8 @@ void setup()
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE)) {
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
-		    mntpoint, DIR_MODE);
+		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",
+			 mntpoint, DIR_MODE);
 	}
 	/* Get the current working directory of the process */
 	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
@@ -461,21 +461,21 @@ void setup()
 	}
 	if (chmod(Path_name, DIR_MODE) != 0) {
 		tst_brkm(TBROK, cleanup, "chmod(%s, %#o) failed",
-		    Path_name, DIR_MODE);
+			 Path_name, DIR_MODE);
 	}
 	snprintf(file, PATH_MAX, "%ssetuid_test", Path_name);
 	if (stat(file, &setuid_test_stat) < 0) {
 		tst_brkm(TBROK, cleanup, "stat for setuid_test failed");
 	} else {
 		if ((setuid_test_stat.st_uid || setuid_test_stat.st_gid) &&
-		     chown(file, 0, 0) < 0) {
+		    chown(file, 0, 0) < 0) {
 			tst_brkm(TBROK, cleanup,
-					"chown for setuid_test failed");
+				 "chown for setuid_test failed");
 		}
 		if (setuid_test_stat.st_mode != SUID_MODE &&
 		    chmod(file, SUID_MODE) < 0) {
 			tst_brkm(TBROK, cleanup,
-					"setuid for setuid_test failed");
+				 "setuid for setuid_test failed");
 		}
 	}
 

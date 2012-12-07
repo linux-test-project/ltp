@@ -19,8 +19,8 @@
 int main(int argc, char *argv[])
 {
 #if !defined(_POSIX_CPUTIME) || _POSIX_CPUTIME == -1
-        printf("_POSIX_CPUTIME unsupported\n");
-        return PTS_UNSUPPORTED;
+	printf("_POSIX_CPUTIME unsupported\n");
+	return PTS_UNSUPPORTED;
 #else
 	clockid_t clockid_1;
 

@@ -41,8 +41,7 @@ int main()
 	int ret;
 
 	/* Create the thread */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
@@ -51,19 +50,19 @@ int main()
 	 * The thread could have ended by the time we try to join, so
 	 * don't worry about it, just so long as other errors don't
 	 * occur. The point is to make sure the thread has ended execution. */
-	if (pthread_join(new_th, NULL) == EDEADLK)
-	{
+	if (pthread_join(new_th, NULL) == EDEADLK) {
 		perror("Error joining thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Detach the non-existant thread. */
-	ret=pthread_detach(new_th);
+	ret = pthread_detach(new_th);
 
 	/* Check return value of pthread_detach() */
-	if (ret != ESRCH)
-	{
-		printf("Test FAILED: Incorrect return code: %d instead of ESRCH\n", ret);
+	if (ret != ESRCH) {
+		printf
+		    ("Test FAILED: Incorrect return code: %d instead of ESRCH\n",
+		     ret);
 		return PTS_FAIL;
 
 	}

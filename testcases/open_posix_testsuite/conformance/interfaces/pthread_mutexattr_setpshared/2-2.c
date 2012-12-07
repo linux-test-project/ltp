@@ -24,25 +24,24 @@ int main()
 {
 
 	/* Make sure there is process-shared capability. */
-	#ifndef PTHREAD_PROCESS_SHARED
-	fprintf(stderr,"process-shared attribute is not available for testing\n");
+#ifndef PTHREAD_PROCESS_SHARED
+	fprintf(stderr,
+		"process-shared attribute is not available for testing\n");
 	return PTS_UNRESOLVED;
-	#endif
+#endif
 
 	pthread_mutexattr_t mta;
 	int ret;
 
 	/* Initialize a mutex attributes object */
-	if (pthread_mutexattr_init(&mta) != 0)
-	{
+	if (pthread_mutexattr_init(&mta) != 0) {
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	 /* Set the attribute to PTHREAD_PROCESS_PRIVATE.  */
-	ret=pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_SHARED);
-	if (ret != 0)
-	{
+	/* Set the attribute to PTHREAD_PROCESS_PRIVATE.  */
+	ret = pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_SHARED);
+	if (ret != 0) {
 		printf("Test FAILED: Expected return code 0, got: %d\n", ret);
 		return PTS_FAIL;
 	}

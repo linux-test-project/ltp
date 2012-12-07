@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 
 		switch (pid = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
 			do_alloc();
 			exit(0);
@@ -112,16 +112,16 @@ int main(int argc, char *argv[])
 static void init_meminfo(void)
 {
 	swap_free_init = read_meminfo("SwapFree:");
-	mem_free_init  = read_meminfo("MemFree:");
-	mem_over       = mem_free_init * COE_SLIGHT_OVER;
-	mem_over_max   = mem_free_init * COE_DELTA;
+	mem_free_init = read_meminfo("MemFree:");
+	mem_over = mem_free_init * COE_SLIGHT_OVER;
+	mem_over_max = mem_free_init * COE_DELTA;
 
 	/* at least 10MB free physical memory needed */
 	if (mem_free_init < 10240) {
 		sleep(5);
 		if (mem_free_init < 10240)
 			tst_brkm(TCONF, cleanup,
-				    "Not enough free memory to test.");
+				 "Not enough free memory to test.");
 	}
 	if (swap_free_init < mem_over)
 		tst_brkm(TCONF, cleanup, "Not enough swap space to test.");
@@ -137,11 +137,11 @@ static void do_alloc(void)
 	tst_resm(TINFO, "try to allocate: %ld MB", mem_count / 1024);
 	s = malloc(mem_count * 1024);
 	if (s == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "malloc");
+		tst_brkm(TBROK | TERRNO, cleanup, "malloc");
 	memset(s, 1, mem_count * 1024);
 	tst_resm(TINFO, "memory allocated: %ld MB", mem_count / 1024);
 	if (raise(SIGSTOP) == -1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "kill");
+		tst_brkm(TBROK | TERRNO, tst_exit, "kill");
 	free(s);
 }
 
@@ -152,7 +152,7 @@ static void check_swapping(void)
 
 	/* wait child stop */
 	if (waitpid(pid, &status, WUNTRACED) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 	if (!WIFSTOPPED(status))
 		tst_brkm(TBROK, cleanup, "child was not stopped.");
 
@@ -162,16 +162,16 @@ static void check_swapping(void)
 		if (swapped > mem_over_max) {
 			kill(pid, SIGCONT);
 			tst_brkm(TFAIL, cleanup, "heavy swapping detected: "
-					"%ld MB swapped.", swapped / 1024);
+				 "%ld MB swapped.", swapped / 1024);
 		}
 		sleep(1);
 	}
 	tst_resm(TPASS, "no heavy swapping detected, %ld MB swapped.",
-			swapped / 1024);
+		 swapped / 1024);
 	kill(pid, SIGCONT);
 	/* wait child exit */
 	if (waitpid(pid, &status, 0) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 }
 
 void setup(void)

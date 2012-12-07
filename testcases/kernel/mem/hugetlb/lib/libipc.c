@@ -54,7 +54,7 @@ int getipckey(void)
 
 	curdir = getcwd(curdir, size);
 	if (curdir == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "getcwd(curdir)");
+		tst_brkm(TBROK | TERRNO, cleanup, "getcwd(curdir)");
 
 	/*
 	 * Get a Sys V IPC key
@@ -71,9 +71,9 @@ int getipckey(void)
 	ftime(&time_info);
 	srandom((unsigned int)time_info.millitm);
 
-	ipc_key = ftok(curdir, ascii_a + random()%26);
+	ipc_key = ftok(curdir, ascii_a + random() % 26);
 	if (ipc_key == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "ftok");
+		tst_brkm(TBROK | TERRNO, cleanup, "ftok");
 
 	return ipc_key;
 }
@@ -87,11 +87,11 @@ int getuserid(char *user)
 
 	ent = (struct passwd *)malloc(sizeof(struct passwd));
 	if (ent == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "malloc ent");
+		tst_brkm(TBROK | TERRNO, cleanup, "malloc ent");
 
 	ent = getpwnam(user);
 	if (ent == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "getpwnam");
+		tst_brkm(TBROK | TERRNO, cleanup, "getpwnam");
 
 	return ent->pw_uid;
 }

@@ -54,8 +54,9 @@ static void test(int rw_loop, int truncate_loop, int append_loop,
 		 int create_loop)
 {
 	static const int rw_flags[4] = { 0, O_RDONLY, O_WRONLY, O_RDWR };
-	static const int create_flags[3] = { 0, O_CREAT /* nonexistent*/ ,
-					     O_CREAT /* existent */ };
+	static const int create_flags[3] = { 0, O_CREAT /* nonexistent */ ,
+		O_CREAT /* existent */
+	};
 	static const int truncate_flags[2] = { 0, O_TRUNC };
 	static const int append_flags[2] = { 0, O_APPEND };
 	int level;
@@ -68,7 +69,7 @@ static void test(int rw_loop, int truncate_loop, int append_loop,
 		 append_loop, truncate_loop, create_loop, rw_loop);
 	fprintf(exception_fp, "deny_rewrite %s\n", buffer);
 	flags = rw_flags[rw_loop] | truncate_flags[truncate_loop] |
-		append_flags[append_loop] | create_flags[create_loop];
+	    append_flags[append_loop] | create_flags[create_loop];
 	for (i = 1; i < 8; i++)
 		fprintf(domain_fp, "delete %d %s\n", i, buffer);
 	for (level = 0; level < 4; level++) {
@@ -85,19 +86,19 @@ static void test(int rw_loop, int truncate_loop, int append_loop,
 			fprintf(stderr, "%d: open(%04o) failed\n", level,
 				flags);
 		/*
-		  fd = open(buffer, flags, 0644)
-		  if (fd != EOF)
-		  close(fd);
-		  else
-		  fprintf(stderr, "%d: open(%04o) failed\n", level, flags);
-		*/
+		   fd = open(buffer, flags, 0644)
+		   if (fd != EOF)
+		   close(fd);
+		   else
+		   fprintf(stderr, "%d: open(%04o) failed\n", level, flags);
+		 */
 		/*
-		  fd = open(buffer, flags, 0644);
-		  if (fd != EOF)
-		  close(fd);
-		  else
-		  fprintf(stderr, "%d: open(%04o) failed\n", level, flags);
-		*/
+		   fd = open(buffer, flags, 0644);
+		   if (fd != EOF)
+		   close(fd);
+		   else
+		   fprintf(stderr, "%d: open(%04o) failed\n", level, flags);
+		 */
 	}
 	for (i = 1; i < 8; i++)
 		fprintf(domain_fp, "delete %d %s\n", i, buffer);

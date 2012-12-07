@@ -60,7 +60,8 @@ int main(void)
 	}
 
 	for (cnt = 0; cnt < LOOP_NUM; cnt++) {
-		pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd,
+			  0);
 		if (pa == MAP_FAILED) {
 			printf("Test FAILED: Error at mmap: %s\n",
 			       strerror(errno));

@@ -65,27 +65,27 @@ int TST_TOTAL = 2;
 #endif
 
 static size_t shm_size;
-static int    shm_id_1 = -1;
-static int    shm_id_2 = -1;
-static void   *addr;
+static int shm_id_1 = -1;
+static int shm_id_2 = -1;
+static void *addr;
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 struct test_case_t {
-	int  *shmid;
+	int *shmid;
 	void *addr;
-	int  error;
+	int error;
 } TC[] = {
 	/* EINVAL - the shared memory ID is not valid */
-	{ &shm_id_1,	NULL,		EINVAL },
-
-	/* EINVAL - the address is not page aligned and SHM_RND is not given */
-	{ &shm_id_2,	(void *)NADDR,	EINVAL },
-};
+	{
+	&shm_id_1, NULL, EINVAL},
+	    /* EINVAL - the address is not page aligned and SHM_RND is not given */
+	{
+&shm_id_2, (void *)NADDR, EINVAL},};
 
 int main(int ac, char **av)
 {
@@ -110,12 +110,12 @@ int main(int ac, char **av)
 				continue;
 			}
 			if (errno == TC[i].error)
-				tst_resm(TPASS|TERRNO, "shmat failed as "
-					    "expected");
+				tst_resm(TPASS | TERRNO, "shmat failed as "
+					 "expected");
 			else
-				tst_resm(TFAIL|TERRNO, "shmat failed "
-					    "unexpectedly - expect errno=%d, "
-					    "got", TC[i].error);
+				tst_resm(TFAIL | TERRNO, "shmat failed "
+					 "unexpectedly - expect errno=%d, "
+					 "got", TC[i].error);
 		}
 	}
 	cleanup();
@@ -141,9 +141,9 @@ void setup(void)
 	/* create a shared memory resource with read and write permissions */
 	/* also post increment the shmkey for the next shmget call */
 	shm_id_2 = shmget(shmkey++, shm_size,
-		    SHM_HUGETLB|SHM_RW|IPC_CREAT|IPC_EXCL);
+			  SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL);
 	if (shm_id_2 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget");
 
 	TEST_PAUSE;
 }

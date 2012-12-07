@@ -29,9 +29,9 @@ int main()
 
 	/* Make sure there is prioceiling capability. */
 	/* #ifndef _POSIX_PRIORITY_SCHEDULING
-	  fprintf(stderr,"prioceiling attribute is not available for testing\n");
-	  return PTS_UNRESOLVED;
-	#endif */
+	   fprintf(stderr,"prioceiling attribute is not available for testing\n");
+	   return PTS_UNRESOLVED;
+	   #endif */
 
 	pthread_mutexattr_t mta;
 	int prioceiling, ret;
@@ -39,15 +39,16 @@ int main()
 	prioceiling = sched_get_priority_min(SCHED_FIFO);
 
 	/* Set the prioceiling of an unintialized mutex attr. */
-	if ((ret=pthread_mutexattr_setprioceiling(&mta,prioceiling)) == 0)
-	{
-		printf("Test PASSED: *Note: Returned 0 instead of EINVAL when passed an uninitialized mutex attribute object to pthread_mutexattr_setprioceiling, but standard says 'may' fail.\n");
+	if ((ret = pthread_mutexattr_setprioceiling(&mta, prioceiling)) == 0) {
+		printf
+		    ("Test PASSED: *Note: Returned 0 instead of EINVAL when passed an uninitialized mutex attribute object to pthread_mutexattr_setprioceiling, but standard says 'may' fail.\n");
 		return PTS_PASS;
 	}
 
-	if (ret != EINVAL)
-	{
-		printf("Test FAILED: Invalid return code %d. Expected EINVAL or 0.\n", ret);
+	if (ret != EINVAL) {
+		printf
+		    ("Test FAILED: Invalid return code %d. Expected EINVAL or 0.\n",
+		     ret);
 		return PTS_FAIL;
 	}
 

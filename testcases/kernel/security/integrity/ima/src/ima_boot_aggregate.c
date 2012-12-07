@@ -32,7 +32,7 @@
 #define MAX_EVENT_SIZE 500
 #define EVENT_HEADER_SIZE 32
 #define MAX_EVENT_DATA_SIZE (MAX_EVENT_SIZE - EVENT_HEADER_SIZE)
-#define NUM_PCRS 8	/*  PCR registers 0-7 in boot aggregate */
+#define NUM_PCRS 8		/*  PCR registers 0-7 in boot aggregate */
 
 char *TCID = "ima_boot_aggregate";
 int TST_TOTAL = 1;
@@ -46,8 +46,7 @@ static void display_sha1_digest(unsigned char *pcr)
 	printf("\n");
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 #if HAVE_OPENSSL_SHA_H
 	unsigned char boot_aggregate[SHA_DIGEST_LENGTH];

@@ -132,7 +132,8 @@ int main(int argc, char **argv)
 		TEST(writev(fd[0], wr_iovec, 2));
 		if (TEST_RETURN >= 0) {
 			if (TEST_RETURN == 2) {
-				tst_resm(TINFO, "writev returned %d as expected", 2);
+				tst_resm(TINFO,
+					 "writev returned %d as expected", 2);
 			} else {
 				tst_resm(TFAIL, "Expected nbytes = %d, got "
 					 "%ld", 2, TEST_RETURN);
@@ -140,7 +141,8 @@ int main(int argc, char **argv)
 			}
 		} else {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL|TTERRNO, "Error writev return value = %ld",
+			tst_resm(TFAIL | TTERRNO,
+				 "Error writev return value = %ld",
 				 TEST_RETURN);
 			fail = 1;
 		}

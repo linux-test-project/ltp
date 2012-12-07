@@ -65,22 +65,22 @@
 #include <sys/iosw.h>
 #endif
 #ifdef sgi
-#include <aio.h>	/* for aio_read,write */
-#include <inttypes.h>	/* for uint64_t type */
-#include <siginfo.h>	/* signal handlers & SA_SIGINFO */
+#include <aio.h>		/* for aio_read,write */
+#include <inttypes.h>		/* for uint64_t type */
+#include <siginfo.h>		/* signal handlers & SA_SIGINFO */
 #endif
 #ifndef CRAY
-#include <sys/uio.h>	/* for struct iovec (readv)*/
-#include <sys/mman.h>	/* for mmap(2) */
-#include <sys/ipc.h>	/* for i/o buffer in shared memory */
-#include <sys/shm.h>	/* for i/o buffer in shared memory */
+#include <sys/uio.h>		/* for struct iovec (readv) */
+#include <sys/mman.h>		/* for mmap(2) */
+#include <sys/ipc.h>		/* for i/o buffer in shared memory */
+#include <sys/shm.h>		/* for i/o buffer in shared memory */
 #endif
 #include <sys/wait.h>
 #ifdef CRAY
 #include <sys/listio.h>
 #include <sys/panic.h>
 #endif
-#include <sys/time.h>	/* for delays */
+#include <sys/time.h>		/* for delays */
 
 #include "doio.h"
 #include "write_log.h"
@@ -89,10 +89,10 @@
 #include "pattern.h"
 
 #define	NMEMALLOC	32
-#define	MEM_DATA	1	/* data space 				*/
-#define	MEM_SHMEM	2	/* System V shared memory 		*/
-#define	MEM_T3ESHMEM	3	/* T3E Shared Memory 			*/
-#define	MEM_MMAP	4	/* mmap(2) 				*/
+#define	MEM_DATA	1	/* data space                           */
+#define	MEM_SHMEM	2	/* System V shared memory               */
+#define	MEM_T3ESHMEM	3	/* T3E Shared Memory                    */
+#define	MEM_MMAP	4	/* mmap(2)                              */
 
 #define	MEMF_PRIVATE	0001
 #define	MEMF_AUTORESRV	0002
@@ -102,18 +102,18 @@
 #define	MEMF_FIXADDR	0100
 #define	MEMF_ADDR	0200
 #define	MEMF_AUTOGROW	0400
-#define	MEMF_FILE	01000	/* regular file -- unlink on close	*/
+#define	MEMF_FILE	01000	/* regular file -- unlink on close      */
 #define	MEMF_MPIN	010000	/* use mpin(2) to lock pages in memory */
 
 struct memalloc {
-	int	memtype;
-	int	flags;
-	int	nblks;
-	char	*name;
-	void	*space;		/* memory address of allocated space */
-	int	fd;		/* FD open for mmaping */
-	int	size;
-}	Memalloc[NMEMALLOC];
+	int memtype;
+	int flags;
+	int nblks;
+	char *name;
+	void *space;		/* memory address of allocated space */
+	int fd;			/* FD open for mmaping */
+	int size;
+} Memalloc[NMEMALLOC];
 
 /*
  * Structure for maintaining open file test descriptors.  Used by
@@ -121,18 +121,18 @@ struct memalloc {
  */
 
 struct fd_cache {
-	char    c_file[MAX_FNAME_LENGTH+1];
-	int	c_oflags;
-	int	c_fd;
-	long    c_rtc;
+	char c_file[MAX_FNAME_LENGTH + 1];
+	int c_oflags;
+	int c_fd;
+	long c_rtc;
 #ifdef sgi
-	int	c_memalign;	/* from F_DIOINFO */
-	int	c_miniosz;
-	int	c_maxiosz;
+	int c_memalign;		/* from F_DIOINFO */
+	int c_miniosz;
+	int c_maxiosz;
 #endif
 #ifndef CRAY
-	void	*c_memaddr;	/* mmapped address */
-	int	c_memlen;	/* length of above region */
+	void *c_memaddr;	/* mmapped address */
+	int c_memlen;		/* length of above region */
 #endif
 };
 
@@ -141,27 +141,27 @@ struct fd_cache {
  * Used to map cmdline arguments to values
  */
 struct smap {
-	char    *string;
-	int	value;
+	char *string;
+	int value;
 };
 
 struct aio_info {
-	int			busy;
-	int			id;
-	int			fd;
-	int			strategy;
-	volatile int		done;
+	int busy;
+	int id;
+	int fd;
+	int strategy;
+	volatile int done;
 #ifdef CRAY
-	struct iosw		iosw;
+	struct iosw iosw;
 #endif
 #ifdef sgi
-	aiocb_t			aiocb;
-	int			aio_ret;	/* from aio_return */
-	int			aio_errno;	/* from aio_error */
+	aiocb_t aiocb;
+	int aio_ret;		/* from aio_return */
+	int aio_errno;		/* from aio_error */
 #endif
-	int			sig;
-	int			signalled;
-	struct sigaction	osa;
+	int sig;
+	int signalled;
+	struct sigaction osa;
 };
 
 /* ---------------------------------------------------------------------------
@@ -176,20 +176,20 @@ struct aio_info {
  *	FILE_LOCK, WRITE_LOG, VERIFY_DATA,
  */
 
-struct	status {
-	int	rval;		/* syscall return */
-	int	err;		/* errno */
-	int	*aioid;		/* list of async I/O structures */
+struct status {
+	int rval;		/* syscall return */
+	int err;		/* errno */
+	int *aioid;		/* list of async I/O structures */
 };
 
 struct syscall_info {
-	char		*sy_name;
-	int		sy_type;
-	struct status	*(*sy_syscall)();
-	int		(*sy_buffer)();
-	char		*(*sy_format)();
-	int		sy_flags;
-	int		sy_bits;
+	char *sy_name;
+	int sy_type;
+	struct status *(*sy_syscall) ();
+	int (*sy_buffer) ();
+	char *(*sy_format) ();
+	int sy_flags;
+	int sy_bits;
 };
 
 #define	SY_WRITE		00001
@@ -198,7 +198,7 @@ struct syscall_info {
 #define	SY_SDS			00100
 
 #ifndef O_SSD
-#define O_SSD 0	    	/* so code compiles on a CRAY2 */
+#define O_SSD 0			/* so code compiles on a CRAY2 */
 #endif
 
 #ifdef sgi
@@ -208,13 +208,13 @@ struct syscall_info {
 #endif
 
 #ifndef O_PARALLEL
-#define O_PARALLEL 0	/* so O_PARALLEL may be used in expressions */
+#define O_PARALLEL 0		/* so O_PARALLEL may be used in expressions */
 #endif
 
-#define PPID_CHECK_INTERVAL 5		/* check ppid every <-- iterations */
-#define	MAX_AIO		256		/* maximum number of async I/O ops */
+#define PPID_CHECK_INTERVAL 5	/* check ppid every <-- iterations */
+#define	MAX_AIO		256	/* maximum number of async I/O ops */
 #ifdef _CRAYMPP
-#define	MPP_BUMP	16		/* page un-alignment for MPP */
+#define	MPP_BUMP	16	/* page un-alignment for MPP */
 #else
 #define	MPP_BUMP	0
 #endif
@@ -234,52 +234,52 @@ struct syscall_info {
  * on the cmdline.
  */
 
-int 	a_opt = 0;  	    /* abort on data compare errors 	*/
-int	e_opt = 0;	    /* exec() after fork()'ing	        */
-int	C_opt = 0;	    /* Data Check Type			*/
-int	d_opt = 0;	    /* delay between operations		*/
-int 	k_opt = 0;  	    /* lock file regions during writes	*/
-int	m_opt = 0;	    /* generate periodic messages	*/
-int 	n_opt = 0;  	    /* nprocs	    	    	    	*/
-int 	r_opt = 0;  	    /* resource release interval    	*/
-int 	w_opt = 0;  	    /* file write log file  	    	*/
-int 	v_opt = 0;  	    /* verify writes if set 	    	*/
-int 	U_opt = 0;  	    /* upanic() on varios conditions	*/
-int	V_opt = 0;	    /* over-ride default validation fd type */
-int	M_opt = 0;	    /* data buffer allocation types     */
-char	TagName[40];	    /* name of this doio (see Monster)  */
+int a_opt = 0;			/* abort on data compare errors     */
+int e_opt = 0;			/* exec() after fork()'ing          */
+int C_opt = 0;			/* Data Check Type                  */
+int d_opt = 0;			/* delay between operations         */
+int k_opt = 0;			/* lock file regions during writes  */
+int m_opt = 0;			/* generate periodic messages       */
+int n_opt = 0;			/* nprocs                           */
+int r_opt = 0;			/* resource release interval        */
+int w_opt = 0;			/* file write log file              */
+int v_opt = 0;			/* verify writes if set             */
+int U_opt = 0;			/* upanic() on varios conditions    */
+int V_opt = 0;			/* over-ride default validation fd type */
+int M_opt = 0;			/* data buffer allocation types     */
+char TagName[40];		/* name of this doio (see Monster)  */
 
 /*
  * Misc globals initialized in parse_cmdline()
  */
 
-char	*Prog = NULL;	    /* set up in parse_cmdline()		*/
-int 	Upanic_Conditions;  /* set by args to -U    	    		*/
-int 	Release_Interval;   /* arg to -r    	    	    		*/
-int 	Nprocs;	    	    /* arg to -n    	    	    		*/
-char	*Write_Log; 	    /* arg to -w    	    	    		*/
-char	*Infile;    	    /* input file (defaults to stdin)		*/
-int	*Children;	    /* pids of child procs			*/
-int	Nchildren = 0;
-int	Nsiblings = 0;	    /* tfork'ed siblings			*/
-int	Execd = 0;
-int	Message_Interval = 0;
-int	Npes = 0;	    /* non-zero if built as an mpp multi-pe app */
-int	Vpe = -1;	    /* Virtual pe number if Npes >= 0           */
-int	Reqno = 1;	    /* request # - used in some error messages  */
-int	Reqskipcnt = 0;	    /* count of I/O requests that are skipped   */
-int	Validation_Flags;
-char	*(*Data_Check)();   /* function to call for data checking       */
-int	(*Data_Fill)();     /* function to call for data filling        */
-int	Nmemalloc = 0;	    /* number of memory allocation strategies   */
-int	delayop = 0;	    /* delay between operations - type of delay */
-int	delaytime = 0;	    /* delay between operations - how long      */
+char *Prog = NULL;		/* set up in parse_cmdline()                */
+int Upanic_Conditions;		/* set by args to -U                        */
+int Release_Interval;		/* arg to -r                                */
+int Nprocs;			/* arg to -n                                */
+char *Write_Log;		/* arg to -w                                */
+char *Infile;			/* input file (defaults to stdin)           */
+int *Children;			/* pids of child procs                      */
+int Nchildren = 0;
+int Nsiblings = 0;		/* tfork'ed siblings                        */
+int Execd = 0;
+int Message_Interval = 0;
+int Npes = 0;			/* non-zero if built as an mpp multi-pe app */
+int Vpe = -1;			/* Virtual pe number if Npes >= 0           */
+int Reqno = 1;			/* request # - used in some error messages  */
+int Reqskipcnt = 0;		/* count of I/O requests that are skipped   */
+int Validation_Flags;
+char *(*Data_Check) ();		/* function to call for data checking       */
+int (*Data_Fill) ();		/* function to call for data filling        */
+int Nmemalloc = 0;		/* number of memory allocation strategies   */
+int delayop = 0;		/* delay between operations - type of delay */
+int delaytime = 0;		/* delay between operations - how long      */
 
-struct wlog_file	Wlog;
+struct wlog_file Wlog;
 
-int	active_mmap_rw = 0; /* Indicates that mmapped I/O is occurring. */
+int active_mmap_rw = 0;		/* Indicates that mmapped I/O is occurring. */
 			    /* Used by sigbus_action() in the child doio. */
-int	havesigint = 0;
+int havesigint = 0;
 
 #define SKIP_REQ	-2	/* skip I/O request */
 
@@ -287,209 +287,205 @@ int	havesigint = 0;
  * Global file descriptors
  */
 
-int 	Wfd_Append; 	    /* for appending to the write-log	    */
-int 	Wfd_Random; 	    /* for overlaying write-log entries	    */
+int Wfd_Append;			/* for appending to the write-log       */
+int Wfd_Random;			/* for overlaying write-log entries     */
 
-#define FD_ALLOC_INCR	32      /* allocate this many fd_map structs	*/
+#define FD_ALLOC_INCR	32	/* allocate this many fd_map structs    */
 				/* at a time */
 
 /*
  * Globals for tracking Sds and Core usage
  */
 
-char	*Memptr;		/* ptr to core buffer space	    	*/
-int 	Memsize;		/* # bytes pointed to by Memptr 	*/
-				/* maintained by alloc_mem()    	*/
+char *Memptr;			/* ptr to core buffer space             */
+int Memsize;			/* # bytes pointed to by Memptr         */
+				/* maintained by alloc_mem()            */
 
-int 	Sdsptr;			/* sds offset (always 0)	    	*/
-int 	Sdssize;		/* # bytes of allocated sds space	*/
-				/* Maintained by alloc_sds()    	*/
-char	Host[16];
-char	Pattern[128];
-int	Pattern_Length;
+int Sdsptr;			/* sds offset (always 0)                */
+int Sdssize;			/* # bytes of allocated sds space       */
+				/* Maintained by alloc_sds()            */
+char Host[16];
+char Pattern[128];
+int Pattern_Length;
 
 /*
  * Signal handlers, and related globals
  */
 
-char		*syserrno(int err);
-void		doio(void);
-void		doio_delay(void);
-char		*format_oflags(int oflags);
-char		*format_strat(int strategy);
-char		*format_rw(struct io_req *ioreq, int fd, void *buffer,
-			int signo, char *pattern, void *iosw);
+char *syserrno(int err);
+void doio(void);
+void doio_delay(void);
+char *format_oflags(int oflags);
+char *format_strat(int strategy);
+char *format_rw(struct io_req *ioreq, int fd, void *buffer,
+		int signo, char *pattern, void *iosw);
 #ifdef CRAY
-char		*format_sds(struct io_req *ioreq, void *buffer, int sds
-			char *pattern);
+char *format_sds(struct io_req *ioreq, void *buffer, int sds char *pattern);
 #endif /* CRAY */
 
-int		do_read(struct io_req *req);
-int		do_write(struct io_req *req);
-int		lock_file_region(char *fname, int fd, int type, int start,
-			int nbytes);
+int do_read(struct io_req *req);
+int do_write(struct io_req *req);
+int lock_file_region(char *fname, int fd, int type, int start, int nbytes);
 
 #ifdef CRAY
-char		*format_listio(struct io_req *ioreq, int lcmd,
-			struct listreq *list, int nent, int fd, char *pattern);
+char *format_listio(struct io_req *ioreq, int lcmd,
+		    struct listreq *list, int nent, int fd, char *pattern);
 #endif /* CRAY */
 
-int		do_listio(struct io_req *req);
+int do_listio(struct io_req *req);
 
 #if defined(_CRAY1) || defined(CRAY)
-int		do_ssdio(struct io_req *req);
+int do_ssdio(struct io_req *req);
 #endif /* defined(_CRAY1) || defined(CRAY) */
 
-char		*fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy,
-			int fd);
+char *fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd);
 
 #ifdef CRAY
-struct status	*sy_listio(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr);
-int		listio_mem(struct io_req *req, int offset, int fmstride,
-			int *min, int *max);
-char		*fmt_listio(struct io_req *req, struct syscall_info *sy,
-			int fd, char *addr);
+struct status *sy_listio(struct io_req *req, struct syscall_info *sysc,
+			 int fd, char *addr);
+int listio_mem(struct io_req *req, int offset, int fmstride,
+	       int *min, int *max);
+char *fmt_listio(struct io_req *req, struct syscall_info *sy,
+		 int fd, char *addr);
 #endif /* CRAY */
 
 #ifdef sgi
-struct status	*sy_pread(struct io_req *req, struct syscall_info *sysc,
+struct status *sy_pread(struct io_req *req, struct syscall_info *sysc,
 			int fd, char *addr);
-struct status	*sy_pwrite(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr);
-char		*fmt_pread(struct io_req *req, struct syscall_info *sy,
-			int fd, char *addr);
-#endif	/* sgi */
-
-#ifndef CRAY
-struct status	*sy_readv(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr);
-struct status	*sy_writev(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr);
-struct status	*sy_rwv(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr, int rw);
-char		*fmt_readv(struct io_req *req, struct syscall_info *sy,
-			int fd, char *addr);
-#endif /* !CRAY */
-
-#ifdef sgi
-struct status	*sy_aread(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr);
-struct status	*sy_awrite(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr)
-struct status	*sy_arw(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr, int rw);
-char		*fmt_aread(struct io_req *req, struct syscall_info *sy,
-			int fd, char *addr);
+struct status *sy_pwrite(struct io_req *req, struct syscall_info *sysc,
+			 int fd, char *addr);
+char *fmt_pread(struct io_req *req, struct syscall_info *sy,
+		int fd, char *addr);
 #endif /* sgi */
 
 #ifndef CRAY
-struct status	*sy_mmread(struct io_req *req, struct syscall_info *sysc,
+struct status *sy_readv(struct io_req *req, struct syscall_info *sysc,
 			int fd, char *addr);
-struct status	*sy_mmwrite(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr);
-struct status	*sy_mmrw(struct io_req *req, struct syscall_info *sysc,
-			int fd, char *addr, int rw);
-char		*fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd,
-			char *addr);
+struct status *sy_writev(struct io_req *req, struct syscall_info *sysc,
+			 int fd, char *addr);
+struct status *sy_rwv(struct io_req *req, struct syscall_info *sysc,
+		      int fd, char *addr, int rw);
+char *fmt_readv(struct io_req *req, struct syscall_info *sy,
+		int fd, char *addr);
 #endif /* !CRAY */
 
-int		do_rw(struct io_req *req);
-
 #ifdef sgi
-int		do_fcntl(struct io_req *req);
+struct status *sy_aread(struct io_req *req, struct syscall_info *sysc,
+			int fd, char *addr);
+struct status *sy_awrite(struct io_req *req, struct syscall_info *sysc,
+			 int fd, char *addr)
+struct status *sy_arw(struct io_req *req, struct syscall_info *sysc,
+		      int fd, char *addr, int rw);
+char *fmt_aread(struct io_req *req, struct syscall_info *sy,
+		int fd, char *addr);
 #endif /* sgi */
 
 #ifndef CRAY
-int		do_sync(struct io_req *req);
+struct status *sy_mmread(struct io_req *req, struct syscall_info *sysc,
+			 int fd, char *addr);
+struct status *sy_mmwrite(struct io_req *req, struct syscall_info *sysc,
+			  int fd, char *addr);
+struct status *sy_mmrw(struct io_req *req, struct syscall_info *sysc,
+		       int fd, char *addr, int rw);
+char *fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd, char *addr);
 #endif /* !CRAY */
 
-int		doio_pat_fill(char *addr, int mem_needed, char *Pattern,
-			int Pattern_Length, int shift);
-char		*doio_pat_check(char *buf, int offset, int length,
-			char *pattern, int pattern_length, int patshift);
-char		*check_file(char *file, int offset, int length, char *pattern,
-			int pattern_length, int patshift, int fsa);
-int		doio_fprintf(FILE *stream, char *format, ...);
-int		alloc_mem(int nbytes);
+int do_rw(struct io_req *req);
+
+#ifdef sgi
+int do_fcntl(struct io_req *req);
+#endif /* sgi */
+
+#ifndef CRAY
+int do_sync(struct io_req *req);
+#endif /* !CRAY */
+
+int doio_pat_fill(char *addr, int mem_needed, char *Pattern,
+		  int Pattern_Length, int shift);
+char *doio_pat_check(char *buf, int offset, int length,
+		     char *pattern, int pattern_length, int patshift);
+char *check_file(char *file, int offset, int length, char *pattern,
+		 int pattern_length, int patshift, int fsa);
+int doio_fprintf(FILE * stream, char *format, ...);
+int alloc_mem(int nbytes);
 
 #if defined(_CRAY1) || defined(CRAY)
-int		alloc_sds(int nbytes);
+int alloc_sds(int nbytes);
 #endif /* defined(_CRAY1) || defined(CRAY) */
 
-int		alloc_fd(char *file, int oflags);
-struct fd_cache	*alloc_fdcache(char *file, int oflags);
+int alloc_fd(char *file, int oflags);
+struct fd_cache *alloc_fdcache(char *file, int oflags);
 
 #ifdef sgi
-void		signal_info(int sig, siginfo_t *info, void *v);
-void		cleanup_handler(int sig, siginfo_t *info, void *v);
-void		die_handler(int sig, siginfo_t *info, void *v);
-void		sigbus_handler(int sig, siginfo_t *info, void *v);
-#else	/* !sgi */
-void		cleanup_handler(int sig);
-void		die_handler(int sig);
+void signal_info(int sig, siginfo_t * info, void *v);
+void cleanup_handler(int sig, siginfo_t * info, void *v);
+void die_handler(int sig, siginfo_t * info, void *v);
+void sigbus_handler(int sig, siginfo_t * info, void *v);
+#else /* !sgi */
+void cleanup_handler(int sig);
+void die_handler(int sig);
 
 #ifndef CRAY
-void		sigbus_handler(int sig);
+void sigbus_handler(int sig);
 #endif /* !CRAY */
 #endif /* sgi */
 
-void		noop_handler(int sig);
-void		sigint_handler(int sig);
-void		aio_handler(int sig);
-void		dump_aio(void);
+void noop_handler(int sig);
+void sigint_handler(int sig);
+void aio_handler(int sig);
+void dump_aio(void);
 
 #ifdef sgi
-void		cb_handler(sigval_t val);
+void cb_handler(sigval_t val);
 #endif /* sgi */
 
-struct aio_info	*aio_slot(int aio_id);
-int		aio_register(int fd, int strategy, int sig);
-int		aio_unregister(int aio_id);
+struct aio_info *aio_slot(int aio_id);
+int aio_register(int fd, int strategy, int sig);
+int aio_unregister(int aio_id);
 
 #ifndef __linux__
-int		aio_wait(int aio_id);
+int aio_wait(int aio_id);
 #endif /* !__linux__ */
 
-char		*hms(time_t t);
-int		aio_done(struct aio_info *ainfo);
-void		doio_upanic(int mask);
-int		parse_cmdline(int argc, char **argv, char *opts);
+char *hms(time_t t);
+int aio_done(struct aio_info *ainfo);
+void doio_upanic(int mask);
+int parse_cmdline(int argc, char **argv, char *opts);
 
 #ifndef CRAY
-void		parse_memalloc(char *arg);
-void		dump_memalloc(void);
+void parse_memalloc(char *arg);
+void dump_memalloc(void);
 #endif /* !CRAY */
 
-void		parse_delay(char *arg);
-int		usage(FILE *stream);
-void		help(FILE *stream);
+void parse_delay(char *arg);
+int usage(FILE * stream);
+void help(FILE * stream);
 
 /*
  * Upanic conditions, and a map from symbolics to values
  */
 
-#define U_CORRUPTION	0001	    /* upanic on data corruption    */
-#define U_IOSW	    	0002	    /* upanic on bad iosw   	    */
-#define U_RVAL	    	0004	    /* upanic on bad rval   	    */
+#define U_CORRUPTION	0001	/* upanic on data corruption    */
+#define U_IOSW	    	0002	/* upanic on bad iosw           */
+#define U_RVAL	    	0004	/* upanic on bad rval           */
 
 #define U_ALL	    	(U_CORRUPTION | U_IOSW | U_RVAL)
 
 struct smap Upanic_Args[] = {
-	{ "corruption",	U_CORRUPTION	},
-	{ "iosw",	U_IOSW		},
-	{ "rval",	U_RVAL  	},
-	{ "all",	U_ALL   	},
-	{ NULL,         0               }
+	{"corruption", U_CORRUPTION},
+	{"iosw", U_IOSW},
+	{"rval", U_RVAL},
+	{"all", U_ALL},
+	{NULL, 0}
 };
 
-struct aio_info	Aio_Info[MAX_AIO];
+struct aio_info Aio_Info[MAX_AIO];
 
 /* -C data-fill/check type */
 #define	C_DEFAULT	1
 struct smap checkmap[] = {
-	{ "default",	C_DEFAULT },
-	{ NULL,		0 },
+	{"default", C_DEFAULT},
+	{NULL, 0},
 };
 
 /* -d option delay types */
@@ -497,16 +493,16 @@ struct smap checkmap[] = {
 #define	DELAY_SLEEP	2
 #define	DELAY_SGINAP	3
 #define	DELAY_ALARM	4
-#define	DELAY_ITIMER	5	/* POSIX timer				*/
+#define	DELAY_ITIMER	5	/* POSIX timer                          */
 
 struct smap delaymap[] = {
-	{ "select",	DELAY_SELECT },
-	{ "sleep",	DELAY_SLEEP },
+	{"select", DELAY_SELECT},
+	{"sleep", DELAY_SLEEP},
 #ifdef sgi
-	{ "sginap",	DELAY_SGINAP },
+	{"sginap", DELAY_SGINAP},
 #endif
-	{ "alarm",	DELAY_ALARM },
-	{ NULL,	0 },
+	{"alarm", DELAY_ALARM},
+	{NULL, 0},
 };
 
 /******
@@ -523,18 +519,17 @@ syserrno(int err)
 
 ******/
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int	    	    	i, pid, stat, ex_stat;
+	int i, pid, stat, ex_stat;
 #ifdef CRAY
-	sigset_t	    	omask;
+	sigset_t omask;
 #elif defined(linux)
-	sigset_t		omask, block_mask;
+	sigset_t omask, block_mask;
 #else
-	int		    	omask;
+	int omask;
 #endif
-	struct sigaction	sa;
+	struct sigaction sa;
 
 	umask(0);		/* force new file modes to known values */
 #if _CRAYMPP
@@ -545,7 +540,7 @@ main(int argc, char **argv)
 	TagName[0] = '\0';
 	parse_cmdline(argc, argv, OPTS);
 
-	random_range_seed(getpid());       /* initialize random number generator */
+	random_range_seed(getpid());	/* initialize random number generator */
 
 	/*
 	 * If this is a re-exec of doio, jump directly into the doio function.
@@ -562,9 +557,9 @@ main(int argc, char **argv)
 	sigemptyset(&sa.sa_mask);
 	sa.sa_handler = sigint_handler;
 	sa.sa_flags = SA_RESETHAND;	/* sigint is ignored after the */
-					/* first time */
+	/* first time */
 	for (i = 1; i <= NSIG; i++) {
-		switch(i) {
+		switch (i) {
 #ifdef SIGRECOVERY
 		case SIGRECOVERY:
 			break;
@@ -643,7 +638,7 @@ main(int argc, char **argv)
 			if ((pid = fork()) == -1) {
 				doio_fprintf(stderr,
 					     "(parent) Could not fork %d children:  %s (%d)\n",
-					     i+1, SYSERR, errno);
+					     i + 1, SYSERR, errno);
 				exit(E_SETUP);
 			}
 
@@ -655,7 +650,9 @@ main(int argc, char **argv)
 					char *exec_path;
 
 					exec_path = argv[0];
-					argv[0] = (char *)malloc(strlen(exec_path + 1));
+					argv[0] =
+					    (char *)
+					    malloc(strlen(exec_path + 1));
 					sprintf(argv[0], "-%s", exec_path);
 
 					execvp(exec_path, argv);
@@ -735,7 +732,8 @@ main(int argc, char **argv)
 					ex_stat |= E_INTERNAL;
 					break;
 				}
-			} else if (WIFSIGNALED(stat) && WTERMSIG(stat) != SIGINT) {
+			} else if (WIFSIGNALED(stat)
+				   && WTERMSIG(stat) != SIGINT) {
 				doio_fprintf(stderr,
 					     "(parent) pid %d terminated by signal %d\n",
 					     pid, WTERMSIG(stat));
@@ -749,21 +747,20 @@ main(int argc, char **argv)
 
 	exit(ex_stat);
 
-}  /* main */
+}				/* main */
 
 /*
  * main doio function.  Each doio child starts here, and never returns.
  */
 
-void
-doio(void)
+void doio(void)
 {
-	int	    	    	rval, i, infd, nbytes;
-	char			*cp;
-	struct io_req   	ioreq;
-	struct sigaction	sa, def_action, ignore_action, exit_action;
+	int rval, i, infd, nbytes;
+	char *cp;
+	struct io_req ioreq;
+	struct sigaction sa, def_action, ignore_action, exit_action;
 #ifndef CRAY
-	struct sigaction	sigbus_action;
+	struct sigaction sigbus_action;
 #endif
 
 	Memsize = Sdssize = 0;
@@ -867,7 +864,7 @@ doio(void)
 #endif
 
 	for (i = 1; i <= NSIG; i++) {
-		switch(i) {
+		switch (i) {
 			/* Signals to terminate program on */
 		case SIGINT:
 			sigaction(i, &exit_action, NULL);
@@ -880,7 +877,7 @@ doio(void)
 			break;
 #endif
 
-		    /* Signals to Ignore... */
+			/* Signals to Ignore... */
 		case SIGSTOP:
 		case SIGCONT:
 #ifdef SIGRECOVERY
@@ -889,15 +886,15 @@ doio(void)
 			sigaction(i, &ignore_action, NULL);
 			break;
 
-		    /* Signals to trap & report & die */
-		/*case SIGTRAP:*/
-		/*case SIGABRT:*/
-#ifdef SIGERR	/* cray only signals */
+			/* Signals to trap & report & die */
+			/*case SIGTRAP: */
+			/*case SIGABRT: */
+#ifdef SIGERR			/* cray only signals */
 		case SIGERR:
 		case SIGBUFIO:
 		case SIGINFO:
 #endif
-		/*case SIGFPE:*/
+			/*case SIGFPE: */
 		case SIGURG:
 		case SIGHUP:
 		case SIGTERM:
@@ -908,7 +905,7 @@ doio(void)
 			sigaction(i, &sa, NULL);
 			break;
 
-		    /* Default Action for all other signals */
+			/* Default Action for all other signals */
 		default:
 			sigaction(i, &def_action, NULL);
 			break;
@@ -966,7 +963,7 @@ doio(void)
 		 * core space, and close all fd's in Fd_Map[].
 		 */
 
-		if (Reqno && Release_Interval && ! (Reqno%Release_Interval)) {
+		if (Reqno && Release_Interval && !(Reqno % Release_Interval)) {
 			if (Memsize) {
 #ifdef NOTDEF
 				sbrk(-1 * Memsize);
@@ -974,7 +971,6 @@ doio(void)
 				alloc_mem(-1);
 #endif
 			}
-
 #ifdef _CRAY1
 			if (Sdssize) {
 				ssbreak(-1 * btoc(Sdssize));
@@ -1057,8 +1053,7 @@ doio(void)
 
 		if (rval == SKIP_REQ) {
 			Reqskipcnt++;
-		}
-		else if (rval != 0) {
+		} else if (rval != 0) {
 			alloc_mem(-1);
 			doio_fprintf(stderr,
 				     "doio(): operation %d returned != 0\n",
@@ -1067,7 +1062,9 @@ doio(void)
 		}
 
 		if (Message_Interval && Reqno % Message_Interval == 0) {
-			doio_fprintf(stderr, "Info:  %d requests done (%d skipped) by this process\n", Reqno, Reqskipcnt);
+			doio_fprintf(stderr,
+				     "Info:  %d requests done (%d skipped) by this process\n",
+				     Reqno, Reqskipcnt);
 		}
 
 		Reqno++;
@@ -1082,21 +1079,20 @@ doio(void)
 	alloc_mem(-1);
 	exit(E_NORMAL);
 
-}  /* doio */
+}				/* doio */
 
-void
-doio_delay(void)
+void doio_delay(void)
 {
 	struct timeval tv_delay;
 	struct sigaction sa_al, sa_old;
 	sigset_t al_mask;
 
-	switch(delayop) {
+	switch (delayop) {
 	case DELAY_SELECT:
 		tv_delay.tv_sec = delaytime / 1000000;
 		tv_delay.tv_usec = delaytime % 1000000;
 		/*doio_fprintf(stdout, "delay_select: %d %d\n",
-			    tv_delay.tv_sec, tv_delay.tv_usec);*/
+		   tv_delay.tv_sec, tv_delay.tv_usec); */
 		select(0, NULL, NULL, NULL, &tv_delay);
 		break;
 
@@ -1135,143 +1131,164 @@ doio_delay(void)
  */
 
 struct smap sysnames[] = {
-	{ "READ",	READ		},
-	{ "WRITE",	WRITE		},
-	{ "READA",	READA		},
-	{ "WRITEA",	WRITEA		},
-	{ "SSREAD",	SSREAD		},
-	{ "SSWRITE",	SSWRITE		},
-	{ "LISTIO",  	LISTIO		},
-	{ "LREAD",	LREAD		},
-	{ "LREADA",	LREADA		},
-	{ "LWRITE",	LWRITE		},
-	{ "LWRITEA",	LWRITEA		},
-	{ "LSREAD",	LSREAD		},
-	{ "LSREADA",	LSREADA		},
-	{ "LSWRITE",	LSWRITE		},
-	{ "LSWRITEA",	LSWRITEA	},
+	{"READ", READ},
+	{"WRITE", WRITE},
+	{"READA", READA},
+	{"WRITEA", WRITEA},
+	{"SSREAD", SSREAD},
+	{"SSWRITE", SSWRITE},
+	{"LISTIO", LISTIO},
+	{"LREAD", LREAD},
+	{"LREADA", LREADA},
+	{"LWRITE", LWRITE},
+	{"LWRITEA", LWRITEA},
+	{"LSREAD", LSREAD},
+	{"LSREADA", LSREADA},
+	{"LSWRITE", LSWRITE},
+	{"LSWRITEA", LSWRITEA},
 
 	/* Irix System Calls */
-	{ "PREAD",	PREAD		},
-	{ "PWRITE",	PWRITE		},
-	{ "AREAD",	AREAD		},
-	{ "AWRITE",	AWRITE		},
-	{ "LLREAD",	LLREAD		},
-	{ "LLAREAD",	LLAREAD		},
-	{ "LLWRITE",	LLWRITE		},
-	{ "LLAWRITE",	LLAWRITE	},
-	{ "RESVSP",	RESVSP		},
-	{ "UNRESVSP",	UNRESVSP	},
-	{ "DFFSYNC",	DFFSYNC		},
+	{"PREAD", PREAD},
+	{"PWRITE", PWRITE},
+	{"AREAD", AREAD},
+	{"AWRITE", AWRITE},
+	{"LLREAD", LLREAD},
+	{"LLAREAD", LLAREAD},
+	{"LLWRITE", LLWRITE},
+	{"LLAWRITE", LLAWRITE},
+	{"RESVSP", RESVSP},
+	{"UNRESVSP", UNRESVSP},
+	{"DFFSYNC", DFFSYNC},
 
 	/* Irix and Linux System Calls */
-	{ "READV",	READV		},
-	{ "WRITEV",	WRITEV		},
-	{ "MMAPR",	MMAPR		},
-	{ "MMAPW",	MMAPW		},
-	{ "FSYNC2",	FSYNC2		},
-	{ "FDATASYNC",	FDATASYNC	},
+	{"READV", READV},
+	{"WRITEV", WRITEV},
+	{"MMAPR", MMAPR},
+	{"MMAPW", MMAPW},
+	{"FSYNC2", FSYNC2},
+	{"FDATASYNC", FDATASYNC},
 
-	{ "unknown",	-1		},
+	{"unknown", -1},
 };
 
 struct smap aionames[] = {
-	{ "poll",	A_POLL		},
-	{ "signal",	A_SIGNAL	},
-	{ "recall",	A_RECALL	},
-	{ "recalla",	A_RECALLA	},
-	{ "recalls",	A_RECALLS	},
-	{ "suspend",	A_SUSPEND	},
-	{ "callback",	A_CALLBACK	},
-	{ "synch",	0		},
-	{ "unknown",	-1		},
+	{"poll", A_POLL},
+	{"signal", A_SIGNAL},
+	{"recall", A_RECALL},
+	{"recalla", A_RECALLA},
+	{"recalls", A_RECALLS},
+	{"suspend", A_SUSPEND},
+	{"callback", A_CALLBACK},
+	{"synch", 0},
+	{"unknown", -1},
 };
 
-char *
-format_oflags(int oflags)
+char *format_oflags(int oflags)
 {
 	char flags[255];
 
-	flags[0]='\0';
-	switch(oflags & 03) {
-	case O_RDONLY:		strcat(flags,"O_RDONLY,");	break;
-	case O_WRONLY:		strcat(flags,"O_WRONLY,");	break;
-	case O_RDWR:		strcat(flags,"O_RDWR,");	break;
-	default:		strcat(flags,"O_weird");	break;
+	flags[0] = '\0';
+	switch (oflags & 03) {
+	case O_RDONLY:
+		strcat(flags, "O_RDONLY,");
+		break;
+	case O_WRONLY:
+		strcat(flags, "O_WRONLY,");
+		break;
+	case O_RDWR:
+		strcat(flags, "O_RDWR,");
+		break;
+	default:
+		strcat(flags, "O_weird");
+		break;
 	}
 
 	if (oflags & O_EXCL)
-		strcat(flags,"O_EXCL,");
+		strcat(flags, "O_EXCL,");
 
 	if (oflags & O_SYNC)
-		strcat(flags,"O_SYNC,");
+		strcat(flags, "O_SYNC,");
 #ifdef CRAY
 	if (oflags & O_RAW)
-		strcat(flags,"O_RAW,");
+		strcat(flags, "O_RAW,");
 	if (oflags & O_WELLFORMED)
-		strcat(flags,"O_WELLFORMED,");
+		strcat(flags, "O_WELLFORMED,");
 #ifdef O_SSD
 	if (oflags & O_SSD)
-		strcat(flags,"O_SSD,");
+		strcat(flags, "O_SSD,");
 #endif
 	if (oflags & O_LDRAW)
-		strcat(flags,"O_LDRAW,");
+		strcat(flags, "O_LDRAW,");
 	if (oflags & O_PARALLEL)
-		strcat(flags,"O_PARALLEL,");
+		strcat(flags, "O_PARALLEL,");
 	if (oflags & O_BIG)
-		strcat(flags,"O_BIG,");
+		strcat(flags, "O_BIG,");
 	if (oflags & O_PLACE)
-		strcat(flags,"O_PLACE,");
+		strcat(flags, "O_PLACE,");
 	if (oflags & O_ASYNC)
-		strcat(flags,"O_ASYNC,");
+		strcat(flags, "O_ASYNC,");
 #endif
 
 #ifdef sgi
 	if (oflags & O_DIRECT)
-		strcat(flags,"O_DIRECT,");
+		strcat(flags, "O_DIRECT,");
 	if (oflags & O_DSYNC)
-		strcat(flags,"O_DSYNC,");
+		strcat(flags, "O_DSYNC,");
 	if (oflags & O_RSYNC)
-		strcat(flags,"O_RSYNC,");
+		strcat(flags, "O_RSYNC,");
 #endif
 
-	return(strdup(flags));
+	return (strdup(flags));
 }
 
-char *
-format_strat(int strategy)
+char *format_strat(int strategy)
 {
 	char msg[64];
 	char *aio_strat;
 
 	switch (strategy) {
-	case A_POLL:		aio_strat = "POLL";	break;
-	case A_SIGNAL:		aio_strat = "SIGNAL";	break;
-	case A_RECALL:		aio_strat = "RECALL";	break;
-	case A_RECALLA:		aio_strat = "RECALLA";	break;
-	case A_RECALLS:		aio_strat = "RECALLS";	break;
-	case A_SUSPEND:		aio_strat = "SUSPEND";	break;
-	case A_CALLBACK:	aio_strat = "CALLBACK";	break;
-	case 0:			aio_strat = "<zero>";	break;
+	case A_POLL:
+		aio_strat = "POLL";
+		break;
+	case A_SIGNAL:
+		aio_strat = "SIGNAL";
+		break;
+	case A_RECALL:
+		aio_strat = "RECALL";
+		break;
+	case A_RECALLA:
+		aio_strat = "RECALLA";
+		break;
+	case A_RECALLS:
+		aio_strat = "RECALLS";
+		break;
+	case A_SUSPEND:
+		aio_strat = "SUSPEND";
+		break;
+	case A_CALLBACK:
+		aio_strat = "CALLBACK";
+		break;
+	case 0:
+		aio_strat = "<zero>";
+		break;
 	default:
 		sprintf(msg, "<error:%#o>", strategy);
 		aio_strat = strdup(msg);
 		break;
 	}
 
-	return(aio_strat);
+	return (aio_strat);
 }
 
-char *
-format_rw(struct io_req *ioreq, int fd, void *buffer, int signo, char *pattern,
-	void *iosw)
+char *format_rw(struct io_req *ioreq, int fd, void *buffer, int signo,
+		char *pattern, void *iosw)
 {
-	static char		*errbuf=NULL;
-	char			*aio_strat, *cp;
-	struct read_req		*readp = &ioreq->r_data.read;
-	struct write_req	*writep = &ioreq->r_data.write;
-	struct read_req		*readap = &ioreq->r_data.read;
-	struct write_req	*writeap = &ioreq->r_data.write;
+	static char *errbuf = NULL;
+	char *aio_strat, *cp;
+	struct read_req *readp = &ioreq->r_data.read;
+	struct write_req *writep = &ioreq->r_data.write;
+	struct read_req *readap = &ioreq->r_data.read;
+	struct write_req *writeap = &ioreq->r_data.write;
 
 	if (errbuf == NULL)
 		errbuf = (char *)malloc(32768);
@@ -1282,48 +1299,66 @@ format_rw(struct io_req *ioreq, int fd, void *buffer, int signo, char *pattern,
 	switch (ioreq->r_type) {
 	case READ:
 		cp += sprintf(cp, "syscall:  read(%d, %#lo, %d)\n",
-			      fd, (unsigned long) buffer, readp->r_nbytes);
-		cp += sprintf(cp, "          fd %d is file %s - open flags are %#o\n",
-			      fd, readp->r_file, readp->r_oflags);
-		cp += sprintf(cp, "          read done at file offset %d\n",
-			      readp->r_offset);
+			      fd, (unsigned long)buffer, readp->r_nbytes);
+		cp +=
+		    sprintf(cp,
+			    "          fd %d is file %s - open flags are %#o\n",
+			    fd, readp->r_file, readp->r_oflags);
+		cp +=
+		    sprintf(cp, "          read done at file offset %d\n",
+			    readp->r_offset);
 		break;
 
 	case WRITE:
 		cp += sprintf(cp, "syscall:  write(%d, %#lo, %d)\n",
-			      fd, (unsigned long) buffer, writep->r_nbytes);
-		cp += sprintf(cp, "          fd %d is file %s - open flags are %#o\n",
-			      fd, writep->r_file, writep->r_oflags);
-		cp += sprintf(cp, "          write done at file offset %d - pattern is %s\n",
-			      writep->r_offset, pattern);
+			      fd, (unsigned long)buffer, writep->r_nbytes);
+		cp +=
+		    sprintf(cp,
+			    "          fd %d is file %s - open flags are %#o\n",
+			    fd, writep->r_file, writep->r_oflags);
+		cp +=
+		    sprintf(cp,
+			    "          write done at file offset %d - pattern is %s\n",
+			    writep->r_offset, pattern);
 		break;
 
 	case READA:
 		aio_strat = format_strat(readap->r_aio_strat);
 
 		cp += sprintf(cp, "syscall:  reada(%d, %#lo, %d, %#lo, %d)\n",
-			      fd, (unsigned long) buffer, readap->r_nbytes,
-			      (unsigned long) iosw, signo);
-		cp += sprintf(cp, "          fd %d is file %s - open flags are %#o\n",
-			      fd, readap->r_file, readp->r_oflags);
-		cp += sprintf(cp, "          reada done at file offset %d\n",
-			      readap->r_offset);
-		cp += sprintf(cp, "          async io completion strategy is %s\n",
-			      aio_strat);
+			      fd, (unsigned long)buffer, readap->r_nbytes,
+			      (unsigned long)iosw, signo);
+		cp +=
+		    sprintf(cp,
+			    "          fd %d is file %s - open flags are %#o\n",
+			    fd, readap->r_file, readp->r_oflags);
+		cp +=
+		    sprintf(cp, "          reada done at file offset %d\n",
+			    readap->r_offset);
+		cp +=
+		    sprintf(cp,
+			    "          async io completion strategy is %s\n",
+			    aio_strat);
 		break;
 
 	case WRITEA:
 		aio_strat = format_strat(writeap->r_aio_strat);
 
 		cp += sprintf(cp, "syscall:  writea(%d, %#lo, %d, %#lo, %d)\n",
-			      fd, (unsigned long) buffer, writeap->r_nbytes,
-			      (unsigned long) iosw, signo);
-		cp += sprintf(cp, "          fd %d is file %s - open flags are %#o\n",
-			      fd, writeap->r_file, writeap->r_oflags);
-		cp += sprintf(cp, "          writea done at file offset %d - pattern is %s\n",
-			      writeap->r_offset, pattern);
-		cp += sprintf(cp, "          async io completion strategy is %s\n",
-			      aio_strat);
+			      fd, (unsigned long)buffer, writeap->r_nbytes,
+			      (unsigned long)iosw, signo);
+		cp +=
+		    sprintf(cp,
+			    "          fd %d is file %s - open flags are %#o\n",
+			    fd, writeap->r_file, writeap->r_oflags);
+		cp +=
+		    sprintf(cp,
+			    "          writea done at file offset %d - pattern is %s\n",
+			    writeap->r_offset, pattern);
+		cp +=
+		    sprintf(cp,
+			    "          async io completion strategy is %s\n",
+			    aio_strat);
 		break;
 
 	}
@@ -1332,15 +1367,14 @@ format_rw(struct io_req *ioreq, int fd, void *buffer, int signo, char *pattern,
 }
 
 #ifdef CRAY
-char *
-format_sds(struct io_req *ioreq, void *buffer, int sds, char *pattern)
+char *format_sds(struct io_req *ioreq, void *buffer, int sds, char *pattern)
 {
-	int			i;
-	static char		*errbuf=NULL;
-	char			*cp;
+	int i;
+	static char *errbuf = NULL;
+	char *cp;
 
-	struct ssread_req	*ssreadp = &ioreq->r_data.ssread;
-	struct sswrite_req	*sswritep = &ioreq->r_data.sswrite;
+	struct ssread_req *ssreadp = &ioreq->r_data.ssread;
+	struct sswrite_req *sswritep = &ioreq->r_data.sswrite;
 
 	if (errbuf == NULL)
 		errbuf = (char *)malloc(32768);
@@ -1355,8 +1389,10 @@ format_sds(struct io_req *ioreq, void *buffer, int sds, char *pattern)
 		break;
 
 	case SSWRITE:
-		cp += sprintf(cp, "syscall:  sswrite(%#o, %#o, %d) - pattern was %s\n",
-			      buffer, sds, sswritep->r_nbytes, pattern);
+		cp +=
+		    sprintf(cp,
+			    "syscall:  sswrite(%#o, %#o, %d) - pattern was %s\n",
+			    buffer, sds, sswritep->r_nbytes, pattern);
 		break;
 	}
 	return errbuf;
@@ -1367,17 +1403,16 @@ format_sds(struct io_req *ioreq, void *buffer, int sds, char *pattern)
  * Perform the various sorts of disk reads
  */
 
-int
-do_read(struct io_req *req)
+int do_read(struct io_req *req)
 {
-	int	    	    	fd, offset, nbytes, oflags, rval;
-	char    	    	*addr, *file;
+	int fd, offset, nbytes, oflags, rval;
+	char *addr, *file;
 #ifdef CRAY
-	struct aio_info		*aiop;
-	int			aio_id, aio_strat, signo;
+	struct aio_info *aiop;
+	int aio_id, aio_strat, signo;
 #endif
 #ifdef sgi
-	struct fd_cache		*fdc;
+	struct fd_cache *fdc;
 #endif
 
 	/*
@@ -1391,12 +1426,12 @@ do_read(struct io_req *req)
 	offset = req->r_data.read.r_offset;
 	nbytes = req->r_data.read.r_nbytes;
 
-	/*printf("read: %s, %#o, %d %d\n", file, oflags, offset, nbytes);*/
+	/*printf("read: %s, %#o, %d %d\n", file, oflags, offset, nbytes); */
 
 	/*
 	 * Grab an open file descriptor
 	 * Note: must be done before memory allocation so that the direct i/o
-	 *	information is available in mem. allocate
+	 *      information is available in mem. allocate
 	 */
 
 	if ((fd = alloc_fd(file, oflags)) == -1)
@@ -1417,7 +1452,9 @@ do_read(struct io_req *req)
 
 		addr = (char *)Sdsptr;
 	} else {
-		if ((rval = alloc_mem(nbytes + wtob(1) * 2 + MPP_BUMP * sizeof(UINT64_T))) < 0) {
+		if ((rval =
+		     alloc_mem(nbytes + wtob(1) * 2 +
+			       MPP_BUMP * sizeof(UINT64_T))) < 0) {
 			return rval;
 		}
 
@@ -1427,7 +1464,7 @@ do_read(struct io_req *req)
 		 * if io is not raw, bump the offset by a random amount
 		 * to generate non-word-aligned io.
 		 */
-		if (! (req->r_data.read.r_uflags & F_WORD_ALIGNED)) {
+		if (!(req->r_data.read.r_uflags & F_WORD_ALIGNED)) {
 			addr += random_range(0, wtob(1) - 1, 1, NULL);
 		}
 	}
@@ -1447,7 +1484,8 @@ do_read(struct io_req *req)
 		 * Force memory alignment for Direct I/O
 		 */
 		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0)) {
-			addr += fdc->c_memalign - ((long)addr % fdc->c_memalign);
+			addr +=
+			    fdc->c_memalign - ((long)addr % fdc->c_memalign);
 		}
 	} else {
 		addr += random_range(0, wtob(1) - 1, 1, NULL);
@@ -1459,12 +1497,12 @@ do_read(struct io_req *req)
 	}
 
 	addr = Memptr;
-#endif	/* !CRAY && sgi */
-#endif	/* CRAY */
+#endif /* !CRAY && sgi */
+#endif /* CRAY */
 
 	switch (req->r_type) {
 	case READ:
-	        /* move to the desired file position. */
+		/* move to the desired file position. */
 		if (lseek(fd, offset, SEEK_SET) == -1) {
 			doio_fprintf(stderr,
 				     "lseek(%d, %d, SEEK_SET) failed:  %s (%d)\n",
@@ -1495,7 +1533,7 @@ do_read(struct io_req *req)
 		 * Async read
 		 */
 
-	        /* move to the desired file position. */
+		/* move to the desired file position. */
 		if (lseek(fd, offset, SEEK_SET) == -1) {
 			doio_fprintf(stderr,
 				     "lseek(%d, %d, SEEK_SET) failed:  %s (%d)\n",
@@ -1512,7 +1550,8 @@ do_read(struct io_req *req)
 		if (reada(fd, addr, nbytes, &aiop->iosw, signo) == -1) {
 			doio_fprintf(stderr, "reada() failed: %s (%d)\n%s\n",
 				     SYSERR, errno,
-				     format_rw(req, fd, addr, signo, NULL, &aiop->iosw));
+				     format_rw(req, fd, addr, signo, NULL,
+					       &aiop->iosw));
 			aio_unregister(aio_id);
 			doio_upanic(U_RVAL);
 			rval = -1;
@@ -1534,7 +1573,8 @@ do_read(struct io_req *req)
 					     aiop->iosw.sw_flag,
 					     aiop->iosw.sw_error,
 					     aiop->iosw.sw_count,
-				     format_rw(req, fd, addr, signo, NULL, &aiop->iosw));
+					     format_rw(req, fd, addr, signo,
+						       NULL, &aiop->iosw));
 				aio_unregister(aio_id);
 				doio_upanic(U_IOSW);
 				rval = -1;
@@ -1547,7 +1587,7 @@ do_read(struct io_req *req)
 		if (rval == -1)
 			return rval;
 		break;
-#endif	/* CRAY */
+#endif /* CRAY */
 	}
 
 	return 0;		/* if we get here, everything went ok */
@@ -1557,21 +1597,20 @@ do_read(struct io_req *req)
  * Perform the verious types of disk writes.
  */
 
-int
-do_write(struct io_req *req)
+int do_write(struct io_req *req)
 {
-	static int		pid = -1;
-	int	    	    	fd, nbytes, oflags, signo;
-	int	    	    	logged_write, rval, got_lock;
-	off_t    	    	offset, woffset;
-	char    	    	*addr, pattern, *file, *msg;
-	struct wlog_rec		wrec;
+	static int pid = -1;
+	int fd, nbytes, oflags, signo;
+	int logged_write, rval, got_lock;
+	off_t offset, woffset;
+	char *addr, pattern, *file, *msg;
+	struct wlog_rec wrec;
 #ifdef CRAY
-	int			aio_strat, aio_id;
-	struct aio_info		*aiop;
+	int aio_strat, aio_id;
+	struct aio_info *aiop;
 #endif
 #ifdef sgi
-	struct fd_cache		*fdc;
+	struct fd_cache *fdc;
 #endif
 
 	woffset = 0;
@@ -1580,14 +1619,14 @@ do_write(struct io_req *req)
 	 * Misc variable setup
 	 */
 
-	signo   = 0;
-	nbytes	= req->r_data.write.r_nbytes;
-	offset	= req->r_data.write.r_offset;
-	pattern	= req->r_data.write.r_pattern;
-	file	= req->r_data.write.r_file;
-	oflags	= req->r_data.write.r_oflags;
+	signo = 0;
+	nbytes = req->r_data.write.r_nbytes;
+	offset = req->r_data.write.r_offset;
+	pattern = req->r_data.write.r_pattern;
+	file = req->r_data.write.r_file;
+	oflags = req->r_data.write.r_oflags;
 
-	/*printf("pwrite: %s, %#o, %d %d\n", file, oflags, offset, nbytes);*/
+	/*printf("pwrite: %s, %#o, %d %d\n", file, oflags, offset, nbytes); */
 
 	/*
 	 * Allocate core memory and possibly sds space.  Initialize the data
@@ -1604,7 +1643,7 @@ do_write(struct io_req *req)
 		return -1;
 
 	/*printf("write: %d, %s, %#o, %d %d\n",
-	       fd, file, oflags, offset, nbytes);*/
+	   fd, file, oflags, offset, nbytes); */
 
 	/*
 	 * Allocate SDS space for backdoor write if desired
@@ -1617,23 +1656,25 @@ do_write(struct io_req *req)
 			return rval;
 		}
 
-		(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
-		/*pattern_fill(Memptr, nbytes, Pattern, Pattern_Length, 0);*/
+		(*Data_Fill) (Memptr, nbytes, Pattern, Pattern_Length, 0);
+		/*pattern_fill(Memptr, nbytes, Pattern, Pattern_Length, 0); */
 
 		if (alloc_sds(nbytes) == -1)
 			return -1;
 
 		if (sswrite((long)Memptr, Sdsptr, btoc(nbytes)) == -1) {
-			doio_fprintf(stderr, "sswrite(%d, %d, %d) failed:  %s (%d)\n",
-				     (long)Memptr, Sdsptr, btoc(nbytes),
-				     SYSERR, errno);
+			doio_fprintf(stderr,
+				     "sswrite(%d, %d, %d) failed:  %s (%d)\n",
+				     (long)Memptr, Sdsptr, btoc(nbytes), SYSERR,
+				     errno);
 			fflush(stderr);
 			return -1;
 		}
 
 		addr = (char *)Sdsptr;
 #else
-		doio_fprintf(stderr, "Invalid O_SSD flag was generated for MPP system\n");
+		doio_fprintf(stderr,
+			     "Invalid O_SSD flag was generated for MPP system\n");
 		fflush(stderr);
 		return -1;
 #endif /* !CRAYMPP */
@@ -1649,13 +1690,13 @@ do_write(struct io_req *req)
 		 * to generate non-word-aligned io.
 		 */
 
-		if (! (req->r_data.write.r_uflags & F_WORD_ALIGNED)) {
+		if (!(req->r_data.write.r_uflags & F_WORD_ALIGNED)) {
 			addr += random_range(0, wtob(1) - 1, 1, NULL);
 		}
 
-		(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
+		(*Data_Fill) (Memptr, nbytes, Pattern, Pattern_Length, 0);
 		if (addr != Memptr)
-			memmove( addr, Memptr, nbytes);
+			memmove(addr, Memptr, nbytes);
 	}
 #else /* CRAY */
 #ifdef sgi
@@ -1673,15 +1714,16 @@ do_write(struct io_req *req)
 		 * Force memory alignment for Direct I/O
 		 */
 		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0)) {
-			addr += fdc->c_memalign - ((long)addr % fdc->c_memalign);
+			addr +=
+			    fdc->c_memalign - ((long)addr % fdc->c_memalign);
 		}
 	} else {
 		addr += random_range(0, wtob(1) - 1, 1, NULL);
 	}
 
-	(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
+	(*Data_Fill) (Memptr, nbytes, Pattern, Pattern_Length, 0);
 	if (addr != Memptr)
-		memmove( addr, Memptr, nbytes);
+		memmove(addr, Memptr, nbytes);
 
 #else /* sgi */
 	if ((rval = alloc_mem(nbytes + wtob(1) * 2)) < 0) {
@@ -1690,9 +1732,9 @@ do_write(struct io_req *req)
 
 	addr = Memptr;
 
-	(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
+	(*Data_Fill) (Memptr, nbytes, Pattern, Pattern_Length, 0);
 	if (addr != Memptr)
-		memmove( addr, Memptr, nbytes);
+		memmove(addr, Memptr, nbytes);
 #endif /* sgi */
 #endif /* CRAY */
 
@@ -1745,7 +1787,7 @@ do_write(struct io_req *req)
 		}
 	}
 
-	switch (req->r_type ) {
+	switch (req->r_type) {
 	case WRITE:
 		/*
 		 * sync write
@@ -1764,28 +1806,31 @@ do_write(struct io_req *req)
 			doio_fprintf(stderr,
 				     "write() failed:  %s (%d)\n%s\n",
 				     SYSERR, errno,
-				     format_rw(req, fd, addr, -1, Pattern, NULL));
+				     format_rw(req, fd, addr, -1, Pattern,
+					       NULL));
 #ifdef sgi
 			doio_fprintf(stderr,
 				     "write() failed:  %s\n\twrite(%d, %#o, %d)\n\toffset %d, nbytes%%miniou(%d)=%d, oflags=%#o memalign=%d, addr%%memalign=%d\n",
 				     strerror(errno),
 				     fd, addr, nbytes,
 				     offset,
-				     fdc->c_miniosz, nbytes%fdc->c_miniosz,
-				     oflags, fdc->c_memalign, (long)addr%fdc->c_memalign);
+				     fdc->c_miniosz, nbytes % fdc->c_miniosz,
+				     oflags, fdc->c_memalign,
+				     (long)addr % fdc->c_memalign);
 #else
 			doio_fprintf(stderr,
 				     "write() failed:  %s\n\twrite(%d, %#o, %d)\n\toffset %d, nbytes%%1B=%d, oflags=%#o\n",
 				     strerror(errno),
 				     fd, addr, nbytes,
-				     offset, nbytes%4096, oflags);
+				     offset, nbytes % 4096, oflags);
 #endif
 			doio_upanic(U_RVAL);
 		} else if (rval != nbytes) {
 			doio_fprintf(stderr,
 				     "write() returned wrong # bytes - expected %d, got %d\n%s\n",
 				     nbytes, rval,
-				     format_rw(req, fd, addr, -1, Pattern, NULL));
+				     format_rw(req, fd, addr, -1, Pattern,
+					       NULL));
 			doio_upanic(U_RVAL);
 			rval = -1;
 		}
@@ -1818,7 +1863,8 @@ do_write(struct io_req *req)
 			doio_fprintf(stderr,
 				     "writea() failed: %s (%d)\n%s\n",
 				     SYSERR, errno,
-				     format_rw(req, fd, addr, -1, Pattern, NULL));
+				     format_rw(req, fd, addr, -1, Pattern,
+					       NULL));
 			doio_upanic(U_RVAL);
 			aio_unregister(aio_id);
 			rval = -1;
@@ -1841,7 +1887,8 @@ do_write(struct io_req *req)
 					     aiop->iosw.sw_flag,
 					     aiop->iosw.sw_error,
 					     aiop->iosw.sw_count,
-					     format_rw(req, fd, addr, -1, Pattern, &aiop->iosw));
+					     format_rw(req, fd, addr, -1,
+						       Pattern, &aiop->iosw));
 				aio_unregister(aio_id);
 				doio_upanic(U_IOSW);
 				rval = -1;
@@ -1865,14 +1912,14 @@ do_write(struct io_req *req)
 		msg = check_file(file, offset, nbytes, Pattern, Pattern_Length,
 				 0, oflags & O_PARALLEL);
 		if (msg != NULL) {
-		  	doio_fprintf(stderr, "%s%s\n",
-				     msg,
+			doio_fprintf(stderr, "%s%s\n", msg,
 #ifdef CRAY
-				     format_rw(req, fd, addr, -1, Pattern, &aiop->iosw)
+				     format_rw(req, fd, addr, -1, Pattern,
+					       &aiop->iosw)
 #else
 				     format_rw(req, fd, addr, -1, Pattern, NULL)
 #endif
-				);
+			    );
 			doio_upanic(U_CORRUPTION);
 			exit(E_COMPARE);
 
@@ -1904,17 +1951,16 @@ do_write(struct io_req *req)
 		}
 	}
 
-	return( (rval == -1) ? -1 : 0);
+	return ((rval == -1) ? -1 : 0);
 }
 
 /*
  * Simple routine to lock/unlock a file using fcntl()
  */
 
-int
-lock_file_region(char *fname, int fd, int type, int start, int nbytes)
+int lock_file_region(char *fname, int fd, int type, int start, int nbytes)
 {
-	struct flock	flk;
+	struct flock flk;
 
 	flk.l_type = type;
 	flk.l_whence = 0;
@@ -1938,20 +1984,25 @@ lock_file_region(char *fname, int fd, int type, int start, int nbytes)
  */
 
 #ifdef CRAY
-char *
-format_listio(struct io_req *ioreq, int lcmd, struct listreq *list,
-	int nent, int fd, char *pattern)
+char *format_listio(struct io_req *ioreq, int lcmd, struct listreq *list,
+		    int nent, int fd, char *pattern)
 {
-	static	char		*errbuf=NULL;
-	struct	listio_req	*liop = &ioreq->r_data.listio;
-	struct	listreq		*listreq;
-	char			*cp, *cmd, *opcode, *aio_strat;
-	int			i;
+	static char *errbuf = NULL;
+	struct listio_req *liop = &ioreq->r_data.listio;
+	struct listreq *listreq;
+	char *cp, *cmd, *opcode, *aio_strat;
+	int i;
 
 	switch (lcmd) {
-	case LC_START:	cmd = "LC_START";	break;
-	case LC_WAIT:	cmd = "LC_WAIT";	break;
-	default:	cmd = "???";		break;
+	case LC_START:
+		cmd = "LC_START";
+		break;
+	case LC_WAIT:
+		cmd = "LC_WAIT";
+		break;
+	default:
+		cmd = "???";
+		break;
 	}
 
 	if (errbuf == NULL)
@@ -1960,8 +2011,7 @@ format_listio(struct io_req *ioreq, int lcmd, struct listreq *list,
 	cp = errbuf;
 	cp += sprintf(cp, "Request number %d\n", Reqno);
 
-	cp += sprintf(cp, "syscall:  listio(%s, %#o, %d)\n\n",
-		      cmd, list, nent);
+	cp += sprintf(cp, "syscall:  listio(%s, %#o, %d)\n\n", cmd, list, nent);
 
 	aio_strat = format_strat(liop->r_aio_strat);
 
@@ -1972,47 +2022,78 @@ format_listio(struct io_req *ioreq, int lcmd, struct listreq *list,
 		listreq = list + i;
 
 		switch (listreq->li_opcode) {
-		case LO_READ:	opcode = "LO_READ";	break;
-		case LO_WRITE:	opcode = "LO_WRITE";	break;
-		default:	opcode = "???";		break;
+		case LO_READ:
+			opcode = "LO_READ";
+			break;
+		case LO_WRITE:
+			opcode = "LO_WRITE";
+			break;
+		default:
+			opcode = "???";
+			break;
 		}
 
 		cp += sprintf(cp, "          li_opcode =    %s\n", opcode);
-		cp += sprintf(cp, "          li_drvr =      %#o\n", listreq->li_drvr);
-		cp += sprintf(cp, "          li_flags =     %#o\n", listreq->li_flags);
-		cp += sprintf(cp, "          li_offset =    %d\n", listreq->li_offset);
-		cp += sprintf(cp, "          li_fildes =    %d\n", listreq->li_fildes);
-		cp += sprintf(cp, "          li_buf =       %#o\n", listreq->li_buf);
-		cp += sprintf(cp, "          li_nbyte =     %d\n", listreq->li_nbyte);
-		cp += sprintf(cp, "          li_status =    %#o (%d, %d, %d)\n", listreq->li_status, listreq->li_status->sw_flag, listreq->li_status->sw_error, listreq->li_status->sw_count);
-		cp += sprintf(cp, "          li_signo =     %d\n", listreq->li_signo);
-		cp += sprintf(cp, "          li_nstride =   %d\n", listreq->li_nstride);
-		cp += sprintf(cp, "          li_filstride = %d\n", listreq->li_filstride);
-		cp += sprintf(cp, "          li_memstride = %d\n", listreq->li_memstride);
-		cp += sprintf(cp, "          io completion strategy is %s\n", aio_strat);
+		cp +=
+		    sprintf(cp, "          li_drvr =      %#o\n",
+			    listreq->li_drvr);
+		cp +=
+		    sprintf(cp, "          li_flags =     %#o\n",
+			    listreq->li_flags);
+		cp +=
+		    sprintf(cp, "          li_offset =    %d\n",
+			    listreq->li_offset);
+		cp +=
+		    sprintf(cp, "          li_fildes =    %d\n",
+			    listreq->li_fildes);
+		cp +=
+		    sprintf(cp, "          li_buf =       %#o\n",
+			    listreq->li_buf);
+		cp +=
+		    sprintf(cp, "          li_nbyte =     %d\n",
+			    listreq->li_nbyte);
+		cp +=
+		    sprintf(cp, "          li_status =    %#o (%d, %d, %d)\n",
+			    listreq->li_status, listreq->li_status->sw_flag,
+			    listreq->li_status->sw_error,
+			    listreq->li_status->sw_count);
+		cp +=
+		    sprintf(cp, "          li_signo =     %d\n",
+			    listreq->li_signo);
+		cp +=
+		    sprintf(cp, "          li_nstride =   %d\n",
+			    listreq->li_nstride);
+		cp +=
+		    sprintf(cp, "          li_filstride = %d\n",
+			    listreq->li_filstride);
+		cp +=
+		    sprintf(cp, "          li_memstride = %d\n",
+			    listreq->li_memstride);
+		cp +=
+		    sprintf(cp, "          io completion strategy is %s\n",
+			    aio_strat);
 	}
 	return errbuf;
 }
 #endif /* CRAY */
 
-int
-do_listio(struct io_req *req)
+int do_listio(struct io_req *req)
 {
 #ifdef CRAY
-	struct listio_req	*lio;
-	int	    	    	fd, oflags, signo, nb, i;
-	int	    	    	logged_write, rval, got_lock;
-	int			aio_strat, aio_id;
-	int			min_byte, max_byte;
-	int			mem_needed;
-	int		       	foffset, fstride, mstride, nstrides;
-	char			*moffset;
-	long    	    	offset, woffset;
-	char    	    	*addr, *msg;
-	sigset_t		block_mask, omask;
-	struct wlog_rec		wrec;
-	struct aio_info		*aiop;
-	struct listreq		lio_req;
+	struct listio_req *lio;
+	int fd, oflags, signo, nb, i;
+	int logged_write, rval, got_lock;
+	int aio_strat, aio_id;
+	int min_byte, max_byte;
+	int mem_needed;
+	int foffset, fstride, mstride, nstrides;
+	char *moffset;
+	long offset, woffset;
+	char *addr, *msg;
+	sigset_t block_mask, omask;
+	struct wlog_rec wrec;
+	struct aio_info *aiop;
+	struct listreq lio_req;
 
 	lio = &req->r_data.listio;
 
@@ -2023,7 +2104,8 @@ do_listio(struct io_req *req)
 	 */
 
 	if (lio->r_filestride && abs(lio->r_filestride) < lio->r_nbytes) {
-		doio_fprintf(stderr, "do_listio():  Bogus listio request - abs(filestride) [%d] < nbytes [%d]\n",
+		doio_fprintf(stderr,
+			     "do_listio():  Bogus listio request - abs(filestride) [%d] < nbytes [%d]\n",
 			     abs(lio->r_filestride), lio->r_nbytes);
 		return -1;
 	}
@@ -2034,8 +2116,8 @@ do_listio(struct io_req *req)
 	 */
 
 	mem_needed =
-		stride_bounds(0, lio->r_memstride, lio->r_nstrides,
-			      lio->r_nbytes, NULL, NULL);
+	    stride_bounds(0, lio->r_memstride, lio->r_nstrides,
+			  lio->r_nbytes, NULL, NULL);
 
 	if ((rval = alloc_mem(mem_needed + wtob(1))) < 0) {
 		return rval;
@@ -2049,15 +2131,15 @@ do_listio(struct io_req *req)
 
 	addr = Memptr;
 
-	if (! (lio->r_uflags & F_WORD_ALIGNED)) {
+	if (!(lio->r_uflags & F_WORD_ALIGNED)) {
 		addr += random_range(0, wtob(1) - 1, 1, NULL);
 	}
 
 	if (lio->r_opcode == LO_WRITE) {
 		Pattern[0] = lio->r_pattern;
-		(*Data_Fill)(Memptr, mem_needed, Pattern, Pattern_Length, 0);
+		(*Data_Fill) (Memptr, mem_needed, Pattern, Pattern_Length, 0);
 		if (addr != Memptr)
-			memmove( addr, Memptr, mem_needed);
+			memmove(addr, Memptr, mem_needed);
 	}
 
 	/*
@@ -2086,8 +2168,9 @@ do_listio(struct io_req *req)
 			      lio->r_nbytes, &min_byte, &max_byte);
 
 		if (lock_file_region(lio->r_file, fd, F_WRLCK,
-				     min_byte, (max_byte-min_byte+1)) < 0) {
-			doio_fprintf(stderr, "stride_bounds(%d, %d, %d, %d, ..., ...) set min_byte to %d, max_byte to %d\n",
+				     min_byte, (max_byte - min_byte + 1)) < 0) {
+			doio_fprintf(stderr,
+				     "stride_bounds(%d, %d, %d, %d, ..., ...) set min_byte to %d, max_byte to %d\n",
 				     lio->r_offset, lio->r_filestride,
 				     lio->r_nstrides, lio->r_nbytes, min_byte,
 				     max_byte);
@@ -2145,7 +2228,8 @@ do_listio(struct io_req *req)
 		doio_fprintf(stderr,
 			     "listio() failed: %s (%d)\n%s\n",
 			     SYSERR, errno,
-			     format_listio(req, lio->r_cmd, &lio_req, 1, fd, Pattern));
+			     format_listio(req, lio->r_cmd, &lio_req, 1, fd,
+					   Pattern));
 		aio_unregister(aio_id);
 		doio_upanic(U_RVAL);
 		goto lio_done;
@@ -2168,7 +2252,8 @@ do_listio(struct io_req *req)
 			     1, 0, lio->r_nbytes * lio->r_nstrides,
 			     aiop->iosw.sw_flag,
 			     aiop->iosw.sw_error, aiop->iosw.sw_count,
-			     format_listio(req, lio->r_cmd, &lio_req, 1, fd, Pattern));
+			     format_listio(req, lio->r_cmd, &lio_req, 1, fd,
+					   Pattern));
 		aio_unregister(aio_id);
 		doio_upanic(U_IOSW);
 		goto lio_done;
@@ -2190,7 +2275,7 @@ do_listio(struct io_req *req)
 		mstride = lio->r_memstride ? lio->r_memstride : lio->r_nbytes;
 		foffset = lio->r_offset;
 
-		if (mstride> 0 || lio->r_nstrides <= 1) {
+		if (mstride > 0 || lio->r_nstrides <= 1) {
 			moffset = addr;
 		} else {
 			moffset = addr + mem_needed - lio->r_nbytes;
@@ -2206,9 +2291,11 @@ do_listio(struct io_req *req)
 			if (msg != NULL) {
 				doio_fprintf(stderr, "%s\n%s\n",
 					     msg,
-			     format_listio(req, lio->r_cmd, &lio_req, 1, fd, Pattern));
+					     format_listio(req, lio->r_cmd,
+							   &lio_req, 1, fd,
+							   Pattern));
 				doio_upanic(U_CORRUPTION);
-	    			exit(E_COMPARE);
+				exit(E_COMPARE);
 			}
 
 			moffset += mstride;
@@ -2219,7 +2306,7 @@ do_listio(struct io_req *req)
 
 	rval = 0;
 
- lio_done:
+lio_done:
 
 	/*
 	 * General cleanup ...
@@ -2232,7 +2319,7 @@ do_listio(struct io_req *req)
 
 	if (got_lock) {
 		if (lock_file_region(lio->r_file, fd, F_UNLCK,
-				     min_byte, (max_byte-min_byte+1)) < 0) {
+				     min_byte, (max_byte - min_byte + 1)) < 0) {
 			return -1;
 		}
 	}
@@ -2249,11 +2336,10 @@ do_listio(struct io_req *req)
 
 #ifdef _CRAY1
 
-int
-do_ssdio(struct io_req *req)
+int do_ssdio(struct io_req *req)
 {
-	int	    nbytes, nb;
-	char    errbuf[BSIZE];
+	int nbytes, nb;
+	char errbuf[BSIZE];
 
 	nbytes = req->r_data.ssread.r_nbytes;
 
@@ -2274,8 +2360,8 @@ do_ssdio(struct io_req *req)
 		 */
 
 		Pattern[0] = req->r_data.sswrite.r_pattern;
-		/*pattern_fill(Memptr, nbytes, Pattern, Pattern_Length, 0);*/
-		(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
+		/*pattern_fill(Memptr, nbytes, Pattern, Pattern_Length, 0); */
+		(*Data_Fill) (Memptr, nbytes, Pattern, Pattern_Length, 0);
 
 		if (sswrite((long)Memptr, (long)Sdsptr, btoc(nbytes)) == -1) {
 			doio_fprintf(stderr, "sswrite() failed:  %s (%d)\n%s\n",
@@ -2306,7 +2392,8 @@ do_ssdio(struct io_req *req)
 	if (v_opt && req->r_type == SSWRITE) {
 		ssread((long)Memptr, (long)Sdsptr, btoc(nbytes));
 
-		if (pattern_check(Memptr, nbytes, Pattern, Pattern_Length, 0) == -1) {
+		if (pattern_check(Memptr, nbytes, Pattern, Pattern_Length, 0) ==
+		    -1) {
 			doio_fprintf(stderr,
 				     "sds DATA COMPARE ERROR - ABORTING\n%s\n",
 				     format_sds(req, Memptr, Sdsptr, Pattern));
@@ -2321,8 +2408,7 @@ do_ssdio(struct io_req *req)
 
 #ifdef CRAY
 
-int
-do_ssdio(struct io_req *req)
+int do_ssdio(struct io_req *req)
 {
 	doio_fprintf(stderr,
 		     "Internal Error - do_ssdio() called on a non-cray1 system\n");
@@ -2334,18 +2420,17 @@ do_ssdio(struct io_req *req)
 
 #endif /* _CRAY1 */
 
-char *
-fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
+char *fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
 {
-	static char		*errbuf=NULL;
-	char			*cp;
-	struct rw_req		*io;
-	struct smap		*aname;
+	static char *errbuf = NULL;
+	char *cp;
+	struct rw_req *io;
+	struct smap *aname;
 #ifdef CRAY
-	struct stat		sbuf;
+	struct stat sbuf;
 #endif
 #ifdef sgi
-	struct dioattr		finfo;
+	struct dioattr finfo;
 #endif
 
 	if (errbuf == NULL)
@@ -2356,99 +2441,113 @@ fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
 	/*
 	 * Look up async I/O completion strategy
 	 */
-	for (aname=aionames;
-	    aname->value != -1 && aname->value != io->r_aio_strat;
-	    aname++)
-		;
+	for (aname = aionames;
+	     aname->value != -1 && aname->value != io->r_aio_strat; aname++) ;
 
 	cp = errbuf;
 	cp += sprintf(cp, "Request number %d\n", Reqno);
 
-	cp += sprintf(cp, "          fd %d is file %s - open flags are %#o %s\n",
-		      fd, io->r_file, io->r_oflags, format_oflags(io->r_oflags));
+	cp +=
+	    sprintf(cp, "          fd %d is file %s - open flags are %#o %s\n",
+		    fd, io->r_file, io->r_oflags, format_oflags(io->r_oflags));
 
 	if (sy->sy_flags & SY_WRITE) {
-		cp += sprintf(cp, "          write done at file offset %d - pattern is %c (%#o)\n",
-			      io->r_offset,
-			      (io->r_pattern == '\0') ? '?' : io->r_pattern,
-			      io->r_pattern);
+		cp +=
+		    sprintf(cp,
+			    "          write done at file offset %d - pattern is %c (%#o)\n",
+			    io->r_offset,
+			    (io->r_pattern == '\0') ? '?' : io->r_pattern,
+			    io->r_pattern);
 	} else {
 		cp += sprintf(cp, "          read done at file offset %d\n",
-		      io->r_offset);
+			      io->r_offset);
 	}
 
 	if (sy->sy_flags & SY_ASYNC) {
-		cp += sprintf(cp, "          async io completion strategy is %s\n",
-			      aname->string);
+		cp +=
+		    sprintf(cp,
+			    "          async io completion strategy is %s\n",
+			    aname->string);
 	}
 
-	cp += sprintf(cp, "          number of requests is %d, strides per request is %d\n",
-		      io->r_nent, io->r_nstrides);
+	cp +=
+	    sprintf(cp,
+		    "          number of requests is %d, strides per request is %d\n",
+		    io->r_nent, io->r_nstrides);
 
-	cp += sprintf(cp, "          i/o byte count = %d\n",
-		      io->r_nbytes);
+	cp += sprintf(cp, "          i/o byte count = %d\n", io->r_nbytes);
 
 	cp += sprintf(cp, "          memory alignment is %s\n",
-		      (io->r_uflags & F_WORD_ALIGNED) ? "aligned" : "unaligned");
+		      (io->
+		       r_uflags & F_WORD_ALIGNED) ? "aligned" : "unaligned");
 
 #ifdef CRAY
 	if (io->r_oflags & O_RAW) {
-		cp += sprintf(cp, "          RAW I/O: offset %% 4096 = %d length %% 4096 = %d\n",
-			      io->r_offset % 4096, io->r_nbytes % 4096);
+		cp +=
+		    sprintf(cp,
+			    "          RAW I/O: offset %% 4096 = %d length %% 4096 = %d\n",
+			    io->r_offset % 4096, io->r_nbytes % 4096);
 		fstat(fd, &sbuf);
-		cp += sprintf(cp, "          optimal file xfer size: small: %d large: %d\n",
-			      sbuf.st_blksize, sbuf.st_oblksize);
-		cp += sprintf(cp, "          cblks %d cbits %#o\n",
-			      sbuf.st_cblks, sbuf.st_cbits);
+		cp +=
+		    sprintf(cp,
+			    "          optimal file xfer size: small: %d large: %d\n",
+			    sbuf.st_blksize, sbuf.st_oblksize);
+		cp +=
+		    sprintf(cp, "          cblks %d cbits %#o\n", sbuf.st_cblks,
+			    sbuf.st_cbits);
 	}
 #endif
 #ifdef sgi
 	if (io->r_oflags & O_DIRECT) {
 
 		if (fcntl(fd, F_DIOINFO, &finfo) == -1) {
-			cp += sprintf(cp, "          Error %s (%d) getting direct I/O info\n",
-				      strerror(errno), errno);
+			cp +=
+			    sprintf(cp,
+				    "          Error %s (%d) getting direct I/O info\n",
+				    strerror(errno), errno);
 			finfo.d_mem = 1;
 			finfo.d_miniosz = 1;
 			finfo.d_maxiosz = 1;
 		}
 
-		cp += sprintf(cp, "          DIRECT I/O: offset %% %d = %d length %% %d = %d\n",
-			      finfo.d_miniosz,
-			      io->r_offset % finfo.d_miniosz,
-			      io->r_nbytes,
-			      io->r_nbytes % finfo.d_miniosz);
-		cp += sprintf(cp, "          mem alignment 0x%x xfer size: small: %d large: %d\n",
-			      finfo.d_mem, finfo.d_miniosz, finfo.d_maxiosz);
+		cp +=
+		    sprintf(cp,
+			    "          DIRECT I/O: offset %% %d = %d length %% %d = %d\n",
+			    finfo.d_miniosz, io->r_offset % finfo.d_miniosz,
+			    io->r_nbytes, io->r_nbytes % finfo.d_miniosz);
+		cp +=
+		    sprintf(cp,
+			    "          mem alignment 0x%x xfer size: small: %d large: %d\n",
+			    finfo.d_mem, finfo.d_miniosz, finfo.d_maxiosz);
 	}
 #endif
 
-	return(errbuf);
+	return (errbuf);
 }
 
 /*
  * Issue listio requests
  */
 #ifdef CRAY
-struct status *
-sy_listio(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_listio(struct io_req *req, struct syscall_info *sysc, int fd,
+			 char *addr)
 {
-	int		offset, nbytes, nstrides, nents, aio_strat;
-	int		aio_id, signo, o, i, lc;
-	char    	*a;
-	struct listreq	*lio_req, *l;
-	struct aio_info	*aiop;
-	struct status	*status;
+	int offset, nbytes, nstrides, nents, aio_strat;
+	int aio_id, signo, o, i, lc;
+	char *a;
+	struct listreq *lio_req, *l;
+	struct aio_info *aiop;
+	struct status *status;
 
 	/*
 	 * Initialize common fields - assumes r_oflags, r_file, r_offset, and
 	 * r_nbytes are at the same offset in the read_req and reada_req
 	 * structures.
 	 */
-	offset	  = req->r_data.io.r_offset;
-	nbytes	  = req->r_data.io.r_nbytes;
-	nstrides  = req->r_data.io.r_nstrides;
-	nents     = req->r_data.io.r_nent;
+	offset = req->r_data.io.r_offset;
+	nbytes = req->r_data.io.r_nbytes;
+	nstrides = req->r_data.io.r_nstrides;
+	nents = req->r_data.io.r_nent;
 	aio_strat = req->r_data.io.r_aio_strat;
 
 	lc = (sysc->sy_flags & SY_ASYNC) ? LC_START : LC_WAIT;
@@ -2456,13 +2555,13 @@ sy_listio(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 	status = (struct status *)malloc(sizeof(struct status));
 	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
-	status->aioid = (int *)malloc( (nents+1) * sizeof(int) );
+	status->aioid = (int *)malloc((nents + 1) * sizeof(int));
 	if (status->aioid == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
 
@@ -2471,39 +2570,38 @@ sy_listio(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
 	lio_req = (struct listreq *)malloc(nents * sizeof(struct listreq));
 	if (lio_req == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
-	for (l=lio_req,a=addr,o=offset,i=0;
-	    i < nents;
-	    l++, a+=nbytes, o+=nbytes, i++) {
+	for (l = lio_req, a = addr, o = offset, i = 0;
+	     i < nents; l++, a += nbytes, o += nbytes, i++) {
 
 		aio_id = aio_register(fd, aio_strat, signo);
 		aiop = aio_slot(aio_id);
 		status->aioid[i] = aio_id;
 
-		l->li_opcode	= (sysc->sy_flags & SY_WRITE) ? LO_WRITE : LO_READ;
-		l->li_offset	= o;
-		l->li_fildes	= fd;
-		l->li_buf	= a;
-		l->li_nbyte	= nbytes;
-		l->li_status	= &aiop->iosw;
-		l->li_signo	= signo;
-		l->li_nstride	= nstrides;
-		l->li_filstride	= 0;
-		l->li_memstride	= 0;
-		l->li_drvr	= 0;
-		l->li_flags	= LF_LSEEK;
+		l->li_opcode = (sysc->sy_flags & SY_WRITE) ? LO_WRITE : LO_READ;
+		l->li_offset = o;
+		l->li_fildes = fd;
+		l->li_buf = a;
+		l->li_nbyte = nbytes;
+		l->li_status = &aiop->iosw;
+		l->li_signo = signo;
+		l->li_nstride = nstrides;
+		l->li_filstride = 0;
+		l->li_memstride = 0;
+		l->li_drvr = 0;
+		l->li_flags = LF_LSEEK;
 	}
 
-	status->aioid[nents] = -1;		/* end sentinel */
+	status->aioid[nents] = -1;	/* end sentinel */
 
 	if ((status->rval = listio(lc, lio_req, nents)) == -1) {
 		status->err = errno;
 	}
 
 	free(lio_req);
-	return(status);
+	return (status);
 }
 
 /*
@@ -2511,31 +2609,30 @@ sy_listio(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
  *
  * This assumes filestride & memstride = 0.
  */
-int
-listio_mem(struct io_req *req, int offset, int fmstride, int *min, int *max)
+int listio_mem(struct io_req *req, int offset, int fmstride, int *min, int *max)
 {
-	int	i, size;
+	int i, size;
 
 	size = stride_bounds(offset, fmstride,
-			     req->r_data.io.r_nstrides*req->r_data.io.r_nent,
+			     req->r_data.io.r_nstrides * req->r_data.io.r_nent,
 			     req->r_data.io.r_nbytes, min, max);
-	return(size);
+	return (size);
 }
 
-char *
-fmt_listio(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
+char *fmt_listio(struct io_req *req, struct syscall_info *sy, int fd,
+		 char *addr)
 {
-	static char	*errbuf = NULL;
-	char		*cp;
-	char		*c, *opcode;
-	int		i;
+	static char *errbuf = NULL;
+	char *cp;
+	char *c, *opcode;
+	int i;
 
 	if (errbuf == NULL) {
 		errbuf = (char *)malloc(32768);
 		if (errbuf == NULL) {
 			doio_fprintf(stderr, "malloc failed, %s/%d\n",
-				__FILE__, __LINE__);
-				return NULL;
+				     __FILE__, __LINE__);
+			return NULL;
 		}
 	}
 
@@ -2547,66 +2644,63 @@ fmt_listio(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 
 	cp += sprintf(cp, "          data buffer at %#o\n", addr);
 
-	return(errbuf);
+	return (errbuf);
 }
 #endif /* CRAY */
 
 #ifdef sgi
-struct status *
-sy_pread(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_pread(struct io_req *req, struct syscall_info *sysc, int fd,
+			char *addr)
 {
 	int rc;
-	struct status	*status;
+	struct status *status;
 
-	rc = pread(fd, addr, req->r_data.io.r_nbytes,
-		   req->r_data.io.r_offset);
+	rc = pread(fd, addr, req->r_data.io.r_nbytes, req->r_data.io.r_offset);
 
 	status = (struct status *)malloc(sizeof(struct status));
 	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
 	status->aioid = NULL;
 	status->rval = rc;
 	status->err = errno;
 
-	return(status);
+	return (status);
 }
 
-struct status *
-sy_pwrite(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_pwrite(struct io_req *req, struct syscall_info *sysc, int fd,
+			 char *addr)
 {
 	int rc;
-	struct status	*status;
+	struct status *status;
 
-	rc = pwrite(fd, addr, req->r_data.io.r_nbytes,
-		    req->r_data.io.r_offset);
+	rc = pwrite(fd, addr, req->r_data.io.r_nbytes, req->r_data.io.r_offset);
 
 	status = (struct status *)malloc(sizeof(struct status));
 	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
 	status->aioid = NULL;
 	status->rval = rc;
 	status->err = errno;
 
-	return(status);
+	return (status);
 }
 
-char *
-fmt_pread(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
+char *fmt_pread(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 {
-	static char	*errbuf = NULL;
-	char		*cp;
+	static char *errbuf = NULL;
+	char *cp;
 
 	if (errbuf == NULL) {
 		errbuf = (char *)malloc(32768);
 		if (errbuf == NULL) {
 			doio_fprintf(stderr, "malloc failed, %s/%d\n",
-				__FILE__, __LINE__);
+				     __FILE__, __LINE__);
 			return NULL;
 		}
 	}
@@ -2614,46 +2708,45 @@ fmt_pread(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 	cp = errbuf;
 	cp += sprintf(cp, "syscall:  %s(%d, 0x%lx, %d)\n",
 		      sy->sy_name, fd, addr, req->r_data.io.r_nbytes);
-	return(errbuf);
+	return (errbuf);
 }
-#endif	/* sgi */
+#endif /* sgi */
 
 #ifndef CRAY
-struct status *
-sy_readv(struct io_req	*req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_readv(struct io_req *req, struct syscall_info *sysc, int fd,
+			char *addr)
 {
 	struct status *sy_rwv();
 	return sy_rwv(req, sysc, fd, addr, 0);
 }
 
-struct status *
-sy_writev(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_writev(struct io_req *req, struct syscall_info *sysc, int fd,
+			 char *addr)
 {
 	struct status *sy_rwv();
 	return sy_rwv(req, sysc, fd, addr, 1);
 }
 
-struct status *
-sy_rwv(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
-	int rw)
+struct status *sy_rwv(struct io_req *req, struct syscall_info *sysc, int fd,
+		      char *addr, int rw)
 {
 	int rc;
-	struct status	*status;
-	struct iovec	iov[2];
+	struct status *status;
+	struct iovec iov[2];
 
 	status = (struct status *)malloc(sizeof(struct status));
 	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
 	status->aioid = NULL;
 
 	/* move to the desired file position. */
-	if ((rc=lseek(fd, req->r_data.io.r_offset, SEEK_SET)) == -1) {
+	if ((rc = lseek(fd, req->r_data.io.r_offset, SEEK_SET)) == -1) {
 		status->rval = rc;
 		status->err = errno;
-		return(status);
+		return (status);
 	}
 
 	iov[0].iov_base = addr;
@@ -2666,32 +2759,31 @@ sy_rwv(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
 	status->aioid = NULL;
 	status->rval = rc;
 	status->err = errno;
-	return(status);
+	return (status);
 }
 
-char *
-fmt_readv(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
+char *fmt_readv(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 {
-	static char	errbuf[32768];
-	char		*cp;
+	static char errbuf[32768];
+	char *cp;
 
 	cp = errbuf;
 	cp += sprintf(cp, "syscall:  %s(%d, (iov on stack), 1)\n",
 		      sy->sy_name, fd);
-	return(errbuf);
+	return (errbuf);
 }
 #endif /* !CRAY */
 
 #ifdef sgi
-struct status *
-sy_aread(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_aread(struct io_req *req, struct syscall_info *sysc, int fd,
+			char *addr)
 {
 	struct status *sy_arw();
 	return sy_arw(req, sysc, fd, addr, 0);
 }
 
-struct status *
-sy_awrite(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_awrite(struct io_req *req, struct syscall_info *sysc, int fd,
+			 char *addr)
 {
 	struct status *sy_arw();
 	return sy_arw(req, sysc, fd, addr, 1);
@@ -2702,20 +2794,19 @@ sy_awrite(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
   #define sy_awrite(A, B, C, D)	sy_arw(A, B, C, D, 1)
  */
 
-struct status *
-sy_arw(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
-	int rw)
+struct status *sy_arw(struct io_req *req, struct syscall_info *sysc, int fd,
+		      char *addr, int rw)
 {
 	/* POSIX 1003.1b-1993 Async read */
-	struct status		*status;
-	int	    	    	rc;
-	int			aio_id, aio_strat, signo;
-	struct aio_info		*aiop;
+	struct status *status;
+	int rc;
+	int aio_id, aio_strat, signo;
+	struct aio_info *aiop;
 
 	status = (struct status *)malloc(sizeof(struct status));
 	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
 	aio_strat = req->r_data.io.r_aio_strat;
@@ -2724,7 +2815,7 @@ sy_arw(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
 	aio_id = aio_register(fd, aio_strat, signo);
 	aiop = aio_slot(aio_id);
 
-	memset( (void *)&aiop->aiocb, 0, sizeof(aiocb_t));
+	memset((void *)&aiop->aiocb, 0, sizeof(aiocb_t));
 
 	aiop->aiocb.aio_fildes = fd;
 	aiop->aiocb.aio_nbytes = req->r_data.io.r_nbytes;
@@ -2751,67 +2842,64 @@ sy_arw(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
 	else
 		rc = aio_read(&aiop->aiocb);
 
-	status->aioid = (int *)malloc( 2 * sizeof(int) );
+	status->aioid = (int *)malloc(2 * sizeof(int));
 	if (status->aioid == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
 	status->aioid[0] = aio_id;
 	status->aioid[1] = -1;
 	status->rval = rc;
 	status->err = errno;
-	return(status);
+	return (status);
 }
 
-char *
-fmt_aread(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
+char *fmt_aread(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 {
-	static char	errbuf[32768];
-	char		*cp;
+	static char errbuf[32768];
+	char *cp;
 
 	cp = errbuf;
-	cp += sprintf(cp, "syscall:  %s(&aiop->aiocb)\n",
-		      sy->sy_name);
-	return(errbuf);
+	cp += sprintf(cp, "syscall:  %s(&aiop->aiocb)\n", sy->sy_name);
+	return (errbuf);
 }
 #endif /* sgi */
 
 #ifndef CRAY
 
-struct status *
-sy_mmread(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_mmread(struct io_req *req, struct syscall_info *sysc, int fd,
+			 char *addr)
 {
 	struct status *sy_mmrw();
 	return sy_mmrw(req, sysc, fd, addr, 0);
 }
 
-struct status *
-sy_mmwrite(struct io_req *req, struct syscall_info *sysc, int fd, char *addr)
+struct status *sy_mmwrite(struct io_req *req, struct syscall_info *sysc, int fd,
+			  char *addr)
 {
 	struct status *sy_mmrw();
 	return sy_mmrw(req, sysc, fd, addr, 1);
 }
 
-struct status *
-sy_mmrw(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
-	int rw)
+struct status *sy_mmrw(struct io_req *req, struct syscall_info *sysc, int fd,
+		       char *addr, int rw)
 {
 	/*
 	 * mmap read/write
 	 * This version is oriented towards mmaping the file to memory
 	 * ONCE and keeping it mapped.
 	 */
-	struct status		*status;
-	void			*mrc=NULL, *memaddr=NULL;
-	struct fd_cache		*fdc;
-	struct stat		sbuf;
-    int rc;
+	struct status *status;
+	void *mrc = NULL, *memaddr = NULL;
+	struct fd_cache *fdc;
+	struct stat sbuf;
+	int rc;
 
 	status = (struct status *)malloc(sizeof(struct status));
 	if (status == NULL) {
 		doio_fprintf(stderr, "malloc failed, %s/%d\n",
-			__FILE__, __LINE__);
+			     __FILE__, __LINE__);
 		return NULL;
 	}
 	status->aioid = NULL;
@@ -2821,22 +2909,21 @@ sy_mmrw(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
 
 	if (v_opt || fdc->c_memaddr == NULL) {
 		if (fstat(fd, &sbuf) < 0) {
-			doio_fprintf(stderr, "fstat failed, errno=%d\n",
-				     errno);
+			doio_fprintf(stderr, "fstat failed, errno=%d\n", errno);
 			status->err = errno;
-			return(status);
+			return (status);
 		}
 
 		fdc->c_memlen = (int)sbuf.st_size;
 		mrc = mmap(NULL, (int)sbuf.st_size,
-		     rw ? PROT_WRITE|PROT_READ : PROT_READ,
-		     MAP_SHARED, fd, 0);
+			   rw ? PROT_WRITE | PROT_READ : PROT_READ,
+			   MAP_SHARED, fd, 0);
 
 		if (mrc == MAP_FAILED) {
 			doio_fprintf(stderr, "mmap() failed - 0x%lx %d\n",
-				mrc, errno);
+				     mrc, errno);
 			status->err = errno;
-			return(status);
+			return (status);
 		}
 
 		fdc->c_memaddr = mrc;
@@ -2849,27 +2936,26 @@ sy_mmrw(struct io_req *req, struct syscall_info *sysc, int fd, char *addr,
 		memcpy(memaddr, addr, req->r_data.io.r_nbytes);
 	else
 		memcpy(addr, memaddr, req->r_data.io.r_nbytes);
-       if (v_opt)
-               msync(fdc->c_memaddr, (int)sbuf.st_size, MS_SYNC);
+	if (v_opt)
+		msync(fdc->c_memaddr, (int)sbuf.st_size, MS_SYNC);
 	active_mmap_rw = 0;
 
 	status->rval = req->r_data.io.r_nbytes;
 	status->err = 0;
 
-    if (v_opt) {
-      rc = munmap(mrc, (int)sbuf.st_size);
-    }
+	if (v_opt) {
+		rc = munmap(mrc, (int)sbuf.st_size);
+	}
 
-	return(status);
+	return (status);
 }
 
-char *
-fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
+char *fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 {
-	static char	errbuf[32768];
-	char		*cp;
-	struct fd_cache	*fdc;
-	void		*memaddr;
+	static char errbuf[32768];
+	char *cp;
+	struct fd_cache *fdc;
+	void *memaddr;
 
 	fdc = alloc_fdcache(req->r_data.io.r_file, req->r_data.io.r_oflags);
 
@@ -2881,133 +2967,111 @@ fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 		      fd);
 
 	cp += sprintf(cp, "\tfile is mmaped to: 0x%lx\n",
-		      (unsigned long) fdc->c_memaddr);
+		      (unsigned long)fdc->c_memaddr);
 
 	memaddr = (void *)((char *)fdc->c_memaddr + req->r_data.io.r_offset);
 
 	cp += sprintf(cp, "\tfile-mem=0x%lx, length=%d, buffer=0x%lx\n",
-		      (unsigned long) memaddr, req->r_data.io.r_nbytes,
-		      (unsigned long) addr);
+		      (unsigned long)memaddr, req->r_data.io.r_nbytes,
+		      (unsigned long)addr);
 
-	return(errbuf);
+	return (errbuf);
 }
 #endif /* !CRAY */
 
 struct syscall_info syscalls[] = {
 #ifdef CRAY
-	{ "listio-read-sync",		LREAD,
-	  sy_listio,	NULL,		fmt_listio,
-	  SY_IOSW
-	},
-	{ "listio-read-strides-sync",	LSREAD,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW
-	},
-	{ "listio-read-reqs-sync",	LEREAD,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW
-	},
-	{ "listio-read-async",		LREADA,
-	  sy_listio,	NULL,		fmt_listio,
-	  SY_IOSW | SY_ASYNC
-	},
-	{ "listio-read-strides-async",	LSREADA,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW | SY_ASYNC
-	},
-	{ "listio-read-reqs-async",	LEREADA,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW | SY_ASYNC
-	},
-	{ "listio-write-sync",		LWRITE,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW | SY_WRITE
-	},
-	{ "listio-write-strides-sync",	LSWRITE,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW | SY_WRITE
-	},
-	{ "listio-write-reqs-sync",	LEWRITE,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW | SY_WRITE
-	},
-	{ "listio-write-async",		LWRITEA,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW | SY_WRITE | SY_ASYNC
-	},
-	{ "listio-write-strides-async",	LSWRITEA,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW | SY_WRITE | SY_ASYNC
-	},
-	{ "listio-write-reqs-async",	LEWRITEA,
-	  sy_listio,	listio_mem,	fmt_listio,
-	  SY_IOSW | SY_WRITE | SY_ASYNC
-	},
+	{"listio-read-sync", LREAD,
+	 sy_listio, NULL, fmt_listio,
+	 SY_IOSW},
+	{"listio-read-strides-sync", LSREAD,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW},
+	{"listio-read-reqs-sync", LEREAD,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW},
+	{"listio-read-async", LREADA,
+	 sy_listio, NULL, fmt_listio,
+	 SY_IOSW | SY_ASYNC},
+	{"listio-read-strides-async", LSREADA,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW | SY_ASYNC},
+	{"listio-read-reqs-async", LEREADA,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW | SY_ASYNC},
+	{"listio-write-sync", LWRITE,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW | SY_WRITE},
+	{"listio-write-strides-sync", LSWRITE,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW | SY_WRITE},
+	{"listio-write-reqs-sync", LEWRITE,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW | SY_WRITE},
+	{"listio-write-async", LWRITEA,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW | SY_WRITE | SY_ASYNC},
+	{"listio-write-strides-async", LSWRITEA,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW | SY_WRITE | SY_ASYNC},
+	{"listio-write-reqs-async", LEWRITEA,
+	 sy_listio, listio_mem, fmt_listio,
+	 SY_IOSW | SY_WRITE | SY_ASYNC},
 #endif
 
 #ifdef sgi
-	{ "aread",			AREAD,
-	  sy_aread,	NULL,		fmt_aread,
-	  SY_IOSW | SY_ASYNC
-	},
-	{ "awrite",			AWRITE,
-	  sy_awrite,	NULL,		fmt_aread,
-	  SY_IOSW | SY_WRITE | SY_ASYNC
-	},
-	{ "pread",			PREAD,
-	  sy_pread,	NULL,		fmt_pread,
-	  0
-	},
-	{ "pwrite",			PWRITE,
-	  sy_pwrite,	NULL,		fmt_pread,
-	  SY_WRITE
-	},
+	{"aread", AREAD,
+	 sy_aread, NULL, fmt_aread,
+	 SY_IOSW | SY_ASYNC},
+	{"awrite", AWRITE,
+	 sy_awrite, NULL, fmt_aread,
+	 SY_IOSW | SY_WRITE | SY_ASYNC},
+	{"pread", PREAD,
+	 sy_pread, NULL, fmt_pread,
+	 0},
+	{"pwrite", PWRITE,
+	 sy_pwrite, NULL, fmt_pread,
+	 SY_WRITE},
 #endif
 
 #ifndef CRAY
-	{ "readv",			READV,
-	  sy_readv,	NULL,		fmt_readv,
-	  0
-	},
-	{ "writev",			WRITEV,
-	  sy_writev,	NULL,		fmt_readv,
-	  SY_WRITE
-	},
-	{ "mmap-read",			MMAPR,
-	  sy_mmread,	NULL,		fmt_mmrw,
-	  0
-	},
-	{ "mmap-write",			MMAPW,
-	  sy_mmwrite,	NULL,		fmt_mmrw,
-	  SY_WRITE
-	},
+	{"readv", READV,
+	 sy_readv, NULL, fmt_readv,
+	 0},
+	{"writev", WRITEV,
+	 sy_writev, NULL, fmt_readv,
+	 SY_WRITE},
+	{"mmap-read", MMAPR,
+	 sy_mmread, NULL, fmt_mmrw,
+	 0},
+	{"mmap-write", MMAPW,
+	 sy_mmwrite, NULL, fmt_mmrw,
+	 SY_WRITE},
 #endif
 
-	{ NULL,				0,
-	  0,		0,		0,
-	  0
-	},
+	{NULL, 0,
+	 0, 0, 0,
+	 0},
 };
 
-int
-do_rw(struct io_req *req)
+int do_rw(struct io_req *req)
 {
-	static int		pid = -1;
-	int	    		fd, offset, nbytes, nstrides, nents, oflags;
-	int			rval, mem_needed, i;
-	int	    		logged_write, got_lock, pattern;
-	off_t			woffset;
-	int			min_byte, max_byte;
-	char    		*addr, *file, *msg;
-	struct status		*s;
-	struct wlog_rec		wrec;
-	struct syscall_info	*sy;
+	static int pid = -1;
+	int fd, offset, nbytes, nstrides, nents, oflags;
+	int rval, mem_needed, i;
+	int logged_write, got_lock, pattern;
+	off_t woffset;
+	int min_byte, max_byte;
+	char *addr, *file, *msg;
+	struct status *s;
+	struct wlog_rec wrec;
+	struct syscall_info *sy;
 #if defined(CRAY) || defined(sgi)
-	struct aio_info		*aiop;
-	struct iosw		*iosw;
+	struct aio_info *aiop;
+	struct iosw *iosw;
 #endif
 #ifdef sgi
-	struct fd_cache		*fdc;
+	struct fd_cache *fdc;
 #endif
 
 	woffset = 0;
@@ -3017,36 +3081,37 @@ do_rw(struct io_req *req)
 	 * r_nbytes are at the same offset in the read_req and reada_req
 	 * structures.
 	 */
-	file	= req->r_data.io.r_file;
-	oflags	= req->r_data.io.r_oflags;
-	offset	= req->r_data.io.r_offset;
-	nbytes	= req->r_data.io.r_nbytes;
-	nstrides= req->r_data.io.r_nstrides;
-	nents   = req->r_data.io.r_nent;
-	pattern	= req->r_data.io.r_pattern;
+	file = req->r_data.io.r_file;
+	oflags = req->r_data.io.r_oflags;
+	offset = req->r_data.io.r_offset;
+	nbytes = req->r_data.io.r_nbytes;
+	nstrides = req->r_data.io.r_nstrides;
+	nents = req->r_data.io.r_nent;
+	pattern = req->r_data.io.r_pattern;
 
 	if (nents >= MAX_AIO) {
-		doio_fprintf(stderr, "do_rw: too many list requests, %d.  Maximum is %d\n",
+		doio_fprintf(stderr,
+			     "do_rw: too many list requests, %d.  Maximum is %d\n",
 			     nents, MAX_AIO);
-		return(-1);
+		return (-1);
 	}
 
 	/*
 	 * look up system call info
 	 */
-	for (sy=syscalls; sy->sy_name != NULL && sy->sy_type != req->r_type; sy++)
-		;
+	for (sy = syscalls; sy->sy_name != NULL && sy->sy_type != req->r_type;
+	     sy++) ;
 
 	if (sy->sy_name == NULL) {
 		doio_fprintf(stderr, "do_rw: unknown r_type %d.\n",
 			     req->r_type);
-		return(-1);
+		return (-1);
 	}
 
 	/*
 	 * Get an open file descriptor
 	 * Note: must be done before memory allocation so that the direct i/o
-	 *	information is available in mem. allocate
+	 *      information is available in mem. allocate
 	 */
 
 	if ((fd = alloc_fd(file, oflags)) == -1)
@@ -3058,19 +3123,21 @@ do_rw(struct io_req *req)
 	 * memstride.
 	 *
 	 * need:
-	 *	1 extra word for possible partial-word address "bump"
-	 *	1 extra word for dynamic pattern overrun
-	 *	MPP_BUMP extra words for T3E non-hw-aligned memory address.
+	 *      1 extra word for possible partial-word address "bump"
+	 *      1 extra word for dynamic pattern overrun
+	 *      MPP_BUMP extra words for T3E non-hw-aligned memory address.
 	 */
 
 	if (sy->sy_buffer != NULL) {
-		mem_needed = (*sy->sy_buffer)(req, 0, 0, NULL, NULL);
+		mem_needed = (*sy->sy_buffer) (req, 0, 0, NULL, NULL);
 	} else {
 		mem_needed = nbytes;
 	}
 
 #ifdef CRAY
-	if ((rval = alloc_mem(mem_needed + wtob(1) * 2 + MPP_BUMP * sizeof(UINT64_T))) < 0) {
+	if ((rval =
+	     alloc_mem(mem_needed + wtob(1) * 2 +
+		       MPP_BUMP * sizeof(UINT64_T))) < 0) {
 		return rval;
 	}
 #else
@@ -3102,11 +3169,14 @@ do_rw(struct io_req *req)
 			return -1;
 
 		if (sy->sy_flags & SY_WRITE) {
-			/*pattern_fill(Memptr, mem_needed, Pattern, Pattern_Length, 0);*/
-			(*Data_Fill)(Memptr, nbytes, Pattern, Pattern_Length, 0);
+			/*pattern_fill(Memptr, mem_needed, Pattern, Pattern_Length, 0); */
+			(*Data_Fill) (Memptr, nbytes, Pattern, Pattern_Length,
+				      0);
 
-			if (sswrite((long)Memptr, Sdsptr, btoc(mem_needed)) == -1) {
-				doio_fprintf(stderr, "sswrite(%d, %d, %d) failed:  %s (%d)\n",
+			if (sswrite((long)Memptr, Sdsptr, btoc(mem_needed)) ==
+			    -1) {
+				doio_fprintf(stderr,
+					     "sswrite(%d, %d, %d) failed:  %s (%d)\n",
 					     (long)Memptr, Sdsptr,
 					     btoc(mem_needed), SYSERR, errno);
 				fflush(stderr);
@@ -3116,15 +3186,17 @@ do_rw(struct io_req *req)
 
 		addr = (char *)Sdsptr;
 #else
-		doio_fprintf(stderr, "Invalid O_SSD flag was generated for MPP system\n");
+		doio_fprintf(stderr,
+			     "Invalid O_SSD flag was generated for MPP system\n");
 		fflush(stderr);
 		return -1;
 #endif /* _CRAYMPP */
-#else	/* CRAY */
-		doio_fprintf(stderr, "Invalid O_SSD flag was generated for non-Cray system\n");
+#else /* CRAY */
+		doio_fprintf(stderr,
+			     "Invalid O_SSD flag was generated for non-Cray system\n");
 		fflush(stderr);
 		return -1;
-#endif	/* CRAY */
+#endif /* CRAY */
 	} else {
 		addr = Memptr;
 
@@ -3136,19 +3208,20 @@ do_rw(struct io_req *req)
 		 * For non-aligned I/O, bump the address from 1 to 8 words.
 		 */
 
-		if (! (req->r_data.io.r_uflags & F_WORD_ALIGNED)) {
+		if (!(req->r_data.io.r_uflags & F_WORD_ALIGNED)) {
 #ifdef _CRAYMPP
-			addr += random_range(0, MPP_BUMP, 1, NULL) * sizeof(int);
+			addr +=
+			    random_range(0, MPP_BUMP, 1, NULL) * sizeof(int);
 #endif
 			addr += random_range(0, wtob(1) - 1, 1, NULL);
 		}
-
 #ifdef sgi
 		/*
 		 * Force memory alignment for Direct I/O
 		 */
 		if ((oflags & O_DIRECT) && ((long)addr % fdc->c_memalign != 0)) {
-			addr += fdc->c_memalign - ((long)addr % fdc->c_memalign);
+			addr +=
+			    fdc->c_memalign - ((long)addr % fdc->c_memalign);
 		}
 #endif
 
@@ -3158,9 +3231,10 @@ do_rw(struct io_req *req)
 		 * then memmove it to the right place.
 		 */
 		if (sy->sy_flags & SY_WRITE) {
-			(*Data_Fill)(Memptr, mem_needed, Pattern, Pattern_Length, 0);
+			(*Data_Fill) (Memptr, mem_needed, Pattern,
+				      Pattern_Length, 0);
 			if (addr != Memptr)
-			    memmove( addr, Memptr, mem_needed);
+				memmove(addr, Memptr, mem_needed);
 		}
 	}
 
@@ -3173,22 +3247,22 @@ do_rw(struct io_req *req)
 	 */
 	if (sy->sy_flags & SY_WRITE && k_opt) {
 		if (sy->sy_buffer != NULL) {
-			(*sy->sy_buffer)(req, offset, 0, &min_byte, &max_byte);
+			(*sy->sy_buffer) (req, offset, 0, &min_byte, &max_byte);
 		} else {
 			min_byte = offset;
 			max_byte = offset + (nbytes * nstrides * nents);
 		}
 
 		if (lock_file_region(file, fd, F_WRLCK,
-				     min_byte, (max_byte-min_byte+1)) < 0) {
-		    doio_fprintf(stderr,
-				"file lock failed:\n%s\n",
-				fmt_ioreq(req, sy, fd));
-		    doio_fprintf(stderr,
-				"          buffer(req, %d, 0, 0x%x, 0x%x)\n",
-				offset, min_byte, max_byte);
-		    alloc_mem(-1);
-		    exit(E_INTERNAL);
+				     min_byte, (max_byte - min_byte + 1)) < 0) {
+			doio_fprintf(stderr,
+				     "file lock failed:\n%s\n",
+				     fmt_ioreq(req, sy, fd));
+			doio_fprintf(stderr,
+				     "          buffer(req, %d, 0, 0x%x, 0x%x)\n",
+				     offset, min_byte, max_byte);
+			alloc_mem(-1);
+			exit(E_INTERNAL);
 		}
 
 		got_lock = 1;
@@ -3231,18 +3305,18 @@ do_rw(struct io_req *req)
 		}
 	}
 
-	s = (*sy->sy_syscall)(req, sy, fd, addr);
+	s = (*sy->sy_syscall) (req, sy, fd, addr);
 
 	if (s->rval == -1) {
 		doio_fprintf(stderr,
 			     "%s() request failed:  %s (%d)\n%s\n%s\n",
 			     sy->sy_name, SYSERR, errno,
 			     fmt_ioreq(req, sy, fd),
-			     (*sy->sy_format)(req, sy, fd, addr));
+			     (*sy->sy_format) (req, sy, fd, addr));
 
 		doio_upanic(U_RVAL);
 
-		for (i=0; i < nents; i++) {
+		for (i = 0; i < nents; i++) {
 			if (s->aioid == NULL)
 				break;
 			aio_unregister(s->aioid[i]);
@@ -3254,7 +3328,7 @@ do_rw(struct io_req *req)
 		 */
 #ifndef __linux__
 		if (sy->sy_flags & SY_ASYNC) {
-			for (i=0; i < nents; i++) {
+			for (i = 0; i < nents; i++) {
 				aio_wait(s->aioid[i]);
 			}
 		}
@@ -3268,9 +3342,9 @@ do_rw(struct io_req *req)
 
 		if (sy->sy_flags & SY_IOSW) {
 #ifdef CRAY
-			for (i=0; i < nents; i++) {
+			for (i = 0; i < nents; i++) {
 				if (s->aioid == NULL)
-					break; /* >>> error condition? */
+					break;	/* >>> error condition? */
 				aiop = aio_slot(s->aioid[i]);
 				iosw = &aiop->iosw;
 				if (iosw->sw_error != 0) {
@@ -3279,19 +3353,23 @@ do_rw(struct io_req *req)
 						     sy->sy_name,
 						     strerror(iosw->sw_error),
 						     fmt_ioreq(req, sy, fd),
-						     (*sy->sy_format)(req, sy, fd, addr));
+						     (*sy->sy_format) (req, sy,
+								       fd,
+								       addr));
 					doio_upanic(U_IOSW);
 					rval = -1;
-				} else if (iosw->sw_count != nbytes*nstrides) {
+				} else if (iosw->sw_count != nbytes * nstrides) {
 					doio_fprintf(stderr,
 						     "Bad iosw from %s() #%d\nExpected (%d,%d,%d), got (%d,%d,%d)\n%s\n%s\n",
 						     sy->sy_name, i,
-						     1, 0, nbytes*nstrides,
+						     1, 0, nbytes * nstrides,
 						     iosw->sw_flag,
 						     iosw->sw_error,
 						     iosw->sw_count,
 						     fmt_ioreq(req, sy, fd),
-						     (*sy->sy_format)(req, sy, fd, addr));
+						     (*sy->sy_format) (req, sy,
+								       fd,
+								       addr));
 					doio_upanic(U_IOSW);
 					rval = -1;
 				}
@@ -3318,7 +3396,9 @@ do_rw(struct io_req *req)
 						     strerror(aiop->aio_errno),
 						     aiop->aio_errno,
 						     fmt_ioreq(req, sy, fd),
-						     (*sy->sy_format)(req, sy, fd, addr));
+						     (*sy->sy_format) (req, sy,
+								       fd,
+								       addr));
 					doio_upanic(U_IOSW);
 					rval = -1;
 				} else if (aiop->aio_ret != nbytes) {
@@ -3329,7 +3409,9 @@ do_rw(struct io_req *req)
 						     aiop->aio_errno,
 						     aiop->aio_ret,
 						     fmt_ioreq(req, sy, fd),
-						     (*sy->sy_format)(req, sy, fd, addr));
+						     (*sy->sy_format) (req, sy,
+								       fd,
+								       addr));
 					aio_unregister(s->aioid[i]);
 					doio_upanic(U_IOSW);
 					return -1;
@@ -3346,7 +3428,8 @@ do_rw(struct io_req *req)
 					     "%s() request returned wrong # of bytes - expected %d, got %d\n%s\n%s\n",
 					     sy->sy_name, nbytes, s->rval,
 					     fmt_ioreq(req, sy, fd),
-					     (*sy->sy_format)(req, sy, fd, addr));
+					     (*sy->sy_format) (req, sy, fd,
+							       addr));
 				rval = -1;
 				doio_upanic(U_RVAL);
 			}
@@ -3360,14 +3443,14 @@ do_rw(struct io_req *req)
 	 */
 
 	if (rval == 0 && sy->sy_flags & SY_WRITE && v_opt) {
-		msg = check_file(file, offset, nbytes*nstrides*nents,
+		msg = check_file(file, offset, nbytes * nstrides * nents,
 				 Pattern, Pattern_Length, 0,
 				 oflags & O_PARALLEL);
 		if (msg != NULL) {
 			doio_fprintf(stderr, "%s\n%s\n%s\n",
 				     msg,
 				     fmt_ioreq(req, sy, fd),
-				     (*sy->sy_format)(req, sy, fd, addr));
+				     (*sy->sy_format) (req, sy, fd, addr));
 			doio_upanic(U_CORRUPTION);
 			exit(E_COMPARE);
 		}
@@ -3393,7 +3476,7 @@ do_rw(struct io_req *req)
 
 	if (got_lock) {
 		if (lock_file_region(file, fd, F_UNLCK,
-				     min_byte, (max_byte-min_byte+1)) < 0) {
+				     min_byte, (max_byte - min_byte + 1)) < 0) {
 			alloc_mem(-1);
 			exit(E_INTERNAL);
 		}
@@ -3412,30 +3495,29 @@ do_rw(struct io_req *req)
  *   - F_FSYNC
  */
 #ifdef sgi
-int
-do_fcntl(struct io_req *req)
+int do_fcntl(struct io_req *req)
 {
-	int	    		fd, oflags, offset, nbytes;
-	int			rval, op;
-	int	    		got_lock;
-	int			min_byte, max_byte;
-	char    		*file, *msg;
-	struct flock    	flk;
+	int fd, oflags, offset, nbytes;
+	int rval, op;
+	int got_lock;
+	int min_byte, max_byte;
+	char *file, *msg;
+	struct flock flk;
 
 	/*
 	 * Initialize common fields - assumes r_oflags, r_file, r_offset, and
 	 * r_nbytes are at the same offset in the read_req and reada_req
 	 * structures.
 	 */
-	file	= req->r_data.io.r_file;
-	oflags	= req->r_data.io.r_oflags;
-	offset	= req->r_data.io.r_offset;
-	nbytes	= req->r_data.io.r_nbytes;
+	file = req->r_data.io.r_file;
+	oflags = req->r_data.io.r_oflags;
+	offset = req->r_data.io.r_offset;
+	nbytes = req->r_data.io.r_nbytes;
 
-	flk.l_type=0;
-	flk.l_whence=SEEK_SET;
-	flk.l_start=offset;
-	flk.l_len=nbytes;
+	flk.l_type = 0;
+	flk.l_whence = SEEK_SET;
+	flk.l_start = offset;
+	flk.l_len = nbytes;
 
 	/*
 	 * Get an open file descriptor
@@ -3455,24 +3537,32 @@ do_fcntl(struct io_req *req)
 		max_byte = offset + nbytes;
 
 		if (lock_file_region(file, fd, F_WRLCK,
-				     min_byte, (nbytes+1)) < 0) {
-		    doio_fprintf(stderr,
-				"file lock failed:\n");
-		    doio_fprintf(stderr,
-				"          buffer(req, %d, 0, 0x%x, 0x%x)\n",
-				offset, min_byte, max_byte);
-		    alloc_mem(-1);
-		    exit(E_INTERNAL);
+				     min_byte, (nbytes + 1)) < 0) {
+			doio_fprintf(stderr, "file lock failed:\n");
+			doio_fprintf(stderr,
+				     "          buffer(req, %d, 0, 0x%x, 0x%x)\n",
+				     offset, min_byte, max_byte);
+			alloc_mem(-1);
+			exit(E_INTERNAL);
 		}
 
 		got_lock = 1;
 	}
 
 	switch (req->r_type) {
-	case RESVSP:	op=F_RESVSP;	msg="f_resvsp";		break;
-	case UNRESVSP:	op=F_UNRESVSP;	msg="f_unresvsp";	break;
+	case RESVSP:
+		op = F_RESVSP;
+		msg = "f_resvsp";
+		break;
+	case UNRESVSP:
+		op = F_UNRESVSP;
+		msg = "f_unresvsp";
+		break;
 #ifdef F_FSYNC
-	case DFFSYNC:	op=F_FSYNC;	msg="f_fsync";		break;
+	case DFFSYNC:
+		op = F_FSYNC;
+		msg = "f_fsync";
+		break;
 #endif
 	}
 
@@ -3483,8 +3573,7 @@ do_fcntl(struct io_req *req)
 			     "fcntl %s request failed: %s (%d)\n\tfcntl(%d, %s %d, {%d %lld ==> %lld}\n",
 			     msg, SYSERR, errno,
 			     fd, msg, op, flk.l_whence,
-			     (long long)flk.l_start,
-			     (long long)flk.l_len);
+			     (long long)flk.l_start, (long long)flk.l_len);
 
 		doio_upanic(U_RVAL);
 		rval = -1;
@@ -3496,7 +3585,7 @@ do_fcntl(struct io_req *req)
 
 	if (got_lock) {
 		if (lock_file_region(file, fd, F_UNLCK,
-				     min_byte, (max_byte-min_byte+1)) < 0) {
+				     min_byte, (max_byte - min_byte + 1)) < 0) {
 			alloc_mem(-1);
 			exit(E_INTERNAL);
 		}
@@ -3510,20 +3599,19 @@ do_fcntl(struct io_req *req)
  *  fsync(2) and fdatasync(2)
  */
 #ifndef CRAY
-int
-do_sync(struct io_req *req)
+int do_sync(struct io_req *req)
 {
-	int	    		fd, oflags;
-	int			rval;
-	char    		*file;
+	int fd, oflags;
+	int rval;
+	char *file;
 
 	/*
 	 * Initialize common fields - assumes r_oflags, r_file, r_offset, and
 	 * r_nbytes are at the same offset in the read_req and reada_req
 	 * structures.
 	 */
-	file	= req->r_data.io.r_file;
-	oflags	= req->r_data.io.r_oflags;
+	file = req->r_data.io.r_file;
+	oflags = req->r_data.io.r_oflags;
 
 	/*
 	 * Get an open file descriptor
@@ -3533,7 +3621,7 @@ do_sync(struct io_req *req)
 		return -1;
 
 	rval = 0;
-	switch(req->r_type) {
+	switch (req->r_type) {
 	case FSYNC2:
 		rval = fsync(fd);
 		break;
@@ -3549,24 +3637,27 @@ do_sync(struct io_req *req)
 
 int
 doio_pat_fill(char *addr, int mem_needed, char *Pattern, int Pattern_Length,
-	int shift)
+	      int shift)
 {
 	return pattern_fill(addr, mem_needed, Pattern, Pattern_Length, 0);
 }
 
-char *
-doio_pat_check(char *buf, int offset, int length, char *pattern,
-	int pattern_length, int patshift)
+char *doio_pat_check(char *buf, int offset, int length, char *pattern,
+		     int pattern_length, int patshift)
 {
-	static char	errbuf[4096];
-	int		nb, i, pattern_index;
-	char    	*cp, *bufend, *ep;
-	char    	actual[33], expected[33];
+	static char errbuf[4096];
+	int nb, i, pattern_index;
+	char *cp, *bufend, *ep;
+	char actual[33], expected[33];
 
 	if (pattern_check(buf, length, pattern, pattern_length, patshift) != 0) {
 		ep = errbuf;
-		ep += sprintf(ep, "Corrupt regions follow - unprintable chars are represented as '.'\n");
-		ep += sprintf(ep, "-----------------------------------------------------------------\n");
+		ep +=
+		    sprintf(ep,
+			    "Corrupt regions follow - unprintable chars are represented as '.'\n");
+		ep +=
+		    sprintf(ep,
+			    "-----------------------------------------------------------------\n");
 
 		pattern_index = patshift % pattern_length;;
 		cp = buf;
@@ -3575,11 +3666,14 @@ doio_pat_check(char *buf, int offset, int length, char *pattern,
 		while (cp < bufend) {
 			if (*cp != pattern[pattern_index]) {
 				nb = bufend - cp;
-				if ((unsigned int)nb > sizeof(expected)-1) {
-					nb = sizeof(expected)-1;
+				if ((unsigned int)nb > sizeof(expected) - 1) {
+					nb = sizeof(expected) - 1;
 				}
 
-				ep += sprintf(ep, "corrupt bytes starting at file offset %d\n", offset + (int)(cp-buf));
+				ep +=
+				    sprintf(ep,
+					    "corrupt bytes starting at file offset %d\n",
+					    offset + (int)(cp - buf));
 
 				/*
 				 * Fill in the expected and actual patterns
@@ -3588,19 +3682,27 @@ doio_pat_check(char *buf, int offset, int length, char *pattern,
 				memset(actual, 0x00, sizeof(actual));
 
 				for (i = 0; i < nb; i++) {
-					expected[i] = pattern[(pattern_index + i) % pattern_length];
-					if (! isprint(expected[i])) {
+					expected[i] =
+					    pattern[(pattern_index +
+						     i) % pattern_length];
+					if (!isprint(expected[i])) {
 						expected[i] = '.';
 					}
 
 					actual[i] = cp[i];
-					if (! isprint(actual[i])) {
+					if (!isprint(actual[i])) {
 						actual[i] = '.';
 					}
 				}
 
-				ep += sprintf(ep, "    1st %2d expected bytes:  %s\n", nb, expected);
-				ep += sprintf(ep, "    1st %2d actual bytes:    %s\n", nb, actual);
+				ep +=
+				    sprintf(ep,
+					    "    1st %2d expected bytes:  %s\n",
+					    nb, expected);
+				ep +=
+				    sprintf(ep,
+					    "    1st %2d actual bytes:    %s\n",
+					    nb, actual);
 				fflush(stderr);
 				return errbuf;
 			} else {
@@ -3633,13 +3735,12 @@ doio_pat_check(char *buf, int offset, int length, char *pattern,
  * previously opened for O_PARALLEL io.
  */
 
-char *
-check_file(char *file, int offset, int length, char *pattern,
-	int pattern_length, int patshift, int fsa)
+char *check_file(char *file, int offset, int length, char *pattern,
+		 int pattern_length, int patshift, int fsa)
 {
-	static char	errbuf[4096];
-	int	    	fd, nb, flags;
-	char		*buf, *em, *ep;
+	static char errbuf[4096];
+	int fd, nb, flags;
+	char *buf, *em, *ep;
 #ifdef sgi
 	struct fd_cache *fdc;
 #endif
@@ -3660,8 +3761,7 @@ check_file(char *file, int offset, int length, char *pattern,
 	if ((fd = alloc_fd(file, flags)) == -1) {
 		sprintf(errbuf,
 			"Could not open file %s with flags %#o (%s) for data comparison:  %s (%d)\n",
-			file, flags, format_oflags(flags),
-			SYSERR, errno);
+			file, flags, format_oflags(flags), SYSERR, errno);
 		return errbuf;
 	}
 
@@ -3671,7 +3771,6 @@ check_file(char *file, int offset, int length, char *pattern,
 			offset, file, SYSERR, errno);
 		return errbuf;
 	}
-
 #ifdef sgi
 	/* Irix: Guarantee a properly aligned address on Direct I/O */
 	fdc = alloc_fdcache(file, flags);
@@ -3703,15 +3802,20 @@ check_file(char *file, int offset, int length, char *pattern,
 		return errbuf;
 	}
 
-	if ((em = (*Data_Check)(buf, offset, length, pattern, pattern_length, patshift)) != NULL) {
+	if ((em =
+	     (*Data_Check) (buf, offset, length, pattern, pattern_length,
+			    patshift)) != NULL) {
 		ep = errbuf;
 		ep += sprintf(ep, "*** DATA COMPARISON ERROR ***\n");
-		ep += sprintf(ep, "check_file(%s, %d, %d, %s, %d, %d) failed\n\n",
-			      file, offset, length, pattern, pattern_length, patshift);
-		ep += sprintf(ep, "Comparison fd is %d, with open flags %#o\n",
-			      fd, flags);
+		ep +=
+		    sprintf(ep, "check_file(%s, %d, %d, %s, %d, %d) failed\n\n",
+			    file, offset, length, pattern, pattern_length,
+			    patshift);
+		ep +=
+		    sprintf(ep, "Comparison fd is %d, with open flags %#o\n",
+			    fd, flags);
 		strcpy(ep, em);
-		return(errbuf);
+		return (errbuf);
 	}
 	return NULL;
 }
@@ -3720,16 +3824,15 @@ check_file(char *file, int offset, int length, char *pattern,
  * Function to single-thread stdio output.
  */
 
-int
-doio_fprintf(FILE *stream, char *format, ...)
+int doio_fprintf(FILE * stream, char *format, ...)
 {
-	static int	pid = -1;
-	char		*date;
-	int		rval;
-	struct flock	flk;
-	va_list		arglist;
+	static int pid = -1;
+	char *date;
+	int rval;
+	struct flock flk;
+	va_list arglist;
 	struct timeval ts;
-	gettimeofday(&ts,NULL);
+	gettimeofday(&ts, NULL);
 	date = hms(ts.tv_sec);
 
 	if (pid == -1) {
@@ -3759,31 +3862,30 @@ doio_fprintf(FILE *stream, char *format, ...)
  * keep track of the current amount allocated.
  */
 #ifndef CRAY
-int
-alloc_mem(int nbytes)
+int alloc_mem(int nbytes)
 {
-	char    	*cp;
-	void		*addr;
-	int		me=0, flags, key, shmid;
-	static int	mturn = 0;	/* which memory type to use */
-	struct memalloc	*M;
-	char		filename[255];
+	char *cp;
+	void *addr;
+	int me = 0, flags, key, shmid;
+	static int mturn = 0;	/* which memory type to use */
+	struct memalloc *M;
+	char filename[255];
 #ifdef __linux__
 	struct shmid_ds shm_ds;
 #endif
 
 #ifdef __linux__
-	memset( &shm_ds, 0x00, sizeof(struct shmid_ds) );
+	memset(&shm_ds, 0x00, sizeof(struct shmid_ds));
 #endif
 
 	/* nbytes = -1 means "free all allocated memory" */
 	if (nbytes == -1) {
 
-		for (me=0; me < Nmemalloc; me++) {
+		for (me = 0; me < Nmemalloc; me++) {
 			if (Memalloc[me].space == NULL)
 				continue;
 
-			switch(Memalloc[me].memtype) {
+			switch (Memalloc[me].memtype) {
 			case MEM_DATA:
 #ifdef sgi
 				if (Memalloc[me].flags & MEMF_MPIN)
@@ -3815,8 +3917,7 @@ alloc_mem(int nbytes)
 					munpin(Memalloc[me].space,
 					       Memalloc[me].size);
 #endif
-				munmap(Memalloc[me].space,
-				       Memalloc[me].size);
+				munmap(Memalloc[me].space, Memalloc[me].size);
 				close(Memalloc[me].fd);
 				if (Memalloc[me].flags & MEMF_FILE) {
 					unlink(Memalloc[me].name);
@@ -3824,7 +3925,8 @@ alloc_mem(int nbytes)
 				Memalloc[me].space = NULL;
 				break;
 			default:
-				doio_fprintf(stderr, "alloc_mem: HELP! Unknown memory space type %d index %d\n",
+				doio_fprintf(stderr,
+					     "alloc_mem: HELP! Unknown memory space type %d index %d\n",
 					     Memalloc[me].memtype, me);
 				break;
 			}
@@ -3837,17 +3939,17 @@ alloc_mem(int nbytes)
 	 */
 
 	if (mturn >= Nmemalloc)
-		mturn=0;
+		mturn = 0;
 
 	M = &Memalloc[mturn];
 
-	switch(M->memtype) {
+	switch (M->memtype) {
 	case MEM_DATA:
 		if (nbytes > M->size) {
 			if (M->space != NULL) {
 #ifdef sgi
 				if (M->flags & MEMF_MPIN)
-					munpin( M->space, M->size );
+					munpin(M->space, M->size);
 #endif
 				free(M->space);
 			}
@@ -3856,16 +3958,18 @@ alloc_mem(int nbytes)
 		}
 
 		if (M->space == NULL) {
-			if ((cp = malloc( nbytes )) == NULL) {
-				doio_fprintf(stderr, "malloc(%d) failed:  %s (%d)\n",
+			if ((cp = malloc(nbytes)) == NULL) {
+				doio_fprintf(stderr,
+					     "malloc(%d) failed:  %s (%d)\n",
 					     nbytes, SYSERR, errno);
 				return -1;
 			}
 #ifdef sgi
 			if (M->flags & MEMF_MPIN) {
 				if (mpin(cp, nbytes) == -1) {
-					doio_fprintf(stderr, "mpin(0x%lx, %d) failed:  %s (%d)\n",
-					     cp, nbytes, SYSERR, errno);
+					doio_fprintf(stderr,
+						     "mpin(0x%lx, %d) failed:  %s (%d)\n",
+						     cp, nbytes, SYSERR, errno);
 				}
 			}
 #endif
@@ -3884,7 +3988,7 @@ alloc_mem(int nbytes)
 				munmap(M->space, M->size);
 				close(M->fd);
 				if (M->flags & MEMF_FILE)
-					unlink( M->name );
+					unlink(M->name);
 			}
 			M->space = NULL;
 			M->size = 0;
@@ -3896,11 +4000,12 @@ alloc_mem(int nbytes)
 				M->name = strdup(filename);
 			}
 
-			if ((M->fd = open(M->name, O_CREAT|O_RDWR, 0666)) == -1) {
-				doio_fprintf(stderr, "alloc_mmap: error %d (%s) opening '%s'\n",
-					     errno, SYSERR,
-					     M->name);
-				return(-1);
+			if ((M->fd =
+			     open(M->name, O_CREAT | O_RDWR, 0666)) == -1) {
+				doio_fprintf(stderr,
+					     "alloc_mmap: error %d (%s) opening '%s'\n",
+					     errno, SYSERR, M->name);
+				return (-1);
 			}
 
 			addr = NULL;
@@ -3925,25 +4030,29 @@ alloc_mem(int nbytes)
 				flags |= MAP_SHARED;
 
 /*printf("alloc_mem, about to mmap, fd=%d, name=(%s)\n", M->fd, M->name);*/
-			if ( (M->space = mmap(addr, M->size,
-					     PROT_READ|PROT_WRITE,
+			if ((M->space = mmap(addr, M->size,
+					     PROT_READ | PROT_WRITE,
 					     flags, M->fd, 0))
 			    == MAP_FAILED) {
-				doio_fprintf(stderr, "alloc_mem: mmap error. errno %d (%s)\n\tmmap(addr 0x%x, size %d, read|write 0x%x, mmap flags 0x%x [%#o], fd %d, 0)\n\tfile %s\n",
-					     errno, SYSERR,
-					     addr, M->size,
-					     PROT_READ|PROT_WRITE,
-					     flags, M->flags, M->fd,
-					     M->name);
+				doio_fprintf(stderr,
+					     "alloc_mem: mmap error. errno %d (%s)\n\tmmap(addr 0x%x, size %d, read|write 0x%x, mmap flags 0x%x [%#o], fd %d, 0)\n\tfile %s\n",
+					     errno, SYSERR, addr, M->size,
+					     PROT_READ | PROT_WRITE, flags,
+					     M->flags, M->fd, M->name);
 				doio_fprintf(stderr, "\t%s%s%s%s%s",
-					     (flags & MAP_PRIVATE) ? "private " : "",
+					     (flags & MAP_PRIVATE) ? "private "
+					     : "",
 #ifdef sgi
-					     (flags & MAP_LOCAL) ? "local " : "",
-					     (flags & MAP_AUTORESRV) ? "autoresrv " : "",
-					     (flags & MAP_AUTOGROW) ? "autogrow " : "",
+					     (flags & MAP_LOCAL) ? "local " :
+					     "",
+					     (flags & MAP_AUTORESRV) ?
+					     "autoresrv " : "",
+					     (flags & MAP_AUTOGROW) ?
+					     "autogrow " : "",
 #endif
-					     (flags & MAP_SHARED) ? "shared" : "");
-				return(-1);
+					     (flags & MAP_SHARED) ? "shared" :
+					     "");
+				return (-1);
 			}
 		}
 		break;
@@ -3955,11 +4064,11 @@ alloc_mem(int nbytes)
 				if (M->flags & MEMF_MPIN)
 					munpin(M->space, M->size);
 #endif
-				shmdt( M->space );
+				shmdt(M->space);
 #ifdef sgi
-				shmctl( M->fd, IPC_RMID );
+				shmctl(M->fd, IPC_RMID);
 #else
-				shmctl( M->fd, IPC_RMID, &shm_ds );
+				shmctl(M->fd, IPC_RMID, &shm_ds);
 #endif
 			}
 			M->space = NULL;
@@ -3977,38 +4086,44 @@ alloc_mem(int nbytes)
 
 			if (nbytes > M->size) {
 #ifdef DEBUG
-				doio_fprintf(stderr, "MEM_SHMEM: nblks(%d) too small:  nbytes=%d  Msize=%d, skipping this req.\n",
-					     M->nblks, nbytes, M->size );
+				doio_fprintf(stderr,
+					     "MEM_SHMEM: nblks(%d) too small:  nbytes=%d  Msize=%d, skipping this req.\n",
+					     M->nblks, nbytes, M->size);
 #endif
 				return SKIP_REQ;
 			}
 
-			shmid = shmget(key, M->size, IPC_CREAT|0666);
+			shmid = shmget(key, M->size, IPC_CREAT | 0666);
 			if (shmid == -1) {
-				doio_fprintf(stderr, "shmget(0x%x, %d, CREAT) failed: %s (%d)\n",
+				doio_fprintf(stderr,
+					     "shmget(0x%x, %d, CREAT) failed: %s (%d)\n",
 					     key, M->size, SYSERR, errno);
-				return(-1);
+				return (-1);
 			}
 			M->fd = shmid;
 			M->space = shmat(shmid, NULL, SHM_RND);
 			if (M->space == (void *)-1) {
-				doio_fprintf(stderr, "shmat(0x%x, NULL, SHM_RND) failed: %s (%d)\n",
+				doio_fprintf(stderr,
+					     "shmat(0x%x, NULL, SHM_RND) failed: %s (%d)\n",
 					     shmid, SYSERR, errno);
-				return(-1);
+				return (-1);
 			}
 #ifdef sgi
 			if (M->flags & MEMF_MPIN) {
 				if (mpin(M->space, M->size) == -1) {
-					doio_fprintf(stderr, "mpin(0x%lx, %d) failed:  %s (%d)\n",
-						     M->space, M->size, SYSERR, errno);
-			    }
+					doio_fprintf(stderr,
+						     "mpin(0x%lx, %d) failed:  %s (%d)\n",
+						     M->space, M->size, SYSERR,
+						     errno);
+				}
 			}
 #endif
 		}
 		break;
 
 	default:
-		doio_fprintf(stderr, "alloc_mem: HELP! Unknown memory space type %d index %d\n",
+		doio_fprintf(stderr,
+			     "alloc_mem: HELP! Unknown memory space type %d index %d\n",
 			     Memalloc[me].memtype, mturn);
 		break;
 	}
@@ -4020,12 +4135,11 @@ alloc_mem(int nbytes)
 	return 0;
 }
 #else /* CRAY */
-int
-alloc_mem(int nbytes)
+int alloc_mem(int nbytes)
 {
-	char    *cp;
-	int	ip;
-	static	char	*malloc_space;
+	char *cp;
+	int ip;
+	static char *malloc_space;
 
 	/*
 	 * The "unicos" version of this did some stuff with sbrk;
@@ -4048,41 +4162,42 @@ alloc_mem(int nbytes)
 
 	/* nbytes = -1 means "free all allocated memory" */
 	if (nbytes == -1) {
-		free( malloc_space );
+		free(malloc_space);
 		Memptr = NULL;
 		Memsize = 0;
 		return 0;
 	}
 
 	if (nbytes > Memsize) {
-	    if (Memsize != 0)
-		free( malloc_space );
+		if (Memsize != 0)
+			free(malloc_space);
 
-	    if ((cp = malloc_space = malloc( nbytes )) == NULL) {
-		doio_fprintf(stderr, "malloc(%d) failed:  %s (%d)\n",
-			     nbytes, SYSERR, errno);
-		return -1;
-	    }
-
-#ifdef _CRAYT3E
-	    /* T3E requires memory to be aligned on 0x40 word boundaries */
-	    ip = (int)cp;
-	    if (ip & 0x3F != 0) {
-		doio_fprintf(stderr, "malloc(%d) = 0x%x(0x%x) not aligned by 0x%x\n",
-			     nbytes, cp, ip, ip & 0x3f);
-
-		free(cp);
-		if ((cp = malloc_space = malloc(nbytes + 0x40)) == NULL) {
-		    doio_fprintf(stderr, "malloc(%d) failed:  %s (%d)\n",
-				 nbytes, SYSERR, errno);
-		    return -1;
+		if ((cp = malloc_space = malloc(nbytes)) == NULL) {
+			doio_fprintf(stderr, "malloc(%d) failed:  %s (%d)\n",
+				     nbytes, SYSERR, errno);
+			return -1;
 		}
+#ifdef _CRAYT3E
+		/* T3E requires memory to be aligned on 0x40 word boundaries */
 		ip = (int)cp;
-		cp += (0x40 - (ip & 0x3F));
-	    }
+		if (ip & 0x3F != 0) {
+			doio_fprintf(stderr,
+				     "malloc(%d) = 0x%x(0x%x) not aligned by 0x%x\n",
+				     nbytes, cp, ip, ip & 0x3f);
+
+			free(cp);
+			if ((cp = malloc_space = malloc(nbytes + 0x40)) == NULL) {
+				doio_fprintf(stderr,
+					     "malloc(%d) failed:  %s (%d)\n",
+					     nbytes, SYSERR, errno);
+				return -1;
+			}
+			ip = (int)cp;
+			cp += (0x40 - (ip & 0x3F));
+		}
 #endif /* _CRAYT3E */
-	    Memptr = cp;
-	    Memsize = nbytes;
+		Memptr = cp;
+		Memsize = nbytes;
 	}
 #endif /* NOTDEF */
 	return 0;
@@ -4096,8 +4211,7 @@ alloc_mem(int nbytes)
 
 #ifdef _CRAY1
 
-int
-alloc_sds(int nbytes)
+int alloc_sds(int nbytes)
 {
 	int nblks;
 
@@ -4119,8 +4233,7 @@ alloc_sds(int nbytes)
 
 #ifdef CRAY
 
-int
-alloc_sds(int nbytes)
+int alloc_sds(int nbytes)
 {
 	doio_fprintf(stderr,
 		     "Internal Error - alloc_sds() called on a CRAY2 system\n");
@@ -4144,28 +4257,26 @@ alloc_sds(int nbytes)
  * in the cache, and free the memory in the cache.
  */
 
-int
-alloc_fd(char *file, int oflags)
+int alloc_fd(char *file, int oflags)
 {
 	struct fd_cache *fdc;
 	struct fd_cache *alloc_fdcache(char *file, int oflags);
 
 	fdc = alloc_fdcache(file, oflags);
 	if (fdc != NULL)
-		return(fdc->c_fd);
+		return (fdc->c_fd);
 	else
-		return(-1);
+		return (-1);
 }
 
-struct fd_cache *
-alloc_fdcache(char *file, int oflags)
+struct fd_cache *alloc_fdcache(char *file, int oflags)
 {
-	int			fd;
-	struct fd_cache		*free_slot, *oldest_slot, *cp;
-	static int		cache_size = 0;
-	static struct fd_cache	*cache = NULL;
+	int fd;
+	struct fd_cache *free_slot, *oldest_slot, *cp;
+	static int cache_size = 0;
+	static struct fd_cache *cache = NULL;
 #ifdef sgi
-	struct dioattr		finfo;
+	struct dioattr finfo;
 #endif
 
 	/*
@@ -4187,7 +4298,7 @@ alloc_fdcache(char *file, int oflags)
 		free(cache);
 		cache = NULL;
 		cache_size = 0;
-              return 0;
+		return 0;
 	}
 
 	free_slot = NULL;
@@ -4202,8 +4313,7 @@ alloc_fdcache(char *file, int oflags)
 
 	for (cp = cache; cp != NULL && cp < &cache[cache_size]; cp++) {
 		if (cp->c_fd != -1 &&
-		    cp->c_oflags == oflags &&
-		    strcmp(cp->c_file, file) == 0) {
+		    cp->c_oflags == oflags && strcmp(cp->c_file, file) == 0) {
 #ifdef CRAY
 			cp->c_rtc = _rtc();
 #else
@@ -4268,16 +4378,20 @@ alloc_fdcache(char *file, int oflags)
 	 */
 
 	if (free_slot == NULL) {
-		cache = (struct fd_cache *)realloc(cache, sizeof(struct fd_cache) * (FD_ALLOC_INCR + cache_size));
+		cache =
+		    (struct fd_cache *)realloc(cache,
+					       sizeof(struct fd_cache) *
+					       (FD_ALLOC_INCR + cache_size));
 		if (cache == NULL) {
-			doio_fprintf(stderr, "Could not malloc() space for fd chace");
+			doio_fprintf(stderr,
+				     "Could not malloc() space for fd chace");
 			alloc_mem(-1);
 			exit(E_SETUP);
 		}
 
 		cache_size += FD_ALLOC_INCR;
 
-		for (cp = &cache[cache_size-FD_ALLOC_INCR];
+		for (cp = &cache[cache_size - FD_ALLOC_INCR];
 		     cp < &cache[cache_size]; cp++) {
 			cp->c_fd = -1;
 		}
@@ -4334,13 +4448,12 @@ alloc_fdcache(char *file, int oflags)
 /*
  * "caller-id" for signals
  */
-void
-signal_info(int sig, siginfo_t *info, void *v)
+void signal_info(int sig, siginfo_t * info, void *v)
 {
 	int haveit = 0;
 
 	if (info != NULL) {
-		switch(info->si_code) {
+		switch (info->si_code) {
 		case SI_USER:
 			doio_fprintf(stderr,
 				     "signal_info: si_signo %d si_errno %d si_code SI_USER pid %d uid %d\n",
@@ -4350,7 +4463,8 @@ signal_info(int sig, siginfo_t *info, void *v)
 			break;
 
 		case SI_QUEUE:
-			doio_fprintf(stderr, "signal_info  si_signo %d si_code = SI_QUEUE\n",
+			doio_fprintf(stderr,
+				     "signal_info  si_signo %d si_code = SI_QUEUE\n",
 				     info->si_signo);
 			haveit = 1;
 			break;
@@ -4358,18 +4472,19 @@ signal_info(int sig, siginfo_t *info, void *v)
 
 		if (!haveit) {
 			if ((info->si_signo == SIGSEGV) ||
-			   (info->si_signo == SIGBUS) ) {
-				doio_fprintf(stderr, "signal_info  si_signo %d si_errno %d si_code = %d  si_addr=%p  active_mmap_rw=%d havesigint=%d\n",
+			    (info->si_signo == SIGBUS)) {
+				doio_fprintf(stderr,
+					     "signal_info  si_signo %d si_errno %d si_code = %d  si_addr=%p  active_mmap_rw=%d havesigint=%d\n",
 					     info->si_signo, info->si_errno,
 					     info->si_code, info->si_addr,
-					     active_mmap_rw,
-					     havesigint);
+					     active_mmap_rw, havesigint);
 				haveit = 1;
-			   }
+			}
 		}
 
 		if (!haveit) {
-			doio_fprintf(stderr, "signal_info: si_signo %d si_errno %d unknown code %d\n",
+			doio_fprintf(stderr,
+				     "signal_info: si_signo %d si_errno %d unknown code %d\n",
 				     info->si_signo, info->si_errno,
 				     info->si_code);
 		}
@@ -4378,17 +4493,15 @@ signal_info(int sig, siginfo_t *info, void *v)
 	}
 }
 
-void
-cleanup_handler(int sig, siginfo_t *info, void *v)
+void cleanup_handler(int sig, siginfo_t * info, void *v)
 {
-	havesigint=1; /* in case there's a followup signal */
-	/*signal_info(sig, info, v);*/	/* be quiet on "normal" kill */
+	havesigint = 1;		/* in case there's a followup signal */
+	/*signal_info(sig, info, v); *//* be quiet on "normal" kill */
 	alloc_mem(-1);
 	exit(0);
 }
 
-void
-die_handler(int sig, siginfo_t *info, void *v)
+void die_handler(int sig, siginfo_t * info, void *v)
 {
 	doio_fprintf(stderr, "terminating on signal %d\n", sig);
 	signal_info(sig, info, v);
@@ -4396,8 +4509,7 @@ die_handler(int sig, siginfo_t *info, void *v)
 	exit(1);
 }
 
-void
-sigbus_handler(int sig, siginfo_t *info, void *v)
+void sigbus_handler(int sig, siginfo_t * info, void *v)
 {
 	/* While we are doing a memcpy to/from an mmapped region we can
 	   get a SIGBUS for a variety of reasons--and not all of them
@@ -4416,24 +4528,21 @@ sigbus_handler(int sig, siginfo_t *info, void *v)
 	 */
 
 	if (active_mmap_rw && havesigint && (info->si_errno == EINTR)) {
-		cleanup_handler( sig, info, v );
-	}
-	else{
-		die_handler( sig, info, v );
+		cleanup_handler(sig, info, v);
+	} else {
+		die_handler(sig, info, v);
 	}
 }
 #else
 
-void
-cleanup_handler(int sig)
+void cleanup_handler(int sig)
 {
-	havesigint=1; /* in case there's a followup signal */
+	havesigint = 1;		/* in case there's a followup signal */
 	alloc_mem(-1);
 	exit(0);
 }
 
-void
-die_handler(int sig)
+void die_handler(int sig)
 {
 	doio_fprintf(stderr, "terminating on signal %d\n", sig);
 	alloc_mem(-1);
@@ -4441,13 +4550,12 @@ die_handler(int sig)
 }
 
 #ifndef CRAY
-void
-sigbus_handler(int sig)
+void sigbus_handler(int sig)
 {
 	/* See sigbus_handler() in the 'ifdef sgi' case for details.  Here,
 	   we don't have the siginfo stuff so the guess is weaker but we'll
 	   do it anyway.
-	*/
+	 */
 
 	if (active_mmap_rw && havesigint)
 		cleanup_handler(sig);
@@ -4457,8 +4565,7 @@ sigbus_handler(int sig)
 #endif /* !CRAY */
 #endif /* sgi */
 
-void
-noop_handler(int sig)
+void noop_handler(int sig)
 {
 	return;
 }
@@ -4469,10 +4576,9 @@ noop_handler(int sig)
  * pgrp, this can be done with a single kill().
  */
 
-void
-sigint_handler(int sig)
+void sigint_handler(int sig)
 {
-	int	i;
+	int i;
 
 	for (i = 0; i < Nchildren; i++) {
 		if (Children[i] != -1) {
@@ -4487,11 +4593,10 @@ sigint_handler(int sig)
  * re-registered.
  */
 
-void
-aio_handler(int sig)
+void aio_handler(int sig)
 {
-	unsigned int	i;
-	struct aio_info	*aiop;
+	unsigned int i;
+	struct aio_info *aiop;
 
 	for (i = 0; i < sizeof(Aio_Info) / sizeof(Aio_Info[0]); i++) {
 		aiop = &Aio_Info[i];
@@ -4509,12 +4614,11 @@ aio_handler(int sig)
 /*
  * dump info on all open aio slots
  */
-void
-dump_aio(void)
+void dump_aio(void)
 {
-	unsigned int	i, count;
+	unsigned int i, count;
 
-	count=0;
+	count = 0;
 	for (i = 0; i < sizeof(Aio_Info) / sizeof(Aio_Info[0]); i++) {
 		if (Aio_Info[i].busy) {
 			count++;
@@ -4522,8 +4626,7 @@ dump_aio(void)
 				"Aio_Info[%03d] id=%d fd=%d signal=%d signaled=%d\n",
 				i, Aio_Info[i].id,
 				Aio_Info[i].fd,
-				Aio_Info[i].sig,
-				Aio_Info[i].signalled);
+				Aio_Info[i].sig, Aio_Info[i].signalled);
 			fprintf(stderr, "\tstrategy=%s\n",
 				format_strat(Aio_Info[i].strategy));
 		}
@@ -4537,13 +4640,12 @@ dump_aio(void)
  * 'val' is the value from sigev_value and is assumed to be the
  * Aio_Info[] index.
  */
-void
-cb_handler(sigval_t val)
+void cb_handler(sigval_t val)
 {
-	struct aio_info	*aiop;
+	struct aio_info *aiop;
 
 /*printf("cb_handler requesting slot %d\n", val.sival_int);*/
-	aiop = aio_slot( val.sival_int );
+	aiop = aio_slot(val.sival_int);
 /*printf("cb_handler, aiop=%p\n", aiop);*/
 
 /*printf("%d in cb_handler\n", getpid() );*/
@@ -4557,18 +4659,17 @@ cb_handler(sigval_t val)
 }
 #endif
 
-struct aio_info *
-aio_slot(int aio_id)
+struct aio_info *aio_slot(int aio_id)
 {
-	unsigned int	i;
-	static int	id = 1;
-	struct aio_info	*aiop;
+	unsigned int i;
+	static int id = 1;
+	struct aio_info *aiop;
 
 	aiop = NULL;
 
 	for (i = 0; i < sizeof(Aio_Info) / sizeof(Aio_Info[0]); i++) {
 		if (aio_id == -1) {
-			if (! Aio_Info[i].busy) {
+			if (!Aio_Info[i].busy) {
 				aiop = &Aio_Info[i];
 				aiop->busy = 1;
 				aiop->id = id++;
@@ -4583,7 +4684,7 @@ aio_slot(int aio_id)
 	}
 
 	if (aiop == NULL) {
-		doio_fprintf(stderr,"aio_slot(%d) not found.  Request %d\n",
+		doio_fprintf(stderr, "aio_slot(%d) not found.  Request %d\n",
 			     aio_id, Reqno);
 		dump_aio();
 		alloc_mem(-1);
@@ -4593,11 +4694,10 @@ aio_slot(int aio_id)
 	return aiop;
 }
 
-int
-aio_register(int fd, int strategy, int sig)
+int aio_register(int fd, int strategy, int sig)
 {
-	struct aio_info		*aiop;
-	struct sigaction	sa;
+	struct aio_info *aiop;
+	struct sigaction sa;
 
 	aiop = aio_slot(-1);
 
@@ -4625,10 +4725,9 @@ aio_register(int fd, int strategy, int sig)
 	return aiop->id;
 }
 
-int
-aio_unregister(int aio_id)
+int aio_unregister(int aio_id)
 {
-	struct aio_info	*aiop;
+	struct aio_info *aiop;
 
 	aiop = aio_slot(aio_id);
 
@@ -4641,19 +4740,18 @@ aio_unregister(int aio_id)
 }
 
 #ifndef __linux__
-int
-aio_wait(int aio_id)
+int aio_wait(int aio_id)
 {
 #ifdef RECALL_SIZEOF
-	long		mask[RECALL_SIZEOF];
+	long mask[RECALL_SIZEOF];
 #endif
-	sigset_t	sigset;
-	struct aio_info	*aiop;
+	sigset_t sigset;
+	struct aio_info *aiop;
 #ifdef CRAY
-	struct iosw	*ioswlist[1];
+	struct iosw *ioswlist[1];
 #endif
 #ifdef sgi
-	const aiocb_t	*aioary[1];
+	const aiocb_t *aioary[1];
 #endif
 	int r, cnt;
 
@@ -4662,17 +4760,16 @@ aio_wait(int aio_id)
 
 	switch (aiop->strategy) {
 	case A_POLL:
-		while (! aio_done(aiop))
-			;
+		while (!aio_done(aiop)) ;
 		break;
 
 	case A_SIGNAL:
 		sigemptyset(&sigset);
-		sighold( aiop->sig );
+		sighold(aiop->sig);
 
 		while (!aiop->signalled || !aiop->done) {
 			sigsuspend(&sigset);
-			sighold( aiop->sig );
+			sighold(aiop->sig);
 		}
 		break;
 
@@ -4705,21 +4802,22 @@ aio_wait(int aio_id)
 		ioswlist[0] = &aiop->iosw;
 		if (recalls(1, ioswlist) < 0) {
 			doio_fprintf(stderr, "recalls failed:  %s (%d)\n",
-				SYSERR, errno);
+				     SYSERR, errno);
 			exit(E_SETUP);
 		}
 		break;
-#endif	/* CRAY */
+#endif /* CRAY */
 
 #ifdef sgi
 	case A_CALLBACK:
 		aioary[0] = &aiop->aiocb;
-		cnt=0;
+		cnt = 0;
 		do {
 			r = aio_suspend(aioary, 1, NULL);
 			if (r == -1) {
-				doio_fprintf(stderr, "aio_suspend failed: %s (%d)\n",
-					     SYSERR, errno );
+				doio_fprintf(stderr,
+					     "aio_suspend failed: %s (%d)\n",
+					     SYSERR, errno);
 				exit(E_SETUP);
 			}
 			cnt++;
@@ -4731,7 +4829,9 @@ aio_wait(int aio_id)
 		 * it's too noisy
 		 */
 		if (cnt > 1)
-			doio_fprintf(stderr, "aio_wait: callback wait took %d tries\n", cnt);
+			doio_fprintf(stderr,
+				     "aio_wait: callback wait took %d tries\n",
+				     cnt);
 #endif
 
 		/*
@@ -4744,7 +4844,7 @@ aio_wait(int aio_id)
 		r = aio_suspend(aioary, 1, NULL);
 		if (r == -1) {
 			doio_fprintf(stderr, "aio_suspend failed: %s (%d)\n",
-				     SYSERR, errno );
+				     SYSERR, errno);
 			exit(E_SETUP);
 		}
 
@@ -4764,11 +4864,10 @@ aio_wait(int aio_id)
  * in seconds (as returned from time(2)).
  */
 
-char *
-hms(time_t t)
+char *hms(time_t t)
 {
-	static char	ascii_time[9];
-	struct tm	*ltime;
+	static char ascii_time[9];
+	struct tm *ltime;
 
 	ltime = localtime(&t);
 	strftime(ascii_time, sizeof(ascii_time), "%H:%M:%S", ltime);
@@ -4780,8 +4879,7 @@ hms(time_t t)
  * Simple routine to check if an async io request has completed.
  */
 
-int
-aio_done(struct aio_info *ainfo)
+int aio_done(struct aio_info *ainfo)
 {
 #ifdef CRAY
 	return ainfo->iosw.sw_flag;
@@ -4790,21 +4888,22 @@ aio_done(struct aio_info *ainfo)
 #ifdef sgi
 	if ((ainfo->aio_errno = aio_error(&ainfo->aiocb)) == -1) {
 		doio_fprintf(stderr, "aio_done: aio_error failed: %s (%d)\n",
-			     SYSERR, errno );
+			     SYSERR, errno);
 		exit(E_SETUP);
 	}
-	/*printf("%d aio_done aio_errno=%d\n", getpid(), ainfo->aio_errno);*/
+	/*printf("%d aio_done aio_errno=%d\n", getpid(), ainfo->aio_errno); */
 	if (ainfo->aio_errno != EINPROGRESS) {
 		if ((ainfo->aio_ret = aio_return(&ainfo->aiocb)) == -1) {
-			doio_fprintf(stderr, "aio_done: aio_return failed: %s (%d)\n",
-				     SYSERR, errno );
+			doio_fprintf(stderr,
+				     "aio_done: aio_return failed: %s (%d)\n",
+				     SYSERR, errno);
 			exit(E_SETUP);
 		}
 	}
 
 	return (ainfo->aio_errno != EINPROGRESS);
 #else
-        return -1;   /* invalid */
+	return -1;		/* invalid */
 #endif
 }
 
@@ -4818,23 +4917,22 @@ aio_done(struct aio_info *ainfo)
  * mask is set in the Upanic_Conditions bitmask.
  */
 
-void
-doio_upanic(int mask)
+void doio_upanic(int mask)
 {
 	if (U_opt == 0 || (mask & Upanic_Conditions) == 0) {
 		return;
 	}
-
 #ifdef CRAY
 	if (upanic(PA_SET) < 0) {
-		doio_fprintf(stderr, "WARNING - Could not set the panic flag - upanic(PA_SET) failed:  %s (%d)\n",
+		doio_fprintf(stderr,
+			     "WARNING - Could not set the panic flag - upanic(PA_SET) failed:  %s (%d)\n",
 			     SYSERR, errno);
 	}
 
 	upanic(PA_PANIC);
 #endif
 #ifdef sgi
-	syssgi(1005);	/* syssgi test panic - DEBUG kernels only */
+	syssgi(1005);		/* syssgi test panic - DEBUG kernels only */
 #endif
 	doio_fprintf(stderr, "WARNING - upanic() failed\n");
 }
@@ -4845,17 +4943,16 @@ doio_upanic(int mask)
  * of 1.
  */
 
-int
-parse_cmdline(int argc, char **argv, char *opts)
+int parse_cmdline(int argc, char **argv, char *opts)
 {
-	int	    	c;
-	char    	cc, *cp=NULL, *tok=NULL;
-	extern int	opterr;
-	extern int	optind;
-	extern char	*optarg;
-	struct smap	*s;
-	char		*memargs[NMEMALLOC];
-	int		nmemargs, ma;
+	int c;
+	char cc, *cp = NULL, *tok = NULL;
+	extern int opterr;
+	extern int optind;
+	extern char *optarg;
+	struct smap *s;
+	char *memargs[NMEMALLOC];
+	int nmemargs, ma;
 
 	if (*argv[0] == '-') {
 		argv[0]++;
@@ -4877,10 +4974,10 @@ parse_cmdline(int argc, char **argv, char *opts)
 
 		case 'C':
 			C_opt++;
-			for (s=checkmap; s->string != NULL; s++)
+			for (s = checkmap; s->string != NULL; s++)
 				if (!strcmp(s->string, optarg))
 					break;
-			if (s->string == NULL && tok != NULL)  {
+			if (s->string == NULL && tok != NULL) {
 				fprintf(stderr,
 					"%s%s:  Illegal -C arg (%s).  Must be one of: ",
 					Prog, TagName, tok);
@@ -4891,7 +4988,7 @@ parse_cmdline(int argc, char **argv, char *opts)
 				exit(1);
 			}
 
-			switch(s->value) {
+			switch (s->value) {
 			case C_DEFAULT:
 				Data_Fill = doio_pat_fill;
 				Data_Check = doio_pat_check;
@@ -4910,7 +5007,9 @@ parse_cmdline(int argc, char **argv, char *opts)
 
 		case 'e':
 			if (Npes > 1 && Nprocs > 1) {
-				fprintf(stderr, "%s%s:  Warning - Program is a multi-pe application - exec option is ignored.\n", Prog, TagName);
+				fprintf(stderr,
+					"%s%s:  Warning - Program is a multi-pe application - exec option is ignored.\n",
+					Prog, TagName);
 			}
 			e_opt++;
 			break;
@@ -4927,7 +5026,9 @@ parse_cmdline(int argc, char **argv, char *opts)
 		case 'm':
 			Message_Interval = strtol(optarg, &cp, 10);
 			if (*cp != '\0' || Message_Interval < 0) {
-				fprintf(stderr, "%s%s:  Illegal -m arg (%s):  Must be an integer >= 0\n", Prog, TagName, optarg);
+				fprintf(stderr,
+					"%s%s:  Illegal -m arg (%s):  Must be an integer >= 0\n",
+					Prog, TagName, optarg);
 				exit(1);
 			}
 			m_opt++;
@@ -4936,19 +5037,21 @@ parse_cmdline(int argc, char **argv, char *opts)
 		case 'M':	/* memory allocation types */
 #ifndef CRAY
 			nmemargs = string_to_tokens(optarg, memargs, 32, ",");
-			for (ma=0; ma < nmemargs; ma++) {
+			for (ma = 0; ma < nmemargs; ma++) {
 				parse_memalloc(memargs[ma]);
 			}
-			/*dump_memalloc();*/
+			/*dump_memalloc(); */
 #else
-			fprintf(stderr, "%s%s: Error: -M isn't supported on this platform\n", Prog, TagName);
+			fprintf(stderr,
+				"%s%s: Error: -M isn't supported on this platform\n",
+				Prog, TagName);
 			exit(1);
 #endif
 			M_opt++;
 			break;
 
 		case 'N':
-			sprintf( TagName, "(%.39s)", optarg );
+			sprintf(TagName, "(%.39s)", optarg);
 			break;
 
 		case 'n':
@@ -4961,7 +5064,9 @@ parse_cmdline(int argc, char **argv, char *opts)
 			}
 
 			if (Npes > 1 && Nprocs > 1) {
-				fprintf(stderr, "%s%s:  Program has been built as a multi-pe app.  -n1 is the only nprocs value allowed\n", Prog, TagName);
+				fprintf(stderr,
+					"%s%s:  Program has been built as a multi-pe app.  -n1 is the only nprocs value allowed\n",
+					Prog, TagName);
 				exit(E_SETUP);
 			}
 			n_opt++;
@@ -5006,10 +5111,16 @@ parse_cmdline(int argc, char **argv, char *opts)
 				Validation_Flags = O_DIRECT;
 #endif
 			} else {
-				if (sscanf(optarg, "%i%c", &Validation_Flags, &cc) != 1) {
-					fprintf(stderr, "%s:  Invalid -V argument (%s) - must be a decimal, hex, or octal\n", Prog, optarg);
-					fprintf(stderr, "    number, or one of the following strings:  'sync',\n");
-					fprintf(stderr, "    'buffered', 'parallel', 'ldraw', or 'raw'\n");
+				if (sscanf
+				    (optarg, "%i%c", &Validation_Flags,
+				     &cc) != 1) {
+					fprintf(stderr,
+						"%s:  Invalid -V argument (%s) - must be a decimal, hex, or octal\n",
+						Prog, optarg);
+					fprintf(stderr,
+						"    number, or one of the following strings:  'sync',\n");
+					fprintf(stderr,
+						"    'buffered', 'parallel', 'ldraw', or 'raw'\n");
 					exit(E_USAGE);
 				}
 			}
@@ -5027,8 +5138,10 @@ parse_cmdline(int argc, char **argv, char *opts)
 						"%s%s:  Illegal -U arg (%s).  Must be one of: ",
 						Prog, TagName, tok);
 
-					for (s = Upanic_Args; s->string != NULL; s++)
-						fprintf(stderr, "%s ", s->string);
+					for (s = Upanic_Args; s->string != NULL;
+					     s++)
+						fprintf(stderr, "%s ",
+							s->string);
 
 					fprintf(stderr, "\n");
 
@@ -5053,21 +5166,21 @@ parse_cmdline(int argc, char **argv, char *opts)
 	 * Supply defaults
 	 */
 
-	if (! C_opt) {
+	if (!C_opt) {
 		Data_Fill = doio_pat_fill;
 		Data_Check = doio_pat_check;
 	}
 
-	if (! U_opt)
+	if (!U_opt)
 		Upanic_Conditions = 0;
 
-	if (! n_opt)
+	if (!n_opt)
 		Nprocs = 1;
 
-	if (! r_opt)
+	if (!r_opt)
 		Release_Interval = DEF_RELEASE_INTERVAL;
 
-	if (! M_opt) {
+	if (!M_opt) {
 		Memalloc[Nmemalloc].memtype = MEM_DATA;
 		Memalloc[Nmemalloc].flags = 0;
 		Memalloc[Nmemalloc].name = NULL;
@@ -5127,16 +5240,15 @@ parse_cmdline(int argc, char **argv, char *opts)
  *	nblks worth of directories - 1 int pids
  */
 #ifndef CRAY
-void
-parse_memalloc(char *arg)
+void parse_memalloc(char *arg)
 {
-	char		*allocargs[NMEMALLOC];
-	int		nalloc;
-	struct memalloc	*M;
+	char *allocargs[NMEMALLOC];
+	int nalloc;
+	struct memalloc *M;
 
 	if (Nmemalloc >= NMEMALLOC) {
 		doio_fprintf(stderr, "Error - too many memory types (%d).\n",
-			Nmemalloc);
+			     Nmemalloc);
 		return;
 	}
 
@@ -5185,15 +5297,14 @@ parse_memalloc(char *arg)
 			if (!strcmp(allocargs[2], "devzero")) {
 				M->name = "/dev/zero";
 				if (M->flags &
-				   ((MEMF_PRIVATE|MEMF_LOCAL) == 0))
+				    ((MEMF_PRIVATE | MEMF_LOCAL) == 0))
 					M->flags |= MEMF_PRIVATE;
 			} else {
 				M->name = allocargs[2];
 			}
 		} else {
 			M->name = "/dev/zero";
-			if (M->flags &
-			   ((MEMF_PRIVATE|MEMF_LOCAL) == 0))
+			if (M->flags & ((MEMF_PRIVATE | MEMF_LOCAL) == 0))
 				M->flags |= MEMF_PRIVATE;
 		}
 		Nmemalloc++;
@@ -5221,34 +5332,40 @@ parse_memalloc(char *arg)
 		Nmemalloc++;
 	} else {
 		doio_fprintf(stderr, "Error - unknown memory type '%s'.\n",
-			allocargs[0]);
+			     allocargs[0]);
 		exit(1);
 	}
 }
 
-void
-dump_memalloc(void)
+void dump_memalloc(void)
 {
-	int	ma;
-	char	*mt;
+	int ma;
+	char *mt;
 
 	if (Nmemalloc == 0) {
 		printf("No memory allocation strategies devined\n");
 		return;
 	}
 
-	for (ma=0; ma < Nmemalloc; ma++) {
-		switch(Memalloc[ma].memtype) {
-		case MEM_DATA:	mt = "data";	break;
-		case MEM_SHMEM:	mt = "shmem";	break;
-		case MEM_MMAP:	mt = "mmap";	break;
-		default:	mt = "unknown";	break;
+	for (ma = 0; ma < Nmemalloc; ma++) {
+		switch (Memalloc[ma].memtype) {
+		case MEM_DATA:
+			mt = "data";
+			break;
+		case MEM_SHMEM:
+			mt = "shmem";
+			break;
+		case MEM_MMAP:
+			mt = "mmap";
+			break;
+		default:
+			mt = "unknown";
+			break;
 		}
 		printf("mstrat[%d] = %d %s\n", ma, Memalloc[ma].memtype, mt);
 		printf("\tflags=%#o name='%s' nblks=%d\n",
 		       Memalloc[ma].flags,
-		       Memalloc[ma].name,
-		       Memalloc[ma].nblks);
+		       Memalloc[ma].name, Memalloc[ma].nblks);
 	}
 }
 
@@ -5259,20 +5376,20 @@ dump_memalloc(void)
  *	currently this permits ONE type of delay between operations.
  */
 
-void
-parse_delay(char *arg)
+void parse_delay(char *arg)
 {
-	char		*delayargs[NMEMALLOC];
-	int		ndelay;
-	struct smap	*s;
+	char *delayargs[NMEMALLOC];
+	int ndelay;
+	struct smap *s;
 
 	ndelay = string_to_tokens(arg, delayargs, 32, ":");
 	if (ndelay < 2) {
 		doio_fprintf(stderr,
-			"Illegal delay arg (%s). Must be operation:time\n", arg);
+			     "Illegal delay arg (%s). Must be operation:time\n",
+			     arg);
 		exit(1);
 	}
-	for (s=delaymap; s->string != NULL; s++)
+	for (s = delaymap; s->string != NULL; s++)
 		if (!strcmp(s->string, delayargs[0]))
 			break;
 	if (s->string == NULL) {
@@ -5290,8 +5407,7 @@ parse_delay(char *arg)
 	sscanf(delayargs[1], "%i", &delaytime);
 
 	if (ndelay > 2) {
-		fprintf(stderr,
-			"Warning: extra delay arguments ignored.\n");
+		fprintf(stderr, "Warning: extra delay arguments ignored.\n");
 	}
 }
 
@@ -5299,8 +5415,7 @@ parse_delay(char *arg)
  * Usage clause - obvious
  */
 
-int
-usage(FILE *stream)
+int usage(FILE * stream)
 {
 	/*
 	 * Only do this if we are on vpe 0, to avoid seeing it from every
@@ -5311,12 +5426,13 @@ usage(FILE *stream)
 		return 0;
 	}
 
-	fprintf(stream, "usage%s:  %s [-aekv] [-m message_interval] [-n nprocs] [-r release_interval] [-w write_log] [-V validation_ftype] [-U upanic_cond] [infile]\n", TagName, Prog);
+	fprintf(stream,
+		"usage%s:  %s [-aekv] [-m message_interval] [-n nprocs] [-r release_interval] [-w write_log] [-V validation_ftype] [-U upanic_cond] [infile]\n",
+		TagName, Prog);
 	return 0;
 }
 
-void
-help(FILE *stream)
+void help(FILE * stream)
 {
 	/*
 	 * Only the app running on vpe 0 gets to issue help - this prevents
@@ -5329,28 +5445,41 @@ help(FILE *stream)
 
 	usage(stream);
 	fprintf(stream, "\n");
-	fprintf(stream, "\t-a                   abort - kill all doio processes on data compare\n");
-	fprintf(stream, "\t                     errors.  Normally only the erroring process exits\n");
+	fprintf(stream,
+		"\t-a                   abort - kill all doio processes on data compare\n");
+	fprintf(stream,
+		"\t                     errors.  Normally only the erroring process exits\n");
 	fprintf(stream, "\t-C data-pattern-type \n");
-	fprintf(stream, "\t                     Available data patterns are:\n");
+	fprintf(stream,
+		"\t                     Available data patterns are:\n");
 	fprintf(stream, "\t                     default - repeating pattern\n");
 	fprintf(stream, "\t-d Operation:Time    Inter-operation delay.\n");
 	fprintf(stream, "\t                     Operations are:\n");
-	fprintf(stream, "\t                         select:time (1 second=1000000)\n");
+	fprintf(stream,
+		"\t                         select:time (1 second=1000000)\n");
 	fprintf(stream, "\t                         sleep:time (1 second=1)\n");
 #ifdef sgi
-	fprintf(stream, "\t                         sginap:time (1 second=CLK_TCK=100)\n");
+	fprintf(stream,
+		"\t                         sginap:time (1 second=CLK_TCK=100)\n");
 #endif
 	fprintf(stream, "\t                         alarm:time (1 second=1)\n");
-	fprintf(stream, "\t-e                   Re-exec children before entering the main\n");
-	fprintf(stream, "\t                     loop.  This is useful for spreading\n");
-	fprintf(stream, "\t                     procs around on multi-pe systems.\n");
-	fprintf(stream, "\t-k                   Lock file regions during writes using fcntl()\n");
-	fprintf(stream, "\t-v                   Verify writes - this is done by doing a buffered\n");
-	fprintf(stream, "\t                     read() of the data if file io was done, or\n");
-	fprintf(stream, "\t                     an ssread()of the data if sds io was done\n");
+	fprintf(stream,
+		"\t-e                   Re-exec children before entering the main\n");
+	fprintf(stream,
+		"\t                     loop.  This is useful for spreading\n");
+	fprintf(stream,
+		"\t                     procs around on multi-pe systems.\n");
+	fprintf(stream,
+		"\t-k                   Lock file regions during writes using fcntl()\n");
+	fprintf(stream,
+		"\t-v                   Verify writes - this is done by doing a buffered\n");
+	fprintf(stream,
+		"\t                     read() of the data if file io was done, or\n");
+	fprintf(stream,
+		"\t                     an ssread()of the data if sds io was done\n");
 #ifndef CRAY
-	fprintf(stream, "\t-M                   Data buffer allocation method\n");
+	fprintf(stream,
+		"\t-M                   Data buffer allocation method\n");
 	fprintf(stream, "\t                     alloc-type[,type]\n");
 #ifdef sgi
 	fprintf(stream, "\t			    data:flags\n");
@@ -5369,54 +5498,92 @@ help(FILE *stream)
 	fprintf(stream, "\t			        a - autoresrv\n");
 	fprintf(stream, "\t			        G - autogrow\n");
 #else
-	fprintf(stream, "\t			        s - shared (shared file must exist\n"),
-	fprintf(stream, "\t			            and have needed length)\n");
+	fprintf(stream,
+		"\t			        s - shared (shared file must exist\n"),
+	    fprintf(stream,
+		    "\t			            and have needed length)\n");
 #endif
-	fprintf(stream, "\t			        f - fixed address (not used)\n");
-	fprintf(stream, "\t			        a - specify address (not used)\n");
-	fprintf(stream, "\t			        U - Unlink file when done\n");
-	fprintf(stream, "\t			        The default flag is private\n");
+	fprintf(stream,
+		"\t			        f - fixed address (not used)\n");
+	fprintf(stream,
+		"\t			        a - specify address (not used)\n");
+	fprintf(stream,
+		"\t			        U - Unlink file when done\n");
+	fprintf(stream,
+		"\t			        The default flag is private\n");
 	fprintf(stream, "\n");
 #endif /* !CRAY */
-	fprintf(stream, "\t-m message_interval  Generate a message every 'message_interval'\n");
-	fprintf(stream, "\t                     requests.  An interval of 0 suppresses\n");
-	fprintf(stream, "\t                     messages.  The default is 0.\n");
+	fprintf(stream,
+		"\t-m message_interval  Generate a message every 'message_interval'\n");
+	fprintf(stream,
+		"\t                     requests.  An interval of 0 suppresses\n");
+	fprintf(stream,
+		"\t                     messages.  The default is 0.\n");
 	fprintf(stream, "\t-N tagname           Tag name, for Monster.\n");
 	fprintf(stream, "\t-n nprocs            # of processes to start up\n");
-	fprintf(stream, "\t-r release_interval  Release all memory and close\n");
-	fprintf(stream, "\t                     files every release_interval operations.\n");
-	fprintf(stream, "\t                     By default procs never release memory\n");
-	fprintf(stream, "\t                     or close fds unless they have to.\n");
-	fprintf(stream, "\t-V validation_ftype  The type of file descriptor to use for doing data\n");
-	fprintf(stream, "\t                     validation.  validation_ftype may be an octal,\n");
-	fprintf(stream, "\t                     hex, or decimal number representing the open()\n");
-	fprintf(stream, "\t                     flags, or may be one of the following strings:\n");
-	fprintf(stream, "\t                     'buffered' - validate using bufferd read\n");
-	fprintf(stream, "\t                     'sync'     - validate using O_SYNC read\n");
+	fprintf(stream,
+		"\t-r release_interval  Release all memory and close\n");
+	fprintf(stream,
+		"\t                     files every release_interval operations.\n");
+	fprintf(stream,
+		"\t                     By default procs never release memory\n");
+	fprintf(stream,
+		"\t                     or close fds unless they have to.\n");
+	fprintf(stream,
+		"\t-V validation_ftype  The type of file descriptor to use for doing data\n");
+	fprintf(stream,
+		"\t                     validation.  validation_ftype may be an octal,\n");
+	fprintf(stream,
+		"\t                     hex, or decimal number representing the open()\n");
+	fprintf(stream,
+		"\t                     flags, or may be one of the following strings:\n");
+	fprintf(stream,
+		"\t                     'buffered' - validate using bufferd read\n");
+	fprintf(stream,
+		"\t                     'sync'     - validate using O_SYNC read\n");
 #ifdef sgi
-	fprintf(stream, "\t                     'direct    - validate using O_DIRECT read'\n");
+	fprintf(stream,
+		"\t                     'direct    - validate using O_DIRECT read'\n");
 #endif
 #ifdef CRAY
-	fprintf(stream, "\t                     'ldraw'    - validate using O_LDRAW read\n");
-	fprintf(stream, "\t                     'parallel' - validate using O_PARALLEL read\n");
-	fprintf(stream, "\t                     'raw'      - validate using O_RAW read\n");
+	fprintf(stream,
+		"\t                     'ldraw'    - validate using O_LDRAW read\n");
+	fprintf(stream,
+		"\t                     'parallel' - validate using O_PARALLEL read\n");
+	fprintf(stream,
+		"\t                     'raw'      - validate using O_RAW read\n");
 #endif
 	fprintf(stream, "\t                     By default, 'parallel'\n");
-	fprintf(stream, "\t                     is used if the write was done with O_PARALLEL\n");
-	fprintf(stream, "\t                     or 'buffered' for all other writes.\n");
-	fprintf(stream, "\t-w write_log         File to log file writes to.  The doio_check\n");
-	fprintf(stream, "\t                     program can reconstruct datafiles using the\n");
-	fprintf(stream, "\t                     write_log, and detect if a file is corrupt\n");
-	fprintf(stream, "\t                     after all procs have exited.\n");
-	fprintf(stream, "\t-U upanic_cond       Comma separated list of conditions that will\n");
-	fprintf(stream, "\t                     cause a call to upanic(PA_PANIC).\n");
-	fprintf(stream, "\t                     'corruption' -> upanic on bad data comparisons\n");
-	fprintf(stream, "\t                     'iosw'     ---> upanic on unexpected async iosw\n");
-	fprintf(stream, "\t                     'rval'     ---> upanic on unexpected syscall rvals\n");
-	fprintf(stream, "\t                     'all'      ---> all of the above\n");
+	fprintf(stream,
+		"\t                     is used if the write was done with O_PARALLEL\n");
+	fprintf(stream,
+		"\t                     or 'buffered' for all other writes.\n");
+	fprintf(stream,
+		"\t-w write_log         File to log file writes to.  The doio_check\n");
+	fprintf(stream,
+		"\t                     program can reconstruct datafiles using the\n");
+	fprintf(stream,
+		"\t                     write_log, and detect if a file is corrupt\n");
+	fprintf(stream,
+		"\t                     after all procs have exited.\n");
+	fprintf(stream,
+		"\t-U upanic_cond       Comma separated list of conditions that will\n");
+	fprintf(stream,
+		"\t                     cause a call to upanic(PA_PANIC).\n");
+	fprintf(stream,
+		"\t                     'corruption' -> upanic on bad data comparisons\n");
+	fprintf(stream,
+		"\t                     'iosw'     ---> upanic on unexpected async iosw\n");
+	fprintf(stream,
+		"\t                     'rval'     ---> upanic on unexpected syscall rvals\n");
+	fprintf(stream,
+		"\t                     'all'      ---> all of the above\n");
 	fprintf(stream, "\n");
-	fprintf(stream, "\tinfile               Input stream - default is stdin - must be a list\n");
-	fprintf(stream, "\t                     of io_req structures (see doio.h).  Currently\n");
-	fprintf(stream, "\t                     only the iogen program generates the proper\n");
+	fprintf(stream,
+		"\tinfile               Input stream - default is stdin - must be a list\n");
+	fprintf(stream,
+		"\t                     of io_req structures (see doio.h).  Currently\n");
+	fprintf(stream,
+		"\t                     only the iogen program generates the proper\n");
 	fprintf(stream, "\t                     format\n");
 }

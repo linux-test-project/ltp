@@ -29,9 +29,10 @@ int main()
 	struct tm time_ptr;
 
 	char expected[26];
-	char* real;
+	char *real;
 
-	char wday_name[7][3] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+	char wday_name[7][3] =
+	    { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
 	char mon_name[12][3] = {
 		"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -49,19 +50,18 @@ int main()
 	real = asctime(&time_ptr);
 
 	sprintf(expected, "%.3s %.3s%3d %.2d:%.2d:%.2d %d\n",
-	        wday_name[time_ptr.tm_wday],
-	        mon_name[time_ptr.tm_mon],
-	        time_ptr.tm_mday, time_ptr.tm_hour,
-	        time_ptr.tm_min, time_ptr.tm_sec,
-	        1900 + time_ptr.tm_year);
+		wday_name[time_ptr.tm_wday],
+		mon_name[time_ptr.tm_mon],
+		time_ptr.tm_mday, time_ptr.tm_hour,
+		time_ptr.tm_min, time_ptr.tm_sec, 1900 + time_ptr.tm_year);
 
 	printf("real = %s\n", real);
 	printf("expected = %s\n", expected);
 
 	if (strcmp(real, expected) != 0) {
 		perror("asctime did not return the correct value\n");
-	        printf("Got %s\n", real);
-	        printf("Expected %s\n", expected);
+		printf("Got %s\n", real);
+		printf("Expected %s\n", expected);
 		return PTS_FAIL;
 	}
 

@@ -32,8 +32,8 @@
 #define NUMINVALIDTESTS 9
 
 static int invalid_tests[NUMINVALIDTESTS] = {
-		INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
-		1073743192, -1, 1000000000, 1000000001
+	INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
+	1073743192, -1, 1000000000, 1000000001
 };
 
 int main(int argc, char *argv[])
@@ -43,8 +43,7 @@ int main(int argc, char *argv[])
 	int failure = 0;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if (getuid() != 0)
-	{
+	if (getuid() != 0) {
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
 	}
@@ -60,7 +59,7 @@ int main(int argc, char *argv[])
 		tsset.tv_nsec = invalid_tests[i];
 
 		printf("Test %d sec %d nsec\n",
-				(int) tsset.tv_sec, (int) tsset.tv_nsec);
+		       (int)tsset.tv_sec, (int)tsset.tv_nsec);
 		if (clock_settime(CLOCK_REALTIME, &tsset) == -1) {
 			if (EINVAL != errno) {
 				printf("errno != EINVAL\n");

@@ -48,7 +48,7 @@
 #define TEST "sem_post_8-1"
 
 static char semname[28];
-static char semname_1[28]; /* Used to record state */
+static char semname_1[28];	/* Used to record state */
 
 int set_my_prio(int priority)
 {
@@ -95,7 +95,7 @@ int child_fn(int priority, int id)
 	}
 
 	fprintf(stderr, "child %d try to get lock, prio: %d\n",
-			id, get_my_prio());
+		id, get_my_prio());
 
 	sem_wait(sem_1);
 
@@ -157,12 +157,12 @@ int main(void)
 	switch (c_1) {
 	case 0:
 		child_fn(priority - 2, 1);
-	break;
+		break;
 	case -1:
 		perror("fork()");
 		retval = PTS_UNRESOLVED;
 		goto clean_up;
-	break;
+		break;
 	}
 	fprintf(stderr, "P: child_1: %d forked\n", c_1);
 
@@ -170,12 +170,12 @@ int main(void)
 	switch (c_2) {
 	case 0:
 		child_fn(priority - 1, 2);
-	break;
+		break;
 	case -1:
 		perror("fork()");
 		retval = PTS_UNRESOLVED;
 		goto clean_up;
-	break;
+		break;
 	}
 	fprintf(stderr, "P: child_2: %d forked\n", c_2);
 
@@ -190,12 +190,12 @@ int main(void)
 	switch (c_3) {
 	case 0:
 		child_fn(priority - 1, 3);
-	break;
+		break;
 	case -1:
 		perror("fork()");
 		retval = PTS_UNRESOLVED;
 		goto clean_up;
-	break;
+		break;
 	}
 	fprintf(stderr, "P: child_3: %d forked\n", c_3);
 
@@ -216,7 +216,7 @@ int main(void)
 		sem_post(sem);
 		ret_pid = wait(&status);
 		if (ret_pid == c_3 && WIFEXITED(status)
-		    && WEXITSTATUS(status) == 0){
+		    && WEXITSTATUS(status) == 0) {
 			fprintf(stderr, "P: release lock\n");
 			sem_post(sem);
 			ret_pid = wait(&status);
@@ -227,24 +227,23 @@ int main(void)
 				goto clean_up;
 			}
 			printf("Test Fail: Expect child_1: %d, got %d\n",
-				c_1, ret_pid);
+			       c_1, ret_pid);
 			retval = PTS_FAIL;
 			goto clean_up;
 		} else {
 			printf("Test Fail: Expect child_3: %d, got %d\n",
-			c_3, ret_pid);
+			       c_3, ret_pid);
 			retval = PTS_FAIL;
 			sem_post(sem);
-			while ((wait(NULL) > 0));
+			while ((wait(NULL) > 0)) ;
 			goto clean_up;
 		}
 	} else {
-		printf("Test Fail: Expect child_2: %d, got %d\n",
-			c_2, ret_pid);
+		printf("Test Fail: Expect child_2: %d, got %d\n", c_2, ret_pid);
 		retval = PTS_FAIL;
 		sem_post(sem);
 		sem_post(sem);
-		while ((wait(NULL) > 0));
+		while ((wait(NULL) > 0)) ;
 		goto clean_up;
 	}
 

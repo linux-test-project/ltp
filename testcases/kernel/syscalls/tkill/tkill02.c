@@ -53,8 +53,8 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "tkill02";  /* Test program identifier.*/
-int  testno;
+char *TCID = "tkill02";		/* Test program identifier. */
+int testno;
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -74,7 +74,8 @@ int  testno;
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -98,7 +99,8 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
@@ -109,13 +111,15 @@ struct test_case_t {
 	int tid;
 	int exp_errno;
 } test_cases[] = {
-	{ -1, EINVAL },
-	{ 99999, ESRCH }
+	{
+	-1, EINVAL}, {
+	99999, ESRCH}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int i;
 
 	setup();
@@ -125,19 +129,19 @@ int main(int ac, char **av) {
 		TEST(syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
 
 		if (TEST_RETURN == -1) {
-		    	if (TEST_ERRNO == test_cases[i].exp_errno) {
-				tst_resm(TPASS|TTERRNO,
-				    "tkill(%d, SIGUSR1) failed as expected",
-				    test_cases[i].tid);
+			if (TEST_ERRNO == test_cases[i].exp_errno) {
+				tst_resm(TPASS | TTERRNO,
+					 "tkill(%d, SIGUSR1) failed as expected",
+					 test_cases[i].tid);
 			} else {
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-				    "tkill(%d, SIGUSR1) failed unexpectedly",
-				    test_cases[i].tid);
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "tkill(%d, SIGUSR1) failed unexpectedly",
+					 test_cases[i].tid);
 			}
 		} else {
 			tst_brkm(TFAIL, cleanup,
-			    "tkill(%d) succeeded unexpectedly",
-			    test_cases[i].tid);
+				 "tkill(%d) succeeded unexpectedly",
+				 test_cases[i].tid);
 		}
 	}
 	cleanup();

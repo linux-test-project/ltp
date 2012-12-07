@@ -45,28 +45,25 @@ static void exm_proc();
 int progNum;
 int run_mode;
 
-struct datas
-{
+struct datas {
 	double a;
 	double b;
 	double c;
-}argument;
+} argument;
 
 //XDR Struct function
-bool_t xdr_datas(XDR *pt_xdr, struct datas* pt)
+bool_t xdr_datas(XDR * pt_xdr, struct datas *pt)
 {
-	return(xdr_double(pt_xdr, &(pt->a)) &&
-		   xdr_double(pt_xdr, &(pt->b)) &&
-		   xdr_double(pt_xdr, &(pt->c)));
+	return (xdr_double(pt_xdr, &(pt->a)) &&
+		xdr_double(pt_xdr, &(pt->b)) && xdr_double(pt_xdr, &(pt->c)));
 }
 
-void *server_thread_process (void * arg)
+void *server_thread_process(void *arg)
 {
 	//Server process in a thread
-	int err=0;
+	int err = 0;
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("Server #%d launched\n", atoi(arg));
 		printf("Server Nb : %d\n", progNum + atoi(arg));
 	}
@@ -75,10 +72,9 @@ void *server_thread_process (void * arg)
 
 	err = svc_create(exm_proc, progNum + atoi(arg), VERSNUM, "VISIBLE");
 
-	if (err == 0)
-	{
-    	fprintf(stderr, "Cannot create service.\n");
-    	exit(1);
+	if (err == 0) {
+		fprintf(stderr, "Cannot create service.\n");
+		exit(1);
 	}
 
 	svc_run();
@@ -86,7 +82,7 @@ void *server_thread_process (void * arg)
 	fprintf(stderr, "svc_run() returned.  ERROR has occurred.\n");
 	svc_unreg(progNum, VERSNUM);
 
-    pthread_exit (0);
+	pthread_exit(0);
 }
 
 //****************************************//
@@ -95,33 +91,31 @@ void *server_thread_process (void * arg)
 int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
-	//					    argc[2] : Number of threads
-	//					    others arguments depend on server program
+	//                                          argc[2] : Number of threads
+	//                                          others arguments depend on server program
 	run_mode = 0;
 	int threadNb = atoi(argc[2]);
 	int i;
 	//Thread declaration
 	pthread_t *pThreadArray;
-    void *ret;
+	void *ret;
 
 	progNum = atoi(argc[1]);
 
-	pThreadArray = (pthread_t *)malloc(threadNb * sizeof(pthread_t));
-	for (i = 0; i < threadNb; i++)
-	{
+	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
+	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
-			fprintf (stderr, "Try to create Thread Server %d\n", i);
-		if (pthread_create (&pThreadArray[i], NULL, server_thread_process, i) < 0)
-	    {
-	        fprintf (stderr, "pthread_create error for thread 1\n");
-	        exit (1);
-	    }
+			fprintf(stderr, "Try to create Thread Server %d\n", i);
+		if (pthread_create
+		    (&pThreadArray[i], NULL, server_thread_process, i) < 0) {
+			fprintf(stderr, "pthread_create error for thread 1\n");
+			exit(1);
+		}
 	}
 
 	//Clean threads
-	for (i = 0; i < threadNb; i++)
-	{
-		(void)pthread_join (pThreadArray[i], &ret);
+	for (i = 0; i < threadNb; i++) {
+		(void)pthread_join(pThreadArray[i], &ret);
 	}
 
 	return 1;
@@ -143,59 +137,56 @@ char *calcProc(struct datas *dt)
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
+static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
 {
 	//printf("* in Dispatch Func.\n");
 
 	char *result;
 	xdrproc_t xdr_argument;
 	xdrproc_t xdr_result;
-	int *(*proc)(struct datas *);
+	int *(*proc) (struct datas *);
 
-	switch (rqstp->rq_proc)
-	{
-		case CALCTHREADPROC:
+	switch (rqstp->rq_proc) {
+	case CALCTHREADPROC:
 		{
 			//printf("** in PROCPONG dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_datas;
-			xdr_result   = (xdrproc_t)xdr_double;
-			proc         = (int *(*)(struct datas *))calcProc;
+			xdr_argument = (xdrproc_t) xdr_datas;
+			xdr_result = (xdrproc_t) xdr_double;
+			proc = (int *(*)(struct datas *))calcProc;
 			break;
 		}
-		case PROGSYSERROR:
+	case PROGSYSERROR:
 		{
 			//Simulate an error
 			svcerr_systemerr(transp);
 			return;
 		}
-		case PROGAUTHERROR:
+	case PROGAUTHERROR:
 		{
 			//Simulate an authentification error
 			svcerr_weakauth(transp);
 			return;
 		}
-		default:
+	default:
 		{
 			//Proc is unavaible
-      		svcerr_noproc(transp);
-      		return;
-      	}
+			svcerr_noproc(transp);
+			return;
+		}
 	}
 	memset((int *)&argument, (int)0, sizeof(argument));
-	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE)
-	{
+	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE) {
 		svcerr_decode(transp);
 		return;
 	}
 
-	result = (char *)(*proc)((struct datas *)&argument);
+	result = (char *)(*proc) ((struct datas *)&argument);
 
-	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
-	{
+	if ((result != NULL)
+	    && (svc_sendreply(transp, xdr_result, result) == FALSE)) {
 		svcerr_systemerr(transp);
 	}
-	if (svc_freeargs(transp, xdr_argument, (char *)&argument) == FALSE)
-	{
+	if (svc_freeargs(transp, xdr_argument, (char *)&argument) == FALSE) {
 		(void)fprintf(stderr, "unable to free arguments\n");
 		exit(1);
 	}

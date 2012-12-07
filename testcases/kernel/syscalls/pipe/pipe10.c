@@ -116,7 +116,7 @@ int main(int ac, char **av)
 
 		if (forkstat == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 }
+		}
 
 		if (forkstat == 0) {	/* child */
 			red = safe_read(fd[0], rebuf, written);

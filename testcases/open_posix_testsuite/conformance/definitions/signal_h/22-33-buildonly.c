@@ -1,6 +1,6 @@
   /*
-  Test that the POLL_ERR macro is defined.
-  */
+     Test that the POLL_ERR macro is defined.
+   */
 
 #include <signal.h>
 

@@ -66,9 +66,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "mq_notify01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+char *TCID = "mq_notify01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -88,7 +88,8 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -113,7 +114,8 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
@@ -164,64 +166,66 @@ struct test_case {
 */
 
 static struct test_case tcase[] = {
-	{ // case00
-		.ttype	  = NORMAL,
-		.notify	 = SIGEV_NONE,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case01
-		.ttype	  = NORMAL,
-		.notify	 = SIGEV_SIGNAL,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case02
-		.ttype	  = NORMAL,
-		.notify	 = SIGEV_THREAD,
-		.ret	    = 0,
-		.err	    = 0,
-	},
-	{ // case03
-		.ttype	  = FD_NONE,
-		.notify	 = SIGEV_NONE,
-		.ret	    = -1,
-		.err	    = EBADF,
-	},
-	{ // case04
-		.ttype	  = FD_NOT_EXIST,
-		.notify	 = SIGEV_NONE,
-		.ret	    = -1,
-		.err	    = EBADF,
-	},
-	{ // case05
-		.ttype	  = FD_FILE,
-		.notify	 = SIGEV_NONE,
-		.ret	    = -1,
-		.err	    = EBADF,
-	},
-	{ // case06
-		.ttype	  = ALREADY_REGISTERED,
-		.notify	 = SIGEV_NONE,
-		.ret	    = -1,
-		.err	    = EBUSY,
-	},
+	{			// case00
+	 .ttype = NORMAL,
+	 .notify = SIGEV_NONE,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case01
+	 .ttype = NORMAL,
+	 .notify = SIGEV_SIGNAL,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case02
+	 .ttype = NORMAL,
+	 .notify = SIGEV_THREAD,
+	 .ret = 0,
+	 .err = 0,
+	 },
+	{			// case03
+	 .ttype = FD_NONE,
+	 .notify = SIGEV_NONE,
+	 .ret = -1,
+	 .err = EBADF,
+	 },
+	{			// case04
+	 .ttype = FD_NOT_EXIST,
+	 .notify = SIGEV_NONE,
+	 .ret = -1,
+	 .err = EBADF,
+	 },
+	{			// case05
+	 .ttype = FD_FILE,
+	 .notify = SIGEV_NONE,
+	 .ret = -1,
+	 .err = EBADF,
+	 },
+	{			// case06
+	 .ttype = ALREADY_REGISTERED,
+	 .notify = SIGEV_NONE,
+	 .ret = -1,
+	 .err = EBUSY,
+	 },
 };
 
-static void sigfunc(int signo, siginfo_t *info, void *data)
+static void sigfunc(int signo, siginfo_t * info, void *data)
 {
 	if (opt_debug) {
-		tst_resm(TINFO,"si_code  E:%d,\tR:%d", info->si_code, SI_MESGQ);
-		tst_resm(TINFO,"si_signo E:%d,\tR:%d", info->si_signo, SIGUSR1);
-		tst_resm(TINFO,"si_value E:0x%x,\tR:0x%x", info->si_value.sival_int,USER_DATA);
-		tst_resm(TINFO,"si_pid   E:%d,\tR:%d", info->si_pid, getpid());
-		tst_resm(TINFO,"si_uid   E:%d,\tR:%d", info->si_uid, getuid());
+		tst_resm(TINFO, "si_code  E:%d,\tR:%d", info->si_code,
+			 SI_MESGQ);
+		tst_resm(TINFO, "si_signo E:%d,\tR:%d", info->si_signo,
+			 SIGUSR1);
+		tst_resm(TINFO, "si_value E:0x%x,\tR:0x%x",
+			 info->si_value.sival_int, USER_DATA);
+		tst_resm(TINFO, "si_pid   E:%d,\tR:%d", info->si_pid, getpid());
+		tst_resm(TINFO, "si_uid   E:%d,\tR:%d", info->si_uid, getuid());
 	}
 	cmp_ok = info->si_code == SI_MESGQ &&
-		 info->si_signo == SIGUSR1 &&
-		 info->si_value.sival_int == USER_DATA &&
-		 info->si_pid == getpid() &&
-		 info->si_uid == getuid();
+	    info->si_signo == SIGUSR1 &&
+	    info->si_value.sival_int == USER_DATA &&
+	    info->si_pid == getpid() && info->si_uid == getuid();
 	notified = 1;
 }
 
@@ -271,7 +275,7 @@ static int do_test(struct test_case *tc)
 	case FD_FILE:
 		TEST(fd = open("/", O_RDONLY));
 		if (TEST_RETURN < 0) {
-			tst_resm(TFAIL,"can't open \"/\".");
+			tst_resm(TFAIL, "can't open \"/\".");
 			result = 1;
 			goto EXIT;
 		}
@@ -280,9 +284,11 @@ static int do_test(struct test_case *tc)
 		/*
 		 * Open message queue
 		 */
-		TEST(fd = mq_open(QUEUE_NAME, O_CREAT|O_EXCL|O_RDWR, S_IRWXU, NULL));
+		TEST(fd =
+		     mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU,
+			     NULL));
 		if (TEST_RETURN < 0) {
-			tst_resm(TFAIL|TTERRNO,"mq_open failed");
+			tst_resm(TFAIL | TTERRNO, "mq_open failed");
 			result = 1;
 			goto EXIT;
 		}
@@ -315,7 +321,7 @@ static int do_test(struct test_case *tc)
 	if (tc->ttype == ALREADY_REGISTERED) {
 		TEST(rc = mq_notify(fd, &ev));
 		if (TEST_RETURN < 0) {
-			tst_resm(TFAIL|TTERRNO,"mq_notify failed");
+			tst_resm(TFAIL | TTERRNO, "mq_notify failed");
 			result = 1;
 			goto EXIT;
 		}
@@ -337,7 +343,7 @@ static int do_test(struct test_case *tc)
 		smsg[i] = i;
 	TEST(rc = mq_timedsend(fd, smsg, MSG_SIZE, 0, &abs_timeout));
 	if (rc < 0) {
-		tst_resm(TFAIL|TTERRNO, "mq_timedsend failed");
+		tst_resm(TFAIL | TTERRNO, "mq_timedsend failed");
 		result = 1;
 		goto EXIT;
 	}
@@ -368,18 +374,20 @@ EXIT:
 
 static void usage(const char *progname)
 {
-	tst_resm(TINFO,"usage: %s [options]", progname);
-	tst_resm(TINFO,"This is a regression test program of %s system call.",SYSCALL_NAME);
-	tst_resm(TINFO,"options:");
-	tst_resm(TINFO,"    -d --debug	   Show debug messages");
-	tst_resm(TINFO,"    -h --help	    Show this message");
+	tst_resm(TINFO, "usage: %s [options]", progname);
+	tst_resm(TINFO, "This is a regression test program of %s system call.",
+		 SYSCALL_NAME);
+	tst_resm(TINFO, "options:");
+	tst_resm(TINFO, "    -d --debug	   Show debug messages");
+	tst_resm(TINFO, "    -h --help	    Show this message");
 }
 
 /*
  * main()
  */
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int result = RESULT_OK;
 	int c;
 	int i;
@@ -387,9 +395,9 @@ int main(int ac, char **av) {
 	char *msg;
 
 	struct option long_options[] = {
-		{ "debug", no_argument, 0, 'd' },
-		{ "help",  no_argument, 0, 'h' },
-		{ NULL, 0, NULL, 0 }
+		{"debug", no_argument, 0, 'd'},
+		{"help", no_argument, 0, 'h'},
+		{NULL, 0, NULL, 0}
 	};
 
 	progname = basename(av[0]);
@@ -402,8 +410,8 @@ int main(int ac, char **av) {
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
-			 while (TEST_RETURN != -1) {
+			TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
+			while (TEST_RETURN != -1) {
 				switch (c) {
 				case 'd':
 					opt_debug = 1;
@@ -414,26 +422,27 @@ int main(int ac, char **av) {
 			}
 
 			if (ac != optind) {
-				tst_resm(TINFO,"Options are not match.");
+				tst_resm(TINFO, "Options are not match.");
 				usage(progname);
 			}
 
-			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+			for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0]));
+			     i++) {
 				int ret;
-				tst_resm(TINFO,"(case%02d) START", i);
+				tst_resm(TINFO, "(case%02d) START", i);
 				ret = do_test(&tcase[i]);
-				tst_resm(TINFO,"(case%02d) END => %s",
-					i, (ret == 0) ? "OK" : "NG");
+				tst_resm(TINFO, "(case%02d) END => %s",
+					 i, (ret == 0) ? "OK" : "NG");
 				result |= ret;
 			}
 
-			switch(result) {
+			switch (result) {
 			case RESULT_OK:
 				tst_resm(TPASS, "mq_notify call succeeded");
 				break;
 
 			default:
-		 	   	tst_brkm(TFAIL, cleanup, "mq_notify failed");
+				tst_brkm(TFAIL, cleanup, "mq_notify failed");
 				break;
 			}
 

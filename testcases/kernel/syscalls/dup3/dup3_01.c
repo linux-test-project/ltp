@@ -64,7 +64,7 @@
 #include "linux_syscall_numbers.h"
 
 #ifndef O_CLOEXEC
-# define O_CLOEXEC 02000000
+#define O_CLOEXEC 02000000
 #endif
 
 /* Global Variables */
@@ -132,25 +132,24 @@ int main(int argc, char *argv[])
 
 	fd = syscall(__NR_dup3, 1, 4, 0);
 	if (fd == -1) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "dup3(0) failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "dup3(0) failed");
 	}
 	coe = fcntl(fd, F_GETFD);
 	if (coe == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "fcntl failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fcntl failed");
 	}
 	if (coe & FD_CLOEXEC) {
-		tst_brkm(TFAIL, cleanup,
-			 "dup3(0) set close-on-exec flag");
+		tst_brkm(TFAIL, cleanup, "dup3(0) set close-on-exec flag");
 	}
 	close(fd);
 
 	fd = syscall(__NR_dup3, 1, 4, O_CLOEXEC);
 	if (fd == -1) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "dup3(O_CLOEXEC) failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "dup3(O_CLOEXEC) failed");
 	}
 	coe = fcntl(fd, F_GETFD);
 	if (coe == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "fcntl failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fcntl failed");
 	}
 	if ((coe & FD_CLOEXEC) == 0) {
 		tst_brkm(TFAIL, cleanup,

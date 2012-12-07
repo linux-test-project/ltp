@@ -295,7 +295,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "Test to attempt to make a directory"
 				 " inherits group ID FAILED");
 			cleanup();
-		 }
+		}
 
 	}
 

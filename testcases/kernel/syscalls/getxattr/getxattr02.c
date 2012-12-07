@@ -69,10 +69,10 @@ static void setup(void);
 static void cleanup(void);
 
 static char *tc[] = {
-	FIFO,	/* case 00, get attr from fifo */
-	CHR,	/* case 01, get attr from char special */
-	BLK,	/* case 02, get attr from block special */
-	SOCK,	/* case 03, get attr from UNIX domain socket */
+	FIFO,			/* case 00, get attr from fifo */
+	CHR,			/* case 01, get attr from char special */
+	BLK,			/* case 02, get attr from block special */
+	SOCK,			/* case 03, get attr from UNIX domain socket */
 };
 
 int TST_TOTAL = sizeof(tc) / sizeof(tc[0]);
@@ -104,14 +104,14 @@ int main(int argc, char *argv[])
 		else
 			exp_eno = EPERM;
 
-		for (i = 0; i < TST_TOTAL; i++)	{
+		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(getxattr(tc[0], XATTR_TEST_KEY, buf, BUFSIZ));
 
 			if (TEST_RETURN == -1 && TEST_ERRNO == exp_eno)
 				tst_resm(TPASS | TTERRNO, "expected behavior");
 			else
 				tst_resm(TFAIL | TTERRNO, "unexpected behavior"
-				    " - expected errno %d - Got", exp_eno);
+					 " - expected errno %d - Got", exp_eno);
 		}
 	}
 
@@ -135,25 +135,25 @@ static void setup(void)
 	if (setxattr("testfile", "user.test", "test", 4, XATTR_CREATE) == -1)
 		if (errno == ENOTSUP)
 			tst_brkm(TCONF, cleanup, "No xattr support in fs or "
-			    "mount without user_xattr option");
+				 "mount without user_xattr option");
 	unlink("testfile");
 
 	/* Create test files */
 	if (mknod(FIFO, S_IFIFO | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create FIFO(%s) failed",
-		    FIFO);
+			 FIFO);
 
 	if (mknod(CHR, S_IFCHR | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create char special(%s)"
-		    " failed", CHR);
+			 " failed", CHR);
 
 	if (mknod(BLK, S_IFBLK | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create block special(%s)"
-		    " failed", BLK);
+			 " failed", BLK);
 
 	if (mknod(SOCK, S_IFSOCK | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create socket(%s) failed",
-		    SOCK);
+			 SOCK);
 
 	TEST_PAUSE;
 }

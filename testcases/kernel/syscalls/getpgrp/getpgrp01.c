@@ -144,11 +144,9 @@ int main(int ac, char **av)
 		TEST(getpgrp());
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "getpgrp failed");
-		else
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "getpgrp returned %ld",
-				    TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO, "getpgrp failed");
+		else if (STD_FUNCTIONAL_TEST)
+			tst_resm(TPASS, "getpgrp returned %ld", TEST_RETURN);
 
 	}
 

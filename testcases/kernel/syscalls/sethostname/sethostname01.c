@@ -74,7 +74,6 @@
 
 #define MAX_LENGTH __NEW_UTS_LEN
 
-
 static void setup();
 static void cleanup();
 

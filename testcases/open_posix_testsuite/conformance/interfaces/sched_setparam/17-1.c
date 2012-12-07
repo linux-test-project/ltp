@@ -16,6 +16,7 @@
 
 int main()
 {
-        printf("Will not test that sched_setparam have no effect on the scheduling of threads\n with system scheduling contention scope.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test that sched_setparam have no effect on the scheduling of threads\n with system scheduling contention scope.\n");
+	return PTS_UNTESTED;
 }

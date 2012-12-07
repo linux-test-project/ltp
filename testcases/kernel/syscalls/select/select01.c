@@ -222,7 +222,7 @@ void setup()
 	tst_tmpdir();
 
 	if ((Fd = open(FILENAME, O_CREAT | O_RDWR, 0777)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_CREAT | O_RDWR) failed", FILENAME);
 
 	/*
@@ -248,7 +248,7 @@ void cleanup()
 
 	if (Fd >= 0) {
 		if (close(Fd) == -1)
-			tst_resm(TWARN|TERRNO, "close(%s) failed", FILENAME);
+			tst_resm(TWARN | TERRNO, "close(%s) failed", FILENAME);
 		Fd = -1;
 	}
 

@@ -37,24 +37,23 @@
 //Other define
 #define NBCASE 1
 
-typedef struct
-{
+typedef struct {
 	//List parameters here
 	int init_tout;
 	int next_tout;
-}params;
+} params;
 
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 0; //Default test result set to PASS
+	int test_status = 0;	//Default test result set to PASS
 	int progNum = atoi(argc[2]);
 	int i;
 	params paramList[NBCASE];
@@ -67,25 +66,23 @@ int main(int argn, char *argc[])
 	paramList[0].next_tout = 1;
 
 	//Call tested function using all tests cases
-	for (i = 0; i < NBCASE; i++)
-	{
+	for (i = 0; i < NBCASE; i++) {
 		//Debug mode prints
-		if (run_mode == 1)
-		{
-			printf("Test using values : %d ", paramList[i].init_tout);
+		if (run_mode == 1) {
+			printf("Test using values : %d ",
+			       paramList[i].init_tout);
 			printf("%d", paramList[i].next_tout);
 			printf("\n");
 		}
-
 		//Call function
 		tv.tv_sec = paramList[i].init_tout;
 		tv.tv_usec = paramList[i].next_tout;
 
-		clnt = clnt_create_timed(argc[1], progNum, VERSNUM, nettype, &tv);
+		clnt =
+		    clnt_create_timed(argc[1], progNum, VERSNUM, nettype, &tv);
 
 		//Check result
-		if (clnt == NULL)
-		{
+		if (clnt == NULL) {
 			//test has failed
 			test_status = 1;
 			break;

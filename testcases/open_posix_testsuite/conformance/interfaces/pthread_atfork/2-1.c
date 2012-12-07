@@ -26,39 +26,36 @@
 #include <sys/types.h>
 #include "posixtest.h"
 
-int main ()
+int main()
 {
 	pid_t pid;
 	int ret;
 
 	/* Set up the fork handlers */
 	ret = pthread_atfork(NULL, NULL, NULL);
-	if (ret != 0)
-	{
-		if (ret == ENOMEM)
-		{
+	if (ret != 0) {
+		if (ret == ENOMEM) {
 			printf("Error: ran out of memory\n");
 			return PTS_UNRESOLVED;
 		}
 
-		printf("Test FAILED: Expected return value success, instead received %d\n", ret);
+		printf
+		    ("Test FAILED: Expected return value success, instead received %d\n",
+		     ret);
 		return PTS_FAIL;
 	}
 
 	/* Now call fork() to make sure everything goes smoothly */
 	pid = fork();
 
-	if (pid < 0)
-	{
+	if (pid < 0) {
 		perror("Error in fork()\n");
 		return PTS_UNRESOLVED;
 	}
-	if (pid == 0)
-	{
+	if (pid == 0) {
 		/* Child process */
 		pthread_exit(0);
-	} else
-	{
+	} else {
 		/* Parent process */
 		wait(NULL);
 	}

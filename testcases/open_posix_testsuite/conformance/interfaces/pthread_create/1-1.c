@@ -29,19 +29,17 @@ int main()
 {
 	pthread_t main_th, new_th;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Obtain the thread ID of this main function */
-	main_th=pthread_self();
+	main_th = pthread_self();
 
 	/* Compare the thread ID of the new thread to the main thread.
 	 * They should be different.  If not, the test fails. */
-	if (pthread_equal(new_th, main_th) != 0)
-	{
+	if (pthread_equal(new_th, main_th) != 0) {
 		printf("Test FAILED: A new thread wasn't created\n");
 		return PTS_FAIL;
 	}

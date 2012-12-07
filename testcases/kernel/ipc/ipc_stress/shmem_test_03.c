@@ -107,17 +107,17 @@
  * error (): Error message function
  * cleanup (): Releases semaphores & kills child processes
  */
-static void create_semaphores ();
-static void delete_semaphores ();
-static void lock_resource (int);
-static void unlock_resource (int);
-static void parse_args (int, char **);
-static void setup_signal_handlers ();
-static void handler (int, int, struct sigcontext *);
-static void child (int, unsigned char *);
-static void sys_error (const char *, int);
-static void error (const char *, int);
-static void cleanup ();
+static void create_semaphores();
+static void delete_semaphores();
+static void lock_resource(int);
+static void unlock_resource(int);
+static void parse_args(int, char **);
+static void setup_signal_handlers();
+static void handler(int, int, struct sigcontext *);
+static void child(int, unsigned char *);
+static void sys_error(const char *, int);
+static void error(const char *, int);
+static void cleanup();
 
 /*
  * Global Variables:
@@ -130,20 +130,20 @@ static void cleanup ();
  * buffer_size: size of "scratch" shared memory segment
  * read_count: number of child processes reading data
  */
-enum { READ_COUNT, WRITE };		/* semaphore constants */
-int	*read_count;
+enum { READ_COUNT, WRITE };	/* semaphore constants */
+int *read_count;
 
-unsigned long *checksum; 	/* shared memory segment address */
-pid_t	parent_pid;		/* process id of parent */
-pid_t	pid [MAX_CHILDREN];	/* child processes process id's */
-int	semid;			/* semaphore id */
-int     num_children = DEFAULT_NUM_CHILDREN;
-int 	buffer_size = DEFAULT_SHMEM_SIZE;
+unsigned long *checksum;	/* shared memory segment address */
+pid_t parent_pid;		/* process id of parent */
+pid_t pid[MAX_CHILDREN];	/* child processes process id's */
+int semid;			/* semaphore id */
+int num_children = DEFAULT_NUM_CHILDREN;
+int buffer_size = DEFAULT_SHMEM_SIZE;
 
 union semun {
-   int val;
-   struct semid_ds *buf;
-   unsigned short *array;
+	int val;
+	struct semid_ds *buf;
+	unsigned short *array;
 } arg;
 
 /*---------------------------------------------------------------------+
@@ -156,13 +156,13 @@ union semun {
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int	fd;		/* Misc file descriptor  */
-	int	i; 		/* Misc loop index */
-	int	shmem_size;	/* Size (in bytes) of shared memory segment */
-	int	status;		/* Child processes exit status */
-	unsigned char *ptr;		/* Misc pointer */
+	int fd;			/* Misc file descriptor  */
+	int i;			/* Misc loop index */
+	int shmem_size;		/* Size (in bytes) of shared memory segment */
+	int status;		/* Child processes exit status */
+	unsigned char *ptr;	/* Misc pointer */
 	unsigned char data = 0;	/* Value written into shared memory segment */
 	unsigned char *shmptr;	/* Shared memory segment address */
 	unsigned long cksum;	/* Shared memory segment checksum */
@@ -170,8 +170,8 @@ int main (int argc, char **argv)
 	/*
 	 * Parse command line arguments and print out program header
 	 */
-	parse_args (argc, argv);
-	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
+	parse_args(argc, argv);
+	printf("%s: IPC Shared Memory TestSuite program\n", *argv);
 
 	/*
 	 * Setup the signal handlers (in case user aborts program).
@@ -182,25 +182,25 @@ int main (int argc, char **argv)
 	 * Save the parent process id and initialize the array of child
 	 * process ids.
 	 */
-	setup_signal_handlers ();
-	create_semaphores ();
+	setup_signal_handlers();
+	create_semaphores();
 
-	parent_pid = getpid ();
-	for (i=0; i<num_children; i++)
-		pid [i] = (pid_t)0;
+	parent_pid = getpid();
+	for (i = 0; i < num_children; i++)
+		pid[i] = (pid_t) 0;
 
 	/*
 	 * Create a shared memory segment for storing the read count
 	 * (number of child processes reading shared data)
 	 * After creating the shared memory segment, initialize it.
 	 */
-	if ((fd = open ("/dev/zero", O_RDWR)) < 0)
-		sys_error ("open failed", __LINE__);
+	if ((fd = open("/dev/zero", O_RDWR)) < 0)
+		sys_error("open failed", __LINE__);
 	if ((read_count = (int *)
-		mmap (0, sizeof (int), PROT_READ | PROT_WRITE,
-			MAP_SHARED, fd, 0)) < 0)
-		sys_error ("mmap failed", __LINE__);
-	close (fd);
+	     mmap(0, sizeof(int), PROT_READ | PROT_WRITE,
+		  MAP_SHARED, fd, 0)) < 0)
+		sys_error("mmap failed", __LINE__);
+	close(fd);
 	*read_count = 0;
 
 	/*
@@ -208,37 +208,37 @@ int main (int argc, char **argv)
 	 * processes checksums by memory mapping /dev/zero.
 	 * After creating the shared memory segment, initialize it.
 	 */
-	if ((fd = open ("/dev/zero", O_RDWR)) < 0)
-		sys_error ("open failed", __LINE__);
-	shmem_size = sizeof (unsigned long) * num_children;
+	if ((fd = open("/dev/zero", O_RDWR)) < 0)
+		sys_error("open failed", __LINE__);
+	shmem_size = sizeof(unsigned long) * num_children;
 	if ((checksum = (unsigned long *)
-		mmap (0, shmem_size, PROT_READ | PROT_WRITE,
-			MAP_SHARED, fd, 0)) < 0)
-		sys_error ("mmap failed", __LINE__);
-	close (fd);
+	     mmap(0, shmem_size, PROT_READ | PROT_WRITE,
+		  MAP_SHARED, fd, 0)) < 0)
+		sys_error("mmap failed", __LINE__);
+	close(fd);
 
-	for (i=0; i < num_children; i++)
-		*(checksum + (sizeof (unsigned long) * i)) = 0;
+	for (i = 0; i < num_children; i++)
+		*(checksum + (sizeof(unsigned long) * i)) = 0;
 
 	/*
 	 * Create the "scratch" shared memory segment for storing
 	 * a series of values by memory mapping /dev/zero.
 	 */
-	if ((fd = open ("/dev/zero", O_RDWR)) < 0)
-		sys_error ("open failed", __LINE__);
+	if ((fd = open("/dev/zero", O_RDWR)) < 0)
+		sys_error("open failed", __LINE__);
 
-	printf ("\n\tGet shared memory segment (%d bytes)\n", buffer_size);
-	if ((shmptr = mmap (0, buffer_size, PROT_READ | PROT_WRITE,
-		MAP_SHARED, fd, 0)) < 0)
-		sys_error ("mmap failed", __LINE__);
-	close (fd);
+	printf("\n\tGet shared memory segment (%d bytes)\n", buffer_size);
+	if ((shmptr = mmap(0, buffer_size, PROT_READ | PROT_WRITE,
+			   MAP_SHARED, fd, 0)) < 0)
+		sys_error("mmap failed", __LINE__);
+	close(fd);
 
 	/*
 	 * Obtain an exclusive "write" lock on the shared memory data
 	 * segment -- get lock now to insure the parent process gets
 	 * first access to the segment.
 	 */
-	lock_resource (WRITE);
+	lock_resource(WRITE);
 
 	/*
 	 * Spawn all N child processes.  Each child process will compute
@@ -246,14 +246,14 @@ int main (int argc, char **argv)
 	 * the results in the other shared memory segment accessible
 	 * by the parent.
 	 */
-	printf ("\n\tSpawning %d child processes ... \n", num_children);
-	for (i=0; i<num_children; i++) {
+	printf("\n\tSpawning %d child processes ... \n", num_children);
+	for (i = 0; i < num_children; i++) {
 
-		if ((pid [i] = fork()) == (pid_t)0) {
-			child (i, shmptr);
-			exit (0);
-		} else if (pid [i] < (pid_t)0)
-			sys_error ("fork failed", __LINE__);
+		if ((pid[i] = fork()) == (pid_t) 0) {
+			child(i, shmptr);
+			exit(0);
+		} else if (pid[i] < (pid_t) 0)
+			sys_error("fork failed", __LINE__);
 	}
 
 	/*
@@ -262,15 +262,15 @@ int main (int argc, char **argv)
 	 * completing so that the child processes may begin to read the
 	 * data.
 	 */
-	printf ("\n\tParent: calculate shared memory segment checksum\n");
+	printf("\n\tParent: calculate shared memory segment checksum\n");
 	cksum = data = 0;
 
-	for (ptr=shmptr; ptr < (shmptr+buffer_size); ptr++) {
+	for (ptr = shmptr; ptr < (shmptr + buffer_size); ptr++) {
 		*ptr = (data++) % (UCHAR_MAX + 1);
 		cksum += *ptr;
 	}
-	printf ("\t        shared memory checksum %08lx\n", cksum);
-	unlock_resource (WRITE);
+	printf("\t        shared memory checksum %08lx\n", cksum);
+	unlock_resource(WRITE);
 
 	/*
 	 * Wait for the child processes to compute the checksums and complete.
@@ -278,24 +278,24 @@ int main (int argc, char **argv)
 	 * that they ran to completion and then verify the corresponding
 	 * checksum.
 	 */
-	for (i=0; i<num_children; i++) {
-		waitpid (pid [i], &status, 0);
+	for (i = 0; i < num_children; i++) {
+		waitpid(pid[i], &status, 0);
 
-		if (!WIFEXITED (status))
-			sys_error ("child process terminated abnormally",
-				__LINE__);
-		if (cksum != *(checksum + (sizeof (unsigned long) * i))) {
-			printf ("checksum [%d] = %08lx\n", i, checksum [i]);
-			error ("checksums do not match", __LINE__);
+		if (!WIFEXITED(status))
+			sys_error("child process terminated abnormally",
+				  __LINE__);
+		if (cksum != *(checksum + (sizeof(unsigned long) * i))) {
+			printf("checksum [%d] = %08lx\n", i, checksum[i]);
+			error("checksums do not match", __LINE__);
 		}
 	}
-	printf ("\n\tParent: children calculated segment successfully\n");
+	printf("\n\tParent: children calculated segment successfully\n");
 
 	/*
 	 * Program completed successfully, cleanup semaphores and exit.
 	 */
-	delete_semaphores ();
-	printf ("\nsuccessful!\n");
+	delete_semaphores();
+	printf("\nsuccessful!\n");
 
 	return (0);
 }
@@ -312,37 +312,37 @@ int main (int argc, char **argv)
 |                       computed by child processes                    |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void child (int num, unsigned char *shmptr)
+static void child(int num, unsigned char *shmptr)
 {
 	unsigned long cksum = 0;	/* Shared memory regions checksum */
-	int	i;			/* Misc index */
+	int i;			/* Misc index */
 
 	/*
 	 * Wait for a READ_COUNT lock on the shared memory segment, then
 	 * compute the checksum and release the READ_COUNT lock.
 	 */
-	lock_resource (READ_COUNT);
+	lock_resource(READ_COUNT);
 	(*read_count)++;
 	if (*read_count == 1)
-		lock_resource (WRITE);
-	unlock_resource (READ_COUNT);
+		lock_resource(WRITE);
+	unlock_resource(READ_COUNT);
 
-	for (i=0; i<buffer_size; i++)
+	for (i = 0; i < buffer_size; i++)
 		cksum += *shmptr++;
 
-	lock_resource (READ_COUNT);
+	lock_resource(READ_COUNT);
 	(*read_count)--;
 	if (*read_count == 0)
-		unlock_resource (WRITE);
-	unlock_resource (READ_COUNT);
+		unlock_resource(WRITE);
+	unlock_resource(READ_COUNT);
 
 	/*
 	 * Store the resulting checksum and print out a message
 	 */
-	checksum [num] = cksum;
-	*(checksum + (sizeof (unsigned long) * num)) = cksum;
-	printf ("\t\tchild (%02d): checksum %08lx\n", num,
-		*(checksum + (sizeof (unsigned long) * num)));
+	checksum[num] = cksum;
+	*(checksum + (sizeof(unsigned long) * num)) = cksum;
+	printf("\t\tchild (%02d): checksum %08lx\n", num,
+	       *(checksum + (sizeof(unsigned long) * num)));
 }
 
 /*---------------------------------------------------------------------+
@@ -357,21 +357,21 @@ static void child (int num, unsigned char *shmptr)
 | Updates:   semid - system wide semaphore identifier                  |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void create_semaphores ()
+static void create_semaphores()
 {
-	int	nsems = 2;	/* Number of semaphores to create */
+	int nsems = 2;		/* Number of semaphores to create */
 
 	/*
 	 * Create two system unique semaphores.
 	 */
-	if ((semid = semget (IPC_PRIVATE, nsems, IPC_CREAT | 0666)) < 0)
-		sys_error ("semget failed", __LINE__);
+	if ((semid = semget(IPC_PRIVATE, nsems, IPC_CREAT | 0666)) < 0)
+		sys_error("semget failed", __LINE__);
 
 	arg.val = 1;
-	if (semctl (semid, WRITE, SETVAL, arg) < 0)
-		sys_error ("semctl (SETVAL) failed", __LINE__);
-	if (semctl (semid, READ_COUNT, SETVAL, arg) < 0)
-		sys_error ("semctl (SETVAL) failed", __LINE__);
+	if (semctl(semid, WRITE, SETVAL, arg) < 0)
+		sys_error("semctl (SETVAL) failed", __LINE__);
+	if (semctl(semid, READ_COUNT, SETVAL, arg) < 0)
+		sys_error("semctl (SETVAL) failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -381,17 +381,17 @@ static void create_semaphores ()
 | Function:  Deletes the two READ/WRITE semaphores.                    |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void delete_semaphores ()
+static void delete_semaphores()
 {
-	int	nsems = 2;
+	int nsems = 2;
 
 	/*
 	 * Delete both READ_COUNT and WRITE semaphores.
 	 */
 
 	arg.val = 0;
-	if (semctl (semid, nsems, IPC_RMID, arg) < 0)
-		sys_error ("semctl (IPC_RMID) failed", __LINE__);
+	if (semctl(semid, nsems, IPC_RMID, arg) < 0)
+		sys_error("semctl (IPC_RMID) failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -401,16 +401,16 @@ static void delete_semaphores ()
 | Function:  Obtains a READ/WRITE semaphore lock.                      |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void lock_resource (int semaphore)
+static void lock_resource(int semaphore)
 {
-	struct sembuf	buf;
+	struct sembuf buf;
 
-	buf.sem_op = -1;		/* Obtain resource */
+	buf.sem_op = -1;	/* Obtain resource */
 	buf.sem_num = semaphore;
 	buf.sem_flg = 0;
 
-	if (semop (semid, &buf, 1) < 0)
-		sys_error ("semop (LOCK) failed", __LINE__);
+	if (semop(semid, &buf, 1) < 0)
+		sys_error("semop (LOCK) failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -420,16 +420,16 @@ static void lock_resource (int semaphore)
 | Function:  Releases a READ/WRITE semaphore lock.                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void unlock_resource (int semaphore)
+static void unlock_resource(int semaphore)
 {
-	struct sembuf	buf;
+	struct sembuf buf;
 
-	buf.sem_op = 1;			/* Release resource */
+	buf.sem_op = 1;		/* Release resource */
 	buf.sem_num = semaphore;
 	buf.sem_flg = 0;
 
-	if (semop (semid, &buf, 1) < 0)
-		sys_error ("semop (UNLOCK) failed", __LINE__);
+	if (semop(semid, &buf, 1) < 0)
+		sys_error("semop (UNLOCK) failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -446,35 +446,35 @@ static void unlock_resource (int semaphore)
 |            [-c] num_children: number of child processes              |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	i;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int i;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	while ((i = getopt(argc, argv, "c:s:?")) != EOF) {
 		switch (i) {
-			case 'c':
-				num_children = atoi (optarg);
-				break;
-			case 's':
-				buffer_size = atoi (optarg);
-				break;
-			case '?':
-				errflag++;
-				break;
+		case 'c':
+			num_children = atoi(optarg);
+			break;
+		case 's':
+			buffer_size = atoi(optarg);
+			break;
+		case '?':
+			errflag++;
+			break;
 		}
 	}
 	if (num_children >= MAX_CHILDREN) {
 		errflag++;
-		fprintf (stderr, "ERROR: num_children must be less than %d\n",
+		fprintf(stderr, "ERROR: num_children must be less than %d\n",
 			MAX_CHILDREN);
 	}
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -485,16 +485,16 @@ void parse_args (int argc, char **argv)
 | Function:  Setup the signal handler for SIGINT.                      |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void setup_signal_handlers ()
+void setup_signal_handlers()
 {
 	struct sigaction invec;
 
-	invec.sa_handler = (void (*)(int)) handler;
-	sigemptyset (&invec.sa_mask);
+	invec.sa_handler = (void (*)(int))handler;
+	sigemptyset(&invec.sa_mask);
 	invec.sa_flags = 0;
 
-	if (sigaction (SIGINT, &invec, (struct sigaction *) NULL) < 0)
-		sys_error ("sigaction failed", __LINE__);
+	if (sigaction(SIGINT, &invec, (struct sigaction *)NULL) < 0)
+		sys_error("sigaction failed", __LINE__);
 
 }
 
@@ -510,23 +510,22 @@ void setup_signal_handlers ()
 |            o  Other:   Print message and abort program...            |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void handler (int sig, int code, struct sigcontext *scp)
+void handler(int sig, int code, struct sigcontext *scp)
 {
-	char 	msg [100];	/* Buffer for error message */
+	char msg[100];		/* Buffer for error message */
 
 	if (sig == SIGINT) {
-		if (getpid () == parent_pid) {
+		if (getpid() == parent_pid) {
 
-			fprintf (stderr, "Received SIGINT -- cleaning up...\n");
-			fflush (stderr);
+			fprintf(stderr, "Received SIGINT -- cleaning up...\n");
+			fflush(stderr);
 
-			cleanup ();
-		}
-		else
-			exit (-1);
+			cleanup();
+		} else
+			exit(-1);
 	} else {
-		sprintf (msg, "Received an unexpected signal (%d)", sig);
-		error (msg, __LINE__);
+		sprintf(msg, "Received an unexpected signal (%d)", sig);
+		error(msg, __LINE__);
 	}
 }
 
@@ -538,19 +537,19 @@ void handler (int sig, int code, struct sigcontext *scp)
 |            processes and exits the program...                        |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void cleanup ()
+void cleanup()
 {
 	int i;
 
-	if (getpid () == parent_pid) {
-		delete_semaphores ();
-		for (i=0; i<num_children; i++) {
-			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0)
-				sys_error ("signal failed", __LINE__);
+	if (getpid() == parent_pid) {
+		delete_semaphores();
+		for (i = 0; i < num_children; i++) {
+			if (pid[i] > (pid_t) 0 && kill(pid[i], SIGKILL) < 0)
+				sys_error("signal failed", __LINE__);
 		}
 	}
 
-	exit (-1);
+	exit(-1);
 }
 
 /*---------------------------------------------------------------------+
@@ -560,12 +559,12 @@ void cleanup ()
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void sys_error (const char *msg, int line)
+void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -575,8 +574,8 @@ void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void error (const char *msg, int line)
+void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	cleanup ();
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	cleanup();
 }

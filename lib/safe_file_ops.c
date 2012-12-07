@@ -49,17 +49,17 @@ static int count_scanf_conversions(const char *fmt)
 				flag = 1;
 				cnt++;
 			}
-		break;
+			break;
 		case '*':
 			if (flag) {
 				cnt--;
 				flag = 0;
 			}
-		break;
+			break;
 		default:
 			flag = 0;
 		}
-	
+
 		fmt++;
 	}
 
@@ -67,7 +67,7 @@ static int count_scanf_conversions(const char *fmt)
 }
 
 void safe_file_scanf(const char *file, const int lineno,
-                     void (*cleanup_fn)(void),
+		     void (*cleanup_fn) (void),
 		     const char *path, const char *fmt, ...)
 {
 	va_list va;
@@ -78,34 +78,33 @@ void safe_file_scanf(const char *file, const int lineno,
 
 	if (f == NULL) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "Failed to open FILE '%s' for reading at %s:%d",
-		         path, file, lineno);
+			 "Failed to open FILE '%s' for reading at %s:%d",
+			 path, file, lineno);
 	}
-	
+
 	exp_convs = count_scanf_conversions(fmt);
 
 	va_start(va, fmt);
 	ret = vfscanf(f, fmt, va);
 	va_end(va);
-		
+
 	if (ret == EOF) {
 		tst_brkm(TBROK, cleanup_fn,
-		         "The FILE '%s' ended prematurely at %s:%d",
-		         path, file, lineno);
+			 "The FILE '%s' ended prematurely at %s:%d",
+			 path, file, lineno);
 	}
 
 	if (ret != exp_convs) {
 		tst_brkm(TBROK, cleanup_fn,
-		         "Expected %i conversions got %i FILE '%s' at %s:%d",
-		         exp_convs, ret, path, file, lineno);
+			 "Expected %i conversions got %i FILE '%s' at %s:%d",
+			 exp_convs, ret, path, file, lineno);
 	}
 
 }
 
-
 void safe_file_printf(const char *file, const int lineno,
-                      void (*cleanup_fn)(void),
-                      const char *path, const char *fmt, ...)
+		      void (*cleanup_fn) (void),
+		      const char *path, const char *fmt, ...)
 {
 	va_list va;
 	FILE *f;
@@ -114,31 +113,30 @@ void safe_file_printf(const char *file, const int lineno,
 
 	if (f == NULL) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "Failed to open FILE '%s' for writing at %s:%d",
-		         path, file, lineno);
+			 "Failed to open FILE '%s' for writing at %s:%d",
+			 path, file, lineno);
 	}
 
 	va_start(va, fmt);
 
 	if (vfprintf(f, fmt, va) < 0) {
 		tst_brkm(TBROK, cleanup_fn,
-		         "Failed to print to FILE '%s' at %s:%d",
-		         path, file, lineno);
+			 "Failed to print to FILE '%s' at %s:%d",
+			 path, file, lineno);
 	}
 
 	va_end(va);
 
 	if (fclose(f)) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "Failed to close FILE '%s' at %s:%d",
-		         path, file, lineno);
+			 "Failed to close FILE '%s' at %s:%d",
+			 path, file, lineno);
 	}
 }
 
 //TODO: C implementation? better error condition reporting?
 void safe_cp(const char *file, const int lineno,
-             void (*cleanup_fn)(void),
-	     const char *src, const char *dst)
+	     void (*cleanup_fn) (void), const char *src, const char *dst)
 {
 	size_t len = strlen(src) + strlen(dst) + 16;
 	char buf[len];
@@ -150,7 +148,7 @@ void safe_cp(const char *file, const int lineno,
 
 	if (ret) {
 		tst_brkm(TBROK, cleanup_fn,
-		         "Failed to copy '%s' to '%s' at %s:%d",
-		         src, dst, file, lineno);
+			 "Failed to copy '%s' to '%s' at %s:%d",
+			 src, dst, file, lineno);
 	}
 }

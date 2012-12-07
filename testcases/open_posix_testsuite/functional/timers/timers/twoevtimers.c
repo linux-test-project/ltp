@@ -22,8 +22,8 @@
 
 #define CHILDPASS 1
 
-int caughtabort=0;
-int caughtalarm=0;
+int caughtabort = 0;
+int caughtalarm = 0;
 
 void handler_abrt(int signo)
 {
@@ -46,18 +46,18 @@ int main(int argc, char *argv[])
 	struct itimerspec its;
 	int flags = 0;
 
-	act1.sa_handler=handler_abrt;
-	act1.sa_flags=0;
-	act2.sa_handler=handler_alrm;
-	act2.sa_flags=0;
+	act1.sa_handler = handler_abrt;
+	act1.sa_flags = 0;
+	act2.sa_handler = handler_alrm;
+	act2.sa_flags = 0;
 
 	if ((sigemptyset(&act1.sa_mask) != 0) ||
-       	    (sigemptyset(&act2.sa_mask) != 0)) {
+	    (sigemptyset(&act2.sa_mask) != 0)) {
 		perror("sigemptyset() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 	if ((sigaction(SIGABRT, &act1, 0) != 0) ||
-       	    (sigaction(SIGALRM, &act2, 0) != 0)) {
+	    (sigaction(SIGALRM, &act2, 0) != 0)) {
 		perror("sigaction() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	sleep(EXPIREDELTA+1);
+	sleep(EXPIREDELTA + 1);
 
 	if ((caughtalarm == 1) && (caughtabort == 1)) {
 		printf("Test PASSED\n");

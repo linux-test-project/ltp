@@ -1,6 +1,6 @@
   /*
-  Test that the ILL_BADSTK macro is defined.
-  */
+     Test that the ILL_BADSTK macro is defined.
+   */
 
 #include <signal.h>
 

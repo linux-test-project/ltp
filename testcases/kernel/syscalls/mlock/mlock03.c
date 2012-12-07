@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		fp = fopen("/proc/self/maps", "r");
 		if (fp == NULL)
-			tst_brkm(TBROK|TERRNO, cleanup, "fopen");
+			tst_brkm(TBROK | TERRNO, cleanup, "fopen");
 		while (!feof(fp)) {
 			if (!fgets(b, KB - 1, fp))
 				break;
@@ -73,23 +73,24 @@ int main(int argc, char *argv[])
 
 			/* Record the initial stack size. */
 			if (lc == 0 && strstr(b, "[stack]") != NULL)
-				first = (to - from)/KB;
+				first = (to - from) / KB;
 
 			switch (lc & 1) {
 			case 0:
-				if (mlock((const void*)from, to-from) == -1)
-					tst_resm(TINFO|TERRNO, "mlock failed");
+				if (mlock((const void *)from, to - from) == -1)
+					tst_resm(TINFO | TERRNO,
+						 "mlock failed");
 				break;
 			case 1:
-				if (munlock((void*)from, to - from) == -1)
-					tst_resm(TINFO|TERRNO,
-					    "munlock failed");
+				if (munlock((void *)from, to - from) == -1)
+					tst_resm(TINFO | TERRNO,
+						 "munlock failed");
 				break;
 			default:
 				break;
 			}
 			tst_resm(TINFO, "%s from %lx to %0lx",
-				(lc&1) ? "munlock" : "mlock", from, to);
+				 (lc & 1) ? "munlock" : "mlock", from, to);
 
 			/* Record the final stack size. */
 			if (strstr(b, "[stack]") != NULL)

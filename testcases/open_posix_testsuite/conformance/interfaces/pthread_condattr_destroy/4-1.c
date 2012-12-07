@@ -22,19 +22,18 @@
 
 int main()
 {
-	pthread_condattr_t *condattr=NULL;
+	pthread_condattr_t *condattr = NULL;
 	int rc;
 
 	/* Try to destroy a NULL condition variable attributes object using pthread_condattr_destroy()
 	 * It should return EINVAL */
-	if ((rc=pthread_condattr_destroy(condattr)) == EINVAL)
-	{
+	if ((rc = pthread_condattr_destroy(condattr)) == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	}
-	else
-	{
-		printf("Test PASSED: *NOTE: Expect %d(EINVAL), but return %d, though standard states 'may' fail\n", EINVAL, rc);
+	} else {
+		printf
+		    ("Test PASSED: *NOTE: Expect %d(EINVAL), but return %d, though standard states 'may' fail\n",
+		     EINVAL, rc);
 		return PTS_PASS;
 	}
 }

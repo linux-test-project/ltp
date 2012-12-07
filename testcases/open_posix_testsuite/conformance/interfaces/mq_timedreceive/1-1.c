@@ -37,7 +37,7 @@ int main()
 	const char *msgptr2 = "test message 2";
 	mqd_t mqdes;
 	unsigned rvprio, sdprio1 = 1, sdprio2 = 2;
-	struct timespec	ts;
+	struct timespec ts;
 	struct mq_attr attr;
 	int unresolved = 0, failure = 0;
 
@@ -46,7 +46,7 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
 	}
@@ -74,7 +74,7 @@ int main()
 	}
 	if (rvprio != sdprio2) {
 		printf("FAIL: receive priority %d != send priority %d\n",
-			rvprio, sdprio2);
+		       rvprio, sdprio2);
 		failure = 1;
 	}
 	ts.tv_sec = time(NULL) + 1;
@@ -90,7 +90,7 @@ int main()
 	}
 	if (rvprio != sdprio1) {
 		printf("FAIL: receive priority %d != send priority %d\n",
-			rvprio, sdprio1);
+		       rvprio, sdprio1);
 		failure = 1;
 	}
 

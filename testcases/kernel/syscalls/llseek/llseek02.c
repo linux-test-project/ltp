@@ -68,7 +68,7 @@
  */
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include <stdio.h>
@@ -163,7 +163,8 @@ int main(int ac, char **av)
 			TEST(lseek64(fildes, (loff_t) 0, whence));
 
 			if (TEST_RETURN != (loff_t) - 1) {
-				tst_resm(TFAIL, "llseek() returned %ld, expected"
+				tst_resm(TFAIL,
+					 "llseek() returned %ld, expected"
 					 " -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 				continue;

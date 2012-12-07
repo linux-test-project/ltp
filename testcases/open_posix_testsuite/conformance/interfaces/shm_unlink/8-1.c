@@ -34,12 +34,13 @@
 #define SHM_NAME "posixtest_9-1"
 #define BUF_SIZE 8
 
-int main() {
+int main()
+{
 	int fd, result;
 	struct passwd *pw;
 	struct stat stat_before, stat_after;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -70,15 +71,15 @@ int main() {
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
+			printf
+			    ("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
 			return PTS_UNRESOLVED;
 		}
 		perror("An error occurs when calling seteuid()");
 		return PTS_UNRESOLVED;
 	}
 
-	printf("Testing with user '%s' (uid: %i)\n",
-	       pw->pw_name, pw->pw_uid);
+	printf("Testing with user '%s' (uid: %i)\n", pw->pw_name, pw->pw_uid);
 
 	result = shm_unlink(SHM_NAME);
 	if (result == 0) {
@@ -95,9 +96,9 @@ int main() {
 	}
 
 	if (stat_after.st_uid != stat_before.st_uid ||
-	   stat_after.st_gid != stat_before.st_gid ||
-	   stat_after.st_size != stat_before.st_size ||
-	   stat_after.st_mode != stat_before.st_mode) {
+	    stat_after.st_gid != stat_before.st_gid ||
+	    stat_after.st_size != stat_before.st_size ||
+	    stat_after.st_mode != stat_before.st_mode) {
 		printf("The shared memory object has changed.\n");
 		return PTS_FAIL;
 	}

@@ -67,7 +67,7 @@ int check_shmem1(void *vtest)
 	/* first create the key */
 	id1 = shmget(TESTKEY, 100, IPC_CREAT);
 	if (id1 == -1)
-		tst_brkm(TFAIL|TERRNO, NULL, "shmget failed");
+		tst_brkm(TFAIL | TERRNO, NULL, "shmget failed");
 
 	tst_resm(TINFO, "Cont1: Able to create shared mem segment");
 	write(p1[1], "done", 5);
@@ -90,10 +90,11 @@ int check_shmem2(void *vtest)
 	if (id2 == -1) {
 		id2 = shmget(TESTKEY, 100, IPC_CREAT);
 		if (id2 == -1)
-			tst_resm(TFAIL|TERRNO, "shmget failed");
+			tst_resm(TFAIL | TERRNO, "shmget failed");
 		else
-			tst_resm(TINFO, "Cont2: Able to allocate shmem seg with "
-					"the same key");
+			tst_resm(TINFO,
+				 "Cont2: Able to allocate shmem seg with "
+				 "the same key");
 		write(p2[1], "notfnd", 7);
 	} else
 		write(p2[1], "exists", 7);
@@ -111,15 +112,15 @@ int main(int argc, char *argv[])
 	if (argc != 2) {
 		tst_resm(TINFO, "Usage: %s <clone| unshare| none>", argv[0]);
 		tst_resm(TINFO, " where clone, unshare, or fork specifies"
-				" unshare method.");
+			 " unshare method.");
 		tst_exit();
 	}
 
 	/* Using PIPE's to sync between containers and Parent */
 	if (pipe(p1) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "pipe1 error");
+		tst_brkm(TBROK | TERRNO, NULL, "pipe1 error");
 	if (pipe(p2) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "pipe2 error");
+		tst_brkm(TBROK | TERRNO, NULL, "pipe2 error");
 
 	if (strcmp(argv[1], "clone") == 0) {
 		use_clone = T_CLONE;
@@ -132,11 +133,13 @@ int main(int argc, char *argv[])
 	tst_resm(TINFO, "Shared Memory namespace test : %s", tsttype);
 
 	/* Create 2 containers */
-	ret = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmem1, NULL);
+	ret =
+	    do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmem1, NULL);
 	if (ret < 0)
 		tst_brkm(TFAIL, NULL, "clone/unshare failed");
 
-	ret = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmem2, NULL);
+	ret =
+	    do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmem2, NULL);
 	if (ret < 0)
 		tst_brkm(TFAIL, NULL, "clone/unshare failed");
 
@@ -145,17 +148,21 @@ int main(int argc, char *argv[])
 
 	if (strcmp(buf, "exists") == 0) {
 		if (use_clone == T_NONE)
-			tst_resm(TPASS, "Plain cloned process able to access shmem "
-					"segment created");
+			tst_resm(TPASS,
+				 "Plain cloned process able to access shmem "
+				 "segment created");
 		else
-			tst_resm(TFAIL, "%s : In namespace2 found the shmem segment "
-					"created in Namespace1", tsttype);
+			tst_resm(TFAIL,
+				 "%s : In namespace2 found the shmem segment "
+				 "created in Namespace1", tsttype);
 	} else {
 		if (use_clone == T_NONE)
-			tst_resm(TFAIL, "Plain cloned process didn't find shmem seg");
+			tst_resm(TFAIL,
+				 "Plain cloned process didn't find shmem seg");
 		else
-			tst_resm(TPASS, "%s : In namespace2 unable to access the shmem seg "
-					"created in Namespace1", tsttype);
+			tst_resm(TPASS,
+				 "%s : In namespace2 unable to access the shmem seg "
+				 "created in Namespace1", tsttype);
 	}
 	/* destroy the key */
 

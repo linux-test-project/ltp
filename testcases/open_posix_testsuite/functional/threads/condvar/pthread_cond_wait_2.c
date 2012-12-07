@@ -60,15 +60,15 @@ void signal_handler(int sig)
 float timediff(struct timespec t2, struct timespec t1)
 {
 	float diff = t2.tv_sec - t1.tv_sec;
-	diff += (t2.tv_nsec - t1.tv_nsec)/1000000000.0;
+	diff += (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
 	return diff;
 }
 
 void *hi_priority_thread(void *tmp)
 {
-	struct sched_param        param;
-	int                       policy;
-	int                       rc = 0;
+	struct sched_param param;
+	int policy;
+	int rc = 0;
 
 	param.sched_priority = HIGH_PRIORITY;
 
@@ -126,10 +126,10 @@ void *hi_priority_thread(void *tmp)
 
 void *low_priority_thread(void *tmp)
 {
-	struct timespec        start_time, current_time;
-	struct sched_param     param;
-	int                    policy;
-	int                    rc = 0;
+	struct timespec start_time, current_time;
+	struct sched_param param;
+	int policy;
+	int rc = 0;
 
 	param.sched_priority = LOW_PRIORITY;
 
@@ -150,8 +150,7 @@ void *low_priority_thread(void *tmp)
 
 	/* grab the start time and busy loop for 5 seconds */
 	clock_gettime(CLOCK_REALTIME, &start_time);
-	while (1)
-	{
+	while (1) {
 		clock_gettime(CLOCK_REALTIME, &current_time);
 		if (timediff(current_time, start_time) > RUNTIME)
 			break;
@@ -162,10 +161,10 @@ void *low_priority_thread(void *tmp)
 
 int main()
 {
-	pthread_t                   high_id, low_id;
-	pthread_attr_t              high_attr, low_attr;
-	struct sched_param          param;
-	int                         rc = 0;
+	pthread_t high_id, low_id;
+	pthread_attr_t high_attr, low_attr;
+	struct sched_param param;
+	int rc = 0;
 
 	/* Create the higher priority thread */
 	rc = pthread_attr_init(&high_attr);

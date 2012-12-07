@@ -47,13 +47,15 @@
 #include "tpci.h"
 #include "st_tpci.h"
 
-MODULE_AUTHOR("Sean Ruyle <srruyle@us.ibm.com>, Amit Khanna <amit.khanna@intel.com>");
+MODULE_AUTHOR
+    ("Sean Ruyle <srruyle@us.ibm.com>, Amit Khanna <amit.khanna@intel.com>");
 MODULE_DESCRIPTION(TPCI_TEST_DRIVER_NAME);
 MODULE_LICENSE("GPL");
 
-static int tpci_ioctl (struct inode *, struct file *, unsigned int, unsigned long);
-static int tpci_open (struct inode *, struct file *);
-static int tpci_close (struct inode *, struct file *);
+static int tpci_ioctl(struct inode *, struct file *, unsigned int,
+		      unsigned long);
+static int tpci_open(struct inode *, struct file *);
+static int tpci_close(struct inode *, struct file *);
 
 static int probe_pci_dev(void);
 static int pci_enable(void);
@@ -85,19 +87,21 @@ static tpci_user_t ltp_pci;
  * correct file descriptor
  */
 static struct file_operations tpci_fops = {
-	open : tpci_open,
-	release: tpci_close,
-	ioctl: tpci_ioctl,
+open:	tpci_open,
+release:tpci_close,
+ioctl:	tpci_ioctl,
 };
 
 /*
  * open and close operations
  */
-static int tpci_open(struct inode *ino, struct file *f) {
+static int tpci_open(struct inode *ino, struct file *f)
+{
 	return 0;
 }
 
-static int tpci_close(struct inode *ino, struct file *f) {
+static int tpci_close(struct inode *ino, struct file *f)
+{
 	return 0;
 }
 
@@ -111,74 +115,117 @@ static int tpci_close(struct inode *ino, struct file *f) {
  *
  */
 static int tpci_ioctl(struct inode *ino, struct file *f,
-			unsigned int cmd, unsigned long l) {
-	int 			rc;
-	struct tpci_interface	tif;
-	caddr_t			*inparms;
-	caddr_t			*outparms;
+		      unsigned int cmd, unsigned long l)
+{
+	int rc;
+	struct tpci_interface tif;
+	caddr_t *inparms;
+	caddr_t *outparms;
 
 	printk("Enter tpci_ioctl\n");
 
-	inparms	= NULL;
+	inparms = NULL;
 	outparms = NULL;
 	rc = 0;
 
 	if (copy_from_user(&tif, (void *)l, sizeof(tif))) {
 		/* Bad address */
-		return(-EFAULT);
+		return (-EFAULT);
 	}
 
 	/*
 	 * Setup inparms and outparms as needed
 	 */
 	if (tif.in_len > 0) {
-		inparms = (caddr_t *)kmalloc(tif.in_len, GFP_KERNEL);
+		inparms = (caddr_t *) kmalloc(tif.in_len, GFP_KERNEL);
 		if (!inparms) {
-			return(-ENOMEM);
+			return (-ENOMEM);
 		}
 
 		rc = copy_from_user(inparms, tif.in_data, tif.in_len);
 		if (rc) {
 			kfree(inparms);
-			return(-EFAULT);
+			return (-EFAULT);
 		}
 	}
 	if (tif.out_len > 0) {
-		outparms = (caddr_t *)kmalloc(tif.out_len, GFP_KERNEL);
+		outparms = (caddr_t *) kmalloc(tif.out_len, GFP_KERNEL);
 		if (!outparms) {
 			kfree(inparms);
-			return(-ENOMEM);
+			return (-ENOMEM);
 		}
 	}
 
 	/*
 	 * determine which call to make on the cmd value
 	 */
-	switch(cmd) {
-		case PCI_PROBE: 	rc = probe_pci_dev(); break;
-		case PCI_ENABLE: 	rc = pci_enable(); break;
-		case PCI_DISABLE:	rc = pci_disable(); break;
-		case FIND_BUS:		rc = test_find_bus(); break;
-		case FIND_CLASS:	rc = test_find_class(); break;
-		case FIND_DEVICE:	rc = test_find_device(); break;
-		case FIND_SUBSYS:	rc = test_find_subsys(); break;
-		case BUS_SCAN:		rc = test_scan_bus(); break;
-		case SLOT_SCAN:		rc = test_slot_scan(); break;
-		case BUS_ADD_DEVICES:	rc = test_bus_add_devices(); break;
-		case ENABLE_BRIDGES:	rc = test_enable_bridges(); break;
-		case MATCH_DEVICE:	rc = test_match_device(); break;
-		case REG_DRIVER:	rc = test_reg_driver(); break;
-		case UNREG_DRIVER:	rc = test_unreg_driver(); break;
-		case PCI_RESOURCES:	rc = test_assign_resources(); break;
-		case SAVE_STATE:	rc = test_save_state(); break;
-		case RESTORE_STATE:	rc = test_restore_state(); break;
-		case TEST_MAX_BUS:	rc = test_max_bus(); break;
-		case FIND_CAP:		rc = test_find_cap(); break;
-		case FIND_PCI_EXP_CAP:  rc = test_find_pci_exp_cap(); break;
-		case READ_PCI_EXP_CONFIG:  rc = test_read_pci_exp_config(); break;
-		default:
-			printk("Mismatching ioctl command\n");
-			break;
+	switch (cmd) {
+	case PCI_PROBE:
+		rc = probe_pci_dev();
+		break;
+	case PCI_ENABLE:
+		rc = pci_enable();
+		break;
+	case PCI_DISABLE:
+		rc = pci_disable();
+		break;
+	case FIND_BUS:
+		rc = test_find_bus();
+		break;
+	case FIND_CLASS:
+		rc = test_find_class();
+		break;
+	case FIND_DEVICE:
+		rc = test_find_device();
+		break;
+	case FIND_SUBSYS:
+		rc = test_find_subsys();
+		break;
+	case BUS_SCAN:
+		rc = test_scan_bus();
+		break;
+	case SLOT_SCAN:
+		rc = test_slot_scan();
+		break;
+	case BUS_ADD_DEVICES:
+		rc = test_bus_add_devices();
+		break;
+	case ENABLE_BRIDGES:
+		rc = test_enable_bridges();
+		break;
+	case MATCH_DEVICE:
+		rc = test_match_device();
+		break;
+	case REG_DRIVER:
+		rc = test_reg_driver();
+		break;
+	case UNREG_DRIVER:
+		rc = test_unreg_driver();
+		break;
+	case PCI_RESOURCES:
+		rc = test_assign_resources();
+		break;
+	case SAVE_STATE:
+		rc = test_save_state();
+		break;
+	case RESTORE_STATE:
+		rc = test_restore_state();
+		break;
+	case TEST_MAX_BUS:
+		rc = test_max_bus();
+		break;
+	case FIND_CAP:
+		rc = test_find_cap();
+		break;
+	case FIND_PCI_EXP_CAP:
+		rc = test_find_pci_exp_cap();
+		break;
+	case READ_PCI_EXP_CONFIG:
+		rc = test_read_pci_exp_config();
+		break;
+	default:
+		printk("Mismatching ioctl command\n");
+		break;
 	}
 
 	if (!(ltp_pci.dev))
@@ -199,7 +246,7 @@ static int tpci_ioctl(struct inode *ino, struct file *f,
 	}
 
 	/* copy tif structure into l so that can be used by user program */
-	if (copy_to_user((void*)l, &tif, sizeof(tif))) {
+	if (copy_to_user((void *)l, &tif, sizeof(tif))) {
 		printk("tpci: Unsuccessful copy_to_user of tif\n");
 		rc = -EFAULT;
 	}
@@ -223,10 +270,13 @@ static int tpci_ioctl(struct inode *ino, struct file *f,
  * 	calls in this kernel module, select first device
  * 	that finds for use, do not need a specific device
  */
-static int probe_pci_dev() {
+static int probe_pci_dev()
+{
 	unsigned int i, j;
-	struct pci_dev *dev = (struct pci_dev *)kmalloc(sizeof(struct pci_dev),GFP_KERNEL);
-	struct pci_bus *bus = (struct pci_bus *)kmalloc(sizeof(struct pci_bus),GFP_KERNEL);
+	struct pci_dev *dev =
+	    (struct pci_dev *)kmalloc(sizeof(struct pci_dev), GFP_KERNEL);
+	struct pci_bus *bus =
+	    (struct pci_bus *)kmalloc(sizeof(struct pci_bus), GFP_KERNEL);
 
 	/* Zero out the ltp_pci */
 	memset(&ltp_pci, 0, sizeof(tpci_user_t));
@@ -239,15 +289,19 @@ static int probe_pci_dev() {
 		for (j = MAX_DEVFN; j > 1; j--) {
 			dev = pci_find_slot(i, j);
 			if (dev && dev->driver) {
-				printk("tpci: found pci_dev, bus %d, devfn %d\n", i, j);
-				printk("Slot number: %d\n", dev->devfn );
+				printk
+				    ("tpci: found pci_dev, bus %d, devfn %d\n",
+				     i, j);
+				printk("Slot number: %d\n", dev->devfn);
 
 				bus = dev->bus;
-				printk("Bus number: %d\n", bus->number );
+				printk("Bus number: %d\n", bus->number);
 
 				/* copy data into ltp_pci struct */
-				memcpy(ltp_pci.dev, dev, sizeof(struct pci_dev));
-				memcpy(ltp_pci.bus, bus, sizeof(struct pci_bus));
+				memcpy(ltp_pci.dev, dev,
+				       sizeof(struct pci_dev));
+				memcpy(ltp_pci.bus, bus,
+				       sizeof(struct pci_bus));
 
 				return 0;
 			}
@@ -264,7 +318,8 @@ static int probe_pci_dev() {
  * 	enable a pci device so that it may be used in
  * 	later testing in the user test program
  */
-static int pci_enable() {
+static int pci_enable()
+{
 	int rc = 0;
 
 	struct pci_dev *dev = ltp_pci.dev;
@@ -278,8 +333,7 @@ static int pci_enable() {
 	if (pci_enable_device(dev)) {
 		printk("tpci: failed to enable pci device\n");
 		rc = 1;
-	}
-	else {
+	} else {
 		printk("tpci: enabled pci device\n");
 		rc = 0;
 	}
@@ -291,7 +345,8 @@ static int pci_enable() {
  * pci_disable
  *	call to pci_disable_device
  */
-static int pci_disable() {
+static int pci_disable()
+{
 	int rc = 0;
 
 	struct pci_dev *dev = ltp_pci.dev;
@@ -307,8 +362,7 @@ static int pci_disable() {
 	if (dev->current_state == 4 || dev->current_state == 3) {
 		printk("tpci: disabled pci device\n");
 		rc = 0;
-	}
-	else {
+	} else {
 		printk("tpci: failed to disable pci device\n");
 		rc = 1;
 	}
@@ -322,7 +376,8 @@ static int pci_disable() {
  *	pointer in ltp_pci, make sure that returns
  * 	bus with same values
  */
-static int test_find_bus() {
+static int test_find_bus()
+{
 	int rc;
 	int num = ltp_pci.bus->number;
 	struct pci_bus *temp = NULL;
@@ -332,12 +387,10 @@ static int test_find_bus() {
 	if (!temp) {
 		printk("tpci: pci_find_bus failed to return bus pointer\n");
 		rc = 1;
-	}
-	else if (temp->number != num) {
+	} else if (temp->number != num) {
 		printk("tpci: returned bus pointer w/ wrong bus number\n");
 		rc = 1;
-	}
-	else {
+	} else {
 		printk("tpci: success returned bus pointer \n");
 		rc = 0;
 	}
@@ -350,7 +403,8 @@ static int test_find_bus() {
  *	call to pci_find_class, using values from the
  *	pci_dev pointer in ltp_pci structure
  */
-static int test_find_class() {
+static int test_find_class()
+{
 	int rc;
 	unsigned int num = ltp_pci.dev->class;
 	struct pci_dev *temp = NULL;
@@ -360,8 +414,7 @@ static int test_find_class() {
 	if (!temp) {
 		printk("tpci: failed to find pci device from class number\n");
 		rc = 1;
-	}
-	else {
+	} else {
 		printk("tpci: found pci device from class number\n");
 		rc = 0;
 	}
@@ -375,24 +428,23 @@ static int test_find_class() {
  *	parameters from pci_dev pointer in the
  *	ltp_pci structure
  */
-static int test_find_device() {
+static int test_find_device()
+{
 	int rc;
 	struct pci_dev *temp = NULL;
-	unsigned short ven = ltp_pci.dev->vendor,
-		       dev = ltp_pci.dev->device;
+	unsigned short ven = ltp_pci.dev->vendor, dev = ltp_pci.dev->device;
 
 	temp = pci_find_device(ven, dev, NULL);
 
-        if (!temp) {
-                printk("tpci: failed to find pci device from device info\n");
-                rc = 1;
-        }
-        else {
-                printk("tpci: found pci device from device info\n");
-                rc = 0;
-        }
+	if (!temp) {
+		printk("tpci: failed to find pci device from device info\n");
+		rc = 1;
+	} else {
+		printk("tpci: found pci device from device info\n");
+		rc = 0;
+	}
 
-        return rc;
+	return rc;
 }
 
 /*
@@ -401,26 +453,26 @@ static int test_find_device() {
  *	pci_dev pointer in ltp_pci structure to
  *	find pci_dev from subsys info
  */
-static int test_find_subsys() {
+static int test_find_subsys()
+{
 	int rc;
 	struct pci_dev *temp = NULL;
-	unsigned short  ven = ltp_pci.dev->vendor,
-			dev = ltp_pci.dev->device,
-			ss_ven = ltp_pci.dev->subsystem_vendor,
-			ss_dev = ltp_pci.dev->subsystem_device;
+	unsigned short ven = ltp_pci.dev->vendor,
+	    dev = ltp_pci.dev->device,
+	    ss_ven = ltp_pci.dev->subsystem_vendor,
+	    ss_dev = ltp_pci.dev->subsystem_device;
 
 	temp = pci_find_subsys(ven, dev, ss_ven, ss_dev, NULL);
 
 	if (!temp) {
-                printk("tpci: failed to find pci device from subsys info\n");
-                rc = 1;
-        }
-        else {
-                printk("tpci: found pci device from subsys info\n");
-                rc = 0;
-        }
+		printk("tpci: failed to find pci device from subsys info\n");
+		rc = 1;
+	} else {
+		printk("tpci: found pci device from subsys info\n");
+		rc = 0;
+	}
 
-        return rc;
+	return rc;
 }
 
 /*
@@ -430,7 +482,8 @@ static int test_find_subsys() {
  * 	return a an integer for how far the
  *	function got in scanning bus
  */
-static int test_scan_bus() {
+static int test_scan_bus()
+{
 	int rc, num;
 	struct pci_bus *bus = ltp_pci.bus;
 
@@ -440,11 +493,10 @@ static int test_scan_bus() {
 	 * check if returned number is greater than
 	 * max number of bus or less than 0
 	 */
-	if (num > MAX_BUS ||  num < 0) {
+	if (num > MAX_BUS || num < 0) {
 		printk("tpci: Failed scan bus\n");
 		rc = 1;
-	}
-	else {
+	} else {
 		printk("tpci: Success scan bus\n");
 		rc = 0;
 	}
@@ -458,7 +510,8 @@ static int test_scan_bus() {
  *	find the device pointer and setup the
  *	device info
  */
-static int test_slot_scan() {
+static int test_slot_scan()
+{
 	int rc, ret;
 	int num = ltp_pci.dev->devfn;
 	struct pci_bus *bus = ltp_pci.bus;
@@ -468,8 +521,7 @@ static int test_slot_scan() {
 	if (ret > 0) {
 		printk("tpci: Found device from scan slot\n");
 		rc = 0;
-	}
-	else {
+	} else {
 		printk("tpci: Failed find device from scan slot\n");
 		rc = 1;
 	}
@@ -484,7 +536,8 @@ static int test_slot_scan() {
  *	that is passed in for more devices
  *	that it can add
  */
-static int test_bus_add_devices() {
+static int test_bus_add_devices()
+{
 	int rc;
 	struct pci_bus *bus = ltp_pci.bus;
 
@@ -493,8 +546,7 @@ static int test_bus_add_devices() {
 	if (bus) {
 		printk("tpci: Called bus_add_device\n");
 		rc = 0;
-	}
-	else {
+	} else {
 		printk("tpci: bus_add_device failed\n");
 		rc = 1;
 	}
@@ -508,22 +560,22 @@ static int test_bus_add_devices() {
  *	use bus pointer from the ltp_pci
  *	structure
  */
-static int test_enable_bridges() {
+static int test_enable_bridges()
+{
 	int rc;
 	struct pci_bus *bus = ltp_pci.bus;
 
 	pci_enable_bridges(bus);
 
 	if (bus) {
-                printk("tpci: Called enable bridges\n");
-                rc = 0;
-        }
-        else {
-                printk("tpci: enable_bridges failed\n");
-                rc = 1;
-        }
+		printk("tpci: Called enable bridges\n");
+		rc = 0;
+	} else {
+		printk("tpci: enable_bridges failed\n");
+		rc = 1;
+	}
 
-        return rc;
+	return rc;
 }
 
 /*
@@ -531,7 +583,8 @@ static int test_enable_bridges() {
  *	make call to pci_match_device, returns a
  *	pci_device_id pointer
  */
-static int test_match_device() {
+static int test_match_device()
+{
 	int rc;
 	struct pci_dev *dev = ltp_pci.dev;
 	struct pci_driver *drv;
@@ -549,8 +602,7 @@ static int test_match_device() {
 	if (id) {
 		printk("tpci: Match device success\n");
 		rc = 0;
-	}
-	else {
+	} else {
 		printk("tpci: Failed return pci_device_id \n");
 		rc = 1;
 	}
@@ -564,9 +616,11 @@ static int test_match_device() {
  *	register the driver for a device with the
  *	system
  */
-static int test_reg_driver() {
+static int test_reg_driver()
+{
 	int rc, ret;
-	struct pci_driver *drv = (struct pci_driver *)kmalloc(sizeof(struct pci_driver), GFP_KERNEL);
+	struct pci_driver *drv =
+	    (struct pci_driver *)kmalloc(sizeof(struct pci_driver), GFP_KERNEL);
 	struct pci_driver *tmp = ltp_pci.dev->driver;
 
 	/* zero out drv structure */
@@ -590,8 +644,7 @@ static int test_reg_driver() {
 	if (ret) {
 		printk("tpci: Success driver register\n");
 		rc = 0;
-	}
-	else {
+	} else {
 		rc = 1;
 		printk("tpci: unsuccessful registering pci driver\n");
 	}
@@ -604,26 +657,26 @@ static int test_reg_driver() {
  *	make call to pci_unregister_driver, which will
  *	unregister the driver for a device from the system
  */
-static int test_unreg_driver() {
+static int test_unreg_driver()
+{
 	int rc;
-        struct pci_driver *drv = ltp_pci.drv;
+	struct pci_driver *drv = ltp_pci.drv;
 
-        if (!drv) {
-                printk("tpci: Device does not have a driver pointer\n");
-                return 1;
-        }
-
-        pci_unregister_driver(drv);
-        if (!drv) {
-                printk("tpci: Unsuccesful driver unregister\n");
-		rc = 1;
+	if (!drv) {
+		printk("tpci: Device does not have a driver pointer\n");
+		return 1;
 	}
-        else {
-                printk("tpci: unregistering pci driver\n");
+
+	pci_unregister_driver(drv);
+	if (!drv) {
+		printk("tpci: Unsuccesful driver unregister\n");
+		rc = 1;
+	} else {
+		printk("tpci: unregistering pci driver\n");
 		rc = 0;
 	}
 
-        return rc;
+	return rc;
 }
 
 /*
@@ -631,13 +684,14 @@ static int test_unreg_driver() {
  *	make calls to pci_assign_resource, will need
  *	to setup a dev pointer and resource pointer,
  */
-static int test_assign_resources() {
+static int test_assign_resources()
+{
 	int rc;
 	struct pci_dev *dev = ltp_pci.dev;
 	int resno;
 
 	for (resno = 0; resno < 7; resno++) {
-		struct resource *r = dev->resource +resno;
+		struct resource *r = dev->resource + resno;
 		if (r->flags)
 			pci_assign_resource(dev, resno);
 	}
@@ -645,7 +699,7 @@ static int test_assign_resources() {
 	/*
 	 * enable device after call to assign resource
 	 * because might error if (!r->start && r->end)
-	*/
+	 */
 	rc = pci_enable_device(dev);
 
 	return rc;
@@ -656,7 +710,8 @@ static int test_assign_resources() {
  *	make call to pci_save_state, takes in a u32*
  * 	buffer
  */
-static int test_save_state() {
+static int test_save_state()
+{
 	int rc;
 	u32 *buffer = ltp_pci.state;
 	struct pci_dev *dev = ltp_pci.dev;
@@ -675,18 +730,19 @@ static int test_save_state() {
  *	make call to pci_restore_state, get the state buffer
  *	should have been previously filled out by save state
  */
-static int test_restore_state() {
+static int test_restore_state()
+{
 	int rc;
 	u32 *buffer = ltp_pci.state;
 	struct pci_dev *dev = ltp_pci.dev;
 
 	rc = pci_restore_state(dev, buffer);
-        if (rc)
-                printk("tpci: Failed restore state\n");
-        else
-                printk("tpci: Restored state of device\n");
+	if (rc)
+		printk("tpci: Failed restore state\n");
+	else
+		printk("tpci: Restored state of device\n");
 
-        return rc;
+	return rc;
 }
 
 /*
@@ -694,15 +750,15 @@ static int test_restore_state() {
  *	make call to pci_max_busnr, which will determine
  *	the max number of bus on the system
  */
-static int test_max_bus() {
+static int test_max_bus()
+{
 	int rc, ret;
 
 	ret = pci_max_busnr();
 	if (ret) {
 		printk("Found max busnr\n");
 		rc = 0;
-	}
-	else {
+	} else {
 		printk("Did not return max busnr\n");
 		rc = 1;
 	}
@@ -717,7 +773,8 @@ static int test_max_bus() {
  *	capability, use second parameter to specify
  *	which capability you are looking for
  */
-static int test_find_cap() {
+static int test_find_cap()
+{
 	int rc;
 	struct pci_dev *dev = ltp_pci.dev;
 
@@ -737,15 +794,16 @@ static int test_find_cap() {
  *  use second parameter to specify which capability
  *  you are looking for
  */
-static int test_find_pci_exp_cap() {
+static int test_find_pci_exp_cap()
+{
 	int rc;
 	struct pci_dev *dev = ltp_pci.dev;
 
 	rc = pci_find_capability(dev, PCI_CAP_ID_EXP);
 	if (rc)
-	 	printk("tpci: Device has PCI-EXP capability\n");
+		printk("tpci: Device has PCI-EXP capability\n");
 	else
-		printk ("tpci: Device doesn't have PCI-EXP capability\n");
+		printk("tpci: Device doesn't have PCI-EXP capability\n");
 	return rc;
 }
 
@@ -755,26 +813,32 @@ static int test_find_pci_exp_cap() {
  *  the PCI-Express enhanced config space of this
  *  device can be read successfully.
  */
-static int test_read_pci_exp_config() {
+static int test_read_pci_exp_config()
+{
 	int rc;
-	int reg= 100, len= 4; /*PCI-Exp enhanced config register 0x100, 4 implies dword access*/
+	int reg = 100, len = 4;	/*PCI-Exp enhanced config register 0x100, 4 implies dword access */
 	struct pci_dev *dev = ltp_pci.dev;
 
 	u32 data, *value;
 
-	printk("tpci: Device(%d) on bus(%d) & slot(%d) \n",dev,dev->bus->number,dev->devfn);
+	printk("tpci: Device(%d) on bus(%d) & slot(%d) \n", dev,
+	       dev->bus->number, dev->devfn);
 	printk("tpci: Reading the PCI Express configuration registers---\n");
 
-	printk("tpci: Reading PCI-Express AER CAP-ID REGISTER at Enh-Cfg AddrSpace 0x100\n");
+	printk
+	    ("tpci: Reading PCI-Express AER CAP-ID REGISTER at Enh-Cfg AddrSpace 0x100\n");
 
-	rc = pci_config_read(0, dev->bus->number, PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn), reg        , len, &data);
+	rc = pci_config_read(0, dev->bus->number, PCI_SLOT(dev->devfn),
+			     PCI_FUNC(dev->devfn), reg, len, &data);
 
-	*value = (u32)data;
+	*value = (u32) data;
 
-	if (*value==AER_CAP_ID_VALUE) /*comparing the value read with AER_CAP_ID_VALUE macro */
-	printk("tpci: \nCorrect value read using PCI-Express driver installed\n\n");
+	if (*value == AER_CAP_ID_VALUE)	/*comparing the value read with AER_CAP_ID_VALUE macro */
+		printk
+		    ("tpci: \nCorrect value read using PCI-Express driver installed\n\n");
 	else
-	printk("tpci: \nIncorrect value read. PCI-Express driver/device not installed\n\n");
+		printk
+		    ("tpci: \nIncorrect value read. PCI-Express driver/device not installed\n\n");
 
 	return rc;
 }
@@ -785,7 +849,8 @@ static int test_read_pci_exp_config() {
  * 	as a char device, and perform any necessary
  * 	initialization for pci devices
  */
-static int tpci_init_module(void) {
+static int tpci_init_module(void)
+{
 	int rc;
 
 	SET_MODULE_OWNER(&tpci_fops);
@@ -808,7 +873,8 @@ static int tpci_init_module(void) {
  * 	unregister the device and any necessary
  * 	operations to close for pci devices
  */
-static void tpci_exit_module(void) {
+static void tpci_exit_module(void)
+{
 	int rc;
 
 	kfree(ltp_pci.dev);
@@ -824,4 +890,4 @@ static void tpci_exit_module(void) {
 }
 
 module_init(tpci_init_module)
-module_exit(tpci_exit_module)
+    module_exit(tpci_exit_module)

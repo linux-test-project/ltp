@@ -52,16 +52,16 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = 0;
 	its.it_value.tv_sec = TIMERSEC;
 	its.it_value.tv_nsec = 0;
 
-	ts.tv_sec=TIMERSEC+SLEEPDELTA;
-	ts.tv_nsec=0;
+	ts.tv_sec = TIMERSEC + SLEEPDELTA;
+	ts.tv_nsec = 0;
 
 	if (sigemptyset(&act.sa_mask) == -1) {
 		perror("Error calling sigemptyset\n");
@@ -87,14 +87,13 @@ int main(int argc, char *argv[])
 		return PTS_FAIL;
 	}
 
-	if (abs(tsleft.tv_sec-SLEEPDELTA) <= ACCEPTABLEDELTA) {
+	if (abs(tsleft.tv_sec - SLEEPDELTA) <= ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {
 		printf("Timer did not last for correct amount of time\n");
 		printf("timer: %d != correct %d\n",
-				(int) ts.tv_sec- (int) tsleft.tv_sec,
-				TIMERSEC);
+		       (int)ts.tv_sec - (int)tsleft.tv_sec, TIMERSEC);
 		return PTS_FAIL;
 	}
 

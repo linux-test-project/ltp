@@ -111,7 +111,7 @@ static int test_ioctl(struct block_device *bdev, fmode_t mode,
 		      unsigned int cmd, unsigned long l)
 #endif
 {
-	int rc = 0;             /* return code */
+	int rc = 0;		/* return code */
 	int arg;
 
 	printk(KERN_DEBUG "Entered the ioctl call.\n");

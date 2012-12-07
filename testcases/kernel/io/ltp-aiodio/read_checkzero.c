@@ -41,7 +41,8 @@ char *check_zero(unsigned char *buf, int size)
 
 	while (size > 0) {
 		if (*buf != 0) {
-			fprintf(stderr, "non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
+			fprintf(stderr,
+				"non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
 				buf - p, (unsigned int)buf[0],
 				size > 1 ? (unsigned int)buf[1] : 0,
 				size > 2 ? (unsigned int)buf[2] : 0,
@@ -52,8 +53,9 @@ char *check_zero(unsigned char *buf, int size)
 		buf++;
 		size--;
 	}
-	return 0;	/* all zeros */
+	return 0;		/* all zeros */
 }
+
 int read_eof(char *filename)
 {
 	int fd;
@@ -61,19 +63,19 @@ int read_eof(char *filename)
 	int r;
 	char buf[4096];
 
-       if ((fd = open(filename, O_RDWR)) < 0) {
-               fprintf(stderr, "can't open file %s \n",filename);
-               exit(1);
+	if ((fd = open(filename, O_RDWR)) < 0) {
+		fprintf(stderr, "can't open file %s \n", filename);
+		exit(1);
 	}
 
-	for (i = 0 ; i < 100000; i++) {
+	for (i = 0; i < 100000; i++) {
 		off_t offset;
 		char *bufoff;
 
-               offset = lseek(fd, 4096, SEEK_END);
-               r = write(fd,"A",1);
+		offset = lseek(fd, 4096, SEEK_END);
+		r = write(fd, "A", 1);
 
-               offset = lseek(fd, offset - 4096 , SEEK_SET);
+		offset = lseek(fd, offset - 4096, SEEK_SET);
 
 		r = read(fd, buf, 4096);
 		if (r > 0) {
@@ -85,19 +87,19 @@ int read_eof(char *filename)
 		}
 	}
 	fprintf(stderr, "read_checkzero done\n");
-  return 0;
+	return 0;
 }
 
 int main(int argc, char **argv)
 {
-    if (argc < 2) {
-        printf("You must pass a filename to the test \n");
-        exit(1);
-    }
+	if (argc < 2) {
+		printf("You must pass a filename to the test \n");
+		exit(1);
+	}
 
 	char *filename = argv[1];
 
 	read_eof(filename);
 
-  return 0;
+	return 0;
 }

@@ -27,7 +27,7 @@
 
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[50];
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
@@ -37,9 +37,9 @@ int main()
 	sem_close(mysemp);
 
 	/* Opening the same existance SEM */
-	mysemp = sem_open(semname, O_CREAT|O_EXCL, 0444, 1);
+	mysemp = sem_open(semname, O_CREAT | O_EXCL, 0444, 1);
 
-	if ((mysemp  == SEM_FAILED) && (errno == EEXIST)) {
+	if ((mysemp == SEM_FAILED) && (errno == EEXIST)) {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		return PTS_PASS;

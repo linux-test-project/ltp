@@ -40,24 +40,24 @@
 
 char *simplePing(char *i_var)
 {
-        //Simple function, returns what received
-        static int result = 0;
-        result = *i_var;
-        return (char *)&result;
+	//Simple function, returns what received
+	static int result = 0;
+	result = *i_var;
+	return (char *)&result;
 
 }
 
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	SVCXPRT *svcr = NULL;
 	int rslt;
@@ -68,10 +68,11 @@ int main(int argn, char *argc[])
 	svcr = svcudp_create(RPC_ANYSOCK);
 
 	//call routine
-	rslt = registerrpc(progNum, VERSNUM, PROCNUM, simplePing, xdr_int, xdr_int);
+	rslt =
+	    registerrpc(progNum, VERSNUM, PROCNUM, simplePing, xdr_int,
+			xdr_int);
 
-	if (run_mode)
-	{
+	if (run_mode) {
 		printf("SVC : %d\n", svcr);
 		printf("rslt : %d\n", rslt);
 	}

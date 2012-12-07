@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 		return 1;
 	in[40] = '\0';
 	for (i = 0; i < 20; i++) {
-		sscanf(&in[2*i], "%02x", &v);
+		sscanf(&in[2 * i], "%02x", &v);
 		out[i] = v;
 	}
 	write(STDOUT_FILENO, out, 20);

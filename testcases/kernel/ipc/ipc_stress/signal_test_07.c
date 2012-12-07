@@ -69,15 +69,15 @@
 #endif
 
 /* Function prototypes */
-void handler (int, int, struct sigcontext *);
-void init_sig ();
-void sys_error (const char *, int);
-void error (const char *, int);
+void handler(int, int, struct sigcontext *);
+void init_sig();
+void sys_error(const char *, int);
+void error(const char *, int);
 
 int signals_received = 0;
 
-#define MAXSIG 	1024*1024		/* Max interrupts */
-#define MAXTIME	2			/* Time out (minutes) */
+#define MAXSIG 	1024*1024	/* Max interrupts */
+#define MAXTIME	2		/* Time out (minutes) */
 
 /*---------------------------------------------------------------------+
 |                               main ()                                |
@@ -86,18 +86,18 @@ int signals_received = 0;
 | Function:  Main program  (see prolog for more details)               |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int	timeout = MAXTIME*60;	/* Timeout value */
-	int	i;			/* Loop index */
-	char 	msg [256];		/* Buffer for error message */
+	int timeout = MAXTIME * 60;	/* Timeout value */
+	int i;			/* Loop index */
+	char msg[256];		/* Buffer for error message */
 
 	/* Print out program header */
-	printf ("%s: IPC TestSuite program\n\n", *argv);
-	fflush (stdout);
+	printf("%s: IPC TestSuite program\n\n", *argv);
+	fflush(stdout);
 
 	/* Set up our signal handler */
-	init_sig ();
+	init_sig();
 
 	/*
 	 * Send MAXSIG signals to the process
@@ -105,26 +105,26 @@ int main (int argc, char **argv)
 	 * Using raise, send MAX signals to the process.  Then loop until
 	 * every signal is caught by the signal handler (or the timer expires).
 	 */
-	printf ("\tSend MAX (%d) signals to the process...\n", MAXSIG);
-	fflush (stdout);
-	for (i=0; i<MAXSIG; i++)
-		raise (SIGUSR1);
+	printf("\tSend MAX (%d) signals to the process...\n", MAXSIG);
+	fflush(stdout);
+	for (i = 0; i < MAXSIG; i++)
+		raise(SIGUSR1);
 
 	while (signals_received < MAXSIG && --timeout)
-		sleep (1);
+		sleep(1);
 
 	if (timeout == 0) {
-		sprintf (msg, "failed to received %d signals in %d minutes\n",
+		sprintf(msg, "failed to received %d signals in %d minutes\n",
 			MAXSIG, MAXTIME);
-		error (msg, __LINE__);
+		error(msg, __LINE__);
 	}
 
 	/*
 	 * Received ALL of the sent signals!  Exit with success
 	 */
-	printf ("\n\tReceived EVERY signal!\n");
+	printf("\n\tReceived EVERY signal!\n");
 
-	printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 	return (0);
 }
 
@@ -139,17 +139,17 @@ int main (int argc, char **argv)
 | Returns:   Aborts if an unexpected signal is caught                  |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void handler (int signal, int code, struct sigcontext *scp)
+void handler(int signal, int code, struct sigcontext *scp)
 {
-	char msg [256];		/* Buffer for error message */
+	char msg[256];		/* Buffer for error message */
 
 	if (signal == SIGUSR1) {
 		signals_received++;
 	} else if (signal == SIGUSR2) {
-		printf ("\tcaught signal (%d)\n", signal);
+		printf("\tcaught signal (%d)\n", signal);
 	} else {
-		sprintf (msg, "caught an unexpected signal (%d)", signal);
-		error (msg, __LINE__);
+		sprintf(msg, "caught an unexpected signal (%d)", signal);
+		error(msg, __LINE__);
 	}
 }
 
@@ -168,33 +168,37 @@ void handler (int signal, int code, struct sigcontext *scp)
 | Returns:   n/a                                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void init_sig ()
+void init_sig()
 {
 	struct sigaction invec;
-	char 	msg [256];		/* Buffer for error message */
-	int 	i;
+	char msg[256];		/* Buffer for error message */
+	int i;
 
-	for (i=1; i<=SIGMAX; i++) {
+	for (i = 1; i <= SIGMAX; i++) {
 
 		/* Cannot catch or ignore the following signals */
-#ifdef _IA64    /* SIGWAITING not supported, RESERVED */
+#ifdef _IA64			/* SIGWAITING not supported, RESERVED */
 		if ((i == SIGKILL) || (i == SIGSTOP) ||
-		    (i == SIGCONT) || (i == SIGWAITING)) continue;
+		    (i == SIGCONT) || (i == SIGWAITING))
+			continue;
 #else
-# ifdef _LINUX_
-       		if ((i == SIGKILL) || (i == SIGSTOP) || ((i>=32)&&(i<=34))) continue;
-# else
-		if (i == SIGKILL || i == SIGSTOP || i == SIGCONT) continue;
-# endif
+#ifdef _LINUX_
+		if ((i == SIGKILL) || (i == SIGSTOP)
+		    || ((i >= 32) && (i <= 34)))
+			continue;
+#else
+		if (i == SIGKILL || i == SIGSTOP || i == SIGCONT)
+			continue;
+#endif
 #endif
 
-		invec.sa_handler = (void (*)(int)) handler;
-		sigemptyset (&invec.sa_mask);
+		invec.sa_handler = (void (*)(int))handler;
+		sigemptyset(&invec.sa_mask);
 		invec.sa_flags = 0;
 
-		if (sigaction (i, &invec, (struct sigaction *) NULL) < 0) {
-			sprintf (msg, "sigaction failed on signal %d", i);
-			error (msg, __LINE__);
+		if (sigaction(i, &invec, (struct sigaction *)NULL) < 0) {
+			sprintf(msg, "sigaction failed on signal %d", i);
+			error(msg, __LINE__);
 		}
 	}
 }
@@ -206,12 +210,12 @@ void init_sig ()
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void sys_error (const char *msg, int line)
+void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -221,8 +225,8 @@ void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void error (const char *msg, int line)
+void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	exit (-1);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	exit(-1);
 }

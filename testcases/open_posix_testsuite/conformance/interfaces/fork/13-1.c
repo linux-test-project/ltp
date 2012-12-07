@@ -39,14 +39,14 @@
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
 #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <sys/wait.h>
- #include <errno.h>
+#include <errno.h>
 
 #include <sys/time.h>
 
@@ -54,7 +54,7 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -85,7 +85,7 @@
 /********************************************************************************************/
 #ifndef WITHOUT_XOPEN
 /* The main test function. */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -103,25 +103,24 @@ int main(int argc, char * argv[])
 
 	ret = setitimer(ITIMER_REAL, &it, NULL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(errno, "Failed to set interval timer for ITIMER_REAL");
+	if (ret != 0) {
+		UNRESOLVED(errno,
+			   "Failed to set interval timer for ITIMER_REAL");
 	}
 
 	ret = setitimer(ITIMER_VIRTUAL, &it, NULL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(errno, "Failed to set interval timer for ITIMER_VIRTUAL");
+	if (ret != 0) {
+		UNRESOLVED(errno,
+			   "Failed to set interval timer for ITIMER_VIRTUAL");
 	}
 
 	ret = setitimer(ITIMER_PROF, &it, NULL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(errno, "Failed to set interval timer for ITIMER_PROF");
+	if (ret != 0) {
+		UNRESOLVED(errno,
+			   "Failed to set interval timer for ITIMER_PROF");
 	}
-
 #if VERBOSE > 0
 	output("All interval timers are set.\n");
 
@@ -130,48 +129,43 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-	if (child == -1)
-	{
+	if (child == -1) {
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if (child == 0)
-	{
+	if (child == 0) {
 		/* Check we get the correct information: timer is reset */
 		ret = getitimer(ITIMER_REAL, &it);
 
-		if (ret != 0)
-		{
-			UNRESOLVED(errno, "Failed to read ITIMER_REAL in child");
+		if (ret != 0) {
+			UNRESOLVED(errno,
+				   "Failed to read ITIMER_REAL in child");
 		}
 
-		if (it.it_value.tv_sec != 0)
-		{
+		if (it.it_value.tv_sec != 0) {
 			FAILED("Timer ITIMER_REAL was not reset in child");
 		}
 
 		ret = getitimer(ITIMER_VIRTUAL, &it);
 
-		if (ret != 0)
-		{
-			UNRESOLVED(errno, "Failed to read ITIMER_VIRTUAL in child");
+		if (ret != 0) {
+			UNRESOLVED(errno,
+				   "Failed to read ITIMER_VIRTUAL in child");
 		}
 
-		if (it.it_value.tv_sec != 0)
-		{
+		if (it.it_value.tv_sec != 0) {
 			FAILED("Timer ITIMER_VIRTUAL was not reset in child");
 		}
 
 		ret = getitimer(ITIMER_PROF, &it);
 
-		if (ret != 0)
-		{
-			UNRESOLVED(errno, "Failed to read ITIMER_PROF in child");
+		if (ret != 0) {
+			UNRESOLVED(errno,
+				   "Failed to read ITIMER_PROF in child");
 		}
 
-		if (it.it_value.tv_sec != 0)
-		{
+		if (it.it_value.tv_sec != 0) {
 			FAILED("Timer ITIMER_PROF was not reset in child");
 		}
 
@@ -182,13 +176,11 @@ int main(int argc, char * argv[])
 	/* Parent joins the child */
 	ctl = waitpid(child, &status, 0);
 
-	if (ctl != child)
-	{
+	if (ctl != child) {
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS))
-	{
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS)) {
 		FAILED("Child exited abnormally");
 	}
 
@@ -203,7 +195,7 @@ int main(int argc, char * argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	output_init();
 	UNTESTED("This testcase requires XSI features");

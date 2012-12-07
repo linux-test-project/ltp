@@ -59,7 +59,7 @@ int main(void)
 	changed_dir = getcwd(NULL, PATH_MAX);
 
 	if (strcmp(tmp_dir, changed_dir) == 0 &&
-			strcmp(tmp_dir, start_dir) != 0) {
+	    strcmp(tmp_dir, start_dir) != 0) {
 		printf("Temp directory successfully created and switched to\n");
 	} else {
 		printf("Temp directory is wrong!\n");

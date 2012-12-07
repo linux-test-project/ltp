@@ -31,28 +31,26 @@ int main()
 {
 	pthread_mutexattr_t mta;
 	int ret;
-        int invalid_type = -1;
+	int invalid_type = -1;
 
 	/* Initialize a mutex attributes object */
-	if (pthread_mutexattr_init(&mta) != 0)
-	{
+	if (pthread_mutexattr_init(&mta) != 0) {
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-        while (invalid_type == PTHREAD_MUTEX_NORMAL ||
-		invalid_type == PTHREAD_MUTEX_ERRORCHECK ||
-		invalid_type == PTHREAD_MUTEX_RECURSIVE ||
-		invalid_type == PTHREAD_MUTEX_DEFAULT)
-        {
-                invalid_type --;
-        }
-	 /* Set the 'type' attribute to be a negative number.  */
-	ret=pthread_mutexattr_settype(&mta, invalid_type);
+	while (invalid_type == PTHREAD_MUTEX_NORMAL ||
+	       invalid_type == PTHREAD_MUTEX_ERRORCHECK ||
+	       invalid_type == PTHREAD_MUTEX_RECURSIVE ||
+	       invalid_type == PTHREAD_MUTEX_DEFAULT) {
+		invalid_type--;
+	}
+	/* Set the 'type' attribute to be a negative number.  */
+	ret = pthread_mutexattr_settype(&mta, invalid_type);
 
-	if (ret != EINVAL)
-	{
-		printf("Test FAILED: Expected return code of EINVAL, got: %d\n", ret);
+	if (ret != EINVAL) {
+		printf("Test FAILED: Expected return code of EINVAL, got: %d\n",
+		       ret);
 		return PTS_FAIL;
 	}
 

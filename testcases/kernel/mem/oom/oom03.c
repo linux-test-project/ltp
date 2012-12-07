@@ -69,9 +69,9 @@ int main(int argc, char *argv[])
 		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
 			if (errno == ENOENT)
 				tst_resm(TCONF,
-				    "memcg swap accounting is disabled");
+					 "memcg swap accounting is disabled");
 			else
-				tst_brkm(TBROK|TERRNO, cleanup, "access");
+				tst_brkm(TBROK | TERRNO, cleanup, "access");
 		} else {
 			write_file(MEMCG_SW_LIMIT, mem);
 			testoom(0, 1, 0);

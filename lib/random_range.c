@@ -40,9 +40,9 @@
  */
 
 struct range {
-	int	min;
-	int	max;
-	int	mult;
+	int min;
+	int max;
+	int mult;
 };
 
 /*
@@ -95,23 +95,22 @@ struct range {
  * parse_range() returns -1 on error, or the number of ranges parsed.
  */
 
-static int       str_to_int();
+static int str_to_int();
 static long long divider(long long, long long, long long, long long);
 
-int
-parse_ranges(str, defmin, defmax, defmult, parse_func, rangeptr, errptr)
-char	*str;
-int	defmin;
-int	defmax;
-int	defmult;
-int	(*parse_func)();
-char	**rangeptr;
-char	**errptr;
+int parse_ranges(str, defmin, defmax, defmult, parse_func, rangeptr, errptr)
+char *str;
+int defmin;
+int defmax;
+int defmult;
+int (*parse_func) ();
+char **rangeptr;
+char **errptr;
 {
-	int		ncommas;
-	char		*tmpstr, *cp, *tok, *n1str, *n2str, *multstr;
-	struct range	*rp, *ranges;
-	static char	errmsg[256];
+	int ncommas;
+	char *tmpstr, *cp, *tok, *n1str, *n2str, *multstr;
+	struct range *rp, *ranges;
+	static char errmsg[256];
 
 	if (errptr != NULL) {
 		*errptr = errmsg;
@@ -128,7 +127,7 @@ char	**errptr;
 	}
 
 	tmpstr = strdup(str);
-	ranges = (struct range *)malloc((ncommas+1) * sizeof(struct range));
+	ranges = (struct range *)malloc((ncommas + 1) * sizeof(struct range));
 	rp = ranges;
 
 	tok = strtok(tmpstr, ",");
@@ -143,11 +142,11 @@ char	**errptr;
 
 		if ((cp = strchr(n1str, ':')) != NULL) {
 			*cp = '\0';
-			n2str = cp+1;
+			n2str = cp + 1;
 
 			if ((cp = strchr(n2str, ':')) != NULL) {
 				*cp = '\0';
-				multstr = cp+1;
+				multstr = cp + 1;
 			}
 		}
 
@@ -158,8 +157,10 @@ char	**errptr;
 		 */
 
 		if ((int)strlen(n1str) > 0) {
-			if ((*parse_func)(n1str, &rp->min) < 0) {
-				sprintf(errmsg, "error parsing string %s into an integer", n1str);
+			if ((*parse_func) (n1str, &rp->min) < 0) {
+				sprintf(errmsg,
+					"error parsing string %s into an integer",
+					n1str);
 				free(tmpstr);
 				free(ranges);
 				return -1;
@@ -176,8 +177,10 @@ char	**errptr;
 		if (n2str == NULL) {
 			rp->max = rp->min;
 		} else if ((int)strlen(n2str) > 0) {
-			if ((*parse_func)(n2str, &rp->max) < 0) {
-				sprintf(errmsg, "error parsing string %s into an integer", n2str);
+			if ((*parse_func) (n2str, &rp->max) < 0) {
+				sprintf(errmsg,
+					"error parsing string %s into an integer",
+					n2str);
 				free(tmpstr);
 				free(ranges);
 				return -1;
@@ -192,8 +195,10 @@ char	**errptr;
 		 */
 
 		if (multstr != NULL && (int)strlen(multstr) > 0) {
-			if ((*parse_func)(multstr, &rp->mult) < 0) {
-				sprintf(errmsg, "error parsing string %s into an integer", multstr);
+			if ((*parse_func) (multstr, &rp->mult) < 0) {
+				sprintf(errmsg,
+					"error parsing string %s into an integer",
+					multstr);
 				free(tmpstr);
 				free(ranges);
 				return -1;
@@ -209,7 +214,7 @@ char	**errptr;
 	if (rangeptr != NULL) {
 		*rangeptr = (char *)ranges;
 	} else {
-		free(ranges);		/* just running in parse mode */
+		free(ranges);	/* just running in parse mode */
 	}
 
 	return (rp - ranges);
@@ -219,12 +224,11 @@ char	**errptr;
  * The default integer-parsing function
  */
 
-static int
-str_to_int(str, ip)
-char	*str;
-int	*ip;
+static int str_to_int(str, ip)
+char *str;
+int *ip;
 {
-	char	c;
+	char c;
 
 	if (sscanf(str, "%i%c", ip, &c) != 1) {
 		return -1;
@@ -239,26 +243,23 @@ int	*ip;
  * and that r is a valid range within that buffer.
  */
 
-int
-range_min(rbuf, r)
-char	*rbuf;
-int	r;
+int range_min(rbuf, r)
+char *rbuf;
+int r;
 {
 	return ((struct range *)rbuf)[r].min;
 }
 
-int
-range_max(rbuf, r)
-char	*rbuf;
-int	r;
+int range_max(rbuf, r)
+char *rbuf;
+int r;
 {
 	return ((struct range *)rbuf)[r].max;
 }
 
-int
-range_mult(rbuf, r)
-char	*rbuf;
-int	r;
+int range_mult(rbuf, r)
+char *rbuf;
+int r;
 {
 	return ((struct range *)rbuf)[r].mult;
 }
@@ -288,16 +289,15 @@ int	r;
  *          setting the seed.
  *****************************************************************************/
 
-long
-random_range(min, max, mult, errp)
-int	min;
-int	max;
-int	mult;
-char	**errp;
+long random_range(min, max, mult, errp)
+int min;
+int max;
+int mult;
+char **errp;
 {
-	int     	r, nmults, orig_min, orig_max, orig_mult, tmp;
-	extern long	lrand48();
-	static char	errbuf[128];
+	int r, nmults, orig_min, orig_max, orig_mult, tmp;
+	extern long lrand48();
+	static char errbuf[128];
 
 	/*
 	 * Sanity check
@@ -333,44 +333,46 @@ char	**errp;
 	 * select the random number
 	 */
 
-    	if ((r = min % mult))     /* bump to the next higher 'mult' multiple */
-        	min += mult - r;
+	if ((r = min % mult))	/* bump to the next higher 'mult' multiple */
+		min += mult - r;
 
-    	if ((r = max % mult))     /* reduce to the next lower 'mult' multiple */
-        	max -= r;
+	if ((r = max % mult))	/* reduce to the next lower 'mult' multiple */
+		max -= r;
 
-    	if (min > max) {         /* no 'mult' multiples between min & max */
+	if (min > max) {	/* no 'mult' multiples between min & max */
 		if (errp != NULL) {
-			sprintf(errbuf, "no numbers in the range %d:%d that are a multiple of %d", orig_min, orig_max, orig_mult);
+			sprintf(errbuf,
+				"no numbers in the range %d:%d that are a multiple of %d",
+				orig_min, orig_max, orig_mult);
 			*errp = errbuf;
 		}
-        	return -1;
+		return -1;
 	}
 
 	if (errp != NULL) {
 		*errp = NULL;
 	}
 
-    	nmults = ((max - min) / mult) + 1;
+	nmults = ((max - min) / mult) + 1;
 #if CRAY
-        /*
-         * If max is less than 2gb, then the value can fit in 32 bits
-         * and the standard lrand48() routine can be used.
-         */
-        if (max <= (long)2147483647) {
-            return (long) (min + (((long)lrand48() % nmults) * mult));
-        } else {
-            /*
-             * max is greater than 2gb - meeds more than 32 bits.
-             * Since lrand48 only will get a number up to 32bits.
-             */
-	    long randnum;
-            randnum=divider(min, max, 0, -1);
-            return (long) (min + ((randnum % nmults) * mult));
-        }
+	/*
+	 * If max is less than 2gb, then the value can fit in 32 bits
+	 * and the standard lrand48() routine can be used.
+	 */
+	if (max <= (long)2147483647) {
+		return (long)(min + (((long)lrand48() % nmults) * mult));
+	} else {
+		/*
+		 * max is greater than 2gb - meeds more than 32 bits.
+		 * Since lrand48 only will get a number up to 32bits.
+		 */
+		long randnum;
+		randnum = divider(min, max, 0, -1);
+		return (long)(min + ((randnum % nmults) * mult));
+	}
 
 #else
-        return (min + ((lrand48() % nmults) * mult));
+	return (min + ((lrand48() % nmults) * mult));
 #endif
 
 }
@@ -378,16 +380,15 @@ char	**errp;
 /*
  * Just like random_range, but all values are longs.
  */
-long
-random_rangel(min, max, mult, errp)
-long	min;
-long	max;
-long	mult;
-char	**errp;
+long random_rangel(min, max, mult, errp)
+long min;
+long max;
+long mult;
+char **errp;
 {
-	long     	r, nmults, orig_min, orig_max, orig_mult, tmp;
-	extern long	lrand48();
-	static char	errbuf[128];
+	long r, nmults, orig_min, orig_max, orig_mult, tmp;
+	extern long lrand48();
+	static char errbuf[128];
 
 	/*
 	 * Sanity check
@@ -423,63 +424,62 @@ char	**errp;
 	 * select the random number
 	 */
 
-    	if ((r = min % mult))     /* bump to the next higher 'mult' multiple */
-        	min += mult - r;
+	if ((r = min % mult))	/* bump to the next higher 'mult' multiple */
+		min += mult - r;
 
-    	if ((r = max % mult))     /* reduce to the next lower 'mult' multiple */
-        	max -= r;
+	if ((r = max % mult))	/* reduce to the next lower 'mult' multiple */
+		max -= r;
 
-    	if (min > max) {         /* no 'mult' multiples between min & max */
+	if (min > max) {	/* no 'mult' multiples between min & max */
 		if (errp != NULL) {
-		    sprintf(errbuf,
-			"no numbers in the range %ld:%ld that are a multiple of %ld",
-			orig_min, orig_max, orig_mult);
-		    *errp = errbuf;
+			sprintf(errbuf,
+				"no numbers in the range %ld:%ld that are a multiple of %ld",
+				orig_min, orig_max, orig_mult);
+			*errp = errbuf;
 		}
-        	return -1;
+		return -1;
 	}
 
 	if (errp != NULL) {
 		*errp = NULL;
 	}
 
-    	nmults = ((max - min) / mult) + 1;
+	nmults = ((max - min) / mult) + 1;
 #if CRAY || (_MIPS_SZLONG == 64)
-        /*
-         * If max is less than 2gb, then the value can fit in 32 bits
-         * and the standard lrand48() routine can be used.
-         */
-        if (max <= (long)2147483647) {
-            return (long) (min + (((long)lrand48() % nmults) * mult));
-        } else {
-            /*
-             * max is greater than 2gb - meeds more than 32 bits.
-             * Since lrand48 only will get a number up to 32bits.
-             */
-	    long randnum;
-            randnum=divider(min, max, 0, -1);
-            return (long) (min + ((randnum % nmults) * mult));
-        }
+	/*
+	 * If max is less than 2gb, then the value can fit in 32 bits
+	 * and the standard lrand48() routine can be used.
+	 */
+	if (max <= (long)2147483647) {
+		return (long)(min + (((long)lrand48() % nmults) * mult));
+	} else {
+		/*
+		 * max is greater than 2gb - meeds more than 32 bits.
+		 * Since lrand48 only will get a number up to 32bits.
+		 */
+		long randnum;
+		randnum = divider(min, max, 0, -1);
+		return (long)(min + ((randnum % nmults) * mult));
+	}
 
 #else
-    	return (min + ((lrand48() % nmults) * mult));
+	return (min + ((lrand48() % nmults) * mult));
 #endif
 }
 
 /*
  *  Attempts to be just like random_range, but everything is long long (64 bit)
  */
-long long
-random_rangell(min, max, mult, errp)
-long long	min;
-long long	max;
-long long	mult;
-char		**errp;
+long long random_rangell(min, max, mult, errp)
+long long min;
+long long max;
+long long mult;
+char **errp;
 {
-	long long     	r, nmults, orig_min, orig_max, orig_mult, tmp;
-        long long	randnum;
-	extern long	lrand48();
-	static char	errbuf[128];
+	long long r, nmults, orig_min, orig_max, orig_mult, tmp;
+	long long randnum;
+	extern long lrand48();
+	static char errbuf[128];
 
 	/*
 	 * Sanity check
@@ -515,41 +515,42 @@ char		**errp;
 	 * select the random number
 	 */
 
-    	if ((r = min % mult))     /* bump to the next higher 'mult' multiple */
-        	min += mult - r;
+	if ((r = min % mult))	/* bump to the next higher 'mult' multiple */
+		min += mult - r;
 
-    	if ((r = max % mult))     /* reduce to the next lower 'mult' multiple */
-        	max -= r;
+	if ((r = max % mult))	/* reduce to the next lower 'mult' multiple */
+		max -= r;
 
-    	if (min > max) {         /* no 'mult' multiples between min & max */
+	if (min > max) {	/* no 'mult' multiples between min & max */
 		if (errp != NULL) {
-		    sprintf(errbuf,
-			"no numbers in the range %lld:%lld that are a multiple of %lld",
-			orig_min, orig_max, orig_mult);
-		    *errp = errbuf;
+			sprintf(errbuf,
+				"no numbers in the range %lld:%lld that are a multiple of %lld",
+				orig_min, orig_max, orig_mult);
+			*errp = errbuf;
 		}
-        	return -1;
+		return -1;
 	}
 
 	if (errp != NULL) {
 		*errp = NULL;
 	}
 
-    	nmults = ((max - min) / mult) + 1;
-        /*
+	nmults = ((max - min) / mult) + 1;
+	/*
 	 * If max is less than 2gb, then the value can fit in 32 bits
 	 * and the standard lrand48() routine can be used.
 	 */
 	if (max <= (long)2147483647) {
-    	    return (long long) (min + (((long long)lrand48() % nmults) * mult));
+		return (long long)(min +
+				   (((long long)lrand48() % nmults) * mult));
 	} else {
-	    /*
-	     * max is greater than 2gb - meeds more than 32 bits.
-	     * Since lrand48 only will get a number up to 32bits.
-	     */
-	    randnum=divider(min, max, 0, -1);
-	    return (long long) (min + ((randnum % nmults) * mult));
-        }
+		/*
+		 * max is greater than 2gb - meeds more than 32 bits.
+		 * Since lrand48 only will get a number up to 32bits.
+		 */
+		randnum = divider(min, max, 0, -1);
+		return (long long)(min + ((randnum % nmults) * mult));
+	}
 
 }
 
@@ -570,61 +571,61 @@ char		**errp;
 static long long
 divider(long long min, long long max, long long cnt, long long rand)
 {
-    long long med, half, diff;
+	long long med, half, diff;
 
-    /*
-     * prevent run away code.  We are dividing by two each count.
-     * if we get to a count of more than 32, we should have gotten
-     * to 2gb.
-     */
-    if (cnt > 32)
-       return -1;
+	/*
+	 * prevent run away code.  We are dividing by two each count.
+	 * if we get to a count of more than 32, we should have gotten
+	 * to 2gb.
+	 */
+	if (cnt > 32)
+		return -1;
 
-    /*
-     * Only get a random number the first time.
-     */
-    if (cnt == 0 || rand < -1) {
-        rand = (long long)lrand48();  /* 32 bit random number */
-    }
-
-    diff = max - min;
-
-    if (diff <= 2147483647)
-	return min + rand;
-
-    half = diff/(long long)2;   /* half the distance between min and max */
-    med = min + half;	        /* med way point between min and max */
-
-#if DEBUG
-printf("divider: min=%lld, max=%lld, cnt=%lld, rand=%lld\n", min, max, cnt, rand);
-printf("   diff = %lld, half = %lld,   med = %lld\n", diff, half, med);
-#endif
-
-    if (half <= 2147483647) {
-        /*
-         * If half is smaller than 2gb, we can use the random number
-         * to pick the number within the min to med or med to max
-         * if the cnt bit of rand is zero or one, respectively.
-         */
-        if (rand & (1<<cnt))
-	    return med + rand;
-        else
-	    return min + rand;
-    } else {
-        /*
-	 * recursively call ourself to reduce the value to the bottom half
-	 * or top half (bit cnt is set).
-         */
-        if (rand & (1<<cnt)) {
-	    return divider(med, max, cnt+1, rand);
-	} else {
-	    return divider(min, med, cnt+1, rand);
+	/*
+	 * Only get a random number the first time.
+	 */
+	if (cnt == 0 || rand < -1) {
+		rand = (long long)lrand48();	/* 32 bit random number */
 	}
 
-    }
+	diff = max - min;
+
+	if (diff <= 2147483647)
+		return min + rand;
+
+	half = diff / (long long)2;	/* half the distance between min and max */
+	med = min + half;	/* med way point between min and max */
+
+#if DEBUG
+	printf("divider: min=%lld, max=%lld, cnt=%lld, rand=%lld\n", min, max,
+	       cnt, rand);
+	printf("   diff = %lld, half = %lld,   med = %lld\n", diff, half, med);
+#endif
+
+	if (half <= 2147483647) {
+		/*
+		 * If half is smaller than 2gb, we can use the random number
+		 * to pick the number within the min to med or med to max
+		 * if the cnt bit of rand is zero or one, respectively.
+		 */
+		if (rand & (1 << cnt))
+			return med + rand;
+		else
+			return min + rand;
+	} else {
+		/*
+		 * recursively call ourself to reduce the value to the bottom half
+		 * or top half (bit cnt is set).
+		 */
+		if (rand & (1 << cnt)) {
+			return divider(med, max, cnt + 1, rand);
+		} else {
+			return divider(min, med, cnt + 1, rand);
+		}
+
+	}
 
 }
-
 
 /*****************************************************************************
  * random_range_seed(s)
@@ -633,13 +634,12 @@ printf("   diff = %lld, half = %lld,   med = %lld\n", diff, half, med);
  * be used in random_range().
  *****************************************************************************/
 
-void
-random_range_seed(s)
-long    s;
+void random_range_seed(s)
+long s;
 {
-    extern void srand48();
+	extern void srand48();
 
-    srand48(s);
+	srand48(s);
 }
 
 /****************************************************************************
@@ -649,56 +649,54 @@ long    s;
  * set in mask.  If mask is zero, zero is returned.
  *
  ****************************************************************************/
-long
-random_bit(long mask)
+long random_bit(long mask)
 {
-    int nbits = 0;      /* number of set bits in mask */
-    long bit;           /* used to count bits and num of set bits choosen */
-    int nshift;         /* used to count bit shifts */
+	int nbits = 0;		/* number of set bits in mask */
+	long bit;		/* used to count bits and num of set bits choosen */
+	int nshift;		/* used to count bit shifts */
 
-    if (mask == 0)
-        return 0;
+	if (mask == 0)
+		return 0;
 
-    /*
-     * get the number of bits set in mask
-     */
+	/*
+	 * get the number of bits set in mask
+	 */
 #ifndef CRAY
 
-        bit=1L;
-        for (nshift=0; (unsigned int)nshift<sizeof(long)*8; nshift++) {
-                if (mask & bit)
-                        nbits++;
-                bit=bit<<1;
-        }
+	bit = 1L;
+	for (nshift = 0; (unsigned int)nshift < sizeof(long) * 8; nshift++) {
+		if (mask & bit)
+			nbits++;
+		bit = bit << 1;
+	}
 
 #else
-        nbits=_popcnt(mask);
-#endif  /* if CRAY */
+	nbits = _popcnt(mask);
+#endif /* if CRAY */
 
-    /*
-     * randomly choose a bit.
-     */
-    bit=random_range(1, nbits, 1, NULL);
+	/*
+	 * randomly choose a bit.
+	 */
+	bit = random_range(1, nbits, 1, NULL);
 
-    /*
-     * shift bits until you determine which bit was randomly choosen.
-     * nshift will hold the number of shifts to make.
-     */
+	/*
+	 * shift bits until you determine which bit was randomly choosen.
+	 * nshift will hold the number of shifts to make.
+	 */
 
-    nshift=0;
-    while (bit) {
-        /* check if the current one's bit is set */
-        if (mask & 1L) {
-            bit--;
-        }
-        mask = mask >> 1;
-        nshift++;
-    }
+	nshift = 0;
+	while (bit) {
+		/* check if the current one's bit is set */
+		if (mask & 1L) {
+			bit--;
+		}
+		mask = mask >> 1;
+		nshift++;
+	}
 
-    return 01L << (nshift-1);
+	return 01L << (nshift - 1);
 
 }
-
 
 #if RANDOM_BIT_UNITTEST
 /*
@@ -708,210 +706,213 @@ main(argc, argv)
 int argc;
 char **argv;
 {
-    int ind;
-    int cnt, iter;
-    long mask, ret;
+	int ind;
+	int cnt, iter;
+	long mask, ret;
 
-    printf("test for first and last bit set\n");
-    mask=1L;
-    ret=random_bit(mask);
-    printf("random_bit(%#o) returned %#o\n", mask, ret);
+	printf("test for first and last bit set\n");
+	mask = 1L;
+	ret = random_bit(mask);
+	printf("random_bit(%#o) returned %#o\n", mask, ret);
 
-    mask=1L<<(sizeof(long)*8-1);
-    ret=random_bit(mask);
-    printf("random_bit(%#o) returned %#o\n", mask, ret);
+	mask = 1L << (sizeof(long) * 8 - 1);
+	ret = random_bit(mask);
+	printf("random_bit(%#o) returned %#o\n", mask, ret);
 
-    if (argc >= 3) {
-        iter=atoi(argv[1]);
-        for (ind=2; ind<argc; ind++) {
-            printf("Calling random_bit %d times for mask %#o\n", iter, mask);
-            sscanf(argv[ind], "%i", &mask);
-            for (cnt=0; cnt<iter; cnt++) {
-                ret=random_bit(mask);
-                printf("random_bit(%#o) returned %#o\n", mask, ret);
-            }
-        }
-    }
-    exit(0);
+	if (argc >= 3) {
+		iter = atoi(argv[1]);
+		for (ind = 2; ind < argc; ind++) {
+			printf("Calling random_bit %d times for mask %#o\n",
+			       iter, mask);
+			sscanf(argv[ind], "%i", &mask);
+			for (cnt = 0; cnt < iter; cnt++) {
+				ret = random_bit(mask);
+				printf("random_bit(%#o) returned %#o\n", mask,
+				       ret);
+			}
+		}
+	}
+	exit(0);
 }
 
 #endif /* end if RANDOM_BIT_UNITTEST */
-
 
 #if UNIT_TEST
 /*
  *  The following is a unit test main function for random_range*().
  */
 
-#define PARTNUM	10	/* used to determine even distribution of random numbers */
+#define PARTNUM	10		/* used to determine even distribution of random numbers */
 #define MEG  1024*1024*1024
 #define GIG 1073741824
-int
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char **argv;
 {
-    int ind;
-    int cnt, iter=10;
-    int imin=0, imult=1, itmin, itmax=0;
+	int ind;
+	int cnt, iter = 10;
+	int imin = 0, imult = 1, itmin, itmax = 0;
 #if CRAY
-    int imax=6*GIG;	/* higher than 32 bits */
+	int imax = 6 * GIG;	/* higher than 32 bits */
 #else
-    int imax=1048576;
+	int imax = 1048576;
 #endif
 
-    long lret, lmin=0, lmult=1, ltmin, ltmax=0;
+	long lret, lmin = 0, lmult = 1, ltmin, ltmax = 0;
 #if CRAY || (_MIPS_SZLONG == 64)
-    long lmax=6*(long)GIG;	/* higher than 32 bits */
+	long lmax = 6 * (long)GIG;	/* higher than 32 bits */
 #else
-    long lmax=1048576;
+	long lmax = 1048576;
 #endif
-    long long llret, llmin=0, llmult=1, lltmin, lltmax=0;
-    long long llmax=(long long)80*(long long)GIG;
+	long long llret, llmin = 0, llmult = 1, lltmin, lltmax = 0;
+	long long llmax = (long long)80 * (long long)GIG;
 
-    long part;
-    long long lpart;
-    long cntarr[PARTNUM];
-    long valbound[PARTNUM];
-    long long lvalbound[PARTNUM];
+	long part;
+	long long lpart;
+	long cntarr[PARTNUM];
+	long valbound[PARTNUM];
+	long long lvalbound[PARTNUM];
 
-    for (ind=0; ind<PARTNUM; ind++)
-	cntarr[ind]=0;
+	for (ind = 0; ind < PARTNUM; ind++)
+		cntarr[ind] = 0;
 
-    if (argc < 2) {
-        printf("Usage: %s func [iterations] \n", argv[0]);
-	printf("func can be random_range, random_rangel, random_rangell\n");
-	exit(1);
-    }
+	if (argc < 2) {
+		printf("Usage: %s func [iterations] \n", argv[0]);
+		printf
+		    ("func can be random_range, random_rangel, random_rangell\n");
+		exit(1);
+	}
 
-    if (argc >= 3) {
-        if (sscanf(argv[2], "%i", &iter) != 1) {
-            printf("Usage: %s [func iterations] \n", argv[0]);
-	    printf("argv[2] is not a number\n");
-	    exit(1);
-        }
-    }
-
-
-    /*
-     * random_rangel ()
-     */
-    if (strcmp(argv[1], "random_rangel") == 0) {
-	ltmin=lmax;
-        part = lmax/PARTNUM;
-        for (ind=0; ind<PARTNUM; ind++) {
-	    valbound[ind]=part*ind;
-        }
-
-	for (cnt=0; cnt<iter; cnt++) {
-	    lret=random_rangel(lmin, lmax, lmult, NULL);
-	    if (iter < 100)
-	        printf("%ld\n", lret);
-	    if (lret < ltmin)
-		ltmin = lret;
-	    if (lret > ltmax)
-		ltmax = lret;
-	    for (ind=0; ind<PARTNUM-1; ind++) {
-		if (valbound[ind]  < lret && lret <= valbound[ind+1]) {
-		    cntarr[ind]++;
-		    break;
+	if (argc >= 3) {
+		if (sscanf(argv[2], "%i", &iter) != 1) {
+			printf("Usage: %s [func iterations] \n", argv[0]);
+			printf("argv[2] is not a number\n");
+			exit(1);
 		}
-	    }
-	    if (lret > valbound[PARTNUM-1]) {
-		cntarr[PARTNUM-1]++;
-	    }
-        }
-        for (ind=0; ind<PARTNUM-1; ind++) {
-	    printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", ind+1,
-	        valbound[ind], valbound[ind+1], cntarr[ind],
-	        (float)(cntarr[ind]/(float)iter));
-        }
-        printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", PARTNUM,
-	    valbound[PARTNUM-1], lmax, cntarr[PARTNUM-1],
-	    (float)(cntarr[PARTNUM-1]/(float)iter));
-	printf("  min=%ld,  max=%ld\n", ltmin, ltmax);
+	}
 
-    } else if (strcmp(argv[1], "random_rangell") == 0) {
-       /*
-	* random_rangell() unit test
-        */
-	 lltmin=llmax;
-        lpart = llmax/PARTNUM;
-        for (ind=0; ind<PARTNUM; ind++) {
-	    lvalbound[ind]=(long long)(lpart*ind);
-        }
-
-	for (cnt=0; cnt<iter; cnt++) {
-	    llret=random_rangell(llmin, llmax, llmult, NULL);
-	    if (iter < 100)
-	        printf("random_rangell returned %lld\n", llret);
-            if (llret < lltmin)
-                lltmin = llret;
-            if (llret > lltmax)
-                lltmax = llret;
-
-	    for (ind=0; ind<PARTNUM-1; ind++) {
-		if (lvalbound[ind]  < llret && llret <= lvalbound[ind+1]) {
-		    cntarr[ind]++;
-		    break;
-		}
-	    }
-	    if (llret > lvalbound[PARTNUM-1]) {
-		cntarr[PARTNUM-1]++;
-	    }
-        }
-        for (ind=0; ind<PARTNUM-1; ind++) {
-            printf("%2d %-13lld to  %-13lld   %5ld %4.4f\n", ind+1,
-                lvalbound[ind], lvalbound[ind+1], cntarr[ind],
-                (float)(cntarr[ind]/(float)iter));
-        }
-        printf("%2d %-13lld to  %-13lld   %5ld %4.4f\n", PARTNUM,
-            lvalbound[PARTNUM-1], llmax, cntarr[PARTNUM-1],
-            (float)(cntarr[PARTNUM-1]/(float)iter));
-	printf("  min=%lld,  max=%lld\n", lltmin, lltmax);
-
-    } else {
 	/*
-	 * random_range() unit test
-         */
-	itmin=imax;
-        part = imax/PARTNUM;
-        for (ind=0; ind<PARTNUM; ind++) {
-	    valbound[ind]=part*ind;
-        }
-
-	for (cnt=0; cnt<iter; cnt++) {
-	    lret=random_range(imin, imax, imult, NULL);
-	    if (iter < 100)
-	        printf("%ld\n", lret);
-            if (lret < itmin)
-                itmin = lret;
-            if (lret > itmax)
-                itmax = lret;
-
-	    for (ind=0; ind<PARTNUM-1; ind++) {
-		if (valbound[ind]  < lret && lret <= valbound[ind+1]) {
-		    cntarr[ind]++;
-		    break;
+	 * random_rangel ()
+	 */
+	if (strcmp(argv[1], "random_rangel") == 0) {
+		ltmin = lmax;
+		part = lmax / PARTNUM;
+		for (ind = 0; ind < PARTNUM; ind++) {
+			valbound[ind] = part * ind;
 		}
-	    }
-	    if (lret > valbound[PARTNUM-1]) {
-		cntarr[PARTNUM-1]++;
-	    }
-        }
-        for (ind=0; ind<PARTNUM-1; ind++) {
-	    printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", ind+1,
-	        valbound[ind], valbound[ind+1], cntarr[ind],
-	        (float)(cntarr[ind]/(float)iter));
-        }
-        printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", PARTNUM,
-	    valbound[PARTNUM-1], (long)imax, cntarr[PARTNUM-1],
-	    (float)(cntarr[PARTNUM-1]/(float)iter));
-	printf("  min=%d,  max=%d\n", itmin, itmax);
 
-    }
+		for (cnt = 0; cnt < iter; cnt++) {
+			lret = random_rangel(lmin, lmax, lmult, NULL);
+			if (iter < 100)
+				printf("%ld\n", lret);
+			if (lret < ltmin)
+				ltmin = lret;
+			if (lret > ltmax)
+				ltmax = lret;
+			for (ind = 0; ind < PARTNUM - 1; ind++) {
+				if (valbound[ind] < lret
+				    && lret <= valbound[ind + 1]) {
+					cntarr[ind]++;
+					break;
+				}
+			}
+			if (lret > valbound[PARTNUM - 1]) {
+				cntarr[PARTNUM - 1]++;
+			}
+		}
+		for (ind = 0; ind < PARTNUM - 1; ind++) {
+			printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", ind + 1,
+			       valbound[ind], valbound[ind + 1], cntarr[ind],
+			       (float)(cntarr[ind] / (float)iter));
+		}
+		printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", PARTNUM,
+		       valbound[PARTNUM - 1], lmax, cntarr[PARTNUM - 1],
+		       (float)(cntarr[PARTNUM - 1] / (float)iter));
+		printf("  min=%ld,  max=%ld\n", ltmin, ltmax);
 
-    exit(0);
+	} else if (strcmp(argv[1], "random_rangell") == 0) {
+		/*
+		 * random_rangell() unit test
+		 */
+		lltmin = llmax;
+		lpart = llmax / PARTNUM;
+		for (ind = 0; ind < PARTNUM; ind++) {
+			lvalbound[ind] = (long long)(lpart * ind);
+		}
+
+		for (cnt = 0; cnt < iter; cnt++) {
+			llret = random_rangell(llmin, llmax, llmult, NULL);
+			if (iter < 100)
+				printf("random_rangell returned %lld\n", llret);
+			if (llret < lltmin)
+				lltmin = llret;
+			if (llret > lltmax)
+				lltmax = llret;
+
+			for (ind = 0; ind < PARTNUM - 1; ind++) {
+				if (lvalbound[ind] < llret
+				    && llret <= lvalbound[ind + 1]) {
+					cntarr[ind]++;
+					break;
+				}
+			}
+			if (llret > lvalbound[PARTNUM - 1]) {
+				cntarr[PARTNUM - 1]++;
+			}
+		}
+		for (ind = 0; ind < PARTNUM - 1; ind++) {
+			printf("%2d %-13lld to  %-13lld   %5ld %4.4f\n",
+			       ind + 1, lvalbound[ind], lvalbound[ind + 1],
+			       cntarr[ind], (float)(cntarr[ind] / (float)iter));
+		}
+		printf("%2d %-13lld to  %-13lld   %5ld %4.4f\n", PARTNUM,
+		       lvalbound[PARTNUM - 1], llmax, cntarr[PARTNUM - 1],
+		       (float)(cntarr[PARTNUM - 1] / (float)iter));
+		printf("  min=%lld,  max=%lld\n", lltmin, lltmax);
+
+	} else {
+		/*
+		 * random_range() unit test
+		 */
+		itmin = imax;
+		part = imax / PARTNUM;
+		for (ind = 0; ind < PARTNUM; ind++) {
+			valbound[ind] = part * ind;
+		}
+
+		for (cnt = 0; cnt < iter; cnt++) {
+			lret = random_range(imin, imax, imult, NULL);
+			if (iter < 100)
+				printf("%ld\n", lret);
+			if (lret < itmin)
+				itmin = lret;
+			if (lret > itmax)
+				itmax = lret;
+
+			for (ind = 0; ind < PARTNUM - 1; ind++) {
+				if (valbound[ind] < lret
+				    && lret <= valbound[ind + 1]) {
+					cntarr[ind]++;
+					break;
+				}
+			}
+			if (lret > valbound[PARTNUM - 1]) {
+				cntarr[PARTNUM - 1]++;
+			}
+		}
+		for (ind = 0; ind < PARTNUM - 1; ind++) {
+			printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", ind + 1,
+			       valbound[ind], valbound[ind + 1], cntarr[ind],
+			       (float)(cntarr[ind] / (float)iter));
+		}
+		printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", PARTNUM,
+		       valbound[PARTNUM - 1], (long)imax, cntarr[PARTNUM - 1],
+		       (float)(cntarr[PARTNUM - 1] / (float)iter));
+		printf("  min=%d,  max=%d\n", itmin, itmax);
+
+	}
+
+	exit(0);
 }
 
 #endif

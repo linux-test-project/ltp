@@ -90,17 +90,18 @@ struct test_case_t {
 	int exp_errno;
 } TC[] = {
 	{
-	"Test for ELOOP on f2: f1 -> f2", {}, O_NOFOLLOW, 00700,
-		    setupfunc_test1, ELOOP}, {
-	"Test for ELOOP on d2: d1 -> d2", {}, O_NOFOLLOW, 00700,
-		    setupfunc_test2, ELOOP}, {
-	"Test for ELOOP on f3: f1 -> f2 -> f3", {}, O_NOFOLLOW,
-		    00700, setupfunc_test3, ELOOP}, {
-	"Test for ELOOP on d3: d1 -> d2 -> d3", {}, O_NOFOLLOW,
-		    00700, setupfunc_test4, ELOOP}, {
-	"Test for success on d2: d1 -> d2", {}, O_NOFOLLOW, 00700,
-		    setupfunc_test5, 0}, {
-	NULL, {}, 0, 0, NULL, 0}
+		"Test for ELOOP on f2: f1 -> f2", {
+	}, O_NOFOLLOW, 00700, setupfunc_test1, ELOOP}, {
+		"Test for ELOOP on d2: d1 -> d2", {
+	}, O_NOFOLLOW, 00700, setupfunc_test2, ELOOP}, {
+		"Test for ELOOP on f3: f1 -> f2 -> f3", {
+	}, O_NOFOLLOW, 00700, setupfunc_test3, ELOOP}, {
+		"Test for ELOOP on d3: d1 -> d2 -> d3", {
+	}, O_NOFOLLOW, 00700, setupfunc_test4, ELOOP}, {
+		"Test for success on d2: d1 -> d2", {
+	}, O_NOFOLLOW, 00700, setupfunc_test5, 0}, {
+		NULL, {
+	}, 0, 0, NULL, 0}
 };
 
 int main(int ac, char **av)
@@ -159,7 +160,7 @@ int main(int ac, char **av)
 					tst_resm(TPASS, "open succeeded as "
 						 "expected");
 				}
- 			}
+			}
 			if (TEST_RETURN != -1)
 				close(TEST_RETURN);
 		}
@@ -176,10 +177,10 @@ void setupfunc_test1()
 	sprintf(file2, "open03.2.%d", getpid());
 	if ((fd1 = creat(file1, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
-	 }
+	}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 }
+	}
 	strcpy(TC[0].filename, file2);
 }
 
@@ -191,10 +192,10 @@ void setupfunc_test2()
 	sprintf(file2, "open03.4.%d", getpid());
 	if (mkdir(file1, 00700) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) failed: errno: %d", errno);
-	 }
+	}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 }
+	}
 	strcpy(TC[1].filename, file2);
 }
 
@@ -207,13 +208,13 @@ void setupfunc_test3()
 	sprintf(file3, "open03.7.%d", getpid());
 	if ((fd2 = creat(file1, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
-	 }
+	}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 }
+	}
 	if (symlink(file2, file3) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 }
+	}
 	strcpy(TC[2].filename, file3);
 }
 
@@ -226,13 +227,13 @@ void setupfunc_test4()
 	sprintf(file3, "open03.10.%d", getpid());
 	if (mkdir(file1, 00700) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) failed: errno: %d", errno);
-	 }
+	}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 }
+	}
 	if (symlink(file2, file3) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-	 }
+	}
 	strcpy(TC[3].filename, file3);
 }
 

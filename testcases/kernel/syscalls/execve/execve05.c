@@ -64,7 +64,7 @@ char *ev[1];
 void usage(void)
 {
 	tst_brkm(TBROK, NULL, "usage: %s <iters> <fname1> <fname2> <count>",
-	    TCID);
+		 TCID);
 }
 
 int main(int ac, char **av)
@@ -148,7 +148,8 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "Main - started pid %d", pid);
 #endif
 			if (wait(&status) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "wait failed");
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL, "child exited abnormally");
 
@@ -172,7 +173,8 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "Main - started pid %d", pid);
 #endif
 			if (wait(&status) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "wait failed");
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL, "child exited abnormally");
 
@@ -180,7 +182,7 @@ int main(int ac, char **av)
 
 		if (wait(&status) != -1)
 			tst_brkm(TBROK, cleanup,
-			    "leftover children haven't exited yet");
+				 "leftover children haven't exited yet");
 
 	}
 	cleanup();

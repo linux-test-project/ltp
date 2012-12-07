@@ -31,7 +31,7 @@
 #define FUNCTION "sem_post"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-#define SEMINITVAL 0 //initial value of semaphore = 0
+#define SEMINITVAL 0		//initial value of semaphore = 0
 
 sem_t *gsemp;
 
@@ -40,7 +40,8 @@ void sighdl(int sig)
 	return;
 }
 
-int main() {
+int main()
+{
 	char semname[28];
 	int val;
 
@@ -53,7 +54,7 @@ int main() {
 	}
 	signal(SIGALRM, sighdl);
 	sleep(1);
-        alarm(1);
+	alarm(1);
 
 	if (sem_post(gsemp) == -1) {
 		perror(ERROR_PREFIX "sem_post");
@@ -65,14 +66,13 @@ int main() {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 	}
-	if (val != SEMINITVAL+1) {
+	if (val != SEMINITVAL + 1) {
 #ifdef DEBUG
 		printf("semaphore value was not incremented\n");
 #endif
 		printf("TEST FAILED\n");
 		return PTS_FAIL;
 	}
-
 #ifdef DEBUG
 	printf("semaphore value was %d\n", val);
 #endif

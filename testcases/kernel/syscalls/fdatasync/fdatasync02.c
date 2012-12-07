@@ -78,7 +78,6 @@
 #include "test.h"
 #include "usctest.h"
 
-
 #define EXP_RET_VAL	-1
 #define SPL_FILE	"/dev/null"
 
@@ -91,6 +90,7 @@ struct test_case_t {		/* test case structure */
 
 char *TCID = "fdatasync02";
 static int exp_enos[] = { EBADF, EINVAL, 0 };
+
 static int testno;
 static int fd;
 
@@ -112,8 +112,7 @@ int main(int argc, char **argv)
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -210,4 +209,4 @@ void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
- }
+}

@@ -35,12 +35,13 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_28-1"
 
-int main() {
+int main()
+{
 	int fd;
 	char str[BUF_SIZE] = "qwerty";
 	char *buf;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -73,9 +74,9 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-        /* Now, there are no more reference on SHM_NAME but it is not unlink */
+	/* Now, there are no more reference on SHM_NAME but it is not unlink */
 
-	fd = shm_open(SHM_NAME, O_RDONLY, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDONLY, S_IRUSR | S_IWUSR);
 	if (fd == -1 && errno == ENOENT) {
 		printf("The name of the shared memory object was removed.\n");
 		return PTS_FAIL;

@@ -53,8 +53,7 @@ pthread_mutex_t mutex;
 volatile int ts_stop = 0;
 volatile double base_time;
 
-struct thread_param
-{
+struct thread_param {
 	int index;
 	volatile int stop;
 	int sleep_ms;
@@ -66,15 +65,16 @@ struct thread_param
 	volatile unsigned should_stall;
 	volatile unsigned progress;
 } tp[] = {
-	{ 0,   0,   0, 1, SCHED_FIFO, "TL",  0, 0, 0, 0 },
-	{ 1,   0, 100, 2, SCHED_FIFO, "TP1", 0, 0, 0, 0 },
-	{ 2,   0, 100, 5, SCHED_FIFO, "TP2", 0, 0, 0, 0 },
-	{ 3,   0,   0, 3, SCHED_FIFO, "TF",  1, 0, 0, 0 },
-	{ 4,   0,   0, 3, SCHED_FIFO, "TF",  2, 0, 0, 0 },
-	{ 5,   0,   0, 3, SCHED_FIFO, "TF",  3, 0, 0, 0 },
-	{ 6,   0,   0, 3, SCHED_FIFO, "TF",  4, 0, 0, 0 },
-	{ 7,   0,   0, 3, SCHED_FIFO, "TF",  5, 0, 0, 0 },
-	{ 8,   0,   0, 3, SCHED_FIFO, "TF",  6, 0, 0, 0 }
+	{
+	0, 0, 0, 1, SCHED_FIFO, "TL", 0, 0, 0, 0}, {
+	1, 0, 100, 2, SCHED_FIFO, "TP1", 0, 0, 0, 0}, {
+	2, 0, 100, 5, SCHED_FIFO, "TP2", 0, 0, 0, 0}, {
+	3, 0, 0, 3, SCHED_FIFO, "TF", 1, 0, 0, 0}, {
+	4, 0, 0, 3, SCHED_FIFO, "TF", 2, 0, 0, 0}, {
+	5, 0, 0, 3, SCHED_FIFO, "TF", 3, 0, 0, 0}, {
+	6, 0, 0, 3, SCHED_FIFO, "TF", 4, 0, 0, 0}, {
+	7, 0, 0, 3, SCHED_FIFO, "TF", 5, 0, 0, 0}, {
+	8, 0, 0, 3, SCHED_FIFO, "TF", 6, 0, 0, 0}
 };
 
 volatile unsigned do_work_dummy;
@@ -85,14 +85,14 @@ void do_work(unsigned granularity_top, volatile unsigned *progress)
 	unsigned dummy = do_work_dummy;
 
 	for (granularity_cnt = 0; granularity_cnt < granularity_top;
-	     granularity_cnt++)
-	{
+	     granularity_cnt++) {
 		for (i = 0; i < top; i++)
 			dummy = i | dummy;
 		(*progress)++;
 	}
 	return;
 }
+
 void *thread_fn(void *param)
 {
 	struct thread_param *tp = param;
@@ -109,14 +109,13 @@ void *thread_fn(void *param)
 		exit(UNRESOLVED);
 	}
 	test_set_priority(pthread_self(), SCHED_FIFO, tp->priority);
-        DPRINTF(stdout, "#EVENT %f Thread %s Started\n",
+	DPRINTF(stdout, "#EVENT %f Thread %s Started\n",
 		seconds_read() - base_time, tp->name);
-	DPRINTF(stderr,"Thread %s index %d: started \n", tp->name, tp->index);
+	DPRINTF(stderr, "Thread %s index %d: started \n", tp->name, tp->index);
 	tp->progress = 0;
 	ts.tv_sec = 0;
 	ts.tv_nsec = tp->sleep_ms * 1000 * 1000;
-	while (!tp->stop)
-	{
+	while (!tp->stop) {
 		do_work(5, &tp->progress);
 		if (tp->sleep_ms == 0)
 			continue;
@@ -127,10 +126,11 @@ void *thread_fn(void *param)
 			exit(UNRESOLVED);
 		}
 	}
-        DPRINTF(stdout, "#EVENT %f Thread %s Stopped\n",
+	DPRINTF(stdout, "#EVENT %f Thread %s Stopped\n",
 		seconds_read() - base_time, tp->name);
 	return NULL;
 }
+
 void *thread_tl(void *param)
 {
 	struct thread_param *tp = param;
@@ -138,26 +138,26 @@ void *thread_tl(void *param)
 	int rc;
 
 #if __linux__
-	rc = sched_setaffinity((pid_t)0, sizeof(mask), &mask);
+	rc = sched_setaffinity((pid_t) 0, sizeof(mask), &mask);
 #endif
-	test_set_priority(pthread_self(),SCHED_FIFO, tp->priority);
+	test_set_priority(pthread_self(), SCHED_FIFO, tp->priority);
 
 	DPRINTF(stdout, "#EVENT %f Thread TL Started\n",
 		seconds_read() - base_time);
-	DPRINTF(stderr,"Thread %s index %d: started\n", tp->name, tp->index);
+	DPRINTF(stderr, "Thread %s index %d: started\n", tp->name, tp->index);
 	if (rc < 0) {
-		EPRINTF("UNRESOLVED: Thread %s index %d: Can't set affinity: %d %s",
-			tp->name, tp->index, rc, strerror(rc));
+		EPRINTF
+		    ("UNRESOLVED: Thread %s index %d: Can't set affinity: %d %s",
+		     tp->name, tp->index, rc, strerror(rc));
 		exit(UNRESOLVED);
 	}
 	tp->progress = 0;
 	pthread_mutex_lock(&mutex);
-	while (!tp->stop)
-	{
+	while (!tp->stop) {
 		do_work(5, &tp->progress);
 	}
 	pthread_mutex_unlock(&mutex);
-        DPRINTF(stdout, "#EVENT %f Thread TL Stoped\n",
+	DPRINTF(stdout, "#EVENT %f Thread TL Stoped\n",
 		seconds_read() - base_time);
 	return NULL;
 }
@@ -172,21 +172,22 @@ void *thread_sample(void *arg)
 	int i;
 	int rc;
 
-	test_set_priority(pthread_self(),SCHED_FIFO, 7);
-	DPRINTF(stderr,"Thread Sampler: started \n");
+	test_set_priority(pthread_self(), SCHED_FIFO, 7);
+	DPRINTF(stderr, "Thread Sampler: started \n");
 	DPRINTF(stdout, "# COLUMNS %d Time TL TP1 TP2 ", 3 + cpus);
 	for (i = 0; i < (cpus - 1); i++)
 		DPRINTF(stdout, "TF%d ", i);
 	DPRINTF(stdout, "\n");
 	ts.tv_sec = 0;
 	ts.tv_nsec = period * 1000 * 1000;
-	while (!ts_stop)
-	{
+	while (!ts_stop) {
 		newtime = seconds_read();
 		size = snprintf(buffer, 1023, "%f ", newtime - base_time);
 		for (i = 0; i < cpus + 2; i++)
-			size += snprintf(buffer + size, 1023 - size, "%u ", tp[i].progress);
-		DPRINTF(stdout,"%s \n", buffer);
+			size +=
+			    snprintf(buffer + size, 1023 - size, "%u ",
+				     tp[i].progress);
+		DPRINTF(stdout, "%s \n", buffer);
 		rc = nanosleep(&ts, NULL);
 		if (rc < 0)
 			EPRINTF("UNRESOLVED: Thread %s %d: nanosleep returned "
@@ -194,19 +195,20 @@ void *thread_sample(void *arg)
 	}
 	return NULL;
 }
+
 void *thread_tb1(void *arg)
 {
 	struct timespec boost_time;
 	double t0, t1;
 	int rc;
 
-	test_set_priority(pthread_self(),SCHED_FIFO, 4);
+	test_set_priority(pthread_self(), SCHED_FIFO, 4);
 
-	DPRINTF(stderr,"Thread TB1: started\n");
+	DPRINTF(stderr, "Thread TB1: started\n");
 	DPRINTF(stdout, "#EVENT %f TB1 Thread Started\n",
 		seconds_read() - base_time);
 
-	boost_time.tv_sec = time(NULL) + *(time_t*) arg;
+	boost_time.tv_sec = time(NULL) + *(time_t *) arg;
 	boost_time.tv_nsec = 0;
 
 	t0 = seconds_read();
@@ -229,13 +231,13 @@ void *thread_tb2(void *arg)
 	double t0, t1;
 	int rc;
 
-	test_set_priority(pthread_self(),SCHED_FIFO, 6);
+	test_set_priority(pthread_self(), SCHED_FIFO, 6);
 
-	DPRINTF(stderr,"Thread TB2: started\n");
+	DPRINTF(stderr, "Thread TB2: started\n");
 	DPRINTF(stdout, "#EVENT %f TB2 Thread Started\n",
 		seconds_read() - base_time);
 
-	boost_time.tv_sec = time(NULL) + *(time_t*)arg;
+	boost_time.tv_sec = time(NULL) + *(time_t *) arg;
 	boost_time.tv_nsec = 0;
 
 	t0 = seconds_read();
@@ -250,10 +252,11 @@ void *thread_tb2(void *arg)
 	}
 	return NULL;
 }
+
 int main(int argc, char **argv)
 {
 	pthread_mutexattr_t mutex_attr;
-	pthread_attr_t	threadattr;
+	pthread_attr_t threadattr;
 	pthread_t threads[cpus - 1];
 	pthread_t threadsample, threadtp, threadtl, threadtb1, threadtb2;
 
@@ -261,7 +264,7 @@ int main(int argc, char **argv)
 	int i;
 	int rc;
 
-	test_set_priority(pthread_self(),SCHED_FIFO, 8);
+	test_set_priority(pthread_self(), SCHED_FIFO, 8);
 	cpus = sysconf(_SC_NPROCESSORS_ONLN);
 	base_time = seconds_read();
 
@@ -273,70 +276,62 @@ int main(int argc, char **argv)
 	threadattr_init(&threadattr);
 
 	/* Start the sample thread */
-	DPRINTF(stderr,"Main Thread: Creating sample thread \n");
+	DPRINTF(stderr, "Main Thread: Creating sample thread \n");
 	rc = pthread_create(&threadsample, &threadattr, thread_sample, NULL);
-        if (rc != 0) {
-                EPRINTF("UNRESOLVED: pthread_create: %d %s",
-                        rc, strerror(rc));
-                exit(UNRESOLVED);
-        }
+	if (rc != 0) {
+		EPRINTF("UNRESOLVED: pthread_create: %d %s", rc, strerror(rc));
+		exit(UNRESOLVED);
+	}
 
 	/* Start the TF threads */
-	DPRINTF(stderr,"Main Thread: Creating %d TF threads \n", cpus - 1);
-	for (i = 0; i < cpus - 1; i++)
-	{
+	DPRINTF(stderr, "Main Thread: Creating %d TF threads \n", cpus - 1);
+	for (i = 0; i < cpus - 1; i++) {
 		rc = pthread_create(&threads[i], &threadattr, thread_fn,
 				    &tp[i + 3]);
-	        if (rc != 0) {
-	                EPRINTF("UNRESOLVED: pthread_create: %d %s",
-	                        rc, strerror(rc));
-	                exit(UNRESOLVED);
-	        }
+		if (rc != 0) {
+			EPRINTF("UNRESOLVED: pthread_create: %d %s",
+				rc, strerror(rc));
+			exit(UNRESOLVED);
+		}
 	}
 	sleep(base_time + multiplier * 10 - seconds_read());
 
 	/* Start TP1, TP2 thread */
-	DPRINTF(stderr,"Main Thread: Creating TP1, TP2 thread \n");
-	for (i = 1; i <= 2; i++)
-	{
+	DPRINTF(stderr, "Main Thread: Creating TP1, TP2 thread \n");
+	for (i = 1; i <= 2; i++) {
 		rc = pthread_create(&threadtp, &threadattr, thread_fn, &tp[i]);
-        	if (rc != 0) {
-                	EPRINTF("UNRESOLVED: pthread_create: %d %s",
-                        	rc, strerror(rc));
-                	exit(UNRESOLVED);
+		if (rc != 0) {
+			EPRINTF("UNRESOLVED: pthread_create: %d %s",
+				rc, strerror(rc));
+			exit(UNRESOLVED);
 		}
-        }
+	}
 	sleep(base_time + multiplier * 20 - seconds_read());
 
 	/* Start TL thread */
-	DPRINTF(stderr,"Main Thread: Creating TL thread\n");
+	DPRINTF(stderr, "Main Thread: Creating TL thread\n");
 	rc = pthread_create(&threadtl, &threadattr, thread_tl, &tp[0]);
-        if (rc != 0) {
-                EPRINTF("UNRESOLVED: pthread_create: %d %s",
-                        rc, strerror(rc));
-                exit(UNRESOLVED);
-        }
+	if (rc != 0) {
+		EPRINTF("UNRESOLVED: pthread_create: %d %s", rc, strerror(rc));
+		exit(UNRESOLVED);
+	}
 	sleep(base_time + multiplier * 30 - seconds_read());
 
 	/* Start TB1 thread (boosting thread) */
 	time_t timeout = multiplier * 20;
-	rc = pthread_create(&threadtb1, &threadattr, thread_tb1,
-			    &timeout);
-        if (rc != 0) {
-                EPRINTF("UNRESOLVED: pthread_create: %d %s",
-                        rc, strerror(rc));
-                exit(UNRESOLVED);
-        }
+	rc = pthread_create(&threadtb1, &threadattr, thread_tb1, &timeout);
+	if (rc != 0) {
+		EPRINTF("UNRESOLVED: pthread_create: %d %s", rc, strerror(rc));
+		exit(UNRESOLVED);
+	}
 	sleep(base_time + multiplier * 60 - seconds_read());
 
 	/* Start TB2 thread (boosting thread) */
-	rc = pthread_create(&threadtb2, &threadattr, thread_tb2,
-			    &timeout);
-        if (rc != 0) {
-                EPRINTF("UNRESOLVED: pthread_create: %d %s",
-                        rc, strerror(rc));
-                exit(UNRESOLVED);
-        }
+	rc = pthread_create(&threadtb2, &threadattr, thread_tb2, &timeout);
+	if (rc != 0) {
+		EPRINTF("UNRESOLVED: pthread_create: %d %s", rc, strerror(rc));
+		exit(UNRESOLVED);
+	}
 	sleep(base_time + multiplier * 90 - seconds_read());
 
 	/* Stop TL thread */
@@ -351,13 +346,12 @@ int main(int argc, char **argv)
 	sleep(base_time + multiplier * 120 - seconds_read());
 
 	/* Stop TF threads */
-	for (i = 2; i < cpus - 1; i++)
-	{
+	for (i = 2; i < cpus - 1; i++) {
 		tp[i].stop = 1;
 	}
 
 	/* Stop sampler */
 	ts_stop = 1;
-	DPRINTF(stderr,"Main Thread: stop sampler thread \n");
+	DPRINTF(stderr, "Main Thread: stop sampler thread \n");
 	return 0;
 }

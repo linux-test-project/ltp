@@ -86,9 +86,9 @@ int main(int ac, char **av)
 	int sflag = 0;
 
 	option_t options[] = {
-		{ "H:", &Hflag, &Hopt },
-		{ "s:", &sflag, &nr_opt },
-		{ NULL, NULL, NULL }
+		{"H:", &Hflag, &Hopt},
+		{"s:", &sflag, &nr_opt},
+		{NULL, NULL, NULL}
 	};
 
 	msg = parse_opts(ac, av, options, &help);
@@ -110,15 +110,15 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Creat a temporary file used for huge mapping */
-		fildes = open(TEMPFILE, O_RDWR|O_CREAT, 0666);
+		fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666);
 		if (fildes < 0)
-			tst_brkm(TBROK|TERRNO, cleanup,
+			tst_brkm(TBROK | TERRNO, cleanup,
 				 "opening %s failed", TEMPFILE);
 
 		/* Creat a file used for normal mapping */
 		nfildes = open("/dev/zero", O_RDONLY, 0666);
 		if (nfildes < 0)
-			tst_brkm(TBROK|TERRNO, cleanup,
+			tst_brkm(TBROK | TERRNO, cleanup,
 				 "opening /dev/zero failed");
 
 		Tst_count = 0;
@@ -127,7 +127,7 @@ int main(int ac, char **av)
 		 * Call mmap on /dev/zero 5 times
 		 */
 		for (i = 0; i < 5; i++) {
-			addr = mmap(0, 256*1024*1024, PROT_READ,
+			addr = mmap(0, 256 * 1024 * 1024, PROT_READ,
 				    MAP_SHARED, nfildes, 0);
 			addrlist[i] = addr;
 		}
@@ -136,15 +136,15 @@ int main(int ac, char **av)
 		addr = mmap(LOW_ADDR, page_sz, PROT_READ,
 			    MAP_SHARED | MAP_FIXED, nfildes, 0);
 		if (addr == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, cleanup,
+			tst_brkm(TBROK | TERRNO, cleanup,
 				 "mmap failed on nfildes");
 
 		/* Attempt to mmap a huge page into a low memory address */
 		addr2 = mmap(LOW_ADDR2, map_sz, PROT_READ | PROT_WRITE,
 			     MAP_SHARED, fildes, 0);
-#if __WORDSIZE == 64 /* 64-bit process */
+#if __WORDSIZE == 64		/* 64-bit process */
 		if (addr2 == MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO, "huge mmap failed unexpectedly"
+			tst_resm(TFAIL | TERRNO, "huge mmap failed unexpectedly"
 				 " with %s (64-bit)", TEMPFILE);
 			close(fildes);
 			continue;
@@ -153,7 +153,7 @@ int main(int ac, char **av)
 		}
 #else /* 32-bit process */
 		if (addr2 == MAP_FAILED)
-			tst_resm(TFAIL|TERRNO, "huge mmap failed unexpectedly"
+			tst_resm(TFAIL | TERRNO, "huge mmap failed unexpectedly"
 				 " with %s (32-bit)", TEMPFILE);
 		else if (addr2 > 0) {
 			tst_resm(TCONF,
@@ -166,17 +166,17 @@ int main(int ac, char **av)
 
 		/* Clean up things in case we are looping */
 		for (i = 0; i < 5; i++) {
-			if (munmap(addrlist[i], 256*1024*1024) == -1)
-				tst_resm(TBROK|TERRNO,
+			if (munmap(addrlist[i], 256 * 1024 * 1024) == -1)
+				tst_resm(TBROK | TERRNO,
 					 "munmap of addrlist[%d] failed", i);
 		}
 
 #if __WORDSIZE == 64
 		if (munmap(addr2, map_sz) == -1)
-			tst_brkm(TFAIL|TERRNO, NULL, "huge munmap failed");
+			tst_brkm(TFAIL | TERRNO, NULL, "huge munmap failed");
 #endif
 		if (munmap(addr, page_sz) == -1)
-			tst_brkm(TFAIL|TERRNO, NULL, "munmap failed");
+			tst_brkm(TFAIL | TERRNO, NULL, "munmap failed");
 
 		close(fildes);
 	}
@@ -190,12 +190,10 @@ void setup(void)
 	TEST_PAUSE;
 	tst_require_root(NULL);
 	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
-		tst_brkm(TBROK|TERRNO, NULL,
-			 "mount failed on %s", Hopt);
+		tst_brkm(TBROK | TERRNO, NULL, "mount failed on %s", Hopt);
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
-	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d",
-		 Hopt, getpid());
+	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d", Hopt, getpid());
 }
 
 void cleanup(void)

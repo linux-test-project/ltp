@@ -34,50 +34,49 @@ void crasher_exit(void);
 module_init(crasher_init);
 module_exit(crasher_exit);
 
-#define CRASH "crasher"     /* name of /proc entry file */
+#define CRASH "crasher"		/* name of /proc entry file */
 
 static int crasher_read(char *buf, char **start, off_t offset, int len,
 			int *eof, void *data)
 {
-	return (sprintf (buf, "\n") );
+	return (sprintf(buf, "\n"));
 }
 
 static int crasher_write(struct file *file, const char *buffer,
-                           unsigned long count, void *data)
+			 unsigned long count, void *data)
 {
 	char value, *a;
 	spinlock_t mylock = SPIN_LOCK_UNLOCKED;
 
 	/* grab the first byte the user gave us, ignore the rest */
-	if (copy_from_user(&value,buffer, 1))
+	if (copy_from_user(&value, buffer, 1))
 		return -EFAULT;
 
-	switch ( value )
-	{
-		case '0': /* panic the system */
-			panic("KDUMP test panic\n");
-			break;
+	switch (value) {
+	case '0':		/* panic the system */
+		panic("KDUMP test panic\n");
+		break;
 
-                case '1': /* BUG() test */
-                        BUG();
-			break;
+	case '1':		/* BUG() test */
+		BUG();
+		break;
 
-		case '2': /* panic_on_oops test */
-			a=0;
-			a[1]='A';
-			break;
+	case '2':		/* panic_on_oops test */
+		a = 0;
+		a[1] = 'A';
+		break;
 
-		case '3': /* hang w/double spinlock */
-			spin_lock_irq(&mylock);
-			spin_lock_irq(&mylock);
-			break;
+	case '3':		/* hang w/double spinlock */
+		spin_lock_irq(&mylock);
+		spin_lock_irq(&mylock);
+		break;
 
-		default:
-			printk("crasher: Bad command\n");
+	default:
+		printk("crasher: Bad command\n");
 	}
 
-	return count; /* tell the user we read all his data,
-			 somtimes white lies are ok */
+	return count;		/* tell the user we read all his data,
+				   somtimes white lies are ok */
 }
 
 /* create a directory in /proc and a debug file in the new directory */
@@ -89,7 +88,7 @@ int crasher_init(void)
 	printk("loaded crasher module\n");
 
 	/* build a crasher file that can be set */
-	if ((crasher_proc = create_proc_entry(CRASH,0,NULL)) == NULL) {
+	if ((crasher_proc = create_proc_entry(CRASH, 0, NULL)) == NULL) {
 		return -ENOMEM;
 	}
 
@@ -101,6 +100,6 @@ int crasher_init(void)
 
 void crasher_exit(void)
 {
-		remove_proc_entry(CRASH, NULL);
-		printk("removed crasher module\n");
+	remove_proc_entry(CRASH, NULL);
+	printk("removed crasher module\n");
 }

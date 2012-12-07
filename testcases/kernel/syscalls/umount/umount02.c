@@ -169,9 +169,10 @@ int main(int ac, char **av)
 	if (Tflag == 1) {
 		strncpy(Type, fstype,
 			(FSTYPE_LEN <
-			 (strlen(fstype)+1)) ? FSTYPE_LEN : (strlen(fstype)+1));
+			 (strlen(fstype) + 1)) ? FSTYPE_LEN : (strlen(fstype) +
+							       1));
 	} else {
-		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE)+1);
+		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE) + 1);
 	}
 
 	if (STD_COPIES != 1) {
@@ -247,9 +248,9 @@ int setup_test(int i, int cnt)
 	switch (i) {
 	case 0:
 		/* Setup for umount(2) returning errno EBUSY. */
-		if (access(Device,F_OK)) {
+		if (access(Device, F_OK)) {
 			tst_brkm(TBROK, cleanup,
-				"Device %s does not exist", Device);
+				 "Device %s does not exist", Device);
 			return 1;
 		}
 

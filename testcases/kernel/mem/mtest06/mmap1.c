@@ -69,7 +69,7 @@ static volatile char read_lock = 0;
 char *TCID = "mmap1";
 int TST_TOTAL = 1;
 
-static void sig_handler(int signal, siginfo_t *info, void *ut)
+static void sig_handler(int signal, siginfo_t * info, void *ut)
 {
 	switch (signal) {
 	case SIGALRM:
@@ -77,10 +77,9 @@ static void sig_handler(int signal, siginfo_t *info, void *ut)
 		_exit(TPASS);
 	case SIGSEGV:
 		longjmp(jmpbuf, 1);
-	break;
-        default:
-		fprintf(stderr, "Unexpected signal - %d --- exiting\n",
-		        signal);
+		break;
+	default:
+		fprintf(stderr, "Unexpected signal - %d --- exiting\n", signal);
 		_exit(TBROK);
 	}
 }
@@ -89,7 +88,7 @@ static void sig_handler(int signal, siginfo_t *info, void *ut)
  * Signal handler that is active, when file is mapped, eg. we do not expect
  * SIGSEGV to be delivered.
  */
-static void sig_handler_mapped(int signal, siginfo_t *info, void *ut)
+static void sig_handler_mapped(int signal, siginfo_t * info, void *ut)
 {
 	switch (signal) {
 	case SIGALRM:
@@ -97,12 +96,11 @@ static void sig_handler_mapped(int signal, siginfo_t *info, void *ut)
 		_exit(TPASS);
 	case SIGSEGV:
 		tst_resm(TINFO, "[%lu] Unexpected page fault at %p",
-		         pthread_self(), info->si_addr);
+			 pthread_self(), info->si_addr);
 		_exit(TFAIL);
-	break;
-        default:
-		fprintf(stderr, "Unexpected signal - %d --- exiting\n",
-		        signal);
+		break;
+	default:
+		fprintf(stderr, "Unexpected signal - %d --- exiting\n", signal);
 		_exit(TBROK);
 	}
 }
@@ -113,19 +111,19 @@ int mkfile(int size)
 	int fd, i;
 
 	if ((fd = mkstemp(template)) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "mkstemp() failed");
+		tst_brkm(TBROK | TERRNO, NULL, "mkstemp() failed");
 
 	unlink(template);
 
 	for (i = 0; i < size; i++)
 		if (write(fd, "a", 1) == -1)
-			tst_brkm(TBROK|TERRNO, NULL, "write() failed");
+			tst_brkm(TBROK | TERRNO, NULL, "write() failed");
 
 	if (write(fd, "\0", 1) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "write() failed");
+		tst_brkm(TBROK | TERRNO, NULL, "write() failed");
 
 	if (fsync(fd) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "fsync() failed");
+		tst_brkm(TBROK | TERRNO, NULL, "fsync() failed");
 
 	return fd;
 }
@@ -138,21 +136,21 @@ void *map_write_unmap(void *ptr)
 	int j;
 
 	tst_resm(TINFO, "[%lu] - map, change contents, unmap files %ld times",
-	         pthread_self(), args[2]);
+		 pthread_self(), args[2]);
 
 	if (verbose_print)
 		tst_resm(TINFO, "map_write_unmap() arguments are: "
-		                "fd - arg[0]: %ld; "
-		                "size of file - arg[1]: %ld; "
-		                "num of map/write/unmap - arg[2]: %ld",
-		                args[0], args[1], args[2]);
+			 "fd - arg[0]: %ld; "
+			 "size of file - arg[1]: %ld; "
+			 "num of map/write/unmap - arg[2]: %ld",
+			 args[0], args[1], args[2]);
 
 	for (i = 0; i < args[2]; i++) {
 
-		map_address = mmap(0, (size_t)args[1], PROT_WRITE|PROT_READ,
-		                        MAP_SHARED, (int)args[0], 0);
+		map_address = mmap(0, (size_t) args[1], PROT_WRITE | PROT_READ,
+				   MAP_SHARED, (int)args[0], 0);
 
-		if (map_address == (void*) -1) {
+		if (map_address == (void *)-1) {
 			perror("map_write_unmap(): mmap()");
 			pthread_exit((void *)1);
 		}
@@ -162,12 +160,12 @@ void *map_write_unmap(void *ptr)
 
 		sigfillset(&sa.sa_mask);
 		sigdelset(&sa.sa_mask, SIGSEGV);
-		sa.sa_flags = SA_SIGINFO|SA_NODEFER;
+		sa.sa_flags = SA_SIGINFO | SA_NODEFER;
 		sa.sa_sigaction = sig_handler_mapped;
 
 		if (sigaction(SIGSEGV, &sa, NULL)) {
 			perror("map_write_unmap(): sigaction()");
-			pthread_exit((void*)1);
+			pthread_exit((void *)1);
 		}
 
 		if (verbose_print)
@@ -180,21 +178,22 @@ void *map_write_unmap(void *ptr)
 		}
 
 		if (verbose_print)
-			tst_resm(TINFO, "[%ld] times done: of total [%ld] iterations, "
-			         "map_write_unmap():memset() content of memory = %s",
-                                 i, args[2], (char*)map_address);
+			tst_resm(TINFO,
+				 "[%ld] times done: of total [%ld] iterations, "
+				 "map_write_unmap():memset() content of memory = %s",
+				 i, args[2], (char *)map_address);
 
 		sigfillset(&sa.sa_mask);
 		sigdelset(&sa.sa_mask, SIGSEGV);
-		sa.sa_flags = SA_SIGINFO|SA_NODEFER;
+		sa.sa_flags = SA_SIGINFO | SA_NODEFER;
 		sa.sa_sigaction = sig_handler;
 
 		if (sigaction(SIGSEGV, &sa, NULL)) {
 			perror("map_write_unmap(): sigaction()");
-			pthread_exit((void*)1);
+			pthread_exit((void *)1);
 		}
 
-		if (munmap(map_address, (size_t)args[1]) == -1) {
+		if (munmap(map_address, (size_t) args[1]) == -1) {
 			perror("map_write_unmap(): mmap()");
 			pthread_exit((void *)1);
 		}
@@ -210,29 +209,29 @@ void *read_mem(void *ptr)
 	int j;
 
 	tst_resm(TINFO, "[%lu] - read contents of memory %p %ld times",
-	         pthread_self(), map_address, args[2]);
+		 pthread_self(), map_address, args[2]);
 
 	if (verbose_print)
 		tst_resm(TINFO, "read_mem() arguments are: "
-		         "number of reads to be performed - arg[2]: %ld; "
-		         "read from address %p",
-                         args[2], map_address);
+			 "number of reads to be performed - arg[2]: %ld; "
+			 "read from address %p", args[2], map_address);
 
 	for (i = 0; i < args[2]; i++) {
 
 		if (verbose_print)
 			tst_resm(TINFO, "read_mem() in while loop %ld times "
-			         "to go %ld times", i, args[2]);
+				 "to go %ld times", i, args[2]);
 
 		if (setjmp(jmpbuf) == 1) {
 			read_lock = 0;
 			if (verbose_print)
 				tst_resm(TINFO, "page fault occurred due to "
-				         "a read after an unmap");
+					 "a read after an unmap");
 		} else {
 			if (verbose_print)
-				tst_resm(TINFO, "read_mem(): content of memory: %s",
-				         (char *)map_address);
+				tst_resm(TINFO,
+					 "read_mem(): content of memory: %s",
+					 (char *)map_address);
 
 			for (j = 0; j < args[1]; j++) {
 				read_lock = 1;
@@ -262,21 +261,21 @@ static void usage(char *progname)
 }
 
 struct signal_info {
-	int  signum;
+	int signum;
 	char *signame;
 };
 
 static struct signal_info sig_info[] = {
-	{SIGHUP,  "SIGHUP" },
-	{SIGINT,  "SIGINT" },
+	{SIGHUP, "SIGHUP"},
+	{SIGINT, "SIGINT"},
 	{SIGQUIT, "SIGQUIT"},
 	{SIGABRT, "SIGABRT"},
-	{SIGBUS,  "SIGBUS" },
+	{SIGBUS, "SIGBUS"},
 	{SIGSEGV, "SIGSEGV"},
 	{SIGALRM, "SIGALRM"},
 	{SIGUSR1, "SIGUSR1"},
 	{SIGUSR2, "SIGUSR2"},
-	{-1,      "ENDSIG" }
+	{-1, "ENDSIG"}
 };
 
 int main(int argc, char **argv)
@@ -298,47 +297,50 @@ int main(int argc, char **argv)
 	num_iter = 1000;
 	exec_time = 24;
 
-	while ((c =  getopt(argc, argv, "hvl:s:x:")) != -1) {
-		switch(c) {
+	while ((c = getopt(argc, argv, "hvl:s:x:")) != -1) {
+		switch (c) {
 		case 'h':
 			usage(argv[0]);
-		break;
+			break;
 		case 'l':
 			if ((num_iter = atoi(optarg)) == 0)
 				OPT_MISSING(argv[0], optopt);
-                	else
-				if (num_iter < 0)
-					printf("WARNING: bad argument. Using default %d\n", (num_iter = 1000));
-		break;
+			else if (num_iter < 0)
+				printf
+				    ("WARNING: bad argument. Using default %d\n",
+				     (num_iter = 1000));
+			break;
 		case 's':
 			if ((file_size = atoi(optarg)) == 0)
 				OPT_MISSING(argv[0], optopt);
-			else
-				if (file_size < 0)
-					printf("WARNING: bad argument. Using default %d\n", (file_size = 1024));
-		break;
+			else if (file_size < 0)
+				printf
+				    ("WARNING: bad argument. Using default %d\n",
+				     (file_size = 1024));
+			break;
 		case 'v':
 			verbose_print = 1;
-		break;
+			break;
 		case 'x':
 			exec_time = atof(optarg);
 			if (exec_time == 0)
 				OPT_MISSING(argv[0], optopt);
-			else
-				if (exec_time < 0)
-					printf("WARNING: bad argument. Using default %.0f\n", (exec_time = 24));
-		break;
+			else if (exec_time < 0)
+				printf
+				    ("WARNING: bad argument. Using default %.0f\n",
+				     (exec_time = 24));
+			break;
 		default:
 			usage(argv[0]);
-		break;
+			break;
 		}
 	}
 
 	if (verbose_print)
 		tst_resm(TINFO, "Input parameters are: File size:  %d; "
-		         "Scheduled to run:  %lf hours; "
-		         "Number of mmap/write/read:  %d",
-		         file_size, exec_time, num_iter);
+			 "Scheduled to run:  %lf hours; "
+			 "Number of mmap/write/read:  %d",
+			 file_size, exec_time, num_iter);
 
 	alarm(exec_time * 3600);
 
@@ -351,15 +353,17 @@ int main(int argc, char **argv)
 	for (i = 0; sig_info[i].signum != -1; i++) {
 		if (sigaction(sig_info[i].signum, &sigptr, NULL) == -1) {
 			perror("man(): sigaction()");
-			fprintf(stderr, "could not set handler for %s, errno = %d\n",
-			sig_info[i].signame, errno);
+			fprintf(stderr,
+				"could not set handler for %s, errno = %d\n",
+				sig_info[i].signame, errno);
 			exit(-1);
 		}
 	}
 
 	for (;;) {
 		if ((fd = mkfile(file_size)) == -1)
-			tst_brkm(TBROK, NULL, "main(): mkfile(): Failed to create temp file");
+			tst_brkm(TBROK, NULL,
+				 "main(): mkfile(): Failed to create temp file");
 
 		if (verbose_print)
 			tst_resm(TINFO, "Tmp file created");
@@ -368,24 +372,30 @@ int main(int argc, char **argv)
 		chld_args[1] = file_size;
 		chld_args[2] = num_iter;
 
-		if ((ret = pthread_create(&thid[0], NULL, map_write_unmap, chld_args)))
-			tst_brkm(TBROK, NULL, "main(): pthread_create(): %s", strerror(ret));
+		if ((ret =
+		     pthread_create(&thid[0], NULL, map_write_unmap,
+				    chld_args)))
+			tst_brkm(TBROK, NULL, "main(): pthread_create(): %s",
+				 strerror(ret));
 
 		tst_resm(TINFO, "created writing thread[%lu]", thid[0]);
 
 		if ((ret = pthread_create(&thid[1], NULL, read_mem, chld_args)))
-			tst_brkm(TBROK, NULL, "main(): pthread_create(): %s", strerror(ret));
+			tst_brkm(TBROK, NULL, "main(): pthread_create(): %s",
+				 strerror(ret));
 
 		tst_resm(TINFO, "created reading thread[%lu]", thid[1]);
 
 		for (i = 0; i < 2; i++) {
-			if ((ret = pthread_join(thid[i], (void*)&status[i])))
-				tst_brkm(TBROK, NULL, "main(): pthread_join(): %s",
-				         strerror(ret));
+			if ((ret = pthread_join(thid[i], (void *)&status[i])))
+				tst_brkm(TBROK, NULL,
+					 "main(): pthread_join(): %s",
+					 strerror(ret));
 
 			if (status[i])
-				tst_brkm(TFAIL, NULL, "thread [%lu] - process exited "
-				         "with %d", thid[i], status[i]);
+				tst_brkm(TFAIL, NULL,
+					 "thread [%lu] - process exited "
+					 "with %d", thid[i], status[i]);
 		}
 
 		close(fd);

@@ -122,7 +122,7 @@ int main(int ac, char **av)
 		do_master_child(av);
 
 	if (waitpid(pid, &status, 0) == -1)
-		tst_resm(TBROK|TERRNO, "waitpid failed");
+		tst_resm(TBROK | TERRNO, "waitpid failed");
 	else if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 		tst_resm(TFAIL, "child exited abnormally");
 	else
@@ -163,7 +163,7 @@ void do_master_child(char **av)
 	pid1 = FORK_OR_VFORK();
 
 	if (pid1 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "Fork failed");
 
 	if (pid1 == 0) {
 		ltpuser1 = SAFE_GETPWNAM(NULL, user1name);
@@ -233,11 +233,11 @@ void setup(void)
 
 	semkey = getipckey();
 
-	if ((shmid1 = shmget(semkey, getpagesize(), 0666|IPC_CREAT)) == -1)
+	if ((shmid1 = shmget(semkey, getpagesize(), 0666 | IPC_CREAT)) == -1)
 		tst_brkm(TBROK, cleanup, "Failed to setup shared memory");
 
 	if ((flag = (int *)shmat(shmid1, 0, 0)) == (int *)-1)
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "Failed to attach shared memory:%d", shmid1);
 }
 

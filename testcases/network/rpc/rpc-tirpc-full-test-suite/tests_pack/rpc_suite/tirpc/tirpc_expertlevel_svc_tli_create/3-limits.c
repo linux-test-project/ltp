@@ -37,24 +37,23 @@
 //Other define
 #define NBCASE 3
 
-typedef struct
-{
+typedef struct {
 	//List parameters here
 	int bufmin;
 	int bufmax;
-}params;
+} params;
 
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 0; //Default test result set to PASS
+	int test_status = 0;	//Default test result set to PASS
 	int progNum = atoi(argc[2]);
 	int i;
 	params paramList[NBCASE];
@@ -62,21 +61,18 @@ int main(int argn, char *argc[])
 	struct netconfig *nconf = NULL;
 
 	//Initialization
-    if (run_mode)
-    {
-    	printf("Before creation\n");
+	if (run_mode) {
+		printf("Before creation\n");
 		printf("nconf : %d\n", nconf);
 	}
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *) NULL)
-	{
+	if (nconf == (struct netconfig *)NULL) {
 		//syslog(LOG_ERR, "getnetconfigent for udp failed");
 		fprintf(stderr, "err nconf\n");
 		printf("5\n");
 		exit(1);
 	}
-
 	//Test arguments initialization
 	paramList[0].bufmin = 0;
 	paramList[0].bufmax = 2147483647;
@@ -86,24 +82,21 @@ int main(int argn, char *argc[])
 	paramList[2].bufmax = 2147483647;
 
 	//Call tested function using all tests cases
-	for (i = 0; i < NBCASE; i++)
-	{
+	for (i = 0; i < NBCASE; i++) {
 		//Debug mode prints
-		if (run_mode == 1)
-		{
+		if (run_mode == 1) {
 			printf("Test using values : %d ", paramList[i].bufmin);
 			printf("%d", paramList[i].bufmax);
 			printf("\n");
 		}
-
 		//Call function
 		transp = svc_tli_create(RPC_ANYFD, nconf,
-                            	(struct t_bind *)NULL,
-                            	paramList[i].bufmin, paramList[i].bufmax);
+					(struct t_bind *)NULL,
+					paramList[i].bufmin,
+					paramList[i].bufmax);
 
 		//Check result
-		if (transp == NULL)
-		{
+		if (transp == NULL) {
 			//test has failed
 			test_status = 1;
 			break;

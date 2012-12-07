@@ -23,18 +23,19 @@
 
 #define BUFSIZE 8
 
-int main() {
-        int result;
+int main()
+{
+	int result;
 	long page_size;
 	void *page_ptr;
 
 	page_size = sysconf(_SC_PAGESIZE);
-        if (errno) {
-                perror("An error occurs when calling sysconf()");
-                return PTS_UNRESOLVED;
-        }
+	if (errno) {
+		perror("An error occurs when calling sysconf()");
+		return PTS_UNRESOLVED;
+	}
 
-	page_ptr = (void*)(LONG_MAX - (LONG_MAX % page_size));
+	page_ptr = (void *)(LONG_MAX - (LONG_MAX % page_size));
 	result = munlock(page_ptr, BUFSIZE);
 
 	if (result == -1 && errno == ENOMEM) {

@@ -78,12 +78,14 @@ struct test_case_t {
 	 * to test whether chdir() is setting ENAMETOOLONG if the
 	 * directory is more than VFS_MAXNAMELEN
 	 */
-	{ bad_dir, ENAMETOOLONG},
+	{
+	bad_dir, ENAMETOOLONG},
 	    /*
 	     * to test whether chdir() is setting ENOENT if the
 	     * directory is not existing.
 	     */
-	{ noexist_dir, ENOENT},
+	{
+	noexist_dir, ENOENT},
 #ifndef UCLINUX
 	    /*
 	     * to test whether chdir() is setting EFAULT if the
@@ -130,11 +132,11 @@ int main(int ac, char **av)
 			}
 
 			if (TEST_ERRNO == TC[i].error)
-				tst_resm(TPASS|TTERRNO, "failed as expected");
+				tst_resm(TPASS | TTERRNO, "failed as expected");
 			else {
-				tst_resm(TFAIL|TTERRNO,
-				    "didn't fail as expected (expected %d)",
-				    TC[i].error);
+				tst_resm(TFAIL | TTERRNO,
+					 "didn't fail as expected (expected %d)",
+					 TC[i].error);
 			}
 		}
 	}
@@ -155,9 +157,9 @@ void setup()
 
 #ifdef UCLINUX
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap() failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap() failed");
 	TC[2].dname = bad_addr;
 #endif
 }

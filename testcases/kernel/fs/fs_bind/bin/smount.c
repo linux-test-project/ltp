@@ -37,29 +37,29 @@ int main(int argc, char *argv[])
 	int type;
 	if (argc != 3) {
 		fprintf(stderr, "usage: %s DIR "
-	"[rshared|rslave|rprivate|runclone|shared|slave|private|unclone]\n"
-					, argv[0]);
+			"[rshared|rslave|rprivate|runclone|shared|slave|private|unclone]\n",
+			argv[0]);
 		return 1;
 	}
 
 	fprintf(stdout, "%s %s %s\n", argv[0], argv[1], argv[2]);
 
-	if (strcmp(argv[2],"rshared")==0)
-		type=(MS_SHARED|MS_REC);
-	else if (strcmp(argv[2],"rslave")==0)
-		type=(MS_SLAVE|MS_REC);
-	else if (strcmp(argv[2],"rprivate")==0)
-		type=(MS_PRIVATE|MS_REC);
-	else if (strcmp(argv[2],"runclone")==0)
-		type=(MS_UNCLONE|MS_REC);
-	else if (strcmp(argv[2],"shared")==0)
-		type=MS_SHARED;
-	else if (strcmp(argv[2],"slave")==0)
-		type=MS_SLAVE;
-	else if (strcmp(argv[2],"private")==0)
-		type=MS_PRIVATE;
-	else if (strcmp(argv[2],"unclone")==0)
-		type=MS_UNCLONE;
+	if (strcmp(argv[2], "rshared") == 0)
+		type = (MS_SHARED | MS_REC);
+	else if (strcmp(argv[2], "rslave") == 0)
+		type = (MS_SLAVE | MS_REC);
+	else if (strcmp(argv[2], "rprivate") == 0)
+		type = (MS_PRIVATE | MS_REC);
+	else if (strcmp(argv[2], "runclone") == 0)
+		type = (MS_UNCLONE | MS_REC);
+	else if (strcmp(argv[2], "shared") == 0)
+		type = MS_SHARED;
+	else if (strcmp(argv[2], "slave") == 0)
+		type = MS_SLAVE;
+	else if (strcmp(argv[2], "private") == 0)
+		type = MS_PRIVATE;
+	else if (strcmp(argv[2], "unclone") == 0)
+		type = MS_UNCLONE;
 	else {
 		fprintf(stderr, "invalid operation: %s\n", argv[2]);
 		return 1;

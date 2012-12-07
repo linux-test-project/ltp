@@ -39,40 +39,36 @@ int main()
 	int ret_val;
 
 	/* Initialize attribute */
-	if (pthread_attr_init(&new_attr) != 0)
-	{
+	if (pthread_attr_init(&new_attr) != 0) {
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Set the attribute object to PTHREAD_CREATE_DETACHED. */
-	if (pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED) != 0)
-	{
+	if (pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED) !=
+	    0) {
 		perror("Error in pthread_attr_setdetachstate()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Create a new thread passing it the new attribute object */
-	if (pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* If pthread_join() or pthread_detach fail, that means that the
 	 * test fails as well. */
-	ret_val=pthread_join(new_th, NULL);
+	ret_val = pthread_join(new_th, NULL);
 
-	if (ret_val != EINVAL)
-	{
+	if (ret_val != EINVAL) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	ret_val=pthread_detach(new_th);
+	ret_val = pthread_detach(new_th);
 
-	if (ret_val != EINVAL)
-	{
+	if (ret_val != EINVAL) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

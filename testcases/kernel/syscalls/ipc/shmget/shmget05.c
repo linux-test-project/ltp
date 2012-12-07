@@ -97,7 +97,7 @@ int main(int ac, char **av)
 
 		cleanup();
 
-	 } else {	/* parent */
+	} else {		/* parent */
 		/* wait for the child to return */
 		if (waitpid(pid, NULL, 0) == -1) {
 			tst_brkm(TBROK, cleanup, "waitpid failed");

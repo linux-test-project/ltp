@@ -18,19 +18,21 @@
 
 #define BUFSIZE 8
 
-int main() {
+int main()
+{
 	int result;
 	void *ptr;
 
 	ptr = malloc(BUFSIZE);
 	if (ptr == NULL) {
-                printf("Can not allocate memory.\n");
-                return PTS_UNRESOLVED;
-        }
+		printf("Can not allocate memory.\n");
+		return PTS_UNRESOLVED;
+	}
 
 	if (mlock(ptr, BUFSIZE) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
+			printf
+			    ("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		} else {
 			perror("An error occurs when calling mlock()");
 		}

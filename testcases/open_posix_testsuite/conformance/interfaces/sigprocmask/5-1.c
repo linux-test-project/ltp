@@ -30,14 +30,15 @@ int main()
 	act.sa_handler = handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGABRT,  &act, 0) == -1) {
+	if (sigaction(SIGABRT, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigprocmask(SIG_SETMASK, &blocked_set, NULL) == -1) {
-		perror("Unexpected error while attempting to use sigprocmask.\n");
+		perror
+		    ("Unexpected error while attempting to use sigprocmask.\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -58,7 +59,8 @@ int main()
 	}
 
 	if (sigismember(&pending_set, SIGABRT) == -1) {
-		perror("Unexpected error while attempting to use sigismember.\n");
+		perror
+		    ("Unexpected error while attempting to use sigismember.\n");
 		return PTS_UNRESOLVED;
 	}
 

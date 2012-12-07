@@ -41,8 +41,8 @@ int TST_TOTAL = 1;
 static int sflag;
 static char *sz_opt;
 static option_t options[] = {
-	{ "s:", &sflag, &sz_opt },
-	{ NULL, NULL,   NULL }
+	{"s:", &sflag, &sz_opt},
+	{NULL, NULL, NULL}
 };
 
 static long bufsz;
@@ -70,14 +70,14 @@ int main(int argc, char **argv)
 		Tst_count = 0;
 
 		if (pipe(pipe_fd) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "pipe");
+			tst_brkm(TBROK | TERRNO, cleanup, "pipe");
 
 		/* the start of child_init_and_verify and child_write is
 		 * already synchronized via pipe */
 		pids[0] = fork();
 		switch (pids[0]) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork #0");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork #0");
 		case 0:
 			child_init_and_verify();
 			exit(0);
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 		pids[1] = fork();
 		switch (pids[1]) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork #1");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork #1");
 		case 0:
 			child_write();
 			exit(0);
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 		/* wait until child_write writes into
 		 * child_init_and_verify's VM */
 		if (waitpid(pids[1], &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 1 returns %d", status);
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 		safe_semop(semid, 0, 1);
 
 		if (waitpid(pids[0], &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 0 returns %d", status);
 	}
@@ -139,15 +139,14 @@ static void child_init_and_verify(void)
 		if (foo[i] != i % 256) {
 #if DEBUG
 			tst_resm(TFAIL, "child 0: expected %i, got %i for "
-					"byte seq %ld",
-					i % 256, foo[i], i);
+				 "byte seq %ld", i % 256, foo[i], i);
 #endif
 			nr_err++;
 		}
 	}
 	if (nr_err)
 		tst_brkm(TFAIL, tst_exit, "child 0: got %ld incorrect bytes.",
-			    nr_err);
+			 nr_err);
 	else
 		tst_resm(TPASS, "child 0: all bytes are expected.");
 }
@@ -164,36 +163,37 @@ static void child_write(void)
 	SAFE_READ(tst_exit, 0, pipe_fd[0], buf, bufsz);
 	SAFE_CLOSE(tst_exit, pipe_fd[0]);
 	if (sscanf(buf, "%p", &rp) != 1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "sscanf");
+		tst_brkm(TBROK | TERRNO, tst_exit, "sscanf");
 
 	lp = SAFE_MALLOC(tst_exit, bufsz + PADDING_SIZE * 2);
 
 	for (i = 0; i < bufsz + PADDING_SIZE * 2; i++)
 		lp[i] = DEFAULT_CHAR;
 	for (i = 0; i < bufsz; i++)
-		lp[i+PADDING_SIZE] = i % 256;
+		lp[i + PADDING_SIZE] = i % 256;
 
-	local.iov_base  = lp + PADDING_SIZE;
-	local.iov_len   = bufsz;
+	local.iov_base = lp + PADDING_SIZE;
+	local.iov_len = bufsz;
 	remote.iov_base = rp;
-	remote.iov_len  = bufsz;
+	remote.iov_len = bufsz;
 
 	tst_resm(TINFO, "child 2: write to the same memory location.");
 	TEST(test_process_vm_writev(pids[0], &local, 1, &remote, 1, 0));
 	if (TEST_RETURN != bufsz)
-		tst_brkm(TFAIL|TERRNO, tst_exit, "process_vm_readv");
+		tst_brkm(TFAIL | TERRNO, tst_exit, "process_vm_readv");
 }
 
 static void setup(void)
 {
 	tst_require_root(NULL);
 
-	bufsz = sflag ? SAFE_STRTOL(NULL, sz_opt, 1, LONG_MAX-PADDING_SIZE*2)
-		    : 100000;
+	bufsz =
+	    sflag ? SAFE_STRTOL(NULL, sz_opt, 1, LONG_MAX - PADDING_SIZE * 2)
+	    : 100000;
 
 #if !defined(__NR_process_vm_readv)
 	tst_brkm(TCONF, NULL, "process_vm_writev does not exist "
-		    "on your system");
+		 "on your system");
 #endif
 	semid = init_sem(1);
 

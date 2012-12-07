@@ -104,19 +104,25 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* the file name is greater than VFS_MAXNAMELEN - ENAMTOOLONG */
-	{ long_file, ENAMETOOLONG},
-	/* the filename does not exist - ENOENT */
-	{ no_dir, ENOENT},
-	/* the path contains a directory name which doesn't exist - ENOTDIR */
-	{ test_name3, ENOTDIR},
+	{
+	long_file, ENAMETOOLONG},
+	    /* the filename does not exist - ENOENT */
+	{
+	no_dir, ENOENT},
+	    /* the path contains a directory name which doesn't exist - ENOTDIR */
+	{
+	test_name3, ENOTDIR},
 #if !defined(UCLINUX)
-	/* the filename isn't part of the process address space - EFAULT */
-	{ (char *)-1, EFAULT},
+	    /* the filename isn't part of the process address space - EFAULT */
+	{
+	(char *)-1, EFAULT},
 #endif
-	/* the filename does not have execute permission - EACCES */
-	{ test_name5, EACCES},
-	/* the file is zero length with execute permissions - ENOEXEC */
-	{ test_name6, ENOEXEC}
+	    /* the filename does not have execute permission - EACCES */
+	{
+	test_name5, EACCES},
+	    /* the file is zero length with execute permissions - ENOEXEC */
+	{
+	test_name6, ENOEXEC}
 };
 
 int TST_TOTAL = sizeof(TC) / sizeof(*TC);
@@ -150,13 +156,13 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error)
-				tst_resm(TPASS|TTERRNO,
-				    "execve failed as expected");
+				tst_resm(TPASS | TTERRNO,
+					 "execve failed as expected");
 			else
-				tst_resm(TFAIL|TTERRNO,
-				    "execve failed unexpectedly; expected "
-				    "%d - %s",
-				    TC[i].error, strerror(TC[i].error));
+				tst_resm(TFAIL | TTERRNO,
+					 "execve failed unexpectedly; expected "
+					 "%d - %s",
+					 TC[i].error, strerror(TC[i].error));
 		}
 	}
 	cleanup();
@@ -196,7 +202,7 @@ void setup()
 	fd = SAFE_CLOSE(cleanup, fd);
 #ifndef UCLINUX
 	bad_addr = SAFE_MMAP(cleanup, NULL, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			     MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	TC[3].tname = bad_addr;
 #endif
 }

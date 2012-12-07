@@ -44,7 +44,7 @@ int main()
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGSYS);
-	if (sigaction(SIGTRAP,  &act, 0) == -1) {
+	if (sigaction(SIGTRAP, &act, 0) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;
@@ -53,7 +53,7 @@ int main()
 	act.sa_handler = SIGSYS_handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGSYS,  &act, 0) == -1) {
+	if (sigaction(SIGSYS, &act, 0) == -1) {
 		perror("Unexpected error while attempting to "
 		       "setup test pre-conditions");
 		return PTS_UNRESOLVED;

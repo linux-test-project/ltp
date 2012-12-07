@@ -26,7 +26,8 @@
 /* There is no chance that a scheduling policy has such a value */
 #define INVALID_POLICY -27367
 
-int main() {
+int main()
+{
 	int result;
 	struct sched_param param;
 
@@ -38,10 +39,12 @@ int main() {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == EPERM) {
-		printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
+		printf
+		    ("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else if (errno == 0) {
-		printf("No error occurs, check if -1 a valid value for the scheduling policy.\n");
+		printf
+		    ("No error occurs, check if -1 a valid value for the scheduling policy.\n");
 	} else {
 		perror("Unknow error");
 		return PTS_FAIL;
@@ -56,7 +59,9 @@ int main() {
 		printf("Test PASSED with policy value %i\n", INVALID_POLICY);
 		return PTS_PASS;
 	} else if (errno == 0) {
-		printf("No error occurs, could %i be a valid value for the scheduling policy ???\n", INVALID_POLICY);
+		printf
+		    ("No error occurs, could %i be a valid value for the scheduling policy ???\n",
+		     INVALID_POLICY);
 		return PTS_UNRESOLVED;
 	} else {
 		perror("Unknow error");

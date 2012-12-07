@@ -164,7 +164,8 @@ int main(int ac, char **av)
 			TEST(lseek(fildes, 0, whence));
 
 			if (TEST_RETURN != (off_t) - 1) {
-				tst_resm(TFAIL, "lseek() returned %ld, expected "
+				tst_resm(TFAIL,
+					 "lseek() returned %ld, expected "
 					 "-1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 				continue;

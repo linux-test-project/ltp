@@ -44,10 +44,10 @@ int waiting = 0;
 
 void mdelay(unsigned msecs)
 {
-    struct timespec req;
-    req.tv_sec = msecs / 1000;
-    req.tv_nsec = (msecs % 1000) * 1000000;
-    nanosleep(&req, NULL);
+	struct timespec req;
+	req.tv_sec = msecs / 1000;
+	req.tv_nsec = (msecs % 1000) * 1000000;
+	nanosleep(&req, NULL);
 }
 
 void *barbers(void *unused)
@@ -59,7 +59,8 @@ void *barbers(void *unused)
 			pthread_exit((void *)1);
 		}
 		if (waiting == 0) {
-			my_printf("There are no more customers waiting, barber will sleep.\n");
+			my_printf
+			    ("There are no more customers waiting, barber will sleep.\n");
 		}
 		if (-1 == sem_post(&lock)) {
 			perror("sem_post(&lock) didn't return success");
@@ -75,25 +76,29 @@ void *barbers(void *unused)
 		}
 		if (waiting >= 1)
 			waiting--;
-		my_printf("A customer sits in the barber's chair and get a hair cut.  %d customers left waiting.\n", waiting);
+		my_printf
+		    ("A customer sits in the barber's chair and get a hair cut.  %d customers left waiting.\n",
+		     waiting);
 		if (-1 == sem_post(&lock)) {
 			perror("sem_post(&lock) didn't return success");
 			pthread_exit((void *)1);
 		}
 		if (-1 == sem_post(&barber)) {
-		perror("sem_post(&barber) didn't return success");
+			perror("sem_post(&barber) didn't return success");
 			pthread_exit((void *)1);
 		}
 
 	}
-	return (void *) 0;
+	return (void *)0;
 }
-void *customers(void* ID)
+
+void *customers(void *ID)
 {
 	int CusID;
 	CusID = *(int *)ID;
 
-	if (CusID == 8) mdelay(10);
+	if (CusID == 8)
+		mdelay(10);
 
 	my_printf("customer %d enters the room.\n", CusID);
 	if (-1 == sem_wait(&lock)) {
@@ -106,7 +111,9 @@ void *customers(void* ID)
 			perror("sem_post(&customer) didn't return success");
 			pthread_exit((void *)1);
 		}
-		my_printf("Customer %d sits down, now %d customers are waiting.\n", CusID, waiting);
+		my_printf
+		    ("Customer %d sits down, now %d customers are waiting.\n",
+		     CusID, waiting);
 		if (-1 == sem_post(&lock)) {
 			perror("sem_post(&lock) didn't return success");
 			pthread_exit((void *)1);
@@ -116,31 +123,31 @@ void *customers(void* ID)
 			pthread_exit((void *)1);
 		}
 		my_printf("Customer %d leaves with nice hair.\n", CusID);
-	}
-	else
-	{
-		my_printf("No chairs available, customer %d leaves without a haircut.\n", CusID);
+	} else {
+		my_printf
+		    ("No chairs available, customer %d leaves without a haircut.\n",
+		     CusID);
 		if (-1 == sem_post(&lock)) {
 			perror("sem_post(&lock) didn't return success");
 			pthread_exit((void *)1);
 		}
 	}
-	return (void *) 0;
+	return (void *)0;
 }
+
 int main(int argc, char *argv[])
 {
 	pthread_t bar, cus[CUS_NUM];
 	int shared = 0;
 	int barber_value = 0;
 	int customer_value = 0;
-	int lock_value=1;
+	int lock_value = 1;
 	int i, ID[CUS_NUM];
 
 	if (-1 == sem_init(&print, shared, 1)) {
 		perror("sem_init(&print) didn't return success");
 		return PTS_UNRESOLVED;
 	}
-
 #ifndef  _POSIX_SEMAPHORES
 	my_printf("_POSIX_SEMAPHORES is not defined\n");
 	return PTS_UNRESOLVED;
@@ -162,7 +169,7 @@ int main(int argc, char *argv[])
 		pthread_create(&cus[i], NULL, customers, (void *)&ID[i]);
 	}
 	pthread_create(&bar, NULL, barbers, NULL);
-	for (i = 0; i< CUS_NUM; i++)
+	for (i = 0; i < CUS_NUM; i++)
 		pthread_join(cus[i], NULL);
 
 	return PTS_PASS;

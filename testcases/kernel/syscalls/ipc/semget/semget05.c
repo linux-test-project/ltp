@@ -69,6 +69,7 @@ int TST_TOTAL = 1;
 int MAXIDS = 2048;
 
 int exp_enos[] = { ENOSPC, 0 };	/* 0 terminated list of expected errnos */
+
 int *sem_id_arr = NULL;
 int num_sems = 0;		/* count the semaphores created */
 
@@ -130,7 +131,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	  return (0);
+	return (0);
 }
 
 /*

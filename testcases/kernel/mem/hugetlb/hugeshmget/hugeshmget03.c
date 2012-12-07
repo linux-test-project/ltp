@@ -74,8 +74,8 @@ static int shm_id_arr[MAXIDS];
 static long hugepages = 128;
 static long orig_shmmni;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 int main(int ac, char **av)
@@ -95,16 +95,16 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		TEST(shmget(IPC_PRIVATE, shm_size,
-			    SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW));
+			    SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW));
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "shmget succeeded unexpectedly");
 			continue;
 		}
 		if (TEST_ERRNO == ENOSPC)
-			tst_resm(TPASS|TTERRNO, "shmget failed as expected");
+			tst_resm(TPASS | TTERRNO, "shmget failed as expected");
 		else
-			tst_resm(TFAIL|TTERRNO, "shmget failed unexpectedly "
-				    "- expect errno=ENOSPC, got");
+			tst_resm(TFAIL | TTERRNO, "shmget failed unexpectedly "
+				 "- expect errno=ENOSPC, got");
 	}
 	cleanup();
 	tst_exit();
@@ -136,19 +136,19 @@ void setup(void)
 	 */
 	num_shms = 0;
 	shm_id_1 = shmget(IPC_PRIVATE, shm_size,
-			SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW);
+			  SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
 	while (shm_id_1 != -1) {
 		shm_id_arr[num_shms++] = shm_id_1;
 		if (num_shms == MAXIDS)
 			tst_brkm(TBROK, cleanup, "The maximum number of "
-				    "shared memory ID's has been reached. "
-				    "Please increase the MAXIDS value in "
-				    "the test.");
+				 "shared memory ID's has been reached. "
+				 "Please increase the MAXIDS value in "
+				 "the test.");
 		shm_id_1 = shmget(IPC_PRIVATE, shm_size,
-			    SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW);
+				  SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
 	}
 	if (errno != ENOSPC)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget #setup");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget #setup");
 
 	TEST_PAUSE;
 }

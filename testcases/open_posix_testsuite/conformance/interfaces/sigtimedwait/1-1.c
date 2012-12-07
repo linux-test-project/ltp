@@ -45,9 +45,12 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-void myhandler (int signo) {
-	printf("Test FAILED: %d seconds have elapsed and sigtimedwait() has not yet returned.\n", TIMERSEC);
-	exit (PTS_FAIL);
+void myhandler(int signo)
+{
+	printf
+	    ("Test FAILED: %d seconds have elapsed and sigtimedwait() has not yet returned.\n",
+	     TIMERSEC);
+	exit(PTS_FAIL);
 }
 
 int main()
@@ -72,16 +75,16 @@ int main()
         ev.sigev_notify = SIGEV_SIGNAL;
         ev.sigev_signo = TIMERSIGNAL;
 */
-	act.sa_flags=0;
-	act.sa_handler=myhandler;
+	act.sa_flags = 0;
+	act.sa_handler = myhandler;
 	sigemptyset(&act.sa_mask);
 	sigaction(TIMERSIGNAL, &act, 0);
 
 	sigemptyset(&selectset);
 	sigaddset(&selectset, SIGTOTEST);
 
-        ts.tv_sec=SIGTIMEDWAITSEC;
-        ts.tv_nsec=0;
+	ts.tv_sec = SIGTIMEDWAITSEC;
+	ts.tv_nsec = 0;
 /*
         if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
                 perror("timer_create() did not return success\n");
@@ -95,16 +98,19 @@ int main()
 */
 	time1 = time(NULL);
 	if (sigtimedwait(&selectset, NULL, &ts) != -1) {
-                perror("sigtimedwait() did not return -1 even though signal was not pending\n");
+		perror
+		    ("sigtimedwait() did not return -1 even though signal was not pending\n");
 		return PTS_UNRESOLVED;
 	}
 
 	time2 = time(NULL);
 
-	time_elapsed = difftime (time2, time1);
+	time_elapsed = difftime(time2, time1);
 
-	if ((time_elapsed > SIGTIMEDWAITSEC+ERRORMARGIN) || (time_elapsed < SIGTIMEDWAITSEC-ERRORMARGIN)) {
-		printf ("Test FAILED: sigtimedwait() did not return in the required time\n");
+	if ((time_elapsed > SIGTIMEDWAITSEC + ERRORMARGIN)
+	    || (time_elapsed < SIGTIMEDWAITSEC - ERRORMARGIN)) {
+		printf
+		    ("Test FAILED: sigtimedwait() did not return in the required time\n");
 		return PTS_FAIL;
 	}
 

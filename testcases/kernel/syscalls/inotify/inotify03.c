@@ -156,9 +156,8 @@ int main(int ac, char **av)
 
 	len = read(fd_notify, event_buf, EVENT_BUF_LEN);
 	if (len < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "read(%d, buf, %zu) failed",
-			 fd_notify, EVENT_BUF_LEN);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "read(%d, buf, %zu) failed", fd_notify, EVENT_BUF_LEN);
 	}
 
 	/* check events */
@@ -196,12 +195,12 @@ int main(int ac, char **av)
 	}
 	ret = myinotify_rm_watch(fd_notify, wd);
 	if (ret != -1 || errno != EINVAL)
-		tst_resm(TFAIL|TERRNO,
-			"inotify_rm_watch (%d, %d) didn't return EINVAL",
-			fd_notify, wd);
+		tst_resm(TFAIL | TERRNO,
+			 "inotify_rm_watch (%d, %d) didn't return EINVAL",
+			 fd_notify, wd);
 	else
 		tst_resm(TPASS, "inotify_rm_watch (%d, %d) returned EINVAL",
-			fd_notify, wd);
+			 fd_notify, wd);
 
 	cleanup();
 	tst_exit();
@@ -223,8 +222,8 @@ void setup()
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
-			mntpoint, DIR_MODE);
+		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",
+			 mntpoint, DIR_MODE);
 	}
 
 	/* Call mount(2) */
@@ -234,28 +233,26 @@ void setup()
 	/* check return code */
 	if (TEST_RETURN != 0) {
 		TEST_ERROR_LOG(TEST_ERRNO);
-		tst_brkm(TBROK|TTERRNO, cleanup, "mount(2) failed");
+		tst_brkm(TBROK | TTERRNO, cleanup, "mount(2) failed");
 	}
 	mount_flag = 1;
 
 	sprintf(fname, "%s/tfile_%d", mntpoint, getpid());
 	fd = open(fname, O_RDWR | O_CREAT, 0700);
 	if (fd == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) failed",
-			 fname);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 	}
 
 	ret = write(fd, fname, 1);
 	if (ret == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "write(%d, %s, 1) failed",
-			 fd, fname);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "write(%d, %s, 1) failed", fd, fname);
 	}
 
 	/* close the file we have open */
 	if (close(fd) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", fname);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed", fname);
 	}
 
 	fd_notify = myinotify_init();
@@ -265,13 +262,14 @@ void setup()
 			tst_brkm(TCONF, cleanup,
 				 "inotify is not configured in this kernel.");
 		} else {
-			tst_brkm(TBROK|TERRNO, cleanup, "inotify_init failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "inotify_init failed");
 		}
 	}
 
 	wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS);
 	if (wd < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed.",
 			 fd_notify, fname);
 	};
@@ -286,13 +284,14 @@ void cleanup()
 {
 	free(Fstype);
 	if (close(fd_notify) == -1) {
-		tst_resm(TWARN|TERRNO, "close(%d) failed", fd_notify);
+		tst_resm(TWARN | TERRNO, "close(%d) failed", fd_notify);
 	}
 
 	if (mount_flag) {
 		TEST(umount(mntpoint));
 		if (TEST_RETURN != 0) {
-			tst_resm(TWARN|TTERRNO, "umount(%s) failed", mntpoint);
+			tst_resm(TWARN | TTERRNO, "umount(%s) failed",
+				 mntpoint);
 		}
 	}
 

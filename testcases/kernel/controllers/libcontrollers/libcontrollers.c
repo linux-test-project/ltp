@@ -43,26 +43,25 @@
  */
 int scan_shares_files(unsigned int *shares_pointer)
 {
-	struct stat 	statbuffer;
-	DIR		*dp;
-	char		*path_pointer;
+	struct stat statbuffer;
+	DIR *dp;
+	char *path_pointer;
 
 	/*
 	 * Check if we can get stat of the file
 	 */
-	if (lstat (fullpath, &statbuffer) < 0)
+	if (lstat(fullpath, &statbuffer) < 0)
 		error_function("Can not read stat for file ", fullpath);
 
-	if (S_ISDIR (statbuffer.st_mode) == 0) /* not a directory */
-	{
-	/*
-	 * We run all user tasks in the created groups and not default groups. So
-	 * exclude the shares of default group. FLAG to ensure dir_pointer is non NULL
-	 */
-		if ((FLAG == 1) && (strcmp(fullpath, "/dev/cpuctl/cpu.shares") != 0) &&\
-			 (strcmp (dir_pointer->d_name, "cpu.shares") == 0))
-		{
-			*shares_pointer += read_shares_file (fullpath);
+	if (S_ISDIR(statbuffer.st_mode) == 0) {	/* not a directory */
+		/*
+		 * We run all user tasks in the created groups and not default groups. So
+		 * exclude the shares of default group. FLAG to ensure dir_pointer is non NULL
+		 */
+		if ((FLAG == 1)
+		    && (strcmp(fullpath, "/dev/cpuctl/cpu.shares") != 0)
+		    && (strcmp(dir_pointer->d_name, "cpu.shares") == 0)) {
+			*shares_pointer += read_shares_file(fullpath);
 		}
 		return 0;
 	}
@@ -74,21 +73,21 @@ int scan_shares_files(unsigned int *shares_pointer)
 
 	path_pointer = fullpath + strlen(fullpath);
 	*path_pointer++ = '/';
-	*path_pointer	= 0;
+	*path_pointer = 0;
 
-	if ((dp = opendir(fullpath)) == NULL) /* Error in opening directory */
+	if ((dp = opendir(fullpath)) == NULL)	/* Error in opening directory */
 		error_function("Can't open ", fullpath);
 	/*
 	 * search all groups recursively and get total shares
 	 */
 
-	while ((dir_pointer = readdir(dp)) != NULL) /* Error in reading directory */
-	{
-		if ((strcmp(dir_pointer->d_name, ".") == 0) || (strcmp(dir_pointer->d_name, "..") == 0))
+	while ((dir_pointer = readdir(dp)) != NULL) {	/* Error in reading directory */
+		if ((strcmp(dir_pointer->d_name, ".") == 0)
+		    || (strcmp(dir_pointer->d_name, "..") == 0))
 			continue;	/* ignore current and parent directory */
 
 		FLAG = 1;
-		strcpy (path_pointer, dir_pointer->d_name ); /* append name to fullpath */
+		strcpy(path_pointer, dir_pointer->d_name);	/* append name to fullpath */
 
 		if ((retval = scan_shares_files(shares_pointer)) != 0)
 			break;
@@ -100,7 +99,7 @@ int scan_shares_files(unsigned int *shares_pointer)
 
 	path_pointer[-1] = 0;
 
-	if (closedir (dp) < 0)
+	if (closedir(dp) < 0)
 		error_function("Could not close dir ", fullpath);
 	return 0;
 }
@@ -116,28 +115,28 @@ int read_file(char *filepath, int action, unsigned int *value)
 {
 	int num_line = 0;
 	FILE *fp;
-	switch (action)
-	{
-		case GET_SHARES:
-			*value = read_shares_file(filepath);
-			if (*value == -1)
-				return -1;
-			break;
+	switch (action) {
+	case GET_SHARES:
+		*value = read_shares_file(filepath);
+		if (*value == -1)
+			return -1;
+		break;
 
-		case GET_TASKS:
-			fp = fopen (filepath, "r");
-			if (fp == NULL)
-				error_function("Could not open file", filepath);
-			while (fgets(target, LINE_MAX, fp) != NULL)
-				num_line++;
-			*value = (unsigned int)num_line;
-			if (fclose (fp))
-				error_function ("Could not close file", filepath);
-			break;
+	case GET_TASKS:
+		fp = fopen(filepath, "r");
+		if (fp == NULL)
+			error_function("Could not open file", filepath);
+		while (fgets(target, LINE_MAX, fp) != NULL)
+			num_line++;
+		*value = (unsigned int)num_line;
+		if (fclose(fp))
+			error_function("Could not close file", filepath);
+		break;
 
-		default:
-			error_function("Wrong action type passed to fun read_file for ", filepath);
-			break;
+	default:
+		error_function("Wrong action type passed to fun read_file for ",
+			       filepath);
+		break;
 	}
 	return 0;
 }
@@ -149,8 +148,8 @@ int read_file(char *filepath, int action, unsigned int *value)
 
 inline int error_function(char *msg1, char *msg2)
 {
-	fprintf (stdout,"ERROR: %s ", msg1);
-	fprintf (stdout,"%s\n", msg2);
+	fprintf(stdout, "ERROR: %s ", msg1);
+	fprintf(stdout, "%s\n", msg2);
 	return -1;
 
 }
@@ -161,16 +160,16 @@ inline int error_function(char *msg1, char *msg2)
  */
 
 unsigned
-int read_shares_file (char *filepath)
+int read_shares_file(char *filepath)
 {
 	FILE *fp;
 	unsigned int shares;
-	fp = fopen (filepath, "r");
+	fp = fopen(filepath, "r");
 	if (fp == NULL)
 		error_function("Could not open file", filepath);
-	fscanf (fp, "%u", &shares);
-	if (fclose (fp))
-		error_function ("Could not close file", filepath);
+	fscanf(fp, "%u", &shares);
+	if (fclose(fp))
+		error_function("Could not close file", filepath);
 	return shares;
 }
 
@@ -178,21 +177,22 @@ int read_shares_file (char *filepath)
  * writes value to shares file or pid to tasks file
  */
 
-int write_to_file (char *file, const char *mode, unsigned int value)
+int write_to_file(char *file, const char *mode, unsigned int value)
 {
 	FILE *fp;
-	fp = fopen (file, mode);
+	fp = fopen(file, mode);
 	if (fp == NULL)
-		error_function ("in opening file for writing:", file);
-	fprintf (fp, "%u\n", value);
-	fclose (fp);
+		error_function("in opening file for writing:", file);
+	fprintf(fp, "%u\n", value);
+	fclose(fp);
 	return 0;
 }
+
 /* Function: signal_handler_alarm()
  * signal handler for the new action
  */
 
-void signal_handler_alarm (int signal)
+void signal_handler_alarm(int signal)
 {
 	timer_expired = 1;
 }

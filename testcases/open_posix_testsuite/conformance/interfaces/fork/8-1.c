@@ -33,19 +33,19 @@
 #define _POSIX_C_SOURCE 200112L
 
 #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <sys/wait.h>
- #include <errno.h>
+#include <errno.h>
 
 #include <sys/times.h>
 
 #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -68,7 +68,7 @@
 #define VERBOSE 1
 #endif
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	struct tms ini_tms, parent_tms, child_tms;
 
@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
 
 	if (ini_tms.tms_cutime != 0 || ini_tms.tms_cstime != 0)
 		FAILED("The process is created with non-zero tms_cutime or "
-		    "tms_cstime");
+		       "tms_cstime");
 
 #if VERBOSE > 1
 	output("Starting loop...\n");
@@ -96,17 +96,18 @@ int main(int argc, char * argv[])
 	do {
 		cur_time = times(&parent_tms);
 
-		if (cur_time == (clock_t) -1)
+		if (cur_time == (clock_t) - 1)
 			UNRESOLVED(errno, "times failed");
 	} while ((cur_time - st_time) < sysconf(_SC_CLK_TCK));
 
 #if VERBOSE > 1
 	output("Busy loop terminated\n");
-	output(" Real time: %ld, User Time %ld, System Time %ld, Ticks per sec %ld\n",
-	        (long) (cur_time - st_time),
-	        (long) (parent_tms.tms_utime - ini_tms.tms_utime),
-	        (long) (parent_tms.tms_stime - ini_tms.tms_stime),
-	        sysconf(_SC_CLK_TCK));
+	output
+	    (" Real time: %ld, User Time %ld, System Time %ld, Ticks per sec %ld\n",
+	     (long)(cur_time - st_time),
+	     (long)(parent_tms.tms_utime - ini_tms.tms_utime),
+	     (long)(parent_tms.tms_stime - ini_tms.tms_stime),
+	     sysconf(_SC_CLK_TCK));
 #endif
 
 	/* Create the child */
@@ -120,12 +121,13 @@ int main(int argc, char * argv[])
 
 		cur_time = times(&child_tms);
 
-		if (cur_time == (clock_t) -1)
+		if (cur_time == (clock_t) - 1)
 			UNRESOLVED(errno, "times failed");
 
-		if ((child_tms.tms_utime + child_tms.tms_stime) >= sysconf(_SC_CLK_TCK))
+		if ((child_tms.tms_utime + child_tms.tms_stime) >=
+		    sysconf(_SC_CLK_TCK))
 			FAILED("The tms struct was not reset during fork "
-			    "operation");
+			       "operation");
 
 		do {
 			cur_time = times(&child_tms);
@@ -155,14 +157,14 @@ int main(int argc, char * argv[])
 	output("Child joined\n");
 
 	output(" Real time: %ld,\n"
-	        "  User Time %ld, System Time %ld,\n"
-	        "  Child User Time %ld, Child System Time %ld\n",
-	        (long) (cur_time - st_time),
-	        (long) (parent_tms.tms_utime - ini_tms.tms_utime),
-	        (long) (parent_tms.tms_stime - ini_tms.tms_stime),
-	        (long) (parent_tms.tms_cutime - ini_tms.tms_cutime),
-	        (long) (parent_tms.tms_cstime - ini_tms.tms_cstime)
-	      );
+	       "  User Time %ld, System Time %ld,\n"
+	       "  Child User Time %ld, Child System Time %ld\n",
+	       (long)(cur_time - st_time),
+	       (long)(parent_tms.tms_utime - ini_tms.tms_utime),
+	       (long)(parent_tms.tms_stime - ini_tms.tms_stime),
+	       (long)(parent_tms.tms_cutime - ini_tms.tms_cutime),
+	       (long)(parent_tms.tms_cstime - ini_tms.tms_cstime)
+	    );
 
 #endif
 
@@ -171,7 +173,7 @@ int main(int argc, char * argv[])
 
 	if (parent_tms.tms_cutime == 0 && parent_tms.tms_cstime == 0)
 		FAILED("The process is created with non-zero tms_cutime or "
-		    "tms_cstime");
+		       "tms_cstime");
 
 	/* Test passed */
 #if VERBOSE > 0

@@ -26,16 +26,16 @@
 
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[28];
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mysemp = sem_open(semname, O_CREAT, 0777, 1);
-        if (mysemp == SEM_FAILED || mysemp == NULL) {
-                perror(ERROR_PREFIX "sem_open");
-                return PTS_UNRESOLVED;
-        }
+	if (mysemp == SEM_FAILED || mysemp == NULL) {
+		perror(ERROR_PREFIX "sem_open");
+		return PTS_UNRESOLVED;
+	}
 
 	/* Checking if mysemp has a value returned. From sem_open */
 	if (sem_post(mysemp) == 0) {

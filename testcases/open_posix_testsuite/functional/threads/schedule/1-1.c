@@ -44,7 +44,7 @@ volatile int low_done = -1;
 float timediff(struct timespec t2, struct timespec t1)
 {
 	float diff = t2.tv_sec - t1.tv_sec;
-	diff += (t2.tv_nsec - t1.tv_nsec)/1000000000.0;
+	diff += (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
 	return diff;
 }
 
@@ -53,7 +53,7 @@ float timediff(struct timespec t2, struct timespec t1)
  */
 void signal_handler(int sig)
 {
-	int                       rc = 0;
+	int rc = 0;
 
 	rc = pthread_barrier_wait(&barrier);
 	if ((rc != 0) && (rc != PTHREAD_BARRIER_SERIAL_THREAD)) {
@@ -64,10 +64,10 @@ void signal_handler(int sig)
 
 void *hi_priority_thread(void *tmp)
 {
-	struct sched_param   param;
-	int                  policy;
-	int                  rc = 0;
-	void                 *previous_signal;
+	struct sched_param param;
+	int policy;
+	int rc = 0;
+	void *previous_signal;
 
 	param.sched_priority = HIGH_PRIORITY;
 	rc = pthread_setschedparam(pthread_self(), SCHED_RR, &param);
@@ -106,15 +106,15 @@ void *hi_priority_thread(void *tmp)
 	if (low_done != 1)
 		woken_up = 1;
 
-	pthread_exit((void *) 0);
+	pthread_exit((void *)0);
 }
 
 void *low_priority_thread(void *tmp)
 {
-	struct timespec	           start_timespec, current_timespec;
-	struct sched_param         param;
-	int                        rc = 0;
-	int                        policy;
+	struct timespec start_timespec, current_timespec;
+	struct sched_param param;
+	int rc = 0;
+	int policy;
 
 	param.sched_priority = LOW_PRIORITY;
 	rc = pthread_setschedparam(pthread_self(), SCHED_RR, &param);
@@ -141,15 +141,15 @@ void *low_priority_thread(void *tmp)
 	}
 	low_done = 1;
 
-	pthread_exit((void *) 0);
+	pthread_exit((void *)0);
 }
 
 int main()
 {
-	pthread_t                 high_id, low_id;
-	pthread_attr_t            low_attr, high_attr;
-	struct sched_param        param;
-	int                       rc = 0;
+	pthread_t high_id, low_id;
+	pthread_attr_t low_attr, high_attr;
+	struct sched_param param;
+	int rc = 0;
 
 	/* Initialize the barrier */
 	rc = pthread_barrier_init(&barrier, NULL, 2);

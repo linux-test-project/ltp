@@ -82,19 +82,20 @@
 
 #include <sys/stat.h>
 off_t offsets[] = {
-0x30000000,
-0x30200000,
-0x30400000,
-0x30600000,
-0x30800000,
-0x30A00000,
-0x30C00000,
-0x30D00000,
-0x30F00000,
-0x31000000,
-0x32000000
+	0x30000000,
+	0x30200000,
+	0x30400000,
+	0x30600000,
+	0x30800000,
+	0x30A00000,
+	0x30C00000,
+	0x30D00000,
+	0x30F00000,
+	0x31000000,
+	0x32000000
 };
-int offsets_cnt = sizeof (offsets) /sizeof (offsets[0]);
+
+int offsets_cnt = sizeof(offsets) / sizeof(offsets[0]);
 /* Defines
  *
  * MAX_SHMEM_SIZE: maximum shared memory segment size of 256MB
@@ -125,9 +126,9 @@ int offsets_cnt = sizeof (offsets) /sizeof (offsets[0]);
  * sys_error (): System error message function
  * error (): Error message function
  */
-void parse_args (int, char **);
-void sys_error (const char *, int);
-void error (const char *, int);
+void parse_args(int, char **);
+void sys_error(const char *, int);
+void error(const char *, int);
 
 /*
  * Global variables
@@ -147,7 +148,7 @@ int shmem_size = DEFAULT_SHMEM_SIZE;
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	off_t offset;
 	int i;
@@ -155,13 +156,13 @@ int main (int argc, char **argv)
 	int shmid[MAX_SHMEM_NUMBER];	/* (Unique) Shared memory identifier */
 
 	char *shmptr[MAX_SHMEM_NUMBER];	/* Shared memory segment address */
-	char	*ptr;		/* Index into shared memory segment */
+	char *ptr;		/* Index into shared memory segment */
 
-	int value = 0;	/* Value written into shared memory segment */
+	int value = 0;		/* Value written into shared memory segment */
 
 	key_t mykey[MAX_SHMEM_NUMBER];
-	char * null_file = "/dev/null";
-	char  proj[MAX_SHMEM_NUMBER] = {
+	char *null_file = "/dev/null";
+	char proj[MAX_SHMEM_NUMBER] = {
 		'3',
 		'4',
 		'5',
@@ -178,80 +179,86 @@ int main (int argc, char **argv)
 	/*
 	 * Parse command line arguments and print out program header
 	 */
-	parse_args (argc, argv);
-	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
+	parse_args(argc, argv);
+	printf("%s: IPC Shared Memory TestSuite program\n", *argv);
 
-	for (i=0; i<offsets_cnt; i++) {
-        /*
-         * Create a key to uniquely identify the shared segment
-         */
+	for (i = 0; i < offsets_cnt; i++) {
+		/*
+		 * Create a key to uniquely identify the shared segment
+		 */
 
-	mykey[i] = ftok(null_file,proj[i]);
+		mykey[i] = ftok(null_file, proj[i]);
 
-	printf ("\n\tmykey to uniquely identify the shared memory segment 0x%x\n",mykey[i]);
+		printf
+		    ("\n\tmykey to uniquely identify the shared memory segment 0x%x\n",
+		     mykey[i]);
 
-	printf ("\n\tGet shared memory segment (%d bytes)\n", shmem_size);
-        /*
-         * Obtain a unique shared memory identifier with shmget ().
-         */
+		printf("\n\tGet shared memory segment (%d bytes)\n",
+		       shmem_size);
+		/*
+		 * Obtain a unique shared memory identifier with shmget ().
+		 */
 
 /*	if ((shmid[i]= shmget(mykey[i], shmem_size, IPC_CREAT | 0666 )) < 0) */
-	if ((shmid[i]= shmget (IPC_PRIVATE, shmem_size,
-				IPC_CREAT | IPC_EXCL | 0666 )) < 0)
-		sys_error ("shmget failed", __LINE__);
+		if ((shmid[i] = shmget(IPC_PRIVATE, shmem_size,
+				       IPC_CREAT | IPC_EXCL | 0666)) < 0)
+			sys_error("shmget failed", __LINE__);
 
-	printf ("\n\tAttach shared memory segment to process\n");
-        /*
-         * Attach the shared memory segment to the process
-         */
+		printf("\n\tAttach shared memory segment to process\n");
+		/*
+		 * Attach the shared memory segment to the process
+		 */
 
-                offset = offsets[i];
+		offset = offsets[i];
 
 #ifndef __64BIT__
-         printf ("\n\toffset of the shared memory segment 0x%lx\n",offset);
-        if ((shmptr[i] = (char *) shmat (shmid[i], (const void *)offset, 0)) == (char *)-1)
+		printf("\n\toffset of the shared memory segment 0x%lx\n",
+		       offset);
+		if ((shmptr[i] =
+		     (char *)shmat(shmid[i], (const void *)offset,
+				   0)) == (char *)-1)
 #else
-         printf ("\n\toffset of the shared memory is determined by the system\n"
-);
-         if ((shmptr[i] = (char *) shmat (shmid[i], 0 , 0)) == (char *)-1)
+		printf
+		    ("\n\toffset of the shared memory is determined by the system\n");
+		if ((shmptr[i] = (char *)shmat(shmid[i], 0, 0)) == (char *)-1)
 #endif
-                sys_error ("shmat failed", __LINE__);
+			sys_error("shmat failed", __LINE__);
 
-	printf ("\n\tIndex through shared memory segment ...\n");
+		printf("\n\tIndex through shared memory segment ...\n");
 
-        /*
-         * Index through the shared memory segment
-         */
+		/*
+		 * Index through the shared memory segment
+		 */
 
-	for (ptr=shmptr[i]; ptr < (shmptr[i] + shmem_size); ptr++)
-		*ptr = value++;
+		for (ptr = shmptr[i]; ptr < (shmptr[i] + shmem_size); ptr++)
+			*ptr = value++;
 
 	}
 
-	printf ("\n\tDetach from the segment using the shmdt subroutine\n");
+	printf("\n\tDetach from the segment using the shmdt subroutine\n");
 
-	printf ("\n\tRelease shared memory\n");
+	printf("\n\tRelease shared memory\n");
 
-	for (i=0; i<offsets_cnt; i++) {
-        /*
-         * Detach from the segment
-         */
+	for (i = 0; i < offsets_cnt; i++) {
+		/*
+		 * Detach from the segment
+		 */
 
-	shmdt( shmptr[i] );
+		shmdt(shmptr[i]);
 
-        /*
-         * Release shared memory
-         */
+		/*
+		 * Release shared memory
+		 */
 
-	if (shmctl (shmid[i], IPC_RMID, 0) < 0)
-		sys_error ("shmctl failed", __LINE__);
+		if (shmctl(shmid[i], IPC_RMID, 0) < 0)
+			sys_error("shmctl failed", __LINE__);
 
 	}
 	/*
 	 * Program completed successfully -- exit
 	 */
 
-	printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 
 	return (0);
 }
@@ -268,21 +275,21 @@ int main (int argc, char **argv)
 |            [-s] size: shared memory segment size                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	i;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int i;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	while ((i = getopt(argc, argv, "s:?")) != EOF) {
 		switch (i) {
-			case 's':
-				shmem_size = atoi (optarg);
-				break;
-			case '?':
-				errflag++;
-				break;
+		case 's':
+			shmem_size = atoi(optarg);
+			break;
+		case '?':
+			errflag++;
+			break;
 		}
 	}
 
@@ -290,8 +297,8 @@ void parse_args (int argc, char **argv)
 		errflag++;
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -302,12 +309,12 @@ void parse_args (int argc, char **argv)
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void sys_error (const char *msg, int line)
+void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -317,8 +324,8 @@ void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void error (const char *msg, int line)
+void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	exit (-1);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	exit(-1);
 }

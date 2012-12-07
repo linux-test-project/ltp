@@ -26,8 +26,6 @@
 #include "../libclone/libclone.h"
 #include "test.h"
 
-
-
 int dummy(void *v)
 {
 	return 0;

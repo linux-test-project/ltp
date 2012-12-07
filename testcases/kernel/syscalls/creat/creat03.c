@@ -101,7 +101,8 @@ int main(int ac, char **av)
 		close(TEST_RETURN);
 		/* clean up things in case we are looping */
 		if (unlink(pfilname) == -1) {
-			tst_brkm(TBROK|TERRNO, cleanup, "couldn't remove file");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "couldn't remove file");
 		}
 	}
 	cleanup();

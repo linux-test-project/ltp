@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = 0;
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
 		its.it_value.tv_sec = timervals[i][0];
 		its.it_value.tv_nsec = timervals[i][1];
 
-		ts.tv_sec=timervals[i][0]+SLEEPDELTA;
-		ts.tv_nsec=timervals[i][1];
+		ts.tv_sec = timervals[i][0] + SLEEPDELTA;
+		ts.tv_nsec = timervals[i][1];
 
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
 			perror("timer_create() did not return success\n");
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 			failure = 1;
 		}
 
-		if (abs(tsleft.tv_sec-SLEEPDELTA) > ACCEPTABLEDELTA) {
+		if (abs(tsleft.tv_sec - SLEEPDELTA) > ACCEPTABLEDELTA) {
 			printf("Timer did not last correct amount of time\n");
 			failure = 1;
 		}

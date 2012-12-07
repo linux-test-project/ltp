@@ -76,7 +76,6 @@
 
 #define RLIMIT_TOO_HIGH 1000
 
-
 char *TCID = "getrlimit02";
 
 static void cleanup(void);

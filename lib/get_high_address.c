@@ -36,5 +36,5 @@
 
 char *get_high_address(void)
 {
-       return (char *)sbrk(0) + (4 * getpagesize());
+	return (char *)sbrk(0) + (4 * getpagesize());
 }

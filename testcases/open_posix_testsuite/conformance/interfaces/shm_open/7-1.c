@@ -16,6 +16,7 @@
 
 int main()
 {
-        printf("Will not test the interpretation of slash characters other than the leading\nslash character in name because it is implementation-defined.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test the interpretation of slash characters other than the leading\nslash character in name because it is implementation-defined.\n");
+	return PTS_UNTESTED;
 }

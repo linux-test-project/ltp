@@ -35,19 +35,20 @@ void SIGUSR2_handler(int signo)
 int main()
 {
 	if (signal(SIGUSR1, SIGUSR1_handler) == SIG_ERR) {
-                perror("Unexpected error while using signal()");
-               	return PTS_UNRESOLVED;
-        }
+		perror("Unexpected error while using signal()");
+		return PTS_UNRESOLVED;
+	}
 
 	if (signal(SIGUSR2, SIGUSR2_handler) == SIG_ERR) {
-                perror("Unexpected error while using signal()");
-               	return PTS_UNRESOLVED;
-        }
+		perror("Unexpected error while using signal()");
+		return PTS_UNRESOLVED;
+	}
 
-        if (signal(SIGUSR1,SIG_IGN) != SIGUSR1_handler) {
-		printf("signal did not return the last handler that was associated with SIGUSR1\n");
-               	return PTS_FAIL;
-        }
+	if (signal(SIGUSR1, SIG_IGN) != SIGUSR1_handler) {
+		printf
+		    ("signal did not return the last handler that was associated with SIGUSR1\n");
+		return PTS_FAIL;
+	}
 
 	return PTS_PASS;
 }

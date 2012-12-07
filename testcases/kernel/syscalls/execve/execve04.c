@@ -75,6 +75,7 @@ void do_child_1(void);
 void do_child_2(void);
 
 int exp_enos[] = { ETXTBSY, 0 };
+
 int start_sync_pipes[2];
 int end_sync_pipes[2];
 
@@ -109,7 +110,7 @@ int main(int ac, char **av)
 
 	if (!Fflag)
 		tst_brkm(TBROK, NULL,
-		    "You must specify an executable file with the -F option.");
+			 "You must specify an executable file with the -F option.");
 
 	setup(*av);
 
@@ -169,12 +170,12 @@ int main(int ac, char **av)
 				perror("didn't get ETXTBSY\n");
 			} else
 				printf("execve failed with ETXTBSY as "
-				    "expected\n");
+				       "expected\n");
 			exit(retval);
 		}
 		/* wait for the child to finish */
 		if (waitpid(pid1, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid failed");
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 3)
 			tst_resm(TPASS, "execve failed as expected");
 		else
@@ -182,7 +183,7 @@ int main(int ac, char **av)
 
 		/*  terminate first child */
 		sync_pipe_notify(end_sync_pipes);
-		(void) waitpid(pid, NULL, 0);
+		(void)waitpid(pid, NULL, 0);
 	}
 	cleanup();
 
@@ -203,18 +204,18 @@ void setup(char *argv0)
 		strncpy(test_path, test_app, sizeof(test_path));
 	else {
 		if ((pwd = get_current_dir_name()) == NULL)
-			tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
+			tst_brkm(TBROK | TERRNO, NULL, "getcwd failed");
 
 		snprintf(test_path, sizeof(test_path), "%s/%s",
-		    pwd, basename(test_app));
+			 pwd, basename(test_app));
 
 		free(pwd);
 	}
 
 	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") +
-	    1);
+		     1);
 	if (cmd == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
+		tst_brkm(TBROK | TERRNO, NULL, "Cannot alloc command string");
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

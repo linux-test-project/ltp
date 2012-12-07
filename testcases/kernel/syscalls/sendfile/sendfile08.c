@@ -73,18 +73,18 @@ int main(int argc, char *argv[])
 		ret = lseek(out_fd, 0, SEEK_SET);
 		if (ret == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "lseek %s failed",
-			    out_file);
+				 out_file);
 		ret = read(out_fd, buf, BUFSIZ);
 		if (ret == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "read %s failed",
-			    out_file);
+				 out_file);
 
 		if (!strcmp(buf, TEST_MSG_OUT TEST_MSG_IN))
 			tst_resm(TPASS, "sendfile(2) copies data correctly");
 		else
 			tst_resm(TFAIL, "sendfile(2) copies data incorrectly."
-			    " Expect \"%s%s\", got \"%s\"", TEST_MSG_OUT,
-			    TEST_MSG_IN, buf);
+				 " Expect \"%s%s\", got \"%s\"", TEST_MSG_OUT,
+				 TEST_MSG_IN, buf);
 	}
 
 	cleanup();

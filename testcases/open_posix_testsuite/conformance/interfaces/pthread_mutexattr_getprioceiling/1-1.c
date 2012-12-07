@@ -22,8 +22,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-static void
-print_pthread_error(const char *fname, int ret)
+static void print_pthread_error(const char *fname, int ret)
 {
 	printf("Unexpected error at %s(): %s\n", fname, strerror(ret));
 }
@@ -33,9 +32,9 @@ int main()
 
 	/* Make sure there is prioceiling capability. */
 	/* #ifndef _POSIX_PRIORITY_SCHEDULING
-	  fprintf(stderr,"prioceiling attribute is not available for testing\n");
-	  return PTS_UNRESOLVED;
-	#endif */
+	   fprintf(stderr,"prioceiling attribute is not available for testing\n");
+	   return PTS_UNRESOLVED;
+	   #endif */
 
 	pthread_mutexattr_t ma;
 	int prioceiling, max_prio, min_prio, ret;
@@ -65,9 +64,10 @@ int main()
 	min_prio = sched_get_priority_min(SCHED_FIFO);
 
 	/* Ensure that prioceiling is within legal limits. */
-	if ((prioceiling < min_prio) || (prioceiling > max_prio))
-	{
-		printf("Test FAILED: Default prioceiling %d is not compliant with SCHED_FIFO boundary.\n", prioceiling);
+	if ((prioceiling < min_prio) || (prioceiling > max_prio)) {
+		printf
+		    ("Test FAILED: Default prioceiling %d is not compliant with SCHED_FIFO boundary.\n",
+		     prioceiling);
 		return PTS_FAIL;
 	}
 

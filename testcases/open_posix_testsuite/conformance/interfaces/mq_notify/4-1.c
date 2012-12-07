@@ -37,7 +37,7 @@ int enter_handler = 0;
 
 void msg_handler()
 {
-        enter_handler = 1;
+	enter_handler = 1;
 }
 
 void mqclean(mqd_t queue, const char *qname)
@@ -45,6 +45,7 @@ void mqclean(mqd_t queue, const char *qname)
 	mq_close(queue);
 	mq_unlink(qname);
 }
+
 int main()
 {
 	char mqname[50];
@@ -57,7 +58,7 @@ int main()
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		return PTS_UNRESOLVED;
 	}
@@ -86,8 +87,7 @@ int main()
 		printf("Test FAILED \n");
 		mqclean(mqdes, mqname);
 		return PTS_FAIL;
-	}
-	else {
+	} else {
 		printf("Test PASSED \n");
 		mqclean(mqdes, mqname);
 		return PTS_PASS;

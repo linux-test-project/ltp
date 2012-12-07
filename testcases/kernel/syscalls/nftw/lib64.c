@@ -194,8 +194,8 @@ test_ENAMETOOLONG_path(char *name, int (*callback) (const char *), int expected)
 #endif
 
 	if ((path = (char *)malloc(pcPathMax + 2)) == NULL) {
-		tst_resm(TFAIL, "malloc(%zu) for path failed: %s", pcPathMax + 2,
-			 strerror(errno));
+		tst_resm(TFAIL, "malloc(%zu) for path failed: %s",
+			 pcPathMax + 2, strerror(errno));
 		cleanup_function();
 		fail_exit();
 	}

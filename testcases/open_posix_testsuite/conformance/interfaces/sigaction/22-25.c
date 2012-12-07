@@ -69,7 +69,7 @@ int main()
 		act.sa_handler = handler;
 		act.sa_flags = SA_NODEFER;
 		sigemptyset(&act.sa_mask);
-		if (sigaction(SIGXCPU,  &act, 0) == -1) {
+		if (sigaction(SIGXCPU, &act, 0) == -1) {
 			perror("Unexpected error while attempting to "
 			       "setup test pre-conditions");
 			return PTS_UNRESOLVED;

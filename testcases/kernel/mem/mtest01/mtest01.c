@@ -57,17 +57,17 @@ void handler(int signo)
 	pid_count++;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	int c;
 	char *mem;
 	float percent;
-	unsigned int maxpercent = 0, dowrite = 0, verbose=0, j;
+	unsigned int maxpercent = 0, dowrite = 0, verbose = 0, j;
 	unsigned long bytecount, alloc_bytes, max_pids;
 	unsigned long long original_maxbytes, maxbytes = 0;
 	unsigned long long pre_mem = 0, post_mem = 0;
 	unsigned long long total_ram, total_free, D, C;
-	int chunksize = 1024*1024; /* one meg at a time by default */
+	int chunksize = 1024 * 1024;	/* one meg at a time by default */
 	struct sysinfo sstats;
 	int i, pid_cntr;
 	pid_t pid, *pid_list;
@@ -76,34 +76,34 @@ int main(int argc, char* argv[])
 	act.sa_handler = handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	sigaction(SIGRTMIN,  &act, 0);
+	sigaction(SIGRTMIN, &act, 0);
 
 	while ((c = getopt(argc, argv, "c:b:p:wvh")) != -1) {
-		switch(c) {
+		switch (c) {
 		case 'c':
 			chunksize = atoi(optarg);
 			break;
 		case 'b':
 			if (maxpercent != 0)
 				tst_brkm(TBROK, NULL,
-				    "ERROR: -b option cannot be used with -p "
-				    "option at the same time");
+					 "ERROR: -b option cannot be used with -p "
+					 "option at the same time");
 			maxbytes = atoll(optarg);
 			break;
 		case 'p':
 			if (maxbytes != 0)
 				tst_brkm(TBROK, NULL,
-				    "ERROR: -p option cannot be used with -b "
-				    "option at the same time");
+					 "ERROR: -p option cannot be used with -b "
+					 "option at the same time");
 			maxpercent = atoi(optarg);
 			if (maxpercent <= 0)
 				tst_brkm(TBROK, NULL,
-				    "ERROR: -p option requires number greater "
-				    "than 0");
+					 "ERROR: -p option requires number greater "
+					 "than 0");
 			if (maxpercent > 99)
 				tst_brkm(TBROK, NULL,
-				    "ERROR: -p option cannot be greater than "
-				    "99");
+					 "ERROR: -p option cannot be greater than "
+					 "99");
 			break;
 		case 'w':
 			dowrite = 1;
@@ -113,11 +113,17 @@ int main(int argc, char* argv[])
 			break;
 		case 'h':
 		default:
-			printf("usage: %s [-c <bytes>] [-b <bytes>|-p <percent>] [-v]\n", argv[0]);
-			printf("\t-c <num>\tsize of chunk in bytes to malloc on each pass\n");
-			printf("\t-b <bytes>\tmaximum number of bytes to allocate before stopping\n");
-			printf("\t-p <bytes>\tpercent of total memory used at which the program stops\n");
-			printf("\t-w\t\twrite to the memory after allocating\n");
+			printf
+			    ("usage: %s [-c <bytes>] [-b <bytes>|-p <percent>] [-v]\n",
+			     argv[0]);
+			printf
+			    ("\t-c <num>\tsize of chunk in bytes to malloc on each pass\n");
+			printf
+			    ("\t-b <bytes>\tmaximum number of bytes to allocate before stopping\n");
+			printf
+			    ("\t-p <bytes>\tpercent of total memory used at which the program stops\n");
+			printf
+			    ("\t-w\t\twrite to the memory after allocating\n");
 			printf("\t-v\t\tverbose\n");
 			printf("\t-h\t\tdisplay usage\n");
 			exit(1);
@@ -132,13 +138,13 @@ int main(int argc, char* argv[])
 	max_pids = total_ram / (unsigned long)FIVE_HUNDRED_MB + 1;
 
 	if ((pid_list = malloc(max_pids * sizeof(pid_t))) == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "malloc failed.");
+		tst_brkm(TBROK | TERRNO, NULL, "malloc failed.");
 	memset(pid_list, 0, max_pids * sizeof(pid_t));
 
 	/* Currently used memory */
 	C = sstats.mem_unit * (total_ram - total_free);
 	tst_resm(TINFO, "Total memory already used on system = %llu kbytes",
-	    C / 1024);
+		 C / 1024);
 
 	if (maxpercent) {
 		percent = (float)maxpercent / 100.00;
@@ -146,14 +152,14 @@ int main(int argc, char* argv[])
 		/* Desired memory needed to reach maxpercent */
 		D = percent * (sstats.mem_unit * total_ram);
 		tst_resm(TINFO,
-		    "Total memory used needed to reach maximum = %llu kbytes",
-		    D / 1024);
+			 "Total memory used needed to reach maximum = %llu kbytes",
+			 D / 1024);
 
 		/* Are we already using more than maxpercent? */
 		if (C > D) {
 			tst_resm(TFAIL,
-			    "More memory than the maximum amount you specified "
-			    " is already being used");
+				 "More memory than the maximum amount you specified "
+				 " is already being used");
 			free(pid_list);
 			tst_exit();
 		}
@@ -161,7 +167,7 @@ int main(int argc, char* argv[])
 		/* set maxbytes to the extra amount we want to allocate */
 		maxbytes = D - C;
 		tst_resm(TINFO, "Filling up %d%% of ram which is %llu kbytes",
-		    maxpercent, maxbytes / 1024);
+			 maxpercent, maxbytes / 1024);
 	}
 	original_maxbytes = maxbytes;
 	i = 0;
@@ -171,7 +177,7 @@ int main(int argc, char* argv[])
 		pid_cntr++;
 	pid_list[i] = pid;
 
-#if defined (_s390_) /* s390's 31bit addressing requires smaller chunks */
+#if defined (_s390_)		/* s390's 31bit addressing requires smaller chunks */
 	while (pid != 0 && maxbytes > FIVE_HUNDRED_MB) {
 		i++;
 		maxbytes -= FIVE_HUNDRED_MB;
@@ -184,7 +190,7 @@ int main(int argc, char* argv[])
 	if (maxbytes > FIVE_HUNDRED_MB)
 		alloc_bytes = FIVE_HUNDRED_MB;
 	else
-		alloc_bytes = (unsigned long) maxbytes;
+		alloc_bytes = (unsigned long)maxbytes;
 
 #elif __WORDSIZE == 32
 	while (pid != 0 && maxbytes > ONE_GB) {
@@ -193,7 +199,7 @@ int main(int argc, char* argv[])
 		pid = fork();
 		if (pid != 0) {
 			pid_cntr++;
-			pid_list[i]=pid;
+			pid_list[i] = pid;
 		}
 	}
 	if (maxbytes > ONE_GB)
@@ -221,28 +227,28 @@ int main(int argc, char* argv[])
 		bytecount = chunksize;
 		while (1) {
 			if ((mem = malloc(chunksize)) == NULL) {
-				tst_resm(TBROK|TERRNO,
-				    "stopped at %lu bytes", bytecount);
+				tst_resm(TBROK | TERRNO,
+					 "stopped at %lu bytes", bytecount);
 				free(pid_list);
 				tst_exit();
 			}
 			if (dowrite)
 				for (j = 0; j < chunksize; j++)
-					*(mem+j) = 'a';
+					*(mem + j) = 'a';
 			if (verbose)
 				tst_resm(TINFO,
-				    "allocated %lu bytes chunksize is %d",
-				    bytecount, chunksize);
+					 "allocated %lu bytes chunksize is %d",
+					 bytecount, chunksize);
 			bytecount += chunksize;
 			if (alloc_bytes && bytecount >= alloc_bytes)
 				break;
 		}
 		if (dowrite)
 			tst_resm(TINFO, "... %lu bytes allocated and used.",
-			    bytecount);
+				 bytecount);
 		else
 			tst_resm(TINFO, "... %lu bytes allocated only.",
-			    bytecount);
+				 bytecount);
 		kill(getppid(), SIGRTMIN);
 		while (1)
 			sleep(1);
@@ -252,16 +258,26 @@ int main(int argc, char* argv[])
 
 		if (dowrite) {
 			/* Total Free Post-Test RAM */
-			post_mem = (unsigned long long)sstats.mem_unit * sstats.freeram;
-			post_mem = post_mem + (unsigned long long)sstats.mem_unit * sstats.freeswap;
+			post_mem =
+			    (unsigned long long)sstats.mem_unit *
+			    sstats.freeram;
+			post_mem =
+			    post_mem +
+			    (unsigned long long)sstats.mem_unit *
+			    sstats.freeswap;
 
 			while ((((unsigned long long)pre_mem - post_mem) <
-			    (unsigned long long)original_maxbytes) &&
-			    pid_count < pid_cntr) {
+				(unsigned long long)original_maxbytes) &&
+			       pid_count < pid_cntr) {
 				sleep(1);
 				sysinfo(&sstats);
-				post_mem = (unsigned long long)sstats.mem_unit * sstats.freeram;
-				post_mem = post_mem + (unsigned long long)sstats.mem_unit * sstats.freeswap;
+				post_mem =
+				    (unsigned long long)sstats.mem_unit *
+				    sstats.freeram;
+				post_mem =
+				    post_mem +
+				    (unsigned long long)sstats.mem_unit *
+				    sstats.freeswap;
 			}
 		}
 		while (pid_list[i] != 0) {
@@ -270,10 +286,10 @@ int main(int argc, char* argv[])
 		}
 		if (dowrite)
 			tst_resm(TPASS, "%llu kbytes allocated and used.",
-			    original_maxbytes / 1024);
+				 original_maxbytes / 1024);
 		else
 			tst_resm(TPASS, "%llu kbytes allocated only.",
-			    original_maxbytes / 1024);
+				 original_maxbytes / 1024);
 	}
 	free(pid_list);
 	tst_exit();

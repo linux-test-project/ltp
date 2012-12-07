@@ -1,6 +1,6 @@
   /*
-  Test that the SI_MESGQ macro is defined.
-  */
+     Test that the SI_MESGQ macro is defined.
+   */
 
 #include <signal.h>
 

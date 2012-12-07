@@ -22,7 +22,8 @@ MODULE_LICENSE("GPL");
 #define BLK_DEV_NAME		"test_block"
 #define MAX_MAJOR		255
 
-static void tc20(void) {
+static void tc20(void)
+{
 	struct gendisk *gd_ptr;
 
 	gd_ptr = alloc_disk(1);

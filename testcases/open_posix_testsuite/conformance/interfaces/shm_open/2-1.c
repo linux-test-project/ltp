@@ -17,7 +17,7 @@
 
 int main()
 {
-        printf("Test doesn't exercise requirements; read code comments for "
-		"more details of what isn't tested\n");
-        return PTS_UNTESTED;
+	printf("Test doesn't exercise requirements; read code comments for "
+	       "more details of what isn't tested\n");
+	return PTS_UNTESTED;
 }

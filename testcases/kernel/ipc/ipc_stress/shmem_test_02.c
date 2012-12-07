@@ -101,23 +101,23 @@
  */
 
 struct data {
-	int	who;
-	int	value;
+	int who;
+	int value;
 };
 
-void cleanup ();
-void handler (int, int, struct sigcontext *);
-void setup_signal_handlers ();
-static void child (int, unsigned char *);
-static int create_lock_file (char *);
-static void unlock_file (int);
-static void write_lock (int);
-static void read_lock (int);
-void parse_args (int, char **);
-void sys_error (const char *, int);
-void error (const char *, int);
-void loop (int, char);
-void tell (int, char *);
+void cleanup();
+void handler(int, int, struct sigcontext *);
+void setup_signal_handlers();
+static void child(int, unsigned char *);
+static int create_lock_file(char *);
+static void unlock_file(int);
+static void write_lock(int);
+static void read_lock(int);
+void parse_args(int, char **);
+void sys_error(const char *, int);
+void error(const char *, int);
+void loop(int, char);
+void tell(int, char *);
 
 enum { READ, WRITE };		/* Pipe read & write end indices */
 enum { PARENT, CHILD };		/* Pipe read & write end indices */
@@ -127,13 +127,13 @@ enum { PARENT, CHILD };		/* Pipe read & write end indices */
 #define DEFAULT_NUM_CHILDREN	2
 #define DEFAULT_SHMEM_SIZE	100000
 
-int     num_children = DEFAULT_NUM_CHILDREN;
-int 	buffer_size = DEFAULT_SHMEM_SIZE;
+int num_children = DEFAULT_NUM_CHILDREN;
+int buffer_size = DEFAULT_SHMEM_SIZE;
 
-unsigned long *checksum; 	/* Shared memory segment address */
-int	lockfd;
-pid_t	parent_pid;
-pid_t	pid [MAX_CHILDREN];
+unsigned long *checksum;	/* Shared memory segment address */
+int lockfd;
+pid_t parent_pid;
+pid_t pid[MAX_CHILDREN];
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -145,48 +145,48 @@ pid_t	pid [MAX_CHILDREN];
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	unsigned char	*shmptr,	/* Shared memory segment address */
-		value = 0;	/* Value written into shared memory segment */
-	int	i;
-	unsigned char 	*ptr;
-	int	status;
-	int	shmem_size;
+	unsigned char *shmptr,	/* Shared memory segment address */
+	 value = 0;		/* Value written into shared memory segment */
+	int i;
+	unsigned char *ptr;
+	int status;
+	int shmem_size;
 	unsigned long cksum;
 
-	lockfd = create_lock_file (LOCK_FILE);
-	setup_signal_handlers ();
+	lockfd = create_lock_file(LOCK_FILE);
+	setup_signal_handlers();
 
 	/*
 	 * Parse command line arguments and print out program header
 	 */
-	parse_args (argc, argv);
-	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
+	parse_args(argc, argv);
+	printf("%s: IPC Shared Memory TestSuite program\n", *argv);
 
-	parent_pid = getpid ();
-	for (i=0; i<num_children; i++)
-		pid [i] = (pid_t)0;
+	parent_pid = getpid();
+	for (i = 0; i < num_children; i++)
+		pid[i] = (pid_t) 0;
 
 	/*
 	 * Get chunk of shared memory for storing num_children checksum
 	 */
-	shmem_size = sizeof (unsigned long) * num_children;
-        if ((checksum = (unsigned long *)
-		mmap (0, shmem_size, PROT_READ | PROT_WRITE,
-		      MAP_ANON | MAP_SHARED, -1, 0)) == MAP_FAILED )
-		sys_error ("mmap failed", __LINE__);
+	shmem_size = sizeof(unsigned long) * num_children;
+	if ((checksum = (unsigned long *)
+	     mmap(0, shmem_size, PROT_READ | PROT_WRITE,
+		  MAP_ANON | MAP_SHARED, -1, 0)) == MAP_FAILED)
+		sys_error("mmap failed", __LINE__);
 
-	for (i=0; i < num_children; i++)
-		*(checksum + (sizeof (unsigned long) * i)) = 0;
+	for (i = 0; i < num_children; i++)
+		*(checksum + (sizeof(unsigned long) * i)) = 0;
 
 	/*
 	 * Get chunk of memory for writing scratch data
 	 */
-	printf ("\n\tGet shared memory segment (%d bytes)\n", buffer_size);
-	if ((shmptr = mmap (0, buffer_size, PROT_READ | PROT_WRITE,
-		MAP_ANON | MAP_SHARED, -1, 0)) == MAP_FAILED)
-		sys_error ("mmap failed", __LINE__);
+	printf("\n\tGet shared memory segment (%d bytes)\n", buffer_size);
+	if ((shmptr = mmap(0, buffer_size, PROT_READ | PROT_WRITE,
+			   MAP_ANON | MAP_SHARED, -1, 0)) == MAP_FAILED)
+		sys_error("mmap failed", __LINE__);
 
 	/*
 	 * Parent:
@@ -195,79 +195,79 @@ int main (int argc, char **argv)
 	 */
 	cksum = value = 0;
 
-	printf ("\n\tParent: calculate shared memory segment checksum\n");
-	write_lock (lockfd);
-	for (ptr=shmptr; ptr < (shmptr+buffer_size); ptr++) {
-                *ptr = (value++) % (UCHAR_MAX + 1);
+	printf("\n\tParent: calculate shared memory segment checksum\n");
+	write_lock(lockfd);
+	for (ptr = shmptr; ptr < (shmptr + buffer_size); ptr++) {
+		*ptr = (value++) % (UCHAR_MAX + 1);
 		cksum += *ptr;
 	}
-	unlock_file (lockfd);
-	printf ("\t        shared memory checksum %08lx\n", cksum);
+	unlock_file(lockfd);
+	printf("\t        shared memory checksum %08lx\n", cksum);
 
-	printf ("\n\tSpawning %d child processes ... \n", num_children);
-	for (i=0; i<num_children; i++) {
+	printf("\n\tSpawning %d child processes ... \n", num_children);
+	for (i = 0; i < num_children; i++) {
 
-		if ((pid [i] = fork()) == (pid_t)0) {
-			child (i, shmptr);
-			exit (0);
-		} else if (pid [i] < (pid_t)0)
-			sys_error ("fork failed", __LINE__);
+		if ((pid[i] = fork()) == (pid_t) 0) {
+			child(i, shmptr);
+			exit(0);
+		} else if (pid[i] < (pid_t) 0)
+			sys_error("fork failed", __LINE__);
 	}
 
 	/*
 	 * Wait for child processes to compute checksum and complete...
 	 */
-	for (i=0; i<num_children; i++) {
-		waitpid (pid [i], &status, 0);
+	for (i = 0; i < num_children; i++) {
+		waitpid(pid[i], &status, 0);
 
-		if (!WIFEXITED (status))
-			sys_error ("child process terminated abnormally",
-				__LINE__);
-		if (cksum != *(checksum + (sizeof (unsigned long) * i))) {
-			printf ("checksum [%d] = %08lx\n", i, checksum [i]);
-			error ("checksums do not match", __LINE__);
+		if (!WIFEXITED(status))
+			sys_error("child process terminated abnormally",
+				  __LINE__);
+		if (cksum != *(checksum + (sizeof(unsigned long) * i))) {
+			printf("checksum [%d] = %08lx\n", i, checksum[i]);
+			error("checksums do not match", __LINE__);
 		}
 	}
-	printf ("\n\tParent: children calculated segment successfully\n");
+	printf("\n\tParent: children calculated segment successfully\n");
 	/*
 	 * Program completed successfully -- exit
 	 */
-	printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 
 	return (0);
 }
 
-static void child (int num, unsigned char *shmptr)
+static void child(int num, unsigned char *shmptr)
 {
 	unsigned long cksum = 0;
-	int	i;
+	int i;
 
-	read_lock (lockfd);
-	for (i=0; i<buffer_size; i++)
+	read_lock(lockfd);
+	for (i = 0; i < buffer_size; i++)
 		cksum += *shmptr++;
-	unlock_file (lockfd);
+	unlock_file(lockfd);
 
-	*(checksum + (sizeof (unsigned long) * num)) = cksum;
-	printf ("\t\tchild (%02d): checksum %08lx\n", num,
-		*(checksum + (sizeof (unsigned long) * num)));
+	*(checksum + (sizeof(unsigned long) * num)) = cksum;
+	printf("\t\tchild (%02d): checksum %08lx\n", num,
+	       *(checksum + (sizeof(unsigned long) * num)));
 }
 
-static void write_lock (int fd)
+static void write_lock(int fd)
 {
-	if (lockf (fd, F_LOCK, 0) < 0)
-		sys_error ("lockf (LOCK) failed", __LINE__);
+	if (lockf(fd, F_LOCK, 0) < 0)
+		sys_error("lockf (LOCK) failed", __LINE__);
 }
 
-static void read_lock (int fd)
+static void read_lock(int fd)
 {
-	if (lockf (fd, F_TEST, 0) < 0)
-		sys_error ("lockf (LOCK) failed", __LINE__);
+	if (lockf(fd, F_TEST, 0) < 0)
+		sys_error("lockf (LOCK) failed", __LINE__);
 }
 
-static void unlock_file (int fd)
+static void unlock_file(int fd)
 {
-	if (lockf (fd, F_ULOCK, 0) < 0)
-		sys_error ("lockf (UNLOCK) failed", __LINE__);
+	if (lockf(fd, F_ULOCK, 0) < 0)
+		sys_error("lockf (UNLOCK) failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -277,16 +277,16 @@ static void unlock_file (int fd)
 | Function:  Setup the signal handler for SIGPIPE.                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void setup_signal_handlers ()
+void setup_signal_handlers()
 {
 	struct sigaction invec;
 
-	invec.sa_handler = (void (*)(int)) handler;
-	sigemptyset (&invec.sa_mask);
+	invec.sa_handler = (void (*)(int))handler;
+	sigemptyset(&invec.sa_mask);
 	invec.sa_flags = 0;
 
-	if (sigaction (SIGINT, &invec, (struct sigaction *) NULL) < 0)
-		sys_error ("sigaction failed", __LINE__);
+	if (sigaction(SIGINT, &invec, (struct sigaction *)NULL) < 0)
+		sys_error("sigaction failed", __LINE__);
 
 }
 
@@ -304,23 +304,22 @@ void setup_signal_handlers ()
 |            o  Other:   Print message and abort program...            |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void handler (int sig, int code, struct sigcontext *scp)
+void handler(int sig, int code, struct sigcontext *scp)
 {
-	char 	msg [100];	/* Buffer for error message */
+	char msg[100];		/* Buffer for error message */
 
 	if (sig == SIGINT) {
-		if (getpid () == parent_pid) {
+		if (getpid() == parent_pid) {
 
-			fprintf (stderr, "Received SIGINT -- cleaning up...\n");
-			fflush (stderr);
+			fprintf(stderr, "Received SIGINT -- cleaning up...\n");
+			fflush(stderr);
 
-			cleanup ();
-		}
-		else
-			exit (-1);
+			cleanup();
+		} else
+			exit(-1);
 	} else {
-		sprintf (msg, "Received an unexpected signal (%d)", sig);
-		error (msg, __LINE__);
+		sprintf(msg, "Received an unexpected signal (%d)", sig);
+		error(msg, __LINE__);
 	}
 }
 
@@ -332,30 +331,30 @@ void handler (int sig, int code, struct sigcontext *scp)
 |            processes and exits the program...                        |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void cleanup ()
+void cleanup()
 {
 	int i;
 
-	if (getpid () == parent_pid) {
-		for (i=0; i<num_children; i++) {
-			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0)
-				sys_error ("signal failed", __LINE__);
+	if (getpid() == parent_pid) {
+		for (i = 0; i < num_children; i++) {
+			if (pid[i] > (pid_t) 0 && kill(pid[i], SIGKILL) < 0)
+				sys_error("signal failed", __LINE__);
 		}
 	}
 
-	exit (-1);
+	exit(-1);
 }
 
-static int create_lock_file (char *lock_name)
+static int create_lock_file(char *lock_name)
 {
-	int	fd;
+	int fd;
 
-        if ((fd = open (lock_name, O_RDWR)) < 0) {
-		if ((fd = open (lock_name, O_RDWR|O_CREAT|O_EXCL, 0666)) < 0) {
-			perror ("cannot create lock file");
-			exit (-1);
+	if ((fd = open(lock_name, O_RDWR)) < 0) {
+		if ((fd = open(lock_name, O_RDWR | O_CREAT | O_EXCL, 0666)) < 0) {
+			perror("cannot create lock file");
+			exit(-1);
 		}
-        }
+	}
 	return (fd);
 }
 
@@ -373,30 +372,30 @@ static int create_lock_file (char *lock_name)
 |            [-c] num_children: number of child processes              |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	i;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int i;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	while ((i = getopt(argc, argv, "c:s:?")) != EOF) {
 		switch (i) {
-			case 'c':
-				num_children = atoi (optarg);
-				break;
-			case 's':
-				buffer_size = atoi (optarg);
-				break;
-			case '?':
-				errflag++;
-				break;
+		case 'c':
+			num_children = atoi(optarg);
+			break;
+		case 's':
+			buffer_size = atoi(optarg);
+			break;
+		case '?':
+			errflag++;
+			break;
 		}
 	}
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -407,12 +406,12 @@ void parse_args (int argc, char **argv)
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void sys_error (const char *msg, int line)
+void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -422,8 +421,8 @@ void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void error (const char *msg, int line)
+void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	cleanup ();
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	cleanup();
 }

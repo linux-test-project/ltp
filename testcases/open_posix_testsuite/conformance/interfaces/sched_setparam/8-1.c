@@ -15,7 +15,9 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main() {
-	printf("Will not test that the target process is moved to the tail of the thread\nlist for its priority when it is running.\n");
+int main()
+{
+	printf
+	    ("Will not test that the target process is moved to the tail of the thread\nlist for its priority when it is running.\n");
 	return PTS_UNTESTED;
 }

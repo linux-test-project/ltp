@@ -45,12 +45,12 @@ static int opt_consume, opt_grand, opt_show, opt_self, opt_child;
 static char *consume_str, *grand_consume_str, *self_str, *child_str;
 
 option_t child_options[] = {
-	{ "n:", &opt_consume, &consume_str },
-	{ "g:", &opt_grand,   &grand_consume_str },
-	{ "v",  &opt_show,    NULL },
-	{ "s:", &opt_self,    &self_str },
-	{ "l:", &opt_child,   &child_str },
-	{ NULL, NULL,         NULL }
+	{"n:", &opt_consume, &consume_str},
+	{"g:", &opt_grand, &grand_consume_str},
+	{"v", &opt_show, NULL},
+	{"s:", &opt_self, &self_str},
+	{"l:", &opt_child, &child_str},
+	{NULL, NULL, NULL}
 };
 
 static void usage(void);
@@ -78,16 +78,17 @@ int main(int argc, char *argv[])
 
 		if (opt_consume) {
 			consume_nr = SAFE_STRTOL(cleanup,
-				    consume_str, 0, LONG_MAX);
+						 consume_str, 0, LONG_MAX);
 			tst_resm(TINFO, "child allocate %ldMB", consume_nr);
 			consume(consume_nr);
 		}
 
 		if (opt_grand) {
 			grand_consume_nr = SAFE_STRTOL(cleanup,
-				    grand_consume_str, 0, LONG_MAX);
+						       grand_consume_str, 0,
+						       LONG_MAX);
 			tst_resm(TINFO, "grandchild allocate %ldMB",
-				    grand_consume_nr);
+				 grand_consume_nr);
 			switch (pid = fork()) {
 			case -1:
 				tst_brkm(TBROK, cleanup, "fork");
@@ -97,10 +98,10 @@ int main(int argc, char *argv[])
 			default:
 				break;
 			}
-			while (waitpid(-1, &pid, WUNTRACED|WCONTINUED) > 0)
+			while (waitpid(-1, &pid, WUNTRACED | WCONTINUED) > 0)
 				if (WEXITSTATUS(pid) != 0)
-					tst_brkm(TBROK|TERRNO, cleanup,
-						"child exit status is not 0");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "child exit status is not 0");
 		}
 
 		if (opt_show) {
@@ -109,28 +110,28 @@ int main(int argc, char *argv[])
 			SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
 			maxrss_children = ru.ru_maxrss;
 			tst_resm(TINFO, "exec.self = %ld, exec.children = %ld",
-				    maxrss_self, maxrss_children);
+				 maxrss_self, maxrss_children);
 			if (opt_self) {
 				self_nr = SAFE_STRTOL(cleanup,
-					    self_str, 0, LONG_MAX);
+						      self_str, 0, LONG_MAX);
 				delta = maxrss_self - self_nr;
 				if (delta >= -DELTA_MAX && delta <= DELTA_MAX)
 					tst_resm(TPASS,
-						"initial.self ~= exec.self");
+						 "initial.self ~= exec.self");
 				else
 					tst_resm(TFAIL,
-						"initial.self !~= exec.self");
+						 "initial.self !~= exec.self");
 			}
 			if (opt_child) {
 				child_nr = SAFE_STRTOL(cleanup,
-					    child_str, 0, LONG_MAX);
+						       child_str, 0, LONG_MAX);
 				delta = maxrss_children - child_nr;
 				if (delta >= -DELTA_MAX && delta <= DELTA_MAX)
 					tst_resm(TPASS,
-						"initial.children ~= exec.children");
+						 "initial.children ~= exec.children");
 				else
 					tst_resm(TFAIL,
-						"initial.children !~= exec.children");
+						 "initial.children !~= exec.children");
 			}
 		}
 	}
@@ -153,7 +154,7 @@ static void consume(int mega)
 	size_t sz;
 	void *ptr;
 
-	sz  = mega * 1024 * 1024;
+	sz = mega * 1024 * 1024;
 	ptr = SAFE_MALLOC(cleanup, sz);
 	memset(ptr, 0, sz);
 }

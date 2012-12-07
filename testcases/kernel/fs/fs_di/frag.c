@@ -39,9 +39,9 @@
 #include<sys/types.h>
 #include<unistd.h>
 
-FILE *fp_data;  /* File pointer for data file */
-FILE *fp_frag1; /* File pointer for fragmented file 1 */
-FILE *fp_frag2; /* File pointer for fragmented file 2 */
+FILE *fp_data;			/* File pointer for data file */
+FILE *fp_frag1;			/* File pointer for fragmented file 1 */
+FILE *fp_frag2;			/* File pointer for fragmented file 2 */
 
 int main(int argc, char *argv[])
 {

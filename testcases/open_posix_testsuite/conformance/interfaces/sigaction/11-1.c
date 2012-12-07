@@ -30,7 +30,7 @@
 int child_continued = 0;
 int waiting = 1;
 
-void handler(int signo, siginfo_t *info, void *context)
+void handler(int signo, siginfo_t * info, void *context)
 {
 	if (info && info->si_code == CLD_CONTINUED) {
 		printf("Child has been stopped\n");
@@ -48,7 +48,7 @@ int main()
 	act.sa_sigaction = handler;
 	act.sa_flags = SA_SIGINFO;
 	sigemptyset(&act.sa_mask);
-	sigaction(SIGCHLD,  &act, 0);
+	sigaction(SIGCHLD, &act, 0);
 
 	if ((pid = fork()) == 0) {
 		/* child */
@@ -76,9 +76,9 @@ int main()
 			kill(pid, SIGSTOP);
 
 			/*
-			  Don't let the kernel optimize away queued
-			  SIGSTOP/SIGCONT signals.
-			*/
+			   Don't let the kernel optimize away queued
+			   SIGSTOP/SIGCONT signals.
+			 */
 			tv.tv_sec = 1;
 			tv.tv_usec = 0;
 			select(0, NULL, NULL, NULL, &tv);
@@ -102,22 +102,24 @@ int main()
 
 	if (child_continued == NUMSTOPS) {
 		printf("Test PASSED\n");
-		printf("In the section of the POSIX spec that describes the SA_NOCLDSTOP flag in the sigaction() interface "
-			"it is specified that if the SA_NOCLDSTOP flag is not set in sa_flags, then a SIGCHLD and a SIGCHLD "
-			"signal **MAY** be generated for the calling process whenever any of its stopped child processes are continued. "
-			"Because of that, this test will PASS either way, but note that the signals implementation you are currently "
-			"run this test on DOES choose to send a SIGCHLD signal whenever any of its stopped child processes are "
-			"continued. Again, this is not a bug because of the existence of the word *MAY* in the spec.\n");
+		printf
+		    ("In the section of the POSIX spec that describes the SA_NOCLDSTOP flag in the sigaction() interface "
+		     "it is specified that if the SA_NOCLDSTOP flag is not set in sa_flags, then a SIGCHLD and a SIGCHLD "
+		     "signal **MAY** be generated for the calling process whenever any of its stopped child processes are continued. "
+		     "Because of that, this test will PASS either way, but note that the signals implementation you are currently "
+		     "run this test on DOES choose to send a SIGCHLD signal whenever any of its stopped child processes are "
+		     "continued. Again, this is not a bug because of the existence of the word *MAY* in the spec.\n");
 		return PTS_PASS;
 	}
 
 	printf("Test PASSED\n");
 
-	printf("In the section of the POSIX spec that describes the SA_NOCLDSTOP flag in the sigaction() interface "
-		"it is specified that if the SA_NOCLDSTOP flag is not set in sa_flags, then a SIGCHLD and a SIGCHLD "
-		"signal **MAY** be generated for the calling process whenever any of its stopped child processes are continued. "
-		"Because of that, this test will PASS either way, but note that the signals implementation you are currently "
-		"run this test on chooses NOT TO send a SIGCHLD signal whenever any of its stopped child processes are "
-		"continued. Again, this is not a bug because of the existence of the word *MAY* in the spec.\n");
+	printf
+	    ("In the section of the POSIX spec that describes the SA_NOCLDSTOP flag in the sigaction() interface "
+	     "it is specified that if the SA_NOCLDSTOP flag is not set in sa_flags, then a SIGCHLD and a SIGCHLD "
+	     "signal **MAY** be generated for the calling process whenever any of its stopped child processes are continued. "
+	     "Because of that, this test will PASS either way, but note that the signals implementation you are currently "
+	     "run this test on chooses NOT TO send a SIGCHLD signal whenever any of its stopped child processes are "
+	     "continued. Again, this is not a bug because of the existence of the word *MAY* in the spec.\n");
 	return PTS_PASS;
 }

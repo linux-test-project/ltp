@@ -108,22 +108,22 @@ void do_sendfile(OFF_T offset, int i)
 
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: %d", errno);
-	 }
+	}
 	if (stat(in_file, &sb) < 0) {
 		tst_brkm(TBROK, cleanup, "stat failed: %d", errno);
-	 }
+	}
 
 	if ((before_pos = lseek(in_fd, 0, SEEK_CUR)) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "lseek before invoking sendfile failed: %d", errno);
-	 }
+	}
 
 	TEST(sendfile(out_fd, in_fd, &offset, sb.st_size - offset));
 
 	if ((after_pos = lseek(in_fd, 0, SEEK_CUR)) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "lseek after invoking sendfile failed: %d", errno);
-	 }
+	}
 
 	if (STD_FUNCTIONAL_TEST) {
 		/* Close the sockets */
@@ -138,13 +138,14 @@ void do_sendfile(OFF_T offset, int i)
 		} else if (offset != testcases[i].exp_updated_offset) {
 			tst_resm(TFAIL, "sendfile(2) failed to update "
 				 "OFFSET parameter to expected value, "
-				 "expected: %d, got: %"PRId64,
-				 testcases[i].exp_updated_offset, (int64_t)offset);
+				 "expected: %d, got: %" PRId64,
+				 testcases[i].exp_updated_offset,
+				 (int64_t) offset);
 		} else if (before_pos != after_pos) {
 			tst_resm(TFAIL, "sendfile(2) updated the file position "
-				 " of in_fd unexpectedly, expected file position: %"PRId64", "
-				 " actual file position %"PRId64,
-				 (int64_t)before_pos, (int64_t)after_pos);
+				 " of in_fd unexpectedly, expected file position: %"
+				 PRId64 ", " " actual file position %" PRId64,
+				 (int64_t) before_pos, (int64_t) after_pos);
 		} else {
 			tst_resm(TPASS, "functionality of sendfile() is "
 				 "correct");
@@ -201,11 +202,11 @@ void setup()
 	if ((fd = creat(in_file, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat failed in setup, errno: %d",
 			 errno);
-	 }
+	}
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
 	if (write(fd, buf, strlen(buf)) < 0) {
 		tst_brkm(TBROK, cleanup, "write failed, errno: %d", errno);
-	 }
+	}
 	close(fd);
 	sprintf(out_file, "out.%d", getpid());
 }
@@ -288,7 +289,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 #ifdef UCLINUX
 	argv0 = av[0];
 	maybe_run_child(&do_child, "");

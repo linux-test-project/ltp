@@ -73,10 +73,10 @@ int main(int argc, char *argv[])
 
 	sa.sa_handler = sighandler;
 	if (sigemptyset(&sa.sa_mask) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "sigemptyset");
+		tst_brkm(TBROK | TERRNO, cleanup, "sigemptyset");
 	sa.sa_flags = 0;
 	if (sigaction(SIGUSR1, &sa, NULL) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "sigaction");
+		tst_brkm(TBROK | TERRNO, cleanup, "sigaction");
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
 	switch (pid = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 
 	case 0:
 		/* startup the check monitor */
@@ -102,12 +102,12 @@ int main(int argc, char *argv[])
 	}
 
 	if (kill(pid, SIGUSR1) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "kill %d", pid);
-	if (waitpid(pid, &status, WUNTRACED|WCONTINUED)  == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+		tst_brkm(TBROK | TERRNO, cleanup, "kill %d", pid);
+	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		tst_resm(TFAIL,
-		    "check_monitor child exit with status: %d", status);
+			 "check_monitor child exit with status: %d", status);
 
 	cleanup();
 	tst_exit();
@@ -129,7 +129,7 @@ static void test_tune(unsigned long overcommit_policy)
 		/* case2 */
 		else if (i == 1) {
 			set_sys_tune("min_free_kbytes", 2 * default_tune, 1);
-		/* case3 */
+			/* case3 */
 		} else {
 			memfree = read_meminfo("MemFree:");
 			memtotal = read_meminfo("MemTotal:");
@@ -143,44 +143,47 @@ static void test_tune(unsigned long overcommit_policy)
 		fflush(stdout);
 		switch (pid[i] = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
 			ret = eatup_mem(overcommit_policy);
 			exit(ret);
 		}
 
-		if (waitpid(pid[i], &status, WUNTRACED|WCONTINUED) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+		if (waitpid(pid[i], &status, WUNTRACED | WCONTINUED) == -1)
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 
 		if (overcommit_policy == 2) {
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL,
-				    "child unexpectedly failed: %d", status);
+					 "child unexpectedly failed: %d",
+					 status);
 		} else if (overcommit_policy == 1) {
 			if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
 #if __WORDSIZE == 32
 			{
 				if (total_mem < 3145728UL)
 #endif
-				tst_resm(TFAIL,
-				    "child unexpectedly failed: %d", status);
+					tst_resm(TFAIL,
+						 "child unexpectedly failed: %d",
+						 status);
 #if __WORDSIZE == 32
-	/* in 32-bit system, a process allocate about 3Gb memory at most */
+				/* in 32-bit system, a process allocate about 3Gb memory at most */
 				else
 					tst_resm(TINFO, "Child can't allocate "
-					    ">3Gb memory in 32bit system");
+						 ">3Gb memory in 32bit system");
 			}
 #endif
 		} else {
 			if (WIFEXITED(status)) {
 				if (WEXITSTATUS(status) != 0) {
 					tst_resm(TFAIL, "child unexpectedly "
-					    "failed: %d", status);
+						 "failed: %d", status);
 				}
 			} else if (!WIFSIGNALED(status) ||
-				    WTERMSIG(status) != SIGKILL) {
+				   WTERMSIG(status) != SIGKILL) {
 				tst_resm(TFAIL,
-				    "child unexpectedly failed: %d", status);
+					 "child unexpectedly failed: %d",
+					 status);
 			}
 		}
 	}
@@ -195,8 +198,8 @@ static int eatup_mem(unsigned long overcommit_policy)
 	memfree = read_meminfo("MemFree:");
 	printf("memfree is %lu kB before eatup mem\n", memfree);
 	while (1) {
-		addrs = mmap(NULL, MAP_SIZE, PROT_READ|PROT_WRITE,
-		    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+		addrs = mmap(NULL, MAP_SIZE, PROT_READ | PROT_WRITE,
+			     MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 		if (addrs == MAP_FAILED) {
 			if (overcommit_policy != 1 && errno != ENOMEM) {
 				perror("mmap");
@@ -223,7 +226,7 @@ static void check_monitor(void)
 
 		if (memfree < tune) {
 			tst_resm(TINFO, "MemFree is %lu kB, "
-			    "min_free_kbytes is %lu kB", memfree, tune);
+				 "min_free_kbytes is %lu kB", memfree, tune);
 			tst_resm(TFAIL, "MemFree < min_free_kbytes");
 		}
 

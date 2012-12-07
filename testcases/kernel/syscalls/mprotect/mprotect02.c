@@ -91,7 +91,7 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		fd = SAFE_OPEN(cleanup, file1, O_RDWR|O_CREAT, 0777);
+		fd = SAFE_OPEN(cleanup, file1, O_RDWR | O_CREAT, 0777);
 
 		num_bytes = getpagesize();
 
@@ -102,16 +102,17 @@ int main(int ac, char **av)
 			else
 				bytes_to_write = num_bytes;
 
-			num_bytes -= SAFE_WRITE(cleanup, 1, fd, buf, bytes_to_write);
+			num_bytes -=
+			    SAFE_WRITE(cleanup, 1, fd, buf, bytes_to_write);
 
 		} while (0 < num_bytes);
 
 		/* mmap the PAGESIZE bytes as read only. */
 		addr = SAFE_MMAP(cleanup, 0, sizeof(buf), PROT_READ,
-		    MAP_SHARED, fd, 0);
+				 MAP_SHARED, fd, 0);
 
 		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "fork #1 failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork #1 failed");
 
 		if (pid == 0) {
 			(void)memcpy(addr, buf, strlen(buf));
@@ -119,20 +120,20 @@ int main(int ac, char **av)
 		}
 
 		if (waitpid(pid, &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid failed");
 		if (!WIFEXITED(status))
 			tst_brkm(TBROK, cleanup, "child exited abnormally "
-					"with status: %d", status);
+				 "with status: %d", status);
 		switch (status) {
 		case 255:
 			tst_brkm(TBROK, cleanup,
-					"memcpy did not generate SIGSEGV");
+				 "memcpy did not generate SIGSEGV");
 		case 0:
 			tst_resm(TPASS, "got SIGSEGV as expected");
 			break;
 		default:
 			tst_brkm(TBROK, cleanup, "got unexpected signal: %d",
-					status);
+				 status);
 			break;
 		}
 
@@ -144,7 +145,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 
 				if ((pid = FORK_OR_VFORK()) == -1)
-					tst_brkm(TBROK|TERRNO, cleanup,
+					tst_brkm(TBROK | TERRNO, cleanup,
 						 "fork #2 failed");
 
 				if (pid == 0) {
@@ -153,21 +154,21 @@ int main(int ac, char **av)
 				}
 
 				if (waitpid(pid, &status, 0) == -1)
-					tst_brkm(TBROK|TERRNO, cleanup,
-					    "waitpid failed");
+					tst_brkm(TBROK | TERRNO, cleanup,
+						 "waitpid failed");
 
 				if (WIFEXITED(status) &&
 				    WEXITSTATUS(status) == 0)
 					tst_resm(TPASS, "didn't get SIGSEGV");
 				else
 					tst_brkm(TBROK, cleanup,
-					    "child exited abnormally");
+						 "child exited abnormally");
 
 			} else
 				tst_resm(TPASS, "call succeeded");
 
 		} else {
-			tst_resm(TFAIL|TERRNO, "mprotect failed");
+			tst_resm(TFAIL | TERRNO, "mprotect failed");
 			continue;
 		}
 

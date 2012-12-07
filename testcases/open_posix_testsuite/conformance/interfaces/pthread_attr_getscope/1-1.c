@@ -28,7 +28,8 @@
 #define SYSTEMSCOPE PTHREAD_SCOPE_SYSTEM
 #define PROCESSSCOPE PTHREAD_SCOPE_PROCESS
 
-int verify_scope(pthread_attr_t *attr, int scopetype) {
+int verify_scope(pthread_attr_t * attr, int scopetype)
+{
 	int rc;
 	int scope;
 
@@ -37,27 +38,27 @@ int verify_scope(pthread_attr_t *attr, int scopetype) {
 		perror(ERROR_PREFIX "pthread_attr_getscope");
 		exit(PTS_UNRESOLVED);
 	}
-	switch(scopetype) {
+	switch (scopetype) {
 	case SYSTEMSCOPE:
-  		if (scope != SYSTEMSCOPE) {
-    			perror(ERROR_PREFIX "got wrong scope param");
-    			exit(PTS_FAIL);
-  		}
+		if (scope != SYSTEMSCOPE) {
+			perror(ERROR_PREFIX "got wrong scope param");
+			exit(PTS_FAIL);
+		}
 		break;
 	case PROCESSSCOPE:
-  		if (scope != PROCESSSCOPE) {
-    			perror(ERROR_PREFIX "got wrong scope param");
-    			exit(PTS_FAIL);
-  		}
+		if (scope != PROCESSSCOPE) {
+			perror(ERROR_PREFIX "got wrong scope param");
+			exit(PTS_FAIL);
+		}
 		break;
 	}
-      return 0;
+	return 0;
 }
 
 int main()
 {
-	int                   rc=0;
-	pthread_attr_t        attr;
+	int rc = 0;
+	pthread_attr_t attr;
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
@@ -65,20 +66,20 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 
-  	rc = pthread_attr_setscope(&attr, SYSTEMSCOPE);
+	rc = pthread_attr_setscope(&attr, SYSTEMSCOPE);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "PTHREAD_SCOPE_SYSTEM is not supported");
 	} else {
-  		verify_scope(&attr, SYSTEMSCOPE);
+		verify_scope(&attr, SYSTEMSCOPE);
 	}
-  	rc = pthread_attr_setscope(&attr, PROCESSSCOPE);
+	rc = pthread_attr_setscope(&attr, PROCESSSCOPE);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "PTHREAD_SCOPE_SYSTEM is not supported");
 	} else {
-  		verify_scope(&attr, PROCESSSCOPE);
+		verify_scope(&attr, PROCESSSCOPE);
 	}
 
-  	rc = pthread_attr_destroy(&attr);
+	rc = pthread_attr_destroy(&attr);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);

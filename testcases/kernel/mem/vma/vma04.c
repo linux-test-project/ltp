@@ -64,8 +64,8 @@ static void *mmap_addr;
 static struct bitmask *nmask;
 
 static option_t options[] = {
-	{ "n:", &opt_node,	&opt_nodestr},
-	{ NULL, NULL,		NULL}
+	{"n:", &opt_node, &opt_nodestr},
+	{NULL, NULL, NULL}
 };
 
 static void init(void);
@@ -97,11 +97,11 @@ int main(int argc, char **argv)
 	if (opt_node) {
 		node = SAFE_STRTOL(NULL, opt_nodestr, 1, LONG_MAX);
 	} else {
-		err = get_allowed_nodes(NH_MEMS|NH_MEMS, 1, &node);
+		err = get_allowed_nodes(NH_MEMS | NH_MEMS, 1, &node);
 		if (err == -3)
 			tst_brkm(TCONF, NULL, "requires at least one node.");
 		else if (err < 0)
-			tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes");
+			tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes");
 	}
 	numa_bitmask_setbit(nmask, node);
 
@@ -129,13 +129,14 @@ static void init(void)
 {
 	void *addr;
 
-	addr = SAFE_MMAP(cleanup, NULL, pagesize*8, PROT_NONE,
-		    MAP_ANON|MAP_PRIVATE, 0, 0);
-	SAFE_MMAP(cleanup, addr+pagesize, pagesize*6, PROT_READ|PROT_WRITE,
-		    MAP_ANON|MAP_PRIVATE|MAP_FIXED, 0, 0);
+	addr = SAFE_MMAP(cleanup, NULL, pagesize * 8, PROT_NONE,
+			 MAP_ANON | MAP_PRIVATE, 0, 0);
+	SAFE_MMAP(cleanup, addr + pagesize, pagesize * 6,
+		  PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE | MAP_FIXED, 0,
+		  0);
 
 	mmap_addr = addr + pagesize;
-	memset(mmap_addr, 0, pagesize*6);
+	memset(mmap_addr, 0, pagesize * 6);
 }
 
 static void fin(void)
@@ -143,47 +144,47 @@ static void fin(void)
 	void *addr;
 
 	addr = mmap_addr - pagesize;
-	SAFE_MUNMAP(cleanup, addr, pagesize*8);
+	SAFE_MUNMAP(cleanup, addr, pagesize * 8);
 
 	memset(retbuf, 0, sizeof(retbuf));
 }
 
 static void mem_bind(int index, int len)
 {
-	if (mbind(mmap_addr+pagesize*index, pagesize*len,
-		    MPOL_BIND, nmask->maskp, nmask->size, 0) != 0) {
+	if (mbind(mmap_addr + pagesize * index, pagesize * len,
+		  MPOL_BIND, nmask->maskp, nmask->size, 0) != 0) {
 		if (errno != ENOSYS)
-			tst_brkm(TBROK|TERRNO, cleanup, "mbind: bind");
+			tst_brkm(TBROK | TERRNO, cleanup, "mbind: bind");
 		else
 			tst_brkm(TCONF, cleanup,
-				    "mbind syscall not implemented "
-				    "on this system.");
+				 "mbind syscall not implemented "
+				 "on this system.");
 	}
 }
 
 static void mem_interleave(int index, int len)
 {
-	if (mbind(mmap_addr+pagesize*index, pagesize*len,
-		    MPOL_INTERLEAVE, nmask->maskp, nmask->size, 0) != 0) {
+	if (mbind(mmap_addr + pagesize * index, pagesize * len,
+		  MPOL_INTERLEAVE, nmask->maskp, nmask->size, 0) != 0) {
 		if (errno != ENOSYS)
-			tst_brkm(TBROK|TERRNO, cleanup, "mbind: interleave");
+			tst_brkm(TBROK | TERRNO, cleanup, "mbind: interleave");
 		else
 			tst_brkm(TCONF, cleanup,
-				    "mbind syscall not implemented "
-				    "on this system.");
+				 "mbind syscall not implemented "
+				 "on this system.");
 	}
 }
 
 static void mem_unbind(int index, int len)
 {
-	if (mbind(mmap_addr+pagesize*index, pagesize*len,
-		    MPOL_DEFAULT, NULL, 0, 0) != 0) {
+	if (mbind(mmap_addr + pagesize * index, pagesize * len,
+		  MPOL_DEFAULT, NULL, 0, 0) != 0) {
 		if (errno != ENOSYS)
-			tst_brkm(TBROK|TERRNO, cleanup, "mbind: unbind");
+			tst_brkm(TBROK | TERRNO, cleanup, "mbind: unbind");
 		else
 			tst_brkm(TCONF, cleanup,
-				    "mbind syscall not implemented "
-				    "on this system.");
+				 "mbind syscall not implemented "
+				 "on this system.");
 	}
 }
 
@@ -193,7 +194,7 @@ static void assertion(char *expected, char *value, char *name)
 		tst_resm(TPASS, "%s: passed.", name);
 	else
 		tst_resm(TFAIL, "%s: failed. expect '%s', actual '%s'",
-			    name, expected, value);
+			 name, expected, value);
 }
 
 static void get_vmas(char *retbuf, void *addr_s, void *addr_e)
@@ -201,22 +202,22 @@ static void get_vmas(char *retbuf, void *addr_s, void *addr_e)
 	FILE *fp;
 	void *s, *t;
 	char buf[BUFSIZ], tmpstr[BUFSIZ];
-	int  flag;
+	int flag;
 
 	retbuf[0] = '\0';
 	flag = 0;
 	fp = fopen("/proc/self/maps", "r");
 	if (fp == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "fopen");
+		tst_brkm(TBROK | TERRNO, cleanup, "fopen");
 	while (fgets(buf, BUFSIZ, fp) != NULL) {
 		if (sscanf(buf, "%p-%p ", &s, &t) != 2)
 			continue;
 		if (addr_s <= s && s < addr_e) {
 			if (!flag) {
-				sprintf(tmpstr, "%ld", (t-s)/pagesize);
+				sprintf(tmpstr, "%ld", (t - s) / pagesize);
 				flag = 1;
 			} else {
-				sprintf(tmpstr, ",%ld", (t-s)/pagesize);
+				sprintf(tmpstr, ",%ld", (t - s) / pagesize);
 			}
 			strncat(retbuf, tmpstr, 32);
 		}
@@ -236,7 +237,7 @@ static void case4(void)
 	init();
 	mem_bind(0, 4);
 	mem_unbind(2, 2);
-	get_vmas(retbuf, mmap_addr, mmap_addr+pagesize*6);
+	get_vmas(retbuf, mmap_addr, mmap_addr + pagesize * 6);
 	assertion("2,4", retbuf, "case4");
 	fin();
 }
@@ -253,7 +254,7 @@ static void case5(void)
 	init();
 	mem_bind(0, 2);
 	mem_bind(2, 2);
-	get_vmas(retbuf, mmap_addr, mmap_addr+pagesize*6);
+	get_vmas(retbuf, mmap_addr, mmap_addr + pagesize * 6);
 	assertion("4,2", retbuf, "case5");
 	fin();
 }
@@ -270,7 +271,7 @@ static void case6(void)
 	mem_bind(0, 2);
 	mem_bind(4, 2);
 	mem_bind(2, 2);
-	get_vmas(retbuf, mmap_addr, mmap_addr+pagesize*6);
+	get_vmas(retbuf, mmap_addr, mmap_addr + pagesize * 6);
 	assertion("6", retbuf, "case6");
 	fin();
 }
@@ -287,7 +288,7 @@ static void case7(void)
 	mem_bind(0, 2);
 	mem_interleave(4, 2);
 	mem_bind(2, 2);
-	get_vmas(retbuf, mmap_addr, mmap_addr+pagesize*6);
+	get_vmas(retbuf, mmap_addr, mmap_addr + pagesize * 6);
 	assertion("4,2", retbuf, "case7");
 	fin();
 }
@@ -304,7 +305,7 @@ static void case8(void)
 	mem_bind(0, 2);
 	mem_interleave(4, 2);
 	mem_interleave(2, 2);
-	get_vmas(retbuf, mmap_addr, mmap_addr+pagesize*6);
+	get_vmas(retbuf, mmap_addr, mmap_addr + pagesize * 6);
 	assertion("2,4", retbuf, "case8");
 	fin();
 }

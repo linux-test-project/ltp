@@ -140,10 +140,10 @@ int main(int ac, char **av)
 		wait(&status);
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			tst_resm(TPASS, "nanosleep() failed, interrupted"
-					" by signal (%d) as expected", EINTR);
+				 " by signal (%d) as expected", EINTR);
 		} else {
 			tst_resm(TFAIL, "child process exited abnormally; "
-					"status = %d", status);
+				 "status = %d", status);
 		}
 	}
 
@@ -173,13 +173,13 @@ void do_child()
 		/* Check for expected errno is set */
 		if (TEST_ERRNO != EINTR) {
 			tst_resm(TFAIL | TTERRNO,
-				"nanosleep() failed; expected errno: %d",
-				EINTR);
+				 "nanosleep() failed; expected errno: %d",
+				 EINTR);
 			exit(1);
 		}
 	} else {
 		tst_resm(TFAIL, "nanosleep() returns %ld, "
-				"expected -1, errno:%d", TEST_RETURN, EINTR);
+			 "expected -1, errno:%d", TEST_RETURN, EINTR);
 		exit(1);
 	}
 

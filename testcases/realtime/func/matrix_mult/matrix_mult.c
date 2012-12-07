@@ -45,9 +45,9 @@
 #define MAX_CPUS	8192
 #define PRIO		43
 #define MATRIX_SIZE	100
-#define DEF_OPS		8		/* the higher the number, the more CPU intensive */
+#define DEF_OPS		8	/* the higher the number, the more CPU intensive */
 					/* (and therefore SMP performance goes up) */
-#define PASS_CRITERIA	0.75		/* Avg concurrent time * pass criteria < avg seq time - */
+#define PASS_CRITERIA	0.75	/* Avg concurrent time * pass criteria < avg seq time - */
 					/* for every addition of a cpu */
 #define ITERATIONS	128
 #define HIST_BUCKETS	100
@@ -75,7 +75,8 @@ void usage(void)
 {
 	rt_help();
 	printf("matrix_mult specific options:\n");
-	printf("  -l#	   #: number of multiplications per iteration (load)\n");
+	printf
+	    ("  -l#	   #: number of multiplications per iteration (load)\n");
 	printf("  -i#	   #: number of iterations\n");
 }
 
@@ -99,13 +100,14 @@ int parse_args(int c, char *v)
 	return handled;
 }
 
-void matrix_init(double  A[MATRIX_SIZE][MATRIX_SIZE], double  B[MATRIX_SIZE][MATRIX_SIZE])
+void matrix_init(double A[MATRIX_SIZE][MATRIX_SIZE],
+		 double B[MATRIX_SIZE][MATRIX_SIZE])
 {
 	int i, j;
 	for (i = 0; i < MATRIX_SIZE; i++) {
 		for (j = 0; j < MATRIX_SIZE; j++) {
-			A[i][j] = (double) (i*j);
-			B[i][j] = (double) ((i*j)%10);
+			A[i][j] = (double)(i * j);
+			B[i][j] = (double)((i * j) % 10);
 		}
 	}
 }
@@ -123,7 +125,7 @@ void matrix_mult(int m_size)
 		for (j = 0; j < m_size; j++) {
 			double sum = A[i_m][j] * B[j][i];
 			for (k = 0; k < m_size; k++)
-				sum += A[i_m][k]*B[k][j];
+				sum += A[i_m][k] * B[k][j];
 			C[i][j] = sum;
 		}
 	}
@@ -138,7 +140,7 @@ void matrix_mult_record(int m_size, int index)
 	for (i = 0; i < ops; i++)
 		matrix_mult(MATRIX_SIZE);
 	end = rt_gettime();
-	delta = (long)((end - start)/NS_PER_US);
+	delta = (long)((end - start) / NS_PER_US);
 	curdat->records[index].x = index;
 	curdat->records[index].y = delta;
 }
@@ -155,7 +157,7 @@ int set_affinity(void)
 		CPU_SET(online_cpu_id, &mask);
 
 		if (!sched_setaffinity(0, sizeof(mask), &mask)) {
-			cpuid = online_cpu_id; /* Save this value before unlocking mutex */
+			cpuid = online_cpu_id;	/* Save this value before unlocking mutex */
 			pthread_mutex_unlock(&mutex_cpu);
 			return cpuid;
 		}
@@ -167,7 +169,7 @@ int set_affinity(void)
 void *concurrent_thread(void *thread)
 {
 	struct thread *t = (struct thread *)thread;
-	int thread_id = (intptr_t)t->id;
+	int thread_id = (intptr_t) t->id;
 	int cpuid;
 	int i;
 	int index;
@@ -178,9 +180,9 @@ void *concurrent_thread(void *thread)
 		exit(1);
 	}
 
-	index = iterations_percpu * thread_id; /* To avoid stats overlapping */
+	index = iterations_percpu * thread_id;	/* To avoid stats overlapping */
 	pthread_barrier_wait(&mult_start);
-	for (i=0; i < iterations_percpu; i++)
+	for (i = 0; i < iterations_percpu; i++)
 		matrix_mult_record(MATRIX_SIZE, index++);
 
 	return NULL;
@@ -194,13 +196,12 @@ void main_thread(void)
 	float savg, cavg;
 	int cpuid;
 
-	if (	stats_container_init(&sdat, iterations) ||
-		stats_container_init(&shist, HIST_BUCKETS) ||
-		stats_container_init(&cdat, iterations) ||
-		stats_container_init(&chist, HIST_BUCKETS)
-	)
-	{
-		fprintf (stderr, "Cannot init stats container\n");
+	if (stats_container_init(&sdat, iterations) ||
+	    stats_container_init(&shist, HIST_BUCKETS) ||
+	    stats_container_init(&cdat, iterations) ||
+	    stats_container_init(&chist, HIST_BUCKETS)
+	    ) {
+		fprintf(stderr, "Cannot init stats container\n");
 		exit(1);
 	}
 
@@ -219,15 +220,15 @@ void main_thread(void)
 
 	/* run matrix mult operation sequentially */
 	curdat = &sdat;
-	curdat->index = iterations-1;
+	curdat->index = iterations - 1;
 	printf("\nRunning sequential operations\n");
 	start = rt_gettime();
 	for (i = 0; i < iterations; i++)
 		matrix_mult_record(MATRIX_SIZE, i);
 	end = rt_gettime();
-	delta = (long)((end - start)/NS_PER_US);
+	delta = (long)((end - start) / NS_PER_US);
 
-	savg = delta/iterations; /* don't use the stats record, use the total time recorded */
+	savg = delta / iterations;	/* don't use the stats record, use the total time recorded */
 	smin = stats_min(&sdat);
 	smax = stats_max(&sdat);
 
@@ -236,27 +237,29 @@ void main_thread(void)
 	printf("Avg: %.4f us\n", savg);
 	printf("StdDev: %.4f us\n", stats_stddev(&sdat));
 
-	if (
-		stats_hist(&shist, &sdat) ||
-
-		stats_container_save("sequential", "Matrix Multiplication Sequential Execution Runtime Scatter Plot",
-				"Iteration", "Runtime (us)", &sdat, "points") ||
-		stats_container_save("sequential_hist", "Matrix Multiplicatoin Sequential Execution Runtime Histogram",
-				"Runtime (us)", "Samples", &shist, "steps")
-	) {
-		fprintf(stderr, "Warning: could not save sequential mults stats\n");
+	if (stats_hist(&shist, &sdat) ||
+	    stats_container_save("sequential",
+				 "Matrix Multiplication Sequential Execution Runtime Scatter Plot",
+				 "Iteration", "Runtime (us)", &sdat, "points")
+	    || stats_container_save("sequential_hist",
+				    "Matrix Multiplicatoin Sequential Execution Runtime Histogram",
+				    "Runtime (us)", "Samples", &shist, "steps")
+	    ) {
+		fprintf(stderr,
+			"Warning: could not save sequential mults stats\n");
 	}
 
-	pthread_barrier_init(&mult_start, NULL, numcpus+1);
+	pthread_barrier_init(&mult_start, NULL, numcpus + 1);
 	set_priority(PRIO);
 	curdat = &cdat;
-	curdat->index = iterations-1;
-	online_cpu_id = -1; /* Redispatch cpus */
+	curdat->index = iterations - 1;
+	online_cpu_id = -1;	/* Redispatch cpus */
 	/* Create numcpus-1 concurrent threads */
 	for (j = 0; j < numcpus; j++) {
 		tids[j] = create_fifo_thread(concurrent_thread, NULL, PRIO);
 		if (tids[j] == -1) {
-			printf("Thread creation failed (max threads exceeded?)\n");
+			printf
+			    ("Thread creation failed (max threads exceeded?)\n");
 			exit(1);
 		}
 	}
@@ -268,9 +271,9 @@ void main_thread(void)
 	join_threads();
 	end = rt_gettime();
 
-	delta = (long)((end - start)/NS_PER_US);
+	delta = (long)((end - start) / NS_PER_US);
 
-	cavg = delta/iterations; /* don't use the stats record, use the total time recorded */
+	cavg = delta / iterations;	/* don't use the stats record, use the total time recorded */
 	cmin = stats_min(&cdat);
 	cmax = stats_max(&cdat);
 
@@ -279,27 +282,30 @@ void main_thread(void)
 	printf("Avg: %.4f us\n", cavg);
 	printf("StdDev: %.4f us\n", stats_stddev(&cdat));
 
-	if (
-		stats_hist(&chist, &cdat) ||
-
-		stats_container_save("concurrent", "Matrix Multiplication Concurrent Execution Runtime Scatter Plot",
-					"Iteration", "Runtime (us)", &cdat, "points") ||
-		stats_container_save("concurrent_hist", "Matrix Multiplication Concurrent Execution Runtime Histogram",
-					"Iteration", "Runtime (us)", &chist, "steps")
-	) {
-		fprintf(stderr, "Warning: could not save concurrent mults stats\n");
+	if (stats_hist(&chist, &cdat) ||
+	    stats_container_save("concurrent",
+				 "Matrix Multiplication Concurrent Execution Runtime Scatter Plot",
+				 "Iteration", "Runtime (us)", &cdat, "points")
+	    || stats_container_save("concurrent_hist",
+				    "Matrix Multiplication Concurrent Execution Runtime Histogram",
+				    "Iteration", "Runtime (us)", &chist,
+				    "steps")
+	    ) {
+		fprintf(stderr,
+			"Warning: could not save concurrent mults stats\n");
 	}
 
 	printf("\nConcurrent Multipliers:\n");
-	printf("Min: %.4f\n", (float)smin/cmin);
-	printf("Max: %.4f\n", (float)smax/cmax);
-	printf("Avg: %.4f\n", (float)savg/cavg);
+	printf("Min: %.4f\n", (float)smin / cmin);
+	printf("Max: %.4f\n", (float)smax / cmax);
+	printf("Avg: %.4f\n", (float)savg / cavg);
 
 	ret = 1;
 	if (savg > (cavg * criteria))
 		ret = 0;
-	printf("\nCriteria: %.2f * average concurrent time < average sequential time\n",
-		criteria);
+	printf
+	    ("\nCriteria: %.2f * average concurrent time < average sequential time\n",
+	     criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
 
 	return;
@@ -328,9 +334,10 @@ int main(int argc, char *argv[])
 	 * Without this, having iterations not a mutiple of numcpus causes
 	 * stats to segfault (overflow stats array).
 	 */
-	new_iterations = (int) ( (iterations + numcpus - 1) / numcpus) * numcpus;
+	new_iterations = (int)((iterations + numcpus - 1) / numcpus) * numcpus;
 	if (new_iterations != iterations)
-		printf("Rounding up iterations value to nearest multiple of total online CPUs\n");
+		printf
+		    ("Rounding up iterations value to nearest multiple of total online CPUs\n");
 
 	iterations = new_iterations;
 	iterations_percpu = iterations / numcpus;

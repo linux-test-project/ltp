@@ -33,95 +33,81 @@ int main()
 
 	/* Empty set of blocked signals */
 
-	if ((sigemptyset(&newmask) == -1) ||
-	    (sigemptyset(&pendingset) == -1))
-	{
+	if ((sigemptyset(&newmask) == -1) || (sigemptyset(&pendingset) == -1)) {
 		printf("Error in sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Add SIGRTMIN to the set of blocked signals */
-	if (sigaddset(&newmask, SIGRTMIN) == -1)
-	{
+	if (sigaddset(&newmask, SIGRTMIN) == -1) {
 		perror("Error in sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Obtain a set of pending signals and make sure SIGRTMIN
 	 * isn't pending. */
-	if (sigpending(&pendingset) == -1)
-	{
+	if (sigpending(&pendingset) == -1) {
 		printf("Error calling sigpending()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGRTMIN) == 1)
-	{
+	if (sigismember(&pendingset, SIGRTMIN) == 1) {
 		printf("Error: signal SIGRTMIN is pending\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Block SIGALRM */
-	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1)
-	{
+	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1) {
 		printf("Error in sigprocmask()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Send SIGALRM signal 2 times to this process.  Since it is blocked,
 	 * it should be pending and queued. */
-	if (raise(SIGRTMIN) != 0)
-	{
+	if (raise(SIGRTMIN) != 0) {
 		printf("Could not raise SIGALRM\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (raise(SIGRTMIN) != 0)
-	{
+	if (raise(SIGRTMIN) != 0) {
 		printf("Could not raise SIGALRM\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Obtain a set of pending signals */
-	if (sigpending(&pendingset) == -1)
-	{
+	if (sigpending(&pendingset) == -1) {
 		printf("Error calling sigpending()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure SIGRTMIN is still pending since sigwait should have only
 	 * deleted one instance of SIGRTMIN from the pending set. */
-	if (sigismember(&pendingset, SIGRTMIN) == 0)
-	{
+	if (sigismember(&pendingset, SIGRTMIN) == 0) {
 		printf("Test FAILED\n");
 		return -1;
 	}
 
 	/* Call sigwait to remove first SIGRTMIN instance from the
 	 * pending list. */
-	if (sigwait(&newmask, &sig) != 0)
-	{
+	if (sigwait(&newmask, &sig) != 0) {
 		printf("Error in sigwait\n");
 		return PTS_FAIL;
 	}
 
 	/* Make sure SIGRTMIN is still in the pending list */
-	if (sigpending(&pendingset) == -1)
-	{
+	if (sigpending(&pendingset) == -1) {
 		printf("Error calling sigpending()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGRTMIN) == 0)
-	{
+	if (sigismember(&pendingset, SIGRTMIN) == 0) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	/* Call sigwait again to remove last SIGRTMIN instance from the
 	 * pending list. */
-	if (sigwait(&newmask, &sig) != 0)
-	{
+	if (sigwait(&newmask, &sig) != 0) {
 		printf("Error in sigwait\n");
 		return PTS_FAIL;
 	}
@@ -129,14 +115,12 @@ int main()
 	/* Make sure SIGRTMIN is NOT in the pending list anymore, since
 	 * the previous sigwait() should have taken it out of the
 	 * pending list. */
-	if (sigpending(&pendingset) == -1)
-	{
+	if (sigpending(&pendingset) == -1) {
 		printf("Error calling sigpending()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (sigismember(&pendingset, SIGRTMIN) != 0)
-	{
+	if (sigismember(&pendingset, SIGRTMIN) != 0) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

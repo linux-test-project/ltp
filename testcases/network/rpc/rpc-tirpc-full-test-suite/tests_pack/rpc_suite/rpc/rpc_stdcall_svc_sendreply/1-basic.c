@@ -35,8 +35,8 @@
 #define PROCSIMPLEPING	1
 #define SVCGETCALLTEST	2
 
-void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp);
-char *simplePing(int inVar, SVCXPRT *transp);
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT * transp);
+char *simplePing(int inVar, SVCXPRT * transp);
 
 static int argument;
 
@@ -46,8 +46,8 @@ static int argument;
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
@@ -59,24 +59,23 @@ int main(int argn, char *argc[])
 	//Initialization
 	pmap_unset(progNum, VERSNUM);
 
-    //registerrpc(progNum, VERSNUM, PROCSIMPLEPING,
-    //    		simplePing, xdr_int, xdr_int);
-    transpUDP = svcudp_create(RPC_ANYSOCK);
+	//registerrpc(progNum, VERSNUM, PROCSIMPLEPING,
+	//                  simplePing, xdr_int, xdr_int);
+	transpUDP = svcudp_create(RPC_ANYSOCK);
 
-    if (run_mode)
-    {
-    	printf ("SVC TCP : %d\n", transpUDP);
-    }
+	if (run_mode) {
+		printf("SVC TCP : %d\n", transpUDP);
+	}
 
-	if (!svc_register(transpUDP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_UDP))
-	{
-    	fprintf(stderr, "svc_register: error (TCP)\n");
-    }
+	if (!svc_register
+	    (transpUDP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_UDP)) {
+		fprintf(stderr, "svc_register: error (TCP)\n");
+	}
 
-    svc_run();
-    fprintf(stderr, "Error: svc_run returned!\n");
-    //Test has failed if we are here
-    printf("1\n");
+	svc_run();
+	fprintf(stderr, "Error: svc_run returned!\n");
+	//Test has failed if we are here
+	printf("1\n");
 
 	return 1;
 }
@@ -84,7 +83,7 @@ int main(int argn, char *argc[])
 //****************************************//
 //***        Remotes Procedures        ***//
 //****************************************//
-char *simplePing(int inVar, SVCXPRT *transp)
+char *simplePing(int inVar, SVCXPRT * transp)
 {
 	static int result;
 	result = inVar;
@@ -94,52 +93,46 @@ char *simplePing(int inVar, SVCXPRT *transp)
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT * transp)
 {
 	char *result;
 	xdrproc_t xdr_argument;
 	xdrproc_t xdr_result;
-	char *(*proc)(int , SVCXPRT *);
+	char *(*proc) (int, SVCXPRT *);
 	int test_status = 1;
 
-    switch (rqstp->rq_proc)
-    {
-		case PROCSIMPLEPING:
+	switch (rqstp->rq_proc) {
+	case PROCSIMPLEPING:
 		{
 			//printf("** in PROCPONG dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_int;
-			xdr_result   = (xdrproc_t)xdr_int;
-			proc         = (char *(*)(int, SVCXPRT *))simplePing;
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc = (char *(*)(int, SVCXPRT *))simplePing;
 			break;
 		}
-    }
+	}
 
-    memset((char *)&argument, (int)0, sizeof(argument));
-	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE)
-	{
+	memset((char *)&argument, (int)0, sizeof(argument));
+	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE) {
 
 	}
 
-	result = (char *)(*proc)(argument, transp);
+	result = (char *)(*proc) (argument, transp);
 
-	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
-	{
+	if ((result != NULL)
+	    && (svc_sendreply(transp, xdr_result, result) == FALSE)) {
 		//Test has failed
 		test_status = 1;
-	}
-	else
-	{
+	} else {
 		//Test succeeds
 		test_status = 0;
 	}
-	if (svc_freeargs(transp, xdr_argument, (char *)&argument) == FALSE)
-	{
+	if (svc_freeargs(transp, xdr_argument, (char *)&argument) == FALSE) {
 
 	}
-
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
 
-	exit (test_status);
+	exit(test_status);
 }

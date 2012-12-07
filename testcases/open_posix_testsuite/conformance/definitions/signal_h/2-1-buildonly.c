@@ -1,6 +1,6 @@
   /*
-  Test the definition of SIG_DFL.
-  */
+     Test the definition of SIG_DFL.
+   */
 
 #include <signal.h>
 

@@ -49,7 +49,7 @@
 #include "usctest.h"
 #include "runcc.h"
 
-char *TCID="asapi_07";		/* Test program identifier.    */
+char *TCID = "asapi_07";	/* Test program identifier.    */
 
 void setup(void);
 void cleanup(void);
@@ -57,11 +57,10 @@ void cleanup(void);
 void adatet(void);
 void adatft(void);
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int	lc;
-	char	*msg;
+	int lc;
+	char *msg;
 
 	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
@@ -81,74 +80,86 @@ main(int argc, char *argv[])
 enum ttype { EXISTS, ALIAS, VALUE, DEFINED };
 
 struct etent {
-	char	*et_tname;		/* test name */
-	int	et_type;		/* test type */
-	char	*et_incl;		/* include file list */
-	char	*et_struct;		/* structure name */
-	char	*et_field;		/* field name */
-	char	*et_offset;		/* field offset */
+	char *et_tname;		/* test name */
+	int et_type;		/* test type */
+	char *et_incl;		/* include file list */
+	char *et_struct;	/* structure name */
+	char *et_field;		/* field name */
+	char *et_offset;	/* field offset */
 	union {
-		char	*fu_value;	/* field size or value */
-		char	*fu_dname;	/* #define name */
+		char *fu_value;	/* field size or value */
+		char *fu_dname;	/* #define name */
 	} ftun;
 #define et_value	ftun.fu_value
 #define et_dname	ftun.fu_dname
 } etab[] = {
 /* existence checks, RFC 3542 sections 5, 20 */
-	{ "msghdr msg_name", EXISTS, SOCKET_H, "msghdr",
-		"msg_name", NULL, {"sizeof(void *)"} },
-	{ "msghdr msg_namelen", EXISTS, SOCKET_H, "msghdr",
-		"msg_namelen", NULL, {"sizeof(socklen_t)"} },
-	{ "msghdr msg_iov", EXISTS, SOCKET_H, "msghdr",
-		"msg_iov", NULL, {"sizeof(struct iovec *)"} },
-	{ "msghdr msg_iovlen", EXISTS, SOCKET_H, "msghdr",
-		"msg_iovlen", NULL, {"sizeof(struct iovec *)"} },
-	{ "msghdr msg_control", EXISTS, SOCKET_H, "msghdr",
-		"msg_control", NULL, {"sizeof(void *)"} },
-	{ "msghdr msg_controllen", EXISTS, SOCKET_H, "msghdr",
-		"msg_controllen", NULL, {"sizeof(socklen_t)"} },
-	{ "msghdr msg_flags", EXISTS, SOCKET_H, "msghdr",
-		"msg_flags", NULL, {"sizeof(int)"} },
-	{ "cmsghdr cmsg_len", EXISTS, SOCKET_H, "cmsghdr",
-		"cmsg_len", NULL, {"sizeof(socklen_t)"} },
-	{ "cmsghdr cmsg_level", EXISTS, SOCKET_H, "cmsghdr",
-		"cmsg_level", NULL, {"sizeof(int)"} },
-	{ "cmsghdr cmsg_type", EXISTS, SOCKET_H, "cmsghdr",
-		"cmsg_type", NULL, {"sizeof(int)"} },
-	{ "CMSG_DATA", DEFINED, SOCKET_H, "CMSG_DATA", NULL, NULL, {0}},
-	{ "CMSG_NXTHDR", DEFINED, SOCKET_H, "CMSG_NXTHDR", NULL, NULL, {0}},
-	{ "CMSG_FIRSTHDR", DEFINED, SOCKET_H, "CMSG_FIRSTHDR", NULL, NULL, {0}},
-	{ "CMSG_SPACE", DEFINED, SOCKET_H, "CMSG_SPACE", NULL, NULL, {0}},
-	{ "CMSG_LEN", DEFINED, SOCKET_H, "CMSG_LEN", NULL, NULL, {0}},
-};
+	{
+		"msghdr msg_name", EXISTS, SOCKET_H, "msghdr", "msg_name", NULL, {
+	"sizeof(void *)"}}, {
+		"msghdr msg_namelen", EXISTS, SOCKET_H, "msghdr",
+		    "msg_namelen", NULL, {
+	"sizeof(socklen_t)"}}, {
+		"msghdr msg_iov", EXISTS, SOCKET_H, "msghdr", "msg_iov", NULL, {
+	"sizeof(struct iovec *)"}}, {
+		"msghdr msg_iovlen", EXISTS, SOCKET_H, "msghdr",
+		    "msg_iovlen", NULL, {
+	"sizeof(struct iovec *)"}}, {
+		"msghdr msg_control", EXISTS, SOCKET_H, "msghdr",
+		    "msg_control", NULL, {
+	"sizeof(void *)"}}, {
+		"msghdr msg_controllen", EXISTS, SOCKET_H, "msghdr",
+		    "msg_controllen", NULL, {
+	"sizeof(socklen_t)"}}, {
+		"msghdr msg_flags", EXISTS, SOCKET_H, "msghdr",
+		    "msg_flags", NULL, {
+	"sizeof(int)"}}, {
+		"cmsghdr cmsg_len", EXISTS, SOCKET_H, "cmsghdr",
+		    "cmsg_len", NULL, {
+	"sizeof(socklen_t)"}}, {
+		"cmsghdr cmsg_level", EXISTS, SOCKET_H, "cmsghdr",
+		    "cmsg_level", NULL, {
+	"sizeof(int)"}}, {
+		"cmsghdr cmsg_type", EXISTS, SOCKET_H, "cmsghdr",
+		    "cmsg_type", NULL, {
+	"sizeof(int)"}}, {
+		"CMSG_DATA", DEFINED, SOCKET_H, "CMSG_DATA", NULL, NULL, {
+	0}}, {
+		"CMSG_NXTHDR", DEFINED, SOCKET_H, "CMSG_NXTHDR", NULL, NULL, {
+	0}}, {
+		"CMSG_FIRSTHDR", DEFINED, SOCKET_H, "CMSG_FIRSTHDR", NULL, NULL, {
+	0}}, {
+		"CMSG_SPACE", DEFINED, SOCKET_H, "CMSG_SPACE", NULL, NULL, {
+	0}}, {
+		"CMSG_LEN", DEFINED, SOCKET_H, "CMSG_LEN", NULL, NULL, {
+0}},};
 
 #define ETCOUNT	(sizeof(etab)/sizeof(etab[0]))
 
 /*  existence tests */
-void
-adatet(void)
+void adatet(void)
 {
-	int	i;
+	int i;
 
-	for (i=0; i<ETCOUNT; ++i) {
+	for (i = 0; i < ETCOUNT; ++i) {
 		switch (etab[i].et_type) {
 		case EXISTS:
 			structcheck(etab[i].et_tname, etab[i].et_incl,
-				etab[i].et_struct, etab[i].et_field,
-				etab[i].et_offset, etab[i].et_value);
+				    etab[i].et_struct, etab[i].et_field,
+				    etab[i].et_offset, etab[i].et_value);
 			break;
 		case ALIAS:
 			aliascheck(etab[i].et_tname, etab[i].et_incl,
-				etab[i].et_struct, etab[i].et_field,
-				etab[i].et_dname);
+				   etab[i].et_struct, etab[i].et_field,
+				   etab[i].et_dname);
 			break;
 		case VALUE:
 			valuecheck(etab[i].et_tname, etab[i].et_incl,
-				etab[i].et_struct, etab[i].et_dname);
+				   etab[i].et_struct, etab[i].et_dname);
 			break;
 		case DEFINED:
 			funccheck(etab[i].et_tname, etab[i].et_incl,
-				etab[i].et_struct);
+				  etab[i].et_struct);
 			break;
 		default:
 			tst_resm(TBROK, "invalid type %d", etab[i].et_type);
@@ -157,14 +168,12 @@ adatet(void)
 	}
 }
 
-void
-setup(void)
+void setup(void)
 {
-	TEST_PAUSE;	/* if -P option specified */
+	TEST_PAUSE;		/* if -P option specified */
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 }

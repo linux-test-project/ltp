@@ -31,8 +31,8 @@
 #include <sys/types.h>
 #include "posixtest.h"
 
-# define HANDLER_NOTCALLED 0
-# define HANDLER_CALLED 1
+#define HANDLER_NOTCALLED 0
+#define HANDLER_CALLED 1
 
 int prep_val;
 int parent_val;
@@ -56,7 +56,7 @@ static void child_handler()
 	return;
 }
 
-int main ()
+int main()
 {
 	pid_t pid;
 
@@ -66,8 +66,7 @@ int main ()
 	child_val = HANDLER_NOTCALLED;
 
 	/* Set up the fork handlers */
-	if (pthread_atfork(prepare_handler, parent_handler, child_handler) != 0)
-	{
+	if (pthread_atfork(prepare_handler, parent_handler, child_handler) != 0) {
 		printf("Error in pthread_atfork\n");
 		return PTS_UNRESOLVED;
 	}
@@ -75,43 +74,34 @@ int main ()
 	/* Now call fork() */
 	pid = fork();
 
-	if (pid < 0)
-	{
+	if (pid < 0) {
 		perror("Error in fork()\n");
 		return PTS_UNRESOLVED;
 	}
-	if (pid == 0)
-	{
+	if (pid == 0) {
 		/* Child process */
 		pthread_exit(0);
-	} else
-	{
+	} else {
 		/* Parent process */
 		wait(NULL);
 	}
 
 	/* Check if fork handlers were called */
-	if (prep_val == 1)
-	{
-		if (parent_val == 1)
-		{
-			if (parent_val == 1)
-			{
+	if (prep_val == 1) {
+		if (parent_val == 1) {
+			if (parent_val == 1) {
 				printf("Test PASSED\n");
 				return PTS_PASS;
-			} else
-			{
-				printf("Test FAILED: child handler not called\n");
+			} else {
+				printf
+				    ("Test FAILED: child handler not called\n");
 				return PTS_FAIL;
 			}
-		} else
-		{
+		} else {
 			printf("Test FAILED: parent handler not called\n");
 			return PTS_FAIL;
 		}
-	}
-	else
-	{
+	} else {
 		printf("Test FAILED: prepare handler not called\n");
 		return PTS_FAIL;
 	}

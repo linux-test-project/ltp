@@ -34,11 +34,11 @@ int policy_correct = -1;
 int priority_correct = -1;
 
 /* Thread function which checks the scheduler settings for itself */
-void * thread(void *tmp)
+void *thread(void *tmp)
 {
-	struct sched_param     param;
-	int                    policy;
-	int                    rc = 0;
+	struct sched_param param;
+	int policy;
+	int rc = 0;
 
 	rc = pthread_getschedparam(pthread_self(), &policy, &param);
 	if (rc != 0) {
@@ -56,12 +56,12 @@ void * thread(void *tmp)
 
 int main()
 {
-	pthread_t               thread_id;
-	pthread_attr_t          attr;
-	struct sched_param      param;
-	int                     rc = 0;
+	pthread_t thread_id;
+	pthread_attr_t attr;
+	struct sched_param param;
+	int rc = 0;
 
-	/* Initialze the attribute struct and set policy and priority in it*/
+	/* Initialze the attribute struct and set policy and priority in it */
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_init\n");

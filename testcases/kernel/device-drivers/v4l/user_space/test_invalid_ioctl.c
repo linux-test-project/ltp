@@ -31,7 +31,8 @@
 
 /* invalid ioctls */
 
-static void do_invalid_ioctl(int f, int request) {
+static void do_invalid_ioctl(int f, int request)
+{
 	int ret_invalid, errno_invalid;
 
 	ret_invalid = ioctl(f, request, NULL);
@@ -41,18 +42,22 @@ static void do_invalid_ioctl(int f, int request) {
 	CU_ASSERT_EQUAL(errno_invalid, EINVAL);
 }
 
-void test_invalid_ioctl_1() {
+void test_invalid_ioctl_1()
+{
 	do_invalid_ioctl(get_video_fd(), _IO(0, 0));
 }
 
-void test_invalid_ioctl_2() {
+void test_invalid_ioctl_2()
+{
 	do_invalid_ioctl(get_video_fd(), _IO(0xFF, 0xFF));
 }
 
-void test_invalid_ioctl_3() {
+void test_invalid_ioctl_3()
+{
 	do_invalid_ioctl(get_video_fd(), _IO('v', 0xFF));
 }
 
-void test_invalid_ioctl_4() {
+void test_invalid_ioctl_4()
+{
 	do_invalid_ioctl(get_video_fd(), _IO('V', 0xFF));
 }

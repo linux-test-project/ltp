@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-struct shmstruct{
+struct shmstruct {
 	pthread_rwlock_t rwl;
 	int data;
 } *rwlock_data;
@@ -43,10 +43,11 @@ int main()
 {
 
 	/* Make sure there is process-shared capability. */
-	#ifndef PTHREAD_PROCESS_SHARED
-	  fprintf(stderr,"process-shared attribute is not available for testing\n");
-	  return PTS_UNSUPPORTED;
-	#endif
+#ifndef PTHREAD_PROCESS_SHARED
+	fprintf(stderr,
+		"process-shared attribute is not available for testing\n");
+	return PTS_UNSUPPORTED;
+#endif
 
 	pthread_rwlockattr_t rwla;
 	int pshared = PTHREAD_PROCESS_SHARED;
@@ -56,71 +57,66 @@ int main()
 	int pid;
 
 	/* Initialize a rwlock attributes object */
-	if (pthread_rwlockattr_init(&rwla) != 0)
-	{
+	if (pthread_rwlockattr_init(&rwla) != 0) {
 		printf("Error at pthread_rwlockattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_rwlockattr_setpshared(&rwla, pshared) != 0)
-	{
+	if (pthread_rwlockattr_setpshared(&rwla, pshared) != 0) {
 		printf("Error at pthread_rwlockattr_setpshared()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_rwlockattr_getpshared(&rwla, &pshared) != 0)
-	{
-		printf("Test FAILED: Error at pthread_rwlockattr_getpshared()\n");
+	if (pthread_rwlockattr_getpshared(&rwla, &pshared) != 0) {
+		printf
+		    ("Test FAILED: Error at pthread_rwlockattr_getpshared()\n");
 		return PTS_FAIL;
 	}
 
-	if (pshared != PTHREAD_PROCESS_SHARED)
-	{
-		printf("Test FAILED: Got error shared attribute value %d\n", pshared);
+	if (pshared != PTHREAD_PROCESS_SHARED) {
+		printf("Test FAILED: Got error shared attribute value %d\n",
+		       pshared);
 		return PTS_FAIL;
 	}
 
 	/* Create shared object */
 	shm_unlink(shm_name);
-	shm_fd = shm_open(shm_name, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-	if (shm_fd == -1)
-	{
+	shm_fd =
+	    shm_open(shm_name, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+	if (shm_fd == -1) {
 		perror("Error at shm_open()");
 		return PTS_UNRESOLVED;
 	}
 
-        if (ftruncate(shm_fd, sizeof(struct shmstruct)) != 0) {
-                perror("Error at ftruncate()");
-                shm_unlink(shm_name);
-                return PTS_UNRESOLVED;
-        }
-
-	/* Map the shared memory object to my memory */
-	rwlock_data = mmap(NULL, sizeof(struct shmstruct), PROT_READ|PROT_WRITE,
-				MAP_SHARED, shm_fd, 0);
-
-	if (rwlock_data == MAP_FAILED)
-	{
-		perror("Error at first mmap()");
-                shm_unlink(shm_name);
+	if (ftruncate(shm_fd, sizeof(struct shmstruct)) != 0) {
+		perror("Error at ftruncate()");
+		shm_unlink(shm_name);
 		return PTS_UNRESOLVED;
 	}
 
-	if ((pthread_rwlock_init(&(rwlock_data->rwl), &rwla)) != 0)
-	{
+	/* Map the shared memory object to my memory */
+	rwlock_data =
+	    mmap(NULL, sizeof(struct shmstruct), PROT_READ | PROT_WRITE,
+		 MAP_SHARED, shm_fd, 0);
+
+	if (rwlock_data == MAP_FAILED) {
+		perror("Error at first mmap()");
+		shm_unlink(shm_name);
+		return PTS_UNRESOLVED;
+	}
+
+	if ((pthread_rwlock_init(&(rwlock_data->rwl), &rwla)) != 0) {
 		printf("Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if ((pthread_rwlockattr_destroy(&rwla)) != 0)
-	{
+	if ((pthread_rwlockattr_destroy(&rwla)) != 0) {
 		printf("Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	printf("Parent getting read lock.\n");
-	if ((pthread_rwlock_rdlock(&(rwlock_data->rwl))) != 0)
-	{
+	if ((pthread_rwlock_rdlock(&(rwlock_data->rwl))) != 0) {
 		printf("Error at pthread_rwlock_rdlock()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -128,23 +124,18 @@ int main()
 	rwlock_data->data = 0;
 
 	pid = fork();
-	if (pid == -1)
-	{
+	if (pid == -1) {
 		perror("Error at fork()");
 		return PTS_UNRESOLVED;
-	}
-	else if (pid > 0)
-	{
+	} else if (pid > 0) {
 		/* Parent */
 		/* wait until child do wrlock */
-		while (rwlock_data->data == 0)
-		{
+		while (rwlock_data->data == 0) {
 			sleep(1);
 		}
 
 		printf("Parent unlocking.\n");
-		if (pthread_rwlock_unlock(&(rwlock_data->rwl)) != 0)
-		{
+		if (pthread_rwlock_unlock(&(rwlock_data->rwl)) != 0) {
 			printf("Parent: error at pthread_rwlock_unlock()\n");
 			return PTS_FAIL;
 		}
@@ -153,37 +144,33 @@ int main()
 		/* Wait for child to end */
 		wait(NULL);
 
-		if ((shm_unlink(shm_name)) != 0)
-		{
+		if ((shm_unlink(shm_name)) != 0) {
 			perror("Error at shm_unlink()");
 			return PTS_UNRESOLVED;
 		}
 
-		if (rwlock_data->data == -1)
-		{
-			printf("Test FAILED: child did not block on write lock\n");
+		if (rwlock_data->data == -1) {
+			printf
+			    ("Test FAILED: child did not block on write lock\n");
 			return PTS_FAIL;
 		}
 
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	}
-	else
-	{
+	} else {
 		/* Child */
 		/* Map the shared object to child's memory */
-		rwlock_data = mmap(NULL, sizeof(struct shmstruct), PROT_READ|PROT_WRITE,
-				MAP_SHARED, shm_fd, 0);
+		rwlock_data =
+		    mmap(NULL, sizeof(struct shmstruct), PROT_READ | PROT_WRITE,
+			 MAP_SHARED, shm_fd, 0);
 
-		if (rwlock_data == MAP_FAILED)
-		{
+		if (rwlock_data == MAP_FAILED) {
 			perror("Error at first mmap()");
 			return PTS_UNRESOLVED;
 		}
 
 		printf("Child tries to get write lock, should get EBUSY.\n");
-		if ((pthread_rwlock_trywrlock(&(rwlock_data->rwl))) != EBUSY)
-		{
+		if ((pthread_rwlock_trywrlock(&(rwlock_data->rwl))) != EBUSY) {
 			printf("Test FAILED: Child expects EBUSY\n");
 			return PTS_FAIL;
 		}
@@ -195,16 +182,15 @@ int main()
 		rwlock_data->data = 1;
 
 		/* Should block until parent unlock */
-		if ((pthread_rwlock_wrlock(&(rwlock_data->rwl))) != 0)
-		{
+		if ((pthread_rwlock_wrlock(&(rwlock_data->rwl))) != 0) {
 			printf("Child:pthread_rwlock_wrlock() error\n");
-			printf("Test FAILED: Error while write lock the shared rwlock\n");
+			printf
+			    ("Test FAILED: Error while write lock the shared rwlock\n");
 			rwlock_data->data = -1;
 			return PTS_FAIL;
 		}
 		printf("Child got wrlock.\n");
-		if ((pthread_rwlock_unlock(&(rwlock_data->rwl))) != 0)
-		{
+		if ((pthread_rwlock_unlock(&(rwlock_data->rwl))) != 0) {
 			printf("Child:pthread_rwlock_unlock() error\n");
 			printf("Error while write unlock the shared rwlock\n");
 			rwlock_data->data = -1;

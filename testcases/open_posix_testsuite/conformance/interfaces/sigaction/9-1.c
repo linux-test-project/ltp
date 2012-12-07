@@ -30,7 +30,7 @@
 
 volatile int child_stopped = 0;
 
-void handler(int signo, siginfo_t *info, void *context)
+void handler(int signo, siginfo_t * info, void *context)
 {
 	if (info && info->si_code == CLD_STOPPED) {
 		printf("Child has been stopped\n");
@@ -47,7 +47,7 @@ int main()
 	act.sa_sigaction = handler;
 	act.sa_flags = SA_SIGINFO | SA_NOCLDSTOP;
 	sigemptyset(&act.sa_mask);
-	sigaction(SIGCHLD,  &act, 0);
+	sigaction(SIGCHLD, &act, 0);
 
 	if ((pid = fork()) == 0) {
 		/* child */
@@ -65,22 +65,22 @@ int main()
 			kill(pid, SIGSTOP);
 
 			/*
-			  If we send a bunch of SIGSTOP/SIGCONT
-			  signals one after the other then it is
-			  perfectly OK for the OS to not send
-			  the SIGSTOP/SIGCONT combination as an
-			  optimization.
+			   If we send a bunch of SIGSTOP/SIGCONT
+			   signals one after the other then it is
+			   perfectly OK for the OS to not send
+			   the SIGSTOP/SIGCONT combination as an
+			   optimization.
 
-			  I can't think of any POSIX method to determine
-			  if a process has been stopped, so I'm
-			  going to punt with a one second sleep and
-			  assume the child process gets put to sleep
-			  within that time period.  This will be problem
-			  when this test is run on a really stressed
-			  system. (Although since we are sending multiple
-			  SIGSTOP's then maybe in practice this will
-			  cause any problems.)
-			*/
+			   I can't think of any POSIX method to determine
+			   if a process has been stopped, so I'm
+			   going to punt with a one second sleep and
+			   assume the child process gets put to sleep
+			   within that time period.  This will be problem
+			   when this test is run on a really stressed
+			   system. (Although since we are sending multiple
+			   SIGSTOP's then maybe in practice this will
+			   cause any problems.)
+			 */
 			tv.tv_sec = 1;
 			tv.tv_usec = 0;
 			select(0, NULL, NULL, NULL, &tv);

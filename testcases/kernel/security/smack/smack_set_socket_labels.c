@@ -29,8 +29,7 @@
 
 #include <sys/xattr.h>
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char message[256];
 	char *anin = "security.SMACK64IPIN";

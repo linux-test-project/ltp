@@ -89,11 +89,11 @@ struct test_case_t {		/* test case structure */
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)0,
 		    &sinlen, -1, EFAULT, setup1, cleanup1,
 		    "invalid socket buffer"}, {
-	/* invalid salen test for aligned input */
+		/* invalid salen test for aligned input */
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
 		    (socklen_t *) 0, -1, EFAULT, setup1, cleanup1,
 		    "invalid aligned salen"}, {
-	/* invalid salen test for unaligned input */
+		/* invalid salen test for unaligned input */
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
 		    (socklen_t *) 1, -1, EFAULT, setup1, cleanup1,
 		    "invalid unaligned salen"},
@@ -103,7 +103,6 @@ struct test_case_t {		/* test case structure */
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
 int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, 0 };
-
 
 int main(int argc, char *argv[])
 {

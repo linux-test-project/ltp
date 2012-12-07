@@ -1,8 +1,8 @@
   /*
-  @pt:CX
+     @pt:CX
 
-  Test the definition of SIG_HOLD.
-  */
+     Test the definition of SIG_HOLD.
+   */
 
 #include <signal.h>
 

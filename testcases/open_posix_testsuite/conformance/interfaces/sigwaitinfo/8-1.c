@@ -32,7 +32,8 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void myhandler(int signo, siginfo_t *info, void *context) {
+void myhandler(int signo, siginfo_t * info, void *context)
+{
 	printf("Just a dummy handler\n");
 }
 
@@ -53,30 +54,34 @@ int main()
 
 	sighold(SIGTOTEST);
 
-	for (i=NUMCALLS; i>0; i--) {
+	for (i = NUMCALLS; i > 0; i--) {
 		value.sival_int = i;
 		if (sigqueue(pid, SIGTOTEST, value) != 0) {
-			printf("Test FAILED: call to sigqueue did not return success\n");
+			printf
+			    ("Test FAILED: call to sigqueue did not return success\n");
 			return PTS_FAIL;
 		}
 	}
 
-        sigemptyset(&selectset);
-        sigaddset(&selectset, SIGTOTEST);
+	sigemptyset(&selectset);
+	sigaddset(&selectset, SIGTOTEST);
 
-	for (i=NUMCALLS; i>0; i--) {
-	        if (sigwaitinfo(&selectset, &info) != SIGTOTEST) {
-	                perror("sigwaitinfo() returned signal other than SIGTOTEST\n");
-	                return PTS_UNRESOLVED;
-	        }
+	for (i = NUMCALLS; i > 0; i--) {
+		if (sigwaitinfo(&selectset, &info) != SIGTOTEST) {
+			perror
+			    ("sigwaitinfo() returned signal other than SIGTOTEST\n");
+			return PTS_UNRESOLVED;
+		}
 	}
 
-        sigemptyset(&pendingset);
-        sigpending(&pendingset);
-        if (sigismember(&pendingset, SIGTOTEST) != 0) {
-                printf("Test FAILED: Signal %d still pending even after call to sigwaitinfo()\n", SIGTOTEST);
-                return PTS_FAIL;
-        }
+	sigemptyset(&pendingset);
+	sigpending(&pendingset);
+	if (sigismember(&pendingset, SIGTOTEST) != 0) {
+		printf
+		    ("Test FAILED: Signal %d still pending even after call to sigwaitinfo()\n",
+		     SIGTOTEST);
+		return PTS_FAIL;
+	}
 
 	return PTS_PASS;
 }

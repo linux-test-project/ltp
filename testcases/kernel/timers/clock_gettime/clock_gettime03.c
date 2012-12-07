@@ -78,21 +78,20 @@
 
 void setup(void);
 
-char *TCID = "clock_gettime03"; /* Test program identifier.    */
-int TST_TOTAL;		/* Total number of test cases. */
-static int exp_enos[] = {EINVAL, EFAULT, 0};
+char *TCID = "clock_gettime03";	/* Test program identifier.    */
+int TST_TOTAL;			/* Total number of test cases. */
+static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
 int testcase[6] = {
-	EFAULT,	/* Bad timespec   */
-	EFAULT, /* Bad timespec   */
-	EINVAL,	/* MAX_CLOCKS	  */
-	EINVAL	/* MAX_CLOCKS + 1 */
+	EFAULT,			/* Bad timespec   */
+	EFAULT,			/* Bad timespec   */
+	EINVAL,			/* MAX_CLOCKS     */
+	EINVAL			/* MAX_CLOCKS + 1 */
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int i, lc;	/* loop counter */
+	int i, lc;		/* loop counter */
 	char *msg;
 	struct timespec spec, *temp;
 
@@ -117,8 +116,7 @@ main(int ac, char **av)
 	if ((tst_kvercmp(2, 6, 12)) < 0) {
 		testcase[4] = EINVAL;
 		testcase[5] = EINVAL;
-	}
-	else {
+	} else {
 		testcase[4] = EFAULT;
 		testcase[5] = EFAULT;
 	}
@@ -133,11 +131,11 @@ main(int ac, char **av)
 			temp = &spec;
 
 			if (i == 0) {
-				temp = (struct timespec *) -1;
+				temp = (struct timespec *)-1;
 			} else if (i == 1) {
-				temp = (struct timespec *) NULL;
+				temp = (struct timespec *)NULL;
 			} else if ((i >= 4) && (tst_kvercmp(2, 6, 12) >= 0)) {
-				temp = (struct timespec *) NULL;
+				temp = (struct timespec *)NULL;
 			}
 
 			TEST(syscall(__NR_clock_gettime, clocks[i], temp));
@@ -145,27 +143,26 @@ main(int ac, char **av)
 			/* check return code */
 			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
 				tst_resm(TPASS | TTERRNO,
-					"got expected failure");
+					 "got expected failure");
 			} else {
 				tst_resm(TFAIL | TTERRNO,
-					"failed to produce expected error "
-					"[expected errno = %d (%s), "
-					"TEST_RETURN = %ld]",
-					testcase[i], strerror(testcase[i]),
-					TEST_RETURN);
-			} /* end of else */
+					 "failed to produce expected error "
+					 "[expected errno = %d (%s), "
+					 "TEST_RETURN = %ld]",
+					 testcase[i], strerror(testcase[i]),
+					 TEST_RETURN);
+			}	/* end of else */
 
-		}	/*End of TEST CASE LOOPING*/
+		}		/*End of TEST CASE LOOPING */
 
-	}	/*End for TEST_LOOPING*/
+	}			/*End for TEST_LOOPING */
 
 	cleanup();
 	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -180,12 +177,11 @@ setup(void)
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 }

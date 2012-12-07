@@ -41,7 +41,7 @@ int main()
 	struct timespec ts;
 	int pid, status;
 
-	if (sem_init (&mysemp, 0, 1) == -1) {
+	if (sem_init(&mysemp, 0, 1) == -1) {
 		perror(ERROR_PREFIX "sem_init");
 		return PTS_UNRESOLVED;
 	}
@@ -52,11 +52,11 @@ int main()
 	}
 
 	pid = fork();
-	if (pid == 0) { // child create the semaphore.
+	if (pid == 0) {		// child create the semaphore.
 		struct sigaction act;
 
-		act.sa_handler=handler;
-		act.sa_flags=0;
+		act.sa_handler = handler;
+		act.sa_flags = 0;
 		if (sigemptyset(&act.sa_mask) == -1) {
 			perror("Error calling sigemptyset\n");
 			return CHILDFAIL;
@@ -66,22 +66,22 @@ int main()
 			return CHILDFAIL;
 		}
 
-		ts.tv_sec = time(NULL)+3;
+		ts.tv_sec = time(NULL) + 3;
 		ts.tv_nsec = 0;
 
 		sem_timedwait(&mysemp, &ts);
 
-	       if (errno == EINTR) {
+		if (errno == EINTR) {
 			printf("Test PASSED\n");
 			return (CHILDPASS);
 		}
 		puts("TEST FAILED: errno != EINTR");
 		return (CHILDFAIL);
 
-	} else { // parent to send a signal to child
+	} else {		// parent to send a signal to child
 		int i;
 		sleep(1);
-		status = kill(pid,SIGABRT);  // send signal to child
+		status = kill(pid, SIGABRT);	// send signal to child
 		if (wait(&i) == -1) {
 			perror("Error waiting for child to exit\n");
 			return PTS_UNRESOLVED;

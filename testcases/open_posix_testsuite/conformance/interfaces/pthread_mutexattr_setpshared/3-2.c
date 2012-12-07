@@ -30,29 +30,30 @@ int main()
 {
 
 	/* Make sure there is process-shared capability. */
-	#ifndef PTHREAD_PROCESS_SHARED
-	fprintf(stderr,"process-shared attribute is not available for testing\n");
+#ifndef PTHREAD_PROCESS_SHARED
+	fprintf(stderr,
+		"process-shared attribute is not available for testing\n");
 	return PTS_UNRESOLVED;
-	#endif
+#endif
 
 	pthread_mutexattr_t mta;
 	int ret;
 
-	 /* Set the attribute to INVALID_PSHARED_VALUE.  */
-	ret=pthread_mutexattr_setpshared(&mta, INVALID_PSHARED_VALUE);
-	if (ret != 0)
-	{
-		if (ret == EINVAL)
-		{
+	/* Set the attribute to INVALID_PSHARED_VALUE.  */
+	ret = pthread_mutexattr_setpshared(&mta, INVALID_PSHARED_VALUE);
+	if (ret != 0) {
+		if (ret == EINVAL) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		}
 
-		printf("Test FAILED: Expected return code 0 or EINVAL, got: %d", ret);
+		printf("Test FAILED: Expected return code 0 or EINVAL, got: %d",
+		       ret);
 		return PTS_FAIL;
 	}
 
-	printf("Test PASSED: NOTE*: Returned 0 on error, though standard states 'may' fail.\n");
-       	return PTS_PASS;
+	printf
+	    ("Test PASSED: NOTE*: Returned 0 on error, though standard states 'may' fail.\n");
+	return PTS_PASS;
 
 }

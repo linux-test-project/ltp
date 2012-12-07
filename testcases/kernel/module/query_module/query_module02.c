@@ -89,23 +89,23 @@
 #endif
 
 #define NULLMODNAME	""
-#define LONGMODNAMECHAR	'm'		/* Arbitrarily selected */
+#define LONGMODNAMECHAR	'm'	/* Arbitrarily selected */
 #define MODNAMEMAX	(PAGE_SIZE + 1)
 #define EXP_RET_VAL	-1
 #define QM_INVALID	(QM_INFO + 100)
 
-
-struct test_case_t {			/* test case structure */
-	char 	*modname;
-	int	which;
-	void	*buf;
-	size_t	bufsize;
-	int	experrno;		/* expected errno */
-	char	*desc;
+struct test_case_t {		/* test case structure */
+	char *modname;
+	int which;
+	void *buf;
+	size_t bufsize;
+	int experrno;		/* expected errno */
+	char *desc;
 };
 
 char *TCID = "query_module02";
-static int exp_enos[]={ENOENT, EINVAL, ENAMETOOLONG, 0};
+static int exp_enos[] = { ENOENT, EINVAL, ENAMETOOLONG, 0 };
+
 static char longmodname[MODNAMEMAX];
 static int testno;
 static char out_buf[PAGE_SIZE];
@@ -114,34 +114,37 @@ static size_t ret_size;
 static void setup(void);
 static void cleanup(void);
 
-static struct test_case_t  tdat[] = {
+static struct test_case_t tdat[] = {
 
-	{ "dummy_mod", QM_REFS, (void *) out_buf, sizeof(out_buf), ENOENT,
-		"results for non-existing module" },
+	{"dummy_mod", QM_REFS, (void *)out_buf, sizeof(out_buf), ENOENT,
+	 "results for non-existing module"}
+	,
 
-	{ NULL, QM_INVALID, (void *) out_buf, sizeof(out_buf), EINVAL,
-		"results for invalid which argument" },
+	{NULL, QM_INVALID, (void *)out_buf, sizeof(out_buf), EINVAL,
+	 "results for invalid which argument"}
+	,
 
-	{ NULL, QM_REFS, (void *) out_buf, sizeof(out_buf), EINVAL,
-		"results for NULL module name and valid which argument" },
+	{NULL, QM_REFS, (void *)out_buf, sizeof(out_buf), EINVAL,
+	 "results for NULL module name and valid which argument"}
+	,
 
-	{ NULLMODNAME, QM_REFS, (void *) out_buf, sizeof(out_buf), EINVAL,
-		"results for null terminated (zero lenght) module name" },
+	{NULLMODNAME, QM_REFS, (void *)out_buf, sizeof(out_buf), EINVAL,
+	 "results for null terminated (zero lenght) module name"}
+	,
 
-	{ longmodname, QM_REFS, (void *) out_buf, sizeof(out_buf), ENAMETOOLONG,
-		"results for long module name" },
+	{longmodname, QM_REFS, (void *)out_buf, sizeof(out_buf), ENAMETOOLONG,
+	 "results for long module name"}
+	,
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -154,19 +157,19 @@ main(int argc, char **argv)
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 			TEST(query_module(tdat[testno].modname,
-				tdat[testno].which, tdat[testno].buf,
-				tdat[testno].bufsize, &ret_size));
+					  tdat[testno].which, tdat[testno].buf,
+					  tdat[testno].bufsize, &ret_size));
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if ((TEST_RETURN == EXP_RET_VAL) &&
-				(TEST_ERRNO == tdat[testno].experrno) ) {
+			    (TEST_ERRNO == tdat[testno].experrno)) {
 				tst_resm(TPASS, "Expected %s, errno: %d",
-					tdat[testno].desc, TEST_ERRNO);
+					 tdat[testno].desc, TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Unexpected %s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
-					TEST_RETURN, EXP_RET_VAL,
-					TEST_ERRNO, tdat[testno].experrno);
+					 " %d (expected %d), errno %d (expected"
+					 " %d)", tdat[testno].desc,
+					 TEST_RETURN, EXP_RET_VAL,
+					 TEST_ERRNO, tdat[testno].experrno);
 			}
 		}
 	}
@@ -179,15 +182,14 @@ main(int argc, char **argv)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	if (tst_kvercmp(2,5,48) >= 0)
+	if (tst_kvercmp(2, 5, 48) >= 0)
 		tst_brkm(TCONF, NULL, "This test will not work on "
-				"kernels after 2.5.48");
+			 "kernels after 2.5.48");
 
 	/* Initialize longmodname to LONGMODNAMECHAR character */
 	memset(longmodname, LONGMODNAMECHAR, MODNAMEMAX - 1);
@@ -206,8 +208,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

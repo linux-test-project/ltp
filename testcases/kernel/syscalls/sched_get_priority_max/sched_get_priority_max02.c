@@ -101,9 +101,9 @@ int main(int ac, char **av)
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == EINVAL)) {
 			tst_resm(TPASS, "Test Passed, Got EINVAL");
 		} else {
-			tst_resm(TFAIL|TTERRNO, "Test Failed, sched_get_priority_max()"
-				 " returned %ld",
-				 TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO,
+				 "Test Failed, sched_get_priority_max()"
+				 " returned %ld", TEST_RETURN);
 		}
 	}
 

@@ -26,27 +26,22 @@ int main()
 	int detach_state;
 
 	/* Initialize attribute */
-	if (pthread_attr_init(&new_attr) != 0)
-	{
+	if (pthread_attr_init(&new_attr) != 0) {
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* The test passes if pthread_attr_getdetachstate gets the attribute
 	 * of PTHREAD_CREATE_JOINABLE from the attribute object. */
-	if (pthread_attr_getdetachstate(&new_attr, &detach_state) != 0)
-	{
+	if (pthread_attr_getdetachstate(&new_attr, &detach_state) != 0) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	if (detach_state == PTHREAD_CREATE_JOINABLE)
-	{
+	if (detach_state == PTHREAD_CREATE_JOINABLE) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	}
-	else
-	{
+	} else {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

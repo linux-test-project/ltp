@@ -110,16 +110,16 @@ char high_address_node[64];
 struct test_case_t {
 	char *pathname;
 	int exp_errno;
-	void (*setupfunc)(void);
+	void (*setupfunc) (void);
 } test_cases[] = {
-	{ TEST_FILE1, EPERM, setup1 },
-	{ TEST_FILE2, EACCES, setup2 },
-	{ high_address_node, EFAULT, NULL },
-	{ (char *)-1, EFAULT, NULL },
-	{ Longpathname, ENAMETOOLONG, longpath_setup},
-	{ "", ENOENT, NULL},
-	{ TEST_FILE3, ENOTDIR, setup3},
-};
+	{
+	TEST_FILE1, EPERM, setup1}, {
+	TEST_FILE2, EACCES, setup2}, {
+	high_address_node, EFAULT, NULL}, {
+	(char *)-1, EFAULT, NULL}, {
+	Longpathname, ENAMETOOLONG, longpath_setup}, {
+	"", ENOENT, NULL}, {
+TEST_FILE3, ENOTDIR, setup3},};
 
 char *TCID = "chown04";
 int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
@@ -167,12 +167,12 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "chown succeeded unexpectedly");
 				continue;
 			} else if (TEST_ERRNO == test_cases[i].exp_errno)
-				tst_resm(TPASS|TTERRNO, "chown failed");
+				tst_resm(TPASS | TTERRNO, "chown failed");
 			else {
-				tst_resm(TFAIL|TTERRNO,
-				    "chown failed; expected: %d - %s",
-				    test_cases[i].exp_errno,
-				    strerror(test_cases[i].exp_errno));
+				tst_resm(TFAIL | TTERRNO,
+					 "chown failed; expected: %d - %s",
+					 test_cases[i].exp_errno,
+					 strerror(test_cases[i].exp_errno));
 			}
 		}
 	}
@@ -192,19 +192,19 @@ void setup()
 
 	ltpuser = getpwnam("nobody");
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getpwnam(\"nobody\") failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpwnam(\"nobody\") failed");
 	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "seteuid(%d) failed",
-		    ltpuser->pw_uid);
+		tst_brkm(TBROK | TERRNO, NULL, "seteuid(%d) failed",
+			 ltpuser->pw_uid);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 
 	test_cases[3].pathname = bad_addr;
 
@@ -220,22 +220,23 @@ void setup1()
 
 	old_uid = geteuid();
 
-	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "opening \"%s\" failed",
-		    TEST_FILE1);
+	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "opening \"%s\" failed",
+			 TEST_FILE1);
 
 	if (seteuid(0) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "seteuid(0) failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "seteuid(0) failed");
 
 	if (fchown(fd, 0, 0) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchown failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "fchown failed");
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "closing \"%s\" failed",
-		    TEST_FILE1);
+		tst_brkm(TBROK | TERRNO, cleanup, "closing \"%s\" failed",
+			 TEST_FILE1);
 
 	if (seteuid(old_uid) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "seteuid(%d) failed", old_uid);
+		tst_brkm(TBROK | TERRNO, cleanup, "seteuid(%d) failed",
+			 old_uid);
 
 }
 
@@ -247,20 +248,21 @@ void setup2()
 	old_uid = geteuid();
 
 	if (seteuid(0) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "seteuid(0) failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "seteuid(0) failed");
 
 	if (mkdir(DIR_TEMP, S_IRWXU) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mkdir failed");
 
-	if ((fd = open(TEST_FILE2, O_RDWR|O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "fchown failed");
+	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "fchown failed");
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "closing \"%s\" failed",
-		    TEST_FILE2);
+		tst_brkm(TBROK | TERRNO, cleanup, "closing \"%s\" failed",
+			 TEST_FILE2);
 
 	if (seteuid(old_uid) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "seteuid(%d) failed", old_uid);
+		tst_brkm(TBROK | TERRNO, cleanup, "seteuid(%d) failed",
+			 old_uid);
 
 }
 
@@ -268,10 +270,10 @@ void setup3()
 {
 	int fd;
 
-	if ((fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "opening \"t_file\" failed");
+	if ((fd = open("t_file", O_RDWR | O_CREAT, MODE_RWX)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "opening \"t_file\" failed");
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "closing \"t_file\" failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "closing \"t_file\" failed");
 }
 
 void longpath_setup()
@@ -287,7 +289,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (seteuid(0) == -1)
-		tst_resm(TWARN|TERRNO, "seteuid(0) failed");
+		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 
 	tst_rmdir();
 

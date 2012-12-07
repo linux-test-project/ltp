@@ -96,10 +96,9 @@ int main(int argc, char **argv)
 	char *msg;
 	pid_t pid;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	/* global setup */
 	setup();
@@ -167,7 +166,7 @@ int main(int argc, char **argv)
 	cleanup();
 	tst_exit();
 
- }
+}
 
 /*
  * setup()
@@ -223,4 +222,4 @@ void cleanup(void)
 
 	tst_rmdir();
 
- }
+}

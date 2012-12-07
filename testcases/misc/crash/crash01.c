@@ -63,8 +63,8 @@ benchmark.
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="crash01";
-int TST_TOTAL=1;
+char *TCID = "crash01";
+int TST_TOTAL = 1;
 
 static int x_opt = 0;
 static int v_opt = 0;
@@ -136,65 +136,65 @@ void help()
  *  crashme +2000.80 666 100 1:10:30 2
  *	nsub  -> -c ?
  */
-option_t options[] =
-{
-	{ "v:", &v_opt, &v_copt },
-	{ "s:", &s_opt, &s_copt },
-	{ "n:", &n_opt, &n_copt },
-	{ "b:", &b_opt, &b_copt },
-	{ "x", &x_opt, NULL },
+option_t options[] = {
+	{"v:", &v_opt, &v_copt},
+	{"s:", &s_opt, &s_copt},
+	{"n:", &n_opt, &n_copt},
+	{"b:", &b_opt, &b_copt},
+	{"x", &x_opt, NULL},
 
-	{ NULL, NULL, NULL }
+	{NULL, NULL, NULL}
 };
 
-int malloc_flag = 1; /* to be phased out */
+int malloc_flag = 1;		/* to be phased out */
 
-void badboy_fork ();
-void badboy_loop ();
-void summarize_status ();
+void badboy_fork();
+void badboy_loop();
+void summarize_status();
 void record_status(unsigned int n);
 
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-  char *msg;
-  int lc;
+	char *msg;
+	int lc;
 
-  if ((msg=parse_opts(argc, argv, options, help)) != (char *) NULL)
-	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(argc, argv, options, help)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-  if (v_opt)
-	  verbose_level = atoi(v_copt);
+	if (v_opt)
+		verbose_level = atoi(v_copt);
 
-  if (n_opt)
-	  ntries = atoi(n_copt);
+	if (n_opt)
+		ntries = atoi(n_copt);
 
-  if (s_opt)
-	  nseed = atoi(s_copt);
-  else
-	  nseed = time(NULL);
-
-  if (b_opt) {
-	int inc;
-
-	inc = atoi(b_copt);
-	if (inc <= nbytes/2)
-	  	incptr = inc;
+	if (s_opt)
+		nseed = atoi(s_copt);
 	else
-		tst_brkm(TBROK, cleanup, "Invalid arg for -b (max: %u): %s", nbytes/2, b_copt);
-  }
+		nseed = time(NULL);
 
-   	setup();
+	if (b_opt) {
+		int inc;
 
-	for (lc=0; TEST_LOOPING(lc); lc++)
-    {
-		Tst_count=0;
+		inc = atoi(b_copt);
+		if (inc <= nbytes / 2)
+			incptr = inc;
+		else
+			tst_brkm(TBROK, cleanup,
+				 "Invalid arg for -b (max: %u): %s", nbytes / 2,
+				 b_copt);
+	}
+
+	setup();
+
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		Tst_count = 0;
 
 		tst_resm(TINFO, "crashme %s%d.%d %d %d",
-	   		(malloc_flag == 0) ? "" : "+", nbytes, incptr, nseed, ntries);
+			 (malloc_flag == 0) ? "" : "+", nbytes, incptr, nseed,
+			 ntries);
 
-  		srand (nseed);
-		badboy_fork ();
+		srand(nseed);
+		badboy_fork();
 
 		/* still there? */
 		tst_resm(TPASS, "we're still here, OS seems to be robust");
@@ -209,60 +209,56 @@ main (int argc, char *argv[])
 /* ************************* */
 int badboy_pid;
 
-void my_signal (int sig, void (*func) ());
+void my_signal(int sig, void (*func) ());
 
-void monitor_fcn (int sig)
+void monitor_fcn(int sig)
 {
-  int status;
+	int status;
 
- if (verbose_level >= 3)
-	    printf ("time limit reached on pid. using kill.\n");
-
-  status = kill (badboy_pid, SIGKILL);
-  if (status < 0)
-    {
 	if (verbose_level >= 3)
-      		printf ("failed to kill process\n");
-    }
+		printf("time limit reached on pid. using kill.\n");
+
+	status = kill(badboy_pid, SIGKILL);
+	if (status < 0) {
+		if (verbose_level >= 3)
+			printf("failed to kill process\n");
+	}
 }
 
-void
-badboy_fork ()
+void badboy_fork()
 {
 	int status, pid;
 
-      status = fork ();
-      badboy_pid = status;
-      if (status == 0)	/* badboy */
-	{
+	status = fork();
+	badboy_pid = status;
+	if (status == 0) {	/* badboy */
 #ifdef DEBUG_LATE_BADBOY
-	  sleep(ntries*MAX_TRY_TIME+10);
+		sleep(ntries * MAX_TRY_TIME + 10);
 #else
-	  badboy_loop ();
+		badboy_loop();
 #endif
-	  exit (0);	/* good goy, he survived! */
-	}
-      else if (status < 0)
-	perror ("fork");
-      else			/* parent watching over badboy */
-	{
-	  if (verbose_level > 3)
-	  	printf ("badboy pid = %d\n", badboy_pid);
+		exit(0);	/* good goy, he survived! */
+	} else if (status < 0)
+		perror("fork");
+	else {			/* parent watching over badboy */
+
+		if (verbose_level > 3)
+			printf("badboy pid = %d\n", badboy_pid);
 
 /* don't trust the child to return at night */
-      my_signal (SIGALRM, monitor_fcn);
-      alarm (ntries*MAX_TRY_TIME);
+		my_signal(SIGALRM, monitor_fcn);
+		alarm(ntries * MAX_TRY_TIME);
 
-	  pid = wait (&status);
-	  if (pid <= 0)
-	  {
-		  perror ("wait");
-	  } else {
-	  	if (verbose_level > 3)
-		  printf ("pid %d exited with status %d\n", pid, status);
-		record_status(status);
-	   }
-	}	/* parent */
+		pid = wait(&status);
+		if (pid <= 0) {
+			perror("wait");
+		} else {
+			if (verbose_level > 3)
+				printf("pid %d exited with status %d\n", pid,
+				       status);
+			record_status(status);
+		}
+	}			/* parent */
 	alarm(0);
 }
 
@@ -280,20 +276,18 @@ void record_status(unsigned int n)
 }
 
 /* may not work with -c option */
-void
-summarize_status ()
+void summarize_status()
 {
-  int i;
+	int i;
 
-  if (verbose_level < 2)
-		  return;
+	if (verbose_level < 2)
+		return;
 
-  printf ("exit status ... number of cases\n");
-  for (i = 0; i < STATUS_MAX; i++)
-    {
-      if (status_table[i])
-      	printf ( "%11d ... %5d\n", i, status_table[i]);
-    }
+	printf("exit status ... number of cases\n");
+	for (i = 0; i < STATUS_MAX; i++) {
+		if (status_table[i])
+			printf("%11d ... %5d\n", i, status_table[i]);
+	}
 }
 
 /* ************* badboy ******************************************* */
@@ -308,229 +302,215 @@ char *the_data;
 int offset = 0;
 int next_offset = 0;
 
-char * bad_malloc (int n);
-void my_signal (int sig, void (*func) ());
-void again_handler (int sig);
-void compute_block_badboy (int n);
-void compute_badboy ();
-BADBOY castaway (char *dat);
-void try_one_crash ();
-void set_up_signals ();
+char *bad_malloc(int n);
+void my_signal(int sig, void (*func) ());
+void again_handler(int sig);
+void compute_block_badboy(int n);
+void compute_badboy();
+BADBOY castaway(char *dat);
+void try_one_crash();
+void set_up_signals();
 
 /* badboy "entry" point */
-void
-badboy_loop ()
+void badboy_loop()
 {
-  int i;
+	int i;
 
-  if (malloc_flag == 0)
-	    {
-	      the_data = bad_malloc ((nbytes < 0) ? -nbytes : nbytes);
-	      badboy = castaway (the_data);
-	      printf ("Badboy at %p\n", badboy);
-	    }
-
-  for (i = 0; i < ntries; ++i)
-    {
-      compute_badboy ();
-	  /* level 5 */
-
-  if (!x_opt && verbose_level >= 5) {
-      if (offset)
-		printf ("try %d, offset %d\n", i, offset);
-      else if (malloc_flag == 1)
-		printf ("try %d, Badboy at %p\n", i, badboy);
-      else
-		printf ("try %d\n", i);
-  }
-
-      if (setjmp (again_buff) == 3)
-	{
-  	  if (verbose_level >= 5)
-	  	printf ("Barfed\n");
+	if (malloc_flag == 0) {
+		the_data = bad_malloc((nbytes < 0) ? -nbytes : nbytes);
+		badboy = castaway(the_data);
+		printf("Badboy at %p\n", badboy);
 	}
-      else
-	{
-	  set_up_signals ();
-	  alarm (MAX_TRY_TIME);
-	  try_one_crash ();
-  	  if (!x_opt && verbose_level >= 5)
-	  	printf ("didn't barf!\n");
+
+	for (i = 0; i < ntries; ++i) {
+		compute_badboy();
+		/* level 5 */
+
+		if (!x_opt && verbose_level >= 5) {
+			if (offset)
+				printf("try %d, offset %d\n", i, offset);
+			else if (malloc_flag == 1)
+				printf("try %d, Badboy at %p\n", i, badboy);
+			else
+				printf("try %d\n", i);
+		}
+
+		if (setjmp(again_buff) == 3) {
+			if (verbose_level >= 5)
+				printf("Barfed\n");
+		} else {
+			set_up_signals();
+			alarm(MAX_TRY_TIME);
+			try_one_crash();
+			if (!x_opt && verbose_level >= 5)
+				printf("didn't barf!\n");
+		}
 	}
-  }
 }
 
-char * bad_malloc (int n)
+char *bad_malloc(int n)
 {
-  char *data;
-  data = (char *) malloc (n);
+	char *data;
+	data = (char *)malloc(n);
 #ifdef pyr
-  if (mprotect (((int) data / PAGSIZ) * PAGSIZ, (n / PAGSIZ + 1) * PAGSIZ,
-		PROT_READ | PROT_WRITE | PROT_EXEC))
-    perror ("mprotect");
+	if (mprotect(((int)data / PAGSIZ) * PAGSIZ, (n / PAGSIZ + 1) * PAGSIZ,
+		     PROT_READ | PROT_WRITE | PROT_EXEC))
+		perror("mprotect");
 #endif
-  return (data);
+	return (data);
 }
 
-void again_handler (int sig)
+void again_handler(int sig)
 {
-  char *ss;
+	char *ss;
 
-  switch (sig)
-    {
-    case SIGILL:
-      ss = " illegal instruction";
-      break;
+	switch (sig) {
+	case SIGILL:
+		ss = " illegal instruction";
+		break;
 #ifdef SIGTRAP
-    case SIGTRAP:
-      ss = " trace trap";
-      break;
+	case SIGTRAP:
+		ss = " trace trap";
+		break;
 #endif
-    case SIGFPE:
-      ss = " arithmetic exception";
-      break;
+	case SIGFPE:
+		ss = " arithmetic exception";
+		break;
 #ifdef SIGBUS
-    case SIGBUS:
-      ss = " bus error";
-      break;
+	case SIGBUS:
+		ss = " bus error";
+		break;
 #endif
-    case SIGSEGV:
-      ss = " segmentation violation";
-      break;
+	case SIGSEGV:
+		ss = " segmentation violation";
+		break;
 #ifdef SIGIOT
-    case SIGIOT:
-      ss = " IOT instruction";
-      break;
+	case SIGIOT:
+		ss = " IOT instruction";
+		break;
 #endif
 #ifdef SIGEMT
-    case SIGEMT:
-      ss = " EMT instruction";
-      break;
+	case SIGEMT:
+		ss = " EMT instruction";
+		break;
 #endif
 #ifdef SIGALRM
-    case SIGALRM:
-      ss = " alarm clock";
-      break;
+	case SIGALRM:
+		ss = " alarm clock";
+		break;
 #endif
-    case SIGINT:
-      ss = " interrupt";
-      break;
-    default:
-      ss = "";
-    }
-  if (verbose_level >= 5)
-  	printf ("Got signal %d%s\n", sig, ss);
+	case SIGINT:
+		ss = " interrupt";
+		break;
+	default:
+		ss = "";
+	}
+	if (verbose_level >= 5)
+		printf("Got signal %d%s\n", sig, ss);
 
-  longjmp (again_buff, 3);
+	longjmp(again_buff, 3);
 }
 
-void my_signal (int sig, void (*func) ())
+void my_signal(int sig, void (*func) ())
 {
-  struct sigaction act;
+	struct sigaction act;
 
-  act.sa_handler = func;
-  memset (&act.sa_mask, 0x00, sizeof (sigset_t));
-  act.sa_flags = SA_NOMASK|SA_RESTART;
-  sigaction (sig, &act, 0);
+	act.sa_handler = func;
+	memset(&act.sa_mask, 0x00, sizeof(sigset_t));
+	act.sa_flags = SA_NOMASK | SA_RESTART;
+	sigaction(sig, &act, 0);
 }
 
-void
-set_up_signals ()
+void set_up_signals()
 {
-  my_signal (SIGILL, again_handler);
+	my_signal(SIGILL, again_handler);
 #ifdef SIGTRAP
-  my_signal (SIGTRAP, again_handler);
+	my_signal(SIGTRAP, again_handler);
 #endif
-  my_signal (SIGFPE, again_handler);
+	my_signal(SIGFPE, again_handler);
 #ifdef SIGBUS
-  my_signal (SIGBUS, again_handler);
+	my_signal(SIGBUS, again_handler);
 #endif
-  my_signal (SIGSEGV, again_handler);
+	my_signal(SIGSEGV, again_handler);
 #ifdef SIGIOT
-  my_signal (SIGIOT, again_handler);
+	my_signal(SIGIOT, again_handler);
 #endif
 #ifdef SIGEMT
-  my_signal (SIGEMT, again_handler);
+	my_signal(SIGEMT, again_handler);
 #endif
 #ifdef SIGALRM
-  my_signal (SIGALRM, again_handler);
+	my_signal(SIGALRM, again_handler);
 #endif
-  my_signal (SIGINT, again_handler);
+	my_signal(SIGINT, again_handler);
 }
 
-void compute_block_badboy (int n)
+void compute_block_badboy(int n)
 {
-  int j;
+	int j;
 
-  if (malloc_flag == 1) {
-	free(the_data);
-    	the_data = bad_malloc (n);
-  }
+	if (malloc_flag == 1) {
+		free(the_data);
+		the_data = bad_malloc(n);
+	}
 
-  for (j = 0; j < n; ++j) {
+	for (j = 0; j < n; ++j) {
 #ifdef WANT_SLOW_RAND
-    the_data[j] = 0xFF & (int) (256.0*rand()/(RAND_MAX+1.0));
+		the_data[j] = 0xFF & (int)(256.0 * rand() / (RAND_MAX + 1.0));
 #else
-    the_data[j] = (rand () >> 7) & 0xFF;
+		the_data[j] = (rand() >> 7) & 0xFF;
 #endif
 #ifdef __powerpc__
-    __asm__ __volatile__("dcbst 0,%0 ; icbi 0,%0 ; isync" : : "r"(&the_data[j]) );
+		__asm__
+		    __volatile__("dcbst 0,%0 ; icbi 0,%0 ; isync"::"r"
+				 (&the_data[j]));
 #endif
 
-  }
-
-  /* was (nbytes < 0) */
-  if (x_opt)
-    {
-      if (verbose_level >= 1)
-      		printf ("Dump of %d bytes of data\n", n);
-      for (j = 0; j < n; ++j)
-	{
-	  if ((j % 16) == 0)
-	    printf ("\n%04d: ", j);
-
-	  printf ("%02x ", the_data[j]);
 	}
-      putc ('\n', stdout);
-    }
+
+	/* was (nbytes < 0) */
+	if (x_opt) {
+		if (verbose_level >= 1)
+			printf("Dump of %d bytes of data\n", n);
+		for (j = 0; j < n; ++j) {
+			if ((j % 16) == 0)
+				printf("\n%04d: ", j);
+
+			printf("%02x ", the_data[j]);
+		}
+		putc('\n', stdout);
+	}
 }
 
-BADBOY
-castaway (char *dat)
+BADBOY castaway(char *dat)
 {
-  return ((BADBOY) dat);
+	return ((BADBOY) dat);
 }
 
-void
-compute_badboy ()
+void compute_badboy()
 {
-  if (incptr == 0)
-    {
-      compute_block_badboy (nbytes);
-      badboy = castaway (the_data);
-    }
-    /* trigger block generation at xx % of the current block */
-  else if ((next_offset == 0) || (next_offset > ((nbytes * BLOCK_TRIGGER) / 100)))
-    {
-      compute_block_badboy (nbytes);
-      offset = 0;
-      next_offset = offset + incptr;
-      badboy = castaway (the_data);
-    }
-  else
-    {
-      offset = next_offset;
-      next_offset = offset + incptr;
-      badboy = castaway (&the_data[offset]);
-    }
+	if (incptr == 0) {
+		compute_block_badboy(nbytes);
+		badboy = castaway(the_data);
+	}
+	/* trigger block generation at xx % of the current block */
+	else if ((next_offset == 0)
+		 || (next_offset > ((nbytes * BLOCK_TRIGGER) / 100))) {
+		compute_block_badboy(nbytes);
+		offset = 0;
+		next_offset = offset + incptr;
+		badboy = castaway(the_data);
+	} else {
+		offset = next_offset;
+		next_offset = offset + incptr;
+		badboy = castaway(&the_data[offset]);
+	}
 }
 
-void
-try_one_crash ()
+void try_one_crash()
 {
-  /* was (nbytes < 0) */
-  if (!x_opt)
-    (*badboy) ();
-  else if (nbytes == 0)
-    while (1);
+	/* was (nbytes < 0) */
+	if (!x_opt)
+		(*badboy) ();
+	else if (nbytes == 0)
+		while (1) ;
 }

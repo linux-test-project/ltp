@@ -35,8 +35,9 @@
 int last_signal = 0;
 int test_failed = 0;
 
-void myhandler(int signo, siginfo_t *info, void *context) {
-	printf ("%d, ", signo);
+void myhandler(int signo, siginfo_t * info, void *context)
+{
+	printf("%d, ", signo);
 	if (last_signal >= signo) {
 		test_failed = 1;
 	}
@@ -55,7 +56,7 @@ int main()
 
 	sigemptyset(&mask);
 
-	for (rtsig=SIGRTMAX; rtsig>=SIGRTMIN; rtsig--) {
+	for (rtsig = SIGRTMAX; rtsig >= SIGRTMIN; rtsig--) {
 		sigaddset(&act.sa_mask, rtsig);
 		sighold(rtsig);
 		sigaddset(&mask, rtsig);
@@ -64,10 +65,11 @@ int main()
 	pid = getpid();
 	value.sival_int = 5;	/* 5 is just an arbitrary value */
 
-	for (rtsig=SIGRTMAX; rtsig>=SIGRTMIN; rtsig--) {
+	for (rtsig = SIGRTMAX; rtsig >= SIGRTMIN; rtsig--) {
 		sigaction(rtsig, &act, 0);
 		if (sigqueue(pid, rtsig, value) != 0) {
-			printf("Test UNRESOLVED: call to sigqueue did not return success\n");
+			printf
+			    ("Test UNRESOLVED: call to sigqueue did not return success\n");
 			return PTS_UNRESOLVED;
 		}
 	}
@@ -76,7 +78,8 @@ int main()
 	printf("\n");
 
 	if (test_failed == 1) {
-		printf("Test FAILED: A pending signal was delivered even though a smaller one is still pending.\n");
+		printf
+		    ("Test FAILED: A pending signal was delivered even though a smaller one is still pending.\n");
 		return PTS_FAIL;
 	}
 

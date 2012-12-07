@@ -37,15 +37,15 @@
 uint64_t ffsb_get_filesize(char *name)
 {
 #ifndef HAVE_STAT64
- #define STAT(a, b) do { stat((a), (b)); } while (0)
+#define STAT(a, b) do { stat((a), (b)); } while (0)
 	struct stat filestat;
 #else
- #define STAT(a, b) do { stat64((a), (b)); } while (0)
+#define STAT(a, b) do { stat64((a), (b)); } while (0)
 	struct stat64 filestat;
 #endif
 
 	STAT(name, &filestat);
-	return (uint64_t)filestat.st_size;
+	return (uint64_t) filestat.st_size;
 #undef STAT
 }
 
@@ -59,7 +59,7 @@ void *ffsb_malloc(size_t size)
 
 void *ffsb_realloc(void *ptr, size_t size)
 {
-	void *tmp ;
+	void *tmp;
 	/* printf("ffsb_realloc: ptr = %p  size = %ld\n",ptr,size); */
 
 	if (ptr == NULL)
@@ -73,7 +73,7 @@ void *ffsb_realloc(void *ptr, size_t size)
 
 void *ffsb_align_4k(void *ptr)
 {
-	unsigned long mask = ~(0xfff); /* 12 zeros at the end */
+	unsigned long mask = ~(0xfff);	/* 12 zeros at the end */
 	void *ret = (void *)((unsigned long)ptr & mask);
 	/* printf("align_4k got %p returning %p\n",ptr,ret); */
 	return ret;
@@ -84,7 +84,7 @@ char *ffsb_strdup(const char *str)
 	int len = strlen(str);
 	char *dup = ffsb_malloc(len + 1);
 	/* !!! am I off by one here ?? */
-	strncpy(dup, str, len+1);
+	strncpy(dup, str, len + 1);
 	return dup;
 }
 
@@ -103,7 +103,7 @@ size_t ffsb_strnlen(const char *str, size_t maxlen)
 /* not perfect, in case we are somehow interrupted it's borked */
 void ffsb_sleep(unsigned secs)
 {
-	struct timeval tv = { 0 , 0 };
+	struct timeval tv = { 0, 0 };
 	tv.tv_sec = secs;
 	select(0, NULL, NULL, NULL, &tv);
 }
@@ -115,7 +115,7 @@ char *ffsb_printsize(char *buf, double size, int bufsize)
 	else if (size >= 1024 * 1024)
 		snprintf(buf, bufsize, "%.3gMB", size / (1024 * 1024));
 	else if (size >= 1024)
-		snprintf(buf, bufsize, "%.3gKB", size/1024);
+		snprintf(buf, bufsize, "%.3gKB", size / 1024);
 	else
 		snprintf(buf, bufsize, "%.3gB", size);
 
@@ -153,8 +153,8 @@ struct timeval tvadd(struct timeval t1, struct timeval t0)
 
 double tvtodouble(struct timeval *t)
 {
-	return ((double)t->tv_sec*(1000000.0f) + (double)t->tv_usec) /
-		1000000.0f;
+	return ((double)t->tv_sec * (1000000.0f) + (double)t->tv_usec) /
+	    1000000.0f;
 }
 
 double cpu_so_far(void)
@@ -164,10 +164,10 @@ double cpu_so_far(void)
 	getrusage(RUSAGE_SELF, &rusage);
 
 	return
-		((double) rusage.ru_utime.tv_sec) +
-		(((double) rusage.ru_utime.tv_usec) / 1000000.0) +
-		((double) rusage.ru_stime.tv_sec) +
-		(((double) rusage.ru_stime.tv_usec) / 1000000.0);
+	    ((double)rusage.ru_utime.tv_sec) +
+	    (((double)rusage.ru_utime.tv_usec) / 1000000.0) +
+	    ((double)rusage.ru_stime.tv_sec) +
+	    (((double)rusage.ru_stime.tv_usec) / 1000000.0);
 }
 
 double cpu_so_far_children(void)
@@ -177,10 +177,10 @@ double cpu_so_far_children(void)
 	getrusage(RUSAGE_CHILDREN, &rusage);
 
 	return
-		((double) rusage.ru_utime.tv_sec) +
-		(((double) rusage.ru_utime.tv_usec) / 1000000.0) +
-		((double) rusage.ru_stime.tv_sec) +
-		(((double) rusage.ru_stime.tv_usec) / 1000000.0);
+	    ((double)rusage.ru_utime.tv_sec) +
+	    (((double)rusage.ru_utime.tv_usec) / 1000000.0) +
+	    ((double)rusage.ru_stime.tv_sec) +
+	    (((double)rusage.ru_stime.tv_usec) / 1000000.0);
 }
 
 /* !!!! check portability */
@@ -192,8 +192,8 @@ float getfsutil(char *dirname)
 
 /* 	return (float)(fsdata.f_blocks-fsdata.f_bfree)/ */
 /* 		(float)(fsdata.f_blocks-fsdata.f_bfree+fsdata.f_bavail); */
-	return (float) (((float)(fsdata.f_blocks - fsdata.f_bfree)) /
-			((float)fsdata.f_blocks));
+	return (float)(((float)(fsdata.f_blocks - fsdata.f_bfree)) /
+		       ((float)fsdata.f_blocks));
 }
 
 uint64_t getfsutil_size(char *dirname)
@@ -206,7 +206,7 @@ uint64_t getfsutil_size(char *dirname)
 
 int ffsb_system(char *command)
 {
-	int pid=0, status;
+	int pid = 0, status;
 	extern char **environ;
 
 	if (command == NULL)
@@ -227,8 +227,7 @@ int ffsb_system(char *command)
 		if (waitpid(pid, &status, 0) == -1) {
 			if (errno != EINTR)
 				return -1;
-		}
-		else
+		} else
 			return status;
 	} while (1);
 }
@@ -263,7 +262,7 @@ void ffsb_getrusage(struct rusage *ru_self, struct rusage *ru_children)
 
 void ffsb_milli_sleep(unsigned time)
 {
-	struct timeval tv = { 0 , 0 };
+	struct timeval tv = { 0, 0 };
 	if (!time)
 		return;
 	tv.tv_usec = time * 1000;
@@ -272,14 +271,14 @@ void ffsb_milli_sleep(unsigned time)
 
 void ffsb_micro_sleep(unsigned time)
 {
-	struct timeval tv = { 0 , 0 };
+	struct timeval tv = { 0, 0 };
 	if (!time)
 		return;
-	tv.tv_usec = time ;
+	tv.tv_usec = time;
 	select(0, NULL, NULL, NULL, &tv);
 }
 
-void ffsb_barrier_init(ffsb_barrier_t *fb, unsigned count)
+void ffsb_barrier_init(ffsb_barrier_t * fb, unsigned count)
 {
 	memset(fb, 0, sizeof(*fb));
 	pthread_mutex_init(&fb->plock, NULL);
@@ -287,7 +286,7 @@ void ffsb_barrier_init(ffsb_barrier_t *fb, unsigned count)
 	fb->required_count = count;
 }
 
-void ffsb_barrier_wait(ffsb_barrier_t *fb)
+void ffsb_barrier_wait(ffsb_barrier_t * fb)
 {
 	pthread_mutex_lock(&fb->plock);
 

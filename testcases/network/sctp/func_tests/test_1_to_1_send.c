@@ -49,7 +49,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>         /* for sockaddr_in */
+#include <netinet/in.h>		/* for sockaddr_in */
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/sctp.h>
@@ -61,55 +61,54 @@ char *TCID = __FILE__;
 int TST_TOTAL = 8;
 int TST_CNT = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-        socklen_t len,len_snd;
+	socklen_t len, len_snd;
 	int msg_count;
-	int sk,sk1,pf_class,lstn_sk,acpt_sk,acpt1_sk, flag, count;
-        char *message = "hello, world!\n";
-        char *message_rcv;
+	int sk, sk1, pf_class, lstn_sk, acpt_sk, acpt1_sk, flag, count;
+	char *message = "hello, world!\n";
+	char *message_rcv;
 
-        struct sockaddr_in conn_addr,lstn_addr,svr_addr;
+	struct sockaddr_in conn_addr, lstn_addr, svr_addr;
 
 	/* Rather than fflush() throughout the code, set stdout to
-         * be unbuffered.
-         */
-        setvbuf(stdout, NULL, _IONBF, 0);
-        setvbuf(stderr, NULL, _IONBF, 0);
+	 * be unbuffered.
+	 */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
 
-        pf_class = PF_INET;
+	pf_class = PF_INET;
 
-        sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-        sk1 = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	sk1 = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-        lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
 	conn_addr.sin_family = AF_INET;
-        conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        conn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	conn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
 	lstn_addr.sin_family = AF_INET;
-        lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
-	/*Binding the listen socket*/
-        test_bind(lstn_sk, (struct sockaddr *) &lstn_addr, sizeof(lstn_addr));
+	/*Binding the listen socket */
+	test_bind(lstn_sk, (struct sockaddr *)&lstn_addr, sizeof(lstn_addr));
 
-        /*Listening the socket*/
-        test_listen(lstn_sk, 10);
+	/*Listening the socket */
+	test_listen(lstn_sk, 10);
 
 	len = sizeof(struct sockaddr_in);
 
-	test_connect(sk, (struct sockaddr *) &conn_addr, len);
+	test_connect(sk, (struct sockaddr *)&conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
 
 	len_snd = (strlen(message) + 1);
 
 	flag = MSG_NOSIGNAL;
-	/*send () TEST1: Bad socket descriptor, EBADF Expected error*/
+	/*send () TEST1: Bad socket descriptor, EBADF Expected error */
 	count = send(-1, message, len_snd, flag);
 	if (count != -1 || errno != EBADF)
 		tst_brkm(TBROK, NULL, "send with a bad socket "
@@ -117,7 +116,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "send() with a bad socket descriptor - EBADF");
 
-	/*send () TEST2: Invalid socket, ENOTSOCK Expected error*/
+	/*send () TEST2: Invalid socket, ENOTSOCK Expected error */
 	count = send(0, message, len_snd, flag);
 	if (count != -1 || errno != ENOTSOCK)
 		tst_brkm(TBROK, NULL, "send with invalid socket "
@@ -125,7 +124,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "send() with invalid socket - ENOTSOCK");
 
-	/*send () TEST3: send on listening socket, EPIPE Expected error*/
+	/*send () TEST3: send on listening socket, EPIPE Expected error */
 	count = send(lstn_sk, message, len_snd, flag);
 	if (count != -1 || errno != EPIPE)
 		tst_brkm(TBROK, NULL, "send on a listening socket "
@@ -133,8 +132,8 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "send() on a listening socket - EPIPE");
 #if 0
-	/*send () TEST4: Invalid message address, EFAULT Expected error*/
-       /* FIXME this test should pass. Don't catch why...  */
+	/*send () TEST4: Invalid message address, EFAULT Expected error */
+	/* FIXME this test should pass. Don't catch why...  */
 	count = send(sk, (char *)0x1, len_snd, flag);
 	if (count != -1 || errno != EFAULT)
 		tst_brkm(TBROK, NULL, "send with invalid message "
@@ -143,7 +142,7 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "send() with invalid message ptr - EFAULT");
 #endif
 
-	test_connect(sk1, (struct sockaddr *) &lstn_addr, len);
+	test_connect(sk1, (struct sockaddr *)&lstn_addr, len);
 
 	count = test_send(sk1, message, len_snd, flag);
 
@@ -151,7 +150,7 @@ main(int argc, char *argv[])
 
 	acpt1_sk = test_accept(lstn_sk, (struct sockaddr *)&conn_addr, &len);
 
-	/*send () TEST5: send on closed association, EPIPE Expected error*/
+	/*send () TEST5: send on closed association, EPIPE Expected error */
 	count = send(acpt1_sk, message, len_snd, flag);
 	if (count != -1 || errno != EPIPE)
 		tst_brkm(TBROK, NULL, "send on a closed association "
@@ -163,61 +162,61 @@ main(int argc, char *argv[])
 	close(lstn_sk);
 	close(acpt_sk);
 
-        sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
-        lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
+	lstn_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 
 	message_rcv = malloc(512);
 
-	/*Binding the listen socket*/
-        test_bind(lstn_sk, (struct sockaddr *) &lstn_addr, sizeof(lstn_addr));
+	/*Binding the listen socket */
+	test_bind(lstn_sk, (struct sockaddr *)&lstn_addr, sizeof(lstn_addr));
 
-        /*Listening the socket*/
-        test_listen(lstn_sk, 10);
+	/*Listening the socket */
+	test_listen(lstn_sk, 10);
 
 	conn_addr.sin_family = AF_INET;
-        conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        conn_addr.sin_port = htons(SCTP_TESTPORT_1);
+	conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	conn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
 	len = sizeof(struct sockaddr_in);
 
-	test_connect(sk, (struct sockaddr *) &conn_addr, len);
+	test_connect(sk, (struct sockaddr *)&conn_addr, len);
 
 	acpt_sk = test_accept(lstn_sk, (struct sockaddr *)&svr_addr, &len);
 
 	msg_count = strlen(message) + 1;
 
-	/*send() TEST6: Sending data from client socket to server socket*/
+	/*send() TEST6: Sending data from client socket to server socket */
 	count = send(sk, message, msg_count, flag);
 	if (count != msg_count)
 		tst_brkm(TBROK, NULL, "send from client to server "
-                         "count:%d, errno:%d", count, errno);
+			 "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() from client to server - SUCCESS");
 
 	test_recv(acpt_sk, message_rcv, msg_count, flag);
 
-	strncpy(message_rcv,"\0",512);
+	strncpy(message_rcv, "\0", 512);
 
-	/*send() TEST7: Sending data from accept socket to client socket*/
+	/*send() TEST7: Sending data from accept socket to client socket */
 	count = send(acpt_sk, message, msg_count, flag);
 	if (count != msg_count)
 		tst_brkm(TBROK, NULL, "send from accept socket to client "
-                         "count:%d, errno:%d", count, errno);
+			 "count:%d, errno:%d", count, errno);
 
 	tst_resm(TPASS, "send() from accept socket to client - SUCCESS");
 
 	test_recv(sk, message_rcv, msg_count, flag);
 
-	/*send() TEST8: Sending less number of data from the buffer*/
-	/*Sending only 5 bytes so that only hello is received*/
-	test_send(sk, message, 5 , flag);
+	/*send() TEST8: Sending less number of data from the buffer */
+	/*Sending only 5 bytes so that only hello is received */
+	test_send(sk, message, 5, flag);
 	test_recv(acpt_sk, message_rcv, 5, flag);
 
 	tst_resm(TPASS, "send() partial data from a buffer - SUCCESS");
 
 	/* TEST9: sctp_send with no sinfo */
-	test_sctp_send(sk, message, strlen(message) + 1 , NULL, flag);
+	test_sctp_send(sk, message, strlen(message) + 1, NULL, flag);
 	test_recv(acpt_sk, message_rcv, strlen(message) + 1, flag);
 	tst_resm(TPASS, "sctp_send() with no sinfo - SUCCESS");
 

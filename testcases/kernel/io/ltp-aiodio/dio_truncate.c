@@ -47,7 +47,8 @@ char *check_zero(unsigned char *buf, int size)
 
 	while (size > 0) {
 		if (*buf != 0) {
-			fprintf(stderr, "non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
+			fprintf(stderr,
+				"non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
 				buf - p, (unsigned int)buf[0],
 				size > 1 ? (unsigned int)buf[1] : 0,
 				size > 2 ? (unsigned int)buf[2] : 0,
@@ -58,20 +59,21 @@ char *check_zero(unsigned char *buf, int size)
 		buf++;
 		size--;
 	}
-	return 0;	/* all zeros */
+	return 0;		/* all zeros */
 }
+
 int dio_read(char *filename)
 {
 	int fd;
 	int r;
 	void *bufptr;
 
-	if (posix_memalign(&bufptr, 4096, 64*1024)) {
+	if (posix_memalign(&bufptr, 4096, 64 * 1024)) {
 		perror("cannot malloc aligned memory");
 		return -1;
 	}
 
-	while ((fd = open(filename, O_DIRECT|O_RDONLY)) < 0) {
+	while ((fd = open(filename, O_DIRECT | O_RDONLY)) < 0) {
 	}
 	fprintf(stderr, "dio_truncate: child reading file\n");
 	while (1) {
@@ -81,10 +83,11 @@ int dio_read(char *filename)
 		/* read the file, checking for zeros */
 		offset = lseek(fd, SEEK_SET, 0);
 		do {
-			r = read(fd, bufptr, 64*1024);
+			r = read(fd, bufptr, 64 * 1024);
 			if (r > 0) {
 				if ((bufoff = check_zero(bufptr, r))) {
-					fprintf(stderr, "non-zero read at offset %p\n",
+					fprintf(stderr,
+						"non-zero read at offset %p\n",
 						offset + bufoff);
 					exit(1);
 				}
@@ -92,7 +95,7 @@ int dio_read(char *filename)
 			}
 		} while (r > 0);
 	}
-  return 0;
+	return 0;
 }
 
 void dio_append(char *filename, int fill)
@@ -102,22 +105,22 @@ void dio_append(char *filename, int fill)
 	int i;
 	int w;
 
-	fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666);
+	fd = open(filename, O_DIRECT | O_WRONLY | O_CREAT, 0666);
 
 	if (fd < 0) {
 		perror("cannot create file");
 		return;
 	}
 
-	if (posix_memalign(&bufptr, 4096, 64*1024)) {
+	if (posix_memalign(&bufptr, 4096, 64 * 1024)) {
 		perror("cannot malloc aligned memory");
 		return;
 	}
 
-	memset(bufptr, fill, 64*1024);
+	memset(bufptr, fill, 64 * 1024);
 
 	for (i = 0; i < 1000; i++) {
-		if ((w = write(fd, bufptr, 64*1024)) != 64*1024) {
+		if ((w = write(fd, bufptr, 64 * 1024)) != 64 * 1024) {
 			fprintf(stderr, "write %d returned %d\n", i, w);
 		}
 	}
@@ -132,7 +135,7 @@ int main(int argc, char **argv)
 	int i;
 
 	snprintf(filename, sizeof(filename), "%s/aiodio/file",
-		getenv("TMP") ? getenv("TMP") : "/tmp");
+		 getenv("TMP") ? getenv("TMP") : "/tmp");
 
 	for (i = 0; i < num_children; i++) {
 		if ((pid[i] = fork()) == 0) {
@@ -164,5 +167,5 @@ int main(int argc, char **argv)
 		kill(pid[i], SIGTERM);
 	}
 
-  return 0;
+	return 0;
 }

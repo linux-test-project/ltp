@@ -106,7 +106,6 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. *
 
 int exp_enos[] = { EFAULT, EINVAL, ENOTSOCK, EADDRINUSE, EADDRNOTAVAIL, 0 };
 
-
 int main(int argc, char *argv[])
 {
 	int lc;
@@ -191,7 +190,8 @@ void setup0(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "socket() failed for bind test %d", testno);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "socket() failed for bind test %d", testno);
 }
 
 void cleanup0(void)
@@ -203,7 +203,7 @@ void setup1(void)
 {
 	/* setup for the "not a socket" case */
 	if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open(/dev/null) failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "open(/dev/null) failed");
 
 }
 

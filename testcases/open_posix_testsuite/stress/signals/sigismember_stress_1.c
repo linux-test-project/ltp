@@ -22,9 +22,9 @@ int main()
 	int returnval;
 	returnval = sigismember(&signalset, SIGALRM);
 
-	#ifdef DEBUG
-		printf("sigismember returned returnval\n");
-	#endif
+#ifdef DEBUG
+	printf("sigismember returned returnval\n");
+#endif
 
 	/*
 	 * If we made it here, the test case passes.

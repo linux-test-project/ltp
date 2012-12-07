@@ -63,35 +63,36 @@
 char *TCID = "hugeshmat01";
 int TST_TOTAL = 3;
 
-#define CASE0		10		/* values to write into the shared */
-#define CASE1		20		/* memory location.		   */
+#define CASE0		10	/* values to write into the shared */
+#define CASE1		20	/* memory location.                */
 
 static size_t shm_size;
-static int    shm_id_1 = -1;
-static void   *addr;
+static int shm_id_1 = -1;
+static void *addr;
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 struct test_case_t {
-	int  *shmid;
+	int *shmid;
 	void *addr;
-	int  flags;
+	int flags;
 } TC[] = {
 	/* a straight forward read/write attach */
-	{ &shm_id_1,	0,		0 },
-
-	/*
-	 * an attach using non aligned memory
-	 * -1 will be replaced with an unaligned addr
-	 */
-	{ &shm_id_1,	(void *)-1,	SHM_RND },
-
-	/* a read only attach */
-	{ &shm_id_1,	0,		SHM_RDONLY }
+	{
+	&shm_id_1, 0, 0},
+	    /*
+	     * an attach using non aligned memory
+	     * -1 will be replaced with an unaligned addr
+	     */
+	{
+	&shm_id_1, (void *)-1, SHM_RND},
+	    /* a read only attach */
+	{
+	&shm_id_1, 0, SHM_RDONLY}
 };
 
 static void check_functionality(int i);
@@ -115,7 +116,7 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 			addr = shmat(*(TC[i].shmid), TC[i].addr, TC[i].flags);
 			if (addr == (void *)-1) {
-				tst_brkm(TFAIL|TERRNO, cleanup, "shmat");
+				tst_brkm(TFAIL | TERRNO, cleanup, "shmat");
 			} else {
 				if (STD_FUNCTIONAL_TEST)
 					check_functionality(i);
@@ -129,9 +130,10 @@ int main(int ac, char **av)
 			 */
 			if (i == 0 && addr != (void *)-1)
 				TC[1].addr = (void *)(((unsigned long)addr &
-					     ~(SHMLBA-1)) + SHMLBA - 1);
+						       ~(SHMLBA - 1)) + SHMLBA -
+						      1);
 			if (shmdt(addr) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "shmdt");
+				tst_brkm(TBROK | TERRNO, cleanup, "shmdt");
 		}
 	}
 	cleanup();
@@ -152,7 +154,7 @@ static void check_functionality(int i)
 
 	/* stat the shared memory ID */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmctl");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmctl");
 
 	/* check the number of attaches */
 	if (buf.shm_nattch != 1) {
@@ -188,7 +190,7 @@ static void check_functionality(int i)
 		orig_add = addr + ((unsigned long)TC[i].addr % SHMLBA);
 		if (orig_add != TC[i].addr) {
 			tst_resm(TFAIL, "shared memory address is not "
-					"correct");
+				 "correct");
 			return;
 		}
 		break;
@@ -223,9 +225,9 @@ void setup(void)
 	update_shm_size(&shm_size);
 	shmkey = getipckey();
 	shm_id_1 = shmget(shmkey++, shm_size,
-		    SHM_HUGETLB|SHM_RW|IPC_CREAT|IPC_EXCL);
+			  SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL);
 	if (shm_id_1 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget");
 
 	TEST_PAUSE;
 }

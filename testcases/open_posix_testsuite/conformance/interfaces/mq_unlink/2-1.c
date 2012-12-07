@@ -53,7 +53,7 @@ int main()
 	char mqname[NAMESIZE];
 	pid_t pid;
 	int to_parent[2];
-        int to_child[2];
+	int to_child[2];
 	int rval;
 	struct sigaction sa;
 
@@ -64,15 +64,15 @@ int main()
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 	rval = pipe(to_parent);
-        if (rval == -1) {
-                perror(ERROR_PREFIX "fd[0]");
-                return PTS_UNRESOLVED;
-        }
-        rval = pipe(to_child);
-        if (rval == -1) {
-               perror(ERROR_PREFIX "fd[1]");
-               return PTS_UNRESOLVED;
-        }
+	if (rval == -1) {
+		perror(ERROR_PREFIX "fd[0]");
+		return PTS_UNRESOLVED;
+	}
+	rval = pipe(to_child);
+	if (rval == -1) {
+		perror(ERROR_PREFIX "fd[1]");
+		return PTS_UNRESOLVED;
+	}
 	pid = fork();
 	if (pid == -1) {
 		perror(ERROR_PREFIX "fork");
@@ -83,16 +83,16 @@ int main()
 		close(to_parent[PIPE_READ]);
 		close(to_child[PIPE_WRITE]);
 		return child_process(mqname, to_child[PIPE_READ],
-                                     to_parent[PIPE_WRITE]);
-	}
-	else {
+				     to_parent[PIPE_WRITE]);
+	} else {
 		//parent process
 		close(to_parent[PIPE_WRITE]);
-                close(to_child[PIPE_READ]);
+		close(to_child[PIPE_READ]);
 		return parent_process(mqname, to_parent[PIPE_READ],
-                                      to_child[PIPE_WRITE], pid);
+				      to_child[PIPE_WRITE], pid);
 	}
 }
+
 int parent_process(char *mqname, int read_pipe, int write_pipe, int child_pid)
 {
 	mqd_t mqdes;
@@ -100,31 +100,33 @@ int parent_process(char *mqname, int read_pipe, int write_pipe, int child_pid)
 	int rval;
 
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		return PTS_UNRESOLVED;
 	}
 	// Tell child a message queue has been opened.
 	rval = send_receive(read_pipe, write_pipe, 'a', &reply);
 	if (rval) {
-	        return rval;
-        }
+		return rval;
+	}
 	if (reply != 'b') {
-	        printf(ERROR_PREFIX "send_receive: " "expected a 'b'");
-                return PTS_UNRESOLVED;
-        }
+		printf(ERROR_PREFIX "send_receive: " "expected a 'b'");
+		return PTS_UNRESOLVED;
+	}
 	if (mq_unlink(mqname) == 0) {
-		if (mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0) == -1) {
-			printf("mq_open to recreate the message	mqueue may fail until all references to the message queue have been closed, or until the message queue is actually removed. \n");
+		if (mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0) ==
+		    -1) {
+			printf
+			    ("mq_open to recreate the message	mqueue may fail until all references to the message queue have been closed, or until the message queue is actually removed. \n");
 			printf("Test PASSED\n");
 			return PTS_PASS;
-		}
-		else {
+		} else {
 			if (mq_unlink(mqname) != 0) {
-	        		printf(ERROR_PREFIX "mq_unlink(2)");
-                		return PTS_UNRESOLVED;
+				printf(ERROR_PREFIX "mq_unlink(2)");
+				return PTS_UNRESOLVED;
 			}
-			printf("mq_open to recreate the message	mqueue may succeed even if the references to the message queue have not been closed or the message queue is not actually removed. \n");
+			printf
+			    ("mq_open to recreate the message	mqueue may succeed even if the references to the message queue have not been closed or the message queue is not actually removed. \n");
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		}
@@ -141,14 +143,14 @@ int child_process(char *mqname, int read_pipe, int write_pipe)
 
 	rval = send_receive(read_pipe, write_pipe, 0, &reply);
 	if (rval) {
-                return rval;
-        }
-        if (reply != 'a') {
-                printf(ERROR_PREFIX "send_receive: " "expected an 'a'\n");
-                return PTS_UNRESOLVED;
-        }
+		return rval;
+	}
+	if (reply != 'a') {
+		printf(ERROR_PREFIX "send_receive: " "expected an 'a'\n");
+		return PTS_UNRESOLVED;
+	}
 	mqdes = mq_open(mqname, O_RDWR, 0, 0);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		return PTS_UNRESOLVED;
 	}
@@ -159,24 +161,24 @@ int child_process(char *mqname, int read_pipe, int write_pipe)
 
 int send_receive(int read_pipe, int write_pipe, char send, char *reply)
 {
-        ssize_t bytes;
+	ssize_t bytes;
 
-        if (send) {
-                bytes = write(write_pipe, &send, 1);
-                if (bytes == -1) {
-                perror(ERROR_PREFIX "write fd[1]");
-                return PTS_UNRESOLVED;
-	        }
-        }
-        if (reply) {
-                bytes = read(read_pipe, reply, 1);
-                if (bytes == -1) {
-	                perror(ERROR_PREFIX "read fd[0]");
-                        return PTS_UNRESOLVED;
-                } else if (bytes == 0) {
-                        printf(ERROR_PREFIX "read: EOF \n");
-                        return PTS_UNRESOLVED;
-                }
-        }
+	if (send) {
+		bytes = write(write_pipe, &send, 1);
+		if (bytes == -1) {
+			perror(ERROR_PREFIX "write fd[1]");
+			return PTS_UNRESOLVED;
+		}
+	}
+	if (reply) {
+		bytes = read(read_pipe, reply, 1);
+		if (bytes == -1) {
+			perror(ERROR_PREFIX "read fd[0]");
+			return PTS_UNRESOLVED;
+		} else if (bytes == 0) {
+			printf(ERROR_PREFIX "read: EOF \n");
+			return PTS_UNRESOLVED;
+		}
+	}
 	return 0;
 }

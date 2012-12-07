@@ -77,7 +77,7 @@ int setup_uid(char *uname)
 /*
  * Change effective user ID
  */
-int setup_euid(char *uname, uid_t *old_uid)
+int setup_euid(char *uname, uid_t * old_uid)
 {
 	struct passwd *pw;
 	int rc;
@@ -112,6 +112,7 @@ static void sigterm_handler(int sig)
 {
 	_exit(0);
 }
+
 /*
  * Generate a child process which will send a signal
  */
@@ -120,12 +121,10 @@ pid_t create_sig_proc(unsigned long usec, int sig, unsigned count)
 	pid_t pid, cpid;
 
 	pid = getpid();
-	WITH_SIGNALS_BLOCKED(
-		if ((cpid = fork()) == 0) {
-			tst_sig(NOFORK, SIG_DFL, NULL);
-			signal(SIGTERM, sigterm_handler);
-		}
-	);
+	WITH_SIGNALS_BLOCKED(if ((cpid = fork()) == 0) {
+			     tst_sig(NOFORK, SIG_DFL, NULL);
+			     signal(SIGTERM, sigterm_handler);}
+	) ;
 	switch (cpid) {
 	case 0:
 		while (count-- > 0) {
@@ -149,7 +148,7 @@ pid_t create_sig_proc(unsigned long usec, int sig, unsigned count)
 int setup_file(char *testdir, char *fname, char *path)
 {
 	return _setup_file(testdir, fname, path,
-			   O_CREAT|O_EXCL|O_RDWR, S_IRUSR|S_IWUSR);
+			   O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
 }
 
 int _setup_file(char *testdir, char *fname, char *path, int flags, mode_t mode)
@@ -185,7 +184,7 @@ int setup_swapfile(char *testdir, char *fname, char *path, size_t size)
 	char *p = NULL;
 
 	sprintf(path, "%s/%s", testdir, fname);
-	fd = open(path, O_CREAT|O_EXCL|O_RDWR, S_IRUSR|S_IWUSR);
+	fd = open(path, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
 	if (fd < 0) {
 		EPRINTF("open failed.\n");
 		goto ERR_EXIT;
@@ -201,7 +200,7 @@ int setup_swapfile(char *testdir, char *fname, char *path, size_t size)
 	}
 	/* Swap file must not have hole area */
 	memset(p, 0x5a, size);
-	r_sz = (size_t)write(fd, p, size);
+	r_sz = (size_t) write(fd, p, size);
 	if (r_sz != size) {
 		EPRINTF("write failed.\n");
 		goto ERR_EXIT;
@@ -231,7 +230,7 @@ int cleanup_swapfile(char *path)
 /*
  * Change user limit that the calling process can open
  */
-int setup_ulimit_fnum(rlim_t newlim, rlim_t *oldlim)
+int setup_ulimit_fnum(rlim_t newlim, rlim_t * oldlim)
 {
 	int rc;
 	struct rlimit rlim;

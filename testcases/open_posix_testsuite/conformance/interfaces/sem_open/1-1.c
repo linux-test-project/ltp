@@ -26,15 +26,14 @@
 
 int main()
 {
-	sem_t   *mysemp;
+	sem_t *mysemp;
 	char semname[50];
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mysemp = sem_open(semname, O_CREAT, 0777, 1);
 
-	if ((mysemp == SEM_FAILED) || (mysemp == NULL))
-	{
+	if ((mysemp == SEM_FAILED) || (mysemp == NULL)) {
 		puts("TEST FAILED");
 		return PTS_FAIL;
 	} else {

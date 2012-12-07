@@ -46,7 +46,7 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	rdwrqueue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (rdwrqueue == (mqd_t) -1) {
+	if (rdwrqueue == (mqd_t) - 1) {
 		perror("mq_open() did not return success on read-write queue");
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
@@ -77,7 +77,7 @@ int main()
 #endif
 
 	rdwrqueue2 = mq_open(qname, O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (rdwrqueue2 == (mqd_t) -1) {
+	if (rdwrqueue2 == (mqd_t) - 1) {
 		perror("mq_open() did not return success on read-write queue");
 		/* close rdwrqueue and exit */
 		mq_close(rdwrqueue);

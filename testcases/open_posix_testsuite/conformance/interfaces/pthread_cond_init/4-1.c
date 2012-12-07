@@ -33,19 +33,19 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
- #include <pthread.h>
- #include <stdio.h>
- #include <string.h>
- #include <unistd.h>
- #include <stdlib.h>
- #include <errno.h>
- #include <signal.h>
- #include <sys/wait.h>
- #include <sys/resource.h>
- #include <stdarg.h>
- #include <posixtest.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <sys/resource.h>
+#include <stdarg.h>
+#include <posixtest.h>
 
 #define ERR_MSG(f, rc) printf("Failed: func: %s rc: %s (%u)\n", \
 			f, strerror(rc), rc);
@@ -69,8 +69,8 @@ static void child(void)
 	/* Limit the process memory to a small value (8 for example). */
 	rl.rlim_max = MAX_MEM;
 	rl.rlim_cur = MAX_MEM;
-	rc = setrlimit(RLIMIT_DATA,  &rl);
-	rc |= setrlimit(RLIMIT_AS,  &rl);
+	rc = setrlimit(RLIMIT_DATA, &rl);
+	rc |= setrlimit(RLIMIT_AS, &rl);
 	if (rc < 0) {
 		ERR_MSG("setrlimit()", errno);
 		exit(PTS_UNRESOLVED);
@@ -131,7 +131,7 @@ int main(void)
 
 	if (WIFSIGNALED(child_status)) {
 		printf("Failed: child received signal: %u\n",
-				WTERMSIG(child_status));
+		       WTERMSIG(child_status));
 		goto done;
 	}
 

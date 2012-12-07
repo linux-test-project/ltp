@@ -155,8 +155,8 @@ int main(int ac, char **av)
 					retval = 1;
 					tst_resm(TFAIL, "Child execution not "
 						 "suspended for %jd seconds.  (Wanted %ld ms, got %ld ms)",
-						 (intmax_t)timereq.tv_sec, want_ms,
-						 got_ms);
+						 (intmax_t) timereq.tv_sec,
+						 want_ms, got_ms);
 				} else {
 					tst_resm(TPASS, "nanosleep "
 						 "functionality is correct");

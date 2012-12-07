@@ -30,13 +30,13 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-# define CLEANUP_NOTCALLED 0
-# define CLEANUP_CALLED 1
+#define CLEANUP_NOTCALLED 0
+#define CLEANUP_CALLED 1
 
-# define INTHREAD 0 	/* Control going to or is already for Thread */
-# define INMAIN 1	/* Control going to or is already for Main */
+#define INTHREAD 0		/* Control going to or is already for Thread */
+#define INMAIN 1		/* Control going to or is already for Main */
 
-int sem1;		/* Manual semaphore */
+int sem1;			/* Manual semaphore */
 int cleanup_flag;
 
 /* The cleanup handler */
@@ -53,14 +53,14 @@ void *a_thread_func()
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
-	pthread_cleanup_push(a_cleanup_func, (void*) CLEANUP_CALLED);
+	pthread_cleanup_push(a_cleanup_func, (void *)CLEANUP_CALLED);
 
 	/* Indicate to main() that the thread has been created. */
-	sem1=INMAIN;
+	sem1 = INMAIN;
 
 	/* Wait until main() has sent out a cancel request, meaning until it
 	 * sets sem1==INTHREAD */
-	while (sem1==INMAIN)
+	while (sem1 == INMAIN)
 		sleep(1);
 
 	/* Give thread 10 seconds to time out.  If the cancel request was not
@@ -71,60 +71,56 @@ void *a_thread_func()
 	/* Shouldn't get here if the cancel request was honored immediately
 	 * like it should have been. */
 	pthread_cleanup_pop(0);
-	pthread_exit((void*)PTS_UNRESOLVED);
+	pthread_exit((void *)PTS_UNRESOLVED);
 	return NULL;
 }
 
 int main()
 {
 	pthread_t new_th;
-	void *value_ptr;		/* hold return value of thread from pthread_join */
+	void *value_ptr;	/* hold return value of thread from pthread_join */
 
 	/* Initializing values */
-	sem1=INTHREAD;
-	cleanup_flag=CLEANUP_NOTCALLED;
+	sem1 = INTHREAD;
+	cleanup_flag = CLEANUP_NOTCALLED;
 
 	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure thread is created before we cancel it. (wait for
 	 * a_thread_func() to set sem1=1.) */
-	while (sem1==INTHREAD)
+	while (sem1 == INTHREAD)
 		sleep(1);
 
-	if (pthread_cancel(new_th) != 0)
-	{
+	if (pthread_cancel(new_th) != 0) {
 		printf("Error: Couldn't cancel thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Indicate to the thread function that the thread cancel request
 	 * has been sent to it. */
-	sem1=INTHREAD;
+	sem1 = INTHREAD;
 
 	/* Wait for thread to return. */
-	if (pthread_join(new_th, &value_ptr) != 0)
-	{
+	if (pthread_join(new_th, &value_ptr) != 0) {
 		printf("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure cancellation happened correctly */
-	if ((long)value_ptr == PTS_UNRESOLVED)
-	{
+	if ((long)value_ptr == PTS_UNRESOLVED) {
 		printf("Error: cancellation not correctly handled\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* This means that the cleanup function wasn't called, so the cancel
 	 * request was not honord immediately like it should have been. */
-	if (cleanup_flag != CLEANUP_CALLED)
-	{
-		printf("Test FAILED: Cleanup hanlder not called up cancellation\n");
+	if (cleanup_flag != CLEANUP_CALLED) {
+		printf
+		    ("Test FAILED: Cleanup hanlder not called up cancellation\n");
 		return PTS_FAIL;
 	}
 

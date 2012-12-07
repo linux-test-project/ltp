@@ -121,6 +121,7 @@ char *TCID = "pause01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { EINTR, 0 };
+
 void go();
 
 int main(int ac, char **av)

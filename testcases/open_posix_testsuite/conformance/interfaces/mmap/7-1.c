@@ -88,8 +88,7 @@ int main(void)
 
 	if (*(char *)pa == 'b') {
 		printf("Memory write with MAP_SHARED has changed "
-		       "the underlying file\n"
-		       "Test PASSED\n");
+		       "the underlying file\n" "Test PASSED\n");
 
 		close(fd);
 		munmap(pa, size);
@@ -101,7 +100,6 @@ int main(void)
 	munmap(pa, size);
 
 	printf("Memory write with MAP_SHARED has not changed "
-	       "the underlying file\n"
-	       "Test FAILED\n");
+	       "the underlying file\n" "Test FAILED\n");
 	return PTS_FAIL;
 }

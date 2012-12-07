@@ -110,6 +110,7 @@
 char *TCID = "fork05";
 
 static char *environ_list[] = { "TERM", "NoTSetzWq", "TESTPROG" };
+
 #define NUMBER_OF_ENVIRON (sizeof(environ_list)/sizeof(char *))
 int TST_TOTAL = NUMBER_OF_ENVIRON;
 

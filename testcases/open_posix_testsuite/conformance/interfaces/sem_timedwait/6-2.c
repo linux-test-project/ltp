@@ -29,17 +29,18 @@
 
 #define NANOSEC 1000000000
 
-int main() {
+int main()
+{
 	sem_t mysemp;
 	struct timespec ts;
 	int sts;
 
-        if (sem_init (&mysemp, 0, 0) == -1) {
-                perror(ERROR_PREFIX "sem_init");
-                return PTS_UNRESOLVED;
-        }
-	ts.tv_sec=time(NULL);
-        ts.tv_nsec= NANOSEC;
+	if (sem_init(&mysemp, 0, 0) == -1) {
+		perror(ERROR_PREFIX "sem_init");
+		return PTS_UNRESOLVED;
+	}
+	ts.tv_sec = time(NULL);
+	ts.tv_nsec = NANOSEC;
 
 	sts = sem_timedwait(&mysemp, &ts);
 

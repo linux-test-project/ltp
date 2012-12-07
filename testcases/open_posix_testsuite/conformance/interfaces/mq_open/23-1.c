@@ -31,7 +31,7 @@ int main()
 	sprintf(qname, "/mq_open_23-1_%d", getpid());
 
 	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
-	if (queue == (mqd_t) -1) {
+	if (queue == (mqd_t) - 1) {
 		perror("mq_open() did not return success");
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
@@ -42,7 +42,7 @@ int main()
 	 */
 	queue2 = mq_open(qname, O_CREAT | O_EXCL | O_RDWR,
 			 S_IRUSR | S_IWUSR, NULL);
-	if (queue2 != (mqd_t) -1) {
+	if (queue2 != (mqd_t) - 1) {
 		printf("mq_open() should have failed with O_CREAT and\n");
 		printf("O_EXCL on an already opened queue.\n");
 		printf("Test FAILED\n");

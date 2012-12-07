@@ -91,7 +91,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();		/* global setup */
 
@@ -115,7 +115,7 @@ int main(int ac, char **av)
 			if ((rval = signal(siglist[i], &sighandler)) == SIG_ERR) {
 				tst_brkm(TBROK, cleanup, "initial signal call"
 					 " failed");
-			 }
+			}
 
 			/* store the return value */
 			first = rval;
@@ -129,7 +129,7 @@ int main(int ac, char **av)
 				tst_brkm(TFAIL, cleanup, "%s call failed - "
 					 "errno = %d : %s", TCID, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
-			 }
+			}
 
 			if (STD_FUNCTIONAL_TEST) {
 				/* now set the handler back to our own */
@@ -137,7 +137,7 @@ int main(int ac, char **av)
 				    == SIG_ERR) {
 					tst_brkm(TBROK, cleanup, "initial "
 						 "signal call failed");
-				 }
+				}
 
 				/*
 				 * the first return value should equal the
@@ -151,7 +151,7 @@ int main(int ac, char **av)
 						 "values for signal(%d) don't "
 						 "match. Got %p, expected %p.",
 						 siglist[i], rval, first);
-				 }
+				}
 			} else {
 				tst_resm(TPASS, "Call of signal(%d) succeeded",
 					 siglist[i]);

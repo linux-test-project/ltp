@@ -1,6 +1,6 @@
   /*
-  Test the definition of sig_atomic_t.
-  */
+     Test the definition of sig_atomic_t.
+   */
 
 #include <signal.h>
 

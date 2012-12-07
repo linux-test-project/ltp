@@ -77,7 +77,8 @@ int main(void)
 	switch (child) {
 	case 0:
 		/* Mmap again the same shared memory to child's memory */
-		pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+		pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd,
+			  0);
 		if (pa == MAP_FAILED) {
 			printf("Error at mmap(): %s\n", strerror(errno));
 			return PTS_FAIL;
@@ -93,11 +94,11 @@ int main(void)
 		       "not change the underlying shared memory object\n"
 		       "Test PASSED\n");
 		return PTS_PASS;
-	break;
+		break;
 	case -1:
 		printf("Error at fork(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
-	break;
+		break;
 	default:
 		waitpid(child, &exit_stat, WUNTRACED);
 

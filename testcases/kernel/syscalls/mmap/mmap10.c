@@ -69,7 +69,7 @@
 char *TCID = "mmap10";
 int TST_TOTAL = 1;
 
-static int  fd, opt_anon, opt_ksm;
+static int fd, opt_anon, opt_ksm;
 static long ps;
 static char *x;
 
@@ -79,9 +79,9 @@ void mmapzero(void);
 void help(void);
 
 static option_t options[] = {
-	{ "a", &opt_anon,   NULL},
-	{ "s", &opt_ksm,    NULL},
-	{ NULL, NULL,       NULL}
+	{"a", &opt_anon, NULL},
+	{"s", &opt_ksm, NULL},
+	{NULL, NULL, NULL}
 };
 
 int main(int argc, char *argv[])
@@ -93,10 +93,10 @@ int main(int argc, char *argv[])
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	if (opt_ksm)
-	{
+	if (opt_ksm) {
 		if (access(PATH_KSM, F_OK) == -1)
-			tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
+			tst_brkm(TCONF, NULL,
+				 "KSM configuration is not enabled");
 #ifdef HAVE_MADV_MERGEABLE
 		tst_resm(TINFO, "add to KSM regions.");
 #else
@@ -125,51 +125,51 @@ void mmapzero(void)
 	int n;
 
 	if (opt_anon) {
-		x = mmap(NULL, SIZE+SIZE-ps, PROT_READ|PROT_WRITE,
-			MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+		x = mmap(NULL, SIZE + SIZE - ps, PROT_READ | PROT_WRITE,
+			 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	} else {
 		if ((fd = open("/dev/zero", O_RDWR, 0666)) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "open");
-		x = mmap(NULL, SIZE+SIZE-ps, PROT_READ|PROT_WRITE,
-			MAP_PRIVATE, fd, 0);
+			tst_brkm(TBROK | TERRNO, cleanup, "open");
+		x = mmap(NULL, SIZE + SIZE - ps, PROT_READ | PROT_WRITE,
+			 MAP_PRIVATE, fd, 0);
 	}
 	if (x == MAP_FAILED)
-		tst_brkm(TFAIL|TERRNO, cleanup, "mmap");
+		tst_brkm(TFAIL | TERRNO, cleanup, "mmap");
 #ifdef HAVE_MADV_MERGEABLE
 	if (opt_ksm) {
-		if (madvise(x, SIZE+SIZE-ps, MADV_MERGEABLE) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "madvise");
+		if (madvise(x, SIZE + SIZE - ps, MADV_MERGEABLE) == -1)
+			tst_brkm(TBROK | TERRNO, cleanup, "madvise");
 	}
 #endif
 	x[SIZE] = 0;
 
-	switch(n = fork()) {
+	switch (n = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
-		if (munmap(x+SIZE+ps, SIZE-ps-ps) == -1)
-			tst_brkm(TFAIL|TERRNO, cleanup, "munmap");
+		if (munmap(x + SIZE + ps, SIZE - ps - ps) == -1)
+			tst_brkm(TFAIL | TERRNO, cleanup, "munmap");
 		exit(0);
 	default:
 		break;
 	}
 
-	switch(n = fork()) {
+	switch (n = fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
-		if (munmap(x+SIZE+ps, SIZE-ps-ps) == -1)
-			tst_brkm(TFAIL|TERRNO, cleanup,
-					"subsequent munmap #1");
+		if (munmap(x + SIZE + ps, SIZE - ps - ps) == -1)
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "subsequent munmap #1");
 		exit(0);
 	default:
 		switch (n = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
-			if (munmap(x+SIZE+ps, SIZE-ps-ps) == -1)
-				tst_brkm(TFAIL|TERRNO, cleanup,
-						"subsequent munmap #2");
+			if (munmap(x + SIZE + ps, SIZE - ps - ps) == -1)
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "subsequent munmap #2");
 			exit(0);
 		default:
 			break;
@@ -177,13 +177,13 @@ void mmapzero(void)
 		break;
 	}
 
-	if (munmap(x, SIZE+SIZE-ps) == -1)
-		tst_resm(TFAIL|TERRNO, "munmap all");
+	if (munmap(x, SIZE + SIZE - ps) == -1)
+		tst_resm(TFAIL | TERRNO, "munmap all");
 
 	while (waitpid(-1, &n, WUNTRACED | WCONTINUED) > 0)
 		if (WEXITSTATUS(n) != 0)
 			tst_resm(TFAIL, "child exit status is %d",
-				WEXITSTATUS(n));
+				 WEXITSTATUS(n));
 }
 
 void cleanup(void)
@@ -199,7 +199,7 @@ void setup(void)
 	TEST_PAUSE;
 
 	if ((ps = sysconf(_SC_PAGESIZE)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "sysconf(_SC_PAGESIZE)");
+		tst_brkm(TBROK | TERRNO, cleanup, "sysconf(_SC_PAGESIZE)");
 }
 
 void help(void)

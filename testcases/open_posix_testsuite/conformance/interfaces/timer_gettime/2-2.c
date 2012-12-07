@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	/*
 	 * let timer expire (just call sleep())
 	 */
-	sleep(TIMERSEC+SLEEPDELTA);
+	sleep(TIMERSEC + SLEEPDELTA);
 
 	if (timer_gettime(tid, &itsget) != 0) {
 		perror("timer_gettime() did not return success\n");
@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
 		return PTS_PASS;
 	} else {
 		printf("Test FAILED:  tv_sec %d tv_nsec %d\n",
-				(int) itsget.it_value.tv_sec,
-				(int) itsget.it_value.tv_nsec);
+		       (int)itsget.it_value.tv_sec,
+		       (int)itsget.it_value.tv_nsec);
 		return PTS_FAIL;
 	}
 

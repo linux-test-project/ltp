@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
 	if ((pid = fork()) == 0) {
 		/* child here */
 
-		act.sa_handler=handler;
-		act.sa_flags=0;
+		act.sa_handler = handler;
+		act.sa_flags = 0;
 		if (sigemptyset(&act.sa_mask) != 0) {
 			perror("sigemptyset() did not return success\n");
 			return CHILDFAIL;
@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
 			perror("sigaction() did not return success\n");
 			return CHILDFAIL;
 		}
-		tssleep.tv_sec=SLEEPSEC;
-		tssleep.tv_nsec=0;
+		tssleep.tv_sec = SLEEPSEC;
+		tssleep.tv_nsec = 0;
 		if (clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL) == EINTR) {
-				return CHILDPASS;
+			return CHILDPASS;
 		} else {
-				printf("errno != EINTR\n");
-				return CHILDFAIL;
+			printf("errno != EINTR\n");
+			return CHILDFAIL;
 		}
 	} else {
 		/* parent here */

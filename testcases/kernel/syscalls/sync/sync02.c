@@ -124,7 +124,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "lseek() "
 						 "failed on %s, error=%d",
 						 TEMP_FILE, errno);
-				 }
+				}
 
 				/* Read the contents of file */
 				if (read(fildes, read_buffer,
@@ -142,7 +142,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup,
 						 "read() Fails on %s, error=%d",
 						 TEMP_FILE, errno);
-				 }
+				}
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
@@ -184,7 +184,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR | O_CREAT, %#o) Failed, errno=%d :%s",
 			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-	 }
+	}
 
 	/* Write the buffer data into file */
 	if (write(fildes, write_buffer, strlen(write_buffer) + 1) !=
@@ -192,7 +192,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "write() failed to write buffer data to %s",
 			 TEMP_FILE);
-	 }
+	}
 
 }
 

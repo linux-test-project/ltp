@@ -16,17 +16,18 @@
 
 int main(int argc, char *argv[])
 {
-        long scTIMER_MAX=0;
+	long scTIMER_MAX = 0;
 
-        scTIMER_MAX=sysconf(_SC_TIMER_MAX);
+	scTIMER_MAX = sysconf(_SC_TIMER_MAX);
 
 #ifdef DEBUG
 	printf("TIMER_MAX = %ld\n_POSIX_TIMER_MAX=%ld\n",
-			scTIMER_MAX, (long) _POSIX_TIMER_MAX);
+	       scTIMER_MAX, (long)_POSIX_TIMER_MAX);
 #endif
 
 	if ((scTIMER_MAX != -1) && (scTIMER_MAX < _POSIX_TIMER_MAX)) {
-		printf("Test FAILED (%ld < %ld)\n", scTIMER_MAX, (long)_POSIX_TIMER_MAX);
+		printf("Test FAILED (%ld < %ld)\n", scTIMER_MAX,
+		       (long)_POSIX_TIMER_MAX);
 		return PTS_FAIL;
 	}
 

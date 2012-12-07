@@ -79,33 +79,34 @@ static int enable_fullscreen = 0;
  * makes it hard to get work done.
  */
 static int seed_random(void);
-static int get_desktop_size(Display *disp, unsigned long *w,
-	unsigned long *h);
-static char *get_property (Display *disp, Window win, Atom xa_prop_type,
-	char *prop_name, unsigned long *size, unsigned long *items);
-static void go_bonkers(Display *disp, unsigned long iterations,
-	unsigned long sleep);
-static Window *get_interesting_windows(Display *disp,
-	unsigned long *num_windows);
-static Window *get_client_list(Display *disp, unsigned long *size,
-	unsigned long *items);
+static int get_desktop_size(Display * disp, unsigned long *w, unsigned long *h);
+static char *get_property(Display * disp, Window win, Atom xa_prop_type,
+			  char *prop_name, unsigned long *size,
+			  unsigned long *items);
+static void go_bonkers(Display * disp, unsigned long iterations,
+		       unsigned long sleep);
+static Window *get_interesting_windows(Display * disp,
+				       unsigned long *num_windows);
+static Window *get_client_list(Display * disp, unsigned long *size,
+			       unsigned long *items);
 static long get_randnum(long min, long max);
-static int send_client_msg(Display *disp, Window win, char *msg,
-	unsigned long data0, unsigned long data1,
-	unsigned long data2, unsigned long data3,
-	unsigned long data4);
-static int activate_window (Display *disp, Window *win);
-static int wm_supports(Display *disp, const char *prop);
-static void move_window(Display *disp, Window *win, unsigned long desk_w,
-	unsigned long desk_h);
-static int toggle_property(Display *disp, Window *win, const char *property);
+static int send_client_msg(Display * disp, Window win, char *msg,
+			   unsigned long data0, unsigned long data1,
+			   unsigned long data2, unsigned long data3,
+			   unsigned long data4);
+static int activate_window(Display * disp, Window * win);
+static int wm_supports(Display * disp, const char *prop);
+static void move_window(Display * disp, Window * win, unsigned long desk_w,
+			unsigned long desk_h);
+static int toggle_property(Display * disp, Window * win, const char *property);
 static inline unsigned long clamp_value(unsigned long value,
-	unsigned long min, unsigned long max);
-static int ignore_xlib_error(Display *disp, XErrorEvent *xee);
+					unsigned long min, unsigned long max);
+static int ignore_xlib_error(Display * disp, XErrorEvent * xee);
 
 /* Actual functions begin here. */
 
-static int seed_random(void) {
+static int seed_random(void)
+{
 	int fp;
 	long seed;
 
@@ -126,15 +127,17 @@ static int seed_random(void) {
 	return 1;
 }
 
-static int get_desktop_size(Display *disp, unsigned long *w, unsigned long *h) {
+static int get_desktop_size(Display * disp, unsigned long *w, unsigned long *h)
+{
 	*w = DisplayWidth(disp, 0);
 	*h = DisplayHeight(disp, 0);
 
 	return 1;
 }
 
-static char *get_property (Display *disp, Window win, Atom xa_prop_type,
-	char *prop_name, unsigned long *size, unsigned long *items)
+static char *get_property(Display * disp, Window win, Atom xa_prop_type,
+			  char *prop_name, unsigned long *size,
+			  unsigned long *items)
 {
 	Atom xa_prop_name;
 	Atom xa_ret_type;
@@ -147,10 +150,10 @@ static char *get_property (Display *disp, Window win, Atom xa_prop_type,
 
 	xa_prop_name = XInternAtom(disp, prop_name, False);
 
-	if (XGetWindowProperty(disp, win, xa_prop_name, 0, MAX_PROPERTY_VALUE_LEN / 4, False,
-		xa_prop_type, &xa_ret_type, &ret_format,
-		&ret_nitems, &ret_bytes_after, &ret_prop) != Success)
-	{
+	if (XGetWindowProperty
+	    (disp, win, xa_prop_name, 0, MAX_PROPERTY_VALUE_LEN / 4, False,
+	     xa_prop_type, &xa_ret_type, &ret_format, &ret_nitems,
+	     &ret_bytes_after, &ret_prop) != Success) {
 		fprintf(stderr, "Cannot get %s property.\n", prop_name);
 		return NULL;
 	}
@@ -165,8 +168,7 @@ static char *get_property (Display *disp, Window win, Atom xa_prop_type,
 	 * is listed as 32bits and we're trying to get the client list.  Just double
 	 * ret_format and proceed. */
 	if (ret_format == 32 && strcmp(prop_name, "_NET_CLIENT_LIST") == 0 &&
-		sizeof(Window) == 8)
-	{
+	    sizeof(Window) == 8) {
 		ret_format *= 2;
 	}
 
@@ -191,19 +193,21 @@ static char *get_property (Display *disp, Window win, Atom xa_prop_type,
 	return ret;
 }
 
-static long get_randnum(long min, long max) {
+static long get_randnum(long min, long max)
+{
 	return min + (long)((float)max * (rand() / (RAND_MAX + 1.0)));
 }
 
-static int wm_supports(Display *disp, const char *prop) {
+static int wm_supports(Display * disp, const char *prop)
+{
 	Atom xa_prop = XInternAtom(disp, prop, False);
 	Atom *list;
 	unsigned long size, items;
 	int i;
 
-	if (! (list = (Atom *)get_property(disp, DefaultRootWindow(disp),
-		XA_ATOM, "_NET_SUPPORTED", &size, &items)))
-	{
+	if (!(list = (Atom *) get_property(disp, DefaultRootWindow(disp),
+					   XA_ATOM, "_NET_SUPPORTED", &size,
+					   &items))) {
 		fprintf(stderr, "Cannot get _NET_SUPPORTED property.\n");
 		return 0;
 	}
@@ -222,36 +226,43 @@ static int wm_supports(Display *disp, const char *prop) {
 }
 
 static inline unsigned long clamp_value(unsigned long value,
-	unsigned long min, unsigned long max)
+					unsigned long min, unsigned long max)
 {
 	return (value < min ? min : (value > max ? max : value));
 }
 
-static int ignore_xlib_error(Display *disp, XErrorEvent *xee) {
+static int ignore_xlib_error(Display * disp, XErrorEvent * xee)
+{
 	char errbuf[256];
 
 	XGetErrorText(disp, xee->error_code, errbuf, 256);
-	fprintf(stderr, "IGNORING Xlib error %d (%s) on request (%d.%d), sernum = %lu.\n",
+	fprintf(stderr,
+		"IGNORING Xlib error %d (%s) on request (%d.%d), sernum = %lu.\n",
 		xee->error_code, errbuf, xee->request_code, xee->minor_code,
 		xee->serial);
 	return 1;
 }
 
-static void slide_window(Display *disp, Window *win, unsigned long desk_w, unsigned long desk_h) {
+static void slide_window(Display * disp, Window * win, unsigned long desk_w,
+			 unsigned long desk_h)
+{
 	unsigned long x, y;
 	unsigned long w, h;
 	XWindowAttributes moo;
 	Window junk;
 
 	if (XGetWindowAttributes(disp, *win, &moo) != 1) {
-		fprintf(stderr, "Cannot get attributes of window 0x%lx.\n", *win);
+		fprintf(stderr, "Cannot get attributes of window 0x%lx.\n",
+			*win);
 		return;
 	}
 
 	if (XTranslateCoordinates(disp, *win, moo.root,
-		-moo.border_width, -moo.border_width, &moo.x, &moo.y, &junk) != 1)
-	{
-		fprintf(stderr, "Cannot translate coordinates of window 0x%lx.\n", *win);
+				  -moo.border_width, -moo.border_width, &moo.x,
+				  &moo.y, &junk) != 1) {
+		fprintf(stderr,
+			"Cannot translate coordinates of window 0x%lx.\n",
+			*win);
 		return;
 	}
 
@@ -267,13 +278,15 @@ static void slide_window(Display *disp, Window *win, unsigned long desk_w, unsig
 
 	if (wm_supports(disp, "_NET_MOVERESIZE_WINDOW")) {
 		send_client_msg(disp, *win, "_NET_MOVERESIZE_WINDOW",
-			0, x, y, w, h);
+				0, x, y, w, h);
 	} else {
 		XMoveResizeWindow(disp, *win, x, y, w, h);
 	}
 }
 
-static void move_window(Display *disp, Window *win, unsigned long desk_w, unsigned long desk_h) {
+static void move_window(Display * disp, Window * win, unsigned long desk_w,
+			unsigned long desk_h)
+{
 	unsigned long x, y, w, h;
 
 	x = get_randnum(0, desk_w);
@@ -283,21 +296,24 @@ static void move_window(Display *disp, Window *win, unsigned long desk_w, unsign
 
 	if (wm_supports(disp, "_NET_MOVERESIZE_WINDOW")) {
 		send_client_msg(disp, *win, "_NET_MOVERESIZE_WINDOW",
-			0, x, y, w, h);
+				0, x, y, w, h);
 	} else {
 		XMoveResizeWindow(disp, *win, x, y, w, h);
 	}
 }
 
-static int toggle_property(Display *disp, Window *win, const char *property) {
+static int toggle_property(Display * disp, Window * win, const char *property)
+{
 	Atom prop;
 
 	prop = XInternAtom(disp, property, False);
 	return send_client_msg(disp, *win, "_NET_WM_STATE",
-		_NET_WM_STATE_TOGGLE, prop, 0, 0, 0);
+			       _NET_WM_STATE_TOGGLE, prop, 0, 0, 0);
 }
 
-static void go_bonkers(Display *disp, unsigned long iterations, unsigned long sleep) {
+static void go_bonkers(Display * disp, unsigned long iterations,
+		       unsigned long sleep)
+{
 	unsigned long desk_w, desk_h;
 	Window *windows, *window;
 	unsigned long windows_length = 0, i;
@@ -323,35 +339,35 @@ static void go_bonkers(Display *disp, unsigned long iterations, unsigned long sl
 	for (i = 0; i < iterations; i++) {
 		window = &windows[i % windows_length];
 		switch (get_randnum(ACTION_MIN, ACTION_MAX)) {
-			case ACTION_MOVE_WINDOW:
-				move_window(disp, window, desk_w, desk_h);
-				break;
-			case ACTION_ACTIVATE_WINDOW:
-				activate_window(disp, window);
-				break;
-			case ACTION_MAXIMIZE_WINDOW:
-				toggle_property(disp, window,
+		case ACTION_MOVE_WINDOW:
+			move_window(disp, window, desk_w, desk_h);
+			break;
+		case ACTION_ACTIVATE_WINDOW:
+			activate_window(disp, window);
+			break;
+		case ACTION_MAXIMIZE_WINDOW:
+			toggle_property(disp, window,
 					"_NET_WM_STATE_MAXIMIZED_VERT");
-				toggle_property(disp, window,
+			toggle_property(disp, window,
 					"_NET_WM_STATE_MAXIMIZED_HORZ");
+			break;
+		case ACTION_FULLSCREEN_WINDOW:
+			if (!enable_fullscreen)
 				break;
-			case ACTION_FULLSCREEN_WINDOW:
-				if (!enable_fullscreen) break;
-				toggle_property(disp, window,
+			toggle_property(disp, window,
 					"_NET_WM_STATE_FULLSCREEN");
-				break;
-			case ACTION_HIDDEN_WINDOW:
-				toggle_property(disp, window,
-					"_NET_WM_STATE_HIDDEN");
-				break;
-			case ACTION_SLIDE_WINDOW_0:
-			case ACTION_SLIDE_WINDOW_1:
-			case ACTION_SLIDE_WINDOW_2:
-			case ACTION_SLIDE_WINDOW_3:
-			case ACTION_SLIDE_WINDOW_4:
-			case ACTION_SLIDE_WINDOW_5:
-				slide_window(disp, window, desk_w, desk_h);
-				break;
+			break;
+		case ACTION_HIDDEN_WINDOW:
+			toggle_property(disp, window, "_NET_WM_STATE_HIDDEN");
+			break;
+		case ACTION_SLIDE_WINDOW_0:
+		case ACTION_SLIDE_WINDOW_1:
+		case ACTION_SLIDE_WINDOW_2:
+		case ACTION_SLIDE_WINDOW_3:
+		case ACTION_SLIDE_WINDOW_4:
+		case ACTION_SLIDE_WINDOW_5:
+			slide_window(disp, window, desk_w, desk_h);
+			break;
 		}
 		usleep(sleep);
 	}
@@ -359,10 +375,10 @@ static void go_bonkers(Display *disp, unsigned long iterations, unsigned long sl
 	free(windows);
 }
 
-static int send_client_msg(Display *disp, Window win, char *msg,
-	unsigned long data0, unsigned long data1,
-	unsigned long data2, unsigned long data3,
-	unsigned long data4)
+static int send_client_msg(Display * disp, Window win, char *msg,
+			   unsigned long data0, unsigned long data1,
+			   unsigned long data2, unsigned long data3,
+			   unsigned long data4)
 {
 	XEvent event;
 	long mask = SubstructureRedirectMask | SubstructureNotifyMask;
@@ -387,56 +403,62 @@ static int send_client_msg(Display *disp, Window win, char *msg,
 	}
 }
 
-static int activate_window (Display *disp, Window *win) {
+static int activate_window(Display * disp, Window * win)
+{
 	int ret;
 
-	ret = send_client_msg(disp, *win, "_NET_ACTIVE_WINDOW",
-		0, 0, 0, 0, 0);
+	ret = send_client_msg(disp, *win, "_NET_ACTIVE_WINDOW", 0, 0, 0, 0, 0);
 	XMapRaised(disp, *win);
 
 	return ret;
 }
 
-static Window *get_client_list(Display *disp, unsigned long *size, unsigned long *items) {
+static Window *get_client_list(Display * disp, unsigned long *size,
+			       unsigned long *items)
+{
 	void *res;
 
-	if ((res = (Window *)get_property(disp, DefaultRootWindow(disp),
-		XA_WINDOW, "_NET_CLIENT_LIST", size, items)) == NULL)
-	{
-		if ((res = (Window *)get_property(disp, DefaultRootWindow(disp),
-			XA_CARDINAL, "_WIN_CLIENT_LIST", size, items)) == NULL)
-		{
-			fprintf(stderr, "Cannot get client list properties. \n"
-				"(_NET_CLIENT_LIST or _WIN_CLIENT_LIST)"
-			"\n");
+	if ((res = (Window *) get_property(disp, DefaultRootWindow(disp),
+					   XA_WINDOW, "_NET_CLIENT_LIST", size,
+					   items)) == NULL) {
+		if ((res =
+		     (Window *) get_property(disp, DefaultRootWindow(disp),
+					     XA_CARDINAL, "_WIN_CLIENT_LIST",
+					     size, items)) == NULL) {
+			fprintf(stderr,
+				"Cannot get client list properties. \n"
+				"(_NET_CLIENT_LIST or _WIN_CLIENT_LIST)" "\n");
 			return NULL;
 		}
 	}
 
-	return (Window *)res;
+	return (Window *) res;
 }
 
-static Window *get_interesting_windows(Display *disp, unsigned long *num_windows) {
+static Window *get_interesting_windows(Display * disp,
+				       unsigned long *num_windows)
+{
 	Window *client_list, *ret, *tmp;
 	unsigned long client_list_size, client_list_items, i;
 	long *desktop;
 	unsigned long num_needed = 0;
 
 	if ((client_list = get_client_list(disp, &client_list_size,
-		&client_list_items)) == NULL)
-	{
+					   &client_list_items)) == NULL) {
 		return NULL;
 	}
-
 
 	/* Figure out how many Window structs we'll ultimately need. */
 	for (i = 0; i < client_list_items; i++) {
 		/* desktop ID */
 		if ((desktop = (long *)get_property(disp, client_list[i],
-			XA_CARDINAL, "_NET_WM_DESKTOP", NULL, NULL)) == NULL)
-		{
-			desktop = (long *)get_property(disp, client_list[i],
-				XA_CARDINAL, "_WIN_WORKSPACE", NULL, NULL);
+						    XA_CARDINAL,
+						    "_NET_WM_DESKTOP", NULL,
+						    NULL)) == NULL) {
+			desktop =
+			    (long *)get_property(disp, client_list[i],
+						 XA_CARDINAL, "_WIN_WORKSPACE",
+						 NULL, NULL);
 		}
 
 		/* Ignore windows on unknown desktops */
@@ -458,10 +480,13 @@ static Window *get_interesting_windows(Display *disp, unsigned long *num_windows
 	for (i = 0; i < client_list_items; i++) {
 		/* desktop ID */
 		if ((desktop = (long *)get_property(disp, client_list[i],
-			XA_CARDINAL, "_NET_WM_DESKTOP", NULL, NULL)) == NULL)
-		{
-			desktop = (long *)get_property(disp, client_list[i],
-				XA_CARDINAL, "_WIN_WORKSPACE", NULL, NULL);
+						    XA_CARDINAL,
+						    "_NET_WM_DESKTOP", NULL,
+						    NULL)) == NULL) {
+			desktop =
+			    (long *)get_property(disp, client_list[i],
+						 XA_CARDINAL, "_WIN_WORKSPACE",
+						 NULL, NULL);
 		}
 
 		if (desktop && *desktop >= 0 && *desktop < DESKTOP_MAX) {
@@ -476,8 +501,8 @@ static Window *get_interesting_windows(Display *disp, unsigned long *num_windows
 	return ret;
 }
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	char *disp_string = NULL;
 	unsigned long iterations = 10000, rounds = -1, i;
 	unsigned long sleep = 100000;
@@ -486,36 +511,38 @@ int main(int argc, char *argv[]) {
 
 	while ((opt = getopt(argc, argv, "d:i:r:s:f")) != -1) {
 		switch (opt) {
-			case 'd':
-				disp_string = optarg;
-				break;
-			case 'i':
-				iterations = atoi(optarg);
-				break;
-			case 'r':
-				rounds = atoi(optarg);
-				break;
-			case 's':
-				sleep = atoi(optarg);
-				break;
-			case 'f':
-				enable_fullscreen = 1;
-				break;
-			default:
-				fprintf(stderr,
-"Usage: %s [-d DISPLAY] [-i ITERATIONS] [-r ROUNDS] [-s SLEEP] [-f]\n\
+		case 'd':
+			disp_string = optarg;
+			break;
+		case 'i':
+			iterations = atoi(optarg);
+			break;
+		case 'r':
+			rounds = atoi(optarg);
+			break;
+		case 's':
+			sleep = atoi(optarg);
+			break;
+		case 'f':
+			enable_fullscreen = 1;
+			break;
+		default:
+			fprintf(stderr,
+				"Usage: %s [-d DISPLAY] [-i ITERATIONS] [-r ROUNDS] [-s SLEEP] [-f]\n\
 	DISPLAY is an X11 display string.\n\
 	ITERATIONS is the approximate number of windows to play with before generating a new window list.\n\
 	SLEEP is the amount of time (in usec) to sleep between window tweaks.\n\
 	-f enables fullscreen toggling.\n\
-	ROUNDS is the number of iterations to run, or -1 to run forever.\n", argv[0]);
-				return 0;
+	ROUNDS is the number of iterations to run, or -1 to run forever.\n",
+				argv[0]);
+			return 0;
 		}
 	}
 
 	if (!(disp = XOpenDisplay(disp_string))) {
 		fprintf(stderr, "Unable to connect to display '%s'.\n",
-			(disp_string != NULL ? disp_string : getenv("DISPLAY")));
+			(disp_string !=
+			 NULL ? disp_string : getenv("DISPLAY")));
 		return 1;
 	}
 

@@ -46,38 +46,34 @@ int main()
 	int ret;
 
 	/* Initialize a mutex attributes object */
-	if (pthread_mutexattr_init(&mta) != 0)
-	{
+	if (pthread_mutexattr_init(&mta) != 0) {
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	 /* Set the 'type' attribute to be PTHREAD_MUTEX_NORMAL  */
-	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_NORMAL) != 0)
-	{
+	/* Set the 'type' attribute to be PTHREAD_MUTEX_NORMAL  */
+	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_NORMAL) != 0) {
 		printf("Test FAILED: Error setting the attribute 'type'\n");
 		return PTS_FAIL;
 	}
 
 	/* Initialize the mutex with that attribute obj. */
-	if (pthread_mutex_init(&mutex, &mta) != 0)
-	{
+	if (pthread_mutex_init(&mutex, &mta) != 0) {
 		perror("Error intializing the mutex.\n");
 		return PTS_UNRESOLVED;
 	}
 
-	ret=pthread_mutex_lock(&mutex);
-	if (ret != 0)
-	{
+	ret = pthread_mutex_lock(&mutex);
+	if (ret != 0) {
 		printf("Test Unresolved: Error at pthread_mutex_lock, "
-			"error code %d\n", ret);
+		       "error code %d\n", ret);
 		return PTS_UNRESOLVED;
 	}
 
 	signal(SIGALRM, alarm_handler);
 	alarm(1);
 	/* This lock will cause deadlock */
-	ret=pthread_mutex_lock(&mutex);
+	ret = pthread_mutex_lock(&mutex);
 	/* We should not get here */
 	printf("Relock the mutex did not get deadlock\n");
 	printf("Test FAILED\n");

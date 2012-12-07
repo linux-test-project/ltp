@@ -46,7 +46,7 @@ int set_policy(char *label, int policy)
 		status = PTS_FAIL;
 	}
 
-	(void) pthread_attr_destroy(&attr);
+	(void)pthread_attr_destroy(&attr);
 
 	return status;
 }

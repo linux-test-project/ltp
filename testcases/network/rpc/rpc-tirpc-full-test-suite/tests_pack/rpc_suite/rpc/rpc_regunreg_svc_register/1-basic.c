@@ -37,19 +37,19 @@
 #define PROCNUM 1
 #define VERSNUM 1
 
-void dispatch(struct svc_req *request, SVCXPRT *xprt);
+void dispatch(struct svc_req *request, SVCXPRT * xprt);
 
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	SVCXPRT *svcr = NULL;
 	int sock = 0;
@@ -60,13 +60,12 @@ int main(int argn, char *argc[])
 	svcr = svctcp_create(RPC_ANYSOCK, 0, 0);
 
 	//call routine
-	test_status = !svc_register(svcr, progNum, VERSNUM, dispatch, IPPROTO_TCP);
+	test_status =
+	    !svc_register(svcr, progNum, VERSNUM, dispatch, IPPROTO_TCP);
 
-	if (run_mode)
-	{
+	if (run_mode) {
 		printf("SVC : %d\n", svcr);
 	}
-
 	//clean up
 	svc_destroy(svcr);
 
@@ -77,6 +76,6 @@ int main(int argn, char *argc[])
 	return test_status;
 }
 
-void dispatch(struct svc_req *request, SVCXPRT *xprt)
+void dispatch(struct svc_req *request, SVCXPRT * xprt)
 {
 }

@@ -74,31 +74,31 @@ void ok_exit();
  */
 
 #define MAXLOOPS	500	/* max pages for map children to write */
-#define	MAPSIZE		(64*1024)   /* default mapsize set up by parent */
+#define	MAPSIZE		(64*1024)	/* default mapsize set up by parent */
 #ifdef roundup
 #undef roundup
 #endif
 #define roundup(x, y)	((((x)+((y)-1))/(y))*(y))
 #define min(x, y)	(((x) < (y)) ? (x) : (y))
 
-extern time_t	time(time_t *);
-extern char	*ctime(const time_t *);
+extern time_t time(time_t *);
+extern char *ctime(const time_t *);
 extern void *malloc(size_t);
 extern void exit(int);
 extern long lrand48(void);
 extern void srand(unsigned);
 extern void srand48(long);
-extern int  rand(void);
-extern int  atoi(const char *);
+extern int rand(void);
+extern int atoi(const char *);
 
 typedef unsigned char uchar_t;
 
-char *usage="-p nprocs [-t minutes -s mapsize -m -r -d]";
+char *usage = "-p nprocs [-t minutes -s mapsize -m -r -d]";
 
 unsigned int initrand(void);
 void finish(int sig);
 void child_mapper(unsigned procno, unsigned nprocs);
-int mapokay(uchar_t *expbuf);
+int mapokay(uchar_t * expbuf);
 
 int finished = 0;
 int debug = 0;
@@ -110,15 +110,14 @@ unsigned dosync = 0;
 unsigned pattern = 0;
 caddr_t mapaddr;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char *progname;
 	unsigned c;
 	extern char *optarg;
 	unsigned nprocs = 0;
 	unsigned procno;
-	pid_t *pidarray=NULL;
+	pid_t *pidarray = NULL;
 	pid_t pid;
 	uchar_t *buf, *ptr;
 	unsigned int seed;
@@ -156,8 +155,8 @@ main(int argc, char *argv[])
 			mapsize = atoi(optarg);
 			if (mapsize < 0) {
 				(void)fprintf(stderr, "error: negative "
-					"mapsize\n");
-                		anyfail();
+					      "mapsize\n");
+				anyfail();
 			}
 			break;
 		case 'r':
@@ -165,64 +164,65 @@ main(int argc, char *argv[])
 			break;
 		default:
 			(void)fprintf(stderr, "usage: %s %s\n", progname,
-				usage);
-        	        anyfail();
+				      usage);
+			anyfail();
 		}
 	}
 
 	/* nprocs is unsigned */
 	if (nprocs > 255) {
 		(void)fprintf(stderr, "invalid nprocs %d - (range 0-255)\n",
-			nprocs);
-                anyfail();
+			      nprocs);
+		anyfail();
 	}
 	(void)time(&t);
-//	(void)printf("%s: Started %s", argv[0], ctime(&t)); LTP Port
+//      (void)printf("%s: Started %s", argv[0], ctime(&t)); LTP Port
 
 	seed = initrand();
 	pattern = seed & 0xff;
 
 	if (debug) {
 		(void)printf("%s mapsize %d bytes, pattern %d\n",
-			progname, mapsize, pattern);
+			     progname, mapsize, pattern);
 		if (alarmtime)
-			(void)printf("running for %f minutes\n", alarmtime/60);
+			(void)printf("running for %f minutes\n",
+				     alarmtime / 60);
 		else
 			(void)printf("running with no time limit\n");
 	}
 
-	if ((mapaddr = mmap(0, mapsize, PROT_READ|PROT_WRITE,
-			    MAP_ANONYMOUS|MAP_SHARED, 0, 0))
-			    == (caddr_t)-1) {
+	if ((mapaddr = mmap(0, mapsize, PROT_READ | PROT_WRITE,
+			    MAP_ANONYMOUS | MAP_SHARED, 0, 0))
+	    == (caddr_t) - 1) {
 		perror("mmap error");
-                anyfail();
+		anyfail();
 	}
 
-	if ((buf = (uchar_t *)malloc(pagesize)) == NULL
-	    || (pidarray = (pid_t *)malloc(nprocs*sizeof(pid_t))) == NULL) {
+	if ((buf = (uchar_t *) malloc(pagesize)) == NULL
+	    || (pidarray = (pid_t *) malloc(nprocs * sizeof(pid_t))) == NULL) {
 		perror("malloc error");
-                anyfail();
+		anyfail();
 	}
 
 	for (i = 0; i < nprocs; i++)
-		*(pidarray+i) = 0;
+		*(pidarray + i) = 0;
 
 	/*
 	 * Initialize page compare buffer, then initialize map.
 	 */
 
 	for (i = 0, data = 0; i < pagesize; i++) {
-		*(buf+i) = (data + pattern) & 0xff;
+		*(buf + i) = (data + pattern) & 0xff;
 		if (++data == nprocs)
 			data = 0;
 	}
 
-	mappages = roundup(mapsize, pagesize)/pagesize;
-	ptr = (uchar_t *)mapaddr;
+	mappages = roundup(mapsize, pagesize) / pagesize;
+	ptr = (uchar_t *) mapaddr;
 
 	for (i = 0; i < mappages; i++) {
 		for (j = 0; j < pagesize; j++)
-			*ptr++ = *(buf+j);
+			*ptr++ = *(buf + j);
 	}
 
 	/*
@@ -294,7 +294,7 @@ main(int argc, char *argv[])
 			if (!WIFEXITED(wait_stat)
 			    || WEXITSTATUS(wait_stat) != 0) {
 				(void)fprintf(stderr, "child exit with err "
-					"<x%x>\n", wait_stat);
+					      "<x%x>\n", wait_stat);
 				goto cleanup;
 			}
 			for (i = 0; i < nprocs; i++)
@@ -302,8 +302,8 @@ main(int argc, char *argv[])
 					break;
 			if (i == nprocs) {
 				(void)fprintf(stderr,
-					"unknown child pid %d, <x%x>\n",
-					pid, wait_stat);
+					      "unknown child pid %d, <x%x>\n",
+					      pid, wait_stat);
 				goto cleanup;
 			}
 
@@ -311,7 +311,7 @@ main(int argc, char *argv[])
 				perror("fork error");
 				pidarray[i] = 0;
 				goto cleanup;
-			} else if (pid == 0) {		/* child */
+			} else if (pid == 0) {	/* child */
 				child_mapper(i, nprocs);
 				exit(0);
 			} else
@@ -355,14 +355,13 @@ cleanup:
 	if (no_prob) {		/* only check file if no errors */
 		if (!mapokay(buf)) {
 			(void)fprintf(stderr, "map data incorrect!\n");
-               		 anyfail();
-		}
-		else
+			anyfail();
+		} else
 			(void)printf("map data okay\n");
 	}
 
 	(void)time(&t);
-//	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP POrt
+//      (void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP POrt
 	ok_exit();
 	tst_exit();
 }
@@ -373,8 +372,7 @@ cleanup:
  *  determined based on nprocs & procno).  After a specific number of
  *  iterations, it exits.
  */
-void
-child_mapper(unsigned procno, unsigned nprocs)
+void child_mapper(unsigned procno, unsigned nprocs)
 {
 	uchar_t *paddr;
 	unsigned randpage;
@@ -383,50 +381,51 @@ child_mapper(unsigned procno, unsigned nprocs)
 	unsigned nloops;
 	unsigned i;
 
-	seed = initrand();		/* initialize random seed */
+	seed = initrand();	/* initialize random seed */
 
 	nloops = (randloops) ? (lrand48() % MAXLOOPS) : MAXLOOPS;
 
 	if (debug)
 		(void)printf("child %d (pid %d): seed %d, loop %d\n",
-			procno, getpid(), seed, nloops);
+			     procno, getpid(), seed, nloops);
 
 	/*
 	 *  Now loop read/writing random pages.
 	 */
 
-	 for (loopcnt = 0; loopcnt < nloops; loopcnt++) {
+	for (loopcnt = 0; loopcnt < nloops; loopcnt++) {
 		randpage = lrand48() % mappages;
 		/* find the page address */
-		paddr = (uchar_t *)(mapaddr + (randpage * pagesize));
+		paddr = (uchar_t *) (mapaddr + (randpage * pagesize));
 
 		for (i = procno; i < pagesize; i += nprocs) {
-			if (*((unsigned char *)(paddr+i))
+			if (*((unsigned char *)(paddr + i))
 			    != ((procno + pattern) & 0xff)) {
 				(void)fprintf(stderr,
-					"child %d: invalid data <x%x>", procno,
-					*((unsigned char *)(paddr+i)));
+					      "child %d: invalid data <x%x>",
+					      procno,
+					      *((unsigned char *)(paddr + i)));
 				(void)fprintf(stderr,
-					" at pg %d off %d, exp <x%x>\n",
-					randpage, i, (procno+pattern)&0xff);
-			         anyfail();
+					      " at pg %d off %d, exp <x%x>\n",
+					      randpage, i,
+					      (procno + pattern) & 0xff);
+				anyfail();
 			}
 			/*
 			 *  Now write it.
 			 */
 
-			*(paddr+i) = (procno + pattern) & 0xff;
+			*(paddr + i) = (procno + pattern) & 0xff;
 		}
 	}
 
 	if (dosync) {
 		randpage = (unsigned)lrand48() % mappages;
-		paddr = (uchar_t *)mapaddr + (randpage * pagesize);
-		if (msync((caddr_t)paddr, (mappages-randpage)*pagesize,
-			MS_SYNC) == -1)
-		{
+		paddr = (uchar_t *) mapaddr + (randpage * pagesize);
+		if (msync((caddr_t) paddr, (mappages - randpage) * pagesize,
+			  MS_SYNC) == -1) {
 			perror("msync error");
-	                anyfail();
+			anyfail();
 		}
 	}
 
@@ -436,13 +435,12 @@ child_mapper(unsigned procno, unsigned nprocs)
 /*
  *  Make sure file has all the correct data.
  */
-int
-mapokay(uchar_t *expbuf)
+int mapokay(uchar_t * expbuf)
 {
 	uchar_t *ptr;
 	unsigned i, j;
 
-	ptr = (uchar_t *)mapaddr;
+	ptr = (uchar_t *) mapaddr;
 	for (i = 0; i < mappages; i++) {
 		/*
 		 *  Compare read bytes of data.
@@ -450,10 +448,10 @@ mapokay(uchar_t *expbuf)
 		for (j = 0; j < pagesize; j++) {
 			if (*ptr != expbuf[j]) {
 				(void)fprintf(stderr,
-					"bad map data: exp %c got %c)",
-					expbuf[j], *ptr);
+					      "bad map data: exp %c got %c)",
+					      expbuf[j], *ptr);
 				(void)fprintf(stderr, ", pg %d off %d\n", i, j);
-                		anyfail();
+				anyfail();
 			}
 			ptr++;
 		}
@@ -462,30 +460,27 @@ mapokay(uchar_t *expbuf)
 	return 1;
 }
 
-/*ARGSUSED*/
-void
-finish(int sig)
+ /*ARGSUSED*/ void finish(int sig)
 {
 	finished++;
 	return;
 }
 
-unsigned int
-initrand(void)
+unsigned int initrand(void)
 {
 	unsigned int seed;
 
 	/*
 	 *  Initialize random seed...  Got this from a test written
 	 *  by scooter:
-	 *	Use srand/rand to diffuse the information from the
-	 *	time and pid.  If you start several processes, then
-	 *	the time and pid information don't provide much
-	 *	variation.
+	 *      Use srand/rand to diffuse the information from the
+	 *      time and pid.  If you start several processes, then
+	 *      the time and pid information don't provide much
+	 *      variation.
 	 */
 	srand((unsigned int)getpid());
 	seed = rand();
-	srand((unsigned int)time((time_t *)0));
+	srand((unsigned int)time((time_t *) 0));
 	seed = (seed ^ rand()) % 100000;
 	srand48((long int)seed);
 	return (seed);
@@ -494,15 +489,15 @@ initrand(void)
 /*****  LTP Port        *****/
 void ok_exit()
 {
-        tst_resm(TPASS, "Test passed\n");
+	tst_resm(TPASS, "Test passed\n");
 	tst_exit();
 }
 
 int anyfail()
 {
-  tst_resm(TFAIL, "Test failed\n");
-  tst_exit();
-        return 0;
+	tst_resm(TFAIL, "Test failed\n");
+	tst_exit();
+	return 0;
 }
 
 /*****  **      **      *****/

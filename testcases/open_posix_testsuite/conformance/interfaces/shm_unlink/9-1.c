@@ -33,11 +33,12 @@
 
 #define SHM_NAME "posixtest_9-1"
 
-int main() {
+int main()
+{
 	int fd, result;
 	struct passwd *pw;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -56,18 +57,18 @@ int main() {
 
 	if (seteuid(pw->pw_uid) != 0) {
 		if (errno == EPERM) {
-			printf("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
+			printf
+			    ("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
 			return PTS_UNRESOLVED;
 		}
 		perror("An error occurs when calling seteuid()");
 		return PTS_UNRESOLVED;
 	}
 
-	printf("Testing with user '%s' (uid: %i)\n",
-	       pw->pw_name, pw->pw_uid);
+	printf("Testing with user '%s' (uid: %i)\n", pw->pw_name, pw->pw_uid);
 
 	result = shm_unlink(SHM_NAME);
-	if (result == -1&& errno == EACCES) {
+	if (result == -1 && errno == EACCES) {
 		printf("Test PASSED\n");
 		seteuid(getuid());
 		shm_unlink(SHM_NAME);

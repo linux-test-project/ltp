@@ -37,15 +37,15 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   argc[3] : Number of testes function calls
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         argc[3] : Number of testes function calls
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	char proto[8] = "udp";
 	CLIENT *clnt = NULL;
@@ -53,7 +53,7 @@ int main(int argn, char *argc[])
 	struct timeval to;
 	int varSnd = 10;
 	int varRec = -1;
-    int nbCall = atoi(argc[3]);
+	int nbCall = atoi(argc[3]);
 	int nbOk = 0;
 	int i;
 
@@ -64,33 +64,28 @@ int main(int argn, char *argc[])
 	//First of all, create a client
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("CLIENT : %d\n", clnt);
 		printf("progNum : %d\n", progNum);
 		printf("Proto : %s\n", proto);
 	}
 
-	if ((CLIENT *)clnt == NULL)
-	{
+	if ((CLIENT *) clnt == NULL) {
 		clnt_pcreateerror("err");
 		printf("1\n");
 		return 1;
 	}
 
-	for (i = 0; i < nbCall; i++)
-	{
+	for (i = 0; i < nbCall; i++) {
 		cs = clnt_call(clnt, PROCNUM,
-					   (xdrproc_t)xdr_int, (char *)&varSnd,
-					   (xdrproc_t)xdr_int, (char *)&varRec,
-					   to);
+			       (xdrproc_t) xdr_int, (char *)&varSnd,
+			       (xdrproc_t) xdr_int, (char *)&varRec, to);
 		if (cs == RPC_SUCCESS)
 			nbOk++;
 	}
 
 	//If we are here, macro call was successful
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("Aimed : %d\n", nbCall);
 		printf("Got : %d\n", nbOk);
 	}

@@ -42,7 +42,6 @@ ________________________________________________________________
 ________________________________________________________________
 <    pid       >< offset in file of this word  ><    pid       >
 
-
 8 bits to a bytes == character
  NBPW            8
 ************/
@@ -64,7 +63,7 @@ static char Errmsg[80];
 #define LOWBITS(WRD, bits) ( (-1 >> (64-bits)) & WRD)
 ****/
 
-#define NBPBYTE		8		/* number bits per byte */
+#define NBPBYTE		8	/* number bits per byte */
 
 #ifndef DEBUG
 #define DEBUG	0
@@ -82,8 +81,7 @@ static char Errmsg[80];
  * thus, offset 16 is the start of  the second full word
  * Thus, offset 8 is in middle of word 1
  ***********************************************************************/
-int
-datapidgen(pid, buffer, bsize, offset)
+int datapidgen(pid, buffer, bsize, offset)
 int pid;
 char *buffer;
 int bsize;
@@ -91,83 +89,90 @@ int offset;
 {
 #if CRAY
 
-   int cnt;
-   int tmp;
-   char *chr;
-   long *wptr;
-   long word;
-   int woff;	/* file offset for the word */
-   int boff;	/* buffer offset or index */
-   int num_full_words;
+	int cnt;
+	int tmp;
+	char *chr;
+	long *wptr;
+	long word;
+	int woff;		/* file offset for the word */
+	int boff;		/* buffer offset or index */
+	int num_full_words;
 
-    num_full_words = bsize/NBPW;
-    boff = 0;
+	num_full_words = bsize / NBPW;
+	boff = 0;
 
-    if (cnt=(offset % NBPW)) {	/* partial word */
+	if (cnt = (offset % NBPW)) {	/* partial word */
 
-	woff = offset - cnt;
+		woff = offset - cnt;
 #if DEBUG
-printf("partial at beginning, cnt = %d, woff = %d\n", cnt, woff);
+		printf("partial at beginning, cnt = %d, woff = %d\n", cnt,
+		       woff);
 #endif
 
-	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
+		word =
+		    ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) |
+		     LOWER16BITS(pid));
 
-	chr = (char *)&word;
+		chr = (char *)&word;
 
-	for (tmp=0; tmp<cnt; tmp++) {   /* skip unused bytes */
-	    chr++;
-        }
+		for (tmp = 0; tmp < cnt; tmp++) {	/* skip unused bytes */
+			chr++;
+		}
 
-	for (; boff<(NBPW-cnt) && boff<bsize; boff++, chr++) {
-	    buffer[boff] = *chr;
+		for (; boff < (NBPW - cnt) && boff < bsize; boff++, chr++) {
+			buffer[boff] = *chr;
+		}
 	}
-    }
 
-    /*
-     * full words
-     */
+	/*
+	 * full words
+	 */
 
-    num_full_words = (bsize-boff)/NBPW;
+	num_full_words = (bsize - boff) / NBPW;
 
-    woff = offset+boff;
+	woff = offset + boff;
 
-    for (cnt=0; cnt<num_full_words; woff += NBPW, cnt++) {
+	for (cnt = 0; cnt < num_full_words; woff += NBPW, cnt++) {
 
-	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
+		word =
+		    ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) |
+		     LOWER16BITS(pid));
 
-	chr = (char *)&word;
-	for (tmp=0; tmp<NBPW; tmp++, chr++) {
-	    buffer[boff++] = *chr;
-	}
+		chr = (char *)&word;
+		for (tmp = 0; tmp < NBPW; tmp++, chr++) {
+			buffer[boff++] = *chr;
+		}
 /****** Only if wptr is a word ellined
 	wptr = (long *)&buffer[boff];
 	*wptr = word;
 	boff += NBPW;
 *****/
 
-    }
-
-    /*
-     * partial word at end of buffer
-     */
-
-    if (cnt=((bsize-boff) % NBPW)) {
-#if DEBUG
-printf("partial at end\n");
-#endif
-	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
-
-	chr = (char *)&word;
-
-	for (tmp=0; tmp<cnt && boff<bsize; tmp++, chr++) {
-	    buffer[boff++] = *chr;
 	}
-    }
 
-    return bsize;
+	/*
+	 * partial word at end of buffer
+	 */
+
+	if (cnt = ((bsize - boff) % NBPW)) {
+#if DEBUG
+		printf("partial at end\n");
+#endif
+		word =
+		    ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) |
+		     LOWER16BITS(pid));
+
+		chr = (char *)&word;
+
+		for (tmp = 0; tmp < cnt && boff < bsize; tmp++, chr++) {
+			buffer[boff++] = *chr;
+		}
+	}
+
+	return bsize;
 
 #else
-	return -1;	/* not support on non-64 bits word machines  */
+	return -1;		/* not support on non-64 bits word machines  */
 
 #endif
 
@@ -177,8 +182,7 @@ printf("partial at end\n");
  *
  *
  ***********************************************************************/
-int
-datapidchk(pid, buffer, bsize, offset, errmsg)
+int datapidchk(pid, buffer, bsize, offset, errmsg)
 int pid;
 char *buffer;
 int bsize;
@@ -187,62 +191,66 @@ char **errmsg;
 {
 #if CRAY
 
-   int cnt;
-   int tmp;
-   char *chr;
-   long *wptr;
-   long word;
-   int woff;	/* file offset for the word */
-   int boff;	/* buffer offset or index */
-   int num_full_words;
+	int cnt;
+	int tmp;
+	char *chr;
+	long *wptr;
+	long word;
+	int woff;		/* file offset for the word */
+	int boff;		/* buffer offset or index */
+	int num_full_words;
 
-
-    if (errmsg != NULL) {
-        *errmsg = Errmsg;
-    }
-
-
-    num_full_words = bsize/NBPW;
-    boff = 0;
-
-    if (cnt=(offset % NBPW)) {	/* partial word */
-	woff = offset - cnt;
-	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
-
-	chr = (char *)&word;
-
-	for (tmp=0; tmp<cnt; tmp++) {   /* skip unused bytes */
-	    chr++;
-        }
-
-	for (; boff<(NBPW-cnt) && boff<bsize; boff++, chr++) {
-	    if (buffer[boff] != *chr) {
-		sprintf(Errmsg, "Data mismatch at offset %d, exp:%#o, act:%#o",
-		    offset+boff, *chr, buffer[boff]);
-		return offset+boff;
-	    }
+	if (errmsg != NULL) {
+		*errmsg = Errmsg;
 	}
-    }
 
-    /*
-     * full words
-     */
+	num_full_words = bsize / NBPW;
+	boff = 0;
 
-    num_full_words = (bsize-boff)/NBPW;
+	if (cnt = (offset % NBPW)) {	/* partial word */
+		woff = offset - cnt;
+		word =
+		    ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) |
+		     LOWER16BITS(pid));
 
-    woff = offset+boff;
+		chr = (char *)&word;
 
-    for (cnt=0; cnt<num_full_words; woff += NBPW, cnt++) {
-	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
+		for (tmp = 0; tmp < cnt; tmp++) {	/* skip unused bytes */
+			chr++;
+		}
 
-	chr = (char *)&word;
-	for (tmp=0; tmp<NBPW; tmp++, boff++, chr++) {
-	    if (buffer[boff] != *chr) {
-	        sprintf(Errmsg, "Data mismatch at offset %d, exp:%#o, act:%#o",
-	            woff, *chr, buffer[boff]);
-	        return woff;
-	    }
+		for (; boff < (NBPW - cnt) && boff < bsize; boff++, chr++) {
+			if (buffer[boff] != *chr) {
+				sprintf(Errmsg,
+					"Data mismatch at offset %d, exp:%#o, act:%#o",
+					offset + boff, *chr, buffer[boff]);
+				return offset + boff;
+			}
+		}
 	}
+
+	/*
+	 * full words
+	 */
+
+	num_full_words = (bsize - boff) / NBPW;
+
+	woff = offset + boff;
+
+	for (cnt = 0; cnt < num_full_words; woff += NBPW, cnt++) {
+		word =
+		    ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) |
+		     LOWER16BITS(pid));
+
+		chr = (char *)&word;
+		for (tmp = 0; tmp < NBPW; tmp++, boff++, chr++) {
+			if (buffer[boff] != *chr) {
+				sprintf(Errmsg,
+					"Data mismatch at offset %d, exp:%#o, act:%#o",
+					woff, *chr, buffer[boff]);
+				return woff;
+			}
+		}
 
 /****** only if a word elined
 	wptr = (long *)&buffer[boff];
@@ -253,121 +261,122 @@ char **errmsg;
 	}
 	boff += NBPW;
 ******/
-    }
-
-    /*
-     * partial word at end of buffer
-     */
-
-    if (cnt=((bsize-boff) % NBPW)) {
-#if DEBUG
-printf("partial at end\n");
-#endif
-	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
-
-	chr = (char *)&word;
-
-
-	for (tmp=0; tmp<cnt && boff<bsize; boff++, tmp++, chr++) {
-	    if (buffer[boff] != *chr) {
-		sprintf(Errmsg, "Data mismatch at offset %d, exp:%#o, act:%#o",
-		    offset+boff, *chr, buffer[boff]);
-		return offset+boff;
-	    }
 	}
-    }
 
-    sprintf(Errmsg, "all %d bytes match desired pattern", bsize);
-    return -1;      /* buffer is ok */
+	/*
+	 * partial word at end of buffer
+	 */
+
+	if (cnt = ((bsize - boff) % NBPW)) {
+#if DEBUG
+		printf("partial at end\n");
+#endif
+		word =
+		    ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) |
+		     LOWER16BITS(pid));
+
+		chr = (char *)&word;
+
+		for (tmp = 0; tmp < cnt && boff < bsize; boff++, tmp++, chr++) {
+			if (buffer[boff] != *chr) {
+				sprintf(Errmsg,
+					"Data mismatch at offset %d, exp:%#o, act:%#o",
+					offset + boff, *chr, buffer[boff]);
+				return offset + boff;
+			}
+		}
+	}
+
+	sprintf(Errmsg, "all %d bytes match desired pattern", bsize);
+	return -1;		/* buffer is ok */
 
 #else
 
-    if (errmsg != NULL) {
-        *errmsg = Errmsg;
-    }
-    sprintf(Errmsg, "Not supported on this OS.");
-    return 0;
+	if (errmsg != NULL) {
+		*errmsg = Errmsg;
+	}
+	sprintf(Errmsg, "Not supported on this OS.");
+	return 0;
 
 #endif
 
-
-}       /* end of datapidchk */
+}				/* end of datapidchk */
 
 #if UNIT_TEST
 
 /***********************************************************************
  * main for doing unit testing
  ***********************************************************************/
-int
-main(ac, ag)
+int main(ac, ag)
 int ac;
 char **ag;
 {
 
-int size=1234;
-char *buffer;
-int ret;
-char *errmsg;
+	int size = 1234;
+	char *buffer;
+	int ret;
+	char *errmsg;
 
-    if ((buffer=(char *)malloc(size)) == NULL) {
-        perror("malloc");
-        exit(2);
-    }
+	if ((buffer = (char *)malloc(size)) == NULL) {
+		perror("malloc");
+		exit(2);
+	}
 
-
-    datapidgen(-1, buffer, size, 3);
+	datapidgen(-1, buffer, size, 3);
 
 /***
 fwrite(buffer, size, 1, stdout);
 fwrite("\n", 1, 1, stdout);
 ****/
 
-    printf("datapidgen(-1, buffer, size, 3)\n");
+	printf("datapidgen(-1, buffer, size, 3)\n");
 
-    ret=datapidchk(-1, buffer, size, 3, &errmsg);
-    printf("datapidchk(-1, buffer, %d, 3, &errmsg) returned %d %s\n",
-        size, ret, errmsg);
-    ret=datapidchk(-1, &buffer[1], size-1, 4, &errmsg);
-    printf("datapidchk(-1, &buffer[1], %d, 4, &errmsg) returned %d %s\n",
-        size-1, ret, errmsg);
+	ret = datapidchk(-1, buffer, size, 3, &errmsg);
+	printf("datapidchk(-1, buffer, %d, 3, &errmsg) returned %d %s\n",
+	       size, ret, errmsg);
+	ret = datapidchk(-1, &buffer[1], size - 1, 4, &errmsg);
+	printf("datapidchk(-1, &buffer[1], %d, 4, &errmsg) returned %d %s\n",
+	       size - 1, ret, errmsg);
 
-    buffer[25]= 0x0;
-    buffer[26]= 0x0;
-    buffer[27]= 0x0;
-    buffer[28]= 0x0;
-    printf("changing char 25-28\n");
+	buffer[25] = 0x0;
+	buffer[26] = 0x0;
+	buffer[27] = 0x0;
+	buffer[28] = 0x0;
+	printf("changing char 25-28\n");
 
-    ret=datapidchk(-1, &buffer[1], size-1, 4, &errmsg);
-    printf("datapidchk(-1, &buffer[1], %d, 4, &errmsg) returned %d %s\n",
-        size-1, ret, errmsg);
+	ret = datapidchk(-1, &buffer[1], size - 1, 4, &errmsg);
+	printf("datapidchk(-1, &buffer[1], %d, 4, &errmsg) returned %d %s\n",
+	       size - 1, ret, errmsg);
 
-printf("------------------------------------------\n");
+	printf("------------------------------------------\n");
 
-    datapidgen(getpid(), buffer, size, 5);
+	datapidgen(getpid(), buffer, size, 5);
 
 /*******
 fwrite(buffer, size, 1, stdout);
 fwrite("\n", 1, 1, stdout);
 ******/
 
-    printf("\ndatapidgen(getpid(), buffer, size, 5)\n");
+	printf("\ndatapidgen(getpid(), buffer, size, 5)\n");
 
-    ret=datapidchk(getpid(), buffer, size, 5, &errmsg);
-    printf("datapidchk(getpid(), buffer, %d, 5, &errmsg) returned %d %s\n",
-        size, ret, errmsg);
+	ret = datapidchk(getpid(), buffer, size, 5, &errmsg);
+	printf("datapidchk(getpid(), buffer, %d, 5, &errmsg) returned %d %s\n",
+	       size, ret, errmsg);
 
-    ret=datapidchk(getpid(), &buffer[1], size-1, 6, &errmsg);
-    printf("datapidchk(getpid(), &buffer[1], %d, 6, &errmsg) returned %d %s\n",
-        size-1, ret, errmsg);
+	ret = datapidchk(getpid(), &buffer[1], size - 1, 6, &errmsg);
+	printf
+	    ("datapidchk(getpid(), &buffer[1], %d, 6, &errmsg) returned %d %s\n",
+	     size - 1, ret, errmsg);
 
-    buffer[25]= 0x0;
-    printf("changing char 25\n");
+	buffer[25] = 0x0;
+	printf("changing char 25\n");
 
-    ret=datapidchk(getpid(), &buffer[1], size-1, 6, &errmsg);
-    printf("datapidchk(getpid(), &buffer[1], %d, 6, &errmsg) returned %d %s\n",
-        size-1, ret, errmsg);
+	ret = datapidchk(getpid(), &buffer[1], size - 1, 6, &errmsg);
+	printf
+	    ("datapidchk(getpid(), &buffer[1], %d, 6, &errmsg) returned %d %s\n",
+	     size - 1, ret, errmsg);
 
-    exit(0);
+	exit(0);
 }
 
 #endif

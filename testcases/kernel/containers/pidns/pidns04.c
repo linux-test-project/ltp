@@ -79,7 +79,7 @@ static int child_fn1(void *ttype)
 	cpid = getpid();
 	ppid = getppid();
 	char mesg[] = "I was not killed !";
-       	/* Child process closes up read side of pipe */
+	/* Child process closes up read side of pipe */
 	close(fd[0]);
 
 	/* Comparing the values to make sure pidns is created correctly */
@@ -87,15 +87,14 @@ static int child_fn1(void *ttype)
 		printf("PIDNS test is running inside container\n");
 		kill(INIT_PID, SIGKILL);
 		/* Verifying whether the container init is not killed, "
-		 If so writing into the pipe created in the parent NS" */
+		   If so writing into the pipe created in the parent NS" */
 
 		/* Send "mesg" through the write side of pipe */
-		write(fd[1], mesg, (strlen(mesg)+1));
+		write(fd[1], mesg, (strlen(mesg) + 1));
 		exit_val = 0;
-	}
-	else {
+	} else {
 		printf("got unexpected result of cpid=%d ppid=%d\n",
-		    cpid, ppid);
+		       cpid, ppid);
 		exit_val = 1;
 	}
 	exit(exit_val);
@@ -109,9 +108,9 @@ int main(int argc, char *argv[])
 	pipe(fd);
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL|TTERRNO, CLEANUP, "clone failed");
+		tst_brkm(TFAIL | TTERRNO, CLEANUP, "clone failed");
 	} else if (wait(&status) == -1) {
-		tst_brkm(TFAIL|TERRNO, CLEANUP, "wait failed");
+		tst_brkm(TFAIL | TERRNO, CLEANUP, "wait failed");
 	}
 
 	/* Parent process closes up write side of pipe */
@@ -123,14 +122,14 @@ int main(int argc, char *argv[])
 		tst_resm(TPASS, "Container init : %s", readbuffer);
 	} else {
 		tst_brkm(TFAIL, CLEANUP,
-		    "Container init is killed by SIGKILL !!!");
+			 "Container init is killed by SIGKILL !!!");
 	}
 
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
 		tst_resm(TFAIL, "Container init pid exited abnormally");
 	} else if (WIFSIGNALED(status)) {
 		tst_resm(TFAIL, "Container init pid got killed by signal %d",
-		    WTERMSIG(status));
+			 WTERMSIG(status));
 	}
 	CLEANUP();
 
@@ -138,8 +137,7 @@ int main(int argc, char *argv[])
 
 }
 
-static void
-cleanup(void)
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 	close(fd[0]);

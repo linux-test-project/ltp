@@ -76,10 +76,10 @@ int TST_TOTAL = 1;
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
 option_t ksm_options[] = {
-	{ "n:", &opt_num,       &opt_numstr},
-	{ "s:", &opt_size,      &opt_sizestr},
-	{ "u:", &opt_unit,      &opt_unitstr},
-	{ NULL, NULL,           NULL}
+	{"n:", &opt_num, &opt_numstr},
+	{"s:", &opt_size, &opt_sizestr},
+	{"u:", &opt_unit, &opt_unitstr},
+	{NULL, NULL, NULL}
 };
 
 int main(int argc, char *argv[])
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	node  = get_a_numa_node(tst_exit);
+	node = get_a_numa_node(tst_exit);
 	nmask = 1 << node;
 
 	setup();
@@ -107,12 +107,12 @@ int main(int argc, char *argv[])
 
 		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1) {
 			if (errno != ENOSYS)
-				tst_brkm(TBROK|TERRNO, cleanup,
-					    "set_mempolicy");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "set_mempolicy");
 			else
 				tst_brkm(TCONF, cleanup,
-					    "set_mempolicy syscall is not "
-					    "implemented on your system.");
+					 "set_mempolicy syscall is not "
+					 "implemented on your system.");
 		}
 		create_same_memory(size, num, unit);
 

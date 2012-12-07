@@ -78,14 +78,14 @@ int main(int argc, char *argv[])
 	TEST(msgget(key, IPC_CREAT | IPC_EXCL));
 	msqid = TEST_RETURN;
 	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL|TTERRNO, "msgget() failed");
+		tst_resm(TFAIL | TTERRNO, "msgget() failed");
 		tst_exit();
 	}
 
 	TEST(msgctl(msqid, IPC_STAT, &buf));
 	status = TEST_RETURN;
 	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL|TTERRNO,
+		tst_resm(TFAIL | TTERRNO,
 			 "msgctl(msqid, IPC_STAT, &buf) failed");
 		(void)msgctl(msqid, IPC_RMID, NULL);
 		tst_exit();

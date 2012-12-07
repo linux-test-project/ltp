@@ -28,8 +28,8 @@
 
 int main()
 {
-	int                   rc=0;
-	pthread_attr_t        attr;
+	int rc = 0;
+	pthread_attr_t attr;
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
@@ -37,12 +37,12 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 
-  	rc = pthread_attr_setinheritsched(&attr, INVALIDSCHED);
+	rc = pthread_attr_setinheritsched(&attr, INVALIDSCHED);
 	if ((rc != EINVAL)) {
 		perror(ERROR_PREFIX "pthread_attr_setinheritsched");
 		exit(PTS_FAIL);
 	}
-  	rc = pthread_attr_destroy(&attr);
+	rc = pthread_attr_destroy(&attr);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);

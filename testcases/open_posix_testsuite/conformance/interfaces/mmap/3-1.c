@@ -58,10 +58,10 @@ int main(void)
 	/* Size of the file */
 	total_size = 2 * page_size;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_3_1_%d_1", getpid());
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_3_1_%d_1",
+		 getpid());
 	snprintf(tmpfname2, sizeof(tmpfname2), "/tmp/pts_mmap_3_1_%d_2",
 		 getpid());
-
 
 	unlink(tmpfname);
 	unlink(tmpfname2);
@@ -106,7 +106,9 @@ int main(void)
 	}
 
 	/* Replace orginal mapping */
-	pa2 = mmap(pa, size2, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, fd2, 0);
+	pa2 =
+	    mmap(pa, size2, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, fd2,
+		 0);
 	if (pa2 == MAP_FAILED) {
 		printf("Error at 2nd mmap: %s\n", strerror(errno));
 		return PTS_FAIL;
@@ -138,4 +140,3 @@ int main(void)
 	return PTS_UNRESOLVED;
 }
 #endif /* MAP_FIXED */
-

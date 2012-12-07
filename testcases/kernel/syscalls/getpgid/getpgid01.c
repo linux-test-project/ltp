@@ -90,7 +90,7 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
 		if ((pgid_0 = getpgid(0)) == -1) {
-			tst_resm(TFAIL|TERRNO, "getpgid(0) failed");
+			tst_resm(TFAIL | TERRNO, "getpgid(0) failed");
 			fail = 1;
 		}
 
@@ -106,7 +106,7 @@ int main(int ac, char **av)
 
 		my_pid = getpid();
 		if ((pgid_1 = getpgid(my_pid)) == -1)
-			tst_resm(TFAIL|TERRNO, "getpgid(%d) failed", my_pid);
+			tst_resm(TFAIL | TERRNO, "getpgid(%d) failed", my_pid);
 
 		if (pgid_0 != pgid_1) {
 			tst_resm(TFAIL, "getpgid(my_pid=%d) != getpgid(0) "
@@ -127,11 +127,11 @@ int main(int ac, char **av)
 
 		my_ppid = getppid();
 		if ((pgid_1 = getpgid(my_ppid)) == -1)
-			tst_resm(TFAIL|TERRNO, "getpgid(%d) failed", my_ppid);
+			tst_resm(TFAIL | TERRNO, "getpgid(%d) failed", my_ppid);
 
 		if (pgid_0 != pgid_1) {
 			tst_resm(TFAIL, "getpgid(%d) != getpgid(0) [%d != %d]",
-			    my_ppid, pgid_1, pgid_0);
+				 my_ppid, pgid_1, pgid_0);
 			fail = 1;
 		}
 
@@ -149,11 +149,11 @@ int main(int ac, char **av)
 		fail = 0;
 
 		if ((pgid_1 = getpgid(pgid_0)) < 0)
-			tst_resm(TFAIL|TERRNO, "getpgid(%d) failed", pgid_0);
+			tst_resm(TFAIL | TERRNO, "getpgid(%d) failed", pgid_0);
 
 		if (pgid_0 != pgid_1) {
 			tst_resm(TFAIL, "getpgid(%d) != getpgid(0) [%d != %d]",
-			    pgid_0, pgid_1, pgid_0);
+				 pgid_0, pgid_1, pgid_0);
 			fail = 1;
 		}
 
@@ -168,7 +168,7 @@ int main(int ac, char **av)
 		fail = 0;
 
 		if (getpgid(1) < 0) {
-			tst_resm(TFAIL|TERRNO, "getpgid(1) failed");
+			tst_resm(TFAIL | TERRNO, "getpgid(1) failed");
 			fail = 1;
 		}
 

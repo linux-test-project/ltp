@@ -36,16 +36,16 @@
 
 char *TCID = "stream01";
 int TST_TOTAL = 1;
-int     local_flag;
+int local_flag;
 
 #define PASSED 1
 #define FAILED 0
 
 /* XXX: add setup and cleanup. */
 
-char progname[] = "stream01()" ;
-char tempfile1[40]="";
-char tempfile2[40]="";
+char progname[] = "stream01()";
+char tempfile1[40] = "";
+char tempfile2[40] = "";
 
 /*--------------------------------------------------------------------*/
 int main(int ac, char *av[])
@@ -56,52 +56,58 @@ int main(int ac, char *av[])
 	int lc;
 	char *msg;
 
-         /*
-          * parse standard options
-          */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	/*
+	 * parse standard options
+	 */
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-        local_flag = PASSED;
+	local_flag = PASSED;
 	tst_tmpdir();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		sprintf(tempfile1, "stream011.%d", getpid());
 		sprintf(tempfile2, "stream012.%d", getpid());
 	/*--------------------------------------------------------------------*/
-	//block0:
-		if ((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
+		//block0:
+		if ((stream = fopen(tempfile1, "a+")) == NULL) {
+			tst_resm(TFAIL, "fopen(%s) a+ failed: %s", tempfile1,
+				 strerror(errno));
 			tst_exit();
 		}
-		fwrite("a",1,1,stream);
-		if ((stream=freopen(tempfile2,"a+",stream)) == NULL) {
-			tst_brkm(TFAIL|TERRNO, NULL, "freopen(%s) a+ failed", tempfile2);
+		fwrite("a", 1, 1, stream);
+		if ((stream = freopen(tempfile2, "a+", stream)) == NULL) {
+			tst_brkm(TFAIL | TERRNO, NULL, "freopen(%s) a+ failed",
+				 tempfile2);
 		}
-		fwrite("a",1,1,stream);
+		fwrite("a", 1, 1, stream);
 		fclose(stream);
 
 		/* now check that a single "a" is in each file */
-		if ((stream=fopen(tempfile1,"r")) == NULL) {
-			tst_brkm(TFAIL|TERRNO, NULL, "fopen(%s) r failed", tempfile1);
-		}
-		else {
-			for (i=0; i<10; i++) buf[i]=0;
-			fread(buf,1,1,stream);
+		if ((stream = fopen(tempfile1, "r")) == NULL) {
+			tst_brkm(TFAIL | TERRNO, NULL, "fopen(%s) r failed",
+				 tempfile1);
+		} else {
+			for (i = 0; i < 10; i++)
+				buf[i] = 0;
+			fread(buf, 1, 1, stream);
 			if ((buf[0] != 'a') || (buf[1] != 0)) {
-				tst_resm(TFAIL,"bad contents in %s", tempfile1);
+				tst_resm(TFAIL, "bad contents in %s",
+					 tempfile1);
 				local_flag = FAILED;
 			}
 			fclose(stream);
 		}
-		if ((stream=fopen(tempfile2,"r")) == NULL) {
-			tst_brkm(TFAIL|TERRNO, NULL, "fopen(%s) r failed", tempfile2);
-		}
-		else {
-			for (i=0; i<10; i++) buf[i]=0;
-			fread(buf,1,1,stream);
+		if ((stream = fopen(tempfile2, "r")) == NULL) {
+			tst_brkm(TFAIL | TERRNO, NULL, "fopen(%s) r failed",
+				 tempfile2);
+		} else {
+			for (i = 0; i < 10; i++)
+				buf[i] = 0;
+			fread(buf, 1, 1, stream);
 			if ((buf[0] != 'a') || (buf[1] != 0)) {
-				tst_resm(TFAIL,"bad contents in %s", tempfile2);
+				tst_resm(TFAIL, "bad contents in %s",
+					 tempfile2);
 				local_flag = FAILED;
 			}
 			fclose(stream);
@@ -118,7 +124,7 @@ int main(int ac, char *av[])
 		unlink(tempfile1);
 		unlink(tempfile2);
 
-	} /* end for */
+	}			/* end for */
 	tst_rmdir();
 	tst_exit();
 }

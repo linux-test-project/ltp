@@ -197,8 +197,7 @@ void do_child()
 	exit(0);
 }
 
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
 	if (sig == SIGHUP)
 		return;

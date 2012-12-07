@@ -76,6 +76,7 @@ int fds[TEST_CASES];
 char *filenames[TEST_CASES];
 int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, EINVAL, 0 };
 int flags[TEST_CASES] = { 0, 0, 0, 0, 9999, 0 };
+
 uid_t uid;
 gid_t gid;
 

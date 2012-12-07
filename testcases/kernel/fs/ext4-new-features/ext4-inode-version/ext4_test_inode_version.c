@@ -145,8 +145,7 @@ void test_mmap_write(void)
 
 	old_inode_version = get_inode_version();
 
-	p = mmap(NULL, 1, PROT_WRITE,
-		 MAP_PRIVATE | MAP_FILE, fd, 0);
+	p = mmap(NULL, 1, PROT_WRITE, MAP_PRIVATE | MAP_FILE, fd, 0);
 	if (p == (void *)-1) {
 		perror("mmap");
 		exit(1);

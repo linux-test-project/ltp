@@ -93,13 +93,12 @@ int main()
 	}
 
 	valuensec = tsres.tv_nsec;
-	intervalnsec = 2*valuensec;
+	intervalnsec = 2 * valuensec;
 	//expectedoverruns = (1000000000 - valuensec) / intervalnsec;
 	expectedoverruns = 1000000000 / intervalnsec - 1;
 
 	printf("value = %d sec, interval = %d nsec, "
-			"expected overruns = %d\n",
-			1, intervalnsec, expectedoverruns);
+	       "expected overruns = %d\n", 1, intervalnsec, expectedoverruns);
 
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = intervalnsec;
@@ -112,7 +111,6 @@ int main()
 		perror("timer_settime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
-
 	//tssleep.tv_nsec = valuensec + (expectedoverruns*intervalnsec);
 	tssleep.tv_nsec = 0;
 	tssleep.tv_sec = 2;
@@ -132,8 +130,8 @@ int main()
 	//its.it_value.tv_sec = 0;
 	//its.it_value.tv_nsec = 0;
 	//if (timer_settime(tid, 0, &its, NULL) != 0) {
-	//	perror("timer_settime() did not return success\n");
-	//	return PTS_UNRESOLVED;
+	//      perror("timer_settime() did not return success\n");
+	//      return PTS_UNRESOLVED;
 	//}
 
 	if (sigprocmask(SIG_UNBLOCK, &set, NULL) != 0) {
@@ -148,13 +146,13 @@ int main()
 	 * extra expiries after the nanosleep completes so do
 	 * a range check.
 	 */
-	fudge = expectedoverruns/100;
-	if (overruns >= expectedoverruns && overruns < expectedoverruns+fudge) {
+	fudge = expectedoverruns / 100;
+	if (overruns >= expectedoverruns && overruns < expectedoverruns + fudge) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {
 		printf("FAIL:  %d overruns sent; expected %d\n",
-				overruns, expectedoverruns);
+		       overruns, expectedoverruns);
 		return PTS_FAIL;
 	}
 

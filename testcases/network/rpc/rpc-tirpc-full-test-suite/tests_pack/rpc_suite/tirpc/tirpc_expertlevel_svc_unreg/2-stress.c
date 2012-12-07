@@ -42,54 +42,48 @@ static void exm_proc();
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   argc[3] : Number of testes function calls
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         argc[3] : Number of testes function calls
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	SVCXPRT *transp = NULL;
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
-    int nbCall = atoi(argc[3]);
+	int nbCall = atoi(argc[3]);
 	int nbOk = 0;
 	int i;
 
 	//Initialization
-    if (run_mode)
-    {
-    	printf("Before creation\n");
+	if (run_mode) {
+		printf("Before creation\n");
 		printf("nconf : %d\n", nconf);
 	}
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *) NULL)
-	{
+	if (nconf == (struct netconfig *)NULL) {
 		//syslog(LOG_ERR, "getnetconfigent for udp failed");
 		printf("err nconf\n");
 		exit(1);
 	}
 
-	transp = svc_tli_create(RPC_ANYFD, nconf,
-                            (struct t_bind *)NULL,
-                            0, 0);
+	transp = svc_tli_create(RPC_ANYFD, nconf, (struct t_bind *)NULL, 0, 0);
 
-    svc_unreg(progNum, VERSNUM);
+	svc_unreg(progNum, VERSNUM);
 
-    for (i = 0; i < nbCall; i++)
-	{
-		svc_reg(transp, progNum, VERSNUM,
-            exm_proc, nconf);
+	for (i = 0; i < nbCall; i++) {
+		svc_reg(transp, progNum, VERSNUM, exm_proc, nconf);
 
-    	svc_unreg(progNum, VERSNUM);
-    }
+		svc_unreg(progNum, VERSNUM);
+	}
 
-    //If we are here, test has passed
-    test_status = 0;
+	//If we are here, test has passed
+	test_status = 0;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
@@ -98,7 +92,7 @@ int main(int argn, char *argc[])
 	return test_status;
 }
 
-static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
+static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
 {
 	//Nothing to do here in that test case
 }

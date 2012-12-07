@@ -51,8 +51,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="diotest01";		 		 /* Test program identifier.    */
-int TST_TOTAL=1;		 		 /* Total number of test conditions */
+char *TCID = "diotest01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test conditions */
 
 #ifdef O_DIRECT
 
@@ -64,51 +64,50 @@ int TST_TOTAL=1;		 		 /* Total number of test conditions */
 /*
  * prg_usage: display the program usage.
 */
-void
-prg_usage()
+void prg_usage()
 {
-	fprintf(stderr, "Usage: diotest1 [-b bufsize] [-n numblks] [-i infile] [-o outfile]\n");
-	tst_resm (TBROK, "usage");
+	fprintf(stderr,
+		"Usage: diotest1 [-b bufsize] [-n numblks] [-i infile] [-o outfile]\n");
+	tst_resm(TBROK, "usage");
 	tst_exit();
 }
 
 /*
  * fail_clean: cleanup and exit.
 */
-void
-fail_clean(int fd1, int fd2, char *infile, char *outfile)
+void fail_clean(int fd1, int fd2, char *infile, char *outfile)
 {
 	close(fd1);
 	close(fd2);
 	unlink(infile);
 	unlink(outfile);
-	tst_resm (TFAIL, "Test failed");
+	tst_resm(TFAIL, "Test failed");
 	tst_exit();
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int	bufsize = BUFSIZE;	/* Buffer size. Default 8k */
-	int	numblks = NBLKS;	/* Number of blocks. Default 20 */
-	char	infile[LEN];		/* Input file. Default "infile" */
-	char	outfile[LEN];		/* Output file. Default "outfile" */
-	int	fd, fd1, fd2;
-	int	i, n, offset;
-	char	*buf;
+	int bufsize = BUFSIZE;	/* Buffer size. Default 8k */
+	int numblks = NBLKS;	/* Number of blocks. Default 20 */
+	char infile[LEN];	/* Input file. Default "infile" */
+	char outfile[LEN];	/* Output file. Default "outfile" */
+	int fd, fd1, fd2;
+	int i, n, offset;
+	char *buf;
 
 	/* Options */
 	strcpy(infile, "infile");	/* Default input file */
 	strcpy(outfile, "outfile");	/* Default outfile file */
 	while ((i = getopt(argc, argv, "b:n:i:o:")) != -1) {
-		switch(i) {
+		switch (i) {
 		case 'b':
 			if ((bufsize = atoi(optarg)) <= 0) {
 				fprintf(stderr, "bufsize must be > 0\n");
 				prg_usage();
 			}
 			if (bufsize % 4096 != 0) {
-				fprintf(stderr, "bufsize must be multiple of 4k\n");
+				fprintf(stderr,
+					"bufsize must be multiple of 4k\n");
 				prg_usage();
 			}
 			break;
@@ -130,23 +129,24 @@ main(int argc, char *argv[])
 	}
 
 	/* Test for filesystem support of O_DIRECT */
-	if ((fd = open(infile, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
-	         tst_resm(TCONF,"O_DIRECT is not supported by this filesystem.");
-                 tst_exit();
-	}else{
+	if ((fd = open(infile, O_DIRECT | O_RDWR | O_CREAT, 0666)) < 0) {
+		tst_resm(TCONF,
+			 "O_DIRECT is not supported by this filesystem.");
+		tst_exit();
+	} else {
 		close(fd);
 	}
 
 	/* Open files */
-	if ((fd1 = open(infile, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
+	if ((fd1 = open(infile, O_DIRECT | O_RDWR | O_CREAT, 0666)) < 0) {
 		tst_resm(TFAIL, "open infile failed: %s", strerror(errno));
 		tst_exit();
 	}
 
-	if ((fd2 = open(outfile, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
+	if ((fd2 = open(outfile, O_DIRECT | O_RDWR | O_CREAT, 0666)) < 0) {
 		close(fd1);
 		unlink(infile);
-		tst_resm(TFAIL,"open outfile failed: %s", strerror(errno));
+		tst_resm(TFAIL, "open outfile failed: %s", strerror(errno));
 		tst_exit();
 	}
 
@@ -158,7 +158,8 @@ main(int argc, char *argv[])
 	for (i = 0; i < numblks; i++) {
 		fillbuf(buf, bufsize, (char)(i % 256));
 		if (write(fd1, buf, bufsize) < 0) {
-			tst_resm(TFAIL, "write infile failed: %s", strerror(errno));
+			tst_resm(TFAIL, "write infile failed: %s",
+				 strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
 	}
@@ -171,24 +172,27 @@ main(int argc, char *argv[])
 	}
 	while ((n = read(fd1, buf, bufsize)) > 0) {
 		if (lseek(fd2, offset, SEEK_SET) < 0) {
-			tst_resm(TFAIL, "lseek(outfd) failed: %s", strerror(errno));
+			tst_resm(TFAIL, "lseek(outfd) failed: %s",
+				 strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
 		if (write(fd2, buf, n) < n) {
-			tst_resm(TFAIL, "write(outfd) failed: %s", strerror(errno));
+			tst_resm(TFAIL, "write(outfd) failed: %s",
+				 strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
 		offset += n;
 		if (lseek(fd1, offset, SEEK_SET) < 0) {
-			tst_resm(TFAIL, "lseek(infd) failed: %s", strerror(errno));
+			tst_resm(TFAIL, "lseek(infd) failed: %s",
+				 strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
 	}
 
 	/* Verify */
 	if (filecmp(infile, outfile) != 0) {
-		tst_resm(TFAIL,"file compare failed for %s and %s",
-			infile, outfile);
+		tst_resm(TFAIL, "file compare failed for %s and %s",
+			 infile, outfile);
 		fail_clean(fd1, fd2, infile, outfile);
 	}
 
@@ -204,9 +208,9 @@ main(int argc, char *argv[])
 
 #else /* O_DIRECT */
 
-int
-main() {
-	tst_resm(TCONF,"O_DIRECT is not defined.");
+int main()
+{
+	tst_resm(TCONF, "O_DIRECT is not defined.");
 	tst_exit();
 }
 #endif /* O_DIRECT */

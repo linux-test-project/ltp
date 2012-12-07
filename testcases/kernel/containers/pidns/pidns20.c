@@ -56,25 +56,25 @@ int TST_TOTAL = 1;
 int errno;
 int parent_cinit[2];
 int cinit_parent[2];
-int broken = 1; /* broken should be 0 when test completes properly */
+int broken = 1;			/* broken should be 0 when test completes properly */
 
 #define CHILD_PID       1
 #define PARENT_PID      0
 
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 }
 
 /*
  * child_signal_handler() - to handle SIGUSR1
  */
-static void child_signal_handler(int sig, siginfo_t *si, void *unused)
+static void child_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	if (si->si_signo != SIGUSR1)
-		tst_resm(TBROK, "cinit: recieved %s unexpectedly!",\
-				strsignal(si->si_signo));
+		tst_resm(TBROK, "cinit: recieved %s unexpectedly!",
+			 strsignal(si->si_signo));
 	else
 		tst_resm(TPASS, "cinit: user function is called as expected");
 
@@ -160,12 +160,12 @@ int main(int argc, char *argv[])
 
 	/* Create pipes for intercommunication */
 	if (pipe(parent_cinit) == -1 || pipe(cinit_parent) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "pipe failed");
 	}
 
-	cpid = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
+	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
 	if (cpid == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "clone failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "clone failed");
 	}
 
 	/* Setup pipe read and write ends */
@@ -180,26 +180,27 @@ int main(int argc, char *argv[])
 
 	/* Enqueue SIGUSR1 in pending signal queue of container */
 	if (kill(cpid, SIGUSR1) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "kill() failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "kill() failed");
 	}
 
 	tst_resm(TINFO, "parent: signalled SIGUSR1 to container");
 	if (write(parent_cinit[1], "p:go", 5) != 5) {
-		tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 	}
 
 	/* collect exit status of child */
 	if (wait(&status) == -1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "wait failed");
 	}
 
 	if (WIFSIGNALED(status)) {
 		if (WTERMSIG(status) == SIGUSR1)
 			tst_resm(TFAIL,
-			    "user function was not called inside cinit");
+				 "user function was not called inside cinit");
 		else
 			tst_resm(TBROK,
-			    "cinit was terminated by %d", WTERMSIG(status));
+				 "cinit was terminated by %d",
+				 WTERMSIG(status));
 	}
 
 	/* Cleanup and exit */

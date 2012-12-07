@@ -29,31 +29,31 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
- #include <sched.h>
- #include <semaphore.h>
- #include <errno.h>
- #include <assert.h>
+#include <sched.h>
+#include <semaphore.h>
+#include <errno.h>
+#include <assert.h>
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -96,136 +96,151 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-struct testdata
-{
+struct testdata {
 	pthread_t tid;
-	pid_t	  pid;
-	sem_t	* sem;
+	pid_t pid;
+	sem_t *sem;
 };
 
-int global; /* This value is used to check both threads share the same process memory (and not a copy) */
+int global;			/* This value is used to check both threads share the same process memory (and not a copy) */
 
-void * threaded (void * arg)
+void *threaded(void *arg)
 {
-	struct testdata * td=(struct testdata *) arg;
+	struct testdata *td = (struct testdata *)arg;
 	pthread_t mytid;
 	pid_t mypid;
 	int ret = 0;
 
 	/* Compare the process IDs */
-	mypid=getpid();
-	#if VERBOSE > 0
+	mypid = getpid();
+#if VERBOSE > 0
 	output("  Main pid: %i  thread pid: %i\n", td->pid, mypid);
-	#endif
+#endif
 
-	if (mypid != td->pid)
-	{
-		FAILED("New thread does not belong to the same process as its parent thread");
+	if (mypid != td->pid) {
+		FAILED
+		    ("New thread does not belong to the same process as its parent thread");
 	}
 
 	/* Compare the threads IDs */
 	mytid = pthread_self();
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	/* pthread_t is a pointer with Linux/nptl. This output can be erroneous for other arcs */
 	output("  Main tid: %p  thread tid: %p\n", td->tid, mytid);
-	#endif
+#endif
 
-	if (pthread_equal(mytid, td->tid) != 0)
-	{
-		FAILED("The created thread has the same thread ID as its parent");
+	if (pthread_equal(mytid, td->tid) != 0) {
+		FAILED
+		    ("The created thread has the same thread ID as its parent");
 	}
 
 	/* Change the global value */
-	global++;
+	global ++;
 
 	/* Post the semaphore to unlock the main thread in case of a detached thread */
-	do { ret = sem_post(td->sem); }
+	do {
+		ret = sem_post(td->sem);
+	}
 	while ((ret == -1) && (errno == EINTR));
-	if (ret == -1)  {  UNRESOLVED(errno, "Failed to post the semaphore");  }
+	if (ret == -1) {
+		UNRESOLVED(errno, "Failed to post the semaphore");
+	}
 
 	return arg;
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int ret=0;
+	int ret = 0;
 	struct testdata td;
-	void * rval;
+	void *rval;
 	pthread_t child;
 	int i;
 
 	output_init();
 
-	td.tid=pthread_self();
-	td.pid=getpid();
+	td.tid = pthread_self();
+	td.pid = getpid();
 
 	scenar_init();
 
-	for (i=0; i < NSCENAR; i++)
-	{
-		#if VERBOSE > 0
+	for (i = 0; i < NSCENAR; i++) {
+#if VERBOSE > 0
 		output("-----\n");
-		output("Starting test with scenario (%i): %s\n", i, scenarii[i].descr);
-		#endif
+		output("Starting test with scenario (%i): %s\n", i,
+		       scenarii[i].descr);
+#endif
 
 		td.sem = &scenarii[i].sem;
 
-		global = 2*i;
+		global = 2 * i;
 
 		ret = pthread_create(&child, &scenarii[i].ta, threaded, &td);
-		switch (scenarii[i].result)
-		{
-			case 0: /* Operation was expected to succeed */
-				if (ret != 0)  {  UNRESOLVED(ret, "Failed to create this thread");  }
-				break;
+		switch (scenarii[i].result) {
+		case 0:	/* Operation was expected to succeed */
+			if (ret != 0) {
+				UNRESOLVED(ret, "Failed to create this thread");
+			}
+			break;
 
-			case 1: /* Operation was expected to fail */
-				if (ret == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
-				break;
+		case 1:	/* Operation was expected to fail */
+			if (ret == 0) {
+				UNRESOLVED(-1,
+					   "An error was expected but the thread creation succeeded");
+			}
+			break;
 
-			case 2: /* We did not know the expected result */
-			default:
-				#if VERBOSE > 0
-				if (ret == 0)
-					{ output("Thread has been created successfully for this scenario\n"); }
-				else
-					{ output("Thread creation failed with the error: %s\n", strerror(ret)); }
-				#endif
+		case 2:	/* We did not know the expected result */
+		default:
+#if VERBOSE > 0
+			if (ret == 0) {
+				output
+				    ("Thread has been created successfully for this scenario\n");
+			} else {
+				output
+				    ("Thread creation failed with the error: %s\n",
+				     strerror(ret));
+			}
+#endif
 		}
-		if (ret == 0) /* The new thread is running */
-		{
-			if (scenarii[i].detached == 0)
-			{
+		if (ret == 0) {	/* The new thread is running */
+			if (scenarii[i].detached == 0) {
 				ret = pthread_join(child, &rval);
-				if (ret != 0)  {  UNRESOLVED(ret, "Unable to join a thread");  }
+				if (ret != 0) {
+					UNRESOLVED(ret,
+						   "Unable to join a thread");
+				}
 
-				if (rval != &td)
-				{
-					FAILED("Could not get the thread return value. Did it execute?");
+				if (rval != &td) {
+					FAILED
+					    ("Could not get the thread return value. Did it execute?");
+				}
+			} else {
+				/* Just wait for the thread terminate */
+				do {
+					ret = sem_wait(td.sem);
+				}
+				while ((ret == -1) && (errno == EINTR));
+				if (ret == -1) {
+					UNRESOLVED(errno,
+						   "Failed to post the semaphore");
 				}
 			}
-			else
-			{
-				/* Just wait for the thread terminate */
-				do { ret = sem_wait(td.sem); }
-				while ((ret == -1) && (errno == EINTR));
-				if (ret == -1)  {  UNRESOLVED(errno, "Failed to post the semaphore");  }
-			}
 
-			if (global != (2*i + 1))
-			{
+			if (global !=(2 * i + 1)) {
 				/* Maybe a possible issue with CPU memory-caching here? */
-				FAILED("The threads do not share the same process memory.");
+				FAILED
+				    ("The threads do not share the same process memory.");
 			}
 		}
 	}
 
 	scenar_fini();
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("-----\n");
 	output("All test data destroyed\n");
 	output("Test PASSED\n");
-	#endif
+#endif
 
 	PASSED;
 }

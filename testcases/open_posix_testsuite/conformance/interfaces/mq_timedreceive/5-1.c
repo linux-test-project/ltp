@@ -52,7 +52,7 @@ int main()
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
 	}
@@ -71,7 +71,7 @@ int main()
 			}
 		} else {
 			printf("mq_timedreceive didn't block on waiting\n");
-			wait(NULL); /* wait for child to exit */
+			wait(NULL);	/* wait for child to exit */
 			perror(ERROR_PREFIX "mq_timedreceive");
 			failure = 1;
 		}
@@ -95,8 +95,8 @@ int main()
 		return PTS_PASS;
 	} else {
 		/*  Child Process */
-		sleep(2); /* sleep 2 seconds,
-			      assume that parent will block on waiting then */
+		sleep(2);	/* sleep 2 seconds,
+				   assume that parent will block on waiting then */
 		if (mq_send(mqdes, msgptr, strlen(msgptr), prio) == -1) {
 			perror(ERROR_PREFIX "mq_send");
 			return PTS_UNRESOLVED;

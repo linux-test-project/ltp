@@ -50,7 +50,7 @@
 #include "posixtest.h"
 
 static const char *queue_name = "/fork_19_1_mq";
-static const char message[]  = "I'm your father...";
+static const char message[] = "I'm your father...";
 
 int main(void)
 {
@@ -67,7 +67,7 @@ int main(void)
 	mqa.mq_msgsize = sizeof(message);
 
 	mq = mq_open(queue_name, O_RDWR | O_CREAT | O_NONBLOCK,
-	             S_IRUSR | S_IWUSR, &mqa);
+		     S_IRUSR | S_IWUSR, &mqa);
 
 	if (mq == -1) {
 		perror("Failed to create the message queue descriptor");
@@ -116,12 +116,14 @@ int main(void)
 		ret = mq_getattr(mq, &mqa);
 
 		if (ret != 0) {
-			perror("Failed to get message queue attributes in child");
+			perror
+			    ("Failed to get message queue attributes in child");
 			return PTS_FAIL;
 		}
 
 		if (mqa.mq_curmsgs != 1) {
-			perror("The queue information does not show the message in child");
+			perror
+			    ("The queue information does not show the message in child");
 			return PTS_FAIL;
 		}
 

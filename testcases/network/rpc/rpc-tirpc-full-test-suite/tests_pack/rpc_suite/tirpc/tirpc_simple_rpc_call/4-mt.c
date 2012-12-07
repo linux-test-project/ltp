@@ -46,65 +46,60 @@ int run_mode;
 int progNum;
 int callNb;
 
-void *my_thread_process (void *arg)
+void *my_thread_process(void *arg)
 {
 	enum clnt_stat rslt;
-    int sndVar = atoi(arg);
-    int recVar;
-    int i;
+	int sndVar = atoi(arg);
+	int recVar;
+	int i;
 
-    if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		fprintf(stderr, "Thread %d\n", atoi(arg));
 		fprintf(stderr, "%s\n", nettype);
-    	fprintf(stderr, "%s\n", hostname);
-    	fprintf(stderr, "Value sent : %d\n", sndVar);
-    }
-
-	for (i = 0; i < callNb; i++)
-	{
-		rslt = rpc_call(hostname, progNum + atoi(arg), VERSNUM, PROCNUM,
-                    (xdrproc_t)xdr_int, (char *)&sndVar,    // xdr_in
-                    (xdrproc_t)xdr_int, (char *)&recVar,    // xdr_out
-                    nettype);	/**/
-
-    	//printf("Value received : %d\n", recVar);
-
-		thread_array_result[atoi(arg)] = thread_array_result[atoi(arg)] + (rslt == RPC_SUCCESS);
+		fprintf(stderr, "%s\n", hostname);
+		fprintf(stderr, "Value sent : %d\n", sndVar);
 	}
 
-    pthread_exit (0);
+	for (i = 0; i < callNb; i++) {
+		rslt = rpc_call(hostname, progNum + atoi(arg), VERSNUM, PROCNUM, (xdrproc_t) xdr_int, (char *)&sndVar,	// xdr_in
+				(xdrproc_t) xdr_int, (char *)&recVar,	// xdr_out
+				nettype);
+		/**/
+		    //printf("Value received : %d\n", recVar);
+		    thread_array_result[atoi(arg)] =
+		    thread_array_result[atoi(arg)] + (rslt == RPC_SUCCESS);
+	}
+
+	pthread_exit(0);
 }
 
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   argc[3] : Number of threads
-	//					   argc[4] : Number of calls per thread
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         argc[3] : Number of threads
+	//                                         argc[4] : Number of calls per thread
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int threadNb = atoi(argc[3]);
 	int i;
 	pthread_t *pThreadArray;
-    void *ret;
+	void *ret;
 
-    nettype = "visible";
+	nettype = "visible";
 	progNum = atoi(argc[2]);
 	callNb = atoi(argc[4]);
-    hostname = argc[1];
+	hostname = argc[1];
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("Server #%d\n", progNum);
 		printf("Thread to create %d\n", threadNb);
 	}
-
 	//Initialization : create threads results array, init elements to 0
 	//Each thread will put function result (pas/fail) into array
 	thread_array_result = (int *)malloc(threadNb * sizeof(int));
@@ -112,43 +107,37 @@ int main(int argn, char *argc[])
 
 	//Create all threads
 	//Run all threads
-	pThreadArray = (pthread_t *)malloc(threadNb * sizeof(pthread_t));
-	for (i = 0; i < threadNb; i++)
-	{
+	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
+	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
-			fprintf (stderr, "Try to create thread %d\n", i);
-		if (pthread_create (&pThreadArray[i], NULL, my_thread_process, i) < 0)
-	    {
-	        fprintf (stderr, "pthread_create error for thread 1\n");
-	        exit (1);
-	    }
+			fprintf(stderr, "Try to create thread %d\n", i);
+		if (pthread_create(&pThreadArray[i], NULL, my_thread_process, i)
+		    < 0) {
+			fprintf(stderr, "pthread_create error for thread 1\n");
+			exit(1);
+		}
 	}
 
 	//Clean threads
-	for (i = 0; i < threadNb; i++)
-	{
-		(void)pthread_join (pThreadArray[i], &ret);
+	for (i = 0; i < threadNb; i++) {
+		(void)pthread_join(pThreadArray[i], &ret);
 	}
 
 	//Check if all threads results are ok
 	test_status = 0;
-	for (i = 0; i < threadNb; i++)
-	{
-		if (thread_array_result[i] != callNb)
-		{
+	for (i = 0; i < threadNb; i++) {
+		if (thread_array_result[i] != callNb) {
 			test_status = 1;
 			break;
 		}
 	}
 
-	if (run_mode == 1)
-	{
-		for (i = 0; i < threadNb; i++)
-		{
-			fprintf(stderr, "Result[%d]=%d\n", i, thread_array_result[i]);
+	if (run_mode == 1) {
+		for (i = 0; i < threadNb; i++) {
+			fprintf(stderr, "Result[%d]=%d\n", i,
+				thread_array_result[i]);
 		}
 	}
-
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);

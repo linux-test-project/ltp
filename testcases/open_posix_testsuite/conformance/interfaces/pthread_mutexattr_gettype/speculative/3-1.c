@@ -34,12 +34,13 @@ int main()
 	/* Make 'attr' invalid by not initializing it and using memset. */
 	memset(&mta, 0, sizeof(mta));
 
-	 /* Pass an invalid 'attr'.  */
-	ret=pthread_mutexattr_gettype(&mta, &type);
+	/* Pass an invalid 'attr'.  */
+	ret = pthread_mutexattr_gettype(&mta, &type);
 
-	if (ret != EINVAL)
-	{
-		printf("Test FAILED: Incorrect return code.  Expected EINVAL, but got: %d\n", ret);
+	if (ret != EINVAL) {
+		printf
+		    ("Test FAILED: Incorrect return code.  Expected EINVAL, but got: %d\n",
+		     ret);
 		return PTS_FAIL;
 	}
 

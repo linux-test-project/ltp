@@ -36,12 +36,12 @@
  * and this test to function correctly.
  */
 #ifndef MSG_CMSG_COMPAT
-# if defined(__powerpc64__) || defined(__mips64) || defined(__x86_64__) || \
+#if defined(__powerpc64__) || defined(__mips64) || defined(__x86_64__) || \
      defined(__sparc64__) || defined(__ia64__) || defined(__s390x__)
-#  define MSG_CMSG_COMPAT 0x80000000
-# else
-#  define MSG_CMSG_COMPAT 0
-# endif
+#define MSG_CMSG_COMPAT 0x80000000
+#else
+#define MSG_CMSG_COMPAT 0
+#endif
 #endif /* MSG_CMSG_COMPAT */
 
 #include <stdio.h>
@@ -111,8 +111,8 @@ struct test_case_t {		/* test case structure */
 	int tolen;		/* length of "to" buffer */
 	int retval;		/* syscall return value */
 	int experrno;		/* expected errno */
-	void (*setup)(void);
-	void (*cleanup)(void);
+	void (*setup) (void);
+	void (*cleanup) (void);
 	char *desc;
 };
 
@@ -132,7 +132,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EBADF,
 	 .setup = setup0,
 	 .cleanup = cleanup0,
-	 .desc = "bad file descriptor"},
+	 .desc = "bad file descriptor"}
+	,
 	{.domain = 0,
 	 .type = 0,
 	 .proto = 0,
@@ -148,7 +149,8 @@ struct test_case_t tdat[] = {
 	 .experrno = ENOTSOCK,
 	 .setup = setup0,
 	 .cleanup = cleanup0,
-	 .desc = "invalid socket"},
+	 .desc = "invalid socket"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -164,7 +166,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EFAULT,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "invalid send buffer"},
+	 .desc = "invalid send buffer"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -180,7 +183,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EFAULT,
 	 .setup = setup5,
 	 .cleanup = cleanup1,
-	 .desc = "connected TCP"},
+	 .desc = "connected TCP"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -196,7 +200,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EPIPE,
 	 .setup = setup3,
 	 .cleanup = cleanup1,
-	 .desc = "not connected TCP"},
+	 .desc = "not connected TCP"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -244,7 +249,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EMSGSIZE,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "UDP message too big"},
+	 .desc = "UDP message too big"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -260,7 +266,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EPIPE,
 	 .setup = setup2,
 	 .cleanup = cleanup1,
-	 .desc = "local endpoint shutdown"},
+	 .desc = "local endpoint shutdown"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -276,7 +283,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EFAULT,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "invalid iovec pointer"},
+	 .desc = "invalid iovec pointer"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -292,7 +300,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EFAULT,
 	 .setup = setup1,
 	 .cleanup = cleanup1,
-	 .desc = "invalid msghdr pointer"},
+	 .desc = "invalid msghdr pointer"}
+	,
 	{.domain = PF_UNIX,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -308,7 +317,8 @@ struct test_case_t tdat[] = {
 	 .experrno = 0,
 	 .setup = setup4,
 	 .cleanup = cleanup4,
-	 .desc = "rights passing"},
+	 .desc = "rights passing"}
+	,
 	{.domain = PF_UNIX,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -324,7 +334,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EOPNOTSUPP,
 	 .setup = setup4,
 	 .cleanup = cleanup4,
-	 .desc = "invalid flags set w/ control"},
+	 .desc = "invalid flags set w/ control"}
+	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -340,7 +351,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EOPNOTSUPP,
 	 .setup = setup7,
 	 .cleanup = cleanup1,
-	 .desc = "invalid flags set"},
+	 .desc = "invalid flags set"}
+	,
 	{.domain = PF_UNIX,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -356,7 +368,8 @@ struct test_case_t tdat[] = {
 	 .experrno = EOPNOTSUPP,
 	 .setup = setup6,
 	 .cleanup = cleanup4,
-	 .desc = "invalid cmsg length"},
+	 .desc = "invalid cmsg length"}
+	,
 	{.domain = PF_UNIX,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -500,7 +513,7 @@ static pid_t start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 		return pid;
 	}
 
-	  exit(1);
+	exit(1);
 }
 
 static void do_child(void)

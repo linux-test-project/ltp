@@ -60,7 +60,7 @@
 #define DEF_ITERATIONS 100
 
 #define HIST_BUCKETS 100
-#define THRESHOLD 200 /* microseconds */
+#define THRESHOLD 200		/* microseconds */
 
 pthread_barrier_t bar1, bar2;
 pthread_mutex_t lock;
@@ -84,8 +84,10 @@ void usage(void)
 {
 	rt_help();
 	printf("pi_perf_test specific options:\n");
-	printf("  -nNUMBER   Number of busy threads. Default = number of cpus\n");
-	printf("  -iNUMBER   Number of iterations. Default = %d\n", DEF_ITERATIONS);
+	printf
+	    ("  -nNUMBER   Number of busy threads. Default = number of cpus\n");
+	printf("  -iNUMBER   Number of iterations. Default = %d\n",
+	       DEF_ITERATIONS);
 	printf("  -tPERIOD   Duration of work. Number of ms.\n");
 }
 
@@ -112,7 +114,7 @@ int parse_args(int c, char *v)
 	return handled;
 }
 
-void * busy_thread(void *arg)
+void *busy_thread(void *arg)
 {
 	struct thread *thr = (struct thread *)arg;
 
@@ -128,7 +130,7 @@ void * busy_thread(void *arg)
 	return NULL;
 }
 
-void * low_prio_thread(void *arg)
+void *low_prio_thread(void *arg)
 {
 	nsec_t low_start, low_hold;
 	unsigned int i;
@@ -142,7 +144,7 @@ void * low_prio_thread(void *arg)
 		/* Wait for all threads to reach barrier wait.
 		   Since we already own the mutex, high prio
 		   thread will boost our priority.
-		*/
+		 */
 		pthread_barrier_wait(&bar1);
 
 		low_start = rt_gettime();
@@ -156,7 +158,7 @@ void * low_prio_thread(void *arg)
 		rec.y = low_hold / NS_PER_US;
 		stats_container_append(&low_dat, rec);
 
-		if (i == iterations-1)
+		if (i == iterations - 1)
 			end = 1;
 
 		/* Wait for all threads to finish this iteration */
@@ -166,7 +168,7 @@ void * low_prio_thread(void *arg)
 	return NULL;
 }
 
-void * high_prio_thread(void *arg)
+void *high_prio_thread(void *arg)
 {
 	nsec_t high_start, high_end, high_get_lock;
 	unsigned int i;
@@ -201,11 +203,14 @@ void * high_prio_thread(void *arg)
 
 	stats_hist(&cpu_delay_hist, &cpu_delay_dat);
 	stats_container_save("samples", "pi_perf Latency Scatter Plot",
-				"Iteration", "Latency (us)", &cpu_delay_dat, "points");
+			     "Iteration", "Latency (us)", &cpu_delay_dat,
+			     "points");
 	stats_container_save("hist", "pi_perf Latency Histogram",
-				"Latency (us)", "Samples", &cpu_delay_hist, "steps");
+			     "Latency (us)", "Samples", &cpu_delay_hist,
+			     "steps");
 
-	printf("Time taken for high prio thread to get the lock once released by low prio thread\n");
+	printf
+	    ("Time taken for high prio thread to get the lock once released by low prio thread\n");
 	printf("Min delay = %ld us\n", stats_min(&cpu_delay_dat));
 	printf("Max delay = %ld us\n", stats_max(&cpu_delay_dat));
 	printf("Average delay = %4.2f us\n", stats_avg(&cpu_delay_dat));
@@ -252,17 +257,19 @@ int main(int argc, char *argv[])
 
 	if ((ret = create_fifo_thread(low_prio_thread, (void *)0, LOWPRIO)) < 0)
 		exit(ret);
-	if ((ret = create_fifo_thread(high_prio_thread, (void *)0, HIGHPRIO)) < 0)
+	if ((ret =
+	     create_fifo_thread(high_prio_thread, (void *)0, HIGHPRIO)) < 0)
 		exit(ret);
 
 	for (i = 0; i < num_busy; i++) {
-		if ((ret = create_fifo_thread(busy_thread, (void *)i, BUSYPRIO)) < 0)
+		if ((ret =
+		     create_fifo_thread(busy_thread, (void *)i, BUSYPRIO)) < 0)
 			exit(ret);
 	}
 
 	join_threads();
 	printf("Criteria: High prio lock wait time < "
-			"(Low prio lock held time + %d us)\n", (int)pass_criteria);
+	       "(Low prio lock held time + %d us)\n", (int)pass_criteria);
 
 	ret = 0;
 	if (max_pi_delay > pass_criteria)

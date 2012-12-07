@@ -83,7 +83,7 @@ int main(int ac, char **av)
 		if (pid < 0) {
 			tst_resm(TFAIL, "Fork failed");
 			cleanup();
-		 } else if (pid == 0) {	/* child */
+		} else if (pid == 0) {	/* child */
 			max_files = getdtablesize();
 			for (i = 0; i < max_files; i++) {
 				if ((fd = open(fname, O_CREAT | O_RDONLY,

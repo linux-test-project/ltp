@@ -58,9 +58,9 @@
 #define verbose(x...) do {} while (0);
 #endif
 
-#define NUM_TIMES 200 /* How many intervals you want to check*/
-#define INTERVALS 1  /* How many milliseconds interval in iterations*/
-#define USECONDS  1000  /* microseconds to sleep*/
+#define NUM_TIMES 200		/* How many intervals you want to check */
+#define INTERVALS 1		/* How many milliseconds interval in iterations */
+#define USECONDS  1000		/* microseconds to sleep */
 #define info	printf("The results FAIL is just intuitive and not exact" \
 		" failure. Please look at cpuctl_testplan.txt in the test directory.\n");
 
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	if (test_num == 2) {
 		strncpy(mytaskfile, argv[4], FILENAME_MAX);
 		strncat(mytaskfile, "/tasks",
-					 FILENAME_MAX - strlen(mytaskfile) - 1);
+			FILENAME_MAX - strlen(mytaskfile) - 1);
 		write_to_file(mytaskfile, "a", getpid());
 
 		/* Give a chance to other tasks too to go to their class */
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 	printf("TINFO \tThe latency check task started\n");
 
 	/* Let us start capturing the time now */
-	for (count = NUM_TIMES; count >= 0 ; count -= INTERVALS) {
+	for (count = NUM_TIMES; count >= 0; count -= INTERVALS) {
 		if (gettimeofday(&prev_time, NULL) == -1)
 			perror("In Iteration no 1 \n");
 		/* sleep for specified time */
@@ -132,18 +132,18 @@ int main(int argc, char *argv[])
 			fail = 1;
 
 		verbose("Iteration %d: Exp(us) =%u, Actual =%u delta = %u\n",
-						 i++, sleeptime, actual, delta);
+			i++, sleeptime, actual, delta);
 	}
 
 	if (fail) {
 		printf("FAIL \tThe Latency test %d failed\n", test_num);
 		printf("Max latency observed = %u in Iteration %d\n",
-							 delta_max, iteration);
+		       delta_max, iteration);
 		info;
 	} else {
 		printf("PASS \tThe Latency test %d passed\n", test_num);
 		printf("Max latency observed = %u microsec in Iteration %d\n",
-							 delta_max, iteration);
+		       delta_max, iteration);
 	}
 	return fail;
 }

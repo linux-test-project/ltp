@@ -116,7 +116,8 @@ int main(int ac, char **av)
 						 " %ld unexpected - expected %d",
 						 TEST_RETURN, pwent->pw_gid);
 				} else {
-					tst_resm(TPASS, "effective group id %ld "
+					tst_resm(TPASS,
+						 "effective group id %ld "
 						 "is correct", TEST_RETURN);
 				}
 			}

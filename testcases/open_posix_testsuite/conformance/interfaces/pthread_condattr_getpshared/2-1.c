@@ -24,31 +24,31 @@ int main()
 {
 
 	/* Make sure there is process-shared capability. */
-	#ifndef PTHREAD_PROCESS_SHARED
-	  fprintf(stderr,"process-shared attribute is not available for testing\n");
-	  return PTS_UNRESOLVED;
-	#endif
+#ifndef PTHREAD_PROCESS_SHARED
+	fprintf(stderr,
+		"process-shared attribute is not available for testing\n");
+	return PTS_UNRESOLVED;
+#endif
 
 	pthread_condattr_t attr;
 	int pshared;
 
 	/* Initialize a mutex attributes object */
-	if (pthread_condattr_init(&attr) != 0)
-	{
+	if (pthread_condattr_init(&attr) != 0) {
 		perror("Error at pthread_condattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	 /* The default 'pshared' attribute should be PTHREAD_PROCESS_PRIVATE  */
-	if (pthread_condattr_getpshared(&attr, &pshared) != 0)
-	{
-		fprintf(stderr,"Error obtaining the attribute process-shared\n");
+	/* The default 'pshared' attribute should be PTHREAD_PROCESS_PRIVATE  */
+	if (pthread_condattr_getpshared(&attr, &pshared) != 0) {
+		fprintf(stderr,
+			"Error obtaining the attribute process-shared\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pshared != PTHREAD_PROCESS_PRIVATE)
-	{
-		printf("Test FAILED: Incorrect default pshared value: %d\n", pshared);
+	if (pshared != PTHREAD_PROCESS_PRIVATE) {
+		printf("Test FAILED: Incorrect default pshared value: %d\n",
+		       pshared);
 		return PTS_FAIL;
 	}
 

@@ -247,8 +247,7 @@ struct list mnem[] = {
 int npathdats, ngoods, nbads, nmnem;
 
 /*--------------------------------------------------------------*/
-int
-main(void)
+int main(void)
 {
 	setup();		/* temp file is now open        */
 

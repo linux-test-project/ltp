@@ -124,6 +124,7 @@ char *TCID = "readlink02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 
 int exp_enos[] = { 0, 0 };
+
 char fname[255], buf[255], symlnk[255];
 int fd;
 

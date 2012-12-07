@@ -18,7 +18,7 @@
  *
  */
 
-# define _XOPEN_SOURCE  600
+#define _XOPEN_SOURCE  600
 
 #include <pthread.h>
 #include <unistd.h>
@@ -30,10 +30,10 @@
 int main()
 {
 
-	#if _POSIX_CPUTIME == -1
-		printf("_POSIX_CPUTIME unsupported\n");
-		return PTS_UNSUPPORTED;
-	#endif
+#if _POSIX_CPUTIME == -1
+	printf("_POSIX_CPUTIME unsupported\n");
+	return PTS_UNSUPPORTED;
+#endif
 
 	pthread_condattr_t condattr;
 	clockid_t clockid;
@@ -45,25 +45,25 @@ int main()
 	}
 
 	/* Initialize a cond attributes object */
-	if ((rc=pthread_condattr_init(&condattr)) != 0)
-	{
-		fprintf(stderr,"Error at pthread_condattr_init(), rc=%d\n",rc);
+	if ((rc = pthread_condattr_init(&condattr)) != 0) {
+		fprintf(stderr, "Error at pthread_condattr_init(), rc=%d\n",
+			rc);
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	/* Get the cpu clock id */
 
-	if (clock_getcpuclockid(getpid(), &clockid) != 0)
-	{
+	if (clock_getcpuclockid(getpid(), &clockid) != 0) {
 		printf("clock_getcpuclockid() failed\n");
 		return PTS_FAIL;
 	}
 
 	rc = pthread_condattr_setclock(&condattr, clockid);
-	if (rc != EINVAL)
-	{
-		printf("Test FAILED: Expected EINVAL when passing a cpu clock id, instead it returned: %d \n", rc);
+	if (rc != EINVAL) {
+		printf
+		    ("Test FAILED: Expected EINVAL when passing a cpu clock id, instead it returned: %d \n",
+		     rc);
 		return PTS_FAIL;
 	}
 

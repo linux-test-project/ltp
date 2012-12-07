@@ -37,13 +37,13 @@
 
 char *TCID = "stream02";
 int TST_TOTAL = 1;
-int     local_flag;
+int local_flag;
 
 #define PASSED 1
 #define FAILED 0
 
-char progname[] = "stream02()" ;
-char tempfile1[40]="";
+char progname[] = "stream02()";
+char tempfile1[40] = "";
 
 /* XXX: add cleanup + setup. */
 
@@ -55,65 +55,68 @@ int main(int ac, char *av[])
 	int lc;
 	char *msg;
 
-         /*
-          * parse standard options
-          */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	/*
+	 * parse standard options
+	 */
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-        local_flag = PASSED;
+	local_flag = PASSED;
 	tst_tmpdir();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		sprintf(tempfile1, "stream1.%d", getpid());
 	/*--------------------------------------------------------------------*/
-	//block0:
-		if (mknod(tempfile1, (S_IFIFO|0666), 0) != 0) {
-			tst_resm(TFAIL,"mknod failed in block0: %s", strerror(errno));
+		//block0:
+		if (mknod(tempfile1, (S_IFIFO | 0666), 0) != 0) {
+			tst_resm(TFAIL, "mknod failed in block0: %s",
+				 strerror(errno));
 			local_flag = FAILED;
 			goto block1;
 		}
-		if ((stream=fopen(tempfile1,"w+")) == NULL) {
-			tst_resm(TFAIL,"fopen(%s) w+ failed for pipe file: %s", tempfile1, strerror(errno));
+		if ((stream = fopen(tempfile1, "w+")) == NULL) {
+			tst_resm(TFAIL, "fopen(%s) w+ failed for pipe file: %s",
+				 tempfile1, strerror(errno));
 			local_flag = FAILED;
 		} else {
 			fclose(stream);
 		}
-		if ((stream=fopen(tempfile1,"a+")) == NULL) {
-			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
+		if ((stream = fopen(tempfile1, "a+")) == NULL) {
+			tst_resm(TFAIL, "fopen(%s) a+ failed: %s", tempfile1,
+				 strerror(errno));
 			local_flag = FAILED;
 		} else {
 			fclose(stream);
 			unlink(tempfile1);
 		}
 		if (local_flag == PASSED) {
-		         tst_resm(TPASS, "Test passed in block0.");
+			tst_resm(TPASS, "Test passed in block0.");
 		} else {
-		         tst_resm(TFAIL, "Test failed in block0.");
-	        }
+			tst_resm(TFAIL, "Test failed in block0.");
+		}
 		local_flag = PASSED;
 
 	/*--------------------------------------------------------------------*/
-	block1 :
-		if ((fd = open("/dev/tty", O_WRONLY)) >= 0)
-		{
+block1:
+		if ((fd = open("/dev/tty", O_WRONLY)) >= 0) {
 			close(fd);
-			if (( stream = fopen("/dev/tty","w"))==NULL) {
-				tst_resm(TFAIL|TERRNO,"fopen(/dev/tty) write failed");
+			if ((stream = fopen("/dev/tty", "w")) == NULL) {
+				tst_resm(TFAIL | TERRNO,
+					 "fopen(/dev/tty) write failed");
 				local_flag = FAILED;
 			} else {
 				fclose(stream);
 			}
 		}
 		if (local_flag == PASSED) {
-		         tst_resm(TPASS, "Test passed in block1.");
+			tst_resm(TPASS, "Test passed in block1.");
 		} else {
-		         tst_resm(TFAIL, "Test failed in block1.");
-	        }
+			tst_resm(TFAIL, "Test failed in block1.");
+		}
 
 	/*--------------------------------------------------------------------*/
-	} /* end for */
+	}			/* end for */
 	tst_rmdir();
 	tst_exit();
 }

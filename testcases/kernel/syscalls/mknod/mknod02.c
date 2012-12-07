@@ -241,7 +241,8 @@ void setup()
 	/* Get the uid/gid of ltpuser */
 	if ((user1 = getpwnam(LTPUSER)) == NULL) {
 		tst_brkm(TBROK | TERRNO, cleanup,
-			"Couldn't determine if %s was in /etc/passwd", LTPUSER);
+			 "Couldn't determine if %s was in /etc/passwd",
+			 LTPUSER);
 	}
 	user1_uid = user1->pw_uid;
 	group1_gid = user1->pw_gid;

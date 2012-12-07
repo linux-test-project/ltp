@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	sigset_t signalset;
 
 	if (argc < 2) {
-        	printf("Usage:  %s [0|1]\n", argv[0]);
+		printf("Usage:  %s [0|1]\n", argv[0]);
 		return PTS_UNRESOLVED;
 	}
 	if ('0' == argv[1][0]) {
@@ -33,14 +33,14 @@ int main(int argc, char *argv[])
 			return PTS_UNRESOLVED;
 		}
 	} else if ('1' == argv[1][0]) {
-			if (sigfillset(&signalset) == -1) {
-				perror("sigfillset failed -- test aborted");
-				return PTS_UNRESOLVED;
-			}
-		} else {
-			printf("Usage:  %s [0|1]\n", argv[0]);
+		if (sigfillset(&signalset) == -1) {
+			perror("sigfillset failed -- test aborted");
 			return PTS_UNRESOLVED;
 		}
+	} else {
+		printf("Usage:  %s [0|1]\n", argv[0]);
+		return PTS_UNRESOLVED;
+	}
 
 	if (sigaddset(&signalset, SIGALRM) == 0) {
 		if (sigismember(&signalset, SIGALRM) == 0) {

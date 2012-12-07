@@ -1,8 +1,8 @@
 #include <errno.h>
 #include "config.h"
 #if HAVE_SYS_CAPABILITY_H
-# include <linux/types.h>
-# include <sys/capability.h>
+#include <linux/types.h>
+#include <sys/capability.h>
 #endif
 #include <sys/prctl.h>
 #include <linux/securebits.h>
@@ -10,7 +10,7 @@
 #include "test.h"
 
 #ifndef SECBIT_KEEP_CAPS
-# define SECBIT_KEEP_CAPS (1<<4)
+#define SECBIT_KEEP_CAPS (1<<4)
 #endif
 
 /* Tests:

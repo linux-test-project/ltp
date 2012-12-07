@@ -43,14 +43,14 @@
 #include "affinity.h"
 
 #ifdef BSD
-# include <sys/types.h>
-# include <sys/param.h>
-# include <sys/sysctl.h>
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
 #endif
 
 #ifdef HPUX
-# include <sys/param.h>
-# include <sys/pstat.h>
+#include <sys/param.h>
+#include <sys/pstat.h>
 #endif
 
 static int nb_cpu;
@@ -94,7 +94,7 @@ static void child_process(void)
 
 	/* to avoid blocking */
 	alarm(2);
-	while (1);
+	while (1) ;
 }
 
 static void test_process(void)
@@ -136,7 +136,7 @@ int main(void)
 	child_pid = malloc(nb_cpu * sizeof(int));
 
 	key = ftok("conformance/interfaces/sched_setparam/9-1.c", 1234);
-	shm_id = shmget(key, sizeof(int), IPC_CREAT|0600);
+	shm_id = shmget(key, sizeof(int), IPC_CREAT | 0600);
 	if (shm_id < 0) {
 		perror("An error occurs when calling shmget()");
 		return PTS_UNRESOLVED;

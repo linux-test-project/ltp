@@ -1,6 +1,6 @@
   /*
-  Test that the constants below are supported.
-  */
+     Test that the constants below are supported.
+   */
 
 #include <signal.h>
 

@@ -300,8 +300,9 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
 	off_t offloc;		/* offset ret. from lseek() */
 
 	if ((offloc = lseek(fdesc, offset, whence)) != checkoff) {
-		tst_resm(TWARN, "return = %"PRId64", expected %"PRId64, (int64_t)offloc, (int64_t)checkoff);
-		tst_brkm(TBROK|TERRNO, cleanup, "lseek() on %s failed",
+		tst_resm(TWARN, "return = %" PRId64 ", expected %" PRId64,
+			 (int64_t) offloc, (int64_t) checkoff);
+		tst_brkm(TBROK | TERRNO, cleanup, "lseek() on %s failed",
 			 TEMPFILE);
 	}
 }

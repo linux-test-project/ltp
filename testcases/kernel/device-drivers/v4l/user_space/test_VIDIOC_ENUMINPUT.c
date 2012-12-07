@@ -40,7 +40,8 @@
 
 #include "test_VIDIOC_ENUMINPUT.h"
 
-void test_VIDIOC_ENUMINPUT() {
+void test_VIDIOC_ENUMINPUT()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_input input;
 	struct v4l2_input input2;
@@ -53,15 +54,17 @@ void test_VIDIOC_ENUMINPUT() {
 		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMINPUT, &input);
 		errno_enum = errno;
 
-		dprintf("\t%s:%u: VIDIOC_ENUMINPUT, ret_enum=%i, errno_enum=%i\n",
-			__FILE__, __LINE__, ret_enum, errno_enum);
+		dprintf
+		    ("\t%s:%u: VIDIOC_ENUMINPUT, ret_enum=%i, errno_enum=%i\n",
+		     __FILE__, __LINE__, ret_enum, errno_enum);
 
 		if (ret_enum == 0) {
 			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(input.index, i);
 
-			CU_ASSERT(0 < strlen( (char*)input.name ));
-			CU_ASSERT(valid_string((char*)input.name, sizeof(input.name)));
+			CU_ASSERT(0 < strlen((char *)input.name));
+			CU_ASSERT(valid_string
+				  ((char *)input.name, sizeof(input.name)));
 
 			//CU_ASSERT_EQUAL(input.type, ?);
 			//CU_ASSERT_EQUAL(input.audioset, ?);
@@ -80,13 +83,15 @@ void test_VIDIOC_ENUMINPUT() {
 			 */
 			memset(&input2, 0, sizeof(input2));
 			input2.index = input.index;
-			strncpy((char*)input2.name, (char*)input.name, sizeof(input2.name));
+			strncpy((char *)input2.name, (char *)input.name,
+				sizeof(input2.name));
 			input2.type = input.type;
 			input2.audioset = input.audioset;
 			input2.tuner = input.tuner;
 			input2.std = input.std;
 			input2.status = input.status;
-			CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)), 0);
+			CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)),
+					0);
 
 			show_v4l2_input(&input);
 
@@ -96,7 +101,8 @@ void test_VIDIOC_ENUMINPUT() {
 
 			memset(&input2, 0xff, sizeof(input2));
 			input2.index = i;
-			CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)), 0);
+			CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)),
+					0);
 
 		}
 		i++;
@@ -104,13 +110,14 @@ void test_VIDIOC_ENUMINPUT() {
 
 }
 
-void test_VIDIOC_ENUMINPUT_S32_MAX() {
+void test_VIDIOC_ENUMINPUT_S32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_input input;
 	struct v4l2_input input2;
 
 	memset(&input, 0xff, sizeof(input));
-	input.index = (__u32)S32_MAX;
+	input.index = (__u32) S32_MAX;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMINPUT, &input);
 	errno_enum = errno;
 
@@ -121,17 +128,18 @@ void test_VIDIOC_ENUMINPUT_S32_MAX() {
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&input2, 0xff, sizeof(input2));
-	input2.index = (__u32)S32_MAX;
+	input2.index = (__u32) S32_MAX;
 	CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)), 0);
 }
 
-void test_VIDIOC_ENUMINPUT_S32_MAX_1() {
+void test_VIDIOC_ENUMINPUT_S32_MAX_1()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_input input;
 	struct v4l2_input input2;
 
 	memset(&input, 0xff, sizeof(input));
-	input.index = ((__u32)S32_MAX)+1;
+	input.index = ((__u32) S32_MAX) + 1;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMINPUT, &input);
 	errno_enum = errno;
 
@@ -142,11 +150,12 @@ void test_VIDIOC_ENUMINPUT_S32_MAX_1() {
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&input2, 0xff, sizeof(input2));
-	input2.index = ((__u32)S32_MAX)+1;
+	input2.index = ((__u32) S32_MAX) + 1;
 	CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)), 0);
 }
 
-void test_VIDIOC_ENUMINPUT_U32_MAX() {
+void test_VIDIOC_ENUMINPUT_U32_MAX()
+{
 	int ret_enum, errno_enum;
 	struct v4l2_input input;
 	struct v4l2_input input2;
@@ -167,7 +176,8 @@ void test_VIDIOC_ENUMINPUT_U32_MAX() {
 	CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)), 0);
 }
 
-void test_VIDIOC_ENUMINPUT_NULL() {
+void test_VIDIOC_ENUMINPUT_NULL()
+{
 	int ret_enum, errno_enum;
 	int ret_null, errno_null;
 	struct v4l2_input input;

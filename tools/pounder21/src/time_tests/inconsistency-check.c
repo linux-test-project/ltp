@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
 		clock_type = CLOCK_REALTIME;
 	}
 
-
 	clock_gettime(clock_type, &list[0]);
 	now = then = list[0].tv_sec;
 
@@ -68,32 +67,32 @@ int main(int argc, char *argv[])
 		inconsistent = 0;
 
 		/* Fill list */
-		for (i=0; i < CALLS_PER_LOOP; i++)
+		for (i = 0; i < CALLS_PER_LOOP; i++)
 			clock_gettime(clock_type, &list[i]);
 
 		/* Check for inconsistencies */
-		for (i=0; i < CALLS_PER_LOOP-1; i++)
-			if (!in_order(list[i],list[i+1]))
+		for (i = 0; i < CALLS_PER_LOOP - 1; i++)
+			if (!in_order(list[i], list[i + 1]))
 				inconsistent = i;
 
 		/* display inconsistency */
 		if (inconsistent) {
 			unsigned long long delta;
-			for (i=0; i < CALLS_PER_LOOP; i++) {
+			for (i = 0; i < CALLS_PER_LOOP; i++) {
 				if (i == inconsistent)
 					printf("--------------------\n");
-				printf("%lu:%lu\n",list[i].tv_sec,
-							list[i].tv_nsec);
-				if (i == inconsistent + 1 )
+				printf("%lu:%lu\n", list[i].tv_sec,
+				       list[i].tv_nsec);
+				if (i == inconsistent + 1)
 					printf("--------------------\n");
 			}
-			delta = list[inconsistent].tv_sec*NSEC_PER_SEC;
+			delta = list[inconsistent].tv_sec * NSEC_PER_SEC;
 			delta += list[inconsistent].tv_nsec;
-			delta -= list[inconsistent+1].tv_sec*NSEC_PER_SEC;
-			delta -= list[inconsistent+1].tv_nsec;
+			delta -= list[inconsistent + 1].tv_sec * NSEC_PER_SEC;
+			delta -= list[inconsistent + 1].tv_nsec;
 			printf("Delta: %llu ns\n", delta);
 			fflush(0);
-			/* timestamp inconsistency*/
+			/* timestamp inconsistency */
 			system("date");
 			return -1;
 		}

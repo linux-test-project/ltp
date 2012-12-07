@@ -120,10 +120,10 @@ int main(int ac, char **av)
 			 "Cannot do utime on a file located on an NFS filesystem");
 	}
 
-        if (tst_is_cwd_v9fs()) {
-                tst_brkm(TCONF, cleanup,
-                         "Cannot do utime on a file located on an 9P filesystem");
-        }
+	if (tst_is_cwd_v9fs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do utime on a file located on an 9P filesystem");
+	}
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -164,7 +164,7 @@ int main(int ac, char **av)
 						 "failed to get present time "
 						 "after utime, error=%d",
 						 errno);
-				 }
+				}
 
 				/*
 				 * Get the modification and access times of
@@ -174,7 +174,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "stat(2) of "
 						 "%s failed, error:%d",
 						 TEMP_FILE, TEST_ERRNO);
-				 }
+				}
 				modf_time = stat_buf.st_mtime;
 				access_time = stat_buf.st_atime;
 
@@ -230,20 +230,20 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "creat(%s, %#o) Failed, errno=%d :%s",
 			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-	 }
+	}
 
 	/* Close the temporary file created */
 	if (close(fildes) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s:",
 			 TEMP_FILE, errno, strerror(errno));
-	 }
+	}
 
 	/* Get the current time */
 	if ((curr_time = time(&tloc)) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "time() failed to get current time, errno=%d", errno);
-	 }
+	}
 
 	/*
 	 * Sleep for a second so that mod time and access times will be

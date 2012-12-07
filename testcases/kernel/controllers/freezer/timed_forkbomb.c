@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct timeval start, now;
 	pid_t child_root;
@@ -55,7 +55,8 @@ int main (int argc, char **argv)
 	 */
 	{
 		char *word;
-		while (scanf("%as", &word) < 1) {}
+		while (scanf("%as", &word) < 1) {
+		}
 		free(word);
 	}
 	if (gettimeofday(&start, NULL))

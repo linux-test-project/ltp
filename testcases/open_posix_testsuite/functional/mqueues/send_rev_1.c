@@ -29,9 +29,9 @@ int main(int argc, char *argv[])
 {
 	struct mq_attr mqstat, attr;
 	char r_msg_ptr[MAX_MSG][MSG_SIZE];
-	const char *s_msg_ptr[] = {"msg test 1", "msg test 2", "msg test 3"};
+	const char *s_msg_ptr[] = { "msg test 1", "msg test 2", "msg test 3" };
 	int i;
-	int oflag = O_CREAT|O_RDWR;
+	int oflag = O_CREAT | O_RDWR;
 	int ret_code = PTS_PASS;
 	mqd_t mq = 0;
 	pid_t pid;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	return PTS_UNRESOLVED;
 #endif */
 
-	if (((mqd_t) -1) == (mq = mq_open(MQ_NAME, oflag, 0777, &mqstat))) {
+	if (((mqd_t) - 1) == (mq = mq_open(MQ_NAME, oflag, 0777, &mqstat))) {
 		perror("mq_open doesn't return success \n");
 		return PTS_UNRESOLVED;
 	}
@@ -59,15 +59,16 @@ int main(int argc, char *argv[])
 	case 0:
 		mq_getattr(mq, &attr);
 		for (i = 0; i < MAX_MSG && ret_code == PTS_PASS; i++) {
-			printf("[%d] s_msg_ptr is '%s' \n", i+1, s_msg_ptr[i]);
+			printf("[%d] s_msg_ptr is '%s' \n", i + 1,
+			       s_msg_ptr[i]);
 			printf("Prepare to send message...\n");
 			if (-1 == mq_send(mq, s_msg_ptr[i], attr.mq_msgsize, 1)) {
 				perror("mq_send doesn't return success \n");
 				ret_code = PTS_UNRESOLVED;
 			} else {
 				printf("Process %ld send message '%s' to "
-				    "process %ld \n",
-				    (long)getpid(), s_msg_ptr[i], (long)pid);
+				       "process %ld \n",
+				       (long)getpid(), s_msg_ptr[i], (long)pid);
 			}
 		}
 		(void)wait(NULL);
@@ -76,14 +77,17 @@ int main(int argc, char *argv[])
 		printf("Enter into child process...\n");
 		mq_getattr(mq, &attr);
 		for (i = 0; i < MAX_MSG && ret_code == PTS_PASS; i++) {
-			printf("Prepare to receive [%d] messages...\n", i+1);
-			if (-1 == mq_receive(mq, r_msg_ptr[i], attr.mq_msgsize, NULL)) {
+			printf("Prepare to receive [%d] messages...\n", i + 1);
+			if (-1 ==
+			    mq_receive(mq, r_msg_ptr[i], attr.mq_msgsize,
+				       NULL)) {
 				perror("mq_receive doesn't return success \n");
 				ret_code = PTS_UNRESOLVED;
 			} else {
 				printf("process %ld receive message '%s' from "
-				    "process %ld \n",
-				    (long)getpid(), r_msg_ptr[i], (long)getppid());
+				       "process %ld \n",
+				       (long)getpid(), r_msg_ptr[i],
+				       (long)getppid());
 			}
 		}
 		exit(ret_code);
@@ -91,8 +95,8 @@ int main(int argc, char *argv[])
 		break;
 	}
 
-	(void) mq_close(mq);
-	(void) mq_unlink(MQ_NAME);
+	(void)mq_close(mq);
+	(void)mq_unlink(MQ_NAME);
 
 	return ret_code;
 

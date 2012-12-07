@@ -42,23 +42,23 @@ int main()
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
-	memset(&mqstat,0,sizeof(mqstat));
+	memset(&mqstat, 0, sizeof(mqstat));
 	mqstat.mq_msgsize = MSGSIZE;
 	mqstat.mq_maxmsg = MAXMSG;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &mqstat);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open()");
 		return PTS_UNRESOLVED;
 	}
-	memset(&nmqstat,0,sizeof(nmqstat));
+	memset(&nmqstat, 0, sizeof(nmqstat));
 	if (mq_getattr(mqdes, &nmqstat) != 0) {
 		perror(ERROR_PREFIX "mq_getattr");
 		unresolved = 1;
 	}
 	if ((mqstat.mq_maxmsg != nmqstat.mq_maxmsg) ||
-            (mqstat.mq_msgsize != nmqstat.mq_msgsize)) {
+	    (mqstat.mq_msgsize != nmqstat.mq_msgsize)) {
 		printf("FAIL: mq_getattr didn't get the correct mq_maxmsg, "
-                       "mq_msgsize set by mq_open\n");
+		       "mq_msgsize set by mq_open\n");
 		failure = 1;
 	}
 
@@ -66,13 +66,13 @@ int main()
 	mq_unlink(mqname);
 
 	if (failure == 1) {
-                printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
+		printf("Test FAILED\n");
+		return PTS_FAIL;
+	}
 	if (unresolved == 1) {
-                printf("Test UNRESOLVED\n");
-                return PTS_UNRESOLVED;
-        }
+		printf("Test UNRESOLVED\n");
+		return PTS_UNRESOLVED;
+	}
 
 	printf("Test PASSED \n");
 	return PTS_PASS;

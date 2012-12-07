@@ -44,20 +44,21 @@
 /*		pair will read from this memory.		              */
 /*									      */
 /******************************************************************************/
-#include <pthread.h>	/* required by pthread functions		      */
-#include <stdio.h>	/* required by fprintf()			      */
-#include <stdlib.h>	/* required by exit(), atoi()			      */
-#include <string.h>     /* required by strncpy()                              */
-#include <unistd.h>	/* required by getopt(), mmap()			      */
-#include <sys/types.h>  /* required by open(), shmat(), shmdt()		      */
-#include <sys/stat.h>   /* required by open()				      */
-#include <sys/ipc.h>    /* required by shmat() shmdt(), shmctl()              */
-#include <sys/shm.h>    /* required by shmat() shmdt(), shmctl()              */
-#include <sys/mman.h>   /* required by mmap()                                 */
-#include <fcntl.h>	/* required by open()				      */
-#include <stdint.h>	/* required by uintptr_t			      */
+#include <pthread.h>		/* required by pthread functions                      */
+#include <stdio.h>		/* required by fprintf()                              */
+#include <stdlib.h>		/* required by exit(), atoi()                         */
+#include <string.h>		/* required by strncpy()                              */
+#include <unistd.h>		/* required by getopt(), mmap()                       */
+#include <sys/types.h>		/* required by open(), shmat(), shmdt()               */
+#include <sys/stat.h>		/* required by open()                                 */
+#include <sys/ipc.h>		/* required by shmat() shmdt(), shmctl()              */
+#include <sys/shm.h>		/* required by shmat() shmdt(), shmctl()              */
+#include <sys/mman.h>		/* required by mmap()                                 */
+#include <fcntl.h>		/* required by open()                                 */
+#include <stdint.h>		/* required by uintptr_t                              */
 
-void noprintf(char* string, ...) {
+void noprintf(char *string, ...)
+{
 }
 
 #ifdef DEBUG
@@ -78,10 +79,10 @@ void noprintf(char* string, ...) {
                                usage(prog); \
                                    } while (0)
 
-#define MAXT	30	/* default number of threads to create.	              */
-#define MAXR	1000	/* default number of repatetions to execute           */
-#define WRITER  0	/* cause thread function to shmat and write           */
-#define READER  1	/* cause thread function to shmat and read            */
+#define MAXT	30		/* default number of threads to create.               */
+#define MAXR	1000		/* default number of repatetions to execute           */
+#define WRITER  0		/* cause thread function to shmat and write           */
+#define READER  1		/* cause thread function to shmat and read            */
 
 /******************************************************************************/
 /*								 	      */
@@ -92,15 +93,15 @@ void noprintf(char* string, ...) {
 /* Return:	exits with -1						      */
 /*									      */
 /******************************************************************************/
-static void
-usage(char *progname)           /* name of this program                       */{
-    fprintf(stderr,
-               "Usage: %s -d NUMDIR -f NUMFILES -h -t NUMTHRD\n"
-               "\t -h Help!\n"
-               "\t -l Number of repatetions to execute:       Default: 1000\n"
-               "\t -t Number of threads to generate:          Default: 30\n",
-                    progname);
-    exit(-1);
+static void usage(char *progname)
+{				/* name of this program                       */
+	fprintf(stderr,
+		"Usage: %s -d NUMDIR -f NUMFILES -h -t NUMTHRD\n"
+		"\t -h Help!\n"
+		"\t -l Number of repatetions to execute:       Default: 1000\n"
+		"\t -t Number of threads to generate:          Default: 30\n",
+		progname);
+	exit(-1);
 }
 
 /******************************************************************************/
@@ -122,34 +123,28 @@ usage(char *progname)           /* name of this program                       */
 /* Return:	exits with -1 on error, 0 on success                          */
 /*									      */
 /******************************************************************************/
-static int
-rm_shared_mem(key_t  shm_id,	/* id of shared memory segment to be removed  */
-	      char *shm_addr,   /* address of shared mem seg to be removed    */
-	      int  cmd)         /* remove id only or remove id and detach seg */
-{
-    struct shmid *shmbuf=NULL;	/* info about the segment pointed by shmkey   */
+static int rm_shared_mem(key_t shm_id,	/* id of shared memory segment to be removed  */
+			 char *shm_addr,	/* address of shared mem seg to be removed    */
+			 int cmd)
+{				/* remove id only or remove id and detach seg */
+	struct shmid *shmbuf = NULL;	/* info about the segment pointed by shmkey   */
 
-    dprt("pid[%d]: rm_shared_mem(): shm_id = %d shm_addr = %#x cmd = %d\n",
-        getpid(), shm_id, shm_addr, cmd);
-    if (shmctl(shm_id, IPC_RMID, (struct shmid_ds *)shmbuf) == -1)
-    {
-	dprt("pid[%d]: rm_shared_mem(): shmctl unable to remove shm_id[%d]\n",
-	    getpid(), shm_id);
-        perror("rm_shared_mem(): shmctl()");
-        return -1;
-    }
+	dprt("pid[%d]: rm_shared_mem(): shm_id = %d shm_addr = %#x cmd = %d\n",
+	     getpid(), shm_id, shm_addr, cmd);
+	if (shmctl(shm_id, IPC_RMID, (struct shmid_ds *)shmbuf) == -1) {
+		dprt("pid[%d]: rm_shared_mem(): shmctl unable to remove shm_id[%d]\n", getpid(), shm_id);
+		perror("rm_shared_mem(): shmctl()");
+		return -1;
+	}
 
-    if (cmd)
-    {
-        if (shmdt((void *)shm_addr) == -1)
-        {
-	    dprt("pid[%d]:rm_shared_mem(): shmdt unable to detach addr = %#x\n",
-	        getpid(), shm_addr);
-            perror("rm_shared_mem(): shmdt()");
-            return -1;
-        }
-    }
-  return 0;
+	if (cmd) {
+		if (shmdt((void *)shm_addr) == -1) {
+			dprt("pid[%d]:rm_shared_mem(): shmdt unable to detach addr = %#x\n", getpid(), shm_addr);
+			perror("rm_shared_mem(): shmdt()");
+			return -1;
+		}
+	}
+	return 0;
 }
 
 /******************************************************************************/
@@ -171,97 +166,88 @@ rm_shared_mem(key_t  shm_id,	/* id of shared memory segment to be removed  */
 /* Return:	exits with -1 on error, 0 on success                          */
 /*									      */
 /******************************************************************************/
-static void *
-shmat_rd_wr(void *args)	/* arguments to the thread function	      */
-{
-    int          shmndx   = 0;	/* index to the number of attach and detach   */
-    int		 index    = 0;  /* index to the number of blocks touched      */
-    int		 reader   = 0;  /* this thread is a reader thread if set to 1 */
-    key_t        shm_id   = 0;	/* shared memory id			      */
-    long         *locargs = 	/* local pointer to arguments		      */
-		            (long *)args;
-    volatile int exit_val = 0;	/* exit value of the pthread 		      */
-    char         *read_from_mem;/* ptr to touch each (4096) block in memory   */
-    char         *write_to_mem; /* ptr to touch each (4096) block in memory   */
-    char         *shmat_addr;   /* address of the attached memory             */
-    char	 buff;          /* temporary buffer                           */
+static void *shmat_rd_wr(void *args)
+{				/* arguments to the thread function             */
+	int shmndx = 0;		/* index to the number of attach and detach   */
+	int index = 0;		/* index to the number of blocks touched      */
+	int reader = 0;		/* this thread is a reader thread if set to 1 */
+	key_t shm_id = 0;	/* shared memory id                           */
+	long *locargs =		/* local pointer to arguments                 */
+	    (long *)args;
+	volatile int exit_val = 0;	/* exit value of the pthread                  */
+	char *read_from_mem;	/* ptr to touch each (4096) block in memory   */
+	char *write_to_mem;	/* ptr to touch each (4096) block in memory   */
+	char *shmat_addr;	/* address of the attached memory             */
+	char buff;		/* temporary buffer                           */
 
-    reader = (int)locargs[3];
-    while (shmndx++ < (int)locargs[0])
-    {
-        dprt("pid[%d]: shmat_rd_wr(): locargs[1] = %#x\n",
-	    getpid(), (int)locargs[1]);
+	reader = (int)locargs[3];
+	while (shmndx++ < (int)locargs[0]) {
+		dprt("pid[%d]: shmat_rd_wr(): locargs[1] = %#x\n",
+		     getpid(), (int)locargs[1]);
 
-	/* get shared memory id */
-        if ((shm_id = shmget((int)locargs[1], (int)locargs[2], IPC_CREAT|0666))
-		    == -1)
-        {
-	    dprt("pid[%d]: shmat_rd_wr(): shmget failed\n", getpid());
-            perror("do_shmat_shmadt(): shmget()");
-            PTHREAD_EXIT(-1);
-        }
+		/* get shared memory id */
+		if ((shm_id =
+		     shmget((int)locargs[1], (int)locargs[2], IPC_CREAT | 0666))
+		    == -1) {
+			dprt("pid[%d]: shmat_rd_wr(): shmget failed\n",
+			     getpid());
+			perror("do_shmat_shmadt(): shmget()");
+			PTHREAD_EXIT(-1);
+		}
 
-        fprintf(stdout, "pid[%d]: shmat_rd_wr(): shmget():"
-			"success got segment id %d\n",
-                           getpid(), shm_id);
+		fprintf(stdout, "pid[%d]: shmat_rd_wr(): shmget():"
+			"success got segment id %d\n", getpid(), shm_id);
 
-	/* get shared memory segment */
-        if ((shmat_addr = (char *)shmat(shm_id, NULL, 0)) ==  (void *)-1)
-        {
-            rm_shared_mem(shm_id, shmat_addr, 0);
-            fprintf(stderr, "pid[%d]: do_shmat_shmadt(): shmat_addr = %#lx\n",
-		 		 		 getpid(), (long)shmat_addr);
-            perror("do_shmat_shmadt(): shmat()");
-            PTHREAD_EXIT(-1);
-        }
-	dprt("pid[%d]: do_shmat_shmadt(): content of memory shmat_addr = %s\n",
-            getpid(), shmat_addr);
+		/* get shared memory segment */
+		if ((shmat_addr = (char *)shmat(shm_id, NULL, 0)) == (void *)-1) {
+			rm_shared_mem(shm_id, shmat_addr, 0);
+			fprintf(stderr,
+				"pid[%d]: do_shmat_shmadt(): shmat_addr = %#lx\n",
+				getpid(), (long)shmat_addr);
+			perror("do_shmat_shmadt(): shmat()");
+			PTHREAD_EXIT(-1);
+		}
+		dprt("pid[%d]: do_shmat_shmadt(): content of memory shmat_addr = %s\n", getpid(), shmat_addr);
 
-        fprintf(stdout, "pid[%d]: do_shmat_shmadt(): got shmat address = %#lx\n",
-            getpid(), (long)shmat_addr);
+		fprintf(stdout,
+			"pid[%d]: do_shmat_shmadt(): got shmat address = %#lx\n",
+			getpid(), (long)shmat_addr);
 
-	if (!reader)
-        {
-	    /* write character 'Y' to that memory area */
-	    index = 0;
-	    write_to_mem = shmat_addr;
-	    while (index < (int)locargs[2])
-            {
-	        dprt("pid[%d]: do_shmat_shmatd(): write_to_mem = %#x\n",
-                    getpid(), write_to_mem);
-	        *write_to_mem = 'Y';
-	        index++;
-	        write_to_mem++;
-	        sched_yield();
-            }
-        }
-	else
-        {
-            /* read from the memory area */
-            index = 0;
-	    read_from_mem = shmat_addr;
-	    while (index < (int)locargs[2])
-            {
-	        buff = *read_from_mem;
-		index++;
-		read_from_mem++;
+		if (!reader) {
+			/* write character 'Y' to that memory area */
+			index = 0;
+			write_to_mem = shmat_addr;
+			while (index < (int)locargs[2]) {
+				dprt("pid[%d]: do_shmat_shmatd(): write_to_mem = %#x\n", getpid(), write_to_mem);
+				*write_to_mem = 'Y';
+				index++;
+				write_to_mem++;
+				sched_yield();
+			}
+		} else {
+			/* read from the memory area */
+			index = 0;
+			read_from_mem = shmat_addr;
+			while (index < (int)locargs[2]) {
+				buff = *read_from_mem;
+				index++;
+				read_from_mem++;
+				sched_yield();
+			}
+		}
+
 		sched_yield();
-            }
-        }
 
-	sched_yield();
+		/* remove the shared memory */
+		if (rm_shared_mem(shm_id, shmat_addr, 1) == -1) {
+			fprintf(stderr,
+				"pid[%d]: do_shmat_shmatd(): rm_shared_mem(): faild to rm id\n",
+				getpid());
+			PTHREAD_EXIT(-1);
+		}
+	}
 
-	/* remove the shared memory */
-	if (rm_shared_mem(shm_id, shmat_addr, 1) == -1)
-        {
-            fprintf(stderr,
-                "pid[%d]: do_shmat_shmatd(): rm_shared_mem(): faild to rm id\n",
-		    getpid());
-	    PTHREAD_EXIT(-1);
-        }
-    }
-
-    PTHREAD_EXIT(0);
+	PTHREAD_EXIT(0);
 }
 
 /******************************************************************************/
@@ -280,108 +266,96 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
 /*		 0 on success						      */
 /*									      */
 /******************************************************************************/
-int
-main(int	argc,		/* number of input parameters		      */
-     char	**argv)		/* pointer to the command line arguments.     */
-{
-    int		c;		/* command line options			      */
-    int		num_thrd = MAXT;/* number of threads to create                */
-    int		num_reps = MAXR;/* number of repatitions the test is run      */
-    int		thrd_ndx;	/* index into the array of thread ids         */
-    int		th_status;	/* exit status of LWP's	                      */
-    int		map_size;	/* size of the file mapped.                   */
-    int		shmkey   = 1969;/* key used to generate shmid by shmget()     */
-    pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
-    long	chld_args[4];   /* arguments to the thread function           */
-    char        *map_address=NULL;
-				/* address in memory of the mapped file       */
-    extern int	 optopt;	/* options to the program		      */
+int main(int argc,		/* number of input parameters                 */
+	 char **argv)
+{				/* pointer to the command line arguments.     */
+	int c;			/* command line options                       */
+	int num_thrd = MAXT;	/* number of threads to create                */
+	int num_reps = MAXR;	/* number of repatitions the test is run      */
+	int thrd_ndx;		/* index into the array of thread ids         */
+	int th_status;		/* exit status of LWP's                       */
+	int map_size;		/* size of the file mapped.                   */
+	int shmkey = 1969;	/* key used to generate shmid by shmget()     */
+	pthread_t thrdid[30];	/* maxinum of 30 threads allowed              */
+	long chld_args[4];	/* arguments to the thread function           */
+	char *map_address = NULL;
+	/* address in memory of the mapped file       */
+	extern int optopt;	/* options to the program                     */
 
-    while ((c =  getopt(argc, argv, "hl:t:")) != -1)
-    {
-        switch(c)
-        {
-            case 'h':
-                usage(argv[0]);
-                break;
-            case 'l':		/* how many repetitions of the test to exec   */
-		if ((num_reps = atoi(optarg)) == 0)
-                    OPT_MISSING(argv[0], optopt);
-                else
-	        if (num_reps < 0)
-                {
-		    fprintf(stdout,
-			"WARNING: bad argument. Using default\n");
-                    num_reps = MAXR;
-                }
-                break;
-            case 't':
-		if ((num_thrd = atoi(optarg)) == 0)
-	            OPT_MISSING(argv[0], optopt);
-                else
-                if (num_thrd < 0)
-                {
-                    fprintf(stdout,
-                        "WARNING: bad argument. Using default\n");
-                    num_thrd = MAXT;
-                }
-                break;
-            default :
-		usage(argv[0]);
-		break;
+	while ((c = getopt(argc, argv, "hl:t:")) != -1) {
+		switch (c) {
+		case 'h':
+			usage(argv[0]);
+			break;
+		case 'l':	/* how many repetitions of the test to exec   */
+			if ((num_reps = atoi(optarg)) == 0)
+				OPT_MISSING(argv[0], optopt);
+			else if (num_reps < 0) {
+				fprintf(stdout,
+					"WARNING: bad argument. Using default\n");
+				num_reps = MAXR;
+			}
+			break;
+		case 't':
+			if ((num_thrd = atoi(optarg)) == 0)
+				OPT_MISSING(argv[0], optopt);
+			else if (num_thrd < 0) {
+				fprintf(stdout,
+					"WARNING: bad argument. Using default\n");
+				num_thrd = MAXT;
+			}
+			break;
+		default:
+			usage(argv[0]);
+			break;
+		}
 	}
-    }
 
-    chld_args[0] = num_reps;
+	chld_args[0] = num_reps;
 
-    for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx+=2)
-    {
-        srand(time(NULL)%100);
-        map_size = (1 + (int)(1000.0*rand()/(RAND_MAX+1.0))) * 4096;
+	for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx += 2) {
+		srand(time(NULL) % 100);
+		map_size =
+		    (1 + (int)(1000.0 * rand() / (RAND_MAX + 1.0))) * 4096;
 
-        chld_args[1] = shmkey++;
-        chld_args[2] = map_size;
+		chld_args[1] = shmkey++;
+		chld_args[2] = map_size;
 
-	dprt("main(): thrd_ndx = %d map_address = %#x map_size = %d\n",
-            thrd_ndx, map_address, map_size);
+		dprt("main(): thrd_ndx = %d map_address = %#x map_size = %d\n",
+		     thrd_ndx, map_address, map_size);
 
-        chld_args[3] = WRITER;
+		chld_args[3] = WRITER;
 
-        if (pthread_create(&thrdid[thrd_ndx], NULL, shmat_rd_wr, chld_args))
-        {
-            perror("shmat_rd_wr(): pthread_create()");
-            exit(-1);
-        }
+		if (pthread_create
+		    (&thrdid[thrd_ndx], NULL, shmat_rd_wr, chld_args)) {
+			perror("shmat_rd_wr(): pthread_create()");
+			exit(-1);
+		}
 
-        chld_args[3] = READER;
+		chld_args[3] = READER;
 
-        if (pthread_create(&thrdid[thrd_ndx+1], NULL, shmat_rd_wr, chld_args))
-        {
-            perror("shmat_rd_wr(): pthread_create()");
-            exit(-1);
-        }
-    }
+		if (pthread_create
+		    (&thrdid[thrd_ndx + 1], NULL, shmat_rd_wr, chld_args)) {
+			perror("shmat_rd_wr(): pthread_create()");
+			exit(-1);
+		}
+	}
 
-    sync();
+	sync();
 
-    for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
-    {
-        if (pthread_join(thrdid[thrd_ndx], (void *)&th_status) != 0)
-        {
-            perror("shmat_rd_wr(): pthread_join()");
-            exit(-1);
-        }
-        else
-        {
-            dprt("WE ARE HERE %d\n", __LINE__);
-            if (th_status == -1)
-            {
-                fprintf(stderr,
-                        "thread [%ld] - process exited with errors\n",
-                            (long)thrdid[thrd_ndx]);
-                exit(-1);
-            }
-        }
-    }
-    exit(0);
+	for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++) {
+		if (pthread_join(thrdid[thrd_ndx], (void *)&th_status) != 0) {
+			perror("shmat_rd_wr(): pthread_join()");
+			exit(-1);
+		} else {
+			dprt("WE ARE HERE %d\n", __LINE__);
+			if (th_status == -1) {
+				fprintf(stderr,
+					"thread [%ld] - process exited with errors\n",
+					(long)thrdid[thrd_ndx]);
+				exit(-1);
+			}
+		}
+	}
+	exit(0);
 }

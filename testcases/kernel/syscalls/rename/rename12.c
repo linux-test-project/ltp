@@ -131,7 +131,7 @@ int main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 }
+		}
 
 		if (pid == 0) {	/* child */
 			/* set to nobody */
@@ -139,7 +139,7 @@ int main(int ac, char **av)
 				tst_resm(TWARN, "setreuid failed");
 				perror("setreuid");
 				exit(1);
-			 }
+			}
 
 			/* rename "old" to "new" */
 			TEST(rename(fname, mname));
@@ -147,7 +147,7 @@ int main(int ac, char **av)
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				exit(1);
-			 }
+			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
@@ -156,7 +156,7 @@ int main(int ac, char **av)
 					 "Expected EPERM or EACCES, got %d",
 					 TEST_ERRNO);
 				exit(1);
-			 } else {
+			} else {
 				tst_resm(TPASS,
 					 "rename returned EPERM or EACCES");
 			}
@@ -189,7 +189,7 @@ void setup()
 	/* must run as root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must run this as root");
-	 }
+	}
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -207,7 +207,7 @@ void setup()
 	/* create a directory */
 	if (mkdir(fdir, PERMS) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
-	 }
+	}
 
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s", fdir);

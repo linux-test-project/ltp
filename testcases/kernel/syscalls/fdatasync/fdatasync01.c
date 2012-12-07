@@ -72,7 +72,6 @@
 #include "test.h"
 #include "usctest.h"
 
-
 static int fd;
 static char filename[30];
 static void setup(void);
@@ -86,8 +85,7 @@ int main(int argc, char **argv)
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -134,13 +132,13 @@ void setup(void)
 	/* Initialize unique filename for each child process */
 	if (sprintf(filename, "fdatasync_%d", getpid()) <= 0) {
 		tst_brkm(TBROK, cleanup, "Failed to initialize filename");
-	 }
+	}
 	if ((fd = open(filename, O_CREAT | O_WRONLY, 0777)) == -1) {	//mode must be specified when O_CREATE is in the flag
 		tst_brkm(TBROK, cleanup, "open() failed");
-	 }
+	}
 	if ((write(fd, filename, strlen(filename) + 1)) == -1) {
 		tst_brkm(TBROK, cleanup, "write() failed");
-	 }
+	}
 }
 
 /*
@@ -160,4 +158,4 @@ void cleanup(void)
 
 	tst_rmdir();
 
- }
+}

@@ -40,21 +40,21 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* We enable the following line to have mutex attributes defined */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <errno.h>
- #include <semaphore.h>
- #include <signal.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <errno.h>
+#include <semaphore.h>
+#include <signal.h>
+#include <unistd.h>
 #if _POSIX_TIMEOUTS < 0
 #error "This sample needs POSIX TIMEOUTS option support"
 #endif
@@ -68,16 +68,16 @@
 #warning "This sample needs POSIX TIMERS option support"
 #endif
 
- #include <stdio.h>
- #include <stdlib.h>
- #include <stdarg.h>
- #include <time.h> /* required for the pthread_mutex_timedlock() function */
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <time.h>		/* required for the pthread_mutex_timedlock() function */
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "testfrmw.h"
- #include "testfrmw.c"
+#include "testfrmw.h"
+#include "testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -105,74 +105,80 @@
 #ifndef VERBOSE
 #define VERBOSE 2
 #endif
-#define N 2  /* N * 10 * 6 * SCALABILITY_FACTOR threads will be created */
+#define N 2			/* N * 10 * 6 * SCALABILITY_FACTOR threads will be created */
 
 /********************************************************************************************/
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
-char do_it=1;
+char do_it = 1;
 #ifndef WITHOUT_XOPEN
-int types[]={PTHREAD_MUTEX_NORMAL,
-					PTHREAD_MUTEX_ERRORCHECK,
-					PTHREAD_MUTEX_RECURSIVE,
-					PTHREAD_MUTEX_DEFAULT};
+int types[] = { PTHREAD_MUTEX_NORMAL,
+	PTHREAD_MUTEX_ERRORCHECK,
+	PTHREAD_MUTEX_RECURSIVE,
+	PTHREAD_MUTEX_DEFAULT
+};
 #endif
 
 /* The following type represents the data
  * for one group of ten threads */
-typedef struct
-{
-	pthread_t  threads[10]; /* The 10 threads */
-	pthread_mutex_t mtx;  /* The mutex those threads work on */
-	char ctrl;                       /* The value used to check the behavior */
-	char sigok;                   /* Used to tell the threads they can return */
-	sem_t  semsig;             /* Semaphore for synchronizing the signal handler */
-	int id;                             /* An identifier for the threads group */
-	int tcnt;	 /* we need to make sure the threads are started before killing 'em */
+typedef struct {
+	pthread_t threads[10];	/* The 10 threads */
+	pthread_mutex_t mtx;	/* The mutex those threads work on */
+	char ctrl;		/* The value used to check the behavior */
+	char sigok;		/* Used to tell the threads they can return */
+	sem_t semsig;		/* Semaphore for synchronizing the signal handler */
+	int id;			/* An identifier for the threads group */
+	int tcnt;		/* we need to make sure the threads are started before killing 'em */
 	pthread_mutex_t tmtx;
-	unsigned long long sigcnt, opcnt; /* We count every iteration */
+	unsigned long long sigcnt, opcnt;	/* We count every iteration */
 } cell_t;
 
-pthread_key_t  _c; /* this key will always contain a pointer to the thread's cell */
+pthread_key_t _c;		/* this key will always contain a pointer to the thread's cell */
 
 /***** The next function is in charge of sending signal USR2 to
  * all the other threads in its cell, until the end of the test. */
-void * sigthr(void * arg)
+void *sigthr(void *arg)
 {
 	int ret;
-	int i=0;
-	cell_t * c = (cell_t *)arg;
+	int i = 0;
+	cell_t *c = (cell_t *) arg;
 
-	do
-	{
+	do {
 		sched_yield();
 		ret = pthread_mutex_lock(&(c->tmtx));
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Failed to lock the mutex");
+		}
 		i = c->tcnt;
 		ret = pthread_mutex_unlock(&(c->tmtx));
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
-	} while (i<9);
+		if (ret != 0) {
+			UNRESOLVED(ret, "Failed to unlock the mutex");
+		}
+	} while (i < 9);
 
 	/* Until we must stop, do */
-	while (do_it)
-	{
+	while (do_it) {
 		/* Wait for the semaphore */
 		ret = sem_wait(&(c->semsig));
-		if (ret != 0)
-		{  UNRESOLVED(errno, "Sem wait failed in signal thread"); }
+		if (ret != 0) {
+			UNRESOLVED(errno, "Sem wait failed in signal thread");
+		}
 
 		/* Kill the next thread */
 		i %= 9;
 		ret = pthread_kill(c->threads[++i], SIGUSR2);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Thread kill failed in signal thread");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Thread kill failed in signal thread");
+		}
 
 		/* Increment the signal counter */
 		c->sigcnt++;
 	}
 
 	/* Tell the other threads they can now stop */
-	do {  c->sigok = 1;  }
+	do {
+		c->sigok = 1;
+	}
 	while (c->sigok == 0);
 
 	return NULL;
@@ -183,31 +189,36 @@ void * sigthr(void * arg)
 void sighdl(int sig)
 {
 	int ret;
-	cell_t * c = (cell_t *) pthread_getspecific(_c);
+	cell_t *c = (cell_t *) pthread_getspecific(_c);
 	ret = sem_post(&(c->semsig));
-	if (ret != 0)
-	{  UNRESOLVED(errno, "Unable to post semaphore in signal handler");  }
+	if (ret != 0) {
+		UNRESOLVED(errno, "Unable to post semaphore in signal handler");
+	}
 }
 
 /***** The next function can return only when the sigthr has terminated.
  * This avoids the signal thread try to kill a terminated thread. */
 void waitsigend(cell_t * c)
 {
-	while (c->sigok == 0)
-	{  sched_yield();  }
+	while (c->sigok == 0) {
+		sched_yield();
+	}
 }
 
 /***** The next function aims to control that no other thread
  * owns the mutex at the same time */
-void control(cell_t * c, char * loc)
+void control(cell_t * c, char *loc)
 {
-	*loc++; /* change the local control value */
-	if (c->ctrl != 0)
-	{  FAILED("Got a non-zero value - two threads owns the mutex");  }
+	*loc++;			/* change the local control value */
+	if (c->ctrl != 0) {
+		FAILED("Got a non-zero value - two threads owns the mutex");
+	}
 	c->ctrl = *loc;
 	sched_yield();
-	if (c->ctrl != *loc)
-	{  FAILED("Got a different value - another thread touched protected data");  }
+	if (c->ctrl != *loc) {
+		FAILED
+		    ("Got a different value - another thread touched protected data");
+	}
 	c->ctrl = 0;
 
 	/* Avoid some values for the next control */
@@ -219,36 +230,42 @@ void control(cell_t * c, char * loc)
 
 /***** The next 3 functions are the worker threads
  */
-void * lockthr(void * arg)
+void *lockthr(void *arg)
 {
 	int ret;
-	char loc; /* Local value for control */
-	cell_t * c = (cell_t *)arg;
+	char loc;		/* Local value for control */
+	cell_t *c = (cell_t *) arg;
 
 	/* Set the thread local data key value (used in the signal handler) */
 	ret = pthread_setspecific(_c, arg);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to assign the thread-local-data key");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to assign the thread-local-data key");
+	}
 
 	/* Signal we're started */
 	ret = pthread_mutex_lock(&(c->tmtx));
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to lock the mutex");
+	}
 	c->tcnt += 1;
 	ret = pthread_mutex_unlock(&(c->tmtx));
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to unlock the mutex");
+	}
 
-	do
-	{
+	do {
 		/* Lock, control, then unlock */
 		ret = pthread_mutex_lock(&(c->mtx));
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Mutex lock failed in worker thread");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Mutex lock failed in worker thread");
+		}
 
 		control(c, &loc);
 
 		ret = pthread_mutex_unlock(&(c->mtx));
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Mutex unlock failed in worker thread");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Mutex unlock failed in worker thread");
+		}
 
 		/* Increment the operation counter */
 		c->opcnt++;
@@ -260,44 +277,52 @@ void * lockthr(void * arg)
 	return NULL;
 }
 
-void * timedlockthr(void * arg)
+void *timedlockthr(void *arg)
 {
 	int ret;
-	char loc; /* Local value for control */
+	char loc;		/* Local value for control */
 	struct timespec ts;
-	cell_t * c = (cell_t *)arg;
+	cell_t *c = (cell_t *) arg;
 
 	/* Set the thread local data key value (used in the signal handler) */
 	ret = pthread_setspecific(_c, arg);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to assign the thread-local-data key");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to assign the thread-local-data key");
+	}
 
 	/* Signal we're started */
 	ret = pthread_mutex_lock(&(c->tmtx));
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to lock the mutex");
+	}
 	c->tcnt += 1;
 	ret = pthread_mutex_unlock(&(c->tmtx));
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to unlock the mutex");
+	}
 
-	do
-	{
+	do {
 		/* Lock, control, then unlock */
-		do
-		{
+		do {
 			ret = clock_gettime(CLOCK_REALTIME, &ts);
-			if (ret != 0)
-			{  UNRESOLVED(errno, "Unable to get time for timeout");  }
-			ts.tv_sec++; /* We will wait for 1 second */
+			if (ret != 0) {
+				UNRESOLVED(errno,
+					   "Unable to get time for timeout");
+			}
+			ts.tv_sec++;	/* We will wait for 1 second */
 			ret = pthread_mutex_timedlock(&(c->mtx), &ts);
 		} while (ret == ETIMEDOUT);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Timed mutex lock failed in worker thread");  }
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Timed mutex lock failed in worker thread");
+		}
 
 		control(c, &loc);
 
 		ret = pthread_mutex_unlock(&(c->mtx));
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Mutex unlock failed in worker thread");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Mutex unlock failed in worker thread");
+		}
 
 		/* Increment the operation counter */
 		c->opcnt++;
@@ -309,39 +334,45 @@ void * timedlockthr(void * arg)
 	return NULL;
 }
 
-void * trylockthr(void * arg)
+void *trylockthr(void *arg)
 {
 	int ret;
-	char loc; /* Local value for control */
-	cell_t * c = (cell_t *)arg;
+	char loc;		/* Local value for control */
+	cell_t *c = (cell_t *) arg;
 
 	/* Set the thread local data key value (used in the signal handler) */
 	ret = pthread_setspecific(_c, arg);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to assign the thread-local-data key");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to assign the thread-local-data key");
+	}
 
 	/* Signal we're started */
 	ret = pthread_mutex_lock(&(c->tmtx));
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to lock the mutex");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to lock the mutex");
+	}
 	c->tcnt += 1;
 	ret = pthread_mutex_unlock(&(c->tmtx));
-	if (ret != 0)  {  UNRESOLVED(ret, "Failed to unlock the mutex");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to unlock the mutex");
+	}
 
-	do
-	{
+	do {
 		/* Lock, control, then unlock */
-		do
-		{
+		do {
 			ret = pthread_mutex_trylock(&(c->mtx));
-		}  while (ret == EBUSY);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Mutex lock try failed in worker thread");  }
+		} while (ret == EBUSY);
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Mutex lock try failed in worker thread");
+		}
 
 		control(c, &loc);
 
 		ret = pthread_mutex_unlock(&(c->mtx));
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Mutex unlock failed in worker thread");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Mutex unlock failed in worker thread");
+		}
 
 		/* Increment the operation counter */
 		c->opcnt++;
@@ -355,10 +386,10 @@ void * trylockthr(void * arg)
 
 /***** The next function initializes a cell_t object
  * This includes running the threads */
-void cell_init(int id, cell_t * c, pthread_mutexattr_t *pma)
+void cell_init(int id, cell_t * c, pthread_mutexattr_t * pma)
 {
 	int ret, i;
-	pthread_attr_t  pa; /* We will specify a minimal stack size */
+	pthread_attr_t pa;	/* We will specify a minimal stack size */
 
 	/* mark this group with its ID */
 	c->id = id;
@@ -371,121 +402,133 @@ void cell_init(int id, cell_t * c, pthread_mutexattr_t *pma)
 
 	/* Initialize the mutex */
 	ret = pthread_mutex_init(&(c->tmtx), NULL);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex init failed"); }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex init failed");
+	}
 	ret = pthread_mutex_init(&(c->mtx), pma);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex init failed"); }
-	#if VERBOSE > 1
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex init failed");
+	}
+#if VERBOSE > 1
 	output("Mutex initialized in cell %i\n", id);
-	#endif
+#endif
 
 	/* Initialize the semaphore */
 	ret = sem_init(&(c->semsig), 0, 0);
-	if (ret != 0)
-	{  UNRESOLVED(errno, "Sem init failed"); }
-	#if VERBOSE > 1
+	if (ret != 0) {
+		UNRESOLVED(errno, "Sem init failed");
+	}
+#if VERBOSE > 1
 	output("Semaphore initialized in cell %i\n", id);
-	#endif
+#endif
 
 	/* Create the thread attribute with the minimal size */
 	ret = pthread_attr_init(&pa);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to create pthread attribute object");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to create pthread attribute object");
+	}
 	ret = pthread_attr_setstacksize(&pa, sysconf(_SC_THREAD_STACK_MIN));
-	if (ret != 0)
- 	{  UNRESOLVED(ret, "Unable to specify minimal stack size");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to specify minimal stack size");
+	}
 
 	/* Create the signal thread */
-	ret = pthread_create(&(c->threads[0]), &pa, sigthr, (void *) c);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to create the signal thread"); }
+	ret = pthread_create(&(c->threads[0]), &pa, sigthr, (void *)c);
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to create the signal thread");
+	}
 
 	/* Create 5 "lock" threads */
-	for (i=1; i<=5; i++)
-	{
-		ret = pthread_create(&(c->threads[i]), &pa, lockthr, (void *) c);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Unable to create a locker thread"); }
+	for (i = 1; i <= 5; i++) {
+		ret = pthread_create(&(c->threads[i]), &pa, lockthr, (void *)c);
+		if (ret != 0) {
+			UNRESOLVED(ret, "Unable to create a locker thread");
+		}
 	}
 
 	/* Create 2 "timedlock" threads */
-	for (i=6; i<=7; i++)
-	{
-		ret = pthread_create(&(c->threads[i]), &pa, timedlockthr, (void *) c);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Unable to create a (timed) locker thread"); }
+	for (i = 6; i <= 7; i++) {
+		ret =
+		    pthread_create(&(c->threads[i]), &pa, timedlockthr,
+				   (void *)c);
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Unable to create a (timed) locker thread");
+		}
 	}
 
 	/* Create 2 "trylock" threads */
-	for (i=8; i<=9; i++)
-	{
-		ret = pthread_create(&(c->threads[i]), &pa, trylockthr, (void *) c);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Unable to create a (try) locker thread"); }
+	for (i = 8; i <= 9; i++) {
+		ret =
+		    pthread_create(&(c->threads[i]), &pa, trylockthr,
+				   (void *)c);
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Unable to create a (try) locker thread");
+		}
 	}
 
-	#if VERBOSE > 1
+#if VERBOSE > 1
 	output("All threads initialized in cell %i\n", id);
-	#endif
+#endif
 
 	/* Destroy the thread attribute object */
 	ret = pthread_attr_destroy(&pa);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to destroy thread attribute object");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to destroy thread attribute object");
+	}
 
 	/* Tell the signal thread to start working */
 	ret = sem_post(&(c->semsig));
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to post signal semaphore");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to post signal semaphore");
+	}
 }
 
 /***** The next function destroys a cell_t object
  * This includes stopping the threads */
-void cell_fini(
-				int id,
-				cell_t * c,
-				unsigned long long * globalopcount,
-				unsigned long long * globalsigcount  )
+void cell_fini(int id,
+	       cell_t * c,
+	       unsigned long long *globalopcount,
+	       unsigned long long *globalsigcount)
 {
 	int ret, i;
 
 	/* Just a basic check */
-	if (id != c->id)
-	{
+	if (id != c->id) {
 		output("Something is wrong: Cell %i has id %i\n", id, c->id);
 		FAILED("Some memory has been corrupted");
 	}
 
 	/* Start with joining the threads */
-	for (i=0; i<10; i++)
-	{
+	for (i = 0; i < 10; i++) {
 		ret = pthread_join(c->threads[i], NULL);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Unable to join a thread");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Unable to join a thread");
+		}
 	}
 
 	/* Destroy the semaphore and the mutex */
 	ret = sem_destroy(&(c->semsig));
-	if (ret != 0)
-	{  UNRESOLVED(errno, "Unable to destroy the semaphore");  }
+	if (ret != 0) {
+		UNRESOLVED(errno, "Unable to destroy the semaphore");
+	}
 
 	ret = pthread_mutex_destroy(&(c->mtx));
-	if (ret != 0)
-	{
-		output("Unable to destroy the mutex in cell %i (ret = %i)\n", id, ret);
+	if (ret != 0) {
+		output("Unable to destroy the mutex in cell %i (ret = %i)\n",
+		       id, ret);
 		FAILED("Mutex destruction failed");
 	}
 
 	/* Report the cell counters */
 	*globalopcount += c->opcnt;
 	*globalsigcount += c->sigcnt;
-	#if VERBOSE > 1
-	output("Counters for cell %i:\n\t%llu locks and unlocks\n\t%llu signals\n",
-	                   id,
-	                   c->opcnt,
-	                   c->sigcnt);
-	#endif
+#if VERBOSE > 1
+	output
+	    ("Counters for cell %i:\n\t%llu locks and unlocks\n\t%llu signals\n",
+	     id, c->opcnt, c->sigcnt);
+#endif
 
 	/* We are done with this cell. */
 }
@@ -496,14 +539,16 @@ void cell_fini(
 void globalsig(int sig)
 {
 	output("Signal received, processing. Please wait...\n");
-	do { do_it=0; }
+	do {
+		do_it = 0;
+	}
 	while (do_it);
 }
 
 /******
  * Last but not least, the main function
  */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	/* Main is responsible for :
 	 * the mutex attributes initializing
@@ -514,115 +559,122 @@ int main(int argc, char * argv[])
 	int ret;
 	int i;
 	struct sigaction sa;
-	unsigned long long globopcnt=0, globsigcnt=0;
+	unsigned long long globopcnt = 0, globsigcnt = 0;
 
-	#ifndef WITHOUT_XOPEN
+#ifndef WITHOUT_XOPEN
 	int sz = 2 + (sizeof(types) / sizeof(int));
-	#else
+#else
 	int sz = 2;
-	#endif
-	pthread_mutexattr_t ma[sz-1];
+#endif
+	pthread_mutexattr_t ma[sz - 1];
 	pthread_mutexattr_t *pma[sz];
 
 	cell_t data[sz * N * SCALABILITY_FACTOR];
 
-	pma[sz-1] = NULL;
+	pma[sz - 1] = NULL;
 
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Mutex lock / unlock stress sample is starting\n");
 	output("Kill with SIGUSR1 to stop the process\n");
 	output("\t kill -USR1 <pid>\n\n");
-	#endif
+#endif
 
 	/* Initialize the mutex attributes */
-	for (i=0; i<sz-1; i++)
-	{
+	for (i = 0; i < sz - 1; i++) {
 		pma[i] = &ma[i];
 		ret = pthread_mutexattr_init(pma[i]);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Unable to init a mutex attribute object");  }
-		#ifndef WITHOUT_XOPEN  /* we have the mutex attribute types */
-		if (i != 0)
-		{
-			ret = pthread_mutexattr_settype(pma[i], types[i-1]);
-			if (ret != 0)
-			{
-				UNRESOLVED(ret, "Unable to set type of a mutex attribute object");
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Unable to init a mutex attribute object");
+		}
+#ifndef WITHOUT_XOPEN		/* we have the mutex attribute types */
+		if (i != 0) {
+			ret = pthread_mutexattr_settype(pma[i], types[i - 1]);
+			if (ret != 0) {
+				UNRESOLVED(ret,
+					   "Unable to set type of a mutex attribute object");
 			}
 		}
-		#endif
+#endif
 	}
-	#if VERBOSE > 1
+#if VERBOSE > 1
 	output("%i mutex attribute objects were initialized\n", sz - 1);
-	#endif
+#endif
 
 	/* Initialize the thread-local-data key */
 	ret = pthread_key_create(&_c, NULL);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to initialize TLD key");  }
-	#if VERBOSE > 1
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to initialize TLD key");
+	}
+#if VERBOSE > 1
 	output("TLD key initialized\n");
-	#endif
+#endif
 
 	/* Register the signal handler for SIGUSR1  */
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = globalsig;
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register signal handler"); }
+	if ((ret = sigaction(SIGUSR1, &sa, NULL))) {
+		UNRESOLVED(ret, "Unable to register signal handler");
+	}
 
 	/* Register the signal handler for SIGUSR2  */
 	sa.sa_handler = sighdl;
-	if ((ret = sigaction (SIGUSR2, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register signal handler"); }
+	if ((ret = sigaction(SIGUSR2, &sa, NULL))) {
+		UNRESOLVED(ret, "Unable to register signal handler");
+	}
 
 	/* Start every threads */
-	#if VERBOSE > 0
-	output("%i cells of 10 threads are being created...\n", sz * N * SCALABILITY_FACTOR);
-	#endif
-	for (i=0; i< sz * N * SCALABILITY_FACTOR; i++)
+#if VERBOSE > 0
+	output("%i cells of 10 threads are being created...\n",
+	       sz * N * SCALABILITY_FACTOR);
+#endif
+	for (i = 0; i < sz * N * SCALABILITY_FACTOR; i++)
 		cell_init(i, &data[i], pma[i % sz]);
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("All threads created and running.\n");
-	#endif
+#endif
 
 	/* We stay here while not interrupted */
-	do { sched_yield(); }
+	do {
+		sched_yield();
+	}
 	while (do_it);
 
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Starting to join the threads...\n");
-	#endif
+#endif
 	/* Everybody is stopping, we must join them, and destroy the cell data */
-	for (i=0; i< sz * N * SCALABILITY_FACTOR; i++)
+	for (i = 0; i < sz * N * SCALABILITY_FACTOR; i++)
 		cell_fini(i, &data[i], &globopcnt, &globsigcnt);
 
 	/* Destroy the mutex attributes objects */
-	for (i=0; i<sz-1; i++)
-	{
+	for (i = 0; i < sz - 1; i++) {
 		ret = pthread_mutexattr_destroy(pma[i]);
-		if (ret != 0)
-		{  UNRESOLVED(ret, "Unable to destroy a mutex attribute object");  }
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Unable to destroy a mutex attribute object");
+		}
 	}
 
 	/* Destroy the thread-local-data key */
 	ret = pthread_key_delete(_c);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Unable to destroy TLD key");  }
-	#if VERBOSE > 1
+	if (ret != 0) {
+		UNRESOLVED(ret, "Unable to destroy TLD key");
+	}
+#if VERBOSE > 1
 	output("TLD key destroyed\n");
-	#endif
+#endif
 
 	/* output the total counters */
-	#if VERBOSE > 1
+#if VERBOSE > 1
 	output("===============================================\n");
-	#endif
-	#if VERBOSE > 0
+#endif
+#if VERBOSE > 0
 	output("Total counters:\n\t%llu locks and unlocks\n\t%llu signals\n",
-	                   globopcnt,
-	                   globsigcnt);
+	       globopcnt, globsigcnt);
 	output("pthread_mutex_lock stress test passed.\n");
-	#endif
+#endif
 
 	PASSED;
 }

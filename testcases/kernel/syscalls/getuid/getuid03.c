@@ -70,12 +70,12 @@ int main(int ac, char **av)
 		TEST(GETUID());
 
 		if (TEST_RETURN == -1)
-			tst_brkm(TBROK|TTERRNO, cleanup, "getuid failed");
+			tst_brkm(TBROK | TTERRNO, cleanup, "getuid failed");
 
 		if (STD_FUNCTIONAL_TEST) {
 			pwent = getpwuid(TEST_RETURN);
 			if (pwent == NULL)
-				tst_resm(TFAIL|TERRNO, "getpwuid failed");
+				tst_resm(TFAIL | TERRNO, "getpwuid failed");
 			else if (!UID_SIZE_CHECK(pwent->pw_uid))
 				tst_brkm(TBROK, cleanup,
 					 "uid = %ld is too large for testing "

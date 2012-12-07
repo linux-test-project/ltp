@@ -42,7 +42,7 @@
 #include "mqns.h"
 
 char *TCID = "posixmq_namespace_04";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 int p1[2];
 int p2[2];
@@ -59,10 +59,11 @@ int check_mqueue(void *vtest)
 	close(p1[1]);
 	close(p2[0]);
 
-	read(p1[0], buf, 3); /* go */
+	read(p1[0], buf, 3);	/* go */
 
-	mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0755,
-			NULL);
+	mqd =
+	    syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR | O_CREAT | O_EXCL, 0755,
+		    NULL);
 	if (mqd == -1) {
 		write(p2[1], "mqfail", 7);
 		tst_exit();
@@ -92,13 +93,21 @@ int main(int argc, char *argv[])
 	int use_clone = T_UNSHARE;
 
 	if (argc == 2 && strcmp(argv[1], "-clone") == 0) {
-		tst_resm(TINFO, "Testing posix mq namespaces through clone(2).\n");
+		tst_resm(TINFO,
+			 "Testing posix mq namespaces through clone(2).\n");
 		use_clone = T_CLONE;
 	} else
-		tst_resm(TINFO, "Testing posix mq namespaces through unshare(2).\n");
+		tst_resm(TINFO,
+			 "Testing posix mq namespaces through unshare(2).\n");
 
-	if (pipe(p1) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
-	if (pipe(p2) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
+	if (pipe(p1) == -1) {
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+	if (pipe(p2) == -1) {
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
 
 	mkdir(DEV_MQUEUE2, 0755);
 
@@ -140,18 +149,21 @@ int main(int argc, char *argv[])
 		goto fail;
 	}
 	if (!WIFEXITED(status)) {
-		tst_resm(TFAIL, "Child did not exit normally (status %d)\n", status);
+		tst_resm(TFAIL, "Child did not exit normally (status %d)\n",
+			 status);
 		goto fail;
 	}
 	rc = stat(FNAM1, &statbuf);
 	if (rc == -1) {
-		tst_resm(TFAIL, "parent's view of child's mq died with child\n");
+		tst_resm(TFAIL,
+			 "parent's view of child's mq died with child\n");
 		goto fail;
 	}
 
 	rc = creat(FNAM2, 0755);
 	if (rc != -1) {
-		tst_resm(TFAIL, "parent was able to create a file in dead child's mqfs\n");
+		tst_resm(TFAIL,
+			 "parent was able to create a file in dead child's mqfs\n");
 		goto fail;
 	}
 

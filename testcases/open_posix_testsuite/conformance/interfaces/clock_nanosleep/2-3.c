@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
 		int flags = 0;
 
 		/* child here */
-		tssleep.tv_sec=sleepuntilsec;
-		tssleep.tv_nsec=tsbefore.tv_nsec;
+		tssleep.tv_sec = sleepuntilsec;
+		tssleep.tv_nsec = tsbefore.tv_nsec;
 
 		flags |= TIMER_ABSTIME;
 		clock_nanosleep(CLOCK_REALTIME, flags, &tssleep, NULL);
@@ -69,8 +69,7 @@ int main(int argc, char *argv[])
 			return PTS_PASS;
 		} else {
 			printf("Slept for too long: %d >= %d\n",
-				(int)tsafter.tv_sec,
-				sleepuntilsec);
+			       (int)tsafter.tv_sec, sleepuntilsec);
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}

@@ -71,7 +71,7 @@
 *******************************************************************************/
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include <stdio.h>
@@ -217,13 +217,13 @@ int test_epoll_create(unsigned int num_rand_attempts)
 	num_epoll_create_test_calls++;
 	epoll_fd = epoll_create(fd_set_size);
 	if (epoll_fd >= 0) {
-		tst_resm(TFAIL|TERRNO,
+		tst_resm(TFAIL | TERRNO,
 			 "epoll_create with negative set size succeeded unexpectedly");
 		num_epoll_create_test_fails++;
 		close(epoll_fd);
 	} else {
 		if (errno != EINVAL) {
-			tst_resm(TFAIL|TERRNO,
+			tst_resm(TFAIL | TERRNO,
 				 "epoll_create with negative set size didn't set errno to EINVAL");
 			num_epoll_create_test_fails++;
 		} else {
@@ -235,7 +235,8 @@ int test_epoll_create(unsigned int num_rand_attempts)
 	   small amount (expect num_rand_attempts to be approximately the
 	   amount we'd like to go below INT_MAX). */
 	fd_set_size = INT_MAX;
-	for (attempt_count = num_rand_attempts; attempt_count > 0; attempt_count--, fd_set_size--) {
+	for (attempt_count = num_rand_attempts; attempt_count > 0;
+	     attempt_count--, fd_set_size--) {
 		num_epoll_create_test_calls++;
 		epoll_fd = epoll_create(fd_set_size);
 		if (epoll_fd == -1) {
@@ -251,13 +252,15 @@ int test_epoll_create(unsigned int num_rand_attempts)
 			}
 		} else {
 			tst_resm(TPASS,
-				 "epoll_create with large set size (size = %d)", fd_set_size);
+				 "epoll_create with large set size (size = %d)",
+				 fd_set_size);
 			close(epoll_fd);
 		}
 	}
 
 	/* Random large set sizes */
-	for (attempt_count = num_rand_attempts; attempt_count > 0; attempt_count--) {
+	for (attempt_count = num_rand_attempts; attempt_count > 0;
+	     attempt_count--) {
 		fd_set_size = abs(rand() + SHRT_MAX) % INT_MAX;
 		errno = 0;
 		num_epoll_create_test_calls++;
@@ -283,11 +286,11 @@ int test_epoll_create(unsigned int num_rand_attempts)
 
 	tst_resm(TINFO,
 		 "Summary: Of %d tests, epoll_create failed %d (%3.0f%% passed).",
-		 num_epoll_create_test_calls, num_epoll_create_test_fails, ((float)
-									    (num_epoll_create_test_calls -
-									     num_epoll_create_test_fails)
-									    * 100.0f / (float)
-									    num_epoll_create_test_calls));
+		 num_epoll_create_test_calls, num_epoll_create_test_fails,
+		 ((float)
+		  (num_epoll_create_test_calls - num_epoll_create_test_fails)
+		  * 100.0f / (float)
+		  num_epoll_create_test_calls));
 	/* Return 0 on success. */
 
 	return num_epoll_create_test_fails;
@@ -390,7 +393,8 @@ int test_epoll_ctl(int epoll_fd)
 	int epoll_fds[] = { 0, -1, 0, INT_MAX };
 	int epoll_events[64];
 	/* The list of operations to try AND THE ORDER THEY ARE TRIED IN */
-	int epoll_ctl_ops[] = { EPOLL_CTL_DEL, EPOLL_CTL_MOD, EPOLL_CTL_ADD, EPOLL_CTL_MOD,
+	int epoll_ctl_ops[] =
+	    { EPOLL_CTL_DEL, EPOLL_CTL_MOD, EPOLL_CTL_ADD, EPOLL_CTL_MOD,
 		EPOLL_CTL_DEL, EPOLL_CTL_MOD, EPOLL_CTL_DEL, INT_MAX, -1
 	};
 	struct epoll_event event;
@@ -426,7 +430,8 @@ int test_epoll_ctl(int epoll_fd)
 	{
 		char *unalign_ptr = event_mem;
 
-		unalign_ptr = unalign_ptr + (((unsigned long)unalign_ptr & 1) ? 0 : 1);
+		unalign_ptr =
+		    unalign_ptr + (((unsigned long)unalign_ptr & 1) ? 0 : 1);
 		unaligned_event_ptr = (struct epoll_event *)unalign_ptr;
 	}
 
@@ -454,20 +459,29 @@ int test_epoll_ctl(int epoll_fd)
 			break;
 		}
 
-		for (epfd_index = 0; epfd_index < (sizeof(epoll_fds) / sizeof(int)); epfd_index++) {
-			for (event_index = 0; event_index < (sizeof(epoll_events) / sizeof(int)); event_index++) {
-				for (fd_index = 0; fd_index < (sizeof(fds) / sizeof(int)); fd_index++) {
+		for (epfd_index = 0;
+		     epfd_index < (sizeof(epoll_fds) / sizeof(int));
+		     epfd_index++) {
+			for (event_index = 0;
+			     event_index < (sizeof(epoll_events) / sizeof(int));
+			     event_index++) {
+				for (fd_index = 0;
+				     fd_index < (sizeof(fds) / sizeof(int));
+				     fd_index++) {
 					/* Now epoll_fd is a descriptor that references the set of
 					   file descriptors we are interested in. Next we test epoll_ctl */
 					for (op_index = 0;
 					     op_index <
-					     (sizeof(epoll_ctl_ops) / sizeof(int)); op_index++) {
+					     (sizeof(epoll_ctl_ops) /
+					      sizeof(int)); op_index++) {
 						int result;
 						int expected_errno = 0;
 						int num_errors_expected = 0;
 
 						if (ev_ptr != NULL)
-							ev_ptr->events = epoll_events[event_index];
+							ev_ptr->events =
+							    epoll_events
+							    [event_index];
 
 						/* Perform the call itself. Put it in a protected region which
 						   returns -1 in the variable result if a protection violation
@@ -481,7 +495,9 @@ int test_epoll_ctl(int epoll_fd)
 						    epoll_ctl(epoll_fds
 							      [epfd_index],
 							      epoll_ctl_ops
-							      [op_index], fds[fd_index], ev_ptr);
+							      [op_index],
+							      fds[fd_index],
+							      ev_ptr);
 
 						/* We can't test errno resulting from the epoll_ctl call outside of
 						   the PROTECT_REGION hence we do not have a PROTECT_REGION_END
@@ -492,13 +508,17 @@ int test_epoll_ctl(int epoll_fd)
 						 */
 
 						/* Check the epfd */
-						if (epoll_fds[epfd_index] != epoll_fd) {
+						if (epoll_fds[epfd_index] !=
+						    epoll_fd) {
 							/* Expect an error */
-							if (epoll_fds[epfd_index] == 0)
-								expected_errno = EINVAL;
+							if (epoll_fds
+							    [epfd_index] == 0)
+								expected_errno =
+								    EINVAL;
 							else	/* epfd is not a valid file descriptor since it is
 								   neither epoll_fd nor stdin */
-								expected_errno = EBADF;
+								expected_errno =
+								    EBADF;
 							num_errors_expected++;
 						}
 
@@ -520,16 +540,22 @@ int test_epoll_ctl(int epoll_fd)
 							expected_errno = EINVAL;
 							num_errors_expected++;
 						} else if ((ev_ptr == &event)
-							   || (ev_ptr == unaligned_event_ptr)) {
+							   || (ev_ptr ==
+							       unaligned_event_ptr))
+						{
 							if (ev_ptr->events == 0) {
-								expected_errno = EINVAL;
+								expected_errno =
+								    EINVAL;
 								num_errors_expected++;
 							}
 
-							for (index = 1; index < 64; index++) {
-								if (ev_ptr->
-								    events != epoll_events[index]) {
-									expected_errno = EINVAL;
+							for (index = 1;
+							     index < 64;
+							     index++) {
+								if (ev_ptr->events != epoll_events[index]) {
+									expected_errno
+									    =
+									    EINVAL;
 									num_errors_expected++;
 								}
 							}
@@ -540,20 +566,25 @@ int test_epoll_ctl(int epoll_fd)
 						if (num_errors_expected == 0) {
 							/* We did not expect an error */
 							if (result == 0) {
-	/* We didn't get an error. Think of this as RES_PASS_RETV_MAT_ERRNO_IGN */
+								/* We didn't get an error. Think of this as RES_PASS_RETV_MAT_ERRNO_IGN */
 								return RES_PASS;
 							} else if (result == -1) {	/* The return value is -1, so it's not bad */
-								return RES_FAIL_RETV_MIS_ERRNO_IGN;
+								return
+								    RES_FAIL_RETV_MIS_ERRNO_IGN;
 							} else {
-								return RES_FAIL_RETV_BAD_ERRNO_IGN;
+								return
+								    RES_FAIL_RETV_BAD_ERRNO_IGN;
 							}
-						} else if (num_errors_expected == 1) {
+						} else if (num_errors_expected
+							   == 1) {
 							/* We expected an error */
 							if (result == 0) {
 								return RES_FAIL_RETV_MIS_ERRNO_IGN;	/* Unexpected success */
 							} else if (result == -1) {
 								/* We got an error. Check errno */
-								if (errno == expected_errno) {
+								if (errno ==
+								    expected_errno)
+								{
 									return RES_PASS;	/* think of this as RETV_MAT_ERRNO_MAT */
 								} else {
 									return
@@ -562,20 +593,24 @@ int test_epoll_ctl(int epoll_fd)
 							} else {
 								/* We got a bad return code! Interpret this as
 								   getting an error and check errno. */
-								if (errno == expected_errno)
+								if (errno ==
+								    expected_errno)
 									return
 									    RES_FAIL_RETV_BAD_ERRNO_MAT;
 								else
 									return
 									    RES_FAIL_RETV_BAD_ERRNO_MIS;
 							}
-						} else if (num_errors_expected > 1) {
+						} else if (num_errors_expected >
+							   1) {
 							/* We expected multiple errors */
 							if (result == 0) {
 								return RES_FAIL_RETV_MIS_ERRNO_IGN;	/* Unexpected success */
 							} else if (result == -1) {
 								/* We got an error. Check errno */
-								if (errno == expected_errno) {
+								if (errno ==
+								    expected_errno)
+								{
 									return RES_PASS;	/* think of this as RETV_MAT_ERRNO_MAT */
 								} else {
 									/* Ignore errno because the desired value is unknowable
@@ -586,7 +621,8 @@ int test_epoll_ctl(int epoll_fd)
 							} else {
 								/* We got a bad return code! Interpret this as
 								   getting an error and check errno. */
-								if (errno == expected_errno)
+								if (errno ==
+								    expected_errno)
 									/* Don't Ignore errno because the desired value
 									   happened to match what we expected. */
 									return
@@ -612,9 +648,15 @@ int test_epoll_ctl(int epoll_fd)
 
 						/* Now test the result */
 						if (!((result == RES_PASS)
-						      || (result == RES_PASS_RETV_MAT_ERRNO_IGN))) {
-							if (result > (sizeof(result_strings) / sizeof(const char *))) {
-							/* Returned a result which has no corresponding text description */
+						      || (result ==
+							  RES_PASS_RETV_MAT_ERRNO_IGN)))
+						{
+							if (result >
+							    (sizeof
+							     (result_strings) /
+							     sizeof(const char
+								    *))) {
+								/* Returned a result which has no corresponding text description */
 								EPOLL_CTL_TEST_FAIL
 								    ("FIXME FIX ME BUG in Test Program itself!");
 							} else {
@@ -623,14 +665,12 @@ int test_epoll_ctl(int epoll_fd)
 									    ("Test arguments caused abnormal exit.");
 								else	/* The 'normal' failiure */
 									EPOLL_CTL_TEST_FAIL
-									    ((result_strings
-									      [result]));
+									    ((result_strings[result]));
 							}
 							num_epoll_ctl_test_fails++;
 #ifdef DEBUG
 						} else	/* The call of epoll_ctl behaved as expected */
-							EPOLL_CTL_TEST_PASS((result_strings
-									     [result]));
+							EPOLL_CTL_TEST_PASS((result_strings[result]));
 #else
 						}
 #endif
@@ -659,14 +699,16 @@ int main(int argc, char **argv)
 
 	/* Get the current time */
 	if (gettimeofday(&tv, NULL) != 0) {
-		tst_brkm(TBROK|TERRNO, NULL, "gettimeofday failed");
+		tst_brkm(TBROK | TERRNO, NULL, "gettimeofday failed");
 	} else {
 		tst_resm(TINFO, "gettimeofday() works");
 	}
 
 	/* Set up RNG */
 	srand(tv.tv_usec);
-	tst_resm(TINFO, "random number seeded with gettimeofday() [seed = %ld] works", tv.tv_usec);
+	tst_resm(TINFO,
+		 "random number seeded with gettimeofday() [seed = %ld] works",
+		 tv.tv_usec);
 
 	tst_resm(TINFO, "Testing epoll_create");
 	/* Testing epoll_create with some different sizes */
@@ -678,7 +720,7 @@ int main(int argc, char **argv)
 	/* Create an epoll_fd for testing epoll_ctl */
 	epoll_fd = epoll_create(BACKING_STORE_SIZE_HINT);
 	if (epoll_fd < 0) {
-		tst_brkm(TFAIL|TERRNO, NULL, "epoll_create failed");
+		tst_brkm(TFAIL | TERRNO, NULL, "epoll_create failed");
 	}
 
 	tst_resm(TINFO, "Testing epoll_ctl");

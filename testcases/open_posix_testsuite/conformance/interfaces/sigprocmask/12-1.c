@@ -25,10 +25,11 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int is_changed(sigset_t set) {
+int is_changed(sigset_t set)
+{
 
 	int i;
-	int siglist[] = {SIGALRM, SIGBUS, SIGCHLD,
+	int siglist[] = { SIGALRM, SIGBUS, SIGCHLD,
 		SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
 		SIGPIPE, SIGQUIT, SIGSEGV,
 		SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
@@ -40,28 +41,31 @@ int is_changed(sigset_t set) {
 		SIGPROF,
 #endif
 		SIGSYS,
-		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
+		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
+	};
 
-	for (i=0; i<NUMSIGNALS; i++) {
+	for (i = 0; i < NUMSIGNALS; i++) {
 		if (sigismember(&set, siglist[i]) != 0)
-		return 1;
+			return 1;
 	}
 	return 0;
 }
 
-int get_rand() {
+int get_rand()
+{
 
 	int r;
-	r=rand();
+	r = rand();
 	while ((r == SIG_BLOCK) || (r == SIG_SETMASK) || (r == SIG_UNBLOCK)) {
 		r = get_rand();
 	}
 	return r;
 }
 
-int main() {
+int main()
+{
 
-	int r=get_rand();
+	int r = get_rand();
 	sigset_t actl, oactl;
 
 	sigemptyset(&actl);
@@ -72,7 +76,8 @@ int main() {
 
 	sigaddset(&actl, SIGALRM);
 	if (sigprocmask(r, &actl, NULL) != -1) {
-		perror("sigprocmask() did not fail even though invalid how parameter was passed to it.\n");
+		perror
+		    ("sigprocmask() did not fail even though invalid how parameter was passed to it.\n");
 		return PTS_UNRESOLVED;
 	}
 

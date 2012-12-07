@@ -21,8 +21,8 @@
 int main(int argc, char *argv[])
 {
 #if !defined(_POSIX_CPUTIME) || _POSIX_CPUTIME == -1
-        printf("_POSIX_CPUTIME unsupported\n");
-        return PTS_UNSUPPORTED;
+	printf("_POSIX_CPUTIME unsupported\n");
+	return PTS_UNSUPPORTED;
 #else
 	clockid_t clockid_1;
 	int error;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	} else if (error != EPERM) {
 		printf("clock_getcpuclockid(1, ..) failed with an improper "
-			"error (%d != %d)\n", EPERM, error);
+		       "error (%d != %d)\n", EPERM, error);
 		return PTS_UNRESOLVED;
 	}
 	printf("Test PASSED\n");

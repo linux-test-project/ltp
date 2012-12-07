@@ -58,10 +58,9 @@ unsigned long get_max_node(void)
 }
 
 #if HAVE_NUMA_H
-static void get_nodemask_allnodes(nodemask_t *nodemask,
-	unsigned long max_node)
+static void get_nodemask_allnodes(nodemask_t * nodemask, unsigned long max_node)
 {
-	unsigned long nodemask_size = max_node/8+1;
+	unsigned long nodemask_size = max_node / 8 + 1;
 	int i;
 	char fn[64];
 	struct stat st;
@@ -74,10 +73,10 @@ static void get_nodemask_allnodes(nodemask_t *nodemask,
 	}
 }
 
-static int filter_nodemask_mem(nodemask_t *nodemask, unsigned long max_node)
+static int filter_nodemask_mem(nodemask_t * nodemask, unsigned long max_node)
 {
 #if MPOL_F_MEMS_ALLOWED
-	unsigned long nodemask_size = max_node/8+1;
+	unsigned long nodemask_size = max_node / 8 + 1;
 	memset(nodemask, 0, nodemask_size);
 	/*
 	 * avoid numa_get_mems_allowed(), because of bug in getpol()
@@ -85,7 +84,7 @@ static int filter_nodemask_mem(nodemask_t *nodemask, unsigned long max_node)
 	 * http://www.spinics.net/lists/linux-numa/msg00849.html
 	 */
 	if (syscall(__NR_get_mempolicy, NULL, nodemask->n,
-		max_node, 0, MPOL_F_MEMS_ALLOWED) < 0)
+		    max_node, 0, MPOL_F_MEMS_ALLOWED) < 0)
 		return -2;
 #else
 	int i;
@@ -110,13 +109,13 @@ static int cpumask_has_cpus(char *cpumask, size_t len)
 		if (cpumask[j] == '\0')
 			return 0;
 		else if ((cpumask[j] > '0' && cpumask[j] <= '9') ||
-			(cpumask[j] >= 'a' && cpumask[j] <= 'f'))
+			 (cpumask[j] >= 'a' && cpumask[j] <= 'f'))
 			return 1;
 	return 0;
 
 }
 
-static void filter_nodemask_cpu(nodemask_t *nodemask, unsigned long max_node)
+static void filter_nodemask_cpu(nodemask_t * nodemask, unsigned long max_node)
 {
 	char *cpumask = NULL;
 	char fn[64];
@@ -166,14 +165,14 @@ int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes)
 
 #if HAVE_NUMA_H
 	unsigned long max_node = get_max_node();
-	unsigned long nodemask_size = max_node/8+1;
+	unsigned long nodemask_size = max_node / 8 + 1;
 
 	nodemask = malloc(nodemask_size);
 	if (nodes)
-		*nodes = malloc(sizeof(int)*max_node);
+		*nodes = malloc(sizeof(int) * max_node);
 
 	do {
-		if (nodemask == NULL ||	(nodes && (*nodes == NULL))) {
+		if (nodemask == NULL || (nodes && (*nodes == NULL))) {
 			ret = -1;
 			break;
 		}
@@ -188,7 +187,7 @@ int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes)
 		if ((flag & NH_CPUS) == NH_CPUS)
 			filter_nodemask_cpu(nodemask, max_node);
 
-		for (i = 0; i <	max_node; i++) {
+		for (i = 0; i < max_node; i++) {
 			if (nodemask_isset(nodemask, i)) {
 				if (nodes)
 					(*nodes)[*num_nodes] = i;

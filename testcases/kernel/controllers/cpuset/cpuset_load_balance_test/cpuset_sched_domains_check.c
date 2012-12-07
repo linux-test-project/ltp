@@ -87,27 +87,28 @@ void check_sched_domains(void)
 		     cpu = bitmask_next(domains[i], cpu + 1)) {
 			if (bitmask_weight(domains[i]) == 1) {
 				if (cpus[cpu].sched_domain != NULL) {
-				    	bitmask_displaylist(buf1, sizeof(buf1),
-							domains[i]);
+					bitmask_displaylist(buf1, sizeof(buf1),
+							    domains[i]);
 					bitmask_displaylist(buf2, sizeof(buf2),
-							cpus[cpu].sched_domain);
-					tst_resm(TFAIL, "cpu%d's sched domain is not "
-							"NULL(Domain: %s, "
-							"CPU's Sched Domain: %s).",
-						cpu, buf1, buf2);
+							    cpus[cpu].
+							    sched_domain);
+					tst_resm(TFAIL,
+						 "cpu%d's sched domain is not "
+						 "NULL(Domain: %s, "
+						 "CPU's Sched Domain: %s).",
+						 cpu, buf1, buf2);
 					goto err;
 				}
 				break;
 			}
-			if (!bitmask_equal(domains[i],
-			    cpus[cpu].sched_domain)) {
-			    	bitmask_displaylist(buf1, sizeof(buf1),
-						domains[i]);
+			if (!bitmask_equal(domains[i], cpus[cpu].sched_domain)) {
+				bitmask_displaylist(buf1, sizeof(buf1),
+						    domains[i]);
 				bitmask_displaylist(buf2, sizeof(buf2),
-				    cpus[cpu].sched_domain);
+						    cpus[cpu].sched_domain);
 				tst_resm(TFAIL, "cpu%d's sched domain is wrong"
-					"(Domain: %s, CPU's Sched Domain: %s).",
-					cpu, buf1, buf2);
+					 "(Domain: %s, CPU's Sched Domain: %s).",
+					 cpu, buf1, buf2);
 				goto err;
 			}
 		}

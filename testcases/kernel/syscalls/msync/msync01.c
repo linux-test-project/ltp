@@ -106,13 +106,14 @@ int main(int ac, char **av)
 		TEST(msync(addr, page_sz, MS_ASYNC));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TERRNO, "msync failed");
+			tst_resm(TFAIL | TERRNO, "msync failed");
 			continue;
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
 			if (lseek(fildes, (off_t) 100, SEEK_SET) != 100)
-				tst_brkm(TBROK|TERRNO, cleanup, "lseek failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "lseek failed");
 
 			/*
 			 * Seeking to specified offset. successful.
@@ -165,17 +166,17 @@ void setup()
 	TEST_PAUSE;
 
 	if ((page_sz = getpagesize()) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "getpagesize failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpagesize failed");
 
 	tst_tmpdir();
 
-	if ((fildes = open(TEMPFILE, O_RDWR|O_CREAT, 0666)) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
 	while (c_total < page_sz) {
 		nwrite = write(fildes, write_buf, sizeof(write_buf));
 		if (nwrite <= 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "write failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 		else
 			c_total += nwrite;
 	}
@@ -184,12 +185,12 @@ void setup()
 	 * Call mmap to map virtual memory (mul. of page size bytes) from the
 	 * beginning of temporary file (offset is 0) into memory.
 	 */
-	addr = mmap(0, page_sz, PROT_READ|PROT_WRITE, MAP_FILE|MAP_SHARED,
+	addr = mmap(0, page_sz, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
 		    fildes, 0);
 
 	/* Check for the return value of mmap() */
 	if (addr == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 
 	/* Set 256 bytes, at 100 byte offset in the mapped region */
 	memset(addr + 100, 1, 256);
@@ -200,10 +201,10 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (munmap(addr, page_sz) == -1)
-		tst_resm(TBROK|TERRNO, "munmap failed");
+		tst_resm(TBROK | TERRNO, "munmap failed");
 
 	if (close(fildes) == -1)
-		tst_resm(TWARN|TERRNO, "close failed");
+		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
 }

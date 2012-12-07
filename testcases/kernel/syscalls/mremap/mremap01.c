@@ -117,7 +117,7 @@ int main(int ac, char **av)
 
 	/* Check for the return value of mremap() */
 	if (addr == MAP_FAILED) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "mremap failed");
+		tst_brkm(TFAIL | TERRNO, cleanup, "mremap failed");
 	}
 
 	/*
@@ -140,7 +140,7 @@ int main(int ac, char **av)
 		 * with the file.
 		 */
 		if (msync(addr, newsize, MS_SYNC) != 0) {
-			tst_resm(TFAIL|TERRNO, "msync failed to synch "
+			tst_resm(TFAIL | TERRNO, "msync failed to synch "
 				 "mapped file");
 		} else {
 			tst_resm(TPASS, "Functionality of "
@@ -189,14 +189,14 @@ void setup()
 	tst_tmpdir();
 
 	/* Creat a temporary file used for mapping */
-	if ((fildes = open(TEMPFILE, O_RDWR|O_CREAT, 0666)) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "opening %s failed",
+	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "opening %s failed",
 			 TEMPFILE);
 
 	/* Stretch the file to the size of virtual memory area */
 	if (lseek(fildes, (off_t) memsize, SEEK_SET) != (off_t) memsize) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "lseeking to %d offset pos. failed", memsize);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "lseeking to %d offset pos. failed", memsize);
 	}
 
 	/* Write one byte data into temporary file */
@@ -212,8 +212,7 @@ void setup()
 
 	/* Check for the return value of mmap() */
 	if (addr == (char *)MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmaping Failed on %s",
-			 TEMPFILE);
+		tst_brkm(TBROK, cleanup, "mmaping Failed on %s", TEMPFILE);
 	}
 
 	/* Stretch the file to newsize of virtual memory block */
@@ -224,7 +223,7 @@ void setup()
 
 	/* Write one byte data into temporary file */
 	if (write(fildes, "\0", 1) != 1) {
-		tst_brkm(TBROK|TERRNO, cleanup, "writing to %s failed",
+		tst_brkm(TBROK | TERRNO, cleanup, "writing to %s failed",
 			 TEMPFILE);
 	}
 }
@@ -247,7 +246,7 @@ void cleanup()
 
 	/* Unmap the mapped memory */
 	if (munmap(addr, newsize) != 0)
-		tst_brkm(TBROK|TERRNO, NULL, "munmap failed");
+		tst_brkm(TBROK | TERRNO, NULL, "munmap failed");
 
 	/* Close the temporary file */
 	if (close(fildes) < 0) {

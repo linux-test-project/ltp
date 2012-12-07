@@ -48,32 +48,30 @@ char cmd[1024];
 /*
  * like strspn, with ASCII, numbers and underscore only
  */
-int
-strfpn(char *name)
+int strfpn(char *name)
 {
 	int i;
 
-	for (i=0; *name; ++name, ++i)
+	for (i = 0; *name; ++name, ++i)
 		if (!(isalnum(*name) || *name == '_'))
 			break;
 	return i;
 }
 
-int
-runcc(char *tname, char *filename0, char *program)
+int runcc(char *tname, char *filename0, char *program)
 {
 	static char filename[1024];
 	int fd, es, saved_errno;
-	char * cflags = "";
+	char *cflags = "";
 
 	fd = mkstemp(filename0);
 	if (fd < 0) {
 		perror("mkstemp");
 		return -1;
 	}
-	strncpy(filename, filename0, sizeof(filename)-1);
-	filename[sizeof(filename)-1] = '\0';
-	strncat(filename, ".c", sizeof(filename)-strlen(filename)-1);
+	strncpy(filename, filename0, sizeof(filename) - 1);
+	filename[sizeof(filename) - 1] = '\0';
+	strncat(filename, ".c", sizeof(filename) - strlen(filename) - 1);
 	if (rename(filename0, filename) < 0) {
 		perror("rename");
 		unlink(filename0);
@@ -84,7 +82,7 @@ runcc(char *tname, char *filename0, char *program)
 		unlink(filename);
 		return -1;
 	}
-	(void) close(fd);
+	(void)close(fd);
 
 	cflags = getenv("CFLAGS");
 	if (cflags == NULL) {
@@ -93,18 +91,18 @@ runcc(char *tname, char *filename0, char *program)
 	}
 
 	snprintf(cmd, sizeof(cmd), "%s %s -o %s %s > /tmp/test 2>&1", "cc",
-		cflags, filename0, filename);
+		 cflags, filename0, filename);
 	es = system(cmd);
 	if (WEXITSTATUS(es) == 127) {
 		tst_resm(TBROK, "can't run C compiler: \"%s\"", cmd);
 		if (unlink(filename) < 0)
 			tst_resm(TWARN, "%s; unlink \"%s\" failed: %s", tname,
-				filename, strerror(errno));
+				 filename, strerror(errno));
 		return -1;
 	}
 	if (unlink(filename) < 0)
 		tst_resm(TWARN, "%s: unlink \"%s\" failed: %s", tname,
-			filename, strerror(errno));
+			 filename, strerror(errno));
 
 	if (WIFSIGNALED(es) &&
 	    (WTERMSIG(es) == SIGINT || WTERMSIG(es) == SIGQUIT))
@@ -120,7 +118,7 @@ runcc(char *tname, char *filename0, char *program)
 	saved_errno = errno;
 	if (unlink(filename0) < 0)
 		tst_resm(TWARN, "%s: unlink \"%s\" failed: %s", tname,
-			filename0, strerror(errno));
+			 filename0, strerror(errno));
 
 	if (WIFSIGNALED(es) &&
 	    (WTERMSIG(es) == SIGINT || WTERMSIG(es) == SIGQUIT))
@@ -128,7 +126,7 @@ runcc(char *tname, char *filename0, char *program)
 
 	if (WEXITSTATUS(es) == 127)
 		tst_resm(TBROK, "%s: can't run \"%s\": %s", tname, filename0,
-			strerror(saved_errno));
+			 strerror(saved_errno));
 	if (WEXITSTATUS(es))
 		tst_resm(TFAIL, "%s: present, but incorrect", tname);
 	else
@@ -137,18 +135,18 @@ runcc(char *tname, char *filename0, char *program)
 }
 
 char *field_fmt = "\n\texit((offsetof(struct %s, %s) != %s) || "
-	"sizeof(tst.%s) != (%s));\n";
+    "sizeof(tst.%s) != (%s));\n";
 /* no offset check */
 char *field_fmt2 = "\n\texit(sizeof(tst.%s) != (%s));\n";
 
 const char *stmpl =
-"%s\n#ifndef offsetof\n"\
-"#define offsetof(dtype, dfield) ((int)&((dtype *)0)->dfield)\n"\
-"#endif\n\nstruct %s tst;\n\nmain(int argc, char *argv[])\n{\n\t%s\n}\n";
+    "%s\n#ifndef offsetof\n"
+    "#define offsetof(dtype, dfield) ((int)&((dtype *)0)->dfield)\n"
+    "#endif\n\nstruct %s tst;\n\nmain(int argc, char *argv[])\n{\n\t%s\n}\n";
 
 int
 structcheck(char *tname, char *incl, char *structure, char *field,
-	char *offset, char *size)
+	    char *offset, char *size)
 {
 	int rv;
 	static char filename[1024];
@@ -160,12 +158,13 @@ structcheck(char *tname, char *incl, char *structure, char *field,
 		sprintf(fieldref, field_fmt2, field, size);
 	sprintf(program, stmpl, incl, structure, fieldref);
 	snprintf(filename, sizeof(filename), filetmpl, strfpn(structure),
-		structure);
+		 structure);
 	rv = runcc(tname, filename, program);
 	return rv;
 }
 
-char *aliasfmt = "exit(&tst.%s != &tst.%s || sizeof(tst.%s) != sizeof(tst.%s));";
+char *aliasfmt =
+    "exit(&tst.%s != &tst.%s || sizeof(tst.%s) != sizeof(tst.%s));";
 
 int
 aliascheck(char *tname, char *incl, char *structure, char *field, char *dname)
@@ -176,16 +175,15 @@ aliascheck(char *tname, char *incl, char *structure, char *field, char *dname)
 	sprintf(fieldref, aliasfmt, field, dname, field, dname);
 	sprintf(program, stmpl, incl, structure, fieldref);
 	snprintf(filename, sizeof(filename), filetmpl, strfpn(structure),
-		structure);
+		 structure);
 	rv = runcc(tname, filename, program);
 	return rv;
 }
 
 const char *dtmpl =
-"%s\n\nmain(int argc, char *argv[])\n{\n\texit((%s) != (%s));\n}\n";
+    "%s\n\nmain(int argc, char *argv[])\n{\n\texit((%s) != (%s));\n}\n";
 
-int
-valuecheck(char *tname, char *incl, char *dname, char *dval)
+int valuecheck(char *tname, char *incl, char *dname, char *dval)
 {
 	int rv;
 	static char filename[1024];
@@ -197,11 +195,10 @@ valuecheck(char *tname, char *incl, char *dname, char *dval)
 }
 
 const char *ftmpl =
-"%s\n\nmain(int argc, char *argv[])\n{\n#ifdef %s\n\texit(0);\n#else\n"
-	"\tsyntax error;\n#endif\n}\n";
+    "%s\n\nmain(int argc, char *argv[])\n{\n#ifdef %s\n\texit(0);\n#else\n"
+    "\tsyntax error;\n#endif\n}\n";
 
-int
-funccheck(char *tname, char *incl, char *fname)
+int funccheck(char *tname, char *incl, char *fname)
 {
 	int rv;
 	static char filename[1024];

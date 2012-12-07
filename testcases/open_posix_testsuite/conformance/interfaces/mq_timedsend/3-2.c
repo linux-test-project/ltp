@@ -45,67 +45,67 @@
 
 int main()
 {
-        char qname[NAMESIZE], msgrcd[BUFFER];
-        const char *msgptr1 = MSG1;
-        const char *msgptr2 = MSG2;
-        const char *msgptr3 = MSG3;
-        const char *msgptr4 = MSG4;
-        const char *msgptr5 = MSG5;
+	char qname[NAMESIZE], msgrcd[BUFFER];
+	const char *msgptr1 = MSG1;
+	const char *msgptr2 = MSG2;
+	const char *msgptr3 = MSG3;
+	const char *msgptr4 = MSG4;
+	const char *msgptr5 = MSG5;
 	struct timespec ts;
-        mqd_t queue;
+	mqd_t queue;
 	struct mq_attr attr;
-	int unresolved=0, failure=0;
+	int unresolved = 0, failure = 0;
 	unsigned pri;
 
-        sprintf(qname, "/mq_timedsend_3-2_%d", getpid());
+	sprintf(qname, "/mq_timedsend_3-2_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
-        queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-                return PTS_UNRESOLVED;
-        }
+	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
+	if (queue == (mqd_t) - 1) {
+		perror("mq_open() did not return success");
+		return PTS_UNRESOLVED;
+	}
 
-	ts.tv_sec=time(NULL)+1;
-	ts.tv_nsec=0;
-        if (mq_timedsend(queue, msgptr3, strlen(msgptr3), PRI3, &ts) != 0) {
-                perror("mq_timedsend() did not return success");
+	ts.tv_sec = time(NULL) + 1;
+	ts.tv_nsec = 0;
+	if (mq_timedsend(queue, msgptr3, strlen(msgptr3), PRI3, &ts) != 0) {
+		perror("mq_timedsend() did not return success");
 		printf("error sending %s\n", msgptr3);
-		failure=1;
-        }
+		failure = 1;
+	}
 
 	ts.tv_sec++;
-        if (mq_timedsend(queue, msgptr1, strlen(msgptr1), PRI1, &ts) != 0) {
-                perror("mq_timedsend() did not return success");
+	if (mq_timedsend(queue, msgptr1, strlen(msgptr1), PRI1, &ts) != 0) {
+		perror("mq_timedsend() did not return success");
 		printf("error sending %s\n", msgptr1);
-		failure=1;
-        }
+		failure = 1;
+	}
 
 	ts.tv_sec++;
-        if (mq_timedsend(queue, msgptr4, strlen(msgptr4), PRI4, &ts) != 0) {
-                perror("mq_timedsend() did not return success");
+	if (mq_timedsend(queue, msgptr4, strlen(msgptr4), PRI4, &ts) != 0) {
+		perror("mq_timedsend() did not return success");
 		printf("error sending %s\n", msgptr4);
-		failure=1;
-        }
+		failure = 1;
+	}
 
 	ts.tv_sec++;
-        if (mq_timedsend(queue, msgptr2, strlen(msgptr2), PRI2, &ts) != 0) {
-                perror("mq_timedsend() did not return success");
+	if (mq_timedsend(queue, msgptr2, strlen(msgptr2), PRI2, &ts) != 0) {
+		perror("mq_timedsend() did not return success");
 		printf("error sending %s\n", msgptr2);
-		failure=1;
-        }
+		failure = 1;
+	}
 
 	ts.tv_sec++;
-        if (mq_timedsend(queue, msgptr5, strlen(msgptr5), PRI5, &ts) != 0) {
-                perror("mq_timedsend() did not return success");
+	if (mq_timedsend(queue, msgptr5, strlen(msgptr5), PRI5, &ts) != 0) {
+		perror("mq_timedsend() did not return success");
 		printf("error sending %s\n", msgptr5);
-		failure=1;
-        }
+		failure = 1;
+	}
 
-        if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
+	if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
 		perror("mq_receive() returned failure");
-		unresolved=1;
+		unresolved = 1;
 	}
 
 	if (strncmp(msgptr1, msgrcd, strlen(msgptr1)) != 0) {
@@ -113,9 +113,9 @@ int main()
 		failure = 1;
 	}
 
-        if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
+	if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
 		perror("mq_receive() returned failure");
-		unresolved=1;
+		unresolved = 1;
 	}
 
 	if (strncmp(msgptr2, msgrcd, strlen(msgptr2)) != 0) {
@@ -123,9 +123,9 @@ int main()
 		failure = 1;
 	}
 
-        if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
+	if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
 		perror("mq_receive() returned failure");
-		unresolved=1;
+		unresolved = 1;
 	}
 
 	if (strncmp(msgptr3, msgrcd, strlen(msgptr3)) != 0) {
@@ -133,9 +133,9 @@ int main()
 		failure = 1;
 	}
 
-        if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
+	if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
 		perror("mq_receive() returned failure");
-		unresolved=1;
+		unresolved = 1;
 	}
 
 	if (strncmp(msgptr4, msgrcd, strlen(msgptr4)) != 0) {
@@ -143,9 +143,9 @@ int main()
 		failure = 1;
 	}
 
-        if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
+	if (mq_receive(queue, msgrcd, BUFFER, &pri) == -1) {
 		perror("mq_receive() returned failure");
-		unresolved=1;
+		unresolved = 1;
 	}
 
 	if (strncmp(msgptr5, msgrcd, strlen(msgptr5)) != 0) {
@@ -153,26 +153,26 @@ int main()
 		failure = 1;
 	}
 
-        if (mq_close(queue) != 0) {
+	if (mq_close(queue) != 0) {
 		perror("mq_close() did not return success");
-		unresolved=1;
-        }
+		unresolved = 1;
+	}
 
-        if (mq_unlink(qname) != 0) {
+	if (mq_unlink(qname) != 0) {
 		perror("mq_unlink() did not return success");
-		unresolved=1;
-        }
+		unresolved = 1;
+	}
 
-	if (failure==1) {
+	if (failure == 1) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	if (unresolved==1) {
+	if (unresolved == 1) {
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
 	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

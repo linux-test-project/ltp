@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	if (sigemptyset(&act.sa_mask) == -1) {
 		perror("Error calling sigemptyset\n");
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
 	/*
 	 * Ensure sleep for TIMEREXPIRE seconds not interrupted
 	 */
-	ts.tv_sec=TIMEREXPIRE;
-	ts.tv_nsec=0;
+	ts.tv_sec = TIMEREXPIRE;
+	ts.tv_nsec = 0;
 
 	if (nanosleep(&ts, NULL) == -1) {
 		printf("nanosleep() interrupted\n");

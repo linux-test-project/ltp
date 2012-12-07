@@ -37,18 +37,18 @@ int main(void)
 {
 	int fd;
 	int i;
-	char buf[32*1024];
+	char buf[32 * 1024];
 	char filename[PATH_MAX];
 
 	printf("Starting dirty tests...\n");
 
 	snprintf(filename, sizeof(filename), "%s/aiodio/file.xx.%d",
-		getenv("TMP") ? getenv("TMP") : "/tmp", getpid());
+		 getenv("TMP") ? getenv("TMP") : "/tmp", getpid());
 
-	fd = open(filename, O_CREAT|O_WRONLY, 0666);
+	fd = open(filename, O_CREAT | O_WRONLY, 0666);
 
 	memset(buf, 0xaa, sizeof(buf));
-	for (i = 0 ; i < 3000; i++)
+	for (i = 0; i < 3000; i++)
 		write(fd, buf, sizeof(buf));
 	fsync(fd);
 	close(fd);

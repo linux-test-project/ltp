@@ -47,12 +47,12 @@ int main()
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR | MQFLAGS,
-                        S_IRUSR | S_IWUSR, NULL);
-	if (mqdes == (mqd_t)-1) {
+			S_IRUSR | S_IWUSR, NULL);
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open()");
 		return PTS_UNRESOLVED;
 	}
-	memset(&mqstat,0,sizeof(mqstat));
+	memset(&mqstat, 0, sizeof(mqstat));
 	if (mq_getattr(mqdes, &mqstat) != 0) {
 		perror(ERROR_PREFIX "mq_getattr");
 		unresolved = 1;
@@ -62,20 +62,20 @@ int main()
 		perror(ERROR_PREFIX "mq_unlink()");
 		return PTS_UNRESOLVED;
 	}
-	if (!(mqstat.mq_flags & MQFLAGS))  {
+	if (!(mqstat.mq_flags & MQFLAGS)) {
 		printf("FAIL: mq_getattr didn't get the correct "
 		       "mq_flags set by mq_open\n");
 		failure = 1;
 	}
 
 	if (failure == 1) {
-                printf("Test FAILED\n");
-                return PTS_FAIL;
-        }
+		printf("Test FAILED\n");
+		return PTS_FAIL;
+	}
 	if (unresolved == 1) {
-                printf("Test UNRESOLVED\n");
-                return PTS_UNRESOLVED;
-        }
+		printf("Test UNRESOLVED\n");
+		return PTS_UNRESOLVED;
+	}
 
 	printf("Test PASSED \n");
 	return PTS_PASS;

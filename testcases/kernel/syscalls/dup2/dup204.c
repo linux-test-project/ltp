@@ -104,7 +104,8 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "call succeeded");
 
 			if (close(TEST_RETURN) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "close failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "close failed");
 		}
 	}
 	cleanup();
@@ -123,7 +124,7 @@ void setup()
 	tst_tmpdir();
 
 	if (pipe(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "pipe failed");
 }
 
 void cleanup()

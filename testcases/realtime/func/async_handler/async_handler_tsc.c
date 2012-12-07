@@ -56,7 +56,7 @@
 
 nsec_t start;
 nsec_t end;
-unsigned long long tsc_period; /* in picoseconds */
+unsigned long long tsc_period;	/* in picoseconds */
 int over_20 = 0;
 int over_25 = 0;
 int over_30 = 0;
@@ -81,12 +81,12 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
@@ -104,7 +104,7 @@ unsigned long long tsc_period_ps(void)
 	rdtscll(tsc_end);
 	ns_end = rt_gettime();
 
-	return (1000*(ns_end - ns_start)) / tsc_minus(tsc_start, tsc_end);
+	return (1000 * (ns_end - ns_start)) / tsc_minus(tsc_start, tsc_end);
 }
 
 void *handler_thread(void *arg)
@@ -171,7 +171,8 @@ void *signal_thread(void *arg)
 			min = MIN(min, delta);
 			max = MAX(max, delta);
 		}
-		atomic_set((i == ITERATIONS-1) ? CHILD_QUIT : CHILD_START, &step);
+		atomic_set((i == ITERATIONS - 1) ? CHILD_QUIT : CHILD_START,
+			   &step);
 	}
 	printf("recording statistics...\n");
 	printf("Minimum: %ld\n", min);
@@ -179,9 +180,11 @@ void *signal_thread(void *arg)
 	printf("Average: %f\n", stats_avg(&dat));
 	printf("Standard Deviation: %f\n", stats_stddev(&dat));
 	stats_hist(&hist, &dat);
-	stats_container_save("samples", "Asynchronous Event Handling Latency (TSC) Scatter Plot",\
+	stats_container_save("samples",
+			     "Asynchronous Event Handling Latency (TSC) Scatter Plot",
 			     "Iteration", "Latency (us)", &dat, "points");
-	stats_container_save("hist", "Asynchronous Event Handling Latency (TSC) Histogram",\
+	stats_container_save("hist",
+			     "Asynchronous Event Handling Latency (TSC) Histogram",
 			     "Latency (us)", "Samples", &hist, "steps");
 	printf("signal thread exiting\n");
 
@@ -212,8 +215,9 @@ int main(int argc, char *argv[])
 	init_pi_mutex(&mutex);
 
 	atomic_set(CHILD_START, &step);
-	handler_id = create_fifo_thread(handler_thread, (void*)0, HANDLER_PRIO);
-	signal_id = create_fifo_thread(signal_thread, (void*)0, SIGNAL_PRIO);
+	handler_id =
+	    create_fifo_thread(handler_thread, (void *)0, HANDLER_PRIO);
+	signal_id = create_fifo_thread(signal_thread, (void *)0, SIGNAL_PRIO);
 
 	join_threads();
 

@@ -58,8 +58,7 @@ char *TCID = __FILE__;
 int TST_TOTAL = 2;
 int TST_CNT = 0;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int svr_sk, clt_sk;
 	struct sockaddr_in svr_loop, clt_loop;
@@ -70,7 +69,7 @@ main(int argc, char *argv[])
 	char *big_buffer;
 	void *msg_buf;
 
-        /* Rather than fflush() throughout the code, set stdout to
+	/* Rather than fflush() throughout the code, set stdout to
 	 * be unbuffered.
 	 */
 	setvbuf(stdout, NULL, _IONBF, 0);
@@ -84,7 +83,7 @@ main(int argc, char *argv[])
 	clt_loop.sin_port = htons(SCTP_TESTPORT_2);
 
 	/* Create and bind the server socket.  */
-        svr_sk = test_socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
+	svr_sk = test_socket(AF_INET, SOCK_SEQPACKET, IPPROTO_SCTP);
 	test_bind(svr_sk, (struct sockaddr *)&svr_loop, sizeof(svr_loop));
 
 	/* Mark server socket as being able to accept new associations.  */
@@ -111,7 +110,7 @@ main(int argc, char *argv[])
 
 	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-        memset(&inmessage, 0, sizeof(inmessage));
+	memset(&inmessage, 0, sizeof(inmessage));
 	iov.iov_base = big_buffer;
 	iov.iov_len = 2000;
 	inmessage.msg_iov = &iov;
@@ -135,18 +134,17 @@ main(int argc, char *argv[])
 	/* Read the 30000 byte message using multiple recvmsg() calls in a
 	 * loop with 2000 bytes per read.
 	 */
-	for (i = 0, msglen = 30000; i < 15; i++, msglen-=2000) {
+	for (i = 0, msglen = 30000; i < 15; i++, msglen -= 2000) {
 		iov.iov_len = REALLY_BIG;
 		inmessage.msg_controllen = sizeof(incmsg);
 		error = test_recvmsg(svr_sk, &inmessage, MSG_PEEK);
-		test_check_msg_data(&inmessage, error, msglen,
-				    MSG_EOR, 0, 0);
+		test_check_msg_data(&inmessage, error, msglen, MSG_EOR, 0, 0);
 
 		iov.iov_len = 2000;
 		inmessage.msg_controllen = sizeof(incmsg);
 		error = test_recvmsg(svr_sk, &inmessage, MSG_WAITALL);
 		test_check_msg_data(&inmessage, error, 2000,
-				    ((i==14)?MSG_EOR:0), 0, 0);
+				    ((i == 14) ? MSG_EOR : 0), 0, 0);
 	}
 
 	tst_resm(TPASS, "recvmsg with MSG_PEEK flag");
@@ -155,6 +153,6 @@ main(int argc, char *argv[])
 	close(svr_sk);
 	close(clt_sk);
 
-        /* Indicate successful completion.  */
-    return 0;
+	/* Indicate successful completion.  */
+	return 0;
 }

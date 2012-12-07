@@ -44,11 +44,12 @@
 
 char str[BUF_SIZE] = "qwerty";
 
-int child_process() {
+int child_process()
+{
 	int fd;
 	char *buf;
 
-	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		kill(getppid(), SIGUSR1);
@@ -73,7 +74,8 @@ int child_process() {
 	return PTS_PASS;
 }
 
-int main() {
+int main()
+{
 	int fd, child_pid;
 	char *buf;
 
@@ -87,7 +89,7 @@ int main() {
 
 	wait(NULL);
 
-	fd = shm_open(SHM_NAME, O_RDONLY, S_IRUSR|S_IWUSR);
+	fd = shm_open(SHM_NAME, O_RDONLY, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;

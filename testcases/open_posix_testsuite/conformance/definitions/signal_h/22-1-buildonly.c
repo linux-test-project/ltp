@@ -1,6 +1,6 @@
   /*
-  Test that the ILL_ILLOPC macro is defined.
-  */
+     Test that the ILL_ILLOPC macro is defined.
+   */
 
 #include <signal.h>
 

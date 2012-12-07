@@ -92,8 +92,9 @@ struct test_case_t {
 	dev_t *olddev;
 	ino_t *oldino;
 } TC[] = {
-	{ fname, mname, "file", &f_olddev, &f_oldino},
-	{ fdir, mdir, "directory", &d_olddev, &d_oldino}
+	{
+	fname, mname, "file", &f_olddev, &f_oldino}, {
+	fdir, mdir, "directory", &d_olddev, &d_oldino}
 };
 
 int main(int ac, char **av)
@@ -179,7 +180,7 @@ int main(int ac, char **av)
 		/* remove the new directory */
 		if (rmdir(mdir) == -1) {
 			tst_brkm(TBROK, cleanup, "Couldn't remove directory %s",
-			    mdir);
+				 mdir);
 		}
 	}
 

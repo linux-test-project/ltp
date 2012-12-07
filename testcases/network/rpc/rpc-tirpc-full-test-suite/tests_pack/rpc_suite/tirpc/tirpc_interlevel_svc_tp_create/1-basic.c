@@ -46,23 +46,20 @@ int main(int argn, char *argc[])
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[1]);
 	SVCXPRT *transp;
 	struct netconfig *nconf;
 
 	//Test initialization
-	if ((nconf = getnetconfigent("udp")) == NULL)
-    {
-    	fprintf(stderr, "Cannot get netconfig entry for UDP\n");
-    	exit(1);
+	if ((nconf = getnetconfigent("udp")) == NULL) {
+		fprintf(stderr, "Cannot get netconfig entry for UDP\n");
+		exit(1);
 	}
-
 	//Call routine
-	transp = svc_tp_create(exm_proc, progNum, VERSNUM,
-                           nconf);
+	transp = svc_tp_create(exm_proc, progNum, VERSNUM, nconf);
 
-    test_status = (transp != NULL) ? 0 : 1;
+	test_status = (transp != NULL) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
@@ -70,7 +67,7 @@ int main(int argn, char *argc[])
 	return test_status;
 }
 
-static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
+static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
 {
 
 }

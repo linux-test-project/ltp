@@ -126,7 +126,7 @@
  * unix, this is done through pthread_join.  In Windows we
  * use a sleeping loop.
  */
-void cleanUpTestChildren(test_ll_t *test)
+void cleanUpTestChildren(test_ll_t * test)
 {
 	thread_struct_t *pTmpThread = NULL, *pTmpThreadLast = NULL;
 
@@ -147,7 +147,7 @@ void cleanUpTestChildren(test_ll_t *test)
  * during the call.  if we cannot create a child, we fail and exit with
  * errno as the exit status.
  */
-void CreateTestChild(void *function, test_ll_t *test)
+void CreateTestChild(void *function, test_ll_t * test)
 {
 	thread_struct_t *pNewThread;
 	hThread_t hTmpThread;
@@ -155,8 +155,12 @@ void CreateTestChild(void *function, test_ll_t *test)
 	hTmpThread = spawnThread(function, test);
 
 	if (ISTHREADVALID(hTmpThread)) {
-		if ((pNewThread = (thread_struct_t *) ALLOC(sizeof(thread_struct_t))) == NULL) {
-			pMsg(ERR, test->args, "%d : Could not allocate memory for child thread...\n", GETLASTERROR());
+		if ((pNewThread =
+		     (thread_struct_t *) ALLOC(sizeof(thread_struct_t))) ==
+		    NULL) {
+			pMsg(ERR, test->args,
+			     "%d : Could not allocate memory for child thread...\n",
+			     GETLASTERROR());
 			exit(GETLASTERROR());
 		}
 		test->env->kids++;
@@ -165,13 +169,18 @@ void CreateTestChild(void *function, test_ll_t *test)
 		test->env->pThreads = pNewThread;
 		test->env->pThreads->hThread = hTmpThread;
 	} else {
-		pMsg(ERR, test->args, "%d : Could not create all child threads.\n", GETLASTERROR());
-		pMsg(INFO, test->args, "Total Number of Threads created was %u\n", test->env->kids);
+		pMsg(ERR, test->args,
+		     "%d : Could not create all child threads.\n",
+		     GETLASTERROR());
+		pMsg(INFO, test->args,
+		     "Total Number of Threads created was %u\n",
+		     test->env->kids);
 		exit(GETLASTERROR());
 	}
 }
 
-void createChild(void *function, test_ll_t *test) {
+void createChild(void *function, test_ll_t * test)
+{
 	hThread_t hTmpThread;
 
 	hTmpThread = spawnThread(function, test);
@@ -179,12 +188,14 @@ void createChild(void *function, test_ll_t *test) {
 	if (ISTHREADVALID(hTmpThread)) {
 		test->hThread = hTmpThread;
 	} else {
-		pMsg(ERR, test->args, "%d : Could not create child thread...\n", GETLASTERROR());
+		pMsg(ERR, test->args, "%d : Could not create child thread...\n",
+		     GETLASTERROR());
 		exit(GETLASTERROR());
 	}
 }
 
-void cleanUp(test_ll_t *test) {
+void cleanUp(test_ll_t * test)
+{
 	test_ll_t *pTmpTest = test;
 	test_ll_t *pLastTest;
 	while (pTmpTest != NULL) {
@@ -198,7 +209,8 @@ void cleanUp(test_ll_t *test) {
 	}
 }
 
-hThread_t spawnThread(void *function, void *param) {
+hThread_t spawnThread(void *function, void *param)
+{
 	hThread_t hTmpThread;
 
 #ifdef WINDOWS
@@ -212,7 +224,8 @@ hThread_t spawnThread(void *function, void *param) {
 	return hTmpThread;
 }
 
-void closeThread(hThread_t hThread) {
+void closeThread(hThread_t hThread)
+{
 #ifdef WINDOWS
 	DWORD dwExitCode = 0;
 
@@ -222,7 +235,8 @@ void closeThread(hThread_t hThread) {
 		 * Sleep(0) will force this thread to
 		 * relinquish the remainder of its time slice
 		 */
-		if (dwExitCode == STILL_ACTIVE) Sleep(0);
+		if (dwExitCode == STILL_ACTIVE)
+			Sleep(0);
 	} while (dwExitCode == STILL_ACTIVE);
 #else
 	pthread_join(hThread, NULL);

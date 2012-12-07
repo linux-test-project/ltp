@@ -67,7 +67,7 @@ struct thestruct {
 
 static void *sendsig(void *arg)
 {
-	struct thestruct *thearg = (struct thestruct *) arg;
+	struct thestruct *thearg = (struct thestruct *)arg;
 	int ret;
 	pid_t process;
 
@@ -77,7 +77,7 @@ static void *sendsig(void *arg)
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
 		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 "
-				"in signal thread");
+			   "in signal thread");
 
 	while (do_it1) {
 #ifdef WITH_SYNCHRO
@@ -129,7 +129,7 @@ static void *test(void *arg)
 	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
 	if (ret != 0)
 		UNRESOLVED(ret, "Unable to unblock SIGUSR1 and SIGUSR2 "
-				"in worker thread");
+			   "in worker thread");
 
 	while (do_it2) {
 		for (sc = 0; sc < NSCENAR; sc++) {
@@ -144,7 +144,7 @@ static void *test(void *arg)
 			if ((scenarii[sc].result == 1) && (ret == 0))
 
 				UNRESOLVED(-1, "An error was expected but the "
-					       "thread creation succeeded");
+					   "thread creation succeeded");
 
 			if (ret == 0) {
 				count_ope++;
@@ -155,7 +155,7 @@ static void *test(void *arg)
 
 				if (ret != 0)
 					UNRESOLVED(ret, "Unable to join a "
-							"thread");
+						   "thread");
 
 			}
 		}
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
 		UNRESOLVED(ret, "Unable to block SIGUSR1 and SIGUSR2 "
-				"in main thread");
+			   "in main thread");
 
 #ifdef WITH_SYNCHRO
 	if (sem_init(&semsig1, 0, 1))
@@ -224,11 +224,11 @@ int main(int argc, char *argv[])
 	arg2.sem = &semsig2;
 #endif
 
-	ret = pthread_create(&th_sig1, NULL, sendsig, (void *) &arg1);
+	ret = pthread_create(&th_sig1, NULL, sendsig, (void *)&arg1);
 	if (ret)
 		UNRESOLVED(ret, "Signal 1 sender thread creation failed");
 
-	ret = pthread_create(&th_sig2, NULL, sendsig, (void *) &arg2);
+	ret = pthread_create(&th_sig2, NULL, sendsig, (void *)&arg2);
 	if (ret)
 		UNRESOLVED(ret, "Signal 2 sender thread creation failed");
 
@@ -266,6 +266,6 @@ int main(int argc, char *argv[])
 	output("  %d signals were sent meanwhile.\n", count_sig);
 
 #endif
- #endif
+#endif
 	PASSED;
 }

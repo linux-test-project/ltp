@@ -148,7 +148,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "stat(2) of "
 						 "%s failed after 1st truncate, "
 						 "error:%d", TESTFILE, errno);
-				 }
+				}
 				file_length1 = stat_buf.st_size;
 
 				/*
@@ -159,7 +159,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "lseek(2) on "
 						 "%s failed after 1st truncate, "
 						 "error:%d", TESTFILE, errno);
-				 }
+				}
 
 				/* Read the testfile from the beginning. */
 				while ((rbytes = read(fd, tst_buff,
@@ -190,7 +190,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "stat(2) of "
 						 "%s failed after 2nd truncate, "
 						 "error:%d", TESTFILE, errno);
-				 }
+				}
 				file_length2 = stat_buf.st_size;
 
 				/*
@@ -201,7 +201,7 @@ int main(int ac, char **av)
 					tst_brkm(TFAIL, cleanup, "lseek(2) on "
 						 "%s failed after 2nd truncate, "
 						 "error:%d", TESTFILE, errno);
-				 }
+				}
 
 				/* Read the testfile contents till EOF */
 				while ((rbytes = read(fd, tst_buff,
@@ -275,7 +275,7 @@ void setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	 }
+	}
 
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {

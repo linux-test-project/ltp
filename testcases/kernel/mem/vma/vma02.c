@@ -56,8 +56,8 @@ static unsigned long pagesize;
 static int opt_node;
 static char *opt_nodestr;
 static option_t options[] = {
-	{ "n:", &opt_node,	&opt_nodestr},
-	{ NULL, NULL,		NULL}
+	{"n:", &opt_node, &opt_nodestr},
+	{NULL, NULL, NULL}
 };
 
 static void usage(void);
@@ -79,46 +79,46 @@ int main(int argc, char **argv)
 	if (opt_node) {
 		node = SAFE_STRTOL(NULL, opt_nodestr, 1, LONG_MAX);
 	} else {
-		err = get_allowed_nodes(NH_MEMS|NH_MEMS, 1, &node);
+		err = get_allowed_nodes(NH_MEMS | NH_MEMS, 1, &node);
 		if (err == -3)
 			tst_brkm(TCONF, NULL, "requires at least one node.");
 		else if (err < 0)
-			tst_brkm(TBROK|TERRNO, NULL, "get_allowed_nodes");
+			tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes");
 	}
 	numa_bitmask_setbit(nmask, node);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
-		addr = mmap(NULL, pagesize*3, PROT_WRITE,
-			MAP_ANON|MAP_PRIVATE, 0, 0);
+		addr = mmap(NULL, pagesize * 3, PROT_WRITE,
+			    MAP_ANON | MAP_PRIVATE, 0, 0);
 		if (addr == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, NULL, "mmap");
+			tst_brkm(TBROK | TERRNO, NULL, "mmap");
 
 		tst_resm(TINFO, "pid = %d addr = %p", getpid(), addr);
 		/* make page populate */
-		memset(addr, 0, pagesize*3);
+		memset(addr, 0, pagesize * 3);
 
 		/* first mbind */
-		err = mbind(addr+pagesize, pagesize, MPOL_BIND, nmask->maskp,
-			nmask->size, MPOL_MF_MOVE_ALL);
+		err = mbind(addr + pagesize, pagesize, MPOL_BIND, nmask->maskp,
+			    nmask->size, MPOL_MF_MOVE_ALL);
 		if (err != 0) {
 			if (errno != ENOSYS)
-				tst_brkm(TBROK|TERRNO, NULL, "mbind1");
+				tst_brkm(TBROK | TERRNO, NULL, "mbind1");
 			else
 				tst_brkm(TCONF, NULL,
-					"mbind syscall not implemented on this system.");
+					 "mbind syscall not implemented on this system.");
 		}
 
 		/* second mbind */
-		err = mbind(addr, pagesize*3, MPOL_DEFAULT, NULL, 0, 0);
+		err = mbind(addr, pagesize * 3, MPOL_DEFAULT, NULL, 0, 0);
 		if (err != 0)
-			tst_brkm(TBROK|TERRNO, NULL, "mbind2");
+			tst_brkm(TBROK | TERRNO, NULL, "mbind2");
 
 		/* /proc/self/maps in the form of
 		   "00400000-00406000 r-xp 00000000". */
 		fp = fopen("/proc/self/maps", "r");
 		if (fp == NULL)
-			tst_brkm(TBROK|TERRNO, NULL, "fopen");
+			tst_brkm(TBROK | TERRNO, NULL, "fopen");
 
 		while (fgets(buf, BUFSIZ, fp) != NULL) {
 			if (sscanf(buf, "%p-%p ", &start, &end) != 2)
@@ -126,8 +126,8 @@ int main(int argc, char **argv)
 
 			if (start == addr) {
 				tst_resm(TINFO, "start = %p, end = %p",
-					start, end);
-				if (end == addr + pagesize*3) {
+					 start, end);
+				if (end == addr + pagesize * 3) {
 					tst_resm(TPASS, "only 1 VMA.");
 					break;
 				}
@@ -136,28 +136,28 @@ int main(int argc, char **argv)
 				while (fgets(buf, BUFSIZ, fp) != NULL) {
 					/* No more VMAs, break */
 					if (sscanf(buf, "%p-%p ", &start,
-						&end) != 2)
+						   &end) != 2)
 						break;
 					tst_resm(TINFO, "start = %p, end = %p",
-						start, end);
+						 start, end);
 
 					/* more VMAs found */
 					if (start == lastend)
 						lastend = end;
-					if (end == addr + pagesize*3) {
+					if (end == addr + pagesize * 3) {
 						tst_resm(TFAIL,
-							">1 unmerged VMAs.");
+							 ">1 unmerged VMAs.");
 						break;
 					}
 				}
-				if (end != addr + pagesize*3)
+				if (end != addr + pagesize * 3)
 					tst_resm(TFAIL, "no matched VMAs.");
 				break;
 			}
 		}
 		fclose(fp);
-		if (munmap(addr, pagesize*3) == -1)
-			tst_brkm(TWARN|TERRNO, NULL, "munmap");
+		if (munmap(addr, pagesize * 3) == -1)
+			tst_brkm(TWARN | TERRNO, NULL, "munmap");
 	}
 	tst_exit();
 }

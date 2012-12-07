@@ -113,9 +113,9 @@ int offsets_cnt = 11;
  * sys_error (): System error message function
  * error (): Error message function
  */
-void parse_args (int, char **);
-void sys_error (const char *, int);
-void error (const char *, int);
+void parse_args(int, char **);
+void sys_error(const char *, int);
+void error(const char *, int);
 
 /*
  * Global variables
@@ -135,98 +135,101 @@ int shmem_size = DEFAULT_SHMEM_SIZE;
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-  int i;
+	int i;
 
-  int shmid[MAX_SHMEM_NUMBER];	/* (Unique) Shared memory identifier */
+	int shmid[MAX_SHMEM_NUMBER];	/* (Unique) Shared memory identifier */
 
-  char *shmptr[MAX_SHMEM_NUMBER];	/* Shared memory segment address */
-  char	*ptr;		/* Index into shared memory segment */
+	char *shmptr[MAX_SHMEM_NUMBER];	/* Shared memory segment address */
+	char *ptr;		/* Index into shared memory segment */
 
-  int value = 0;	/* Value written into shared memory segment */
+	int value = 0;		/* Value written into shared memory segment */
 
-  key_t mykey[MAX_SHMEM_NUMBER];
-  char * null_file = "/dev/null";
-  char  proj[MAX_SHMEM_NUMBER] = {
-    '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'E'
-  };
+	key_t mykey[MAX_SHMEM_NUMBER];
+	char *null_file = "/dev/null";
+	char proj[MAX_SHMEM_NUMBER] = {
+		'3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'E'
+	};
 
-  /*
-   * Parse command line arguments and print out program header
-   */
-  parse_args (argc, argv);
-  printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
+	/*
+	 * Parse command line arguments and print out program header
+	 */
+	parse_args(argc, argv);
+	printf("%s: IPC Shared Memory TestSuite program\n", *argv);
 
-  for (i=0; i<offsets_cnt; i++)
-    {
-      char tmpstr[256];
-      /*
-       * Create a key to uniquely identify the shared segment
-       */
+	for (i = 0; i < offsets_cnt; i++) {
+		char tmpstr[256];
+		/*
+		 * Create a key to uniquely identify the shared segment
+		 */
 
-      mykey[i] = ftok(null_file,proj[i]);
+		mykey[i] = ftok(null_file, proj[i]);
 
-      printf ("\n\tmykey to uniquely identify the shared memory segment 0x%x\n",mykey[i]);
+		printf
+		    ("\n\tmykey to uniquely identify the shared memory segment 0x%x\n",
+		     mykey[i]);
 
-      printf ("\n\tGet shared memory segment (%d bytes)\n", shmem_size);
-      /*
-       * Obtain a unique shared memory identifier with shmget ().
-       */
+		printf("\n\tGet shared memory segment (%d bytes)\n",
+		       shmem_size);
+		/*
+		 * Obtain a unique shared memory identifier with shmget ().
+		 */
 
-      if ((long)(shmid[i]= shmget (mykey[i], shmem_size, IPC_CREAT | 0666 )) < 0)
-	sys_error ("shmget failed", __LINE__);
+		if ((long)
+		    (shmid[i] =
+		     shmget(mykey[i], shmem_size, IPC_CREAT | 0666)) < 0)
+			sys_error("shmget failed", __LINE__);
 
-      printf ("\n\tAttach shared memory segment to process\n");
+		printf("\n\tAttach shared memory segment to process\n");
 
-      if ((long)(shmptr[i] = (char *) shmat (shmid[i], NULL, 0)) == -1)
-	{
-	  /* If shmat(2) failed, we need the currect process address
-	     space layout to debug. The failure can be random. */
-	  sprintf (tmpstr, "cat /proc/%d/maps >&2", (int) getpid ());
-	  fprintf (stderr, "heap %p\n", sbrk (0));
-	  system (tmpstr);
+		if ((long)(shmptr[i] = (char *)shmat(shmid[i], NULL, 0)) == -1) {
+			/* If shmat(2) failed, we need the currect process address
+			   space layout to debug. The failure can be random. */
+			sprintf(tmpstr, "cat /proc/%d/maps >&2", (int)getpid());
+			fprintf(stderr, "heap %p\n", sbrk(0));
+			system(tmpstr);
 
-	  sprintf(tmpstr, "shmat failed - return: %ld", (long)shmptr[i]);
-	  sys_error (tmpstr, __LINE__);
-	}
+			sprintf(tmpstr, "shmat failed - return: %ld",
+				(long)shmptr[i]);
+			sys_error(tmpstr, __LINE__);
+		}
 
-      printf ("\n\tShared memory segment address : %p \n",shmptr[i]);
+		printf("\n\tShared memory segment address : %p \n", shmptr[i]);
 
-      printf ("\n\tIndex through shared memory segment ...\n");
+		printf("\n\tIndex through shared memory segment ...\n");
 
-      /*
-       * Index through the shared memory segment
-       */
+		/*
+		 * Index through the shared memory segment
+		 */
 
-      for (ptr=shmptr[i]; ptr < (shmptr[i] + shmem_size); ptr++)
-	*ptr = value++;
+		for (ptr = shmptr[i]; ptr < (shmptr[i] + shmem_size); ptr++)
+			*ptr = value++;
 
-    } // for 1..11
+	}			// for 1..11
 
-  printf ("\n\tDetach from the segment using the shmdt subroutine\n");
+	printf("\n\tDetach from the segment using the shmdt subroutine\n");
 
-  printf ("\n\tRelease shared memory\n");
+	printf("\n\tRelease shared memory\n");
 
-  for (i=0; i<offsets_cnt; i++)
-    {
-      // Detach from the segment
+	for (i = 0; i < offsets_cnt; i++) {
+		// Detach from the segment
 
-      shmdt( shmptr[i] );
+		shmdt(shmptr[i]);
 
-      // Release shared memory
+		// Release shared memory
 
-      if (shmctl (shmid[i], IPC_RMID, 0) < 0)
-	sys_error ("shmctl failed", __LINE__);
+		if (shmctl(shmid[i], IPC_RMID, 0) < 0)
+			sys_error("shmctl failed", __LINE__);
 
-    } // 2nd for 1..11
-  /*
-   * Program completed successfully -- exit
-   */
+	}			// 2nd for 1..11
+	/*
+	 * Program completed successfully -- exit
+	 */
 
-  printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 
-  return (0);
+	return (0);
 
 }
 
@@ -242,31 +245,31 @@ int main (int argc, char **argv)
 |            [-s] size: shared memory segment size                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-  int	i;
-  int	errflag = 0;
-  char	*program_name = *argv;
-  extern char 	*optarg;	/* Command line option */
+	int i;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
-  while ((i = getopt(argc, argv, "s:?")) != EOF) {
-    switch (i) {
-    case 's':
-      shmem_size = atoi (optarg);
-      break;
-    case '?':
-      errflag++;
-      break;
-    }
-  }
+	while ((i = getopt(argc, argv, "s:?")) != EOF) {
+		switch (i) {
+		case 's':
+			shmem_size = atoi(optarg);
+			break;
+		case '?':
+			errflag++;
+			break;
+		}
+	}
 
-  if (shmem_size < 1 || shmem_size > MAX_SHMEM_SIZE)
-    errflag++;
+	if (shmem_size < 1 || shmem_size > MAX_SHMEM_SIZE)
+		errflag++;
 
-  if (errflag) {
-    fprintf (stderr, USAGE, program_name);
-    exit (2);
-  }
+	if (errflag) {
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
+	}
 }
 
 /*---------------------------------------------------------------------+
@@ -276,12 +279,12 @@ void parse_args (int argc, char **argv)
   | Function:  Creates system error message and calls error ()           |
   |                                                                      |
   +---------------------------------------------------------------------*/
-void sys_error (const char *msg, int line)
+void sys_error(const char *msg, int line)
 {
-  char syserr_msg [256];
+	char syserr_msg[256];
 
-  sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-  error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -291,8 +294,8 @@ void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void error (const char *msg, int line)
+void error(const char *msg, int line)
 {
-  fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-  exit (-1);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	exit(-1);
 }

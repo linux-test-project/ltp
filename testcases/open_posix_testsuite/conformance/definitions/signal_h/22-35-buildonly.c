@@ -1,6 +1,6 @@
   /*
-  Test that the POLL_HUP macro is defined.
-  */
+     Test that the POLL_HUP macro is defined.
+   */
 
 #include <signal.h>
 

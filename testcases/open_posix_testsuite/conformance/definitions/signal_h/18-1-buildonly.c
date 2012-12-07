@@ -1,6 +1,6 @@
   /*
-  Test the definition of ucontext_t.
-  */
+     Test the definition of ucontext_t.
+   */
 
 #include <ucontext.h>
 

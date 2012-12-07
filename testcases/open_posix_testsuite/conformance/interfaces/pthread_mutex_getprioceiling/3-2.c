@@ -23,8 +23,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int
-main(void)
+int main(void)
 {
 #if defined(_SC_PRIORITY_SCHEDULING)
 
@@ -47,11 +46,10 @@ main(void)
 	 * The default protocol is PTHREAD_PRIO_NONE according to
 	 * pthread_mutexattr_getprotocol.
 	 */
-	error = pthread_mutexattr_setprotocol(&mutex_attr,
-		PTHREAD_PRIO_NONE);
+	error = pthread_mutexattr_setprotocol(&mutex_attr, PTHREAD_PRIO_NONE);
 	if (error) {
 		printf("pthread_mutexattr_setprotocol failed: %s\n",
-			strerror(error));
+		       strerror(error));
 		return PTS_UNRESOLVED;
 	}
 
@@ -67,16 +65,16 @@ main(void)
 	if (error) {
 		if (error == EINVAL) {
 			printf("pthread_mutex_getprioceiling failed as "
-				"expected\n");
+			       "expected\n");
 		} else {
 			printf("pthread_mutex_getprioceiling did not fail as "
-				"expected: %s\n", strerror(error));
+			       "expected: %s\n", strerror(error));
 		}
 	} else
 		printf("pthread_mutex_getprioceiling passed unexpectedly\n");
 
-	(void) pthread_mutexattr_destroy(&mutex_attr);
-	(void) pthread_mutex_destroy(&mutex);
+	(void)pthread_mutexattr_destroy(&mutex_attr);
+	(void)pthread_mutex_destroy(&mutex);
 
 	return (error == EINVAL ? PTS_PASS : PTS_FAIL);
 #else

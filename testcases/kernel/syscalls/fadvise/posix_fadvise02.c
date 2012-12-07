@@ -154,7 +154,7 @@ void setup()
 	TEST_PAUSE;
 
 	/* Make WRONG_FD really wrong. */
-      retry:
+retry:
 	errno = 0;
 	if (close(WRONG_FD) != 0) {
 		if (errno == EBADF) ;	/* Good. Do nothing. */

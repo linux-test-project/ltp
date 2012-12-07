@@ -23,33 +23,30 @@
 
 void *a_thread_func();
 
-pthread_t self_th; 	/* Save the value of the function call pthread_self()
-			   within the thread.  Keeping it global so 'main' can
-			   see it too. */
+pthread_t self_th;		/* Save the value of the function call pthread_self()
+				   within the thread.  Keeping it global so 'main' can
+				   see it too. */
 
 int main()
 {
 	pthread_t new_th;
 
 	/* Create a new thread */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for the thread function to return to make sure we got
 	 * the thread ID value from pthread_self(). */
-	if (pthread_join(new_th, NULL) != 0)
-	{
+	if (pthread_join(new_th, NULL) != 0) {
 		perror("Error calling pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* If the value of pthread_self() and the return value from
 	 * pthread_create() is equal, then the test passes. */
-	if (pthread_equal(new_th, self_th) == 0)
-	{
+	if (pthread_equal(new_th, self_th) == 0) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
@@ -61,7 +58,7 @@ int main()
 /* The thread function that calls pthread_self() to obtain its thread ID */
 void *a_thread_func()
 {
-	self_th=pthread_self();
+	self_th = pthread_self();
 	pthread_exit(0);
 	return NULL;
 }

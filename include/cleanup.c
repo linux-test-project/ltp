@@ -30,16 +30,18 @@
 
 /* Did the user define a cleanup function? */
 #ifndef CLEANUP
-# define USING_DUMMY_CLEANUP 1
-# define CLEANUP dummy_cleanup
+#define USING_DUMMY_CLEANUP 1
+#define CLEANUP dummy_cleanup
 #endif
 
 /* A freebie for defining the function prototype. */
-static void CLEANUP(void) __attribute__((unused));
+static void CLEANUP(void) __attribute__ ((unused));
 
 #ifdef USING_DUMMY_CLEANUP
 /* The stub function. Wewt.. */
-static void dummy_cleanup(void) { }
+static void dummy_cleanup(void)
+{
+}
 #endif
 
 #endif

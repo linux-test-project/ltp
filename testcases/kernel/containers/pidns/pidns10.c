@@ -73,11 +73,11 @@ int child_fn(void *arg)
 
 	if ((ret = kill(-1, SIGUSR1)) == -1 && errno == ESRCH) {
 		printf("cinit: kill(-1, sig) failed with -1 / ESRCH as "
-		    "expected\n");
+		       "expected\n");
 		exit_val = 0;
 	} else {
 		printf("cinit: kill(-1, sig) didn't fail with -1 / ESRCH "
-		    "(%d); failed with %d / %d instead", ESRCH, ret, errno);
+		       "(%d); failed with %d / %d instead", ESRCH, ret, errno);
 		exit_val = 1;
 	}
 	exit(exit_val);
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 	/* Container creation on PID namespace */
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, NULL));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TBROK|TTERRNO, CLEANUP, "clone failed");
+		tst_brkm(TBROK | TTERRNO, CLEANUP, "clone failed");
 	}
 
 	sleep(1);
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
  */
 static void cleanup()
 {
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 
 }

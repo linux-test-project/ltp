@@ -37,6 +37,7 @@ void *thread_func()
 	pthread_exit(0);
 	return NULL;
 }
+
 int main()
 {
 	pthread_attr_t attr;
@@ -59,37 +60,35 @@ int main()
 
 	stack_size = PTHREAD_STACK_MIN;
 
-	if (posix_memalign (&stack_addr, sysconf(_SC_PAGE_SIZE),
-            stack_size) != 0)
-    	{
-      		perror (ERROR_PREFIX "out of memory while "
-                        "allocating the stack memory");
-      		exit(PTS_UNRESOLVED);
-    	}
+	if (posix_memalign(&stack_addr, sysconf(_SC_PAGE_SIZE),
+			   stack_size) != 0) {
+		perror(ERROR_PREFIX "out of memory while "
+		       "allocating the stack memory");
+		exit(PTS_UNRESOLVED);
+	}
 
 	stack_addr = stack_addr + OFFSET;
 	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != EINVAL) {
-                printf("The function didn't fail when stackaddr "
-                       "lacks proper alignment\n");
-        }
+	if (rc != EINVAL) {
+		printf("The function didn't fail when stackaddr "
+		       "lacks proper alignment\n");
+	}
 
 	stack_addr = stack_addr + OFFSET;
 	stack_size = PTHREAD_STACK_MIN + OFFSET;
 	/* printf("stack_addr = %p, stack_size = %u\n", stack_addr, stack_size); */
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != EINVAL) {
-                printf("The function didn't fail when (stackaddr + stacksize) "
-                       "lacks proper alignment\n");
-        }
+	if (rc != EINVAL) {
+		printf("The function didn't fail when (stackaddr + stacksize) "
+		       "lacks proper alignment\n");
+	}
 
 	rc = pthread_attr_destroy(&attr);
-	if (rc != 0)
-        {
-                perror(ERROR_PREFIX "pthread_attr_destroy");
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

@@ -38,41 +38,36 @@ int main()
 	int ret;
 
 	/* Initialize attribute */
-	if (pthread_attr_init(&new_attr) != 0)
-	{
+	if (pthread_attr_init(&new_attr) != 0) {
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy attribute */
-	if (pthread_attr_destroy(&new_attr) != 0)
-	{
+	if (pthread_attr_destroy(&new_attr) != 0) {
 		perror("Cannot destroy the attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Creating a thread, passing to it the destroyed attribute, should
 	 * result in an error value of EINVAL (invalid 'attr' value). */
-       ret=pthread_create(&new_th, &new_attr, a_thread_func, NULL);
+	ret = pthread_create(&new_th, &new_attr, a_thread_func, NULL);
 
-       if (ret==EINVAL)
-       {
-	       printf("Test PASSED\n");
-	       return PTS_PASS;
-       }
-       else if ((ret != 0) && ((ret == EPERM) || (ret == EAGAIN)))
-       {
-	       perror("Error created a new thread\n");
-	       return PTS_UNRESOLVED;
-       }
-       else if (ret==0)
-       {
-	       printf("Test PASSED: NOTE*: Though returned 0 when creating a thread with a destroyed attribute, this behavior is compliant with garbage-in-garbage-out. \n");
-	       return PTS_PASS;
-       } else
-       {
-	       printf("Test FAILED: (1) Incorrect return code from pthread_create(); %d not EINVAL  or  (2) Error in pthread_create()'s behavior in returning error codes \n", ret);
-	       return PTS_FAIL;
-       }
+	if (ret == EINVAL) {
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	} else if ((ret != 0) && ((ret == EPERM) || (ret == EAGAIN))) {
+		perror("Error created a new thread\n");
+		return PTS_UNRESOLVED;
+	} else if (ret == 0) {
+		printf
+		    ("Test PASSED: NOTE*: Though returned 0 when creating a thread with a destroyed attribute, this behavior is compliant with garbage-in-garbage-out. \n");
+		return PTS_PASS;
+	} else {
+		printf
+		    ("Test FAILED: (1) Incorrect return code from pthread_create(); %d not EINVAL  or  (2) Error in pthread_create()'s behavior in returning error codes \n",
+		     ret);
+		return PTS_FAIL;
+	}
 
 }

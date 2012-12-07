@@ -17,7 +17,8 @@
 
 int main()
 {
-	printf("Difficult to detect whether mq_unlink will block until all the reference have been closed\n");
+	printf
+	    ("Difficult to detect whether mq_unlink will block until all the reference have been closed\n");
 	printf("for this instance.  Will not be tested.\n");
 	return PTS_UNTESTED;
 }

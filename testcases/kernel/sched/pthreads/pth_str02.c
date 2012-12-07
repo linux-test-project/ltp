@@ -56,18 +56,18 @@
  * parse_args (): Parses command line arguments
  */
 
-static void sys_error (const char *, int);
-static void error (const char *, int);
-static void parse_args (int, char **);
-void *thread (void *);
+static void sys_error(const char *, int);
+static void error(const char *, int);
+static void parse_args(int, char **);
+void *thread(void *);
 
 /*
  * Global Variables
  */
 
 int num_threads = DEFAULT_NUM_THREADS;
-int test_limit  = 0;
-int debug       = 0;
+int test_limit = 0;
+int debug = 0;
 
 char *TCID = "pth_str02";
 int TST_TOTAL = 1;
@@ -79,25 +79,25 @@ int TST_TOTAL = 1;
 | Function:  Main program  (see prolog for more details)               |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	/*
 	 * Parse command line arguments and print out program header
 	 */
-	parse_args (argc, argv);
+	parse_args(argc, argv);
 
-        if (test_limit) {
-	  tst_resm (TINFO, "Creating as many threads as possible");
-        } else {
-	  tst_resm (TINFO, "Creating %d threads", num_threads);
-        }
-	thread (0);
+	if (test_limit) {
+		tst_resm(TINFO, "Creating as many threads as possible");
+	} else {
+		tst_resm(TINFO, "Creating %d threads", num_threads);
+	}
+	thread(0);
 
 	/*
 	 * Program completed successfully...
 	 */
 	tst_resm(TPASS, "Test passed");
-	exit (0);
+	exit(0);
 }
 
 /*---------------------------------------------------------------------+
@@ -107,51 +107,55 @@ int main (int argc, char **argv)
 | Function:  Recursively creates threads while num < num_threads       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void *thread (void *parm)
+void *thread(void *parm)
 {
 	intptr_t num = (intptr_t) parm;
-	pthread_t	th;
-	pthread_attr_t	attr;
-	size_t		stacksize = 1046528;
-        int             pcrterr;
+	pthread_t th;
+	pthread_attr_t attr;
+	size_t stacksize = 1046528;
+	int pcrterr;
 
 	/*
 	 * Create threads while num < num_threads...
 	 */
 	if (test_limit || (num < num_threads)) {
 
-		if (pthread_attr_init (&attr))
-			sys_error ("pthread_attr_init failed", __LINE__);
-		if (pthread_attr_setstacksize (&attr, stacksize))
-			sys_error ("pthread_attr_setstacksize failed", __LINE__);
-		if (pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE))
-			sys_error ("pthread_attr_setdetachstate failed", __LINE__);
-                /************************************************/
-                /*   pthread_create does not touch errno.  It RETURNS the error
-                 *   if it fails.  errno has no bearing on this test, so it was
-                 *   removed and replaced with return value check(see man page
-                 *   for pthread_create();
-                 */
-		pcrterr = pthread_create (&th, &attr, thread, (void *)(num + 1));
+		if (pthread_attr_init(&attr))
+			sys_error("pthread_attr_init failed", __LINE__);
+		if (pthread_attr_setstacksize(&attr, stacksize))
+			sys_error("pthread_attr_setstacksize failed", __LINE__);
+		if (pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE))
+			sys_error("pthread_attr_setdetachstate failed",
+				  __LINE__);
+		/************************************************/
+		/*   pthread_create does not touch errno.  It RETURNS the error
+		 *   if it fails.  errno has no bearing on this test, so it was
+		 *   removed and replaced with return value check(see man page
+		 *   for pthread_create();
+		 */
+		pcrterr = pthread_create(&th, &attr, thread, (void *)(num + 1));
 		if (pcrterr != 0) {
 			if (test_limit) {
-			   tst_resm (TINFO, "Testing pthread limit, %d pthreads created.", (int)num);
-			   pthread_exit(0);
+				tst_resm(TINFO,
+					 "Testing pthread limit, %d pthreads created.",
+					 (int)num);
+				pthread_exit(0);
 			}
 			if (pcrterr == EAGAIN) {
-			    tst_resm (TINFO, "Thread [%d]: unable to create more threads!", (int)num);
-			    return NULL;
-			}
-			else
-			    sys_error ("pthread_create failed", __LINE__);
+				tst_resm(TINFO,
+					 "Thread [%d]: unable to create more threads!",
+					 (int)num);
+				return NULL;
+			} else
+				sys_error("pthread_create failed", __LINE__);
 		}
-		pthread_join (th, (void *) NULL);
+		pthread_join(th, (void *)NULL);
 	}
 
 	return 0;
 	/*
-	pthread_exit(0);
-	*/
+	   pthread_exit(0);
+	 */
 }
 
 /*---------------------------------------------------------------------+
@@ -162,33 +166,33 @@ void *thread (void *parm)
 |            variables.                                                |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void parse_args (int argc, char **argv)
+static void parse_args(int argc, char **argv)
 {
-	int	i;
-	int	errflag = 0;
-	char	*program_name = *argv;
+	int i;
+	int errflag = 0;
+	char *program_name = *argv;
 
 	while ((i = getopt(argc, argv, "dln:?")) != EOF) {
 		switch (i) {
-			case 'd':		/* debug option */
-				debug++;
-				break;
-			case 'l':		/* test pthread limit */
-				test_limit++;
-				break;
-			case 'n':		/* number of threads */
-				num_threads = atoi (optarg);
-				break;
-			case '?':
-				errflag++;
-				break;
+		case 'd':	/* debug option */
+			debug++;
+			break;
+		case 'l':	/* test pthread limit */
+			test_limit++;
+			break;
+		case 'n':	/* number of threads */
+			num_threads = atoi(optarg);
+			break;
+		case '?':
+			errflag++;
+			break;
 		}
 	}
 
 	/* If any errors exit program */
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -199,12 +203,12 @@ static void parse_args (int argc, char **argv)
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void sys_error (const char *msg, int line)
+static void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -214,9 +218,9 @@ static void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void error (const char *msg, int line)
+static void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
 	tst_resm(TFAIL, "Test failed");
-	exit (-1);
+	exit(-1);
 }

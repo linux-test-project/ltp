@@ -50,9 +50,9 @@ pthread_mutex_t sig_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #ifdef WINDOWS
-void sig_handler( int sig )
+void sig_handler(int sig)
 #else
-void* sig_handler( void* arg )
+void *sig_handler(void *arg)
 #endif
 {
 #ifndef WINDOWS
@@ -61,72 +61,72 @@ void* sig_handler( void* arg )
 	int rv;
 
 	/* wait for any and all signals */
-	sigfillset( &signal_set );
+	sigfillset(&signal_set);
 #ifdef AIX
 	/* except in AIX, can't sigwait on this signals */
-	sigdelset( &signal_set, SIGKILL );
-	sigdelset( &signal_set, SIGWAITING );
-	sigdelset( &signal_set, SIGSTOP );
+	sigdelset(&signal_set, SIGKILL);
+	sigdelset(&signal_set, SIGWAITING);
+	sigdelset(&signal_set, SIGSTOP);
 #endif
 
 	for (;;) {
-		rv = sigwait( &signal_set, &sig );
+		rv = sigwait(&signal_set, &sig);
 #endif
 
-		switch( sig ) {
-			case SIGQUIT:
-				LOCK(sig_mutex);
-				handled_signal = SIGQUIT;
-				signal_action |= SIGNAL_STOP;
-				UNLOCK(sig_mutex);
-				break;
+		switch (sig) {
+		case SIGQUIT:
+			LOCK(sig_mutex);
+			handled_signal = SIGQUIT;
+			signal_action |= SIGNAL_STOP;
+			UNLOCK(sig_mutex);
+			break;
 
-			case SIGINT:
-				LOCK(sig_mutex);
-				handled_signal = SIGINT;
-				signal_action |= SIGNAL_STOP;
-				UNLOCK(sig_mutex);
-				break;
+		case SIGINT:
+			LOCK(sig_mutex);
+			handled_signal = SIGINT;
+			signal_action |= SIGNAL_STOP;
+			UNLOCK(sig_mutex);
+			break;
 
-			case SIGTERM:
-				LOCK(sig_mutex);
-				handled_signal = SIGTERM;
-				signal_action |= SIGNAL_STOP;
-				UNLOCK(sig_mutex);
-				break;
+		case SIGTERM:
+			LOCK(sig_mutex);
+			handled_signal = SIGTERM;
+			signal_action |= SIGNAL_STOP;
+			UNLOCK(sig_mutex);
+			break;
 
-			case SIGHUP:
-				LOCK(sig_mutex);
-				handled_signal = SIGHUP;
-				signal_action |= SIGNAL_STOP;
-				UNLOCK(sig_mutex);
-				break;
+		case SIGHUP:
+			LOCK(sig_mutex);
+			handled_signal = SIGHUP;
+			signal_action |= SIGNAL_STOP;
+			UNLOCK(sig_mutex);
+			break;
 
-			case SIGUSR1:
-				LOCK(sig_mutex);
-				handled_signal = SIGUSR1;
-				signal_action |= SIGNAL_STAT;
-				UNLOCK(sig_mutex);
-				break;
+		case SIGUSR1:
+			LOCK(sig_mutex);
+			handled_signal = SIGUSR1;
+			signal_action |= SIGNAL_STAT;
+			UNLOCK(sig_mutex);
+			break;
 
 			/* whatever you need to do for other signals */
-			default:
-				LOCK(sig_mutex);
-				handled_signal = 0;
-				UNLOCK(sig_mutex);
-				break;
-			}
+		default:
+			LOCK(sig_mutex);
+			handled_signal = 0;
+			UNLOCK(sig_mutex);
+			break;
+		}
 #ifndef WINDOWS
 	}
 	return (void *)0;
 #endif
 }
 
-void setup_sig_mask( void )
+void setup_sig_mask(void)
 {
 #ifndef WINDOWS
-    sigset_t signal_set;
-    pthread_t sig_thread;
+	sigset_t signal_set;
+	pthread_t sig_thread;
 #endif
 
 #ifdef WINDOWS
@@ -137,29 +137,29 @@ void setup_sig_mask( void )
 
 	/* block all signals */
 #ifdef WINDOWS
-	signal( SIGINT, sig_handler );
-	signal( SIGTERM, sig_handler );
-	signal( SIGUSR1, sig_handler );
+	signal(SIGINT, sig_handler);
+	signal(SIGTERM, sig_handler);
+	signal(SIGUSR1, sig_handler);
 #else
-	sigemptyset( &signal_set );
-	sigaddset( &signal_set, SIGINT );
-	sigaddset( &signal_set, SIGHUP );
-	sigaddset( &signal_set, SIGQUIT );
-	sigaddset( &signal_set, SIGTERM );
-	sigaddset( &signal_set, SIGUSR1 );
+	sigemptyset(&signal_set);
+	sigaddset(&signal_set, SIGINT);
+	sigaddset(&signal_set, SIGHUP);
+	sigaddset(&signal_set, SIGQUIT);
+	sigaddset(&signal_set, SIGTERM);
+	sigaddset(&signal_set, SIGUSR1);
 
 #ifdef AIX
 	sigthreadmask(SIG_SETMASK, &signal_set, NULL);
 #else
-	pthread_sigmask( SIG_SETMASK, &signal_set, NULL );
+	pthread_sigmask(SIG_SETMASK, &signal_set, NULL);
 #endif
 
 	/* create the signal handling thread */
-	pthread_create( &sig_thread, NULL, sig_handler, NULL );
+	pthread_create(&sig_thread, NULL, sig_handler, NULL);
 #endif
 }
 
-void clear_stat_signal( void )
+void clear_stat_signal(void)
 {
 	if (signal_action & SIGNAL_STAT) {
 		LOCK(sig_mutex);

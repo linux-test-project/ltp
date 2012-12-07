@@ -62,7 +62,8 @@ int main(int argc, char **argv)
 	void *memmap;
 
 	if (--argc != 5) {
-		printf("usage: %s filename openflags offset length passflag\n", argv[0]);
+		printf("usage: %s filename openflags offset length passflag\n",
+		       argv[0]);
 		exit(-1);
 	}
 
@@ -83,7 +84,7 @@ int main(int argc, char **argv)
 		printf("%s error: invalid offset %s\n", argv[0], argv[3]);
 		exit(-1);
 	}
-	if (offset & (PAGE_SIZE-1)) {
+	if (offset & (PAGE_SIZE - 1)) {
 		printf("%s error: unaligned offset %d\n", argv[0], offset);
 		exit(-1);
 	}
@@ -94,7 +95,7 @@ int main(int argc, char **argv)
 	} else if (openflags == O_WRONLY) {
 		flags = PROT_WRITE;
 	} else if (openflags == O_RDWR) {
-		flags = PROT_READ|PROT_WRITE;
+		flags = PROT_READ | PROT_WRITE;
 	} else {
 		printf("%s error: invalid openflags %s\n", argv[0], argv[2]);
 		exit(-1);
@@ -103,14 +104,17 @@ int main(int argc, char **argv)
 	printf("invoking open(%s, %d)\n", argv[1], openflags);
 	fd = open(argv[1], openflags);
 	if (fd == -1) {
-		printf("%s error: open failed with rc = %d (errno = %d)\n", argv[0], rc, errno);
+		printf("%s error: open failed with rc = %d (errno = %d)\n",
+		       argv[0], rc, errno);
 		exit(-1);
 	}
 
-	printf("invoking memmap(%d, %d, %s, %d)\n", length, flags, argv[1], offset);
+	printf("invoking memmap(%d, %d, %s, %d)\n", length, flags, argv[1],
+	       offset);
 	memmap = mmap(NULL, length, flags, MAP_SHARED, fd, offset);
 	if (memmap == MAP_FAILED) {
-		printf("%s error: mmap failed with errno = %d\n", argv[0], errno);
+		printf("%s error: mmap failed with errno = %d\n", argv[0],
+		       errno);
 		if (passflag) {
 			close(fd);
 			exit(-1);

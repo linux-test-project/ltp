@@ -58,9 +58,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "keyctl01";/* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 2;	/* total number of tests in this file.   */
+char *TCID = "keyctl01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 2;		/* total number of tests in this file.   */
 
 #if HAVE_KEYCTL_SYSCALL
 /* Extern Global Functions */
@@ -81,7 +81,8 @@ int  TST_TOTAL = 2;	/* total number of tests in this file.   */
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -106,14 +107,16 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
+void setup()
+{
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int ret;
 	int lc;
 	key_serial_t ne_key;
@@ -134,17 +137,17 @@ int main(int ac, char **av) {
 
 			/* Call keyctl() and ask for a keyring's ID. */
 			ret = syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID,
-					KEY_SPEC_USER_SESSION_KEYRING);
+				      KEY_SPEC_USER_SESSION_KEYRING);
 			if (ret != -1) {
-				tst_resm(TPASS,"KEYCTL_GET_KEYRING_ID succeeded");
+				tst_resm(TPASS,
+					 "KEYCTL_GET_KEYRING_ID succeeded");
 			} else {
-		 		tst_resm(TFAIL|TERRNO, "KEYCTL_GET_KEYRING_ID");
+				tst_resm(TFAIL | TERRNO,
+					 "KEYCTL_GET_KEYRING_ID");
 			}
 
-			for (ne_key = INT32_MAX; ne_key > INT32_MIN;
-			    ne_key--) {
-				ret = syscall(__NR_keyctl, KEYCTL_READ,
-					ne_key);
+			for (ne_key = INT32_MAX; ne_key > INT32_MIN; ne_key--) {
+				ret = syscall(__NR_keyctl, KEYCTL_READ, ne_key);
 				if (ret == -1 && errno == ENOKEY)
 					break;
 			}
@@ -152,18 +155,18 @@ int main(int ac, char **av) {
 			/* Call keyctl. */
 			ret = syscall(__NR_keyctl, KEYCTL_REVOKE, ne_key);
 			if (ret != -1) {
-				tst_resm(TFAIL|TERRNO,
-					"KEYCTL_REVOKE succeeded unexpectedly");
+				tst_resm(TFAIL | TERRNO,
+					 "KEYCTL_REVOKE succeeded unexpectedly");
 			} else {
 				/* Check for the correct error num. */
 				if (errno == ENOKEY) {
-					tst_resm(TPASS|TERRNO,
-						"KEYCTL_REVOKE got expected "
-						"errno");
+					tst_resm(TPASS | TERRNO,
+						 "KEYCTL_REVOKE got expected "
+						 "errno");
 				} else {
-					tst_resm(TFAIL|TERRNO,
-						"KEYCTL_REVOKE got unexpected "
-						"errno");
+					tst_resm(TFAIL | TERRNO,
+						 "KEYCTL_REVOKE got unexpected "
+						 "errno");
 				}
 
 			}
@@ -176,8 +179,7 @@ int main(int ac, char **av) {
 	return (1);
 }
 #else
-int
-main(void)
+int main(void)
 {
 	tst_resm(TCONF, "keyctl syscall support not available on system");
 	tst_exit();

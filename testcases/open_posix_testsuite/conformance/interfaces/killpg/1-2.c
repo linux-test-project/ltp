@@ -28,7 +28,8 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-void myhandler (int signo) {
+void myhandler(int signo)
+{
 	exit(1);
 }
 
@@ -39,8 +40,8 @@ int main()
 	if ((child_pid = fork()) == 0) {
 		/* child here */
 		struct sigaction act;
-		act.sa_handler=myhandler;
-		act.sa_flags=0;
+		act.sa_handler = myhandler;
+		act.sa_flags = 0;
 		sigemptyset(&act.sa_mask);
 		sigaction(SIGTOTEST, &act, 0);
 

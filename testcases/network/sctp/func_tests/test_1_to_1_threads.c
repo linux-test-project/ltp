@@ -42,7 +42,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>         /* for sockaddr_in */
+#include <netinet/in.h>		/* for sockaddr_in */
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/sctp.h>
@@ -51,7 +51,7 @@
 #include <linux/socket.h>
 #include <sctputil.h>
 
-#define THREADS 10    /* FIXME should be 500 instead of 10 */
+#define THREADS 10		/* FIXME should be 500 instead of 10 */
 #define THREAD_SND_RCV_LOOPS 10
 
 char *TCID = __FILE__;
@@ -61,89 +61,89 @@ int TST_CNT = 0;
 int client_sk;
 int server_sk;
 int acpt_sk;
-struct sockaddr_in  conn_addr;
+struct sockaddr_in conn_addr;
 char *message = "hello, world!\n";
 
-void
-t_recv (int id) {
+void t_recv(int id)
+{
 	int cnt;
 	struct msghdr inmessage;
 	struct iovec iov;
-        char incmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
-        char * buffer;
+	char incmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
+	char *buffer;
 
 	memset(&inmessage, 0, sizeof(inmessage));
-        buffer = malloc(100);
+	buffer = malloc(100);
 
-        iov.iov_base = buffer;
-        iov.iov_len = 100;
-        inmessage.msg_iov = &iov;
-        inmessage.msg_iovlen = 1;
-        inmessage.msg_control = incmsg;
-        inmessage.msg_controllen = sizeof(incmsg);
+	iov.iov_base = buffer;
+	iov.iov_len = 100;
+	inmessage.msg_iov = &iov;
+	inmessage.msg_iovlen = 1;
+	inmessage.msg_control = incmsg;
+	inmessage.msg_controllen = sizeof(incmsg);
 
-	cnt = test_recvmsg(acpt_sk,&inmessage, MSG_WAITALL);
-        test_check_msg_data(&inmessage, cnt, strlen(message) + 1, MSG_EOR,
+	cnt = test_recvmsg(acpt_sk, &inmessage, MSG_WAITALL);
+	test_check_msg_data(&inmessage, cnt, strlen(message) + 1, MSG_EOR,
 			    0, 0);
 }
 
-void
-t_send(int id) {
-        struct msghdr outmessage;
-        struct sctp_sndrcvinfo *sinfo;
-        char *buffer_snd;
-        struct cmsghdr *cmsg;
-        struct iovec out_iov;
-        char outcmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
+void t_send(int id)
+{
+	struct msghdr outmessage;
+	struct sctp_sndrcvinfo *sinfo;
+	char *buffer_snd;
+	struct cmsghdr *cmsg;
+	struct iovec out_iov;
+	char outcmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
 
-        memset(&outmessage, 0, sizeof(outmessage));
-        buffer_snd = malloc(100);
+	memset(&outmessage, 0, sizeof(outmessage));
+	buffer_snd = malloc(100);
 
-        outmessage.msg_name = &conn_addr;
-        outmessage.msg_namelen = sizeof(conn_addr);
-        outmessage.msg_iov = &out_iov;
-        outmessage.msg_iovlen = 1;
-        outmessage.msg_control = outcmsg;
-        outmessage.msg_controllen = sizeof(outcmsg);
-        outmessage.msg_flags = 0;
+	outmessage.msg_name = &conn_addr;
+	outmessage.msg_namelen = sizeof(conn_addr);
+	outmessage.msg_iov = &out_iov;
+	outmessage.msg_iovlen = 1;
+	outmessage.msg_control = outcmsg;
+	outmessage.msg_controllen = sizeof(outcmsg);
+	outmessage.msg_flags = 0;
 
-        cmsg = CMSG_FIRSTHDR(&outmessage);
+	cmsg = CMSG_FIRSTHDR(&outmessage);
 	cmsg->cmsg_level = IPPROTO_SCTP;
-        cmsg->cmsg_type = SCTP_SNDRCV;
-        cmsg->cmsg_len = CMSG_LEN(sizeof(struct sctp_sndrcvinfo));
-        outmessage.msg_controllen = cmsg->cmsg_len;
+	cmsg->cmsg_type = SCTP_SNDRCV;
+	cmsg->cmsg_len = CMSG_LEN(sizeof(struct sctp_sndrcvinfo));
+	outmessage.msg_controllen = cmsg->cmsg_len;
 
-        sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
-        memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
-        outmessage.msg_iov->iov_base = message;
-        outmessage.msg_iov->iov_len = (strlen(message) + 1);
+	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
+	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
+	outmessage.msg_iov->iov_base = message;
+	outmessage.msg_iov->iov_len = (strlen(message) + 1);
 
-        test_sendmsg(client_sk, &outmessage, 0, strlen(message)+1);
+	test_sendmsg(client_sk, &outmessage, 0, strlen(message) + 1);
 }
 
-void * relay (void* id_) {
-	int id=(uintptr_t)id_;
+void *relay(void *id_)
+{
+	int id = (uintptr_t) id_;
 	if (id == 0) {
 		t_send(id);
-	} else if (id == THREADS -1) {
+	} else if (id == THREADS - 1) {
 		t_send(id);
 	} else {
-		t_recv (id);
+		t_recv(id);
 		t_send(id);
 	}
 
 	return 0;
 }
 
-int
-main(void)
+int main(void)
 {
 
-	int      cnt,i;
-	pthread_t       thread[THREADS];
-	int  status;
-	int  exit_status;
-	void *      result;
+	int cnt, i;
+	pthread_t thread[THREADS];
+	int status;
+	int exit_status;
+	void *result;
 	pthread_attr_t attr;
 	struct sockaddr_in lstn_addr;
 	socklen_t len = sizeof(struct sockaddr_in);
@@ -156,38 +156,38 @@ main(void)
 	client_sk = test_socket(PF_INET, SOCK_STREAM, IPPROTO_SCTP);
 
 	lstn_addr.sin_family = AF_INET;
-        lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	lstn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
 	lstn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
 	conn_addr.sin_family = AF_INET;
-        conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	conn_addr.sin_addr.s_addr = SCTP_IP_LOOPBACK;
 	conn_addr.sin_port = htons(SCTP_TESTPORT_1);
 
 	test_bind(server_sk, (struct sockaddr *)&lstn_addr,
-		 sizeof(struct sockaddr_in));
+		  sizeof(struct sockaddr_in));
 
-	test_listen(server_sk,10);
+	test_listen(server_sk, 10);
 
-	test_connect(client_sk,(struct sockaddr *)&conn_addr,len);
+	test_connect(client_sk, (struct sockaddr *)&conn_addr, len);
 
 	acpt_sk = test_accept(server_sk, (struct sockaddr *)&svr_addr, &len);
 
 	for (i = 0; i < THREAD_SND_RCV_LOOPS; i++) {
 		for (cnt = 1; cnt < THREADS; cnt++) {
 			status = pthread_create(&thread[cnt], &attr,
-						relay, (void*)(uintptr_t)cnt);
+						relay, (void *)(uintptr_t) cnt);
 			if (status)
 				tst_brkm(TBROK, NULL, "pthread_create "
-                         		 "failed status:%d, errno:%d", status,
+					 "failed status:%d, errno:%d", status,
 					 errno);
 		}
 
 		pthread_attr_destroy(&attr);
-		for (cnt = 1; cnt < THREADS ; cnt++) {
-			exit_status = pthread_join (thread[cnt], &result);
+		for (cnt = 1; cnt < THREADS; cnt++) {
+			exit_status = pthread_join(thread[cnt], &result);
 			if (exit_status == -1)
 				tst_brkm(TBROK, NULL, "pthread_join "
-                         		 "Thread #%d exited with status:%d",
+					 "Thread #%d exited with status:%d",
 					 cnt, exit_status);
 		}
 	}

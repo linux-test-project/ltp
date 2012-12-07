@@ -83,13 +83,13 @@
 #endif
 
 /* Do not create more than this amount of children: */
-static int max_process_children  = 200;
+static int max_process_children = 200;
 static int max_thread_children = 1000;
 
 #define TIMEOUT  (180)
 
 #ifndef WITHOUT_ALTCLK
-#define USE_ALTCLK  /* make tests with MONOTONIC CLOCK if supported */
+#define USE_ALTCLK		/* make tests with MONOTONIC CLOCK if supported */
 #endif
 
 #ifdef WITHOUT_XOPEN
@@ -107,50 +107,66 @@ struct _scenar {
 	int c_clock;
 	int fork;
 	char *descr;
-}
-
-scenarii[] = {
-	{PTHREAD_MUTEX_DEFAULT,    0, 0, 0, "Default mutex"},
-	{PTHREAD_MUTEX_NORMAL,     0, 0, 0, "Normal mutex"},
-	{PTHREAD_MUTEX_ERRORCHECK, 0, 0, 0, "Errorcheck mutex"},
-	{PTHREAD_MUTEX_RECURSIVE,  0, 0, 0, "Recursive mutex"},
-
-	{PTHREAD_MUTEX_DEFAULT,    1, 0, 0, "PShared default mutex"},
-	{PTHREAD_MUTEX_NORMAL,     1, 0, 0, "Pshared normal mutex"},
-	{PTHREAD_MUTEX_ERRORCHECK, 1, 0, 0, "Pshared errorcheck mutex"},
-	{PTHREAD_MUTEX_RECURSIVE,  1, 0, 0, "Pshared recursive mutex"},
-
-	{PTHREAD_MUTEX_DEFAULT,    1, 0, 1, "Pshared default mutex across processes"},
-	{PTHREAD_MUTEX_NORMAL,     1, 0, 1, "Pshared normal mutex across processes"},
-	{PTHREAD_MUTEX_ERRORCHECK, 1, 0, 1, "Pshared errorcheck mutex across processes"},
-	{PTHREAD_MUTEX_RECURSIVE,  1, 0, 1, "Pshared recursive mutex across processes"},
-
+} scenarii[] = {
+	{
+	PTHREAD_MUTEX_DEFAULT, 0, 0, 0, "Default mutex"}, {
+	PTHREAD_MUTEX_NORMAL, 0, 0, 0, "Normal mutex"}, {
+	PTHREAD_MUTEX_ERRORCHECK, 0, 0, 0, "Errorcheck mutex"}, {
+	PTHREAD_MUTEX_RECURSIVE, 0, 0, 0, "Recursive mutex"}, {
+	PTHREAD_MUTEX_DEFAULT, 1, 0, 0, "PShared default mutex"}, {
+	PTHREAD_MUTEX_NORMAL, 1, 0, 0, "Pshared normal mutex"}, {
+	PTHREAD_MUTEX_ERRORCHECK, 1, 0, 0, "Pshared errorcheck mutex"}, {
+	PTHREAD_MUTEX_RECURSIVE, 1, 0, 0, "Pshared recursive mutex"}, {
+	PTHREAD_MUTEX_DEFAULT, 1, 0, 1,
+		    "Pshared default mutex across processes"}, {
+	PTHREAD_MUTEX_NORMAL, 1, 0, 1, "Pshared normal mutex across processes"},
+	{
+	PTHREAD_MUTEX_ERRORCHECK, 1, 0, 1,
+		    "Pshared errorcheck mutex across processes"}, {
+	PTHREAD_MUTEX_RECURSIVE, 1, 0, 1,
+		    "Pshared recursive mutex across processes"},
 #ifdef USE_ALTCLK
-	{PTHREAD_MUTEX_DEFAULT,    1, 1, 1, "Pshared default mutex and alt clock condvar across processes"},
-	{PTHREAD_MUTEX_NORMAL,     1, 1, 1, "Pshared normal mutex and alt clock condvar across processes"},
-	{PTHREAD_MUTEX_ERRORCHECK, 1, 1, 1, "Pshared errorcheck mutex and alt clock condvar across processes"},
-	{PTHREAD_MUTEX_RECURSIVE,  1, 1, 1, "Pshared recursive mutex and alt clock condvar across processes"},
-
-	{PTHREAD_MUTEX_DEFAULT,    0, 1, 0, "Default mutex and alt clock condvar"},
-	{PTHREAD_MUTEX_NORMAL,     0, 1, 0, "Normal mutex and alt clock condvar"},
-	{PTHREAD_MUTEX_ERRORCHECK, 0, 1, 0, "Errorcheck mutex and alt clock condvar"},
-	{PTHREAD_MUTEX_RECURSIVE,  0, 1, 0, "Recursive mutex and alt clock condvar"},
-
-	{PTHREAD_MUTEX_DEFAULT,    1, 1, 0, "PShared default mutex and alt clock condvar"},
-	{PTHREAD_MUTEX_NORMAL,     1, 1, 0, "Pshared normal mutex and alt clock condvar"},
-	{PTHREAD_MUTEX_ERRORCHECK, 1, 1, 0, "Pshared errorcheck mutex and alt clock condvar"},
-	{PTHREAD_MUTEX_RECURSIVE,  1, 1, 0, "Pshared recursive mutex and alt clock condvar"},
+	{
+	PTHREAD_MUTEX_DEFAULT, 1, 1, 1,
+		    "Pshared default mutex and alt clock condvar across processes"},
+	{
+	PTHREAD_MUTEX_NORMAL, 1, 1, 1,
+		    "Pshared normal mutex and alt clock condvar across processes"},
+	{
+	PTHREAD_MUTEX_ERRORCHECK, 1, 1, 1,
+		    "Pshared errorcheck mutex and alt clock condvar across processes"},
+	{
+	PTHREAD_MUTEX_RECURSIVE, 1, 1, 1,
+		    "Pshared recursive mutex and alt clock condvar across processes"},
+	{
+	PTHREAD_MUTEX_DEFAULT, 0, 1, 0, "Default mutex and alt clock condvar"},
+	{
+	PTHREAD_MUTEX_NORMAL, 0, 1, 0, "Normal mutex and alt clock condvar"},
+	{
+	PTHREAD_MUTEX_ERRORCHECK, 0, 1, 0,
+		    "Errorcheck mutex and alt clock condvar"}, {
+	PTHREAD_MUTEX_RECURSIVE, 0, 1, 0,
+		    "Recursive mutex and alt clock condvar"}, {
+	PTHREAD_MUTEX_DEFAULT, 1, 1, 0,
+		    "PShared default mutex and alt clock condvar"}, {
+	PTHREAD_MUTEX_NORMAL, 1, 1, 0,
+		    "Pshared normal mutex and alt clock condvar"}, {
+	PTHREAD_MUTEX_ERRORCHECK, 1, 1, 0,
+		    "Pshared errorcheck mutex and alt clock condvar"}, {
+	PTHREAD_MUTEX_RECURSIVE, 1, 1, 0,
+		    "Pshared recursive mutex and alt clock condvar"},
 #endif
 };
+
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
 struct testdata {
-	int		count;     /* number of children currently waiting */
-	pthread_cond_t	cnd;
-	pthread_mutex_t	mtx;
-	int		predicate; /* Boolean associated to the condvar */
-	clockid_t	cid;       /* clock used in the condvar */
-	char		fork;      /* the children are processes */
+	int count;		/* number of children currently waiting */
+	pthread_cond_t cnd;
+	pthread_mutex_t mtx;
+	int predicate;		/* Boolean associated to the condvar */
+	clockid_t cid;		/* clock used in the condvar */
+	char fork;		/* the children are processes */
 };
 struct testdata *td;
 
@@ -185,10 +201,10 @@ static void *child(void *arg)
 			ret = pthread_cond_timedwait(&td->cnd, &td->mtx, &ts);
 		else
 			ret = pthread_cond_wait(&td->cnd, &td->mtx);
-		#if VERBOSE > 5
+#if VERBOSE > 5
 		output("[child] Wokenup timed=%i, Predicate=%i, ret=%i\n",
-			timed, td->predicate, ret);
-		#endif
+		       timed, td->predicate, ret);
+#endif
 	} while ((ret == 0) && (td->predicate == 0));
 	if (ret == ETIMEDOUT) {
 		ret = pthread_mutex_unlock(&td->mtx);
@@ -217,7 +233,7 @@ typedef struct _children {
 	struct _children *next;
 } children_t;
 
-children_t sentinel = { .next = NULL };
+children_t sentinel = {.next = NULL };
 
 children_t *children = &sentinel;
 
@@ -235,13 +251,13 @@ void *timer(void *arg)
 	} while ((ret != 0) && (errno == EINTR));
 	if (ret != 0)
 		UNRESOLVED(errno, "Failed to wait for the semaphore "
-				  "in timer thread.");
+			   "in timer thread.");
 
 	do {
 		to = sleep(to);
 	} while (to > 0);
 	FAILED_KILLALL("Operation timed out. A signal was lost.");
-	return NULL; /* For compiler */
+	return NULL;		/* For compiler */
 }
 
 #ifdef __linux__
@@ -269,7 +285,7 @@ static void children_number(void)
 		UNTESTED("Not enough memory.");
 
 	max_process_children = (avail_number < max_process_children ?
-					avail_number : max_process_children);
+				avail_number : max_process_children);
 
 	return;
 }
@@ -313,7 +329,7 @@ int main(int argc, char *argv[])
 	monotonic = sysconf(_SC_MONOTONIC_CLOCK);
 	mf = sysconf(_SC_MAPPED_FILES);
 
-	#if VERBOSE > 0
+#if VERBOSE > 0
 	output("Test starting\n");
 	output("System abilities:\n");
 	output(" TPS : %li\n", pshared);
@@ -324,7 +340,7 @@ int main(int argc, char *argv[])
 		output("Process-shared attributes won't be tested\n");
 	if ((cs < 0) || (monotonic < 0))
 		output("Alternative clock won't be tested\n");
-	#endif
+#endif
 
 	if (monotonic < 0)
 		cs = -1;
@@ -341,10 +357,10 @@ int main(int argc, char *argv[])
 	if (mf < 0) {
 		/* Cannot mmap a file, we use an alternative method */
 		td = &alternativ;
-		pshared = -1; /* We won't do this testing anyway */
-		#if VERBOSE > 0
+		pshared = -1;	/* We won't do this testing anyway */
+#if VERBOSE > 0
 		output("Testdata allocated in the process memory.\n");
-		#endif
+#endif
 	} else {
 		/* We will place the test data in a mmaped file */
 		char filename[] = "/tmp/cond_broadcast-XXXXXX";
@@ -362,14 +378,14 @@ int main(int argc, char *argv[])
 		/* and make sure the file will be deleted when closed */
 		unlink(filename);
 
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Temp file created (%s).\n", filename);
-		#endif
+#endif
 
-		ps = (size_t)sysconf(_SC_PAGESIZE);
+		ps = (size_t) sysconf(_SC_PAGESIZE);
 		sz = ((sizeof(struct testdata) / ps) + 1) * ps;
 
-		tmp = calloc(1 , sz);
+		tmp = calloc(1, sz);
 		if (tmp == NULL)
 			UNRESOLVED(errno, "Memory allocation failed");
 
@@ -388,17 +404,17 @@ int main(int argc, char *argv[])
 		td = (struct testdata *)mmaped;
 
 		/* Our datatest structure is now in shared memory */
-		#if VERBOSE > 1
+#if VERBOSE > 1
 		output("Testdata allocated in shared memory (%ib).\n",
-			sizeof(struct testdata));
-		#endif
+		       sizeof(struct testdata));
+#endif
 	}
 
 	/* Initialize the thread attribute object */
 	ret = pthread_attr_init(&ta);
 	if (ret != 0)
 		UNRESOLVED(ret, "[parent] Failed to initialize a thread "
-				"attribute object");
+			   "attribute object");
 	ret = pthread_attr_setstacksize(&ta, sysconf(_SC_THREAD_STACK_MIN));
 	if (ret != 0)
 		UNRESOLVED(ret, "[parent] Failed to set thread stack size");
@@ -415,47 +431,47 @@ int main(int argc, char *argv[])
 		ret = pthread_mutexattr_init(&ma);
 		if (ret != 0)
 			UNRESOLVED(ret, "[parent] Unable to initialize the "
-					"mutex attribute object");
+				   "mutex attribute object");
 		ret = pthread_condattr_init(&ca);
 		if (ret != 0)
 			UNRESOLVED(ret, "[parent] Unable to initialize the "
-					"cond attribute object");
+				   "cond attribute object");
 
-		#ifndef WITHOUT_XOPEN
+#ifndef WITHOUT_XOPEN
 		/* Set the mutex type */
 		ret = pthread_mutexattr_settype(&ma, scenarii[scenar].m_type);
 		if (ret != 0)
 			UNRESOLVED(ret, "[parent] Unable to set mutex type");
-		#endif
+#endif
 
 		/* Set the pshared attributes, if supported */
 		if ((pshared > 0) && (scenarii[scenar].mc_pshared != 0)) {
 			ret = pthread_mutexattr_setpshared(&ma,
-					PTHREAD_PROCESS_SHARED);
+							   PTHREAD_PROCESS_SHARED);
 			if (ret != 0)
 				UNRESOLVED(ret, "[parent] Unable to set the "
-						"mutex process-shared");
+					   "mutex process-shared");
 			ret = pthread_condattr_setpshared(&ca,
-					PTHREAD_PROCESS_SHARED);
+							  PTHREAD_PROCESS_SHARED);
 			if (ret != 0)
 				UNRESOLVED(ret, "[parent] Unable to set the "
-						"cond var process-shared");
+					   "cond var process-shared");
 		}
 
 		/* Set the alternative clock, if supported */
-		#ifdef USE_ALTCLK
+#ifdef USE_ALTCLK
 		if ((cs > 0) && (scenarii[scenar].c_clock != 0)) {
 			ret = pthread_condattr_setclock(&ca, CLOCK_MONOTONIC);
 			if (ret != 0)
 				UNRESOLVED(ret, "[parent] Unable to set the "
-						"monotonic clock for the cond");
+					   "monotonic clock for the cond");
 		}
 		ret = pthread_condattr_getclock(&ca, &td->cid);
 		if (ret != 0)
 			UNRESOLVED(ret, "Unable to get clock from cond attr");
-		#else
+#else
 		td->cid = CLOCK_REALTIME;
-		#endif
+#endif
 
 		/* Tell whether the test will be across processes */
 		if ((pshared > 0) && (scenarii[scenar].fork != 0))
@@ -484,9 +500,9 @@ int main(int argc, char *argv[])
 				   "Failed to destroy the mutex "
 				   "attribute object");
 
-		#if VERBOSE > 2
+#if VERBOSE > 2
 		output("[parent] Starting test %s\n", scenarii[scenar].descr);
-		#endif
+#endif
 
 		td->count = 0;
 		child_count = 0;
@@ -495,12 +511,13 @@ int main(int argc, char *argv[])
 		/* create the timeout thread */
 		ret = pthread_create(&t_timer, NULL, timer, NULL);
 		if (ret != 0)
-			UNRESOLVED_KILLALL(ret, "Unable to create timer thread");
+			UNRESOLVED_KILLALL(ret,
+					   "Unable to create timer thread");
 
 		/* Create all the children */
 		if (td->fork == 0) {
 			do {
-				tmp = (children_t *)malloc(sizeof(children_t));
+				tmp = (children_t *) malloc(sizeof(children_t));
 				if (tmp != (children_t *) NULL) {
 					ret = pthread_create(&(tmp->data.t),
 							     &ta, child, NULL);
@@ -515,15 +532,17 @@ int main(int argc, char *argv[])
 				} else {
 					ret = errno;
 				}
-			} while ((ret == 0) && (child_count < max_thread_children));
-			#if VERBOSE > 2
-			output("[parent] Created %i children threads\n", child_count);
-			#endif
+			} while ((ret == 0)
+				 && (child_count < max_thread_children));
+#if VERBOSE > 2
+			output("[parent] Created %i children threads\n",
+			       child_count);
+#endif
 			if (child_count == 0)
 				UNRESOLVED(ret, "Unable to create any thread");
 		} else {
 			do {
-				tmp = (children_t *)malloc(sizeof(children_t));
+				tmp = (children_t *) malloc(sizeof(children_t));
 				if (tmp != (children_t *) NULL) {
 					tmp->data.p = fork();
 					if (tmp->data.p == 0) {
@@ -543,10 +562,12 @@ int main(int argc, char *argv[])
 				} else {
 					ret = errno;
 				}
-			} while ((ret == 0) && (child_count < max_process_children));
-			#if VERBOSE > 2
-			output("[parent] Created %i children processes\n", child_count);
-			#endif
+			} while ((ret == 0)
+				 && (child_count < max_process_children));
+#if VERBOSE > 2
+			output("[parent] Created %i children processes\n",
+			       child_count);
+#endif
 			if (child_count == 0)
 				UNRESOLVED(ret, "Unable to create any process");
 
@@ -560,7 +581,8 @@ int main(int argc, char *argv[])
 		while (ch < child_count) {
 			ret = pthread_mutex_unlock(&td->mtx);
 			if (ret != 0)
-				UNRESOLVED_KILLALL(ret, "Failed to unlock mutex");
+				UNRESOLVED_KILLALL(ret,
+						   "Failed to unlock mutex");
 			sched_yield();
 			ret = pthread_mutex_lock(&td->mtx);
 			if (ret != 0)
@@ -568,34 +590,36 @@ int main(int argc, char *argv[])
 			ch = td->count;
 		}
 
-		#if VERBOSE > 4
+#if VERBOSE > 4
 		output("[parent] All children are waiting\n");
-		#endif
+#endif
 
 		/* start the timer count */
 		do {
 			ret = sem_post(&sem_tmr);
 		} while ((ret != 0) && (errno == EINTR));
 		if (ret != 0)
-			UNRESOLVED_KILLALL(errno, "Failed to post the semaphore.");
+			UNRESOLVED_KILLALL(errno,
+					   "Failed to post the semaphore.");
 
 		/* Wakeup the children */
 		td->predicate = 1;
 		ret = pthread_cond_broadcast(&td->cnd);
 		if (ret != 0)
-			UNRESOLVED_KILLALL(ret, "Failed to broadcast the condition.");
+			UNRESOLVED_KILLALL(ret,
+					   "Failed to broadcast the condition.");
 
-		#if VERBOSE > 4
+#if VERBOSE > 4
 		output("[parent] Condition was signaled\n");
-		#endif
+#endif
 
 		ret = pthread_mutex_unlock(&td->mtx);
 		if (ret != 0)
 			UNRESOLVED_KILLALL(ret, "Failed to unlock mutex");
 
-		#if VERBOSE > 4
+#if VERBOSE > 4
 		output("[parent] Joining the children\n");
-		#endif
+#endif
 
 		/* join the children */
 		while (children->next != NULL) {
@@ -608,8 +632,7 @@ int main(int argc, char *argv[])
 				if (pid != tmp->data.p) {
 					ret = errno;
 					output("Waitpid failed (expected: %i, "
-					       "got: %i)\n",
-					       tmp->data.p, pid);
+					       "got: %i)\n", tmp->data.p, pid);
 					free(tmp);
 					UNRESOLVED_KILLALL(ret,
 							   "Waitpid failed");
@@ -626,9 +649,9 @@ int main(int argc, char *argv[])
 			output_fini();
 			exit(ret);
 		}
-		#if VERBOSE > 4
+#if VERBOSE > 4
 		output("[parent] All children terminated\n");
-		#endif
+#endif
 
 		/* cancel the timeout thread */
 		ret = pthread_cancel(t_timer);

@@ -32,28 +32,28 @@
   */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* We enable the following line to have mutex attributes defined */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <unistd.h>
- #include <stdlib.h>
- #include <stdio.h>
- #include <stdarg.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 
- #include <errno.h> /* needed for EPERM test */
+#include <errno.h>		/* needed for EPERM test */
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -86,83 +86,91 @@
 pthread_mutex_t m;
 
 /** child thread function **/
-void * threaded(void * arg)
+void *threaded(void *arg)
 {
 	int ret;
 	ret = pthread_mutex_unlock(&m);
-	if (ret == 0)
-	{  UNRESOLVED(ret, "Unlocking a not owned recursive mutex succeeded");  }
+	if (ret == 0) {
+		UNRESOLVED(ret,
+			   "Unlocking a not owned recursive mutex succeeded");
+	}
 
-	if (ret != EPERM) /* This is a "may" assertion */
-		output("Unlocking a not owned recursive mutex did not return EPERM\n");
+	if (ret != EPERM)	/* This is a "may" assertion */
+		output
+		    ("Unlocking a not owned recursive mutex did not return EPERM\n");
 
 	return NULL;
 }
 
 /** parent thread function **/
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret;
 	pthread_mutexattr_t ma;
-	pthread_t  th;
+	pthread_t th;
 
 	output_init();
 
-	#if VERBOSE >1
+#if VERBOSE >1
 	output("Initialize the PTHREAD_MUTEX_RECURSIVE mutex\n");
-	#endif
+#endif
 
 	ret = pthread_mutexattr_init(&ma);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex attribute init failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex attribute init failed");
+	}
 
 	ret = pthread_mutexattr_settype(&ma, PTHREAD_MUTEX_RECURSIVE);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Set type recursive failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Set type recursive failed");
+	}
 
 	ret = pthread_mutex_init(&m, &ma);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex init failed");  }
-
-	#if VERBOSE >1
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex init failed");
+	}
+#if VERBOSE >1
 	output("Lock the mutex\n");
-	#endif
+#endif
 
 	ret = pthread_mutex_lock(&m);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex lock failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex lock failed");
+	}
 
 	/* destroy the mutex attribute object */
 	ret = pthread_mutexattr_destroy(&ma);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex attribute destroy failed");  }
-
-	#if VERBOSE >1
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex attribute destroy failed");
+	}
+#if VERBOSE >1
 	output("Create the thread\n");
-	#endif
+#endif
 
 	ret = pthread_create(&th, NULL, threaded, NULL);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Thread creation failed");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Thread creation failed");
+	}
 
 	/* Let the thread terminate */
 	ret = pthread_join(th, NULL);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Thread join failed");  }
-
-	#if VERBOSE >1
+	if (ret != 0) {
+		UNRESOLVED(ret, "Thread join failed");
+	}
+#if VERBOSE >1
 	output("Joined the thread\n");
-	#endif
+#endif
 
 	/* We can clean everything and exit */
 	ret = pthread_mutex_unlock(&m);
-	if (ret != 0)
-	{  UNRESOLVED(ret, "Mutex unlock failed. Mutex got corrupted?");  }
+	if (ret != 0) {
+		UNRESOLVED(ret, "Mutex unlock failed. Mutex got corrupted?");
+	}
 
 	PASSED;
 }
 #else /* WITHOUT_XOPEN */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

@@ -32,37 +32,39 @@
 
 void *f1(void *parm);
 
-pthread_mutex_t    mutex = PTHREAD_MUTEX_INITIALIZER;
-int                value;	/* value protected by mutex */
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+int value;			/* value protected by mutex */
 
 int main()
 {
-  	int                   i, rc;
-  	pthread_attr_t        pta;
-  	pthread_t             threads[THREAD_NUM];
-  	//pthread_t  	      self = pthread_self();
+	int i, rc;
+	pthread_attr_t pta;
+	pthread_t threads[THREAD_NUM];
+	//pthread_t           self = pthread_self();
 
-  	pthread_attr_init(&pta);
-  	pthread_attr_setdetachstate(&pta, PTHREAD_CREATE_JOINABLE);
+	pthread_attr_init(&pta);
+	pthread_attr_setdetachstate(&pta, PTHREAD_CREATE_JOINABLE);
 
-  	/* Create threads */
-  	fprintf(stderr,"Creating %d threads\n", THREAD_NUM);
-  	for (i=0; i<THREAD_NUM; ++i)
-    		rc = pthread_create(&threads[i], &pta, f1, NULL);
+	/* Create threads */
+	fprintf(stderr, "Creating %d threads\n", THREAD_NUM);
+	for (i = 0; i < THREAD_NUM; ++i)
+		rc = pthread_create(&threads[i], &pta, f1, NULL);
 
 	/* Wait to join all threads */
-  	for (i=0; i<THREAD_NUM; ++i)
-    		pthread_join(threads[i], NULL);
-  	pthread_attr_destroy(&pta);
-  	pthread_mutex_destroy(&mutex);
+	for (i = 0; i < THREAD_NUM; ++i)
+		pthread_join(threads[i], NULL);
+	pthread_attr_destroy(&pta);
+	pthread_mutex_destroy(&mutex);
 
-  	/* Check if the final value is as expected */
-  	if (value != (THREAD_NUM) * LOOPS) {
-	  	fprintf(stderr,"Using %d threads and each loops %d times\n", THREAD_NUM, LOOPS);
-    		fprintf(stderr,"Final value must be %d instead of %d\n", (THREAD_NUM)*LOOPS, value);
+	/* Check if the final value is as expected */
+	if (value != (THREAD_NUM) * LOOPS) {
+		fprintf(stderr, "Using %d threads and each loops %d times\n",
+			THREAD_NUM, LOOPS);
+		fprintf(stderr, "Final value must be %d instead of %d\n",
+			(THREAD_NUM) * LOOPS, value);
 		printf("Test FAILED\n");
 		return PTS_FAIL;
-  	}
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;
@@ -70,33 +72,35 @@ int main()
 
 void *f1(void *parm)
 {
-  	int   i, tmp;
-  	int   rc = 0;
-  	pthread_t  self = pthread_self();
+	int i, tmp;
+	int rc = 0;
+	pthread_t self = pthread_self();
 
 	/* Loopd M times to acquire the mutex, increase the value,
 	   and then release the mutex. */
 
-  	for (i=0; i<LOOPS; ++i) {
-      		rc = pthread_mutex_lock(&mutex);
-      		if (rc!=0) {
-        		fprintf(stderr,"Error on pthread_mutex_lock(), rc=%d\n", rc);
-			return (void*)(PTS_FAIL);
-      		}
+	for (i = 0; i < LOOPS; ++i) {
+		rc = pthread_mutex_lock(&mutex);
+		if (rc != 0) {
+			fprintf(stderr,
+				"Error on pthread_mutex_lock(), rc=%d\n", rc);
+			return (void *)(PTS_FAIL);
+		}
 
-    		tmp = value;
-    		tmp = tmp+1;
-    		fprintf(stderr,"Thread(0x%p) holds the mutex\n",(void*)self);
-    		usleep(1000);	  /* delay the increasement operation */
-    		value = tmp;
+		tmp = value;
+		tmp = tmp + 1;
+		fprintf(stderr, "Thread(0x%p) holds the mutex\n", (void *)self);
+		usleep(1000);	/* delay the increasement operation */
+		value = tmp;
 
-      		rc = pthread_mutex_unlock(&mutex);
-      		if (rc!=0) {
-        		fprintf(stderr,"Error on pthread_mutex_unlock(), rc=%d\n", rc);
- 			return (void*)(PTS_UNRESOLVED);
-      		}
-    		sleep(1);
-  	}
-  	pthread_exit(0);
-  	return (void*)(0);
+		rc = pthread_mutex_unlock(&mutex);
+		if (rc != 0) {
+			fprintf(stderr,
+				"Error on pthread_mutex_unlock(), rc=%d\n", rc);
+			return (void *)(PTS_UNRESOLVED);
+		}
+		sleep(1);
+	}
+	pthread_exit(0);
+	return (void *)(0);
 }

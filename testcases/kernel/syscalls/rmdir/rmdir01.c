@@ -110,7 +110,7 @@ int main(int ac, char **av)
 		if (mkdir(tstdir, PERMS) == -1) {
 			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
 				 tstdir, PERMS);
-		 }
+		}
 		/* call rmdir using TEST macro */
 
 		TEST(rmdir(tstdir));

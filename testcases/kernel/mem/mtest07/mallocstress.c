@@ -73,8 +73,8 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 
-#define MAXL    100     /* default number of loops to do malloc and free      */
-#define MAXT     60     /* default number of threads to create.               */
+#define MAXL    100		/* default number of loops to do malloc and free      */
+#define MAXT     60		/* default number of threads to create.               */
 
 #ifdef DEBUG
 #define dprt(args)	printf args
@@ -88,7 +88,7 @@
                                usage(prog); \
                                    } while (0)
 
-int num_loop = MAXL;/* number of loops to perform		      */
+int num_loop = MAXL;		/* number of loops to perform                     */
 int semid;
 
 /* Define SPEW_SIGNALS to tickle thread_create bug (it fails if interrupted). */
@@ -102,21 +102,20 @@ int semid;
 /*              Generate a signal, too.                                       */
 /*									      */
 /******************************************************************************/
-static void
-my_yield()
+static void my_yield()
 {
 #ifdef SPEW_SIGNALS
-    /* usleep just happens to use signals in glibc at moment.
-     * This is good because it allows us to test whether pthread_create
-     * improperly returns EINTR (which would violate SUSv3)
-     */
-    usleep(0);
+	/* usleep just happens to use signals in glibc at moment.
+	 * This is good because it allows us to test whether pthread_create
+	 * improperly returns EINTR (which would violate SUSv3)
+	 */
+	usleep(0);
 #else
-    /* If you want this test to pass, don't define SPEW_SIGNALS,
-     * as pthread_create is broken at moment, and fails if interrupted
-     */
-    static const struct timespec t0 = {0, 0};
-    nanosleep(&t0, NULL);
+	/* If you want this test to pass, don't define SPEW_SIGNALS,
+	 * as pthread_create is broken at moment, and fails if interrupted
+	 */
+	static const struct timespec t0 = { 0, 0 };
+	nanosleep(&t0, NULL);
 #endif
 }
 
@@ -131,16 +130,14 @@ my_yield()
 /* Return:	exits with -1						      */
 /*									      */
 /******************************************************************************/
-static void
-usage(char *progname)           /* name of this program                       */
-{
-    fprintf(stderr,
-               "Usage: %s -d NUMDIR -f NUMFILES -h -t NUMTHRD\n"
-               "\t -h Help!\n"
-               "\t -l Number of loops:               Default: 1000\n"
-               "\t -t Number of threads to generate: Default: 30\n",
-                    progname);
-    exit(-1);
+static void usage(char *progname)
+{				/* name of this program                       */
+	fprintf(stderr,
+		"Usage: %s -d NUMDIR -f NUMFILES -h -t NUMTHRD\n"
+		"\t -h Help!\n"
+		"\t -l Number of loops:               Default: 1000\n"
+		"\t -t Number of threads to generate: Default: 30\n", progname);
+	exit(-1);
 }
 
 /******************************************************************************/
@@ -157,87 +154,87 @@ usage(char *progname)           /* name of this program                       */
 /* Return:	1 on failure						      */
 /*		0 on success						      */
 /******************************************************************************/
-int
-allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
-              int    scheme)	/* how fast to increase block size            */
-{
-    int  loop;
-    const int MAXPTRS = 50;	    /* only 42 or so get used on 32 bit machine */
+int allocate_free(int repeat,	/* number of times to repeat allocate/free    */
+		  int scheme)
+{				/* how fast to increase block size            */
+	int loop;
+	const int MAXPTRS = 50;	/* only 42 or so get used on 32 bit machine */
 
-    dprt(("pid[%d]: allocate_free: repeat %d, scheme %d\n", getpid(), repeat, scheme));
+	dprt(("pid[%d]: allocate_free: repeat %d, scheme %d\n", getpid(),
+	      repeat, scheme));
 
-    for (loop = 0; loop < repeat; loop++)
-    {
-        size_t  oldsize    = 5;	    /* remember size for fibannoci series     */
-        size_t  size       = sizeof(long);     /* size of next block in ptrs[]           */
-        long    *ptrs[MAXPTRS];     /* the pointers allocated in this loop    */
-        int     num_alloc;	    /* number of elements in ptrs[] so far    */
-        int     i;
+	for (loop = 0; loop < repeat; loop++) {
+		size_t oldsize = 5;	/* remember size for fibannoci series     */
+		size_t size = sizeof(long);	/* size of next block in ptrs[]           */
+		long *ptrs[MAXPTRS];	/* the pointers allocated in this loop    */
+		int num_alloc;	/* number of elements in ptrs[] so far    */
+		int i;
 
-        dprt(("pid[%d]: allocate_free: loop %d of %d\n", getpid(), loop, repeat));
+		dprt(("pid[%d]: allocate_free: loop %d of %d\n", getpid(), loop,
+		      repeat));
 
-	/* loop terminates in one of three ways:
-	 * 1. after MAXPTRS iterations
-	 * 2. if malloc fails
-	 * 3. if new size overflows
-	 */
-        for (num_alloc=0; num_alloc < MAXPTRS; num_alloc++)
-        {
-            size_t  newsize = 0;
+		/* loop terminates in one of three ways:
+		 * 1. after MAXPTRS iterations
+		 * 2. if malloc fails
+		 * 3. if new size overflows
+		 */
+		for (num_alloc = 0; num_alloc < MAXPTRS; num_alloc++) {
+			size_t newsize = 0;
 
-            dprt(("pid[%d]: loop %d/%d; num_alloc=%d; size=%u\n",
-		getpid(), loop, repeat, num_alloc, size));
+			dprt(("pid[%d]: loop %d/%d; num_alloc=%d; size=%u\n",
+			      getpid(), loop, repeat, num_alloc, size));
 
-	    /* Malloc the next block */
-            ptrs[num_alloc] = (long *)malloc(size);
-            if (ptrs[num_alloc] == NULL)
-            {
-		/* terminate loop if malloc couldn't give us the memory we asked for */
-                break;
-            }
-            ptrs[num_alloc][0] = num_alloc;
+			/* Malloc the next block */
+			ptrs[num_alloc] = (long *)malloc(size);
+			if (ptrs[num_alloc] == NULL) {
+				/* terminate loop if malloc couldn't give us the memory we asked for */
+				break;
+			}
+			ptrs[num_alloc][0] = num_alloc;
 
-	    /* Increase size according to one of four schedules. */
-	    switch (scheme) {
-	    case 0:
-                newsize = size + oldsize;
-		oldsize = size;
-		break;
-	    case 1:
-		newsize = size * 2;
-		break;
-	    case 2:
-		newsize = size * 3;
-		break;
-	    case 3:
-		newsize = size * 5;
-		break;
-	    default:
-		assert(0);
-            }
-	    /* terminate loop on overflow */
-	    if (newsize < size)
-		break;
-	    size = newsize;
+			/* Increase size according to one of four schedules. */
+			switch (scheme) {
+			case 0:
+				newsize = size + oldsize;
+				oldsize = size;
+				break;
+			case 1:
+				newsize = size * 2;
+				break;
+			case 2:
+				newsize = size * 3;
+				break;
+			case 3:
+				newsize = size * 5;
+				break;
+			default:
+				assert(0);
+			}
+			/* terminate loop on overflow */
+			if (newsize < size)
+				break;
+			size = newsize;
 
-            my_yield();
-        }
+			my_yield();
+		}
 
-        for (i = 0; i < num_alloc; i++)
-        {
-            dprt(("pid[%d]: freeing ptrs[i] %p\n", getpid(), ptrs[i]));
-	    if (ptrs[i][0] != i) {
-		fprintf(stderr, "pid[%d]: fail: bad sentinel value\n", getpid());
-		return 1;
-	    }
-	    free(ptrs[i]);
-            my_yield();
-        }
+		for (i = 0; i < num_alloc; i++) {
+			dprt(("pid[%d]: freeing ptrs[i] %p\n", getpid(),
+			      ptrs[i]));
+			if (ptrs[i][0] != i) {
+				fprintf(stderr,
+					"pid[%d]: fail: bad sentinel value\n",
+					getpid());
+				return 1;
+			}
+			free(ptrs[i]);
+			my_yield();
+		}
 
-        my_yield();
-    }
-    /* Success! */
-  return 0;
+		my_yield();
+	}
+	/* Success! */
+	return 0;
 }
 
 /******************************************************************************/
@@ -253,26 +250,26 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
 /*		pthread_exit  0 on success			              */
 /*								              */
 /******************************************************************************/
-void *
-alloc_mem(void * threadnum)
+void *alloc_mem(void *threadnum)
 {
-    struct sembuf sop[1];
-    sop[0].sem_num = 0;
-    sop[0].sem_op = 0;
-    sop[0].sem_flg = 0;
-    /* waiting for other threads starting */
-    if (semop(semid, sop, 1) == -1) {
-        if (errno != EIDRM)
-            perror("semop");
-        return (void *) -1;
-    }
+	struct sembuf sop[1];
+	sop[0].sem_num = 0;
+	sop[0].sem_op = 0;
+	sop[0].sem_flg = 0;
+	/* waiting for other threads starting */
+	if (semop(semid, sop, 1) == -1) {
+		if (errno != EIDRM)
+			perror("semop");
+		return (void *)-1;
+	}
 
-    /* thread N will use growth scheme N mod 4 */
-    int err = allocate_free(num_loop, ((uintptr_t)threadnum) % 4);
-    fprintf(stdout,
-    "Thread [%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
-    (int)(uintptr_t)threadnum, err, (err ? "failed" : "succeeded"));
-    return (void *)(uintptr_t)(err ? -1 : 0);
+	/* thread N will use growth scheme N mod 4 */
+	int err = allocate_free(num_loop, ((uintptr_t) threadnum) % 4);
+	fprintf(stdout,
+		"Thread [%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
+		(int)(uintptr_t) threadnum, err,
+		(err ? "failed" : "succeeded"));
+	return (void *)(uintptr_t) (err ? -1 : 0);
 }
 
 /******************************************************************************/
@@ -291,132 +288,120 @@ alloc_mem(void * threadnum)
 /*		 0 on success						      */
 /*									      */
 /******************************************************************************/
-int
-main(int	argc,		/* number of input parameters		      */
-     char	**argv)		/* pointer to the command line arguments.     */
-{
-    int		c;		/* command line options			      */
-    int		num_thrd = MAXT;/* number of threads to create                */
-    int		thrd_ndx;	/* index into the array of thread ids         */
-    pthread_t	*thrdid;	/* the threads                                */
-    extern int	 optopt;	/* options to the program		      */
-    struct sembuf sop[1];
-    int ret = 0;
+int main(int argc,		/* number of input parameters                 */
+	 char **argv)
+{				/* pointer to the command line arguments.     */
+	int c;			/* command line options                       */
+	int num_thrd = MAXT;	/* number of threads to create                */
+	int thrd_ndx;		/* index into the array of thread ids         */
+	pthread_t *thrdid;	/* the threads                                */
+	extern int optopt;	/* options to the program                     */
+	struct sembuf sop[1];
+	int ret = 0;
 
-    while ((c =  getopt(argc, argv, "hl:t:")) != -1)
-    {
-        switch(c)
-        {
-            case 'h':
-                usage(argv[0]);
-                break;
-            case 'l':
-		if ((num_loop = atoi(optarg)) == 0)
-	            OPT_MISSING(argv[0], optopt);
-                else
-                if (num_loop < 1)
-                {
-                    fprintf(stdout,
-                        "WARNING: bad argument. Using default\n");
-                    num_loop = MAXL;
-                }
-                break;
-            case 't':
-		if ((num_thrd = atoi(optarg)) == 0)
-	            OPT_MISSING(argv[0], optopt);
-                else
-                if (num_thrd < 1)
-                {
-                    fprintf(stdout,
-                        "WARNING: bad argument. Using default\n");
-                    num_thrd = MAXT;
-                }
-                break;
-            default :
-		usage(argv[0]);
-		break;
+	while ((c = getopt(argc, argv, "hl:t:")) != -1) {
+		switch (c) {
+		case 'h':
+			usage(argv[0]);
+			break;
+		case 'l':
+			if ((num_loop = atoi(optarg)) == 0)
+				OPT_MISSING(argv[0], optopt);
+			else if (num_loop < 1) {
+				fprintf(stdout,
+					"WARNING: bad argument. Using default\n");
+				num_loop = MAXL;
+			}
+			break;
+		case 't':
+			if ((num_thrd = atoi(optarg)) == 0)
+				OPT_MISSING(argv[0], optopt);
+			else if (num_thrd < 1) {
+				fprintf(stdout,
+					"WARNING: bad argument. Using default\n");
+				num_thrd = MAXT;
+			}
+			break;
+		default:
+			usage(argv[0]);
+			break;
+		}
 	}
-    }
 
-    dprt(("number of times to loop in the thread = %d\n", num_loop));
+	dprt(("number of times to loop in the thread = %d\n", num_loop));
 
-    thrdid = malloc(sizeof(pthread_t) * num_thrd);
-    if (thrdid == NULL)
-    {
-	perror("main(): allocating space for thrdid[] malloc()");
-	return 1;
-    }
+	thrdid = malloc(sizeof(pthread_t) * num_thrd);
+	if (thrdid == NULL) {
+		perror("main(): allocating space for thrdid[] malloc()");
+		return 1;
+	}
 
-    semid = semget(IPC_PRIVATE, 1, IPC_CREAT | 0666);
-    if  (semid < 0) {
-        perror("Semaphore creation failed  Reason:");
-    }
+	semid = semget(IPC_PRIVATE, 1, IPC_CREAT | 0666);
+	if (semid < 0) {
+		perror("Semaphore creation failed  Reason:");
+	}
 
-    sop[0].sem_num = 0;
-    sop[0].sem_op = 1;
-    sop[0].sem_flg = 0;
-    if (semop(semid, sop, 1) == -1) {
-        perror("semop");
-        ret = -1;
-        goto out;
-    }
-
-    for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
-    {
-        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem,
-		(void *)(uintptr_t)thrd_ndx))
-        {
-	    int err = errno;
-	    if (err == EINTR) {
-		fprintf(stderr, "main(): pthread_create failed with EINTR!\n");
+	sop[0].sem_num = 0;
+	sop[0].sem_op = 1;
+	sop[0].sem_flg = 0;
+	if (semop(semid, sop, 1) == -1) {
+		perror("semop");
 		ret = -1;
 		goto out;
-	    }
-            perror("main(): pthread_create()");
-            ret = -11;
-            goto out;
-        }
-    }
-    my_yield();
+	}
 
-    sop[0].sem_op = -1;
-    if (semop(semid, sop, 1) == -1) {
-        perror("semop");
-        ret = -1;
-        goto out;
-    }
+	for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++) {
+		if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem,
+				   (void *)(uintptr_t) thrd_ndx)) {
+			int err = errno;
+			if (err == EINTR) {
+				fprintf(stderr,
+					"main(): pthread_create failed with EINTR!\n");
+				ret = -1;
+				goto out;
+			}
+			perror("main(): pthread_create()");
+			ret = -11;
+			goto out;
+		}
+	}
+	my_yield();
 
-    for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
-    {
-        void *th_status;	/* exit status of LWP */
-        if (pthread_join(thrdid[thrd_ndx], &th_status) != 0)
-        {
-            perror("main(): pthread_join()");
-            ret = -1;
-            goto out;
-        }
-        else
-        {
-            if ((intptr_t)th_status != 0)
-            {
-                fprintf(stderr,
-                        "main(): thread [%d] - exited with errors\n", thrd_ndx);
-                ret = -1;
-                goto out;
-            }
-            dprt(("main(): thread [%d]: exited without errors\n", thrd_ndx));
-        }
-        my_yield();
-    }
-    printf("main(): test passed.\n");
+	sop[0].sem_op = -1;
+	if (semop(semid, sop, 1) == -1) {
+		perror("semop");
+		ret = -1;
+		goto out;
+	}
+
+	for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++) {
+		void *th_status;	/* exit status of LWP */
+		if (pthread_join(thrdid[thrd_ndx], &th_status) != 0) {
+			perror("main(): pthread_join()");
+			ret = -1;
+			goto out;
+		} else {
+			if ((intptr_t) th_status != 0) {
+				fprintf(stderr,
+					"main(): thread [%d] - exited with errors\n",
+					thrd_ndx);
+				ret = -1;
+				goto out;
+			}
+			dprt(("main(): thread [%d]: exited without errors\n",
+			      thrd_ndx));
+		}
+		my_yield();
+	}
+	printf("main(): test passed.\n");
 out:
-    if (semctl(semid, 0, IPC_RMID) == -1) {
-        perror("semctl\n");
-        ret = -1;
-    }
-    if (thrdid) {
-        free(thrdid);
-        thrdid = NULL;
-    }
-    exit(ret);
+	if (semctl(semid, 0, IPC_RMID) == -1) {
+		perror("semctl\n");
+		ret = -1;
+	}
+	if (thrdid) {
+		free(thrdid);
+		thrdid = NULL;
+	}
+	exit(ret);
 }

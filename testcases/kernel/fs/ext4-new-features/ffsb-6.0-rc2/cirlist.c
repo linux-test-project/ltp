@@ -24,7 +24,7 @@
 void init_cirlist(struct cirlist *cl)
 {
 	cl->count = 0;
-	cl->head  = NULL;
+	cl->head = NULL;
 }
 
 int cl_empty(struct cirlist *cl)
@@ -32,7 +32,7 @@ int cl_empty(struct cirlist *cl)
 	return !(cl->count);
 }
 
-void cl_insert_tail(struct cirlist *cl , cldatatype object)
+void cl_insert_tail(struct cirlist *cl, cldatatype object)
 {
 	struct cnode *new = ffsb_malloc(sizeof(struct cnode));
 	new->obj = object;

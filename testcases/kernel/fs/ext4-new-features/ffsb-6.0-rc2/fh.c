@@ -48,7 +48,7 @@
  */
 
 static void do_stats(struct timeval *start, struct timeval *end,
-		     ffsb_thread_t *ft, ffsb_fs_t *fs, syscall_t sys)
+		     ffsb_thread_t * ft, ffsb_fs_t * fs, syscall_t sys)
 {
 	struct timeval diff;
 	uint32_t value = 0;
@@ -67,12 +67,12 @@ static void do_stats(struct timeval *start, struct timeval *end,
 }
 
 static int fhopenhelper(char *filename, char *bufflags, int flags,
-			ffsb_thread_t *ft, ffsb_fs_t *fs)
+			ffsb_thread_t * ft, ffsb_fs_t * fs)
 {
 	int fd = 0;
 	struct timeval start, end;
 	int need_stats = ft_needs_stats(ft, SYS_OPEN) ||
-		fs_needs_stats(fs, SYS_OPEN);
+	    fs_needs_stats(fs, SYS_OPEN);
 
 	flags |= O_LARGEFILE;
 
@@ -93,7 +93,7 @@ static int fhopenhelper(char *filename, char *bufflags, int flags,
 	return fd;
 }
 
-int fhopenread(char *filename, ffsb_thread_t *ft, ffsb_fs_t *fs)
+int fhopenread(char *filename, ffsb_thread_t * ft, ffsb_fs_t * fs)
 {
 	int flags = O_RDONLY;
 	int directio = fs_get_directio(fs);
@@ -103,7 +103,7 @@ int fhopenread(char *filename, ffsb_thread_t *ft, ffsb_fs_t *fs)
 	return fhopenhelper(filename, "r", flags, ft, fs);
 }
 
-int fhopenappend(char *filename, ffsb_thread_t *ft, ffsb_fs_t *fs)
+int fhopenappend(char *filename, ffsb_thread_t * ft, ffsb_fs_t * fs)
 {
 	int flags = O_APPEND | O_WRONLY;
 	int directio = fs_get_directio(fs);
@@ -113,7 +113,7 @@ int fhopenappend(char *filename, ffsb_thread_t *ft, ffsb_fs_t *fs)
 	return fhopenhelper(filename, "a", flags, ft, fs);
 }
 
-int fhopenwrite(char *filename, ffsb_thread_t *ft, ffsb_fs_t *fs)
+int fhopenwrite(char *filename, ffsb_thread_t * ft, ffsb_fs_t * fs)
 {
 	int flags = O_WRONLY;
 	int directio = fs_get_directio(fs);
@@ -123,7 +123,7 @@ int fhopenwrite(char *filename, ffsb_thread_t *ft, ffsb_fs_t *fs)
 	return fhopenhelper(filename, "w", flags, ft, fs);
 }
 
-int fhopencreate(char *filename, ffsb_thread_t *ft, ffsb_fs_t *fs)
+int fhopencreate(char *filename, ffsb_thread_t * ft, ffsb_fs_t * fs)
 {
 	int flags = O_CREAT | O_RDWR | O_TRUNC;
 	int directio = fs_get_directio(fs);
@@ -133,12 +133,13 @@ int fhopencreate(char *filename, ffsb_thread_t *ft, ffsb_fs_t *fs)
 	return fhopenhelper(filename, "rw", flags, ft, fs);
 }
 
-void fhread(int fd, void *buf, uint64_t size, ffsb_thread_t *ft, ffsb_fs_t *fs)
+void fhread(int fd, void *buf, uint64_t size, ffsb_thread_t * ft,
+	    ffsb_fs_t * fs)
 {
 	ssize_t realsize;
 	struct timeval start, end;
 	int need_stats = ft_needs_stats(ft, SYS_READ) ||
-		fs_needs_stats(fs, SYS_READ);
+	    fs_needs_stats(fs, SYS_READ);
 
 	assert(size <= SIZE_MAX);
 	if (need_stats)
@@ -158,12 +159,13 @@ void fhread(int fd, void *buf, uint64_t size, ffsb_thread_t *ft, ffsb_fs_t *fs)
 	}
 }
 
-void fhwrite(int fd, void *buf, uint32_t size, ffsb_thread_t *ft, ffsb_fs_t *fs)
+void fhwrite(int fd, void *buf, uint32_t size, ffsb_thread_t * ft,
+	     ffsb_fs_t * fs)
 {
 	ssize_t realsize;
 	struct timeval start, end;
 	int need_stats = ft_needs_stats(ft, SYS_WRITE) ||
-		fs_needs_stats(fs, SYS_WRITE);
+	    fs_needs_stats(fs, SYS_WRITE);
 
 	assert(size <= SIZE_MAX);
 	if (need_stats)
@@ -178,19 +180,19 @@ void fhwrite(int fd, void *buf, uint32_t size, ffsb_thread_t *ft, ffsb_fs_t *fs)
 
 	if (realsize != size) {
 		printf("Wrote %d instead of %d bytes.\n"
-			  "Probably out of disk space\n", realsize, size);
+		       "Probably out of disk space\n", realsize, size);
 		perror("write");
 		exit(1);
 	}
 }
 
-void fhseek(int fd, uint64_t offset, int whence, ffsb_thread_t *ft,
-	    ffsb_fs_t *fs)
+void fhseek(int fd, uint64_t offset, int whence, ffsb_thread_t * ft,
+	    ffsb_fs_t * fs)
 {
 	uint64_t res;
 	struct timeval start, end;
 	int need_stats = ft_needs_stats(ft, SYS_LSEEK) ||
-		fs_needs_stats(fs, SYS_LSEEK);
+	    fs_needs_stats(fs, SYS_LSEEK);
 
 	if ((whence == SEEK_CUR) && (offset == 0))
 		return;
@@ -219,11 +221,11 @@ void fhseek(int fd, uint64_t offset, int whence, ffsb_thread_t *ft,
 	}
 }
 
-void fhclose(int fd, ffsb_thread_t *ft, ffsb_fs_t *fs)
+void fhclose(int fd, ffsb_thread_t * ft, ffsb_fs_t * fs)
 {
 	struct timeval start, end;
 	int need_stats = ft_needs_stats(ft, SYS_CLOSE) ||
-		fs_needs_stats(fs, SYS_CLOSE);
+	    fs_needs_stats(fs, SYS_CLOSE);
 
 	if (need_stats)
 		gettimeofday(&start, NULL);
@@ -236,19 +238,19 @@ void fhclose(int fd, ffsb_thread_t *ft, ffsb_fs_t *fs)
 	}
 }
 
-void fhstat(char *name, ffsb_thread_t *ft, ffsb_fs_t *fs)
+void fhstat(char *name, ffsb_thread_t * ft, ffsb_fs_t * fs)
 {
 	struct timeval start, end;
 	struct stat tmp_stat;
 
 	int need_stats = ft_needs_stats(ft, SYS_STAT) ||
-		fs_needs_stats(fs, SYS_CLOSE);
+	    fs_needs_stats(fs, SYS_CLOSE);
 
 	if (need_stats)
 		gettimeofday(&start, NULL);
 
 	if (stat(name, &tmp_stat)) {
-		fprintf (stderr, "stat call failed for file %s\n", name);
+		fprintf(stderr, "stat call failed for file %s\n", name);
 		exit(1);
 	}
 

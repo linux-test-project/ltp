@@ -92,9 +92,9 @@ int main(int ac, char **av)
 	int huge_pagesize = 0;
 
 	option_t options[] = {
-		{ "H:", &Hflag, &Hopt },
-		{ "s:", &sflag, &nr_opt },
-		{ NULL, NULL, NULL }
+		{"H:", &Hflag, &Hopt},
+		{"s:", &sflag, &nr_opt},
+		{NULL, NULL, NULL}
 	};
 
 	msg = parse_opts(ac, av, options, &help);
@@ -115,7 +115,7 @@ int main(int ac, char **av)
 		/* Creat a temporary file used for huge mapping */
 		fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666);
 		if (fildes < 0)
-			tst_brkm(TFAIL|TERRNO, cleanup, "open %s failed",
+			tst_brkm(TFAIL | TERRNO, cleanup, "open %s failed",
 				 TEMPFILE);
 
 		Tst_count = 0;
@@ -136,18 +136,19 @@ int main(int ac, char **av)
 		if (freepages > 128)
 			freepages = 128;
 #endif
-		mapsize = (long long)freepages * huge_pagesize * 1024;
+		mapsize = (long long)freepages *huge_pagesize * 1024;
 		addr = mmap(NULL, mapsize, PROT_READ | PROT_WRITE,
 			    MAP_SHARED, fildes, 0);
 		sleep(2);
 		if (addr == MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO, "mmap() Failed on %s", TEMPFILE);
+			tst_resm(TFAIL | TERRNO, "mmap() Failed on %s",
+				 TEMPFILE);
 			close(fildes);
 			continue;
 		} else {
 			tst_resm(TPASS,
-				"Succeeded mapping file using %ld pages",
-				freepages);
+				 "Succeeded mapping file using %ld pages",
+				 freepages);
 			/* force to allocate page and change HugePages_Free */
 			*(int *)addr = 0;
 		}
@@ -166,7 +167,7 @@ int main(int ac, char **av)
 		/* Clean up things in case we are looping */
 		/* Unmap the mapped memory */
 		if (munmap(addr, mapsize) != 0)
-			tst_brkm(TFAIL|TERRNO, NULL, "munmap failed");
+			tst_brkm(TFAIL | TERRNO, NULL, "munmap failed");
 
 		close(fildes);
 	}
@@ -180,12 +181,10 @@ void setup(void)
 	TEST_PAUSE;
 	tst_require_root(NULL);
 	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
-		tst_brkm(TBROK|TERRNO, NULL,
-			 "mount failed on %s", Hopt);
+		tst_brkm(TBROK | TERRNO, NULL, "mount failed on %s", Hopt);
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
-	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d",
-		 Hopt, getpid());
+	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d", Hopt, getpid());
 }
 
 void cleanup(void)

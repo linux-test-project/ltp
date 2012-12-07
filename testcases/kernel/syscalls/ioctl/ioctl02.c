@@ -309,7 +309,7 @@ static int chk_tty_parms(void)
 	 * However, it has been observed that other flags are properly set.
 	 */
 #if 0
-	if (termio.c_cflag != (B50|CS7|CREAD|PARENB|PARODD|CLOCAL)) {
+	if (termio.c_cflag != (B50 | CS7 | CREAD | PARENB | PARODD | CLOCAL)) {
 		tst_resm(TINFO, "cflag has incorrect value. %o",
 			 termio.c_cflag);
 		flag++;

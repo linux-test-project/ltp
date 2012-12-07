@@ -179,11 +179,11 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 #ifdef CRAY
 		case SIGINFO:
 		case SIGRECOVERY:	/* allow chkpnt/restart */
-#endif				/* CRAY */
+#endif /* CRAY */
 
 #ifdef SIGSWAP
 		case SIGSWAP:
-#endif				/* SIGSWAP */
+#endif /* SIGSWAP */
 
 #ifdef SIGCKPT
 		case SIGCKPT:
@@ -198,10 +198,10 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 			 */
 #ifdef SIGPTINTR
 		case SIGPTINTR:
-#endif				/* SIGPTINTR */
+#endif /* SIGPTINTR */
 #ifdef SIGPTRESCHED
 		case SIGPTRESCHED:
-#endif				/* SIGPTRESCHED */
+#endif /* SIGPTRESCHED */
 #ifdef _SIGRESERVE
 		case _SIGRESERVE:
 #endif
@@ -222,15 +222,15 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 
 		default:
 			if (tst_setup_signal(sig, handler) == SIG_ERR)
-				tst_resm(TWARN|TERRNO,
-				    "signal failed for signal %d", sig);
+				tst_resm(TWARN | TERRNO,
+					 "signal failed for signal %d", sig);
 			break;
 		}
 #ifdef __sgi
 		/* On irix  (07/96), signal() fails when signo is 33 or higher */
 		if (sig + 1 >= 33)
 			break;
-#endif				/*  __sgi */
+#endif /*  __sgi */
 
 	}			/* endfor */
 }
@@ -246,15 +246,14 @@ static void def_handler(int sig)
 	 * Break remaining test cases, do any cleanup, then exit
 	 */
 	tst_brkm(TBROK, T_cleanup,
-	    "unexpected signal %d received (pid = %d).", sig, getpid());
+		 "unexpected signal %d received (pid = %d).", sig, getpid());
 }
 
 /*
  * tst_setup_signal - A function like signal(), but we have
  *                    control over its personality.
  */
-static void (*tst_setup_signal(int sig, void (*handler) (int))) (int)
-{
+static void (*tst_setup_signal(int sig, void (*handler) (int))) (int) {
 	struct sigaction my_act, old_act;
 	int ret;
 

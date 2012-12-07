@@ -86,24 +86,24 @@ static void thp_test(void)
 	void *p;
 
 	p = mmap(NULL, unaligned_size, PROT_READ | PROT_WRITE,
-		MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+		 MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 	if (p == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 
 	memset(p, 0x00, unaligned_size);
 	if (mprotect(p, unaligned_size, PROT_NONE) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mprotect");
+		tst_brkm(TBROK | TERRNO, cleanup, "mprotect");
 	if (madvise(p + hugepage_size, page_size, MADV_MERGEABLE) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "madvise");
+		tst_brkm(TBROK | TERRNO, cleanup, "madvise");
 
 	switch (fork()) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "fork");
+		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
 		exit(0);
 	default:
 		if (waitpid(-1, NULL, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 	}
 }
 
@@ -126,6 +126,6 @@ void cleanup(void)
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "Kernel doesn't support MADV_MERGEABLE"
-			      " or you need to update your glibc-headers");
+		 " or you need to update your glibc-headers");
 }
 #endif

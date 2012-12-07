@@ -87,8 +87,8 @@ int main(void)
 			if (pa[i] != 0) {
 				printf("Test FAILED: The partial page at the "
 				       "end of an object is not zero-filled\n");
-			return PTS_FAIL;
-		}
+				return PTS_FAIL;
+			}
 
 		/* Write the partial page */
 		pa[len + 1] = 'b';
@@ -100,7 +100,7 @@ int main(void)
 		printf("Error at fork(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	default:
-	break;
+		break;
 	}
 
 	wait(&exit_val);

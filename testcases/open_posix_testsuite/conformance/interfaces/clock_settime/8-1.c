@@ -37,8 +37,7 @@ int main(int argc, char *argv[])
 	int pid;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if (getuid() != 0)
-	{
+	if (getuid() != 0) {
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
 	}
@@ -66,20 +65,19 @@ int main(int argc, char *argv[])
 			return CHILDFAIL;
 		}
 
-		expectedsec = tsT0.tv_sec + (SLEEPSEC-SMALLTIME);
+		expectedsec = tsT0.tv_sec + (SLEEPSEC - SMALLTIME);
 
 		if (tsend.tv_sec >= expectedsec) {
-			if ((tsend.tv_sec-expectedsec) <= ACCEPTABLEDELTA) {
+			if ((tsend.tv_sec - expectedsec) <= ACCEPTABLEDELTA) {
 				return CHILDPASS;
 			} else {
 				printf("Ended too late.  %d >> %d\n",
-						(int) tsend.tv_sec,
-						(int) expectedsec);
+				       (int)tsend.tv_sec, (int)expectedsec);
 				return CHILDFAIL;
 			}
 		} else {
 			printf("Did not sleep for long enough %d < %d\n",
-					(int) tsend.tv_sec, (int) expectedsec);
+			       (int)tsend.tv_sec, (int)expectedsec);
 			return CHILDFAIL;
 		}
 
@@ -101,7 +99,7 @@ int main(int argc, char *argv[])
 			return PTS_UNRESOLVED;
 		}
 
-		getBeforeTime(&tsreset); // get current time
+		getBeforeTime(&tsreset);	// get current time
 		tsreset.tv_sec += SMALLTIME;
 		setBackTime(tsreset);
 

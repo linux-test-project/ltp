@@ -49,9 +49,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "set_tid_address01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "set_tid_address01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -71,12 +71,13 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
-        TEST_CLEANUP;
-        tst_rmdir();
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        tst_exit();
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -97,39 +98,44 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
-        int newtid = -1;
+int main(int ac, char **av)
+{
+	int newtid = -1;
 	int lc;
 	char *msg;
 
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-             tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
-        setup();
+	setup();
 
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     TEST(syscall(__NR_set_tid_address, &newtid));     //call set_tid_address()
-                     if (TEST_RETURN == getpid()) {
-        		tst_resm(TPASS, "set_tid_address call succeeded:  as expected %ld",TEST_RETURN);
-                     }
-                     else {
-                 	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-                           cleanup();
-	  	           tst_exit();
-                     }
-                }
-        }
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+			TEST(syscall(__NR_set_tid_address, &newtid));	//call set_tid_address()
+			if (TEST_RETURN == getpid()) {
+				tst_resm(TPASS,
+					 "set_tid_address call succeeded:  as expected %ld",
+					 TEST_RETURN);
+			} else {
+				tst_resm(TFAIL, "%s failed - errno = %d : %s",
+					 TCID, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+				cleanup();
+				tst_exit();
+			}
+		}
+	}
 	cleanup();
-        tst_exit();
+	tst_exit();
 }

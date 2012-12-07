@@ -130,7 +130,8 @@ int main(int ac, char **av)
 
 		/* Check for the return value of mmap() */
 		if (addr == MAP_FAILED) {
-			tst_resm(TFAIL|TERRNO, "mmap() failed on %s", TEMPFILE);
+			tst_resm(TFAIL | TERRNO, "mmap() failed on %s",
+				 TEMPFILE);
 			continue;
 		}
 		/*
@@ -143,9 +144,8 @@ int main(int ac, char **av)
 			 * variable.
 			 */
 			if (read(fildes, dummy, page_sz) < 0) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-					"reading %s failed",
-					TEMPFILE);
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "reading %s failed", TEMPFILE);
 			}
 
 			/*
@@ -184,8 +184,8 @@ int main(int ac, char **av)
 		/* Clean up things in case we are looping */
 		/* Unmap the mapped memory */
 		if (munmap(addr, page_sz) != 0) {
-			tst_brkm(TFAIL|TERRNO, cleanup,
-				"failed to unmap the mmapped pages");
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "failed to unmap the mmapped pages");
 		}
 		pass = 0;
 
@@ -231,14 +231,15 @@ void setup()
 	/* Creat a temporary file used for mapping */
 	if ((fildes = open(TEMPFILE, O_WRONLY | O_CREAT, 0666)) < 0) {
 		free(tst_buff);
-		tst_brkm(TFAIL|TERRNO, cleanup, "opening %s failed", TEMPFILE);
+		tst_brkm(TFAIL | TERRNO, cleanup, "opening %s failed",
+			 TEMPFILE);
 	}
 
 	/* Write test buffer contents into temporary file */
 	if (write(fildes, tst_buff, page_sz) < page_sz) {
 		free(tst_buff);
-		tst_brkm(TFAIL|TERRNO, cleanup, "writing to %s failed",
-			TEMPFILE);
+		tst_brkm(TFAIL | TERRNO, cleanup, "writing to %s failed",
+			 TEMPFILE);
 	}
 
 	/* Free the memory allocated for test buffer */
@@ -251,7 +252,8 @@ void setup()
 
 	/* Close the temporary file opened for write */
 	if (close(fildes) < 0) {
-		tst_brkm(TFAIL|TERRNO, cleanup, "closing %s failed", TEMPFILE);
+		tst_brkm(TFAIL | TERRNO, cleanup, "closing %s failed",
+			 TEMPFILE);
 	}
 
 	/* Allocate and initialize dummy string of system page size bytes */
@@ -261,8 +263,8 @@ void setup()
 
 	/* Open the temporary file again for reading */
 	if ((fildes = open(TEMPFILE, O_RDONLY)) < 0) {
-		tst_brkm(TFAIL|TERRNO, cleanup,
-			"opening %s read-only failed", TEMPFILE);
+		tst_brkm(TFAIL | TERRNO, cleanup,
+			 "opening %s read-only failed", TEMPFILE);
 	}
 }
 

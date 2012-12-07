@@ -49,7 +49,7 @@
 #include <librttest.h>
 
 #define NS_PER_SEC 1000000000
-#define THRESHOLD 0.5  /* 500 milliseconds */
+#define THRESHOLD 0.5		/* 500 milliseconds */
 #define NUMSLEEP 5
 #define NUMWORK 2
 
@@ -79,17 +79,17 @@ int parse_args(int c, char *v)
 /* Just spend some time on the CPU */
 void work(void)
 {
-	unsigned int i=0;
-	for (i=0; i<2147483600; i++) {
-		if ((i == i+1) || (i == i-1))
+	unsigned int i = 0;
+	for (i = 0; i < 2147483600; i++) {
+		if ((i == i + 1) || (i == i - 1))
 			printf("Hey!\n");
 	}
 }
 
 void *workerthread(void *arg)
 {
-	struct thread* pthr = (struct thread* )arg;
-	int tid =(int)(long)pthr->arg;
+	struct thread *pthr = (struct thread *)arg;
+	int tid = (int)(long)pthr->arg;
 	struct timespec *ts = &workts[tid];
 
 #ifdef DEBUG
@@ -97,20 +97,20 @@ void *workerthread(void *arg)
 #endif
 	work();
 
-	if ((clock_gettime (CLOCK_THREAD_CPUTIME_ID, ts)) < 0) {
+	if ((clock_gettime(CLOCK_THREAD_CPUTIME_ID, ts)) < 0) {
 		perror("clock_gettime: CLOCK_THREAD_CPUTIME_ID: ");
 		exit(1);
 	}
-
 #ifdef DEBUG
-	printf("workerthread %d: AFTER WORK: tv_sec = %ld, tv_nsec = %ld\n", tid, ts->tv_sec, ts->tv_nsec);
+	printf("workerthread %d: AFTER WORK: tv_sec = %ld, tv_nsec = %ld\n",
+	       tid, ts->tv_sec, ts->tv_nsec);
 #endif
 	return NULL;
 }
 
 void *sleeperthread(void *arg)
 {
-	struct thread* pthr = (struct thread* )arg;
+	struct thread *pthr = (struct thread *)arg;
 	int tid = (int)(long)pthr->arg;
 	struct timespec *ts = &sleepts[tid];
 
@@ -120,13 +120,13 @@ void *sleeperthread(void *arg)
 
 	sleep(5);
 
-	if ((clock_gettime (CLOCK_THREAD_CPUTIME_ID, ts)) < 0) {
+	if ((clock_gettime(CLOCK_THREAD_CPUTIME_ID, ts)) < 0) {
 		perror("clock_gettime: CLOCK_THREAD_CPUTIME_ID: ");
 		exit(1);
 	}
-
 #ifdef DEBUG
-	printf("sleeperthread %d: AFTER SLEEP: tv_sec = %ld, tv_nsec = %ld\n", tid, ts->tv_sec, ts->tv_nsec);
+	printf("sleeperthread %d: AFTER SLEEP: tv_sec = %ld, tv_nsec = %ld\n",
+	       tid, ts->tv_sec, ts->tv_nsec);
 #endif
 	return NULL;
 }
@@ -134,24 +134,31 @@ void *sleeperthread(void *arg)
 int checkresult(float proctime)
 {
 	int i, retval = 0;
-	float diff, threadstime=0;
-	for (i=0; i<NUMSLEEP; i++) {
+	float diff, threadstime = 0;
+	for (i = 0; i < NUMSLEEP; i++) {
 		/* Sleeping thread should not accumulate more than 1 second of CPU time */
 		if (sleepts[i].tv_sec > 0) {
-			printf("Sleeper thread %d time is %f, should have been close to zero. FAIL\n",
-				i, sleepts[i].tv_sec + ((float)sleepts[i].tv_nsec/NS_PER_SEC));
+			printf
+			    ("Sleeper thread %d time is %f, should have been close to zero. FAIL\n",
+			     i,
+			     sleepts[i].tv_sec +
+			     ((float)sleepts[i].tv_nsec / NS_PER_SEC));
 			retval = 1;
 		}
-		threadstime += sleepts[i].tv_sec + ((float)sleepts[i].tv_nsec/NS_PER_SEC);
+		threadstime +=
+		    sleepts[i].tv_sec +
+		    ((float)sleepts[i].tv_nsec / NS_PER_SEC);
 	}
 	if (retval)
 		return retval;
 
-	for (i=0; i<NUMWORK; i++) {
-		threadstime += workts[i].tv_sec + ((float)workts[i].tv_nsec/NS_PER_SEC);
+	for (i = 0; i < NUMWORK; i++) {
+		threadstime +=
+		    workts[i].tv_sec + ((float)workts[i].tv_nsec / NS_PER_SEC);
 	}
 	diff = proctime - threadstime;
-	if (diff < 0) diff = -diff;
+	if (diff < 0)
+		diff = -diff;
 	printf("Process: %.4f s\n", proctime);
 	printf("Threads: %.4f s\n", threadstime);
 	printf("Delta:   %.4f s\n", diff);
@@ -162,33 +169,34 @@ int checkresult(float proctime)
 	if (diff > pass_criteria) {
 		printf("FAIL\n");
 		retval = 1;
-	}
-	else {
+	} else {
 		printf("PASS\n");
 	}
 	return retval;
 }
 
-int main(int argc,char* argv[])
+int main(int argc, char *argv[])
 {
 	int i, retval = 0;
 	struct timespec myts;
 	setup();
 
 	pass_criteria = THRESHOLD;
-	rt_init("ht:",parse_args,argc,argv);
+	rt_init("ht:", parse_args, argc, argv);
 
 	/* Start sleeper threads */
-	for (i=0; i<NUMSLEEP; i++) {
-		if ((create_other_thread (sleeperthread, (void *)(intptr_t)i)) < 0) {
+	for (i = 0; i < NUMSLEEP; i++) {
+		if ((create_other_thread(sleeperthread, (void *)(intptr_t) i)) <
+		    0) {
 			exit(1);
 		}
 	}
 	printf("\n%d sleeper threads created\n", NUMSLEEP);
 
 	/* Start worker threads */
-	for (i=0; i<NUMWORK; i++) {
-		if ((create_other_thread (workerthread, (void *)(intptr_t)i)) < 0) {
+	for (i = 0; i < NUMWORK; i++) {
+		if ((create_other_thread(workerthread, (void *)(intptr_t) i)) <
+		    0) {
 			exit(1);
 		}
 	}
@@ -198,10 +206,10 @@ int main(int argc,char* argv[])
 
 	join_threads();
 	/* Get the process cpu clock value */
-	if ((clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &myts)) < 0) {
+	if ((clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &myts)) < 0) {
 		perror("clock_gettime: CLOCK_PROCESS_CPUTIME_ID: ");
 		exit(1);
 	}
-	retval = checkresult(myts.tv_sec + ((float)myts.tv_nsec/NS_PER_SEC));
+	retval = checkresult(myts.tv_sec + ((float)myts.tv_nsec / NS_PER_SEC));
 	return retval;
 }

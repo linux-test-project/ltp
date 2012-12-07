@@ -40,23 +40,23 @@
   */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <semaphore.h>
- #include <errno.h>
- #include <stdio.h>
- #include <unistd.h>
- #include <stdarg.h>
- #include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdarg.h>
+#include <stdlib.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -87,70 +87,79 @@
 /********************************************************************************************/
 
 /**** global variables ****/
-pthread_mutex_t * p_mtx;
+pthread_mutex_t *p_mtx;
 int retval = 0;
 int returned = 0;
 int canceled = 0;
 sem_t semA, semB;
 
 /***** Cancelation handlers  *****/
-void cleanup_deadlk(void * arg)
+void cleanup_deadlk(void *arg)
 {
 	canceled = 1;
 	pthread_mutex_unlock(p_mtx);
 }
 
 /***** Threads functions *****/
-void * deadlk_issue(void * arg)
+void *deadlk_issue(void *arg)
 {
 	int ret, tmp;
 
-	if ((ret=pthread_mutex_lock(p_mtx)))
-	{ UNRESOLVED(ret, "First mutex lock in deadlk_issue"); }
+	if ((ret = pthread_mutex_lock(p_mtx))) {
+		UNRESOLVED(ret, "First mutex lock in deadlk_issue");
+	}
 	pthread_cleanup_push(cleanup_deadlk, NULL);
-	if ((ret = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &tmp)))
-	{ UNRESOLVED(ret, "Set cancel type in deadlk_issue"); }
-	if ((ret = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &tmp)))
-	{ UNRESOLVED(ret, "Set cancel state in deadlk_issue"); }
-	#if VERBOSE >1
+	if ((ret = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &tmp))) {
+		UNRESOLVED(ret, "Set cancel type in deadlk_issue");
+	}
+	if ((ret = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &tmp))) {
+		UNRESOLVED(ret, "Set cancel state in deadlk_issue");
+	}
+#if VERBOSE >1
 	output("Thread releases the semaphore...\n");
-	#endif
-	if ((ret = sem_post(&semA)))
-	{ UNRESOLVED(errno, "Sem_post in deadlk_issue"); }
+#endif
+	if ((ret = sem_post(&semA))) {
+		UNRESOLVED(errno, "Sem_post in deadlk_issue");
+	}
 
-    	returned = 0;
+	returned = 0;
 	retval = pthread_mutex_lock(p_mtx);
 	returned = 1;
 
-	if ((ret = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &tmp)))
-	{ UNRESOLVED(ret, "Set cancel state in deadlk_issue"); }
+	if ((ret = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &tmp))) {
+		UNRESOLVED(ret, "Set cancel state in deadlk_issue");
+	}
 	pthread_cleanup_pop(0);
 	return NULL;
 }
 
-void * unlock_issue(void * arg)
+void *unlock_issue(void *arg)
 {
 	int ret;
 
-	#if VERBOSE >1
+#if VERBOSE >1
 	output("Locking in child...\n");
-	#endif
-	if ((ret=pthread_mutex_lock(p_mtx)))
-	{ UNRESOLVED(ret, "First mutex lock in unlock_issue"); }
+#endif
+	if ((ret = pthread_mutex_lock(p_mtx))) {
+		UNRESOLVED(ret, "First mutex lock in unlock_issue");
+	}
 
-	if ((ret = sem_post(&semA)))
-	{ UNRESOLVED(errno, "Sem_post in unlock_issue"); }
+	if ((ret = sem_post(&semA))) {
+		UNRESOLVED(errno, "Sem_post in unlock_issue");
+	}
 
-	if ((ret = sem_wait(&semB)))
-	{ UNRESOLVED(errno, "Sem_wait in unlock_issue"); }
+	if ((ret = sem_wait(&semB))) {
+		UNRESOLVED(errno, "Sem_wait in unlock_issue");
+	}
 
-	if (retval != 0) /* parent thread failed to unlock the mutex) */
-	{
-		#if VERBOSE >1
+	if (retval != 0) {	/* parent thread failed to unlock the mutex) */
+#if VERBOSE >1
 		output("Unlocking in child...\n");
-		#endif
-		if ((ret=pthread_mutex_unlock(p_mtx)))
-		{ FAILED("Mutex unlock returned an error but mutex is unlocked."); }
+#endif
+		if ((ret = pthread_mutex_unlock(p_mtx))) {
+			FAILED
+			    ("Mutex unlock returned an error but mutex is unlocked.");
+		}
 	}
 
 	return NULL;
@@ -163,97 +172,105 @@ int main(int argc, char *argv[])
 	pthread_mutexattr_t mattr;
 	pthread_t thr;
 
-	pthread_mutex_t * tab_mutex[2]={&mtx_null, &mtx_def};
-	int tab_res[2][3]={{0,0,0},{0,0,0}};
+	pthread_mutex_t *tab_mutex[2] = { &mtx_null, &mtx_def };
+	int tab_res[2][3] = { {0, 0, 0}, {0, 0, 0} };
 
 	int ret;
-	void * th_ret;
+	void *th_ret;
 
 	int i;
 
 	output_init();
 
-	#if VERBOSE >1
+#if VERBOSE >1
 	output("Test starting...\n");
-	#endif
+#endif
 
 	/* We first initialize the two mutexes. */
-	if ((ret=pthread_mutex_init(&mtx_null, NULL)))
-	{ UNRESOLVED(ret, "NULL mutex init"); }
+	if ((ret = pthread_mutex_init(&mtx_null, NULL))) {
+		UNRESOLVED(ret, "NULL mutex init");
+	}
 
-	if ((ret=pthread_mutexattr_init(&mattr)))
-	{ UNRESOLVED(ret, "Mutex attribute init"); }
-	if ((ret=pthread_mutex_init(&mtx_def, &mattr)))
-	{ UNRESOLVED(ret, "Default attribute mutex init"); }
+	if ((ret = pthread_mutexattr_init(&mattr))) {
+		UNRESOLVED(ret, "Mutex attribute init");
+	}
+	if ((ret = pthread_mutex_init(&mtx_def, &mattr))) {
+		UNRESOLVED(ret, "Default attribute mutex init");
+	}
 
-	if ((ret=pthread_mutexattr_destroy(&mattr)))
-	{ UNRESOLVED(ret, "Mutex attribute destroy"); }
+	if ((ret = pthread_mutexattr_destroy(&mattr))) {
+		UNRESOLVED(ret, "Mutex attribute destroy");
+	}
 
-	if ((ret=sem_init(&semA, 0, 0)))
-	{ UNRESOLVED(errno, "Sem A init"); }
-	if ((ret=sem_init(&semB, 0, 0)))
-	{ UNRESOLVED(errno, "Sem B init"); }
-
-	#if VERBOSE >1
+	if ((ret = sem_init(&semA, 0, 0))) {
+		UNRESOLVED(errno, "Sem A init");
+	}
+	if ((ret = sem_init(&semB, 0, 0))) {
+		UNRESOLVED(errno, "Sem B init");
+	}
+#if VERBOSE >1
 	output("Data initialized...\n");
-	#endif
+#endif
 
 	/* OK let's go for the first part of the test : abnormals unlocking */
 
 	/* We first check if unlocking an unlocked mutex returns an error. */
 	retval = pthread_mutex_unlock(tab_mutex[0]);
 	ret = pthread_mutex_unlock(tab_mutex[1]);
-	#if VERBOSE >0
-	output("Results for unlock issue #1:\n mutex 1 unlocking returned %i\n mutex 2 unlocking returned %i\n",
-				retval, ret);
-	#endif
-	if (ret != retval)
-	{
+#if VERBOSE >0
+	output
+	    ("Results for unlock issue #1:\n mutex 1 unlocking returned %i\n mutex 2 unlocking returned %i\n",
+	     retval, ret);
+#endif
+	if (ret != retval) {
 		FAILED("Unlocking an unlocked mutex behaves differently.");
 	}
 
-    /* Now we focus on unlocking a mutex lock by another thread */
-	for (i=0; i<2; i++)
-	{
+	/* Now we focus on unlocking a mutex lock by another thread */
+	for (i = 0; i < 2; i++) {
 		p_mtx = tab_mutex[i];
-		tab_res[i][0]=0;
-		tab_res[i][1]=0;
-		tab_res[i][2]=0;
+		tab_res[i][0] = 0;
+		tab_res[i][1] = 0;
+		tab_res[i][2] = 0;
 
-		#if VERBOSE >1
+#if VERBOSE >1
 		output("Creating thread (unlock)...\n");
-		#endif
+#endif
 
-		if ((ret = pthread_create(&thr, NULL, unlock_issue, NULL)))
-		{ UNRESOLVED(ret, "Unlock issue thread create"); }
+		if ((ret = pthread_create(&thr, NULL, unlock_issue, NULL))) {
+			UNRESOLVED(ret, "Unlock issue thread create");
+		}
 
-		if ((ret = sem_wait(&semA)))
-		{ UNRESOLVED(errno, "Sem A wait failed for unlock issue."); }
-
-		#if VERBOSE >1
+		if ((ret = sem_wait(&semA))) {
+			UNRESOLVED(errno,
+				   "Sem A wait failed for unlock issue.");
+		}
+#if VERBOSE >1
 		output("Unlocking in parent...\n");
-		#endif
+#endif
 		retval = pthread_mutex_unlock(p_mtx);
 
-		if ((ret = sem_post(&semB)))
-		{ UNRESOLVED(errno, "Sem B post failed for unlock issue."); }
+		if ((ret = sem_post(&semB))) {
+			UNRESOLVED(errno,
+				   "Sem B post failed for unlock issue.");
+		}
 
-		if ((ret=pthread_join(thr, &th_ret)))
-		{ UNRESOLVED(ret, "Join thread"); }
-
-		#if VERBOSE >1
+		if ((ret = pthread_join(thr, &th_ret))) {
+			UNRESOLVED(ret, "Join thread");
+		}
+#if VERBOSE >1
 		output("Thread joined successfully...\n");
-		#endif
+#endif
 
 		tab_res[i][0] = retval;
 	}
-	#if VERBOSE >0
-	output("Results for unlock issue #2:\n mutex 1 returned %i\n mutex 2 returned %i\n",
-				tab_res[0][0],tab_res[1][0]);
-	#endif
+#if VERBOSE >0
+	output
+	    ("Results for unlock issue #2:\n mutex 1 returned %i\n mutex 2 returned %i\n",
+	     tab_res[0][0], tab_res[1][0]);
+#endif
 
-	if (tab_res[0][0] != tab_res[1][0])
-	{
+	if (tab_res[0][0] != tab_res[1][0]) {
 		FAILED("Unlocking an unowned mutex behaves differently.");
 	}
 
@@ -261,46 +278,47 @@ int main(int argc, char *argv[])
 	 */
 
 	/* We start with testing the NULL mutex features */
-	for (i=0; i<2; i++)
-	{
+	for (i = 0; i < 2; i++) {
 		p_mtx = tab_mutex[i];
-		tab_res[i][0]=0;
-		tab_res[i][1]=0;
-		tab_res[i][2]=0;
+		tab_res[i][0] = 0;
+		tab_res[i][1] = 0;
+		tab_res[i][2] = 0;
 
-		#if VERBOSE >1
+#if VERBOSE >1
 		output("Creating thread (deadlk)...\n");
-		#endif
+#endif
 
-		if ((ret = pthread_create(&thr, NULL, deadlk_issue, NULL)))
-		{ UNRESOLVED(ret, "Deadlk_issue thread create"); }
+		if ((ret = pthread_create(&thr, NULL, deadlk_issue, NULL))) {
+			UNRESOLVED(ret, "Deadlk_issue thread create");
+		}
 
 		/* Now we are waiting the thread is ready to relock the mutex. */
-		if ((ret=sem_wait(&semA)))
-		{ UNRESOLVED(errno, "Sem wait"); }
+		if ((ret = sem_wait(&semA))) {
+			UNRESOLVED(errno, "Sem wait");
+		}
 
 		/* To ensure thread runs until second lock, we yield here */
 		sched_yield();
 
 		/* OK, now we cancel the thread */
-		canceled=0;
-		#if VERBOSE >1
+		canceled = 0;
+#if VERBOSE >1
 		output("Cancel thread...\n");
-		#endif
-		if (returned ==0)
-			if ((ret=pthread_cancel(thr)))
-			{ UNRESOLVED(ret, "Cancel thread (deadlk_issue)"); }
-
-		#if VERBOSE >1
+#endif
+		if (returned == 0)
+			if ((ret = pthread_cancel(thr))) {
+				UNRESOLVED(ret, "Cancel thread (deadlk_issue)");
+			}
+#if VERBOSE >1
 		output("Thread canceled...\n");
-		#endif
+#endif
 
-		if ((ret=pthread_join(thr, &th_ret)))
-		{ UNRESOLVED(ret, "Join thread"); }
-
-		#if VERBOSE >1
+		if ((ret = pthread_join(thr, &th_ret))) {
+			UNRESOLVED(ret, "Join thread");
+		}
+#if VERBOSE >1
 		output("Thread joined successfully...\n");
-		#endif
+#endif
 
 		tab_res[i][2] = retval;
 		tab_res[i][1] = returned;
@@ -308,24 +326,26 @@ int main(int argc, char *argv[])
 	}
 
 	/* Now we parse the results */
-	#if VERBOSE >0
-	output("Results for deadlock issue:\n mutex 1 \t%s\t%s%i\n mutex 2 \t%s\t%s%i\n",
-				tab_res[0][0]?"deadlock" : "no deadlock",
-				tab_res[0][1]?"returned " : "did not return ",
-				tab_res[0][2],
-				tab_res[1][0]?"deadlock" : "no deadlock",
-				tab_res[1][1]?"returned " : "did not return ",
-				tab_res[1][2]);
-	#endif
+#if VERBOSE >0
+	output
+	    ("Results for deadlock issue:\n mutex 1 \t%s\t%s%i\n mutex 2 \t%s\t%s%i\n",
+	     tab_res[0][0] ? "deadlock" : "no deadlock",
+	     tab_res[0][1] ? "returned " : "did not return ", tab_res[0][2],
+	     tab_res[1][0] ? "deadlock" : "no deadlock",
+	     tab_res[1][1] ? "returned " : "did not return ", tab_res[1][2]);
+#endif
 
-	if (tab_res[0][0] != tab_res[1][0])
-	{ FAILED("One mutex deadlocks, not the other"); }
+	if (tab_res[0][0] != tab_res[1][0]) {
+		FAILED("One mutex deadlocks, not the other");
+	}
 
-	if (tab_res[0][1] != tab_res[1][1])
-	{ UNRESOLVED(tab_res[0][1], "Abnormal situation!"); }
+	if (tab_res[0][1] != tab_res[1][1]) {
+		UNRESOLVED(tab_res[0][1], "Abnormal situation!");
+	}
 
-	if ((tab_res[0][1] == 1) && (tab_res[0][2] != tab_res[1][2]))
-	{ FAILED("The locks returned different error codes."); }
+	if ((tab_res[0][1] == 1) && (tab_res[0][2] != tab_res[1][2])) {
+		FAILED("The locks returned different error codes.");
+	}
 
 	PASSED;
 }

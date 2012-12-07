@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 							 "mask didnot take",
 							 low9mode,
 							 (~mskval & 0777));
-					 }
+					}
 				}
 			}
 			close(fildes);

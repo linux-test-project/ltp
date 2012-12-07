@@ -58,7 +58,6 @@
 #define IFF_VNET_HDR	0x4000
 #endif
 
-
 char *TCID = "ioctl03";
 int TST_TOTAL = 1;
 
@@ -95,11 +94,12 @@ int main()
 
 	int netfd = open("/dev/net/tun", O_RDWR);
 	if (netfd < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "opening /dev/net/tun failed");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "opening /dev/net/tun failed");
 
 	if (ioctl(netfd, TUNGETFEATURES, &features) != 0)
 		tst_brkm(TCONF, cleanup,
-		    "Kernel does not support TUNGETFEATURES");
+			 "Kernel does not support TUNGETFEATURES");
 	tst_resm(TINFO, "Available features are: %#x", features);
 	for (i = 0; i < sizeof(known_flags) / sizeof(known_flags[0]); i++) {
 		if (features & known_flags[i].flag) {

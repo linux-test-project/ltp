@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 
 	if ((pid = fork()) == 0) {
 		/* child here */
-		tssleep.tv_sec=SLEEPSEC;
-		tssleep.tv_nsec=0;
+		tssleep.tv_sec = SLEEPSEC;
+		tssleep.tv_nsec = 0;
 		clock_nanosleep(CLOCK_REALTIME, 0, &tssleep, NULL);
 	} else {
 		/* parent here */
@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
 		 * pass if we slept for less than the (large) sleep time
 		 * allotted
 		 */
-		if ((tsafter.tv_sec-tsbefore.tv_sec) < SLEEPSEC) {
+		if ((tsafter.tv_sec - tsbefore.tv_sec) < SLEEPSEC) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		} else {
 			printf("Slept for too long: %d >= %d\n",
-				(int)tsafter.tv_sec-(int)tsbefore.tv_sec,
-				SLEEPSEC);
+			       (int)tsafter.tv_sec - (int)tsbefore.tv_sec,
+			       SLEEPSEC);
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}

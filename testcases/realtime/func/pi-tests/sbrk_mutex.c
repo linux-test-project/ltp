@@ -50,7 +50,7 @@
 #define NUM_MUTEXES 5000
 #define NUM_THREADS 50
 #define NUM_CONCURRENT_LOCKS 50
-#define DELAY 1000 /* how long to sleep in the worker thread in us */
+#define DELAY 1000		/* how long to sleep in the worker thread in us */
 
 static pthread_mutex_t *mutexes[NUM_MUTEXES];
 
@@ -65,12 +65,12 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
@@ -82,7 +82,7 @@ void *worker_thread(void *arg)
 	for (i = 0; i < NUM_MUTEXES + NUM_CONCURRENT_LOCKS; i++) {
 		/* release prior lock */
 		if (i >= NUM_CONCURRENT_LOCKS) {
-			pthread_mutex_unlock(mutexes[i-NUM_CONCURRENT_LOCKS]);
+			pthread_mutex_unlock(mutexes[i - NUM_CONCURRENT_LOCKS]);
 		}
 		/* grab a new lock */
 		if (i < NUM_MUTEXES) {
@@ -97,19 +97,20 @@ void *worker_thread(void *arg)
 	return NULL;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	int m, ret, robust;
 	intptr_t t;
 	pthread_mutexattr_t mutexattr;
 	setup();
 
-	rt_init("h",parse_args,argc,argv);
+	rt_init("h", parse_args, argc, argv);
 
 	if (pthread_mutexattr_init(&mutexattr) != 0) {
 		printf("Failed to init mutexattr\n");
 	}
-	if (pthread_mutexattr_setrobust_np(&mutexattr, PTHREAD_MUTEX_ROBUST_NP) != 0) {
+	if (pthread_mutexattr_setrobust_np(&mutexattr, PTHREAD_MUTEX_ROBUST_NP)
+	    != 0) {
 		printf("Can't set mutexattr robust\n");
 	}
 	if (pthread_mutexattr_getrobust_np(&mutexattr, &robust) != 0) {
@@ -132,7 +133,8 @@ int main(int argc, char* argv[])
 
 	/* start children threads to walk the array, grabbing the locks */
 	for (t = 0; t < NUM_THREADS; t++) {
-		create_fifo_thread(worker_thread, (void*)t, sched_get_priority_min(SCHED_FIFO));
+		create_fifo_thread(worker_thread, (void *)t,
+				   sched_get_priority_min(SCHED_FIFO));
 	}
 	/* wait for the children to complete */
 	printf("joining threads\n");
@@ -150,8 +152,10 @@ int main(int argc, char* argv[])
 }
 
 #else
-int main(void) {
-	printf("Your system doesn't support the pthread robust mutexattr APIs\n");
+int main(void)
+{
+	printf
+	    ("Your system doesn't support the pthread robust mutexattr APIs\n");
 	return 1;
 }
 #endif

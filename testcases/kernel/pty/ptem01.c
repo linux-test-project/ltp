@@ -38,8 +38,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="ptem01";            /* Test program identifier.    */
-int TST_TOTAL=6;                /* Total number of test cases. */
+char *TCID = "ptem01";		/* Test program identifier.    */
+int TST_TOTAL = 6;		/* Total number of test cases. */
 /**************/
 
 /*
@@ -52,8 +52,7 @@ int TST_TOTAL=6;                /* Total number of test cases. */
 /*
  * test termio/termios ioctls
  */
-int
-test1(void)
+int test1(void)
 {
 	int masterfd, slavefd;
 	char *slavename;
@@ -62,86 +61,86 @@ test1(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"%s",MASTERCLONE);
+		tst_resm(TBROK, "%s", MASTERCLONE);
 		tst_exit();
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK|TERRNO, "ptsname() call failed");
+		tst_resm(TBROK | TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK|TERRNO, "grantpt() call failed");
+		tst_resm(TBROK | TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt() call failed");
+		tst_resm(TBROK, "unlockpt() call failed");
 		tst_exit();
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TFAIL,"Could not open %s",slavename);
+		tst_resm(TFAIL, "Could not open %s", slavename);
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCGETS, &termios) != 0) {
-		tst_resm(TFAIL,"TCGETS");
+		tst_resm(TFAIL, "TCGETS");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCSETS, &termios) != 0) {
-		tst_resm(TFAIL,"TCSETS");
+		tst_resm(TFAIL, "TCSETS");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCSETSW, &termios) != 0) {
-		tst_resm(TFAIL,"TCSETSW");
+		tst_resm(TFAIL, "TCSETSW");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCSETSF, &termios) != 0) {
-		tst_resm(TFAIL,"TCSETSF");
+		tst_resm(TFAIL, "TCSETSF");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCSETS, &termios) != 0) {
-		tst_resm(TFAIL,"TCSETS");
+		tst_resm(TFAIL, "TCSETS");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCGETA, &termio) != 0) {
-		tst_resm(TFAIL,"TCGETA");
+		tst_resm(TFAIL, "TCGETA");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCSETA, &termio) != 0) {
-		tst_resm(TFAIL,"TCSETA");
+		tst_resm(TFAIL, "TCSETA");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCSETAW, &termio) != 0) {
-		tst_resm(TFAIL,"TCSETAW");
+		tst_resm(TFAIL, "TCSETAW");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCSETAF, &termio) != 0) {
-		tst_resm(TFAIL,"TCSETAF");
+		tst_resm(TFAIL, "TCSETAF");
 		tst_exit();
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close slave");
+		tst_resm(TBROK, "close slave");
 		tst_exit();
 	}
 
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK,"close master");
+		tst_resm(TBROK, "close master");
 		tst_exit();
 	}
-	tst_resm(TPASS,"test1");
+	tst_resm(TPASS, "test1");
 
 	/** NOT REACHED **/
 	return 0;
@@ -150,49 +149,48 @@ test1(void)
 /*
  * test window size setting and getting
  */
-int
-test2(void)
+int test2(void)
 {
 	int masterfd, slavefd;
 	char *slavename;
 	struct winsize wsz;
-	struct winsize wsz1 = {24, 80, 5, 10};
-	struct winsize wsz2 = {60, 100, 11, 777};
+	struct winsize wsz1 = { 24, 80, 5, 10 };
+	struct winsize wsz2 = { 60, 100, 11, 777 };
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"%s",MASTERCLONE);
+		tst_resm(TBROK, "%s", MASTERCLONE);
 		tst_exit();
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK|TERRNO, "ptsname() call failed");
+		tst_resm(TBROK | TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK|TERRNO, "grantpt() call failed");
+		tst_resm(TBROK | TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt() call failed");
+		tst_resm(TBROK, "unlockpt() call failed");
 		tst_exit();
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK,"Could not open %s",slavename);
+		tst_resm(TBROK, "Could not open %s", slavename);
 		tst_exit();
 	}
 
 	if (ioctl(masterfd, TIOCSWINSZ, &wsz1) != 0) {
-		tst_resm(TFAIL,"TIOCSWINSZ");
+		tst_resm(TFAIL, "TIOCSWINSZ");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TIOCGWINSZ, &wsz) != 0) {
-		tst_resm(TFAIL,"TIOCGWINSZ");
+		tst_resm(TFAIL, "TIOCGWINSZ");
 		tst_exit();
 	}
 
@@ -204,7 +202,7 @@ test2(void)
 	}
 
 	if (ioctl(masterfd, TIOCGWINSZ, &wsz) != 0) {
-		tst_resm(TFAIL,"TIOCGWINSZ");
+		tst_resm(TFAIL, "TIOCGWINSZ");
 		tst_exit();
 	}
 
@@ -216,12 +214,12 @@ test2(void)
 	}
 
 	if (ioctl(slavefd, TIOCSWINSZ, &wsz2) != 0) {
-		tst_resm(TFAIL,"TIOCSWINSZ");
+		tst_resm(TFAIL, "TIOCSWINSZ");
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TIOCGWINSZ, &wsz) != 0) {
-		tst_resm(TFAIL,"TIOCGWINSZ");
+		tst_resm(TFAIL, "TIOCGWINSZ");
 		tst_exit();
 	}
 
@@ -233,15 +231,15 @@ test2(void)
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close");
+		tst_resm(TBROK, "close");
 		tst_exit();
 	}
 
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK,"close");
+		tst_resm(TBROK, "close");
 		tst_exit();
 	}
-	tst_resm(TPASS,"test2");
+	tst_resm(TPASS, "test2");
 
 	/** NOT REACHED **/
 	return 0;
@@ -250,59 +248,58 @@ test2(void)
 /*
  * test sending a break
  */
-int
-test3(void)
+int test3(void)
 {
 	int masterfd, slavefd;
 	char *slavename;
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"%s",MASTERCLONE);
+		tst_resm(TBROK, "%s", MASTERCLONE);
 		tst_exit();
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK|TERRNO, "ptsname() call failed");
+		tst_resm(TBROK | TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK|TERRNO, "grantpt() call failed");
+		tst_resm(TBROK | TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt() call failed");
+		tst_resm(TBROK, "unlockpt() call failed");
 		tst_exit();
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK,"Could not open %s",slavename);
+		tst_resm(TBROK, "Could not open %s", slavename);
 		tst_exit();
 	}
 
 	if (tcsendbreak(masterfd, 10) != 0) {
-		tst_resm(TFAIL,"tcsendbreak");
+		tst_resm(TFAIL, "tcsendbreak");
 		tst_exit();
 	}
 
 	if (tcsendbreak(slavefd, 10) != 0) {
-		tst_resm(TFAIL,"tcsendbreak");
+		tst_resm(TFAIL, "tcsendbreak");
 		tst_exit();
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close slave");
+		tst_resm(TBROK, "close slave");
 		tst_exit();
 	}
 
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK,"close master");
+		tst_resm(TBROK, "close master");
 		tst_exit();
 	}
-	tst_resm(TPASS,"test3");
+	tst_resm(TPASS, "test3");
 
 	/** NOT REACHED **/
 	return 0;
@@ -311,66 +308,65 @@ test3(void)
 /*
  * test multiple opens of slave side
  */
-int
-test4(void)
+int test4(void)
 {
 	int masterfd, slavefd, slavefd2, slavefd3;
 	char *slavename;
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"%s",MASTERCLONE);
+		tst_resm(TBROK, "%s", MASTERCLONE);
 		tst_exit();
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK|TERRNO, "ptsname() call failed");
+		tst_resm(TBROK | TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK|TERRNO, "grantpt() call failed");
+		tst_resm(TBROK | TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt() call failed");
+		tst_resm(TBROK, "unlockpt() call failed");
 		tst_exit();
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK,"Could not open %s",slavename);
+		tst_resm(TBROK, "Could not open %s", slavename);
 		tst_exit();
 	}
 
 	if ((slavefd2 = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TFAIL,"Could not open %s (again)",slavename);
+		tst_resm(TFAIL, "Could not open %s (again)", slavename);
 		tst_exit();
 	}
 
 	if ((slavefd3 = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TFAIL,"Could not open %s (once more)",slavename);
+		tst_resm(TFAIL, "Could not open %s (once more)", slavename);
 		tst_exit();
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close slave");
+		tst_resm(TBROK, "close slave");
 		tst_exit();
 	}
 	if (close(slavefd2) != 0) {
-		tst_resm(TBROK,"close slave again");
+		tst_resm(TBROK, "close slave again");
 		tst_exit();
 	}
 	if (close(slavefd3) != 0) {
-		tst_resm(TBROK,"close slave once more");
+		tst_resm(TBROK, "close slave once more");
 		tst_exit();
 	}
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK,"close master");
+		tst_resm(TBROK, "close master");
 		tst_exit();
 	}
-	tst_resm(TPASS,"test4");
+	tst_resm(TPASS, "test4");
 
 	/** NOT REACHED **/
 	return 0;
@@ -381,8 +377,7 @@ test4(void)
 /*
  * test several simultaneous opens
  */
-int
-test5(void)
+int test5(void)
 {
 	static int masterfd[NUMOPENS];
 	static int slavefd[NUMOPENS];
@@ -392,14 +387,14 @@ test5(void)
 	for (i = 0; i < NUMOPENS; ++i) {
 		masterfd[i] = open(MASTERCLONE, O_RDWR);
 		if (masterfd[i] < 0) {
-			tst_resm(TBROK,"%s",MASTERCLONE);
+			tst_resm(TBROK, "%s", MASTERCLONE);
 			tst_resm(TBROK, "out of ptys");
 			for (i = 0; i < NUMOPENS; ++i) {
 				if (masterfd[i] != 0) {
-					(void) close(masterfd[i]);
+					(void)close(masterfd[i]);
 				}
 				if (slavefd[i] != 0) {
-					(void) close(slavefd[i]);
+					(void)close(slavefd[i]);
 				}
 			}
 			tst_exit();
@@ -407,22 +402,23 @@ test5(void)
 
 		slavename = ptsname(masterfd[i]);
 		if (slavename == NULL) {
-			tst_resm(TBROK|TERRNO, "ptsname() call failed");
+			tst_resm(TBROK | TERRNO, "ptsname() call failed");
 			tst_exit();
 		}
 
 		if (grantpt(masterfd[i]) != 0) {
-			tst_resm(TBROK|TERRNO, "grantpt() call failed");
+			tst_resm(TBROK | TERRNO, "grantpt() call failed");
 			tst_exit();
 		}
 
 		if (unlockpt(masterfd[i]) != 0) {
-			tst_resm(TBROK,"unlockpt() call failed");
+			tst_resm(TBROK, "unlockpt() call failed");
 			tst_exit();
 		}
 
 		if ((slavefd[i] = open(slavename, O_RDWR)) < 0) {
-			tst_resm(TFAIL,"Iteration %d: Could not open %s",i,slavename);
+			tst_resm(TFAIL, "Iteration %d: Could not open %s", i,
+				 slavename);
 			tst_exit();
 		}
 
@@ -430,15 +426,15 @@ test5(void)
 
 	for (i = 0; i < NUMOPENS; ++i) {
 		if (close(slavefd[i]) != 0) {
-			tst_resm(TBROK,"Iteration %d: close slave",i);
+			tst_resm(TBROK, "Iteration %d: close slave", i);
 			tst_exit();
 		}
 		if (close(masterfd[i]) != 0) {
-			tst_resm(TBROK,"close master");
+			tst_resm(TBROK, "close master");
 			tst_exit();
 		}
 	}
-	tst_resm(TPASS,"test5");
+	tst_resm(TPASS, "test5");
 
 	/** NOT REACHED **/
 	return 0;
@@ -447,8 +443,7 @@ test5(void)
 /*
  * test hangup semantics
  */
-int
-test6(void)
+int test6(void)
 {
 	static int masterfd;
 	static int slavefd;
@@ -457,52 +452,52 @@ test6(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"%s",MASTERCLONE);
+		tst_resm(TBROK, "%s", MASTERCLONE);
 		tst_exit();
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK|TERRNO, "ptsname() call failed");
+		tst_resm(TBROK | TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK|TERRNO, "grantpt() call failed");
+		tst_resm(TBROK | TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt() call failed");
+		tst_resm(TBROK, "unlockpt() call failed");
 		tst_exit();
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK,"Could not open %s",slavename);
+		tst_resm(TBROK, "Could not open %s", slavename);
 		tst_exit();
 	}
 
 	if (ioctl(slavefd, TCGETS, &termios) != 0) {
-		tst_resm(TFAIL,"TCGETS");
+		tst_resm(TFAIL, "TCGETS");
 		tst_exit();
 	}
 
 	termios.c_cflag &= ~CBAUD;
-	termios.c_cflag |= B0&CBAUD;
+	termios.c_cflag |= B0 & CBAUD;
 	if (ioctl(slavefd, TCSETS, &termios) != 0) {
-		tst_resm(TFAIL,"TCGETS");
+		tst_resm(TFAIL, "TCGETS");
 		tst_exit();
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close");
+		tst_resm(TBROK, "close");
 		tst_exit();
 	}
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK,"close");
+		tst_resm(TBROK, "close");
 		tst_exit();
 	}
-	tst_resm(TPASS,"test6");
+	tst_resm(TPASS, "test6");
 
 	/** NOT REACHED **/
 	return 0;
@@ -511,8 +506,7 @@ test6(void)
 /*
  * main test driver
  */
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	test1();
 	test2();
@@ -521,7 +515,7 @@ main(int argc, char **argv)
 	test5();
 	test6();
 	/*
- 	 * all done
+	 * all done
 	 */
 	tst_exit();
 

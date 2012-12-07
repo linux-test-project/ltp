@@ -78,35 +78,33 @@
 
 void setup(void);
 
-char *TCID = "timer_create04"; 	/* Test program identifier.    */
+char *TCID = "timer_create04";	/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
 
-static int exp_enos[] = {EINVAL, EFAULT, 0};
+static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
 int testcase[6] = {
-	EINVAL,	/* MAX_CLOCKS     */
-	EINVAL,	/* MAX_CLOCKS + 1 */
-	EFAULT,	/* bad sigevent   */
-	EFAULT	/* bad timer_id   */
+	EINVAL,			/* MAX_CLOCKS     */
+	EINVAL,			/* MAX_CLOCKS + 1 */
+	EFAULT,			/* bad sigevent   */
+	EFAULT			/* bad timer_id   */
 };
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 
 }
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc, i;
 	char *msg;
@@ -146,41 +144,40 @@ main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			temp_ev = (struct sigevent *) NULL;
+			temp_ev = (struct sigevent *)NULL;
 			temp_id = &timer_id;
 
 			switch (i) {
-			case 2: /* make the timer_id bad address */
-				temp_id = (kernel_timer_t *) -1;
+			case 2:	/* make the timer_id bad address */
+				temp_id = (kernel_timer_t *) - 1;
 				break;
 			case 3:
 				/* make the event bad address */
-				temp_ev = (struct sigevent *) -1;
+				temp_ev = (struct sigevent *)-1;
 				break;
 			case 4:
 				/* Produce an invalid timer_id address. */
 				if (tst_kvercmp(2, 6, 12) >= 0)
-					temp_id = (kernel_timer_t *) -1;
+					temp_id = (kernel_timer_t *) - 1;
 				break;
 			case 5:
 				/* Produce an invalid event address. */
 				if (tst_kvercmp(2, 6, 12) >= 0)
-					temp_ev = (struct sigevent *) -1;
+					temp_ev = (struct sigevent *)-1;
 			}
 
 			TEST(syscall(__NR_timer_create, clocks[i], temp_ev,
-					temp_id));
+				     temp_id));
 
 			/* check return code */
 			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
 				tst_resm(TPASS | TTERRNO, "failed as expected");
 			} else {
 				tst_resm(TFAIL | TTERRNO,
-					"didn't fail as expected [expected "
-					"errno = %d (%s)]",
-					testcase[i],
-					strerror(testcase[i]));
-			} /* end of else */
+					 "didn't fail as expected [expected "
+					 "errno = %d (%s)]",
+					 testcase[i], strerror(testcase[i]));
+			}	/* end of else */
 
 		}
 
@@ -191,8 +188,7 @@ main(int ac, char **av)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

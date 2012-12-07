@@ -56,24 +56,24 @@
 #endif
 
 #ifndef MPOL_MF_WAIT
-#define MPOL_MF_WAIT    (1<<2)  /* Wait for existing pages to migrate */
+#define MPOL_MF_WAIT    (1<<2)	/* Wait for existing pages to migrate */
 #endif
 
 #if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
-static inline int nodemask_isset(nodemask_t *mask, int node)
+static inline int nodemask_isset(nodemask_t * mask, int node)
 {
 	if ((unsigned)node >= NUMA_NUM_NODES)
 		return 0;
-	if (mask->n[node / (8*sizeof(unsigned long))] &
-		(1UL<<(node%(8*sizeof(unsigned long)))))
+	if (mask->n[node / (8 * sizeof(unsigned long))] &
+	    (1UL << (node % (8 * sizeof(unsigned long)))))
 		return 1;
 	return 0;
 }
 
-static inline void nodemask_set(nodemask_t *mask, int node)
+static inline void nodemask_set(nodemask_t * mask, int node)
 {
-	mask->n[node / (8*sizeof(unsigned long))] |=
-		(1UL<<(node%(8*sizeof(unsigned long))));
+	mask->n[node / (8 * sizeof(unsigned long))] |=
+	    (1UL << (node % (8 * sizeof(unsigned long))));
 }
 #endif
 
@@ -89,8 +89,7 @@ static int help_me(char *);	/* forward reference */
  *
  * return true if arg [something] exists; else return false
  */
-static bool
-required_arg(char *arg, char *arg_name)
+static bool required_arg(char *arg, char *arg_name)
 {
 	glctx_t *gcp = &glctx;
 
@@ -108,8 +107,7 @@ required_arg(char *arg, char *arg_name)
  *  size_kmgp() -- convert ascii arg to numeric and scale as requested
  */
 #define KILO_SHIFT 10
-static size_t
-size_kmgp(char *arg)
+static size_t size_kmgp(char *arg)
 {
 	size_t argval;
 	char *next;
@@ -119,7 +117,7 @@ size_kmgp(char *arg)
 		return argval;
 
 	switch (tolower(*next)) {
-	case 'p':	/* pages */
+	case 'p':		/* pages */
 		argval *= glctx.pagesize;
 		break;
 
@@ -142,23 +140,21 @@ size_kmgp(char *arg)
 	return argval;
 }
 
-static size_t
-get_scaled_value(char *args, char *what)
+static size_t get_scaled_value(char *args, char *what)
 {
 	glctx_t *gcp = &glctx;
 	size_t size = size_kmgp(args);
 
 	if (size == BOGUS_SIZE) {
 		fprintf(stderr, "%s:  segment %s must be numeric value"
-		" followed by optional k, m, g or p [pages] scale factor.\n",
+			" followed by optional k, m, g or p [pages] scale factor.\n",
 			gcp->program_name, what);
 	}
 
 	return size;
 }
 
-static int
-get_range(char *args, range_t *range, char **nextarg)
+static int get_range(char *args, range_t * range, char **nextarg)
 {
 
 	if (isdigit(*args)) {
@@ -176,7 +172,8 @@ get_range(char *args, range_t *range, char **nextarg)
 		if (*args != '\0') {
 			args = strtok_r(args, whitespace, &nextarg);
 			if (*args != '*') {
-				range->length = get_scaled_value(args, "length");
+				range->length =
+				    get_scaled_value(args, "length");
 				if (range->length == BOGUS_SIZE)
 					return CMD_ERROR;
 			} else
@@ -189,8 +186,7 @@ get_range(char *args, range_t *range, char **nextarg)
 	return CMD_SUCCESS;
 }
 
-static int
-get_shared(char *args)
+static int get_shared(char *args)
 {
 	glctx_t *gcp = &glctx;
 	int segflag = MAP_PRIVATE;
@@ -212,28 +208,27 @@ get_shared(char *args)
  *	2 = write
  *	0 = neither [error]
  */
-static int
-get_access(char *args)
+static int get_access(char *args)
 {
 	glctx_t *gcp = &glctx;
 	int axcs = 1;
-	int  len = strlen(args);
+	int len = strlen(args);
 
 	if (tolower(*args) == 'w')
 		axcs = 2;
 	else if (len != 0 && tolower(*args) != 'r') {
-		fprintf(stderr, "%s:  segment access must be 'r[ead]' or 'w[rite]'\n",
-			 gcp->program_name);
+		fprintf(stderr,
+			"%s:  segment access must be 'r[ead]' or 'w[rite]'\n",
+			gcp->program_name);
 		return 0;
 	}
 
 	return axcs;
 }
 
-static bool
-numa_supported(void)
+static bool numa_supported(void)
 {
-	glctx_t      *gcp = &glctx;
+	glctx_t *gcp = &glctx;
 
 	if (gcp->numa_max_node <= 0) {
 		fprintf(stderr, "%s:  no NUMA support on this platform\n",
@@ -245,14 +240,14 @@ numa_supported(void)
 
 static struct policies {
 	char *pol_name;
-	int   pol_flag;
-} policies[] =
-{
-	{"default",     MPOL_DEFAULT},
-	{"preferred",   MPOL_PREFERRED},
-	{"bind",        MPOL_BIND},
-	{"interleaved", MPOL_INTERLEAVE},
-	{NULL, -1}
+	int pol_flag;
+} policies[] = {
+	{
+	"default", MPOL_DEFAULT}, {
+	"preferred", MPOL_PREFERRED}, {
+	"bind", MPOL_BIND}, {
+	"interleaved", MPOL_INTERLEAVE}, {
+	NULL, -1}
 };
 
 /*
@@ -262,12 +257,11 @@ static struct policies {
  * <mpol> is one of the policies[] above.
  * '+<flags>' = modifiers to mbind() call.  parsed by get_mbind_flags()
  */
-static int
-get_mbind_policy(char *args, char **nextarg)
+static int get_mbind_policy(char *args, char **nextarg)
 {
 	glctx_t *gcp = &glctx;
 	struct policies *polp;
-	char            *pol;
+	char *pol;
 
 	pol = args;
 	args += strcspn(args, " 	+");
@@ -299,17 +293,16 @@ get_mbind_policy(char *args, char **nextarg)
  *
  * returns flags on success; -1 on error
  */
-static int
-get_mbind_flags(char *args, char **nextarg)
+static int get_mbind_flags(char *args, char **nextarg)
 {
 	glctx_t *gcp = &glctx;
-	char    *arg;
-	int      flags = 0;
+	char *arg;
+	int flags = 0;
 
 	arg = args;
 	args += strcspn(args, " 	+");
 
-	if (strncmp(arg, "move", args-arg))
+	if (strncmp(arg, "move", args - arg))
 		goto flags_err;
 
 	flags = MPOL_MF_MOVE;
@@ -343,13 +336,12 @@ flags_err:
  *
  * N.B., caller must free returned nodemask
  */
-static nodemask_t *
-get_nodemask(char *args)
+static nodemask_t *get_nodemask(char *args)
 {
-	glctx_t    *gcp = &glctx;
-	nodemask_t *nmp = (nodemask_t *)calloc(1, sizeof(nodemask_t));
-	char       *next;
-	int         node;
+	glctx_t *gcp = &glctx;
+	nodemask_t *nmp = (nodemask_t *) calloc(1, sizeof(nodemask_t));
+	char *next;
+	int node;
 	while (*args != '\0') {
 		if (!isdigit(*args)) {
 			fprintf(stderr, "%s:  expected digit for <node/list>\n",
@@ -372,7 +364,7 @@ get_nodemask(char *args)
 		if (*next != ',') {
 			break;
 		}
-		args = next+1;
+		args = next + 1;
 	}
 
 out_err:
@@ -385,15 +377,14 @@ out_err:
  *
  * on success, returns count of id's in list; on error -1
  */
-static int
-get_arg_nodeid_list(char *args, unsigned int *list)
+static int get_arg_nodeid_list(char *args, unsigned int *list)
 {
-	glctx_t    *gcp;
-	char       *next;
-	nodemask_t  my_allowed_nodes;
-	int         node, count = 0;
+	glctx_t *gcp;
+	char *next;
+	nodemask_t my_allowed_nodes;
+	int node, count = 0;
 
-        gcp = &glctx;
+	gcp = &glctx;
 #if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
 	my_allowed_nodes = numa_get_membind_compat();
 #else
@@ -415,7 +406,8 @@ get_arg_nodeid_list(char *args, unsigned int *list)
 		}
 
 		if (!nodemask_isset(&my_allowed_nodes, node)) {
-			fprintf(stderr, "%s:  node %d is not in my allowed node mask\n",
+			fprintf(stderr,
+				"%s:  node %d is not in my allowed node mask\n",
 				gcp->program_name, node);
 			return -1;
 		}
@@ -432,7 +424,7 @@ get_arg_nodeid_list(char *args, unsigned int *list)
 			fprintf(stderr, "%s:  too many node ids in list\n",
 				gcp->program_name);
 		}
-		args = next+1;
+		args = next + 1;
 	}
 
 	return -1;
@@ -443,25 +435,24 @@ get_arg_nodeid_list(char *args, unsigned int *list)
  * current thread's allowed node mask.  return # of nodes in
  * mask.
  */
-static int
-get_current_nodeid_list(unsigned int *fromids)
+static int get_current_nodeid_list(unsigned int *fromids)
 {
 	/*
 	 * FIXME (garrcoop): gcp is unitialized and shortly hereafter used in
 	 * an initialization statement..... UHHHHHHH... test writer fail?
 	 */
-	glctx_t    *gcp;
+	glctx_t *gcp;
 	nodemask_t my_allowed_nodes;
-	int        nr_nodes = 0, max_node = gcp->numa_max_node;
-	int        node;
+	int nr_nodes = 0, max_node = gcp->numa_max_node;
+	int node;
 
-        gcp = &glctx;
+	gcp = &glctx;
 #if defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION == 2
 	my_allowed_nodes = numa_get_membind_compat();
 #else
 	my_allowed_nodes = numa_get_membind();
 #endif
-	for (node=0; node <= max_node; ++node) {
+	for (node = 0; node <= max_node; ++node) {
 		if (nodemask_isset(&my_allowed_nodes, node))
 			*(fromids + nr_nodes++) = node;
 	}
@@ -480,8 +471,7 @@ get_current_nodeid_list(unsigned int *fromids)
  * I don't know what the original intent was for this code.
  */
 #if 0
-static void
-not_implemented()
+static void not_implemented()
 {
 	glctx_t *gcp = &glctx;
 
@@ -493,14 +483,12 @@ not_implemented()
 /*
  * =========================================================================
  */
-static int
-quit(char *args)
+static int quit(char *args)
 {
-	exit(0);	/* let cleanup() do its thing */
+	exit(0);		/* let cleanup() do its thing */
 }
 
-static int
-show_pid(char *args)
+static int show_pid(char *args)
 {
 	glctx_t *gcp = &glctx;
 
@@ -509,8 +497,7 @@ show_pid(char *args)
 	return CMD_SUCCESS;
 }
 
-static int
-pause_me(char *args)
+static int pause_me(char *args)
 {
 	// glctx_t *gcp = &glctx;
 
@@ -520,31 +507,30 @@ pause_me(char *args)
 	return CMD_SUCCESS;
 }
 
-static char *numa_header =
-"  Node  Total Mem[MB]  Free Mem[MB]\n";
-static int
-numa_info(char *args)
+static char *numa_header = "  Node  Total Mem[MB]  Free Mem[MB]\n";
+static int numa_info(char *args)
 {
-	glctx_t      *gcp = &glctx;
+	glctx_t *gcp = &glctx;
 	unsigned int *nodeids;
-	int           nr_nodes, i;
-	bool          do_header = true;
+	int nr_nodes, i;
+	bool do_header = true;
 
 	if (!numa_supported())
 		return CMD_ERROR;
 
-	nodeids   = calloc(gcp->numa_max_node, sizeof(*nodeids));
-	nr_nodes  = get_current_nodeid_list(nodeids);
+	nodeids = calloc(gcp->numa_max_node, sizeof(*nodeids));
+	nr_nodes = get_current_nodeid_list(nodeids);
 	if (nr_nodes < 0)
 		return CMD_ERROR;
 
-	for (i=0; i < nr_nodes; ++i) {
-		int  node = nodeids[i];
+	for (i = 0; i < nr_nodes; ++i) {
+		int node = nodeids[i];
 		long node_size, node_free;
 
 		node_size = numa_node_size(node, &node_free);
 		if (node_size < 0) {
-			fprintf(stderr, "%s:  numa_node_size() failed for node %d\n",
+			fprintf(stderr,
+				"%s:  numa_node_size() failed for node %d\n",
 				gcp->program_name, node);
 			return CMD_ERROR;
 		}
@@ -554,7 +540,7 @@ numa_info(char *args)
 			puts(numa_header);
 		}
 		printf("  %3d  %9ld      %8ld\n", node,
-			 node_size/(1024*1024), node_free/(1024*1024));
+		       node_size / (1024 * 1024), node_free / (1024 * 1024));
 	}
 
 	return CMD_SUCCESS;
@@ -568,21 +554,20 @@ numa_info(char *args)
  * if <from-node-id[s]> omitted, <to-node-id[s]> must be
  * a single node id.
  */
-static int
-migrate_process(char *args)
+static int migrate_process(char *args)
 {
-	glctx_t       *gcp = &glctx;
-	unsigned int  *fromids, *toids;
-	char          *idlist, *nextarg;
+	glctx_t *gcp = &glctx;
+	unsigned int *fromids, *toids;
+	char *idlist, *nextarg;
 	struct timeval t_start, t_end;
-	int            nr_to, nr_from;
-	int            nr_migrated;
-	int            ret = CMD_ERROR;
+	int nr_to, nr_from;
+	int nr_migrated;
+	int ret = CMD_ERROR;
 
 	if (!numa_supported())
 		return CMD_ERROR;
 
-	toids   = calloc(gcp->numa_max_node, sizeof(*toids));
+	toids = calloc(gcp->numa_max_node, sizeof(*toids));
 	fromids = calloc(gcp->numa_max_node, sizeof(*fromids));
 
 	/*
@@ -605,7 +590,8 @@ migrate_process(char *args)
 		if (nr_from <= 0)
 			goto out_free;
 		if (nr_from != nr_to) {
-			fprintf(stderr, "%s:  # of 'from' ids must = # of 'to' ids\n",
+			fprintf(stderr,
+				"%s:  # of 'from' ids must = # of 'to' ids\n",
 				gcp->program_name);
 			goto out_free;
 		}
@@ -630,10 +616,10 @@ migrate_process(char *args)
 		 * remove 'to' node from 'from' list.  to and from
 		 * lists can't intersect.
 		 */
-		for (i = nr_from-1; i >= 0; --i) {
+		for (i = nr_from - 1; i >= 0; --i) {
 			if (*toids == *(fromids + i)) {
 				while (i <= nr_from) {
-					*(fromids + i) = *(fromids + i+1);
+					*(fromids + i) = *(fromids + i + 1);
 					++i;
 				}
 				--nr_from;
@@ -649,7 +635,8 @@ migrate_process(char *args)
 	}
 
 	gettimeofday(&t_start, NULL);
-	nr_migrated = syscall(__NR_migrate_pages, getpid(), nr_from, fromids, toids);
+	nr_migrated =
+	    syscall(__NR_migrate_pages, getpid(), nr_from, fromids, toids);
 	if (nr_migrated < 0) {
 		int err = errno;
 		fprintf(stderr, "%s: migrate_pages failed - %s\n",
@@ -658,8 +645,8 @@ migrate_process(char *args)
 	}
 	gettimeofday(&t_end, NULL);
 	printf("%s:  migrated %d pages in %6.3fsecs\n",
-		gcp->program_name, nr_migrated,
-		(float)(tv_diff_usec(&t_start, &t_end))/1000000.0);
+	       gcp->program_name, nr_migrated,
+	       (float)(tv_diff_usec(&t_start, &t_end)) / 1000000.0);
 	ret = CMD_SUCCESS;
 
 out_free:
@@ -668,8 +655,7 @@ out_free:
 	return ret;
 }
 
-static int
-show_seg(char *args)
+static int show_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
@@ -688,14 +674,13 @@ show_seg(char *args)
 /*
  * anon_seg:  <seg-name> <size>[kmgp] [private|shared]
  */
-static int
-anon_seg(char *args)
+static int anon_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
-	char    *segname, *nextarg;
-	range_t  range = { 0L, 0L };
-	int      segflag = 0;
+	char *segname, *nextarg;
+	range_t range = { 0L, 0L };
+	int segflag = 0;
 
 	args += strspn(args, whitespace);
 
@@ -727,14 +712,13 @@ anon_seg(char *args)
 /*
  * file_seg:  <path-name> [<offset>[kmgp] <length>[kmgp]  [private|shared]]
  */
-static int
-file_seg(char *args)
+static int file_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
 	char *pathname, *nextarg;
 	range_t range = { 0L, 0L };
-	int  segflag = MAP_PRIVATE;
+	int segflag = MAP_PRIVATE;
 
 	args += strspn(args, whitespace);
 
@@ -765,8 +749,7 @@ file_seg(char *args)
 /*
  * remove_seg:  <seg-name> [<seg-name> ...]
  */
-static int
-remove_seg(char *args)
+static int remove_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
@@ -788,8 +771,7 @@ remove_seg(char *args)
 /*
  * touch_seg:  <seg-name> [<offset> <length>] [read|write]
  */
-static int
-touch_seg(char *args)
+static int touch_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
@@ -814,7 +796,7 @@ touch_seg(char *args)
 	if (axcs == 0)
 		return CMD_ERROR;
 
-	if (!segment_touch(segname, &range, axcs-1))
+	if (!segment_touch(segname, &range, axcs - 1))
 		return CMD_ERROR;
 
 	return CMD_SUCCESS;
@@ -823,8 +805,7 @@ touch_seg(char *args)
 /*
  * unmap <seg-name> - unmap specified segment, but remember name/size/...
  */
-static int
-unmap_seg(char *args)
+static int unmap_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 	char *segname, *nextarg;
@@ -844,15 +825,14 @@ unmap_seg(char *args)
 /*
  * map <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>]
  */
-static int
-map_seg(char *args)
+static int map_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
-	char    *segname, *nextarg;
-	range_t  range = { 0L, 0L };
+	char *segname, *nextarg;
+	range_t range = { 0L, 0L };
 	range_t *rangep = NULL;
-	int      segflag = MAP_PRIVATE;
+	int segflag = MAP_PRIVATE;
 
 	args += strspn(args, whitespace);
 	if (!required_arg(args, "<seg-name>"))
@@ -885,16 +865,15 @@ map_seg(char *args)
 /*
  * mbind <seg-name> [<offset>[kmgp] <length>[kmgp]] <policy> <node-list>
  */
-static int
-mbind_seg(char *args)
+static int mbind_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
-	char       *segname, *nextarg;
-	range_t     range = { 0L, 0L };
+	char *segname, *nextarg;
+	range_t range = { 0L, 0L };
 	nodemask_t *nodemask = NULL;
-	int         policy, flags = 0;
-	int         ret;
+	int policy, flags = 0;
+	int ret;
 
 	if (!numa_supported())
 		return CMD_ERROR;
@@ -935,7 +914,7 @@ mbind_seg(char *args)
 	}
 
 	ret = CMD_SUCCESS;
-#if 1	// for testing
+#if 1				// for testing
 	if (!segment_mbind(segname, &range, policy, nodemask, flags))
 		ret = CMD_ERROR;
 #endif
@@ -949,8 +928,7 @@ mbind_seg(char *args)
  *  shmem_seg - create [shmget] and register a SysV shared memory segment
  *              of specified size
  */
-static int
-shmem_seg(char *args)
+static int shmem_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
@@ -987,14 +965,13 @@ shmem_seg(char *args)
  * rather than the entire segment.  Suitable for a "quick look" at where
  * segment resides.
  */
-static int
-where_seg(char *args)
+static int where_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
 
-	char  *segname, *nextarg;
+	char *segname, *nextarg;
 	range_t range = { 0L, 0L };
-	int    ret;
+	int ret;
 
 	if (!numa_supported())
 		return CMD_ERROR;
@@ -1020,8 +997,7 @@ where_seg(char *args)
 }
 
 #if 0
-static int
-command(char *args)
+static int command(char *args)
 {
 	glctx_t *gcp = &glctx;
 
@@ -1032,173 +1008,106 @@ command(char *args)
 /*
  * =========================================================================
  */
-typedef int (*cmd_func_t)(char *);
+typedef int (*cmd_func_t) (char *);
 
 struct command {
-	char       *cmd_name;
-	cmd_func_t  cmd_func;    /* */
-	char       *cmd_help;
+	char *cmd_name;
+	cmd_func_t cmd_func;	/* */
+	char *cmd_help;
 
 } cmd_table[] = {
 	{
-		.cmd_name="quit",
-		.cmd_func=quit,
-		.cmd_help=
-			"quit           - just what you think\n"
-			"\tEOF on stdin has the same effect\n"
-	},
+	.cmd_name = "quit",.cmd_func = quit,.cmd_help =
+		    "quit           - just what you think\n"
+		    "\tEOF on stdin has the same effect\n"}, {
+	.cmd_name = "help",.cmd_func = help_me,.cmd_help =
+		    "help           - show this help\n"
+		    "help <command> - display help for just <command>\n"}, {
+	.cmd_name = "pid",.cmd_func = show_pid,.cmd_help =
+		    "pid            - show process id of this session\n"}, {
+	.cmd_name = "pause",.cmd_func = pause_me,.cmd_help =
+		    "pause          - pause program until signal"
+		    " -- e.g., INT, USR1\n"}, {
+	.cmd_name = "numa",.cmd_func = numa_info,.cmd_help =
+		    "numa          - display numa info as seen by this program.\n"
+		    "\tshows nodes from which program may allocate memory\n"
+		    "\twith total and free memory.\n"}, {
+	.cmd_name = "migrate",.cmd_func = migrate_process,.cmd_help =
+		    "migrate <to-node-id[s]> [<from-node-id[s]>] - \n"
+		    "\tmigrate this process' memory from <from-node-id[s]>\n"
+		    "\tto <to-node-id[s]>.  Specify multiple node ids as a\n"
+		    "\tcomma-separated list. TODO - more info\n"}, {
+	.cmd_name = "show",.cmd_func = show_seg,.cmd_help =
+		    "show [<name>]  - show info for segment[s]; default all\n"},
 	{
-		.cmd_name="help",
-		.cmd_func=help_me,
-		.cmd_help=
-			"help           - show this help\n"
-			"help <command> - display help for just <command>\n"
-	},
+	.cmd_name = "anon",.cmd_func = anon_seg,.cmd_help =
+		    "anon <seg-name> <seg-size>[k|m|g|p] [<seg-share>] -\n"
+		    "\tdefine a MAP_ANONYMOUS segment of specified size\n"
+		    "\t<seg-share> := private|shared - default = private\n"}, {
+	.cmd_name = "file",.cmd_func = file_seg,.cmd_help =
+		    "file <pathname> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] -\n"
+		    "\tdefine a mapped file segment of specified length starting at the\n"
+		    "\tspecified offset into the file.  <offset> and <length> may be\n"
+		    "\tomitted and specified on the map command.\n"
+		    "\t<seg-share> := private|shared - default = private\n"}, {
+	.cmd_name = "shm",.cmd_func = shmem_seg,.cmd_help =
+		    "shm <seg-name> <seg-size>[k|m|g|p] - \n"
+		    "\tdefine a shared memory segment of specified size.\n"
+		    "\tYou may need to increase limits [/proc/sys/kernel/shmmax].\n"
+		    "\tUse map/unmap to attach/detach\n"}, {
+	.cmd_name = "remove",.cmd_func = remove_seg,.cmd_help =
+		    "remove <seg-name> [<seg-name> ...] - remove the named segment[s]\n"},
 	{
-		.cmd_name="pid",
-		.cmd_func=show_pid,
-		.cmd_help=
-			"pid            - show process id of this session\n"
-	},
+	.cmd_name = "map",.cmd_func = map_seg,.cmd_help =
+		    "map <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] - \n"
+		    "\tmmap()/shmat() a previously defined, currently unmapped() segment.\n"
+		    "\t<offset> and <length> apply only to mapped files.\n"
+		    "\tUse <length> of '*' or '0' to map to the end of the file.\n"},
 	{
-		.cmd_name="pause",
-		.cmd_func=pause_me,
-		.cmd_help=
-			"pause          - pause program until signal"
-			" -- e.g., INT, USR1\n"
-	},
+	.cmd_name = "unmap",.cmd_func = unmap_seg,.cmd_help =
+		    "unmap <seg-name> - unmap specified segment, but remember name/size/...\n"},
 	{
-		.cmd_name="numa",
-		.cmd_func=numa_info,
-		.cmd_help=
-			"numa          - display numa info as seen by this program.\n"
-			"\tshows nodes from which program may allocate memory\n"
-			"\twith total and free memory.\n"
-	},
+	.cmd_name = "touch",.cmd_func = touch_seg,.cmd_help =
+		    "touch <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [read|write] - \n"
+		    "\tread [default] or write the named segment from <offset> through\n"
+		    "\t<offset>+<length>.  If <offset> and <length> omitted, touches all\n"
+		    "\t of mapped segment.\n"}, {
+	.cmd_name = "mbind",.cmd_func = mbind_seg,.cmd_help =
+		    "mbind <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]]\n"
+		    "      <policy>[+move[+wait]] [<node/list>] - \n"
+		    "\tset the numa policy for the specified range of the name segment\n"
+		    "\tto policy --  one of {default, bind, preferred, interleaved}.\n"
+		    "\t<node/list> specifies a node id or a comma separated list of\n"
+		    "\tnode ids.  <node> is ignored for 'default' policy, and only\n"
+		    "\tthe first node is used for 'preferred' policy.\n"
+		    "\t'+move' specifies that currently allocated pages be prepared\n"
+		    "\t        for migration on next touch\n"
+		    "\t'+wait' [valid only with +move] specifies that pages mbind()\n"
+		    "          touch the pages and wait for migration before returning.\n"},
 	{
-		.cmd_name="migrate",
-		.cmd_func=migrate_process,
-		.cmd_help=
-			"migrate <to-node-id[s]> [<from-node-id[s]>] - \n"
-			"\tmigrate this process' memory from <from-node-id[s]>\n"
-			"\tto <to-node-id[s]>.  Specify multiple node ids as a\n"
-			"\tcomma-separated list. TODO - more info\n"
-	},
-
+	.cmd_name = "where",.cmd_func = where_seg,.cmd_help =
+		    "where <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] - \n"
+		    "\tshow the node location of pages in the specified range\n"
+		    "\tof the specified segment.  <offset> defaults to start of\n"
+		    "\tsegment; <length> defaults to 64 pages.\n"},
+#if 0				/* template for new commands */
 	{
-		.cmd_name="show",
-		.cmd_func=show_seg,
-		.cmd_help=
-			"show [<name>]  - show info for segment[s]; default all\n"
-	},
-	{
-		.cmd_name="anon",
-		.cmd_func=anon_seg,
-		.cmd_help=
-			"anon <seg-name> <seg-size>[k|m|g|p] [<seg-share>] -\n"
-			"\tdefine a MAP_ANONYMOUS segment of specified size\n"
-			"\t<seg-share> := private|shared - default = private\n"
-	},
-	{
-		.cmd_name="file",
-		.cmd_func=file_seg,
-		.cmd_help=
-			"file <pathname> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] -\n"
-			"\tdefine a mapped file segment of specified length starting at the\n"
-			"\tspecified offset into the file.  <offset> and <length> may be\n"
-			"\tomitted and specified on the map command.\n"
-			"\t<seg-share> := private|shared - default = private\n"
-	},
-	{
-		.cmd_name="shm",
-		.cmd_func=shmem_seg,
-		.cmd_help=
-			"shm <seg-name> <seg-size>[k|m|g|p] - \n"
-			"\tdefine a shared memory segment of specified size.\n"
-			"\tYou may need to increase limits [/proc/sys/kernel/shmmax].\n"
-			"\tUse map/unmap to attach/detach\n"
-	},
-	{
-		.cmd_name="remove",
-		.cmd_func=remove_seg,
-		.cmd_help=
-			"remove <seg-name> [<seg-name> ...] - remove the named segment[s]\n"
-
-	},
-
-	{
-		.cmd_name="map",
-		.cmd_func=map_seg,
-		.cmd_help=
-			"map <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] - \n"
-			"\tmmap()/shmat() a previously defined, currently unmapped() segment.\n"
-			"\t<offset> and <length> apply only to mapped files.\n"
-			"\tUse <length> of '*' or '0' to map to the end of the file.\n"
-	},
-	{
-		.cmd_name="unmap",
-		.cmd_func=unmap_seg,
-		.cmd_help=
-			"unmap <seg-name> - unmap specified segment, but remember name/size/...\n"
-	},
-	{
-		.cmd_name="touch",
-		.cmd_func=touch_seg,
-		.cmd_help=
-			"touch <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [read|write] - \n"
-			"\tread [default] or write the named segment from <offset> through\n"
-			"\t<offset>+<length>.  If <offset> and <length> omitted, touches all\n"
-			"\t of mapped segment.\n"
-	},
-	{
-		.cmd_name="mbind",
-		.cmd_func=mbind_seg,
-		.cmd_help=
-			"mbind <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]]\n"
-			"      <policy>[+move[+wait]] [<node/list>] - \n"
-			"\tset the numa policy for the specified range of the name segment\n"
-			"\tto policy --  one of {default, bind, preferred, interleaved}.\n"
-			"\t<node/list> specifies a node id or a comma separated list of\n"
-			"\tnode ids.  <node> is ignored for 'default' policy, and only\n"
-			"\tthe first node is used for 'preferred' policy.\n"
-			"\t'+move' specifies that currently allocated pages be prepared\n"
-			"\t        for migration on next touch\n"
-			"\t'+wait' [valid only with +move] specifies that pages mbind()\n"
-			"          touch the pages and wait for migration before returning.\n"
-	},
-	{
-		.cmd_name="where",
-		.cmd_func=where_seg,
-		.cmd_help=
-			"where <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] - \n"
-			"\tshow the node location of pages in the specified range\n"
-			"\tof the specified segment.  <offset> defaults to start of\n"
-			"\tsegment; <length> defaults to 64 pages.\n"
-	},
-
-#if 0 /* template for new commands */
-	{
-		.cmd_name="",
-		.cmd_func= ,
-		.cmd_help=
-	},
+	.cmd_name = "",.cmd_func =,.cmd_help =},
 #endif
 	{
-		.cmd_name=NULL
-	}
+	.cmd_name = NULL}
 };
 
-static int
-help_me(char *args)
+static int help_me(char *args)
 {
 	struct command *cmdp = cmd_table;
 	char *cmd, *nextarg;
-	int   cmdlen;
-	bool  match = false;
+	int cmdlen;
+	bool match = false;
 
 	args += strspn(args, whitespace);
 	if (*args != '\0') {
-		cmd    = strtok_r(args, whitespace, &nextarg);
+		cmd = strtok_r(args, whitespace, &nextarg);
 		cmdlen = strlen(cmd);
 	} else {
 		cmd = NULL;
@@ -1206,8 +1115,7 @@ help_me(char *args)
 	}
 
 	for (cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
-		if (cmd == NULL ||
-				!strncmp(cmd, cmdp->cmd_name, cmdlen)) {
+		if (cmd == NULL || !strncmp(cmd, cmdp->cmd_name, cmdlen)) {
 			printf("%s\n", cmdp->cmd_help);
 			match = true;
 		}
@@ -1227,8 +1135,7 @@ help_me(char *args)
  */
 #define CMDBUFSZ 256
 
-static bool
-unique_abbrev(char *cmd, size_t clen, struct command *cmdp)
+static bool unique_abbrev(char *cmd, size_t clen, struct command *cmdp)
 {
 	for (; cmdp->cmd_name != NULL; ++cmdp) {
 		if (!strncmp(cmd, cmdp->cmd_name, clen))
@@ -1237,8 +1144,7 @@ unique_abbrev(char *cmd, size_t clen, struct command *cmdp)
 	return true;
 }
 
-static int
-parse_command(char *cmdline)
+static int parse_command(char *cmdline)
 {
 	glctx_t *gcp = &glctx;
 	char *cmd, *args;
@@ -1254,7 +1160,7 @@ parse_command(char *cmdline)
 
 		if (strncmp(cmd, cmdp->cmd_name, clen))
 			continue;
-		if (!unique_abbrev(cmd, clen, cmdp+1)) {
+		if (!unique_abbrev(cmd, clen, cmdp + 1)) {
 			fprintf(stderr, "%s:  ambiguous command:  %s\n",
 				gcp->program_name, cmd);
 			return CMD_ERROR;
@@ -1265,20 +1171,18 @@ parse_command(char *cmdline)
 		return ret;
 	}
 
-	fprintf(stderr, "%s:  unrecognized command %s\n",
-		__FUNCTION__, cmd);
+	fprintf(stderr, "%s:  unrecognized command %s\n", __FUNCTION__, cmd);
 	return CMD_ERROR;
 }
 
-void
-process_commands()
+void process_commands()
 {
 	glctx_t *gcp = &glctx;
 
 	char cmdbuf[CMDBUFSZ];
 
 	do {
-		char  *cmdline;
+		char *cmdline;
 		size_t cmdlen;
 
 		if (is_option(INTERACTIVE))
@@ -1287,8 +1191,8 @@ process_commands()
 		cmdline = fgets(cmdbuf, CMDBUFSZ, stdin);
 		if (cmdline == NULL) {
 			printf("%s\n",
-				 is_option(INTERACTIVE) ? "" : "EOF on stdin");
-			exit(0);		/* EOF */
+			       is_option(INTERACTIVE) ? "" : "EOF on stdin");
+			exit(0);	/* EOF */
 		}
 		if (cmdline[0] == '\n')
 			continue;
@@ -1297,11 +1201,11 @@ process_commands()
 		 * trim trailing newline, if any
 		 */
 		cmdlen = strlen(cmdline);
-		if (cmdline[cmdlen-1] == '\n')
+		if (cmdline[cmdlen - 1] == '\n')
 			cmdline[--cmdlen] = '\0';
 
 		cmdline += strspn(cmdline, whitespace);
-		cmdlen  -= (cmdline - cmdbuf);
+		cmdlen -= (cmdline - cmdbuf);
 
 		if (cmdlen == 0) {
 			//TODO:  interactive help?
@@ -1314,7 +1218,7 @@ process_commands()
 		/*
 		 * trim trailing whitespace for ease of parsing
 		 */
-		while (strchr(whitespace, cmdline[cmdlen-1]))
+		while (strchr(whitespace, cmdline[cmdlen - 1]))
 			cmdline[--cmdlen] = '\0';
 
 		if (cmdlen == 0)
@@ -1326,7 +1230,7 @@ process_commands()
 		 */
 		if (signalled(gcp)) {
 			if (!is_option(INTERACTIVE) &&
-			   gcp->siginfo->si_signo == SIGQUIT)
+			    gcp->siginfo->si_signo == SIGQUIT)
 				exit(0);
 			reset_signal();
 		}

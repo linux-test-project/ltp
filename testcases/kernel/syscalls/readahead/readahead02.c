@@ -49,20 +49,20 @@
 #include "linux_syscall_numbers.h"
 
 char *TCID = "readahead02";
-int  TST_TOTAL = 1;
+int TST_TOTAL = 1;
 
 #if defined(__NR_readahead)
 static const char testfile[] = "testfile";
 static const char drop_caches_fname[] = "/proc/sys/vm/drop_caches";
 static const char meminfo_fname[] = "/proc/meminfo";
-static size_t testfile_size = 64*1024*1024;
+static size_t testfile_size = 64 * 1024 * 1024;
 static int opt_fsize;
 static char *opt_fsizestr;
 static int pagesize;
 
 option_t options[] = {
-	{ "s:", &opt_fsize, &opt_fsizestr},
-	{ NULL, NULL, NULL }
+	{"s:", &opt_fsize, &opt_fsizestr},
+	{NULL, NULL, NULL}
 };
 
 static void setup(void);
@@ -77,12 +77,12 @@ static int check_ret(long expected_ret)
 {
 	if (expected_ret == TEST_RETURN) {
 		tst_resm(TPASS, "expected ret success - "
-			"returned value = %ld", TEST_RETURN);
+			 "returned value = %ld", TEST_RETURN);
 		return 0;
 	}
 	tst_resm(TFAIL, "unexpected failure - "
-			"returned value = %ld, expected: %ld",
-			TEST_RETURN, expected_ret);
+		 "returned value = %ld, expected: %ld",
+		 TEST_RETURN, expected_ret);
 	return 1;
 }
 
@@ -95,11 +95,11 @@ static int has_file(const char *fname, int required)
 		if (errno == ENOENT)
 			if (required)
 				tst_brkm(TCONF, cleanup, "%s not available",
-					fname);
+					 fname);
 			else
 				return 0;
 		else
-			tst_brkm(TBROK|TERRNO, cleanup, "stat %s", fname);
+			tst_brkm(TBROK | TERRNO, cleanup, "stat %s", fname);
 	}
 	return 1;
 }
@@ -169,15 +169,15 @@ static void create_testfile(void)
 	f = fopen(testfile, "w");
 	if (!f) {
 		free(tmp);
-		tst_brkm(TBROK|TERRNO, cleanup, "Failed to create %s",
-			testfile);
+		tst_brkm(TBROK | TERRNO, cleanup, "Failed to create %s",
+			 testfile);
 	}
 
 	for (i = 0; i < testfile_size; i += pagesize)
 		if (fwrite(tmp, pagesize, 1, f) < 1) {
 			free(tmp);
 			tst_brkm(TBROK, cleanup, "Failed to create %s",
-				testfile);
+				 testfile);
 		}
 	fflush(f);
 	fsync(fileno(f));
@@ -197,7 +197,7 @@ static void create_testfile(void)
  * @cached: returns cached kB from /proc/meminfo
  */
 static void read_testfile(int do_readahead, const char *fname, size_t fsize,
-	long *read_bytes, long *usec, long *cached)
+			  long *read_bytes, long *usec, long *cached)
 {
 	int fd, i;
 	long read_bytes_start;
@@ -208,18 +208,17 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 
 	fd = open(fname, O_RDONLY);
 	if (fd < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "Failed to open %s",
-			fname);
+		tst_brkm(TBROK | TERRNO, cleanup, "Failed to open %s", fname);
 
 	if (do_readahead) {
-		TEST(syscall(__NR_readahead, fd, (off64_t)0, (size_t)fsize));
+		TEST(syscall(__NR_readahead, fd, (off64_t) 0, (size_t) fsize));
 		check_ret(0);
 		*cached = get_cached_size();
 
 		/* offset of file shouldn't change after readahead */
 		offset = lseek(fd, 0, SEEK_CUR);
-		if (offset == (off_t) -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "lseek failed");
+		if (offset == (off_t) - 1)
+			tst_brkm(TBROK | TERRNO, cleanup, "lseek failed");
 		if (offset == 0)
 			tst_resm(TPASS, "offset is still at 0 as expected");
 		else
@@ -227,13 +226,13 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 	}
 
 	if (gettimeofday(&now, NULL) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "gettimeofday failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "gettimeofday failed");
 	time_start_usec = now.tv_sec * 1000000 + now.tv_usec;
 	read_bytes_start = get_bytes_read();
 
-	p = mmap(NULL, fsize, PROT_READ, MAP_SHARED|MAP_POPULATE, fd, 0);
+	p = mmap(NULL, fsize, PROT_READ, MAP_SHARED | MAP_POPULATE, fd, 0);
 	if (p == MAP_FAILED)
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 
 	/* for old kernels, where MAP_POPULATE doesn't work, touch each page */
 	tmp = 0;
@@ -247,16 +246,16 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 		*cached = get_cached_size();
 
 	if (munmap(p, fsize) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "munmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "munmap failed");
 
 	*read_bytes = get_bytes_read() - read_bytes_start;
 	if (gettimeofday(&now, NULL) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "gettimeofday failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "gettimeofday failed");
 	time_end_usec = now.tv_sec * 1000000 + now.tv_usec;
 	*usec = time_end_usec - time_start_usec;
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "close failed");
 }
 
 static void test_readahead(void)
@@ -268,8 +267,7 @@ static void test_readahead(void)
 	sprintf(proc_io_fname, "/proc/%u/io", getpid());
 
 	/* find out how much can cache hold if we read whole file */
-	read_testfile(0, testfile, testfile_size, &read_bytes,
-		&usec, &cached);
+	read_testfile(0, testfile, testfile_size, &read_bytes, &usec, &cached);
 	cached_max = get_cached_size();
 	sync();
 	drop_caches();
@@ -277,8 +275,7 @@ static void test_readahead(void)
 	cached_max = cached_max - cached_low;
 
 	tst_resm(TINFO, "read_testfile(0)");
-	read_testfile(0, testfile, testfile_size, &read_bytes,
-		&usec, &cached);
+	read_testfile(0, testfile, testfile_size, &read_bytes, &usec, &cached);
 	cached = cached - cached_low;
 
 	sync();
@@ -286,16 +283,15 @@ static void test_readahead(void)
 	cached_low = get_cached_size();
 	tst_resm(TINFO, "read_testfile(1)");
 	read_testfile(1, testfile, testfile_size, &read_bytes_ra,
-		&usec_ra, &cached_ra);
+		      &usec_ra, &cached_ra);
 	cached_ra = cached_ra - cached_low;
 
 	tst_resm(TINFO, "read_testfile(0) took: %ld usec", usec);
 	tst_resm(TINFO, "read_testfile(1) took: %ld usec", usec_ra);
 	if (has_file(proc_io_fname, 0)) {
-		tst_resm(TINFO, "read_testfile(0) read: %ld bytes",
-				read_bytes);
+		tst_resm(TINFO, "read_testfile(0) read: %ld bytes", read_bytes);
 		tst_resm(TINFO, "read_testfile(1) read: %ld bytes",
-				read_bytes_ra);
+			 read_bytes_ra);
 		/* actual number of read bytes depends on total RAM */
 		if (read_bytes_ra < read_bytes)
 			tst_resm(TPASS, "readahead saved some I/O");
@@ -303,25 +299,25 @@ static void test_readahead(void)
 			tst_resm(TFAIL, "readahead failed to save any I/O");
 	} else {
 		tst_resm(TCONF, "Your system doesn't have /proc/pid/io,"
-			" unable to determine read bytes during test");
+			 " unable to determine read bytes during test");
 	}
 
 	tst_resm(TINFO, "cache can hold at least: %ld kB", cached_max);
 	tst_resm(TINFO, "read_testfile(0) used cache: %ld kB", cached);
 	tst_resm(TINFO, "read_testfile(1) used cache: %ld kB", cached_ra);
 
-	if (cached_max*1024 >= testfile_size) {
+	if (cached_max * 1024 >= testfile_size) {
 		/*
 		 * if cache can hold ~testfile_size then cache increase
 		 * for readahead should be at least testfile_size/2
 		 */
-		if (cached_ra*1024 > testfile_size/2)
+		if (cached_ra * 1024 > testfile_size / 2)
 			tst_resm(TPASS, "using cache as expected");
 		else
 			tst_resm(TWARN, "using less cache than expected");
 	} else {
 		tst_resm(TCONF, "Page cache on your system is too small "
-				"to hold whole testfile.");
+			 "to hold whole testfile.");
 	}
 }
 

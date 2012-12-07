@@ -69,15 +69,15 @@
 #ifdef _LINUX_
 typedef unsigned long ulong_t;
 //#include <sys/except.h>
-# ifndef PAGE_SIZE
-#  define PAGE_SIZE 0x400
-# endif
-# ifndef SIGDANGER
-#  define SIGDANGER 4
-# endif
+#ifndef PAGE_SIZE
+#define PAGE_SIZE 0x400
+#endif
+#ifndef SIGDANGER
+#define SIGDANGER 4
+#endif
 #else
-# include <sys/m_except.h>
-# include <sys/machine.h>
+#include <sys/m_except.h>
+#include <sys/machine.h>
 #endif
 
 #ifdef _IA64
@@ -116,15 +116,15 @@ typedef unsigned long ulong_t;
  * sys_error (): System error message function
  * error (): Error message function
  */
-static int mkemptyfile (uint);
-static void parse_args (int, char **);
-static void cleanup (int);
-static void setup_signal_handlers ();
-static void int_handler (int signal);
-static void segv_handler (int signal, int code, struct sigcontext *scp);
-static void bus_handler (int signal, int code, struct sigcontext *scp);
-static void sys_error (const char *, int);
-static void error (const char *, int);
+static int mkemptyfile(uint);
+static void parse_args(int, char **);
+static void cleanup(int);
+static void setup_signal_handlers();
+static void int_handler(int signal);
+static void segv_handler(int signal, int code, struct sigcontext *scp);
+static void bus_handler(int signal, int code, struct sigcontext *scp);
+static void sys_error(const char *, int);
+static void error(const char *, int);
 
 /*
  * Global variables
@@ -135,16 +135,16 @@ static void error (const char *, int);
  * nprocs:
  * childpid:
  */
-static int bflg,lflg,mflg,pflg = 0;
-static int Fflg,Mflg,Vflg,Wflg = 0;
-char	*filename;
-int	fd;
-int	nprocs;
-int	childpid [MAXPROCS];
+static int bflg, lflg, mflg, pflg = 0;
+static int Fflg, Mflg, Vflg, Wflg = 0;
+char *filename;
+int fd;
+int nprocs;
+int childpid[MAXPROCS];
 
-int	nloops, objtype, pgspblks;
-pid_t	parent_pid;
-size_t	length;
+int nloops, objtype, pgspblks;
+pid_t parent_pid;
+size_t length;
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -157,7 +157,7 @@ size_t	length;
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	caddr_t region;
 	int *wptr;
@@ -172,24 +172,25 @@ int main (int argc, char **argv)
 	/*
 	 * Parse command line arguments and print out program header
 	 */
-	parse_args (argc, argv);
-	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
+	parse_args(argc, argv);
+	printf("%s: IPC Shared Memory TestSuite program\n", *argv);
 
-	setup_signal_handlers ();
-	parent_pid = getpid ();
+	setup_signal_handlers();
+	parent_pid = getpid();
 
 	/*
 	 * Show options in effect.
 	 */
-	printf ("\n\tObject type to map = %s\n",
-			 (objtype == MEMOBJ) ? "Anonymous memory" : "File");
-	printf ("\tNumber of loops    = %d\n", nloops);
-	printf ("\tNumber of procs    = %d\n", nprocs);
-	printf ("\tBytes per process  = %ld (%ldMB)\n", (long)length, (long)length/MB);
+	printf("\n\tObject type to map = %s\n",
+	       (objtype == MEMOBJ) ? "Anonymous memory" : "File");
+	printf("\tNumber of loops    = %d\n", nloops);
+	printf("\tNumber of procs    = %d\n", nprocs);
+	printf("\tBytes per process  = %ld (%ldMB)\n", (long)length,
+	       (long)length / MB);
 
 	/*
 	 * Determine the number of words for that size.
- 	 */
+	 */
 	nwords = length / sizeof(int);
 
 	/*
@@ -207,9 +208,9 @@ int main (int argc, char **argv)
 	 * Map the object with the specified flags.
 	 */
 	if ((region = mmap(0, length, PROT_READ | PROT_WRITE,
-				map_flags | MAP_SHARED, fd, 0))
-		 == MAP_FAILED) {
-		sys_error ("mmap failed", __LINE__);
+			   map_flags | MAP_SHARED, fd, 0))
+	    == MAP_FAILED) {
+		sys_error("mmap failed", __LINE__);
 	}
 
 	/*
@@ -219,8 +220,8 @@ int main (int argc, char **argv)
 		/*
 		 * Child leaves loop, parent continues to fork.
 		 */
-		if ((pid = fork()) < (pid_t)0) {
-			sys_error ("fork failed\n", __LINE__);
+		if ((pid = fork()) < (pid_t) 0) {
+			sys_error("fork failed\n", __LINE__);
 		} else if (pid == 0)
 			break;
 		else
@@ -232,82 +233,89 @@ int main (int argc, char **argv)
 	/*
 	 * Initialize each word in the region with a unique value.
 	 */
-        checksum = 0;
-        for (word = 0, wptr = (int *)region; word < nwords; word++, wptr++) {
+	checksum = 0;
+	for (word = 0, wptr = (int *)region; word < nwords; word++, wptr++) {
 		if (Vflg) {
 			if (word && word % WPERMB == 0)
-				printf ("\t[%d] %ldMB initialized...\n",
-					pid, (long)word/WPERMB);
+				printf("\t[%d] %ldMB initialized...\n",
+				       pid, (long)word / WPERMB);
 		}
 		*wptr = word;
-                checksum += word;
-        }
+		checksum += word;
+	}
 	if (Vflg) {
-		printf ("\t[%d] checksum = %d\n", pid, checksum);
+		printf("\t[%d] checksum = %d\n", pid, checksum);
 	}
 
 	for (loop = 1; loop <= nloops; loop++) {
 
-	/*
-	 * Read back each word in the region and check its value.
-	 */
-        checksum2 = 0;
-        last = -1;
-        for (word = 0, wptr = (int *)region; word < nwords; word++, wptr++) {
-		if (Vflg) {
-			if (word && word % WPERMB == 0)
-				printf ("\t[%d][%d] %ldMB verified...\n", pid, loop,
-					(long)word/WPERMB);
-		}
-                if (*wptr != word) {
-                        addr = ((intptr_t)wptr & 0x0fffffff)/4096;
-                        if (addr != last) {
-                                last = addr;
-				if (Vflg) {
-					printf ("\t[%d][%d] page in error at addr = %d\n",
-						pid, loop, addr);
-				}
-                        }
+		/*
+		 * Read back each word in the region and check its value.
+		 */
+		checksum2 = 0;
+		last = -1;
+		for (word = 0, wptr = (int *)region; word < nwords;
+		     word++, wptr++) {
 			if (Vflg) {
-				printf ("\t[%d][%d] Word = %d, Value = %d\n",
-					pid, loop, word, *wptr);
+				if (word && word % WPERMB == 0)
+					printf("\t[%d][%d] %ldMB verified...\n",
+					       pid, loop, (long)word / WPERMB);
 			}
-                }
-                checksum2 += *wptr;
-        }
-	if (Vflg) {
-		printf ("\t[%d][%d] checksum2 = %d\n", pid, loop, checksum2);
-	}
-
-	if (checksum2 == checksum) {
-		if (Vflg) {
-			printf ("\t[%d][%d] Check sums compare\n", pid, loop);
+			if (*wptr != word) {
+				addr = ((intptr_t) wptr & 0x0fffffff) / 4096;
+				if (addr != last) {
+					last = addr;
+					if (Vflg) {
+						printf
+						    ("\t[%d][%d] page in error at addr = %d\n",
+						     pid, loop, addr);
+					}
+				}
+				if (Vflg) {
+					printf
+					    ("\t[%d][%d] Word = %d, Value = %d\n",
+					     pid, loop, word, *wptr);
+				}
+			}
+			checksum2 += *wptr;
 		}
-	} else {
 		if (Vflg) {
-			printf ("\t[%d][%d] Check sums DON'T compare\n", pid, loop);
+			printf("\t[%d][%d] checksum2 = %d\n", pid, loop,
+			       checksum2);
 		}
-	}
 
-	} /* end loop */
+		if (checksum2 == checksum) {
+			if (Vflg) {
+				printf("\t[%d][%d] Check sums compare\n", pid,
+				       loop);
+			}
+		} else {
+			if (Vflg) {
+				printf("\t[%d][%d] Check sums DON'T compare\n",
+				       pid, loop);
+			}
+		}
+
+	}			/* end loop */
 
 	/*
 	 * Unmap the region.
 	 */
 	if ((rc = munmap(region, length)) != 0) {
-		sys_error ("munmap failed", __LINE__);
+		sys_error("munmap failed", __LINE__);
 	}
 	/*
 	 * Program completed successfully -- exit
 	 */
-	if (pid != parent_pid) exit (0);
+	if (pid != parent_pid)
+		exit(0);
 
-	printf ("\nsuccessful!\n");
+	printf("\nsuccessful!\n");
 	cleanup(0);
 	return 0;
 }
 
-static void cleanup (int rc)
+static void cleanup(int rc)
 {
 	int i;
 
@@ -315,8 +323,8 @@ static void cleanup (int rc)
 	 * Close and remove any file we've created.
 	 */
 	if (Fflg) {
-		close (fd);
-		unlink (filename);
+		close(fd);
+		unlink(filename);
 	}
 
 	/*
@@ -324,7 +332,7 @@ static void cleanup (int rc)
 	 */
 	if (rc) {
 		for (i = 1; i < nprocs; i++) {
-			kill (childpid[i], SIGKILL);
+			kill(childpid[i], SIGKILL);
 		}
 	}
 
@@ -334,7 +342,7 @@ static void cleanup (int rc)
 /*
  * segv_handler - signal handler for SIGSEGV
  */
-static void segv_handler (int signal, int code, struct sigcontext *scp)
+static void segv_handler(int signal, int code, struct sigcontext *scp)
 {
 #ifndef _LINUX_
 	int except;
@@ -345,48 +353,48 @@ static void segv_handler (int signal, int code, struct sigcontext *scp)
 	 * Get the exception type.  This is either an errno value
 	 * or an exception value from <sys/m_except.h>.
 	 */
-# ifdef _IA64
-	except  = scp->sc_context.__excp_type;
-# else
-	except	= scp->sc_jmpbuf.jmp_context.excp_type;
-# endif
+#ifdef _IA64
+	except = scp->sc_context.__excp_type;
+#else
+	except = scp->sc_jmpbuf.jmp_context.excp_type;
+#endif
 
 	/*
 	 * Get the Data Address Register and Interrupt Status Register
 	 * for the exception.
 	 */
-# ifdef _IA64
-	dar     = scp->sc_context.__ifa;
-	dsisr   = scp->sc_context.__isr;
-# else
-	dar	= scp->sc_jmpbuf.jmp_context.except[0];
-	dsisr	= scp->sc_jmpbuf.jmp_context.except[1];
-# endif
+#ifdef _IA64
+	dar = scp->sc_context.__ifa;
+	dsisr = scp->sc_context.__isr;
+#else
+	dar = scp->sc_jmpbuf.jmp_context.except[0];
+	dsisr = scp->sc_jmpbuf.jmp_context.except[1];
+#endif
 
-	printf ("SIGSEGV occurred on address 0x%08x.\n", dar);
+	printf("SIGSEGV occurred on address 0x%08x.\n", dar);
 
 	/*
 	 * Determine if the operation was a load or a store.
 	 * Definition of bits in DSISR are in <sys/machine.h>.
 	 */
 	if (dsisr & DSISR_ST) {
-		printf ("The operation was a store.\n");
+		printf("The operation was a store.\n");
 	} else {
-		printf ("The operation was a load.\n");
+		printf("The operation was a load.\n");
 	}
 
 	switch (except) {
 
 	case EFAULT:
-		printf ("Exception was due to a bad address.\n");
+		printf("Exception was due to a bad address.\n");
 		break;
 
 	case EXCEPT_PROT:
-		printf ("Exception was due to a protection violation.\n");
+		printf("Exception was due to a protection violation.\n");
 		break;
 
 	default:
-		printf ("Exception type = 0x%08x.\n", except);
+		printf("Exception type = 0x%08x.\n", except);
 	}
 #else
 	printf("An unexpected segmentation fault occurred... Exiting\n");
@@ -398,7 +406,7 @@ static void segv_handler (int signal, int code, struct sigcontext *scp)
 /*
  * bus_handler - signal handler for SIGBUS
  */
-static void bus_handler (int signal, int code, struct sigcontext *scp)
+static void bus_handler(int signal, int code, struct sigcontext *scp)
 {
 #ifndef _LINUX_
 	int except;
@@ -409,44 +417,44 @@ static void bus_handler (int signal, int code, struct sigcontext *scp)
 	 * Get the exception type.  This is either an errno value
 	 * or an exception value from <sys/m_except.h>.
 	 */
-# ifdef _IA64
-	except  = scp->sc_context.__excp_type;
-# else
-	except	= scp->sc_jmpbuf.jmp_context.excp_type;
-# endif
+#ifdef _IA64
+	except = scp->sc_context.__excp_type;
+#else
+	except = scp->sc_jmpbuf.jmp_context.excp_type;
+#endif
 
 	/*
 	 * Get the Data Address Register and Interrupt Status Register
 	 * for the exception.
 	 */
-# ifdef _IA64
-	dar     = scp->sc_context.__ifa;
-	dsisr   = scp->sc_context.__isr;
-# else
-	dar	= scp->sc_jmpbuf.jmp_context.except[0];
-	dsisr	= scp->sc_jmpbuf.jmp_context.except[1];
-# endif
+#ifdef _IA64
+	dar = scp->sc_context.__ifa;
+	dsisr = scp->sc_context.__isr;
+#else
+	dar = scp->sc_jmpbuf.jmp_context.except[0];
+	dsisr = scp->sc_jmpbuf.jmp_context.except[1];
+#endif
 
-	printf ("SIGBUS occurred on address 0x%08x:\n", dar);
+	printf("SIGBUS occurred on address 0x%08x:\n", dar);
 
 	switch (except) {
 
 	case ENOSPC:
-		printf ("A mapper fault required disk allocation and \
+		printf("A mapper fault required disk allocation and \
 			no space is left on the device.\n");
 		break;
 
 	case EDQUOT:
-		printf ("A mapper fault required disk allocation and \
+		printf("A mapper fault required disk allocation and \
 			the disc quota was exceeded.\n");
 		break;
 
 	case EXCEPT_EOF:
-		printf ("An mmap() mapper referenced beyond end-of-file.\n");
+		printf("An mmap() mapper referenced beyond end-of-file.\n");
 		break;
 
 	default:
-		printf ("Exception type = 0x%08x.\n", except);
+		printf("Exception type = 0x%08x.\n", except);
 	}
 #else
 	printf("An unexpected bus error occurred... Exiting\n");
@@ -458,7 +466,7 @@ static void bus_handler (int signal, int code, struct sigcontext *scp)
 /*
  * int_handler - signal handler for SIGINT
  */
-static void int_handler (int sig)
+static void int_handler(int sig)
 {
 	cleanup(1);
 }
@@ -468,7 +476,7 @@ static void int_handler (int sig)
  *
  * Make an empty temporary file of a given size and return its descriptor.
  */
-static int mkemptyfile (uint size)
+static int mkemptyfile(uint size)
 {
 #ifdef _LINUX_
 
@@ -483,28 +491,28 @@ static int mkemptyfile (uint size)
 	filename = tempnam(TEMPDIR, TEMPNAME);
 
 	/* Create the file.
-	 * O_EXCL:	I'm supposed to be getting a unique name so if
-	 *		a file already exists by this name then fail.
-	 * 0700:	Set up for r/w access by owner only.
+	 * O_EXCL:      I'm supposed to be getting a unique name so if
+	 *              a file already exists by this name then fail.
+	 * 0700:        Set up for r/w access by owner only.
 	 */
 	if ((fd = open(filename, O_CREAT | O_EXCL | O_RDWR, 0700)) == -1)
-		return(-1);
+		return (-1);
 
 #endif // _LINUX_
 
 	/* Now extend it to the requested length.
 	 */
-	if (lseek(fd, size-1, SEEK_SET) == -1)
-		return(-1);
+	if (lseek(fd, size - 1, SEEK_SET) == -1)
+		return (-1);
 
 	if (write(fd, "\0", 1) == -1)
-		return(-1);
+		return (-1);
 
 	/* Sync the file out.
 	 */
 	fsync(fd);
 
-	return(fd);
+	return (fd);
 }
 
 /*---------------------------------------------------------------------+
@@ -518,27 +526,27 @@ static int mkemptyfile (uint size)
 |            SIGSEGV - segmentation violation                          |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void setup_signal_handlers ()
+static void setup_signal_handlers()
 {
 	struct sigaction sigact;
 
 	sigact.sa_flags = 0;
-	sigfillset (&sigact.sa_mask);
+	sigfillset(&sigact.sa_mask);
 
 	/*
 	 * Establish the signal handlers for SIGSEGV, SIGBUS & SIGINT
 	 */
-	sigact.sa_handler = (void (*)(int)) segv_handler;
-	if (sigaction (SIGSEGV, &sigact, NULL) < 0)
-		sys_error ("sigaction failed", __LINE__);
+	sigact.sa_handler = (void (*)(int))segv_handler;
+	if (sigaction(SIGSEGV, &sigact, NULL) < 0)
+		sys_error("sigaction failed", __LINE__);
 
-	sigact.sa_handler = (void (*)(int)) bus_handler;
-	if (sigaction (SIGBUS, &sigact, NULL) < 0)
-		sys_error ("sigaction failed", __LINE__);
+	sigact.sa_handler = (void (*)(int))bus_handler;
+	if (sigaction(SIGBUS, &sigact, NULL) < 0)
+		sys_error("sigaction failed", __LINE__);
 
-	sigact.sa_handler = (void (*)(int)) int_handler;
-	if (sigaction (SIGINT, &sigact, NULL) < 0)
-		sys_error ("sigaction failed", __LINE__);
+	sigact.sa_handler = (void (*)(int))int_handler;
+	if (sigaction(SIGINT, &sigact, NULL) < 0)
+		sys_error("sigaction failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -553,21 +561,19 @@ static void setup_signal_handlers ()
 |            [-s] size: shared memory segment size                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void parse_args (int argc, char **argv)
+static void parse_args(int argc, char **argv)
 {
-	int	opt;
-	int 	bytes = 0, megabytes = 0;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int opt;
+	int bytes = 0, megabytes = 0;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	/*
 	 * Parse command line options.
 	 */
-	while ((opt = getopt(argc, argv, "DFMWvb:l:m:p:")) != EOF)
-	{
-		switch (opt)
-		{
+	while ((opt = getopt(argc, argv, "DFMWvb:l:m:p:")) != EOF) {
+		switch (opt) {
 		case 'F':	/* map a file */
 			Fflg++;
 			break;
@@ -602,13 +608,13 @@ static void parse_args (int argc, char **argv)
 		}
 	}
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 
 	/*
 	 * Determine the number of processes to run.
- 	 */
+	 */
 	if (pflg) {
 		if (nprocs > MAXPROCS)
 			nprocs = MAXPROCS;
@@ -618,7 +624,7 @@ static void parse_args (int argc, char **argv)
 
 	/*
 	 * Determine the type of object to map.
- 	 */
+	 */
 	if (Fflg) {
 		objtype = FILEOBJ;
 	} else if (Mflg) {
@@ -633,9 +639,10 @@ static void parse_args (int argc, char **argv)
 	 * close to the paging space warning level.
 	 */
 
-        if (Wflg)
+	if (Wflg)
 #ifdef _LINUX_
-	        printf("Option 'W' not implemented in Linux (psdanger() and SIGDANGER)\n");
+		printf
+		    ("Option 'W' not implemented in Linux (psdanger() and SIGDANGER)\n");
 #else
 	{
 		pgspblks = psdanger(SIGDANGER);
@@ -674,12 +681,12 @@ static void parse_args (int argc, char **argv)
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void sys_error (const char *msg, int line)
+static void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -689,8 +696,8 @@ static void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void error (const char *msg, int line)
+static void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	cleanup (1);
+	fprintf(stderr, "ERROR [line: %d] %s\n", line, msg);
+	cleanup(1);
 }

@@ -30,50 +30,42 @@ int main()
 
 	/* Initialize a read-write lock attributes object */
 	rc = pthread_rwlockattr_init(&rwa);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		printf("Error at pthread_rwlockattr_init(), returns %d\n", rc);
 		return PTS_UNRESOLVED;
 	}
 
-	if ((rc = pthread_rwlock_init(&rwl1, &rwa)) != 0)
-	{
+	if ((rc = pthread_rwlock_init(&rwl1, &rwa)) != 0) {
 		printf("Error at 1st pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if ((rc = pthread_rwlock_init(&rwl2, &rwa)) != 0)
-	{
+	if ((rc = pthread_rwlock_init(&rwl2, &rwa)) != 0) {
 		printf("Error at 2nd pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if ((rc = pthread_rwlock_rdlock(&rwl1)) != 0)
-	{
+	if ((rc = pthread_rwlock_rdlock(&rwl1)) != 0) {
 		printf("Error at pthread_rwlock_rdlock(): rwl1\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if ((rc = pthread_rwlockattr_destroy(&rwa)) != 0)
-	{
+	if ((rc = pthread_rwlockattr_destroy(&rwa)) != 0) {
 		printf("Error at pthread_rwlockattr_destory()\n");
 		return PTS_UNRESOLVED;
 	}
-	if ((rc = pthread_rwlock_unlock(&rwl1)) != 0)
-	{
+	if ((rc = pthread_rwlock_unlock(&rwl1)) != 0) {
 		printf("Error at pthread_rwlock_unlock: rwl1\n");
 		printf("Test Failed.\n");
 		return PTS_FAIL;
 	}
 
-	if ((rc = pthread_rwlock_rdlock(&rwl2)) != 0)
-	{
+	if ((rc = pthread_rwlock_rdlock(&rwl2)) != 0) {
 		printf("Error at pthread_rwlock_rdlock():rwl2\n");
 		printf("Test Failed.\n");
 		return PTS_FAIL;
 	}
-	if ((rc = pthread_rwlock_unlock(&rwl2)) != 0)
-	{
+	if ((rc = pthread_rwlock_unlock(&rwl2)) != 0) {
 		printf("Error at pthread_rwlock_unlock:rwl2\n");
 		printf("Test Failed.\n");
 		return PTS_FAIL;

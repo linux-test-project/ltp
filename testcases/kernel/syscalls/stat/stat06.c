@@ -169,6 +169,7 @@ struct test_case_t {
 	{
 	NULL, NULL, NULL, 0, no_setup}
 };
+
 int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);
 
 /***********************************************************************
@@ -249,8 +250,8 @@ int main(int ac, char **av)
 						tst_resm(TFAIL,
 							 "stat(<%s>, &stbuf) Failed, errno=%d, expected errno:%d",
 							 desc, TEST_ERRNO,
-							 Test_cases[ind].
-							 exp_errno);
+							 Test_cases
+							 [ind].exp_errno);
 				} else
 					Tst_count++;
 			} else {

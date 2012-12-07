@@ -101,19 +101,25 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* The file name is an existing directory */
-	{ good_dir, MODE1, EISDIR },
-	/* The file name is too long - ENAMETOOLONG */
-	{ long_name, MODE1, ENAMETOOLONG },
-	/* Attempt to create a file in a directory that doesn't exist - ENOENT */
-	{ no_dir, MODE1, ENOENT },
-	/* a compent of the file's path is not a directory - ENOTDIR */
-	{ not_dir, MODE1, ENOTDIR },
+	{
+	good_dir, MODE1, EISDIR},
+	    /* The file name is too long - ENAMETOOLONG */
+	{
+	long_name, MODE1, ENAMETOOLONG},
+	    /* Attempt to create a file in a directory that doesn't exist - ENOENT */
+	{
+	no_dir, MODE1, ENOENT},
+	    /* a compent of the file's path is not a directory - ENOTDIR */
+	{
+	not_dir, MODE1, ENOTDIR},
 #if !defined(UCLINUX)
-	/* The file address is bad - EFAULT */
-	{ (char *)-1, MODE1, EFAULT },
+	    /* The file address is bad - EFAULT */
+	{
+	(char *)-1, MODE1, EFAULT},
 #endif
-	/* The directory lacks execute permission - EACCES */
-	{ test6_file, MODE1, EACCES }
+	    /* The directory lacks execute permission - EACCES */
+	{
+	test6_file, MODE1, EACCES}
 };
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
@@ -152,9 +158,11 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS|TTERRNO, "got expected failure");
+				tst_resm(TPASS | TTERRNO,
+					 "got expected failure");
 			} else {
-				tst_resm(TFAIL|TTERRNO, "wanted errno %d", TC[i].error);
+				tst_resm(TFAIL | TTERRNO, "wanted errno %d",
+					 TC[i].error);
 			}
 		}
 	}
@@ -174,10 +182,10 @@ void setup()
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
-		tst_brkm(TBROK|TERRNO, cleanup, "getpwnam failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "getpwnam failed");
 	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "seteuid(%d) failed", ltpuser->pw_uid);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "seteuid(%d) failed", ltpuser->pw_uid);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -187,7 +195,7 @@ void setup()
 
 	/* get the current directory for the first test */
 	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-		tst_brkm(TBROK|TERRNO, cleanup, "getcwd failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "getcwd failed");
 	}
 
 	strncpy(good_dir, cur_dir, NSIZE);
@@ -200,7 +208,7 @@ void setup()
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 	}
 	TC[4].fname = bad_addr;
 #endif

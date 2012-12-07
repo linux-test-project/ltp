@@ -79,7 +79,8 @@ int main(void)
 	switch (child) {
 	case 0:
 		/* Mmap again the same shared memory to child's memory */
-		pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, shm_fd, 0);
+		pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE,
+			  shm_fd, 0);
 		if (pa == MAP_FAILED) {
 			printf("child: Error at mmap: %s\n", strerror(errno));
 			return PTS_FAIL;

@@ -1,6 +1,6 @@
   /*
-  Test that the CLD_TRAPPED macro is defined.
-  */
+     Test that the CLD_TRAPPED macro is defined.
+   */
 
 #include <signal.h>
 

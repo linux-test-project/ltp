@@ -24,13 +24,14 @@ int main()
 {
 	int failure = 0;
 	union sigval value;
-	value.sival_int = 0; /* 0 is just an arbitrary value */
+	value.sival_int = 0;	/* 0 is just an arbitrary value */
 
 	if (-1 == sigqueue(getpid(), -1, value)) {
 		if (EINVAL == errno) {
 			printf("EINVAL error received\n");
 		} else {
-			printf("sigqueue() failed on EINVAL but errno not set correctly\n");
+			printf
+			    ("sigqueue() failed on EINVAL but errno not set correctly\n");
 			failure = 1;
 		}
 	} else {

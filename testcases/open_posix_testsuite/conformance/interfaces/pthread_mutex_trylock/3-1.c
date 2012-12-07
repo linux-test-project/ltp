@@ -17,33 +17,32 @@
 
 int main()
 {
-	pthread_mutex_t  mutex;
+	pthread_mutex_t mutex;
 	int rc;
 
 	/* Initialize a mutex object with the default mutex attributes */
-	if ((rc=pthread_mutex_init(&mutex,NULL)) != 0) {
-		fprintf(stderr,"Error at pthread_mutex_init(), rc=%d\n",rc);
+	if ((rc = pthread_mutex_init(&mutex, NULL)) != 0) {
+		fprintf(stderr, "Error at pthread_mutex_init(), rc=%d\n", rc);
 		return PTS_UNRESOLVED;
 	}
 
 	/* Try to lock the mutex using pthread_mutex_trylock() */
-	if ((rc=pthread_mutex_trylock(&mutex)) == 0) {
+	if ((rc = pthread_mutex_trylock(&mutex)) == 0) {
 		pthread_mutex_unlock(&mutex);
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 
 	/* Check if returned values are tolerable */
-	/* PATCH: since we are using the mutex properly,*/
+	/* PATCH: since we are using the mutex properly, */
 	/*  errors are NOT tolerable here */
 	else if (rc == EBUSY) {
-		fprintf(stderr,"The mutex was already locked\n");
-	}
-	else if (rc == EINVAL) {
-		fprintf(stderr,"Invalid mutex object\n");
-	}
-	else if (rc == EAGAIN) {
-		fprintf(stderr,"The maximum number of recursive locks has been exceeded\n");
+		fprintf(stderr, "The mutex was already locked\n");
+	} else if (rc == EINVAL) {
+		fprintf(stderr, "Invalid mutex object\n");
+	} else if (rc == EAGAIN) {
+		fprintf(stderr,
+			"The maximum number of recursive locks has been exceeded\n");
 	}
 
 	/* Any other returned value means the test failed */

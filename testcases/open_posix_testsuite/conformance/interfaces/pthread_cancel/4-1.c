@@ -20,13 +20,13 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int sem; 		/* Manual semaphore */
+int sem;			/* Manual semaphore */
 void *a_thread_func()
 {
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 	/* Indicate to main() that the thread has been created. */
-	sem=1;
+	sem = 1;
 
 	while (1)
 		sleep(1);
@@ -40,31 +40,26 @@ int main()
 	pthread_t new_th;
 	int ret;
 
-	sem=0;
+	sem = 0;
 
 	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure thread is created before we cancel it. */
-	while (sem==0)
+	while (sem == 0)
 		sleep(1);
 
 	/* Send cancel request to thread */
-	ret=pthread_cancel(new_th);
+	ret = pthread_cancel(new_th);
 
-	if (ret != 0)
-	{
-		if (ret == ESRCH)
-		{
+	if (ret != 0) {
+		if (ret == ESRCH) {
 			perror("Could not cancel thread\n");
 			return PTS_UNRESOLVED;
-		}
-		else
-		{
+		} else {
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}

@@ -29,7 +29,8 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_20-1"
 
-int main() {
+int main()
+{
 	int fd, result;
 
 	result = shm_unlink(SHM_NAME);
@@ -40,7 +41,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	fd = shm_open(SHM_NAME, O_RDONLY|O_CREAT, S_IRUSR);
+	fd = shm_open(SHM_NAME, O_RDONLY | O_CREAT, S_IRUSR);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;

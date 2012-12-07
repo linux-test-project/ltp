@@ -130,7 +130,7 @@
 void setup();
 void cleanup();
 
-char *TCID = "access01";	/* Test program identifier.	*/
+char *TCID = "access01";	/* Test program identifier.     */
 int TST_TOTAL = 4;		/* Total number of test cases. */
 
 char Fname[255];
@@ -141,11 +141,11 @@ static struct test_case_t {
 	char *string;
 	int experrno;
 } Test_cases[] = {
-	{ Fname, F_OK, "F_OK", 0},
-	{ Fname, X_OK, "X_OK", 0},
-	{ Fname, W_OK, "W_OK", 0},
-	{ Fname, R_OK, "R_OK", 0},
-};
+	{
+	Fname, F_OK, "F_OK", 0}, {
+	Fname, X_OK, "X_OK", 0}, {
+	Fname, W_OK, "W_OK", 0}, {
+Fname, R_OK, "R_OK", 0},};
 
 int Ntc = sizeof(Test_cases) / sizeof(struct test_case_t);
 
@@ -177,19 +177,19 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1 && Test_cases[tc].experrno == 0) {
-				tst_resm(TFAIL|TTERRNO,
-				    "access(%s, %s) failed",
-				    Test_cases[tc].file,
-				    Test_cases[tc].string);
+				tst_resm(TFAIL | TTERRNO,
+					 "access(%s, %s) failed",
+					 Test_cases[tc].file,
+					 Test_cases[tc].string);
 
 			} else if (TEST_RETURN != -1
 				   && Test_cases[tc].experrno != 0) {
 				tst_resm(TFAIL,
-				    "access(%s, %s) returned %ld, "
-				    "exp -1, errno:%d",
-				    Test_cases[tc].file,
-				    Test_cases[tc].string, TEST_RETURN,
-				    Test_cases[tc].experrno);
+					 "access(%s, %s) returned %ld, "
+					 "exp -1, errno:%d",
+					 Test_cases[tc].file,
+					 Test_cases[tc].string, TEST_RETURN,
+					 Test_cases[tc].experrno);
 			} else {
 
 				if (STD_FUNCTIONAL_TEST) {
@@ -227,25 +227,25 @@ void setup()
 	 * to us.
 	 */
 	if (chown(".", -1, getegid()) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "chown(\".\", -1, %d) failed", getegid());
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "chown(\".\", -1, %d) failed", getegid());
 	}
 
 	sprintf(Fname, "accessfile");
 
 	fd = open(Fname, O_RDWR | O_CREAT, 06777);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			"open(%s, O_RDWR|O_CREAT, 06777) failed", Fname);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 06777) failed", Fname);
 	else if (close(fd) == -1)
-		tst_resm(TINFO|TERRNO, "close(%s) failed", Fname);
+		tst_resm(TINFO | TERRNO, "close(%s) failed", Fname);
 
 	/*
 	 * force the mode to be set to 6777
 	 */
 	if (chmod(Fname, 06777) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, 06777) failed",
-		    Fname);
+		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, 06777) failed",
+			 Fname);
 
 	stat(Fname, &stbuf);
 

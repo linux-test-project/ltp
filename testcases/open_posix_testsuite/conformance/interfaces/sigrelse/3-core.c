@@ -32,71 +32,70 @@ int main(int argc, char *argv[])
 	struct sigaction sa, osa;
 
 	if (argc < 2) {
-        	printf("Usage:  %s [1|2|3|4]\n", argv[0]);
+		printf("Usage:  %s [1|2|3|4]\n", argv[0]);
 		return PTS_UNRESOLVED;
 	}
 
 	/*
-		Various error conditions
-	*/
+	   Various error conditions
+	 */
 	switch (argv[1][0]) {
-		case '1':
-			signo=-1;
-			break;
-		case '2':
-			signo=-10000;
-			break;
-		case '3':
-			signo=INT32_MIN+1;
-			break;
-		case '4':
-			signo=INT32_MIN;
-			break;
-		default:
-			printf("Usage:  %s [1|2|3|4]\n", argv[0]);
-			return PTS_UNRESOLVED;
+	case '1':
+		signo = -1;
+		break;
+	case '2':
+		signo = -10000;
+		break;
+	case '3':
+		signo = INT32_MIN + 1;
+		break;
+	case '4':
+		signo = INT32_MIN;
+		break;
+	default:
+		printf("Usage:  %s [1|2|3|4]\n", argv[0]);
+		return PTS_UNRESOLVED;
 	}
 
 	/* special sig11 case */
-        sa.sa_handler = &sig11_handler;
-        sigemptyset(&sa.sa_mask);
-        sa.sa_flags = 0;
+	sa.sa_handler = &sig11_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
 
-        sigaction(SIGSEGV, NULL, &osa);
-        sigaction(SIGSEGV, &sa, NULL);
+	sigaction(SIGSEGV, NULL, &osa);
+	sigaction(SIGSEGV, &sa, NULL);
 
-        if (setjmp(sig11_recover)) {
-              errno = EINVAL;
-              TEST_RETURN=-2;
-        } else {
-              TEST_RETURN=sigrelse(signo);
-        }
-        sigaction(SIGSEGV, &osa, NULL);
+	if (setjmp(sig11_recover)) {
+		errno = EINVAL;
+		TEST_RETURN = -2;
+	} else {
+		TEST_RETURN = sigrelse(signo);
+	}
+	sigaction(SIGSEGV, &osa, NULL);
 
-        if (TEST_RETURN == -1) {
-                if (EINVAL == errno) {
-                        printf ("errno set to EINVAL\n");
-                        return PTS_PASS;
-                } else {
-                        printf ("errno not set to EINVAL\n");
-                        return PTS_FAIL;
-                }
-        }
+	if (TEST_RETURN == -1) {
+		if (EINVAL == errno) {
+			printf("errno set to EINVAL\n");
+			return PTS_PASS;
+		} else {
+			printf("errno not set to EINVAL\n");
+			return PTS_FAIL;
+		}
+	}
 	if (TEST_RETURN == -2) {
-                printf ("test received SIGSEGV\n");
-                return PTS_UNRESOLVED;
-        }
+		printf("test received SIGSEGV\n");
+		return PTS_UNRESOLVED;
+	}
 
-        printf("sigrelse did not return -1\n");
-        return PTS_FAIL;
+	printf("sigrelse did not return -1\n");
+	return PTS_FAIL;
 
 }
 
 /******************************************************************
  * sig11_handler() - our segfault recover hack
  ******************************************************************/
-void
-sig11_handler(int sig)
+void sig11_handler(int sig)
 {
-    longjmp(sig11_recover, 1);
+	longjmp(sig11_recover, 1);
 }

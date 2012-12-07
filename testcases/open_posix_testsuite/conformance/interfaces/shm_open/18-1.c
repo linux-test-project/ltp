@@ -31,12 +31,13 @@
 #define SHM_NAME "posixtest_18-1"
 
 /* execution bits is undefined */
-#define MOD_FLAGS     (S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH) /* -w?rw?r-? */
-#define UMASK_FLAGS   (S_IRGRP | S_IWOTH)                     /* --?r-?-w? */
+#define MOD_FLAGS     (S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)	/* -w?rw?r-? */
+#define UMASK_FLAGS   (S_IRGRP | S_IWOTH)	/* --?r-?-w? */
 #define ALL_MOD_FLAGS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | \
-		       S_IROTH | S_IWOTH)                     /* rw?rw?rw? */
+		       S_IROTH | S_IWOTH)	/* rw?rw?rw? */
 
-int main() {
+int main()
+{
 	int fd, result;
 	struct stat stat_buf;
 
@@ -50,7 +51,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	fd = shm_open(SHM_NAME, O_RDONLY|O_CREAT, MOD_FLAGS);
+	fd = shm_open(SHM_NAME, O_RDONLY | O_CREAT, MOD_FLAGS);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
@@ -71,8 +72,7 @@ int main() {
 	 * are set and thoses of UMASK_FLAGS are not, i.e.:
 	 * ALL_MOD_FLAGS & (stat_buf.st_mode ^ (MOD_FLAGS & ~UMASK_FLAGS)) == 0
 	 */
-	if (!(ALL_MOD_FLAGS &
-	      (stat_buf.st_mode ^ (MOD_FLAGS & ~UMASK_FLAGS)))) {
+	if (!(ALL_MOD_FLAGS & (stat_buf.st_mode ^ (MOD_FLAGS & ~UMASK_FLAGS)))) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

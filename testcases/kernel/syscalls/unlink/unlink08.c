@@ -215,8 +215,7 @@ int main(int ac, char **av)
 								 desc,
 								 TEST_ERRNO,
 								 Test_cases
-								 [ind].
-								 exp_errno);
+								 [ind].exp_errno);
 					} else
 						Tst_count++;
 				} else {

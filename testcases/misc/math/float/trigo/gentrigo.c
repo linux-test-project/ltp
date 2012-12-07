@@ -53,57 +53,57 @@ int create_file(char *func_name, int NbVal)
 {
 	pid_t myproc;
 
-        if (( myproc = fork() )!=0)
-                return myproc;
-        else {
-		char *arglist[] = { func_name, NULL};
-	     	execvp(arglist[0], arglist);
+	if ((myproc = fork()) != 0)
+		return myproc;
+	else {
+		char *arglist[] = { func_name, NULL };
+		execvp(arglist[0], arglist);
 
-	     	fprintf(stderr, "ERROR %s\n", strerror(errno));
-	     	abort();
+		fprintf(stderr, "ERROR %s\n", strerror(errno));
+		abort();
 	}
 }
 
 int main(int argc, char *argv[])
 {
 	char *funct, *bin_path;
-	pid_t  child;
+	pid_t child;
 
 	if (argc != 2) {
-                printf ("ERROR: need the path to generation binaries\n");
-                abort();
-        }
+		printf("ERROR: need the path to generation binaries\n");
+		abort();
+	}
 
 	bin_path = argv[1];
 
-	funct = malloc (strlen (bin_path) + MAX_FNAME_LEN);
-	sprintf (funct, "%s/gencos", bin_path);
-	child=create_file(funct, 0);
-	waitpid(child,NULL,0);
+	funct = malloc(strlen(bin_path) + MAX_FNAME_LEN);
+	sprintf(funct, "%s/gencos", bin_path);
+	child = create_file(funct, 0);
+	waitpid(child, NULL, 0);
 
-	sprintf (funct, "%s/gensin", bin_path);
-	child=create_file(funct, 0);
-	waitpid(child,NULL,0);
+	sprintf(funct, "%s/gensin", bin_path);
+	child = create_file(funct, 0);
+	waitpid(child, NULL, 0);
 
-	sprintf (funct, "%s/gentan", bin_path);
-	child=create_file(funct, 0);
-	waitpid(child,NULL,0);
+	sprintf(funct, "%s/gentan", bin_path);
+	child = create_file(funct, 0);
+	waitpid(child, NULL, 0);
 
-	sprintf (funct, "%s/genatan", bin_path);
-	child=create_file(funct, 0);
-	waitpid(child,NULL,0);
+	sprintf(funct, "%s/genatan", bin_path);
+	child = create_file(funct, 0);
+	waitpid(child, NULL, 0);
 
-	sprintf (funct, "%s/genatan2", bin_path);
-	child=create_file(funct, 0);
-	waitpid(child,NULL,0);
+	sprintf(funct, "%s/genatan2", bin_path);
+	child = create_file(funct, 0);
+	waitpid(child, NULL, 0);
 
-	sprintf (funct, "%s/genacos", bin_path);
-	child=create_file(funct, 0);
-	waitpid(child,NULL,0);
+	sprintf(funct, "%s/genacos", bin_path);
+	child = create_file(funct, 0);
+	waitpid(child, NULL, 0);
 
-	sprintf (funct, "%s/genasin", bin_path);
-	child=create_file(funct, 0);
-	waitpid(child,NULL,0);
+	sprintf(funct, "%s/genasin", bin_path);
+	child = create_file(funct, 0);
+	waitpid(child, NULL, 0);
 
 	return 0;
 }

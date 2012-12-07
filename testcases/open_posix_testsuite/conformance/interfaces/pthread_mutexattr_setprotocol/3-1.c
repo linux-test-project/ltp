@@ -30,26 +30,25 @@ int main()
 	int ret;
 
 	/* Initialize a mutex attributes object */
-	if (pthread_mutexattr_init(&mta) != 0)
-	{
+	if (pthread_mutexattr_init(&mta) != 0) {
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	while (protocol == PTHREAD_PRIO_NONE || protocol == PTHREAD_PRIO_INHERIT
-		|| protocol == PTHREAD_PRIO_PROTECT) {
+	       || protocol == PTHREAD_PRIO_PROTECT) {
 		protocol--;
 	}
 
 	/* Set the protocol to an invalid value. */
-	ret = pthread_mutexattr_setprotocol(&mta,protocol);
-	if ((ret == ENOTSUP) || (ret == EINVAL))
-	{
+	ret = pthread_mutexattr_setprotocol(&mta, protocol);
+	if ((ret == ENOTSUP) || (ret == EINVAL)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else{
+	} else {
 
-		printf("Test FAILED: Expected error code ENOTSUP, got %d.\n", ret);
+		printf("Test FAILED: Expected error code ENOTSUP, got %d.\n",
+		       ret);
 		return PTS_FAIL;
 	}
 }

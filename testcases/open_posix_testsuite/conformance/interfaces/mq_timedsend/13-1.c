@@ -28,61 +28,61 @@
 #define NUMINVALID 3
 
 static unsigned invalidpri[NUMINVALID] = {
-		MQ_PRIO_MAX, MQ_PRIO_MAX+1, MQ_PRIO_MAX+5
+	MQ_PRIO_MAX, MQ_PRIO_MAX + 1, MQ_PRIO_MAX + 5
 };
 
 int main()
 {
-        char qname[NAMESIZE];
-        const char *msgptr = MSGSTR;
+	char qname[NAMESIZE];
+	const char *msgptr = MSGSTR;
 	struct timespec ts;
-        mqd_t queue;
-	int unresolved=0, failure=0, i;
+	mqd_t queue;
+	int unresolved = 0, failure = 0, i;
 
-        sprintf(qname, "/mq_timedsend_13-1_%d", getpid());
+	sprintf(qname, "/mq_timedsend_13-1_%d", getpid());
 
-        queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-                return PTS_UNRESOLVED;
-        }
+	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue == (mqd_t) - 1) {
+		perror("mq_open() did not return success");
+		return PTS_UNRESOLVED;
+	}
 
-	ts.tv_sec=time(NULL)+1;
-	ts.tv_nsec=0;
-	for (i=0; i<NUMINVALID; i++) {
-        	if (mq_timedsend(queue, msgptr,
-				strlen(msgptr), invalidpri[i], &ts)== 0) {
-                	printf("mq_timedsend() ret success on invalid %d\n",
-				invalidpri[i]);
+	ts.tv_sec = time(NULL) + 1;
+	ts.tv_nsec = 0;
+	for (i = 0; i < NUMINVALID; i++) {
+		if (mq_timedsend(queue, msgptr,
+				 strlen(msgptr), invalidpri[i], &ts) == 0) {
+			printf("mq_timedsend() ret success on invalid %d\n",
+			       invalidpri[i]);
 			failure = 1;
-        	}
+		}
 		if (errno != EINVAL) {
 			printf("errno not == EINVAL for invalid %d\n",
-				invalidpri[i]);
+			       invalidpri[i]);
 			failure = 1;
 		}
 	}
 
-        if (mq_close(queue) != 0) {
+	if (mq_close(queue) != 0) {
 		perror("mq_close() did not return success");
-		unresolved=1;
-        }
+		unresolved = 1;
+	}
 
-        if (mq_unlink(qname) != 0) {
+	if (mq_unlink(qname) != 0) {
 		perror("mq_unlink() did not return success");
-		unresolved=1;
-        }
+		unresolved = 1;
+	}
 
-	if (failure==1) {
+	if (failure == 1) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	if (unresolved==1) {
+	if (unresolved == 1) {
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
 	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

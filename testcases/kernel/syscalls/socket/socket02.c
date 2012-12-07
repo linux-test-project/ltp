@@ -69,12 +69,12 @@
 #define PORT 57392
 
 #ifndef O_CLOEXEC
-# define O_CLOEXEC 02000000
+#define O_CLOEXEC 02000000
 #endif
 
 /* For Linux these must be the same.  */
 #ifndef SOCK_CLOEXEC
-# define SOCK_CLOEXEC O_CLOEXEC
+#define SOCK_CLOEXEC O_CLOEXEC
 #endif
 
 /* Extern Global Variables */

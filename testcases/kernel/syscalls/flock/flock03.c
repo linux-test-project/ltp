@@ -94,10 +94,9 @@ int main(int argc, char **argv)
 	int status;
 	int fd;			/* for opening the temporary file */
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 #ifdef UCLINUX
 	maybe_run_child(&childfunc_uc, "ds", &fd_uc, filename);
 #endif
@@ -252,4 +251,4 @@ void cleanup(void)
 	unlink(filename);
 	tst_rmdir();
 
- }
+}

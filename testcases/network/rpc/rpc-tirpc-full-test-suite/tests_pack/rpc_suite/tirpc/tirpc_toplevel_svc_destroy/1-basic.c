@@ -45,31 +45,29 @@ static void exm_proc();
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	char nettype[16] = "visible";
 	SVCXPRT *svcr;
-        struct netconfig *nconf;
+	struct netconfig *nconf;
 
-        //Test initialization
-        if ((nconf = getnetconfigent("tcp")) == NULL) {
-        	fprintf(stderr, "Cannot get netconfig entry for TCP\n");
+	//Test initialization
+	if ((nconf = getnetconfigent("tcp")) == NULL) {
+		fprintf(stderr, "Cannot get netconfig entry for TCP\n");
 		exit(1);
-        }
+	}
 
-	if (run_mode == 1)
-	{
+	if (run_mode == 1) {
 		printf("Server : %s\n", argc[1]);
 		printf("Server # %d\n", progNum);
 	}
-
 	//First create server
 	svcr = svc_tp_create(exm_proc, progNum, VERSNUM, nconf);
 
@@ -91,7 +89,7 @@ int main(int argn, char *argc[])
 	return test_status;
 }
 
-static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
+static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
 {
 	//Nothing to do
 }

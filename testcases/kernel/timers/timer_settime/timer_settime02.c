@@ -83,14 +83,12 @@ static struct itimerspec new_set, old_set, *old_temp;
 static kernel_timer_t timer;
 static int flag;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc, i;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
-			(char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -105,13 +103,14 @@ main(int ac, char **av)
 			/* Set up individual test */
 			if (setup_test(i) == 0) {
 				TEST(syscall(__NR_timer_settime, timer, flag,
-						&new_set, old_temp));
+					     &new_set, old_temp));
 				tst_resm((TEST_RETURN == 0 ?
-							TPASS :
-							TFAIL | TTERRNO),
-					"%s",
-					(TEST_RETURN == 0 ? "passed" : "failed")
-				);
+					  TPASS :
+					  TFAIL | TTERRNO),
+					 "%s",
+					 (TEST_RETURN ==
+					  0 ? "passed" : "failed")
+				    );
 			}
 
 		}
@@ -122,8 +121,7 @@ main(int ac, char **av)
 }
 
 /* This function does set up for individual tests */
-static int
-setup_test(int option)
+static int setup_test(int option)
 {
 	struct timespec timenow;	/* Used to obtain current time */
 	int rc = 0;
@@ -135,7 +133,7 @@ setup_test(int option)
 		 * make flags equal to zero
 		 * use one-shot timer
 		 */
-		old_temp = (struct itimerspec *) NULL;
+		old_temp = (struct itimerspec *)NULL;
 		new_set.it_interval.tv_sec = 0;
 		new_set.it_interval.tv_nsec = 0;
 		new_set.it_value.tv_sec = 5;
@@ -153,7 +151,7 @@ setup_test(int option)
 	case 2:
 		/* Use the periodic timer */
 		new_set.it_interval.tv_sec = 5;
-	        new_set.it_value.tv_sec = 0;
+		new_set.it_value.tv_sec = 0;
 		break;
 	case 3:
 		/* Use TIMER_ABSTIME flag for setting
@@ -168,7 +166,7 @@ setup_test(int option)
 		 */
 		if (clock_gettime(CLOCK_REALTIME, &timenow) < 0) {
 			tst_resm(TWARN | TERRNO,
-				"clock_gettime failed; skipping the test");
+				 "clock_gettime failed; skipping the test");
 			rc = -1;
 		} else {
 			new_set.it_value.tv_sec = timenow.tv_sec + 25;
@@ -179,8 +177,7 @@ setup_test(int option)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -195,12 +192,11 @@ setup(void)
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 }

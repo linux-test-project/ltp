@@ -121,24 +121,24 @@ struct test_case_t {
 	char *pathname;
 	char *desc;
 	int exp_errno;
-	void (*setup)(int pos);
+	void (*setup) (int pos);
 };
 
 static struct test_case_t test_cases[] = {
-	{SFILE1, "Process is not owner/root",    EPERM,   setup_eperm},
-	{SFILE2, "Search permission denied",     EACCES,  setup_eacces},
-	{NULL,   "Address beyond address space", EFAULT,  setup_highaddress},
-	{NULL,   "Unaccessible address space",   EFAULT,  setup_efault},
-	{path,   "Pathname too long",            ENAMETOOLONG, setup_longpath},
-	{SFILE3, "Path contains regular file",   ENOTDIR, setup_enotdir},
-	{"",     "Pathname is empty",            ENOENT,  NULL},
-	{NULL,   NULL,                           0,       NULL}
+	{SFILE1, "Process is not owner/root", EPERM, setup_eperm},
+	{SFILE2, "Search permission denied", EACCES, setup_eacces},
+	{NULL, "Address beyond address space", EFAULT, setup_highaddress},
+	{NULL, "Unaccessible address space", EFAULT, setup_efault},
+	{path, "Pathname too long", ENAMETOOLONG, setup_longpath},
+	{SFILE3, "Path contains regular file", ENOTDIR, setup_enotdir},
+	{"", "Pathname is empty", ENOENT, NULL},
+	{NULL, NULL, 0, NULL}
 };
 
 static struct passwd *ltpuser;
 
 static int exp_enos[] =
-	{EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
+    { EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0 };
 
 void setup(void);
 void cleanup(void);
@@ -244,23 +244,23 @@ void setup_eperm(int pos LTP_ATTRIBUTE_UNUSED)
 	int fd;
 
 	/* create a testfile */
-	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "close failed");
 
 	/* become root once more */
 	if (seteuid(0) == -1)
-		tst_resm(TBROK|TERRNO, "setuid(0) failed");
+		tst_resm(TBROK | TERRNO, "setuid(0) failed");
 
 	/* create symling to testfile */
 	if (symlink(TEST_FILE1, SFILE1) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "symlink failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "symlink failed");
 
 	/* back to the user nobody */
 	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_resm(TBROK|TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
+		tst_resm(TBROK | TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
 }
 
 /*
@@ -278,14 +278,14 @@ void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 
 	/* create a test directory */
 	if (mkdir(DIR_TEMP, MODE_RWX) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mkdir failed");
 
 	/* create a file under test directory */
-	if ((fd = open(TEST_FILE2, O_RDWR|O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open failed");
+	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
 	if (close(fd) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "close failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "close failed");
 
 	/* create a symlink of testfile */
 	if (symlink(TEST_FILE2, SFILE2) < 0) {
@@ -296,7 +296,7 @@ void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 	/* modify mode permissions on test directory */
 	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "chmod(2) %s failed",
-		         DIR_TEMP);
+			 DIR_TEMP);
 	}
 }
 
@@ -343,13 +343,11 @@ void setup_enotdir(int pos LTP_ATTRIBUTE_UNUSED)
 
 	/* create a testfile under temporary directory */
 	if ((fd = open(TFILE3, O_RDWR | O_CREAT, MODE_RWX)) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "open(2) %s failed",
-		         TFILE3);
+		tst_brkm(TBROK | TERRNO, cleanup, "open(2) %s failed", TFILE3);
 	}
 
 	if (close(fd) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "close(2) %s failed",
-		         TFILE3);
+		tst_brkm(TBROK | TERRNO, cleanup, "close(2) %s failed", TFILE3);
 	}
 }
 
@@ -376,8 +374,8 @@ void cleanup(void)
 
 	/* become root again */
 	if (seteuid(0) == -1) {
-		tst_resm(TINFO|TERRNO,
-		         "seteuid(2) failed to set the effective uid to 0");
+		tst_resm(TINFO | TERRNO,
+			 "seteuid(2) failed to set the effective uid to 0");
 	}
 
 	tst_rmdir();

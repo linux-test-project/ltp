@@ -33,8 +33,7 @@ int unit = 1024 * 1024;
 
 //argv[1] memory use(M) (>0)
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	long int use;
 	if (argc != 2) {
@@ -43,7 +42,7 @@ main(int argc, char *argv[])
 	}
 	if ((use = strtol(argv[1], NULL, 10)) < 0) {
 		errx(EINVAL, "Invalid mmap size specified (must be a long "
-			     "int greater than 1)");
+		     "int greater than 1)");
 	}
 
 	long int pagesize = getpagesize();
@@ -52,7 +51,8 @@ main(int argc, char *argv[])
 
 	while (pagesize * mmap_block > 2 * unit) {
 		unsigned long *addr = mmap(NULL, pagesize * mmap_block,
-			PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+					   PROT_READ | PROT_WRITE,
+					   MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 		if (addr == MAP_FAILED) {
 			mmap_block = mmap_block / 2;
 			continue;

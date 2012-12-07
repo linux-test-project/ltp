@@ -28,10 +28,10 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-# define INTHREAD 0 	/* Control going to or is already for Thread */
-# define INMAIN 1	/* Control going to or is already for Main */
+#define INTHREAD 0		/* Control going to or is already for Thread */
+#define INMAIN 1		/* Control going to or is already for Main */
 
-int sem1;		/* Manual semaphore */
+int sem1;			/* Manual semaphore */
 int cancel_flag;
 
 /* Function that the thread executes upon its creation */
@@ -40,14 +40,14 @@ void *a_thread_func()
 	/* Set cancel state to DISABLE, meaning it shouldn't honor any cancel requests. */
 	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 
-	cancel_flag=-1;
+	cancel_flag = -1;
 
 	/* Indicate to main() that the thread has been created. */
-	sem1=INMAIN;
+	sem1 = INMAIN;
 
 	/* Wait until main() has sent out a cancel request, meaning until it
 	 * sets sem1==INTHREAD. */
-	while (sem1==INMAIN)
+	while (sem1 == INMAIN)
 		sleep(1);
 
 	/* If the thread incorrectly honors the cancel request, then the cancel_flag will
@@ -57,7 +57,7 @@ void *a_thread_func()
 
 	/* Should reach here if the thread correctly ignores the cancel
 	 * request. */
-	cancel_flag=1;
+	cancel_flag = 1;
 	pthread_exit(0);
 	return NULL;
 }
@@ -67,42 +67,38 @@ int main()
 	pthread_t new_th;
 
 	/* Initializing values */
-	sem1=INTHREAD;
-	cancel_flag=0;
+	sem1 = INTHREAD;
+	cancel_flag = 0;
 
 	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure thread is created before we cancel it. (wait for
 	 * a_thread_func() to set sem1=INMAIN.) */
-	while (sem1==INTHREAD)
+	while (sem1 == INTHREAD)
 		sleep(1);
 
-	if (pthread_cancel(new_th) != 0)
-	{
+	if (pthread_cancel(new_th) != 0) {
 		perror("Error sending cancel request\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Indicate to the thread function that the thread cancel request
 	 * has been sent to it. */
-	sem1=INTHREAD;
+	sem1 = INTHREAD;
 
 	/* Wait for thread to end execution. */
-	if (pthread_join(new_th, NULL) != 0)
-	{
+	if (pthread_join(new_th, NULL) != 0) {
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* This means that the cancel request was honored rather than ignored, and
 	 * the test fails. */
-	if (cancel_flag <= 0)
-	{
+	if (cancel_flag <= 0) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

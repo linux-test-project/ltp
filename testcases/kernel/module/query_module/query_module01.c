@@ -99,7 +99,7 @@
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 
-#define LONGMODNAMECHAR	'm'		/* Arbitrarily selected */
+#define LONGMODNAMECHAR	'm'	/* Arbitrarily selected */
 #define MODNAMEMAX	(PAGE_SIZE + 1)
 #define EXP_RET_VAL	0
 #define DUMMY_MOD	"dummy_query_mod"
@@ -109,13 +109,12 @@
 /* Name of exported function in DUMMY_MOD */
 #define EXP_FUNC_NAME	"dummy_func_test"
 
-
-struct test_case_t {			/* test case structure */
-	char 	*modname;
-	int	which;
-	char	*desc;
-	int	(*setup)(void);		/* Individual setup routine */
-	void	(*cleanup)(void);	/* Individual cleanup routine */
+struct test_case_t {		/* test case structure */
+	char *modname;
+	int which;
+	char *desc;
+	int (*setup) (void);	/* Individual setup routine */
+	void (*cleanup) (void);	/* Individual cleanup routine */
 };
 
 char *TCID = "query_module01";
@@ -132,43 +131,41 @@ static void cleanup1(void);
 static int setup2(void);
 static void cleanup2(void);
 
-static struct test_case_t  tdat[] = {
-	{ NULL, 0, "module name: NULL, which: 0", NULL, NULL},
+static struct test_case_t tdat[] = {
+	{NULL, 0, "module name: NULL, which: 0", NULL, NULL},
 
-	{ NULL, QM_MODULES, "NULL module name, which: QM_MODULES",
-		setup1, cleanup1},
+	{NULL, QM_MODULES, "NULL module name, which: QM_MODULES",
+	 setup1, cleanup1},
 
-	{ DUMMY_MOD_DEP, QM_DEPS, "valid module name, which: QM_DEPS",
-		setup2, cleanup2},
+	{DUMMY_MOD_DEP, QM_DEPS, "valid module name, which: QM_DEPS",
+	 setup2, cleanup2},
 
-	{ DUMMY_MOD, QM_REFS, "valid module name, which: QM_REFS",
-		setup2, cleanup2},
+	{DUMMY_MOD, QM_REFS, "valid module name, which: QM_REFS",
+	 setup2, cleanup2},
 
-	{ DUMMY_MOD, QM_INFO, "valid module name, which: QM_INFO",
-		setup1, cleanup1},
+	{DUMMY_MOD, QM_INFO, "valid module name, which: QM_INFO",
+	 setup1, cleanup1},
 
-	{ DUMMY_MOD, QM_SYMBOLS, "valid module name, which: QM_SYMBOLS",
-		setup1, cleanup1},
+	{DUMMY_MOD, QM_SYMBOLS, "valid module name, which: QM_SYMBOLS",
+	 setup1, cleanup1},
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
 	size_t buflen = sizeof(out_buf);
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for these testcases - "
-			"doesn't allow running more than one instance "
-			"at a time");
+			 "doesn't allow running more than one instance "
+			 "at a time");
 		STD_COPIES = 1;
 	}
 
@@ -186,20 +183,20 @@ main(int argc, char **argv)
 			}
 
 			TEST(query_module(tdat[testno].modname,
-				tdat[testno].which, (void *)out_buf, buflen,
-				&ret));
+					  tdat[testno].which, (void *)out_buf,
+					  buflen, &ret));
 
 			if ((TEST_RETURN == EXP_RET_VAL) &&
-				!test_functionality(tdat[testno].which,
-				out_buf, buflen, ret) ) {
+			    !test_functionality(tdat[testno].which,
+						out_buf, buflen, ret)) {
 				tst_resm(TPASS, "query_module() successful "
-					"for %s", tdat[testno].desc);
+					 "for %s", tdat[testno].desc);
 			} else {
 				tst_resm(TFAIL, "query_module() failed for "
-					"%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" 0)", tdat[testno].desc,
-					TEST_RETURN, EXP_RET_VAL, TEST_ERRNO);
+					 "%s ; returned"
+					 " %d (expected %d), errno %d (expected"
+					 " 0)", tdat[testno].desc,
+					 TEST_RETURN, EXP_RET_VAL, TEST_ERRNO);
 			}
 			if (tdat[testno].cleanup) {
 				tdat[testno].cleanup();
@@ -210,8 +207,7 @@ main(int argc, char **argv)
 	tst_exit();
 }
 
-int
-test_functionality(int which, char *buf, size_t bufsize, size_t ret)
+int test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 {
 	int i = 0;
 	char *modname;
@@ -225,59 +221,58 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 		return 0;
 	}
 
-	switch(which) {
-		case 0:
-			/* Always return SUCCESS */
+	switch (which) {
+	case 0:
+		/* Always return SUCCESS */
+		return 0;
+
+	case QM_MODULES:
+	case QM_DEPS:
+		/* Return SUCCESS if found DUMMY_MOD entry */
+		modname = DUMMY_MOD;
+		break;
+
+	case QM_REFS:
+		/* Return SUCCESS if found DUMMY_MOD_DEP entry */
+		modname = DUMMY_MOD_DEP;
+		break;
+
+	case QM_INFO:
+		/*
+		 * Since module is already loaded, flags should show
+		 * MOD_RUNNING
+		 */
+		if (((struct module_info *)buf)->flags & MOD_RUNNING) {
 			return 0;
+		}
+		return 1;
 
-		case QM_MODULES:
-		case QM_DEPS:
-			/* Return SUCCESS if found DUMMY_MOD entry */
-			modname = DUMMY_MOD;
-			break;
+	case QM_SYMBOLS:
+		vals = (unsigned long *)buf;
 
-		case QM_REFS:
-			/* Return SUCCESS if found DUMMY_MOD_DEP entry */
-			modname = DUMMY_MOD_DEP;
-			break;
+		/*
+		 * Find entry for atleast one symbol, checking for
+		 * EXP_FUNC_NAME symbol, if found return SUCCESS.
+		 */
+		for (i = 0; i < ret; i++, vals += 2) {
 
-		case QM_INFO:
-			/*
-			 * Since module is already loaded, flags should show
-			 * MOD_RUNNING
-			 */
-			if (((struct module_info *) buf) -> flags &
-					MOD_RUNNING) {
+			/* buf + vals[1] - address of symbol name */
+			if (!strcmp(buf + vals[1], EXP_FUNC_NAME)) {
 				return 0;
 			}
-			return 1;
+		}
+		return 1;
 
-		case QM_SYMBOLS:
-			vals = (unsigned long *)buf;
-
-			/*
-			 * Find entry for atleast one symbol, checking for
-			 * EXP_FUNC_NAME symbol, if found return SUCCESS.
-			 */
-			for (i = 0; i < ret; i++, vals += 2) {
-
-				/* buf + vals[1] - address of symbol name */
-				if (!strcmp(buf + vals[1], EXP_FUNC_NAME)) {
-					return 0;
-				}
-			}
-			return 1;
-
-		default:
-			/* Unknown which type */
-			return 1;
+	default:
+		/* Unknown which type */
+		return 1;
 	}
 
 	/* Return SUCCESS if found entry */
 	for (i = 0; i != ret; i++) {
 		if (strcmp(buf, modname)) {
 			buf += strlen(buf) + 1;
-		} else{
+		} else {
 			return 0;
 		}
 	}
@@ -286,8 +281,7 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 }
 
 /* Insert a module of name mod */
-int
-insert_mod(char *mod)
+int insert_mod(char *mod)
 {
 	char cmd[80];
 
@@ -300,8 +294,8 @@ insert_mod(char *mod)
 		return 1;
 	}
 
-        /* Should use force to ignore kernel version & insure loading  */
-        /* -RW                                                         */
+	/* Should use force to ignore kernel version & insure loading  */
+	/* -RW                                                         */
 	/* if (sprintf(cmd, "insmod %s.o", mod) == -1) {               */
 	if (sprintf(cmd, "insmod --force -q %s.o >/dev/null 2>&1", mod) == -1) {
 		tst_resm(TBROK, "sprintf failed");
@@ -314,8 +308,7 @@ insert_mod(char *mod)
 	return 0;
 }
 
-int
-setup1(void)
+int setup1(void)
 {
 	if (insert_mod(DUMMY_MOD)) {
 		/* Failed */
@@ -325,8 +318,7 @@ setup1(void)
 	}
 }
 
-int
-setup2(void)
+int setup2(void)
 {
 	if (insert_mod(DUMMY_MOD)) {
 		/* Failed */
@@ -340,23 +332,21 @@ setup2(void)
 	return 0;
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
 	/* Remove the loadable module - DUMMY_MOD */
-	if (system("rmmod "DUMMY_MOD) != 0) {
+	if (system("rmmod " DUMMY_MOD) != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to unload module %s",
-			DUMMY_MOD);
+			 DUMMY_MOD);
 	}
 }
 
-void
-cleanup2(void)
+void cleanup2(void)
 {
 	/* Remove the loadable module - DUMMY_MOD_DEP */
-	if (system("rmmod "DUMMY_MOD_DEP) != 0) {
+	if (system("rmmod " DUMMY_MOD_DEP) != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to unload module %s",
-			DUMMY_MOD_DEP);
+			 DUMMY_MOD_DEP);
 	}
 	/* Remove the loadable module - DUMMY_MOD */
 	cleanup1();
@@ -366,17 +356,16 @@ cleanup2(void)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
 
-	if (tst_kvercmp(2,5,48) >= 0)
+	if (tst_kvercmp(2, 5, 48) >= 0)
 		tst_brkm(TCONF, NULL, "This test will not work on "
-				"kernels after 2.5.48");
+			 "kernels after 2.5.48");
 
 	/* Initialize longmodname to LONGMODNAMECHAR character */
 	memset(longmodname, LONGMODNAMECHAR, MODNAMEMAX - 1);
@@ -392,8 +381,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

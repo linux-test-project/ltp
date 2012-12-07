@@ -58,8 +58,7 @@ int TST_CNT = 0;
 
 #define MAX_CLIENTS 10
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int svr_sk, clt_sk[MAX_CLIENTS], peeloff_sk[MAX_CLIENTS];
 	sctp_assoc_t svr_associd[MAX_CLIENTS], clt_associd[MAX_CLIENTS];
@@ -78,19 +77,19 @@ main(int argc, char *argv[])
 	struct sctp_assoc_change *sac;
 	char *big_buffer;
 	int i;
-        char *message = "hello, world!\n";
+	char *message = "hello, world!\n";
 	int pf_class;
 
-        /* Rather than fflush() throughout the code, set stdout to
+	/* Rather than fflush() throughout the code, set stdout to
 	 * be unbuffered.
 	 */
 	setvbuf(stdout, NULL, _IONBF, 0);
 
 #if TEST_V6
 	pf_class = PF_INET6;
-        svr_loop.v6.sin6_family = AF_INET6;
-        svr_loop.v6.sin6_addr = in6addr_loopback;
-        svr_loop.v6.sin6_port = htons(SCTP_TESTPORT_1);
+	svr_loop.v6.sin6_family = AF_INET6;
+	svr_loop.v6.sin6_addr = in6addr_loopback;
+	svr_loop.v6.sin6_port = htons(SCTP_TESTPORT_1);
 #else
 	pf_class = PF_INET;
 	svr_loop.v4.sin_family = AF_INET;
@@ -99,7 +98,7 @@ main(int argc, char *argv[])
 #endif
 
 	/* Create and bind the server socket.  */
-        svr_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
+	svr_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 	test_bind(svr_sk, &svr_loop.sa, sizeof(svr_loop));
 
 	/* Enable ASSOC_CHANGE and SNDRCVINFO notifications. */
@@ -112,9 +111,9 @@ main(int argc, char *argv[])
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		clt_sk[i] = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 #if TEST_V6
-        	clt_loop[i].v6.sin6_family = AF_INET6;
-        	clt_loop[i].v6.sin6_addr = in6addr_loopback;
-        	clt_loop[i].v6.sin6_port = htons(SCTP_TESTPORT_2 + i);
+		clt_loop[i].v6.sin6_family = AF_INET6;
+		clt_loop[i].v6.sin6_addr = in6addr_loopback;
+		clt_loop[i].v6.sin6_port = htons(SCTP_TESTPORT_2 + i);
 #else
 		clt_loop[i].v4.sin_family = AF_INET;
 		clt_loop[i].v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
@@ -125,7 +124,7 @@ main(int argc, char *argv[])
 		test_enable_assoc_change(clt_sk[i]);
 	}
 
-        /* Send the first message from all the clients to the server.  This
+	/* Send the first message from all the clients to the server.  This
 	 * will create the associations.
 	 */
 	outmessage.msg_name = &svr_loop;
@@ -142,15 +141,14 @@ main(int argc, char *argv[])
 	outmessage.msg_controllen = cmsg->cmsg_len;
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
-	ppid = rand(); /* Choose an arbitrary value. */
+	ppid = rand();		/* Choose an arbitrary value. */
 	stream = 1;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
 	outmessage.msg_iov->iov_base = message;
 	outmessage.msg_iov->iov_len = strlen(message) + 1;
 	for (i = 0; i < MAX_CLIENTS; i++)
-		test_sendmsg(clt_sk[i], &outmessage, 0,
-					  strlen(message)+1);
+		test_sendmsg(clt_sk[i], &outmessage, 0, strlen(message) + 1);
 
 	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
@@ -214,14 +212,13 @@ main(int argc, char *argv[])
 	if ((-1 != sctp_peeloff(peeloff_sk[0], svr_associd[0])) ||
 	    (EINVAL != errno))
 		tst_brkm(TBROK, NULL, "sctp_peeloff on a peeled off "
-			 "socket error:%d, errno:%d",
-			 error, errno);
+			 "socket error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "sctp_peeloff on a peeled off socket");
 
 	/* Send a message from all the client sockets to the server socket. */
 	for (i = 0; i < MAX_CLIENTS; i++)
-		test_sendmsg(clt_sk[i], &outmessage, 0, strlen(message)+1);
+		test_sendmsg(clt_sk[i], &outmessage, 0, strlen(message) + 1);
 
 	/* Receive the sent messages on the peeled off server sockets.  */
 	for (i = 0; i < MAX_CLIENTS; i++) {
@@ -239,7 +236,8 @@ main(int argc, char *argv[])
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		outmessage.msg_name = &clt_loop[i];
 		outmessage.msg_namelen = sizeof(clt_loop[i]);
-		test_sendmsg(peeloff_sk[i], &outmessage, 0, strlen(message)+1);
+		test_sendmsg(peeloff_sk[i], &outmessage, 0,
+			     strlen(message) + 1);
 	}
 
 	/* Receive the messages sent from the peeled of server sockets on
@@ -263,7 +261,7 @@ main(int argc, char *argv[])
 	 */
 	outmessage.msg_name = &clt_loop[1];
 	outmessage.msg_namelen = sizeof(clt_loop[1]);
-	test_sendmsg(peeloff_sk[0], &outmessage, 0, strlen(message)+1);
+	test_sendmsg(peeloff_sk[0], &outmessage, 0, strlen(message) + 1);
 
 	inmessage.msg_controllen = sizeof(incmsg);
 	error = test_recvmsg(clt_sk[0], &inmessage, MSG_WAITALL);
@@ -292,6 +290,6 @@ main(int argc, char *argv[])
 		close(clt_sk[i]);
 	}
 
-        /* Indicate successful completion.  */
-       	tst_exit();
+	/* Indicate successful completion.  */
+	tst_exit();
 }

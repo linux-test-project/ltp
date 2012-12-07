@@ -50,7 +50,7 @@ int main()
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
 		return PTS_UNRESOLVED;
 	}
@@ -63,23 +63,21 @@ int main()
 		return PTS_FAIL;
 	}
 	pid = fork();
-        if (pid == -1) {
-                perror(ERROR_PREFIX "fork");
+	if (pid == -1) {
+		perror(ERROR_PREFIX "fork");
 		mqclean(mqdes, mqname);
-                return PTS_UNRESOLVED;
-        }
-        if (pid == 0) {
-                /* child process */
+		return PTS_UNRESOLVED;
+	}
+	if (pid == 0) {
+		/* child process */
 		if (mq_notify(mqdes, &notification) != -1) {
 			printf("Test FAILED \n");
 			return PTS_FAIL;
-		}
-		else {
+		} else {
 			printf("Test PASSED \n");
 			return PTS_PASS;
 		}
-	}
-	else {
+	} else {
 		/* parent process */
 		wait(&status);
 		mqclean(mqdes, mqname);

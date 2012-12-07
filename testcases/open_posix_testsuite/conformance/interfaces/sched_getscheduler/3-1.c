@@ -22,27 +22,22 @@ struct unique {
 } sym[] = {
 #ifdef SCHED_FIFO
 	{
-		 SCHED_FIFO, "SCHED_FIFO"
-	},
+	SCHED_FIFO, "SCHED_FIFO"},
 #endif
 #ifdef SCHED_RR
 	{
-		 SCHED_RR, "SCHED_RR"
-	},
+	SCHED_RR, "SCHED_RR"},
 #endif
 #ifdef SCHED_SPORADIC
 	{
-	  SCHED_SPORADIC, "SCHED_SPORADIC"
-	},
+	SCHED_SPORADIC, "SCHED_SPORADIC"},
 #endif
 #ifdef SCHED_OTHER
 	{
-		 SCHED_OTHER, "SCHED_OTHER"
-	},
+	SCHED_OTHER, "SCHED_OTHER"},
 #endif
 	{
-		 0, 0
-	}
+	0, 0}
 };
 
 int main(int argc, char **argv)

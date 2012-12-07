@@ -52,54 +52,58 @@ void *a_thread_func()
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 
-	if (sigaction(SIGABRT,  &act, 0) == -1) {
+	if (sigaction(SIGABRT, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
-		pthread_exit((void*)1);
+		pthread_exit((void *)1);
 	}
 
-	if (sigaction(SIGALRM,  &act, 0) == -1) {
+	if (sigaction(SIGALRM, &act, 0) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
-		pthread_exit((void*)1);
+		pthread_exit((void *)1);
 	}
 
 	if (pthread_sigmask(SIG_SETMASK, &blocked_set1, NULL) == -1) {
-		perror("Unexpected error while attempting to use pthread_sigmask.\n");
-		pthread_exit((void*)1);
+		perror
+		    ("Unexpected error while attempting to use pthread_sigmask.\n");
+		pthread_exit((void *)1);
 	}
 
 	if (pthread_sigmask(SIG_BLOCK, &blocked_set2, NULL) == -1) {
-		perror("Unexpected error while attempting to use pthread_sigmask.\n");
-		pthread_exit((void*)1);
+		perror
+		    ("Unexpected error while attempting to use pthread_sigmask.\n");
+		pthread_exit((void *)1);
 	}
 
 	if ((raise(SIGABRT) == -1) | (raise(SIGALRM) == -1)) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
-		pthread_exit((void*)1);
+		pthread_exit((void *)1);
 	}
 
 	if (handler_called) {
 		printf("FAIL: Signal was not blocked\n");
-		pthread_exit((void*)-1);
+		pthread_exit((void *)-1);
 	}
 
 	if (sigpending(&pending_set) == -1) {
 		perror("Unexpected error while attempting to use sigpending\n");
-		pthread_exit((void*)1);
+		pthread_exit((void *)1);
 	}
 
-	if ((sigismember(&pending_set, SIGABRT) != 1) | (sigismember(&pending_set, SIGALRM) != 1)) {
+	if ((sigismember(&pending_set, SIGABRT) !=
+	     1) | (sigismember(&pending_set, SIGALRM) != 1)) {
 		perror("FAIL: sigismember did not return 1\n");
-		pthread_exit((void*)-1);
+		pthread_exit((void *)-1);
 	}
 
-	pthread_exit((void*)0);
+	pthread_exit((void *)0);
 	return NULL;
 }
 
-int main() {
+int main()
+{
 
 	int *thread_return_value;
 
@@ -110,22 +114,20 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_join(new_thread, (void*)&thread_return_value) != 0) {
-                perror("Error in pthread_join()\n");
-                return PTS_UNRESOLVED;
-        }
+	if (pthread_join(new_thread, (void *)&thread_return_value) != 0) {
+		perror("Error in pthread_join()\n");
+		return PTS_UNRESOLVED;
+	}
 
 	if ((long)thread_return_value != 0) {
 		if ((long)thread_return_value == 1) {
-			printf ("Test UNRESOLVED\n");
+			printf("Test UNRESOLVED\n");
 			return PTS_UNRESOLVED;
-		}
-		else if ((long)thread_return_value == -1) {
-			printf ("Test FAILED\n");
+		} else if ((long)thread_return_value == -1) {
+			printf("Test FAILED\n");
 			return PTS_FAIL;
-		}
-		else {
-			printf ("Test UNRESOLVED\n");
+		} else {
+			printf("Test UNRESOLVED\n");
 			return PTS_UNRESOLVED;
 		}
 	}

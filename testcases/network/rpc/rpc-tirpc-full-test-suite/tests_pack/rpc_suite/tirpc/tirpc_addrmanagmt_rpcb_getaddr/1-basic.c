@@ -43,40 +43,36 @@
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 1; //Default test result set to FAILED
+	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
-    char addrbuf[ADDRBUFSIZE];
+	char addrbuf[ADDRBUFSIZE];
 
 	//Initialization
 	svcaddr.len = 0;
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 
-	if (run_mode)
-	{
+	if (run_mode) {
 		printf("Host : %s\n", argc[1]);
 		printf("ProgNum : %d\n", progNum);
 	}
 
 	/* Returns a pointer to nconf corresponding to NETCONF */
-	if ((nconf = getnetconfigent("udp")) ==
-               (struct netconfig *)NULL)
-    {
-    	fprintf(stderr, "Cannot get netconfig entry for UDP\n");
-    	exit(1);
+	if ((nconf = getnetconfigent("udp")) == (struct netconfig *)NULL) {
+		fprintf(stderr, "Cannot get netconfig entry for UDP\n");
+		exit(1);
 	}
 
-  	test_status = !rpcb_getaddr(progNum, VERSNUM, nconf,
-                                &svcaddr, argc[1]);
+	test_status = !rpcb_getaddr(progNum, VERSNUM, nconf, &svcaddr, argc[1]);
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

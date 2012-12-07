@@ -17,15 +17,17 @@
 #include <stdio.h>
 #include "test.h"
 
-int get_supp_sched_mc(void) {
-	if (tst_kvercmp(2,6,29) < 0)
+int get_supp_sched_mc(void)
+{
+	if (tst_kvercmp(2, 6, 29) < 0)
 		return 1;
 	else
 		return 2;
 }
 
-int get_supp_sched_smt(void) {
-	if (tst_kvercmp(2,6,29) < 0)
+int get_supp_sched_smt(void)
+{
+	if (tst_kvercmp(2, 6, 29) < 0)
 		return 1;
 	else
 		return 2;
@@ -36,12 +38,11 @@ int main(int argc, char **argv)
 	char *param;
 	if (argc == 0)
 		return 1;
-	else
-	{
+	else {
 		param = argv[1];
-		if (strcmp(param, "sched_mc")==0)
+		if (strcmp(param, "sched_mc") == 0)
 			return (get_supp_sched_mc());
-		if (strcmp(param, "sched_smt")==0)
-                        return (get_supp_sched_smt());
+		if (strcmp(param, "sched_smt") == 0)
+			return (get_supp_sched_smt());
 	}
 }

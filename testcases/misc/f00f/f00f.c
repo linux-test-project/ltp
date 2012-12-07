@@ -42,48 +42,43 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="f00f";
-int TST_TOTAL=1;
+char *TCID = "f00f";
+int TST_TOTAL = 1;
 
 #ifdef __i386__
 
-void
-sigill (int sig)
+void sigill(int sig)
 {
-  tst_resm(TPASS, "SIGILL received from f00f instruction.  Good.");
-  tst_exit();
+	tst_resm(TPASS, "SIGILL received from f00f instruction.  Good.");
+	tst_exit();
 }
 
-int
-main ()
+int main()
 {
-  signal (SIGILL, sigill);
-  tst_resm(TINFO, "Testing for proper f00f instruction handling.");
+	signal(SIGILL, sigill);
+	tst_resm(TINFO, "Testing for proper f00f instruction handling.");
 
-  /*
-   * an f00f instruction
-   */
-  asm volatile (".byte	0xf0\n"
-		".byte	0x0f\n"
-		".byte	0xc7\n"
-		".byte	0xc8\n");
+	/*
+	 * an f00f instruction
+	 */
+	asm volatile (".byte	0xf0\n"
+		      ".byte	0x0f\n" ".byte	0xc7\n" ".byte	0xc8\n");
 
-  /*
-   * we shouldn't get here, the f00f instruction should trigger
-   * a SIGILL or lock the system.
-   */
-  tst_resm(TFAIL, "f00f instruction did not properly cause SIGILL");
-  tst_exit();
+	/*
+	 * we shouldn't get here, the f00f instruction should trigger
+	 * a SIGILL or lock the system.
+	 */
+	tst_resm(TFAIL, "f00f instruction did not properly cause SIGILL");
+	tst_exit();
 }
 
 #else /* __i386__ */
 
-int
-main ()
+int main()
 {
-  tst_resm(TCONF, "f00f bug test only for i386");
-  tst_exit();
-        return 0;
+	tst_resm(TCONF, "f00f bug test only for i386");
+	tst_exit();
+	return 0;
 }
 
 #endif /* __i386__ */

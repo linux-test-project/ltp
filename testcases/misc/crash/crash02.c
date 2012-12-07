@@ -65,8 +65,8 @@ TODO:
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="crash02";
-int TST_TOTAL=1;
+char *TCID = "crash02";
+int TST_TOTAL = 1;
 
 static int x_opt = 0;
 static int v_opt = 0;
@@ -116,7 +116,8 @@ void setup()
 
 void help()
 {
-	printf("	-x		dry run, hexdump random code instead\n");
+	printf
+	    ("	-x		dry run, hexdump random code instead\n");
 	printf("	-l x		max syscall no\n");
 	printf("	-v x		verbose level\n");
 	printf("	-s x		random seed\n");
@@ -125,25 +126,23 @@ void help()
 
 /*
  */
-option_t options[] =
-{
-	{ "v:", &v_opt, &v_copt },
-	{ "l:", &l_opt, &l_copt },
-	{ "s:", &s_opt, &s_copt },
-	{ "n:", &n_opt, &n_copt },
-	{ "x", &x_opt, NULL },
+option_t options[] = {
+	{"v:", &v_opt, &v_copt},
+	{"l:", &l_opt, &l_copt},
+	{"s:", &s_opt, &s_copt},
+	{"n:", &n_opt, &n_copt},
+	{"x", &x_opt, NULL},
 
-	{ NULL, NULL, NULL }
+	{NULL, NULL, NULL}
 };
 
-void badboy_fork ();
-void badboy_loop ();
+void badboy_fork();
+void badboy_loop();
 
-void summarize_errno ();
+void summarize_errno();
 void record_errno(unsigned int n);
 
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char *msg;
 	int lc;
@@ -168,7 +167,7 @@ main (int argc, char *argv[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count=0;
+		Tst_count = 0;
 
 		tst_resm(TINFO, "crashme02 %d %d %d", sysno_max, nseed, ntries);
 
@@ -187,24 +186,23 @@ main (int argc, char *argv[])
 /* ************************* */
 int badboy_pid;
 
-void my_signal (int sig, void (*func) ());
+void my_signal(int sig, void (*func) ());
 
 void monitor_fcn(int sig)
 {
 	int status;
 
 	if (verbose_level >= 3)
-	printf ("time limit reached on pid. using kill.\n");
+		printf("time limit reached on pid. using kill.\n");
 
 	status = kill(badboy_pid, SIGKILL);
 	if (status < 0) {
 		if (verbose_level >= 3)
-			printf ("failed to kill process\n");
+			printf("failed to kill process\n");
 	}
 }
 
-void
-badboy_fork()
+void badboy_fork()
 {
 	int status, pid;
 	pid_t child;
@@ -215,26 +213,26 @@ badboy_fork()
 		perror("fork");
 	case 0:
 #ifdef DEBUG_LATE_BADBOY
-		sleep(ntries*MAX_TRY_TIME+10);
+		sleep(ntries * MAX_TRY_TIME + 10);
 #else
 		badboy_loop();
 #endif
 		exit(0);
 	default:
 		if (verbose_level > 3)
-			printf ("badboy pid = %d\n", badboy_pid);
+			printf("badboy pid = %d\n", badboy_pid);
 
 		/* don't trust the child to return at night */
-		my_signal (SIGALRM, monitor_fcn);
-		alarm (ntries*MAX_TRY_TIME);
+		my_signal(SIGALRM, monitor_fcn);
+		alarm(ntries * MAX_TRY_TIME);
 
-		pid = waitpid (-1, &status, WUNTRACED);
+		pid = waitpid(-1, &status, WUNTRACED);
 		if (pid <= 0)
 			perror("wait");
 		else {
 			if (verbose_level > 3)
 				printf("pid %d exited with status %d\n",
-				    pid, status);
+				       pid, status);
 #if 0
 			record_status(status);
 #endif
@@ -258,18 +256,17 @@ void record_errno(unsigned int n)
 }
 
 /* may not work with -c option */
-void
-summarize_errno ()
+void summarize_errno()
 {
 	int i;
 
 	if (x_opt || verbose_level < 2)
-			return;
+		return;
 
-	printf ("errno status ... number of cases\n");
+	printf("errno status ... number of cases\n");
 	for (i = 0; i < STATUS_MAX; i++) {
 		if (errno_table[i])
-			printf ( "%12d ... %5d\n", i, errno_table[i]);
+			printf("%12d ... %5d\n", i, errno_table[i]);
 	}
 }
 
@@ -277,20 +274,19 @@ summarize_errno ()
 
 jmp_buf again_buff;
 
-unsigned char * bad_malloc (int n);
-void my_signal (int sig, void (*func) ());
-void again_handler (int sig);
-void try_one_crash (int try_num);
-void set_up_signals ();
-int in_blacklist (int sysno);
+unsigned char *bad_malloc(int n);
+void my_signal(int sig, void (*func) ());
+void again_handler(int sig);
+void try_one_crash(int try_num);
+void set_up_signals();
+int in_blacklist(int sysno);
 
 /* badboy "entry" point */
 
 /*
  * Unlike crashme, faulty syscalls are not supposed to barf
  */
-void
-badboy_loop ()
+void badboy_loop()
 {
 	int i;
 
@@ -301,19 +297,19 @@ badboy_loop ()
 			printf("try %d\n", i);
 		}
 
-		if (setjmp (again_buff) == 3) {
+		if (setjmp(again_buff) == 3) {
 			if (verbose_level >= 5)
-					printf("Barfed\n");
+				printf("Barfed\n");
 		} else {
-			set_up_signals ();
+			set_up_signals();
 			alarm(MAX_TRY_TIME);
-			try_one_crash (i);
+			try_one_crash(i);
 		}
 	}
 	summarize_errno();
 }
 
-void again_handler (int sig)
+void again_handler(int sig)
 {
 	char *ss;
 
@@ -359,43 +355,42 @@ void again_handler (int sig)
 		ss = "";
 	}
 	if (verbose_level >= 5)
-		printf ("Got signal %d%s\n", sig, ss);
+		printf("Got signal %d%s\n", sig, ss);
 
-	longjmp (again_buff, 3);
+	longjmp(again_buff, 3);
 }
 
-void my_signal (int sig, void (*func) ())
+void my_signal(int sig, void (*func) ())
 {
 	struct sigaction act;
 
 	act.sa_handler = func;
-	memset (&act.sa_mask, 0x00, sizeof (sigset_t));
-	act.sa_flags = SA_NOMASK|SA_RESTART;
-	sigaction (sig, &act, 0);
+	memset(&act.sa_mask, 0x00, sizeof(sigset_t));
+	act.sa_flags = SA_NOMASK | SA_RESTART;
+	sigaction(sig, &act, 0);
 }
 
-void
-set_up_signals ()
+void set_up_signals()
 {
-	my_signal (SIGILL, again_handler);
+	my_signal(SIGILL, again_handler);
 #ifdef SIGTRAP
-	my_signal (SIGTRAP, again_handler);
+	my_signal(SIGTRAP, again_handler);
 #endif
-	my_signal (SIGFPE, again_handler);
+	my_signal(SIGFPE, again_handler);
 #ifdef SIGBUS
-	my_signal (SIGBUS, again_handler);
+	my_signal(SIGBUS, again_handler);
 #endif
-	my_signal (SIGSEGV, again_handler);
+	my_signal(SIGSEGV, again_handler);
 #ifdef SIGIOT
-	my_signal (SIGIOT, again_handler);
+	my_signal(SIGIOT, again_handler);
 #endif
 #ifdef SIGEMT
-	my_signal (SIGEMT, again_handler);
+	my_signal(SIGEMT, again_handler);
 #endif
 #ifdef SIGALRM
-	my_signal (SIGALRM, again_handler);
+	my_signal(SIGALRM, again_handler);
 #endif
-	my_signal (SIGINT, again_handler);
+	my_signal(SIGINT, again_handler);
 }
 
 /*
@@ -412,28 +407,27 @@ set_up_signals ()
  */
 long int rand_long()
 {
-		int r1, r2;
+	int r1, r2;
 
-		r1 = rand();
-		r2 = rand();
+	r1 = rand();
+	r2 = rand();
 
-		if (r1 & 0x10000L)
-			r1 = 0;
-		if (!r1 && (r2 & 0x50000L))
-			r2 = 0;
-		else if (!r1 && (r2 & 0x20000L))
-			r2 &= 0x00ffL;
+	if (r1 & 0x10000L)
+		r1 = 0;
+	if (!r1 && (r2 & 0x50000L))
+		r2 = 0;
+	else if (!r1 && (r2 & 0x20000L))
+		r2 &= 0x00ffL;
 
-		return (long int) ((r1 & 0xffffL) << 16) | (r2 & 0xffffL);
+	return (long int)((r1 & 0xffffL) << 16) | (r2 & 0xffffL);
 }
 
-void
-try_one_crash (int try_num)
+void try_one_crash(int try_num)
 {
 	long int sysno, arg1, arg2, arg3, arg4, arg5, arg6, arg7;
 
 	do {
-		sysno = rand()%sysno_max;
+		sysno = rand() % sysno_max;
 	} while (in_blacklist(sysno));
 
 	arg1 = rand_long();
@@ -447,19 +441,18 @@ try_one_crash (int try_num)
 	if (x_opt) {
 		if (verbose_level >= 1)
 			printf("%04d: syscall(%ld, %#lx, %#lx, %#lx, %#lx, "
-					"%#lx, %#lx, %#lx)\n",
-					try_num, sysno, arg1, arg2, arg3, arg4, arg5,
-					arg6, arg7);
+			       "%#lx, %#lx, %#lx)\n",
+			       try_num, sysno, arg1, arg2, arg3, arg4, arg5,
+			       arg6, arg7);
 	} else {
-		syscall (sysno, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+		syscall(sysno, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 		record_errno(errno);
 	}
 }
 
 /* The following syscalls create new processes which may cause the test
 	 unable to finish. */
-int
-in_blacklist (int sysno)
+int in_blacklist(int sysno)
 {
 	int i;
 	const int list[] = {

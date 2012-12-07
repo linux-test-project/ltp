@@ -111,10 +111,10 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		if (chmod(test_app, 0700) != 0)
-			tst_resm(TFAIL|TERRNO, "chmod failed");
+			tst_resm(TFAIL | TERRNO, "chmod failed");
 
 		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 
 		if (pid == 0) {
 			if (seteuid(ltpuser1->pw_uid) == -1)
@@ -132,7 +132,8 @@ int main(int ac, char **av)
 				retval = 1;
 				perror("execve failed unexpectedly");
 			} else
-				printf("execve failed with EACCES as expected\n");
+				printf
+				    ("execve failed with EACCES as expected\n");
 
 			if (seteuid(0) == -1)
 				perror("setuid(0) failed");
@@ -142,7 +143,7 @@ int main(int ac, char **av)
 			exit(retval);
 		}
 		if (wait(&status) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "wait failed");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child exited abnormally");
 
@@ -172,18 +173,18 @@ void setup(char *argv0)
 		strncpy(test_path, test_app, sizeof(test_path));
 	else {
 		if ((pwd = get_current_dir_name()) == NULL)
-			tst_brkm(TBROK|TERRNO, NULL, "getcwd failed");
+			tst_brkm(TBROK | TERRNO, NULL, "getcwd failed");
 
 		snprintf(test_path, sizeof(test_path), "%s/%s",
-		    pwd, basename(test_app));
+			 pwd, basename(test_app));
 
 		free(pwd);
 	}
 
 	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") +
-	    1);
+		     1);
 	if (cmd == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "Cannot alloc command string");
+		tst_brkm(TBROK | TERRNO, NULL, "Cannot alloc command string");
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

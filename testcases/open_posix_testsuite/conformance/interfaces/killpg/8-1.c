@@ -22,13 +22,15 @@
 int main()
 {
 
- 	if (killpg(999999, 0) != -1) {
-		printf("killpg did not return -1 even though it was passed an invalid process group id.");
+	if (killpg(999999, 0) != -1) {
+		printf
+		    ("killpg did not return -1 even though it was passed an invalid process group id.");
 		return PTS_UNRESOLVED;
 	}
 
 	if (errno != ESRCH) {
-		printf("killpg did not set errno to ESRCH even though it was passed an invalid signal number.");
+		printf
+		    ("killpg did not set errno to ESRCH even though it was passed an invalid signal number.");
 		return PTS_FAIL;
 	}
 

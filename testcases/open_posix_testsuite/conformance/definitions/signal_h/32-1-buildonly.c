@@ -1,14 +1,14 @@
   /*
-  Test that the function:
-   int sigdelset(sigset_t *, int);
-  is declared.
-  */
+     Test that the function:
+     int sigdelset(sigset_t *, int);
+     is declared.
+   */
 
 #include <signal.h>
 
-typedef int (*sigdelset_test)(sigset_t *, int);
+typedef int (*sigdelset_test) (sigset_t *, int);
 
-int dummyfcn (void)
+int dummyfcn(void)
 {
 	sigdelset_test dummyvar;
 	dummyvar = sigdelset;

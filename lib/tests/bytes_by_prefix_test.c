@@ -159,7 +159,6 @@ struct test_vals test_ll[] = {
 	{"552558G", 4746437078286336LL}
 };
 
-
 static int test_values(void)
 {
 	/*
@@ -168,12 +167,12 @@ static int test_values(void)
 	 * 3rd position of the array denotes the valid long long operations
 	 */
 	int valid_count[3];
-	int tests_number[3]; /* int / long / long long */
+	int tests_number[3];	/* int / long / long long */
 	int i;
 	int error_count = 0;
-	int elements;	/* Number of elements inside the test array. */
+	int elements;		/* Number of elements inside the test array. */
 
-	elements = sizeof(test)/sizeof(struct test_vals);
+	elements = sizeof(test) / sizeof(struct test_vals);
 	/*
 	 * Initializing counters.
 	 */
@@ -205,12 +204,12 @@ static int test_values(void)
 			valid_count[2]++;
 		} else {
 			printf("Test value:%s failed on long long.\n",
-				test[i].val);
+			       test[i].val);
 			error_count++;
 		}
 	}
 
-	elements = sizeof(test_i)/sizeof(struct test_vals);
+	elements = sizeof(test_i) / sizeof(struct test_vals);
 	tests_number[0] += elements;
 
 	/*
@@ -220,13 +219,12 @@ static int test_values(void)
 		if (bytes_by_prefix(test_i[i].val) == test_i[i].res) {
 			valid_count[0]++;
 		} else {
-			printf("Test value:%s failed on int.\n",
-				test_i[i].val);
+			printf("Test value:%s failed on int.\n", test_i[i].val);
 			error_count++;
 		}
 	}
 
-	elements = sizeof(test_l)/sizeof(struct test_vals);
+	elements = sizeof(test_l) / sizeof(struct test_vals);
 	tests_number[1] += elements;
 
 	/*
@@ -237,12 +235,12 @@ static int test_values(void)
 			valid_count[1]++;
 		} else {
 			printf("Test value:%s failed on long.\n",
-				test_l[i].val);
+			       test_l[i].val);
 			error_count++;
 		}
 	}
 
-	elements = sizeof(test_ll)/sizeof(struct test_vals);
+	elements = sizeof(test_ll) / sizeof(struct test_vals);
 	tests_number[2] += elements;
 
 	/*
@@ -253,7 +251,7 @@ static int test_values(void)
 			valid_count[2]++;
 		} else {
 			printf("Test value:%s failed on long long.\n",
-				test_ll[i].val);
+			       test_ll[i].val);
 			error_count++;
 		}
 	}

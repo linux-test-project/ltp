@@ -93,6 +93,7 @@ static struct test_case_t {
 	"fs_index is out of bounds", EINVAL, "EINVAL"}, {
 	"buf is outside your accessible address space", EFAULT, "EFAULT"}
 };
+
 int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);
 
 char *bad_addr = 0;

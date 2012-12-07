@@ -46,8 +46,7 @@ double average(double *tbl)
 	int i;
 	double rslt = 0;
 
-	for (i = 0; i < maxIter; i++)
-	{
+	for (i = 0; i < maxIter; i++) {
 		rslt += tbl[i];
 	}
 	rslt = rslt / maxIter;
@@ -60,8 +59,7 @@ double mini(double *tbl)
 	int i;
 	double rslt = tbl[0];
 
-	for (i = 0; i < maxIter; i++)
-	{
+	for (i = 0; i < maxIter; i++) {
 		if (rslt > tbl[i])
 			rslt = tbl[i];
 	}
@@ -74,8 +72,7 @@ double maxi(double *tbl)
 	int i;
 	double rslt = tbl[0];
 
-	for (i = 0; i < maxIter; i++)
-	{
+	for (i = 0; i < maxIter; i++) {
 		if (rslt < tbl[i])
 			rslt = tbl[i];
 	}
@@ -85,41 +82,40 @@ double maxi(double *tbl)
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
-	//					   argc[2] : Server Program Number
-	//					   argc[3] : Number of test call
-	//					   other arguments depend on test case
+	//                                         argc[2] : Server Program Number
+	//                                         argc[3] : Number of test call
+	//                                         other arguments depend on test case
 
 	//run_mode can switch into stand alone program or program launch by shell script
 	//1 : stand alone, debug mode, more screen information
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
-	int test_status = 0; //Default test result set to FAILED
+	int test_status = 0;	//Default test result set to FAILED
 	int i;
 	double *resultTbl;
-	struct timeval tv1,tv2;
-    struct timezone tz;
-    long long diff;
-    double rslt;
+	struct timeval tv1, tv2;
+	struct timezone tz;
+	long long diff;
+	double rslt;
 	int progNum = atoi(argc[2]);
-    CLIENT *client = NULL;
+	CLIENT *client = NULL;
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
-    char addrbuf[ADDRBUFSIZE];
+	char addrbuf[ADDRBUFSIZE];
 	enum clnt_stat cs;
 	int var_snd = 0;
 	int var_rec = -1;
 	struct timeval tv;
 
 	//Test initialisation
-    maxIter = atoi(argc[3]);
-    resultTbl = (double *)malloc(maxIter * sizeof(double));
+	maxIter = atoi(argc[3]);
+	resultTbl = (double *)malloc(maxIter * sizeof(double));
 
-    tv.tv_sec = 0;
+	tv.tv_sec = 0;
 	tv.tv_usec = 100;
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *) NULL)
-	{
+	if (nconf == (struct netconfig *)NULL) {
 		//syslog(LOG_ERR, "getnetconfigent for udp failed");
 		fprintf(stderr, "err nconf\n");
 		printf("5\n");
@@ -130,66 +126,56 @@ int main(int argn, char *argc[])
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 
-	if (svcaddr.buf == NULL)
-	{
-    	/* if malloc() failed, print error messages and exit */
+	if (svcaddr.buf == NULL) {
+		/* if malloc() failed, print error messages and exit */
 		printf("5\n");
-  		exit(1);
-    }
+		exit(1);
+	}
+	//printf("svcaddr reserved (%s)\n", argc[1]);
 
-    //printf("svcaddr reserved (%s)\n", argc[1]);
-
-	if (!rpcb_getaddr(progNum, VERSNUM, nconf,
-                               &svcaddr, argc[1]))
-    {
-    	fprintf(stderr, "rpcb_getaddr failed!!\n");
+	if (!rpcb_getaddr(progNum, VERSNUM, nconf, &svcaddr, argc[1])) {
+		fprintf(stderr, "rpcb_getaddr failed!!\n");
 		printf("5\n");
-    	exit(1);
-    }
-    //printf("svc get\n");
+		exit(1);
+	}
+	//printf("svc get\n");
 
 	client = clnt_dg_create(RPC_ANYFD, &svcaddr,
-			 				progNum, VERSNUM, 1024, 1024);
+				progNum, VERSNUM, 1024, 1024);
 
-	if (client == NULL)
-	{
+	if (client == NULL) {
 		clnt_pcreateerror("ERR");
 		exit(1);
 	}
-
 	//Call tested function several times
-	for (i = 0; i < maxIter; i++)
-	{
+	for (i = 0; i < maxIter; i++) {
 		//Tic
 		gettimeofday(&tv1, &tz);
 
 		//Call function
 		cs = clnt_call(client, PROCNUM,
-	               		(xdrproc_t)xdr_int, (char *)&var_snd,
-	               		(xdrproc_t)xdr_int, (char *)&var_rec,
-	               		tv);
+			       (xdrproc_t) xdr_int, (char *)&var_snd,
+			       (xdrproc_t) xdr_int, (char *)&var_rec, tv);
 
 		//Toc
 		gettimeofday(&tv2, &tz);
 
 		//Add function execution time (toc-tic)
-		diff = (tv2.tv_sec-tv1.tv_sec) * 1000000L + (tv2.tv_usec-tv1.tv_usec);
+		diff =
+		    (tv2.tv_sec - tv1.tv_sec) * 1000000L + (tv2.tv_usec -
+							    tv1.tv_usec);
 		rslt = (double)diff / 1000;
 
-    	if (cs == RPC_SUCCESS)
-    	{
-    		resultTbl[i] = rslt;
-    	}
-    	else
-    	{
-    		test_status = 1;
-    		break;
-    	}
+		if (cs == RPC_SUCCESS) {
+			resultTbl[i] = rslt;
+		} else {
+			test_status = 1;
+			break;
+		}
 
-    	if (run_mode)
-    	{
-    		fprintf(stderr, "lf time  = %lf usecn\n", resultTbl[i]);
-    	}
+		if (run_mode) {
+			fprintf(stderr, "lf time  = %lf usecn\n", resultTbl[i]);
+		}
 	}
 
 	//This last printf gives the result status to the tests suite

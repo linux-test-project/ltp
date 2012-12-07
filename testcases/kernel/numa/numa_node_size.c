@@ -41,47 +41,48 @@
 int numa_exit_on_error = 0;
 char *fmt_mem(unsigned long long mem, char *buf)
 {
-        if (mem == -1L)
-            sprintf(buf, "<not available>");
-        else
-            sprintf(buf, "%Lu MB", mem >> 20);
-        return buf;
+	if (mem == -1L)
+		sprintf(buf, "<not available>");
+	else
+		sprintf(buf, "%Lu MB", mem >> 20);
+	return buf;
 }
+
 void hardware(void)
 {
 #if HAVE_NUMA_H
-        int i;
-        int maxnode = numa_max_node();
-        printf("available: %d nodes (0-%d)\n", 1+maxnode, maxnode);
-        for (i = 0; i <= maxnode; i++) {
-            char buf[64];
-            long fr;
-            unsigned long sz = numa_node_size(i, &fr);
-            printf("node %d cpus:", i);
-            printf("node %d size: %s\n", i, fmt_mem(sz, buf));
-            printf("node %d free: %s\n", i, fmt_mem(fr, buf));
-        }
+	int i;
+	int maxnode = numa_max_node();
+	printf("available: %d nodes (0-%d)\n", 1 + maxnode, maxnode);
+	for (i = 0; i <= maxnode; i++) {
+		char buf[64];
+		long fr;
+		unsigned long sz = numa_node_size(i, &fr);
+		printf("node %d cpus:", i);
+		printf("node %d size: %s\n", i, fmt_mem(sz, buf));
+		printf("node %d free: %s\n", i, fmt_mem(fr, buf));
+	}
 #endif
 }
+
 int main()
 {
 #if HAVE_NUMA_H
-        nodemask_t nodemask;
-        void hardware();
-        if (numa_available() < 0)
-        {
-            printf("This system does not support NUMA policy\n");
-            numa_error("numa_available");
-            numa_exit_on_error = 1;
-            exit(numa_exit_on_error);
-        }
-        nodemask_zero(&nodemask);
-        nodemask_set(&nodemask,1);
-        numa_bind(&nodemask);
-        hardware();
-        return numa_exit_on_error;
+	nodemask_t nodemask;
+	void hardware();
+	if (numa_available() < 0) {
+		printf("This system does not support NUMA policy\n");
+		numa_error("numa_available");
+		numa_exit_on_error = 1;
+		exit(numa_exit_on_error);
+	}
+	nodemask_zero(&nodemask);
+	nodemask_set(&nodemask, 1);
+	numa_bind(&nodemask);
+	hardware();
+	return numa_exit_on_error;
 #else
-        printf("NUMA is not available\n");
-        return 1;
+	printf("NUMA is not available\n");
+	return 1;
 #endif
 }

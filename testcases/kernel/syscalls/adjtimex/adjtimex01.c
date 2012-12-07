@@ -108,7 +108,7 @@ int main(int ac, char **av)
 		if ((TEST_RETURN >= 0) && (TEST_RETURN <= 5)) {
 			tst_resm(TPASS, "adjtimex() returned %ld", TEST_RETURN);
 		} else {
-			tst_resm(TFAIL|TTERRNO, "Test Failed, adjtimex()"
+			tst_resm(TFAIL | TTERRNO, "Test Failed, adjtimex()"
 				 "returned %ld", TEST_RETURN);
 		}
 	}
@@ -132,8 +132,8 @@ void setup()
 
 	/* Save current parameters in tim_save */
 	if ((adjtimex(&tim_save)) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-		    "failed to save current parameters");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "failed to save current parameters");
 }
 
 /*

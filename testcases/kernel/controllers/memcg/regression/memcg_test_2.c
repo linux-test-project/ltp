@@ -26,13 +26,13 @@
 #include <string.h>
 #include <unistd.h>
 
-void sigusr_handler(int __attribute__((unused)) signo)
+void sigusr_handler(int __attribute__ ((unused)) signo)
 {
 	char *p;
 	int size = getpagesize() * 2;
 
-	p = mmap(NULL, size, PROT_READ|PROT_WRITE,
-		 MAP_PRIVATE|MAP_ANONYMOUS|MAP_LOCKED, 0, 0);
+	p = mmap(NULL, size, PROT_READ | PROT_WRITE,
+		 MAP_PRIVATE | MAP_ANONYMOUS | MAP_LOCKED, 0, 0);
 	if (p == MAP_FAILED)
 		exit(1);
 }

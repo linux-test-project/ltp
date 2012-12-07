@@ -49,13 +49,13 @@
  *                      Report Generation                               *
  ************************************************************************/
 
-static int scanner_reporter( SYM );
-static int iscanner_reporter( SYM );
-static int scanner_test_end( SYM, SYM, SYM );
-static int iscanner_test_end( SYM, SYM, SYM );
+static int scanner_reporter(SYM);
+static int iscanner_reporter(SYM);
+static int scanner_test_end(SYM, SYM, SYM);
+static int iscanner_test_end(SYM, SYM, SYM);
 
-static int (*reporter_func)( SYM ) = scanner_reporter;
-static int (*test_end_func)( SYM, SYM, SYM ) = scanner_test_end;
+static int (*reporter_func) (SYM) = scanner_reporter;
+static int (*test_end_func) (SYM, SYM, SYM) = scanner_test_end;
 
 /*
  * Do the report generation.
@@ -79,94 +79,93 @@ static int (*test_end_func)( SYM, SYM, SYM ) = scanner_test_end;
  *  (4) go thru all tags and report each as described at the beginning of
  *      this file
  */
-static int
-scanner_reporter(tags)
-    SYM tags;
+static int scanner_reporter(tags)
+SYM tags;
 {
-    DBT Key, Data;
-    SYM Tag, Keys;
+	DBT Key, Data;
+	SYM Tag, Keys;
 
-    time_t clock;
-    struct tm *tm;
+	time_t clock;
+	struct tm *tm;
 
-    /* a list of tags, a count of the number of tags allocated to the list,
-       and a pointer to go thru the list */
-    char **taglist, **tl;
-    int ntags;
-    int tagcount;               /* how many tags used */
+	/* a list of tags, a count of the number of tags allocated to the list,
+	   and a pointer to go thru the list */
+	char **taglist, **tl;
+	int ntags;
+	int tagcount;		/* how many tags used */
 
-    char key_get[KEYSIZE];
-    char *info;
+	char key_get[KEYSIZE];
+	char *info;
 
+	/*
+	 * extract tag names from data
+	 */
+	ntags = NTAGS_START;
+	taglist = (char **)malloc(sizeof(char *) * ntags);
+	tagcount = 0;
 
-    /*
-     * extract tag names from data
-     */
-    ntags=NTAGS_START;
-    taglist= (char **)malloc(sizeof(char *) * ntags);
-    tagcount=0;
+	tl = taglist;
+	sym_seq(tags, &Key, &Data, R_FIRST);
+	do {
+		if (tagcount == ntags) {
+			/* exceeded tag array size -- realloc */
+			ntags += NTAGS_START;
+			taglist =
+			    (char **)realloc(taglist, sizeof(char *) * ntags);
+			tl = taglist + tagcount;
+		}
 
-    tl = taglist;
-    sym_seq(tags, &Key, &Data, R_FIRST);
-    do {
-        if (tagcount == ntags) {
-            /* exceeded tag array size -- realloc */
-            ntags += NTAGS_START;
-            taglist= (char **)realloc(taglist, sizeof(char *) * ntags);
-            tl = taglist+tagcount;
-        }
+		*tl++ = Key.data;
+		tagcount++;
+	} while (sym_seq(tags, &Key, &Data, R_NEXT) == 0);
 
-        *tl++ = Key.data;
-        tagcount++;
-    } while (sym_seq(tags, &Key, &Data, R_NEXT)==0);
+	if (tagcount == ntags) {
+		/* exceeded tag array size -- realloc */
+		ntags += NTAGS_START;
+		taglist = (char **)realloc(taglist, sizeof(char *) * ntags);
+		tl = taglist + tagcount;
+	}
 
-    if (tagcount == ntags) {
-        /* exceeded tag array size -- realloc */
-        ntags += NTAGS_START;
-        taglist= (char **)realloc(taglist, sizeof(char *) * ntags);
-        tl = taglist+tagcount;
-    }
+	*tl++ = NULL;
+	ntags = tagcount;
+	/* Retrieve one "stime" to get the date. */
+	for (tl = taglist; *tl != NULL; tl++) {
+		strcpy(key_get, *tl);
+		strcat(key_get, ",_keys,stime");
+		if ((info = (char *)sym_get(tags, key_get)) != NULL) {
+			clock = atoi(info);
+			tm = gmtime(&clock);
+			strftime(key_get, KEYSIZE, "%x", tm);
+			sym_put(tags, strdup("_RTS,date"), strdup(key_get), 0);
+			break;
+		}
+	}
 
-    *tl++ = NULL;
-    ntags = tagcount;
-    /* Retrieve one "stime" to get the date. */
-    for (tl=taglist; *tl != NULL; tl++) {
-        strcpy(key_get, *tl);
-        strcat(key_get, ",_keys,stime");
-        if ((info = (char *)sym_get(tags, key_get)) != NULL) {
-            clock = atoi(info);
-            tm = gmtime(&clock);
-            strftime(key_get, KEYSIZE, "%x", tm);
-            sym_put(tags, strdup("_RTS,date"), strdup(key_get), 0);
-            break;
-        }
-    }
+	print_header(tags);
 
-    print_header(tags);
+	/*
+	 * The way that I am using 'Keys' and 'Tag' makes assumptions about the
+	 * internals of the sym_* data structure.
+	 */
+	/* dump 'em all */
+	for (tl = taglist; *tl != NULL; tl++) {
+		if (!strcmp(*tl, "_RTS"))
+			continue;
 
-    /*
-     * The way that I am using 'Keys' and 'Tag' makes assumptions about the
-     * internals of the sym_* data structure.
-     */
-    /* dump 'em all */
-    for (tl=taglist; *tl != NULL; tl++) {
-        if (!strcmp(*tl, "_RTS"))
-            continue;
+		strcpy(key_get, *tl);
+		strcat(key_get, ",_keys");
+		if ((Keys = sym_get(tags, key_get)) == NULL) {
+			return 0;
+		}
 
-        strcpy(key_get, *tl);
-        strcat(key_get, ",_keys");
-        if ((Keys = sym_get(tags, key_get)) == NULL) {
-            return 0;
-        }
+		strcpy(key_get, *tl);
+		if ((Tag = sym_get(tags, key_get)) != NULL) {
+			tag_report(NULL, Tag, Keys);
+		}
+	}
+	free(taglist);
 
-        strcpy(key_get, *tl);
-        if ((Tag = sym_get(tags, key_get)) != NULL) {
-            tag_report(NULL, Tag, Keys);
-        }
-    }
-    free(taglist);
-
-    return 0;
+	return 0;
 }
 
 /*
@@ -180,100 +179,96 @@ scanner_reporter(tags)
  * under another key tree with almost zero brainwork because a SYM
  * is what the DATA area points to.
  */
-static int
-scanner_test_end(alltags, ctag, keys)
-    SYM alltags, ctag, keys;
+static int scanner_test_end(alltags, ctag, keys)
+SYM alltags, ctag, keys;
 {
-    static int notag=0;         /* counter for records with no tag (error) */
-    char tagname[KEYSIZE];      /* used when creating name (see above) */
-    char *tag;                  /* tag name to look things up in */
-    char *status;               /* initiation status of old tag */
-    SYM rm;                     /* pointer to old tag -- to remove it */
+	static int notag = 0;	/* counter for records with no tag (error) */
+	char tagname[KEYSIZE];	/* used when creating name (see above) */
+	char *tag;		/* tag name to look things up in */
+	char *status;		/* initiation status of old tag */
+	SYM rm;			/* pointer to old tag -- to remove it */
 
+	if (alltags == NULL || keys == NULL || ctag == NULL)
+		return -1;	/* for really messed up test output */
 
-    if (alltags == NULL || keys == NULL || ctag == NULL)
-        return -1;                       /* for really messed up test output */
+	/* insert keys into tag */
+	sym_put(ctag, "_keys", (void *)keys, 0);
 
-    /* insert keys into tag */
-    sym_put(ctag, "_keys", (void *)keys, 0);
+	/* get the tag, or build a new one */
+	if ((tag = (char *)sym_get(keys, "tag")) == NULL) {
+		/* this is an "impossible" situation: test_output checks for this
+		 * and creates a dummy tag. */
+		sprintf(tagname, "no_tag_%d", notag++);
+		fprintf(stderr, "No TAG key!  Using %s\n", tagname);
+		sym_put(keys, "tag", strdup(tagname), 0);
+		tag = strdup(tagname);
+	}
 
-    /* get the tag, or build a new one */
-    if ((tag=(char *)sym_get(keys, "tag")) == NULL) {
-        /* this is an "impossible" situation: test_output checks for this
-         * and creates a dummy tag. */
-        sprintf(tagname, "no_tag_%d", notag++);
-        fprintf(stderr, "No TAG key!  Using %s\n", tagname);
-        sym_put(keys, "tag", strdup(tagname), 0);
-        tag=strdup(tagname);
-    }
+	/*
+	 * Special case: duplicate tag that has an initiation_status failure
+	 * is thrown away.
+	 */
+	if ((rm = (SYM) sym_get(alltags, tag)) != NULL) {
+		if ((status =
+		     (char *)sym_get(keys, "initiation_status")) != NULL) {
+			if (strcmp(status, "ok")) {
+				/* do not take new data.  remove new data */
+				sym_rm(ctag, RM_KEY | RM_DATA);
+				return 1;
+			} else {
+				/* remove old data in alltags */
+				sym_rm(rm, RM_KEY | RM_DATA);
+			}
+		} else {
+			/* new data does not have an initiation_status -- throw it away */
+			sym_rm(ctag, RM_KEY | RM_DATA);
+			return 1;
+		}
+	}
 
-    /*
-     * Special case: duplicate tag that has an initiation_status failure
-     * is thrown away.
-     */
-    if ((rm=(SYM)sym_get(alltags, tag)) != NULL) {
-        if ((status=(char *)sym_get(keys, "initiation_status")) != NULL) {
-            if (strcmp(status, "ok")) {
-                /* do not take new data.  remove new data */
-                sym_rm(ctag, RM_KEY | RM_DATA);
-                return 1;
-            } else {
-                /* remove old data in alltags */
-                sym_rm(rm, RM_KEY | RM_DATA);
-            }
-        } else {
-            /* new data does not have an initiation_status -- throw it away */
-            sym_rm(ctag, RM_KEY | RM_DATA);
-            return 1;
-        }
-    }
+	/* put new data.. replaces existing "tag" key if it exists
+	 * (it's data should have been removed above) */
+	sym_put(alltags, tag, ctag, PUT_REPLACE);
 
-    /* put new data.. replaces existing "tag" key if it exists
-     * (it's data should have been removed above) */
-    sym_put(alltags, tag, ctag, PUT_REPLACE);
-
-    return 0;
+	return 0;
 }
 
-static int
-iscanner_reporter(tags)
-    SYM tags;
+static int iscanner_reporter(tags)
+SYM tags;
 {
-  return 0;
+	return 0;
 }
 
-static int
-iscanner_test_end(alltags, ctag, keys)
-    SYM alltags, ctag, keys;
+static int iscanner_test_end(alltags, ctag, keys)
+SYM alltags, ctag, keys;
 {
-    if (alltags == NULL || keys == NULL || ctag == NULL)
-        return -1;                       /* for really messed up test output */
+	if (alltags == NULL || keys == NULL || ctag == NULL)
+		return -1;	/* for really messed up test output */
 
-    /* insert keys into tag */
-    sym_put(ctag, "_keys", (void *)keys, 0);
+	/* insert keys into tag */
+	sym_put(ctag, "_keys", (void *)keys, 0);
 
-
-    return tag_report(alltags, ctag, keys);
+	return tag_report(alltags, ctag, keys);
 }
 
-int reporter( SYM s )
+int reporter(SYM s)
 {
-  return reporter_func( s );
+	return reporter_func(s);
 }
 
-int test_end( SYM a, SYM b, SYM c )
+int test_end(SYM a, SYM b, SYM c)
 {
-  return test_end_func( a, b, c );
+	return test_end_func(a, b, c);
 }
 
 void set_scanner(void)
 {
-  reporter_func = scanner_reporter;
-  test_end_func = scanner_test_end;
+	reporter_func = scanner_reporter;
+	test_end_func = scanner_test_end;
 }
 
 void set_iscanner(void)
 {
-  reporter_func = iscanner_reporter;
-  test_end_func = iscanner_test_end;
+	reporter_func = iscanner_reporter;
+	test_end_func = iscanner_test_end;
 }

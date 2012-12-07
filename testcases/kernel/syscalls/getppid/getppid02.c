@@ -79,19 +79,20 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				if (TEST_RETURN != ppid)
 					errx(1, "getppid failed (%ld != %d)",
-					    TEST_RETURN, ppid);
+					     TEST_RETURN, ppid);
 				else
 					printf("return value and parent's pid "
-					    "value match\n");
+					       "value match\n");
 			} else
 				tst_resm(TPASS, "call succeeded");
 			exit(0);
 		} else {
 			if (wait(&status) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "wait failed");
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL,
-				    "getppid functionality incorrect");
+					 "getppid functionality incorrect");
 		}
 	}
 	cleanup();

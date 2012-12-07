@@ -122,7 +122,7 @@ int main(int ac, char **av)
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 }
+	}
 
 	setup();
 
@@ -159,8 +159,8 @@ int main(int ac, char **av)
 							 "fails, %s, errno:%d, "
 							 "expected errno:%d",
 							 test_desc, TEST_ERRNO,
-							 Test_cases[ind].
-							 exp_errno);
+							 Test_cases
+							 [ind].exp_errno);
 					}
 				} else {
 					tst_resm(TPASS, "Call returned -1 as "
@@ -196,7 +196,7 @@ void setup()
 	if ((sigstk.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "could not allocate memory for the alternate stack");
-	 }
+	}
 }
 
 /*

@@ -16,6 +16,7 @@
 
 int main()
 {
-        printf("Will not test that the underlying kernel-scheduled entities for the system\ncontention scope threads are not be affected by sched_setscheduler().\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test that the underlying kernel-scheduled entities for the system\ncontention scope threads are not be affected by sched_setscheduler().\n");
+	return PTS_UNTESTED;
 }

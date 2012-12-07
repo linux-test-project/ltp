@@ -76,7 +76,7 @@ static unsigned int no_lib_memcpy;
  */
 
 typedef size_t record_t;
-static unsigned int record_size = sizeof (record_t);
+static unsigned int record_size = sizeof(record_t);
 static char *cmd;
 static record_t **mem;
 static char **hole_mem;
@@ -85,8 +85,7 @@ static time_t start_time;
 static volatile int threads_go;
 static unsigned int records_read;
 
-static void
-usage(void)
+static void usage(void)
 {
 	fprintf(stderr, "Usage: %s [options]\n"
 		"-T\t\t Just 'touch' the allocated pages\n"
@@ -101,8 +100,7 @@ usage(void)
 		"-S <seconds>\t Number of seconds to run\n"
 		"-t <num>\t Number of threads (2 * number cpus by default)\n"
 		"-v[v[v]]\t Be verbose (more v's for more verbose)\n"
-		"-z\t\t Linear search instead of binary search\n",
-		cmd);
+		"-z\t\t Linear search instead of binary search\n", cmd);
 	exit(1);
 }
 
@@ -110,8 +108,7 @@ usage(void)
  * Read options, check them, and set some defaults.
  */
 
-static void
-read_options(int argc, char *argv[])
+static void read_options(int argc, char *argv[])
 {
 	int c;
 
@@ -229,24 +226,22 @@ read_options(int argc, char *argv[])
 	}
 }
 
-static void
-touch_mem(char *dest, size_t size)
+static void touch_mem(char *dest, size_t size)
 {
-       int i;
-       if (touch_pages) {
-               for (i = 0; i < size; i += page_size)
-                       *(dest + i) = 0xff;
-       }
+	int i;
+	if (touch_pages) {
+		for (i = 0; i < size; i += page_size)
+			*(dest + i) = 0xff;
+	}
 }
 
-static void *
-alloc_mem(size_t size)
+static void *alloc_mem(size_t size)
 {
 	char *p;
 	int err = 0;
 
 	if (always_mmap) {
-		p = mmap((void *) 0, size, (PROT_READ | PROT_WRITE),
+		p = mmap((void *)0, size, (PROT_READ | PROT_WRITE),
 			 (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 		if (p == MAP_FAILED)
 			err = 1;
@@ -267,8 +262,7 @@ alloc_mem(size_t size)
 	return (p);
 }
 
-static void
-free_mem(void *p, size_t size)
+static void free_mem(void *p, size_t size)
 {
 	if (always_mmap)
 		munmap(p, size);
@@ -281,28 +275,25 @@ free_mem(void *p, size_t size)
  * our own simple memcpy implementation.
  */
 
-static void
-my_memcpy(void *dest, void *src, size_t len)
+static void my_memcpy(void *dest, void *src, size_t len)
 {
-	char *d = (char *) dest;
-	char *s = (char *) src;
-        int i;
+	char *d = (char *)dest;
+	char *s = (char *)src;
+	int i;
 
-        for (i = 0; i < len; i++)
-                d[i] = s[i];
-        return;
+	for (i = 0; i < len; i++)
+		d[i] = s[i];
+	return;
 }
 
-static void
-allocate(void)
+static void allocate(void)
 {
 	int i;
 
-	mem = alloc_mem(chunks * sizeof (record_t *));
+	mem = alloc_mem(chunks * sizeof(record_t *));
 
 	if (use_holes)
-		hole_mem = alloc_mem(chunks * sizeof (record_t *));
-
+		hole_mem = alloc_mem(chunks * sizeof(record_t *));
 
 	for (i = 0; i < chunks; i++) {
 		mem[i] = (record_t *) alloc_mem(chunk_size);
@@ -320,8 +311,7 @@ allocate(void)
 		printf("Allocated memory\n");
 }
 
-static void
-write_pattern(void)
+static void write_pattern(void)
 {
 	int i, j;
 
@@ -330,14 +320,13 @@ write_pattern(void)
 			mem[i][j] = (record_t) j;
 		/* Prevent coalescing by alternating permissions */
 		if (use_permissions && (i % 2) == 0)
-			mprotect((void *) mem[i], chunk_size, PROT_READ);
+			mprotect((void *)mem[i], chunk_size, PROT_READ);
 	}
 	if (verbose)
 		printf("Wrote memory\n");
 }
 
-static void *
-linear_search(record_t key, record_t *base, size_t size)
+static void *linear_search(record_t key, record_t * base, size_t size)
 {
 	record_t *p;
 	record_t *end = base + (size / record_size);
@@ -348,10 +337,9 @@ linear_search(record_t key, record_t *base, size_t size)
 	return NULL;
 }
 
-static int
-compare(const void *p1, const void *p2)
+static int compare(const void *p1, const void *p2)
 {
-	return (* (record_t *) p1 - * (record_t *) p2);
+	return (*(record_t *) p1 - *(record_t *) p2);
 }
 
 /*
@@ -360,11 +348,10 @@ compare(const void *p1, const void *p2)
  * Inline because it's starting to be a scaling issue.
  */
 
-static inline unsigned int
-rand_num(unsigned int max, unsigned int *state)
+static inline unsigned int rand_num(unsigned int max, unsigned int *state)
 {
 	*state *= 1103515245 + 12345;
-	return ((*state/65536) % max);
+	return ((*state / 65536) % max);
 }
 
 /*
@@ -379,8 +366,7 @@ rand_num(unsigned int max, unsigned int *state)
  *
  */
 
-static unsigned int
-search_mem(void)
+static unsigned int search_mem(void)
 {
 	record_t key, *found;
 	record_t *src, *copy;
@@ -402,7 +388,7 @@ search_mem(void)
 		copy = alloc_mem(copy_size);
 
 		if (touch_pages) {
-			touch_mem((char *) copy, copy_size);
+			touch_mem((char *)copy, copy_size);
 		} else {
 
 			if (no_lib_memcpy)
@@ -413,19 +399,21 @@ search_mem(void)
 			key = rand_num(copy_size / record_size, &state);
 
 			if (verbose > 2)
-				printf("Search key %zu, copy size %zu\n", key, copy_size);
+				printf("Search key %zu, copy size %zu\n", key,
+				       copy_size);
 			if (linear)
 				found = linear_search(key, copy, copy_size);
 			else
-				found = bsearch(&key, copy, copy_size / record_size,
-					record_size, compare);
+				found =
+				    bsearch(&key, copy, copy_size / record_size,
+					    record_size, compare);
 
-				/* Below check is mainly for memory corruption or other bug */
+			/* Below check is mainly for memory corruption or other bug */
 			if (found == NULL) {
 				fprintf(stderr, "Couldn't find key %zd\n", key);
 				exit(1);
 			}
-		} /* end if ! touch_pages */
+		}		/* end if ! touch_pages */
 
 		free_mem(copy, copy_size);
 	}
@@ -433,8 +421,7 @@ search_mem(void)
 	return (i);
 }
 
-static void *
-thread_run(void *arg)
+static void *thread_run(void *arg)
 {
 
 	if (verbose > 1)
@@ -442,7 +429,7 @@ thread_run(void *arg)
 
 	/* Wait for the start signal */
 
-	while (threads_go == 0);
+	while (threads_go == 0) ;
 
 	records_read += search_mem();
 
@@ -453,8 +440,7 @@ thread_run(void *arg)
 	return NULL;
 }
 
-static struct timeval
-difftimeval(struct timeval *end, struct timeval *start)
+static struct timeval difftimeval(struct timeval *end, struct timeval *start)
 {
 	struct timeval diff;
 	diff.tv_sec = end->tv_sec - start->tv_sec;
@@ -462,8 +448,7 @@ difftimeval(struct timeval *end, struct timeval *start)
 	return diff;
 }
 
-static void
-start_threads(void)
+static void start_threads(void)
 {
 	pthread_t thread_array[threads];
 	double elapsed;
@@ -511,18 +496,17 @@ start_threads(void)
 		printf("Threads finished\n");
 
 	printf("%u records/s\n",
-	       (unsigned int) (((double) records_read)/elapsed));
+	       (unsigned int)(((double)records_read) / elapsed));
 
 	usr_time = difftimeval(&end_ru.ru_utime, &start_ru.ru_utime);
 	sys_time = difftimeval(&end_ru.ru_stime, &start_ru.ru_stime);
 
 	printf("real %5.2f s\n", elapsed);
-	printf("user %5.2f s\n", usr_time.tv_sec + usr_time.tv_usec/1e6);
-	printf("sys  %5.2f s\n", sys_time.tv_sec + sys_time.tv_usec/1e6);
+	printf("user %5.2f s\n", usr_time.tv_sec + usr_time.tv_usec / 1e6);
+	printf("sys  %5.2f s\n", sys_time.tv_sec + sys_time.tv_usec / 1e6);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	read_options(argc, argv);
 

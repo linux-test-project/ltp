@@ -108,7 +108,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	  return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 
 /*

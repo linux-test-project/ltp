@@ -81,7 +81,8 @@ struct test_case_t {		/* test case structure */
 	    /* Skip since uClinux does not implement memory protection */
 	{
 	PF_UNIX, SOCK_STREAM, 0, 0, -1, EFAULT, "bad aligned pointer"}, {
-	PF_UNIX, SOCK_STREAM, 0, (int *)7, -1, EFAULT, "bad unaligned pointer"},
+	PF_UNIX, SOCK_STREAM, 0, (int *)7, -1, EFAULT,
+		    "bad unaligned pointer"},
 #endif
 	{
 	PF_INET, SOCK_DGRAM, 17, sv, -1, EOPNOTSUPP, "UDP socket"}, {
@@ -90,7 +91,6 @@ struct test_case_t {		/* test case structure */
 PF_INET, SOCK_STREAM, 1, sv, -1, ESOCKTNOSUPPORT, "ICMP stream"},};
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
-
 
 int main(int argc, char *argv[])
 {

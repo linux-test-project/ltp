@@ -1,6 +1,6 @@
   /*
-  Test that the ILL_ILLTRP macro is defined.
-  */
+     Test that the ILL_ILLTRP macro is defined.
+   */
 
 #include <signal.h>
 

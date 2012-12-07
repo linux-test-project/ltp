@@ -66,7 +66,7 @@ static void cleanup(void)
  * empty.
  */
 static void testsetup(const char *file_name, int flag, mode_t mode,
-                      int user_id, int group_id)
+		      int user_id, int group_id)
 {
 	FILE *file;
 
@@ -74,7 +74,7 @@ static void testsetup(const char *file_name, int flag, mode_t mode,
 
 	if (file == NULL)
 		tst_brkm(TBROK | TERRNO, cleanup,
-		         "Could not create test file %s.", file_name);
+			 "Could not create test file %s.", file_name);
 
 	/* create file with shebang */
 	if (flag) {
@@ -82,7 +82,7 @@ static void testsetup(const char *file_name, int flag, mode_t mode,
 
 		if (tst_get_path("sh", buf, PATH_MAX))
 			tst_brkm(TBROK, cleanup,
-			         "Could not find path to sh in $PATH.");
+				 "Could not find path to sh in $PATH.");
 
 		if (fprintf(file, "#!%s\n", buf) < 0)
 			tst_brkm(TBROK, cleanup, "Calling fprintf failed.");
@@ -93,19 +93,18 @@ static void testsetup(const char *file_name, int flag, mode_t mode,
 
 	if (chmod(file_name, mode))
 		tst_brkm(TBROK | TERRNO, cleanup,
-		         "Could not chmod test file %s.", file_name);
+			 "Could not chmod test file %s.", file_name);
 
 	if (chown(file_name, user_id, group_id))
 		tst_brkm(TBROK | TERRNO, cleanup,
-		         "Could not chown test file %s.", file_name);
+			 "Could not chown test file %s.", file_name);
 }
 
 /*
  * Test permissions.
  */
 static int testfperm(const char *file_name, int flag, int user_id,
-                     int group_id, char *fperm)
-
+		     int group_id, char *fperm)
 {
 	FILE *file;
 	int status;
@@ -114,11 +113,11 @@ static int testfperm(const char *file_name, int flag, int user_id,
 	case 0:
 		if (setgid(group_id))
 			tst_brkm(TBROK | TERRNO, cleanup,
-			         "Could not setgid to %d.", group_id);
+				 "Could not setgid to %d.", group_id);
 
 		if (setuid(user_id))
 			tst_brkm(TBROK | TERRNO, cleanup,
-			         "Could not setuid to %d.", user_id);
+				 "Could not setuid to %d.", user_id);
 
 		switch (tolower(fperm[0])) {
 		case 'x':
@@ -133,21 +132,21 @@ static int testfperm(const char *file_name, int flag, int user_id,
 				execlp(file_name, "test", NULL);
 
 			exit(1);
-		break;
+			break;
 		default:
 			if ((file = fopen(file_name, fperm)) != NULL) {
 				fclose(file);
 				exit(0);
 			}
 			exit(1);
-		break;
+			break;
 		}
-	break;
+		break;
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
-	break;
+		break;
 	default:
-	break;
+		break;
 	}
 
 	wait(&status);
@@ -158,8 +157,8 @@ static int testfperm(const char *file_name, int flag, int user_id,
 static void print_usage(const char *bname)
 {
 	char *usage = "<file mode> <file UID> <file GID> "
-                      "<tester UID> <tester GID> <permission "
-                      "to test r|w|x> <expected result 0|1>";
+	    "<tester UID> <tester GID> <permission "
+	    "to test r|w|x> <expected result 0|1>";
 
 	printf("Usage: %s %s\n", bname, usage);
 }
@@ -171,7 +170,7 @@ static long str_to_l(const char *str, const char *name, int base)
 
 	if (*end != '\0')
 		tst_brkm(TBROK, NULL, "Invalid parameter '%s' passed. (%s)",
-		         name, str);
+			 name, str);
 
 	return i;
 }
@@ -197,13 +196,13 @@ int main(int argc, char *argv[])
 		tst_exit();
 	}
 
-	fmode     = str_to_l(argv[1], "file mode", 8);
-	fuser_id  = str_to_l(argv[2], "file uid", 10);
+	fmode = str_to_l(argv[1], "file mode", 8);
+	fuser_id = str_to_l(argv[2], "file uid", 10);
 	fgroup_id = str_to_l(argv[3], "file gid", 10);
-	user_id   = str_to_l(argv[4], "tester uid", 10);
-	group_id  = str_to_l(argv[5], "tester gid", 10);
-	fperm     = argv[6];
-	exp_res   = str_to_l(argv[7], "expected result", 10);
+	user_id = str_to_l(argv[4], "tester uid", 10);
+	group_id = str_to_l(argv[5], "tester gid", 10);
+	fperm = argv[6];
+	exp_res = str_to_l(argv[7], "expected result", 10);
 
 	tst_tmpdir();
 	testsetup(TEST_FILE_NAME1, 0, fmode, fuser_id, fgroup_id);
@@ -222,8 +221,8 @@ int main(int argc, char *argv[])
 	res1 = testfperm(TEST_FILE_NAME1, 0, user_id, group_id, fperm);
 
 	tst_resm((exp_res == res1) && res2 ? TPASS : TFAIL,
-	         "%c a %03o file owned by (%d/%d) as user/group (%d/%d)",
-	         fperm[0], fmode, fuser_id, fgroup_id, user_id, group_id);
+		 "%c a %03o file owned by (%d/%d) as user/group (%d/%d)",
+		 fperm[0], fmode, fuser_id, fgroup_id, user_id, group_id);
 
 	tst_rmdir();
 	tst_exit();

@@ -87,7 +87,7 @@ int main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		 }
+		}
 
 		if (pid == 0) {	/* child */
 			if (seteuid(nobody->pw_uid) == -1) {
@@ -159,7 +159,7 @@ void setup()
 
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
 		tst_brkm(TBROK, cleanup, "open() failed, errno: %d", errno);
-	 }
+	}
 }
 
 /*

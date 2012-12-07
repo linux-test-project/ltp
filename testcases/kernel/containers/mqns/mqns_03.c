@@ -45,7 +45,7 @@
 #include "mqns.h"
 
 char *TCID = "posixmq_namespace_03";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 int p1[2];
 int p2[2];
@@ -63,13 +63,14 @@ int check_mqueue(void *vtest)
 	close(p1[1]);
 	close(p2[0]);
 
-	if (read(p1[0], buf, 3) != 3) { /* go */
+	if (read(p1[0], buf, 3) != 3) {	/* go */
 		perror("read failed");
 		exit(1);
 	}
 
-	mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0755,
-			NULL);
+	mqd =
+	    syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR | O_CREAT | O_EXCL, 0755,
+		    NULL);
 	if (mqd == -1) {
 		write(p2[1], "mqfail", 7);
 		exit(1);
@@ -136,15 +137,16 @@ int main(int argc, char *argv[])
 		tst_resm(TINFO, "Testing posix mq namespaces through clone(2)");
 		use_clone = T_CLONE;
 	} else
-		tst_resm(TINFO, "Testing posix mq namespaces through unshare(2)");
+		tst_resm(TINFO,
+			 "Testing posix mq namespaces through unshare(2)");
 
 	if (pipe(p1) == -1 || pipe(p2) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "pipe failed");
+		tst_brkm(TBROK | TERRNO, NULL, "pipe failed");
 
 	/* fire off the test */
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
-		tst_brkm(TBROK|TERRNO, NULL, "failed clone/unshare");
+		tst_brkm(TBROK | TERRNO, NULL, "failed clone/unshare");
 	}
 
 	tst_resm(TINFO, "Checking correct umount+remount of mqueuefs");
@@ -176,10 +178,12 @@ int main(int argc, char *argv[])
 		tst_resm(TFAIL, "child couldn't remount mqueuefs");
 		goto fail;
 	} else if (!strcmp(buf, "stat2")) {
-		tst_resm(TFAIL, "mq_open()d file gone after remount of mqueuefs");
+		tst_resm(TFAIL,
+			 "mq_open()d file gone after remount of mqueuefs");
 		goto fail;
 	} else if (!strcmp(buf, "stat3")) {
-		tst_resm(TFAIL, "creat(2)'d file gone after remount of mqueuefs");
+		tst_resm(TFAIL,
+			 "creat(2)'d file gone after remount of mqueuefs");
 		goto fail;
 	}
 

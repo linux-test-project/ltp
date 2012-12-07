@@ -77,24 +77,24 @@ struct test_case {
 	int exp_err;
 };
 static struct test_case tc[] = {
-	{	/* case 00, set attr to immutable file */
-		.desc = "Set attr to immutable file",
-		.fname = IMMU_FILE,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = EPERM,
-	},
-	{	/* case 01, set attr to append-only file */
-		.desc = "Set attr to append-only file",
-		.fname = APPEND_FILE,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = EPERM,
-	},
+	{			/* case 00, set attr to immutable file */
+	 .desc = "Set attr to immutable file",
+	 .fname = IMMU_FILE,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EPERM,
+	 },
+	{			/* case 01, set attr to append-only file */
+	 .desc = "Set attr to append-only file",
+	 .fname = APPEND_FILE,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EPERM,
+	 },
 };
 
 static void setup(void);
@@ -120,15 +120,16 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		for (i = 0; i < TST_TOTAL; i++)	{
+		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(setxattr(tc[i].fname, tc[i].key, tc[i].value,
-			    tc[i].size, tc[i].flags));
+				      tc[i].size, tc[i].flags));
 
 			if (TEST_ERRNO == tc[i].exp_err) {
 				tst_resm(TPASS | TTERRNO, "%s", tc[i].desc);
 			} else {
 				tst_resm(TFAIL | TTERRNO, "%s - expected errno"
-				    " %d - Got", tc[i].desc, tc[i].exp_err);
+					 " %d - Got", tc[i].desc,
+					 tc[i].exp_err);
 			}
 		}
 	}
@@ -177,25 +178,25 @@ static void setup(void)
 	if (setxattr("testfile", "user.test", "test", 4, XATTR_CREATE) == -1)
 		if (errno == ENOTSUP)
 			tst_brkm(TCONF, cleanup, "No xattr support in fs or "
-			    "fs mounted without user_xattr option");
+				 "fs mounted without user_xattr option");
 	unlink("testfile");
 
 	/* Create test files and set file immutable or append-only */
 	immu_fd = creat(IMMU_FILE, 0644);
 	if (immu_fd == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create test file(%s) failed",
-		    IMMU_FILE);
+			 IMMU_FILE);
 	if (set_immutable_on(immu_fd))
 		tst_brkm(TBROK | TERRNO, cleanup, "Set %s immutable failed",
-		    IMMU_FILE);
+			 IMMU_FILE);
 
 	append_fd = creat(APPEND_FILE, 0644);
 	if (append_fd == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create test file(%s) failed",
-		    APPEND_FILE);
+			 APPEND_FILE);
 	if (set_append_on(append_fd))
 		tst_brkm(TBROK | TERRNO, cleanup, "Set %s append-only failed",
-		    APPEND_FILE);
+			 APPEND_FILE);
 
 	TEST_PAUSE;
 }
@@ -204,10 +205,10 @@ static void cleanup(void)
 {
 	if ((immu_fd > 0) && set_immutable_off(immu_fd))
 		tst_resm(TWARN | TERRNO, "Unset %s immutable failed",
-		    IMMU_FILE);
+			 IMMU_FILE);
 	if ((append_fd > 0) && set_append_off(append_fd))
 		tst_resm(TWARN | TERRNO, "Unset %s append-only failed",
-		    APPEND_FILE);
+			 APPEND_FILE);
 	close(immu_fd);
 	close(append_fd);
 
@@ -218,6 +219,6 @@ static void cleanup(void)
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "<attr/xattr.h> not present or FS_IOC_FLAGS "
-	                      "missing in <linux/fs.h>");
+		 "missing in <linux/fs.h>");
 }
 #endif /* defined HAVE_ATTR_XATTR_H && defined HAVE_FS_IOC_FLAGS */

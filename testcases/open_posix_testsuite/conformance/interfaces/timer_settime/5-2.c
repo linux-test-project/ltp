@@ -30,7 +30,7 @@
 
 #define SIGTOTEST SIGALRM
 
-#define DATEINPAST 1037128358 //Nov 13, 2002 ~11:13am
+#define DATEINPAST 1037128358	//Nov 13, 2002 ~11:13am
 
 #define LONGSLEEPTIME 10
 
@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
 	ev.sigev_notify = SIGEV_SIGNAL;
 	ev.sigev_signo = SIGTOTEST;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = 0;

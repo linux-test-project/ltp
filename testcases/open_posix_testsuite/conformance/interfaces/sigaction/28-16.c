@@ -70,7 +70,7 @@ then reinstalling it with act must be valid.
 #include <time.h>
 #include <sys/types.h>
 
-#ifdef __GNUC__ /* We are using GCC */
+#ifdef __GNUC__			/* We are using GCC */
 
 #define UNRESOLVED(x, s) \
  { output("Test %s unresolved: got %i (%s) on line %i (%s)\n", __FILE__, x, strerror(x), __LINE__, s); \
@@ -118,16 +118,16 @@ then reinstalling it with act must be valid.
 void output_init()
 {
 	/* do nothing */
-	return ;
+	return;
 }
 
-void output(char * string, ...)
+void output(char *string, ...)
 {
 	va_list ap;
 #ifndef PLOT_OUTPUT
 	char *ts = "[??:??:??]";
 
-	struct tm * now;
+	struct tm *now;
 	time_t nw;
 #endif
 
@@ -138,7 +138,8 @@ void output(char * string, ...)
 	if (now == NULL)
 		printf(ts);
 	else
-		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec);
+		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min,
+		       now->tm_sec);
 
 #endif
 	va_start(ap, string);
@@ -152,7 +153,7 @@ void output(char * string, ...)
 void output_fini()
 {
 	/*do nothing */
-	return ;
+	return;
 }
 
 /******************************************************************************/
@@ -192,65 +193,58 @@ int main()
 
 	/* Register the signal handler with signal */
 
-	if (SIG_ERR == signal(SIGNAL, handler_1))
-	{
-		UNRESOLVED(errno, "Failed to register signal handler with signal()");
+	if (SIG_ERR == signal(SIGNAL, handler_1)) {
+		UNRESOLVED(errno,
+			   "Failed to register signal handler with signal()");
 	}
 
 	/* As whether signal handler is restored to default when executed
-	is implementation defined, we cannot check it was registered here. */
+	   is implementation defined, we cannot check it was registered here. */
 
-	/* Set the new signal handler with sigaction*/
+	/* Set the new signal handler with sigaction */
 	sa.sa_flags = 0;
 
 	sa.sa_handler = handler_2;
 
 	ret = sigemptyset(&sa.sa_mask);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	/* Install the signal handler for SIGTTOU */
 	ret = sigaction(SIGNAL, &sa, &save);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
 	/* Check the signal handler has been set up */
 	ret = raise(SIGNAL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret , "Failed to raise the signal");
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to raise the signal");
 	}
 
-	if (called != 0)
-	{
+	if (called != 0) {
 		FAILED("handler not executed");
 	}
 
 	/* Restore the first signal handler */
 	ret = sigaction(SIGNAL, &save, 0);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
 	/* Check the signal handler has been set up */
 	ret = raise(SIGNAL);
 
-	if (ret != 0)
-	{
-		UNRESOLVED(ret , "Failed to raise the signal");
+	if (ret != 0) {
+		UNRESOLVED(ret, "Failed to raise the signal");
 	}
 
-	if (called != 1)
-	{
+	if (called != 1) {
 		FAILED("handler not executed");
 	}
 

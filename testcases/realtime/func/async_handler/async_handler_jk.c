@@ -66,27 +66,27 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
 
 void *async_event_server(void *arg)
 {
-	int err=0;
+	int err = 0;
 	struct thread *thread = ((struct thread *)arg);
 
 	thread->func = NULL;	// entrypoint
 	thread->flags |= THREAD_FLAG_SUSPENDED;
 
-	for (; ;) {
+	for (;;) {
 		if ((err = pthread_mutex_lock(&thread->mutex)))
-			return (void*)(intptr_t)err;
+			return (void *)(intptr_t) err;
 
 		/* Go to sleep and wait for work */
 		while (thread->flags & THREAD_FLAG_SUSPENDED)
@@ -104,13 +104,13 @@ void *async_event_server(void *arg)
 		set_thread_priority(thread->pthread, thread->priority);
 
 		thread->flags |= THREAD_FLAG_SUSPENDED;
-	}	// Go back to sleep and wait for next command
+	}			// Go back to sleep and wait for next command
 }
 
 void *user_thread(void *arg)
 {
 	struct thread *thread = ((struct thread *)arg);
-	struct thread *server = (struct thread*)thread->arg;
+	struct thread *server = (struct thread *)thread->arg;
 
 	start = rt_gettime();
 
@@ -133,10 +133,10 @@ void *handler1(void *arg)
 	return NULL;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	int aes_id;	// asynchronous event server id
-	int user_id;	// User thread - that fires the event
+	int aes_id;		// asynchronous event server id
+	int user_id;		// User thread - that fires the event
 	long delta;
 	struct thread *server;
 	setup();
@@ -144,16 +144,17 @@ int main(int argc, char* argv[])
 	pass_criteria = PASS_US;
 	rt_init("h", parse_args, argc, argv);
 
-	aes_id = create_fifo_thread(async_event_server, (void*)0, 83);
+	aes_id = create_fifo_thread(async_event_server, (void *)0, 83);
 	server = get_thread(aes_id);
 
-	user_id = create_fifo_thread(user_thread, (void*)server, NORMAL_PRIORITY);
+	user_id =
+	    create_fifo_thread(user_thread, (void *)server, NORMAL_PRIORITY);
 
 	usleep(1000);
 	pthread_detach(server->pthread);
 	join_thread(user_id);
 	join_threads();
-	delta = (end - start)/NS_PER_US;
+	delta = (end - start) / NS_PER_US;
 
 	printf("delta = %ld us\n", delta);
 	printf("\nCriteria: latencies < %d\n", (int)pass_criteria);

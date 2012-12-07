@@ -30,7 +30,7 @@
 
 int main()
 {
-    int status;
-    status = create_net_namespace("par_ftp.sh", "ch_ftp.sh");
-    return status;
+	int status;
+	status = create_net_namespace("par_ftp.sh", "ch_ftp.sh");
+	return status;
 }

@@ -24,20 +24,17 @@ void *a_thread_func()
 	sparam.sched_priority = priority;
 
 	rc = pthread_setschedparam(pthread_self(), policy, &sparam);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		printf("Error at pthread_setschedparam: rc=%d\n", rc);
 		exit(PTS_FAIL);
 	}
 	rc = pthread_getschedparam(pthread_self(), &policy_1, &sparam);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		printf("Error at pthread_getschedparam: rc=%d\n", rc);
 		exit(PTS_UNRESOLVED);
 	}
 	//printf("policy: %d, priority: %d\n", policy_1, sparam.sched_priority);
-	if (policy_1 != policy || sparam.sched_priority != priority)
-	{
+	if (policy_1 != policy || sparam.sched_priority != priority) {
 		printf("pthread_getschedparam did not get the correct value\n");
 		exit(PTS_FAIL);
 	}
@@ -50,8 +47,7 @@ int main()
 {
 	pthread_t new_th;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}

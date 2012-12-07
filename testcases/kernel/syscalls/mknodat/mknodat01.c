@@ -74,6 +74,7 @@ int dirfd, fd, ret;
 int fds[TEST_CASES];
 char *filenames[TEST_CASES];
 int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
+
 dev_t dev;
 
 int mymknodat(int dirfd, const char *filename, mode_t mode, dev_t dev)

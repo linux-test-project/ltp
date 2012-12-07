@@ -60,6 +60,7 @@ char *TCID = "sched_setscheduler02";
 int TST_TOTAL = 1;
 
 int exp_enos[] = { EPERM, 0 };
+
 extern struct passwd *my_getpwnam(char *);
 
 void setup(void);
@@ -79,7 +80,7 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	setup();
 

@@ -92,19 +92,20 @@ static void *set_shmat(void);
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 struct test_case_t {
-	int  cmd;
-	void (*func_test)(void);
-	void (*func_setup)(void);
+	int cmd;
+	void (*func_test) (void);
+	void (*func_setup) (void);
 } TC[] = {
-	{ IPC_STAT,	func_stat,	stat_setup },
-	{ IPC_STAT,	func_stat,	stat_setup },
-	{ IPC_SET,	func_set,	set_setup },
-	{ IPC_RMID,	func_rmid,	NULL }
+	{
+	IPC_STAT, func_stat, stat_setup}, {
+	IPC_STAT, func_stat, stat_setup}, {
+	IPC_SET, func_set, set_setup}, {
+	IPC_RMID, func_rmid, NULL}
 };
 
 int main(int ac, char **av)
@@ -132,9 +133,9 @@ int main(int ac, char **av)
 		 * so that looping (-i) will work correctly.
 		 */
 		shm_id_1 = shmget(shmkey, shm_size,
-			    SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW);
+				  SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
 		if (shm_id_1 == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "shmget #main");
+			tst_brkm(TBROK | TERRNO, cleanup, "shmget #main");
 
 		for (i = 0; i < TST_TOTAL; i++) {
 			/*
@@ -142,14 +143,14 @@ int main(int ac, char **av)
 			 * calling the appropriate setup function
 			 */
 			if (TC[i].func_setup != NULL)
-				(*TC[i].func_setup)();
+				(*TC[i].func_setup) ();
 
 			if (shmctl(shm_id_1, TC[i].cmd, &buf) == -1) {
-				tst_resm(TFAIL|TERRNO, "shmctl #main");
+				tst_resm(TFAIL | TERRNO, "shmctl #main");
 				continue;
 			}
 			if (STD_FUNCTIONAL_TEST) {
-				(*TC[i].func_test)();
+				(*TC[i].func_test) ();
 			} else {
 				tst_resm(TPASS, "shmctl call succeeded");
 
@@ -180,7 +181,7 @@ void *set_shmat(void)
 
 	rval = shmat(shm_id_1, 0, 0);
 	if (rval == (void *)-1)
-		tst_brkm(TBROK|TERRNO, cleanup, "set shmat");
+		tst_brkm(TBROK | TERRNO, cleanup, "set shmat");
 
 	return rval;
 }
@@ -224,12 +225,12 @@ static void stat_setup(void)
 	sigemptyset(&newmask);
 	sigaddset(&newmask, SIGUSR1);
 	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "block SIGUSR1 error");
+		tst_brkm(TBROK | TERRNO, cleanup, "block SIGUSR1 error");
 
 	for (i = 0; i < N_ATTACH; i++) {
 		switch (pid = fork()) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
 			test = (stat_time == FIRST) ? set_shmat() : set_shared;
 
@@ -243,20 +244,20 @@ static void stat_setup(void)
 			 */
 			rval = sigsuspend(&oldmask);
 			if (rval != -1)
-				tst_brkm(TBROK|TERRNO, cleanup, "sigsuspend");
+				tst_brkm(TBROK | TERRNO, cleanup, "sigsuspend");
 
 			/*
 			 * don't have to block SIGUSR1 any more,
 			 * recover the mask
 			 */
 			if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
-				tst_brkm(TBROK|TERRNO, cleanup,
-					    "child sigprocmask");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "child sigprocmask");
 
 			/* now we're back - detach the memory and exit */
 			if (shmdt(test) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup,
-					    "shmdt in stat_setup()");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "shmdt in stat_setup()");
 			exit(0);
 		default:
 			/* save the child's pid for cleanup later */
@@ -333,12 +334,12 @@ static void stat_cleanup(void)
 	/* wake up the childern so they can detach the memory and exit */
 	for (i = 0; i < N_ATTACH; i++)
 		if (kill(pid_arr[i], SIGUSR1) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "kill with SIGUSR1");
+			tst_brkm(TBROK | TERRNO, cleanup, "kill with SIGUSR1");
 
 	/* remove the parent's shared memory the second time through */
 	if (stat_time == SECOND)
 		if (shmdt(set_shared) == -1)
-			tst_resm(TBROK|TERRNO, "shmdt in stat_cleanup()");
+			tst_resm(TBROK | TERRNO, "shmdt in stat_cleanup()");
 	stat_time++;
 }
 
@@ -361,12 +362,11 @@ static void func_set(void)
 {
 	/* first stat the shared memory to get the new data */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
-		tst_resm(TBROK|TERRNO, "shmctl in func_set()");
+		tst_resm(TBROK | TERRNO, "shmctl in func_set()");
 		return;
 	}
 
-	if ((buf.shm_perm.mode & MODE_MASK) !=
-			((SHM_RW | NEWMODE) & MODE_MASK)) {
+	if ((buf.shm_perm.mode & MODE_MASK) != ((SHM_RW | NEWMODE) & MODE_MASK)) {
 		tst_resm(TFAIL, "new mode is incorrect");
 		return;
 	}
@@ -387,13 +387,13 @@ static void func_rmid(void)
 	/* Do another shmctl() - we should get EINVAL */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) != -1)
 		tst_brkm(TBROK, cleanup, "shmctl in func_rmid() "
-			    "succeeded unexpectedly");
+			 "succeeded unexpectedly");
 	if (errno != EINVAL)
-		tst_resm(TFAIL|TERRNO, "shmctl in func_rmid() failed "
-			    "unexpectedly - expect errno=EINVAL, got");
+		tst_resm(TFAIL | TERRNO, "shmctl in func_rmid() failed "
+			 "unexpectedly - expect errno=EINVAL, got");
 	else
 		tst_resm(TPASS, "shmctl in func_rmid() failed as expected, "
-			    "shared memory appears to be removed");
+			 "shared memory appears to be removed");
 	shm_id_1 = -1;
 }
 

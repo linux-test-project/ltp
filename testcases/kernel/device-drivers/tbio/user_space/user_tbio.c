@@ -69,113 +69,120 @@
 #include "user_tbio.h"
 #include "../kernel_space/tbio.h"
 
-static int tbio_fd = -1;		/* file descriptor */
+static int tbio_fd = -1;	/* file descriptor */
 
-int
-tbioopen() {
+int tbioopen()
+{
 
-    dev_t devt;
-	struct stat     st;
-    int    rc = 0;
+	dev_t devt;
+	struct stat st;
+	int rc = 0;
 
-    devt = makedev(TBIO_MAJOR, 0);
+	devt = makedev(TBIO_MAJOR, 0);
 
-    if (rc) {
-        if (errno == ENOENT) {
-            /* dev node does not exist. */
-            rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-                                                S_IRGRP | S_IXGRP |
-                                                S_IROTH | S_IXOTH));
-        } else {
-            printf("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n", errno);
-        }
+	if (rc) {
+		if (errno == ENOENT) {
+			/* dev node does not exist. */
+			rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
+						 S_IRGRP | S_IXGRP |
+						 S_IROTH | S_IXOTH));
+		} else {
+			printf
+			    ("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n",
+			     errno);
+		}
 
-    } else {
-        if (!(st.st_mode & S_IFDIR)) {
-            rc = unlink(DEVICE_NAME);
-            if (!rc) {
-                rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-                                                S_IRGRP | S_IXGRP |
-                                                S_IROTH | S_IXOTH));
-            }
-        }
-    }
+	} else {
+		if (!(st.st_mode & S_IFDIR)) {
+			rc = unlink(DEVICE_NAME);
+			if (!rc) {
+				rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
+							 S_IRGRP | S_IXGRP |
+							 S_IROTH | S_IXOTH));
+			}
+		}
+	}
 
-    /*
-     * Check for the /dev/tbase node, and create if it does not
-     * exist.
-     */
-    rc = stat(DEVICE_NAME, &st);
-    if (rc) {
-        if (errno == ENOENT) {
-            /* dev node does not exist */
-            rc = mknod(DEVICE_NAME, (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
-        } else {
-            printf("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n", errno);
-        }
+	/*
+	 * Check for the /dev/tbase node, and create if it does not
+	 * exist.
+	 */
+	rc = stat(DEVICE_NAME, &st);
+	if (rc) {
+		if (errno == ENOENT) {
+			/* dev node does not exist */
+			rc = mknod(DEVICE_NAME,
+				   (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP |
+				    S_IWGRP), devt);
+		} else {
+			printf
+			    ("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n",
+			     errno);
+		}
 
-    } else {
-        /*
-         * /dev/tbio CHR device exists.  Check to make sure it is for a
-         * block device and that it has the right major and minor.
-         */
-        if ((!(st.st_mode & S_IFCHR)) ||
-             (st.st_rdev != devt)) {
+	} else {
+		/*
+		 * /dev/tbio CHR device exists.  Check to make sure it is for a
+		 * block device and that it has the right major and minor.
+		 */
+		if ((!(st.st_mode & S_IFCHR)) || (st.st_rdev != devt)) {
 
-            /* Recreate the dev node. */
-            rc = unlink(DEVICE_NAME);
-            if (!rc) {
-                rc = mknod(DEVICE_NAME, (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP), devt);
-            }
-        }
-    }
+			/* Recreate the dev node. */
+			rc = unlink(DEVICE_NAME);
+			if (!rc) {
+				rc = mknod(DEVICE_NAME,
+					   (S_IFCHR | S_IRUSR | S_IWUSR |
+					    S_IRGRP | S_IWGRP), devt);
+			}
+		}
+	}
 
-    tbio_fd = open(DEVICE_NAME, O_RDWR);
+	tbio_fd = open(DEVICE_NAME, O_RDWR);
 
-    if (tbio_fd < 0) {
-        printf("ERROR: Open of device %s failed %d errno = %d\n", DEVICE_NAME,tbio_fd, errno);
-        return errno;
-    }
-    else {
-        printf("Device opened successfully \n");
-      return 0;
-    }
+	if (tbio_fd < 0) {
+		printf("ERROR: Open of device %s failed %d errno = %d\n",
+		       DEVICE_NAME, tbio_fd, errno);
+		return errno;
+	} else {
+		printf("Device opened successfully \n");
+		return 0;
+	}
 
 }
 
-int
-tbioclose() {
+int tbioclose()
+{
 
 	if (tbio_fd != -1) {
-		close (tbio_fd);
+		close(tbio_fd);
 		tbio_fd = -1;
 	}
 
 	return 0;
 }
 
-int tbio_to_dev(int fd  , int flag)
+int tbio_to_dev(int fd, int flag)
 {
 	int rc;
 	tbio_interface_t bif;
 
-	memset(&bif , 0 , sizeof(tbio_interface_t));
-	rc = posix_memalign(&bif.data , 512 , 1024);
+	memset(&bif, 0, sizeof(tbio_interface_t));
+	rc = posix_memalign(&bif.data, 512, 1024);
 	if (rc) {
 		printf("posix_memalign failed\n");
 		return -1;
 	}
 
-	strcpy(bif.data , "User space data");
+	strcpy(bif.data, "User space data");
 	bif.data_len = 1024;
 	bif.direction = TBIO_TO_DEV;
-	bif.cmd = (char *) malloc (6);
+	bif.cmd = (char *)malloc(6);
 	if (bif.cmd == NULL) {
 		printf("malloc cmd space failed\n");
-		free (bif.data);
+		free(bif.data);
 		return -1;
 	}
-	strcpy(bif.cmd , "WRITE");
+	strcpy(bif.cmd, "WRITE");
 	bif.cmd_len = 6;
 
 	rc = ioctl(fd, flag, &bif);
@@ -193,29 +200,29 @@ int tbio_to_dev(int fd  , int flag)
 
 }
 
-int tbio_from_dev(int fd  , int flag)
+int tbio_from_dev(int fd, int flag)
 {
 	int rc;
 	tbio_interface_t bif;
 
-	memset(&bif , 0 , sizeof(tbio_interface_t));
-	rc = posix_memalign(&bif.data , 512 , 1024);
+	memset(&bif, 0, sizeof(tbio_interface_t));
+	rc = posix_memalign(&bif.data, 512, 1024);
 	if (rc) {
 		printf("posix_memalign failed\n");
 		return -1;
 	}
 
-	memset(bif.data , 0 , 1024);
+	memset(bif.data, 0, 1024);
 
 	bif.data_len = 1024;
 	bif.direction = TBIO_FROM_DEV;
-	bif.cmd = (char *) malloc (6);
+	bif.cmd = (char *)malloc(6);
 	if (bif.cmd == NULL) {
 		printf("malloc cmd space failed\n");
-		free (bif.data);
+		free(bif.data);
 		return -1;
 	}
-	strcpy(bif.cmd , "READ");
+	strcpy(bif.cmd, "READ");
 	bif.cmd_len = 6;
 
 	rc = ioctl(fd, flag, &bif);
@@ -226,7 +233,7 @@ int tbio_from_dev(int fd  , int flag)
 		return rc;
 	}
 	//printf("read from dev %s\n",bif.data);
-	if (strcmp(bif.data , "User space data")) {
+	if (strcmp(bif.data, "User space data")) {
 		printf("TBIO_FROM_DEV failed\n");
 		free(bif.data);
 		free(bif.cmd);
@@ -240,28 +247,28 @@ int tbio_from_dev(int fd  , int flag)
 
 }
 
-int tbio_split_to_dev(int fd  , int flag)
+int tbio_split_to_dev(int fd, int flag)
 {
 	int rc;
 	tbio_interface_t bif;
 
-	memset(&bif , 0 , sizeof(tbio_interface_t));
-	rc = posix_memalign(&bif.data , 512 , 2048);
+	memset(&bif, 0, sizeof(tbio_interface_t));
+	rc = posix_memalign(&bif.data, 512, 2048);
 	if (rc) {
 		printf("posix_memalign failed\n");
 		return -1;
 	}
 
-	strcpy(bif.data , "User space data");
+	strcpy(bif.data, "User space data");
 	bif.data_len = 2048;
 	bif.direction = TBIO_TO_DEV;
-	bif.cmd = (char *) malloc (6);
+	bif.cmd = (char *)malloc(6);
 	if (bif.cmd == NULL) {
 		printf("malloc cmd space failed\n");
-		free (bif.data);
+		free(bif.data);
 		return -1;
 	}
-	strcpy(bif.cmd , "WRITE");
+	strcpy(bif.cmd, "WRITE");
 	bif.cmd_len = 6;
 
 	rc = ioctl(fd, flag, &bif);
@@ -290,42 +297,42 @@ int main()
 		exit(1);
 	}
 
-	if (ki_generic(tbio_fd , LTP_TBIO_ALLOC))
+	if (ki_generic(tbio_fd, LTP_TBIO_ALLOC))
 		printf("Failed on LTP_TBIO_ALLOC test\n");
 	else
 		printf("Success on LTP_TBIO_ALLOC test\n");
 
-	if (ki_generic(tbio_fd , LTP_TBIO_CLONE))
+	if (ki_generic(tbio_fd, LTP_TBIO_CLONE))
 		printf("Failed on LTP_TBIO_CLONE test\n");
 	else
 		printf("Success on LTP_TBIO_CLONE test\n");
 
-	if (ki_generic(tbio_fd , LTP_TBIO_GET_NR_VECS))
+	if (ki_generic(tbio_fd, LTP_TBIO_GET_NR_VECS))
 		printf("Failed on LTP_TBIO_GET_NR_VECS test\n");
 	else
 		printf("Success on LTP_TBIO_GET_NR_VECS test\n");
 
-	if (ki_generic(tbio_fd , LTP_TBIO_ADD_PAGE))
+	if (ki_generic(tbio_fd, LTP_TBIO_ADD_PAGE))
 		printf("Failed on LTP_TBIO_ADD_PAGE test\n");
 	else
 		printf("Success on LTP_TBIO_ADD_PAGE test\n");
 
-	if (tbio_split_to_dev(tbio_fd , LTP_TBIO_SPLIT))
+	if (tbio_split_to_dev(tbio_fd, LTP_TBIO_SPLIT))
 		printf("Failed on LTP_TBIO_SPLIT:write to dev\n");
 	else
 		printf("Success on LTP_TBIO_SPLIT:write to dev\n");
 
-	if (tbio_to_dev(tbio_fd , LTP_TBIO_DO_IO))
+	if (tbio_to_dev(tbio_fd, LTP_TBIO_DO_IO))
 		printf("Failed on LTP_TBIO_DO_IO:write to dev\n");
 	else
 		printf("Success on LTP_TBIO_DO_IO:write to dev\n");
 
-	if (tbio_from_dev(tbio_fd , LTP_TBIO_DO_IO))
+	if (tbio_from_dev(tbio_fd, LTP_TBIO_DO_IO))
 		printf("Failed on LTP_TBIO_DO_IO:read from dev\n");
 	else
 		printf("Success on LTP_TBIO_DO_IO:read from dev\n");
 
-	if (ki_generic(tbio_fd , LTP_TBIO_PUT))
+	if (ki_generic(tbio_fd, LTP_TBIO_PUT))
 		printf("Failed on LTP_TBIO_PUT test\n");
 	else
 		printf("Success on LTP_TBIO_PUT test\n");
@@ -333,9 +340,9 @@ int main()
 	/* close the bioule */
 	rc = tbioclose();
 	if (rc) {
-                printf("Test bio Driver may not be closed\n");
-                exit(1);
-        }
+		printf("Test bio Driver may not be closed\n");
+		exit(1);
+	}
 
-      return 0;
+	return 0;
 }

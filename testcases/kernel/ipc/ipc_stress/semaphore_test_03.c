@@ -90,10 +90,10 @@
  *
  * SEMOP_TABLE: macro for printing attempted semop command combinations
  */
-# define MAX_SEMAPHORES	        32
-# define MAX_CHILDREN		200
-# define DEFAULT_NUM_SEMAPHORES	16
-# define DEFAULT_NUM_CHILDREN	0
+#define MAX_SEMAPHORES	        32
+#define MAX_CHILDREN		200
+#define DEFAULT_NUM_SEMAPHORES	16
+#define DEFAULT_NUM_CHILDREN	0
 
 #define USAGE	"\nUsage: %s [-s nsems] [-p nproc]\n\n" \
 		"\t-s nsems  number of semaphores (per process)\n\n"	\
@@ -115,12 +115,12 @@
  * parse_args (): Parse command line arguments
  * catch: Signal catching function for SIGUSR1 signal
  */
-static void setup_signal_handler ();
-static void test_commands ();
-static void sys_error (const char *, int);
-static void error (const char *, int);
-static void parse_args (int, char **);
-static void catch (int);
+static void setup_signal_handler();
+static void test_commands();
+static void sys_error(const char *, int);
+static void error(const char *, int);
+static void parse_args(int, char **);
+static void catch(int);
 
 /*
  * Structures and Global variables:
@@ -130,16 +130,16 @@ static void catch (int);
  * childpid: array containing process id's of the child processes
  * parent_pid: process id of parent process
  */
-int	nsems = DEFAULT_NUM_SEMAPHORES;
-int	nprocs = DEFAULT_NUM_CHILDREN;
-pid_t   childpid [MAX_CHILDREN];
-pid_t   parent_pid;
-pid_t   errpid;
+int nsems = DEFAULT_NUM_SEMAPHORES;
+int nprocs = DEFAULT_NUM_CHILDREN;
+pid_t childpid[MAX_CHILDREN];
+pid_t parent_pid;
+pid_t errpid;
 
 union semun {
-   int val;
-   struct semid_ds *buf;
-   unsigned short *array;
+	int val;
+	struct semid_ds *buf;
+	unsigned short *array;
 } arg;
 
 /*---------------------------------------------------------------------+
@@ -152,73 +152,74 @@ union semun {
 |            (-1) Error occurred                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	pid_t	pid;			/* Child's process id */
-	int	proc;			/* Fork loop index */
-	int	status;			/* Child's exit status */
+	pid_t pid;		/* Child's process id */
+	int proc;		/* Fork loop index */
+	int status;		/* Child's exit status */
 
-        /*
-         * Parse command line arguments, print out program header, setup
+	/*
+	 * Parse command line arguments, print out program header, setup
 	 * signal handler (for SIGUSR1) and save parent process id.
-         */
-        parse_args (argc, argv);
-        printf ("%s: IPC Semaphore TestSuite program\n", *argv);
-	fflush (stdout);
-	setup_signal_handler ();
-	errpid = parent_pid = getpid ();
+	 */
+	parse_args(argc, argv);
+	printf("%s: IPC Semaphore TestSuite program\n", *argv);
+	fflush(stdout);
+	setup_signal_handler();
+	errpid = parent_pid = getpid();
 
-	if (nsems < 8) nsems = 8;
+	if (nsems < 8)
+		nsems = 8;
 
 	/*
 	 * Fork off the additional processes.
 	 */
 	if (nprocs > 0) {
-		printf ("\n\tParent: spawning %d child processes\n", nprocs);
-		fflush (stdout);
+		printf("\n\tParent: spawning %d child processes\n", nprocs);
+		fflush(stdout);
 	}
 	for (proc = 1; proc < nprocs; proc++) {
 		/*
 		 * Child leaves loop, parent continues to fork.
 		 */
-		if ((pid = fork ()) < 0)
-			sys_error ("fork failed", __LINE__);
-		else if (pid == (pid_t)0)
-		    {
-		        errpid = pid;
-		        break;
-		    }
-		else
-			childpid [proc] = pid;
+		if ((pid = fork()) < 0)
+			sys_error("fork failed", __LINE__);
+		else if (pid == (pid_t) 0) {
+			errpid = pid;
+			break;
+		} else
+			childpid[proc] = pid;
 	}
 	pid = getpid();
 
-        /*
-         * Test the semget () and semctl () commands
-         */
-	test_commands (pid);
+	/*
+	 * Test the semget () and semctl () commands
+	 */
+	test_commands(pid);
 
-        /*
-         * Finished testing commands, only parent process needs to continue
-         */
-        if (pid != parent_pid) exit (0);
+	/*
+	 * Finished testing commands, only parent process needs to continue
+	 */
+	if (pid != parent_pid)
+		exit(0);
 
-        /*
-         * Wait for all of the child processes to complete & check their
-         * exit status.
-         *
-         * Upon completion of the child proccesses, exit program with success.
-         */
-        for (proc = 1; proc < nprocs; proc++) {
-                waitpid (childpid [proc], &status, 0);
+	/*
+	 * Wait for all of the child processes to complete & check their
+	 * exit status.
+	 *
+	 * Upon completion of the child proccesses, exit program with success.
+	 */
+	for (proc = 1; proc < nprocs; proc++) {
+		waitpid(childpid[proc], &status, 0);
 
-                if (WEXITSTATUS (status))
-                        sys_error ("child process terminated abnormally",
-                                __LINE__);
-        }
+		if (WEXITSTATUS(status))
+			sys_error("child process terminated abnormally",
+				  __LINE__);
+	}
 	if (nprocs > 0)
-		printf ("\n\tAll child processes verified commands successfully\n");
-        printf ("\nsuccessful!\n");
+		printf
+		    ("\n\tAll child processes verified commands successfully\n");
+	printf("\nsuccessful!\n");
 	return (0);
 }
 
@@ -229,70 +230,72 @@ int main (int argc, char **argv)
 | Function:  Verifies options for semop () system function call.       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void test_commands (pid_t proc_pid)
+static void test_commands(pid_t proc_pid)
 {
-	int	i;			/* Misc loop index */
-	int	val;			/* Value (semctl parameter) */
-	int	semid;			/* Unique semaphore id */
-	int	status;			/* Child's exit status */
-	int	expected_value;		/* Expected semaphore value */
-	pid_t	pid;			/* Misc process id */
-	gid_t	gid = getgid ();	/* Misc group id */
-	uid_t	uid = getuid ();	/* Misc user id */
-	mode_t	mode = 0666;		/* Misc mode bits */
-	// ushort	array [MAX_SEMAPHORES];	/* Misc array of semaphore values */
-	struct sembuf semoparray [MAX_SEMAPHORES];
+	int i;			/* Misc loop index */
+	int val;		/* Value (semctl parameter) */
+	int semid;		/* Unique semaphore id */
+	int status;		/* Child's exit status */
+	int expected_value;	/* Expected semaphore value */
+	pid_t pid;		/* Misc process id */
+	gid_t gid = getgid();	/* Misc group id */
+	uid_t uid = getuid();	/* Misc user id */
+	mode_t mode = 0666;	/* Misc mode bits */
+	// ushort       array [MAX_SEMAPHORES]; /* Misc array of semaphore values */
+	struct sembuf semoparray[MAX_SEMAPHORES];
 
 	/*
 	 * Create the semaphores...
 	 */
 	if (proc_pid == parent_pid)
-		printf ("\n\tCreating %d semaphores ...\n", nsems);
-	if ((semid = semget (IPC_PRIVATE, nsems, IPC_CREAT|mode)) < 0)
-		sys_error ("semget (IPC_PRIVATE) failed", __LINE__);
+		printf("\n\tCreating %d semaphores ...\n", nsems);
+	if ((semid = semget(IPC_PRIVATE, nsems, IPC_CREAT | mode)) < 0)
+		sys_error("semget (IPC_PRIVATE) failed", __LINE__);
 
 	/*
 	 * Set the semaphore uid, gid and mode
 	 */
 	if (proc_pid == parent_pid)
-		printf ("\n\tSetting semaphore uid, gid and mode ... semid = %d\n", semid);
-	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
+		printf
+		    ("\n\tSetting semaphore uid, gid and mode ... semid = %d\n",
+		     semid);
+	arg.buf = (struct semid_ds *)calloc(1, sizeof(struct semid_ds));
 	if (!arg.buf)
 		error("calloc failed", __LINE__);
 	arg.buf->sem_perm.uid = uid;
 	arg.buf->sem_perm.gid = gid;
 	arg.buf->sem_perm.mode = mode;
-	if (semctl (semid, 0, IPC_SET, arg) < 0)
-		sys_error ("semctl failed", __LINE__);
+	if (semctl(semid, 0, IPC_SET, arg) < 0)
+		sys_error("semctl failed", __LINE__);
 
 	/*
 	 * Verify that semaphore uid, gid and mode were set correctly
 	 */
 	if (proc_pid == parent_pid)
-		printf ("\n\tVerifying semaphore info ...\n");
-	if (semctl (semid, 0, IPC_STAT, arg) < 0)
-		sys_error ("semctl (IPC_STAT) failed", __LINE__);
+		printf("\n\tVerifying semaphore info ...\n");
+	if (semctl(semid, 0, IPC_STAT, arg) < 0)
+		sys_error("semctl (IPC_STAT) failed", __LINE__);
 	if (arg.buf->sem_perm.uid != uid)
-		error ("semctl: uid was not set", __LINE__);
+		error("semctl: uid was not set", __LINE__);
 	if (arg.buf->sem_perm.gid != gid)
-		error ("semctl: gid was not set", __LINE__);
+		error("semctl: gid was not set", __LINE__);
 	if ((arg.buf->sem_perm.mode & 0777) != mode)
-		error ("semctl: mode was not set", __LINE__);
+		error("semctl: mode was not set", __LINE__);
 	if (arg.buf->sem_nsems != nsems)
-		error ("semctl: nsems (number of semaphores) was not set",
-			__LINE__);
+		error("semctl: nsems (number of semaphores) was not set",
+		      __LINE__);
 	SAFE_FREE(arg.buf);
 
 	/*
 	 * Set the value of each semaphore in the set to 2.
 	 */
-        arg.array = malloc(sizeof(int) * nsems);
+	arg.array = malloc(sizeof(int) * nsems);
 	if (!arg.array)
 		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
-		arg.array [i] = 2;
-	if (semctl (semid, 0, SETALL, arg) < 0)
-		sys_error ("semctl (SETALL) failed", __LINE__);
+		arg.array[i] = 2;
+	if (semctl(semid, 0, SETALL, arg) < 0)
+		sys_error("semctl (SETALL) failed", __LINE__);
 	SAFE_FREE(arg.array);
 
 	/* ------------------------------------------------------------------ */
@@ -303,8 +306,9 @@ static void test_commands (pid_t proc_pid)
 	/*               Return Immediately                                   */
 	/* ------------------------------------------------------------------ */
 	if (proc_pid == parent_pid) {
-		printf ("\n\tTesting semop() with all Semaphore values, options and flags\n");
-		printf ("\n\t   Semval Semop  Semflag    Description\n");
+		printf
+		    ("\n\tTesting semop() with all Semaphore values, options and flags\n");
+		printf("\n\t   Semval Semop  Semflag    Description\n");
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -314,20 +318,20 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(2, -1, "0", "Obtain resource");
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = -1;
-		semoparray [i].sem_flg = 0;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = -1;
+		semoparray[i].sem_flg = 0;
 	}
-	if (semop (semid, semoparray, nsems) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) < 0)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 1;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, i, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -337,20 +341,20 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(1, -1, "0", "Obtain resource");
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = -1;
-		semoparray [i].sem_flg = 0;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = -1;
+		semoparray[i].sem_flg = 0;
 	}
-	if (semop (semid, semoparray, nsems) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) < 0)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 0;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, i, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -360,20 +364,20 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(0, 0, "0", "Semop function returns immediately");
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = 0;
-		semoparray [i].sem_flg = 0;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = 0;
+		semoparray[i].sem_flg = 0;
 	}
-	if (semop (semid, semoparray, nsems) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) < 0)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 0;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, i, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -382,31 +386,31 @@ static void test_commands (pid_t proc_pid)
 	/*           THE FOLLOWING SHOULD SHOW semval = 6                     */
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(5, 1, "0", "Return resource");
-        arg.array = malloc(sizeof(int) * nsems);
+	arg.array = malloc(sizeof(int) * nsems);
 	if (!arg.array)
 		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++) {
-		arg.array [i] = 5;
+		arg.array[i] = 5;
 	}
-	if (semctl (semid, 0, SETALL, arg) < 0)
-		sys_error ("semctl (SETALL) failed", __LINE__);
+	if (semctl(semid, 0, SETALL, arg) < 0)
+		sys_error("semctl (SETALL) failed", __LINE__);
 	SAFE_FREE(arg.array);
 
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = 1;
-		semoparray [i].sem_flg = 0;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = 1;
+		semoparray[i].sem_flg = 0;
 	}
-	if (semop (semid, semoparray, nsems) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) < 0)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 6;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, i, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -416,23 +420,22 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(6, -7, "IPC_NOWAIT", "Semop function returns immediately");
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = -7;
-		semoparray [i].sem_flg = IPC_NOWAIT;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = -7;
+		semoparray[i].sem_flg = IPC_NOWAIT;
 	}
-	if (semop (semid, semoparray, nsems) >= 0)
-		error ("semop did not return EAGAIN", __LINE__);
-	else
-		if (errno != EAGAIN)
-			sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) >= 0)
+		error("semop did not return EAGAIN", __LINE__);
+	else if (errno != EAGAIN)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 6;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, i, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -443,23 +446,22 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(6, 0, "IPC_NOWAIT", "Semop function returns immediately");
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = 0;
-		semoparray [i].sem_flg = IPC_NOWAIT;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = 0;
+		semoparray[i].sem_flg = IPC_NOWAIT;
 	}
-	if (semop (semid, semoparray, nsems) >= 0)
-		error ("semop did not return EAGAIN", __LINE__);
-	else
-		if (errno != EAGAIN)
-			sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) >= 0)
+		error("semop did not return EAGAIN", __LINE__);
+	else if (errno != EAGAIN)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 6;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, i, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -469,20 +471,20 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(6, 1, "0", "Return resource");
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = 1;
-		semoparray [i].sem_flg = 0;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = 1;
+		semoparray[i].sem_flg = 0;
 	}
-	if (semop (semid, semoparray, nsems) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) < 0)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 7;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, i, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, i, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -497,39 +499,39 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Child process
 	 */
-	if ((pid = fork()) == (pid_t)0) {
-		semoparray [0].sem_num = 0;
-		semoparray [0].sem_op  = -8;
-		semoparray [0].sem_flg = 0;
-		if (semop (semid, semoparray, 1) < 0)
-			sys_error ("semop failed", __LINE__);
+	if ((pid = fork()) == (pid_t) 0) {
+		semoparray[0].sem_num = 0;
+		semoparray[0].sem_op = -8;
+		semoparray[0].sem_flg = 0;
+		if (semop(semid, semoparray, 1) < 0)
+			sys_error("semop failed", __LINE__);
 		exit(0);
 	} else if (pid < 0) {
-		sys_error ("fork failed", __LINE__);
+		sys_error("fork failed", __LINE__);
 	}
-	semoparray [0].sem_num = 0;
-	semoparray [0].sem_op  = 2;
-	semoparray [0].sem_flg = 0;
+	semoparray[0].sem_num = 0;
+	semoparray[0].sem_op = 2;
+	semoparray[0].sem_flg = 0;
 
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 0, GETNCNT, arg))
-                sleep (1);
+	while (!semctl(semid, 0, GETNCNT, arg))
+		sleep(1);
 
-	if (semop (semid, semoparray, 1) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, 1) < 0)
+		sys_error("semop failed", __LINE__);
 
-	waitpid (pid, &status, 0);	/* Wait for child to complete */
-	if (WEXITSTATUS (status))
-		sys_error ("child process terminated abnormally", __LINE__);
+	waitpid(pid, &status, 0);	/* Wait for child to complete */
+	if (WEXITSTATUS(status))
+		sys_error("child process terminated abnormally", __LINE__);
 
 	expected_value = 1;
 	arg.val = 0;
-	if ((val = semctl (semid, 0, GETVAL, arg)) < 0)
-		sys_error ("semctl (GETVAL) failed", __LINE__);
+	if ((val = semctl(semid, 0, GETVAL, arg)) < 0)
+		sys_error("semctl (GETVAL) failed", __LINE__);
 	if (val != expected_value)
-		error ("incorrect semaphore value", __LINE__);
+		error("incorrect semaphore value", __LINE__);
 
 	/* ------------------------------------------------------------------ */
 	/* TEST # 9  --- semval = 7, sem_op[0] = -8, sem_flg = 0              */
@@ -542,41 +544,40 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Child process
 	 */
-	if ((pid = fork()) == (pid_t)0) {
-		semoparray [0].sem_num = 1;
-		semoparray [0].sem_op  = -8;
-		semoparray [0].sem_flg = 0;
+	if ((pid = fork()) == (pid_t) 0) {
+		semoparray[0].sem_num = 1;
+		semoparray[0].sem_op = -8;
+		semoparray[0].sem_flg = 0;
 
-		if (semop (semid, semoparray, 1) >= 0)
-			error ("semop did not return EINTR", __LINE__);
-		else
-			if (errno != EINTR) {
-				printf ("semop returned: %d\n", errno);
-				sys_error ("semop failed", __LINE__);
-			}
-		exit (0);
-	} else if (pid < (pid_t)0) {
-		sys_error ("fork failed", __LINE__);
+		if (semop(semid, semoparray, 1) >= 0)
+			error("semop did not return EINTR", __LINE__);
+		else if (errno != EINTR) {
+			printf("semop returned: %d\n", errno);
+			sys_error("semop failed", __LINE__);
+		}
+		exit(0);
+	} else if (pid < (pid_t) 0) {
+		sys_error("fork failed", __LINE__);
 	}
 
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 1, GETNCNT, arg))
-                sleep (1);
+	while (!semctl(semid, 1, GETNCNT, arg))
+		sleep(1);
 
-	kill (pid, SIGUSR1);
+	kill(pid, SIGUSR1);
 
-	waitpid (pid, &status, 0);	/* Wait for child to complete */
-	if (WEXITSTATUS (status))
-		sys_error ("child process terminated abnormally", __LINE__);
+	waitpid(pid, &status, 0);	/* Wait for child to complete */
+	if (WEXITSTATUS(status))
+		sys_error("child process terminated abnormally", __LINE__);
 
 	expected_value = 7;
 	arg.val = 0;
-	if ((val = semctl (semid, 1, GETVAL, arg)) < 0)
-		sys_error ("semctl (GETVAL) failed", __LINE__);
+	if ((val = semctl(semid, 1, GETVAL, arg)) < 0)
+		sys_error("semctl (GETVAL) failed", __LINE__);
 	if (val != expected_value)
-		error ("incorrect semaphore value", __LINE__);
+		error("incorrect semaphore value", __LINE__);
 
 	/* ------------------------------------------------------------------ */
 	/* TEST # 10 --- semval = 1, sem_op[3] = -3, sem_flg = 0              */
@@ -590,50 +591,51 @@ static void test_commands (pid_t proc_pid)
 	/*           --- semval < |semop (-3)| THEN semval = 8                */
 	/*         THE FOLLOWING SHOULD SHOW semval = 8                       */
 	/* ------------------------------------------------------------------ */
-	SEMOP_TABLE(1, 5, "SEM_UNDO", "Sleep (until resource becomes available)");
+	SEMOP_TABLE(1, 5, "SEM_UNDO",
+		    "Sleep (until resource becomes available)");
 	/*
 	 * Child process
 	 */
-	if ((pid = fork()) == (pid_t)0) {
-		semoparray [0].sem_num = 0;
-		semoparray [0].sem_op  = -3;
-		semoparray [0].sem_flg = 0;
+	if ((pid = fork()) == (pid_t) 0) {
+		semoparray[0].sem_num = 0;
+		semoparray[0].sem_op = -3;
+		semoparray[0].sem_flg = 0;
 
-		if (semop (semid, semoparray, 1) < 0)
-			sys_error ("semop failed", __LINE__);
-		exit (0);
-	} else if (pid < (pid_t)0) {
-		sys_error ("fork failed", __LINE__);
+		if (semop(semid, semoparray, 1) < 0)
+			sys_error("semop failed", __LINE__);
+		exit(0);
+	} else if (pid < (pid_t) 0) {
+		sys_error("fork failed", __LINE__);
 	}
 
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 0, GETNCNT, arg))
-                sleep (1);
+	while (!semctl(semid, 0, GETNCNT, arg))
+		sleep(1);
 
-	semoparray [0].sem_num = 0;
-	semoparray [0].sem_op  = 5;
-	semoparray [0].sem_flg = 0;
-	if (semop (semid, semoparray, 1) < 0)
-		sys_error ("semop failed", __LINE__);
+	semoparray[0].sem_num = 0;
+	semoparray[0].sem_op = 5;
+	semoparray[0].sem_flg = 0;
+	if (semop(semid, semoparray, 1) < 0)
+		sys_error("semop failed", __LINE__);
 
-	semoparray [0].sem_num = 0;
-	semoparray [0].sem_op  = 5;
-	semoparray [0].sem_flg = SEM_UNDO;
-	if (semop (semid, semoparray, 1) < 0)
-		sys_error ("semop failed", __LINE__);
+	semoparray[0].sem_num = 0;
+	semoparray[0].sem_op = 5;
+	semoparray[0].sem_flg = SEM_UNDO;
+	if (semop(semid, semoparray, 1) < 0)
+		sys_error("semop failed", __LINE__);
 
-	waitpid (pid, &status, 0);	/* Wait for child to complete */
-	if (WEXITSTATUS (status))
-		sys_error ("child process terminated abnormally", __LINE__);
+	waitpid(pid, &status, 0);	/* Wait for child to complete */
+	if (WEXITSTATUS(status))
+		sys_error("child process terminated abnormally", __LINE__);
 
 	expected_value = 8;
 	arg.val = 0;
-	if ((val = semctl (semid, 0, GETVAL, arg)) < 0)
-		sys_error ("semctl (GETVAL) failed", __LINE__);
+	if ((val = semctl(semid, 0, GETVAL, arg)) < 0)
+		sys_error("semctl (GETVAL) failed", __LINE__);
 	if (val != expected_value)
-		error ("incorrect semaphore value", __LINE__);
+		error("incorrect semaphore value", __LINE__);
 
 	/* ------------------------------------------------------------------ */
 	/* TEST # 11 --- semval = 7, sem_op[3] = -8, sem_flg = 0              */
@@ -645,37 +647,36 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Child process
 	 */
-	if ((pid = fork()) == (pid_t)0) {
-		semoparray [0].sem_num = 2;
-		semoparray [0].sem_op  = -8;
-		semoparray [0].sem_flg = 0;
+	if ((pid = fork()) == (pid_t) 0) {
+		semoparray[0].sem_num = 2;
+		semoparray[0].sem_op = -8;
+		semoparray[0].sem_flg = 0;
 
-		if (semop (semid, semoparray, 1) >= 0)
-			error ("semop did not return ERMID", __LINE__);
-		else
-			if (errno != EIDRM) {
-				printf ("semop returned: %d\n", errno);
-				sys_error ("semop failed", __LINE__);
-			}
-		exit (0);
-	} else if (pid < (pid_t)0) {
-		sys_error ("fork failed", __LINE__);
+		if (semop(semid, semoparray, 1) >= 0)
+			error("semop did not return ERMID", __LINE__);
+		else if (errno != EIDRM) {
+			printf("semop returned: %d\n", errno);
+			sys_error("semop failed", __LINE__);
+		}
+		exit(0);
+	} else if (pid < (pid_t) 0) {
+		sys_error("fork failed", __LINE__);
 	}
 
 	/*
 	 * Wait for child process's semaphore request before deleting the
 	 * semaphores...
 	 */
-        while (!semctl (semid, 2, GETNCNT, arg))
-	  sleep (1);
+	while (!semctl(semid, 2, GETNCNT, arg))
+		sleep(1);
 
 	arg.val = 0;
-	if (semctl (semid, 0, IPC_RMID, arg) < 0)
-		sys_error ("semctl (IPC_RMID) failed", __LINE__);
+	if (semctl(semid, 0, IPC_RMID, arg) < 0)
+		sys_error("semctl (IPC_RMID) failed", __LINE__);
 
-	waitpid (pid, &status, 0);	/* Wait for child to complete */
-	if (WEXITSTATUS (status))
-		sys_error ("child process terminated abnormally", __LINE__);
+	waitpid(pid, &status, 0);	/* Wait for child to complete */
+	if (WEXITSTATUS(status))
+		sys_error("child process terminated abnormally", __LINE__);
 
 	/* ------------------------------------------------------------------ */
 	/*        IPC_RMID DESTROYED THE SEMAPHORE STRUCTURES.                */
@@ -684,44 +685,44 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Create the semaphores...
 	 */
-	if ((semid = semget (IPC_PRIVATE, nsems, IPC_CREAT|mode)) < 0)
-		sys_error ("semget (IPC_PRIVATE) failed", __LINE__);
+	if ((semid = semget(IPC_PRIVATE, nsems, IPC_CREAT | mode)) < 0)
+		sys_error("semget (IPC_PRIVATE) failed", __LINE__);
 
 	/*
 	 * Set the semaphore uid, gid and mode
 	 */
-	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
+	arg.buf = (struct semid_ds *)calloc(1, sizeof(struct semid_ds));
 	if (!arg.buf)
 		error("calloc failed", __LINE__);
 	arg.buf->sem_perm.uid = uid;
 	arg.buf->sem_perm.gid = gid;
 	arg.buf->sem_perm.mode = mode;
-	if (semctl (semid, 0, IPC_SET, arg) < 0)
-		sys_error ("semctl failed", __LINE__);
+	if (semctl(semid, 0, IPC_SET, arg) < 0)
+		sys_error("semctl failed", __LINE__);
 
 	/*
 	 * Verify that semaphore uid, gid and mode were set correctly
 	 */
-	if (semctl (semid, 0, IPC_STAT, arg) < 0)
-		sys_error ("semctl (IPC_STAT) failed", __LINE__);
+	if (semctl(semid, 0, IPC_STAT, arg) < 0)
+		sys_error("semctl (IPC_STAT) failed", __LINE__);
 	if (arg.buf->sem_perm.uid != uid)
-		error ("semctl: uid was not set", __LINE__);
+		error("semctl: uid was not set", __LINE__);
 	if (arg.buf->sem_perm.gid != gid)
-		error ("semctl: gid was not set", __LINE__);
+		error("semctl: gid was not set", __LINE__);
 	if ((arg.buf->sem_perm.mode & 0777) != mode)
-		error ("semctl: mode was not set", __LINE__);
+		error("semctl: mode was not set", __LINE__);
 	if (arg.buf->sem_nsems != nsems)
-		error ("semctl: nsems (number of semaphores) was not set",
-			__LINE__);
+		error("semctl: nsems (number of semaphores) was not set",
+		      __LINE__);
 	SAFE_FREE(arg.buf);
 
-        arg.array = malloc(sizeof(int) * nsems);
+	arg.array = malloc(sizeof(int) * nsems);
 	if (!arg.array)
 		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
-		arg.array [i] = 9;
-	if (semctl (semid, 0, SETALL, arg) < 0)
-		sys_error ("semctl (SETALL) failed", __LINE__);
+		arg.array[i] = 9;
+	if (semctl(semid, 0, SETALL, arg) < 0)
+		sys_error("semctl (SETALL) failed", __LINE__);
 	SAFE_FREE(arg.array);
 
 	/* ------------------------------------------------------------------ */
@@ -732,20 +733,20 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(9, -1, "SEM_UNDO", "Obtain resource");
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = -1;
-		semoparray [i].sem_flg = SEM_UNDO;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = -1;
+		semoparray[i].sem_flg = SEM_UNDO;
 	}
-	if (semop (semid, semoparray, nsems) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) < 0)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 8;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, 0, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, 0, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -755,29 +756,29 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(8, -8, "SEM_UNDO", "Obtain resource");
 	for (i = 0; i < nsems; i++) {
-		semoparray [i].sem_num = i;
-		semoparray [i].sem_op  = -8;
-		semoparray [i].sem_flg = SEM_UNDO;
+		semoparray[i].sem_num = i;
+		semoparray[i].sem_op = -8;
+		semoparray[i].sem_flg = SEM_UNDO;
 	}
-	if (semop (semid, semoparray, nsems) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, nsems) < 0)
+		sys_error("semop failed", __LINE__);
 
 	expected_value = 0;
 	for (i = 0; i < nsems; i++) {
 		arg.val = 0;
-		if ((val = semctl (semid, 0, GETVAL, arg)) < 0)
-			sys_error ("semctl (GETVAL) failed", __LINE__);
+		if ((val = semctl(semid, 0, GETVAL, arg)) < 0)
+			sys_error("semctl (GETVAL) failed", __LINE__);
 		if (val != expected_value)
-			error ("incorrect semaphore value", __LINE__);
+			error("incorrect semaphore value", __LINE__);
 	}
 
-        arg.array = malloc(sizeof(int) * nsems);
+	arg.array = malloc(sizeof(int) * nsems);
 	if (!arg.array)
 		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
-		arg.array [i] = 9;
-	if (semctl (semid, 0, SETALL, arg) < 0)
-		sys_error ("semctl (SETALL) failed", __LINE__);
+		arg.array[i] = 9;
+	if (semctl(semid, 0, SETALL, arg) < 0)
+		sys_error("semctl (SETALL) failed", __LINE__);
 	SAFE_FREE(arg.array);
 
 	/* ------------------------------------------------------------------ */
@@ -791,40 +792,39 @@ static void test_commands (pid_t proc_pid)
 	 * Child process
 	 */
 	if ((pid = fork()) == 0) {
-		semoparray [0].sem_num = 0;
-		semoparray [0].sem_op  = 0;
-		semoparray [0].sem_flg = 0;
+		semoparray[0].sem_num = 0;
+		semoparray[0].sem_op = 0;
+		semoparray[0].sem_flg = 0;
 
-		if (semop (semid, semoparray, 1) >= 0)
-			error ("semop did not return EINTR", __LINE__);
-		else
-			if (errno != EINTR) {
-				printf ("semop returned: %d\n", errno);
-				sys_error ("semop failed", __LINE__);
-			}
-		exit (0);
+		if (semop(semid, semoparray, 1) >= 0)
+			error("semop did not return EINTR", __LINE__);
+		else if (errno != EINTR) {
+			printf("semop returned: %d\n", errno);
+			sys_error("semop failed", __LINE__);
+		}
+		exit(0);
 	} else if (pid < 0) {
-		sys_error ("fork failed", __LINE__);
+		sys_error("fork failed", __LINE__);
 	}
 
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 0, GETZCNT, arg))
-                sleep (1);
+	while (!semctl(semid, 0, GETZCNT, arg))
+		sleep(1);
 
-	kill (pid, SIGUSR1);
+	kill(pid, SIGUSR1);
 
-	waitpid (pid, &status, 0);	/* Wait for child to complete */
-	if (WEXITSTATUS (status))
-		sys_error ("child process terminated abnormally", __LINE__);
+	waitpid(pid, &status, 0);	/* Wait for child to complete */
+	if (WEXITSTATUS(status))
+		sys_error("child process terminated abnormally", __LINE__);
 
 	expected_value = 9;
 	arg.val = 0;
-	if ((val = semctl (semid, 0, GETVAL, arg)) < 0)
-		sys_error ("semctl (GETVAL) failed", __LINE__);
+	if ((val = semctl(semid, 0, GETVAL, arg)) < 0)
+		sys_error("semctl (GETVAL) failed", __LINE__);
 	if (val != expected_value)
-		error ("incorrect semaphore value", __LINE__);
+		error("incorrect semaphore value", __LINE__);
 
 	/* ------------------------------------------------------------------ */
 	/* TEST # 15 --- semval = 9, sem_op[0] = 0, sem_flg = 0               */
@@ -838,40 +838,40 @@ static void test_commands (pid_t proc_pid)
 	/*
 	 * Child process
 	 */
-	if ((pid = fork()) == (pid_t)0) {
-		semoparray [0].sem_num = 0;
-		semoparray [0].sem_op  = 0;
-		semoparray [0].sem_flg = 0;
-		if (semop (semid, semoparray, 1) < 0)
-			sys_error ("semop failed", __LINE__);
+	if ((pid = fork()) == (pid_t) 0) {
+		semoparray[0].sem_num = 0;
+		semoparray[0].sem_op = 0;
+		semoparray[0].sem_flg = 0;
+		if (semop(semid, semoparray, 1) < 0)
+			sys_error("semop failed", __LINE__);
 		exit(0);
-	} else if (pid < (pid_t)0) {
-		sys_error ("fork failed", __LINE__);
+	} else if (pid < (pid_t) 0) {
+		sys_error("fork failed", __LINE__);
 	}
 
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 0, GETZCNT, arg))
-                sleep (1);
+	while (!semctl(semid, 0, GETZCNT, arg))
+		sleep(1);
 
-	semoparray [0].sem_num = 0;
-	semoparray [0].sem_op  = -9;
-	semoparray [0].sem_flg = 0;
+	semoparray[0].sem_num = 0;
+	semoparray[0].sem_op = -9;
+	semoparray[0].sem_flg = 0;
 
-	if (semop (semid, semoparray, 1) < 0)
-		sys_error ("semop failed", __LINE__);
+	if (semop(semid, semoparray, 1) < 0)
+		sys_error("semop failed", __LINE__);
 
-	waitpid (pid, &status, 0);	/* Wait for child to complete */
-	if (WEXITSTATUS (status))
-		sys_error ("child process terminated abnormally", __LINE__);
+	waitpid(pid, &status, 0);	/* Wait for child to complete */
+	if (WEXITSTATUS(status))
+		sys_error("child process terminated abnormally", __LINE__);
 
 	expected_value = 0;
 	arg.val = 0;
-	if ((val = semctl (semid, 0, GETVAL, arg)) < 0)
-		sys_error ("semctl (GETVAL) failed", __LINE__);
+	if ((val = semctl(semid, 0, GETVAL, arg)) < 0)
+		sys_error("semctl (GETVAL) failed", __LINE__);
 	if (val != expected_value)
-		error ("incorrect semaphore value", __LINE__);
+		error("incorrect semaphore value", __LINE__);
 
 	/* ------------------------------------------------------------------ */
 	/* TEST # 16 --- semval = 4, sem_op[4] = 0, sem_flg = 0               */
@@ -884,39 +884,38 @@ static void test_commands (pid_t proc_pid)
 	 * Child process
 	 */
 	arg.val = 4;
-	if (semctl (semid, 4, SETVAL, arg) < 0)
-		sys_error ("semctl (SETALL) failed", __LINE__);
+	if (semctl(semid, 4, SETVAL, arg) < 0)
+		sys_error("semctl (SETALL) failed", __LINE__);
 
-	if ((pid = fork()) == (pid_t)0) {
-		semoparray [0].sem_num = 4;
-		semoparray [0].sem_op  = -8;
-		semoparray [0].sem_flg = 0;
+	if ((pid = fork()) == (pid_t) 0) {
+		semoparray[0].sem_num = 4;
+		semoparray[0].sem_op = -8;
+		semoparray[0].sem_flg = 0;
 
-		if (semop (semid, semoparray, 1) >= 0)
-			error ("semop did not return ERMID", __LINE__);
-		else
-			if (errno != EIDRM) {
-				printf ("semop returned: %d\n", errno);
-				sys_error ("semop failed", __LINE__);
-			}
-		exit (0);
+		if (semop(semid, semoparray, 1) >= 0)
+			error("semop did not return ERMID", __LINE__);
+		else if (errno != EIDRM) {
+			printf("semop returned: %d\n", errno);
+			sys_error("semop failed", __LINE__);
+		}
+		exit(0);
 	} else if (pid < 0) {
-		sys_error ("fork failed", __LINE__);
+		sys_error("fork failed", __LINE__);
 	}
 
 	/*
 	 * Wait for child process's semaphore request before proceeding...
 	 */
-        while (!semctl (semid, 4, GETNCNT, arg))
-                sleep (1);
+	while (!semctl(semid, 4, GETNCNT, arg))
+		sleep(1);
 
 	arg.val = 0;
-	if (semctl (semid, 0, IPC_RMID, arg) < 0)
-		sys_error ("semctl (IPC_RMDI) failed", __LINE__);
+	if (semctl(semid, 0, IPC_RMID, arg) < 0)
+		sys_error("semctl (IPC_RMDI) failed", __LINE__);
 
-	waitpid (pid, &status, 0);	/* Wait for child to complete */
-	if (WEXITSTATUS (status))
-		sys_error ("child process terminated abnormally", __LINE__);
+	waitpid(pid, &status, 0);	/* Wait for child to complete */
+	if (WEXITSTATUS(status))
+		sys_error("child process terminated abnormally", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -931,40 +930,40 @@ static void test_commands (pid_t proc_pid)
 |            [-p] nproc: number of child processes                     |
 |                                                                      |
 +---------------------------------------------------------------------*/
-void parse_args (int argc, char **argv)
+void parse_args(int argc, char **argv)
 {
-	int	opt;
-	int	errflag = 0;
-	char	*program_name = *argv;
-	extern char 	*optarg;	/* Command line option */
+	int opt;
+	int errflag = 0;
+	char *program_name = *argv;
+	extern char *optarg;	/* Command line option */
 
 	while ((opt = getopt(argc, argv, "s:p:")) != EOF) {
 		switch (opt) {
-			case 's':
-				nsems = atoi (optarg);
-				break;
-			case 'p':
-				nprocs = atoi (optarg);
-				break;
-			default:
-				errflag++;
-				break;
+		case 's':
+			nsems = atoi(optarg);
+			break;
+		case 'p':
+			nprocs = atoi(optarg);
+			break;
+		default:
+			errflag++;
+			break;
 		}
 	}
 	if (nsems >= MAX_SEMAPHORES) {
 		errflag++;
-		fprintf (stderr, "ERROR: nsems must be less than %d\n",
+		fprintf(stderr, "ERROR: nsems must be less than %d\n",
 			MAX_SEMAPHORES);
 	}
 	if (nprocs >= MAX_CHILDREN) {
 		errflag++;
-		fprintf (stderr, "ERROR: nproc must be less than %d\n",
+		fprintf(stderr, "ERROR: nproc must be less than %d\n",
 			MAX_CHILDREN);
 	}
 
 	if (errflag) {
-		fprintf (stderr, USAGE, program_name);
-		exit (2);
+		fprintf(stderr, USAGE, program_name);
+		exit(2);
 	}
 }
 
@@ -975,19 +974,19 @@ void parse_args (int argc, char **argv)
 | Function:  Sets up signal handler for SIGUSR1 signal                 |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void setup_signal_handler ()
+static void setup_signal_handler()
 {
-        struct sigaction sigact;
+	struct sigaction sigact;
 
-        sigact.sa_flags = 0;
-        sigfillset (&sigact.sa_mask);
+	sigact.sa_flags = 0;
+	sigfillset(&sigact.sa_mask);
 
-        /*
-         * Establish the signal handler for SIGUSR1
-         */
-        sigact.sa_handler = (void (*)(int)) catch;
-        if (sigaction (SIGUSR1, &sigact, NULL) < 0)
-                sys_error ("sigaction failed", __LINE__);
+	/*
+	 * Establish the signal handler for SIGUSR1
+	 */
+	sigact.sa_handler = (void (*)(int))catch;
+	if (sigaction(SIGUSR1, &sigact, NULL) < 0)
+		sys_error("sigaction failed", __LINE__);
 }
 
 /*---------------------------------------------------------------------+
@@ -997,18 +996,19 @@ static void setup_signal_handler ()
 | Function:  Signal catching function for SIGUSR1                      |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void catch (int sig)
+static void catch(int sig)
 {
-	char	err_msg [256];
-	pid_t	pid = getpid ();
+	char err_msg[256];
+	pid_t pid = getpid();
 
 	if (sig == SIGUSR1) {
 		if (pid == parent_pid)
-			printf ("\t\t\t\t    <<< caught signal (SIGUSR1, %d) >>>\n",
-				sig);
+			printf
+			    ("\t\t\t\t    <<< caught signal (SIGUSR1, %d) >>>\n",
+			     sig);
 	} else {
-		sprintf (err_msg, "caught unexpected signal (%d)", sig);
-		error (err_msg, __LINE__);
+		sprintf(err_msg, "caught unexpected signal (%d)", sig);
+		error(err_msg, __LINE__);
 	}
 }
 
@@ -1019,12 +1019,12 @@ static void catch (int sig)
 | Function:  Creates system error message and calls error ()           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void sys_error (const char *msg, int line)
+static void sys_error(const char *msg, int line)
 {
-	char syserr_msg [256];
+	char syserr_msg[256];
 
-	sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
-	error (syserr_msg, line);
+	sprintf(syserr_msg, "%s: %s\n", msg, strerror(errno));
+	error(syserr_msg, line);
 }
 
 /*---------------------------------------------------------------------+
@@ -1034,8 +1034,8 @@ static void sys_error (const char *msg, int line)
 | Function:  Prints out message and exits...                           |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void error (const char *msg, int line)
+static void error(const char *msg, int line)
 {
-	fprintf (stderr, "ERROR pid %d [line: %d] %s\n", errpid, line, msg);
-	exit (-1);
+	fprintf(stderr, "ERROR pid %d [line: %d] %s\n", errpid, line, msg);
+	exit(-1);
 }

@@ -1,6 +1,6 @@
   /*
-  Test that the SI_QUEUE macro is defined.
-  */
+     Test that the SI_QUEUE macro is defined.
+   */
 
 #include <signal.h>
 

@@ -38,10 +38,12 @@
 int return_val = 1;
 int handler_called = 0;
 
-void myhandler(int signo, siginfo_t *info, void *context) {
+void myhandler(int signo, siginfo_t * info, void *context)
+{
 	handler_called = 1;
 	if (return_val != 1) {
-		printf("Test FAILED: sigqueue() seems to have returned before handler finished executing.\n");
+		printf
+		    ("Test FAILED: sigqueue() seems to have returned before handler finished executing.\n");
 		exit(1);
 	}
 }
@@ -61,7 +63,8 @@ int main()
 	pid = getpid();
 
 	if ((return_val = sigqueue(pid, SIGTOTEST, value)) != 0) {
-		printf("Test UNRESOLVED: call to sigqueue did not return success\n");
+		printf
+		    ("Test UNRESOLVED: call to sigqueue did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 

@@ -49,11 +49,11 @@
 
 #include <string.h>
 #include <errno.h>
-#include <sys/socket.h>   /* struct sockaddr_storage, setsockopt() */
+#include <sys/socket.h>		/* struct sockaddr_storage, setsockopt() */
 #include <netinet/sctp.h>
 
 int sctp_recvmsg(int s, void *msg, size_t len, struct sockaddr *from,
-		 socklen_t *fromlen, struct sctp_sndrcvinfo *sinfo,
+		 socklen_t * fromlen, struct sctp_sndrcvinfo *sinfo,
 		 int *msg_flags)
 {
 	int error;
@@ -62,7 +62,7 @@ int sctp_recvmsg(int s, void *msg, size_t len, struct sockaddr *from,
 	char incmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
 	struct cmsghdr *cmsg = NULL;
 
-	memset(&inmsg, 0, sizeof (inmsg));
+	memset(&inmsg, 0, sizeof(inmsg));
 
 	iov.iov_base = msg;
 	iov.iov_len = len;
@@ -87,13 +87,13 @@ int sctp_recvmsg(int s, void *msg, size_t len, struct sockaddr *from,
 		return error;
 
 	for (cmsg = CMSG_FIRSTHDR(&inmsg); cmsg != NULL;
-				 cmsg = CMSG_NXTHDR(&inmsg, cmsg)) {
+	     cmsg = CMSG_NXTHDR(&inmsg, cmsg)) {
 		if ((IPPROTO_SCTP == cmsg->cmsg_level) &&
 		    (SCTP_SNDRCV == cmsg->cmsg_type))
 			break;
 	}
 
-        /* Copy sinfo. */
+	/* Copy sinfo. */
 	if (cmsg)
 		memcpy(sinfo, CMSG_DATA(cmsg), sizeof(struct sctp_sndrcvinfo));
 

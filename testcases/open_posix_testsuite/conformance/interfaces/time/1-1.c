@@ -21,7 +21,7 @@ int main(void)
 	time_t current_time;
 
 	current_time = time(NULL);
-	printf("%ju secs since the Epoch\n",(uintmax_t) current_time);
+	printf("%ju secs since the Epoch\n", (uintmax_t) current_time);
 
 	if (current_time != -1) {
 		puts("Test PASSED");

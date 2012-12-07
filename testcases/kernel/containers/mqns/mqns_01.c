@@ -39,7 +39,7 @@
 #include "mqns.h"
 
 char *TCID = "posixmq_namespace_01";
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 
 int p1[2];
 int p2[2];
@@ -75,8 +75,7 @@ int check_mqueue(void *vtest)
 	exit(0);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int r;
 	mqd_t mqd;
@@ -84,17 +83,20 @@ main(int argc, char *argv[])
 	int use_clone = T_UNSHARE;
 
 	if (argc == 2 && strcmp(argv[1], "-clone") == 0) {
-		tst_resm(TINFO, "Testing posix mq namespaces through clone(2).\n");
+		tst_resm(TINFO,
+			 "Testing posix mq namespaces through clone(2).\n");
 		use_clone = T_CLONE;
 	} else
-		tst_resm(TINFO, "Testing posix mq namespaces through unshare(2).\n");
+		tst_resm(TINFO,
+			 "Testing posix mq namespaces through unshare(2).\n");
 
 	if (pipe(p1) == -1 || pipe(p2) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "pipe failed");
+		tst_brkm(TBROK | TERRNO, NULL, "pipe failed");
 	}
 
-	mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777,
-			NULL);
+	mqd =
+	    syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR | O_CREAT | O_EXCL, 0777,
+		    NULL);
 	if (mqd == -1) {
 		perror("mq_open");
 		tst_resm(TFAIL, "mq_open failed\n");
@@ -129,7 +131,7 @@ main(int argc, char *argv[])
 
 	/* destroy the mqueue */
 	if (mq_close(mqd) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "mq_close failed");
+		tst_brkm(TBROK | TERRNO, NULL, "mq_close failed");
 	}
 	syscall(__NR_mq_unlink, NOSLASH_MQ1);
 

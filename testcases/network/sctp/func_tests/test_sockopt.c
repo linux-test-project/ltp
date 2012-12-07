@@ -61,23 +61,22 @@ char *TCID = __FILE__;
 int TST_TOTAL = 29;
 int TST_CNT = 0;
 
-int
-main(void)
+int main(void)
 {
 	int udp_svr_sk, udp_clt_sk, tcp_svr_sk, tcp_clt_sk;
 	int accept_sk, peeloff_sk;
-        sockaddr_storage_t udp_svr_loop, udp_clt_loop;
-        sockaddr_storage_t tcp_svr_loop, tcp_clt_loop;
-        struct iovec iov;
-        struct msghdr inmessage;
+	sockaddr_storage_t udp_svr_loop, udp_clt_loop;
+	sockaddr_storage_t tcp_svr_loop, tcp_clt_loop;
+	struct iovec iov;
+	struct msghdr inmessage;
 	struct msghdr outmessage;
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
 	char outcmsg[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
 	struct cmsghdr *cmsg;
 	struct sctp_sndrcvinfo *sinfo;
-        struct iovec out_iov;
-        char *message = "hello, world!\n";
-        int error;
+	struct iovec out_iov;
+	char *message = "hello, world!\n";
+	int error;
 	int pf_class, af_family;
 	uint32_t ppid;
 	uint32_t stream;
@@ -98,7 +97,7 @@ main(void)
 	socklen_t optlen, addrlen;
 	struct sctp_status status;
 
-        /* Rather than fflush() throughout the code, set stdout to
+	/* Rather than fflush() throughout the code, set stdout to
 	 * be unbuffered.
 	 */
 	setvbuf(stdout, NULL, _IONBF, 0);
@@ -108,55 +107,55 @@ main(void)
 	pf_class = PF_INET6;
 	af_family = AF_INET6;
 
-        udp_svr_loop.v6.sin6_family = AF_INET6;
-        udp_svr_loop.v6.sin6_addr = in6addr_loopback;
-        udp_svr_loop.v6.sin6_port = htons(SCTP_TESTPORT_1);
+	udp_svr_loop.v6.sin6_family = AF_INET6;
+	udp_svr_loop.v6.sin6_addr = in6addr_loopback;
+	udp_svr_loop.v6.sin6_port = htons(SCTP_TESTPORT_1);
 
-        udp_clt_loop.v6.sin6_family = AF_INET6;
-        udp_clt_loop.v6.sin6_addr = in6addr_loopback;
-        udp_clt_loop.v6.sin6_port = htons(SCTP_TESTPORT_1+1);
+	udp_clt_loop.v6.sin6_family = AF_INET6;
+	udp_clt_loop.v6.sin6_addr = in6addr_loopback;
+	udp_clt_loop.v6.sin6_port = htons(SCTP_TESTPORT_1 + 1);
 
-        tcp_svr_loop.v6.sin6_family = AF_INET6;
-        tcp_svr_loop.v6.sin6_addr = in6addr_loopback;
-        tcp_svr_loop.v6.sin6_port = htons(SCTP_TESTPORT_1+2);
+	tcp_svr_loop.v6.sin6_family = AF_INET6;
+	tcp_svr_loop.v6.sin6_addr = in6addr_loopback;
+	tcp_svr_loop.v6.sin6_port = htons(SCTP_TESTPORT_1 + 2);
 
-        tcp_clt_loop.v6.sin6_family = AF_INET6;
-        tcp_clt_loop.v6.sin6_addr = in6addr_loopback;
-        tcp_clt_loop.v6.sin6_port = htons(SCTP_TESTPORT_1+3);
+	tcp_clt_loop.v6.sin6_family = AF_INET6;
+	tcp_clt_loop.v6.sin6_addr = in6addr_loopback;
+	tcp_clt_loop.v6.sin6_port = htons(SCTP_TESTPORT_1 + 3);
 #else
 	pf_class = PF_INET;
 	af_family = AF_INET;
 
-        udp_svr_loop.v4.sin_family = AF_INET;
-        udp_svr_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        udp_svr_loop.v4.sin_port = htons(SCTP_TESTPORT_1);
+	udp_svr_loop.v4.sin_family = AF_INET;
+	udp_svr_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	udp_svr_loop.v4.sin_port = htons(SCTP_TESTPORT_1);
 
-        udp_clt_loop.v4.sin_family = AF_INET;
-        udp_clt_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        udp_clt_loop.v4.sin_port = htons(SCTP_TESTPORT_1+1);
+	udp_clt_loop.v4.sin_family = AF_INET;
+	udp_clt_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	udp_clt_loop.v4.sin_port = htons(SCTP_TESTPORT_1 + 1);
 
-        tcp_svr_loop.v4.sin_family = AF_INET;
-        tcp_svr_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        tcp_svr_loop.v4.sin_port = htons(SCTP_TESTPORT_1+2);
+	tcp_svr_loop.v4.sin_family = AF_INET;
+	tcp_svr_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	tcp_svr_loop.v4.sin_port = htons(SCTP_TESTPORT_1 + 2);
 
-        tcp_clt_loop.v4.sin_family = AF_INET;
-        tcp_clt_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
-        tcp_clt_loop.v4.sin_port = htons(SCTP_TESTPORT_2+3);
+	tcp_clt_loop.v4.sin_family = AF_INET;
+	tcp_clt_loop.v4.sin_addr.s_addr = SCTP_IP_LOOPBACK;
+	tcp_clt_loop.v4.sin_port = htons(SCTP_TESTPORT_2 + 3);
 #endif /* TEST_V6 */
 
-        /* Create the two endpoints which will talk to each other.  */
-        udp_svr_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
-        udp_clt_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
+	/* Create the two endpoints which will talk to each other.  */
+	udp_svr_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
+	udp_clt_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 
 	/* Enable ASSOC_CHANGE and SNDRCVINFO notifications. */
 	test_enable_assoc_change(udp_svr_sk);
 	test_enable_assoc_change(udp_clt_sk);
 
-        /* Bind these sockets to the test ports.  */
-        test_bind(udp_svr_sk, &udp_svr_loop.sa, sizeof(udp_svr_loop));
-        test_bind(udp_clt_sk, &udp_clt_loop.sa, sizeof(udp_clt_loop));
+	/* Bind these sockets to the test ports.  */
+	test_bind(udp_svr_sk, &udp_svr_loop.sa, sizeof(udp_svr_loop));
+	test_bind(udp_clt_sk, &udp_clt_loop.sa, sizeof(udp_clt_loop));
 
-       /* Mark udp_svr_sk as being able to accept new associations.  */
+	/* Mark udp_svr_sk as being able to accept new associations.  */
 	test_listen(udp_svr_sk, 1);
 
 	/* TEST #1: SCTP_STATUS socket option. */
@@ -165,8 +164,7 @@ main(void)
 	 */
 	optlen = sizeof(struct sctp_status);
 	memset(&status, 0, optlen);
-	error = getsockopt(udp_svr_sk, SOL_SCTP, SCTP_STATUS, &status,
-			   &optlen);
+	error = getsockopt(udp_svr_sk, SOL_SCTP, SCTP_STATUS, &status, &optlen);
 	if ((error != -1) && (errno != EINVAL))
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_STATUS) on a "
 			 "socket with no assoc error:%d errno:%d",
@@ -174,14 +172,14 @@ main(void)
 
 	tst_resm(TPASS, "getsockopt(SCTP_STATUS) on a socket with no assoc");
 
-        /* Send the first message.  This will create the association.  */
-        outmessage.msg_name = &udp_svr_loop;
-        outmessage.msg_namelen = sizeof(udp_svr_loop);
-        outmessage.msg_iov = &out_iov;
-        outmessage.msg_iovlen = 1;
-        outmessage.msg_control = outcmsg;
-        outmessage.msg_controllen = sizeof(outcmsg);
-        outmessage.msg_flags = 0;
+	/* Send the first message.  This will create the association.  */
+	outmessage.msg_name = &udp_svr_loop;
+	outmessage.msg_namelen = sizeof(udp_svr_loop);
+	outmessage.msg_iov = &out_iov;
+	outmessage.msg_iovlen = 1;
+	outmessage.msg_control = outcmsg;
+	outmessage.msg_controllen = sizeof(outcmsg);
+	outmessage.msg_flags = 0;
 	cmsg = CMSG_FIRSTHDR(&outmessage);
 	cmsg->cmsg_level = IPPROTO_SCTP;
 	cmsg->cmsg_type = SCTP_SNDRCV;
@@ -189,45 +187,45 @@ main(void)
 	outmessage.msg_controllen = cmsg->cmsg_len;
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
-	ppid = rand(); /* Choose an arbitrary value. */
+	ppid = rand();		/* Choose an arbitrary value. */
 	stream = 1;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
-        outmessage.msg_iov->iov_base = message;
-        outmessage.msg_iov->iov_len = strlen(message) + 1;
-        test_sendmsg(udp_clt_sk, &outmessage, 0, strlen(message)+1);
+	outmessage.msg_iov->iov_base = message;
+	outmessage.msg_iov->iov_len = strlen(message) + 1;
+	test_sendmsg(udp_clt_sk, &outmessage, 0, strlen(message) + 1);
 
 	/* Initialize inmessage for all receives. */
 	big_buffer = test_malloc(REALLY_BIG);
-        memset(&inmessage, 0, sizeof(inmessage));
-        iov.iov_base = big_buffer;
-        iov.iov_len = REALLY_BIG;
-        inmessage.msg_iov = &iov;
-        inmessage.msg_iovlen = 1;
-        inmessage.msg_control = incmsg;
+	memset(&inmessage, 0, sizeof(inmessage));
+	iov.iov_base = big_buffer;
+	iov.iov_len = REALLY_BIG;
+	inmessage.msg_iov = &iov;
+	inmessage.msg_iovlen = 1;
+	inmessage.msg_control = incmsg;
 
-        /* Get the communication up message on udp_svr_sk.  */
-        inmessage.msg_controllen = sizeof(incmsg);
-        error = test_recvmsg(udp_svr_sk, &inmessage, MSG_WAITALL);
+	/* Get the communication up message on udp_svr_sk.  */
+	inmessage.msg_controllen = sizeof(incmsg);
+	error = test_recvmsg(udp_svr_sk, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
 				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	udp_svr_associd = sac->sac_assoc_id;
 
-        /* Get the communication up message on udp_clt_sk.  */
-        inmessage.msg_controllen = sizeof(incmsg);
-        error = test_recvmsg(udp_clt_sk, &inmessage, MSG_WAITALL);
+	/* Get the communication up message on udp_clt_sk.  */
+	inmessage.msg_controllen = sizeof(incmsg);
+	error = test_recvmsg(udp_clt_sk, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
 				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
 	sac = (struct sctp_assoc_change *)iov.iov_base;
 	udp_clt_associd = sac->sac_assoc_id;
 
-        /* Get the first message which was sent.  */
-        inmessage.msg_controllen = sizeof(incmsg);
-        error = test_recvmsg(udp_svr_sk, &inmessage, MSG_WAITALL);
-        test_check_msg_data(&inmessage, error, strlen(message) + 1,
+	/* Get the first message which was sent.  */
+	inmessage.msg_controllen = sizeof(incmsg);
+	error = test_recvmsg(udp_svr_sk, &inmessage, MSG_WAITALL);
+	test_check_msg_data(&inmessage, error, strlen(message) + 1,
 			    MSG_EOR, stream, ppid);
 
 	/* Get SCTP_STATUS for udp_clt_sk's given association. */
@@ -242,10 +240,9 @@ main(void)
 	optlen = sizeof(struct sctp_status);
 	memset(&status, 0, optlen);
 	status.sstat_assoc_id = udp_svr_associd;
-	error = getsockopt(udp_clt_sk, SOL_SCTP, SCTP_STATUS, &status,
-			   &optlen);
+	error = getsockopt(udp_clt_sk, SOL_SCTP, SCTP_STATUS, &status, &optlen);
 	if ((error != -1) && (errno != EINVAL))
-        	tst_brkm(TBROK, NULL, "getsockopt(SCTP_STATUS) with "
+		tst_brkm(TBROK, NULL, "getsockopt(SCTP_STATUS) with "
 			 "associd error: %d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt(SCTP_STATUS) with invalid associd");
@@ -254,31 +251,30 @@ main(void)
 	optlen = sizeof(struct sctp_status);
 	memset(&status, 0, optlen);
 	status.sstat_assoc_id = 0;
-	error = getsockopt(udp_svr_sk, SOL_SCTP, SCTP_STATUS, &status,
-			   &optlen);
+	error = getsockopt(udp_svr_sk, SOL_SCTP, SCTP_STATUS, &status, &optlen);
 	if ((error != -1) && (errno != EINVAL))
-        	tst_brkm(TBROK, NULL, "getsockopt(SCTP_STATUS) with "
+		tst_brkm(TBROK, NULL, "getsockopt(SCTP_STATUS) with "
 			 "NULL associd error: %d errno:%d", error, errno);
 
 	tst_resm(TPASS, "getsockopt(SCTP_STATUS) with NULL associd");
 
-        /* Shut down the link.  */
-        close(udp_clt_sk);
+	/* Shut down the link.  */
+	close(udp_clt_sk);
 
-        /* Get the shutdown complete notification. */
+	/* Get the shutdown complete notification. */
 	inmessage.msg_controllen = sizeof(incmsg);
-        error = test_recvmsg(udp_svr_sk, &inmessage, MSG_WAITALL);
+	error = test_recvmsg(udp_svr_sk, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
 				    SCTP_ASSOC_CHANGE, SCTP_SHUTDOWN_COMP);
 
 	error = 0;
-        close(udp_svr_sk);
+	close(udp_svr_sk);
 
 	/* TEST #2: SCTP_EVENTS socket option and SCTP_SHUTDOWN_EVENT
 	 * notification.
 	 */
-        /* Create the two endpoints which will talk to each other.  */
+	/* Create the two endpoints which will talk to each other.  */
 	udp_svr_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 	udp_clt_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 
@@ -305,10 +301,8 @@ main(void)
 
 	/* Disable all the events on udp_svr_sk and udp_clt_sk. */
 	memset(&subscribe, 0, sizeof(struct sctp_event_subscribe));
-	test_setsockopt(udp_svr_sk, SCTP_EVENTS, &subscribe,
-			sizeof(subscribe));
-	test_setsockopt(udp_clt_sk, SCTP_EVENTS, &subscribe,
-			sizeof(subscribe));
+	test_setsockopt(udp_svr_sk, SCTP_EVENTS, &subscribe, sizeof(subscribe));
+	test_setsockopt(udp_clt_sk, SCTP_EVENTS, &subscribe, sizeof(subscribe));
 
 	tst_resm(TPASS, "setsockopt(SCTP_EVENTS)");
 
@@ -323,27 +317,25 @@ main(void)
 	/* Send a message.  This will create the association.  */
 	outmessage.msg_iov->iov_base = message;
 	outmessage.msg_iov->iov_len = strlen(message) + 1;
-	test_sendmsg(udp_clt_sk, &outmessage, 0, strlen(message)+1);
+	test_sendmsg(udp_clt_sk, &outmessage, 0, strlen(message) + 1);
 
 	/* Get the message which was sent.  */
 	inmessage.msg_controllen = sizeof(incmsg);
 	error = test_recvmsg(udp_svr_sk, &inmessage, MSG_WAITALL);
-        test_check_msg_data(&inmessage, error, strlen(message) + 1,
+	test_check_msg_data(&inmessage, error, strlen(message) + 1,
 			    MSG_EOR, 0, 0);
 	/* Verify that we received the msg without any ancillary data. */
 	if (inmessage.msg_controllen != 0)
-		tst_brkm(TBROK, NULL, "Receive unexpected ancillary"
-			 "data");
+		tst_brkm(TBROK, NULL, "Receive unexpected ancillary" "data");
 
 	/* Enable SCTP_SHUTDOWN_EVENTs on udp_svr_sk. */
 	memset(&subscribe, 0, sizeof(struct sctp_event_subscribe));
 	subscribe.sctp_shutdown_event = 1;
-	test_setsockopt(udp_svr_sk, SCTP_EVENTS, &subscribe,
-			sizeof(subscribe));
+	test_setsockopt(udp_svr_sk, SCTP_EVENTS, &subscribe, sizeof(subscribe));
 
 	error = 0;
-        /* Shut down the link.  */
-        close(udp_clt_sk);
+	/* Shut down the link.  */
+	close(udp_clt_sk);
 
 	/* Get the SHUTDOWN_EVENT notification on udp_svr_sk. */
 	inmessage.msg_controllen = sizeof(incmsg);
@@ -354,10 +346,10 @@ main(void)
 
 	tst_resm(TPASS, "setsockopt(SCTP_EVENTS) - SCTP_SHUTDOWN_EVENT");
 
-        close(udp_svr_sk);
+	close(udp_svr_sk);
 
 	/* TEST #3: whether sctp_opt_info equals */
-        /* Create the two endpoints which will talk to each other.  */
+	/* Create the two endpoints which will talk to each other.  */
 	udp_svr_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 	udp_clt_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 
@@ -372,14 +364,14 @@ main(void)
 	/* Mark udp_svr_sk as being able to accept new associations.  */
 	test_listen(udp_svr_sk, 1);
 
-        /* Send the first message.  This will create the association.  */
-        outmessage.msg_name = &udp_svr_loop;
-        outmessage.msg_namelen = sizeof(udp_svr_loop);
-        outmessage.msg_iov = &out_iov;
-        outmessage.msg_iovlen = 1;
-        outmessage.msg_control = outcmsg;
-        outmessage.msg_controllen = sizeof(outcmsg);
-        outmessage.msg_flags = 0;
+	/* Send the first message.  This will create the association.  */
+	outmessage.msg_name = &udp_svr_loop;
+	outmessage.msg_namelen = sizeof(udp_svr_loop);
+	outmessage.msg_iov = &out_iov;
+	outmessage.msg_iovlen = 1;
+	outmessage.msg_control = outcmsg;
+	outmessage.msg_controllen = sizeof(outcmsg);
+	outmessage.msg_flags = 0;
 	cmsg = CMSG_FIRSTHDR(&outmessage);
 	cmsg->cmsg_level = IPPROTO_SCTP;
 	cmsg->cmsg_type = SCTP_SNDRCV;
@@ -387,17 +379,17 @@ main(void)
 	outmessage.msg_controllen = cmsg->cmsg_len;
 	sinfo = (struct sctp_sndrcvinfo *)CMSG_DATA(cmsg);
 	memset(sinfo, 0x00, sizeof(struct sctp_sndrcvinfo));
-	ppid = rand(); /* Choose an arbitrary value. */
+	ppid = rand();		/* Choose an arbitrary value. */
 	stream = 1;
 	sinfo->sinfo_ppid = ppid;
 	sinfo->sinfo_stream = stream;
-        outmessage.msg_iov->iov_base = message;
-        outmessage.msg_iov->iov_len = strlen(message) + 1;
-        test_sendmsg(udp_clt_sk, &outmessage, 0, strlen(message)+1);
+	outmessage.msg_iov->iov_base = message;
+	outmessage.msg_iov->iov_len = strlen(message) + 1;
+	test_sendmsg(udp_clt_sk, &outmessage, 0, strlen(message) + 1);
 
-        /* Get the communication up message on udp_clt_sk.  */
-        inmessage.msg_controllen = sizeof(incmsg);
-        error = test_recvmsg(udp_clt_sk, &inmessage, MSG_WAITALL);
+	/* Get the communication up message on udp_clt_sk.  */
+	inmessage.msg_controllen = sizeof(incmsg);
+	error = test_recvmsg(udp_clt_sk, &inmessage, MSG_WAITALL);
 	test_check_msg_notification(&inmessage, error,
 				    sizeof(struct sctp_assoc_change),
 				    SCTP_ASSOC_CHANGE, SCTP_COMM_UP);
@@ -415,33 +407,33 @@ main(void)
 		optlen = sizeof(struct sctp_status);
 
 		/* Test SCTP_STATUS for udp_clt_sk's given association. */
-		error = sctp_opt_info(udp_clt_sk,udp_clt_associd,SCTP_STATUS,
-				(char *)&status1, &optlen);
+		error = sctp_opt_info(udp_clt_sk, udp_clt_associd, SCTP_STATUS,
+				      (char *)&status1, &optlen);
 		if (error != 0)
-	                tst_brkm(TBROK, NULL,
+			tst_brkm(TBROK, NULL,
 				 "sctp_opt_info(SCTP_STATUS): %s",
 				 strerror(errno));
 
 		status2.sstat_assoc_id = udp_clt_associd;
 		error = getsockopt(udp_clt_sk, IPPROTO_SCTP, SCTP_STATUS,
-                		(char *)&status2, &optlen);
+				   (char *)&status2, &optlen);
 		if (error != 0)
-	                tst_brkm(TBROK, NULL,
+			tst_brkm(TBROK, NULL,
 				 "getsockopt(SCTP_STATUS): %s",
 				 strerror(errno));
 		if (strncmp((char *)&status1, (char *)&status2, optlen))
-	                tst_brkm(TBROK, NULL, "sctp_opt_info(SCTP_STAUS)"
-			       "doesn't match getsockopt(SCTP_STATUS)");
+			tst_brkm(TBROK, NULL, "sctp_opt_info(SCTP_STAUS)"
+				 "doesn't match getsockopt(SCTP_STATUS)");
 
-                tst_resm(TPASS, "sctp_opt_info(SCTP_STATUS)");
+		tst_resm(TPASS, "sctp_opt_info(SCTP_STATUS)");
 	}
 	error = 0;
-        /* Shut down the link.  */
-        close(udp_svr_sk);
-        close(udp_clt_sk);
+	/* Shut down the link.  */
+	close(udp_svr_sk);
+	close(udp_clt_sk);
 
 	/* TEST #4: SCTP_INITMSG socket option. */
-        /* Create a socket.  */
+	/* Create a socket.  */
 	udp_svr_sk = test_socket(pf_class, SOCK_SEQPACKET, IPPROTO_SCTP);
 
 	/* Bind this socket to the test port.  */
@@ -518,7 +510,7 @@ main(void)
 
 	/* Verify that the get param matches set param. */
 	if (set_udp_sk_dflt_param.sinfo_ppid !=
-			get_udp_sk_dflt_param.sinfo_ppid)
+	    get_udp_sk_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -526,11 +518,11 @@ main(void)
 	memset(&get_udp_sk_dflt_param, 0, sizeof(struct sctp_sndrcvinfo));
 	optlen = sizeof(get_udp_sk_dflt_param);
 	test_getsockopt(udp_clt_sk, SCTP_DEFAULT_SEND_PARAM,
-		       &get_udp_sk_dflt_param, &optlen);
+			&get_udp_sk_dflt_param, &optlen);
 
 	/* Verify that the get param matches set param. */
 	if (set_udp_sk_dflt_param.sinfo_ppid !=
-			get_udp_sk_dflt_param.sinfo_ppid)
+	    get_udp_sk_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -542,15 +534,14 @@ main(void)
 	 */
 	memset(&set_udp_sk_dflt_param, 0, sizeof(struct sctp_sndrcvinfo));
 	set_udp_sk_dflt_param.sinfo_ppid = 1000;
-       	/* Invalid assoc id */
+	/* Invalid assoc id */
 	set_udp_sk_dflt_param.sinfo_assoc_id = 1234;
-        error = setsockopt(udp_clt_sk, SOL_SCTP, SCTP_DEFAULT_SEND_PARAM,
+	error = setsockopt(udp_clt_sk, SOL_SCTP, SCTP_DEFAULT_SEND_PARAM,
 			   &set_udp_sk_dflt_param,
 			   sizeof(set_udp_sk_dflt_param));
 	if ((-1 != error) || (EINVAL != errno))
 		tst_brkm(TBROK, NULL, "setsockopt(SCTP_DEFAULT_SEND_PARAM) "
-			 "invalid associd error:%d, errno:%d\n",
-			 error, errno);
+			 "invalid associd error:%d, errno:%d\n", error, errno);
 
 	tst_resm(TPASS, "setsockopt(SCTP_DEFAULT_SEND_PARAM) "
 		 "- one-to-many style invalid associd");
@@ -609,14 +600,14 @@ main(void)
 	 * UDP-style socket with a valid associd.
 	 */
 	memset(&get_udp_assoc_dflt_param, 0, sizeof(struct sctp_sndrcvinfo));
-	get_udp_assoc_dflt_param.sinfo_assoc_id = udp_svr_associd ;
+	get_udp_assoc_dflt_param.sinfo_assoc_id = udp_svr_associd;
 	optlen = sizeof(get_udp_assoc_dflt_param);
 	test_getsockopt(udp_svr_sk, SCTP_DEFAULT_SEND_PARAM,
 			&get_udp_assoc_dflt_param, &optlen);
 
 	/* Verify that the get param matches the set param. */
 	if (get_udp_assoc_dflt_param.sinfo_ppid !=
-			set_udp_assoc_dflt_param.sinfo_ppid)
+	    set_udp_assoc_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -628,14 +619,14 @@ main(void)
 	 * socket wide default parameters.
 	 */
 	memset(&get_udp_sk_dflt_param, 0, sizeof(struct sctp_sndrcvinfo));
-	get_udp_sk_dflt_param.sinfo_assoc_id = 0 ;
+	get_udp_sk_dflt_param.sinfo_assoc_id = 0;
 	optlen = sizeof(get_udp_sk_dflt_param);
 	test_getsockopt(udp_clt_sk, SCTP_DEFAULT_SEND_PARAM,
 			&get_udp_sk_dflt_param, &optlen);
 
 	/* Verify that the get param matches the socket-wide set param. */
 	if (get_udp_sk_dflt_param.sinfo_ppid !=
-			set_udp_sk_dflt_param.sinfo_ppid)
+	    set_udp_sk_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -650,14 +641,14 @@ main(void)
 	 */
 	memset(&get_peeloff_assoc_dflt_param, 0,
 	       sizeof(struct sctp_sndrcvinfo));
-	get_peeloff_assoc_dflt_param.sinfo_assoc_id = 0 ;
+	get_peeloff_assoc_dflt_param.sinfo_assoc_id = 0;
 	optlen = sizeof(get_peeloff_assoc_dflt_param);
 	test_getsockopt(peeloff_sk, SCTP_DEFAULT_SEND_PARAM,
 			&get_peeloff_assoc_dflt_param, &optlen);
 
 	/* Verify that the get param matches the association's set param. */
 	if (get_peeloff_assoc_dflt_param.sinfo_ppid !=
-			set_udp_assoc_dflt_param.sinfo_ppid)
+	    set_udp_assoc_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -670,8 +661,7 @@ main(void)
 	/* Invalid assoc id, ignored on a TCP-style socket. */
 	set_tcp_sk_dflt_param.sinfo_assoc_id = 1234;
 	test_setsockopt(tcp_svr_sk, SCTP_DEFAULT_SEND_PARAM,
-			&set_tcp_sk_dflt_param,
-			sizeof(set_tcp_sk_dflt_param));
+			&set_tcp_sk_dflt_param, sizeof(set_tcp_sk_dflt_param));
 
 	/* Set default send parameters on the unconnected TCP-style sockets. */
 	memset(&set_tcp_sk_dflt_param, 0, sizeof(struct sctp_sndrcvinfo));
@@ -679,8 +669,7 @@ main(void)
 	/* Invalid assoc id, ignored on a TCP-style socket. */
 	set_tcp_sk_dflt_param.sinfo_assoc_id = 1234;
 	test_setsockopt(tcp_clt_sk, SCTP_DEFAULT_SEND_PARAM,
-			&set_tcp_sk_dflt_param,
-			sizeof(set_tcp_sk_dflt_param));
+			&set_tcp_sk_dflt_param, sizeof(set_tcp_sk_dflt_param));
 
 	tst_resm(TPASS, "setsockopt(SCTP_DEFAULT_SEND_PARAM) - "
 		 "one-to-one style socket");
@@ -693,7 +682,7 @@ main(void)
 
 	/* Verify that the get param matches set param. */
 	if (set_tcp_sk_dflt_param.sinfo_ppid !=
-			get_tcp_sk_dflt_param.sinfo_ppid)
+	    get_tcp_sk_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -705,7 +694,7 @@ main(void)
 
 	/* Verify that the get param matches set param. */
 	if (set_tcp_sk_dflt_param.sinfo_ppid !=
-			get_tcp_sk_dflt_param.sinfo_ppid)
+	    get_tcp_sk_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -737,7 +726,7 @@ main(void)
 			&get_tcp_assoc_dflt_param, &optlen);
 
 	if (set_tcp_assoc_dflt_param.sinfo_ppid !=
-			get_tcp_assoc_dflt_param.sinfo_ppid)
+	    get_tcp_assoc_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -751,9 +740,9 @@ main(void)
 	 * set for the association, not the socket-wide param.
 	 */
 	if ((get_tcp_sk_dflt_param.sinfo_ppid ==
-			set_tcp_sk_dflt_param.sinfo_ppid) ||
+	     set_tcp_sk_dflt_param.sinfo_ppid) ||
 	    (get_tcp_sk_dflt_param.sinfo_ppid !=
-	    		set_tcp_assoc_dflt_param.sinfo_ppid))
+	     set_tcp_assoc_dflt_param.sinfo_ppid))
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -767,7 +756,7 @@ main(void)
 	 * set param.
 	 */
 	if (get_tcp_sk_dflt_param.sinfo_ppid !=
-			set_tcp_sk_dflt_param.sinfo_ppid)
+	    set_tcp_sk_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -790,7 +779,7 @@ main(void)
 	 * set param.
 	 */
 	if (get_tcp_sk_dflt_param.sinfo_ppid !=
-			set_tcp_sk_dflt_param.sinfo_ppid)
+	    set_tcp_sk_dflt_param.sinfo_ppid)
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_DEFAULT_SEND_PARAM) "
 			 "mismatch.");
 
@@ -806,7 +795,7 @@ main(void)
 	if ((-1 != error) || (EINVAL != errno))
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_GET_PEER_ADDR_INFO) "
 			 "null associd, null addr error:%d, errno:%d\n",
-			error, errno);
+			 error, errno);
 
 	tst_resm(TPASS, "getsockopt(SCTP_GET_PEER_ADDR_INFO) - "
 		 "null associd and null addr");
@@ -820,7 +809,7 @@ main(void)
 	if ((-1 != error) || (EINVAL != errno))
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_GET_PEER_ADDR_INFO) "
 			 "valid associd, null addr error:%d, errno:%d\n",
-			error, errno);
+			 error, errno);
 
 	tst_resm(TPASS, "getsockopt(SCTP_GET_PEER_ADDR_INFO) - "
 		 "valid associd and null addr");
@@ -835,7 +824,7 @@ main(void)
 	if ((-1 != error) || (EINVAL != errno))
 		tst_brkm(TBROK, NULL, "getsockopt(SCTP_GET_PEER_ADDR_INFO) "
 			 "valid associd, invalid addr error:%d, errno:%d\n",
-			error, errno);
+			 error, errno);
 
 	tst_resm(TPASS, "getsockopt(SCTP_GET_PEER_ADDR_INFO) - "
 		 "valid associd and invalid addr");
@@ -878,6 +867,6 @@ main(void)
 	close(accept_sk);
 	close(peeloff_sk);
 
-        /* Indicate successful completion.  */
-      tst_exit();
+	/* Indicate successful completion.  */
+	tst_exit();
 }

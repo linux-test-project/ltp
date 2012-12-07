@@ -30,8 +30,8 @@ int cleanup_flag;		/* Made global so that the cleanup function
  * cleanup function was reached. */
 void a_cleanup_func()
 {
-	cleanup_flag=1;
-	sem=0;
+	cleanup_flag = 1;
+	sem = 0;
 	return;
 }
 
@@ -45,12 +45,12 @@ void *a_thread_func()
 	/* To enable thread immediate cancelation, since the default
 	 * is PTHREAD_CANCEL_DEFERRED. */
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	pthread_cleanup_push(a_cleanup_func,NULL);
-	sem=1;
-	while (sem==1)
+	pthread_cleanup_push(a_cleanup_func, NULL);
+	sem = 1;
+	while (sem == 1)
 		sleep(1);
 	sleep(5);
-	sem=0;
+	sem = 0;
 	/* Should never be reached, but is required to be in the code
 	 * since pthread_cleanup_push is in the code.  Else a compile error
 	 * will result. */
@@ -65,33 +65,30 @@ int main()
 	pthread_t new_th;
 	int i;
 	/* Initializing the cleanup flag. */
-	cleanup_flag=0;
-	sem=0;
+	cleanup_flag = 0;
+	sem = 0;
 
 	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure thread is created before we cancel it. */
-	while (sem==0)
+	while (sem == 0)
 		sleep(1);
 
-	if (pthread_cancel(new_th) != 0)
-	{
+	if (pthread_cancel(new_th) != 0) {
 		printf("Error canceling thread\n");
 		return PTS_FAIL;
 	}
 
-	i=0;
-	while (sem==1)
-	{
+	i = 0;
+	while (sem == 1) {
 		sleep(1);
-		if (i==10)
-		{
-			printf("Test FAILED: Timed out while waiting for cancelation cleanup handlers to execute\n");
+		if (i == 10) {
+			printf
+			    ("Test FAILED: Timed out while waiting for cancelation cleanup handlers to execute\n");
 			return PTS_FAIL;
 		}
 		i++;
@@ -99,8 +96,7 @@ int main()
 
 	/* If the cleanup function was not reached by calling the
 	 * pthread_cancel function, then the test fails. */
-	if (cleanup_flag != 1)
-	{
+	if (cleanup_flag != 1) {
 		printf("Test FAILED: Could not cancel thread\n");
 		return PTS_FAIL;
 	}

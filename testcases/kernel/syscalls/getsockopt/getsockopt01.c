@@ -129,7 +129,6 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. *
 
 int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, EOPNOTSUPP, ENOPROTOOPT, 0 };
 
-
 int main(int argc, char *argv[])
 {
 	int lc;

@@ -27,26 +27,24 @@ int main()
 	pthread_barrierattr_t ba;
 
 	/* Initialize a barrier attribute object */
-	if (pthread_barrierattr_init(&ba) != 0)
-	{
+	if (pthread_barrierattr_init(&ba) != 0) {
 		printf("Error at pthread_barrierattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy barrier attribute object */
 	rc = pthread_barrierattr_destroy(&ba);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		printf("Test FAILED: Error at pthread_barrierattr_destroy() "
-			"return code: %d, %s", rc, strerror(rc));
+		       "return code: %d, %s", rc, strerror(rc));
 		return PTS_FAIL;
 	}
 
 	/* Re-initialize the barrier attribute object */
 	rc = pthread_barrierattr_init(&ba);
-	if (rc != 0)
-	{
-		printf("Test FAILED: Error while re-initializing barrier attribute object\n");
+	if (rc != 0) {
+		printf
+		    ("Test FAILED: Error while re-initializing barrier attribute object\n");
 		return PTS_FAIL;
 	}
 

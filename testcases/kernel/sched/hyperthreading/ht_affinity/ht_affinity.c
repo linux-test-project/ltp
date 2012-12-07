@@ -50,34 +50,28 @@ int HT_SetAffinity()
 {
 	unsigned int mask;
 	pid_t pid;
-	int result=1;
+	int result = 1;
 	int cpu_count, i, j, k, cpuid;
 
-	pid=getpid();
+	pid = getpid();
 
 	tst_resm(TINFO, "Set affinity through system call");
 
-	cpu_count=get_cpu_count();
-	if (cpu_count==0)
-	{
-	 	return 0;
-	}
-	else if (cpu_count>32)
-		cpu_count=32;
+	cpu_count = get_cpu_count();
+	if (cpu_count == 0) {
+		return 0;
+	} else if (cpu_count > 32)
+		cpu_count = 32;
 
-	for (i=0, mask=0x1;i<cpu_count;i++, mask=mask<<1)
-	{
+	for (i = 0, mask = 0x1; i < cpu_count; i++, mask = mask << 1) {
 		tst_resm(TINFO, "Set test process affinity.");
-		printf("mask: %x\n",mask);
+		printf("mask: %x\n", mask);
 
 		sched_setaffinity(pid, sizeof(unsigned long), &mask);
 
-		for (j=0;j<10;j++)
-		{
-			for (k=0;k<10;k++)
-			{
-				if (fork()==0)
-				{
+		for (j = 0; j < 10; j++) {
+			for (k = 0; k < 10; k++) {
+				if (fork() == 0) {
 					system("ps > /dev/null");
 					exit(0);
 				}
@@ -85,33 +79,27 @@ int HT_SetAffinity()
 
 			sleep(1);
 
-			if (get_current_cpu(pid)!=i)
+			if (get_current_cpu(pid) != i)
 				break;
 		}
 
-		if (j<10)
-		{
+		if (j < 10) {
 			tst_resm(TINFO, "...Error");
-			result=0;
-		}
-		else
+			result = 0;
+		} else
 			tst_resm(TINFO, "...OK");
 
 	}
 
-	for (i=0, mask=0x3;i<cpu_count-1;i++, mask=mask<<1)
-	{
+	for (i = 0, mask = 0x3; i < cpu_count - 1; i++, mask = mask << 1) {
 		tst_resm(TINFO, "Set test process affinity.");
-		printf("mask: %x\n",mask);
+		printf("mask: %x\n", mask);
 
 		sched_setaffinity(pid, sizeof(unsigned long), &mask);
 
-		for (j=0;j<10;j++)
-		{
-			for (k=0;k<10;k++)
-			{
-				if (fork()==0)
-				{
+		for (j = 0; j < 10; j++) {
+			for (k = 0; k < 10; k++) {
+				if (fork() == 0) {
 					system("ps > /dev/null");
 					exit(0);
 				}
@@ -119,17 +107,15 @@ int HT_SetAffinity()
 
 			sleep(1);
 
-			cpuid=get_current_cpu(pid);
-			if (cpuid!=i&&cpuid!=i+1)
+			cpuid = get_current_cpu(pid);
+			if (cpuid != i && cpuid != i + 1)
 				break;
 		}
 
-		if (j<10)
-		{
+		if (j < 10) {
 			tst_resm(TINFO, "...Error");
-			result=0;
-		}
-		else
+			result = 0;
+		} else
 			tst_resm(TINFO, "...OK");
 
 	}
@@ -146,11 +132,10 @@ unsigned long get_porc_affinity(pid_t pid)
 
 	sprintf(buf, "%s%d/%s%c", PROCFS_PATH, pid, AFFINITY_NAME, 0);
 
-	if ((pfile=fopen(buf, "r"))==NULL)
+	if ((pfile = fopen(buf, "r")) == NULL)
 		return 0;
 
-	if (fgets(buf, 255, pfile)==NULL)
-	{
+	if (fgets(buf, 255, pfile) == NULL) {
 		fclose(pfile);
 		return 0;
 	}
@@ -176,8 +161,7 @@ int HT_GetAffinity()
 
 	sched_getaffinity(pid, sizeof(mask), mask1);
 
-	if (mask[0] == 0x1 && mask[0] == mask1[0])
-	{
+	if (mask[0] == 0x1 && mask[0] == mask1[0]) {
 		mask[0] = 0x2;
 		sched_setaffinity(pid, sizeof(mask), mask);
 
@@ -189,8 +173,7 @@ int HT_GetAffinity()
 			return 1;
 		else
 			return 0;
-	}
-	else
+	} else
 		return 0;
 }
 
@@ -206,8 +189,7 @@ int HT_InheritAffinity()
 
 	sleep(1);
 	pid = fork();
-	if (pid  == 0)
-	{
+	if (pid == 0) {
 		sleep(1);
 		sched_getaffinity(pid, sizeof(mask), mask);
 		if (mask[0] == 0x2)
@@ -224,8 +206,7 @@ int HT_InheritAffinity()
 	if (WEXITSTATUS(status) == 0) {
 		tst_resm(TINFO, "Inherited affinity from parent process");
 		return 1;
-	}
-	else
+	} else
 		return 0;
 }
 
@@ -234,10 +215,10 @@ int main(int argc, char *argv[])
 {
 
 #if (!defined __i386__ && !defined __x86_64__)
-	tst_brkm(TCONF, NULL, "This test suite can only execute on x86 architecture.");
+	tst_brkm(TCONF, NULL,
+		 "This test suite can only execute on x86 architecture.");
 #else
-	if (!check_ht_capability())
-	{
+	if (!check_ht_capability()) {
 
 		if (HT_GetAffinity())
 			tst_resm(TPASS, "System call getaffinity() is OK.");
@@ -257,9 +238,7 @@ int main(int argc, char *argv[])
 			tst_resm(TPASS, "System call setaffinity() is OK.");
 		else
 			tst_resm(TFAIL, "System call setaffinity() is error.");
-	}
-	else
-	{
+	} else {
 		tst_brkm(TCONF, NULL, "HT is not enabled or not supported.");
 	}
 #endif

@@ -28,34 +28,32 @@
 
 int main()
 {
-  int rc;
+	int rc;
 
-  int page_size;
-  void *buffer = NULL, *new_addr = NULL;
+	int page_size;
+	void *buffer = NULL, *new_addr = NULL;
 
-  page_size = sysconf(_SC_PAGE_SIZE);
-  buffer =  malloc(page_size * 2);
-  if (buffer == NULL)
-  {
-  	printf("Error at malloc\n");
-    exit(PTS_UNRESOLVED);
-  }
+	page_size = sysconf(_SC_PAGE_SIZE);
+	buffer = malloc(page_size * 2);
+	if (buffer == NULL) {
+		printf("Error at malloc\n");
+		exit(PTS_UNRESOLVED);
+	}
 
-  /* Make new_addr is a multiple of page_size, while
-   * [new_addr, new_addr + page_size] is a valid memory range
-   */
-  new_addr = buffer + (page_size - (unsigned long)buffer % page_size);
+	/* Make new_addr is a multiple of page_size, while
+	 * [new_addr, new_addr + page_size] is a valid memory range
+	 */
+	new_addr = buffer + (page_size - (unsigned long)buffer % page_size);
 
-  rc = munmap(new_addr, page_size);
-  if (rc == -1)
-  {
-  	printf ("Test FAILED " TNAME " Error at munmap(): %s\n",
-             strerror(errno));
-  	free(buffer);
-  	exit(PTS_FAIL);
-  }
+	rc = munmap(new_addr, page_size);
+	if (rc == -1) {
+		printf("Test FAILED " TNAME " Error at munmap(): %s\n",
+		       strerror(errno));
+		free(buffer);
+		exit(PTS_FAIL);
+	}
 
-  free(buffer);
-  printf ("Test PASSED\n");
-  return PTS_PASS;
+	free(buffer);
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

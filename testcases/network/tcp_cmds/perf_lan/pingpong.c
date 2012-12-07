@@ -56,59 +56,58 @@
 #endif
 
 #if INET6
-char		*TCID = "perf_lan6";
+char *TCID = "perf_lan6";
 #else
-char		*TCID = "perf_lan";
+char *TCID = "perf_lan";
 #endif
 
-int		TST_TOTAL = 1;
+int TST_TOTAL = 1;
 
-int		pfd[2];
-int		fdstr[10];
-int		verbose;
-int		count;
-uint8_t		packet[MAXPACKET];
-int		options;
-int		s;			/* Socket file descriptor */
-struct hostent	*hp;			/* Pointer to host info */
-struct timezone	tz;			/* leftover */
+int pfd[2];
+int fdstr[10];
+int verbose;
+int count;
+uint8_t packet[MAXPACKET];
+int options;
+int s;				/* Socket file descriptor */
+struct hostent *hp;		/* Pointer to host info */
+struct timezone tz;		/* leftover */
 
-sai_t		whereto;		/* Who to pingpong */
-int		datalen;		/* How much data */
+sai_t whereto;			/* Who to pingpong */
+int datalen;			/* How much data */
 
-char		*hostname;
-char		hnamebuf[MAXHOSTNAMELEN];
+char *hostname;
+char hnamebuf[MAXHOSTNAMELEN];
 
-int		npackets = 1;
-int		ntransmitted = 0;	/* sequence number for outbound
-					 * packets => amount sent */
-int		ident;
-int		nwrite;
+int npackets = 1;
+int ntransmitted = 0;		/* sequence number for outbound
+				 * packets => amount sent */
+int ident;
+int nwrite;
 
-int		nreceived = 0;		/* # of packets we got back */
-int		timing = 0;
+int nreceived = 0;		/* # of packets we got back */
+int timing = 0;
 
-void		finish(int);
-uint16_t	in_cksum(uint16_t*, int);
-int		ck_packet(uint8_t*, size_t, sai_t*);
-int		echopkt(int, int);
+void finish(int);
+uint16_t in_cksum(uint16_t *, int);
+int ck_packet(uint8_t *, size_t, sai_t *);
+int echopkt(int, int);
 
 /*
  * 			M A I N
  */
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	sai_t from;
 	int rc = 0;
 	struct protoent *proto;
 
-	tst_resm (TINFO, "Starting pingpong - to send / receive packets from "
-			 "host");
+	tst_resm(TINFO, "Starting pingpong - to send / receive packets from "
+		 "host");
 
 	/* Get Host net address */
-	tst_resm (TINFO, "Get host net address for sending packets");
-	memset( (char *)&whereto, 0, sizeof(sa_t) );
+	tst_resm(TINFO, "Get host net address for sending packets");
+	memset((char *)&whereto, 0, sizeof(sa_t));
 #if INET6
 	whereto.sin6_family = AFI;
 	whereto.sin6_addr.s6_addr = inet_addr(argv[1]);
@@ -125,62 +124,63 @@ main (int argc, char *argv[])
 		if ((hp = gethostbyname(argv[1])) != NULL) {
 #if INET6
 			whereto.sin6_family = hp->h_addrtype;
-			memcpy((caddr_t) &whereto.sin6_addr, hp->h_addr, hp->h_length);
+			memcpy((caddr_t) & whereto.sin6_addr, hp->h_addr,
+			       hp->h_length);
 #else
 			whereto.sin_family = hp->h_addrtype;
-			memcpy((caddr_t) &whereto.sin_addr, hp->h_addr, hp->h_length);
+			memcpy((caddr_t) & whereto.sin_addr, hp->h_addr,
+			       hp->h_length);
 #endif
 			hostname = hp->h_name;
 		} else {
-			tst_resm (TBROK, "%s: unknown host, couldn't get "
-					 "address", argv[0]);
+			tst_resm(TBROK, "%s: unknown host, couldn't get "
+				 "address", argv[0]);
 			tst_exit();
 		}
 
 	}
 
 	/*  Determine Packet Size - either use what was passed in or the default */
-	tst_resm (TINFO, "Determining packet size");
+	tst_resm(TINFO, "Determining packet size");
 
 	if (argc >= 3)
 		datalen = atoi(argv[2]);
-		if (datalen < 0) {
-			tst_resm (TBROK, "datalen must be an integer.");
-			tst_exit();
-		}
-	else
+	if (datalen < 0) {
+		tst_resm(TBROK, "datalen must be an integer.");
+		tst_exit();
+	} else
 		datalen = 64;
 
 	datalen -= 8;
 
 	if (datalen > MAXPACKET) {
-		tst_resm (TBROK, "packet size too large");
+		tst_resm(TBROK, "packet size too large");
 		tst_exit();
 	}
 	if (datalen >= sizeof(struct timeval))
 		timing = 1;
 
-        /* Set number of packets to be sent */
-	tst_resm (TINFO, "Determining number of packets to send");
+	/* Set number of packets to be sent */
+	tst_resm(TINFO, "Determining number of packets to send");
 	if (argc >= 4)
 		npackets = atoi(argv[3]);
 
-        /* Get PID of current process */
+	/* Get PID of current process */
 	ident = getpid() & 0xFFFF;
 
 	/* Get network protocol to use (check /etc/protocol) */
 	if ((proto = getprotobyname(ICMP_PROTO)) == NULL) {
-		tst_resm (TINFO, "unknown protocol: %s", ICMP_PROTO);
+		tst_resm(TINFO, "unknown protocol: %s", ICMP_PROTO);
 		tst_exit();
 	}
 
 	/* Create a socket endpoint for communications - returns a descriptor */
 	if ((s = socket(AFI, SOCK_RAW, proto->p_proto)) < 0) {
-		tst_resm (TINFO, "socket - could not create link");
+		tst_resm(TINFO, "socket - could not create link");
 		tst_exit();
 	}
 
-	tst_resm (TINFO, "echoing %s: %d data bytes", hostname, datalen);
+	tst_resm(TINFO, "echoing %s: %d data bytes", hostname, datalen);
 
 	setlinebuf(stdout);
 
@@ -189,38 +189,41 @@ main (int argc, char *argv[])
 	signal(SIGCLD, finish);
 
 	/* Fork a child process to continue sending packets */
-	tst_resm (TINFO, "Create a child process to continue to send packets");
+	tst_resm(TINFO, "Create a child process to continue to send packets");
 	switch (fork()) {
 	case -1:
-		tst_resm (TINFO, "ERROR when forking a new process");
+		tst_resm(TINFO, "ERROR when forking a new process");
 		tst_exit();
 	case 0:
 		/* Child's work */
 		ntransmitted = echopkt(datalen, npackets);
-		tst_resm (TINFO, "%d packets transmitted", ntransmitted);
+		tst_resm(TINFO, "%d packets transmitted", ntransmitted);
 		sleep(10);
 		break;
 	default:
 
-		tst_resm (TINFO, "Parent started - to  receive packets");
+		tst_resm(TINFO, "Parent started - to  receive packets");
 		/* Parent's work - receive packets back from child */
 
 		size_t len;
 
 		while (1) {
 
-			len = sizeof (packet);
+			len = sizeof(packet);
 			size_t cc;
 			socklen_t fromlen;
 
 			/* Receive packet from socket */
-			tst_resm (TINFO, "Receiving packet");
-			if ((cc = recvfrom(s, packet, len, 0, (sa_t*) &from, &fromlen)) < 0) {
-				tst_resm (TINFO, "ERROR - recvfrom");
+			tst_resm(TINFO, "Receiving packet");
+			if ((cc =
+			     recvfrom(s, packet, len, 0, (sa_t *) & from,
+				      &fromlen)) < 0) {
+				tst_resm(TINFO, "ERROR - recvfrom");
 			}
 			/* Verify contents of packet */
-			if ((rc = ck_packet (packet, cc, &from)) != 0) {
-				tst_resm (TINFO, "ERROR - network garbled packet");
+			if ((rc = ck_packet(packet, cc, &from)) != 0) {
+				tst_resm(TINFO,
+					 "ERROR - network garbled packet");
 			} else {
 				nreceived++;
 			}
@@ -233,8 +236,7 @@ main (int argc, char *argv[])
 
 }
 
-int
-echopkt (int datalen, int npackets)
+int echopkt(int datalen, int npackets)
 {
 	int count = 0;
 	static uint8_t outpack[MAXPACKET];
@@ -244,20 +246,20 @@ echopkt (int datalen, int npackets)
 
 	register u_char *datap = &outpack[8];
 
-        /* Setup the packet structure */
-        tst_resm (TINFO, "Setting up ICMP packet structure to send to host");
+	/* Setup the packet structure */
+	tst_resm(TINFO, "Setting up ICMP packet structure to send to host");
 
 #if INET6
 	icp->icmp6_type = IERQ;
 	icp->icmp6_code = 0;
-	icp->icmp6_id = ident;		/* ID */
+	icp->icmp6_id = ident;	/* ID */
 #else
 	icp->icmp_type = IERQ;
 	icp->icmp_code = 0;
-	icp->icmp_id = ident;		/* ID */
+	icp->icmp_id = ident;	/* ID */
 #endif
 
-	cc = datalen + 8;		/* skips ICMP portion */
+	cc = datalen + 8;	/* skips ICMP portion */
 
 	for (i = 8; i < datalen; i++) {	/* skip 8 for time */
 		*datap++ = i;
@@ -265,9 +267,9 @@ echopkt (int datalen, int npackets)
 
 	/* Compute ICMP checksum here */
 #if INET6
-	icp->icmp6_cksum = in_cksum((uint16_t*) icp, cc);
+	icp->icmp6_cksum = in_cksum((uint16_t *) icp, cc);
 #else
-	icp->icmp_cksum = in_cksum((uint16_t*) icp, cc);
+	icp->icmp_cksum = in_cksum((uint16_t *) icp, cc);
 #endif
 
 	/* cc = sendto(s, msg, len, flags, to, tolen) */
@@ -276,19 +278,20 @@ echopkt (int datalen, int npackets)
 	while (count < npackets) {
 		count++;
 		/* Send packet through socket created */
-		tst_resm (TINFO, "Sending packet through created socket");
-		i = sendto( s, outpack, cc, 0, (const sa_t*) &whereto, sizeof(whereto) );
+		tst_resm(TINFO, "Sending packet through created socket");
+		i = sendto(s, outpack, cc, 0, (const sa_t *)&whereto,
+			   sizeof(whereto));
 
-		if (i < 0 || i != cc)  {
+		if (i < 0 || i != cc) {
 			if (i < 0)
 				perror("sendto");
 			tst_resm(TINFO, "wrote %s %d chars, ret=%d",
-					hostname, cc, i);
+				 hostname, cc, i);
 			fflush(stdout);
 		}
 	}
 	/* sleep(30); */
-	return(count);
+	return (count);
 
 }
 
@@ -298,8 +301,7 @@ echopkt (int datalen, int npackets)
  * Checksum routine for Internet Protocol family headers (C Version)
  *
  */
-uint16_t
-in_cksum (uint16_t *addr, int len)
+uint16_t in_cksum(uint16_t * addr, int len)
 {
 	register int nleft = len;
 	register uint16_t *w = addr, tmp;
@@ -311,20 +313,20 @@ in_cksum (uint16_t *addr, int len)
 	 * sequential 16 bit words to it, and at the end, fold back all the
 	 * carry bits from the top 16 bits into the lower 16 bits.
 	 */
-	while (nleft > 1)  {
+	while (nleft > 1) {
 		sum += *w++;
 		nleft -= 2;
 	}
 
 	/* mop up an odd byte, if necessary */
 	if (nleft == 1) {
-		tmp = *(u_char *)w;
+		tmp = *(u_char *) w;
 		sum += (tmp << 8);
 	}
 	/* add back carry outs from top 16 bits to low 16 bits */
 	sum = (sum >> 16) + (sum & 0xffff);	/* add hi 16 to low 16 */
-	sum += (sum >> 16);			/* add carry */
-	answer = ~sum;				/* truncate to 16 bits */
+	sum += (sum >> 16);	/* add carry */
+	answer = ~sum;		/* truncate to 16 bits */
 
 	return answer;
 
@@ -335,10 +337,9 @@ in_cksum (uint16_t *addr, int len)
  *
  * Outputs packet information to confirm transmission and reception.
  */
-void
-finish (int n)
+void finish(int n)
 {
-	tst_resm (TINFO, "%d packets received", nreceived);
+	tst_resm(TINFO, "%d packets received", nreceived);
 	exit(0);
 }
 
@@ -353,14 +354,13 @@ finish (int n)
  * cc	- total size of received packet
  * from - address of sender
  */
-int
-ck_packet (uint8_t *buf, size_t cc, sai_t *from)
+int ck_packet(uint8_t * buf, size_t cc, sai_t * from)
 {
-	u_char 	i;
-	int 	iphdrlen;
-	struct 	ip *ip = (struct ip *) buf;	/* pointer to IP header */
-	register icmp_t *icp;			/* ptr to ICMP */
-  	u_char *datap ;
+	u_char i;
+	int iphdrlen;
+	struct ip *ip = (struct ip *)buf;	/* pointer to IP header */
+	register icmp_t *icp;	/* ptr to ICMP */
+	u_char *datap;
 
 #if INET6
 	from->sin6_addr.s6_addr = ntohl(from->sin6_addr.s6_addr);
@@ -368,29 +368,29 @@ ck_packet (uint8_t *buf, size_t cc, sai_t *from)
 	from->sin_addr.s_addr = ntohl(from->sin_addr.s_addr);
 #endif
 
-	iphdrlen = ip->ip_hl << 2;		/* Convert # 16-bit words to
-						 * number of bytes */
+	iphdrlen = ip->ip_hl << 2;	/* Convert # 16-bit words to
+					 * number of bytes */
 	cc -= iphdrlen;
-	icp = (icmp_t*) (buf + iphdrlen);
-	datap = (u_char *)icp + sizeof(struct timeval) + 8;
+	icp = (icmp_t *) (buf + iphdrlen);
+	datap = (u_char *) icp + sizeof(struct timeval) + 8;
 	if (icp->icmp_type != IERP) {
-		return 0;			/* Not your packet because it's
-						 * not an echo */
+		return 0;	/* Not your packet because it's
+				 * not an echo */
 	}
 	if (icp->icmp_id != ident) {
-		return 0;			/* Sent to us by someone
-						 * else */
+		return 0;	/* Sent to us by someone
+				 * else */
 	}
 
 	/* Verify data in packet */
-	tst_resm (TINFO, "Verify data in packet after returned from sender");
+	tst_resm(TINFO, "Verify data in packet after returned from sender");
 	if (datalen > 118) {
 		datalen = 118;
 	}
-	tst_resm (TINFO, "Checking Data.");
-	for (i = 8; i < datalen; i++) {		/* skip 8 for time */
-		if (i !=  (*datap)) {
-			tst_resm (TINFO, "Data cannot be validated.");
+	tst_resm(TINFO, "Checking Data.");
+	for (i = 8; i < datalen; i++) {	/* skip 8 for time */
+		if (i != (*datap)) {
+			tst_resm(TINFO, "Data cannot be validated.");
 		}
 		datap++;
 	}

@@ -52,7 +52,7 @@
 #include "config.h"
 
 char *TCID = "aio01";
-int TST_TOTAL=6;
+int TST_TOTAL = 6;
 
 #ifdef HAVE_LIBAIO_H
 
@@ -77,50 +77,50 @@ static void cleanup(void);
 int fd;
 char *maddr;
 
-size_t		bufsize;	/* Size of I/O, 8k default */
-io_context_t	io_ctx;		/* I/O Context */
-struct iocb	**iocbs;	/* I/O Control Blocks */
-char		*srcbuf, *dstbuf;
-char		fname[128];
-char		tbuf[80];
-int		pos, nr;
-struct stat	s;
+size_t bufsize;			/* Size of I/O, 8k default */
+io_context_t io_ctx;		/* I/O Context */
+struct iocb **iocbs;		/* I/O Control Blocks */
+char *srcbuf, *dstbuf;
+char fname[128];
+char tbuf[80];
+int pos, nr;
+struct stat s;
 
 struct test_case_t {
 	off_t newsize;
 	char *desc;
 } TC[] = {
-	{mapsize - 8192, "ftruncate mmaped file to a smaller size"},
-	{mapsize + 1024, "ftruncate mmaped file to a larger size"},
-	{0, "ftruncate mmaped file to 0 size"},
-};
+	{
+	mapsize - 8192, "ftruncate mmaped file to a smaller size"}, {
+	mapsize + 1024, "ftruncate mmaped file to a larger size"}, {
+0, "ftruncate mmaped file to 0 size"},};
 
 int main(int argc, char **argv)
 {
 	int i, j, sec, usec;
-	int failflag=0;
-	int bflag=0, nflag=0, Fflag=0;
+	int failflag = 0;
+	int bflag = 0, nflag = 0, Fflag = 0;
 	char *optb, *optn, *optF;
-	char *msg;	/* for parse_opts */
+	char *msg;		/* for parse_opts */
 	struct io_event event;
 	static struct timespec ts;
 	struct timeval stv, etv;
 
 	option_t options[] = {
-		{ "b:", &bflag, &optb },
-		{ "n:", &nflag, &optn },
-		{ "F:", &Fflag, &optF },
-		{ NULL, NULL, NULL}
+		{"b:", &bflag, &optb},
+		{"n:", &nflag, &optn},
+		{"F:", &Fflag, &optF},
+		{NULL, NULL, NULL}
 	};
 
 	msg = parse_opts(argc, argv, options, &help);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
 
-	bufsize = (bflag ? atoi(optb):8192);
-	nr = (nflag ? atoi(optn):10);
+	bufsize = (bflag ? atoi(optb) : 8192);
+	nr = (nflag ? atoi(optn) : 10);
 	if (Fflag) {
 		sprintf(fname, optF);
 	} else {
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 	pos = 0;
 	gettimeofday(&stv, NULL);
 	io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
-	for (i = 0; i< nr; i++) {
+	for (i = 0; i < nr; i++) {
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
 		do {
@@ -142,11 +142,11 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 1: io_submit failed - retval=%d, "
-					"errno=%d", TEST_RETURN, TEST_ERRNO);
-			failflag=1;
+				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+			failflag = 1;
 			continue;
 		}
-		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1);
+		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		gettimeofday(&etv, NULL);
 	}
 	if (!failflag) {
@@ -157,15 +157,15 @@ int main(int argc, char **argv)
 			sec--;
 		}
 		tst_resm(TPASS, "Test 1: %d writes in %3d.%06d sec",
-				nr, sec, usec);
+			 nr, sec, usec);
 	}
 
 /* TEST 2 */
 	pos = 0;
-	failflag=0;
+	failflag = 0;
 	gettimeofday(&stv, NULL);
 	io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
-	for (i = 0; i< nr; i++) {
+	for (i = 0; i < nr; i++) {
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
 		do {
@@ -174,11 +174,11 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 2: io_submit failed - retval=%d, "
-					"errno=%d", TEST_RETURN, TEST_ERRNO);
-			failflag=1;
+				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+			failflag = 1;
 			continue;
 		}
-		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1);
+		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		gettimeofday(&etv, NULL);
 	}
 	if (!failflag) {
@@ -189,14 +189,14 @@ int main(int argc, char **argv)
 			sec--;
 		}
 		tst_resm(TPASS, "Test 2: %d reads in %3d.%06d sec",
-				nr, sec, usec);
+			 nr, sec, usec);
 	}
 
 /* TEST 3 */
 	pos = 0;
-	failflag=0;
+	failflag = 0;
 	gettimeofday(&stv, NULL);
-	for (i = 0; i< nr; i++) {
+	for (i = 0; i < nr; i++) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -206,11 +206,11 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 3: io_submit failed - retval=%d, "
-					"errno=%d", TEST_RETURN, TEST_ERRNO);
-			failflag=1;
+				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+			failflag = 1;
 			continue;
 		}
-		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1);
+		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		gettimeofday(&etv, NULL);
 	}
 	if (!failflag) {
@@ -221,14 +221,14 @@ int main(int argc, char **argv)
 			sec--;
 		}
 		tst_resm(TPASS, "Test 3: %d prep,writes in %3d.%06d sec",
-				nr, sec, usec);
+			 nr, sec, usec);
 	}
 
 /* TEST 4 */
 	pos = 0;
-	failflag=0;
+	failflag = 0;
 	gettimeofday(&stv, NULL);
-	for (i = 0; i< nr; i++) {
+	for (i = 0; i < nr; i++) {
 		io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -238,11 +238,11 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 4: io_submit failed - retval=%d, "
-					"errno=%d", TEST_RETURN, TEST_ERRNO);
-			failflag=1;
+				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+			failflag = 1;
 			continue;
 		}
-		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1);
+		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		gettimeofday(&etv, NULL);
 	}
 	if (!failflag) {
@@ -253,14 +253,14 @@ int main(int argc, char **argv)
 			sec--;
 		}
 		tst_resm(TPASS, "Test 4: %d prep,reads in %3d.%06d sec",
-				nr, sec, usec);
+			 nr, sec, usec);
 	}
 
 /* TEST 5 */
 	pos = 0;
-	failflag=0;
+	failflag = 0;
 	gettimeofday(&stv, NULL);
-	for (i = 0; i< nr; i++) {
+	for (i = 0; i < nr; i++) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -270,12 +270,12 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: write io_submit failed - "
-					"retval=%d, errno=%d", TEST_RETURN,
-					TEST_ERRNO);
-			failflag=1;
+				 "retval=%d, errno=%d", TEST_RETURN,
+				 TEST_ERRNO);
+			failflag = 1;
 			continue;
 		}
-		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1);
+		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -285,12 +285,12 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: read io_submit failed - "
-					"retval=%d, errno=%d", TEST_RETURN,
-					TEST_ERRNO);
-			failflag=1;
+				 "retval=%d, errno=%d", TEST_RETURN,
+				 TEST_ERRNO);
+			failflag = 1;
 			continue;
 		}
-		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1);
+		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		gettimeofday(&etv, NULL);
 	}
 	if (!failflag) {
@@ -301,14 +301,14 @@ int main(int argc, char **argv)
 			sec--;
 		}
 		tst_resm(TPASS, "Test 5: %d reads and writes in %3d.%06d sec",
-				nr, sec, usec);
+			 nr, sec, usec);
 	}
 
 /* TEST 6 */
 	pos = 0;
-	failflag=0;
+	failflag = 0;
 	gettimeofday(&stv, NULL);
-	for (i = 0; i< nr; i++) {
+	for (i = 0; i < nr; i++) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -318,12 +318,12 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: write io_submit failed - "
-					"retval=%d, errno=%d", TEST_RETURN,
-					TEST_ERRNO);
-			failflag=1;
+				 "retval=%d, errno=%d", TEST_RETURN,
+				 TEST_ERRNO);
+			failflag = 1;
 			continue;
 		}
-		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1);
+		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -333,18 +333,18 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: read io_submit failed - "
-					"retval=%d, errno=%d", TEST_RETURN,
-					TEST_ERRNO);
-			failflag=1;
+				 "retval=%d, errno=%d", TEST_RETURN,
+				 TEST_ERRNO);
+			failflag = 1;
 			continue;
 		}
-		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1);
+		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		for (j = 0; j < bufsize; j++) {
 			if (srcbuf[j] != dstbuf[j])
 				tst_resm(TFAIL, "Test 6: compare failed - "
-						"read: %c, " "actual: %c",
-						dstbuf[j], srcbuf[j]);
-				break;
+					 "read: %c, " "actual: %c",
+					 dstbuf[j], srcbuf[j]);
+			break;
 		}
 		gettimeofday(&etv, NULL);
 	}
@@ -356,7 +356,7 @@ int main(int argc, char **argv)
 			sec--;
 		}
 		tst_resm(TPASS, "Test 6: %d read,write,verify in %d.%06d sec",
-				i, sec, usec);
+			 i, sec, usec);
 	}
 
 	cleanup();
@@ -384,36 +384,41 @@ static void setup(void)
 
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0600)) < 0)
 		tst_brkm(TFAIL, cleanup, "failed to open %s "
-				"file, errno: %d", fname, errno);
+			 "file, errno: %d", fname, errno);
 	stat(fname, &s);
-	if ((iocbs = malloc(sizeof(int)*nr)) == NULL)
+	if ((iocbs = malloc(sizeof(int) * nr)) == NULL)
 		tst_brkm(TFAIL, cleanup, "malloc for iocbs failed - "
-				"errno: %d",errno);
+			 "errno: %d", errno);
 	if ((iocbs[0] = malloc(sizeof(struct iocb))) == NULL)
 		tst_brkm(TFAIL, cleanup, "malloc for iocbs elements failed - "
-				"errno: %d",errno);
+			 "errno: %d", errno);
 	if (S_ISCHR(s.st_mode)) {
-		if ((ret = posix_memalign((void **)&srcbuf, bufsize, bufsize)) != 0)
-			tst_brkm(TFAIL, cleanup, "posix_memalign for srcbuf "
-					"failed - errno: %d",errno);
-		if ((ret = posix_memalign((void **)&dstbuf, bufsize, bufsize)) != 0)
-			tst_brkm(TFAIL, cleanup, "posix_memalign for dstbuf "
-					"failed - errno: %d",errno);
+		if ((ret =
+		     posix_memalign((void **)&srcbuf, bufsize, bufsize)) != 0)
+			tst_brkm(TFAIL, cleanup,
+				 "posix_memalign for srcbuf "
+				 "failed - errno: %d", errno);
+		if ((ret =
+		     posix_memalign((void **)&dstbuf, bufsize, bufsize)) != 0)
+			tst_brkm(TFAIL, cleanup,
+				 "posix_memalign for dstbuf "
+				 "failed - errno: %d", errno);
 	} else {
-		if ((srcbuf = malloc(sizeof(char)*bufsize)) == NULL)
+		if ((srcbuf = malloc(sizeof(char) * bufsize)) == NULL)
 			tst_brkm(TFAIL, cleanup, "malloc for srcbuf "
-					"failed - errno: %d",errno);
-		if ((dstbuf = malloc(sizeof(char)*bufsize)) == NULL)
+				 "failed - errno: %d", errno);
+		if ((dstbuf = malloc(sizeof(char) * bufsize)) == NULL)
 			tst_brkm(TFAIL, cleanup, "malloc for dstbuf "
-					"failed - errno: %d",errno);
+				 "failed - errno: %d", errno);
 	}
 	memset((void *)srcbuf, 65, bufsize);
 	if ((ret = io_queue_init(1, &io_ctx)) != 0)
 		tst_brkm(TFAIL, cleanup, "io_queue_init failed: %s",
-				strerror(ret));
+			 strerror(ret));
 }
 
-static void cleanup(void) {
+static void cleanup(void)
+{
 	TEST_CLEANUP;
 	free(dstbuf);
 	free(srcbuf);
@@ -429,8 +434,8 @@ static void cleanup(void) {
 
 int main(void)
 {
-  tst_resm(TCONF, "libaio missing");
-  tst_exit();
+	tst_resm(TCONF, "libaio missing");
+	tst_exit();
 }
 
 #endif

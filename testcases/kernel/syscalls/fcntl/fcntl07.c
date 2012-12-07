@@ -220,10 +220,9 @@ int main(int ac, char **av)
 			TEST(fcntl(**tcp, F_SETFD, FD_CLOEXEC));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL|TTERRNO,
+				tst_resm(TFAIL | TTERRNO,
 					 "fcntl(%s[%d], F_SETFD, FD_CLOEXEC) "
-					 "failed",
-					 *tcd, **tcp);
+					 "failed", *tcd, **tcp);
 			} else {
 
 				if (STD_FUNCTIONAL_TEST) {
@@ -277,7 +276,7 @@ void setup(char *path)
 
 	tst_tmpdir();
 
-	file_fd = SAFE_OPEN(cleanup, File1, O_CREAT|O_RDWR, 0666);
+	file_fd = SAFE_OPEN(cleanup, File1, O_CREAT | O_RDWR, 0666);
 	SAFE_PIPE(cleanup, pipe_fds);
 }
 

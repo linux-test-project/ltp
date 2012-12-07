@@ -75,32 +75,32 @@ it print out the values of each counter.
 #define PR_TASK_PERF_COUNTERS_ENABLE            32
 
 /* Global Variables */
-char *TCID     = "performance_counter02"; /* test program identifier.          */
-int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
+char *TCID = "performance_counter02";	/* test program identifier.          */
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 typedef unsigned int u32;
 typedef unsigned long long u64;
 typedef long long s64;
 
 struct perf_counter_hw_event {
-        s64                     type;
-        u64                     irq_period;
-        u32                     record_type;
+	s64 type;
+	u64 irq_period;
+	u32 record_type;
 
-        u32                     disabled     :  1, /* off by default */
-                                nmi          :  1, /* NMI sampling   */
-                                raw          :  1, /* raw event type */
-                                __reserved_1 : 29;
-        u64                     __reserved_2;
+	u32 disabled:1,		/* off by default */
+	 nmi:1,			/* NMI sampling   */
+	 raw:1,			/* raw event type */
+	 __reserved_1:29;
+	u64 __reserved_2;
 };
 
 enum hw_event_types {
-	PERF_COUNT_CYCLES		=  0,
-	PERF_COUNT_INSTRUCTIONS		=  1,
-	PERF_COUNT_CACHE_REFERENCES	=  2,
-	PERF_COUNT_CACHE_MISSES		=  3,
-	PERF_COUNT_BRANCH_INSTRUCTIONS	=  4,
-	PERF_COUNT_BRANCH_MISSES	=  5,
+	PERF_COUNT_CYCLES = 0,
+	PERF_COUNT_INSTRUCTIONS = 1,
+	PERF_COUNT_CACHE_REFERENCES = 2,
+	PERF_COUNT_CACHE_MISSES = 3,
+	PERF_COUNT_BRANCH_INSTRUCTIONS = 4,
+	PERF_COUNT_BRANCH_MISSES = 5,
 
 	/*
 	 * Special "software" counters provided by the kernel, even if
@@ -108,13 +108,13 @@ enum hw_event_types {
 	 * counters measure various physical and sw events of the
 	 * kernel (and allow the profiling of them as well):
 	 */
-	PERF_COUNT_CPU_CLOCK		= -1,
-	PERF_COUNT_TASK_CLOCK		= -2,
+	PERF_COUNT_CPU_CLOCK = -1,
+	PERF_COUNT_TASK_CLOCK = -2,
 	/*
 	 * Future software events:
 	 */
-	/* PERF_COUNT_PAGE_FAULTS	= -3,
-	   PERF_COUNT_CONTEXT_SWITCHES	= -4, */
+	/* PERF_COUNT_PAGE_FAULTS       = -3,
+	   PERF_COUNT_CONTEXT_SWITCHES  = -4, */
 };
 
 int sys_perf_counter_open(struct perf_counter_hw_event *hw_event,
@@ -132,13 +132,14 @@ void do_work(void)
 	int i;
 
 	for (i = 0; i < LOOPS; ++i)
-		asm volatile("" : : "g" (i));
+		asm volatile (""::"g" (i));
 }
 
-void cleanup(void) { /* Stub function. */ }
+void cleanup(void)
+{				/* Stub function. */
+}
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int tsk0;
 	int hwfd[MAX_CTRS], tskfd[MAX_CTRS];
@@ -182,18 +183,19 @@ main(int ac, char **av)
 
 	tsk0 = sys_perf_counter_open(&tsk_event, 0, -1, -1, 0);
 	if (tsk0 == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "perf_counter_open failed (1)");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "perf_counter_open failed (1)");
 	} else {
 
 		tsk_event.disabled = 0;
 		for (i = 0; i < n; ++i) {
-			hwfd[i] =  sys_perf_counter_open(&hw_event, 0, -1,
-							 -1, 0);
+			hwfd[i] = sys_perf_counter_open(&hw_event, 0, -1,
+							-1, 0);
 			tskfd[i] = sys_perf_counter_open(&tsk_event, 0, -1,
 							 hwfd[i], 0);
 			if (tskfd[i] == -1 || hwfd[i] == -1) {
 				tst_brkm(TBROK | TERRNO, cleanup,
-					"perf_counter_open failed (2)");
+					 "perf_counter_open failed (2)");
 			}
 		}
 	}
@@ -204,7 +206,7 @@ main(int ac, char **av)
 
 	if (read(tsk0, &vt0, sizeof(vt0)) != sizeof(vt0)) {
 		tst_brkm(TBROK | TERRNO, cleanup,
-			"error reading task clock counter");
+			 "error reading task clock counter");
 	}
 
 	vtsum = vhsum = 0;
@@ -212,7 +214,7 @@ main(int ac, char **av)
 		if (read(tskfd[i], &vt[i], sizeof(vt[i])) != sizeof(vt[i]) ||
 		    read(hwfd[i], &vh[i], sizeof(vh[i])) != sizeof(vh[i])) {
 			tst_brkm(TBROK | TERRNO, cleanup,
-				"error reading counter(s)");
+				 "error reading counter(s)");
 		}
 		vtsum += vt[i];
 		vhsum += vh[i];

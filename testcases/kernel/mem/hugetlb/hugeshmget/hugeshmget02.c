@@ -65,8 +65,8 @@ static key_t shmkey2;
 
 static long hugepages = 128;
 static option_t options[] = {
-	{ "s:",	&sflag,	&nr_opt	},
-	{ NULL,	NULL,	NULL	}
+	{"s:", &sflag, &nr_opt},
+	{NULL, NULL, NULL}
 };
 
 struct test_case_t {
@@ -76,14 +76,18 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EINVAL - size is 0 */
-	{ &shmkey2,  0, SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW,	EINVAL },
-	/* EINVAL - size is larger than created segment */
-	{ &shmkey,   2, SHM_HUGETLB|SHM_RW,			EINVAL },
-	/* EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given */
-	{ &shmkey,   1, SHM_HUGETLB|IPC_CREAT|IPC_EXCL|SHM_RW,	EEXIST },
-	/* ENOENT - no segment exists for the key and IPC_CREAT is not given */
-	/* use shm_nonexistend_key (-1) as the key */
-	{ &shm_nonexistent_key, 1, SHM_HUGETLB|SHM_RW,		ENOENT }
+	{
+	&shmkey2, 0, SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
+	    /* EINVAL - size is larger than created segment */
+	{
+	&shmkey, 2, SHM_HUGETLB | SHM_RW, EINVAL},
+	    /* EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given */
+	{
+	&shmkey, 1, SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW, EEXIST},
+	    /* ENOENT - no segment exists for the key and IPC_CREAT is not given */
+	    /* use shm_nonexistend_key (-1) as the key */
+	{
+	&shm_nonexistent_key, 1, SHM_HUGETLB | SHM_RW, ENOENT}
 };
 
 int main(int ac, char **av)
@@ -111,20 +115,20 @@ int main(int ac, char **av)
 					shmctl(shm_id_2, IPC_RMID, NULL);
 			}
 
-			TEST(shmget(*(TC[i].skey), TC[i].size_coe*shm_size,
+			TEST(shmget(*(TC[i].skey), TC[i].size_coe * shm_size,
 				    TC[i].flags));
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "shmget succeeded "
-						"unexpectedly");
+					 "unexpectedly");
 				continue;
 			}
 			if (TEST_ERRNO == TC[i].error)
-				tst_resm(TPASS|TTERRNO, "shmget failed "
-					    "as expected");
+				tst_resm(TPASS | TTERRNO, "shmget failed "
+					 "as expected");
 			else
-				tst_resm(TFAIL|TTERRNO, "shmget failed "
-					    "unexpectedly - expect errno=%d, "
-					    "got", TC[i].error);
+				tst_resm(TFAIL | TTERRNO, "shmget failed "
+					 "unexpectedly - expect errno=%d, "
+					 "got", TC[i].error);
 		}
 	}
 	cleanup();
@@ -148,9 +152,9 @@ void setup(void)
 
 	shmkey = getipckey();
 	shmkey2 = shmkey + 1;
-	shm_id_1 = shmget(shmkey, shm_size, IPC_CREAT|IPC_EXCL|SHM_RW);
+	shm_id_1 = shmget(shmkey, shm_size, IPC_CREAT | IPC_EXCL | SHM_RW);
 	if (shm_id_1 == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "shmget #setup");
+		tst_brkm(TBROK | TERRNO, cleanup, "shmget #setup");
 
 	TEST_PAUSE;
 }

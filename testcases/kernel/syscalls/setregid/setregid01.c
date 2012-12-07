@@ -250,12 +250,12 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL|TTERRNO, "setregid failed");
+			tst_resm(TFAIL | TTERRNO, "setregid failed");
 		} else {
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS, "setregid return %ld",
-				    TEST_RETURN);
+					 TEST_RETURN);
 			}
 		}
 

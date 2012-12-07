@@ -57,6 +57,7 @@ int TST_TOTAL = 1;
 #define TEST_TMPDIR	"chroot04_tmpdir"
 
 int exp_enos[] = { EACCES, 0 };
+
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -89,7 +90,8 @@ int main(int ac, char **av)
 		else if (TEST_ERRNO == EACCES)
 			tst_resm(TPASS, "got EACCESS as expected");
 		else
-			tst_resm(TFAIL|TTERRNO, "did not get EACCES as expected");
+			tst_resm(TFAIL | TTERRNO,
+				 "did not get EACCES as expected");
 
 	}
 	cleanup();
@@ -132,10 +134,10 @@ void cleanup()
 {
 	/* reset the process ID to the saved ID (root) */
 	if (setuid(0) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL, "setuid(0) failed");
+		tst_brkm(TBROK | TERRNO, NULL, "setuid(0) failed");
 	}
 	if (rmdir(TEST_TMPDIR) != 0) {
-		tst_brkm(TFAIL|TERRNO, NULL, "rmdir(%s) failed", TEST_TMPDIR);
+		tst_brkm(TFAIL | TERRNO, NULL, "rmdir(%s) failed", TEST_TMPDIR);
 	}
 	/*
 	 * print timing stats if that option was specified.

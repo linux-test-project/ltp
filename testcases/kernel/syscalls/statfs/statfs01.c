@@ -156,11 +156,11 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL|TERRNO, "statfs(%s, ..) failed",
-				fname);
+			tst_resm(TFAIL | TERRNO, "statfs(%s, ..) failed",
+				 fname);
 		} else {
 
-	     		/*
+			/*
 			 * only perform functional verification if flag set
 			 * (-f not given)
 			 */

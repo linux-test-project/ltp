@@ -125,9 +125,10 @@ int main(int ac, char **av)
 
 		/* Check for expected errno. */
 		if (TEST_ERRNO == EINVAL) {
-			tst_resm(TPASS|TTERRNO, "munmap failed as expected");
+			tst_resm(TPASS | TTERRNO, "munmap failed as expected");
 		} else {
-			tst_resm(TPASS|TTERRNO, "munmap didn't fail as expected");
+			tst_resm(TPASS | TTERRNO,
+				 "munmap didn't fail as expected");
 		}
 
 		cleanup();

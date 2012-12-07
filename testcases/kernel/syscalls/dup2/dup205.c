@@ -75,26 +75,26 @@ int main(int ac, char *av[])
 
 		fildes = malloc((min + 10) * sizeof(int));
 		if (fildes == NULL)
-			tst_brkm(TBROK|TERRNO, cleanup, "malloc error");
+			tst_brkm(TBROK | TERRNO, cleanup, "malloc error");
 
 		sprintf(pfilname, "./dup205.%d\n", getpid());
 		unlink(pfilname);
 		serrno = 0;
 		if ((fildes[0] = creat(pfilname, 0666)) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "creat failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "creat failed");
 		else {
 			fildes[fildes[0]] = fildes[0];
 			for (ifile = fildes[0] + 1; ifile < min + 10; ifile++) {
 				if ((fildes[ifile] = dup2(fildes[ifile - 1],
-				    ifile)) == -1) {
+							  ifile)) == -1) {
 					serrno = errno;
 					break;
 				} else {
 					if (fildes[ifile] != ifile) {
 						tst_brkm(TFAIL, cleanup,
-						    "got wrong descriptor "
-						    "number back (%d != %d)",
-						    fildes[ifile], ifile);
+							 "got wrong descriptor "
+							 "number back (%d != %d)",
+							 fildes[ifile], ifile);
 					}
 				}
 			}	/* end for */
@@ -125,14 +125,12 @@ int main(int ac, char *av[])
 	tst_exit();
 }
 
-static void
-setup(void)
+static void setup(void)
 {
 	tst_tmpdir();
 }
 
-static void
-cleanup(void)
+static void cleanup(void)
 {
 	tst_rmdir();
 }

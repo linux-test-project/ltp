@@ -45,7 +45,7 @@
 #define STRPROCNUM 4000
 #define SVCGETARGSPROC 5000
 
-void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp);
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT * transp);
 
 //static int argument;
 union u_argument {
@@ -61,7 +61,7 @@ union u_argument {
 int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
-	//					    others arguments depend on server program
+	//                                          others arguments depend on server program
 	int run_mode = 1;
 	int progNum = atoi(argc[1]);
 	SVCXPRT *transpTCP = NULL;
@@ -72,56 +72,55 @@ int main(int argn, char *argc[])
 	pmap_unset(progNum, VERSNUM);
 	svc_unregister(progNum, VERSNUM);
 
-    //registerrpc(progNum, VERSNUM, PROCSIMPLEPING,
-    //    		simplePing, xdr_int, xdr_int);
-    transpTCP = svctcp_create(RPC_ANYSOCK, 1000, 1000);
-    transpUDP = svcudp_create(RPC_ANYSOCK);
+	//registerrpc(progNum, VERSNUM, PROCSIMPLEPING,
+	//                  simplePing, xdr_int, xdr_int);
+	transpTCP = svctcp_create(RPC_ANYSOCK, 1000, 1000);
+	transpUDP = svcudp_create(RPC_ANYSOCK);
 
-    if (run_mode)
-    {
-    	printf ("SVC TCP : %d\n", transpTCP);
-    	printf ("SVC UDP : %d\n", transpUDP);
-    }
+	if (run_mode) {
+		printf("SVC TCP : %d\n", transpTCP);
+		printf("SVC UDP : %d\n", transpUDP);
+	}
 
-	if (!svc_register(transpTCP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_TCP))
-	{
-    	fprintf(stderr, "svc_register: error (TCP)\n");
-    }
+	if (!svc_register
+	    (transpTCP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_TCP)) {
+		fprintf(stderr, "svc_register: error (TCP)\n");
+	}
 
-    if (!svc_register(transpUDP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_UDP))
-	{
-    	fprintf(stderr, "svc_register: error (UDP)\n");
-    }
+	if (!svc_register
+	    (transpUDP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_UDP)) {
+		fprintf(stderr, "svc_register: error (UDP)\n");
+	}
 
-    svc_run();
-    fprintf(stderr, "Error: svc_run returned!\n");
-    exit(1);
+	svc_run();
+	fprintf(stderr, "Error: svc_run returned!\n");
+	exit(1);
 }
 
 //****************************************//
 //***        Remotes Procedures        ***//
 //****************************************//
-char *simplePing(union u_argument *inVar, SVCXPRT *transp)
+char *simplePing(union u_argument *inVar, SVCXPRT * transp)
 {
 	static int result;
 	result = inVar->varInt;
 	return (char *)&result;
 }
 
-char *svc_getcaller_test(union u_argument *inVar, SVCXPRT *transp)
+char *svc_getcaller_test(union u_argument *inVar, SVCXPRT * transp)
 {
 	//In this function we test svc_getcaller function basically (simple call)
 	struct sockaddr_in *sa = NULL;
 	static int result;
 
-	sa = svc_getcaller (transp);
+	sa = svc_getcaller(transp);
 	//If the result is not NULL we consider that function call succeeds
 	//so returns 0 (PASS)
 	result = (sa != NULL) ? 0 : 1;
 	return (char *)&result;
 }
 
-char *intTestProc(union u_argument *in, SVCXPRT *transp)
+char *intTestProc(union u_argument *in, SVCXPRT * transp)
 {
 	//printf("*** in intTestProc.\n");
 	//returns what received
@@ -131,7 +130,7 @@ char *intTestProc(union u_argument *in, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *lngTestProc(union u_argument *in, SVCXPRT *transp)
+char *lngTestProc(union u_argument *in, SVCXPRT * transp)
 {
 	//printf("*** in lngTestProc.\n");
 	//returns what received
@@ -141,7 +140,7 @@ char *lngTestProc(union u_argument *in, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *dblTestProc(union u_argument *in, SVCXPRT *transp)
+char *dblTestProc(union u_argument *in, SVCXPRT * transp)
 {
 	//printf("*** in dblTestProc.\n");
 	//returns what received
@@ -151,7 +150,7 @@ char *dblTestProc(union u_argument *in, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *strTestProc(union u_argument *in, SVCXPRT *transp)
+char *strTestProc(union u_argument *in, SVCXPRT * transp)
 {
 	//printf("*** in strTestProc.\n");
 	//returns what received
@@ -161,7 +160,7 @@ char *strTestProc(union u_argument *in, SVCXPRT *transp)
 	return (char *)&result;
 }
 
-char *svcGetargsProc(union u_argument *in, SVCXPRT *transp)
+char *svcGetargsProc(union u_argument *in, SVCXPRT * transp)
 {
 	//printf("*** in svcGetargsProc.\n");
 	//returns what received inside this procedure : test svc_getargs function
@@ -170,12 +169,10 @@ char *svcGetargsProc(union u_argument *in, SVCXPRT *transp)
 	static char *result;
 	result = in->str;
 
-	if ((svc_getargs(transp, (xdrproc_t)xdr_int, (char *)&args)) == FALSE)
-	{
+	if ((svc_getargs(transp, (xdrproc_t) xdr_int, (char *)&args)) == FALSE) {
 		svcerr_decode(transp);
 		return;
 	}
-
 	//printf("%s\n", result);
 	return (char *)&result;
 }
@@ -183,119 +180,131 @@ char *svcGetargsProc(union u_argument *in, SVCXPRT *transp)
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT * transp)
 {
 	//printf("* in Dispatch Func.\n");
 	/*union {
-		int varIn;
-	} argument;*/
+	   int varIn;
+	   } argument; */
 
 	char *result;
 	xdrproc_t xdr_argument;
 	xdrproc_t xdr_result;
-	char *(*proc)(union u_argument *, SVCXPRT *);
+	char *(*proc) (union u_argument *, SVCXPRT *);
 	enum auth_stat why;
 
-    switch (rqstp->rq_proc)
-    {
-		case PROCSIMPLEPING:
+	switch (rqstp->rq_proc) {
+	case PROCSIMPLEPING:
 		{
 			//printf("** in PROCSIMPLEPING dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_int;
-			xdr_result   = (xdrproc_t)xdr_int;
-			proc         = (char *(*)(union u_argument *, SVCXPRT *))simplePing;
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc =
+			    (char *(*)(union u_argument *, SVCXPRT *))
+			    simplePing;
 			break;
 		}
-		case SVCGETCALLTEST:
+	case SVCGETCALLTEST:
 		{
 			//printf("** in SVCGETCALLTEST dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_int;
-			xdr_result   = (xdrproc_t)xdr_int;
-			proc         = (char *(*)(union u_argument *, SVCXPRT *))svc_getcaller_test;
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc =
+			    (char *(*)(union u_argument *, SVCXPRT *))
+			    svc_getcaller_test;
 			break;
 		}
-		case PROGSYSERROR:
+	case PROGSYSERROR:
 		{
 			//printf("** in PROGSYSERROR dispatch Func.\n");
 			//Simulate an error
 			svcerr_systemerr(transp);
 			return;
 		}
-		case PROGAUTHERROR:
+	case PROGAUTHERROR:
 		{
 			//printf("** in PROGAUTHERROR dispatch Func.\n");
 			//Simulate an authentification error
 			svcerr_auth(transp, why);
 			return;
 		}
-		case PROGWKAUTHERROR:
+	case PROGWKAUTHERROR:
 		{
 			//printf("** in PROGWKAUTHERROR dispatch Func.\n");
 			//Simulate an authentification error
 			svcerr_weakauth(transp);
 			return;
 		}
-		case INTPROCNUM:
+	case INTPROCNUM:
 		{
 			//printf("** in INTPROCNUM dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_int;
-			xdr_result   = (xdrproc_t)xdr_int;
-			proc         = (char *(*)(union u_argument *, SVCXPRT *))intTestProc;
-						 //(char *(*)(union u_argument *))
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc =
+			    (char *(*)(union u_argument *, SVCXPRT *))
+			    intTestProc;
+			//(char *(*)(union u_argument *))
 			break;
 		}
-		case DBLPROCNUM:
+	case DBLPROCNUM:
 		{
 			//printf("** in DBLPROCNUM dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_double;
-			xdr_result   = (xdrproc_t)xdr_double;
-			proc         = (char *(*)(union u_argument *, SVCXPRT *))dblTestProc;
+			xdr_argument = (xdrproc_t) xdr_double;
+			xdr_result = (xdrproc_t) xdr_double;
+			proc =
+			    (char *(*)(union u_argument *, SVCXPRT *))
+			    dblTestProc;
 			break;
 		}
-		case LNGPROCNUM:
+	case LNGPROCNUM:
 		{
 			//printf("** in LNGPROCNUM dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_long;
-			xdr_result   = (xdrproc_t)xdr_long;
-			proc         = (char *(*)(union u_argument *, SVCXPRT *))lngTestProc;
+			xdr_argument = (xdrproc_t) xdr_long;
+			xdr_result = (xdrproc_t) xdr_long;
+			proc =
+			    (char *(*)(union u_argument *, SVCXPRT *))
+			    lngTestProc;
 			break;
 		}
-		case STRPROCNUM:
+	case STRPROCNUM:
 		{
 			//printf("** in STRPROCNUM dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_wrapstring;
-			xdr_result   = (xdrproc_t)xdr_wrapstring;
-			proc         = (char *(*)(union u_argument *, SVCXPRT *))strTestProc;
+			xdr_argument = (xdrproc_t) xdr_wrapstring;
+			xdr_result = (xdrproc_t) xdr_wrapstring;
+			proc =
+			    (char *(*)(union u_argument *, SVCXPRT *))
+			    strTestProc;
 			break;
 		}
-		case SVCGETARGSPROC:
+	case SVCGETARGSPROC:
 		{
 			//printf("** in SVCGETARGSPROC dispatch Func.\n");
-			xdr_argument = (xdrproc_t)xdr_int;
-			xdr_result   = (xdrproc_t)xdr_int;
-			proc         = (char *(*)(union u_argument *, SVCXPRT *))svcGetargsProc;
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc =
+			    (char *(*)(union u_argument *, SVCXPRT *))
+			    svcGetargsProc;
 			break;
 		}
-		default:
+	default:
 		{
 			//printf("** in NOT DEFINED dispatch Func.\n");
 			//Proc is unavaible
-      		svcerr_noproc(transp);
-      		return;
-      	}
-    }
+			svcerr_noproc(transp);
+			return;
+		}
+	}
 
-    memset((char *)&argument, (int)0, sizeof(argument));
-	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE)
-	{
+	memset((char *)&argument, (int)0, sizeof(argument));
+	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE) {
 		svcerr_decode(transp);
 		return;
 	}
 
-	result = (char *)(*proc)((union u_argument *)&argument, transp);
+	result = (char *)(*proc) ((union u_argument *)&argument, transp);
 
-	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
-	{
+	if ((result != NULL)
+	    && (svc_sendreply(transp, xdr_result, result) == FALSE)) {
 		svcerr_systemerr(transp);
 	}
 	if (svc_freeargs(transp, xdr_argument, (char *)&argument) == FALSE) {

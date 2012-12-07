@@ -54,26 +54,26 @@ void justreturn_handler(int signo)
 int main()
 {
 	int pid;
-        const char *msgptr = MSGSTR;
+	const char *msgptr = MSGSTR;
 	struct mq_attr attr;
 	struct sigaction act;
 
-        sprintf(gqname, "/mq_send_12-1_%d", getpid());
+	sprintf(gqname, "/mq_send_12-1_%d", getpid());
 
 	attr.mq_maxmsg = MAXMSG;
 	attr.mq_msgsize = BUFFER;
-        gqueue = mq_open(gqname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, &attr);
-        if (gqueue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-                return PTS_UNRESOLVED;
-        }
+	gqueue = mq_open(gqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
+	if (gqueue == (mqd_t) - 1) {
+		perror("mq_open() did not return success");
+		return PTS_UNRESOLVED;
+	}
 
 	/* parent and child use justreturn_handler to just return out of
 	 * situations -- parent uses to stop it's sleep and wait again for
 	 * the child; child uses to stop its mq_send
 	 */
-	act.sa_handler=justreturn_handler;
-	act.sa_flags=0;
+	act.sa_handler = justreturn_handler;
+	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	sigaction(SIGABRT, &act, 0);
 
@@ -81,17 +81,19 @@ int main()
 		/* child here */
 		int i;
 
-		sleep(1);  // give parent time to set up handler
-		for (i=0; i<MAXMSG+1; i++) {
-        		if (mq_send(gqueue, msgptr, strlen(msgptr), 1) == -1) {
+		sleep(1);	// give parent time to set up handler
+		for (i = 0; i < MAXMSG + 1; i++) {
+			if (mq_send(gqueue, msgptr, strlen(msgptr), 1) == -1) {
 				if (errno == EINTR) {
-				printf("mq_send interrupted by signal\n");
+					printf
+					    ("mq_send interrupted by signal\n");
 					return CHILDPASS;
 				} else {
-				printf("mq_send not interrupted by signal\n");
+					printf
+					    ("mq_send not interrupted by signal\n");
 					return CHILDFAIL;
 				}
-        		}
+			}
 			/* send signal to parent each time message is sent */
 			kill(getppid(), SIGABRT);
 		}
@@ -100,12 +102,12 @@ int main()
 		return CHILDFAIL;
 	} else {
 		/* parent here */
-		int j,k;
+		int j, k;
 
-		for (j=0; j<MAXMSG+1; j++) {
+		for (j = 0; j < MAXMSG + 1; j++) {
 			if (sleep(3) == 0) {
-			/* If sleep finished, child is probably blocking */
-				kill(pid, SIGABRT); //signal child
+				/* If sleep finished, child is probably blocking */
+				kill(pid, SIGABRT);	//signal child
 				break;
 			}
 		}
@@ -117,7 +119,7 @@ int main()
 
 		if (wait(&k) == -1) {
 			perror("Error waiting for child to exit\n");
-			kill(pid, SIGKILL); //kill child if not gone
+			kill(pid, SIGKILL);	//kill child if not gone
 			return PTS_UNRESOLVED;
 		}
 		if (!WIFEXITED(k) || !WEXITSTATUS(k)) {

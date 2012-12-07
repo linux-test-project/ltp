@@ -47,7 +47,7 @@ static int expired;
 #define ENTERED_THREAD 2
 #define EXITING_THREAD 3
 
-static void* fn(void *arg)
+static void *fn(void *arg)
 {
 	struct timespec abs_timeout;
 	int rc;
@@ -79,7 +79,9 @@ static void* fn(void *arg)
 			exit(PTS_UNRESOLVED);
 		}
 	} else {
-		printf("Error in pthread_rwlock_timedwrlock(), error code:%d.\n", rc);
+		printf
+		    ("Error in pthread_rwlock_timedwrlock(), error code:%d.\n",
+		     rc);
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -129,15 +131,16 @@ int main(void)
 			exit(PTS_FAIL);
 		} else
 			printf("thread correctly expired and did not wait\n");
-	break;
+		break;
 	case ENTERED_THREAD:
-		printf("Test FAILED: thread blocked even when the timer expired\n");
+		printf
+		    ("Test FAILED: thread blocked even when the timer expired\n");
 		exit(PTS_FAIL);
-	break;
+		break;
 	default:
 		printf("Unexpected thread state %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
-	break;
+		break;
 	}
 
 	printf("main: unlock write lock\n");

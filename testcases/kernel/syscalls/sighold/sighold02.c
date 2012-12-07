@@ -192,7 +192,7 @@ int main(int ac, char **av)
 		 * fork off a child process
 		 */
 		if ((pid = FORK_OR_VFORK()) < 0) {
-			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
 
 		} else if (pid > 0) {
 
@@ -253,7 +253,9 @@ int main(int ac, char **av)
 #endif
 				    ) {
 					if (kill(pid, sig) < 0) {
-						tst_brkm(TBROK|TERRNO, NULL, "kill(%d, %d) failed", pid, sig);
+						tst_brkm(TBROK | TERRNO, NULL,
+							 "kill(%d, %d) failed",
+							 pid, sig);
 						getout();
 					}
 				}
@@ -299,7 +301,8 @@ int main(int ac, char **av)
 #ifdef UCLINUX
 			if (self_exec(av[0], "dd", CHILDSWRITEFD, CHILDSREADFD)
 			    < 0) {
-				tst_brkm(TBROK|TERRNO, cleanup, "self_exec() failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "self_exec() failed");
 			}
 #else
 			do_child();
@@ -461,7 +464,7 @@ int fd;
 #endif
 	if (write(fd, (char *)&p_p, sizeof(struct pipe_packet)) < 0) {
 		if (pid)
-			tst_brkm(TBROK|TERRNO, getout, "write() pipe failed");
+			tst_brkm(TBROK | TERRNO, getout, "write() pipe failed");
 		return -1;
 	}
 #ifdef debug
@@ -585,7 +588,7 @@ int sig;			/* the signal causing the execution of this handler */
 static void getout()
 {
 	if (kill(pid, SIGKILL) < 0)
-		tst_resm(TWARN|TERRNO, "kill(%d) failed", pid);
+		tst_resm(TWARN | TERRNO, "kill(%d) failed", pid);
 	cleanup();
 }
 
@@ -599,11 +602,11 @@ void setup()
 
 	/* set up pipe for child sending to parent communications */
 	if (pipe(Fds1) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "pipe() failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "pipe() failed");
 
 	/* set up pipe for parent sending to child communications */
 	if (pipe(Fds2) < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "pipe() failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "pipe() failed");
 
 #if debug
 	printf("child 2 parent Fds1[0] = %d, Fds1[1] = %d\n", Fds1[0], Fds1[1]);

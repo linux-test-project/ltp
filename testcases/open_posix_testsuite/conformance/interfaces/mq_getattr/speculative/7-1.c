@@ -39,7 +39,7 @@ int main(void)
 
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
 
-	if (mqdes == (mqd_t)-1) {
+	if (mqdes == (mqd_t) - 1) {
 		perror("mq_open()");
 		return PTS_UNRESOLVED;
 	}
@@ -59,7 +59,7 @@ int main(void)
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
 	case -1:
-	break;
+		break;
 	default:
 		printf("mq_getattr returned %i\n", ret);
 		printf("Test FAILED\n");

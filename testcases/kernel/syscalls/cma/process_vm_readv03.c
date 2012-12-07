@@ -42,9 +42,9 @@ int TST_TOTAL = 1;
 static int nflag, sflag;
 static char *nr_opt, *sz_opt;
 static option_t options[] = {
-	{ "n:", &nflag, &nr_opt },
-	{ "s:", &sflag, &sz_opt },
-	{ NULL, NULL,   NULL }
+	{"n:", &nflag, &nr_opt},
+	{"s:", &sflag, &sz_opt},
+	{NULL, NULL, NULL}
 };
 
 static int nr_iovecs;
@@ -70,14 +70,14 @@ int main(int argc, char **argv)
 	msg = parse_opts(argc, argv, options, &help);
 	if (msg != NULL)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s"
-				"use -help", msg);
+			 "use -help", msg);
 
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
 		if (pipe(pipe_fd) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "pipe");
+			tst_brkm(TBROK | TERRNO, cleanup, "pipe");
 
 		bufsz_arr = SAFE_MALLOC(cleanup, nr_iovecs * sizeof(int));
 		gen_random_arr(bufsz_arr, nr_iovecs);
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 		pids[0] = fork();
 		switch (pids[0]) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork #0");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork #0");
 		case 0:
 			child_alloc(bufsz_arr);
 			exit(0);
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 		pids[1] = fork();
 		switch (pids[1]) {
 		case -1:
-			tst_brkm(TBROK|TERRNO, cleanup, "fork #1");
+			tst_brkm(TBROK | TERRNO, cleanup, "fork #1");
 		case 0:
 			child_invoke(bufsz_arr);
 			exit(0);
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
 		/* wait until child_invoke reads from child_alloc's VM */
 		if (waitpid(pids[1], &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 1 returns %d", status);
 
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 		safe_semop(semid, 0, 1);
 
 		if (waitpid(pids[0], &status, 0) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 0 returns %d", status);
 
@@ -134,7 +134,7 @@ static void gen_random_arr(int *arr, int arr_sz)
 		arr[i] = bufsz_single;
 		bufsz_left -= bufsz_single;
 	}
-	arr[arr_sz-1] = bufsz_left;
+	arr[arr_sz - 1] = bufsz_left;
 }
 
 static void child_alloc(int *bufsz_arr)
@@ -155,7 +155,7 @@ static void child_alloc(int *bufsz_arr)
 		}
 	}
 	tst_resm(TINFO, "child 0: %d iovecs allocated and initialized.",
-		    nr_iovecs);
+		 nr_iovecs);
 
 	/* passing addr via pipe */
 	SAFE_CLOSE(tst_exit, pipe_fd[0]);
@@ -179,18 +179,18 @@ static long *fetch_remote_addrs(void)
 	SAFE_READ(tst_exit, 0, pipe_fd[0], buf, BUFSIZ);
 	SAFE_CLOSE(tst_exit, pipe_fd[0]);
 	if (sscanf(buf, "%p", &foo) != 1)
-		tst_brkm(TBROK|TERRNO, tst_exit, "sscanf");
+		tst_brkm(TBROK | TERRNO, tst_exit, "sscanf");
 
 	len = nr_iovecs * sizeof(long);
 	bar = SAFE_MALLOC(tst_exit, len);
-	local.iov_base  = bar;
-	local.iov_len   = len;
+	local.iov_base = bar;
+	local.iov_len = len;
 	remote.iov_base = foo;
-	remote.iov_len  = len;
+	remote.iov_len = len;
 
 	TEST(test_process_vm_readv(pids[0], &local, 1, &remote, 1, 0));
 	if (TEST_RETURN != len)
-		tst_brkm(TFAIL|TERRNO, tst_exit, "process_vm_readv");
+		tst_brkm(TFAIL | TERRNO, tst_exit, "process_vm_readv");
 
 	return local.iov_base;
 }
@@ -208,22 +208,22 @@ static void child_invoke(int *bufsz_arr)
 	remote = SAFE_MALLOC(tst_exit, nr_iovecs * sizeof(struct iovec));
 	for (i = 0; i < nr_iovecs; i++) {
 		remote[i].iov_base = (void *)addrs[i];
-		remote[i].iov_len  = bufsz_arr[i];
+		remote[i].iov_len = bufsz_arr[i];
 	}
 	tst_resm(TINFO, "child 1: %d remote iovecs received.", nr_iovecs);
 
 	gen_random_arr(rcv_arr, NUM_LOCAL_VECS);
 	for (i = 0; i < NUM_LOCAL_VECS; i++) {
 		local[i].iov_base = SAFE_MALLOC(tst_exit, rcv_arr[i]);
-		local[i].iov_len  = rcv_arr[i];
+		local[i].iov_len = rcv_arr[i];
 	}
 	tst_resm(TINFO, "child 1: %d local iovecs initialized.",
-		    NUM_LOCAL_VECS);
+		 NUM_LOCAL_VECS);
 
 	TEST(test_process_vm_readv(pids[0], local, NUM_LOCAL_VECS,
-		    remote, nr_iovecs, 0));
+				   remote, nr_iovecs, 0));
 	if (TEST_RETURN != bufsz)
-		tst_brkm(TBROK|TERRNO, tst_exit, "process_vm_readv");
+		tst_brkm(TBROK | TERRNO, tst_exit, "process_vm_readv");
 
 	/* verify every byte */
 	count = 0;
@@ -235,8 +235,8 @@ static void child_invoke(int *bufsz_arr)
 			if (expect != actual) {
 #if DEBUG
 				tst_resm(TFAIL, "child 1: expected %i, got %i "
-						"for byte seq %d",
-						expect, actual, count);
+					 "for byte seq %d",
+					 expect, actual, count);
 #endif
 				nr_error++;
 			}
@@ -245,7 +245,7 @@ static void child_invoke(int *bufsz_arr)
 	}
 	if (nr_error)
 		tst_brkm(TFAIL, tst_exit, "child 1: %d incorrect bytes "
-				"received.", nr_error);
+			 "received.", nr_error);
 	else
 		tst_resm(TPASS, "child 1: all bytes are correctly received.");
 }
@@ -256,11 +256,11 @@ static void setup(void)
 
 	nr_iovecs = nflag ? SAFE_STRTOL(NULL, nr_opt, 1, IOV_MAX) : 10;
 	bufsz = sflag ? SAFE_STRTOL(NULL, sz_opt, NUM_LOCAL_VECS, LONG_MAX)
-		    : 100000;
+	    : 100000;
 
 #if !defined(__NR_process_vm_readv)
 	tst_brkm(TCONF, NULL, "process_vm_readv does not exist "
-		    "on your system");
+		 "on your system");
 #endif
 	semid = init_sem(1);
 	srand(time(NULL));

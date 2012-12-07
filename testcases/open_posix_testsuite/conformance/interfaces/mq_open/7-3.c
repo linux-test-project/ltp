@@ -33,14 +33,14 @@ int main()
 	sprintf(qname, "/mq_open_7-3_%d", getpid());
 
 	roqueue = mq_open(qname, O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR, NULL);
-	if (roqueue == (mqd_t) -1) {
+	if (roqueue == (mqd_t) - 1) {
 		perror("mq_open() for read-only queue did not return success");
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	roqueue2 = mq_open(qname, O_RDONLY, S_IRUSR | S_IWUSR, NULL);
-	if (roqueue2 == (mqd_t) -1) {
+	if (roqueue2 == (mqd_t) - 1) {
 		perror("Second mq_open() for rd-only queue didn't ret success");
 		printf("Test FAILED\n");
 		return PTS_FAIL;

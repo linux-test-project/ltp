@@ -58,7 +58,7 @@ struct bitmask {
 static unsigned int _getbit(const struct bitmask *bmp, unsigned int n)
 {
 	if (n < bmp->size)
-		return (bmp->maskp[n/bitsperlong] >> (n % bitsperlong)) & 1;
+		return (bmp->maskp[n / bitsperlong] >> (n % bitsperlong)) & 1;
 	else
 		return 0;
 }
@@ -68,9 +68,10 @@ static void _setbit(struct bitmask *bmp, unsigned int n, unsigned int v)
 {
 	if (n < bmp->size) {
 		if (v)
-			bmp->maskp[n/bitsperlong] |= 1UL << (n % bitsperlong);
+			bmp->maskp[n / bitsperlong] |= 1UL << (n % bitsperlong);
 		else
-			bmp->maskp[n/bitsperlong] &= ~(1UL << (n % bitsperlong));
+			bmp->maskp[n / bitsperlong] &=
+			    ~(1UL << (n % bitsperlong));
 	}
 }
 
@@ -101,7 +102,7 @@ void bitmask_free(struct bitmask *bmp)
 	if (bmp == 0)
 		return;
 	free(bmp->maskp);
-	bmp->maskp = (unsigned long *)0xdeadcdef;  /* double free tripwire */
+	bmp->maskp = (unsigned long *)0xdeadcdef;	/* double free tripwire */
 	free(bmp);
 }
 
@@ -109,8 +110,8 @@ void bitmask_free(struct bitmask *bmp)
  * Display and parse ascii string representations.
  */
 
-#define HEXCHUNKSZ 32	/* hex binary format shows 32 bits per chunk */
-#define HEXCHARSZ 8	/* hex ascii format has up to 8 chars per chunk */
+#define HEXCHUNKSZ 32		/* hex binary format shows 32 bits per chunk */
+#define HEXCHARSZ 8		/* hex ascii format has up to 8 chars per chunk */
 #define max(a,b) ((a) > (b) ? (a) : (b))
 
 /*
@@ -139,7 +140,7 @@ int bitmask_displayhex(char *buf, int buflen, const struct bitmask *bmp)
 		for (bit = HEXCHUNKSZ - 1; bit >= 0; bit--)
 			val = val << 1 | _getbit(bmp, chunk * HEXCHUNKSZ + bit);
 		cnt += snprintf(buf + cnt, max(buflen - cnt, 0), "%s%0*x",
-			sep, HEXCHARSZ, val);
+				sep, HEXCHARSZ, val);
 		sep = ",";
 	}
 	return cnt;
@@ -161,7 +162,9 @@ static inline int emit(char *buf, int buflen, int rbot, int rtop, int len)
 	if (rbot == rtop)
 		len += snprintf(buf + len, max(buflen - len, 0), "%d", rbot);
 	else
-		len += snprintf(buf + len, max(buflen - len, 0), "%d-%d", rbot, rtop);
+		len +=
+		    snprintf(buf + len, max(buflen - len, 0), "%d-%d", rbot,
+			     rtop);
 	return len;
 }
 
@@ -190,7 +193,7 @@ int bitmask_displaylist(char *buf, int buflen, const struct bitmask *bmp)
 	rbot = cur = bitmask_first(bmp);
 	while (cur < bmp->size) {
 		rtop = cur;
-		cur = bitmask_next(bmp, cur+1);
+		cur = bitmask_next(bmp, cur + 1);
 		if (cur >= bmp->size || cur > rtop + 1) {
 			len = emit(buf, buflen, rbot, rtop, len);
 			rbot = cur;
@@ -199,7 +202,7 @@ int bitmask_displaylist(char *buf, int buflen, const struct bitmask *bmp)
 	return len;
 }
 
-static const char *nexttoken(const char *q,  int sep)
+static const char *nexttoken(const char *q, int sep)
 {
 	if (q)
 		q = strchr(q, sep);
@@ -280,8 +283,7 @@ err:
  */
 static int scan_was_ok(int sret, char nextc, const char *ok_next_chars)
 {
-	return sret == 1 ||
-		(sret == 2 && strchr(ok_next_chars, nextc) != NULL);
+	return sret == 1 || (sret == 2 && strchr(ok_next_chars, nextc) != NULL);
 }
 
 /*
@@ -302,12 +304,12 @@ int bitmask_parselist(const char *buf, struct bitmask *bmp)
 
 	q = buf;
 	while (p = q, q = nexttoken(q, ','), p) {
-		unsigned int a;		/* begin of range */
-		unsigned int b;		/* end of range */
-		unsigned int s;		/* stride */
+		unsigned int a;	/* begin of range */
+		unsigned int b;	/* end of range */
+		unsigned int s;	/* stride */
 		const char *c1, *c2;	/* next tokens after '-' or ',' */
-		char nextc;		/* char after sscanf %u match */
-		int sret;		/* sscanf return (number of matches) */
+		char nextc;	/* char after sscanf %u match */
+		int sret;	/* sscanf return (number of matches) */
 
 		sret = sscanf(p, "%u%c", &a, &nextc);
 		if (!scan_was_ok(sret, nextc, ",-"))
@@ -423,7 +425,7 @@ int bitmask_isbitset(const struct bitmask *bmp, unsigned int i)
 /* True if specified bit i is clear */
 int bitmask_isbitclear(const struct bitmask *bmp, unsigned int i)
 {
-	return ! _getbit(bmp, i);
+	return !_getbit(bmp, i);
 }
 
 /* True if all bits are set */
@@ -431,7 +433,7 @@ int bitmask_isallset(const struct bitmask *bmp)
 {
 	unsigned int i;
 	for (i = 0; i < bmp->size; i++)
-		if (! _getbit(bmp, i))
+		if (!_getbit(bmp, i))
 			return 0;
 	return 1;
 }
@@ -514,7 +516,7 @@ int bitmask_intersects(const struct bitmask *bmp1, const struct bitmask *bmp2)
 
 /* Set bits of bitmask in specified range [i, j) */
 struct bitmask *bitmask_setrange(struct bitmask *bmp,
-				unsigned int i, unsigned int j)
+				 unsigned int i, unsigned int j)
 {
 	unsigned int n;
 	for (n = i; n < j; n++)
@@ -524,7 +526,7 @@ struct bitmask *bitmask_setrange(struct bitmask *bmp,
 
 /* Clear bits of bitmask in specified range */
 struct bitmask *bitmask_clearrange(struct bitmask *bmp,
-				unsigned int i, unsigned int j)
+				   unsigned int i, unsigned int j)
 {
 	unsigned int n;
 	for (n = i; n < j; n++)
@@ -534,7 +536,7 @@ struct bitmask *bitmask_clearrange(struct bitmask *bmp,
 
 /* Clear all but specified range */
 struct bitmask *bitmask_keeprange(struct bitmask *bmp,
-				unsigned int i, unsigned int j)
+				  unsigned int i, unsigned int j)
 {
 	bitmask_clearrange(bmp, 0, i);
 	bitmask_clearrange(bmp, j, bmp->size);
@@ -547,31 +549,31 @@ struct bitmask *bitmask_keeprange(struct bitmask *bmp,
 
 /* Complement: bmp1 = ~bmp2 */
 struct bitmask *bitmask_complement(struct bitmask *bmp1,
-				const struct bitmask *bmp2)
+				   const struct bitmask *bmp2)
 {
 	unsigned int i;
 	for (i = 0; i < bmp1->size; i++)
-		_setbit(bmp1, i, ! _getbit(bmp2, i));
+		_setbit(bmp1, i, !_getbit(bmp2, i));
 	return bmp1;
 }
 
 /* Right shift: bmp1 = bmp2 >> n */
 struct bitmask *bitmask_shiftright(struct bitmask *bmp1,
-				const struct bitmask *bmp2, unsigned int n)
+				   const struct bitmask *bmp2, unsigned int n)
 {
 	unsigned int i;
 	for (i = 0; i < bmp1->size; i++)
-		_setbit(bmp1, i, _getbit(bmp2, i+n));
+		_setbit(bmp1, i, _getbit(bmp2, i + n));
 	return bmp1;
 }
 
 /* Left shift: bmp1 = bmp2 << n */
 struct bitmask *bitmask_shiftleft(struct bitmask *bmp1,
-				const struct bitmask *bmp2, unsigned int n)
+				  const struct bitmask *bmp2, unsigned int n)
 {
 	int i;
 	for (i = bmp1->size - 1; i >= 0; i--)
-		_setbit(bmp1, i, _getbit(bmp2, i-n));
+		_setbit(bmp1, i, _getbit(bmp2, i - n));
 	return bmp1;
 }
 
@@ -581,7 +583,7 @@ struct bitmask *bitmask_shiftleft(struct bitmask *bmp1,
 
 /* Logical `and` of two bitmasks: bmp1 = bmp2 & bmp3 */
 struct bitmask *bitmask_and(struct bitmask *bmp1, const struct bitmask *bmp2,
-				const struct bitmask *bmp3)
+			    const struct bitmask *bmp3)
 {
 	unsigned int i;
 	for (i = 0; i < bmp1->size; i++)
@@ -591,7 +593,7 @@ struct bitmask *bitmask_and(struct bitmask *bmp1, const struct bitmask *bmp2,
 
 /* Logical `andnot` of two bitmasks: bmp1 = bmp2 & ~bmp3 */
 struct bitmask *bitmask_andnot(struct bitmask *bmp1, const struct bitmask *bmp2,
-				const struct bitmask *bmp3)
+			       const struct bitmask *bmp3)
 {
 	unsigned int i;
 	for (i = 0; i < bmp1->size; i++)
@@ -601,7 +603,7 @@ struct bitmask *bitmask_andnot(struct bitmask *bmp1, const struct bitmask *bmp2,
 
 /* Logical `or` of two bitmasks: bmp1 = bmp2 | bmp3 */
 struct bitmask *bitmask_or(struct bitmask *bmp1, const struct bitmask *bmp2,
-				const struct bitmask *bmp3)
+			   const struct bitmask *bmp3)
 {
 	unsigned int i;
 	for (i = 0; i < bmp1->size; i++)
@@ -611,7 +613,7 @@ struct bitmask *bitmask_or(struct bitmask *bmp1, const struct bitmask *bmp2,
 
 /* Logical `eor` of two bitmasks: bmp1 = bmp2 ^ bmp3 */
 struct bitmask *bitmask_eor(struct bitmask *bmp1, const struct bitmask *bmp2,
-				const struct bitmask *bmp3)
+			    const struct bitmask *bmp3)
 {
 	unsigned int i;
 	for (i = 0; i < bmp1->size; i++)

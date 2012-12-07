@@ -1,6 +1,6 @@
   /*
-  Test that the CLD_STOPPED macro is defined.
-  */
+     Test that the CLD_STOPPED macro is defined.
+   */
 
 #include <signal.h>
 

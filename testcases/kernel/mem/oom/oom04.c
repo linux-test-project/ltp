@@ -73,10 +73,10 @@ int main(int argc, char *argv[])
 		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
 			if (errno == ENOENT) {
 				tst_resm(TCONF,
-				    "memcg swap accounting is disabled");
+					 "memcg swap accounting is disabled");
 				swap_acc_on = 0;
 			} else
-				tst_brkm(TBROK|TERRNO, cleanup, "access");
+				tst_brkm(TBROK | TERRNO, cleanup, "access");
 		}
 
 		tst_resm(TINFO, "process mempolicy.");

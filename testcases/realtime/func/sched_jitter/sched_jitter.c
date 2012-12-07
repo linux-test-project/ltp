@@ -58,7 +58,7 @@
 
 int array[WORKLEN];
 
-volatile int flag; /*let interrupter know we're done */
+volatile int flag;		/*let interrupter know we're done */
 
 void usage(void)
 {
@@ -71,17 +71,17 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'h':
-			usage();
-			exit(0);
-		default:
-			handled = 0;
-			break;
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
 	}
 	return handled;
 }
 
-unsigned long long ts_sub(struct timespec a , struct timespec b)
+unsigned long long ts_sub(struct timespec a, struct timespec b)
 {
 	unsigned long long first, second;
 
@@ -93,9 +93,9 @@ unsigned long long ts_sub(struct timespec a , struct timespec b)
 void print_unit(unsigned long long val)
 {
 	if (val > 1000000)
-		printf("%f ms\n", (float)(val)/1000000);
+		printf("%f ms\n", (float)(val) / 1000000);
 	else if (val > 1000)
-		printf("%f us\n", (float)(val)/1000);
+		printf("%f us\n", (float)(val) / 1000);
 	else
 		printf("%f ns\n", (float)val);
 
@@ -104,29 +104,29 @@ void print_unit(unsigned long long val)
 void do_work(int runs)
 {
 	int i, j;
-	for (i=0; i < runs; i++) {
-		for (j=0; j < WORKLEN-1; j++)
-			array[j] = array[j]+array[j+1];
-		for (j=0; j < WORKLEN-1; j++)
-			array[j] = array[j]-array[j+1];
+	for (i = 0; i < runs; i++) {
+		for (j = 0; j < WORKLEN - 1; j++)
+			array[j] = array[j] + array[j + 1];
+		for (j = 0; j < WORKLEN - 1; j++)
+			array[j] = array[j] - array[j + 1];
 	}
 }
 
-void *thread_worker(void* arg)
+void *thread_worker(void *arg)
 {
 	struct timespec start, stop;
 	int i;
 	unsigned long long delta;
-	unsigned long long min=-1, max=0;
+	unsigned long long min = -1, max = 0;
 
 	stats_container_t dat;
 	stats_record_t rec;
 
 	stats_container_init(&dat, NUMRUNS);
 
-	for (i=0; i < NUMRUNS; i++) {
+	for (i = 0; i < NUMRUNS; i++) {
 
-		do_work(1); /* warm cache */
+		do_work(1);	/* warm cache */
 
 		/* do test */
 		clock_gettime(CLOCK_MONOTONIC, &start);
@@ -137,27 +137,27 @@ void *thread_worker(void* arg)
 		delta = ts_sub(stop, start);
 		if (delta < min)
 			min = delta;
-		if (delta> max)
+		if (delta > max)
 			max = delta;
 		rec.x = i;
 		rec.y = delta;
 		stats_container_append(&dat, rec);
 
 		printf("delta: %llu ns\n", delta);
-		usleep(1); /* let other things happen */
+		usleep(1);	/* let other things happen */
 	}
 
 	printf("max jitter: ");
 	print_unit(max - min);
-	stats_container_save("samples", "Scheduling Jitter Scatter Plot",\
-				"Iteration", "Delay (ns)", &dat, "points");
+	stats_container_save("samples", "Scheduling Jitter Scatter Plot",
+			     "Iteration", "Delay (ns)", &dat, "points");
 	return NULL;
 }
 
-void *thread_interrupter(void* arg)
+void *thread_interrupter(void *arg)
 {
 	while (!flag)
-	usleep(ISLEEP);
+		usleep(ISLEEP);
 	return NULL;
 }
 
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	rt_init("h",parse_args,argc,argv);
+	rt_init("h", parse_args, argc, argv);
 
 	interrupter = create_fifo_thread(thread_interrupter, NULL, 80);
 	sleep(1);

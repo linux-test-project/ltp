@@ -143,13 +143,13 @@ int main(int ac, char **av)
 		TEST(gethostname(hname, sizeof(hname)));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL|TTERRNO, "gethostname failed");
+			tst_resm(TFAIL | TTERRNO, "gethostname failed");
 			continue;	/* next loop for MTKERNEL */
 		}
 
 		if (STD_FUNCTIONAL_TEST)
 			tst_resm(TPASS, "gethostname returned %ld",
-			    TEST_RETURN);
+				 TEST_RETURN);
 	}
 
 	cleanup();

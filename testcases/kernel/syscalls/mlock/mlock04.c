@@ -63,18 +63,18 @@ int main(void)
 		buf = mmap(NULL, file_len, PROT_WRITE, MAP_SHARED, fd, 0);
 
 		if (buf == MAP_FAILED)
-			tst_brkm(TBROK|TERRNO, cleanup, "mmap");
+			tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 
 		if (mlock(buf, file_len) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "mlock");
+			tst_brkm(TBROK | TERRNO, cleanup, "mlock");
 
 		tst_resm(TINFO, "locked %d bytes from %p", file_len, buf);
 
 		if (munlock(buf, file_len) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "munlock");
+			tst_brkm(TBROK | TERRNO, cleanup, "munlock");
 
 		if (munmap(buf, file_len) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "munmap");
+			tst_brkm(TBROK | TERRNO, cleanup, "munmap");
 	}
 
 	tst_resm(TPASS, "test succeeded.");
@@ -90,10 +90,10 @@ static void setup(void)
 
 	fd = open(testfile, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	if (fd == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "open");
+		tst_brkm(TBROK | TERRNO, cleanup, "open");
 
 	if (ftruncate(fd, file_len) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "ftruncate");
+		tst_brkm(TBROK | TERRNO, cleanup, "ftruncate");
 
 	TEST_PAUSE;
 }

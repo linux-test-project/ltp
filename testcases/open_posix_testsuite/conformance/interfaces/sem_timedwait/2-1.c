@@ -29,32 +29,31 @@
 
 int main()
 {
-        sem_t mysemp;
+	sem_t mysemp;
 	struct timespec ts;
 	int pid;
 
 	/* Semaphore started out locked */
-	 if (sem_init (&mysemp, 0, 0) == -1) {
+	if (sem_init(&mysemp, 0, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
-                return PTS_UNRESOLVED;
-         }
+		return PTS_UNRESOLVED;
+	}
 
 	pid = fork();
-	if (pid == 0)  // child to lock semaphore
+	if (pid == 0)		// child to lock semaphore
 	{
-		ts.tv_sec=time(NULL)+2;
-		ts.tv_nsec=0;
+		ts.tv_sec = time(NULL) + 2;
+		ts.tv_nsec = 0;
 
-	       	if (sem_timedwait(&mysemp, &ts) == -1) {
-			puts ("TEST FAILED");
+		if (sem_timedwait(&mysemp, &ts) == -1) {
+			puts("TEST FAILED");
 			return PTS_FAIL;
 		} else {
 			puts("TEST PASSED");
 			sem_destroy(&mysemp);
 			return PTS_PASS;
 		}
-	}
-	else if (pid > 0) // parent to unlock semaphore
+	} else if (pid > 0)	// parent to unlock semaphore
 	{
 		int i;
 		sleep(1);
@@ -74,5 +73,5 @@ int main()
 		sem_destroy(&mysemp);
 		return PTS_PASS;
 	}
-return PTS_UNRESOLVED;
+	return PTS_UNRESOLVED;
 }

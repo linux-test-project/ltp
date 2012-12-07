@@ -38,27 +38,28 @@ int main()
 	if (pid == 0) {
 		/* child */
 
-	        sigset_t tempmask;
+		sigset_t tempmask;
 
-	        struct sigaction act;
+		struct sigaction act;
 
-	        act.sa_handler = handler;
-	        act.sa_flags=0;
-	        sigemptyset(&act.sa_mask);
+		act.sa_handler = handler;
+		act.sa_flags = 0;
+		sigemptyset(&act.sa_mask);
 
-	        sigemptyset(&tempmask);
+		sigemptyset(&tempmask);
 
-	        if (sigaction(SIGUSR1,  &act, 0) == -1) {
-	                perror("Unexpected error while attempting to pre-conditions");
-                	return 3;
-	        }
+		if (sigaction(SIGUSR1, &act, 0) == -1) {
+			perror
+			    ("Unexpected error while attempting to pre-conditions");
+			return 3;
+		}
 
 		printf("suspending child\n");
-	        if (sigsuspend(&tempmask) != -1) {
-	                perror("sigsuspend error");
+		if (sigsuspend(&tempmask) != -1) {
+			perror("sigsuspend error");
 			return 1;
 		}
-	        printf("returned from suspend\n");
+		printf("returned from suspend\n");
 
 		sleep(1);
 		return 2;
@@ -71,7 +72,7 @@ int main()
 		sleep(1);
 
 		printf("parent sending child a SIGUSR1 signal\n");
-		kill (pid, SIGUSR1);
+		kill(pid, SIGUSR1);
 
 		if (wait(&s) == -1) {
 			perror("Unexpected error while setting up test "
@@ -83,21 +84,22 @@ int main()
 
 		printf("Exit status from child is %d\n", exit_status);
 
-                if (exit_status == 1) {
+		if (exit_status == 1) {
 			printf("Test FAILED\n");
-                        return PTS_FAIL;
-                }
+			return PTS_FAIL;
+		}
 
-                if (exit_status == 2) {
+		if (exit_status == 2) {
 			printf("Test PASSED\n");
-                        return PTS_PASS;
-                }
+			return PTS_PASS;
+		}
 
-                if (exit_status == 3) {
-                        return PTS_UNRESOLVED;
-                }
+		if (exit_status == 3) {
+			return PTS_UNRESOLVED;
+		}
 
-		printf("Child didn't exit with any of the expected return codes\n");
+		printf
+		    ("Child didn't exit with any of the expected return codes\n");
 		return PTS_UNRESOLVED;
 	}
 }

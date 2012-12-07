@@ -84,7 +84,7 @@ int main(int ac, char **av)
 	TEST(msgctl(msg_q_1, IPC_RMID, NULL));
 
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL|TTERRNO, cleanup, "msgctl() call failed");
+		tst_brkm(TFAIL | TTERRNO, cleanup, "msgctl() call failed");
 	} else {
 		if (STD_FUNCTIONAL_TEST) {
 			/*

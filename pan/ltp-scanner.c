@@ -131,32 +131,33 @@
 #include "reporter.h"
 #include "symbol.h"
 
-char *cnf;              /* current filename */
-int extended=0;		/* -e option        */
+char *cnf;			/* current filename */
+int extended = 0;		/* -e option        */
 
 int main(int argc, char *argv[])
 {
-	SYM tags;			/* tag data */
+	SYM tags;		/* tag data */
 	int c;
 
 	while ((c = getopt(argc, argv, "D:ehi")) != -1) {
-		switch(c) {
-			case 'i':
-			    set_iscanner();
-			    break;
-			case 'D':
-			    set_debug(optarg);
-			    break;
-			case 'e':
-			    extended++;
-			    break;
-			case 'h':
-			    fprintf(stderr, "%s [-e] [-i] [ -D area, level ] input-filenames\n",
-				    argv[0]);
-			    exit(0);
-			default:
-			    fprintf(stderr, "invalid argument, %c\n", c);
-			    exit(1);
+		switch (c) {
+		case 'i':
+			set_iscanner();
+			break;
+		case 'D':
+			set_debug(optarg);
+			break;
+		case 'e':
+			extended++;
+			break;
+		case 'h':
+			fprintf(stderr,
+				"%s [-e] [-i] [ -D area, level ] input-filenames\n",
+				argv[0]);
+			exit(0);
+		default:
+			fprintf(stderr, "invalid argument, %c\n", c);
+			exit(1);
 		}
 	}
 
@@ -166,7 +167,7 @@ int main(int argc, char *argv[])
 	scanner(tags);
 #ifdef DEBUGGING
 	DEBUG(D_INIT, 1)
-	sym_dump_s(tags, 0);
+	    sym_dump_s(tags, 0);
 #endif
 	reporter(tags);
 

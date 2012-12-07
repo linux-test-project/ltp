@@ -23,9 +23,9 @@
  *   Sridhar Samudrala     <sri@us.ibm.com>
  */
 
-#include <sys/socket.h>   /* struct sockaddr_storage, setsockopt() */
+#include <sys/socket.h>		/* struct sockaddr_storage, setsockopt() */
 #include <netinet/in.h>
-#include <netinet/sctp.h> /* SCTP_SOCKOPT_BINDX_* */
+#include <netinet/sctp.h>	/* SCTP_SOCKOPT_BINDX_* */
 #include <errno.h>
 
 /* Support the sctp_bindx() interface.
@@ -35,8 +35,7 @@
  * Instead of implementing through a socket call in sys_socketcall(),
  * tunnel the request through setsockopt().
  */
-int
-sctp_bindx(int fd, struct sockaddr *addrs, int addrcnt, int flags)
+int sctp_bindx(int fd, struct sockaddr *addrs, int addrcnt, int flags)
 {
 	int setsock_option = 0;
 	void *addrbuf;

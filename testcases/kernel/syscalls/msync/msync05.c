@@ -104,7 +104,7 @@ int main(int ac, char **av)
 		else if (TEST_ERRNO == ENOMEM)
 			tst_resm(TPASS, "msync failed as expected with ENOMEM");
 		else
-			tst_resm(TFAIL|TTERRNO, "msync failed unexpectedly");
+			tst_resm(TFAIL | TTERRNO, "msync failed unexpectedly");
 	}
 
 	cleanup();
@@ -118,7 +118,7 @@ void setup()
 	TEST_PAUSE;
 
 	if ((page_sz = getpagesize()) == -1)
-		tst_brkm(TBROK|TERRNO, NULL, "getpagesize failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getpagesize failed");
 
 	addr = get_high_address();
 }

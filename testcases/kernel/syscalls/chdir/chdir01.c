@@ -95,13 +95,13 @@ int main(int ac, char **av)
 		fd = SAFE_CREAT(cleanup, filname, 0000);
 		SAFE_CLOSE(cleanup, fd);
 		if ((ddir = opendir(".")) == NULL)
-			tst_brkm(TBROK|TERRNO, cleanup, "opendir(.) failed");
+			tst_brkm(TBROK | TERRNO, cleanup, "opendir(.) failed");
 
 		filenames[0] = ".";
 		filenames[1] = "..";
 		filenames[2] = filname;
 		checknames(filenames, sizeof(filenames) / sizeof(filenames[0]),
-		    ddir);
+			   ddir);
 		closedir(ddir);
 
 		TEST(chdir(filname));
@@ -109,14 +109,14 @@ int main(int ac, char **av)
 		if (TEST_RETURN != -1)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 		else if (TEST_ERRNO != ENOTDIR)
-			tst_resm(TFAIL|TTERRNO,
-			    "failed unexpectedly; wanted ENOTDIR");
+			tst_resm(TFAIL | TTERRNO,
+				 "failed unexpectedly; wanted ENOTDIR");
 		else
-			tst_resm(TPASS,
-			    "failed as expected with ENOTDIR");
+			tst_resm(TPASS, "failed as expected with ENOTDIR");
 
 		if (unlink(filname) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "Couldn't remove file");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "Couldn't remove file");
 
 		SAFE_CHDIR(cleanup, "..");
 
@@ -150,7 +150,7 @@ void cleanup(void)
 	tst_rmdir();
 }
 
-void checknames(char **pfilnames, int fnamecount, DIR *ddir)
+void checknames(char **pfilnames, int fnamecount, DIR * ddir)
 {
 	struct dirent *dir;
 	int i, found;

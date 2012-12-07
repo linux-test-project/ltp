@@ -147,18 +147,18 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				if (TEST_ERRNO == EMFILE)
 					tst_resm(TPASS,
-					    "dup failed as expected with "
-					    "EMFILE");
+						 "dup failed as expected with "
+						 "EMFILE");
 				else
-					tst_resm(TFAIL|TTERRNO,
-					    "dup failed unexpectedly");
+					tst_resm(TFAIL | TTERRNO,
+						 "dup failed unexpectedly");
 			}
 		} else {
 			tst_resm(TFAIL, "dup succeeded unexpectedly");
 
 			if (close(TEST_RETURN) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup,
-				    "close failed");
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "close failed");
 		}
 
 	}
@@ -178,12 +178,12 @@ void setup()
 	 * why == -1 matters for errno.
 	 */
 	if (maxfds < 1)
-		tst_brkm((maxfds == -1 ? TBROK|TERRNO : TBROK), NULL,
-		    "sysconf(_SC_OPEN_MAX) failed");
+		tst_brkm((maxfds == -1 ? TBROK | TERRNO : TBROK), NULL,
+			 "sysconf(_SC_OPEN_MAX) failed");
 
 	fd = malloc(maxfds * sizeof(int));
 	if (fd == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "malloc failed");
+		tst_brkm(TBROK | TERRNO, NULL, "malloc failed");
 	fd[0] = -1;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -194,11 +194,12 @@ void setup()
 
 	sprintf(filename, "dupfile");
 	for (nfds = 1; nfds <= maxfds; nfds++)
-		if ((fd[nfds-1] = open(filename, O_RDWR|O_CREAT, 0700)) == -1) {
+		if ((fd[nfds - 1] =
+		     open(filename, O_RDWR | O_CREAT, 0700)) == -1) {
 			if (errno == EMFILE)
 				break;
 			else
-				tst_brkm(TBROK|TBROK, cleanup, "open failed");
+				tst_brkm(TBROK | TBROK, cleanup, "open failed");
 			nfds--;
 		}
 
@@ -206,9 +207,8 @@ void setup()
 		tst_brkm(TBROK, cleanup, "unable to open at least one file");
 	if (nfds > maxfds)
 		tst_brkm(TBROK, cleanup,
-		    "unable to open enough files to use all file descriptors, "
-		    "tried %ld",
-		    maxfds);
+			 "unable to open enough files to use all file descriptors, "
+			 "tried %ld", maxfds);
 }
 
 void cleanup()

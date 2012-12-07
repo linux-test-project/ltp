@@ -36,8 +36,8 @@ int main()
 	int pgrp;
 	struct sigaction act;
 
-	act.sa_handler=handler;
-	act.sa_flags=0;
+	act.sa_handler = handler;
+	act.sa_flags = 0;
 	if (sigemptyset(&act.sa_mask) == -1) {
 		perror("Error calling sigemptyset\n");
 		return PTS_UNRESOLVED;
@@ -47,12 +47,12 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
- 	if ((pgrp = getpgrp()) == -1) {
+	if ((pgrp = getpgrp()) == -1) {
 		printf("Could not get process group number\n");
 		return PTS_UNRESOLVED;
 	}
 
- 	if (killpg(pgrp, SIGTOTEST) != 0) {
+	if (killpg(pgrp, SIGTOTEST) != 0) {
 		printf("Could not raise signal being tested\n");
 		return PTS_UNRESOLVED;
 	}

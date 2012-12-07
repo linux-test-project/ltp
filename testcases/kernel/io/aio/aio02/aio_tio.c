@@ -60,7 +60,7 @@ static void work_done(io_context_t ctx, struct iocb *iocb, long res, long res2)
 			iocb->u.c.nbytes, res2);
 		exit(1);
 	}
-	wait_count --;
+	wait_count--;
 }
 
 /*
@@ -80,8 +80,10 @@ int io_wait_run(io_context_t ctx, struct timespec *to)
 	/*
 	 * Call the callback functions for each event.
 	 */
-	for (ep = events ; n-- > 0 ; ep++) {
-		io_callback_t cb = (io_callback_t)ep->data ; struct iocb *iocb = ep->obj ; cb(ctx, iocb, ep->res, ep->res2);
+	for (ep = events; n-- > 0; ep++) {
+		io_callback_t cb = (io_callback_t) ep->data;
+		struct iocb *iocb = ep->obj;
+		cb(ctx, iocb, ep->res, ep->res2);
 	}
 	return ret;
 }
@@ -89,7 +91,7 @@ int io_wait_run(io_context_t ctx, struct timespec *to)
 int io_tio(char *pathname, int flag, int n, int operation)
 {
 	int res, fd = 0, i = 0;
-	void * bufptr = NULL;
+	void *bufptr = NULL;
 	off_t offset = 0;
 	struct timespec timeout;
 
@@ -97,7 +99,7 @@ int io_tio(char *pathname, int flag, int n, int operation)
 	struct iocb iocb_array[AIO_MAXIO];
 	struct iocb *iocbps[AIO_MAXIO];
 
-	fd = open (pathname, flag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	fd = open(pathname, flag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (fd <= 0) {
 		printf("open for %s failed: %s\n", pathname, strerror(errno));
 		return -1;
@@ -106,46 +108,46 @@ int io_tio(char *pathname, int flag, int n, int operation)
 	res = io_queue_init(n, &myctx);
 	//printf (" res = %d \n", res);
 
-	for (i = 0 ; i < AIO_MAXIO ; i ++) {
+	for (i = 0; i < AIO_MAXIO; i++) {
 
 		switch (operation) {
-		case IO_CMD_FSYNC :
-		case IO_CMD_FDSYNC :
-		case IO_CMD_PWRITE :
-			if (posix_memalign (&bufptr, alignment, AIO_BLKSIZE)) {
-				perror (" posix_memalign failed ");
+		case IO_CMD_FSYNC:
+		case IO_CMD_FDSYNC:
+		case IO_CMD_PWRITE:
+			if (posix_memalign(&bufptr, alignment, AIO_BLKSIZE)) {
+				perror(" posix_memalign failed ");
 				return -1;
 			}
-			memset (bufptr, 0, AIO_BLKSIZE);
+			memset(bufptr, 0, AIO_BLKSIZE);
 
-			io_prep_pwrite (&iocb_array[i], fd, bufptr ,
-					 AIO_BLKSIZE, offset);
+			io_prep_pwrite(&iocb_array[i], fd, bufptr,
+				       AIO_BLKSIZE, offset);
 			io_set_callback(&iocb_array[i], work_done);
 			iocbps[i] = &iocb_array[i];
 			offset += AIO_BLKSIZE;
 
 			break;
-		case IO_CMD_PREAD :
-			if (posix_memalign (&bufptr, alignment, AIO_BLKSIZE)) {
-				perror (" posix_memalign failed ");
+		case IO_CMD_PREAD:
+			if (posix_memalign(&bufptr, alignment, AIO_BLKSIZE)) {
+				perror(" posix_memalign failed ");
 				return -1;
 			}
-			memset (bufptr, 0, AIO_BLKSIZE);
+			memset(bufptr, 0, AIO_BLKSIZE);
 
-			io_prep_pread (&iocb_array[i], fd, bufptr ,
-					AIO_BLKSIZE, offset);
+			io_prep_pread(&iocb_array[i], fd, bufptr,
+				      AIO_BLKSIZE, offset);
 			io_set_callback(&iocb_array[i], work_done);
 			iocbps[i] = &iocb_array[i];
 			offset += AIO_BLKSIZE;
 			break;
-		case IO_CMD_POLL :
-		case IO_CMD_NOOP :
+		case IO_CMD_POLL:
+		case IO_CMD_NOOP:
 			break;
 		default:
-			tst_resm (TFAIL,
-				  "Command failed; opcode returned: %d\n",
-				  operation);
-		  	return -1;
+			tst_resm(TFAIL,
+				 "Command failed; opcode returned: %d\n",
+				 operation);
+			return -1;
 			break;
 		}
 	}
@@ -167,50 +169,50 @@ int io_tio(char *pathname, int flag, int n, int operation)
 	timeout.tv_nsec = 0;
 
 	switch (operation) {
-		case IO_CMD_PREAD :
-		case IO_CMD_PWRITE :
-		  {
+	case IO_CMD_PREAD:
+	case IO_CMD_PWRITE:
+		{
 			while (wait_count) {
 				res = io_wait_run(myctx, &timeout);
 				if (res < 0)
 					io_error("io_wait_run", res);
 			}
-		  }
-		  break;
-		  case IO_CMD_FSYNC :
-			for (i = 0 ; i < AIO_MAXIO ; i ++) {
-				res = io_fsync(myctx, iocbps[i], work_done, fd);
-				if (res  < 0) {
-					io_error("io_fsync write", res);
-				}
+		}
+		break;
+	case IO_CMD_FSYNC:
+		for (i = 0; i < AIO_MAXIO; i++) {
+			res = io_fsync(myctx, iocbps[i], work_done, fd);
+			if (res < 0) {
+				io_error("io_fsync write", res);
 			}
-		  break;
-		case IO_CMD_FDSYNC :
-			for (i = 0 ; i < AIO_MAXIO ; i ++) {
-				res = io_fdsync(myctx, iocbps[i], work_done, fd);
-				if (res  < 0) {
-					io_error("io_fsync write", res);
-				}
+		}
+		break;
+	case IO_CMD_FDSYNC:
+		for (i = 0; i < AIO_MAXIO; i++) {
+			res = io_fdsync(myctx, iocbps[i], work_done, fd);
+			if (res < 0) {
+				io_error("io_fsync write", res);
 			}
-		  break;
+		}
+		break;
 	}
 
-	close (fd);
+	close(fd);
 
-	for (i = 0 ; i < AIO_MAXIO ; i ++) {
+	for (i = 0; i < AIO_MAXIO; i++) {
 		if (iocb_array[i].u.c.buf != NULL) {
-			free (iocb_array[i].u.c.buf);
+			free(iocb_array[i].u.c.buf);
 		}
 	}
 
-	io_queue_release (myctx);
+	io_queue_release(myctx);
 
 	return 0;
 }
 
 int test_main(void)
 {
-	int	status = 0 ;
+	int status = 0;
 
 	tst_resm(TINFO, "Running test 1\n");
 	status = io_tio("file1",
@@ -228,29 +230,25 @@ int test_main(void)
 	}
 
 	tst_resm(TINFO, "Running test 3\n");
-	status = io_tio("file1", O_TRUNC | O_RDWR,
-			AIO_MAXIO, IO_CMD_PWRITE);
+	status = io_tio("file1", O_TRUNC | O_RDWR, AIO_MAXIO, IO_CMD_PWRITE);
 	if (status) {
 		return status;
 	}
 
 	tst_resm(TINFO, "Running test 4\n");
-	status = io_tio("file1", O_RDWR,
-			AIO_MAXIO, IO_CMD_PREAD);
+	status = io_tio("file1", O_RDWR, AIO_MAXIO, IO_CMD_PREAD);
 	if (status) {
 		return status;
 	}
 
 	tst_resm(TINFO, "Running test 5\n");
-	status = io_tio("file1", O_TRUNC | O_WRONLY,
-			AIO_MAXIO, IO_CMD_PWRITE);
+	status = io_tio("file1", O_TRUNC | O_WRONLY, AIO_MAXIO, IO_CMD_PWRITE);
 	if (status) {
 		return status;
 	}
 
 	tst_resm(TINFO, "Running test 6 \n");
-	status = io_tio("file1", O_RDONLY,
-			AIO_MAXIO, IO_CMD_PREAD);
+	status = io_tio("file1", O_RDONLY, AIO_MAXIO, IO_CMD_PREAD);
 	if (status) {
 		return status;
 	}

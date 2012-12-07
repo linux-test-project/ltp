@@ -35,12 +35,12 @@
 
 #include "test_VIDIOC_ENUMAUDIO.h"
 
-int valid_audio_capability(__u32 capability) {
+int valid_audio_capability(__u32 capability)
+{
 	int valid = 0;
 
-	if ( (capability & ~(V4L2_AUDCAP_STEREO |
-			     V4L2_AUDCAP_AVL))
-		== 0) {
+	if ((capability & ~(V4L2_AUDCAP_STEREO | V4L2_AUDCAP_AVL))
+	    == 0) {
 		valid = 1;
 	} else {
 		valid = 0;
@@ -48,11 +48,12 @@ int valid_audio_capability(__u32 capability) {
 	return valid;
 }
 
-int valid_audio_mode(__u32 mode) {
+int valid_audio_mode(__u32 mode)
+{
 	int valid = 0;
 
 	if ((mode & ~(V4L2_AUDMODE_AVL))
-		== 0) {
+	    == 0) {
 		valid = 1;
 	} else {
 		valid = 0;
@@ -60,7 +61,8 @@ int valid_audio_mode(__u32 mode) {
 	return valid;
 }
 
-void test_VIDIOC_G_AUDIO() {
+void test_VIDIOC_G_AUDIO()
+{
 	int ret_get, errno_get;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
@@ -77,8 +79,8 @@ void test_VIDIOC_G_AUDIO() {
 
 		//CU_ASSERT_EQUAL(audio.index, ?);
 
-		CU_ASSERT(0 < strlen( (char*)audio.name ));
-		CU_ASSERT(valid_string((char*)audio.name, sizeof(audio.name)));
+		CU_ASSERT(0 < strlen((char *)audio.name));
+		CU_ASSERT(valid_string((char *)audio.name, sizeof(audio.name)));
 
 		CU_ASSERT(valid_audio_capability(audio.capability));
 		CU_ASSERT(valid_audio_mode(audio.mode));
@@ -93,7 +95,8 @@ void test_VIDIOC_G_AUDIO() {
 		 */
 		memset(&audio2, 0, sizeof(audio2));
 		audio2.index = audio.index;
-		strncpy((char*)audio2.name, (char*)audio.name, sizeof(audio2.name));
+		strncpy((char *)audio2.name, (char *)audio.name,
+			sizeof(audio2.name));
 		audio2.capability = audio.capability;
 		audio2.mode = audio.mode;
 		CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
@@ -104,10 +107,8 @@ void test_VIDIOC_G_AUDIO() {
 			audio.index,
 			audio.name,
 			audio.capability,
-			audio.mode,
-			audio.reserved[0],
-			audio.reserved[1]
-			);
+			audio.mode, audio.reserved[0], audio.reserved[1]
+		    );
 
 	} else {
 		CU_ASSERT_EQUAL(ret_get, -1);
@@ -121,7 +122,8 @@ void test_VIDIOC_G_AUDIO() {
 
 }
 
-void test_VIDIOC_G_AUDIO_ignore_index() {
+void test_VIDIOC_G_AUDIO_ignore_index()
+{
 	int ret_get, errno_get;
 	int ret2, errno2;
 	struct v4l2_audio audio;
@@ -130,8 +132,7 @@ void test_VIDIOC_G_AUDIO_ignore_index() {
 	/* check whether the "index" field is ignored by VIDIOC_G_AUDIO */
 
 	memset(&audio, 0, sizeof(audio));
-	dprintf("\t%s:%u: audio.index=%u\n",
-		__FILE__, __LINE__, audio.index);
+	dprintf("\t%s:%u: audio.index=%u\n", __FILE__, __LINE__, audio.index);
 	ret_get = ioctl(get_video_fd(), VIDIOC_G_AUDIO, &audio);
 	errno_get = errno;
 
@@ -158,7 +159,8 @@ void test_VIDIOC_G_AUDIO_ignore_index() {
 
 }
 
-void test_VIDIOC_G_AUDIO_NULL() {
+void test_VIDIOC_G_AUDIO_NULL()
+{
 	int ret_get, errno_get;
 	int ret_null, errno_null;
 	struct v4l2_audio audio;
@@ -192,7 +194,8 @@ void test_VIDIOC_G_AUDIO_NULL() {
 
 }
 
-void test_VIDIOC_S_AUDIO() {
+void test_VIDIOC_S_AUDIO()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	int ret_enum, errno_enum;
@@ -236,7 +239,8 @@ void test_VIDIOC_S_AUDIO() {
 		if (ret_enum == 0) {
 			memset(&audio_set, 0xff, sizeof(audio_set));
 			audio_set.index = index;
-			ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDIO, &audio_set);
+			ret_set =
+			    ioctl(get_video_fd(), VIDIOC_S_AUDIO, &audio_set);
 			errno_set = errno;
 
 			/* It shall be always possible to set the audio input to the
@@ -252,7 +256,7 @@ void test_VIDIOC_S_AUDIO() {
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* try to set audio input to beyond the enumerated values */
-	for (i=0; i<=32; i++) {
+	for (i = 0; i <= 32; i++) {
 		memset(&audio_set, 0xff, sizeof(audio_set));
 		audio_set.index = index;
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDIO, &audio_set);
@@ -285,7 +289,8 @@ void test_VIDIOC_S_AUDIO() {
 
 }
 
-void test_VIDIOC_S_AUDIO_S32_MAX() {
+void test_VIDIOC_S_AUDIO_S32_MAX()
+{
 	int ret_set, errno_set;
 	int ret_orig, errno_orig;
 	struct v4l2_audio audio;
@@ -303,7 +308,7 @@ void test_VIDIOC_S_AUDIO_S32_MAX() {
 
 	/* test invalid index */
 	memset(&audio, 0xff, sizeof(audio));
-	audio.index = (__u32)S32_MAX;
+	audio.index = (__u32) S32_MAX;
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDIO, &audio);
 	errno_set = errno;
 
@@ -315,7 +320,7 @@ void test_VIDIOC_S_AUDIO_S32_MAX() {
 
 	/* Check whether the original audio struct is untouched */
 	memset(&audio2, 0xff, sizeof(audio2));
-	audio2.index = (__u32)S32_MAX;
+	audio2.index = (__u32) S32_MAX;
 	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
 
 	/* restore the original audio input settings */
@@ -341,7 +346,8 @@ void test_VIDIOC_S_AUDIO_S32_MAX() {
 	}
 }
 
-void test_VIDIOC_S_AUDIO_S32_MAX_1() {
+void test_VIDIOC_S_AUDIO_S32_MAX_1()
+{
 	int ret_set, errno_set;
 	int ret_orig, errno_orig;
 	struct v4l2_audio audio;
@@ -359,7 +365,7 @@ void test_VIDIOC_S_AUDIO_S32_MAX_1() {
 
 	/* test invalid index */
 	memset(&audio, 0xff, sizeof(audio));
-	audio.index = ((__u32)S32_MAX)+1;
+	audio.index = ((__u32) S32_MAX) + 1;
 	ret_set = ioctl(get_video_fd(), VIDIOC_S_AUDIO, &audio);
 	errno_set = errno;
 
@@ -371,7 +377,7 @@ void test_VIDIOC_S_AUDIO_S32_MAX_1() {
 
 	/* Check whether the original audio struct is untouched */
 	memset(&audio2, 0xff, sizeof(audio2));
-	audio2.index = ((__u32)S32_MAX)+1;
+	audio2.index = ((__u32) S32_MAX) + 1;
 	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
 
 	/* restore the original audio input settings */
@@ -397,7 +403,8 @@ void test_VIDIOC_S_AUDIO_S32_MAX_1() {
 	}
 }
 
-void test_VIDIOC_S_AUDIO_U32_MAX() {
+void test_VIDIOC_S_AUDIO_U32_MAX()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	struct v4l2_audio audio;
@@ -452,7 +459,8 @@ void test_VIDIOC_S_AUDIO_U32_MAX() {
 	}
 }
 
-void test_VIDIOC_S_AUDIO_NULL() {
+void test_VIDIOC_S_AUDIO_NULL()
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	int ret_null, errno_null;

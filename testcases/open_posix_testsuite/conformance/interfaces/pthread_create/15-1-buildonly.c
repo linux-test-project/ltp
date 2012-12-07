@@ -27,33 +27,33 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* Some routines are part of the XSI Extensions */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
- #include <sched.h>
- #include <semaphore.h>
- #include <errno.h>
- #include <assert.h>
- #include <sys/wait.h>
+#include <sched.h>
+#include <semaphore.h>
+#include <errno.h>
+#include <assert.h>
+#include <sys/wait.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "../testfrmw/testfrmw.h"
- #include "../testfrmw/testfrmw.c"
+#include "../testfrmw/testfrmw.h"
+#include "../testfrmw/testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -97,53 +97,63 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-void * teststack(void * arg)
+void *teststack(void *arg)
 {
-	int ret=0;
+	int ret = 0;
 	*(int **)arg = &ret;
 	return NULL;
 }
 
 /* Thread function */
-void * threaded(void * arg)
+void *threaded(void *arg)
 {
 	int ret;
-	int * child_stack;
+	int *child_stack;
 	pthread_t gchild;
 
 	int sz = sysconf(_SC_THREAD_STACK_MIN);
 
-	if (scenarii[sc].bottom != NULL)
-	{
-		#if VERBOSE > 1
+	if (scenarii[sc].bottom != NULL) {
+#if VERBOSE > 1
 		output("Processing test\n");
-		#endif
+#endif
 
 		/* Create a new thread and get a location inside its stack */
 		ret = pthread_create(&gchild, NULL, teststack, &child_stack);
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to create a thread with default attribute"); }
+		if (ret != 0) {
+			UNRESOLVED(ret,
+				   "Failed to create a thread with default attribute");
+		}
 
 		ret = pthread_join(gchild, NULL);
-		if (ret != 0)  {  UNRESOLVED(ret, "Failed to join the test thread");  }
+		if (ret != 0) {
+			UNRESOLVED(ret, "Failed to join the test thread");
+		}
 
 		/* Check the new thread stack location was outside of the current thread location */
 		/* We convert all the @ to longs */
-		#if VERBOSE > 4
-		output("Current stack : %p -> %p\n", scenarii[sc].bottom, sz + (long)scenarii[sc].bottom);
+#if VERBOSE > 4
+		output("Current stack : %p -> %p\n", scenarii[sc].bottom,
+		       sz + (long)scenarii[sc].bottom);
 		output("Child location: %p\n", child_stack);
-		#endif
+#endif
 
 		if ((((long)scenarii[sc].bottom) < ((long)child_stack))
-		   && (((long)child_stack) < (((long)scenarii[sc].bottom) + sz)))
-	   	{
-			FAILED("The new thread inherited th alternate stack from its parent");
+		    && (((long)child_stack) <
+			(((long)scenarii[sc].bottom) + sz))) {
+			FAILED
+			    ("The new thread inherited th alternate stack from its parent");
 		}
 	}
 
 	/* Signal we're done (especially in case of a detached thread) */
-	do { ret = sem_post(&scenarii[sc].sem); }
+	do {
+		ret = sem_post(&scenarii[sc].sem);
+	}
 	while ((ret == -1) && (errno == EINTR));
-	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
+	if (ret == -1) {
+		UNRESOLVED(errno, "Failed to wait for the semaphore");
+	}
 
 	/* return */
 	return arg;

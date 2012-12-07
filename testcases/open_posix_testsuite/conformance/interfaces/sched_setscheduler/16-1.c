@@ -22,8 +22,9 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main() {
-        int result, old_policy, new_policy;
+int main()
+{
+	int result, old_policy, new_policy;
 	struct sched_param param;
 
 	old_policy = sched_getscheduler(getpid());
@@ -42,7 +43,8 @@ int main() {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (result == -1 && errno == EPERM) {
-		printf("The process have not permission to change its own policy.\nTry to launch this test as root.\n");
+		printf
+		    ("The process have not permission to change its own policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	}
 

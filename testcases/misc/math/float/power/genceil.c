@@ -102,14 +102,17 @@ int main(int argc, char *argv[])
 			if (create_Data_file() == 0)
 				printf("Data file created\n");
 			else
-				printf("problem during %s data file creation\n", argv[0]);
+				printf("problem during %s data file creation\n",
+				       argv[0]);
 			break;
 
 		case 2:
 			if (create_Result_file() == 0)
 				printf("Result file created\n");
 			else
-				printf("problem during %s result file creation\n", argv[0]);
+				printf
+				    ("problem during %s result file creation\n",
+				     argv[0]);
 			break;
 		default:
 			printf("Bad arglist code for: '%s'\n", argv[0]);
@@ -118,9 +121,11 @@ int main(int argc, char *argv[])
 		}
 	} else {
 		if (create_Data_file() != 0)
-			printf("problem during %s data file creation\n", argv[0]);
+			printf("problem during %s data file creation\n",
+			       argv[0]);
 		if (create_Result_file() != 0)
-			printf("problem during %s result file creation\n", argv[0]);
+			printf("problem during %s result file creation\n",
+			       argv[0]);
 	}
 
 	return 0;

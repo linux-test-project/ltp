@@ -16,6 +16,7 @@
 
 int main()
 {
-        printf("Will not test that the threads scheduling policy and associated parameters\nare not affected.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test that the threads scheduling policy and associated parameters\nare not affected.\n");
+	return PTS_UNTESTED;
 }

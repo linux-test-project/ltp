@@ -36,24 +36,23 @@ char *TCID = "echoes6";
 char *TCID = "echoes";
 #endif
 
-int	TST_TOTAL = 1;
+int TST_TOTAL = 1;
 
-void	echofile (struct servent *, struct addrinfo *, char *, char *);
-int	checkfile(char *, char *);
-void	cleanup(int);
+void echofile(struct servent *, struct addrinfo *, char *, char *);
+int checkfile(char *, char *);
+void cleanup(int);
 
-int
-main (int argc, char *argv[], char *env[])
+int main(int argc, char *argv[], char *env[])
 {
 
-	unsigned int	finish, i, j, k;
-	int		gai, wait_stat;
-	pid_t		pid;
+	unsigned int finish, i, j, k;
+	int gai, wait_stat;
+	pid_t pid;
 	struct addrinfo hints, *hp;
-	struct		servent *sp;
-	struct  {
-		char	resultfile[FILENAME_MAX+1];
-		pid_t	pid;
+	struct servent *sp;
+	struct {
+		char resultfile[FILENAME_MAX + 1];
+		pid_t pid;
 	} echo_struc[200];
 
 	memset(&hints, 0, sizeof(hints));
@@ -64,18 +63,18 @@ main (int argc, char *argv[], char *env[])
 		tst_brkm(TBROK, NULL, "usage: remote-addr file num-procs");
 
 	if ((sp = getservbyname("echo", "tcp")) == NULL)
-		tst_brkm(TBROK|TERRNO, NULL, "getservbyname failed");
+		tst_brkm(TBROK | TERRNO, NULL, "getservbyname failed");
 
 	if ((gai = getaddrinfo(argv[1], NULL, &hints, &hp)) != 0)
 		tst_brkm(TBROK, NULL, "unknown subject address %s: %s\n",
-			argv[1], gai_strerror(gai));
+			 argv[1], gai_strerror(gai));
 
 	if (!hp || !hp->ai_addr || hp->ai_addr->sa_family != AFI)
 		tst_brkm(TBROK, NULL, "getaddrinfo failed");
 
-	i = (unsigned int) strtol(argv[3], (char**) NULL, 10);
+	i = (unsigned int)strtol(argv[3], (char **)NULL, 10);
 	j = 0;
-	while (i-- > 0)  {
+	while (i-- > 0) {
 		switch (pid = fork()) {
 		case 0:
 			snprintf(echo_struc[j].resultfile,
@@ -83,7 +82,7 @@ main (int argc, char *argv[], char *env[])
 			echofile(sp, hp, echo_struc[j].resultfile, argv[2]);
 			break;
 		case -1:
-			tst_resm(TBROK|TERRNO, "fork failed");
+			tst_resm(TBROK | TERRNO, "fork failed");
 			break;
 		default:
 			echo_struc[j].pid = pid;
@@ -91,13 +90,13 @@ main (int argc, char *argv[], char *env[])
 			break;
 		}
 	}
-	finish = (unsigned int) strtol(argv[3], (char**) NULL, 10);
+	finish = (unsigned int)strtol(argv[3], (char **)NULL, 10);
 	i = finish;
 	/* Consume all operating threads until we're done... */
 	while (finish != 0) {
 
 		if ((pid = wait(&wait_stat)) == -1)
-			tst_resm(TFAIL|TERRNO, "wait failed");
+			tst_resm(TFAIL | TERRNO, "wait failed");
 		if (wait_stat == 0) {
 			for (j = 0; j < i; j++) {
 				if (echo_struc[j].pid == pid) {
@@ -111,10 +110,10 @@ main (int argc, char *argv[], char *env[])
 
 			if (WIFEXITED(wait_stat)) {
 				tst_resm(TINFO, "exit status: %d",
-				    WEXITSTATUS(wait_stat));
+					 WEXITSTATUS(wait_stat));
 			} else if (WIFSIGNALED(wait_stat)) {
 				tst_resm(TINFO, "signaled: %d",
-				    WTERMSIG(wait_stat));
+					 WTERMSIG(wait_stat));
 			}
 
 			for (k = 0; k < i; k++) {
@@ -132,24 +131,24 @@ main (int argc, char *argv[], char *env[])
 
 /* XXX (garrcoop): This shouldn't use libltp as it's a forked process. */
 void
-echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
-		char *srcfile)
+echofile(struct servent *sp, struct addrinfo *ai, char *resultfile,
+	 char *srcfile)
 {
-	int		n;
-	int		port;
-	char		wr_buffer[BUFSIZ];
-	char		rd_buffer[BUFSIZ];
-	sai_t		sa;
+	int n;
+	int port;
+	char wr_buffer[BUFSIZ];
+	char rd_buffer[BUFSIZ];
+	sai_t sa;
 #ifdef DEBUG
-	sa_t		address;
-	socklen_t	addrlen;
+	sa_t address;
+	socklen_t addrlen;
 #endif
-	int		s;
-	int		finish;
-	int		fdw, fdr;
-	int		nread, nwrite;
-	int		count;
-	pid_t		pid;
+	int s;
+	int finish;
+	int fdw, fdr;
+	int nread, nwrite;
+	int count;
+	pid_t pid;
 
 #ifdef 	DEBUG
 	printf("Creating socket .....\n");
@@ -158,7 +157,7 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 	pid = getpid();
 	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0) {
 		tst_resm(TBROK, "Failed to create listener socket (pid=%d)",
-				pid);
+			 pid);
 		cleanup(s);
 		tst_exit();
 	}
@@ -173,7 +172,7 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 	 *
 	 * ...
 	 *
-	 * struct	in_addr	hostaddr;
+	 * struct       in_addr hostaddr;
 	 *
 	 * memcpy(&hostaddr,hp->h_addr_list[0],sizeof(struct in_addr));
 	 *
@@ -221,7 +220,7 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 	//tst_resm(TBROK, "FIX ME GARRETT!");
 	//tst_exit();
 
-	memset((char*) &sa, 0, sizeof(sa));
+	memset((char *)&sa, 0, sizeof(sa));
 	memcpy(&sa, ai->ai_addr, ai->ai_addrlen);
 
 #if INET6
@@ -230,93 +229,95 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 	sa.sin_port = port;
 #endif
 
-	if (connect(s, (sa_t*) &sa, sizeof(sa)) == -1) {
-		tst_resm(TBROK|TERRNO,
-		    "failed to create connector socket (pid=%d)", pid);
+	if (connect(s, (sa_t *) & sa, sizeof(sa)) == -1) {
+		tst_resm(TBROK | TERRNO,
+			 "failed to create connector socket (pid=%d)", pid);
 		cleanup(s);
 		tst_exit();
 	}
-
 #ifdef DEBUG
 	addrlen = sizeof(struct sockaddr);
 	/* printf("addrlen=%d\n", addrlen); */
 	/* printf("ai->ai_addr=%s\n", inet_ntoa(ai->ai_addr)); */
 	if (getsockname(s, &address, &addrlen) == -1) {
-		tst_resm(TBROK|TERRNO, "getsockname call failed (pid=%d)", pid);
+		tst_resm(TBROK | TERRNO, "getsockname call failed (pid=%d)",
+			 pid);
 		cleanup(s);
 		tst_exit();
 	}
 
-	printf ("local port is: %d\n", port);
+	printf("local port is: %d\n", port);
 
 	if (getpeername(s, &address, &addrlen) == -1) {
-		tst_resm(TBROK|TERRNO, "getpeername call failed (pid=%d)", pid);
+		tst_resm(TBROK | TERRNO, "getpeername call failed (pid=%d)",
+			 pid);
 		cleanup(s);
 		tst_exit();
 	}
 
-	tst_resm (TINFO, "The remote port is: %d\n", port);
+	tst_resm(TINFO, "The remote port is: %d\n", port);
 #endif
 	if ((fdr = open(srcfile, O_RDONLY)) < 0) {
-		tst_resm(TBROK|TERRNO,
-		    "failed to open input file (pid=%d)", pid);
+		tst_resm(TBROK | TERRNO,
+			 "failed to open input file (pid=%d)", pid);
 		cleanup(s);
 		tst_exit();
 	}
 
 	if ((fdw = creat(resultfile, 0644)) < 0) {
-		tst_resm(TBROK|TERRNO,
-		    "failed to create a temporary file (pid=%d)", pid);
+		tst_resm(TBROK | TERRNO,
+			 "failed to create a temporary file (pid=%d)", pid);
 		cleanup(s);
 		tst_exit();
 	}
 #if DEBUG
-	tst_resm (TINFO, "creat(resultfile,...) done.");
+	tst_resm(TINFO, "creat(resultfile,...) done.");
 #endif
 	finish = FALSE;
 	count = 0;
 	while (finish == FALSE) {
 
 		if ((nwrite = read(fdr, wr_buffer, BUFSIZ)) == -1) {
-			tst_resm(TFAIL|TERRNO,
-			    "failed to read from file (pid=%d)", pid);
+			tst_resm(TFAIL | TERRNO,
+				 "failed to read from file (pid=%d)", pid);
 			cleanup(s);
 		}
 #if DEBUG
-		tst_resm (TINFO, "Read %d bytes from file", nwrite);
+		tst_resm(TINFO, "Read %d bytes from file", nwrite);
 #endif
 		if (nwrite == 0)
 			finish = TRUE;
 		else {
 			count++;
 			if ((n = write(s, wr_buffer, nwrite)) != nwrite) {
-				tst_resm(TFAIL|TERRNO,
-				    "failed to write to socket (pid=%d)", pid);
+				tst_resm(TFAIL | TERRNO,
+					 "failed to write to socket (pid=%d)",
+					 pid);
 				cleanup(s);
 			}
 #ifdef 	DEBUG
 			tst_resm(TINFO, "Writing %d bytes to remote socket",
-					count);
+				 count);
 #endif
 			while (nwrite != 0) {
 
 				nread = read(s, rd_buffer, BUFSIZ);
 				if (nread == -1) {
 					printf("read size: %d\n", n);
-					tst_resm(TFAIL|TERRNO,
-					    "failed to read from socket [2nd "
-					    "time] (pid=%d)", pid);
+					tst_resm(TFAIL | TERRNO,
+						 "failed to read from socket [2nd "
+						 "time] (pid=%d)", pid);
 					cleanup(s);
 				}
 #ifdef 	DEBUG
-				printf("Reading ....... %d\n",count);
+				printf("Reading ....... %d\n", count);
 #endif
 				n = write(fdw, rd_buffer, nread);
 				if (n != nread) {
-					tst_resm(TFAIL|TERRNO,
-					    "ERROR during write to result "
-					    "file (pid=%d); read amount: %d",
-					    pid, n);
+					tst_resm(TFAIL | TERRNO,
+						 "ERROR during write to result "
+						 "file (pid=%d); read amount: %d",
+						 pid, n);
 					cleanup(s);
 				}
 
@@ -324,35 +325,35 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 
 			}
 
-		}/* end of else */
+		}		/* end of else */
 
-	} /* end of while */
+	}			/* end of while */
 
 	if ((n = close(s)) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL,
-		    "failed to cleanly close socket (pid=%d)", pid);
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "failed to cleanly close socket (pid=%d)", pid);
 	}
 	if ((n = close(fdr)) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL,
-		    "failed to cleanly close input file (pid=%d)", pid);
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "failed to cleanly close input file (pid=%d)", pid);
 	}
-	if ((n = close(fdw) ) == -1) {
-		tst_brkm(TBROK|TERRNO, NULL,
-		    "failed to cleanly close temp file (pid=%d)", pid);
+	if ((n = close(fdw)) == -1) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "failed to cleanly close temp file (pid=%d)", pid);
 	}
 	if (checkfile(srcfile, resultfile) != TRUE) {
 		tst_brkm(TFAIL, NULL,
-		    "Input file and output file are not equal (pid=%d)", pid);
+			 "Input file and output file are not equal (pid=%d)",
+			 pid);
 	}
 	tst_resm(TINFO, "Finish .... (pid=%d)", pid);
 	tst_exit();
 }
 
-int
-checkfile(char *file1, char *file2)
+int checkfile(char *file1, char *file2)
 {
-	off_t	n;
-	struct	stat buffer;
+	off_t n;
+	struct stat buffer;
 	stat(file1, &buffer);
 	n = buffer.st_size;
 #ifdef 	DEBUG
@@ -368,8 +369,7 @@ checkfile(char *file1, char *file2)
 		return TRUE;
 }
 
-void
-cleanup(int s)
+void cleanup(int s)
 {
 	close(s);
 }

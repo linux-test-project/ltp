@@ -31,7 +31,8 @@
 
 #include "test_VIDIOC_FMT.h"
 
-int valid_pixelformat(__u32 pixelformat) {
+int valid_pixelformat(__u32 pixelformat)
+{
 	int valid = 0;
 
 	switch (pixelformat) {
@@ -78,7 +79,7 @@ int valid_pixelformat(__u32 pixelformat) {
 	case V4L2_PIX_FMT_PWC2:
 	case V4L2_PIX_FMT_ET61X251:
 
-	/* formats from Linux kernel 2.6.31-rc2 */
+		/* formats from Linux kernel 2.6.31-rc2 */
 
 #ifdef V4L2_PIX_FMT_VYUY
 	case V4L2_PIX_FMT_VYUY:
@@ -161,7 +162,8 @@ int valid_pixelformat(__u32 pixelformat) {
 	return valid;
 }
 
-int valid_colorspace(enum v4l2_colorspace colorspace) {
+int valid_colorspace(enum v4l2_colorspace colorspace)
+{
 	int valid = 0;
 
 	switch (colorspace) {
@@ -182,7 +184,8 @@ int valid_colorspace(enum v4l2_colorspace colorspace) {
 	return valid;
 }
 
-static void do_get_formats(enum v4l2_buf_type type) {
+static void do_get_formats(enum v4l2_buf_type type)
+{
 	int ret_get, errno_get;
 	struct v4l2_format format;
 	struct v4l2_format format2;
@@ -201,261 +204,278 @@ static void do_get_formats(enum v4l2_buf_type type) {
 		CU_ASSERT_EQUAL(format.type, type);
 
 		switch (format.type) {
-			case V4L2_BUF_TYPE_VIDEO_CAPTURE:
-			case V4L2_BUF_TYPE_VIDEO_OUTPUT:
-				dprintf("\tformat = {.type=0x%X, .fmt.pix = { "
-					".width=%u, "
-					".height=%u, "
-					".pixelformat=0x%X, "
-					".field=%i, "
-					".bytesperline=%i, "
-					".sizeimage=%u, "
-					".colorspace=%i, "
-					".priv=0x%X "
-					" } }\n",
-					format.type,
-					format.fmt.pix.width,
-					format.fmt.pix.height,
-					format.fmt.pix.pixelformat,
-					format.fmt.pix.field,
-					format.fmt.pix.bytesperline,
-					format.fmt.pix.sizeimage,
-					format.fmt.pix.colorspace,
-					format.fmt.pix.priv
-				);
-				if (sizeof(format.fmt.pix) < sizeof(format.fmt.raw_data)) {
-					dprintf1("\tformat = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format.fmt.pix); j < sizeof(format.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format.fmt.raw_data[j]);
-					}
-					dprintf1(" }}\n");
+		case V4L2_BUF_TYPE_VIDEO_CAPTURE:
+		case V4L2_BUF_TYPE_VIDEO_OUTPUT:
+			dprintf("\tformat = {.type=0x%X, .fmt.pix = { "
+				".width=%u, "
+				".height=%u, "
+				".pixelformat=0x%X, "
+				".field=%i, "
+				".bytesperline=%i, "
+				".sizeimage=%u, "
+				".colorspace=%i, "
+				".priv=0x%X "
+				" } }\n",
+				format.type,
+				format.fmt.pix.width,
+				format.fmt.pix.height,
+				format.fmt.pix.pixelformat,
+				format.fmt.pix.field,
+				format.fmt.pix.bytesperline,
+				format.fmt.pix.sizeimage,
+				format.fmt.pix.colorspace, format.fmt.pix.priv);
+			if (sizeof(format.fmt.pix) <
+			    sizeof(format.fmt.raw_data)) {
+				dprintf1
+				    ("\tformat = { ..., .fmt.raw_data[] = { ...");
+				for (j = sizeof(format.fmt.pix);
+				     j < sizeof(format.fmt.raw_data); j++) {
+					dprintf(", 0x%x",
+						format.fmt.raw_data[j]);
 				}
+				dprintf1(" }}\n");
+			}
 
-				/* TODO: check different fields */
-				//CU_ASSERT_EQUAL(format.fmt.pix.width, ???);
-				//CU_ASSERT_EQUAL(format.fmt.pix.height, ???);
-				//CU_ASSERT_EQUAL(format.fmt.pix.pixelformat, ???);
-				CU_ASSERT(valid_pixelformat(format.fmt.pix.pixelformat));
+			/* TODO: check different fields */
+			//CU_ASSERT_EQUAL(format.fmt.pix.width, ???);
+			//CU_ASSERT_EQUAL(format.fmt.pix.height, ???);
+			//CU_ASSERT_EQUAL(format.fmt.pix.pixelformat, ???);
+			CU_ASSERT(valid_pixelformat
+				  (format.fmt.pix.pixelformat));
 
-				//CU_ASSERT_EQUAL(format.fmt.pix.field, ???);
-				//CU_ASSERT_EQUAL(format.fmt.pix.bytesperline, ???);
-				//CU_ASSERT_EQUAL(format.fmt.pix.sizeimage, ???);
-				//CU_ASSERT_EQUAL(format.fmt.pix.colorspace, ???);
-				CU_ASSERT(valid_colorspace(format.fmt.pix.colorspace));
-				//CU_ASSERT_EQUAL(format.fmt.pix.priv, ???);
+			//CU_ASSERT_EQUAL(format.fmt.pix.field, ???);
+			//CU_ASSERT_EQUAL(format.fmt.pix.bytesperline, ???);
+			//CU_ASSERT_EQUAL(format.fmt.pix.sizeimage, ???);
+			//CU_ASSERT_EQUAL(format.fmt.pix.colorspace, ???);
+			CU_ASSERT(valid_colorspace(format.fmt.pix.colorspace));
+			//CU_ASSERT_EQUAL(format.fmt.pix.priv, ???);
 
-				/* Check whether the remaining bytes of rawdata is set to zero */
-				memset(&format2, 0, sizeof(format2));
-				CU_ASSERT_EQUAL(
-					memcmp(format.fmt.raw_data+sizeof(format.fmt.pix),
-					       format2.fmt.raw_data+sizeof(format2.fmt.pix),
-					       sizeof(format.fmt.raw_data)-sizeof(format.fmt.pix)),
-					       0
-					);
-				break;
+			/* Check whether the remaining bytes of rawdata is set to zero */
+			memset(&format2, 0, sizeof(format2));
+			CU_ASSERT_EQUAL(memcmp
+					(format.fmt.raw_data +
+					 sizeof(format.fmt.pix),
+					 format2.fmt.raw_data +
+					 sizeof(format2.fmt.pix),
+					 sizeof(format.fmt.raw_data) -
+					 sizeof(format.fmt.pix)), 0);
+			break;
 
-			case V4L2_BUF_TYPE_VIDEO_OVERLAY:
-			case V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY:
-				dprintf("\tformat = {.type=0x%X, .fmt.win={ "
-					".w = { .left=%i, .top=%i, .width=%i, .height=%i, }, "
-					".field = %i, "
-					".chromakey = 0x%X, "
-					".clips = %p, "
-					".clipcount = %u, "
-					".bitmap = %p, "
-					".global_alpha = %u "
-					"} }\n",
-					format.type,
-					format.fmt.win.w.left,
-					format.fmt.win.w.top,
-					format.fmt.win.w.width,
-					format.fmt.win.w.height,
-					format.fmt.win.field,
-					format.fmt.win.chromakey,
-					format.fmt.win.clips,
-					format.fmt.win.clipcount,
-					format.fmt.win.bitmap,
-					format.fmt.win.global_alpha
-				);
-				if (sizeof(format.fmt.win) < sizeof(format.fmt.raw_data)) {
-					dprintf1("\tformat = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format.fmt.win); j < sizeof(format.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format.fmt.raw_data[j]);
-					}
-					dprintf1(" }}\n");
+		case V4L2_BUF_TYPE_VIDEO_OVERLAY:
+		case V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY:
+			dprintf("\tformat = {.type=0x%X, .fmt.win={ "
+				".w = { .left=%i, .top=%i, .width=%i, .height=%i, }, "
+				".field = %i, "
+				".chromakey = 0x%X, "
+				".clips = %p, "
+				".clipcount = %u, "
+				".bitmap = %p, "
+				".global_alpha = %u "
+				"} }\n",
+				format.type,
+				format.fmt.win.w.left,
+				format.fmt.win.w.top,
+				format.fmt.win.w.width,
+				format.fmt.win.w.height,
+				format.fmt.win.field,
+				format.fmt.win.chromakey,
+				format.fmt.win.clips,
+				format.fmt.win.clipcount,
+				format.fmt.win.bitmap,
+				format.fmt.win.global_alpha);
+			if (sizeof(format.fmt.win) <
+			    sizeof(format.fmt.raw_data)) {
+				dprintf1
+				    ("\tformat = { ..., .fmt.raw_data[] = { ...");
+				for (j = sizeof(format.fmt.win);
+				     j < sizeof(format.fmt.raw_data); j++) {
+					dprintf(", 0x%x",
+						format.fmt.raw_data[j]);
 				}
+				dprintf1(" }}\n");
+			}
 
-				/* TODO: check different fields */
-				//CU_ASSERT_EQUAL(format.fmt.win.w.left, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.w.top, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.w.width, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.w.height, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.field, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.chromakey, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.clips, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.clipcount, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.bitmap, ???);
-				//CU_ASSERT_EQUAL(format.fmt.win.global_alpha ???);
+			/* TODO: check different fields */
+			//CU_ASSERT_EQUAL(format.fmt.win.w.left, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.w.top, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.w.width, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.w.height, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.field, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.chromakey, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.clips, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.clipcount, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.bitmap, ???);
+			//CU_ASSERT_EQUAL(format.fmt.win.global_alpha ???);
 
-				/* Check whether the remaining bytes of raw_data is set to zero */
-				memset(&format2, 0, sizeof(format2));
-				CU_ASSERT_EQUAL(
-					memcmp(format.fmt.raw_data+sizeof(format.fmt.win),
-					       format2.fmt.raw_data+sizeof(format2.fmt.win),
-					       sizeof(format.fmt.raw_data)-sizeof(format.fmt.win)),
-					       0
-					);
-				break;
+			/* Check whether the remaining bytes of raw_data is set to zero */
+			memset(&format2, 0, sizeof(format2));
+			CU_ASSERT_EQUAL(memcmp
+					(format.fmt.raw_data +
+					 sizeof(format.fmt.win),
+					 format2.fmt.raw_data +
+					 sizeof(format2.fmt.win),
+					 sizeof(format.fmt.raw_data) -
+					 sizeof(format.fmt.win)), 0);
+			break;
 
-			case V4L2_BUF_TYPE_VBI_CAPTURE:
-			case V4L2_BUF_TYPE_VBI_OUTPUT:
-				dprintf("\tformat = {.type=0x%X, .fmt.vbi={ "
-					".sampling_rate=%u, "
-					".offset=%u, "
-					".samples_per_line=%u "
-					".sample_format=0x%X "
-					".start = { %u, %u }, "
-					".count = { %u, %u }, "
-					".flags = 0x%X, "
-					".reserved = { 0x%X, 0x%X } "
-					"} }\n",
-					format.type,
-					format.fmt.vbi.sampling_rate,
-					format.fmt.vbi.offset,
-					format.fmt.vbi.samples_per_line,
-					format.fmt.vbi.sample_format,
-					format.fmt.vbi.start[0],
-					format.fmt.vbi.start[1],
-					format.fmt.vbi.count[0],
-					format.fmt.vbi.count[1],
-					format.fmt.vbi.flags,
-					format.fmt.vbi.reserved[0],
-					format.fmt.vbi.reserved[1]
-				);
-				if (sizeof(format.fmt.vbi) < sizeof(format.fmt.raw_data)) {
-					dprintf1("\tformat = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format.fmt.vbi); j < sizeof(format.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format.fmt.raw_data[j]);
-					}
-					dprintf1(" }}\n");
+		case V4L2_BUF_TYPE_VBI_CAPTURE:
+		case V4L2_BUF_TYPE_VBI_OUTPUT:
+			dprintf("\tformat = {.type=0x%X, .fmt.vbi={ "
+				".sampling_rate=%u, "
+				".offset=%u, "
+				".samples_per_line=%u "
+				".sample_format=0x%X "
+				".start = { %u, %u }, "
+				".count = { %u, %u }, "
+				".flags = 0x%X, "
+				".reserved = { 0x%X, 0x%X } "
+				"} }\n",
+				format.type,
+				format.fmt.vbi.sampling_rate,
+				format.fmt.vbi.offset,
+				format.fmt.vbi.samples_per_line,
+				format.fmt.vbi.sample_format,
+				format.fmt.vbi.start[0],
+				format.fmt.vbi.start[1],
+				format.fmt.vbi.count[0],
+				format.fmt.vbi.count[1],
+				format.fmt.vbi.flags,
+				format.fmt.vbi.reserved[0],
+				format.fmt.vbi.reserved[1]
+			    );
+			if (sizeof(format.fmt.vbi) <
+			    sizeof(format.fmt.raw_data)) {
+				dprintf1
+				    ("\tformat = { ..., .fmt.raw_data[] = { ...");
+				for (j = sizeof(format.fmt.vbi);
+				     j < sizeof(format.fmt.raw_data); j++) {
+					dprintf(", 0x%x",
+						format.fmt.raw_data[j]);
 				}
+				dprintf1(" }}\n");
+			}
 
-				/* TODO: check different fields */
-				//CU_ASSERT_EQUAL(format.fmt.vbi.sampling_rate, ???);
-				//CU_ASSERT_EQUAL(format.fmt.vbi.offset, ???);
-				//CU_ASSERT_EQUAL(format.fmt.vbi.samples_per_line, ???);
-				//CU_ASSERT_EQUAL(format.fmt.vbi.sample_format, ???);
-				//CU_ASSERT_EQUAL(format.fmt.vbi.start[0], ???);
-				//CU_ASSERT_EQUAL(format.fmt.vbi.start[1], ???);
-				//CU_ASSERT_EQUAL(format.fmt.vbi.count[0], ???);
-				//CU_ASSERT_EQUAL(format.fmt.vbi.count[1], ???);
-				//CU_ASSERT_EQUAL(format.fmt.vbi.flags, ???);
-				CU_ASSERT_EQUAL(format.fmt.vbi.reserved[0], 0);
-				CU_ASSERT_EQUAL(format.fmt.vbi.reserved[1], 0);
+			/* TODO: check different fields */
+			//CU_ASSERT_EQUAL(format.fmt.vbi.sampling_rate, ???);
+			//CU_ASSERT_EQUAL(format.fmt.vbi.offset, ???);
+			//CU_ASSERT_EQUAL(format.fmt.vbi.samples_per_line, ???);
+			//CU_ASSERT_EQUAL(format.fmt.vbi.sample_format, ???);
+			//CU_ASSERT_EQUAL(format.fmt.vbi.start[0], ???);
+			//CU_ASSERT_EQUAL(format.fmt.vbi.start[1], ???);
+			//CU_ASSERT_EQUAL(format.fmt.vbi.count[0], ???);
+			//CU_ASSERT_EQUAL(format.fmt.vbi.count[1], ???);
+			//CU_ASSERT_EQUAL(format.fmt.vbi.flags, ???);
+			CU_ASSERT_EQUAL(format.fmt.vbi.reserved[0], 0);
+			CU_ASSERT_EQUAL(format.fmt.vbi.reserved[1], 0);
 
-				/* Check whether the remaining bytes of raw_data is set to zero */
-				memset(&format2, 0, sizeof(format2));
-				CU_ASSERT_EQUAL(
-					memcmp(format.fmt.raw_data+sizeof(format.fmt.vbi),
-					       format2.fmt.raw_data+sizeof(format2.fmt.vbi),
-					       sizeof(format.fmt.raw_data)-sizeof(format.fmt.vbi)),
-					       0
-					);
-				break;
+			/* Check whether the remaining bytes of raw_data is set to zero */
+			memset(&format2, 0, sizeof(format2));
+			CU_ASSERT_EQUAL(memcmp
+					(format.fmt.raw_data +
+					 sizeof(format.fmt.vbi),
+					 format2.fmt.raw_data +
+					 sizeof(format2.fmt.vbi),
+					 sizeof(format.fmt.raw_data) -
+					 sizeof(format.fmt.vbi)), 0);
+			break;
 
-			case V4L2_BUF_TYPE_SLICED_VBI_CAPTURE:
-			case V4L2_BUF_TYPE_SLICED_VBI_OUTPUT:
-				dprintf("\tformat = {.type=0x%X, "
-					".fmt.sliced = { .service_set = 0x%X, "
-					".service_lines = { ... }, "
-					".io_size = %u, "
-					".reserved[0] = 0x%X, "
-					".reserved[1] = 0x%X "
-					"} }\n",
-					format.type,
-					format.fmt.sliced.service_set,
-					//format.fmt.sliced.service_lines[][],
-					format.fmt.sliced.io_size,
-					format.fmt.sliced.reserved[0],
-					format.fmt.sliced.reserved[1]
-				);
-				if (sizeof(format.fmt.sliced) < sizeof(format.fmt.raw_data)) {
-					dprintf1("\tformat = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format.fmt.sliced); j < sizeof(format.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format.fmt.raw_data[j]);
-					}
-					dprintf1(" }}\n");
+		case V4L2_BUF_TYPE_SLICED_VBI_CAPTURE:
+		case V4L2_BUF_TYPE_SLICED_VBI_OUTPUT:
+			dprintf("\tformat = {.type=0x%X, "
+				".fmt.sliced = { .service_set = 0x%X, "
+				".service_lines = { ... }, "
+				".io_size = %u, "
+				".reserved[0] = 0x%X, "
+				".reserved[1] = 0x%X "
+				"} }\n",
+				format.type, format.fmt.sliced.service_set,
+				//format.fmt.sliced.service_lines[][],
+				format.fmt.sliced.io_size,
+				format.fmt.sliced.reserved[0],
+				format.fmt.sliced.reserved[1]
+			    );
+			if (sizeof(format.fmt.sliced) <
+			    sizeof(format.fmt.raw_data)) {
+				dprintf1
+				    ("\tformat = { ..., .fmt.raw_data[] = { ...");
+				for (j = sizeof(format.fmt.sliced);
+				     j < sizeof(format.fmt.raw_data); j++) {
+					dprintf(", 0x%x",
+						format.fmt.raw_data[j]);
 				}
+				dprintf1(" }}\n");
+			}
 
-				/* TODO: check different fields */
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_set, ???);
-				CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][0], 0);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][1], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][2], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][3], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][4], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][5], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][6], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][7], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][8], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][9], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][10], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][11], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][12], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][13], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][14], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][15], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][16], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][17], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][18], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][19], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][20], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][21], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][22], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][23], ???);
-				CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][0], 0);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][1], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][2], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][3], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][4], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][5], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][6], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][7], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][8], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][9], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][10], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][11], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][12], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][13], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][14], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][15], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][16], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][17], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][18], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][19], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][20], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][21], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][22], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][23], ???);
-				//CU_ASSERT_EQUAL(format.fmt.sliced.io_size, ???);
-				CU_ASSERT_EQUAL(format.fmt.sliced.reserved[0], 0);
-				CU_ASSERT_EQUAL(format.fmt.sliced.reserved[1], 0);
+			/* TODO: check different fields */
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_set, ???);
+			CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][0],
+					0);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][1], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][2], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][3], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][4], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][5], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][6], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][7], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][8], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][9], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][10], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][11], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][12], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][13], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][14], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][15], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][16], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][17], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][18], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][19], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][20], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][21], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][22], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[0][23], ???);
+			CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][0],
+					0);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][1], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][2], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][3], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][4], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][5], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][6], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][7], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][8], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][9], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][10], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][11], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][12], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][13], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][14], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][15], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][16], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][17], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][18], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][19], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][20], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][21], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][22], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.service_lines[1][23], ???);
+			//CU_ASSERT_EQUAL(format.fmt.sliced.io_size, ???);
+			CU_ASSERT_EQUAL(format.fmt.sliced.reserved[0], 0);
+			CU_ASSERT_EQUAL(format.fmt.sliced.reserved[1], 0);
 
-				/* Check whether the remaining bytes of raw_data is set to zero */
-				memset(&format2, 0, sizeof(format2));
-				CU_ASSERT_EQUAL(
-					memcmp(format.fmt.raw_data+sizeof(format.fmt.sliced),
-					       format2.fmt.raw_data+sizeof(format2.fmt.sliced),
-					       sizeof(format.fmt.raw_data)-sizeof(format.fmt.sliced)),
-					       0
-					);
-				break;
+			/* Check whether the remaining bytes of raw_data is set to zero */
+			memset(&format2, 0, sizeof(format2));
+			CU_ASSERT_EQUAL(memcmp
+					(format.fmt.raw_data +
+					 sizeof(format.fmt.sliced),
+					 format2.fmt.raw_data +
+					 sizeof(format2.fmt.sliced),
+					 sizeof(format.fmt.raw_data) -
+					 sizeof(format.fmt.sliced)), 0);
+			break;
 
-			case V4L2_BUF_TYPE_PRIVATE:
-				dprintf("\tformat = {.type=0x%X, ... }\n",
-					format.type
-				);
-				/* TODO: check different fields */
+		case V4L2_BUF_TYPE_PRIVATE:
+			dprintf("\tformat = {.type=0x%X, ... }\n", format.type);
+			/* TODO: check different fields */
 		}
 
 	} else {
@@ -470,7 +490,8 @@ static void do_get_formats(enum v4l2_buf_type type) {
 
 }
 
-void test_VIDIOC_G_FMT() {
+void test_VIDIOC_G_FMT()
+{
 	do_get_formats(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	do_get_formats(V4L2_BUF_TYPE_VIDEO_OUTPUT);
 	do_get_formats(V4L2_BUF_TYPE_VIDEO_OVERLAY);
@@ -482,7 +503,8 @@ void test_VIDIOC_G_FMT() {
 	do_get_formats(V4L2_BUF_TYPE_PRIVATE);
 }
 
-static void do_get_format_invalid(enum v4l2_buf_type type) {
+static void do_get_format_invalid(enum v4l2_buf_type type)
+{
 	int ret_get, errno_get;
 	struct v4l2_format format;
 	struct v4l2_format format2;
@@ -504,7 +526,8 @@ static void do_get_format_invalid(enum v4l2_buf_type type) {
 	CU_ASSERT_EQUAL(memcmp(&format, &format2, sizeof(format)), 0);
 }
 
-void test_VIDIOC_G_FMT_invalid_type() {
+void test_VIDIOC_G_FMT_invalid_type()
+{
 	int i;
 
 	/* In this test case the .index is valid (0) and only the .type
@@ -521,7 +544,8 @@ void test_VIDIOC_G_FMT_invalid_type() {
 	do_get_format_invalid(-1);
 
 	/* test invalid .type= 8..0x7F */
-	for (i = V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY+1; i < V4L2_BUF_TYPE_PRIVATE; i++) {
+	for (i = V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY + 1;
+	     i < V4L2_BUF_TYPE_PRIVATE; i++) {
 		do_get_format_invalid(i);
 	}
 
@@ -535,7 +559,8 @@ void test_VIDIOC_G_FMT_invalid_type() {
 
 }
 
-void test_VIDIOC_G_FMT_NULL() {
+void test_VIDIOC_G_FMT_NULL()
+{
 	int ret_capture, errno_capture;
 	int ret_output, errno_output;
 	int ret_video_overlay, errno_video_overlay;
@@ -555,8 +580,9 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_capture = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_capture = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_capture=%i, errno_capture=%i\n",
-		__FILE__, __LINE__, type, ret_capture, errno_capture);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_capture=%i, errno_capture=%i\n",
+	     __FILE__, __LINE__, type, ret_capture, errno_capture);
 
 	type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 	memset(&format, 0xff, sizeof(format));
@@ -564,8 +590,9 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_output = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_output = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_output=%i, errno_output=%i\n",
-		__FILE__, __LINE__, type, ret_output, errno_output);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_output=%i, errno_output=%i\n",
+	     __FILE__, __LINE__, type, ret_output, errno_output);
 
 	type = V4L2_BUF_TYPE_VIDEO_OVERLAY;
 	memset(&format, 0xff, sizeof(format));
@@ -573,8 +600,9 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_video_overlay = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_video_overlay = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_video_overlay=%i, errno_video_overlay=%i\n",
-		__FILE__, __LINE__, type, ret_video_overlay, errno_video_overlay);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_video_overlay=%i, errno_video_overlay=%i\n",
+	     __FILE__, __LINE__, type, ret_video_overlay, errno_video_overlay);
 
 	type = V4L2_BUF_TYPE_VBI_CAPTURE;
 	memset(&format, 0xff, sizeof(format));
@@ -582,8 +610,9 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_vbi_capture = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_vbi_capture = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_vbi_capture=%i, errno_vbi_capture=%i\n",
-		__FILE__, __LINE__, type, ret_vbi_capture, errno_vbi_capture);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_vbi_capture=%i, errno_vbi_capture=%i\n",
+	     __FILE__, __LINE__, type, ret_vbi_capture, errno_vbi_capture);
 
 	type = V4L2_BUF_TYPE_VBI_OUTPUT;
 	memset(&format, 0xff, sizeof(format));
@@ -591,8 +620,9 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_vbi_output = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_vbi_output = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_vbi_output=%i, errno_vbi_output=%i\n",
-		__FILE__, __LINE__, type, ret_vbi_output, errno_vbi_output);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_vbi_output=%i, errno_vbi_output=%i\n",
+	     __FILE__, __LINE__, type, ret_vbi_output, errno_vbi_output);
 
 	type = V4L2_BUF_TYPE_SLICED_VBI_CAPTURE;
 	memset(&format, 0xff, sizeof(format));
@@ -600,8 +630,10 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_sliced_vbi_capture = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_sliced_vbi_capture = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_sliced_vbi_capture=%i, errno_sliced_vbi_capture=%i\n",
-		__FILE__, __LINE__, type, ret_sliced_vbi_capture, errno_sliced_vbi_capture);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_sliced_vbi_capture=%i, errno_sliced_vbi_capture=%i\n",
+	     __FILE__, __LINE__, type, ret_sliced_vbi_capture,
+	     errno_sliced_vbi_capture);
 
 	type = V4L2_BUF_TYPE_SLICED_VBI_OUTPUT;
 	memset(&format, 0xff, sizeof(format));
@@ -609,8 +641,10 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_sliced_vbi_output = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_sliced_vbi_output = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_sliced_vbi_output=%i, errno_sliced_vbi_output=%i\n",
-		__FILE__, __LINE__, type, ret_sliced_vbi_output, errno_sliced_vbi_output);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_sliced_vbi_output=%i, errno_sliced_vbi_output=%i\n",
+	     __FILE__, __LINE__, type, ret_sliced_vbi_output,
+	     errno_sliced_vbi_output);
 
 	type = V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY;
 	memset(&format, 0xff, sizeof(format));
@@ -618,8 +652,10 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_video_output_overlay = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_video_output_overlay = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_video_output_overlay=%i, errno_video_output_overlay=%i\n",
-		__FILE__, __LINE__, type, ret_video_output_overlay, errno_video_output_overlay);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_video_output_overlay=%i, errno_video_output_overlay=%i\n",
+	     __FILE__, __LINE__, type, ret_video_output_overlay,
+	     errno_video_output_overlay);
 
 	type = V4L2_BUF_TYPE_PRIVATE;
 	memset(&format, 0xff, sizeof(format));
@@ -627,8 +663,9 @@ void test_VIDIOC_G_FMT_NULL() {
 	ret_private = ioctl(get_video_fd(), VIDIOC_G_FMT, &format);
 	errno_private = errno;
 
-	dprintf("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_private=%i, errno_private=%i\n",
-		__FILE__, __LINE__, type, ret_private, errno_private);
+	dprintf
+	    ("\t%s:%u: VIDIOC_G_FMT, type=%i, ret_private=%i, errno_private=%i\n",
+	     __FILE__, __LINE__, type, ret_private, errno_private);
 
 	ret_null = ioctl(get_video_fd(), VIDIOC_G_FMT, NULL);
 	errno_null = errno;
@@ -668,7 +705,8 @@ void test_VIDIOC_G_FMT_NULL() {
 
 }
 
-static void do_set_formats_enum(enum v4l2_buf_type type) {
+static void do_set_formats_enum(enum v4l2_buf_type type)
+{
 	int ret_get, errno_get;
 	int ret_enum, errno_enum;
 	int ret_max, errno_max;
@@ -701,8 +739,9 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &fmtdesc);
 		errno_enum = errno;
 
-		dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
-			__FILE__, __LINE__, i, type, ret_enum, errno_enum);
+		dprintf
+		    ("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+		     __FILE__, __LINE__, i, type, ret_enum, errno_enum);
 
 		switch (type) {
 		case V4L2_BUF_TYPE_VIDEO_CAPTURE:
@@ -712,62 +751,72 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			format_max.fmt.pix.pixelformat = fmtdesc.pixelformat;
 			format_max.fmt.pix.field = V4L2_FIELD_ANY;
 
-			ret_max = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
+			ret_max =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
 			errno_max = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
-				__FILE__, __LINE__, type, ret_max, errno_max);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
+			     __FILE__, __LINE__, type, ret_max, errno_max);
 
 			if (ret_max == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
 
-				dprintf("\tformat_max = {.type=0x%X, .fmt.pix = { "
-					".width=%u, "
-					".height=%u, "
-					".pixelformat=0x%X, "
-					".field=%i, "
-					".bytesperline=%i, "
-					".sizeimage=%u, "
-					".colorspace=%i, "
-					".priv=0x%X "
-					"} }\n",
-					format_max.type,
-					format_max.fmt.pix.width,
-					format_max.fmt.pix.height,
-					format_max.fmt.pix.pixelformat,
-					format_max.fmt.pix.field,
-					format_max.fmt.pix.bytesperline,
-					format_max.fmt.pix.sizeimage,
-					format_max.fmt.pix.colorspace,
-					format_max.fmt.pix.priv
-				);
-				if (sizeof(format_max.fmt.pix) < sizeof(format_max.fmt.raw_data)) {
-					dprintf1("\tformat_max = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format_max.fmt.pix); j < sizeof(format_max.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format_max.fmt.raw_data[j]);
+				dprintf
+				    ("\tformat_max = {.type=0x%X, .fmt.pix = { "
+				     ".width=%u, " ".height=%u, "
+				     ".pixelformat=0x%X, " ".field=%i, "
+				     ".bytesperline=%i, " ".sizeimage=%u, "
+				     ".colorspace=%i, " ".priv=0x%X " "} }\n",
+				     format_max.type, format_max.fmt.pix.width,
+				     format_max.fmt.pix.height,
+				     format_max.fmt.pix.pixelformat,
+				     format_max.fmt.pix.field,
+				     format_max.fmt.pix.bytesperline,
+				     format_max.fmt.pix.sizeimage,
+				     format_max.fmt.pix.colorspace,
+				     format_max.fmt.pix.priv);
+				if (sizeof(format_max.fmt.pix) <
+				    sizeof(format_max.fmt.raw_data)) {
+					dprintf1
+					    ("\tformat_max = { ..., .fmt.raw_data[] = { ...");
+					for (j = sizeof(format_max.fmt.pix);
+					     j <
+					     sizeof(format_max.fmt.raw_data);
+					     j++) {
+						dprintf(", 0x%x",
+							format_max.fmt.
+							raw_data[j]);
 					}
 					dprintf1(" }}\n");
 				}
 
 				CU_ASSERT_EQUAL(ret_max, 0);
-				CU_ASSERT(valid_pixelformat(format_max.fmt.pix.pixelformat));
-				CU_ASSERT_EQUAL(format_max.fmt.pix.pixelformat, fmtdesc.pixelformat);
+				CU_ASSERT(valid_pixelformat
+					  (format_max.fmt.pix.pixelformat));
+				CU_ASSERT_EQUAL(format_max.fmt.pix.pixelformat,
+						fmtdesc.pixelformat);
 				CU_ASSERT(0 < format_max.fmt.pix.width);
 				CU_ASSERT(0 < format_max.fmt.pix.height);
-				CU_ASSERT_NOT_EQUAL(format_max.fmt.pix.field, V4L2_FIELD_ANY);
+				CU_ASSERT_NOT_EQUAL(format_max.fmt.pix.field,
+						    V4L2_FIELD_ANY);
 				CU_ASSERT(0 < format_max.fmt.pix.bytesperline);
 				CU_ASSERT(0 < format_max.fmt.pix.sizeimage);
-				CU_ASSERT(valid_colorspace(format_max.fmt.pix.colorspace));
+				CU_ASSERT(valid_colorspace
+					  (format_max.fmt.pix.colorspace));
 				//CU_ASSERT_EQUAL(format_max.fmt.pix.priv, ???);
 
 				/* Check whether the remaining bytes of rawdata is set to zero */
 				memset(&format2, 0, sizeof(format2));
-				CU_ASSERT_EQUAL(
-					memcmp(format_max.fmt.raw_data+sizeof(format_max.fmt.pix),
-					       format2.fmt.raw_data+sizeof(format2.fmt.pix),
-					       sizeof(format_max.fmt.raw_data)-sizeof(format_max.fmt.pix)),
-					       0
-					);
+				CU_ASSERT_EQUAL(memcmp
+						(format_max.fmt.raw_data +
+						 sizeof(format_max.fmt.pix),
+						 format2.fmt.raw_data +
+						 sizeof(format2.fmt.pix),
+						 sizeof(format_max.fmt.
+							raw_data) -
+						 sizeof(format_max.fmt.pix)),
+						0);
 
 			} else {
 				CU_ASSERT_EQUAL(ret_max, -1);
@@ -779,79 +828,94 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			format_min.fmt.pix.pixelformat = fmtdesc.pixelformat;
 			format_min.fmt.pix.field = V4L2_FIELD_ANY;
 
-			ret_min = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
+			ret_min =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
 			errno_min = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
-				__FILE__, __LINE__, type, ret_min, errno_min);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
+			     __FILE__, __LINE__, type, ret_min, errno_min);
 
 			if (ret_min == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
 
-				dprintf("\tformat_min = {.type=0x%X, .fmt.pix = { "
-					".width=%u, "
-					".height=%u, "
-					".pixelformat=0x%X, "
-					".field=%i, "
-					".bytesperline=%i, "
-					".sizeimage=%u, "
-					".colorspace=%i, "
-					".priv=0x%X "
-					"} }\n",
-					format_min.type,
-					format_min.fmt.pix.width,
-					format_min.fmt.pix.height,
-					format_min.fmt.pix.pixelformat,
-					format_min.fmt.pix.field,
-					format_min.fmt.pix.bytesperline,
-					format_min.fmt.pix.sizeimage,
-					format_min.fmt.pix.colorspace,
-					format_min.fmt.pix.priv
-				);
-				if (sizeof(format_min.fmt.pix) < sizeof(format_min.fmt.raw_data)) {
-					dprintf1("\tformat_min = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format_min.fmt.pix); j < sizeof(format_min.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format_min.fmt.raw_data[j]);
+				dprintf
+				    ("\tformat_min = {.type=0x%X, .fmt.pix = { "
+				     ".width=%u, " ".height=%u, "
+				     ".pixelformat=0x%X, " ".field=%i, "
+				     ".bytesperline=%i, " ".sizeimage=%u, "
+				     ".colorspace=%i, " ".priv=0x%X " "} }\n",
+				     format_min.type, format_min.fmt.pix.width,
+				     format_min.fmt.pix.height,
+				     format_min.fmt.pix.pixelformat,
+				     format_min.fmt.pix.field,
+				     format_min.fmt.pix.bytesperline,
+				     format_min.fmt.pix.sizeimage,
+				     format_min.fmt.pix.colorspace,
+				     format_min.fmt.pix.priv);
+				if (sizeof(format_min.fmt.pix) <
+				    sizeof(format_min.fmt.raw_data)) {
+					dprintf1
+					    ("\tformat_min = { ..., .fmt.raw_data[] = { ...");
+					for (j = sizeof(format_min.fmt.pix);
+					     j <
+					     sizeof(format_min.fmt.raw_data);
+					     j++) {
+						dprintf(", 0x%x",
+							format_min.fmt.
+							raw_data[j]);
 					}
 					dprintf1(" }}\n");
 				}
 
 				CU_ASSERT_EQUAL(ret_min, 0);
-				CU_ASSERT(valid_pixelformat(format_min.fmt.pix.pixelformat));
-				CU_ASSERT_EQUAL(format_min.fmt.pix.pixelformat, fmtdesc.pixelformat);
+				CU_ASSERT(valid_pixelformat
+					  (format_min.fmt.pix.pixelformat));
+				CU_ASSERT_EQUAL(format_min.fmt.pix.pixelformat,
+						fmtdesc.pixelformat);
 				CU_ASSERT(0 < format_min.fmt.pix.width);
 				CU_ASSERT(0 < format_min.fmt.pix.height);
-				CU_ASSERT_NOT_EQUAL(format_min.fmt.pix.field, V4L2_FIELD_ANY);
+				CU_ASSERT_NOT_EQUAL(format_min.fmt.pix.field,
+						    V4L2_FIELD_ANY);
 				CU_ASSERT(0 < format_min.fmt.pix.bytesperline);
 				CU_ASSERT(0 < format_min.fmt.pix.sizeimage);
-				CU_ASSERT(valid_colorspace(format_min.fmt.pix.colorspace));
+				CU_ASSERT(valid_colorspace
+					  (format_min.fmt.pix.colorspace));
 				//CU_ASSERT_EQUAL(format_min.fmt.pix.priv, ???);
 
 				/* Check whether the remaining bytes of rawdata is set to zero */
 				memset(&format2, 0, sizeof(format2));
-				CU_ASSERT_EQUAL(
-					memcmp(format_min.fmt.raw_data+sizeof(format_min.fmt.pix),
-					       format2.fmt.raw_data+sizeof(format2.fmt.pix),
-					       sizeof(format_min.fmt.raw_data)-sizeof(format_min.fmt.pix)),
-					       0
-					);
+				CU_ASSERT_EQUAL(memcmp
+						(format_min.fmt.raw_data +
+						 sizeof(format_min.fmt.pix),
+						 format2.fmt.raw_data +
+						 sizeof(format2.fmt.pix),
+						 sizeof(format_min.fmt.
+							raw_data) -
+						 sizeof(format_min.fmt.pix)),
+						0);
 			} else {
 				CU_ASSERT_EQUAL(ret_min, -1);
 				CU_ASSERT_EQUAL(errno_min, EINVAL);
 			}
 
 			if (ret_max == 0 && ret_min == 0) {
-				CU_ASSERT(format_min.fmt.pix.width <= format_max.fmt.pix.width);
-				CU_ASSERT(format_min.fmt.pix.height <= format_max.fmt.pix.height);
-				CU_ASSERT_EQUAL(format_min.fmt.pix.colorspace, format_max.fmt.pix.colorspace);
+				CU_ASSERT(format_min.fmt.pix.width <=
+					  format_max.fmt.pix.width);
+				CU_ASSERT(format_min.fmt.pix.height <=
+					  format_max.fmt.pix.height);
+				CU_ASSERT_EQUAL(format_min.fmt.pix.colorspace,
+						format_max.fmt.pix.colorspace);
 
 				/* If priv equals zero then this field is not used and shall
 				 * be set to zero each case. Otherwise it can have any driver
 				 * specific value which cannot be checked here.
 				 */
 				if (format_min.fmt.pix.priv == 0) {
-					CU_ASSERT_EQUAL(format_min.fmt.pix.priv, 0);
-					CU_ASSERT_EQUAL(format_max.fmt.pix.priv, 0);
+					CU_ASSERT_EQUAL(format_min.fmt.pix.priv,
+							0);
+					CU_ASSERT_EQUAL(format_max.fmt.pix.priv,
+							0);
 				}
 			}
 
@@ -867,40 +931,45 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			memset(&format_max, 0xff, sizeof(format_max));
 			format_max.type = type;
 
-			ret_max = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
+			ret_max =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
 			errno_max = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
-				__FILE__, __LINE__, type, ret_max, errno_max);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
+			     __FILE__, __LINE__, type, ret_max, errno_max);
 
 			if (ret_max == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
 
-				dprintf("\tformat_max = {.type=0x%X, .fmt.win={ "
-					".w = { .left=%i, .top=%i, .width=%i, .height=%i, }, "
-					".field = %i, "
-					".chromakey = 0x%X, "
-					".clips = %p, "
-					".clipcount = %u, "
-					".bitmap = %p, "
-					".global_alpha = %u "
-					"} }\n",
-					format_max.type,
-					format_max.fmt.win.w.left,
-					format_max.fmt.win.w.top,
-					format_max.fmt.win.w.width,
-					format_max.fmt.win.w.height,
-					format_max.fmt.win.field,
-					format_max.fmt.win.chromakey,
-					format_max.fmt.win.clips,
-					format_max.fmt.win.clipcount,
-					format_max.fmt.win.bitmap,
-					format_max.fmt.win.global_alpha
-				);
-				if (sizeof(format_max.fmt.win) < sizeof(format_max.fmt.raw_data)) {
-					dprintf1("\tformat_max = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format_max.fmt.win); j < sizeof(format_max.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format_max.fmt.raw_data[j]);
+				dprintf
+				    ("\tformat_max = {.type=0x%X, .fmt.win={ "
+				     ".w = { .left=%i, .top=%i, .width=%i, .height=%i, }, "
+				     ".field = %i, " ".chromakey = 0x%X, "
+				     ".clips = %p, " ".clipcount = %u, "
+				     ".bitmap = %p, " ".global_alpha = %u "
+				     "} }\n", format_max.type,
+				     format_max.fmt.win.w.left,
+				     format_max.fmt.win.w.top,
+				     format_max.fmt.win.w.width,
+				     format_max.fmt.win.w.height,
+				     format_max.fmt.win.field,
+				     format_max.fmt.win.chromakey,
+				     format_max.fmt.win.clips,
+				     format_max.fmt.win.clipcount,
+				     format_max.fmt.win.bitmap,
+				     format_max.fmt.win.global_alpha);
+				if (sizeof(format_max.fmt.win) <
+				    sizeof(format_max.fmt.raw_data)) {
+					dprintf1
+					    ("\tformat_max = { ..., .fmt.raw_data[] = { ...");
+					for (j = sizeof(format_max.fmt.win);
+					     j <
+					     sizeof(format_max.fmt.raw_data);
+					     j++) {
+						dprintf(", 0x%x",
+							format_max.fmt.
+							raw_data[j]);
 					}
 					dprintf1(" }}\n");
 				}
@@ -925,39 +994,44 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			format_min.type = type;
 			format_min.fmt.pix.pixelformat = fmtdesc.pixelformat;
 
-			ret_min = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
+			ret_min =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
 			errno_min = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
-				__FILE__, __LINE__, type, ret_min, errno_min);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
+			     __FILE__, __LINE__, type, ret_min, errno_min);
 
 			if (ret_min == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
-				dprintf("\tformat_min = {.type=0x%X, .fmt.win={ "
-					".w = { .left=%i, .top=%i, .width=%i, .height=%i, }, "
-					".field = %i, "
-					".chromakey = 0x%X, "
-					".clips = %p, "
-					".clipcount = %u, "
-					".bitmap = %p, "
-					".global_alpha = %u "
-					"} }\n",
-					format_min.type,
-					format_min.fmt.win.w.left,
-					format_min.fmt.win.w.top,
-					format_min.fmt.win.w.width,
-					format_min.fmt.win.w.height,
-					format_min.fmt.win.field,
-					format_min.fmt.win.chromakey,
-					format_min.fmt.win.clips,
-					format_min.fmt.win.clipcount,
-					format_min.fmt.win.bitmap,
-					format_min.fmt.win.global_alpha
-				);
-				if (sizeof(format_min.fmt.win) < sizeof(format_min.fmt.raw_data)) {
-					dprintf1("\tformat_min = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format_min.fmt.win); j < sizeof(format_min.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format_min.fmt.raw_data[j]);
+				dprintf
+				    ("\tformat_min = {.type=0x%X, .fmt.win={ "
+				     ".w = { .left=%i, .top=%i, .width=%i, .height=%i, }, "
+				     ".field = %i, " ".chromakey = 0x%X, "
+				     ".clips = %p, " ".clipcount = %u, "
+				     ".bitmap = %p, " ".global_alpha = %u "
+				     "} }\n", format_min.type,
+				     format_min.fmt.win.w.left,
+				     format_min.fmt.win.w.top,
+				     format_min.fmt.win.w.width,
+				     format_min.fmt.win.w.height,
+				     format_min.fmt.win.field,
+				     format_min.fmt.win.chromakey,
+				     format_min.fmt.win.clips,
+				     format_min.fmt.win.clipcount,
+				     format_min.fmt.win.bitmap,
+				     format_min.fmt.win.global_alpha);
+				if (sizeof(format_min.fmt.win) <
+				    sizeof(format_min.fmt.raw_data)) {
+					dprintf1
+					    ("\tformat_min = { ..., .fmt.raw_data[] = { ...");
+					for (j = sizeof(format_min.fmt.win);
+					     j <
+					     sizeof(format_min.fmt.raw_data);
+					     j++) {
+						dprintf(", 0x%x",
+							format_min.fmt.
+							raw_data[j]);
 					}
 					dprintf1(" }}\n");
 				}
@@ -990,41 +1064,48 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			memset(&format_max, 0xff, sizeof(format_max));
 			format_max.type = type;
 
-			ret_max = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
+			ret_max =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
 			errno_max = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
-				__FILE__, __LINE__, type, ret_max, errno_max);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
+			     __FILE__, __LINE__, type, ret_max, errno_max);
 
 			if (ret_max == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
-				dprintf("\tformat_max = {.type=0x%X, .fmt.vbi={ "
-					".sampling_rate=%u, "
-					".offset=%u, "
-					".samples_per_line=%u "
-					".sample_format=0x%X "
-					".start = { %u, %u }, "
-					".count = { %u, %u }, "
-					".flags = 0x%X, "
-					".reserved = { 0x%X, 0x%X } "
-					"} }\n",
-					format_max.type,
-					format_max.fmt.vbi.sampling_rate,
-					format_max.fmt.vbi.offset,
-					format_max.fmt.vbi.samples_per_line,
-					format_max.fmt.vbi.sample_format,
-					format_max.fmt.vbi.start[0],
-					format_max.fmt.vbi.start[1],
-					format_max.fmt.vbi.count[0],
-					format_max.fmt.vbi.count[1],
-					format_max.fmt.vbi.flags,
-					format_max.fmt.vbi.reserved[0],
-					format_max.fmt.vbi.reserved[1]
-				);
-				if (sizeof(format_max.fmt.vbi) < sizeof(format_max.fmt.raw_data)) {
-					dprintf1("\tformat_max = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format_max.fmt.vbi); j < sizeof(format_max.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format_max.fmt.raw_data[j]);
+				dprintf
+				    ("\tformat_max = {.type=0x%X, .fmt.vbi={ "
+				     ".sampling_rate=%u, " ".offset=%u, "
+				     ".samples_per_line=%u "
+				     ".sample_format=0x%X "
+				     ".start = { %u, %u }, "
+				     ".count = { %u, %u }, " ".flags = 0x%X, "
+				     ".reserved = { 0x%X, 0x%X } " "} }\n",
+				     format_max.type,
+				     format_max.fmt.vbi.sampling_rate,
+				     format_max.fmt.vbi.offset,
+				     format_max.fmt.vbi.samples_per_line,
+				     format_max.fmt.vbi.sample_format,
+				     format_max.fmt.vbi.start[0],
+				     format_max.fmt.vbi.start[1],
+				     format_max.fmt.vbi.count[0],
+				     format_max.fmt.vbi.count[1],
+				     format_max.fmt.vbi.flags,
+				     format_max.fmt.vbi.reserved[0],
+				     format_max.fmt.vbi.reserved[1]
+				    );
+				if (sizeof(format_max.fmt.vbi) <
+				    sizeof(format_max.fmt.raw_data)) {
+					dprintf1
+					    ("\tformat_max = { ..., .fmt.raw_data[] = { ...");
+					for (j = sizeof(format_max.fmt.vbi);
+					     j <
+					     sizeof(format_max.fmt.raw_data);
+					     j++) {
+						dprintf(", 0x%x",
+							format_max.fmt.
+							raw_data[j]);
 					}
 					dprintf1(" }}\n");
 				}
@@ -1039,8 +1120,10 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 				//CU_ASSERT_EQUAL(format_max.fmt.vbi.count[0], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.vbi.count[1], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.vbi.flags, ???);
-				CU_ASSERT_EQUAL(format_max.fmt.vbi.reserved[0], 0);
-				CU_ASSERT_EQUAL(format_max.fmt.vbi.reserved[1], 0);
+				CU_ASSERT_EQUAL(format_max.fmt.vbi.reserved[0],
+						0);
+				CU_ASSERT_EQUAL(format_max.fmt.vbi.reserved[1],
+						0);
 
 			} else {
 				CU_ASSERT_EQUAL(ret_max, -1);
@@ -1051,41 +1134,48 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			format_min.type = type;
 			format_min.fmt.pix.pixelformat = fmtdesc.pixelformat;
 
-			ret_min = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
+			ret_min =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
 			errno_min = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
-				__FILE__, __LINE__, type, ret_min, errno_min);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
+			     __FILE__, __LINE__, type, ret_min, errno_min);
 
 			if (ret_min == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
-				dprintf("\tformat_min = {.type=0x%X, .fmt.vbi={ "
-					".sampling_rate=%u, "
-					".offset=%u, "
-					".samples_per_line=%u "
-					".sample_format=0x%X "
-					".start = { %u, %u }, "
-					".count = { %u, %u }, "
-					".flags = 0x%X, "
-					".reserved = { 0x%X, 0x%X } "
-					"} }\n",
-					format_min.type,
-					format_min.fmt.vbi.sampling_rate,
-					format_min.fmt.vbi.offset,
-					format_min.fmt.vbi.samples_per_line,
-					format_min.fmt.vbi.sample_format,
-					format_min.fmt.vbi.start[0],
-					format_min.fmt.vbi.start[1],
-					format_min.fmt.vbi.count[0],
-					format_min.fmt.vbi.count[1],
-					format_min.fmt.vbi.flags,
-					format_min.fmt.vbi.reserved[0],
-					format_min.fmt.vbi.reserved[1]
-				);
-				if (sizeof(format_min.fmt.vbi) < sizeof(format_min.fmt.raw_data)) {
-					dprintf1("\tformat_min = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format_min.fmt.vbi); j < sizeof(format_min.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format_min.fmt.raw_data[j]);
+				dprintf
+				    ("\tformat_min = {.type=0x%X, .fmt.vbi={ "
+				     ".sampling_rate=%u, " ".offset=%u, "
+				     ".samples_per_line=%u "
+				     ".sample_format=0x%X "
+				     ".start = { %u, %u }, "
+				     ".count = { %u, %u }, " ".flags = 0x%X, "
+				     ".reserved = { 0x%X, 0x%X } " "} }\n",
+				     format_min.type,
+				     format_min.fmt.vbi.sampling_rate,
+				     format_min.fmt.vbi.offset,
+				     format_min.fmt.vbi.samples_per_line,
+				     format_min.fmt.vbi.sample_format,
+				     format_min.fmt.vbi.start[0],
+				     format_min.fmt.vbi.start[1],
+				     format_min.fmt.vbi.count[0],
+				     format_min.fmt.vbi.count[1],
+				     format_min.fmt.vbi.flags,
+				     format_min.fmt.vbi.reserved[0],
+				     format_min.fmt.vbi.reserved[1]
+				    );
+				if (sizeof(format_min.fmt.vbi) <
+				    sizeof(format_min.fmt.raw_data)) {
+					dprintf1
+					    ("\tformat_min = { ..., .fmt.raw_data[] = { ...");
+					for (j = sizeof(format_min.fmt.vbi);
+					     j <
+					     sizeof(format_min.fmt.raw_data);
+					     j++) {
+						dprintf(", 0x%x",
+							format_min.fmt.
+							raw_data[j]);
 					}
 					dprintf1(" }}\n");
 				}
@@ -1100,8 +1190,10 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 				//CU_ASSERT_EQUAL(format_min.fmt.vbi.count[0], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.vbi.count[1], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.vbi.flags, ???);
-				CU_ASSERT_EQUAL(format_min.fmt.vbi.reserved[0], 0);
-				CU_ASSERT_EQUAL(format_min.fmt.vbi.reserved[1], 0);
+				CU_ASSERT_EQUAL(format_min.fmt.vbi.reserved[0],
+						0);
+				CU_ASSERT_EQUAL(format_min.fmt.vbi.reserved[1],
+						0);
 			} else {
 				CU_ASSERT_EQUAL(ret_min, -1);
 				CU_ASSERT_EQUAL(errno_min, EINVAL);
@@ -1118,11 +1210,13 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			memset(&format_max, 0xff, sizeof(format_max));
 			format_max.type = type;
 
-			ret_max = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
+			ret_max =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
 			errno_max = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
-				__FILE__, __LINE__, type, ret_max, errno_max);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
+			     __FILE__, __LINE__, type, ret_max, errno_max);
 
 			if (ret_max == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
@@ -1139,18 +1233,26 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 					format_max.fmt.sliced.io_size,
 					format_max.fmt.sliced.reserved[0],
 					format_max.fmt.sliced.reserved[1]
-				);
-				if (sizeof(format_max.fmt.sliced) < sizeof(format_max.fmt.raw_data)) {
-					dprintf1("\tformat_max = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format_max.fmt.sliced); j < sizeof(format_max.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format_max.fmt.raw_data[j]);
+				    );
+				if (sizeof(format_max.fmt.sliced) <
+				    sizeof(format_max.fmt.raw_data)) {
+					dprintf1
+					    ("\tformat_max = { ..., .fmt.raw_data[] = { ...");
+					for (j = sizeof(format_max.fmt.sliced);
+					     j <
+					     sizeof(format_max.fmt.raw_data);
+					     j++) {
+						dprintf(", 0x%x",
+							format_max.fmt.
+							raw_data[j]);
 					}
 					dprintf1(" }}\n");
 				}
 
 				/* TODO: check the different fields */
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_set, ???);
-				CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[0][0], 0);
+				CU_ASSERT_EQUAL(format_max.fmt.sliced.
+						service_lines[0][0], 0);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[0][1], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[0][2], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[0][3], ???);
@@ -1174,7 +1276,8 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[0][21], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[0][22], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[0][23], ???);
-				CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[1][0], 0);
+				CU_ASSERT_EQUAL(format_max.fmt.sliced.
+						service_lines[1][0], 0);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[1][1], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[1][2], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[1][3], ???);
@@ -1199,8 +1302,10 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[1][22], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.service_lines[1][23], ???);
 				//CU_ASSERT_EQUAL(format_max.fmt.sliced.io_size, ???);
-				CU_ASSERT_EQUAL(format_max.fmt.sliced.reserved[0], 0);
-				CU_ASSERT_EQUAL(format_max.fmt.sliced.reserved[1], 0);
+				CU_ASSERT_EQUAL(format_max.fmt.sliced.
+						reserved[0], 0);
+				CU_ASSERT_EQUAL(format_max.fmt.sliced.
+						reserved[1], 0);
 
 			} else {
 				CU_ASSERT_EQUAL(ret_max, -1);
@@ -1211,11 +1316,13 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			format_min.type = type;
 			format_min.fmt.pix.pixelformat = fmtdesc.pixelformat;
 
-			ret_min = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
+			ret_min =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
 			errno_min = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
-				__FILE__, __LINE__, type, ret_min, errno_min);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
+			     __FILE__, __LINE__, type, ret_min, errno_min);
 
 			if (ret_min == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
@@ -1232,18 +1339,26 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 					format_min.fmt.sliced.io_size,
 					format_min.fmt.sliced.reserved[0],
 					format_min.fmt.sliced.reserved[1]
-				);
-				if (sizeof(format_min.fmt.sliced) < sizeof(format_min.fmt.raw_data)) {
-					dprintf1("\tformat_min = { ..., .fmt.raw_data[] = { ...");
-					for (j = sizeof(format_min.fmt.sliced); j < sizeof(format_min.fmt.raw_data); j++) {
-						dprintf(", 0x%x", format_min.fmt.raw_data[j]);
+				    );
+				if (sizeof(format_min.fmt.sliced) <
+				    sizeof(format_min.fmt.raw_data)) {
+					dprintf1
+					    ("\tformat_min = { ..., .fmt.raw_data[] = { ...");
+					for (j = sizeof(format_min.fmt.sliced);
+					     j <
+					     sizeof(format_min.fmt.raw_data);
+					     j++) {
+						dprintf(", 0x%x",
+							format_min.fmt.
+							raw_data[j]);
 					}
 					dprintf1(" }}\n");
 				}
 
 				/* TODO: check the different fields */
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_set, ???);
-				CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[0][0], 0);
+				CU_ASSERT_EQUAL(format_min.fmt.sliced.
+						service_lines[0][0], 0);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[0][1], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[0][2], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[0][3], ???);
@@ -1267,7 +1382,8 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[0][21], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[0][22], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[0][23], ???);
-				CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[1][0], 0);
+				CU_ASSERT_EQUAL(format_min.fmt.sliced.
+						service_lines[1][0], 0);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[1][1], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[1][2], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[1][3], ???);
@@ -1292,8 +1408,10 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[1][22], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.service_lines[1][23], ???);
 				//CU_ASSERT_EQUAL(format_min.fmt.sliced.io_size, ???);
-				CU_ASSERT_EQUAL(format_min.fmt.sliced.reserved[0], 0);
-				CU_ASSERT_EQUAL(format_min.fmt.sliced.reserved[1], 0);
+				CU_ASSERT_EQUAL(format_min.fmt.sliced.
+						reserved[0], 0);
+				CU_ASSERT_EQUAL(format_min.fmt.sliced.
+						reserved[1], 0);
 
 			} else {
 				CU_ASSERT_EQUAL(ret_min, -1);
@@ -1310,17 +1428,22 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			memset(&format_max, 0xff, sizeof(format_max));
 			format_max.type = type;
 
-			ret_max = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
+			ret_max =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_max);
 			errno_max = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
-				__FILE__, __LINE__, type, ret_max, errno_max);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_max=%i, errno_max=%i\n",
+			     __FILE__, __LINE__, type, ret_max, errno_max);
 
 			if (ret_max == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
-				dprintf1("\tformat_max = { ..., .fmt.raw_data[] = { ");
-				for (j = 0; j < sizeof(format_max.fmt.raw_data); j++) {
-					dprintf("0x%x", format_max.fmt.raw_data[j]);
+				dprintf1
+				    ("\tformat_max = { ..., .fmt.raw_data[] = { ");
+				for (j = 0; j < sizeof(format_max.fmt.raw_data);
+				     j++) {
+					dprintf("0x%x",
+						format_max.fmt.raw_data[j]);
 					if (j < sizeof(format_max.fmt.raw_data)) {
 						dprintf1(", ");
 					}
@@ -1338,17 +1461,22 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 			format_min.type = type;
 			format_min.fmt.pix.pixelformat = fmtdesc.pixelformat;
 
-			ret_min = ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
+			ret_min =
+			    ioctl(get_video_fd(), VIDIOC_S_FMT, &format_min);
 			errno_min = errno;
 
-			dprintf("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
-				__FILE__, __LINE__, type, ret_min, errno_min);
+			dprintf
+			    ("\t%s:%u: VIDIOC_S_FMT, type=%i, ret_min=%i, errno_min=%i\n",
+			     __FILE__, __LINE__, type, ret_min, errno_min);
 
 			if (ret_min == 0) {
 				CU_ASSERT_EQUAL(ret_enum, 0);
-				dprintf1("\tformat_min = { ..., .fmt.raw_data[] = { ");
-				for (j = 0; j < sizeof(format_min.fmt.raw_data); j++) {
-					dprintf("0x%x", format_min.fmt.raw_data[j]);
+				dprintf1
+				    ("\tformat_min = { ..., .fmt.raw_data[] = { ");
+				for (j = 0; j < sizeof(format_min.fmt.raw_data);
+				     j++) {
+					dprintf("0x%x",
+						format_min.fmt.raw_data[j]);
 					if (j < sizeof(format_min.fmt.raw_data)) {
 						dprintf1(", ");
 					}
@@ -1403,7 +1531,8 @@ static void do_set_formats_enum(enum v4l2_buf_type type) {
 
 }
 
-void test_VIDIOC_S_FMT_enum() {
+void test_VIDIOC_S_FMT_enum()
+{
 	do_set_formats_enum(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	do_set_formats_enum(V4L2_BUF_TYPE_VIDEO_OUTPUT);
 	do_set_formats_enum(V4L2_BUF_TYPE_VIDEO_OVERLAY);
@@ -1415,7 +1544,8 @@ void test_VIDIOC_S_FMT_enum() {
 	do_set_formats_enum(V4L2_BUF_TYPE_PRIVATE);
 }
 
-static void do_set_formats_type(enum v4l2_buf_type type) {
+static void do_set_formats_type(enum v4l2_buf_type type)
+{
 	int ret_set, errno_set;
 	struct v4l2_format format;
 	struct v4l2_format format2;
@@ -1439,10 +1569,11 @@ static void do_set_formats_type(enum v4l2_buf_type type) {
 
 }
 
-void test_VIDIOC_S_FMT_type() {
+void test_VIDIOC_S_FMT_type()
+{
 	do_set_formats_type(0);
 	do_set_formats_type(9);
-	do_set_formats_type(V4L2_BUF_TYPE_PRIVATE-1);
+	do_set_formats_type(V4L2_BUF_TYPE_PRIVATE - 1);
 	do_set_formats_type(S16_MIN);
 	do_set_formats_type(S16_MAX);
 	do_set_formats_type(S32_MAX);

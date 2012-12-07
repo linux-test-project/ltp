@@ -71,7 +71,7 @@
  */
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include <stdio.h>
@@ -153,7 +153,8 @@ int main(int ac, char **av)
 					 TESTDIR, dir_mode, PERMS & ~S_ISGID);
 			} else {
 				tst_resm(TPASS, "Functionality of fchmod(%d, "
-					 "%#o) successful", fd, PERMS & ~S_ISGID);
+					 "%#o) successful", fd,
+					 PERMS & ~S_ISGID);
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
@@ -211,17 +212,18 @@ void setup()
 	}
 
 	if (setgroups(1, &nobody_u->pw_gid) == -1)
-		tst_brkm(TBROK, cleanup, "Couldn't change supplementary group Id: %s",
-				strerror(errno));
+		tst_brkm(TBROK, cleanup,
+			 "Couldn't change supplementary group Id: %s",
+			 strerror(errno));
 
 	if (chown(TESTDIR, nobody_u->pw_uid, bin_group->gr_gid) == -1)
 		tst_brkm(TBROK, cleanup, "Couldn't change owner of testdir: %s",
-				strerror(errno));
+			 strerror(errno));
 
 	/* change to nobody:nobody */
 	if (setegid(nobody_u->pw_gid) == -1 || seteuid(nobody_u->pw_uid) == -1)
 		tst_brkm(TBROK, cleanup, "Couldn't switch to nobody:nobody: %s",
-				strerror(errno));
+			 strerror(errno));
 
 	/* Open the test directory for reading */
 	fd = open(TESTDIR, O_RDONLY);

@@ -27,11 +27,11 @@
 
 int main()
 {
-	pthread_attr_t         attr;
-	int                    rc=0;
-	int                    policy = RRPOLICY;
-	struct sched_param     param;
-	int                    priority;
+	pthread_attr_t attr;
+	int rc = 0;
+	int policy = RRPOLICY;
+	struct sched_param param;
+	int priority;
 
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
@@ -54,7 +54,8 @@ int main()
 	param.sched_priority = priority + PRIORITY_OFFSET;
 	rc = pthread_attr_setschedparam(&attr, &param);
 	if ((rc != EINVAL) && (rc != ENOTSUP)) {
-		printf(ERROR_PREFIX "pthread_attr_setschedparam did not fail\n");
+		printf(ERROR_PREFIX
+		       "pthread_attr_setschedparam did not fail\n");
 		exit(PTS_FAIL);
 	}
 

@@ -15,15 +15,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 
-	int		fd;
-	int		fsize;
-	int		count = 0;
-	int		n, remain;
-	static	char	buf[BUFSIZ];
+	int fd;
+	int fsize;
+	int count = 0;
+	int n, remain;
+	static char buf[BUFSIZ];
 
 	for (fsize = 0; fsize < BUFSIZ; fsize++) {
 		if ((fsize % 2) == 0)
@@ -41,7 +40,7 @@ main(int argc, char *argv[])
 		remain = fsize % BUFSIZ;
 	} else
 		remain = fsize;
-	while (count-- !=0) {
+	while (count-- != 0) {
 		if ((n = write(fd, buf, BUFSIZ)) != BUFSIZ)
 			perror("createfile");
 	}

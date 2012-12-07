@@ -60,7 +60,7 @@ union u_argument {
 int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
-	//					    others arguments depend on server program
+	//                                          others arguments depend on server program
 	int run_mode = 0;
 	int progNum = atoi(argc[1]);
 	bool_t rslt;
@@ -71,25 +71,21 @@ int main(int argn, char *argc[])
 	//Initialization
 	svc_unreg(progNum, VERSNUM);
 
-	if ((nconf = getnetconfigent("udp")) == NULL)
-    {
-    	fprintf(stderr, "Cannot get netconfig entry for UDP\n");
-    	exit(1);
+	if ((nconf = getnetconfigent("udp")) == NULL) {
+		fprintf(stderr, "Cannot get netconfig entry for UDP\n");
+		exit(1);
 	}
 
-	transp = svc_tp_create(exm_proc, progNum, VERSNUM,
-                           nconf);
+	transp = svc_tp_create(exm_proc, progNum, VERSNUM, nconf);
 
-	if (transp == NULL)
-	{
-    	fprintf(stderr, "Cannot create service.\n");
-    	exit(1);
+	if (transp == NULL) {
+		fprintf(stderr, "Cannot create service.\n");
+		exit(1);
 	}
 
-	if (!svc_reg(transp, progNum, VERSNUM, exm_proc, nconf))
-	{
-    	fprintf(stderr, "svc_reg failed!!\n");
-    	exit(1);
+	if (!svc_reg(transp, progNum, VERSNUM, exm_proc, nconf)) {
+		fprintf(stderr, "svc_reg failed!!\n");
+		exit(1);
 	}
 
 	svc_run();
@@ -155,68 +151,66 @@ char *strTestProc(union u_argument *in)
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
+static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
 {
 	char *result;
 	xdrproc_t xdr_argument;
 	xdrproc_t xdr_result;
-	char *(*proc)(union u_argument *);
+	char *(*proc) (union u_argument *);
 
-	switch (rqstp->rq_proc)
-	{
-		case PROCSIMPLEPING:
+	switch (rqstp->rq_proc) {
+	case PROCSIMPLEPING:
 		{
-			xdr_argument = (xdrproc_t)xdr_int;
-			xdr_result   = (xdrproc_t)xdr_int;
-			proc         = (char *(*)(union u_argument *))simplePing;
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc = (char *(*)(union u_argument *))simplePing;
 			break;
 		}
-		case INTPROCNUM:
+	case INTPROCNUM:
 		{
-			xdr_argument = (xdrproc_t)xdr_int;
-			xdr_result   = (xdrproc_t)xdr_int;
-			proc         = (char *(*)(union u_argument *))intTestProc;
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result = (xdrproc_t) xdr_int;
+			proc = (char *(*)(union u_argument *))intTestProc;
 			break;
 		}
-		case DBLPROCNUM:
+	case DBLPROCNUM:
 		{
-			xdr_argument = (xdrproc_t)xdr_double;
-			xdr_result   = (xdrproc_t)xdr_double;
-			proc         = (char *(*)(union u_argument *))dblTestProc;
+			xdr_argument = (xdrproc_t) xdr_double;
+			xdr_result = (xdrproc_t) xdr_double;
+			proc = (char *(*)(union u_argument *))dblTestProc;
 			break;
 		}
-		case LNGPROCNUM:
+	case LNGPROCNUM:
 		{
-			xdr_argument = (xdrproc_t)xdr_long;
-			xdr_result   = (xdrproc_t)xdr_long;
-			proc         = (char *(*)(union u_argument *))lngTestProc;
+			xdr_argument = (xdrproc_t) xdr_long;
+			xdr_result = (xdrproc_t) xdr_long;
+			proc = (char *(*)(union u_argument *))lngTestProc;
 			break;
 		}
-		case STRPROCNUM:
+	case STRPROCNUM:
 		{
-			xdr_argument = (xdrproc_t)xdr_wrapstring;
-			xdr_result   = (xdrproc_t)xdr_wrapstring;
-			proc         = (char *(*)(union u_argument *))strTestProc;
+			xdr_argument = (xdrproc_t) xdr_wrapstring;
+			xdr_result = (xdrproc_t) xdr_wrapstring;
+			proc = (char *(*)(union u_argument *))strTestProc;
 			break;
 		}
-		default:
+	default:
 		{
 			//Proc is unavaible
-      		svcerr_noproc(transp);
-      		return;
-      	}
+			svcerr_noproc(transp);
+			return;
+		}
 	}
 	memset((char *)&argument, (int)0, sizeof(argument));
-	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE)
-	{
+	if (svc_getargs(transp, xdr_argument, (char *)&argument) == FALSE) {
 		svcerr_decode(transp);
 		return;
 	}
 
-	result = (char *)(*proc)((union u_argument *)&argument);
+	result = (char *)(*proc) ((union u_argument *)&argument);
 
-	if ((result != NULL) && (svc_sendreply(transp, xdr_result, (char *)result) == FALSE))
-	{
+	if ((result != NULL)
+	    && (svc_sendreply(transp, xdr_result, (char *)result) == FALSE)) {
 		svcerr_systemerr(transp);
 	}
 	if (svc_freeargs(transp, xdr_argument, (char *)&argument) == FALSE) {

@@ -77,15 +77,14 @@ void setup(void);
 char *TCID = "clock_gettime02";	/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc, i;
 	char *msg;
 	struct timespec spec;
-	clockid_t clocks[2] = {CLOCK_REALTIME, CLOCK_MONOTONIC};
+	clockid_t clocks[2] = { CLOCK_REALTIME, CLOCK_MONOTONIC };
 
-	if ((msg = parse_opts (ac, av, NULL, NULL)) != NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	TST_TOTAL = sizeof(clocks) / sizeof(clocks[0]);
@@ -99,7 +98,8 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(syscall(__NR_clock_gettime, clocks[i], &spec));
 			tst_resm((TEST_RETURN < 0 ? TFAIL | TTERRNO : TPASS),
-				"%s", (TEST_RETURN == 0 ? "passed" : "failed"));
+				 "%s",
+				 (TEST_RETURN == 0 ? "passed" : "failed"));
 		}
 	}
 
@@ -108,8 +108,7 @@ main(int ac, char **av)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup(void)
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, CLEANUP);
@@ -121,12 +120,11 @@ setup(void)
  * CLEANUP() - Performs one time CLEANUP for this test at
  * completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 }

@@ -26,16 +26,16 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define TIMEOUT 3					/* 3 seconds of timeout time for
-							   pthread_mutex_timedlock(). */
+#define TIMEOUT 3		/* 3 seconds of timeout time for
+				   pthread_mutex_timedlock(). */
 void *f1(void *parm);
 
-int ret;						/* Save return value of
-							   pthread_mutex_timedlock(). */
+int ret;			/* Save return value of
+				   pthread_mutex_timedlock(). */
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
-time_t currsec1, currsec2;				/* Variables for saving time before
-						           and afer locking the mutex using
-							   pthread_mutex_timedlock(). */
+time_t currsec1, currsec2;	/* Variables for saving time before
+				   and afer locking the mutex using
+				   pthread_mutex_timedlock(). */
 /****************************
  *
  * MAIN()
@@ -46,22 +46,19 @@ int main()
 	pthread_t new_th;
 
 	/* Create a thread that will call pthread_mutex_timedlock */
-	if (pthread_create(&new_th, NULL, f1, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, f1, NULL) != 0) {
 		perror("Error in pthread_create().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to end. */
-	if (pthread_join(new_th, NULL) != 0)
-	{
+	if (pthread_join(new_th, NULL) != 0) {
 		perror("Error in pthread_join().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Check the return status of pthread_mutex_timedlock(). */
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		printf("Test FAILED: Expected return code 0, got: %d.\n", ret);
 		return PTS_FAIL;
 	}
@@ -88,19 +85,17 @@ void *f1(void *parm)
 	ret = pthread_mutex_timedlock(&mutex, &timeout);
 
 	/* Cleaning up the mutexes. */
-	if (pthread_mutex_unlock(&mutex) != 0)
-	{
+	if (pthread_mutex_unlock(&mutex) != 0) {
 		perror("Error in pthread_mutex_unlock().\n");
-		pthread_exit((void*)PTS_UNRESOLVED);
-		return (void*)PTS_UNRESOLVED;
+		pthread_exit((void *)PTS_UNRESOLVED);
+		return (void *)PTS_UNRESOLVED;
 	}
-	if (pthread_mutex_destroy(&mutex) != 0)
-	{
+	if (pthread_mutex_destroy(&mutex) != 0) {
 		perror("Error in pthread_mutex_destroy().\n");
-		pthread_exit((void*)PTS_UNRESOLVED);
-		return (void*)PTS_UNRESOLVED;
+		pthread_exit((void *)PTS_UNRESOLVED);
+		return (void *)PTS_UNRESOLVED;
 	}
 
-  	pthread_exit(0);
-  	return (void*)(0);
+	pthread_exit(0);
+	return (void *)(0);
 }

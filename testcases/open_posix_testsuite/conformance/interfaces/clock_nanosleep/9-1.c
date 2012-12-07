@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
 		/* child here */
 		int sleptplusremaining;
 
-		act.sa_handler=handler;
-		act.sa_flags=0;
+		act.sa_handler = handler;
+		act.sa_flags = 0;
 		if (sigemptyset(&act.sa_mask) != 0) {
 			perror("sigemptyset() did not return success\n");
 			return CHILDFAIL;
@@ -55,25 +55,26 @@ int main(int argc, char *argv[])
 			perror("sigaction() did not return success\n");
 			return CHILDFAIL;
 		}
-		tssleep.tv_sec=SLEEPSEC;
-		tssleep.tv_nsec=0;
+		tssleep.tv_sec = SLEEPSEC;
+		tssleep.tv_nsec = 0;
 		if (clock_nanosleep(CLOCK_REALTIME, 0,
-					&tssleep, &tsremain) == EINTR) {
+				    &tssleep, &tsremain) == EINTR) {
 			if (clock_gettime(CLOCK_REALTIME, &tsafter) != 0) {
 				perror("clock_gettime() failed\n");
 				return CHILDFAIL;
 			}
-			sleptplusremaining = (tsafter.tv_sec-tsbefore.tv_sec) +
-							tsremain.tv_sec;
+			sleptplusremaining =
+			    (tsafter.tv_sec - tsbefore.tv_sec) +
+			    tsremain.tv_sec;
 
 			if (abs(sleptplusremaining - SLEEPSEC) <= OKDELTA) {
 				printf("PASS - within %d difference\n",
-					abs(sleptplusremaining - SLEEPSEC));
-					return CHILDPASS;
+				       abs(sleptplusremaining - SLEEPSEC));
+				return CHILDPASS;
 			} else {
 				printf("FAIL - within %d difference\n",
-					abs(sleptplusremaining - SLEEPSEC));
-					return CHILDFAIL;
+				       abs(sleptplusremaining - SLEEPSEC));
+				return CHILDFAIL;
 			}
 
 			return CHILDFAIL;

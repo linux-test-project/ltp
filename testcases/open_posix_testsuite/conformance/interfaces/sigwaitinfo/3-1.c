@@ -40,28 +40,29 @@ int main()
 		/* child */
 		sigset_t selectset;
 
-	        struct sigaction act;
+		struct sigaction act;
 
-	        act.sa_handler = handler;
-	        act.sa_flags=0;
-	        sigemptyset(&act.sa_mask);
+		act.sa_handler = handler;
+		act.sa_flags = 0;
+		sigemptyset(&act.sa_mask);
 
-	        if (sigaction(SIGUSR1,  &act, 0) == -1) {
-	                perror("Unexpected error while attempting to pre-conditions");
-                	return PTS_UNRESOLVED;
-	        }
+		if (sigaction(SIGUSR1, &act, 0) == -1) {
+			perror
+			    ("Unexpected error while attempting to pre-conditions");
+			return PTS_UNRESOLVED;
+		}
 
 		sigemptyset(&selectset);
 		sigaddset(&selectset, SIGUSR1);
 
 		printf("Child calling sigwaitinfo()\n");
 
-	        if (sigwaitinfo(&selectset, NULL) == -1) {
-	                perror("Call to sigwaitinfo() failed\n");
-	                return PTS_UNRESOLVED;
-	        }
+		if (sigwaitinfo(&selectset, NULL) == -1) {
+			perror("Call to sigwaitinfo() failed\n");
+			return PTS_UNRESOLVED;
+		}
 
-	        printf("returned from sigwaitinfo\n");
+		printf("returned from sigwaitinfo\n");
 		sleep(1);
 		return PTS_PASS;
 
@@ -73,7 +74,7 @@ int main()
 		sleep(1);
 
 		printf("parent sending child a SIGUSR1 signal\n");
-		kill (pid, SIGUSR1);
+		kill(pid, SIGUSR1);
 
 		if (wait(&s) == -1) {
 			perror("Unexpected error while setting up test "
@@ -91,9 +92,9 @@ int main()
 		printf("Exit status from child is %d\n", exit_status);
 
 		if (exit_status != PTS_PASS) {
-                        printf("Test FAILED\n");
-                        return PTS_FAIL;
-                }
+			printf("Test FAILED\n");
+			return PTS_FAIL;
+		}
 
 		printf("Test PASSED\n");
 		return PTS_PASS;

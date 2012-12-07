@@ -37,21 +37,22 @@ void *thread_func()
 	pthread_t self = pthread_self();
 
 	struct sched_param param;
-        memset(&param, 0, sizeof(param));
+	memset(&param, 0, sizeof(param));
 
 	rc = pthread_getschedparam(self, &new_policy, &param);
-        if (rc != 0) {
-                perror(ERROR_PREFIX "pthread_getschedparam");
-                exit(PTS_UNRESOLVED);
-        }
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_getschedparam");
+		exit(PTS_UNRESOLVED);
+	}
 	if (new_policy == policy) {
 		fprintf(stderr, ERROR_PREFIX "The scheduling attribute is not "
-		       "inherited from creating thread \n");
+			"inherited from creating thread \n");
 		exit(PTS_FAIL);
 	}
 	pthread_exit(0);
 	return NULL;
 }
+
 int main()
 {
 	pthread_t new_th;
@@ -69,33 +70,31 @@ int main()
 	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_setschedpolicy");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	int insched = PTHREAD_INHERIT_SCHED;
 	rc = pthread_attr_setinheritsched(&attr, insched);
 	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_setinheritsched");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
-	if (rc !=0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_create");
-                exit(PTS_UNRESOLVED);
-        }
+		exit(PTS_UNRESOLVED);
+	}
 
 	rc = pthread_join(new_th, NULL);
-	if (rc != 0)
-        {
-                perror(ERROR_PREFIX "pthread_join");
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_join");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 	rc = pthread_attr_destroy(&attr);
-	if (rc != 0)
-        {
-                perror(ERROR_PREFIX "pthread_attr_destroy");
+	if (rc != 0) {
+		perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);
-        }
+	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

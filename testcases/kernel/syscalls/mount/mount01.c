@@ -110,21 +110,22 @@ int main(int ac, char **av)
 	/* Check for mandatory option of the testcase */
 	if (!Dflag)
 		tst_brkm(TBROK, NULL,
-		    "you must specify the device used for mounting with the -D "
-		    "option");
+			 "you must specify the device used for mounting with the -D "
+			 "option");
 
 	if (Tflag) {
 		Fstype = malloc(strlen(fstype) + 1);
 		if (Fstype == NULL) {
-			tst_brkm(TBROK|TERRNO, NULL,
-			    "malloc - failed to alloc %zd", strlen(fstype));
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "malloc - failed to alloc %zd",
+				 strlen(fstype));
 		}
 		strncpy(Fstype, fstype, strlen(fstype) + 1);
 	} else {
 		Fstype = malloc(strlen(DEFAULT_FSTYPE) + 1);
 		if (Fstype == NULL) {
 			tst_brkm(TBROK, NULL, "malloc - failed to alloc %zu",
-			    strlen(DEFAULT_FSTYPE));
+				 strlen(DEFAULT_FSTYPE));
 		}
 		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE) + 1);
 	}
@@ -147,13 +148,13 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN != 0) {
-			tst_resm(TFAIL|TTERRNO, "mount(2) failed");
+			tst_resm(TFAIL | TTERRNO, "mount(2) failed");
 		} else {
 			tst_resm(TPASS, "mount(2) passed ");
 			TEST(umount(mntpoint));
 			if (TEST_RETURN != 0) {
-				tst_brkm(TBROK|TTERRNO, cleanup,
-				    "umount(2) failed");
+				tst_brkm(TBROK | TTERRNO, cleanup,
+					 "umount(2) failed");
 			}
 		}
 	}
@@ -186,8 +187,8 @@ void setup()
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
-		    mntpoint, DIR_MODE);
+		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",
+			 mntpoint, DIR_MODE);
 	}
 
 	TEST_PAUSE;

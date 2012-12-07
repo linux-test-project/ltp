@@ -30,7 +30,8 @@
 
 #include "test_VIDIOC_QUERYSTD.h"
 
-void test_VIDIOC_QUERYSTD() {
+void test_VIDIOC_QUERYSTD()
+{
 	int ret_query, errno_query;
 	v4l2_std_id id;
 
@@ -39,8 +40,9 @@ void test_VIDIOC_QUERYSTD() {
 	ret_query = ioctl(get_video_fd(), VIDIOC_QUERYSTD, &id);
 	errno_query = errno;
 
-	dprintf("\t%s:%u: VIDIOC_QUERYSTD, ret_query=%i, errno_query=%i, id=0x%llx\n",
-		__FILE__, __LINE__, ret_query, errno_query, id);
+	dprintf
+	    ("\t%s:%u: VIDIOC_QUERYSTD, ret_query=%i, errno_query=%i, id=0x%llx\n",
+	     __FILE__, __LINE__, ret_query, errno_query, id);
 
 	if (ret_query == 0) {
 		CU_ASSERT_EQUAL(ret_query, 0);
@@ -55,7 +57,8 @@ void test_VIDIOC_QUERYSTD() {
 
 }
 
-void test_VIDIOC_QUERYSTD_NULL() {
+void test_VIDIOC_QUERYSTD_NULL()
+{
 	int ret_query, errno_query;
 	int ret_null, errno_null;
 	v4l2_std_id id;

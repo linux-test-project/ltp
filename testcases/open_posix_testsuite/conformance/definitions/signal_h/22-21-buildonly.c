@@ -1,6 +1,6 @@
   /*
-  Test that the BUS_OBJERR macro is defined.
-  */
+     Test that the BUS_OBJERR macro is defined.
+   */
 
 #include <signal.h>
 

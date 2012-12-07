@@ -1,21 +1,21 @@
   /*
- * Copyright (c) 2002, Intel Corporation. All rights reserved.
- * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this
- * source tree.
+   * Copyright (c) 2002, Intel Corporation. All rights reserved.
+   * Created by:  rolla.n.selbak REMOVE-THIS AT intel DOT com
+   * This file is licensed under the GPL license.  For the full content
+   * of this license, see the COPYING file at the top level of this
+   * source tree.
 
-  Test this function is defined:
+   Test this function is defined:
 
-  pthread_create(pthread_t *restrict, const pthread_attr_t *restrict,
- 	void *(*)(void *), void *restrict);
-  */
+   pthread_create(pthread_t *restrict, const pthread_attr_t *restrict,
+   void *(*)(void *), void *restrict);
+   */
 
 #include <pthread.h>
 
-void * thread_function(void * arg)
+void *thread_function(void *arg)
 {
-    return NULL;
+	return NULL;
 }
 
 void dummy_func()

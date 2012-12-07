@@ -104,8 +104,9 @@ struct test_case_t {
 	int flags;
 	int (*parent_fn) ();
 } test_cases[] = {
-	{FLAG_ALL, parent_test1},
-	{FLAG_NONE, parent_test2}
+	{
+	FLAG_ALL, parent_test1}, {
+	FLAG_NONE, parent_test2}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);

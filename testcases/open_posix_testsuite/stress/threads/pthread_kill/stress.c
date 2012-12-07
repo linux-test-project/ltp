@@ -85,8 +85,7 @@ void sighdl(int sig)
 {
 	/* do_it = 0 */
 
-	do
-	{
+	do {
 		do_it = 0;
 	}
 	while (do_it);
@@ -95,17 +94,17 @@ void sighdl(int sig)
 void floodsighdl(int sig)
 {
 	/* Nothing to do */
-	return ;
+	return;
 }
 
 /* Signals flood receiver thread */
-void* flood_receiver(void *arg)
+void *flood_receiver(void *arg)
 {
 	int ret = 0;
 	/* register the signal handler for this one thread */
 
 	struct sigaction sa;
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = floodsighdl;
 
@@ -113,8 +112,7 @@ void* flood_receiver(void *arg)
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction(SIGBUS, &sa, NULL)))
-	{
+	if ((ret = sigaction(SIGBUS, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
@@ -122,23 +120,21 @@ void* flood_receiver(void *arg)
 
 	do {
 		sched_yield();
-	} while (*(int *) arg);
+	} while (*(int *)arg);
 
 	return NULL;
 }
 
 /* Signal flood threads */
-void * flooder_1(void * arg)
+void *flooder_1(void *arg)
 {
 	int ret = 0;
 
-	while (do_it)
-	{
+	while (do_it) {
 		iterations++;
-		ret = pthread_kill(*(pthread_t *) arg , SIGABRT);
+		ret = pthread_kill(*(pthread_t *) arg, SIGABRT);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(ret, "Flooder 1 thread got an error");
 		}
 	}
@@ -146,17 +142,15 @@ void * flooder_1(void * arg)
 	return NULL;
 }
 
-void * flooder_2(void * arg)
+void *flooder_2(void *arg)
 {
 	int ret = 0;
 
-	while (do_it)
-	{
+	while (do_it) {
 		iterations++;
-		ret = pthread_kill(*(pthread_t *) arg , SIGBUS);
+		ret = pthread_kill(*(pthread_t *) arg, SIGBUS);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(ret, "Flooder 1 thread got an error");
 		}
 	}
@@ -168,45 +162,43 @@ void * flooder_2(void * arg)
 int sync;
 void syncsighdl(int sig)
 {
-	/* signal we have been called*/
+	/* signal we have been called */
 	sync = 1;
-	return ;
+	return;
 }
 
-void * sync_rec(void * arg)
+void *sync_rec(void *arg)
 {
 	int ret = 0;
 
 	struct sigaction sa;
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = syncsighdl;
 
-	if ((ret = sigaction (SIGILL, &sa, NULL))) {
+	if ((ret = sigaction(SIGILL, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
 	/* wait until termination */
 	do {
 		sched_yield();
-	} while (*(int *) arg);
+	} while (*(int *)arg);
 
 	return NULL;
 }
 
-void * sync_send(void * arg)
+void *sync_send(void *arg)
 {
 	int ret = 0;
 
-	while (do_it)
-	{
+	while (do_it) {
 		/* Disarm the flag */
 		sync = 0;
 		/* Send the signal */
 		ret = pthread_kill(*(pthread_t *) arg, SIGILL);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(ret, "Failed to send signal");
 		}
 
@@ -215,9 +207,9 @@ void * sync_send(void * arg)
 			sleep(1);
 
 		/* Test if signal was received */
-		if (sync == 0)
-		{
-			FAILED("Signal SIGILL was not delivered within 5 second -- lost?");
+		if (sync == 0) {
+			FAILED
+			    ("Signal SIGILL was not delivered within 5 second -- lost?");
 		}
 	}
 
@@ -226,7 +218,7 @@ void * sync_send(void * arg)
 }
 
 /* Main function */
-int main (int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret = 0;
 
@@ -244,20 +236,19 @@ int main (int argc, char * argv[])
 	output_init();
 
 	/* Register the signal handler for SIGUSR1 */
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 
 	sa.sa_flags = 0;
 
 	sa.sa_handler = sighdl;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL))) {
+	if ((ret = sigaction(SIGUSR1, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGALRM, &sa, NULL))) {
+	if ((ret = sigaction(SIGALRM, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
-
 #if VERBOSE > 1
 	output("[parent] Signal handler registered\n");
 
@@ -265,66 +256,57 @@ int main (int argc, char * argv[])
 
 	ret = pthread_create(&fl_rec, NULL, flood_receiver, &flooding);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Unable to create a thread");
 	}
 
 	ret = pthread_create(&fl_snd1, NULL, flooder_1, &fl_rec);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Unable to create a thread");
 	}
 
 	ret = pthread_create(&fl_snd2, NULL, flooder_2, &fl_rec);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Unable to create a thread");
 	}
 
 	ret = pthread_create(&sy_rec, NULL, sync_rec, &synchro);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Unable to create a thread");
 	}
 
 	ret = pthread_create(&sy_snd, NULL, sync_send, &sy_rec);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Unable to create a thread");
 	}
 
 	/* Wait the user stops the test */
 	ret = pthread_join(fl_snd1, NULL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to join a thread");
 	}
 
 	ret = pthread_join(fl_snd2, NULL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to join a thread");
 	}
 
 	flooding = 0;
 	ret = pthread_join(fl_rec, NULL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to join a thread");
 	}
 
 	ret = pthread_join(sy_snd, NULL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to join a thread");
 	}
 
@@ -332,13 +314,13 @@ int main (int argc, char * argv[])
 
 	ret = pthread_join(sy_rec, NULL);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to join a thread");
 	}
 
 	/* We've been asked to stop */
-	output("pthread_kill stress test PASSED -- %llu iterations\n", iterations);
+	output("pthread_kill stress test PASSED -- %llu iterations\n",
+	       iterations);
 
 	PASSED;
 }

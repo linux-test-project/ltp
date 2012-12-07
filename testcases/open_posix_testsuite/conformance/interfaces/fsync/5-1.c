@@ -23,21 +23,17 @@
 
 int main()
 {
-  int fd;
+	int fd;
 
-  /* -1 is an invalid fd */
+	/* -1 is an invalid fd */
 
-  fd = -1;
-  if (fsync(fd) == -1 && errno == EBADF)
-  {
-    printf("Got EBADF when fd=-1\n");
-    printf("Test PASSED\n");
-    exit(PTS_PASS);
-  }
-  else
-  {
-    printf("Test FAILED: Expect EBADF, get: %s\n",
-            strerror(errno));
-    exit(PTS_FAIL);
-  }
+	fd = -1;
+	if (fsync(fd) == -1 && errno == EBADF) {
+		printf("Got EBADF when fd=-1\n");
+		printf("Test PASSED\n");
+		exit(PTS_PASS);
+	} else {
+		printf("Test FAILED: Expect EBADF, get: %s\n", strerror(errno));
+		exit(PTS_FAIL);
+	}
 }

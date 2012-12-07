@@ -102,10 +102,10 @@ int main(int ac, char **av)
 		sprintf(dir1, "getcwd1.%d", getpid());
 		if (mkdir(dir1, 00755) < 0) {
 			tst_brkm(TBROK, cleanup, "mkdir(2) failed");
-		 }
+		}
 		if (chdir(dir1) != 0) {
 			tst_brkm(TBROK, cleanup, "chdir(2) failed");
-		 }
+		}
 
 		pwd1 = getpwd();
 		if (getcwd(cwd1, sizeof cwd1) == NULL) {
@@ -117,7 +117,7 @@ int main(int ac, char **av)
 			tst_brkm(TFAIL, cleanup, "getcwd() returned unexpected "
 				 "working directory: expected: %s, got: %s\n",
 				 pwd1, cwd1);
-		 }
+		}
 
 		tst_resm(TINFO, "getcwd(2) succeeded in returning correct path "
 			 "for dir1");
@@ -133,12 +133,12 @@ int main(int ac, char **av)
 		if (symlink(dir1, dir2) < 0) {
 			tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d",
 				 errno);
-		 }
+		}
 
 		if (chdir(dir2) != 0) {
 			tst_brkm(TBROK, cleanup, "chdir(2) failed: errno: %d",
 				 errno);
-		 }
+		}
 
 		pwd2 = getpwd();
 		if (getcwd(cwd2, sizeof cwd2) == NULL) {
@@ -152,7 +152,7 @@ int main(int ac, char **av)
 		    ((n = readlink(dir2, link2, sizeof(link2))) < 0)) {
 			tst_brkm(TBROK, cleanup, "readlink(2) failed: errno:%d",
 				 errno);
-		 }
+		}
 
 		/*
 		 * Finally compare the pwd, cwd, link informations:
@@ -236,11 +236,11 @@ char *getpwd()
 	if ((fin = popen(pwd, "r")) == NULL) {
 		tst_resm(TINFO, "%s: can't run %s", TCID, pwd);
 		tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
-	 }
+	}
 	while (fgets(buf, BUFSIZ, fin) != NULL) {
 		if ((cp = strchr(buf, '\n')) == NULL) {
 			tst_brkm(TBROK, cleanup, "pwd output too long");
-		 }
+		}
 		*cp = 0;
 		cp_cur = buf;
 	}

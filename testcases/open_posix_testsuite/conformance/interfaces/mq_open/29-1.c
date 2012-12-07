@@ -31,7 +31,7 @@ int main()
 	sprintf(qname, "/mq_open_29-1_%d", getpid());
 
 	queue = mq_open(qname, O_RDWR, S_IRUSR | S_IWUSR, NULL);
-	if (queue != (mqd_t) -1) {
+	if (queue != (mqd_t) - 1) {
 		printf("mq_open() did not return mqd_t - on error\n");
 		printf("Test FAILED\n");
 		mq_close(queue);

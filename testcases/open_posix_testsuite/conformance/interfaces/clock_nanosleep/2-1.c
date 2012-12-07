@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tsafter.tv_sec >= sleepuntilsec) {
-		if (tsafter.tv_sec <= (sleepuntilsec+ACCEPTABLEDELTA)) {
+		if (tsafter.tv_sec <= (sleepuntilsec + ACCEPTABLEDELTA)) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		} else {

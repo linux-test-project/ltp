@@ -33,7 +33,9 @@
 
 #include "test_VIDIOC_CROPCAP.h"
 
-static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_ret) {
+static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type,
+				    int expected_ret)
+{
 	int ret_cap, errno_cap;
 	struct v4l2_cropcap cropcap;
 	struct v4l2_cropcap cropcap2;
@@ -53,23 +55,23 @@ static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_re
 		CU_ASSERT_EQUAL(ret_cap, 0);
 		CU_ASSERT_EQUAL(cropcap.type, buf_type);
 
-	/*     |   left                                   x   */
-	/* ----+----+-------------------------------------->  */
-	/*     |    :                                         */
-	/* top +    +-------- cropcap ------------+  ^        */
-	/*     |    |                             |  |        */
-	/*     |    | +------- defrect ---------+ |  |        */
-	/*     |    | |                         | |  |        */
-	/*     |    | |                         | |  |        */
-	/*     |    | |                         | |  | height */
-	/*     |    | +-------------------------+ |  |        */
-	/*     |    |                             |  |        */
-	/*     |    |                             |  |        */
-	/*     |    +-----------------------------+  v        */
-	/*     |    :                             :           */
-	/*     |    <---------- width ------------>           */
-	/*     |                                              */
-	/*     v y                                            */
+		/*     |   left                                   x   */
+		/* ----+----+-------------------------------------->  */
+		/*     |    :                                         */
+		/* top +    +-------- cropcap ------------+  ^        */
+		/*     |    |                             |  |        */
+		/*     |    | +------- defrect ---------+ |  |        */
+		/*     |    | |                         | |  |        */
+		/*     |    | |                         | |  |        */
+		/*     |    | |                         | |  | height */
+		/*     |    | +-------------------------+ |  |        */
+		/*     |    |                             |  |        */
+		/*     |    |                             |  |        */
+		/*     |    +-----------------------------+  v        */
+		/*     |    :                             :           */
+		/*     |    <---------- width ------------>           */
+		/*     |                                              */
+		/*     v y                                            */
 
 		/* top left corner */
 		CU_ASSERT(cropcap.bounds.left <= cropcap.defrect.left);
@@ -97,20 +99,16 @@ static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_re
 			".pixelaspect = { .numerator = %u, .denominator = %u } "
 			"}\n",
 			cropcap.type,
-
 			cropcap.bounds.left,
 			cropcap.bounds.top,
 			cropcap.bounds.width,
 			cropcap.bounds.height,
-
 			cropcap.defrect.left,
 			cropcap.defrect.top,
 			cropcap.defrect.width,
 			cropcap.defrect.height,
-
 			cropcap.pixelaspect.numerator,
-			cropcap.pixelaspect.denominator
-			);
+			cropcap.pixelaspect.denominator);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_cap, -1);
@@ -118,13 +116,15 @@ static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_re
 
 		memset(&cropcap2, 0xff, sizeof(cropcap2));
 		cropcap2.type = buf_type;
-		CU_ASSERT_EQUAL(memcmp(&cropcap, &cropcap2, sizeof(cropcap)), 0);
+		CU_ASSERT_EQUAL(memcmp(&cropcap, &cropcap2, sizeof(cropcap)),
+				0);
 
 	}
 
 }
 
-void test_VIDIOC_CROPCAP() {
+void test_VIDIOC_CROPCAP()
+{
 
 	do_ioctl_VIDIOC_CROPCAP(0, -1);
 	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_VIDEO_CAPTURE, 0);
@@ -135,17 +135,18 @@ void test_VIDIOC_CROPCAP() {
 	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_SLICED_VBI_CAPTURE, -1);
 	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_SLICED_VBI_OUTPUT, -1);
 	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY, -1);
-	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_PRIVATE-1, -1);
+	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_PRIVATE - 1, -1);
 	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_PRIVATE, 0);
-	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_PRIVATE+1, 0);
+	do_ioctl_VIDIOC_CROPCAP(V4L2_BUF_TYPE_PRIVATE + 1, 0);
 	do_ioctl_VIDIOC_CROPCAP(S32_MAX, -1);
-	do_ioctl_VIDIOC_CROPCAP(((__u32)S32_MAX)+1, -1);
-	do_ioctl_VIDIOC_CROPCAP(U32_MAX-1, -1);
+	do_ioctl_VIDIOC_CROPCAP(((__u32) S32_MAX) + 1, -1);
+	do_ioctl_VIDIOC_CROPCAP(U32_MAX - 1, -1);
 	do_ioctl_VIDIOC_CROPCAP(U32_MAX, -1);
 
 }
 
-void test_VIDIOC_CROPCAP_enum_INPUT() {
+void test_VIDIOC_CROPCAP_enum_INPUT()
+{
 	int ret_get, errno_get;
 	int ret_set, errno_set;
 	int enum_ret;
@@ -168,19 +169,23 @@ void test_VIDIOC_CROPCAP_enum_INPUT() {
 			input.index = i;
 			enum_ret = ioctl(f, VIDIOC_ENUMINPUT, &input);
 
-			dprintf("\t%s:%u: ENUMINPUT: i=%u, enum_ret=%i, errno=%i\n",
-				__FILE__, __LINE__, i, enum_ret, errno);
+			dprintf
+			    ("\t%s:%u: ENUMINPUT: i=%u, enum_ret=%i, errno=%i\n",
+			     __FILE__, __LINE__, i, enum_ret, errno);
 
 			if (enum_ret == 0) {
-				ret_set = ioctl(f, VIDIOC_S_INPUT, &input.index);
+				ret_set =
+				    ioctl(f, VIDIOC_S_INPUT, &input.index);
 				errno_set = errno;
 
-				dprintf("\t%s:%u: input.index=0x%X, ret_set=%i, errno_set=%i\n",
-					__FILE__, __LINE__, input.index, ret_set, errno_set);
+				dprintf
+				    ("\t%s:%u: input.index=0x%X, ret_set=%i, errno_set=%i\n",
+				     __FILE__, __LINE__, input.index, ret_set,
+				     errno_set);
 
 				CU_ASSERT_EQUAL(ret_set, 0);
 				if (ret_set == 0) {
-				    test_VIDIOC_CROPCAP();
+					test_VIDIOC_CROPCAP();
 				}
 
 			}
@@ -198,7 +203,8 @@ void test_VIDIOC_CROPCAP_enum_INPUT() {
 	}
 }
 
-void test_VIDIOC_CROPCAP_NULL() {
+void test_VIDIOC_CROPCAP_NULL()
+{
 	int ret_capture, errno_capture;
 	int ret_output, errno_output;
 	int ret_overlay, errno_overlay;
@@ -240,12 +246,13 @@ void test_VIDIOC_CROPCAP_NULL() {
 		__FILE__, __LINE__, ret_private, errno_private);
 
 	memset(&cropcap, 0xff, sizeof(cropcap));
-	cropcap.type = V4L2_BUF_TYPE_PRIVATE+1;
+	cropcap.type = V4L2_BUF_TYPE_PRIVATE + 1;
 	ret_private_1 = ioctl(get_video_fd(), VIDIOC_CROPCAP, &cropcap);
 	errno_private_1 = errno;
 
-	dprintf("\t%s:%u: VIDIOC_CROPCAP, ret_private_1=%i, errno_private_1=%i\n",
-		__FILE__, __LINE__, ret_private_1, errno_private_1);
+	dprintf
+	    ("\t%s:%u: VIDIOC_CROPCAP, ret_private_1=%i, errno_private_1=%i\n",
+	     __FILE__, __LINE__, ret_private_1, errno_private_1);
 
 	ret_null = ioctl(get_video_fd(), VIDIOC_CROPCAP, NULL);
 	errno_null = errno;

@@ -33,22 +33,23 @@
 #define FALSE          0
 #include "Ltpfs.h"
 
-static int     ltpdev_open( struct inode *inode, struct file *pfile);
-static int     ltpdev_release( struct inode *inode, struct file *pfile);
-static int     ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int cmd, unsigned long arg );
-static int     do_buffer_c_tests(void);
+static int ltpdev_open(struct inode *inode, struct file *pfile);
+static int ltpdev_release(struct inode *inode, struct file *pfile);
+static int ltpdev_ioctl(struct inode *pinode, struct file *pfile,
+			unsigned int cmd, unsigned long arg);
+static int do_buffer_c_tests(void);
 
 static struct block_device_operations blkops = {
-open:       ltpdev_open,
-release:    ltpdev_release,
-ioctl:      ltpdev_ioctl,
+open:	ltpdev_open,
+release:ltpdev_release,
+ioctl:	ltpdev_ioctl,
 };
 
 int ltp_fs_major = LTPMAJOR;
 int test_iteration = 0;
 
 static char genhd_flags = 0;
-static struct gendisk * gd_ptr;
+static struct gendisk *gd_ptr;
 static spinlock_t bdev_lock __cacheline_aligned_in_smp = SPIN_LOCK_UNLOCKED;
 
 MODULE_AUTHOR("Martin Ridgeway <mridge@us.ibm.com>");
@@ -65,77 +66,78 @@ int path_lookup(const char *name, unsigned int flags, struct nameidata *nd);
 //static int __emul_lookup_dentry(const char *name, struct nameidata *nd);
 void path_release(struct nameidata *nd);
 
-static int ltpdev_open (struct inode *pinode, struct file *pfile)
+static int ltpdev_open(struct inode *pinode, struct file *pfile)
 {
-    printk(KERN_ALERT "ltpdev_open \n");
-  return 0;
+	printk(KERN_ALERT "ltpdev_open \n");
+	return 0;
 }
 
-static int ltpdev_release (struct inode *pinode, struct file *pfile)
+static int ltpdev_release(struct inode *pinode, struct file *pfile)
 {
 
-    printk(KERN_ALERT "ltpdev_release \n");
-  return 0;
+	printk(KERN_ALERT "ltpdev_release \n");
+	return 0;
 }
 
-static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int cmd, unsigned long arg )
+static int ltpdev_ioctl(struct inode *pinode, struct file *pfile,
+			unsigned int cmd, unsigned long arg)
 {
 
-    struct bio *my_bio = NULL;
-    struct bio *my_bio_copy = NULL;
+	struct bio *my_bio = NULL;
+	struct bio *my_bio_copy = NULL;
 	request_queue_t *q = NULL;
-    struct block_device *bdev = NULL;
-    unsigned long uaddr;
+	struct block_device *bdev = NULL;
+	unsigned long uaddr;
 
-    unsigned int bytes_done = 100;
+	unsigned int bytes_done = 100;
 
-    int          error = 0;
-    int          rc = 0;
+	int error = 0;
+	int rc = 0;
 
     /*****************************************************************************/
 
-    printk(KERN_ALERT "ltpdev_ioctl fs tests\n");
+	printk(KERN_ALERT "ltpdev_ioctl fs tests\n");
 
-    switch (cmd) {
+	switch (cmd) {
 
-    case LTPAIODEV_CMD:
-        printk(KERN_ALERT "Running AIO FS tests \n");
-        printk(KERN_ALERT "AIO FS tests complete\n");
-        break;
+	case LTPAIODEV_CMD:
+		printk(KERN_ALERT "Running AIO FS tests \n");
+		printk(KERN_ALERT "AIO FS tests complete\n");
+		break;
 
-    case LTPBIODEV_CMD:
+	case LTPBIODEV_CMD:
 
-        printk(KERN_ALERT "Running BIO FS tests \n");
+		printk(KERN_ALERT "Running BIO FS tests \n");
 
-        my_bio = bio_alloc(GFP_KERNEL, 0);
-        if (!my_bio) {
-            printk(KERN_ALERT "Error getting kernel slab memory !!\n");
-        }
-        else {
-            printk(KERN_ALERT "kernel slab memory alloc OK\n");
-        }
+		my_bio = bio_alloc(GFP_KERNEL, 0);
+		if (!my_bio) {
+			printk(KERN_ALERT
+			       "Error getting kernel slab memory !!\n");
+		} else {
+			printk(KERN_ALERT "kernel slab memory alloc OK\n");
+		}
 
-        bio_endio(my_bio, bytes_done, error);
+		bio_endio(my_bio, bytes_done, error);
 
-        printk(KERN_ALERT "Return from bio_endio = %d \n", error);
+		printk(KERN_ALERT "Return from bio_endio = %d \n", error);
 
-        my_bio_copy = bio_clone(my_bio,GFP_ATOMIC);
+		my_bio_copy = bio_clone(my_bio, GFP_ATOMIC);
 
-        if (!my_bio_copy) {
-            printk(KERN_ALERT "Error getting kernel bio clone !!\n");
-        }
-        else {
-            printk(KERN_ALERT "kernel bio clone OK\n");
-        }
+		if (!my_bio_copy) {
+			printk(KERN_ALERT
+			       "Error getting kernel bio clone !!\n");
+		} else {
+			printk(KERN_ALERT "kernel bio clone OK\n");
+		}
 
-        my_bio_copy = bio_clone(my_bio,GFP_NOIO);
+		my_bio_copy = bio_clone(my_bio, GFP_NOIO);
 
-        if (!my_bio_copy) {
-            printk(KERN_ALERT "Error getting kernel bio clone !!\n");
-        }
-        else {
-            printk(KERN_ALERT "kernel bio clone OK\n");
-        }
+		if (!my_bio_copy) {
+			printk(KERN_ALERT
+			       "Error getting kernel bio clone !!\n");
+		} else {
+			printk(KERN_ALERT "kernel bio clone OK\n");
+		}
 
 //        q = bdev_get_queue(my_bio->bi_bdev);
 
@@ -143,104 +145,108 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
 //        rc = bio_hw_segments(q, my_bio);
 
-        bdev = lookup_bdev(LTP_FS_DEVICE_NAME);
+		bdev = lookup_bdev(LTP_FS_DEVICE_NAME);
 
-        printk(KERN_ALERT "return from bdev size %d\n", bdev->bd_block_size);
+		printk(KERN_ALERT "return from bdev size %d\n",
+		       bdev->bd_block_size);
 
-        printk(KERN_ALERT "Return from phys_segments = %d \n", rc);
+		printk(KERN_ALERT "Return from phys_segments = %d \n", rc);
 
 //        Don't use this API, causes system to hang and corrupts FS
 //        bio_put(my_bio);
 
-        (char *)uaddr = kmalloc(TEST_MEM_SIZE, GFP_KERNEL);
+		(char *)uaddr = kmalloc(TEST_MEM_SIZE, GFP_KERNEL);
 
-        my_bio_copy = bio_map_user(bdev, uaddr, TEST_MEM_SIZE, FALSE);
+		my_bio_copy = bio_map_user(bdev, uaddr, TEST_MEM_SIZE, FALSE);
 
-        printk(KERN_ALERT "Return from bio_map_user %p\n", my_bio_copy);
+		printk(KERN_ALERT "Return from bio_map_user %p\n", my_bio_copy);
 
-        do_buffer_c_tests();
+		do_buffer_c_tests();
 
-        printk(KERN_ALERT "BIO FS tests complete\n");
+		printk(KERN_ALERT "BIO FS tests complete\n");
 
-    break;
-    }
+		break;
+	}
 
-  return 0;
+	return 0;
 }
 
 static int ltp_pm_callback(struct pm_dev *dev, pm_request_t rqst, void *data)
 {
-  return 0;
+	return 0;
 }
 
 int init_module(void)
 {
-    int                result;
+	int result;
 
-    printk(KERN_ALERT "ltpdev_init_module \n");
+	printk(KERN_ALERT "ltpdev_init_module \n");
 
 	ltp_pm_dev = pm_register(PM_UNKNOWN_DEV, 0, ltp_pm_callback);
 
-    result = register_blkdev(ltp_fs_major, LTP_FS_DEV_NAME);
+	result = register_blkdev(ltp_fs_major, LTP_FS_DEV_NAME);
 
-    printk(KERN_ALERT "LTP FS: register_blkdev result=%d major %d\n",result, ltp_fs_major);
+	printk(KERN_ALERT "LTP FS: register_blkdev result=%d major %d\n",
+	       result, ltp_fs_major);
 
-    if (result < 0) {
-        printk(KERN_ALERT "LTP FS: can't get major %d\n",ltp_fs_major);
-        return result;
-    }
+	if (result < 0) {
+		printk(KERN_ALERT "LTP FS: can't get major %d\n", ltp_fs_major);
+		return result;
+	}
 
 	gd_ptr = kmalloc(sizeof(struct gendisk *), GFP_KERNEL);
 
-    if (!gd_ptr) {
-        printk(KERN_ALERT "ERROR getting memory !!!\n");
-      return 0;
-    }
+	if (!gd_ptr) {
+		printk(KERN_ALERT "ERROR getting memory !!!\n");
+		return 0;
+	}
 
-    gd_ptr = alloc_disk(1);
+	gd_ptr = alloc_disk(1);
 
-    printk(KERN_ALERT "gd_ptr after alloc = %p \n",gd_ptr);
+	printk(KERN_ALERT "gd_ptr after alloc = %p \n", gd_ptr);
 
-    gd_ptr->major = ltp_fs_major;
-    gd_ptr->first_minor = 0;
-    gd_ptr->fops = &blkops;
-    gd_ptr->driverfs_dev = NULL;
-    gd_ptr->capacity = MAX_NUM_DISKS;
-    gd_ptr->flags = genhd_flags;
+	gd_ptr->major = ltp_fs_major;
+	gd_ptr->first_minor = 0;
+	gd_ptr->fops = &blkops;
+	gd_ptr->driverfs_dev = NULL;
+	gd_ptr->capacity = MAX_NUM_DISKS;
+	gd_ptr->flags = genhd_flags;
 
-    sprintf(gd_ptr->disk_name, LTP_FS_DEV_NAME);
+	sprintf(gd_ptr->disk_name, LTP_FS_DEV_NAME);
 
-    add_disk(gd_ptr);
+	add_disk(gd_ptr);
 
-  return 0;
+	return 0;
 }
 
 void cleanup_module(void)
 {
 
-    printk(KERN_ALERT "Exiting module and cleaning up \n");
+	printk(KERN_ALERT "Exiting module and cleaning up \n");
 
-    pm_unregister(ltp_pm_dev);
+	pm_unregister(ltp_pm_dev);
 
-    put_disk(gd_ptr);
+	put_disk(gd_ptr);
 
-    del_gendisk(gd_ptr);
+	del_gendisk(gd_ptr);
 
-    unregister_blkdev(ltp_fs_major, LTP_FS_DEV_NAME);
+	unregister_blkdev(ltp_fs_major, LTP_FS_DEV_NAME);
 
 }
+
 static int do_buffer_c_tests()
 {
-    int line_no = 0;
+	int line_no = 0;
 
-    printk(KERN_ALERT "Starting buffer.c coverage tests... \n");
+	printk(KERN_ALERT "Starting buffer.c coverage tests... \n");
 
-    __buffer_error("Test file", line_no);
+	__buffer_error("Test file", line_no);
 
-    printk(KERN_ALERT "buffer.c coverage tests complete...\n");
+	printk(KERN_ALERT "buffer.c coverage tests complete...\n");
 
-  return 0;
+	return 0;
 }
+
 /**
  * lookup_bdev  - lookup a struct block_device by name
  *

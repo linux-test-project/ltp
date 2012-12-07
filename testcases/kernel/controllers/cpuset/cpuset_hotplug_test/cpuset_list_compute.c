@@ -38,7 +38,7 @@ static void checkopt(int argc, char **argv)
 			add_or_subtract = 0;
 			optc++;
 			break;
-		case 'h':   /* help */
+		case 'h':	/* help */
 			usage(argv[0], 0);
 			break;
 		case 's':
@@ -55,8 +55,7 @@ static void checkopt(int argc, char **argv)
 		OPT_COLLIDING(argv[0], 'a', 's');
 
 	if (argc == optc + 1) {
-		fprintf(stderr, "%s: missing the argument list1.\n",
-			argv[0]);
+		fprintf(stderr, "%s: missing the argument list1.\n", argv[0]);
 		usage(argv[0], 1);
 	} else if (argc == optc + 2)
 		convert = 1;

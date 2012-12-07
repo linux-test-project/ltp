@@ -151,7 +151,7 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-		 }
+		}
 
 		if (STD_FUNCTIONAL_TEST) {
 			/*
@@ -178,7 +178,7 @@ int main(int ac, char **av)
 		}
 		if (shmdt(flag)) {
 			tst_brkm(TBROK, cleanup, "shmdt failed ");
-		 }
+		}
 	}
 	cleanup();
 
@@ -204,7 +204,7 @@ void do_child()
 	int exno = 1;
 
 	sleep(300);
-	  tst_resm(TINFO, "Child never recieved a signal");
+	tst_resm(TINFO, "Child never recieved a signal");
 	exit(exno);
 }
 

@@ -84,10 +84,9 @@ int main(int argc, char **argv)
 	int pipefildes[2];
 	int status, pid;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+	}
 
 	/* global setup */
 	setup();
@@ -117,19 +116,19 @@ int main(int argc, char **argv)
 		if (fd < 0) {
 			tst_resm(TFAIL, "creating a new file failed");
 			cleanup();
-		 }
+		}
 		if (write(fd, bad_addr, 10) != -1) {
 			tst_resm(TFAIL, "write() on an invalid buffer "
 				 "succeeded, but should have failed");
 			cleanup();
-		 } else {
+		} else {
 			TEST_ERROR_LOG(errno);
 			if (errno != EFAULT) {
 				tst_resm(TFAIL, "write() returned illegal "
 					 "errno: expected EFAULT, got %d",
 					 errno);
 				cleanup();
-			 }
+			}
 			tst_resm(TPASS, "received EFAULT as expected.");
 		}
 		tst_resm(TINFO, "Exit Block 2");
@@ -232,4 +231,4 @@ void cleanup(void)
 	unlink(filename);
 	tst_rmdir();
 
- }
+}

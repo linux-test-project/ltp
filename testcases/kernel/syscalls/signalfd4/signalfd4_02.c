@@ -168,7 +168,8 @@ int main(int argc, char *argv[])
 			}
 			close(fd);
 
-			fd = syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE, SFD_NONBLOCK);
+			fd = syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE,
+				     SFD_NONBLOCK);
 			if (fd == -1) {
 				tst_resm(TFAIL,
 					 "signalfd4(SFD_NONBLOCK) failed");

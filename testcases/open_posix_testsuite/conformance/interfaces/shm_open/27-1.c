@@ -16,6 +16,7 @@
 
 int main()
 {
-        printf("Will not test the result of shm_open() when using O_TRUNC with O_RDONLY.\nIt is undefined.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test the result of shm_open() when using O_TRUNC with O_RDONLY.\nIt is undefined.\n");
+	return PTS_UNTESTED;
 }

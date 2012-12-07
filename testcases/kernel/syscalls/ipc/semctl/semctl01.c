@@ -205,8 +205,8 @@ int main(int ac, char **av)
 					 /*FALLTHROUGH*/ case GETZCNT:
 					 /*FALLTHROUGH*/ case GETPID:
 					 /*FALLTHROUGH*/ case GETVAL:
-						(*TC[i].
-						 func_test) (TEST_RETURN);
+						(*TC[i].func_test)
+						    (TEST_RETURN);
 						break;
 					default:
 						(*TC[i].func_test) ();

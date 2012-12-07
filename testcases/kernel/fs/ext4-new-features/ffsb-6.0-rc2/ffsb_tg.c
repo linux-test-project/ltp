@@ -23,7 +23,7 @@
 #include "ffsb_tg.h"
 #include "util.h"
 
-void init_ffsb_tg(ffsb_tg_t *tg, unsigned num_threads, unsigned tg_num)
+void init_ffsb_tg(ffsb_tg_t * tg, unsigned num_threads, unsigned tg_num)
 {
 	int i;
 	memset(tg, 0, sizeof(ffsb_tg_t));
@@ -32,14 +32,14 @@ void init_ffsb_tg(ffsb_tg_t *tg, unsigned num_threads, unsigned tg_num)
 	tg->tg_num = tg_num;
 	tg->num_threads = num_threads;
 
-	tg->bindfs = -1; /* default is not bound */
+	tg->bindfs = -1;	/* default is not bound */
 
 	tg->thread_bufsize = 0;
-	for (i = 0 ; i < num_threads ; i++)
+	for (i = 0; i < num_threads; i++)
 		init_ffsb_thread(tg->threads + i, tg, 0, tg_num, i);
 }
 
-void destroy_ffsb_tg(ffsb_tg_t *tg)
+void destroy_ffsb_tg(ffsb_tg_t * tg)
 {
 	int i;
 	for (i = 0; i < tg->num_threads; i++)
@@ -51,7 +51,7 @@ void destroy_ffsb_tg(ffsb_tg_t *tg)
 
 void *tg_run(void *data)
 {
-	tg_run_params_t *params = (tg_run_params_t *)data;
+	tg_run_params_t *params = (tg_run_params_t *) data;
 	ffsb_tg_t *tg = params->tg;
 	int i;
 	pthread_attr_t attr;
@@ -95,7 +95,7 @@ void *tg_run(void *data)
 }
 
 /* Needs to set params->opnum and params->fs */
-void tg_get_op(ffsb_tg_t *tg, randdata_t *rd, tg_op_params_t *params)
+void tg_get_op(ffsb_tg_t * tg, randdata_t * rd, tg_op_params_t * params)
 {
 	unsigned curop;
 	int num;
@@ -121,148 +121,148 @@ void tg_get_op(ffsb_tg_t *tg, randdata_t *rd, tg_op_params_t *params)
 	params->fs = fc_get_fs(tg->fc, fsnum);
 }
 
-void tg_set_op_weight(ffsb_tg_t *tg, char *opname, unsigned weight)
+void tg_set_op_weight(ffsb_tg_t * tg, char *opname, unsigned weight)
 {
 	int opnum = ops_find_op(opname);
 	assert(opnum >= 0);
 	tg->op_weights[opnum] = weight;
 }
 
-unsigned tg_get_op_weight(ffsb_tg_t *tg, char *opname)
+unsigned tg_get_op_weight(ffsb_tg_t * tg, char *opname)
 {
 	int opnum = ops_find_op(opname);
 	assert(opnum >= 0);
 	return tg->op_weights[opnum];
 }
 
-void tg_set_bindfs(ffsb_tg_t *tg, int fsnum)
+void tg_set_bindfs(ffsb_tg_t * tg, int fsnum)
 {
 	tg->bindfs = fsnum;
 }
 
-int tg_get_bindfs(ffsb_tg_t *tg)
+int tg_get_bindfs(ffsb_tg_t * tg)
 {
 	return tg->bindfs;
 }
 
-unsigned tg_get_numthreads(ffsb_tg_t *tg)
+unsigned tg_get_numthreads(ffsb_tg_t * tg)
 {
 	return tg->num_threads;
 }
 
-static void update_bufsize(ffsb_tg_t *tg)
+static void update_bufsize(ffsb_tg_t * tg)
 {
 	int i;
 	uint32_t newmax = max(tg->read_blocksize, tg->write_blocksize);
 
 	if (newmax == max(newmax, tg->thread_bufsize))
-		for (i = 0; i < tg->num_threads ; i++)
+		for (i = 0; i < tg->num_threads; i++)
 			ft_alter_bufsize(tg->threads + i, newmax);
 }
 
-void tg_set_read_random(ffsb_tg_t *tg, int rr)
+void tg_set_read_random(ffsb_tg_t * tg, int rr)
 {
 	tg->read_random = rr;
 }
 
-void tg_set_write_random(ffsb_tg_t *tg, int wr)
+void tg_set_write_random(ffsb_tg_t * tg, int wr)
 {
 	tg->write_random = wr;
 }
 
-void tg_set_fsync_file(ffsb_tg_t *tg, int fsync)
+void tg_set_fsync_file(ffsb_tg_t * tg, int fsync)
 {
 	tg->fsync_file = fsync;
 }
 
-void tg_set_read_size(ffsb_tg_t *tg, uint64_t rs)
+void tg_set_read_size(ffsb_tg_t * tg, uint64_t rs)
 {
 	tg->read_size = rs;
 }
 
-void tg_set_read_blocksize(ffsb_tg_t *tg, uint32_t rs)
+void tg_set_read_blocksize(ffsb_tg_t * tg, uint32_t rs)
 {
 	tg->read_blocksize = rs;
 	update_bufsize(tg);
 }
 
-void tg_set_read_skip(ffsb_tg_t *tg, int rs)
+void tg_set_read_skip(ffsb_tg_t * tg, int rs)
 {
 	tg->read_skip = rs;
 }
 
-void tg_set_read_skipsize(ffsb_tg_t *tg, uint32_t rs)
+void tg_set_read_skipsize(ffsb_tg_t * tg, uint32_t rs)
 {
 	tg->read_skipsize = rs;
 }
 
-void tg_set_write_size(ffsb_tg_t *tg, uint64_t ws)
+void tg_set_write_size(ffsb_tg_t * tg, uint64_t ws)
 {
 	tg->write_size = ws;
 }
 
-void tg_set_write_blocksize(ffsb_tg_t *tg, uint32_t ws)
+void tg_set_write_blocksize(ffsb_tg_t * tg, uint32_t ws)
 {
 	tg->write_blocksize = ws;
 	update_bufsize(tg);
 }
 
-int tg_get_read_random(ffsb_tg_t *tg)
+int tg_get_read_random(ffsb_tg_t * tg)
 {
 	return tg->read_random;
 }
 
-int tg_get_write_random(ffsb_tg_t *tg)
+int tg_get_write_random(ffsb_tg_t * tg)
 {
 	return tg->write_random;
 }
 
-int tg_get_fsync_file(ffsb_tg_t *tg)
+int tg_get_fsync_file(ffsb_tg_t * tg)
 {
 	return tg->fsync_file;
 }
 
-uint64_t tg_get_read_size(ffsb_tg_t *tg)
+uint64_t tg_get_read_size(ffsb_tg_t * tg)
 {
 	return tg->read_size;
 }
 
-uint32_t tg_get_read_blocksize(ffsb_tg_t *tg)
+uint32_t tg_get_read_blocksize(ffsb_tg_t * tg)
 {
 	return tg->read_blocksize;
 }
 
-int tg_get_read_skip(ffsb_tg_t *tg)
+int tg_get_read_skip(ffsb_tg_t * tg)
 {
 	return tg->read_skip;
 }
 
-uint32_t tg_get_read_skipsize(ffsb_tg_t *tg)
+uint32_t tg_get_read_skipsize(ffsb_tg_t * tg)
 {
 	return tg->read_skipsize;
 }
 
-uint64_t tg_get_write_size(ffsb_tg_t *tg)
+uint64_t tg_get_write_size(ffsb_tg_t * tg)
 {
 	return tg->write_size;
 }
 
-uint32_t tg_get_write_blocksize(ffsb_tg_t *tg)
+uint32_t tg_get_write_blocksize(ffsb_tg_t * tg)
 {
 	return tg->write_blocksize;
 }
 
-int tg_get_stopval(ffsb_tg_t *tg)
+int tg_get_stopval(ffsb_tg_t * tg)
 {
 	return tg->stopval;
 }
 
-ffsb_barrier_t *tg_get_start_barrier(ffsb_tg_t *tg)
+ffsb_barrier_t *tg_get_start_barrier(ffsb_tg_t * tg)
 {
 	return tg->start_barrier;
 }
 
-static void tg_print_config_helper(ffsb_tg_t *tg)
+static void tg_print_config_helper(ffsb_tg_t * tg)
 {
 	int i;
 	int sumweights = 0;
@@ -303,43 +303,43 @@ static void tg_print_config_helper(ffsb_tg_t *tg)
 	printf("\t\n");
 }
 
-void tg_print_config(ffsb_tg_t *tg)
+void tg_print_config(ffsb_tg_t * tg)
 {
 	printf("ThreadGroup %d\n", tg->tg_num);
 	printf("================\n");
 	tg_print_config_helper(tg);
 }
 
-void tg_print_config_aging(ffsb_tg_t *tg, char *fsname)
+void tg_print_config_aging(ffsb_tg_t * tg, char *fsname)
 {
 	printf("\t Aging ThreadGroup for fs %s\n", fsname);
 	printf("\t ================\n");
 	tg_print_config_helper(tg);
 }
 
-void tg_collect_results(ffsb_tg_t *tg, ffsb_op_results_t *r)
+void tg_collect_results(ffsb_tg_t * tg, ffsb_op_results_t * r)
 {
 	int i;
 	for (i = 0; i < tg_get_numthreads(tg); i++)
 		add_results(r, ft_get_results(tg->threads + i));
 }
 
-void tg_set_waittime(ffsb_tg_t *tg, unsigned time)
+void tg_set_waittime(ffsb_tg_t * tg, unsigned time)
 {
 	tg->wait_time = time;
 }
 
-unsigned tg_get_waittime(ffsb_tg_t *tg)
+unsigned tg_get_waittime(ffsb_tg_t * tg)
 {
 	return tg->wait_time;
 }
 
-int tg_get_flagval(ffsb_tg_t *tg)
+int tg_get_flagval(ffsb_tg_t * tg)
 {
 	return tg->flagval;
 }
 
-void tg_set_statsc(ffsb_tg_t *tg, ffsb_statsc_t *fsc)
+void tg_set_statsc(ffsb_tg_t * tg, ffsb_statsc_t * fsc)
 {
 	if (fsc) {
 		int i;
@@ -352,7 +352,7 @@ void tg_set_statsc(ffsb_tg_t *tg, ffsb_statsc_t *fsc)
 	}
 }
 
-void tg_collect_stats(ffsb_tg_t *tg, ffsb_statsd_t *fsd)
+void tg_collect_stats(ffsb_tg_t * tg, ffsb_statsd_t * fsd)
 {
 	int i;
 
@@ -360,10 +360,10 @@ void tg_collect_stats(ffsb_tg_t *tg, ffsb_statsd_t *fsd)
 	ffsb_statsd_init(fsd, &tg->fsc);
 
 	for (i = 0; i < tg_get_numthreads(tg); i++)
-		ffsb_statsd_add(fsd, ft_get_stats_data(tg->threads+i));
+		ffsb_statsd_add(fsd, ft_get_stats_data(tg->threads + i));
 }
 
-int tg_needs_stats(ffsb_tg_t *tg)
+int tg_needs_stats(ffsb_tg_t * tg)
 {
 	return tg->need_stats;
 }

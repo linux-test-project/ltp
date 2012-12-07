@@ -17,6 +17,7 @@
 
 int main()
 {
-        printf("Will not test that implementations may require the requesting process to\nhave the appropriate privilege to set its own scheduling parameters or those\nof another process.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test that implementations may require the requesting process to\nhave the appropriate privilege to set its own scheduling parameters or those\nof another process.\n");
+	return PTS_UNTESTED;
 }

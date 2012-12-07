@@ -31,17 +31,18 @@
 #define KEY_VALUE_2 200
 
 pthread_key_t key;
-void* rc1;
-void* rc2;
+void *rc1;
+void *rc2;
 
 void *a_thread_func()
 {
 	/* Bind a value to key for this thread (this will be different from the value
 	 * that we bind for the main thread) */
-	if (pthread_setspecific(key, (void *)(KEY_VALUE_2)) != 0)
-	{
-		printf("Test FAILED: Could not set the value of the key to %d\n", (KEY_VALUE_2));
-		pthread_exit((void*)PTS_FAIL);
+	if (pthread_setspecific(key, (void *)(KEY_VALUE_2)) != 0) {
+		printf
+		    ("Test FAILED: Could not set the value of the key to %d\n",
+		     (KEY_VALUE_2));
+		pthread_exit((void *)PTS_FAIL);
 		return NULL;
 	}
 
@@ -58,22 +59,21 @@ int main()
 	pthread_t new_th;
 
 	/* Create the key */
-	if (pthread_key_create(&key, NULL) != 0)
-	{
+	if (pthread_key_create(&key, NULL) != 0) {
 		printf("Error: pthread_key_create() failed\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Bind a value for this main thread */
-	if (pthread_setspecific(key, (void *)(KEY_VALUE_1)) != 0)
-	{
-		printf("Test FAILED: Could not set the value of the key to %d\n", (KEY_VALUE_1));
+	if (pthread_setspecific(key, (void *)(KEY_VALUE_1)) != 0) {
+		printf
+		    ("Test FAILED: Could not set the value of the key to %d\n",
+		     (KEY_VALUE_1));
 		return PTS_FAIL;
 	}
 
 	/* Create another thread.  This thread will also bind a value to the key */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
-	{
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
 		printf("Error: in pthread_create()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -86,15 +86,17 @@ int main()
 
 	/* Compare this value with the value associated for the key in the newly created
 	 * thread, they should be different. */
-	if (rc1 != (void *)(KEY_VALUE_1))
-	{
-		printf("Test FAILED: Incorrect value bound to key, expected %d, got %ld\n", KEY_VALUE_1, (long)rc1);
+	if (rc1 != (void *)(KEY_VALUE_1)) {
+		printf
+		    ("Test FAILED: Incorrect value bound to key, expected %d, got %ld\n",
+		     KEY_VALUE_1, (long)rc1);
 		return PTS_FAIL;
 	}
 
-	if (rc2 != (void *)(KEY_VALUE_2))
-	{
-		printf("Test FAILED: Incorrect value bound to key, expected %d, got %ld\n", KEY_VALUE_2, (long)rc2);
+	if (rc2 != (void *)(KEY_VALUE_2)) {
+		printf
+		    ("Test FAILED: Incorrect value bound to key, expected %d, got %ld\n",
+		     KEY_VALUE_2, (long)rc2);
 		return PTS_FAIL;
 	}
 

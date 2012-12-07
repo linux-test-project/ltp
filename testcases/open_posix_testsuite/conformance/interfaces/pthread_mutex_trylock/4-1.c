@@ -21,26 +21,26 @@
 #include <errno.h>
 #include "posixtest.h"
 
-pthread_mutex_t    mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int main()
 {
-  	int           	rc;
+	int rc;
 
-	if ((rc=pthread_mutex_lock(&mutex))!=0) {
-		fprintf(stderr,"Error at pthread_mutex_lock(), rc=%d\n",rc);
+	if ((rc = pthread_mutex_lock(&mutex)) != 0) {
+		fprintf(stderr, "Error at pthread_mutex_lock(), rc=%d\n", rc);
 		return PTS_UNRESOLVED;
 	}
 
-   	rc = pthread_mutex_trylock(&mutex);
-      	if (rc!=EBUSY) {
-        	fprintf(stderr,"Expected %d(EBUSY), got %d\n",EBUSY,rc);
-        	printf("Test FAILED\n");
+	rc = pthread_mutex_trylock(&mutex);
+	if (rc != EBUSY) {
+		fprintf(stderr, "Expected %d(EBUSY), got %d\n", EBUSY, rc);
+		printf("Test FAILED\n");
 		return PTS_FAIL;
-      	}
+	}
 
-    	pthread_mutex_unlock(&mutex);
-  	pthread_mutex_destroy(&mutex);
+	pthread_mutex_unlock(&mutex);
+	pthread_mutex_destroy(&mutex);
 
 	printf("Test PASSED\n");
 	return PTS_PASS;

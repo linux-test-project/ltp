@@ -141,6 +141,7 @@ struct test_data_t {
 	WFILE, DEFAULT_TEST_MODE, -(BLOCKS_WRITTEN + OFFSET), 1, EINVAL}, {
 	WFILE, DEFAULT_TEST_MODE, BLOCKS_WRITTEN - OFFSET, 1, 0}
 };
+
 /* total number of tests in this file */
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 int block_size;
@@ -156,10 +157,10 @@ extern void cleanup()
 {
 	/* Close all open file descriptors. */
 	if (close(fdw) == -1)
-		tst_resm(TWARN|TERRNO, "close(%s) failed", fnamew);
+		tst_resm(TWARN | TERRNO, "close(%s) failed", fnamew);
 
 	if (close(fdr) == -1)
-		tst_resm(TWARN|TERRNO, "close(%s) failed", fnamer);
+		tst_resm(TWARN | TERRNO, "close(%s) failed", fnamer);
 
 	tst_rmdir();
 
@@ -184,14 +185,12 @@ void setup()
 
 	fdr = open(fnamer, O_RDONLY | O_CREAT, S_IRUSR);
 	if (fdr == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDONLY|O_CREAT, S_IRUSR) failed",
-			 fnamer);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDONLY|O_CREAT, S_IRUSR) failed", fnamer);
 	fdw = open(fnamew, O_RDWR | O_CREAT, S_IRWXU);
 	if (fdw == -1)
-		tst_brkm(TBROK|TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, S_IRWXU) failed",
-			 fnamew);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, S_IRWXU) failed", fnamew);
 	get_blocksize(fdr);
 	populate_file();
 }
@@ -204,7 +203,7 @@ void get_blocksize(int fd)
 	struct stat file_stat;
 
 	if (fstat(fd, &file_stat) < 0)
-		tst_resm(TFAIL|TERRNO,
+		tst_resm(TFAIL | TERRNO,
 			 "fstat failed while getting block_size");
 
 	block_size = (int)file_stat.st_blksize;
@@ -225,7 +224,7 @@ void populate_file()
 			buf[index] = 'A' + (index % 26);
 		buf[buf_size] = '\0';
 		if ((data = write(fdw, buf, buf_size)) < 0)
-			tst_brkm(TBROK|TERRNO, cleanup,
+			tst_brkm(TBROK | TERRNO, cleanup,
 				 "Unable to write to %s", fnamew);
 	}
 }
@@ -236,9 +235,11 @@ void populate_file()
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
 #if __WORDSIZE == 32
-	return (long) syscall(__NR_fallocate, fd, mode,
-	    __LONG_LONG_PAIR((off_t)(offset >> 32), (off_t)offset),
-	    __LONG_LONG_PAIR((off_t)(len >> 32), (off_t)len));
+	return (long)syscall(__NR_fallocate, fd, mode,
+			     __LONG_LONG_PAIR((off_t) (offset >> 32),
+					      (off_t) offset),
+			     __LONG_LONG_PAIR((off_t) (len >> 32),
+					      (off_t) len));
 #else
 	return syscall(__NR_fallocate, fd, mode, offset, len);
 #endif
@@ -280,7 +281,8 @@ int main(int ac, char **av)
 				strcpy(fname, fnamew);
 				break;
 			default:
-				tst_brkm(TCONF, cleanup, "invalid test setting");
+				tst_brkm(TCONF, cleanup,
+					 "invalid test setting");
 				tst_exit();
 			}
 
@@ -290,21 +292,26 @@ int main(int ac, char **av)
 			      test_data[test_index].len * block_size));
 			/* check return code */
 			if (TEST_ERRNO != test_data[test_index].error) {
-				if (TEST_ERRNO == EOPNOTSUPP || TEST_ERRNO == ENOSYS) {
+				if (TEST_ERRNO == EOPNOTSUPP
+				    || TEST_ERRNO == ENOSYS) {
 					tst_brkm(TCONF, cleanup,
 						 "fallocate system call is not implemented");
 				}
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL|TTERRNO, "fallocate(%s:%d, %d, %"PRId64", %"PRId64") failed, expected errno:%d",
-					fname, fd, test_data[test_index].mode,
-					test_data[test_index].offset * block_size,
-					test_data[test_index].len * block_size,
-					test_data[test_index].error);
+				tst_resm(TFAIL | TTERRNO,
+					 "fallocate(%s:%d, %d, %" PRId64 ", %"
+					 PRId64 ") failed, expected errno:%d",
+					 fname, fd, test_data[test_index].mode,
+					 test_data[test_index].offset *
+					 block_size,
+					 test_data[test_index].len * block_size,
+					 test_data[test_index].error);
 			} else {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "fallocate(%s:%d, %d, %"PRId64", %"PRId64") returned %d",
-					 fname, fd, test_data[test_index].mode,
+					 "fallocate(%s:%d, %d, %" PRId64 ", %"
+					 PRId64 ") returned %d", fname, fd,
+					 test_data[test_index].mode,
 					 test_data[test_index].offset *
 					 block_size,
 					 test_data[test_index].len * block_size,

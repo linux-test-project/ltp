@@ -54,8 +54,8 @@ static const char *dstname = NULL;
 static const char *srcname = NULL;
 static int source_open_flag = O_RDONLY;	/* open flags on source file */
 static int dest_open_flag = O_WRONLY;	/* open flags on dest file */
-static int no_write;			/* do not write */
-static int zero;			/* write zero's only */
+static int no_write;		/* do not write */
+static int zero;		/* write zero's only */
 
 static int debug;
 static int count_io_q_waits;	/* how many time io_queue_wait called */
@@ -76,13 +76,14 @@ int init_iocb(int n, int iosize)
 	}
 
 	for (i = 0; i < n; i++) {
-		if (!(iocb_free[i] = (struct iocb *) malloc(sizeof(struct iocb))))
+		if (!
+		    (iocb_free[i] = (struct iocb *)malloc(sizeof(struct iocb))))
 			return -1;
 		if (posix_memalign(&buf, alignment, iosize))
 			return -1;
 		if (debug > 1) {
 			printf("buf allocated at 0x%p, align:%d\n",
-					buf, alignment);
+			       buf, alignment);
 		}
 		if (zero) {
 			/*
@@ -126,7 +127,7 @@ int io_wait_run(io_context_t ctx, struct timespec *to)
 	 * Call the callback functions for each event.
 	 */
 	for (ep = events; n-- > 0; ep++) {
-		io_callback_t cb = (io_callback_t)ep->data;
+		io_callback_t cb = (io_callback_t) ep->data;
 		struct iocb *iocb = ep->obj;
 
 		if (debug > 1) {
@@ -273,7 +274,7 @@ int main(int argc, char *const *argv)
 		case 'a':	/* alignment of data buffer */
 			alignment = strtol(optarg, &endp, 0);
 			alignment = (long)scale_by_kmg((long long)alignment,
-							*endp);
+						       *endp);
 			break;
 		case 'f':	/* use these open flags */
 			if (strcmp(optarg, "LARGEFILE") == 0 ||
@@ -281,7 +282,7 @@ int main(int argc, char *const *argv)
 				source_open_flag |= O_LARGEFILE;
 				dest_open_flag |= O_LARGEFILE;
 			} else if (strcmp(optarg, "TRUNC") == 0 ||
-			           strcmp(optarg, "O_TRUNC") == 0) {
+				   strcmp(optarg, "O_TRUNC") == 0) {
 				dest_open_flag |= O_TRUNC;
 			} else if (strcmp(optarg, "SYNC") == 0 ||
 				   strcmp(optarg, "O_SYNC") == 0) {
@@ -303,7 +304,8 @@ int main(int argc, char *const *argv)
 			break;
 		case 'b':	/* block size */
 			aio_blksize = strtol(optarg, &endp, 0);
-			aio_blksize = (long)scale_by_kmg((long long)aio_blksize, *endp);
+			aio_blksize =
+			    (long)scale_by_kmg((long long)aio_blksize, *endp);
 			break;
 
 		case 'n':	/* num io */
@@ -332,7 +334,7 @@ int main(int argc, char *const *argv)
 		usage();
 	}
 	if (!zero) {
-	       	if ((srcfd = open(srcname = *argv, source_open_flag)) < 0) {
+		if ((srcfd = open(srcname = *argv, source_open_flag)) < 0) {
 			perror(srcname);
 			exit(1);
 		}
@@ -388,8 +390,8 @@ int main(int argc, char *const *argv)
 				}
 			}
 			if (!no_write) {
-				flag = (O_SYNC|dest_open_flag) &
-						~(O_DIRECT|O_CREAT);
+				flag = (O_SYNC | dest_open_flag) &
+				    ~(O_DIRECT | O_CREAT);
 				dstfd2 = open(dstname, flag);
 				if (dstfd2 < 0) {
 					perror(dstname);
@@ -413,7 +415,7 @@ int main(int argc, char *const *argv)
 		int i, rc;
 		/* Submit as many reads as once as possible upto aio_maxio */
 		int n = MIN(MIN(aio_maxio - busy, aio_maxio),
-				howmany(length - offset, aio_blksize));
+			    howmany(length - offset, aio_blksize));
 		if (n > 0) {
 			struct iocb *ioq[n];
 
@@ -426,11 +428,11 @@ int main(int argc, char *const *argv)
 					 * We are writing zero's to dstfd
 					 */
 					io_prep_pwrite(io, dstfd, io->u.c.buf,
-							iosize, offset);
+						       iosize, offset);
 					io_set_callback(io, wr_done);
 				} else {
 					io_prep_pread(io, srcfd, io->u.c.buf,
-							iosize, offset);
+						      iosize, offset);
 					io_set_callback(io, rd_done);
 				}
 				ioq[i] = io;
@@ -446,7 +448,7 @@ int main(int argc, char *const *argv)
 				printf("io_submit(%d) busy:%d\n", n, busy);
 			if (delay.tv_usec) {
 				struct timeval t = delay;
-				(void)select(0,0,0,0,&t);
+				(void)select(0, 0, 0, 0, &t);
 			}
 		}
 
@@ -462,7 +464,7 @@ int main(int argc, char *const *argv)
 		if (debug > 1) {
 			printf("io_wait_run: rc == %d\n", rc);
 			printf("busy:%d aio_maxio:%d tocopy:%d\n",
-					busy, aio_maxio, tocopy);
+			       busy, aio_maxio, tocopy);
 		}
 	}
 
@@ -475,11 +477,11 @@ int main(int argc, char *const *argv)
 			 * We are writing zero's to dstfd2
 			 */
 			io_prep_pwrite(io, dstfd2, io->u.c.buf,
-					leftover, offset);
+				       leftover, offset);
 			io_set_callback(io, wr_done);
 		} else {
 			io_prep_pread(io, srcfd2, io->u.c.buf,
-					leftover, offset);
+				      leftover, offset);
 			io_set_callback(io, rd_done);
 		}
 		rc = io_submit(myctx, 1, &io);
@@ -514,8 +516,8 @@ int main(int argc, char *const *argv)
 
 #else
 
-int
-main(void) {
+int main(void)
+{
 	fprintf(stderr, "System doesn't have libaio support.\n");
 	return 1;
 }

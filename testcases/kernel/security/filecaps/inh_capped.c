@@ -98,7 +98,7 @@ int main()
 	debug_print_caps("after second drop cap_sys_admin");
 	if (ret) {
 		tst_resm(TFAIL, "failed to drop capsysadmin from pI "
-				"after dropping cappset from pE");
+			 "after dropping cappset from pE");
 		tst_exit();
 	}
 
@@ -110,7 +110,7 @@ int main()
 	}
 
 	tst_resm(TFAIL, "succeeded raising capsysadmin in pI "
-			"without having setpcap");
+		 "without having setpcap");
 #else
 	tst_resm(TCONF, "System doesn't have POSIX capabilities support.");
 #endif

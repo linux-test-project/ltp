@@ -130,7 +130,6 @@ struct test_case_t {		/* test case structure */
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
-
 int main(int argc, char *argv[])
 {
 	int lc;
@@ -141,7 +140,7 @@ int main(int argc, char *argv[])
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 }
+	}
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {

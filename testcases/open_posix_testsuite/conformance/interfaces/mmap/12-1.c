@@ -66,14 +66,14 @@ int main(void)
 
 	/* Fill the buffer */
 	for (i = 0; i < size; i++)
-		((char *)pa)[i] = (13*i)%21;
+		((char *)pa)[i] = (13 * i) % 21;
 
 	/* Force the data to be written to disk */
 	msync(pa, size, MS_SYNC);
 
 	/* Check if the buffer still contains data */
 	for (i = 0; i < size; i++) {
-		if (((char *)pa)[i] != (13*i)%21) {
+		if (((char *)pa)[i] != (13 * i) % 21) {
 			printf("FAILED: Mapped buffer was not preserved\n");
 			return PTS_FAIL;
 		}

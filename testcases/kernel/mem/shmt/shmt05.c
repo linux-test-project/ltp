@@ -95,14 +95,13 @@ int main(void)
 			 "Error: shmget: shmid1 = %d, errno = %d\n",
 			 shmid1, errno);
 	} else {
-		cp1 = (char *)shmat(shmid1, cp + (SIZE/2), 0);
+		cp1 = (char *)shmat(shmid1, cp + (SIZE / 2), 0);
 		if (cp1 != (char *)-1) {
 			perror("shmat");
 			tst_resm(TFAIL,
 				 "Error: shmat: shmid1 = %d, addr= %p, errno = %d\n",
 				 shmid1, cp1, errno);
-		}
-		else{
+		} else {
 			tst_resm(TPASS, "2nd shmget & shmat");
 		}
 	}

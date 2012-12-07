@@ -27,30 +27,30 @@
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
- #define _POSIX_C_SOURCE 200112L
+#define _POSIX_C_SOURCE 200112L
 
  /* We need the XSI extention for some routines */
 #ifndef WITHOUT_XOPEN
- #define _XOPEN_SOURCE	600
+#define _XOPEN_SOURCE	600
 #endif
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
- #include <pthread.h>
- #include <stdarg.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <unistd.h>
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
- #include <errno.h>
- #include <signal.h>
- #include <semaphore.h>
+#include <errno.h>
+#include <signal.h>
+#include <semaphore.h>
 
 /********************************************************************************************/
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
- #include "testfrmw.h"
- #include "testfrmw.c"
+#include "testfrmw.h"
+#include "testfrmw.c"
  /* This header is responsible for defining the following macros:
   * UNRESOLVED(ret, descr);
   *    where descr is a description of the error and ret is an int (error code for example)
@@ -100,31 +100,37 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-char do_it=1;
-long long iterations=0;
+char do_it = 1;
+long long iterations = 0;
 
 /* Handler for user request to terminate */
 void sighdl(int sig)
 {
 	/* do_it = 0 */
-	do { do_it = 0; }
+	do {
+		do_it = 0;
+	}
 	while (do_it);
 }
 
 /* Cleanup handler to make sure the thread is exiting */
-void cleanup(void * arg)
+void cleanup(void *arg)
 {
 	int ret = 0;
-	sem_t * sem = (sem_t *) arg;
+	sem_t *sem = (sem_t *) arg;
 
 	/* Signal we're done (especially in case of a detached thread) */
-	do { ret = sem_post(sem); }
+	do {
+		ret = sem_post(sem);
+	}
 	while ((ret == -1) && (errno == EINTR));
-	if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
+	if (ret == -1) {
+		UNRESOLVED(errno, "Failed to wait for the semaphore");
+	}
 }
 
 /* Thread routine */
-void * threaded(void * arg)
+void *threaded(void *arg)
 {
 	pthread_cleanup_push(cleanup, &scenarii[sc].sem);
 
@@ -133,93 +139,122 @@ void * threaded(void * arg)
 
 	pthread_cleanup_pop(1);
 
-	return NULL; /* For the sake of compiler */
+	return NULL;		/* For the sake of compiler */
 }
 
 /* main routine */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	int ret, i;
-	void * rval;
+	void *rval;
 	struct sigaction sa;
 
 	pthread_t threads[NSCENAR * SCALABILITY_FACTOR * FACTOR];
 	int rets[NSCENAR * SCALABILITY_FACTOR * FACTOR];
 
- 	/* Initialize output */
+	/* Initialize output */
 	output_init();
 
 	/* Initialize scenarii table */
 	scenar_init();
 
 	/* Register the signal handler for SIGUSR1 */
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = sighdl;
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register signal handler"); }
-	if ((ret = sigaction (SIGALRM, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register signal handler"); }
-	#if VERBOSE > 1
+	if ((ret = sigaction(SIGUSR1, &sa, NULL))) {
+		UNRESOLVED(ret, "Unable to register signal handler");
+	}
+	if ((ret = sigaction(SIGALRM, &sa, NULL))) {
+		UNRESOLVED(ret, "Unable to register signal handler");
+	}
+#if VERBOSE > 1
 	output("[parent] Signal handler registered\n");
-	#endif
+#endif
 
-	while (do_it)
-	{
+	while (do_it) {
 		/* Create all the threads */
-		for (i=0; i<SCALABILITY_FACTOR * FACTOR; i++)
-		{
-			for (sc=0; sc<NSCENAR; sc++)
-			{
+		for (i = 0; i < SCALABILITY_FACTOR * FACTOR; i++) {
+			for (sc = 0; sc < NSCENAR; sc++) {
 				/* Skip the alternative stack threads */
 				if (scenarii[sc].altstack != 0)
 					continue;
 
-				rets[i*NSCENAR + sc] = pthread_create(&threads[i*NSCENAR + sc], &scenarii[sc].ta, threaded, &threads[i*NSCENAR + sc]);
-				switch (scenarii[sc].result)
-				{
-					case 0: /* Operation was expected to succeed */
-						if (rets[i*NSCENAR + sc] != 0)  {  UNRESOLVED(rets[i*NSCENAR + sc], "Failed to create this thread");  }
-						break;
+				rets[i * NSCENAR + sc] =
+				    pthread_create(&threads[i * NSCENAR + sc],
+						   &scenarii[sc].ta, threaded,
+						   &threads[i * NSCENAR + sc]);
+				switch (scenarii[sc].result) {
+				case 0:	/* Operation was expected to succeed */
+					if (rets[i * NSCENAR + sc] != 0) {
+						UNRESOLVED(rets
+							   [i * NSCENAR + sc],
+							   "Failed to create this thread");
+					}
+					break;
 
-					case 1: /* Operation was expected to fail */
-						if (rets[i*NSCENAR + sc] == 0)  {  UNRESOLVED(-1, "An error was expected but the thread creation succeeded");  }
-						break;
+				case 1:	/* Operation was expected to fail */
+					if (rets[i * NSCENAR + sc] == 0) {
+						UNRESOLVED(-1,
+							   "An error was expected but the thread creation succeeded");
+					}
+					break;
 
-					case 2: /* We did not know the expected result */
-					default:
-						#if VERBOSE > 5
-						if (rets[i*NSCENAR + sc] == 0)
-							{ output("Thread has been created successfully for this scenario\n"); }
-						else
-							{ output("Thread creation failed with the error: %s\n", strerror(rets[i*NSCENAR + sc])); }
-						#endif
-						;
+				case 2:	/* We did not know the expected result */
+				default:
+#if VERBOSE > 5
+					if (rets[i * NSCENAR + sc] == 0) {
+						output
+						    ("Thread has been created successfully for this scenario\n");
+					} else {
+						output
+						    ("Thread creation failed with the error: %s\n",
+						     strerror(rets
+							      [i * NSCENAR +
+							       sc]));
+					}
+#endif
+					;
 				}
-				if (rets[i*NSCENAR + sc] == 0)
-				{
+				if (rets[i * NSCENAR + sc] == 0) {
 					/* Just wait for the thread to terminate */
-					do { ret = sem_wait(&scenarii[sc].sem); }
+					do {
+						ret =
+						    sem_wait(&scenarii[sc].sem);
+					}
 					while ((ret == -1) && (errno == EINTR));
-					if (ret == -1)  {  UNRESOLVED(errno, "Failed to wait for the semaphore");  }
+					if (ret == -1) {
+						UNRESOLVED(errno,
+							   "Failed to wait for the semaphore");
+					}
 				}
 			}
 		}
 
 		/* Join all the joinable threads and check the value */
-		for (i=0; i<SCALABILITY_FACTOR * FACTOR; i++)
-		{
-			for (sc=0; sc<NSCENAR; sc++)
-			{
-				if ((scenarii[sc].altstack == 0) && (scenarii[sc].detached == 0) && (rets[i*NSCENAR + sc] == 0))
-				{
-					ret = pthread_join(threads[i*NSCENAR + sc], &rval);
-					if (ret != 0)  {  UNRESOLVED(ret, "Unable to join a thread");  }
+		for (i = 0; i < SCALABILITY_FACTOR * FACTOR; i++) {
+			for (sc = 0; sc < NSCENAR; sc++) {
+				if ((scenarii[sc].altstack == 0)
+				    && (scenarii[sc].detached == 0)
+				    && (rets[i * NSCENAR + sc] == 0)) {
+					ret =
+					    pthread_join(threads
+							 [i * NSCENAR + sc],
+							 &rval);
+					if (ret != 0) {
+						UNRESOLVED(ret,
+							   "Unable to join a thread");
+					}
 
-					if (rval !=  (void *)&threads[i*NSCENAR + sc])
-					{
-						output("arg: %p -- got %p -- NULL=%p\n", &threads[i*NSCENAR + sc], rval, NULL);
-						FAILED("The retrieved error value is corrupted");
+					if (rval !=
+					    (void *)&threads[i * NSCENAR +
+							     sc]) {
+						output
+						    ("arg: %p -- got %p -- NULL=%p\n",
+						     &threads[i * NSCENAR + sc],
+						     rval, NULL);
+						FAILED
+						    ("The retrieved error value is corrupted");
 					}
 				}
 			}
@@ -232,12 +267,13 @@ int main(int argc, char * argv[])
 	scenar_fini();
 
 	/* Test passed */
-	output("pthread_exit stress test PASSED -- %llu iterations\n",iterations);
+	output("pthread_exit stress test PASSED -- %llu iterations\n",
+	       iterations);
 	PASSED;
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

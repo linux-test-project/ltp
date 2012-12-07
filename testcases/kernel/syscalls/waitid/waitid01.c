@@ -54,9 +54,9 @@
 /* Extern Global Variables */
 
 /* Global Variables */
-char *TCID = "waitid01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 3;                   /* total number of tests in this file.   */
+char *TCID = "waitid01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 3;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -76,12 +76,13 @@ int  TST_TOTAL = 3;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
 
-        TEST_CLEANUP;
-        tst_rmdir();
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        tst_exit();
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -102,82 +103,85 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
-}
-
-void display_status(siginfo_t *infop)
+void setup()
 {
-        tst_resm(TINFO,"Process %d terminated:", infop->si_pid);
-        tst_resm(TINFO,"code = %d",infop->si_code);
-        if (infop->si_code == CLD_EXITED)
-                tst_resm(TINFO,"exit value = %d",infop->si_status);
-        else
-		tst_resm(TINFO,"signal = %d",infop->si_status);
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
+void display_status(siginfo_t * infop)
+{
+	tst_resm(TINFO, "Process %d terminated:", infop->si_pid);
+	tst_resm(TINFO, "code = %d", infop->si_code);
+	if (infop->si_code == CLD_EXITED)
+		tst_resm(TINFO, "exit value = %d", infop->si_status);
+	else
+		tst_resm(TINFO, "signal = %d", infop->si_status);
+}
+
+int main(int ac, char **av)
+{
 	id_t pid;
-        siginfo_t infop;
+	siginfo_t infop;
 	int lc;
 	char *msg;
 
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-             tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
-        setup();
+	setup();
 
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-	TEST(fork());
-	if (TEST_RETURN == 0) {
-                exit(123);
-        }
-        else{
-                TEST(waitid(P_ALL,getpid(),&infop,WEXITED));
-		if (TEST_RETURN == -1) {
-                        tst_resm(TFAIL|TTERRNO, "waitid(getpid()) failed");
-                        tst_exit();
-		}else
-		    display_status(&infop); //CLD_EXITED = 1
-        }
+			TEST(fork());
+			if (TEST_RETURN == 0) {
+				exit(123);
+			} else {
+				TEST(waitid(P_ALL, getpid(), &infop, WEXITED));
+				if (TEST_RETURN == -1) {
+					tst_resm(TFAIL | TTERRNO,
+						 "waitid(getpid()) failed");
+					tst_exit();
+				} else
+					display_status(&infop);	//CLD_EXITED = 1
+			}
 
-        TEST(fork());
-        if (TEST_RETURN == 0) {
-		int a, b = 0;
-                a = 1/b;
-                tst_exit();
-        } else{
-                TEST(waitid(P_ALL,0,&infop,WEXITED));
-		if (TEST_RETURN == -1) {
-                        tst_resm(TFAIL|TTERRNO, "waitid(0) failed");
-                        tst_exit();
-                } else
-			display_status(&infop); //CLD_DUMPED = 3 ; SIGFPE = 8
-        }
+			TEST(fork());
+			if (TEST_RETURN == 0) {
+				int a, b = 0;
+				a = 1 / b;
+				tst_exit();
+			} else {
+				TEST(waitid(P_ALL, 0, &infop, WEXITED));
+				if (TEST_RETURN == -1) {
+					tst_resm(TFAIL | TTERRNO,
+						 "waitid(0) failed");
+					tst_exit();
+				} else
+					display_status(&infop);	//CLD_DUMPED = 3 ; SIGFPE = 8
+			}
 
-        TEST(pid = fork());
-	if (TEST_RETURN == 0) {
-                TEST(sleep(10));
-                tst_exit();
-        }
-        TEST(kill(pid,SIGHUP));
-        TEST(waitid(P_ALL,0,&infop,WEXITED));
-	if (TEST_RETURN == -1) {
-                tst_resm(TFAIL|TTERRNO, "waitid(0) failed");
-                tst_exit();
-        } else
-		display_status(&infop); //CLD_KILLED = 2 ; SIGHUP = 1
-                }
-        }
-        tst_resm(TPASS, "waitid(): system call passed");
+			TEST(pid = fork());
+			if (TEST_RETURN == 0) {
+				TEST(sleep(10));
+				tst_exit();
+			}
+			TEST(kill(pid, SIGHUP));
+			TEST(waitid(P_ALL, 0, &infop, WEXITED));
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL | TTERRNO, "waitid(0) failed");
+				tst_exit();
+			} else
+				display_status(&infop);	//CLD_KILLED = 2 ; SIGHUP = 1
+		}
+	}
+	tst_resm(TPASS, "waitid(): system call passed");
 	cleanup();
-        tst_exit();
+	tst_exit();
 }

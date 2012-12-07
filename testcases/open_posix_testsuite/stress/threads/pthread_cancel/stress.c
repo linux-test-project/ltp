@@ -46,7 +46,7 @@
 /******************************   Test framework   *****************************************/
 /********************************************************************************************/
 #include "testfrmw.h"
- #include "testfrmw.c"
+#include "testfrmw.c"
 /* This header is responsible for defining the following macros:
  * UNRESOLVED(ret, descr);
  *    where descr is a description of the error and ret is an int (error code for example)
@@ -83,8 +83,7 @@ char do_it = 1;
 /* Handler for user request to terminate */
 void sighdl(int sig)
 {
-	do
-	{
+	do {
 		do_it = 0;
 	}
 	while (do_it);
@@ -93,13 +92,12 @@ void sighdl(int sig)
 long long canceled, ended;
 
 /* The canceled thread */
-void * th(void * arg)
+void *th(void *arg)
 {
 	int ret = 0;
 	ret = pthread_barrier_wait(arg);
 
-	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
-	{
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD)) {
 		UNRESOLVED(ret, "Failed to wait for the barrier");
 	}
 
@@ -107,7 +105,7 @@ void * th(void * arg)
 }
 
 /* Thread function */
-void * threaded(void * arg)
+void *threaded(void *arg)
 {
 	int ret = 0;
 	pthread_t child;
@@ -115,26 +113,22 @@ void * threaded(void * arg)
 	/* Initialize the barrier */
 	ret = pthread_barrier_init(arg, NULL, 2);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to initialize a barrier");
 	}
 
-	while (do_it)
-	{
+	while (do_it) {
 		/* Create the thread */
 		ret = pthread_create(&child, NULL, th, arg);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(ret, "Thread creation failed");
 		}
 
 		/* Synchronize */
 		ret = pthread_barrier_wait(arg);
 
-		if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
-		{
+		if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD)) {
 			UNRESOLVED(ret, "Failed to wait for the barrier");
 		}
 
@@ -149,8 +143,7 @@ void * threaded(void * arg)
 		/* Join the thread */
 		ret = pthread_join(child, NULL);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(ret, "Unable to join the child");
 		}
 
@@ -159,8 +152,7 @@ void * threaded(void * arg)
 	/* Destroy the barrier */
 	ret = pthread_barrier_destroy(arg);
 
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to destroy a barrier");
 	}
 
@@ -168,46 +160,41 @@ void * threaded(void * arg)
 }
 
 /* Main function */
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int ret = 0, i;
 
 	struct sigaction sa;
 
-	pthread_t th[ NTHREADS ];
-	pthread_barrier_t b[ NTHREADS ];
+	pthread_t th[NTHREADS];
+	pthread_barrier_t b[NTHREADS];
 
 	/* Initialize output routine */
 	output_init();
 
 	/* Register the signal handler for SIGUSR1 */
-	sigemptyset (&sa.sa_mask);
+	sigemptyset(&sa.sa_mask);
 
 	sa.sa_flags = 0;
 
 	sa.sa_handler = sighdl;
 
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
-	{
+	if ((ret = sigaction(SIGUSR1, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if ((ret = sigaction (SIGALRM, &sa, NULL)))
-	{
+	if ((ret = sigaction(SIGALRM, &sa, NULL))) {
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
-
 #if VERBOSE > 1
 	output("[parent] Signal handler registered\n");
 
 #endif
 
-	for (i = 0; i < NTHREADS; i++)
-	{
-		ret = pthread_create(&th[ i ], NULL, threaded, &b[ i ]);
+	for (i = 0; i < NTHREADS; i++) {
+		ret = pthread_create(&th[i], NULL, threaded, &b[i]);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(ret, "Failed to create a thread");
 		}
 	}
@@ -218,12 +205,10 @@ int main (int argc, char *argv[])
 #endif
 
 	/* Then join */
-	for (i = 0; i < NTHREADS; i++)
-	{
-		ret = pthread_join(th[ i ], NULL);
+	for (i = 0; i < NTHREADS; i++) {
+		ret = pthread_join(th[i], NULL);
 
-		if (ret != 0)
-		{
+		if (ret != 0) {
 			UNRESOLVED(ret, "Failed to join a thread");
 		}
 	}

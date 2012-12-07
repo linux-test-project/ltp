@@ -86,62 +86,62 @@ struct test_case {
 	int exp_err;
 };
 static struct test_case tc[] = {
-	{	/* case 00, set attr to reg */
-		.fname = FILENAME,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = 0,
-	},
-	{	/* case 01, set attr to dir */
-		.fname = DIRNAME,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = 0,
-	},
-	{	/* case 02, set attr to symlink */
-		.fname = SYMLINK,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = EEXIST,
-	},
-	{	/* case 03, set attr to fifo */
-		.fname = FIFO,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = EPERM,
-	},
-	{	/* case 04, set attr to character special */
-		.fname = CHR,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = EPERM,
-	},
-	{	/* case 05, set attr to block special */
-		.fname = BLK,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = EPERM,
-	},
-	{	/* case 06, set attr to socket */
-		.fname = SOCK,
-		.key = XATTR_TEST_KEY,
-		.value = XATTR_TEST_VALUE,
-		.size = XATTR_TEST_VALUE_SIZE,
-		.flags = XATTR_CREATE,
-		.exp_err = EPERM,
-	},
+	{			/* case 00, set attr to reg */
+	 .fname = FILENAME,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = 0,
+	 },
+	{			/* case 01, set attr to dir */
+	 .fname = DIRNAME,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = 0,
+	 },
+	{			/* case 02, set attr to symlink */
+	 .fname = SYMLINK,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EEXIST,
+	 },
+	{			/* case 03, set attr to fifo */
+	 .fname = FIFO,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EPERM,
+	 },
+	{			/* case 04, set attr to character special */
+	 .fname = CHR,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EPERM,
+	 },
+	{			/* case 05, set attr to block special */
+	 .fname = BLK,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EPERM,
+	 },
+	{			/* case 06, set attr to socket */
+	 .fname = SOCK,
+	 .key = XATTR_TEST_KEY,
+	 .value = XATTR_TEST_VALUE,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EPERM,
+	 },
 };
 
 int TST_TOTAL = sizeof(tc) / sizeof(tc[0]);
@@ -161,15 +161,16 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		for (i = 0; i < TST_TOTAL; i++)	{
+		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(setxattr(tc[i].fname, tc[i].key, tc[i].value,
-			    tc[i].size, tc[i].flags));
+				      tc[i].size, tc[i].flags));
 
 			if (TEST_ERRNO == tc[i].exp_err) {
 				tst_resm(TPASS | TTERRNO, "expected behavior");
 			} else {
 				tst_resm(TFAIL | TTERRNO, "unexpected behavior "
-				    "- expected errno %d - Got", tc[i].exp_err);
+					 "- expected errno %d - Got",
+					 tc[i].exp_err);
 			}
 		}
 	}
@@ -194,39 +195,39 @@ static void setup(void)
 	if (setxattr("testfile", "user.test", "test", 4, XATTR_CREATE) == -1)
 		if (errno == ENOTSUP)
 			tst_brkm(TCONF, cleanup, "No xattr support in fs or "
-			    "mount without user_xattr option");
+				 "mount without user_xattr option");
 	unlink("testfile");
 
 	/* Create test files */
 	fd = creat(FILENAME, 0644);
 	if (fd == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create test file(%s) failed",
-		    FILENAME);
+			 FILENAME);
 	close(fd);
 
 	if (mkdir(DIRNAME, 0644) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create test dir(%s) failed",
-		    DIRNAME);
+			 DIRNAME);
 
 	if (symlink(FILENAME, SYMLINK) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create symlink(%s->%s)"
-		    " failed", SYMLINK, FILENAME);
+			 " failed", SYMLINK, FILENAME);
 
 	if (mknod(FIFO, S_IFIFO | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create FIFO(%s) failed",
-		    FIFO);
+			 FIFO);
 
 	if (mknod(CHR, S_IFCHR | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create char special(%s)"
-		    " failed", CHR);
+			 " failed", CHR);
 
 	if (mknod(BLK, S_IFBLK | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create block special(%s)"
-		    " failed", BLK);
+			 " failed", BLK);
 
 	if (mknod(SOCK, S_IFSOCK | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create socket(%s) failed",
-		    SOCK);
+			 SOCK);
 
 	TEST_PAUSE;
 }

@@ -26,20 +26,20 @@
 #include "tfloat.h"
 
 const TH_FUNC th_func[] = {
-	{FUNC_NORMAL, 50, acos,  "acos",  "dacos",         "racos",
-		""},
-	{FUNC_NORMAL, 50, asin,  "asin",  "dasin",         "rasin",
-		""},
-	{FUNC_NORMAL, 50, atan,  "atan",  "datan",         "ratan",
-		""},
-	{FUNC_ATAN2,  50, atan2, "atan2", "datan2",        "ratan2",
-		""},
-	{FUNC_NORMAL, 50, cos,   "cos",   "dcos",          "rcos",
-		""},
-	{FUNC_NORMAL, 50, sin,   "sin",   "dsin",          "rsin",
-		""},
-	{FUNC_NORMAL, 50, tan,   "tan",   "dtan",          "rtan",
-		""}
+	{FUNC_NORMAL, 50, acos, "acos", "dacos", "racos",
+	 ""},
+	{FUNC_NORMAL, 50, asin, "asin", "dasin", "rasin",
+	 ""},
+	{FUNC_NORMAL, 50, atan, "atan", "datan", "ratan",
+	 ""},
+	{FUNC_ATAN2, 50, atan2, "atan2", "datan2", "ratan2",
+	 ""},
+	{FUNC_NORMAL, 50, cos, "cos", "dcos", "rcos",
+	 ""},
+	{FUNC_NORMAL, 50, sin, "sin", "dsin", "rsin",
+	 ""},
+	{FUNC_NORMAL, 50, tan, "tan", "dtan", "rtan",
+	 ""}
 };
 
 #define NB_FUNC  (sizeof(th_func)/sizeof(TH_FUNC))

@@ -33,42 +33,48 @@
 typedef struct {
 	int ThreadID;
 	mqd_t mqID;
-}mq_info;
+} mq_info;
 
-int* send(void *info)
+int *send(void *info)
 {
 	int i;
 
-	const char *s_msg_ptr[] = {"msg test 1", "msg test 2", "msg test 3"};
+	const char *s_msg_ptr[] = { "msg test 1", "msg test 2", "msg test 3" };
 	mq_info send_info;
-	send_info.ThreadID = ((mq_info *)info)->ThreadID;
-	send_info.mqID = ((mq_info *)info)->mqID;
-	printf("Enter into send [%d], mq = %d \n", send_info.ThreadID, send_info.mqID);
+	send_info.ThreadID = ((mq_info *) info)->ThreadID;
+	send_info.mqID = ((mq_info *) info)->mqID;
+	printf("Enter into send [%d], mq = %d \n", send_info.ThreadID,
+	       send_info.mqID);
 	for (i = 0; i < MAX_MSG; i++) {
 		if (-1 == mq_send(send_info.mqID, s_msg_ptr[i], MSG_SIZE, i)) {
 			perror("mq_send doesn't return success \n");
-			pthread_exit((void *) 1);
+			pthread_exit((void *)1);
 		}
-		printf("[%d] send '%s' in thread send [%d]. \n", i+1, s_msg_ptr[i], send_info.ThreadID);
+		printf("[%d] send '%s' in thread send [%d]. \n", i + 1,
+		       s_msg_ptr[i], send_info.ThreadID);
 	}
 	pthread_exit((void *)0);
 
 }
-int* receive(void * info)
+
+int *receive(void *info)
 {
 	int i;
 	char r_msg_ptr[MAX_MSG][MSG_SIZE];
 
 	mq_info recv_info;
-	recv_info.ThreadID = ((mq_info *)info)->ThreadID;
-	recv_info.mqID = ((mq_info *)info)->mqID;
-	printf("Enter into receive [%d], mq = %d \n", recv_info.ThreadID, recv_info.mqID);
-	for (i = 0; i< MAX_MSG; i++) {
-		if (-1 == mq_receive(recv_info.mqID, r_msg_ptr[i], MSG_SIZE, NULL)) {
+	recv_info.ThreadID = ((mq_info *) info)->ThreadID;
+	recv_info.mqID = ((mq_info *) info)->mqID;
+	printf("Enter into receive [%d], mq = %d \n", recv_info.ThreadID,
+	       recv_info.mqID);
+	for (i = 0; i < MAX_MSG; i++) {
+		if (-1 ==
+		    mq_receive(recv_info.mqID, r_msg_ptr[i], MSG_SIZE, NULL)) {
 			perror("mq_receive doesn't return success \n");
 			pthread_exit((void *)0);
 		}
-		printf("[%d] receive '%s' in thread receive recv [%d]. \n", i+1, r_msg_ptr[i], recv_info.ThreadID);
+		printf("[%d] receive '%s' in thread receive recv [%d]. \n",
+		       i + 1, r_msg_ptr[i], recv_info.ThreadID);
 	}
 
 	pthread_exit((void *)0);
@@ -76,10 +82,12 @@ int* receive(void * info)
 
 int main(int argc, char *argv[])
 {
-	const char * MQ_NAME[Max_Threads] = {"/msg1", "/msg2", "/msg3", "/msg4", "/msg5", "/msg6", "/msg7", "/msg8", "/msg9", "/msg10"};
- 	mqd_t mq[Max_Threads];
+	const char *MQ_NAME[Max_Threads] =
+	    { "/msg1", "/msg2", "/msg3", "/msg4", "/msg5", "/msg6", "/msg7",
+"/msg8", "/msg9", "/msg10" };
+	mqd_t mq[Max_Threads];
 	struct mq_attr mqstat;
-	int oflag = O_CREAT|O_NONBLOCK|O_RDWR;
+	int oflag = O_CREAT | O_NONBLOCK | O_RDWR;
 	int num, i;
 	pthread_t sed[Max_Threads], rev[Max_Threads];
 	mq_info info[Max_Threads];
@@ -90,11 +98,12 @@ int main(int argc, char *argv[])
 #endif */
 	if ((2 != argc) || ((num = atoi(argv[1])) <= 0)) {
 		fprintf(stderr, "Usage: %s number_of_threads\n", argv[0]);
-                return PTS_FAIL;
-        }
+		return PTS_FAIL;
+	}
 	if (num > Max_Threads) {
-        	printf("The num of threads are too large.  Reset to %d\n", Max_Threads);
-        	num = Max_Threads;
+		printf("The num of threads are too large.  Reset to %d\n",
+		       Max_Threads);
+		num = Max_Threads;
 	}
 	memset(&mqstat, 0, sizeof(mqstat));
 	mqstat.mq_maxmsg = MAX_MSG;
@@ -102,7 +111,7 @@ int main(int argc, char *argv[])
 	mqstat.mq_flags = 0;
 
 	for (i = 0; i < num; i++) {
-	  	if ((mq[i] = mq_open(MQ_NAME[i],oflag,0777, &mqstat)) == -1) {
+		if ((mq[i] = mq_open(MQ_NAME[i], oflag, 0777, &mqstat)) == -1) {
 			perror("mq_open doesn't return success \n");
 			return PTS_UNRESOLVED;
 		}
@@ -112,7 +121,8 @@ int main(int argc, char *argv[])
 		info[i].ThreadID = i;
 		info[i].mqID = mq[i];
 		pthread_create(&sed[i], NULL, (void *)send, (void *)&info[i]);
-        	pthread_create(&rev[i], NULL, (void *)receive, (void *)&info[i]);
+		pthread_create(&rev[i], NULL, (void *)receive,
+			       (void *)&info[i]);
 	}
 	for (i = 0; i < num; i++) {
 		pthread_join(sed[i], NULL);

@@ -25,7 +25,8 @@
 
 #include "test_VIDIOC_CROP.h"
 
-void do_get_crop(enum v4l2_buf_type type) {
+void do_get_crop(enum v4l2_buf_type type)
+{
 	int ret1, errno1;
 	struct v4l2_crop crop;
 
@@ -47,13 +48,15 @@ void do_get_crop(enum v4l2_buf_type type) {
 
 }
 
-void test_VIDIOC_G_CROP() {
+void test_VIDIOC_G_CROP()
+{
 	do_get_crop(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	do_get_crop(V4L2_BUF_TYPE_VIDEO_OUTPUT);
 	do_get_crop(V4L2_BUF_TYPE_VIDEO_OVERLAY);
 }
 
-void do_get_crop_invalid(enum v4l2_buf_type type) {
+void do_get_crop_invalid(enum v4l2_buf_type type)
+{
 	int ret1, errno1;
 	struct v4l2_crop crop;
 
@@ -69,7 +72,8 @@ void do_get_crop_invalid(enum v4l2_buf_type type) {
 	CU_ASSERT_EQUAL(errno1, EINVAL);
 }
 
-void test_VIDIOC_G_CROP_invalid() {
+void test_VIDIOC_G_CROP_invalid()
+{
 	do_get_crop_invalid(0);
 	do_get_crop_invalid(V4L2_BUF_TYPE_VBI_CAPTURE);
 	do_get_crop_invalid(V4L2_BUF_TYPE_VBI_OUTPUT);
@@ -78,11 +82,12 @@ void test_VIDIOC_G_CROP_invalid() {
 	do_get_crop_invalid(V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY);
 	do_get_crop_invalid(V4L2_BUF_TYPE_PRIVATE);
 	do_get_crop_invalid(S32_MAX);
-	do_get_crop_invalid( ((__u32)S32_MAX)+1 );
+	do_get_crop_invalid(((__u32) S32_MAX) + 1);
 	do_get_crop_invalid(U32_MAX);
 }
 
-void test_VIDIOC_G_CROP_NULL() {
+void test_VIDIOC_G_CROP_NULL()
+{
 	int ret_get1, errno_get1;
 	int ret_get2, errno_get2;
 	int ret_get3, errno_get3;
@@ -140,7 +145,8 @@ void test_VIDIOC_G_CROP_NULL() {
 
 }
 
-void do_set_crop(enum v4l2_buf_type type) {
+void do_set_crop(enum v4l2_buf_type type)
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	int ret_new, errno_new;
@@ -161,38 +167,23 @@ void do_set_crop(enum v4l2_buf_type type) {
 		ret_orig, errno_orig,
 		crop_orig.type,
 		crop_orig.c.left,
-		crop_orig.c.top,
-		crop_orig.c.width,
-		crop_orig.c.height
-		);
+		crop_orig.c.top, crop_orig.c.width, crop_orig.c.height);
 
 	memset(&cropcap, 0, sizeof(cropcap));
 	cropcap.type = type;
 	ret_cap = ioctl(get_video_fd(), VIDIOC_CROPCAP, &cropcap);
 	errno_cap = errno;
 
-	dprintf("\t%s:%u: VIDIOC_CROPCAP, ret_cap=%i, errno_cap=%i, cropcap = { .type = %i, "
-		".bounds = { .left = %i, .top = %i, .width = %i, .height = %i }, "
-		".defrect = { .left = %i, .top = %i, .width = %i, .height = %i }, "
-		".pixelaspect = { .numerator = %u, .denominator = %u } "
-		"}\n",
-		__FILE__, __LINE__,
-		ret_cap, errno_cap,
-		cropcap.type,
-
-		cropcap.bounds.left,
-		cropcap.bounds.top,
-		cropcap.bounds.width,
-		cropcap.bounds.height,
-
-		cropcap.defrect.left,
-		cropcap.defrect.top,
-		cropcap.defrect.width,
-		cropcap.defrect.height,
-
-		cropcap.pixelaspect.numerator,
-		cropcap.pixelaspect.denominator
-		);
+	dprintf
+	    ("\t%s:%u: VIDIOC_CROPCAP, ret_cap=%i, errno_cap=%i, cropcap = { .type = %i, "
+	     ".bounds = { .left = %i, .top = %i, .width = %i, .height = %i }, "
+	     ".defrect = { .left = %i, .top = %i, .width = %i, .height = %i }, "
+	     ".pixelaspect = { .numerator = %u, .denominator = %u } " "}\n",
+	     __FILE__, __LINE__, ret_cap, errno_cap, cropcap.type,
+	     cropcap.bounds.left, cropcap.bounds.top, cropcap.bounds.width,
+	     cropcap.bounds.height, cropcap.defrect.left, cropcap.defrect.top,
+	     cropcap.defrect.width, cropcap.defrect.height,
+	     cropcap.pixelaspect.numerator, cropcap.pixelaspect.denominator);
 
 	memset(&crop, 0xff, sizeof(crop));
 	crop.type = type;
@@ -204,11 +195,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 		__FILE__, __LINE__,
 		ret_set, errno_set,
 		crop.type,
-		crop.c.left,
-		crop.c.top,
-		crop.c.width,
-		crop.c.height
-		);
+		crop.c.left, crop.c.top, crop.c.width, crop.c.height);
 
 	memset(&crop_new, 0, sizeof(crop_new));
 	crop_new.type = type;
@@ -220,10 +207,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 		ret_new, errno_new,
 		crop_new.type,
 		crop_new.c.left,
-		crop_new.c.top,
-		crop_new.c.width,
-		crop_new.c.height
-		);
+		crop_new.c.top, crop_new.c.width, crop_new.c.height);
 
 	if (ret_cap == 0) {
 		CU_ASSERT_EQUAL(ret_cap, 0);
@@ -232,29 +216,31 @@ void do_set_crop(enum v4l2_buf_type type) {
 
 		if (ret_cap == 0 && ret_new == 0) {
 
-	/*     |   left                                   x   */
-	/* ----+----+-------------------------------------->  */
-	/*     |    :                                         */
-	/* top +    +------ cropcap.bounds -------+  ^        */
-	/*     |    |                             |  |        */
-	/*     |    | +------- crop_new --------+ |  |        */
-	/*     |    | |                         | |  |        */
-	/*     |    | |                         | |  |        */
-	/*     |    | |                         | |  | height */
-	/*     |    | +-------------------------+ |  |        */
-	/*     |    |                             |  |        */
-	/*     |    |                             |  |        */
-	/*     |    +-----------------------------+  v        */
-	/*     |    :                             :           */
-	/*     |    <---------- width ------------>           */
-	/*     |                                              */
-	/*     v y                                            */
+			/*     |   left                                   x   */
+			/* ----+----+-------------------------------------->  */
+			/*     |    :                                         */
+			/* top +    +------ cropcap.bounds -------+  ^        */
+			/*     |    |                             |  |        */
+			/*     |    | +------- crop_new --------+ |  |        */
+			/*     |    | |                         | |  |        */
+			/*     |    | |                         | |  |        */
+			/*     |    | |                         | |  | height */
+			/*     |    | +-------------------------+ |  |        */
+			/*     |    |                             |  |        */
+			/*     |    |                             |  |        */
+			/*     |    +-----------------------------+  v        */
+			/*     |    :                             :           */
+			/*     |    <---------- width ------------>           */
+			/*     |                                              */
+			/*     v y                                            */
 
 			CU_ASSERT(cropcap.bounds.left <= crop_new.c.left);
 			CU_ASSERT(cropcap.bounds.top <= crop_new.c.top);
 
-			CU_ASSERT(crop_new.c.left+crop_new.c.width <= cropcap.bounds.left+cropcap.bounds.width);
-			CU_ASSERT(crop_new.c.top+crop_new.c.height <= cropcap.bounds.top+cropcap.bounds.height);
+			CU_ASSERT(crop_new.c.left + crop_new.c.width <=
+				  cropcap.bounds.left + cropcap.bounds.width);
+			CU_ASSERT(crop_new.c.top + crop_new.c.height <=
+				  cropcap.bounds.top + cropcap.bounds.height);
 		}
 
 	} else {
@@ -277,11 +263,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 		__FILE__, __LINE__,
 		ret_set, errno_set,
 		crop.type,
-		crop.c.left,
-		crop.c.top,
-		crop.c.width,
-		crop.c.height
-		);
+		crop.c.left, crop.c.top, crop.c.width, crop.c.height);
 
 	memset(&crop_new, 0, sizeof(crop_new));
 	crop_new.type = type;
@@ -293,10 +275,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 		ret_new, errno_new,
 		crop_new.type,
 		crop_new.c.left,
-		crop_new.c.top,
-		crop_new.c.width,
-		crop_new.c.height
-		);
+		crop_new.c.top, crop_new.c.width, crop_new.c.height);
 
 	if (ret_cap == 0) {
 		CU_ASSERT_EQUAL(ret_cap, 0);
@@ -305,29 +284,31 @@ void do_set_crop(enum v4l2_buf_type type) {
 
 		if (ret_cap == 0 && ret_new == 0) {
 
-	/*     |   left                                   x   */
-	/* ----+----+-------------------------------------->  */
-	/*     |    :                                         */
-	/* top +    +------ cropcap.defrect ------+  ^        */
-	/*     |    |                             |  |        */
-	/*     |    | +------- crop_new --------+ |  |        */
-	/*     |    | |                         | |  |        */
-	/*     |    | |                         | |  |        */
-	/*     |    | |                         | |  | height */
-	/*     |    | +-------------------------+ |  |        */
-	/*     |    |                             |  |        */
-	/*     |    |                             |  |        */
-	/*     |    +-----------------------------+  v        */
-	/*     |    :                             :           */
-	/*     |    <---------- width ------------>           */
-	/*     |                                              */
-	/*     v y                                            */
+			/*     |   left                                   x   */
+			/* ----+----+-------------------------------------->  */
+			/*     |    :                                         */
+			/* top +    +------ cropcap.defrect ------+  ^        */
+			/*     |    |                             |  |        */
+			/*     |    | +------- crop_new --------+ |  |        */
+			/*     |    | |                         | |  |        */
+			/*     |    | |                         | |  |        */
+			/*     |    | |                         | |  | height */
+			/*     |    | +-------------------------+ |  |        */
+			/*     |    |                             |  |        */
+			/*     |    |                             |  |        */
+			/*     |    +-----------------------------+  v        */
+			/*     |    :                             :           */
+			/*     |    <---------- width ------------>           */
+			/*     |                                              */
+			/*     v y                                            */
 
 			CU_ASSERT(cropcap.defrect.left <= crop_new.c.left);
 			CU_ASSERT(cropcap.defrect.top <= crop_new.c.top);
 
-			CU_ASSERT(crop_new.c.left+crop_new.c.width <= cropcap.defrect.left+cropcap.defrect.width);
-			CU_ASSERT(crop_new.c.top+crop_new.c.height <= cropcap.defrect.top+cropcap.defrect.height);
+			CU_ASSERT(crop_new.c.left + crop_new.c.width <=
+				  cropcap.defrect.left + cropcap.defrect.width);
+			CU_ASSERT(crop_new.c.top + crop_new.c.height <=
+				  cropcap.defrect.top + cropcap.defrect.height);
 		}
 
 	} else {
@@ -357,12 +338,12 @@ void do_set_crop(enum v4l2_buf_type type) {
 	/*     |    <---------- width ------------>           */
 	/*     |                                              */
 	/*     v y                                            */
-	for (i=0; i<cropcap.bounds.width; i++) {
+	for (i = 0; i < cropcap.bounds.width; i++) {
 		memset(&crop, 0xff, sizeof(crop));
 		crop.type = type;
 		crop.c.left = cropcap.bounds.left;
 		crop.c.top = cropcap.bounds.top;
-		crop.c.width = cropcap.bounds.width-i;
+		crop.c.width = cropcap.bounds.width - i;
 		crop.c.height = cropcap.bounds.height;
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_CROP, &crop);
 		errno_set = errno;
@@ -371,11 +352,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 			__FILE__, __LINE__,
 			ret_set, errno_set,
 			crop.type,
-			crop.c.left,
-			crop.c.top,
-			crop.c.width,
-			crop.c.height
-			);
+			crop.c.left, crop.c.top, crop.c.width, crop.c.height);
 
 		memset(&crop_new, 0, sizeof(crop_new));
 		crop_new.type = type;
@@ -387,10 +364,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 			ret_new, errno_new,
 			crop_new.type,
 			crop_new.c.left,
-			crop_new.c.top,
-			crop_new.c.width,
-			crop_new.c.height
-			);
+			crop_new.c.top, crop_new.c.width, crop_new.c.height);
 
 		if (ret_cap == 0) {
 			CU_ASSERT_EQUAL(ret_cap, 0);
@@ -399,11 +373,17 @@ void do_set_crop(enum v4l2_buf_type type) {
 
 			if (ret_cap == 0 && ret_new == 0) {
 
-				CU_ASSERT(cropcap.defrect.left <= crop_new.c.left);
-				CU_ASSERT(cropcap.defrect.top <= crop_new.c.top);
+				CU_ASSERT(cropcap.defrect.left <=
+					  crop_new.c.left);
+				CU_ASSERT(cropcap.defrect.top <=
+					  crop_new.c.top);
 
-				CU_ASSERT(crop_new.c.left+crop_new.c.width <= cropcap.defrect.left+cropcap.defrect.width);
-				CU_ASSERT(crop_new.c.top+crop_new.c.height <= cropcap.defrect.top+cropcap.defrect.height);
+				CU_ASSERT(crop_new.c.left + crop_new.c.width <=
+					  cropcap.defrect.left +
+					  cropcap.defrect.width);
+				CU_ASSERT(crop_new.c.top + crop_new.c.height <=
+					  cropcap.defrect.top +
+					  cropcap.defrect.height);
 			}
 
 		} else {
@@ -433,13 +413,13 @@ void do_set_crop(enum v4l2_buf_type type) {
 	/*     |    <---------- width ------------>           */
 	/*     |                                              */
 	/*     v y                                            */
-	for (i=0; i<cropcap.bounds.height; i++) {
+	for (i = 0; i < cropcap.bounds.height; i++) {
 		memset(&crop, 0xff, sizeof(crop));
 		crop.type = type;
 		crop.c.left = cropcap.bounds.left;
 		crop.c.top = cropcap.bounds.top;
 		crop.c.width = cropcap.bounds.width;
-		crop.c.height = cropcap.bounds.height-i;
+		crop.c.height = cropcap.bounds.height - i;
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_CROP, &crop);
 		errno_set = errno;
 		dprintf("\t%s:%u: VIDIOC_S_CROP, ret_set=%i, errno_set=%i, "
@@ -447,11 +427,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 			__FILE__, __LINE__,
 			ret_set, errno_set,
 			crop.type,
-			crop.c.left,
-			crop.c.top,
-			crop.c.width,
-			crop.c.height
-			);
+			crop.c.left, crop.c.top, crop.c.width, crop.c.height);
 
 		memset(&crop_new, 0, sizeof(crop_new));
 		crop_new.type = type;
@@ -463,10 +439,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 			ret_new, errno_new,
 			crop_new.type,
 			crop_new.c.left,
-			crop_new.c.top,
-			crop_new.c.width,
-			crop_new.c.height
-			);
+			crop_new.c.top, crop_new.c.width, crop_new.c.height);
 
 		if (ret_cap == 0) {
 			CU_ASSERT_EQUAL(ret_cap, 0);
@@ -475,11 +448,17 @@ void do_set_crop(enum v4l2_buf_type type) {
 
 			if (ret_cap == 0 && ret_new == 0) {
 
-				CU_ASSERT(cropcap.defrect.left <= crop_new.c.left);
-				CU_ASSERT(cropcap.defrect.top <= crop_new.c.top);
+				CU_ASSERT(cropcap.defrect.left <=
+					  crop_new.c.left);
+				CU_ASSERT(cropcap.defrect.top <=
+					  crop_new.c.top);
 
-				CU_ASSERT(crop_new.c.left+crop_new.c.width <= cropcap.defrect.left+cropcap.defrect.width);
-				CU_ASSERT(crop_new.c.top+crop_new.c.height <= cropcap.defrect.top+cropcap.defrect.height);
+				CU_ASSERT(crop_new.c.left + crop_new.c.width <=
+					  cropcap.defrect.left +
+					  cropcap.defrect.width);
+				CU_ASSERT(crop_new.c.top + crop_new.c.height <=
+					  cropcap.defrect.top +
+					  cropcap.defrect.height);
 			}
 
 		} else {
@@ -509,12 +488,12 @@ void do_set_crop(enum v4l2_buf_type type) {
 	/*     |    <---------- width ------------>           */
 	/*     |                                              */
 	/*     v y                                            */
-	for (i=0; i<cropcap.bounds.width; i++) {
+	for (i = 0; i < cropcap.bounds.width; i++) {
 		memset(&crop, 0xff, sizeof(crop));
 		crop.type = type;
-		crop.c.left = cropcap.bounds.left+i;
+		crop.c.left = cropcap.bounds.left + i;
 		crop.c.top = cropcap.bounds.top;
-		crop.c.width = cropcap.bounds.width-i;
+		crop.c.width = cropcap.bounds.width - i;
 		crop.c.height = cropcap.bounds.height;
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_CROP, &crop);
 		errno_set = errno;
@@ -523,11 +502,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 			__FILE__, __LINE__,
 			ret_set, errno_set,
 			crop.type,
-			crop.c.left,
-			crop.c.top,
-			crop.c.width,
-			crop.c.height
-			);
+			crop.c.left, crop.c.top, crop.c.width, crop.c.height);
 
 		memset(&crop_new, 0, sizeof(crop_new));
 		crop_new.type = type;
@@ -539,10 +514,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 			ret_new, errno_new,
 			crop_new.type,
 			crop_new.c.left,
-			crop_new.c.top,
-			crop_new.c.width,
-			crop_new.c.height
-			);
+			crop_new.c.top, crop_new.c.width, crop_new.c.height);
 
 		if (ret_cap == 0) {
 			CU_ASSERT_EQUAL(ret_cap, 0);
@@ -551,11 +523,17 @@ void do_set_crop(enum v4l2_buf_type type) {
 
 			if (ret_cap == 0 && ret_new == 0) {
 
-				CU_ASSERT(cropcap.defrect.left <= crop_new.c.left);
-				CU_ASSERT(cropcap.defrect.top <= crop_new.c.top);
+				CU_ASSERT(cropcap.defrect.left <=
+					  crop_new.c.left);
+				CU_ASSERT(cropcap.defrect.top <=
+					  crop_new.c.top);
 
-				CU_ASSERT(crop_new.c.left+crop_new.c.width <= cropcap.defrect.left+cropcap.defrect.width);
-				CU_ASSERT(crop_new.c.top+crop_new.c.height <= cropcap.defrect.top+cropcap.defrect.height);
+				CU_ASSERT(crop_new.c.left + crop_new.c.width <=
+					  cropcap.defrect.left +
+					  cropcap.defrect.width);
+				CU_ASSERT(crop_new.c.top + crop_new.c.height <=
+					  cropcap.defrect.top +
+					  cropcap.defrect.height);
 			}
 
 		} else {
@@ -585,13 +563,13 @@ void do_set_crop(enum v4l2_buf_type type) {
 	/*     |    <---------- width ------------>           */
 	/*     |                                              */
 	/*     v y                                            */
-	for (i=0; i<cropcap.bounds.height; i++) {
+	for (i = 0; i < cropcap.bounds.height; i++) {
 		memset(&crop, 0xff, sizeof(crop));
 		crop.type = type;
 		crop.c.left = cropcap.bounds.left;
-		crop.c.top = cropcap.bounds.top+i;
+		crop.c.top = cropcap.bounds.top + i;
 		crop.c.width = cropcap.bounds.width;
-		crop.c.height = cropcap.bounds.height-i;
+		crop.c.height = cropcap.bounds.height - i;
 		ret_set = ioctl(get_video_fd(), VIDIOC_S_CROP, &crop);
 		errno_set = errno;
 		dprintf("\t%s:%u: VIDIOC_S_CROP, ret_set=%i, errno_set=%i, "
@@ -599,11 +577,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 			__FILE__, __LINE__,
 			ret_set, errno_set,
 			crop.type,
-			crop.c.left,
-			crop.c.top,
-			crop.c.width,
-			crop.c.height
-			);
+			crop.c.left, crop.c.top, crop.c.width, crop.c.height);
 
 		memset(&crop_new, 0, sizeof(crop_new));
 		crop_new.type = type;
@@ -615,10 +589,7 @@ void do_set_crop(enum v4l2_buf_type type) {
 			ret_new, errno_new,
 			crop_new.type,
 			crop_new.c.left,
-			crop_new.c.top,
-			crop_new.c.width,
-			crop_new.c.height
-			);
+			crop_new.c.top, crop_new.c.width, crop_new.c.height);
 
 		if (ret_cap == 0) {
 			CU_ASSERT_EQUAL(ret_cap, 0);
@@ -627,11 +598,17 @@ void do_set_crop(enum v4l2_buf_type type) {
 
 			if (ret_cap == 0 && ret_new == 0) {
 
-				CU_ASSERT(cropcap.defrect.left <= crop_new.c.left);
-				CU_ASSERT(cropcap.defrect.top <= crop_new.c.top);
+				CU_ASSERT(cropcap.defrect.left <=
+					  crop_new.c.left);
+				CU_ASSERT(cropcap.defrect.top <=
+					  crop_new.c.top);
 
-				CU_ASSERT(crop_new.c.left+crop_new.c.width <= cropcap.defrect.left+cropcap.defrect.width);
-				CU_ASSERT(crop_new.c.top+crop_new.c.height <= cropcap.defrect.top+cropcap.defrect.height);
+				CU_ASSERT(crop_new.c.left + crop_new.c.width <=
+					  cropcap.defrect.left +
+					  cropcap.defrect.width);
+				CU_ASSERT(crop_new.c.top + crop_new.c.height <=
+					  cropcap.defrect.top +
+					  cropcap.defrect.height);
 			}
 
 		} else {
@@ -654,7 +631,8 @@ void do_set_crop(enum v4l2_buf_type type) {
 	}
 }
 
-void test_VIDIOC_S_CROP() {
+void test_VIDIOC_S_CROP()
+{
 
 	do_set_crop(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	do_set_crop(V4L2_BUF_TYPE_VIDEO_OUTPUT);
@@ -663,7 +641,8 @@ void test_VIDIOC_S_CROP() {
 
 }
 
-void do_set_crop_invalid(enum v4l2_buf_type type) {
+void do_set_crop_invalid(enum v4l2_buf_type type)
+{
 	int ret_set, errno_set;
 	int ret_new, errno_new;
 	int ret_cap, errno_cap;
@@ -676,28 +655,16 @@ void do_set_crop_invalid(enum v4l2_buf_type type) {
 	ret_cap = ioctl(get_video_fd(), VIDIOC_CROPCAP, &cropcap);
 	errno_cap = errno;
 
-	dprintf("\t%s:%u: VIDIOC_CROPCAP, ret_cap=%i, errno_cap=%i, cropcap = { .type = %i, "
-		".bounds = { .left = %i, .top = %i, .width = %i, .height = %i }, "
-		".defrect = { .left = %i, .top = %i, .width = %i, .height = %i }, "
-		".pixelaspect = { .numerator = %u, .denominator = %u } "
-		"}\n",
-		__FILE__, __LINE__,
-		ret_cap, errno_cap,
-		cropcap.type,
-
-		cropcap.bounds.left,
-		cropcap.bounds.top,
-		cropcap.bounds.width,
-		cropcap.bounds.height,
-
-		cropcap.defrect.left,
-		cropcap.defrect.top,
-		cropcap.defrect.width,
-		cropcap.defrect.height,
-
-		cropcap.pixelaspect.numerator,
-		cropcap.pixelaspect.denominator
-		);
+	dprintf
+	    ("\t%s:%u: VIDIOC_CROPCAP, ret_cap=%i, errno_cap=%i, cropcap = { .type = %i, "
+	     ".bounds = { .left = %i, .top = %i, .width = %i, .height = %i }, "
+	     ".defrect = { .left = %i, .top = %i, .width = %i, .height = %i }, "
+	     ".pixelaspect = { .numerator = %u, .denominator = %u } " "}\n",
+	     __FILE__, __LINE__, ret_cap, errno_cap, cropcap.type,
+	     cropcap.bounds.left, cropcap.bounds.top, cropcap.bounds.width,
+	     cropcap.bounds.height, cropcap.defrect.left, cropcap.defrect.top,
+	     cropcap.defrect.width, cropcap.defrect.height,
+	     cropcap.pixelaspect.numerator, cropcap.pixelaspect.denominator);
 
 	memset(&crop, 0xff, sizeof(crop));
 	crop.type = type;
@@ -709,11 +676,7 @@ void do_set_crop_invalid(enum v4l2_buf_type type) {
 		__FILE__, __LINE__,
 		ret_set, errno_set,
 		crop.type,
-		crop.c.left,
-		crop.c.top,
-		crop.c.width,
-		crop.c.height
-		);
+		crop.c.left, crop.c.top, crop.c.width, crop.c.height);
 
 	memset(&crop_new, 0, sizeof(crop_new));
 	crop_new.type = type;
@@ -725,10 +688,7 @@ void do_set_crop_invalid(enum v4l2_buf_type type) {
 		ret_new, errno_new,
 		crop_new.type,
 		crop_new.c.left,
-		crop_new.c.top,
-		crop_new.c.width,
-		crop_new.c.height
-		);
+		crop_new.c.top, crop_new.c.width, crop_new.c.height);
 
 	CU_ASSERT_EQUAL(ret_cap, -1);
 	CU_ASSERT_EQUAL(errno_cap, EINVAL);
@@ -739,7 +699,8 @@ void do_set_crop_invalid(enum v4l2_buf_type type) {
 
 }
 
-void test_VIDIOC_S_CROP_invalid() {
+void test_VIDIOC_S_CROP_invalid()
+{
 	do_set_crop_invalid(0);
 	do_set_crop_invalid(V4L2_BUF_TYPE_VBI_CAPTURE);
 	do_set_crop_invalid(V4L2_BUF_TYPE_VBI_OUTPUT);
@@ -748,11 +709,12 @@ void test_VIDIOC_S_CROP_invalid() {
 	do_set_crop_invalid(V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY);
 	do_set_crop_invalid(V4L2_BUF_TYPE_PRIVATE);
 	do_set_crop_invalid(S32_MAX);
-	do_set_crop_invalid( ((__u32)S32_MAX)+1 );
+	do_set_crop_invalid(((__u32) S32_MAX) + 1);
 	do_set_crop_invalid(U32_MAX);
 }
 
-void do_set_crop_null(enum v4l2_buf_type type) {
+void do_set_crop_null(enum v4l2_buf_type type)
+{
 	int ret_orig, errno_orig;
 	int ret_set, errno_set;
 	int ret_cap, errno_cap;
@@ -771,38 +733,23 @@ void do_set_crop_null(enum v4l2_buf_type type) {
 		ret_orig, errno_orig,
 		crop_orig.type,
 		crop_orig.c.left,
-		crop_orig.c.top,
-		crop_orig.c.width,
-		crop_orig.c.height
-		);
+		crop_orig.c.top, crop_orig.c.width, crop_orig.c.height);
 
 	memset(&cropcap, 0, sizeof(cropcap));
 	cropcap.type = type;
 	ret_cap = ioctl(get_video_fd(), VIDIOC_CROPCAP, &cropcap);
 	errno_cap = errno;
 
-	dprintf("\t%s:%u: VIDIOC_CROPCAP, ret_cap=%i, errno_cap=%i, cropcap = { .type = %i, "
-		".bounds = { .left = %i, .top = %i, .width = %i, .height = %i }, "
-		".defrect = { .left = %i, .top = %i, .width = %i, .height = %i }, "
-		".pixelaspect = { .numerator = %u, .denominator = %u } "
-		"}\n",
-		__FILE__, __LINE__,
-		ret_cap, errno_cap,
-		cropcap.type,
-
-		cropcap.bounds.left,
-		cropcap.bounds.top,
-		cropcap.bounds.width,
-		cropcap.bounds.height,
-
-		cropcap.defrect.left,
-		cropcap.defrect.top,
-		cropcap.defrect.width,
-		cropcap.defrect.height,
-
-		cropcap.pixelaspect.numerator,
-		cropcap.pixelaspect.denominator
-		);
+	dprintf
+	    ("\t%s:%u: VIDIOC_CROPCAP, ret_cap=%i, errno_cap=%i, cropcap = { .type = %i, "
+	     ".bounds = { .left = %i, .top = %i, .width = %i, .height = %i }, "
+	     ".defrect = { .left = %i, .top = %i, .width = %i, .height = %i }, "
+	     ".pixelaspect = { .numerator = %u, .denominator = %u } " "}\n",
+	     __FILE__, __LINE__, ret_cap, errno_cap, cropcap.type,
+	     cropcap.bounds.left, cropcap.bounds.top, cropcap.bounds.width,
+	     cropcap.bounds.height, cropcap.defrect.left, cropcap.defrect.top,
+	     cropcap.defrect.width, cropcap.defrect.height,
+	     cropcap.pixelaspect.numerator, cropcap.pixelaspect.denominator);
 
 	memset(&crop, 0, sizeof(crop));
 	crop.type = type;
@@ -841,7 +788,8 @@ void do_set_crop_null(enum v4l2_buf_type type) {
 
 }
 
-void test_VIDIOC_S_CROP_NULL() {
+void test_VIDIOC_S_CROP_NULL()
+{
 
 	do_set_crop_null(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	do_set_crop_null(V4L2_BUF_TYPE_VIDEO_OUTPUT);

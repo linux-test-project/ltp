@@ -46,7 +46,7 @@ static int get_cpu_baseinfo(void)
 	}
 
 	/* allocate the memory space for cpus */
-	cpus = (struct cpuinfo*)malloc(sizeof(*cpus) * ncpus);
+	cpus = (struct cpuinfo *)malloc(sizeof(*cpus) * ncpus);
 	if (cpus == NULL)
 		return -1;
 	memset(cpus, 0, sizeof(*cpus) * ncpus);
@@ -140,14 +140,14 @@ int present_cpumask(struct bitmask *cpumask)
 	 */
 	if ((fp = fopen(LIST_PRESENT_CPU_FILE, "r")) == NULL) {
 		while_each_childdir(SYS_CPU_DIR, "/", c_relpath,
-					sizeof(c_relpath)) {
+				    sizeof(c_relpath)) {
 			if (!strncmp(c_relpath + 1, "cpu", 3)
 			    && sscanf(c_relpath + 4, "%d", &cpu) > 0) {
 				if (cpu >= 0)
-			    		bitmask_setbit(cpumask, cpu);
+					bitmask_setbit(cpumask, cpu);
 			}
-		} end_while_each_childdir
-	} else {
+		}
+	end_while_each_childdir} else {
 		if (fgets(buf, sizeof(buf), fp) == NULL) {
 			fclose(fp);
 			return -1;
@@ -228,8 +228,8 @@ static int get_sched_domains(void)
 			}
 		} else if (!strncmp(str1, "domain", 6)) {
 			if (!cpus[ci].sched_domain) {
-				cpus[ci].sched_domain = bitmask_alloc(
-								cpus_nbits);
+				cpus[ci].sched_domain =
+				    bitmask_alloc(cpus_nbits);
 				if (!cpus[ci].sched_domain)
 					return -1;
 			}
@@ -257,7 +257,7 @@ int getcpuinfo(void)
 	if (cpus == NULL) {
 		if (get_cpu_baseinfo() != 0) {
 			warn("get base infomation of cpus from /proc/cpuinfo "
-				"failed.");
+			     "failed.");
 			return -1;
 		}
 	}
@@ -296,7 +296,7 @@ static int get_num_cpusets(void)
 	while (fgets(buf, sizeof(buf), fp) != NULL) {
 		if (!strncmp(buf, "cpuset", 6)) {
 			sscanf(buf, "%s\t%d\t%d\t%d\n", subsys_name,
-				&hierarchy, &num_cgroups, &enabled);
+			       &hierarchy, &num_cgroups, &enabled);
 		}
 	}
 
@@ -334,17 +334,18 @@ static int find_domain_cpusets(char *relpath)
 		return 0;
 
 	if (cpuset_cpus_weight(cp) > 0
-			&& cpuset_get_iopt(cp, "sched_load_balance") == 1) {
+	    && cpuset_get_iopt(cp, "sched_load_balance") == 1) {
 		cpusets[ncpusets] = cp;
 		ncpusets++;
 		return 0;
 	}
 
 	while_each_childdir(cpuset_mountpoint(), relpath, c_relpath,
-				sizeof(c_relpath)) {
+			    sizeof(c_relpath)) {
 		if ((ret = find_domain_cpusets(c_relpath)))
-				break;
-	} end_while_each_childdir;
+			break;
+	}
+	end_while_each_childdir;
 
 	return ret;
 }

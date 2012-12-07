@@ -145,11 +145,9 @@ int main(int ac, char **av)
 		TEST(uname(&un));
 
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL|TTERRNO, "uname failed");
-		else
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "uname(&un) returned %ld",
-					 TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO, "uname failed");
+		else if (STD_FUNCTIONAL_TEST)
+			tst_resm(TPASS, "uname(&un) returned %ld", TEST_RETURN);
 
 	}
 

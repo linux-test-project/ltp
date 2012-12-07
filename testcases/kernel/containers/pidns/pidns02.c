@@ -74,15 +74,13 @@ int child_fn1(void *vtest)
 	sid = getsid(0);
 
 	printf("Checking session id & group id inside container\n");
-	if (pgid == PGID && sid == SID)
-	{
+	if (pgid == PGID && sid == SID) {
 		printf("Success: Got Group ID = %d & Session ID = %d\n",
-		    pgid, sid);
+		       pgid, sid);
 		exit(0);
-	}
-	else {
+	} else {
 		printf("Got unexpected result of Group ID = %d & Session ID = "
-		    "%d\n", pgid, sid);
+		       "%d\n", pgid, sid);
 		exit(1);
 	}
 }
@@ -93,15 +91,15 @@ int main(int argc, char *argv[])
 
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL|TTERRNO, CLEANUP, "clone failed");
+		tst_brkm(TFAIL | TTERRNO, CLEANUP, "clone failed");
 	} else if ((wait(&status)) == -1) {
-		tst_brkm(TFAIL|TERRNO, CLEANUP, "wait failed");
+		tst_brkm(TFAIL | TERRNO, CLEANUP, "wait failed");
 	}
 
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-		tst_resm(TFAIL|TERRNO, "child exited abnormally");
+		tst_resm(TFAIL | TERRNO, "child exited abnormally");
 	} else if (WIFSIGNALED(status)) {
-		tst_resm(TFAIL|TERRNO, "child exited with signal %d",
+		tst_resm(TFAIL | TERRNO, "child exited with signal %d",
 			 WTERMSIG(status));
 	}
 
@@ -114,9 +112,8 @@ int main(int argc, char *argv[])
  * CLEANUP() -	performs all ONE TIME CLEANUP for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
 }

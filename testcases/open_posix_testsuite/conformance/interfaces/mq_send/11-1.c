@@ -26,49 +26,49 @@
 
 int main()
 {
-        char qname[NAMESIZE];
-        const char *msgptr = MSGSTR;
-        mqd_t queue;
-	int unresolved=0, failure=0;
+	char qname[NAMESIZE];
+	const char *msgptr = MSGSTR;
+	mqd_t queue;
+	int unresolved = 0, failure = 0;
 
-        sprintf(qname, "/mq_send_11-1_%d", getpid());
+	sprintf(qname, "/mq_send_11-1_%d", getpid());
 
-        queue = mq_open(qname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, NULL);
-        if (queue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
-                return PTS_UNRESOLVED;
-        }
+	queue = mq_open(qname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, NULL);
+	if (queue == (mqd_t) - 1) {
+		perror("mq_open() did not return success");
+		return PTS_UNRESOLVED;
+	}
 
-        if (mq_send(queue+1, msgptr, strlen(msgptr), 1) != -1) {
-                printf("mq_send() did not return -1 on invalid queue\n");
-		failure=1;
-        }
+	if (mq_send(queue + 1, msgptr, strlen(msgptr), 1) != -1) {
+		printf("mq_send() did not return -1 on invalid queue\n");
+		failure = 1;
+	}
 
 	if (errno != EBADF) {
 		printf("errno != EBADF\n");
 		failure = 1;
 	}
 
-        if (mq_close(queue) != 0) {
+	if (mq_close(queue) != 0) {
 		perror("mq_close() did not return success");
-		unresolved=1;
-        }
+		unresolved = 1;
+	}
 
-        if (mq_unlink(qname) != 0) {
+	if (mq_unlink(qname) != 0) {
 		perror("mq_unlink() did not return success");
-		unresolved=1;
-        }
+		unresolved = 1;
+	}
 
-	if (failure==1) {
+	if (failure == 1) {
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
-	if (unresolved==1) {
+	if (unresolved == 1) {
 		printf("Test UNRESOLVED\n");
 		return PTS_UNRESOLVED;
 	}
 
-        printf("Test PASSED\n");
-        return PTS_PASS;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

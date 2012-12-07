@@ -88,14 +88,12 @@ int main(void)
 
 	if (*(char *)pa == 'b') {
 		printf("Memory write with MAP_PRIVATE has changed "
-		       "the underlying file\n"
-		       "Test FAILED\n");
+		       "the underlying file\n" "Test FAILED\n");
 		exit(PTS_FAIL);
 	}
 
 	close(fd);
 	printf("Memory write with MAP_PRIVATE has not changed "
-	       "the underlying file\n"
-	       "Test PASSED\n");
+	       "the underlying file\n" "Test PASSED\n");
 	return PTS_PASS;
 }

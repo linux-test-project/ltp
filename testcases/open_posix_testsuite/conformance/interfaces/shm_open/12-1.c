@@ -22,6 +22,7 @@
 
 int main()
 {
-        printf("Will not test the behavior of implementation when an application does not\nspecify exactly one of two values: O_RDONLY and O_RDWR.\n");
-        return PTS_UNTESTED;
+	printf
+	    ("Will not test the behavior of implementation when an application does not\nspecify exactly one of two values: O_RDONLY and O_RDWR.\n");
+	return PTS_UNTESTED;
 }

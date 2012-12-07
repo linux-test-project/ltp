@@ -39,23 +39,23 @@ struct testcase {
 };
 
 struct testcase testcases[] = {
-	{.flags = MAP_SHARED, .prot = PROT_NONE},
-	{.flags = MAP_SHARED, .prot = PROT_READ},
-	{.flags = MAP_SHARED, .prot = PROT_WRITE},
-	{.flags = MAP_SHARED, .prot = PROT_EXEC},
-	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_WRITE},
-	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_EXEC},
-	{.flags = MAP_SHARED, .prot = PROT_EXEC | PROT_WRITE},
-	{.flags = MAP_SHARED, .prot = PROT_READ | PROT_WRITE | PROT_EXEC},
+	{.flags = MAP_SHARED,.prot = PROT_NONE},
+	{.flags = MAP_SHARED,.prot = PROT_READ},
+	{.flags = MAP_SHARED,.prot = PROT_WRITE},
+	{.flags = MAP_SHARED,.prot = PROT_EXEC},
+	{.flags = MAP_SHARED,.prot = PROT_READ | PROT_WRITE},
+	{.flags = MAP_SHARED,.prot = PROT_READ | PROT_EXEC},
+	{.flags = MAP_SHARED,.prot = PROT_EXEC | PROT_WRITE},
+	{.flags = MAP_SHARED,.prot = PROT_READ | PROT_WRITE | PROT_EXEC},
 
-	{.flags = MAP_PRIVATE, .prot = PROT_NONE},
-	{.flags = MAP_PRIVATE, .prot = PROT_READ},
-	{.flags = MAP_PRIVATE, .prot = PROT_WRITE},
-	{.flags = MAP_PRIVATE, .prot = PROT_EXEC},
-	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_WRITE},
-	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_EXEC},
-	{.flags = MAP_PRIVATE, .prot = PROT_EXEC | PROT_WRITE},
-	{.flags = MAP_PRIVATE, .prot = PROT_READ | PROT_WRITE | PROT_EXEC},
+	{.flags = MAP_PRIVATE,.prot = PROT_NONE},
+	{.flags = MAP_PRIVATE,.prot = PROT_READ},
+	{.flags = MAP_PRIVATE,.prot = PROT_WRITE},
+	{.flags = MAP_PRIVATE,.prot = PROT_EXEC},
+	{.flags = MAP_PRIVATE,.prot = PROT_READ | PROT_WRITE},
+	{.flags = MAP_PRIVATE,.prot = PROT_READ | PROT_EXEC},
+	{.flags = MAP_PRIVATE,.prot = PROT_EXEC | PROT_WRITE},
+	{.flags = MAP_PRIVATE,.prot = PROT_READ | PROT_WRITE | PROT_EXEC},
 };
 
 static void print_error(struct testcase *t, int saved_errno)
@@ -77,10 +77,10 @@ static void print_error(struct testcase *t, int saved_errno)
 	switch (t->flags) {
 	case MAP_SHARED:
 		printf("with MAP_SHARED");
-	break;
+		break;
 	case MAP_PRIVATE:
 		printf("with MAP_PRIVATE");
-	break;
+		break;
 	}
 
 	printf(" has failed: %s\n", strerror(saved_errno));
@@ -106,9 +106,10 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	for (i = 0; i < sizeof(testcases)/sizeof(*testcases); i++) {
+	for (i = 0; i < sizeof(testcases) / sizeof(*testcases); i++) {
 
-		pa = mmap(NULL, size, testcases[i].prot, testcases[i].flags, fd, 0);
+		pa = mmap(NULL, size, testcases[i].prot, testcases[i].flags, fd,
+			  0);
 
 		if (pa == MAP_FAILED) {
 			if (errno != ENOTSUP) {
