@@ -38,6 +38,10 @@ test_user1_home="/home/${test_user1}"
 test_user2_home="/home/${test_user2}"
 tmpfile="$TMP/at_allow_test"
 
+if [ "$(id -ru)" = 0 ]; then
+	. cmdlib.sh
+fi
+
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
 #-----------------------------------------------------------------------
@@ -80,19 +84,7 @@ do_setup()
 		exit 1
 	fi
 
-	# running under systemd?
-	if command -v systemctl >/dev/null 2>&1; then
-		HAVE_SYSTEMCTL=true
-	else
-		HAVE_SYSTEMCTL=false
-	fi
-
-	# Restart atd daemon.
-	if $HAVE_SYSTEMCTL; then
-		systemctl restart atd.service
-	else
-		/etc/init.d/atd restart
-	fi
+	restart_daemon atd
 }
 
 #-----------------------------------------------------------------------
