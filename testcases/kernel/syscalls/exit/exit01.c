@@ -1,42 +1,26 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	exit01.c
- *
- * DESCRIPTION
- *	Check that exit returns the correct values to the waiting parent
- *
- * ALGORITHM
- * 	Fork a process that immediately calls exit() with a known
- * 	value. Check for that value in the parent.
- *
- * USAGE
- * 	exit01
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- * 	None
+ * Check that exit returns the correct values to the waiting parent
  */
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -46,8 +30,8 @@
 #include "test.h"
 #include "usctest.h"
 
-void cleanup(void);
-void setup(void);
+static void cleanup(void);
+static void setup(void);
 
 char *TCID = "exit01";
 int TST_TOTAL = 1;
@@ -61,9 +45,9 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSIkNG ERROR - %s", msg);
-	 }
+	}
 
-	setup();		/* global setup for test */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -72,13 +56,16 @@ int main(int ac, char **av)
 		sig = 0;
 		exno = 1;
 
-		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
+		pid = FORK_OR_VFORK();
 
-		if (pid == 0) {	/* parent */
+		switch (pid) {
+		case 0:
 			exit(exno);
-		} else {
-			sleep(1);	/* let child start */
+		break;
+		case -1:
+			tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
+		break;
+		default:
 			npid = wait(&status);
 
 			if (npid != pid) {
@@ -114,40 +101,26 @@ int main(int ac, char **av)
 					 "unexpected exit number returned");
 				rval = 1;
 			}
+		break;
 		}
 
 		if (rval != 1) {
 			tst_resm(TPASS, "exit() test PASSED");
 		}
 	}
+	
 	cleanup();
-
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	umask(0);
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at completion or
- * 	       premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
