@@ -1,64 +1,34 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2002
+ * Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
  *
- *   Copyright (c) International Business Machines  Corp., 2002
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/**********************************************************
+/*
+ * This test verifies that flock cannot unlock a file locked
+ * by another task
  *
- *    TEST IDENTIFIER   : flock03
+ * Test Steps:
  *
- *    EXECUTED BY       : anyone
- *
- *    TEST TITLE        : Error condition test for flock(2)
- *
- *    TEST CASE TOTAL   : 1
- *
- *    AUTHOR            : Paul Larson <plars@linuxtestproject.org>
- *
- *    SIGNALS
- *      Uses SIGUSR1 to pause before test if option set.
- *      (See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- * 	This test verifies that flock cannot unlock a file locked
- * 	by another task
- *
- *	Test:
- * 		Fork a child processes
- * 		The parent flocks a file with LOCK_EX
- * 		Child waits for that to happen, then checks to make sure
- * 		it is locked.  Child then tries to unlock the file. If
- *		the unlock succeeds, the child attempts to lock the
- *		file with LOCK_EX. The test passes if the child is
- *		able to lock the file.
- *
- * USAGE:  <for command-line>
- *      flock03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
- *                      where,  -c n : Run n copies concurrently
- *                              -f   : Turn off functional testing
- *    				-e   : Turn on errno logging
- *                              -h   : Show help screen
- *				-i n : Execute test n times
- *                              -I x : Execute test for x seconds
- *                              -p   : Pause for SIGUSR1 before starting
- *                              -P x : Pause for x seconds between iterations
- *                              -t   : Turn on syscall timing
- *
- ****************************************************************/
+ *  Fork a child processes The parent flocks a file with LOCK_EX Child waits
+ *  for that to happen, then checks to make sure it is locked.  Child then
+ *  tries to unlock the file. If the unlock succeeds, the child attempts to
+ *  lock the file with LOCK_EX. The test passes if the child is able to lock
+ *  the file.
+ */
 
 #include <stdio.h>
 #include <errno.h>
@@ -70,21 +40,24 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup(void);
-void cleanup(void);
-void childfunc(int);
+#define FILE_NAME "flock03"
+
+static void setup(void);
+static void cleanup(void);
+static void childfunc(int);
 
 #ifdef UCLINUX
 static int fd_uc;
-void childfunc_uc()
+static void childfunc_uc(void)
 {
 	childfunc(fd_uc);
 }
 #endif
 
-char *TCID = "flock03";		/* Test program identifier */
-int TST_TOTAL = 3;		/* Total number of test cases */
-char filename[100];
+char *TCID = "flock03";
+int TST_TOTAL = 3;
+
+static struct tst_checkpoint checkpoint;
 
 int main(int argc, char **argv)
 {
@@ -92,38 +65,34 @@ int main(int argc, char **argv)
 	char *msg;
 	pid_t pid;
 	int status;
-	int fd;			/* for opening the temporary file */
+	int fd;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
-	    NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 }
+
 #ifdef UCLINUX
-	maybe_run_child(&childfunc_uc, "ds", &fd_uc, filename);
+	maybe_run_child(&childfunc_uc, "ds", &fd_uc, FILE_NAME);
 #endif
 
 	setup();
 
-	/* The following loop checks looping state if -i option given */
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* PARENT */
-		fd = open(filename, O_RDWR);
+		fd = open(FILE_NAME, O_RDWR);
+
 		if (fd == -1)
 			tst_brkm(TFAIL, cleanup, "parent failed to open the"
 				 "file, errno %d", errno);
 
 		pid = FORK_OR_VFORK();
+		
 		if (pid == -1)
 			tst_brkm(TFAIL, cleanup, "fork() failed, errno %d",
 				 errno);
 		if (pid == 0) {
 #ifdef UCLINUX
-			if (self_exec(argv[0], "ds", fd, filename) < 0)
+			if (self_exec(argv[0], "ds", fd, FILENAME) < 0)
 				tst_brkm(TFAIL, cleanup, "self_exec failed, "
 					 "errno &d", errno);
 #else
@@ -132,6 +101,7 @@ int main(int argc, char **argv)
 		}
 
 		TEST(flock(fd, LOCK_EX | LOCK_NB));
+
 		if (TEST_RETURN != 0)
 			tst_resm(TFAIL,
 				 "Parent: Initial attempt to flock() failed, "
@@ -139,6 +109,8 @@ int main(int argc, char **argv)
 		else
 			tst_resm(TPASS,
 				 "Parent: Initial attempt to flock() passed");
+
+		TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint);
 
 		if ((waitpid(pid, &status, 0)) < 0) {
 			tst_resm(TFAIL, "wait() failed");
@@ -154,102 +126,80 @@ int main(int argc, char **argv)
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
-void childfunc(int fd)
+static void childfunc(int fd)
 {
 	int fd2;
 
-	/* give the parent a chance to lock the file */
-	sleep(2);
+	TST_CHECKPOINT_CHILD_WAIT(&checkpoint);
 
-	fd2 = open(filename, O_RDWR);
-	if (fd2 == -1)
-		tst_brkm(TFAIL, cleanup, "child failed to open the"
-			 "file, errno %d", errno);
-	if (flock(fd2, LOCK_EX | LOCK_NB) != -1)
-		tst_resm(TFAIL, "Child: The file was not already locked");
+	fd2 = open(FILE_NAME, O_RDWR);
+
+	if (fd2 == -1) {
+		fprintf(stderr, "CHILD: failed to open the file: %s\n",
+		        strerror(errno));
+		exit(1);
+	}
+
+	if (flock(fd2, LOCK_EX | LOCK_NB) != -1) {
+		fprintf(stderr, "CHILD: The file was not already locked\n");
+		exit(1);
+	}
 
 	TEST(flock(fd, LOCK_UN));
 	/* XXX: LOCK_UN does not return an error if there was nothing to
 	 * unlock.
 	 */
-	if (TEST_RETURN == -1)
-		tst_resm(TFAIL,
-			 "Child: Unable to unlock file locked by parent, "
-			 "errno %d", TEST_ERRNO);
-	else
-		tst_resm(TPASS, "Child: Unlocked file locked by parent");
+	if (TEST_RETURN == -1) {
+		fprintf(stderr, "CHILD: Unable to unlock file locked by "
+		        "parent: %s\n", strerror(TEST_ERRNO));
+		exit(1);
+	} else {
+		fprintf(stderr, "CHILD: File locked by parent unlocked\n");
+	}
 
 	TEST(flock(fd2, LOCK_EX | LOCK_NB));
-	if (TEST_RETURN == -1)
-		tst_resm(TFAIL, "Child: Unable to relock file after unlocking, "
-			 "errno %d", TEST_ERRNO);
-	else
-		tst_resm(TPASS, "Child: flock after unlocking passed");
-
+	
+	if (TEST_RETURN == -1) {
+		fprintf(stderr, "CHILD: Unable to lock file after "
+		        "unlocking: %s\n", strerror(TEST_ERRNO));
+		exit(1);
+	} else {
+		fprintf(stderr, "CHILD: Locking after unlock passed\n");
+	}
+	
 	close(fd);
 	close(fd2);
-
-	tst_exit();
-
-	return;
+	
+	exit(0);
 }
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
 	int fd;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -i option.
-	 * You want to make sure you do this before you create your temporary
-	 * directory.
-	 */
 	TEST_PAUSE;
 
-	/* Create a unique temporary directory and chdir() to it. */
 	tst_tmpdir();
 
-	sprintf(filename, "flock03.%d", getpid());
+	TST_CHECKPOINT_INIT(&checkpoint);
 
-	/* creating temporary file */
-	fd = creat(filename, 0666);
+	fd = creat(FILE_NAME, 0666);
 	if (fd < 0) {
-		tst_resm(TFAIL, "creating a new file failed");
-
+		tst_resm(TBROK, "creating a new file failed");
 		TEST_CLEANUP;
-
-		/* Removing temp dir */
-		tst_rmdir();
-
-		tst_exit();
+		cleanup();
 	}
 	close(fd);
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- * 	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	unlink(filename);
 	tst_rmdir();
-
- }
+}
