@@ -46,6 +46,7 @@
 
 #include "safe_file_ops.h"
 #include "tst_checkpoint.h"
+#include "tst_process_state.h"
 
 /* Use low 6 bits to encode test type */
 #define TTYPE_MASK 0x3f
