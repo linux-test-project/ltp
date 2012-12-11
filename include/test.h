@@ -45,6 +45,8 @@
 #include "compiler.h"
 
 #include "safe_file_ops.h"
+#include "tst_checkpoint.h"
+#include "tst_process_state.h"
 
 /* Use low 6 bits to encode test type */
 #define TTYPE_MASK 0x3f
@@ -232,6 +234,10 @@ void tst_rmdir(void);
  * FREE VARIABLE AFTER USE IF IT IS REUSED!
  */
 char *get_tst_tmpdir(void);
+/*
+ * Returns 1 if temp directory was created.
+ */
+int tst_tmpdir_created(void);
 
 /* lib/get_high_address.c */
 char *get_high_address(void);
