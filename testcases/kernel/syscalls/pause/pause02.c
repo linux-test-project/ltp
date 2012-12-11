@@ -40,7 +40,6 @@ static pid_t cpid;
 static void do_child(void);
 static void setup(void);
 static void cleanup(void);
-static void kill_handle(int sig);
 
 int main(int ac, char **av)
 {
@@ -77,10 +76,10 @@ int main(int ac, char **av)
 		break;
 		}
 
-
-		/* Parent process */
-		/* sleep to ensure the child executes */
-		sleep(1);
+		/*
+		 * Wait for child to enter pause().
+		 */
+		TST_PROCESS_STATE_WAIT(cleanup, cpid, 'S');
 
 		/*
 		 * Send the SIGINT signal now, so that child
@@ -88,27 +87,30 @@ int main(int ac, char **av)
 		 */
 		kill(cpid, SIGINT);
 
-		/*
-		 * In case pause() doesn't return witin 2 seconds,
-		 * set the alarm to send SIGKILL for the child.
-		 */
-		signal(SIGALRM, kill_handle);
-		alarm(2);
-
 		wait(&status);
-
-		/* Reset the timer in case pause() returned */
-		alarm(0);
 
 		if (WIFEXITED(status)) {
 			if (WEXITSTATUS(status) == 0)
 				tst_resm(TPASS, "pause was interrupted correctly");
 			else
-				tst_resm(TFAIL, "pause was interrupted but the"
+				tst_resm(TFAIL, "pause was interrupted but the "
 				                "retval and/or errno was wrong");
-		} else {
-			tst_resm(TFAIL, "Pause was not interrupted");
+			continue;
 		}
+
+		if (WIFSIGNALED(status)) {
+			switch (WTERMSIG(status)) {
+			case SIGALRM:
+				tst_resm(TFAIL, "Timeout: SIGINT wasn't recieved by child");
+			break;
+			default:
+				tst_resm(TFAIL, "Child killed by signal");
+			}
+
+			continue;
+		}
+			
+		tst_resm(TFAIL, "Pause was not interrupted");
 	}
 
 	cleanup();
@@ -121,10 +123,16 @@ static void sig_handle(int sig)
 
 static void do_child(void)
 {
+	/* avoid LTP framework to do whatever it likes */
+	signal(SIGALRM, SIG_DFL);
+
 	if (signal(SIGINT, sig_handle) == SIG_ERR) {
 		fprintf(stderr, "Child: Failed to setup signal handler\n");
 		exit(1);
 	}
+
+	/* Commit suicide after 10 seconds */
+	alarm(10);
 
 	TEST(pause());
 
@@ -150,12 +158,6 @@ static void setup(void)
 	TEST_PAUSE;
 	
 	TEST_EXP_ENOS(exp_enos);
-}
-
-/* Send SIGKILL to the child */
-static void kill_handle(int sig)
-{
-	kill(cpid, SIGKILL);
 }
 
 static void cleanup(void)
