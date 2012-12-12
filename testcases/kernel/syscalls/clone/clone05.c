@@ -60,7 +60,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		TEST(ltp_clone(CLONE_VM | CLONE_VFORK, child_fn, NULL,
+		TEST(ltp_clone(CLONE_VM | CLONE_VFORK | SIGCHLD, child_fn, NULL,
 		               CHILD_STACK_SIZE, child_stack));
 
 		if ((TEST_RETURN != -1) && (child_exited))
