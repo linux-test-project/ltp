@@ -99,6 +99,9 @@ static void tmpdir_cleanup(void);
 extern char *TCID;		/* defined/initialized in main() */
 static char *TESTDIR = NULL;	/* the directory created */
 
+static char test_start_work_dir[PATH_MAX];
+
+
 int tst_tmpdir_created(void)
 {
 	return TESTDIR != NULL;
@@ -110,6 +113,11 @@ char *get_tst_tmpdir(void)
 	if (TESTDIR == NULL)
 		tst_brkm(TBROK, NULL, "you must call tst_tmpdir() first");
 	return strdup(TESTDIR);
+}
+
+const char *tst_get_startwd(void)
+{
+	return test_start_work_dir;
 }
 
 void tst_tmpdir(void)
@@ -142,6 +150,11 @@ void tst_tmpdir(void)
 	if (chmod(TESTDIR, DIR_MODE) == -1)
 		tst_brkm(TBROK | TERRNO, tmpdir_cleanup,
 			 "chmod(%s, %#o) failed", TESTDIR, DIR_MODE);
+
+	if (getcwd(test_start_work_dir, sizeof(test_start_work_dir)) == NULL) {
+		tst_resm(TINFO, "Failed to record test working dir");
+		test_start_work_dir[0] = '\0';
+	}
 
 	/*
 	 * Change to the temporary directory.  If the chdir() fails, issue
