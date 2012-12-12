@@ -1,48 +1,24 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	creat07.c
- *
- * DESCRIPTION
- *	Testcase to check creat(2) sets the following errnos correctly:
- *	1.	ETXTBSY
- *
- * ALGORITHM
- *	1.	Attempt to creat(2) an executable which is currently running,
- *		and test for ETXTBSY
- *
- * USAGE:  <for command-line>
- *  creat07 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	test must be run with the -F option
+ * Testcase to check creat(2) sets ETXTBSY correctly.
  */
 
 #ifndef _GNU_SOURCE
@@ -58,22 +34,23 @@
 #include "test.h"
 #include "usctest.h"
 
-#define test_app "test1"
+#define TEST_APP "creat07_child"
 
 char *TCID = "creat07";
 int TST_TOTAL = 1;
 
-void setup(char *);
-void cleanup(void);
+static void setup(char *);
+static void cleanup(void);
 
-int exp_enos[] = { ETXTBSY, 0 };
+static int exp_enos[] = {ETXTBSY, 0};
+
+static struct tst_checkpoint checkpoint;
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	int retval = 0, status;
-	pid_t pid, pid2;
+	pid_t pid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -87,88 +64,56 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "fork #1 failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "fork #1 failed");
 
 		if (pid == 0) {
 			char *av[2];
-			av[0] = test_app;
+			av[0] = TEST_APP;
 			av[1] = NULL;
-			(void)execve(test_app, av, NULL);
+			(void)execve(TEST_APP, av, NULL);
 			perror("execve failed");
 			exit(1);
 		}
 
-		if ((pid2 = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK, cleanup, "fork #2 failed");
+		TST_CHECKPOINT_PARENT_WAIT(NULL, &checkpoint);
 
-		if (pid2 == 0) {
-			sleep(10);
+		TEST(creat(TEST_APP, O_WRONLY));
 
-			TEST(creat(test_app, O_WRONLY));
-
-			if (TEST_RETURN != -1) {
-				retval = 1;
-				printf("creat didn't fail as expected\n");
-			} else if (TEST_ERRNO == ETXTBSY)
-				printf("received ETXTBSY\n");
-			else {
-				retval = 1;
-				perror("creat failed unexpectedly");
-			}
-
-			if (kill(pid, SIGKILL) == -1) {
-				retval = 1;
-				perror("kill failed");
-			}
-			exit(retval);
+		if (TEST_RETURN != -1) {
+			tst_resm(TFAIL, "creat succeeded");
+		} else {
+			if (TEST_ERRNO == ETXTBSY)
+				tst_resm(TPASS, "creat received EXTBSY");
+			else
+				tst_resm(TFAIL | TTERRNO, "creat failed with "
+				                         "unexpected error");
 		}
-		if (wait(&status) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "wait failed");
-		if (WIFEXITED(status) || WEXITSTATUS(status) == 0)
-			tst_resm(TPASS, "creat functionality correct");
-		else
-			tst_resm(TFAIL, "creat functionality incorrect");
-	}
-	cleanup();
 
+		if (kill(pid, SIGKILL) == -1)
+			tst_resm(TINFO | TERRNO, "kill failed");
+		
+		if (wait(NULL) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "wait failed");
+	}
+	
+	cleanup();
 	tst_exit();
 }
 
-void setup(char *app)
+static void setup(char *app)
 {
-	char *cmd, *pwd = NULL;
-	char test_path[MAXPATHLEN];
-
-	if (app[0] == '/')
-		snprintf(test_path, sizeof(test_path), "%s/%s",
-			 dirname(app), test_app);
-	else {
-		if ((pwd = get_current_dir_name()) == NULL)
-			tst_brkm(TBROK | TERRNO, NULL, "getcwd failed");
-
-		snprintf(test_path, sizeof(test_path), "%s/%s", pwd, test_app);
-
-		free(pwd);
-	}
-
-	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") +
-		     1);
-	if (cmd == NULL)
-		tst_brkm(TBROK | TERRNO, NULL, "Cannot alloc command string");
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_tmpdir();
 
-	sprintf(cmd, "cp -p \"%s\" .", test_path);
-	if (system(cmd) != 0)
-		tst_brkm(TBROK, cleanup, "Cannot copy file %s", test_path);
-	free(cmd);
+	TST_RESOURCE_COPY(cleanup, TEST_APP, NULL);
+	
+	TST_CHECKPOINT_INIT(&checkpoint);
 
 	TEST_PAUSE;
 }
 
-void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 
