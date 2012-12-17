@@ -54,7 +54,7 @@
 #define TUNGETFEATURES _IOR('T', 207, unsigned int)
 #endif
 
-#ifndef define
+#ifndef IFF_VNET_HDR
 #define IFF_VNET_HDR	0x4000
 #endif
 
