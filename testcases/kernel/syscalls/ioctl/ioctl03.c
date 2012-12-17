@@ -58,6 +58,10 @@
 #define IFF_VNET_HDR	0x4000
 #endif
 
+#ifndef IFF_MULTI_QUEUE
+#define IFF_MULTI_QUEUE	0x0100
+#endif
+
 char *TCID = "ioctl03";
 int TST_TOTAL = 1;
 
@@ -82,7 +86,8 @@ static struct {
 	IFF_TAP, "TAP"}, {
 	IFF_NO_PI, "NO_PI"}, {
 	IFF_ONE_QUEUE, "ONE_QUEUE"}, {
-	IFF_VNET_HDR, "VNET_HDR"}
+	IFF_VNET_HDR, "VNET_HDR"}, {
+	IFF_MULTI_QUEUE, "MULTI_QUEUE"}
 };
 
 int main()
