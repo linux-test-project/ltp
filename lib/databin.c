@@ -41,11 +41,7 @@
 
 static char Errmsg[80];
 
-void databingen(mode, buffer, bsize, offset)
-int mode;			/* either a, c, r, o, z or C */
-char *buffer;			/* buffer pointer */
-int bsize;			/* size of buffer */
-int offset;			/* offset into the file where buffer starts */
+void databingen(int mode, char *buffer, int bsize, int offset)
 {
 	int ind;
 
@@ -60,9 +56,9 @@ int offset;			/* offset into the file where buffer starts */
 		break;
 
 	case 'C':		/* */
-		for (ind = 0; ind < bsize; ind++) {
+		for (ind = 0; ind < bsize; ind++)
 			buffer[ind] = ((offset + ind) % 8 & 0177);
-		}
+
 		break;
 
 	case 'o':
@@ -74,24 +70,17 @@ int offset;			/* offset into the file where buffer starts */
 		break;
 
 	case 'r':		/* random */
-		for (ind = 0; ind < bsize; ind++) {
+		for (ind = 0; ind < bsize; ind++)
 			buffer[ind] = (rand() & 0177) | 0100;
-		}
 	}
 }
 
-/***********************************************************************
- *
+/*
  * return values:
  *      >= 0 : error at byte offset into the file, offset+buffer[0-(bsize-1)]
  *      < 0  : no error
- ***********************************************************************/
-int databinchk(mode, buffer, bsize, offset, errmsg)
-int mode;			/* either a, c, r, z, o, or C */
-char *buffer;			/* buffer pointer */
-int bsize;			/* size of buffer */
-int offset;			/* offset into the file where buffer starts */
-char **errmsg;
+ */
+int databinchk(int mode, char *buffer, int bsize, int offset, char **errmsg)
 {
 	int cnt;
 	unsigned char *chr;
@@ -100,9 +89,8 @@ char **errmsg;
 
 	chr = (unsigned char *)buffer;
 
-	if (errmsg != NULL) {
+	if (errmsg != NULL)
 		*errmsg = Errmsg;
-	}
 
 	switch (mode) {
 	default:
@@ -152,19 +140,13 @@ char **errmsg;
 	}
 
 	sprintf(Errmsg, "all %d bytes match desired pattern", bsize);
-	return -1;		/* all ok */
+	return -1;
 }
 
 #if UNIT_TEST
 
-/***********************************************************************
- * main for doing unit testing
- ***********************************************************************/
-int main(ac, ag)
-int ac;
-char **ag;
+int main(int ac, char **ag)
 {
-
 	int size = 1023;
 	int offset;
 	int number;
@@ -172,7 +154,8 @@ char **ag;
 	int ret;
 	char *errmsg;
 
-	if ((buffer = (unsigned char *)malloc(size)) == NULL) {
+	buffer = malloc(size);
+	if (buffer == NULL) {
 		perror("malloc");
 		exit(2);
 	}
@@ -273,9 +256,8 @@ char **ag;
 	printf("changing char 20 and 21 to 0x0 (offset %d and %d)\n", 20, 21);
 
 	ret = databinchk('C', &buffer[18], size - 18, 18, &errmsg);
-	printf
-	    ("databinchk('C', &buffer[18], %d, 18, &errmsg) returned %d: %s\n",
-	     size - 18, ret, errmsg);
+	printf("databinchk('C', &buffer[18], %d, 18, &errmsg) returned %d: %s\n",
+		size - 18, ret, errmsg);
 
 	if (ret == 20 || ret == 21)
 		printf("\tPASS return value of %d or %d as expected\n", 20, 21);
