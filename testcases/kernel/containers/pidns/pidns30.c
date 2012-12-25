@@ -186,7 +186,7 @@ int child_fn(void *arg)
 	while (read(father_to_child[0], buf, 1) != 1)
 		sleep(1);
 
-	mqd = syscall(__NR_mq_open, mqname, O_RDONLY);
+	mqd = syscall(__NR_mq_open, mqname, O_RDONLY, 0, NULL);
 	if (mqd == -1) {
 		perror("mq_open failed");
 		return 1;

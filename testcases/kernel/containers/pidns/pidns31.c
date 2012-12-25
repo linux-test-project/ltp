@@ -177,7 +177,7 @@ int child_fn(void *arg)
 	}
 	tst_resm(TINFO, "cinit: my father is ready to receive a message");
 
-	mqd = syscall(__NR_mq_open, mqname, O_WRONLY);
+	mqd = syscall(__NR_mq_open, mqname, O_WRONLY, 0, NULL);
 	if (mqd == (mqd_t) - 1) {
 		tst_resm(TBROK, "cinit: mq_open() failed (%s)",
 			 strerror(errno));
