@@ -37,20 +37,16 @@
 #define CHARS_SIZE	sizeof(CHARS)
 
 #ifdef UNIT_TEST
-#include <stdlib.h>		/* malloc */
+#include <stdlib.h>
 #endif
 
 static char Errmsg[80];
 
-int dataasciigen(listofchars, buffer, bsize, offset)
-char *listofchars;		/* a null terminated list of characters */
-char *buffer;
-int bsize;
-int offset;
+int dataasciigen(char *listofchars, char *buffer, int bsize, int offset)
 {
 	int cnt;
 	int total;
-	int ind;		/* index into CHARS array */
+	int ind;
 	char *chr;
 	int chars_size;
 	char *charlist;
@@ -72,19 +68,14 @@ int offset;
 	}
 
 	return bsize;
+}
 
-}				/* end of dataasciigen */
-
-int dataasciichk(listofchars, buffer, bsize, offset, errmsg)
-char *listofchars;		/* a null terminated list of characters */
-char *buffer;
-int bsize;
-int offset;
-char **errmsg;
+int dataasciichk(char *listofchars, char *buffer, int bsize,
+		 int offset, char **errmsg)
 {
 	int cnt;
 	int total;
-	int ind;		/* index into CHARS array */
+	int ind;
 	char *chr;
 	int chars_size;
 	char *charlist;
@@ -100,9 +91,8 @@ char **errmsg;
 		chars_size = strlen(listofchars);
 	}
 
-	if (errmsg != NULL) {
+	if (errmsg != NULL)
 		*errmsg = Errmsg;
-	}
 
 	for (cnt = offset; cnt < total; chr++, cnt++) {
 		ind = cnt % chars_size;
@@ -115,18 +105,12 @@ char **errmsg;
 	}
 
 	sprintf(Errmsg, "all %d bytes match desired pattern", bsize);
-	return -1;		/* buffer is ok */
-
-}				/* end of dataasciichk */
+	return -1;
+}
 
 #if UNIT_TEST
 
-/***********************************************************************
- * main for doing unit testing
- ***********************************************************************/
-int main(ac, ag)
-int ac;
-char **ag;
+int main(int ac, char **ag)
 {
 
 	int size = 1023;
@@ -134,7 +118,8 @@ char **ag;
 	int ret;
 	char *errmsg;
 
-	if ((buffer = (char *)malloc(size)) == NULL) {
+	buffer = malloc(size);
+	if (buffer == NULL)
 		perror("malloc");
 		exit(2);
 	}
@@ -152,9 +137,8 @@ char **ag;
 		printf("\tFAIL return value is %d, expected -1\n", ret);
 
 	ret = dataasciichk(NULL, &buffer[1], size - 1, 1, &errmsg);
-	printf
-	    ("dataasciichk(NULL, &buffer[1], %d, 1, &errmsg) returned %d %s\n",
-	     size - 1, ret, errmsg);
+	printf("dataasciichk(NULL, &buffer[1], %d, 1, &errmsg) returned %d %s\n",
+		size - 1, ret, errmsg);
 
 	if (ret == -1)
 		printf("\tPASS return value is -1 as expected\n");
@@ -165,9 +149,8 @@ char **ag;
 	printf("changing char 25\n");
 
 	ret = dataasciichk(NULL, &buffer[1], size - 1, 1, &errmsg);
-	printf
-	    ("dataasciichk(NULL, &buffer[1], %d, 1, &errmsg) returned %d %s\n",
-	     size - 1, ret, errmsg);
+	printf("dataasciichk(NULL, &buffer[1], %d, 1, &errmsg) returned %d %s\n",
+		size - 1, ret, errmsg);
 
 	if (ret == 25)
 		printf("\tPASS return value is 25 as expected\n");
@@ -175,16 +158,13 @@ char **ag;
 		printf("\tFAIL return value is %d, expected 25\n", ret);
 
 	dataasciigen("this is a test of the my string", buffer, size, 0);
-	printf
-	    ("dataasciigen(\"this is a test of the my string\", buffer, %d, 0)\n",
-	     size);
+	printf("dataasciigen(\"this is a test of the my string\", buffer, %d, 0)\n",
+		size);
 
-	ret =
-	    dataasciichk("this is a test of the my string", buffer, size, 0,
-			 &errmsg);
-	printf
-	    ("dataasciichk(\"this is a test of the my string\", buffer, %d, 0, &errmsg) returned %d %s\n",
-	     size, ret, errmsg);
+	ret = dataasciichk("this is a test of the my string",
+			   buffer, size, 0, &errmsg);
+	printf("dataasciichk(\"this is a test of the my string\", buffer, %d, 0, &errmsg) returned %d %s\n",
+		size, ret, errmsg);
 
 	if (ret == -1)
 		printf("\tPASS return value is -1 as expected\n");
@@ -194,9 +174,8 @@ char **ag;
 	ret =
 	    dataasciichk("this is a test of the my string", &buffer[1],
 			 size - 1, 1, &errmsg);
-	printf
-	    ("dataasciichk(\"this is a test of the my string\", &buffer[1], %d, 1, &errmsg) returned %d %s\n",
-	     size - 1, ret, errmsg);
+	printf("dataasciichk(\"this is a test of the my string\", &buffer[1], %d, 1, &errmsg) returned %d %s\n",
+		size - 1, ret, errmsg);
 
 	if (ret == -1)
 		printf("\tPASS return value is -1 as expected\n");
@@ -206,12 +185,10 @@ char **ag;
 	buffer[25] = 0x0;
 	printf("changing char 25\n");
 
-	ret =
-	    dataasciichk("this is a test of the my string", &buffer[1],
-			 size - 1, 1, &errmsg);
-	printf
-	    ("dataasciichk(\"this is a test of the my string\", &buffer[1], %d, 1, &errmsg) returned %d %s\n",
-	     size - 1, ret, errmsg);
+	ret = dataasciichk("this is a test of the my string", &buffer[1],
+			   size - 1, 1, &errmsg);
+	printf("dataasciichk(\"this is a test of the my string\", &buffer[1], %d, 1, &errmsg) returned %d %s\n",
+		size - 1, ret, errmsg);
 
 	if (ret == 25)
 		printf("\tPASS return value is 25 as expected\n");
