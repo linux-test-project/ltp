@@ -70,17 +70,29 @@ void cleanup()
 void child_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	static int c = 1;
+	pid_t expected_pid;
+
 	/* Verifying from which process the signal handler is signalled */
 
-	if ((c == 1) && (si->si_pid == globalpid))
-		tst_resm(TINFO, "sig_handler is signalled from pid  %d",
-			 globalpid);
-	else if ((c == 2) && (si->si_pid == CHILD_PID))
-		tst_resm(TINFO, "sig_handler is signalled from pid  %d",
-			 CHILD_PID);
+	switch (c) {
+	case 1:
+		expected_pid = globalpid;
+		break;
+	case 2:
+		expected_pid = CHILD_PID;
+		break;
+	default:
+		tst_resm(TBROK, "child should NOT be signalled 3+ times");
+		return;
+	}
+
+	if (si->si_pid == expected_pid)
+		tst_resm(TINFO, "child is signalled from expected pid %d",
+			 expected_pid);
 	else
-		tst_resm(TBROK, "Unexpected value for Sending-ProcessID"
-			 " when signal handler called %d\n", si->si_pid);
+		tst_resm(TBROK, "child is signalled from unexpected pid %d,"
+			 " expecting pid %d", si->si_pid, expected_pid);
+
 	c++;
 }
 
