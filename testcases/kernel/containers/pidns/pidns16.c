@@ -54,7 +54,6 @@
 
 char *TCID = "pidns16";
 int TST_TOTAL = 3;
-pid_t globalpid;
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -76,7 +75,7 @@ void child_signal_handler(int sig, siginfo_t * si, void *unused)
 
 	switch (c) {
 	case 1:
-		expected_pid = globalpid;
+		expected_pid = PARENT_PID;
 		break;
 	case 2:
 		expected_pid = CHILD_PID;
@@ -137,8 +136,6 @@ int main(int argc, char *argv[])
 {
 	int status;
 	pid_t cpid;
-
-	globalpid = getpid();
 
 	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
 
