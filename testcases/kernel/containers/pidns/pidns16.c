@@ -53,7 +53,7 @@
 #define PARENT_PID	0
 
 char *TCID = "pidns16";
-int TST_TOTAL = 1;
+int TST_TOTAL = 3;
 pid_t globalpid;
 
 /*
@@ -87,10 +87,10 @@ void child_signal_handler(int sig, siginfo_t * si, void *unused)
 	}
 
 	if (si->si_pid == expected_pid)
-		tst_resm(TINFO, "child is signalled from expected pid %d",
+		tst_resm(TPASS, "child is signalled from expected pid %d",
 			 expected_pid);
 	else
-		tst_resm(TBROK, "child is signalled from unexpected pid %d,"
+		tst_resm(TFAIL, "child is signalled from unexpected pid %d,"
 			 " expecting pid %d", si->si_pid, expected_pid);
 
 	c++;
