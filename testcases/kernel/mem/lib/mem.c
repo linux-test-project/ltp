@@ -200,7 +200,7 @@ static void _group_check(int run, int pages_shared, int pages_sharing,
 	_check("pages_to_scan", pages_to_scan);
 }
 
-static void _verify(char **memory_new, char value, int proc,
+static void _verify(char **memory, char value, int proc,
 		    int start, int end, int start2, int end2)
 {
 	int i, j;
@@ -212,14 +212,14 @@ static void _verify(char **memory_new, char value, int proc,
 
 	tst_resm(TINFO, "child %d verifies memory content.", proc);
 	memset(s, value, (end - start) * (end2 - start2));
-	if (memcmp(memory_new[start], s, (end - start) * (end2 - start2))
+	if (memcmp(memory[start], s, (end - start) * (end2 - start2))
 	    != 0)
 		for (j = start; j < end; j++)
 			for (i = start2; i < end2; i++)
-				if (memory_new[j][i] != value)
+				if (memory[j][i] != value)
 					tst_resm(TFAIL, "child %d has %c at "
 						 "%d,%d,%d.",
-						 proc, memory_new[j][i], proc,
+						 proc, memory[j][i], proc,
 						 j, i);
 	free(s);
 }
@@ -241,7 +241,7 @@ static struct ksm_merge_data {
 };
 
 static void ksm_child_memset(int child_num, int size, int total_unit,
-		 struct ksm_merge_data ksm_merge_data, char **memory_new)
+		 struct ksm_merge_data ksm_merge_data, char **memory)
 {
 	int i, j;
 	int unit = size / total_unit;
@@ -260,34 +260,34 @@ static void ksm_child_memset(int child_num, int size, int total_unit,
 
 	for (j = 0; j < total_unit; j++) {
 		for (i = 0; i < unit * MB; i++)
-			memory_new[j][i] = ksm_merge_data.data;
+			memory[j][i] = ksm_merge_data.data;
 	}
 
 	/* if it contains unshared page, then set 'e' char
 	 * at the end of the last page
 	 */
 	if (ksm_merge_data.mergeable_size < size * MB)
-		memory_new[j-1][i-1] = 'e';
+		memory[j-1][i-1] = 'e';
 }
 
 static void create_ksm_child(int child_num, int size, int unit,
 		       struct ksm_merge_data *ksm_merge_data)
 {
 	int j, total_unit;
-	char **memory_new;
+	char **memory;
 
 	/* The total units in all */
 	total_unit = size / unit;
 
-	/* Apply for the space for memory_new */
-	memory_new = (char **)malloc(total_unit * sizeof(char *));
+	/* Apply for the space for memory */
+	memory = (char **)malloc(total_unit * sizeof(char *));
 	for (j = 0; j < total_unit; j++) {
-		memory_new[j] = mmap(NULL, unit * MB, PROT_READ|PROT_WRITE,
+		memory[j] = mmap(NULL, unit * MB, PROT_READ|PROT_WRITE,
 			MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
-		if (memory_new[j] == MAP_FAILED)
+		if (memory[j] == MAP_FAILED)
 			tst_brkm(TBROK|TERRNO, tst_exit, "mmap");
 #ifdef HAVE_MADV_MERGEABLE
-		if (madvise(memory_new[j], unit * MB, MADV_MERGEABLE) == -1)
+		if (madvise(memory[j], unit * MB, MADV_MERGEABLE) == -1)
 			tst_brkm(TBROK|TERRNO, tst_exit, "madvise");
 #endif
 	}
@@ -300,7 +300,7 @@ static void create_ksm_child(int child_num, int size, int unit,
 	for (j = 0; j < 4; j++) {
 
 		ksm_child_memset(child_num, size, total_unit,
-				  ksm_merge_data[j], memory_new);
+				  ksm_merge_data[j], memory);
 
 		fflush(stdout);
 
@@ -309,12 +309,12 @@ static void create_ksm_child(int child_num, int size, int unit,
 			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
 
 		if (ksm_merge_data[j].mergeable_size < size * MB) {
-			_verify(memory_new, 'e', child_num, total_unit - 1,
+			_verify(memory, 'e', child_num, total_unit - 1,
 				total_unit, unit * MB - 1, unit * MB);
-			_verify(memory_new, ksm_merge_data[j].data, child_num,
+			_verify(memory, ksm_merge_data[j].data, child_num,
 				0, total_unit, 0, unit * MB - 1);
 		} else {
-			_verify(memory_new, ksm_merge_data[j].data, child_num,
+			_verify(memory, ksm_merge_data[j].data, child_num,
 				0, total_unit, 0, unit * MB);
 		}
 	}

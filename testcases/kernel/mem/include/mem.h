@@ -36,11 +36,6 @@ void testoom(int mempolicy, int lite, int numa);
 
 #define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
 
-/*
- * memory pointer to identify per process, MB unit, and byte like
- * memory[process No.][MB unit No.][byte No.].
- */
-char ***memory;
 void write_memcg(void);
 void create_same_memory(int size, int num, int unit);
 int  opt_num, opt_size, opt_unit;
