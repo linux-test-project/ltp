@@ -11,7 +11,7 @@ static void _check(char *path, long int value);
 static void _group_check(int run, int pages_shared, int pages_sharing,
 		int pages_volatile, int pages_unshared,
 		int sleep_millisecs, int pages_to_scan);
-static void _verify(char value, int proc, int start, int end,
+static void _verify(char **memory_new, char value, int proc, int start, int end,
 		int start2, int end2);
 
 /* cpuset/memcg */
