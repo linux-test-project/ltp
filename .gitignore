@@ -5,6 +5,8 @@ CVS
 *.obj
 *.gdb
 core
+.gdb_history
+.gdbinit
 lib*.a
 
 /aclocal.m4
