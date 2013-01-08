@@ -65,9 +65,9 @@ int main()
 	ltproot = getenv("LTPROOT");
 
 	if (!ltproot) {
-		tst_resm(TINFO, "LTPROOT env variable is not set\n");
+		tst_resm(TINFO, "LTPROOT env variable is not set");
 		tst_resm(TINFO,
-			 "Please set LTPROOT and re-run the test.. Thankyou\n");
+			 "Please set LTPROOT and re-run the test.. Thankyou");
 		return -1;
 	}
 
@@ -89,7 +89,7 @@ int main()
 		if (ret < 0) {
 			perror("unshare");
 			tst_resm(TFAIL,
-				 "Error:Unshare syscall failed for network namespace\n");
+				 "Error:Unshare syscall failed for network namespace");
 			return 1;
 		}
 #else
@@ -104,7 +104,7 @@ int main()
 		if (ret == -1 || status != 0) {
 			tst_resm(TFAIL,
 				 "Error: While running the IPv6 tests between \
-parent & child NS\n");
+parent & child NS");
 			fflush(stdout);
 			exit(1);
 		}
@@ -113,7 +113,7 @@ parent & child NS\n");
 		ret = waitpid(pid, &status, __WALL);
 		status = WEXITSTATUS(status);
 		if (status != 0 || ret == -1) {
-			tst_resm(TFAIL, "waitpid() returns %d, errno %d\n", ret,
+			tst_resm(TFAIL, "waitpid() returns %d, errno %d", ret,
 				 errno);
 			status = errno;
 		}

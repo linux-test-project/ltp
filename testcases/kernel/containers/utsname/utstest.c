@@ -109,10 +109,10 @@ int P1(void *vtest)
 		zeroize(rhostname);
 		len = read(p1fd[0], rhostname, HLEN);
 		if (strcmp(hostname, rhostname) == 0) {
-			tst_resm(TPASS, "test 1 (%s): success\n", tsttype);
+			tst_resm(TPASS, "test 1 (%s): success", tsttype);
 			tst_exit();
 		}
-		tst_resm(TFAIL, "test 1 (%s): hostname 1 %s, hostname 2 %s\n",
+		tst_resm(TFAIL, "test 1 (%s): hostname 1 %s, hostname 2 %s",
 			 tsttype, hostname, rhostname);
 		tst_exit();
 	case 2:
@@ -128,10 +128,10 @@ int P1(void *vtest)
 		zeroize(rhostname);
 		len = read(p1fd[0], rhostname, HLEN);
 		if (strcmp(newhostname, rhostname) == 0) {
-			tst_resm(TPASS, "test 2 (%s): success\n", tsttype);
+			tst_resm(TPASS, "test 2 (%s): success", tsttype);
 			tst_exit();
 		}
-		tst_resm(TFAIL, "test 2 (%s) hostname 1 %s, hostname 2 %s\n",
+		tst_resm(TFAIL, "test 2 (%s) hostname 1 %s, hostname 2 %s",
 			 tsttype, newhostname, rhostname);
 		tst_exit();
 	case 3:
@@ -149,16 +149,16 @@ int P1(void *vtest)
 		len = read(p1fd[0], rhostname, HLEN);
 		if (strcmp(newhostname, rhostname) == 0) {
 			tst_resm(TFAIL,
-				 "test 3 (%s): hostname 1 %s, hostname 2 %s, these should have been different\n",
+				 "test 3 (%s): hostname 1 %s, hostname 2 %s, these should have been different",
 				 tsttype, newhostname, rhostname);
 			tst_exit();
 		}
 		if (strcmp(hostname, rhostname) == 0) {
-			tst_resm(TPASS, "test 3 (%s): success\n", tsttype);
+			tst_resm(TPASS, "test 3 (%s): success", tsttype);
 			tst_exit();
 		}
 		tst_resm(TFAIL,
-			 "test 3 (%s): hostname 1 %s, hostname 2 %s, should have been same\n",
+			 "test 3 (%s): hostname 1 %s, hostname 2 %s, should have been same",
 			 tsttype, hostname, rhostname);
 		tst_exit();
 
@@ -170,7 +170,7 @@ int P1(void *vtest)
 		gethostname(newhostname, HLEN);
 		if (strcmp(hostname, newhostname) != 0) {
 			tst_resm(TFAIL,
-				 "test 4 (%s): hostname 1 %s, hostname 2 %s, should be same\n",
+				 "test 4 (%s): hostname 1 %s, hostname 2 %s, should be same",
 				 tsttype, hostname, newhostname);
 			tst_exit();
 		}
@@ -180,7 +180,7 @@ int P1(void *vtest)
 				 tsttype, hostname, rhostname);
 			tst_exit();
 		}
-		tst_resm(TPASS, "test 4 (%s): successful\n", tsttype);
+		tst_resm(TPASS, "test 4 (%s): successful", tsttype);
 		tst_exit();
 	case 5:
 		write(p2fd[1], "1", 1);	/* tell p2 to go ahead and sethostname */
@@ -189,7 +189,7 @@ int P1(void *vtest)
 		gethostname(newhostname, HLEN);
 		if (strcmp(rhostname, newhostname) != 0) {
 			tst_resm(TFAIL,
-				 "test 5 (%s): hostnames %s and %s should be same\n",
+				 "test 5 (%s): hostnames %s and %s should be same",
 				 tsttype, rhostname, newhostname);
 			tst_exit();
 		}
@@ -233,7 +233,7 @@ int P2(void *vtest)
 			len = read(p2fd[0], hostname, 1);
 		}
 		if (hostname[0] == '0') {
-			tst_resm(TPASS, "P2: P1 claims error\n");
+			tst_resm(TPASS, "P2: P1 claims error");
 			tst_exit();
 			exit(0);
 		}
@@ -243,7 +243,7 @@ int P2(void *vtest)
 		write(p1fd[1], newhostname, strlen(newhostname));
 		break;
 	default:
-		tst_resm(TFAIL, "undefined test: %d\n", testnum);
+		tst_resm(TFAIL, "undefined test: %d", testnum);
 		break;
 	}
 	tst_exit();
@@ -259,11 +259,11 @@ int main(int argc, char *argv[])
 	void *vtest;
 
 	if (argc != 3) {
-		tst_resm(TFAIL, "Usage: %s <clone|unshare> <testnum>\n",
+		tst_resm(TFAIL, "Usage: %s <clone|unshare> <testnum>",
 			 argv[0]);
 		tst_resm(TFAIL,
 			 " where clone or unshare specifies unshare method,");
-		tst_resm(TFAIL, " and testnum is between 1 and 5 inclusive\n");
+		tst_resm(TFAIL, " and testnum is between 1 and 5 inclusive");
 		exit(2);
 	}
 	if (pipe(p1fd) == -1) {
@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
 		}
 		if (pid == 0) {
 			if (!drop_root()) {
-				tst_resm(TFAIL, "failed to drop root.\n");
+				tst_resm(TFAIL, "failed to drop root.");
 				tst_exit();
 				exit(1);
 			}
@@ -316,7 +316,7 @@ int main(int argc, char *argv[])
 		break;
 	default:
 		tst_resm(TFAIL,
-			 "testnum should be between 1 and 5 inclusive.\n");
+			 "testnum should be between 1 and 5 inclusive.");
 		break;
 	}
 

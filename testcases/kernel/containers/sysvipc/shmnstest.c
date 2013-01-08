@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	char buf[7];
 
 	if (argc != 2) {
-		tst_resm(TFAIL, "Usage: %s <clone|unshare|none>\n", argv[0]);
+		tst_resm(TFAIL, "Usage: %s <clone|unshare|none>", argv[0]);
 		tst_resm(TFAIL,
 			 " where clone, unshare, or fork specifies unshare method.");
 		tst_exit();
@@ -98,15 +98,15 @@ int main(int argc, char *argv[])
 	id = shmget(TESTKEY, 100, IPC_CREAT);
 	if (id == -1) {
 		perror("shmget");
-		tst_resm(TFAIL, "shmget failed\n");
+		tst_resm(TFAIL, "shmget failed");
 		tst_exit();
 	}
 
-	tst_resm(TINFO, "shmid namespaces test : %s\n", tsttype);
+	tst_resm(TINFO, "shmid namespaces test : %s", tsttype);
 	/* fire off the test */
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmid, NULL);
 	if (r < 0) {
-		tst_resm(TFAIL, "%s failed\n", tsttype);
+		tst_resm(TFAIL, "%s failed", tsttype);
 		tst_exit();
 	}
 
@@ -116,16 +116,16 @@ int main(int argc, char *argv[])
 	read(p2[0], buf, 7);
 	if (strcmp(buf, "exists") == 0) {
 		if (use_clone == T_NONE)
-			tst_resm(TPASS, "plain cloned process found shmid\n");
+			tst_resm(TPASS, "plain cloned process found shmid");
 		else
-			tst_resm(TFAIL, "%s: child process found shmid\n",
+			tst_resm(TFAIL, "%s: child process found shmid",
 				 tsttype);
 	} else {
 		if (use_clone == T_NONE)
 			tst_resm(TFAIL,
-				 "plain cloned process didn't find shmid\n");
+				 "plain cloned process didn't find shmid");
 		else
-			tst_resm(TPASS, "%s: child process didn't find shmid\n",
+			tst_resm(TPASS, "%s: child process didn't find shmid",
 				 tsttype);
 	}
 

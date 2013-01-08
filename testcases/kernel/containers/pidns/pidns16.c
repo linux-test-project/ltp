@@ -20,7 +20,7 @@
 * *	- from the parent process and also inside a container
 * *	- Where init has defined a custom handler for USR1
 * *	- Should call the handler and
-* * 	- Verify whether the signal handler is called from the proper process.
+* *	- Verify whether the signal handler is called from the proper process.
 * *
 * * Description:
 * *  Create PID namespace container.
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 
 	if ((WIFEXITED(status)) && (WEXITSTATUS(status) == 10))
 		tst_resm(TPASS, "container init continued successfuly, "
-			 "after handling signal -USR1\n");
+			 "after handling signal -USR1");
 	else
 		tst_resm(TFAIL, "c-init failed to continue after "
 			 "passing kill -USR1");

@@ -35,8 +35,8 @@
 *
 * History:
 *
-* FLAG DATE     	NAME	   			DESCRIPTION
-* 31/10/08  Veerendra C <vechandr@in.ibm.com> 	Verifies killing of NestedCont's
+* FLAG DATE		NAME				DESCRIPTION
+* 31/10/08  Veerendra C <vechandr@in.ibm.com>	Verifies killing of NestedCont's
 *
 *******************************************************************************/
 #define _GNU_SOURCE 1
@@ -75,7 +75,7 @@ int max_pid(void)
 		fscanf(fp, "%d", &ret);
 		fclose(fp);
 	} else {
-		tst_resm(TBROK, "Cannot open /proc/sys/kernel/pid_max \n");
+		tst_resm(TBROK, "Cannot open /proc/sys/kernel/pid_max");
 		ret = -1;
 	}
 	return ret;
@@ -178,11 +178,11 @@ void kill_nested_containers()
 	}
 
 	if (status == 0)
-		tst_resm(TPASS, "The number of containers killed are %d\n",
+		tst_resm(TPASS, "The number of containers killed are %d",
 			 orig_count - new_count);
 	else
 		tst_resm(TFAIL, "Failed to kill the sub-containers of "
-			 "the container %d\n", pids[MAX_DEPTH - 3]);
+			 "the container %d", pids[MAX_DEPTH - 3]);
 
 	/* Loops through the containers created to exit from sleep() */
 	for (i = 0; i < MAX_DEPTH; i++) {

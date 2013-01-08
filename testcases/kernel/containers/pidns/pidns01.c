@@ -42,7 +42,7 @@
 *
 * History:
 *
-* FLAG DATE     	NAME	   		DESCRIPTION
+* FLAG DATE		NAME			DESCRIPTION
 * 27/12/07  RISHIKESH K RAJAK <risrajak@in.ibm.com> Created this test
 *
 *******************************************************************************************/
@@ -75,7 +75,7 @@ int child_fn1(void *ttype)
 	cpid = getpid();
 	ppid = getppid();
 
-	tst_resm(TINFO, "PIDNS test is running inside container\n");
+	tst_resm(TINFO, "PIDNS test is running inside container");
 	if (cpid == CHILD_PID && ppid == PARENT_PID) {
 		printf("Got expected cpid and ppid\n");
 		exit_val = 0;

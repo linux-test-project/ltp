@@ -94,11 +94,11 @@ int main(int argc, char *argv[])
 
 	if (argc == 2 && strcmp(argv[1], "-clone") == 0) {
 		tst_resm(TINFO,
-			 "Testing posix mq namespaces through clone(2).\n");
+			 "Testing posix mq namespaces through clone(2).");
 		use_clone = T_CLONE;
 	} else
 		tst_resm(TINFO,
-			 "Testing posix mq namespaces through unshare(2).\n");
+			 "Testing posix mq namespaces through unshare(2).");
 
 	if (pipe(p1) == -1) {
 		perror("pipe");
@@ -111,12 +111,12 @@ int main(int argc, char *argv[])
 
 	mkdir(DEV_MQUEUE2, 0755);
 
-	tst_resm(TINFO, "Checking mqueue filesystem lifetime\n");
+	tst_resm(TINFO, "Checking mqueue filesystem lifetime");
 
 	/* fire off the test */
 	rc = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (rc < 0) {
-		tst_resm(TFAIL, "failed clone/unshare\n");
+		tst_resm(TFAIL, "failed clone/unshare");
 		goto fail;
 	}
 
@@ -126,10 +126,10 @@ int main(int argc, char *argv[])
 
 	read(p2[0], buf, 7);
 	if (!strcmp(buf, "mqfail")) {
-		tst_resm(TFAIL, "child process could not create mqueue\n");
+		tst_resm(TFAIL, "child process could not create mqueue");
 		goto fail;
 	} else if (!strcmp(buf, "mount")) {
-		tst_resm(TFAIL, "child process could not mount mqueue\n");
+		tst_resm(TFAIL, "child process could not mount mqueue");
 		goto fail;
 	}
 
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 	if (rc == -1) {
 		perror("stat");
 		write(p1[1], "go", 3);
-		tst_resm(TFAIL, "parent could not see child's created mq\n");
+		tst_resm(TFAIL, "parent could not see child's created mq");
 		goto fail;
 	}
 	write(p1[1], "go", 3);
@@ -145,29 +145,29 @@ int main(int argc, char *argv[])
 	rc = wait(&status);
 	if (rc == -1) {
 		perror("wait");
-		tst_resm(TFAIL, "error while parent waited on child to exit\n");
+		tst_resm(TFAIL, "error while parent waited on child to exit");
 		goto fail;
 	}
 	if (!WIFEXITED(status)) {
-		tst_resm(TFAIL, "Child did not exit normally (status %d)\n",
+		tst_resm(TFAIL, "Child did not exit normally (status %d)",
 			 status);
 		goto fail;
 	}
 	rc = stat(FNAM1, &statbuf);
 	if (rc == -1) {
 		tst_resm(TFAIL,
-			 "parent's view of child's mq died with child\n");
+			 "parent's view of child's mq died with child");
 		goto fail;
 	}
 
 	rc = creat(FNAM2, 0755);
 	if (rc != -1) {
 		tst_resm(TFAIL,
-			 "parent was able to create a file in dead child's mqfs\n");
+			 "parent was able to create a file in dead child's mqfs");
 		goto fail;
 	}
 
-	tst_resm(TPASS, "Child mqueue fs still visible for parent\n");
+	tst_resm(TPASS, "Child mqueue fs still visible for parent");
 
 fail:
 	umount(DEV_MQUEUE2);

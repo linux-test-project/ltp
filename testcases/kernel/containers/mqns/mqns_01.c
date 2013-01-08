@@ -84,11 +84,11 @@ int main(int argc, char *argv[])
 
 	if (argc == 2 && strcmp(argv[1], "-clone") == 0) {
 		tst_resm(TINFO,
-			 "Testing posix mq namespaces through clone(2).\n");
+			 "Testing posix mq namespaces through clone(2).");
 		use_clone = T_CLONE;
 	} else
 		tst_resm(TINFO,
-			 "Testing posix mq namespaces through unshare(2).\n");
+			 "Testing posix mq namespaces through unshare(2).");
 
 	if (pipe(p1) == -1 || pipe(p2) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL, "pipe failed");
@@ -99,15 +99,15 @@ int main(int argc, char *argv[])
 		    NULL);
 	if (mqd == -1) {
 		perror("mq_open");
-		tst_resm(TFAIL, "mq_open failed\n");
+		tst_resm(TFAIL, "mq_open failed");
 		tst_exit();
 	}
 
-	tst_resm(TINFO, "Checking namespaces isolation from parent to child\n");
+	tst_resm(TINFO, "Checking namespaces isolation from parent to child");
 	/* fire off the test */
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
-		tst_resm(TFAIL, "failed clone/unshare\n");
+		tst_resm(TFAIL, "failed clone/unshare");
 		mq_close(mqd);
 		syscall(__NR_mq_unlink, NOSLASH_MQ1);
 		tst_exit();
@@ -121,11 +121,11 @@ int main(int argc, char *argv[])
 		tst_resm(TBROK | TERRNO, "read(p2[0], buf, ...) failed");
 	else {
 		if (!strcmp(buf, "exists")) {
-			tst_resm(TFAIL, "child process found mqueue\n");
+			tst_resm(TFAIL, "child process found mqueue");
 		} else if (!strcmp(buf, "notfnd")) {
-			tst_resm(TPASS, "child process didn't find mqueue\n");
+			tst_resm(TPASS, "child process didn't find mqueue");
 		} else {
-			tst_resm(TFAIL, "UNKNOWN RESULT\n");
+			tst_resm(TFAIL, "UNKNOWN RESULT");
 		}
 	}
 

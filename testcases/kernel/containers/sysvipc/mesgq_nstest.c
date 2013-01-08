@@ -17,7 +17,7 @@
 *
 * In Parent Process , create mesgq with key 154326L
 * Now create container by passing 1 of the flag values..
-* 	Flag = clone, clone(CLONE_NEWIPC), or unshare(CLONE_NEWIPC)
+*	Flag = clone, clone(CLONE_NEWIPC), or unshare(CLONE_NEWIPC)
 * In cloned process, try to access the created mesgq
 * Test PASS: If the mesgq is readable when flag is None.
 * Test FAIL: If the mesgq is readable when flag is Unshare or Clone.
@@ -57,7 +57,7 @@ void mesgq_read(id)
 	if (n == -1)
 		perror("msgrcv"), tst_exit();
 
-	tst_resm(TINFO, "Mesg read of %d bytes; Type %ld: Msg: %.*s\n",
+	tst_resm(TINFO, "Mesg read of %d bytes; Type %ld: Msg: %.*s",
 		 n, msg.mtype, n, msg.mtext);
 }
 
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 	char buf[7];
 
 	if (argc != 2) {
-		tst_resm(TFAIL, "Usage: %s <clone|unshare|none>\n", argv[0]);
+		tst_resm(TFAIL, "Usage: %s <clone|unshare|none>", argv[0]);
 		tst_resm(TFAIL, " where clone, unshare, or fork specifies"
 			 " unshare method.");
 		tst_exit();
@@ -130,11 +130,11 @@ int main(int argc, char *argv[])
 	if (n == -1)
 		perror("msgsnd"), tst_exit();
 
-	tst_resm(TINFO, "mesgq namespaces test : %s\n", tsttype);
+	tst_resm(TINFO, "mesgq namespaces test : %s", tsttype);
 	/* fire off the test */
 	ret = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mesgq, NULL);
 	if (ret < 0) {
-		tst_resm(TFAIL, "%s failed\n", tsttype);
+		tst_resm(TFAIL, "%s failed", tsttype);
 		tst_exit();
 	}
 
@@ -146,15 +146,15 @@ int main(int argc, char *argv[])
 	if (strcmp(buf, "exists") == 0) {
 		if (use_clone == T_NONE)
 			tst_resm(TPASS, "Plain cloned process found mesgq "
-				 "inside container\n");
+				 "inside container");
 		else
 			tst_resm(TFAIL,
-				 "%s: Container init process found mesgq\n",
+				 "%s: Container init process found mesgq",
 				 tsttype);
 	} else {
 		if (use_clone == T_NONE)
 			tst_resm(TFAIL,
-				 "Plain cloned process didn't find mesgq\n");
+				 "Plain cloned process didn't find mesgq");
 		else
 			tst_resm(TPASS, "%s: Container didn't find mesgq",
 				 tsttype);

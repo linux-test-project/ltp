@@ -26,7 +26,7 @@
 * Check that mq1 is not readable from father
 *
 * Changelog:
-* 	Dec 16: accomodate new mqns semantics (Serge Hallyn)
+*	Dec 16: accomodate new mqns semantics (Serge Hallyn)
 
 ***************************************************************************/
 
@@ -117,11 +117,11 @@ int main(int argc, char *argv[])
 
 	if (argc == 2 && strcmp(argv[1], "-clone") == 0) {
 		tst_resm(TINFO,
-			 "Testing posix mq namespaces through clone(2).\n");
+			 "Testing posix mq namespaces through clone(2).");
 		use_clone = T_CLONE;
 	} else
 		tst_resm(TINFO,
-			 "Testing posix mq namespaces through unshare(2).\n");
+			 "Testing posix mq namespaces through unshare(2).");
 
 	if (pipe(p1) == -1 || pipe(p2) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL, "pipe");
@@ -130,10 +130,10 @@ int main(int argc, char *argv[])
 	/* fire off the test */
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
-		tst_brkm(TFAIL, NULL, "failed clone/unshare\n");
+		tst_brkm(TFAIL, NULL, "failed clone/unshare");
 	}
 
-	tst_resm(TINFO, "Checking namespaces isolation (child to parent)\n");
+	tst_resm(TINFO, "Checking namespaces isolation (child to parent)");
 
 	close(p1[0]);
 	close(p2[1]);
@@ -144,19 +144,19 @@ int main(int argc, char *argv[])
 	if (read(p2[0], buf, 7) < 0) {
 		tst_resm(TBROK | TERRNO, "read(p2[0], ..) failed");
 	} else if (!strcmp(buf, "mqfail")) {
-		tst_resm(TFAIL, "child process could not create mqueue\n");
+		tst_resm(TFAIL, "child process could not create mqueue");
 		umount(DEV_MQUEUE);
 	} else if (strcmp(buf, "mqopen")) {
-		tst_resm(TFAIL, "child process could not create mqueue\n");
+		tst_resm(TFAIL, "child process could not create mqueue");
 		umount(DEV_MQUEUE);
 	} else {
 		mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDONLY);
 		if (mqd == -1) {
 			tst_resm(TPASS,
-				 "Parent process can't see the mqueue\n");
+				 "Parent process can't see the mqueue");
 		} else {
 			tst_resm(TFAIL | TERRNO,
-				 "Parent process found mqueue\n");
+				 "Parent process found mqueue");
 			mq_close(mqd);
 		}
 		if (write(p1[1], "cont", 5) < 0) {
