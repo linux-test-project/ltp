@@ -48,7 +48,7 @@ int main(void)
 	}
 
 	if (pa == MAP_FAILED)
-		printf("Test FAILED: Expected EINVAL got %s", strerror(errno));
+		printf("Test FAILED: Expected EINVAL got %s\n", strerror(errno));
 	else
 		printf("Test FAILED: mmap() succedded unexpectedly\n");
 
