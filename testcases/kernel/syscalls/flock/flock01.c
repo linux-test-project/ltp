@@ -31,7 +31,7 @@
  *      (See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- * 	Test to verify flock(2) succeds with all kind of locks.
+ * 	Test to verify flock(2) succeeds with all kind of locks.
  *	Intends to provide a limited exposure of system call.
  *    $
  *	Setup:
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 				continue;	/*next loop for MTKERNEL  */
 			} else {
 				tst_resm(TPASS,
-					 "flock() succeded with %s, returned error number=%d",
+					 "flock() succeeded with %s, returned error number=%d",
 					 test_cases[i].opt, TEST_ERRNO);
 			}
 
