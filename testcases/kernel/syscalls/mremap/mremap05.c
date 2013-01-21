@@ -36,6 +36,7 @@
  */
 
 #define _GNU_SOURCE
+#include "config.h"
 #include <sys/mman.h>
 #include <errno.h>
 #include <unistd.h>
@@ -43,6 +44,8 @@
 #include "usctest.h"
 
 char *TCID = "mremap05";
+
+#ifdef HAVE_MREMAP_FIXED
 
 struct test_case_t {
 	char *old_address;
@@ -241,3 +244,12 @@ static void cleanup(void)
 {
 	TEST_CLEANUP;
 }
+
+#else
+
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "MREMAP_FIXED not present in <sys/mman.h>");
+}
+
+#endif /* HAVE_MREMAP_FIXED */
