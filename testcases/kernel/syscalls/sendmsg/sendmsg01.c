@@ -573,6 +573,9 @@ static void setup(void)
 {
 
 	int ret = 0;
+
+	tst_require_root(NULL);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
 	/* initialize sockaddr's */
@@ -586,13 +589,16 @@ static void setup(void)
 	strcpy(sun1.sun_path, tmpsunpath);
 
 	/* this test will fail or in some cases hang if no eth or lo is
-	 * configured, so making sure in setup that atleast lo is up
+	 * configured, so making sure in setup that at least lo is up
 	 */
-	ret = system("ifconfig lo up 127.0.0.1");
+	ret = system("ip link set lo up");
 	if (WEXITSTATUS(ret) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "ifconfig failed to bring up loop back device");
-		tst_exit();
+		ret = system("ifconfig lo up 127.0.0.1");
+		if (WEXITSTATUS(ret) != 0) {
+			tst_brkm(TBROK, cleanup,
+			    "ip/ifconfig failed to bring up loop back device");
+			tst_exit();
+		}
 	}
 
 	pid = start_server(&sin1, &sun1);
@@ -607,7 +613,6 @@ static void cleanup(void)
 	unlink(tmpsunpath);
 	TEST_CLEANUP;
 	tst_rmdir();
-
 }
 
 static void setup0(void)
