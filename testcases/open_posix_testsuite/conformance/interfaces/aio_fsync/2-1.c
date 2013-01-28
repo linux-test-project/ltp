@@ -27,7 +27,7 @@ int main(void)
 {
 	char tmpfname[256];
 	char buf[BUF_SIZE];
-	int fd;
+	int fd, ret;
 	struct aiocb aiocb_write;
 	struct aiocb aiocb_fsync;
 
@@ -63,9 +63,27 @@ int main(void)
 		exit(PTS_FAIL);
 	}
 
+	/* wait for aio_fsync */
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb_fsync);
+	} while (ret == EINPROGRESS);
+
+	ret = aio_return(&aiocb_fsync);
+	if (ret) {
+		printf(TNAME " Error at aio_return(): %d (%s)\n",
+			ret, strerror(errno));
+		close(fd);
+		return PTS_FAIL;
+	}
+
+	/* check that aio_write is completed at this point */
+	ret = aio_error(&aiocb_write);
+	if (ret == EINPROGRESS) {
+		printf(TNAME " aiocb_write still in progress\n");
+		close(fd);
+		return PTS_FAIL;
+	}
 	close(fd);
-
-	/* we didn't check if the operation is really performed */
-
-	return PTS_UNTESTED;
+	return PTS_PASS;
 }
