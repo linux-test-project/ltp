@@ -18,14 +18,9 @@
  */
 
 /*
- * NAME
- *	open10.c - Verifies that the group ID and setgid bit are
- *		   set correctly when a new file is created using open.
- *		  (ported from SPIE, section2/iosuite/open5.c, by
- *		   Airong Zhang)
- *
- * CALLS
- *	open
+ * Description:
+ *	Verifies that the group ID and setgid bit are
+ *	set correctly when a new file is created using open.
  *
  * ALGORITHM
  *	Create two directories, one with the group ID of this process
@@ -37,15 +32,9 @@
  *	As root, create a file with the setgid bit on in the
  *	directory with the setgid bit.
  *	This tests the SVID3 create group semantics.
- *
- * USAGE
- *	open10
- *
- * RESTRICTIONS
- *
  */
 
-#include <stdio.h>		/* needed by testhead.h         */
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/fcntl.h>
@@ -57,15 +46,13 @@
 
 char *TCID = "open10";
 int TST_TOTAL = 1;
-int local_flag;
+static int local_flag;
 
 #define PASSED 1
 #define FAILED 0
 
-int local_flag;
-
-#define MODE_RWX        S_IRWXU | S_IRWXG | S_IRWXO
-#define MODE_SGID       S_ISGID | S_IRWXU | S_IRWXG | S_IRWXO
+#define MODE_RWX        (S_IRWXU | S_IRWXG | S_IRWXO)
+#define MODE_SGID       (S_ISGID | S_IRWXU | S_IRWXG | S_IRWXO)
 #define DIR_A_TEMP	"open10.testdir.A.%d"
 #define DIR_B_TEMP	"open10.testdir.B.%d"
 #define SETGID		"setgid"
@@ -73,34 +60,9 @@ int local_flag;
 #define ROOT_SETGID	"root_setgid"
 #define	MSGSIZE		150
 
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
-char progname[] = "open10()";
-
-int issu()
-{
-
-	int uid;
-
-	uid = (-1);
-	uid = geteuid();
-
-	if (uid == (-1)) {
-		fprintf(stderr, "geteuid: failed in issu()");
-		return (-1);
-	}
-
-	if (uid == 0) {
-		return 0;
-	} else {
-		fprintf(stderr, "*** NOT SUPERUSER must be root  %s\n",
-			progname);
-		return (uid);
-	}
-	return 0;
-}
-
-/*--------------------------------------------------------------*/
 int main(int ac, char *av[])
 {
 	int ret;
@@ -118,21 +80,13 @@ int main(int ac, char *av[])
 	char *msg;
 	int fail_count = 0;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	tst_tmpdir();
+	setup();
 
-	if (issu() != 0) {
-		tst_resm(TINFO, "Must be root to run this test.");
-		cleanup();
-	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		local_flag = PASSED;
 
 		save_myuid = getuid();
@@ -146,46 +100,45 @@ int main(int ac, char *av[])
 		sprintf(root_setgid_B, "%s/%s", DIR_B, ROOT_SETGID);
 
 		/* Get the uid of user1 */
-		if ((user1 = getpwnam("nobody")) == NULL) {
+		user1 = getpwnam("nobody");
+		if (user1 == NULL)
 			tst_brkm(TBROK, cleanup, "nobody not in /etc/passwd");
-		}
+
 		user1_uid = user1->pw_uid;
 
 		/*
 		 * Get the group IDs of group1 and group2.
 		 */
-		if ((group = getgrnam("nobody")) == NULL) {
-			if ((group = getgrnam("nogroup")) == NULL) {
+		group = getgrnam("nobody");
+		if (group == NULL) {
+			group = getgrnam("nogroup");
+			if (group == NULL) {
 				tst_brkm(TBROK, cleanup,
 					 "nobody/nogroup not in /etc/group");
 			}
 		}
 		group1_gid = group->gr_gid;
-		if ((group = getgrnam("bin")) == NULL) {
+		group = getgrnam("bin");
+		if (group == NULL)
 			tst_brkm(TBROK, cleanup, "bin not in /etc/group");
-		}
-		group2_gid = group->gr_gid;
 
-		/*--------------------------------------------------------------*/
-		/* Block0: Set up the parent directories                        */
-		/*--------------------------------------------------------------*/
-		//block0:
+		group2_gid = group->gr_gid;
 
 		/*
 		 * Create a directory with group id the same as this process
 		 * and with no setgid bit.
 		 */
-		if ((ret = mkdir(DIR_A, MODE_RWX)) < 0) {
+		if (mkdir(DIR_A, MODE_RWX) < 0) {
 			tst_resm(TFAIL | TERRNO, "mkdir(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
 
-		if ((ret = chown(DIR_A, user1_uid, group2_gid)) < 0) {
+		if (chown(DIR_A, user1_uid, group2_gid) < 0) {
 			tst_resm(TFAIL | TERRNO, "chown(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
 
-		if ((ret = stat(DIR_A, &buf)) < 0) {
+		if (stat(DIR_A, &buf) < 0) {
 			tst_resm(TFAIL | TERRNO, "stat(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
@@ -208,22 +161,22 @@ int main(int ac, char *av[])
 		 * Create a directory with group id different from that of
 		 * this process and with the setgid bit set.
 		 */
-		if ((ret = mkdir(DIR_B, MODE_RWX)) < 0) {
+		if (mkdir(DIR_B, MODE_RWX) < 0) {
 			tst_resm(TFAIL | TERRNO, "mkdir(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
-		if ((ret = chown(DIR_B, user1_uid, group2_gid)) < 0) {
+		if (chown(DIR_B, user1_uid, group2_gid) < 0) {
 			tst_resm(TFAIL | TERRNO, "chown(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
-		if ((ret = chmod(DIR_B, MODE_SGID)) < 0) {
+		if (chmod(DIR_B, MODE_SGID) < 0) {
 			tst_resm(TFAIL | TERRNO, "chmod(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
-		if ((ret = stat(DIR_B, &buf)) < 0) {
+		if (stat(DIR_B, &buf) < 0) {
 			tst_resm(TFAIL | TERRNO, "stat(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
@@ -252,26 +205,21 @@ int main(int ac, char *av[])
 
 		local_flag = PASSED;
 
-	/*--------------------------------------------------------------*/
-		/* Block1: Create two files in testdir.A, one with the setgid   */
-		/*         bit set in the creation modes and the other without. */
-		/*         Both should inherit the group ID of the process and  */
-		/*         maintain the setgid bit as specified in the creation */
-		/*         modes.                                               */
-	/*--------------------------------------------------------------*/
-		//block1:
-
 		/*
-		 * Now become user1, group1
+		 * Create two files in testdir.A, one with the setgid
+		 * bit set in the creation modes and the other without.
+		 * Both should inherit the group ID of the process and
+		 * maintain the setgid bit as specified in the creation
+		 * modes.
 		 */
-		if ((ret = setgid(group1_gid)) < 0) {
+		if (setgid(group1_gid) < 0) {
 			tst_resm(TINFO,
 				 "Unable to set process group ID to group1");
 		}
 
-		if ((ret = setreuid(-1, user1_uid)) < 0) {
+		if (setreuid(-1, user1_uid) < 0)
 			tst_resm(TINFO, "Unable to set process uid to user1");
-		}
+
 		mygid = getgid();
 
 		/*
@@ -284,7 +232,7 @@ int main(int ac, char *av[])
 		}
 		close(ret);
 
-		if ((ret = stat(nosetgid_A, &buf)) < 0) {
+		if (stat(nosetgid_A, &buf) < 0) {
 			tst_resm(TFAIL | TERRNO, "stat(%s) failed", nosetgid_A);
 			local_flag = FAILED;
 		}
@@ -313,7 +261,7 @@ int main(int ac, char *av[])
 		}
 		close(ret);
 
-		if ((ret = stat(setgid_A, &buf)) < 0) {
+		if (stat(setgid_A, &buf) < 0) {
 			tst_resm(TFAIL | TERRNO, "stat(%s) failed", setgid_A);
 			local_flag = FAILED;
 		}
@@ -342,15 +290,13 @@ int main(int ac, char *av[])
 
 		local_flag = PASSED;
 
-	/*--------------------------------------------------------------*/
-		/* Block2: Create two files in testdir.B, one with the setgid   */
-		/*         bit set in the creation modes and the other without. */
-		/*         Both should inherit the group ID of the parent       */
-		/*         directory, group2. Either file should have the segid */
-		/*         bit set in the modes.                                */
-	/*--------------------------------------------------------------*/
-		//block2:
-
+		/*
+		 * Create two files in testdir.B, one with the setgid
+		 * bit set in the creation modes and the other without.
+		 * Both should inherit the group ID of the parent
+		 * directory, group2. Either file should have the segid
+		 * bit set in the modes.
+		 */
 		/*
 		 * Create the file with setgid not set
 		 */
@@ -361,7 +307,7 @@ int main(int ac, char *av[])
 		}
 		close(ret);
 
-		if ((ret = stat(nosetgid_B, &buf)) < 0) {
+		if (stat(nosetgid_B, &buf) < 0) {
 			tst_resm(TFAIL | TERRNO, "stat(%s) failed", nosetgid_B);
 			local_flag = FAILED;
 		}
@@ -391,7 +337,7 @@ int main(int ac, char *av[])
 		}
 		close(ret);
 
-		if ((ret = stat(setgid_B, &buf)) < 0) {
+		if (stat(setgid_B, &buf) < 0) {
 			tst_resm(TFAIL | TERRNO, "stat(%s) failed", setgid_B);
 			local_flag = FAILED;
 		}
@@ -420,31 +366,30 @@ int main(int ac, char *av[])
 
 		local_flag = PASSED;
 
-	/*--------------------------------------------------------------*/
-		/* Block3: Create a file in testdir.B, with the setgid bit set  */
-		/*         in the creation modes and do so as root. The file    */
-		/*         should inherit the group ID of the parent directory, */
-		/*         group2 and should have the setgid bit set.           */
-	/*--------------------------------------------------------------*/
-		//block3:
+		/*
+		 * Create a file in testdir.B, with the setgid bit set
+		 * in the creation modes and do so as root. The file
+		 * should inherit the group ID of the parent directory,
+		 * group2 and should have the setgid bit set.
+		 */
 
 		/* Become root again */
-		if ((ret = setreuid(-1, save_myuid)) < 0) {
+		if (setreuid(-1, save_myuid) < 0) {
 			tst_resm(TFAIL | TERRNO,
 				 "Changing back to root failed");
 			local_flag = FAILED;
 		}
 
 		/* Create the file with setgid set */
-		if ((ret = open(root_setgid_B, O_CREAT | O_EXCL | O_RDWR,
-				MODE_SGID)) < 0) {
+		ret = open(root_setgid_B, O_CREAT | O_EXCL | O_RDWR, MODE_SGID);
+		if (ret < 0) {
 			tst_resm(TFAIL | TERRNO, "open(%s) failed",
 				 root_setgid_B);
 			local_flag = FAILED;
 		}
 		close(ret);
 
-		if ((ret = stat(root_setgid_B, &buf)) < 0) {
+		if (stat(root_setgid_B, &buf) < 0) {
 			tst_resm(TFAIL | TERRNO, "stat(%s) failed",
 				 root_setgid_B);
 			local_flag = FAILED;
@@ -472,27 +417,27 @@ int main(int ac, char *av[])
 			fail_count++;
 		}
 
-	/*--------------------------------------------------------------*/
-		/* Clean up any files created by test before call to anyfail.   */
-		/* Remove the directories.                                      */
-	/*--------------------------------------------------------------*/
-		if ((ret = unlink(setgid_A)) < 0)
+		/*
+		 * Clean up any files created by test before call to anyfail.
+		 * Remove the directories.
+		 */
+		if (unlink(setgid_A) < 0)
 			tst_resm(TWARN | TERRNO, "unlink(%s) failed", setgid_A);
-		if ((ret = unlink(nosetgid_A)) < 0)
+		if (unlink(nosetgid_A) < 0)
 			tst_resm(TWARN | TERRNO, "unlink(%s) failed",
 				 nosetgid_A);
-		if ((ret = rmdir(DIR_A)) < 0)
+		if (rmdir(DIR_A) < 0)
 			tst_resm(TWARN | TERRNO, "rmdir(%s) failed", DIR_A);
 
-		if ((ret = unlink(setgid_B)) < 0)
+		if (unlink(setgid_B) < 0)
 			tst_resm(TWARN | TERRNO, "unlink(%s) failed", setgid_B);
-		if ((ret = unlink(root_setgid_B)) < 0)
+		if (unlink(root_setgid_B) < 0)
 			tst_resm(TWARN | TERRNO, "unlink(%s) failed",
 				 root_setgid_B);
-		if ((ret = unlink(nosetgid_B)) < 0)
+		if (unlink(nosetgid_B) < 0)
 			tst_resm(TWARN | TERRNO, "unlink(%s) failed",
 				 nosetgid_B);
-		if ((ret = rmdir(DIR_B)) < 0)
+		if (rmdir(DIR_B) < 0)
 			tst_resm(TWARN | TERRNO, "rmdir(%s) failed", DIR_B);
 
 		if (fail_count == 0) {
@@ -503,18 +448,21 @@ int main(int ac, char *av[])
 		}
 
 	}
+
 	cleanup();
 	tst_exit();
 }
 
-void cleanup(void)
+static void setup(void)
 {
-	/*
-	 * print timing status if that option was specified.
-	 * print errno log if that option was specified
-	 */
+	tst_require_root(NULL);
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	TEST_PAUSE;
+	tst_tmpdir();
+}
+
+static void cleanup(void)
+{
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
 }
