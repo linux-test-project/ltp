@@ -18,9 +18,6 @@
  */
 
 /*
- * NAME
- *	open04.c
- *
  * DESCRIPTION
  *	Testcase to check that open(2) sets EMFILE if a process opens files
  *	more than its descriptor size
@@ -30,23 +27,8 @@
  *	Use open(2) for creating files till the descriptor table becomes full.
  *	These open(2)s should succeed. Finally use open(2) to open another
  *	file. This attempt should fail with EMFILE.
- *
- * USAGE:  <for command-line>
- *  open04 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	NONE
- *
  */
+
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -57,31 +39,30 @@
 char *TCID = "open04";
 int TST_TOTAL = 1;
 
-int fd, ifile, mypid, first;
-int nfile;
-int *buf;
-char fname[40];
+static int fd, ifile, mypid, first;
+static int nfile;
+static int *buf;
+static char fname[40];
 
-int exp_enos[] = { EMFILE, 0 };
+static int exp_enos[] = { EMFILE, 0 };
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		TEST(open(fname, O_RDWR | O_CREAT, 0777));
@@ -93,25 +74,20 @@ int main(int ac, char **av)
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-		if (TEST_ERRNO != EMFILE) {
+		if (TEST_ERRNO != EMFILE)
 			tst_resm(TFAIL, "Expected EMFILE, got %d", TEST_ERRNO);
-		} else {
+		else
 			tst_resm(TPASS, "call returned expected EMFILE error");
-		}
 	}
+
 	close(first);
 	close(fd);
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
@@ -123,22 +99,23 @@ void setup()
 	nfile = getdtablesize();
 	sprintf(fname, "open04.%d", mypid);
 
-	if ((first = fd = open(fname, O_RDWR | O_CREAT, 0777)) == -1) {
+	first = fd = open(fname, O_RDWR | O_CREAT, 0777);
+	if (first == -1)
 		tst_brkm(TBROK, cleanup, "Cannot open first file");
-	}
 
 	close(fd);
 	close(first);
 	unlink(fname);
 
 	/* Allocate memory for stat and ustat structure variables */
-	if ((buf = (int *)malloc(sizeof(int) * nfile - first)) == NULL) {
+	buf = malloc(sizeof(int) * nfile - first);
+	if (buf == NULL)
 		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
-	}
 
 	for (ifile = first; ifile <= nfile; ifile++) {
 		sprintf(fname, "open04.%d.%d", ifile, mypid);
-		if ((fd = open(fname, O_RDWR | O_CREAT, 0777)) == -1) {
+		fd = open(fname, O_RDWR | O_CREAT, 0777);
+		if (fd == -1) {
 			if (errno != EMFILE) {
 				tst_brkm(TBROK, cleanup, "Expected EMFILE got "
 					 "%d", errno);
@@ -149,16 +126,8 @@ void setup()
 	}
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	close(first);
 
 	TEST_CLEANUP;
@@ -171,5 +140,4 @@ void cleanup()
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();
-
 }
