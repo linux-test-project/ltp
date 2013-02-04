@@ -1,6 +1,6 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *   Copyright (c) 2013 Wanlong Gao <gaowanlong@cn.fujitsu.com>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,18 +17,11 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* Ported from SPIE, section2/iosuite/open1.c, by Airong Zhang */
-
-/*======================================================================
-	=================== TESTPLAN SEGMENT ===================
->KEYS:  < open()
->WHAT:  < Does a read on a file opened with oflag = O_WRONLY  return -1?
-	< Does a write on a file opened with oflag = O_RDONLY  return -1?
->HOW:   < Open a file with O_WRONLY, test for -1 to pass
-        < Open a file with O_RDONLY, test for -1 to pass
->BUGS:  < DUMMY functions used in BSD
->AUTHOR:< PERENNIAL
-======================================================================*/
+/*
+ * Description:
+ *	1. open an O_WRONLY file, test if read failed.
+ *	2. open an O_RDONLY file, test if write failed.
+ */
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -38,16 +31,16 @@
 #include "usctest.h"
 
 char *TCID = "open09";
-int TST_TOTAL = 1;
-int local_flag;
+int TST_TOTAL = 2;
 
 #define PASSED 1
 #define FAILED 0
 
-char progname[] = "open09()";
-char tempfile[40] = "";
+static char tempfile[40] = "";
 
-/*--------------------------------------------------------------------*/
+static void setup(void);
+static void cleanup(void);
+
 int main(int ac, char *av[])
 {
 	int fildes;
@@ -56,76 +49,66 @@ int main(int ac, char *av[])
 
 	int lc;
 	char *msg;
-	int fail_count = 0;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
-	tst_tmpdir();
-	local_flag = PASSED;
-	sprintf(tempfile, "open09.%d", getpid());
-/*--------------------------------------------------------------------*/
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	setup();
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		local_flag = PASSED;
 
-		//block0:
-		if ((fildes = creat(tempfile, 0600)) == -1) {
-			tst_resm(TBROK, "\t\t\tcan't create '%s'", tempfile);
-			tst_exit();
-		} else {
-			close(fildes);
-			if ((fildes = open(tempfile, 1)) == -1) {
-				tst_resm(TFAIL, "\t\t\topen failed");
-				tst_exit();
-			}
-		}
+		fildes = open(tempfile, O_WRONLY);
+		if (fildes == -1)
+			tst_brkm(TFAIL, cleanup, "\t\t\topen failed");
+
 		ret = read(fildes, pbuf, 1);
-		if (ret != -1) {
+		if (ret != -1)
 			tst_resm(TFAIL, "read should not succeed");
-			local_flag = FAILED;
-		}
+		else
+			tst_resm(TPASS, "Test passed in O_WRONLY.");
+
 		close(fildes);
 
-		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in block0.");
-		} else {
-			tst_resm(TFAIL, "Test failed in block0.");
-			fail_count++;
-		}
-
-		local_flag = PASSED;
-	/*--------------------------------------------------------------------*/
-		//block1:
-		if ((fildes = open(tempfile, 0)) == -1) {
+		fildes = open(tempfile, O_RDONLY);
+		if (fildes == -1) {
 			tst_resm(TFAIL, "\t\t\topen failed");
-			local_flag = FAILED;
 		} else {
 			ret = write(fildes, pbuf, 1);
-			if (ret != -1) {
-				tst_resm(TFAIL, "writeshould not succeed");
-				local_flag = FAILED;
-			}
+			if (ret != -1)
+				tst_resm(TFAIL, "write should not succeed");
+			else
+				tst_resm(TPASS, "Test passed in O_RDONLY.");
 		}
 		close(fildes);
-		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in block1.");
-		} else {
-			tst_resm(TFAIL, "Test failed in block1.");
-			fail_count++;
-		}
-	/*--------------------------------------------------------------------*/
-		unlink(tempfile);
-		tst_rmdir();
+	}
 
-		if (fail_count == 0) {
-			tst_resm(TPASS, "Test passed.");
-		} else {
-			tst_resm(TFAIL, "Test failed due to above failures.");
-		}
-	}			/* end for */
+	cleanup();
 	tst_exit();
+}
+
+static void setup(void)
+{
+	int fildes;
+
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	TEST_PAUSE;
+	tst_tmpdir();
+
+	sprintf(tempfile, "open09.%d", getpid());
+
+	fildes = creat(tempfile, 0600);
+	if (fildes == -1) {
+		tst_brkm(TBROK, cleanup, "\t\t\tcan't create '%s'",
+			 tempfile);
+	} else {
+		close(fildes);
+	}
+}
+
+static void cleanup(void)
+{
+	TEST_CLEANUP;
+	unlink(tempfile);
+	tst_rmdir();
 }
