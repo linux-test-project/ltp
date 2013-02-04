@@ -53,12 +53,12 @@
 char *TCID = "open02";
 int TST_TOTAL = 1;
 
-char pfilname[40] = "";
+static char pfilname[40] = "";
 
-int exp_enos[] = { ENOENT, 0 };
+static int exp_enos[] = { ENOENT, 0 };
 
-void cleanup(void);
-void setup(void);
+static void cleanup(void);
+static void setup(void);
 
 int main(int ac, char **av)
 {
@@ -68,11 +68,11 @@ int main(int ac, char **av)
 	/*
 	 * parse standard command line options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* global setup for test */
+	setup();
 
 	TEST_EXP_ENOS(exp_enos);
 
@@ -98,15 +98,12 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "open returned ENOENT");
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
 	umask(0);
 
@@ -119,18 +116,8 @@ void setup(void)
 	sprintf(pfilname, "./open3.%d", getpid());
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at completion or
- *	       premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
 }
