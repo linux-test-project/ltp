@@ -59,10 +59,10 @@
 char *TCID = "open01";
 int TST_TOTAL = 1;
 
-char pfilname[40] = "";
+static char pfilname[40] = "";
 
-void cleanup(void);
-void setup(void);
+static void cleanup(void);
+static void setup(void);
 
 int main(int ac, char **av)
 {
@@ -76,11 +76,11 @@ int main(int ac, char **av)
 	/*
 	 * parse standard command line options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* global setup for test */
+	setup();
 
 	/*
 	 * check looping state if -i option given on the command line
@@ -91,7 +91,8 @@ int main(int ac, char **av)
 		/* test #1 */
 		TEST(open(pfilname, O_RDWR | O_CREAT, 01444));
 
-		if ((fildes = TEST_RETURN) == -1) {
+		fildes = TEST_RETURN;
+		if (fildes == -1) {
 			tst_resm(TFAIL, "Cannot open %s", pfilname);
 			continue;
 		}
@@ -134,27 +135,21 @@ int main(int ac, char **av)
 		}
 
 		/* clean up things is case we are looping */
-		if (close(fildes) == -1) {
+		if (close(fildes) == -1)
 			tst_brkm(TBROK, cleanup, "close #1 failed");
-		}
 
-		if (unlink(pfilname) == -1) {
+		if (unlink(pfilname) == -1)
 			tst_brkm(TBROK, cleanup, "can't remove file");
-		}
 
-		if (close(TEST_RETURN) == -1) {
+		if (close(TEST_RETURN) == -1)
 			tst_brkm(TBROK, cleanup, "close #2 failed");
-		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
 	umask(0);
 
@@ -167,18 +162,9 @@ void setup(void)
 	sprintf(pfilname, "open3.%d", getpid());
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at completion or
- *	       premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }
