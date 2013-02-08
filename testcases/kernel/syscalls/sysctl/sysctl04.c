@@ -54,6 +54,10 @@
 #include <linux/sysctl.h>
 
 char *TCID = "sysctl04";
+
+/* This is an older/deprecated syscall that newer arches are omitting */
+#ifdef __NR_sysctl
+
 int TST_TOTAL = 2;
 
 int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
@@ -166,3 +170,14 @@ void cleanup()
 	TEST_CLEANUP;
 
 }
+
+#else
+int TST_TOTAL = 0;		/* Total number of test cases. */
+
+int main()
+{
+
+	tst_resm(TCONF, "This test needs a kernel that has sysctl syscall.");
+	tst_exit();
+}
+#endif
