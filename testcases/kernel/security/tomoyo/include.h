@@ -35,7 +35,6 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
-#include <sys/sysctl.h>
 #include <sys/time.h>
 #include <sys/timex.h>
 #include <sys/types.h>
@@ -83,6 +82,36 @@ static inline int pivot_root(const char *new_root, const char *put_old)
 	return -1;
 }
 #endif
+
+/* The sysctl() wrapper is dead and newer arches omit it now. */
+static inline int write_sysctl(const char *path, const char *value)
+{
+	FILE *fp = fopen(path, "w");
+	if (!fp)
+		return 1;
+	fputs(value, fp);
+	fclose(fp);
+	return 0;
+}
+
+static inline int read_sysctl(const char *path, char *value, int len)
+{
+	char scratch[100];
+	FILE *fp = fopen(path, "r");
+	if (!fp)
+		return 1;
+	if (!value) {
+		value = scratch;
+		len = sizeof(scratch);
+	}
+	if (fgets(value, len, fp))
+		/* ignore */;
+	fclose(fp);
+	return 0;
+}
+
+/* Should be a fairly benign path to bang on. */
+#define TEST_SYSCTL_PATH "/proc/sys/net/ipv4/ip_local_port_range"
 
 #define proc_policy_dir              "/sys/kernel/security/tomoyo/"
 #define proc_policy_domain_policy    "/sys/kernel/security/tomoyo/domain_policy"

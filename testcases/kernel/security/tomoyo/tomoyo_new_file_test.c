@@ -90,9 +90,7 @@ static void mkfifo2(const char *pathname)
 
 static void stage_file_test(void)
 {
-	static int name[] = { CTL_NET, NET_IPV4, NET_IPV4_LOCAL_PORT_RANGE };
-	int buffer[2] = { 32768, 61000 };
-	size_t size = sizeof(buffer);
+	const char buffer[] = "32768 61000";
 	int pipe_fd[2] = { EOF, EOF };
 	int error = 0;
 	int fd;
@@ -127,21 +125,23 @@ static void stage_file_test(void)
 
 	policy = "allow_read /proc/sys/net/ipv4/ip_local_port_range";
 	write_domain_policy(policy, 0);
-	show_result(sysctl(name, 3, buffer, &size, 0, 0), 1);
+	show_result(read_sysctl(TEST_SYSCTL_PATH, NULL, 0), 1);
 	write_domain_policy(policy, 1);
-	show_result(sysctl(name, 3, buffer, &size, 0, 0), 0);
+	show_result(read_sysctl(TEST_SYSCTL_PATH, NULL, 0), 0);
 
 	policy = "allow_write /proc/sys/net/ipv4/ip_local_port_range";
 	write_domain_policy(policy, 0);
-	show_result(sysctl(name, 3, 0, 0, buffer, size), 1);
+	show_result(write_sysctl(TEST_SYSCTL_PATH, buffer), 1);
 	write_domain_policy(policy, 1);
-	show_result(sysctl(name, 3, 0, 0, buffer, size), 0);
+	show_result(write_sysctl(TEST_SYSCTL_PATH, buffer), 0);
 
 	policy = "allow_read/write /proc/sys/net/ipv4/ip_local_port_range";
 	write_domain_policy(policy, 0);
-	show_result(sysctl(name, 3, buffer, &size, buffer, size), 1);
+	show_result(read_sysctl(TEST_SYSCTL_PATH, NULL, 0) &&
+	            write_sysctl(TEST_SYSCTL_PATH, buffer), 1);
 	write_domain_policy(policy, 1);
-	show_result(sysctl(name, 3, buffer, &size, buffer, size), 0);
+	show_result(read_sysctl(TEST_SYSCTL_PATH, NULL, 0) &&
+	            write_sysctl(TEST_SYSCTL_PATH, buffer), 0);
 
 	policy = "allow_read /bin/true";
 	write_domain_policy(policy, 0);
