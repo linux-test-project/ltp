@@ -154,6 +154,7 @@ struct test_case tc[] = {
 		.mode = 0755,
 		.err = EISDIR,
 	},
+#ifdef O_DIRECTORY
 	{	/* open regular file O_DIRECTORY */
 		.desc = "Open regular file O_DIRECTORY, expect ENOTDIR",
 		.path = T_REG_EMPTY,
@@ -161,6 +162,7 @@ struct test_case tc[] = {
 		.mode = 0644,
 		.err = ENOTDIR,
 	},
+#endif /* O_DIRECTORY */
 	/*
 	 * Test open(2) hard link
 	 */
