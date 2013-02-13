@@ -59,6 +59,7 @@
  *     but should not oops or hang
  */
 
+#define _GNU_SOURCE
 #include "config.h"
 #include <sys/types.h>
 #include <sys/stat.h>
