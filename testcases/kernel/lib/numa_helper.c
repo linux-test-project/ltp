@@ -83,7 +83,7 @@ static int filter_nodemask_mem(nodemask_t * nodemask, unsigned long max_node)
 	 * utility function in older versions:
 	 * http://www.spinics.net/lists/linux-numa/msg00849.html
 	 */
-	if (syscall(__NR_get_mempolicy, NULL, nodemask->n,
+	if (ltp_syscall(__NR_get_mempolicy, NULL, nodemask->n,
 		    max_node, 0, MPOL_F_MEMS_ALLOWED) < 0)
 		return -2;
 #else

@@ -126,7 +126,7 @@ int main(int ac, char **av)
 
 	for (i = 0; i < TST_TOTAL; i++) {
 
-		TEST(syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
+		TEST(ltp_syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
 
 		if (TEST_RETURN == -1) {
 			if (TEST_ERRNO == test_cases[i].exp_errno) {

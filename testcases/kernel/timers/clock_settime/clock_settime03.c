@@ -92,7 +92,7 @@ int main(int ac, char **av)
 			if (setup_test(i) < 0)
 				continue;
 
-			TEST(syscall(__NR_clock_settime, clocks[i], temp));
+			TEST(ltp_syscall(__NR_clock_settime, clocks[i], temp));
 
 			/* Change the UID back to root */
 			if (i == TST_TOTAL - 1) {
@@ -115,7 +115,7 @@ int main(int ac, char **av)
 					 TEST_RETURN);
 				/* Restore the clock to its previous state. */
 				if (TEST_RETURN == 0) {
-					if (syscall(__NR_clock_settime,
+					if (ltp_syscall(__NR_clock_settime,
 						    CLOCK_REALTIME,
 						    &saved) < 0) {
 						tst_resm(TWARN | TERRNO,
@@ -183,7 +183,7 @@ static void setup(void)
 
 	tst_require_root(NULL);
 
-	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
+	if (ltp_syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
 		tst_brkm(TBROK, NULL, "Clock gettime failed");
 
 	TEST_EXP_ENOS(exp_enos);

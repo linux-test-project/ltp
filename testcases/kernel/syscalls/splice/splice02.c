@@ -53,7 +53,8 @@ static inline long ltp_splice(int fd_in, loff_t * off_in,
 			      int fd_out, loff_t * off_out,
 			      size_t len, unsigned int flags)
 {
-	return syscall(__NR_splice, fd_in, off_in, fd_out, off_out, len, flags);
+	return ltp_syscall(__NR_splice, fd_in, off_in, fd_out, off_out,
+		len, flags);
 }
 
 /* Extern Global Functions */

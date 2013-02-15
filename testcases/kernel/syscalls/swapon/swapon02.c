@@ -161,7 +161,8 @@ int main(int ac, char **av)
 				continue;
 			} else {
 				/* run the test */
-				TEST(syscall(__NR_swapon, testcase[i].path, 0));
+				TEST(ltp_syscall(__NR_swapon,
+					testcase[i].path, 0));
 			}
 			/* do the clean if the test have one */
 			if (testcase[i].cleanfunc
@@ -189,7 +190,7 @@ int main(int ac, char **av)
 					 testcase[i].exp_errval, TEST_ERRNO);
 				/*If swapfile is turned on, turn it off */
 				if (TEST_RETURN == 0) {
-					if (syscall
+					if (ltp_syscall
 					    (__NR_swapoff,
 					     testcase[i].path) != 0) {
 						tst_resm(TWARN,
@@ -325,7 +326,8 @@ int setup03()
 	}
 
 	/* turn on the swap file */
-	if ((res = syscall(__NR_swapon, "alreadyused", 0)) != 0) {
+	res = ltp_syscall(__NR_swapon, "alreadyused", 0);
+	if (res != 0) {
 		tst_resm(TWARN, "Failed swapon for file alreadyused"
 			 " returned %d", res);
 		return -1;
@@ -340,7 +342,7 @@ int setup03()
 int cleanup03()
 {
 	/* give swapoff to the test swap file */
-	if (syscall(__NR_swapoff, "alreadyused") != 0) {
+	if (ltp_syscall(__NR_swapoff, "alreadyused") != 0) {
 		tst_resm(TWARN, "Failed to turn off swap files. system"
 			 " reboot after execution of LTP test"
 			 " suite is recommended");

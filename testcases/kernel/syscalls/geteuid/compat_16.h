@@ -32,7 +32,7 @@
 UID_T
 GETEUID(void)
 {
-	return syscall(__NR_geteuid);
+	return ltp_syscall(__NR_geteuid);
 }
 
 #else

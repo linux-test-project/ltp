@@ -45,7 +45,7 @@ int main(void)
 		tst_resm(TBROK | TERRNO,
 			 "CLONE_NEWNET (%d) or CLONE_NEWNS (%d) not supported",
 			 CLONE_NEWNET, CLONE_NEWNS);
-	else if (syscall(__NR_unshare, CLONE_NEWNET | CLONE_NEWNS) == -1)
+	else if (ltp_syscall(__NR_unshare, CLONE_NEWNET | CLONE_NEWNS) == -1)
 		tst_resm(TFAIL | TERRNO, "unshare syscall smoke test failed");
 	else
 		tst_resm(TPASS, "unshare syscall smoke test passed");

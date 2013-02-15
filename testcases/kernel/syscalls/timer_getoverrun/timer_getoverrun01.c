@@ -143,12 +143,13 @@ int main(int ac, char **av)
 			ev.sigev_signo = SIGALRM;
 			ev.sigev_notify = SIGEV_SIGNAL;
 
-			TEST(syscall
+			TEST(ltp_syscall
 			     (__NR_timer_create, CLOCK_REALTIME, &ev,
 			      &created_timer_id));
 
 			ENTER(1);
-			TEST(syscall(__NR_timer_getoverrun, created_timer_id));
+			TEST(ltp_syscall(__NR_timer_getoverrun,
+				created_timer_id));
 			if (TEST_RETURN == 0) {
 				tst_resm(TPASS, "Block %d: test %d PASSED",
 					 block, Tst_count);
@@ -162,7 +163,7 @@ int main(int ac, char **av)
 			}
 
 			ENTER(0);
-			TEST(syscall(__NR_timer_getoverrun, -1));
+			TEST(ltp_syscall(__NR_timer_getoverrun, -1));
 			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL) {
 				tst_resm(TPASS, "Block %d: test %d PASSED",
 					 block, Tst_count);

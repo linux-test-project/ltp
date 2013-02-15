@@ -102,8 +102,8 @@ int main(int ac, char **av)
 
 			/* Set up individual test */
 			if (setup_test(i) == 0) {
-				TEST(syscall(__NR_timer_settime, timer, flag,
-					     &new_set, old_temp));
+				TEST(ltp_syscall(__NR_timer_settime, timer,
+					flag, &new_set, old_temp));
 				tst_resm((TEST_RETURN == 0 ?
 					  TPASS :
 					  TFAIL | TTERRNO),
@@ -184,7 +184,7 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer) < 0)
+	if (ltp_syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer) < 0)
 		tst_brkm(TBROK, NULL, "timer_create failed");
 }
 

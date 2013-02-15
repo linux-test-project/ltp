@@ -170,14 +170,14 @@ int main(int ac, char **av)
 			}
 
 			/* call rt_sigaction() */
-			TEST(syscall(__NR_rt_sigaction, TEST_SIG, &act, &oact,
-				     SIGSETSIZE));
+			TEST(ltp_syscall(__NR_rt_sigaction, TEST_SIG, &act,
+				&oact, SIGSETSIZE));
 			if (TEST_RETURN < 0) {
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "rt_sigaction call failed");
 			}
 			/* call rt_sigprocmask() to block signal#TEST_SIG */
-			TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK, &set,
+			TEST(ltp_syscall(__NR_rt_sigprocmask, SIG_BLOCK, &set,
 				     &oset, SIGSETSIZE));
 			if (TEST_RETURN == -1) {
 				tst_brkm(TFAIL | TTERRNO, cleanup,
@@ -195,7 +195,7 @@ int main(int ac, char **av)
 					 "the process's signal mask");
 			} else {
 				/* call rt_sigpending() */
-				TEST(syscall(__NR_rt_sigpending, &oset,
+				TEST(ltp_syscall(__NR_rt_sigpending, &oset,
 					     SIGSETSIZE));
 				if (TEST_RETURN == -1) {
 					tst_brkm(TFAIL | TTERRNO, cleanup,
@@ -209,7 +209,7 @@ int main(int ac, char **av)
 				}
 				/* call rt_sigprocmask() to unblock
 				 * signal#TEST_SIG */
-				TEST(syscall(__NR_rt_sigprocmask,
+				TEST(ltp_syscall(__NR_rt_sigprocmask,
 					     SIG_UNBLOCK, &set, &oset,
 					     SIGSETSIZE));
 				if (TEST_RETURN == -1) {

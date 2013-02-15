@@ -32,13 +32,13 @@
 GID_T
 GETGID(void)
 {
-	return syscall(__NR_getgid);
+	return ltp_syscall(__NR_getgid);
 }
 
 GID_T
 GETEGID(void)
 {
-	return syscall(__NR_getegid);
+	return ltp_syscall(__NR_getegid);
 }
 
 #else

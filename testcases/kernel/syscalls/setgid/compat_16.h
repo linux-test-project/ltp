@@ -32,7 +32,7 @@
 int
 SETGID(GID_T gid)
 {
-	return syscall(__NR_setgid, gid);
+	return ltp_syscall(__NR_setgid, gid);
 }
 
 GID_T

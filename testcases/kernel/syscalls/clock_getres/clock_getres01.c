@@ -215,9 +215,11 @@ static int do_test(struct test_case *tc)
 	 */
 	errno = 0;
 	if (tc->ttype == NULL_POINTER)
-		TEST(sys_ret = syscall(__NR_clock_getres, tc->clk_id, NULL));
+		TEST(sys_ret = ltp_syscall(__NR_clock_getres, tc->clk_id,
+			NULL));
 	else
-		TEST(sys_ret = syscall(__NR_clock_getres, tc->clk_id, &res));
+		TEST(sys_ret = ltp_syscall(__NR_clock_getres, tc->clk_id,
+			&res));
 	sys_errno = errno;
 
 	/*

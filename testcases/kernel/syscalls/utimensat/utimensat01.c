@@ -72,7 +72,7 @@ static inline int
 utimensat_sc(int dirfd, const char *pathname,
 	     const struct timespec times[2], int flags)
 {
-	return syscall(__NR_utimensat, dirfd, pathname, times, flags);
+	return ltp_syscall(__NR_utimensat, dirfd, pathname, times, flags);
 }
 
 static void usageError(char *progName)

@@ -121,8 +121,9 @@ int main(int ac, char **av)
 				if (strstr(get_clock_str(clock_list[j]), mrstr))
 					continue;
 
-				TEST(syscall(__NR_timer_create, clock_list[j],
-					     evp_ptr, &created_timer_id));
+				TEST(ltp_syscall(__NR_timer_create,
+					clock_list[j], evp_ptr,
+					&created_timer_id));
 
 				tst_resm((TEST_RETURN == 0 ?
 					  TPASS :

@@ -34,7 +34,7 @@ extern void cleanup(void);
 long
 SETGROUPS(size_t gidsetsize, GID_T *list)
 {
-	return syscall(__NR_setgroups, gidsetsize, list);
+	return ltp_syscall(__NR_setgroups, gidsetsize, list);
 }
 
 int

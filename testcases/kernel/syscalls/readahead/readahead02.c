@@ -211,7 +211,8 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 		tst_brkm(TBROK | TERRNO, cleanup, "Failed to open %s", fname);
 
 	if (do_readahead) {
-		TEST(syscall(__NR_readahead, fd, (off64_t) 0, (size_t) fsize));
+		TEST(ltp_syscall(__NR_readahead, fd, (off64_t) 0,
+			(size_t) fsize));
 		check_ret(0);
 		*cached = get_cached_size();
 
@@ -352,7 +353,7 @@ static void setup(void)
 	has_file(meminfo_fname, 1);
 
 	/* check if readahead is supported */
-	syscall(__NR_readahead, 0, 0, 0);
+	ltp_syscall(__NR_readahead, 0, 0, 0);
 
 	pagesize = getpagesize();
 	create_testfile();

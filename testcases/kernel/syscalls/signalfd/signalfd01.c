@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 int signalfd(int fd, const sigset_t * mask, int flags)
 {
 	/* Taken from GLIBC. */
-	return (syscall(__NR_signalfd, fd, mask, SIGSETSIZE));
+	return ltp_syscall(__NR_signalfd, fd, mask, SIGSETSIZE);
 }
 #endif
 

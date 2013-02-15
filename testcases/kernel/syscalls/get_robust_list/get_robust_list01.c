@@ -78,7 +78,6 @@ int main(int argc, char **argv)
 	char *msg;
 	struct robust_list_head head;
 	size_t len_ptr;		/* size of structure struct robust_list_head */
-	int retval;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -98,7 +97,7 @@ int main(int argc, char **argv)
 		 * argument.
 		 */
 
-		TEST(retval = syscall(__NR_get_robust_list, 0,
+		TEST(ltp_syscall(__NR_get_robust_list, 0,
 				      (struct robust_list_head *)&head,
 				      (size_t *) NULL));
 
@@ -114,7 +113,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL,
 				 "get_robust_list succeeded unexpectedly");
 
-		TEST(retval = syscall(__NR_get_robust_list, 0,
+		TEST(ltp_syscall(__NR_get_robust_list, 0,
 				      (struct robust_list_head **)NULL,
 				      &len_ptr));
 
@@ -135,7 +134,7 @@ int main(int argc, char **argv)
 		 * find the task specified by the pid argument.
 		 */
 
-		TEST(retval = syscall(__NR_get_robust_list, UINT16_MAX,
+		TEST(ltp_syscall(__NR_get_robust_list, UINT16_MAX,
 				      (struct robust_list_head *)&head,
 				      &len_ptr));
 
@@ -151,7 +150,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL,
 				 "get_robust_list succeeded unexpectedly");
 
-		TEST(retval = syscall(__NR_get_robust_list, 0,
+		TEST(ltp_syscall(__NR_get_robust_list, 0,
 				      (struct robust_list_head **)&head,
 				      &len_ptr));
 
@@ -164,7 +163,7 @@ int main(int argc, char **argv)
 		if (setuid(1) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "setuid(1) failed");
 
-		TEST(retval = syscall(__NR_get_robust_list, 1,
+		TEST(ltp_syscall(__NR_get_robust_list, 1,
 				      (struct robust_list_head *)&head,
 				      &len_ptr));
 

@@ -103,7 +103,7 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		TEST(syscall(__NR_swapon, "./swapfile01", 0));
+		TEST(ltp_syscall(__NR_swapon, "./swapfile01", 0));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
@@ -114,7 +114,7 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "swapon(2) passed and turned on"
 				 " swapfile");
 			/*we need to turn this swap file off for -i option */
-			if (syscall(__NR_swapoff, "./swapfile01") != 0) {
+			if (ltp_syscall(__NR_swapoff, "./swapfile01") != 0) {
 				tst_brkm(TBROK, cleanup, "Failed to turn off"
 					 " swapfile. system"
 					 " reboot after"

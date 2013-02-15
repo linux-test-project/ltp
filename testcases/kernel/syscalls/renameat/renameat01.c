@@ -87,7 +87,7 @@ int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
 int myrenameat(int olddirfd, const char *oldfilename, int newdirfd,
 	       const char *newfilename)
 {
-	return syscall(__NR_renameat, olddirfd, oldfilename, newdirfd,
+	return ltp_syscall(__NR_renameat, olddirfd, oldfilename, newdirfd,
 		       newfilename);
 }
 

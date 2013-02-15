@@ -149,7 +149,8 @@ int main(int argc, char *argv[])
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			sigemptyset(&ss);
 			sigaddset(&ss, SIGUSR1);
-			fd = syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE, 0);
+			fd = ltp_syscall(__NR_signalfd4, -1, &ss,
+				SIGSETSIZE, 0);
 			if (fd == -1) {
 				tst_resm(TFAIL, "signalfd4(0) failed");
 				cleanup();
@@ -168,7 +169,7 @@ int main(int argc, char *argv[])
 			}
 			close(fd);
 
-			fd = syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE,
+			fd = ltp_syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE,
 				     SFD_NONBLOCK);
 			if (fd == -1) {
 				tst_resm(TFAIL,

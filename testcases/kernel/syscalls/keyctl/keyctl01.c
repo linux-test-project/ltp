@@ -136,7 +136,7 @@ int main(int ac, char **av)
 		for (testno = 1; testno < TST_TOTAL; ++testno) {
 
 			/* Call keyctl() and ask for a keyring's ID. */
-			ret = syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID,
+			ret = ltp_syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID,
 				      KEY_SPEC_USER_SESSION_KEYRING);
 			if (ret != -1) {
 				tst_resm(TPASS,
@@ -147,13 +147,14 @@ int main(int ac, char **av)
 			}
 
 			for (ne_key = INT32_MAX; ne_key > INT32_MIN; ne_key--) {
-				ret = syscall(__NR_keyctl, KEYCTL_READ, ne_key);
+				ret = ltp_syscall(__NR_keyctl, KEYCTL_READ,
+					ne_key);
 				if (ret == -1 && errno == ENOKEY)
 					break;
 			}
 
 			/* Call keyctl. */
-			ret = syscall(__NR_keyctl, KEYCTL_REVOKE, ne_key);
+			ret = ltp_syscall(__NR_keyctl, KEYCTL_REVOKE, ne_key);
 			if (ret != -1) {
 				tst_resm(TFAIL | TERRNO,
 					 "KEYCTL_REVOKE succeeded unexpectedly");

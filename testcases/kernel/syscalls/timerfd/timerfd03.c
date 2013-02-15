@@ -149,7 +149,8 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			fd = syscall(__NR_timerfd_create, CLOCK_REALTIME, 0);
+			fd = ltp_syscall(__NR_timerfd_create,
+				CLOCK_REALTIME, 0);
 			if (fd == -1) {
 				tst_resm(TFAIL, "timerfd_create(0) failed");
 				cleanup();
@@ -168,7 +169,7 @@ int main(int argc, char *argv[])
 			}
 			close(fd);
 
-			fd = syscall(__NR_timerfd_create, CLOCK_REALTIME,
+			fd = ltp_syscall(__NR_timerfd_create, CLOCK_REALTIME,
 				     TFD_NONBLOCK);
 			if (fd == -1) {
 				tst_resm(TFAIL,

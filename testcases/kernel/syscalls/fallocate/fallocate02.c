@@ -235,13 +235,13 @@ void populate_file()
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
 #if __WORDSIZE == 32
-	return (long)syscall(__NR_fallocate, fd, mode,
+	return (long)ltp_syscall(__NR_fallocate, fd, mode,
 			     __LONG_LONG_PAIR((off_t) (offset >> 32),
 					      (off_t) offset),
 			     __LONG_LONG_PAIR((off_t) (len >> 32),
 					      (off_t) len));
 #else
-	return syscall(__NR_fallocate, fd, mode, offset, len);
+	return ltp_syscall(__NR_fallocate, fd, mode, offset, len);
 #endif
 }
 

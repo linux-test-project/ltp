@@ -113,7 +113,7 @@ const clockid_t CLOCK_TO_USE = CLOCK_MONOTONIC;
 static int clock_nanosleep2(clockid_t clock_id, int flags,
 			    const struct timespec *req, struct timespec *rem)
 {
-	return syscall(__NR_clock_nanosleep, clock_id, flags, req, rem);
+	return ltp_syscall(__NR_clock_nanosleep, clock_id, flags, req, rem);
 }
 
 int main(int ac, char **av)

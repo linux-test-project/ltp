@@ -79,7 +79,7 @@ dev_t dev;
 
 int mymknodat(int dirfd, const char *filename, mode_t mode, dev_t dev)
 {
-	return syscall(__NR_mknodat, dirfd, filename, mode, dev);
+	return ltp_syscall(__NR_mknodat, dirfd, filename, mode, dev);
 }
 
 int main(int ac, char **av)

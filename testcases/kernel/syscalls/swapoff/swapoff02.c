@@ -141,7 +141,8 @@ int main(int ac, char **av)
 					 " Skipping test", i);
 				continue;
 			} else {
-				TEST(syscall(__NR_swapoff, testcase[i].path));
+				TEST(ltp_syscall(__NR_swapoff,
+					testcase[i].path));
 			}
 
 			if (testcase[i].cleanfunc &&
@@ -167,7 +168,7 @@ int main(int ac, char **av)
 					 testcase[i].exp_errval, TEST_ERRNO);
 
 				if ((TEST_RETURN == 0) && (i == 2)) {
-					if (syscall
+					if (ltp_syscall
 					    (__NR_swapon, "./swapfile01",
 					     0) != 0) {
 						tst_brkm(TBROK, cleanup,
@@ -275,7 +276,7 @@ void setup()
 		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
 	}
 
-	if (syscall(__NR_swapon, "./swapfile01", 0) != 0) {
+	if (ltp_syscall(__NR_swapon, "./swapfile01", 0) != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to turn on the swap file."
 			 " skipping  the test iteration");
 	}
@@ -297,7 +298,7 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (need_swapfile_cleanup
-	    && (syscall(__NR_swapoff, "./swapfile01") != 0)) {
+	    && (ltp_syscall(__NR_swapoff, "./swapfile01") != 0)) {
 		tst_resm(TWARN,
 			 " Failed to turn off swap file. System reboot"
 			 " after execution of LTP test suite is"

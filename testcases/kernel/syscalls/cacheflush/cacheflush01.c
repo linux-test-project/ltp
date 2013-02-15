@@ -143,21 +143,21 @@ int main(int ac, char **av)
 	}
 
 	/* Invokes cacheflush() with proper parameters */
-	TEST(syscall(__NR_cacheflush, addr, getpagesize(), ICACHE));
+	TEST(ltp_syscall(__NR_cacheflush, addr, getpagesize(), ICACHE));
 	if (TEST_RETURN == 0) {
 		tst_resm(TPASS, "passed with no errno");
 	} else {
 		tst_resm(TFAIL, "failed with unexpected errno");
 	}
 
-	TEST(syscall(__NR_cacheflush, addr, getpagesize(), DCACHE));
+	TEST(ltp_syscall(__NR_cacheflush, addr, getpagesize(), DCACHE));
 	if (TEST_RETURN == 0) {
 		tst_resm(TPASS, "passed with no errno");
 	} else {
 		tst_resm(TFAIL, "failed with unexpected errno");
 	}
 
-	TEST(syscall(__NR_cacheflush, addr, getpagesize(), BCACHE));
+	TEST(ltp_syscall(__NR_cacheflush, addr, getpagesize(), BCACHE));
 	if (TEST_RETURN == 0) {
 		tst_resm(TPASS, "passed with no errno");
 	} else {

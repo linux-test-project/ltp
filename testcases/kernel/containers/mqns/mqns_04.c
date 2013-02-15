@@ -61,9 +61,8 @@ int check_mqueue(void *vtest)
 
 	read(p1[0], buf, 3);	/* go */
 
-	mqd =
-	    syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR | O_CREAT | O_EXCL, 0755,
-		    NULL);
+	mqd = ltp_syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR | O_CREAT | O_EXCL,
+		0755, NULL);
 	if (mqd == -1) {
 		write(p2[1], "mqfail", 7);
 		tst_exit();

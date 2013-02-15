@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 			 "This test can only run on kernels that are 2.6.27 and higher");
 	setup();
 
-	fd = syscall(__NR_dup3, 1, 4, 0);
+	fd = ltp_syscall(__NR_dup3, 1, 4, 0);
 	if (fd == -1) {
 		tst_brkm(TFAIL | TERRNO, cleanup, "dup3(0) failed");
 	}
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 	}
 	close(fd);
 
-	fd = syscall(__NR_dup3, 1, 4, O_CLOEXEC);
+	fd = ltp_syscall(__NR_dup3, 1, 4, O_CLOEXEC);
 	if (fd == -1) {
 		tst_brkm(TFAIL | TERRNO, cleanup, "dup3(O_CLOEXEC) failed");
 	}

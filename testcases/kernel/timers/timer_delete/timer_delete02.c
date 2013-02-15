@@ -95,14 +95,14 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Create a Posix timer */
-		if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer_id)
-		    < 0) {
+		if (ltp_syscall(__NR_timer_create, CLOCK_REALTIME, NULL,
+			&timer_id) < 0) {
 			Tst_count = TST_TOTAL;
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "timer_delete can't be tested because "
 				 "timer_create failed");
 		}
-		TEST(syscall(__NR_timer_delete, timer_id));
+		TEST(ltp_syscall(__NR_timer_delete, timer_id));
 		tst_resm((TEST_RETURN == 0 ? TPASS : TFAIL | TTERRNO),
 			 "%s", (TEST_RETURN == 0 ? "passed" : "failed"));
 	}

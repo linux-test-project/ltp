@@ -120,7 +120,8 @@ static int migrate_to_node(pid_t pid, int node)
 		set_bit(old_nodes, nodes[i], 1);
 	set_bit(new_nodes, node, 1);
 
-	TEST(syscall(__NR_migrate_pages, pid, max_node, old_nodes, new_nodes));
+	TEST(ltp_syscall(__NR_migrate_pages, pid, max_node, old_nodes,
+		new_nodes));
 	if (TEST_RETURN != 0) {
 		if (TEST_RETURN < 0)
 			tst_resm(TFAIL | TERRNO, "migrate_pages failed "
@@ -140,7 +141,7 @@ static int addr_on_node(void *addr)
 	int node;
 	int ret;
 
-	ret = syscall(__NR_get_mempolicy, &node, NULL, (unsigned long)0,
+	ret = ltp_syscall(__NR_get_mempolicy, &node, NULL, (unsigned long)0,
 		      (unsigned long)addr, MPOL_F_NODE | MPOL_F_ADDR);
 	if (ret == -1) {
 		tst_resm(TBROK | TERRNO, "error getting memory policy "
@@ -343,7 +344,7 @@ static void setup(void)
 	void *p;
 
 	tst_require_root(NULL);
-	TEST(syscall(__NR_migrate_pages, 0, 0, NULL, NULL));
+	TEST(ltp_syscall(__NR_migrate_pages, 0, 0, NULL, NULL));
 
 	if (numa_available() == -1)
 		tst_brkm(TCONF, NULL, "NUMA not available");

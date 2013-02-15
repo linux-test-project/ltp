@@ -134,7 +134,7 @@ int main(int ac, char **av)
 		}
 
 		/* Call swapon sys call for the first time */
-		TEST(syscall(__NR_swapon, swap_testfiles[0].filename, 0));
+		TEST(ltp_syscall(__NR_swapon, swap_testfiles[0].filename, 0));
 
 		/* Check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == expected_errno)) {
@@ -151,7 +151,7 @@ int main(int ac, char **av)
 
 			/* Call swapon sys call once again for 32
 			 * now we can't receive an error */
-			TEST(syscall
+			TEST(ltp_syscall
 			     (__NR_swapon, swap_testfiles[1].filename, 0));
 
 			/* Check return code (now we're expecting success) */
@@ -161,7 +161,7 @@ int main(int ac, char **av)
 			} else {
 				/* Call swapon sys call once again for 33
 				 * now we have to receive an error */
-				TEST(syscall
+				TEST(ltp_syscall
 				     (__NR_swapon, swap_testfiles[2].filename,
 				      0));
 
@@ -285,7 +285,8 @@ int setup_swap()
 			}
 
 			/* turn on the swap file */
-			if ((res = syscall(__NR_swapon, filename, 0)) != 0) {
+			res = ltp_syscall(__NR_swapon, filename, 0);
+			if (res != 0) {
 				if (errno == EPERM) {
 					printf("Successfully created %d "
 					       "swapfiles\n", j);
@@ -413,7 +414,7 @@ int check_and_swapoff(char *filename)
 		if (system(cmd_buffer) == 0) {
 
 			/* now we need to swapoff the file */
-			if (syscall(__NR_swapoff, filename) != 0) {
+			if (ltp_syscall(__NR_swapoff, filename) != 0) {
 
 				tst_resm(TWARN, "Failed to turn off swap "
 					 "file. system reboot after "

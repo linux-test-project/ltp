@@ -312,7 +312,8 @@ static int do_test(struct test_case *tc)
 	 * Execute system call
 	 */
 	errno = 0;
-	sys_ret = syscall(__NR_ppoll, p_fds, nfds, p_ts, p_sigmask, SIGSETSIZE);
+	sys_ret = ltp_syscall(__NR_ppoll, p_fds, nfds, p_ts, p_sigmask,
+		SIGSETSIZE);
 	sys_errno = errno;
 	if (sys_ret <= 0 || tc->ret < 0)
 		goto TEST_END;

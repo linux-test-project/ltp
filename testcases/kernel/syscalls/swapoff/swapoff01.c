@@ -104,13 +104,13 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		if (syscall(__NR_swapon, "./swapfile01", 0) != 0) {
+		if (ltp_syscall(__NR_swapon, "./swapfile01", 0) != 0) {
 			tst_resm(TWARN, "Failed to turn on the swap file"
 				 ", skipping test iteration");
 			continue;
 		}
 
-		TEST(syscall(__NR_swapoff, "./swapfile01"));
+		TEST(ltp_syscall(__NR_swapoff, "./swapfile01"));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {

@@ -112,7 +112,7 @@ int main(int ac, char **av)
 	setup();
 
 	/* Call add_key. */
-	TEST(syscall
+	TEST(ltp_syscall
 	     (__NR_add_key, "keyring", "wjkey", NULL, 0,
 	      KEY_SPEC_THREAD_KEYRING));
 	if (TEST_RETURN == -1)

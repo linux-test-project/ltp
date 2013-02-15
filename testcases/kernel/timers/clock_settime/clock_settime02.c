@@ -97,7 +97,7 @@ int main(int ac, char **av)
 		spec.tv_sec = 1;
 		spec.tv_nsec = 0;
 
-		TEST(syscall(__NR_clock_settime, CLOCK_REALTIME, &spec));
+		TEST(ltp_syscall(__NR_clock_settime, CLOCK_REALTIME, &spec));
 		tst_resm((TEST_RETURN < 0 ? TFAIL | TTERRNO : TPASS),
 			 "clock_settime %s",
 			 (TEST_RETURN == 0 ? "passed" : "failed"));
@@ -118,7 +118,7 @@ void setup(void)
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 	/* Save the current time specifications */
-	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
+	if (ltp_syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
 		tst_brkm(TBROK, NULL, "Could not save the current time");
 
 	TEST_PAUSE;

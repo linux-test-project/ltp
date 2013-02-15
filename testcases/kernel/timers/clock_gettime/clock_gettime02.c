@@ -96,7 +96,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(syscall(__NR_clock_gettime, clocks[i], &spec));
+			TEST(ltp_syscall(__NR_clock_gettime, clocks[i], &spec));
 			tst_resm((TEST_RETURN < 0 ? TFAIL | TTERRNO : TPASS),
 				 "%s",
 				 (TEST_RETURN == 0 ? "passed" : "failed"));

@@ -93,7 +93,7 @@ static void remove_pipe(int *fd)
 static void remove_mqueue(mqd_t mqd)
 {
 	mq_close(mqd);
-	syscall(__NR_mq_unlink, mqname);
+	ltp_syscall(__NR_mq_unlink, mqname);
 }
 
 static void cleanup(void)
@@ -113,7 +113,7 @@ static void cleanup(void)
 static void cleanup_child(void)
 {
 	if (mqd != -1) {
-		syscall(__NR_mq_notify, mqd, NULL);
+		ltp_syscall(__NR_mq_notify, mqd, NULL);
 	}
 	cleanup();
 }
@@ -186,7 +186,7 @@ int child_fn(void *arg)
 	while (read(father_to_child[0], buf, 1) != 1)
 		sleep(1);
 
-	mqd = syscall(__NR_mq_open, mqname, O_RDONLY, 0, NULL);
+	mqd = ltp_syscall(__NR_mq_open, mqname, O_RDONLY, 0, NULL);
 	if (mqd == -1) {
 		perror("mq_open failed");
 		return 1;
@@ -197,7 +197,7 @@ int child_fn(void *arg)
 	notif.sigev_notify = SIGEV_SIGNAL;
 	notif.sigev_signo = SIGUSR1;
 	notif.sigev_value.sival_int = mqd;
-	if (syscall(__NR_mq_notify, mqd, &notif) == -1) {
+	if (ltp_syscall(__NR_mq_notify, mqd, &notif) == -1) {
 		perror("mq_notify failed");
 		return 1;
 	} else
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK | TERRNO, cleanup, "pipe failed");
 	}
 
-	syscall(__NR_mq_unlink, mqname);
+	ltp_syscall(__NR_mq_unlink, mqname);
 
 	/* container creation on PID namespace */
 	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK | TERRNO, cleanup, "clone failed");
 
 	mqd =
-	    syscall(__NR_mq_open, mqname, O_RDWR | O_CREAT | O_EXCL, 0777,
+	    ltp_syscall(__NR_mq_open, mqname, O_RDWR | O_CREAT | O_EXCL, 0777,
 		    NULL);
 	if (mqd == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "mq_open failed");

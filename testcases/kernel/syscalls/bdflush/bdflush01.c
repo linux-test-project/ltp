@@ -120,7 +120,7 @@ int main(int ac, char **av)
 	data = 0;
 	Tst_count = 1;
 	for (testno = 0; testno < TST_TOTAL; ++testno) {
-		TEST(syscall(__NR_bdflush, 3, data));
+		TEST(ltp_syscall(__NR_bdflush, 3, data));
 		if (TEST_RETURN == -1)
 			tst_brkm(TFAIL | TTERRNO, cleanup, "bdflush failed");
 		else

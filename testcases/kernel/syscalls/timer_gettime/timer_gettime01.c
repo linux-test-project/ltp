@@ -141,9 +141,9 @@ int main(int ac, char **av)
 			ev.sigev_value = (sigval_t) 0;
 			ev.sigev_signo = SIGALRM;
 			ev.sigev_notify = SIGEV_SIGNAL;
-			TEST(syscall(__NR_timer_create, CLOCK_REALTIME, &ev,
+			TEST(ltp_syscall(__NR_timer_create, CLOCK_REALTIME, &ev,
 				     &created_timer_id));
-			TEST(syscall(__NR_timer_gettime, created_timer_id,
+			TEST(ltp_syscall(__NR_timer_gettime, created_timer_id,
 				     &spec));
 			if (TEST_RETURN == 0) {
 				tst_resm(TPASS, "Block %d: test %d PASSED",
@@ -161,7 +161,7 @@ ERRORS
 	      An invalid timer_id value was specified.
 */
 			ENTER(0);
-			TEST(syscall(__NR_timer_gettime, -1, &spec));
+			TEST(ltp_syscall(__NR_timer_gettime, -1, &spec));
 			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL) {
 				tst_resm(TPASS,
 					 "Block %d: test %d PASSED",
@@ -179,7 +179,7 @@ ERRORS
 */
 
 			ENTER(0);
-			TEST(syscall(__NR_timer_gettime, created_timer_id,
+			TEST(ltp_syscall(__NR_timer_gettime, created_timer_id,
 				     NULL));
 			if (TEST_RETURN < 0 && TEST_ERRNO == EFAULT) {
 				tst_resm(TPASS,

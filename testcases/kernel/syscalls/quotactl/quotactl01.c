@@ -73,7 +73,7 @@ int testno;
 int TST_TOTAL = 1;		/* total number of tests in this file.  */
 
 #define QUOTACTL(cmd, addr) \
-	syscall(__NR_quotactl, QCMD(cmd, USRQUOTA), block_dev, id, \
+	ltp_syscall(__NR_quotactl, QCMD(cmd, USRQUOTA), block_dev, id, \
 					(caddr_t) addr)
 #ifndef BROKEN_QUOTACTL
 
@@ -221,7 +221,6 @@ int main(int ac, char **av)
 	};
 
 	int newtid = -1;
-	int result;
 	int ret;
 	int i;
 	int lc;
@@ -252,7 +251,7 @@ int main(int ac, char **av)
 
 			}
 
-			TEST(result = syscall(__NR_set_tid_address, &newtid));
+			TEST(ltp_syscall(__NR_set_tid_address, &newtid));
 
 			if (TEST_RETURN == getpid()) {
 				cleanup();

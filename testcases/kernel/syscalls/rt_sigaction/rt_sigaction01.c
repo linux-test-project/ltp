@@ -144,7 +144,7 @@ int set_handler(int sig, int sig_to_mask, int mask_flags)
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, sig);
 
-	return syscall(__NR_rt_sigaction, sig, &sa, &oldaction, SIGSETSIZE);
+	return ltp_syscall(__NR_rt_sigaction, sig, &sa, &oldaction, SIGSETSIZE);
 
 }
 

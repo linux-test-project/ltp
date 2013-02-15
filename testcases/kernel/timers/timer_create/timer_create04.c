@@ -166,7 +166,7 @@ int main(int ac, char **av)
 					temp_ev = (struct sigevent *)-1;
 			}
 
-			TEST(syscall(__NR_timer_create, clocks[i], temp_ev,
+			TEST(ltp_syscall(__NR_timer_create, clocks[i], temp_ev,
 				     temp_id));
 
 			/* check return code */

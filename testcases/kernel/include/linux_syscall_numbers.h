@@ -17,7 +17,7 @@
 #include <sys/syscall.h>
 #include "cleanup.c"
 
-#define syscall(NR, ...) ({ \
+#define ltp_syscall(NR, ...) ({ \
 	int __ret; \
 	if (NR == 0) { \
 		errno = ENOSYS; \

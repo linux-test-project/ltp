@@ -203,7 +203,7 @@ int TST_TOTAL = sizeof(test_desc) / sizeof(*test_desc);
 static int mylinkat(int olddirfd, const char *oldfilename, int newdirfd,
 		    const char *newfilename, int flags)
 {
-	return syscall(__NR_linkat, olddirfd, oldfilename, newdirfd,
+	return ltp_syscall(__NR_linkat, olddirfd, oldfilename, newdirfd,
 		       newfilename, flags);
 }
 

@@ -117,7 +117,7 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			setup_test(i);
-			TEST(syscall(__NR_timer_create, CLOCK_MONOTONIC,
+			TEST(ltp_syscall(__NR_timer_create, CLOCK_MONOTONIC,
 				     evp_ptr, &created_timer_id));
 
 			tst_resm((TEST_RETURN == 0 ? TPASS : TFAIL | TTERRNO),

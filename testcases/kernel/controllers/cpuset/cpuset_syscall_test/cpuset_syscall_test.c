@@ -62,7 +62,8 @@ int ret;
 static int get_mempolicy(int *policy, unsigned long *nmask,
 			 unsigned long maxnode, void *addr, int flags)
 {
-	return syscall(__NR_get_mempolicy, policy, nmask, maxnode, addr, flags);
+	return ltp_syscall(__NR_get_mempolicy, policy, nmask, maxnode, addr,
+		flags);
 }
 #endif
 
@@ -70,14 +71,14 @@ static int get_mempolicy(int *policy, unsigned long *nmask,
 static int mbind(void *start, unsigned long len, int policy,
 		 unsigned long *nodemask, unsigned long maxnode, unsigned flags)
 {
-	return syscall(__NR_mbind, start, len, policy, nodemask, maxnode,
+	return ltp_syscall(__NR_mbind, start, len, policy, nodemask, maxnode,
 		       flags);
 }
 
 static int set_mempolicy(int policy, unsigned long *nodemask,
 			 unsigned long maxnode)
 {
-	return syscall(__NR_set_mempolicy, policy, nodemask, maxnode);
+	return ltp_syscall(__NR_set_mempolicy, policy, nodemask, maxnode);
 }
 #endif
 

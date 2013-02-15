@@ -243,17 +243,17 @@ static int do_test(struct test_case *tc)
 
 	errno = 0;
 	if (tc->from_node == NONE)
-		TEST(ret = syscall(__NR_mbind, p, len, tc->policy,
+		TEST(ret = ltp_syscall(__NR_mbind, p, len, tc->policy,
 				   NULL, 0, tc->flags));
 	else if (tc->ttype == INVALID_POINTER)
-		TEST(ret = syscall(__NR_mbind, p, len, tc->policy,
+		TEST(ret = ltp_syscall(__NR_mbind, p, len, tc->policy,
 				   invalid_nodemask, maxnode, tc->flags));
 	else
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
-		TEST(ret = syscall(__NR_mbind, p, len, tc->policy,
+		TEST(ret = ltp_syscall(__NR_mbind, p, len, tc->policy,
 				   nodemask, maxnode, tc->flags));
 #else
-		TEST(ret = syscall(__NR_mbind, p, len, tc->policy,
+		TEST(ret = ltp_syscall(__NR_mbind, p, len, tc->policy,
 				   nodemask->maskp, nodemask->size, tc->flags));
 #endif
 
@@ -263,10 +263,10 @@ static int do_test(struct test_case *tc)
 
 	/* Check policy of the allocated memory */
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
-	TEST(syscall(__NR_get_mempolicy, &policy, getnodemask,
+	TEST(ltp_syscall(__NR_get_mempolicy, &policy, getnodemask,
 		     maxnode, p, MPOL_F_ADDR));
 #else
-	TEST(syscall(__NR_get_mempolicy, &policy, getnodemask->maskp,
+	TEST(ltp_syscall(__NR_get_mempolicy, &policy, getnodemask->maskp,
 		     getnodemask->size, p, MPOL_F_ADDR));
 #endif
 	if (TEST_RETURN < 0) {
@@ -300,7 +300,7 @@ TEST_END:
 static void setup(void)
 {
 	/* check syscall availability */
-	syscall(__NR_mbind, NULL, 0, 0, NULL, 0, 0);
+	ltp_syscall(__NR_mbind, NULL, 0, 0, NULL, 0, 0);
 
 	TEST_PAUSE;
 	tst_tmpdir();

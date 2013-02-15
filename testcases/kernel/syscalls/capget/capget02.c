@@ -137,7 +137,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 			test_setup(i);
-			TEST(syscall(__NR_capget, test_cases[i].headerp,
+			TEST(ltp_syscall(__NR_capget, test_cases[i].headerp,
 				     test_cases[i].datap));
 
 			if (TEST_RETURN == -1 &&

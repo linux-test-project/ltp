@@ -74,7 +74,7 @@ int TST_TOTAL = 15;
 static int myeventfd(unsigned int initval, int flags)
 {
 	/* eventfd2 uses FLAGS but eventfd doesn't take FLAGS. */
-	return syscall(__NR_eventfd, initval);
+	return ltp_syscall(__NR_eventfd, initval);
 }
 
 /*

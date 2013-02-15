@@ -345,7 +345,7 @@ static int do_test(struct test_case *tc)
 	fd2 = sys_ret;
 
 	if (p_attr) {
-		TEST(rc = syscall(__NR_mq_getsetattr, fd2, NULL, &old));
+		TEST(rc = ltp_syscall(__NR_mq_getsetattr, fd2, NULL, &old));
 		if (TEST_RETURN < 0) {
 			tst_resm(TFAIL,
 				 "mq_getsetattr failed - errno = %d : %s",

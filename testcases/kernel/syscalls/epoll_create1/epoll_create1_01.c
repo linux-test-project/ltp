@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	fd = syscall(__NR_epoll_create1, 0);
+	fd = ltp_syscall(__NR_epoll_create1, 0);
 	if (fd == -1) {
 		tst_brkm(TFAIL, cleanup, "epoll_create1(0) failed");
 	}
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 			 "epoll_create1(0) set close-on-exec flag");
 	}
 	close(fd);
-	fd = syscall(__NR_epoll_create1, EPOLL_CLOEXEC);
+	fd = ltp_syscall(__NR_epoll_create1, EPOLL_CLOEXEC);
 	if (fd == -1) {
 		tst_brkm(TFAIL, cleanup, "epoll_create1(EPOLL_CLOEXEC) failed");
 	}

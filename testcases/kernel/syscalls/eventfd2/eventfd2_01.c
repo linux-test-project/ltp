@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 	}
 	setup();
 
-	fd = syscall(__NR_eventfd2, 1, 0);
+	fd = ltp_syscall(__NR_eventfd2, 1, 0);
 	if (fd == -1) {
 		tst_brkm(TFAIL, cleanup, "eventfd2(0) failed");
 	}
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 	}
 	close(fd);
 
-	fd = syscall(__NR_eventfd2, 1, EFD_CLOEXEC);
+	fd = ltp_syscall(__NR_eventfd2, 1, EFD_CLOEXEC);
 	if (fd == -1) {
 		tst_brkm(TFAIL, cleanup, "eventfd2(EFD_CLOEXEC) failed");
 	}

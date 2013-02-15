@@ -83,7 +83,7 @@ gid_t gid;
 int myfchownat(int dirfd, const char *filename, uid_t owner, gid_t group,
 	       int flags)
 {
-	return syscall(__NR_fchownat, dirfd, filename, owner, group, flags);
+	return ltp_syscall(__NR_fchownat, dirfd, filename, owner, group, flags);
 }
 
 int main(int ac, char **av)

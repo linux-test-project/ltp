@@ -150,7 +150,7 @@ int set_handler(int sig, int sig_to_mask, int mask_flags)
 	 * sigsetsize was not equivalent to the size of a sigset_t type *
 	 */
 
-	TEST(syscall
+	TEST(ltp_syscall
 	     (__NR_rt_sigaction, sig, &sa, &oldaction, INVAL_SIGSETSIZE));
 	if (TEST_RETURN == 0) {
 		return 0;

@@ -78,7 +78,7 @@ int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0, 0 };
 
 int myfaccessat(int dirfd, const char *filename, int mode)
 {
-	return syscall(__NR_faccessat, dirfd, filename, mode);
+	return ltp_syscall(__NR_faccessat, dirfd, filename, mode);
 }
 
 int main(int ac, char **av)

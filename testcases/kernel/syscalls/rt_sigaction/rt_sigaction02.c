@@ -174,7 +174,7 @@ int main(int ac, char **av)
 					 * An invalid act or oact value was specified                   *
 					 */
 
-					TEST(syscall
+					TEST(ltp_syscall
 					     (__NR_rt_sigaction, signal,
 					      INVAL_STRUCT, NULL, SIGSETSIZE));
 					if ((TEST_RETURN == -1)

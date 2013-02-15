@@ -100,7 +100,7 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		TEST(syscall(__NR_capget, &header, &data));
+		TEST(ltp_syscall(__NR_capget, &header, &data));
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS, "capget() returned %ld", TEST_RETURN);

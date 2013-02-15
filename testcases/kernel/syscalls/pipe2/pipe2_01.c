@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			if (syscall(__NR_pipe2, fd, 0) != 0) {
+			if (ltp_syscall(__NR_pipe2, fd, 0) != 0) {
 				tst_resm(TFAIL, "pipe2(0) failed");
 				cleanup();
 				tst_exit();
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 			close(fd[0]);
 			close(fd[1]);
 
-			if (syscall(__NR_pipe2, fd, O_CLOEXEC) != 0) {
+			if (ltp_syscall(__NR_pipe2, fd, O_CLOEXEC) != 0) {
 				tst_resm(TFAIL, "pipe2(O_CLOEXEC) failed");
 				cleanup();
 				tst_exit();

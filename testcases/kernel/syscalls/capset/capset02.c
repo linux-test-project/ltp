@@ -155,7 +155,7 @@ int main(int ac, char **av)
 		for (; i < TST_TOTAL; i++) {
 
 			test_setup(i, av[0]);
-			TEST(syscall(__NR_capset, test_cases[i].headerp,
+			TEST(ltp_syscall(__NR_capset, test_cases[i].headerp,
 				     test_cases[i].datap));
 
 			if (TEST_RETURN == -1 &&
@@ -188,10 +188,8 @@ void setup()
 	 * header.version must be _LINUX_CAPABILITY_VERSION
 	 */
 	header.version = _LINUX_CAPABILITY_VERSION;
-	if (syscall(__NR_capget, &header, &data) == -1) {
+	if (ltp_syscall(__NR_capget, &header, &data) == -1)
 		tst_brkm(TBROK | TERRNO, NULL, "capget failed");
-	}
-
 }
 
 void cleanup()

@@ -251,14 +251,15 @@ static int do_test(struct test_case *tc)
 		flags = 0;
 		p = NULL;
 		if (tc->from_node == NONE)
-			TEST(syscall(__NR_set_mempolicy, tc->policy, NULL, 0));
+			TEST(ltp_syscall(__NR_set_mempolicy, tc->policy,
+				NULL, 0));
 		else
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
-			TEST(syscall(__NR_set_mempolicy, tc->policy,
-				     nodemask, maxnode));
+			TEST(ltp_syscall(__NR_set_mempolicy, tc->policy,
+				nodemask, maxnode));
 #else
-			TEST(syscall(__NR_set_mempolicy, tc->policy,
-				     nodemask->maskp, nodemask->size));
+			TEST(ltp_syscall(__NR_set_mempolicy, tc->policy,
+				nodemask->maskp, nodemask->size));
 #endif
 		if (TEST_RETURN < 0) {
 			tst_resm(TBROK | TERRNO, "set_mempolicy");
@@ -273,15 +274,15 @@ static int do_test(struct test_case *tc)
 		if (p == MAP_FAILED)
 			tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 		if (tc->from_node == NONE)
-			TEST(syscall(__NR_mbind, p, len, tc->policy,
-				     NULL, 0, 0));
+			TEST(ltp_syscall(__NR_mbind, p, len, tc->policy,
+				NULL, 0, 0));
 		else
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
-			TEST(syscall(__NR_mbind, p, len, tc->policy,
-				     nodemask, maxnode, 0));
+			TEST(ltp_syscall(__NR_mbind, p, len, tc->policy,
+				nodemask, maxnode, 0));
 #else
-			TEST(syscall(__NR_mbind, p, len, tc->policy,
-				     nodemask->maskp, nodemask->size, 0));
+			TEST(ltp_syscall(__NR_mbind, p, len, tc->policy,
+				nodemask->maskp, nodemask->size, 0));
 #endif
 		if (TEST_RETURN < 0) {
 			tst_resm(TBROK | TERRNO, "mbind");
@@ -301,10 +302,10 @@ static int do_test(struct test_case *tc)
 	errno = 0;
 	cmp_ok = 1;
 #if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
-	TEST(ret = syscall(__NR_get_mempolicy, &policy, getnodemask,
+	TEST(ret = ltp_syscall(__NR_get_mempolicy, &policy, getnodemask,
 			   maxnode, p, flags));
 #else
-	TEST(ret = syscall(__NR_get_mempolicy, &policy, getnodemask->maskp,
+	TEST(ret = ltp_syscall(__NR_get_mempolicy, &policy, getnodemask->maskp,
 			   getnodemask->size, p, flags));
 #endif
 	err = TEST_ERRNO;
@@ -339,7 +340,7 @@ static void cleanup(void)
 static void setup(void)
 {
 	/* check syscall availability */
-	syscall(__NR_get_mempolicy, NULL, NULL, 0, NULL, 0);
+	ltp_syscall(__NR_get_mempolicy, NULL, NULL, 0, NULL, 0);
 
 	TEST_PAUSE;
 	tst_tmpdir();

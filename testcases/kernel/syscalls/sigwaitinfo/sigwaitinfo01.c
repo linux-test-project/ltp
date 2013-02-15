@@ -133,7 +133,7 @@ static int my_rt_sigtimedwait(const sigset_t * set, siginfo_t * info,
 {
 
 	/* The last argument is (number_of_signals)/(bits_per_byte), which are 64 and 8, resp. */
-	return syscall(__NR_rt_sigtimedwait, set, info, timeout, 8);
+	return ltp_syscall(__NR_rt_sigtimedwait, set, info, timeout, 8);
 }
 #endif
 

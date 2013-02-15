@@ -93,18 +93,18 @@ struct stat statbuf;
 int myfstatat(int dirfd, const char *filename, struct stat64 *statbuf,
 	      int flags)
 {
-	return syscall(__NR_fstatat64, dirfd, filename, statbuf, flags);
+	return ltp_syscall(__NR_fstatat64, dirfd, filename, statbuf, flags);
 }
 #elif (defined __NR_newfstatat) && (__NR_newfstatat != 0)
 int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
-	return syscall(__NR_newfstatat, dirfd, filename, statbuf, flags);
+	return ltp_syscall(__NR_newfstatat, dirfd, filename, statbuf, flags);
 }
 #else
 /* stub - will never run */
 int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
-	return syscall(0, dirfd, filename, statbuf, flags);
+	return ltp_syscall(0, dirfd, filename, statbuf, flags);
 }
 #endif
 

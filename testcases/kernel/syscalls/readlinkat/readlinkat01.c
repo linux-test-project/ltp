@@ -91,7 +91,7 @@ char buffer[BUFF_SIZE];
 
 int myreadlinkat(int dirfd, const char *filename, char *buffer, size_t bufsize)
 {
-	return syscall(__NR_readlinkat, dirfd, filename, buffer, bufsize);
+	return ltp_syscall(__NR_readlinkat, dirfd, filename, buffer, bufsize);
 }
 
 int main(int ac, char **av)

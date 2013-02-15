@@ -118,7 +118,7 @@ int main(int ac, char **av)
 		tst_brkm(TFAIL | TERRNO, cleanup, "fork failed");
 	} else if (cpid == 0) {
 		sleep(5);
-		TEST(syscall(__NR_exit_group, 4));
+		TEST(ltp_syscall(__NR_exit_group, 4));
 	} else {
 		w = wait(&status);
 		if (w == -1)

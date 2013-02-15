@@ -77,7 +77,7 @@ int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
 
 int myopenat(int dirfd, const char *filename, int flags, int mode)
 {
-	return syscall(__NR_openat, dirfd, filename, flags, mode);
+	return ltp_syscall(__NR_openat, dirfd, filename, flags, mode);
 }
 
 int main(int ac, char **av)

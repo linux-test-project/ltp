@@ -138,7 +138,7 @@ int main(int ac, char **av)
 				temp = (struct timespec *)NULL;
 			}
 
-			TEST(syscall(__NR_clock_gettime, clocks[i], temp));
+			TEST(ltp_syscall(__NR_clock_gettime, clocks[i], temp));
 
 			/* check return code */
 			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {

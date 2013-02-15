@@ -111,7 +111,7 @@ int main(int ac, char **av)
 
 		Tst_count = 0;
 
-		TEST(syscall(__NR_capset, &header, &data));
+		TEST(ltp_syscall(__NR_capset, &header, &data));
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS, "capset() returned %ld", TEST_RETURN);
@@ -139,10 +139,8 @@ void setup()
 
 	header.version = _LINUX_CAPABILITY_VERSION;
 	header.pid = 0;
-	if (syscall(__NR_capget, &header, &data) == -1) {
+	if (ltp_syscall(__NR_capget, &header, &data) == -1)
 		tst_brkm(TBROK | TERRNO, NULL, "capget() failed");
-	}
-
 }
 
 void cleanup()

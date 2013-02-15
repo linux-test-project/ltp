@@ -84,7 +84,7 @@ int flags[TEST_CASES] = { 0, 0, 0, 0, 9999, 0, AT_REMOVEDIR };
 
 int myunlinkat(int dirfd, const char *filename, int flags)
 {
-	return syscall(__NR_unlinkat, dirfd, filename, flags);
+	return ltp_syscall(__NR_unlinkat, dirfd, filename, flags);
 }
 
 int main(int ac, char **av)

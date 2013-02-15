@@ -106,7 +106,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			TEST(syscall(__NR_timer_delete, INVALID_ID));
+			TEST(ltp_syscall(__NR_timer_delete, INVALID_ID));
 
 			/* check return code */
 			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {

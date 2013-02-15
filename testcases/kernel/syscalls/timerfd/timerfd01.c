@@ -89,20 +89,20 @@ void set_timespec(struct timespec *tmr, unsigned long long ustime)
 int timerfd_create(int clockid, int flags)
 {
 
-	return syscall(__NR_timerfd_create, clockid, flags);
+	return ltp_syscall(__NR_timerfd_create, clockid, flags);
 }
 
 int timerfd_settime(int ufc, int flags, const struct itimerspec *utmr,
 		    struct itimerspec *otmr)
 {
 
-	return syscall(__NR_timerfd_settime, ufc, flags, utmr, otmr);
+	return ltp_syscall(__NR_timerfd_settime, ufc, flags, utmr, otmr);
 }
 
 int timerfd_gettime(int ufc, struct itimerspec *otmr)
 {
 
-	return syscall(__NR_timerfd_gettime, ufc, otmr);
+	return ltp_syscall(__NR_timerfd_gettime, ufc, otmr);
 }
 
 long waittmr(int tfd, int timeo)

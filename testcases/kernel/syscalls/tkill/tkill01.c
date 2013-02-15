@@ -97,11 +97,11 @@ int main(int ac, char **av)
 			if (signal(SIGUSR1, &sig_action) == SIG_ERR)
 				tst_brkm(TBROK | TERRNO, cleanup,
 					 "signal(SIGUSR1, ..) failed");
-			TEST(tid = syscall(__NR_gettid));
+			TEST(tid = ltp_syscall(__NR_gettid));
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL | TTERRNO, "tkill failed");
 			}
-			TEST(syscall(__NR_tkill, tid, SIGUSR1));
+			TEST(ltp_syscall(__NR_tkill, tid, SIGUSR1));
 			if (TEST_RETURN == 0) {
 				tst_resm(TPASS, "tkill call succeeded");
 			} else {

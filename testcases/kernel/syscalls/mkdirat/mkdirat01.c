@@ -77,7 +77,7 @@ int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
 
 int mymkdirat(int dirfd, const char *dirname, int mode)
 {
-	return syscall(__NR_mkdirat, dirfd, dirname, mode);
+	return ltp_syscall(__NR_mkdirat, dirfd, dirname, mode);
 }
 
 int main(int ac, char **av)

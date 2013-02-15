@@ -147,13 +147,13 @@ int main(int ac, char **av)
 		act.sa_handler = sig_handler;
 #endif
 
-		TEST(syscall(__NR_rt_sigaction, SIGALRM, &act, &oact,
+		TEST(ltp_syscall(__NR_rt_sigaction, SIGALRM, &act, &oact,
 			     SIGSETSIZE));
 		if (TEST_RETURN == -1) {
 			tst_brkm(TFAIL | TTERRNO, cleanup,
 				 "rt_sigaction failed");
 		}
-		TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0,
+		TEST(ltp_syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0,
 			     &set1, SIGSETSIZE));
 		if (TEST_RETURN == -1) {
 			tst_brkm(TFAIL | TTERRNO, cleanup,
@@ -162,11 +162,12 @@ int main(int ac, char **av)
 
 		TEST(alarm(5));
 		int result;
-		TEST(result = syscall(__NR_rt_sigsuspend, &set, SIGSETSIZE));
+		TEST(result = ltp_syscall(__NR_rt_sigsuspend, &set,
+			SIGSETSIZE));
 		TEST(alarm(0));
 		if (result == -1 && TEST_ERRNO != EINTR) {
-			TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0, &set2,
-				     SIGSETSIZE));
+			TEST(ltp_syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0,
+				&set2, SIGSETSIZE));
 			if (TEST_RETURN == -1) {
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "rt_sigprocmask failed");
