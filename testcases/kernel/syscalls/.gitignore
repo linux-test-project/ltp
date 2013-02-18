@@ -764,6 +764,7 @@
 /setitimer/setitimer01
 /setitimer/setitimer02
 /setitimer/setitimer03
+/setns/setns01
 /setpgid/setpgid01
 /setpgid/setpgid02
 /setpgid/setpgid03
