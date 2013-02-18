@@ -1,10 +1,3 @@
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include "posixtest.h"
-
 /*
  * Copyright (c) 2002-2003, Intel Corporation. All rights reserved.
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
@@ -31,6 +24,13 @@
  *  the parent's signal.  If that is not the case, this test will fail.
  */
 
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include "posixtest.h"
+
 #define SIGTOTEST SIGUSR1
 
 void myhandler(int signo)
@@ -44,16 +44,19 @@ int main()
 
 	int sig;
 	sigset_t set;
+
 	if (sigemptyset(&set) == -1) {
 		perror("Error calling sigemptyset\n");
 		return PTS_UNRESOLVED;
 	}
+
 	if (sigaddset(&set, SIGTOTEST) == -1) {
 		perror("Error calling sigaddset\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if ((pid = fork()) == 0) {
+	pid = fork();
+	if (pid == 0) {
 		/* child here */
 		struct sigaction act;
 		act.sa_handler = myhandler;
@@ -62,16 +65,18 @@ int main()
 		sigaction(SIGTOTEST, &act, 0);
 
 		if (0 != sigwait(&set, &sig)) {
-			printf
-			    ("Sigwait did not return 0. Possible problem with sigwait function\n");
-			return 0;	/* FAIL */
+			printf("Sigwait did not return 0."
+				"Possible problem with sigwait function\n");
+			/* FAIL */
+			return 0;
 		}
 
 		if (sig != SIGTOTEST)
-			return 0;	/* FAIL */
+			/* FAIL */
+			return 0;
 
 		return 1;
-	} else {
+	} else if (pid > 0) {
 		/* parent here */
 		int i;
 
@@ -95,6 +100,10 @@ int main()
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}
+
+	} else {
+		printf("Error fork() a child\n");
+		return PTS_UNRESOLVED;
 	}
 
 	printf("Should have exited from parent\n");
