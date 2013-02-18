@@ -963,6 +963,7 @@ setitimer02 setitimer02
 setitimer03 setitimer03
 
 setns01 setns01
+setns02 setns02
 
 setpgid01 setpgid01
 setpgid02 setpgid02
