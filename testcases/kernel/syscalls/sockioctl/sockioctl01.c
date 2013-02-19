@@ -23,23 +23,6 @@
  * Test Description:
  *  Verify that ioctl() on sockets returns the proper errno for various
  *  failure cases
- *
- * Usage:  <for command-line>
- *  sockioctl01 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
- *	where,  -c n : Run n copies concurrently.
- *		-e   : Turn on errno logging.
- *		-i n : Execute test n times.
- *		-I x : Execute test for x seconds.
- *		-P x : Pause for x seconds between iterations.
- *		-t   : Turn on syscall timing.
- *
- * History
- *	07/2001 John George
- *		-Ported
- *
- * Restrictions:
- *  None.
- *
  */
 
 #include <stdio.h>
@@ -59,23 +42,30 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "sockioctl01";	/* Test program identifier.    */
+char *TCID = "sockioctl01";
 int testno;
 
-int s;				/* socket descriptor */
-struct sockaddr_in sin0, fsin1;
-struct ifconf ifc;
-struct ifreq ifr;
-int sinlen;
-int optval;
-int exp_enos[] = { EBADF, EINVAL, EFAULT, 0 };
+static int s; /* socket descriptor */
+static struct sockaddr_in sin0, fsin1;
+static struct ifconf ifc;
+static struct ifreq ifr;
+static int sinlen;
+static int optval;
+static int exp_enos[] = {EBADF, EINVAL, EFAULT, 0};
 
-char buf[8192];
+static char buf[8192];
 
-void setup(void), setup0(void), setup1(void), setup2(void), setup3(void),
-cleanup(void), cleanup0(void), cleanup1(void);
+static void setup(void);
+static void setup0(void);
+static void setup1(void);
+static void setup2(void);
+static void setup3(void);
 
-struct test_case_t {		/* test case structure */
+static void cleanup(void);
+static void cleanup0(void);
+static void cleanup1(void);
+
+struct test_case_t {
 	int domain;		/* PF_INET, PF_UNIX, ... */
 	int type;		/* SOCK_STREAM, SOCK_DGRAM ... */
 	int proto;		/* protocol number (usually 0 = default) */
@@ -127,19 +117,16 @@ struct test_case_t {		/* test case structure */
 		    EFAULT, setup3, cleanup1, "SIOCSIFFLAGS with invalid ifr"}
 ,};
 
-int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
 int main(int argc, char *argv[])
 {
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	setup();
 
@@ -165,31 +152,28 @@ int main(int argc, char *argv[])
 			tdat[testno].cleanup();
 		}
 	}
+	
 	cleanup();
 	tst_exit();
-
 }
 
-void setup(void)
+static void setup(void)
 {
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	TEST_PAUSE;		/* if -P option specified */
+	TEST_PAUSE;
 
-	/* initialize local sockaddr */
 	sin0.sin_family = AF_INET;
 	sin0.sin_port = 0;
 	sin0.sin_addr.s_addr = INADDR_ANY;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	TEST_CLEANUP;
-
 }
 
-void setup0(void)
+static void setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
 		s = 1025;	/* anything not an open file */
@@ -211,7 +195,7 @@ void setup0(void)
 	}
 }
 
-void cleanup0(void)
+static void cleanup0(void)
 {
 	/* delete the test directory created in setup0() */
 	if (tdat[testno].experrno != EBADF) {
@@ -221,7 +205,7 @@ void cleanup0(void)
 	}
 }
 
-void setup1(void)
+static void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
@@ -240,7 +224,7 @@ void setup1(void)
 	}
 }
 
-void setup2(void)
+static void setup2(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
@@ -251,7 +235,7 @@ void setup2(void)
 	ifc.ifc_buf = buf;
 }
 
-void setup3(void)
+static void setup3(void)
 {
 	setup2();
 	if (ioctl(s, SIOCGIFCONF, &ifc) < 0) {
@@ -261,7 +245,7 @@ void setup3(void)
 	ifr = *(struct ifreq *)ifc.ifc_buf;
 }
 
-void cleanup1(void)
+static void cleanup1(void)
 {
 	(void)close(s);
 	s = -1;
