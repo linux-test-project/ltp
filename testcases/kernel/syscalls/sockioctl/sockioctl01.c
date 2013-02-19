@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 			tdat[testno].cleanup();
 		}
 	}
-	
+
 	cleanup();
 	tst_exit();
 }
@@ -166,22 +166,28 @@ static void setup(void)
 	sin0.sin_family = AF_INET;
 	sin0.sin_port = 0;
 	sin0.sin_addr.s_addr = INADDR_ANY;
+
+	tst_tmpdir();
 }
 
 static void cleanup(void)
 {
 	TEST_CLEANUP;
+
+	tst_rmdir();
 }
 
 static void setup0(void)
 {
-	if (tdat[testno].experrno == EBADF)
+	if (tdat[testno].experrno == EBADF) {
 		s = 1025;	/* anything not an open file */
-	else {
-		tst_tmpdir();
-		if ((mknod("test", O_RDWR | O_CREAT | S_IFIFO, 0)) == -1)
+	} else {
+		unlink("test");
+
+		if ((mknod("test", S_IRWXU | O_CREAT | S_IFIFO, 0)) == -1)
 			tst_brkm(TBROK, cleanup, "Could not create test - "
 				 "errno: %s", strerror(errno));
+
 		if ((s = open("test", O_RDWR)) == -1)
 			tst_brkm(TBROK, cleanup, "Could not open test - "
 				 "errno: %s", strerror(errno));
@@ -197,11 +203,9 @@ static void setup0(void)
 
 static void cleanup0(void)
 {
-	/* delete the test directory created in setup0() */
 	if (tdat[testno].experrno != EBADF) {
 		(void)close(s);
 		s = -1;
-		tst_rmdir();
 	}
 }
 
