@@ -44,12 +44,11 @@
 char *TCID = "readlink04";
 int TST_TOTAL = 1;
 
-static char TESTFILE[] = "./testfile\0";
-static char SYMFILE[] = "slink_file\0";
+static char *TESTFILE = "./testfile";
+static char *SYMFILE = "slink_file";
 
 #define MAX_SIZE	256
 
-static char *symfile_path;
 static int exp_val;
 static char buffer[MAX_SIZE];
 
@@ -74,11 +73,11 @@ int main(int ac, char **av)
 		 * Call readlink(2) to read the contents of
 		 * symlink into a buffer.
 		 */
-		TEST(readlink(symfile_path, buffer, sizeof(buffer)));
+		TEST(readlink(SYMFILE, buffer, sizeof(buffer)));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "readlink() on %s failed",
-			         symfile_path);
+			         SYMFILE);
 			continue;
 		}
 
@@ -108,72 +107,45 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
+#define FILE_MODE  S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+
 static void setup(void)
 {
-	int pid;
+	int fd;
 	char *tmp_dir = NULL;
 	struct passwd *pwent;
 
 	tst_require_root(NULL);
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
 	/* get the name of the temporary directory */
-	if ((tmp_dir = getcwd(tmp_dir, 0)) == NULL) {
+	if ((tmp_dir = getcwd(tmp_dir, 0)) == NULL)
 		tst_brkm(TBROK, NULL, "getcwd failed");
-	}
 
-	if ((pwent = getpwnam("bin")) == NULL) {
+	if ((pwent = getpwnam("bin")) == NULL)
 		tst_brkm(TBROK, cleanup, "getpwname() failed");
-	}
 
 	/* make the tmp directory belong to bin */
-	if (chown(tmp_dir, pwent->pw_uid, pwent->pw_gid) == -1) {
+	if (chown(tmp_dir, pwent->pw_uid, pwent->pw_gid) == -1)
 		tst_brkm(TBROK, cleanup, "chown() failed");
+
+	if (chmod(tmp_dir, 0711) != 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s) failed", tmp_dir);
+
+	/* create test file and symlink */
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open(%s) failed", TESTFILE);
+
+	if (close(fd))
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
+
+	if (symlink(TESTFILE, SYMFILE) < 0) {
+		tst_brkm(TBROK|TERRNO, cleanup, "symlink(%s, %s) failed",
+		         TESTFILE, SYMFILE);
 	}
-
-	if (chmod(tmp_dir, 0711) != 0) {
-		tst_brkm(TBROK, cleanup, "chmod() failed");
-	}
-
-	symfile_path = "slink_file\0";
-
-	if ((pid = FORK_OR_VFORK()) == -1) {
-		tst_brkm(TBROK, cleanup, "fork failed");
-	}
-
-	if (pid == 0) {
-		#define FILE_MODE        S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-	
-		int fd;
-
-		/* Create a testfile under temporary directory */
-		if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-			perror("child: open() failed");
-			exit(1);
-		}
-
-		/* Close the testfile created */
-		if (close(fd) == -1) {
-			perror("child: close() failed");
-			exit(1);
-		}
-
-		/* Create a symlink of testfile under temporary directory */
-		if (symlink(TESTFILE, symfile_path) < 0) {
-			perror("creat_slink: symlink() failed");
-			exit(1);
-		}
-
-		exit(0);
-	}
-
-	/* wait to let the execvp'ed process do its work */
-	waitpid(pid, NULL, 0);
 
 	/* set up the expected return value from the readlink() call */
 	exp_val = strlen(TESTFILE);
