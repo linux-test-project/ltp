@@ -1,20 +1,19 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -28,43 +27,8 @@
  * Expected Result:
  *  readlink() should return the contents of symbolic link path in the
  *  specified buffer on success.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
- *		Issue sys call fails with unexpected errno.
- *   Otherwise,
- *	Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory(s)/file(s) created.
- *
- * Usage:  <for command-line>
- *  readlink04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  This test should be executed by 'super-user' only.
  */
+
 #include <stdlib.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -76,31 +40,27 @@
 #include "test.h"
 #include "usctest.h"
 
-char TESTFILE[] = "./testfile\0";	/* name of file to create */
-char SYMFILE[] = "slink_file\0";	/* name of symbolic link to create */
-char creat_slink[] = "/creat_slink";	/* name of executable to execvp() */
+char *TCID = "readlink04";
+int TST_TOTAL = 1;
 
-char nobody[] = "nobody";
-char bin[] = "bin";
+static char TESTFILE[] = "./testfile\0";
+static char SYMFILE[] = "slink_file\0";
+static char creat_slink[] = "/creat_slink";
 
 #define MAX_SIZE	256
 
-char *TCID = "readlink04";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+static char *symfile_path;
+static int exp_val;
+static char buffer[MAX_SIZE];
 
-char *symfile_path;
-int exp_val;			/* strlen of testfile */
-char buffer[MAX_SIZE];		/* temporary buffer to hold symlink contents */
-
-void setup();			/* Setup function for the test */
-void cleanup();			/* Cleanup function for the test */
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -117,22 +77,12 @@ int main(int ac, char **av)
 		TEST(readlink(symfile_path, buffer, sizeof(buffer)));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "readlink() on %s failed, errno=%d : "
-				 "%s", symfile_path, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL | TTERRNO, "readlink() on %s failed",
+			         symfile_path);
 			continue;
 		}
 
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
 		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Compare the return value of readlink()
-			 * with the expected value which is the
-			 * strlen() of testfile.
-			 */
 			if (TEST_RETURN == exp_val) {
 				/* Check for the contents of buffer */
 				if (memcmp(buffer, TESTFILE, exp_val) != 0) {
@@ -159,26 +109,16 @@ int main(int ac, char **av)
 
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- *  Create a temporary directory and change directory to it.
- *
- *  execvp() the creat_slink program as bin to creat a file and symlink.
- */
-void setup()
+static void setup(void)
 {
 	int pid;
 	char *tmp_dir = NULL;
-	char path_buffer[BUFSIZ];	/* Buffer to hold command string */
+	char path_buffer[BUFSIZ];
 	char *cargv[4];
-	char bin_dir[PATH_MAX];	/* variable to hold TESTHOME env */
+	char bin_dir[PATH_MAX];
 	struct passwd *pwent;
 
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-	}
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -226,7 +166,7 @@ void setup()
 		tst_brkm(TBROK, cleanup, "fork failed");
 	}
 
-	if (pid == 0) {		/* child */
+	if (pid == 0) {
 		/*
 		 * execvp the process/program that will create the test file
 		 * and set up the symlink
@@ -244,8 +184,6 @@ void setup()
 		 */
 	}
 
-	/* parent */
-
 	/* wait to let the execvp'ed process do its work */
 	waitpid(pid, NULL, 0);
 
@@ -253,37 +191,23 @@ void setup()
 	exp_val = strlen(TESTFILE);
 
 	/* fill the buffer with a known value */
-	(void)memset(buffer, 0, MAX_SIZE);
+	memset(buffer, 0, MAX_SIZE);
 
 	/* finally, change the id of the parent process to "nobody" */
-	if ((pwent = getpwnam("nobody")) == NULL) {
+	if ((pwent = getpwnam("nobody")) == NULL)
 		tst_brkm(TBROK, cleanup, "getpwname() failed for nobody");
-	}
 
-	if (seteuid(pwent->pw_uid) == -1) {
+	if (seteuid(pwent->pw_uid) == -1)
 		tst_brkm(TBROK, cleanup, "seteuid() failed for nobody");
-	}
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *
- *  Remove the test directory and testfile created in the setup.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	/* set the process id back to root in order to remove the tmp dir */
-	if (seteuid(0) == -1) {
+	if (seteuid(0) == -1)
 		tst_brkm(TBROK, NULL, "failed to set process id to root");
-	}
 
 	tst_rmdir();
-
 }
