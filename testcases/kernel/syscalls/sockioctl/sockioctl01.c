@@ -184,13 +184,16 @@ static void setup0(void)
 	} else {
 		unlink("test");
 
-		if ((mknod("test", S_IRWXU | O_CREAT | S_IFIFO, 0)) == -1)
+		if ((mknod("test", S_IRWXU | S_IFIFO, 0)) == -1) {
 			tst_brkm(TBROK, cleanup, "Could not create test - "
 				 "errno: %s", strerror(errno));
+		}
 
-		if ((s = open("test", O_RDWR)) == -1)
+		if ((s = open("test", O_RDWR)) == -1) {
 			tst_brkm(TBROK, cleanup, "Could not open test - "
 				 "errno: %s", strerror(errno));
+		}
+
 		/*
 		 * kernel commit 46ce341b2f176c2611f12ac390adf862e932eb02
 		 * changed -EINVAL to -ENOIOCTLCMD, so vfs_ioctl now
