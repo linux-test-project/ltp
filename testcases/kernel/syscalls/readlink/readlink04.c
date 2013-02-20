@@ -1,5 +1,6 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +46,6 @@ int TST_TOTAL = 1;
 
 static char TESTFILE[] = "./testfile\0";
 static char SYMFILE[] = "slink_file\0";
-static char creat_slink[] = "/creat_slink";
 
 #define MAX_SIZE	256
 
@@ -106,16 +106,12 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 static void setup(void)
 {
 	int pid;
 	char *tmp_dir = NULL;
-	char path_buffer[BUFSIZ];
-	char *cargv[4];
-	char bin_dir[PATH_MAX];
 	struct passwd *pwent;
 
 	tst_require_root(NULL);
@@ -123,12 +119,6 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
-	/* Get current bin directory */
-	if (getcwd(bin_dir, sizeof(bin_dir)) == NULL) {
-		tst_brkm(TBROK, NULL,
-			 "getcwd(3) fails to get working directory of process");
-	}
 
 	tst_tmpdir();
 
@@ -150,38 +140,36 @@ static void setup(void)
 		tst_brkm(TBROK, cleanup, "chmod() failed");
 	}
 
-	/* create the full pathname of the executable to be execvp'ed */
-	strcpy((char *)path_buffer, (char *)bin_dir);
-	strcat((char *)path_buffer, (char *)creat_slink);
-
 	symfile_path = "slink_file\0";
-
-	/* set up the argument vector to pass into the execvp call */
-	cargv[0] = tmp_dir;
-	cargv[1] = TESTFILE;
-	cargv[2] = symfile_path;
-	cargv[3] = NULL;
 
 	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_brkm(TBROK, cleanup, "fork failed");
 	}
 
 	if (pid == 0) {
-		/*
-		 * execvp the process/program that will create the test file
-		 * and set up the symlink
-		 */
-		execvp(path_buffer, cargv);
+		#define FILE_MODE        S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+	
+		int fd;
 
-		/* on success, execvp will not return */
-		perror("execvp");
-		tst_brkm(TBROK, NULL, "execvp() failed");
+		/* Create a testfile under temporary directory */
+		if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
+			perror("child: open() failed");
+			exit(1);
+		}
 
-		/*
-		 * In reality, the contents/functionality of the creat_slink
-		 * program could be included right here.  This would simplify
-		 * the test a bit.  For now, however, we'll leave it as is.
-		 */
+		/* Close the testfile created */
+		if (close(fd) == -1) {
+			perror("child: close() failed");
+			exit(1);
+		}
+
+		/* Create a symlink of testfile under temporary directory */
+		if (symlink(TESTFILE, symfile_path) < 0) {
+			perror("creat_slink: symlink() failed");
+			exit(1);
+		}
+
+		exit(0);
 	}
 
 	/* wait to let the execvp'ed process do its work */
