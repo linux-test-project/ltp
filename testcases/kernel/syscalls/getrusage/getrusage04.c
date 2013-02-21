@@ -17,6 +17,8 @@
  * this test won't be executed on those platforms.
  *
  * Copyright (C) 2011  Red Hat, Inc.
+ * Copyright (C) 2013  Cyril Hrubis <chrubis@suse.cz>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
  * License as published by the Free Software Foundation.
@@ -37,6 +39,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+
 #define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/resource.h>
@@ -44,6 +47,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -52,13 +56,14 @@
 char *TCID = "getrusage04";
 int TST_TOTAL = 1;
 
-#define BIAS_MAX      1000
 #define RECORD_MAX    20
 #define FACTOR_MAX    10
 
 #ifndef RUSAGE_THREAD
 #define RUSAGE_THREAD 1
 #endif
+
+static long BIAS_MAX;
 
 static int opt_factor;
 static char *factor_str;
@@ -136,6 +141,9 @@ int main(int argc, char *argv[])
 			busyloop(100000);
 		}
 	}
+
+	tst_resm(TPASS, "Test Passed");
+
 	cleanup();
 	tst_exit();
 }
@@ -151,9 +159,53 @@ static void busyloop(long wait)
 	while (wait--) ;
 }
 
+/*
+ * The resolution of getrusage timers currently depends on CONFIG_HZ settings,
+ * as they are measured in jiffies.
+ *
+ * The problem is that there is no reasonable API to get either getrusage
+ * timers resolution or duration of jiffie.
+ *
+ * Here we use clock_getres() with linux specific CLOCK_REALTIME_COARSE (added
+ * in 2.6.32) which is also based on jiffies. This timer has the same
+ * granularity as getrusage but it's not guaranteed and it may change in the
+ * future.
+ *
+ * The default value for resolution was choosen to be 4ms as it corresponds to
+ * CONFIG_HZ=250 which seems to be default value.
+ */
+
+#ifndef CLOCK_REALTIME_COARSE
+#define CLOCK_REALTIME_COARSE 5
+#endif
+
+static unsigned long guess_timer_resolution(void)
+{
+	struct timespec res;
+
+	if (clock_getres(CLOCK_REALTIME_COARSE, &res)) {
+		tst_resm(TINFO,
+		        "CLOCK_REALTIME_COARSE not supported, using 4000 us");
+		return 4000;
+	}
+
+	if (res.tv_nsec < 1000000 || res.tv_nsec > 10000000) {
+		tst_resm(TINFO, "Unexpected CLOCK_REALTIME_COARSE resolution,"
+		        " using 4000 us");
+		return 4000;
+	}
+
+	tst_resm(TINFO, "Expected timers granularity is %li us",
+	         res.tv_nsec / 1000);
+
+	return res.tv_nsec / 1000;
+}
+
 static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	BIAS_MAX = guess_timer_resolution();
 
 	TEST_PAUSE;
 }
