@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
-	sigaction(SIGUSR2, &sa, 0);
+	ret = sigaction(SIGUSR2, &sa, 0);
 
 	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to set signal handler");
