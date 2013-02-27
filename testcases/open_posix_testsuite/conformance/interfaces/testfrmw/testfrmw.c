@@ -29,6 +29,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <stdarg.h>
 
 /* We use a mutex to avoid conflicts in traces */
 static pthread_mutex_t m_trace = PTHREAD_MUTEX_INITIALIZER;
