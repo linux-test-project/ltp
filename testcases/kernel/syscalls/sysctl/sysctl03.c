@@ -117,7 +117,7 @@ int main(int ac, char **av)
 		exp_eno = EPERM;
 	} else {
 		/* ^^ Look above this warning. ^^ */
-		tst_resm(TWARN,
+		tst_resm(TINFO,
 			 "this test's results are based on potentially undocumented behavior in the kernel. read the NOTE in the source file for more details");
 		exp_eno = EACCES;
 		exp_enos[0] = EACCES;
