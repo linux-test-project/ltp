@@ -1,12 +1,7 @@
-/***************************************************************************
- *            madvise2.c
- *
- *  Fri May 14 17:23:19 2004
- *	Copyright (c) International Business Machines  Corp., 2004
- *  Email	sumit@in.ibm.com
- ****************************************************************************/
-
 /*
+ *  Copyright (c) International Business Machines  Corp., 2004
+ *  Copyright (c) Linux Test Project, 2013
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -22,88 +17,48 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/**********************************************************
- *    TEST CASES
+/*
+ * This is a test for the madvise(2) system call. It is intended
+ * to provide a complete exposure of the system call. It tests
+ * madvise(2) for all error conditions to occur correctly.
  *
- *	1.) madvise(2) error conditions...(See Description)
+ * (A) Test Case for EINVAL
+ *  1. start is not page-aligned
+ *  2. advice is not a valid value
+ *  3. application is attempting to release
+ *     locked or shared pages (with MADV_DONTNEED)
  *
- *	INPUT SPECIFICATIONS
- *		The standard options for system call tests are accepted.
- *		(See the parse_opts(3) man page).
+ * (B) Test Case for ENOMEM
+ *  4. addresses in the specified range are not currently mapped
+ *     or are outside the address space of the process
+ *  b. Not enough memory - paging in failed
  *
- *	OUTPUT SPECIFICATIONS
- *		Output describing whether test cases passed or failed.
- *
- *	ENVIRONMENTAL NEEDS
- *		None
- *
- *	SPECIAL PROCEDURAL REQUIREMENTS
- *		None
- *
- *	DETAILED DESCRIPTION
- *		This is a test for the madvise(2) system call. It is intended
- *		to provide a complete exposure of the system call. It tests
- *		madvise(2) for all error conditions to occur correctly.
- *
- *		(A) Test Case for EINVAL
- *		1. start is not page-aligned
- *		2. advice is not a valid value
- *		3. application is attempting to release
- *			   locked or shared pages (with MADV_DONTNEED)
- *
- *		(B) Test Case for ENOMEM
- *		4. addresses in the specified range are not currently mapped
- *			   or are outside the address space of the process
- *			b. Not enough memory - paging in failed
- *
- *		(C) Test Case for EBADF
- *		5. the map exists,
- *			   but the area maps something that isn't a file.
- *
- *		(D) Test Case for EAGAIN
- *		6. a kernel resource was temporarily unavailable.
- *
- *	Setup:
- *		Setup signal handling.
- *		Pause for SIGUSR1 if option specified.
- *
- *	Test:
- *		Loop if the proper options are given.
- *		Execute system call
- *		Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *		Otherwise, Issue a PASS message.
- *
- *	Cleanup:
- *		Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+ * (C) Test Case for EBADF
+ *  5. the map exists,
+ *     but the area maps something that isn't a file.
+ */
 
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
-#include <sys/types.h>		/* For fstat */
-#include <sys/stat.h>		/* For fstat */
-#include <unistd.h>		/* For fstat & getpagesize() */
-#include <sys/mman.h>		/* For madvise */
-#include <fcntl.h>
-#include <sys/time.h>		/* For rlimit */
-#include <sys/resource.h>	/* For rlimit */
-
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
-/* Uncomment the following line in DEBUG mode */
-//#define MM_DEBUG 1
 #define MM_RLIMIT_RSS 5
+
+char *TCID = "madvise02";
+int TST_TOTAL = 7;
 
 static void setup(void);
 static void cleanup(void);
 static void check_and_print(int expected_errno);
-
-char *TCID = "madvise02";
-int TST_TOTAL = 7;
 
 int main(int argc, char *argv[])
 {
@@ -135,7 +90,7 @@ int main(int argc, char *argv[])
 		fd = open(filename, O_RDWR | O_CREAT, 0664);
 		if (fd < 0)
 			tst_brkm(TBROK, cleanup, "open failed");
-#ifdef MM_DEBUG
+#ifdef DEBUG
 		tst_resm(TINFO, "filename = %s opened successfully", filename);
 #endif
 
@@ -153,7 +108,7 @@ int main(int argc, char *argv[])
 		file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
 		if (file == MAP_FAILED)
 			tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
-#ifdef MM_DEBUG
+#ifdef DEBUG
 		tst_resm(TINFO, "The Page size is %d", pagesize);
 #endif
 

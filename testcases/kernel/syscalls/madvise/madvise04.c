@@ -34,9 +34,6 @@ char *TCID = "madvise04";
 
 #ifdef MADV_DONTDUMP
 
-/* Uncomment the following line in DEBUG mode */
-//#define MM_DEBUG 1
-
 int TST_TOTAL = 2;
 
 #define BUFFER_SIZE  256
@@ -72,7 +69,7 @@ int main(int argc, char *argv[])
 		fd = open(filename, O_RDWR | O_CREAT, 0664);
 		if (fd < 0)
 			tst_brkm(TBROK, cleanup, "open failed");
-#ifdef MM_DEBUG
+#ifdef DEBUG
 		tst_resm(TINFO, "filename = %s opened successfully", filename);
 #endif
 

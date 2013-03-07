@@ -21,16 +21,16 @@
  * This is a test case for madvise(2) system call. No error should be returned.
  */
 
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/shm.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
-#include <sys/shm.h>
-#include <sys/mman.h>
-#include <fcntl.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -38,9 +38,6 @@
 char *TCID = "madvise03";
 
 #ifdef MADV_REMOVE
-
-/* Uncomment the following line in DEBUG mode */
-//#define MM_DEBUG 1
 
 int TST_TOTAL = 3;
 
@@ -80,7 +77,7 @@ int main(int argc, char *argv[])
 		fd = open(filename, O_RDWR | O_CREAT, 0664);
 		if (fd < 0)
 			tst_brkm(TBROK, cleanup, "open failed");
-#ifdef MM_DEBUG
+#ifdef DEBUG
 		tst_resm(TINFO, "filename = %s opened successfully", filename);
 #endif
 
