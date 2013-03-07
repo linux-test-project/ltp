@@ -164,8 +164,8 @@ static char *Last_mesg;		/* previous test result message */
 /*
  * These globals may be externed by the test.
  */
-int Tst_count = 0;		/* current count of test cases executed; NOTE: */
-			/* Tst_count may be externed by other programs */
+int tst_count = 0;		/* current count of test cases executed; NOTE: */
+			/* tst_count may be externed by other programs */
 
 /*
  * These globals must be defined in the test.
@@ -263,7 +263,7 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
-	printf("IN tst_res; Tst_count = %d\n", Tst_count);
+	printf("IN tst_res; tst_count = %d\n", tst_count);
 	fflush(stdout);
 #endif
 
@@ -298,9 +298,9 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	if (ttype_result == TWARN || ttype_result == TINFO) {
 		tst_print(TCID, 0, ttype, tmesg);
 	} else {
-		if (Tst_count < 0)
+		if (tst_count < 0)
 			tst_print(TCID, 0, TWARN,
-				  "tst_res(): Tst_count < 0 is not valid");
+				  "tst_res(): tst_count < 0 is not valid");
 
 		/*
 		 * Process each display type.
@@ -309,14 +309,14 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 		case DISCARD:
 			break;
 		case NOPASS:	/* filtered by tst_print() */
-			tst_condense(Tst_count + 1, ttype, tmesg);
+			tst_condense(tst_count + 1, ttype, tmesg);
 			break;
 		default:	/* VERBOSE */
-			tst_print(TCID, Tst_count + 1, ttype, tmesg);
+			tst_print(TCID, tst_count + 1, ttype, tmesg);
 			break;
 		}
 
-		Tst_count++;
+		tst_count++;
 	}
 
 }

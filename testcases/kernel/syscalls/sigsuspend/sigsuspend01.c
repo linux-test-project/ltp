@@ -109,7 +109,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* Set the alarm timer */
 		alarm(5);
@@ -156,7 +156,7 @@ int main(int ac, char **av)
 				 TEST_RETURN);
 		}
 
-		Tst_count++;	/* incr TEST_LOOP counter */
+		tst_count++;	/* incr TEST_LOOP counter */
 	}
 
 	cleanup();

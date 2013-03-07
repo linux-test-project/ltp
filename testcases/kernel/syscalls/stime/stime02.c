@@ -110,7 +110,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Invoke stime(2) to set the system's time
@@ -132,7 +132,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "stime(2) returned %ld, expected -1, "
 				 "errno:%d", TEST_RETURN, EPERM);
 		}
-		Tst_count++;	/* incr TEST_LOOP counter */
+		tst_count++;	/* incr TEST_LOOP counter */
 	}
 
 	cleanup();

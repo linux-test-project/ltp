@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 
 	tst_resm(TINFO, "start tests.");
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		mmapzero();
 	}
 

@@ -258,19 +258,19 @@ char **argv;
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		errno = -4;
 
 		/*
 		 * Call catch_test to test setup and catching of SIGKILL.
 		 */
-		(void)do_test(CATCH_TEST, Tst_count);
+		(void)do_test(CATCH_TEST, tst_count);
 
 		/*
 		 * Call ignore_test to test setup and ignoring of SIGKILL.
 		 */
-		(void)do_test(IGNORE_TEST, Tst_count);
+		(void)do_test(IGNORE_TEST, tst_count);
 
 		/*
 		 * Call sigdfl_test to test setting SIGKILL to default.
@@ -287,15 +287,15 @@ char **argv;
 /***********************************************************************
  *
  ***********************************************************************/
-void do_test(test_case, tst_count)
+void do_test(test_case, tst_cnt)
 int test_case;
-int tst_count;
+int tst_cnt;
 {
 	int term_stat;		/* Termination status of the child returned to   */
 	/* the parent.                                   */
 	int rd_sz;		/* size of read */
 
-	Tst_count = tst_count;
+	tst_count = tst_cnt;
 
 	/*
 	 * Create a pipe of ipc
@@ -363,7 +363,7 @@ int tst_count;
 					tst_resm(TPASS, "From child: %s",
 						 Ipc_info.mesg);
 				else
-					Tst_count++;
+					tst_count++;
 				update_timings(Ipc_info.timings);
 			} else if (Ipc_info.status == FAIL_FLAG) {
 				tst_resm(TFAIL, "From child: %s",
@@ -422,7 +422,7 @@ int tst_count;
 				}
 			}
 		} else {
-			Tst_count++;	/* increment test counter */
+			tst_count++;	/* increment test counter */
 		}
 		close(fd1[0]);
 
@@ -556,7 +556,7 @@ void sigdfl_test()
 					 Tret);
 			}
 		} else
-			Tst_count++;
+			tst_count++;
 	} else {
 		tst_resm(TFAIL,
 			 "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",

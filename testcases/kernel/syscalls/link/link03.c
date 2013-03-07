@@ -188,7 +188,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		if (Nlinks)
 			nlinks = Nlinks;
@@ -242,7 +242,7 @@ int main(int ac, char **av)
 					 nlinks, fbuf.st_nlink);
 			}
 		} else
-			Tst_count++;
+			tst_count++;
 
 		for (cnt = 1; cnt < nlinks; cnt++) {
 

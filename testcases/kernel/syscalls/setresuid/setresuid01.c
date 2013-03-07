@@ -136,8 +136,8 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int i;
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
 			/* Set the real, effective or user id */

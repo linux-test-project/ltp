@@ -103,8 +103,8 @@ int main(int argc, char **argv)
 		int status[TEST_PAGES];
 		unsigned long onepage = get_page_size();
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		ret = alloc_pages_on_node(pages, TOUCHED_PAGES, from_node);
 		if (ret == -1)

@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 	}
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		test_tune(2);
 		test_tune(0);

@@ -118,7 +118,7 @@ int main(int ac, char **av)
 	 * missing.
 	 */
 	data = 0;
-	Tst_count = 1;
+	tst_count = 1;
 	for (testno = 0; testno < TST_TOTAL; ++testno) {
 		TEST(ltp_syscall(__NR_bdflush, 3, data));
 		if (TEST_RETURN == -1)

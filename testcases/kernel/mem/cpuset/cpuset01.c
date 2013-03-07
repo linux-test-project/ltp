@@ -114,7 +114,7 @@ static void testcpuset(void)
 		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		snprintf(buf, BUFSIZ, "%d", nodes[0]);
 		write_cpuset_files(CPATH_NEW, "mems", buf);
 		snprintf(buf, BUFSIZ, "%d", nodes[1]);

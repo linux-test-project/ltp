@@ -72,7 +72,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		if ((pgid_0 = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "fork failed");

@@ -92,7 +92,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		TEST(shmget(IPC_PRIVATE, shm_size,
 			    SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW));

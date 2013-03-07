@@ -91,7 +91,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		tp.tv_sec = 99;
 		tp.tv_nsec = 99;

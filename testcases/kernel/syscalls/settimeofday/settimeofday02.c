@@ -94,8 +94,8 @@ int main(int argc, char **argv)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		TEST(settimeofday((void *)-1, NULL));
 		if (TEST_RETURN != -1) {

@@ -87,8 +87,8 @@ int main(int argc, char **argv)
 		int status[TEST_PAGES];
 		int ret;
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		ret = alloc_pages_linear(pages, TEST_PAGES);
 		if (ret == -1)

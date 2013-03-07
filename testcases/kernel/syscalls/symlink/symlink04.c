@@ -109,7 +109,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Call symlink(2) to create a symlink of
@@ -159,7 +159,7 @@ int main(int ac, char **av)
 				 "unlink(%s) Failed, errno=%d : %s",
 				 SYMFILE, errno, strerror(errno));
 		}
-		Tst_count++;	/* incr TEST_LOOP counter */
+		tst_count++;	/* incr TEST_LOOP counter */
 	}
 
 	cleanup();

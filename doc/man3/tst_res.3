@@ -66,9 +66,9 @@ char *\fItmesg, [arg ...]\fR)
 .P
 \fBint  tst_environ()
 .P
-\fBextern int Tst_count;
+\fBextern int tst_count;
 .br
-extern int Tst_range;
+extern int tst_range;
 .br
 \fR
 .SH DESCRIPTION
@@ -79,7 +79,7 @@ library have a distinct number of test cases, and that each test case is
 distinct and uniquely identified by the test case number.  It is also assumed
 that test case results are printed in consecutive order, starting with 1.
 The library maintains a set of global variables (\fBTCID\fR, \fBTST_TOTAL\fR,
-\fBTst_count\fR), which are used by the various functions to format the
+\fBtst_count\fR), which are used by the various functions to format the
 results and to keep track of the current result reporting state (i.e. how many
 total test cases there are, and how many have been reported so far) for the
 calling test.
@@ -91,7 +91,7 @@ library, and MUST be defined/initialized by tests using the library.
 reported.
 .P
 The other global variables are available as externs to tests linked with
-tst_res.o.  \fBTst_count\fR is the running count of the number of test
+tst_res.o.  \fBtst_count\fR is the running count of the number of test
 results that have been reported so far.  The library initializes it to 0, and
 it should not be modified by the test.
 The details are described below under the appropriate functions.
@@ -156,11 +156,11 @@ correspond to a test case result and does not indicate a problem.
 \fBtst_res()\fR and \fBtst_resm()\fR are the basic result reporting
 functions.  They report 1 or more test case results of the specified
 \fIttype\fR.  All result types are valid for these functions.  The
-\fBTst_range\fR global variable indicates the number of results that will be
+\fBtst_range\fR global variable indicates the number of results that will be
 reported for each call to one of these functions.  It is initialized by the
 library to 1, but may be set to a value > 1 by the test.  Each call to one of
-these functions will result in \fBTst_range\fR test case results being
-reported, each with an identical message (\fItmesg\fR).  \fBTst_range\fR is
+these functions will result in \fBtst_range\fR test case results being
+reported, each with an identical message (\fItmesg\fR).  \fBtst_range\fR is
 always reset to 1 by the library before returning to the caller.  If
 \fBtst_res()\fR is called with a \fIfname\fR argument, the contents of the
 file will only be printed for the first reported result.  \fBtst_res()\fR
@@ -168,7 +168,7 @@ takes the \fIfname\fR argument whereas \fBtst_resm()\fR does not.
 .P
 NOTE: All calls to \fBtst_res()\fR specifying a \fIttype\fR of \fBTWARN\fR or
 \fBTINFO\fR will be printed with a test case number of zero.  Because of
-this, a \fBTst_range\fR value > 1 is not valid for these types.
+this, a \fBtst_range\fR value > 1 is not valid for these types.
 .P
 \fBtst_brk()\fR and \fBtst_brkm()\fR are used to report results for all test
 cases remaining in the test, and then call a cleanup function.  The only
@@ -306,7 +306,7 @@ A WARN result message will be printed if any of the following occur:
 .P
 If an invalid test type is specified.
 .P
-If \fBTst_count\fR is negative.
+If \fBtst_count\fR is negative.
 .P
 If one of the \fBtst_brk[m]()\fR routines is called with a test type
 other than \fBTFAIL, TBROK, TCONF\fR, or \fBTRETR\fR.
@@ -319,5 +319,5 @@ will be empty.  This allows a test to not print a message for a result, but
 it is not advised.
 .SH BUGS
 .P
-The programmer is free to alter the value of \fBTst_count\fR causing possible
+The programmer is free to alter the value of \fBtst_count\fR causing possible
 test result order problems.

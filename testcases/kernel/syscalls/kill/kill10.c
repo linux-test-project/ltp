@@ -248,7 +248,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 		child_signal_counter = 0;
 		pgrps_ready = 0;
 		checklist_reset(0x03);

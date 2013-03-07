@@ -88,7 +88,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Call sched_setparam(2) with pid=0 sothat it will

@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			fd = ltp_syscall(__NR_timerfd_create,
 				CLOCK_REALTIME, 0);

@@ -117,7 +117,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			Tst_count = 0;
+			tst_count = 0;
 			if (i == 0) {
 				TEST(reboot(INVALID_PARAMETER));
 			} else {

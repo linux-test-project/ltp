@@ -114,7 +114,7 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * generate sequence of events
@@ -123,41 +123,41 @@ int main(int ac, char **av)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "chmod(\".\", 0755) failed");
 		}
-		event_set[Tst_count].mask = IN_ISDIR | IN_ATTRIB;
-		strcpy(event_set[Tst_count].name, "");
-		Tst_count++;
+		event_set[tst_count].mask = IN_ISDIR | IN_ATTRIB;
+		strcpy(event_set[tst_count].name, "");
+		tst_count++;
 
 		if ((fd = creat(FILE_NAME1, 0755)) == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "creat(\"%s\", 755) failed", FILE_NAME1);
 		}
 
-		event_set[Tst_count].mask = IN_CREATE;
-		strcpy(event_set[Tst_count].name, FILE_NAME1);
-		Tst_count++;
-		event_set[Tst_count].mask = IN_OPEN;
-		strcpy(event_set[Tst_count].name, FILE_NAME1);
-		Tst_count++;
+		event_set[tst_count].mask = IN_CREATE;
+		strcpy(event_set[tst_count].name, FILE_NAME1);
+		tst_count++;
+		event_set[tst_count].mask = IN_OPEN;
+		strcpy(event_set[tst_count].name, FILE_NAME1);
+		tst_count++;
 
 		if (close(fd) == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "close(%s) failed", FILE_NAME1);
 		}
-		event_set[Tst_count].mask = IN_CLOSE_WRITE;
-		strcpy(event_set[Tst_count].name, FILE_NAME1);
-		Tst_count++;
+		event_set[tst_count].mask = IN_CLOSE_WRITE;
+		strcpy(event_set[tst_count].name, FILE_NAME1);
+		tst_count++;
 
 		if (rename(FILE_NAME1, FILE_NAME2) == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "rename(%s, %s) failed",
 				 FILE_NAME1, FILE_NAME2);
 		}
-		event_set[Tst_count].mask = IN_MOVED_FROM;
-		strcpy(event_set[Tst_count].name, FILE_NAME1);
-		Tst_count++;
-		event_set[Tst_count].mask = IN_MOVED_TO;
-		strcpy(event_set[Tst_count].name, FILE_NAME2);
-		Tst_count++;
+		event_set[tst_count].mask = IN_MOVED_FROM;
+		strcpy(event_set[tst_count].name, FILE_NAME1);
+		tst_count++;
+		event_set[tst_count].mask = IN_MOVED_TO;
+		strcpy(event_set[tst_count].name, FILE_NAME2);
+		tst_count++;
 
 		if (getcwd(fname1, BUF_SIZE) == NULL) {
 			tst_brkm(TBROK | TERRNO, cleanup,
@@ -169,17 +169,17 @@ int main(int ac, char **av)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "rename(%s, %s) failed", fname1, fname2);
 		}
-		event_set[Tst_count].mask = IN_MOVE_SELF;
-		strcpy(event_set[Tst_count].name, "");
-		Tst_count++;
+		event_set[tst_count].mask = IN_MOVE_SELF;
+		strcpy(event_set[tst_count].name, "");
+		tst_count++;
 
 		if (unlink(FILE_NAME2) == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "unlink(%s) failed", FILE_NAME2);
 		}
-		event_set[Tst_count].mask = IN_DELETE;
-		strcpy(event_set[Tst_count].name, FILE_NAME2);
-		Tst_count++;
+		event_set[tst_count].mask = IN_DELETE;
+		strcpy(event_set[tst_count].name, FILE_NAME2);
+		tst_count++;
 
 		/*
 		 * test that duplicate events will be coalesced into
@@ -197,16 +197,16 @@ int main(int ac, char **av)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "rename(%s, %s) failed", fname3, fname1);
 		}
-		event_set[Tst_count].mask = IN_MOVE_SELF;
-		strcpy(event_set[Tst_count].name, "");
-		Tst_count++;
+		event_set[tst_count].mask = IN_MOVE_SELF;
+		strcpy(event_set[tst_count].name, "");
+		tst_count++;
 
-		if (Tst_count != TST_TOTAL) {
+		if (tst_count != TST_TOTAL) {
 			tst_brkm(TBROK, cleanup,
-				 "Tst_count and TST_TOTAL are not equal");
+				 "tst_count and TST_TOTAL are not equal");
 		}
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		int len, i = 0, test_num = 0;
 		if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) == -1) {

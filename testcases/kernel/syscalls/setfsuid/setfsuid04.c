@@ -172,7 +172,7 @@ void do_master_child()
 	/* Test 3: Fallback to initial uid and check we can again open
 	 *         the file with RDWR permissions.
 	 */
-	Tst_count++;
+	tst_count++;
 	if (setfsuid(0) == -1) {
 		perror("setfsuid failed");
 		exit(1);

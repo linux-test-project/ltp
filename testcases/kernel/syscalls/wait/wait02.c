@@ -153,7 +153,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* create a child to wait for */
 		if ((fork_pid = FORK_OR_VFORK()) == -1) {

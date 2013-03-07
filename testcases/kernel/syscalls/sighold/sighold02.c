@@ -184,7 +184,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		signals_received[0] = '\0';
 
@@ -224,7 +224,7 @@ int main(int ac, char **av)
 			} else if (STD_FUNCTIONAL_TEST) {
 				tst_resm(p_p.result, "%s", p_p.mesg);
 			} else {	/* no pass results being issued */
-				Tst_count++;
+				tst_count++;
 			}
 
 			/*
@@ -283,7 +283,7 @@ int main(int ac, char **av)
 				tst_resm(p_p.result, "%s", p_p.mesg);
 
 			else
-				Tst_count++;
+				tst_count++;
 
 			/*
 			 * wait for child

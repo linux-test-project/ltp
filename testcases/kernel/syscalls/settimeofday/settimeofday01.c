@@ -92,8 +92,8 @@ int main(int argc, char **argv)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int condition_number = 1;
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		tp.tv_sec = VAL_SEC;
 		tp.tv_usec = VAL_MSEC;

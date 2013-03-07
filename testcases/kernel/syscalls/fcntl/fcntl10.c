@@ -157,7 +157,7 @@ int main(int ac, char **av)
 		int type;
 		for (type = 0; type < 2; type++) {
 
-			Tst_count = 0;
+			tst_count = 0;
 
 			flocks.l_type = type ? F_RDLCK : F_WRLCK;
 

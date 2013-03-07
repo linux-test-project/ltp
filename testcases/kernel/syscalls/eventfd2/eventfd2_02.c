@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 	}
 	setup();
 
-	Tst_count = 0;
+	tst_count = 0;
 	fd = ltp_syscall(__NR_eventfd2, 1, 0);
 	if (fd == -1) {
 		tst_brkm(TFAIL, cleanup, "eventfd2(0) failed");

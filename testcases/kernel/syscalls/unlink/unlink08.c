@@ -187,7 +187,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 
@@ -217,7 +217,7 @@ int main(int ac, char **av)
 								 Test_cases
 								 [ind].exp_errno);
 					} else
-						Tst_count++;
+						tst_count++;
 				} else {
 					tst_resm(TFAIL,
 						 "unlink(<%s>) Failed, errno=%d",
@@ -234,7 +234,7 @@ int main(int ac, char **av)
 						 "unlink(<%s>) returned %ld",
 						 desc, TEST_RETURN);
 				} else
-					Tst_count++;
+					tst_count++;
 				Test_cases[ind].setupfunc(1);
 			}
 		}

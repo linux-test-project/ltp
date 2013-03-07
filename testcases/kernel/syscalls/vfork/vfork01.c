@@ -127,7 +127,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Call vfork(2) to create a child process without
@@ -290,7 +290,7 @@ int main(int ac, char **av)
 					 "Child process exited abnormally");
 			}
 		}
-		Tst_count++;	/* incr. TEST_LOOP counter */
+		tst_count++;	/* incr. TEST_LOOP counter */
 	}
 
 	cleanup();

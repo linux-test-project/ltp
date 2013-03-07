@@ -327,7 +327,7 @@ int main(int argc, char *argv[])
 
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		test_migrate_current_process(nodeA, nodeB, 1);
 		test_migrate_current_process(nodeA, nodeB, 0);
 		test_migrate_other_process(nodeA, nodeB, 1);

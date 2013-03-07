@@ -103,7 +103,7 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* attempt to rename a file to a directory */
 		/* Call rename(2) */

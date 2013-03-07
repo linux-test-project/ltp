@@ -119,7 +119,7 @@ int parent;
 int block = 1;
 
 #define ENTER(normal) tst_resm(TINFO, "Enter block %d: test %d (%s)", \
-                         block, Tst_count, normal?"NORMAL":"ERROR");
+                         block, tst_count, normal?"NORMAL":"ERROR");
 
 int main(int ac, char **av)
 {
@@ -136,7 +136,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 			ev.sigev_value = (sigval_t) 0;
@@ -152,11 +152,11 @@ int main(int ac, char **av)
 				created_timer_id));
 			if (TEST_RETURN == 0) {
 				tst_resm(TPASS, "Block %d: test %d PASSED",
-					 block, Tst_count);
+					 block, tst_count);
 			} else {
 				tst_resm(TFAIL,
 					 "Block %d: test %d FAILED... errno = %d : %s",
-					 block, Tst_count, TEST_ERRNO,
+					 block, tst_count, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 				cleanup();
 				tst_exit();
@@ -166,11 +166,11 @@ int main(int ac, char **av)
 			TEST(ltp_syscall(__NR_timer_getoverrun, -1));
 			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL) {
 				tst_resm(TPASS, "Block %d: test %d PASSED",
-					 block, Tst_count);
+					 block, tst_count);
 			} else {
 				tst_resm(TFAIL,
 					 "Block %d: test %d FAILED... errno = %d : %s",
-					 block, Tst_count, TEST_ERRNO,
+					 block, tst_count, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 				cleanup();
 				tst_exit();

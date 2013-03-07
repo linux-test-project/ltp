@@ -93,8 +93,8 @@ int main(int argc, char **argv)
 		int nodes[TEST_PAGES];
 		int status[TEST_PAGES];
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		ret = alloc_pages_on_node(pages, TEST_PAGES, from_node);
 		if (ret == -1)

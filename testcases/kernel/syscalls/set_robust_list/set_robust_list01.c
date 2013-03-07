@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	len = sizeof(struct robust_list_head);
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * The set_robust_list function fails with EINVAL if the len argument

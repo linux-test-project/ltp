@@ -164,7 +164,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			file_name = Test_cases[ind].pathname;
@@ -203,7 +203,7 @@ int main(int ac, char **av)
 					 Test_cases[ind].exp_errno);
 			}
 		}
-		Tst_count++;	/* incr TEST_LOOP counter */
+		tst_count++;	/* incr TEST_LOOP counter */
 	}
 
 	/*

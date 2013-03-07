@@ -269,7 +269,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 		for (test_index = 0; test_index < TST_TOTAL; test_index++) {
 			switch (test_data[test_index].file) {
 			case RFILE:

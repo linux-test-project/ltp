@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 	numa_bitmask_setbit(nmask, node);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		addr = mmap(NULL, pagesize * 3, PROT_WRITE,
 			    MAP_ANON | MAP_PRIVATE, 0, 0);
 		if (addr == MAP_FAILED)

@@ -59,7 +59,7 @@ char *TCID = "mallopt01";
 int block_number;
 FILE *temp;
 int TST_TOTAL = 1;
-extern int Tst_COUNT;		/* Test Case counter for tst_routines */
+extern int tst_COUNT;		/* Test Case counter for tst_routines */
 
 void printinfo();
 

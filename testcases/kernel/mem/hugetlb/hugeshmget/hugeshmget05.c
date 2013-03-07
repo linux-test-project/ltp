@@ -117,7 +117,7 @@ static void do_child(void)
 	int lc;
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		TEST(shmget(shmkey, shm_size, SHM_HUGETLB | SHM_RW));
 		if (TEST_RETURN != -1) {

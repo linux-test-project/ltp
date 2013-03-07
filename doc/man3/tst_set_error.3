@@ -33,9 +33,9 @@
 .\"
 .TH TST_SET_ERROR 3 07/25/2000 "Linux Test Project"
 .SH NAME
-tst_set_error \- Sets global Tst_error values
+tst_set_error \- Sets global tst_error values
 .br
-tst_clear_error \- clears global Tst_error values
+tst_clear_error \- clears global tst_error values
 .SH SYNOPSIS
 .nf
 \fB
@@ -56,14 +56,14 @@ tst_clear_error()
 .SH DESCRIPTION
 These two functions provide a simple interface to allow
 a programmer set and clear the global variables in
-\fBTst_error\fR defined in \fItest_error.c\fR.
+\fBtst_error\fR defined in \fItest_error.c\fR.
 
 The purpose of these global variables to provide space
 for error messages passing.  Functions within our library
 can use this space and these routines to a pass error messages and
 some debug data to the caller.
 
-\fBTst_error\fR is a global variable, which is really a structure
+\fBtst_error\fR is a global variable, which is really a structure
 of five elements.   The structure is defined \fItest.h\fR and looks
 like:
 
@@ -97,7 +97,7 @@ This does not say that for long error messages, that there can not be
 newlines in the message.
 
 \fBtst_set_error()\fR will not overwrite these global variables if
-\fBTst_error.te_level\fR is not zero.
+\fBtst_error.te_level\fR is not zero.
 
 \fBtst_clear_error()\fR will make all strings zero length and set all integers to zero.
 
@@ -106,7 +106,7 @@ method for determining if there is an error.  The functions that use
 \fBtst_set_error\fR, should provide another way to indicating that an error
 has occurred.  These variables should be used reporting the error message.
 Although, if you use \fBtst_clear_error()\fR prior to calling any functions
-and \fBTst_error.te_mesg\fR[0] != '\0', you know someone reported an error or
+and \fBtst_error.te_mesg\fR[0] != '\0', you know someone reported an error or
 at least used the space.
 
 .RE
@@ -136,7 +136,7 @@ To access the error information an issue an error message:
 .nf
 #include "test.h"
  	....
-	fprintf(stderr, "%s: funcname failed: %s\n", Prog, Tst_error.te_mesg);
+	fprintf(stderr, "%s: funcname failed: %s\n", Prog, tst_error.te_mesg);
 
 .fi
 
@@ -144,7 +144,7 @@ To access the error information an issue an error message:
 Both functions are void, thus not return value.
 
 .SH BUGS
-There is no space overwrite preventions on the \fBTst_error.te_mesg\fR field.
+There is no space overwrite preventions on the \fBtst_error.te_mesg\fR field.
 If \fIfmt\fR parameter of \fBtst_set_error\fR expands to a string
-larger than the space in \fBTst_error.te_mesg\fR, you will start overwriting
+larger than the space in \fBtst_error.te_mesg\fR, you will start overwriting
 memory.  This field contains 1024 bytes, which is fairly big error message.

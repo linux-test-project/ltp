@@ -141,8 +141,8 @@ int main(int ac, char **av)
 		pid_t pid;
 		int status, i;
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		/* set the appropriate ownership values */
 		if (setregid(sys_gr_gid, bin_gr_gid) == -1) {

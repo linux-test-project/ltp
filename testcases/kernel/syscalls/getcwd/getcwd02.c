@@ -99,7 +99,7 @@ int main(int ac, char **av)
 	 * The following loop checks looping state if -i option given
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		if ((fin = popen(pwd, "r")) == NULL) {
 			tst_resm(TINFO, "%s: can't run %s", TCID, pwd);

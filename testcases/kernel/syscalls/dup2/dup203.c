@@ -73,7 +73,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 //block1:
 		tst_resm(TINFO, "Enter block 1");
 		tst_resm(TINFO, "Test duping over an open fd");

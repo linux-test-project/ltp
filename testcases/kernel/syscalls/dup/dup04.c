@@ -145,7 +145,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		TEST(dup(fd[0]));
 
@@ -159,7 +159,7 @@ int main(int ac, char **av)
 					 fd[0], TEST_RETURN);
 
 			} else
-				Tst_count++;
+				tst_count++;
 
 			if (close(TEST_RETURN) == -1)
 				tst_brkm(TBROK, cleanup, "close failed");
@@ -178,7 +178,7 @@ int main(int ac, char **av)
 					 fd[1], TEST_RETURN);
 
 			} else
-				Tst_count++;
+				tst_count++;
 
 			if (close(TEST_RETURN) == -1)
 				tst_brkm(TBROK | TTERRNO, cleanup,

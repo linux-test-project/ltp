@@ -89,7 +89,7 @@ int main(int ac, char **av)
 	 * The following loop checks looping state if -c option given
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		TEST(sendfile(out_fd, in_fd, NULL, 1));
 

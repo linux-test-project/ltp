@@ -205,7 +205,7 @@ int main(int argc, char **argv)
 	ret = 0;
 	testno = (int)(sizeof(tcase) / sizeof(*tcase));
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (i = 0; i < testno; i++) {
 			tst_resm(TINFO, "(case%02d) START", i);

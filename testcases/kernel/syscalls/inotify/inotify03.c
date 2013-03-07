@@ -128,21 +128,21 @@ int main(int ac, char **av)
 
 	setup();
 
-	Tst_count = 0;
+	tst_count = 0;
 
-	event_set[Tst_count] = IN_UNMOUNT;
-	Tst_count++;
-	event_set[Tst_count] = IN_IGNORED;
-	Tst_count++;
+	event_set[tst_count] = IN_UNMOUNT;
+	tst_count++;
+	event_set[tst_count] = IN_IGNORED;
+	tst_count++;
 
 	/*check exit code from inotify_rm_watch */
-	Tst_count++;
+	tst_count++;
 
-	if (TST_TOTAL != Tst_count) {
+	if (TST_TOTAL != tst_count) {
 		tst_brkm(TBROK, cleanup,
-			 "TST_TOTAL and Tst_count are not equal");
+			 "TST_TOTAL and tst_count are not equal");
 	}
-	Tst_count = 0;
+	tst_count = 0;
 
 	tst_resm(TINFO, "umount %s", device);
 	TEST(umount(mntpoint));

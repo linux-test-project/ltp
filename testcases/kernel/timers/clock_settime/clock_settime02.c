@@ -92,7 +92,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		spec.tv_sec = 1;
 		spec.tv_nsec = 0;

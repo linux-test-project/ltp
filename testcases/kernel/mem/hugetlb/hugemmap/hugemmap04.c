@@ -118,7 +118,7 @@ int main(int ac, char **av)
 			tst_brkm(TFAIL | TERRNO, cleanup, "open %s failed",
 				 TEMPFILE);
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* Note the number of free huge pages BEFORE testing */
 		freepages = read_meminfo("HugePages_Free:");

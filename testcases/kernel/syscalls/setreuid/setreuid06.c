@@ -81,8 +81,8 @@ int main(int argc, char **argv)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		TEST(setreuid(-1, INVAL_USER));
 		if (TEST_RETURN != -1) {

@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		set_sys_tune("overcommit_memory", 2, 1);
 		oom(OVERCOMMIT, 0, 0);

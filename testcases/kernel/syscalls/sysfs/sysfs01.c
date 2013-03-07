@@ -92,7 +92,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* option 1, buf holds fs name */
 		TEST(syscall(__NR_sysfs, 1, "proc"));

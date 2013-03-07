@@ -108,7 +108,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* Set the offset position */
 		offset = file_size + (lc * strlen(write_buf2));

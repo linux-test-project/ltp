@@ -88,9 +88,9 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/*
-		 * reset Tst_count in case we are looping.
+		 * reset tst_count in case we are looping.
 		 */
-		Tst_count = 0;
+		tst_count = 0;
 
 		strcpy(wbuf, "abcd");
 		len = strlen(wbuf);

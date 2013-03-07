@@ -99,7 +99,7 @@ int main(int ac, char **av)
 	/* check -c option for looping. */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* Call sethostname(2) */
 		TEST(sethostname(ltphost, sizeof(ltphost)));

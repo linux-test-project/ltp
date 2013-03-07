@@ -58,9 +58,9 @@
  *               TCID and TST_TOTAL were set did not print usage message.
  *               Modified code to print usage message in each case.
  * Dec 16 2002 - Modified - Code to get the test number, gets environment
- *               variable TST_COUNT and initializes Tst_count.
+ *               variable TST_COUNT and initializes tst_count.
  * Dec 16 2002 - Documentation and comment changes.
- * Feb 11 2003 - Tst_count was set to -1 during init or setup in the script.
+ * Feb 11 2003 - tst_count was set to -1 during init or setup in the script.
  *               this was causing tst_resm to issue a warning message.
  *               This bug is now fixed.
  *
@@ -128,7 +128,7 @@ int ident_ttype(char *tstype)
  *              set the value for TST_TOTAL for total number of tests this is
  *              required in case one test breaks and all following tests also
  *              should be reported as broken.
- *              Set Tst_count before every individual test.
+ *              Set tst_count before every individual test.
  *
  * Exit:        0 on success
  *              -1 on failure
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 	char *arg_fmt;		/* message string printed along with test type */
 	char *cmd_name;		/* name by which this program is invoked tst_brk etc */
 	char *tst_total;	/* total number of tests in the file. */
-	char *tst_count;	/* sets the value of Tst_count with this value */
+	char *tst_cntstr;	/* sets the value of tst_count with this value */
 	char *file_name;	/* contents of this file are printed; see tst_res() */
 
 	arg_fmt = SAFE_MALLOC(NULL, 1024);
@@ -149,8 +149,8 @@ int main(int argc, char *argv[])
 
 	TCID = getenv("TCID");
 	tst_total = getenv("TST_TOTAL");
-	tst_count = getenv("TST_COUNT");
-	if (TCID == NULL || tst_total == NULL || tst_count == NULL) {
+	tst_cntstr = getenv("TST_COUNT");
+	if (TCID == NULL || tst_total == NULL || tst_cntstr == NULL) {
 		if (strcmp(cmd_name, "tst_kvercmp") != 0) {
 			fprintf(stderr,
 				"\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
@@ -162,9 +162,9 @@ int main(int argc, char *argv[])
 		}
 	} else {
 		TST_TOTAL = atoi(tst_total);
-		Tst_count = atoi(tst_count);
-		if (Tst_count > 0)
-			Tst_count--;
+		tst_count = atoi(tst_cntstr);
+		if (tst_count > 0)
+			tst_count--;
 
 		if (strcmp(TCID, " ") == 0) {
 			fprintf(stderr,

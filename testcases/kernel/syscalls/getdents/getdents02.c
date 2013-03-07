@@ -85,7 +85,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		if ((dir_name = getcwd(dir_name, size)) == NULL)
 			tst_brkm(TBROK, cleanup, "Can not get current "

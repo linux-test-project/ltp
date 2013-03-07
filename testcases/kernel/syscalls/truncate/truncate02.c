@@ -120,7 +120,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Call truncate(2) to truncate a test file to a
@@ -233,7 +233,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "%s call succeeded", TCID);
 			}
 		}
-		Tst_count++;	/* incr. TEST_LOOP counter */
+		tst_count++;	/* incr. TEST_LOOP counter */
 	}
 
 	cleanup();

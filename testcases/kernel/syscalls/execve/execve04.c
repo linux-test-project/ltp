@@ -118,7 +118,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		if (sync_pipe_create(start_sync_pipes, PIPE_NAME_START) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");

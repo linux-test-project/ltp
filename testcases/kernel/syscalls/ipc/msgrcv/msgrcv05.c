@@ -102,7 +102,7 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * fork a child that will attempt to read a non-existent

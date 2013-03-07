@@ -298,8 +298,8 @@ int main(int ac, char **av)
 
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		if ((child_pid = FORK_OR_VFORK()) == 0) {	/* child */
 #ifdef UCLINUX

@@ -112,8 +112,8 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* Reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* Reset tst_count in case we are looping */
+		tst_count = 0;
 
 		/*
 		 * Call pread() of K1 data (should be 2's) at offset K2.

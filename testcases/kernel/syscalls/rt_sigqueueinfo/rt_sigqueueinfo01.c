@@ -79,7 +79,7 @@ int main(int ac, char **av)
 	pid = getpid();
 	siginfo_t uinfo;
 
-	Tst_count = 0;
+	tst_count = 0;
 	for (testno = 0; testno < TST_TOTAL; ++testno) {
 		TEST(pid = fork());
 		setup();

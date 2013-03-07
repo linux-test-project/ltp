@@ -122,7 +122,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
 

@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		if (opt_consume) {
 			consume_nr = SAFE_STRTOL(cleanup,

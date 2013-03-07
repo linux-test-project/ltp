@@ -56,7 +56,7 @@ int main(int ac, char **av)
 	if (child_stack == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 
-	Tst_count = 0;
+	tst_count = 0;
 
 	TEST(ltp_clone(SIGCHLD, do_child, NULL, CHILD_STACK_SIZE, child_stack));
 	if (TEST_RETURN == -1)

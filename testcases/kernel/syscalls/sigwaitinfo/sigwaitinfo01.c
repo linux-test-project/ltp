@@ -238,7 +238,7 @@ void test_masked_matching(swi_func sigwaitinfo, int signo)
 	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed",
 		       SIG_SETMASK, &oldmask, &oldmask);
 
-	Tst_count--;
+	tst_count--;
 
 	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
@@ -277,7 +277,7 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo)
 			    && si.si_signo == signo, "Struct siginfo mismatch");
 
 	/* eat the other signal */
-	Tst_count--;
+	tst_count--;
 	TEST(sigwaitinfo(&sigs, &si, NULL));
 	REPORT_SUCCESS_COND(signo + 1, 0, si.si_pid == child[1]
 			    && si.si_code == SI_USER
@@ -287,7 +287,7 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo)
 	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed",
 		       SIG_SETMASK, &oldmask, &oldmask);
 
-	Tst_count--;
+	tst_count--;
 
 	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
@@ -321,7 +321,7 @@ void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo)
 	SUCCEED_OR_DIE(sigprocmask, "restoring original signal mask failed",
 		       SIG_SETMASK, &oldmask, &oldmask);
 
-	Tst_count--;
+	tst_count--;
 
 	if (sigismember(&oldmask, signo))
 		tst_resm(TPASS, "sigwaitinfo restored the original mask");
@@ -457,7 +457,7 @@ int main(int argc, char **argv)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (i = 0; i < sizeof(tests) / sizeof(*tests); i++) {
 			alarm(10);	/* arrange a 10 second timeout */

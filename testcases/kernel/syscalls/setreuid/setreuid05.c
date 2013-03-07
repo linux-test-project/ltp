@@ -145,8 +145,8 @@ int main(int argc, char **argv)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int i, pid, status;
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork failed");

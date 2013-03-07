@@ -156,7 +156,7 @@ void do_master_child(char **av)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	Tst_count = 0;
+	tst_count = 0;
 
 	*flag = 0;
 

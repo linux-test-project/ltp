@@ -120,7 +120,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Call alarm(2)
@@ -150,7 +150,7 @@ int main(int ac, char **av)
 			break;
 
 		default:
-			Tst_count++;
+			tst_count++;
 			TEST(alarm(0));
 /* The timer may be rounded up to the next nearest second, this is OK */
 			if (TEST_RETURN <= 0 || TEST_RETURN > 101) {

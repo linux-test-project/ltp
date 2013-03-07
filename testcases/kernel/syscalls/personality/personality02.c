@@ -99,8 +99,8 @@ int main(int ac, char **av)
 	/* The following checks the looping state if -i option given */
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		TEST(personality(PER_BAD));
 

@@ -216,8 +216,8 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping. */
+		tst_count = 0;
 
 		if (Nlinks)
 			nlinks = Nlinks;
@@ -292,7 +292,7 @@ int main(int ac, char **av)
 					 nlinks, fbuf.st_nlink);
 			}
 		} else
-			Tst_count++;
+			tst_count++;
 
 		/* Here we clean up after the test case so we can do another
 		 * iteration.

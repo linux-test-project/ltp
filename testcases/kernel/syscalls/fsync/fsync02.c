@@ -93,7 +93,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		while (max_block <= data_blocks) {
 			random_number = random();

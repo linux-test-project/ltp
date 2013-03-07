@@ -138,8 +138,8 @@ int main(int argc, char **argv)
 		pid_t cpid;
 		sem_t *sem;
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		ret = alloc_shared_pages_on_node(pages + SHARED_PAGE,
 						 N_SHARED_PAGES, from_node);

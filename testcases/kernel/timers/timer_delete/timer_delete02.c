@@ -92,12 +92,12 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* Create a Posix timer */
 		if (ltp_syscall(__NR_timer_create, CLOCK_REALTIME, NULL,
 			&timer_id) < 0) {
-			Tst_count = TST_TOTAL;
+			tst_count = TST_TOTAL;
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "timer_delete can't be tested because "
 				 "timer_create failed");

@@ -126,7 +126,7 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* Initialize the test directories name */
 		sprintf(tstdir1, "tstdir1.%d", getpid());

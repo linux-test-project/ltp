@@ -136,7 +136,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Invoke utime(2) to set TEMP_FILE access and
@@ -201,7 +201,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "%s call succeeded", TCID);
 			}
 		}
-		Tst_count++;
+		tst_count++;
 	}
 
 	cleanup();

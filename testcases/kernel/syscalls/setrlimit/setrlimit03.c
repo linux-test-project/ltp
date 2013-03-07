@@ -78,7 +78,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		if (getrlimit(RLIMIT_NOFILE, &rlim) != 0)
 			tst_brkm(TFAIL, cleanup, "getrlimit failed, "

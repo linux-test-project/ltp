@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			if (ltp_syscall(__NR_pipe2, fd, 0) != 0) {
 				tst_resm(TFAIL, "pipe2(0) failed");

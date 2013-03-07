@@ -103,7 +103,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Call sync(2) to commit buffer data to disk.
@@ -147,7 +147,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "call succeeded");
 			}
 		}
-		Tst_count++;	/* incr. TEST_LOOP counter */
+		tst_count++;	/* incr. TEST_LOOP counter */
 	}
 
 	cleanup();

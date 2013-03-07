@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (i = 0; test_cases[i].desc != NULL; i++) {
 			uid_t user_id = test_cases[i].user_id;

@@ -63,7 +63,7 @@ int main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		TEST(open(fname, O_RDWR | O_CREAT, 0777));
 

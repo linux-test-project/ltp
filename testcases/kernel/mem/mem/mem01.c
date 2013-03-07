@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		if (!m_opt) {
 			/* find out by ourselves! */

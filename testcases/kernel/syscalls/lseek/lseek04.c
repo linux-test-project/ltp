@@ -156,7 +156,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 *  Call lseek(2)
@@ -178,7 +178,7 @@ int main(int ac, char **av)
 						 TEST_ERRNO,
 						 strerror(TEST_ERRNO), EINVAL);
 			} else
-				Tst_count++;
+				tst_count++;
 		} else {
 
 			tst_resm(TFAIL,

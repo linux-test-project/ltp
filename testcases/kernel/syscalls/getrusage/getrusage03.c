@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		tst_resm(TINFO, "allocate 100MB");
 		consume(100);

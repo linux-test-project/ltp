@@ -86,7 +86,7 @@ int main(int ac, char **av)
 	 * check looping state if -i option given on the command line
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;	/* reset Tst_count while looping. */
+		tst_count = 0;	/* reset tst_count while looping. */
 
 		/* test #1 */
 		TEST(open(pfilname, O_RDWR | O_CREAT, 01444));

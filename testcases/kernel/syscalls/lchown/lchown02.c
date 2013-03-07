@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
 	group_id = getegid();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (i = 0; test_cases[i].desc != NULL; i++) {
 			char *file_name = test_cases[i].pathname;

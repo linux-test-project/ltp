@@ -135,7 +135,7 @@ int main(int ac, char **av)
 
 	setup();
 
-	Tst_count = 0;
+	tst_count = 0;
 	/* Create some user address range */
 	addr = malloc(getpagesize());
 	if (addr == NULL) {

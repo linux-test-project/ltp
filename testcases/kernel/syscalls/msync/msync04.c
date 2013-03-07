@@ -91,7 +91,7 @@ int main(int ac, char **av)
 {
 	TEST_EXP_ENOS(exp_enos);
 
-	Tst_count = 0;
+	tst_count = 0;
 
 	setup();
 

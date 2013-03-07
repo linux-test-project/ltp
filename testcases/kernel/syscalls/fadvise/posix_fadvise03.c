@@ -127,7 +127,7 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* loop through the test cases */
 		for (advise = 0; advise < advise_limit; advise++) {

@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
 	setup();
 
-	Tst_count = 0;
+	tst_count = 0;
 	fail = 0;
 
 	/*

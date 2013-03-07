@@ -114,7 +114,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			Tst_count = 0;
+			tst_count = 0;
 			TEST(syscall
 			     (__NR_sysfs, option[i], fsindex[i], bad_addr));
 

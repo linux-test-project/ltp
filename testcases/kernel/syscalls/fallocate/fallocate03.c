@@ -261,8 +261,8 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 		for (test_index = 0; test_index < TST_TOTAL; test_index++) {
 			TEST(fallocate
 			     (fd, test_data[test_index].mode,

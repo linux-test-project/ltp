@@ -556,7 +556,7 @@ int main(int argc, char *argv[])
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Execute tcs testing function and all defined test cases
@@ -918,7 +918,7 @@ struct tcses *tcs;
 		if (Selectedtests == NULL) {
 			if (strcmp(tcs->tcid, tc_ptr->tcid) != 0) {
 				TCID = tc_ptr->tcid;
-				Tst_count = 0;
+				tst_count = 0;
 			}
 		}
 		/*
@@ -1042,7 +1042,7 @@ struct all_test_cases *tc_ptr;
 			if (STD_FUNCTIONAL_TEST)
 				tst_resm(TPASS, "%s", msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s %s",
 				 "Expected EEXIST error when creating a symbolic link file",
@@ -1056,7 +1056,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else {
 
 			tst_resm(TFAIL, "%s %s",
@@ -1073,7 +1073,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected EEXIST error for exclusively opening an object file",
@@ -1102,7 +1102,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error for stating a non-existent directory",
@@ -1114,7 +1114,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error for changing to a non-existent",
@@ -1131,7 +1131,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error condition when link(2) a symbolic",
@@ -1146,7 +1146,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error condition when chmod(2) a symbolic",
@@ -1159,7 +1159,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error condition when utime(2) a symbolic",
@@ -1173,7 +1173,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error for opening a non-existent object",
@@ -1203,13 +1203,13 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
 			tst_resm(TEST_RESULT, "%s errno:%d %s",
 				 "Expected ELOOP errno from stat(2) (nested symb link),",
 				 errno, strerror(errno));
 		else
-			Tst_count++;
+			tst_count++;
 	} else if (cktcsid(tc_ptr->tcid, CHDIR)) {
 
 		TEST(chdir(tc_ptr->fn_arg[1]));
@@ -1219,7 +1219,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else {
 
 			tst_resm(TFAIL, "%s errno:%d %s",
@@ -1237,7 +1237,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when link(2) a nested symbolic link:",
@@ -1251,7 +1251,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when chmod(2) a nested symbolic link:",
@@ -1267,7 +1267,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when utime(2) a nested symbolic link:",
@@ -1283,7 +1283,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when open(2) a nested symbolic link:",
@@ -1316,7 +1316,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 			rmdir(tc_ptr->fn_arg[0]);
 		} else
 			tst_resm(TFAIL, "%s %s errno:%d %s",
@@ -1348,7 +1348,7 @@ struct all_test_cases *tc_ptr;
 					tst_resm(TEST_RESULT, "%s",
 						 msgs[tc_ptr->pass_msg]);
 				else
-					Tst_count++;
+					tst_count++;
 			else
 				tst_resm(TFAIL,
 					 "%s %s %s file outside of current file system",
@@ -1389,7 +1389,7 @@ struct all_test_cases *tc_ptr;
 					tst_resm(TEST_RESULT, "%s",
 						 msgs[tc_ptr->pass_msg]);
 				else
-					Tst_count++;
+					tst_count++;
 			else
 				tst_resm(TFAIL, "%s %s %d %s",
 					 "symlink(2) returned -1 when trying to create a symbolic",
@@ -1410,7 +1410,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL,
 				 "Expected ENAMETOOLONG error when reading %s symbolic link file with a path exceeding %d characters: errno:%d %s",
@@ -1440,7 +1440,7 @@ struct all_test_cases *tc_ptr;
 					tst_resm(TEST_RESULT, "%s",
 						 msgs[tc_ptr->pass_msg]);
 				else
-					Tst_count++;
+					tst_count++;
 			} else
 				tst_resm(TFAIL,
 					 "readlink(2) ret:-1, errno:%d, : Exp errno:%d",
@@ -1490,7 +1490,7 @@ struct all_test_cases *tc_ptr;
 	} else if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
 		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 	else
-		Tst_count++;
+		tst_count++;
 }
 
 /***********************************************************************
@@ -1552,7 +1552,7 @@ struct all_test_cases *tc_ptr;
 	else if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
 		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 	else
-		Tst_count++;
+		tst_count++;
 }
 
 /***********************************************************************
@@ -1597,7 +1597,7 @@ struct all_test_cases *tc_ptr;
 					tst_resm(TEST_RESULT, "%s",
 						 msgs[tc_ptr->pass_msg]);
 				else
-					Tst_count++;
+					tst_count++;
 			else {
 				tst_resm(TFAIL,
 					 "%s%s %s %s not equal to expected %s",
@@ -1657,7 +1657,7 @@ struct all_test_cases *tc_ptr;
 								 msgs[tc_ptr->
 								      pass_msg]);
 						else
-							Tst_count++;
+							tst_count++;
 					} else {
 						lstat(tc_ptr->fn_arg[2],
 						      &stbuf);
@@ -1711,7 +1711,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s%s %s %s", Buffer,
 				 "unlink(2) failed because it not only removed symbolic link",
@@ -1753,7 +1753,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s%s %o to %o %s", Buffer,
 				 "chmod(2) failed to change object file permissions from",
@@ -1812,7 +1812,7 @@ struct all_test_cases *tc_ptr;
 							 msgs[tc_ptr->
 							      pass_msg]);
 					else
-						Tst_count++;
+						tst_count++;
 				else
 					tst_resm(TFAIL,
 						 "%s %s %jd greater than original times",
@@ -1851,7 +1851,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		else
 			tst_resm(TFAIL, "%s", test_msg);
 	else if (!ck_symlink(tc_ptr->fn_arg[0], A_S_FILE, NULL))
@@ -1863,7 +1863,7 @@ struct all_test_cases *tc_ptr;
 	else if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
 		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 	else
-		Tst_count++;
+		tst_count++;
 }
 
 /***********************************************************************
@@ -1957,7 +1957,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TEST_RESULT, "%s",
 					 msgs[tc_ptr->pass_msg]);
 			else
-				Tst_count++;
+				tst_count++;
 		} else {	/* Insure newly created object file is pointed at */
 			if (ck_both
 			    (tc_ptr->fn_arg[0], tc_ptr->fn_arg[1],
@@ -1966,7 +1966,7 @@ struct all_test_cases *tc_ptr;
 					tst_resm(TEST_RESULT, "%s",
 						 msgs[tc_ptr->pass_msg]);
 				else
-					Tst_count++;
+					tst_count++;
 			else
 				tst_resm(TFAIL, "%s", test_msg);
 		}

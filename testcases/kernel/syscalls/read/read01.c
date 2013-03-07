@@ -164,7 +164,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		if (write(fd, s, READ_BLOCK_SIZE) == -1) {
 			tst_brkm(TBROK, cleanup,

@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	len_ptr = sizeof(struct robust_list_head);
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * The get_robust_list function fails with EFAULT if the size of the

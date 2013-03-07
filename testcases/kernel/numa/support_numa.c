@@ -47,7 +47,7 @@
 #define barrier() __asm__ __volatile__("": : :"memory")
 
 /* Extern Global Variables */
-extern int Tst_count;		/* to avoid compilation errors. */
+extern int tst_count;		/* to avoid compilation errors. */
 extern char *TESTDIR;		/* to avoid compilation errors. */
 
 /* Global Variables */

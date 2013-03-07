@@ -98,7 +98,7 @@ int main(int ac, char **av)
 		if (fildes < 0)
 			tst_brkm(TBROK | TERRNO, cleanup, "open %s", TEMPFILE);
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* Attempt to mmap into highmem addr, should get ENOMEM */
 		addr = mmap(HIGH_ADDR, map_sz, PROT_READ,

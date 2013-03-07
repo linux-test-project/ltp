@@ -124,7 +124,7 @@ int main(int ac, char **av)
 	 * check looping state if -i option given
 	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* do the test setup */
 		if (setup_swap() < 0) {

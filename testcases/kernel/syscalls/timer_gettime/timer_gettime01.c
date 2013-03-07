@@ -114,7 +114,7 @@ void setup()
 }
 
 #define ENTER(normal) tst_resm(TINFO, "Enter block %d: test %d (%s)", \
-		 block, Tst_count, normal?"NORMAL":"ERROR");
+		 block, tst_count, normal?"NORMAL":"ERROR");
 
 char tmpname[40];
 int parent;
@@ -135,7 +135,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			ENTER(1);
 			ev.sigev_value = (sigval_t) 0;
@@ -147,11 +147,11 @@ int main(int ac, char **av)
 				     &spec));
 			if (TEST_RETURN == 0) {
 				tst_resm(TPASS, "Block %d: test %d PASSED",
-					 block, Tst_count);
+					 block, tst_count);
 			} else {
 				tst_brkm(TFAIL | TERRNO, cleanup,
 					 "Block %d: test %d FAILED",
-					 block, Tst_count);
+					 block, tst_count);
 			}
 
 /*
@@ -165,11 +165,11 @@ ERRORS
 			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL) {
 				tst_resm(TPASS,
 					 "Block %d: test %d PASSED",
-					 block, Tst_count);
+					 block, tst_count);
 			} else {
 				tst_brkm(TFAIL | TERRNO, cleanup,
 					 "Block %d: test %d FAILED",
-					 block, Tst_count);
+					 block, tst_count);
 			}
 
 /*
@@ -184,11 +184,11 @@ ERRORS
 			if (TEST_RETURN < 0 && TEST_ERRNO == EFAULT) {
 				tst_resm(TPASS,
 					 "Block %d: test %d PASSED",
-					 block, Tst_count);
+					 block, tst_count);
 			} else {
 				tst_brkm(TFAIL | TERRNO, cleanup,
 					 "Block %d: test %d FAILED",
-					 block, Tst_count);
+					 block, tst_count);
 			}
 
 		}

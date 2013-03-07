@@ -232,7 +232,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc1 != NULL; ind++) {
 
@@ -271,7 +271,7 @@ int main(int ac, char **av)
 							 Test_cases
 							 [ind].exp_errno);
 				} else
-					Tst_count++;
+					tst_count++;
 			} else {
 				tst_resm(TFAIL,
 					 "link(<%s>, <%s>) returned %ld, expected -1, errno:%d",

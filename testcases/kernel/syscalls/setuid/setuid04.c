@@ -123,8 +123,8 @@ void do_master_child()
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int tst_fd;
 
-		/* Reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* Reset tst_count in case we are looping */
+		tst_count = 0;
 
 		TEST(tst_fd = open(testfile, O_RDWR));
 

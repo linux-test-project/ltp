@@ -91,7 +91,7 @@ int main(int ac, char **av)
 
 	setup();
 
-	Tst_count = 0;
+	tst_count = 0;
 
 	TEST(msync(addr, page_sz, MS_INVALIDATE));
 

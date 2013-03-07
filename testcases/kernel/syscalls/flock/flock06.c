@@ -92,8 +92,8 @@ int main(int argc, char **argv)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int fd1, fd2;
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		fd1 = open(filename, O_RDWR);
 		if (fd1 == -1)

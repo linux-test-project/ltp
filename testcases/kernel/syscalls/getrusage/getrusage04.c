@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 		 "increment (1000+%ldus)!", factor_nr, BIAS_MAX * factor_nr);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		i = 0;
 		SAFE_GETRUSAGE(cleanup, RUSAGE_THREAD, &usage);
 		tst_resm(TINFO, "utime:%12luus; stime:%12luus",

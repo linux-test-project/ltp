@@ -234,7 +234,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		if ((pid1 = FORK_OR_VFORK()) > 0) {
 			if ((pid2 = FORK_OR_VFORK()) > 0) {
@@ -406,7 +406,7 @@ void parent_rout()
 				tst_resm(TPASS,
 					 "The signal was sent to all processes in the process group.");
 			else
-				Tst_count++;
+				tst_count++;
 		} else {	/*Process A didn't receive the signal. */
 			tst_resm(TFAIL,
 				 "Process A did not receive the signal.");
@@ -428,7 +428,7 @@ void parent_rout()
 				tst_resm(TPASS,
 					 "The signal was not sent to selective processes that were not in the process group.");
 			else
-				Tst_count++;
+				tst_count++;
 		} else {	/*Process B received the signal. */
 			tst_resm(TFAIL, "Process B received the signal.");
 		}

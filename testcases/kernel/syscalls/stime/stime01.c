@@ -131,7 +131,7 @@ int main(int ac, char **av)
 		/* Get the system's new time */
 		new_time = real_time_tv.tv_sec + INCR_TIME;
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Invoke stime(2) to set the system's time to the specified

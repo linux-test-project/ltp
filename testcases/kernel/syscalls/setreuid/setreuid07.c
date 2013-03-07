@@ -107,8 +107,8 @@ void do_master_child()
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int tst_fd;
 
-		/* Reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* Reset tst_count in case we are looping */
+		tst_count = 0;
 
 		if (setreuid(0, ltpuser->pw_uid) == -1) {
 			perror("setfsuid failed");
@@ -174,7 +174,7 @@ void do_master_child()
 		/* Test 3: Fallback to initial uid and check we can again open
 		 *         the file with RDWR permissions.
 		 */
-		Tst_count++;
+		tst_count++;
 		if (setreuid(0, 0) == -1) {
 			perror("setfsuid failed");
 			exit(1);

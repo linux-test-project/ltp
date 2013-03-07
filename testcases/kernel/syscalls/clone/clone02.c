@@ -130,7 +130,7 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 			if (test_setup() != 0) {

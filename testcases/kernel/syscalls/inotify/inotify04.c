@@ -154,15 +154,15 @@ int main(int argc, char **argv)
 
 	setup();
 
-	Tst_count = 0;
+	tst_count = 0;
 
 	rmdir(TEST_DIR);
-	event_set[Tst_count].mask = IN_DELETE_SELF;
-	strcpy(event_set[Tst_count].name, "");
-	Tst_count++;
-	event_set[Tst_count].mask = IN_IGNORED;
-	strcpy(event_set[Tst_count].name, "");
-	Tst_count++;
+	event_set[tst_count].mask = IN_DELETE_SELF;
+	strcpy(event_set[tst_count].name, "");
+	tst_count++;
+	event_set[tst_count].mask = IN_IGNORED;
+	strcpy(event_set[tst_count].name, "");
+	tst_count++;
 
 	unlink(TEST_FILE);
 	/*
@@ -173,23 +173,23 @@ int main(int argc, char **argv)
 	 * understand how Unix works.
 	 */
 	if (0 <= tst_kvercmp(2, 6, 25)) {
-		event_set[Tst_count].mask = IN_ATTRIB;
-		strcpy(event_set[Tst_count].name, "");
-		Tst_count++;
+		event_set[tst_count].mask = IN_ATTRIB;
+		strcpy(event_set[tst_count].name, "");
+		tst_count++;
 		TST_TOTAL++;
 	}
-	event_set[Tst_count].mask = IN_DELETE_SELF;
-	strcpy(event_set[Tst_count].name, TEST_FILE);
-	Tst_count++;
-	event_set[Tst_count].mask = IN_IGNORED;
-	strcpy(event_set[Tst_count].name, "");
-	Tst_count++;
+	event_set[tst_count].mask = IN_DELETE_SELF;
+	strcpy(event_set[tst_count].name, TEST_FILE);
+	tst_count++;
+	event_set[tst_count].mask = IN_IGNORED;
+	strcpy(event_set[tst_count].name, "");
+	tst_count++;
 
-	if (Tst_count != TST_TOTAL)
+	if (tst_count != TST_TOTAL)
 		tst_brkm(TBROK, cleanup,
-			 "Tst_count and TST_TOTAL are not equal");
+			 "tst_count and TST_TOTAL are not equal");
 
-	Tst_count = 0;
+	tst_count = 0;
 
 	len = read(fd_notify, event_buf, EVENT_BUF_LEN);
 	if (len == -1)

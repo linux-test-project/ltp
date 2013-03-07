@@ -111,7 +111,7 @@ void check(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "malloc");
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		ret = pthread_create(&th, &attr, wait_thread, NULL);
 		if (ret) {
 			tst_resm(TINFO, "[%d] ", count);

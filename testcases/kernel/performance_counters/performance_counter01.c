@@ -43,7 +43,7 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;
+extern int tst_count;
 extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 /* Global Variables */
 char *TCID = "performance_counter01";	/* test program identifier.          */

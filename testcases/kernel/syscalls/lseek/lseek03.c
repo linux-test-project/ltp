@@ -64,7 +64,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int i;
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
@@ -89,7 +89,7 @@ int main(int ac, char **av)
 							 EINVAL);
 					}
 				} else {
-					Tst_count++;
+					tst_count++;
 				}
 			} else {
 				tst_resm(TFAIL, "lseek(%s, 1, %d) returned %ld",

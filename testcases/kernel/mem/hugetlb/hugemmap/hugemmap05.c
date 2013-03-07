@@ -81,7 +81,7 @@ char path_sys_sz_huge[BUFSIZ];
 #endif
 
 char *TCID = "hugemmap05";
-int TST_TOTAL = 1, Tst_count;
+int TST_TOTAL = 1, tst_count;
 static char nr_hugepages[BUFSIZ], nr_overcommit_hugepages[BUFSIZ];
 static char buf[BUFSIZ], line[BUFSIZ], path[BUFSIZ], pathover[BUFSIZ];
 static char shmmax[BUFSIZ];
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 	}
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		overcommit();
 	}
 	cleanup();

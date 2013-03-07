@@ -114,7 +114,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Call stat(2) to get the status of
@@ -154,7 +154,7 @@ int main(int ac, char **av)
 				tst_resm(TINFO, "Call succeeded");
 			}
 		}
-		Tst_count++;	/* incr. TEST_LOOP counter */
+		tst_count++;	/* incr. TEST_LOOP counter */
 	}
 
 	cleanup();

@@ -93,7 +93,7 @@ static void check(void)
 	int child_exit_code, distance, reaped, status;
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		child_exit_code = lc % RETURN;
 		switch (pid = fork()) {
 		case -1:

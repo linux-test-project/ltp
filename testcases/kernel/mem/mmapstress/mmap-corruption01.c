@@ -56,7 +56,7 @@
 #include "usctest.h"
 
 /* Extern Global Variables */
-extern int Tst_count;
+extern int tst_count;
 
 /* Global Variables */
 char *TCID = "mmap-corruption01";	/* test program identifier.          */

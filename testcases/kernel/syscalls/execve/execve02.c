@@ -108,7 +108,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		if (chmod(test_app, 0700) != 0)
 			tst_resm(TFAIL | TERRNO, "chmod failed");

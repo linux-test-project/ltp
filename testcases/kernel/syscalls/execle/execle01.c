@@ -144,7 +144,7 @@ int main(int ac, char **av, char **environ)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		switch (pid = FORK_OR_VFORK()) {
 		case 0:	/* CHILD - Call execle(2) */

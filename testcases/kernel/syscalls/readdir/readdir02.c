@@ -115,7 +115,7 @@ int main(int ac, char **av)
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		if ((test_dir = opendir(".")) == NULL) {
 			tst_resm(TFAIL, "opendir(\".\") Failed, errno=%d : %s",

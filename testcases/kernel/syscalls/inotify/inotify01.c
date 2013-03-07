@@ -98,7 +98,7 @@ int main(int ac, char **av)
 	 */
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * generate sequence of events
@@ -107,54 +107,54 @@ int main(int ac, char **av)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "chmod(%s, 0755) failed", fname);
 		}
-		event_set[Tst_count] = IN_ATTRIB;
-		Tst_count++;
+		event_set[tst_count] = IN_ATTRIB;
+		tst_count++;
 
 		if ((fd = open(fname, O_RDONLY)) == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 		}
-		event_set[Tst_count] = IN_OPEN;
-		Tst_count++;
+		event_set[tst_count] = IN_OPEN;
+		tst_count++;
 
 		if (read(fd, buf, BUF_SIZE) == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "read(%d, buf, %d) failed", fd, BUF_SIZE);
 		}
-		event_set[Tst_count] = IN_ACCESS;
-		Tst_count++;
+		event_set[tst_count] = IN_ACCESS;
+		tst_count++;
 
 		if (close(fd) == -1) {
 			tst_brkm(TBROK, cleanup, "close(%s) failed", fname);
 		}
-		event_set[Tst_count] = IN_CLOSE_NOWRITE;
-		Tst_count++;
+		event_set[tst_count] = IN_CLOSE_NOWRITE;
+		tst_count++;
 
 		if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
 			tst_brkm(TBROK, cleanup,
 				 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 		}
-		event_set[Tst_count] = IN_OPEN;
-		Tst_count++;
+		event_set[tst_count] = IN_OPEN;
+		tst_count++;
 
 		if (write(fd, buf, BUF_SIZE) == -1) {
 			tst_brkm(TBROK, cleanup,
 				 "write(%d, %s, 1) failed", fd, fname);
 		}
-		event_set[Tst_count] = IN_MODIFY;
-		Tst_count++;
+		event_set[tst_count] = IN_MODIFY;
+		tst_count++;
 
 		if (close(fd) == -1) {
 			tst_brkm(TBROK, cleanup, "close(%s) failed", fname);
 		}
-		event_set[Tst_count] = IN_CLOSE_WRITE;
-		Tst_count++;
+		event_set[tst_count] = IN_CLOSE_WRITE;
+		tst_count++;
 
-		if (TST_TOTAL != Tst_count) {
+		if (TST_TOTAL != tst_count) {
 			tst_brkm(TBROK, cleanup,
-				 "TST_TOTAL and Tst_count are not equal");
+				 "TST_TOTAL and tst_count are not equal");
 		}
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * get list on events

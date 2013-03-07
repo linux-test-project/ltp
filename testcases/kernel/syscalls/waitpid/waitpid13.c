@@ -87,7 +87,7 @@ int main(int ac, char **av)
 
 	setup();
 
-	Tst_count = 0;
+	tst_count = 0;
 	fail = 0;
 
 	/*

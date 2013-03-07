@@ -129,7 +129,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/* loop through the test cases */
 		for (i = 0; Test_cases[i].desc != NULL; i++) {

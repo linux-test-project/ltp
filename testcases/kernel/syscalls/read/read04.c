@@ -83,7 +83,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;	/* reset Tst_count while looping */
+		tst_count = 0;	/* reset tst_count while looping */
 
 		if ((rfild = open(fname, O_RDONLY)) == -1) {
 			tst_brkm(TBROK, cleanup, "can't open for reading");

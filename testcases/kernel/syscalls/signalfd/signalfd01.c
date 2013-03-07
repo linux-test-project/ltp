@@ -288,7 +288,7 @@ int main(int argc, char **argv)
 
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 
 		sfd = do_test1(lc, SIGUSR1);
 		if (sfd < 0)

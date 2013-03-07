@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		check_ksm_options(&size, &num, &unit);
 		create_same_memory(size, num, unit);
 	}

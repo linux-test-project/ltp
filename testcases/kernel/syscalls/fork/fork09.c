@@ -80,7 +80,7 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "malloc failed");
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;
+		tst_count = 0;
 		mypid = getpid();
 
 		tst_resm(TINFO, "OPEN_MAX is %ld", OPEN_MAX);

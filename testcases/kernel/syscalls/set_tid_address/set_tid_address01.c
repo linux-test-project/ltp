@@ -120,7 +120,7 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			TEST(ltp_syscall(__NR_set_tid_address, &newtid));
 			if (TEST_RETURN == getpid()) {

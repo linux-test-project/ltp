@@ -90,9 +90,9 @@ int main(int argc, char **argv)
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
+		/* reset tst_count in case we are looping */
 		int ikids = 0;
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Set SIGTERM to SIG_DFL as test driver sets up to ignore

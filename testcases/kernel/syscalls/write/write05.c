@@ -94,8 +94,8 @@ int main(int argc, char **argv)
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 //block1:
 		tst_resm(TINFO, "Enter Block 1: test with bad fd");

@@ -47,11 +47,11 @@ void (*cleanup)();
 .fi
 .SH DESCRIPTION
 .P
-\fITst_sig\fR is used by UNICOS test case programs
+\fItst_sig\fR is used by UNICOS test case programs
 to set up signal handling functions for unexpected
 signals.  This provides test cases with a graceful means
 of exiting following an unexpected interruption by a signal.
-\fITst_sig\fR should be called only once by a test
+\fItst_sig\fR should be called only once by a test
 program.
 .P
 The \fIfork_flag\fR parameter is used to tell \fItst_sig\fR
@@ -85,7 +85,7 @@ signal, the \fIdefault handler\fR will generate
 not been completed at the time of the signal, execute the
 \fIcleanup\fR routine, if provided, and call \fItst_exit\fR.
 Note: if the \fIdefault handler\fR is used, the variables
-\fBTCID\fR and \fBTst_count\fR must be defined and available to
+\fBTCID\fR and \fBtst_count\fR must be defined and available to
 \fItst_sig\fR (see \fItst_res\fR(3)).
 .P
 The \fIcleanup\fR parameter is a pointer to a user-defined
@@ -138,5 +138,5 @@ tst_res(3),
 tst_setup(1).
 .SH DIAGNOSTICS
 .P
-\fITst_sig\fR will output warnings in standard \fItst_res\fR
+\fItst_sig\fR will output warnings in standard \fItst_res\fR
 format if it cannot set up the signal handlers.

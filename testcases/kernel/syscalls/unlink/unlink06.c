@@ -159,7 +159,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		create_file();
 
@@ -183,7 +183,7 @@ int main(int ac, char **av)
 					 Fname, TEST_RETURN);
 			}
 		} else
-			Tst_count++;
+			tst_count++;
 
 	}
 

@@ -115,7 +115,7 @@ int main(int ac, char *av[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		Tst_count = 0;
+		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 

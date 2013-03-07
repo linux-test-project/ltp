@@ -113,7 +113,7 @@ int main(int ac, char **av)
 	/* check looping state */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 		for (i = 0; i < TST_TOTAL; i++) {
 #ifdef __ia64__
 			TC[0].len = 8 * getpagesize();

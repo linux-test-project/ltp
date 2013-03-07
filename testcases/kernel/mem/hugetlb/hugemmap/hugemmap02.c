@@ -121,7 +121,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "opening /dev/zero failed");
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		/*
 		 * Call mmap on /dev/zero 5 times

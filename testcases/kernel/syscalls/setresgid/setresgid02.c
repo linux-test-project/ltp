@@ -133,8 +133,8 @@ int main(int argc, char **argv)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset Tst_count in case we are looping */
-		Tst_count = 0;
+		/* reset tst_count in case we are looping */
+		tst_count = 0;
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 

@@ -145,7 +145,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			mode = Modes[ind];
@@ -162,7 +162,7 @@ int main(int ac, char **av)
 						 "chmod(%s, %#o) returned %ld",
 						 fname, mode, TEST_RETURN);
 				} else
-					Tst_count++;
+					tst_count++;
 			}
 		}
 

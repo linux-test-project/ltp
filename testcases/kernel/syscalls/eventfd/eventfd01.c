@@ -669,7 +669,7 @@ int main(int argc, char **argv)
 		int ret;
 		uint64_t einit = 10;
 
-		Tst_count = 0;
+		tst_count = 0;
 
 		fd = myeventfd(einit, 0);
 		if (fd == -1)
