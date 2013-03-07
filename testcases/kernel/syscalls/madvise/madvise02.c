@@ -187,7 +187,15 @@ int main(int argc, char *argv[])
 
 		TEST(madvise
 		     (tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
-		check_and_print(EBADF);
+		if (tst_kvercmp(3, 9, 0) < 0)
+			check_and_print(EBADF);
+		/* in kernel commit 1998cc0, madvise(MADV_WILLNEED) to anon
+		 * mem doesn't return -EBADF now, as now we support swap
+		 * prefretch.
+		 */
+		else
+			tst_resm(TPASS, "madvise succeeded as expected, see "
+					"kernel commit 1998cc0 for details.");
 		free((void *)ptr_memory_allocated);
 
 		close(fd);
