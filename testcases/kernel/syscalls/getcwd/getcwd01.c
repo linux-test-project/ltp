@@ -141,14 +141,13 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup_test4()
+void setup_test4(void)
 {
 	chdir("/");
 }
 
-void setup()
+void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
@@ -157,7 +156,7 @@ void setup()
 	tst_tmpdir();
 }
 
-void cleanup()
+void cleanup(void)
 {
 	/* remove the test directory */
 	tst_rmdir();
@@ -167,5 +166,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
 }

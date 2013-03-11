@@ -69,7 +69,7 @@ int TST_TOTAL = 1;
 
 void cleanup(void);
 void setup(void);
-char *getpwd();
+char *getpwd(void);
 
 int main(int ac, char **av)
 {
@@ -203,9 +203,8 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
-
 	/* FORK is set here because of the popen() call below */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -215,17 +214,16 @@ void setup()
 	tst_tmpdir();
 }
 
-void cleanup()
+void cleanup(void)
 {
 	/* remove the test directory */
 	tst_rmdir();
 
 	/* print timing stats if that option was specified */
 	TEST_CLEANUP;
-
 }
 
-char *getpwd()
+char *getpwd(void)
 {
 	FILE *fin;
 	char *pwd = "/bin/pwd";

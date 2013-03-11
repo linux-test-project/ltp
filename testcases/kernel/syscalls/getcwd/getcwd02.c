@@ -70,13 +70,13 @@ int TST_TOTAL = 7;
 
 void cleanup(void);
 void setup(void);
-void do_block1();
-void do_block2();
-void do_block3();
-void do_block4();
-void do_block5();
-void do_block6();
-void do_block7();
+void do_block1(void);
+void do_block2(void);
+void do_block3(void);
+void do_block4(void);
+void do_block5(void);
+void do_block6(void);
+void do_block7(void);
 
 char pwd_buf[BUFSIZ];		//holds results of pwd pipe
 char cwd[BUFSIZ];		//used as our valid buffer
@@ -126,7 +126,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void do_block1()		//valid cwd[]: -> Should work fine
+void do_block1(void)		//valid cwd[]: -> Should work fine
 {
 	int flag = 0;
 	tst_resm(TINFO, "Enter Block 1");
@@ -149,7 +149,7 @@ void do_block1()		//valid cwd[]: -> Should work fine
 	}
 }
 
-void do_block2()		//valid cwd[], size = 0: -> Should return NULL, errno = EINVAL
+void do_block2(void)		//valid cwd[], size = 0: -> Should return NULL, errno = EINVAL
 {
 	int flag = 0;
 	tst_resm(TINFO, "Enter Block 2");
@@ -168,7 +168,7 @@ void do_block2()		//valid cwd[], size = 0: -> Should return NULL, errno = EINVAL
 	}
 }
 
-void do_block3()		//valid cwd[], size = 1 -> Should return NULL, errno = ERANGE
+void do_block3(void)		//valid cwd[], size = 1 -> Should return NULL, errno = ERANGE
 {
 	int flag = 0;
 	tst_resm(TINFO, "Enter Block 3");
@@ -187,7 +187,7 @@ void do_block3()		//valid cwd[], size = 1 -> Should return NULL, errno = ERANGE
 	}
 }
 
-void do_block4()		//invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno = FAULT
+void do_block4(void)		//invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno = FAULT
 {
 /* Skip since uClinux does not implement memory protection */
 #ifndef UCLINUX
@@ -211,7 +211,7 @@ void do_block4()		//invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno = F
 #endif
 }
 
-void do_block5()		//buffer = NULL, and size = 0, should succeed
+void do_block5(void)		//buffer = NULL, and size = 0, should succeed
 {
 	int flag = 0;
 	tst_resm(TINFO, "Enter Block 5");
@@ -236,7 +236,7 @@ void do_block5()		//buffer = NULL, and size = 0, should succeed
 	buffer = NULL;
 }
 
-void do_block6()		//buffer = NULL, size = 1: -> return NULL, errno = ERANGE
+void do_block6(void)		//buffer = NULL, size = 1: -> return NULL, errno = ERANGE
 {
 	int flag = 0;
 	tst_resm(TINFO, "Enter Block 6");
@@ -255,7 +255,7 @@ void do_block6()		//buffer = NULL, size = 1: -> return NULL, errno = ERANGE
 	}
 }
 
-void do_block7()		//buffer = NULL, size = BUFSIZ: -> work fine, allocate buffer
+void do_block7(void)		//buffer = NULL, size = BUFSIZ: -> work fine, allocate buffer
 {
 	int flag = 0;
 	tst_resm(TINFO, "Enter Block 7");
@@ -280,9 +280,8 @@ void do_block7()		//buffer = NULL, size = BUFSIZ: -> work fine, allocate buffer
 	buffer = NULL;
 }
 
-void setup()
+void setup(void)
 {
-
 	/* FORK is set here because of the popen() call above */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -292,9 +291,8 @@ void setup()
 	tst_tmpdir();
 }
 
-void cleanup()
+void cleanup(void)
 {
 	/* remove the test directory */
 	tst_rmdir();
-
 }
