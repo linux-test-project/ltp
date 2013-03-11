@@ -22,7 +22,7 @@ void handler(int signo)
 	handler_called = 1;
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 	sigset_t set1, set2, pending_set;

@@ -21,7 +21,7 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int main()
+int main(void)
 {
 	sigset_t oactl, tempset;
 	int i, j, test_failed = 0;

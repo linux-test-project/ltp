@@ -15,9 +15,8 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
-
 	sigset_t set1, set2;
 	int sigprocmask_return_val = 1;
 

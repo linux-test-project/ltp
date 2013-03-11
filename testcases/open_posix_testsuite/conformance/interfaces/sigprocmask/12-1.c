@@ -51,7 +51,7 @@ int is_changed(sigset_t set)
 	return 0;
 }
 
-int get_rand()
+int get_rand(void)
 {
 
 	int r;
@@ -62,7 +62,7 @@ int get_rand()
 	return r;
 }
 
-int main()
+int main(void)
 {
 
 	int r = get_rand();
@@ -93,6 +93,6 @@ int main()
 		return PTS_FAIL;
 	}
 
-	printf("PASS: signal mask was not changed.\n");
+	printf("Test PASSED: signal mask was not changed.\n");
 	return PTS_PASS;
 }

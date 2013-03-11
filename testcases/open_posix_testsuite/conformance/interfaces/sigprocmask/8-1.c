@@ -53,7 +53,7 @@ int is_changed(sigset_t set, int sig)
 	return 0;
 }
 
-int main()
+int main(void)
 {
 	sigset_t actl, oactl;
 
@@ -65,9 +65,9 @@ int main()
 	sigprocmask(SIG_SETMASK, &actl, NULL);
 	sigprocmask(SIG_BLOCK, NULL, &oactl);
 
-	if (is_changed(oactl, SIGABRT)) {
+	if (is_changed(oactl, SIGABRT))
 		return PTS_FAIL;
-	}
-	printf("PASS: signal mask was not changed.\n");
+
+	printf("Test PASSED: signal mask was not changed.\n");
 	return PTS_PASS;
 }
