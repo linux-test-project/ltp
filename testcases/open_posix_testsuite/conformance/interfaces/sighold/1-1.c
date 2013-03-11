@@ -19,14 +19,14 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int handler_called = 0;
+static int handler_called = 0;
 
-void handler(int signo)
+static void handler(int signo)
 {
 	handler_called = 1;
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 
@@ -51,7 +51,8 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	sleep(1);
+	usleep(100000);
+
 	if (handler_called) {
 		printf("FAIL: Signal was not blocked\n");
 		return PTS_FAIL;
