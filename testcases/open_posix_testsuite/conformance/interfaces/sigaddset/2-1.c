@@ -16,13 +16,13 @@
 #include <signal.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	sigset_t signalset;
 
 	if (sigaddset(&signalset, SIGALRM) == 0) {
 		if (sigismember(&signalset, SIGALRM) == 1) {
-			printf("Signal was added\n");
+			printf("Test PASSED: Signal was added\n");
 			return PTS_PASS;
 		}
 		printf("Signal was not added\n");
