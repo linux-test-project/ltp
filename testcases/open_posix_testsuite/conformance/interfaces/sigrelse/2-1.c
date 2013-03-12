@@ -4,24 +4,22 @@
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
-
- Simply, if sigrelse returns a 0 here, test passes.
-
-*/
-
+ *
+ * Simply, if sigrelse returns a 0 here, test passes.
+ *
+ */
 #define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <signal.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
-
-	if ((int)sigrelse(SIGABRT) != 0) {
-		perror("sigrelse failed -- returned -- test aborted");
+	if (sigrelse(SIGABRT) != 0) {
+		perror("Sigrelse failed");
 		return PTS_UNRESOLVED;
 	}
-	printf("sigrelse passed\n");
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003, Intel Corporation. All rights reserved.
+ * Copyright (c) 2013, Cyril Hrubis <chrubis@suse.cz>
+ *
  * Created by:  salwan.searty REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
-
- Steps:
- 1. Set up a handler for signal SIGABRT, such that it is called if
-signal is ever raised.
- 2. Call sighold on that SIGABRT.
- 3. Raise a SIGABRT and verify that the signal handler was not called.
-Otherwise, the test exits with unresolved results.
- 4. Call sigrelse on SIGABRT.
- 5. Verify that the handler gets called this time.
-
-*/
-
+ *
+ * Steps:
+ * 1. Set up a handler for signal SIGABRT, such that it is called if
+ *    signal is ever raised.
+ * 2. Call sighold on that SIGABRT.
+ * 3. Raise a SIGABRT and verify that the signal handler was not called.
+ *    Otherwise, the test exits with unresolved results.
+ * 4. Call sigrelse on SIGABRT.
+ * 5. Verify that the handler gets called this time.
+ */
 #define _XOPEN_SOURCE 600
 
 #include <signal.h>
@@ -23,14 +23,14 @@ Otherwise, the test exits with unresolved results.
 #include <unistd.h>
 #include "posixtest.h"
 
-int handler_called = 0;
+static int handler_called;
 
-void handler(int signo)
+static void handler(int signo)
 {
 	handler_called = 1;
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 
@@ -38,16 +38,14 @@ int main()
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
 	if (sigaction(SIGABRT, &act, 0) == -1) {
-		perror("Unexpected error while attempting to setup test "
-		       "pre-conditions");
+		perror("Failed to set signal handler.");
 		return PTS_UNRESOLVED;
 	}
 
 	sighold(SIGABRT);
 
 	if (raise(SIGABRT) == -1) {
-		perror("Unexpected error while attempting to setup test "
-		       "pre-conditions");
+		perror("Failed to raise SIGABRT.");
 		return PTS_UNRESOLVED;
 	}
 
@@ -61,12 +59,12 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	sleep(1);
+	usleep(100000);
 
 	if (handler_called) {
-		printf("PASS: SIGABRT successfully removed from signal mask\n");
+		printf("Test PASSED: SIGABRT removed from signal mask\n");
 		return PTS_PASS;
 	}
-	printf("FAIL\n");
+	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
