@@ -19,14 +19,14 @@
 #include <stdint.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	if (sigignore(SIGSTOP) == -1) {
 		if (EINVAL == errno) {
-			printf("errno set to EINVAL\n");
+			printf("Test PASSED: errno set to EINVAL\n");
 			return PTS_PASS;
 		} else {
-			printf("errno not set to EINVAL\n");
+			printf("errno was not set to EINVAL\n");
 			return PTS_FAIL;
 		}
 	}
