@@ -31,7 +31,7 @@
 
 #undef clone			/* we want to use clone() */
 
-#if defined (__s390__) || (__s390x__)
+#if defined (__s390__) || defined(__s390x__)
 #define clone __clone
 extern int __clone(int (void *), void *, int, void *);
 #elif defined(__ia64__)
@@ -54,7 +54,7 @@ ltp_clone(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
 {
 	int ret;
 
-#if defined(__hppa__)
+#if defined(__hppa__) || defined(__metag__)
 	ret = clone(fn, stack, clone_flags, arg);
 #elif defined(__ia64__)
 	ret = clone2(fn, stack, stack_size, clone_flags, arg, NULL, NULL, NULL);
