@@ -19,10 +19,5 @@
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
-include $(abs_srcdir)/../utils/newer_64.mk
-
-CPPFLAGS += -D_LARGEFILE64_SOURCE
-
-%_64: CPPFLAGS += -D_FILE_OFFSET_BITS=64 -DOFF_T=__off64_t
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

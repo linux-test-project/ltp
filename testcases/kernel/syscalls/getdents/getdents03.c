@@ -1,5 +1,8 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
+ *	         written by Wayne Boyer
+ * Copyright (c) 2013 Markos Chandras
+ * Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,31 +19,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*
- * ALGORITHM
- *	issue the system call using a memory size (count) that is too small
- *	check the errno value
- *	  issue a PASS message if we get EINVAL
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	  break any remaining tests
- *	  call cleanup
- *
- * HISTORY
- *	03/2013 - Added -l option by Markos Chandras
- *	03/2001 - Written by Wayne Boyer
- */
+#include <stdio.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-#include "getdents.h"
 #include "test.h"
 #include "usctest.h"
-
-#include <errno.h>
-#include <fcntl.h>
-#include <linux/types.h>
-#include <dirent.h>
-#include <linux/unistd.h>
-#include <unistd.h>
+#include "getdents.h"
 
 static void cleanup(void);
 static void setup(void);
@@ -68,42 +55,24 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 	int rval, fd;
-	int count;
-	size_t size = 0;
-	char *dir_name = NULL;
-	struct dirent64 *dirp64 = NULL;
-	struct dirent *dirp = NULL;
+	char buf[1];
 
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	if (longsyscall) {
-		if ((dirp64 = malloc(sizeof(struct dirent64))) == NULL)
-			tst_brkm(TBROK, cleanup, "malloc failed");
-	} else {
-		if ((dirp = malloc(sizeof(struct dirent))) == NULL)
-			tst_brkm(TBROK, cleanup, "malloc failed");
-	}
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		if ((dir_name = getcwd(dir_name, size)) == NULL)
-			tst_brkm(TBROK, cleanup, "Can not get current "
-				 "directory name");
-
-		/* Set count to be very small. The result should be EINVAL */
-		count = 1;
-
-		if ((fd = open(dir_name, O_RDONLY)) == -1)
+		if ((fd = open(".", O_RDONLY)) == -1)
 			tst_brkm(TBROK, cleanup, "open of directory failed");
 
+		/* Pass one byte long buffer. The result should be EINVAL */
 		if (longsyscall)
-			rval = getdents64(fd, dirp64, count);
+			rval = getdents64(fd, (void *)buf, sizeof(buf));
 		else
-			rval = getdents(fd, dirp, count);
+			rval = getdents(fd, (void *)buf, sizeof(buf));
 
 		/*
 		 * Hopefully we get an error due to the small buffer.
@@ -115,7 +84,10 @@ int main(int ac, char **av)
 			case EINVAL:
 				tst_resm(TPASS,
 					 "getdents failed with EINVAL as expected");
-				break;
+			break;
+			case ENOSYS:
+				tst_resm(TCONF, "syscall not implemented");
+			break;
 			default:
 				tst_resm(TFAIL | TERRNO,
 					 "getdents call failed unexpectedly");
@@ -125,10 +97,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "getdents passed unexpectedly");
 		}
 
-		free(dir_name);
-		dir_name = NULL;
-
-		if ((rval = close(fd)) == -1)
+		if (close(fd) == -1)
 			tst_brkm(TBROK, cleanup, "fd close failed");
 	}
 

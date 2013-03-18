@@ -323,22 +323,14 @@ getcwd02 getcwd02
 getcwd03 getcwd03
 
 getdents01 getdents01
-getdents01_64 getdents01_64
 getdents02 getdents02
-getdents02_64 getdents02_64
 getdents03 getdents03
-getdents03_64 getdents03_64
 getdents04 getdents04
-getdents04_64 getdents04_64
 
-getdents01_long getdents01 -l
-getdents01_64_long getdents01_64 -l
-getdents02_long getdents02 -l
-getdents02_64_long getdents02_64 -l
-getdents03_long getdents03 -l
-getdents03_64_long getdents03_64 -l
-getdents04_long getdents04 -l
-getdents04_64_long getdents04_64 -l
+getdents01_64 getdents01 -l
+getdents02_64 getdents02 -l
+getdents03_64 getdents03 -l
+getdents04_64 getdents04 -l
 
 getdomainname01 getdomainname01
 
