@@ -1,34 +1,23 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	getdents03.c
- *
- * DESCRIPTION
- *	getdents03 - check for an EINVAL error
- *
- * CALLS
- *	getdents()
- *
  * ALGORITHM
- *	loop if that option was specified
  *	issue the system call using a memory size (count) that is too small
  *	check the errno value
  *	  issue a PASS message if we get EINVAL
@@ -37,22 +26,9 @@
  *	  break any remaining tests
  *	  call cleanup
  *
- * USAGE:  <for command-line>
- *  getdents03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -l   : Test the getdents64 system call.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	03/2013 - Added -l option by Markos Chandras
  *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
  */
 
 #include "getdents.h"
@@ -66,22 +42,23 @@
 #include <linux/unistd.h>
 #include <unistd.h>
 
-void cleanup(void);
-void setup(void);
+static void cleanup(void);
+static void setup(void);
 
 char *TCID = "getdents03";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of expected errnos */
+static int exp_enos[] = { EINVAL, 0 };
 
 static int longsyscall;
 
-option_t Options[] = {
-		{"l", &longsyscall, NULL}, /* -l long option. Tests getdents64 */
+static option_t options[] = {
+		/* -l long option. Tests getdents64 */
+		{"l", &longsyscall, NULL},
 		{NULL, NULL, NULL}
 };
 
-void help(void)
+static void help(void)
 {
 	printf("  -l      Test the getdents64 system call\n");
 }
@@ -97,7 +74,7 @@ int main(int ac, char **av)
 	struct dirent64 *dirp64 = NULL;
 	struct dirent *dirp = NULL;
 
-	if ((msg = parse_opts(ac, av, Options, &help)) != NULL)
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
@@ -117,8 +94,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Can not get current "
 				 "directory name");
 
-		/* Set count to be very small.  The result should be EINVAL */
-
+		/* Set count to be very small. The result should be EINVAL */
 		count = 1;
 
 		if ((fd = open(dir_name, O_RDONLY)) == -1)
@@ -132,7 +108,6 @@ int main(int ac, char **av)
 		/*
 		 * Hopefully we get an error due to the small buffer.
 		 */
-
 		if (rval < 0) {
 			TEST_ERROR_LOG(errno);
 
@@ -146,8 +121,9 @@ int main(int ac, char **av)
 					 "getdents call failed unexpectedly");
 				break;
 			}
-		} else
+		} else {
 			tst_resm(TFAIL, "getdents passed unexpectedly");
+		}
 
 		free(dir_name);
 		dir_name = NULL;
@@ -156,19 +132,12 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fd close failed");
 	}
 
-	if (longsyscall)
-		free(dirp64);
-	else
-		free(dirp);
-
 	cleanup();
-
 	tst_exit();
 }
 
-void setup(void)
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
@@ -180,9 +149,8 @@ void setup(void)
 	TEST_PAUSE;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
-
 	TEST_CLEANUP;
 
 	tst_rmdir();
