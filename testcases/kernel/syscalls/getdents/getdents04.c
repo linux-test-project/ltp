@@ -43,10 +43,12 @@
  *             -e   : Turn on errno logging.
  *	       -i n : Execute test n times.
  *	       -I x : Execute test for x seconds.
+ *	       -l   : Test the getdents64 system call.
  *	       -P x : Pause for x seconds between iterations.
  *	       -t   : Turn on syscall timing.
  *
  * HISTORY
+ *	03/2013 - Added -l option by Markos Chandras
  *	03/2001 - Written by Wayne Boyer
  *
  * RESTRICTIONS
@@ -73,6 +75,18 @@ int TST_TOTAL = 1;
 
 int exp_enos[] = { ENOTDIR, 0 };	/* 0 terminated list of expected errnos */
 
+static int longsyscall;
+
+option_t Options[] = {
+		{"l", &longsyscall, NULL}, /* -l long option. Tests getdents64 */
+		{NULL, NULL, NULL}
+};
+
+void help(void)
+{
+	printf("  -l      Test the getdents64 system call\n");
+}
+
 int main(int ac, char **av)
 {
 	int lc;
@@ -80,14 +94,25 @@ int main(int ac, char **av)
 	int count, rval, fd;
 	size_t size = 0;
 	char *dir_name = NULL;
-	struct dirent *dirp;
 	struct stat *sbuf;
 	char *newfile;
+	struct dirent64 *dirp64 = NULL;
+	struct dirent *dirp = NULL;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	if ((msg = parse_opts(ac, av, Options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
+
+	if (longsyscall) {
+		if ((dirp64 = malloc(sizeof(struct dirent64))) == NULL)
+			tst_brkm(TBROK, cleanup, "malloc failed");
+		count = (int)sizeof(struct dirent64);
+	} else {
+		if ((dirp = malloc(sizeof(struct dirent))) == NULL)
+			tst_brkm(TBROK, cleanup, "malloc failed");
+		count = (int)sizeof(struct dirent);
+	}
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -95,11 +120,6 @@ int main(int ac, char **av)
 		if ((dir_name = getcwd(dir_name, size)) == NULL)
 			tst_brkm(TBROK, cleanup, "Can not get current "
 				 "directory name");
-
-		if ((dirp = malloc(sizeof(struct dirent))) == NULL)
-			tst_brkm(TBROK, cleanup, "malloc failed");
-
-		count = (int)sizeof(struct dirent);
 
 		/* set up some space for a file name */
 		if ((newfile = malloc(sizeof(char) * 20)) == NULL)
@@ -123,7 +143,10 @@ int main(int ac, char **av)
 		if (S_ISDIR(sbuf->st_mode))
 			tst_brkm(TBROK, cleanup, "fd is a directory");
 
-		rval = getdents(fd, dirp, count);
+		if (longsyscall)
+			rval = getdents64(fd, dirp64, count);
+		else
+			rval = getdents(fd, dirp, count);
 
 		/*
 		 * Calling with a non directory file descriptor should give
@@ -149,13 +172,16 @@ int main(int ac, char **av)
 		free(dir_name);
 		dir_name = NULL;
 
-		free(dirp);
-
 		if ((rval = close(fd)) == -1)
 			tst_brkm(TBROK, cleanup, "fd close failed");
 		if ((rval = unlink(newfile)) == -1)
 			tst_brkm(TBROK, cleanup, "file unlink failed");
 	}
+
+	if (longsyscall)
+		free(dirp64);
+	else
+		free(dirp);
 
 	cleanup();
 

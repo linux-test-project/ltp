@@ -44,10 +44,12 @@
  *             -f   : Turn off functionality Testing.
  *	       -i n : Execute test n times.
  *	       -I x : Execute test for x seconds.
+ *	       -l   : Test the getdents64 system call.
  *	       -P x : Pause for x seconds between iterations.
  *	       -t   : Turn on syscall timing.
  *
  * HISTORY
+ *	03/2013 - Added -l option by Markos Chandras
  *	03/2001 - Written by Wayne Boyer
  *
  * RESTRICTIONS
@@ -71,6 +73,18 @@ void setup(void);
 char *TCID = "getdents01";
 int TST_TOTAL = 1;
 
+static int longsyscall;
+
+option_t Options[] = {
+		{"l", &longsyscall, NULL}, /* -l long option. Tests getdents64 */
+		{NULL, NULL, NULL}
+};
+
+void help(void)
+{
+	printf("  -l      Test the getdents64 system call\n");
+}
+
 int main(int ac, char **av)
 {
 	int lc;
@@ -79,12 +93,27 @@ int main(int ac, char **av)
 	int count;
 	size_t size = 0;
 	char *dir_name = NULL;
-	struct dirent *dirp;
+	struct dirent64 *dirp64 = NULL;
+	struct dirent *dirp = NULL;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	if ((msg = parse_opts(ac, av, Options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
+
+	/*
+	 * Set up count to be equal to the sizeof struct dirent,
+	 * just to pick a decent size.
+	 */
+	if (longsyscall) {
+		if ((dirp64 = malloc(sizeof(struct dirent64))) == NULL)
+			tst_brkm(TBROK, cleanup, "malloc failed");
+		count = (int)sizeof(struct dirent64);
+	} else {
+		if ((dirp = malloc(sizeof(struct dirent))) == NULL)
+			tst_brkm(TBROK, cleanup, "malloc failed");
+		count = (int)sizeof(struct dirent);
+	}
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -93,20 +122,14 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Can not get current "
 				 "directory name");
 
-		if ((dirp = malloc(sizeof(struct dirent))) == NULL)
-			tst_brkm(TBROK, cleanup, "malloc failed");
-
-		/*
-		 * Set up count to be equal to the sizeof struct dirent,
-		 * just to pick a decent size.
-		 */
-
-		count = (int)sizeof(struct dirent);
-
 		if ((fd = open(dir_name, O_RDONLY)) == -1)
 			tst_brkm(TBROK, cleanup, "open of directory failed");
 
-		rval = getdents(fd, dirp, count);
+		if (longsyscall)
+			rval = getdents64(fd, dirp64, count);
+		else
+			rval = getdents(fd, dirp, count);
+
 		if (rval < 0) {
 
 			TEST_ERROR_LOG(errno);
@@ -127,11 +150,14 @@ int main(int ac, char **av)
 		free(dir_name);
 		dir_name = NULL;
 
-		free(dirp);
-
 		if ((rval = close(fd)) == -1)
 			tst_brkm(TBROK, cleanup, "file close failed");
 	}
+
+	if (longsyscall)
+		free(dirp64);
+	else
+		free(dirp);
 
 	cleanup();
 

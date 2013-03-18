@@ -40,10 +40,12 @@
  *             -e   : Turn on errno logging.
  *	       -i n : Execute test n times.
  *	       -I x : Execute test for x seconds.
+ *	       -l   : Test the getdents64 system call.
  *	       -P x : Pause for x seconds between iterations.
  *	       -t   : Turn on syscall timing.
  *
  * HISTORY
+ *	03/2013 - Added -l option by Markos Chandras
  *	03/2001 - Written by Wayne Boyer
  *
  * RESTRICTIONS
@@ -69,6 +71,18 @@ int TST_TOTAL = 1;
 
 int exp_enos[] = { EBADF, 0 };	/* 0 terminated list of expected errnos */
 
+static int longsyscall;
+
+option_t Options[] = {
+		{"l", &longsyscall, NULL}, /* -l long option. Tests getdents64 */
+		{NULL, NULL, NULL}
+};
+
+void help(void)
+{
+	printf("  -l      Test the getdents64 system call\n");
+}
+
 int main(int ac, char **av)
 {
 	int lc;
@@ -77,12 +91,23 @@ int main(int ac, char **av)
 	int count;
 	size_t size = 0;
 	char *dir_name = NULL;
-	struct dirent *dirp;
+	struct dirent64 *dirp64 = NULL;
+	struct dirent *dirp = NULL;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	if ((msg = parse_opts(ac, av, Options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
+
+	if (longsyscall) {
+		if ((dirp64 = malloc(sizeof(struct dirent))) == NULL)
+			tst_brkm(TBROK, cleanup, "malloc failed");
+		count = (int)sizeof(struct dirent64);
+	} else {
+		if ((dirp = malloc(sizeof(struct dirent))) == NULL)
+			tst_brkm(TBROK, cleanup, "malloc failed");
+		count = (int)sizeof(struct dirent);
+	}
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -91,16 +116,14 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Can not get current "
 				 "directory name");
 
-		if ((dirp = malloc(sizeof(struct dirent))) == NULL)
-			tst_brkm(TBROK, cleanup, "malloc failed");
-
-		count = (int)sizeof(struct dirent);
-
 		/* set up a bad file descriptor */
 
 		fd = -5;
 
-		rval = getdents(fd, dirp, count);
+		if (longsyscall)
+			rval = getdents64(fd, dirp64, count);
+		else
+			rval = getdents(fd, dirp, count);
 
 		/*
 		 * Hopefully we get an error due to the bad file descriptor.
@@ -124,8 +147,12 @@ int main(int ac, char **av)
 		free(dir_name);
 		dir_name = NULL;
 
-		free(dirp);
 	}
+
+	if (longsyscall)
+		free(dirp64);
+	else
+		free(dirp);
 
 	cleanup();
 

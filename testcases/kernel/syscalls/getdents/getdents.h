@@ -25,10 +25,13 @@
 #define __GETDENTS_H	1
 
 #include <dirent.h>
+#include <features.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/syscall.h>
+#include "test.h"
+#include "linux_syscall_numbers.h"
 
 /*
  * The dirent struct that the C library exports is not the same
@@ -45,6 +48,13 @@ struct linux_dirent {
 	char            d_name[];
 };
 
+struct linux_dirent64 {
+	unsigned long long	d_ino;
+	long long		d_off;
+	unsigned short		d_reclen;
+	char			d_name[];
+};
+
 static inline int
 getdents(unsigned int fd, struct dirent *dirp, unsigned int count)
 {
@@ -57,7 +67,43 @@ getdents(unsigned int fd, struct dirent *dirp, unsigned int count)
 	unsigned int i;
 
 	ptrs.buf = buf;
-	ret = syscall(SYS_getdents, fd, buf, count);
+	ret = ltp_syscall(__NR_getdents, fd, buf, count);
+	if (ret < 0)
+		return ret;
+
+#define kdircpy(field) memcpy(&dirp[i].field, &ptrs.dirp->field, sizeof(dirp[i].field))
+
+	i = 0;
+	while (i < count && i < ret) {
+		unsigned long reclen;
+
+		kdircpy(d_ino);
+		kdircpy(d_reclen);
+		reclen = dirp[i].d_reclen;
+		kdircpy(d_off);
+		strcpy(dirp[i].d_name, ptrs.dirp->d_name);
+
+		ptrs.buf += reclen;
+
+		i += reclen;
+	}
+
+	return ret;
+}
+
+static inline int
+getdents64(unsigned int fd, struct dirent64 *dirp, unsigned int count)
+{
+	union {
+		struct linux_dirent64 *dirp;
+		char *buf;
+	} ptrs;
+	char buf[count];
+	long ret;
+	unsigned int i;
+
+	ptrs.buf = buf;
+	ret = ltp_syscall(__NR_getdents64, fd, buf, count);
 	if (ret < 0)
 		return ret;
 
