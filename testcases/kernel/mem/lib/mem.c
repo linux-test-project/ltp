@@ -20,6 +20,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "safe_file_ops.h"
 #include "_private.h"
 #include "mem.h"
 #include "numa_helper.h"
@@ -481,20 +482,37 @@ void ksm_usage(void)
 
 /* cpuset/memcg */
 
-static void _gather_cpus(char *cpus, long nd)
+static void _gather_node_cpus(char *cpus, long nd)
 {
 	int ncpus = 0;
 	int i;
+	long online;
 	char buf[BUFSIZ];
+	char path[BUFSIZ], path1[BUFSIZ];
 
 	while (path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
 		ncpus++;
 
-	for (i = 0; i < ncpus; i++)
-		if (path_exist(PATH_SYS_SYSTEM "/node/node%ld/cpu%d", nd, i)) {
+	for (i = 0; i < ncpus; i++) {
+		snprintf(path, BUFSIZ,
+			 PATH_SYS_SYSTEM "/node/node%ld/cpu%d", nd, i);
+		if (path_exist(path, nd, i)) {
+			snprintf(path1, BUFSIZ, "%s/online", path);
+			/*
+			 * No cpu0/online knob, as it can't support to
+			 * on/offline cpu0, so if the 'nd' node contains
+			 * cpu0, it should skip to check cpu0/online's value.
+			 */
+			if (i == 0)
+				goto next;
+			SAFE_FILE_SCANF(cleanup, path1, "%ld", &online);
+			if (online == 0)
+				continue;
+next:
 			sprintf(buf, "%d,", i);
 			strcat(cpus, buf);
 		}
+	}
 	/* Remove the trailing comma. */
 	cpus[strlen(cpus) - 1] = '\0';
 }
@@ -563,7 +581,7 @@ void write_cpusets(long nd)
 	snprintf(buf, BUFSIZ, "%ld", nd);
 	write_cpuset_files(CPATH_NEW, "mems", buf);
 
-	_gather_cpus(cpus, nd);
+	_gather_node_cpus(cpus, nd);
 	write_cpuset_files(CPATH_NEW, "cpus", cpus);
 
 	snprintf(buf, BUFSIZ, "%d", getpid());
