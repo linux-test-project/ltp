@@ -1,5 +1,5 @@
 /*
- * Out Of Memory (OOM) for NUMA
+ * Out Of Memory (OOM) for mempolicy - need NUMA system support
  *
  * The program is designed to cope with unpredictable like amount and
  * system physical memory, swap size and other VMM technology like KSM,
@@ -44,6 +44,8 @@ int TST_TOTAL = 1;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
+#include <numaif.h>
+
 int main(int argc, char *argv[])
 {
 	char *msg;
@@ -62,11 +64,14 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		tst_resm(TINFO, "process mempolicy.");
-		testoom(1, 0, 1);
+		tst_resm(TINFO, "OOM on MPOL_BIND mempolicy...");
+		testoom(MPOL_BIND, 0, 1);
 
-		tst_resm(TINFO, "process cpuset.");
-		testoom(0, 0, 1);
+		tst_resm(TINFO, "OOM on MPOL_INTERLEAVE mempolicy...");
+		testoom(MPOL_INTERLEAVE, 0, 1);
+
+		tst_resm(TINFO, "OOM on MPOL_PREFERRED mempolicy...");
+		testoom(MPOL_PREFERRED, 0, 1);
 	}
 	cleanup();
 	tst_exit();
@@ -78,15 +83,16 @@ void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
+	/* Judge a NUMA system through get_a_numa_node */
+	get_a_numa_node(NULL);
+
 	overcommit = get_sys_tune("overcommit_memory");
 	set_sys_tune("overcommit_memory", 1, 1);
-	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
 }
 
 void cleanup(void)
 {
 	set_sys_tune("overcommit_memory", overcommit, 0);
-	umount_mem(CPATH, CPATH_NEW);
 
 	TEST_CLEANUP;
 }

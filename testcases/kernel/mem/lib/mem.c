@@ -65,32 +65,17 @@ void oom(int testcase, int mempolicy, int lite)
 {
 	pid_t pid;
 	int status;
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
-	&& HAVE_MPOL_CONSTANTS
-	unsigned long nmask = 0;
-	unsigned int node;
-
-	if (mempolicy)
-		node = get_a_numa_node(cleanup);
-	nmask += 1 << node;
-#endif
 
 	switch (pid = fork()) {
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
-	&& HAVE_MPOL_CONSTANTS
-		if (mempolicy)
-			if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "set_mempolicy");
-#endif
 		_test_alloc(testcase, lite);
 		exit(0);
 	default:
 		break;
 	}
+
 	tst_resm(TINFO, "expected victim is %d.", pid);
 	if (waitpid(-1, &status, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
@@ -108,7 +93,46 @@ void oom(int testcase, int mempolicy, int lite)
 
 void testoom(int mempolicy, int lite, int numa)
 {
-	long nodes[MAXNODES];
+#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
+	&& HAVE_MPOL_CONSTANTS
+	unsigned long nmask = 0;
+	unsigned int num_nodes, *nodes;
+	int ret;
+
+	if (mempolicy) {
+		ret = get_allowed_nodes_arr(NH_MEMS|NH_CPUS, &num_nodes, &nodes);
+		if (ret != 0)
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "get_allowed_nodes_arr");
+		if (num_nodes < 2) {
+			tst_resm(TINFO, "mempolicy need NUMA system support");
+			free(nodes);
+			return;
+		}
+		switch(mempolicy) {
+		case MPOL_BIND:
+			/* bind the second node */
+			nmask = 1 << nodes[1];
+			break;
+		case MPOL_INTERLEAVE:
+		case MPOL_PREFERRED:
+			if (num_nodes == 2) {
+				tst_resm(TINFO, "The mempolicy need "
+					 "more than 2 numa nodes");
+				free(nodes);
+				return;
+			} else {
+				/* Using the 2nd,3rd node */
+				nmask = (1 << nodes[1]) | (1 << nodes[2]);
+			}
+			break;
+		default:
+			tst_brkm(TBROK|TERRNO, cleanup, "Bad mempolicy mode");
+		}
+		if (set_mempolicy(mempolicy, &nmask, MAXNODES) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
+	}
+#endif
 
 	if (numa && !mempolicy)
 		write_cpusets(get_a_numa_node(cleanup));
