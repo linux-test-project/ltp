@@ -34,5 +34,6 @@ unsigned long get_max_node(void);
 int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes);
 int get_allowed_nodes(int flag, int count, ...);
 void nh_dump_nodes();
+int is_numa(void (*cleanup_fn)(void));
 
 #endif

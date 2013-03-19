@@ -265,3 +265,27 @@ void nh_dump_nodes()
 	print_node_info(NH_CPUS);
 	print_node_info(NH_MEMS | NH_CPUS);
 }
+
+/*
+ * is_numa - judge a system is NUMA system or not
+ * NOTE: the function is designed to try to find more than
+ *       1 available node, at least each node contains memory.
+ * WARN: Don't use this func in child, as it calls tst_brkm()
+ * RETURNS:
+ *     0 - it's not a NUMA system
+ *     1 - it's a NUMA system
+ */
+int is_numa(void (*cleanup_fn)(void))
+{
+	int ret;
+	int numa_nodes = 0;
+
+	ret = get_allowed_nodes_arr(NH_MEMS, &numa_nodes, NULL);
+	if (ret < 0)
+		tst_brkm(TBROK | TERRNO, cleanup_fn, "get_allowed_nodes_arr");
+
+	if (numa_nodes > 1)
+		return 1;
+	else
+		return 0;
+}
