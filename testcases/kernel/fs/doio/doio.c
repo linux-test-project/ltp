@@ -650,9 +650,7 @@ int main(int argc, char **argv)
 					char *exec_path;
 
 					exec_path = argv[0];
-					argv[0] =
-					    (char *)
-					    malloc(strlen(exec_path + 1));
+					argv[0] = malloc(strlen(exec_path) + 2);
 					sprintf(argv[0], "-%s", exec_path);
 
 					execvp(exec_path, argv);
