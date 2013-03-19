@@ -1,5 +1,5 @@
 /*
- * Out Of Memory (OOM) for Memory Resource Controller and NUMA
+ * Out Of Memory (OOM) for CPUSET
  *
  * The program is designed to cope with unpredictable like amount and
  * system physical memory, swap size and other VMM technology like KSM,
@@ -35,6 +35,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include "numa_helper.h"
 #include "test.h"
 #include "usctest.h"
 #include "mem.h"
@@ -44,12 +45,11 @@ int TST_TOTAL = 1;
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
+
 int main(int argc, char *argv[])
 {
 	char *msg;
 	int lc;
-	int swap_acc_on = 1;
-	char buf[BUFSIZ], mem[BUFSIZ];
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
@@ -64,38 +64,19 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		snprintf(buf, BUFSIZ, "%d", getpid());
-		write_file(MEMCG_PATH_NEW "/tasks", buf);
+		tst_resm(TINFO, "OOM on CPUSET...");
+		testoom(0, 0, 0);
 
-		snprintf(mem, BUFSIZ, "%ld", TESTMEM);
-		write_file(MEMCG_PATH_NEW "/memory.limit_in_bytes", mem);
-
-		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
-			if (errno == ENOENT) {
-				tst_resm(TCONF,
-					 "memcg swap accounting is disabled");
-				swap_acc_on = 0;
-			} else
-				tst_brkm(TBROK | TERRNO, cleanup, "access");
-		}
-
-		tst_resm(TINFO, "process mempolicy.");
-		testoom(1, 0, 1);
-
-		if (swap_acc_on) {
-			write_file(MEMCG_SW_LIMIT, mem);
-			testoom(1, 1, 1);
-		}
-
-		tst_resm(TINFO, "process cpuset.");
-
-		if (swap_acc_on)
-			write_file(MEMCG_SW_LIMIT, "-1");
-		testoom(0, 0, 1);
-
-		if (swap_acc_on) {
-			write_file(MEMCG_SW_LIMIT, mem);
-			testoom(0, 1, 1);
+		if (is_numa(cleanup)) {
+			/*
+			 * Under NUMA system, the migration of cpuset's memory
+			 * is in charge of cpuset.memory_migrate, we can write
+			 * 1 to cpuset.memory_migrate to enable the migration.
+			 */
+			write_cpuset_files(CPATH_NEW,
+					   "memory_migrate", "1");
+			tst_resm(TINFO, "OOM on CPUSET with mem migrate:");
+			testoom(0, 0, 0);
 		}
 	}
 	cleanup();
@@ -110,15 +91,20 @@ void setup(void)
 
 	overcommit = get_sys_tune("overcommit_memory");
 	set_sys_tune("overcommit_memory", 1, 1);
+
 	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
-	mount_mem("memcg", "cgroup", "memory", MEMCG_PATH, MEMCG_PATH_NEW);
+	if (is_numa(cleanup) > 0)
+		/* For NUMA system, using the first node for cpuset.mems */
+		write_cpusets(get_a_numa_node(cleanup));
+	else
+		/* For nonNUMA system, using node0 for cpuset.mems */
+		write_cpusets(0);
 }
 
 void cleanup(void)
 {
 	set_sys_tune("overcommit_memory", overcommit, 0);
 	umount_mem(CPATH, CPATH_NEW);
-	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
 
 	TEST_CLEANUP;
 }

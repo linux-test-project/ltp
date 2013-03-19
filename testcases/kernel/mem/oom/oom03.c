@@ -33,12 +33,16 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include "numa_helper.h"
 #include "test.h"
 #include "usctest.h"
 #include "mem.h"
 
 char *TCID = "oom03";
 int TST_TOTAL = 1;
+
+#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
+	&& HAVE_MPOL_CONSTANTS
 
 int main(int argc, char *argv[])
 {
@@ -76,6 +80,14 @@ int main(int argc, char *argv[])
 			write_file(MEMCG_SW_LIMIT, mem);
 			testoom(0, 1, 0);
 		}
+
+		/* OOM for MEMCG with mempolicy */
+		if (is_numa(cleanup)) {
+			tst_resm(TINFO, "OOM on MEMCG & mempolicy...");
+			testoom(MPOL_BIND, 0, 1);
+			testoom(MPOL_INTERLEAVE, 0, 1);
+			testoom(MPOL_PREFERRED, 0, 1);
+		}
 	}
 	cleanup();
 	tst_exit();
@@ -99,3 +111,10 @@ void cleanup(void)
 
 	TEST_CLEANUP;
 }
+
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
+}
+#endif
