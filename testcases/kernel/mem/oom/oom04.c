@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 
 		tst_resm(TINFO, "OOM on CPUSET...");
-		testoom(0, 0, 0);
+		testoom(0, 0);
 
 		if (is_numa(cleanup)) {
 			/*
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 			write_cpuset_files(CPATH_NEW,
 					   "memory_migrate", "1");
 			tst_resm(TINFO, "OOM on CPUSET with mem migrate:");
-			testoom(0, 0, 0);
+			testoom(0, 0);
 		}
 	}
 	cleanup();

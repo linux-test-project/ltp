@@ -25,8 +25,8 @@
 #define KSM			4
 
 long overcommit;
-void oom(int testcase, int mempolicy, int lite);
-void testoom(int mempolicy, int lite, int numa);
+void oom(int testcase, int lite);
+void testoom(int mempolicy, int lite);
 
 /* KSM */
 

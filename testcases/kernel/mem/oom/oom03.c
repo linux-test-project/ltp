@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
 		snprintf(mem, BUFSIZ, "%ld", TESTMEM);
 		write_file(MEMCG_PATH_NEW "/memory.limit_in_bytes", mem);
-		testoom(0, 0, 0);
+		testoom(0, 0);
 
 		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
 			if (errno == ENOENT)
@@ -78,15 +78,15 @@ int main(int argc, char *argv[])
 				tst_brkm(TBROK | TERRNO, cleanup, "access");
 		} else {
 			write_file(MEMCG_SW_LIMIT, mem);
-			testoom(0, 1, 0);
+			testoom(0, 1);
 		}
 
 		/* OOM for MEMCG with mempolicy */
 		if (is_numa(cleanup)) {
 			tst_resm(TINFO, "OOM on MEMCG & mempolicy...");
-			testoom(MPOL_BIND, 0, 1);
-			testoom(MPOL_INTERLEAVE, 0, 1);
-			testoom(MPOL_PREFERRED, 0, 1);
+			testoom(MPOL_BIND, 0);
+			testoom(MPOL_INTERLEAVE, 0);
+			testoom(MPOL_PREFERRED, 0);
 		}
 	}
 	cleanup();

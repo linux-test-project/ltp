@@ -61,7 +61,7 @@ static void _test_alloc(int testcase, int lite)
 				return;
 }
 
-void oom(int testcase, int mempolicy, int lite)
+void oom(int testcase, int lite)
 {
 	pid_t pid;
 	int status;
@@ -91,7 +91,7 @@ void oom(int testcase, int mempolicy, int lite)
 	}
 }
 
-void testoom(int mempolicy, int lite, int numa)
+void testoom(int mempolicy, int lite)
 {
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
@@ -134,20 +134,17 @@ void testoom(int mempolicy, int lite, int numa)
 	}
 #endif
 
-	if (numa && !mempolicy)
-		write_cpusets(get_a_numa_node(cleanup));
-
 	tst_resm(TINFO, "start normal OOM testing.");
-	oom(NORMAL, mempolicy, lite);
+	oom(NORMAL, lite);
 
 	tst_resm(TINFO, "start OOM testing for mlocked pages.");
-	oom(MLOCK, mempolicy, lite);
+	oom(MLOCK, lite);
 
 	if (access(PATH_KSM, F_OK) == -1)
 		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
 
 	tst_resm(TINFO, "start OOM testing for KSM pages.");
-	oom(KSM, mempolicy, lite);
+	oom(KSM, lite);
 }
 
 /* KSM */

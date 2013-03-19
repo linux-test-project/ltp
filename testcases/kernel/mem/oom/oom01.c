@@ -61,13 +61,13 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 
 		set_sys_tune("overcommit_memory", 2, 1);
-		oom(OVERCOMMIT, 0, 0);
+		oom(OVERCOMMIT, 0);
 
 		set_sys_tune("overcommit_memory", 0, 1);
-		oom(OVERCOMMIT, 0, 0);
+		oom(OVERCOMMIT, 0);
 
 		set_sys_tune("overcommit_memory", 1, 1);
-		testoom(0, 0, 0);
+		testoom(0, 0);
 	}
 	cleanup();
 	tst_exit();
