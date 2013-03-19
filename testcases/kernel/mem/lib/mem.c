@@ -27,7 +27,7 @@
 
 /* OOM */
 
-static int _alloc_mem(long int length, int testcase)
+static int alloc_mem(long int length, int testcase)
 {
 	void *s;
 
@@ -51,13 +51,13 @@ static int _alloc_mem(long int length, int testcase)
 	return 0;
 }
 
-static void _test_alloc(int testcase, int lite)
+static void test_alloc(int testcase, int lite)
 {
 	if (lite)
-		_alloc_mem(TESTMEM + MB, testcase);
+		alloc_mem(TESTMEM + MB, testcase);
 	else
 		while (1)
-			if (_alloc_mem(LENGTH, testcase))
+			if (alloc_mem(LENGTH, testcase))
 				return;
 }
 
@@ -70,7 +70,7 @@ void oom(int testcase, int lite)
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
-		_test_alloc(testcase, lite);
+		test_alloc(testcase, lite);
 		exit(0);
 	default:
 		break;
@@ -149,7 +149,7 @@ void testoom(int mempolicy, int lite)
 
 /* KSM */
 
-static void _check(char *path, long int value)
+static void check(char *path, long int value)
 {
 	FILE *fp;
 	char buf[BUFSIZ], fullpath[BUFSIZ];
@@ -164,7 +164,7 @@ static void _check(char *path, long int value)
 		tst_resm(TFAIL, "%s is not %ld.", path, value);
 }
 
-static void _wait_ksmd_done(void)
+static void wait_ksmd_done(void)
 {
 	char buf[BUFSIZ];
 	long pages_shared, pages_sharing, pages_volatile, pages_unshared;
@@ -205,24 +205,24 @@ static void _wait_ksmd_done(void)
 		 count * 10);
 }
 
-static void _group_check(int run, int pages_shared, int pages_sharing,
+static void group_check(int run, int pages_shared, int pages_sharing,
 			 int pages_volatile, int pages_unshared,
 			 int sleep_millisecs, int pages_to_scan)
 {
 	/* wait for ksm daemon to scan all mergeable pages. */
-	_wait_ksmd_done();
+	wait_ksmd_done();
 
 	tst_resm(TINFO, "check!");
-	_check("run", run);
-	_check("pages_shared", pages_shared);
-	_check("pages_sharing", pages_sharing);
-	_check("pages_volatile", pages_volatile);
-	_check("pages_unshared", pages_unshared);
-	_check("sleep_millisecs", sleep_millisecs);
-	_check("pages_to_scan", pages_to_scan);
+	check("run", run);
+	check("pages_shared", pages_shared);
+	check("pages_sharing", pages_sharing);
+	check("pages_volatile", pages_volatile);
+	check("pages_unshared", pages_unshared);
+	check("sleep_millisecs", sleep_millisecs);
+	check("pages_to_scan", pages_to_scan);
 }
 
-static void _verify(char **memory, char value, int proc,
+static void verify(char **memory, char value, int proc,
 		    int start, int end, int start2, int end2)
 {
 	int i, j;
@@ -331,12 +331,12 @@ static void create_ksm_child(int child_num, int size, int unit,
 			tst_brkm(TBROK|TERRNO, tst_exit, "kill");
 
 		if (ksm_merge_data[j].mergeable_size < size * MB) {
-			_verify(memory, 'e', child_num, total_unit - 1,
+			verify(memory, 'e', child_num, total_unit - 1,
 				total_unit, unit * MB - 1, unit * MB);
-			_verify(memory, ksm_merge_data[j].data, child_num,
+			verify(memory, ksm_merge_data[j].data, child_num,
 				0, total_unit, 0, unit * MB - 1);
 		} else {
-			_verify(memory, ksm_merge_data[j].data, child_num,
+			verify(memory, ksm_merge_data[j].data, child_num,
 				0, total_unit, 0, unit * MB);
 		}
 	}
@@ -437,19 +437,19 @@ void create_same_memory(int size, int num, int unit)
 	write_file(PATH_KSM "sleep_millisecs", "0");
 
 	resume_ksm_children(child, num);
-	_group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
+	group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
 
 	stop_ksm_children(child, num);
 	resume_ksm_children(child, num);
-	_group_check(1, 3, size * num * pages - 3, 0, 0, 0, size * pages * num);
+	group_check(1, 3, size * num * pages - 3, 0, 0, 0, size * pages * num);
 
 	stop_ksm_children(child, num);
 	resume_ksm_children(child, num);
-	_group_check(1, 1, size * num * pages - 1, 0, 0, 0, size * pages * num);
+	group_check(1, 1, size * num * pages - 1, 0, 0, 0, size * pages * num);
 
 	stop_ksm_children(child, num);
 	resume_ksm_children(child, num);
-	_group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
+	group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
 
 	stop_ksm_children(child, num);
 
@@ -457,11 +457,11 @@ void create_same_memory(int size, int num, int unit)
 	write_file(PATH_KSM "run", "2");
 
 	resume_ksm_children(child, num);
-	_group_check(2, 0, 0, 0, 0, 0, size * pages * num);
+	group_check(2, 0, 0, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "stop KSM.");
 	write_file(PATH_KSM "run", "0");
-	_group_check(0, 0, 0, 0, 0, 0, size * pages * num);
+	group_check(0, 0, 0, 0, 0, 0, size * pages * num);
 
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0)
 		if (WEXITSTATUS(status) != 0)
@@ -503,7 +503,7 @@ void ksm_usage(void)
 
 /* cpuset/memcg */
 
-static void _gather_node_cpus(char *cpus, long nd)
+static void gather_node_cpus(char *cpus, long nd)
 {
 	int ncpus = 0;
 	int i;
@@ -602,7 +602,7 @@ void write_cpusets(long nd)
 	snprintf(buf, BUFSIZ, "%ld", nd);
 	write_cpuset_files(CPATH_NEW, "mems", buf);
 
-	_gather_node_cpus(cpus, nd);
+	gather_node_cpus(cpus, nd);
 	write_cpuset_files(CPATH_NEW, "cpus", cpus);
 
 	snprintf(buf, BUFSIZ, "%d", getpid());
