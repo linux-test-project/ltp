@@ -19,9 +19,11 @@
 #include <sys/types.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
-	setuid(1);		/* this is added incase user is root. If user is normal user, then it has no effect on the tests */
+	/* this is added incase user is root. If user is normal user, then it
+	 * has no effect on the tests */
+	setuid(1);
 
 	if (kill(1, 0) != -1) {
 		printf
@@ -34,5 +36,6 @@ int main()
 		return PTS_FAIL;
 	}
 
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }

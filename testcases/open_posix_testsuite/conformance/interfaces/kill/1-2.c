@@ -33,12 +33,13 @@
 
 #define SIGTOTEST SIGUSR1
 
-void myhandler(int signo)
+static void myhandler(int signo)
 {
-	exit(1);
+	(void) signo;
+	_exit(1);
 }
 
-int main()
+int main(void)
 {
 	int pid;
 

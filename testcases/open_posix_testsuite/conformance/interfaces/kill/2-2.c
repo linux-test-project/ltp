@@ -30,7 +30,7 @@
  *         *** I need to check to see if these assumptions are always valid.
  */
 
-int main()
+int main(void)
 {
 	int failure = 0;
 
@@ -53,7 +53,9 @@ int main()
 	/*
 	 * EPERM
 	 */
-	setuid(1);		/* this is added incase user is root. If user is normal user, then it has no effect on the tests */
+	/* this is added incase user is root. If user is normal user, then it
+	 * has no effect on the tests */
+	setuid(1);
 
 	if (-1 == kill(1, 0)) {
 		if (EPERM == errno) {
@@ -72,7 +74,7 @@ int main()
 		printf("At least one test FAILED -- see output for status\n");
 		return PTS_FAIL;
 	} else {
-		printf("All tests PASSED\n");
+		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 }
