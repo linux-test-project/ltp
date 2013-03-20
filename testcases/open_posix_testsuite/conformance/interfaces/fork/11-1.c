@@ -83,6 +83,9 @@
 void *threaded(void *arg)
 {
 	int ret;
+	
+	(void) arg;
+	
 	ret = ftrylockfile(stdout);
 
 	if (ret != 0) {
@@ -98,7 +101,7 @@ void *threaded(void *arg)
 }
 
 /* The main test function. */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, status;
 	pid_t child, ctl;

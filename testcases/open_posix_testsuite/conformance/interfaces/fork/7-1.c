@@ -105,7 +105,7 @@ static int create_catalog(void)
 	return 0;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, status;
 	pid_t child, ctl;

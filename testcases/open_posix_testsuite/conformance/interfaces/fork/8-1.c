@@ -68,7 +68,7 @@
 #define VERBOSE 1
 #endif
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct tms ini_tms, parent_tms, child_tms;
 

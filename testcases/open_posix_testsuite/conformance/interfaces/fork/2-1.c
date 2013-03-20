@@ -68,7 +68,7 @@ void handler(int sig)
 	(void)sig;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, status;
 	pid_t child, ctl;

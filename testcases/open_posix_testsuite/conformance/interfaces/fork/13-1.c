@@ -85,7 +85,7 @@
 /********************************************************************************************/
 #ifndef WITHOUT_XOPEN
 /* The main test function. */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int main(void)
 {
 	output_init();
 	UNTESTED("This testcase requires XSI features");

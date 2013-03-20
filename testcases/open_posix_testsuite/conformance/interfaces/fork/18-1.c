@@ -95,7 +95,7 @@ void notification(union sigval sv)
 }
 
 /* The main test function. */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, status;
 	pid_t child, ctl;
