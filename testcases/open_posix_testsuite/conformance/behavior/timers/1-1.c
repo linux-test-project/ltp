@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	timer_t tid;
 	int i;
@@ -31,10 +31,10 @@ int main(int argc, char *argv[])
 		if (timer_create(CLOCK_REALTIME, NULL, &tid) == -1) {
 			printf("[%d] timer_create() did not return success: "
 			       "%s\n", i, strerror(errno));
-			exit(PTS_FAIL);
+			return PTS_FAIL;
 		}
 	}
 
-	printf("Successfully created %d timers\nTest PASSED\n");
-	exit(PTS_PASS);
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }

@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	long scTIMER_MAX = 0;
 
