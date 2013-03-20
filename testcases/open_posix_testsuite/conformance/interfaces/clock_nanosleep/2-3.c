@@ -19,7 +19,7 @@
 
 #define SLEEPSEC 30
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleep, tsbefore, tsafter;
 	int pid, sleepuntilsec;

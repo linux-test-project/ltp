@@ -23,10 +23,12 @@
 
 void handler(int signo)
 {
+	(void) signo;
+
 	printf("In handler\n");
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleep;
 	int pid;

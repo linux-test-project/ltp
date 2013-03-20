@@ -17,7 +17,7 @@
 
 #define BOGUSCLOCKID 99999
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleep;
 

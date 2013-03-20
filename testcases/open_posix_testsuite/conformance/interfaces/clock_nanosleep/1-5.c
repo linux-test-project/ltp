@@ -24,7 +24,7 @@
 #define CHILDPASS 1
 #define CHILDFAIL 0
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int pid, slepts;
 	struct timespec tsbefore, tsafter;
