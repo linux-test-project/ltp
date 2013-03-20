@@ -109,8 +109,7 @@ int main(int ac, char **av)
 
 		pwd1 = getpwd();
 		if (getcwd(cwd1, sizeof cwd1) == NULL) {
-			tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-				 "errno = %d\n", errno);
+			tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly");
 			flag = FAILED;
 		}
 		if ((flag != FAILED) && (strcmp(pwd1, cwd1) != 0)) {
@@ -142,8 +141,7 @@ int main(int ac, char **av)
 
 		pwd2 = getpwd();
 		if (getcwd(cwd2, sizeof cwd2) == NULL) {
-			tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-				 "errno = %d\n", errno);
+			tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly");
 			flag = FAILED;
 		}
 
@@ -227,7 +225,7 @@ char *getpwd(void)
 {
 	FILE *fin;
 	char *pwd = "/bin/pwd";
-	char *cp, *cp_cur;
+	char *cp;
 	char *buf;
 
 	buf = (char *)malloc(BUFSIZ);
@@ -240,7 +238,6 @@ char *getpwd(void)
 			tst_brkm(TBROK, cleanup, "pwd output too long");
 		}
 		*cp = 0;
-		cp_cur = buf;
 	}
 	pclose(fin);
 	return buf;

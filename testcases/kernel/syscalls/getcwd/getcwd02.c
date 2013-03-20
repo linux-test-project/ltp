@@ -86,7 +86,7 @@ char *cwd_ptr = NULL;		//catches the return value from getcwd() when passing cwd
 int main(int ac, char **av)
 {
 	FILE *fin;
-	char *cp, *cp_cur;
+	char *cp;
 	int lc;
 	char *msg;		/* parse_opts() return message */
 
@@ -110,7 +110,6 @@ int main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "pwd output too long");
 			}
 			*cp = 0;
-			cp_cur = pwd_buf;
 		}
 		pclose(fin);
 
@@ -132,8 +131,7 @@ void do_block1(void)		//valid cwd[]: -> Should work fine
 	tst_resm(TINFO, "Enter Block 1");
 
 	if ((cwd_ptr = getcwd(cwd, sizeof(cwd))) == NULL) {
-		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-			 "errno = %d\n", errno);
+		tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly");
 		flag = FAILED;
 	}
 	if ((flag != FAILED) && (strcmp(pwd_buf, cwd) != 0)) {
@@ -156,8 +154,7 @@ void do_block2(void)		//valid cwd[], size = 0: -> Should return NULL, errno = EI
 
 	if (((cwd_ptr = getcwd(cwd, 0)) == NULL)
 	    && (errno != EINVAL)) {
-		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-			 "errno = %d expected EINVAL(%d)\n", errno, EINVAL);
+		tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly (wanted EINVAL)");
 		flag = FAILED;
 	}
 	tst_resm(TINFO, "Exit Block 2");
@@ -175,8 +172,7 @@ void do_block3(void)		//valid cwd[], size = 1 -> Should return NULL, errno = ERA
 
 	if (((cwd_ptr = getcwd(cwd, 1)) != NULL)
 	    || (errno != ERANGE)) {
-		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-			 "errno = %d, expected ERANGE(%d)\n", errno, ERANGE);
+		tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly (wanted ERANGE)");
 		flag = FAILED;
 	}
 	tst_resm(TINFO, "Exit Block 3");
@@ -196,8 +192,7 @@ void do_block4(void)		//invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno
 
 	if (((cwd_ptr = getcwd((char *)-1, sizeof(cwd))) != NULL)
 	    || (errno != EFAULT)) {
-		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-			 "errno = %d, expected EFAULT(%d)\n", errno, EFAULT);
+		tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly (wanted EFAULT)");
 		flag = FAILED;
 	}
 	tst_resm(TINFO, "Exit Block 4");
@@ -217,8 +212,7 @@ void do_block5(void)		//buffer = NULL, and size = 0, should succeed
 	tst_resm(TINFO, "Enter Block 5");
 
 	if ((buffer = getcwd(NULL, 0)) == NULL) {
-		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-			 "errno = %d\n", errno);
+		tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly");
 		flag = FAILED;
 	}
 	if ((flag != FAILED) && (strcmp(pwd_buf, buffer) != 0)) {
@@ -243,8 +237,7 @@ void do_block6(void)		//buffer = NULL, size = 1: -> return NULL, errno = ERANGE
 
 	if (((buffer = getcwd(NULL, 1)) != NULL)
 	    || (errno != ERANGE)) {
-		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-			 "errno = %d, expected ERANGE(%d)\n", errno, ERANGE);
+		tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly (wanted ERANGE)");
 		flag = FAILED;
 	}
 	tst_resm(TINFO, "Exit Block 6");
@@ -261,8 +254,7 @@ void do_block7(void)		//buffer = NULL, size = BUFSIZ: -> work fine, allocate buf
 	tst_resm(TINFO, "Enter Block 7");
 
 	if ((buffer = getcwd(NULL, sizeof(cwd))) == NULL) {
-		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-			 "errno = %d\n", errno);
+		tst_resm(TFAIL|TERRNO, "getcwd() failed unexpectedly");
 		flag = FAILED;
 	}
 	if ((flag != FAILED) && (strcmp(pwd_buf, buffer) != 0)) {
