@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #ifdef CLOCK_MONOTONIC
 

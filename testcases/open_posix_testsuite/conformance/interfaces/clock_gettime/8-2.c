@@ -30,7 +30,7 @@ static int invalid_tests[NUMINVALIDTESTS] = {
 	1073743192, -1, 17
 };
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tp;
 	int i;

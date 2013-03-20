@@ -27,7 +27,7 @@ void dosomething()
 	}
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #if _POSIX_CPUTIME == -1
 	printf("_POSIX_CPUTIME unsupported\n");
