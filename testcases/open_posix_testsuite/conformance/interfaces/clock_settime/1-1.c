@@ -26,7 +26,7 @@
 #define TESTTIME 1037128358
 #define ACCEPTABLEDELTA 1
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tpset, tpget, tpreset, tpres;
 	int delta, nsdelta;

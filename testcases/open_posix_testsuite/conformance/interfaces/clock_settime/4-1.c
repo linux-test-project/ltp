@@ -38,7 +38,7 @@
 
 #define SIGTOTEST SIGALRM
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	struct timespec tpT0, tpT2, tpreset;

@@ -21,7 +21,7 @@
 
 #define BOGUSCLOCKID 9999
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tpset;
 

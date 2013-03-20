@@ -47,11 +47,13 @@ int caught = 0;
 
 void handler(int signo)
 {
+	(void) signo;
+
 	printf("Caught signal\n");
 	caught++;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	struct sigaction act;

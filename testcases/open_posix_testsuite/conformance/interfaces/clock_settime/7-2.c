@@ -32,7 +32,7 @@
 #define CHILDPASS 1
 #define CHILDFAIL 0
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tsT0, tsT1, tsT2;
 	int pid;

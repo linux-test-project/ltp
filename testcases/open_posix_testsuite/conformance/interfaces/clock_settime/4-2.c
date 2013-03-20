@@ -36,13 +36,15 @@ struct timespec tpreset;
 
 void handler(int signo)
 {
+	(void) signo;
+
 	printf("Caught signal\n");
 	printf("Test PASSED\n");
 	setBackTime(tpreset);
 	exit(PTS_PASS);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	struct sigaction act;

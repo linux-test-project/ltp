@@ -18,7 +18,7 @@
 
 #define TESTTIME 1037128358
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #ifdef CLOCK_MONOTONIC
 	struct timespec tpset;

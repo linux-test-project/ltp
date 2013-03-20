@@ -36,10 +36,12 @@
 
 void handler(int signo)
 {
+	(void) signo;
+
 	printf("Caught signal\n");
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	struct sigaction act;
