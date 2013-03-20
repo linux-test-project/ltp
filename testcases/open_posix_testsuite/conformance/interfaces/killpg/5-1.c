@@ -18,14 +18,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void handler(int signo)
-{
-	printf("Caught signal being tested!\n");
-	printf("Test PASSED\n");
-	exit(0);
-}
-
-int main()
+int main(void)
 {
 	int pgrp;
 

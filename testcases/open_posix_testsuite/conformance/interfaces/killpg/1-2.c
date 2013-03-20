@@ -30,10 +30,11 @@
 
 void myhandler(int signo)
 {
-	exit(1);
+	(void) signo;
+	_exit(1);
 }
 
-int main()
+int main(void)
 {
 	int child_pid, child_pgid;
 

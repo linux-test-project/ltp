@@ -26,12 +26,14 @@
 
 void handler(int signo)
 {
+	(void) signo;
+
 	printf("Caught signal being tested!\n");
 	printf("Test PASSED\n");
-	exit(0);
+	_exit(PTS_PASS);
 }
 
-int main()
+int main(void)
 {
 	int pgrp;
 	struct sigaction act;

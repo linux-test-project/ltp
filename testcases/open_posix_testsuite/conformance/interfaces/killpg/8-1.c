@@ -19,9 +19,8 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
-
 	if (killpg(999999, 0) != -1) {
 		printf
 		    ("killpg did not return -1 even though it was passed an invalid process group id.");

@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	if (killpg(getpgrp(), 0) != 0) {
 		printf("Could not call killpg with sig = 0\n");
