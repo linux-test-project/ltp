@@ -29,7 +29,7 @@
 #define BUF_SIZE 8
 #define SHM_NAME "/posixtest_3-6"
 
-int main()
+int main(void)
 {
 	void *page_ptr;
 	size_t page_size;

@@ -17,9 +17,10 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	void *page_ptr;
 	size_t page_size;
