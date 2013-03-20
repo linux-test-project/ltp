@@ -21,7 +21,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #if !defined(_POSIX_CPUTIME) || _POSIX_CPUTIME == -1
 	printf("_POSIX_CPUTIME unsupported\n");

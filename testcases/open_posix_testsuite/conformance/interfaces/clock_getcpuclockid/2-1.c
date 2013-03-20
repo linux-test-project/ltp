@@ -20,13 +20,12 @@
 #include "posixtest.h"
 #include "timespec.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #if !defined(_POSIX_CPUTIME) || _POSIX_CPUTIME == -1
 	printf("_POSIX_CPUTIME unsupported\n");
 	return PTS_UNSUPPORTED;
 #else
-	unsigned long time_to_set;
 	clockid_t clockid_1, clockid_2;
 	struct timespec t1, t2, t3;
 
