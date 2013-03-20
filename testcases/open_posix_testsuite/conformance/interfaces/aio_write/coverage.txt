@@ -4,7 +4,7 @@ Assertion	Covered?
 1		YES
 2		YES
 3		YES
-4		YES
+4		NO
 5		YES
 6		YES
 7		YES
