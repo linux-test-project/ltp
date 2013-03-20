@@ -95,7 +95,7 @@ void *threaded(void *arg)
 }
 
 /* The main test function. */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, status;
 	long mf;		/* Is memory mapping supported? */
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int main(void)
 {
 	output_init();
 	UNTESTED("This test requires XSI features");
