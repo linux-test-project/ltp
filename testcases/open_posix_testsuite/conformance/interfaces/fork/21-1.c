@@ -30,9 +30,6 @@
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
 
-/********************************************************************************************/
-/****************************** standard includes *****************************************/
-/********************************************************************************************/
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -44,44 +41,16 @@
 #include <string.h>
 #include <unistd.h>
 
-/********************************************************************************************/
-/******************************   Test framework   *****************************************/
-/********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
-/* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);
- *    where descr is a description of the error and ret is an int (error code for example)
- * FAILED(descr);
- *    where descr is a short text saying why the test has failed.
- * PASSED();
- *    No parameter.
- *
- * Both three macros shall terminate the calling process.
- * The testcase shall not terminate in any other maneer.
- *
- * The other file defines the functions
- * void output_init()
- * void output(char * string, ...)
- *
- * Those may be used to output information.
- */
 
-/********************************************************************************************/
-/********************************** Configuration ******************************************/
-/********************************************************************************************/
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
 
-/********************************************************************************************/
-/***********************************    Test case   *****************************************/
-/********************************************************************************************/
+static sem_t *sem;
 
-sem_t *sem;
-
-/* Thread function */
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret = 0;
 
@@ -98,14 +67,12 @@ void *threaded(void *arg)
 	return NULL;
 }
 
-/* The main test function. */
 int main(void)
 {
 	int ret, status;
 	pid_t child, ctl;
 	pthread_t th;
 
-	/* Initialize output */
 	output_init();
 
 	ctl = getpid();
@@ -167,10 +134,8 @@ int main(void)
 	if (ret != 0)
 		UNRESOLVED(ret, "Failed to join the thread in parent");
 
-	/* Test passed */
 #if VERBOSE > 0
 	output("Test passed\n");
-
 #endif
 	PASSED;
 }

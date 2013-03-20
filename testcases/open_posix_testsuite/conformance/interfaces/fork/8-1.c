@@ -46,23 +46,6 @@
 
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
-/* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);
- *    where descr is a description of the error and ret is an int (error code for example)
- * FAILED(descr);
- *    where descr is a short text saying why the test has failed.
- * PASSED();
- *    No parameter.
- *
- * Both three macros shall terminate the calling process.
- * The testcase shall not terminate in any other maneer.
- *
- * The other file defines the functions
- * void output_init()
- * void output(char * string, ...)
- *
- * Those may be used to output information.
- */
 
 #ifndef VERBOSE
 #define VERBOSE 1
@@ -175,7 +158,6 @@ int main(void)
 		FAILED("The process is created with non-zero tms_cutime or "
 		       "tms_cstime");
 
-	/* Test passed */
 #if VERBOSE > 0
 
 	output("Test passed\n");

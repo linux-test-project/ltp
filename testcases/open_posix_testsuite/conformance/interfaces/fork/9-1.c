@@ -32,9 +32,6 @@
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
 
-/********************************************************************************************/
-/****************************** standard includes *****************************************/
-/********************************************************************************************/
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -45,53 +42,22 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-/********************************************************************************************/
-/******************************   Test framework   *****************************************/
-/********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
-/* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);
- *    where descr is a description of the error and ret is an int (error code for example)
- * FAILED(descr);
- *    where descr is a short text saying why the test has failed.
- * PASSED();
- *    No parameter.
- *
- * Both three macros shall terminate the calling process.
- * The testcase shall not terminate in any other maneer.
- *
- * The other file defines the functions
- * void output_init()
- * void output(char * string, ...)
- *
- * Those may be used to output information.
- */
 
-/********************************************************************************************/
-/********************************** Configuration ******************************************/
-/********************************************************************************************/
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
 
-/********************************************************************************************/
-/***********************************    Test case   *****************************************/
-/********************************************************************************************/
-
-/* The main test function. */
 int main(void)
 {
 	int ret, status;
 	pid_t child, ctl;
 
-	/* Initialize output */
 	output_init();
 
-	/* Set the alarm pending */
 	alarm(10);
 
-	/* Check the alarm() behavior */
 	ret = alarm(10);
 
 	if (ret == 0) {
@@ -131,11 +97,8 @@ int main(void)
 
 	alarm(0);
 
-	/* Test passed */
 #if VERBOSE > 0
-
 	output("Test passed\n");
-
 #endif
 
 	PASSED;

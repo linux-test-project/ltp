@@ -46,32 +46,12 @@
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
 
- /*
-  * This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);
-  *    where descr is a description of the error and ret is an int (error code for example)
-  * FAILED(descr);
-  *    where descr is a short text saying why the test has failed.
-  * PASSED();
-  *    No parameter.
-  *
-  * Both three macros shall terminate the calling process.
-  * The testcase shall not terminate in any other maneer.
-  *
-  * The other file defines the functions
-  * void output_init()
-  * void output(char * string, ...)
-  *
-  * Those may be used to output information.
-  */
-
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
 
 #define SEM_NAME "/semfork1_1"
 
-/* The main test function. */
 int main(void)
 {
 	int ret, status;
@@ -79,7 +59,6 @@ int main(void)
 	sem_t *sem;
 	struct timespec tsini, tsfin;
 
-	/* Initialize output */
 	output_init();
 
 	/* read current time */
