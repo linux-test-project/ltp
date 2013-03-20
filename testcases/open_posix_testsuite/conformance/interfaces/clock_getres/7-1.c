@@ -16,7 +16,7 @@
 #include "posixtest.h"
 
 #define LARGENUM 100000
-int main(int argc, char *argv[])
+int main(void)
 {
 #if _POSIX_CPUTIME != -1
 	struct timespec res;

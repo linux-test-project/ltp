@@ -28,7 +28,7 @@
 
 #define NUMINVALIDTESTS 8
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec res;
 	int invalid_tests[NUMINVALIDTESTS] = {

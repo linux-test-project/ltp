@@ -15,7 +15,7 @@
 
 #define LARGENUM 100000
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #ifdef CLOCK_MONOTONIC
 	struct timespec res;
