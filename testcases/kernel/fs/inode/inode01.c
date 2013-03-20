@@ -96,7 +96,6 @@ char rm_string[200];
 FILE *list_stream = NULL;
 int file_id;
 int list_id;
-char slash[2];
 
 int increment_name(), get_next_name(), mode(), escrivez();
 
@@ -110,9 +109,7 @@ int main()
 	int status;
 	int len;
 	int term();
-
-	slash[0] = '/';
-	slash[1] = '\0';
+	int snp_ret;
 
 	strcpy(path_string, "inode");
 	sprintf(root, "A%d", getpid());
@@ -160,9 +157,13 @@ int main()
 	/*                                      */
 	/****************************************/
 
-	strcpy(path_list_string, path_string);
-	strcat(path_list_string, slash);
-	strcat(path_list_string, "path_list");
+	snp_ret = snprintf(path_list_string, sizeof(path_list_string),
+		"%s/path_list",	path_string);
+	if (snp_ret < 0 || snp_ret >= sizeof(path_list_string)) {
+		tst_resm(TBROK, "snprintf(path_list_string,..) returned %d",
+			snp_ret);
+		fail_exit();
+	}
 	list_id = creat(path_list_string, FILE_MODE);
 	if (list_id == -1) {
 		fprintf(temp,
@@ -308,6 +309,7 @@ int level;			/* the tree depth variable */
 	char new_string[PATH_STRING_LENGTH + 1];
 	int new_level;
 	int i, j;		/* iteration counters */
+	int snp_ret;
 
 	switch_flag = level & TRUE;
 	if (strlen(string) >= MAX_PATH_STRING_LENGTH) {
@@ -324,9 +326,13 @@ int level;			/* the tree depth variable */
 	} else if (level < MAX_DEPTH) {
 		for (i = 0; i <= MAX_BREADTH; i++) {
 			get_next_name();
-			strcpy(new_string, string);
-			strcat(new_string, slash);
-			strcat(new_string, name);
+			snp_ret = snprintf(new_string, sizeof(new_string),
+				"%s/%s", string, name);
+			if (snp_ret < 0 || snp_ret >= sizeof(new_string)) {
+				tst_resm(TBROK, "snprintf(new_string,..) "
+					"returned %d", snp_ret);
+				fail_exit();
+			}
 
 			/****************************************/
 			/*                                      */
