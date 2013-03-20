@@ -20,7 +20,7 @@
 #include "posixtest.h"
 
 #define LARGENUMBER 8000000
-int main(int argc, char *argv[])
+int main(void)
 {
 	clock_t c1, c2;
 	double sec1, sec2;

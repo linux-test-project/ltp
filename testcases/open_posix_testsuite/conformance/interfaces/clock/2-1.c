@@ -21,7 +21,7 @@
 
 #define EXPECTEDVALUE INTMAX_C(1000000)
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	intmax_t clocks_per_sec = (intmax_t) CLOCKS_PER_SEC;
 
