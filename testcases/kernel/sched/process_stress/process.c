@@ -1132,6 +1132,7 @@ void messenger(void)
 				prtln();
 				if (discrim) {
 					prtln();
+					printf("Test exiting with SUCCESS\n");
 					exit(0);
 				}
 				exit(1);
@@ -1204,7 +1205,6 @@ void doit(void)
 
 			}
 		}
-		printf("Test exiting with SUCCESS\n");
 		exit(0);
 	}
 #ifdef __64LDT__
