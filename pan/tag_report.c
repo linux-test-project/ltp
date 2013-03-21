@@ -425,7 +425,7 @@ SYM tags;
 int cuts_testcase(tag, keys)
 SYM tag, keys;
 {
-	char *cuts_info[5];
+	char *cuts_info[6];
 	char key[KEYSIZE];
 	char *oldresult, *newresult, *worst_case();
 	int tok_num = 0;
