@@ -123,6 +123,10 @@ void *threaded(void *arg)
 	if (mf > 0)
 		*ctl = 0;
 
+#ifdef VERBOSE > 0
+	fflush(stdout);
+#endif
+
 	pid = fork();
 	if (pid == (pid_t) - 1) {
 		UNRESOLVED(errno, "Failed to fork()");
