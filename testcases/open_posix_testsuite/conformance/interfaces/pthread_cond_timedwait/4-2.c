@@ -261,6 +261,7 @@ int main(int argc, char *argv[])
 		output("Process-shared attributes won't be tested\n");
 	if ((cs < 0) || (monotonic < 0))
 		output("Alternative clock won't be tested\n");
+	fflush(stdout);
 #endif
 
 	/* We are not interested in testing the clock if we have no other clock available.. */
