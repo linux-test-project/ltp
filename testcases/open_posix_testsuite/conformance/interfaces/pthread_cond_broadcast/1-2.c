@@ -340,6 +340,7 @@ int main(int argc, char *argv[])
 		output("Process-shared attributes won't be tested\n");
 	if ((cs < 0) || (monotonic < 0))
 		output("Alternative clock won't be tested\n");
+	fflush(stdout);
 #endif
 
 	if (monotonic < 0)
