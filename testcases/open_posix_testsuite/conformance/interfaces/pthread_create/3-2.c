@@ -186,6 +186,10 @@ int test_stack(pthread_attr_t * ta, size_t newsize)
 	int status;
 	int ret;
 
+#ifdef VERBOSE > 0
+	fflush(stdout);
+#endif
+
 	child = fork();		/* We'll test the feature in another process as this test may segfault */
 
 	if (child == -1) {
