@@ -210,7 +210,7 @@ void invert_matrix()
 	 * Form an identity matrix in the random matrix
 	 */
 	for (i = 0; i < MATRIX_SIZE; i++) {
-		t1 = matrix_1[i][j];
+		t1 = matrix_1[i][i];
 		for (j = 0; j < MATRIX_SIZE; j++) {
 			matrix_1[i][j] /= t1;
 			matrix_2[i][j] /= t1;
