@@ -31,7 +31,7 @@ void handler2(int signo)
 {
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 	struct sigaction oact;

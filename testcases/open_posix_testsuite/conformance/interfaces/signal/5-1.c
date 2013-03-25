@@ -32,7 +32,7 @@ void SIGUSR2_handler(int signo)
 	printf("do nothing useful\n");
 }
 
-int main()
+int main(void)
 {
 	if (signal(SIGUSR1, SIGUSR1_handler) == SIG_ERR) {
 		perror("Unexpected error while using signal()");

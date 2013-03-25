@@ -79,7 +79,7 @@ int child_func(void)
 	return 0;
 }
 
-int main()
+int main(void)
 {
 	int i, pid, result_fd;
 	char semname[20];

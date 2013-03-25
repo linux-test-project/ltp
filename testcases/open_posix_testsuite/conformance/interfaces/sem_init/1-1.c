@@ -24,7 +24,7 @@ and then check the value of the semaphore.
 #define FUNCTION "sem_init"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main()
+int main(void)
 {
 	sem_t mysemp;
 	int sts;

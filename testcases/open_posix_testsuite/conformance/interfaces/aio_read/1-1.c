@@ -32,7 +32,7 @@
 
 #define TNAME "aio_read/1-1.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 #define WBUF_SIZE 1024

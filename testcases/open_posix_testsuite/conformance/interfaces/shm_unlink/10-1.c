@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int result, i;
 	long name_max;

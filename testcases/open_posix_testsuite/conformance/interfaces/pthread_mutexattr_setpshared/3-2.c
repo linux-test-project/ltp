@@ -26,7 +26,7 @@
 
 #define INVALID_PSHARED_VALUE -1
 
-int main()
+int main(void)
 {
 
 	/* Make sure there is process-shared capability. */

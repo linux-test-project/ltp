@@ -29,7 +29,7 @@ void myhandler(int signo)
 	}
 }
 
-int main()
+int main(void)
 {
 	if (sigset(SIGCHLD, myhandler) == SIG_ERR) {
 		perror("Unexpected error while using sigset()");

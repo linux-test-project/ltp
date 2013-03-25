@@ -38,7 +38,7 @@ void *a_thread_func()
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 #if _POSIX_THREAD_CPUTIME == -1
 	printf("_POSIX_THREAD_CPUTIME not supported\n");

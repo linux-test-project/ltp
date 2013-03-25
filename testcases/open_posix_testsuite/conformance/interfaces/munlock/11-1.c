@@ -19,7 +19,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int result;
 	long page_size;

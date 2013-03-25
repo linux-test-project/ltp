@@ -36,7 +36,7 @@
 
 #define TNAME "aio_cancel/2-2.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 	int fd;

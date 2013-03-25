@@ -29,7 +29,7 @@
 #define BUFFER 40
 #define MAXMSG 5
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE], msgrcd[BUFFER];
 	const char *msgptr = MSGSTR;

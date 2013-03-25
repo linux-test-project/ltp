@@ -49,7 +49,7 @@ void handler(int signo)
 	}
 }
 
-int main()
+int main(void)
 {
 
 	struct sigaction act;

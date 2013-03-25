@@ -18,7 +18,7 @@
 #include "posixtest.h"
 #include <time.h>
 
-int main(int argc, char **argv)
+int main(void)
 {
 
 	struct timespec interval0;

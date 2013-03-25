@@ -26,7 +26,7 @@
  *  6) Verify that there are no more instances for SIGRTMIN in the pending list. *
  */
 
-int main()
+int main(void)
 {
 	sigset_t newmask, pendingset;
 	int sig;

@@ -29,7 +29,7 @@
 #define SLEEPNSEC 400000000
 #define ACCEPTABLEDELTA 30000000
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	timer_t tid;

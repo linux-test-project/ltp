@@ -62,7 +62,7 @@ void *t1_func(void *arg)
 	}
 }
 
-int main()
+int main(void)
 {
 	pthread_t thread1;
 	int th_ret;

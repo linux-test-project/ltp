@@ -20,7 +20,7 @@
  *  4)  Verify the return value and the 'sig' value is correct.
  */
 
-int main()
+int main(void)
 {
 	sigset_t newmask, pendingset;
 	int sig;

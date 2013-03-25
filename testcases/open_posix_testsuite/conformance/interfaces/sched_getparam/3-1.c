@@ -15,7 +15,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main(int argc, char **argv)
+int main(void)
 {
 
 	struct sched_param param;

@@ -24,7 +24,7 @@
 #define MAXMSG 10
 #define MSGSIZE 5
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	mqd_t queue;

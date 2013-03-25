@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	static pthread_rwlock_t rwlock;
 	int rc;

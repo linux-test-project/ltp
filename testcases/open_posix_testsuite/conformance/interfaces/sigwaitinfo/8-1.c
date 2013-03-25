@@ -37,7 +37,7 @@ void myhandler(int signo, siginfo_t * info, void *context)
 	printf("Just a dummy handler\n");
 }
 
-int main()
+int main(void)
 {
 	int pid, i;
 	union sigval value;

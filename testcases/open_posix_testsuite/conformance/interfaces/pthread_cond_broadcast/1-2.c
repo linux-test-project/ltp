@@ -296,7 +296,7 @@ static void children_number(void)
 }
 #endif
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 

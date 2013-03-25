@@ -28,7 +28,7 @@ static void handler(int signo)
 	caught_signal = 1;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #if _POSIX_THREAD_CPUTIME == -1
 	printf("_POSIX_THREAD_CPUTIME not defined\n");

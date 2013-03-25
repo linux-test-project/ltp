@@ -35,7 +35,7 @@
 #define ACCEPTABLEDELTA 1
 #define RESOLUTION	1000000
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	timer_t tid;

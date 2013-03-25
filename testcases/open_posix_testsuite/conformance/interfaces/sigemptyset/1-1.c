@@ -17,7 +17,7 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int main()
+int main(void)
 {
 
 	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,

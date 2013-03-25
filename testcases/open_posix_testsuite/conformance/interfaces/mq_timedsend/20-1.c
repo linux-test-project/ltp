@@ -49,7 +49,7 @@ void testfailed_handler(int signo)
 	exit(PTS_FAIL);
 }
 
-int main()
+int main(void)
 {
 	char *msgptr = MSGSTR;
 	struct timespec ts;

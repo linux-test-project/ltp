@@ -74,7 +74,7 @@ int child_process()
 	return PTS_PASS;
 }
 
-int main()
+int main(void)
 {
 	int fd, child_pid;
 	char *buf;

@@ -29,7 +29,7 @@ int main(void)
 	return PTS_UNSUPPORTED;
 }
 #else
-int main()
+int main(void)
 {
 	int return_value = 0;
 	int result;

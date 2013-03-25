@@ -22,7 +22,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int rc;
 	pthread_barrierattr_t ba;

@@ -27,7 +27,7 @@
 #define FUNCTION "mq_close"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main()
+int main(void)
 {
 	char qname[50];
 	mqd_t queue;

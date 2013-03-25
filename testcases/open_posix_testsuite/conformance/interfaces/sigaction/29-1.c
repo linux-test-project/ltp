@@ -105,7 +105,7 @@ void handler(int sig, siginfo_t * info, void *context)
 }
 
 /* main function */
-int main()
+int main(void)
 {
 	int ret;
 	long rts;

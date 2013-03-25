@@ -29,7 +29,7 @@
 #define SHM_NAME "posixtest_13-1"
 #define BUF_SIZE 8
 
-int main()
+int main(void)
 {
 	int fd, result;
 

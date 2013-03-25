@@ -21,7 +21,7 @@ void handler(int signo)
 	printf("In handler\n");
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int sleepsec = 30;

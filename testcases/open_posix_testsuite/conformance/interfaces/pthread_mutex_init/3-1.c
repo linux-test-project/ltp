@@ -22,7 +22,7 @@ typedef struct my_data {
 
 my_data_t data = { PTHREAD_MUTEX_INITIALIZER, 0 };
 
-int main()
+int main(void)
 {
 	printf("Test PASSED\n");
 	return PTS_PASS;

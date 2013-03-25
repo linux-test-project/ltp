@@ -34,7 +34,7 @@ void *thread_func()
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int rc;
 	clockid_t cid;

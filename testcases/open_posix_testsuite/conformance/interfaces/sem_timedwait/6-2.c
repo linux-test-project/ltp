@@ -29,7 +29,7 @@
 
 #define NANOSEC 1000000000
 
-int main()
+int main(void)
 {
 	sem_t mysemp;
 	struct timespec ts;

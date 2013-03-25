@@ -38,7 +38,7 @@ void handler(int signo, siginfo_t * info, void *context)
 	}
 }
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	struct sigaction act;

@@ -50,7 +50,7 @@ void myhandler(int signo)
 	exit(PTS_FAIL);
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 

@@ -23,7 +23,7 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main()
+int main(void)
 {
 	int policy, result;
 	struct sched_param param;
@@ -59,7 +59,7 @@ int main()
 	return PTS_FAIL;
 }
 #else
-int main()
+int main(void)
 {
 	printf("Does not support SS (SPORADIC SERVER)\n");
 	return PTS_UNSUPPORTED;

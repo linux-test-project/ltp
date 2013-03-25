@@ -112,7 +112,7 @@ void *a_thread_func()
 
 }
 
-int main()
+int main(void)
 {
 
 	int *thread_return_value;

@@ -34,7 +34,7 @@ void handler(int signo)
 	printf("Just a dummy handler\n");
 }
 
-int main()
+int main(void)
 {
 
 	struct sigaction act;

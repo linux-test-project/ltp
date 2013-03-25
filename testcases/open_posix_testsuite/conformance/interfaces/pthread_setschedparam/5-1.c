@@ -197,7 +197,7 @@ void *test(void *arg)
 }
 
 /* Main function */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 	pthread_t th_work, th_sig1, th_sig2, me;

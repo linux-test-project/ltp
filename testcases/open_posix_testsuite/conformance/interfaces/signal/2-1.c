@@ -29,7 +29,7 @@ void myhandler(int signo)
 	handler_called = 1;
 }
 
-int main()
+int main(void)
 {
 	if (signal(SIGCHLD, myhandler) == SIG_ERR) {
 		perror("Unexpected error while using signal()");

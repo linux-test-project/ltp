@@ -54,7 +54,7 @@ void *thread(void *tmp)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t thread_id;
 	pthread_attr_t attr;

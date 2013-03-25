@@ -30,7 +30,7 @@
 #define NAMESIZE 50
 #define BUFFER 20
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE], msgrv[BUFFER];
 	const char *msgptr = "test message";

@@ -30,7 +30,7 @@ void handler(int signo)
 	printf("Now inside signal handler\n");
 }
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	pid = fork();

@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L ||
 	    sysconf(_SC_MONOTONIC_CLOCK) < 200112L)

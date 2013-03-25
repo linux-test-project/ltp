@@ -21,7 +21,7 @@
 
 #define SHM_NAME "posixtest_2-1"
 
-int main()
+int main(void)
 {
 	int fd;
 

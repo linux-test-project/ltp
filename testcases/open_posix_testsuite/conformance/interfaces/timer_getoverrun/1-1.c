@@ -36,7 +36,7 @@ void handler(int signo)
 	}
 }
 
-int main()
+int main(void)
 {
 	struct sigevent ev;
 	struct sigaction act;

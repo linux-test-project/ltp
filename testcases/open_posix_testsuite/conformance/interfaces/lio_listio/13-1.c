@@ -36,7 +36,7 @@
 #define NUM_AIOCBS	10
 #define BUF_SIZE	1024
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 	int fd;

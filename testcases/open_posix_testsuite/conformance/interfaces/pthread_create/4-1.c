@@ -27,7 +27,7 @@ pthread_t self_th;		/* Save the value of the function call pthread_self()
 				   within the thread.  Keeping it global so 'main' can
 				   see it too. */
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
 

@@ -23,7 +23,7 @@
 #include <sched.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 
 	/* Make sure there is prioceiling capability. */

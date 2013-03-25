@@ -40,7 +40,7 @@ static void sig_handler()
 	exit(PTS_PASS);
 }
 
-int main()
+int main(void)
 {
 	pthread_spinlock_t spinlock;
 	struct sigaction act;

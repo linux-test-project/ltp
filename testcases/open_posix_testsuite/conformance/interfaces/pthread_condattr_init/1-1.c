@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pthread_condattr_t condattr;
 	int rc;

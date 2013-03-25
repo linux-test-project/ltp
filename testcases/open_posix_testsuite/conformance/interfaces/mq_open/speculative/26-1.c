@@ -32,7 +32,7 @@
 
 #define NAMESIZE 50
 
-int main()
+int main(void)
 {
 #ifndef _POSIX_OPEN_MAX
 	printf("_POSIX_OPEN_MAX not defined as expected\n");

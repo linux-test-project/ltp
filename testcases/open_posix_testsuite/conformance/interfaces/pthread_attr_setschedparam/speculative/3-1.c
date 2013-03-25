@@ -25,7 +25,7 @@
 #define FIFOPOLICY SCHED_FIFO
 #define PRIORITY_OFFSET 1000
 
-int main()
+int main(void)
 {
 	pthread_attr_t attr;
 	int rc = 0;

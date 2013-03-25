@@ -35,7 +35,7 @@ void an_init_func(void)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int ret;
 

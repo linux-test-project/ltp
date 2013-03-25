@@ -37,7 +37,7 @@
 #define BUFFER 40
 #define MAXMSG 10		// send should end after MAXMSG
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE], msgrcd[BUFFER];
 	char msgptr[MESSAGESIZE];

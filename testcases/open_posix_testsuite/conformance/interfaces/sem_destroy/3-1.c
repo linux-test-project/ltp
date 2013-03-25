@@ -28,7 +28,7 @@
 sem_t psem, csem;
 int n;
 
-int main()
+int main(void)
 {
 	pthread_t prod, cons;
 	void *producer(void *);

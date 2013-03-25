@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int result, new_priority, old_priority, max_prio, policy;
 	struct sched_param param;

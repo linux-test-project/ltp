@@ -131,7 +131,7 @@ void *tf(void *arg)
 }
 
 /* Main entry point. */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 	int sc;
@@ -435,7 +435,7 @@ int main(int argc, char *argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int main(void)
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

@@ -29,7 +29,7 @@ static long messagesize[NUMINVALID] = {
 	19, 2, 1
 };
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	const char *msgptr = MSGSTR;

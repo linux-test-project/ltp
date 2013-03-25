@@ -26,7 +26,7 @@
 
 #define TNAME "munmap/2-1.c"
 
-int main()
+int main(void)
 {
 	int rc;
 

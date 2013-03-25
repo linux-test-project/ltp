@@ -42,7 +42,7 @@ void *a_thread_func()
 	pthread_exit(0);
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
 	void *value_ptr;

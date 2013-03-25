@@ -23,7 +23,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 
 	pthread_spinlock_t spinlock;

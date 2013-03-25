@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pthread_t main_thread;
 

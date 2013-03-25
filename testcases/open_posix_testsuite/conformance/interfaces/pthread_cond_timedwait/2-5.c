@@ -167,7 +167,7 @@ void *threaded(void *arg)
 	return NULL;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, i, j;
 	pthread_mutexattr_t ma;
@@ -378,7 +378,7 @@ int main(int argc, char *argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int main(void)
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

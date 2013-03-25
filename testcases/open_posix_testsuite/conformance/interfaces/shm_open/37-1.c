@@ -37,7 +37,7 @@ char *shm_name[] = {
 	NULL
 };
 
-int main()
+int main(void)
 {
 	int fd, i = 0, result = PTS_PASS;
 

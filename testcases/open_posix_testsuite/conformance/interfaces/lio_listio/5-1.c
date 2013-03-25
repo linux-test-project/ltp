@@ -39,7 +39,7 @@
 
 #define TNAME "lio_listio/5-1.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 	int fd;

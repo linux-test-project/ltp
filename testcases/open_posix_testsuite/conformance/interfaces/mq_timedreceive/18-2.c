@@ -44,7 +44,7 @@ void exit_handler(int signo)
 	return;
 }
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE], msgrv[BUFFER];
 	mqd_t mqdes;

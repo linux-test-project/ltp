@@ -29,7 +29,7 @@
 #define BUFFER 100
 #define MAXMSG 5
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	char msgptr[MESSAGESIZE];

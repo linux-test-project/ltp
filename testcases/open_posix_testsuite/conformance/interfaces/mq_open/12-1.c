@@ -28,7 +28,7 @@
 
 #define NAMESIZE 50
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	mqd_t queue;

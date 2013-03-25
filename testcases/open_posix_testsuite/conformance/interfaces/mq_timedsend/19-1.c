@@ -36,7 +36,7 @@ int invalid_tests[NUMTESTS] = { -1, INT32_MIN, 1000000000, 1000000001,
 	INT32_MAX
 };
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	char *msgptr = MSGSTR;

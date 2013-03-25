@@ -33,7 +33,7 @@
 #define MQMSGSIZE	777
 #define MQCURMSGS	555
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE];
 	mqd_t mqdes;

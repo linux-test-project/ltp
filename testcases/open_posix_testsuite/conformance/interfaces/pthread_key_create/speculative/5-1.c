@@ -36,7 +36,7 @@
 
 pthread_key_t keys[PTHREAD_KEYS_MAX];
 
-int main()
+int main(void)
 {
 	int i, rc;
 

@@ -21,7 +21,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pthread_attr_t new_attr;
 	int ret_val, invalid_val;

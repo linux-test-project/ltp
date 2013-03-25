@@ -87,7 +87,7 @@ static void *th_fn(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int cnt;
 	handler_called = 0;

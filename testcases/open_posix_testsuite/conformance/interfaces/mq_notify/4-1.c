@@ -46,7 +46,7 @@ void mqclean(mqd_t queue, const char *qname)
 	mq_unlink(qname);
 }
 
-int main()
+int main(void)
 {
 	char mqname[50];
 	mqd_t mqdes;

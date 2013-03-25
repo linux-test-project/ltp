@@ -29,7 +29,7 @@
 
 static int invalid_values[NUMTESTS] = { 0, -1, INT32_MIN };
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	mqd_t queue;

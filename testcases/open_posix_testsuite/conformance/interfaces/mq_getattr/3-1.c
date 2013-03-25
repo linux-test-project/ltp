@@ -32,7 +32,7 @@
 #define MAXMSG		40
 #define MSGSIZE		50
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE];
 	mqd_t mqdes;

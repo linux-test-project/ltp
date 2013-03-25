@@ -31,7 +31,7 @@
 
 #define NAMESIZE	50
 
-int main()
+int main(void)
 {
 	mqd_t mqdes;
 	struct sigevent notification;

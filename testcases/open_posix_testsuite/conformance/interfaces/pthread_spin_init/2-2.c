@@ -45,7 +45,7 @@ struct shmstruct {
 	int data;
 } *spinlock_data;
 
-int main()
+int main(void)
 {
 
 	int pshared;

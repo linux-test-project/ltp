@@ -48,7 +48,7 @@ void sig_handler()
 	exit(PTS_FAIL);
 }
 
-int main()
+int main(void)
 {
 
 	/* Make sure there is process-shared capability. */

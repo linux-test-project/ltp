@@ -35,7 +35,7 @@ void *f1(void *parm);
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int value;			/* value protected by mutex */
 
-int main()
+int main(void)
 {
 	int i, rc;
 	pthread_attr_t pta;

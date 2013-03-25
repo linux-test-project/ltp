@@ -140,7 +140,7 @@ void *threaded(void *arg)
 }
 
 /********* main ********/
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, i, j;
 	pthread_t th;

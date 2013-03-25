@@ -39,7 +39,7 @@ void handler(int signo)
 	return;
 }
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	const char *msgptr = MSGSTR;

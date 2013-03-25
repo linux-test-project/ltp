@@ -65,7 +65,7 @@ static void *fn_wr(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int cnt = 0;
 	int rc = 0;

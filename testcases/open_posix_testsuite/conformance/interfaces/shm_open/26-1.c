@@ -27,7 +27,7 @@
 #define CREATION_MODE S_IRUSR|S_IWUSR
 #define OPEN_MODE     S_IRGRP
 
-int main()
+int main(void)
 {
 	int fd;
 	struct stat stat_buf;

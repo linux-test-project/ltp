@@ -24,7 +24,7 @@ The asctime() function shall convert the broken-down time in the structure point
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	struct tm time_ptr;
 

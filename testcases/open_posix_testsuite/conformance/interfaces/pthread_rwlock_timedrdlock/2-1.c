@@ -85,7 +85,7 @@ static void *fn_rd(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int cnt = 0;
 	pthread_t thread1;

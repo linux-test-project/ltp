@@ -27,7 +27,7 @@
 static pthread_barrier_t barrier;
 #define LOOP_NUM 5
 
-int main()
+int main(void)
 {
 	int cnt;
 	int rc;

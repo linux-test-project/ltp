@@ -36,7 +36,7 @@
 #define NAMESIZE 50
 #define TNAME "mq_open/16-1.c"
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	char fname[NAMESIZE];

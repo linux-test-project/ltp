@@ -52,7 +52,7 @@ int set_nonroot()
 	return 0;
 }
 
-int main()
+int main(void)
 {
 	int old_priority;
 	struct sched_param param;

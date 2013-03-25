@@ -24,7 +24,7 @@
 #define MSGSTR "01234567890123456789"
 #define MSGSIZE 10		// < strlen(MSGSTR)
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	const char *msgptr = MSGSTR;

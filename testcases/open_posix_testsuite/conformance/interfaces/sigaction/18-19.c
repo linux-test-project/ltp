@@ -78,7 +78,7 @@ void handler(int sig)
 }
 
 /* main function */
-int main()
+int main(void)
 {
 	int ret;
 

@@ -40,7 +40,7 @@ struct unique {
 	0, 0}
 };
 
-int main(int argc, char **argv)
+int main(void)
 {
 	int result = -1;
 	struct unique *tst;

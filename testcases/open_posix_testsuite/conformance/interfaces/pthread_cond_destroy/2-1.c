@@ -329,7 +329,7 @@ void *timer(void *arg)
 
 /* main function */
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 

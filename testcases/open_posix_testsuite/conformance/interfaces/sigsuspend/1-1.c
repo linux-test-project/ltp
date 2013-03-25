@@ -67,7 +67,7 @@ void handler(int signo)
 	}
 }
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	pid = fork();

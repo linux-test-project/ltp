@@ -28,7 +28,7 @@
 
 #define TNAME "fsync/7-1.c"
 
-int main()
+int main(void)
 {
 	int fd[2];
 

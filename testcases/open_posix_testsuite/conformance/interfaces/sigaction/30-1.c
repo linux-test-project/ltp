@@ -88,7 +88,7 @@ void handler(int signo)
 }
 
 /* main function */
-int main()
+int main(void)
 {
 	int ret;
 

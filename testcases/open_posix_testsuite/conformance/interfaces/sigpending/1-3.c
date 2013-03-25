@@ -76,7 +76,7 @@ void handler(int signo)
 	}
 }
 
-int main()
+int main(void)
 {
 	sigset_t blockset;
 	sigset_t prevset;

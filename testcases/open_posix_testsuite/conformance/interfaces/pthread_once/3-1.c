@@ -66,7 +66,7 @@ void *an_init_func2()
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
 	init_flag = 0;

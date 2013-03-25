@@ -23,7 +23,7 @@
 #define NAMESIZE 50
 #define MSGSTR "O123456789"
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE];
 	const char *msgptr = MSGSTR;

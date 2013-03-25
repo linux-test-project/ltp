@@ -35,7 +35,7 @@
 
 #define TNAME "lio_listio/9-1.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 #define BUF_SIZE 512

@@ -44,7 +44,7 @@ void *a_thread_func()
 	pthread_exit((void *)0);
 }
 
-int main()
+int main(void)
 {
 
 	/* Initialize a mutex attributes object */

@@ -73,7 +73,7 @@ static void *fn_chld(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int rc;
 	pthread_t child_thread;

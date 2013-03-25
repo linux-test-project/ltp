@@ -15,7 +15,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int sleepsec = 30;

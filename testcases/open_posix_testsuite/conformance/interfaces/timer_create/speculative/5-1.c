@@ -47,7 +47,7 @@ void handler(int signo)
 	printf("Caught signal\n");
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigaction act;
 	timer_t tid;

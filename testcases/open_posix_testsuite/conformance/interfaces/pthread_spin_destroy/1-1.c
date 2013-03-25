@@ -27,7 +27,7 @@
 
 static pthread_spinlock_t spinlock;
 
-int main()
+int main(void)
 {
 	int rc = 0;
 

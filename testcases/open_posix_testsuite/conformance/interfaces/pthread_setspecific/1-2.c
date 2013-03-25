@@ -54,7 +54,7 @@ void *a_thread_func()
 
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
 

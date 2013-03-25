@@ -82,7 +82,7 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	pid_t child;
 
@@ -246,7 +246,7 @@ int main(int argc, char *argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int main(void)
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

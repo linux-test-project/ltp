@@ -15,7 +15,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pthread_cond_t cond;
 	int rc;

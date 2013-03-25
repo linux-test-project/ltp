@@ -31,7 +31,7 @@
 #define NAMESIZE 50
 #define BUFFER	40
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE], msgrv[BUFFER];
 	mqd_t mqdes;

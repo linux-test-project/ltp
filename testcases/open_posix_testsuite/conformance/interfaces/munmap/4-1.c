@@ -35,7 +35,7 @@
 
 #define TNAME "munmap/4-1.c"
 
-int main()
+int main(void)
 {
 	int rc;
 

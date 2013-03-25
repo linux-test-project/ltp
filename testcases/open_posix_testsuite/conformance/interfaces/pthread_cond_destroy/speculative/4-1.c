@@ -59,7 +59,7 @@ void *thread(void *tmp)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t low_id;
 	int rc = 0;

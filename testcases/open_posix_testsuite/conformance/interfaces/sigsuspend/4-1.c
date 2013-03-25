@@ -71,7 +71,7 @@ int is_changed(sigset_t set, int sig)
 	return 0;
 }
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	pid = fork();

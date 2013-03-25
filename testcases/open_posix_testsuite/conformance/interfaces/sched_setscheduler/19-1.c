@@ -37,7 +37,7 @@ struct unique {
 	0, 0}
 };
 
-int main()
+int main(void)
 {
 	int policy, invalid_priority, tmp, result = PTS_PASS;
 	struct sched_param param;

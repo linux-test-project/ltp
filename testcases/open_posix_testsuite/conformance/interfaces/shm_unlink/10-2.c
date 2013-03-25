@@ -27,7 +27,7 @@
 /* Ensure that each component length is short enough */
 #define COMPONENT_SIZE _POSIX_NAME_MAX
 
-int main()
+int main(void)
 {
 	int result, i, path_max;
 	char *shm_name;

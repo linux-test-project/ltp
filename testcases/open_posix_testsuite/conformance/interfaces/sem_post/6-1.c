@@ -42,7 +42,7 @@ void handler(int signo)
 	}
 }
 
-int main()
+int main(void)
 {
 	char semname[28];
 	struct sigaction act;

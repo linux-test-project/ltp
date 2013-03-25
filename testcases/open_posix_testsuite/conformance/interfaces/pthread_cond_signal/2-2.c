@@ -94,7 +94,7 @@ void *thr_func(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int i;
 	pthread_t thread[THREAD_NUM];

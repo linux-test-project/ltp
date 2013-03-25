@@ -66,7 +66,7 @@ static void *fn_chld(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int cnt = 0;
 

@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	pid = fork();

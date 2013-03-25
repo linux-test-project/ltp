@@ -18,7 +18,7 @@
 pthread_cond_t cond1, cond2;
 pthread_cond_t cond3 = PTHREAD_COND_INITIALIZER;
 
-int main()
+int main(void)
 {
 	pthread_condattr_t condattr;
 	int rc;

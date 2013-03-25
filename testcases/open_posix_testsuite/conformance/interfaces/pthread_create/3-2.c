@@ -402,7 +402,7 @@ void *schedtest(void *arg)
 	return NULL;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret = 0;
 	int do_stack_tests;

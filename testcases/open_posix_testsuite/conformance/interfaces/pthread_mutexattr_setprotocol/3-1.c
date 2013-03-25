@@ -21,7 +21,7 @@
 
 #define INVALID_PROTOCOL -1
 
-int main()
+int main(void)
 {
 
 	pthread_mutexattr_t mta;

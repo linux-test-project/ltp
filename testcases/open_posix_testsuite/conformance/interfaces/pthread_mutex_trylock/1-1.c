@@ -33,7 +33,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int t1_start = 0;
 int t1_pause = 1;
 
-int main()
+int main(void)
 {
 	int i, rc;
 	pthread_t t1;

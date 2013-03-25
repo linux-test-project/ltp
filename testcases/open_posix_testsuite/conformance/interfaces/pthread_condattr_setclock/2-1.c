@@ -29,7 +29,7 @@
 
 #define INVALID_CLOCKID -100
 
-int main()
+int main(void)
 {
 	pthread_condattr_t condattr;
 	int rc;

@@ -40,7 +40,7 @@ int child_process(char *qname, int read_pipe, int write_pipe);
 mqd_t open_queue(char *qname, int oflag, int mode);
 int send_receive(int read_pipe, int write_pipe, char send, char *reply);
 
-int main()
+int main(void)
 {
 	char qname[50];
 	pid_t pid;

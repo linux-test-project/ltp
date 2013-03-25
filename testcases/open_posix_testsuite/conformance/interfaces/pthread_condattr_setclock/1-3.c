@@ -27,7 +27,7 @@
 #include <time.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 
 #if _POSIX_CPUTIME == -1

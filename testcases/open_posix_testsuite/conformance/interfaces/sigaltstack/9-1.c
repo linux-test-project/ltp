@@ -37,7 +37,7 @@
 static stack_t a;
 static char path[PATH_MAX + 1];
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	int rc;
 	char path[PATH_MAX + 1];

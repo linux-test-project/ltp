@@ -43,7 +43,7 @@ void *thread_func()
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int rc;
 	pthread_t new_th;

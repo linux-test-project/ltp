@@ -26,7 +26,7 @@ void handler(int signo, siginfo_t * info, void *context)
 	handler_called = 1;
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 

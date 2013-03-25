@@ -45,7 +45,7 @@ time_t currsec1, currsec2;	/* Variables for saving time before
  * MAIN()
  *
  * *************************/
-int main()
+int main(void)
 {
 	pthread_t new_th;
 

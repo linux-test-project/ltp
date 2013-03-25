@@ -126,7 +126,7 @@ void *threaded(void *arg)
 	return NULL;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret = 0;
 	void *rval;

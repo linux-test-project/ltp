@@ -76,7 +76,7 @@ void *a_thread_func()
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 
 	int *thread_return_value;

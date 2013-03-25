@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	union sigval value;
 	value.sival_int = 0;	/* 0 is just an arbitrary value */

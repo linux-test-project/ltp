@@ -24,7 +24,7 @@
 
 #define NUM_OF_CONDATTR 10
 
-int main()
+int main(void)
 {
 
 	/* Make sure there is process-shared capability. */

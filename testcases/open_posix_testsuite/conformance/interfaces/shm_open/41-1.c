@@ -20,7 +20,7 @@
 
 #define SHM_NAME "posixtest_41-1"
 
-int main()
+int main(void)
 {
 	int fd, result;
 

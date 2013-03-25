@@ -51,7 +51,7 @@ void stopsleep_handler(int signo)
 	return;
 }
 
-int main()
+int main(void)
 {
 	int pid;
 	char msgrcd[BUFFER];

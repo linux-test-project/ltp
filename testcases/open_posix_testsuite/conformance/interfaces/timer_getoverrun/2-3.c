@@ -41,7 +41,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 #ifndef _POSIX_REALTIME_SIGNALS
 	printf("_POSIX_REALTIME_SIGNALS is not defined\n");

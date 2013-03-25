@@ -21,7 +21,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int fd;
 

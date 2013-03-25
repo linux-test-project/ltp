@@ -33,7 +33,7 @@ void sig_handler()
 	exit(PTS_PASS);
 }
 
-int main()
+int main(void)
 {
 	pthread_barrier_t barrier;
 	struct sigaction act;

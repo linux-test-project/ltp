@@ -15,7 +15,7 @@
 
 #define NUMTESTS 7
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleepfor, tsstorage;
 	int sleepnsec[NUMTESTS] = { -1, -5, -1000000000, 1000000000,

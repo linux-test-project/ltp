@@ -22,7 +22,7 @@ void myhandler(int signo)
 	printf("handler does nothing useful.\n");
 }
 
-int main()
+int main(void)
 {
 	errno = -1;
 

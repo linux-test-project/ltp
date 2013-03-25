@@ -29,7 +29,7 @@ void *a_thread_func(void *attr)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_threads[NUM_THREADS];
 	pthread_attr_t new_attr;

@@ -138,7 +138,7 @@ void *threaded(void *arg)
 }
 
 /** parent thread function **/
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 	int i;
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
 	PASSED;
 }
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int main(void)
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

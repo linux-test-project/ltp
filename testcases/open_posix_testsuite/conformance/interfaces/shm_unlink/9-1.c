@@ -33,7 +33,7 @@
 
 #define SHM_NAME "posixtest_9-1"
 
-int main()
+int main(void)
 {
 	int fd, result;
 	struct passwd *pw;

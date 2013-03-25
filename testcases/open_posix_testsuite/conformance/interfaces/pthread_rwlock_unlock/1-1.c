@@ -104,7 +104,7 @@ static void *fn_rd(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int cnt = 0;
 	int rc = 0;

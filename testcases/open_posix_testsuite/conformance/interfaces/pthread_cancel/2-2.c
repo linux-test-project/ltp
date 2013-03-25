@@ -71,7 +71,7 @@ void *a_thread_func(void *tmp)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
 	int rc = 0;

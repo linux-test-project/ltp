@@ -119,7 +119,7 @@ void sigterm_handler(int signum)
 	exit(0);
 }
 
-int main()
+int main(void)
 {
 	int child_count, i;
 	struct sched_param param;

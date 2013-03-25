@@ -30,7 +30,7 @@ void *thread_function(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t child_thread;
 	pthread_t invalid_tid;

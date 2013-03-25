@@ -136,7 +136,7 @@ void *threaded(void *arg)
 	return arg;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret = 0;
 	pthread_t child;

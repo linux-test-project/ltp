@@ -55,7 +55,7 @@ void myhandler(int signo)
 {
 }
 
-int main()
+int main(void)
 {
 	sigset_t mask;
 	sigemptyset(&mask);

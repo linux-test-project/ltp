@@ -21,7 +21,7 @@
  *  4)  Verify this process will return when the signal is sent.
  */
 
-int main()
+int main(void)
 {
 	sigset_t newmask, pendingset;
 	int sig;

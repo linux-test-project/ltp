@@ -18,7 +18,7 @@
 pthread_mutex_t mutex1, mutex2;
 pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
 
-int main()
+int main(void)
 {
 	pthread_mutexattr_t mta;
 	int rc;

@@ -256,7 +256,7 @@ void *worker(void *arg)
 }
 
 /* Main function */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 	pthread_t th_waiter, th_worker, th_sig1, th_sig2;

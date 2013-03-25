@@ -31,7 +31,7 @@ void myhandler(int signo, siginfo_t * info, void *context)
 	printf("Inside handler\n");
 }
 
-int main()
+int main(void)
 {
 
 	struct sigaction act;

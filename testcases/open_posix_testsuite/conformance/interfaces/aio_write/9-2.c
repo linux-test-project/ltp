@@ -38,7 +38,7 @@
 
 #define TNAME "aio_write/9-2.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 #define BUF_SIZE 512

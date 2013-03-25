@@ -34,7 +34,7 @@
 
 #define TNAME "aio_error/3-1.c"
 
-int main()
+int main(void)
 {
 
 	char tmpfname[256];

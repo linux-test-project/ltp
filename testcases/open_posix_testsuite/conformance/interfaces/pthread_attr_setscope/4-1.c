@@ -26,7 +26,7 @@
 
 #define INVALIDSCOPE 999
 
-int main()
+int main(void)
 {
 	int rc = 0;
 	pthread_attr_t attr;

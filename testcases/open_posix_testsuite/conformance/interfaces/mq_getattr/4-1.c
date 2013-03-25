@@ -31,7 +31,7 @@
 #define MSGSIZE		50
 #define MAXMSG		40
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE];
 	const char *msgptr = "test message";

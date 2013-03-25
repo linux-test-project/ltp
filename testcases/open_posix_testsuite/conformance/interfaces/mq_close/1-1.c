@@ -22,7 +22,7 @@
 #define TEST "1-1"
 #define FUNCTION "mq_close"
 
-int main()
+int main(void)
 {
 	char qname[50];
 	mqd_t queue;

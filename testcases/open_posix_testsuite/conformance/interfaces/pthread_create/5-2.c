@@ -35,7 +35,7 @@ void *a_thread_func(void *num)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
 	int i[NUM_THREADS], j;

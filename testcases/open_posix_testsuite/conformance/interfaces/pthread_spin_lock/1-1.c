@@ -95,7 +95,7 @@ static void *fn_chld(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t child_thread;
 	void *value_ptr;

@@ -24,7 +24,7 @@
 
 #define SHM_NAME "posixtest_17-1"
 
-int main()
+int main(void)
 {
 	int fd, result;
 	struct stat stat_buf;

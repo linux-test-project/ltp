@@ -94,7 +94,7 @@ void *t1_func(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t thread1;
 

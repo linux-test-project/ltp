@@ -56,7 +56,7 @@ static void child_handler()
 	return;
 }
 
-int main()
+int main(void)
 {
 	pid_t pid;
 

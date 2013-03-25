@@ -22,7 +22,7 @@ void myhandler(int signo)
 	printf("SIGUSR1 called. Inside handler\n");
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 	act.sa_flags = 0;

@@ -23,7 +23,7 @@
 
 #define BUFSIZE 8
 
-int main()
+int main(void)
 {
 	int result;
 	long page_size;

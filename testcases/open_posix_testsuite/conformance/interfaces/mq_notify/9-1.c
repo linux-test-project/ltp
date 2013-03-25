@@ -38,7 +38,7 @@ void mqclean(mqd_t queue, const char *qname)
 	mq_unlink(qname);
 }
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE];
 	mqd_t mqdes;

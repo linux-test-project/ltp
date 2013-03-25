@@ -58,7 +58,7 @@ int set_nonroot()
 	return 0;
 }
 
-int main()
+int main(void)
 {
 	int max_priority, old_priority, old_policy, new_policy, policy;
 	struct sched_param param;

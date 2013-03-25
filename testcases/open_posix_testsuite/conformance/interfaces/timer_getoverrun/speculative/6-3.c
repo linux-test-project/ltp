@@ -21,7 +21,7 @@
 #include <time.h>
 #include "posixtest.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	timer_t tid;

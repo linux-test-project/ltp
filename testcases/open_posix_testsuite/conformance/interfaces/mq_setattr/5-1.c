@@ -32,7 +32,7 @@
 #define MQFLAGS		1
 #define NAMESIZE	50
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE];
 	mqd_t mqdes;

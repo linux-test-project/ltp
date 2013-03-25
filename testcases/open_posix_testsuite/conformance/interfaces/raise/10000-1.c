@@ -56,7 +56,7 @@ void handler(int signo)
 	printf("Caught signal being tested!\n");
 }
 
-int main()
+int main(void)
 {
 	int i;
 	int failure = 0;

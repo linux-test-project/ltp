@@ -38,7 +38,7 @@ void handler(int signo)
 	exit(0);
 }
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	if ((pid = fork()) == 0) {

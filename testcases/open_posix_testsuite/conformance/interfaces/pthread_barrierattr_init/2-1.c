@@ -24,7 +24,7 @@
 
 #define BARRIER_NUM 100
 
-int main()
+int main(void)
 {
 	int rc;
 	pthread_barrierattr_t ba;

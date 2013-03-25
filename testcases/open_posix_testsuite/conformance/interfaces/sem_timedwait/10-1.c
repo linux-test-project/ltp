@@ -29,7 +29,7 @@
 
 #define SLEEP_SEC 1
 
-int main()
+int main(void)
 {
 	sem_t mysemp;
 	struct timespec ts, ts_2;

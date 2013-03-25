@@ -17,7 +17,7 @@
 #include <time.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 
 	/* current time */

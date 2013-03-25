@@ -175,7 +175,7 @@ static void *worker(void *arg)
 	return NULL;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, i;
 	pthread_t th_waiter[5], th_worker, th_sig1, th_sig2;

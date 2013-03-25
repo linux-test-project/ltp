@@ -23,7 +23,7 @@
 #define FUNCTION "sem_unlink"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main()
+int main(void)
 {
 
 	char semname[28];

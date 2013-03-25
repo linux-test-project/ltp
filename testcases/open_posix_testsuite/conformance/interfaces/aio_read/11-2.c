@@ -36,7 +36,7 @@
 
 #define TNAME "aio_read/11-2.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 #define BUF_SIZE 111

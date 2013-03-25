@@ -335,7 +335,7 @@ void main_loop()
 	output("Test finished after %lu usec.\n", usec - usec_start);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	output_init();
 	scenar_init();

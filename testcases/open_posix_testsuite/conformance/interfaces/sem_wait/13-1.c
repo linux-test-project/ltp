@@ -61,7 +61,7 @@ static void handler(int sig)
 	}
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 	struct timespec ts_ref, ts_fin;

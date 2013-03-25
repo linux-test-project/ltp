@@ -31,7 +31,7 @@ void handler(int signo)
 	printf("Inside dummy handler\n");
 }
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	pid = fork();

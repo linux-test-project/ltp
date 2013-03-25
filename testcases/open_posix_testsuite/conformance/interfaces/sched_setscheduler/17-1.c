@@ -42,7 +42,7 @@ struct unique {
 	0, 0}
 };
 
-int main()
+int main(void)
 {
 	int policy, invalid_priority, result = PTS_PASS;
 	int old_priority, old_policy, new_policy;

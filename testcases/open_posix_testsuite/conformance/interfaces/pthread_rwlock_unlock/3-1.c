@@ -181,7 +181,7 @@ static void *fn_wr_2(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 #ifndef _POSIX_THREAD_PRIORITY_SCHEDULING
 	printf("Posix Thread Execution Scheduling not supported\n");

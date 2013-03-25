@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int policy, invalid_priority, old_priority;
 	struct sched_param param;

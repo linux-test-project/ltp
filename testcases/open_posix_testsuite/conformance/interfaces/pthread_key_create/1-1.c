@@ -31,7 +31,7 @@
 
 pthread_key_t keys[NUM_OF_KEYS];
 
-int main()
+int main(void)
 {
 	int i;
 	void *rc;

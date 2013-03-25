@@ -72,7 +72,7 @@ thread_exit_failure:
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_t new_th;
 

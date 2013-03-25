@@ -36,7 +36,7 @@
 
 #define TNAME "aio_cancel/8-1.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 #define BUF_SIZE 1024

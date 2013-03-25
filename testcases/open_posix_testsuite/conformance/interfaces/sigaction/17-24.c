@@ -33,7 +33,7 @@ void handler(int signo)
 	wakeup++;
 }
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	struct timeval tv;

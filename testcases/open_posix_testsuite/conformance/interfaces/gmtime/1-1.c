@@ -14,7 +14,7 @@
 #include <time.h>
 #include <posixtest.h>
 
-int main()
+int main(void)
 {
 	struct tm *tm_ptr;
 	time_t the_time;

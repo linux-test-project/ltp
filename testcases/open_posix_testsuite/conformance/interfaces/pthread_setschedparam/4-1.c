@@ -155,7 +155,7 @@ void *threaded(void *arg)
 }
 
 /* The main test function. */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret = 0;
 	pthread_t child;

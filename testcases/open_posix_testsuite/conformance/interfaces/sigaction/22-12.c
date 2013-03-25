@@ -59,7 +59,7 @@ void handler(int signo)
 	inside_handler--;
 }
 
-int main()
+int main(void)
 {
 	if (fork() == 0) {
 		/* child */

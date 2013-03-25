@@ -23,7 +23,7 @@
 #define FUNCTION "sem_trywait"
 #define ERROR_PREFIX "unexpected errno: " FUNCTION " " TEST ": "
 
-int main()
+int main(void)
 {
 	sem_t *mysemp;
 	char semname[28];

@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	time_t time1, time0;
 

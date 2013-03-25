@@ -15,7 +15,7 @@
 
 pthread_mutex_t mutex;
 
-int main()
+int main(void)
 {
 	int rc;
 

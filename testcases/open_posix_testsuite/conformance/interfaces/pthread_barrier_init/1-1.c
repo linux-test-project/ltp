@@ -29,7 +29,7 @@
 
 static pthread_barrier_t barrier;
 
-int main()
+int main(void)
 {
 	int rc;
 	pthread_barrierattr_t ba;

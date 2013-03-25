@@ -32,7 +32,7 @@
 
 #define TNAME "lio_listio/6-1.c"
 
-int main()
+int main(void)
 {
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)

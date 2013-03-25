@@ -26,7 +26,7 @@
 #include <limits.h>
 #include "posixtest.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #ifdef TIMER_MAX
 	struct sigevent ev;

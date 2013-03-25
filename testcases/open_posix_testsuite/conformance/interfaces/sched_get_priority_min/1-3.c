@@ -19,7 +19,7 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)||defined(_POSIX_THREAD_SPORADIC_SERVER)&&(_POSIX_THREAD_SPORADIC_SERVER != -1)
 
-int main(int argc, char **argv)
+int main(void)
 {
 	int result = -1;
 
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	return PTS_UNRESOLVED;
 }
 #else
-int main()
+int main(void)
 {
 	printf("Does not support SS (SPORADIC SERVER)\n");
 	return PTS_UNSUPPORTED;

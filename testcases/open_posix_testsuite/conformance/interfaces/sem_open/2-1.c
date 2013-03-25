@@ -26,7 +26,7 @@
 #define FUNCTION "sem_open"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main()
+int main(void)
 {
 	sem_t *mysemp;
 	char semname[50];

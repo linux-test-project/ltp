@@ -60,7 +60,7 @@ int verify_policy(pthread_attr_t * attr, int policytype)
 	return 0;
 }
 
-int main()
+int main(void)
 {
 	int rc = 0;
 	pthread_attr_t attr;

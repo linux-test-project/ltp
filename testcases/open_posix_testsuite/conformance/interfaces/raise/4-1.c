@@ -34,7 +34,7 @@ void handler(int signo)
 	exit(0);
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 

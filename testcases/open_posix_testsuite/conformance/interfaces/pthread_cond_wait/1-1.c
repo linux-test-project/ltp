@@ -65,7 +65,7 @@ void *t1_func(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 

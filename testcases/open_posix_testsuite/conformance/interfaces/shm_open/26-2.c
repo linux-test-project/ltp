@@ -36,7 +36,7 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_26-2"
 
-int main()
+int main(void)
 {
 	int fd;
 	struct stat stat_buf;

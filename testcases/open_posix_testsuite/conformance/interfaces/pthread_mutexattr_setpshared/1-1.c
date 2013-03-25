@@ -39,7 +39,7 @@
 
 pthread_mutex_t new_mutex;	/* The mutex. */
 
-int main()
+int main(void)
 {
 	pthread_mutexattr_t mta;
 	int ret;

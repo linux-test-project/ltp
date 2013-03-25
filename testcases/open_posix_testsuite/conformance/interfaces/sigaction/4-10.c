@@ -35,7 +35,7 @@ void handler(int signo)
 	exit(0);
 }
 
-int main()
+int main(void)
 {
 	if (fork() == 0) {
 		/* child */

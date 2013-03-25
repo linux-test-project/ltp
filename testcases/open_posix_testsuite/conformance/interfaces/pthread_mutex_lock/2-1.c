@@ -15,7 +15,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pthread_mutex_t mutex;
 	int rc;

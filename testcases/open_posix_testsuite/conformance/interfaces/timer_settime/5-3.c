@@ -41,7 +41,7 @@ void handler(int signo)
 	passes += 1;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	struct sigaction act;

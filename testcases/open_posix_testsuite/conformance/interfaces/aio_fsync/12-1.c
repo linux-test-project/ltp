@@ -21,7 +21,7 @@
 
 #define TNAME "aio_fsync/12-1.c"
 
-int main()
+int main(void)
 {
 	struct aiocb aiocb;
 

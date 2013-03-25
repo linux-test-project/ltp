@@ -39,7 +39,7 @@ struct unique {
 	0, 0}
 };
 
-int main(int argc, char **argv)
+int main(void)
 {
 	int tmp, policy, priority, result = PTS_PASS;
 	struct sched_param param;

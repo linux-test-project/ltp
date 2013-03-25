@@ -45,7 +45,7 @@ void sigrt1_handler(int signum, siginfo_t * info, void *context)
 	received_all = 1;
 }
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 	int fd;

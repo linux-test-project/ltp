@@ -24,7 +24,7 @@
 #define FUNCTION "sem_destroy"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main()
+int main(void)
 {
 	sem_t mysemp;
 

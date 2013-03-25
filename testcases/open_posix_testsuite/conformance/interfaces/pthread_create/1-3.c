@@ -31,7 +31,7 @@ void alarm_handler();
 
 pthread_t a;
 
-int main()
+int main(void)
 {
 
 	/* Set the action for SIGALRM to generate an error if it is

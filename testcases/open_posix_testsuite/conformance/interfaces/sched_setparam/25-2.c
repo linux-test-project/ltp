@@ -23,7 +23,7 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main()
+int main(void)
 {
 	int policy, invalid_priority, result;
 	struct sched_param param;

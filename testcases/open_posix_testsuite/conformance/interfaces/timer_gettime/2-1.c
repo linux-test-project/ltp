@@ -21,7 +21,7 @@
 
 #define TIMERSEC 1
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	timer_t tid;

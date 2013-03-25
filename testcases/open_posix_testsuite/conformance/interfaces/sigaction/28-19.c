@@ -179,7 +179,7 @@ void handler_2(int sig)
 }
 
 /* main function */
-int main()
+int main(void)
 {
 	int ret;
 

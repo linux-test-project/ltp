@@ -27,7 +27,7 @@ void *runner(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int new_priority, max_priority, old_policy, policy, result;
 	struct sched_param param;

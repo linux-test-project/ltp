@@ -36,7 +36,7 @@
 
 #define TNAME "aio_write/6-1.c"
 
-int main()
+int main(void)
 {
 	struct aiocb aiocb;
 

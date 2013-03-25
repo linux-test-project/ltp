@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int result, old_policy, new_policy;
 	struct sched_param param;

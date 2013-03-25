@@ -48,7 +48,7 @@ int parent_process(char *mqname, int read_pipe, int write_pipe, int child_pid);
 int child_process(char *mqname, int read_pipe, int write_pipe);
 int send_receive(int read_pipe, int write_pipe, char send, char *reply);
 
-int main()
+int main(void)
 {
 	char mqname[NAMESIZE];
 	pid_t pid;

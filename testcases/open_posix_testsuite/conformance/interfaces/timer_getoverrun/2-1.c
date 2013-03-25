@@ -28,7 +28,7 @@
 
 #define EXPECTEDOVERRUNS 2
 
-int main()
+int main(void)
 {
 	sigset_t set;
 	struct sigevent ev;

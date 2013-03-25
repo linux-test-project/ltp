@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pid_t pid;
 	int ret;

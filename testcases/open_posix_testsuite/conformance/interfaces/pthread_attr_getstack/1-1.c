@@ -27,7 +27,7 @@
 #define FUNCTION "pthread_attr_getstack"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main()
+int main(void)
 {
 	pthread_attr_t attr;
 	void *stack_addr;

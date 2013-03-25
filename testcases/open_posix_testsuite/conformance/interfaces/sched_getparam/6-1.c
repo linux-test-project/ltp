@@ -68,7 +68,7 @@ int set_nonroot()
 	return 0;
 }
 
-int main(int argc, char **argv)
+int main(void)
 {
 
 	struct sched_param param;

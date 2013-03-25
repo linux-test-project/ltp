@@ -172,7 +172,7 @@ void *unlock_issue(void *arg)
 }
 
 /***** main program *****/
-int main(int argc, char *argv[])
+int main(void)
 {
 	pthread_mutex_t mtx_null, mtx_macro = PTHREAD_MUTEX_INITIALIZER;
 	pthread_t thr;

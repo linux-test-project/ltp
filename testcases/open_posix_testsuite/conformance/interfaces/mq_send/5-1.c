@@ -62,7 +62,7 @@ int cleanup_for_exit(int gqueue, char *gqname, int ret)
 	return ret;
 }
 
-int main()
+int main(void)
 {
 	int pid;
 	char msgrcd[BUFFER];

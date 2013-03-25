@@ -25,7 +25,7 @@
 #define TEST "7-1"
 #define FUNCTION "mq_unlink"
 
-int main()
+int main(void)
 {
 	char mqname[50] = "/something-which-does-not-exit";
 

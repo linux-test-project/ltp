@@ -84,7 +84,7 @@ static void *fn_rd_2(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int cnt = 0;
 	int rc = 0;

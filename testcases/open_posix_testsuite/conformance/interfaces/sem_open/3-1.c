@@ -58,7 +58,7 @@ int set_nonroot()
 	return 0;
 }
 
-int main()
+int main(void)
 {
 	sem_t *mysemp;
 	char semname[50];

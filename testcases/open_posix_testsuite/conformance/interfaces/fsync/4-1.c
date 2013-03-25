@@ -27,7 +27,7 @@
 
 #define TNAME "fsync/4-1.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 	char *data;

@@ -61,7 +61,7 @@ void sig_handler()
 	exit(PTS_FAIL);
 }
 
-int main()
+int main(void)
 {
 	int cnt = 0;
 	int rc;

@@ -29,7 +29,7 @@ void handler(int signo)
 	handler_called = 1;
 }
 
-int main()
+int main(void)
 {
 	struct sigaction act;
 	struct sigaction oact;

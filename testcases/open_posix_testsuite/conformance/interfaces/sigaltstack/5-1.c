@@ -24,7 +24,7 @@ void handler(int signo)
 	printf("Do nothing useful\n");
 }
 
-int main()
+int main(void)
 {
 
 	stack_t alternate_s, current_s;

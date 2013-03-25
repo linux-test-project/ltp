@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int result, new_priority, old_priority, max_prio;
 	int old_policy, new_policy, test_policy;

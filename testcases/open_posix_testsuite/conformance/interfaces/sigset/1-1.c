@@ -32,7 +32,7 @@ void myhandler(int signo)
 	handler_called = 1;
 }
 
-int main()
+int main(void)
 {
 
 	struct sigaction act;

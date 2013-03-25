@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int failure = 0;
 	union sigval value;

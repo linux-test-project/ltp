@@ -28,7 +28,7 @@ void handler(int signo)
 	exit(CHILDSUCCESS);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleepfor, tsstorage;
 	int sleepsec = 30;

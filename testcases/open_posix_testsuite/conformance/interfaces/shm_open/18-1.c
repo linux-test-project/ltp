@@ -36,7 +36,7 @@
 #define ALL_MOD_FLAGS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | \
 		       S_IROTH | S_IWOTH)	/* rw?rw?rw? */
 
-int main()
+int main(void)
 {
 	int fd, result;
 	struct stat stat_buf;

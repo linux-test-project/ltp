@@ -27,7 +27,7 @@
 
 static pthread_rwlock_t rwlock;
 
-int main()
+int main(void)
 {
 	int cnt = 0;
 	pthread_rwlockattr_t rwlockattr;

@@ -19,7 +19,7 @@
 
 #if !defined(_POSIX_MEMLOCK) || _POSIX_MEMLOCK == -1
 
-int main()
+int main(void)
 {
 	printf("Does not support ML (Memory Lock).\n");
 	return PTS_UNSUPPORTED;
@@ -28,7 +28,7 @@ int main()
 #else
 
 #if _POSIX_MEMLOCK != 0
-int main()
+int main(void)
 {
 	int result;
 
@@ -50,7 +50,7 @@ int main()
 
 #else
 
-int main()
+int main(void)
 {
 	int result;
 	long memlock;

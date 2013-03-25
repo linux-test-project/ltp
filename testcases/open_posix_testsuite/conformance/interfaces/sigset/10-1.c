@@ -18,7 +18,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	if (sigset(SIGKILL, SIG_IGN) == SIG_ERR) {
 		if (errno != EINVAL) {

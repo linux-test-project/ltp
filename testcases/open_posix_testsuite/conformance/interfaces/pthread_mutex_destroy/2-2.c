@@ -103,7 +103,7 @@ struct _scenar {
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
 /* Main function */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 	int i, j;
@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int main(void)
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

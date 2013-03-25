@@ -24,7 +24,7 @@
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-int main()
+int main(void)
 {
 	int rc;
 

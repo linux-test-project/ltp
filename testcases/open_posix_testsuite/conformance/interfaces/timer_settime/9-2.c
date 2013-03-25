@@ -41,7 +41,7 @@ static int timeroffsets[NUMTESTS][2] = { {0, 90000000}, {1, 0},
 {3, 5000}, {4, 5}
 };
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct sigevent ev;
 	timer_t tid;

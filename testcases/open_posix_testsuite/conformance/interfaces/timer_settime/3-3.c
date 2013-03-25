@@ -29,7 +29,7 @@ void handler(int signo)
 	printf("OK to be in once\n");
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	sigset_t set;
 	struct sigevent ev;

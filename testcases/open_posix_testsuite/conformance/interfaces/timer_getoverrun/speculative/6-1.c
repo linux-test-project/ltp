@@ -17,7 +17,7 @@
 
 #define BOGUSTID 9999
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	timer_t tid;
 	int tval = BOGUSTID;

@@ -152,7 +152,7 @@ void *tf(void *arg)
 }
 
 /* Main entry point. */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret;
 	int sc;

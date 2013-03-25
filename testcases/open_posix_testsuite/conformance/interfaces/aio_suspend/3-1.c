@@ -37,7 +37,7 @@
 #define NENT	8
 #define NAIOCB	3
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 #define BUF_SIZE 1024

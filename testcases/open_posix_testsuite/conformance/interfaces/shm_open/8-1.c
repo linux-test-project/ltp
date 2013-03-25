@@ -33,7 +33,7 @@
 
 #define SHM_NAME "posixtest_8-1"
 
-int main()
+int main(void)
 {
 	int fd1, fd2;
 	char path[25] = "/tmp/posixtestXXXXXX";

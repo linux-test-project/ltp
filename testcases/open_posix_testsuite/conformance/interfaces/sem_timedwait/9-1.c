@@ -35,7 +35,7 @@ void handler(int signo)
 	printf("In handler\n");
 }
 
-int main()
+int main(void)
 {
 	sem_t mysemp;
 	struct timespec ts;

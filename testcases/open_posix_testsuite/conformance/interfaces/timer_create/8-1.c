@@ -53,7 +53,7 @@ void handler(int signo)
 	printf("Not expected - Caught signal\n");
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	timer_t tid;
 	struct sigaction actp;

@@ -18,7 +18,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pthread_mutexattr_t mta;
 	int type;

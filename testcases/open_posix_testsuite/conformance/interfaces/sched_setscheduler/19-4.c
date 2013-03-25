@@ -24,7 +24,7 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main()
+int main(void)
 {
 	int policy, result;
 	int result_code = PTS_PASS;
@@ -82,7 +82,7 @@ int main()
 
 }
 #else
-int main()
+int main(void)
 {
 	printf("Does not support SS (SPORADIC SERVER)\n");
 	return PTS_UNSUPPORTED;

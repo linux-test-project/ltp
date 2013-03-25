@@ -22,7 +22,7 @@
 #include <limits.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	char qname[PATH_MAX * 2];
 	mqd_t queue;

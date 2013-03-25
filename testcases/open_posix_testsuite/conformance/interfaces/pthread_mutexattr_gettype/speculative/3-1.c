@@ -26,7 +26,7 @@
 #include "posixtest.h"
 #include <errno.h>
 
-int main()
+int main(void)
 {
 	pthread_mutexattr_t mta;
 	int type, ret;

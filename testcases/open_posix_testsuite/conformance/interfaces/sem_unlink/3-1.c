@@ -127,7 +127,7 @@ int set_nonroot()
 }
 
 /* The main test function. */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, status;
 	pid_t ch, ctl;

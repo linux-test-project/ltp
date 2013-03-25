@@ -56,7 +56,7 @@ void stopsleep_handler(int signo)
 	return;
 }
 
-int main()
+int main(void)
 {
 	int pid;
 	struct mq_attr attr;

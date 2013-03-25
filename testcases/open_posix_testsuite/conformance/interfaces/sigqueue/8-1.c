@@ -38,7 +38,7 @@ void myhandler(int signo, siginfo_t * info, void *context)
 	counter++;
 }
 
-int main()
+int main(void)
 {
 	int pid, i;
 	union sigval value;

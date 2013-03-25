@@ -19,7 +19,7 @@ void handler(int signo)
 	printf("Caught SIGCHLD\n");
 }
 
-int main()
+int main(void)
 {
 
 	/* Make sure this flag is supported. */

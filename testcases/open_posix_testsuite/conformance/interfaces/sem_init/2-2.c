@@ -23,7 +23,7 @@
 #define FUNCTION "sem_init"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main()
+int main(void)
 {
 	sem_t mysemp;
 	int val;

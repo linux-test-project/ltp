@@ -44,7 +44,7 @@ static int sleepinvalid[NUMINVALID][2] = { {-1, -1}, {0, -1},
 {0, 1075002478}
 };
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int i;

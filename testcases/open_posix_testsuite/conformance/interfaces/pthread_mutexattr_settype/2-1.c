@@ -39,7 +39,7 @@ void alarm_handler(int signo)
 	exit(PTS_PASS);
 }
 
-int main()
+int main(void)
 {
 	pthread_mutex_t mutex;
 	pthread_mutexattr_t mta;

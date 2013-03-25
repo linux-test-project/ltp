@@ -31,7 +31,7 @@
 #define MSGSTR "0123456789"
 #define BUFFER 40
 
-int main()
+int main(void)
 {
 	char qname[NAMESIZE], msgrcd[BUFFER];
 	const char *msgptr = MSGSTR;

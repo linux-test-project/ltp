@@ -35,7 +35,7 @@
 
 #define TNAME "aio_read/10-1.c"
 
-int main()
+int main(void)
 {
 #define BUF_SIZE 111
 	char buf[BUF_SIZE];

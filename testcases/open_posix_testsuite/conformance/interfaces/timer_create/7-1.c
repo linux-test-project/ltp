@@ -29,7 +29,7 @@ void handler(int signo)
 	printf("Caught signal\n");
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #ifdef CLOCK_MONOTONIC
 	if (sysconf(_SC_MONOTONIC_CLOCK) == -1) {

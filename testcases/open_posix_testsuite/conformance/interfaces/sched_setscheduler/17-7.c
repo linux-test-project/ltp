@@ -28,7 +28,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	int max_priority, old_priority, old_policy, new_policy, policy;
 	int child_pid, stat_loc;

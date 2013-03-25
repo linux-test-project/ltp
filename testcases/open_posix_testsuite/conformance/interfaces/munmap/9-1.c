@@ -26,7 +26,7 @@
 
 #define TNAME "munmap/9-1.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 	long file_size;

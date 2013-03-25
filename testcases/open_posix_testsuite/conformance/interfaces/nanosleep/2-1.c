@@ -14,7 +14,7 @@
 #include "posixtest.h"
 
 #define NUMINTERVALS 13
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int sleepnsec[NUMINTERVALS] = { 1, 2, 10, 100, 1000, 10000, 1000000,

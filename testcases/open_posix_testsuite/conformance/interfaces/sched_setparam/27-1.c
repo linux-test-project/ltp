@@ -22,7 +22,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	struct sched_param param;
 	int result, child_pid, stat_loc;

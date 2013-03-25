@@ -24,7 +24,7 @@
 
 #define COUNT 10
 
-int main()
+int main(void)
 {
 
 	static pthread_rwlock_t rwlock;

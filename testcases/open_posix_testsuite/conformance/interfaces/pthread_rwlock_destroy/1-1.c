@@ -21,7 +21,7 @@
 
 #define COUNT 1000
 
-int main()
+int main(void)
 {
 	pthread_rwlock_t rwlock;
 	int cnt = 0;

@@ -35,7 +35,7 @@
 
 #define TNAME "aio_write/8-1.c"
 
-int main()
+int main(void)
 {
 #define BUF_SIZE 512
 	char buf[BUF_SIZE];

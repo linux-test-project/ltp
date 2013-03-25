@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	pthread_key_t key;
 	void *rc;

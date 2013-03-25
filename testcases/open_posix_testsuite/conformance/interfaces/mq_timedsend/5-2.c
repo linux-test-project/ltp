@@ -49,7 +49,7 @@ void justreturn_handler(int signo)
 	return;
 }
 
-int main()
+int main(void)
 {
 	int pid;
 	const char *msgptr = MSGSTR;

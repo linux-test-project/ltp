@@ -35,7 +35,7 @@
 
 #define TNAME "aio_read/8-1.c"
 
-int main()
+int main(void)
 {
 	struct aiocb aiocb;
 

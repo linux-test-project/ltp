@@ -50,7 +50,7 @@ static void *fn_chld(void *arg)
 	exit(PTS_PASS);
 }
 
-int main()
+int main(void)
 {
 	int rc = 0;
 	pthread_t child_thread;

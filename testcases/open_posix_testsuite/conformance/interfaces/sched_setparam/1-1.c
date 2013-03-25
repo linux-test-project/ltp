@@ -41,7 +41,7 @@ void child_proc()
 	exit(0);
 }
 
-int main()
+int main(void)
 {
 	int result, child_pid, tmp_errno, policy;
 	int min_priority, new_priority, old_priority;

@@ -17,7 +17,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	if (raise(10000) == 0) {
 		printf("Incorrectly returned 0\n");

@@ -42,7 +42,7 @@ void sigsegv_handler(int signum)
 	exit(PTS_PASS);
 }
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 	long file_size;

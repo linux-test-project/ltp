@@ -88,7 +88,7 @@ static void *th_fn(void *arg)
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	int cnt;
 	int rc = 0;

@@ -21,7 +21,7 @@
 
 #define TNAME "aio_fsync/8-2.c"
 
-int main()
+int main(void)
 {
 	char tmpfname[256];
 #define BUF_SIZE 111

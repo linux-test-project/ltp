@@ -32,7 +32,7 @@ static void sig_handler()
 	pthread_exit((void *)PTS_PASS);
 }
 
-int main()
+int main(void)
 {
 	int rc;
 	pthread_spinlock_t spinlock;

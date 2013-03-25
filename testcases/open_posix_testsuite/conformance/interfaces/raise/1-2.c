@@ -44,7 +44,7 @@ void childhandler(int signo)
 	exit(0);
 }
 
-int main()
+int main(void)
 {
 	struct sigaction parentact;
 

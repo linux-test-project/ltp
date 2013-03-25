@@ -26,7 +26,7 @@
 /* There is no chance that a scheduling policy has such a value */
 #define INVALID_POLICY -27367
 
-int main()
+int main(void)
 {
 	int result;
 	struct sched_param param;

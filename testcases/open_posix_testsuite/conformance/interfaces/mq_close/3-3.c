@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
 	/* Use some arbitrary but high number for the descriptor.  */
 	if (mq_close((mqd_t) 274) != -1) {

@@ -37,7 +37,7 @@ void *a_thread_func()
 	return NULL;
 }
 
-int main()
+int main(void)
 {
 	pthread_attr_t new_attr;
 	pthread_t new_th;

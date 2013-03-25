@@ -40,7 +40,7 @@ void sighdl(int sig)
 	return;
 }
 
-int main()
+int main(void)
 {
 	char semname[28];
 	int val;

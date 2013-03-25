@@ -24,7 +24,7 @@
  *
  */
 
-int main()
+int main(void)
 {
 	sigset_t newmask, pendingset;
 	int sig;
