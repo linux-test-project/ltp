@@ -20,12 +20,13 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "posixtest.h"
 
 #define ERR_MSG(f, rc) printf("Failed: func: %s rc: %s (%u)\n", \
 				f, strerror(rc), rc)
 
-static void *thread_func(void)
+static void *thread_func()
 {
 	struct sched_param sparam;
 	int policy;
