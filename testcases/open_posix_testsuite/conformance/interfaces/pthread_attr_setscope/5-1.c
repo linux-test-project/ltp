@@ -33,7 +33,7 @@ int main(void)
 	rc1 = pthread_attr_init(&attr);
 	if (rc1 != 0) {
 		ERR_MSG("pthread_attr_init()", rc1);
-		exit(PTS_UNRESOLVED);
+		return PTS_UNRESOLVED;
 	}
 
 	rc1 = pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
