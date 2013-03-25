@@ -52,7 +52,7 @@ void *thread_func()
 	}
 	if (ssize < stack_size) {
 		printf(ERROR_PREFIX "stack size is lesser than minimal "
-		       "size (%u < %u)\n", ssize, stack_size);
+		       "size (%zu < %zu)\n", ssize, stack_size);
 		exit(PTS_FAIL);
 	}
 
