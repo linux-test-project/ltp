@@ -123,7 +123,7 @@ void *threaded(void *arg)
 	if (mf > 0)
 		*ctl = 0;
 
-#ifdef VERBOSE > 0
+#if VERBOSE > 0
 	fflush(stdout);
 #endif
 
