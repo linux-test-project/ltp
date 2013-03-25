@@ -18,6 +18,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 #include "posixtest.h"
 
 #define ERR_MSG(f, rc) printf("Failed: func: %s rc: %s (%u)\n", \
@@ -34,7 +35,7 @@ int main(void)
 	rc = pthread_attr_init(&attr);
 	if (rc != 0) {
 		ERR_MSG("pthread_attr_init()", rc);
-		exit(PTS_UNRESOLVED);
+		return PTS_UNRESOLVED;
 	}
 
 	rc = pthread_attr_setschedpolicy(&attr, INVALIDPOLICY);
