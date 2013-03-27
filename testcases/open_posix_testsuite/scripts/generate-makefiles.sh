@@ -187,10 +187,12 @@ EOF
 
 		cat >> "$makefile.3" <<EOF
 $prereq: \$(srcdir)/$c_file
-	@if $COMPILE_STR | tee logfile.\$\$\$\$ 2>&1; then \\
+	@if $COMPILE_STR > logfile.\$\$\$\$ 2>&1; then \\
+		 cat logfile.\$\$\$\$; \\
 		 echo "\$(subdir)/$test_name compile PASSED"; \\
 		 echo "\$(subdir)/$test_name compile PASSED" >> \$(LOGFILE); \\
 	else \\
+		 cat logfile.\$\$\$\$; \\
 		 echo "\$(subdir)/$test_name compile FAILED; SKIPPING"; \\
 		(echo "\$(subdir)/$test_name compile FAILED; SKIPPING"; cat logfile.\$\$\$\$) >> \$(LOGFILE); \\
 	fi; \\
