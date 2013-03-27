@@ -41,9 +41,7 @@
 #ifndef WITHOUT_XOPEN
 #define _XOPEN_SOURCE	600
 #endif
- /********************************************************************************************/
-/****************************** standard includes *****************************************/
-/********************************************************************************************/
+
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -56,32 +54,9 @@
 #include <string.h>
 #include <time.h>
 
-/********************************************************************************************/
-/******************************   Test framework   *****************************************/
-/********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
- /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);
-  *    where descr is a description of the error and ret is an int (error code for example)
-  * FAILED(descr);
-  *    where descr is a short text saying why the test has failed.
-  * PASSED();
-  *    No parameter.
-  *
-  * Both three macros shall terminate the calling process.
-  * The testcase shall not terminate in any other maneer.
-  *
-  * The other file defines the functions
-  * void output_init()
-  * void output(char * string, ...)
-  *
-  * Those may be used to output information.
-  */
 
-/********************************************************************************************/
-/********************************** Configuration ******************************************/
-/********************************************************************************************/
 #ifndef VERBOSE
 #define VERBOSE 1
 #endif
@@ -92,9 +67,6 @@
 #define USE_ALTCLK		/* make tests with MONOTONIC CLOCK if supported */
 #endif
 
-/********************************************************************************************/
-/***********************************    Test case   *****************************************/
-/********************************************************************************************/
 #ifndef WITHOUT_XOPEN
 
 typedef struct {

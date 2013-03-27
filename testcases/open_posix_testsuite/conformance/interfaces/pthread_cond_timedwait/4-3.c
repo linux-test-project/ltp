@@ -30,9 +30,6 @@
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
 
- /********************************************************************************************/
-/****************************** standard includes *****************************************/
-/********************************************************************************************/
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -44,32 +41,9 @@
 #include <signal.h>
 #include <time.h>
 
-/********************************************************************************************/
-/******************************   Test framework   *****************************************/
-/********************************************************************************************/
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
- /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);
-  *    where descr is a description of the error and ret is an int (error code for example)
-  * FAILED(descr);
-  *    where descr is a short text saying why the test has failed.
-  * PASSED();
-  *    No parameter.
-  *
-  * Both three macros shall terminate the calling process.
-  * The testcase shall not terminate in any other maneer.
-  *
-  * The other file defines the functions
-  * void output_init()
-  * void output(char * string, ...)
-  *
-  * Those may be used to output information.
-  */
 
-/********************************************************************************************/
-/********************************** Configuration ******************************************/
-/********************************************************************************************/
 #define WITH_SYNCHRO
 #ifndef VERBOSE
 #define VERBOSE 2
@@ -77,10 +51,6 @@
 
 #define TIMEOUT (1000)		/* ns, timeout parameter for pthread_cond_timedwait */
 #define INTERVAL (700)		/* ns, frequency (actually, period) for the condition signaling */
-
-/********************************************************************************************/
-/***********************************    Test case   *****************************************/
-/********************************************************************************************/
 
 char do_it = 1;
 unsigned long count_cnd_sig = 0, count_cnd_wup = 0;
