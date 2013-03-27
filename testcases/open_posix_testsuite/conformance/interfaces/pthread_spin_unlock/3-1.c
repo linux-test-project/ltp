@@ -31,7 +31,7 @@
 #include "posixtest.h"
 
 static pthread_spinlock_t spinlock;
-volatile static int sem;
+static volatile int sem;
 
 #define INTHREAD 0
 #define INMAIN 1
@@ -39,6 +39,8 @@ volatile static int sem;
 static void *fn_chld(void *arg)
 {
 	int rc = 0;
+
+	(void) arg;
 
 	/* Initialize spin lock */
 	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0) {
