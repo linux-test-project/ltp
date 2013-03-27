@@ -1,7 +1,8 @@
 /*
 * Copyright (c) 2005, Bull S.A..  All rights reserved.
 * Created by: Sebastien Decugis
-
+* Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
+*
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of version 2 of the GNU General Public License as
 * published by the Free Software Foundation.
@@ -13,12 +14,12 @@
 * You should have received a copy of the GNU General Public License along
 * with this program; if not, write the Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
+*
 * This sample test aims to check the following assertions:
 *
 * If the signal action was set with the signal() function, getting it into oact
-then reinstalling it with act must be valid.
-
+* then reinstalling it with act must be valid.
+*
 * The steps are:
 * -> register a signal handler for SIGABRT with signal().
 * -> check this signal handler works.
@@ -26,182 +27,50 @@ then reinstalling it with act must be valid.
 * -> check the new signal handler works.
 * -> set the old signal handler back
 * -> check the old signal handler still works.
-
+*
 * The test fails if a signal handler does not work as expected.
 */
 
 /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
 
-/******************************************************************************/
-/*************************** standard includes ********************************/
-/******************************************************************************/
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 #include <signal.h>
 #include <errno.h>
 
-/******************************************************************************/
-/***************************   Test framework   *******************************/
-/******************************************************************************/
-/* This header is responsible for defining the following macros:
- * UNRESOLVED(ret, descr);
- *    where descr is a description of the error and ret is an int
- *   (error code for example)
- * FAILED(descr);
- *    where descr is a short text saying why the test has failed.
- * PASSED();
- *    No parameter.
- *
- * Both three macros shall terminate the calling process.
- * The testcase shall not terminate in any other maneer.
- *
- * The other file defines the functions
- * void output_init()
- * void output(char * string, ...)
- *
- * Those may be used to output information.
- */
 #include "posixtest.h"
-#include <time.h>
-#include <sys/types.h>
 
-#ifdef __GNUC__			/* We are using GCC */
+static sig_atomic_t called = 1;
 
-#define UNRESOLVED(x, s) \
- { output("Test %s unresolved: got %i (%s) on line %i (%s)\n", __FILE__, x, strerror(x), __LINE__, s); \
- 	output_fini(); \
- 	exit(PTS_UNRESOLVED); }
-
-#define FAILED(s) \
- { output("Test %s FAILED: %s\n", __FILE__, s); \
- 	output_fini(); \
- 	exit(PTS_FAIL); }
-
-#define PASSED \
-  output_fini(); \
-  exit(PTS_PASS);
-
-#define UNTESTED(s) \
-{	output("File %s cannot test: %s\n", __FILE__, s); \
-	  output_fini(); \
-  exit(PTS_UNTESTED); \
-}
-
-#else /* not using GCC */
-
-#define UNRESOLVED(x, s) \
- { output("Test unresolved: got %i (%s) on line %i (%s)\n", x, strerror(x), __LINE__, s); \
-  output_fini(); \
- 	exit(PTS_UNRESOLVED); }
-
-#define FAILED(s) \
- { output("Test FAILED: %s\n", s); \
-  output_fini(); \
- 	exit(PTS_FAIL); }
-
-#define PASSED \
-  output_fini(); \
-  exit(PTS_PASS);
-
-#define UNTESTED(s) \
-{	output("Unable to test: %s\n", s); \
-	  output_fini(); \
-  exit(PTS_UNTESTED); \
-}
-
-#endif
-void output_init()
-{
-	/* do nothing */
-	return;
-}
-
-void output(char *string, ...)
-{
-	va_list ap;
-#ifndef PLOT_OUTPUT
-	char *ts = "[??:??:??]";
-
-	struct tm *now;
-	time_t nw;
-#endif
-
-#ifndef PLOT_OUTPUT
-	nw = time(NULL);
-	now = localtime(&nw);
-
-	if (now == NULL)
-		printf(ts);
-	else
-		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min,
-		       now->tm_sec);
-
-#endif
-	va_start(ap, string);
-
-	vprintf(string, ap);
-
-	va_end(ap);
-
-}
-
-void output_fini()
-{
-	/*do nothing */
-	return;
-}
-
-/******************************************************************************/
-/**************************** Configuration ***********************************/
-/******************************************************************************/
-#ifndef VERBOSE
-#define VERBOSE 1
-#endif
-
-#define SIGNAL SIGABRT
-
-/******************************************************************************/
-/***************************    Test case   ***********************************/
-/******************************************************************************/
-
-sig_atomic_t called = 1;
-
-void handler_1(int sig)
+static void handler_1()
 {
 	called++;
 }
 
-void handler_2(int sig)
+static void handler_2()
 {
 	called--;
 }
 
-/* main function */
 int main(void)
 {
 	int ret;
 
 	struct sigaction sa, save;
 
-	/* Initialize output */
-	output_init();
-
-	/* Register the signal handler with signal */
-
-	if (SIG_ERR == signal(SIGNAL, handler_1)) {
-		UNRESOLVED(errno,
-			   "Failed to register signal handler with signal()");
+	if (signal(SIGABRT, handler_1) == SIG_ERR) {
+		perror("Failed to register signal handler");
+		return PTS_UNRESOLVED;
 	}
 
 	/* As whether signal handler is restored to default when executed
-	   is implementation defined, we cannot check it was registered here. */
+	is implementation defined, we cannot check it was registered here. */
 
-	/* Set the new signal handler with sigaction */
+	/* Set the new signal handler with sigaction*/
 	sa.sa_flags = 0;
 
 	sa.sa_handler = handler_2;
@@ -209,51 +78,51 @@ int main(void)
 	ret = sigemptyset(&sa.sa_mask);
 
 	if (ret != 0) {
-		UNRESOLVED(ret, "Failed to empty signal set");
+		perror("Failed to empty signal set");
+		return PTS_UNRESOLVED;
 	}
 
-	/* Install the signal handler for SIGABRT */
-	ret = sigaction(SIGNAL, &sa, &save);
+	ret = sigaction(SIGABRT, &sa, &save);
 
 	if (ret != 0) {
-		UNRESOLVED(ret, "Failed to set signal handler");
+		perror("Failed to register signal handler");
+		return PTS_UNRESOLVED;
 	}
 
 	/* Check the signal handler has been set up */
-	ret = raise(SIGNAL);
+	ret = raise(SIGABRT);
 
 	if (ret != 0) {
-		UNRESOLVED(ret, "Failed to raise the signal");
+		perror("Failed to raise signal");
+		return PTS_UNRESOLVED;
 	}
 
 	if (called != 0) {
-		FAILED("handler not executed");
+		fprintf(stderr, "Handler was not executed\n");
+		return PTS_FAIL;
 	}
 
 	/* Restore the first signal handler */
-	ret = sigaction(SIGNAL, &save, 0);
+	ret = sigaction(SIGABRT, &save, 0);
 
 	if (ret != 0) {
-		UNRESOLVED(ret, "Failed to set signal handler");
+		perror("Failed to restore signal handler");
+		return PTS_UNRESOLVED;
 	}
 
 	/* Check the signal handler has been set up */
-	ret = raise(SIGNAL);
+	ret = raise(SIGABRT);
 
 	if (ret != 0) {
-		UNRESOLVED(ret, "Failed to raise the signal");
+		perror("Failed to raise signal");
+		return PTS_UNRESOLVED;
 	}
 
 	if (called != 1) {
-		FAILED("handler not executed");
+		fprintf(stderr, "Handler was not executed\n");
+		return PTS_FAIL;
 	}
 
-	/* Test passed */
-#if VERBOSE > 0
-
-	output("Test passed\n");
-
-#endif
-
-	PASSED;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
