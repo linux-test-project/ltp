@@ -29,7 +29,7 @@
 #include "posixtest.h"
 
 static pthread_spinlock_t spinlock;
-volatile static int thread_state;
+static volatile int thread_state;
 
 #define NOT_CREATED_THREAD 1
 #define ENTERED_THREAD 2
@@ -39,6 +39,8 @@ static void *fn_chld(void *arg)
 {
 	int rc = 0;
 	thread_state = ENTERED_THREAD;
+
+	(void) arg;
 
 	/* Lock the spinlock */
 	printf("thread: attempt spin lock\n");
