@@ -28,6 +28,7 @@
 
 void handler(int signo)
 {
+	(void) signo;
 #ifdef DEBUG
 	printf("in handler\n");
 #endif

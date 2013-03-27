@@ -39,6 +39,7 @@
 
 void handler(int signo)
 {
+	(void) signo;
 	return;
 }
 

@@ -58,7 +58,7 @@ int main(void)
 	fd = open(fname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n", strerror(errno));
-		exit(PTS_UNRESOLVED);
+		return PTS_UNRESOLVED;
 	}
 	/* file is empty now, will cause "Bus error" */
 	write(fd, fname, sizeof(int));
@@ -68,7 +68,7 @@ int main(void)
 	if (pa == MAP_FAILED) {
 		printf(TNAME " Error at mmap: %s\n", strerror(errno));
 		close(fd);
-		exit(PTS_FAIL);
+		return PTS_FAIL;
 	}
 	*(int *)pa = 0;
 
