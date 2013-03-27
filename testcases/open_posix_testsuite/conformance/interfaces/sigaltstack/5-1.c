@@ -19,7 +19,7 @@
 
 #define SIGTOTEST SIGUSR1
 
-void handler(int signo)
+void handler()
 {
 	printf("Do nothing useful\n");
 }
@@ -39,7 +39,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if ((alternate_s.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
+	if ((alternate_s.ss_sp = malloc(SIGSTKSZ)) == NULL) {
 		perror
 		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;

@@ -29,7 +29,7 @@
 
 stack_t altstack1;
 
-void handler(int signo)
+void handler()
 {
 	printf("Just a dummy handler\n");
 }
@@ -48,7 +48,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if ((altstack1.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
+	if ((altstack1.ss_sp = malloc(SIGSTKSZ)) == NULL) {
 		perror
 		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;

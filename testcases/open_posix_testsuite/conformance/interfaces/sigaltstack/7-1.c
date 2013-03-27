@@ -27,13 +27,13 @@
 
 #define SIGTOTEST SIGUSR1
 
-stack_t altstack1;
+static stack_t altstack1;
 
-void handler(int signo)
+void handler()
 {
 	stack_t altstack2;
 
-	if ((altstack2.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
+	if ((altstack2.ss_sp = malloc(SIGSTKSZ)) == NULL) {
 		perror
 		    ("Unexpected error while attempting to setup test pre-conditions");
 		exit(PTS_UNRESOLVED);
@@ -63,7 +63,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if ((altstack1.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
+	if ((altstack1.ss_sp = malloc(SIGSTKSZ)) == NULL) {
 		perror
 		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;

@@ -30,7 +30,7 @@
 
 stack_t alternate_s;
 
-void handler(int signo)
+void handler()
 {
 	int i = 0;
 	if ((void *)&i < (alternate_s.ss_sp)
@@ -57,7 +57,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if ((alternate_s.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
+	if ((alternate_s.ss_sp = malloc(SIGSTKSZ)) == NULL) {
 		perror
 		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;
