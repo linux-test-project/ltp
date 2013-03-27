@@ -77,12 +77,12 @@ int main(void)
 			}
 
 			if ((slepts - tssleepfor.tv_sec) > OKSECERR) {
-				printf("FAIL - slept %lds%ldns >> %lds%ldns\n",
+				printf("FAIL - slept %ds%dns >> %lds%ldns\n",
 				       slepts, sleptns,
 				       tssleepfor.tv_sec, tssleepfor.tv_nsec);
 				failure = 1;
 			} else {
-				printf("PASS - slept %lds%ldns ~= %lds%ldns\n",
+				printf("PASS - slept %ds%dns ~= %lds%ldns\n",
 				       slepts, sleptns,
 				       tssleepfor.tv_sec, tssleepfor.tv_nsec);
 			}
