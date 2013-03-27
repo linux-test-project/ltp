@@ -32,7 +32,6 @@ static int init_flag;
 void an_init_func(void)
 {
 	init_flag++;
-	return NULL;
 }
 
 int main(void)
