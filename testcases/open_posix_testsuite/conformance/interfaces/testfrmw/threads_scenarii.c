@@ -194,7 +194,7 @@ CASE_UNK(0, 1, 1, 1, 0, 0, 0, 0, "Explicit FIFO max param"),
 void scenar_init(void)
 {
 	int ret = 0;
-	int i;
+	unsigned int i;
 	int old;
 	long pagesize, minstacksize;
 	long tsa, tss, tps;
@@ -465,7 +465,8 @@ void scenar_init(void)
  */
 void scenar_fini(void)
 {
-	int ret = 0, i;
+	int ret = 0;
+	unsigned int i;
 
 	for (i = 0; i < NSCENAR; i++) {
 		if (scenarii[i].bottom != NULL)
@@ -482,7 +483,7 @@ void scenar_fini(void)
 	}
 }
 
-int sc;
+unsigned int sc;
 
 #ifdef STD_MAIN
 
