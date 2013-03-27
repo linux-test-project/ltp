@@ -21,6 +21,7 @@
 
 void *runner(void *arg)
 {
+	(void) arg;
 
 	while (1)
 		sleep(1);

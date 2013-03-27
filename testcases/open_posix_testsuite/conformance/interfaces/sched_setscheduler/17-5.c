@@ -75,13 +75,13 @@ int main(void)
 	if (old_policy != new_policy) {
 		printf("Failed: invalid policy change, old: %u, new %u\n",
 		       old_policy, new_policy);
-		exit(PTS_FAIL);
+		return PTS_FAIL;
 	}
 
 	if (old_priority != param.sched_priority) {
 		printf("Failed: invalid priority change, old: %u, new %u\n",
 		       old_priority, param.sched_priority);
-		exit(PTS_FAIL);
+		return PTS_FAIL;
 	}
 
 	printf("Test PASSED\n");
