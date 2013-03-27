@@ -41,7 +41,7 @@ int mounted_noatime(const char *path)
 {
 #ifdef __linux__
 	struct mntent *mnt;
-	int i, prefix_max = 0, prefix;
+	int prefix_max = 0, prefix;
 	int has_noatime;
 	FILE *f;
 	
@@ -52,7 +52,7 @@ int mounted_noatime(const char *path)
 		return -1;
 	}
 
-	while (mnt = getmntent(f)) {
+	while ((mnt = getmntent(f))) {
 		
 		/* ignore all pseudo fs */
 		if (mnt->mnt_fsname[0] != '/')
