@@ -169,7 +169,8 @@ void *threaded(void *arg)
 
 int main(void)
 {
-	int ret, i, j;
+	int ret, j;
+	unsigned int i;
 	pthread_mutexattr_t ma;
 	pthread_condattr_t ca;
 	pthread_t th[NTHREADS];

@@ -226,7 +226,8 @@ void *tf(void *arg)
 
 int main(void)
 {
-	int ret, i, j, k;
+	int ret, k;
+	unsigned int i, j;
 	pthread_mutexattr_t ma;
 	pthread_condattr_t ca;
 	pthread_cond_t cnd;

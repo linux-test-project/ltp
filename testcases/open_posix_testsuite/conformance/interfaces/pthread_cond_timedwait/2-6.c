@@ -101,6 +101,9 @@ struct {
 void clnp1(void *arg)
 {
 	int ret;
+
+	(void) arg;
+
 	if (data.type == PTHREAD_MUTEX_RECURSIVE) {
 		ret = pthread_mutex_trylock(&(data.mtx));
 		if (ret != 0) {
@@ -122,6 +125,9 @@ void clnp1(void *arg)
 void clnp2(void *arg)
 {
 	int ret;
+
+	(void) arg;
+
 	do {
 		ret = sem_post(&(data.semA));
 	} while ((ret != 0) && (errno == EINTR));
@@ -145,6 +151,8 @@ void clnp2(void *arg)
 void clnp3(void *arg)
 {
 	int ret;
+
+	(void) arg;
 
 	ret = pthread_mutex_unlock(&(data.mtx));
 	if (ret != 0) {
@@ -170,6 +178,8 @@ void clnp3(void *arg)
 void *threaded(void *arg)
 {
 	int ret;
+
+	(void) arg;
 
 	struct timespec ts;
 
@@ -217,7 +227,8 @@ void *threaded(void *arg)
 
 int main(void)
 {
-	int ret, i;
+	int ret;
+	unsigned int i;
 	void *rc;
 
 	pthread_mutexattr_t ma;

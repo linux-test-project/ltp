@@ -142,6 +142,7 @@ void *sendsig(void *arg)
 /* This one is registered for signal SIGUSR1 */
 void sighdl1(int sig)
 {
+	(void) sig;
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig1)) {
 		UNRESOLVED(errno, "Sem_post in signal handler 1");
@@ -152,6 +153,7 @@ void sighdl1(int sig)
 /* This one is registered for signal SIGUSR2 */
 void sighdl2(int sig)
 {
+	(void) sig;
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig2)) {
 		UNRESOLVED(errno, "Sem_post in signal handler 2");
@@ -165,6 +167,8 @@ void *waiter(void *arg)
 {
 	int ret;
 	struct timespec ts;
+
+	(void) arg;
 
 	/* We don't block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_UNBLOCK, &usersigs, NULL);
@@ -219,8 +223,9 @@ void *waiter(void *arg)
 void *worker(void *arg)
 {
 	int ret = 0;
-
 	struct timespec ts, tsrem;
+
+	(void) arg;
 
 	/* We block the signals SIGUSR1 and SIGUSR2 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);

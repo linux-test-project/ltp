@@ -38,6 +38,8 @@ void *t1_func(void *arg)
 	struct timeval curtime;
 	struct timespec timeout;
 
+	(void) arg;
+
 	fprintf(stderr, "Thread1 started\n");
 
 	/* Lock the mutex */
@@ -115,7 +117,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if ((int)th_ret == PTS_PASS) {
+	if ((long)th_ret == PTS_PASS) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
