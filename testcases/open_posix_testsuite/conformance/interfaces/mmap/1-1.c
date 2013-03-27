@@ -32,7 +32,7 @@ int main(void)
 	char tmpfname[256];
 	char *data;
 	void *pa;
-	size_t len = 1024;
+	ssize_t len = 1024;
 	int fd;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_1_1_%d", getpid());

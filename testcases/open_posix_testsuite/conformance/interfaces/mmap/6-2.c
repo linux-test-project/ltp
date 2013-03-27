@@ -46,7 +46,7 @@ int main(void)
 	char tmpfname[256];
 	char *data;
 	void *pa;
-	size_t size = 1024;
+	ssize_t size = 1024;
 	int fd;
 
 	pid_t child;

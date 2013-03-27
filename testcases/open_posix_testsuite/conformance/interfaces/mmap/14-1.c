@@ -29,6 +29,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 #include "posixtest.h"
 
 int main(void)
@@ -37,7 +38,7 @@ int main(void)
 	char *data;
 
 	void *pa;
-	size_t size = 1024;
+	ssize_t size = 1024;
 	int fd;
 	struct stat stat_buff;
 

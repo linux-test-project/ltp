@@ -91,7 +91,8 @@ int main(void)
 	char tmpfname[256];
 	void *pa;
 	size_t size = 1024;
-	int fd, i, fail = 0;
+	int fd, fail = 0;
+	unsigned int i;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_5_1_%d", getpid());
 	unlink(tmpfname);

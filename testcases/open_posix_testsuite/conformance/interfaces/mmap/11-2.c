@@ -36,9 +36,11 @@
 
 void sigbus_handler(int signum)
 {
-	WRITE("SIGBUS triggered\n");
-	WRITE("Test PASSED\n");
-	_exit(PTS_PASS);
+	if (signum == SIGBUS) {
+		WRITE("SIGBUS triggered\n");
+		WRITE("Test PASSED\n");
+		_exit(PTS_PASS);
+	}
 }
 
 int main(void)

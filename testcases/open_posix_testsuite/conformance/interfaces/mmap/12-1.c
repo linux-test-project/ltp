@@ -37,7 +37,7 @@ int main(void)
 {
 	char tmpfname[256];
 	void *pa;
-	size_t size = 1024;
+	ssize_t size = 1024;
 	int fd, i;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_12_1_%d", getpid());

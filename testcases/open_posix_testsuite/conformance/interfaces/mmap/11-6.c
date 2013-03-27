@@ -47,7 +47,7 @@ int main(void)
 	long page_size;
 
 	char *pa, ch;
-	size_t len;
+	ssize_t len;
 	int fd;
 
 	pid_t child;
