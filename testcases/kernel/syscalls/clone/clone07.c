@@ -94,6 +94,7 @@ static void setup(void)
 
 	act.sa_handler = sigsegv_handler;
 	act.sa_flags = SA_RESTART;
+	sigemptyset(&act.sa_mask);
 	if ((sigaction(SIGSEGV, &act, NULL)) == -1)
 		tst_resm(TWARN | TERRNO,
 			 "sigaction() for SIGSEGV failed in test_setup()");
@@ -101,6 +102,7 @@ static void setup(void)
 	/* Setup signal handler for SIGUSR2 */
 	def_act.sa_handler = sigusr2_handler;
 	def_act.sa_flags = SA_RESTART | SA_RESETHAND;
+	sigemptyset(&def_act.sa_mask);
 
 	if ((sigaction(SIGUSR2, &def_act, NULL)) == -1)
 		tst_resm(TWARN | TERRNO,

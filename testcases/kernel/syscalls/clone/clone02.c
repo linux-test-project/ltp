@@ -242,6 +242,7 @@ static int test_setup(void)
 	/* Setup signal handler for SIGUSR2 */
 	def_act.sa_handler = sig_default_handler;
 	def_act.sa_flags = SA_RESTART;
+	sigemptyset(&def_act.sa_mask);
 
 	if (sigaction(SIGUSR2, &def_act, NULL) == -1) {
 		tst_resm(TWARN | TERRNO, "sigaction() failed in test_setup()");
@@ -376,6 +377,7 @@ static int test_SIG(void)
 
 	new_act.sa_handler = sig_child_defined_handler;
 	new_act.sa_flags = SA_RESTART;
+	sigemptyset(&new_act.sa_mask);
 
 	/* Set signal handler to sig_child_defined_handler */
 	if (sigaction(SIGUSR2, &new_act, NULL) == -1) {
