@@ -296,6 +296,7 @@ int setup_proc_fs(char *path, int newval, int *oldval)
 	} while (rc < 0 && errno == EAGAIN);
 	if (rc < 0) {
 		EPRINTF("read failed.\n");
+		close(fd);
 		return -1;
 	}
 
@@ -303,6 +304,7 @@ int setup_proc_fs(char *path, int newval, int *oldval)
 	sprintf(buf, "%d\n", newval);
 	len = strlen(buf);
 	rc = write(fd, buf, len);
+	close(fd);
 	if (rc != len) {
 		EPRINTF("write failed.\n");
 		return -1;
@@ -324,6 +326,7 @@ int cleanup_proc_fs(char *path, int oldval)
 	sprintf(buf, "%d\n", oldval);
 	len = strlen(buf);
 	rc = write(fd, buf, len);
+	close(fd);
 	if (rc != len) {
 		EPRINTF("write failed.\n");
 		return -1;
