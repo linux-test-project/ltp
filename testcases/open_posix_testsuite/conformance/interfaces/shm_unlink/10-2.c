@@ -41,7 +41,7 @@ int main(void)
 
 	for (i = 0; i < path_max; i++)
 		shm_name[i] = (i + 1) % COMPONENT_SIZE ? 'a' : '/';
-	shm_name[path_max + 1] = 0;
+	shm_name[path_max] = 0;
 
 	result = shm_unlink(shm_name);
 
