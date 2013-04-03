@@ -320,7 +320,7 @@ expect {
   "Password:" {
     send "$USER1_PASSWORD\r"
     expect {
-				"$USER1" { set i_am_correct 1 }
+				"$USER1\r" { set i_am_correct 1 }
     }
   }
 }
