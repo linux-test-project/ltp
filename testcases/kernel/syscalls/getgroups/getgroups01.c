@@ -101,14 +101,14 @@ int main(int ac, char **av)
 		 * return and the the gidset array is not modified.
 		 * This is a POSIX special case.
 		 */
-		memset(gidset, 052, NGROUPS);
-		memset(cmpset, 052, NGROUPS);
+		memset(gidset, 052, NGROUPS * sizeof(gid_t));
+		memset(cmpset, 052, NGROUPS * sizeof(gid_t));
 
 		TEST(getgroups(0, gidset));
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "getgroups failed");
+			tst_resm(TFAIL | TTERRNO, "getgroups failed unexpectedly");
 		} else if (STD_FUNCTIONAL_TEST) {
-			if (memcmp(cmpset, gidset, NGROUPS) != 0)
+			if (memcmp(cmpset, gidset, NGROUPS * sizeof(gid_t)) != 0)
 				tst_resm(TFAIL,
 					 "getgroups modified the gidset array");
 			else
