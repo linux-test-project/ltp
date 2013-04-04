@@ -121,8 +121,8 @@
 void setup();
 void cleanup();
 
-TCID_DEFINE(getuid01);		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+TCID_DEFINE(getuid01);
+int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
 

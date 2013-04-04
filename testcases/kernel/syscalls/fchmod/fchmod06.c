@@ -109,8 +109,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	1, FILE_MODE, EPERM, setup1}, {
 2, FILE_MODE, EBADF, setup2},};
 
-char *TCID = "fchmod06";	/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "fchmod06";
+int TST_TOTAL = 2;
 int exp_enos[] = { EPERM, EBADF, 0 };
 
 char nobody_uid[] = "nobody";

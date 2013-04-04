@@ -121,8 +121,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "setpgrp01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "setpgrp01";
+int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {

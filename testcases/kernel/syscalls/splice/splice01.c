@@ -58,8 +58,8 @@ static int splice_test(void);
 void setup();
 void cleanup();
 
-char *TCID = "splice01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "splice01";
+int TST_TOTAL = 1;
 char testfile1[256];
 char testfile2[256];
 

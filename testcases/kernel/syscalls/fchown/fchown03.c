@@ -89,7 +89,7 @@
 #define TESTFILE	"testfile"
 
 int fildes;			/* File descriptor for test file */
-char *TCID = "fchown03";	/* Test program identifier. */
+char *TCID = "fchown03";
 int TST_TOTAL = 1;		/* Total number of test conditions */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -105,7 +105,6 @@ int main(int ac, char **av)
 	uid_t user_id;		/* Owner id of the test file. */
 	gid_t group_id;		/* Group id of the test file. */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

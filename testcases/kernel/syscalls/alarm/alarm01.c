@@ -118,8 +118,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "alarm01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "alarm01";
+int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {

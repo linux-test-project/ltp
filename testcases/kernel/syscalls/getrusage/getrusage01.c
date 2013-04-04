@@ -73,7 +73,7 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "getrusage01";	/* Test program identifier.    */
+char *TCID = "getrusage01";
 int who[2] = { RUSAGE_SELF, RUSAGE_CHILDREN };
 
 int TST_TOTAL = 2;

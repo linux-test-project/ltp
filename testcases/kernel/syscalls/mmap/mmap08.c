@@ -80,8 +80,8 @@
 
 #define TEMPFILE	"mmapfile"
 
-char *TCID = "mmap08";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mmap08";
+int TST_TOTAL = 1;
 int exp_enos[] = { EBADF, 0 };
 
 size_t page_sz;			/* system page size */
@@ -96,7 +96,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

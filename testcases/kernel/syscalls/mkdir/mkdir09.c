@@ -73,8 +73,8 @@ int errflg;
  *  * These globals must be defined in the test.
  *   */
 
-char *TCID = "mkdir09";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mkdir09";
+int TST_TOTAL = 1;
 
 int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
 

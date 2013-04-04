@@ -54,7 +54,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "getsockopt01";	/* Test program identifier.    */
+char *TCID = "getsockopt01";
 int testno;
 
 int s;				/* socket descriptor */
@@ -125,7 +125,7 @@ struct test_case_t {		/* test case structure */
 		    ENOPROTOOPT, setup1, cleanup1, "invalid option name (TCP)"}
 ,};
 
-int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
 int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, EOPNOTSUPP, ENOPROTOOPT, 0 };
 
@@ -134,7 +134,6 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -175,9 +174,8 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
-	TEST_PAUSE;		/* if -P option specified */
+	TEST_PAUSE;
 
-	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
 	/* initialize local sockaddr */

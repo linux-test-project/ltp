@@ -123,10 +123,10 @@
 void setup();
 void cleanup();
 
-char *TCID = "execv01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "execv01";
+int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };	/* Zero terminated list of expected errnos */
+int exp_enos[] = { 0, 0 };
 
 pid_t pid;			/* process id from fork */
 int status;			/* status returned from waitpid */

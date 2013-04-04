@@ -130,8 +130,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "access01";	/* Test program identifier.     */
-int TST_TOTAL = 4;		/* Total number of test cases. */
+char *TCID = "access01";
+int TST_TOTAL = 4;
 
 char Fname[255];
 

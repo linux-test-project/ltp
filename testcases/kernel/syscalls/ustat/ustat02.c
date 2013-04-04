@@ -78,7 +78,7 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "ustat02";		/* Test program identifier.    */
+char *TCID = "ustat02";
 
 static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
@@ -96,7 +96,7 @@ static struct test_case_t {
 #endif
 };
 
-int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);
 
 dev_t dev_num[2];
 struct ustat *ubuf;

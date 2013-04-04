@@ -188,8 +188,8 @@ void checklist_reset(int bit);
 
 inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa);
 
-char *TCID = "kill10";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "kill10";
+int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
 

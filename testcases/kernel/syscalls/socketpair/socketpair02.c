@@ -53,7 +53,6 @@
 #include <sys/socket.h>
 #include <sys/syscall.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 
@@ -62,8 +61,7 @@
 #endif
 
 int TST_TOTAL = 2;
-/* Global Variables */
-char *TCID = "socketpair02";	/* test program identifier.              */
+char *TCID = "socketpair02";
 
 /* Extern Global Functions */
 /******************************************************************************/

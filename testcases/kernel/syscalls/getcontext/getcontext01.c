@@ -43,14 +43,14 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "getcontext01";	/* Test program identifier.    */
+char *TCID = "getcontext01";
 
 #if !defined(__UCLIBC__)
 
 void setup();
 void cleanup();
 
-int TST_TOTAL = 1;		/* Total number of test cases. */
+int TST_TOTAL = 1;
 
 int exp_enos[] = { 0 };		/* must be a 0 terminated list */
 

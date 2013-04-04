@@ -104,7 +104,7 @@ static void child_func();
 
 static pid_t child_pid = -1;
 
-char *TCID = "capset02";	/* Test program identifier.    */
+char *TCID = "capset02";
 static int exp_enos[] = { EFAULT, EINVAL, EPERM, 0 };
 
 static struct __user_cap_header_struct header;

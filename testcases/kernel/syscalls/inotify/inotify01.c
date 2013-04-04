@@ -64,8 +64,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "inotify01";	/* Test program identifier.    */
-int TST_TOTAL = 7;		/* Total number of test cases. */
+char *TCID = "inotify01";
+int TST_TOTAL = 7;
 
 #define BUF_SIZE 256
 char fname[BUF_SIZE];
@@ -278,8 +278,8 @@ void cleanup()
 
 #else
 
-char *TCID = "inotify01";	/* Test program identifier.    */
-int TST_TOTAL = 0;		/* Total number of test cases. */
+char *TCID = "inotify01";
+int TST_TOTAL = 0;
 
 int main(void)
 {

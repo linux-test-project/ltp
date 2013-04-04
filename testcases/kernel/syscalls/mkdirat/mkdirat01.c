@@ -64,8 +64,8 @@ void setup();
 void cleanup();
 void setup_every_copy();
 
-char *TCID = "mkdirat01";	/* Test program identifier.    */
-int TST_TOTAL = TEST_CASES;	/* Total number of test cases. */
+char *TCID = "mkdirat01";
+int TST_TOTAL = TEST_CASES;
 char testdir[256];
 char testsubdir[256];
 char testsubdir2[256];

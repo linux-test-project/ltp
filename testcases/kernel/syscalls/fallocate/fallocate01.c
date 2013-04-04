@@ -85,7 +85,6 @@
  *
 *************************************************************************/
 
-/* Standard Include Files */
 #include <stdio.h>
 #include <stdlib.h>
 #include <endian.h>
@@ -99,7 +98,6 @@
 #include <inttypes.h>
 #include <sys/utsname.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -112,7 +110,7 @@ void get_blocksize(int);
 void populate_files(int fd);
 void runtest(int, int, loff_t);
 
-char *TCID = "fallocate01";	/* test program identifier */
+char *TCID = "fallocate01";
 char fname_mode1[255], fname_mode2[255];	/* Files used for testing */
 int fd_mode1, fd_mode2;
 int TST_TOTAL = 2;

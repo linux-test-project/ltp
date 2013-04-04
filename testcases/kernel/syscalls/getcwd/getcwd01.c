@@ -98,7 +98,6 @@ int main(int ac, char **av)
 	}
 	setup();
 
-	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
 	/*

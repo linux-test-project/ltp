@@ -83,8 +83,8 @@ extern struct passwd *my_getpwnam(char *);
 
 #define PERMS		0777
 
-char *TCID = "mkdir02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mkdir02";
+int TST_TOTAL = 1;
 
 char tstdir1[100];
 char tstdir2[100];

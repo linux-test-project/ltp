@@ -70,8 +70,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "nice04";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "nice04";
+int TST_TOTAL = 1;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -98,7 +98,6 @@ int main(int ac, char **av)
 	int incr_val;		/* nice value for the process */
 	char *test_desc;	/* test specific error message */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

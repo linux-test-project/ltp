@@ -93,7 +93,7 @@ void do_file_setup(char *);
 
 #define PERMS		0777
 
-char *TCID = "rmdir02";		/* Test program identifier.    */
+char *TCID = "rmdir02";
 
 int exp_enos[] = { ENOTEMPTY, EBUSY, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0 };
 

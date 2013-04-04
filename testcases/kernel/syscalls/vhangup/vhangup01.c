@@ -127,7 +127,6 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Pause if that option was specified

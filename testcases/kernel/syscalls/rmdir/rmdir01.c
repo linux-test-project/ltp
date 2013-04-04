@@ -70,8 +70,8 @@ void cleanup();
 
 #define PERMS		0777
 
-char *TCID = "rmdir01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "rmdir01";
+int TST_TOTAL = 1;
 
 char tstdir[100];
 

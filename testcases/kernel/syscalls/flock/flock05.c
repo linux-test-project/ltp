@@ -84,8 +84,8 @@ void cleanup(void);
 /* 0 terminated list of expected errnos */
 int exp_enos[] = { EWOULDBLOCK, EAGAIN, 0 };
 
-char *TCID = "flock05";		/* Test program identifier */
-int TST_TOTAL = 2;		/* Total number of test cases */
+char *TCID = "flock05";
+int TST_TOTAL = 2;
 char filename[100];
 int fd, fd1, status;
 
@@ -177,7 +177,6 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Pause if that option was specified

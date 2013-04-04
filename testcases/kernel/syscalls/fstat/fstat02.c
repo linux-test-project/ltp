@@ -83,8 +83,8 @@
 #define BUF_SIZE	256
 #define MASK		0777
 
-char *TCID = "fstat02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "fstat02";
+int TST_TOTAL = 1;
 uid_t user_id;			/* user id/group id of test process */
 gid_t group_id;
 int fildes;			/* File descriptor of testfile */
@@ -92,8 +92,8 @@ int fildes;			/* File descriptor of testfile */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-void setup();			/* Setup function for the test */
-void cleanup();			/* Cleanup function for the test */
+void setup();
+void cleanup();
 
 int main(int ac, char **av)
 {

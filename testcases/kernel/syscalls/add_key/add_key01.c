@@ -42,14 +42,12 @@
 #include <errno.h>
 #include <linux/keyctl.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Global Variables */
-char *TCID = "add_key01";	/* Test program identifier. */
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "add_key01";
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

@@ -55,7 +55,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "connect01";	/* Test program identifier.    */
+char *TCID = "connect01";
 int testno;
 
 int s, s2;			/* socket descriptor */
@@ -110,7 +110,7 @@ struct test_case_t {		/* test case structure */
 		    "invalid address family"}
 ,};
 
-int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
 int exp_enos[] = { EBADF, EFAULT, EINVAL, ENOTSOCK, EISCONN, ECONNREFUSED,
 	EAFNOSUPPORT, 0
@@ -125,7 +125,6 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

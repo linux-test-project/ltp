@@ -100,7 +100,7 @@ static void cleanup(void);
 
 static int exp_enos[] = { EPERM, ESRCH, 0 };
 
-char *TCID = "ptrace03";	/* Test program identifier.    */
+char *TCID = "ptrace03";
 
 struct test_case_t {
 	enum __ptrace_request request;

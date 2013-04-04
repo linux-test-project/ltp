@@ -76,8 +76,8 @@
 #define TEMPFILE	"msync_file"
 #define BUF_SIZE	256
 
-char *TCID = "msync01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "msync01";
+int TST_TOTAL = 1;
 
 char *addr;			/* addr of memory mapped region */
 size_t page_sz;			/* system page size */

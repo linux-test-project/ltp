@@ -77,8 +77,8 @@ static char filename[30];
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "fdatasync01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "fdatasync01";
+int TST_TOTAL = 1;
 
 int main(int argc, char **argv)
 {

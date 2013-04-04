@@ -74,8 +74,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "nanosleep01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "nanosleep01";
+int TST_TOTAL = 1;
 
 struct timespec timereq;	/* time struct. buffer for nanosleep() */
 
@@ -91,7 +91,6 @@ int main(int ac, char **av)
 	struct timeval ntime;	/* time after child resumes execution */
 	int retval = 0, e_code, status;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -105,8 +105,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 2, EBADF, setup2},};
 
 char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
-char *TCID = "fchown04";	/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "fchown04";
+int TST_TOTAL = 2;
 int exp_enos[] = { EPERM, EBADF, 0 };
 
 char bin_uid[] = "bin";

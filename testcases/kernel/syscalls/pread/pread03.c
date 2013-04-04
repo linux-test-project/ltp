@@ -85,8 +85,8 @@
 #define K1              2048
 #define NBUFS           1
 
-char *TCID = "pread03";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "pread03";
+int TST_TOTAL = 1;
 
 char *read_buf[NBUFS];		/* buffer to hold data read from file */
 char test_dir[100];
@@ -105,7 +105,6 @@ int main(int ac, char **av)
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

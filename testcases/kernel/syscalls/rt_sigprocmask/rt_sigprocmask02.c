@@ -70,17 +70,13 @@
 #include <signal.h>
 #include <errno.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "ltp_signal.h"
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "rt_sigprocmask02";	/* Test program identifier. */
-int TST_TOTAL = 2;		/* total number of tests in this file.   */
+char *TCID = "rt_sigprocmask02";
+int TST_TOTAL = 2;
 
 /* Extern Global Functions */
 /******************************************************************************/

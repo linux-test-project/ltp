@@ -52,8 +52,8 @@
 
 int local_flag = PASSED;
 
-char *TCID = "rename14";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "rename14";
+int TST_TOTAL = 1;
 /**************/
 
 #define RUNTIME	45
@@ -76,7 +76,6 @@ char *argv[];
 #ifdef UCLINUX
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

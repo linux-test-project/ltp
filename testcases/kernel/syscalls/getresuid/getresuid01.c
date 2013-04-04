@@ -76,8 +76,8 @@
 
 extern int getresuid(uid_t *, uid_t *, uid_t *);
 
-char *TCID = "getresuid01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "getresuid01";
+int TST_TOTAL = 1;
 uid_t pr_uid, pe_uid, ps_uid;	/* calling process real/effective/saved uid */
 
 void setup();			/* Main setup function of test */
@@ -90,7 +90,6 @@ int main(int ac, char **av)
 	uid_t real_uid,		/* real/eff./saved user id from getresuid() */
 	 eff_uid, sav_uid;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

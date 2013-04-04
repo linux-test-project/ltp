@@ -83,8 +83,8 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID = "lseek07";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "lseek07";
+int TST_TOTAL = 1;
 int fildes;			/* file handle for temp file */
 size_t file_size;		/* size of temporary file */
 char write_buf1[BUFSIZ];	/* buffer to hold data */
@@ -100,7 +100,6 @@ int main(int ac, char **av)
 	char read_buf[BUFSIZ];	/* data read from temp. file */
 	off_t offset;		/* byte position in temporary file */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

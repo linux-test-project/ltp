@@ -87,7 +87,7 @@
 #define TESTFILE1	"testfile1"
 #define TESTFILE2	"testfile2"
 
-char *TCID = "chown02";		/* Test program identifier.    */
+char *TCID = "chown02";
 
 int setup1();			/* Test specific setup functions */
 int setup2();
@@ -122,7 +122,6 @@ int main(int ac, char **av)
 	int test_flag;		/* test condition specific flag variable */
 	char *file_name;	/* ptr. for test file name */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

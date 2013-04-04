@@ -51,8 +51,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "creat03";		/* Test program identifier */
-int TST_TOTAL = 1;		/* Total number of test cases */
+char *TCID = "creat03";
+int TST_TOTAL = 1;
 
 char pfilname[40] = "";
 #define FMODE	0444

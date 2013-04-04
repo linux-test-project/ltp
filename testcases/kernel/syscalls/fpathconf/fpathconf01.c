@@ -120,7 +120,7 @@
 void setup();
 void cleanup();
 
-char *TCID = "fpathconf01";	/* Test program identifier.    */
+char *TCID = "fpathconf01";
 
 #define FILENAME	"fpafile01"
 

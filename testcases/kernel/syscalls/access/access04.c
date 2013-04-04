@@ -84,8 +84,8 @@
 #define DIR_MODE	S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID = "access04";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "access04";
+int TST_TOTAL = 1;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 

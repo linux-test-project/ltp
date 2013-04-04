@@ -112,7 +112,7 @@ int TST_TOTAL = 6;
 int TST_TOTAL = 4;
 #endif
 
-char *TCID = "rmdir05";		/* Test program identifier.    */
+char *TCID = "rmdir05";
 struct stat stat_buf;		/* Stat buffer used for verification. */
 char dir_name[256];		/* Array to hold directory name. */
 

@@ -120,8 +120,8 @@ static void cleanup();
 
 #include "compat_16.h"
 
-TCID_DEFINE(setgid01);		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+TCID_DEFINE(setgid01);
+int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
 

@@ -123,8 +123,8 @@ void setup();
 void help();
 void cleanup();
 
-char *TCID = "link03";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "link03";
+int TST_TOTAL = 2;
 
 int exp_enos[] = { 0, 0 };
 

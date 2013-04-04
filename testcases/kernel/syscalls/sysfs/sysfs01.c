@@ -75,8 +75,8 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sysfs01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "sysfs01";
+int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {

@@ -85,7 +85,7 @@ static void setup(void);
 static void cleanup(void);
 static void cleanup1(void);
 
-char *TCID = "umount03";	/* Test program identifier.    */
+char *TCID = "umount03";
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
@@ -105,7 +105,6 @@ static struct test_case_t {
 } testcases = {
 "User not Super User/root", EPERM, "EPERM"};
 
-/* Total number of test cases. */
 int TST_TOTAL = 1;
 
 static int exp_enos[] = { EPERM, 0 };
@@ -265,7 +264,6 @@ void setup()
 		tst_brkm(TBROK, cleanup1, "setuid failed to set the effective"
 			 " uid to %d", ltpuser->pw_uid);
 	}
-	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
 	if (access(device, F_OK)) {

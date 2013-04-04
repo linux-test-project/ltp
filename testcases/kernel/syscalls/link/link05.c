@@ -122,11 +122,11 @@ void setup();
 void cleanup();
 void help();
 
-char *TCID = "link05";		/* Test program identifier.    */
+char *TCID = "link05";
 #ifdef CRAY
-int TST_TOTAL = 2;		/* Total number of test cases. */
+int TST_TOTAL = 2;
 #else
-int TST_TOTAL = 1;		/* Total number of test cases. */
+int TST_TOTAL = 1;
 #endif
 
 #define BASENAME	"lkfile"

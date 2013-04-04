@@ -82,8 +82,8 @@
 
 #define INVAL_FLAGS	9999
 
-char *TCID = "sigaltstack02";	/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "sigaltstack02";
+int TST_TOTAL = 2;
 int exp_enos[] = { EINVAL, ENOMEM, 0 };
 
 stack_t sigstk;			/* signal stack storing struct. */
@@ -117,7 +117,6 @@ int main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -78,8 +78,8 @@
 
 #define INCR_TIME	10	/* increment in the system's current time */
 
-char *TCID = "stime02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "stime02";
+int TST_TOTAL = 1;
 int exp_enos[] = { EPERM, 0 };
 
 time_t curr_time;		/* system's current time in seconds */
@@ -96,7 +96,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -70,8 +70,8 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sched_setparam01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "sched_setparam01";
+int TST_TOTAL = 1;
 
 static struct sched_param param;
 

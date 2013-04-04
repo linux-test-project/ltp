@@ -54,7 +54,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "bind01";		/* Test program identifier.    */
+char *TCID = "bind01";
 int testno;
 
 int s;				/* socket descriptor */
@@ -102,7 +102,7 @@ struct test_case_t {		/* test case structure */
 		    "non-local address"}
 ,};
 
-int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
 int exp_enos[] = { EFAULT, EINVAL, ENOTSOCK, EADDRINUSE, EADDRNOTAVAIL, 0 };
 
@@ -111,7 +111,6 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, 0, "OPTION PARSING ERROR - %s", msg);

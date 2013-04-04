@@ -56,7 +56,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "accept01";	/* Test program identifier.    */
+char *TCID = "accept01";
 int testno;
 
 int s;				/* socket descriptor */
@@ -99,7 +99,7 @@ struct test_case_t {		/* test case structure */
 PF_INET, SOCK_DGRAM, 0, (struct sockaddr *)&fsin1,
 		    &sinlen, -1, EOPNOTSUPP, setup1, cleanup1, "UDP accept"},};
 
-int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
 int exp_enos[] = { EBADF, ENOTSOCK, EINVAL, EOPNOTSUPP, 0 };
 
@@ -108,7 +108,6 @@ int main(int ac, char *av[])
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -145,9 +144,8 @@ int main(int ac, char *av[])
 
 void setup(void)
 {
-	TEST_PAUSE;		/* if -P option specified */
+	TEST_PAUSE;
 
-	/* set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	/* initialize local sockaddr */

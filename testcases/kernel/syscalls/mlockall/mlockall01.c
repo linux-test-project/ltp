@@ -73,8 +73,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "mlockall01";	/* Test program identifier.    */
-int TST_TOTAL = 3;		/* Total number of test cases. */
+char *TCID = "mlockall01";
+int TST_TOTAL = 3;
 
 int exp_enos[] = { 0 };
 

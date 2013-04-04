@@ -122,8 +122,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "fcntl03";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "fcntl03";
+int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
 

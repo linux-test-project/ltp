@@ -73,8 +73,8 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "capget01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "capget01";
+int TST_TOTAL = 1;
 
 static struct __user_cap_header_struct header;	/* cap_user_header_t is a pointer
 						   to __user_cap_header_struct */

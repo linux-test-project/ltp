@@ -94,7 +94,7 @@ static void setup();
 static void cleanup();
 static void test_setup(int);
 
-char *TCID = "capget02";	/* Test program identifier.    */
+char *TCID = "capget02";
 static int exp_enos[] = { EFAULT, EINVAL, ESRCH, 0 };
 
 static struct __user_cap_header_struct header;

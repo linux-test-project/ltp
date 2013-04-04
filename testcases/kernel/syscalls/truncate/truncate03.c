@@ -106,7 +106,7 @@ int setup1();			/* setup function to test chmod for EACCES */
 int setup2();			/* setup function to test chmod for ENOTDIR */
 int longpath_setup();		/* setup function to test chmod for ENAMETOOLONG */
 
-TCID_DEFINE(truncate03);	/* Test program identifier.    */
+TCID_DEFINE(truncate03);
 int exp_enos[] = { EACCES, ENOTDIR, EFAULT, ENAMETOOLONG, ENOENT, 0 };
 
 char *bad_addr = 0;
@@ -148,7 +148,6 @@ int main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int ind;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

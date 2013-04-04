@@ -43,8 +43,8 @@ int local_flag = PASSED;
 int block_number;
 
 FILE *temp;
-char *TCID = "nftw01";		/* Test program identifier.    */
-int TST_TOTAL = 10;		/* Total number of test cases. */
+char *TCID = "nftw01";
+int TST_TOTAL = 10;
 
 struct passwd *ltpuser;		/* password struct for ltpuser */
 /**************/

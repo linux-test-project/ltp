@@ -71,8 +71,8 @@ void setup();
 void cleanup();
 extern void do_file_setup(char *);
 
-char *TCID = "rename13";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "rename13";
+int TST_TOTAL = 1;
 
 int fd;
 char fname[255], mname[255];

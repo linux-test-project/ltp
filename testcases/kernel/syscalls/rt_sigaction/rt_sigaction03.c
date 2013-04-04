@@ -46,19 +46,15 @@
 #include <sys/syscall.h>
 #include <string.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 #define INVAL_SIGSETSIZE -1
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "rt_sigaction03";	/* Test program identifier. */
+char *TCID = "rt_sigaction03";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

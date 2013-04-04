@@ -95,8 +95,8 @@ static int setup01();
 static int cleanup01();
 static int setup02();
 
-char *TCID = "swapoff02";	/* Test program identifier.    */
-int TST_TOTAL = 3;		/* Total number of test cases. */
+char *TCID = "swapoff02";
+int TST_TOTAL = 3;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 int need_swapfile_cleanup = 0;	/* attempt to swapoff in cleanup */

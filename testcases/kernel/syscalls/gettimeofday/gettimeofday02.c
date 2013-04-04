@@ -54,8 +54,8 @@
 
 #define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
 
-char *TCID = "gettimeofday02";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "gettimeofday02";
+int TST_TOTAL = 1;
 
 int Tflag;
 char *tlen = "30";

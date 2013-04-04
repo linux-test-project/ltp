@@ -88,8 +88,8 @@ int fail;
 char user1name[] = "nobody";
 char user2name[] = "bin";
 
-char *TCID = "mkdir04";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mkdir04";
+int TST_TOTAL = 1;
 int fail;
 
 char tstdir1[100];

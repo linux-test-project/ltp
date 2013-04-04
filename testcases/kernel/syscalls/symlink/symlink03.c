@@ -100,8 +100,8 @@
 #define TEST_FILE3      "tfile_3"
 #define SYM_FILE3	"t_file/sfile_3"
 
-char *TCID = "symlink03";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "symlink03";
+int TST_TOTAL = 1;
 int exp_enos[] = { ENOTDIR, ENOENT, ENAMETOOLONG, EFAULT, EEXIST, EACCES, 0 };
 
 char *bad_addr = 0;
@@ -145,8 +145,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-void setup();			/* Setup function for the test */
-void cleanup();			/* Cleanup function for the test */
+void setup();
+void cleanup();
 
 int main(int ac, char **av)
 {
@@ -157,7 +157,6 @@ int main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -101,8 +101,8 @@ struct test_data_t {
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
-void setup(void);		/* Setup function for the test */
-void cleanup(void);		/* Cleanup function for the test */
+void setup(void);
+void cleanup(void);
 void uid_verify(struct passwd *ru, struct passwd *eu, char *when);
 
 int main(int ac, char **av)

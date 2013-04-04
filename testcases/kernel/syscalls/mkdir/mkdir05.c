@@ -79,8 +79,8 @@ void cleanup();
 
 #define PERMS		0777
 
-char *TCID = "mkdir05";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mkdir05";
+int TST_TOTAL = 1;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

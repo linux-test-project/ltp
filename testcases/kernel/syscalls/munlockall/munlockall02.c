@@ -75,8 +75,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "munlockall02";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "munlockall02";
+int TST_TOTAL = 1;
 static int exp_enos[] = { EPERM, 0 };
 
 static char nobody_uid[] = "nobody";

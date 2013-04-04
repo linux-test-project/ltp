@@ -108,7 +108,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;		/* parse_opts() return message */
 
-	/* Parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
@@ -152,7 +151,6 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
 	/* capture the signals */

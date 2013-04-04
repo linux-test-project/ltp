@@ -84,7 +84,7 @@ void setup5();
 
 #define NAMELEN		50
 
-char *TCID = "mkdir03";		/* Test program identifier.    */
+char *TCID = "mkdir03";
 int fileHandle, fileHandle2 = 0;
 
 char tstdir3[NAMELEN];

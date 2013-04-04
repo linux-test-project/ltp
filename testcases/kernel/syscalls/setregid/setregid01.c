@@ -121,10 +121,10 @@
 void setup();
 void cleanup();
 
-char *TCID = "setregid01";	/* Test program identifier.    */
-int TST_TOTAL = 5;		/* Total number of test cases. */
+char *TCID = "setregid01";
+int TST_TOTAL = 5;
 
-int exp_enos[] = { 0, 0 };	/* Zero terminated list of expected errnos */
+int exp_enos[] = { 0, 0 };
 
 int gid, egid;			/* current real and effective group id */
 

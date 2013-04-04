@@ -74,7 +74,7 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sched_get_priority_min02";	/* Test program identifier.    */
+char *TCID = "sched_get_priority_min02";
 
 int TST_TOTAL = 1;
 

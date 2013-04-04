@@ -150,8 +150,8 @@ void setup();
 void cleanup();
 void help();
 
-char *TCID = "fcntl07";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "fcntl07";
+int TST_TOTAL = 2;
 
 int fflag, Tflag;		/* binary flags: opt or not */
 char *fopt, *Topt;		/* option arguments */

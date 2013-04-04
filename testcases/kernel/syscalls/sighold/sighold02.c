@@ -119,8 +119,8 @@ extern int sighold(int __sig);
 
 #define TIMEOUT 2		/* time used in the alarm calls as backup */
 
-char *TCID = "sighold02";	/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "sighold02";
+int TST_TOTAL = 2;
 
 char signals_received[MAXMESG];
 int pid;			/* process id of child */

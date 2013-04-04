@@ -100,7 +100,7 @@ static void cleanup(void);
 static int setup_test(int, int);
 static int cleanup_test(int);
 
-char *TCID = "mount02";		/* Test program identifier.    */
+char *TCID = "mount02";
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
@@ -395,7 +395,6 @@ void setup()
 			 mntpoint, DIR_MODE);
 	}
 
-	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;

@@ -77,7 +77,7 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sysfs05";		/* Test program identifier.    */
+char *TCID = "sysfs05";
 static int option[3] = { 1, 4, 1 };	/* valid and invalid option */
 static char *fsname[] = { "ext0", " ext2", (char *)-1 };
 static int exp_enos[] = { EINVAL, EFAULT, 0 };

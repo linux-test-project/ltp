@@ -82,7 +82,6 @@
  *
 *************************************************************************/
 
-/* Standard Include Files */
 #include <stdio.h>
 #include <stdlib.h>
 #include <endian.h>
@@ -94,7 +93,6 @@
 #include <inttypes.h>
 #include <sys/utsname.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -105,16 +103,12 @@
 #define FALLOC_FL_KEEP_SIZE 1	//Need to be removed once the glibce support is provided
 #define TRUE 0
 
-/*Local Functions*/
 static inline long fallocate();
 void get_blocksize(int);
 void populate_file();
 void file_seek(off_t);
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "fallocate03";	/* test program identifier */
+char *TCID = "fallocate03";
 char fname[255];
 int fd;
 struct test_data_t {
@@ -137,7 +131,7 @@ struct test_data_t {
 		    1, TRUE}
 };
 
-int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);	/* total number of tests in this file.   */
+int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 int block_size;
 int buf_size;
 

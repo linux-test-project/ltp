@@ -172,7 +172,7 @@ void cleanup()
 }
 
 #else
-int TST_TOTAL = 0;		/* Total number of test cases. */
+int TST_TOTAL = 0;
 
 int main()
 {

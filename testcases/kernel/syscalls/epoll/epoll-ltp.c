@@ -194,8 +194,6 @@ do {					\
 }										\
 kid_status = kid_status;})
 
-/* Extern Global Variables */
-
 /*
  * Given the number of random size requests to test,
  * test various boundary cases of epoll_create().

@@ -51,7 +51,6 @@
 #include <string.h>
 #include <signal.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 

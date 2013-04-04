@@ -82,8 +82,8 @@
 #define INVAL_PID	-1
 #define INVAL_FLAG      -1
 
-char *TCID = "getpriority02";	/* Test program identifier.    */
-int TST_TOTAL = 4;		/* Total number of test cases. */
+char *TCID = "getpriority02";
+int TST_TOTAL = 4;
 int exp_enos[] = { EINVAL, ESRCH, 0 };
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
@@ -112,7 +112,6 @@ int main(int ac, char **av)
 	int which;		/* process priority category */
 	uid_t who;		/* process uid of the test process */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

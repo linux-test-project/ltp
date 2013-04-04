@@ -543,8 +543,8 @@ static char tmpname[40];
 extern void catch1();		/* signal catching subroutine */
 extern void catch_alarm();
 
-char *TCID = "fcntl14";		/* Test program identifier */
-int TST_TOTAL = 1;		/* Total number of test cases */
+char *TCID = "fcntl14";
+int TST_TOTAL = 1;
 
 #ifdef UCLINUX
 static char *argv0;		/* Set by main(), passed to self_exec() */

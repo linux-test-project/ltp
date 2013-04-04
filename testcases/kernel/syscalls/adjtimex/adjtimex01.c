@@ -80,8 +80,8 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "adjtimex01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "adjtimex01";
+int TST_TOTAL = 1;
 
 static struct timex tim_save;
 

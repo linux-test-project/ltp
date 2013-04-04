@@ -42,19 +42,15 @@
 #include <signal.h>
 #include <errno.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 #define LTP_RT_SIG_TEST
 #include "ltp_signal.h"
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "rt_sigsuspend01";	/* Test program identifier.              */
+char *TCID = "rt_sigsuspend01";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.     */
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

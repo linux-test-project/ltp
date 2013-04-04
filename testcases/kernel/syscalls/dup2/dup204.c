@@ -55,8 +55,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "dup204";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "dup204";
+int TST_TOTAL = 2;
 
 int fd[2];
 int nfd[2];

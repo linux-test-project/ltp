@@ -77,8 +77,8 @@
 #define TEMPFILE	"pwrite_file"
 #define NBUFS           1
 
-char *TCID = "pwrite03";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "pwrite03";
+int TST_TOTAL = 1;
 
 char *write_buf[NBUFS];		/* buffer to hold data to be written */
 int fd1;			/* file descriptor of temporary file */
@@ -99,7 +99,6 @@ int main(int ac, char **av)
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

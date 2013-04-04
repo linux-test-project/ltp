@@ -77,7 +77,7 @@
 
 #define TESTUSER	"nobody"
 
-TCID_DEFINE(setgroups02);	/* Test program identifier.    */
+TCID_DEFINE(setgroups02);
 int TST_TOTAL = 1;		/* Total number of test conditions */
 GID_T groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
 
@@ -92,7 +92,6 @@ int main(int ac, char **av)
 	int gidsetsize = 1;	/* only one GID, the GID of TESTUSER */
 	int PASS_FLAG = 0;	/* used for checking group array */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

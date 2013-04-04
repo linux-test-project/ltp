@@ -43,7 +43,6 @@
 #include <stdio.h>
 #include <errno.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -53,12 +52,9 @@
  */
 typedef int kernel_timer_t;
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "timer_gettime01";	/* Test program identifier. */
+char *TCID = "timer_gettime01";
 int testno;
-int TST_TOTAL = 3;		/* total number of tests in this file.   */
+int TST_TOTAL = 3;
 
 /* Extern Global Functions */
 /******************************************************************************/

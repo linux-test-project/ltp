@@ -120,8 +120,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "dup03";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "dup03";
+int TST_TOTAL = 1;
 
 char filename[255];
 int *fd = NULL;

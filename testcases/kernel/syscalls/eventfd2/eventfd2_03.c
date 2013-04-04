@@ -35,13 +35,12 @@
 #include <errno.h>
 #include <inttypes.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-char *TCID = "eventfd2_03";	/* test program identifier */
-int TST_TOTAL = 1;		/* total number of tests in this file */
+char *TCID = "eventfd2_03";
+int TST_TOTAL = 1;
 
 #ifndef EFD_SEMLIKE
 #define EFD_SEMLIKE (1 << 0)

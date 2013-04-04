@@ -81,8 +81,8 @@
 
 #define MAX_NAME_LEN __NEW_UTS_LEN
 
-char *TCID = "setdomainname03";	/* Test program identifier. */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "setdomainname03";
+int TST_TOTAL = 1;
 static int exp_enos[] = { EPERM, 0 };
 
 static char nobody_uid[] = "nobody";
@@ -99,7 +99,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

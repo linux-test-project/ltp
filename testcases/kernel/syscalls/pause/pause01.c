@@ -117,8 +117,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "pause01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "pause01";
+int TST_TOTAL = 1;
 
 int exp_enos[] = { EINTR, 0 };
 

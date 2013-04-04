@@ -48,15 +48,13 @@
 #include <sys/syscall.h>
 #include <string.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Global Variables */
-char *TCID = "rt_sigqueueinfo01";	/* Test program identifier. */
+char *TCID = "rt_sigqueueinfo01";
 int testno;
-int TST_TOTAL = 2;		/* total number of tests in this file.   */
+int TST_TOTAL = 2;
 
 extern void cleanup()
 {

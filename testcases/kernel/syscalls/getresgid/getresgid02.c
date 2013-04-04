@@ -81,8 +81,8 @@
 
 extern int getresgid(gid_t *, gid_t *, gid_t *);
 
-char *TCID = "getresgid02";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "getresgid02";
+int TST_TOTAL = 1;
 gid_t pr_gid, pe_gid, ps_gid;	/* calling process real/effective/saved gid */
 
 void setup();			/* Main setup function of test */
@@ -95,7 +95,6 @@ int main(int ac, char **av)
 	gid_t real_gid,		/* real/eff./saved user id from getresgid() */
 	 eff_gid, sav_gid;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

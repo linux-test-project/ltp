@@ -75,7 +75,7 @@ static void setup();
 static void cleanup();
 static int verify_priority(int);
 
-char *TCID = "sched_setparam02";	/* Test program identifier.    */
+char *TCID = "sched_setparam02";
 
 static struct sched_param param;
 static struct sched_param param1 = { 1 };

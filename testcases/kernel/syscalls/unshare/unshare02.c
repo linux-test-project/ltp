@@ -53,17 +53,13 @@
 #include <sys/param.h>
 #include <stdio.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "config.h"
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "unshare02";	/* Test program identifier. */
+char *TCID = "unshare02";
 int testno;
-int TST_TOTAL = 2;		/* total number of tests in this file.   */
+int TST_TOTAL = 2;
 
 #ifdef HAVE_UNSHARE
 

@@ -86,8 +86,8 @@
 
 #define TEMPFILE	"mremapfile"
 
-char *TCID = "mremap01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mremap01";
+int TST_TOTAL = 1;
 char *addr;			/* addr of memory mapped region */
 int memsize;			/* memory mapped size */
 int newsize;			/* new size of virtual memory block */
@@ -101,7 +101,6 @@ int main(int ac, char **av)
 	char *msg;
 	int ind;		/* counter variable */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

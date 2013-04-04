@@ -50,8 +50,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "getdtablesize01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "getdtablesize01";
+int TST_TOTAL = 1;
 
 int main()
 {

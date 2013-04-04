@@ -89,8 +89,8 @@ int compare(char s1[], char s2[]);
 void cleanup_test(int);
 void cleanup();
 
-char *TCID = "mlockall03";	/* Test program identifier.    */
-int TST_TOTAL = 3;		/* Total number of test cases. */
+char *TCID = "mlockall03";
+int TST_TOTAL = 3;
 
 #if !defined(UCLINUX)
 

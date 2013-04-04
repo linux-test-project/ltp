@@ -45,7 +45,6 @@
 /*                                                                            */
 /******************************************************************************/
 
-/* Standard Include Files */
 #include <unistd.h>
 #include <math.h>
 #include <signal.h>

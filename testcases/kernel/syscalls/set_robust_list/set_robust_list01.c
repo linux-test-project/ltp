@@ -68,8 +68,8 @@ struct robust_list_head {
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "set_robust_list01";	/* test program identifier.              */
-int TST_TOTAL = 2;		/* total number of tests in this file.   */
+char *TCID = "set_robust_list01";
+int TST_TOTAL = 2;
 
 int exp_enos[] = { EINVAL, 0 };
 

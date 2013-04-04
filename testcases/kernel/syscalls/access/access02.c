@@ -90,8 +90,8 @@
 #define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define EXE_MODE	0777
 
-char *TCID = "access02";	/* Test program identifier.    */
-int TST_TOTAL = 4;		/* Total number of test cases. */
+char *TCID = "access02";
+int TST_TOTAL = 4;
 int fd1, fd2, fd4;		/* file descriptor for testfile(s) */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

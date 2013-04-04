@@ -126,7 +126,7 @@
 void setup();
 void cleanup();
 
-char *TCID = "stat06";		/* Test program identifier.    */
+char *TCID = "stat06";
 
 int exp_enos[] = { 0, 0 };
 

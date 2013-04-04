@@ -120,8 +120,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "select02";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "select02";
+int TST_TOTAL = 1;
 
 int Fd[2];
 fd_set saved_Readfds, saved_Writefds;

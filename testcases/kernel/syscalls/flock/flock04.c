@@ -83,8 +83,8 @@ void cleanup(void);
 
 int exp_enos[] = { EWOULDBLOCK, EAGAIN, 0 };
 
-char *TCID = "flock04";		/* Test program identifier */
-int TST_TOTAL = 2;		/* Total number of test cases */
+char *TCID = "flock04";
+int TST_TOTAL = 2;
 char filename[100];
 int fd, fd1, status;
 

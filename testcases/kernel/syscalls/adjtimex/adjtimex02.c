@@ -105,7 +105,7 @@ static int setup6();
 static void cleanup();
 static void cleanup6();
 
-char *TCID = "adjtimex02";	/* Test program identifier.    */
+char *TCID = "adjtimex02";
 
 static int hz;			/* HZ from sysconf */
 

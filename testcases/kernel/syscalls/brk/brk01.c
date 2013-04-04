@@ -116,8 +116,8 @@ void cleanup();
 
 #define MAX_SIZE_LC	1000	/* loop count test will reach max size */
 
-char *TCID = "brk01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "brk01";
+int TST_TOTAL = 1;
 
 long Max_brk_byte_size;
 long Beg_brk_val;

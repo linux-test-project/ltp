@@ -97,8 +97,8 @@ void setup();
 void cleanup();
 void alarm_received();
 
-char *TCID = "alarm02";		/* Test program identifier.    */
-int TST_TOTAL = 3;		/* Total number of test cases. */
+char *TCID = "alarm02";
+int TST_TOTAL = 3;
 
 int received_alarm = 0;		/* Indicates a SIGALRM was received */
 

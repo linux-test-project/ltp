@@ -97,8 +97,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	"tnode_1", SOCKET_MODE, EACCES, NULL}, {
 "tnode_2", NEWMODE, EACCES, setup2},};
 
-char *TCID = "mknod07";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "mknod07";
+int TST_TOTAL = 2;
 int exp_enos[] = { EPERM, EACCES, 0 };
 
 char nobody_uid[] = "nobody";

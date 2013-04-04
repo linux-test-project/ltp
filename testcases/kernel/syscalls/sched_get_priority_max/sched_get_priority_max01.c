@@ -71,7 +71,7 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sched_get_priority_max01";	/* Test program identifier.    */
+char *TCID = "sched_get_priority_max01";
 
 static struct test_case_t {
 	char *desc;

@@ -80,8 +80,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "vfork02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "vfork02";
+int TST_TOTAL = 1;
 int exp_enos[] = { 0 };
 
 void setup();			/* Main setup function of test */
@@ -96,7 +96,6 @@ int main(int ac, char **av)
 	int exit_status;	/* exit status of child process */
 	sigset_t PendSig;	/* variable to hold pending signal */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

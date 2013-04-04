@@ -121,10 +121,10 @@
 void setup();
 void cleanup();
 
-char *TCID = "setreuid01";	/* Test program identifier.    */
-int TST_TOTAL = 5;		/* Total number of test cases. */
+char *TCID = "setreuid01";
+int TST_TOTAL = 5;
 
-int exp_enos[] = { 0, 0 };	/* Zero terminated list of expected errnos */
+int exp_enos[] = { 0, 0 };
 
 int ruid, euid;			/* real and effective user ids */
 

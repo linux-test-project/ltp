@@ -86,8 +86,8 @@ void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler(int sig);	/* signal catching function */
 
-char *TCID = "sigprocmask01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "sigprocmask01";
+int TST_TOTAL = 1;
 int exp_enos[] = { 0 };
 
 int sig_catch = 0;		/* variable to blocked/unblocked signals */
@@ -102,7 +102,6 @@ int main(int ac, char **av)
 	char *msg;
 	pid_t my_pid;		/* test process id */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -109,8 +109,8 @@ static int setup03();
 static int cleanup03();
 void handler(int);
 
-char *TCID = "swapon02";	/* Test program identifier.    */
-int TST_TOTAL = 4;		/* Total number of test cases. */
+char *TCID = "swapon02";
+int TST_TOTAL = 4;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 

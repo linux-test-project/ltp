@@ -55,7 +55,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "recv01";		/* Test program identifier.    */
+char *TCID = "recv01";
 int testno;
 
 char buf[1024];
@@ -99,7 +99,7 @@ struct test_case_t {		/* test case structure */
 		    -1, EINVAL, setup1, cleanup1, "invalid flags set"}
 ,};
 
-int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
 int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, EINVAL, 0 };
 
@@ -112,7 +112,6 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 #ifdef UCLINUX
@@ -158,7 +157,7 @@ pid_t pid;
 
 void setup(void)
 {
-	TEST_PAUSE;		/* if -P option specified */
+	TEST_PAUSE;
 
 	/* initialize sockaddr's */
 	sin1.sin_family = AF_INET;

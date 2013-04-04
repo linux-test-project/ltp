@@ -87,8 +87,8 @@
 #define TESTFILE	"testfile"
 
 int fd;				/* file descriptor for test file */
-char *TCID = "fchmod03";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "fchmod03";
+int TST_TOTAL = 1;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

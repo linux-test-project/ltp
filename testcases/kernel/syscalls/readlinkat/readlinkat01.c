@@ -71,8 +71,8 @@ void setup();
 void cleanup();
 void setup_every_copy();
 
-char *TCID = "readlinkat01";	/* Test program identifier.    */
-int TST_TOTAL = TEST_CASES;	/* Total number of test cases. */
+char *TCID = "readlinkat01";
+int TST_TOTAL = TEST_CASES;
 char pathname[256];
 char dpathname[256];
 char testfile[256];

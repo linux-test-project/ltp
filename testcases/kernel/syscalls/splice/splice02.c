@@ -37,17 +37,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "splice02";	/* Test program identifier. */
+char *TCID = "splice02";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+int TST_TOTAL = 1;
 
 static inline long ltp_splice(int fd_in, loff_t * off_in,
 			      int fd_out, loff_t * off_out,

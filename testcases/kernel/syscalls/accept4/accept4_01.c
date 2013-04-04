@@ -79,9 +79,8 @@
 #define USE_SOCKETCALL 1
 #endif
 
-/* Global Variables */
-char *TCID = "accept04_01";	/* test program identifier.          */
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "accept04_01";
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

@@ -122,8 +122,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "fcntl08";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "fcntl08";
+int TST_TOTAL = 1;
 
 char fname[255];
 int arg, fd;

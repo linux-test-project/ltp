@@ -80,7 +80,7 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sched_rr_get_interval03";	/* Test program identifier.    */
+char *TCID = "sched_rr_get_interval03";
 struct timespec tp;
 static int exp_enos[] = { EINVAL, ESRCH, EFAULT, 0 };
 
@@ -153,7 +153,6 @@ void setup()
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;

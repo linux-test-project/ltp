@@ -92,8 +92,8 @@
 				 */
 #define TESTFILE	"testfile"
 
-char *TCID = "chmod07";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "chmod07";
+int TST_TOTAL = 1;
 
 void setup();			/* Main setup function for the test */
 void cleanup();			/* Main cleanup function for the test */

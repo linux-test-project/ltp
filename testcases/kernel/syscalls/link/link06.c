@@ -92,8 +92,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "link06";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "link06";
+int TST_TOTAL = 1;
 
 int exp_enos[] = { EACCES, 0 };
 

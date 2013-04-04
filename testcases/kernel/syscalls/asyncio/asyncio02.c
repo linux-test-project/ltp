@@ -119,8 +119,8 @@ void setup();
 void cleanup();
 int testrun(int flag, int bytes, int ti);
 
-char *TCID = "asyncio02";	/* Test program identifier.    */
-int TST_TOTAL = 6;		/* Total number of test cases. */
+char *TCID = "asyncio02";
+int TST_TOTAL = 6;
 
 int exp_enos[] = { 0 };		/* Array of expected errnos */
 

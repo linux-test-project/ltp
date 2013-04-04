@@ -84,8 +84,8 @@ extern struct passwd *my_getpwnam(char *);
 
 char user1name[] = "nobody";
 
-char *TCID = "rmdir03";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "rmdir03";
+int TST_TOTAL = 1;
 
 char tstdir1[255];
 char tstdir2[255];

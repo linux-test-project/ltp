@@ -65,8 +65,8 @@
 #include "common_j_h.c"
 #include "numa_helper.h"
 
-char *TCID = "get_mempolicy01";	/* Test program identifier. */
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "get_mempolicy01";
+int TST_TOTAL = 1;
 
 #if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_MPOL_CONSTANTS
 

@@ -57,17 +57,13 @@
 #include "../utils/common_j_h.c"
 #include "../utils/include_j_h.h"
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "clock_nanosleep01";	/* Test program identifier. */
+char *TCID = "clock_nanosleep01";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+int TST_TOTAL = 1;
 struct sigaction act;
 
 /*

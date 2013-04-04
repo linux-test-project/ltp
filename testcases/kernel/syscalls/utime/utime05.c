@@ -89,8 +89,8 @@
 #define FILE_MODE	S_IRUSR | S_IRGRP | S_IROTH
 #define NEW_TIME	10000
 
-char *TCID = "utime05";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "utime05";
+int TST_TOTAL = 1;
 int exp_enos[] = { 0 };
 
 char nobody_uid[] = "nobody";
@@ -109,7 +109,6 @@ int main(int ac, char **av)
 	time_t modf_time, access_time;
 	/* file modification/access time */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

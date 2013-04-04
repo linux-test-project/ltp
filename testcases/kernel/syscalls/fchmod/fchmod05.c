@@ -94,8 +94,8 @@
 #define TESTDIR		"testdir"
 
 int fd;				/* file descriptor for test directory */
-char *TCID = "fchmod05";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "fchmod05";
+int TST_TOTAL = 1;
 
 void setup();			/* Main setup function for test */
 void cleanup();			/* Main cleanup function for test */
@@ -107,7 +107,6 @@ int main(int ac, char **av)
 	char *msg;
 	mode_t dir_mode;	/* mode permissions set on test directory */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

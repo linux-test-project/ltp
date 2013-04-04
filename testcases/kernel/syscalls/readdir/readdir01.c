@@ -130,8 +130,8 @@ void setup();
 void help();
 void cleanup();
 
-char *TCID = "readdir01";	/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "readdir01";
+int TST_TOTAL = 2;
 
 int exp_enos[] = { 0, 0 };
 

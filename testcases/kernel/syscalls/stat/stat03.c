@@ -126,7 +126,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	NULL, NULL, 0, no_setup}
 };
 
-char *TCID = "stat03";		/* Test program identifier.    */
+char *TCID = "stat03";
 int TST_TOTAL = (sizeof(Test_cases) / sizeof(*Test_cases));
 int exp_enos[] = { EACCES,
 #if !defined(UCLINUX)
@@ -149,7 +149,6 @@ int main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

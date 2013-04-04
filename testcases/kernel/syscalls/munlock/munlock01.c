@@ -73,8 +73,8 @@ void setup();
 void setup1(int);
 void cleanup();
 
-char *TCID = "munlock01";	/* Test program identifier.    */
-int TST_TOTAL = 4;		/* Total number of test cases. */
+char *TCID = "munlock01";
+int TST_TOTAL = 4;
 
 int exp_enos[] = { 0 };
 

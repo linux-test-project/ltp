@@ -68,7 +68,6 @@
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 
-/* Harness Specific Include Files. */
 #include "ltp_signal.h"
 #include "test.h"
 #include "usctest.h"
@@ -79,9 +78,9 @@
 #define POLLRDHUP 0x2000
 #endif
 
-char *TCID = "ppoll01";		/* Test program identifier. */
+char *TCID = "ppoll01";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+int TST_TOTAL = 1;
 
 void sighandler(int sig)
 {

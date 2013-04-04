@@ -81,8 +81,8 @@
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-char *TCID = "time02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "time02";
+int TST_TOTAL = 1;
 int exp_enos[] = { 0 };
 
 int main(int ac, char **av)
@@ -91,7 +91,6 @@ int main(int ac, char **av)
 	char *msg;
 	time_t tloc;		/* time_t variables for time(2) */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

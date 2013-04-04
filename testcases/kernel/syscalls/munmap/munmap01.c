@@ -79,8 +79,8 @@
 
 #define TEMPFILE	"mmapfile"
 
-char *TCID = "munmap01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "munmap01";
+int TST_TOTAL = 1;
 
 char *addr;			/* addr of memory mapped region */
 int fildes;			/* file descriptor for tempfile */
@@ -95,7 +95,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

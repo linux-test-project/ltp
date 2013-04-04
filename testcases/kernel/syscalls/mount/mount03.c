@@ -100,8 +100,8 @@ static void cleanup(void);
 static int test_rwflag(int, int);
 static int setup_uid(void);
 
-char *TCID = "mount03";		/* Test program identifier.    */
-int TST_TOTAL = 6;		/* Total number of test cases. */
+char *TCID = "mount03";
+int TST_TOTAL = 6;
 extern char **environ;		/* pointer to this processes env */
 
 #define DEFAULT_FSTYPE	"ext2"

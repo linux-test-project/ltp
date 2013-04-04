@@ -89,8 +89,8 @@
 
 #define TEMPFILE	"mmapfile"
 
-char *TCID = "mmap05";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mmap05";
+int TST_TOTAL = 1;
 size_t page_sz;			/* system page size */
 volatile char *addr;		/* addr of memory mapped region */
 int fildes;			/* file descriptor for temporary file */

@@ -83,7 +83,7 @@
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "prctl01";		/* Test program identifier.    */
+char *TCID = "prctl01";
 
 int option[2] = { PR_GET_PDEATHSIG, PR_SET_PDEATHSIG };
 

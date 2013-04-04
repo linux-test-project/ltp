@@ -84,8 +84,8 @@
 #define BUF_SIZE	256
 #define MASK		0777
 
-char *TCID = "stat01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "stat01";
+int TST_TOTAL = 1;
 int exp_enos[] = { 0 };
 
 uid_t user_id;			/* Owner id of the test file */
@@ -93,8 +93,8 @@ gid_t group_id;			/* Group id of the test file */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-void setup();			/* Setup function for the test */
-void cleanup();			/* Cleanup function for the test */
+void setup();
+void cleanup();
 
 int main(int ac, char **av)
 {
@@ -102,7 +102,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

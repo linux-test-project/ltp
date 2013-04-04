@@ -46,7 +46,6 @@
 #include <stdio.h>
 #include <linux/if_tun.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 

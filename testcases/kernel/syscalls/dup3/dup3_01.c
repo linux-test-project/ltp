@@ -58,7 +58,6 @@
 #include <sys/syscall.h>
 #include <errno.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -67,9 +66,8 @@
 #define O_CLOEXEC 02000000
 #endif
 
-/* Global Variables */
-char *TCID = "dup3_01";		/* test program identifier.              */
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "dup3_01";
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

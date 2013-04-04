@@ -55,7 +55,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "getpeername01";	/* Test program identifier.    */
+char *TCID = "getpeername01";
 int testno;
 
 int s, s2;			/* socket descriptors */
@@ -101,7 +101,7 @@ struct test_case_t {		/* test case structure */
 #endif
 };
 
-int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
 int exp_enos[] = { EBADF, ENOTSOCK, ENOTCONN, EFAULT, 0 };
 
@@ -110,7 +110,6 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -119,7 +118,6 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	/* set up the expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
@@ -156,7 +154,7 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
-	TEST_PAUSE;		/* if -P option specified */
+	TEST_PAUSE;
 
 	/* initialize local sockaddr */
 	sin0.sin_family = AF_INET;

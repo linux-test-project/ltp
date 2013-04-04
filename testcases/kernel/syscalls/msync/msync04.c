@@ -75,8 +75,8 @@
 #define BUF_SIZE	256
 #define INV_SYNC	-1
 
-char *TCID = "msync04";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "msync04";
+int TST_TOTAL = 1;
 
 char *addr;			/* addr of memory mapped region */
 size_t page_sz;			/* system page size */

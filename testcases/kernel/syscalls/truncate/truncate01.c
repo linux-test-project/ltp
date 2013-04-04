@@ -85,7 +85,7 @@
 #define FILE_SIZE	1024	/* test file size */
 #define TRUNC_LEN	256	/* truncation length */
 
-TCID_DEFINE(truncate01);	/* Test program identifier.    */
+TCID_DEFINE(truncate01);
 int TST_TOTAL = 1;		/* Total number of test conditions */
 int exp_enos[] = { 0 };
 
@@ -99,7 +99,6 @@ int main(int ac, char **av)
 	char *msg;
 	off_t file_length;	/* test file length */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -109,8 +109,8 @@
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "access03";	/* Test program identifier.     */
-int TST_TOTAL = 8;		/* Total number of test cases. */
+char *TCID = "access03";
+int TST_TOTAL = 8;
 
 int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
 

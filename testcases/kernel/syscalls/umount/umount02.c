@@ -94,7 +94,7 @@ static void cleanup(void);
 static int setup_test(int, int);
 static int cleanup_test(int);
 
-char *TCID = "umount02";	/* Test program identifier.    */
+char *TCID = "umount02";
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
@@ -130,7 +130,6 @@ static struct test_case_t {
 	"Pathname too long", ENAMETOOLONG, "ENAMETOOLONG"}
 };
 
-/* Total number of test cases. */
 int TST_TOTAL = sizeof(testcases) / sizeof(testcases[0]);
 
 static int exp_enos[] = { EBUSY, EINVAL, EFAULT, ENAMETOOLONG, ENOENT, 0 };
@@ -358,7 +357,6 @@ void setup()
 			 strerror(errno));
 	}
 
-	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;

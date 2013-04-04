@@ -126,8 +126,8 @@ void cleanup();
 
 extern char *get_high_address();
 
-char *TCID = "unlink07";	/* Test program identifier.    */
-int TST_TOTAL = 6;		/* Total number of test cases. */
+char *TCID = "unlink07";
+int TST_TOTAL = 6;
 
 int exp_enos[] = { 0, 0 };
 

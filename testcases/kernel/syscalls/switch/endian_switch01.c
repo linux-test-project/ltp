@@ -60,8 +60,8 @@ static void setup();
 
 static void cleanup();
 
-char *TCID = "endian_switch01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "endian_switch01";
+int TST_TOTAL = 1;
 
 #if defined (__powerpc64__) || (__powerpc__)
 void setup()

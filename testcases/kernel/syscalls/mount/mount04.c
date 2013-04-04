@@ -83,7 +83,7 @@ static void help(void);
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "mount04";		/* Test program identifier.    */
+char *TCID = "mount04";
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
@@ -105,7 +105,6 @@ static struct test_case_t {
 	"User not Super User/root", EPERM, "EPERM"}
 };
 
-/* Total number of test cases. */
 int TST_TOTAL = sizeof(testcases) / sizeof(testcases[0]);
 
 static int exp_enos[] = { EPERM, 0 };
@@ -230,7 +229,6 @@ void setup()
 			 strerror(errno));
 	}
 
-	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Setup for mount(2) returning errno EACCES. */

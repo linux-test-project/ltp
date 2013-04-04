@@ -82,8 +82,8 @@ int clean_swap();
 int check_and_swapoff(char *filename);
 int create_swapfile(char *swapfile, int bs, int count);
 
-char *TCID = "swapon03";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "swapon03";
+int TST_TOTAL = 1;
 
 static int exp_enos[] = { EPERM, 0 };
 

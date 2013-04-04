@@ -133,8 +133,8 @@ struct test_struct {
 	    /*      { TEST_FIFO, &newdirfd, TEST_FILE1, TEST_DIR1"/"TEST_FIFO, TEST_DIR2"/"TEST_FILE1, 0 }, */
 };
 
-char *TCID = "symlinkat01";	/* Test program identifier.    */
-int TST_TOTAL = sizeof(test_desc) / sizeof(*test_desc);	/* Total number of test cases. */
+char *TCID = "symlinkat01";
+int TST_TOTAL = sizeof(test_desc) / sizeof(*test_desc);
 
 #define SUCCEED_OR_DIE(syscall, message, ...)														\
 	(errno = 0,																														\

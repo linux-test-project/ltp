@@ -59,7 +59,6 @@
 #include <sys/syscall.h>
 #include <errno.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -70,12 +69,9 @@
 
 #define EFD_CLOEXEC O_CLOEXEC
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "eventfd2_01";	/* test program identifier.              */
+char *TCID = "eventfd2_01";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

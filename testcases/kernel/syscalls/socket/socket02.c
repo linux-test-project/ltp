@@ -62,7 +62,6 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 
@@ -77,12 +76,9 @@
 #define SOCK_CLOEXEC O_CLOEXEC
 #endif
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "socket02";	/* test program identifier.              */
+char *TCID = "socket02";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -142,7 +138,6 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

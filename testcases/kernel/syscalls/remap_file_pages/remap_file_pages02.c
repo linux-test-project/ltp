@@ -97,8 +97,8 @@ static int setup03(int test);
 static int setup04(int test);
 static void cleanup();
 
-char *TCID = "remap_file_pages02";	/* Test program identifier.    */
-int TST_TOTAL = 4;		/* Total number of test cases. */
+char *TCID = "remap_file_pages02";
+int TST_TOTAL = 4;
 static int exp_enos[] = { EINVAL, 0 };
 
 static char *cache_contents;

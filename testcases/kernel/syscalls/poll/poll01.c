@@ -73,8 +73,8 @@
 
 #define BUF_SIZE	512
 
-char *TCID = "poll01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "poll01";
+int TST_TOTAL = 1;
 
 int fildes[2];			/* file descriptors of the pipe. */
 struct pollfd fds[1];		/* struct. for poll() */
@@ -93,7 +93,6 @@ int main(int ac, char **av)
 	int status;		/* exit status of child process */
 	int rval;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

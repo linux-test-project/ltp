@@ -74,8 +74,8 @@
 #define MODE_RWX	S_IFMT	/* mode different from those expected */
 #define TNODE		"tnode"	/*pathname */
 
-char *TCID = "mknod09";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mknod09";
+int TST_TOTAL = 1;
 int exp_enos[] = { EINVAL, 0 };
 
 void setup();			/* setup function for the test */
@@ -87,7 +87,6 @@ int main(int ac, char **av)
 	char *msg;
 	char *test_desc;	/* test specific error message */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

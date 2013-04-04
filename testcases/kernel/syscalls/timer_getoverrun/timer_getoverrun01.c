@@ -44,7 +44,6 @@
 #include <signal.h>
 #include <syscall.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -54,12 +53,9 @@
  */
 typedef int kernel_timer_t;
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "timer_getoverrun01";	/* Test program identifier. */
+char *TCID = "timer_getoverrun01";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

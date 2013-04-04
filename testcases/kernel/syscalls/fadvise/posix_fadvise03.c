@@ -55,7 +55,7 @@
 void setup();
 void cleanup();
 
-TCID_DEFINE(posix_fadvise03);	/* Test program identifier.    */
+TCID_DEFINE(posix_fadvise03);
 
 char fname[] = "/bin/cat";	/* test executable to open */
 int fd = -1;			/* initialized in open */

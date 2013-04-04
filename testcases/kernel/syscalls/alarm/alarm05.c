@@ -76,8 +76,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "alarm05";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "alarm05";
+int TST_TOTAL = 1;
 int alarms_received = 0;	/* flag to indicate SIGALRM received or not */
 
 void setup();			/* Main setup function of test */

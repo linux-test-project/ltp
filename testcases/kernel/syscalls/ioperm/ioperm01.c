@@ -63,7 +63,7 @@
  *
  ****************************************************************/
 
-char *TCID = "ioperm01";	/* Test program identifier.    */
+char *TCID = "ioperm01";
 
 #if defined __i386__ || defined(__x86_64__)
 
@@ -85,7 +85,7 @@ unsigned long io_addr;		/*kernel version dependant io start address */
 static void setup();
 static void cleanup();
 
-int TST_TOTAL = 1;		/* Total number of test cases. */
+int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {
@@ -180,7 +180,7 @@ void cleanup()
 #include "test.h"
 #include "usctest.h"
 
-int TST_TOTAL = 0;		/* Total number of test cases. */
+int TST_TOTAL = 0;
 
 int main()
 {

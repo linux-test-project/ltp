@@ -124,8 +124,8 @@
 void setup();
 void cleanup();
 
-TCID_DEFINE(setgroups01);	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+TCID_DEFINE(setgroups01);
+int TST_TOTAL = 1;
 
 int len = NGROUPS, ngrps = 0;
 GID_T list[NGROUPS];

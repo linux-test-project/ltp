@@ -124,8 +124,8 @@ void cleanup();
 void alarm_handler(int sig);
 void do_child();
 
-char *TCID = "kill09";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "kill09";
+int TST_TOTAL = 1;
 
 int fork_pid;
 

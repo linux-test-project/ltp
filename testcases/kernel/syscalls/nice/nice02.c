@@ -72,8 +72,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "nice02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "nice02";
+int TST_TOTAL = 1;
 
 #define	NICEINC		50
 
@@ -87,7 +87,6 @@ int main(int ac, char **av)
 	int New_nice;		/* priority of process after nice() */
 	int max_val;		/* Maximum nice value per OS. */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

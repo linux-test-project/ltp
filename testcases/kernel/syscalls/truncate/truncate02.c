@@ -86,7 +86,7 @@
 #define TRUNC_LEN1	256	/* truncation length */
 #define TRUNC_LEN2	512	/* truncation length */
 
-TCID_DEFINE(truncate02);	/* Test program identifier.    */
+TCID_DEFINE(truncate02);
 int TST_TOTAL = 1;		/* Total number of test conditions */
 int fd;				/* file descriptor of testfile */
 char tst_buff[BUF_SIZE];	/* buffer to hold testfile contents */
@@ -106,7 +106,6 @@ int main(int ac, char **av)
 	int read_len = 0;	/* total no. of bytes read from testfile */
 	int err_flag = 0;	/* error indicator flag */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

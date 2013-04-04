@@ -120,8 +120,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "times01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "times01";
+int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
 

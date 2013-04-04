@@ -89,8 +89,8 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	0644
 
-char *TCID = "llseek01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "llseek01";
+int TST_TOTAL = 1;
 char write_buff[BUFSIZ];	/* buffer to hold data */
 int fildes;			/* file handle for temp file */
 

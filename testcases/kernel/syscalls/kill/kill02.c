@@ -201,8 +201,8 @@ void chld1_kill();		/*This routine is used by child 1 to remove itself and  */
 void setup();
 void cleanup();
 
-char *TCID = "kill02";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "kill02";
+int TST_TOTAL = 2;
 
 int exp_enos[] = { 0 };		/* Array of expected errnos */
 

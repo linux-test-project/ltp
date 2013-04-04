@@ -43,8 +43,8 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-char *TCID = "utimensat01";	/* Test program identifier.    */
-int TST_TOTAL = 0;		/* Total number of test cases. */
+char *TCID = "utimensat01";
+int TST_TOTAL = 0;
 
 #define cleanup tst_exit
 

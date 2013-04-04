@@ -87,7 +87,7 @@
 #define NEW_PERMS	(S_IFREG|S_IRWXU|S_IRWXG|S_ISUID|S_ISGID)
 #define TESTFILE	"testfile"
 
-char *TCID = "chown03";		/* Test program identifier.    */
+char *TCID = "chown03";
 int TST_TOTAL = 1;		/* Total number of test conditions */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;

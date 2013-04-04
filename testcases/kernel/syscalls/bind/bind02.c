@@ -58,7 +58,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "bind02";		/* Test program identifier.    */
+char *TCID = "bind02";
 int testno;
 int TST_TOTAL = 1;
 

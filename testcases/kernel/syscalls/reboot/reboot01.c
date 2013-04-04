@@ -79,8 +79,8 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "reboot01";	/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "reboot01";
+int TST_TOTAL = 2;
 
 static int flag[2] = { LINUX_REBOOT_CMD_CAD_ON, LINUX_REBOOT_CMD_CAD_OFF };
 

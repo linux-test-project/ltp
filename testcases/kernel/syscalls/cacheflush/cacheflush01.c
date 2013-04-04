@@ -44,7 +44,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -65,11 +64,8 @@
 #endif
 #endif
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "cacheflush01";	/* Test program identifier. */
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "cacheflush01";
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

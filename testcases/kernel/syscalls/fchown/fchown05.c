@@ -82,7 +82,7 @@
 #define TESTFILE	"testfile"
 
 int fildes;			/* File descriptor for the test file */
-char *TCID = "fchown05";	/* Test program identifier.    */
+char *TCID = "fchown05";
 int TST_TOTAL = 5;		/* Total number of test conditions */
 
 struct test_case_t {		/* Struct. for for test case looping */
@@ -112,7 +112,6 @@ int main(int ac, char **av)
 	gid_t group_id;		/* group id of the user set for testfile */
 	char *test_desc;	/* test specific message */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

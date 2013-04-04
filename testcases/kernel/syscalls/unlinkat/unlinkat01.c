@@ -69,8 +69,8 @@ void setup();
 void cleanup();
 void setup_every_copy();
 
-char *TCID = "unlinkat01";	/* Test program identifier.    */
-int TST_TOTAL = TEST_CASES;	/* Total number of test cases. */
+char *TCID = "unlinkat01";
+int TST_TOTAL = TEST_CASES;
 char pathname[256];
 char subpathname[256];
 char testfile[256];

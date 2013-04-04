@@ -60,17 +60,13 @@
 #define BROKEN_QUOTACTL 1
 #endif
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "quotactl01";	/* Test program identifier.             */
+char *TCID = "quotactl01";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.  */
+int TST_TOTAL = 1;
 
 #define QUOTACTL(cmd, addr) \
 	ltp_syscall(__NR_quotactl, QCMD(cmd, USRQUOTA), block_dev, id, \

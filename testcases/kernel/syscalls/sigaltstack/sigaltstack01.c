@@ -78,8 +78,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "sigaltstack01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "sigaltstack01";
+int TST_TOTAL = 1;
 int exp_enos[] = { 0 };
 
 void *addr, *main_stk;		/* address of main stack for signal */
@@ -99,7 +99,6 @@ int main(int ac, char **av)
 	char *msg;
 	void *alt_stk;		/* address of alternate stack for signal */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

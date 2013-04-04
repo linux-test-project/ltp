@@ -89,13 +89,13 @@
 				 */
 #define TESTDIR		"testdir_4"
 
-char *TCID = "chmod04";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "chmod04";
+int TST_TOTAL = 1;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-void setup();			/* Setup function for the test */
-void cleanup();			/* Cleanup function for the test */
+void setup();
+void cleanup();
 
 int main(int ac, char **av)
 {

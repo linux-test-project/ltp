@@ -104,8 +104,8 @@ void setup();
 void cleanup();
 void trapper();
 
-char *TCID = "alarm03";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "alarm03";
+int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {

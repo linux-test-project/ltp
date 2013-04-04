@@ -63,7 +63,7 @@
  *
  ****************************************************************/
 
-char *TCID = "iopl01";		/* Test program identifier.    */
+char *TCID = "iopl01";
 
 #if defined __i386__ || defined(__x86_64__)
 
@@ -77,7 +77,7 @@ char *TCID = "iopl01";		/* Test program identifier.    */
 static void setup();
 static void cleanup();
 
-int TST_TOTAL = 4;		/* Total number of test cases. */
+int TST_TOTAL = 4;
 
 int level;			/* I/O privilege level of the process */
 
@@ -164,7 +164,7 @@ void cleanup()
 #include "test.h"
 #include "usctest.h"
 
-int TST_TOTAL = 0;		/* Total number of test cases. */
+int TST_TOTAL = 0;
 
 int main()
 {

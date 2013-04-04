@@ -75,7 +75,7 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "socketcall01";	/* Test program identifier.    */
+char *TCID = "socketcall01";
 
 #ifdef __NR_socketcall
 
@@ -165,7 +165,7 @@ void cleanup()
 
 #else
 
-int TST_TOTAL = 0;		/* Total number of test cases. */
+int TST_TOTAL = 0;
 
 int main()
 {

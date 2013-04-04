@@ -54,7 +54,7 @@
 void setup();
 void cleanup();
 
-TCID_DEFINE(posix_fadvise02);	/* Test program identifier.    */
+TCID_DEFINE(posix_fadvise02);
 
 #define WRONG_FD       42	/* The number has no meaning.
 				   Just used as something wrong fd */

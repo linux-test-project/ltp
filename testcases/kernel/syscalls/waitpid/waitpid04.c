@@ -146,7 +146,6 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;

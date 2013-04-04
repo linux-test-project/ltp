@@ -89,8 +89,8 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IRGRP | S_IROTH
 
-char *TCID = "utime02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "utime02";
+int TST_TOTAL = 1;
 time_t curr_time;		/* current time in seconds */
 time_t tloc;			/* argument var. for time() */
 int exp_enos[] = { 0 };
@@ -109,7 +109,6 @@ int main(int ac, char **av)
 	time_t modf_time, access_time;
 	time_t pres_time;	/* file modification/access/present time */
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

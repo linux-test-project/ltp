@@ -80,7 +80,7 @@
 #define TESTFILE	"testfile"
 
 int fd;				/* file descriptor for testfile */
-char *TCID = "fchmod07";	/* Test program identifier.    */
+char *TCID = "fchmod07";
 int TST_TOTAL = 8;		/* Total number of test conditions */
 
 int Modes[] = { 0, 07, 070, 0700, 0777, 02777, 04777, 06777 };
@@ -98,7 +98,6 @@ int main(int ac, char **av)
 
 	TST_TOTAL = sizeof(Modes) / sizeof(int);
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -81,7 +81,6 @@
  ******************************************************************************/
 #define _GNU_SOURCE
 
-/* Standard Include Files */
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/utsname.h>
@@ -92,7 +91,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -105,10 +103,7 @@
 
 #define SYNC_FILE_RANGE_INVALID 8
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "sync_file_range01";	/* test program identifier.       */
+char *TCID = "sync_file_range01";
 char filename[255];		/* file used for testing */
 char spl_file[] = "/dev/null";
 int filed, sfd;			/* normal and special fds */

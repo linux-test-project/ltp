@@ -90,8 +90,8 @@
 
 #define SHM_MODE	(SHM_R | SHM_W)	/* mode permissions of shared memory */
 
-char *TCID = "mremap04";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "mremap04";
+int TST_TOTAL = 1;
 char *addr;			/* addr of memory mapped region */
 char *shmaddr;			/* pointer to shared memory segment */
 int shmid;			/* shared memory identifier. */
@@ -109,7 +109,6 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

@@ -75,8 +75,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "nice03";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "nice03";
+int TST_TOTAL = 1;
 
 #define	NICEINC		2
 int Org_nice;			/* original priority of the test process */
@@ -90,7 +90,6 @@ int main(int ac, char **av)
 	char *msg;
 	int New_nice;		/* priority of process after nice() */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

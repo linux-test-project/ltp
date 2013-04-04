@@ -70,8 +70,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "msync03";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "msync03";
+int TST_TOTAL = 1;
 
 void *addr;			/* addr of memory mapped region */
 size_t page_sz;			/* system page size */

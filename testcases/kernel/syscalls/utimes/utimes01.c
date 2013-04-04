@@ -57,15 +57,13 @@
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Global Variables */
-char *TCID = "utimes01";	/* Test program identifier. */
+char *TCID = "utimes01";
 int testno;
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+int TST_TOTAL = 1;
 
 /* Extern Global Functions */
 /******************************************************************************/

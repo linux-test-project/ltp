@@ -51,8 +51,8 @@ void setup();
 void cleanup();
 extern void do_file_setup(char *);
 
-char *TCID = "rename07";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "rename07";
+int TST_TOTAL = 1;
 
 int exp_enos[] = { ENOTDIR, 0 };	/* List must end with 0 */
 

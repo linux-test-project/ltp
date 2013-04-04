@@ -89,7 +89,7 @@
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "prctl02";		/* Test program identifier.    */
+char *TCID = "prctl02";
 static int exp_enos[] = { EINVAL, EINVAL, 0 };
 
 struct test_cases_t {

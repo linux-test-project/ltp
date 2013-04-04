@@ -85,8 +85,8 @@
 #define K4              (K1 * 4)
 #define NBUFS           4
 
-char *TCID = "pread01";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "pread01";
+int TST_TOTAL = 1;
 
 int fildes;			/* file descriptor for tempfile */
 char *write_buf[NBUFS];		/* buffer to hold data to be written */
@@ -104,7 +104,6 @@ int main(int ac, char **av)
 	char *msg;
 	int nread;		/* no. of bytes read by pread() */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

@@ -81,8 +81,8 @@
 #define TEMP_FILE	"temp_file"
 #define FILE_MODE       S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID = "sync02";		/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "sync02";
+int TST_TOTAL = 1;
 char write_buffer[BUFSIZ];	/* buffer used to write data to file */
 int fildes;			/* file descriptor for temporary file */
 
@@ -95,7 +95,6 @@ int main(int ac, char **av)
 	char *msg;
 	char read_buffer[BUFSIZ];	/* buffer used to read data from file */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

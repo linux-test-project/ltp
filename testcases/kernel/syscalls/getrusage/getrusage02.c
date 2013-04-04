@@ -81,7 +81,7 @@ static void setup();
 static void cleanup();
 static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
-char *TCID = "getrusage02";	/* Test program identifier.    */
+char *TCID = "getrusage02";
 
 static struct rusage usage;
 

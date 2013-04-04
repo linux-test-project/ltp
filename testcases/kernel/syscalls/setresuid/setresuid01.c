@@ -112,11 +112,10 @@ struct test_data_t {
 &root_pw_uid, &neg_one, &root_pw_uid, &root, &root, &root,
 		    "After setresuid(root, -1, -1),"},};
 
-/* Total number of test cases. */
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
-void setup(void);		/* Setup function for the test */
-void cleanup(void);		/* Cleanup function for the test */
+void setup(void);
+void cleanup(void);
 
 void
 uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *when);

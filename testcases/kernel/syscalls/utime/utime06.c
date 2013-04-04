@@ -96,8 +96,8 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IRGRP | S_IROTH
 
-char *TCID = "utime06";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
+char *TCID = "utime06";
+int TST_TOTAL = 2;
 time_t curr_time;		/* current time in seconds */
 time_t tloc;			/* argument var. for time() */
 int exp_enos[] = { EACCES, ENOENT, 0 };
@@ -135,7 +135,6 @@ int main(int ac, char **av)
 	int ind;		/* counter to test different test conditions */
 	int pid;
 
-	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

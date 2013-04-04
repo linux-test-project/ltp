@@ -37,7 +37,7 @@
 void setup();
 void cleanup();
 
-char *TCID = "gettid01";	/* Test program identifier.    */
+char *TCID = "gettid01";
 
 int TST_TOTAL = 1;
 

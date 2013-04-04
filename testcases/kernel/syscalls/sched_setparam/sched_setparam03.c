@@ -81,8 +81,8 @@ static void setup();
 static void cleanup();
 static int verify_priority();
 
-char *TCID = "sched_setparam03";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "sched_setparam03";
+int TST_TOTAL = 1;
 
 static struct sched_param param = { NEW_PRIORITY };
 

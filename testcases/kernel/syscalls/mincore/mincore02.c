@@ -61,10 +61,8 @@
 /* comment out if you need to debug */
 /* #define DEBUG_MODE 1 */
 
-/* Extern Global Variables */
-/* Global Variables */
-char *TCID = "mincore02";	/* test program identifier. */
-int TST_TOTAL = 1;		/* total number of tests in this file.   */
+char *TCID = "mincore02";
+int TST_TOTAL = 1;
 
 static int file_desc = 0;	/* this is for the file descriptor */
 static char *position = NULL;

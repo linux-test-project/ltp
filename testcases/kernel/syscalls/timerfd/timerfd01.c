@@ -48,7 +48,7 @@
 
 #define cleanup tst_exit
 
-char *TCID = "timerfd01";	/* Test program identifier */
+char *TCID = "timerfd01";
 
 /*
  * This were good at the time of 2.6.23-rc7 ...
@@ -269,7 +269,7 @@ int main(int ac, char **av)
 }
 
 #else
-int TST_TOTAL = 0;		/* Total number of test cases. */
+int TST_TOTAL = 0;
 
 int main()
 {

@@ -130,7 +130,7 @@ struct test_case_t {		/* test case structure */
 	"", W_OK, ENOENT, NULL}, {
 Longpathname, R_OK, ENAMETOOLONG, longpath_setup},};
 
-char *TCID = "access05";	/* Test program identifier.    */
+char *TCID = "access05";
 int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 int exp_enos[] = { EACCES, EFAULT, EINVAL, ENOENT, ENAMETOOLONG, 0 };
 

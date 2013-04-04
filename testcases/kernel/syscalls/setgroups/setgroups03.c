@@ -82,7 +82,7 @@
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-TCID_DEFINE(setgroups03);	/* Test program identifier.    */
+TCID_DEFINE(setgroups03);
 int TST_TOTAL = 2;		/* Total number of test conditions */
 
 int exp_enos[] = { EINVAL, EPERM, 0 };
@@ -114,7 +114,6 @@ int main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int ngroups_max = sysconf(_SC_NGROUPS_MAX);	/* max no. of groups in the current system */
 
-	/* Parse standard options given to run the test. */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 

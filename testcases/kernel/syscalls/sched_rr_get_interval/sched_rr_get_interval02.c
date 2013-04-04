@@ -73,8 +73,8 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sched_rr_get_interval02";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "sched_rr_get_interval02";
+int TST_TOTAL = 1;
 
 struct timespec tp;
 

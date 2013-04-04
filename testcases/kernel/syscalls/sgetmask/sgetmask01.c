@@ -52,17 +52,13 @@
 #include <stdio.h>
 #include <errno.h>
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* Extern Global Variables */
-
-/* Global Variables */
-char *TCID = "sgetmask01";	/* Test program identifier. */
+char *TCID = "sgetmask01";
 int testno;
-int TST_TOTAL = 2;		/* total number of tests in this file.   */
+int TST_TOTAL = 2;
 
 /* Extern Global Functions */
 /******************************************************************************/

@@ -54,8 +54,8 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-char *TCID = "get_robust_list01";	/* test program identifier.              */
-int TST_TOTAL = 5;		/* total number of tests in this file.   */
+char *TCID = "get_robust_list01";
+int TST_TOTAL = 5;
 
 struct robust_list {
 	struct robust_list *next;
