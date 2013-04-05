@@ -157,8 +157,6 @@ getgroups01 getgroups01
 # 	where x is one less then what is returned by getgroups(0, gidset).
 # 	4. Check to see if getgroups() succeeds and gidset contains
 # 	group id returned from getgid().
-getgroups02 getgroups02
-# Basic test for getgroups(2)
 gethostid01 gethostid01
 # Basic test for gethostid(2)
 gethostname01 gethostname01

@@ -229,8 +229,6 @@ getgid01 getgid01
 getgid03 getgid03
 
 getgroups01 getgroups01
-getgroups02 getgroups02
-getgroups04 getgroups04
 
 gethostid01 gethostid01
 
