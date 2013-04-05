@@ -107,8 +107,8 @@ int main(int ac, char **av)
 		else
 			d_name = dirp->d_name;
 
-		if (strcmp(d_name, "."))
-			tst_resm(TFAIL, "First entry is not '.'");
+		if (strcmp(d_name, ".") && strcmp(d_name, ".."))
+			tst_resm(TINFO, "First entry is not '.' or '..'");
 		else
 			tst_resm(TPASS, "call succeeded");
 
