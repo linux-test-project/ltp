@@ -107,6 +107,18 @@ test_prereqs()
 		exit -1
 	fi
 
+	mount --bind "${sandbox}" "${sandbox}" >& /dev/null
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK true "$0: failed to perform bind mount on directory \"${sandbox}\""
+		exit 1
+	fi
+
+	mount --make-private "${sandbox}" >& /dev/null
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK true "$0: failed to make private mountpoint on directory \"${sandbox}\""
+		exit 1
+	fi
+
 	local mnt_bind=1
 	local mnt_move=1
 
@@ -153,17 +165,11 @@ test_prereqs()
 		tst_resm TINFO "$0: kernel >= 2.6.15 detected -- continuing"
 	fi
 
-	mount --bind "${sandbox}" "${sandbox}" && {
-		mount --make-shared "${sandbox}" > /dev/null 2>&1 || "${FS_BIND_ROOT}/bin/smount" "${sandbox}" shared
-		umount "${sandbox}" || {
-			tst_resm TFAIL "$0: failed to umount simplest shared subtree"
-			exit 1
-		}
-	} || {
-		tst_brkm TBROK true "$0: failed to perform bind mount"
+	mount --make-shared "${sandbox}" > /dev/null 2>&1 || "${FS_BIND_ROOT}/bin/smount" "${sandbox}" shared
+	umount "${sandbox}" || {
+		tst_resm TFAIL "$0: failed to umount simplest shared subtree"
 		exit 1
 	}
-
 	tst_resm TPASS "$0: umounted simplest shared subtree"
 
 }
@@ -428,6 +434,9 @@ run_test()
 	save_sandbox "$tname" "$resdir/$tname" || do_break=1
 	save_mounts "$tname" "$resdir/$tname" || do_break=1
 	save_proc_mounts "$tname" "$resdir/$tname" || do_break=1
+	mount --bind "${sandbox}" "${sandbox}" >& /dev/null || do_break=1
+	mount --make-private "${sandbox}" >& /dev/null || do_break=1
+
 	if [ $do_break -eq 1 ]; then
 		tst_brkm TBROK true "$tname: failed to save pre-test state of \"${sandbox}\""
 		return 2
@@ -453,6 +462,7 @@ run_test()
 		#echo "SUCCEEDED"
 		((nsucceeded++))
 	fi
+	umount -l "${sandbox}" >& /dev/null
 	check_proc_mounts "$tname" "$resdir/$tname" || \
 	restore_proc_mounts "$tname" "$resdir/$tname" || do_break=1
 	check_mounts "$tname" "$resdir/$tname" || \
