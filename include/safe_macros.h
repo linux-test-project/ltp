@@ -159,7 +159,7 @@ unsigned long safe_strtoul(const char *file, const int lineno, void (cleanup_fn)
 long safe_sysconf(const char *file, const int lineno,
 		  void (cleanup_fn)(void), int name);
 #define SAFE_SYSCONF(cleanup_fn, name) \
-	safe_sysconf(__FILE__, __LINE__, cleanup_fn, name);
+	safe_sysconf(__FILE__, __LINE__, cleanup_fn, name)
 
-#endif
-#endif
+#endif /* __SAFE_MACROS_H__ */
+#endif /* __TEST_H__ */
