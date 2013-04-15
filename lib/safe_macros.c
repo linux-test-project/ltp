@@ -294,6 +294,41 @@ safe_unlink(const char *file, const int lineno, void (*cleanup_fn) (void),
 	return (rval);
 }
 
+
+int safe_link(const char *file, const int lineno,
+              void (cleanup_fn)(void), const char *oldpath,
+              const char *newpath)
+{
+	int rval;
+
+	rval = link(oldpath, newpath);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "link(%s, %s) failed at %s:%d",
+			 oldpath, newpath, file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_symlink(const char *file, const int lineno,
+                 void (cleanup_fn)(void), const char *oldpath,
+                 const char *newpath)
+{
+	int rval;
+
+	rval = symlink(oldpath, newpath);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "link(%s, %s) failed at %s:%d",
+			 oldpath, newpath, file, lineno);
+	}
+
+	return rval;
+}
+
 ssize_t
 safe_write(const char *file, const int lineno, void (cleanup_fn) (void),
 	   char len_strict, int fildes, const void *buf, size_t nbyte)

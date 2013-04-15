@@ -121,13 +121,25 @@ int	safe_setgid(const char *file, const int lineno,
 
 int	safe_setuid(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), uid_t uid);
-#define SAFE_SETUID(cleanup_fn, uid)	\
+#define SAFE_SETUID(cleanup_fn, uid) \
 	safe_setuid(__FILE__, __LINE__, cleanup_fn, (uid))
 
 int	safe_unlink(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), const char *pathname);
-#define SAFE_UNLINK(cleanup_fn, pathname)	\
+#define SAFE_UNLINK(cleanup_fn, pathname) \
 	safe_unlink(__FILE__, __LINE__, cleanup_fn, (pathname))
+
+int	safe_link(const char *file, const int lineno,
+                  void (cleanup_fn)(void), const char *oldpath,
+                  const char *newpath);
+#define SAFE_LINK(cleanup_fn, oldpath, newpath) \
+        safe_link(__FILE__, __LINE__, cleanup_fn, (oldpath), (newpath))
+
+int	safe_symlink(const char *file, const int lineno,
+                     void (cleanup_fn)(void), const char *oldpath,
+                     const char *newpath);
+#define SAFE_SYMLINK(cleanup_fn, oldpath, newpath) \
+        safe_symlink(__FILE__, __LINE__, cleanup_fn, (oldpath), (newpath))
 
 ssize_t	safe_write(const char *file, const int lineno,
 	    void (cleanup_fn)(void), char len_strict, int fildes,
