@@ -721,6 +721,7 @@
 /sendfile/sendfile08
 /sendfile/sendfile08_64
 /sendmsg/sendmsg01
+/sendmsg/sendmsg02
 /sendto/sendto01
 /set_robust_list/set_robust_list01
 /set_thread_area/set_thread_area01

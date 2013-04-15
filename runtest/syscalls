@@ -908,6 +908,7 @@ sendfile08_64 sendfile08_64
 
 
 sendmsg01 sendmsg01
+sendmsg02 sendmsg02
 
 sendto01 sendto01
 
