@@ -681,14 +681,24 @@ main()
 
     if [ -n "$DEVICE" ]; then
         sed -i "s|DEVICE|$DEVICE|"  ${TMP}/alltests
+        RC=$?
     else
-        echo "remove test cases which require the block device."
-        echo "You can specify it with option -b"
-        sed -i "/DEVICE/d"  ${TMP}/alltests
+        create_block
+        if [ $? -eq 0 ]; then
+            sed -i "s|DEVICE|$DEVICE|"  ${TMP}/alltests
+            RC=$?
+        else
+            echo "no block device was specified on commandline."
+            echo "Block device could not be created using loopback device"
+            echo "Tests which require block device are disabled."
+            echo "You can specify it with option -b"
+            sed -i "/DEVICE/d"  ${TMP}/alltests
+            RC=$?
+        fi
     fi
 
-    if [ $? -ne 0 ]; then
-            echo "FATAL: error during prcessing alltests file by sed"
+    if [ $RC -ne 0 ]; then
+            echo "FATAL: error during processing alltests file by sed"
             exit 1
     fi
 
@@ -971,8 +981,41 @@ main()
     exit $VALUE
 }
 
+create_block()
+{
+    #create a block device with ext4 filesystem.
+    dd if=/dev/zero of=${TMP}/test.img bs=1kB count=10240 &>/dev/null
+    if [ $? -ne 0 ]; then
+        echo "Failed to create loopback device image, please check disk space and re-run"
+        return 1
+    else
+        ##search for an unused loop dev
+        LOOP_DEV=$(losetup -f)
+        if [ $? -ne 0 ]; then
+            echo "no unused loop device is found"
+            return 1
+        else
+            ##attach the created file to loop dev.
+            losetup $LOOP_DEV ${TMP}/test.img &>/dev/null
+            if [ $? -ne 0 ]; then
+                echo "losetup failed to create block device"
+                return 1
+            else
+                mkfs.ext4 $LOOP_DEV &>/dev/null
+                [ $? -ne 0 ] && (echo "creating a ext4 block device failed" && return 1)
+                #set the values in alltests which require block device.
+                DEVICE=$LOOP_DEV
+                DEVICE_FS_TYPE="ext4"
+                return 0
+            fi
+        fi
+    fi
+}
+
 cleanup()
 {
+    [ "$LOOP_DEV" ] && losetup -d $LOOP_DEV
+    [ -e "${TEMP}/test.img" ] && rm -f ${TEMP}/test.img
     rm -rf ${TMP}
 }
 
