@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		test_transparent_hugepage(nr_children, nr_thps, 1);
+		test_transparent_hugepage(nr_children, nr_thps, 1, 0);
 	}
 
 	cleanup();

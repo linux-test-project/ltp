@@ -91,7 +91,7 @@ void oom(int testcase, int lite)
 	}
 }
 
-void testoom(int mempolicy, int lite)
+static void set_global_mempolicy(int mempolicy)
 {
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
@@ -133,6 +133,11 @@ void testoom(int mempolicy, int lite)
 			tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
 	}
 #endif
+}
+
+void testoom(int mempolicy, int lite)
+{
+	set_global_mempolicy(mempolicy);
 
 	tst_resm(TINFO, "start normal OOM testing.");
 	oom(NORMAL, lite);
@@ -613,11 +618,15 @@ static void verify_thp_size(int *children, int nr_children, int nr_thps)
 	}
 }
 
-void test_transparent_hugepage(int nr_children, int nr_thps, int hg_aligned)
+void test_transparent_hugepage(int nr_children, int nr_thps,
+			       int hg_aligned, int mempolicy)
 {
 	unsigned long hugepagesize, memfree;
 	int i, *pids, ret, status;
 	char path[BUFSIZ];
+
+	if (mempolicy)
+		set_global_mempolicy(mempolicy);
 
 	memfree = read_meminfo("MemFree:");
 	tst_resm(TINFO, "The current MemFree is %luMB", memfree / KB);

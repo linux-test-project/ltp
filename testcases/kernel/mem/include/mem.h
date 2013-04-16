@@ -39,7 +39,8 @@ void testoom(int mempolicy, int lite);
 
 int opt_nr_children, opt_nr_thps;
 char *opt_nr_children_str, *opt_nr_thps_str;
-void test_transparent_hugepage(int nr_children, int nr_thps, int hg_aligned);
+void test_transparent_hugepage(int nr_children, int nr_thps,
+			       int hg_aligned, int mempolicy);
 void check_thp_options(int *nr_children, int *nr_thps);
 void thp_usage(void);
 
