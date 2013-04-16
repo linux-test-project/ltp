@@ -260,7 +260,7 @@ fi
 pattern="[[:space:]]*Defaults[[:space:]]*requiretty.*"
 if grep -q "^${pattern}" $sudoers; then
 	tst_resm TINFO "Comment requiretty in $sudoers for automated testing systems"
-	if ! sed -E -i.$$ -e "s/^($pattern)/#\1/" $sudoers; then
+	if ! sed -r -i.$$ -e "s/^($pattern)/#\1/" $sudoers; then
 		tst_resm TBROK "failed to mangle $sudoers properly"
 		exit 1
 	fi
