@@ -32,6 +32,17 @@ void testoom(int mempolicy, int lite);
 
 #define PATH_KSM		"/sys/kernel/mm/ksm/"
 
+/* THP */
+
+#define PATH_THP		"/sys/kernel/mm/transparent_hugepage/"
+#define PATH_KHPD		PATH_THP "khugepaged/"
+
+int opt_nr_children, opt_nr_thps;
+char *opt_nr_children_str, *opt_nr_thps_str;
+void test_transparent_hugepage(int nr_children, int nr_thps, int hg_aligned);
+void check_thp_options(int *nr_children, int *nr_thps);
+void thp_usage(void);
+
 /* HUGETLB */
 
 #define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
