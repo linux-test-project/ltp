@@ -70,7 +70,7 @@ int main(void)
 	if (ret != EINVAL) {
 		printf(TNAME " return code didn't match expected "
 		       "value (%d != %d).\n", ret, EINVAL);
-		return PTS_UNRESOLVED;
+		return PTS_UNTESTED;
 	}
 
 	close(fd);
