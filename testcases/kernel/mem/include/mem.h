@@ -14,6 +14,12 @@
 #define PATH_SYS_SYSTEM		"/sys/devices/system"
 #define PATH_SYSVM		"/proc/sys/vm/"
 #define PATH_MEMINFO		"/proc/meminfo"
+#define BITS_PER_LONG           (8 * sizeof(long))
+
+static inline void set_node(unsigned long *array, unsigned int node)
+{
+	array[node / BITS_PER_LONG] |= 1UL << (node % BITS_PER_LONG);
+}
 
 /* OOM */
 

@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	int lc;
 	char *msg;
 	int size = 128, num = 3, unit = 1;
-	unsigned long nmask = 0;
+	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 	unsigned int node;
 
 	msg = parse_opts(argc, argv, ksm_options, ksm_usage);
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	node = get_a_numa_node(tst_exit);
-	nmask = 1 << node;
+	set_node(nmask, node);
 
 	setup();
 
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 		check_ksm_options(&size, &num, &unit);
 
-		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1) {
+		if (set_mempolicy(MPOL_BIND, nmask, MAXNODES) == -1) {
 			if (errno != ENOSYS)
 				tst_brkm(TBROK | TERRNO, cleanup,
 					 "set_mempolicy");

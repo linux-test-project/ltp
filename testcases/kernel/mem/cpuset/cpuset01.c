@@ -93,7 +93,7 @@ static void testcpuset(void)
 {
 	int lc;
 	int child, i, status;
-	unsigned long nmask = 0;
+	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 	char mems[BUFSIZ], buf[BUFSIZ];
 
 	read_cpuset_files(CPATH, "cpus", buf);
@@ -107,9 +107,12 @@ static void testcpuset(void)
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
-		for (i = 0; i < nnodes; i++)
-			nmask += 1 << nodes[i];
-		if (set_mempolicy(MPOL_BIND, &nmask, MAXNODES) == -1)
+		for (i = 0; i < nnodes; i++) {
+			if (nodes[i] >= MAXNODES)
+				continue;
+			set_node(nmask, nodes[i]);
+		}
+		if (set_mempolicy(MPOL_BIND, nmask, MAXNODES) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "set_mempolicy");
 		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));
 	}

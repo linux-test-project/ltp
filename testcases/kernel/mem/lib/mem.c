@@ -95,7 +95,7 @@ static void set_global_mempolicy(int mempolicy)
 {
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
-	unsigned long nmask = 0;
+	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 	unsigned int num_nodes, *nodes;
 	int ret;
 
@@ -112,7 +112,7 @@ static void set_global_mempolicy(int mempolicy)
 		switch(mempolicy) {
 		case MPOL_BIND:
 			/* bind the second node */
-			nmask = 1 << nodes[1];
+			set_node(nmask, nodes[1]);
 			break;
 		case MPOL_INTERLEAVE:
 		case MPOL_PREFERRED:
@@ -123,13 +123,14 @@ static void set_global_mempolicy(int mempolicy)
 				return;
 			} else {
 				/* Using the 2nd,3rd node */
-				nmask = (1 << nodes[1]) | (1 << nodes[2]);
+				set_node(nmask, nodes[1]);
+				set_node(nmask, nodes[2]);
 			}
 			break;
 		default:
 			tst_brkm(TBROK|TERRNO, cleanup, "Bad mempolicy mode");
 		}
-		if (set_mempolicy(mempolicy, &nmask, MAXNODES) == -1)
+		if (set_mempolicy(mempolicy, nmask, MAXNODES) == -1)
 			tst_brkm(TBROK|TERRNO, cleanup, "set_mempolicy");
 	}
 #endif
