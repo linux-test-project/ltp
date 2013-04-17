@@ -94,7 +94,7 @@ int main(void)
 	}
 	if (result == 0) {
 		printf("The function sched_getparam has successed.\n");
-		return PTS_UNRESOLVED;
+		return PTS_UNTESTED;
 	}
 	if (errno != EPERM) {
 		perror("errno is not EPERM: The system allows a non-root"

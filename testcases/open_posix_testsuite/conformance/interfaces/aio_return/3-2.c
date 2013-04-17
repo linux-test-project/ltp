@@ -54,7 +54,7 @@ int main(void)
 
 	if (fd == -1) {
 		printf(TNAME " Error at open(): %s\n", strerror(errno));
-		exit(PTS_UNRESOLVED);
+		return PTS_UNRESOLVED;
 	}
 
 	unlink(tmpfname);
@@ -69,7 +69,7 @@ int main(void)
 		close(fd);
 		printf(TNAME " Error at aio_write(): %s\n",
 		       strerror(aio_error(&aiocb)));
-		exit(PTS_FAIL);
+		return PTS_FAIL;
 	}
 
 	do {
@@ -82,14 +82,14 @@ int main(void)
 	if (retval == -1) {
 		printf(TNAME " Error at aio_error(): %s\n",
 		       strerror(aio_error(&aiocb)));
-		exit(PTS_UNRESOLVED);
+		return PTS_UNRESOLVED;
 	} else {
 
 		if (retval != BUF_SIZE) {
 			close(fd);
 			printf(TNAME " Error at aio_return(): %d, %s\n", retval,
 			       strerror(aio_error(&aiocb)));
-			exit(PTS_FAIL);
+			return PTS_FAIL;
 		}
 
 		retval = aio_return(&aiocb);
@@ -99,12 +99,12 @@ int main(void)
 			printf(TNAME " aio_return() may fail with (-1, %d); "
 			       "failed with (%d, %d) instead\n",
 			       EINVAL, retval, aio_error(&aiocb));
-			exit(PTS_UNRESOLVED);
+			return PTS_UNTESTED;
 		}
 
 	}
 
 	close(fd);
 	printf("Test PASSED\n");
-	exit(PTS_PASS);
+	return PTS_PASS;
 }
