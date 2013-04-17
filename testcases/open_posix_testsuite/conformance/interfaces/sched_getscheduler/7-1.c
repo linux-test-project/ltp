@@ -21,8 +21,8 @@
 #include <string.h>
 #include "posixtest.h"
 
-/** Set the euid of this process to a non-root uid */
-int set_nonroot()
+/* Set the euid of this process to a non-root uid */
+int set_nonroot(void)
 {
 	struct passwd *pw;
 	setpwent();
@@ -74,7 +74,7 @@ int main(void)
 	}
 	if (result == 0) {
 		printf("The function sched_getscheduler has successed.\n");
-		return PTS_UNRESOLVED;
+		return PTS_UNTESTED;
 	}
 	if (errno != EPERM) {
 		perror("errno is not EPERM");
