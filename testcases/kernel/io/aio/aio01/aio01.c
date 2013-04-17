@@ -141,8 +141,8 @@ int main(int argc, char **argv)
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "Test 1: io_submit failed - retval=%d, "
-				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+			tst_resm(TFAIL, "Test 1: io_submit failed - retval=%ld"
+				 ", errno=%d", TEST_RETURN, TEST_ERRNO);
 			failflag = 1;
 			continue;
 		}
@@ -173,8 +173,8 @@ int main(int argc, char **argv)
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "Test 2: io_submit failed - retval=%d, "
-				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+			tst_resm(TFAIL, "Test 2: io_submit failed - retval=%ld"
+				 ", errno=%d", TEST_RETURN, TEST_ERRNO);
 			failflag = 1;
 			continue;
 		}
@@ -205,8 +205,8 @@ int main(int argc, char **argv)
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "Test 3: io_submit failed - retval=%d, "
-				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+			tst_resm(TFAIL, "Test 3: io_submit failed - retval=%ld"
+				 ", errno=%d", TEST_RETURN, TEST_ERRNO);
 			failflag = 1;
 			continue;
 		}
@@ -237,8 +237,8 @@ int main(int argc, char **argv)
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "Test 4: io_submit failed - retval=%d, "
-				 "errno=%d", TEST_RETURN, TEST_ERRNO);
+			tst_resm(TFAIL, "Test 4: io_submit failed - retval=%ld"
+				 ", errno=%d", TEST_RETURN, TEST_ERRNO);
 			failflag = 1;
 			continue;
 		}
@@ -270,7 +270,7 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: write io_submit failed - "
-				 "retval=%d, errno=%d", TEST_RETURN,
+				 "retval=%ld, errno=%d", TEST_RETURN,
 				 TEST_ERRNO);
 			failflag = 1;
 			continue;
@@ -285,7 +285,7 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: read io_submit failed - "
-				 "retval=%d, errno=%d", TEST_RETURN,
+				 "retval=%ld, errno=%d", TEST_RETURN,
 				 TEST_ERRNO);
 			failflag = 1;
 			continue;
@@ -318,7 +318,7 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: write io_submit failed - "
-				 "retval=%d, errno=%d", TEST_RETURN,
+				 "retval=%ld, errno=%d", TEST_RETURN,
 				 TEST_ERRNO);
 			failflag = 1;
 			continue;
@@ -333,7 +333,7 @@ int main(int argc, char **argv)
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: read io_submit failed - "
-				 "retval=%d, errno=%d", TEST_RETURN,
+				 "retval=%ld, errno=%d", TEST_RETURN,
 				 TEST_ERRNO);
 			failflag = 1;
 			continue;
