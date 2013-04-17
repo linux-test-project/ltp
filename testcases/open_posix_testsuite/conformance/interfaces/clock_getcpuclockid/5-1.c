@@ -39,7 +39,6 @@ int main(void)
 			setgid(pwd->pw_gid);
 			setuid(pwd->pw_uid);
 		}
-
 	}
 
 	/* Hmmm -- above steps failed :(... */
@@ -51,8 +50,8 @@ int main(void)
 	/* Try and get the cpu clock ID for init(1) :)... */
 	error = clock_getcpuclockid(1, &clockid_1);
 	if (error == 0) {
-		printf("clock_getcpuclockid(1, ..) passed unexpectedly\n");
-		return PTS_UNRESOLVED;
+		printf("clock_getcpuclockid(1, ..) passed\n");
+		return PTS_UNTESTED;
 	} else if (error != EPERM) {
 		printf("clock_getcpuclockid(1, ..) failed with an improper "
 		       "error (%d != %d)\n", EPERM, error);
