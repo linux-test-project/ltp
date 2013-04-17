@@ -340,11 +340,12 @@ int main(int argc, char **argv)
 		}
 		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
 		for (j = 0; j < bufsize; j++) {
-			if (srcbuf[j] != dstbuf[j])
+			if (srcbuf[j] != dstbuf[j]) {
 				tst_resm(TFAIL, "Test 6: compare failed - "
 					 "read: %c, " "actual: %c",
 					 dstbuf[j], srcbuf[j]);
-			break;
+				break;
+			}
 		}
 		gettimeofday(&etv, NULL);
 	}
