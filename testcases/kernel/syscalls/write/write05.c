@@ -162,7 +162,8 @@ int main(int argc, char **argv)
 				tst_resm(TFAIL, "Fork failed");
 			}
 			wait(&status);
-			if (WIFSIGNALED(status) == SIGPIPE) {
+			if (WIFSIGNALED(status) &&
+				WTERMSIG(status) == SIGPIPE) {
 				tst_resm(TFAIL, "child set SIGPIPE in exit");
 			} else if (WEXITSTATUS(status) != 0) {
 				TEST_ERROR_LOG(WEXITSTATUS(status));
