@@ -42,7 +42,7 @@ static void setup(void);
 static void cleanup(void);
 
 char *TCID = "adjtimex01";
-int TST_TOTAL = 1;
+int TST_TOTAL = 2;
 
 static struct timex tim_save;
 
@@ -66,10 +66,26 @@ int main(int ac, char **av)
 		TEST(adjtimex(&tim_save));
 
 		if ((TEST_RETURN >= 0) && (TEST_RETURN <= 5)) {
-			tst_resm(TPASS, "adjtimex() returned %ld", TEST_RETURN);
+			tst_resm(TPASS, "adjtimex() with mode %u returned %ld",
+				 SET_MODE, TEST_RETURN);
 		} else {
-			tst_resm(TFAIL | TTERRNO, "Test Failed, adjtimex()"
-				 "returned %ld", TEST_RETURN);
+			tst_resm(TFAIL | TTERRNO,
+				"Test Failed, adjtimex() with mode %u "
+				"returned %ld", SET_MODE, TEST_RETURN);
+		}
+
+		/* Call adjtimex(2) */
+		tim_save.modes = ADJ_OFFSET_SINGLESHOT;
+
+		TEST(adjtimex(&tim_save));
+
+		if ((TEST_RETURN >= 0) && (TEST_RETURN <= 5)) {
+			tst_resm(TPASS, "adjtimex() with mode %u returned %ld",
+				 ADJ_OFFSET_SINGLESHOT, TEST_RETURN);
+		} else {
+			tst_resm(TFAIL | TTERRNO,
+				"Test Failed, adjtimex() with mode %u returned "
+				"%ld", ADJ_OFFSET_SINGLESHOT, TEST_RETURN);
 		}
 	}
 
