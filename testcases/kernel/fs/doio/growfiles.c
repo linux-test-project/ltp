@@ -635,7 +635,7 @@ int main(int argc, char **argv)
 
 		case 'O':
 			if (sscanf(optarg, "%i", &Alignment) != 1 ||
-			    num_auto_files < 0) {
+			    Alignment < 0) {
 
 				fprintf(stderr,
 					"%s%s: --O option arg invalid\n",
