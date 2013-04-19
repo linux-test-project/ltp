@@ -12,57 +12,18 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
  */
-/**********************************************************
- *
- *    TEST IDENTIFIER	: adjtimex01
- *
- *    EXECUTED BY	: root / superuser
- *
- *    TEST TITLE	: Basic test for adjtimex(2)
- *
- *    TEST CASE TOTAL	: 1
- *
- *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *	This is a Phase I test for the adjtimex(2) system call.
- *	It is intended to provide a limited exposure of the system call.
- *
- * 	Setup:
- * 	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *	  Save current parameters in tim_save
- *
- * 	Test:
- *	 Loop if the proper options are given.
- * 	  call adjtimex with saved timex structure
- *	  Check return value is between 0 & 5
- *		Test passed
- *	  Otherwise
- *		Test failed
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- * adjtimex01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
- *			where,  -c n : Run n copies concurrently.
- *				-e   : Turn on errno logging.
- *				-h   : Show help screen
- *				-f   : Turn off functional testing
- *				-i n : Execute test n times.
- *				-I x : Execute test for x seconds.
- *				-p   : Pause for SIGUSR1 before starting
- *				-P x : Pause for x seconds between iterations.
- *				-t   : Turn on syscall timing.
- *
- ****************************************************************/
+
+/*
+  AUTHOR: Saji Kumar.V.R <saji.kumar@wipro.com>
+  EXECUTED BY: root / superuser
+
+  TEST ITEMS:
+   1. Check to see if adjtimex succeed with mode combination :
+      ADJ_OFFSET | ADJ_FREQUENCY | ADJ_MAXERROR | ADJ_ESTERROR |
+      ADJ_STATUS | ADJ_TIMECONST | ADJ_TICK
+   2. Check to see if adjtimex succeed with mode ADJ_OFFSET_SINGLESHOT
+*/
 
 #if defined UCLINUX && !__THROW
 /* workaround for libc bug causing failure in sys/timex.h */
@@ -74,11 +35,11 @@
 #include "test.h"
 #include "usctest.h"
 
-#define SET_MODE ( ADJ_OFFSET | ADJ_FREQUENCY | ADJ_MAXERROR | ADJ_ESTERROR | \
-	ADJ_STATUS | ADJ_TIMECONST | ADJ_TICK )
+#define SET_MODE (ADJ_OFFSET | ADJ_FREQUENCY | ADJ_MAXERROR | ADJ_ESTERROR | \
+	ADJ_STATUS | ADJ_TIMECONST | ADJ_TICK)
 
-static void setup();
-static void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "adjtimex01";
 int TST_TOTAL = 1;
@@ -87,7 +48,6 @@ static struct timex tim_save;
 
 int main(int ac, char **av)
 {
-
 	int lc;
 	char *msg;
 
@@ -118,10 +78,8 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
-
 	tst_require_root(NULL);
 
 	tim_save.modes = 0;
@@ -136,15 +94,7 @@ void setup()
 			 "failed to save current parameters");
 }
 
-/*
- *cleanup() -  performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 }
