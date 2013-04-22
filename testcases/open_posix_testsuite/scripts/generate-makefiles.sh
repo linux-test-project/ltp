@@ -32,7 +32,8 @@ generate_locate_test_makefile() {
 
 generate_makefile() {
 
-	local make_target_prereq_cache=
+	local make_rule_prereq_cache=
+	local make_copy_prereq_cache=
 	local prereq_cache=
 	local tests=
 
@@ -43,6 +44,8 @@ generate_makefile() {
 
 	prereq_cache=$*
 
+	test_prefix=$(basename "$prereq_dir")
+
 	# Add all source files to $make_target_prereq_cache.
 	for prereq in $prereq_cache; do
 		# Stuff that needs to be tested.
@@ -50,18 +53,25 @@ generate_makefile() {
 			if [ "$tests" != "" ]; then
 				tests="$tests "
 			fi
-			tests="$tests$prereq"
+
+			tests="$tests${test_prefix}_$prereq"
 		fi
+
 		# Stuff that needs to be compiled.
 		case "$prereq" in
 		*.sh)
-			# Catch.
+			# Note that the sh scripts are copied later in order to
+			# have the test_prefix as well
+			if [ "$make_copy_prereq_cache" != "" ]; then
+				make_copy_prereq_cache="$make_copy_prereq_cache "
+			fi
+			make_copy_prereq_cache="$make_copy_prereq_cache$prereq"
 			;;
 		*)
-			if [ "$make_target_prereq_cache" != "" ]; then
-				make_target_prereq_cache="$make_target_prereq_cache "
+			if [ "$make_rule_prereq_cache" != "" ]; then
+				make_rule_prereq_cache="$make_rule_prereq_cache "
 			fi
-			make_target_prereq_cache="$make_target_prereq_cache$prereq"
+			make_rule_prereq_cache="$make_rule_prereq_cache$prereq"
 			;;
 		esac
 	done
@@ -122,7 +132,7 @@ EOF
 
 	cat >> "$makefile.2" <<EOF
 INSTALL_TARGETS+=	${tests}
-MAKE_TARGETS+=		${make_target_prereq_cache}
+MAKE_TARGETS+=		${tests}
 
 EOF
 
@@ -166,13 +176,15 @@ EOF
 	fi
 
 	# Produce _awesome_ target rules for everything that needs it.
-	for prereq in ${make_target_prereq_cache}; do
+	for prereq in ${make_rule_prereq_cache}; do
 
 		test_name="$prereq"
 		if [ "$suffix" != "" ]; then
 			test_name=`echo "$test_name" | sed -e "s,$suffix,,"`
 		fi
+
 		c_file="$test_name.c"
+		bin_file="${test_prefix}_$prereq"
 
 		case "$suffix" in
 		.run-test)
@@ -186,7 +198,7 @@ EOF
 		COMPILE_STR="\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ \$(srcdir)/$c_file \$(LDLIBS)"
 
 		cat >> "$makefile.3" <<EOF
-$prereq: \$(srcdir)/$c_file
+$bin_file: \$(srcdir)/$c_file
 	@if $COMPILE_STR > logfile.\$\$\$\$ 2>&1; then \\
 		 cat logfile.\$\$\$\$; \\
 		 echo "\$(subdir)/$test_name compile PASSED"; \\
@@ -199,9 +211,19 @@ $prereq: \$(srcdir)/$c_file
 	rm -f logfile.\$\$\$\$
 
 EOF
-
 	done
 
+	# Produce copy rules for .sh scripts.
+	for prereq in ${make_copy_prereq_cache}; do
+		src="$prereq"
+		dst="${test_prefix}_$prereq"
+
+		cat >> "$makefile.3" <<EOF
+$dst: \$(srcdir)/$src
+	@cp \$< \$@
+
+EOF
+	done
 }
 
 generate_makefiles() {
