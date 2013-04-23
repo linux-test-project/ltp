@@ -1,6 +1,8 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *    ported from SPIE, section2/iosuite/dup3.c, by Airong Zhang
+ *   Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,20 +19,14 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* Pored from SPIE, section2/iosuite/dup3.c, by Airong Zhang */
-
-			   /*dup3.c */
-/*======================================================================
-    =================== TESTPLAN SEGMENT ===================
->KEYS:  < dup()
->WHAT:  < Is the access mode the same for both file descriptors?
-        < 0: read only?
-        < 1: write only?
-        < 2: read/write?
->HOW:   < Creat a file with each access mode; dup each file descriptor;
-        < stat each file descriptor and compare mode of each pair
->BUGS:  <
-======================================================================*/
+/*
+  WHAT:  Is the access mode the same for both file descriptors?
+          0: read only?
+          1: write only?
+          2: read/write?
+  HOW:   Creat a file with each access mode; dup each file descriptor;
+         stat each file descriptor and compare mode of each pair
+*/
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -42,15 +38,13 @@
 #include "usctest.h"
 
 char *TCID = "dup07";
-int TST_TOTAL = 1;
-int local_flag;
+int TST_TOTAL = 3;
 
-#define PASSED 1
-#define FAILED 0
+static const char *testfile = "dup07";
 
-char testfile[40] = "";
+static void setup(void);
+static void cleanup(void);
 
-/*--------------------------------------------------------------------*/
 int main(int ac, char **av)
 {
 	struct stat retbuf;
@@ -58,107 +52,87 @@ int main(int ac, char **av)
 	int rdoret, wroret, rdwret;
 	int duprdo, dupwro, duprdwr;
 
-/*--------------------------------------------------------------------*/
-
 	int lc;
 	char *msg;
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	local_flag = PASSED;
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		sprintf(testfile, "dup07.%d", getpid());
 		if ((rdoret = creat(testfile, 0444)) == -1) {
 			tst_resm(TFAIL, "Unable to creat file '%s'", testfile);
-			local_flag = FAILED;
 		} else {
 			if ((duprdo = dup(rdoret)) == -1) {
 				tst_resm(TFAIL, "Unable to dup '%s'", testfile);
-				local_flag = FAILED;
 			} else {
 				fstat(rdoret, &retbuf);
 				fstat(duprdo, &dupbuf);
 				if (retbuf.st_mode != dupbuf.st_mode) {
 					tst_resm(TFAIL,
 						 "rdonly and dup do not match");
-					local_flag = FAILED;
+				} else {
+					tst_resm(TPASS,
+					         "Passed in read mode.");
 				}
 			}
 		}
-		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in read mode.");
-		} else {
-			tst_resm(TFAIL, "Test failed in read mode.");
-		}
-
-/*--------------------------------------------------------------------*/
 
 		unlink(testfile);
+		
 		if ((wroret = creat(testfile, 0222)) == -1) {
 			tst_resm(TFAIL, "Unable to creat file '%s'", testfile);
-			local_flag = FAILED;
 		} else {
 			if ((dupwro = dup(wroret)) == -1) {
 				tst_resm(TFAIL, "Unable to dup '%s'", testfile);
-				local_flag = FAILED;
 			} else {
 				fstat(wroret, &retbuf);
 				fstat(dupwro, &dupbuf);
 				if (retbuf.st_mode != dupbuf.st_mode) {
 					tst_resm(TFAIL,
 						 "wronly and dup do not match");
-					local_flag = FAILED;
+				} else {
+					tst_resm(TPASS,
+					         "Passed in write mode.");
 				}
 			}
 		}
 
-		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in write mode.");
-		} else {
-			tst_resm(TFAIL, "Test failed in write mode.");
-		}
-/*--------------------------------------------------------------------*/
 		unlink(testfile);
+
 		if ((rdwret = creat(testfile, 0666)) == -1) {
 			tst_resm(TFAIL, "Unable to creat file '%s'", testfile);
-			local_flag = FAILED;
 		} else {
 			if ((duprdwr = dup(rdwret)) == -1) {
 				tst_resm(TFAIL, "Unable to dup '%s'", testfile);
-				local_flag = FAILED;
 			} else {
 				fstat(rdwret, &retbuf);
 				fstat(duprdwr, &dupbuf);
 				if (retbuf.st_mode != dupbuf.st_mode) {
 					tst_resm(TFAIL,
 						 "rdwr and dup do not match");
-					local_flag = FAILED;
+				} else {
+					tst_resm(TPASS,
+					         "Passed in read/write mode.");
 				}
 			}
 		}
-		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in read/write mode.");
-		} else {
-			tst_resm(TFAIL, "Test failed in read/write mode.");
-		}
-/*--------------------------------------------------------------------*/
+		
 		unlink(testfile);
+	}
 
-		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed");
-		} else {
-			tst_resm(TFAIL, "Test failed");
-		}
-
-		tst_exit();
-	}			/* end for */
+	cleanup();
 	tst_exit();
+}
+
+static void setup(void)
+{
+	tst_tmpdir();
+}
+
+static void cleanup(void)
+{
+	tst_rmdir();
 }
