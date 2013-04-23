@@ -1,6 +1,7 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *    ported from SPIE, section2/iosuite/dup1.c, by Airong Zhang
+ *   Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,17 +18,12 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* Pored from SPIE, section2/iosuite/dup1.c, by Airong Zhang */
-
-/*======================================================================
-	=================== TESTPLAN SEGMENT ===================
->KEYS:  < dup()
->WHAT:  < Does dup return -1 on the 21st file?
->HOW:   < Create up to _NFILE (20) files and check for -1 return on the
-	< next attempt
-	< Should check NOFILE as well as _NFILE.  19-Jun-84 Dale.
->BUGS:  <
-======================================================================*/
+/*
+  WHAT:  Does dup return -1 on the 21st file?
+  HOW:   Create up to _NFILE (20) files and check for -1 return on the
+         next attempt
+         Should check NOFILE as well as _NFILE.  19-Jun-84 Dale.
+*/
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -41,12 +37,8 @@
 
 char *TCID = "dup06";
 int TST_TOTAL = 1;
-int local_flag;
 
-#define PASSED 1
-#define FAILED 0
-
-int cnt_free_fds(int maxfd)
+static int cnt_free_fds(int maxfd)
 {
 	int freefds = 0;
 
@@ -57,63 +49,69 @@ int cnt_free_fds(int maxfd)
 	return (freefds);
 }
 
+static void setup(void);
+static void cleanup(void);
+
 int main(int ac, char **av)
 {
-	int *fildes, j;
-	int ifile;
-	char pfilname[40];
+	int *fildes, i;
 	int min;
 	int freefds;
 	int lc;
 	char *msg;
-
-	ifile = -1;
+	const char *pfilname = "dup06";
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
+	setup();
+
 	min = getdtablesize();
 	freefds = cnt_free_fds(min);
-	fildes = (int *)malloc((min + 5) * sizeof(int));
-	local_flag = PASSED;
+	fildes = malloc((min + 5) * sizeof(int));
+
+	for (i = 0; i < min + 5; i++)
+		fildes[i] = 0;
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		for (j = 0; j < min + 5; j++)
-			fildes[j] = 0;
-
-		sprintf(pfilname, "dup06.%d\n", getpid());
 		unlink(pfilname);
+
 		if ((fildes[0] = creat(pfilname, 0666)) == -1) {
 			tst_resm(TFAIL, "Cannot open first file");
-			local_flag = FAILED;
 		} else {
-			for (ifile = 1; ifile < min + 5; ifile++) {
-				if ((fildes[ifile] =
-				     dup(fildes[ifile - 1])) == -1) {
+			for (i = 1; i < min + 5; i++) {
+				if ((fildes[i] = dup(fildes[i - 1])) == -1)
 					break;
-				}
-
 			}
-			if (ifile < freefds) {
+			if (i < freefds) {
 				tst_resm(TFAIL, "Not enough files duped");
-				local_flag = FAILED;
-			} else if (ifile > freefds) {
+			} else if (i > freefds) {
 				tst_resm(TFAIL, "Too many files duped");
-				local_flag = FAILED;
+			} else {
+				tst_resm(TPASS, "Test passed.");
 			}
 		}
+
 		unlink(pfilname);
 
-		if (ifile > 0)
-			close(fildes[ifile - 1]);
+		for (i = 0; i < min + 5; i++) {
+			if (fildes[i] != 0 && fildes[i] != -1)
+				close(fildes[i]);
 
-		if (local_flag == PASSED)
-			tst_resm(TPASS, "Test passed.");
-		else
-			tst_resm(TFAIL, "Test failed.");
-
+			fildes[i] = 0;
+		}
 	}
-	tst_exit();
 
+	cleanup();
+	tst_exit();
+}
+
+static void setup(void)
+{
+	tst_tmpdir();
+}
+
+static void cleanup(void)
+{
+	tst_rmdir();
 }
