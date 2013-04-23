@@ -88,7 +88,7 @@ static void client(int id, int pipefd[])
 	mh.msg_iovlen = 1;
 
 	do {
-		fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0);
+		fd = socket(AF_UNIX, SOCK_DGRAM, 0);
 		write(pipefd[1], &fd, 1);
 		sendmsg(fd, &mh, MSG_NOSIGNAL);
 		close(fd);
@@ -109,7 +109,7 @@ static void server(int id, int pipefd[])
 	snprintf(sa.sun_path, sizeof(sa.sun_path), "socket_test%d", id);
 
 	do {
-		fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0);
+		fd = socket(AF_UNIX, SOCK_DGRAM, 0);
 		unlink(sa.sun_path);
 		bind(fd, (struct sockaddr *) &sa, sizeof(struct sockaddr_un));
 		read(pipefd[0], &fd, 1);
