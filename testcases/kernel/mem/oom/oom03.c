@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
 {
 	char *msg;
 	int lc;
-	char buf[BUFSIZ], mem[BUFSIZ];
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
@@ -63,11 +62,10 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		snprintf(buf, BUFSIZ, "%d", getpid());
-		write_file(MEMCG_PATH_NEW "/tasks", buf);
+		SAFE_FILE_PRINTF(cleanup, MEMCG_PATH_NEW "/tasks",
+				 "%d", getpid());
+		SAFE_FILE_PRINTF(cleanup, MEMCG_LIMIT, "%ld", TESTMEM);
 
-		snprintf(mem, BUFSIZ, "%ld", TESTMEM);
-		write_file(MEMCG_PATH_NEW "/memory.limit_in_bytes", mem);
 		testoom(0, 0);
 
 		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
@@ -77,7 +75,8 @@ int main(int argc, char *argv[])
 			else
 				tst_brkm(TBROK | TERRNO, cleanup, "access");
 		} else {
-			write_file(MEMCG_SW_LIMIT, mem);
+			SAFE_FILE_PRINTF(cleanup, MEMCG_SW_LIMIT,
+					 "%ld", TESTMEM);
 			testoom(0, 1);
 		}
 

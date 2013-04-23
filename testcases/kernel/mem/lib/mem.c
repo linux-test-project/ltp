@@ -157,13 +157,11 @@ void testoom(int mempolicy, int lite)
 
 static void check(char *path, long int value)
 {
-	FILE *fp;
-	char buf[BUFSIZ], fullpath[BUFSIZ];
+	char fullpath[BUFSIZ];
 	long actual_val;
 
-	snprintf(fullpath, BUFSIZ, "%s%s", PATH_KSM, path);
-	read_file(fullpath, buf);
-	actual_val = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+	snprintf(fullpath, BUFSIZ, PATH_KSM "%s", path);
+	SAFE_FILE_SCANF(cleanup, fullpath, "%ld", &actual_val);
 
 	tst_resm(TINFO, "%s is %ld.", path, actual_val);
 	if (actual_val != value)
@@ -172,7 +170,6 @@ static void check(char *path, long int value)
 
 static void wait_ksmd_done(void)
 {
-	char buf[BUFSIZ];
 	long pages_shared, pages_sharing, pages_volatile, pages_unshared;
 	long old_pages_shared = 0, old_pages_sharing = 0;
 	long old_pages_volatile = 0, old_pages_unshared = 0;
@@ -182,17 +179,17 @@ static void wait_ksmd_done(void)
 		sleep(10);
 		count++;
 
-		read_file(PATH_KSM "pages_shared", buf);
-		pages_shared = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+		SAFE_FILE_SCANF(cleanup, PATH_KSM "pages_shared",
+				"%ld", &pages_shared);
 
-		read_file(PATH_KSM "pages_sharing", buf);
-		pages_sharing = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+		SAFE_FILE_SCANF(cleanup, PATH_KSM "pages_sharing",
+				"%ld", &pages_sharing);
 
-		read_file(PATH_KSM "pages_volatile", buf);
-		pages_volatile = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+		SAFE_FILE_SCANF(cleanup, PATH_KSM "pages_volatile",
+				"%ld", &pages_volatile);
 
-		read_file(PATH_KSM "pages_unshared", buf);
-		pages_unshared = SAFE_STRTOL(cleanup, buf, 0, LONG_MAX);
+		SAFE_FILE_SCANF(cleanup, PATH_KSM "pages_unshared",
+				"%ld", &pages_unshared);
 
 		if (pages_shared != old_pages_shared ||
 		    pages_sharing != old_pages_sharing ||
@@ -254,13 +251,9 @@ static void verify(char **memory, char value, int proc,
 
 void write_memcg(void)
 {
-	char buf[BUFSIZ], mem[BUFSIZ];
+	SAFE_FILE_PRINTF(NULL, MEMCG_LIMIT, "%ld", TESTMEM);
 
-	snprintf(mem, BUFSIZ, "%ld", TESTMEM);
-	write_file(MEMCG_PATH_NEW "/memory.limit_in_bytes", mem);
-
-	snprintf(buf, BUFSIZ, "%d", getpid());
-	write_file(MEMCG_PATH_NEW "/tasks", buf);
+	SAFE_FILE_PRINTF(NULL, MEMCG_PATH_NEW "/tasks", "%d", getpid());
 }
 
 static struct ksm_merge_data {
@@ -377,7 +370,6 @@ static void resume_ksm_children(int *child, int num)
 
 void create_same_memory(int size, int num, int unit)
 {
-	char buf[BUFSIZ];
 	int i, j, status, *child;
 	unsigned long ps, pages;
 	struct ksm_merge_data **ksm_data;
@@ -437,10 +429,10 @@ void create_same_memory(int size, int num, int unit)
 	stop_ksm_children(child, num);
 
 	tst_resm(TINFO, "KSM merging...");
-	write_file(PATH_KSM "run", "1");
-	snprintf(buf, BUFSIZ, "%ld", size * pages * num);
-	write_file(PATH_KSM "pages_to_scan", buf);
-	write_file(PATH_KSM "sleep_millisecs", "0");
+	SAFE_FILE_PRINTF(cleanup, PATH_KSM "run", "1");
+	SAFE_FILE_PRINTF(cleanup, PATH_KSM "pages_to_scan", "%ld",
+			 size * pages *num);
+	SAFE_FILE_PRINTF(cleanup, PATH_KSM "sleep_millisecs", "0");
 
 	resume_ksm_children(child, num);
 	group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
@@ -460,13 +452,13 @@ void create_same_memory(int size, int num, int unit)
 	stop_ksm_children(child, num);
 
 	tst_resm(TINFO, "KSM unmerging...");
-	write_file(PATH_KSM "run", "2");
+	SAFE_FILE_PRINTF(cleanup, PATH_KSM "run", "2");
 
 	resume_ksm_children(child, num);
 	group_check(2, 0, 0, 0, 0, 0, size * pages * num);
 
 	tst_resm(TINFO, "stop KSM.");
-	write_file(PATH_KSM "run", "0");
+	SAFE_FILE_PRINTF(cleanup, PATH_KSM "run", "0");
 	group_check(0, 0, 0, 0, 0, 0, size * pages * num);
 
 	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0)
@@ -624,7 +616,6 @@ void test_transparent_hugepage(int nr_children, int nr_thps,
 {
 	unsigned long hugepagesize, memfree;
 	int i, *pids, ret, status;
-	char path[BUFSIZ];
 
 	if (mempolicy)
 		set_global_mempolicy(mempolicy);
@@ -803,8 +794,7 @@ void write_cpusets(long nd)
 	gather_node_cpus(cpus, nd);
 	write_cpuset_files(CPATH_NEW, "cpus", cpus);
 
-	snprintf(buf, BUFSIZ, "%d", getpid());
-	write_file(CPATH_NEW "/tasks", buf);
+	SAFE_FILE_PRINTF(NULL, CPATH_NEW "/tasks", "%d", getpid());
 }
 
 void umount_mem(char *path, char *path_new)
@@ -932,13 +922,12 @@ long read_meminfo(char *item)
 void set_sys_tune(char *sys_file, long tune, int check)
 {
 	long val;
-	char buf[BUFSIZ], path[BUFSIZ];
+	char path[BUFSIZ];
 
 	tst_resm(TINFO, "set %s to %ld", sys_file, tune);
 
-	snprintf(path, BUFSIZ, "%s%s", PATH_SYSVM, sys_file);
-	snprintf(buf, BUFSIZ, "%ld", tune);
-	write_file(path, buf);
+	snprintf(path, BUFSIZ, PATH_SYSVM "%s", sys_file);
+	SAFE_FILE_PRINTF(NULL, path, "%ld", tune);
 
 	if (check) {
 		val = get_sys_tune(sys_file);
@@ -950,44 +939,20 @@ void set_sys_tune(char *sys_file, long tune, int check)
 
 long get_sys_tune(char *sys_file)
 {
-	char buf[BUFSIZ], path[BUFSIZ];
+	char path[BUFSIZ];
+	long tune;
 
-	snprintf(path, BUFSIZ, "%s%s", PATH_SYSVM, sys_file);
-	read_file(path, buf);
-	return SAFE_STRTOL(cleanup, buf, LONG_MIN, LONG_MAX);
-}
+	snprintf(path, BUFSIZ, PATH_SYSVM "%s", sys_file);
+	SAFE_FILE_SCANF(NULL, path, "%ld", &tune);
 
-void write_file(char *filename, char *buf)
-{
-	int fd;
-
-	fd = open(filename, O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open %s", filename);
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
-		tst_brkm(TBROK | TERRNO, cleanup, "write %s", filename);
-	close(fd);
-}
-
-void read_file(char *filename, char *retbuf)
-{
-	int fd;
-
-	fd = open(filename, O_RDONLY);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open %s", filename);
-	if (read(fd, retbuf, BUFSIZ) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "read %s", filename);
-	close(fd);
+	return tune;
 }
 
 void update_shm_size(size_t * shm_size)
 {
-	char buf[BUFSIZ];
 	size_t shmmax;
 
-	read_file(PATH_SHMMAX, buf);
-	shmmax = SAFE_STRTOUL(cleanup, buf, 0, ULONG_MAX);
+	SAFE_FILE_SCANF(cleanup, PATH_SHMMAX, "%ld", &shmmax);
 	if (*shm_size > shmmax) {
 		tst_resm(TINFO, "Set shm_size to shmmax: %ld", shmmax);
 		*shm_size = shmmax;

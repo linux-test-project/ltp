@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
 	char *msg;
 	int lc;
 	int swap_acc_on = 1;
-	char mem[BUFSIZ];
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
@@ -93,13 +92,12 @@ int main(int argc, char *argv[])
 		if (swap_acc_on) {
 			tst_resm(TINFO, "OOM on CPUSET & MEMCG with "
 					"special memswap limitation:");
-			snprintf(mem, BUFSIZ, "%ld", TESTMEM);
-			write_file(MEMCG_SW_LIMIT, mem);
+			SAFE_FILE_PRINTF(cleanup, MEMCG_SW_LIMIT, "%ld", TESTMEM);
 			testoom(0, 0);
 
 			tst_resm(TINFO, "OOM on CPUSET & MEMCG with "
 					"disabled memswap limitation:");
-			write_file(MEMCG_SW_LIMIT, "-1");
+			SAFE_FILE_PRINTF(cleanup, MEMCG_SW_LIMIT, "-1");
 			testoom(0, 0);
 		}
 	}

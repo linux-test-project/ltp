@@ -67,6 +67,7 @@ void ksm_usage(void);
 #define CPATH_NEW		CPATH "/1"
 #define MEMCG_PATH		"/dev/cgroup"
 #define MEMCG_PATH_NEW		MEMCG_PATH "/1"
+#define MEMCG_LIMIT		MEMCG_PATH_NEW "/memory.limit_in_bytes"
 #define MEMCG_SW_LIMIT		MEMCG_PATH_NEW "/memory.memsw.limit_in_bytes"
 #if HAVE_SYS_EVENTFD_H
 #define PATH_OOMCTRL		MEMCG_PATH_NEW "/memory.oom_control"
@@ -85,8 +86,6 @@ int  path_exist(const char *path, ...);
 long read_meminfo(char *item);
 void set_sys_tune(char *sys_file, long tune, int check);
 long get_sys_tune(char *sys_file);
-void write_file(char *filename, char *buf);
-void read_file(char *filename, char *retbuf);
 void cleanup(void);
 void setup(void);
 

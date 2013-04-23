@@ -100,8 +100,7 @@ static void testcpuset(void)
 	write_cpuset_files(CPATH_NEW, "cpus", buf);
 	read_cpuset_files(CPATH, "mems", mems);
 	write_cpuset_files(CPATH_NEW, "mems", mems);
-	snprintf(buf, BUFSIZ, "%d", getpid());
-	write_file(CPATH_NEW "/tasks", buf);
+	SAFE_FILE_PRINTF(cleanup, CPATH_NEW "/tasks", "%d", getpid());
 
 	switch (child = fork()) {
 	case -1:
