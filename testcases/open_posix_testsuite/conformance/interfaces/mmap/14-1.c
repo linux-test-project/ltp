@@ -116,6 +116,7 @@ int main(void)
 
 	munmap(pa, size);
 	close(fd);
+	unlink(tmpfname);
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
