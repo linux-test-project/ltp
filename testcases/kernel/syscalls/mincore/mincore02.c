@@ -1,49 +1,29 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *   Author: Rajeev Tiwari: rajeevti@in.ibm.com
+ * Copyright (c) 2004 Gernot Payer <gpayer@suse.de>
+ * Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	mincore02.c
- *
- * DESCRIPTION
- *	Testcase to check the error conditions for mincore
- *
- * ALGORITHM
- *	test1:
- *	This test case provides a functional validation for mincore system call.
- *      We mmap a file of known size (multiple of page size) and lock it in
- *      memory. Then we obtain page location information via mincore and compare
- *      the result with the expected value.
- *
- * USAGE:  <for command-line>
- *  ./mincore02
- *
- * HISTORY
- *  Author: Rajeev Tiwari: rajeevti@in.ibm.com
- *	08/2004 Rajeev Tiwari : Provides a functional validation of mincore system call.
- *
- * 	2004/09/10 Gernot Payer <gpayer@suse.de>
- * 		- Original testcase was based on wrong assumptions
- * 		- Major code cleanup
- *
- * RESTRICTIONS
- *	None
+ * This test case provides a functional validation for mincore system call.
+ * We mmap a file of known size (multiple of page size) and lock it in
+ * memory. Then we obtain page location information via mincore and compare
+ * the result with the expected value.
  */
 
 #include <sys/mman.h>
@@ -58,122 +38,69 @@
 #include "test.h"
 #include "usctest.h"
 
-/* comment out if you need to debug */
-/* #define DEBUG_MODE 1 */
-
 char *TCID = "mincore02";
 int TST_TOTAL = 1;
 
-static int file_desc = 0;	/* this is for the file descriptor */
-static char *position = NULL;
-static int p_size;		/* page size obtained via getpagesize() */
-static int num_pages = 4;	/* four pages are used in this test */
+static int file_desc = 0;
+static void *position = NULL;
+static int page_size;
+static int num_pages = 4;
 static unsigned char *vec = NULL;
 
 #if !defined(UCLINUX)
 
 static char tmpfilename[] = "fooXXXXXX";
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-
-	/* Close all open file descriptors. */
-
 	free(vec);
-	munlock(position, p_size * num_pages);
-	munmap(position, p_size * num_pages);
+	munlock(position, page_size * num_pages);
+	munmap(position, page_size * num_pages);
 	TEST_CLEANUP;
 	close(file_desc);
-	remove(tmpfilename);
-
+	unlink(tmpfilename);
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*                                                     */
-/*                                                                            */
-/******************************************************************************/
-
-void setup()
+static void setup(void)
 {
 	char *buf;
-	int size;
-	int status;
+	size_t size;
 
-	if (-1 == (p_size = getpagesize())) {
-		tst_brkm(TBROK, cleanup, "Unable to get page size: %s",
-			 strerror(errno));
-	}
+	page_size = getpagesize();
+	if (page_size == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "Unable to get page size");
 
-	size = p_size * num_pages;
-	buf = (char *)malloc(p_size * num_pages);
+	size = page_size * num_pages;
+	buf = malloc(size);
 
 	memset(buf, 42, size);
-	vec = malloc((size + p_size - 1) / p_size);
+	vec = malloc((size + page_size - 1) / page_size);
 
-	/* create a temporary file to be used */
-
-	if (-1 == (file_desc = mkstemp(tmpfilename))) {
-		tst_brkm(TBROK, cleanup, "Unable to create temporary file: %s",
-			 strerror(errno));
+	file_desc = mkstemp(tmpfilename);
+	if (file_desc == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+		         "Unable to create temporary file");
 	}
 
 	/* fill the temporary file with two pages of data */
-
-	if (-1 == write(file_desc, buf, size)) {
-		tst_brkm(TBROK, cleanup, "Error in writing to the file: %s",
-			 strerror(errno));
+	if (write(file_desc, buf, size) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+		         "Error in writing to the file");
 	}
 	free(buf);
 
 	/* mmap the file in virtual address space in read , write and execute mode , the mapping should be shared  */
+	position = mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC,
+	                MAP_SHARED, file_desc, 0);
 
-	if (MAP_FAILED ==
-	    (position =
-	     (char *)mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC,
-			  MAP_SHARED, file_desc, 0))) {
-		tst_brkm(TBROK, cleanup,
-			 "Unable to map file for read/write.  Error: %d (%s)",
-			 errno, strerror(errno));
+	if (position == MAP_FAILED) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+                         "Unable to map file for read/write.");
 	}
 
 	/* lock mmapped file, so mincore returns "in core" for all pages */
-	if ((status = mlock(position, size)) == -1) {
-		tst_brkm(TBROK, cleanup, "Unable to lock the file: %s",
-			 strerror(errno));
-	}
-	return;
+	if (mlock(position, size) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "Unable to lock the file");
 }
 
 int main(int argc, char **argv)
@@ -182,14 +109,12 @@ int main(int argc, char **argv)
 
 	setup();
 
-	if (-1 == mincore((void *)position, num_pages * p_size, vec)) {
-		tst_brkm(TBROK, cleanup,
-			 "Unable to execute mincore system call: %s",
-			 strerror(errno));
+	if (mincore(position, num_pages * page_size, vec) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+		         "Unable to execute mincore system call");
 	}
 
 	/* check status of pages */
-
 	lock_pages = 0;
 
 	for (counter = 0; counter < num_pages; counter++) {
@@ -211,7 +136,7 @@ int main(int argc, char **argv)
 
 #else
 
-int main()
+int main(void)
 {
 	tst_resm(TINFO, "test is not available on uClinux");
 	tst_exit();
