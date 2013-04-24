@@ -47,8 +47,6 @@ static int page_size;
 static int num_pages = 4;
 static unsigned char *vec = NULL;
 
-#if !defined(UCLINUX)
-
 static char tmpfilename[] = "fooXXXXXX";
 
 static void cleanup(void)
@@ -133,13 +131,3 @@ int main(int argc, char **argv)
 	cleanup();
 	tst_exit();
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */

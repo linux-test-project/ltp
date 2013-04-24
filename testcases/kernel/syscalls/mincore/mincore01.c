@@ -59,8 +59,6 @@ static unsigned char *global_vec = NULL;
 static int global_len = 0;
 static int file_desc = 0;
 
-#if !defined(UCLINUX)
-
 static struct test_case_t {
 	char *addr;
 	int len;
@@ -214,13 +212,3 @@ static void cleanup(void)
 	close(file_desc);
 	remove(file_name);
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
