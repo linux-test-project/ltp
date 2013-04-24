@@ -53,11 +53,10 @@ static void setup3(void);
 char *TCID = "mincore01";
 int TST_TOTAL = 3;
 
-static char file_name[] = "fooXXXXXX";
 static char *global_pointer = NULL;
 static unsigned char *global_vec = NULL;
 static int global_len = 0;
-static int file_desc = 0;
+static int fd = 0;
 
 static struct test_case_t {
 	char *addr;
@@ -78,7 +77,6 @@ int main(int ac, char **av)
 	char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
-
 	if (msg != NULL)
 		tst_brkm(TBROK, cleanup, "error parsing options: %s", msg);
 
@@ -128,7 +126,7 @@ void setup2(void)
 	unsigned char *t;
 	struct rlimit limit;
 	    
-	t = mmap(0, global_len, PROT_READ | PROT_WRITE,
+	t = mmap(NULL, global_len, PROT_READ | PROT_WRITE,
 	         MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 
 	/* Create pointer to invalid address */
@@ -165,6 +163,8 @@ static void setup(void)
 
 	PAGESIZE = getpagesize();
 
+	tst_tmpdir();
+
 	/* global_pointer will point to a mmapped area of global_len bytes */
 	global_len = PAGESIZE * 2;
 
@@ -176,14 +176,14 @@ static void setup(void)
 	TEST_PAUSE;
 
 	/* create a temporary file */
-	file_desc = mkstemp(file_name);
-	if (file_desc == -1) {
+	fd = open("mincore01", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "Error while creating temporary file");
 	}
 
 	/* fill the temporary file with two pages of data */
-	if (write(file_desc, buf, global_len) == -1) {
+	if (write(fd, buf, global_len) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "Error while writing to temporary file");
 	}
@@ -192,7 +192,7 @@ static void setup(void)
 	/* map the file in memory */
 	global_pointer = mmap(NULL, global_len * 2,
 	                      PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED,
-	                      file_desc, 0);
+	                      fd, 0);
 
 	if (global_pointer == MAP_FAILED) {
 		tst_brkm(TBROK | TERRNO, cleanup,
@@ -209,6 +209,6 @@ static void cleanup(void)
 
 	free(global_vec);
 	munmap(global_pointer, global_len);
-	close(file_desc);
-	remove(file_name);
+	close(fd);
+	tst_rmdir();
 }

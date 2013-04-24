@@ -41,28 +41,28 @@
 char *TCID = "mincore02";
 int TST_TOTAL = 1;
 
-static int file_desc = 0;
-static void *position = NULL;
+static int fd = 0;
+static void *addr = NULL;
 static int page_size;
 static int num_pages = 4;
 static unsigned char *vec = NULL;
 
-static char tmpfilename[] = "fooXXXXXX";
-
 static void cleanup(void)
 {
 	free(vec);
-	munlock(position, page_size * num_pages);
-	munmap(position, page_size * num_pages);
+	munlock(addr, page_size * num_pages);
+	munmap(addr, page_size * num_pages);
 	TEST_CLEANUP;
-	close(file_desc);
-	unlink(tmpfilename);
+	close(fd);
+	tst_rmdir();
 }
 
 static void setup(void)
 {
 	char *buf;
 	size_t size;
+
+	tst_tmpdir();
 
 	page_size = getpagesize();
 	if (page_size == -1)
@@ -73,60 +73,70 @@ static void setup(void)
 
 	memset(buf, 42, size);
 	vec = malloc((size + page_size - 1) / page_size);
-
-	file_desc = mkstemp(tmpfilename);
-	if (file_desc == -1) {
+	
+	fd = open("mincore02", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 		         "Unable to create temporary file");
 	}
 
 	/* fill the temporary file with two pages of data */
-	if (write(file_desc, buf, size) < 0) {
+	if (write(fd, buf, size) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 		         "Error in writing to the file");
 	}
 	free(buf);
 
-	/* mmap the file in virtual address space in read , write and execute mode , the mapping should be shared  */
-	position = mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC,
-	                MAP_SHARED, file_desc, 0);
+	addr = mmap(NULL, size, PROT_READ | PROT_WRITE | PROT_EXEC,
+	            MAP_SHARED, fd, 0);
 
-	if (position == MAP_FAILED) {
+	if (addr == MAP_FAILED) {
 		tst_brkm(TBROK | TERRNO, cleanup,
-                         "Unable to map file for read/write.");
+                         "Unable to map file for read/write");
 	}
 
 	/* lock mmapped file, so mincore returns "in core" for all pages */
-	if (mlock(position, size) == -1)
+	if (mlock(addr, size) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Unable to lock the file");
 }
 
 int main(int argc, char **argv)
 {
 	int lock_pages, counter;
+	char *msg;
+	int lc;
+
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
+		tst_brkm(TBROK, cleanup, "error parsing options: %s", msg);
 
 	setup();
+	
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		tst_count = 0;
 
-	if (mincore(position, num_pages * page_size, vec) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-		         "Unable to execute mincore system call");
+		if (mincore(addr, num_pages * page_size, vec) == -1) {
+			tst_brkm(TBROK | TERRNO, cleanup,
+			         "Unable to execute mincore system call");
+		}
+
+		/* check status of pages */
+		lock_pages = 0;
+
+		for (counter = 0; counter < num_pages; counter++) {
+			if (vec[counter] & 1)
+				lock_pages++;
+		}
+
+		if (lock_pages == num_pages) {
+			tst_resm(TPASS, "%d pages locked, %d pages in-core", num_pages,
+				 lock_pages);
+		} else {
+			tst_resm(TFAIL,
+				 "not all locked pages are in-core: no. locked: %d, no. in-core: %d",
+				 num_pages, lock_pages);
+		}
 	}
-
-	/* check status of pages */
-	lock_pages = 0;
-
-	for (counter = 0; counter < num_pages; counter++) {
-		if (vec[counter] & 1)
-			lock_pages++;
-	}
-
-	if (lock_pages == num_pages)
-		tst_resm(TPASS, "%d pages locked, %d pages in-core", num_pages,
-			 lock_pages);
-	else
-		tst_resm(TFAIL,
-			 "not all locked pages are in-core: no. locked: %d, no. in-core: %d",
-			 num_pages, lock_pages);
 
 	cleanup();
 	tst_exit();
