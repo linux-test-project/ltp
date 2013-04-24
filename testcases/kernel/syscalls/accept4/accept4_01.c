@@ -1,42 +1,24 @@
-/******************************************************************************/
-/*                                                                            */
-/* Copyright (C) 2008, Linux Foundation,                                      */
-/* written by Michael Kerrisk <mtk.manpages@gmail.com>                        */
-/*                                                                            */
-/* Licensed under the GNU GPLv2 or later.                                     */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.                                        */
-/*                                                                            */
-/* This program is distributed in the hope that it will be useful,            */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
-/* the GNU General Public License for more details.                           */
-/*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
-/*                                                                            */
-/******************************************************************************/
-
-/******************************************************************************/
-/*                                                                            */
-/* File:        accept4_01.c                                                  */
-/*                                                                            */
-/* Description: This will test the newly introduced syscall accept4()         */
-/*                                                                            */
-/* Total Tests: 4                                                             */
-/*                                                                            */
-/* Test Name:   accept4_01                                                    */
-/*                                                                            */
-/* Author:      Michael Kerrisk <mtk.manpages@gmail.com>                      */
-/*                                                                            */
-/* History:     Created - Nov 17 2008 - Michael <mtk.manpages@gmail.com>      */
-/*              Initial Porting to LTP                                        */
-/*                      - Nov 17 2008 - Subrata <subrata@linux.vnet.ibm.com>  */
-/*                                                                            */
-/******************************************************************************/
+/*
+ *
+ * Copyright (C) 2008, Linux Foundation,
+ * written by Michael Kerrisk <mtk.manpages@gmail.com>
+ * Initial Porting to LTP by Subrata <subrata@linux.vnet.ibm.com>
+ *
+ * Licensed under the GNU GPLv2 or later.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 
 #define _GNU_SOURCE
 #include <unistd.h>
@@ -58,7 +40,6 @@
 
 #define die(msg)	tst_brkm(TBROK|TERRNO, cleanup, msg)
 
-/**********************************************************************/
 
 /* The following is what we need until glibc gets a wrapper for
   accept4() */
@@ -82,62 +63,21 @@
 char *TCID = "accept04_01";
 int TST_TOTAL = 1;
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-/* We would need this for many more reasons in future                          */
-extern void cleanup()
+static void setup(void)
 {
-
-	TEST_CLEANUP;
-	tst_rmdir();
-
-}
-
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
-void setup()
-{
-	/* Capture signals if any */
-	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-#if !(__GLIBC_PREREQ(2,10))
+static void cleanup(void)
+{
+	TEST_CLEANUP;
+	tst_rmdir();
+}
+
+#if !(__GLIBC_PREREQ(2, 10))
 static int
-accept4_01(int fd, struct sockaddr *sockaddr, socklen_t * addrlen, int flags)
+accept4_01(int fd, struct sockaddr *sockaddr, socklen_t *addrlen, int flags)
 {
 #ifdef DEBUG
 	tst_resm(TINFO, "Calling accept4(): flags = %x", flags);
@@ -169,8 +109,6 @@ accept4_01(int fd, struct sockaddr *sockaddr, socklen_t * addrlen, int flags)
 }
 #endif
 
-/**********************************************************************/
-
 static void
 do_test(int lfd, struct sockaddr_in *conn_addr,
 	int closeonexec_flag, int nonblock_flag)
@@ -192,7 +130,7 @@ do_test(int lfd, struct sockaddr_in *conn_addr,
 		die("Connect Error");
 
 	addrlen = sizeof(struct sockaddr_in);
-#if !(__GLIBC_PREREQ(2,10))
+#if !(__GLIBC_PREREQ(2, 10))
 	acceptfd = accept4_01(lfd, (struct sockaddr *)&claddr, &addrlen,
 			      closeonexec_flag | nonblock_flag);
 #else
