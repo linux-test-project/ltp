@@ -1,6 +1,8 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *   01/02/2003	Port to LTP	avenkat@us.ibm.com
+ *   11/11/2002: Ported to LTP Suite by Ananda
+ *   06/30/2001	Port to Linux	nsharoff@us.ibm.com
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,25 +19,11 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* 01/02/2003	Port to LTP	avenkat@us.ibm.com */
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
-
-/*
- * NAME
- *	abort
- *
- * CALLS
- *	abort(3)
- *
- * ALGORITHM
+ /* ALGORITHM
  *	Fork child.  Have child abort, check return status.
  *
  * RESTRICTIONS
  *      The ulimit for core file size must be greater than 0.
- *
- * CHANGE LOG:
- * Nov 11 2002: Ported to LTP Suite by Ananda
- *
  */
 
 #include <sys/types.h>
@@ -46,40 +34,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/*****	LTP Port	*****/
 #include "test.h"
 #include "usctest.h"
-#define ITER	3
-#define FAILED 0
-#define PASSED 1
+#define NUM 3
 
 char *TCID = "abort01";
-
-int local_flag = PASSED;
-int block_number;
-FILE *temp;
 int TST_TOTAL = 1;
 
-void setup(void)
-{
-	temp = stderr;
-	tst_tmpdir();
-}
+static void setup(void);
+static void cleanup(void);
+static void do_child();
+static int instress();
 
-void cleanup(void)
-{
-	unlink("core");
-	tst_rmdir();
-}
-
-int instress();
-void setup();
-int forkfail();
-void do_child();
-
-/*************/
-
-/*--------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
 	register int i;
@@ -89,12 +55,12 @@ int main(int argc, char *argv[])
 
 #ifdef WCOREDUMP
 	int core;
-
 	core = 0;
 #endif
 	ex = sig = 0;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
@@ -102,9 +68,9 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	for (i = 0; i < ITER; i++) {
-
-		if ((kidpid = FORK_OR_VFORK()) == 0) {
+	for (i = 0; i < NUM; i++) {
+		kidpid = FORK_OR_VFORK();
+		if (kidpid == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv[0], "")) {
 				if (!instress()) {
@@ -144,13 +110,13 @@ int main(int argc, char *argv[])
 			tst_brkm(TFAIL, cleanup,
 				 "Child did not dump core; exit code = %d, "
 				 "signal = %d", ex, sig);
-		} else if (core != -1)
+		} else if (core != -1) {
 			tst_resm(TPASS, "abort dumped core");
+		}
 #endif
-
-		if (sig == SIGIOT)
+		if (sig == SIGIOT) {
 			tst_resm(TPASS, "abort raised SIGIOT");
-		else {
+		} else {
 			tst_brkm(TFAIL, cleanup,
 				 "Child did not raise SIGIOT (%d); exit code = %d, "
 				 "signal = %d", SIGIOT, ex, sig);
@@ -162,14 +128,25 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-void do_child()
+static void setup(void)
+{
+	tst_tmpdir();
+}
+
+static void cleanup(void)
+{
+	unlink("core");
+	tst_rmdir();
+}
+
+static void do_child()
 {
 	abort();
 	fprintf(stderr, "\tchild - abort failed.\n");
 	exit(1);
 }
 
-int instress()
+static int instress()
 {
 	tst_resm(TINFO,
 		 "System resources may be too low; fork(), select() etc are likely to fail.");
