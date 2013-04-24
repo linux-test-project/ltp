@@ -91,6 +91,7 @@ static const struct mapping known_issues[] = {
 	{"read", "/proc/sal/cmc/event", EAGAIN},
 	{"read", "/proc/sal/init/event", EAGAIN},
 	{"read", "/proc/sal/mca/event", EAGAIN},
+	{"read", "/proc/xen/privcmd", EIO},
 	{"read", "/proc/xen/privcmd", EINVAL},
 	{"read", "/proc/self/mem", EIO},
 	{"read", "/proc/self/task/[0-9]*/mem", EIO},
