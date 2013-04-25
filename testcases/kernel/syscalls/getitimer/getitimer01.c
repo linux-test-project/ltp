@@ -34,11 +34,18 @@ static void cleanup(void);
 static void setup(void);
 
 char *TCID = "getitimer01";
-int TST_TOTAL = 1;
+int TST_TOTAL = 3;
+
+static int itimer_name[] = {
+	ITIMER_REAL,
+	ITIMER_VIRTUAL,
+	ITIMER_PROF,
+};
 
 int main(int ac, char **av)
 {
 	int lc;
+	int i;
 	char *msg;
 	struct itimerval value;
 
@@ -51,27 +58,30 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		TEST(getitimer(ITIMER_REAL, &value));
+		for (i = 0; i < 3; i++) {
 
-		if (TEST_RETURN != 0)
-			tst_resm(TFAIL, "call failed - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			TEST(getitimer(itimer_name[i], &value));
 
-		if (STD_FUNCTIONAL_TEST) {
+			if (TEST_RETURN != 0)
+				tst_resm(TFAIL, "call failed - errno = %d - %s",
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 
-			/*
-			 * Since ITIMER_REAL is effectively disabled (we did
-			 * not set it before the getitimer call), the elements
-			 * in it_value should be zero.
-			 */
-			if ((value.it_value.tv_sec == 0) &&
-			    (value.it_value.tv_usec == 0)) {
-				tst_resm(TPASS, "functional test passed");
+			if (STD_FUNCTIONAL_TEST) {
+
+				/*
+				 * Since ITIMER is effectively disabled (we did
+				 * not set it before the getitimer call), the
+				 * elements in it_value should be zero.
+				 */
+				if ((value.it_value.tv_sec == 0) &&
+					(value.it_value.tv_usec == 0)) {
+					tst_resm(TPASS, "functionality is ok");
+				} else {
+					tst_resm(TFAIL, "timer are non zero");
+				}
 			} else {
-				tst_resm(TFAIL, "timer values are non zero");
+				tst_resm(TPASS, "call succeeded");
 			}
-		} else {
-			tst_resm(TPASS, "call succeeded");
 		}
 	}
 
