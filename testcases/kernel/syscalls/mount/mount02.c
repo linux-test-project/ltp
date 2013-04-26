@@ -81,8 +81,10 @@ static char *device;
 static int Tflag;
 static int Dflag;
 
-static int exp_enos[] = { ENODEV, ENOTBLK, EBUSY, EINVAL, EFAULT, ENAMETOOLONG,
-	ENOENT, ENOTDIR, 0
+static int exp_enos[] = {
+	ENODEV, ENOTBLK, EBUSY, EBUSY, EINVAL,
+	EINVAL, EINVAL, EFAULT, EFAULT, ENAMETOOLONG,
+	ENOENT, ENOENT, ENOTDIR, 0
 };
 
 int TST_TOTAL = (sizeof(exp_enos) / sizeof(exp_enos[0])) - 1;
