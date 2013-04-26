@@ -20,103 +20,13 @@
  * with this program; if not, write the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
- * Mountain View, CA  94043, or:
- *
- * http://www.sgi.com
- *
- * For further information regarding this notice, see:
- *
- * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.8 2009/11/09 05:56:58 yaberauneya Exp $ */
-/**********************************************************
- *
- *	OS Test - Silicon Graphics, Inc.
- *
- *	TEST IDENTIFIER	: access01
- *
- *	EXECUTED BY	: anyone
- *
- *	TEST TITLE	: Basic test for access(2) using F_OK,
- *						R_OK, W_OK and X_OK arguments.
- *
- *	PARENT DOCUMENT	: usctpl01
- *
- *	TEST CASE TOTAL	: 6
- *
- *	WALL CLOCK TIME	: 1
- *
- *	CPU TYPES		: ALL
- *
- *	AUTHOR		: William Roske
- *
- *	CO-PILOT		: Dave Fenner
- *
- *	DATE STARTED	: 03/30/92
- *
- *	INITIAL RELEASE	: UNICOS 7.0
- *
- *	TEST CASES
- *
- *	1.) access(2) returns 0 for F_OK...(See Description)
- *	2.) access(2) returns 0 for R_OK...(See Description)
- *	3.) access(2) returns 0 for W_OK...(See Description)
- *	4.) access(2) returns 0 for X_OK...(See Description)
- *
- *	INPUT SPECIFICATIONS
- *	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *	OUTPUT SPECIFICATIONS
- *
- *	DURATION
- *	Terminates - with frequency and infinite modes.
- *
- *	SIGNALS
- *	Uses SIGUSR1 to pause before test if option set.
- *	(See the parse_opts(3) man page).
- *
- *	RESOURCES
- *	None
- *
- *	ENVIRONMENTAL NEEDS
- *	The libcuts.a and libsys.a libraries must be included in
- *	the compilation of this test.
- *
- *	SPECIAL PROCEDURAL REQUIREMENTS
- *	None
- *
- *	INTERCASE DEPENDENCIES
- *	None
- *
- *	DETAILED DESCRIPTION
- *	This is a Phase I test for the access(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	access(2).
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *	  Create a temp directory and cd to it.
- *	  Creat a temp file wil read, write and execute permissions.
- *
- *	Test:
- *	 Loop if the proper options are given.
- *	  Execute system call with F_OK on tmp file
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *	  Execute system call with X_OK on tmp file...
- *	  Execute system call with W_OK on tmp file...
- *	  Execute system call with R_OK on tmp file...
- *
- *	Cleanup:
- *	  Print errno log
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+
+/*
+ * Description:
+ *   Basic test for access(2) using F_OK, R_OK, W_OK and X_OK on tmp file
+ *   AUTHOR		: William Roske
+ */
 
 #include <string.h>
 #include <unistd.h>
@@ -127,77 +37,66 @@
 #include <sys/stat.h>
 #include "test.h"
 #include "usctest.h"
-void setup();
-void cleanup();
+
 
 char *TCID = "access01";
-int TST_TOTAL = 4;
 
-char Fname[255];
+char fname[255];
 
 static struct test_case_t {
 	char *file;
 	int mode;
 	char *string;
 	int experrno;
-} Test_cases[] = {
-	{
-	Fname, F_OK, "F_OK", 0}, {
-	Fname, X_OK, "X_OK", 0}, {
-	Fname, W_OK, "W_OK", 0}, {
-Fname, R_OK, "R_OK", 0},};
+} test_cases[] = {
+	{fname, F_OK, "F_OK", 0},
+	{fname, X_OK, "X_OK", 0},
+	{fname, W_OK, "W_OK", 0},
+	{fname, R_OK, "R_OK", 0},
+};
 
-int Ntc = sizeof(Test_cases) / sizeof(struct test_case_t);
+int TST_TOTAL = sizeof(test_cases) / sizeof(struct test_case_t);
 
-/***********************************************************************
- * Main
- ***********************************************************************/
+static void setup(void);
+static void cleanup(void);
+
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 	int tc;
 
-	TST_TOTAL = Ntc;
-
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
+		for (tc = 0; tc < TST_TOTAL; tc++) {
+			TEST(access(test_cases[tc].file, test_cases[tc].mode));
 
-		for (tc = 0; tc < Ntc; tc++) {
-			/*
-			 * Call access(2)
-			 */
-			TEST(access(Test_cases[tc].file, Test_cases[tc].mode));
-
-			/* check return code */
-			if (TEST_RETURN == -1 && Test_cases[tc].experrno == 0) {
+			if (TEST_RETURN == -1 && test_cases[tc].experrno == 0) {
 				tst_resm(TFAIL | TTERRNO,
 					 "access(%s, %s) failed",
-					 Test_cases[tc].file,
-					 Test_cases[tc].string);
+					 test_cases[tc].file,
+					 test_cases[tc].string);
 
 			} else if (TEST_RETURN != -1
-				   && Test_cases[tc].experrno != 0) {
+				   && test_cases[tc].experrno != 0) {
 				tst_resm(TFAIL,
 					 "access(%s, %s) returned %ld, "
 					 "exp -1, errno:%d",
-					 Test_cases[tc].file,
-					 Test_cases[tc].string, TEST_RETURN,
-					 Test_cases[tc].experrno);
+					 test_cases[tc].file,
+					 test_cases[tc].string, TEST_RETURN,
+					 test_cases[tc].experrno);
 			} else {
-
 				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
 					tst_resm(TPASS,
 						 "access(%s, %s) returned %ld",
-						 Test_cases[tc].file,
-						 Test_cases[tc].string,
+						 test_cases[tc].file,
+						 test_cases[tc].string,
 						 TEST_RETURN);
 				}
 			}
@@ -209,17 +108,15 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+static void setup(void)
 {
 	int fd;
 	struct stat stbuf;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	umask(0);		/* reset umask avoid it affects on modes */
-
+	umask(0);
 	TEST_PAUSE;
-
 	tst_tmpdir();
 
 	/*
@@ -231,42 +128,32 @@ void setup()
 			 "chown(\".\", -1, %d) failed", getegid());
 	}
 
-	sprintf(Fname, "accessfile");
+	snprintf(fname, sizeof(fname), "accessfile");
 
-	fd = open(Fname, O_RDWR | O_CREAT, 06777);
+	fd = open(fname, O_RDWR | O_CREAT, 06777);
 	if (fd == -1)
 		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 06777) failed", Fname);
+			 "open(%s, O_RDWR|O_CREAT, 06777) failed", fname);
 	else if (close(fd) == -1)
-		tst_resm(TINFO | TERRNO, "close(%s) failed", Fname);
+		tst_resm(TINFO | TERRNO, "close(%s) failed", fname);
 
 	/*
 	 * force the mode to be set to 6777
 	 */
-	if (chmod(Fname, 06777) == -1)
+	if (chmod(fname, 06777) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, 06777) failed",
-			 Fname);
+			 fname);
 
-	stat(Fname, &stbuf);
+	stat(fname, &stbuf);
 
 	if ((stbuf.st_mode & 06777) != 06777) {
-		/*
-		 * file can not be properly setup
-		 */
+		tst_brkm(TBROK, cleanup, "'%s' can't be properly setup",
+			 fname);
 	}
-
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
 }
