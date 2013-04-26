@@ -18,8 +18,6 @@
  */
 
 /*
- * Test Name: access05
- *
  * Test Description:
  *  Verify that,
  *   1. access() fails with -1 return value and sets errno to EACCES
@@ -35,45 +33,7 @@
  *   5. access() fails with -1 return value and sets errno to ENAMETOOLONG
  *      if the pathname size is > PATH_MAX characters.
  *
- * Expected Result:
- *  access() should fail with return value -1 and set expected errno.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	if errno set == expected errno
- *		Issue sys call fails with expected return value and errno.
- *	Otherwise,
- *		Issue sys call fails with unexpected errno.
- *   Otherwise,
- *	Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory(s)/file(s) created.
- *
- * Usage:  <for command-line>
- *  access05 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  This test should be run by 'non-super-user' only.
- *
+ *   07/2001 Ported by Wayne Boyer
  */
 
 #include <stdio.h>
@@ -98,59 +58,59 @@
 
 #define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 
-void setup1();			/* setup() to test access() for EACCES */
-void setup2();			/* setup() to test access() for EACCES */
-void setup3();			/* setup() to test access() for EACCES */
-void setup4();			/* setup() to test access() for EINVAL */
-void longpath_setup();		/* setup function to test access() for ENAMETOOLONG */
+static void setup1(void);	/* setup() to test access() for EACCES */
+static void setup2(void);	/* setup() to test access() for EACCES */
+static void setup3(void);	/* setup() to test access() for EACCES */
+static void setup4(void);	/* setup() to test access() for EINVAL */
+static void longpath_setup();	/* setup function to test access() for ENAMETOOLONG */
 
 #if !defined(UCLINUX)
-char high_address_node[64];
+static char high_address_node[64];
 #endif
 
-char Longpathname[PATH_MAX + 2];
+static char longpathname[PATH_MAX + 2];
 
-struct test_case_t {		/* test case structure */
+static struct test_case_t {
 	char *pathname;
 	int a_mode;
 	int exp_errno;
 	void (*setupfunc) (void);
 } test_cases[] = {
-	{
-	TEST_FILE1, R_OK, EACCES, setup1}, {
-	TEST_FILE2, W_OK, EACCES, setup2}, {
-	TEST_FILE3, X_OK, EACCES, setup3}, {
-	TEST_FILE4, INV_OK, EINVAL, setup4},
+	{TEST_FILE1, R_OK, EACCES, setup1},
+	{TEST_FILE2, W_OK, EACCES, setup2},
+	{TEST_FILE3, X_OK, EACCES, setup3},
+	{TEST_FILE4, INV_OK, EINVAL, setup4},
 #if !defined(UCLINUX)
-	{
-	(char *)-1, R_OK, EFAULT, NULL}, {
-	high_address_node, R_OK, EFAULT, NULL},
+	{(char *)-1, R_OK, EFAULT, NULL},
+	{high_address_node, R_OK, EFAULT, NULL},
 #endif
-	{
-	"", W_OK, ENOENT, NULL}, {
-Longpathname, R_OK, ENAMETOOLONG, longpath_setup},};
+	{"", W_OK, ENOENT, NULL},
+	{longpathname, R_OK, ENAMETOOLONG, longpath_setup},
+};
 
 char *TCID = "access05";
 int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
-int exp_enos[] = { EACCES, EFAULT, EINVAL, ENOENT, ENAMETOOLONG, 0 };
 
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
+static int exp_enos[] = { EACCES, EFAULT, EINVAL, ENOENT, ENAMETOOLONG, 0 };
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+static const char nobody_uid[] = "nobody";
+static struct passwd *ltpuser;
 
-char *bad_addr = 0;
+static void setup(void);
+static void cleanup(void);
+
+static char *bad_addr;
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	char *file_name;	/* name of the testfile */
-	int access_mode;	/* specified access mode for testfile */
+	char *file_name;
+	int access_mode;
 	int i;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
@@ -158,7 +118,6 @@ int main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -197,17 +156,14 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
-void setup()
+static void setup(void)
 {
 	int i;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	tst_require_root(NULL);
 
 	ltpuser = getpwnam(nobody_uid);
@@ -233,11 +189,10 @@ void setup()
 			test_cases[i].setupfunc();
 }
 
-void setup_file(const char *file, mode_t perms)
+static void setup_file(const char *file, mode_t perms)
 {
-	int fd;			/* file handle for testfile */
-
-	if ((fd = open(file, O_RDWR | O_CREAT, FILE_MODE)) == -1)
+	int fd = open(file, O_RDWR | O_CREAT, FILE_MODE);
+	if (fd == -1)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
 			 file, FILE_MODE);
@@ -258,7 +213,7 @@ void setup_file(const char *file, mode_t perms)
  *   Deny read access permissions on testfile.
  *   This function returns 0.
  */
-void setup1()
+static void setup1(void)
 {
 	setup_file(TEST_FILE1, 0333);
 }
@@ -271,7 +226,7 @@ void setup1()
  *   Deny write access permissions on testfile.
  *   This function returns 0.
  */
-void setup2()
+static void setup2(void)
 {
 	setup_file(TEST_FILE2, 0555);
 }
@@ -284,7 +239,7 @@ void setup2()
  *   Deny search access permissions on testfile.
  *   This function returns 0.
  */
-void setup3()
+static void setup3(void)
 {
 	setup_file(TEST_FILE3, 0666);
 }
@@ -297,7 +252,7 @@ void setup3()
  *   Creat/open a testfile and close it.
  *   This function returns 0.
  */
-void setup4()
+static void setup4(void)
 {
 	setup_file(TEST_FILE4, FILE_MODE);
 }
@@ -306,32 +261,16 @@ void setup4()
  * longpath_setup() - setup to create a node with a name length exceeding
  *		      the MAX. length of PATH_MAX.
  */
-void longpath_setup()
+static void longpath_setup(void)
 {
 	int i;
 
 	for (i = 0; i <= (PATH_MAX + 1); i++)
-		Longpathname[i] = 'a';
+		longpathname[i] = 'a';
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *
- *  Remove the test directory and testfile created in the setup.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
-	/*
-	 * Delete the test directory/file and temporary directory
-	 * created in the setup.
-	 */
 	tst_rmdir();
-
 }
