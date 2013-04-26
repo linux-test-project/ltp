@@ -18,52 +18,11 @@
  */
 
 /*
- * Test Name: access04
- *
  * Test Description:
  *  Verify that access() succeeds to check the existance of a file if
  *  search access is permitted on the pathname of the specified file.
  *
- * Expected Result:
- *  access() should return 0 value and the specified file should exist
- *  on the file system.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	Log the errno and Issue a FAIL message.
- *   Otherwise,
- *	Verify the Functionality of system call
- *      if successful,
- *		Issue Functionality-Pass message.
- *      Otherwise,
- *		Issue Functionality-Fail message.
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  access04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
- *
+ *  07/2001 Ported by Wayne Boyer
  */
 
 #include <stdio.h>
@@ -81,30 +40,31 @@
 
 #define TESTDIR		"testdir"
 #define TESTFILE	"testdir/testfile"
-#define DIR_MODE	S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP
-#define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define DIR_MODE	(S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP)
+#define FILE_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
 char *TCID = "access04";
 int TST_TOTAL = 1;
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+static const char nobody_uid[] = "nobody";
+static struct passwd *ltpuser;
+
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
-	struct stat stat_buf;	/* struct buffer for stat(2) */
+	struct stat stat_buf;
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
 		TEST(access(TESTFILE, F_OK));
@@ -123,22 +83,20 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "functionality of "
 					 "access(%s, F_OK) ok", TESTFILE);
 			}
-		} else
+		} else {
 			tst_resm(TPASS, "call succeeded");
+		}
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
-void setup()
+static void setup(void)
 {
 	int fd;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	tst_require_root(NULL);
 
 	ltpuser = getpwnam(nobody_uid);
@@ -149,7 +107,6 @@ void setup()
 		tst_brkm(TINFO | TERRNO, NULL, "setuid failed");
 
 	TEST_PAUSE;
-
 	tst_tmpdir();
 
 	if (mkdir(TESTDIR, DIR_MODE) < 0)
@@ -174,10 +131,8 @@ void setup()
 			 "chmod(%s, 0) failed", TESTFILE);
 }
 
-void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
 }
