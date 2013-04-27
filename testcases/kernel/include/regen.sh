@@ -1,9 +1,18 @@
 #!/bin/sh
 
 output="linux_syscall_numbers.h"
+rm -f "${output}".[1-9]*
 output_pid="${output}.$$"
 
+max_jobs=$(getconf _NPROCESSORS_ONLN 2>/dev/null)
+: ${max_jobs:=1}
+
 srcdir=${0%/*}
+
+err() {
+	echo "$*" 1>&2
+	exit 1
+}
 
 cat << EOF > "${output_pid}"
 /************************************************
@@ -43,43 +52,61 @@ cat << EOF > "${output_pid}"
 
 EOF
 
+jobs=0
 for arch in $(cat "${srcdir}/order") ; do
-	echo -n "Generating data for arch $arch ... "
+	(
+	echo "Generating data for arch $arch ... "
 
-	echo "" >> "${output_pid}"
-	echo "#ifdef __${arch}__" >> "${output_pid}"
+	(
+	echo
+	echo "#ifdef __${arch}__"
 	while read line ; do
-		set -- $line
+		set -- ${line}
 		nr="__NR_$1"
 		shift
-		if [ -z "$*" ] ; then
-			echo "invalid line found"
-			exit 1
+		if [ $# -eq 0 ] ; then
+			err "invalid line found"
 		fi
-		cat <<-EOF >> "${output_pid}"
-		# ifndef $nr
-		#  define $nr $*
+		cat <<-EOF
+		# ifndef ${nr}
+		#  define ${nr} $*
 		# endif
 		EOF
 	done < "${srcdir}/${arch}.in"
-	echo "#endif" >> "${output_pid}"
-	echo "" >> "${output_pid}"
+	echo "#endif"
+	echo
+	) >> "${output_pid}.${arch}"
 
-	echo "OK!"
+	) &
+
+	: $(( jobs += 1 ))
+	if [ ${jobs} -ge ${max_jobs} ] ; then
+		wait || exit 1
+		jobs=0
+	fi
 done
 
-echo -n "Generating stub list ... "
-echo "" >> "${output_pid}"
-echo "/* Common stubs */" >> "${output_pid}"
+echo "Generating stub list ... "
+(
+echo
+echo "/* Common stubs */"
 for nr in $(awk '{print $1}' "${srcdir}/"*.in | sort -u) ; do
-	nr="__NR_$nr"
-	cat <<-EOF >> "${output_pid}"
-	# ifndef $nr
-	#  define $nr 0
+	nr="__NR_${nr}"
+	cat <<-EOF
+	# ifndef ${nr}
+	#  define ${nr} 0
 	# endif
 	EOF
 done
-echo "#endif" >> "${output_pid}"
+echo "#endif"
+) >> "${output_pid}._footer"
 
+wait || exit 1
+
+printf "Combining them all ... "
+for arch in $(cat "${srcdir}/order") _footer ; do
+	cat "${output_pid}.${arch}"
+done >> "${output_pid}"
 mv "${output_pid}" "${output}"
+rm -f "${output_pid}"*
 echo "OK!"
