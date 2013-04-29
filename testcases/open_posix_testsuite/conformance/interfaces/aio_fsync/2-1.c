@@ -84,6 +84,8 @@ int main(void)
 		close(fd);
 		return PTS_FAIL;
 	}
+
 	close(fd);
+	printf("Test PASSED\n");
 	return PTS_PASS;
 }
