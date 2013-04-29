@@ -792,7 +792,18 @@ void write_cpusets(long nd)
 	write_cpuset_files(CPATH_NEW, "mems", buf);
 
 	gather_node_cpus(cpus, nd);
-	write_cpuset_files(CPATH_NEW, "cpus", cpus);
+	/*
+	 * If the 'nd' node doesn't contain any CPUs,
+	 * the first ID of CPU '0' will be used as
+	 * the value of cpuset.cpus.
+	 */
+	if (strlen(cpus) != 0) {
+		write_cpuset_files(CPATH_NEW, "cpus", cpus);
+	} else {
+		tst_resm(TINFO, "No CPUs in the node%ld; "
+				"using only CPU0", nd);
+		write_cpuset_files(CPATH_NEW, "cpus", "0");
+	}
 
 	SAFE_FILE_PRINTF(NULL, CPATH_NEW "/tasks", "%d", getpid());
 }

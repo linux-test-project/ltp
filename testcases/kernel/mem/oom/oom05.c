@@ -108,24 +108,30 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
+	int ret, memnode;
+
 	tst_require_root(NULL);
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
+
+	overcommit = get_sys_tune("overcommit_memory");
+	set_sys_tune("overcommit_memory", 1, 1);
 
 	mount_mem("memcg", "cgroup", "memory", MEMCG_PATH, MEMCG_PATH_NEW);
 	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
 	write_memcg();
 
-	set_sys_tune("overcommit_memory", 1, 1);
-
-	if (is_numa(cleanup))
-		/* For NUMA system, using the first node for cpuset.mems */
-		write_cpusets(get_a_numa_node(cleanup));
-	else
-		/* For nonNUMA system, using node0 for cpuset.mems */
-		write_cpusets(0);
-
-	overcommit = get_sys_tune("overcommit_memory");
+	/*
+	 * Some nodes do not contain memory, so use
+	 * get_allowed_nodes(NH_MEMS) to get a memory
+	 * node. This operation also applies to Non-NUMA
+	 * systems.
+	 */
+	ret = get_allowed_nodes(NH_MEMS, 1, &memnode);
+	if (ret < 0)
+		tst_brkm(TBROK, NULL, "Failed to get a memory node "
+				      "using get_allowed_nodes()");
+	write_cpusets(memnode);
 }
 
 void cleanup(void)
