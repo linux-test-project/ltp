@@ -30,7 +30,7 @@ int main(void)
 	int fd;
 	struct aiocb aiocb_write;
 	struct aiocb aiocb_fsync;
-	int ret;
+	int ret, err;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
@@ -69,14 +69,13 @@ int main(void)
 		ret = PTS_PASS;
 
 	/* allow to check if aio_error() move from EINPROGRESS to
-	 * something else
-	 * otherwise test hangs
+	 * something else otherwise test hangs
 	 */
 	do {
 		usleep(10000);
-		ret = aio_error(&aiocb_fsync);
-	} while (ret == EINPROGRESS);
-	if (ret < 0) {
+		err = aio_error(&aiocb_fsync);
+	} while (err == EINPROGRESS);
+	if (err < 0) {
 		printf(TNAME " Error at aio_error() : %s\n", strerror(ret));
 		exit(PTS_FAIL);
 	}
@@ -84,6 +83,8 @@ int main(void)
 	close(fd);
 
 	/* we didn't check if the operation is really performed */
+	if (ret == PTS_PASS)
+		printf("Test PASSED\n");
 
 	return ret;
 }
