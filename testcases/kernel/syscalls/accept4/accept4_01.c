@@ -138,8 +138,12 @@ do_test(int lfd, struct sockaddr_in *conn_addr,
 			   closeonexec_flag | nonblock_flag);
 #endif
 	if (acceptfd == -1) {
-		tst_resm(TCONF,
-			 "syscall __NR_accept4 not supported on your arch");
+		if (errno == ENOSYS) {
+			tst_brkm(TCONF, cleanup,
+			         "syscall __NR_accept4 not supported");
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup, "accept4 failed");
+		}
 	}
 
 	fdf = fcntl(acceptfd, F_GETFD);
@@ -209,7 +213,6 @@ static int create_listening_socket(int port_num)
 
 int main(int argc, char *argv[])
 {
-#if defined(__NR_accept4) || defined(__NR_socketcall)
 	struct sockaddr_in conn_addr;
 	int lfd;
 	int port_num;
@@ -228,11 +231,8 @@ int main(int argc, char *argv[])
 	do_test(lfd, &conn_addr, SOCK_CLOEXEC, 0);
 	do_test(lfd, &conn_addr, 0, SOCK_NONBLOCK);
 	do_test(lfd, &conn_addr, SOCK_CLOEXEC, SOCK_NONBLOCK);
+	
 	close(lfd);
-#else
-	tst_resm(TCONF, "syscall __NR_accept4 not supported on your arch");
-#endif
-
 	cleanup();
 	tst_exit();
 }
