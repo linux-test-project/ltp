@@ -44,6 +44,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include "mem.h"
 #include "safe_macros.h"
 #include "test.h"
@@ -93,8 +94,15 @@ static void thp_test(void)
 	memset(p, 0x00, unaligned_size);
 	if (mprotect(p, unaligned_size, PROT_NONE) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "mprotect");
-	if (madvise(p + hugepage_size, page_size, MADV_MERGEABLE) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "madvise");
+
+	if (madvise(p + hugepage_size, page_size, MADV_MERGEABLE) == -1) {
+		if (errno == EINVAL) {
+			tst_brkm(TCONF, cleanup,
+			         "MADV_MERGEABLE is not enabled/supported");
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup, "madvise");
+		}
+	}
 
 	switch (fork()) {
 	case -1:
