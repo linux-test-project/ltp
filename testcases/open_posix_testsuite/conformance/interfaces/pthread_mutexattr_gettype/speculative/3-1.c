@@ -37,13 +37,15 @@ int main(void)
 	/* Pass an invalid 'attr'.  */
 	ret = pthread_mutexattr_gettype(&mta, &type);
 
-	if (ret != EINVAL) {
-		printf
-		    ("Test FAILED: Incorrect return code.  Expected EINVAL, but got: %d\n",
-		     ret);
+	switch (ret) {
+	case 0:
+		printf("UNTESTED: The call didn't fail.\n");
+		return PTS_UNTESTED;
+	case EINVAL:
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	default:
+		printf("Test FAILED: Expected EINVAL, but got: %d\n", ret);
 		return PTS_FAIL;
 	}
-
-	printf("Test PASSED\n");
-	return PTS_PASS;
 }
