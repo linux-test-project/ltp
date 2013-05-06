@@ -61,7 +61,7 @@ int TST_TOTAL = 4;		/* Total number of test cases. */
 #define INCREMENT 		8388608	/* 8Mb */
 #elif defined (__mips__)  ||  defined (__hppa__) || defined (__sparc__)
 #define INCREMENT		262144	/* 256Kb */
-#elif defined __sh__ || defined (__arm__)
+#elif defined __sh__ || defined (__arm__) || defined(__aarch64__)
 #define INCREMENT 		16384	/* 16kb */
 #else
 #define INCREMENT 		SHMLBA
@@ -162,7 +162,7 @@ int main()
 	tst_resm(TPASS, "sbrk, shmat");
 
 /*--------------------------------------------------------*/
-#if defined (__ia64__) || defined(__mips__) || defined(__hppa__) || defined(__arm__)
+#if defined (__ia64__) || defined(__mips__) || defined(__hppa__) || defined(__arm__) || defined(__aarch64__)
 	while ((vp = sbrk(INCREMENT)) != (void *)-1) ;
 	if (errno != ENOMEM) {
 		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
