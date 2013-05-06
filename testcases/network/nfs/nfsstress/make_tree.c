@@ -721,7 +721,7 @@ int main(int argc,		/* number of input parameters                 */
 	int num_dirs = MAXD;	/* number of subdirectories to create         */
 	int num_files = MAXF;	/* number of files in each subdirectory      */
 	int thrd_ndx;		/* index into the array of thread ids         */
-	int th_status[1];	/* exit status of LWP's                       */
+	void *th_status;	/* exit status of LWP's                       */
 	pthread_t thrdid[30];	/* maxinum of 30 threads allowed              */
 	long chld_args[3];	/* arguments to the thread function           */
 	extern int optopt;	/* options to the program                     */
@@ -778,12 +778,12 @@ int main(int argc,		/* number of input parameters                 */
 	sync();
 
 	for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++) {
-		if (pthread_join(thrdid[thrd_ndx], (void **)&th_status) != 0) {
+		if (pthread_join(thrdid[thrd_ndx], &th_status) != 0) {
 			perror("crte_mk_rm(): pthread_join()");
 			exit(-1);
 		} else {
 			dprt("WE ARE HERE %d\n", __LINE__);
-			if (*th_status == -1) {
+			if (th_status == (void *)-1) {
 				fprintf(stderr,
 					"thread [%ld] - process exited with errors\n",
 					thrdid[thrd_ndx]);

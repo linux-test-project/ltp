@@ -361,7 +361,7 @@ RETINFO_t *map_and_thread(char *tmpfile,	/* name of temporary file to be created
 	int fd = 0;		/* file descriptor of the file created       */
 	int thrd_ndx = 0;	/* index to the number of threads created    */
 	int map_type = 0;	/* specifies the type of the mapped object   */
-	int *th_status = 0;	/* status of the thread when it is finished  */
+	void *th_status;	/* status of the thread when it is finished  */
 	long th_args[5];	/* argument list passed to  thread_fault()   */
 	char *empty_buf = NULL;	/* empty buffer used to fill temp file       */
 	long pagesize		/* contains page size at runtime             */
@@ -474,13 +474,12 @@ RETINFO_t *map_and_thread(char *tmpfile,	/* name of temporary file to be created
 	if (verbose_print)
 		tst_resm(TINFO, "map_and_thread(): pthread_create() success");
 	wait_thread = FALSE;
-	th_status = malloc(sizeof(int *));
 
 	/* suspend the execution of the calling thread till the execution of the  */
 	/* other thread has been terminated.                                      */
 
 	for (thrd_ndx = 0; thrd_ndx < NUMTHREAD; thrd_ndx++) {
-		if (pthread_join(pthread_ids[thrd_ndx], (void **)th_status)) {
+		if (pthread_join(pthread_ids[thrd_ndx], &th_status)) {
 			perror("map_and_thread(): pthread_join()");
 			free(empty_buf);
 			fflush(NULL);
@@ -489,7 +488,7 @@ RETINFO_t *map_and_thread(char *tmpfile,	/* name of temporary file to be created
 			retinfo->status = FAILED;
 			return retinfo;
 		} else {
-			if ((int)*th_status == 1) {
+			if ((long)th_status == 1) {
 				tst_resm(TINFO,
 					 "thread [%ld] - process exited with errors",
 					 (long)pthread_ids[thrd_ndx]);
@@ -513,13 +512,11 @@ RETINFO_t *map_and_thread(char *tmpfile,	/* name of temporary file to be created
 	 */
 	if (remove_files(tmpfile, map_addr) == FAILED) {
 		free(empty_buf);
-		free(th_status);
 		retinfo->status = FAILED;
 		return retinfo;
 	}
 
 	free(empty_buf);
-	free(th_status);
 	close(fd);
 	retinfo->status = SUCCESS;
 	return retinfo;

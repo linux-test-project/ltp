@@ -273,7 +273,7 @@ int main(int argc,		/* number of input parameters                 */
 	int num_thrd = MAXT;	/* number of threads to create                */
 	int num_reps = MAXR;	/* number of repatitions the test is run      */
 	int thrd_ndx;		/* index into the array of thread ids         */
-	int th_status;		/* exit status of LWP's                       */
+	void *th_status;	/* exit status of LWP's                       */
 	int map_size;		/* size of the file mapped.                   */
 	int shmkey = 1969;	/* key used to generate shmid by shmget()     */
 	pthread_t thrdid[30];	/* maxinum of 30 threads allowed              */
@@ -344,12 +344,12 @@ int main(int argc,		/* number of input parameters                 */
 	sync();
 
 	for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++) {
-		if (pthread_join(thrdid[thrd_ndx], (void *)&th_status) != 0) {
+		if (pthread_join(thrdid[thrd_ndx], &th_status) != 0) {
 			perror("shmat_rd_wr(): pthread_join()");
 			exit(-1);
 		} else {
 			dprt("WE ARE HERE %d\n", __LINE__);
-			if (th_status == -1) {
+			if (th_status == (void *)-1) {
 				fprintf(stderr,
 					"thread [%ld] - process exited with errors\n",
 					(long)thrdid[thrd_ndx]);

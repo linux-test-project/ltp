@@ -67,7 +67,7 @@ void *t1_func(void *arg)
 int main(void)
 {
 	pthread_t thread1;
-	int th_ret;
+	void *th_ret;
 
 	if (pthread_mutex_init(&td.mutex, NULL) != 0) {
 		fprintf(stderr, "Fail to initialize mutex\n");
@@ -85,6 +85,6 @@ int main(void)
 
 	fprintf(stderr, "Main: no condition is going to be met\n");
 
-	pthread_join(thread1, (void *)&th_ret);
-	return th_ret;
+	pthread_join(thread1, &th_ret);
+	return (long)th_ret;
 }

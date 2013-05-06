@@ -392,7 +392,7 @@ int main(int argc,		/* number of input parameters.                        */
 	int num_iter;		/* number of iteration to perform             */
 	int thrd_ndx;		/* index into the array of threads.           */
 	double exec_time;	/* period for which the test is executed      */
-	int status[1];		/* exit status for light weight process       */
+	void *status;		/* exit status for light weight process       */
 	int sig_ndx;		/* index into signal handler structure.       */
 	pthread_t thid[1000];	/* pids of process that will map/write/unmap  */
 	long chld_args[3];	/* arguments to funcs execed by child process */
@@ -497,14 +497,14 @@ int main(int argc,		/* number of input parameters.                        */
 
 		/* wait for the children to terminate */
 		for (thrd_ndx = 0; thrd_ndx < 3; thrd_ndx++) {
-			if (pthread_join(thid[thrd_ndx], (void *)status)) {
+			if (pthread_join(thid[thrd_ndx], &status)) {
 				perror("main(): pthread_create()");
 				exit(-1);
 			}
-			if (*status == -1) {
+			if (status == (void *)-1) {
 				fprintf(stderr,
-					"thread [%#lx] - process exited with errors %d\n",
-					thid[thrd_ndx], *status);
+					"thread [%#lx] - process exited with errors %ld\n",
+					thid[thrd_ndx], (long)status);
 				exit(-1);
 			}
 		}

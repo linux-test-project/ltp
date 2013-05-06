@@ -143,15 +143,16 @@ int main(int argc, char **argv)
 		sys_error("pthread_attr_destroy failed", __LINE__);
 
 	for (i = 0; i < num_threads; i++) {
-		int exit_value;
+		void *exit_value;
 		printf("\tThread [main]: waiting for thread: %d\n", i + 1);
 		/*if (pthread_join ((pthread_t*) array [i], (void **) &exit_value)) */
-		if (pthread_join((pthread_t) array[i], (void **)&exit_value))
+		if (pthread_join(array[i], &exit_value))
 			sys_error("pthread_join failed", __LINE__);
 
 		if (debug)
-			printf("\tThread [%d]: return %d\n", i + 1, exit_value);
-		rc += exit_value;
+			printf("\tThread [%d]: return %ld\n", i + 1,
+			       (long)exit_value);
+		rc += (long)exit_value;
 	}
 	free(array);
 	free(arg);

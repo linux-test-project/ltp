@@ -264,7 +264,7 @@ int main(int argc,		/* number of input parameters.                        */
 	int num_thrd;		/* number of threads to create                */
 	int thrd_ndx;		/* index into the array of threads.           */
 	float exec_time;	/* period for which the test is executed      */
-	int status;		/* exit status for light weight process       */
+	void *status;		/* exit status for light weight process       */
 	int sig_ndx;		/* index into signal handler structure.       */
 	pthread_t thid[1000];	/* pids of process that will map/write/unmap  */
 	long chld_args[3];	/* arguments to funcs execed by child process */
@@ -362,14 +362,15 @@ int main(int argc,		/* number of input parameters.                        */
 
 		/* wait for the children to terminate */
 		for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++) {
-			if (pthread_join(thid[thrd_ndx], (void *)&status)) {
+			if (pthread_join(thid[thrd_ndx], &status)) {
 				perror("main(): pthread_create()");
 				exit(-1);
 			} else {
 				if (status) {
 					fprintf(stderr,
-						"thread [%d] - process exited with errors %d\n",
-						WEXITSTATUS(status), status);
+						"thread [%d] - process exited with errors %ld\n",
+						WEXITSTATUS((long)status),
+						(long)status);
 					exit(-1);
 				}
 			}

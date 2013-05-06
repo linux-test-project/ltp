@@ -285,7 +285,7 @@ int main(int argc, char **argv)
 	int num_iter;
 	double exec_time;
 	int fd;
-	int status[2];
+	void *status;
 	pthread_t thid[2];
 	long chld_args[3];
 	extern char *optarg;
@@ -387,15 +387,15 @@ int main(int argc, char **argv)
 		tst_resm(TINFO, "created reading thread[%lu]", thid[1]);
 
 		for (i = 0; i < 2; i++) {
-			if ((ret = pthread_join(thid[i], (void *)&status[i])))
+			if ((ret = pthread_join(thid[i], &status)))
 				tst_brkm(TBROK, NULL,
 					 "main(): pthread_join(): %s",
 					 strerror(ret));
 
-			if (status[i])
+			if (status)
 				tst_brkm(TFAIL, NULL,
 					 "thread [%lu] - process exited "
-					 "with %d", thid[i], status[i]);
+					 "with %ld", thid[i], (long)status);
 		}
 
 		close(fd);
