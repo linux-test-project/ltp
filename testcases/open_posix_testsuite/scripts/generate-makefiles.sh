@@ -46,6 +46,12 @@ generate_makefile() {
 
 	test_prefix=$(basename "$prereq_dir")
 
+	# special case for speculative testcases
+	if [ "$test_prefix" = "speculative" ]; then
+		test_prefix=$(basename $(echo "$prereq_dir" | sed s/speculative//))
+		test_prefix="${test_prefix}_speculative"
+	fi
+
 	# Add all source files to $make_target_prereq_cache.
 	for prereq in $prereq_cache; do
 		# Stuff that needs to be tested.
