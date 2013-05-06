@@ -36,7 +36,7 @@ cat << EOF > "${output_pid}"
 
 #define ltp_syscall(NR, ...) ({ \\
 	int __ret; \\
-	if (NR == 0) { \\
+	if (NR == __LTP__NR_INVALID_SYSCALL) { \\
 		errno = ENOSYS; \\
 		__ret = -1; \\
 	} else { \\
@@ -90,11 +90,12 @@ echo "Generating stub list ... "
 (
 echo
 echo "/* Common stubs */"
+echo "#define __LTP__NR_INVALID_SYSCALL -1" >> "${output_pid}"
 for nr in $(awk '{print $1}' "${srcdir}/"*.in | sort -u) ; do
 	nr="__NR_${nr}"
 	cat <<-EOF
 	# ifndef ${nr}
-	#  define ${nr} 0
+	#  define ${nr} __LTP__NR_INVALID_SYSCALL
 	# endif
 	EOF
 done
