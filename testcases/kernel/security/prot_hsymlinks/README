@@ -1,0 +1,24 @@
+TEST SUITE:
+
+The directory prot_hsymlinks contains the tests related to harlinks and
+symlinks restrictions.
+
+TESTS AIM:
+
+The aim of the tests is to check the restrictions
+for hardlinks and symlinks.
+
+This security restrictions were added in Linux 3.6 and enabled by default,
+but it broke some programs. It has been disabled by default in Linux 3.7 and
+to control it, special proc parameters added. Distributions and users
+can enable it by writing "1" to /proc/sys/fs/protected_symlinks,
+/proc/sys/fs/protected_hardlinks.
+
+This test enables restrictions and checks following preconditions:
+
+1. Users who own sticky world-writable directory can't follow symlinks
+inside that directory if their don't own ones. All other users can follow.
+
+2. Hard links restriction applies only to non-privileged users. Only
+non-privileged user can't create hard links to files if he isn't owner
+of the file or he doesn't have write access to the file.
