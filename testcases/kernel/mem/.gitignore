@@ -46,6 +46,7 @@
 /oom/oom02
 /oom/oom03
 /oom/oom04
+/oom/oom05
 /page/page01
 /page/page02
 /shmt/shmt02
@@ -60,6 +61,9 @@
 /swapping/swapping01
 /thp/thp01
 /thp/thp02
+/thp/thp03
+/thp/thp04
+/thp/thp05
 /tunable/max_map_count
 /tunable/min_free_kbytes
 /tunable/overcommit_memory
