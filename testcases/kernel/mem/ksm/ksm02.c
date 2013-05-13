@@ -73,6 +73,8 @@
 char *TCID = "ksm02";
 int TST_TOTAL = 1;
 
+static int merge_across_nodes;
+
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
 option_t ksm_options[] = {
@@ -123,6 +125,10 @@ int main(int argc, char *argv[])
 
 void cleanup(void)
 {
+	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0)
+		SAFE_FILE_PRINTF(NULL, PATH_KSM "merge_across_nodes",
+				 "%d", merge_across_nodes);
+
 	umount_mem(CPATH, CPATH_NEW);
 	TEST_CLEANUP;
 }
@@ -135,6 +141,12 @@ void setup(void)
 		tst_brkm(TCONF, NULL, "2.6.32 or greater kernel required");
 	if (access(PATH_KSM, F_OK) == -1)
 		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
+
+	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0) {
+		SAFE_FILE_SCANF(NULL, PATH_KSM "merge_across_nodes",
+				"%d", &merge_across_nodes);
+		SAFE_FILE_PRINTF(NULL, PATH_KSM "merge_across_nodes", "1");
+	}
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
