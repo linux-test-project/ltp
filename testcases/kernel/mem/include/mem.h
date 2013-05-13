@@ -46,6 +46,8 @@ void testoom(int mempolicy, int lite);
 
 #define PATH_KSM		"/sys/kernel/mm/ksm/"
 
+void test_ksm_merge_across_nodes(unsigned long nr_pages);
+
 /* THP */
 
 #define PATH_THP		"/sys/kernel/mm/transparent_hugepage/"
