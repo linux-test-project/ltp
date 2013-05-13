@@ -41,11 +41,15 @@
  *	call cleanup
  */
 
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include "ipcsem.h"
 #include "libtestsuite.h"
 
 char *TCID = "semctl01";
-int TST_TOTAL = 10;
+int TST_TOTAL = 13;
 
 static int sem_id_1 = -1;
 
@@ -66,8 +70,12 @@ static void func_sval(void);
 static void func_rmid(void);
 static void child_cnt(void);
 static void child_pid(void);
+static void func_iinfo(int);
+static void func_sinfo(void);
+static void func_sstat(int);
 
 static struct semid_ds buf;
+static struct seminfo ipc_buf;
 static unsigned short array[PSEMS];
 static struct sembuf sops;
 
@@ -107,6 +115,9 @@ static struct test_case_t {
 	{SEM4, GETZCNT, func_cnt, SEMUN_CAST & buf, cnt_setup},
 	{0, SETALL, func_sall, SEMUN_CAST array, sall_setup},
 	{SEM4, SETVAL, func_sval, SEMUN_CAST INCVAL, NULL},
+	{0, IPC_INFO, func_iinfo, SEMUN_CAST & ipc_buf, NULL},
+	{0, SEM_INFO, func_sinfo, SEMUN_CAST & ipc_buf, NULL},
+	{0, SEM_STAT, func_sstat, SEMUN_CAST & buf, NULL},
 	{0, IPC_RMID, func_rmid, SEMUN_CAST & buf, NULL},
 };
 
@@ -170,6 +181,8 @@ int main(int argc, char *argv[])
 					case GETZCNT:
 					case GETPID:
 					case GETVAL:
+					case IPC_INFO:
+					case SEM_STAT:
 						(*TC[i].func_test)
 						    (TEST_RETURN);
 						break;
@@ -543,6 +556,30 @@ static void func_rmid(void)
 		tst_resm(TPASS, "semaphore appears to be removed");
 
 	sem_id_1 = -1;
+}
+
+static void func_iinfo(int hidx)
+{
+	if (hidx >= 0)
+		tst_resm(TPASS, "the highest index is correct");
+	else
+		tst_resm(TFAIL, "the highest index is incorrect");
+}
+
+static void func_sinfo(void)
+{
+	if (ipc_buf.semusz < 1)
+		tst_resm(TFAIL, "number of semaphore sets is incorrect");
+	else
+		tst_resm(TPASS, "number of semaphore sets is correct");
+}
+
+static void func_sstat(int semidx)
+{
+	if (semidx >= 0)
+		tst_resm(TPASS, "id of the semaphore set is correct");
+	else
+		tst_resm(TFAIL, "id of the semaphore set is incorrect");
 }
 
 void setup(void)
