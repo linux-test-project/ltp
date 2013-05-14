@@ -181,6 +181,8 @@ void setup()
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	act.sa_handler = sigsegv_handler;
+	act.sa_flags = 0;
+	sigemptyset(&act.sa_mask);
 	(void)sigaction(SIGSEGV, &act, NULL);
 
 	TEST_PAUSE;

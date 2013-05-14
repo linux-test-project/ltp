@@ -81,6 +81,7 @@ static inline int sig_initial(int sig)
 	struct sigaction act, oact;
 
 	act.sa_handler = handler_h;
+	act.sa_flags = 0;
 	/* Clear out the signal set. */
 	if (sigemptyset(&act.sa_mask) < 0) {
 		/* Add the signal to the mask set. */

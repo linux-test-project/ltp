@@ -591,6 +591,8 @@ static void setup(void)
 	tst_tmpdir();
 
 	act.sa_handler = SIG_IGN;
+	act.sa_flags = 0;
+	sigemptyset(&act.sa_mask);
 	(void)sigaction(SIGXFSZ, &act, NULL);
 	sprintf(filename, "testdata-4.%ld", syscall(__NR_gettid));
 

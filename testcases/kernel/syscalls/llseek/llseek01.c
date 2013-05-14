@@ -189,6 +189,8 @@ void setup()
 	TEST_PAUSE;
 
 	act.sa_handler = SIG_IGN;
+	act.sa_flags = 0;
+	sigemptyset(&act.sa_mask);
 	if (sigaction(SIGXFSZ, &act, NULL) == -1) {
 		tst_brkm(TFAIL, NULL, "sigaction() Failed to ignore SIGXFSZ");
 		tst_exit();
