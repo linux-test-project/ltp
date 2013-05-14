@@ -258,6 +258,7 @@ int main(void)
 	pthread_condattr_t ca;
 
 	testdata_t *td;
+	testdata_t alternativ;
 
 	int do_fork;
 
@@ -300,7 +301,6 @@ int main(void)
  */
 	if (mf < 0) {
 		/* Cannot mmap a file, we use an alternative method */
-		testdata_t alternativ;
 		td = &alternativ;
 		pshared = -1;	/* We won't do this testing anyway */
 #if VERBOSE > 0
