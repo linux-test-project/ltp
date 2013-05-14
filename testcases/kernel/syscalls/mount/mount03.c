@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
 
 int test_rwflag(int i, int cnt)
 {
-	int fd, pid, status;
+	int ret, fd, pid, status;
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 
@@ -259,7 +259,9 @@ int test_rwflag(int i, int cnt)
 			tst_resm(TWARN | TERRNO, "opening %s failed", file);
 		} else {
 			close(fd);
-			execlp(file, basename(file), NULL);
+			ret = execlp(file, basename(file), NULL);
+			if ((ret == -1) && (errno == EACCES))
+				return 0;
 		}
 		return 1;
 	case 3:
@@ -410,6 +412,8 @@ int setup_uid()
 
 void setup()
 {
+	int fd;
+	char path[PATH_MAX];
 	char *test_home;
 	struct stat setuid_test_stat;
 
@@ -421,9 +425,9 @@ void setup()
 		tst_brkm(TBROK, NULL, "Test must be run as root");
 	}
 
-	test_home = get_current_dir_name();
-
 	tst_tmpdir();
+
+	test_home = get_current_dir_name();
 
 	sprintf(mntpoint, "mnt_%d", getpid());
 
@@ -439,7 +443,12 @@ void setup()
 		tst_brkm(TBROK, cleanup, "chmod(%s, %#o) failed",
 			 path_name, DIR_MODE);
 
-	snprintf(file, PATH_MAX, "%ssetuid_test", path_name);
+	snprintf(file, PATH_MAX, "%s/setuid_test", path_name);
+	fd = open(file, O_CREAT | O_TRUNC);
+	if (fd == -1)
+		tst_brkm(TBROK, cleanup, "open file failed");
+	close(fd);
+
 	if (stat(file, &setuid_test_stat) < 0) {
 		tst_brkm(TBROK, cleanup, "stat for setuid_test failed");
 	} else {
@@ -457,8 +466,8 @@ void setup()
 	/*
 	 * under temporary directory
 	 */
-	snprintf(path_name, PATH_MAX, "%s/%s/", path_name, mntpoint);
-
+	strncpy(path, path_name, PATH_MAX);
+	snprintf(path_name, PATH_MAX, "%s/%s/", path, mntpoint);
 	strcpy(testhome_path, test_home);
 	strcat(testhome_path, "/setuid_test");
 
