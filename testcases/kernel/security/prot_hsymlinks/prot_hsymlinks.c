@@ -31,6 +31,7 @@
  * of the file or he doesn't have write access to the file.
  */
 
+#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pwd.h>
