@@ -44,7 +44,7 @@
 
 #include "posixtest.h"
 
-static sig_atomic_t called = 1;
+static volatile sig_atomic_t called = 1;
 
 static void handler_1()
 {

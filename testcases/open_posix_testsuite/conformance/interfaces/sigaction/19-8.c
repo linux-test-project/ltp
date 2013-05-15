@@ -44,7 +44,7 @@
 
 #define WRITE(str) write(STDOUT_FILENO, str, sizeof(str) - 1)
 
-static sig_atomic_t called = 0;
+static volatile sig_atomic_t called = 0;
 
 static void handler(int sig, siginfo_t *info, void *context)
 {
