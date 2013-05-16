@@ -196,10 +196,9 @@ static void setup(int argc, char *argv[])
 
 	tst_require_root(NULL);
 
-	if (tst_kvercmp(3, 7, 0) < 0) {
-		tst_brkm(TCONF, cleanup,
+	if (tst_kvercmp(3, 7, 0) < 0)
+		tst_brkm(TCONF, NULL,
 			"Test must be run with kernel 3.7 or newer");
-	}
 
 	/* initialize user names */
 	strcpy(users[ROOT].name, "root");
