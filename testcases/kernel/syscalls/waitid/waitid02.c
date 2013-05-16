@@ -11,9 +11,9 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
 /* the GNU General Public License for more details.                           */
 /*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
+/* You should have received a copy of the GNU General Public License along    */
+/* with this program; if not, write to the Free Software Foundation,  Inc.,   */
+/* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA                 */
 /*                                                                            */
 /******************************************************************************/
 /******************************************************************************/
@@ -54,55 +54,16 @@ char *TCID = "waitid02";
 int testno;
 int TST_TOTAL = 4;
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-extern void cleanup()
+static void cleanup(void)
 {
-
 	TEST_CLEANUP;
 	tst_rmdir();
 
 	tst_exit();
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
-void setup()
+static void setup(void)
 {
-	/* Capture signals if any */
-	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
@@ -112,7 +73,6 @@ int main(int ac, char **av)
 	id_t pgid;
 	id_t id1, id2, id3;
 	siginfo_t infop;
-	int i = 0;
 
 	int lc;
 	char *msg;
@@ -131,14 +91,14 @@ int main(int ac, char **av)
 
 			TEST(waitid(P_ALL, 0, &infop, WNOHANG));
 			if (TEST_RETURN == -1)
-				tst_resm(TPASS,
-					 "Success1 ... -1 is returned. error is %d.",
-					 TEST_ERRNO);
+				tst_resm(TPASS, "Success1 ... -1 is returned."
+					" error is %d.", TEST_ERRNO);
 			else {
 				tst_resm(TFAIL, "%s Failed1 ...", TCID);
 			}
 
-			/* option == WEXITED | WCONTINUED | WSTOPPED | WNOHANG | WNOWAIT */
+			/* option == WEXITED | WCONTINUED | WSTOPPED |
+			 * WNOHANG | WNOWAIT */
 
 			TEST(id1 = fork());
 			if (TEST_RETURN == 0) {
@@ -170,9 +130,8 @@ int main(int ac, char **av)
 
 			TEST(waitid(P_ALL, 0, &infop, WNOHANG | WEXITED));
 			if (TEST_RETURN == 0)
-				tst_resm(TPASS,
-					 "Success 2 ...0 is returned.. error is %d.",
-					 TEST_ERRNO);
+				tst_resm(TPASS, "Success 2 ...0 is returned.."
+					" error is %d.", TEST_ERRNO);
 			else {
 				tst_resm(TFAIL | TTERRNO, "%s Failed 2", TCID);
 				tst_exit();
@@ -184,8 +143,8 @@ int main(int ac, char **av)
 			TEST(waitid(P_PGID, pgid, &infop, WEXITED));
 			if (TEST_RETURN == 0) {
 				tst_resm(TPASS, "Success3 ... 0 is returned.");
-				tst_resm(TINFO,
-					 "si_pid = %d ; si_code = %d ; si_status = %d",
+				tst_resm(TINFO, "si_pid = %d ; si_code = %d ;"
+					" si_status = %d",
 					 infop.si_pid, infop.si_code,
 					 infop.si_status);
 			} else {
@@ -197,28 +156,29 @@ int main(int ac, char **av)
 
 			TEST(kill(id2, SIGSTOP));
 
-			TEST(i =
-			     waitid(P_PID, id2, &infop, WSTOPPED | WNOWAIT));
+			TEST(waitid(P_PID, id2, &infop, WSTOPPED | WNOWAIT));
 			if (TEST_RETURN == 0) {
 				/*EINVAL*/
-				    tst_resm(TINFO,
-					     "si_pid = %d, si_code = %d, si_status = %d",
-					     infop.si_pid, infop.si_code,
-					     infop.si_status);
+				tst_resm(TINFO,	"si_pid = %d, si_code = %d,"
+					" si_status = %d",
+					infop.si_pid, infop.si_code,
+					infop.si_status);
 				tst_resm(TPASS, "Success4 ... 0 is returned");
 			} else {
 				tst_resm(TFAIL | TTERRNO,
-					 "Fail4 ...  %d is returned", i);
+					"Fail4 ...  %ld is returned",
+					TEST_RETURN);
 				tst_exit();
 			}
 
 			TEST(waitid(P_PID, id3, &infop, WEXITED));
 			if (TEST_RETURN == 0) {
 				/*NOCHILD*/
-				    tst_resm(TINFO,
-					     "si_pid = %d, si_code = %d, si_status = %d",
-					     infop.si_pid, infop.si_code,
-					     infop.si_status);
+				tst_resm(TINFO,
+					"si_pid = %d, si_code = %d, "
+					"si_status = %d",
+					infop.si_pid, infop.si_code,
+					infop.si_status);
 				tst_resm(TPASS, "Success5 ... 0 is returned");
 			} else {
 				tst_resm(TFAIL | TTERRNO,
@@ -227,17 +187,19 @@ int main(int ac, char **av)
 				tst_exit();
 			}
 
-			TEST(i = waitid(P_PID, id2, &infop, WCONTINUED));
+			TEST(waitid(P_PID, id2, &infop, WCONTINUED));
 			if (TEST_RETURN == 0) {
 				/*EINVAL*/
-				    tst_resm(TINFO,
-					     "si_pid = %d, si_code = %d, si_status = %d",
-					     infop.si_pid, infop.si_code,
-					     infop.si_status);
+				tst_resm(TINFO,
+					"si_pid = %d, si_code = %d, "
+					"si_status = %d",
+					infop.si_pid, infop.si_code,
+					infop.si_status);
 				tst_resm(TPASS, "Success6 ... 0 is returned");
 			} else {
 				tst_resm(TFAIL | TTERRNO,
-					 "Fail6 ...  %d is returned", i);
+					 "Fail6 ...  %ld is returned",
+					 TEST_RETURN);
 				tst_exit();
 			}
 
