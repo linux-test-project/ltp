@@ -494,8 +494,10 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 			    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 		if (memory[i] == MAP_FAILED)
 			tst_brkm(TBROK|TERRNO, tst_exit, "mmap");
+#ifdef HAVE_MADV_MERGEABLE
 		if (madvise(memory[i], length, MADV_MERGEABLE) == -1)
 			tst_brkm(TBROK|TERRNO, tst_exit, "madvise");
+#endif
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
