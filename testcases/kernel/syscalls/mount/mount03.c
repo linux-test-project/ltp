@@ -444,7 +444,7 @@ void setup()
 			 path_name, DIR_MODE);
 
 	snprintf(file, PATH_MAX, "%s/setuid_test", path_name);
-	fd = open(file, O_CREAT | O_TRUNC);
+	fd = open(file, O_CREAT | O_TRUNC, S_IRWXU);
 	if (fd == -1)
 		tst_brkm(TBROK, cleanup, "open file failed");
 	close(fd);
