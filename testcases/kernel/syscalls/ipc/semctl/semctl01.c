@@ -52,6 +52,7 @@ char *TCID = "semctl01";
 int TST_TOTAL = 13;
 
 static int sem_id_1 = -1;
+static int sem_index;
 
 static int sync_pipes[2];
 
@@ -100,25 +101,26 @@ static int sem_op;
 #endif
 
 static struct test_case_t {
+	int *semid;
 	int semnum;
 	int cmd;
 	void (*func_test) ();
 	union semun arg;
 	void (*func_setup) ();
 } TC[] = {
-	{0, IPC_STAT, func_stat, SEMUN_CAST & buf, NULL},
-	{0, IPC_SET, func_set, SEMUN_CAST & buf, set_setup},
-	{0, GETALL, func_gall, SEMUN_CAST array, NULL},
-	{SEM4, GETNCNT, func_cnt, SEMUN_CAST & buf, cnt_setup},
-	{SEM2, GETPID, func_pid, SEMUN_CAST & buf, pid_setup},
-	{SEM2, GETVAL, func_gval, SEMUN_CAST & buf, NULL},
-	{SEM4, GETZCNT, func_cnt, SEMUN_CAST & buf, cnt_setup},
-	{0, SETALL, func_sall, SEMUN_CAST array, sall_setup},
-	{SEM4, SETVAL, func_sval, SEMUN_CAST INCVAL, NULL},
-	{0, IPC_INFO, func_iinfo, SEMUN_CAST & ipc_buf, NULL},
-	{0, SEM_INFO, func_sinfo, SEMUN_CAST & ipc_buf, NULL},
-	{0, SEM_STAT, func_sstat, SEMUN_CAST & buf, NULL},
-	{0, IPC_RMID, func_rmid, SEMUN_CAST & buf, NULL},
+	{&sem_id_1, 0, IPC_STAT, func_stat, SEMUN_CAST & buf, NULL},
+	{&sem_id_1, 0, IPC_SET, func_set, SEMUN_CAST & buf, set_setup},
+	{&sem_id_1, 0, GETALL, func_gall, SEMUN_CAST array, NULL},
+	{&sem_id_1, SEM4, GETNCNT, func_cnt, SEMUN_CAST & buf, cnt_setup},
+	{&sem_id_1, SEM2, GETPID, func_pid, SEMUN_CAST & buf, pid_setup},
+	{&sem_id_1, SEM2, GETVAL, func_gval, SEMUN_CAST & buf, NULL},
+	{&sem_id_1, SEM4, GETZCNT, func_cnt, SEMUN_CAST & buf, cnt_setup},
+	{&sem_id_1, 0, SETALL, func_sall, SEMUN_CAST array, sall_setup},
+	{&sem_id_1, SEM4, SETVAL, func_sval, SEMUN_CAST INCVAL, NULL},
+	{&sem_id_1, 0, IPC_INFO, func_iinfo, SEMUN_CAST & ipc_buf, NULL},
+	{&sem_id_1, 0, SEM_INFO, func_sinfo, SEMUN_CAST & ipc_buf, NULL},
+	{&sem_index, 0, SEM_STAT, func_sstat, SEMUN_CAST & buf, NULL},
+	{&sem_id_1, 0, IPC_RMID, func_rmid, SEMUN_CAST & buf, NULL},
 };
 
 int main(int argc, char *argv[])
@@ -162,7 +164,7 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			TEST(semctl(sem_id_1, TC[i].semnum, TC[i].cmd,
+			TEST(semctl(*(TC[i].semid), TC[i].semnum, TC[i].cmd,
 				    TC[i].arg));
 
 			if (TEST_RETURN == -1) {
@@ -560,10 +562,13 @@ static void func_rmid(void)
 
 static void func_iinfo(int hidx)
 {
-	if (hidx >= 0)
+	if (hidx >= 0) {
+		sem_index = hidx;
 		tst_resm(TPASS, "the highest index is correct");
-	else
+	} else {
+		sem_index = 0;
 		tst_resm(TFAIL, "the highest index is incorrect");
+	}
 }
 
 static void func_sinfo(void)
