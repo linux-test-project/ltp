@@ -37,6 +37,8 @@ tst_res \- Print result message, including file contents
 .sp
 tst_resm \- Print result message
 .sp
+tst_resm_hexd \- Print result message, including specified buffer in hexadecimal format
+.sp
 tst_brk \- Print result message, including file contents, and break remaining test cases
 .sp
 tst_brkm \- Print result message and break remaining test cases
@@ -53,6 +55,9 @@ tst_environ \- Keep results coming to original stdout
 [arg ...]\fR)
 .P
 \fBvoid tst_resm(int \fIttype\fB, char *\fItmesg, [arg ...]\fR)
+.P
+\fBvoid tst_resm_hexd(int \fIttype\fB, const void *\fIbuf\fB, size_t \fIsize\fB,
+char *\fItmesg, [arg ...]\fR)
 .P
 \fBvoid tst_brk(int \fIttype\fB, char *\fIfname\fB, void (*\fIfunc\fB)(),
 char *\fItmesg, [arg ...]\fR)
@@ -121,6 +126,12 @@ expanded message.  The maximum size allowed for an expanded message is
 pointer to a function which performs either the cleanup necessary prior to
 exiting the test or some function executed at the end of each iteration of a
 loop.
+.TP 10
+.I buf
+pointer to a buffer whose contents will be printed in hexadecimal format.
+.TP 10
+.I size
+size of the buffer.
 .RE
 .SS Result Types
 The possible test result types defined in \fBtest.h\fR are as follows:
@@ -153,9 +164,9 @@ An informative message about the execution of the test that does not
 correspond to a test case result and does not indicate a problem.
 .RE
 .SS Function Descriptions
-\fBtst_res()\fR and \fBtst_resm()\fR are the basic result reporting
-functions.  They report 1 or more test case results of the specified
-\fIttype\fR.  All result types are valid for these functions.  The
+\fBtst_res()\fR, \fBtst_resm()\fR and \fBtst_resm_hexd()\fR are the basic
+result reporting functions. They report 1 or more test case results of the
+specified \fIttype\fR.  All result types are valid for these functions.  The
 \fBtst_range\fR global variable indicates the number of results that will be
 reported for each call to one of these functions.  It is initialized by the
 library to 1, but may be set to a value > 1 by the test.  Each call to one of

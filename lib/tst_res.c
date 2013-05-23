@@ -40,6 +40,7 @@
  *    FUNCTION NAME     :
  *      tst_res() -       Print result message (include file contents)
  *      tst_resm() -      Print result message
+ *      tst_resm_hexd() - Print result message (add buffer contents in hex)
  *      tst_brk() -       Print result message (include file contents)
  *                        and break remaining test cases
  *      tst_brkm() -      Print result message and break remaining test
@@ -672,6 +673,47 @@ void tst_resm(int ttype, char *arg_fmt, ...)
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	tst_res(ttype, NULL, "%s", tmesg);
+}
+
+/*
+ * tst_resm_hexd() - Interface to tst_res(), with no filename.
+ * Also, dump specified buffer in hex.
+ */
+void tst_resm_hexd(int ttype, const void *buf, size_t size, char *arg_fmt, ...)
+{
+	char tmesg[USERMESG];
+
+#if DEBUG
+	printf("IN tst_resm_hexd\n");
+	fflush(stdout);
+#endif
+
+	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
+
+	static const size_t symb_num	= 2; /* xx */
+	static const size_t size_max	= 16;
+	size_t offset = strlen(tmesg);
+	char *pmesg = tmesg;
+
+	if (size > size_max || size == 0 ||
+		(offset + size * (symb_num + 1)) >= USERMESG)
+		tst_res(ttype, NULL, "%s", tmesg);
+	else
+		pmesg += offset;
+
+	size_t i;
+	for (i = 0; i < size; ++i) {
+		/* add space before byte except first one */
+		if (pmesg != tmesg)
+			*(pmesg++) = ' ';
+
+		sprintf(pmesg, "%02x", ((unsigned char *)buf)[i]);
+		pmesg += symb_num;
+		if ((i + 1) % size_max == 0 || i + 1 == size) {
+			tst_res(ttype, NULL, "%s", tmesg);
+			pmesg = tmesg;
+		}
+	}
 }
 
 /*
