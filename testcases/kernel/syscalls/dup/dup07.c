@@ -77,7 +77,9 @@ int main(int ac, char **av)
 					tst_resm(TPASS,
 					         "Passed in read mode.");
 				}
+				close(duprdo);
 			}
+			close(rdoret);
 		}
 
 		unlink(testfile);
@@ -97,7 +99,10 @@ int main(int ac, char **av)
 					tst_resm(TPASS,
 					         "Passed in write mode.");
 				}
+				close(dupwro);
 			}
+			close(wroret);
+
 		}
 
 		unlink(testfile);
@@ -117,7 +122,9 @@ int main(int ac, char **av)
 					tst_resm(TPASS,
 					         "Passed in read/write mode.");
 				}
+				close(duprdwr);
 			}
+			close(rdwret);
 		}
 		
 		unlink(testfile);
