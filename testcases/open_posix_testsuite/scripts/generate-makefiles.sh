@@ -36,6 +36,7 @@ generate_makefile() {
 	local make_copy_prereq_cache=
 	local prereq_cache=
 	local tests=
+	local targets=
 
 	local makefile=$1
 	local prereq_dir=$2
@@ -64,6 +65,15 @@ generate_makefile() {
 		fi
 
 		# Stuff that needs to be compiled.
+		if echo "$prereq" | grep -Eq '\.(run-test|sh|test)'; then
+			if [ "$targets" != "" ]; then
+				targets="$targets "
+			fi
+
+			targets="$targets${test_prefix}_$prereq"
+		fi
+
+		# Cache for generating compile rules.
 		case "$prereq" in
 		*.sh)
 			# Note that the sh scripts are copied later in order to
@@ -138,7 +148,7 @@ EOF
 
 	cat >> "$makefile.2" <<EOF
 INSTALL_TARGETS+=	${tests}
-MAKE_TARGETS+=		${tests}
+MAKE_TARGETS+=		${targets}
 
 EOF
 
