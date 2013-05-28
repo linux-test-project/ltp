@@ -876,6 +876,7 @@ int fileokay(char *file, uchar_t * expbuf)
 		}
 	}
 
+	close(fd);
 	return 1;
 }
 
