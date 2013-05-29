@@ -145,7 +145,7 @@ set exit_code [lindex $codes 3]
 set i_have_env 0
 set test_env_var " "
 if { $i_am_root==1 } {
-	spawn su -c "/bin/su root -c \"echo \"\\\$TEST_LINE > $TEST_ENV_FILE\"\""
+	spawn su -c "/bin/su root -c \"echo \\\$TEST_LINE > $TEST_ENV_FILE\""
 	expect {
 		 "Password:" {
 			send "$PASSWD\r"
