@@ -1,0 +1,25 @@
+TEST SUITE:
+
+The directory cgroup_xattr contains the tests related to extended
+attributes in cgroup filesystem.
+
+WARNING:
+
+This test can cause a kernel panic due to a bug in kernels prior to 3.8.
+It was fixed by kernel upstream commit
+712317ad97f41e738e1a19aa0a6392a78a84094e:
+
+"We should store file xattrs in struct cfent instead of struct cftype,
+because cftype is a type while cfent is object instance of cftype."
+
+TESTS AIM:
+
+The aim of the tests is to check the extended attributes in cgroup
+filesystem. This feature was added in Linux 3.7 to allow attaching runtime
+meta information to cgroups and everything they model (services, apps, vms)
+and can easily be shared among applications.
+
+Test mounts as many subsystems as possible (cpu, cpuset, ...) in the
+cgroup tmp directory and creates one more hierarchy. Then sets extended
+attributes to all files in cgroup fs and subsequently reads the file's
+extended attributes back, checking values during the process.
