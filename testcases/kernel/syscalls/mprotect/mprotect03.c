@@ -47,6 +47,8 @@
 #include "test.h"
 #include "usctest.h"
 
+#include "safe_macros.h"
+
 #ifndef PAGESIZE
 #define PAGESIZE 4096
 #endif
@@ -80,7 +82,7 @@ int main(int ac, char **av)
 		if ((fd = open(file1, O_RDWR | O_CREAT, 0777)) < 0)
 			tst_brkm(TBROK, cleanup, "open failed");
 
-		write(fd, buf, strlen(buf));
+		SAFE_WRITE(cleanup, 1, fd, buf, strlen(buf));
 
 		/*
 		 * mmap the PAGESIZE bytes as read only.
