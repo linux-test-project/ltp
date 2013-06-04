@@ -375,11 +375,11 @@ char *parse_opts(int ac, char **av, const option_t * user_optarr,
 	/*
 	 * Turn on debug
 	 */
-	if ((ptr = getenv("USC_DEBUG")) != NULL) {
+	if (getenv("USC_DEBUG") != NULL) {
 		Debug = 1;
 		printf("env USC_DEBUG is defined, turning on debug\n");
 	}
-	if ((ptr = getenv("USC_VERBOSE")) != NULL) {
+	if (getenv("USC_VERBOSE") != NULL) {
 		Debug = 1;
 		printf("env USC_VERBOSE is defined, turning on debug\n");
 	}
@@ -413,7 +413,7 @@ char *parse_opts(int ac, char **av, const option_t * user_optarr,
 	 * unset the STD_FUNCTIONAL_TEST variable.
 	 */
 	if (!(options & OPT_nofunccheck) &&
-	    (ptr = getenv(USC_NO_FUNC_CHECK)) != NULL) {
+	    getenv(USC_NO_FUNC_CHECK) != NULL) {
 		STD_FUNCTIONAL_TEST = 0;	/* Turn off functional testing */
 		if (Debug)
 			printf("Using env %s, set STD_FUNCTIONAL_TEST to 0\n",
