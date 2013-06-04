@@ -1,6 +1,4 @@
 /*
- * mmap001.c - Tests mmapping a big file and writing it once
- *
  * Copyright (C) 2000 Juan Quintela <quintela@fi.udc.es>
  *                    Aaron Laffin <alaffin@sgi.com>
  *
@@ -17,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * mmap001.c - Tests mmapping a big file and writing it once
  */
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -37,21 +37,16 @@ static char *filename = NULL;
 static int m_opt = 0;
 static char *m_copt;
 
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * remove the tmp directory and exit
-	 */
-
-	if (filename)
-		free(filename);
+	free(filename);
 
 	TEST_CLEANUP;
 
 	tst_rmdir();
 }
 
-void setup()
+static void setup(void)
 {
 	char buf[1024];
 	/*
@@ -72,7 +67,7 @@ void setup()
 
 }
 
-void help()
+static void help(void)
 {
 	printf("  -m x    size of mmap in pages (default 1000)\n");
 }
@@ -141,7 +136,7 @@ int main(int argc, char *argv[])
 		}
 
 		array = mmap(0, memsize, PROT_WRITE, MAP_SHARED, fd, 0);
-		if (array == (char *)MAP_FAILED) {
+		if (array == MAP_FAILED) {
 			TEST_ERRNO = errno;
 			close(fd);
 			tst_brkm(TBROK | TTERRNO, cleanup,

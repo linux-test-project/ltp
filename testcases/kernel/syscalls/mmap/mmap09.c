@@ -1,25 +1,22 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2003
  *
- *   Copyright (c) International Business Machines  Corp., 2003
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * Test Name: mmap09
- *
  * Test Description:
  *  Verify that truncating a mmaped file works correctly.
  *
@@ -27,31 +24,13 @@
  *  ftruncate should be allowed to increase, decrease, or zero the
  *  size of a file that has been mmaped
  *
- * Algorithm:
- *  Setup:
- *   Create file
- *   mmap the file
- *   fill it with data
- *
  *  Test:
  *   Use ftruncate to shrink the file while it is mapped
  *   Use ftruncate to grow the file while it is mapped
  *   Use ftruncate to zero the size of the file while it is mapped
  *
- * Usage:  <for command-line>
- *  mmap09 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	04/2003 Written by Paul Larson
- *
- * RESTRICTIONS:
- *  None.
  */
 #include <stdio.h>
 #include <unistd.h>
@@ -62,30 +41,31 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup();
-void cleanup();
-
 #define mapsize (1 << 14)
 
 char *TCID = "mmap09";
 int TST_TOTAL = 3;
-int fd;
-char *maddr;
 
-struct test_case_t {
+static int fd;
+static char *maddr;
+
+static struct test_case_t {
 	off_t newsize;
 	char *desc;
 } TC[] = {
-	{
-	mapsize - 8192, "ftruncate mmaped file to a smaller size"}, {
-	mapsize + 1024, "ftruncate mmaped file to a larger size"}, {
-0, "ftruncate mmaped file to 0 size"},};
+	{mapsize - 8192, "ftruncate mmaped file to a smaller size"},
+	{mapsize + 1024, "ftruncate mmaped file to a larger size"},
+	{0, "ftruncate mmaped file to 0 size"},
+};
+
+static void setup(void);
+static void cleanup(void);
 
 int main(int argc, char **argv)
 {
 	int lc;
 	int i;
-	char *msg;		/* for parse_opts */
+	char *msg;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -111,11 +91,10 @@ int main(int argc, char **argv)
 	tst_exit();
 }
 
-void setup()
+static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Pause if option was specified */
 	TEST_PAUSE;
 
 	tst_tmpdir();
@@ -127,20 +106,19 @@ void setup()
 	if (ftruncate(fd, mapsize) < 0)
 		tst_brkm(TFAIL | TERRNO, cleanup, "ftruncate file failed");
 
-	maddr = mmap(0, (size_t) mapsize, PROT_READ | PROT_WRITE,
-		     MAP_FILE | MAP_SHARED, fd, (off_t) 0);
+	maddr = mmap(0, mapsize, PROT_READ | PROT_WRITE,
+		     MAP_FILE | MAP_SHARED, fd, 0);
 	if (maddr == MAP_FAILED)
 		tst_brkm(TFAIL | TERRNO, cleanup, "mmapping mmaptest failed");
 
 	/* fill up the file with A's */
 	memset(maddr, 'A', mapsize);
-
 }
 
-void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
-	munmap(maddr, (size_t) mapsize);
+	munmap(maddr, mapsize);
 	close(fd);
 	tst_rmdir();
 }

@@ -1,25 +1,22 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * Test Name: mmap03
- *
  * Test Description:
  *  Call mmap() to map a file creating a mapped region with execute access
  *  under the following conditions -
@@ -38,43 +35,9 @@
  *  an attempt to access the contents of the mapped region should give
  *  rise to the signal SIGSEGV.
  *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *   Create temporary directory.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	Log the errno and Issue a FAIL message.
- *   Otherwise,
- *	Verify the Functionality of system call
- *      if successful,
- *		Issue Functionality-Pass message.
- *      Otherwise,
- *		Issue Functionality-Fail message.
- *  Cleanup:
- *   Print timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  mmap03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -94,16 +57,17 @@
 
 char *TCID = "mmap03";
 int TST_TOTAL = 1;
-size_t page_sz;			/* system page size */
-char *addr;			/* addr of memory mapped region */
-char *dummy;			/* dummy variable to hold temp file contents */
-int fildes;			/* file descriptor for temporary file */
-volatile int pass = 0;		/* pass flag perhaps set to 1 in sig_handler */
-sigjmp_buf env;			/* environment for sigsetjmp/siglongjmp */
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-void sig_handler();		/* signal handler to catch SIGSEGV */
+static size_t page_sz;
+static char *addr;
+static char *dummy;
+static int fildes;
+static volatile int pass = 0;
+static sigjmp_buf env;
+
+static void setup(void);
+static void cleanup(void);
+static void sig_handler(int sig);
 
 int main(int ac, char **av)
 {
@@ -133,10 +97,7 @@ int main(int ac, char **av)
 				 TEMPFILE);
 			continue;
 		}
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
+
 		if (STD_FUNCTIONAL_TEST) {
 			/*
 			 * Read the file contents into the dummy
@@ -195,17 +156,9 @@ int main(int ac, char **av)
 
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *	     Get the system page size.
- *	     Create a temporary directory and a file under it.
- *	     Write some known data into file and close it.
- *	     Change the mode permissions on file to 0555.
- *	     Re-open the file for reading.
- */
-void setup()
+static void setup(void)
 {
-	char *tst_buff;		/* test buffer to hold known data */
+	char *tst_buff;
 
 	tst_sig(NOFORK, sig_handler, cleanup);
 
@@ -218,7 +171,7 @@ void setup()
 	}
 
 	/* Allocate space for the test buffer */
-	if ((tst_buff = (char *)calloc(page_sz, sizeof(char))) == NULL) {
+	if ((tst_buff = calloc(page_sz, sizeof(char))) == NULL) {
 		tst_brkm(TFAIL, NULL, "calloc failed (tst_buff)");
 	}
 
@@ -256,7 +209,7 @@ void setup()
 	}
 
 	/* Allocate and initialize dummy string of system page size bytes */
-	if ((dummy = (char *)calloc(page_sz, sizeof(char))) == NULL) {
+	if ((dummy = calloc(page_sz, sizeof(char))) == NULL) {
 		tst_brkm(TFAIL, cleanup, "calloc failed (dummy)");
 	}
 
@@ -268,12 +221,11 @@ void setup()
 }
 
 /*
- * sig_handler() - Signal Cathing function.
  *   This function gets executed when the test process receives
  *   the signal SIGSEGV while trying to access the contents of memory which
  *   is not accessible.
  */
-void sig_handler(sig)
+static void sig_handler(int sig)
 {
 	if (sig == SIGSEGV) {
 		/* set the global variable and jump back */
@@ -283,25 +235,10 @@ void sig_handler(sig)
 		tst_brkm(TBROK, cleanup, "received an unexpected signal");
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- *		Free the memory allocated to dummy variable.
- *		Remove the temporary directory created.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	close(fildes);
-
 	TEST_CLEANUP;
-
-	/* Free the memory space allocated for dummy variable */
-	if (dummy) {
-		free(dummy);
-	}
-
+	free(dummy);
 	tst_rmdir();
 }

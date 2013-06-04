@@ -1,25 +1,22 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * Test Name: mmap01
- *
  * Test Description:
  *  Verify that, mmap() succeeds when used to map a file where size of the
  *  file is not a multiple of the page size, the memory area beyond the end
@@ -33,43 +30,9 @@
  *  filled with zero.
  *  The changes beyond the end of file should not get written to the file.
  *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *   Create temporary directory.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	Log the errno and Issue a FAIL message.
- *   Otherwise,
- *	Verify the Functionality of system call
- *      if successful,
- *		Issue Functionality-Pass message.
- *      Otherwise,
- *		Issue Functionality-Fail message.
- *  Cleanup:
- *   Print timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  mmap01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -90,15 +53,16 @@
 
 char *TCID = "mmap01";
 int TST_TOTAL = 1;
-char *addr;			/* addr of memory mapped region */
-char *dummy;			/* dummy string */
-size_t page_sz;			/* system page size */
-size_t file_sz;			/* mapped file size */
-int fildes;			/* file descriptor for tempfile */
-char cmd_buffer[BUFSIZ];	/* command buffer to hold test command */
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+static char *addr;
+static char *dummy;
+static size_t page_sz;
+static size_t file_sz;
+static int fildes;
+static char cmd_buffer[BUFSIZ];
+
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
@@ -127,10 +91,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TERRNO, "mmap of %s failed", TEMPFILE);
 			continue;
 		}
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
+
 		if (STD_FUNCTIONAL_TEST) {
 			/*
 			 * Check if mapped memory area beyond EOF are
@@ -187,20 +148,10 @@ int main(int ac, char **av)
 
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- *	     Get system page size, allocate and initialize the string dummy.
- *	     Initialize addr such that it is more than one page below the break
- *	     address of the process, and initialize one page region from addr
- *	     with char 'A'.
- *	     Creat a temporary directory and a file under it.
- *	     Write some known data into file and get the size of the file.
- */
-void setup()
+static void setup(void)
 {
 	struct stat stat_buf;
-	char Path_name[PATH_MAX];	/* pathname of temporary file */
+	char Path_name[PATH_MAX];
 	char write_buf[] = "hello world\n";
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -239,7 +190,7 @@ void setup()
 	}
 
 	/* Allocate and initialize dummy string of system page size bytes */
-	if ((dummy = (char *)calloc(page_sz, sizeof(char))) == NULL) {
+	if ((dummy = calloc(page_sz, sizeof(char))) == NULL) {
 		tst_brkm(TFAIL, cleanup, "calloc failed (dummy)");
 	}
 
@@ -264,25 +215,10 @@ void setup()
 	sprintf(cmd_buffer, "grep XYZ %s/%s > /dev/null", Path_name, TEMPFILE);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *	       Free the memory allocated to dummy variable.
- *	       Remove the temporary directory created.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	close(fildes);
-
 	TEST_CLEANUP;
-
-	/* Free the memory allocated for dummy string */
-	if (dummy) {
-		free(dummy);
-	}
-
+	free(dummy);
 	tst_rmdir();
 }
