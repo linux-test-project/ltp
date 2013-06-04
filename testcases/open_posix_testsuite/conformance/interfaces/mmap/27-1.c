@@ -33,14 +33,12 @@
 int main(void)
 {
 	char tmpfname[256];
-	char *data;
 	int total_size = 1024;
 
 	void *pa;
 	size_t len = total_size;
 	int fd, err = 0;
 
-	data = malloc(total_size);
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_27_1_%d", getpid());
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
