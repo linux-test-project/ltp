@@ -110,8 +110,6 @@ struct test_case_t {
 	&addr3, PAGESIZE, PROT_WRITE, EACCES, setup3}
 };
 
-#ifndef UCLINUX
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -165,16 +163,6 @@ int main(int ac, char **av)
 	cleanup();
 	tst_exit();
 }
-
-#else
-
-int main()
-{
-	tst_resm(TINFO, "Ignore this test on uClinux");
-	tst_exit();
-}
-
-#endif /* UCLINUX */
 
 /*
  * setup1() - sets up conditions for the first test

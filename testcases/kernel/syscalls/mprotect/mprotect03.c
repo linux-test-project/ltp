@@ -73,8 +73,6 @@ int TST_TOTAL = 1;
 int status;
 char file1[BUFSIZ];
 
-#ifndef UCLINUX
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -162,16 +160,6 @@ int main(int ac, char **av)
 	tst_exit();
 
 }
-
-#else
-
-int main()
-{
-	tst_resm(TINFO, "Ignore this test on uClinux");
-	tst_exit();
-}
-
-#endif /* UCLINUX */
 
 void sighandler(int sig)
 {

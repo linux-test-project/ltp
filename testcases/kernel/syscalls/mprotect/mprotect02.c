@@ -72,8 +72,6 @@ char file1[BUFSIZ];
 char *addr = MAP_FAILED;
 char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-#ifndef UCLINUX
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -184,15 +182,6 @@ int main(int ac, char **av)
 	cleanup();
 	tst_exit();
 }
-
-#else
-
-int main()
-{
-	tst_brkm(TCONF, NULL, "test not runnable on uClinux");
-}
-
-#endif /* UCLINUX */
 
 static void sighandler(int sig)
 {
