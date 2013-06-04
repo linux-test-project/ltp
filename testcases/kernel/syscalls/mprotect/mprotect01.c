@@ -41,53 +41,45 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
-#ifndef PAGESIZE
-#define PAGESIZE 4096
-#endif
-
-static void cleanup(void);
-static void setup(void);
-static void setup1(void);
-static void setup2(void);
-static void setup3(void);
-
 char *TCID = "mprotect01";
 int TST_TOTAL = 3;
 
-static void *addr1, *addr2, *addr3;
-static int fd;
-
-static int exp_enos[] = { ENOMEM, EINVAL, EACCES, 0 };
-
-struct test_case_t {
-	void **addr;
+struct test_case {
+	void *addr;
 	int len;
 	int prot;
 	int error;
-	void (*setupfunc) ();
-} TC[] = {
-#ifdef __ia64__
+	void (*setupfunc) (struct test_case *self);
+};
+
+static void cleanup(void);
+static void setup(void);
+static void setup1(struct test_case *self);
+static void setup2(struct test_case *self);
+static void setup3(struct test_case *self);
+
+static int exp_enos[] = { ENOMEM, EINVAL, EACCES, 0 };
+
+static int fd;
+
+struct test_case TC[] = {
 	/* Check for ENOMEM passing memory that cannot be accessed. */
-	{&addr1, 1024, PROT_READ, ENOMEM, setup1},
-#else
-	/* Check for ENOMEM passing memory that cannot be accessed. */
-	{&addr1, 1024, PROT_READ, ENOMEM, NULL},
-#endif
+	{NULL, 0, PROT_READ, ENOMEM, setup1},
+
 	/*
 	 * Check for EINVAL by passing a pointer which is not a
 	 * multiple of PAGESIZE.
 	 */
-	{&addr2, 1024, PROT_READ, EINVAL, setup2},
+	{NULL, 1024, PROT_READ, EINVAL, setup2},
 	/*
 	 * Check for EACCES by trying to mark a section of memory
 	 * which has been mmap'ed as read-only, as PROT_WRITE
 	 */
-	{&addr3, PAGESIZE, PROT_WRITE, EACCES, setup3}
+	{NULL, 0, PROT_WRITE, EACCES, setup3}
 };
 
 int main(int ac, char **av)
@@ -110,9 +102,9 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			if (TC[i].setupfunc != NULL)
-				TC[i].setupfunc();
+				TC[i].setupfunc(&TC[i]);
 
-			TEST(mprotect(*(TC[i].addr), TC[i].len, TC[i].prot));
+			TEST(mprotect(TC[i].addr, TC[i].len, TC[i].prot));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -131,39 +123,42 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
-		close(fd);
 	}
 	cleanup();
 	tst_exit();
 }
 
-static void setup1(void)
+static void setup1(struct test_case *self)
 {
-	TC[0].len = getpagesize() + 1;
+	self->len = getpagesize() + 1;
 }
 
-static void setup2(void)
+static void setup2(struct test_case *self)
 {
-	addr2 = malloc(PAGESIZE);
+	self->addr = malloc(getpagesize());
 
-	if (addr2 == NULL)
+	if (self->addr == NULL)
 		tst_brkm(TINFO, cleanup, "malloc failed");
-	
-	addr2++;		/* Ensure addr2 is not page aligned */
+
+	/* Ensure addr2 is not page aligned */
+	self->addr++;
 }
 
-static void setup3(void)
+static void setup3(struct test_case *self)
 {
 	fd = open("/etc/passwd", O_RDONLY);
 	if (fd < 0)
 		tst_brkm(TBROK, cleanup, "open failed");
+	
+	self->len = getpagesize();
 
 	/*
 	 * mmap the PAGESIZE bytes as read only.
 	 */
-	addr3 = mmap(0, PAGESIZE, PROT_READ, MAP_SHARED, fd, 0);
-	if (addr3 == MAP_FAILED)
+	self->addr = mmap(0, self->len, PROT_READ, MAP_SHARED, fd, 0);
+	if (self->addr == MAP_FAILED)
 		tst_brkm(TBROK, cleanup, "mmap failed");
+
 }
 
 static void setup(void)
@@ -175,5 +170,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	close(fd);
 	TEST_CLEANUP;
 }
