@@ -1,32 +1,25 @@
 /*
+ * Copyright (C) Bull S.A. 2001
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (C) Bull S.A. 2001
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *      readdir02.c
- *
  * DESCRIPTION
- *      readdir02: try to readdir with Invalid directory stream descriptor dir.
- *
- * CALLS
- *      readdir(3)
+ *      Try to readdir with Invalid directory stream descriptor dir.
  *
  * ALGORITHM
  *      loop if that option was specified
@@ -36,15 +29,6 @@
  *      otherwise, the tests fails
  *        issue a FAIL message
  *        call cleanup
- *
- * USAGE:  <for command-line>
- *  readdir02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
  *
  * NOTE
  *	The POSIX standard says:
@@ -57,9 +41,6 @@
  *
  *      06/2003 - Added code to catch SIGSEGV and return TCONF.
  *		Robbie Williamson<robbiew@us.ibm.com>
- *
- * RESTRICTIONS
- *      none
  */
 
 #include <sys/types.h>
@@ -70,24 +51,18 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
- /* test.h and usctest.h are the two header files that are required by the
-  * quickhit package.  They contain function and macro declarations which you
-  * can use in your test programs
-  */
+
 #include "test.h"
 #include "usctest.h"
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "readdir02";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EBADF, 0 };
+static int exp_enos[] = { EBADF, 0 };
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc;
@@ -95,24 +70,13 @@ int main(int ac, char **av)
 	DIR *test_dir;
 	struct dirent *dptr;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state
-     ***************************************************************/
-	/* TEST_LOOPING() is a macro that will make sure the test continues
-	 * looping according to the standard command line args.
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -152,65 +116,36 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
-void sigsegv_handler(int sig)
+static void sigsegv_handler(int sig)
 {
 	tst_resm(TCONF,
 		 "This system's implementation of closedir() will not allow this test to execute properly.");
 	cleanup();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+static void setup(void)
 {
-
 	struct sigaction act;
 
-	/* You will want to enable some signal handling so you can capture
-	 * unexpected signals like SIGSEGV.
-	 */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	act.sa_handler = sigsegv_handler;
 	act.sa_flags = 0;
 	sigemptyset(&act.sa_mask);
-	(void)sigaction(SIGSEGV, &act, NULL);
+	sigaction(SIGSEGV, &act, NULL);
 
 	TEST_PAUSE;
 
-	/* If you are doing any file work, you should use a temporary directory.  We
-	 * provide tst_tmpdir() which will create a uniquely named temporary
-	 * directory and cd into it.  You can now create directories in the current
-	 * directory without worrying.
-	 */
 	tst_tmpdir();
-
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* If you use a temporary directory, you need to be sure you remove it. Use
-	 * tst_rmdir() to do it automatically.$
-	 */
 	tst_rmdir();
-
 }
