@@ -140,11 +140,7 @@ static void setup(void)
 
 	TEST_PAUSE;
 
-	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
-		tst_brkm(TFAIL, NULL,
-			 "getpagesize() fails to get system page size");
-	}
+	page_sz = getpagesize();
 
 	/* Allocate space for the test buffer */
 	if ((tst_buff = calloc(page_sz, sizeof(char))) == NULL) {

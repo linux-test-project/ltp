@@ -183,11 +183,7 @@ static void setup(void)
 	}
 	file_sz = stat_buf.st_size;
 
-	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
-		tst_brkm(TFAIL, cleanup,
-			 "getpagesize() fails to get system page size");
-	}
+	page_sz = getpagesize();
 
 	/* Allocate and initialize dummy string of system page size bytes */
 	if ((dummy = calloc(page_sz, sizeof(char))) == NULL) {
