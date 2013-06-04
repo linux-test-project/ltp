@@ -162,7 +162,7 @@ static void setup3(void)
 	 * mmap the PAGESIZE bytes as read only.
 	 */
 	addr3 = mmap(0, PAGESIZE, PROT_READ, MAP_SHARED, fd, 0);
-	if (addr3 < 0)
+	if (addr3 == MAP_FAILED)
 		tst_brkm(TBROK, cleanup, "mmap failed");
 }
 

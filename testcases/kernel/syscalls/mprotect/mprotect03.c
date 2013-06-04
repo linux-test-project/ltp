@@ -87,7 +87,7 @@ int main(int ac, char **av)
 		 */
 		addr = mmap(0, strlen(buf), PROT_READ | PROT_WRITE, MAP_SHARED,
 			    fd, 0);
-		if (addr < 0)
+		if (addr == MAP_FAILED)
 			tst_brkm(TBROK, cleanup, "mmap failed");
 
 		/*
