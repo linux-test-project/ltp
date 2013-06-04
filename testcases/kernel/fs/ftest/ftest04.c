@@ -228,7 +228,7 @@ int nchunks;
 
 static void dotest(int testers, int me, int fd)
 {
-	char *bits, *buf;
+	char *bits;
 	char val, val0;
 	int count, collide, chunk, whenmisc, xfr, i;
 
@@ -246,11 +246,6 @@ static void dotest(int testers, int me, int fd)
 
 	if ((bits = malloc((nchunks + 7) / 8)) == NULL) {
 		tst_resm(TBROK, "\tmalloc failed(bits)");
-		tst_exit();
-	}
-
-	if ((buf = (malloc(csize))) == NULL) {
-		tst_resm(TBROK, "\tmalloc failed(buf)");
 		tst_exit();
 	}
 
