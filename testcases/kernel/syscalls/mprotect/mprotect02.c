@@ -1,26 +1,22 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	mprotect02.c
- *
  * DESCRIPTION
  *	Testcase to check the mprotect(2) system call.
  *
@@ -32,21 +28,9 @@
  *	Again try to write into the mapped region.
  *	Verify that no SIGSEGV is generated.
  *
- * USAGE:  <for command-line>
- *  mprotect02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *	05/2002 changed over to use tst_sig instead of sigaction
- *
- * RESTRICTIONS
- *	None
  */
 
 #include <sys/mman.h>
@@ -66,11 +50,11 @@ static void setup(void);
 
 char *TCID = "mprotect02";
 int TST_TOTAL = 1;
-int fd, status;
-char file1[BUFSIZ];
+static int fd, status;
+static char file1[BUFSIZ];
 
-char *addr = MAP_FAILED;
-char buf[] = "abcdefghijklmnopqrstuvwxyz";
+static char *addr = MAP_FAILED;
+static char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
 int main(int ac, char **av)
 {
@@ -113,7 +97,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork #1 failed");
 
 		if (pid == 0) {
-			(void)memcpy(addr, buf, strlen(buf));
+			memcpy(addr, buf, strlen(buf));
 			exit(255);
 		}
 
@@ -147,7 +131,7 @@ int main(int ac, char **av)
 						 "fork #2 failed");
 
 				if (pid == 0) {
-					(void)memcpy(addr, buf, strlen(buf));
+					memcpy(addr, buf, strlen(buf));
 					exit(0);
 				}
 
@@ -188,7 +172,7 @@ static void sighandler(int sig)
 	_exit((sig == SIGSEGV) ? 0 : sig);
 }
 
-static void setup()
+static void setup(void)
 {
 	tst_sig(FORK, sighandler, cleanup);
 
@@ -199,7 +183,7 @@ static void setup()
 	sprintf(file1, "mprotect02.tmp.%d", getpid());
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 
