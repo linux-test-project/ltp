@@ -23,6 +23,7 @@
 #include <libgen.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <stdio.h>
 
 char*	safe_basename(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), char *path);
@@ -172,6 +173,16 @@ long safe_sysconf(const char *file, const int lineno,
 		  void (cleanup_fn)(void), int name);
 #define SAFE_SYSCONF(cleanup_fn, name) \
 	safe_sysconf(__FILE__, __LINE__, cleanup_fn, name)
+
+FILE *safe_fopen(const char *file, const int lineno, void (cleanup_fn)(void),
+                 const char *path, const char *mode);
+#define SAFE_FOPEN(cleanup_fn, path, mode) \
+	safe_fopen(__FILE__, __LINE__, cleanup_fn, path, mode)
+
+int safe_fclose(const char *file, const int lineno, void (cleanup_fn)(void),
+                FILE *f);
+#define SAFE_FCLOSE(cleanup_fn, f) \
+	safe_fclose(__FILE__, __LINE__, cleanup_fn, f)
 
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */

@@ -438,3 +438,32 @@ long safe_sysconf(const char *file, const int lineno,
 
 	return rval;
 }
+
+FILE *safe_fopen(const char *file, const int lineno, void (cleanup_fn)(void),
+                 const char *path, const char *mode)
+{
+	FILE *f = fopen(path, mode);
+
+	if (f == NULL) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "fopen(%s) failed at %s:%d", path, file, lineno);
+		return NULL;
+	}
+
+	return f;
+}
+
+int safe_fclose(const char *file, const int lineno, void (cleanup_fn)(void),
+                FILE *f)
+{
+	int ret;
+
+	ret = fclose(f);
+
+	if (ret) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "fclose failed at %s:%d", file, lineno);
+	}
+
+	return ret;
+}
