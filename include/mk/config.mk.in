@@ -75,6 +75,12 @@ LDFLAGS			+= $(WLDFLAGS)
 CFLAGS			+= $(DEBUG_CFLAGS) $(OPT_CFLAGS) $(WCFLAGS)
 CXXFLAGS		+= $(DEBUG_CXXFLAGS) $(OPT_CXXFLAGS) $(WCXXFLAGS)
 
+LINUX_VERSION		:= @LINUX_VERSION@
+LINUX_DIR		:= @LINUX_DIR@
+LINUX_VERSION_MAJOR	:= @LINUX_VERSION_MAJOR@
+LINUX_VERSION_PATCH	:= @LINUX_VERSION_PATCH@
+WITH_MODULES		:= @WITH_MODULES@
+
 ifeq ($(strip $(prefix)),)
 $(error you are using $$(prefix) incorrectly -- set it to $(abs_top_srcdir) if you want to build in the source tree)
 endif
