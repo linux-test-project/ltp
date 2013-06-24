@@ -74,6 +74,7 @@
 
 #include "test.h"
 #include "rmobj.h"
+#include "ltp_priv.h"
 
 /*
  * Define some useful macros.

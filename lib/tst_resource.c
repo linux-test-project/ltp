@@ -22,6 +22,7 @@
  */
 
 #include "tst_resource.h"
+#include "ltp_priv.h"
 
 static int file_copy(const char *file, const int lineno,
                      void (*cleanup_fn)(void), const char *path,
@@ -40,9 +41,6 @@ static int file_copy(const char *file, const int lineno,
 
 	return 1;
 }
-
-/* declared in tst_tmpdir.c */
-const char *tst_get_startwd(void);
 
 void tst_resource_copy(const char *file, const int lineno,
                        void (*cleanup_fn)(void),
