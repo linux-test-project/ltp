@@ -346,6 +346,13 @@ static void consume(int mega)
 
 static void setup(void)
 {
+	/* Disable test if the version of the kernel is less than 2.6.32 */
+	if ((tst_kvercmp(2, 6, 32)) < 0) {
+		tst_resm(TCONF, "This ru_maxrss field is not supported");
+		tst_resm(TCONF, "before kernel 2.6.32");
+		tst_exit();
+	}
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
