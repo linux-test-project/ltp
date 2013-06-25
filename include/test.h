@@ -114,17 +114,6 @@
 #define TOUT_DISCARD_S  "DISCARD"	/* No output is reported */
 
 /*
- * The following defines are used to control tst_tmpdir, tst_wildcard and t_mkchdir
- */
-
-#define TEMPDIR	"/tmp"			/* This is the default temporary directory. */
-					/* The environment variable TMPDIR is */
-					/* used prior to this valid by tempnam(3). */
-					/* To control the base location of the */
-					/* temporary directory, set the TMPDIR */
-					/* environment variable to desired path */
-
-/*
  * The following define contains the name of an environmental variable
  * that can be used to specify the number of iterations.
  * It is supported in parse_opts.c and USC_setup.c.

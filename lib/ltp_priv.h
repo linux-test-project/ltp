@@ -25,4 +25,11 @@
 /* declared in tst_tmpdir.c */
 const char *tst_get_startwd(void);
 
+/*
+ * This is the default temporary directory used by tst_tmpdir().
+ *
+ * This is used when TMPDIR env variable is not set.
+ */
+#define TEMPDIR	"/tmp"
+
 #endif /* __LTP_PRIV_H__ */
