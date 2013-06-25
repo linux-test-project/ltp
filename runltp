@@ -663,7 +663,7 @@ main()
     fi
 
     # check for required users and groups
-    ${LTPROOT}/IDcheck.sh &>/dev/null || \
+    ${LTPROOT}/IDcheck.sh || \
     {
         echo "WARNING: required users and groups not present"
         echo "WARNING: some test cases may fail"
@@ -984,7 +984,7 @@ main()
 create_block()
 {
     #create a block device with ext4 filesystem.
-    dd if=/dev/zero of=${TMP}/test.img bs=1kB count=10240 &>/dev/null
+    dd if=/dev/zero of=${TMP}/test.img bs=1kB count=10240
     if [ $? -ne 0 ]; then
         echo "Failed to create loopback device image, please check disk space and re-run"
         return 1
@@ -996,12 +996,12 @@ create_block()
             return 1
         else
             ##attach the created file to loop dev.
-            losetup $LOOP_DEV ${TMP}/test.img &>/dev/null
+            losetup $LOOP_DEV ${TMP}/test.img
             if [ $? -ne 0 ]; then
                 echo "losetup failed to create block device"
                 return 1
             else
-                mkfs.ext4 $LOOP_DEV &>/dev/null
+                mkfs.ext4 $LOOP_DEV
                 [ $? -ne 0 ] && (echo "creating a ext4 block device failed" && return 1)
                 #set the values in alltests which require block device.
                 DEVICE=$LOOP_DEV
