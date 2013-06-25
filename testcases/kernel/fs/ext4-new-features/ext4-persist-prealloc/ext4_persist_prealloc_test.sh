@@ -37,7 +37,7 @@ export TEST_DIR=$PWD
 read_config $1
 
 # The test path of fallocate
-export TDIRECTORY=$PWD/mnt_point/
+export TMPDIR=$PWD/mnt_point/
 
 # Use ltp's syscall/fallocate to test this feature
 # $1: 1024 or 4096

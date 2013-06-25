@@ -117,16 +117,6 @@
  * The following defines are used to control tst_tmpdir, tst_wildcard and t_mkchdir
  */
 
-#define TDIRECTORY  "TDIRECTORY"	/* The name of the environment variable */
-					/* that if is set, the value (directory) */
-					/* is used by all tests as their working */
-					/* directory.  tst_rmdir and t_rmdir will */
-					/* not attempt to clean up. */
-					/* This environment variable should only */
-					/* be set when doing system testing since */
-					/* tests will collide and break and fail */
-					/* because of setting it. */
-
 #define TEMPDIR	"/tmp"			/* This is the default temporary directory. */
 					/* The environment variable TMPDIR is */
 					/* used prior to this valid by tempnam(3). */
@@ -225,8 +215,6 @@ void tst_tmpdir(void);
  *
  * Recursively remove the temporary directory created by tst_tmpdir().
  * This function is intended ONLY as a companion to tst_tmpdir().
- * If the TDIRECTORY environment variable is set, no cleanup will be
- * attempted.
  */
 void tst_rmdir(void);
 /* get_tst_tmpdir()
