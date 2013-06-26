@@ -66,23 +66,6 @@
 			      output; useful for pthread-like APIs :). */
 
 /*
- * To determine if you are on a Umk or Unicos system,
- * use sysconf(_SC_CRAY_SYSTEM).  But since _SC_CRAY_SYSTEM
- * is not defined until 90, it will be define here if not already
- * defined.
- * if (sysconf(_SC_CRAY_SYSTEM) == 1)
- *    on UMK
- * else   # returned 0 or -1
- *    on Unicos
- * This is only being done on CRAY systems.
- */
-#ifdef CRAY
-#ifndef _SC_CRAY_SYSTEM
-#define _SC_CRAY_SYSTEM  140
-#endif /* ! _SC_CRAY_SYSTEM */
-#endif /* CRAY */
-
-/*
  * Ensure that NUMSIGS is defined.
  * It should be defined in signal.h or sys/signal.h on
  * UNICOS/mk and IRIX systems.   On UNICOS systems,
