@@ -1,0 +1,68 @@
+msgctl01 msgctl01
+msgctl02 msgctl02
+msgctl03 msgctl03
+msgctl04 msgctl04
+msgctl05 msgctl05
+msgctl06 msgctl06
+msgctl07 msgctl07
+msgctl08 msgctl08
+msgctl09 msgctl09
+msgctl10 msgctl10
+msgctl11 msgctl11
+
+msgget01 msgget01
+msgget02 msgget02
+msgget03 msgget03
+msgget04 msgget04
+
+msgrcv01 msgrcv01
+msgrcv02 msgrcv02
+msgrcv03 msgrcv03
+msgrcv04 msgrcv04
+msgrcv05 msgrcv05
+msgrcv06 msgrcv06
+
+msgsnd01 msgsnd01
+msgsnd02 msgsnd02
+msgsnd03 msgsnd03
+msgsnd04 msgsnd04
+msgsnd05 msgsnd05
+msgsnd06 msgsnd06
+
+semctl01 semctl01
+semctl02 semctl02
+semctl03 semctl03
+semctl04 semctl04
+semctl05 semctl05
+semctl06 semctl06
+semctl07 semctl07
+
+semget01 semget01
+semget02 semget02
+semget03 semget03
+semget05 semget05
+semget06 semget06
+
+semop01 semop01
+semop02 semop02
+semop03 semop03
+semop04 semop04
+semop05 semop05
+
+shmat01 shmat01
+shmat02 shmat02
+shmat03 shmat03
+
+shmctl01 shmctl01
+shmctl02 shmctl02
+shmctl03 shmctl03
+shmctl04 shmctl04
+
+shmdt01 shmdt01
+shmdt02 shmdt02
+
+shmget01 shmget01
+shmget02 shmget02
+shmget03 shmget03
+shmget04 shmget04
+shmget05 shmget05
