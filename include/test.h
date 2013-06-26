@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * Copyright (c) 2009 Cyril Hrubis chrubis@suse.cz
+ * Copyright (c) 2009-2013 Cyril Hrubis chrubis@suse.cz
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -30,8 +30,6 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-
-/* $Id: test.h,v 1.26 2010/01/10 22:27:15 yaberauneya Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -91,40 +89,6 @@
 					/* that can be set to one of the following */
 					/* strings to control tst_res output */
 					/* If not set, TOUT_VERBOSE_S is assumed */
-
-#define TOUT_VERBOSE_S  "VERBOSE"	/* All test cases reported */
-#define TOUT_NOPASS_S   "NOPASS"	/* No pass test cases are reported */
-#define TOUT_DISCARD_S  "DISCARD"	/* No output is reported */
-
-/*
- * The following define contains the name of an environmental variable
- * that can be used to specify the number of iterations.
- * It is supported in parse_opts.c and USC_setup.c.
- */
-#define USC_ITERATION_ENV       "USC_ITERATIONS"
-
-/*
- * The following define contains the name of an environmental variable
- * that can be used to specify to iteration until desired time
- * in floating point seconds has gone by.
- * Supported in USC_setup.c.
- */
-#define USC_LOOP_WALLTIME	"USC_LOOP_WALLTIME"
-
-/*
- * The following define contains the name of an environmental variable
- * that can be used to specify that no functional checks are wanted.
- * It is supported in parse_opts.c and USC_setup.c.
- */
-#define USC_NO_FUNC_CHECK	"USC_NO_FUNC_CHECK"
-
-/*
- * The following define contains the name of an environmental variable
- * that can be used to specify the delay between each loop iteration.
- * The value is in seconds (fractional numbers are allowed).
- * It is supported in parse_opts.c.
- */
-#define USC_LOOP_DELAY		"USC_LOOP_DELAY"
 
 /*
  * fork() can't be used on uClinux systems, so use FORK_OR_VFORK instead,

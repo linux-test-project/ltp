@@ -32,4 +32,40 @@ const char *tst_get_startwd(void);
  */
 #define TEMPDIR	"/tmp"
 
+/* environment variables for controlling  tst_res verbosity */
+#define TOUT_VERBOSE_S  "VERBOSE"	/* All test cases reported */
+#define TOUT_NOPASS_S   "NOPASS"	/* No pass test cases are reported */
+#define TOUT_DISCARD_S  "DISCARD"	/* No output is reported */
+
+/*
+ * The following define contains the name of an environmental variable
+ * that can be used to specify the number of iterations.
+ * It is supported in parse_opts.c and USC_setup.c.
+ */
+#define USC_ITERATION_ENV       "USC_ITERATIONS"
+
+/*
+ * The following define contains the name of an environmental variable
+ * that can be used to specify to iteration until desired time
+ * in floating point seconds has gone by.
+ * Supported in USC_setup.c.
+ */
+#define USC_LOOP_WALLTIME	"USC_LOOP_WALLTIME"
+
+/*
+ * The following define contains the name of an environmental variable
+ * that can be used to specify that no functional checks are wanted.
+ * It is supported in parse_opts.c and USC_setup.c.
+ */
+#define USC_NO_FUNC_CHECK	"USC_NO_FUNC_CHECK"
+
+/*
+ * The following define contains the name of an environmental variable
+ * that can be used to specify the delay between each loop iteration.
+ * The value is in seconds (fractional numbers are allowed).
+ * It is supported in parse_opts.c.
+ */
+#define USC_LOOP_DELAY		"USC_LOOP_DELAY"
+
+
 #endif /* __LTP_PRIV_H__ */

@@ -102,6 +102,7 @@
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
+#include "ltp_priv.h"
 
 /* Break bad habits. */
 #ifdef GARRETT_IS_A_PEDANTIC_BASTARD

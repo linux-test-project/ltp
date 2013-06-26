@@ -36,16 +36,16 @@
  *
  *    OS Testing - Silicon Graphics, Inc.
  *
- *    FUNCTION NAME 	: parse_opts
+ *    FUNCTION NAME	: parse_opts
  *
  *    FUNCTION TITLE	: parse standard & user options for system call tests
  *
  *    SYNOPSIS:
  *	#include "usctest.h"
  *
- * 	char *parse_opts(ac, av, user_optarr, uhf)
+ *	char *parse_opts(ac, av, user_optarr, uhf)
  *	int    ac;
- * 	char **av;
+ *	char **av;
  *	option_t user_optarr[];
  *	void (*uhf)();
  *
@@ -54,7 +54,7 @@
  *    INITIAL RELEASE	: UNICOS 7.0
  *
  *    DESCRIPTION
- * 	The parse_opts library routine takes that argc and argv parameters
+ *	The parse_opts library routine takes that argc and argv parameters
  *	recevied by main() and an array of structures defining user options.
  *	It parses the command line setting flag and argument locations
  *      associated with the options.  It uses getopt to do the actual cmd line
@@ -64,7 +64,7 @@
  *      usc_test_looping, which are called by marcos defined in usctest.h.
  *
  *    RETURN VALUE
- * 	parse_opts returns a pointer to an error message if an error occurs.
+ *	parse_opts returns a pointer to an error message if an error occurs.
  *	This pointer is (char *)NULL if parsing is successful.
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
@@ -84,6 +84,7 @@
 #endif /* UNIT_TEST */
 
 #include "test.h"
+#include "ltp_priv.h"
 #define _USC_LIB_   1		/* indicates we are the library to the usctest.h include */
 #include "usctest.h"
 
