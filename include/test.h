@@ -206,6 +206,15 @@ int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
 long tst_ncpus(void);
 long tst_ncpus_max(void);
 
+/* lib/tst_run_cmd.c
+ *
+ * vfork() + execvp() specified program.
+ * @argv: a list of two (at least program name + NULL) or more pointers that
+ * represent the argument list to the new program. The array of pointers
+ * must be terminated by a NULL pointer.
+ */
+void tst_run_cmd(void (cleanup_fn)(void), char *const argv[]);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL
