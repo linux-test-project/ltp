@@ -111,8 +111,6 @@ int io_tio(char *pathname, int flag, int n, int operation)
 	for (i = 0; i < AIO_MAXIO; i++) {
 
 		switch (operation) {
-		case IO_CMD_FSYNC:
-		case IO_CMD_FDSYNC:
 		case IO_CMD_PWRITE:
 			if (posix_memalign(&bufptr, alignment, AIO_BLKSIZE)) {
 				perror(" posix_memalign failed ");
@@ -179,22 +177,6 @@ int io_tio(char *pathname, int flag, int n, int operation)
 			}
 		}
 		break;
-	case IO_CMD_FSYNC:
-		for (i = 0; i < AIO_MAXIO; i++) {
-			res = io_fsync(myctx, iocbps[i], work_done, fd);
-			if (res < 0) {
-				io_error("io_fsync write", res);
-			}
-		}
-		break;
-	case IO_CMD_FDSYNC:
-		for (i = 0; i < AIO_MAXIO; i++) {
-			res = io_fdsync(myctx, iocbps[i], work_done, fd);
-			if (res < 0) {
-				io_error("io_fsync write", res);
-			}
-		}
-		break;
 	}
 
 	close(fd);
@@ -249,22 +231,6 @@ int test_main(void)
 
 	tst_resm(TINFO, "Running test 6 \n");
 	status = io_tio("file1", O_RDONLY, AIO_MAXIO, IO_CMD_PREAD);
-	if (status) {
-		return status;
-	}
-
-	tst_resm(TINFO, "Running test 7 \n");
-	status = io_tio("file2",
-			O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE,
-			AIO_MAXIO, IO_CMD_FSYNC);
-	if (status) {
-		return status;
-	}
-
-	tst_resm(TINFO, "Running test 8 \n");
-	status = io_tio("file2",
-			O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE,
-			AIO_MAXIO, IO_CMD_FDSYNC);
 	if (status) {
 		return status;
 	}
