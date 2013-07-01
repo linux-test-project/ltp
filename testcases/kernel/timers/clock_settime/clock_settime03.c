@@ -49,8 +49,8 @@ int testcases[] = {
 	EINVAL,			/* Invalid timespec     */
 	EINVAL,			/* NSEC_PER_SEC + 1     */
 	EPERM,			/* non-root user        */
-	0,
-	0,
+	EINVAL,			/* PROCESS_CPUTIME_ID	*/
+	EINVAL,			/* THREAD_CPUTIME_ID	*/
 };
 
 char *TCID = "clock_settime03";
@@ -69,17 +69,6 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
-	 * kernel versions lower than 2.6.12 and changed back in 2.6.38
-	 */
-	if ((tst_kvercmp(2, 6, 12)) < 0 || (tst_kvercmp(2, 6, 38)) >= 0) {
-		testcases[7] = EINVAL;
-		testcases[8] = EINVAL;
-	} else {
-		testcases[7] = EFAULT;
-		testcases[8] = EFAULT;
-	}
 
 	setup();
 
@@ -168,11 +157,6 @@ static int setup_test(int option)
 			return -1;
 		}
 		break;
-	case 7:
-	case 8:
-		/* Make tp argument bad pointer */
-		if (tst_kvercmp(2, 6, 12) >= 0)
-			temp = (struct timespec *)-1;
 	}
 	return 0;
 }
