@@ -236,7 +236,7 @@ EOF
 
 		cat >> "$makefile.3" <<EOF
 $dst: \$(srcdir)/$src
-	@cp \$< \$@
+	@cp \$(srcdir)/$src \$@
 
 EOF
 	done
