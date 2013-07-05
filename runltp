@@ -1001,11 +1001,18 @@ create_block()
                 echo "losetup failed to create block device"
                 return 1
             else
+                DEVICE_FS_TYPE="ext4"
                 mkfs.ext4 $LOOP_DEV
-                [ $? -ne 0 ] && (echo "creating a ext4 block device failed" && return 1)
+                if [ $? -ne 0 ]; then
+                    DEVICE_FS_TYPE="ext3"
+                    mkfs.ext3 $LOOP_DEV
+                    if [ $? -ne 0 ]; then
+                        echo "creating an ext4/3 block device failed."
+                        return 1
+                    fi
+                fi
                 #set the values in alltests which require block device.
                 DEVICE=$LOOP_DEV
-                DEVICE_FS_TYPE="ext4"
                 return 0
             fi
         fi
