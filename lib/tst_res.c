@@ -495,9 +495,8 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 
 	if (ttype & TTERRNO) {
 		size += snprintf(message + size, sizeof(message) - size,
-				 ": TEST_ERRNO=%s(%i): %s",
-				 strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+				 ": errno=%s(%i): %s",
+				 strerrnodef(err), (int)err, strerror(err));
 	}
 
 	if (size + 1 >= sizeof(message)) {
