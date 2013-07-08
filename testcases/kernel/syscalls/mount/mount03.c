@@ -27,6 +27,7 @@
  *	4) MS_SYNCHRONOUS - writes are synced at once.
  *	5) MS_REMOUNT - alter flags of a mounted FS.
  *	6) MS_NOSUID - ignore suid and sgid bits.
+ *	7) MS_NOATIME - do not update access times.
  */
 
 #ifndef _GNU_SOURCE
@@ -53,7 +54,7 @@ static void cleanup(void);
 static int test_rwflag(int, int);
 
 char *TCID = "mount03";
-int TST_TOTAL = 6;
+int TST_TOTAL = 7;
 
 #define DEFAULT_FSTYPE	"ext2"
 #define TEMP_FILE	"temp_file"
@@ -83,6 +84,7 @@ long rwflags[] = {
 	MS_SYNCHRONOUS,
 	MS_RDONLY,
 	MS_NOSUID,
+	MS_NOATIME,
 };
 
 static option_t options[] = {
@@ -161,8 +163,9 @@ int test_rwflag(int i, int cnt)
 {
 	int ret, fd, pid, status;
 	char nobody_uid[] = "nobody";
+	time_t atime;
 	struct passwd *ltpuser;
-	struct stat setuid_test_stat;
+	struct stat file_stat;
 
 	switch (i) {
 	case 0:
@@ -294,10 +297,10 @@ int test_rwflag(int i, int cnt)
 		snprintf(file, PATH_MAX, "%ssetuid_test", path_name);
 		SAFE_FILE_PRINTF(cleanup, file, "TEST FILE");
 
-		if (stat(file, &setuid_test_stat) < 0)
+		if (stat(file, &file_stat) < 0)
 			tst_brkm(TBROK, cleanup, "stat for setuid_test failed");
 
-		if (setuid_test_stat.st_mode != SUID_MODE &&
+		if (file_stat.st_mode != SUID_MODE &&
 		    chmod(file, SUID_MODE) < 0)
 			tst_brkm(TBROK, cleanup,
 				 "setuid for setuid_test failed");
@@ -326,6 +329,46 @@ int test_rwflag(int i, int cnt)
 					return 1;
 			}
 		}
+	case 6:
+		/* Validate MS_NOATIME flag of mount call */
+
+		snprintf(file, PATH_MAX, "%satime", path_name);
+		fd = open(file, O_CREAT | O_RDWR, S_IRWXU);
+		if (fd == -1) {
+			tst_resm(TWARN | TERRNO, "opening %s failed", file);
+			return 1;
+		}
+
+		if (write(fd, "TEST_MS_NOATIME", 15) != 15) {
+			tst_resm(TWARN | TERRNO, "write %s failed", file);
+			return 1;
+		}
+
+		if (fstat(fd, &file_stat) == -1) {
+			tst_resm(TWARN | TERRNO, "stat %s failed #1", file);
+			return 1;
+		}
+
+		atime = file_stat.st_atime;
+
+		sleep(1);
+
+		if (read(fd, NULL, 20) == -1) {
+			tst_resm(TWARN | TERRNO, "read %s failed", file);
+			return 1;
+		}
+
+		if (fstat(fd, &file_stat) == -1) {
+			tst_resm(TWARN | TERRNO, "stat %s failed #2", file);
+			return 1;
+		}
+		close(fd);
+
+		if (file_stat.st_atime != atime) {
+			tst_resm(TWARN, "access time is updated");
+			return 1;
+		}
+		return 0;
 	}
 	return 0;
 }
