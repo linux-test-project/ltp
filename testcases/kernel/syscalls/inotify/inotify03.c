@@ -51,6 +51,9 @@
 #include "linux_syscall_numbers.h"
 #include "inotify.h"
 
+char *TCID = "inotify03";
+int TST_TOTAL = 3;
+
 #if defined(HAVE_SYS_INOTIFY_H)
 #include <sys/inotify.h>
 
@@ -60,12 +63,9 @@
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN		(EVENT_MAX * (EVENT_SIZE + 16))
 
-void help(void);
-void setup();
-void cleanup();
-
-char *TCID = "inotify03";
-int TST_TOTAL = 3;
+static void help(void);
+static void setup(void);
+static void cleanup(void);
 
 #define BUF_SIZE 1024
 char fname[BUF_SIZE];
@@ -77,20 +77,19 @@ int event_set[EVENT_MAX];
 
 char event_buf[EVENT_BUF_LEN];
 
-#define DEFAULT_FSTYPE	"ext2"
 #define DIR_MODE	S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP
 
 static char *Fstype;
 static char mntpoint[20];
 static int mount_flag = 0;
-static char *fstype;
+static char *fstype = "ext2";
 static char *device;
 static int Tflag = 0;
 static int Dflag = 0;
 
-static option_t options[] = {	/* options supported by mount01 test */
-	{"T:", &Tflag, &fstype},	/* -T type of filesystem        */
-	{"D:", &Dflag, &device},	/* -D device used for mounting  */
+static option_t options[] = {
+	{"T:", &Tflag, &fstype},
+	{"D:", &Dflag, &device},
 	{NULL, NULL, NULL}
 };
 
@@ -108,22 +107,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
 			 " mounting with -D option, Run '%s  -h' for option "
 			 " information.", TCID);
-	}
-
-	if (Tflag) {
-		Fstype = (char *)malloc(strlen(fstype) + 1);
-		if (Fstype == NULL) {
-			tst_brkm(TBROK, NULL, "malloc - failed to alloc %zu"
-				 "errno %d", strlen(fstype), errno);
-		}
-		strncpy(Fstype, fstype, strlen(fstype) + 1);
-	} else {
-		Fstype = (char *)malloc(strlen(DEFAULT_FSTYPE) + 1);
-		if (Fstype == NULL) {
-			tst_brkm(TBROK, NULL, "malloc - failed to alloc %zu"
-				 "errno %d", strlen(DEFAULT_FSTYPE), errno);
-		}
-		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE) + 1);
 	}
 
 	setup();
@@ -206,10 +189,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
 	int ret;
 
@@ -276,13 +256,8 @@ void setup()
 
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	free(Fstype);
 	if (close(fd_notify) == -1) {
 		tst_resm(TWARN | TERRNO, "close(%d) failed", fd_notify);
 	}
@@ -295,19 +270,12 @@ void cleanup()
 		}
 	}
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
 }
 
-/*
- * issue a help message
- */
-void help()
+static void help(void)
 {
 	printf("-T type : specifies the type of filesystem to be mounted."
 	       " Default ext2. \n");
@@ -316,10 +284,7 @@ void help()
 
 #else
 
-char *TCID = "inotify03";
-int TST_TOTAL = 0;
-
-int main()
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "system doesn't have required inotify support");
 }
