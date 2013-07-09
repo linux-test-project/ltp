@@ -34,15 +34,13 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/utsname.h>
+#include "test.h"
 
 void get_kver(int *k1, int *k2, int *k3)
 {
 	struct utsname uval;
 	char *kver;
 	char *r1, *r2, *r3;
-#if !defined(linux)
-	extern char *strsep();	/* shut up some compilers */
-#endif
 
 	uname(&uval);
 	kver = uval.release;
@@ -65,4 +63,46 @@ int tst_kvercmp(int r1, int r2, int r3)
 	currver = (a1 << 16) + (a2 << 8) + a3;
 
 	return currver - testver;
+}
+
+static int tst_kexvcmp(char *tst_exv, char *cur_ver)
+{
+	int c1 = 0, c2 = 0, t1 = 0, t2 = 0;
+	int ret;
+
+	sscanf(cur_ver, "%*d.%*d.%*d-%d.%d", &c1, &c2);
+	sscanf(tst_exv, "%d.%d", &t1, &t2);
+	if ((ret = c1 - t1))
+		return ret;
+	else
+		return c2 - t2;
+}
+
+int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers)
+{
+	int ret;
+	int i;
+	struct utsname uval;
+	char *kver;
+	const char *cur_dist_name = NULL;
+
+	if ((ret = tst_kvercmp(r1, r2, r3)))
+		return ret;
+
+	uname(&uval);
+	kver = uval.release;
+	if (strstr(kver, ".el5")) {
+		cur_dist_name = "RHEL5";
+	} else if (strstr(kver, ".el6")) {
+		cur_dist_name = "RHEL6";
+	} else {
+		return ret;
+	}
+
+	for (i = 0; vers[i].dist_name; i++) {
+		if (!strcmp(vers[i].dist_name, cur_dist_name))
+			return tst_kexvcmp(vers[i].extra_ver, kver);
+	}
+
+	return ret;
 }

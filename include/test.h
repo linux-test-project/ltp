@@ -173,6 +173,13 @@ char *get_high_address(void);
 void tst_getkver(int *k1, int *k2, int *k3);
 int tst_kvercmp(int r1, int r2, int r3);
 
+struct tst_kern_exv {
+	char *dist_name;
+	char *extra_ver;
+};
+
+int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers);
+
 /* lib/tst_is_cwd.c */
 int tst_is_cwd_nfs(void);
 int tst_is_cwd_v9fs(void);
