@@ -168,6 +168,14 @@ elif command -v rsyslogd >/dev/null 2>&1; then
 	SYSLOG_DAEMON="rsyslog"
 fi
 
+# Check to see if cron or crond exists
+CROND_DAEMON=""
+if command -v crond >/dev/null 2>&1; then
+	CROND_DAEMON="crond"
+elif command -v cron >/dev/null 2>&1; then
+	CROND_DAEMON="cron"
+fi
+
 start_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
