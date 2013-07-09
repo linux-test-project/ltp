@@ -54,7 +54,11 @@ cleanup()
 			mv $NSS_CONFIG_FILE.ltpback $NSS_CONFIG_FILE
 			# Make sure that restart_sssd_daemon doesn't loop
 			# back to cleanup again.
-			restart_sssd_daemon "return 1"
+			if [ $SSSD_STARTED -eq 1 ]; then
+				stop_daemon sssd
+			else
+				restart_sssd_daemon "return 1"
+			fi
 			# Maintain any nonzero exit codes
 			if [ $exit_code -ne $? ]; then
 				exit_code=1
@@ -159,6 +163,12 @@ make_config_file()
 }
 
 . cmdlib.sh
+
+SSSD_STARTED=0
+status_daemon sssd
+if [ $? -ne 0 ]; then
+	SSSD_STARTED=1
+fi
 
 # determine sssd.conf can support override_gid?
 setup
