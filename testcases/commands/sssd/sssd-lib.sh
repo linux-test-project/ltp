@@ -39,20 +39,9 @@ readonly TRAP_SIGS="2 3 6 11 15"
 
 CONFIG_FILE="/etc/sssd/sssd.conf"
 NSS_CONFIG_FILE="/etc/nsswitch.conf"
-SSSD_INIT_SCRIPT="/etc/init.d/sssd"
-
-# Command to restart sssd daemon.
-SSSD_RESTART_CMD=
 
 # number of seconds to wait for another sssd test to complete
 WAIT_COUNT=30
-
-# running under systemd?
-if command -v systemctl >/dev/null 2>&1; then
-	HAVE_SYSTEMCTL=1
-else
-	HAVE_SYSTEMCTL=0
-fi
 
 cleanup()
 {
@@ -98,30 +87,6 @@ setup()
 		cleanup	0
 	fi
 
-	SVCNAME=$(basename $SSSD_INIT_SCRIPT)
-	if [ $HAVE_SYSTEMCTL == 1 ]; then
-		for svc in "$SVCNAME" "sssd"; do
-			if systemctl is-enabled $svc.service >/dev/null 2>&1
-			then
-				SSSD_RESTART_CMD="systemctl restart $svc.service"
-				break
-			fi
-		done
-	else
-		for SSSD_INIT_SCRIPT in "$SSSD_INIT_SCRIPT" "/etc/init.d/sssd"
-		do
-			if [ -x "$SSSD_INIT_SCRIPT" ]; then
-				SSSD_RESTART_CMD="$SSSD_INIT_SCRIPT restart"
-				break
-			fi
-		done
-	fi
-
-	if [ -z "$SSSD_RESTART_CMD" ]; then
-		tst_resm TBROK "Don't know how to restart $SVCNAME"
-		cleanup 1
-	fi
-
 	# Back up configuration file
 	if [ -f "$CONFIG_FILE" ]; then
 		# Pause if another LTP sssd test is running
@@ -163,8 +128,8 @@ restart_sssd_daemon()
 		cleanup_command=$1
 	fi
 
-	tst_resm TINFO "restarting sssd daemon via $SSSD_RESTART_CMD"
-	$SSSD_RESTART_CMD > /dev/null 2>&1
+	tst_resm TINFO "restarting sssd daemon"
+	restart_daemon sssd
 	if [ $? -eq 0 ]; then
 		# wait sssd restart success.
 		sleep 1
@@ -201,7 +166,7 @@ make_config_file
 sed -i -e "/\[domain\/LOCAL\]/ a\override_gid = error" $CONFIG_FILE
 # make sure config file is OK
 sleep 1
-$SSSD_RESTART_CMD > /dev/null 2>&1
+restart_daemon sssd
 
 if [ $? -ne 1 ]; then
 	tst_resm TCONF "override_gid does not exist. Skipping all testcases"
