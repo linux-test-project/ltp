@@ -198,8 +198,8 @@ status_daemon()
 restart_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
-		systemctl start $1.service > /dev/null 2>&1
+		systemctl restart $1.service > /dev/null 2>&1
 	else
-		service $1 start > /dev/null 2>&1
+		service $1 restart > /dev/null 2>&1
 	fi
 }
