@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 			tst_resm(TFAIL | TTERRNO, "mount(2) failed");
 		} else {
 
-			if (open(file_des, O_CREAT | O_EXCL) == -1 &&
+			if (open(file_des, O_CREAT | O_EXCL, S_IRWXU) == -1 &&
 			    errno == EEXIST)
 				tst_resm(TPASS, "bind mount is ok");
 			else
