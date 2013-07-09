@@ -158,6 +158,16 @@ else
 	HAVE_SYSTEMCTL=0
 fi
 
+# Check to see if syslogd, syslog-ng or rsyslogd exists
+SYSLOG_DAEMON=""
+if command -v syslogd >/dev/null 2>&1; then
+	SYSLOG_DAEMON="syslog"
+elif command -v syslog-ng >/dev/null 2>&1; then
+	SYSLOG_DAEMON="syslog-ng"
+elif command -v rsyslogd >/dev/null 2>&1; then
+	SYSLOG_DAEMON="rsyslog"
+fi
+
 start_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
