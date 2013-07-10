@@ -86,13 +86,13 @@ int main(int argc, char **argv)
 				 "file, errno %d", errno);
 
 		pid = FORK_OR_VFORK();
-		
+
 		if (pid == -1)
 			tst_brkm(TFAIL, cleanup, "fork() failed, errno %d",
 				 errno);
 		if (pid == 0) {
 #ifdef UCLINUX
-			if (self_exec(argv[0], "ds", fd, FILENAME) < 0)
+			if (self_exec(argv[0], "ds", fd, FILE_NAME) < 0)
 				tst_brkm(TFAIL, cleanup, "self_exec failed, "
 					 "errno &d", errno);
 #else
@@ -161,7 +161,7 @@ static void childfunc(int fd)
 	}
 
 	TEST(flock(fd2, LOCK_EX | LOCK_NB));
-	
+
 	if (TEST_RETURN == -1) {
 		fprintf(stderr, "CHILD: Unable to lock file after "
 		        "unlocking: %s\n", strerror(TEST_ERRNO));
@@ -169,10 +169,10 @@ static void childfunc(int fd)
 	} else {
 		fprintf(stderr, "CHILD: Locking after unlock passed\n");
 	}
-	
+
 	close(fd);
 	close(fd2);
-	
+
 	exit(0);
 }
 
