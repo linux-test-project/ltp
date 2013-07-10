@@ -29,16 +29,6 @@ CONFIG_FILE=""
 # rsyslogd .conf specific args.
 RSYSLOG_CONFIG=
 
-# Command to restart syslog daemon.
-SYSLOG_RESTART_COMMAND=
-
-# running under systemd?
-if command -v systemctl >/dev/null 2>&1; then
-	HAVE_SYSTEMCTL=1
-else
-	HAVE_SYSTEMCTL=0
-fi
-
 # number of seconds to wait for another syslog test to complete
 WAIT_COUNT=60
 
@@ -75,43 +65,15 @@ setup()
 		tst_resm TBROK "Testing is terminating due to a signal"
 		cleanup 1' $TRAP_SIGS || exit 1
 
-	# Check to see if syslogd or syslog-ng exists
-	if [ -e /sbin/syslogd ]; then
+	if [ "$SYSLOG_DAEMON" == "syslog" ]; then
 		CONFIG_FILE="/etc/syslog.conf"
-		SYSLOG_INIT_SCRIPT="/etc/init.d/sysklogd"
-	elif command -v syslog-ng >/dev/null 2>&1; then
+	elif [ "$SYSLOG_DAEMON" == "syslog-ng" ]; then
 		CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
-		SYSLOG_INIT_SCRIPT="/etc/init.d/syslog-ng"
-	elif command -v rsyslogd >/dev/null 2>&1; then
+	elif [ "$SYSLOG_DAEMON" == "rsyslog" ]; then
 		CONFIG_FILE="/etc/rsyslog.conf"
-		SYSLOG_INIT_SCRIPT="/etc/init.d/rsyslog"
 		RSYSLOG_CONFIG='$ModLoad imuxsock.so'
 	else
-		tst_resm TCONF "couldn't find syslogd, syslog-ng, or rsyslogd"
-		cleanup	0
-	fi
-
-	SVCNAME=$(basename $SYSLOG_INIT_SCRIPT)
-	if [ $HAVE_SYSTEMCTL == 1 ]; then
-		for svc in "$SVCNAME" "syslog"; do
-			if systemctl is-enabled $svc.service >/dev/null 2>&1; then
-				SYSLOG_RESTART_COMMAND="systemctl restart $svc.service"
-				break
-			fi
-		done
-	else
-		# Fallback to /etc/init.d/syslog if $SYSLOG_INIT_SCRIPT
-		# doesn't exist.
-		for SYSLOG_INIT_SCRIPT in "$SYSLOG_INIT_SCRIPT" "/etc/init.d/syslog"; do
-			if [ -x "$SYSLOG_INIT_SCRIPT" ]; then
-				SYSLOG_RESTART_COMMAND="$SYSLOG_INIT_SCRIPT restart"
-				break
-			fi
-		done
-	fi
-
-	if [ -z "$SYSLOG_RESTART_COMMAND" ]; then
-		tst_resm TBROK "Don't know how to restart $SVCNAME"
+		tst_resm TBROK "Couldn't find syslogd, syslog-ng or rsyslogd"
 		cleanup 1
 	fi
 
@@ -152,15 +114,18 @@ restart_syslog_daemon()
 		cleanup_command=$1
 	fi
 
-	tst_resm TINFO "restarting syslog daemon via $SYSLOG_RESTART_COMMAND"
+	tst_resm TINFO "restarting syslog daemon"
 
-	if $SYSLOG_RESTART_COMMAND >/dev/null 2>&1; then
-		# XXX: this really shouldn't exist; if *syslogd isn't ready
-		# once the restart directive has been issued, then it needs to
-		# be fixed.
-		sleep 2
-	else
-		$cleanup_command
+	if [ -n "$SYSLOG_DAEMON" ]; then
+		restart_daemon $SYSLOG_DAEMON
+		if [ $? -eq 0 ]; then
+			# XXX: this really shouldn't exist; if *syslogd isn't
+			# ready once the restart directive has been issued,
+			# then it needs to be fixed.
+			sleep 2
+		else
+			$cleanup_command
+		fi
 	fi
 }
 
