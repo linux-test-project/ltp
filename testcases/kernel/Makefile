@@ -43,6 +43,7 @@ SUBDIRS			+= connectors \
 			   hotplug \
 			   io \
 			   ipc \
+			   logging \
 			   mem \
 			   numa \
 			   performance_counters \
