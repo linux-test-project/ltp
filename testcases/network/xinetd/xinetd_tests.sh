@@ -90,46 +90,46 @@ init()
     chk_ifexists INIT diff       || return $RC
     chk_ifexists INIT telnet     || return $RC
 
-	# Create custom xinetd.conf file.
-	# tst_xinetd.conf.1 config file has telnet service disabled.
-	cat > $LTPTMP/tst_xinetd.conf.1 <<-EOF || RC=$?
-	defaults
-	{
-		instances      = 25
-		log_type       = FILE /var/log/servicelog
-		log_on_success = HOST PID
-		log_on_failure = HOST RECORD
-	    disabled       = telnet
-	}
-	EOF
+    # Create custom xinetd.conf file.
+    # tst_xinetd.conf.1 config file has telnet service disabled.
+    cat > $LTPTMP/tst_xinetd.conf.1 <<-EOF || RC=$?
+defaults
+{
+    instances      = 25
+    log_type       = FILE /var/log/servicelog
+    log_on_success = HOST PID
+    log_on_failure = HOST RECORD
+    disabled       = telnet
+}
+EOF
 
-	# tst_xinetd.conf.2 config file has telnet enabled.
-	cat > $LTPTMP/tst_xinetd.conf.2 <<-EOF || RC=$?
-	defaults
-	{
-		instances      = 25
-		log_type       = FILE /var/log/servicelog
-		log_on_success = HOST PID
-		log_on_failure = HOST
-		# disabled       = telnet
-	}
+    # tst_xinetd.conf.2 config file has telnet enabled.
+    cat > $LTPTMP/tst_xinetd.conf.2 <<-EOF || RC=$?
+defaults
+{
+    instances      = 25
+    log_type       = FILE /var/log/servicelog
+    log_on_success = HOST PID
+    log_on_failure = HOST
+    # disabled       = telnet
+}
 
-	service telnet
-	{
-        socket_type     = stream
-        protocol        = tcp
-        wait            = no
-        user            = root
-        server          = /usr/sbin/in.telnetd
-        server_args     = -n
-        no_access       =
-    }
-	EOF
+service telnet
+{
+    socket_type     = stream
+    protocol        = tcp
+    wait            = no
+    user            = root
+    server          = /usr/sbin/in.telnetd
+    server_args     = -n
+    no_access       =
+}
+EOF
 
     # Create expected file with telnet disabled.
     cat > $LTPTMP/tst_xinetd.exp.1 <<-EOF || RC=$?
-	telnet: Unable to connect to remote host: Connection refused
-	EOF
+telnet: Unable to connect to remote host: Connection refused
+EOF
 
     if [ $RC -ne 0 ]
     then
@@ -139,12 +139,12 @@ init()
     fi
 
     # Create expected file with telnet enabled.
-	cat > $LTPTMP/tst_xinetd.exp.2 <<-EOF || RC=$?
-	Trying 127.0.0.1...
-	Connected to localhost (127.0.0.1).
-	Escape character is '^]'.
-	Connection closed by foreign host.
-	EOF
+    cat > $LTPTMP/tst_xinetd.exp.2 <<-EOF || RC=$?
+Trying 127.0.0.1...
+Connected to localhost (127.0.0.1).
+Escape character is '^]'.
+Connection closed by foreign host.
+EOF
 
     if [ $RC -ne 0 ]
     then
@@ -165,28 +165,28 @@ init()
 #               - non-zero on failure.
 cleanup()
 {
-	RC=0
-	# restore the original xinetd.conf if a back up exits.
-	if [ -f /etc/xinetd.conf.orig ]
-	then
-		mv /etc/xinetd.conf.orig /etc/xinetd.conf \
-			> $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
-		if [ $RC -ne 0 ]
-		then
-			tst_res TINFO $LTPTMP/tst_xinetd.err \
-			"CLEANUP: failed restoring original xinetd.conf RC=$RC. Details:"
-		fi
+    RC=0
+    # restore the original xinetd.conf if a back up exits.
+    if [ -f /etc/xinetd.conf.orig ]
+    then
+        mv /etc/xinetd.conf.orig /etc/xinetd.conf \
+            > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
+        if [ $RC -ne 0 ]
+        then
+            tst_res TINFO $LTPTMP/tst_xinetd.err \
+            "CLEANUP: failed restoring original xinetd.conf RC=$RC. Details:"
+        fi
 
-		sleep 1s
+        sleep 1s
 
-		# restoring original services
-		/etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
-		if [ $RC -ne 0 ]
-		then
-			tst_res TINFO $LTPTMP/tst_xinetd.err \
-			"CLEANUP: failed restoring original services RC=$RC. Details:"
-		fi
-	fi
+        # restoring original services
+        /etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
+        if [ $RC -ne 0 ]
+        then
+            tst_res TINFO $LTPTMP/tst_xinetd.err \
+            "CLEANUP: failed restoring original services RC=$RC. Details:"
+        fi
+    fi
 
     # remove all the temporary files created by this test.
     tst_resm TINFO "CLEAN: removing $LTPTMP"
@@ -214,9 +214,9 @@ test01()
 
     tst_resm TINFO "Test #1: restart xinetd with telnet disabled."
 
-	# create a backup of the original xinetd.conf file.
-	mv /etc/xinetd.conf /etc/xinetd.conf.orig > $LTPTMP/tst_xinetd.err 2>&1 \
-		|| RC=$?
+    # create a backup of the original xinetd.conf file.
+    mv /etc/xinetd.conf /etc/xinetd.conf.orig > $LTPTMP/tst_xinetd.err 2>&1 \
+        || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_brk TBROK $LTPTMP/tst_xinetd.err NULL \
@@ -224,9 +224,9 @@ test01()
         return $RC
     fi
 
-	# install the new config file with telnet disabled.
-	mv $LTPTMP/tst_xinetd.conf.1 /etc/xinetd.conf > $LTPTMP/tst_xinetd.err 2>&1 \
-		|| RC=$?
+    # install the new config file with telnet disabled.
+    mv $LTPTMP/tst_xinetd.conf.1 /etc/xinetd.conf > $LTPTMP/tst_xinetd.err 2>&1 \
+        || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_brk TBROK $LTPTMP/tst_xinetd.err NULL \
@@ -236,36 +236,36 @@ test01()
 
     tst_resm TINFO "Test #1: new xinetd.conf installed with telnet disabled."
 
-	sleep 1s
+    sleep 1s
 
-	# restart xinetd to re-start the services
+    # restart xinetd to re-start the services
     /etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_xinetd.out \
        "Test #1: unable to restart service with telnet disabled. Details:"
         return $RC
-	else
-		# even if xinetd restart has zero exit value,
-		# make certain there was no failure.
-		grep -i "fail" $LTPTMP/tst_xinetd.out > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
-		if [ $RC -eq 0 ]
-		then
-			tst_res TFAIL $LTPTMP/tst_xinetd.err \
-				"Test #1: xinetd failed to restart. Details"
-			return $RC
-		else
-			RC=0
-			tst_resm TINFO \
-				"Test #1: xinetd re-started successfully with telnet disabled."
-		fi
-	fi
+    else
+        # even if xinetd restart has zero exit value,
+        # make certain there was no failure.
+        grep -i "fail" $LTPTMP/tst_xinetd.out > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
+        if [ $RC -eq 0 ]
+        then
+            tst_res TFAIL $LTPTMP/tst_xinetd.err \
+                "Test #1: xinetd failed to restart. Details"
+            return $RC
+        else
+            RC=0
+            tst_resm TINFO \
+                "Test #1: xinetd re-started successfully with telnet disabled."
+        fi
+    fi
 
-	# Not checking for exit code from telnet command because telnet is
-	# not terminated by the test gracefully.
-	echo "" | telnet localhost 2>$LTPTMP/tst_xinetd.out 1>/dev/null
-	diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.1 \
-		> $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
+    # Not checking for exit code from telnet command because telnet is
+    # not terminated by the test gracefully.
+    echo "" | telnet localhost 2>$LTPTMP/tst_xinetd.out 1>/dev/null
+    diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.1 \
+        > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_xinetd.err \
@@ -274,9 +274,9 @@ test01()
     fi
 
     tst_resm TINFO "Test #1: restart xinetd with telnet enabled."
-	# install the xinetd config file with telnet enabled.
-	mv $LTPTMP/tst_xinetd.conf.2 /etc/xinetd.conf > $LTPTMP/tst_xinetd.err 2>&1 \
-		|| RC=$?
+    # install the xinetd config file with telnet enabled.
+    mv $LTPTMP/tst_xinetd.conf.2 /etc/xinetd.conf > $LTPTMP/tst_xinetd.err 2>&1 \
+        || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_brk TBROK $LTPTMP/tst_xinetd.err NULL \
@@ -286,44 +286,44 @@ test01()
 
     tst_resm TINFO "Test #1: new xinetd.conf installed with telnet enabled."
 
-	sleep 1s
+    sleep 1s
 
-	# restart services.
+    # restart services.
     /etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.out 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_xinetd.out \
             "Test #1: unable to restart services with telnet enabled. Details:"
         return $RC
-	else
-		# even if restart has a zero exit value double check for failure.
-		grep -i "fail" $LTPTMP/tst_xinetd.out > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
-		if [ $RC -eq 0 ]
-		then
-			tst_res TFAIL $LTPTMP/tst_xinetd.err \
-				"Test #1: xinetd failed to restart. Details"
-			return $RC
-		else
-			RC=0
-			tst_resm TINFO \
-				"Test #1: xinetd re-started successfully with telnet enabled."
-		fi
-	fi
+    else
+        # even if restart has a zero exit value double check for failure.
+        grep -i "fail" $LTPTMP/tst_xinetd.out > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
+        if [ $RC -eq 0 ]
+        then
+            tst_res TFAIL $LTPTMP/tst_xinetd.err \
+                "Test #1: xinetd failed to restart. Details"
+            return $RC
+        else
+            RC=0
+            tst_resm TINFO \
+                "Test #1: xinetd re-started successfully with telnet enabled."
+        fi
+    fi
 
-	# Not checking for exit code from telnet command because telnet is
-	# not terminated by the test gracefully.
-	echo "" | telnet localhost > $LTPTMP/tst_xinetd.out 2>&1
+    # Not checking for exit code from telnet command because telnet is
+    # not terminated by the test gracefully.
+    echo "" | telnet localhost > $LTPTMP/tst_xinetd.out 2>&1
 
-	diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.2 \
-		> $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
+    diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.2 \
+        > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_res TFAIL $LTPTMP/tst_xinetd.err \
             "Test #1: expected output differes from actual. Details:"
         return $RC
-	else
-		tst_resm TPASS \
-		"Test #1: xinetd reads the config file and starts or stops services."
+    else
+        tst_resm TPASS \
+        "Test #1: xinetd reads the config file and starts or stops services."
     fi
 
     return $RC
