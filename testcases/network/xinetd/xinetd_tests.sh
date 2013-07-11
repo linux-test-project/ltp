@@ -84,11 +84,22 @@ init()
          return $RC
     fi
 
+    # sometimes the default telnet may be /usr/kerberos/bin/telnet
+    TELNET_COMM='/usr/bin/telnet'
+
     # check if commands tst_*, xinetd, awk exists.
     chk_ifexists INIT tst_resm   || return $RC
     chk_ifexists INIT xinetd     || return $RC
     chk_ifexists INIT diff       || return $RC
-    chk_ifexists INIT telnet     || return $RC
+    chk_ifexists INIT ip         || return $RC
+    chk_ifexists INIT $TELNET_COMM || return $RC
+
+    IPV6_ENABLED=0
+    ip a | grep inet6 > /dev/null 2>&1
+    if [ $? -eq 0 ]
+    then
+        IPV6_ENABLED=1
+    fi
 
     # Create custom xinetd.conf file.
     # tst_xinetd.conf.1 config file has telnet service disabled.
@@ -128,7 +139,7 @@ EOF
 
     # Create expected file with telnet disabled.
     cat > $LTPTMP/tst_xinetd.exp.1 <<-EOF || RC=$?
-telnet: Unable to connect to remote host: Connection refused
+telnet: connect to address 127.0.0.1: Connection refused
 EOF
 
     if [ $RC -ne 0 ]
@@ -138,10 +149,23 @@ EOF
         return $RC
     fi
 
+    if [ $IPV6_ENABLED -eq 1 ]
+    then
+        cat > $LTPTMP/tst_xinetd.exp.1.ipv6 <<-EOF || RC=$?
+telnet: connect to address ::1: Connection refused
+EOF
+
+        if [ $RC -ne 0 ]
+        then
+            tst_brkm TBROK NULL \
+                "INIT: unable to create expected file $LTPTMP/tst_xinetd.exp.1"
+        fi
+    fi
+
     # Create expected file with telnet enabled.
     cat > $LTPTMP/tst_xinetd.exp.2 <<-EOF || RC=$?
 Trying 127.0.0.1...
-Connected to localhost (127.0.0.1).
+Connected to 127.0.0.1.
 Escape character is '^]'.
 Connection closed by foreign host.
 EOF
@@ -149,8 +173,24 @@ EOF
     if [ $RC -ne 0 ]
     then
         tst_brkm TBROK  NULL \
-            "INIT: unable to create expected file $LTPTMP/tst_xinetd.exp.1"
+            "INIT: unable to create expected file $LTPTMP/tst_xinetd.exp.2"
         return $RC
+    fi
+
+    if [ $IPV6_ENABLED -eq 1 ]
+    then
+        cat > $LTPTMP/tst_xinetd.exp.2.ipv6 <<-EOF || RC=$?
+Trying ::1...
+Connected to ::1.
+Escape character is '^]'.
+Connection closed by foreign host.
+EOF
+
+        if [ $RC -ne 0 ]
+        then
+            tst_brkm TBROK NULL \
+                "INIT: unable to create expected file $LTPTMP/tst_xinetd.exp.2.ipv6"
+        fi
     fi
 
     return $RC
@@ -263,7 +303,20 @@ test01()
 
     # Not checking for exit code from telnet command because telnet is
     # not terminated by the test gracefully.
-    echo "" | telnet localhost 2>$LTPTMP/tst_xinetd.out 1>/dev/null
+    if [ $IPV6_ENABLED -eq 1 ]
+    then
+        echo "" | $TELNET_COMM ::1 2>$LTPTMP/tst_xinetd.out.ipv6 1>/dev/null
+        diff -iwB $LTPTMP/tst_xinetd.out.ipv6  $LTPTMP/tst_xinetd.exp.1.ipv6 \
+            > $LTPTMP/tst_xinetd.err.ipv6 2>&1 || RC=$?
+        if [ $RC -ne 0 ]
+        then
+            tst_res TFAIL $LTPTMP/tst_xinetd.err.ipv6 \
+                "Test #1: with telnet diabled expected out differs RC=$RC. Details:"
+            return $RC
+        fi
+    fi
+
+    echo "" | $TELNET_COMM 127.0.0.1 2>$LTPTMP/tst_xinetd.out 1>/dev/null
     diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.1 \
         > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
@@ -312,7 +365,23 @@ test01()
 
     # Not checking for exit code from telnet command because telnet is
     # not terminated by the test gracefully.
-    echo "" | telnet localhost > $LTPTMP/tst_xinetd.out 2>&1
+    if [ $IPV6_ENABLED -eq 1 ]
+    then
+        echo "" | $TELNET_COMM ::1 >$LTPTMP/tst_xinetd.out.ipv6 2>&1
+        diff -iwB $LTPTMP/tst_xinetd.out.ipv6  $LTPTMP/tst_xinetd.exp.2.ipv6 \
+            > $LTPTMP/tst_xinetd.err.ipv6 2>&1 || RC=$?
+        if [ $RC -ne 0 ]
+        then
+            tst_res TFAIL $LTPTMP/tst_xinetd.err.ipv6 \
+                "Test #1: with telnet diabled expected out differs RC=$RC. Details:"
+            return $RC
+        else
+            tst_resm TPASS \
+            "Test #1: xinetd reads the config file and starts or stops IPv6 services."
+        fi
+    fi
+
+    echo "" | $TELNET_COMM 127.0.0.1 > $LTPTMP/tst_xinetd.out 2>&1
 
     diff -iwB $LTPTMP/tst_xinetd.out  $LTPTMP/tst_xinetd.exp.2 \
         > $LTPTMP/tst_xinetd.err 2>&1 || RC=$?
