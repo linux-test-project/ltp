@@ -135,8 +135,8 @@ void setup(int argc, char *argv[])
 
 	/* 4 firmware paths + NULL */
 	char *fw_paths[5] = { "/lib/firmware", "/lib/firmware/updates" };
-	asprintf(&fw_paths[2], "%s/%s", fw_paths[0], uts_name.release);
-	asprintf(&fw_paths[3], "%s/%s", fw_paths[1], uts_name.release);
+	SAFE_ASPRINTF(cleanup, &fw_paths[2], "%s/%s", fw_paths[0], uts_name.release);
+	SAFE_ASPRINTF(cleanup, &fw_paths[3], "%s/%s", fw_paths[1], uts_name.release);
 
 	/* create firmware in the hard coded firmware search paths */
 	create_firmware(fw_paths);
@@ -145,7 +145,7 @@ void setup(int argc, char *argv[])
 	free(fw_paths[3]);
 
 	/* make non-existent firmware file */
-	asprintf(&fw[fw_num].file, "/n%d_%s", fw_num, fw_name);
+	SAFE_ASPRINTF(cleanup, &fw[fw_num].file, "/n%d_%s", fw_num, fw_name);
 	fw[fw_num].fake = 1;
 	++fw_num;
 }
@@ -205,7 +205,7 @@ static void create_firmware(char *const fw_paths[])
 		}
 
 		/* create test firmware file */
-		asprintf(&fi->file, "%s/n%d_%s", fi->dir, fw_num, fw_name);
+		SAFE_ASPRINTF(cleanup, &fi->file, "%s/n%d_%s", fi->dir, fw_num, fw_name);
 
 		FILE *f = SAFE_FOPEN(cleanup, fi->file, "w");
 		fi->remove_file = 1;
