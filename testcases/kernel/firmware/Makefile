@@ -38,7 +38,7 @@ endif
 
 ifeq ($(SKIP),0)
 SUBDIRS			+= fw_load_kernel
-SUBDIRS			+= fw_load_user
 endif
+SUBDIRS			+= fw_load_user
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
