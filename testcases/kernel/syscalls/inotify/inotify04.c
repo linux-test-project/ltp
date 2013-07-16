@@ -79,6 +79,11 @@ char event_buf[EVENT_BUF_LEN];
 
 int fd_notify, reap_wd_file, reap_wd_dir, wd_dir, wd_file;
 
+static struct tst_kern_exv kvers[] = {
+	{ "RHEL5", "2.6.18-132" },
+	{ NULL, NULL },
+};
+
 static void cleanup(void)
 {
 
@@ -172,7 +177,7 @@ int main(int argc, char **argv)
 	 * This isn't well documented in inotify(7), but it's intuitive if you
 	 * understand how Unix works.
 	 */
-	if (0 <= tst_kvercmp(2, 6, 25)) {
+	if (tst_kvercmp2(2, 6, 25, kvers) >= 0) {
 		event_set[tst_count].mask = IN_ATTRIB;
 		strcpy(event_set[tst_count].name, "");
 		tst_count++;
