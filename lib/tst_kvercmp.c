@@ -67,27 +67,31 @@ int tst_kvercmp(int r1, int r2, int r3)
 
 static int tst_kexvcmp(char *tst_exv, char *cur_ver)
 {
-	int c1 = 0, c2 = 0, t1 = 0, t2 = 0;
+	int c1 = 0, c2 = 0, c3 = 0, c4 = 0, c5 = 0;
+	int t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
 	int ret;
 
-	sscanf(cur_ver, "%*d.%*d.%*d-%d.%d", &c1, &c2);
-	sscanf(tst_exv, "%d.%d", &t1, &t2);
+	sscanf(cur_ver, "%d.%d.%d-%d.%d", &c1, &c2, &c3, &c4, &c5);
+	sscanf(tst_exv, "%d.%d.%d-%d.%d", &t1, &t2, &t3, &t4, &t5);
+
 	if ((ret = c1 - t1))
 		return ret;
-	else
-		return c2 - t2;
+	if ((ret = c2 - t2))
+		return ret;
+	if ((ret = c3 - t3))
+		return ret;
+	if ((ret = c4 - t4))
+		return ret;
+
+	return c5 - t5;
 }
 
 int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers)
 {
-	int ret;
 	int i;
 	struct utsname uval;
 	char *kver;
 	const char *cur_dist_name = NULL;
-
-	if ((ret = tst_kvercmp(r1, r2, r3)))
-		return ret;
 
 	uname(&uval);
 	kver = uval.release;
@@ -95,14 +99,15 @@ int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers)
 		cur_dist_name = "RHEL5";
 	} else if (strstr(kver, ".el6")) {
 		cur_dist_name = "RHEL6";
-	} else {
-		return ret;
 	}
 
 	for (i = 0; vers[i].dist_name; i++) {
-		if (!strcmp(vers[i].dist_name, cur_dist_name))
+		if (!strcmp(vers[i].dist_name, cur_dist_name)) {
+			tst_resm(TINFO, "Detected %s using kernel version %s",
+				 cur_dist_name, kver);
 			return tst_kexvcmp(vers[i].extra_ver, kver);
+		}
 	}
 
-	return ret;
+	return tst_kvercmp(r1, r2, r3);
 }
