@@ -580,6 +580,7 @@ mount02 mount02 -D DEVICE -T DEVICE_FS_TYPE
 mount03 mount03 -D DEVICE -T DEVICE_FS_TYPE
 mount04 mount04 -D DEVICE -T DEVICE_FS_TYPE
 mount05 mount05
+mount06 mount06 -D DEVICE -T DEVICE_FS_TYPE
 
 move_pages01 move_pages.sh 01
 move_pages02 move_pages.sh 02
