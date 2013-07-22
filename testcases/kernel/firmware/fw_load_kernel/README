@@ -1,0 +1,16 @@
+The aim of the test is to check device firmware loading. Since kernel 3.7
+firmware loading changed to direct loading (by-pass udev). The test consists
+of the two parts:
+ - userspace part
+ - kernelspace part
+
+This is a kernel module, which is a part of the device firmware loading test.
+It allows to call request_firmware kernel function with specified parameters.
+Template firmware file name and expected firmware file's data size are passed
+as the insmod command line parameters. Then, the number of firmware test files
+should be written to sysfs file 'fwnum' (the maximum number is 32). This write
+will initiate request firmware procedure. In the end, results can be read from
+'result' device sysfs file. Also, some information regarding module loading,
+can be obtained by looking at kernel log file.
+
+It is automatically used by userspace part of the test.

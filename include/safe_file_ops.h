@@ -22,10 +22,10 @@
  */
 
  /*
-  
+
    This code helps with file reading/writing files providing scanf/printf like
    interface that opens and closes the file automatically.
-   
+
    This kind of interface is especially useful for reading/writing values
    from/to pseudo filesystems like procfs or sysfs.
 

@@ -57,6 +57,17 @@ else
     LTPBIN=$LTPROOT/testcases/bin
 fi
 
+. cmdlib.sh
+SYSLOG_STARTED=0
+
+if [ -n "$SYSLOG_DAEMON" ]; then
+	status_daemon $SYSLOG_DAEMON
+	if [ $? -ne 0 ]; then
+		restart_daemon $SYSLOG_DAEMON
+		SYSLOG_STARTED=1
+	fi
+fi
+
 # Set return code RC variable to 0, it will be set with a non-zero return code
 # in case of error. Set TFAILCNT to 0, increment if there occures a failure.
 
@@ -398,6 +409,10 @@ else
 	$LTPBIN/tst_res TFAIL $LTPTMP/cron_tst2n1.out \
 		"Test #3: crontab failed removing cronjob. Reason:"
 	TFAILCNT=$(( $TFAILCNT+1 ))
+fi
+
+if [ $SYSLOG_STARTED -eq 1 ]; then
+	stop_daemon $SYSLOG_DAEMON
 fi
 
 exit $TFAILCNT

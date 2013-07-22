@@ -38,10 +38,12 @@ ifneq ($(UCLINUX),1)
 SUBDIRS			+= connectors \
 			   containers \
 			   controllers \
+			   firmware \
 			   fs \
 			   hotplug \
 			   io \
 			   ipc \
+			   logging \
 			   mem \
 			   numa \
 			   performance_counters \

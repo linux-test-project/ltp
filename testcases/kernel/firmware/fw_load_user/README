@@ -1,0 +1,11 @@
+The aim of the test is to check device firmware loading. Since kernel 3.7
+firmware loading changed to direct loading (by-pass udev). The test consists
+of the two parts:
+ - userspace part
+ - kernelspace part
+
+This is the userspace part, its tasks are:
+ - create firmware files in the standard firmware paths
+ - load the module and initiate firmware request procedure
+ - read device's result file and print final results
+ - unload the module.

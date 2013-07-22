@@ -52,29 +52,10 @@ do_setup(){
         }
         fi
 
-	# running under systemd?
-	if command -v systemctl >/dev/null 2>&1; then
-		HAVE_SYSTEMCTL=true
+	if [ -n "$CROND_DAEMON" ]; then
+		restart_daemon $CROND_DAEMON
 	else
-		HAVE_SYSTEMCTL=false
-	fi
-
-	# restart cron daemon
-	# Red Hat uses crond, SuSE/Other uses cron.
-	if [ -x /etc/init.d/crond ]; then
-		/etc/init.d/crond restart
-	elif [ -x /etc/init.d/cron ]; then
-		/etc/init.d/cron restart
-	elif $HAVE_SYSTEMCTL; then
-		for crond in "crond" "cron"; do
-			if systemctl is-enabled $crond.service >/dev/null 2>&1; then
-				systemctl restart $crond.service
-				break
-			fi
-		done
-	else
-		echo "Could not determine cron init.d script."
-		exit 1
+		tst_brkm TBROK "Couldn't find crond or cron"
 	fi
 }
 
@@ -90,6 +71,8 @@ do_cleanup(){
 #-----------------------------------------------------------------------
 # FUNCTION:  MAIN
 #-----------------------------------------------------------------------
+. cmdlib.sh
+
 do_setup
 cron_pos_tests.sh $TEST_USER
 EXIT_CODE=$?

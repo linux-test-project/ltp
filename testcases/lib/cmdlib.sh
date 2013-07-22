@@ -158,6 +158,24 @@ else
 	HAVE_SYSTEMCTL=0
 fi
 
+# Check to see if syslogd, syslog-ng or rsyslogd exists
+SYSLOG_DAEMON=""
+if command -v syslogd >/dev/null 2>&1; then
+	SYSLOG_DAEMON="syslog"
+elif command -v syslog-ng >/dev/null 2>&1; then
+	SYSLOG_DAEMON="syslog-ng"
+elif command -v rsyslogd >/dev/null 2>&1; then
+	SYSLOG_DAEMON="rsyslog"
+fi
+
+# Check to see if cron or crond exists
+CROND_DAEMON=""
+if command -v crond >/dev/null 2>&1; then
+	CROND_DAEMON="crond"
+elif command -v cron >/dev/null 2>&1; then
+	CROND_DAEMON="cron"
+fi
+
 start_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
@@ -188,8 +206,8 @@ status_daemon()
 restart_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
-		systemctl start $1.service > /dev/null 2>&1
+		systemctl restart $1.service > /dev/null 2>&1
 	else
-		service $1 start > /dev/null 2>&1
+		service $1 restart > /dev/null 2>&1
 	fi
 }
