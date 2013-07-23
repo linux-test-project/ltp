@@ -101,6 +101,9 @@ int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers)
 		cur_dist_name = "RHEL6";
 	}
 
+	if (cur_dist_name == NULL)
+		return tst_kvercmp(r1, r2, r3);
+
 	for (i = 0; vers[i].dist_name; i++) {
 		if (!strcmp(vers[i].dist_name, cur_dist_name)) {
 			printf("Detected %s using kernel version %s",
