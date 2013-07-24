@@ -11,12 +11,12 @@
  *
  * Steps:
  * 1. Create a thread and set up a signal handler for SIGUSR1
- * 2. Thread indicates to main that it is ready to start calling mq_timedsend until it
- *    blocks for a timeout of 10 seconds.
- * 3. In main, send the thread the SIGUSR1 signal while mq_timedsend is blocking.
- * 4. Check to make sure that mq_timedsend blocked, and that it returned EINTR when it was
- *    interrupted by SIGUSR1.
- *
+ * 2. Thread indicates to main that it is ready to start calling mq_timedsend
+ *    until it blocks for a timeout of 10 seconds.
+ * 3. In main, send the thread the SIGUSR1 signal while mq_timedsend is
+ *    blocking.
+ * 4. Check to make sure that mq_timedsend blocked, and that it returned
+ *    EINTR when it was interrupted by SIGUSR1.
  */
 
 #include <stdio.h>
@@ -43,10 +43,15 @@
 #define INTHREAD 0
 #define INMAIN 1
 
-int sem;			/* manual semaphore */
-int in_handler;			/* flag to indicate signal handler was called */
-int errno_eintr;		/* flag to indicate that errno was set to eintr when mq_timedsend()
-				   was interruped. */
+/* manual semaphore */
+int sem;
+
+/* flag to indicate signal handler was called */
+int in_handler;
+
+/* flag to indicate that errno was set to eintr when mq_timedsend()
+ * was interruped. */
+int errno_eintr;
 
 /*
  * This handler is just used to catch the signal and stop sleep (so the
@@ -61,8 +66,7 @@ void justreturn_handler(int signo)
 
 void *a_thread_func()
 {
-
-	int i;
+	int i, ret;
 	struct sigaction act;
 	char gqname[NAMESIZE];
 	mqd_t gqueue;
@@ -96,26 +100,26 @@ void *a_thread_func()
 	sem = INMAIN;
 
 	for (i = 0; i < MAXMSG + 1; i++) {
-		if (mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts) == -1) {
-			if (errno == EINTR) {
-				if (mq_unlink(gqname) != 0) {
-					perror
-					    ("mq_unlink() did not return success");
-					pthread_exit((void *)PTS_UNRESOLVED);
-					return NULL;
-				}
-				printf
-				    ("thread: mq_timedsend interrupted by signal and correctly set errno to EINTR\n");
-				errno_eintr = 1;
-				pthread_exit((void *)PTS_PASS);
-				return NULL;
-			} else {
-				printf
-				    ("mq_timedsend not interrupted by signal or set errno to incorrect code: %d\n",
-				     errno);
-				pthread_exit((void *)PTS_FAIL);
+		ret = mq_timedsend(gqueue, msgptr, strlen(msgptr), 1, &ts);
+		if (ret	!= -1)
+			continue;
+
+		if (errno == EINTR) {
+			if (mq_unlink(gqname) != 0) {
+				perror("mq_unlink() did not return success");
+				pthread_exit((void *)PTS_UNRESOLVED);
 				return NULL;
 			}
+			printf("thread: mq_timedsend interrupted by signal"
+				" and correctly set errno to EINTR\n");
+			errno_eintr = 1;
+			pthread_exit((void *)PTS_PASS);
+			return NULL;
+		} else {
+			printf("mq_timedsend not interrupted by signal or"
+				" set errno to incorrect code: %d\n", errno);
+			pthread_exit((void *)PTS_FAIL);
+			return NULL;
 		}
 	}
 
@@ -161,23 +165,22 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	/* Test to see if the thread blocked correctly in mq_timedsend, and if it returned
-	 * EINTR when it caught the signal */
+	/* Test to see if the thread blocked correctly in mq_timedsend,
+	 * and if it returned EINTR when it caught the signal */
 	if (errno_eintr != 1) {
 		if (sem == INTHREAD) {
-			printf
-			    ("Test FAILED: mq_timedsend() never blocked for any timeout period.\n");
+			printf("Test FAILED: mq_timedsend() never"
+				" blocked for any timeout period.\n");
 			return PTS_FAIL;
 		}
 
 		if (in_handler != 0) {
-			perror
-			    ("Error: signal SIGUSR1 was never received, and/or the signal handler was never called.\n");
+			perror("Error: signal SIGUSR1 was never received and/or"
+				" the signal handler was never called.\n");
 			return PTS_UNRESOLVED;
 		}
 	}
 
 	printf("Test PASSED\n");
 	return PTS_PASS;
-
 }
