@@ -106,7 +106,7 @@ int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers)
 
 	for (i = 0; vers[i].dist_name; i++) {
 		if (!strcmp(vers[i].dist_name, cur_dist_name)) {
-			printf("Detected %s using kernel version %s",
+			tst_resm(TINFO, "Detected %s using kernel version %s",
 				 cur_dist_name, kver);
 			return tst_kexvcmp(vers[i].extra_ver, kver);
 		}
