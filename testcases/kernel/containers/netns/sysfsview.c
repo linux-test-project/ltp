@@ -38,7 +38,9 @@
 #include <sys/wait.h>
 #include "libclone.h"
 
-int main()
+const char *TCID = "sysfsview";
+
+int main(void)
 {
 	int ret, status = 0;
 	char *script, *ltproot;

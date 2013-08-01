@@ -28,7 +28,9 @@
 
 #include "libclone.h"
 
-int main()
+const char *TCID = "par_chld_ftp";
+
+int main(void)
 {
 	int status;
 	status = create_net_namespace("par_ftp.sh", "ch_ftp.sh");
