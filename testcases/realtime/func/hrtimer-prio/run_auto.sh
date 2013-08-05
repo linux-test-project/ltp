@@ -8,5 +8,3 @@ fi
 source $SCRIPTS_DIR/setenv.sh
 
 $SCRIPTS_DIR/run_c_files.sh "hrtimer-prio"
-
-
