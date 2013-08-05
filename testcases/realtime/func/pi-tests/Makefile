@@ -22,7 +22,7 @@
 
 top_srcdir		?= ../../../..
 
-INSTALL_TARGETS		:= run_auto.sh
+INSTALL_TARGETS		:= run_auto.sh parse-testpi1.py parse-testpi2.py
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(abs_srcdir)/../../config.mk
 
