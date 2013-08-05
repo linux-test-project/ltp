@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *               Author: William Roske
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -30,61 +31,8 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.14 2009/08/28 10:03:01 vapier Exp $ */
-
-/**********************************************************
- *
- *    IRIX/Linux Feature Test and Evaluation - Silicon Graphics, Inc.
- *
- *    FUNCTION NAME 	: usctest.h
- *
- *    FUNCTION TITLE	: System Call Test Macros
- *
- *    SYNOPSIS:
- *	See DESCRIPTION below.
- *
- *    AUTHOR		: William Roske
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    DESCRIPTION
- * 	TEST(SCALL) - calls a system call
- *	TEST_VOID(SCALL) - same as TEST() but for syscalls with no return value.
- *	TEST_CLEANUP - print the log of errno return counts if STD_ERRNO_LOG
- *		       is set.
- *	TEST_PAUSEF(HAND) - Pause for SIGUSR1 if the pause flag is set.
- *		      Use "hand" as the interrupt handling function
- *	TEST_PAUSE -  Pause for SIGUSR1 if the pause flag is set.
- *		      Use internal function to do nothing on signal and go on.
- *	TEST_LOOPING(COUNTER) - Conditional to check if test should
- *		      loop.  Evaluates to TRUE (1) or FALSE (0).
- *	TEST_ERROR_LOG(eno) - log that this errno was received,
- *		      if STD_ERRNO_LOG is set.
- *	TEST_EXP_ENOS(array) - set the bits in TEST_VALID_ENO array at
- *		      positions specified in integer "array"
- *
- *    RETURN VALUE
- * 	TEST(SCALL) - Global Variables set:
- *			long TEST_RETURN=return code from SCALL
- *			int TEST_ERRNO=value of errno at return from SCALL
- * 	TEST_VOID(SCALL) - Global Variables set:
- *			int TEST_ERRNO=value of errno at return from SCALL
- *	TEST_CLEANUP - None.
- *	TEST_PAUSEF(HAND) -  None.
- *	TEST_PAUSE -  None.
- *	TEST_LOOPING(COUNTER) - True if COUNTER < STD_LOOP_COUNT or
- *			STD_INFINITE is set.
- *	TEST_ERROR_LOG(eno) - None
- *	TEST_EXP_ENOS(array) - None
- *
- *    KNOWN BUGS
- *      If you use the TEST_PAUSE or TEST_LOOPING macros, you must
- *	link in parse_opts.o, which contains the code for those functions.
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
-
-#ifndef  __USCTEST_H__
-#define __USCTEST_H__ 1
+#ifndef __USCTEST_H__
+#define __USCTEST_H__
 
 #ifndef _SC_CLK_TCK
 #include <unistd.h>
@@ -103,19 +51,13 @@
 #endif
 #endif
 
-#ifndef CRAY
-#ifndef BSIZE
-#define BSIZE BBSIZE
-#endif
-#endif
-
 /***********************************************************************
  * Define option_t structure type.
  * Entries in this struct are used by the parse_opts routine
  * to indicate valid options and return option arguments
  ***********************************************************************/
 typedef struct {
-  char *option;      	/* Valid option string (one option only) like "a:" */
+  char *option;		/* Valid option string (one option only) like "a:" */
   int  *flag;		/* pointer to location to set true if option given */
   char **arg;		/* pointer to location to place argument, if needed */
 } option_t;
@@ -139,24 +81,12 @@ extern float STD_LOOP_DURATION, /* wall clock time to iterate */
 
 #define USC_MAX_ERRNO	2000
 
-/**********************************************************************
- * Prototype for parse_opts routine
- **********************************************************************/
-extern char *parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)());
+char *parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)());
 
-
-/*
- * define a structure
- */
 struct usc_errno_t {
     int flag;
 };
 
-/***********************************************************************
- ****
- ****
- ****
- **********************************************************************/
 #ifdef  _USC_LIB_
 
 extern long TEST_RETURN;
@@ -252,7 +182,7 @@ do { \
 
 /***********************************************************************
  * TEST_PAUSEF: Pause for SIGUSR1 if the pause flag is set.
- * 		 Set the user specified function as the interrupt
+ *		 Set the user specified function as the interrupt
  *		 handler instead of "STD_go"
  *
  * parameters:
@@ -320,4 +250,4 @@ do { \
 	} \
 } while (0)
 
-#endif  /* end of __USCTEST_H__ */
+#endif /* __USCTEST_H__ */
