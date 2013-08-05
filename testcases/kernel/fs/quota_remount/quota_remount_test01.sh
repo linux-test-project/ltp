@@ -47,14 +47,8 @@ then
 fi
 MNTDIR=$TMPDIR/mnt
 
-uname -r | {
-	IFS='.-'
-	read MAJOR MINOR RELEASE REST
-	if [ "$MAJOR" -lt 2 -o "$MINOR" -lt 6 -o "$RELEASE" -lt 26 ]; then
-		exit 1
-	fi
-	exit 0; }
-if [ $? -gt 0 ]; then
+tst_kvercmp 2 6 26
+if [ $? -eq 0 ]; then
         tst_resm TCONF "Remounting with quotas enabled is not supported!"
         tst_resm TCONF "You should have kernel 2.6.26 and above running....."
         exit 0
@@ -82,6 +76,13 @@ mkfs.ext3 -q -F -b 4096 $IMAGE || die 2 "Could not create the filesystem"
 mkdir $MNTDIR || die 2 "Could not create the mountpoint"
 mount -t ext3 -o loop,usrquota,grpquota $IMAGE $MNTDIR || die 2 "Could not mount the filesystem"
 tst_resm TINFO "Successfully mounted the File System"
+
+# some distros (CentOS 6.x, for example) doesn't permit creating
+# of quota files in a directory with SELinux file_t type
+if [ -x /usr/sbin/selinuxenabled ] && /usr/sbin/selinuxenabled; then
+	chcon -t tmp_t $MNTDIR || die 2 "Could not change SELinux file type"
+	tst_resm TINFO "Successfully changed SELinux file type"
+fi
 
 quotacheck -cug $MNTDIR || die 2 "Could not create quota files"
 tst_resm TINFO "Successfully Created Quota Files"
