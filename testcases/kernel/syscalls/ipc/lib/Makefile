@@ -22,6 +22,4 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 LIB			:= libipc.a
 
-CFLAGS			+= -D_USC_LIB_
-
 include $(top_srcdir)/include/mk/lib.mk

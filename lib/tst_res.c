@@ -31,8 +31,6 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_res.c,v 1.14 2009/12/01 08:57:20 yaberauneya Exp $ */
-
 /**********************************************************
  *
  *    OS Testing - Silicon Graphics, Inc.
@@ -103,6 +101,10 @@
 #include "test.h"
 #include "usctest.h"
 #include "ltp_priv.h"
+
+long TEST_RETURN;
+int TEST_ERRNO;
+struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
 
 /* Break bad habits. */
 #ifdef GARRETT_IS_A_PEDANTIC_BASTARD

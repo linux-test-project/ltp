@@ -25,8 +25,6 @@
  *	test_func64.c - nftw64() calls these functions.
  */
 
-#define _USC_LIB_
-
 #include "nftw64.h"
 
 extern pathdata pathdat[];

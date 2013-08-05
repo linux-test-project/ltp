@@ -24,10 +24,6 @@ top_srcdir		?= ..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-ifeq ($(UCLINUX),1)
-CFLAGS			+= -D_USC_LIB_
-endif
-
 CFLAGS			+= -I.
 
 #CPPFLAGS		+= -DGARRETT_IS_A_PEDANTIC_BASTARD

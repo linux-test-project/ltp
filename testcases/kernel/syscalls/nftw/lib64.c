@@ -25,8 +25,6 @@
  *      lib64.c - This file contains code for common failure conditions
  */
 
-#define _USC_LIB_
-
 #include "nftw64.h"
 
 extern int s2;

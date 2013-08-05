@@ -25,8 +25,6 @@
  *	tools64.c - Supporting functions for nftw64.c
  */
 
-#define _USC_LIB_
-
 #include "nftw64.h"
 
 extern pathdata pathdat[];

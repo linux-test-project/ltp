@@ -87,27 +87,9 @@ struct usc_errno_t {
     int flag;
 };
 
-#ifdef  _USC_LIB_
-
 extern long TEST_RETURN;
 extern int TEST_ERRNO;
 extern struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
-
-#else
-/***********************************************************************
- * Global array of bit masks to indicate errnos that are expected.
- * Bits set by TEST_EXP_ENOS() macro and used by TEST_CLEANUP() macro.
- ***********************************************************************/
-struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
-
-/***********************************************************************
- * Globals for returning the return code and errno from the system call
- * test macros.
- ***********************************************************************/
-long TEST_RETURN;
-int TEST_ERRNO;
-
-#endif  /* _USC_LIB_ */
 
 /***********************************************************************
  * structure for timing accumulator and counters

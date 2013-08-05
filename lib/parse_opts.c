@@ -85,7 +85,6 @@
 
 #include "test.h"
 #include "ltp_priv.h"
-#define _USC_LIB_   1		/* indicates we are the library to the usctest.h include */
 #include "usctest.h"
 
 #ifndef USC_COPIES
