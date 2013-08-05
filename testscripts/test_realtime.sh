@@ -128,7 +128,7 @@ find_test()
             ;;
         all)
         # Run all tests which have run_auto.sh
-            TESTLIST="func stress java perf"
+            TESTLIST="func stress perf"
             ;;
         list)
         # This will only display subdirs which have run_auto.sh
