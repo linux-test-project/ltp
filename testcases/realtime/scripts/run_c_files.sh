@@ -20,8 +20,11 @@ profile_path=$PROFILES_DIR/$profile
 # Does profile exist?
 [ ! -f "$profile_path" ] && { echo >&2 "$0: Could not find profile ($profile_path)" ; exit 1 ; }
 
-# Compile the test cases to support stand alone runs.
-make
+# if INSTALL_DIR != top_srcdir assume the individual tests are built and installed.
+if [[ -f Makefile ]]; then
+    # Compile the test cases to support stand alone runs.
+    make
+fi
 
 
 # Run the test case

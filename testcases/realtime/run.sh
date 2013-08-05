@@ -185,12 +185,16 @@ if [ $# -lt 1 ]; then
 fi
 pushd $TESTS_DIR >/dev/null
 
-#Only build the library, most of the tests depend upon.
-#The Individual tests will be built, just before they run.
-pushd lib
-make
-check_error make
-popd
+# if INSTALL_DIR != top_srcdir assume the individual tests are built and installed.
+# So no need to build lib
+if [[ -d lib ]]; then
+    #Only build the library, most of the tests depend upon.
+    #The Individual tests will be built, just before they run.
+    pushd lib
+    make
+    check_error make
+    popd
+fi
 
 ISLOOP=0
 index=0
