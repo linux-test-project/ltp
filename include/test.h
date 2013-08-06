@@ -219,8 +219,26 @@ long tst_ncpus_max(void);
  * @argv: a list of two (at least program name + NULL) or more pointers that
  * represent the argument list to the new program. The array of pointers
  * must be terminated by a NULL pointer.
+ * @stdout_fd: file descriptor where to redirect stdout. Set -1 if
+ * redirection is not needed.
+ * @stderr_fd: file descriptor where to redirect stderr. Set -1 if
+ * redirection is not needed.
  */
-void tst_run_cmd(void (cleanup_fn)(void), char *const argv[]);
+void tst_run_cmd_fds(void (cleanup_fn)(void),
+			char *const argv[],
+			int stdout_fd,
+			int stderr_fd);
+
+/* Executes tst_run_cmd_fds() and redirects its output to a file
+ * @stdout_path: path where to redirect stdout. Set NULL if redirection is
+ * not needed.
+ * @stderr_path: path where to redirect stderr. Set NULL if redirection is
+ * not needed.
+ */
+void tst_run_cmd(void (cleanup_fn)(void),
+		char *const argv[],
+		const char *stdout_path,
+		const char *stderr_path);
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
