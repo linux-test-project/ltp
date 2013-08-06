@@ -94,12 +94,12 @@ void tst_module_load(void (cleanup_fn)(void),
 	for (i = offset; i < size; ++i)
 		mod_argv[i] = argv[i - offset];
 
-	tst_run_cmd(cleanup_fn, mod_argv);
+	tst_run_cmd(cleanup_fn, mod_argv, NULL, NULL);
 	free(mod_path);
 }
 
 void tst_module_unload(void (cleanup_fn)(void), const char *mod_name)
 {
 	char *const argv[] = { "rmmod", mod_name, NULL };
-	tst_run_cmd(cleanup_fn, argv);
+	tst_run_cmd(cleanup_fn, argv, NULL, NULL);
 }
