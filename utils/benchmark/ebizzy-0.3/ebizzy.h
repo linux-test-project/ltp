@@ -18,7 +18,7 @@
 /*
  * FreeBSD compatibility stuff
  */
-#ifdef _freebsd
+#if defined(_freebsd) || defined(__UCLIBC__)
 #define mallopt(arg1, arg2) do { } while (0);
 #endif
 
