@@ -85,7 +85,7 @@ void tst_module_load(void (cleanup_fn)(void),
 	while (argv && argv[size])
 		++size;
 	size += offset;
-	char *mod_argv[size + 1]; /* + NULL in the end */
+	const char *mod_argv[size + 1]; /* + NULL in the end */
 	mod_argv[size] = NULL;
 	mod_argv[0] = "insmod";
 	mod_argv[1] = mod_path;
@@ -100,6 +100,6 @@ void tst_module_load(void (cleanup_fn)(void),
 
 void tst_module_unload(void (cleanup_fn)(void), const char *mod_name)
 {
-	char *const argv[] = { "rmmod", mod_name, NULL };
+	const char *const argv[] = { "rmmod", mod_name, NULL };
 	tst_run_cmd(cleanup_fn, argv, NULL, NULL);
 }

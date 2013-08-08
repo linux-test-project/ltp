@@ -225,7 +225,7 @@ long tst_ncpus_max(void);
  * redirection is not needed.
  */
 void tst_run_cmd_fds(void (cleanup_fn)(void),
-			char *const argv[],
+			const char *const argv[],
 			int stdout_fd,
 			int stderr_fd);
 
@@ -236,7 +236,7 @@ void tst_run_cmd_fds(void (cleanup_fn)(void),
  * not needed.
  */
 void tst_run_cmd(void (cleanup_fn)(void),
-		char *const argv[],
+		const char *const argv[],
 		const char *stdout_path,
 		const char *stderr_path);
 

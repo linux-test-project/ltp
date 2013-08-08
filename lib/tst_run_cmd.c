@@ -31,7 +31,7 @@
 #define OPEN_FLAGS	(O_WRONLY | O_APPEND | O_CREAT)
 
 void tst_run_cmd_fds(void (cleanup_fn)(void),
-		char *const argv[],
+		const char *const argv[],
 		int stdout_fd,
 		int stderr_fd)
 {
@@ -57,7 +57,7 @@ void tst_run_cmd_fds(void (cleanup_fn)(void),
 			dup2(stderr_fd, STDERR_FILENO);
 		}
 
-		_exit(execvp(argv[0], argv));
+		_exit(execvp(argv[0], (char *const *)argv));
 	}
 
 	int ret = -1;
@@ -73,7 +73,7 @@ void tst_run_cmd_fds(void (cleanup_fn)(void),
 }
 
 void tst_run_cmd(void (cleanup_fn)(void),
-		char *const argv[],
+		const char *const argv[],
 		const char *stdout_path,
 		const char *stderr_path)
 {
