@@ -153,6 +153,7 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
+	tst_mkfs(NULL, device, fstype, NULL);
 
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL)
 		tst_brkm(TBROK, NULL, "\"nobody\" user not present");

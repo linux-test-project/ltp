@@ -186,6 +186,7 @@ static void setup(void)
 	int ret;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_mkfs(cleanup, device, fstype, NULL);
 
 	TEST_PAUSE;
 

@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
 void setup(void)
 {
 	tst_require_root(NULL);
+	tst_mkfs(NULL, device, fstype, NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

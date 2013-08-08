@@ -101,6 +101,7 @@ static void setup(void)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
+	tst_mkfs(NULL, device, fstype, NULL);
 
 	tst_tmpdir();
 

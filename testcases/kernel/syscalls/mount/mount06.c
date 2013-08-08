@@ -143,6 +143,7 @@ int ismount(char *mntpoint)
 void setup(void)
 {
 	tst_require_root(NULL);
+	tst_mkfs(NULL, device, fstype, NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
