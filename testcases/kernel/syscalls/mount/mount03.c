@@ -151,7 +151,6 @@ int main(int argc, char *argv[])
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
@@ -373,7 +372,7 @@ int test_rwflag(int i, int cnt)
 	return 0;
 }
 
-void setup(void)
+static void setup(void)
 {
 	char path[PATH_MAX];
 
@@ -398,14 +397,13 @@ void setup(void)
 	TEST_PAUSE;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 
-void help(void)
+static void help(void)
 {
 	printf("-T type	  : specifies the type of filesystem to be mounted. "
 	       "Default ext2.\n");

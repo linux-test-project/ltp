@@ -56,11 +56,10 @@ static void setup(void);
 static void cleanup(void);
 
 static int setup_test(int, int);
-static int cleanup_test(int);
+static void cleanup_test(int);
 
 char *TCID = "mount02";
 
-#define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
 #define DIR_MODE	(S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP)
 #define FILE_MODE	(S_IRWXU | S_IRWXG | S_IRWXO)
@@ -75,10 +74,9 @@ static char *Mntpoint;
 static unsigned long Flag;
 
 static int fd;
-static char mntpoint[PATH_MAX];
-static char *fstype;
+static char *mntpoint = "mntpoint";
+static char *fstype = "ext2";
 static char *device;
-static int Tflag;
 static int Dflag;
 
 static int exp_enos[] = {
@@ -90,7 +88,7 @@ static int exp_enos[] = {
 int TST_TOTAL = (sizeof(exp_enos) / sizeof(exp_enos[0])) - 1;
 
 static option_t options[] = {
-	{"T:", &Tflag, &fstype},
+	{"T:", NULL, &fstype},
 	{"D:", &Dflag, &device},
 	{NULL, NULL, NULL}
 };
@@ -108,18 +106,6 @@ int main(int ac, char **av)
 	if (Dflag == 0)
 		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
 			 " mounting with -D option.");
-
-	Type = malloc(FSTYPE_LEN);
-	if (Type == NULL)
-		tst_brkm(TBROK | TERRNO, NULL, "malloc failed");
-
-	if (Tflag == 1) {
-		strncpy(Type, fstype,
-			(FSTYPE_LEN <
-			 strlen(fstype)) ? FSTYPE_LEN : strlen(fstype));
-	} else {
-		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE));
-	}
 
 	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
@@ -162,13 +148,11 @@ int main(int ac, char **av)
 					 "error (%d)", exp_enos[i]);
 			}
 
-			(void)cleanup_test(i);
-
+			cleanup_test(i);
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
@@ -188,9 +172,7 @@ static int setup_test(int i, int cnt)
 	switch (i) {
 	case 0:
 		/* Setup for mount(2) returning errno ENODEV. */
-
-		strncpy(Type, "error", 5);
-		Fstype = Type;
+		Fstype = "error";
 		return 0;
 	case 1:
 		/* Setup for mount(2) returning errno ENOTBLK. */
@@ -308,34 +290,25 @@ static int setup_test(int i, int cnt)
  * cleanup_test() - Setup function for test cases based on the error values
  *		  to be returned.
  */
-static int cleanup_test(int i)
+static void cleanup_test(int i)
 {
 	switch (i) {
 	case 0:
 	case 5:
 	case 7:
-		if (Tflag) {
-			/* Avoid buffer overflow */
-			strncpy(Type, fstype,
-				(FSTYPE_LEN < strlen(fstype) + 1) ? FSTYPE_LEN :
-				strlen(fstype) + 1);
-		} else {
-			strcpy(Type, "ext2");
-		}
-		break;
+		Type = fstype;
+	break;
 	case 3:
 		close(fd);
 		/* FALLTHROUGH */
 	case 2:
-		TEST(umount(mntpoint));
-		if (TEST_RETURN != 0)
-			tst_resm(TWARN | TTERRNO, "umount failed");
-		break;
+		if (umount(mntpoint))
+			tst_resm(TWARN | TERRNO, "umount failed");
+	break;
 	case 12:
 		close(fd);
-		break;
+	break;
 	}
-	return 0;
 }
 
 static void setup(void)
@@ -345,8 +318,6 @@ static void setup(void)
 	tst_require_root(NULL);
 
 	tst_tmpdir();
-
-	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",
@@ -359,16 +330,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	free(Type);
-
 	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 
-/*
- * issue a help message
- */
 static void help(void)
 {
 	printf("-T type	  : specifies the type of filesystem to be mounted."
