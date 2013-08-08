@@ -206,7 +206,7 @@ main()
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
-
+    local DEVICE_FS_TYPE="ext2"
     local scenfile=
 
     version_date=$(cat "$LTPROOT/Version")
@@ -317,9 +317,9 @@ main()
         K)
 	    case $OPTARG in
         	   /*)
-                	DMESG_DIR="$OPTARG-dmesg-output-`echo $$-``date +%X | tr -d ' '`";;
+			DMESG_DIR="$OPTARG-dmesg-output-`echo $$-``date +%X | tr -d ' '`";;
 	            *)
-        	        DMESG_DIR="$LTPROOT/output/$OPTARG-dmesg-output-`echo $$-``date +%X | tr -d ' '`";;
+		        DMESG_DIR="$LTPROOT/output/$OPTARG-dmesg-output-`echo $$-``date +%X | tr -d ' '`";;
 	    esac
             mkdir -p $DMESG_DIR
             ALT_DMESG_OUT=1;;
@@ -703,32 +703,6 @@ main()
     fi
 
     if [ -n "$DEVICE" ]; then
-        mnt_pnt=`mktemp -d "${TMP}/mnt_pnt.XXXXXX"`
-        if [ -n "$DEVICE_FS_TYPE" ]; then
-            mount -t $DEVICE_FS_TYPE $DEVICE $mnt_pnt
-        else
-            mount $DEVICE $mnt_pnt
-        fi
-
-        if [ $? -ne 0 ]; then
-            echo "FATAL: can't mount block device $DEVICE."
-            exit 1
-        fi
-
-        if [ -z "$DEVICE_FS_TYPE" ]; then
-            DEVICE_FS_TYPE=`cat /proc/mounts | awk "{if (\\\$1 == \"$DEVICE\") print \\\$3; }"`
-            echo "determine file system $DEVICE_FS_TYPE on block device $DEVICE"
-        fi
-
-        umount $DEVICE
-        if [ $? -ne 0 ]; then
-            echo "FATAL: can't umount $DEVICE"
-            exit 1
-        fi
-        rm -rf $mnt_pnt
-    fi
-
-    if [ -n "$DEVICE" ]; then
         sed -i "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|"  ${TMP}/alltests
     fi
 
@@ -1000,21 +974,9 @@ create_block()
             if [ $? -ne 0 ]; then
                 echo "losetup failed to create block device"
                 return 1
-            else
-                DEVICE_FS_TYPE="ext4"
-                mkfs.ext4 $LOOP_DEV
-                if [ $? -ne 0 ]; then
-                    DEVICE_FS_TYPE="ext3"
-                    mkfs.ext3 $LOOP_DEV
-                    if [ $? -ne 0 ]; then
-                        echo "creating an ext4/3 block device failed."
-                        return 1
-                    fi
-                fi
-                #set the values in alltests which require block device.
-                DEVICE=$LOOP_DEV
-                return 0
             fi
+            DEVICE=$LOOP_DEV
+            return 0
         fi
     fi
 }
