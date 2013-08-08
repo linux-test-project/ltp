@@ -13,22 +13,7 @@
  * with this program; if not, write the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- */
-/******************************************************************************
- *
- *    TEST IDENTIFIER	: umount02
- *
- *    EXECUTED BY	: root / superuser
- *
- *    TEST TITLE	: Test for checking basic error conditions for umount(2)
- *
- *    TEST CASE TOTAL	: 5
- *
  *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	Check for basic errors returned by umount(2) system call.
@@ -40,37 +25,6 @@
  *	3) ENOENT if pathname was empty or has a nonexistent component.
  *	4) EINVAL if specialfile or device is invalid or not a mount point.
  *	5) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
- *
- * 	Setup:
- *	  Setup signal handling.
- *	  Create a mount point.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- *	  Do necessary setup for each test.
- *	  Execute system call
- *	  Check return code, if system call failed and errno == expected errno
- *		Issue sys call passed with expected return value and errno.
- *	  Otherwise,
- *		Issue sys call failed to produce expected error.
- *	  Do cleanup for each test.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *	  Delete the temporary directory(s)/file(s) created.
- *
- * USAGE:  <for command-line>
- *  umount02 [-T type] -D device [-e] [-i n] [-I x] [-p x] [-t]
- *			where,  -T type : specifies the type of filesystem to
- *					  be mounted. Default ext2.
- *				-D device : device to be mounted.
- *				-e   : Turn on errno logging.
- *				-i n : Execute test n times.
- *				-I x : Execute test for x seconds.
- *				-p   : Pause for SIGUSR1 before starting
- *				-P x : Pause for x seconds between iterations.
- *				-t   : Turn on syscall timing.
  *
  * RESTRICTIONS
  *	test must be run with the -D option
@@ -92,11 +46,10 @@ static void setup(void);
 static void cleanup(void);
 
 static int setup_test(int, int);
-static int cleanup_test(int);
+static void cleanup_test(int);
 
 char *TCID = "umount02";
 
-#define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
 #define DIR_MODE	S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH
 #define FILE_MODE	S_IRWXU | S_IRWXG | S_IRWXO
@@ -104,17 +57,15 @@ char *TCID = "umount02";
 static char *Einval = "nonexixstent";
 static char Longpathname[PATH_MAX + 2];
 static char Path[PATH_MAX];
-static char *Type;
 static char *Fstype;
 static char *Device;
 static char *Mntpoint;
 static unsigned long Flag;
 
 static int fd;
-static char mntpoint[PATH_MAX];
+static char *mntpoint = "mntpoint";
 static char *fstype;
 static char *device;
-static int Tflag = 0;
 static int Dflag = 0;
 
 static struct test_case_t {
@@ -134,9 +85,9 @@ int TST_TOTAL = sizeof(testcases) / sizeof(testcases[0]);
 
 static int exp_enos[] = { EBUSY, EINVAL, EFAULT, ENAMETOOLONG, ENOENT, 0 };
 
-static option_t options[] = {	/* options supported by umount02 test */
-	{"T:", &Tflag, &fstype},	/* -T type of filesystem        */
-	{"D:", &Dflag, &device},	/* -D device used for mounting  */
+static option_t options[] = {
+	{"T:", NULL, &fstype},
+	{"D:", &Dflag, &device},
 	{NULL, NULL, NULL}
 };
 
@@ -156,22 +107,6 @@ int main(int ac, char **av)
 			 " mounting with -D option, Run '%s  -h' for option "
 			 " information.", TCID);
 		tst_exit();
-	}
-
-	Type = (char *)malloc(FSTYPE_LEN);
-	if (!Type) {
-		tst_brkm(TBROK, NULL, "malloc - alloc of %d failed",
-			 FSTYPE_LEN);
-		tst_exit();
-	}
-
-	if (Tflag == 1) {
-		strncpy(Type, fstype,
-			(FSTYPE_LEN <
-			 (strlen(fstype) + 1)) ? FSTYPE_LEN : (strlen(fstype) +
-							       1));
-	} else {
-		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE) + 1);
 	}
 
 	if (STD_COPIES != 1) {
@@ -218,29 +153,20 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			(void)cleanup_test(i);
-
+			cleanup_test(i);
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
-
 	tst_exit();
-
 }
 
-/*
- * int
- * setup_test() - Setup function for test cases based on the error values
- *		  to be returned.
- */
-int setup_test(int i, int cnt)
+static int setup_test(int i, int cnt)
 {
 	char temp[20];
 
 	Device = device;
-	Fstype = Type;
+	Fstype = fstype;
 	Mntpoint = mntpoint;
 	Flag = 0;
 
@@ -311,12 +237,7 @@ int setup_test(int i, int cnt)
 	return 0;
 }
 
-/*
- * int
- * cleanup_test() - Setup function for test cases based on the error values
- *		  to be returned.
- */
-int cleanup_test(int i)
+void cleanup_test(int i)
 {
 	switch (i) {
 	case 0:
@@ -329,27 +250,16 @@ int cleanup_test(int i)
 		}
 		break;
 	}
-	return 0;
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		if (Type != NULL) {
-			free(Type);
-		}
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
-	/* make a temp directory */
 	tst_tmpdir();
-
-	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE)) {
 		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
@@ -360,35 +270,15 @@ void setup()
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
-
-	return;
 }
 
-/*
- *cleanup() -  performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	if (Type != NULL) {
-		free(Type);
-	}
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
-	return;
 }
 
-/*
- * issue a help message
- */
-void help()
+static void help(void)
 {
 	printf("-T type	  : specifies the type of filesystem to be mounted."
 	       " Default ext2. \n");
