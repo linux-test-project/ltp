@@ -25,6 +25,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <signal.h>
 #include "test.h"
 
 #define OPEN_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
@@ -39,6 +40,16 @@ void tst_run_cmd_fds(void (cleanup_fn)(void),
 		tst_brkm(TBROK, cleanup_fn,
 			"argument list is empty at %s:%d", __FILE__, __LINE__);
 	}
+
+	/*
+	 * The tst_sig() install poisoned signal handlers for all signals the
+	 * test is not expected to get.
+	 *
+	 * So we temporarily disable the handler for sigchild we get after our
+	 * child exits so that we don't have to disable it in each test that
+	 * uses this interface.
+	 */
+	void *old_handler = signal(SIGCHLD, SIG_DFL);
 
 	pid_t pid = vfork();
 	if (pid == -1) {
@@ -62,9 +73,11 @@ void tst_run_cmd_fds(void (cleanup_fn)(void),
 
 	int ret = -1;
 	if (waitpid(pid, &ret, 0) != pid) {
-		tst_brkm(TBROK, cleanup_fn, "waitpid failed at %s:%d",
+		tst_brkm(TBROK | TERRNO, cleanup_fn, "waitpid failed at %s:%d",
 			__FILE__, __LINE__);
 	}
+
+	signal(SIGCHLD, old_handler);
 
 	if (!WIFEXITED(ret) || WEXITSTATUS(ret) != 0) {
 		tst_brkm(TBROK, cleanup_fn, "failed to exec cmd '%s' at %s:%d",
