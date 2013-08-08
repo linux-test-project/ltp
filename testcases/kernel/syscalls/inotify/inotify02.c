@@ -22,25 +22,12 @@
  *
  * Started by Andrew Vagin <avagin@sw.ru>
  *
- */
-/****************************************************************************
- * NAME
- *     inotify02
- *
  * DESCRIPTION
  *     Check that inotify work for a directory
  *
  * ALGORITHM
  *     Execute sequence file's operation and check return events
- *
- * HISTORY
- *     01/06/2007 - Fix to compile inotify test case with kernel that does
- *     not support it. Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
- *
- *     03/27/2008 - Fix the test failure due to event coalescence. Also add
- *     test for this event coalescence. Li Zefan <lizf@cn.fujitsu.com>
- *
- * ***************************************************************************/
+ */
 
 #include "config.h"
 
@@ -69,17 +56,16 @@
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * (EVENT_SIZE + 16))
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "inotify02";
 int TST_TOTAL = 9;
 
 #define BUF_SIZE 256
-char fname1[BUF_SIZE], fname2[BUF_SIZE], fname3[BUF_SIZE];
-char buf[BUF_SIZE];
-int fd, fd_notify;
-int wd;
+static char fname1[BUF_SIZE], fname2[BUF_SIZE], fname3[BUF_SIZE];
+static int fd, fd_notify;
+static int wd;
 
 struct event_t {
 	char name[BUF_SIZE];
@@ -89,29 +75,20 @@ struct event_t {
 #define FILE_NAME1 "test_file1"
 #define FILE_NAME2 "test_file2"
 
-struct event_t event_set[EVENT_MAX];
+static struct event_t event_set[EVENT_MAX];
 
-char event_buf[EVENT_BUF_LEN];
+static char event_buf[EVENT_BUF_LEN];
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	/*
-	 * parse standard options
-	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/*
-	 * perform global setup for test
-	 */
 	setup();
 
-	/*
-	 * check looping state if -c option given
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -274,15 +251,11 @@ int main(int ac, char **av)
 		}
 	}
 
-	/* cleanup and exit */
 	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -309,11 +282,7 @@ void setup()
 
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *        completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
 	if (myinotify_rm_watch(fd_notify, wd) < 0) {
 		tst_resm(TWARN,
@@ -325,12 +294,7 @@ void cleanup()
 		tst_resm(TWARN, "close(%d) failed", fd_notify);
 	}
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 

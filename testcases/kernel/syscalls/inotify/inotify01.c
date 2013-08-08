@@ -22,21 +22,11 @@
  *
  * Started by Andrew Vagin <avagin@sw.ru>
  *
- */
-/*
- * NAME
- *     inotify01
- *
  * DESCRIPTION
  *     Check that inotify work for a file
  *
  * ALGORITHM
  *     Execute sequence file's operation and check return events
- *
- * HISTORY
- *     01/06/2007 - Fix to compile inotify test case with kernel that does
- *     not support it. Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
- *
  */
 #include "config.h"
 
@@ -61,41 +51,31 @@
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * (EVENT_SIZE + 16))
 
-void setup();
-void cleanup();
-
 char *TCID = "inotify01";
 int TST_TOTAL = 7;
 
+static void setup(void);
+static void cleanup(void);
+
 #define BUF_SIZE 256
-char fname[BUF_SIZE];
-char buf[BUF_SIZE];
-int fd, fd_notify;
-int wd;
+static char fname[BUF_SIZE];
+static char buf[BUF_SIZE];
+static int fd, fd_notify;
+static int wd;
 
-int event_set[EVENT_MAX];
+static int event_set[EVENT_MAX];
 
-char event_buf[EVENT_BUF_LEN];
+static char event_buf[EVENT_BUF_LEN];
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	/*
-	 * parse standard options
-	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/*
-	 * perform global setup for test
-	 */
 	setup();
-
-	/*
-	 * check looping state if -c option given
-	 */
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -207,10 +187,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -251,11 +228,7 @@ void setup()
 
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *        completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
 	if (myinotify_rm_watch(fd_notify, wd) < 0) {
 		tst_resm(TWARN | TERRNO, "inotify_rm_watch (%d, %d) failed",
@@ -267,12 +240,7 @@ void cleanup()
 		tst_resm(TWARN, "close(%d) failed", fd_notify);
 	}
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 

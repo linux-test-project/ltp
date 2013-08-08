@@ -22,11 +22,6 @@
  *
  * Started by Andrew Vagin <avagin@gmail.com>
  *
- */
-/*
- * NAME
- *	inotify03
- *
  * DESCRIPTION
  *	Check that inotify get IN_UNMOUNT event and
  *	don't block the umount command.
@@ -68,18 +63,17 @@ static void setup(void);
 static void cleanup(void);
 
 #define BUF_SIZE 1024
-char fname[BUF_SIZE];
-char buf[BUF_SIZE];
-int fd, fd_notify;
-int wd;
+static char fname[BUF_SIZE];
+static int fd, fd_notify;
+static int wd;
 
-int event_set[EVENT_MAX];
+static int event_set[EVENT_MAX];
 
-char event_buf[EVENT_BUF_LEN];
+static char event_buf[EVENT_BUF_LEN];
 
 #define DIR_MODE	(S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP)
 
-static char mntpoint[20];
+static char *mntpoint = "mntpoint";
 static int mount_flag;
 static char *fstype = "ext2";
 static char *device;
@@ -196,8 +190,6 @@ static void setup(void)
 	TEST_PAUSE;
 
 	tst_tmpdir();
-
-	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",
