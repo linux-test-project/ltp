@@ -72,6 +72,20 @@ int main(void)
 		exit(PTS_FAIL);
 	}
 
+	/* wait for aio_fsync */
+	do {
+		usleep(10000);
+		ret = aio_error(&aiocb_fsync);
+	} while (ret == EINPROGRESS);
+
+	ret = aio_return(&aiocb_fsync);
+	if (ret) {
+		printf(TNAME " Error at aio_return(): %d (%s)\n",
+			ret, strerror(errno));
+		close(fd);
+		return PTS_FAIL;
+	}
+
 	close(fd);
 	printf("Test PASSED\n");
 	return PTS_PASS;
