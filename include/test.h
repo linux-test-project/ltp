@@ -249,6 +249,16 @@ void tst_run_cmd(void (cleanup_fn)(void),
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
               const char *fs_type, const char *fs_opts);
 
+/* lib/tst_fill_file.c
+ *
+ * Creates/ovewrites a file with specified pattern
+ * @path: path to file
+ * @pattern: pattern
+ * @bs: block size
+ * @bcount: blocks amount
+ */
+int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL
