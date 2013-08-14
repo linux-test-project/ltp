@@ -49,25 +49,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-
-/*
- * For all but __mips__:
- *
- * _COMPAT_NSIG / _COMPAT_NSIG_BPW == 2.
- *
- * For __mips__:
- *
- * _COMPAT_NSIG / _COMPAT_NSIG_BPW == 4.
- *
- * See asm/compat.h under the kernel source for more details.
- *
- * Multiply that by a fudge factor of 4 and you have your SIGSETSIZE.
- */
-#if defined (__mips__)
-#define SIGSETSIZE 16
-#else
-#define SIGSETSIZE 8
-#endif
+#include "ltp_signal.h"
 
 #define INVAL_STRUCT -1
 
