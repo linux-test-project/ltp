@@ -99,6 +99,7 @@
 #include "config.h"
 #include "linux_syscall_numbers.h"
 #include "swaponoff.h"
+#include "libswapon.h"
 
 static void setup();
 static void cleanup();
@@ -217,36 +218,7 @@ int main(int ac, char **av)
  */
 int setup01()
 {
-	int pagesize = getpagesize();
-
-	/*create file */
-	if ((strncmp(kmachine, "ia64", 4)) == 0) {
-		if (system
-		    ("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 > tmpfile"
-		     " 2>&1") != 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Failed to create file for swap");
-		}
-	} else if (pagesize == 65536) {
-		if (system
-		    ("dd if=/dev/zero of=swapfile01 bs=1048  count=655 > tmpfile"
-		     " 2>&1") != 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Failed to create file for swap");
-		}
-	} else {
-		if (system
-		    ("dd if=/dev/zero of=swapfile01 bs=1048  count=40 > tmpfile"
-		     " 2>&1") != 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Failed to create file for swap");
-		}
-	}
-
-	/* make above file a swap file */
-	if (system("mkswap swapfile01 > tmpfile 2>&1") != 0) {
-		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
-	}
+	make_swapfile(cleanup, "swapfile01");
 
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_resm(TWARN, "\"nobody\" user not present. skipping test");
@@ -293,37 +265,9 @@ int setup02()
  */
 int setup03()
 {
-	int pagesize = getpagesize();
 	int res = 0;
 
-	/*create file */
-	if ((strncmp(kmachine, "ia64", 4)) == 0) {
-		if (system
-		    ("dd if=/dev/zero of=alreadyused bs=1024  count=65536 > tmpfile"
-		     " 2>&1") != 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Failed to create file for swap");
-		}
-	} else if (pagesize == 65536) {
-		if (system
-		    ("dd if=/dev/zero of=alreadyused bs=1048  count=655 > tmpfile"
-		     " 2>&1") != 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Failed to create file for swap");
-		}
-	} else {
-		if (system
-		    ("dd if=/dev/zero of=alreadyused bs=1048  count=40 > tmpfile"
-		     " 2>&1") != 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Failed to create file for swap");
-		}
-	}
-
-	/* make above file a swap file */
-	if (system("mkswap alreadyused > tmpfile 2>&1") != 0) {
-		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
-	}
+	make_swapfile(cleanup, "alreadyused");
 
 	/* turn on the swap file */
 	res = ltp_syscall(__NR_swapon, "alreadyused", 0);

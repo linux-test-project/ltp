@@ -74,13 +74,13 @@
 #include "config.h"
 #include "linux_syscall_numbers.h"
 #include "swaponoff.h"
+#include "libswapon.h"
 
 void setup();
 void cleanup();
 int setup_swap();
 int clean_swap();
 int check_and_swapoff(char *filename);
-int create_swapfile(char *swapfile, int bs, int count);
 
 char *TCID = "swapon03";
 int TST_TOTAL = 1;
@@ -208,8 +208,7 @@ int setup_swap()
 	pid_t pid;
 	int j, fd;		/*j is loop counter, fd is file descriptor */
 	int status;		/* used for fork */
-	int res = 0, pagesize = getpagesize();
-	int bs, count;
+	int res = 0;
 	char filename[15];	/* array to store new filename */
 	char buf[BUFSIZ + 1];	/* temp buffer for reading /proc/swaps */
 
@@ -254,18 +253,6 @@ int setup_swap()
 		swapfiles = MAX_SWAPFILES;
 	}
 
-	/* args for dd */
-	if ((strncmp(kmachine, "ia64", 4)) == 0) {
-		bs = 1024;
-		count = 1024;
-	} else if (pagesize == 65536) {
-		bs = 1048;
-		count = 655;
-	} else {
-		bs = 1048;
-		count = 40;
-	}
-
 	pid = FORK_OR_VFORK();
 	if (pid == 0) {
 		/*create and turn on remaining swapfiles */
@@ -279,10 +266,7 @@ int setup_swap()
 			}
 
 			/* Create the swapfile */
-			if (create_swapfile(filename, bs, count) < 0) {
-				printf("Failed to create swapfile");
-				exit(1);
-			}
+			make_swapfile(cleanup, filename);
 
 			/* turn on the swap file */
 			res = ltp_syscall(__NR_swapon, filename, 0);
@@ -307,56 +291,11 @@ int setup_swap()
 	}
 
 	/* Create all needed extra swapfiles for testing */
-	for (j = 0; j < testfiles; j++) {
-		if (create_swapfile(swap_testfiles[j].filename, bs, count) < 0) {
-			tst_resm(TWARN,
-				 "Failed to create swapfiles for the test");
-			exit(1);
-		}
-	}
+	for (j = 0; j < testfiles; j++)
+		make_swapfile(cleanup, swap_testfiles[j].filename);
 
 	return 0;
 
-}
-
-/***************************************************************
- * create_swapfile() - Create a swap file
- ***************************************************************/
-int create_swapfile(char *swapfile, int bs, int count)
-{
-	char cmd_buffer[256];
-
-	/* prepare the path string for dd command */
-	if (snprintf(cmd_buffer, sizeof(cmd_buffer),
-		     "dd if=/dev/zero of=%s bs=%d "
-		     "count=%d > tmpfile 2>&1", swapfile, bs, count) < 0) {
-		tst_resm(TWARN,
-			 "sprintf() failed to create the command string");
-
-		return -1;
-	}
-
-	if (system(cmd_buffer) != 0) {
-		tst_resm(TWARN, "dd command failed to create file via "
-			 "command: %s", cmd_buffer);
-		return -1;
-	}
-
-	/* make the file swapfile */
-	if (snprintf(cmd_buffer, sizeof(cmd_buffer),
-		     "mkswap %s > tmpfile 2>&1", swapfile) < 0) {
-		tst_resm(TWARN,
-			 "snprintf() failed to create mkswap command string");
-		return -1;
-	}
-
-	if (system(cmd_buffer) != 0) {
-		tst_resm(TWARN, "failed to make swap file %s via command %s",
-			 swapfile, cmd_buffer);
-		return -1;
-	}
-
-	return 0;
 }
 
 /***************************************************************
