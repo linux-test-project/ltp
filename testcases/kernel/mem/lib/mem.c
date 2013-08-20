@@ -786,16 +786,14 @@ static void gather_node_cpus(char *cpus, long nd)
 		if (path_exist(path, nd, i)) {
 			snprintf(path1, BUFSIZ, "%s/online", path);
 			/*
-			 * No cpu0/online knob, as it can't support to
-			 * on/offline cpu0, so if the 'nd' node contains
-			 * cpu0, it should skip to check cpu0/online's value.
+			 * if there is no online knob, then the cpu cannot
+			 * be taken offline
 			 */
-			if (i == 0)
-				goto next;
-			SAFE_FILE_SCANF(cleanup, path1, "%ld", &online);
-			if (online == 0)
-				continue;
-next:
+			if (path_exist(path1)) {
+				SAFE_FILE_SCANF(cleanup, path1, "%ld", &online);
+				if (online == 0)
+					continue;
+			}
 			sprintf(buf, "%d,", i);
 			strcat(cpus, buf);
 		}
