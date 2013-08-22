@@ -24,7 +24,15 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	tst_resm(TINFO, "Formatting %s with %s extra opts='%s'",
 	        dev, fs_type, fs_opts ? fs_opts : "");
 
-	const char *const argv[] = {"mkfs", dev, "-t", fs_type, fs_opts, NULL};
+	if (!fs_type)
+		tst_brkm(TBROK, cleanup_fn, "No fs_type specified");
+
+	const char *argv[] = {"mkfs", "-t", fs_type, fs_opts, dev, NULL};
+
+	if (!fs_opts) {
+		argv[3] = dev;
+		argv[4] = NULL;
+	}
 
 	tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL);
 }
