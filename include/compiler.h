@@ -15,4 +15,10 @@
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 #endif
 
+/* Round x to the next multiple of a.
+ * a should be a power of 2.
+ */
+#define LTP_ALIGN(x, a)    __LTP_ALIGN_MASK(x, (typeof(x))(a) - 1)
+#define __LTP_ALIGN_MASK(x, mask)  (((x) + (mask)) & ~(mask))
+
 #endif /* __LTP_COMPILER_H__ */
