@@ -113,7 +113,6 @@ int main(int argc, char *argv[])
 void setup(void)
 {
 	tst_require_root(NULL);
-	tst_mkfs(NULL, device, fstype, NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -122,9 +121,12 @@ void setup(void)
 	SAFE_MKDIR(cleanup, mntpoint_src, DIR_MODE);
 	SAFE_MKDIR(cleanup, mntpoint_des, DIR_MODE);
 
-	if (dflag && tflag)
+	if (dflag) {
+		tst_mkfs(NULL, device, fs_type, NULL);
+
 		if (mount(device, mntpoint_src, fs_type, 0, NULL) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "mount failed");
+	}
 
 	SAFE_FILE_PRINTF(cleanup, file_src, "TEST FILE");
 
@@ -133,7 +135,7 @@ void setup(void)
 
 void cleanup(void)
 {
-	if (dflag && tflag)
+	if (dflag)
 		if (umount(mntpoint_src) != 0)
 			tst_brkm(TBROK | TTERRNO, NULL, "umount(2) failed");
 
