@@ -783,7 +783,7 @@ static void gather_node_cpus(char *cpus, long nd)
 	for (i = 0; i < ncpus; i++) {
 		snprintf(path, BUFSIZ,
 			 PATH_SYS_SYSTEM "/node/node%ld/cpu%d", nd, i);
-		if (path_exist(path, nd, i)) {
+		if (path_exist(path)) {
 			snprintf(path1, BUFSIZ, "%s/online", path);
 			/*
 			 * if there is no online knob, then the cpu cannot
