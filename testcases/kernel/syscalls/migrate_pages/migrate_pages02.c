@@ -109,8 +109,8 @@ static int migrate_to_node(pid_t pid, int node)
 
 	tst_resm(TINFO, "pid(%d) migrate pid %d to node -> %d",
 		 getpid(), pid, node);
-	max_node = get_max_node();
-	nodemask_size = max_node / 8 + 1;
+	max_node = LTP_ALIGN(get_max_node(), sizeof(unsigned long)*8);
+	nodemask_size = max_node / 8;
 	old_nodes = SAFE_MALLOC(NULL, nodemask_size);
 	new_nodes = SAFE_MALLOC(NULL, nodemask_size);
 

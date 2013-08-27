@@ -247,8 +247,8 @@ static void setup(void)
 		tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes_arr: %d",
 			 ret);
 
-	sane_max_node = get_max_node();
-	sane_nodemask_size = sane_max_node / 8 + 1;
+	sane_max_node = LTP_ALIGN(get_max_node(), sizeof(unsigned long)*8);
+	sane_nodemask_size = sane_max_node / 8;
 	sane_old_nodes = SAFE_MALLOC(NULL, sane_nodemask_size);
 	sane_new_nodes = SAFE_MALLOC(NULL, sane_nodemask_size);
 	memset(sane_old_nodes, 0, sane_nodemask_size);
