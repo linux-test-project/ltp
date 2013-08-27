@@ -60,7 +60,7 @@ unsigned long get_max_node(void)
 #if HAVE_NUMA_H
 static void get_nodemask_allnodes(nodemask_t * nodemask, unsigned long max_node)
 {
-	unsigned long nodemask_size = max_node / 8 + 1;
+	unsigned long nodemask_size = max_node / 8;
 	int i;
 	char fn[64];
 	struct stat st;
@@ -76,7 +76,7 @@ static void get_nodemask_allnodes(nodemask_t * nodemask, unsigned long max_node)
 static int filter_nodemask_mem(nodemask_t * nodemask, unsigned long max_node)
 {
 #if MPOL_F_MEMS_ALLOWED
-	unsigned long nodemask_size = max_node / 8 + 1;
+	unsigned long nodemask_size = max_node / 8;
 	memset(nodemask, 0, nodemask_size);
 	/*
 	 * avoid numa_get_mems_allowed(), because of bug in getpol()
@@ -164,8 +164,9 @@ int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes)
 		*nodes = NULL;
 
 #if HAVE_NUMA_H
-	unsigned long max_node = get_max_node();
-	unsigned long nodemask_size = max_node / 8 + 1;
+	unsigned long max_node = LTP_ALIGN(get_max_node(),
+						sizeof(unsigned long)*8);
+	unsigned long nodemask_size = max_node / 8;
 
 	nodemask = malloc(nodemask_size);
 	if (nodes)
