@@ -62,7 +62,7 @@
 } while (0)
 
 static int verbose_print = 0;
-static char *map_address;
+static char *volatile map_address;
 static jmp_buf jmpbuf;
 static volatile char read_lock = 0;
 
@@ -228,11 +228,13 @@ void *read_mem(void *ptr)
 				tst_resm(TINFO, "page fault occurred due to "
 					 "a read after an unmap");
 		} else {
-			if (verbose_print)
+			if (verbose_print) {
+				read_lock = 1;
 				tst_resm(TINFO,
 					 "read_mem(): content of memory: %s",
 					 (char *)map_address);
-
+				read_lock = 0;
+			}
 			for (j = 0; j < args[1]; j++) {
 				read_lock = 1;
 				if (map_address[j] != 'a')
