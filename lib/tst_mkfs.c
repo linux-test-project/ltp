@@ -27,12 +27,23 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	if (!fs_type)
 		tst_brkm(TBROK, cleanup_fn, "No fs_type specified");
 
-	const char *argv[] = {"mkfs", "-t", fs_type, fs_opts, dev, NULL};
+	const char *argv[] = {"mkfs", "-t", fs_type, NULL, NULL, NULL, NULL};
+	int pos = 3;
 
-	if (!fs_opts) {
-		argv[3] = dev;
-		argv[4] = NULL;
+	/*
+	 * The mkfs.xfs aborts if it finds a filesystem superblock
+	 * on the device, which is the case here as we reuse one
+	 * device for all tests.
+	 */
+	if (!strcmp(fs_type, "xfs")) {
+		tst_resm(TINFO, "Appending '-f' force flag to mkfs.xfs");
+		argv[pos++] = "-f";
 	}
+
+	if (fs_opts)
+		argv[pos++] = fs_opts;
+
+	argv[pos] = dev;
 
 	tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL);
 }
