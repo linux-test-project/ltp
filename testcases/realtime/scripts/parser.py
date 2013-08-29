@@ -26,7 +26,7 @@
 ##                                                                            ##
 ################################################################################
 
-import sys,os,string,re
+import sys
 
 class Log:
     def __init__(self,filename):
