@@ -537,18 +537,16 @@ main()
         {
             [ -z "$RHOST" ] && \
             {
-                echo \
-                "INFO: Enter RHOST = 'name of the remote host machine'"
-                echo -n "-> "
+                printf "INFO: Enter RHOST = 'name of the remote host machine'"
+                printf "\n-> "
                 read RHOST
             }
 
             [ -z "$PASSWD" ] && \
             {
-                echo " "
-                echo \
-                "INFO: Enter PASSWD = 'root passwd of the remote host machine'"
-                echo -n "-> "
+                printf "\nINFO: "
+                printf "Enter PASSWD = 'root passwd of the remote host machine'"
+                printf "\n-> "
                 read PASSWD
             }
             export RHOST=$RHOST
@@ -733,15 +731,15 @@ main()
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
 
     ## Display the Output/Log/Failed/HTML file names here
-    echo -e "LOG File: \c"
+    printf "LOG File: "
     echo $LOGFILE | cut -b4-
 
     if [ "$OUTPUTFILE" ]; then
-       echo -e "OUTPUT File: \c"
+       printf "OUTPUT File: "
        echo $OUTPUTFILE | cut -b4-
     fi
 
-    echo -e "FAILED COMMAND File: \c"
+    printf "FAILED COMMAND File: "
     echo $FAILCMDFILE | cut -b4-
 
     if [ "$HTMLFILE" ]; then
