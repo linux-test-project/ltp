@@ -634,6 +634,7 @@
 /pwrite/pwrite04
 /pwrite/pwrite04_64
 /quotactl/quotactl01
+/quotactl/quotactl02
 /read/read01
 /read/read02
 /read/read03

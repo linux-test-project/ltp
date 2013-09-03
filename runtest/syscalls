@@ -770,6 +770,7 @@ pwrite03_64 pwrite03_64
 pwrite04_64 pwrite04_64
 
 quotactl01 quotactl01
+quotactl02 quotactl02 -D DEVICE
 
 read01 read01
 read02 read02
