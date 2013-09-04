@@ -1,42 +1,24 @@
-/******************************************************************************/
-/* Copyright (c) Crackerjack Project., 2007                                   */
-/*                                                                            */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.                                        */
-/*                                                                            */
-/* This program is distributed in the hope that it will be useful,            */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
-/* the GNU General Public License for more details.                           */
-/*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
-/*                                                                            */
-/******************************************************************************/
-/******************************************************************************/
-/*                                                                            */
-/* File:        timer_getoverrun01.c                                           */
-/*                                                                            */
-/* Description: This tests the timer_getoverrun() syscall                      */
-/*                                                                            */
-/* Usage:  <for command-line>                                                 */
-/* timer_getoverrun01 [-c n] [-e][-i n] [-I x] [-p x] [-t]                     */
-/*      where,  -c n : Run n copies concurrently.                             */
-/*              -e   : Turn on errno logging.                                 */
-/*              -i n : Execute test n times.                                  */
-/*              -I x : Execute test for x seconds.                            */
-/*              -P x : Pause for x seconds between iterations.                */
-/*              -t   : Turn on syscall timing.                                */
-/*                                                                            */
-/* Total Tests: 1                                                             */
-/*                                                                            */
-/* Test Name:   timer_getoverrun01                                             */
-/* History:     Porting from Crackerjack to LTP is done by                    */
-/*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
-/******************************************************************************/
+/******************************************************************************
+ * Copyright (c) Crackerjack Project., 2007                                   *
+ * Porting from Crackerjack to LTP is done by:                                *
+ *              Manas Kumar Nayak <maknayak@in.ibm.com>                       *
+ * Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>                          *
+ *                                                                            *
+ * This program is free software;  you can redistribute it and/or modify      *
+ * it under the terms of the GNU General Public License as published by       *
+ * the Free Software Foundation; either version 2 of the License, or          *
+ * (at your option) any later version.                                        *
+ *                                                                            *
+ * This program is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of            *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  *
+ * the GNU General Public License for more details.                           *
+ *                                                                            *
+ * You should have received a copy of the GNU General Public License          *
+ * along with this program;  if not, write to the Free Software Foundation,   *
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           *
+ *                                                                            *
+ ******************************************************************************/
 
 #include <stdio.h>
 #include <errno.h>
@@ -48,164 +30,63 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-/* timer_t in kernel(int) is different from  Glibc definition(void*).
- * Use the kernel definition.
- */
-typedef int kernel_timer_t;
-
 char *TCID = "timer_getoverrun01";
-int testno;
 int TST_TOTAL = 1;
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-extern void cleanup()
+static void cleanup(void)
 {
 
 	TEST_CLEANUP;
 	tst_rmdir();
-
-	tst_exit();
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
-void setup()
+static void setup(void)
 {
-	/* Capture signals if any */
-	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
-
-char tmpname[40];
-int parent;
-int block = 1;
-
-#define ENTER(normal) tst_resm(TINFO, "Enter block %d: test %d (%s)", \
-                         block, tst_count, normal?"NORMAL":"ERROR");
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	kernel_timer_t created_timer_id;
+	int timer;
 	struct sigevent ev;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	setup();
 
+	ev.sigev_value = (sigval_t) 0;
+	ev.sigev_signo = SIGALRM;
+	ev.sigev_notify = SIGEV_SIGNAL;
+	TEST(ltp_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer));
+
+	if (TEST_RETURN != 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "Failed to create timer");
+
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			ev.sigev_value = (sigval_t) 0;
-			ev.sigev_signo = SIGALRM;
-			ev.sigev_notify = SIGEV_SIGNAL;
+		TEST(ltp_syscall(__NR_timer_getoverrun, timer));
+		if (TEST_RETURN == 0) {
+			tst_resm(TPASS,
+			         "timer_getoverrun(CLOCK_REALTIME) Passed");
+		} else {
+			tst_resm(TFAIL | TERRNO,
+			         "timer_getoverrun(CLOCK_REALTIME) Failed");
+		}
 
-			TEST(ltp_syscall
-			     (__NR_timer_create, CLOCK_REALTIME, &ev,
-			      &created_timer_id));
-
-			ENTER(1);
-			TEST(ltp_syscall(__NR_timer_getoverrun,
-				created_timer_id));
-			if (TEST_RETURN == 0) {
-				tst_resm(TPASS, "Block %d: test %d PASSED",
-					 block, tst_count);
-			} else {
-				tst_resm(TFAIL,
-					 "Block %d: test %d FAILED... errno = %d : %s",
-					 block, tst_count, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-				cleanup();
-				tst_exit();
-			}
-
-			ENTER(0);
-			TEST(ltp_syscall(__NR_timer_getoverrun, -1));
-			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL) {
-				tst_resm(TPASS, "Block %d: test %d PASSED",
-					 block, tst_count);
-			} else {
-				tst_resm(TFAIL,
-					 "Block %d: test %d FAILED... errno = %d : %s",
-					 block, tst_count, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-				cleanup();
-				tst_exit();
-			}
-
+		TEST(ltp_syscall(__NR_timer_getoverrun, -1));
+		if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL) {
+			tst_resm(TPASS,	"timer_gettime(-1) Failed: EINVAL");
+		} else {
+			tst_resm(TFAIL | TERRNO,
+			         "timer_gettime(-1) = %li", TEST_RETURN);
 		}
 	}
+
 	cleanup();
 	tst_exit();
 }
-
-/*
-
-NAME
-       timer_getoverrun
-SYNOPSIS
-       #include <time.h>
-
-       int timer_getoverrun(timer_t timerid);
-
-	Only a single signal shall be queued to the process for a given  timer
-       at any point in time. When a timer for which a signal is still pending
-       expires, no signal shall be queued, and a timer overrun  shall  occur.
-        When  a timer expiration signal is delivered to or accepted by a pro-
-       cess, if the implementation supports the Realtime  Signals  Extension,
-       the  timer_getoverrun()  function  shall  return  the timer expiration
-       overrun count for the specified timer. The overrun count returned con-
-       tains  the number of extra timer expirations that occurred between the
-       time the signal was generated (queued) and when it  was  delivered  or
-       accepted, up to but not including an implementation-defined maximum of
-       {DELAYTIMER_MAX}. If the number of such extra expirations  is  greater
-       than or equal to {DELAYTIMER_MAX}, then the overrun count shall be set
-       to {DELAYTIMER_MAX}. The value returned  by  timer_getoverrun()  shall
-       apply  to the most recent expiration signal delivery or acceptance for
-       the timer.  If no expiration signal has been delivered for the  timer,
-       or  if  the  Realtime  Signals  Extension is not supported, the return
-       value of timer_getoverrun() is unspecified.
-
-RETURN VALUE
-       If the timer_getoverrun() function succeeds, it shall return the timer
-       expiration overrun count as explained above.
-*/
