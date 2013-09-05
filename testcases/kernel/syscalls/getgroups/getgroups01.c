@@ -52,8 +52,10 @@
 #include <grp.h>
 #include <sys/param.h>
 #include <sys/types.h>
+
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 static void setup(void);
 static void cleanup(void);
@@ -61,14 +63,14 @@ static void cleanup(void);
 char *TCID = "getgroups01";
 int TST_TOTAL = 4;
 
-static gid_t gidset[NGROUPS];
-static gid_t cmpset[NGROUPS];
+static GID_T gidset[NGROUPS];
+static GID_T cmpset[NGROUPS];
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	gid_t group;
+	GID_T group;
 	int i;
 	int entries;
 
@@ -83,7 +85,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(getgroups(-1, gidset));
+		TEST(GETGROUPS(cleanup, -1, gidset));
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "getgroups succeeded unexpectedly");
@@ -101,14 +103,14 @@ int main(int ac, char **av)
 		 * return and the the gidset array is not modified.
 		 * This is a POSIX special case.
 		 */
-		memset(gidset, 052, NGROUPS * sizeof(gid_t));
-		memset(cmpset, 052, NGROUPS * sizeof(gid_t));
+		memset(gidset, 052, NGROUPS * sizeof(GID_T));
+		memset(cmpset, 052, NGROUPS * sizeof(GID_T));
 
-		TEST(getgroups(0, gidset));
+		TEST(GETGROUPS(cleanup, 0, gidset));
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "getgroups failed unexpectedly");
 		} else if (STD_FUNCTIONAL_TEST) {
-			if (memcmp(cmpset, gidset, NGROUPS * sizeof(gid_t)) != 0)
+			if (memcmp(cmpset, gidset, NGROUPS * sizeof(GID_T)) != 0)
 				tst_resm(TFAIL,
 					 "getgroups modified the gidset array");
 			else
@@ -126,7 +128,7 @@ int main(int ac, char **av)
 				 "getgroups returned %ld; unable to test that using ngrps >=1 but less than number of grps",
 				 TEST_RETURN);
 		} else {
-			TEST(getgroups(TEST_RETURN - 1, gidset));
+			TEST(GETGROUPS(cleanup, TEST_RETURN - 1, gidset));
 			if (TEST_RETURN == -1) {
 				if (STD_FUNCTIONAL_TEST) {
 					if (errno == EINVAL)
@@ -145,7 +147,7 @@ int main(int ac, char **av)
 			}
 		}
 
-		TEST(getgroups(NGROUPS, gidset));
+		TEST(GETGROUPS(cleanup, NGROUPS, gidset));
 		if ((entries = TEST_RETURN) == -1) {
 			tst_resm(TFAIL | TTERRNO,
 				 "getgroups failed unexpectedly");

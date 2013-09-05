@@ -41,6 +41,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 #define TESTUSER "root"
 
@@ -48,8 +49,8 @@ char *TCID = "getgroups03";
 int TST_TOTAL = 1;
 
 static int ngroups;
-static gid_t groups_list[NGROUPS];
-static gid_t groups[NGROUPS];
+static GID_T groups_list[NGROUPS];
+static GID_T groups[NGROUPS];
 
 static void verify_groups(int ret_ngroups);
 static void setup(void);
@@ -70,7 +71,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(getgroups(gidsetsize, groups_list));
+		TEST(GETGROUPS(cleanup, gidsetsize, groups_list));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "getgroups failed");
@@ -88,18 +89,18 @@ int main(int ac, char **av)
 }
 
 /*
- * readgroups(gid_t *)  - Read supplimentary group ids of "root" user
+ * readgroups(GID_T *)  - Read supplimentary group ids of "root" user
  * Scans the /etc/group file to get IDs of all the groups to which TESTUSER
  * belongs and puts them into the array passed.
  * Returns the no of gids read.
  */
-static int readgroups(gid_t groups[NGROUPS])
+static int readgroups(GID_T groups[NGROUPS])
 {
 	struct group *grp;
 	int ngrps = 0;
 	int i;
 	int found;
-	gid_t g;
+	GID_T g;
 
 	setgrent();
 
@@ -151,7 +152,7 @@ static void setup(void)
 	 * testcase will fail. So execute setgroups() before executing
 	 * getgroups()
 	 */
-	if (setgroups(ngroups, groups) == -1)
+	if (SETGROUPS(cleanup, ngroups, groups) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "setgroups failed");
 }
 
@@ -165,7 +166,7 @@ static void setup(void)
 static void verify_groups(int ret_ngroups)
 {
 	int i, j;
-	gid_t egid;
+	GID_T egid;
 	int egid_flag = 1;
 	int fflag = 1;
 
