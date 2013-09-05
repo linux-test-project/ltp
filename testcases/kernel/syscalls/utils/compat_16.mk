@@ -55,6 +55,7 @@ CPPFLAGS		+= -I$(abs_srcdir) -I$(abs_srcdir)/../utils
 SRCS			?= $(wildcard $(abs_srcdir)/*.c)
 
 MAKE_TARGETS		:= $(notdir $(patsubst %.c,%,$(SRCS)))
+MAKE_TARGETS_OBJS_WO_COMPAT_16	:= $(addsuffix .o,$(MAKE_TARGETS))
 
 ifneq ($(TST_COMPAT_16_SYSCALL),no)
 MAKE_TARGETS		+= $(addsuffix _16,$(MAKE_TARGETS))
@@ -69,7 +70,8 @@ COMPAT_16_H		:= $(abs_srcdir)/../utils/compat_16.h
 ifneq ($(wildcard $(COMPAT_16_H)),)
 HAS_COMPAT_16		:= 1
 
-%.c: $(COMPAT_16_H)
+$(MAKE_TARGETS_OBJS_WO_COMPAT_16): $(COMPAT_16_H)
+.INTERMEDIATE: $(MAKE_TARGETS_OBJS_WO_COMPAT_16)
 
 else
 HAS_COMPAT_16		:= 0
@@ -78,5 +80,5 @@ endif
 %_16: CPPFLAGS += -D$(DEF_16)=1
 # XXX (garrcoop): End section of code in question..
 
-%_16.o: %.c
+%_16.o: %.c $(COMPAT_16_H)
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
