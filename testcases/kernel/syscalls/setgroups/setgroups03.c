@@ -145,7 +145,7 @@ int main(int ac, char **av)
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
-			TEST(SETGROUPS(gidsetsize, groups_list));
+			TEST(SETGROUPS(cleanup, gidsetsize, groups_list));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "setgroups(%d) returned %ld, "

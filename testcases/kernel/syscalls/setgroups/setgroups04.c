@@ -111,7 +111,7 @@ int main(int ac, char **av)
 		 * verify that it fails with -1 return value and
 		 * sets appropriate errno.
 		 */
-		TEST(SETGROUPS(gidsetsize, sbrk(0)));
+		TEST(SETGROUPS(cleanup, gidsetsize, sbrk(0)));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "setgroups() returned %ld, "

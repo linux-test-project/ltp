@@ -158,7 +158,7 @@ int main(int ac, char **av)
 		/*
 		 * Call setgroups(2)
 		 */
-		TEST(SETGROUPS(ngrps, list));
+		TEST(SETGROUPS(cleanup, ngrps, list));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
@@ -202,7 +202,8 @@ void setup()
 
 	TEST_PAUSE;
 
-	if ((ngrps = GETGROUPS(len, list)) == -1) {
+	ngrps = GETGROUPS(cleanup, len, list);
+	if (ngrps == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "getgroups(%d, list) Failure. errno=%d : %s",
 			 len, errno, strerror(errno));

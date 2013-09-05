@@ -105,7 +105,7 @@ int main(int ac, char **av)
 		 * Call setgroups() to set supplimentary group IDs of
 		 * the calling super-user process to gid of TESTUSER.
 		 */
-		TEST(SETGROUPS(gidsetsize, groups_list));
+		TEST(SETGROUPS(cleanup, gidsetsize, groups_list));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "setgroups(%d, groups_list) Failed, "
@@ -125,7 +125,7 @@ int main(int ac, char **av)
 			 * supp. gids of TESTUSER.
 			 */
 			groups_list[0] = '\0';
-			if (GETGROUPS(gidsetsize, groups_list) < 0) {
+			if (GETGROUPS(cleanup, gidsetsize, groups_list) < 0) {
 				tst_brkm(TFAIL, cleanup, "getgroups() Fails, "
 					 "error=%d", errno);
 			}
