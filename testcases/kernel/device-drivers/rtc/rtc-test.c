@@ -3,6 +3,7 @@
  *   Tests for the Real Time Clock driver.
  *
  *   Copyright (c) Larsen & Toubro Infotech Ltd., 2010
+ *   Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
  *
  *   Author : Silesh C V <Silesh.Vellattu@lntinfotech.com>
  *
@@ -21,7 +22,7 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "test.h"
+
 #include <sys/ioctl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,9 +32,25 @@
 #include <errno.h>
 #include <time.h>
 
+#include "test.h"
+#include "usctest.h"
+
 int rtc_fd = -1;
 char *TCID = "rtc01";
 int TST_TOTAL = 3;
+
+static char *rtc_dev = "/dev/rtc";
+static int dflag;
+static const option_t options[] = {
+	{"d:", &dflag, &rtc_dev},
+	{NULL, NULL, NULL}
+};
+
+static void help(void)
+{
+	printf("  -d x    rtc device node, default is %s\n",
+		rtc_dev);
+}
 
 /* Read and Alarm Tests :  Read test reads the Date/time from RTC
  * while Alarm test, sets the alarm to 5 seconds in future and
@@ -192,12 +209,17 @@ void update_interrupts_test(void)
 	tst_resm(TPASS, "RTC UPDATE INTERRUPTS TEST Passed");
 }
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
-	char *rtc_dev = "/dev/rtc";
+	char *msg;
+	msg = parse_opts(argc, argv, options, help);
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	if (argc == 2)
-		rtc_dev = argv[1];
+	tst_require_root(NULL);
+
+	if (access(rtc_dev, F_OK) == -1)
+		tst_brkm(TCONF, NULL, "couldn't find rtc device '%s'", rtc_dev);
 
 	rtc_fd = open(rtc_dev, O_RDONLY);
 
