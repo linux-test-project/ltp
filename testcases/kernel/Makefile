@@ -38,6 +38,7 @@ ifneq ($(UCLINUX),1)
 SUBDIRS			+= connectors \
 			   containers \
 			   controllers \
+			   device-drivers \
 			   firmware \
 			   fs \
 			   hotplug \
