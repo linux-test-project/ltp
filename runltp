@@ -955,8 +955,8 @@ main()
 
 create_block()
 {
-    #create a block device with ext4 filesystem.
-    dd if=/dev/zero of=${TMP}/test.img bs=1kB count=10240
+    #create a block device
+    dd if=/dev/zero of=${TMP}/test.img bs=1kB count=20480
     if [ $? -ne 0 ]; then
         echo "Failed to create loopback device image, please check disk space and re-run"
         return 1
