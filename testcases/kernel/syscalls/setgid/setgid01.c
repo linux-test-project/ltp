@@ -112,20 +112,20 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 static void setup();
 static void cleanup();
-
-#include "compat_16.h"
 
 TCID_DEFINE(setgid01);
 int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
 
-GID_T gid;
+gid_t gid;
 
 int main(int ac, char **av)
 {
@@ -156,7 +156,7 @@ int main(int ac, char **av)
 		/*
 		 * Call setgid(2)
 		 */
-		TEST(SETGID(gid));
+		TEST(SETGID(cleanup, gid));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
@@ -181,8 +181,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /***************************************************************
@@ -195,7 +193,8 @@ void setup()
 
 	TEST_PAUSE;
 
-	gid = GETGID();
+	gid = getgid();
+	GID16_CHECK(gid, setgid, cleanup);
 }
 
 /***************************************************************

@@ -37,15 +37,17 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	Must be ran as non-root.
+ *     Must be ran as root.
  */
 #include <errno.h>
+#include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
 #include "test.h"
 #include "usctest.h"
-#include <pwd.h>
+#include "compat_16.h"
 
 #define ROOT_USER	0
 
@@ -80,7 +82,7 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		TEST(setuid(ROOT_USER));
+		TEST(SETUID(cleanup, ROOT_USER));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -98,8 +100,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*
@@ -107,11 +107,14 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	tst_require_root(NULL);
+
 	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK, cleanup, "getpwnam failed for user id %s",
+			nobody_uid);
+
 	if (setuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TINFO, "setuid failed to "
 			 "to set the effective uid to %d", ltpuser->pw_uid);

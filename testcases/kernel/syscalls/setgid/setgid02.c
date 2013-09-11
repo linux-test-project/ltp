@@ -45,8 +45,10 @@
  */
 #include <pwd.h>
 #include <errno.h>
+
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 TCID_DEFINE(setgid02);
 int TST_TOTAL = 1;
@@ -58,8 +60,6 @@ struct passwd *ltpuser;
 
 static void setup(void);
 static void cleanup(void);
-
-#include "compat_16.h"
 
 int exp_enos[] = { EPERM, 0 };
 
@@ -87,14 +87,9 @@ int main(int ac, char **av)
 				 "%s", root);
 		}
 
-		if (!GID_SIZE_CHECK(rootpwent->pw_gid)) {
-			tst_brkm(TBROK,
-				 cleanup,
-				 "gid for `%s' is too large for testing setgid16",
-				 root);
-		}
+		GID16_CHECK(rootpwent->pw_gid, setgid, cleanup);
 
-		TEST(SETGID(rootpwent->pw_gid));
+		TEST(SETGID(cleanup, rootpwent->pw_gid));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -112,8 +107,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*
@@ -121,18 +114,13 @@ int main(int ac, char **av)
  */
 void setup()
 {
-/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
-	ltpuser = getpwnam(nobody_uid);
+	tst_require_root(NULL);
 
-	if (!GID_SIZE_CHECK(ltpuser->pw_gid)) {
-		tst_brkm(TBROK,
-			 cleanup,
-			 "gid for `%s' is too large for testing setgid16",
-			 nobody_gid);
-	}
+	/* Switch to nobody user for correct error code collection */
+	ltpuser = getpwnam(nobody_uid);
+	if (ltpuser == NULL)
+		tst_brkm(TBROK, cleanup, "getpwnam failed for user id %s",
+			nobody_uid);
 
 	if (setgid(ltpuser->pw_gid) == -1) {
 		tst_resm(TINFO, "setgid failed to "

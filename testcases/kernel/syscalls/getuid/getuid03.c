@@ -42,6 +42,7 @@
 
 #include <pwd.h>
 #include <errno.h>
+
 #include "test.h"
 #include "usctest.h"
 #include "compat_16.h"
@@ -57,6 +58,7 @@ int main(int ac, char **av)
 	struct passwd *pwent;
 	int lc;
 	char *msg;		/* message returned by parse_opts */
+	uid_t uid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -67,29 +69,28 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(GETUID());
+		TEST(GETUID(cleanup));
 
 		if (TEST_RETURN == -1)
 			tst_brkm(TBROK | TTERRNO, cleanup, "getuid failed");
 
 		if (STD_FUNCTIONAL_TEST) {
-			pwent = getpwuid(TEST_RETURN);
+			uid = getuid();
+			pwent = getpwuid(uid);
+
 			if (pwent == NULL)
 				tst_resm(TFAIL | TERRNO, "getpwuid failed");
-			else if (!UID_SIZE_CHECK(pwent->pw_uid))
-				tst_brkm(TBROK, cleanup,
-					 "uid = %ld is too large for testing "
-					 "getuid16", TEST_RETURN);
-			else {
-				if (pwent->pw_uid != TEST_RETURN)
-					tst_resm(TFAIL, "getpwuid value, %d, "
-						 "does not match getuid "
-						 "value, %ld", pwent->pw_uid,
-						 TEST_RETURN);
-				else
-					tst_resm(TPASS, "values from getuid "
-						 "and getpwuid match");
-			}
+
+			UID16_CHECK(pwent->pw_uid, getuid, cleanup);
+
+			if (pwent->pw_uid != TEST_RETURN)
+				tst_resm(TFAIL, "getpwuid value, %d, "
+					 "does not match getuid "
+					 "value, %ld", pwent->pw_uid,
+					 TEST_RETURN);
+			else
+				tst_resm(TPASS, "values from getuid "
+					 "and getpwuid match");
 		} else
 			tst_resm(TPASS, "call succeeded");
 	}

@@ -46,14 +46,16 @@
  * 	Must be run as root.
  */
 #include <errno.h>
+#include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 #include "test.h"
 #include "usctest.h"
-#include <pwd.h>
+#include "compat_16.h"
 
 char *TCID = "setuid04";
 int TST_TOTAL = 1;
@@ -101,8 +103,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*
@@ -114,7 +114,7 @@ void do_master_child()
 	int pid;
 	int status;
 
-	if (setuid(ltpuser->pw_uid) == -1) {
+	if (SETUID(cleanup, ltpuser->pw_uid) == -1) {
 		tst_brkm(TBROK, NULL,
 			 "setuid failed to set the effective uid to %d",
 			 ltpuser->pw_uid);
@@ -181,11 +181,15 @@ void do_master_child()
  */
 void setup(void)
 {
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	ltpuser = getpwnam(nobody_uid);
+
+	if (ltpuser == NULL)
+		tst_brkm(TBROK, cleanup, "getpwnam failed for user id %s",
+			nobody_uid);
+
+	UID16_CHECK(ltpuser->pw_uid, setuid, cleanup);
 
 	sprintf(testfile, "setuid04file%d.tst", getpid());
 

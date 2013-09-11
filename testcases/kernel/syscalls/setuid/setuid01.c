@@ -112,11 +112,11 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
-
 #include <sys/types.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 void setup();
 void cleanup();
@@ -124,7 +124,7 @@ void cleanup();
 char *TCID = "setuid01";
 int TST_TOTAL = 1;
 
-int uid;			/* current user id */
+uid_t uid;			/* current user id */
 
 int main(int ac, char **av)
 {
@@ -156,9 +156,10 @@ int main(int ac, char **av)
 		 *  Set the effective user ID to the current real uid
 		 */
 		uid = getuid();
+		UID16_CHECK(uid, setuid, cleanup);
 
 		/* Call setuid(2) */
-		TEST(setuid(uid));
+		TEST(SETUID(cleanup, uid));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
@@ -185,8 +186,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /***************************************************************

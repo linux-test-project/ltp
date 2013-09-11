@@ -343,6 +343,8 @@ getegid02_16 getegid02_16
 
 geteuid01 geteuid01
 geteuid01_16 geteuid01_16
+geteuid02 geteuid02
+geteuid02_16 geteuid02_16
 
 getgid01 getgid01
 getgid01_16 getgid01_16
@@ -413,8 +415,6 @@ gettimeofday02 gettimeofday02
 
 getuid01 getuid01
 getuid01_16 getuid01_16
-getuid02 getuid02
-getuid02_16 getuid02_16
 getuid03 getuid03
 getuid03_16 getuid03_16
 

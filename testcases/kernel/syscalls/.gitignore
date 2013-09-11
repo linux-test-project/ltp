@@ -286,6 +286,8 @@
 /getegid/getegid02_16
 /geteuid/geteuid01
 /geteuid/geteuid01_16
+/geteuid/geteuid02
+/geteuid/geteuid02_16
 /getgid/getgid01
 /getgid/getgid01_16
 /getgid/getgid03
@@ -336,8 +338,6 @@
 /gettimeofday/gettimeofday02
 /getuid/getuid01
 /getuid/getuid01_16
-/getuid/getuid02
-/getuid/getuid02_16
 /getuid/getuid03
 /getuid/getuid03_16
 /getxattr/getxattr01

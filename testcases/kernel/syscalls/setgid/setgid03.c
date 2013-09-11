@@ -44,8 +44,10 @@
  */
 #include <pwd.h>
 #include <errno.h>
+
 #include "test.h"
 #include "usctest.h"
+#include <compat_16.h>
 
 TCID_DEFINE(setgid03);
 int TST_TOTAL = 1;
@@ -53,12 +55,10 @@ int TST_TOTAL = 1;
 char ltpuser1[] = "nobody";
 char root[] = "root";
 struct passwd *getpwnam(), *ltpuser1pwent, *rootpwent;
-int mygid;
+gid_t mygid;
 
 static void setup(void);
 static void cleanup(void);
-
-#include "compat_16.h"
 
 int main(int ac, char **av)
 {
@@ -77,7 +77,7 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		TEST(setgid(ltpuser1pwent->pw_gid));
+		TEST(SETGID(cleanup, ltpuser1pwent->pw_gid));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "call failed unexpectedly");
@@ -98,8 +98,6 @@ int main(int ac, char **av)
 	}
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*
@@ -107,10 +105,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* test must be run as root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -132,13 +127,7 @@ void setup()
 			 "id %s", ltpuser1);
 	}
 
-	if (!(GID_SIZE_CHECK(rootpwent->pw_gid))) {
-		tst_brkm(TBROK,
-			 cleanup,
-			 "gid for `%s' is too large for testing setgid16",
-			 root);
-	}
-
+	GID16_CHECK(ltpuser1pwent->pw_gid, setgid, cleanup);
 }
 
 /*

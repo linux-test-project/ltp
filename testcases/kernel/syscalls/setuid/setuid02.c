@@ -112,11 +112,11 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
-
 #include <sys/types.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 void setup();
 void cleanup();
@@ -126,7 +126,7 @@ int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
 
-int uid;			/* current user id */
+uid_t uid;			/* current user id */
 
 int main(int ac, char **av)
 {
@@ -151,6 +151,7 @@ int main(int ac, char **av)
      * check looping state if -c option given
      ***************************************************************/
 	uid = getuid();
+	UID16_CHECK(uid, setuid, cleanup);
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -161,7 +162,7 @@ int main(int ac, char **av)
 		 */
 
 		/* Call setuid(2) */
-		TEST(setuid(uid));
+		TEST(SETUID(cleanup, uid));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
@@ -188,8 +189,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /***************************************************************
@@ -197,6 +196,7 @@ int main(int ac, char **av)
  ***************************************************************/
 void setup()
 {
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -204,10 +204,6 @@ void setup()
 
 	/* make a temp dir and cd to it */
 	tst_tmpdir();
-
-	/* must be root */
-	if (geteuid() != 0)
-		tst_brkm(TBROK, cleanup, "Must be root for this test!");
 }
 
 /***************************************************************

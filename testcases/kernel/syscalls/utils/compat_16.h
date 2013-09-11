@@ -23,7 +23,12 @@
 #define __LTP_COMPAT_16_H__
 
 #include <errno.h>
+#include <grp.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "compat_gid.h"
+#include "compat_uid.h"
 #include "linux_syscall_numbers.h"
 
 /* If the platform has __NR_sys_name32 defined it
@@ -44,6 +49,21 @@
 	return sys_name(__VA_ARGS__)
 #endif
 
+#define UID16_CHECK(uid, sys_name, cleanup) \
+if (!UID_SIZE_CHECK(uid)) { \
+	tst_brkm(TBROK, cleanup, \
+		"uid %d of %s is too large for testing 16-bit version " \
+		"of %s()", uid, #uid, #sys_name); \
+}
+
+#define GID16_CHECK(gid, sys_name, cleanup) \
+if (!GID_SIZE_CHECK(gid)) { \
+	tst_brkm(TBROK, cleanup, \
+		"gid %d of %s is too large for testing 16-bit version " \
+		"of %s()", gid, #gid, #sys_name); \
+}
+
+
 int SETGROUPS(void (cleanup)(void), size_t gidsetsize, GID_T *list)
 {
 	LTP_CREATE_SYSCALL(setgroups, cleanup, gidsetsize, list);
@@ -54,4 +74,23 @@ int GETGROUPS(void (cleanup)(void), size_t gidsetsize, GID_T *list)
 	LTP_CREATE_SYSCALL(getgroups, cleanup, gidsetsize, list);
 }
 
+int SETUID(void (cleanup)(void), UID_T uid)
+{
+	LTP_CREATE_SYSCALL(setuid, cleanup, uid);
+}
+
+UID_T GETUID(void (cleanup)(void))
+{
+	LTP_CREATE_SYSCALL(getuid, cleanup);
+}
+
+int SETGID(void (cleanup)(void), GID_T gid)
+{
+	LTP_CREATE_SYSCALL(setgid, cleanup, gid);
+}
+
+GID_T GETGID(void (cleanup)(void))
+{
+	LTP_CREATE_SYSCALL(getgid, cleanup);
+}
 #endif /* __LTP_COMPAT_16_H__ */

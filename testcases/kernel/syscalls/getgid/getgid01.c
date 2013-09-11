@@ -114,6 +114,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
+
 #include "test.h"
 #include "usctest.h"
 #include "compat_16.h"
@@ -142,7 +143,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(GETGID());
+		TEST(GETGID(cleanup));
 
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL, "getgid failed");

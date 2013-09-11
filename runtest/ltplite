@@ -285,6 +285,7 @@ getdtablesize01 getdtablesize01
 getegid01 getegid01
 
 geteuid01 geteuid01
+geteuid02 geteuid02
 
 getgid01 getgid01
 getgid03 getgid03
@@ -341,7 +342,6 @@ gettimeofday01 gettimeofday01
 gettimeofday02 gettimeofday02
 
 getuid01 getuid01
-getuid02 getuid02
 getuid03 getuid03
 
 #Needs tty device.
