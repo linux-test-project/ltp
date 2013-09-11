@@ -64,7 +64,6 @@
 
 #include "test.h"
 #include "usctest.h"
-
 #include "compat_16.h"
 
 void cleanup(void);
@@ -77,7 +76,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	int euid;
+	uid_t euid;
 	struct passwd *pwent;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -91,7 +90,7 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		TEST(GETEGID());
+		TEST(GETEGID(cleanup));
 
 		if (TEST_RETURN < 0) {
 			tst_brkm(TBROK, cleanup, "This should never happen");
@@ -99,27 +98,22 @@ int main(int ac, char **av)
 
 		if (STD_FUNCTIONAL_TEST) {
 			euid = geteuid();
-
 			pwent = getpwuid(euid);
 
-			if (pwent == NULL) {
+			if (pwent == NULL)
 				tst_brkm(TBROK, cleanup, "geteuid() returned "
 					 "unexpected value %d", euid);
-			} else if (!GID_SIZE_CHECK(pwent->pw_gid)) {
-				tst_brkm(TBROK,
-					 cleanup,
-					 "gid for euid %d is too large for testing getegid16",
-					 euid);
+
+			GID16_CHECK(pwent->pw_gid, getegid, cleanup);
+
+			if (pwent->pw_gid != TEST_RETURN) {
+				tst_resm(TFAIL, "getegid() return value"
+					 " %ld unexpected - expected %d",
+					 TEST_RETURN, pwent->pw_gid);
 			} else {
-				if (pwent->pw_gid != TEST_RETURN) {
-					tst_resm(TFAIL, "getegid() return value"
-						 " %ld unexpected - expected %d",
-						 TEST_RETURN, pwent->pw_gid);
-				} else {
-					tst_resm(TPASS,
-						 "effective group id %ld "
-						 "is correct", TEST_RETURN);
-				}
+				tst_resm(TPASS,
+					 "effective group id %ld "
+					 "is correct", TEST_RETURN);
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");

@@ -114,7 +114,6 @@
 
 #include "test.h"
 #include "usctest.h"
-
 #include "compat_16.h"
 
 void setup();
@@ -141,7 +140,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(GETEGID());
+		TEST(GETEGID(cleanup));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "getegid failed");

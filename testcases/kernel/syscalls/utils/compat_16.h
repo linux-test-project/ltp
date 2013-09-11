@@ -93,4 +93,14 @@ GID_T GETGID(void (cleanup)(void))
 {
 	LTP_CREATE_SYSCALL(getgid, cleanup);
 }
+
+UID_T GETEUID(void (cleanup)(void))
+{
+	LTP_CREATE_SYSCALL(geteuid, cleanup);
+}
+
+GID_T GETEGID(void (cleanup)(void))
+{
+	LTP_CREATE_SYSCALL(getegid, cleanup);
+}
 #endif /* __LTP_COMPAT_16_H__ */
