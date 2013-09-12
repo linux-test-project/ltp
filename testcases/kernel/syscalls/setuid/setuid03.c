@@ -1,44 +1,26 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- * 	setuid03.c
- *
- * DESCRIPTION
- * 	Test to check the error and trivial conditions in setuid
- *
- * USAGE:  <for command-line>
- *  setuid03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *     Must be ran as root.
+ * Test to check the error and trivial conditions in setuid
  */
+
 #include <errno.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -53,33 +35,28 @@
 
 char *TCID = "setuid03";
 int TST_TOTAL = 1;
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
 
-int exp_enos[] = { EPERM, 0 };
+static char nobody_uid[] = "nobody";
+static struct passwd *ltpuser;
 
-void setup(void);
-void cleanup(void);
+static int exp_enos[] = { EPERM, 0 };
+
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
 		TEST(SETUID(cleanup, ROOT_USER));
@@ -98,14 +75,12 @@ int main(int ac, char **av)
 				 TEST_ERRNO);
 		}
 	}
+
 	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
 	tst_require_root(NULL);
 
@@ -128,16 +103,7 @@ void setup(void)
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
-
 }

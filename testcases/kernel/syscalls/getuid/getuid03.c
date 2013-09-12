@@ -1,43 +1,27 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- * 	getuid03.c
+ * Testcase to check the basic functionality of the getuid() system call.
  *
- * DESCRIPTION
- *	Testcase to check the basic functionality of the getuid() system call.
- *
- * USAGE:  <for command-line>
- *  getuid03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- * 	None
+ * For functionality test the return value from getgid() is compared to passwd
+ * entry.
  */
 
 #include <pwd.h>
@@ -50,14 +34,14 @@
 TCID_DEFINE(getuid03);
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
 	struct passwd *pwent;
 	int lc;
-	char *msg;		/* message returned by parse_opts */
+	char *msg;
 	uid_t uid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -98,15 +82,14 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 }

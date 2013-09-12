@@ -1,62 +1,27 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	getgid03.c
+ * Testcase to check the basic functionality of getgid().
  *
- * DESCRIPTION
- *	Testcase to check the basic functionality of getgid().
- *
- * ALGORITHM
- *	call setup
- *	loop if that option was specified
- *	Execute getgid() call using TEST macro
- *	if not expected value
- *	   break remaining tests and cleanup
- *	if STD_FUNCTIONAL_TEST
- *	   Execute getuid() call
- *	   Execute getpwduid() call
- *	   if the passwd entry is NULL
- *	      break the remaining tests and cleanup
- *	   else if pwent->pw_gid != TEST_RETURN
- *	      print failure message
- *	   else
- *	      print pass message
- *	else
- *	   print pass message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  getgid03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
+ * For functionality test the return value from getgid() is compared to passwd
+ * entry.
  */
 
 #include <pwd.h>
@@ -66,8 +31,8 @@
 #include "usctest.h"
 #include "compat_16.h"
 
-void cleanup(void);
-void setup(void);
+static void cleanup(void);
+static void setup(void);
 
 TCID_DEFINE(getgid03);
 int TST_TOTAL = 1;
@@ -79,16 +44,12 @@ int main(int ac, char **av)
 	uid_t uid;
 	struct passwd *pwent;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* global setup */
+	setup();
 
-	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
 		TEST(GETGID(cleanup));
@@ -112,39 +73,25 @@ int main(int ac, char **av)
 					 "%ld unexpected - expected %d",
 					 TEST_RETURN, pwent->pw_gid);
 			} else {
-				tst_resm(TPASS, "group id %ld returned "
-					 "correctly", TEST_RETURN);
+				tst_resm(TPASS, "values from getuid "
+					 "and getpwuid match");
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified.
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
-
 }

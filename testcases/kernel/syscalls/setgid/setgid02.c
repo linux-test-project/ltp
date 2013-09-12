@@ -1,47 +1,28 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- * 	setgid02.c
- *
- * DESCRIPTION
- * 	Testcase to ensure that the setgid() system call sets errno to EPERM
+ * Testcase to ensure that the setgid() system call sets errno to EPERM
  *
  * ALGORITHM
  *	Call setgid() to set the gid to that of root. Run this test as
  *	ltpuser1, and expect to get EPERM
- *
- * USAGE:  <for command-line>
- *  setgid02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- * 	Must be run as a nonroot user
  */
 #include <pwd.h>
 #include <errno.h>
@@ -53,33 +34,30 @@
 TCID_DEFINE(setgid02);
 int TST_TOTAL = 1;
 
-char root[] = "root";
-char nobody_uid[] = "nobody";
-char nobody_gid[] = "nobody";
-struct passwd *ltpuser;
+static char root[] = "root";
+static char nobody_uid[] = "nobody";
+static char nobody_gid[] = "nobody";
+static struct passwd *ltpuser;
 
 static void setup(void);
 static void cleanup(void);
 
-int exp_enos[] = { EPERM, 0 };
+static int exp_enos[] = { EPERM, 0 };
 
 int main(int ac, char **av)
 {
 	struct passwd *getpwnam(), *rootpwent;
-
 	int lc;
-	char *msg;		/* message returned by parse_opts */
+	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
 		if ((rootpwent = getpwnam(root)) == NULL) {
@@ -105,14 +83,12 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "setgid returned EPERM");
 		}
 	}
+
 	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
 	tst_require_root(NULL);
 
@@ -139,16 +115,7 @@ void setup()
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
