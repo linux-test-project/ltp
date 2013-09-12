@@ -33,11 +33,11 @@ int TST_TOTAL = 1;
 
 static char ltpuser1[] = "nobody";
 static char root[] = "root";
-static struct passwd *getpwnam(), *ltpuser1pwent, *rootpwent;
+static struct passwd *ltpuser1pwent, *rootpwent;
 static gid_t mygid;
 
-static static void setup(void);
-static static void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
