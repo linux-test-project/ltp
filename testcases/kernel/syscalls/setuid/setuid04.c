@@ -41,7 +41,7 @@ char *TCID = "setuid04";
 int TST_TOTAL = 1;
 
 static char nobody_uid[] = "nobody";
-static char testfile[256] = "";
+static char testfile[] = "setuid04_testfile";
 static struct passwd *ltpuser;
 
 static int exp_enos[] = { EACCES, 0 };
@@ -161,7 +161,7 @@ static void setup(void)
 
 	UID16_CHECK(ltpuser->pw_uid, setuid, cleanup);
 
-	sprintf(testfile, "setuid04file%d.tst", getpid());
+	tst_tmpdir();
 
 	/* Create test file */
 	fd = open(testfile, O_CREAT | O_RDWR, 0644);
@@ -176,6 +176,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	close(fd);
-	unlink(testfile);
+	tst_rmdir();
 	TEST_CLEANUP;
 }
