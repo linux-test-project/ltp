@@ -1,62 +1,41 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	setfsgid01.c
- *
- * DESCRIPTION
- *	Testcase to check the basic functionality of setfsgid(2) system
- *	call.
- *
- * ALGORITHM
- *	Call setfsgid() and test the return value.
- *	If this value is not same as that of the user's gid, then fail.
- *
- * USAGE:  <for command-line>
- *  setfsgid01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	None
+ * Testcase to check the basic functionality of setfsgid(2) system call.
  */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/fsuid.h>
 #include <sys/types.h>
 #include <errno.h>
+
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
-char *TCID = "setfsgid01";
+TCID_DEFINE(setfsgid01);
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
@@ -65,29 +44,27 @@ int main(int ac, char **av)
 
 	gid_t gid;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
-	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
 		gid = getegid();
+		GID16_CHECK(gid, setfsgid, cleanup);
 
-		TEST(setfsgid(gid));
+		TEST(SETFSGID(cleanup, gid));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "call failed unexpectedly - errno %d",
-				 TEST_ERRNO);
+			tst_resm(TFAIL | TTERRNO,
+				"setfsgid() failed unexpectedly");
 			continue;
 		}
 
 		if (!STD_FUNCTIONAL_TEST) {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "setfsgid() succeeded");
 			continue;
 		}
 
@@ -95,37 +72,24 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "setfsgid() returned %ld, expected %d",
 				 TEST_RETURN, gid);
 		} else {
-			tst_resm(TPASS, "setfsgid() returned expected value : "
-				 "%d", gid);
+			tst_resm(TPASS,
+				"setfsgid() returned expected value : %ld",
+				TEST_RETURN);
 		}
 	}
+
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }

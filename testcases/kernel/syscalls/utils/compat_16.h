@@ -24,6 +24,9 @@
 
 #include <errno.h>
 #include <grp.h>
+#ifdef __GLIBC__
+#include <sys/fsuid.h>
+#endif
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -102,5 +105,15 @@ UID_T GETEUID(void (cleanup)(void))
 GID_T GETEGID(void (cleanup)(void))
 {
 	LTP_CREATE_SYSCALL(getegid, cleanup);
+}
+
+int SETFSUID(void (cleanup)(void), UID_T uid)
+{
+	LTP_CREATE_SYSCALL(setfsuid, cleanup, uid);
+}
+
+int SETFSGID(void (cleanup)(void), GID_T gid)
+{
+	LTP_CREATE_SYSCALL(setfsgid, cleanup, gid);
 }
 #endif /* __LTP_COMPAT_16_H__ */
