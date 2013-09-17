@@ -60,7 +60,7 @@
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "getgroups01";
+TCID_DEFINE(getgroups01);
 int TST_TOTAL = 4;
 
 static GID_T gidset[NGROUPS];

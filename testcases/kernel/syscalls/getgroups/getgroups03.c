@@ -45,7 +45,7 @@
 
 #define TESTUSER "root"
 
-char *TCID = "getgroups03";
+TCID_DEFINE(getgroups03);
 int TST_TOTAL = 1;
 
 static int ngroups;
