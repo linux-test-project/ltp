@@ -124,7 +124,16 @@ restart_syslog_daemon()
 			# then it needs to be fixed.
 			sleep 2
 		else
-			$cleanup_command
+			#
+			# Some distributions name the service syslog even if
+			# the package is syslog-ng or rsyslog, so try it once
+			# more with just syslog.
+			#
+			restart_daemon "syslog"
+
+			if [ $? -ne 0 ]; then
+				$cleanup_command
+			fi
 		fi
 	fi
 }
