@@ -88,7 +88,7 @@ static void do_master_child(void)
 	int pid;
 	int status;
 
-	if (SETUID(cleanup, ltpuser->pw_uid) == -1) {
+	if (SETUID(NULL, ltpuser->pw_uid) == -1) {
 		tst_brkm(TBROK, NULL,
 			 "setuid failed to set the effective uid to %d",
 			 ltpuser->pw_uid);
