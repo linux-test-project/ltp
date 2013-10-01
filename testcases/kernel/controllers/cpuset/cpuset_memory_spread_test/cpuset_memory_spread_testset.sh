@@ -32,8 +32,8 @@ export TST_COUNT=1
 
 exit_status=0
 # must >= 3 for: 1-$((nr_mems-2))
-nr_cpus=4
-nr_mems=3
+nr_cpus=$NR_CPUS
+nr_mems=$N_NODES
 
 # In general, the cache hog will use more than 10000 kb slab space on the nodes
 # on which it is running. The other nodes' slab space has littler change.(less
@@ -223,15 +223,13 @@ general_memory_spread_test()
 	fi
 
 	# we'd better drop the caches before we test page cache.
+	sync
 	/bin/echo 3 > /proc/sys/vm/drop_caches 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "drop caches failed."
 		return 1
 	fi
-
-	# wait for droping the cache
-	sleep 10
 
 	get_memsinfo
 	/bin/kill -s SIGUSR1 $test_pid
@@ -343,12 +341,6 @@ if [ $? -ne 0 ]; then
 	tst_brkm TFAIL ignored "Creating DATAFILE failed."
 	exit 1
 fi
-
-# drop page caches
-/bin/echo 1 > /proc/sys/vm/drop_caches
-
-# wait for droping caches
-sleep 10
 
 mkfifo $FIFO
 if [ $? -ne 0 ]; then
