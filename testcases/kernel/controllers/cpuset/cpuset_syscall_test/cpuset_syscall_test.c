@@ -22,6 +22,7 @@
 
 #define _GNU_SOURCE
 
+#include "config.h"
 #include <sched.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -38,49 +39,29 @@
 #include <sys/shm.h>
 #include <syscall.h>
 #include <inttypes.h>
-#include "config.h"
-#include "linux_syscall_numbers.h"
+#if HAVE_NUMA_H
+#include <numa.h>
+#endif
+#if HAVE_NUMAIF_H
+#include <numaif.h>
+#endif
+
 #include "test.h"
 #include "usctest.h"
 
 char *TCID = "cpuset_syscall_test";
+int TST_TOTAL = 1;
 
-#if HAVE_LINUX_MEMPOLICY_H
-#include <linux/mempolicy.h>
+#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
+	&& HAVE_MPOL_CONSTANTS
 
 #include "../cpuset_lib/cpuset.h"
 #include "../cpuset_lib/bitmask.h"
 
-int TST_TOTAL = 1;
-
-unsigned long mask;
-int test = -1;
-int flag_exit;
-int ret;
-
-#if HAVE_DECL_MPOL_F_MEMS_ALLOWED
-static int get_mempolicy(int *policy, unsigned long *nmask,
-			 unsigned long maxnode, void *addr, int flags)
-{
-	return ltp_syscall(__NR_get_mempolicy, policy, nmask, maxnode, addr,
-		flags);
-}
-#endif
-
-#if HAVE_DECL_MPOL_BIND
-static int mbind(void *start, unsigned long len, int policy,
-		 unsigned long *nodemask, unsigned long maxnode, unsigned flags)
-{
-	return ltp_syscall(__NR_mbind, start, len, policy, nodemask, maxnode,
-		       flags);
-}
-
-static int set_mempolicy(int policy, unsigned long *nodemask,
-			 unsigned long maxnode)
-{
-	return ltp_syscall(__NR_set_mempolicy, policy, nodemask, maxnode);
-}
-#endif
+static unsigned long mask;
+static int test = -1;
+static int flag_exit;
+static int ret;
 
 #define OPT_setaffinity		(SCHAR_MAX + 1)
 #define OPT_getaffinity		(SCHAR_MAX + 2)
@@ -178,20 +159,12 @@ void test_mbind(void)
 		return;
 	}
 	printf("%p\n", addr);
-#if HAVE_DECL_MPOL_BIND
 	ret = mbind(addr, len, MPOL_BIND, &mask, 8 * sizeof(mask), 0);
-#else
-	ret = 1;
-#endif
 }
 
 void test_set_mempolicy(void)
 {
-#if HAVE_DECL_MPOL_BIND
 	ret = set_mempolicy(MPOL_BIND, &mask, 8 * sizeof(mask));
-#else
-	ret = -1;
-#endif
 }
 
 void test_get_mempolicy(void)
@@ -213,12 +186,8 @@ void test_get_mempolicy(void)
 		ret = 1;
 		return;
 	}
-#if HAVE_DECL_MPOL_F_MEMS_ALLOWED
 	ret = get_mempolicy(NULL, bitmask_mask(nmask), bitmask_nbits(nmask), 0,
 			    MPOL_F_MEMS_ALLOWED);
-#else
-	ret = -1;
-#endif
 
 	bitmask_displaylist(str, 256, nmask);
 	puts(str);

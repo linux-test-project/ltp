@@ -230,15 +230,20 @@ test10()
 	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
-	test "$allowed_list" = "default"
+
+	task_policy=$(cat $TEST_PROCNUMA | grep -e "\s\+stack\s\+anon" | \
+			awk '{print $2}')
+
+	test "$allowed_list" = "$task_policy"
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "Result(/proc/<pid>/status) = \"$allowed_list\", expect = \"default\")"
+		tst_resm TFAIL "Result(/proc/<pid>/status) = \"$allowed_list\",\
+			expect = \"$task_policy\")"
 		return 1
 	fi
 	return 0
 }
 
-# this function is used by case 11-16
+# this function is used by case 11-13
 # check_result <expect>
 check_result()
 {
@@ -279,8 +284,7 @@ test13()
 test14()
 {
 	do_syscall_test 0 0 --set_mempolicy=6 1 || return 1
-	check_result "default"
-	return $?
+	return 0
 }
 
 test15()
@@ -297,7 +301,6 @@ test15()
 		tst_resm TFAIL "Result(/proc/<pid>/status) = \"$allowed_list\", expect = \"0\")"
 		return 1
 	fi
-	check_result "default" || return 1
 	return 0
 }
 
@@ -315,7 +318,6 @@ test16()
 		tst_resm TFAIL "Result(/proc/<pid>/status) = \"$allowed_list\", expect = \"0-1\")"
 		return 1
 	fi
-	check_result "default" || return 1
 	return 0
 }
 
