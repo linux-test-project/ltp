@@ -20,6 +20,7 @@
 /*                                                                            */
 /******************************************************************************/
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,11 +34,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+char *TCID = "cpuset_cpu_hog";
+int TST_TOTAL = 1;
+
+#if HAVE_LINUX_MEMPOLICY_H
+
 #include "../cpuset_lib/common.h"
 #include "../cpuset_lib/bitmask.h"
 #include "../cpuset_lib/cpuset.h"
-
-#if HAVE_LINUX_MEMPOLICY_H
 
 #define MAX_NPROCS	1000
 #define USAGE	("Usage: %s [-p nprocs] [-h]\n"		\
@@ -45,12 +49,8 @@
 		 "\t\tThe num of the procs. [Default = 2 * nr_cpus]\n"	\
 		 "\t-h\tHelp.\n")
 
-char *TCID = "cpuset_cpu_hog";
-int TST_TOTAL = 1;
-
-unsigned long count;
-int nprocs;
-volatile int end;
+static int nprocs;
+static volatile int end;
 
 /*
  * report executing result to the parent by fifo
