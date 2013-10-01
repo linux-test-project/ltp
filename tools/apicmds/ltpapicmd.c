@@ -79,8 +79,7 @@
 char *TCID;			/* Name of the testcase */
 int TST_TOTAL;			/* Total number of testcases */
 
-static char *cmd_name;		/* name by which this program is invoked tst_brk etc */
-static char *arg_fmt;		/* message string printed along with test type */
+static char cmd_name[1024];	/* name by which this program is invoked tst_brk etc */
 static char *tst_total;		/* total number of tests in the file. */
 static char *tst_cntstr;	/* sets the value of tst_count with this value */
 
@@ -135,8 +134,7 @@ void apicmd_brk(int argc, char *argv[])
 	trestype = ident_ttype((argv++)[0]);
 	file_name = (argv++)[0];
 	argv++;
-	strcpy(arg_fmt, *argv);
-	tst_brk(trestype, file_name, NULL, arg_fmt);
+	tst_brk(trestype, file_name, NULL, "%s", *argv);
 }
 
 void apicmd_res(int argc, char *argv[])
@@ -155,8 +153,7 @@ void apicmd_res(int argc, char *argv[])
 	}
 	trestype = ident_ttype((argv++)[0]);
 	file_name = (argv++)[0];
-	strcpy(arg_fmt, *argv);
-	tst_res(trestype, file_name, arg_fmt);
+	tst_res(trestype, file_name, "%s", *argv);
 }
 
 void apicmd_brkm(int argc, char *argv[])
@@ -174,8 +171,7 @@ void apicmd_brkm(int argc, char *argv[])
 	}
 	trestype = ident_ttype((argv++)[0]);
 	argv++;
-	strcpy(arg_fmt, *argv);
-	tst_brkm(trestype, NULL, arg_fmt);
+	tst_brkm(trestype, NULL, "%s", *argv);
 }
 
 void apicmd_resm(int argc, char *argv[])
@@ -191,8 +187,7 @@ void apicmd_resm(int argc, char *argv[])
 		exit(1);
 	}
 	trestype = ident_ttype((argv++)[0]);
-	strcpy(arg_fmt, *argv);
-	tst_resm(trestype, arg_fmt);
+	tst_resm(trestype, "%s", *argv);
 }
 
 void apicmd_kvercmp(int argc, char *argv[])
@@ -321,9 +316,6 @@ void apicmd_kvercmp2(int argc, char *argv[])
  */
 int main(int argc, char *argv[])
 {
-	arg_fmt = SAFE_MALLOC(NULL, 1024);
-	cmd_name = SAFE_MALLOC(NULL, 1024);
-
 	strcpy(cmd_name, SAFE_BASENAME(NULL, (argv++)[0]));
 
 	TCID = getenv("TCID");
