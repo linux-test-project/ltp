@@ -33,8 +33,8 @@ export TST_COUNT=1
 exit_status=0
 
 # must >= 3 for: 1-$((nr_mems-2))
-nr_cpus=4
-nr_mems=3
+nr_cpus=$NR_CPUS
+nr_mems=$N_NODES
 
 cpus_all="$(seq -s, 0 $((nr_cpus-1)))"
 mems_all="$(seq -s, 0 $((nr_mems-1)))"
@@ -53,6 +53,8 @@ simple_getresult()
 {
 	sleep 1
 	echo $1 > "$2/tasks"
+	/bin/kill -s SIGUSR1 $1
+	sleep 1
 	/bin/kill -s SIGUSR1 $1
 	sleep 1
 	/bin/kill -s SIGINT $1
@@ -150,7 +152,7 @@ test5()
 #        1 - support hugetlbfs
 check_hugetlbfs()
 {
-	local fssupport="grep -w hugetlbfs /proc/filesystems 2>/dev/null | cut -f2"
+	local fssupport=$(grep -w hugetlbfs /proc/filesystems 2>/dev/null | cut -f2)
 
 	if [ "$fssupport" = "hugetlbfs" ]; then
 		return 1
@@ -178,7 +180,7 @@ test6()
 	mount -t hugetlbfs none /hugetlb
 
 	save_nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
-	echo 2 > /proc/sys/vm/nr_hugepages
+	echo $((2*$nr_mems)) > /proc/sys/vm/nr_hugepages
 
 	./cpuset_memory_test --mmap-file --hugepage -s $HUGEPAGESIZE >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
@@ -187,7 +189,7 @@ test6()
 	rmdir /hugetlb
 
 	echo $save_nr_hugepages > /proc/sys/vm/nr_hugepages
-	if [ $! -ne 0 ]; then
+	if [ $(cat /proc/sys/vm/nr_hugepages) -ne $save_nr_hugepages ]; then
 		tst_resm TFAIL "can't restore nr_hugepages(nr_hugepages = $save_nr_hugepages)."
 		return 1
 	fi
@@ -217,7 +219,7 @@ test7()
 	mount -t hugetlbfs none /hugetlb
 
 	save_nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
-	echo 2 > /proc/sys/vm/nr_hugepages
+	echo $((2*$nr_mems)) > /proc/sys/vm/nr_hugepages
 
 	./cpuset_memory_test --shm --hugepage -s $HUGEPAGESIZE --key=7 >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
@@ -226,7 +228,7 @@ test7()
 	rmdir /hugetlb
 
 	echo $save_nr_hugepages > /proc/sys/vm/nr_hugepages
-	if [ $! -ne 0 ]; then
+	if [ $(cat /proc/sys/vm/nr_hugepages) -ne $save_nr_hugepages ]; then
 		tst_resm TFAIL "can't restore nr_hugepages(nr_hugepages = $save_nr_hugepages)."
 		return 1
 	fi
@@ -821,7 +823,7 @@ do
 			if [ $? -ne 0 ]; then
 				exit_status=1
 			else
-				tst_resm TPASS "Cpuset memory alloaction test succeeded."
+				tst_resm TPASS "Cpuset memory allocation test succeeded."
 			fi
 		fi
 	fi

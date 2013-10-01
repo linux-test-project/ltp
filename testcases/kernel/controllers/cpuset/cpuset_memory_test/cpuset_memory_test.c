@@ -20,6 +20,7 @@
 /*                                                                            */
 /******************************************************************************/
 
+#include "config.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,27 +37,26 @@
 #include <syscall.h>
 #include <pthread.h>
 
-#include "../cpuset_lib/cpuset.h"
-
 char *TCID = "cpuset_memory_test";
 int TST_TOTAL = 1;
 
-#if HAVE_LINUX_MEMPOLICY_TEST
+#if HAVE_LINUX_MEMPOLICY_H
 
-int fd;
-int flag_exit;
+#include "../cpuset_lib/cpuset.h"
 
-int opt_mmap_anon;
-int opt_mmap_file;
-int opt_mmap_lock1;
-int opt_mmap_lock2;
-int opt_shm;
-int opt_hugepage;
-int opt_check;			/* check node when munmap memory (only for mmap_anon()) */
-int opt_thread;
+static int fd;
 
-int key_id;			/* used with opt_shm */
-unsigned long memsize;
+static int opt_mmap_anon;
+static int opt_mmap_file;
+static int opt_mmap_lock1;
+static int opt_mmap_lock2;
+static int opt_shm;
+static int opt_hugepage;
+static int opt_check; /* check node when munmap memory (only for mmap_anon()) */
+static int opt_thread;
+
+static int key_id;			/* used with opt_shm */
+static unsigned long memsize;
 
 #define FILE_HUGEPAGE	"/hugetlb/hugepagefile"
 
@@ -136,7 +136,7 @@ void process_options(int argc, char *argv[])
 	}
 
 	if (!memsize)
-		memsize = getpagesize();
+		memsize = sysconf(_SC_PAGESIZE);
 }
 
 /*
@@ -145,7 +145,7 @@ void process_options(int argc, char *argv[])
 void touch_memory_and_echo_node(char *p, int size)
 {
 	int i;
-	int pagesize = getpagesize();
+	int pagesize = sysconf(_SC_PAGESIZE);
 
 	for (i = 0; i < size; i += pagesize)
 		p[i] = 0xef;
@@ -281,89 +281,53 @@ void shm(int flag_allocated)
 	}
 }
 
-/*
- * sigint_handler: handle SIGINT by set the exit flag.
- */
-void sigint_handler(int __attribute__ ((unused)) signo)
-{
-	flag_exit = 1;
-}
-
-/*
- * sigusr_handler: handler SIGUSR
- *
- * When we receive SIGUSR, we allocate some memory according
- * to the user input when the process started.
- *
- * When we recive SIGUSR again, we will free all the allocated
- * memory.
- */
-void sigusr_handler(int __attribute__ ((unused)) signo)
-{
-	static int flag_allocated = 0;
-
-	if (opt_mmap_anon)
-		mmap_anon(flag_allocated);
-
-	if (opt_mmap_file)
-		mmap_file(flag_allocated);
-
-	if (opt_mmap_lock1)
-		mmap_lock1(flag_allocated);
-
-	if (opt_mmap_lock2)
-		mmap_lock2(flag_allocated);
-
-	if (opt_shm)
-		shm(flag_allocated);
-
-	flag_allocated = !flag_allocated;
-}
-
-void sigusr2(int __attribute__ ((unused)) signo)
-{
-	static int flag_allocated = 0;
-	mmap_anon(flag_allocated);
-	flag_allocated = !flag_allocated;
-}
-
 void *thread2_routine(void __attribute__ ((unused)) * arg)
 {
 	sigset_t set;
-	struct sigaction sigusr2_action;
+	sigset_t waitset;
+	int flag_allocated;
 
 	sigemptyset(&set);
 	sigaddset(&set, SIGUSR1);
 	sigaddset(&set, SIGINT);
 	pthread_sigmask(SIG_BLOCK, &set, NULL);
 
-	memset(&sigusr2_action, 0, sizeof(sigusr2_action));
-	sigusr2_action.sa_handler = &sigusr2;
-	sigaction(SIGUSR2, &sigusr2_action, NULL);
+	sigemptyset(&waitset);
+	sigaddset(&waitset, SIGUSR2);
+	pthread_sigmask(SIG_BLOCK, &waitset, NULL);
 
-	while (!flag_exit)
-		sleep(1);
+	flag_allocated = 0;
+
+	for (;;) {
+		if (sigwaitinfo(&waitset, NULL) < 0)
+			err(1, "sigwaitinfo() in thread2 failed");
+
+		mmap_anon(flag_allocated);
+		flag_allocated = !flag_allocated;
+	}
 
 	return NULL;
 }
 
+/*
+ * When we receive SIGUSR1, we allocate some memory according
+ * to the user intput when the process started.
+ * When we receive SIGUSR1 again, we will free all the allocated
+ * memory.
+ * Similiar for --thread option but SIGUSR2 signal is used
+ * to control thread2 behaviour.
+ */
 int main(int argc, char *argv[])
 {
-	struct sigaction sigint_action;
-	struct sigaction sigusr_action;
+	sigset_t waitset;
+	int signo;
+	int flag_allocated;
+
 	pthread_t thread2;
 
 	fd = open("/dev/zero", O_RDWR);
 	if (fd < 0)
 		err(1, "open /dev/zero failed");
-
-	memset(&sigint_action, 0, sizeof(sigint_action));
-	sigint_action.sa_handler = &sigint_handler;
-	sigaction(SIGINT, &sigint_action, NULL);
-
-	memset(&sigusr_action, 0, sizeof(sigusr_action));
-	sigusr_action.sa_handler = &sigusr_handler;
-	sigaction(SIGUSR1, &sigusr_action, NULL);
 
 	process_options(argc, argv);
 
@@ -377,8 +341,41 @@ int main(int argc, char *argv[])
 		pthread_sigmask(SIG_BLOCK, &set, NULL);
 	}
 
-	while (!flag_exit)
-		sleep(1);
+
+	sigemptyset(&waitset);
+	sigaddset(&waitset, SIGINT);
+	sigaddset(&waitset, SIGUSR1);
+
+	pthread_sigmask(SIG_BLOCK, &waitset, NULL);
+
+	flag_allocated = 0;
+
+	for (;;) {
+		signo = sigwaitinfo(&waitset, NULL);
+		if (signo < 0)
+			err(1, "sigwaitinfo() failed");
+
+		if (signo == SIGUSR1) {
+			if (opt_mmap_anon)
+				mmap_anon(flag_allocated);
+
+			if (opt_mmap_file)
+				mmap_file(flag_allocated);
+
+			if (opt_mmap_lock1)
+				mmap_lock1(flag_allocated);
+
+			if (opt_mmap_lock2)
+				mmap_lock2(flag_allocated);
+
+			if (opt_shm)
+				shm(flag_allocated);
+
+			flag_allocated = !flag_allocated;
+		} else {
+			break;
+		}
+	}
 
 	if (opt_thread) {
 		void *retv;
