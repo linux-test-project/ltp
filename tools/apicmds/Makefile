@@ -26,8 +26,8 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS		+= -D_GNU_SOURCE
 
-MAKE_TARGETS		:= $(addprefix tst_,brk brkm exit flush kvercmp res resm \
-			     ncpus ncpus_max)
+MAKE_TARGETS		:= $(addprefix tst_,brk brkm exit flush kvercmp kvercmp2 \
+				res resm ncpus ncpus_max)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
