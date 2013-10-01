@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # usage ./run_cpuset_test.sh test_num
 
 ################################################################################
@@ -41,11 +41,11 @@
 #                                                                              #
 ################################################################################
 
-source cpuset_funcs.sh;
-
 export TCID="cpuset_test";
 export TST_TOTAL=1;
 export TST_COUNT=1;
+
+. cpuset_funcs.sh;
 
 TEST_NUM=$1;
 SCRIPT_PID=$$;

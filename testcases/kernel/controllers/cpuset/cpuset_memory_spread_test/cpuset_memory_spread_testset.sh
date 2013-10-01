@@ -24,11 +24,11 @@
 
 cd $LTPROOT/testcases/bin
 
-. ./cpuset_funcs.sh
-
 export TCID="cpuset11"
 export TST_TOTAL=6
 export TST_COUNT=1
+
+. ./cpuset_funcs.sh
 
 exit_status=0
 # must >= 3 for: 1-$((nr_mems-2))
@@ -48,15 +48,45 @@ nodedir="/sys/devices/system/node"
 
 FIFO="./myfifo"
 
-declare -a memsinfo
+# memsinfo is an array implementation of the form of a multi-line string
+# _0: value0
+# _1: value1
+# _2: value2
+#
+memsinfo=""
 
-init_mems_info_array()
+# set value to memsinfo ($1 - index, $2 - value)
+set_memsinfo_val()
+{
+	local nl='
+'
+	# clearing existent value (if present)
+	memsinfo=`echo "$memsinfo" | sed -r "/^\_$1\:\s/d"`
+
+	if [ -z "$memsinfo" ]; then
+		memsinfo="_$1: $2"
+	else
+		memsinfo="$memsinfo${nl}_$1: $2"
+	fi
+}
+
+# get value from memsinfo ($1 - index)
+get_memsinfo_val()
+{
+	local value=
+	value=`echo "$memsinfo" | grep -e "^\_$1\:\s"`
+	value=`echo "$value" | sed -r "s/^.*\:\s(.*)$/\1/"`
+	echo "$value"
+}
+
+
+init_memsinfo_array()
 {
 	local i=
 
 	for i in `seq 0 $((nr_mems-1))`
 	do
-		memsinfo[$i]=0
+		set_memsinfo_val $i 0
 	done
 }
 
@@ -67,8 +97,8 @@ get_meminfo()
 	local nodepath="$nodedir/node$nodeid"
 	local nodememinfo="$nodepath/meminfo"
 	local item="$2"
-	local infoarray=(`cat $nodememinfo | grep $item`)
-	memsinfo[$nodeid]=${infoarray[3]}
+	local info=`cat $nodememinfo | grep $item | awk '{print $4}'`
+	set_memsinfo_val $nodeid $info
 }
 
 # freemem_check
@@ -88,7 +118,7 @@ freemem_check()
 	for i in `seq 0 $((nr_mems-1))`
 	do
 		# I think we need 100MB free memory to run test
-		if [ ${memsinfo[$i]} -lt 100000 ]; then
+		if [ $(get_memsinfo_val $i) -lt 100000 ]; then
 			return 1
 		fi
 	done
@@ -109,9 +139,9 @@ get_memsinfo()
 account_meminfo()
 {
 	local nodeId="$1"
-	local tmp="${memsinfo[$nodeId]}"
+	local tmp="$(get_memsinfo_val $nodeId)"
 	get_meminfo $@ "FilePages"
-	memsinfo[$nodeId]=$((${memsinfo[$nodeId]}-$tmp))
+	set_memsinfo_val $nodeId $(($(get_memsinfo_val $nodeId)-$tmp))
 }
 
 # account_memsinfo
@@ -136,7 +166,7 @@ result_check()
 
 	for i in $nodelist
 	do
-		if [ ${memsinfo[$i]} -le $upperlimit ]; then
+		if [ $(get_memsinfo_val $i) -le $upperlimit ]; then
 			return 1
 		fi
 	done
@@ -153,7 +183,7 @@ result_check()
 
 	for i in $othernodelist
 	do
-		if [ ${memsinfo[$i]} -gt $lowerlimit ]; then
+		if [ $(get_memsinfo_val $i) -gt $lowerlimit ]; then
 			return 1
 		fi
 	done
@@ -214,7 +244,7 @@ general_memory_spread_test()
 	account_memsinfo
 	result_check $expect_nodes
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "hog the memory on the unexpected node(FilePages_For_Nodes(KB): ${memsinfo[*]}, Expect Nodes: $expect_nodes)."
+		tst_resm TFAIL "hog the memory on the unexpected node(FilePages_For_Nodes(KB): ${memsinfo}, Expect Nodes: $expect_nodes)."
 		return 1
 	fi
 }
@@ -246,7 +276,7 @@ base_test()
 			tst_resm TPASS "Cpuset memory spread page test succeeded."
 		fi
 	fi
-	((TST_COUNT++))
+	TST_COUNT=$(($TST_COUNT + 1))
 }
 
 # test general spread page cache in a cpuset
@@ -301,7 +331,7 @@ test_spread_page2()
 	fi
 }
 
-init_mems_info_array
+init_memsinfo_array
 freemem_check
 if [ $? -ne 0 ]; then
 	tst_brkm TFAIL ignored "Some node doesn't has enough free memory(100MB) to do test(MemFree_For_Nodes(KB): ${memsinfo[*]})."

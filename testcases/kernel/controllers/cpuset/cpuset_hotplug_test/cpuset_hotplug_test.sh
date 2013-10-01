@@ -24,11 +24,11 @@
 
 cd $LTPROOT/testcases/bin
 
-. ./cpuset_funcs.sh
-
 export TCID="cpuset08"
 export TST_TOTAL=13
 export TST_COUNT=1
+
+. ./cpuset_funcs.sh
 
 exit_status=0
 
@@ -218,7 +218,7 @@ base_test()
 
 		cpu_hotplug_cleanup
 	fi
-	: $((TST_COUNT++))
+	TST_COUNT=$(($TST_COUNT + 1))
 }
 
 # Test Case 1-2

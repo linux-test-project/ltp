@@ -31,7 +31,7 @@ else
 	N_NODES="`cat /sys/devices/system/node/has_normal_memory`"
 fi
 N_NODES=${N_NODES#*-*}
-: $((N_NODES++))
+N_NODES=$(($N_NODES + 1))
 
 CPUSET="/dev/cpuset"
 CPUSET_TMP="/tmp/cpuset_tmp"

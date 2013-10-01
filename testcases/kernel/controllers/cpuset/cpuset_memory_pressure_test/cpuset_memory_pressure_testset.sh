@@ -24,11 +24,11 @@
 
 cd $LTPROOT/testcases/bin
 
-. ./cpuset_funcs.sh
-
 export TCID="cpuset10"
 export TST_TOTAL=6
 export TST_COUNT=1
+
+. ./cpuset_funcs.sh
 
 exit_status=0
 
@@ -254,7 +254,7 @@ do
 			fi
 		fi
 	fi
-	: $((TST_COUNT++))
+	TST_COUNT=$(($TST_COUNT + 1))
 done
 
 exit $exit_status

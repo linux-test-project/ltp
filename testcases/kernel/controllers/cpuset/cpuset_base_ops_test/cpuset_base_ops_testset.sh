@@ -24,11 +24,11 @@
 
 cd $LTPROOT/testcases/bin
 
-. ./cpuset_funcs.sh
-
 export TCID="cpuset01"
 export TST_TOTAL=97
 export TST_COUNT=1
+
+. ./cpuset_funcs.sh
 
 nr_cpus=$NR_CPUS
 nr_mems=$N_NODES
@@ -97,7 +97,7 @@ base_op_test()
 			exit_status=1
 		fi
 	fi
-	: $((TST_COUNT++))
+	TST_COUNT=$(($TST_COUNT + 1))
 }
 
 test_cpus()
@@ -190,7 +190,7 @@ attach_task_test()
 	if [ $? -ne 0 ]; then
 		exit_status=1
 		cleanup
-		: $((TST_COUNT++))
+		TST_COUNT=$(($TST_COUNT + 1))
 		return
 	fi
 
@@ -199,7 +199,7 @@ attach_task_test()
 	if [ $? -ne 0 ]; then
 		exit_status=1
 		cleanup
-		: $((TST_COUNT++))
+		TST_COUNT=$(($TST_COUNT + 1))
 		return
 	fi
 
@@ -227,7 +227,7 @@ attach_task_test()
 	if [ $? -ne 0 ]; then
 		exit_status=1
 	fi
-	: $((TST_COUNT++))
+	TST_COUNT=$(($TST_COUNT + 1))
 }
 
 
