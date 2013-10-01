@@ -117,7 +117,6 @@ test_cpus()
 		0-$((nr_cpus-1))			0-$((nr_cpus-1))
 		-1					WRITE_ERROR
 		0-$nr_cpus				WRITE_ERROR
-		0-					WRITE_ERROR
 		0--$((nr_cpus-1))			WRITE_ERROR
 		0,1-$((nr_cpus-2)),$((nr_cpus-1))	0-$((nr_cpus-1))
 		0,1-$((nr_cpus-2)),			0-$((nr_cpus-2))
@@ -125,6 +124,13 @@ test_cpus()
 		AAA					WRITE_ERROR
 	EOF
 	# while read cpus result
+
+	tst_kvercmp 3 0 0
+	if [ $? -eq 0 ]; then
+		base_op_test "$CPUSET/1/cpus" "0-" "WRITE_ERROR"
+	else
+		base_op_test "$CPUSET/1/cpus" "0-" "0"
+	fi
 }
 
 test_mems()
@@ -144,7 +150,6 @@ test_mems()
 		0-$((nr_mems-1))			0-$((nr_mems-1))
 		-1					WRITE_ERROR
 		0-$nr_mems				WRITE_ERROR
-		0-					WRITE_ERROR
 		0--$((nr_mems-1))			WRITE_ERROR
 		0,1-$((nr_mems-2)),$((nr_mems-1))	0-$((nr_mems-1))
 		0,1-$((nr_mems-2)),			0-$((nr_mems-2))
@@ -152,6 +157,13 @@ test_mems()
 		AAA					WRITE_ERROR
 	EOF
 	# while read mems result
+
+	tst_kvercmp 3 0 0
+	if [ $? -eq 0 ]; then
+		base_op_test "$CPUSET/1/mems" "0-" "WRITE_ERROR"
+	else
+		base_op_test "$CPUSET/1/mems" "0-" "0"
+	fi
 }
 
 test_flags()
