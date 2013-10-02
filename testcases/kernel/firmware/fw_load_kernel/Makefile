@@ -25,18 +25,11 @@ else
 top_srcdir	?= ../../../..
 include $(top_srcdir)/include/mk/env_pre.mk
 
+REQ_VERSION_MAJOR   := 3
+REQ_VERSION_PATCH   := 7
 MAKE_TARGETS	:= ltp_fw_load.ko
 
-# Ignoring the exit status of commands is done to be forward compatible with
-# kernel internal API changes. The user-space test will return TCONF, if it
-# doesn't find the module (i.e. it wasn't built either due to kernel-devel
-# missing or module build failure).
-ltp_fw_load.ko: ltp_fw_load.c
-	-$(MAKE) -C $(LINUX_DIR) M=$(abs_srcdir)
-	-mv ltp_fw_load.ko ltp_fw_load.ko~
-	-$(MAKE) -C $(LINUX_DIR) M=$(abs_srcdir) clean
-	-mv ltp_fw_load.ko~ ltp_fw_load.ko
-
+include $(top_srcdir)/include/mk/module.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
 endif

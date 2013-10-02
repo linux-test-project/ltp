@@ -17,28 +17,4 @@
 top_srcdir	?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
-
-SUBDIRS			=
-REQ_VERSION_MAJOR	= 3
-REQ_VERSION_PATCH	= 7
-
-ifeq ($(MAKECMDGOALS),clean)
-SKIP = 0
-endif
-
-ifeq ($(WITH_MODULES),yes)
-SKIP ?= $(shell test $(LINUX_VERSION_MAJOR) -gt $(REQ_VERSION_MAJOR); echo $$?)
-ifeq ($(SKIP),1)
-SKIP = $(shell test $(LINUX_VERSION_MAJOR) -eq $(REQ_VERSION_MAJOR); echo $$?)
-ifeq ($(SKIP),0)
-SKIP = $(shell test $(LINUX_VERSION_PATCH) -ge $(REQ_VERSION_PATCH); echo $$?)
-endif
-endif
-endif
-
-ifeq ($(SKIP),0)
-SUBDIRS			+= fw_load_kernel
-endif
-SUBDIRS			+= fw_load_user
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
