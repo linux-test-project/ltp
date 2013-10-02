@@ -1,0 +1,7 @@
+/ltp_block_dev.ko
+/*.mod.c
+/modules.order
+/.tmp_versions
+/.*.ko
+/.*.cmd
+/Module.symvers

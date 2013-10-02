@@ -3,8 +3,8 @@ Module under test: linux/block/genhd.c
 
   Function                    | Declared in   | Tested in
  -----------------------------+---------------+---------------
-  register_blkdev()           | linux/fs.h    | test_blkdev.c
-  unregister_blkdev()         | linux/fs.h    | test_blkdev.c
+  register_blkdev()           | linux/fs.h    | ltp_block_dev.c
+  unregister_blkdev()         | linux/fs.h    | ltp_block_dev.c
   blk_register_region()       | linux/genhd.h |
   blk_unregister_region()     | linux/genhd.h |
   add_disk()                  | linux/genhd.h |
@@ -21,7 +21,3 @@ Module under test: linux/block/genhd.c
 
 For possible test results please see "A POSIX conforming test framework" at
 http://www.gnu.org/software/dejagnu/manual/x47.html#posix
-
-TODO
-----
- - Automatically evaluate test results
