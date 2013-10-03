@@ -56,10 +56,16 @@ static void *thread_func(void *data)
 	if (rc)
 		FAIL_AND_EXIT("pthread_getschedparam()", rc);
 
+	rc = pthread_mutex_lock(&c_mutex);
+	if (rc)
+		FAIL_AND_EXIT("pthread_mutex_lock()", rc);
 	thread_started = 1;
 	rc = pthread_cond_signal(&cond);
 	if (rc)
 		FAIL_AND_EXIT("pthread_cond_signal()", rc);
+	rc = pthread_mutex_unlock(&c_mutex);
+	if (rc)
+		FAIL_AND_EXIT("pthread_mutex_unlock()", rc);
 
 	rc = pthread_mutex_lock(&mutex);
 	if (rc)
@@ -109,19 +115,17 @@ static int create_thread(int prio, pthread_t * tid)
 	if (rc)
 		FAIL_AND_EXIT("pthread_create()", rc);
 
+	rc = pthread_mutex_lock(&c_mutex);
+	if (rc)
+		FAIL_AND_EXIT("pthread_mutex_lock()", rc);
 	while (!thread_started) {
-		rc = pthread_mutex_lock(&c_mutex);
-		if (rc)
-			FAIL_AND_EXIT("pthread_mutex_lock()", rc);
-
 		rc = pthread_cond_wait(&cond, &c_mutex);
 		if (rc)
 			FAIL_AND_EXIT("pthread_cond_wait()", rc);
-
-		rc = pthread_mutex_unlock(&c_mutex);
-		if (rc)
-			FAIL_AND_EXIT("pthread_mutex_unlock()", rc);
 	}
+	rc = pthread_mutex_unlock(&c_mutex);
+	if (rc)
+		FAIL_AND_EXIT("pthread_mutex_unlock()", rc);
 
 	pthread_attr_destroy(&attr);
 
