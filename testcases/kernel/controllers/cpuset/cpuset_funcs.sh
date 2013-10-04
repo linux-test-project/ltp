@@ -65,16 +65,16 @@ version_check()
 
 ncpus_check()
 {
-	if [ $NR_CPUS -lt 4 ]; then
-		tst_brkm TCONF ignored "The total of CPUs is less than 4"
+	if [ $NR_CPUS -lt $1 ]; then
+		tst_brkm TCONF ignored "The total of CPUs is less than $1"
 		return 1
 	fi
 }
 
 nnodes_check()
 {
-	if [ $N_NODES -lt 3 ]; then
-		tst_brkm TCONF ignored "The total of nodes is less than 3"
+	if [ $N_NODES -lt $1 ]; then
+		tst_brkm TCONF ignored "The total of nodes is less than $1"
 		return 1
 	fi
 }
@@ -103,6 +103,9 @@ cpuset_check()
 	return 1
 }
 
+# optional parameters (pass both or none of them):
+# $1 - required number of cpus (default 2)
+# $2 - required number of memory nodes (default 2)
 check()
 {
 	user_check
@@ -120,12 +123,12 @@ check()
 		exit 0
 	fi
 
-	ncpus_check
+	ncpus_check ${1:-2}
 	if [ $? -ne 0 ]; then
 		exit 0
 	fi
 
-	nnodes_check
+	nnodes_check ${2:-2}
 	if [ $? -ne 0 ]; then
 		exit 0
 	fi

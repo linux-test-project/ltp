@@ -32,6 +32,8 @@ check
 
 exit_status=0
 
+nr_mems=$N_NODES
+
 TEST_CPUSET="$CPUSET/0"
 TEST_OUTPUT="$CPUSET_TMP/result"
 TEST_PROCSTATUS="$CPUSET_TMP/status"
@@ -276,14 +278,22 @@ test12()
 
 test13()
 {
-	do_syscall_test 0 0-1 --set_mempolicy=6 0 || return 1
+	if [ $nr_mems -ge 3 ]; then
+		do_syscall_test 0 0-1 --set_mempolicy=6 0 || return 1
+	else
+		do_syscall_test 0 0-1 --set_mempolicy=2 0 || return 1
+	fi
 	check_result "1"
 	return $?
 }
 
 test14()
 {
-	do_syscall_test 0 0 --set_mempolicy=6 1 || return 1
+	if [ $nr_mems -ge 3 ]; then
+		do_syscall_test 0 0 --set_mempolicy=6 1 || return 1
+	else
+		do_syscall_test 0 0 --set_mempolicy=2 1 || return 1
+	fi
 	return 0
 }
 

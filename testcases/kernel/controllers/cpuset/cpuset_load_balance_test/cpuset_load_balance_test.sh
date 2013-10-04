@@ -28,11 +28,10 @@ export TST_COUNT=1
 
 . cpuset_funcs.sh
 
-check
+check 4 2
 
 exit_status=0
 
-# must >= 3 for: 1-$((nr_mems-2))
 nr_cpus=$NR_CPUS
 nr_mems=$N_NODES
 
