@@ -12,4 +12,17 @@ memcg_stress		memcg_stress_test.sh
 memcg_control		PAGESIZE=$(mem_process -p);memcg_control_test.sh $PAGESIZE $PAGESIZE $((PAGESIZE * 2))
 cgroup_fj	run_cgroup_test_fj.sh
 controllers	test_controllers.sh
+
+cpuset_base_ops	cpuset_base_ops_testset.sh
+cpuset_inherit	cpuset_inherit_testset.sh
+cpuset_exclusive	cpuset_exclusive_test.sh
+cpuset_hierarchy	cpuset_hierarchy_test.sh
+cpuset_syscall	cpuset_syscall_testset.sh
+cpuset_sched_domains	cpuset_sched_domains_test.sh
+cpuset_load_balance	cpuset_load_balance_test.sh
+cpuset_hotplug	cpuset_hotplug_test.sh
+cpuset_memory	cpuset_memory_testset.sh
+cpuset_memory_pressure	cpuset_memory_pressure_testset.sh
+cpuset_memory_spread	cpuset_memory_spread_testset.sh
+
 cgroup_xattr	cgroup_xattr

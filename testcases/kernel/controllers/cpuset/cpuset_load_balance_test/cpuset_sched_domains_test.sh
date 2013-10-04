@@ -22,13 +22,13 @@
 #                                                                              #
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-export TCID="cpuset06"
+export TCID="cpuset_sched_domains"
 export TST_TOTAL=19
 export TST_COUNT=1
 
-. ./cpuset_funcs.sh
+. cpuset_funcs.sh
+
+check
 
 exit_status=0
 

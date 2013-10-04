@@ -89,38 +89,45 @@ user_check()
 
 cpuset_check()
 {
-	grep cpuset /proc/cgroups > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		tst_brkm TCONF ignored "Cpuset is not supported"
-		return 1
+        if [ -f /proc/cgroups ]; then
+		CPUSET_CONTROLLER=`grep -w cpuset /proc/cgroups | cut -f1`
+		CPUSET_CONTROLLER_VALUE=`grep -w cpuset /proc/cgroups | cut -f4`
+
+		if [ "$CPUSET_CONTROLLER" = "cpuset" ] && [ "$CPUSET_CONTROLLER_VALUE" = "1" ]
+		then
+			return 0
+		fi
 	fi
+
+	tst_brkm TCONF ignored "Cpuset is not supported"
+	return 1
 }
 
 check()
 {
 	user_check
 	if [ $? -ne 0 ]; then
-		return 1
+		exit 0
 	fi
 
 	cpuset_check
 	if [ $? -ne 0 ]; then
-		return 1
+		exit 0
 	fi
 
 	version_check
 	if [ $? -ne 0 ]; then
-		return 1
+		exit 0
 	fi
 
 	ncpus_check
 	if [ $? -ne 0 ]; then
-		return 1
+		exit 0
 	fi
 
 	nnodes_check
 	if [ $? -ne 0 ]; then
-		return 1
+		exit 0
 	fi
 
 }

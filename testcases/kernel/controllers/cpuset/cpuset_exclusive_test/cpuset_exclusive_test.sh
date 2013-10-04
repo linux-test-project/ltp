@@ -22,13 +22,13 @@
 #                                                                              #
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-export TCID="cpuset03"
+export TCID="cpuset_exclusive"
 export TST_TOTAL=18
 export TST_COUNT=1
 
-. ./cpuset_funcs.sh
+. cpuset_funcs.sh
+
+check
 
 exit_status=0
 

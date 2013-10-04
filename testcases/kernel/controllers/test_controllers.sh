@@ -47,8 +47,6 @@ then
 	IOTHROTTLE_CONTROLLER_VALUE=`grep -w blockio /proc/cgroups | cut -f4`;
 	FREEZER=`grep -w freezer /proc/cgroups | cut -f1`;
 	FREEZER_VALUE=`grep -w freezer /proc/cgroups | cut -f4`;
-	CPUSET_CONTROLLER=`grep -w cpuset /proc/cgroups | cut -f1`
-	CPUSET_CONTROLLER_VALUE=`grep -w cpuset /proc/cgroups | cut -f4`
 	CPUACCOUNT_CONTROLLER=`grep -w cpuacct /proc/cgroups | cut -f1`
 	CPUACCOUNT_CONTROLLER_VALUE=`grep -w cpuacct /proc/cgroups | cut -f4`
 
@@ -101,24 +99,6 @@ then
 		echo "Either Kernel does not support for freezer or functionality is not enabled";
 		echo "Kernel does not support freezer controller";
 		echo "Skipping all freezer testcases....";
-	fi
-	if [ "$CPUSET_CONTROLLER" = "cpuset" ] && [ "$CPUSET_CONTROLLER_VALUE" = "1" ]
-	then
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 1;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 2;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 3;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 4;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 5;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 6;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 7;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 8;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 9;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 10;
-		$LTPROOT/testcases/bin/run_cpuset_test.sh 11;
-	else
-		echo "CONTROLLERS TESTCASES: WARNING";
-		echo "Either Kernel does not support for cpuset controller or functionality is not enabled";
-		echo "Skipping all cpuset controller testcases....";
 	fi
 	if [ "$CPUACCOUNT_CONTROLLER" = "cpuacct" ] && [ "$CPUACCOUNT_CONTROLLER_VALUE" = "1" ]
         then

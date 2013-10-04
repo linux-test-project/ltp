@@ -22,13 +22,13 @@
 #                                                                              #
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-export TCID="cpuset11"
+export TCID="cpuset_memory_spread"
 export TST_TOTAL=6
 export TST_COUNT=1
 
-. ./cpuset_funcs.sh
+. cpuset_funcs.sh
+
+check
 
 exit_status=0
 # must >= 3 for: 1-$((nr_mems-2))

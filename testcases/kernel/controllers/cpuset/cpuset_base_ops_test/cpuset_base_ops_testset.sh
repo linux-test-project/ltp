@@ -22,13 +22,13 @@
 #                                                                              #
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-export TCID="cpuset01"
+export TCID="cpuset_base_ops"
 export TST_TOTAL=97
 export TST_COUNT=1
 
-. ./cpuset_funcs.sh
+. cpuset_funcs.sh
+
+check
 
 nr_cpus=$NR_CPUS
 nr_mems=$N_NODES
