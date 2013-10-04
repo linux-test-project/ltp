@@ -61,7 +61,7 @@ set_memsinfo_val()
 	local nl='
 '
 	# clearing existent value (if present)
-	memsinfo=`echo "$memsinfo" | sed -r "/^\_$1\:\s/d"`
+	memsinfo=`echo "$memsinfo" | sed -r "/^\_$1\: /d"`
 
 	if [ -z "$memsinfo" ]; then
 		memsinfo="_$1: $2"
@@ -74,8 +74,8 @@ set_memsinfo_val()
 get_memsinfo_val()
 {
 	local value=
-	value=`echo "$memsinfo" | grep -e "^\_$1\:\s"`
-	value=`echo "$value" | sed -r "s/^.*\:\s(.*)$/\1/"`
+	value=`echo "$memsinfo" | grep -e "^\_$1\: "`
+	value=`echo "$value" | sed -r "s/^.*\: (.*)$/\1/"`
 	echo "$value"
 }
 

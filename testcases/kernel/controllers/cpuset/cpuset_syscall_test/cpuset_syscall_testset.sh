@@ -231,7 +231,7 @@ test10()
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 
-	task_policy=$(cat $TEST_PROCNUMA | grep -e "\s\+stack\s\+anon" | \
+	task_policy=$(cat $TEST_PROCNUMA | grep -e "  *stack  *anon" | \
 			awk '{print $2}')
 
 	test "$allowed_list" = "$task_policy"
