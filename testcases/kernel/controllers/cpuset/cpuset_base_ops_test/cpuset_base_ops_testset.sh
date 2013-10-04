@@ -128,7 +128,7 @@ test_cpus()
 		base_op_test "$CPUSET/1/cpus" "0,1-$((nr_cpus-2))," "0-$((nr_cpus-2))"
 	fi
 
-	tst_kvercmp 3 0 0
+	tst_kvercmp2 3 0 0 "RHEL6:2.6.32"
 	if [ $? -eq 0 ]; then
 		base_op_test "$CPUSET/1/cpus" "0-" "WRITE_ERROR"
 	else
@@ -164,7 +164,7 @@ test_mems()
 		base_op_test "$CPUSET/1/mems" "0,1-$((nr_mems-2))," "0-$((nr_mems-2))"
 	fi
 
-	tst_kvercmp 3 0 0
+	tst_kvercmp2 3 0 0 "RHEL6:2.6.32"
 	if [ $? -eq 0 ]; then
 		base_op_test "$CPUSET/1/mems" "0-" "WRITE_ERROR"
 	else
