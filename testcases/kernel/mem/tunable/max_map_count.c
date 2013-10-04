@@ -121,12 +121,24 @@ void cleanup(void)
  * for in the vm_area_struct's map_count.
  */
 #if defined(__x86_64__) || defined(__x86__)
-static int filter_map(char *buf)
+static int filter_map(char *line)
 {
+	char buf[BUFSIZ];
+	int ret;
+
+	ret = sscanf(line, "%*p-%*p %*4s %*p %*2d:%*2d %*d %s", buf);
+	if (ret != 1)
+		return 0;
+
 	return strcmp(buf, "[vsyscall]") == 0;
 }
+#elif defined(__arm__)
+static int filter_map(char *line)
+{
+	return strncmp(line, "ffff0000-ffff1000", 17) == 0;
+}
 #else
-static int filter_map(char *buf)
+static int filter_map(char *line)
 {
 	return 0;
 }
@@ -146,8 +158,7 @@ static long count_maps(pid_t pid)
 		tst_brkm(TBROK | TERRNO, cleanup, "fopen %s", buf);
 	while (getline(&line, &len, fp) != -1) {
 		/* exclude vdso and vsyscall */
-		if (sscanf(line, "%*p-%*p %*4s %*p %*2d:%*2d %*d %s", buf) ==
-				1 && filter_map(buf))
+		if (filter_map(line))
 			continue;
 		map_count++;
 	}
