@@ -84,7 +84,7 @@ general_load_balance_test1()
 		return 1
 	fi
 
-	./cpuset_cpu_hog 2> $CPUSET_TMP/cpu-hog_stderr &
+	cpuset_cpu_hog 2> $CPUSET_TMP/cpu-hog_stderr &
 	pid=$!
 
 	read fifo < ./myfifo
@@ -209,7 +209,7 @@ general_load_balance_test2()
 		return 1
 	fi
 
-	./cpuset_cpu_hog 2> $CPUSET_TMP/cpu-hog_stderr &
+	cpuset_cpu_hog 2> $CPUSET_TMP/cpu-hog_stderr &
 	pid=$!
 
 	# wait for the parent to do prepare

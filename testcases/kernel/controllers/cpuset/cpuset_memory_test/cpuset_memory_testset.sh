@@ -71,7 +71,7 @@ test1()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-anon >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 	if [ "$node" != "0" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node(Expect: Node#0)."
@@ -88,7 +88,7 @@ test2()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-file >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-file >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 	if [ "$node" != "0" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node(Expect: Node#0)."
@@ -105,7 +105,7 @@ test3()
 		return 1
 	fi
 
-	./cpuset_memory_test --shm >"$MEMORY_RESULT" &
+	cpuset_memory_test --shm >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 	if [ "$node" != "0" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node(Expect: Node#0)."
@@ -122,7 +122,7 @@ test4()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-lock1 >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-lock1 >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 	if [ "$node" != "0" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node(Expect: Node#0)."
@@ -139,7 +139,7 @@ test5()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-lock2 >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-lock2 >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 	if [ "$node" != "0" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node(Expect: Node#0)."
@@ -182,7 +182,7 @@ test6()
 	save_nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
 	echo $((2*$nr_mems)) > /proc/sys/vm/nr_hugepages
 
-	./cpuset_memory_test --mmap-file --hugepage -s $HUGEPAGESIZE >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-file --hugepage -s $HUGEPAGESIZE >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 
 	umount /hugetlb
@@ -221,7 +221,7 @@ test7()
 	save_nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
 	echo $((2*$nr_mems)) > /proc/sys/vm/nr_hugepages
 
-	./cpuset_memory_test --shm --hugepage -s $HUGEPAGESIZE --key=7 >"$MEMORY_RESULT" &
+	cpuset_memory_test --shm --hugepage -s $HUGEPAGESIZE --key=7 >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 
 	umount /hugetlb
@@ -248,7 +248,7 @@ test8()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-anon >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 	if [ "$node" != "0" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node(Expect: Node#0)."
@@ -265,7 +265,7 @@ test9()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-anon >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 	if [ "$node" != "1" ]; then
 		tst_resm TFAIL "allocate memory on the Node#$node(Expect: Node#1)."
@@ -308,7 +308,7 @@ test10()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-anon --check >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-anon --check >"$MEMORY_RESULT" &
 	talk2memory_test_for_case_10_11 $! "$CPUSET/1" "$CPUSET/2"
 	{
 		read node0
@@ -353,7 +353,7 @@ test11()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-anon --check >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-anon --check >"$MEMORY_RESULT" &
 	talk2memory_test_for_case_10_11 $! "$CPUSET/1" "$CPUSET/2"
 	{
 		read node0
@@ -405,7 +405,7 @@ test12()
 		return 1
 	fi
 
-	./cpuset_memory_test --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-anon >"$MEMORY_RESULT" &
 	talk2memory_test_for_case_12_13 $! "$CPUSET/0"
 
 	{
@@ -441,7 +441,7 @@ test13()
 	fi
 
 
-	./cpuset_memory_test --mmap-anon --check >"$MEMORY_RESULT" &
+	cpuset_memory_test --mmap-anon --check >"$MEMORY_RESULT" &
 	talk2memory_test_for_case_12_13 $! "$CPUSET/0"
 
 	{
@@ -496,7 +496,7 @@ test14()
 		return 1
 	fi
 
-	./cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
 	{
 		local testpid=$!
 		sleep 1
@@ -552,7 +552,7 @@ test15()
 	fi
 
 
-	./cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
 	{
 		local testpid=$!
 		sleep 1
@@ -608,7 +608,7 @@ test16()
 	fi
 
 
-	./cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
 	{
 		local testpid=$!
 		sleep 1
@@ -674,7 +674,7 @@ test17()
 		return 1
 	fi
 
-	./cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
 	{
 		local testpid=$!
 		sleep 1
@@ -756,7 +756,7 @@ test18()
 		return 1
 	fi
 
-	./cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
+	cpuset_memory_test --thread --mmap-anon >"$MEMORY_RESULT" &
 	{
 		local testpid=$!
 		sleep 1

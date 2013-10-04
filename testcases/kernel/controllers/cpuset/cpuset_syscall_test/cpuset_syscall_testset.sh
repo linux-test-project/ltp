@@ -37,10 +37,10 @@ TEST_OUTPUT="$CPUSET_TMP/result"
 TEST_PROCSTATUS="$CPUSET_TMP/status"
 TEST_PROCNUMA="$CPUSET_TMP/numa_maps"
 
-# do_syscall_test - call ./syscall_test
+# do_syscall_test - call syscall_test
 # $1 - cpus
 # $2 - mems
-# $3 - ./syscall_test's args
+# $3 - syscall_test's args
 # $4 - expect return value of test task
 
 do_syscall_test()
@@ -63,7 +63,7 @@ do_syscall_test()
 		tst_resm TFAIL "set $TEST_CPUSET/mems as $2 fail."
 		return 1
 	fi
-	./cpuset_syscall_test $3 >"$TEST_OUTPUT" &
+	cpuset_syscall_test $3 >"$TEST_OUTPUT" &
 	testpid=$!
 	echo $testpid > "$TEST_CPUSET/tasks"
 	if [ $? -ne 0 ]; then

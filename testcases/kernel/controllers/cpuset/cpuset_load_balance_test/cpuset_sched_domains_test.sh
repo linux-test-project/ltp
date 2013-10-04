@@ -76,7 +76,7 @@ root_load_balance_test()
 
 	# check sched domains of every CPU
 	sleep 1
-	./cpuset_sched_domains_check 2> $CPUSET_TMP/stderr
+	cpuset_sched_domains_check 2> $CPUSET_TMP/stderr
 	ret=$?
 	if [ $ret -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -119,7 +119,7 @@ general_load_balance_test1()
 
 	# check sched domains of every CPU
 	sleep 1
-	./cpuset_sched_domains_check 2> $CPUSET_TMP/stderr
+	cpuset_sched_domains_check 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "partition sched domains failed."
@@ -195,7 +195,7 @@ general_load_balance_test2()
 
 	# check sched domains of every CPU
 	sleep 1
-	./cpuset_sched_domains_check > $CPUSET_TMP/stdout
+	cpuset_sched_domains_check > $CPUSET_TMP/stdout
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stdout
 		tst_resm TFAIL "partition sched domains failed."

@@ -36,7 +36,7 @@ nr_cpus=$NR_CPUS
 nr_mems=$N_NODES
 
 cpus_all="$(seq -s, 0 $((nr_cpus-1)))"
-cpus_all="`./cpuset_list_compute $cpus_all`"
+cpus_all="`cpuset_list_compute $cpus_all`"
 mems_all="$(seq -s, 0 $((nr_mems-1)))"
 
 # check_result <result> <expect>
@@ -224,7 +224,7 @@ base_test()
 # Test Case 1-2
 test_root_cpu_hotplug()
 {
-	local tmp_cpus="`./cpuset_list_compute -s $cpus_all $HOTPLUG_CPU`"
+	local tmp_cpus="`cpuset_list_compute -s $cpus_all $HOTPLUG_CPU`"
 
 	test_function="root_cpu_hotplug_test"
 	while read hotplug cpus_expect task_expect
@@ -240,7 +240,7 @@ test_root_cpu_hotplug()
 # Test Case 3-6
 test_general_cpu_hotplug()
 {
-	local tmp_cpus="`./cpuset_list_compute -s $cpus_all $HOTPLUG_CPU`"
+	local tmp_cpus="`cpuset_list_compute -s $cpus_all $HOTPLUG_CPU`"
 
 	test_function="general_cpu_hotplug_test"
 	while read hotplug cpus cpus_expect task_expect
