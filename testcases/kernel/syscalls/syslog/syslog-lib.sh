@@ -65,11 +65,11 @@ setup()
 		tst_resm TBROK "Testing is terminating due to a signal"
 		cleanup 1' $TRAP_SIGS || exit 1
 
-	if [ "$SYSLOG_DAEMON" == "syslog" ]; then
+	if [ "$SYSLOG_DAEMON" = "syslog" ]; then
 		CONFIG_FILE="/etc/syslog.conf"
-	elif [ "$SYSLOG_DAEMON" == "syslog-ng" ]; then
+	elif [ "$SYSLOG_DAEMON" = "syslog-ng" ]; then
 		CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
-	elif [ "$SYSLOG_DAEMON" == "rsyslog" ]; then
+	elif [ "$SYSLOG_DAEMON" = "rsyslog" ]; then
 		CONFIG_FILE="/etc/rsyslog.conf"
 		RSYSLOG_CONFIG='$ModLoad imuxsock.so'
 	else
