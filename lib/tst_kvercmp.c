@@ -95,8 +95,12 @@ int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers)
 
 	uname(&uval);
 	kver = uval.release;
-	if (strstr(kver, ".el5")) {
+	if (strstr(kver, ".el5uek")) {
+		cur_dist_name = "OL5UEK";
+	} else if (strstr(kver, ".el5")) {
 		cur_dist_name = "RHEL5";
+	} else if (strstr(kver, ".el6uek")) {
+		cur_dist_name = "OL6UEK";
 	} else if (strstr(kver, ".el6")) {
 		cur_dist_name = "RHEL6";
 	}
