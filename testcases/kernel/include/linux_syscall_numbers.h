@@ -801,12 +801,6 @@
 # ifndef __NR_sendmmsg
 #  define __NR_sendmmsg 269
 # endif
-# ifndef __NR_cacheflush
-#  define __NR_cacheflush 0x1002
-# endif
-# ifndef __NR_set_tls
-#  define __NR_set_tls 0x1005
-# endif
 #endif
 
 
@@ -12753,9 +12747,6 @@
 # endif
 # ifndef __NR_settimeofday
 #  define __NR_settimeofday __LTP__NR_INVALID_SYSCALL
-# endif
-# ifndef __NR_set_tls
-#  define __NR_set_tls __LTP__NR_INVALID_SYSCALL
 # endif
 # ifndef __NR_setuid
 #  define __NR_setuid __LTP__NR_INVALID_SYSCALL

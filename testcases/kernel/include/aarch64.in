@@ -253,5 +253,3 @@ clock_adjtime 266
 syncfs 267
 setns 268
 sendmmsg 269
-cacheflush 0x1002
-set_tls 0x1005
