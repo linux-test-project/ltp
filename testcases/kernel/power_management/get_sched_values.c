@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include "test.h"
 
+const char *TCID = "get_sched_values";
+
 int get_supp_sched_mc(void)
 {
 	if (tst_kvercmp(2, 6, 29) < 0)
