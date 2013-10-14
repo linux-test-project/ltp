@@ -83,12 +83,9 @@ int main(void)
 	if (EXPECTEDOVERRUNS == overruns) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("FAIL:  %d overruns sent; expected %d\n",
-		       overruns, EXPECTEDOVERRUNS);
-		return PTS_FAIL;
 	}
 
-	printf("UNRESOLVED:  This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("FAIL:  %d overruns sent; expected %d\n",
+	       overruns, EXPECTEDOVERRUNS);
+	return PTS_FAIL;
 }

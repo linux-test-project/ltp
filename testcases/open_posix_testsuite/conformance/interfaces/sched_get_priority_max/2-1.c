@@ -34,11 +34,8 @@ int main(void)
 	if (errno != EINVAL) {
 		perror("error is not EINVAL");
 		return PTS_FAIL;
-	} else {
-		printf("Unresolved test error\n");
-		return PTS_UNRESOLVED;
 	}
 
-	printf("This code should not be executed.\n");
+	printf("Unresolved test error\n");
 	return PTS_UNRESOLVED;
 }

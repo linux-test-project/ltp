@@ -63,13 +63,10 @@ int main(void)
 	if (0 == itsget.it_value.tv_sec && 0 == itsget.it_value.tv_nsec) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("Test FAILED:  tv_sec %d tv_nsec %d\n",
-		       (int)itsget.it_value.tv_sec,
-		       (int)itsget.it_value.tv_nsec);
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed\n");
-	return PTS_UNRESOLVED;
+	printf("Test FAILED:  tv_sec %d tv_nsec %d\n",
+	       (int)itsget.it_value.tv_sec,
+	       (int)itsget.it_value.tv_nsec);
+	return PTS_FAIL;
 }

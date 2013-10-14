@@ -67,13 +67,9 @@ int main(void)
 			setBackTime(tpreset);
 			return PTS_FAIL;
 		}
-	} else {
-		printf("clock_settime() failed\n");
-		setBackTime(tpreset);
-		return PTS_UNRESOLVED;
 	}
 
-	printf("This code should not be executed.\n");
+	printf("clock_settime() failed\n");
 	setBackTime(tpreset);
 	return PTS_UNRESOLVED;
 }

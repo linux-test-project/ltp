@@ -54,11 +54,8 @@ int main(void)
 			printf("clock_nanosleep() slept too long\n");
 			return PTS_FAIL;
 		}
-	} else {
-		printf("clock_nanosleep() did not sleep long enough\n");
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("clock_nanosleep() did not sleep long enough\n");
+	return PTS_FAIL;
 }

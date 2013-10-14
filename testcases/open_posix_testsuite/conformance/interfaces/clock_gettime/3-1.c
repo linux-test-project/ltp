@@ -55,17 +55,13 @@ int main(void)
 	    (ts2.tv_sec <= ts3.tv_sec) && (ts3.tv_sec <= ts4.tv_sec)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("Test FAILED - ts1=%ld,ts2=%ld,ts3=%ld,ts4=%ld\n",
-		       ts1.tv_sec, ts2.tv_sec, ts3.tv_sec, ts4.tv_sec);
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("Test FAILED - ts1=%ld,ts2=%ld,ts3=%ld,ts4=%ld\n",
+	       ts1.tv_sec, ts2.tv_sec, ts3.tv_sec, ts4.tv_sec);
+	return PTS_FAIL;
 #else
 	printf("CLOCK_MONOTONIC unsupported\n");
 	return PTS_UNSUPPORTED;
 #endif
-
 }

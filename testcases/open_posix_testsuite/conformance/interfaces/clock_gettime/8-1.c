@@ -27,11 +27,8 @@ int main(void)
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}
-	} else {
-		printf("clock_gettime() did not return failure\n");
-		return PTS_UNRESOLVED;
 	}
 
-	printf("This code should not be executed.\n");
+	printf("clock_gettime() did not return failure\n");
 	return PTS_UNRESOLVED;
 }

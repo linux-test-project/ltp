@@ -39,11 +39,8 @@ int main(void)
 			printf("errno != EINVAL\n");
 			return PTS_FAIL;
 		}
-	} else {
-		printf("clock_settime() did not return -1\n");
-		return PTS_UNRESOLVED;
 	}
 
-	printf("This test should not be executed.\n");
+	printf("clock_settime() did not return -1\n");
 	return PTS_UNRESOLVED;
 }

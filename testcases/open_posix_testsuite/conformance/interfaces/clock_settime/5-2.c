@@ -122,13 +122,10 @@ int main(void)
 		tsreset.tv_sec += TIMERSEC;
 		setBackTime(tsreset);
 		return PTS_PASS;
-	} else {
-		printf("Timer did not last for correct amount of time\n");
-		printf("timer: %d != correct %d\n",
-		       (int)ts.tv_sec - (int)tsleft.tv_sec, TIMERSEC);
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("Timer did not last for correct amount of time\n");
+	printf("timer: %d != correct %d\n",
+	       (int)ts.tv_sec - (int)tsleft.tv_sec, TIMERSEC);
+	return PTS_FAIL;
 }

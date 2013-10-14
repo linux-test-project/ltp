@@ -48,11 +48,8 @@ int main(void)
 	if ((slepts > 0) || (sleptns > sleepnsec)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("nanosleep() did not sleep long enough\n");
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("nanosleep() did not sleep long enough\n");
+	return PTS_FAIL;
 }

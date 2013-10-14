@@ -20,11 +20,8 @@ int main(void)
 	if (clock_getres(INVALIDCLOCKID, &res) == -1) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("Test FAILED\n");
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed\n");
-	return PTS_UNRESOLVED;
+	printf("Test FAILED\n");
+	return PTS_FAIL;
 }

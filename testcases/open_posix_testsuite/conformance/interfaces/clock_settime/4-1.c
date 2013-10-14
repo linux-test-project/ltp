@@ -12,7 +12,7 @@
  * - get time T0
  * - create/enable a timer to expire at T1 = T0 + TIMEROFFSET
  * - sleep SLEEPTIME seconds (SLEEPTIME should be < TIMEROFFSET,
- * 				but > ACCEPTABLEDELTA)
+ *				but > ACCEPTABLEDELTA)
  * - set time back to T0
  * - wait for the timer to expire
  * - get time T2
@@ -124,12 +124,9 @@ int main(void)
 	if ((delta <= ACCEPTABLEDELTA) && (delta >= 0)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("FAIL:  Ended %d, not %d\n",
-		       (int)tpT2.tv_sec, (int)its.it_value.tv_sec);
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("FAIL:  Ended %d, not %d\n",
+	       (int)tpT2.tv_sec, (int)its.it_value.tv_sec);
+	return PTS_FAIL;
 }

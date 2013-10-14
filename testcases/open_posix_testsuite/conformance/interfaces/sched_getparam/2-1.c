@@ -35,12 +35,9 @@ int main(void)
 	    param0.sched_priority == param1.sched_priority && errno == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("Different results between pid == 0 "
-		       "and pid == getpid().\n");
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("Different results between pid == 0 "
+	       "and pid == getpid().\n");
+	return PTS_FAIL;
 }

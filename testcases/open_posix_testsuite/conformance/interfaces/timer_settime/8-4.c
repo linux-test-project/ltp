@@ -60,12 +60,9 @@ int main(void)
 	if (RELOADVAL == oits.it_interval.tv_sec) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("Test FAILED:  correct %d oits.it_interval %d\n",
-		       RELOADVAL, (int)oits.it_interval.tv_sec);
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("Test FAILED:  correct %d oits.it_interval %d\n",
+	       RELOADVAL, (int)oits.it_interval.tv_sec);
+	return PTS_FAIL;
 }

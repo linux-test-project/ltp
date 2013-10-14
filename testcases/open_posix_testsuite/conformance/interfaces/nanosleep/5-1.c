@@ -22,11 +22,8 @@ int main(void)
 	if (nanosleep(&tssleepfor, &tsstorage) == -1) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("nanosleep() did not return -1 on failure\n");
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("nanosleep() did not return -1 on failure\n");
+	return PTS_FAIL;
 }

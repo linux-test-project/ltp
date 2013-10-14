@@ -58,11 +58,8 @@ int main(void)
 			printf("errno!=EINVAL after a timer_delete()\n");
 			return PTS_FAIL;
 		}
-	} else {
-		printf("timer_settime() did not fail after timer_delete()\n");
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed\n");
-	return PTS_UNRESOLVED;
+	printf("timer_settime() did not fail after timer_delete()\n");
+	return PTS_FAIL;
 }

@@ -17,7 +17,6 @@
 
 int main(void)
 {
-
 	struct sched_param param;
 	int result = -1;
 
@@ -38,11 +37,8 @@ int main(void)
 	if (result != 0) {
 		printf("returned code is not zero.\n");
 		return PTS_FAIL;
-	} else {
-		perror("Unresolved test error");
-		return PTS_UNRESOLVED;
 	}
 
-	printf("This code should not be executed.\n");
+	perror("Unresolved test error");
 	return PTS_UNRESOLVED;
 }

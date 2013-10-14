@@ -150,12 +150,9 @@ int main(void)
 	if (overruns >= expectedoverruns && overruns < expectedoverruns + fudge) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("FAIL:  %d overruns sent; expected %d\n",
-		       overruns, expectedoverruns);
-		return PTS_FAIL;
 	}
 
-	printf("UNRESOLVED:  This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("FAIL:  %d overruns sent; expected %d\n",
+	       overruns, expectedoverruns);
+	return PTS_FAIL;
 }

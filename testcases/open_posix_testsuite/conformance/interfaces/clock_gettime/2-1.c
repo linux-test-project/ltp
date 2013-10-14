@@ -43,11 +43,8 @@ int main(void)
 			perror("Error calling gettimeofday()\n");
 			return PTS_UNRESOLVED;
 		}
-	} else {
-		printf("clock_gettime() failed\n");
-		return PTS_UNRESOLVED;
 	}
 
-	printf("This code should not be executed.\n");
+	printf("clock_gettime() failed\n");
 	return PTS_UNRESOLVED;
 }

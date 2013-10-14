@@ -109,14 +109,11 @@ int main(void)
 
 	overruns = timer_getoverrun(tid);
 	printf("Total overruns: %d\n", overruns);
-	if (1 == madeit) {
+	if (madeit == 1) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("FAIL:  %d signals sent\n", madeit);
-		return PTS_FAIL;
 	}
 
-	printf("UNRESOLVED:  This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+	printf("FAIL:  %d signals sent\n", madeit);
+	return PTS_FAIL;
 }

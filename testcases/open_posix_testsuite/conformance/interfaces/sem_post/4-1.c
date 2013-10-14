@@ -41,10 +41,8 @@ int main(void)
 		sem_close(mysemp);
 		sem_unlink(semname);
 		return PTS_PASS;
-	} else {
-		puts("TEST FAILED: value of sem_post is not returning zero");
-		return PTS_FAIL;
 	}
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+
+	puts("TEST FAILED: value of sem_post is not returning zero");
+	return PTS_FAIL;
 }

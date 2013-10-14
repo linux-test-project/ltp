@@ -27,11 +27,8 @@ int main(void)
 	if (clock_nanosleep(BOGUSCLOCKID, 0, &tssleep, NULL) == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else {
-		printf("errno != EINVAL\n");
-		return PTS_FAIL;
 	}
 
-	printf("This code should not be executed\n");
-	return PTS_UNRESOLVED;
+	printf("errno != EINVAL\n");
+	return PTS_FAIL;
 }

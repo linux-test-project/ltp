@@ -66,10 +66,8 @@ int main(void)
 	if (failure) {
 		printf("At least one test FAILED\n");
 		return PTS_FAIL;
-	} else {
-		printf("All tests PASSED\n");
-		return PTS_PASS;
 	}
-	printf("This code should not be executed.\n");
-	return PTS_UNRESOLVED;
+
+	printf("All tests PASSED\n");
+	return PTS_PASS;
 }
