@@ -43,11 +43,8 @@ int TST_TOTAL = 1;
 
 #define DIR_MODE	(S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP)
 
-static const char *fs_type = "ext2";
-
-static int tflag;
 static int dflag;
-static char *fstype;
+static char *fstype = "ext2";
 static char *device;
 static const char file_src[] = "mnt_src/tstfile";
 static const char file_des[] = "mnt_des/tstfile";
@@ -55,7 +52,7 @@ static const char mntpoint_src[] = "mnt_src";
 static const char mntpoint_des[] = "mnt_des";
 
 static option_t options[] = {
-	{"T:", &tflag, &fstype},
+	{"T:", NULL, &fstype},
 	{"D:", &dflag, &device},
 	{NULL, NULL, NULL},
 };
@@ -68,9 +65,6 @@ int main(int argc, char *argv[])
 	msg = parse_opts(argc, argv, options, &help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	if (tflag)
-		fs_type = fstype;
 
 	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
@@ -85,7 +79,7 @@ int main(int argc, char *argv[])
 
 		tst_count = 0;
 
-		TEST(mount(mntpoint_src, mntpoint_des, fs_type, MS_BIND, NULL));
+		TEST(mount(mntpoint_src, mntpoint_des, fstype, MS_BIND, NULL));
 
 		if (TEST_RETURN != 0) {
 			tst_resm(TFAIL | TTERRNO, "mount(2) failed");
@@ -106,7 +100,6 @@ int main(int argc, char *argv[])
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
@@ -122,9 +115,9 @@ void setup(void)
 	SAFE_MKDIR(cleanup, mntpoint_des, DIR_MODE);
 
 	if (dflag) {
-		tst_mkfs(NULL, device, fs_type, NULL);
+		tst_mkfs(NULL, device, fstype, NULL);
 
-		if (mount(device, mntpoint_src, fs_type, 0, NULL) == -1)
+		if (mount(device, mntpoint_src, fstype, 0, NULL) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "mount failed");
 	}
 

@@ -56,19 +56,15 @@ static int test_rwflag(int, int);
 char *TCID = "mount03";
 int TST_TOTAL = 7;
 
-#define DEFAULT_FSTYPE	"ext2"
 #define TEMP_FILE	"temp_file"
 #define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
 			 S_IXGRP|S_IROTH|S_IXOTH)
 #define SUID_MODE	(S_ISUID|S_IRUSR|S_IXUSR|S_IXGRP|S_IXOTH)
 
-static const char *fs_type = "ext2";
-
 static const char mntpoint[] = "mntpoint";
-static char *fstype;
+static char *fstype = "ext2";
 static char *device;
-static int tflag;
 static int dflag;
 static int fildes;
 
@@ -88,7 +84,7 @@ long rwflags[] = {
 };
 
 static option_t options[] = {
-	{"T:", &tflag, &fstype},
+	{"T:", NULL, &fstype},
 	{"D:", &dflag, &device},
 	{NULL, NULL, NULL}
 };
@@ -108,10 +104,6 @@ int main(int argc, char *argv[])
 			 "you must specify the device used for mounting with -D "
 			 "option");
 
-	if (tflag)
-		fs_type = fstype;
-
-
 	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
 			 "%s doesn't allow running more than one instance "
@@ -127,7 +119,7 @@ int main(int argc, char *argv[])
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 
-			TEST(mount(device, mntpoint, fs_type, rwflags[i],
+			TEST(mount(device, mntpoint, fstype, rwflags[i],
 				   NULL));
 
 			if (TEST_RETURN != 0) {
@@ -274,7 +266,7 @@ int test_rwflag(int i, int cnt)
 	case 4:
 		/* Validate MS_REMOUNT flag of mount call */
 
-		TEST(mount(device, mntpoint, fs_type, MS_REMOUNT, NULL));
+		TEST(mount(device, mntpoint, fstype, MS_REMOUNT, NULL));
 		if (TEST_RETURN != 0) {
 			tst_resm(TWARN | TTERRNO, "mount(2) failed to remount");
 			return 1;
