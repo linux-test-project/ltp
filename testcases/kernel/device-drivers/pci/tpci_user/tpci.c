@@ -1,258 +1,120 @@
-#include <stdio.h>
 /*
+ * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it would be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write the Free Software Foundation,
+ * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Author: Alexey Kodanev <alexey.kodanev@oracle.com>
+ *
  */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
 #include <errno.h>
-#include <linux/kernel.h>
-#include <linux/errno.h>
-#include "user_tpci.h"
-#include "../tpci/tpci.h"
 
-static int tpci_fd = -1;	/* file descriptor */
+#include "test.h"
+#include "usctest.h"
+#include "safe_macros.h"
+#include "tst_module.h"
 
-int tpciopen()
+#include "../tpci_kernel/tpci.h"
+
+char *TCID = "test_pci";
+int TST_TOTAL = PCI_TCASES_NUM;
+
+static const char module_name[]	= PCI_DEVICE_NAME ".ko";
+static const char dev_result[]	= "/sys/devices/" PCI_DEVICE_NAME "/result";
+static const char dev_tcase[]	= "/sys/devices/" PCI_DEVICE_NAME "/tcase";
+static const char dev_busslot[]	= "/sys/devices/" PCI_DEVICE_NAME "/bus_slot";
+static int module_loaded;
+
+static void cleanup(void)
 {
+	if (module_loaded)
+		tst_module_unload(NULL, module_name);
 
-	dev_t devt;
-	struct stat st;
-	int rc = 0;
-
-	devt = makedev(TPCI_MAJOR, 0);
-
-	if (rc) {
-		if (errno == ENOENT) {
-			/* dev node does not exist. */
-			rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-						 S_IRGRP | S_IXGRP |
-						 S_IROTH | S_IXOTH));
-		} else {
-			printf
-			    ("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n",
-			     errno);
-		}
-
-	} else {
-		if (!(st.st_mode & S_IFDIR)) {
-			rc = unlink(DEVICE_NAME);
-			if (!rc) {
-				rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-							 S_IRGRP | S_IXGRP |
-							 S_IROTH | S_IXOTH));
-			}
-		}
-	}
-
-	/*
-	 * Check for the /dev/tbase node, and create if it does not
-	 * exist.
-	 */
-	rc = stat(DEVICE_NAME, &st);
-	if (rc) {
-		if (errno == ENOENT) {
-			/* dev node does not exist */
-			rc = mknod(DEVICE_NAME,
-				   (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP |
-				    S_IWGRP), devt);
-		} else {
-			printf
-			    ("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n",
-			     errno);
-		}
-
-	} else {
-		/*
-		 * /dev/tbase CHR device exists.  Check to make sure it is for a
-		 * block device and that it has the right major and minor.
-		 */
-		if ((!(st.st_mode & S_IFCHR)) || (st.st_rdev != devt)) {
-
-			/* Recreate the dev node. */
-			rc = unlink(DEVICE_NAME);
-			if (!rc) {
-				rc = mknod(DEVICE_NAME,
-					   (S_IFCHR | S_IRUSR | S_IWUSR |
-					    S_IRGRP | S_IWGRP), devt);
-			}
-		}
-	}
-
-	tpci_fd = open(DEVICE_NAME, O_RDWR);
-
-	if (tpci_fd < 0) {
-		printf("ERROR: Open of device %s failed %d errno = %d\n",
-		       DEVICE_NAME, tpci_fd, errno);
-		return errno;
-	} else {
-		printf("Device opened successfully \n");
-		return 0;
-	}
-
+	TEST_CLEANUP;
 }
 
-int tpciclose()
+void setup(int argc, char *argv[])
 {
+	tst_require_root(NULL);
 
-	if (tpci_fd != -1) {
-		close(tpci_fd);
-		tpci_fd = -1;
+	if (tst_kvercmp(2, 6, 0) < 0) {
+		tst_brkm(TCONF, NULL,
+			"Test must be run with kernel 2.6 or newer");
 	}
 
-	return 0;
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 }
 
-int main()
+static void run_pci_testcases(int bus, int slot)
 {
-	int rc;
+	int i, res;
+	for (i = 0; i < TST_TOTAL; ++i) {
+		/* skip pci disable test-case, it is manual */
+		if (i == PCI_DISABLE)
+			continue;
 
-	rc = tpciopen();
-	if (rc) {
-		printf("Test PCI Driver may not be loaded\n");
-		exit(1);
+		SAFE_FILE_PRINTF(cleanup, dev_tcase, "%d", i);
+		SAFE_FILE_SCANF(cleanup, dev_result, "%d", &res);
+
+		tst_resm(res, "PCI bus %02x slot %02x : Test-case '%d'",
+			bus, slot, i);
 	}
+}
 
-	/* test find pci */
-	if (ki_generic(tpci_fd, PCI_PROBE)) {
-		printf("Failed to find a pci device\n");
-		exit(1);
-	} else
-		printf("Success probing for pci device\n");
+static void test_run(void)
+{
+	tst_module_load(cleanup, module_name, NULL);
+	module_loaded = 1;
 
-	/* test disable device */
-	if (ki_generic(tpci_fd, PCI_DISABLE))
-		printf
-		    ("Failed to disable device \nMay still be in use by system\n");
-	else
-		printf("Disabled device\n");
+	char buf[6];
+	int i, j, fd, count;
 
-	/* test enable device */
-	if (ki_generic(tpci_fd, PCI_ENABLE))
-		printf("Failed to enable device\n");
-	else
-		printf("Enabled device\n");
+	for (i = 0; i < MAX_BUS; ++i) {
+		for (j = 0; j < MAX_DEVFN; ++j) {
+			/* set pci device for the test */
+			fd = SAFE_OPEN(cleanup, dev_busslot, O_WRONLY);
+			count = snprintf(buf, 6, "%u", i << 8 | j);
+			errno = 0;
+			if (write(fd, buf, count) < 0) {
+				if (errno == ENODEV) {
+					SAFE_CLOSE(cleanup, fd);
+					continue;
+				}
+				tst_brkm(TBROK | TERRNO, cleanup,
+					"write to '%s' failed", dev_busslot);
+			}
+			SAFE_CLOSE(cleanup, fd);
 
-	/* test find from bus */
-	if (ki_generic(tpci_fd, FIND_BUS))
-		printf("Failed to find from bus pointer\n");
-	else
-		printf("Found device from bus pointer\n");
+			run_pci_testcases(i, j);
 
-	/* test find from device */
-	if (ki_generic(tpci_fd, FIND_DEVICE))
-		printf("Failed to find device from device info\n");
-	else
-		printf("Found device from device info\n");
-
-	/* test find from class */
-	if (ki_generic(tpci_fd, FIND_CLASS))
-		printf("Failed to find device from class\n");
-	else
-		printf("Found device from class \n");
-
-	/* test find subsys */
-	if (ki_generic(tpci_fd, FIND_SUBSYS))
-		printf("Failed to find device from subsys info\n");
-	else
-		printf("Found device from subsys info\n");
-
-	/* test scan bus */
-	if (ki_generic(tpci_fd, BUS_SCAN))
-		printf("Failed on bus scan call\n");
-	else
-		printf("Success scanning bus\n");
-
-	/* test scan slot */
-	if (ki_generic(tpci_fd, SLOT_SCAN))
-		printf("Failed on scan slot \n");
-	else
-		printf("Success scan slot\n");
-
-	/* test enable bridges */
-	if (ki_generic(tpci_fd, ENABLE_BRIDGES))
-		printf("Failed to enable bridges\n");
-	else
-		printf("Enabled bridges\n");
-
-	/* test bus add devices */
-	if (ki_generic(tpci_fd, BUS_ADD_DEVICES))
-		printf("Failed on bus add devices call\n");
-	else
-		printf("Success bus add devices\n");
-
-	/* test match device */
-	if (ki_generic(tpci_fd, MATCH_DEVICE))
-		printf("Failed on match device call\n");
-	else
-		printf("Success match device\n");
-
-#if 0
-	/* test unregister driver */
-	if (ki_generic(tpci_fd, UNREG_DRIVER))
-		printf("Failed to unregister driver\n");
-	else
-		printf("Unregistered driver\n");
-#endif
-
-	/* test register driver */
-	if (ki_generic(tpci_fd, REG_DRIVER))
-		printf("Failed to register driver\n");
-	else
-		printf("Registerd driver\n");
-
-	/* test pci resources */
-	if (ki_generic(tpci_fd, PCI_RESOURCES))
-		printf("Failed on pci_resources call\n");
-	else
-		printf("Success pci resources\n");
-
-	/* test save state */
-	if (ki_generic(tpci_fd, SAVE_STATE))
-		printf("Failed to save state of device\n");
-	else
-		printf("Saved state of device\n");
-
-	/* test restore state */
-	if (ki_generic(tpci_fd, RESTORE_STATE))
-		printf("Failed to restore state\n");
-	else
-		printf("Restored state\n");
-
-	/* test max bus */
-	if (ki_generic(tpci_fd, TEST_MAX_BUS))
-		printf("Failed on max bus call\n");
-	else
-		printf("Success max bus \n");
-
-	if (ki_generic(tpci_fd, FIND_CAP))
-		printf("Does not have tested capability\n");
-	else
-		printf("Device has tested capability\n");
-
-	rc = tpciclose();
-	if (rc) {
-		printf("Test PCI Driver may not be closed\n");
-		exit(1);
+		}
 	}
+}
 
-	return 0;
+int main(int argc, char *argv[])
+{
+	setup(argc, argv);
+
+	test_run();
+
+	cleanup();
+
+	tst_exit();
 }

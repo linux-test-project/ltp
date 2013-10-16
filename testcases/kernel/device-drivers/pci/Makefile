@@ -14,22 +14,7 @@
 # along with this program; if not, write the Free Software Foundation,
 # Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-ifneq ($(KERNELRELEASE),)
-
-obj-m := ltp_tpci.o
-
-else
-
-top_srcdir	?= ../../../../..
+top_srcdir	?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
-
-REQ_VERSION_MAJOR := 2
-REQ_VERSION_PATCH := 6
-
-MAKE_TARGETS := ltp_tpci.ko
-
-include $(top_srcdir)/include/mk/module.mk
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
-
-endif
+include $(top_srcdir)/include/mk/generic_trunk_target.mk
