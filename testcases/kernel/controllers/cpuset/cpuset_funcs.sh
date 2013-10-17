@@ -81,7 +81,7 @@ nnodes_check()
 
 user_check()
 {
-	if [ "$USER" != root ]; then
+	if [ $(id -u) != 0 ]; then
 		tst_brkm TCONF ignored "Test must be run as root"
 		return 1
 	fi
