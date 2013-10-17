@@ -146,6 +146,8 @@ while [ $TST_NUM -le $TST_TOTAL ]; do
 	: $((TST_NUM += 1))
 done
 
+echo 0 > mnt/memory.use_hierarchy 2> /dev/null
+
 cleanup
 
 if [ "$FAILED_CNT" -ne 0 ]; then
