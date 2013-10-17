@@ -205,6 +205,9 @@ static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
+	if (tst_is_virt(VIRT_XEN))
+		tst_brkm(TCONF, NULL, "This testcase is not supported on Xen.");
+
 	BIAS_MAX = guess_timer_resolution();
 
 	TEST_PAUSE;

@@ -25,7 +25,7 @@
 #include <unistd.h>
 #include "test.h"
 
-static int is_xen()
+static int is_xen(void)
 {
 	char hypervisor_type[3];
 
