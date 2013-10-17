@@ -63,6 +63,9 @@
 #define TRERRNO    0x300   /* Capture errno information from TEST_RETURN to
 			      output; useful for pthread-like APIs :). */
 
+/* virt types for tst_is_virt() */
+#define VIRT_XEN	1	/* xen dom0/domU */
+
 /*
  * Ensure that NUMSIGS is defined.
  * It should be defined in signal.h or sys/signal.h on
@@ -188,6 +191,8 @@ int tst_is_cwd_ramfs(void);
 
 /* lib/tst_cwd_has_free.c */
 int tst_cwd_has_free(int required_kib);
+
+int tst_is_virt(int virt_type);
 
 /* lib/self_exec.c */
 void maybe_run_child(void (*child)(), char *fmt, ...);
