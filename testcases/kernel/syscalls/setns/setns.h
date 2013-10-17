@@ -53,8 +53,8 @@ static void init_ns_type(int clone_type, const char *proc_name)
 	if (fd != -1) {
 		ns_types[ns_total] = clone_type;
 		ns_fds[ns_total] = fd;
-		tst_resm(TINFO, "ns_fds[%d]=%d, ns_types[%d]=0x%x", ns_total,
-			fd, ns_total, clone_type);
+		tst_resm(TINFO, "ns_name=%s, ns_fds[%d]=%d, ns_types[%d]=0x%x",
+			 proc_name, ns_total, fd, ns_total, clone_type);
 		ns_total++;
 	}
 }
