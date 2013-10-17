@@ -162,7 +162,7 @@ setup()
 # Write the cleanup function
 cleanup()
 {
-	mount | grep "$CPUSET" >/dev/null 2>&1 || {
+	grep "$CPUSET" /proc/mounts >/dev/null 2>&1 || {
 		rm -rf "$CPUSET" >/dev/null 2>&1
 		return 0
 	}
@@ -171,7 +171,7 @@ cleanup()
 	do
 		while read pid
 		do
-			/bin/kill $pid > /dev/null 2>&1
+			/bin/kill -9 $pid > /dev/null 2>&1
 			if [ $? -ne 0 ]; then
 				tst_brkm TFAIL ignored "Couldn't kill task - "\
 							"$pid in the cpuset"
