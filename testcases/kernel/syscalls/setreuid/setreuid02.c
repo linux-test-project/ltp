@@ -1,87 +1,47 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Ported by John George
  */
 
 /*
- * NAME
- *	setreuid02.c
- *
- * DESCRIPTION
- *	Test setreuid() when executed by root.
- *
- * ALGORITHM
- *
- *	Setup:
- *	  Setup signal handling
- *	  Get user information.
- *	  Pause for SIGUSER1 if option specified.
- *	Setup test values.
- *	Loop if the proper options are given.
- *	For each test set execute the system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise,
- *		Verify the Functionality of system call
- *		if successful,
- *			Issue Functionality-Pass message.
- *		Otherwise,
- *			Issue Functionality-Fail message.
- *	Cleanup:
- *	  Print errno log and/or timing stats if options given.
- *
- * USAGE:  <for command-line>
- *	setreuid02 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
- *	where,  -c n : Run n copies concurrently.
- *		-e   : Turn on errno logging.
- *		-f   : Turn off functionality Testing.
- *		-i n : Execute test n times.
- *		-I x : Execute test for x seconds.
- *		-P x : Pause for x seconds between iterations.
- *		-t   : Turn on syscall timing.
- * History
- *	07/2001 John George
- *		-Ported
- *
- * Restrictions
- *	This test must be ran as root.
- *	nobody, bin, and daemon must be valid users.
+ * Test setreuid() when executed by root.
  */
 
+#include <errno.h>
 #include <pwd.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "test.h"
 #include "usctest.h"
-#include <errno.h>
+#include "compat_16.h"
 
-char *TCID = "setreuid02";
-uid_t nobody_pw_uid, root_pw_uid, daemon_pw_uid, bin_pw_uid;
-uid_t neg_one = -1;
-int exp_enos[] = { 0 };
+TCID_DEFINE(setreuid02);
 
-struct passwd nobody, daemonpw, root, bin;
+static uid_t neg_one = -1;
+static struct passwd nobody, daemonpw, root, bin;
 
 /*
  * The following structure contains all test data.  Each structure in the array
  * is used for a separate test.  The tests are executed in the for loop below.
  */
 
-struct test_data_t {
+static struct test_data_t {
 	uid_t *real_uid;
 	uid_t *eff_uid;
 	struct passwd *exp_real_usr;
@@ -90,42 +50,39 @@ struct test_data_t {
 } test_data[] = {
 	{
 	&neg_one, &neg_one, &root, &root, "After setreuid(-1, -1),"}, {
-	&nobody_pw_uid, &neg_one, &nobody, &root, "After setreuid(nobody, -1)"},
+	&nobody.pw_uid, &neg_one, &nobody, &root, "After setreuid(nobody, -1)"},
 	{
-	&root_pw_uid, &neg_one, &root, &root, "After setreuid(root,-1),"}, {
-	&neg_one, &daemon_pw_uid, &root, &daemonpw,
+	&root.pw_uid, &neg_one, &root, &root, "After setreuid(root,-1),"}, {
+	&neg_one, &daemonpw.pw_uid, &root, &daemonpw,
 		    "After setreuid(-1, daemon)"}, {
-	&neg_one, &root_pw_uid, &root, &root, "After setreuid(-1,root),"}, {
-	&bin_pw_uid, &neg_one, &bin, &root, "After setreuid(bin, -1)"}, {
-&root_pw_uid, &neg_one, &root, &root, "After setreuid(-1, root)"},};
+	&neg_one, &root.pw_uid, &root, &root, "After setreuid(-1,root),"}, {
+	&bin.pw_uid, &neg_one, &bin, &root, "After setreuid(bin, -1)"}, {
+&root.pw_uid, &neg_one, &root, &root, "After setreuid(-1, root)"},};
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
-void setup(void);
-void cleanup(void);
-void uid_verify(struct passwd *ru, struct passwd *eu, char *when);
+static void setup(void);
+static void cleanup(void);
+static void uid_verify(struct passwd *ru, struct passwd *eu, char *when);
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		int i;
 
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
 			/* Set the real or effective user id */
-			TEST(setreuid(*test_data[i].real_uid,
+			TEST(SETREUID(cleanup, *test_data[i].real_uid,
 				      *test_data[i].eff_uid));
 
 			if (TEST_RETURN == -1) {
@@ -134,10 +91,6 @@ int main(int ac, char **av)
 					 *test_data[i].real_uid,
 					 *test_data[i].eff_uid);
 			} else {
-				/*
-				 * Perform functional verification if test
-				 * executed without (-f) option.
-				 */
 				if (STD_FUNCTIONAL_TEST) {
 					uid_verify(test_data[i].exp_real_usr,
 						   test_data[i].exp_eff_usr,
@@ -150,71 +103,44 @@ int main(int ac, char **av)
 	}
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	if (getpwnam("nobody") == NULL) {
+	if (getpwnam("nobody") == NULL)
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
-		tst_exit();
-	}
 
-	if (getpwnam("daemon") == NULL) {
+	if (getpwnam("daemon") == NULL)
 		tst_brkm(TBROK, NULL, "daemon must be a valid user.");
-		tst_exit();
-	}
 
-	/* Check that the test process id is root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-		tst_exit();
-	}
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
+	if (getpwnam("bin") == NULL)
+		tst_brkm(TBROK, NULL, "bin must be a valid user.");
 
 	root = *(getpwnam("root"));
-	root_pw_uid = root.pw_uid;
+	UID16_CHECK(root.pw_uid, setreuid, cleanup);
 
 	nobody = *(getpwnam("nobody"));
-	nobody_pw_uid = nobody.pw_uid;
+	UID16_CHECK(nobody.pw_uid, setreuid, cleanup);
 
 	daemonpw = *(getpwnam("daemon"));
-	daemon_pw_uid = daemonpw.pw_uid;
+	UID16_CHECK(daemonpw.pw_uid, setreuid, cleanup);
 
 	bin = *(getpwnam("bin"));
-	bin_pw_uid = bin.pw_uid;
+	UID16_CHECK(bin.pw_uid, setreuid, cleanup);
 
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
 
-void uid_verify(struct passwd *ru, struct passwd *eu, char *when)
+static void uid_verify(struct passwd *ru, struct passwd *eu, char *when)
 {
 	if ((getuid() != ru->pw_uid) || (geteuid() != eu->pw_uid)) {
 		tst_resm(TFAIL, "ERROR: %s real uid = %d; effective uid = %d",

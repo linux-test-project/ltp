@@ -29,127 +29,41 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
+ * Author: William Roske
+ * Co-pilot: Dave Fenner
  */
-/* $Id: setreuid01.c,v 1.6 2009/11/02 13:57:18 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: setreuid01
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for setreuid(2)
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 5
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: William Roske
- *
- *    CO-PILOT		: Dave Fenner
- *
- *    DATE STARTED	: 05/14/92
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- *	1.) setreuid(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- *	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *
- *    DURATION
- *	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- *	Uses SIGUSR1 to pause before test if option set.
- *	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- *	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- *	None
- *
- *    INTERCASE DEPENDENCIES
- *	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the setreuid(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	setreuid(2).
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- *	Test:
- *	 Loop if the proper options are given.
- *	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- *	Cleanup:
- *	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+
+/*
+ * Testcase to test the basic functionality of setreuid(2) system call.
+ */
 
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
-
 #include <sys/types.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
-char *TCID = "setreuid01";
+TCID_DEFINE(setreuid01);
 int TST_TOTAL = 5;
 
-int exp_enos[] = { 0, 0 };
-
-int ruid, euid;			/* real and effective user ids */
+static uid_t ruid, euid;	/* real and effective user ids */
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -159,21 +73,19 @@ int main(int ac, char **av)
 		 *  Don't change either real or effective uid
 		 */
 		ruid = getuid();	/* get real uid */
+		UID16_CHECK(ruid, setreuid, cleanup);
+
 		euid = geteuid();	/* get effective uid */
+		UID16_CHECK(euid, setreuid, cleanup);
 
-		/* Call setreuid(2) */
-		TEST(setreuid(-1, -1));
+		TEST(SETREUID(cleanup, -1, -1));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setreuid -  Don't change either real or effective uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
@@ -187,21 +99,15 @@ int main(int ac, char **av)
 		 *  change effective to effective uid
 		 */
 
-		/* Call setreuid(2) */
-		TEST(setreuid(-1, euid));
+		TEST(SETREUID(cleanup, -1, euid));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setreuid -  change effective to effective uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
 				tst_resm(TPASS,
 					 "setreuid -  change effective to effective uid returned %ld",
 					 TEST_RETURN);
@@ -213,21 +119,15 @@ int main(int ac, char **av)
 		 *  change real to real uid
 		 */
 
-		/* Call setreuid(2) */
-		TEST(setreuid(ruid, -1));
+		TEST(SETREUID(cleanup, ruid, -1));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setreuid -  change real to real uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
 				tst_resm(TPASS,
 					 "setreuid -  change real to real uid returned %ld",
 					 TEST_RETURN);
@@ -239,21 +139,15 @@ int main(int ac, char **av)
 		 *  change effective to real uid
 		 */
 
-		/* Call setreuid(2) */
-		TEST(setreuid(-1, ruid));
+		TEST(SETREUID(cleanup, -1, ruid));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setreuid -  change effective to real uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
 				tst_resm(TPASS,
 					 "setreuid -  change effective to real uid returned %ld",
 					 TEST_RETURN);
@@ -265,21 +159,15 @@ int main(int ac, char **av)
 		 *  try to change real to current real
 		 */
 
-		/* Call setreuid(2) */
-		TEST(setreuid(ruid, ruid));
+		TEST(SETREUID(cleanup, ruid, ruid));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setreuid -  try to change real to current real failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
 				tst_resm(TPASS,
 					 "setreuid -  try to change real to current real returned %ld",
 					 TEST_RETURN);
@@ -288,41 +176,22 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
-	/* make a temp dir and cd to it */
 	tst_tmpdir();
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }

@@ -1,44 +1,25 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Ported by John George
  */
 
 /*
- * NAME
- *	setreuid06.c
- *
- * DESCRIPTION
- *	Test that EPERM is set when setreuid is given an invalid user id.
- *
- * USAGE:  <for command-line>
- *	setreuid06 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *	where,  -c n : Run n copies concurrently.
- *		-e   : Turn on errno logging.
- *		-i n : Execute test n times.
- *		-I x : Execute test for x seconds.
- *		-P x : Pause for x seconds between iterations.
- *		-t   : Turn on syscall timing.
- *
- * History
- *	07/2001 John George
- *		-Ported
- *
- * Restrictions
- *      Must be ran as non-root user - nobody recommended.
+ * Test that EPERM is set when setreuid is given an invalid user id.
  */
 
 #include <wait.h>
@@ -50,41 +31,35 @@
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 #define INVAL_USER		 (USHRT_MAX-2)
 
-char *TCID = "setreuid06";
+TCID_DEFINE(setreuid06);
 int TST_TOTAL = 1;
-int exp_enos[] = { EPERM, 0 };
 
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
+static struct passwd *ltpuser;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int argc, char **argv)
 {
-
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		TEST(setreuid(-1, INVAL_USER));
+		TEST(SETREUID(cleanup, -1, INVAL_USER));
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "%s did not fail as expected", TCID);
 		} else if (TEST_ERRNO == EPERM) {
@@ -100,49 +75,28 @@ int main(int argc, char **argv)
 	}
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
-/*
- * setup()
- *	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	umask(0);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
-	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
+	ltpuser = getpwnam("nobody");
+	if (ltpuser == NULL)
+		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
+
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_brkm(TBROK | TERRNO, NULL, "setuid failed to "
 			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
 
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- *	performs all the ONE TIME cleanup for this test at completion
- *	or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
-
 }

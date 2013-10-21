@@ -116,4 +116,9 @@ int SETFSGID(void (cleanup)(void), GID_T gid)
 {
 	LTP_CREATE_SYSCALL(setfsgid, cleanup, gid);
 }
+
+int SETREUID(void (cleanup)(void), UID_T ruid, UID_T euid)
+{
+	LTP_CREATE_SYSCALL(setreuid, cleanup, ruid, euid);
+}
 #endif /* __LTP_COMPAT_16_H__ */
