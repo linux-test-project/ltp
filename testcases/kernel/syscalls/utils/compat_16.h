@@ -121,4 +121,8 @@ int SETREUID(void (cleanup)(void), UID_T ruid, UID_T euid)
 {
 	LTP_CREATE_SYSCALL(setreuid, cleanup, ruid, euid);
 }
+int SETREGID(void (cleanup)(void), GID_T rgid, GID_T egid)
+{
+	LTP_CREATE_SYSCALL(setregid, cleanup, rgid, egid);
+}
 #endif /* __LTP_COMPAT_16_H__ */
