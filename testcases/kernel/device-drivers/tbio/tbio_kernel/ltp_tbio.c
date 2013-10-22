@@ -1,39 +1,24 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it would be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write the Free Software Foundation,
+ * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
-
  * This module will test block io layer.
  *
  * module: tbio
- *  Copyright (c) International Business Machines  Corp., 2003
- *
- *  This program is free software;  you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *  the GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program;
  *
  *  FILE        : tbio.c
  *  USAGE       : kernel_space:./load_tbio.sh
@@ -50,14 +35,9 @@
  *
  */
 
-#ifndef __KERNEL__
-#define __KERNEL__
-#endif
-
 #include <linux/module.h>
-//#include <linux/moduleparam.h>
 #include <linux/init.h>
-
+#include <linux/version.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
@@ -66,22 +46,24 @@
 #include <linux/genhd.h>
 #include <linux/blkdev.h>
 #include <linux/buffer_head.h>
+
 #include "tbio.h"
 
-#define BLK_DEFAULT_TIMEOUT	(60 * HZ)
 MODULE_AUTHOR("Kai Zhao <ltcd3@cn.ibm.com>");
+MODULE_AUTHOR("Alexey Kodanev <alexey.kodanev@oracle.com>");
 MODULE_DESCRIPTION(TMOD_DRIVER_NAME);
 MODULE_LICENSE("GPL");
 
-//module_param(major_num , int , 0);
-static int hardsect_size = 1024;
-//module_param(hardsect_size , int , 0);
-static int nsectors = 1024;
-//module_param(nsectors , int , 0);
+#define prk_err(fmt, ...) \
+	pr_err(TBIO_DEVICE_NAME ": " fmt "\n", ##__VA_ARGS__)
+#define prk_info(fmt, ...) \
+	pr_info(TBIO_DEVICE_NAME ": " fmt "\n", ##__VA_ARGS__)
 
-static struct bio *tbiop = NULL, *tbiop_dup = NULL;
-//static struct bio_pair *bio_pairp = NULL;
-static struct request_queue Queue;
+static int nsectors = 4096;
+module_param(nsectors, int, 0444);
+MODULE_PARM_DESC(nsectors, "The number of sectors");
+
+static struct bio *tbiop, *tbiop_dup;
 
 static struct tbio_device {
 	unsigned long size;
@@ -89,83 +71,61 @@ static struct tbio_device {
 	u8 *data;
 	struct gendisk *gd;
 	struct block_device *bdev;
-} Device;
+	struct request_queue *q;
+} tbio_dev;
 
-static int send_request(request_queue_t * q, struct bio *bio,
-			struct block_device *bdev, struct tbio_interface *inter,
-			int writing)
+static int send_request(struct request_queue *q, struct bio *bio,
+	struct block_device *bdev, struct tbio_interface *inter,
+	int writing)
 {
 	struct request *rq;
-	void *buffer = NULL;
-	unsigned long start_time;
-	int err;
+	rq = blk_make_request(q, bio, GFP_KERNEL);
+	if (!rq) {
+		prk_err("failed to make request");
+		return -EFAULT;
+	}
 
-	rq = blk_get_request(q, writing ? WRITE : READ, __GFP_WAIT);
 	rq->cmd_len = inter->cmd_len;
-	//printk("inter.cmd %s\n" , inter->cmd);
+
 	if (copy_from_user(rq->cmd, inter->cmd, inter->cmd_len))
 		goto out_request;
-	//printk("tbio: rq->cmd : %s\n",rq->cmd);
-	if (sizeof(rq->cmd) != inter->cmd_len)
+
+	if (sizeof(rq->cmd) != inter->cmd_len) {
 		memset(rq->cmd + inter->cmd_len, 0,
-		       sizeof(rq->cmd) - inter->cmd_len);
-
-	rq->bio = rq->biotail = NULL;
-
-	blk_rq_bio_prep(q, rq, bio);
-
-	rq->data = buffer;
-	rq->data_len = inter->data_len;
-
-	rq->timeout = 0;
-	if (!rq->timeout)
-		rq->timeout = q->sg_timeout;
-	if (!rq->timeout)
-		rq->timeout = BLK_DEFAULT_TIMEOUT;
-
-	start_time = jiffies;
-
-	DECLARE_COMPLETION(wait);
-
-	rq->rq_disk = bdev->bd_disk;
-
-	rq->waiting = &wait;
-	elv_add_request(q, rq, 1, 1);
-	generic_unplug_device(q);
-	wait_for_completion(&wait);
-	//printk("tbio: completion\n");
-	if (rq->errors) {
-		err = -EIO;
-		printk("tbio: rq->errors\n");
-		return err;
+			sizeof(rq->cmd) - inter->cmd_len);
 	}
+
+	rq->__sector = bio->bi_sector;
+
+	if (blk_execute_rq(q, bdev->bd_disk, rq, 0))
+		goto out_request;
 
 	blk_put_request(rq);
 
 	return 0;
+
 out_request:
+
 	blk_put_request(rq);
 	return -EFAULT;
-
 }
 
 static int tbio_io(struct block_device *bdev, struct tbio_interface *uptr)
 {
+	int ret;
 	tbio_interface_t inter;
 	struct bio *bio = NULL;
 	int reading = 0, writing = 0;
-	void *buffer = NULL;
-	//struct request *rq;
-	request_queue_t *q;
-	q = bdev_get_queue(Device.bdev);
+	void *buf = NULL;
+	struct request_queue *q = bdev_get_queue(bdev);
 
 	if (copy_from_user(&inter, uptr, sizeof(tbio_interface_t))) {
-		printk("tbio: copy_from_user\n");
+		prk_err("copy_from_user");
 		return -EFAULT;
 	}
 
-	if (inter.data_len > (q->max_sectors << 9)) {
-		printk("tbio: inter.in_len > q->max_sectors << 9\n");
+	if (inter.data_len > (q->limits.max_sectors << 9)) {
+		prk_err("inter.in_len > q->max_sectors << 9");
 		return -EIO;
 	}
 
@@ -182,19 +142,22 @@ static int tbio_io(struct block_device *bdev, struct tbio_interface *uptr)
 			break;
 		}
 
-		bio = bio_map_user(bdev, (unsigned long)inter.data,
-				   inter.data_len, reading);
+		bio = bio_map_user(q, bdev, (unsigned long)inter.data,
+			inter.data_len, reading, GFP_KERNEL);
 
 		if (!bio) {
-			printk("tbio : bio_map_user failed\n");
-			buffer =
-			    kmalloc(inter.data_len, q->bounce_gfp | GFP_USER);
-			if (!buffer) {
-				printk("tbio: buffer no memory\n");
+			prk_err("bio_map_user failed");
+			buf = kmalloc(inter.data_len, q->bounce_gfp | GFP_USER);
+			if (!buf) {
+				prk_err("buffer no memory");
 				return -1;
 			}
-			copy_from_user(buffer, inter.data, inter.data_len);
-			printk("tbio: buffer %s\n", (char *)buffer);
+			ret = copy_from_user(buf, inter.data, inter.data_len);
+			if (ret)
+				prk_err("copy_from_user() failed");
+
+			prk_info("buffer %s\n, copy_from_user returns '%d'",
+				(char *)buf, ret);
 		}
 
 	}
@@ -202,13 +165,12 @@ static int tbio_io(struct block_device *bdev, struct tbio_interface *uptr)
 	send_request(q, bio, bdev, &inter, writing);
 
 	if (bio)
-		bio_unmap_user(bio, reading);
+		bio_unmap_user(bio);
 	return 0;
 }
 
 static int test_bio_put(struct bio *biop)
 {
-
 	if (biop)
 		bio_put(biop);
 
@@ -219,7 +181,7 @@ static int test_bio_clone(void)
 {
 	tbiop_dup = bio_clone(tbiop, GFP_NOIO);
 	if (tbiop_dup == NULL) {
-		printk("tbio: bio_clone failed\n");
+		prk_err("bio_clone failed");
 		return -1;
 	}
 
@@ -230,7 +192,7 @@ static int test_bio_clone(void)
 
 static int test_bio_add_page(void)
 {
-	int res = 0, i = 0, offset = 0;
+	int ret = 0, i = 0, offset = 0;
 	unsigned long addr = 0;
 	struct page *ppage = NULL;
 
@@ -239,33 +201,34 @@ static int test_bio_add_page(void)
 		addr = get_zeroed_page(GFP_KERNEL);
 
 		if (addr == 0) {
-			printk("tbio: get free page failed %ld\n", addr);
-			return -1;
+			prk_err("get free page failed %ld", addr);
+			ret = -1;
+			break;
 		}
 
 		ppage = virt_to_page(addr);
 		if (ppage == NULL) {
-			printk
-			    ("tbio: covert virture page to page struct failed\n");
-			return -1;
+			prk_err("covert virture page to page struct failed");
+			ret = -1;
+			break;
 		}
 
-		res = bio_add_page(tbiop, ppage, PAGE_SIZE, offset);
-		if (res < 0) {
-			printk("bio_add_page :res %d\n", res);
-			return -1;
+		ret = bio_add_page(tbiop, ppage, PAGE_SIZE, offset);
+		if (ret < 0) {
+			prk_err("bio_add_page failed");
+			break;
 		}
-		offset += res;
-		//      printk ("tbio: bio_add_page : %d\n", res);
+		offset += ret;
 	}
-	return 0;
+
+	return ret;
 }
 
 static int test_do_bio_alloc(int num)
 {
 	tbiop = bio_alloc(GFP_KERNEL, num);
 	if (tbiop == NULL) {
-		printk("tbio: bio_alloc failed\n");
+		prk_err("bio_alloc failed");
 		return -1;
 	}
 	bio_put(tbiop);
@@ -275,39 +238,39 @@ static int test_do_bio_alloc(int num)
 
 static int test_bio_alloc(void)
 {
-	int res = 0;
-	res = test_do_bio_alloc(2);
-	if (res < 0) {
-		printk("can not alloc bio for %d\n", 2);
+	if (test_do_bio_alloc(2) < 0) {
+		prk_err("can not alloc bio for %d", 2);
 		return -1;
 	}
 
-	res = test_do_bio_alloc(8);
-	if (res < 0) {
-		printk("can not alloc bio for %d\n", 8);
+	if (test_do_bio_alloc(8) < 0) {
+		prk_err("can not alloc bio for %d", 8);
 		return -1;
 	}
-	res = test_do_bio_alloc(32);
-	if (res < 0) {
-		printk("can not alloc bio for %d\n", 32);
+
+	if (test_do_bio_alloc(32) < 0) {
+		prk_err("can not alloc bio for %d", 32);
 		return -1;
 	}
-	res = test_do_bio_alloc(96);
-	if (res < 0) {
-		printk("can not alloc bio for %d\n", 96);
+
+	if (test_do_bio_alloc(96) < 0) {
+		prk_err("can not alloc bio for %d", 96);
 		return -1;
 	}
-	res = test_do_bio_alloc(BIO_MAX_PAGES);
-	if (res < 0) {
-		printk("can not alloc bio for %d\n", BIO_MAX_PAGES);
+
+	if (test_do_bio_alloc(BIO_MAX_PAGES) < 0) {
+		prk_err("can not alloc bio for %d", BIO_MAX_PAGES);
 		return -1;
 	}
 
 	tbiop = bio_alloc(GFP_KERNEL, BIO_MAX_PAGES);
 	if (tbiop == NULL) {
-		printk("tbio: bio_alloc failed\n");
+		prk_err("bio_alloc failed");
 		return -1;
 	}
+
+	tbiop->bi_bdev = tbio_dev.bdev;
+	tbiop->bi_sector = 0;
 
 	return 0;
 }
@@ -315,24 +278,31 @@ static int test_bio_alloc(void)
 static int test_bio_split(struct block_device *bdev,
 			  struct tbio_interface *uptr)
 {
+	int ret;
 	tbio_interface_t inter;
 	struct bio *bio = NULL;
 	struct bio_pair *bio_pairp = NULL;
 	int reading = 0, writing = 0;
-	void *buffer = NULL;
-	request_queue_t *q;
-	q = bdev_get_queue(Device.bdev);
-
-	if (copy_from_user(&inter, uptr, sizeof(tbio_interface_t))) {
-		printk("tbio: copy_from_user\n");
+	void *buf = NULL;
+	struct request_queue *q = bdev_get_queue(bdev);
+	if (!q) {
+		prk_err("bdev_get_queue() failed");
 		return -EFAULT;
 	}
 
-	if (inter.data_len > (q->max_sectors << 9)) {
-		printk("tbio: inter.in_len > q->max_sectors << 9\n");
+	prk_info("test_bio_split");
+
+	if (copy_from_user(&inter, uptr, sizeof(tbio_interface_t))) {
+		prk_err("copy_from_user");
+		return -EFAULT;
+	}
+
+	if (inter.data_len > (q->limits.max_sectors << 9)) {
+		prk_err("inter.in_len > q->limits.max_sectors << 9");
 		return -EIO;
 	}
 
+	prk_info("inter.data_len is %d", inter.data_len);
 	if (inter.data_len) {
 
 		switch (inter.direction) {
@@ -346,27 +316,27 @@ static int test_bio_split(struct block_device *bdev,
 			break;
 		}
 
-		bio = bio_map_user(bdev, (unsigned long)inter.data,
-				   inter.data_len, reading);
+		bio = bio_map_user(q, bdev, (unsigned long)inter.data,
+			inter.data_len, reading, GFP_KERNEL);
 
 		if (!bio) {
-			printk("tbio : bio_map_user failed\n");
-			buffer =
-			    kmalloc(inter.data_len, q->bounce_gfp | GFP_USER);
-			if (!buffer) {
-				printk("tbio: buffer no memory\n");
+			prk_err("bio_map_user failed");
+			buf = kmalloc(inter.data_len, q->bounce_gfp | GFP_USER);
+			if (!buf) {
+				prk_err("buffer no memory");
 				return -1;
 			}
-			copy_from_user(buffer, inter.data, inter.data_len);
-			printk("tbio: buffer %s\n", (char *)buffer);
+			ret = copy_from_user(buf, inter.data, inter.data_len);
+			if (ret)
+				prk_err("copy_from_user() failed");
+
+			prk_info("buffer %s", (char *)buf);
 		} else {
-			//              printk("tbio: bio sectors %d\n", bio_sectors(bio));
-			//              printk("tbio: split now\n");
-			bio_pairp = bio_split(bio, bio_split_pool, 2);
+			bio_pairp = bio_split(bio, 2);
 
 			if (bio_pairp == NULL) {
-				printk("tbio: bio_split failed\n");
-				bio_unmap_user(bio, reading);
+				prk_err("bio_split failed");
+				bio_unmap_user(bio);
 				return -1;
 			}
 		}
@@ -374,141 +344,150 @@ static int test_bio_split(struct block_device *bdev,
 	}
 
 	send_request(q, &(bio_pairp->bio1), bdev, &inter, writing);
-	q = bdev_get_queue(Device.bdev);
+	q = bdev_get_queue(bdev);
 	send_request(q, &(bio_pairp->bio2), bdev, &inter, writing);
 
-	if (bio_pairp) {
+	if (bio_pairp)
 		bio_pair_release(bio_pairp);
-		return 0;
-	}
 
 	if (bio)
-		bio_unmap_user(bio, reading);
+		bio_unmap_user(bio);
 
 	return 0;
-
 }
 
 static int test_bio_get_nr_vecs(void)
 {
 	int number = 0;
 
-	if (!tbiop) {
-		printk("tbio: tbiop is NULL\n");
-		return -1;
-	}
-
-	number = bio_get_nr_vecs(tbiop->bi_bdev);
+	number = bio_get_nr_vecs(tbio_dev.bdev);
 
 	if (number < 0) {
-		printk("tbio: bio_get_nr_vec failed\n");
+		prk_err("bio_get_nr_vec failed");
 		return -1;
 	}
-	//printk("bio_get_nr_vecs: %d\n",number);
+
+	prk_info("bio_get_nr_vecs: %d", number);
 	return 0;
 }
 
-static int tbio_ioctl(struct inode *ino, struct file *file,
-		      unsigned int cmd, unsigned long arg)
+static int tbio_ioctl(struct block_device *blk, fmode_t mode,
+	unsigned cmd, unsigned long arg)
 {
-	int err;
-//      request_queue_t *q;
+	int err = 0;
 
-	//q = bdev_get_queue(Device.bdev);
-
-	printk("ttbio: ioctl 0x%x 0x%lx\n", cmd, arg);
+	tbio_dev.bdev = blkdev_get_by_path(
+		DEVICE_NAME, FMODE_READ | FMODE_WRITE, NULL);
 
 	switch (cmd) {
 	case LTP_TBIO_DO_IO:
-		{
-			err = bd_claim(Device.bdev, current);
-			if (err) {
-				printk("tbio:bd_claim\n");
-				break;
-			}
-
-			err =
-			    tbio_io(Device.bdev, (struct tbio_interface *)arg);
-			bd_release(Device.bdev);
-		}
-		break;
-
+		prk_info("TEST-CASE: LTP_TBIO_DO_IO:");
+		err = tbio_io(tbio_dev.bdev, (struct tbio_interface *)arg);
+	break;
 	case LTP_TBIO_CLONE:
+		prk_info("TEST-CASE: LTP_TBIO_CLONE:");
 		err = test_bio_clone();
 		break;
 	case LTP_TBIO_ADD_PAGE:
+		prk_info("TEST-CASE: LTP_TBIO_ADD_PAGE:");
 		err = test_bio_add_page();
 		break;
 	case LTP_TBIO_ALLOC:
+		prk_info("TEST-CASE: LTP_TBIO_ALLOC:");
 		err = test_bio_alloc();
 		break;
 	case LTP_TBIO_GET_NR_VECS:
+		prk_info("TEST-CASE: LTP_TBIO_GET_NR_VECS:");
 		err = test_bio_get_nr_vecs();
 		break;
 	case LTP_TBIO_PUT:
+		prk_info("TEST-CASE: LTP_TBIO_PUT:");
 		err = test_bio_put(tbiop);
 		break;
 	case LTP_TBIO_SPLIT:
-		{
-			err = bd_claim(Device.bdev, current);
-			if (err) {
-				printk("tbio:bd_claim\n");
-				break;
-			}
-
-			err =
-			    test_bio_split(Device.bdev,
-					   (struct tbio_interface *)arg);
-			bd_release(Device.bdev);
-
-		}
-		break;
-		//case LTP_TBIO_PAIR_RELEASE:     err = test_bio_pair_release();break;
-
+		prk_info("TEST-CASE: LTP_TBIO_SPLIT:");
+		err = test_bio_split(tbio_dev.bdev,
+			(struct tbio_interface *)arg);
+	break;
 	}
+
+	prk_info("TEST-CASE DONE");
+	blkdev_put(tbio_dev.bdev, FMODE_READ | FMODE_WRITE);
+	return err;
+}
+
+static int tbio_transfer(struct request *req, struct tbio_device *dev)
+{
+	unsigned int i = 0, offset = 0;
+	char *buf;
+	unsigned long flags;
+	size_t size;
+
+	struct bio_vec *bv;
+	struct req_iterator iter;
+
+	size = blk_rq_cur_bytes(req);
+	prk_info("bio req of size %zu:", size);
+	offset = blk_rq_pos(req) * 512;
+
+	rq_for_each_segment(bv, req, iter) {
+		size = bv->bv_len;
+		prk_info("%s bio(%u), segs(%u) sect(%u) pos(%lu) off(%u)",
+			(bio_data_dir(iter.bio) == READ) ? "READ" : "WRITE",
+			i, bio_segments(iter.bio), bio_sectors(iter.bio),
+			iter.bio->bi_sector, offset);
+
+		if (get_capacity(req->rq_disk) * 512 < offset) {
+			prk_info("Error, small capacity %zu, offset %u",
+				get_capacity(req->rq_disk) * 512,
+				offset);
+			continue;
+		}
+
+		buf = bvec_kmap_irq(bv, &flags);
+		if (bio_data_dir(iter.bio) == WRITE)
+			memcpy(dev->data + offset, buf, size);
+		else
+			memcpy(buf, dev->data + offset, size);
+		offset += size;
+		flush_kernel_dcache_page(bv->bv_page);
+		bvec_kunmap_irq(buf, &flags);
+		++i;
+	}
+
 	return 0;
 }
 
-static void tbio_transfer(struct request *req, struct tbio_device *dev)
+static void tbio_request(struct request_queue *q)
 {
-
-	struct bio *bio = req->bio;
-
-	//printk("tbio: bio_data(bio) %s\n" , (char *)bio_data(bio));
-	if (bio_data_dir(bio)) {
-		printk("tbio: write \"%s\" to dev\n", (char *)bio_data(bio));
-		memcpy(dev->data, bio_data(bio), bio->bi_size);
-	} else {
-		memcpy(bio_data(bio), dev->data, bio->bi_size);
-		printk("tbio: read \"%s\" from dev\n", (char *)bio_data(bio));
-	}
-
-}
-
-static void tbio_request(request_queue_t * q)
-{
+	int ret = 0;
 	struct request *req;
 
-	while ((req = elv_next_request(q)) != NULL) {
+	while ((req = blk_fetch_request(q)) != NULL) {
 
-		tbio_transfer(req, &Device);
-		end_request(req, 1);
+		ret = tbio_transfer(req, &tbio_dev);
+
+		spin_unlock_irq(q->queue_lock);
+		blk_end_request_all(req, ret);
+		spin_lock_irq(q->queue_lock);
 	}
 }
 
-static int tbio_open(struct inode *inode, struct file *filep)
+static int tbio_open(struct block_device *blk, fmode_t mode)
 {
-	if (!Device.bdev) {
-		Device.bdev = inode->i_bdev;
-		//atomic_inc((atomic_t)&Device.bdev->bd_part_count);
-	}
-
 	return 0;
 }
 
-static int tbio_release(struct inode *inode, struct file *filep)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0)
+static int tbio_release(struct gendisk *gd, fmode_t mode)
+#else
+static void tbio_release(struct gendisk *gd, fmode_t mode)
+#endif
 {
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0)
 	return 0;
+#endif
 }
 
 int tbio_media_changed(struct gendisk *gd)
@@ -521,7 +500,7 @@ int tbio_revalidate(struct gendisk *gd)
 	return 0;
 }
 
-static struct block_device_operations tbio_ops = {
+static const struct block_device_operations tbio_ops = {
 	.owner = THIS_MODULE,
 	.open = tbio_open,
 	.ioctl = tbio_ioctl,
@@ -532,58 +511,59 @@ static struct block_device_operations tbio_ops = {
 
 static int __init tbio_init(void)
 {
-	Device.size = nsectors * hardsect_size;
-	int result;
-	spin_lock_init(&Device.lock);
-	Device.data = vmalloc(Device.size);
-	if (Device.data == NULL)
+	tbio_dev.size = nsectors * 512;
+
+	tbio_dev.data = vmalloc(tbio_dev.size);
+	if (tbio_dev.data == NULL)
 		return -ENOMEM;
-	Device.bdev = NULL;
+	strcpy(tbio_dev.data, "tbio data");
+	tbio_dev.bdev = NULL;
 
-	result = register_blkdev(TBIO_MAJOR, DEVICE_NAME);	//, &tbio_ops);
-
-	printk(KERN_ALERT "LTP BIO: register_blkdev result=%d major %d\n",
-	       result, TBIO_MAJOR);
-
-	if (result <= 0) {
-		printk(KERN_WARNING "tbio:unable to get major number\n");
+	TBIO_MAJOR = register_blkdev(0, DEVICE_NAME);
+	if (TBIO_MAJOR <= 0) {
+		prk_err("unable to get major number");
 		goto out;
 	}
+	prk_info("register_blkdev major %d", TBIO_MAJOR);
 
-	Device.gd = alloc_disk(1);
-	if (!Device.gd)
+	spin_lock_init(&tbio_dev.lock);
+	tbio_dev.q = blk_init_queue(tbio_request, &tbio_dev.lock);
+	if (!tbio_dev.q) {
+		prk_err("failed to init queue");
 		goto out_unregister;
-	Device.gd->major = TBIO_MAJOR;
-	Device.gd->first_minor = 0;
-	Device.gd->fops = &tbio_ops;
-	Device.gd->private_data = &Device;
-	strcpy(Device.gd->disk_name, "tbio0");
-	set_capacity(Device.gd, nsectors);
-	blk_init_queue(tbio_request, &Device.lock);
-	Device.gd->queue = &Queue;
-	add_disk(Device.gd);
+	}
+
+	tbio_dev.gd = alloc_disk(1);
+	if (!tbio_dev.gd)
+		goto out_unregister;
+	tbio_dev.gd->major	= TBIO_MAJOR;
+	tbio_dev.gd->first_minor	= 0;
+	tbio_dev.gd->fops		= &tbio_ops;
+	tbio_dev.gd->private_data	= &tbio_dev;
+	tbio_dev.gd->queue	= tbio_dev.q;
+	strcpy(tbio_dev.gd->disk_name, "tbio");
+	set_capacity(tbio_dev.gd, nsectors);
+	tbio_dev.gd->queue->queuedata = tbio_dev.gd;
+
+	add_disk(tbio_dev.gd);
 
 	return 0;
 
 out_unregister:
-	unregister_chrdev(TBIO_MAJOR, "tbio");
+	unregister_blkdev(TBIO_MAJOR, DEVICE_NAME);
 out:
-	vfree(Device.data);
+	vfree(tbio_dev.data);
 	return -ENOMEM;
 }
+module_init(tbio_init);
 
 static void tbio_exit(void)
 {
-	if (Device.bdev) {
-		invalidate_bdev(Device.bdev, 1);
-		bdput(Device.bdev);
-	}
-
-	del_gendisk(Device.gd);
-	put_disk(Device.gd);
-	unregister_blkdev(TBIO_MAJOR, "tbio");
-	vfree(Device.data);
+	blk_cleanup_queue(tbio_dev.q);
+	del_gendisk(tbio_dev.gd);
+	put_disk(tbio_dev.gd);
+	unregister_blkdev(TBIO_MAJOR, DEVICE_NAME);
+	vfree(tbio_dev.data);
+	prk_info("exit");
 }
-
-module_init(tbio_init);
 module_exit(tbio_exit);

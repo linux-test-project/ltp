@@ -1,21 +1,20 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it would be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write the Free Software Foundation,
+ * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * This is the main of your user space test program,
  * which will open the correct kernel bioule, find the
@@ -24,22 +23,6 @@
  *
  * Use the ki_generic and other ki_testname functions
  * to abstract the calls from the main
- *
- * bioule: tbio
- *  Copyright (c) International Business Machines  Corp., 2003
- *
- *  This program is free software;  you can redistribute it and/or bioify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *  the GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program;
  *
  *  FILE        : user_tbio.c
  *  USAGE       : kernel_space:./load_tbio.sh
@@ -65,92 +48,23 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <linux/kernel.h>
+#include <unistd.h>
+#include <string.h>
 
-#include "user_tbio.h"
-#include "../kernel_space/tbio.h"
+#include "test.h"
+#include "usctest.h"
+#include "safe_macros.h"
+#include "tst_module.h"
 
-static int tbio_fd = -1;	/* file descriptor */
+#include "../tbio_kernel/tbio.h"
 
-int tbioopen()
-{
+char *TCID = TBIO_DEVICE_NAME;
 
-	dev_t devt;
-	struct stat st;
-	int rc = 0;
+static const char module_name[]	= "ltp_tbio.ko";
+static int module_loaded;
+static int tbio_fd = -1;
 
-	devt = makedev(TBIO_MAJOR, 0);
-
-	if (rc) {
-		if (errno == ENOENT) {
-			/* dev node does not exist. */
-			rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-						 S_IRGRP | S_IXGRP |
-						 S_IROTH | S_IXOTH));
-		} else {
-			printf
-			    ("ERROR: Problem with Base dev directory.  Error code from stat() is %d\n\n",
-			     errno);
-		}
-
-	} else {
-		if (!(st.st_mode & S_IFDIR)) {
-			rc = unlink(DEVICE_NAME);
-			if (!rc) {
-				rc = mkdir(DEVICE_NAME, (S_IFDIR | S_IRWXU |
-							 S_IRGRP | S_IXGRP |
-							 S_IROTH | S_IXOTH));
-			}
-		}
-	}
-
-	/*
-	 * Check for the /dev/tbase node, and create if it does not
-	 * exist.
-	 */
-	rc = stat(DEVICE_NAME, &st);
-	if (rc) {
-		if (errno == ENOENT) {
-			/* dev node does not exist */
-			rc = mknod(DEVICE_NAME,
-				   (S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP |
-				    S_IWGRP), devt);
-		} else {
-			printf
-			    ("ERROR:Problem with tbase device node directory.  Error code form stat() is %d\n\n",
-			     errno);
-		}
-
-	} else {
-		/*
-		 * /dev/tbio CHR device exists.  Check to make sure it is for a
-		 * block device and that it has the right major and minor.
-		 */
-		if ((!(st.st_mode & S_IFCHR)) || (st.st_rdev != devt)) {
-
-			/* Recreate the dev node. */
-			rc = unlink(DEVICE_NAME);
-			if (!rc) {
-				rc = mknod(DEVICE_NAME,
-					   (S_IFCHR | S_IRUSR | S_IWUSR |
-					    S_IRGRP | S_IWGRP), devt);
-			}
-		}
-	}
-
-	tbio_fd = open(DEVICE_NAME, O_RDWR);
-
-	if (tbio_fd < 0) {
-		printf("ERROR: Open of device %s failed %d errno = %d\n",
-		       DEVICE_NAME, tbio_fd, errno);
-		return errno;
-	} else {
-		printf("Device opened successfully \n");
-		return 0;
-	}
-
-}
-
-int tbioclose()
+void cleanup(void)
 {
 
 	if (tbio_fd != -1) {
@@ -158,8 +72,80 @@ int tbioclose()
 		tbio_fd = -1;
 	}
 
-	return 0;
+	if (module_loaded)
+		tst_module_unload(NULL, module_name);
+
+	TEST_CLEANUP;
 }
+
+
+void setup(void)
+{
+	tst_require_root(NULL);
+
+	if (tst_kvercmp(2, 6, 0) < 0) {
+		tst_brkm(TCONF, NULL,
+			"Test must be run with kernel 2.6 or newer");
+	}
+
+	tst_module_load(cleanup, module_name, NULL);
+	module_loaded = 1;
+
+	dev_t devt;
+	struct stat st;
+
+	SAFE_FILE_SCANF(cleanup, "/sys/class/block/tbio/dev",
+		"%d:0", &TBIO_MAJOR);
+
+	devt = makedev(TBIO_MAJOR, 0);
+	/*
+	 * Check for the /dev/tbase node, and create if it does not
+	 * exist.
+	 */
+	errno = 0;
+	if (stat(DEVICE_NAME, &st)) {
+		if (errno == ENOENT) {
+			/* dev node does not exist */
+			if (mknod(DEVICE_NAME, S_IFCHR | S_IRUSR | S_IWUSR |
+				S_IRGRP | S_IWGRP, devt)) {
+				tst_brkm(TBROK | TERRNO, cleanup,
+					"mknod failed at %s:%d",
+					__FILE__, __LINE__);
+			}
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup,
+				"problem with tbase device node directory");
+		}
+	} else {
+		/*
+		 * /dev/tbio CHR device exists.  Check to make sure it is for a
+		 * block device and that it has the right major and minor.
+		 */
+		if ((!(st.st_mode & S_IFCHR)) || (st.st_rdev != devt)) {
+			/* Recreate the dev node */
+			if (!unlink(DEVICE_NAME)) {
+				if (mknod(DEVICE_NAME, S_IFCHR | S_IRUSR |
+					S_IWUSR | S_IRGRP | S_IWGRP, devt)) {
+					tst_brkm(TBROK | TERRNO, cleanup,
+						"mknod failed at %s:%d",
+						__FILE__, __LINE__);
+				}
+			} else {
+				tst_brkm(TBROK | TERRNO, cleanup,
+					"unlink failed");
+			}
+		}
+	}
+
+	tbio_fd = open(DEVICE_NAME, O_RDWR);
+	if (tbio_fd < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup, "open of %s failed",
+			DEVICE_NAME);
+	}
+
+	tst_resm(TINFO, "Device opened successfully ");
+}
+
 
 int tbio_to_dev(int fd, int flag)
 {
@@ -169,16 +155,16 @@ int tbio_to_dev(int fd, int flag)
 	memset(&bif, 0, sizeof(tbio_interface_t));
 	rc = posix_memalign(&bif.data, 512, 1024);
 	if (rc) {
-		printf("posix_memalign failed\n");
+		tst_resm(TINFO, "posix_memalign failed");
 		return -1;
 	}
 
 	strcpy(bif.data, "User space data");
 	bif.data_len = 1024;
 	bif.direction = TBIO_TO_DEV;
-	bif.cmd = (char *)malloc(6);
+	bif.cmd = SAFE_MALLOC(cleanup, 6);
 	if (bif.cmd == NULL) {
-		printf("malloc cmd space failed\n");
+		tst_resm(TINFO, "malloc cmd space failed");
 		free(bif.data);
 		return -1;
 	}
@@ -189,7 +175,7 @@ int tbio_to_dev(int fd, int flag)
 	if (rc) {
 		free(bif.data);
 		free(bif.cmd);
-		printf("Ioctl error for TBIO_TO_DEV\n");
+		tst_resm(TINFO, "Ioctl error for TBIO_TO_DEV");
 		return rc;
 	}
 
@@ -208,7 +194,7 @@ int tbio_from_dev(int fd, int flag)
 	memset(&bif, 0, sizeof(tbio_interface_t));
 	rc = posix_memalign(&bif.data, 512, 1024);
 	if (rc) {
-		printf("posix_memalign failed\n");
+		tst_resm(TINFO, "posix_memalign failed");
 		return -1;
 	}
 
@@ -216,9 +202,9 @@ int tbio_from_dev(int fd, int flag)
 
 	bif.data_len = 1024;
 	bif.direction = TBIO_FROM_DEV;
-	bif.cmd = (char *)malloc(6);
+	bif.cmd = SAFE_MALLOC(cleanup, 6);
 	if (bif.cmd == NULL) {
-		printf("malloc cmd space failed\n");
+		tst_resm(TINFO, "malloc cmd space failed");
 		free(bif.data);
 		return -1;
 	}
@@ -229,12 +215,12 @@ int tbio_from_dev(int fd, int flag)
 	if (rc) {
 		free(bif.data);
 		free(bif.cmd);
-		printf("Ioctl error for TBIO_TO_DEV\n");
+		tst_resm(TINFO, "Ioctl error for TBIO_TO_DEV");
 		return rc;
 	}
-	//printf("read from dev %s\n",bif.data);
+
 	if (strcmp(bif.data, "User space data")) {
-		printf("TBIO_FROM_DEV failed\n");
+		tst_resm(TINFO, "TBIO_FROM_DEV failed");
 		free(bif.data);
 		free(bif.cmd);
 		return -1;
@@ -255,16 +241,16 @@ int tbio_split_to_dev(int fd, int flag)
 	memset(&bif, 0, sizeof(tbio_interface_t));
 	rc = posix_memalign(&bif.data, 512, 2048);
 	if (rc) {
-		printf("posix_memalign failed\n");
+		tst_resm(TINFO, "posix_memalign failed");
 		return -1;
 	}
 
 	strcpy(bif.data, "User space data");
 	bif.data_len = 2048;
 	bif.direction = TBIO_TO_DEV;
-	bif.cmd = (char *)malloc(6);
+	bif.cmd = SAFE_MALLOC(cleanup, 6);
 	if (bif.cmd == NULL) {
-		printf("malloc cmd space failed\n");
+		tst_resm(TINFO, "malloc cmd space failed");
 		free(bif.data);
 		return -1;
 	}
@@ -275,7 +261,7 @@ int tbio_split_to_dev(int fd, int flag)
 	if (rc) {
 		free(bif.data);
 		free(bif.cmd);
-		printf("Ioctl error for TBIO_TO_DEV\n");
+		tst_resm(TINFO, "Ioctl error for TBIO_TO_DEV");
 		return rc;
 	}
 
@@ -286,63 +272,63 @@ int tbio_split_to_dev(int fd, int flag)
 
 }
 
-int main()
+int ki_generic(int fd, int flag)
 {
-	int rc;
+	tbio_interface_t bif;
 
-	/* open the bioule */
-	rc = tbioopen();
-	if (rc) {
-		printf("Test bio Driver may not be loaded\n");
-		exit(1);
-	}
+	int rc = ioctl(fd, flag, &bif);
+	if (rc)
+		tst_resm(TINFO | TERRNO, "ioctl error");
+
+	return rc;
+}
+
+
+int main(void)
+{
+	setup();
 
 	if (ki_generic(tbio_fd, LTP_TBIO_ALLOC))
-		printf("Failed on LTP_TBIO_ALLOC test\n");
+		tst_resm(TFAIL, "failed on LTP_TBIO_ALLOC test");
 	else
-		printf("Success on LTP_TBIO_ALLOC test\n");
+		tst_resm(TPASS, "success on LTP_TBIO_ALLOC test");
 
 	if (ki_generic(tbio_fd, LTP_TBIO_CLONE))
-		printf("Failed on LTP_TBIO_CLONE test\n");
+		tst_resm(TFAIL, "failed on LTP_TBIO_CLONE test");
 	else
-		printf("Success on LTP_TBIO_CLONE test\n");
+		tst_resm(TPASS, "success on LTP_TBIO_CLONE test");
 
 	if (ki_generic(tbio_fd, LTP_TBIO_GET_NR_VECS))
-		printf("Failed on LTP_TBIO_GET_NR_VECS test\n");
+		tst_resm(TFAIL, "failed on LTP_TBIO_GET_NR_VECS test");
 	else
-		printf("Success on LTP_TBIO_GET_NR_VECS test\n");
+		tst_resm(TPASS, "success on LTP_TBIO_GET_NR_VECS test");
 
 	if (ki_generic(tbio_fd, LTP_TBIO_ADD_PAGE))
-		printf("Failed on LTP_TBIO_ADD_PAGE test\n");
+		tst_resm(TFAIL, "failed on LTP_TBIO_ADD_PAGE test");
 	else
-		printf("Success on LTP_TBIO_ADD_PAGE test\n");
+		tst_resm(TPASS, "success on LTP_TBIO_ADD_PAGE test");
 
 	if (tbio_split_to_dev(tbio_fd, LTP_TBIO_SPLIT))
-		printf("Failed on LTP_TBIO_SPLIT:write to dev\n");
+		tst_resm(TFAIL, "failed on LTP_TBIO_SPLIT:write to dev");
 	else
-		printf("Success on LTP_TBIO_SPLIT:write to dev\n");
+		tst_resm(TPASS, "success on LTP_TBIO_SPLIT:write to dev");
 
 	if (tbio_to_dev(tbio_fd, LTP_TBIO_DO_IO))
-		printf("Failed on LTP_TBIO_DO_IO:write to dev\n");
+		tst_resm(TFAIL, "failed on LTP_TBIO_DO_IO:write to dev");
 	else
-		printf("Success on LTP_TBIO_DO_IO:write to dev\n");
+		tst_resm(TPASS, "success on LTP_TBIO_DO_IO:write to dev");
 
 	if (tbio_from_dev(tbio_fd, LTP_TBIO_DO_IO))
-		printf("Failed on LTP_TBIO_DO_IO:read from dev\n");
+		tst_resm(TFAIL, "failed on LTP_TBIO_DO_IO:read from dev");
 	else
-		printf("Success on LTP_TBIO_DO_IO:read from dev\n");
+		tst_resm(TPASS, "success on LTP_TBIO_DO_IO:read from dev");
 
 	if (ki_generic(tbio_fd, LTP_TBIO_PUT))
-		printf("Failed on LTP_TBIO_PUT test\n");
+		tst_resm(TFAIL, "failed on LTP_TBIO_PUT test");
 	else
-		printf("Success on LTP_TBIO_PUT test\n");
+		tst_resm(TPASS, "success on LTP_TBIO_PUT test");
 
-	/* close the bioule */
-	rc = tbioclose();
-	if (rc) {
-		printf("Test bio Driver may not be closed\n");
-		exit(1);
-	}
+	cleanup();
 
-	return 0;
+	tst_exit();
 }

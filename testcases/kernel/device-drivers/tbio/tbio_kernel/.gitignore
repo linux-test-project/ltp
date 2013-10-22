@@ -1,0 +1,7 @@
+/ltp_tbio.ko
+/*.mod.c
+/modules.order
+/.tmp_versions
+/.*.ko
+/.*.cmd
+/Module.symvers
