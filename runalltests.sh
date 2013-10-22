@@ -343,12 +343,6 @@ fi
 "${RUNLTP}" -f tpm_tools
 ## END => Test Series 7                               ##
 
-## The next one i plan to run is tcore_patch_test_suites
-## START => Test Series 8                             ##
-"${RUNLTP}" -f tcore
-## END => Test Series 8                               ##
-
-
 ## The next one i plan to run is stress_cd tests
 ## START => Test Series 9                             ##
 if [ $RUN_STRESS_CD -eq 1 ]

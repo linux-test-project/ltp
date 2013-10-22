@@ -121,11 +121,3 @@
 		ltp/testcases/misc/math/nextafter
 	<\test_location>
 <\testname>
-<testname=tcore_patch_test_suites>
-	<description>
-		Test suite for multi-thread core dump kernel patch.
-	<\description>
-	<test_location>
-		ltp/testcases/misc/tcore_patch_test_suites
-	<\test_location>
-<\testname>

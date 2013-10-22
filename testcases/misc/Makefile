@@ -23,9 +23,5 @@
 
 top_srcdir		?= ../..
 
-ifneq ($(WITH_EXPECT),yes)
-FILTER_OUT_SUBDIRS	:= tcore_patch_test_suites
-endif
-
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
