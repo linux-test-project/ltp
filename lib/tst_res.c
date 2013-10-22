@@ -249,7 +249,12 @@ static const char *strerrnodef(int err)
 		    PAIR(EPIPE)
 		    PAIR(EDOM)
 		    PAIR(ERANGE)
+		    PAIR(EDEADLK)
 		    PAIR(ENAMETOOLONG)
+		    PAIR(ENOLCK)
+		    PAIR(ENOSYS)
+		    PAIR(ENOTEMPTY)
+		    PAIR(ELOOP)
 	};
 	return pair_lookup(errno_pairs, err);
 }
