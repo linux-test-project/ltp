@@ -28,6 +28,8 @@ export TCID="cgroup_regression_test"
 export TST_TOTAL=10
 export TST_COUNT=1
 
+failed=0
+
 tst_kvercmp 2 6 29
 if [ $? -eq 0 ]; then
 	tst_brkm TCONF ignored "test must be run with kernel 2.6.29 or newer"
@@ -523,7 +525,7 @@ for ((cur = 1; cur <= $TST_TOTAL; cur++))
 	test_$cur
 }
 
-rmdir cgroup/
+rmdir -p cgroup/*
 
 exit $failed
 
