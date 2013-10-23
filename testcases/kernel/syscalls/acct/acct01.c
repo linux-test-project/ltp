@@ -1,39 +1,29 @@
 /*
  *
- *   Copyright (c) International Business Machines  Corp., 2002
+ *  Copyright (c) International Business Machines  Corp., 2002
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ *  This program is free software;  you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program;  if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* 12/03/2002   Port to LTP     robbiew@us.ibm.com */
+/* 12/03/2002	Port to LTP     robbiew@us.ibm.com */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
 /*
- * NAME
- *	acct01.c  -- test acct
- *
- * CALLS
- *	acct
- *
  * ALGORITHM
  *	issue calls to acct and test the returned values against
  *	expected results
- *
- * RESTRICTIONS
- *	This must run root since the acct call may only be done
- *	by root.   Use the TERM flag, to clean up files.
  */
 
 #include <sys/types.h>
@@ -41,7 +31,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
-#include <stdio.h>		/* needed by testhead.h         */
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -49,100 +39,126 @@
 #include "usctest.h"
 #include "safe_macros.h"
 
-char *TCID = "acct01";
-int TST_TOTAL = 6;
+#define TEST_FILE1	"/"
+#define TEST_FILE2	"/dev/null"
+#define TEST_FILE3	"/tmp/does/not/exist"
+#define TEST_FILE4	"/etc/fstab/"
+#define TEST_FILE5	"./tmpfile"
 
-char tmpbuf[80];
-int fd;
+static void setup(void);
+static void cleanup(void);
+static void setup2(void);
+static void cleanup2(void);
+static void acct_verify(int);
+
+static struct test_case_t {
+	char *filename;
+	char *exp_errval;
+	int exp_errno;
+	void (*setupfunc) ();
+	void (*cleanfunc) ();
+} test_cases[] = {
+	{TEST_FILE1, "EISDIR",  EISDIR,  NULL,   NULL},
+	{TEST_FILE2, "EACCES",  EACCES,  NULL,   NULL},
+	{TEST_FILE3, "ENOENT",  ENOENT,  NULL,   NULL},
+	{TEST_FILE4, "ENOTDIR", ENOTDIR, NULL,   NULL},
+	{TEST_FILE5, "EPERM",   EPERM,   setup2, cleanup2},
+};
+
+char *TCID = "acct01";
+int TST_TOTAL = ARRAY_SIZE(test_cases);
+static struct passwd *ltpuser;
+static int exp_enos[] = { EISDIR, EACCES, ENOENT, ENOTDIR, EPERM, 0 };
+
+int main(int argc, char *argv[])
+{
+	int lc;
+	int i;
+
+	setup();
+
+	TEST_EXP_ENOS(exp_enos);
+
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		tst_count = 0;
+		for (i = 0; i < TST_TOTAL; i++)
+			acct_verify(i);
+	}
+
+	cleanup();
+	tst_exit();
+}
+
+static void setup(void)
+{
+	int fd;
+
+	tst_require_root(NULL);
+
+	tst_tmpdir();
+
+	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
+
+	fd = SAFE_CREAT(cleanup, TEST_FILE5, 0777);
+	SAFE_CLOSE(cleanup, fd);
+
+	if (acct(TEST_FILE5) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "acct failed unexpectedly");
+
+	/* turn off acct, so we are in a known state */
+	if (acct(NULL) == -1) {
+		if (errno == ENOSYS) {
+			tst_brkm(TCONF, cleanup,
+				 "BSD process accounting is not configured in "
+				 "this kernel");
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup, "acct(NULL) failed");
+		}
+	}
+}
+
+static void acct_verify(int i)
+{
+
+	if (test_cases[i].setupfunc)
+		test_cases[i].setupfunc();
+
+	TEST(acct(test_cases[i].filename));
+
+	if (test_cases[i].cleanfunc)
+		test_cases[i].cleanfunc();
+
+	if (TEST_RETURN != -1) {
+		tst_resm(TFAIL, "acct(%s) succeeded unexpectedly",
+			 test_cases[i].filename);
+		return;
+	}
+	if (TEST_ERRNO == test_cases[i].exp_errno) {
+		tst_resm(TPASS | TTERRNO, "acct failed as expected");
+	} else {
+		tst_resm(TFAIL | TTERRNO,
+			 "acct failed unexpectedly; expected: %d - %s",
+			 test_cases[i].exp_errno,
+			 strerror(test_cases[i].exp_errno));
+	}
+}
+
+static void setup2(void)
+{
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
+}
+
+static void cleanup2(void)
+{
+	SAFE_SETEUID(cleanup, 0);
+}
 
 static void cleanup(void)
 {
+	TEST_CLEANUP;
 
 	if (acct(NULL) == -1)
 		tst_resm(TBROK | TERRNO, "acct(NULL) failed");
 
 	tst_rmdir();
-}
-
-static void setup(void)
-{
-
-	/*
-	 * XXX: FreeBSD says you must always be superuser, but Linux says you
-	 * need to have CAP_SYS_PACCT capability.
-	 *
-	 * Either way, it's better to do this to test out the EPERM
-	 * requirement.
-	 */
-	tst_require_root(NULL);
-
-	tst_tmpdir();
-
-	/* turn off acct, so we are in a known state */
-	if (acct(NULL) == -1) {
-		if (errno == ENOSYS)
-			tst_brkm(TCONF, cleanup,
-				 "BSD process accounting is not configured in this "
-				 "kernel");
-		else
-			tst_brkm(TBROK | TERRNO, cleanup, "acct(NULL) failed");
-	}
-}
-
-int main(int argc, char *argv[])
-{
-	struct passwd *pwent;
-
-	setup();
-
-	/* EISDIR */
-	if (acct("/") == -1 && errno == EISDIR)
-		tst_resm(TPASS, "Failed with EISDIR as expected");
-	else
-		tst_brkm(TFAIL | TERRNO, cleanup,
-			 "didn't fail as expected; expected EISDIR");
-
-	/* EACCES */
-	if (acct("/dev/null") == -1 && errno == EACCES)
-		tst_resm(TPASS, "Failed with EACCES as expected");
-	else
-		tst_brkm(TFAIL | TERRNO, cleanup,
-			 "didn't fail as expected; expected EACCES");
-
-	/* ENOENT */
-	if (acct("/tmp/does/not/exist") == -1 && errno == ENOENT)
-		tst_resm(TPASS, "Failed with ENOENT as expected");
-	else
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "didn't fail as expected; expected ENOENT");
-
-	/* ENOTDIR */
-	if (acct("/etc/fstab/") == -1 && errno == ENOTDIR)
-		tst_resm(TPASS, "Failed with ENOTDIR as expected");
-	else
-		tst_brkm(TFAIL | TERRNO, cleanup,
-			 "didn't fail as expected; expected ENOTDIR");
-
-	/* EPERM */
-	sprintf(tmpbuf, "./%s.%d", TCID, getpid());
-	fd = SAFE_CREAT(cleanup, tmpbuf, 0777);
-	SAFE_CLOSE(cleanup, fd);
-
-	if (acct(tmpbuf) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "acct failed unexpectedly");
-
-	pwent = SAFE_GETPWNAM(cleanup, "nobody");
-	SAFE_SETEUID(cleanup, pwent->pw_uid);
-
-	if (acct(tmpbuf) == -1 && errno == EPERM)
-		tst_resm(TPASS, "Failed with EPERM as expected");
-	else
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "didn't fail as expected; expected EPERM");
-
-	SAFE_SETEUID(cleanup, 0);
-	SAFE_UNLINK(cleanup, tmpbuf);
-
-	cleanup();
-	tst_exit();
 }
