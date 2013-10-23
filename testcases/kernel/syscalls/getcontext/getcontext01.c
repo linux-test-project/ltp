@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2005.  All Rights Reserved.
+ *  Author: Prashant P Yendigeri <prashant.yendigeri@wipro.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -12,26 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
  */
-/**********************************************************
- *
- *    TEST IDENTIFIER   : getcontext01
- *
- *    EXECUTED BY       : root / superuser
- *
- *    TEST TITLE        : Basic tests for getcontext(2)
- *
- *    TEST CASE TOTAL   : 1
- *
- *    AUTHOR            : Prashant P Yendigeri
- *                        <prashant.yendigeri@wipro.com>
- *
- *    DESCRIPTION
- *      This is a Phase I test for the getcontext(2) system call.
- *      It is intended to provide a limited exposure of the system call.
- *
- **********************************************************/
 
 #include <features.h>
 
@@ -47,12 +29,10 @@ char *TCID = "getcontext01";
 
 #if !defined(__UCLIBC__)
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 int TST_TOTAL = 1;
-
-int exp_enos[] = { 0 };		/* must be a 0 terminated list */
 
 static void test_getcontext(void)
 {
@@ -62,11 +42,14 @@ static void test_getcontext(void)
 
 	if (TEST_RETURN == -1) {
 		if (errno == ENOSYS)
-			tst_resm(TCONF, "getcontext is not implemented in libc");
+			tst_resm(TCONF, "getcontext not implemented in libc");
 		else
 			tst_resm(TFAIL | TTERRNO, "getcontext failed");
-	} else if (TEST_RETURN >= 0)
+	} else if (TEST_RETURN == 0) {
 		tst_resm(TPASS, "getcontext passed");
+	} else {
+		tst_resm(TFAIL, "Unexpected return value %li", TEST_RETURN);
+	}
 }
 
 int main(int ac, char **av)
@@ -79,8 +62,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -89,26 +70,23 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
-void setup()
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
-
 }
 
 #else /* systems that dont support obsolete getcontext */
-int main()
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "system doesn't have getcontext support");
 }
