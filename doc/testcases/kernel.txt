@@ -688,16 +688,6 @@
 		ltp/testcases/kernel/syscalls/acct/acct01.c
 	<\test_location>
 <\testname>
-<testname=acct02>
-	<description>
-		Issues calls to acct() and tests the returned values against expected
-		results
-
-	<\description>
-	<test_location>
-		ltp/testcases/kernel/syscalls/acct/acct02.c
-	<\test_location>
-<\testname>
 <testname=adjtimex01>
 	<description>
 		Basic test for adjtimex().

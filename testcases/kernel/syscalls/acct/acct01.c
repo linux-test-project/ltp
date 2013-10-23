@@ -63,6 +63,7 @@ static struct test_case_t {
 	{TEST_FILE3, "ENOENT",  ENOENT,  NULL,   NULL},
 	{TEST_FILE4, "ENOTDIR", ENOTDIR, NULL,   NULL},
 	{TEST_FILE5, "EPERM",   EPERM,   setup2, cleanup2},
+	{NULL,       "EPERM",   EPERM,   setup2, cleanup2},
 };
 
 char *TCID = "acct01";
