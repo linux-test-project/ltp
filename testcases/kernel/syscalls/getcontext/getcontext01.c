@@ -54,12 +54,26 @@ int TST_TOTAL = 1;
 
 int exp_enos[] = { 0 };		/* must be a 0 terminated list */
 
+static void test_getcontext(void)
+{
+	ucontext_t ptr;
+
+	TEST(getcontext(&ptr));
+
+	if (TEST_RETURN == -1) {
+		if (errno == ENOSYS)
+			tst_resm(TCONF, "getcontext is not implemented in libc");
+		else
+			tst_resm(TFAIL | TTERRNO, "getcontext failed");
+	} else if (TEST_RETURN >= 0)
+		tst_resm(TPASS, "getcontext passed");
+}
+
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	ucontext_t ptr;
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -71,13 +85,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(getcontext(&ptr));
-
-		if (TEST_RETURN == -1)
-			tst_resm(TFAIL | TTERRNO, "getcontext failed");
-		else if (TEST_RETURN >= 0)
-			tst_resm(TPASS, "getcontext passed");
-
+		test_getcontext();
 	}
 
 	cleanup();
