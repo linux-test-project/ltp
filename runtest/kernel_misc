@@ -3,3 +3,4 @@ fw_load fw_load
 rtc01 rtc01
 block_dev block_dev
 tpci tpci
+tbio tbio
