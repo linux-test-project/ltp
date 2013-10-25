@@ -33,14 +33,14 @@ export TST_COUNT=1
 
 exit_status=0
 
-if [ "$USER" != root ]; then
-	tst_brkm TBROK ignored "Test must be run as root"
+if [ $(id -u) != 0 ]; then
+	tst_brkm TCONF ignored "Test must be run as root"
 	exit 0;
 fi
 
 grep cn_proc /proc/net/connector > /dev/null
 if [ $? -ne 0 ]; then
-	tst_brkm TBROK ignored "Process Event Connector is not supported or kernel is below 2.6.26"
+	tst_brkm TCONF ignored "Process Event Connector is not supported or kernel is below 2.6.26"
 	exit 0;
 fi
 
@@ -77,7 +77,7 @@ run_case()
 	fi
 
 	if [ $ret2 -eq 2 ]; then
-		tst_brkm TBROK NULL "connector may not be supported"
+		tst_brkm TCONF NULL "connector may not be supported"
 		exit 0
 	fi
 
