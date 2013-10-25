@@ -52,7 +52,7 @@ chmod07 chmod07
 chown01 chown01
 chown02 chown02
 chown03 export change_owner=$LTPROOT/testcases/bin/change_owner;chown03
-chown04 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chown04
+chown04 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chown04 -D DEVICE -T DEVICE_FS_TYPE
 chown05 chown05
 
 chroot01 chroot01
