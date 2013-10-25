@@ -92,9 +92,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/mount.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 #define MODE_RWX	(S_IRWXU|S_IRWXG|S_IRWXO)
 #define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
@@ -102,15 +104,32 @@
 #define TEST_FILE1	"tfile_1"
 #define TEST_FILE2	"testdir_1/tfile_2"
 #define TEST_FILE3	"t_file/tfile_3"
+#define TEST_FILE4	"test_file4"
+#define MNT_POINT	"mntpoint"
+
+#define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
+			 S_IXGRP|S_IROTH|S_IXOTH)
 
 int setup1();			/* setup function to test chmod for EPERM */
 int setup2();			/* setup function to test chmod for EACCES */
 int setup3();			/* setup function to test chmod for ENOTDIR */
 int longpath_setup();		/* setup function to test chmod for ENAMETOOLONG */
+static void help();
 
 char *test_home;		/* variable to hold TESTHOME env. */
 char Longpathname[PATH_MAX + 2];
 char High_address_node[64];
+
+static char *fstype = "ext2";
+static char *device;
+static int dflag;
+static int mount_flag;
+
+static option_t options[] = {
+	{"T:", NULL, &fstype},
+	{"D:", &dflag, &device},
+	{NULL, NULL, NULL}
+};
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
@@ -140,8 +159,10 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	{
 	"", FILE_MODE, ENOENT, NULL},
 	    /* Pathname contains a regular file. */
-	{
-TEST_FILE3, FILE_MODE, ENOTDIR, setup3},};
+	{TEST_FILE3, FILE_MODE, ENOTDIR, setup3},
+	{MNT_POINT, FILE_MODE, EROFS, NULL},
+	{TEST_FILE4, FILE_MODE, ELOOP, NULL},
+};
 
 char *TCID = "chmod06";
 int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
@@ -162,8 +183,15 @@ int main(int ac, char **av)
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, options, help);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	/* Check for mandatory option of the testcase */
+	if (!dflag) {
+		tst_brkm(TBROK, NULL, "you must specify the device "
+			 "used for mounting with -D option");
+	}
 
 	setup();
 
@@ -240,6 +268,19 @@ void setup()
 
 	tst_tmpdir();
 
+	tst_mkfs(NULL, device, fstype, NULL);
+
+	SAFE_MKDIR(cleanup, MNT_POINT, DIR_MODE);
+
+	/*
+	 * mount a read-only file system for test EROFS
+	 */
+	if (mount(device, MNT_POINT, fstype, MS_RDONLY, NULL) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "mount device:%s failed", device);
+	}
+	mount_flag = 1;
+
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED)
@@ -249,6 +290,13 @@ void setup()
 	for (i = 0; i < TST_TOTAL; i++)
 		if (test_cases[i].setupfunc != NULL)
 			test_cases[i].setupfunc();
+
+	/*
+	 * create two symbolic links who point to each other for
+	 * test ELOOP.
+	 */
+	SAFE_SYMLINK(cleanup, "test_file4", "test_file5");
+	SAFE_SYMLINK(cleanup, "test_file5", "test_file4");
 }
 
 /*
@@ -355,5 +403,16 @@ void cleanup()
 	if (chmod(DIR_TEMP, MODE_RWX) == -1)
 		tst_resm(TBROK | TERRNO, "chmod(%s) failed", DIR_TEMP);
 
+	if (mount_flag && umount(MNT_POINT) < 0) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "umount device:%s failed", device);
+	}
 	tst_rmdir();
+}
+
+static void help(void)
+{
+	printf("-T type   : specifies the type of filesystem to be mounted. "
+	       "Default ext2.\n");
+	printf("-D device : device used for mounting.\n");
 }
