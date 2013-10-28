@@ -14,9 +14,9 @@ read EXT4_DEV
 
 echo "The partition is: $EXT4_DEV, Are you sure(Y/N)?"
 read RESULT
-if [ "$RESULT" == "Y" ] || [ "$RESULT" == "y" ]; then
+if [ "$RESULT" = "Y" ] || [ "$RESULT" = "y" ]; then
 	echo "EXT4_DEV=$EXT4_DEV" > ./ext4-test-config
-elif [ "$RESULT" == "N" ]; then
+elif [ "$RESULT" = "N" ]; then
 	echo "Give up specifing a partition!"
 else
 	echo "Your input is wrong($RESULT)."
