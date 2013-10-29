@@ -99,8 +99,6 @@ static int probe_pci_dev(unsigned int bus, unsigned int slot)
 {
 	struct pci_dev *dev;
 
-	prk_info("find arbitrary pci device for test");
-
 	if (ltp_pci.dev) {
 		pci_dev_put(ltp_pci.dev);
 		ltp_pci.dev = NULL;
@@ -467,7 +465,8 @@ static int test_assign_resources(void)
 			r->name, r->flags,
 			(unsigned long)r->start, (unsigned long)r->end);
 
-		if ((r->flags & IORESOURCE_MEM) == IORESOURCE_MEM) {
+		if (r->flags & IORESOURCE_MEM &&
+			r->flags & IORESOURCE_PREFETCH) {
 			ret = pci_assign_resource(dev, i);
 			prk_info("assign resource to '%d', ret '%d'", i, ret);
 			rc |= (ret < 0 && ret != -EBUSY) ? TFAIL : TPASS;
@@ -717,8 +716,6 @@ static ssize_t sys_bus_slot(struct device *dev,
 
 	bus = res >> 8 & 0xFF;
 	slot = res & 0xFF;
-
-	prk_info("get bus '%u' slot '%u'", bus, slot);
 
 	ret = probe_pci_dev(bus, slot);
 	if (ret)
