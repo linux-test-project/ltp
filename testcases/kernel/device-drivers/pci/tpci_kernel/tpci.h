@@ -20,7 +20,6 @@
 #define PCI_DEVICE_NAME		"ltp_tpci"
 #define MAX_DEVFN		256
 #define MAX_BUS			256
-#define AER_CAP_ID_VALUE	0x14011
 
 enum PCI_TCASES {
 	PCI_DISABLE = 0,

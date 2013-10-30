@@ -541,28 +541,6 @@ static int test_find_cap(void)
 }
 
 /*
- * test_find_pci_exp_cap
- *	make call to pci_find_capability, which will
- *	determine if a device has PCI-EXPRESS capability,
- *	use second parameter to specify which capability
- *	you are looking for
- */
-static int test_find_pci_exp_cap(void)
-{
-	struct pci_dev *dev = ltp_pci.dev;
-
-	prk_info("find PCIe capability");
-
-	if (pci_find_capability(dev, PCI_CAP_ID_EXP)) {
-		prk_info("device has PCI-EXP capability");
-		return TPASS;
-	}
-
-	prk_info("device doesn't have PCI-EXP capability");
-	return TFAIL;
-}
-
-/*
  * test_read_pci_exp_config
  *	make call to pci_config_read and determine if
  *	the PCI-Express enhanced config space of this
@@ -570,36 +548,34 @@ static int test_find_pci_exp_cap(void)
  */
 static int test_read_pci_exp_config(void)
 {
-	/* PCI-Exp enhanced config register 0x100, 4 implies dword access */
-	int reg = 100;
+	int pos;
+	u32 header;
 	struct pci_dev *dev = ltp_pci.dev;
-	u32 data;
 
 	/* skip the test if device doesn't have PCIe capability */
-	if (test_find_pci_exp_cap() == TFAIL)
+	pos = pci_pcie_cap(dev);
+	if (!pos) {
+		prk_info("device doesn't have PCI-EXP capability");
 		return TSKIP;
+	}
+	prk_info("read the PCI Express configuration registers at 0x%x", pos);
 
-	prk_info("dev on bus(%d) & slot (%d)", dev->bus->number, dev->devfn);
-	prk_info("reading the PCI Express configuration registers---");
-	prk_info("reading PCI-Express AER CAP-ID REGISTER at Enh-Cfg AddrSpace 0x100");
-
-	if (pci_read_config_dword(dev, reg, &data)) {
-		prk_err("failed to read config word");
+	if (pci_read_config_dword(dev, pos, &header)) {
+		prk_err("failed to read config dword");
 		return TFAIL;
 	}
 
-	/* comparing the value read with AER_CAP_ID_VALUE macro */
-	if (data == AER_CAP_ID_VALUE) {
-		prk_info("correct val read using PCIE driver installed: '%u'",
-			data);
+	/* comparing the value read with PCI_CAP_ID_EXP macro */
+	if ((header & 0x000000ff) == PCI_CAP_ID_EXP) {
+		prk_info("correct val read using PCIE driver installed: 0x%x",
+			header);
 		return TPASS;
 	}
 
-	prk_err("incorrect val read. PCIE driver/device not installed: '%u'",
-		data);
+	prk_err("incorrect val read. PCIE driver/device not installed: 0x%x",
+		header);
 	return TFAIL;
 }
-
 
 static int test_case(unsigned int cmd)
 {
