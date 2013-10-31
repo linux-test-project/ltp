@@ -46,7 +46,7 @@ ifneq ($(MAKECMDGOALS),install)
 LIB ?= $(INTERNAL_LIB)
 endif
 
-MAKE_TARGETS	:= $(LIB)
+MAKE_TARGETS	+= $(LIB)
 
 LIBSRCS		?= $(wildcard $(abs_srcdir)/*.c)
 
