@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *
  *   This program is free software;  you can redistribute it and/or modify
@@ -18,16 +17,8 @@
  */
 
 /*
- * NAME
- *	chroot03.c
- *
- * DESCRIPTION
  *	Testcase to test whether chroot(2) sets errno correctly.
  *
- * CALLS
- *	chroot(2)
- *
- * ALGORITHM
  *	1.	Test for ENAMETOOLONG:
  *		Create a bad directory name with length more than
  *		VFS_MAXNAMELEN (Linux kernel variable), and pass it as the
@@ -47,20 +38,7 @@
  *		Too many symbolic links were encountered When resolving the
  *		pathname parameter.
  *
- * USAGE:  <for command-line>
- *  chroot03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	None
  */
 
 #include <stdio.h>
@@ -74,14 +52,13 @@
 
 char *TCID = "chroot03";
 
-int fd = 0;
-char fname[255];
-char good_dir[100] = "/tmp/testdir";
-char bad_dir[] =
-    "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
-char symbolic_dir[] = "sym_dir1";
+static int fd;
+static char fname[255];
+static char good_dir[100] = "/tmp/testdir";
+static char bad_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+static char symbolic_dir[] = "sym_dir1";
 
-int exp_enos[] = { ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, ELOOP, 0 };
+static int exp_enos[] = { ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, ELOOP, 0 };
 
 struct test_case_t {
 	char *dir;
@@ -118,10 +95,10 @@ struct test_case_t {
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
-char *bad_addr = 0;
+static char *bad_addr;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
@@ -129,22 +106,18 @@ int main(int ac, char **av)
 	int i;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
-	/* set up the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
-
 			TEST(chroot(TC[i].dir));
 
 			if (TEST_RETURN != -1) {
@@ -162,22 +135,15 @@ int main(int ac, char **av)
 			}
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
-
-	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
 	/*
@@ -185,9 +151,9 @@ void setup()
 	 * ENOTDIR if the argument is not a directory.
 	 */
 	(void)sprintf(fname, "tfile_%d", getpid());
-	if ((fd = creat(fname, 0777)) == -1) {
+	fd = creat(fname, 0777);
+	if (fd == -1)
 		tst_brkm(TBROK, cleanup, "Failed to creat a temp file");
-	}
 
 	/*
 	 * set up good_dir to test whether chroot() is setting ENOENT if the
@@ -198,9 +164,9 @@ void setup()
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
+	if (bad_addr == MAP_FAILED)
 		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
+
 	TC[3].dir = bad_addr;
 #endif
 	/*
@@ -211,21 +177,9 @@ void setup()
 	SAFE_SYMLINK(cleanup, "sym_dir2/", "sym_dir1");
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	close(fd);
-
 	TEST_CLEANUP;
-
-	/* delete the test directory created in setup() */
 	tst_rmdir();
-
 }
