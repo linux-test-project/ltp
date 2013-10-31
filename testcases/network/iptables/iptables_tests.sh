@@ -165,7 +165,7 @@ test01()
 		return $RC
 	else
 		chaincnt=$(grep -c Chain $LTPTMP/tst_iptables.out)
-		if [ $chaincnt -ne 3 ]; then
+		if [ $chaincnt -ne 3 ] && [ $chaincnt -ne 4 ]; then
 			tst_res TFAIL $LTPTMP/tst_iptables.out \
 				"$TCID: $cmd failed to list rules. Reason:"
 			return $chaincnt
