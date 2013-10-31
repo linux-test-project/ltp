@@ -476,6 +476,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 			tst_resm(TFAIL, "First parent lock failed");
 			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
 				 errno);
+			close(fd);
 			unlink(tmpname);
 			return 1;
 		}
@@ -489,6 +490,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 				tst_resm(TFAIL, "Second parent lock failed");
 				tst_resm(TFAIL, "Test case %d, errno = %d",
 					 test + 1, errno);
+				close(fd);
 				unlink(tmpname);
 				return 1;
 			}
@@ -559,6 +561,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 			tst_resm(TFAIL, "Third parent lock failed");
 			tst_resm(TFAIL, "Test case %d, errno = %d",
 				 test + 1, errno);
+			close(fd);
 			unlink(tmpname);
 			return 1;
 		}
@@ -572,6 +575,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 				tst_resm(TINFO, "Fourth parent lock failed");
 				tst_resm(TINFO, "Test case %d, errno = %d",
 					 test + 1, errno);
+				close(fd);
 				unlink(tmpname);
 				return 1;
 			}
