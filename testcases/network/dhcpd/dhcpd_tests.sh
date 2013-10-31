@@ -42,7 +42,7 @@
 # Function:		init
 #
 # Description:	- Check if command dhcpd is available.
-#				- Check if /etc/dhcpd.conf is available.
+#               - Check if dhcpd.conf file is available.
 #               - Create temporary config file, for dhcpd.
 #               - alias ethX to ethX:1 with IP 10.1.1.12
 #
@@ -141,11 +141,18 @@ init()
 		return $RC
 	fi
 
-	if [ -f /etc/dhcpd.conf ]
+	if [ -f /etc/dhcpd.conf ]; then
+		DHCPD_CONF="/etc/dhcpd.conf"
+	elif [ -f /etc/dhcp/dhcpd.conf ]; then
+		DHCPD_CONF="/etc/dhcp/dhcpd.conf"
+	else
+		DHCPD_CONF=""
+	fi
+	if [ -n $DHCPD_CONF ]
 	then
 		RC1=0
-		mv /etc/dhcpd.conf $LTPTMP/dhcpd.conf > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
-		mv $LTPTMP/tst_dhcpd.conf /etc/dhcpd.conf > $LTPTMP/tst_dhcpd.err 2>&1 \
+		mv $DHCPD_CONF $LTPTMP/dhcpd.conf > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
+		mv $LTPTMP/tst_dhcpd.conf $DHCPD_CONF > $LTPTMP/tst_dhcpd.err 2>&1 \
 			|| RC1=$?
 		if [ $RC -ne 0 -o $RC1 -ne 0 ]
 		then
@@ -155,7 +162,7 @@ init()
 		fi
 	else
 		tst_brkm TBROK NULL \
-			"INIT: No /etc/dhcpd.conf file found."
+			"INIT: No dhcpd.conf file found."
 		return $(($RC+1))
 	fi
 
@@ -204,7 +211,7 @@ cleanup()
 
 	if [ -f $LTPTMP/dhcpd.conf ]
 	then
-		mv $LTPTMP/dhcpd.conf /etc/dhcpd.conf > $LTPTMP/tst_dhcpd.err 2>&1
+		mv $LTPTMP/dhcpd.conf $DHCPD_CONF > $LTPTMP/tst_dhcpd.err 2>&1
 	fi
 
 	/sbin/ifconfig | grep "${ETH_INTERFACE}:1" > $LTPTMP/tst_dhcpd.err 2>&1 || RC=$?
@@ -225,7 +232,7 @@ cleanup()
 #
 # Description	- Test basic functionality of dhcpd.
 #               - Test #1: dhcpd will serve IP addresses based on rules in
-#                 /etc/dhcpd.conf file.
+#                 dhcpd.conf file.
 #				- create dhcpd.conf file, server to listen to ethX/.../10.1.1.0
 #               - start dhcpd server
 #               - create expected output
@@ -241,7 +248,7 @@ test01()
 	TST_COUNT=1		# Test number.
 
 	tst_resm TINFO \
-	 "Test #1: dhcpd will serve IPaddr, rules in /etc/dhcpd.conf file."
+	 "Test #1: dhcpd will serve IPaddr, rules in dhcpd.conf file."
 
 	hwaddr=`ifconfig ${ETH_INTERFACE} | grep HWaddr | awk '{print $5}'` || RC=$?
 	if [ $RC -ne 0 ]
