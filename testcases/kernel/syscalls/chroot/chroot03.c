@@ -43,6 +43,10 @@
  *		The pathname parameter to chroot() points to an invalid address,
  *		chroot(2) fails with EPERM.
  *
+ *	5.	Test for ELOOP:
+ *		Too many symbolic links were encountered When resolving the
+ *		pathname parameter.
+ *
  * USAGE:  <for command-line>
  *  chroot03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
@@ -66,6 +70,7 @@
 #include "test.h"
 #include "usctest.h"
 #include <fcntl.h>
+#include "safe_macros.h"
 
 char *TCID = "chroot03";
 
@@ -74,8 +79,9 @@ char fname[255];
 char good_dir[100] = "/tmp/testdir";
 char bad_dir[] =
     "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+char symbolic_dir[] = "sym_dir1";
 
-int exp_enos[] = { ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0 };
+int exp_enos[] = { ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, ELOOP, 0 };
 
 struct test_case_t {
 	char *dir;
@@ -105,8 +111,9 @@ struct test_case_t {
 	     * and expect EFAULT as errno
 	     */
 	{
-	(char *)-1, EFAULT}
+	(char *)-1, EFAULT},
 #endif
+	{symbolic_dir, ELOOP}
 };
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
@@ -196,6 +203,12 @@ void setup()
 	}
 	TC[3].dir = bad_addr;
 #endif
+	/*
+	 * create two symbolic directory who point to each other to
+	 * test ELOOP.
+	 */
+	SAFE_SYMLINK(cleanup, "sym_dir1/", "sym_dir2");
+	SAFE_SYMLINK(cleanup, "sym_dir2/", "sym_dir1");
 }
 
 /*
