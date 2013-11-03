@@ -103,8 +103,15 @@ static void setup(void)
 	fd = SAFE_CREAT(cleanup, TEST_FILE5, 0777);
 	SAFE_CLOSE(cleanup, fd);
 
-	if (acct(TEST_FILE5) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "acct failed unexpectedly");
+	if (acct(TEST_FILE5) == -1) {
+		if (errno == ENOSYS) {
+			tst_brkm(TCONF, cleanup,
+				 "BSD process accounting is not configured in "
+				 "this kernel");
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup, "acct failed unexpectedly");
+		}
+	}
 
 	/* turn off acct, so we are in a known state */
 	if (acct(NULL) == -1) {
