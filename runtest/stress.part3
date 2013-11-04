@@ -9,7 +9,7 @@ access03 access03
 access04 access04
 access05 access05
 
-acct01 acct01
+acct01 acct01 -D DEVICE -T DEVICE_FS_TYPE
 
 adjtimex01 adjtimex01
 adjtimex02 adjtimex02
