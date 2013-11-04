@@ -48,22 +48,12 @@ do_setup()
 
     exists awk grep host hostname ifconfig netstat ping tail tcpdump
     RHOST=${RHOST:-`hostname`}
-    IP=`host ${RHOST} 2>/dev/null | awk '{print $4}'`
-    IFNUMS=`netstat -i|wc -l`
-    IFNUMS=$(( $IFNUMS - 2 ))
-    IFNAME=${IFNAME:-$(netstat -i | awk '{print $1}' | tail -n ${IFNUMS})}
-
-    for i in ${IFNAME}; do
-        if ifconfig ${i} | grep $IP; then
-            IF=$i
-            break
-        fi
+    # Find the first interface that can ping RHOST
+    IF=""
+    for i in $(netstat -i | tail -n+3 | sed '/^lo/d' | cut -f1 -d' '); do
+        ping -I $i -c 3 $RHOST && { IF="$i"; break; }
     done
-    # Default to empty string if unset, to avoid errors caused by set -u, which we use (see cmdlib.sh)
-    if [ -z "${IF:-}" ]; then
-        end_testcase "Could not identify interface"
-        exit 1
-    fi
+    test -z $IF && end_testcase "Could not find an interface that can ping remote host $RHOST"
     IFNAME=${IF}
     NUMLOOPS=${NUMLOOPS:-20}
     OUTFILE=$TCtmp/tcpdump_out
