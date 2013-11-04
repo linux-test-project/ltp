@@ -299,9 +299,9 @@ int main(void)
 	tst_resm(TPASS, "getsockopt() SCTP_STATUS - SUCCESS");
 
 	/* Reducing the SO_RCVBUF value using setsockopt() */
-	/*Minimum value is 128 and hence I am using it */
 	len = sizeof(int);
-	rcvbuf_val_set = 128;
+	/* (rcvbuf len)*2 should be no less than SOCK_MIN_RCVBUF in kernel */
+	rcvbuf_val_set = 1500;
 	/* TEST16: Test case for setsockopt SO_RCVBUF */
 	error = setsockopt(sk2, SOL_SOCKET, SO_RCVBUF, &rcvbuf_val_set, len);
 	if (error < 0)
