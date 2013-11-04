@@ -106,18 +106,18 @@ do_test()
 
     while [ $TST_COUNT -le $NUMLOOPS ]; do
         rwho -a > $OUTFILE
-        HOST=`awk "\\$2 ~ /$LHOST>/" $OUTFILE | cut -f1 -d: | sort -u`
+        HOST=`grep $LHOST $OUTFILE | sed 's/[^ ]* *//; s/:.*//' | uniq`
         [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in rwho outfile"
-        HOST=`awk "\\$2 ~ /$RHOSTNAME>/" $OUTFILE | cut -f1 -d: | sort -u`
+        HOST=`grep $RHOSTNAME $OUTFILE | sed 's/[^ ]* *//; s/:.*//' | uniq`
         [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in rwho outfile"
 
         ruptime -a > $OUTFILE
-        HOST=`awk "\\$1 ~ /$LHOST>/" $OUTFILE | sort -u`
+        HOST=`grep $LHOST $OUTFILE | sed 's/ .*//' | uniq`
         [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in ruptime outfile"
-        HOST=`awk "\\$1 ~ /$RHOSTNAME>/" $OUTFILE | sort -u`
+        HOST=`grep $RHOSTNAME $OUTFILE | sed 's/ .*//' | uniq`
         [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in ruptime outfile"
 
-        tst_resm TINFO "Test $COUNT of $NUMLOOPS complete"
+        tst_resm TINFO "Test $TST_COUNT of $NUMLOOPS complete"
         incr_tst_count
     done
 }
