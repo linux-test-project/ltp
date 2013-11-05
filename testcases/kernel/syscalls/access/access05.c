@@ -32,6 +32,10 @@
  *	if the specified file doesn't exist (or pathname is NULL).
  *   5. access() fails with -1 return value and sets errno to ENAMETOOLONG
  *      if the pathname size is > PATH_MAX characters.
+ *   6. access() fails with -1 return value and sets errno to ENOTDIR
+ *      if a component used as a directory in pathname is not a directory.
+ *   7. access() fails with -1 return value and sets errno to ELOOP
+ *      if too many symbolic links were encountered in resolving pathname.
  *
  *   07/2001 Ported by Wayne Boyer
  */
@@ -56,6 +60,8 @@
 #define TEST_FILE2	"test_file2"
 #define TEST_FILE3	"test_file3"
 #define TEST_FILE4	"test_file4"
+#define TEST_FILE5	"test_file5/test_file5"
+#define TEST_FILE6	"test_file6"
 
 
 #if !defined(UCLINUX)
@@ -79,12 +85,15 @@ static struct test_case_t {
 #endif
 	{"", W_OK, ENOENT},
 	{longpathname, R_OK, ENAMETOOLONG},
+	{TEST_FILE5, R_OK, ENOTDIR},
+	{TEST_FILE6, R_OK, ELOOP},
 };
 
 char *TCID = "access05";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
 
-static int exp_enos[] = { EACCES, EFAULT, EINVAL, ENOENT, ENAMETOOLONG, 0 };
+static int exp_enos[] = { EACCES, EFAULT, EINVAL, ENOENT, ENAMETOOLONG,
+			  ENOTDIR, ELOOP, 0 };
 
 static const char nobody_uid[] = "nobody";
 static struct passwd *ltpuser;
@@ -172,6 +181,16 @@ static void setup(void)
 	 *the MAX length of PATH_MAX.
 	 */
 	memset(longpathname, 'a', sizeof(longpathname) - 1);
+
+	/* create test_file5 for test ENOTDIR. */
+	SAFE_TOUCH(cleanup, "test_file5", 0644, NULL);
+
+	/*
+	 * create two symbolic links who point to each other for
+	 * test ELOOP.
+	 */
+	SAFE_SYMLINK(cleanup, "test_file6", "test_file7");
+	SAFE_SYMLINK(cleanup, "test_file7", "test_file6");
 }
 
 static void access_verify(int i)

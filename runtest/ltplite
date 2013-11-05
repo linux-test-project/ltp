@@ -66,6 +66,7 @@ access02 access02
 access03 access03
 access04 access04
 access05 access05
+access06 access06 -D DEVICE -T DEVICE_FS_TYPE
 
 acct01 acct01 -D DEVICE -T DEVICE_FS_TYPE
 
