@@ -755,6 +755,7 @@ static void tpci_exit_module(void)
 
 	device_remove_file(&tdev, &dev_attr_result);
 	device_remove_file(&tdev, &dev_attr_tcase);
+	device_remove_file(&tdev, &dev_attr_bus_slot);
 	device_unregister(&tdev);
 }
 module_exit(tpci_exit_module)
