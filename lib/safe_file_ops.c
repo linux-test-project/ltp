@@ -23,6 +23,9 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "safe_file_ops.h"
 
@@ -152,3 +155,41 @@ void safe_cp(const char *file, const int lineno,
 			 src, dst, file, lineno);
 	}
 }
+
+void safe_touch(const char *file, const int lineno,
+		void (*cleanup_fn)(void),
+		const char *pathname,
+		mode_t mode, const struct timespec times[2])
+{
+	int ret;
+	mode_t defmode;
+
+	defmode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+
+	ret = open(pathname, O_CREAT | O_WRONLY, defmode);
+	if (ret == -1)
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			"Failed to open file '%s' at %s:%d",
+			pathname, file, lineno);
+
+	ret = close(ret);
+	if (ret == -1)
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			"Failed to close file '%s' at %s:%d",
+			pathname, file, lineno);
+
+	if (mode != 0) {
+		ret = chmod(pathname, mode);
+		if (ret == -1)
+			tst_brkm(TBROK | TERRNO, cleanup_fn,
+				"Failed to chmod file '%s' at %s:%d",
+				pathname, file, lineno);
+	}
+
+	ret = utimensat(AT_FDCWD, pathname, times, 0);
+	if (ret == -1)
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			"Failed to do utimensat() on file '%s' at %s:%d",
+			pathname, file, lineno);
+}
+
