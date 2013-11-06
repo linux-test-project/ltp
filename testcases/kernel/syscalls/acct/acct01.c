@@ -124,11 +124,27 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
+static void check_acct_in_kernel(void)
+{
+	/* check if acct is implemented in kernel */
+	if (acct(NULL) == -1) {
+		if (errno == ENOSYS) {
+			tst_resm(TCONF,
+				 "BSD process accounting is not configured in "
+				 "this kernel");
+
+			tst_exit();
+		}
+	}
+}
+
 static void setup(void)
 {
 	int fd;
 
 	tst_require_root(NULL);
+
+	check_acct_in_kernel();
 
 	tst_tmpdir();
 
@@ -137,26 +153,12 @@ static void setup(void)
 	fd = SAFE_CREAT(cleanup, TEST_FILE5, 0777);
 	SAFE_CLOSE(cleanup, fd);
 
-	if (acct(TEST_FILE5) == -1) {
-		if (errno == ENOSYS) {
-			tst_brkm(TCONF, cleanup,
-				 "BSD process accounting is not configured in "
-				 "this kernel");
-		} else {
-			tst_brkm(TBROK | TERRNO, cleanup, "acct failed unexpectedly");
-		}
-	}
+	if (acct(TEST_FILE5) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "acct failed unexpectedly");
 
 	/* turn off acct, so we are in a known state */
-	if (acct(NULL) == -1) {
-		if (errno == ENOSYS) {
-			tst_brkm(TCONF, cleanup,
-				 "BSD process accounting is not configured in "
-				 "this kernel");
-		} else {
-			tst_brkm(TBROK | TERRNO, cleanup, "acct(NULL) failed");
-		}
-	}
+	if (acct(NULL) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "acct(NULL) failed");
 
 	/* ELOOP SETTING */
 	SAFE_SYMLINK(cleanup, TEST_FILE6, "test_file_eloop2");
