@@ -177,7 +177,7 @@ void setup()
 	if (fstatvfs(fd, &stat_buf) != 0)
 		tst_brkm(TBROK, cleanup, "fstatvfs failed");
 
-	f_bavail = stat_buf.f_bavail / (BLOCKSIZE / stat_buf.f_frsize);
+	f_bavail = (stat_buf.f_bavail * stat_buf.f_frsize) / BLOCKSIZE;
 	if (f_bavail && (f_bavail < MAXBLKS))
 		max_blks = f_bavail;
 
