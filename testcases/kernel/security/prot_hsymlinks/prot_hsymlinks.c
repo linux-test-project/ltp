@@ -45,6 +45,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "safe_file_ops.h"
 
 char *TCID = "prot_hsymlinks";
 int TST_TOTAL = 396;
@@ -414,7 +415,7 @@ static void ufiles_add(int usr, char *path, int type)
 	struct user_file *ufile = &users[usr].file[file];
 
 	if (type == IS_FILE)
-		SAFE_CREAT(cleanup, path, 0644);
+		SAFE_TOUCH(cleanup, path, 0644, NULL);
 	else
 		SAFE_MKDIR(cleanup, path, 0755);
 
