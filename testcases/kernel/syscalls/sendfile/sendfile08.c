@@ -39,6 +39,7 @@
 
 #define TEST_MSG_IN "world"
 #define TEST_MSG_OUT "hello"
+#define TEST_MSG_ALL (TEST_MSG_OUT TEST_MSG_IN)
 
 TCID_DEFINE(sendfile08);
 int TST_TOTAL = 1;
@@ -79,7 +80,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK | TERRNO, cleanup, "read %s failed",
 				 out_file);
 
-		if (!strcmp(buf, TEST_MSG_OUT TEST_MSG_IN))
+		if (!strncmp(buf, TEST_MSG_ALL, strlen(TEST_MSG_ALL)))
 			tst_resm(TPASS, "sendfile(2) copies data correctly");
 		else
 			tst_resm(TFAIL, "sendfile(2) copies data incorrectly."
