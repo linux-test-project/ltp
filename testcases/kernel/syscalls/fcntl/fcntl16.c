@@ -64,20 +64,12 @@
 #define	TIME_OUT	10
 
 typedef struct {
-	short type;
-	short whence;
-	long start;
-	long len;
-	short flag;
-} lock;
-
-typedef struct {
-	lock parent_a;
-	lock parent_b;
-	lock child_a;
-	lock child_b;
-	lock parent_c;
-	lock parent_d;
+	struct flock parent_a;
+	struct flock parent_b;
+	struct flock child_a;
+	struct flock child_b;
+	struct flock parent_c;
+	struct flock parent_d;
 } testcase;
 
 static testcase testcases[] = {
@@ -267,7 +259,7 @@ static testcase testcases[] = {
 };
 
 static testcase *thiscase;
-static lock *thislock;
+static struct flock *thislock;
 static int parent;
 static int child_flag1 = 0;
 static int child_flag2 = 0;
@@ -484,7 +476,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 		/* Initialize second parent lock structure */
 		thislock = &thiscase->parent_b;
 
-		if ((thislock->type) != IGNORED) {	/*SKIPVAL */
+		if ((thislock->l_type) != IGNORED) {	/*SKIPVAL */
 			/* set the second parent lock */
 			if ((fcntl(fd, F_SETLK, thislock)) < 0) {
 				tst_resm(TFAIL, "Second parent lock failed");
@@ -506,7 +498,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 
 		/* spawn child processes */
 		for (i = 0; i < 2; i++) {
-			if (thislock->type != IGNORED) {
+			if (thislock->l_type != IGNORED) {
 				if ((child = FORK_OR_VFORK()) == 0) {
 #ifdef UCLINUX
 					if (self_exec(argv0, "ddddd", i, parent,
@@ -524,7 +516,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 				}
 				child_count++;
 				child_pid[i] = child;
-				flag[i] = thislock->flag;
+				flag[i] = thislock->l_pid;
 			}
 			/* Initialize second child lock structure */
 			thislock = &thiscase->child_b;
@@ -569,7 +561,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 		/* Initialize fourth parent lock structure */
 		thislock = &thiscase->parent_d;
 
-		if ((thislock->type) != IGNORED) {	/*SKIPVAL */
+		if ((thislock->l_type) != IGNORED) {	/*SKIPVAL */
 			/* set the fourth parent lock */
 			if ((fcntl(fd, F_SETLK, thislock)) < 0) {
 				tst_resm(TINFO, "Fourth parent lock failed");
