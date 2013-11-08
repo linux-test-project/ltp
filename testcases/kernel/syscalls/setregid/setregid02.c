@@ -39,7 +39,7 @@ TCID_DEFINE(setregid02);
 
 static gid_t neg_one = -1;
 
-static gid_t inval_user = (USHRT_MAX);
+static gid_t inval_user = USHRT_MAX - 2;
 static struct passwd *ltpuser;
 
 static struct group nobody, root, bin;
