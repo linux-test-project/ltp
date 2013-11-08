@@ -84,7 +84,7 @@ do_test()
 
     mkdir -p $TCtmp
     PORT=$$
-    if ! rsh -l root $IPADDR "$LTPROOT/testcases/bin/SF_Server $IPADDR $PORT $LTPROOT/testcases/bin $SERVER"; then
+    if ! rsh -l root $IPADDR "$LTPROOT/testcases/bin/sendfile01_server $IPADDR $PORT $LTPROOT/testcases/bin $SERVER"; then
         end_testcase "rsh failed to $IPADDR as root failed"
     fi
     sleep 10
