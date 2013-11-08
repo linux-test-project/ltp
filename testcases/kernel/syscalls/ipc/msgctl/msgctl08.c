@@ -1,37 +1,26 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2002
  *
- *   Copyright (c) International Business Machines  Corp., 2002
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * 06/30/2001   Port to Linux   nsharoff@us.ibm.com
+ * 11/06/2002   Port to LTP     dbarrera@us.ibm.com
  */
 
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
-/* 11/06/2002   Port to LTP     dbarrera@us.ibm.com */
-
 /*
- * NAME
- *	msgctl08
- *
- * CALLS
- *	msgget(2) msgctl(2)
- *
- * ALGORITHM
- *	Get and manipulate a message queue.
- *
- * RESTRICTIONS
- *
+ * Get and manipulate a message queue.
  */
 
 #define _XOPEN_SOURCE 500
@@ -51,17 +40,10 @@
 #include "test.h"
 #include "usctest.h"
 #include "ipcmsg.h"
+#include "libmsgctl.h"
 
-void setup();
-void cleanup();
-/*
- *  *  *  * These globals must be defined in the test.
- *   *   *   */
-
-char *TCID = "msgctl08";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
-
-int exp_enos[] = { 0 };		/* List must end with 0 */
+char *TCID = "msgctl08";
+int TST_TOTAL = 1;
 
 #ifndef CONFIG_COLDFIRE
 #define MAXNPROCS	1000000	/* This value is set to an arbitrary high limit. */
@@ -69,48 +51,34 @@ int exp_enos[] = { 0 };		/* List must end with 0 */
 #define MAXNPROCS	 100000	/* Coldfire can't deal with 1000000 */
 #endif
 #define MAXNREPS	100000
-#define FAIL		1
-#define PASS		0
 
-key_t keyarray[MAXNPROCS];
+static key_t keyarray[MAXNPROCS];
+static int pidarray[MAXNPROCS];
+static int tid;
+static int MSGMNI, nprocs, nreps;
+static int procstat;
+static int mykid;
 
-struct {
-	long type;
-	struct {
-		char len;
-		char pbytes[99];
-	} data;
-} buffer;
+void setup(void);
+void cleanup(void);
 
-int pidarray[MAXNPROCS];
-int tid;
-int MSGMNI, nprocs, nreps;
-int procstat;
-int dotest(key_t key, int child_process);
-int doreader(int id, long key, int child);
-int dowriter(int id, long key, int child);
-int fill_buffer(register char *buf, char val, register int size);
-int verify(register char *buf, char val, register int size, int child);
-void sig_handler();		/* signal catching function */
-int mykid;
+static int dotest(key_t key, int child_process);
+static void sig_handler();
+
 #ifdef UCLINUX
 static char *argv0;
-
-void do_child_1_uclinux();
 static key_t key_uclinux;
 static int i_uclinux;
-
-void do_child_2_uclinux();
 static int id_uclinux;
 static int child_process_uclinux;
+
+static void do_child_1_uclinux(void);
+static void do_child_2_uclinux(void);
 #endif
 
-/*-----------------------------------------------------------------*/
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char **argv)
 {
-	register int i, j, ok, pid;
+	int i, j, ok, pid;
 	int count, status;
 	struct sigaction act;
 
@@ -162,7 +130,7 @@ char *argv[];
 	srand(getpid());
 	tid = -1;
 
-	/* Setup signal handleing routine */
+	/* Setup signal handling routine */
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = sig_handler;
 	sigemptyset(&act.sa_mask);
@@ -255,190 +223,94 @@ char *argv[];
 
 }
 
-/*--------------------------------------------------------------------*/
-
 #ifdef UCLINUX
-void do_child_1_uclinux()
+static void do_child_1_uclinux(void)
 {
 	procstat = 1;
 	exit(dotest(key_uclinux, i_uclinux));
 }
 
-void do_child_2_uclinux()
+static void do_child_2_uclinux(void)
 {
-	exit(doreader(id_uclinux, key_uclinux % 255, child_process_uclinux));
+	exit(doreader(key_uclinux, id_uclinux, 1,
+			child_process_uclinux, nreps));
 }
 #endif
 
-int dotest(key, child_process)
-key_t key;
-int child_process;
+static int dotest(key_t key, int child_process)
 {
 	int id, pid;
+	int ret, status;
 
 	sighold(SIGTERM);
 	TEST(msgget(key, IPC_CREAT | S_IRUSR | S_IWUSR));
 	if (TEST_RETURN < 0) {
-		tst_resm(TFAIL | TTERRNO, "Msgget error in child %d",
-			 child_process);
-		tst_exit();
+		printf("msgget() error in child %d: %s\n",
+			child_process, strerror(TEST_ERRNO));
+
+		return FAIL;
 	}
 	tid = id = TEST_RETURN;
 	sigrelse(SIGTERM);
 
 	fflush(stdout);
 	if ((pid = FORK_OR_VFORK()) < 0) {
-		tst_resm(TWARN, "\tFork failed (may be OK if under stress)");
+		printf("\tFork failed (may be OK if under stress)\n");
 		TEST(msgctl(tid, IPC_RMID, 0));
 		if (TEST_RETURN < 0) {
-			tst_resm(TFAIL | TTERRNO, "Msgctl error in cleanup");
+			printf("mscgtl() error in cleanup: %s\n",
+				strerror(TEST_ERRNO));
 		}
-		tst_exit();
+		return FAIL;
 	}
 	/* Child does this */
 	if (pid == 0) {
 #ifdef UCLINUX
 		if (self_exec(argv0, "nddd", 2, id, key, child_process) < 0) {
-			tst_resm(TWARN, "self_exec failed");
+			printf("self_exec failed\n");
 			TEST(msgctl(tid, IPC_RMID, 0));
 			if (TEST_RETURN < 0) {
-				tst_resm(TFAIL | TTERRNO,
-					 "Msgctl error in cleanup");
+				printf("msgctl() error in cleanup: %s\n",
+					strerror(errno));
 			}
-			tst_exit();
+			return FAIL;
 		}
 #else
-		exit(doreader(id, key % 255, child_process));
+		exit(doreader(key, id, 1, child_process, nreps));
 #endif
 	}
 	/* Parent does this */
 	mykid = pid;
 	procstat = 2;
-	dowriter(id, key % 255, child_process);
-	wait(0);
+	ret = dowriter(key, id, 1, child_process, nreps);
+	wait(&status);
+
+	if (ret != PASS)
+		exit(FAIL);
+
+	if ((!WIFEXITED(status) || (WEXITSTATUS(status) != PASS)))
+		exit(FAIL);
+
 	TEST(msgctl(id, IPC_RMID, 0));
 	if (TEST_RETURN < 0) {
-		tst_resm(TFAIL, "msgctl errno %d", TEST_ERRNO);
-		tst_exit();
+		printf("msgctl() errno %d: %s\n",
+			TEST_ERRNO, strerror(TEST_ERRNO));
+
+		return FAIL;
 	}
-	exit(PASS);
+	return PASS;
 }
 
-int doreader(id, key, child)
-int id, child;
-long key;
-{
-	int i, size;
-
-	for (i = 0; i < nreps; i++) {
-		if ((size = msgrcv(id, &buffer, 100, 0, 0)) < 0) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "Msgrcv error in child %d, read # = %d",
-				 (i + 1), child);
-			tst_exit();
-		}
-		if (buffer.data.len + 1 != size) {
-			tst_resm(TFAIL,
-				 "Size mismatch in child %d, read # = %d",
-				 child, (i + 1));
-			tst_resm(TFAIL,
-				 "for message size got  %d expected  %d",
-				 size, buffer.data.len);
-			tst_exit();
-		}
-		if (verify(buffer.data.pbytes, key, size - 1, child)) {
-			tst_resm(TFAIL, "in child %d read # = %d,key =  %lx",
-				 child, (i + 1), key);
-			tst_exit();
-		}
-		key++;
-	}
-	return (0);
-}
-
-int dowriter(id, key, child)
-int id, child;
-long key;
-{
-	int i, size;
-
-	for (i = 0; i < nreps; i++) {
-		do {
-			size = (rand() % 99);
-		} while (size == 0);
-		fill_buffer(buffer.data.pbytes, key, size);
-		buffer.data.len = size;
-		buffer.type = 1;
-		TEST(msgsnd(id, &buffer, size + 1, 0));
-		if (TEST_RETURN < 0) {
-			tst_brkm(TBROK | TTERRNO, cleanup,
-				 "Msgsnd error in child %d, key =   %lx",
-				 child, key);
-		}
-		key++;
-	}
-	return (0);
-}
-
-int fill_buffer(buf, val, size)
-register char *buf;
-char val;
-register int size;
-{
-	register int i;
-
-	for (i = 0; i < size; i++) {
-		buf[i] = val;
-	}
-
-	return (0);
-}
-
-/*
- * verify()
- *	Check a buffer for correct values.
- */
-
-int verify(buf, val, size, child)
-register char *buf;
-char val;
-register int size;
-int child;
-{
-	while (size-- > 0) {
-		if (*buf++ != val) {
-			tst_resm(TWARN,
-				 "Verify error in child %d, *buf = %x, val = %x, size = %d",
-				 child, *buf, val, size);
-			return (FAIL);
-		}
-	}
-	return (PASS);
-}
-
-/*
- *  * void
- *  * sig_handler() - signal catching function for 'SIGUSR1' signal.
- *  *
- *  *   This is a null function and used only to catch the above signal
- *  *   generated in parent process.
- *  */
-void sig_handler()
+static void sig_handler(void)
 {
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- *****************************************************************/
-void setup()
+void setup(void)
 {
 	int nr_msgqs;
 
 	tst_tmpdir();
 
-	/* You will want to enable some signal handling so you can capture
-	 * unexpected signals like SIGSEGV.
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
@@ -466,11 +338,7 @@ void setup()
 	MSGMNI = min(nr_msgqs, NR_MSGQUEUES);
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- ****************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	int status;
 	/*
@@ -488,11 +356,7 @@ void cleanup()
 	}
 
 	fflush(stdout);
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+
 	TEST_CLEANUP;
 	tst_rmdir();
-
 }

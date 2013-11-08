@@ -19,5 +19,20 @@
 top_srcdir              ?= ../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
+
+LIBSRCS := libmsgctl.c
+INTERNAL_LIB := libmsgctl.a
+
+LDFLAGS += -L$(abs_builddir)
+LDLIBS += -lmsgctl
+
+MAKE_TARGETS := $(patsubst %.c,%,$(wildcard msgctl??.c))
+MAKE_TARGET_OBJS := $(addsuffix .o,$(MAKE_TARGETS))
+
+$(MAKE_TARGET_OBJS): $(INTERNAL_LIB)
+
+.INTERMEDIATE: $(MAKE_TARGET_OBJS)
+
 include $(abs_srcdir)/../Makefile.inc
+include $(top_srcdir)/include/mk/lib.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
