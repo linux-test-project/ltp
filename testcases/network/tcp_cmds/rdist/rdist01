@@ -63,8 +63,8 @@ do_setup()
     done
 
     for i in $FILES; do
-        BASE=${i##*/}
-        DIR=${%%/*}
+        BASE=$(basename "$i")
+        DIR=$(dirname "$i")
         test -d "$DIR" || mkdir -p "$DIR"
         if [ $? -ne 0 ] ; then
             end_testcase "failed to create $DIR"
@@ -94,7 +94,7 @@ create_distfile()
 {
     T_FILES="FILES = ( "
     for i in $FILES; do
-        if [ "${i%%*/}" = "." ]; then
+        if [ $(dirname "$i") == "." ]; then
             T_FILES="$T_FILES $i"
         else
             T_FILES="$T_FILES $DIR"
@@ -105,7 +105,7 @@ create_distfile()
     T_HOST="HOSTS = ("
     for c_ruser in $RUSERS; do
         for c_rhost in $HOSTS; do
-         T_HOST=$T_HOST"$c_ruser@$c_rhost "
+         T_HOST=$T_HOST" $c_ruser@$c_rhost"
         done
     done
 
@@ -113,7 +113,7 @@ create_distfile()
     cat <<EOF > "$TCtmp/distfile"
 $T_HOST
 $T_FILES
-${FILES} -> ${HOSTS}
+\${FILES} -> \${HOSTS}
 EOF
 }
 
@@ -130,17 +130,15 @@ check_result()
     cd $TCtmp
     for c_rhost in $HOSTS; do
         for c_ruser in $RUSERS; do
-            TOTAL_SUM=`rsh -n -l $c_ruser $c_rhost \
-            x=0; SUM=\$(sum -s $FILES|awk '{ print \$1 }')
-            for i in \$SUM; do
-                x=\$(( \$x + \$i ))
+            TOTAL_SUM=0
+            for i in $(rsh -n -l $c_ruser $c_rhost sum -s $FILES | awk '{ print $1 }'); do
+                TOTAL_SUM=$(( $TOTAL_SUM + $i ))
             done
-            echo \$x`
-            if [ $TOTAL_SUM = $LSUM ]; then
+            if [ $TOTAL_SUM -eq $LSUM ]; then
                 tst_resm TINFO "Success rdist in $c_ruser@$c_rhost "
-                rsh -n -l $c_ruser $c_rhost "rm -rf $FILES $DIRECTORIES"
+                rsh -n -l $c_ruser $c_rhost "rm -rf $FILES"
             else
-                end_testcase "Wrong sum doing  rdist in $curr_ruser@$curr_rhost"
+                end_testcase "Wrong sum doing rdist in $curr_ruser@$curr_rhost"
             fi
        done
    done
