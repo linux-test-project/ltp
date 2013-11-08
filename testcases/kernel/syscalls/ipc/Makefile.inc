@@ -25,15 +25,15 @@
 LDLIBS			+= -lipc
 LIBDIR			:= ../lib
 
-LIB			:= $(LIBDIR)/libipc.a
+LIBIPC			:= $(LIBDIR)/libipc.a
 
 $(LIBDIR):
 	mkdir -p "$@"
 
-$(LIB): $(LIBDIR)
+$(LIBIPC): $(LIBDIR)
 	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
-MAKE_DEPS		:= $(LIB)
+MAKE_DEPS		:= $(LIBIPC)
 
 CPPFLAGS		+= -I$(abs_srcdir)/$(LIBDIR)
 
