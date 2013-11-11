@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #
 # Copyright (c) International Business Machines  Corp., 2005
 # Author: Avantika Mathur (mathurav@us.ibm.com)
@@ -38,9 +37,6 @@ trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LI
 while /bin/true ; do
 	# This loop is for error recovery purposes only
 
-
-
-
 	"${FS_BIND_ROOT}/bin/makedir" share parent1
 	"${FS_BIND_ROOT}/bin/makedir" priv parent2
 	"${FS_BIND_ROOT}/bin/makedir" share share1
@@ -74,10 +70,10 @@ if [ -n "${ERR_MSG}" ]; then
 fi
 trap '' ERR
 {
+	umount parent2/child2/b
 	umount parent1/child1/a
-	umount parent1/child1/b
-	umount parent1/child1
-	umount parent1/child1
+	umount parent2/child2
+	umount share1
 	umount parent1/child1
 	umount parent1/child1
 	umount share1
@@ -90,11 +86,11 @@ trap '' ERR
 
 if [ $result -ne 0 ]
 then
-        tst_resm TFAIL "rbind/test02: FAILED: rbind: shared child to private parent."
-        exit 1
+	tst_resm TFAIL "rbind/test02: FAILED: rbind: shared child to private parent."
+	exit 1
 else
-        tst_resm TPASS "rbind/test02: PASSED"
-        exit 0
+	tst_resm TPASS "rbind/test02: PASSED"
+	exit 0
 fi
 
 

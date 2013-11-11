@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #
 # Copyright (c) International Business Machines  Corp., 2005
 # Author: Avantika Mathur (mathurav@us.ibm.com)
@@ -82,10 +81,11 @@ trap '' ERR
 	umount parent1/child1
 	umount parent2/child1
 	umount parent2/child1
-	umount parent2/child2
 	umount parent2
 	umount share1
 	umount share1
+	umount share2
+	umount parent2/child2
 
 	rm -rf parent* share*
 	cleanup
