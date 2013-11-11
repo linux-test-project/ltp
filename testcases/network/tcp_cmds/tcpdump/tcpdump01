@@ -51,7 +51,7 @@ do_setup()
     # Find the first interface that can ping RHOST
     IF=""
     for i in $(netstat -i | tail -n+3 | sed '/^lo/d' | cut -f1 -d' '); do
-        ping -I $i -c 3 $RHOST && { IF="$i"; break; }
+        ping -I $i -c 3 -q $RHOST && { IF="$i"; break; }
     done
     test -z $IF && end_testcase "Could not find an interface that can ping remote host $RHOST"
     IFNAME=${IF}
@@ -62,7 +62,7 @@ do_setup()
 
 do_test()
 {
-    ping -f $RHOST > /dev/null 2>&1 &
+    ping -I $IFNAME -f $RHOST > /dev/null 2>&1 &
     if ! tcpdump -i $IFNAME -c $NUMLOOPS > $OUTFILE; then
         end_testcase "Problems trying to launch tcpdump"
     fi
