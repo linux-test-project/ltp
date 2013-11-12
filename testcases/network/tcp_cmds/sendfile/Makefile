@@ -27,9 +27,9 @@ include $(abs_srcdir)/../Makefile.inc
 
 CPPFLAGS		+= -I$(abs_srcdir)/../include
 
-INSTALL_TARGETS		:= sendfile01 sendfile01_server
+INSTALL_TARGETS		:= sendfile01 sendfile01_server sendfile01_gethost
 
-MAKE_TARGETS		+= testsf_c testsf_s testsf_c6 testsf_s6
+MAKE_TARGETS		+= testsf_c testsf_s testsf_c6 testsf_s6 sendfile01_gethost
 
 testsf_c6.o testsf_s6.o: CPPFLAGS += -DINET6
 
