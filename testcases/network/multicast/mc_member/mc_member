@@ -42,10 +42,9 @@ TCsrc=${TCsrc:-`pwd`}
 TCtmp=${TCtmp:-$TCsrc/$TC$$}
 CLEANUP=${CLEANUP:-ON}
 
-LTPROOT=${LTPROOT:-"../../../../"}
 EXECUTABLES=${EXECUTABLES:-"member"}
 NUMLOOPS=${NUMLOOPS:-2}
-INTERFACE=${INTERFACE:-$("$LTPROOT/bin/gethost" `hostname`| grep address |awk '{ print $2 }')}
+INTERFACE=${INTERFACE:-$(mc_gethost `hostname`| grep address |awk '{ print $2 }')}
 GLIST=${GLIST:-$TCsrc/ManyGroups}
 TooManyGLIST=${TooManyGLIST:-$TCsrc/TooManyGroups}
 ERRFILE=${ERRFILE:-$TCtmp/errors}

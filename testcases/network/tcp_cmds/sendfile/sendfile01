@@ -59,9 +59,9 @@ do_setup()
 
     tst_setup
 
-    exists awk diff sendfile01_gethost grep rsh stat
+    exists awk diff mc_gethost grep rsh stat
 
-    if ! IPADDR=$(sendfile01_gethost ${EXEC_SUFFIX:+6} $RHOST | awk 'BEGIN { ec=1 } /addresses:/ {print $2; ec=0 } END { exit ec }'); then
+    if ! IPADDR=$(mc_gethost ${EXEC_SUFFIX:+6} $RHOST | awk 'BEGIN { ec=1 } /addresses:/ {print $2; ec=0 } END { exit ec }'); then
         # XXX (garrcoop): || exit 1 is there to prevent the test from hanging in the event of an install error.
         end_testcase "Failed to determine the appropriate IP address for the machine." || exit 1
     fi

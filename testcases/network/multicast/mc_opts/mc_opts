@@ -47,7 +47,7 @@ TCtmp=${TCtmp:-$LTPROOT/bin/$TC$$}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES=${EXECUTABLES:-"opts opts_e"}
 NUMLOOPS=${NUMLOOPS:-10}
-IPADDR=${IPADDR:-$("$LTPROOT/bin/gethost" `hostname`| grep address |awk '{ print $2 }')}
+IPADDR=${IPADDR:-$(mc_gethost `hostname`| grep address |awk '{ print $2 }')}
 
 this_file=${0##*/}
 trap "interrupt_test" 2

@@ -1,7 +1,5 @@
 #
-#    network/tcp_cmds/sendfile testcases Makefile.
-#
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (C) 2013, Linux Test Project
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,23 +15,8 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, September 2009
-#
 
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
-include $(abs_srcdir)/../Makefile.inc
-
-CPPFLAGS		+= -I$(abs_srcdir)/../include
-
-INSTALL_TARGETS		:= sendfile01 sendfile01_server
-
-MAKE_TARGETS		+= testsf_c testsf_s testsf_c6 testsf_s6
-
-testsf_c6.o testsf_s6.o: CPPFLAGS += -DINET6
-
-testsf_c6.o testsf_s6.o: %6.o: %.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
