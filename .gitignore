@@ -55,6 +55,7 @@ logfile.*
 /lib/tests/tst_tmpdir_test
 /lib/tests/tst_checkpoint_child
 /lib/tests/tst_checkpoint_child_exits
+/lib/tests/tst_checkpoint_no_child
 /lib/tests/tst_checkpoint_parent
 /lib/tests/tst_checkpoint_parent_exits
 /lib/tests/tst_process_state
