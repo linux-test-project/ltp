@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * Copyright (c) 2009, 2012 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2009-2013 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -176,21 +176,21 @@ int tst_count = 0;		/* current count of test cases executed; NOTE: */
  */
 extern char *TCID;		/* Test case identifier from the test source */
 extern int TST_TOTAL;		/* Total number of test cases from the test */
-			/* source */
+
 
 struct pair {
 	const char *name;
 	int val;
 };
-#define PAIR(def) [def] = { .name = #def, .val = def, },
-const char *pair_lookup(struct pair *pair, int pair_size, int idx)
-{
-	if (idx < 0 || idx >= pair_size || pair[idx].name == NULL)
-		return "???";
-	return pair[idx].name;
-}
 
-#define pair_lookup(pair, idx) pair_lookup(pair, ARRAY_SIZE(pair), idx)
+#define PAIR(def) [def] = {.name = #def, .val = def},
+
+#define PAIR_LOOKUP(pair_arr, idx) do {               \
+	if (idx < 0 || idx >= ARRAY_SIZE(pair_arr) || \
+	    pair_arr[idx].name == NULL)               \
+		return "???";                         \
+	return pair_arr[idx].name;                    \
+} while (0)
 
 /*
  * strttype() - convert a type result to the human readable string
@@ -199,65 +199,21 @@ const char *strttype(int ttype)
 {
 	struct pair ttype_pairs[] = {
 		PAIR(TPASS)
-		    PAIR(TFAIL)
-		    PAIR(TBROK)
-		    PAIR(TRETR)
-		    PAIR(TCONF)
-		    PAIR(TWARN)
-		    PAIR(TINFO)
+		PAIR(TFAIL)
+		PAIR(TBROK)
+		PAIR(TRETR)
+		PAIR(TCONF)
+		PAIR(TWARN)
+		PAIR(TINFO)
 	};
-	return pair_lookup(ttype_pairs, TTYPE_RESULT(ttype));
+
+	PAIR_LOOKUP(ttype_pairs, TTYPE_RESULT(ttype));
 }
 
 /*
- * strerrnodef() - convert an errno value to its C define
+ * Include table of errnos and strerrnodef() function.
  */
-static const char *strerrnodef(int err)
-{
-	struct pair errno_pairs[] = {
-		PAIR(EPERM)
-		    PAIR(ENOENT)
-		    PAIR(ESRCH)
-		    PAIR(EINTR)
-		    PAIR(EIO)
-		    PAIR(ENXIO)
-		    PAIR(E2BIG)
-		    PAIR(ENOEXEC)
-		    PAIR(EBADF)
-		    PAIR(ECHILD)
-		    PAIR(EAGAIN)
-		    PAIR(ENOMEM)
-		    PAIR(EACCES)
-		    PAIR(EFAULT)
-		    PAIR(ENOTBLK)
-		    PAIR(EBUSY)
-		    PAIR(EEXIST)
-		    PAIR(EXDEV)
-		    PAIR(ENODEV)
-		    PAIR(ENOTDIR)
-		    PAIR(EISDIR)
-		    PAIR(EINVAL)
-		    PAIR(ENFILE)
-		    PAIR(EMFILE)
-		    PAIR(ENOTTY)
-		    PAIR(ETXTBSY)
-		    PAIR(EFBIG)
-		    PAIR(ENOSPC)
-		    PAIR(ESPIPE)
-		    PAIR(EROFS)
-		    PAIR(EMLINK)
-		    PAIR(EPIPE)
-		    PAIR(EDOM)
-		    PAIR(ERANGE)
-		    PAIR(EDEADLK)
-		    PAIR(ENAMETOOLONG)
-		    PAIR(ENOLCK)
-		    PAIR(ENOSYS)
-		    PAIR(ENOTEMPTY)
-		    PAIR(ELOOP)
-	};
-	return pair_lookup(errno_pairs, err);
-}
+#include "errnos.h"
 
 /*
  * tst_res() - Main result reporting function.  Handle test information
