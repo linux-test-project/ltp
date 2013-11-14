@@ -48,7 +48,7 @@ HOST=`hostname`
 CLEANUP=${CLEANUP:="ON"}
 VERSION=${VERSION:=3}
 TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
-NFS_TYPE=${NFS_TYPE:nfs}
+NFS_TYPE=${NFS_TYPE:=nfs}
 export TCID=$TC
 export TST_TOTAL=1
 export TST_COUNT=1
