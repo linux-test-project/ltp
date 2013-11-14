@@ -33,6 +33,40 @@
 
 #include "tst_checkpoint.h"
 
+/*
+ * Issue open() on 'path' fifo with O_WRONLY flag and wait for
+ * a reader up to 'timeout' ms.
+ *
+ * Returns:
+ *   >= 0 - file descriptor
+ *   -1  - an error has occurred (errno is set accordingly)
+ *
+ */
+int open_wronly_timed(const char *path, unsigned int timeout)
+{
+	int fd;
+	int i;
+	int interval = 1; /* how often issue open(O_NONBLOCK), in ms */
+
+	for (i = 0; i < timeout; i += interval) {
+		fd = open(path, O_WRONLY | O_NONBLOCK);
+		if (fd < 0) {
+			if ((errno == ENXIO) || (errno == EINTR)) {
+				usleep(interval * 1000);
+
+				continue;
+			}
+
+			return -1;
+		}
+
+		return fd;
+	}
+
+	errno = ETIMEDOUT;
+	return -1;
+}
+
 void tst_checkpoint_init(const char *file, const int lineno,
                          struct tst_checkpoint *self)
 {
@@ -195,7 +229,7 @@ void tst_checkpoint_signal_child(const char *file, const int lineno,
 {
 	int ret, fd;
 	
-	fd = open(TST_CHECKPOINT_FIFO, O_WRONLY);
+	fd = open_wronly_timed(TST_CHECKPOINT_FIFO, self->timeout);
 
 	if (fd < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
