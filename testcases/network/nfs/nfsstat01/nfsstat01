@@ -100,7 +100,7 @@ $trace_logic
    fi
 
    #Verify export
-   /usr/sbin/showmount -e $HOST | grep $EXPORTDIR > /dev/null
+   showmount -e $HOST | grep $EXPORTDIR > /dev/null
    [ $? -eq 0 ] || end_testcase "$EXPORTDIR not exported"
 
    #Create mount point

@@ -103,7 +103,7 @@ $trace_logic
    fi
 
    #Verify export
-   /usr/sbin/showmount -e $RHOST | grep $TESTDIR
+   showmount -e $RHOST | grep $TESTDIR
    [ $? -eq 0 ] || end_testcase "$TESTDIR not exported"
 
    #Create $TCtmp for mount point
