@@ -75,7 +75,7 @@ $trace_logic
 
     PID=$$
 
-    VERSION=${VERSION:=2}
+    VERSION=${VERSION:=3}
     RHOST=${RHOST:=`hostname`}
     NFILES=${NFILES:=1000}
     SOCKET_TYPE=${SOCKET_TYPE:=udp}

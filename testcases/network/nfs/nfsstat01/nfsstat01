@@ -46,7 +46,7 @@ TCbin=${TCbin:=`pwd`}
 EXPORTDIR=${EXPORTDIR:=/tmp/$TC$PID}
 HOST=`hostname`
 CLEANUP=${CLEANUP:="ON"}
-VERSION=${VERSION:=2}
+VERSION=${VERSION:=3}
 TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
 NFS_TYPE=${NFS_TYPE:nfs}
 export TCID=$TC

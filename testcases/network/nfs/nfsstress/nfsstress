@@ -53,9 +53,9 @@ export TCID=$TC
 export TST_TOTAL=1
 export TST_COUNT=1
 
-# Setting the NFS to version 2 with UDP by default
+# Setting the NFS to version 3 with UDP by default
 PID=$$
-VERSION=${VERSION:=2}
+VERSION=${VERSION:=3}
 SOCKET_TYPE=${SOCKET_TYPE:=udp}
 TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
 NFS_TYPE=${NFS_TYPE:=nfs}
