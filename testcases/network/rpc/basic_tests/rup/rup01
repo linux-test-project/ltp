@@ -46,7 +46,7 @@
 
 $trace_logic
 this_file=${0##*/}
-TC=rusers
+TC=rup01
 TCtmp=${TCtmp:=`pwd`}
 TCbin=${TCbin:=`pwd`}
 TCsrc=${TCsrc:=$TCbin}
