@@ -46,6 +46,9 @@ TCbin=${TCbin:=`pwd`}
 TCdat=${TCdat:=$TCbin/datafiles}
 TCsrc=${TCsrc:=$TCbin}
 TCtmp=${TCtmp:=$TCbin/$TC$$}
+export TCID=$TC
+export TST_TOTAL=1
+export TST_COUNT=1
 
 PID=$$
 
@@ -221,8 +224,8 @@ $trace_logic
        do_cleanup
     fi
 
-    [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-    echo "Test Failed: $@"
+    [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+    tst_resm TFAIL "Test Failed: $@"
     exit 1
 }
 

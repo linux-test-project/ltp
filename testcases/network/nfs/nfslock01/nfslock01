@@ -42,6 +42,9 @@ TCbin=${TCbin:=`pwd`}
 TCtmp=${TCtmp:=$TCbin/$TC$$}
 TCsrc=${TCsrc:=$TCbin}
 TClog=${TClog:=$TCtmp}
+export TCID=$TC
+export TST_TOTAL=1
+export TST_COUNT=1
 
 mkdir $TCtmp >/dev/null 2>&1
 
@@ -129,8 +132,8 @@ end_testcase()
      do_cleanup
    fi
 
-   [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 

@@ -179,8 +179,8 @@ end_testcase()
    # Call other cleanup functions
    [ $CLEANUP = "ON" ] && do_cleanup
 
-   [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 

@@ -49,6 +49,9 @@ TCsrc=${TCsrc:=$TCbin}
 TCtmp=${TCtmp:=$TCbin/$TC$$}
 TCdump=${TCdump:=$TCbin}
 RHOST=${RHOST:=`hostname|awk {'print $1'}`}
+export TCID=$TC
+export TST_TOTAL=1
+export TST_COUNT=1
 
 # Setting the NFS to version 2 with UDP by default
 PID=$$
@@ -192,8 +195,8 @@ $trace_logic
 		 rsh -n $RHOST "rm -rf $TESTDIR"
     fi
 
-    [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-    echo "Test Failed: $@"
+    [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+    tst_resm TFAIL "Test Failed: $@"
     exit 1
 }
 

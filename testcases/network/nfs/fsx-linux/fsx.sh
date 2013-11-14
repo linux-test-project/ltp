@@ -51,6 +51,9 @@ TCdat=${TCdat:=$TCbin}
 TCsrc=${TCsrc:=$TCbin}
 TCtmp=${TCtmp:=$TCbin/$TC$$}
 TCdump=${TCdump:=$TCbin}
+export TCID=$TC
+export TST_TOTAL=1
+export TST_COUNT=1
 
 # If CLEANUP is not set; set it to "ON"
 CLEANUP=${CLEANUP:="ON"}
@@ -177,8 +180,8 @@ $trace_logic
  rsh -n $RHOST "rm -rf $TESTDIR"
     fi
 
-    [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-    echo "Test Failed: $@"
+    [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+    tst_resm TFAIL "Test Failed: $@"
     exit 1
 }
 

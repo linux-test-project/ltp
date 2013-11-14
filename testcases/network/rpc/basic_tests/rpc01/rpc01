@@ -43,6 +43,9 @@ NUMLOOPS=${NUMLOOPS:=3}
 RHOST=${RHOST:=`hostname`}
 CLEANUP=${CLEANUP:="ON"}
 DATAFILES=${DATAFILES:="file.1 file.2"}
+export TCID=$TC
+export TST_TOTAL=1
+export TST_COUNT=1
 
 #=============================================================================
 # FUNCTION NAME:        do_test
@@ -115,8 +118,8 @@ end_testcase()
    $trace_logic
    echo "$this_file: doing $0."
 
-   [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
+   [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+   tst_resm TFAIL "Test Failed: $@"
    exit 1
 }
 

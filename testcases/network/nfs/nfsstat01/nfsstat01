@@ -49,6 +49,9 @@ CLEANUP=${CLEANUP:="ON"}
 VERSION=${VERSION:=2}
 TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
 NFS_TYPE=${NFS_TYPE:nfs}
+export TCID=$TC
+export TST_TOTAL=1
+export TST_COUNT=1
 
 if [ "x$NFS_TYPE" != "xnfs4" ]; then
     OPTS=${OPTS:="-o vers=$VERSION "}
@@ -236,8 +239,8 @@ $trace_logic
        do_cleanup
     fi
 
-    [ $? = 0 ] && { echo "Test PASS"; exit 0; }
-    echo "Test FAIL: $@"
+    [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
+    tst_resm TFAIL "Test Failed: $@"
     exit 1
 }
 
