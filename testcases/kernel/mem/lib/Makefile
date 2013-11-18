@@ -20,7 +20,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CFLAGS			:= -I../include
+CFLAGS			+= -I../include
 INTERNAL_LIB		:= libmem.a
 
 include $(top_srcdir)/testcases/kernel/include/lib.mk
