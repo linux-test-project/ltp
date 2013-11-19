@@ -339,7 +339,7 @@ fi
 
   if uname -m |
     grep -qe '\(m68k\)\|\(sparc\)\|\(mips\b\)\|\(mipseb\)\|\(sh.eb\)' \
-         -e '\(powerpc\)\|\(ppc\)\|\(s390\)'; then
+         -e '\(powerpc\)\|\(ppc\)\|\(s390\)\|\(parisc\)'; then
      TEST_ARCH=MSB
   fi
 
