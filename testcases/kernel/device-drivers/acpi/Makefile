@@ -25,7 +25,9 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 REQ_VERSION_MAJOR	:= 2
 REQ_VERSION_PATCH	:= 6
-MAKE_TARGETS		:= ltp_acpi ltp_acpi_cmds.ko
+MAKE_TARGETS		:= ltp_acpi_cpufreq ltp_acpi ltp_acpi_cmds.ko
+
+ltp_acpi_cpufreq: LDLIBS += -lpthread
 
 include $(top_srcdir)/include/mk/module.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
