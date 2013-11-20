@@ -438,6 +438,11 @@ inotify02 inotify02
 inotify03 inotify03 -D DEVICE -T DEVICE_FS_TYPE
 inotify04 inotify04
 
+fanotify01 fanotify01
+fanotify02 fanotify02
+fanotify03 fanotify03
+fanotify04 fanotify04
+
 ioperm01 ioperm01
 ioperm02 ioperm02
 

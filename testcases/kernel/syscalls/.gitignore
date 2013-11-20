@@ -1004,3 +1004,7 @@
 /writev/writev04
 /writev/writev05
 /writev/writev06
+/fanotify/fanotify01
+/fanotify/fanotify02
+/fanotify/fanotify03
+/fanotify/fanotify04

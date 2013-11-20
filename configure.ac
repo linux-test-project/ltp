@@ -43,6 +43,7 @@ AC_CHECK_HEADERS([ \
     linux/netlink.h \
     sys/epoll.h \
     sys/inotify.h \
+    sys/fanotify.h \
     sys/jfsdmapi.h \
     sys/prctl.h \
 ])
