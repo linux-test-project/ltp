@@ -52,6 +52,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "lapi/posix_clocks.h"
 
 char *TCID = "getrusage04";
 int TST_TOTAL = 1;
@@ -174,11 +175,6 @@ static void busyloop(long wait)
  * The default value for resolution was choosen to be 4ms as it corresponds to
  * CONFIG_HZ=250 which seems to be default value.
  */
-
-#ifndef CLOCK_REALTIME_COARSE
-#define CLOCK_REALTIME_COARSE 5
-#endif
-
 static unsigned long guess_timer_resolution(void)
 {
 	struct timespec res;
