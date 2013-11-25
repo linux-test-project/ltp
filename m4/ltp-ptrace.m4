@@ -40,5 +40,8 @@ save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS -I$srcdir/testcases/kernel/syscalls/ptrace"
 AC_CHECK_TYPES([struct user_regs_struct, struct pt_regs],,,[#include "ptrace.h"])
 AC_CHECK_DECLS([PTRACE_GETSIGINFO, PTRACE_O_TRACEVFORKDONE, PTRACE_SETOPTIONS],,,[#include "ptrace.h"])
+dnl glibc-2.18 defines ptrace_peeksiginfo_args in sys/ptrace.h which
+dnl conflicts with the one from linux kernel in linux/ptrace.h
+AC_CHECK_TYPES([struct ptrace_peeksiginfo_args],,,[#include <sys/ptrace.h>])
 CPPFLAGS=$save_CPPFLAGS
 ])

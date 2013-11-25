@@ -19,7 +19,9 @@
 # include <asm/ptrace.h>
 #endif
 #ifdef HAVE_LINUX_PTRACE_H
-# include <linux/ptrace.h>
+# ifndef HAVE_STRUCT_PTRACE_PEEKSIGINFO_ARGS
+#  include <linux/ptrace.h>
+# endif
 #endif
 #undef FU_ia64_fpreg
 #undef FU_pt_all_user_regs

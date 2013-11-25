@@ -167,6 +167,9 @@
 /* Define to 1 if the system has the type `struct modify_ldt_ldt_s'. */
 #undef HAVE_STRUCT_MODIFY_LDT_LDT_S
 
+/* Define to 1 if the system has the type `struct ptrace_peeksiginfo_args'. */
+#undef HAVE_STRUCT_PTRACE_PEEKSIGINFO_ARGS
+
 /* Define to 1 if `signo' is member of `struct signalfd_siginfo'. */
 #undef HAVE_STRUCT_SIGNALFD_SIGINFO_SIGNO
 
