@@ -116,8 +116,10 @@ do_test2()
 
     tst_resm TINFO "finger -bad user "
     finger $BADUSER 2>&1 1>/dev/null || end_testcase "finger $BADUSER"
-    finger @$BADHOST 2>&1 1>/dev/null || end_testcase "finger @$BADHOST"
-    if ! finger $BADUSER@$BADHOST 2>&1 1>/dev/null; then
+    finger @$BADHOST 2>&1 1>/dev/null | grep "finger: unknown host" \
+        || end_testcase "finger @$BADHOST"
+    if ! finger $BADUSER@$BADHOST 2>&1 1>/dev/null \
+        | grep "finger: unknown host"; then
         end_testcase "finger $BADUSER@$BADHOST"
     fi
 }
@@ -158,7 +160,8 @@ do_test3()
         end_testcase "finger -m $RUSER@$RHOST"
     fi
 
-    tst_resm TINFO "finger -p : suppresses printing of .plan files on long and brief long formats"
+    tst_resm TINFO "finger -p : suppresses printing of .plan files on long and \
+        brief long formats"
     finger -p  2>&1 1>/dev/null || end_testcase "finger -p"
     finger -p $LUSER  2>&1 1>/dev/null || end_testcase "finger -p $LUSER"
     finger -p @$LHOST  2>&1 1>/dev/null || end_testcase "finger -p @$LHOST"
