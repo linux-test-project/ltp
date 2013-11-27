@@ -312,6 +312,23 @@ int safe_link(const char *file, const int lineno,
 	return rval;
 }
 
+off_t safe_lseek(const char *file, const int lineno,
+                 void (cleanup_fn)(void), int fd,
+                 off_t offset, int whence)
+{
+	off_t rval;
+
+	rval = lseek(fd, offset, whence);
+
+	if (rval == (off_t) -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "lseek(%i, %li, %i) failed at %s:%d",
+		         fd, (long)offset, whence, file, lineno);
+	}
+
+	return rval;
+}
+
 int safe_symlink(const char *file, const int lineno,
                  void (cleanup_fn)(void), const char *oldpath,
                  const char *newpath)

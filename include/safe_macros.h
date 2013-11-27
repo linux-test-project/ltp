@@ -137,6 +137,12 @@ int	safe_link(const char *file, const int lineno,
 #define SAFE_LINK(cleanup_fn, oldpath, newpath) \
         safe_link(__FILE__, __LINE__, cleanup_fn, (oldpath), (newpath))
 
+off_t	safe_lseek(const char *file, const int lineno,
+                   void (cleanup_fn)(void), int fd,
+                   off_t offset, int whence);
+#define SAFE_LSEEK(cleanup_fn, fd, offset, whence) \
+        safe_lseek(__FILE__, __LINE__, cleanup_fn, (fd), (offset), (whence))
+
 int	safe_symlink(const char *file, const int lineno,
                      void (cleanup_fn)(void), const char *oldpath,
                      const char *newpath);
