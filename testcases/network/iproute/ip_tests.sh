@@ -187,6 +187,8 @@ test01()
 
 	tst_resm TINFO "Test #1: changing mtu size of eth0:1 device."
 
+	MTUSZ_BAK=`ifconfig eth0:1 | grep -i MTU | sed "s/^.*MTU://" \
+		| awk '{print $1}'`
 	ip link set eth0:1 mtu 300 >$LTPTMP/tst_ip.err 2>&1
 	if [ $RC -ne 0 ]
 	then
@@ -198,6 +200,8 @@ test01()
 		if [ $MTUSZ -eq 300 ]
 		then
 			tst_resm TPASS "Test #1: changing mtu size success"
+			ip link set eth0:1 mtu $MTUSZ_BAK \
+				>$LTPTMP/tst_ip.err 2>&1
 		else
 			tst_resm FAIL NULL \
 				"Test #1: MTU value not set to 300: ifconfig returned: $MTUSZ"
@@ -453,7 +457,8 @@ test05()
 		10.6.6.6 via 127.0.0.1 dev lo
 		EOF
 
-		ip route show | head -n1 >$LTPTMP/tst_ip.out 2>&1 || RC=$?
+		ip route show | grep "10.6.6.6 via 127.0.0.1 dev lo" \
+			>$LTPTMP/tst_ip.out 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
