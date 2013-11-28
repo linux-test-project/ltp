@@ -1,7 +1,5 @@
 #
-#    network/rpc/basic_tests/rpc01 test suite Makefile.
-#
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    network/rpc/basic_tests/rpc01/datafiles Makefile.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,18 +15,15 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, July 2009
+#    Simon Xu <xu.simon@oracle.com> Nov 8 2013
 #
 
-top_srcdir		?= ../../../../..
+top_srcdir		?= ../../../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-# XXX (garrcoop): rpc.c has a ridiculous warning to code ratio.
-CPPFLAGS		+= -Wno-error
+INSTALL_DIR		:= testcases/data/rpc01
 
-INSTALL_TARGETS		:= rpc01
+INSTALL_TARGETS		:= file*
 
-SUBDIRS			:= datafiles
-
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

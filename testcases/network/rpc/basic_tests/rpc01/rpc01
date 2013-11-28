@@ -36,9 +36,8 @@
 $trace_logic
 this_file=${0##*/}
 TC=${TC:=rpc01}
-TCbin=${TCbin:=`pwd`}
-TCdat=${TCdat:=$TCbin/datafiles}
-TCtmp=${TCtmp:=$LTPROOT/testcases/bin}
+TCbin=${TCbin:=$LTPROOT/testcases/bin}
+TCdat=${TCdat:=$LTPROOT/testcases/data/rpc01}
 NUMLOOPS=${NUMLOOPS:=3}
 RHOST=${RHOST:=`hostname`}
 CLEANUP=${CLEANUP:="ON"}
@@ -71,7 +70,7 @@ do_test()
     do
       for FILE in $DATAFILES
       do
-	$TCtmp/rpc1 -s $RHOST -f $TCdat/$FILE
+	rpc1 -s $RHOST -f $TCdat/$FILE
 	[ $? -eq 0 ] || end_testcase "Fail on using $FILE"
       done
       COUNT=`expr $COUNT + 1`
@@ -93,9 +92,9 @@ do_cleanup()
     $trace_logic
 
     if [ "$CLEANUP" = "ON" ]; then
-	if [ -f $TCtmp/core ]; then
+	if [ -f $TMPDIR/core ]; then
 	   echo "Core file is saved in /tmp"
-	   mv $TCtmp/core /tmp
+	   mv $TMPDIR/core /tmp
 	fi
 
 	# Kill server
