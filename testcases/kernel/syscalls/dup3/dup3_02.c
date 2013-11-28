@@ -22,6 +22,8 @@
  *     if flags contain an invalid value or oldfd was equal to newfd.
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
