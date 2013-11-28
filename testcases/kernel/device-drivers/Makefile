@@ -18,7 +18,8 @@ top_srcdir	?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-SUBDIRS		:= block \
+SUBDIRS		:= acpi \
+		   block \
 		   pci \
 		   rtc \
 		   tbio \
