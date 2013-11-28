@@ -37,37 +37,28 @@
 #include "usctest.h"
 #include "safe_macros.h"
 
-#define	K_1	1024
-
-#define	NBUFS		4
 #define	CHUNK		64
-#define	MAX_IOVEC	16
 
 char *TCID = "readv01";
 int TST_TOTAL = 1;
 
-static char buf1[K_1], buf2[K_1], buf3[K_1];
+static char buf[CHUNK];
 
-static struct iovec rd_iovec[MAX_IOVEC] = {
-	/* iov_base *//* iov_len */
-
-	/* Test case #1 */
-	{(buf2 + CHUNK * 10), CHUNK},
-
-	/* Test case #2 */
-	{(buf2 + CHUNK * 11), CHUNK}
+static struct iovec rd_iovec[] = {
+	{buf, CHUNK},
+	{NULL, 0},
+	{NULL, 0},
 };
 
 static int fd;
-static char *buf_list[NBUFS];
 
 static void setup(void);
 static void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int lc;
-	char *msg;
+	int lc, i, fail;
+	char *msg, *vec;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -77,64 +68,37 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		SAFE_LSEEK(cleanup, fd, CHUNK * 11, SEEK_SET);
+		SAFE_LSEEK(cleanup, fd, 0, SEEK_SET);
 
-		if (readv(fd, (rd_iovec + 0), 0) == -1) {
-			tst_resm(TFAIL, "readv() failed with unexpected errno "
-				 "%d", errno);
-		} else {
+		if (readv(fd, rd_iovec, 0) == -1)
+			tst_resm(TFAIL | TERRNO, "readv failed unexpectedly");
+		else
 			tst_resm(TPASS, "readv read 0 io vectors");
-		}
 
-		SAFE_LSEEK(cleanup, fd, CHUNK * 12, SEEK_SET);
+		memset(rd_iovec[0].iov_base, 0x00, CHUNK);
 
-		if (readv(fd, (rd_iovec + 1), 4) != CHUNK) {
+		if (readv(fd, rd_iovec, 3) != CHUNK) {
 			tst_resm(TFAIL, "readv failed reading %d bytes, "
 				 "followed by two NULL vectors", CHUNK);
 		} else {
-			tst_resm(TPASS, "readv passed reading %d bytes, "
-				 "followed by two NULL vectors", CHUNK);
+			fail = 0;
+			vec = rd_iovec[0].iov_base;
+
+			for (i = 0; i < CHUNK; i++) {
+				if (vec[i] != 0x42)
+					fail++;
+			}
+
+			if (fail)
+				tst_resm(TFAIL, "Wrong buffer content");
+			else
+				tst_resm(TPASS, "readv passed reading %d bytes "
+				         "followed by two NULL vectors", CHUNK);
 		}
 	}
 
 	cleanup();
 	tst_exit();
-}
-
-static int fill_mem(char *c_ptr, int c1, int c2)
-{
-	int count;
-
-	for (count = 1; count <= K_1 / CHUNK; count++) {
-		if (count & 0x01) {	/* if odd */
-			memset(c_ptr, c1, CHUNK);
-		} else {	/* if even */
-			memset(c_ptr, c2, CHUNK);
-		}
-	}
-	return 0;
-}
-
-static int init_buffs(char *pbufs[])
-{
-	int i;
-
-	for (i = 0; pbufs[i] != NULL; i++) {
-		switch (i) {
-		case 0:
-		 /*FALLTHROUGH*/ case 1:
-			fill_mem(pbufs[i], 0, 1);
-			break;
-
-		case 2:
-			fill_mem(pbufs[i], 1, 0);
-			break;
-
-		default:
-			tst_brkm(TBROK, cleanup, "Error in init_buffs()");
-		}
-	}
-	return 0;
 }
 
 static void setup(void)
@@ -145,15 +109,10 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	buf_list[0] = buf1;
-	buf_list[1] = buf2;
-	buf_list[2] = buf3;
-	buf_list[3] = NULL;
-
-	init_buffs(buf_list);
+	memset(buf, 0x42, sizeof(buf));
 
 	fd = SAFE_OPEN(cleanup, "data_file", O_WRONLY | O_CREAT, 0666);
-	SAFE_WRITE(cleanup, 1, fd, buf_list[2], K_1);
+	SAFE_WRITE(cleanup, 1, fd, buf, sizeof(buf));
 	SAFE_CLOSE(cleanup, fd);
 	fd = SAFE_OPEN(cleanup, "data_file", O_RDONLY);
 }
