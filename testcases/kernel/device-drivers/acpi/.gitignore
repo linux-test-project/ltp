@@ -1,0 +1,8 @@
+/ltp_acpi_cmds.ko
+/ltp_acpi
+/*.mod.c
+/modules.order
+/.tmp_versions
+/.*.ko
+/.*.cmd
+/Module.symvers

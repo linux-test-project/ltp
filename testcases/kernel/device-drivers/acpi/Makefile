@@ -1,34 +1,33 @@
+# Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
 #
-# Makefile for GCOV profiling kernel module
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-#  1 Mar 2009 Márton Németh <nm127@freemail.hu>
-#   - Updated for Linux kernel 2.6.28
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-
-#KERNELDIR := /usr/src/linux-2.5.64-gcov
-EXTRA_CFLAGS := -Wall -g -W -Wno-unused-parameter
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ifneq ($(KERNELRELEASE),)
 
-obj-m	:= LtpAcpiCmds.o
-obj-p   := Test
+obj-m := ltp_acpi_cmds.o
+
 else
-KDIR	:= /lib/modules/$(shell uname -r)/build
-PWD	:= $(shell pwd)
 
-modules:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
-	${CC}  $(CFLAGS) -o LtpAcpiMain  LtpAcpiMain.c
+top_srcdir	?= ../../../..
+include $(top_srcdir)/include/mk/testcases.mk
 
-clean:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) clean
-	rm -f modules.order
-	rm -f LtpAcpiMain
+REQ_VERSION_MAJOR	:= 2
+REQ_VERSION_PATCH	:= 6
+MAKE_TARGETS		:= ltp_acpi ltp_acpi_cmds.ko
 
-help:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) help
-
-modules_install:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules_install
+include $(top_srcdir)/include/mk/module.mk
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
 endif
