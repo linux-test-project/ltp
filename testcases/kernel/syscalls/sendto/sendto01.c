@@ -72,7 +72,6 @@ static void setup0(void);
 static void setup1(void);
 static void setup2(void);
 static void setup3(void);
-static void setup4(void);
 static void cleanup(void);
 static void cleanup0(void);
 static void cleanup1(void);
@@ -212,16 +211,16 @@ struct test_case_t tdat[] = {
 	 .desc = "local endpoint shutdown"}
 	,
 	{.domain = PF_INET,
-	 .type = SOCK_STREAM,
+	 .type = SOCK_DGRAM,
 	 .proto = 0,
 	 .buf = buf,
 	 .buflen = sizeof(buf),
-	 .flags = -1,
+	 .flags = MSG_OOB,
 	 .to = &sin1,
 	 .tolen = sizeof(sin1),
-	 .retval = 0,
-	 .experrno = EPIPE,
-	 .setup = setup4,
+	 .retval = -1,
+	 .experrno = EOPNOTSUPP,
+	 .setup = setup1,
 	 .cleanup = cleanup1,
 	 .desc = "invalid flags set"}
 };
@@ -429,14 +428,4 @@ static void setup3(void)
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "socket setup failed");
-}
-
-static void setup4(void)
-{
-	setup1();
-
-	if (tst_kvercmp(3, 6, 0) >= 0) {
-		tdat[testno].retval = -1;
-		tdat[testno].experrno = ENOTSUP;
-	}
 }
