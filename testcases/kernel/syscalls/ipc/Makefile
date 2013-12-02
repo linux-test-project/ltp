@@ -22,7 +22,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 LIBDIR			:= lib
 FILTER_OUT_DIRS		:= $(LIBDIR)
-LIB			:= $(LIBDIR)/libipc.a
+LIB			:= $(LIBDIR)/libipc.a $(LIBDIR)/libmsgctl.a
 
 $(LIBDIR):
 	mkdir -p "$@"

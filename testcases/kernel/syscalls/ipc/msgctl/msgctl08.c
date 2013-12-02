@@ -40,7 +40,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "ipcmsg.h"
-#include "libmsgctl.h"
+#include "../lib/libmsgctl.h"
 
 char *TCID = "msgctl08";
 int TST_TOTAL = 1;

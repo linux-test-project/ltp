@@ -145,4 +145,3 @@ int verify(char *buf, char val, int size, int child)
 	}
 	return PASS;
 }
-

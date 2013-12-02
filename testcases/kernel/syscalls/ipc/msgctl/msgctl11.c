@@ -39,7 +39,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "ipcmsg.h"
-#include "libmsgctl.h"
+#include "../lib/libmsgctl.h"
 #include "system_specific_process_info.h"
 
 char *TCID = "msgctl11";

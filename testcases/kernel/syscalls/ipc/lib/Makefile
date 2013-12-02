@@ -20,6 +20,6 @@ top_srcdir		?= ../../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-LIB			:= libipc.a
+LIB			:= libipc.a libmsgctl.a
 
 include $(top_srcdir)/include/mk/lib.mk
