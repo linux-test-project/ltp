@@ -22,25 +22,6 @@ top_srcdir              ?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		+= ffsb
-INSTALL_TARGETS		+= run_ext4_test.sh
 INSTALL_TARGETS		+= ext4_funcs.sh
-INSTALL_TARGETS		+= ext4-test-config
-
-FFSBDIR			:= ffsb-6.0-rc2
-FILTER_OUT_DIRS		:= $(FFSBDIR)
-FFSB			:= $(FFSBDIR)/ffsb
-
-$(FFSB): $(FFSBDIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
-	cp $(FFSBDIR)/ffsb ffsb
-
-trunk-all: $(FFSB)
-
-trunk-clean:: | ffsb-clean
-
-ffsb-clean:: $(FFSBDIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
-	rm -rf ffsb
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
