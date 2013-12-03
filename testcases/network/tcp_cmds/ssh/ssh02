@@ -32,7 +32,6 @@
 
 do_setup()
 {
-
     export RHOST="localhost"
     export TEST_USER="ssh_usr2"
     export TEST_USER_PASSWD="now_this_is_a_good_ltp_test_password"

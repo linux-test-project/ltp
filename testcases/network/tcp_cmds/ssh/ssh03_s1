@@ -31,15 +31,13 @@ set TEST_USER $env(TEST_USER)
 set TEST_USER_PASSWD $env(TEST_USER_PASSWD)
 
 set RUSER $TEST_USER
+set PASSWD $TEST_USER_PASSWD
 
 set timeout 90
 
-#test invalid username
+#test valid username
 
 send_user "TEST: SSH allow (non-root) valid User \n"
-
-set RUSER $TEST_USER
-set PASSWD $TEST_USER_PASSWD
 
 
 spawn ssh -l $RUSER $RHOST whoami
@@ -54,7 +52,10 @@ while 1 {
             send_user "\nSSH would not allow $RUSER to login, Test FAILED \n"
             exit 1
         }
-        "$RUSER" {send_user "\nSSH allowed $RUSER to login, Test PASSED \n" ;break}
+        "$RUSER" {
+            send_user "SSH allowed $RUSER to login, Test PASSED \n"
+            break
+        }
     }
     sleep 1
 }

@@ -21,7 +21,6 @@
 #  PURPOSE: Tests to see that ssh rejects an invalid password
 #
 #  SETUP: The program `/usr/bin/expect' MUST be installed.
-#         The PASSWD and RHOST variables MUST be set prior to execution.
 #
 #  HISTORY:
 #    03/03 Jerone Young (jeroney@us.ibm.com)
@@ -31,31 +30,37 @@ set RHOST $env(RHOST)
 set TEST_USER $env(TEST_USER)
 set TEST_USER_PASSWD $env(TEST_USER_PASSWD)
 
+set RUSER $TEST_USER
+set PASSWD $TEST_USER_PASSWD
+
 set timeout 90
 
 #test invalid password
 
-send_user "SSH Test Invalid Password \n"
+send_user "TEST: SSH Test Invalid Password \n"
 
-set RUSER $TEST_USER
+# Set PASSWD to an invalid password
 set PASSWD "invalid_password!"
 
 spawn ssh -l $RUSER $RHOST whoami
 
 while 1 {
-	sleep 2
-	expect {
+    sleep 2
+    expect {
 
-		"Are you sure you want to continue connecting (yes/no)?" { exp_send "yes\r"}
-                "assword:" {exp_send "$PASSWD\r"}
-		"Permission denied" {
-			send_user "SSH would not allow $RUSER to login with invalid password, Test Passed \n"
-			send_user "\nTEST_PASSED\n"
-			break
-		}
-	     "$RUSER" {send_user "SSH allowed $RUSER to login with invalid pass, Test Failed \n" ;exit 1}
-	}
-	sleep 1
+        "Are you sure you want to continue connecting (yes/no)?" { exp_send "yes\r"}
+        "assword:" {exp_send "$PASSWD\r"}
+        "Permission denied" {
+            send_user "SSH would not allow $RUSER to login with invalid password, Test Passed \n"
+            send_user "\nTEST_PASSED\n"
+            break
+        }
+        "$RUSER" {
+            send_user "SSH allowed $RUSER to login with invalid pass, Test Failed \n"
+            exit 1
+        }
+    }
+    sleep 1
 }
 
 exit 0

@@ -34,7 +34,7 @@ do_setup()
 {
     export RHOST="localhost"
     export TEST_USER="ssh_usr3"
-    export TEST_USER_PASSWD="eal"
+    export TEST_USER_PASSWD="now_this_is_a_good_ltp_test_password"
     export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
     export TEST_USER_HOMEDIR="/home/$TEST_USER"
 
@@ -81,9 +81,9 @@ do_cleanup()
 # FUNCTION:  MAIN
 #
 # DESCRIPTION: Create Test User
-#              Call upon script to make sure an invalid user can not have access
-#              Cleanup Test User from system
-#              Exit with exit code of script called upon
+#          Call upon script to make sure a valid user can have access
+#          Cleanup Test User from system
+#          Exit with exit code of script called upon
 #-----------------------------------------------------------------------
 . net_cmdlib.sh
 
