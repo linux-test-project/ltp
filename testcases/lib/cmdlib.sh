@@ -86,9 +86,9 @@ tst_setup()
 #=============================================================================
 end_testcase()
 {
-    tst_cleanup
     if [ $# -eq 0 ]; then
         tst_resm TPASS "Test successful"
+        exit 0
     else
         tst_resm TFAIL "Test broken: $*"
         exit 1
