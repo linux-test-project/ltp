@@ -38,33 +38,32 @@ do_setup()
     export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
     export TEST_USER_HOMEDIR="/home/$TEST_USER"
 
-    # erase user if he/she already exists, so we can have a clean env
-    TCtmp=/home/$TEST_USER
+    exists expect ssh ssh02_s1 useradd userdel
 
-    rm -Rf $TCtmp
+    trap do_cleanup EXIT
+
+    # erase user if he/she already exists, so we can have a clean env
+    userdel -r $TEST_USER
+    [ -d "$TEST_USER_HOMEDIR" ] && rm -rf "$TEST_USER_HOMEDIR"
+    sleep 1
 
     tst_setup
 
-    exists expect ssh ssh02_s1 useradd userdel
-
-    userdel $TEST_USER
-    sleep 1
-
-    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then
+    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER \
+    -d "$TEST_USER_HOMEDIR"; then
         end_testcase "Could not add test user $TEST_USER to system $RHOST."
     fi
 
     # create users home diretory (SLES 8 does not do this, even when specified
     # in adduser)
-    USER_UID=$(id -u $TEST_USER)
-    USER_GID=$(id -g $TEST_USER)
-    if ! mkdir -p "$TEST_USER_HOMEDIR"; then
-        end_testcase "Failed to create $TEST_USER_HOMEDIR"
+    if [ ! -d "$TEST_USER_HOMEDIR" ]; then
+        USER_UID=$(id -u $TEST_USER)
+        USER_GID=$(id -g $TEST_USER)
+        if ! mkdir -p "$TEST_USER_HOMEDIR"; then
+            end_testcase "Failed to create $TEST_USER_HOMEDIR"
+        fi
+        chown -Rf $USER_UID.$USER_GID "$TEST_USER_HOMEDIR"
     fi
-    chown -R $USER_UID.$USER_GID "$TEST_USER_HOMEDIR"
-
-    trap do_cleanup EXIT
-
 }
 
 #-----------------------------------------------------------------------
@@ -73,7 +72,8 @@ do_setup()
 
 do_cleanup()
 {
-    userdel $TEST_USER
+    userdel -r $TEST_USER
+    [ -d "$TEST_USER_HOMEDIR" ] && rm -rf "$TEST_USER_HOMEDIR"
     tst_cleanup
 }
 
