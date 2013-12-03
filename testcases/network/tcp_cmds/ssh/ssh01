@@ -35,7 +35,6 @@ do_setup()
     export RHOST="localhost"
     export TEST_USER="ssh_usr1"
     export TEST_USER_PASSWD="now_this_is_a_good_ltp_test_password"
-    export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
     export TEST_USER_HOMEDIR="/home/$TEST_USER"
 
     exists expect ssh ssh01_s1 useradd userdel
@@ -49,10 +48,11 @@ do_setup()
 
     tst_setup
 
-    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER \
-    -d "$TEST_USER_HOMEDIR"; then
+    if ! useradd -m -d "$TEST_USER_HOMEDIR" $TEST_USER; then
         end_testcase "Could not add test user $TEST_USER to system $RHOST."
     fi
+
+    echo "$TEST_USER_PASSWD" | passwd --stdin $TEST_USER
 
     # create users home diretory (SLES 8 does not do this, even when specified
     # in adduser)
