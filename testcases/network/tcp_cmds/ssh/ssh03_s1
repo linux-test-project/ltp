@@ -48,16 +48,16 @@ while 1 {
 
         "Are you sure you want to continue connecting (yes/no)?" { exp_send "yes\r"}
         "assword:" {exp_send "$PASSWD\r"}
-        "Permission denied" {
+        -re "Permission denied (.*)\." {
             send_user "\nSSH would not allow $RUSER to login, Test FAILED \n"
             exit 1
         }
         "$RUSER" {
             send_user "SSH allowed $RUSER to login, Test PASSED \n"
-            break
+            exit 0
         }
     }
     sleep 1
 }
 
-exit 0
+exit 1
