@@ -5,3 +5,4 @@ block_dev block_dev
 tpci tpci
 tbio tbio
 ltp_acpi ltp_acpi
+uaccess uaccess

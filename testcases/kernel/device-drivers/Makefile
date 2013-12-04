@@ -23,5 +23,6 @@ SUBDIRS		:= acpi \
 		   pci \
 		   rtc \
 		   tbio \
+		   uaccess
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
