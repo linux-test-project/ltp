@@ -1,0 +1,8 @@
+/ltp_uaccess.ko
+/uaccess
+/*.mod.c
+/modules.order
+/.tmp_versions
+/.*.ko
+/.*.cmd
+/Module.symvers
