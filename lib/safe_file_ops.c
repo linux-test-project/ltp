@@ -21,11 +21,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "config.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <utime.h>
 
 #include "safe_file_ops.h"
 
@@ -156,6 +160,26 @@ void safe_cp(const char *file, const int lineno,
 	}
 }
 
+#ifndef HAVE_UTIMENSAT
+
+static void set_time(struct timeval *res, struct timespec *src,
+			long cur_tv_sec, long cur_tv_usec)
+{
+	switch (src->tv_nsec) {
+	case UTIME_NOW:
+	break;
+	case UTIME_OMIT:
+		res->tv_sec = cur_tv_sec;
+		res->tv_usec = cur_tv_usec;
+	break;
+	default:
+		res->tv_sec = src->tv_sec;
+		res->tv_usec = src->tv_nsec / 1000;
+	}
+}
+
+#endif
+
 void safe_touch(const char *file, const int lineno,
 		void (*cleanup_fn)(void),
 		const char *pathname,
@@ -186,10 +210,40 @@ void safe_touch(const char *file, const int lineno,
 				pathname, file, lineno);
 	}
 
-	ret = utimensat(AT_FDCWD, pathname, times, 0);
-	if (ret == -1)
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			"Failed to do utimensat() on file '%s' at %s:%d",
-			pathname, file, lineno);
-}
 
+#if HAVE_UTIMENSAT
+	ret = utimensat(AT_FDCWD, pathname, times, 0);
+#else
+	if (times == NULL) {
+		ret = utimes(pathname, NULL);
+	} else {
+		struct stat sb;
+		struct timeval cotimes[2];
+
+		ret = stat(pathname, &sb);
+		if (ret == -1)
+			tst_brkm(TBROK | TERRNO, cleanup_fn,
+				"Failed to stat file '%s' at %s:%d",
+				pathname, file, lineno);
+
+		ret = gettimeofday(cotimes, NULL);
+		if (ret == -1)
+			tst_brkm(TBROK | TERRNO, cleanup_fn,
+				"Failed to gettimeofday() at %s:%d",
+				file, lineno);
+		cotimes[1] = cotimes[0];
+
+		set_time(cotimes, times,
+			sb.st_atime, sb.st_atim.tv_nsec / 1000);
+		set_time(cotimes + 1, times + 1,
+			sb.st_mtime, sb.st_mtim.tv_nsec / 1000);
+
+		ret = utimes(pathname, cotimes);
+	}
+#endif
+	if (ret == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			"Failed to update the access/modification time on file"
+			" '%s' at %s:%d", pathname, file, lineno);
+	}
+}

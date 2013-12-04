@@ -36,6 +36,7 @@
 
 #include <sys/stat.h>
 
+#include "lapi/utime.h"
 #include "test.h"
 
 /*
