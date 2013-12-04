@@ -60,6 +60,8 @@ static struct pathconf_args {
 	{"_PC_NAME_MAX", _PC_NAME_MAX},
 	{"_PC_PATH_MAX", _PC_PATH_MAX},
 	{"_PC_PIPE_BUF", _PC_PIPE_BUF},
+	{"_PC_CHOWN_RESTRICTED", _PC_CHOWN_RESTRICTED},
+	{"_PC_NO_TRUNC", _PC_NO_TRUNC},
 };
 
 char *TCID = "fpathconf01";
