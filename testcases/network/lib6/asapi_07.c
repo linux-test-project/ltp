@@ -104,19 +104,19 @@ struct etent {
 	"sizeof(struct iovec *)"}}, {
 		"msghdr msg_iovlen", EXISTS, SOCKET_H, "msghdr",
 		    "msg_iovlen", NULL, {
-	"sizeof(struct iovec *)"}}, {
+	"sizeof(size_t)"}}, {
 		"msghdr msg_control", EXISTS, SOCKET_H, "msghdr",
 		    "msg_control", NULL, {
 	"sizeof(void *)"}}, {
 		"msghdr msg_controllen", EXISTS, SOCKET_H, "msghdr",
 		    "msg_controllen", NULL, {
-	"sizeof(socklen_t)"}}, {
+	"sizeof(size_t)"}}, {
 		"msghdr msg_flags", EXISTS, SOCKET_H, "msghdr",
 		    "msg_flags", NULL, {
 	"sizeof(int)"}}, {
 		"cmsghdr cmsg_len", EXISTS, SOCKET_H, "cmsghdr",
 		    "cmsg_len", NULL, {
-	"sizeof(socklen_t)"}}, {
+	"sizeof(size_t)"}}, {
 		"cmsghdr cmsg_level", EXISTS, SOCKET_H, "cmsghdr",
 		    "cmsg_level", NULL, {
 	"sizeof(int)"}}, {
