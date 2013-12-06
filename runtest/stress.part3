@@ -124,7 +124,7 @@ fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
 fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod05
-fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod06
+fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod06 -D DEVICE -T DEVICE_FS_TYPE
 fchmod07 fchmod07
 
 fchown01 fchown01

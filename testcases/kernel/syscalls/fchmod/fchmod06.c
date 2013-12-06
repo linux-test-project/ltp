@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <grp.h>
 #include <pwd.h>
+#include <sys/mount.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -45,6 +46,17 @@
 
 static int fd1;
 static int fd2;
+static int fd3;
+static char *fstype = "ext2";
+static char *device;
+static int dflag;
+static int mount_flag;
+
+static option_t options[] = {
+	{"T:", NULL, &fstype},
+	{"D:", &dflag, &device},
+	{NULL, NULL, NULL}
+};
 
 static struct test_case_t {
 	char *name;
@@ -54,14 +66,16 @@ static struct test_case_t {
 } test_cases[] = {
 	{"EPERM", &fd1, 0644, EPERM},
 	{"EBADF", &fd2, 0644, EBADF},
+	{"EROFS", &fd3, 0644, EROFS},
 };
 
 char *TCID = "fchmod06";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EPERM, EBADF, 0 };
+static int exp_enos[] = { EPERM, EBADF, EROFS, 0 };
 
 static void setup(void);
 static void cleanup(void);
+static void help(void);
 
 int main(int ac, char **av)
 {
@@ -69,8 +83,16 @@ int main(int ac, char **av)
 	char *msg;
 	int i;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, options, help);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	/* Check for mandatory option of the testcase */
+	if (!dflag) {
+		tst_brkm(TBROK, NULL,
+			 "you must specify the device used for mounting with "
+			 "-D option");
+	}
 
 	setup();
 
@@ -122,6 +144,28 @@ static void setup(void)
 
 	tst_tmpdir();
 
+	tst_mkfs(NULL, device, fstype, NULL);
+
+	SAFE_MKDIR(cleanup, "mntpoint", 0755);
+
+	if (mount(device, "mntpoint", fstype, 0, NULL) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "mount device:%s failed", device);
+	}
+	mount_flag = 1;
+
+	/* Create a file in the file system, then remount it as read-only */
+	SAFE_TOUCH(cleanup, "mntpoint/tfile_3", 0644, NULL);
+
+	if (mount(device, "mntpoint", fstype,
+		  MS_REMOUNT | MS_RDONLY, NULL) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "mount device:%s failed", device);
+	}
+	mount_flag = 1;
+
+	fd3 = SAFE_OPEN(cleanup, "mntpoint/tfile_3", O_RDONLY);
+
 	fd1 = SAFE_OPEN(cleanup, "tfile_1", O_RDWR | O_CREAT, 0666);
 
 	fd2 = SAFE_OPEN(cleanup, "tfile_2", O_RDWR | O_CREAT, 0666);
@@ -141,5 +185,19 @@ static void cleanup(void)
 
 	SAFE_CLOSE(NULL, fd1);
 
+	SAFE_CLOSE(NULL, fd3);
+
+	if (mount_flag && umount("mntpoint") < 0) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "umount device:%s failed", device);
+	}
+
 	tst_rmdir();
+}
+
+static void help(void)
+{
+	printf("-T type   : specifies the type of filesystem to be mounted. "
+	       "Default ext2.\n");
+	printf("-D device : device used for mounting.\n");
 }

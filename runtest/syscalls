@@ -173,7 +173,7 @@ fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
 fchmod05 fchmod05
-fchmod06 fchmod06
+fchmod06 fchmod06 -D DEVICE -T DEVICE_FS_TYPE
 fchmod07 fchmod07
 
 #fchmodat test cases
