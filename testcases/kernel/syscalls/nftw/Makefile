@@ -24,7 +24,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS		+= -ansi -DLINUX -D_XOPEN_SOURCE_EXTENDED -D_XOPEN_SOURCE
+CPPFLAGS		+= -D_XOPEN_SOURCE=500 -D_XOPEN_SOURCE_EXTENDED
 
 MAKE_TARGETS		:= nftw01 nftw6401
 

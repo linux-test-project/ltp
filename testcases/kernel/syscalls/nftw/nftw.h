@@ -43,14 +43,10 @@
 #include <errno.h>
 #include <setjmp.h>
 #include <stdio.h>
-#ifdef LINUX
 #include <linux/limits.h>
-#endif
 
-/** LTP Port **/
 #include "test.h"
 #include "usctest.h"
-/*********** **/
 
 #define STRLEN          512
 #define MAX_FD          20
@@ -79,110 +75,79 @@ struct list {
 	int	 i;
 };
 
-extern void fail_exit(void);
+ void fail_exit(void);
 
 /* These functions are found in test.c */
-extern void test1A(void);
-extern void test2A(void);
-extern void test3A(void);
-extern void test4A(void);
-extern void test5A(void);
-extern void test6A(void);
-extern void test7A(void);
-extern void test8A(void);
-extern void test9A(void);
-extern void test10A(void);
-extern void test11A(void);
-extern void test12A(void);
-extern void test13A(void);
-extern void test14A(void);
-extern void test15A(void);
-extern void test16A(void);
-extern void test17A(void);
-extern void test18A(void);
-extern void test19A(void);
-extern void test20A(void);
-extern void test21A(void);
-extern void test22A(void);
-extern void test23A(void);
-extern void test24A(void);
-extern void test25A(void);
-extern void test26A(void);
-extern void test27A(void);
-extern void test28A(void);
-extern void test29A(void);
-extern void test30A(void);
+ void test1A(void);
+ void test2A(void);
+ void test3A(void);
+ void test4A(void);
+ void test5A(void);
+ void test6A(void);
+ void test7A(void);
+ void test8A(void);
+ void test9A(void);
+ void test10A(void);
+ void test11A(void);
+ void test12A(void);
+ void test13A(void);
+ void test14A(void);
+ void test15A(void);
+ void test16A(void);
+ void test17A(void);
+ void test18A(void);
+ void test19A(void);
+ void test20A(void);
+ void test21A(void);
+ void test22A(void);
+ void test23A(void);
+ void test24A(void);
+ void test25A(void);
+ void test26A(void);
+ void test27A(void);
+ void test28A(void);
+ void test29A(void);
+ void test30A(void);
 
 /* These functions are found in test_func.c */
-#ifdef LINUX
-extern int test_func1();
-extern int test_func2();
-extern int test_func3();
-extern int test_func4();
-extern int test_func5();
-extern int test_func6();
-extern int test_func7();
-extern int test_func8();
-extern int test_func9();
-extern int test_func10();
-extern int test_func11();
-extern int test_func12();
-extern int test_func13();
-extern int test_func14();
-extern int test_func15();
-extern int test_func16();
-extern int test_func17();
-extern int test_func18();
-extern int test_func19();
-extern int test_func20();
-extern int test_func21();
-extern int test_func22();
-extern int test_func23();
-#else
-extern int test_func1(const char *, const struct stat *, int, struct FTW *);
-extern int test_func3(const char *, const struct stat *, int, struct FTW *);
-extern int test_func4(const char *, const struct stat *, int, struct FTW *);
-extern int test_func5(const char *, const struct stat *, int, struct FTW *);
-extern int test_func7(const char *, const struct stat *, int, struct FTW *);
-extern int test_func8(const char *, const struct stat *, int, struct FTW *);
-extern int test_func9(const char *, const struct stat *, int, struct FTW *);
-extern int test_func10(const char *, const struct stat *, int, struct FTW *);
-extern int test_func11(const char *, const struct stat *, int, struct FTW *);
-extern int test_func12(const char *, const struct stat *, int, struct FTW *);
-extern int test_func13(const char *, const struct stat *, int, struct FTW *);
-extern int test_func14(const char *, const struct stat *, int, struct FTW *);
-extern int test_func15(const char *, const struct stat *, int, struct FTW *);
-extern int test_func16(const char *, const struct stat *, int, struct FTW *);
-extern int test_func17(const char *, const struct stat *, int, struct FTW *);
-extern int test_func18(const char *, const struct stat *, int, struct FTW *);
-extern int test_func19(const char *, const struct stat *, int, struct FTW *);
-extern int test_func20(const char *, const struct stat *, int, struct FTW *);
-extern int test_func21(const char *, const struct stat *, int, struct FTW *);
-extern int test_func22(const char *, const struct stat *, int, struct FTW *);
-extern int test_func23(const char *, const struct stat *, int, struct FTW *);
-#endif
+ int test_func1(const char *, const struct stat *, int, struct FTW *);
+ int test_func3(const char *, const struct stat *, int, struct FTW *);
+ int test_func4(const char *, const struct stat *, int, struct FTW *);
+ int test_func5(const char *, const struct stat *, int, struct FTW *);
+ int test_func7(const char *, const struct stat *, int, struct FTW *);
+ int test_func8(const char *, const struct stat *, int, struct FTW *);
+ int test_func9(const char *, const struct stat *, int, struct FTW *);
+ int test_func10(const char *, const struct stat *, int, struct FTW *);
+ int test_func11(const char *, const struct stat *, int, struct FTW *);
+ int test_func12(const char *, const struct stat *, int, struct FTW *);
+ int test_func13(const char *, const struct stat *, int, struct FTW *);
+ int test_func14(const char *, const struct stat *, int, struct FTW *);
+ int test_func15(const char *, const struct stat *, int, struct FTW *);
+ int test_func16(const char *, const struct stat *, int, struct FTW *);
+ int test_func17(const char *, const struct stat *, int, struct FTW *);
+ int test_func18(const char *, const struct stat *, int, struct FTW *);
+ int test_func19(const char *, const struct stat *, int, struct FTW *);
+ int test_func20(const char *, const struct stat *, int, struct FTW *);
+ int test_func21(const char *, const struct stat *, int, struct FTW *);
+ int test_func22(const char *, const struct stat *, int, struct FTW *);
+ int test_func23(const char *, const struct stat *, int, struct FTW *);
 
 /* These functions are found in tools.c */
-extern void cleanup_function(void);
-extern void setup_path(void);
-#ifdef LINUX
-extern int nftw_fn();
-#else
-extern int nftw_fn(const char *, const struct stat *, int, struct FTW *);
-#endif
-extern char * ftw_mnemonic(int);
-extern int getbase(const char *);
-extern int getlev(const char *);
-extern void do_info(const char *);
+ void cleanup_function(void);
+ void setup_path(void);
+ int nftw_fn(const char *, const struct stat *, int, struct FTW *);
+ char * ftw_mnemonic(int);
+ int getbase(const char *);
+ int getlev(const char *);
+ void do_info(const char *);
 
 /* These functions are found in lib.c */
-extern void remove_test_ENOTDIR_files(void);
-extern void remove_test_ENOENT_files(void);
-extern void test_ENAMETOOLONG_path(char *, int (*)(const char *), int);
-extern void test_ENAMETOOLONG_name(char *, int (*)(const char *), int);
-extern void test_ENOENT_empty(char *, int (*)(const char *), int);
-extern void test_ENOTDIR(char *, int (*)(const char *), int);
-extern void test_ENOENT_nofile(char *, int (*)(const char *), int);
-
+ void remove_test_ENOTDIR_files(void);
+ void remove_test_ENOENT_files(void);
+ void test_ENAMETOOLONG_path(char *, int (*)(const char *), int);
+ void test_ENAMETOOLONG_name(char *, int (*)(const char *), int);
+ void test_ENOENT_empty(char *, int (*)(const char *), int);
+ void test_ENOTDIR(char *, int (*)(const char *), int);
+ void test_ENOENT_nofile(char *, int (*)(const char *), int);
 
 #endif	/* _NFTW_H_ */
