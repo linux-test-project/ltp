@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Author: Wayne Boyer
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -13,59 +14,12 @@
  *   the GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *   along with this program;  if not, write to the Free Software Foundation,
+ *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * Test Name: fchmod06
- *
- * Test Description:
- *   Verify that,
- *   1) fchmod(2) returns -1 and sets errno to EPERM if the effective user id
- *	of process does not match the owner of the file and the process is
- *	not super user.
- *   2) fchmod(2) returns -1 and sets errno to EBADF if the file descriptor
- *	of the specified file is not valid.
- *
- * Expected Result:
- *  fchmod() should fail with return value -1 and set expected errno.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	if errno set == expected errno
- *		Issue sys call fails with expected return value and errno.
- *	Otherwise,
- *		Issue sys call fails with unexpected errno.
- *   Otherwise,
- *	Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory(s)/file(s) created.
- *
- * Usage:  <for command-line>
- *  fchmod06 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  This test should be executed by 'non-super-user' only.
+ * Test that fchmod() fails and sets the proper errno values.
  */
 
 #ifndef _GNU_SOURCE
@@ -87,46 +41,33 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-#define MODE_RWX	(S_IRWXU|S_IRWXG|S_IRWXO)
-#define FILE_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
-#define TEST_FILE1	"tfile_1"
-#define TEST_FILE2	"tfile_2"
+static int fd1;
+static int fd2;
 
-void setup1();			/* setup function to test chmod for EPERM */
-void setup2();			/* setup function to test chmod for EBADF */
-
-int fd1;			/* File descriptor for testfile1 */
-int fd2;			/* File descriptor for testfile2 */
-
-struct test_case_t {		/* test case struct. to hold ref. test cond's */
-	int fd;
+static struct test_case_t {
+	char *name;
+	int *fd;
 	int mode;
 	int exp_errno;
-	void (*setupfunc) ();
 } test_cases[] = {
-	{
-	1, FILE_MODE, EPERM, setup1}, {
-2, FILE_MODE, EBADF, setup2},};
+	{"EPERM", &fd1, 0644, EPERM},
+	{"EBADF", &fd2, 0644, EBADF},
+};
 
 char *TCID = "fchmod06";
-int TST_TOTAL = 2;
-int exp_enos[] = { EPERM, EBADF, 0 };
+int TST_TOTAL = ARRAY_SIZE(test_cases);
+static int exp_enos[] = { EPERM, EBADF, 0 };
 
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
-char *test_home;		/* variable to hold TESTHOME env. */
-
-void setup();			/* Main setup function for the tests */
-void cleanup();			/* cleanup function for the test */
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	int fd;			/* test file descriptor */
 	int i;
-	int mode;		/* creation mode for the node created */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -140,94 +81,65 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
-			fd = test_cases[i].fd;
-			mode = test_cases[i].mode;
 
-			if (fd == 1)
-				fd = fd1;
-			else
-				fd = fd2;
-
-			TEST(fchmod(fd, mode));
+			TEST(fchmod(*test_cases[i].fd, test_cases[i].mode));
 
 			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == test_cases[i].exp_errno)
+				if (TEST_ERRNO == test_cases[i].exp_errno) {
 					tst_resm(TPASS | TTERRNO,
-						 "fchmod failed as expected");
-				else
+						 "fchmod: test %s success",
+						 test_cases[i].name);
+				} else {
 					tst_resm(TFAIL | TTERRNO,
-						 "fchmod failed unexpectedly");
-			} else
+						 "fchmod: test %s FAILED with "
+						 "unexpect errno: %d",
+						 test_cases[i].name,
+						 TEST_ERRNO);
+				}
+			} else {
 				tst_resm(TFAIL,
-					 "fchmod succeeded unexpectedly");
+					 "fchmod: test %s success unexpectly",
+					 test_cases[i].name);
+			}
 		}
 
 	}
 
 	cleanup();
+
 	tst_exit();
 }
 
-void setup()
+static void setup(void)
 {
-	int i;
+	static struct passwd *ltpuser;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
-	ltpuser = getpwnam(nobody_uid);
-	if (ltpuser == NULL)
-		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
-	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_resm(TBROK | TERRNO, "seteuid failed");
-
-	test_home = get_current_dir_name();
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	for (i = 0; i < TST_TOTAL; i++)
-		test_cases[i].setupfunc();
+	fd1 = SAFE_OPEN(cleanup, "tfile_1", O_RDWR | O_CREAT, 0666);
+
+	fd2 = SAFE_OPEN(cleanup, "tfile_2", O_RDWR | O_CREAT, 0666);
+
+	SAFE_CLOSE(cleanup, fd2);
+
+	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
+
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 }
 
-void setup1()
+static void cleanup(void)
 {
-	uid_t old_uid;
+	SAFE_SETEUID(NULL, 0);
 
-	if ((fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open(%s, ..) failed",
-			 TEST_FILE1);
-
-	old_uid = geteuid();
-	if (seteuid(0) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "seteuid(0) failed");
-
-	if (fchown(fd1, 0, 0) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "fchown of %s failed",
-			 TEST_FILE1);
-
-	if (seteuid(old_uid) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "seteuid(%d) failed",
-			 old_uid);
-
-}
-
-void setup2()
-{
-	if ((fd2 = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open(%s, ..) failed",
-			 TEST_FILE2);
-	if (close(fd2) == -1)
-		tst_brkm(TBROK, cleanup, "closing %s failed", TEST_FILE2);
-}
-
-void cleanup()
-{
 	TEST_CLEANUP;
 
-	if (close(fd1) == -1)
-		tst_resm(TWARN | TERRNO, "closing %s failed", TEST_FILE1);
+	SAFE_CLOSE(NULL, fd1);
 
 	tst_rmdir();
 }
