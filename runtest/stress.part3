@@ -518,7 +518,7 @@ readlink01A symlink01 -T readlink01
 readlink01 readlink01
 readlink02 readlink02
 readlink03 readlink03
-readlink04 cp -f $LTPROOT/testcases/bin/creat_slink $TMPDIR; readlink04
+readlink04 readlink04
 
 readv01 readv01
 readv02 readv02
