@@ -134,6 +134,7 @@ service telnet
     server          = /usr/sbin/in.telnetd
     server_args     = -n
     no_access       =
+    flags           = IPv6
 }
 EOF
 RC=$?
