@@ -778,6 +778,7 @@
 /setpgid/setpgid01
 /setpgid/setpgid02
 /setpgid/setpgid03
+/setpgid/setpgid03_child
 /setpgrp/setpgrp01
 /setpgrp/setpgrp02
 /setpriority/setpriority01

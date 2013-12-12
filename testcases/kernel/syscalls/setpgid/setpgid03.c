@@ -1,5 +1,6 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,12 +32,17 @@
 #include "test.h"
 #include "usctest.h"
 
+#define TEST_APP "setpgid03_child"
+
 char *TCID = "setpgid03";
 int TST_TOTAL = 1;
+
+static struct tst_checkpoint checkpoint;
 
 static void do_child(void);
 static void setup(void);
 static void cleanup(void);
+static void alarm_handler(int signo);
 
 int main(int ac, char **av)
 {
@@ -76,7 +82,7 @@ int main(int ac, char **av)
 #endif
 		}
 
-		sleep(1);
+		TST_CHECKPOINT_PARENT_WAIT(cleanup, &checkpoint);
 		rval = setpgid(pid, getppid());
 		if (errno == EPERM) {
 			tst_resm(TPASS,
@@ -86,7 +92,7 @@ int main(int ac, char **av)
 				"setpgid FAILED, expect %d, return %d",
 				EPERM, errno);
 		}
-		sleep(1);
+		TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint);
 
 		if (wait(&status) < 0)
 			tst_resm(TFAIL | TERRNO, "wait() for child 1 failed");
@@ -105,13 +111,13 @@ int main(int ac, char **av)
 
 		}
 		if (pid == 0) {
-			if (execlp("sleep", "sleep", "3", NULL) < 0) {
+			if (execlp(TEST_APP, TEST_APP, NULL) < 0)
 				perror("exec failed");
-			}
+
 			exit(127);
 		}
 
-		sleep(1);
+		TST_CHECKPOINT_PARENT_WAIT(cleanup, &checkpoint);
 		rval = setpgid(pid, getppid());
 		if (errno == EACCES) {
 			tst_resm(TPASS,
@@ -120,6 +126,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL,
 				"setpgid FAILED, expect EACCES got %d", errno);
 		}
+		TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint);
 
 		if (wait(&status) < 0)
 			tst_resm(TFAIL | TERRNO, "wait() for child 2 failed");
@@ -133,22 +140,48 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
+static void alarm_handler(int signo)
+{
+	printf("CHILD: checkpoint timed out\n");
+
+	exit(3);
+}
+
 static void do_child(void)
 {
-	int exno = 0;
+	unsigned int timeout = checkpoint.timeout / 1000;
+	struct sigaction sa;
+
+	memset(&sa, 0, sizeof(struct sigaction));
+	sa.sa_handler = alarm_handler;
+
+	if (sigaction(SIGALRM, &sa, NULL) < 0) {
+		printf("CHILD: sigaction() failed, errno: %d\n", errno);
+		exit(1);
+	}
 
 	if (setsid() < 0) {
-		printf("setsid() failed, errno: %d\n", errno);
-		exno = 1;
+		printf("CHILD: setsid() failed, errno: %d\n", errno);
+		exit(2);
 	}
-	sleep(2);
-	exit(exno);
+
+	alarm(timeout);
+	TST_CHECKPOINT_SIGNAL_PARENT(&checkpoint);
+
+	alarm(timeout);
+	TST_CHECKPOINT_CHILD_WAIT(&checkpoint);
+
+	exit(0);
 }
 
 static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	tst_tmpdir();
+
+	TST_CHECKPOINT_INIT(&checkpoint);
+	checkpoint.timeout = 10000;
 
 	umask(0);
 
@@ -157,5 +190,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	tst_rmdir();
+
 	TEST_CLEANUP;
 }
