@@ -1,37 +1,24 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- * 	setpgid03.c
- *
- * DESCRIPTION
- * 	Test to check the error and trivial conditions in setpgid system call
- *
- * USAGE
- * 	setuid03
- *
- * RESTRICTIONS
- * 	This test is not completely written in the LTP format - PLEASE FIX!
+ * Test to check the error and trivial conditions in setpgid system call
  */
-
-#define DEBUG 0
 
 #include <wait.h>
 #include <limits.h>
@@ -47,16 +34,15 @@
 char *TCID = "setpgid03";
 int TST_TOTAL = 1;
 
-void do_child(void);
-void setup(void);
-void cleanup(void);
+static void do_child(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
 	int pid;
-	int rval, fail = 0;
-	int ret, status;
-	int exno = 0;
+	int rval;
+	int status;
 
 	int lc;
 	char *msg;
@@ -68,14 +54,10 @@ int main(int ac, char **av)
 	maybe_run_child(&do_child, "");
 #endif
 
-	/*
-	 * perform global setup for the test
-	 */
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
 //test1:
@@ -92,35 +74,27 @@ int main(int ac, char **av)
 #else
 			do_child();
 #endif
-		} else {	/* parent */
-			sleep(1);
-			rval = setpgid(pid, getppid());
-			if (errno == EPERM) {
-				tst_resm(TPASS, "setpgid SUCCESS to set "
-					 "errno to EPERM");
-			} else {
-				tst_resm(TFAIL, "setpgid FAILED, "
-					 "expect %d, return %d", EPERM, errno);
-				fail = 1;
-			}
-			sleep(1);
-			if ((ret = wait(&status)) > 0) {
-				if (DEBUG)
-					tst_resm(TINFO, "Test {%d} exited "
-						 "status 0x%0x", ret, status);
+		}
 
-				if (status != 0) {
-					fail = 1;
-				}
-			}
+		sleep(1);
+		rval = setpgid(pid, getppid());
+		if (errno == EPERM) {
+			tst_resm(TPASS,
+				"setpgid SUCCESS to set errno to EPERM");
+		} else {
+			tst_resm(TFAIL,
+				"setpgid FAILED, expect %d, return %d",
+				EPERM, errno);
 		}
-		if (DEBUG) {
-			if (fail || exno) {
-				tst_resm(TINFO, "Test test 1: FAILED");
-			} else {
-				tst_resm(TINFO, "Test test 1: PASSED");
-			}
-		}
+		sleep(1);
+
+		if (wait(&status) < 0)
+			tst_resm(TFAIL | TERRNO, "wait() for child 1 failed");
+
+		if (!(WIFEXITED(status)) || (WEXITSTATUS(status) != 0))
+			tst_resm(TFAIL, "child 1 failed with status %d",
+				WEXITSTATUS(status));
+
 //test2:
 		/*
 		 * Value of pid matches the pid of the child process and
@@ -135,51 +109,43 @@ int main(int ac, char **av)
 				perror("exec failed");
 			}
 			exit(127);
-		} else {
-			sleep(1);
-			rval = setpgid(pid, getppid());
-			if (errno == EACCES) {
-				tst_resm(TPASS, "setpgid SUCCEEDED to set "
-					 "errno to EACCES");
-			} else {
-				tst_resm(TFAIL, "setpgid FAILED, expect EACCES "
-					 "got %d", errno);
-			}
-			if ((ret = wait(&status)) > 0) {
-				if (DEBUG)
-					tst_resm(TINFO, "Test {%d} exited "
-						 "status 0x%0x", ret, status);
-				if (status != 0) {
-					fail = 1;
-				}
-			}
 		}
+
+		sleep(1);
+		rval = setpgid(pid, getppid());
+		if (errno == EACCES) {
+			tst_resm(TPASS,
+				"setpgid SUCCEEDED to set errno to EACCES");
+		} else {
+			tst_resm(TFAIL,
+				"setpgid FAILED, expect EACCES got %d", errno);
+		}
+
+		if (wait(&status) < 0)
+			tst_resm(TFAIL | TERRNO, "wait() for child 2 failed");
+
+		if (!(WIFEXITED(status)) || (WEXITSTATUS(status) != 0))
+			tst_resm(TFAIL, "child 2 failed with status %d",
+				WEXITSTATUS(status));
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
-/*
- * do_child()
- */
-void do_child()
+static void do_child(void)
 {
 	int exno = 0;
 
 	if (setsid() < 0) {
-		tst_resm(TFAIL, "setsid failed, errno :%d", errno);
+		printf("setsid() failed, errno: %d\n", errno);
 		exno = 1;
 	}
 	sleep(2);
 	exit(exno);
 }
 
-/*
- * setup()
- * 	performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -189,17 +155,7 @@ void setup(void)
 	TEST_PAUSE;
 }
 
-/*
- * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion
- * 	or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
-
 }
