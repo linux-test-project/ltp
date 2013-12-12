@@ -9,9 +9,9 @@ access02 access02
 access03 access03
 access04 access04
 access05 access05
-access06 access06 -D DEVICE -T DEVICE_FS_TYPE
+access06 access06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
-acct01 acct01 -D DEVICE -T DEVICE_FS_TYPE
+acct01 acct01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
 add_key01 add_key01
 add_key02 add_key02
@@ -55,7 +55,7 @@ chmod02 chmod02
 chmod03 chmod03
 chmod04 chmod04
 chmod05 chmod05
-chmod06 chmod06 -D DEVICE -T DEVICE_FS_TYPE
+chmod06 chmod06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 chmod07 chmod07
 
 chown01 chown01
@@ -64,8 +64,8 @@ chown02 chown02
 chown02_16 chown02_16
 chown03 chown03
 chown03_16 chown03_16
-chown04 chown04 -D DEVICE -T DEVICE_FS_TYPE
-chown04_16 chown04_16 -D DEVICE -T DEVICE_FS_TYPE
+chown04 chown04 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+chown04_16 chown04_16 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 chown05 chown05
 chown05_16 chown05_16
 
@@ -174,7 +174,7 @@ fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
 fchmod05 fchmod05
-fchmod06 fchmod06 -D DEVICE -T DEVICE_FS_TYPE
+fchmod06 fchmod06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 fchmod07 fchmod07
 
 #fchmodat test cases
@@ -437,7 +437,7 @@ inotify_init1_02 inotify_init1_02
 
 inotify01 inotify01
 inotify02 inotify02
-inotify03 inotify03 -D DEVICE -T DEVICE_FS_TYPE
+inotify03 inotify03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 inotify04 inotify04
 
 fanotify01 fanotify01
@@ -582,12 +582,12 @@ modify_ldt02 modify_ldt02
 # to run correctly. Please see individual test
 # code for more information.
 #
-mount01 mount01 -D DEVICE -T DEVICE_FS_TYPE
-mount02 mount02 -D DEVICE -T DEVICE_FS_TYPE
-mount03 mount03 -D DEVICE -T DEVICE_FS_TYPE
-mount04 mount04 -D DEVICE -T DEVICE_FS_TYPE
+mount01 mount01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+mount02 mount02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+mount03 mount03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+mount04 mount04 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 mount05 mount05
-mount06 mount06 -D DEVICE -T DEVICE_FS_TYPE
+mount06 mount06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
 move_pages01 move_pages.sh 01
 move_pages02 move_pages.sh 02
@@ -777,7 +777,7 @@ pwrite03_64 pwrite03_64
 pwrite04_64 pwrite04_64
 
 quotactl01 quotactl01
-quotactl02 quotactl02 -D DEVICE
+quotactl02 quotactl02 -D $LTP_DEV
 
 read01 read01
 read02 read02
@@ -1270,9 +1270,9 @@ unshare02 unshare02
 # to run correctly. Please see individual test
 # code for more information.
 #
-umount01 umount01 -D DEVICE -T DEVICE_FS_TYPE
-umount02 umount02 -D DEVICE -T DEVICE_FS_TYPE
-umount03 umount03 -D DEVICE -T DEVICE_FS_TYPE
+umount01 umount01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+umount02 umount02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+umount03 umount03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
 ustat01 ustat01
 ustat02 ustat02

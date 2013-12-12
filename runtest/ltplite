@@ -66,9 +66,9 @@ access02 access02
 access03 access03
 access04 access04
 access05 access05
-access06 access06 -D DEVICE -T DEVICE_FS_TYPE
+access06 access06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
-acct01 acct01 -D DEVICE -T DEVICE_FS_TYPE
+acct01 acct01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
 adjtimex01 adjtimex01
 adjtimex02 adjtimex02
@@ -111,7 +111,7 @@ chmod07 chmod07
 chown01 chown01
 chown02 chown02
 chown03 export change_owner=$LTPROOT/testcases/bin/change_owner;chown03
-chown04 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chown04 -D DEVICE -T DEVICE_FS_TYPE
+chown04 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chown04 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 chown05 chown05
 
 chroot01 chroot01
@@ -184,7 +184,7 @@ fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
 fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod05
-fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod06 -D DEVICE -T DEVICE_FS_TYPE
+fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 fchmod07 fchmod07
 
 fchown01 fchown01

@@ -80,6 +80,11 @@ setup()
     export TMPBASE="/tmp"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
+    export LTP_DEV=""
+    export LTP_BIG_DEV=""
+    export LTP_DEV_FS_TYPE="ext2"
+    export LTP_BIG_DEV_FS_TYPE="ext2"
+
     [ -d "$LTPROOT/testcases/bin" ] ||
     {
         echo "FATAL: LTP not installed correctly"
@@ -109,8 +114,8 @@ usage()
     [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ] [ -g HTMLFILE]
     [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ]
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
-    -v [ -w CMDFILEADDR ] [ -x INSTANCES ] [ -b DEVICE ] [-B DEVICE_FS_TYPE]
-	[ -F LOOPS,PERCENTAGE ]
+    -v [ -w CMDFILEADDR ] [ -x INSTANCES ] [ -b DEVICE ] [-B LTP_DEV_FS_TYPE]
+	[ -F LOOPS,PERCENTAGE ] [ -z BIG_DEVICE ] [-Z  LTP_BIG_DEV_FS_TYPE]
 
     -a EMAIL_TO     EMAIL all your Reports to this E-mail Address
     -c NUM_PROCS    Run LTP under additional background CPU load
@@ -162,7 +167,11 @@ usage()
     -x INSTANCES    Run multiple instances of this testsuite.
     -b DEVICE       Some tests require an unmounted block device
                     to run correctly.
-    -B DEVICE_FS_TYPE The file system of test block devices.
+    -B LTP_DEV_FS_TYPE The file system of test block devices.
+    -z BIG_DEVICE   Some tests require a big unmounted block device
+                    to run correctly.
+    -Z  LTP_BIG_DEV_FS_TYPE The file system of the big device
+
 
 
     example: ${0##*/} -c 2 -i 2 -m 2,4,10240,1 -D 2,10,10240,1 -p -q  -l /tmp/result-log.$$ -o /tmp/result-output.$$ -C /tmp/result-failed.$$ -d ${PWD}
@@ -206,12 +215,11 @@ main()
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
-    local DEVICE_FS_TYPE="ext2"
     local scenfile=
 
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:c:C:d:D:f:F:ehi:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B: arg
+    while getopts a:c:C:d:D:f:F:ehi:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B:z:Z: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -423,7 +431,9 @@ main()
             sleep 10
             INSTANCES="-x $OPTARG";;
         b) DEVICE=$OPTARG;;
-        B) DEVICE_FS_TYPE=$OPTARG;;
+        B) LTP_DEV_FS_TYPE=$OPTARG;;
+        z) BIG_DEVICE=$OPTARG;;
+        Z) LTP_BIG_DEV_FS_TYPE=$OPTARG;;
         \?) usage;;
         esac
     done
@@ -677,36 +687,28 @@ main()
     }
     }
 
-    if [ -n "$DEVICE" ]; then
-        sed -i "s|DEVICE|$DEVICE|"  ${TMP}/alltests
-        RC=$?
-    else
+    if [ -z "$DEVICE" ]; then
         create_block
-        if [ $? -eq 0 ]; then
-            sed -i "s|DEVICE|$DEVICE|"  ${TMP}/alltests
-            RC=$?
-        else
+        if [ $? -ne 0 ]; then
             echo "no block device was specified on commandline."
             echo "Block device could not be created using loopback device"
             echo "Tests which require block device are disabled."
             echo "You can specify it with option -b"
-            sed -i "/DEVICE/d"  ${TMP}/alltests
-            RC=$?
+	else
+            LTP_DEV=$DEVICE
         fi
+    else
+        LTP_DEV=$DEVICE
     fi
 
-    if [ $RC -ne 0 ]; then
-            echo "FATAL: error during processing alltests file by sed"
-            exit 1
-    fi
-
-    if [ -n "$DEVICE" ]; then
-        sed -i "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|"  ${TMP}/alltests
-    fi
-
-    if [ $? -ne 0 ]; then
-        echo "FATAL: error during processing alltests file by sed"
-        exit 1
+    # here even if the user don't specify a big block device, we
+    # also don't create the big block device.
+    if [ -z "$BIG_DEVICE" ]; then
+        echo "no big block device was specified on commandline."
+        echo "Tests which require a big block device are disabled."
+        echo "You can specify it with option -z"
+    else
+        LTP_BIG_DEV=$BIG_DEVICE
     fi
 
     if [ $RUN_REPEATED -gt 1 ]; then # You need to specify at least more than 1 sequential run, else it runs default
