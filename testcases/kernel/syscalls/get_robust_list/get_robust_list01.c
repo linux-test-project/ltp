@@ -68,6 +68,7 @@ struct robust_list_head {
 };
 
 int exp_enos[] = { ESRCH, EPERM, EFAULT, 0 };
+static unsigned int pid_max;
 
 void setup(void);
 void cleanup(void);
@@ -134,7 +135,7 @@ int main(int argc, char **argv)
 		 * find the task specified by the pid argument.
 		 */
 
-		TEST(ltp_syscall(__NR_get_robust_list, UINT16_MAX,
+		TEST(ltp_syscall(__NR_get_robust_list, pid_max,
 				      (struct robust_list_head *)&head,
 				      &len_ptr));
 
@@ -190,6 +191,7 @@ void setup(void)
 	tst_require_root(NULL);
 
 	TEST_EXP_ENOS(exp_enos);
+	SAFE_FILE_SCANF(NULL, "/proc/sys/kernel/pid_max", "%u", &pid_max);
 
 	TEST_PAUSE;
 }
