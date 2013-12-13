@@ -179,7 +179,12 @@ int sctp_connectx3(int fd, struct sockaddr *addrs, int addrcnt,
 	return __connectx(fd, addrs, addrs_size, id);
 }
 
-__asm__(".symver __sctp_connectx, sctp_connectx@");
-__asm__(".symver sctp_connectx_orig, sctp_connectx@VERS_1");
-__asm__(".symver sctp_connectx2, sctp_connectx@VERS_2");
-__asm__(".symver sctp_connectx3, sctp_connectx@@VERS_3");
+#define __SYMPFX(pfx, sym) #pfx sym
+#define _SYMPFX(pfx, sym) __SYMPFX(pfx, sym)
+#define SYMPFX(sym) _SYMPFX(__USER_LABEL_PREFIX__, #sym)
+#define SYMVER(name, name2) __asm__(".symver " SYMPFX(name) "," SYMPFX(name2))
+
+SYMVER(__sctp_connectx, sctp_connectx@);
+SYMVER(sctp_connectx_orig, sctp_connectx@VERS_1);
+SYMVER(sctp_connectx2, sctp_connectx@VERS_2);
+SYMVER(sctp_connectx3, sctp_connectx@@VERS_3);
