@@ -39,6 +39,7 @@
 static struct sockaddr_in server_addr;
 static struct sockaddr_in fsin1;
 static socklen_t sinlen;
+static socklen_t invalid_sinlen = -1;
 static int sv[2];
 
 static void setup(void);
@@ -65,6 +66,8 @@ struct test_case_t {
 	 "ENOTSOCK"},
 	{-1, (struct sockaddr *)&fsin1, &sinlen, -1, ENOTCONN, setup3, cleanup2,
 	 "ENOTCONN"},
+	{-1, (struct sockaddr *)&fsin1, &invalid_sinlen, -1, EINVAL, setup4,
+	 cleanup4, "EINVAL"},
 #ifndef UCLINUX
 	{-1, (struct sockaddr *)-1, &sinlen, -1, EFAULT, setup4, cleanup4,
 	 "EFAULT"},
@@ -77,7 +80,7 @@ struct test_case_t {
 
 char *TCID = "getpeername01";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EBADF, ENOTSOCK, ENOTCONN, EFAULT, 0 };
+static int exp_enos[] = { EBADF, ENOTSOCK, ENOTCONN, EFAULT, EINVAL, 0 };
 
 int main(int argc, char *argv[])
 {
