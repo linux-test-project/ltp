@@ -85,6 +85,8 @@ main(int argc, char *argv[])
         int sk,pf_class;
 	int error = 0;
 	int uid;
+	int fd, err_no = 0;
+	char filename[21];
 
         struct sockaddr_in bind_addr;
 
@@ -141,10 +143,19 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "bind() with invalid address length - EINVAL");
 
 	/*bind() TEST6: Invalid socket descriptor, ENOTSOCK Expect Error*/
-	error = bind(0, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
-	if (error != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	error = bind(fd, (struct sockaddr *) &bind_addr, sizeof(bind_addr));
+	if (error == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (error != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "bind() with invalid socket "
-			 "descriptor error:%d, errno:%d", error, errno);
+			 "descriptor error:%d, errno:%d", error, err_no);
 
 	tst_resm(TPASS, "bind() with invalid socket descriptor - ENOTSOCK");
 
@@ -247,10 +258,19 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "listen() with bad socket descriptor - EBADF");
 
 	/*listen() TEST14: Invalid socket ENOTSOCK, Expected error*/
-	error = listen(0, 3);
-	if (error != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	error = listen(fd, 3);
+	if (error == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (error != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "listen() with invalid socket "
-			 "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, err_no);
 
 	tst_resm(TPASS, "listen() with invalid socket - ENOTSOCK");
 

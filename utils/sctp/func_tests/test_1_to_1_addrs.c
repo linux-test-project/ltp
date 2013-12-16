@@ -92,6 +92,8 @@ main(int argc, char *argv[])
         char * buffer_rcv;
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
 	struct sockaddr *laddrs, *paddrs;
+	int fd, err_no = 0;
+	char filename[21];
 
         struct sockaddr_in conn_addr,lstn_addr,acpt_addr;
 	struct sockaddr_in *addr;
@@ -176,10 +178,19 @@ main(int argc, char *argv[])
 		 "EBADF");
 
 	/*sctp_getladdrs() TEST2: Invalid socket, ENOTSOCK Expected error*/
-	error = sctp_getladdrs(0, 0, &laddrs);
-	if (error != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	error = sctp_getladdrs(fd, 0, &laddrs);
+	if (error == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (error != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "sctp_getladdrs with invalid socket "
-			 "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, err_no);
 
 	tst_resm(TPASS, "sctp_getladdrs() with invalid socket - ENOTSOCK");
 
@@ -225,10 +236,19 @@ main(int argc, char *argv[])
 		 "EBADF");
 
 	/*sctp_getpaddrs() TEST7: Invalid socket, ENOTSOCK Expected error*/
-	error = sctp_getpaddrs(0, 0, &paddrs);
-	if (error != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	error = sctp_getpaddrs(fd, 0, &paddrs);
+	if (error == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (error != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "sctp_getpaddrs with invalid socket "
-			 "error:%d, errno:%d", error, errno);
+			 "error:%d, errno:%d", error, err_no);
 
 	tst_resm(TPASS, "sctp_getpaddrs() with invalid socket - ENOTSOCK");
 	

@@ -66,6 +66,8 @@ main(int argc, char *argv[])
 	socklen_t len;
 	int error;
 	int pf_class;
+	int fd, err_no = 0;
+	char filename[21];
 
         /* Rather than fflush() throughout the code, set stdout to 
 	 * be unbuffered.  
@@ -208,10 +210,19 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "getsockname on a bad socket descriptor - EBADF");
 
 	/*getsockname(): Invalid socket, ENOTSOCK expected error*/
-	error = getsockname(0, (struct sockaddr *)&clt_local_addr, &len);
-	if (error != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	error = getsockname(fd, (struct sockaddr *)&clt_local_addr, &len);
+	if (error == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (error != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "getsockname on an invalid socket "
-			 "error:%d errno:%d", error, errno);
+			 "error:%d errno:%d", error, err_no);
 
 	tst_resm(TPASS, "getsockname on an invalid socket - ENOTSOCK");
 
@@ -234,10 +245,19 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "getpeername on a bad socket descriptor - EBADF");
 
 	/*getpeername(): Invalid socket, ENOTSOCK expected error*/
-	error = getpeername(0, (struct sockaddr *)&clt_local_addr, &len);
-	if (error != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	error = getpeername(fd, (struct sockaddr *)&clt_local_addr, &len);
+	if (error == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (error != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "getpeername on an invalid socket "
-			 "error:%d errno:%d", error, errno);
+			 "error:%d errno:%d", error, err_no);
 
 	tst_resm(TPASS, "getpeername on an invalid socket - ENOTSOCK");
 

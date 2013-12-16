@@ -72,6 +72,8 @@ main(int argc, char *argv[])
 	socklen_t len;
 	int sk,lstn_sk,clnt_sk[SK_MAX],acpt_sk[SK_MAX],pf_class;
 	int sk1,clnt2_sk;
+	int fd, err_no = 0;
+	char filename[21];
 
         struct sockaddr_in conn_addr,lstn_addr,acpt_addr;
 
@@ -120,10 +122,19 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "connect() with bad socket descriptor - EBADF");
 	
 	/*connect () TEST2: Invalid socket, ENOTSOCK Expected error*/
-	error = connect(0, (const struct sockaddr *) &conn_addr, len);
-	if (error != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	error = connect(fd, (const struct sockaddr *) &conn_addr, len);
+	if (error == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (error != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "connect with invalid socket "
-                         "error:%d, errno:%d", error, errno);
+                         "error:%d, errno:%d", error, err_no);
 
 	tst_resm(TPASS, "connect() with invalid socket - ENOTSOCK");
 

@@ -86,6 +86,8 @@ main(int argc, char *argv[])
         struct sockaddr_in conn_addr,lstn_addr,svr_addr;
         struct iovec iov_rcv;
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
+	int fd, err_no = 0;
+	char filename[21];
 
 	/* Rather than fflush() throughout the code, set stdout to
          * be unbuffered.
@@ -151,10 +153,19 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "sendmsg() with a bad socket descriptor - EBADF");
 	
 	/*sendmsg () TEST2: Invalid socket, ENOTSOCK Expected error*/
-	count = sendmsg(0, &outmessage, flag);
-	if (count != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	count = sendmsg(fd, &outmessage, flag);
+	if (count == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (count != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "sendmsg with invalid socket "
-			 "count:%d, errno:%d", count, errno);
+			 "count:%d, errno:%d", count, err_no);
 
 	tst_resm(TPASS, "sendmsg() with invalid socket - ENOTSOCK");
 

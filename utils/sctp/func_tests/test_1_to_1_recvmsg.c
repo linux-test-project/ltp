@@ -67,6 +67,8 @@ main(int argc, char *argv[])
         socklen_t len;
 	int sk,pf_class,lstn_sk,acpt_sk;
 	int flag = 0;
+	int fd, err_no = 0;
+	char filename[21];
 	struct msghdr inmessage;
         char *message = "hello, world!\n";
 	struct iovec iov_rcv;
@@ -128,10 +130,19 @@ main(int argc, char *argv[])
 	tst_resm(TPASS, "recvmsg() with a bad socket descriptor - EBADF");
 
 	/*recvmsg () TEST2: Invalid socket , ENOTSOCK Expected error*/
-	count = recvmsg(0, &inmessage, flag);
-	if (count != -1 || errno != ENOTSOCK)
+	strcpy(filename, "/tmp/sctptest.XXXXXX");
+	fd = mkstemp(filename);
+	if (fd == -1)
+		tst_brkm(TBROK, tst_exit, "Failed to mkstemp %s: %s",
+				filename, strerror(errno));
+	count = recvmsg(fd, &inmessage, flag);
+	if (count == -1)
+		err_no = errno;
+	close(fd);
+	unlink(filename);
+	if (count != -1 || err_no != ENOTSOCK)
 		tst_brkm(TBROK, tst_exit, "recvmsg with invalid socket "
-			 "count:%d, errno:%d", count, errno);
+			 "count:%d, errno:%d", count, err_no);
 
 	tst_resm(TPASS, "recvmsg() with invalid socket - ENOTSOCK");
 
