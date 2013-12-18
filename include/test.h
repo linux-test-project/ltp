@@ -200,7 +200,7 @@ int self_exec(char *argv0, char *fmt, ...);
 
 /* Functions from lib/cloner.c */
 int ltp_clone(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
-		size_t stack_size, void *stack);
+		size_t stack_size, void *stack, ...);
 int ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg),
 		void *arg, size_t stacksize);
 int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),

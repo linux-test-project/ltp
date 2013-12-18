@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sched.h>
+#include <stdarg.h>
 #include "test.h"
 
 #undef clone			/* we want to use clone() */
@@ -50,20 +51,31 @@ extern int __clone2(int (*fn) (void *arg), void *child_stack_base,
  */
 int
 ltp_clone(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
-	  size_t stack_size, void *stack)
+	  size_t stack_size, void *stack, ...)
 {
 	int ret;
+	pid_t *parent_tid, *child_tid;
+	void *tls;
+	va_list arg_clone;
+
+	va_start(arg_clone, stack);
+	parent_tid = va_arg(arg_clone, pid_t *);
+	tls = va_arg(arg_clone, void *);
+	child_tid = va_arg(arg_clone, pid_t *);
+	va_end(arg_clone);
 
 #if defined(__hppa__) || defined(__metag__)
-	ret = clone(fn, stack, clone_flags, arg);
+	ret = clone(fn, stack, clone_flags, arg, parent_tid, tls, child_tid);
 #elif defined(__ia64__)
-	ret = clone2(fn, stack, stack_size, clone_flags, arg, NULL, NULL, NULL);
+	ret = clone2(fn, stack, stack_size, clone_flags, arg,
+		     parent_tid, tls, child_tid);
 #else
 	/*
 	 * For archs where stack grows downwards, stack points to the topmost
 	 * address of the memory space set up for the child stack.
 	 */
-	ret = clone(fn, (stack ? stack + stack_size : NULL), clone_flags, arg);
+	ret = clone(fn, (stack ? stack + stack_size : NULL), clone_flags, arg,
+		    parent_tid, tls, child_tid);
 #endif
 
 	return ret;
