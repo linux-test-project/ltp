@@ -48,14 +48,14 @@
 #
 #-----------------------------------------------------------------------
 
+LHOST_PID=""
+RHOST_PID=""
+
 do_setup()
 {
-
     TCtmp=${TCtmp:-$LTPROOT/testcases/bin/$TC${EXEC_SUFFIX}$$}
 
-    PID=0
-    RHOST_PID=0
-    SLEEPTIME=${SLEEPTIME:-20}
+    SLEEPTIME=${SLEEPTIME:-5}
     NUMLOOPS=${NUMLOOPS:-25}
     OUTFILE=${OUTFILE:-$TCtmp/${TC}.out}
 
@@ -68,21 +68,18 @@ do_setup()
 
     trap do_cleanup EXIT
 
-    if ! ps -ef | awk '/rwhod/ && $0 !~ /awk/'; then
+    if ! pgrep -x rwhod > /dev/null; then
         tst_resm TINFO "Starting rwhod on $LHOST"
         rwhod || end_testcase "Unable to start rwhod on $LHOST"
-        PID=1
+        LHOST_PID=$(pgrep -x rwhod)
         sleep $SLEEPTIME
     fi
 
-    if ! rsh -n -l root $RHOST ps -ef | awk '/rwhod/ && $0 !~ /awk/'; then
+    if [ "$(rsh -n -l root $RHOST pgrep -x rwhod)" == "" ]; then
         tst_resm TINFO "Starting rwhod on $RHOST"
-        if ! rsh -n -l root $RHOST /usr/sbin/rwhod; then
-            end_testcase "Unable to start rwhod on $RHOST"
-        fi
-        RHOST_PID=$(rsh -n -l root $RHOST ps -ef | awk '/rwhod/ && $0 !~ /awk/ {print $2 ; exit}')
+        rsh -n -l root $RHOST /usr/sbin/rwhod
+        RHOST_PID=$(rsh -n -l root $RHOST pgrep -x rwhod)
         if [ -z "$RHOST_PID" ]; then
-            RHOST_PID=0
             end_testcase "Unable to start rwhod on $RHOST"
         fi
         sleep $SLEEPTIME
@@ -92,7 +89,6 @@ do_setup()
     if [ -z "$RHOSTNAME" ]; then
         end_testcase "Unable to determine RHOSTNAME"
     fi
-
 }
 
 #-----------------------------------------------------------------------
@@ -103,7 +99,6 @@ do_setup()
 
 do_test()
 {
-
     while [ $TST_COUNT -le $NUMLOOPS ]; do
         rwho -a > $OUTFILE
         HOST=`grep $LHOST $OUTFILE | sed 's/[^ ]* *//; s/:.*//' | uniq`
@@ -130,18 +125,17 @@ do_test()
 
 do_cleanup()
 {
-    if [ $PID -ne 0 ]; then
+    if [ -n "$LHOST_PID" ]; then
         tst_resm TINFO "Stopping rwhod on $LHOST"
         killall rwhod
     fi
 
-    if [ $RHOST_PID -ne 0 ]; then
+    if [ -n "$RHOST_PID" ]; then
         tst_resm TINFO "Stopping rwhod on $RHOST"
         rsh -n -l root $RHOST "killall rwhod"
     fi
 
     tst_cleanup
-
 }
 
 #-----------------------------------------------------------------------
@@ -154,4 +148,5 @@ do_cleanup()
 read_opts $*
 do_setup
 do_test
+do_cleanup
 end_testcase
