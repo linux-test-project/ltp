@@ -18,32 +18,14 @@
  */
 
 /*
- * NAME
- *	setrlimit01.c
- *
- * DESCRIPTION
  *	Testcase to check the basic functionality of the setrlimit system call.
- *
- * ALGORITHM
  *	Use the different commands like RLIMIT_NOFILE, RLIMIT_CORE,
  *	RLIMIT_FSIZE, and, RLIMIT_NOFILE, and test for different test
  *	conditions.
  *
- * USAGE:  <for command-line>
- *  msgctl01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	Must run test as root.
  */
+
 #include <sys/types.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
@@ -59,34 +41,32 @@
 char *TCID = "setrlimit01";
 int TST_TOTAL = 1;
 
-void setup(void);
-void cleanup(void);
-void test1(void);
-void test2(void);
-void test3(void);
-void test4(void);
-void sighandler(int);
+static void setup(void);
+static void cleanup(void);
+static void test1(void);
+static void test2(void);
+static void test3(void);
+static void test4(void);
+static void sighandler(int);
 
-char filename[40] = "";
-struct rlimit save_rlim, rlim, rlim1;
-int nofiles, fd, bytes, i, status, fail = 0;
-char *buf = "abcdefghijklmnopqrstuvwxyz";
-pid_t pid;
+static char filename[40] = "";
+static struct rlimit save_rlim, rlim, rlim1;
+static int nofiles, fd, bytes, i, status;
+static char *buf = "abcdefghijklmnopqrstuvwxyz";
+static pid_t pid;
 
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
-	setup();		/* set "tstdir", and "fname" vars */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
 		test1();
@@ -99,15 +79,15 @@ int main(int ac, char **av)
 		}
 		test4();
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
 /*
  * test1 - Test for RLIMIT_NOFILE
  */
-void test1()
+static void test1(void)
 {
 	rlim.rlim_cur = 100;
 	rlim.rlim_max = 100;
@@ -139,7 +119,7 @@ void test1()
 /*
  * test2 - Test for RLIMIT_FSIZE
  */
-void test2()
+static void test2(void)
 {
 	/*
 	 * Since we would be altering the filesize in the child,
@@ -153,9 +133,8 @@ void test2()
 	 */
 	int pipefd[2];
 	fflush(stdout);
-	if (pipe(pipefd) == -1) {
+	if (pipe(pipefd) == -1)
 		tst_brkm(TBROK | TERRNO, NULL, "pipe creation failed");
-	}
 
 	/*
 	 * Spawn a child process, and reduce the filesize to
@@ -164,23 +143,23 @@ void test2()
 	 * output will be saved to the logfile (instead of stdout)
 	 * when the testcase (parent) is run from the driver.
 	 */
-	if ((pid = FORK_OR_VFORK()) == -1) {
+	pid = FORK_OR_VFORK();
+	if (pid == -1)
 		tst_brkm(TBROK, cleanup, "fork() failed");
-	}
 
 	if (pid == 0) {
 		close(pipefd[0]);	/* close unused read end */
 		rlim.rlim_cur = 10;
 		rlim.rlim_max = 10;
-		if ((setrlimit(RLIMIT_FSIZE, &rlim)) == -1) {
+		if ((setrlimit(RLIMIT_FSIZE, &rlim)) == -1)
 			exit(1);
-		}
 
-		if ((fd = creat(filename, 0644)) < 0) {
+		fd = creat(filename, 0644);
+		if (fd < 0)
 			exit(2);
-		}
 
-		if ((bytes = write(fd, buf, 26)) != 10) {
+		bytes = write(fd, buf, 26);
+		if (bytes != 10) {
 			if (write(pipefd[1], &bytes, sizeof(bytes))
 			    < sizeof(bytes)) {
 				perror("child: write to pipe failed");
@@ -192,9 +171,9 @@ void test2()
 	}
 
 	/* parent */
-	if (waitpid(pid, &status, 0) == -1) {
+	if (waitpid(pid, &status, 0) == -1)
 		tst_brkm(TBROK, cleanup, "waitpid() failed");
-	}
+
 	switch (WEXITSTATUS(status)) {
 	case 0:
 		tst_resm(TPASS, "RLIMIT_FSIZE test PASSED");
@@ -208,9 +187,9 @@ void test2()
 		break;
 	case 3:
 		close(pipefd[1]);	/* close unused write end */
-		if (read(pipefd[0], &bytes, sizeof(bytes)) < sizeof(bytes)) {
+		if (read(pipefd[0], &bytes, sizeof(bytes)) < sizeof(bytes))
 			tst_resm(TFAIL, "parent: reading pipe failed");
-		}
+
 		close(pipefd[0]);
 		tst_resm(TFAIL, "setrlimit failed, expected "
 			 "10 got %d", bytes);
@@ -223,11 +202,10 @@ void test2()
 /*
  * test3 - Test for RLIMIT_NPROC
  */
-void test3()
+static void test3(void)
 {
-	if (getrlimit(RLIMIT_NPROC, &save_rlim) < 0) {
+	if (getrlimit(RLIMIT_NPROC, &save_rlim) < 0)
 		tst_brkm(TBROK, cleanup, "getrlimit failed, errno: %d", errno);
-	}
 
 	rlim.rlim_cur = 10;
 	rlim.rlim_max = 10;
@@ -257,7 +235,8 @@ void test3()
 	}
 
 	for (i = 0; i < 20; i++) {
-		if ((pid = FORK_OR_VFORK()) == -1) {
+		pid = FORK_OR_VFORK();
+		if (pid == -1) {
 			if (errno != EAGAIN) {
 				tst_resm(TWARN, "Expected EAGAIN got %d",
 					 errno);
@@ -267,18 +246,17 @@ void test3()
 		}
 	}
 	waitpid(pid, &status, 0);
-	if (WEXITSTATUS(status) != 0) {
+	if (WEXITSTATUS(status) != 0)
 		tst_resm(TFAIL, "RLIMIT_NPROC functionality is not correct");
-	} else {
+	else
 		tst_resm(TPASS, "RLIMIT_NPROC functionality is correct");
-	}
 }
 
 /*
  * test4() - Test for RLIMIT_CORE by forking a child and
  *           having it cause a segfault
  */
-void test4()
+static void test4(void)
 {
 	rlim.rlim_cur = 10;
 	rlim.rlim_max = 10;
@@ -295,9 +273,9 @@ void test4()
 		return;
 	}
 
-	if ((pid = FORK_OR_VFORK()) == -1) {
+	pid = FORK_OR_VFORK();
+	if (pid == -1)
 		tst_brkm(TBROK, cleanup, "fork() failed");
-	}
 
 	if (pid == 0) {		/* child */
 		char *testbuf = NULL;
@@ -320,23 +298,17 @@ void test4()
 /*
  * sighandler() - catch sigsegv when generated by child in test #4
  */
-void sighandler(int sig)
+static void sighandler(int sig)
 {
-	if (sig != SIGSEGV && sig != SIGXFSZ) {
+	if (sig != SIGSEGV && sig != SIGXFSZ)
 		tst_brkm(TBROK, NULL, "caught unexpected signal: %d", sig);
-	}
+
 	_exit(0);
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup()
+static void setup(void)
 {
-	/* must run test as root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must run test as root");
-	}
+	tst_require_root(NULL);
 
 	umask(0);
 
@@ -344,25 +316,14 @@ void setup()
 
 	TEST_PAUSE;
 
-	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
 	sprintf(filename, "setrlimit1.%d", getpid());
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified.
-	 * print errno log if that option was specified
-	 */
 	TEST_CLEANUP;
-
 	unlink(filename);
 	tst_rmdir();
-
 }
