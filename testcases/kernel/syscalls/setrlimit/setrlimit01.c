@@ -300,7 +300,7 @@ static void test4(void)
  */
 static void sighandler(int sig)
 {
-	if (sig != SIGSEGV && sig != SIGXFSZ)
+	if (sig != SIGSEGV && sig != SIGXFSZ && sig != SIGTERM)
 		tst_brkm(TBROK, NULL, "caught unexpected signal: %d", sig);
 
 	_exit(0);
