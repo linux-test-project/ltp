@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <rpc/rpc.h>
+#include "librpc01.h"
 
 int debug = 0;
 int program = 2000333;
@@ -13,17 +14,8 @@ int version = 10;
 char host_name[100];
 long host_address;
 
-struct data {
-	long address;
-	long request_id;
-	long data_length;
-	char *data;
-};
-
 void breakpoint(void);
 void service_request(struct svc_req *rqstp, SVCXPRT * transp);
-int xdr_receive_data(XDR * xdrs, struct data **buffer);
-int xdr_send_data(XDR * xdrs, struct data *buffer);
 
 int main(int argc, char *argv[])
 {
@@ -123,35 +115,6 @@ void service_request(struct svc_req *rqstp, SVCXPRT * transp)
 		svcerr_noproc(transp);
 		return;
 	}
-}
-
-int xdr_receive_data(XDR * xdrs, struct data **buffer)
-{
-	struct data *bp;
-	int i, rc;
-	char *p;
-
-	bp = *buffer = (struct data *)malloc(sizeof(struct data));
-	rc = xdr_long(xdrs, &(bp->address));
-	rc = rc && xdr_long(xdrs, &bp->request_id);
-	rc = rc && xdr_long(xdrs, &bp->data_length);
-	p = (*buffer)->data = (char *)malloc(bp->data_length);
-	for (i = 0; rc && i < bp->data_length; p++, i++)
-		rc = xdr_char(xdrs, p);
-	return (rc);
-}
-
-int xdr_send_data(XDR * xdrs, struct data *buffer)
-{
-	int i, rc;
-	char *p;
-
-	rc = xdr_long(xdrs, &buffer->address);
-	rc = rc && xdr_long(xdrs, &buffer->request_id);
-	rc = rc && xdr_long(xdrs, &buffer->data_length);
-	for (i = 0, p = buffer->data; rc && i < buffer->data_length; i++, p++)
-		rc = xdr_char(xdrs, p);
-	return (rc);
 }
 
 void breakpoint(void)

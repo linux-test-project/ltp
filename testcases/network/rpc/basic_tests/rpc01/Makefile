@@ -28,7 +28,15 @@ include $(top_srcdir)/include/mk/env_pre.mk
 CPPFLAGS		+= -Wno-error
 
 INSTALL_TARGETS		:= rpc01
-
 SUBDIRS			:= datafiles
 
+LIBSRCS			:= $(abs_srcdir)/librpc01.c
+INTERNAL_LIB		:= librpc01.a
+LDFLAGS			+= -L$(abs_srcdir)
+LDLIBS			+= -lrpc01
+
+MAKE_TARGETS		:= rpc1 rpc_server
+$(MAKE_TARGETS): $(INTERNAL_LIB)
+
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
+include $(top_srcdir)/include/mk/lib.mk

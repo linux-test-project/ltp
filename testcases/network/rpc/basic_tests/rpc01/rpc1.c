@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "librpc01.h"
 
 int program = 2000333;
 int version = 10;
@@ -17,15 +18,6 @@ char *file_name = NULL;
 char host_name[100];
 long host_address;
 
-struct data {
-	long address;
-	long request_id;
-	long data_length;
-	char *data;
-};
-
-int xdr_receive_data(XDR *, struct data **);
-int xdr_send_data(XDR *, struct data *);
 void do_compare(int, char *, struct data *, char *);
 void usage_error(char *program_name);
 
@@ -185,35 +177,6 @@ void do_compare(int rpc_rc, char *msg, struct data *buffer, char *ret_data)
 		printf("Data compare for %s returned %d\n", msg, rc);
 		exit(1);
 	}
-}
-
-int xdr_receive_data(XDR * xdrs, struct data **buffer)
-{
-	struct data *bp;
-	int i, rc;
-	char *p;
-
-	bp = *buffer = (struct data *)malloc(sizeof(struct data));
-	rc = xdr_long(xdrs, &(bp->address));
-	rc = rc && xdr_long(xdrs, &bp->request_id);
-	rc = rc && xdr_long(xdrs, &bp->data_length);
-	p = (*buffer)->data = (char *)malloc(bp->data_length);
-	for (i = 0; rc && i < bp->data_length; p++, i++)
-		rc = xdr_char(xdrs, p);
-	return (rc);
-}
-
-int xdr_send_data(XDR * xdrs, struct data *buffer)
-{
-	int i, rc;
-	char *p;
-
-	rc = xdr_long(xdrs, &buffer->address);
-	rc = rc && xdr_long(xdrs, &buffer->request_id);
-	rc = rc && xdr_long(xdrs, &buffer->data_length);
-	for (i = 0, p = buffer->data; rc && i < buffer->data_length; i++, p++)
-		rc = xdr_char(xdrs, p);
-	return (rc);
 }
 
 void usage_error(char *program_name)
