@@ -28,7 +28,7 @@ struct data {
 	char *data;
 };
 
-int xdr_receive_data(XDR *xdrs, struct data **buffer);
-int xdr_send_data(XDR *xdrs, struct data *buffer);
+bool_t xdr_receive_data(XDR *xdrs, struct data **buffer);
+bool_t xdr_send_data(XDR *xdrs, struct data *buffer);
 
 #endif /* __LIBRPC_H__ */

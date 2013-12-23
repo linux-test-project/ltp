@@ -11,8 +11,6 @@
 int debug = 0;
 int program = 2000333;
 int version = 10;
-char host_name[100];
-long host_address;
 
 void breakpoint(void);
 void service_request(struct svc_req *rqstp, SVCXPRT * transp);
@@ -20,7 +18,6 @@ void service_request(struct svc_req *rqstp, SVCXPRT * transp);
 int main(int argc, char *argv[])
 {
 	SVCXPRT *transp;
-	struct hostent *hp;
 	int i, n;
 
 	for (i = 1; i < argc; i++) {
@@ -70,17 +67,13 @@ int main(int argc, char *argv[])
 			close(i);
 		open("/dev/null", O_RDONLY);
 		open("/dev/null", O_WRONLY);
-		dup(1);
+		i = dup(1);
 
 		if ((i = open("/dev/tty", O_RDWR)) >= 0) {
 			ioctl(i, TIOCNOTTY, 0);
 			close(i);
 		}
 	}
-
-	gethostname(host_name, 100);
-	if (hp = gethostbyname(host_name))
-		host_address = *((long *)hp->h_addr_list[0]);
 
 	pmap_unset(program, version);
 	transp = svcudp_create(RPC_ANYSOCK);
@@ -97,7 +90,7 @@ void service_request(struct svc_req *rqstp, SVCXPRT * transp)
 
 	switch (rqstp->rq_proc) {
 	case 0:
-		svc_sendreply(transp, xdr_void, (char *)0);
+		svc_sendreply(transp, (xdrproc_t)xdr_void, NULL);
 		breakpoint();
 		return;
 
@@ -105,8 +98,10 @@ void service_request(struct svc_req *rqstp, SVCXPRT * transp)
 		exit(0);
 
 	case 1:
-		svc_getargs(transp, xdr_receive_data, (unsigned char *)&buffer);
-		svc_sendreply(transp, xdr_send_data, (unsigned char *)buffer);
+		svc_getargs(transp, (xdrproc_t)xdr_receive_data,
+				(char *)&buffer);
+		svc_sendreply(transp, (xdrproc_t)xdr_send_data,
+				(char *)buffer);
 		free(buffer->data);
 		free(buffer);
 		return;

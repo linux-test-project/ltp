@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 	}
 	memset(&server_sin, 0x00, sizeof(server_sin));
 	server_sin.sin_family = AF_INET;
-	memcpy((char *)&server_sin.sin_addr, hp->h_addr, sizeof(hp->h_addr));
+	memcpy(&server_sin.sin_addr, hp->h_addr, sizeof(hp->h_addr));
 
 	if (!file_name) {
 		fprintf(stderr, "file name not given\n");
@@ -120,13 +120,14 @@ int main(int argc, char *argv[])
 		usage_error(argv[0]);
 	}
 
-	buffer.data = (char *)malloc(buffer.data_length);
+	buffer.data = malloc(buffer.data_length);
 	for (i = 0, p = buffer.data; i < buffer.data_length; i++, p++)
 		*p = getc(fp);
 	fclose(fp);
 
-	rc = callrpc(server, program, version, 1, xdr_send_data, &buffer,
-		     xdr_receive_data, &return_buffer);
+	rc = callrpc(server, program, version, 1, (xdrproc_t)xdr_send_data,
+			(char *)&buffer, (xdrproc_t)xdr_receive_data,
+			(char *)&return_buffer);
 	do_compare(rc, "callrpc", &buffer, return_buffer->data);
 
 	server_sin.sin_port = 0;
@@ -140,8 +141,9 @@ int main(int argc, char *argv[])
 	}
 	timeout.tv_usec = 0;
 	timeout.tv_sec = 30;
-	rc = (int)clnt_call(clnt, 1, xdr_send_data, &buffer,
-			    xdr_receive_data, &return_buffer, timeout);
+	rc = (int)clnt_call(clnt, 1, (xdrproc_t)xdr_send_data,
+				(char *)&buffer, (xdrproc_t)xdr_receive_data,
+				(char *)&return_buffer, timeout);
 	clnt_destroy(clnt);
 	do_compare(rc, "udp transport", &buffer, return_buffer->data);
 
@@ -154,8 +156,9 @@ int main(int argc, char *argv[])
 	}
 	timeout.tv_usec = 0;
 	timeout.tv_sec = 30;
-	rc = (int)clnt_call(clnt, 1, xdr_send_data, &buffer,
-			    xdr_receive_data, &return_buffer, timeout);
+	rc = (int)clnt_call(clnt, 1, (xdrproc_t)xdr_send_data,
+				(char *)&buffer, (xdrproc_t)xdr_receive_data,
+				(char *)&return_buffer, timeout);
 	clnt_destroy(clnt);
 	do_compare(rc, "tcp transport", &buffer, return_buffer->data);
 

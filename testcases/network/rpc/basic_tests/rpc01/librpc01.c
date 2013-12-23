@@ -19,7 +19,7 @@
 #include <rpc/xdr.h>
 #include "librpc01.h"
 
-int xdr_receive_data(XDR *xdrs, struct data **buffer)
+bool_t xdr_receive_data(XDR *xdrs, struct data **buffer)
 {
 	struct data *bp;
 	int i, rc;
@@ -29,13 +29,13 @@ int xdr_receive_data(XDR *xdrs, struct data **buffer)
 	rc = xdr_long(xdrs, &(bp->address));
 	rc = rc && xdr_long(xdrs, &bp->request_id);
 	rc = rc && xdr_long(xdrs, &bp->data_length);
-	p = (*buffer)->data = (char *)malloc(bp->data_length);
+	p = (*buffer)->data = malloc(bp->data_length);
 	for (i = 0; rc && i < bp->data_length; p++, i++)
 		rc = xdr_char(xdrs, p);
 	return rc;
 }
 
-int xdr_send_data(XDR *xdrs, struct data *buffer)
+bool_t xdr_send_data(XDR *xdrs, struct data *buffer)
 {
 	int i, rc;
 	char *p;
