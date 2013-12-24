@@ -80,7 +80,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	int val = 1;		/* value for SETVAL */
+	int val;		/* value for SETVAL */
 
 	int i;
 
@@ -96,6 +96,7 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
+		val = 1;
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* initialize the s_buf buffer */
