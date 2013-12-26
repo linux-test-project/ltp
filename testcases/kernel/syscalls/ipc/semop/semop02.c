@@ -19,7 +19,7 @@
 
 /*
  * DESCRIPTION
- *	semop02 - test for E2BIG, EACCES, EFAULT and EINVAL errors
+ *	semop02 - test for E2BIG, EACCES, EFAULT, EINVAL and ERANGE errors
  *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
@@ -29,6 +29,7 @@
  *        conflict with the key from another task.
  */
 
+#define _GNU_SOURCE
 #include <pwd.h>
 #include "test.h"
 #include "safe_macros.h"
@@ -38,7 +39,7 @@ char *TCID = "semop02";
 
 static void semop_verify(int i);
 
-static int exp_enos[] = { E2BIG, EACCES, EFAULT, EINVAL, 0 };
+static int exp_enos[] = { E2BIG, EACCES, EFAULT, EINVAL, ERANGE, 0 };
 int sem_id_1 = -1;	/* a semaphore set with read & alter permissions */
 int sem_id_2 = -1;	/* a semaphore set without read & alter permissions */
 int bad_id = -1;
@@ -50,7 +51,6 @@ int badbuf = -1;
 #define NSOPS	5		/* a resonable number of operations */
 #define	BIGOPS	1024		/* a value that is too large for the number */
 				/* of semop operations that are permitted   */
-
 struct test_case_t {
 	int *semid;
 	struct sembuf *t_sbuf;
@@ -61,7 +61,8 @@ struct test_case_t {
 	{&sem_id_2, (struct sembuf *)&s_buf, NSOPS, EACCES},
 	{&sem_id_1, (struct sembuf *)-1, NSOPS, EFAULT},
 	{&sem_id_1, (struct sembuf *)&s_buf, 0, EINVAL},
-	{&bad_id, (struct sembuf *)&s_buf, NSOPS, EINVAL}
+	{&bad_id, (struct sembuf *)&s_buf, NSOPS, EINVAL},
+	{&sem_id_1, (struct sembuf *)&s_buf, 1, ERANGE}
 };
 
 int TST_TOTAL = ARRAY_SIZE(TC);
@@ -94,6 +95,8 @@ void setup(void)
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 	key_t semkey2;
+	struct seminfo ipc_buf;
+	union semun arr;
 
 	tst_require_root(NULL);
 
@@ -127,6 +130,16 @@ void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "couldn't create semaphore in setup");
 	}
+
+	arr.ipc_buf = &ipc_buf;
+	if (semctl(sem_id_1, 0, IPC_INFO, arr) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "semctl() IPC_INFO failed");
+
+	/* for ERANGE errno test */
+	arr.val = 1;
+	s_buf[0].sem_op = ipc_buf.semvmx;
+	if (semctl(sem_id_1, 0, SETVAL, arr) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "semctl() SETVAL failed");
 }
 
 static void semop_verify(int i)
