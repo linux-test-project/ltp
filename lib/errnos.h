@@ -161,7 +161,9 @@ static const char *strerrnodef(int err)
 		PAIR(EKEYREJECTED)
 		PAIR(EOWNERDEAD)
 		PAIR(ENOTRECOVERABLE)
+#ifdef ERFKILL
 		PAIR(ERFKILL)
+#endif
 #ifdef EHWPOISON
 		PAIR(EHWPOISON)
 #endif
