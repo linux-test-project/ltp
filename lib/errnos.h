@@ -155,12 +155,24 @@ static const char *strerrnodef(int err)
 		PAIR(ENOMEDIUM)
 		PAIR(EMEDIUMTYPE)
 		PAIR(ECANCELED)
+#ifdef ENOKEY
 		PAIR(ENOKEY)
+#endif
+#ifdef EKEYEXPIRED
 		PAIR(EKEYEXPIRED)
+#endif
+#ifdef EKEYREVOKED
 		PAIR(EKEYREVOKED)
+#endif
+#ifdef EKEYREJECTED
 		PAIR(EKEYREJECTED)
+#endif
+#ifdef EOWNERDEAD
 		PAIR(EOWNERDEAD)
+#endif
+#ifdef ENOTRECOVERABLE
 		PAIR(ENOTRECOVERABLE)
+#endif
 #ifdef ERFKILL
 		PAIR(ERFKILL)
 #endif
