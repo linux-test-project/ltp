@@ -33,21 +33,12 @@
 
 #include "test.h"
 #include "usctest.h"
-
+#include "lapi/fcntl.h"
 #include "linux_syscall_numbers.h"
 
 #define PORT_NUM 33333
 
 #define die(msg)	tst_brkm(TBROK|TERRNO, cleanup, msg)
-
-
-/* The following is what we need until glibc gets a wrapper for
-  accept4() */
-
-/* Flags for socket(), socketpair(), accept4() */
-#ifndef O_CLOEXEC
-#define O_CLOEXEC 02000000
-#endif
 
 #ifndef SOCK_CLOEXEC
 #define SOCK_CLOEXEC    O_CLOEXEC

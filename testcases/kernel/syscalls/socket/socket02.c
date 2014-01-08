@@ -64,12 +64,9 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "lapi/fcntl.h"
 
 #define PORT 57392
-
-#ifndef O_CLOEXEC
-#define O_CLOEXEC 02000000
-#endif
 
 /* For Linux these must be the same.  */
 #ifndef SOCK_CLOEXEC

@@ -63,12 +63,9 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "lapi/fcntl.h"
 #include "linux_syscall_numbers.h"
 #include "ltp_signal.h"
-
-#ifndef O_CLOEXEC
-#define O_CLOEXEC 02000000
-#endif
 
 #define SFD_CLOEXEC O_CLOEXEC
 
