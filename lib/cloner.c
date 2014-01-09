@@ -64,18 +64,25 @@ ltp_clone(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
 	child_tid = va_arg(arg_clone, pid_t *);
 	va_end(arg_clone);
 
-#if defined(__hppa__) || defined(__metag__)
-	ret = clone(fn, stack, clone_flags, arg, parent_tid, tls, child_tid);
-#elif defined(__ia64__)
+#if defined(__ia64__)
 	ret = clone2(fn, stack, stack_size, clone_flags, arg,
 		     parent_tid, tls, child_tid);
 #else
+# if defined(__hppa__) || defined(__metag__)
+	/*
+	 * These arches grow their stack up, so don't need to adjust the base.
+	 * XXX: This should be made into a runtime test.
+	 */
+# else
 	/*
 	 * For archs where stack grows downwards, stack points to the topmost
 	 * address of the memory space set up for the child stack.
 	 */
-	ret = clone(fn, (stack ? stack + stack_size : NULL), clone_flags, arg,
-		    parent_tid, tls, child_tid);
+	if (stack)
+		stack += stack_size;
+# endif
+
+	ret = clone(fn, stack, clone_flags, arg, parent_tid, tls, child_tid);
 #endif
 
 	return ret;
