@@ -18,7 +18,7 @@
  */
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+# define _GNU_SOURCE
 #endif
 
 #include <stdio.h>
@@ -29,14 +29,30 @@
 #include <sched.h>
 #include <stdarg.h>
 #include "test.h"
+#include "config.h"
 
 #undef clone			/* we want to use clone() */
 
+/*
+ * The ia64 port has never included a prototype for __clone2(). It was updated
+ * to take eight parameters in glibc commit:
+ *
+ * commit 625f22fc7f8e0d61e3e6cff2c65468b91dbad426
+ * Author: Ulrich Drepper <drepper@redhat.com>
+ * Date:   Mon Mar 3 19:53:27 2003 +0000
+ *
+ * The first release that contained this commit was glibc-2.3.3 which is old
+ * enough to assume that __clone2() takes eight parameters.
+ */
 #if defined(__ia64__)
-#define clone2 __clone2
 extern int __clone2(int (*fn) (void *arg), void *child_stack_base,
-		    size_t child_stack_size, int flags, void *arg,
-		    pid_t *parent_tid, void *tls, pid_t *child_tid);
+                    size_t child_stack_size, int flags, void *arg,
+                    pid_t *parent_tid, void *tls, pid_t *child_tid);
+#endif
+
+#ifndef CLONE_SUPPORTS_7_ARGS
+# define clone(fn, stack, flags, arg, ptid, tls, ctid) \
+         clone(fn, stack, flags, arg)
 #endif
 
 /*
@@ -45,24 +61,14 @@ extern int __clone2(int (*fn) (void *arg), void *child_stack_base,
  *   2. __ia64__ takes bottom of stack and uses clone2
  *   3. all others take top of stack (stack grows down)
  */
-int
-ltp_clone(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
-	  size_t stack_size, void *stack, ...)
+static int
+ltp_clone_(unsigned long flags, int (*fn)(void *arg), void *arg,
+	   size_t stack_size, void *stack, pid_t *ptid, void *tls, pid_t *ctid)
 {
 	int ret;
-	pid_t *parent_tid, *child_tid;
-	void *tls;
-	va_list arg_clone;
-
-	va_start(arg_clone, stack);
-	parent_tid = va_arg(arg_clone, pid_t *);
-	tls = va_arg(arg_clone, void *);
-	child_tid = va_arg(arg_clone, pid_t *);
-	va_end(arg_clone);
 
 #if defined(__ia64__)
-	ret = clone2(fn, stack, stack_size, clone_flags, arg,
-		     parent_tid, tls, child_tid);
+	ret = __clone2(fn, stack, stack_size, flags, arg, ptid, tls, ctid);
 #else
 # if defined(__hppa__) || defined(__metag__)
 	/*
@@ -78,10 +84,37 @@ ltp_clone(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
 		stack += stack_size;
 # endif
 
-	ret = clone(fn, stack, clone_flags, arg, parent_tid, tls, child_tid);
+	ret = clone(fn, stack, flags, arg, ptid, tls, ctid);
 #endif
 
 	return ret;
+}
+
+int ltp_clone(unsigned long flags, int (*fn)(void *arg), void *arg,
+              size_t stack_size, void *stack)
+{
+	return ltp_clone_(flags, fn, arg, stack_size, stack, NULL, NULL, NULL);
+}
+
+int ltp_clone7(unsigned long flags, int (*fn)(void *arg), void *arg,
+               size_t stack_size, void *stack, ...)
+{
+	pid_t *ptid, *ctid;
+	void *tls;
+	va_list arg_clone;
+
+	va_start(arg_clone, stack);
+	ptid = va_arg(arg_clone, pid_t *);
+	tls = va_arg(arg_clone, void *);
+	ctid = va_arg(arg_clone, pid_t *);
+	va_end(arg_clone);
+
+#ifdef CLONE_SUPPORTS_7_ARGS
+	return ltp_clone_(flags, fn, arg, stack_size, stack, ptid, tls, ctid);
+#else
+	errno = ENOSYS;
+	return -1;
+#endif
 }
 
 /*

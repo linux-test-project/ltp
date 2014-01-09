@@ -24,6 +24,8 @@
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
 
+char *TCID = "clone08";
+
 static pid_t ptid, ctid, tgid;
 static void *child_stack;
 
@@ -76,7 +78,6 @@ static struct test_case {
 	 test_clone_thread, child_clone_thread},
 };
 
-char *TCID = "clone08";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
 
 int main(int ac, char **av)
@@ -122,8 +123,12 @@ static void cleanup(void)
 
 static long clone_child(const struct test_case *t, int use_tst)
 {
-	TEST(ltp_clone(t->flags, t->do_child, NULL, CHILD_STACK_SIZE,
+	TEST(ltp_clone7(t->flags, t->do_child, NULL, CHILD_STACK_SIZE,
 		child_stack, &ptid, NULL, &ctid));
+
+	if (TEST_RETURN == -1 && TTERRNO == ENOSYS)
+		tst_brkm(TCONF, cleanup, "clone does not support 7 args");
+
 	if (TEST_RETURN == -1) {
 		if (use_tst) {
 			tst_brkm(TBROK | TTERRNO, cleanup, "%s clone() failed",

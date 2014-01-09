@@ -199,7 +199,9 @@ void maybe_run_child(void (*child)(), char *fmt, ...);
 int self_exec(char *argv0, char *fmt, ...);
 
 /* Functions from lib/cloner.c */
-int ltp_clone(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
+int ltp_clone(unsigned long flags, int (*fn)(void *arg), void *arg,
+		size_t stack_size, void *stack);
+int ltp_clone7(unsigned long flags, int (*fn)(void *arg), void *arg,
 		size_t stack_size, void *stack, ...);
 int ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg),
 		void *arg, size_t stacksize);
