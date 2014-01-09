@@ -28,6 +28,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include "config.h"
 
 /* valid characters for a directory name */
 char chars[] = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
@@ -46,10 +47,15 @@ int parent_fd;
 
 void create_dir(void)
 {
+#ifdef HAVE_MKDIRAT
 	if (mkdirat(parent_fd, name, S_IRWXU)) {
 		perror("mkdir");
 		exit(1);
 	}
+#else
+	fprintf(stderr, "System lacks mkdirat() call.\n");
+	exit(1);
+#endif
 }
 
 /*

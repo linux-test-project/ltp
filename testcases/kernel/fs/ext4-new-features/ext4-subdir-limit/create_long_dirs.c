@@ -30,6 +30,7 @@
 #include <sys/types.h>
 //#define __USE_ATFILE
 #include <sys/stat.h>
+#include "config.h"
 
 #define NAME_LEN	255
 #define NCHARS		62
@@ -64,10 +65,15 @@ void init_name(void)
 
 void create_dir(void)
 {
+#ifdef HAVE_MKDIRAT
 	if (mkdirat(parent_fd, name, S_IRWXU)) {
 		perror("mkdir");
 		exit(1);
 	}
+#else
+	fprintf(stderr, "System lacks mkdirat() call.\n");
+	exit(1);
+#endif
 }
 
 /*
