@@ -14,8 +14,8 @@
  * with this program.
  */
 
+#define _GNU_SOURCE
 #include <errno.h>
-#include <linux/sched.h>
 #include <sched.h>
 #include <sys/wait.h>
 #include "test.h"
