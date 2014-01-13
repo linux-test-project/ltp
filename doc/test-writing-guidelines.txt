@@ -1,0 +1,479 @@
+LTP Test Writing Guidelines
+===========================
+
+This document describes LTP guidelines and LTP test interface and is intended
+for anybody who want to write or modify a LTP testcase. It's not a definitive
+guide and it's not, by any means, a substitute for common sense.
+
+
+1. General Rules
+----------------
+
+1.1 Simplicity
+~~~~~~~~~~~~~~
+
+For all it's worth keep the testcases simple or better as simple as possible.
+The kernel and libc are tricky beasts themselves and the complexity imposed by
+their interfaces is is quite high. Concentrate on the interface you want to
+test and follow the UNIX philosophy. It's a good idea to make the test as
+self-contained as possible too (it should not depend on tools or libraries that
+are not widely available).
+
+Do not reinvent the wheel
+
+* Use LTP standard interface
+* Do roll add custom PASS/FAIL reporting functions
+* Do not write Makefiles from scratch
+  use LTP build system instead, etc.
+* ...
+
+1.2 Code duplication
+~~~~~~~~~~~~~~~~~~~~
+
+Copy & paste is a good servant but very poor master. If you are about to copy a
+large part of the code from one testcase to another, think what would happen if
+you find bug in the code that has been copied all around the tree. What about
+moving it to a library instead?
+
+The same goes for short but complicated parts, whenever you are about to copy &
+paste a syscall wrapper that packs arguments accordingly to machine
+architecture or similarly complicated code, put it into a header instead.
+
+1.3 Coding style
+~~~~~~~~~~~~~~~~
+
+LTP adopted Linux kernel coding style. If you aren't familiar with its rules
+locate 'linux/Documentation/CodingStyle' in the kernel sources and read it,
+it's a well written introduction.
+
+There is also a checkpatch (see 'linux/scripts/checkpatch.pl') script that can
+be used to check your patches before the submission.
+
+NOTE: If checkpatch does not report any problems, the code still may be wrong
+      as the tool only looks for common mistakes.
+
+TODO: bash code coding style?
+
+1.4 Commenting code
+~~~~~~~~~~~~~~~~~~~
+
+Comments can sometimes save you day but they can easily do more harm than
+good. There has been several cases where comments and actual implementation
+were drifting slowly apart which yielded into API misuses and hard to find
+bugs. Remember there is only one thing worse than no documentation, wrong
+documentation.
+
+Generally everybody should write code that is obvious (which unfortunately
+isn't always possible). If there is a code that needs to be commented keep it
+short and to the point. Never ever comment the obvious.
+
+In case of LTP testcases it's customary to add a paragraph with highlevel test
+description somewhere at the beginning of the file (usually right under the GPL
+header). This helps other people to understand the overall goal of the test
+before they dive into the technical details.
+
+1.5 Backward compatibility
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LTP test should be as backward compatible as possible. Think of an enterprise
+distributions with long term support (more than five years since the initial
+release) or of an embedded platform that needs to use several years old
+toolchain supplied by the manufacturer.
+
+Therefore LTP test for more current features should be able to cope with older
+systems. It should at least compile fine and if it's not appropriate for the
+configuration it should return 'TCONF' (see test interface description below).
+
+There are several types of checks we use:
+
+The *configure script* is usually used to detect availability of function
+declarations in system headers. It's used to disable tests at compile time.
+
+The *tst_kvercmp()* which is runtime kernel version detection and comparison
+and is used to disable tests at runtime.
+
+Checking the *errno* value is another type of runtime check. Most of the
+syscalls returns either 'EINVAL' or 'ENOSYS' when syscall was not implemented
+or was disabled upon kernel compilation.
+
+Sometimes it also makes sense to define a few macros instead of creating
+configure test. One example are Linux specific POSIX clock ids in
+'include/lapi/posix_clocks.h'.
+
+1.6 Dealing with messed up legacy code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LTP contains a lot of old and messy code and we are cleaning it up as fast as
+we can but despite the efforts there is still a lot. If you start modifying
+old or a messed up testcase and your changes are more complicated than simple
+typo fixes you should do a cleanup first in a separate patch. It's easier to
+review the patch if you separate the formatting fixes from the changes that
+affects the test behavior.
+
+The same goes for moving files. If you need a rename or move file do it in a
+separate patch.
+
+1.7 License
+~~~~~~~~~~~
+
+Code contributed to LTP should be licensed under GPLv2+ (GNU GPL version 2 or
+any later version).
+
+2. Writing a testcase
+---------------------
+
+2.1 LTP Structure
+~~~~~~~~~~~~~~~~~
+
+The structure of LTP is quite simple. Each test is a binary written either in
+portable shell (no bashishm) or C. The test gets a configuration via
+environment variables and/or command line parameters, it prints additional
+information into the stdout and reports overall success/failure via the exit
+value.
+
+Tests are generally placed under the 'testcases/' directory. Everything that
+is a syscall or (slightly confusingly) glibc syscall wrapper goes under
+'testcases/kernel/syscalls/'. Then there is 'testcases/open_posix_testsuite'
+which is a well maintained fork of the upstream project that has been dead
+since 2005 and also a number of directories with tests for more specific
+features.
+
+2.1.1 Runtest Files
+^^^^^^^^^^^^^^^^^^^
+
+The list of tests to be executed is stored in runtest files under the
+'runtest/' directory. The default set of runtest files to be executed is
+stored in 'scenario_groups/default'. When you add a test you should add
+corresponding entires into some runtest files as well.
+
+For syscall tests (these placed under 'testcases/kernel/syscalls/') use
+'runtest/syscalls' file, for kernel related tests for memory management we
+have 'runtest/mm', etc.
+
+2.1.2 Datafiles
+^^^^^^^^^^^^^^^
+
+If your test needs datafiles to work, these should be generally put into a
+subdirectory named with 'TCID' (see below) and installed into the
+'testcases/data/' directory and later retrieved as
+'$LTPROOT/testcases/data/TCID/...'. See
+'testcases/network/rpc/basic_tests/rpc01/' for example.
+
+NOTE: There may be some convenience interface added later.
+
+2.1.3 Subexecutables
+^^^^^^^^^^^^^^^^^^^^
+
+If you test needs to execute a binary place it in the same directory as the
+testcase and name the file starting with 'TCID_' (again see below). Once the
+test is executed by the framework the path to the directory with all LTP
+binaries is added to the '$PATH' and you can execute it just by it's name.
+
+TIP: If you need to execute such test from the LTP tree you can add path to
+     current directory to '$PATH' manually with: 'PATH="$PATH::" ./foo01'.
+
+
+2.2 Writing a test in C
+~~~~~~~~~~~~~~~~~~~~~~~
+
+2.2.1 Basic test structure
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Let's start with an example, following code is a simple test for a getenv().
+
+[source,c]
+-------------------------------------------------------------------------------
+/*
+ * This is test for basic functionality of getenv().
+ *
+ *  - create an env variable and verify that getenv() can get get it
+ *
+ *  - call getenv() with nonexisting variable name, check that it returns NULL
+ */
+
+#include "test.h"
+
+char *TCID = "getenv01";
+int TST_TOTAL = 1;
+
+#define TEST_ENV "LTP_TEST_ENV"
+#define TEST_NE_ENV "LTP_TEST_THIS_DOES_NOT_EXIST"
+#define TEST_ENV_VAL "val"
+
+static void setup(void)
+{
+	if (setenv(TEST_ENV, TEST_ENV_VAL, 1))
+		tst_brkm(TBROK | TERRNO, NULL, "setenv() failed");
+}
+
+static void test(void)
+{
+	char *ret;
+
+	ret = getenv(TEST_EVN);
+
+	if (ret) {
+		if (!strcmp(ret, TEST_ENV_VAL))
+			tst_resm(TPASS, "getenv(" TEST_ENV ") = '"
+			         TEST_ENV_VAL "'");
+		else
+			tst_resm(TFAIL, "getenv(" TEST_ENV "} = '%s', "
+			         "expected '" TEST_ENV_VAL "'", ret);
+	} else {
+		tst_resm(TFAIL, "getenv(" TEST_ENV ") = NULL");
+	}
+
+	ret = getenv(TEST_NE_ENV);
+
+	if (ret)
+		tst_resm(TFAIL, "getenv(" TEST_NE_ENV ") = '%s'", ret);
+	else
+		tst_resm(TPASS, "getenv(" TEST_NE_ENV ")" = NULL);
+}
+
+int main(int argc, char *argv[])
+{
+	const char *msg;
+	int lc;
+
+	if ((msg = parse_opts(argc, argv, NULL, NULL))
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	setup();
+
+	for (lc = 0; TEST_LOOPING(lc); lc++)
+		test();
+
+	tst_exit();
+}
+-------------------------------------------------------------------------------
+
+Each test must define 'TCID' and 'TST_TOTAL'.
+
+'TCID' defines test name (usually syscall/libcall name + number) and is used
+as a base for temporary directory name (if 'tst_tmpdir()' is used). In most of
+the cases the 'TCID' is the same as test filename (without the extension).
+
+'TST_TOTAL' defines total number of tests.
+
+NOTE: The test should report 'TST_TOTAL' PASSES/FAILS on each iteration.
+
+The overall test initialization is usually done in a 'setup()' function and
+the overall cleanup is done in a 'cleanup()' function. Here 'cleanup()' is
+omitted as the test don't have to clean anything up. Usually it's called right
+before the 'tst_exit()' to do the cleanup and passed to library functions that
+can exit the test execution, for example 'tst_brkm()', so that the test can do
+a cleanup before it exits.
+
+WARNING: Never pass a cleanup function to functions called from cleanup.
+         If you don't see why this is a problem you are not ready to write
+	 a testcase yet.
+
+The 'parse_opts()' parses the test command line arguments, it's important to
+use it even if the test has no (other than default) parameters.
+
+The last important thing is the 'TEST_LOOPING()' macro, each test has standard
+options so that it can be executed N times or for M seconds.
+
+NOTE: The 'test()' function must work correctly even if executed several times
+      from test main loop.
+
+
+2.2.2 Basic test interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,c]
+-------------------------------------------------------------------------------
+void tst_resm(int ttype, char *arg_fmt, ...);
+-------------------------------------------------------------------------------
+
+Printf-like function to report test result, it's mostly used with ttype:
+
+|==============================
+| 'TPASS' | Test has passed.
+| 'TFAIL' | Test has failed.
+| 'TINFO' | General message.
+|==============================
+
+[source,c]
+-------------------------------------------------------------------------------
+void tst_brkm(int ttype, void (*cleanup)(void), char *arg_fmt, ...);
+-------------------------------------------------------------------------------
+
+Printf-like function to report error and exit the test, it can be used with ttype:
+
+|============================================================
+| 'TBROK' | Something has failed in test preparation phase.
+| 'TCONF' | test is not appropriate for current configuration
+            (syscall not implemented, unsupported arch, ...)
+| 'TFAIL' | test has failed
+|============================================================
+
+
+[source,c]
+-------------------------------------------------------------------------------
+void tst_require_root(void (*cleanup)(void));
+-------------------------------------------------------------------------------
+
+Abort the test if it's not executed with root privileges. If needed this should
+be one of the first checks in the test 'setup()'.
+
+WARNING: The cleanup parameter is deprecated and should always be 'NULL'.
+
+
+[source,c]
+-------------------------------------------------------------------------------
+void tst_exit(void);
+-------------------------------------------------------------------------------
+
+Exits the tests, note that this function has no parameters, the PASSES/FAILS
+reported by the 'tst_resm()' interfaces were stored and are used for the exit
+value.
+
+
+2.2.3 Test temporary directory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the test needs to create files (which is common case) it must create a test
+temporary directory in LTP temp directory and work with files only inside of
+this directory. Happily there are easy to use library functions exactly for
+this purpose.
+
+[source,c]
+-------------------------------------------------------------------------------
+void tst_tmpdir(void);
+-------------------------------------------------------------------------------
+
+Creates a directory with a unique name (based on the test 'TCID') under the
+LTP temporary directory (defaults to '/tmp/') and changes the test working
+directory to it. It's usually called from the test 'setup()'.
+
+[source,c]
+-------------------------------------------------------------------------------
+void tst_rmdir(void);
+-------------------------------------------------------------------------------
+
+Removes the directory recursively and is usually called from test 'cleanup()'.
+
+It's important to close all file descriptors before the test calls
+'tst_rmdir()' otherwise the test may break on NFS mounted temp dir (look for
+"NFS silly rename").
+
+2.2.4 Safe macros
+^^^^^^^^^^^^^^^^^
+
+Safe macros aids to simplify error checking in test preparation. Instead of
+calling system API functions, checking for their return value and aborting the
+test if operation has failed you just use corresponding safe macro.
+
+Use them whenever it's possible.
+
+NOTE: You cannot use them from child processes because they call test 'tst_'
+      API.
+
+Instead of writing:
+
+[source,c]
+-------------------------------------------------------------------------------
+	fd = open("/dev/null", O_RDONLY);
+	if (fd < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "opening /dev/null failed");
+-------------------------------------------------------------------------------
+
+You write just:
+
+[source,c]
+-------------------------------------------------------------------------------
+	fd = SAFE_OPEN(cleanup, "/dev/null", O_RDONLY);
+-------------------------------------------------------------------------------
+
+They can also simplify reading and writing of sysfs files, you can, for
+example do:
+
+[source,c]
+-------------------------------------------------------------------------------
+	SAFE_FILE_SCANF(cleanup, "/proc/sys/kernel/pid_max", "%lu", &pid_max);
+-------------------------------------------------------------------------------
+
+See 'include/safe_macros.h', 'include/safe_stdio.h' and
+'include/safe_file_ops.h' for a complete list.
+
+Runtime kernel version detection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,c]
+-------------------------------------------------------------------------------
+int tst_kvercmp(int r1, int r2, int r3);
+
+struct tst_kern_exv {
+        char *dist_name;
+        char *extra_ver;
+};
+
+int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers);
+-------------------------------------------------------------------------------
+
+These two functions are intended for runtime kernel version detection. They
+parse the output from 'uname()' and compare them with the passed values.
+
+The return value is similar to the 'strcmp()' function, i.e. zero means equal,
+negative value means that the kernel is older than than the expected value and
+positive means that it's newer.
+
+The second function 'tst_kvercmp2()' allows for specifying per-vendor table of
+kernel versions as vendors typically backport fixes to their kernels and the
+test may be relevant even if the kernel version does not suggests so. See
+'testcases/kernel/syscalls/inotify/inotify04.c' for example usage.
+
+2.2.5 Fork() and Parent-child synchronization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As LTP tests are written for Linux most of the test involves fork()-ing and
+parent-child process synchronization. But first of all:
+
+WARNING: Usage of test interface ('tst_resm()', 'tst_brkm()', 'tst_exit()',
+         ...) from child process is forbidden.
+
+If you happen to use the interface from a child process the outcome would
+likely be disastrous. Just to name a few examples:
+
+* Imagine the 'cleanup()' is called both from the parent and child, the test
+  will likely fail in 'tst_rmdir()' because the directory was removed
+  already by the child.
+
+* The test failures reported via 'tst_resm()' are not propagated from the
+  child to the parent (how could they, it's just a static variable in the
+  test library). And the test will report success even when the test in child
+  process has reported failure.
+
+* And many more...
+
+Now to the child-parent synchronization. We have a checkpoint library code
+that works even for two different processes, all they need to is to run with
+the same working directory (they use FIFO for synchronization). The checkpoint
+interface provides two pairs or signal and wait functions. One pair to be used
+to signal child from parent and second to signal parent from child.
+
+For the details of the interface look into the 'include/tst_checkpoint.h' and
+'lib/tests/tst_checkpoint_*'.
+
+There is also an interface that allows parent to wait until child is blocked
+in kernel (for example waits in 'pause()') see 'include/tst_process_state.h'
+for more.
+
+2.2.6 Kernel Modules
+^^^^^^^^^^^^^^^^^^^^
+
+There are certain cases where the test needs a kernel part and userspace part,
+happily LTP can build a kernel module and then insert it to the kernel on test
+start for you. See 'testcases/kernel/device-drivers/block' for details.
+
+
+3. Test Contribution Checklist
+------------------------------
+
+1. Test compiles and runs fine (check with -i 10 too)
+2. Checkpatch does not report any errors
+3. The runtest entires are in place
+4. Test files are added into corresponding .gitignore files
+5. Patches apply over the latest git
