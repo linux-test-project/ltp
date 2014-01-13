@@ -199,7 +199,7 @@ void tst_rmdir(void)
 	 */
 	if (TESTDIR[0] != '/') {
 		if (getcwd(current_dir, PATH_MAX) == NULL)
-			strncpy(parent_dir, TESTDIR, sizeof(parent_dir));
+			strncpy(parent_dir, TESTDIR, PATH_MAX);
 		else
 			sprintf(parent_dir, "%s/%s", current_dir, TESTDIR);
 	} else {
