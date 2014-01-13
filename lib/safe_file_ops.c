@@ -162,7 +162,7 @@ void safe_cp(const char *file, const int lineno,
 
 #ifndef HAVE_UTIMENSAT
 
-static void set_time(struct timeval *res, struct timespec *src,
+static void set_time(struct timeval *res, const struct timespec *src,
 			long cur_tv_sec, long cur_tv_usec)
 {
 	switch (src->tv_nsec) {
@@ -211,7 +211,7 @@ void safe_touch(const char *file, const int lineno,
 	}
 
 
-#if HAVE_UTIMENSAT
+#ifdef HAVE_UTIMENSAT
 	ret = utimensat(AT_FDCWD, pathname, times, 0);
 #else
 	if (times == NULL) {
