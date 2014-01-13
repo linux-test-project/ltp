@@ -55,7 +55,11 @@ int main(void)
 	}
 
 	altstack1.ss_flags = 0;
-	altstack1.ss_size = MINSIGSTKSZ - 1;
+	/* use value low enough for all kernel versions
+	 * avoid using MINSIGSTKSZ defined by glibc as it could be different
+	 * from the one in kernel ABI
+	 */
+	altstack1.ss_size = 2048 - 1;
 
 	if (sigaltstack(&altstack1, (stack_t *) 0) != -1) {
 		printf("Test FAILED: Expected return value of -1.\n");

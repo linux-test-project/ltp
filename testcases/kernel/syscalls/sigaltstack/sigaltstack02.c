@@ -99,13 +99,12 @@ struct test_case_t {		/* test case struct. to hold diff. test.conds */
 } Test_cases[] = {
 	{
 	INVAL_FLAGS, SIGSTKSZ, "Invalid Flag value", EINVAL},
-#ifdef __ia64__
+	/* use value low enough for all kernel versions
+	 * avoid using MINSIGSTKSZ defined by glibc as it could be different
+	 * from the one in kernel ABI
+	 */
 	{
-	0, (131027 - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM},
-#else
-	{
-	0, (MINSIGSTKSZ - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM},
-#endif
+	0, (2048 - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM},
 	{
 	0, 0, NULL, 0}
 };
