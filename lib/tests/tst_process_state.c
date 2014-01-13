@@ -28,11 +28,11 @@
 char *TCID = "tst_checkpoint_child";
 int TST_TOTAL = 1;
 
-void handler(int sig __attribute__((unused)))
+void handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
-	int unused;
-	
-	unused = write(2, "Child in sighandler\n", 20);
+	if (write(2, "Child in sighandler\n", 20)) {
+		/* silence build time warnings */
+	}
 }
 
 int main(void)
@@ -45,7 +45,7 @@ int main(void)
 	switch (pid) {
 	case -1:
 		tst_brkm(TBROK | TERRNO, NULL, "Fork failed");
-	break;
+		break;
 	case 0:
 		fprintf(stderr, "Child starts\n");
 
@@ -54,22 +54,22 @@ int main(void)
 		for (i = 0; i < 100000000; i++);
 
 		fprintf(stderr, "Child about to sleep\n");
-		
+
 		pause();
 
 		fprintf(stderr, "Child woken up\n");
 
 		return 0;
-	break;
+		break;
 	default:
 		/* Wait for child to sleep */
 		fprintf(stderr, "Parent waits for child to fall asleep\n");
 		TST_PROCESS_STATE_WAIT(NULL, pid, 'S');
 		fprintf(stderr, "Child sleeping, wake it\n");
 		kill(pid, SIGALRM);
-	break;
+		break;
 	}
-		
+
 	wait(NULL);
 	return 0;
 }

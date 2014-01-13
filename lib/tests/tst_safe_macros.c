@@ -13,14 +13,17 @@ void cleanup(void)
 	tst_resm(TINFO, "got here");
 }
 
-int main(int argc, char **argv)
+int main(int argc LTP_ATTRIBUTE_UNUSED, char **argv)
 {
 	char buf[10];
 	int fds[2];
 
 	buf[9] = '\0';
 
-	system("cp " __FILE__ " " __FILE__ "~");
+	if (system("cp " __FILE__ " " __FILE__ "~")) {
+		fprintf(stderr, "error: could not cp file\n");
+		return 1;
+	}
 	printf("%s\n", SAFE_BASENAME(NULL, *argv));
 	printf("%s\n", SAFE_DIRNAME(NULL, *argv));
 	fd = SAFE_OPEN(cleanup, __FILE__ "~", O_RDWR);
