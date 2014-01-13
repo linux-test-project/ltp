@@ -696,6 +696,8 @@ void tst_brkm(int ttype, void (*func) (void), char *arg_fmt, ...)
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	tst_brk(ttype, NULL, func, "%s", tmesg);
+	/* Shouldn't be reach, but fixes build time warnings about noreturn. */
+	abort();
 }
 
 /*
