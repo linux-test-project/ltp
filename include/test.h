@@ -266,6 +266,13 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
  */
 int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
 
+/* lib/tst_uid_gid.c
+ *
+ * Return the first unused uid and gid
+ */
+uid_t tst_get_unused_uid(void);
+gid_t tst_get_unused_gid(void);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL
