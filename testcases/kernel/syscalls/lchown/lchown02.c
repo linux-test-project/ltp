@@ -1,20 +1,19 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -39,43 +38,9 @@
  * Expected Result:
  *  lchown() should fail with return value -1 and set expected errno.
  *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	if errno set == expected errno
- *		Issue sys call fails with expected return value and errno.
- *	Otherwise,
- *		Issue sys call fails with unexpected errno.
- *   Otherwise,
- *	Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory(s)/file(s) created.
- *
- * Usage:  <for command-line>
- *  lchown02 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *      11/2010 Rewritten by Cyril Hrubis chrubis@suse.cz
- *
- * RESTRICTIONS:
- *
  */
 
 #include <stdio.h>
@@ -93,6 +58,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 #define TEST_USER       "nobody"
 #define MODE_RWX	S_IRWXU | S_IRWXG | S_IRWXO
@@ -105,7 +71,7 @@
 #define TFILE3          "t_file"
 #define SFILE3		"t_file/sfile"
 
-char *TCID = "lchown02";
+TCID_DEFINE(lchown02);
 int TST_TOTAL = 7;
 
 static void setup_eperm(int pos);
@@ -140,8 +106,8 @@ static struct passwd *ltpuser;
 static int exp_enos[] =
     { EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0 };
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 int main(int argc, char *argv[])
 {
@@ -159,7 +125,9 @@ int main(int argc, char *argv[])
 	TEST_EXP_ENOS(exp_enos);
 
 	user_id = geteuid();
+	UID16_CHECK(user_id, lchown, cleanup);
 	group_id = getegid();
+	GID16_CHECK(group_id, lchown, cleanup);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -173,7 +141,7 @@ int main(int argc, char *argv[])
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
-			TEST(lchown(file_name, user_id, group_id));
+			TEST(LCHOWN(cleanup, file_name, user_id, group_id));
 
 			/* Check return code from lchown(2) */
 			if (TEST_RETURN == -1) {
@@ -200,14 +168,7 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- *	Exit the test program on receipt of unexpected signals.
- *	Create a temporary directory and change directory to it.
- *	Invoke individual test setup functions.
- */
-void setup(void)
+static void setup(void)
 {
 	int i;
 
@@ -239,7 +200,7 @@ void setup(void)
  *
  * Create test file and symlink with uid 0.
  */
-void setup_eperm(int pos LTP_ATTRIBUTE_UNUSED)
+static void setup_eperm(int pos LTP_ATTRIBUTE_UNUSED)
 {
 	int fd;
 
@@ -272,7 +233,7 @@ void setup_eperm(int pos LTP_ATTRIBUTE_UNUSED)
  *  Modify the mode permissions on test directory such that process will not
  *  have search permissions on test directory.
  */
-void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
+static void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 {
 	int fd;
 
@@ -337,7 +298,7 @@ static void setup_highaddress(int pos)
  *
  * Create a regular file "t_file" to call lchown(2) on "t_file/sfile" later.
  */
-void setup_enotdir(int pos LTP_ATTRIBUTE_UNUSED)
+static void setup_enotdir(int pos LTP_ATTRIBUTE_UNUSED)
 {
 	int fd;
 
@@ -355,20 +316,13 @@ void setup_enotdir(int pos LTP_ATTRIBUTE_UNUSED)
  * longpath_setup() - setup to create a node with a name length exceeding
  *                    the length of PATH_MAX.
  */
-void setup_longpath(int pos)
+static void setup_longpath(int pos)
 {
 	memset(test_cases[pos].pathname, 'a', PATH_MAX + 1);
 	test_cases[pos].pathname[PATH_MAX + 1] = '\0';
 }
 
-/*
- * cleanup() - Performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *
- *	Remove temporary directory and sub-directories/files under it
- *	created during setup().
- */
-void cleanup(void)
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 

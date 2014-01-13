@@ -125,4 +125,9 @@ int SETREGID(void (cleanup)(void), GID_T rgid, GID_T egid)
 {
 	LTP_CREATE_SYSCALL(setregid, cleanup, rgid, egid);
 }
+
+int LCHOWN(void (cleanup)(void), const char *path, UID_T owner, GID_T group)
+{
+	LTP_CREATE_SYSCALL(lchown, cleanup, path, owner, group);
+}
 #endif /* __LTP_COMPAT_16_H__ */
