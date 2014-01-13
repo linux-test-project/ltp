@@ -39,7 +39,7 @@ TCID_DEFINE(setregid02);
 
 static gid_t neg_one = -1;
 
-static gid_t inval_user = USHRT_MAX - 2;
+static gid_t inval_user;
 static struct passwd *ltpuser;
 
 static struct group nobody, root, bin;
@@ -176,6 +176,10 @@ static void setup(void)
 	GET_GID(root);
 	GET_GID(nobody);
 	GET_GID(bin);
+
+	inval_user = GET_UNUSED_GID();
+	if (inval_user == -1)
+		tst_brkm(TBROK, NULL, "No free gid found");
 
 	TEST_PAUSE;
 }

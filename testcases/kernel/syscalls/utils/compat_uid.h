@@ -48,4 +48,24 @@ UID_SIZE_CHECK(uid_t uid)
 
 #endif
 
+/* for 16-bit syscalls testing we can only
+ * use uids <= 0xFFFE */
+uid_t GET_UNUSED_UID(void)
+{
+	uid_t r;
+	r = tst_get_unused_uid();
+
+#ifdef TST_USE_COMPAT16_SYSCALL
+	if (!UID_SIZE_CHECK(r))
+		return -1;
+
+	/* kernel low2highuid() converts
+	 * 0xFFFF to (uid_t)-1 */
+	if (r == (UID_T)-1)
+		return -1;
+#endif
+
+	return r;
+}
+
 #endif /* __SETUID_COMPAT_16_H__ */

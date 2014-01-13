@@ -70,10 +70,12 @@
 #include <errno.h>
 #include <sys/wait.h>
 
+#include <compat_16.h>
+
 char *TCID = "setresuid03";
 
 uid_t neg_one = -1;
-uid_t inval_user = (USHRT_MAX - 2);
+uid_t inval_user;
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;
@@ -231,6 +233,10 @@ void setup(void)
 
 	bin = *(getpwnam("bin"));
 	bin_pw_uid = bin.pw_uid;
+
+	inval_user = GET_UNUSED_UID();
+	if (inval_user == -1)
+		tst_brkm(TBROK, NULL, "No free uid found");
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
