@@ -1,6 +1,7 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,12 @@
 
 /*
  * Test to check the error and trivial conditions in setpgid system call
+ *
+ * EPERM   -  The calling process, process specified by pid and the target
+ *            process group must be in the same session.
+ *
+ * EACCESS -  Proccess cannot change process group ID of a child after child
+ *            has performed exec()
  */
 
 #include <wait.h>
@@ -42,20 +49,17 @@ static struct tst_checkpoint checkpoint;
 static void do_child(void);
 static void setup(void);
 static void cleanup(void);
-static void alarm_handler(int signo);
 
 int main(int ac, char **av)
 {
-	int pid;
-	int rval;
+	int child_pid;
 	int status;
-
+	int rval;
 	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
@@ -66,31 +70,27 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-//test1:
-		/* sid of the calling process is not same */
-		if ((pid = FORK_OR_VFORK()) == -1) {
+		/* Child is in new session we are not alowed to change pgid */
+		if ((child_pid = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
 
-		if (pid == 0) {	/* child */
+		if (child_pid == 0) {
 #ifdef UCLINUX
-			if (self_exec(av[0], "") < 0) {
+			if (self_exec(av[0], "") < 0)
 				tst_brkm(TBROK, cleanup, "self_exec failed");
-			}
 #else
 			do_child();
 #endif
 		}
 
 		TST_CHECKPOINT_PARENT_WAIT(cleanup, &checkpoint);
-		rval = setpgid(pid, getppid());
-		if (errno == EPERM) {
-			tst_resm(TPASS,
-				"setpgid SUCCESS to set errno to EPERM");
+		rval = setpgid(child_pid, getppid());
+		if (rval == -1 && errno == EPERM) {
+			tst_resm(TPASS, "setpgid failed with EPERM");
 		} else {
 			tst_resm(TFAIL,
-				"setpgid FAILED, expect %d, return %d",
-				EPERM, errno);
+				"retval %d, errno %d, expected errno %d",
+				rval, errno, EPERM);
 		}
 		TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint);
 
@@ -101,16 +101,11 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "child 1 failed with status %d",
 				WEXITSTATUS(status));
 
-//test2:
-		/*
-		 * Value of pid matches the pid of the child process and
-		 * the child process has exec successfully. Error
-		 */
-		if ((pid = FORK_OR_VFORK()) == -1) {
+		/* Child after exec() we are no longer allowed to set pgid */
+		if ((child_pid = FORK_OR_VFORK()) == -1)
 			tst_resm(TFAIL, "Fork failed");
 
-		}
-		if (pid == 0) {
+		if (child_pid == 0) {
 			if (execlp(TEST_APP, TEST_APP, NULL) < 0)
 				perror("exec failed");
 
@@ -118,13 +113,13 @@ int main(int ac, char **av)
 		}
 
 		TST_CHECKPOINT_PARENT_WAIT(cleanup, &checkpoint);
-		rval = setpgid(pid, getppid());
-		if (errno == EACCES) {
-			tst_resm(TPASS,
-				"setpgid SUCCEEDED to set errno to EACCES");
+		rval = setpgid(child_pid, getppid());
+		if (rval == -1 && errno == EACCES) {
+			tst_resm(TPASS, "setpgid failed with EACCES");
 		} else {
 			tst_resm(TFAIL,
-				"setpgid FAILED, expect EACCES got %d", errno);
+				"retval %d, errno %d, expected errno %d",
+				rval, errno, EACCES);
 		}
 		TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint);
 
@@ -140,35 +135,15 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void alarm_handler(int signo)
-{
-	printf("CHILD: checkpoint timed out\n");
-
-	exit(3);
-}
-
 static void do_child(void)
 {
-	unsigned int timeout = checkpoint.timeout / 1000;
-	struct sigaction sa;
-
-	memset(&sa, 0, sizeof(struct sigaction));
-	sa.sa_handler = alarm_handler;
-
-	if (sigaction(SIGALRM, &sa, NULL) < 0) {
-		printf("CHILD: sigaction() failed, errno: %d\n", errno);
-		exit(1);
-	}
-
 	if (setsid() < 0) {
 		printf("CHILD: setsid() failed, errno: %d\n", errno);
 		exit(2);
 	}
 
-	alarm(timeout);
 	TST_CHECKPOINT_SIGNAL_PARENT(&checkpoint);
 
-	alarm(timeout);
 	TST_CHECKPOINT_CHILD_WAIT(&checkpoint);
 
 	exit(0);
