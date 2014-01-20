@@ -141,7 +141,7 @@ creat01 creat01
 creat03 creat03
 creat04 creat04
 creat05 creat05
-creat06 creat06
+creat06 creat06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 creat07 creat07
 creat08 creat08
 creat09 creat09

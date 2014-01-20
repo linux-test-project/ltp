@@ -26,6 +26,8 @@
  *	4.	ENOTDIR
  *	5.	EFAULT
  *	6.	EACCES
+ *	7.	ELOOP
+ *	8.	EROFS
  *
  *
  * ALGORITHM
@@ -41,6 +43,10 @@
  *		and test for EFAULT
  *	6.	Attempt to creat(2) a file in a directory with no
  *		execute permission and test for EACCES
+ *	7.	Attempt to creat(2) a file which links the other file that
+ *		links the former and test for ELOOP
+ *	8.	Attempt to creat(2) a file in a Read-only file system
+ *		and test for EROFS
  */
 
 #include <stdio.h>
@@ -51,6 +57,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/mount.h>
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
@@ -59,37 +66,55 @@
 #define	NO_DIR		"testfile/testdir"
 #define	NOT_DIR		"file1/testdir"
 #define	TEST6_FILE	"dir6/file6"
+#define	TEST7_FILE	"file7"
+#define	TEST8_FILE	"mntpoint/tmp"
 
 #define	MODE1		0444
 #define	MODE2		0666
 
 static void setup(void);
 static void cleanup(void);
+static void test6_setup(void);
+static void test6_cleanup(void);
+static void help(void);
 #if !defined(UCLINUX)
 static void bad_addr_setup(int);
 #endif
 
 static char long_name[PATH_MAX+2];
+static char *fstype = "ext2";
+static char *device;
+static int dflag;
+static int mount_flag;
+static option_t options[] = {
+	{"T:", NULL, &fstype},
+	{"D:", &dflag, &device},
+	{NULL, NULL, NULL}
+};
 static struct test_case_t {
 	char *fname;
 	int mode;
 	int error;
 	void (*setup)();
+	void (*cleanup)(void);
 } TC[] = {
-	{TEST_FILE, MODE1, EISDIR, NULL},
-	{long_name, MODE1, ENAMETOOLONG, NULL},
-	{NO_DIR, MODE1, ENOENT, NULL},
-	{NOT_DIR, MODE1, ENOTDIR, NULL},
+	{TEST_FILE, MODE1, EISDIR, NULL, NULL},
+	{long_name, MODE1, ENAMETOOLONG, NULL, NULL},
+	{NO_DIR, MODE1, ENOENT, NULL, NULL},
+	{NOT_DIR, MODE1, ENOTDIR, NULL, NULL},
 #if !defined(UCLINUX)
-	{NULL, MODE1, EFAULT, bad_addr_setup},
+	{NULL, MODE1, EFAULT, bad_addr_setup, NULL},
 #endif
-	{TEST6_FILE, MODE1, EACCES, NULL},
+	{TEST6_FILE, MODE1, EACCES, test6_setup, test6_cleanup},
+	{TEST7_FILE, MODE1, ELOOP, NULL, NULL},
+	{TEST8_FILE, MODE1, EROFS, NULL, NULL},
 };
 
 char *TCID = "creat06";
 int TST_TOTAL = ARRAY_SIZE(TC);
 static int exp_enos[] = { EISDIR, ENAMETOOLONG, ENOENT, ENOTDIR,
-			  EFAULT, EACCES, 0 };
+			  EFAULT, EACCES, ELOOP, EROFS, 0 };
+static struct passwd *ltpuser;
 
 int main(int ac, char **av)
 {
@@ -97,8 +122,15 @@ int main(int ac, char **av)
 	char *msg;
 	int i;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, options, help);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	if (!dflag) {
+		tst_brkm(TBROK, NULL,
+			 "you must specify the device used for mounting with "
+			 "-D option");
+	}
 
 	setup();
 
@@ -114,6 +146,9 @@ int main(int ac, char **av)
 				TC[i].setup(i);
 
 			TEST(creat(TC[i].fname, TC[i].mode));
+
+			if (TC[i].cleanup != NULL)
+				TC[i].cleanup();
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -137,13 +172,9 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	struct passwd *ltpuser;
-
 	tst_require_root(NULL);
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
-
-	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -158,6 +189,17 @@ static void setup(void)
 	SAFE_TOUCH(cleanup, "file1", MODE1, NULL);
 
 	SAFE_MKDIR(cleanup, "dir6", MODE2);
+
+	SAFE_SYMLINK(cleanup, TEST7_FILE, "test_file_eloop2");
+	SAFE_SYMLINK(cleanup, "test_file_eloop2", TEST7_FILE);
+
+	tst_mkfs(NULL, device, fstype, NULL);
+	SAFE_MKDIR(cleanup, "mntpoint", 0777);
+	if (mount(device, "mntpoint", fstype, MS_RDONLY, NULL) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "mount device:%s failed", device);
+	}
+	mount_flag = 1;
 }
 
 #if !defined(UCLINUX)
@@ -168,9 +210,31 @@ static void bad_addr_setup(int i)
 }
 #endif
 
+static void test6_setup(void)
+{
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
+}
+
+static void test6_cleanup(void)
+{
+	SAFE_SETEUID(cleanup, 0);
+}
+
 static void cleanup(void)
 {
 	TEST_CLEANUP;
 
+	if (mount_flag && umount("mntpoint") < 0) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "umount device:%s failed", device);
+	}
+
 	tst_rmdir();
+}
+
+static void help(void)
+{
+	printf("-T type   : specifies the type of filesystem to be mounted. "
+	       "Default ext2.\n");
+	printf("-D device : device used for mounting.\n");
 }
