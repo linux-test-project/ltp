@@ -170,7 +170,7 @@ test is executed by the framework the path to the directory with all LTP
 binaries is added to the '$PATH' and you can execute it just by it's name.
 
 TIP: If you need to execute such test from the LTP tree you can add path to
-     current directory to '$PATH' manually with: 'PATH="$PATH::" ./foo01'.
+     current directory to '$PATH' manually with: 'PATH="$PATH:$PWD" ./foo01'.
 
 
 2.2 Writing a test in C
