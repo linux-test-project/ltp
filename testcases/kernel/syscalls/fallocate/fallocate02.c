@@ -22,7 +22,7 @@
 /*
  * DESCRIPTION
  *	check fallocate() with various error conditions that should produce
- *	EBADF and EINVAL.
+ *	EBADF, EINVAL and EFBIG.
  */
 
 #include <stdio.h>
@@ -50,6 +50,7 @@
 #define FNAMER			"test_file1"
 #define FNAMEW			"test_file2"
 #define BLOCK_SIZE		1024
+#define MAX_FILESIZE            (LLONG_MAX / 1024)
 
 static void setup(void);
 static void fallocate_verify(int);
@@ -73,6 +74,8 @@ static struct test_data_t {
 	{&fdw, FNAMEW, DEFAULT_TEST_MODE, BLOCKS_WRITTEN, -1, EINVAL},
 	{&fdw, FNAMEW, DEFAULT_TEST_MODE, -(BLOCKS_WRITTEN+OFFSET), 1, EINVAL},
 	{&fdw, FNAMEW, DEFAULT_TEST_MODE, BLOCKS_WRITTEN-OFFSET, 1, 0},
+	{&fdw, FNAMEW, DEFAULT_TEST_MODE, MAX_FILESIZE, 1, EFBIG},
+	{&fdw, FNAMEW, DEFAULT_TEST_MODE, 1, MAX_FILESIZE, EFBIG},
 };
 
 TCID_DEFINE(fallocate02);
