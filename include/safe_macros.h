@@ -181,5 +181,10 @@ long safe_sysconf(const char *file, const int lineno,
 #define SAFE_SYSCONF(cleanup_fn, name) \
 	safe_sysconf(__FILE__, __LINE__, cleanup_fn, name)
 
+int safe_fstat(const char *file, const int lineno, void (cleanup_fn)(void),
+	       int fd, struct stat *buf);
+#define SAFE_FSTAT(cleanup_fn, fd, buf) \
+	safe_fstat(__FILE__, __LINE__, (cleanup_fn), (fd), (buf))
+
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */

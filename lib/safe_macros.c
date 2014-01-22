@@ -455,3 +455,18 @@ long safe_sysconf(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_fstat(const char *file, const int lineno,
+	       void (cleanup_fn)(void), int fd, struct stat *buf)
+{
+	int rval;
+
+	rval = fstat(fd, buf);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "fstat  failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}
