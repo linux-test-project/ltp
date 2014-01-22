@@ -100,12 +100,10 @@
 
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
+#include "fallocate.h"
 
 #define BLOCKS_WRITTEN 12
 
-/* Local Function */
-static inline long fallocate();
 void get_blocksize(int);
 void populate_files(int fd);
 void runtest(int, int, loff_t);
@@ -183,15 +181,9 @@ void get_blocksize(int fd)
 void populate_files(int fd)
 {
 	char buf[buf_size + 1];
-	char *fname;
 	int index;
 	int blocks;
 	int data;
-
-	if (fd == fd_mode1)
-		fname = fname_mode1;
-	else
-		fname = fname_mode2;
 
 	for (blocks = 0; blocks < BLOCKS_WRITTEN; blocks++) {
 		for (index = 0; index < buf_size; index++)
@@ -237,19 +229,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-}
-
-static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
-{
-#if __WORDSIZE == 32
-	return (long)ltp_syscall(__NR_fallocate, fd, mode,
-			     __LONG_LONG_PAIR((off_t) (offset >> 32),
-					      (off_t) offset),
-			     __LONG_LONG_PAIR((off_t) (len >> 32),
-					      (off_t) len));
-#else
-	return ltp_syscall(__NR_fallocate, fd, mode, offset, len);
-#endif
 }
 
 /*****************************************************************************

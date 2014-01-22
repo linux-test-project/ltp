@@ -95,7 +95,7 @@
 
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
+#include "fallocate.h"
 
 #define BLOCKS_WRITTEN 12
 #define HOLE_SIZE_IN_BLOCKS 12
@@ -103,7 +103,6 @@
 #define FALLOC_FL_KEEP_SIZE 1	//Need to be removed once the glibce support is provided
 #define TRUE 0
 
-static inline long fallocate();
 void get_blocksize(int);
 void populate_file();
 void file_seek(off_t);
@@ -216,22 +215,6 @@ void populate_file()
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "Unable to write to %s", fname);
 	}
-}
-
-/*****************************************************************************
- * Wraper function to call fallocate system call
- ******************************************************************************/
-static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
-{
-#if __WORDSIZE == 32
-	return (long)ltp_syscall(__NR_fallocate, fd, mode,
-			     __LONG_LONG_PAIR((off_t) (offset >> 32),
-					      (off_t) offset),
-			     __LONG_LONG_PAIR((off_t) (len >> 32),
-					      (off_t) len));
-#else
-	return ltp_syscall(__NR_fallocate, fd, mode, offset, len);
-#endif
 }
 
 /*****************************************************************************
