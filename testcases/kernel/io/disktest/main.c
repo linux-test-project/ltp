@@ -290,7 +290,7 @@ void *threadedMain(void *vtest)
 	int i;
 	unsigned char *sharedMem;
 
-	extern unsigned long glb_run;
+	extern unsigned short glb_run;
 	extern int signal_action;
 
 	test->args->pid = GETPID();

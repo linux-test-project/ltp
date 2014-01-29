@@ -86,7 +86,7 @@ void *ChildTimer(void *vtest)
 	test_env_t *env = test->env;
 
 	extern int signal_action;
-	extern unsigned long glb_run;
+	extern unsigned short glb_run;
 
 #ifdef _DEBUG
 	PDBG3(DBUG, args, "In timer %lu, %d\n", time(NULL), env->bContinue);
