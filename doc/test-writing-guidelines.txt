@@ -474,7 +474,31 @@ There is also an interface that allows parent to wait until child is blocked
 in kernel (for example waits in 'pause()') see 'include/tst_process_state.h'
 for more.
 
-2.2.8 Kernel Modules
+2.2.8 Signal handlers
+^^^^^^^^^^^^^^^^^^^^^
+
+If you need to use signal handlers keep the code short and simple. Don't
+forget that the signal handler code runs concurently to the rest of your code.
+
+If you call a non-async-safe function from a signal handler (functions that
+have global state or locks, such as malloc(), free(), any operations on FILE
+and many more...) the test will run fine in most of the cases but will
+deadlock occasionally.
+
+Quite common mistake is to call 'exit(3)' from a signal hanler. Note that this
+function is not signal-async-safe as it flushes buffers, etc. If you need to
+exit a test immediately from a signal handler use '_exit(2)' instead.
+
+TIP: See 'man 7 singnal' for the list of signal-async-safe functions.
+
+If signal handler sets a variable it's declaration must be 'volatile'
+otherwise compiler may misoptimize the code because the variable may not be
+changed in the codeflow analysis. There is 'sig_atomic_t' type defined in C99
+but this one DOES NOT imply volatile (it's just a typedef to int). So correct
+type for a flag that is changed from a signal handler is either of 'volatile
+int' or 'volatile sig_atomic_t'.
+
+2.2.9 Kernel Modules
 ^^^^^^^^^^^^^^^^^^^^
 
 There are certain cases where the test needs a kernel part and userspace part,
