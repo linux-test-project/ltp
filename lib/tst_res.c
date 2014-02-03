@@ -548,6 +548,12 @@ void tst_exit(void)
 	exit(T_exitval & ~(TRETR | TINFO | TCONF));
 }
 
+pid_t tst_fork(void)
+{
+	tst_flush();
+	return fork();
+}
+
 /*
  * tst_environ() - Preserve the tst_res() output location, despite any
  *                 changes to stdout.

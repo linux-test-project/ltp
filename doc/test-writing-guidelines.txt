@@ -172,7 +172,6 @@ binaries is added to the '$PATH' and you can execute it just by it's name.
 TIP: If you need to execute such test from the LTP tree you can add path to
      current directory to '$PATH' manually with: 'PATH="$PATH:$PWD" ./foo01'.
 
-
 2.2 Writing a test in C
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -398,8 +397,8 @@ example do:
 See 'include/safe_macros.h', 'include/safe_stdio.h' and
 'include/safe_file_ops.h' for a complete list.
 
-Runtime kernel version detection
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2.2.5 Runtime kernel version detection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -425,7 +424,21 @@ kernel versions as vendors typically backport fixes to their kernels and the
 test may be relevant even if the kernel version does not suggests so. See
 'testcases/kernel/syscalls/inotify/inotify04.c' for example usage.
 
-2.2.5 Fork() and Parent-child synchronization
+2.2.6 Fork()-ing
+^^^^^^^^^^^^^^^^
+
+Be wary that if the test forks and there are were messages printed by tst_*
+interfaces the data may still be in kernel buffers and these are NOT flushed
+automatically.
+
+This happens when 'stdout' gets redirected to a file. In this case the
+'stdout' is not line buffered but block buffered and buffered messages will be
+printed by the parent and by each of the forked children.
+
+To avoid that you should either call 'tst_flush()' right before the 'fork()'
+or use 'tst_fork()' instead.
+
+2.2.7 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As LTP tests are written for Linux most of the test involves fork()-ing and
@@ -461,7 +474,7 @@ There is also an interface that allows parent to wait until child is blocked
 in kernel (for example waits in 'pause()') see 'include/tst_process_state.h'
 for more.
 
-2.2.6 Kernel Modules
+2.2.8 Kernel Modules
 ^^^^^^^^^^^^^^^^^^^^
 
 There are certain cases where the test needs a kernel part and userspace part,

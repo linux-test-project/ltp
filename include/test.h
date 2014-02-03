@@ -131,6 +131,11 @@ int  tst_environ(void);
 void tst_exit(void) LTP_ATTRIBUTE_NORETURN;
 void tst_flush(void);
 
+/*
+ * tst_flush() + fork
+ */
+pid_t tst_fork(void);
+
 extern int tst_count;
 
 /* lib/tst_sig.c */
