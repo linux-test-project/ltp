@@ -30,8 +30,13 @@
 
 /* inotify(7) wrappers */
 
+#if __NR_inotify_init != __LTP__NR_INVALID_SYSCALL
 #define	myinotify_init() \
 	syscall(__NR_inotify_init)
+#else
+#define	myinotify_init() \
+	syscall(__NR_inotify_init1, 0)
+#endif
 
 #define	myinotify_add_watch(fd, pathname, mask)	\
 	syscall(__NR_inotify_add_watch, fd, pathname, mask)
