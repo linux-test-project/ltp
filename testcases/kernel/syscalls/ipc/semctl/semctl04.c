@@ -172,8 +172,7 @@ void do_child()
  */
 void setup(void)
 {
-	/* check for root as user id of process */
-	check_root();
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

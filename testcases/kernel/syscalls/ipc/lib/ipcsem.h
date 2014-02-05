@@ -56,7 +56,6 @@ union semun {
 };
 
 void rm_sema(int sem_id);
-void check_root();
 
 int getipckey();
 int getuserid(char *);

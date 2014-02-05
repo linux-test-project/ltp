@@ -30,7 +30,6 @@
  *	rm_queue()
  *	init_buf()
  *	rm_sema()
- *	check_root()
  *	getuserid()
  *	rm_shm()
  */
@@ -134,16 +133,6 @@ void rm_sema(int sem_id)
 		tst_resm(TINFO, "WARNING: semaphore deletion failed.");
 		tst_resm(TINFO, "This could lead to IPC resource problems.");
 		tst_resm(TINFO, "id = %d", sem_id);
-	}
-}
-
-/*
- * check_root() - make sure the process ID is root
- */
-void check_root()
-{
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, cleanup, "test must be run as root");
 	}
 }
 

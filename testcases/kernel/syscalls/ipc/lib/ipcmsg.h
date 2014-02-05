@@ -57,7 +57,6 @@ key_t msgkey;                   /* the ftok() generated message key */
 extern key_t msgkey;                   /* the ftok() generated message key */
 #endif
 
-void check_root();
 void init_buf(MSGBUF *, int, int);
 void rm_queue(int);
 

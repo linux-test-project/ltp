@@ -155,8 +155,7 @@ static void do_child(void)
  */
 void setup(void)
 {
-	/* check for root as process owner */
-	check_root();
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
