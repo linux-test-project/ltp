@@ -217,7 +217,7 @@ safe_read(const char *file, const int lineno, void (*cleanup_fn) (void),
 	ssize_t rval;
 
 	rval = read(fildes, buf, nbyte);
-	if (rval == -1 || (len_strict && rval != nbyte))
+	if (rval == -1 || (len_strict && (size_t)rval != nbyte))
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "read failed at %s:%d",
 			 file, lineno);
 
@@ -353,7 +353,7 @@ safe_write(const char *file, const int lineno, void (cleanup_fn) (void),
 	ssize_t rval;
 
 	rval = write(fildes, buf, nbyte);
-	if ((len_strict == 0 && rval == -1) || rval != nbyte)
+	if ((len_strict == 0 && rval == -1) || (size_t)rval != nbyte)
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "write failed at %s:%d",
 			 file, lineno);
 

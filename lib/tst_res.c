@@ -185,11 +185,11 @@ struct pair {
 
 #define PAIR(def) [def] = {.name = #def, .val = def},
 
-#define PAIR_LOOKUP(pair_arr, idx) do {               \
-	if (idx < 0 || idx >= ARRAY_SIZE(pair_arr) || \
-	    pair_arr[idx].name == NULL)               \
-		return "???";                         \
-	return pair_arr[idx].name;                    \
+#define PAIR_LOOKUP(pair_arr, idx) do {                       \
+	if (idx < 0 || (size_t)idx >= ARRAY_SIZE(pair_arr) || \
+	    pair_arr[idx].name == NULL)                       \
+		return "???";                                 \
+	return pair_arr[idx].name;                            \
 } while (0)
 
 /*
@@ -378,7 +378,7 @@ static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
 	const char *type;
 	int ttype_result = TTYPE_RESULT(ttype);
 	char message[USERMESG];
-	int size;
+	size_t size;
 
 #ifdef GARRETT_IS_A_PEDANTIC_BASTARD
 	/* Don't execute these APIs unless you have the same pid as main! */

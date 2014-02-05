@@ -619,7 +619,7 @@ void print_help(void (*user_help) ())
 /*********************************************************************
  * STD_opts_help() - return a help string for the STD_OPTIONS.
  *********************************************************************/
-void STD_opts_help()
+void STD_opts_help(void)
 {
 	int i;
 
@@ -632,7 +632,7 @@ void STD_opts_help()
 /*
  * routine to goto when we get the SIGUSR1 for STD_PAUSE
  */
-void STD_go(int sig)
+void STD_go()
 {
 	return;
 }
@@ -644,7 +644,7 @@ void STD_go(int sig)
  * STD_PAUSE is set.
  *
  ***********************************************************************/
-int usc_global_setup_hook()
+int usc_global_setup_hook(void)
 {
 #ifndef UCLINUX
 	int cnt;

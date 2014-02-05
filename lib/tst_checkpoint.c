@@ -45,7 +45,7 @@
 int open_wronly_timed(const char *path, unsigned int timeout)
 {
 	int fd;
-	int i;
+	unsigned int i;
 	int interval = 1; /* how often issue open(O_NONBLOCK), in ms */
 
 	for (i = 0; i < timeout; i += interval) {

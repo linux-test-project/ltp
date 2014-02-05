@@ -30,7 +30,8 @@
 
 int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount)
 {
-	int fd, counter;
+	int fd;
+	size_t counter;
 	char *buf;
 
 	fd = open(path, O_CREAT|O_WRONLY|O_TRUNC, S_IRUSR|S_IWUSR);
@@ -50,7 +51,7 @@ int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount)
 
 	/* Filling the file */
 	for (counter = 0; counter < bcount; counter++) {
-		if (write(fd, buf, bs) != bs) {
+		if (write(fd, buf, bs) != (ssize_t)bs) {
 			free(buf);
 			close(fd);
 			unlink(path);
