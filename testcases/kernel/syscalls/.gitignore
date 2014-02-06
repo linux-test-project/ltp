@@ -375,6 +375,7 @@
 /ipc/msgctl/msgctl10
 /ipc/msgctl/msgctl11
 /ipc/msgctl/msgctl12
+/ipc/msgctl/msgctl13
 /ipc/msgget/msgget01
 /ipc/msgget/msgget02
 /ipc/msgget/msgget03
