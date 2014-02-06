@@ -43,11 +43,9 @@ $trace_logic
 # Initialize local variables
 #-----------------------------------------------------------------------
 TC=${TC:=nfsstress}
-TCbin=${TCbin:=`pwd`}
-TCdat=${TCdat:=$TCbin}
+TCbin=${TCbin:=$LTPROOT/testcases/bin}
 TCsrc=${TCsrc:=$TCbin}
-TCtmp=${TCtmp:=$TCbin/$TC$$}
-TCdump=${TCdump:=$TCbin}
+TCtmp=${TCtmp:=$TMPDIR/$TC$$}
 RHOST=${RHOST:=`hostname|awk {'print $1'}`}
 export TCID=$TC
 export TST_TOTAL=1
