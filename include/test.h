@@ -101,11 +101,13 @@
  * If MAP_PRIVATE really is required, the test can not be run on uClinux.
  */
 #ifdef UCLINUX
-#define FORK_OR_VFORK			vfork
-#define MAP_PRIVATE_EXCEPT_UCLINUX	0
+# define FORK_OR_VFORK			tst_vfork
+# define MAP_PRIVATE_EXCEPT_UCLINUX	0
+/* tst_flush() + vfork() */
+pid_t tst_vfork(void);
 #else
-#define FORK_OR_VFORK			fork
-#define MAP_PRIVATE_EXCEPT_UCLINUX	MAP_PRIVATE
+# define FORK_OR_VFORK			tst_fork
+# define MAP_PRIVATE_EXCEPT_UCLINUX	MAP_PRIVATE
 #endif
 
 /*

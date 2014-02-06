@@ -554,6 +554,12 @@ pid_t tst_fork(void)
 	return fork();
 }
 
+pid_t tst_vfork(void)
+{
+	tst_flush();
+	return vfork();
+}
+
 /*
  * tst_environ() - Preserve the tst_res() output location, despite any
  *                 changes to stdout.
