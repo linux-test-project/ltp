@@ -628,6 +628,7 @@ msgctl08 msgctl08
 msgctl09 msgctl09
 msgctl10 msgctl10
 msgctl11 msgctl11
+msgctl12 msgctl12
 
 msgget01 msgget01
 msgget02 msgget02
