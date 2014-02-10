@@ -35,9 +35,20 @@
 $trace_logic
 
 TC=mc_cmds
-PING_OUT=/tmp/${TC}_out
+TCtmp=${TCtmp:-$TMPDIR/$TC$$}
+PING_OUT=${TCtmp}/PING_OUT
 HOSTNAME=`hostname`
 CLEANUP=${CLEANUP:-ON}
+
+export TCID=$TC
+export TST_TOTAL=1
+export TST_COUNT=1
+
+setup()
+{
+   mkdir -p $TCtmp || { tst_brkm TBROK NULL "Could not create $TCtmp"; exit 1; }
+}
+
 #*******************************************************************************
 #
 # FUNCTION:  do_test
@@ -119,6 +130,7 @@ for eth in $IFNAME
    if [ $? -eq 0 ]
    then
        tst_resm TCONF "Multicast ping disabled on this system (this is normal on post year:2005 kernels)"
+       rm -rf $TCtmp
        exit 0
    fi
 
@@ -158,7 +170,7 @@ do_cleanup()
 {
    $trace_logic
    echo "$this_file: doing $0."
-   rm -rf $PING_OUT
+   rm -rf $TCtmp
 }
 
 #=============================================================================
@@ -193,5 +205,6 @@ end_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #*******************************************************************************
+setup
 do_test
 end_testcase
