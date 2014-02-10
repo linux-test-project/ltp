@@ -114,9 +114,12 @@ incr_tst_count()
     : $(( TST_COUNT += 1 ))
 }
 
-is_root()
+tst_require_root()
 {
-    [ "x$(id -ru)" = x0 ]
+	if [ "x$(id -u)" != "x0" ]; then
+		tst_resm TCONF "You must be root to execute this test"
+		exit 0
+	fi
 }
 
 #

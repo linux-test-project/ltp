@@ -73,7 +73,7 @@ cleanup()
 
 setup()
 {
-	is_root || exit 1
+	tst_require_root
 
 	trap '	disable_traps
 		tst_resm TBROK "Testing is terminating due to a signal"

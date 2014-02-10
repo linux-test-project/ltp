@@ -95,11 +95,7 @@ setup()
 		PATH=$PATH:$LTPBIN
 	fi
 
-	# Must be root
-	if ! is_root; then
-		tst_resm TCONF "You must be root to execute this test"
-		return 1
-	fi
+	tst_require_root
 
 	# create the temporary directory used by this testcase
 	LTPIMA=$LTPTMP/ima
