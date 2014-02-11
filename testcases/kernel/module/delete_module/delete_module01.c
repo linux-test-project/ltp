@@ -14,157 +14,81 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**********************************************************
- *
- *    TEST IDENTIFIER   : delete_module01
- *
- *    EXECUTED BY       : root / superuser
- *
- *    TEST TITLE        : Basic tests for delete_module(2)
- *
- *    TEST CASE TOTAL   : 1
- *
- *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- *
- *    SIGNALS
- *		 Uses SIGUSR1 to pause before test if option set.
- *		 (See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *		 This is a Phase I test for the delete_module(2) system call.
- *		 It is intended to provide limited exposure of the system call.
- *
- *		 Setup:
- *		   Setup signal handling.
- *		   Test caller is superuser
- *		   Pause for SIGUSR1 if option specified.
- *		   Initialize modname for each child process.
- *
- *		 Test:
- *		  Loop if the proper options are given.
- *		   Create module entry
- *		   Execute system call
- *		   Check return code, if system call failed (return=-1),
- *		   	issue a FAIL message with the errno.
- *		   Otherwise, Issue PASS message.
- *
- *		 Cleanup:
- *		   Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- *  delete_module01 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
- *		 		 where,  -c n : Run n copies concurrently.
- *			 		 -e   : Turn on errno logging.
- *		 	 		 -f   : Turn off functional testing
- *		 	 		 -h   : Show help screen
- *		 	 		 -i n : Execute test n times.
- *		 	 		 -I x : Execute test for x seconds.
- *		 	 		 -p   : Pause for SIGUSR1 before
- *		 	 		 	starting test.
- *		 	 		 -P x : Pause for x seconds between
- *		 	 		 	iterations.
- *		 	 		 -t   : Turn on syscall timing.
- *
- ****************************************************************/
 
-#include <libgen.h>
+/*
+ *    AUTHOR: Madhu T L <madhu.tarikere@wipro.com>
+ *
+ *    DESCRIPTION:
+ *    	Basic tests for delete_module(2)
+ *    	1) insmod dummy_del_mod.ko
+ *    	2) call delete_module(2) to remove dummy_del_mod.ko
+ */
+
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
+#include "tst_module.h"
+#include "safe_macros.h"
+#include "linux_syscall_numbers.h"
+
+#define MODULE_NAME	"dummy_del_mod"
+#define MODULE_NAME_KO	"dummy_del_mod.ko"
 
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "delete_module01";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+
+char *TCID = "delete_module01";
+int TST_TOTAL = 1;
+static int module_loaded;
 
 int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
-	char cmd[PATH_MAX];
-	char *module_name = "dummy_del_mod";
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != (char *)NULL) {
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		/* Execute system call */
-		sprintf(cmd, "/sbin/insmod %s/%s.ko", dirname(argv[0]),
-			module_name);
-
-		/* Insmod the module */
-		if ((system(cmd)) != 0) {
-			tst_resm(TBROK, "Failed to load %s module",
-				 module_name);
-			printf("system() failed; cannot test init_module: "
-			       "errno=%i\n", errno);
-			goto EXIT;
+		/* insert dummy_del_mod.ko */
+		if (module_loaded == 0) {
+			tst_module_load(NULL, MODULE_NAME_KO, NULL);
+			module_loaded = 1;
 		}
 
-		/* Test the system call */
-		TEST(delete_module(module_name));
-
-		/* check return code */
+		TEST(ltp_syscall(__NR_delete_module, MODULE_NAME, 0));
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "delete_module() failed to remove"
-				 " module entry for %s, errno=%d : %s",
-				 module_name, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL | TTERRNO, "delete_module() failed to "
+				 "remove module entry for %s ", MODULE_NAME);
 		} else {
-			tst_resm(TPASS, "delete_module() successful, returned"
-				 " %d", TEST_RETURN);
+			tst_resm(TPASS, "delete_module() successful");
+			module_loaded = 0;
 		}
 
 	}
 
-	/* perform global cleanup and exit */
-EXIT:
 	cleanup();
-
+	tst_exit();
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup(void)
+static void setup(void)
 {
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_require_root(NULL);
 
-	/* Check whether we are root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-
-	}
-
-	/*
-	 * if (tst_kvercmp(2,5,48) >= 0)
-	 * tst_brkm(TCONF, NULL, "This test will not work on "
-	 *                              "kernels after 2.5.48");
-	 */
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
-
 }
 
-/*
- * cleanup()
- *	performs all ONE TIME cleanup for this test at
- *	completion or premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+	if (module_loaded == 1)
+		tst_module_unload(NULL, MODULE_NAME_KO);
 	TEST_CLEANUP;
-
 }
