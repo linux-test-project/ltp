@@ -18,36 +18,23 @@
 # description		 : make file for the delete_module(2) testcases	  #
 ###########################################################################
 
+ifneq ($(KERNELRELEASE),)
+
+obj-m := dummy_del_mod.o dummy_del_mod_dep.o
+
+else
+
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CFLAGS			+= -D_GNU_SOURCE
+REQ_VERSION_MAJOR	:= 2
+REQ_VERSION_PATCH	:= 6
 
-LOCALVERSION		?= $(shell uname -r)
+MAKE_TARGETS		:= delete_module01 delete_module02 delete_module03 \
+			   dummy_del_mod.ko dummy_del_mod_dep.ko
 
-MODULEDIR		:= $(DESTDIR)/lib/modules/$(LOCALVERSION)/build
-
-# KBuild make variables...
-MODCFLAGS		+= $(MODULEDIR)
-
-export EXTRA_CFLAGS	:= $(CFLAGS)
-export EXTRA_CPPFLAGS	:= $(CPPFLAGS)
-export EXTRA_LDFLAGS	:= $(LDFLAGS)
-
-obj-m			:= dummy_del_mod.o dummy_del_mod_dep.o
-MODULES			:= dummy_del_mod.ko dummy_del_mod_dep.ko
-
-# New make infra variables...
-CLEAN_TARGETS		:= .dummy* *.mod.c .tmp_version *.ko
-INSTALL_TARGETS		:= $(MODULES)
-MAKE_TARGETS		:= delete_module01 delete_module02 delete_module03
-
+include $(top_srcdir)/include/mk/module.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
-$(MAKE_TARGETS): | make-module
-
-# KBuild will gripe because we redefine CFLAGS if KBUILD_NOPEDANTIC isn't set.
-.PHONY: make-module
-make-module:
-	make -C $(MODULEDIR) KBUILD_NOPEDANTIC=1 SUBDIRS=$(abs_srcdir) modules
+endif

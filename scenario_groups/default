@@ -25,3 +25,4 @@ hugetlb
 commands
 hyperthreading
 kernel_misc
+modules
