@@ -19,6 +19,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/*
+ * Test Description:
+ *  Verify that,
+ *   1. getdents() fails with -1 return value and sets errno to EBADF
+ *      if file descriptor fd is invalid.
+ *   2. getdents() fails with -1 return value and sets errno to EINVAL
+ *      if result buffer is too small.
+ *   3. getdents() fails with -1 return value and sets errno to ENOTDIR
+ *      if file descriptor does not refer to a directory.
+ *   4. getdents() fails with -1 return value and sets errno to ENOENT
+ *      if there is no such directory.
+ *
+ */
+
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -28,14 +43,29 @@
 #include "test.h"
 #include "usctest.h"
 #include "getdents.h"
+#include "safe_macros.h"
+
+#define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
+			 S_IXGRP|S_IROTH|S_IXOTH)
+#define TEST_DIR	"test_dir"
 
 static void cleanup(void);
 static void setup(void);
+static void print_test_result(int err, int exp_errno);
 
 char *TCID = "getdents02";
-int TST_TOTAL = 1;
 
-static int exp_enos[] = { EBADF, 0 };
+static int exp_enos[] = { EBADF, EINVAL, ENOTDIR, ENOENT, 0 };
+
+static void test_ebadf(void);
+static void test_einval(void);
+static void test_enotdir(void);
+static void test_enoent(void);
+
+static void (*testfunc[])(void) = { test_ebadf, test_einval,
+				    test_enotdir, test_enoent };
+
+int TST_TOTAL = ARRAY_SIZE(testfunc);
 
 static int longsyscall;
 
@@ -52,11 +82,8 @@ static void help(void)
 
 int main(int ac, char **av)
 {
-	int lc;
+	int lc, i;
 	char *msg;
-	int rval;
-	struct linux_dirent64 dirp64;
-	struct linux_dirent dirp;
 
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -64,37 +91,10 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		int fd = -5;
-
 		tst_count = 0;
 
-		if (longsyscall)
-			rval = getdents64(fd, &dirp64, sizeof(dirp64));
-		else
-			rval = getdents(fd, &dirp, sizeof(dirp));
-
-		/*
-		 * Hopefully we get an error due to the bad file descriptor.
-		 */
-		if (rval < 0) {
-			TEST_ERROR_LOG(errno);
-
-			switch (errno) {
-			case EBADF:
-				tst_resm(TPASS,
-					 "failed as expected with EBADF");
-			break;
-			case ENOSYS:
-				tst_resm(TCONF, "syscall not implemented");
-			break;
-			default:
-				tst_resm(TFAIL | TERRNO,
-					 "getdents failed unexpectedly");
-			break;
-			}
-		} else {
-			tst_resm(TFAIL, "call succeeded unexpectedly");
-		}
+		for (i = 0; i < TST_TOTAL; i++)
+			(*testfunc[i])();
 	}
 
 	cleanup();
@@ -110,6 +110,96 @@ static void setup(void)
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
+}
+
+static void print_test_result(int err, int exp_errno)
+{
+	TEST_ERROR_LOG(err);
+	if (err == 0) {
+		tst_resm(TFAIL, "call succeeded unexpectedly");
+	} else if  (err == exp_errno) {
+		tst_resm(TPASS, "getdents failed as expected: %s",
+			 strerror(err));
+	} else if (err == ENOSYS) {
+		tst_resm(TCONF, "syscall not implemented");
+	} else {
+		tst_resm(TFAIL, "getdents failed unexpectedly: %s",
+			 strerror(err));
+	}
+}
+
+static void test_ebadf(void)
+{
+	int fd = -5;
+	struct linux_dirent64 dirp64;
+	struct linux_dirent dirp;
+
+	if (longsyscall)
+		getdents64(fd, &dirp64, sizeof(dirp64));
+	else
+		getdents(fd, &dirp, sizeof(dirp));
+
+	print_test_result(errno, EBADF);
+}
+
+static void test_einval(void)
+{
+	int fd;
+	char buf[1];
+
+	fd = SAFE_OPEN(cleanup, ".", O_RDONLY);
+
+	/* Pass one byte long buffer. The result should be EINVAL */
+	if (longsyscall)
+		getdents64(fd, (void *)buf, sizeof(buf));
+	else
+		getdents(fd, (void *)buf, sizeof(buf));
+
+	print_test_result(errno, EINVAL);
+
+	SAFE_CLOSE(cleanup, fd);
+}
+
+static void test_enotdir(void)
+{
+	int fd;
+	struct linux_dirent64 dir64;
+	struct linux_dirent dir;
+
+	fd = SAFE_OPEN(cleanup, "test", O_CREAT | O_RDWR);
+
+	if (longsyscall)
+		getdents64(fd, &dir64, sizeof(dir64));
+	else
+		getdents(fd, &dir, sizeof(dir));
+
+	print_test_result(errno, ENOTDIR);
+
+	SAFE_CLOSE(cleanup, fd);
+}
+
+static void test_enoent(void)
+{
+	int fd;
+	struct linux_dirent64 dir64;
+	struct linux_dirent dir;
+
+	SAFE_MKDIR(cleanup, TEST_DIR, DIR_MODE);
+
+	fd = SAFE_OPEN(cleanup, TEST_DIR, O_DIRECTORY);
+	if (rmdir(TEST_DIR) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "rmdir(%s) failed", TEST_DIR);
+	}
+
+	if (longsyscall)
+		getdents64(fd, &dir64, sizeof(dir64));
+	else
+		getdents(fd, &dir, sizeof(dir));
+
+	print_test_result(errno, ENOENT);
+
+	SAFE_CLOSE(cleanup, fd);
 }
 
 static void cleanup(void)

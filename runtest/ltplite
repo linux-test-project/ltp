@@ -276,8 +276,6 @@ getcwd03 getcwd03
 
 getdents01 getdents01
 getdents02 getdents02
-getdents03 getdents03
-getdents04 getdents04
 
 getdomainname01 getdomainname01
 

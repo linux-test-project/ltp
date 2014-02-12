@@ -326,13 +326,9 @@ getcwd03 getcwd03
 
 getdents01 getdents01
 getdents02 getdents02
-getdents03 getdents03
-getdents04 getdents04
 
 getdents01_64 getdents01 -l
 getdents02_64 getdents02 -l
-getdents03_64 getdents03 -l
-getdents04_64 getdents04 -l
 
 getdomainname01 getdomainname01
 
