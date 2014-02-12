@@ -54,8 +54,6 @@ bindir			:= @bindir@
 libdir			:= @libdir@
 mandir			:= @mandir@
 
-RPMBUILD		?= rpmbuild
-
 CPPFLAGS		:= @CPPFLAGS@
 CFLAGS			:= @CFLAGS@
 LDLIBS			:= @LIBS@

@@ -219,8 +219,4 @@ help:
 menuconfig:
 	@$(SHELL) "$(top_srcdir)/ltpmenu"
 
-## Package
-package:
-	@$(RPMBUILD) -ba ltp-devel.spec
-
 ## End misc targets.

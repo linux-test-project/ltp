@@ -52,8 +52,6 @@ bindir			:= ${exec_prefix}/bin
 libdir			:= ${exec_prefix}/lib
 mandir			:= ${datarootdir}/man
 
-RPMBUILD		?= rpmbuild
-
 CPPFLAGS		:=
 CFLAGS			:= -g -O2
 LDLIBS			:=

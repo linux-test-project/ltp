@@ -7,10 +7,8 @@ AC_CONFIG_FILES([ \
     include/mk/config.mk \
     include/mk/features.mk \
     lib/ltp.pc \
-    ltp-devel.spec \
     m4/Makefile \
     execltp \
-    README.ltp-devel \
 ])
 
 AM_CONDITIONAL(CROSS_COMPILATION, test x$cross_compiling = xyes)
