@@ -223,6 +223,7 @@ fcntl26 fcntl26
 # The tests for these system calls  fcntl27 and fcntl28 are temporarily being disabled
 # fcntl27 fcntl27
 # fcntl28 fcntl28
+fcntl29 fcntl29
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02

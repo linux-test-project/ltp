@@ -23,4 +23,8 @@
 # define O_CLOEXEC 02000000
 #endif
 
+#ifndef F_DUPFD_CLOEXEC
+# define F_DUPFD_CLOEXEC 1030
+#endif
+
 #endif /* __LAPI_FCNTL_H__ */
