@@ -106,9 +106,9 @@ configure test. One example are Linux specific POSIX clock ids in
 LTP contains a lot of old and messy code and we are cleaning it up as fast as
 we can but despite the efforts there is still a lot. If you start modifying
 old or a messed up testcase and your changes are more complicated than simple
-typo fixes you should do a cleanup first in a separate patch. It's easier to
-review the patch if you separate the formatting fixes from the changes that
-affects the test behavior.
+typo fixes you should do a cleanup first (in a separate patch). It's easier to
+review to review the changes if you separate the formatting fixes from the
+changes that affects the test behavior.
 
 The same goes for moving files. If you need a rename or move file do it in a
 separate patch.
@@ -193,7 +193,7 @@ Let's start with an example, following code is a simple test for a getenv().
 #include "test.h"
 
 char *TCID = "getenv01";
-int TST_TOTAL = 1;
+int TST_TOTAL = 2;
 
 #define TEST_ENV "LTP_TEST_ENV"
 #define TEST_NE_ENV "LTP_TEST_THIS_DOES_NOT_EXIST"
@@ -354,7 +354,8 @@ void tst_rmdir(void);
 
 Removes the directory recursively and is usually called from test 'cleanup()'.
 
-It's important to close all file descriptors before the test calls
+It's important to close all file descriptors (that points to files in test
+temporary directory, even the unlinked ones) before the test calls
 'tst_rmdir()' otherwise the test may break on NFS mounted temp dir (look for
 "NFS silly rename").
 
@@ -367,8 +368,8 @@ test if operation has failed you just use corresponding safe macro.
 
 Use them whenever it's possible.
 
-NOTE: You cannot use them from child processes because they call test 'tst_'
-      API.
+NOTE: You cannot use safe macros from a child processes because they call test
+      'tst_' API.
 
 Instead of writing:
 
@@ -396,6 +397,12 @@ example do:
 
 See 'include/safe_macros.h', 'include/safe_stdio.h' and
 'include/safe_file_ops.h' for a complete list.
+
+NOTE: It's wise NOT to use safe macros in test cleanup(). This is because
+      all safe macros calls tst_brkm() which exits the test immediately which
+      may exit the cleanup() prematurely. (Actually this is hacked around in
+      the test library at the moment so that the cleanup() will finish, but
+      the hack will be removed in the future).
 
 2.2.5 Runtime kernel version detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -505,6 +512,23 @@ There are certain cases where the test needs a kernel part and userspace part,
 happily LTP can build a kernel module and then insert it to the kernel on test
 start for you. See 'testcases/kernel/device-drivers/block' for details.
 
+2.2.10 Usefull macros
+^^^^^^^^^^^^^^^^^^^^^
+
+[source,c]
+-------------------------------------------------------------------------------
+ARRAY_SIZE(arr)
+-------------------------------------------------------------------------------
+
+Returns the size of statically defined array, i.e.
+'(sizeof(arr) / sizeof(*arr))'
+
+[source,c]
+-------------------------------------------------------------------------------
+LTP_ALIGN(x, a)
+-------------------------------------------------------------------------------
+
+Aligns the x to be next multiple of a. The a must be power of 2.
 
 3. Test Contribution Checklist
 ------------------------------
