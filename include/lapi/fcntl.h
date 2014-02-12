@@ -27,4 +27,12 @@
 # define F_DUPFD_CLOEXEC 1030
 #endif
 
+#ifndef F_SETPIPE_SZ
+#define F_SETPIPE_SZ 1031
+#endif
+
+#ifndef F_GETPIPE_SZ
+#define F_GETPIPE_SZ 1032
+#endif
+
 #endif /* __LAPI_FCNTL_H__ */

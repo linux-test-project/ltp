@@ -216,6 +216,8 @@
 /fcntl/fcntl28_64
 /fcntl/fcntl29
 /fcntl/fcntl29_64
+/fcntl/fcntl30
+/fcntl/fcntl30_64
 /fdatasync/fdatasync01
 /fdatasync/fdatasync02
 /flock/flock01
