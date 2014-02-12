@@ -277,6 +277,81 @@ options so that it can be executed N times or for M seconds.
 NOTE: The 'test()' function must work correctly even if executed several times
       from test main loop.
 
+A word about the cleanup() callback
++++++++++++++++++++++++++++++++++++
+
+There are a few rules that needs to be followed in order to write correct
+cleanup() callback.
+
+1. Don't call callback() from within the callback().
+(This includes passing callback pointer to library 'tst_' functions.)
+
+2. Make sure to uninitialize resources in the inverser order they were
+   initialized. (Some of the steps may not depend on others and everything
+   will work if there were swapped but let's keep it in order.)
+
+3. Uninitialize only resources that were initialized.
+
+The third rule needs a bit more detailed discussion. Consider, for example,
+test setup below which is example of a setup that prepares temporary
+directory, two file descriptors and allocates a buffer.
+
+[source,c]
+-------------------------------------------------------------------------------
+static int fd0, fd1;
+static void *buf;
+#define BUFSIZE (1024 * 1024)
+
+static void setup(void)
+{
+	tst_require_root();
+	tst_tmpdir();
+
+	fd0 = SAFE_OPEN(cleanup, "test_file1", O_CREAT | O_RDWR, 0666);
+	SAFE_UNLINK(cleanup, "test_file1");
+	fd1 = SAFE_OPEN(cleanup, "test_file2", O_CREAT | O_RDWR, 0666);
+	SAFE_UNLINK(cleanup, "test_file2");
+
+	buf = SAFE_MALLOC(cleanup, BUFSIZE);
+}
+-------------------------------------------------------------------------------
+
+In this case the 'cleanup()' function may be entered in five different states:
+
+* The first 'SAFE_OPEN()' has failed, tempororary directory is created
+  no files are open and +fd0 == -1+, +fd1 == 0+ and +buf == NULL+.
+
+* The first 'SAFE_UNLINK()' has failed, +fd0+ holds file descriptor and
+  +fd1 == 0+.
+
+* The second SAFE_OPEN() has failed, +fd0+ holds file descriptor and
+  +fd1 == -1+.
+
+* The second 'SAFE_UNLINK()' or 'SAFE_MALLOC()' has failed and both 'fd0' and
+  'fd1' holds file descriptors, +buf+ is still +NULL+.
+
+* The 'cleanup()' was called at the end of the test, all +fd0+, +fd1+ and
+  +buf+ are initialized.
+
+The 'cleanup()' functions should be able to cope with all scenarios. In this
+case following code will do:
+
+[source,c]
+-------------------------------------------------------------------------------
+static void cleanup(void)
+{
+	if (buf)
+		free(buf);
+
+	if (fd1 > 0)
+		close(fd1);
+
+	if (fd0 > 0)
+		close(fd0);
+
+	tst_rmdir();
+}
+-------------------------------------------------------------------------------
 
 2.2.2 Basic test interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
