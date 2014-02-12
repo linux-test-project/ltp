@@ -115,7 +115,7 @@ extern void cleanup()
 /******************************************************************************/
 void setup()
 {
-	tst_require_root(tst_exit);
+	tst_require_root(NULL);
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;
