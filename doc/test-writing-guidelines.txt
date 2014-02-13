@@ -13,11 +13,11 @@ guide and it's not, by any means, a substitute for common sense.
 ~~~~~~~~~~~~~~
 
 For all it's worth keep the testcases simple or better as simple as possible.
-The kernel and libc are tricky beasts themselves and the complexity imposed by
-their interfaces is is quite high. Concentrate on the interface you want to
-test and follow the UNIX philosophy. It's a good idea to make the test as
-self-contained as possible too (it should not depend on tools or libraries that
-are not widely available).
+The kernel and libc are tricky beasts and the complexity imposed by their
+interfaces is is quite high. Concentrate on the interface you want to test and
+follow the UNIX philosophy. It's a good idea to make the test as
+self-contained as possible too (it should not depend on tools or libraries
+that are not widely available).
 
 Do not reinvent the wheel
 
@@ -86,7 +86,7 @@ configuration it should return 'TCONF' (see test interface description below).
 
 There are several types of checks we use:
 
-The *configure script* is usually used to detect availability of function
+The *configure script* is usually used to detect availability of a function
 declarations in system headers. It's used to disable tests at compile time.
 
 The *tst_kvercmp()* which is runtime kernel version detection and comparison
@@ -107,8 +107,8 @@ LTP contains a lot of old and messy code and we are cleaning it up as fast as
 we can but despite the efforts there is still a lot. If you start modifying
 old or a messed up testcase and your changes are more complicated than simple
 typo fixes you should do a cleanup first (in a separate patch). It's easier to
-review to review the changes if you separate the formatting fixes from the
-changes that affects the test behavior.
+review the changes if you separate the formatting fixes from the changes that
+affects the test behavior.
 
 The same goes for moving files. If you need a rename or move file do it in a
 separate patch.
@@ -132,7 +132,7 @@ information into the stdout and reports overall success/failure via the exit
 value.
 
 Tests are generally placed under the 'testcases/' directory. Everything that
-is a syscall or (slightly confusingly) glibc syscall wrapper goes under
+is a syscall or (slightly confusingly) libc syscall wrapper goes under
 'testcases/kernel/syscalls/'. Then there is 'testcases/open_posix_testsuite'
 which is a well maintained fork of the upstream project that has been dead
 since 2005 and also a number of directories with tests for more specific
@@ -150,12 +150,16 @@ For syscall tests (these placed under 'testcases/kernel/syscalls/') use
 'runtest/syscalls' file, for kernel related tests for memory management we
 have 'runtest/mm', etc.
 
+IMPORTANT: The runtest files should have one entry per a test. Creating a
+           wrapper that runs all your tests and adding it as a single test
+           into runtest file is strongly discouraged.
+
 2.1.2 Datafiles
 ^^^^^^^^^^^^^^^
 
 If your test needs datafiles to work, these should be generally put into a
-subdirectory named with 'TCID' (see below) and installed into the
-'testcases/data/' directory and later retrieved as
+subdirectory named test name ('TCID' see below) and install it into the
+'testcases/data/' directory. The datafiles can be accessed as
 '$LTPROOT/testcases/data/TCID/...'. See
 'testcases/network/rpc/basic_tests/rpc01/' for example.
 
@@ -165,9 +169,9 @@ NOTE: There may be some convenience interface added later.
 ^^^^^^^^^^^^^^^^^^^^
 
 If you test needs to execute a binary place it in the same directory as the
-testcase and name the file starting with 'TCID_' (again see below). Once the
-test is executed by the framework the path to the directory with all LTP
-binaries is added to the '$PATH' and you can execute it just by it's name.
+testcase and name the file starting with testname_ ('TCID_' see below).
+Once the test is executed by the framework the path to the directory with all
+LTP binaries is added to the '$PATH' and you can execute it just by it's name.
 
 TIP: If you need to execute such test from the LTP tree you can add path to
      current directory to '$PATH' manually with: 'PATH="$PATH:$PWD" ./foo01'.
@@ -268,6 +272,10 @@ WARNING: Never pass a cleanup function to functions called from cleanup.
          If you don't see why this is a problem you are not ready to write
 	 a testcase yet.
 
+WARNING: Don't use 'tst_brkm()' in 'cleanup()' unless you really want to exit
+         the cleanup prematurely. See discussion below for further
+	 information.
+
 The 'parse_opts()' parses the test command line arguments, it's important to
 use it even if the test has no (other than default) parameters.
 
@@ -286,11 +294,11 @@ cleanup() callback.
 1. Don't call callback() from within the callback().
 (This includes passing callback pointer to library 'tst_' functions.)
 
-2. Make sure to uninitialize resources in the inverser order they were
+2. Make sure to free resources in the reverse order they were
    initialized. (Some of the steps may not depend on others and everything
    will work if there were swapped but let's keep it in order.)
 
-3. Uninitialize only resources that were initialized.
+3. Free only resources that were initialized.
 
 The third rule needs a bit more detailed discussion. Consider, for example,
 test setup below which is example of a setup that prepares temporary
@@ -318,13 +326,13 @@ static void setup(void)
 
 In this case the 'cleanup()' function may be entered in five different states:
 
-* The first 'SAFE_OPEN()' has failed, tempororary directory is created
+* The first 'SAFE_OPEN()' has failed, temporary directory is created
   no files are open and +fd0 == -1+, +fd1 == 0+ and +buf == NULL+.
 
 * The first 'SAFE_UNLINK()' has failed, +fd0+ holds file descriptor and
   +fd1 == 0+.
 
-* The second SAFE_OPEN() has failed, +fd0+ holds file descriptor and
+* The second 'SAFE_OPEN()' has failed, +fd0+ holds file descriptor and
   +fd1 == -1+.
 
 * The second 'SAFE_UNLINK()' or 'SAFE_MALLOC()' has failed and both 'fd0' and
@@ -340,8 +348,7 @@ case following code will do:
 -------------------------------------------------------------------------------
 static void cleanup(void)
 {
-	if (buf)
-		free(buf);
+	free(buf);
 
 	if (fd1 > 0)
 		close(fd1);
@@ -427,7 +434,7 @@ directory to it. It's usually called from the test 'setup()'.
 void tst_rmdir(void);
 -------------------------------------------------------------------------------
 
-Removes the directory recursively and is usually called from test 'cleanup()'.
+Removes the directory recursively. It's usually called from test 'cleanup()'.
 
 It's important to close all file descriptors (that points to files in test
 temporary directory, even the unlinked ones) before the test calls
@@ -515,10 +522,10 @@ automatically.
 
 This happens when 'stdout' gets redirected to a file. In this case the
 'stdout' is not line buffered but block buffered and buffered messages will be
-printed by the parent and by each of the forked children.
+printed by the parent and by each of the children.
 
 To avoid that you should either call 'tst_flush()' right before the 'fork()'
-or use 'tst_fork()' instead.
+or even better use 'tst_fork()' instead.
 
 2.2.7 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -560,14 +567,14 @@ for more.
 ^^^^^^^^^^^^^^^^^^^^^
 
 If you need to use signal handlers keep the code short and simple. Don't
-forget that the signal handler code runs concurently to the rest of your code.
+forget that the signal handler code runs concurrently to the rest of your code.
 
 If you call a non-async-safe function from a signal handler (functions that
-have global state or locks, such as malloc(), free(), any operations on FILE
-and many more...) the test will run fine in most of the cases but will
+have global state or locks, such as 'malloc()', 'free()', any operations on
+'FILE' and many more...) the test will run fine in most of the cases but will
 deadlock occasionally.
 
-Quite common mistake is to call 'exit(3)' from a signal hanler. Note that this
+Quite common mistake is to call 'exit(3)' from a signal handler. Note that this
 function is not signal-async-safe as it flushes buffers, etc. If you need to
 exit a test immediately from a signal handler use '_exit(2)' instead.
 
@@ -575,7 +582,7 @@ TIP: See 'man 7 singnal' for the list of signal-async-safe functions.
 
 If signal handler sets a variable it's declaration must be 'volatile'
 otherwise compiler may misoptimize the code because the variable may not be
-changed in the codeflow analysis. There is 'sig_atomic_t' type defined in C99
+changed in the code flow analysis. There is 'sig_atomic_t' type defined in C99
 but this one DOES NOT imply volatile (it's just a typedef to int). So correct
 type for a flag that is changed from a signal handler is either of 'volatile
 int' or 'volatile sig_atomic_t'.
@@ -583,7 +590,7 @@ int' or 'volatile sig_atomic_t'.
 2.2.9 Kernel Modules
 ^^^^^^^^^^^^^^^^^^^^
 
-There are certain cases where the test needs a kernel part and userspace part,
+There are certain cases where the test needs a kernel part and user space part,
 happily LTP can build a kernel module and then insert it to the kernel on test
 start for you. See 'testcases/kernel/device-drivers/block' for details.
 
