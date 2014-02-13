@@ -91,6 +91,8 @@
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
+#define _GNU_SOURCE		/* for asprintf */
+
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -140,15 +142,15 @@ pid_t spawned_program_pid;
  * Define local function prototypes.
  */
 static void check_env(void);
-static void tst_condense(int tnum, int ttype, char *tmesg);
-static void tst_print(char *tcid, int tnum, int ttype, char *tmesg);
-static void cat_file(char *filename);
+static void tst_condense(int tnum, int ttype, const char *tmesg);
+static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg);
+static void cat_file(const char *filename);
 
 /*
  * Define some static/global variables.
  */
 static FILE *T_out = NULL;	/* tst_res() output file descriptor */
-static char *File;		/* file whose contents is part of result */
+static const char *File;		/* file whose contents is part of result */
 static int T_exitval = 0;	/* exit value used by tst_exit() */
 static int T_mode = VERBOSE;	/* flag indicating print mode: VERBOSE, */
 			      /* NOPASS, DISCARD */
@@ -197,7 +199,7 @@ struct pair {
  */
 const char *strttype(int ttype)
 {
-	struct pair ttype_pairs[] = {
+	static const struct pair ttype_pairs[] = {
 		PAIR(TPASS)
 		PAIR(TFAIL)
 		PAIR(TBROK)
@@ -222,7 +224,7 @@ const char *strttype(int ttype)
  *             All result functions (tst_resm(), tst_brk(), etc.)
  *             eventually get here to print the results.
  */
-void tst_res(int ttype, char *fname, char *arg_fmt, ...)
+void tst_res(int ttype, const char *fname, const char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 	int ttype_result = TTYPE_RESULT(ttype);
@@ -293,9 +295,9 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
  *                  specified, print the current result and do not
  *                  buffer it.
  */
-static void tst_condense(int tnum, int ttype, char *tmesg)
+static void tst_condense(int tnum, int ttype, const char *tmesg)
 {
-	char *file;
+	const char *file;
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
@@ -333,11 +335,11 @@ static void tst_condense(int tnum, int ttype, char *tmesg)
 		tst_print(TCID, tnum, ttype, tmesg);
 		Buffered = FALSE;
 	} else {
-		Last_tcid = (char *)malloc(strlen(TCID) + 1);
+		Last_tcid = malloc(strlen(TCID) + 1);
 		strcpy(Last_tcid, TCID);
 		Last_num = tnum;
 		Last_type = ttype_result;
-		Last_mesg = (char *)malloc(strlen(tmesg) + 1);
+		Last_mesg = malloc(strlen(tmesg) + 1);
 		strcpy(Last_mesg, tmesg);
 		Buffered = TRUE;
 	}
@@ -368,7 +370,7 @@ void tst_flush(void)
 /*
  * tst_print() - Print a line to the output stream.
  */
-static void tst_print(char *tcid, int tnum, int ttype, char *tmesg)
+static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 {
 	/*
 	 * avoid unintended side effects from failures with fprintf when
@@ -582,7 +584,7 @@ static int tst_brk_entered = 0;
  * tst_brk() - Fail or break current test case, and break the remaining
  *             tests cases.
  */
-void tst_brk(int ttype, char *fname, void (*func) (void), char *arg_fmt, ...)
+void tst_brk(int ttype, const char *fname, void (*func) (void), const char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 	int ttype_result = TTYPE_RESULT(ttype);
@@ -636,7 +638,7 @@ void tst_brk(int ttype, char *fname, void (*func) (void), char *arg_fmt, ...)
 /*
  * tst_resm() - Interface to tst_res(), with no filename.
  */
-void tst_resm(int ttype, char *arg_fmt, ...)
+void tst_resm(int ttype, const char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 
@@ -655,7 +657,7 @@ void tst_resm(int ttype, char *arg_fmt, ...)
  * tst_resm_hexd() - Interface to tst_res(), with no filename.
  * Also, dump specified buffer in hex.
  */
-void tst_resm_hexd(int ttype, const void *buf, size_t size, char *arg_fmt, ...)
+void tst_resm_hexd(int ttype, const void *buf, size_t size, const char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 
@@ -695,7 +697,7 @@ void tst_resm_hexd(int ttype, const void *buf, size_t size, char *arg_fmt, ...)
 /*
  * tst_brkm() - Interface to tst_brk(), with no filename.
  */
-void tst_brkm(int ttype, void (*func) (void), char *arg_fmt, ...)
+void tst_brkm(int ttype, void (*func) (void), const char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 
@@ -724,7 +726,7 @@ void tst_require_root(void (*func) (void))
 /*
  * cat_file() - Print the contents of a file to standard out.
  */
-static void cat_file(char *filename)
+static void cat_file(const char *filename)
 {
 	FILE *fp;
 	int b_read, b_written;

@@ -118,15 +118,15 @@ extern int Forker_npids;
 
 /* lib/tst_res.c */
 const char *strttype(int ttype);
-void tst_res(int ttype, char *fname, char *arg_fmt, ...)
+void tst_res(int ttype, const char *fname, const char *arg_fmt, ...)
 	__attribute__ ((format (printf, 3, 4)));
-void tst_resm(int ttype, char *arg_fmt, ...)
+void tst_resm(int ttype, const char *arg_fmt, ...)
 	__attribute__ ((format (printf, 2, 3)));
-void tst_resm_hexd(int ttype, const void *buf, size_t size, char *arg_fmt, ...)
+void tst_resm_hexd(int ttype, const void *buf, size_t size, const char *arg_fmt, ...)
 	__attribute__ ((format (printf, 4, 5)));
-void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
+void tst_brk(int ttype, const char *fname, void (*func)(void), const char *arg_fmt, ...)
 	__attribute__ ((format (printf, 4, 5)));
-void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
+void tst_brkm(int ttype, void (*func)(void), const char *arg_fmt, ...)
 	__attribute__ ((format (printf, 3, 4))) LTP_ATTRIBUTE_NORETURN;
 void tst_require_root(void (*func)(void));
 int  tst_environ(void);
@@ -202,8 +202,8 @@ int tst_cwd_has_free(int required_kib);
 int tst_is_virt(int virt_type);
 
 /* lib/self_exec.c */
-void maybe_run_child(void (*child)(), char *fmt, ...);
-int self_exec(char *argv0, char *fmt, ...);
+void maybe_run_child(void (*child)(), const char *fmt, ...);
+int self_exec(const char *argv0, const char *fmt, ...);
 
 /* Functions from lib/cloner.c */
 int ltp_clone(unsigned long flags, int (*fn)(void *arg), void *arg,

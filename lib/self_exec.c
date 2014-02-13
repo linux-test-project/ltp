@@ -67,7 +67,7 @@ int asprintf(char **app, const char *fmt, ...)
 	return rv;
 }
 
-void maybe_run_child(void (*child) (), char *fmt, ...)
+void maybe_run_child(void (*child) (), const char *fmt, ...)
 {
 	va_list ap;
 	char *child_dir;
@@ -155,7 +155,7 @@ void maybe_run_child(void (*child) (), char *fmt, ...)
 	}
 }
 
-int self_exec(char *argv0, char *fmt, ...)
+int self_exec(const char *argv0, const char *fmt, ...)
 {
 	va_list ap;
 	char *p;
