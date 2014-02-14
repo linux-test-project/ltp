@@ -38,6 +38,7 @@ HUGEPAGESIZE=`grep Hugepagesize /proc/meminfo | awk '{ print $2 }'`
 HUGEPAGESIZE=$(( $HUGEPAGESIZE * 1024 ))
 PASS=0
 FAIL=1
+orig_memory_use_hierarchy=""
 
 cur_id=0
 failed=0
@@ -396,6 +397,16 @@ test_move_charge()
 
 cleanup()
 {
+	if [ -n "$orig_memory_use_hierarchy" ];then
+		echo $orig_memory_use_hierarchy > \
+		     /dev/memcg/memory.use_hierarchy
+		if [ $? -ne 0 ];then
+			tst_resm TINFO "restore "\
+				 "/dev/memcg/memory.use_hierarchy failed"
+		fi
+		orig_memory_use_hierarchy=""
+	fi
+
 	killall -9 memcg_process 2>/dev/null
 	if [ -e /dev/memcg ]; then
 		umount /dev/memcg 2>/dev/null
@@ -409,4 +420,21 @@ do_mount()
 
 	mkdir /dev/memcg 2> /dev/null
 	mount -t cgroup -omemory memcg /dev/memcg
+
+	# The default value for memory.use_hierarchy is 0 and some of tests
+	# (memcg_stat_test.sh and memcg_use_hierarchy_test.sh) expect it so
+	# while there are distributions (RHEL7U0Beta for example) that sets
+	# it to 1.
+	orig_memory_use_hierarchy=$(cat /dev/memcg/memory.use_hierarchy)
+	if [ -z "orig_memory_use_hierarchy" ];then
+		tst_resm TINFO "cat /dev/memcg/memory.use_hierarchy failed"
+	elif [ "$orig_memory_use_hierarchy" = "0" ];then
+		orig_memory_use_hierarchy=""
+	else
+		echo 0 > /dev/memcg/memory.use_hierarchy
+		if [ $? -ne 0 ];then
+			tst_resm TINFO "set /dev/memcg/memory.use_hierarchy" \
+				"to 0 failed"
+		fi
+	fi
 }
