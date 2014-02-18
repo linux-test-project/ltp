@@ -111,6 +111,20 @@ pid_t tst_vfork(void);
 #endif
 
 /*
+ * Macro to use for making functions called only once in
+ * multi-threaded tests such as init or cleanup function.
+ * The first call to @name_fn function by any thread shall
+ * call the @exec_fn. Subsequent calls shall not call @exec_fn.
+ * *_fn functions must not take any arguments.
+ */
+#define TST_DECLARE_ONCE_FN(name_fn, exec_fn)				\
+	void name_fn(void)						\
+	{								\
+		static pthread_once_t ltp_once = PTHREAD_ONCE_INIT;	\
+		pthread_once(&ltp_once, exec_fn);			\
+	}
+
+/*
  * lib/forker.c
  */
 extern int Forker_pids[];
