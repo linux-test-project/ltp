@@ -32,7 +32,6 @@
 /chdir/chdir02
 /chdir/chdir03
 /chdir/chdir04
-/chmod/change_owner
 /chmod/chmod01
 /chmod/chmod02
 /chmod/chmod03
@@ -40,7 +39,6 @@
 /chmod/chmod05
 /chmod/chmod06
 /chmod/chmod07
-/chown/change_owner
 /chown/chown01
 /chown/chown01_16
 /chown/chown02
@@ -134,7 +132,6 @@
 /fchdir/fchdir01
 /fchdir/fchdir02
 /fchdir/fchdir03
-/fchmod/change_owner
 /fchmod/fchmod01
 /fchmod/fchmod02
 /fchmod/fchmod03
@@ -143,8 +140,6 @@
 /fchmod/fchmod06
 /fchmod/fchmod07
 /fchmodat/fchmodat01
-/fchown/change_owner
-/fchown/change_owner_16
 /fchown/fchown01
 /fchown/fchown01_16
 /fchown/fchown02

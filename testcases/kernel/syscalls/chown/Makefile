@@ -20,10 +20,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-SRCS			:= $(filter-out %/change_owner.c,$(wildcard $(abs_srcdir)/*.c))
-
 include $(abs_srcdir)/../utils/compat_16.mk
-
-MAKE_TARGETS		+= change_owner
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

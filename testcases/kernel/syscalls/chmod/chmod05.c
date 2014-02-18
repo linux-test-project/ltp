@@ -76,11 +76,7 @@
  *		-Robbie Williamson
  *
  * RESTRICTIONS:
-//wjh
-//Actually it seems that this test has to be run by root (check setup()) and
-//it calls another program (change_owner) to change ownership on the directory
-//it creates. But this test never gives up it's uid/gid to be nonroot
- *  This test should be run by 'non-super-user' only.
+ *  This test should be run by root.
  *
  */
 
