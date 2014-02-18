@@ -495,6 +495,7 @@
 /mkdir/mkdir08
 /mkdir/mkdir09
 /mkdirat/mkdirat01
+/mkdirat/mkdirat02
 /mknod/mknod01
 /mknod/mknod02
 /mknod/mknod03

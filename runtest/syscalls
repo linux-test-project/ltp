@@ -547,6 +547,7 @@ mkdir09 mkdir09
 
 #mkdirat test cases
 mkdirat01 mkdirat01
+mkdirat02 mkdirat02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
 mknod01 mknod01
 mknod02 mknod02
