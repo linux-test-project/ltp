@@ -25,6 +25,8 @@
  *	not super user.
  *   2) fchown(2) returns -1 and sets errno to EBADF if the file descriptor
  *	of the specified file is not valid.
+ *   3) fchown(2) returns -1 and sets errno to EROFS if the named file resides
+ *	on a read-only file system.
  */
 
 #include <stdio.h>
@@ -38,14 +40,27 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mount.h>
 
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
 
+#define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
+			 S_IXGRP|S_IROTH|S_IXOTH)
 
 static int fd1;
 static int fd2 = -1;
+static int fd3;
+static char *fstype = "ext2";
+static char *device;
+static int mount_flag;
+
+static option_t options[] = {
+	{"T:", NULL, &fstype},
+	{"D:", NULL, &device},
+	{NULL, NULL, NULL}
+};
 
 static struct test_case_t {
 	int *fd;
@@ -53,15 +68,17 @@ static struct test_case_t {
 } test_cases[] = {
 	{&fd1, EPERM},
 	{&fd2, EBADF},
+	{&fd3, EROFS},
 };
 
 char *TCID = "fchown04";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EPERM, EBADF, 0 };
+static int exp_enos[] = { EPERM, EBADF, EROFS, 0 };
 
 static void setup(void);
 static void fchown_verify(int);
 static void cleanup(void);
+static void help(void);
 
 int main(int ac, char **av)
 {
@@ -69,9 +86,15 @@ int main(int ac, char **av)
 	char *msg;
 	int i;
 
-	msg = parse_opts(ac, av, NULL, NULL);
+	msg = parse_opts(ac, av, options, help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	if (!device) {
+		tst_brkm(TBROK, NULL,
+			 "you must specify the device used for mounting with "
+			 "-D option");
+	}
 
 	setup();
 
@@ -103,6 +126,21 @@ static void setup(void)
 
 	fd1 = SAFE_OPEN(cleanup, "tfile_1", O_RDWR | O_CREAT, 0666);
 
+	tst_mkfs(NULL, device, fstype, NULL);
+	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
+	if (mount(device, "mntpoint", fstype, 0, NULL) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "mount device:%s failed", device);
+	}
+	mount_flag = 1;
+	SAFE_TOUCH(cleanup, "mntpoint/tfile_3", 0644, NULL);
+	if (mount(device, "mntpoint", fstype,
+		  MS_REMOUNT | MS_RDONLY, NULL) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "mount device:%s failed", device);
+	}
+	fd3 = SAFE_OPEN(cleanup, "mntpoint/tfile_3", O_RDONLY);
+
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 }
@@ -128,12 +166,25 @@ static void fchown_verify(int i)
 static void cleanup(void)
 {
 	if (seteuid(0))
-                tst_resm(TINFO | TERRNO, "Failet to seteuid(0) before cleanup");
+		tst_resm(TINFO | TERRNO, "Failet to seteuid(0) before cleanup");
 
 	TEST_CLEANUP;
 
 	if (fd1 > 0)
-                close(fd1);
+		close(fd1);
+
+	if (fd3 > 0)
+		close(fd3);
+
+	if (mount_flag && umount("mntpoint") < 0)
+		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 
 	tst_rmdir();
+}
+
+static void help(void)
+{
+	printf("-T type   : specifies the type of filesystem to be mounted. "
+	       "Default ext2.\n");
+	printf("-D device : device used for mounting.\n");
 }
