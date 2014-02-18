@@ -93,6 +93,7 @@
 
 #define _GNU_SOURCE		/* for asprintf */
 
+#include <pthread.h>
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -137,6 +138,8 @@ pid_t spawned_program_pid;
 	va_end(ap);				\
 	assert(strlen(buf) > 0);		\
 } while (0)
+
+static pthread_mutex_t tmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 /*
  * Define local function prototypes.
@@ -226,6 +229,8 @@ const char *strttype(int ttype)
  */
 void tst_res(int ttype, const char *fname, const char *arg_fmt, ...)
 {
+	pthread_mutex_lock(&tmutex);
+
 	char tmesg[USERMESG];
 	int ttype_result = TTYPE_RESULT(ttype);
 
@@ -286,6 +291,7 @@ void tst_res(int ttype, const char *fname, const char *arg_fmt, ...)
 		tst_count++;
 	}
 
+	pthread_mutex_unlock(&tmutex);
 }
 
 /*
@@ -351,6 +357,8 @@ static void tst_condense(int tnum, int ttype, const char *tmesg)
  */
 void tst_flush(void)
 {
+	pthread_mutex_lock(&tmutex);
+
 #if DEBUG
 	printf("IN tst_flush\n");
 	fflush(stdout);
@@ -365,6 +373,8 @@ void tst_flush(void)
 	}
 
 	fflush(T_out);
+
+	pthread_mutex_unlock(&tmutex);
 }
 
 /*
@@ -537,6 +547,8 @@ static void check_env(void)
  */
 void tst_exit(void)
 {
+	pthread_mutex_lock(&tmutex);
+
 #if DEBUG
 	printf("IN tst_exit\n");
 	fflush(stdout);
@@ -568,10 +580,13 @@ pid_t tst_vfork(void)
  */
 int tst_environ(void)
 {
+	pthread_mutex_lock(&tmutex);
+	int ret = 0;
 	if ((T_out = fdopen(dup(fileno(stdout)), "w")) == NULL)
-		return -1;
-	else
-		return 0;
+		ret = -1;
+
+	pthread_mutex_unlock(&tmutex);
+	return ret;
 }
 
 /*
@@ -586,6 +601,8 @@ static int tst_brk_entered = 0;
  */
 void tst_brk(int ttype, const char *fname, void (*func) (void), const char *arg_fmt, ...)
 {
+	pthread_mutex_lock(&tmutex);
+
 	char tmesg[USERMESG];
 	int ttype_result = TTYPE_RESULT(ttype);
 
@@ -633,6 +650,7 @@ void tst_brk(int ttype, const char *fname, void (*func) (void), const char *arg_
 	if (tst_brk_entered == 0)
 		tst_exit();
 
+	pthread_mutex_unlock(&tmutex);
 }
 
 /*
@@ -659,6 +677,8 @@ void tst_resm(int ttype, const char *arg_fmt, ...)
  */
 void tst_resm_hexd(int ttype, const void *buf, size_t size, const char *arg_fmt, ...)
 {
+	pthread_mutex_lock(&tmutex);
+
 	char tmesg[USERMESG];
 
 #if DEBUG
@@ -692,6 +712,8 @@ void tst_resm_hexd(int ttype, const void *buf, size_t size, const char *arg_fmt,
 			pmesg = tmesg;
 		}
 	}
+
+	pthread_mutex_unlock(&tmutex);
 }
 
 /*
