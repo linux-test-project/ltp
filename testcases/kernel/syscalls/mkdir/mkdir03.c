@@ -19,7 +19,7 @@
 /*
  * DESCRIPTION
  *	check mkdir() with various error conditions that should produce
- *	EFAULT, ENAMETOOLONG, EEXIST, ENOENT and ENOTDIR
+ *	EFAULT, ENAMETOOLONG, EEXIST, ENOENT, ENOTDIR, ELOOP and EROFS
  */
 
 #include <errno.h>
@@ -27,6 +27,8 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <sys/mount.h>
+
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
@@ -36,16 +38,34 @@ struct test_case_t;
 static void mkdir_verify(struct test_case_t *tc);
 static void bad_addr_setup(struct test_case_t *tc);
 static void cleanup(void);
+static void help(void);
 
 #define TST_EEXIST	"tst_eexist"
 #define TST_ENOENT	"tst_enoent/tst"
 #define TST_ENOTDIR	"tst_enotdir/tst"
 #define MODE		0777
 
+#define MNT_POINT	"mntpoint"
+#define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
+			 S_IXGRP|S_IROTH|S_IXOTH)
+#define TST_EROFS      "mntpoint/tst_erofs"
+
 char *TCID = "mkdir03";
 
 static char long_dir[PATH_MAX+2];
-static int exp_enos[] = { EFAULT, ENAMETOOLONG, EEXIST, ENOENT, ENOTDIR, 0 };
+static char loop_dir[PATH_MAX] = ".";
+static char *fstype = "ext2";
+static char *device;
+static int mount_flag;
+
+static option_t options[] = {
+	{"T:", NULL, &fstype},
+	{"D:", NULL, &device},
+	{NULL, NULL, NULL}
+};
+
+static int exp_enos[] = { EFAULT, ENAMETOOLONG, EEXIST, ENOENT,
+			  ENOTDIR, ELOOP, EROFS, 0 };
 
 static struct test_case_t {
 	char *pathname;
@@ -60,6 +80,8 @@ static struct test_case_t {
 	{TST_EEXIST, MODE, EEXIST, NULL},
 	{TST_ENOENT, MODE, ENOENT, NULL},
 	{TST_ENOTDIR, MODE, ENOTDIR, NULL},
+	{loop_dir, MODE, ELOOP, NULL},
+	{TST_EROFS, MODE, EROFS, NULL},
 };
 
 int TST_TOTAL = ARRAY_SIZE(TC);
@@ -69,9 +91,15 @@ int main(int ac, char **av)
 	int i, lc;
 	char *msg;
 
-	msg = parse_opts(ac, av, NULL, NULL);
+	msg = parse_opts(ac, av, options, help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	if (!device) {
+		tst_brkm(TBROK, NULL,
+			 "you must specify the device used for mounting with "
+			 "-D option");
+	}
 
 	setup();
 
@@ -87,6 +115,10 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	int i;
+
+	tst_require_root(NULL);
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_EXP_ENOS(exp_enos);
@@ -100,6 +132,19 @@ static void setup(void)
 	SAFE_TOUCH(cleanup, TST_EEXIST, MODE, NULL);
 
 	SAFE_TOUCH(cleanup, "tst_enotdir", MODE, NULL);
+
+	SAFE_MKDIR(cleanup, "test_eloop", DIR_MODE);
+	SAFE_SYMLINK(cleanup, "../test_eloop", "test_eloop/test_eloop");
+	for (i = 0; i < 43; i++)
+		strcat(loop_dir, "/test_eloop");
+
+	tst_mkfs(NULL, device, fstype, NULL);
+	SAFE_MKDIR(cleanup, MNT_POINT, DIR_MODE);
+	if (mount(device, MNT_POINT, fstype, MS_RDONLY, NULL) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "mount device:%s failed", device);
+	}
+	mount_flag = 1;
 }
 
 #if !defined(UCLINUX)
@@ -138,5 +183,15 @@ static void cleanup(void)
 {
 	TEST_CLEANUP;
 
+	if (mount_flag && umount(MNT_POINT) < 0)
+		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
+
 	tst_rmdir();
+}
+
+static void help(void)
+{
+	printf("-T type   : specifies the type of filesystem to be mounted. "
+	       "Default ext2.\n");
+	printf("-D device : device used for mounting.\n");
 }
