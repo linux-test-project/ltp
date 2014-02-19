@@ -532,7 +532,7 @@ mlockall03 mlockall03
 
 mkdir01 mkdir01
 mkdir02 mkdir02
-mkdir03 mkdir03
+mkdir03 mkdir03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 mkdir04 mkdir04
 mkdir05 mkdir05
 mkdir05A symlink01 -T mkdir05
