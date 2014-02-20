@@ -16,6 +16,7 @@
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <errno.h>
 #include <grp.h>
 #include <limits.h>
 #include <pwd.h>
@@ -44,10 +45,21 @@ uid_t tst_get_unused_uid(void)
 		s = getpwuid_r(uid, &pwd, buf, bufsize, &result);
 		if (result == NULL) {
 			free(buf);
-			if (s == 0)
+			/*
+			 * When the given name or gid was not found, getgrgid_r
+			 * may return 0 or ENOENT or ESRCH or EBADF or EPERM
+			 * or ...
+			 */
+			switch (s) {
+			case 0:
+			case ENOENT:
+			case ESRCH:
+			case EBADF:
+			case EPERM:
 				return uid;
-			else
+			default:
 				return -1;
+			}
 		}
 	}
 
@@ -76,10 +88,21 @@ gid_t tst_get_unused_gid(void)
 		s = getgrgid_r(gid, &grp, buf, bufsize, &result);
 		if (result == NULL) {
 			free(buf);
-			if (s == 0)
+			/*
+			 * When the given name or gid was not found, getgrgid_r
+			 * may return 0 or ENOENT or ESRCH or EBADF or EPERM
+			 * or ...
+			 */
+			switch (s) {
+			case 0:
+			case ENOENT:
+			case ESRCH:
+			case EBADF:
+			case EPERM:
 				return gid;
-			else
+			default:
 				return -1;
+			}
 		}
 	}
 
