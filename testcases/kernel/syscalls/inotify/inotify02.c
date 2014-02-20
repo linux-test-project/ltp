@@ -83,6 +83,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
+	unsigned int stored_cookie = UINT_MAX;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -224,12 +225,38 @@ int main(int ac, char **av)
 				   (!strncmp
 				    (event_set[test_num].name, event->name,
 				     event->len))) {
-				tst_resm(TPASS,
-					 "get event: wd=%d mask=%x"
-					 " cookie=%u len=%u name=\"%s\"",
-					 event->wd, event->mask, event->cookie,
-					 event->len, event->name);
+				int fail = 0;
 
+				if (event->mask == IN_MOVED_FROM) {
+					if (event->cookie == 0)
+						fail = 1;
+					else
+						stored_cookie = event->cookie;
+				} else if (event->mask == IN_MOVED_TO) {
+					if (event->cookie != stored_cookie)
+						fail = 1;
+					else
+						stored_cookie = UINT_MAX;
+				} else {
+					if (event->cookie != 0)
+						fail = 1;
+				}
+				if (!fail) {
+					tst_resm(TPASS,
+						 "get event: wd=%d mask=%x "
+						 "cookie=%u len=%u name=\"%s\"",
+						 event->wd, event->mask,
+						 event->cookie, event->len,
+						 event->name);
+				} else {
+					tst_resm(TFAIL,
+						 "get event: wd=%d mask=%x "
+						 "cookie=%u (wrong) len=%u "
+						 "name=\"%s\"",
+						 event->wd, event->mask,
+						 event->cookie, event->len,
+						 event->name);
+				}
 			} else {
 				tst_resm(TFAIL, "get event: wd=%d mask=%x "
 					 "(expected %x) cookie=%u len=%u "

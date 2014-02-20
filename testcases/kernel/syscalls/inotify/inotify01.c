@@ -160,10 +160,18 @@ int main(int ac, char **av)
 					 event->wd, event->mask,
 					 event->cookie, event->len);
 			} else if (event_set[test_num] == event->mask) {
-				tst_resm(TPASS, "get event: wd=%d mask=%x"
-					 " cookie=%u len=%u",
-					 event->wd, event->mask,
-					 event->cookie, event->len);
+				if (event->cookie != 0) {
+					tst_resm(TFAIL,
+						 "get event: wd=%d mask=%x "
+						 "cookie=%u (expected 0) len=%u",
+						 event->wd, event->mask,
+						 event->cookie, event->len);
+				} else {
+					tst_resm(TPASS, "get event: wd=%d "
+						 "mask=%x cookie=%u len=%u",
+						 event->wd, event->mask,
+						 event->cookie, event->len);
+				}
 
 			} else {
 				tst_resm(TFAIL, "get event: wd=%d mask=%x "
