@@ -25,7 +25,10 @@
 #include <linux/proc_fs.h>
 #include <linux/spinlock.h>
 #include <asm/uaccess.h>
-#include <asm/system.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 4, 0)
+# include <asm/system.h>
+#endif
 
 MODULE_LICENSE("GPL");
 
@@ -46,7 +49,7 @@ static int crasher_write(struct file *file, const char *buffer,
 			 unsigned long count, void *data)
 {
 	char value, *a;
-	spinlock_t mylock = SPIN_LOCK_UNLOCKED;
+	DEFINE_SPINLOCK(mylock);
 
 	/* grab the first byte the user gave us, ignore the rest */
 	if (copy_from_user(&value, buffer, 1))
@@ -91,10 +94,11 @@ int crasher_init(void)
 	if ((crasher_proc = create_proc_entry(CRASH, 0, NULL)) == NULL) {
 		return -ENOMEM;
 	}
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 30)
+	crasher_proc->owner = THIS_MODULE
+#endif
 	crasher_proc->read_proc = crasher_read;
 	crasher_proc->write_proc = crasher_write;
-	crasher_proc->owner = THIS_MODULE;
 	return 0;
 }
 
