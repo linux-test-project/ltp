@@ -86,11 +86,11 @@ echo "Modify Boot Loader."
 if [ "${arch}" = "ppc64" ]; then
     args="crashkernel=256M@32M xmon=off"
 elif [ "${arch}" = "i686" ]; then
-    args="crashkernel=128M@16M nmi_watchdog=1"
+    args="crashkernel=256M@128M nmi_watchdog=1"
 elif [ "${arch}" = "ia64" ]; then
     args="crashkernel=512M@256M"
 else
-    args="crashkernel=128M@16M"
+    args="crashkernel=256M@128M"
 fi
 
 if [ -x "/sbin/grubby" ]; then
