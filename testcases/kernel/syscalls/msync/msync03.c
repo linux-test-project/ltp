@@ -1,138 +1,183 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2014 Fujitsu Ltd.
+ * Author: Xiaoguang Wang <wangxg.fnst@cn.fujitsu.com>
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 /*
- * Test Name: msync03
- *
- * Test Description:
- *  Verify that, msync() fails, when the region to synchronize, is outside
- *  the address space of the process.
- *
- * Expected Result:
- *  msync() should fail with a return value of -1, and errno should be
- *  set to EINVAL.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *      if errno set == expected errno
- *              Issue sys call fails with expected return value and errno.
- *      Otherwise,
- *              Issue sys call fails with unexpected errno.
- *   Otherwise,
- *      Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *
- * Usage:  <for command-line>
- *  msync03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *	       -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
+ * Description:
+ * Verify that,
+ *  1. msync() fails with -1 return value and sets errno to EBUSY
+ *     if MS_INVALIDATE was specified in flags, and a memory lock
+ *     exists for the specified address range.
+ *  2. msync() fails with -1 return value and sets errno to EINVAL
+ *     if addr is not a multiple of PAGESIZE; or any bit other than
+ *     MS_ASYNC | MS_INVALIDATE | MS_SYNC is set in flags; or both
+ *     MS_SYNC and MS_ASYNC are set in flags.
+ *  3. msync() fails with -1 return value and sets errno to ENOMEM
+ *     if the indicated memory (or part of it) was not mapped.
  */
+
+#include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/mount.h>
+#include <pwd.h>
 #include <sys/resource.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
+
+#define INV_SYNC	-1
+#define TEMPFILE	"msync_file"
+#define BUF_SIZE	256
+
+static void setup(void);
+static void cleanup(void);
+
+static int fd;
+static char *addr1;
+static char *addr2;
+static char *addr3;
+
+#if !defined(UCLINUX)
+static char *addr4;
+#endif
+
+static size_t page_sz;
+
+static struct test_case_t {
+	char **addr;
+	int flags;
+	int exp_errno;
+} test_cases[] = {
+	{ &addr1, MS_INVALIDATE, EBUSY },
+	{ &addr1, MS_ASYNC | MS_SYNC, EINVAL },
+	{ &addr1, INV_SYNC, EINVAL },
+	{ &addr2, MS_SYNC, EINVAL },
+	{ &addr3, MS_SYNC, EINVAL },
+#if !defined(UCLINUX)
+	{ &addr4, MS_SYNC, ENOMEM },
+#endif
+};
+
+static void msync_verify(struct test_case_t *tc);
 
 char *TCID = "msync03";
-int TST_TOTAL = 1;
-
-void *addr;			/* addr of memory mapped region */
-size_t page_sz;			/* system page size */
-
-int exp_enos[] = { EINVAL, 0 };
-
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+int TST_TOTAL = ARRAY_SIZE(test_cases);
+static int exp_enos[] = { EBUSY, EINVAL, ENOMEM, 0 };
 
 int main(int ac, char **av)
 {
-	int lc;
+	int i, lc;
 	char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
-		TEST(msync(addr, page_sz, MS_ASYNC));
-
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "msync() returns unexpected "
-				 "value %ld, expected:-1", TEST_RETURN);
-			continue;
-		}
-
-		if (errno == EINVAL)
-			tst_resm(TPASS, "msync failed with EINVAL as expected");
-		else
-			tst_resm(TFAIL | TERRNO, "msync failed unexpectedly");
+		for (i = 0; i < TST_TOTAL; i++)
+			msync_verify(&test_cases[i]);
 	}
 
 	cleanup();
 	tst_exit();
 }
 
-void setup()
+static void setup(void)
 {
-	struct rlimit brkval;
+	size_t nwrite = 0;
+	char write_buf[BUF_SIZE];
+	struct rlimit rl;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
+	TEST_EXP_ENOS(exp_enos);
+
+	tst_tmpdir();
+
 	TEST_PAUSE;
 
-	if ((page_sz = getpagesize()) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "getpagesize failed");
+	page_sz = (size_t)sysconf(_SC_PAGESIZE);
 
-	getrlimit(RLIMIT_DATA, &brkval);
+	fd = SAFE_OPEN(cleanup, TEMPFILE, O_RDWR | O_CREAT, 0666);
 
-	addr = (void *)brkval.rlim_max;
+	memset(write_buf, 'a', BUF_SIZE);
+	while (nwrite < page_sz) {
+		SAFE_WRITE(cleanup, 1, fd, write_buf, BUF_SIZE);
+		nwrite += BUF_SIZE;
+	}
+
+	addr1 = SAFE_MMAP(cleanup, 0, page_sz, PROT_READ | PROT_WRITE,
+			  MAP_SHARED | MAP_LOCKED, fd, 0);
+
+	/* addr2 is not a multiple of PAGESIZE */
+	addr2 = addr1 + 1;
+
+	/* addr3 is outside the address space of the process */
+	if (getrlimit(RLIMIT_DATA, &rl) < 0)
+		tst_brkm(TBROK | TERRNO, NULL, "getrlimit failed");
+	addr3 = (char *)rl.rlim_max;
+
+#if !defined(UCLINUX)
+	/* memory pointed to by addr4 was not mapped */
+	addr4 = get_high_address();
+#endif
 }
 
-void cleanup()
+static void msync_verify(struct test_case_t *tc)
+{
+	TEST(msync(*(tc->addr), page_sz, tc->flags));
+	if (TEST_RETURN != -1) {
+		tst_resm(TFAIL, "msync succeeded unexpectedly");
+		return;
+	}
+
+	TEST_ERROR_LOG(TEST_ERRNO);
+
+	if (TEST_ERRNO == tc->exp_errno) {
+		tst_resm(TPASS | TTERRNO, "msync failed as expected");
+	} else {
+		tst_resm(TFAIL | TTERRNO,
+			 "msync failed unexpectedly; expected: "
+			 "%d - %s", tc->exp_errno,
+			 strerror(tc->exp_errno));
+	}
+}
+
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 
+	if (addr1 && munmap(addr1, page_sz) < 0)
+		tst_resm(TWARN | TERRNO, "munmap() failed");
+
+	if (fd > 0 && close(fd) < 0)
+		tst_resm(TWARN | TERRNO, "close() failed");
+
+	tst_rmdir();
 }
