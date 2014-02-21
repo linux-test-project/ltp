@@ -95,7 +95,7 @@ PrepareVerify ()
             exit 1
         fi
 
-        file=$(ssh "${SCP_PATH}" "ls -t ${COREDIR}/*/vmcore \
+        file=$(ssh -i ~/.ssh/kdump_id_rsa "${SCP_PATH}" "ls -t ${COREDIR}/*/vmcore* \
          2>/dev/null | head -1")
 
         mkdir -p "${COREDIR}/${last}"
@@ -103,7 +103,7 @@ PrepareVerify ()
         if [ "${file}" ]; then
             # Not fatal error.
             set +e
-            scp "${SCP_PATH}:${file}" "${COREDIR}/${last}"
+            scp  -i ~/.ssh/kdump_id_rsa "${SCP_PATH}:${file}" "${COREDIR}/${last}"
             set -e
         fi
 
@@ -116,7 +116,7 @@ PrepareVerify ()
         COREDIR=/mnt"${COREDIR}"
     fi
 
-    vmcore=$(ls -t "${COREDIR}"/*/vmcore 2>/dev/null | head -1)
+    vmcore=$(ls -t "${COREDIR}"/*/vmcore* 2>/dev/null | head -1)
 }
 
 VerifyTest ()
