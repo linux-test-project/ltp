@@ -552,6 +552,7 @@
 /mprotect/mprotect02
 /mprotect/mprotect03
 /mq_notify/mq_notify01
+/mq_notify/mq_notify02
 /mq_open/mq_open01
 /mq_timedreceive/mq_timedreceive01
 /mq_timedsend/mq_timedsend01

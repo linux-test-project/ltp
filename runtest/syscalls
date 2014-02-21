@@ -615,6 +615,7 @@ mprotect02 mprotect02
 mprotect03 mprotect03
 
 mq_notify01 mq_notify01
+mq_notify02 mq_notify02
 mq_open01 mq_open01
 mq_timedreceive01 mq_timedreceive01
 mq_timedsend01 mq_timedsend01
