@@ -49,6 +49,7 @@
 	}
 #else
 # define LTP_CREATE_SYSCALL(sys_name, cleanup, ...) \
+	(void) cleanup;                             \
 	return sys_name(__VA_ARGS__)
 #endif
 

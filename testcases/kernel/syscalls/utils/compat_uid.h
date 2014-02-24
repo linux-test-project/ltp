@@ -22,14 +22,12 @@
 #ifndef __COMPAT_UID_16_H__
 #define __COMPAT_UID_16_H__
 
-
 #include <asm/posix_types.h>
-
+#include "compiler.h"
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 typedef __kernel_old_uid_t UID_T;
-int
-UID_SIZE_CHECK(uid_t uid)
+int UID_SIZE_CHECK(uid_t uid)
 {
 	/* See high2lowuid in linux/highuid.h
 	   Return 0 if uid is too large to store
@@ -40,8 +38,7 @@ UID_SIZE_CHECK(uid_t uid)
 #else
 
 typedef uid_t UID_T;
-int
-UID_SIZE_CHECK(uid_t uid)
+int UID_SIZE_CHECK(uid_t uid LTP_ATTRIBUTE_UNUSED)
 {
 	return 1;
 }
