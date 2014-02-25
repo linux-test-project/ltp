@@ -31,12 +31,12 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	int pos = 3;
 
 	/*
-	 * The mkfs.xfs aborts if it finds a filesystem superblock
-	 * on the device, which is the case here as we reuse one
-	 * device for all tests.
+	 * mkfs.xfs and mkfs.btrfs aborts if it finds a filesystem
+	 * superblock on the device, which is the case here as we
+	 * reuse one device for all tests.
 	 */
-	if (!strcmp(fs_type, "xfs")) {
-		tst_resm(TINFO, "Appending '-f' force flag to mkfs.xfs");
+	if (!strcmp(fs_type, "xfs") || !strcmp(fs_type, "btrfs")) {
+		tst_resm(TINFO, "Appending '-f' flag to mkfs.%s", fs_type);
 		argv[pos++] = "-f";
 	}
 
