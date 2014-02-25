@@ -88,8 +88,8 @@ int exp_enos[] = { EINVAL, ENOMEM, 0 };
 
 stack_t sigstk;			/* signal stack storing struct. */
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+void setup(void);			/* Main setup function of test */
+void cleanup(void);			/* cleanup function for the test */
 
 struct test_case_t {		/* test case struct. to hold diff. test.conds */
 	int flag;
@@ -183,7 +183,7 @@ int main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  * Allocate memory for the alternative stack.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -203,7 +203,7 @@ void setup()
  *             completion or premature exit.
  *  Free the memory allocated for alternate stack.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

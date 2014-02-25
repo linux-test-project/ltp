@@ -89,9 +89,9 @@ pid_t my_pid;			/* test process id */
 stack_t sigstk, osigstk;	/* signal stack storing struct. */
 struct sigaction act, oact;	/* sigaction() struct. */
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-void sig_handler();		/* signal catching function */
+void setup(void);		/* Main setup function of test */
+void cleanup(void);		/* cleanup function for the test */
+void sig_handler(int);		/* signal catching function */
 
 int main(int ac, char **av)
 {
@@ -194,7 +194,7 @@ int main(int ac, char **av)
  * wait till the signal arrives.
  * Allocate memory for the alternative stack.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -205,7 +205,7 @@ void setup()
 	my_pid = getpid();
 
 	/* Capture SIGUSR1 on the main stack */
-	act.sa_handler = (void (*)())sig_handler;
+	act.sa_handler = (void (*)(int))sig_handler;
 	if ((sigaction(SIGUSR1, &act, &oact)) == -1) {
 		tst_brkm(TFAIL, cleanup,
 			 "sigaction() fails in setup, errno=%d", errno);
@@ -235,10 +235,11 @@ void setup()
  *
  *  This function updates 'addr' variable and sets got_signal value.
  */
-void sig_handler()
+void sig_handler(int n)
 {
 	int i;
 
+	(void) n;
 	addr = &i;
 	got_signal = 1;
 }
@@ -249,7 +250,7 @@ void sig_handler()
  *             completion or premature exit.
  *  Free the memory allocated for alternate stack.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
