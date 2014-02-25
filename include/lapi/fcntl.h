@@ -35,4 +35,11 @@
 #define F_GETPIPE_SZ 1032
 #endif
 
+#ifndef AT_FDCWD
+# define AT_FDCWD -100
+#endif
+#ifndef AT_SYMLINK_FOLLOW
+# define AT_SYMLINK_FOLLOW 0x400
+#endif
+
 #endif /* __LAPI_FCNTL_H__ */
