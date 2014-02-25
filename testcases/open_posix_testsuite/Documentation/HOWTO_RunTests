@@ -49,6 +49,8 @@ From there, execute:
 
 This will build all of the conformance, functional, and stress tests.
 
+To disable known failures on Linux do make filter-known-fails.
+
 * Conformance-specific items *
 
 To run conformance tests for a specific directory, just cd to the directory
@@ -76,6 +78,10 @@ To make only functional tests, run:
 
 To make only stress tests, run:
     # make stress-all
+
+To skip known failures on Linux, run:
+    # make filter-known-fails
+    # make test
 
 4. Running POSIX Option Group Feature Tests
 -----------------------------------------------------
