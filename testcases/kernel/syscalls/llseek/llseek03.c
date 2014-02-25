@@ -85,7 +85,6 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	int fd;
-	char write_buf[BUFSIZ];
 	struct stat stat_buf;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -94,12 +93,10 @@ static void setup(void)
 
 	TEST_PAUSE;
 
-	if (strcpy(write_buf, "abcdefgh") != write_buf)
-		tst_brkm(TBROK | TERRNO, NULL, "strcpy failed");
-
 	fd = SAFE_CREAT(cleanup, TEST_FILE, 0644);
 
-	SAFE_WRITE(cleanup, 1, fd, write_buf, strlen(write_buf));
+	#define STR "abcdefgh"
+	SAFE_WRITE(cleanup, 1, fd, STR, sizeof(STR) - 1);
 
 	SAFE_FSTAT(cleanup, fd, &stat_buf);
 
@@ -137,7 +134,7 @@ static void testfunc_seekcur(void)
 	SAFE_READ(cleanup, 1, fd, read_buf, 3);
 
 	if (strcmp(read_buf, "fgh"))
-		tst_resm(TFAIL, "test SEEK_SET for llseek failed");
+		tst_resm(TFAIL, "Read wrong bytes after llseek");
 	else
 		tst_resm(TPASS, "test SEEK_SET for llseek success");
 
@@ -162,7 +159,7 @@ static void testfunc_seekend(void)
 		goto cleanup_seekend;
 	}
 
-	if (TEST_RETURN != file_size) {
+	if (TEST_RETURN != (long)file_size) {
 		tst_resm(TFAIL, "llseek return a incorrect file offset");
 		goto cleanup_seekend;
 	}
@@ -171,7 +168,7 @@ static void testfunc_seekend(void)
 
 	nread = SAFE_READ(cleanup, 0, fd, read_buf, file_size);
 	if (nread > 0)
-		tst_resm(TFAIL, "test SEEK_END for llseek failed");
+		tst_resm(TFAIL, "Read bytes after llseek to end of file");
 	else
 		tst_resm(TPASS, "test SEEK_END for llseek success");
 
