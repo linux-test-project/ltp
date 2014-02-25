@@ -40,6 +40,10 @@ exec_prefix?=		$(prefix)
 
 all: conformance-all functional-all stress-all tools-all
 
+ifeq ($(shell uname -s), Linux)
+include Makefile.linux
+endif
+
 clean: $(CRITICAL_MAKEFILES)
 	@rm -f $(LOGFILE)*
 	@for dir in $(SUBDIRS) tools; do \

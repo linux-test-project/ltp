@@ -1,0 +1,20 @@
+cmd_disable = @set -e; \
+	echo "Disabling: $(1)"; \
+	echo "\#!/bin/sh" > $(1); \
+	echo "echo $(1) skipped" >> $(1); \
+	echo "echo $(2)" >> $(1); \
+	echo "exit 0" >> $(1); \
+	chmod a+x $(1)
+
+BROKEN :=
+
+kver_cmp = $(shell $(top_srcdir)/scripts/tst_kvercmp.sh 2 6 22)
+ifeq ($(kver_cmp), 1)
+BROKEN += t_sigaction_16-1
+endif
+
+filter-known-fails: $(BROKEN)
+
+t_sigaction_16-1:
+	$(call cmd_disable,conformance/interfaces/sigaction/sigaction_16-1.run-test, \
+	  This fails on old linux because sem_wait always be interrupted by a signal.)
