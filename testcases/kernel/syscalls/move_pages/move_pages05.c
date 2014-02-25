@@ -178,7 +178,6 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, N_TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE);
-		TEST_ERRNO = errno;
 		if (ret == -1) {
 			tst_resm(TFAIL | TERRNO,
 				 "move_pages unexpectedly failed");

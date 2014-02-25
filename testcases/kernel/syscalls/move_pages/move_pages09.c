@@ -105,7 +105,6 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE);
-		TEST_ERRNO = errno;
 
 		/*
 		 * commit e78bbfa8262424417a29349a8064a535053912b9
@@ -123,7 +122,8 @@ int main(int argc, char **argv)
 				tst_resm(TPASS, "move_pages failed with "
 					 "ENOENT as expected");
 			else
-				tst_resm(TFAIL | TERRNO, "move_pages");
+				tst_resm(TFAIL | TERRNO, "move_pages did not "
+					"fail with ENOENT ret: %d", ret);
 		}
 
 		free_pages(pages, TEST_PAGES);

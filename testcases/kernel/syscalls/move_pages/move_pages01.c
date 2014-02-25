@@ -95,10 +95,8 @@ int main(int argc, char **argv)
 			continue;
 
 		ret = numa_move_pages(0, TEST_PAGES, pages, NULL, status, 0);
-		TEST_ERRNO = errno;
-
 		if (ret != 0) {
-			tst_resm(TFAIL, "retrieving NUMA nodes failed");
+			tst_resm(TFAIL|TERRNO, "move_pages failed");
 			free_pages(pages, TEST_PAGES);
 			continue;
 		}

@@ -108,13 +108,12 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_STRICT);
-		TEST_ERRNO = errno;
 		if (ret == -1 && errno == EINVAL)
 			tst_resm(TPASS, "move_pages failed with "
 				 "EINVAL as expected");
 		else
-			tst_resm(TFAIL, "move_pages did not fail "
-				 "with EINVAL");
+			tst_resm(TFAIL|TERRNO, "move_pages did not fail "
+				 "with EINVAL ret: %d", ret);
 
 		free_pages(pages, TEST_PAGES);
 	}

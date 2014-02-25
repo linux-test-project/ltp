@@ -119,13 +119,12 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(ipid, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE);
-		TEST_ERRNO = errno;
 		if (ret == -1 && errno == ESRCH)
 			tst_resm(TPASS, "move_pages failed with "
 				 "ESRCH as expected");
 		else
-			tst_resm(TFAIL, "move pages did not fail "
-				 "with ESRCH");
+			tst_resm(TFAIL|TERRNO, "move pages did not fail "
+				 "with ESRCH ret: %d", ret);
 
 err_free_pages:
 		free_pages(pages, TEST_PAGES);

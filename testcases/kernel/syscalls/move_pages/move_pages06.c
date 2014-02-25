@@ -109,13 +109,12 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE);
-		TEST_ERRNO = errno;
 		if (ret == -1 && errno == ENODEV)
 			tst_resm(TPASS, "move_pages failed with "
 				 "ENODEV as expected");
 		else
-			tst_resm(TFAIL, "move pages did not fail "
-				 "with ENODEV");
+			tst_resm(TFAIL|TERRNO, "move pages did not fail "
+				 "with ENODEV ret: %d", ret);
 
 		free_pages(pages, TEST_PAGES);
 	}

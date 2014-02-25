@@ -106,13 +106,12 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, ULONG_MAX, pages, nodes,
 				      status, MPOL_MF_MOVE);
-		TEST_ERRNO = errno;
 		if (ret == -1 && errno == E2BIG)
 			tst_resm(TPASS, "move_pages failed with "
 				 "E2BIG as expected");
 		else
-			tst_resm(TFAIL, "move pages did not fail "
-				 "with E2BIG");
+			tst_resm(TFAIL|TERRNO, "move pages did not fail "
+				 "with E2BIG ret: %d", ret);
 
 		free_pages(pages, TEST_PAGES);
 	}

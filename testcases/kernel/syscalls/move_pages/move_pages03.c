@@ -171,9 +171,8 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE_ALL);
-		TEST_ERRNO = errno;
 		if (ret != 0) {
-			tst_resm(TFAIL, "retrieving NUMA nodes failed");
+			tst_resm(TFAIL|TERRNO, "move_pages failed");
 			goto err_kill_child;
 		}
 

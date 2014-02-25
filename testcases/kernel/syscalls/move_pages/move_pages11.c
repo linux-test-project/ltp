@@ -173,13 +173,12 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE_ALL);
-		TEST_ERRNO = errno;
 		if (ret == -1 && errno == EPERM)
 			tst_resm(TPASS, "move_pages failed with "
 				 "EPERM as expected");
 		else
-			tst_resm(TFAIL, "move_pages did not fail "
-				 "with EPERM");
+			tst_resm(TFAIL|TERRNO, "move_pages did not fail "
+				 "with EPERM ret: %d", ret);
 
 		/* Test done. Ask child to terminate. */
 		if (sem_post(&sem[SEM_PARENT_TEST]) == -1)
