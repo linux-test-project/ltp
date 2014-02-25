@@ -456,6 +456,21 @@ long safe_sysconf(const char *file, const int lineno,
 	return rval;
 }
 
+int safe_stat(const char *file, const int lineno,
+	      void (cleanup_fn)(void), const char *path, struct stat *buf)
+{
+	int rval;
+
+	rval = stat(path, buf);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "stat failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}
+
 int safe_fstat(const char *file, const int lineno,
 	       void (cleanup_fn)(void), int fd, struct stat *buf)
 {
@@ -465,7 +480,22 @@ int safe_fstat(const char *file, const int lineno,
 
 	if (rval == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "fstat  failed at %s:%d", file, lineno);
+			 "fstat failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_lstat(const char *file, const int lineno,
+	       void (cleanup_fn)(void), const char *path, struct stat *buf)
+{
+	int rval;
+
+	rval = lstat(path, buf);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "lstat failed at %s:%d", file, lineno);
 	}
 
 	return rval;
