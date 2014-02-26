@@ -14,65 +14,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**************************************************************************
- *
- *    TEST IDENTIFIER	: swapoff01
- *
- *    EXECUTED BY	: root / superuser
- *
- *    TEST TITLE	: Basic test for swapoff(2)
- *
- *    TEST CASE TOTAL	: 1
- *
- *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *    This is a Phase I test for the swapoff(2) system call.
- *    It is intended to provide a limited exposure of the system call.
- *   $
- *
- * 	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *	  Create a temporary directory.
- *	  Create file of size 40K ( minimum swapfile size).
- *	  Make this file as swap file using mkswap(8)
- *	  Turn on the swap file.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- *	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- * swapoff01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
- * where:
- * 	-c n : Run n copies simultaneously.
- *	-e   : Turn on errno logging.
- *	-i n : Execute test n times.
- *	-I x : Execute test for x seconds.
- *	-p   : Pause for SIGUSR1 before starting
- *	-P x : Pause for x seconds between iterations.
- *	-t   : Turn on syscall timing.
- *
- *RESTRICTIONS:
- * Not compatible with kernel versions below 1.3.2.
- *
- *CHANGES:
- * 2005/01/01  Add extra check to stop test if insufficient disk space in dir
- *             -Ricky Ng-Adam (rngadam@yahoo.com)
- * 2005/01/01  Add extra check to stop test if swap file is on tmpfs
- *             -Ricky Ng-Adam (rngadam@yahoo.com)
- *****************************************************************************/
+
+/*
+ * Check that swapoff() succeeds.
+ */
 
 #include <unistd.h>
 #include "test.h"
@@ -83,15 +28,14 @@
 #include "linux_syscall_numbers.h"
 #include "swaponoff.h"
 
-static void setup();
-static void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "swapoff01";
 int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {
-
 	int lc;
 	char *msg;
 
@@ -124,24 +68,17 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "swapoff(2) passed and turned off"
 				 " swapfile.");
 		}
-	}			/*End for TEST_LOOPING */
+	}
 
-	/*Clean up and exit */
 	cleanup();
 	tst_exit();
-
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 
@@ -163,31 +100,18 @@ void setup()
 	}
 
 	/*create file */
-	if (system
-	    ("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 > tmpfile"
-	     " 2>&1 ") != 0) {
+	if (tst_fill_file("swapfile01", 0x00, 1024, 65536))
 		tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-	}
 
 	/* make above file a swap file */
 	if (system("mkswap swapfile01 > tmpfile 2>&1") != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
 	}
-
 }
 
-/*
- * cleanup() - Performs one time cleanup for this test at
- * completion or premature exit
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }

@@ -14,66 +14,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**************************************************************************
- *
- *    TEST IDENTIFIER	: swapoff02
- *
- *
- *    EXECUTED BY	: root / superuser
- *
- *    TEST TITLE	: Test checking for basic error conditions
- *    				 for swapoff(2)
- *
- *    TEST CASE TOTAL	: 3
- *
- *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
+/*
  *    DESCRIPTION
  *	This test case checks whether swapoff(2) system call  returns
  *	1. EINVAL when the path does not exist
  *	2. ENOENT when the path exists but is invalid
  *	3. EPERM when user is not a superuser
- *
- * 	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *	 1.  For testing error on invalid user, change the effective uid
- * 	$
- * 	Test:
- *	  Loop if the proper options are given.
- *	  Execute system call.
- *	  Check return code, if system call fails with errno == expected errno
- *		Issue syscall passed with expected errno
- *	  Otherwise,
- *	  Issue syscall failed to produce expected errno
- *
- * 	Cleanup:
- * 	  Do cleanup for the test.
- * 	 $
- * USAGE:  <for command-line>
- *  swapoff02 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where
- *  	-c n : Run n copies simultaneously
- *	-e   : Turn on errno logging.
- *	-i n : Execute test n times.
- *	-I x : Execute test for x seconds.
- *	-p   : Pause for SIGUSR1 before starting
- *	-P x : Pause for x seconds between iterations.
- *	-t   : Turn on syscall timing.
- *
- *RESTRICTIONS:
- *Incompatible with kernel versions below 2.1.35.
- *
- *CHANGES:
- * 2005/01/01  Add extra check to stop test if insufficient disk space in dir
- *             -Ricky Ng-Adam (rngadam@yahoo.com)
- * 2005/01/01  Add extra check to stop test if swap file is on tmpfs
- *             -Ricky Ng-Adam (rngadam@yahoo.com)
- *****************************************************************************/
+ */
 
 #include <unistd.h>
 #include <errno.h>
@@ -89,17 +36,17 @@
 #include "linux_syscall_numbers.h"
 #include "swaponoff.h"
 
-static void setup();
-static void cleanup();
-static int setup01();
-static int cleanup01();
-static int setup02();
+static void setup(void);
+static void cleanup(void);
+static int setup01(void);
+static int cleanup01(void);
+static int setup02(void);
 
 char *TCID = "swapoff02";
 int TST_TOTAL = 3;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-int need_swapfile_cleanup = 0;	/* attempt to swapoff in cleanup */
+int need_swapfile_cleanup = 0;
 
 static int exp_enos[] = { EPERM, EINVAL, ENOENT, 0 };
 
@@ -179,19 +126,14 @@ int main(int ac, char **av)
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-		}		/*End of TEST LOOPS */
+		}
 	}
 
-	/*Clean up and exit */
 	cleanup();
-
 	tst_exit();
-}				/*End of main */
+}
 
-/*
- * setup01() - This function sets the user as nobody
- */
-int setup01()
+static int setup01(void)
 {
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_resm(TWARN, "\"nobody\" user not present. skipping test");
@@ -205,13 +147,10 @@ int setup01()
 		return -1;
 	}
 
-	return 0;		/* user switched to nobody */
+	return 0;
 }
 
-/*
- * cleanup01() - switch back to user root
- */
-int cleanup01()
+static int cleanup01(void)
 {
 	if (seteuid(0) == -1) {
 		tst_brkm(TBROK, cleanup, "seteuid failed to set uid to root");
@@ -222,7 +161,7 @@ int cleanup01()
 	return 0;
 }
 
-int setup02()
+static int setup02(void)
 {
 	int fd;
 	fd = creat("nofile", S_IRWXU);
@@ -231,19 +170,13 @@ int setup02()
 	return 0;
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 
@@ -282,19 +215,10 @@ void setup()
 	}
 
 	need_swapfile_cleanup = 1;
-
 }
 
-/*
-* cleanup() - Performs one time cleanup for this test at
-* completion or premature exit
-*/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	if (need_swapfile_cleanup
@@ -306,5 +230,4 @@ void cleanup()
 	}
 
 	tst_rmdir();
-
 }
