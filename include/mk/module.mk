@@ -43,4 +43,4 @@ endif
 # missing or module build failure).
 %.ko: %.c
 	-$(MAKE) -C $(LINUX_DIR) M=$(abs_srcdir)
-	rm -rf *.mod.c *.o modules.order .tmp* .*.ko .*.cmd Module.symvers
+	rm -rf *.mod.c *.o *.ko.unsigned modules.order .tmp* .*.ko .*.cmd Module.symvers
