@@ -1,6 +1,6 @@
-/******************************************************************************
- *
+/*
  *   Copyright (c) International Business Machines  Corp., 2006
+ *   AUTHOR: Yi Yang <yyangcdl@cn.ibm.com>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -13,34 +13,14 @@
  *   the GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * NAME
- *      fchownat01.c
- *
+ *   along with this program;  if not, write to the Free Software Foundation,
+ *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+/*
  * DESCRIPTION
  *	This test case will verify basic function of fchownat
  *	added by kernel 2.6.16 or up.
- *
- * USAGE:  <for command-line>
- * fchownat01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- *      -c n : Run n copies simultaneously.
- *      -e   : Turn on errno logging.
- *      -i n : Execute test n times.
- *      -I x : Execute test for x seconds.
- *      -p   : Pause for SIGUSR1 before starting
- *      -P x : Pause for x seconds between iterations.
- *      -t   : Turn on syscall timing.
- *
- * Author
- *	Yi Yang <yyangcdl@cn.ibm.com>
- *
- * History
- *      08/23/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
- *
- *****************************************************************************/
+ */
 
 #define _GNU_SOURCE
 
@@ -53,38 +33,40 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
+#include "safe_macros.h"
+#include "fchownat.h"
+#include "lapi/fcntl.h"
 
-#define TEST_CASES 6
-#ifndef AT_FDCWD
-#define AT_FDCWD -100
-#endif
-void setup();
-void cleanup();
-void setup_every_copy();
+#define TESTFILE	"testfile"
+
+static void setup(void);
+static void cleanup(void);
+
+static int dirfd;
+static int fd;
+static int no_fd = -1;
+static int cu_fd = AT_FDCWD;
+
+static struct test_case_t {
+	int exp_ret;
+	int exp_errno;
+	int flag;
+	int *fds;
+	char *filenames;
+} test_cases[] = {
+	{0, 0, 0, &dirfd, TESTFILE},
+	{-1, ENOTDIR, 0, &fd, TESTFILE},
+	{-1, EBADF, 0, &no_fd, TESTFILE},
+	{-1, EINVAL, 9999, &dirfd, TESTFILE},
+	{0, 0, 0, &cu_fd, TESTFILE},
+};
 
 char *TCID = "fchownat01";
-int TST_TOTAL = TEST_CASES;
-char pathname[256];
-char testfile[256];
-char testfile2[256];
-char testfile3[256];
-int dirfd, fd, ret;
-int fds[TEST_CASES];
-char *filenames[TEST_CASES];
-int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, EINVAL, 0 };
-int flags[TEST_CASES] = { 0, 0, 0, 0, 9999, 0 };
-
-uid_t uid;
-gid_t gid;
-
-int myfchownat(int dirfd, const char *filename, uid_t owner, gid_t group,
-	       int flags)
-{
-	return ltp_syscall(__NR_fchownat, dirfd, filename, owner, group, flags);
-}
+int TST_TOTAL = ARRAY_SIZE(test_cases);
+static void fchownat_verify(const struct test_case_t *);
 
 int main(int ac, char **av)
 {
@@ -92,153 +74,71 @@ int main(int ac, char **av)
 	char *msg;
 	int i;
 
-	/* Disable test if the version of the kernel is less than 2.6.16 */
-	if ((tst_kvercmp(2, 6, 16)) < 0) {
-		tst_resm(TWARN, "This test can only run on kernels that are ");
-		tst_resm(TWARN, "2.6.16 and higher");
-		exit(0);
-	}
-
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/***************************************************************
-	 * perform global setup for test
-	 ***************************************************************/
 	setup();
 
-	/***************************************************************
-	 * check looping state if -c option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		setup_every_copy();
-
 		tst_count = 0;
-
-		/*
-		 * Call fchownat
-		 */
-		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(myfchownat
-			     (fds[i], filenames[i], uid, gid, flags[i]));
-
-			/* check return code */
-			if (TEST_ERRNO == expected_errno[i]) {
-
-				/***************************************************************
-				 * only perform functional verification if flag set (-f not given)
-				 ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "fchownat() returned the expected  errno %d: %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				}
-			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL,
-					 "fchownat() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
-		}
-
+		for (i = 0; i < TST_TOTAL; i++)
+			fchownat_verify(&test_cases[i]);
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
-
-	return (0);
+	tst_exit();
 }
 
-void setup_every_copy()
+static void setup(void)
 {
-	/* Initialize test dir and file names */
-	sprintf(pathname, "fchownattestdir%d", getpid());
-	sprintf(testfile, "fchownattestfile%d.txt", getpid());
-	sprintf(testfile2, "/tmp/fchownattestfile%d.txt", getpid());
-	sprintf(testfile3, "fchownattestdir%d/fchownattestfile%d.txt", getpid(),
-		getpid());
-
-	ret = mkdir(pathname, 0700);
-	if (ret < 0) {
-		perror("mkdir: ");
-		exit(-1);
-	}
-
-	dirfd = open(pathname, O_DIRECTORY);
-	if (dirfd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	fd = open(testfile, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	fd = open(testfile2, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	fd = open(testfile3, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	fds[0] = fds[1] = fds[4] = dirfd;
-	fds[2] = fd;
-	fds[3] = 100;
-	fds[5] = AT_FDCWD;
-
-	filenames[0] = filenames[2] = filenames[3] = filenames[4] =
-	    filenames[5] = testfile;
-	filenames[1] = testfile2;
-}
-
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
-{
-	/* Set uid and gid */
-	uid = geteuid();
-	gid = getegid();
+	if ((tst_kvercmp(2, 6, 16)) < 0)
+		tst_brkm(TCONF, NULL, "This test needs kernel 2.6.16 or newer");
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
+
+	tst_tmpdir();
+
+	dirfd = SAFE_OPEN(cleanup, "./", O_DIRECTORY);
+
+	SAFE_TOUCH(cleanup, TESTFILE, 0600, NULL);
+
+	fd = SAFE_OPEN(cleanup, "testfile2", O_CREAT | O_RDWR, 0600);
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void fchownat_verify(const struct test_case_t *test)
 {
-	/* Remove them */
-	char tmppathname[256];
-	strcpy(tmppathname, pathname);
+	TEST(fchownat(*(test->fds), test->filenames, geteuid(),
+		      getegid(), test->flag));
 
-	close(fd);
-	unlink(testfile);
-	unlink(testfile2);
-	unlink(testfile3);
-	rmdir(pathname);
+	if (TEST_RETURN != test->exp_ret) {
+		tst_resm(TFAIL | TTERRNO,
+			 "fchownat() returned %ld, expected %d, errno=%d",
+			 TEST_RETURN, test->exp_ret, test->exp_errno);
+		return;
+	}
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+	if (TEST_ERRNO == test->exp_errno) {
+		tst_resm(TPASS | TTERRNO,
+			 "fchownat() returned the expected errno %d: %s",
+			 test->exp_ret, strerror(test->exp_errno));
+	} else {
+		tst_resm(TFAIL | TTERRNO,
+			 "fchownat() failed unexpectedly; expected: %d - %s",
+			 test->exp_errno, strerror(test->exp_errno));
+	}
+}
+
+static void cleanup(void)
+{
+	if (fd > 0)
+		close(fd);
+
+	if (dirfd > 0)
+		close(dirfd);
+
+	tst_rmdir();
+
 	TEST_CLEANUP;
-
 }
