@@ -46,7 +46,6 @@ char *TCID = "swapoff02";
 int TST_TOTAL = 3;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-int need_swapfile_cleanup = 0;
 
 static int exp_enos[] = { EPERM, EINVAL, ENOENT, 0 };
 
@@ -192,42 +191,18 @@ static void setup(void)
 			 "Cannot do swapon on a file located on a nfs filesystem");
 	}
 
-	if (!tst_cwd_has_free(65536)) {
+	if (!tst_cwd_has_free(1)) {
 		tst_brkm(TBROK, cleanup,
 			 "Insufficient disk space to create swap file");
 	}
 
-	/*create file */
-	if (system
-	    ("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 > tmpfile"
-	     " 2>&1") != 0) {
-		tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-	}
-
-	/* make above file a swap file */
-	if (system("mkswap ./swapfile01 > tmpfile 2>&1") != 0) {
-		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
-	}
-
-	if (ltp_syscall(__NR_swapon, "./swapfile01", 0) != 0) {
-		tst_brkm(TBROK, cleanup, "Failed to turn on the swap file."
-			 " skipping  the test iteration");
-	}
-
-	need_swapfile_cleanup = 1;
+	if (tst_fill_file("./swapfile01", 0x00, 1024, 1))
+		tst_brkm(TBROK, cleanup, "Failed to create swapfile");
 }
 
 static void cleanup(void)
 {
 	TEST_CLEANUP;
-
-	if (need_swapfile_cleanup
-	    && (ltp_syscall(__NR_swapoff, "./swapfile01") != 0)) {
-		tst_resm(TWARN,
-			 " Failed to turn off swap file. System reboot"
-			 " after execution of LTP test suite is"
-			 " recommended.");
-	}
 
 	tst_rmdir();
 }
