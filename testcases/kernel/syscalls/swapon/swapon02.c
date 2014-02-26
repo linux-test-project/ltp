@@ -13,75 +13,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**************************************************************************
- *
- *    TEST IDENTIFIER	  : swapon02
- *
- *    EXECUTED BY	  : root / superuser
- *
- *    TEST TITLE	  : Test checking for basic error conditions
- *    		            for swapon(2)
- *
- *    TEST CASE TOTAL	  : 5
- *
- *    AUTHOR	 	  : Aniruddha Marathe <aniruddha.marathe@wipro.com> and
- *                          Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com> for
- *                          the EBUSY test case
- *
- *    SIGNALS
- * 		 Uses SIGUSR1 to pause before test if option set.
- * 		  (See the parse_opts(3) man page).
- *
- *    DESCRIPTION
+/*
  *		  This test case checks whether swapon(2) system call  returns
  *		  1. ENOENT when the path does not exist
  *		  2. EINVAL when the path exists but is invalid
  *		  3. EPERM when user is not a superuser
  *		  4. EBUSY when the specified path is already being used as a swap area
- *		$
- * 		  Setup:
- *		    Setup signal handling.
- *		    Pause for SIGUSR1 if option specified.
- *		   1. For testing error on invalid user, change the effective uid
- *
- * 		  Test:
- *		    Loop if the proper options are given.
- *		    Execute system call.
- *		    Check return code, if system call fails with errno == expected errno
- *	 	    Issue syscall passed with expected errno
- *		    Otherwise,
- *		    Issue syscall failed to produce expected errno
- *
- * 		  Cleanup:
- * 		    Do cleanup for the test.
- * 		  $
- * USAGE:  <for command-line>
- *  swapon02 [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where
- *		  -e   : Turn on errno logging.
- *		  -i n : Execute test n times.
- *		  -I x : Execute test for x seconds.
- *		  -p   : Pause for SIGUSR1 before starting
- *		  -P x : Pause for x seconds between iterations.
- *		  -t   : Turn on syscall timing.
- *
- *RESTRICTIONS:
- *Incompatible with kernel versions below 2.1.35.
- *Incompatible if MAX_SWAPFILES definition in later kernels is changed
- * -c option can't be used.
- *
- *CHANGES:
- * 2005/01/01  Add extra check to stop test if swap file is on tmpfs
- *             -Ricky Ng-Adam (rngadam@yahoo.com)
- * 01/02/03  Added fork to handle SIGSEGV generated when the intentional EPERM
- * error for hitting MAX_SWAPFILES is hit.
- * -Robbie Williamson <robbiew@us.ibm.com>
- * 05/17/07  Fixing the test description and added the EBUSY test case
- *           - Ricardo Salveti de Araujo (rsalveti@linux.vnet.ibm.com)
- * 08/16/07  Removed the the 'more than MAX_SWAPFILES swapfiles in use' test
- * case as now we have a separated file only for this test.
- *           - Ricardo Salveti de Araujo (rsalveti@linux.vnet.ibm.com)
- *****************************************************************************/
+ */
 
 #include <unistd.h>
 #include <errno.h>
@@ -101,22 +39,19 @@
 #include "swaponoff.h"
 #include "libswapon.h"
 
-static void setup();
-static void cleanup();
-static int setup01();
-static int cleanup01();
-static int setup02();
-static int setup03();
-static int cleanup03();
-void handler(int);
+static void setup(void);
+static void cleanup(void);
+static int setup01(void);
+static int cleanup01(void);
+static int setup02(void);
+static int setup03(void);
+static int cleanup03(void);
 
 char *TCID = "swapon02";
 int TST_TOTAL = 4;
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
 
-struct utsname uval;
-char *kmachine;
+static char nobody_uid[] = "nobody";
+static struct passwd *ltpuser;
 
 static int exp_enos[] = { EPERM, EINVAL, ENOENT, EBUSY, 0 };
 
@@ -145,8 +80,6 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	uname(&uval);
-	kmachine = uval.machine;
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -161,7 +94,6 @@ int main(int ac, char **av)
 					 " Skipping test", i);
 				continue;
 			} else {
-				/* run the test */
 				TEST(ltp_syscall(__NR_swapon,
 					testcase[i].path, 0));
 			}
@@ -206,17 +138,17 @@ int main(int ac, char **av)
 				}
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
-		}		/*End of TEST LOOPS */
-	}			/*End of TEST LOOPING */
+		}
+	}
 
 	cleanup();
 	tst_exit();
-}				/*End of main */
+}
 
 /*
  * setup01() - This function creates the file and sets the user as nobody
  */
-int setup01()
+static int setup01(void)
 {
 	make_swapfile(cleanup, "swapfile01");
 
@@ -231,13 +163,13 @@ int setup01()
 		perror("seteuid");
 		return -1;
 	}
-	return 0;		/* user switched to nobody */
+	return 0;
 }
 
 /*
  * cleanup01() - switch back to user root and gives swapoff to the swap file
  */
-int cleanup01()
+static int cleanup01(void)
 {
 	if (seteuid(0) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
@@ -250,7 +182,7 @@ int cleanup01()
 /*
  * setup02() - create a normal file, to be used with swapon
  */
-int setup02()
+static int setup02(void)
 {
 	int fd;
 	fd = creat("nofile", S_IRWXU);
@@ -263,7 +195,7 @@ int setup02()
 /*
  * setup03() - This function creates the swap file and turn it on
  */
-int setup03()
+static int setup03(void)
 {
 	int res = 0;
 
@@ -283,7 +215,7 @@ int setup03()
 /*
  * cleanup03() - clearing the turned on swap file
  */
-int cleanup03()
+static int cleanup03(void)
 {
 	/* give swapoff to the test swap file */
 	if (ltp_syscall(__NR_swapoff, "alreadyused") != 0) {
@@ -296,19 +228,13 @@ int cleanup03()
 	return 0;
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	tst_tmpdir();
 
@@ -323,19 +249,10 @@ void setup()
 	}
 
 	TEST_PAUSE;
-
 }
 
-/*
-* cleanup() - Performs one time cleanup for this test at
-* completion or premature exit
-*/
-void cleanup()
+void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();

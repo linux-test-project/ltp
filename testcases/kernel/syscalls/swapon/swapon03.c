@@ -76,11 +76,11 @@
 #include "swaponoff.h"
 #include "libswapon.h"
 
-void setup();
-void cleanup();
-int setup_swap();
-int clean_swap();
-int check_and_swapoff(char *filename);
+static void setup(void);
+static void cleanup(void);
+static int setup_swap(void);
+static int clean_swap(void);
+static int check_and_swapoff(const char *filename);
 
 char *TCID = "swapon03";
 int TST_TOTAL = 1;
@@ -88,9 +88,6 @@ int TST_TOTAL = 1;
 static int exp_enos[] = { EPERM, 0 };
 
 static int swapfiles;		/* Number of swapfiles turned on */
-
-struct utsname uval;
-char *kmachine;
 
 /* Paths for files that we'll use to test */
 int testfiles = 3;
@@ -103,7 +100,8 @@ static struct swap_testfile_t {
 	"thirdswapfile"}
 };
 
-int expected_errno = EPERM;	/* Expected errno when doing the test */
+/* Expected errno when doing the test */
+int expected_errno = EPERM;
 
 int main(int ac, char **av)
 {
@@ -113,16 +111,8 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/***************************************************************
-	 * perform global setup for test
-	 ***************************************************************/
-	uname(&uval);
-	kmachine = uval.machine;
 	setup();
 
-	/***************************************************************
-	 * check looping state if -i option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
@@ -200,17 +190,17 @@ int main(int ac, char **av)
 
 }
 
-/***************************************************************
- * setup_swap() - Create 33 and activate 30 swapfiles.
- ***************************************************************/
-int setup_swap()
+/*
+ * Create 33 and activate 30 swapfiles.
+ */
+static int setup_swap(void)
 {
 	pid_t pid;
-	int j, fd;		/*j is loop counter, fd is file descriptor */
-	int status;		/* used for fork */
+	int j, fd;
+	int status;
 	int res = 0;
-	char filename[15];	/* array to store new filename */
-	char buf[BUFSIZ + 1];	/* temp buffer for reading /proc/swaps */
+	char filename[15];
+	char buf[BUFSIZ + 1];
 
 	/* Find out how many swapfiles (1 line per entry) already exist */
 	swapfiles = 0;
@@ -298,10 +288,10 @@ int setup_swap()
 
 }
 
-/***************************************************************
- * clean_swap() - clearing all turned on swapfiles
- ***************************************************************/
-int clean_swap()
+/*
+ * Turn off all swapfiles previously turned on
+ */
+static int clean_swap(void)
 {
 	int j;
 	char filename[FILENAME_MAX];
@@ -333,11 +323,10 @@ int clean_swap()
 	return 0;
 }
 
-/***************************************************************
- * check_and_swapoff() - check if the file is at /proc/swaps and
- * 			 remove it giving swapoff
- ***************************************************************/
-int check_and_swapoff(char *filename)
+/*
+ * Check if the file is at /proc/swaps and remove it giving swapoff
+ */
+static int check_and_swapoff(const char *filename)
 {
 	char cmd_buffer[256];
 	int rc = -1;
@@ -367,24 +356,15 @@ int check_and_swapoff(char *filename)
 	}
 
 	return rc;
-
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test
- ***************************************************************/
-void setup()
+static void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	tst_tmpdir();
 
@@ -402,21 +382,11 @@ void setup()
 
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* Remove any remaining swap files */
 	clean_swap();
 
 	tst_rmdir();
-
 }

@@ -14,64 +14,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**************************************************************************
- *
- *    TEST IDENTIFIER	: swapon1
- *
- *    EXECUTED BY	: root / superuser
- *
- *    TEST TITLE	: Basic test for swapon(2)
- *
- *    TEST CASE TOTAL	: 1
- *
- *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *    This is a Phase I test for the swapon(2) system call.
- *    It is intended to provide a limited exposure of the system call.
- *
- * 	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *	  Create a temporary directory.
- *	  Create file of size 32Mb .
- *	  Make this file as swap file using mkswap(8)
- *
- * 	Test:
- *	 Loop if the proper options are given.
- *	 Turn on the swapfile to test the system call
- *	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- * swapon01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
- * where:
- * 	-c n : run n copies simultaneously.
- *	-e   : Turn on errno logging.
- *	-i n : Execute test n times.
- *	-I x : Execute test for x seconds.
- *	-p   : Pause for SIGUSR1 before starting
- *	-P x : Pause for x seconds between iterations.
- *	-t   : Turn on syscall timing.
- *
- *RESTRICTIONS:
- * Not compatible with kernel versions below 2.1.35
- *
- *CHANGES:
- * 2005/01/01  Add extra check to stop test if insufficient disk space in dir
- *             -Ricky Ng-Adam (rngadam@yahoo.com)
- * 2005/01/01  Add extra check to stop test if swap file is on tmpfs
- *             -Ricky Ng-Adam (rngadam@yahoo.com)
- *****************************************************************************/
+
+ /*
+  * Checks that swapon() succeds with swapfile.
+  */
 
 #include <unistd.h>
 #include <errno.h>
@@ -83,8 +29,8 @@
 #include "swaponoff.h"
 #include "libswapon.h"
 
-static void setup();
-static void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "swapon01";
 int TST_TOTAL = 1;
@@ -106,7 +52,6 @@ int main(int ac, char **av)
 
 		TEST(ltp_syscall(__NR_swapon, "./swapfile01", 0));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "swapon(2) Failed to turn on"
@@ -123,22 +68,17 @@ int main(int ac, char **av)
 					 " test suite is" " recommended.");
 			}
 		}
-	}			/*End for TEST_LOOPING */
+	}
 
 	cleanup();
 	tst_exit();
-
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 
@@ -157,18 +97,9 @@ void setup()
 	make_swapfile(cleanup, "swapfile01");
 }
 
-/*
- * cleanup() - Performs one time cleanup for this test at
- * completion or premature exit
- */
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }
