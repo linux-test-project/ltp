@@ -157,6 +157,11 @@ static void cleanup(void)
 static void check_and_print(char *advice)
 {
 	if (TEST_RETURN == -1) {
+		if (TEST_ERRNO == ENOTSUP && !strcmp(advice, "MADV_REMOVE")) {
+			tst_resm(TCONF, "madvise MADV_REMOVE returned ENOTSUP"
+				 " CONFIG_TMPFS=y not in kernel .config?");
+			return;
+		}
 		tst_resm(TFAIL,
 			 "madvise test for %s failed with "
 			 "return = %ld, errno = %d : %s",
