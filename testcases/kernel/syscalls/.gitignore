@@ -151,6 +151,7 @@
 /fchown/fchown05
 /fchown/fchown05_16
 /fchownat/fchownat01
+/fchownat/fchownat02
 /fcntl/fcntl01
 /fcntl/fcntl01_64
 /fcntl/fcntl02
