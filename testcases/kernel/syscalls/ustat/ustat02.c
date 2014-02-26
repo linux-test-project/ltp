@@ -14,93 +14,46 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**************************************************************************
- *
- *    TEST IDENTIFIER	: ustat02
- *
- *
- *    EXECUTED BY	: Anyone
- *
- *    TEST TITLE	: Test checking for basic error conditions
- *    				 for ustat(2)
- *
- *    TEST CASE TOTAL	: 2
- *       $
- *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *	This test case checks whether ustat(2) system call  returns
- *	appropriate error number for invalid
- *	dev_t parameter. Next, it checks for bad address paramater.
- *
- * 	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *	  For testing error on invalid parameter, set dev_num to -1
- *
- * 	Test:
- *	  Loop if the proper options are given.
- *	  Execute system call with invaid flag parameter
- *	  and then for invalid user
- *	  Check return code, if system call fails with errno == expected errno
- *		Issue syscall passed with expected errno
- *	  Otherwise,
- *	  Issue syscall failed to produce expected errno
- *
- * 	Cleanup:
- * 	  Do cleanup for the test.
- * 	 $
- * USAGE:  <for command-line>
- *  ustat02 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where
- *  	-c n: run n copies simultaneously
- *	-e   : Turn on errno logging.
- *	-i n : Execute test n times.
- *	-I x : Execute test for x seconds.
- *	-p   : Pause for SIGUSR1 before starting
- *	-P x : Pause for x seconds between iterations.
- *	-t   : Turn on syscall timing.
- *
- *RESTRICTIONS: None
- *****************************************************************************/
+
+/*
+ * Test whether ustat(2) system call returns appropriate error number for
+ * invalid dev_t parameter and for bad address paramater.
+ */
+
+#include <unistd.h>
+#include <ustat.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "test.h"
 #include "usctest.h"
-#include <sys/types.h>
-#include <unistd.h>		/* libc[45] */
-#include <ustat.h>		/* glibc2 */
-#include <sys/stat.h>
+#include "safe_macros.h"
 
-static void setup();
-static void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "ustat02";
 
 static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
+static dev_t invalid_dev = -1;
+static dev_t root_dev;
+struct ustat ubuf;
+
 static struct test_case_t {
-	char *err_desc;		/*error description */
-	int exp_errno;		/* expected error number */
-	char *exp_errval;	/*Expected errorvalue string */
-} testcase[] = {
-	{
-	"Invalid parameter", EINVAL, "EINVAL"},
+	char *err_desc;
+	int exp_errno;
+	char *exp_errval;
+	dev_t *dev;
+	struct ustat *buf;
+} tc[] = {
+	{"Invalid parameter", EINVAL, "EINVAL", &invalid_dev, &ubuf},
 #ifndef UCLINUX
-	    /* Skip since uClinux does not implement memory protection */
-	{
-	"Bad address", EFAULT, "EFAULT"}
+	{"Bad address", EFAULT, "EFAULT", &root_dev, (void*)-1}
 #endif
 };
 
-int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);
-
-dev_t dev_num[2];
-struct ustat *ubuf;
-struct stat *buf;
+int TST_TOTAL = ARRAY_SIZE(tc);
 
 int main(int ac, char **av)
 {
@@ -114,86 +67,50 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
-			if (i == 0) {
-				TEST(ustat(dev_num[i], ubuf));
-			} else {
-				TEST(ustat(dev_num[i], (struct ustat *)-1));
-			}
+			TEST(ustat(*tc[i].dev, tc[i].buf));
 
 			if ((TEST_RETURN == -1)
-			    && (TEST_ERRNO == testcase[i].exp_errno)) {
+			    && (TEST_ERRNO == tc[i].exp_errno)) {
 				tst_resm(TPASS,
 					 "ustat(2) expected failure;"
 					 " Got errno - %s : %s",
-					 testcase[i].exp_errval,
-					 testcase[i].err_desc);
+					 tc[i].exp_errval, tc[i].err_desc);
 			} else {
-				tst_resm(TFAIL, "ustat(2) failed to produce"
+				tst_resm(TFAIL | TTERRNO,
+				         "ustat(2) failed to produce"
 					 " expected error; %d, errno"
-					 ": %s and got %d",
-					 testcase[i].exp_errno,
-					 testcase[i].exp_errval, TEST_ERRNO);
+					 ": %s",
+					 tc[i].exp_errno, tc[i].exp_errval);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-		}		/*End of TEST LOOPS */
+		}
 	}
 
-	/*Clean up and exit */
 	cleanup();
-
 	tst_exit();
-}				/*End of main */
+}
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup()
+static void setup(void)
 {
+	struct stat buf;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
-	dev_num[0] = -1;
+	/* Find a valid device number */
+	SAFE_STAT(cleanup, "/", &buf);
 
-	/* Allocating memory for ustat and stat structure variables */
-	if ((ubuf = (struct ustat *)malloc(sizeof(struct ustat))) == NULL) {
-		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
-	}
-
-	if ((buf = (struct stat *)malloc(sizeof(struct stat))) == NULL) {
-		free(ubuf);
-		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
-	}
-
-	/* Finding out a valid device number */
-	if (stat("/", buf) != 0) {
-		free(buf);
-		free(ubuf);
-		tst_brkm(TBROK, NULL, "stat(2) failed. Exiting without"
-			 "invoking ustat(2)");
-	}
-	dev_num[1] = buf->st_dev;
+	root_dev = buf.st_dev;
 }
 
-/*
-* cleanup() - Performs one time cleanup for this test at
-* completion or premature exit
-*/
-void cleanup()
+static void cleanup(void)
 {
-	free(ubuf);
-	free(buf);
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
