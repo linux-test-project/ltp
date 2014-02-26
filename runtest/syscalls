@@ -554,7 +554,7 @@ mknod03 mknod03
 mknod04 mknod04
 mknod05 mknod05
 mknod06 mknod06
-mknod07 mknod07
+mknod07 mknod07 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 mknod08 mknod08
 mknod09 mknod09
 
