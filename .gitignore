@@ -59,3 +59,5 @@ logfile.*
 /lib/tests/tst_checkpoint_parent
 /lib/tests/tst_checkpoint_parent_exits
 /lib/tests/tst_process_state
+/lib/tests/tst_cleanup_once
+/lib/tests/tst_safe_macros
