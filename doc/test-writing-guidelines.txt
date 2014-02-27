@@ -612,6 +612,42 @@ LTP_ALIGN(x, a)
 
 Aligns the x to be next multiple of a. The a must be power of 2.
 
+2.2.11 Filesystem type detection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some tests are known to fail on certain filesytems (you cannot swap on TMPFS,
+there are unimplemented fcntl() etc.).
+
+If your test needs to be skipped on certain filesystems use the interface
+bellow:
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_fs_type.h"
+
+	/*
+	 * Unsupported only on NFS.
+	 */
+	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC) {
+		tst_brkm(TCONF, cleanup,
+		         "Test not supported on NFS filesystem");
+	}
+
+	/*
+	 * Unsupported on NFS, TMPFS and RAMFS
+	 */
+	long type;
+
+	switch ((type = tst_fs_type(cleanup, "."))) {
+	case TST_NFS_MAGIC:
+	case TST_TMPFS_MAGIC:
+	case TST_RAMFS_MAGIC:
+		tst_brkm(TCONF, cleanup, "Test not supported on %s filesytem",
+		         tst_fs_type_name(type));
+	break;
+	}
+-------------------------------------------------------------------------------
+
 3. Test Contribution Checklist
 ------------------------------
 

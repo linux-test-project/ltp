@@ -49,6 +49,7 @@
 #include <inttypes.h>
 #include "usctest.h"
 #include "test.h"
+#include "tst_fs_type.h"
 
 #define SKIP 0x0c00
 #if SKIP == F_RDLCK || SKIP== F_WRLCK
@@ -990,12 +991,9 @@ int main(int ac, char **av)
 
 	setup();		/* global setup */
 
-	/*
-	 * check if the current filesystem is nfs
-	 */
-	if (tst_is_cwd_nfs()) {
+	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC) {
 		tst_brkm(TCONF, cleanup,
-			 "Cannot do fcntl on a file located on an NFS filesystem");
+			 "Cannot do fcntl on a file on NFS filesystem");
 	}
 
 	/* Check for looping state if -i option is given */

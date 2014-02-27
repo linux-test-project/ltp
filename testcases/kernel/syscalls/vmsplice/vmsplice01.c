@@ -54,6 +54,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "tst_fs_type.h"
 
 #define SPLICE_TEST_BLOCK_SIZE (1<<17)	/* 128K */
 
@@ -215,7 +216,7 @@ static int vmsplice_test(void)
 		/*
 		 * check if the current filesystem is nfs
 		 */
-		if (tst_is_cwd_nfs()) {
+		if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC) {
 			if (flag == 1)
 				tst_resm(TINFO, "vmplice() passes");
 			tst_brkm(TCONF, cleanup, "Cannot do splice() "

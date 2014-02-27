@@ -51,6 +51,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "tst_fs_type.h"
 
 #define SPLICE_TEST_BLOCK_SIZE 1024
 
@@ -95,13 +96,10 @@ int main(int ac, char **av)
 	 */
 	setup();
 
-	/*
-	 * check if the current filesystem of the test directory is nfs
-	 */
 	tst_tmpdir();
-	if (tst_is_cwd_nfs()) {
+	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC) {
 		tst_brkm(TCONF, cleanup,
-			 "Cannot do splice on a file located on an NFS filesystem");
+			 "Cannot do splice on a file on NFS filesystem");
 	}
 	tst_rmdir();
 

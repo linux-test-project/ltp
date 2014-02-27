@@ -95,6 +95,7 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
+#include "tst_fs_type.h"
 
 void setup();
 void cleanup();
@@ -110,6 +111,7 @@ int fd;
 int main(int ac, char **av)
 {
 	int lc;
+	long type;
 	char *msg;
 
     /***************************************************************
@@ -123,28 +125,14 @@ int main(int ac, char **av)
      ***************************************************************/
 	setup();
 
-	/*
-	 * check if the current filesystem is nfs
-	 */
-	if (tst_is_cwd_nfs()) {
+	switch ((type = tst_fs_type(cleanup, "."))) {
+	case TST_NFS_MAGIC:
+	case TST_RAMFS_MAGIC:
+	case TST_TMPFS_MAGIC:
 		tst_brkm(TCONF, cleanup,
-			 "Cannot do fcntl on a file located on an NFS filesystem");
-	}
-
-	/*
-	 * check if the current filesystem is tmpfs
-	 */
-	if (tst_is_cwd_tmpfs()) {
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do fcntl on a file located on an TMPFS filesystem");
-	}
-
-	/*
-	 * check if the current filesystem is ramfs
-	 */
-	if (tst_is_cwd_ramfs()) {
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do fcntl on a file located on an RAMFS filesystem");
+			 "Cannot do fcntl on a file on %s filesystem",
+			 tst_fs_type_name(type));
+	break;
 	}
 
 	/* set the expected errnos... */

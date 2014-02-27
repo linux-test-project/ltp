@@ -90,6 +90,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "tst_fs_type.h"
 
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRWXU | S_IRGRP | S_IWGRP| S_IROTH | S_IWOTH
@@ -114,6 +115,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* struct buffer to hold file info. */
 	int lc;
+	long type;
 	char *msg;
 	time_t modf_time, access_time;
 	time_t pres_time;	/* file modification/access/present time */
@@ -127,17 +129,13 @@ int main(int ac, char **av)
 
 	setup();
 
-	/*
-	 * check if the current filesystem is nfs
-	 */
-	if (tst_is_cwd_nfs()) {
+	switch ((type = tst_fs_type(cleanup, "."))) {
+	case TST_NFS_MAGIC:
+	case TST_V9FS_MAGIC:
 		tst_brkm(TCONF, cleanup,
-			 "Cannot do utime on a file located on an NFS filesystem");
-	}
-
-	if (tst_is_cwd_v9fs()) {
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do utime on a file located on an 9P filesystem");
+			 "Cannot do utime on a file on %s filesystem",
+			 tst_fs_type_name(type));
+	break;
 	}
 
 	/* set the expected errnos... */

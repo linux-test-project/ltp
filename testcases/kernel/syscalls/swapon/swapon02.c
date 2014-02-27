@@ -36,6 +36,7 @@
 #include "usctest.h"
 #include "config.h"
 #include "linux_syscall_numbers.h"
+#include "tst_fs_type.h"
 #include "swaponoff.h"
 #include "libswapon.h"
 
@@ -230,6 +231,8 @@ static int cleanup03(void)
 
 static void setup(void)
 {
+	long type;
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_EXP_ENOS(exp_enos);
@@ -238,14 +241,13 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	if (tst_is_cwd_tmpfs()) {
+	switch ((type = tst_fs_type(cleanup, "."))) {
+	case TST_NFS_MAGIC:
+	case TST_TMPFS_MAGIC:
 		tst_brkm(TCONF, cleanup,
-			 "Cannot do swapon on a file located on a tmpfs filesystem");
-	}
-
-	if (tst_is_cwd_nfs()) {
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do swapon on a file located on a nfs filesystem");
+			 "Cannot do swapon on a file on %s filesystem",
+			 tst_fs_type_name(type));
+	break;
 	}
 
 	TEST_PAUSE;

@@ -204,12 +204,6 @@ struct tst_kern_exv {
 
 int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers);
 
-/* lib/tst_is_cwd.c */
-int tst_is_cwd_nfs(void);
-int tst_is_cwd_v9fs(void);
-int tst_is_cwd_tmpfs(void);
-int tst_is_cwd_ramfs(void);
-
 /* lib/tst_cwd_has_free.c */
 int tst_cwd_has_free(int required_kib);
 
