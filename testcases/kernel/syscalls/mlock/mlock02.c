@@ -23,11 +23,20 @@
  *   1. mlock() fails with -1 return value and sets errno to ENOMEM,
  *      if some of the specified address range does not correspond to
  *      mapped pages in the address space of the process.
+ *   2. mlock() fails with -1 return value and sets errno to ENOMEM,
+ *      if (Linux  2.6.9  and  later)  the caller had a non-zero RLIMIT_MEMLOCK
+ *      soft resource limit, but tried to lock more memory than the limit
+ *      permitted.  This limit is not enforced if the process is privileged
+ *      (CAP_IPC_LOCK).
+ *   3. mlock() fails with -1 return value and sets errno to EPERM,
+ *      if (Linux 2.6.9 and later) the caller was not privileged (CAP_IPC_LOCK)
+ *      and its RLIMIT_MEMLOCK soft resource limit was 0.
  */
 
 #include <errno.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -40,14 +49,18 @@ char *TCID = "mlock02";
 static void setup(void);
 static void cleanup(void);
 static void test_enomem1(void);
+static void test_enomem2(void);
+static void test_eperm(void);
 static void mlock_verify(const void *, const size_t, const int);
 
 static size_t len;
+static struct rlimit original;
+static struct passwd *ltpuser;
 
-static void (*test_func[])(void) = { test_enomem1 };
+static void (*test_func[])(void) = { test_enomem1, test_enomem2, test_eperm };
 
 int TST_TOTAL = ARRAY_SIZE(test_func);
-static int exp_enos[] = { ENOMEM, 0 };
+static int exp_enos[] = { ENOMEM, EPERM, 0 };
 
 int main(int ac, char **av)
 {
@@ -73,11 +86,17 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	tst_require_root(NULL);
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
+	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
+
 	len = getpagesize();
+
+	SAFE_GETRLIMIT(cleanup, RLIMIT_MEMLOCK, &original);
 }
 
 static void test_enomem1(void)
@@ -109,6 +128,65 @@ static void test_enomem1(void)
 	SAFE_MUNMAP(cleanup, addr, len);
 
 	mlock_verify(addr, len, ENOMEM);
+}
+
+static void test_enomem2(void)
+{
+	void *addr;
+	struct rlimit rl;
+
+	if ((tst_kvercmp(2, 6, 9)) < 0) {
+		tst_resm(TCONF,
+			 "ENOMEM error value test for this condition needs "
+			 "kernel 2.6.9 or higher");
+		return;
+	}
+
+	rl.rlim_max = len - 1;
+	rl.rlim_cur = len - 1;
+	SAFE_SETRLIMIT(cleanup, RLIMIT_MEMLOCK, &rl);
+
+	addr = SAFE_MMAP(cleanup, NULL, len, PROT_READ,
+			 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
+
+	mlock_verify(addr, len, ENOMEM);
+
+	SAFE_SETEUID(cleanup, 0);
+
+	SAFE_MUNMAP(cleanup, addr, len);
+
+	SAFE_SETRLIMIT(cleanup, RLIMIT_MEMLOCK, &original);
+}
+
+static void test_eperm(void)
+{
+	void *addr;
+	struct rlimit rl;
+
+	if ((tst_kvercmp(2, 6, 9)) < 0) {
+		tst_resm(TCONF,
+			 "EPERM error value test needs kernel 2.6.9 or higher");
+		return;
+	}
+
+	rl.rlim_max = 0;
+	rl.rlim_cur = 0;
+	SAFE_SETRLIMIT(cleanup, RLIMIT_MEMLOCK, &rl);
+
+	addr = SAFE_MMAP(cleanup, NULL, len, PROT_READ,
+			 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
+
+	mlock_verify(addr, len, EPERM);
+
+	SAFE_SETEUID(cleanup, 0);
+
+	SAFE_MUNMAP(cleanup, addr, len);
+
+	SAFE_SETRLIMIT(cleanup, RLIMIT_MEMLOCK, &original);
 }
 
 static void mlock_verify(const void *addr, const size_t len, const int error)
