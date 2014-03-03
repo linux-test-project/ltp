@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *  AUTHOR		: Richard Logan
+ *  CO-PILOT		: William Roske
+ * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -28,86 +31,11 @@
  * For further information regarding this notice, see:
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- *
  */
-/* $Id: link05.c,v 1.5 2009/10/26 14:55:47 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: link05
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: multi links (EMLINK) negative test
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 2
- *
- *    WALL CLOCK TIME	: 3
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: Richard Logan
- *
- *    CO-PILOT		: William Roske
- *
- *    DATE STARTED	: 03/31/94
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- * 	1.) link(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *$
- *    DURATION
- * 	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- * 	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
- *
- *    INTERCASE DEPENDENCIES
- * 	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the link(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	link(2).
- *
- * 	Setup:
- * 	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- * 	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+
+/*
+ * Test if link(2) fails with EMLINK.
+ */
 
 #include <sys/types.h>
 #include <sys/fcntl.h>
@@ -117,37 +45,28 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-void setup();
-void cleanup();
-void help();
+static void setup(void);
+static void cleanup(void);
+static void help(void);
 
 char *TCID = "link05";
-#ifdef CRAY
-int TST_TOTAL = 2;
-#else
 int TST_TOTAL = 1;
-#endif
 
 #define BASENAME	"lkfile"
 
-char Basename[255];
-char Fname[255];
+static char fname[255];
 
-int Nflag = 0;
-char *Noptlinks;
+static char *links_arg;
 
-/* for test specific parse_opts options */
 option_t options[] = {
-	{"N:", &Nflag, &Noptlinks},	/* -N option */
+	{"N:", NULL, &links_arg},
 	{NULL, NULL, NULL}
 };
 
-int nlinks = 1000;
+static int nlinks = 1000;
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc;
@@ -156,185 +75,91 @@ int main(int ac, char **av)
 	int cnt;
 	char lname[255];
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL) {
+	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
-	if (Nflag) {
-		if (sscanf(Noptlinks, "%i", &nlinks) != 1) {
-			tst_brkm(TBROK, cleanup,
-				 "-N option invalid, must be numeric");
+	if (links_arg) {
+		nlinks = atoi(links_arg);
+
+		if (nlinks == 0) {
+			tst_brkm(TBROK, NULL,
+			         "nlinks is not a positive number");
 		}
 	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
 
 		for (cnt = 1; cnt < nlinks; cnt++) {
+			sprintf(lname, "%s%d", fname, cnt);
+			TEST(link(fname, lname));
 
-			sprintf(lname, "%s%d", Basename, cnt);
-			/*
-			 *  Call link(2)
-			 */
-			TEST(link(Fname, lname));
-
-			/* check return code */
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL,
 					 "link(%s, %s) Failed, errno=%d : %s",
-					 Fname, lname, TEST_ERRNO,
+					 fname, lname, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			}
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
-		if (STD_FUNCTIONAL_TEST) {
-			stat(Fname, &fbuf);
-
-			for (cnt = 1; cnt < nlinks; cnt++) {
-				sprintf(lname, "%s%d", Basename, cnt);
-
-				stat(lname, &lbuf);
-				if (fbuf.st_nlink <= 1 || lbuf.st_nlink <= 1 ||
-				    (fbuf.st_nlink != lbuf.st_nlink)) {
-
-					tst_resm(TFAIL,
-						 "link(%s, %s[1-%d]) ret %ld for %d files, stat values do not match %d %d",
-						 Fname, Basename, nlinks,
-						 TEST_RETURN, nlinks,
-						 fbuf.st_nlink, lbuf.st_nlink);
-					break;
-				}
-			}
-			if (cnt >= nlinks) {
-				tst_resm(TPASS,
-					 "link(%s, %s[1-%d]) ret %ld for %d files, stat linkcounts match %d",
-					 Fname, Basename, nlinks, TEST_RETURN,
-					 nlinks, fbuf.st_nlink);
-			}
-		} else
-			tst_count++;
-
-#ifdef CRAY
-/*
- * IRIX (xfs) systems do not have the 1000 link limit.
- * I tried 100000 links on 2/97 without error on IRIX 6.4.
- */
-		/*
-		 * Now check that one more link will put you over the top
-		 */
-		sprintf(lname, "%s%d", Basename, cnt);
-
-		/*
-		 *  Call link(2)
-		 */
-		TEST(link(Fname, lname));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			if (STD_FUNCTIONAL_TEST) {
-				if (TEST_ERRNO == EMLINK) {
-					tst_resm(TPASS,
-						 "link(%s, %s) ret %d on %d link, errno:%d",
-						 Fname, lname, TEST_RETURN,
-						 nlinks + 1, EMLINK);
-				} else {
-					tst_resm(TFAIL,
-						 "link(%s, %s) ret %d on %d link, errno:%d, expected -1, errno:%d",
-						 Fname, lname, TEST_RETURN,
-						 nlinks + 1, TEST_ERRNO,
-						 EMLINK);
-				}
-			} else
-				tst_count++;
-		} else {
-			tst_resm(TFAIL,
-				 "link(%s, %s) ret %d on %d link, expected -1, errno:%d",
-				 Fname, lname, TEST_RETURN, nlinks + 1, EMLINK);
-		}
-#endif /* CRAY */
+		SAFE_STAT(cleanup, fname, &fbuf);
 
 		for (cnt = 1; cnt < nlinks; cnt++) {
+			sprintf(lname, "%s%d", fname, cnt);
 
-			sprintf(lname, "%s%d", Basename, cnt);
+			SAFE_STAT(cleanup, lname, &lbuf);
+			if (fbuf.st_nlink <= 1 || lbuf.st_nlink <= 1 ||
+			    (fbuf.st_nlink != lbuf.st_nlink)) {
 
-			if (unlink(lname) == -1) {
-				tst_res(TWARN,
-					"unlink(%s) Failed, errno=%d : %s",
-					Fname, errno, strerror(errno));
+				tst_resm(TFAIL,
+					 "link(%s, %s[1-%d]) ret %ld for %d "
+				         "files, stat values do not match %d %d",
+					 fname, fname, nlinks,
+					 TEST_RETURN, nlinks,
+					 (int)fbuf.st_nlink, (int)lbuf.st_nlink);
+				break;
 			}
 		}
+		if (cnt >= nlinks) {
+			tst_resm(TPASS,
+				 "link(%s, %s[1-%d]) ret %ld for %d files,"
+			         "stat linkcounts match %d",
+				 fname, fname, nlinks, TEST_RETURN,
+				 nlinks, (int)fbuf.st_nlink);
+		}
 
+		for (cnt = 1; cnt < nlinks; cnt++) {
+			sprintf(lname, "%s%d", fname, cnt);
+			SAFE_UNLINK(cleanup, lname);
+		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
 
-/***************************************************************
- * help
- ***************************************************************/
-void help()
+static void help(void)
 {
 	printf("  -N #links : create #links hard links every iteration\n");
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+static void setup(void)
 {
-	int fd;
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	sprintf(Fname, "%s_%d", BASENAME, getpid());
-	if ((fd = open(Fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 Fname, errno, strerror(errno));
-	} else if (close(fd) == -1) {
-		tst_res(TWARN, "close(%s) Failed, errno=%d : %s",
-			Fname, errno, strerror(errno));
-	}
-	sprintf(Basename, "%s_%d.", BASENAME, getpid());
+	sprintf(fname, "%s_%d", BASENAME, getpid());
+	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
 }

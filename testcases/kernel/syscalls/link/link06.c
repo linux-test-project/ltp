@@ -1,76 +1,30 @@
 /*
- *
  * Copyright (C) Bull S.A. 2001
  * Copyright (c) International Business Machines  Corp., 2001
+ * 06/2002 Ported by Jacky Malcles
+ * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * Test Name: link06
- *
- * Test Description:
- *  Verify that, link() fails with -1 and sets errno to EACCES when
- *	 	 Write access to the directory containing newpath is
- *		 not allowed for the process's effective uid.
- *
- * Expected Result:
- *  link() should fail with return value -1 and sets expected errno.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *   Create temporary directory.
- *   Modify mode permissions on temporary directory: deny write access.
- *   Create regular file.
- *   Set UID to NOBODY
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
- *		Issue sys call fails with unexpected errno.
- *   Otherwise,
- *	Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Set UID to ROOT
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  link06 [-c n] [-e] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	06/2002 Ported by Jacky Malcles
- *
- * RESTRICTIONS:
- *  none.
- *
+ * Verify that, link() fails with -1 and sets errno to EACCES when Write access
+ * to the directory containing newpath is not allowed for the process's
+ * effective uid.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -84,151 +38,82 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-#define ROOT_USER	0
 #define NOBODY_USER	99
 #define MODE_TO S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IXOTH|S_IROTH
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "link06";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EACCES, 0 };
+static int exp_enos[] = { EACCES, 0 };
 
-char *file1, *file2;		/* oldpath and newpath */
+#define OLDPATH "oldpath"
+#define NEWPATH "newpath"
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	char *test_desc;	/* test specific error message */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		test_desc = "EACCES";
-
 		tst_count = 0;
 
-		/*
-		 *  Call link(2)
-		 */
-		TEST(link(file1, file2));
+		TEST(link(OLDPATH, NEWPATH));
 
-		/* Check return code from link(2) */
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "link() returned %ld,"
 				 "expected -1, errno=%d", TEST_RETURN,
 				 exp_enos[0]);
 		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			if (TEST_ERRNO == exp_enos[0]) {
+			if (TEST_ERRNO == EACCES) {
 				tst_resm(TPASS, "link() fails with expected "
 					 "error EACCES errno:%d", TEST_ERRNO);
 			} else {
-				tst_resm(TFAIL, "link() fails, %s, "
+				tst_resm(TFAIL, "link() fails with "
 					 "errno=%d, expected errno=%d",
-					 test_desc, TEST_ERRNO, exp_enos[0]);
+					 TEST_ERRNO, EACCES);
 			}
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+static void setup(void)
 {
-	char Path_name[PATH_MAX];	/* Buffer to hold current path */
-	int fd;
 	struct passwd *nobody_pwd;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
+	tst_require_root(NULL);
+
 	TEST_PAUSE;
 
 	tst_tmpdir();
-	/* Get the current working directory of the process */
-	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
 
 	/* Modify mode permissions on test directory */
-	if (chmod(Path_name, MODE_TO) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", Path_name);
-	}
+	SAFE_CHMOD(cleanup, ".", MODE_TO);
 
-	/* create regular file */
-	if ((fd = creat("regfile", 0777)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "creat(regfile, 0777) failed, errno:%d %s", errno,
-			 strerror(errno));
-	}
-	close(fd);
-
-	/* set paths for test */
-	file1 = "regfile";
-	file2 = "new_test_file";
-
-	if ((nobody_pwd = getpwnam("nobody")) == NULL) {
-		tst_brkm(TCONF | TERRNO, cleanup,
-			 "couldn't determine login information for nobody");
-	}
-
-	/* set effective user ID to "nobody"'s UID using seteuid */
-	if (seteuid(nobody_pwd->pw_uid) != 0) {
-		tst_brkm(TCONF | TERRNO, cleanup,
-			 "seteuid to %d for %s failed",
-			 nobody_pwd->pw_uid, nobody_pwd->pw_name);
-	}
-
+	SAFE_TOUCH(cleanup, OLDPATH, 0777, NULL);
+	nobody_pwd = SAFE_GETPWNAM(cleanup, "nobody");
+	SAFE_SETEUID(cleanup, nobody_pwd->pw_uid);
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/* set back effective user ID to ROOT_USER using seteuid */
-	if (seteuid(ROOT_USER) != 0) {
-		tst_resm(TFAIL | TERRNO, "seteuid to %d failed", ROOT_USER);
-	}
+	if (seteuid(0))
+		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
 }

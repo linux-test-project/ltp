@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *  AUTHOR		: Richard Logan
+ *  CO-PILOT		: William Roske
+ * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -30,118 +33,31 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link04.c,v 1.9 2009/10/26 14:55:47 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: link04
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Negative test cases for link(2).
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 14
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: Richard Logan
- *
- *    CO-PILOT		: William Roske
- *
- *    DATE STARTED	: 03/30/94
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- * 	1-14.) link(2) returns...(See Test_cases structure below)
- *
- *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *	Standard tst_res output formt.
- *$
- *    DURATION
- * 	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- * 	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
- *
- *    INTERCASE DEPENDENCIES
- * 	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the link(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	link(2).
- *
- * 	Setup:
- * 	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- * 	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
+/*
+ * Negative test cases for link(2).
+ *
+ * This test program should contain test cases where link will fail regardless
+ * of who executed it (i.e. joe-user or root)
+ */
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
-#include <sys/param.h>		/* for PATH_MAX */
+#include <sys/param.h>
 #include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-void setup();
-void cleanup();
+static char *bad_addr = 0;
 
-extern char *get_high_address();
-
-char *TCID = "link04";
-int TST_TOTAL = 14;
-
-int exp_enos[] = { 0, 0 };
-
-char *bad_addr = 0;
-
-int longpath_setup();
-int no_setup();
-int filepath_setup();
-int filepath2_setup();
-char Longpathname[PATH_MAX + 2];
+static char longpath[PATH_MAX + 2];
 #if !defined(UCLINUX)
-char High_address[64];
+char high_addr[64];
 #endif
-int dir_setup();
 
 struct test_case_t {
 	char *file1;
@@ -149,154 +65,104 @@ struct test_case_t {
 	char *file2;
 	char *desc2;
 	int exp_errno;
-	int (*setupfunc1) ();
-	int (*setupfunc2) ();
-} Test_cases[] = {
-	/* This test program should contain test cases where link */
-	/* will fail regardless of who executed it (i.e. joe-user or root) */
-
+} test_cases[] = {
 	/* first path is invalid */
-
-	{
-	"nonexistfile", "non-existent file", "nefile", "nefile",
-		    ENOENT, no_setup, no_setup}, {
-	"", "path is empty string", "nefile", "nefile",
-		    ENOENT, no_setup, no_setup}, {
-	"neefile/file", "path contains a non-existent file", "nefile",
-		    "nefile", ENOENT, no_setup, no_setup}, {
-	"regfile/file", "path contains a regular file", "nefile",
-		    "nefile", ENOTDIR, filepath_setup, no_setup}, {
-	Longpathname, "pathname too long", "nefile", "nefile",
-		    ENAMETOOLONG, longpath_setup, no_setup},
+	{"nonexistfile", "non-existent file", "nefile", "nefile", ENOENT},
+	{"", "path is empty string", "nefile", "nefile", ENOENT},
+	{"neefile/file", "path contains a non-existent file", "nefile",
+	 "nefile", ENOENT},
+	{"regfile/file", "path contains a regular file", "nefile", "nefile",
+	 ENOTDIR},
+	{longpath, "pathname too long", "nefile", "nefile", ENAMETOOLONG},
 #if !defined(UCLINUX)
-	{
-	High_address, "address beyond address space", "nefile",
-		    "nefile", EFAULT, no_setup, no_setup},
+	{high_addr, "address beyond address space", "nefile", "nefile", EFAULT},
 #endif
-	{
-	(char *)-1, "negative address", "nefile", "nefile",
-		    EFAULT, no_setup, no_setup},
-	    /* second path is invalid */
-	{
-	"regfile", "regfile", "", "empty string",
-		    ENOENT, no_setup, no_setup}, {
-	"regfile", "regfile", "neefile/file",
-		    "path contains a non-existent file", ENOENT,
-		    filepath_setup, no_setup}, {
-	"regfile", "regfile", "file/file",
-		    "path contains a regular file", ENOENT,
-		    filepath_setup, no_setup}, {
-	"regfile", "regfile", Longpathname, "pathname too long",
-		    ENAMETOOLONG, no_setup, longpath_setup},
+	{(char *)-1, "negative address", "nefile", "nefile", EFAULT},
+	/* second path is invalid */
+	{"regfile", "regfile", "", "empty string", ENOENT},
+	{"regfile", "regfile", "neefile/file",
+		    "path contains a non-existent file", ENOENT},
+	{"regfile", "regfile", "file/file",
+		    "path contains a regular file", ENOENT},
+	{"regfile", "regfile", longpath, "pathname too long", ENAMETOOLONG},
 #if !defined(UCLINUX)
-	{
-	"regfile", "regfile", High_address,
-		    "address beyond address space", EFAULT, no_setup, no_setup},
+	{"regfile", "regfile", high_addr,
+		    "address beyond address space", EFAULT},
 #endif
-	{
-	"regfile", "regfile", (char *)-1, "negative address",
-		    EFAULT, no_setup, no_setup},
-	    /* two existing files */
-	{
-	"regfile", "regfile", "regfile2", "regfile2",
-		    EEXIST, filepath_setup, filepath2_setup}, {
-	NULL, NULL, NULL, NULL, 0, no_setup, no_setup}
+	{"regfile", "regfile", (char *)-1, "negative address", EFAULT},
+	/* two existing files */
+	{"regfile", "regfile", "regfile2", "regfile2", EEXIST},
 };
 
-/***********************************************************************
- * Main
- ***********************************************************************/
+char *TCID = "link04";
+int TST_TOTAL = ARRAY_SIZE(test_cases);
+
+static void setup(void);
+static void cleanup(void);
+
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 	char *fname1, *fname2;
 	char *desc1, *desc2;
-	int ind;
+	int i;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc1 != NULL; ind++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
-			fname1 = Test_cases[ind].file1;
-			desc1 = Test_cases[ind].desc1;
-			fname2 = Test_cases[ind].file2;
-			desc2 = Test_cases[ind].desc2;
+			fname1 = test_cases[i].file1;
+			desc1 = test_cases[i].desc1;
+			fname2 = test_cases[i].file2;
+			desc2 = test_cases[i].desc2;
 
 #if !defined(UCLINUX)
-			if (fname1 == High_address)
+			if (fname1 == high_addr)
 				fname1 = get_high_address();
 
-			if (fname2 == High_address)
+			if (fname2 == high_addr)
 				fname2 = get_high_address();
 #endif
 
-			/*
-			 *  Call link(2)
-			 */
 			TEST(link(fname1, fname2));
 
-			/* check return code */
 			if (TEST_RETURN == -1) {
-				if (STD_FUNCTIONAL_TEST) {
-					if (TEST_ERRNO ==
-					    Test_cases[ind].exp_errno)
-						tst_resm(TPASS,
-							 "link(<%s>, <%s>) Failed, errno=%d",
-							 desc1, desc2,
-							 TEST_ERRNO);
-					else
-						tst_resm(TFAIL,
-							 "link(<%s>, <%s>) Failed, errno=%d, expected errno:%d",
-							 desc1, desc2,
-							 TEST_ERRNO,
-							 Test_cases
-							 [ind].exp_errno);
-				} else
-					tst_count++;
+				if (TEST_ERRNO == test_cases[i].exp_errno) {
+					tst_resm(TPASS | TTERRNO,
+						 "link(<%s>, <%s>)",
+						 desc1, desc2);
+				} else {
+					tst_resm(TFAIL | TTERRNO,
+						 "link(<%s>, <%s>) Failed "
+					         "expected errno: %d",
+						 desc1, desc2,
+						 test_cases[i].exp_errno);
+				}
 			} else {
 				tst_resm(TFAIL,
-					 "link(<%s>, <%s>) returned %ld, expected -1, errno:%d",
+					 "link(<%s>, <%s>) returned %ld, "
+				         "expected -1, errno:%d",
 					 desc1, desc2, TEST_RETURN,
-					 Test_cases[ind].exp_errno);
+					 test_cases[i].exp_errno);
 			}
 		}
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+static void setup(void)
 {
-	int ind;
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
@@ -304,124 +170,20 @@ void setup()
 	tst_tmpdir();
 
 #if !defined(UCLINUX)
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
-	Test_cases[6].file1 = bad_addr;
-	Test_cases[12].file2 = bad_addr;
+	bad_addr = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
+	                     MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+	test_cases[6].file1 = bad_addr;
+	test_cases[12].file2 = bad_addr;
 #endif
 
-	for (ind = 0; Test_cases[ind].desc1 != NULL; ind++) {
-		Test_cases[ind].setupfunc1();
-		Test_cases[ind].setupfunc2();
-	}
-
+	memset(longpath, 'a', PATH_MAX+1);
+	SAFE_TOUCH(cleanup, "regfile", 0777, NULL);
+	SAFE_TOUCH(cleanup, "regfile2", 0777, NULL);
+	SAFE_MKDIR(cleanup, "dir", 0777);
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
-}
-
-/******************************************************************
- *
- ******************************************************************/
-int no_setup()
-{
-	return 0;
-}
-
-/******************************************************************
- *
- ******************************************************************/
-int longpath_setup()
-{
-	int ind;
-
-	static int alreadycalled = 0;
-
-	if (alreadycalled)
-		return 0;
-	alreadycalled++;
-
-	for (ind = 0; ind <= PATH_MAX + 1; ind++) {
-		Longpathname[ind] = 'a';
-	}
-	return 0;
-
-}
-
-/******************************************************************
- *
- ******************************************************************/
-int filepath2_setup()
-{
-	int fd;
-	static int alreadycalled = 0;
-
-	if (alreadycalled)
-		return 0;
-	alreadycalled++;
-
-	if ((fd = creat("regfile2", 0777)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "creat(regfile2, 0777) failed, errno:%d %s", errno,
-			 strerror(errno));
-	}
-	close(fd);
-	return 0;
-}
-
-/******************************************************************
- *
- ******************************************************************/
-int filepath_setup()
-{
-	int fd;
-	static int alreadycalled = 0;
-
-	if (alreadycalled)
-		return 0;
-	alreadycalled++;
-
-	if ((fd = creat("regfile", 0777)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "creat(regfile, 0777) failed, errno:%d %s", errno,
-			 strerror(errno));
-	}
-	close(fd);
-	return 0;
-}
-
-/******************************************************************
- *
- ******************************************************************/
-int dir_setup()
-{
-	static int alreadycalled = 0;
-
-	if (alreadycalled)
-		return 0;
-	alreadycalled++;
-
-	if (mkdir("dir", 0777) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "mkdir(dir, 0700) Failed, errno=%d : %s",
-			 errno, strerror(errno));
-	}
-
-	return 0;
 }
