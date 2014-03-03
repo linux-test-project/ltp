@@ -196,5 +196,15 @@ int safe_lstat(const char *file, const int lineno, void (cleanup_fn)(void),
 #define SAFE_LSTAT(cleanup_fn, path, buf) \
 	safe_lstat(__FILE__, __LINE__, (cleanup_fn), (path), (buf))
 
+int safe_getrlimit(const char *file, const int lineno, void (cleanup_fn)(void),
+		   int resource, struct rlimit *rlim);
+#define SAFE_GETRLIMIT(cleanup_fn, resource, rlim) \
+	safe_getrlimit(__FILE__, __LINE__, (cleanup_fn), (resource), (rlim))
+
+int safe_setrlimit(const char *file, const int lineno, void (cleanup_fn)(void),
+		   int resource, const struct rlimit *rlim);
+#define SAFE_SETRLIMIT(cleanup_fn, resource, rlim) \
+	safe_setrlimit(__FILE__, __LINE__, (cleanup_fn), (resource), (rlim))
+
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */
