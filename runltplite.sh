@@ -37,6 +37,7 @@
 #
 #
 
+source "$(dirname $0)/runltp"
 
 setup()
 {
@@ -49,6 +50,9 @@ setup()
     export TMPBASE="/tmp"
     export TMP="${TMPBASE}/ltp-$$"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
+
+    export LTP_DEV=""
+    export LTP_DEV_FS_TYPE="ext2"
 
     [ -d $LTPROOT/testcases/bin ] ||
     {
@@ -85,6 +89,9 @@ usage()
     -p              Human readable format logfiles.
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
+    -b DEVICE       Some tests require an unmounted block device to run
+                    correctly.
+    -B LTP_DEV_FS_TYPE  The file system of test block devices.
 
     example: ${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
 
@@ -114,7 +121,7 @@ main()
 
     local scenfile=""
 
-    while getopts c:d:hi:l:m:No:pqr: arg
+    while getopts c:d:hi:l:m:No:pqr:b:B: arg
     do  case $arg in
         c)
 	    NUM_PROCS=$(($OPTARG))
@@ -170,6 +177,11 @@ main()
         q)  QUIET_MODE=" -q ";;
 
         r)  LTPROOT=$OPTARG;;
+
+        b)  DEVICE=$OPTARG;;
+
+        B)  LTP_DEV_FS_TYPE=$OPTARG;;
+
 
         \?) usage;;
         esac
@@ -304,6 +316,8 @@ main()
             exit 1
         }
     }
+
+    set_block_device
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
     PAN_COMMAND="${LTPROOT}/bin/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \

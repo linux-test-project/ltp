@@ -687,19 +687,7 @@ main()
     }
     }
 
-    if [ -z "$DEVICE" ]; then
-        create_block
-        if [ $? -ne 0 ]; then
-            echo "no block device was specified on commandline."
-            echo "Block device could not be created using loopback device"
-            echo "Tests which require block device are disabled."
-            echo "You can specify it with option -b"
-	else
-            LTP_DEV=$DEVICE
-        fi
-    else
-        LTP_DEV=$DEVICE
-    fi
+    set_block_device
 
     # here even if the user don't specify a big block device, we
     # also don't create the big block device.
@@ -981,14 +969,36 @@ create_block()
     fi
 }
 
+set_block_device()
+{
+    if [ -z "$DEVICE" ]; then
+        create_block
+        if [ $? -ne 0 ]; then
+            echo "no block device was specified on commandline."
+            echo "Block device could not be created using loopback device"
+            echo "Tests which require block device are disabled."
+            echo "You can specify it with option -b"
+	else
+            LTP_DEV=$DEVICE
+        fi
+    else
+        LTP_DEV=$DEVICE
+    fi
+}
+
 cleanup()
 {
     [ "$LOOP_DEV" ] && losetup -d $LOOP_DEV
     rm -rf ${TMP}
 }
 
-trap "cleanup" 0
-setup
-main "$@"
+
+LTP_SCRIPT="$(basename $0)"
+
+if [[ "$LTP_SCRIPT" == "runltp" ]]; then
+    trap "cleanup" 0
+    setup
+    main "$@"
+fi
 
 #vim: syntax=sh
