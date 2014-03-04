@@ -55,11 +55,11 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "lapi/fcntl.h"
+#include "mknodat.h"
 
 #define TEST_CASES 5
-#ifndef AT_FDCWD
-#define AT_FDCWD -100
-#endif
+
 void setup();
 void cleanup();
 void setup_every_copy();
@@ -76,11 +76,6 @@ char *filenames[TEST_CASES];
 int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
 
 dev_t dev;
-
-int mymknodat(int dirfd, const char *filename, mode_t mode, dev_t dev)
-{
-	return ltp_syscall(__NR_mknodat, dirfd, filename, mode, dev);
-}
 
 int main(int ac, char **av)
 {
@@ -119,7 +114,7 @@ int main(int ac, char **av)
 		 */
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			TEST(mymknodat(fds[i], filenames[i], S_IFREG, dev));
+			TEST(mknodat(fds[i], filenames[i], S_IFREG, dev));
 
 			/* check return code */
 			if (TEST_ERRNO == expected_errno[i]) {

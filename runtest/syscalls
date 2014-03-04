@@ -563,7 +563,8 @@ mknod08 mknod08
 mknod09 mknod09
 
 #mknodat test cases
-mknodat01 cd $LTPROOT/testcases/bin && chown root mknodat01 && chmod 04755 mknodat01 && mknodat01
+mknodat01 mknodat01
+mknodat02 mknodat02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
 mlock01 mlock01
 mlock02 mlock02
