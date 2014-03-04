@@ -530,3 +530,33 @@ int safe_setrlimit(const char *file, const int lineno, void (cleanup_fn)(void),
 
 	return rval;
 }
+
+int safe_chmod(const char *file, const int lineno,
+               void (cleanup_fn)(void), const char *path, mode_t mode)
+{
+	int rval;
+
+	rval = chmod(path, mode);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "chmod failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_fchmod(const char *file, const int lineno,
+                void (cleanup_fn)(void), int fd, mode_t mode)
+{
+	int rval;
+
+	rval = fchmod(fd, mode);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "fchmod failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}

@@ -206,5 +206,15 @@ int safe_setrlimit(const char *file, const int lineno, void (cleanup_fn)(void),
 #define SAFE_SETRLIMIT(cleanup_fn, resource, rlim) \
 	safe_setrlimit(__FILE__, __LINE__, (cleanup_fn), (resource), (rlim))
 
+int safe_chmod(const char *file, const int lineno, void (cleanup_fn)(void),
+	       const char *path, mode_t mode);
+#define SAFE_CHMOD(cleanup_fn, path, mode) \
+	safe_chmod(__FILE__, __LINE__, (cleanup_fn), (path), (mode))
+
+int safe_fchmod(const char *file, const int lineno, void (cleanup_fn)(void),
+	        int fd, mode_t mode);
+#define SAFE_FCHMOD(cleanup_fn, fd, mode) \
+	safe_fchmod(__FILE__, __LINE__, (cleanup_fn), (fd), (mode))
+
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */
