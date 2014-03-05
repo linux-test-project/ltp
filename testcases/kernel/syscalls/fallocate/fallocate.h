@@ -23,8 +23,10 @@
 
 #include <sys/types.h>
 #include <endian.h>
+#include "config.h"
 #include "linux_syscall_numbers.h"
 
+#if !defined(HAVE_FALLOCATE)
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
 	/* Deal with 32bit ABIs that have 64bit syscalls. */
@@ -40,5 +42,6 @@ static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 						  (off_t) len));
 #endif
 }
+#endif
 
 #endif /* FALLOCATE_H */
