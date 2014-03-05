@@ -31,11 +31,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "linux_syscall_numbers.h"
-
-#ifndef AT_FDCWD
-# define AT_FDCWD -100
-#endif
+#include "lapi/mkdirat.h"
 
 static void setup(void);
 static void cleanup(void);
@@ -125,7 +121,10 @@ static void setup(void)
 	SAFE_MKDIR(cleanup, "test_dir/test_eloop", DIR_MODE);
 	SAFE_SYMLINK(cleanup, "../test_eloop",
 		     "test_dir/test_eloop/test_eloop");
-
+	/*
+	 * NOTE: the ELOOP test is written based on that the consecutive
+	 * symlinks limits in kernel is hardwired to 40.
+	 */
 	for (i = 0; i < 43; i++)
 		strcat(test_file2, "/test_eloop");
 
@@ -150,8 +149,7 @@ static void setup(void)
 
 static void mkdirat_verify(const struct test_case_t *test)
 {
-	TEST(ltp_syscall(__NR_mkdirat, *test->dirfd,
-			 test->pathname, 0777));
+	TEST(mkdirat(*test->dirfd, test->pathname, 0777));
 
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "mkdirat() returned %ld, expected -1, errno=%d",
