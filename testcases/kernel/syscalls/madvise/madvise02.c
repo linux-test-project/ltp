@@ -13,8 +13,8 @@
  *  GNU Library General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *  along with this program; if not, write to the Free Software Foundation,
+ *  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
 /*
@@ -50,176 +50,95 @@
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-#define MM_RLIMIT_RSS 5
-
-char *TCID = "madvise02";
-int TST_TOTAL = 7;
+#define TEST_FILE "testfile"
+#define STR "abcdefghijklmnopqrstuvwxyz12345\n"
 
 static void setup(void);
 static void cleanup(void);
 static void check_and_print(int expected_errno);
 
+static void test_addr_einval(void);
+static void test_advice_einval(void);
+#if !defined(UCLINUX)
+static void test_lock_einval(void);
+#endif /* if !defined(UCLINUX) */
+static void test_enomem(void);
+static void test_ebadf(void);
+
+static void (*test_func[])(void) = {
+	test_addr_einval,
+	test_advice_einval,
+#if !defined(UCLINUX)
+	test_lock_einval,
+#endif /* if !defined(UCLINUX) */
+	test_enomem,
+	test_ebadf,
+};
+
+char *TCID = "madvise02";
+int TST_TOTAL = ARRAY_SIZE(test_func);
+static int exp_enos[] = { EINVAL, ENOMEM, EBADF, 0 };
+
+static int fd;
+static struct stat st;
+static int pagesize;
+
 int main(int argc, char *argv[])
 {
-	int lc, fd, pagesize;
+	int lc;
 	int i;
-	unsigned long len;
-	char *file, *low, *high;
-	struct stat stat;
-	char *ptr_memory_allocated = NULL;
-	char *tmp_memory_allocated = NULL;
-
 	char *msg = NULL;
-	char filename[64];
-	char *progname = NULL;
-	char *str_for_file = "abcdefghijklmnopqrstuvwxyz12345\n";
 
 	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg)
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	progname = *argv;
-	sprintf(filename, "%s-out.%d", progname, getpid());
+	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		fd = open(filename, O_RDWR | O_CREAT, 0664);
-		if (fd < 0)
-			tst_brkm(TBROK, cleanup, "open failed");
-#ifdef DEBUG
-		tst_resm(TINFO, "filename = %s opened successfully", filename);
-#endif
-
-		pagesize = getpagesize();
-
-		/* Writing 16 pages of random data into this file */
-		for (i = 0; i < (pagesize / 2); i++)
-			if (write(fd, str_for_file, strlen(str_for_file)) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "write failed");
-
-		if (fstat(fd, &stat) == -1)
-			tst_brkm(TBROK, cleanup, "fstat failed");
-
-		file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
-		if (file == MAP_FAILED)
-			tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
-#ifdef DEBUG
-		tst_resm(TINFO, "The Page size is %d", pagesize);
-#endif
-
-		/* Test Case 1 */
-		TEST(madvise(file + 100, stat.st_size, MADV_NORMAL));
-		check_and_print(EINVAL);
-
-		/* Test Case 2 */
-		TEST(madvise(file, stat.st_size, 1212));
-		check_and_print(EINVAL);
-
-#if !defined(UCLINUX)
-		/* Test Case 3 */
-		if (mlock((void *)file, stat.st_size) < 0)
-			tst_brkm(TBROK, cleanup, "mlock failed");
-
-		TEST(madvise(file, stat.st_size, MADV_DONTNEED));
-		check_and_print(EINVAL);
-
-		if (munmap(file, stat.st_size) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "munmap failed");
-#endif /* if !defined(UCLINUX) */
-
-		/* Test Case 4 */
-
-		/* We cannot be sure, which region is mapped, which is
-		 * not, at runtime.
-		 * So, we will create two maps(of the same file),
-		 * unmap the map at higher address.
-		 * Now issue an madvise() on a region covering the
-		 * region which we unmapped.
-		 */
-
-		low = mmap(NULL, stat.st_size / 2, PROT_READ, MAP_SHARED,
-			   fd, 0);
-		if (low == MAP_FAILED)
-			tst_brkm(TBROK, cleanup, "mmap [low] failed");
-
-		high = mmap(NULL, stat.st_size / 2, PROT_READ, MAP_SHARED,
-			    fd, stat.st_size / 2);
-		if (high == MAP_FAILED)
-			tst_brkm(TBROK, cleanup, "mmap [high] failed");
-
-		/* Swap if necessary to make low < high */
-		if (low > high) {
-			char *tmp;
-			tmp = high;
-			high = low;
-			low = tmp;
-		}
-
-		len = (high - low) + pagesize;
-
-		if (munmap(high, stat.st_size / 2) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "munmap [high] failed");
-
-		TEST(madvise(low, len, MADV_NORMAL));
-		check_and_print(ENOMEM);
-
-		/* Test Case 5 */
-		/* Unmap the file map from low */
-		if (munmap(low, stat.st_size / 2) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "munmap [low] failed");
-		/* Create one memory segment using malloc */
-		ptr_memory_allocated = (char *)malloc(5 * pagesize);
-		/*
-		 * Take temporary pointer for later use, freeing up the
-		 * original one.
-		 */
-		tmp_memory_allocated = ptr_memory_allocated;
-		tmp_memory_allocated =
-		    (char *)(((unsigned long)tmp_memory_allocated +
-			      pagesize - 1) & ~(pagesize - 1));
-
-		TEST(madvise
-		     (tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
-		if (tst_kvercmp(3, 9, 0) < 0)
-			check_and_print(EBADF);
-		/* in kernel commit 1998cc0, madvise(MADV_WILLNEED) to anon
-		 * mem doesn't return -EBADF now, as now we support swap
-		 * prefretch.
-		 */
-		else
-			tst_resm(TPASS, "madvise succeeded as expected, see "
-					"kernel commit 1998cc0 for details.");
-		free((void *)ptr_memory_allocated);
-
-		close(fd);
+		for (i = 0; i < TST_TOTAL; i++)
+			(*test_func[i])();
 	}
+
 	cleanup();
 	tst_exit();
 }
 
 static void setup(void)
 {
+	int i;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
+
+	fd = SAFE_OPEN(cleanup, TEST_FILE, O_RDWR | O_CREAT, 0664);
+
+	pagesize = getpagesize();
+
+	/* Writing 16 pages of random data into this file */
+	for (i = 0; i < (pagesize / 2); i++)
+		SAFE_WRITE(cleanup, 1, fd, STR, sizeof(STR) - 1);
+
+	SAFE_FSTAT(cleanup, fd, &st);
 }
 
 static void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	tst_rmdir();
+	if (fd && close(fd) < 0)
+		tst_resm(TWARN | TERRNO, "close failed");
 
+	tst_rmdir();
 }
 
 static void check_and_print(int expected_errno)
@@ -234,4 +153,109 @@ static void check_and_print(int expected_errno)
 	} else {
 		tst_resm(TFAIL, "madvise succeeded unexpectedly");
 	}
+}
+
+static void test_addr_einval(void)
+{
+	char *file;
+
+	file = SAFE_MMAP(cleanup, 0, st.st_size, PROT_READ,
+					 MAP_SHARED, fd, 0);
+
+	TEST(madvise(file + 100, st.st_size, MADV_NORMAL));
+	check_and_print(EINVAL);
+
+	SAFE_MUNMAP(cleanup, file, st.st_size);
+}
+
+static void test_advice_einval(void)
+{
+	char *file;
+
+	file = SAFE_MMAP(cleanup, 0, st.st_size, PROT_READ,
+					 MAP_SHARED, fd, 0);
+
+	TEST(madvise(file, st.st_size, 1212));
+	check_and_print(EINVAL);
+
+	SAFE_MUNMAP(cleanup, file, st.st_size);
+}
+
+#if !defined(UCLINUX)
+static void test_lock_einval(void)
+{
+	char *file;
+
+	file = SAFE_MMAP(cleanup, 0, st.st_size, PROT_READ,
+					 MAP_SHARED, fd, 0);
+
+	if (mlock(file, st.st_size) < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "mlock failed");
+
+	TEST(madvise(file, st.st_size, MADV_DONTNEED));
+	check_and_print(EINVAL);
+
+	SAFE_MUNMAP(cleanup, file, st.st_size);
+}
+#endif /* if !defined(UCLINUX) */
+
+static void test_enomem(void)
+{
+	char *low;
+	char *high;
+	unsigned long len;
+
+	low = SAFE_MMAP(cleanup, 0, st.st_size / 2, PROT_READ,
+					MAP_SHARED, fd, 0);
+
+	high = SAFE_MMAP(cleanup, 0, st.st_size / 2, PROT_READ,
+					 MAP_SHARED, fd, st.st_size / 2);
+
+	/* Swap if necessary to make low < high */
+	if (low > high) {
+		char *tmp;
+		tmp = high;
+		high = low;
+		low = tmp;
+	}
+
+	len = (high - low) + pagesize;
+
+	SAFE_MUNMAP(cleanup, high, st.st_size / 2);
+
+	TEST(madvise(low, len, MADV_NORMAL));
+	check_and_print(ENOMEM);
+
+	SAFE_MUNMAP(cleanup, low, st.st_size / 2);
+}
+
+static void test_ebadf(void)
+{
+	char *ptr_memory_allocated = NULL;
+	char *tmp_memory_allocated = NULL;
+
+	/* Create one memory segment using malloc */
+	ptr_memory_allocated = malloc(5 * pagesize);
+	/*
+	 * Take temporary pointer for later use, freeing up the
+	 * original one.
+	 */
+	tmp_memory_allocated = ptr_memory_allocated;
+	tmp_memory_allocated =
+		(char *)(((unsigned long)tmp_memory_allocated +
+			pagesize - 1) & ~(pagesize - 1));
+
+	TEST(madvise(tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
+	if (tst_kvercmp(3, 9, 0) < 0) {
+		check_and_print(EBADF);
+	/* in kernel commit 1998cc0, madvise(MADV_WILLNEED) to anon
+	 * mem doesn't return -EBADF now, as now we support swap
+	 * prefretch.
+	 */
+	} else {
+		tst_resm(TPASS, "madvise succeeded as expected, see "
+				"kernel commit 1998cc0 for details.");
+	}
+
+	free(ptr_memory_allocated);
 }
