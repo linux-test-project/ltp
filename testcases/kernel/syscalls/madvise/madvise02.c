@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) International Business Machines  Corp., 2004
- *  Copyright (c) Linux Test Project, 2013
+ *  Copyright (c) Linux Test Project, 2013-2014
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,14 +27,16 @@
  *  2. advice is not a valid value
  *  3. application is attempting to release
  *     locked or shared pages (with MADV_DONTNEED)
+ *  4. MADV_MERGEABLE or MADV_UNMERGEABLE was specified in advice,
+ *     but the kernel was not configured with CONFIG_KSM.
  *
  * (B) Test Case for ENOMEM
- *  4. addresses in the specified range are not currently mapped
+ *  5. addresses in the specified range are not currently mapped
  *     or are outside the address space of the process
  *  b. Not enough memory - paging in failed
  *
  * (C) Test Case for EBADF
- *  5. the map exists,
+ *  6. the map exists,
  *     but the area maps something that isn't a file.
  */
 
@@ -55,6 +57,8 @@
 #define TEST_FILE "testfile"
 #define STR "abcdefghijklmnopqrstuvwxyz12345\n"
 
+#define KSM_SYS_DIR	"/sys/kernel/mm/ksm"
+
 static void setup(void);
 static void cleanup(void);
 static void check_and_print(int expected_errno);
@@ -64,6 +68,12 @@ static void test_advice_einval(void);
 #if !defined(UCLINUX)
 static void test_lock_einval(void);
 #endif /* if !defined(UCLINUX) */
+#if defined(MADV_MERGEABLE)
+static void test_mergeable_einval(void);
+#endif
+#if defined(MADV_UNMERGEABLE)
+static void test_unmergeable_einval(void);
+#endif
 static void test_enomem(void);
 static void test_ebadf(void);
 
@@ -73,6 +83,12 @@ static void (*test_func[])(void) = {
 #if !defined(UCLINUX)
 	test_lock_einval,
 #endif /* if !defined(UCLINUX) */
+#if defined(MADV_MERGEABLE)
+	test_mergeable_einval,
+#endif
+#if defined(MADV_UNMERGEABLE)
+	test_unmergeable_einval,
+#endif
 	test_enomem,
 	test_ebadf,
 };
@@ -198,6 +214,48 @@ static void test_lock_einval(void)
 	SAFE_MUNMAP(cleanup, file, st.st_size);
 }
 #endif /* if !defined(UCLINUX) */
+
+#if defined(MADV_MERGEABLE)
+static void test_mergeable_einval(void)
+{
+	char *file;
+
+	if (access(KSM_SYS_DIR, F_OK) >= 0) {
+		tst_resm(TCONF, "kernel configured with CONFIG_KSM, "
+				 "skip EINVAL test for MADV_MERGEABLE.");
+		return;
+	}
+
+	file = SAFE_MMAP(cleanup, 0, st.st_size, PROT_READ,
+					 MAP_SHARED, fd, 0);
+
+	TEST(madvise(file, st.st_size, MADV_MERGEABLE));
+	check_and_print(EINVAL);
+
+	SAFE_MUNMAP(cleanup, file, st.st_size);
+}
+#endif
+
+#if defined(MADV_UNMERGEABLE)
+static void test_unmergeable_einval(void)
+{
+	char *file;
+
+	if (access(KSM_SYS_DIR, F_OK) >= 0) {
+		tst_resm(TCONF, "kernel configured with CONFIG_KSM, "
+				 "skip EINVAL test for MADV_UNMERGEABLE.");
+		return;
+	}
+
+	file = SAFE_MMAP(cleanup, 0, st.st_size, PROT_READ,
+					 MAP_SHARED, fd, 0);
+
+	TEST(madvise(file, st.st_size, MADV_UNMERGEABLE));
+	check_and_print(EINVAL);
+
+	SAFE_MUNMAP(cleanup, file, st.st_size);
+}
+#endif
 
 static void test_enomem(void)
 {
