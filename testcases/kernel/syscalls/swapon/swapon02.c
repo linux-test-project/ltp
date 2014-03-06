@@ -49,6 +49,7 @@ int TST_TOTAL = 4;
 
 static uid_t nobody_uid;
 static int do_swapoff;
+static long fs_type;
 
 static int exp_enos[] = { EPERM, EINVAL, ENOENT, EBUSY, 0 };
 
@@ -81,11 +82,17 @@ static void verify_swapon(struct test_case_t *test)
 		tst_resm(TPASS, "swapon(2) expected failure;"
 			 " Got errno - %s : %s",
 			 test->exp_errval, test->err_desc);
-	} else {
-		tst_resm(TFAIL, "swapon(2) failed to produce expected error:"
-		         " %d, errno: %s and got %d.", test->exp_errno,
-			 test->exp_errval, TEST_ERRNO);
+		return;
 	}
+
+	if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL) {
+		tst_resm(TCONF, "Swapfile on BTRFS not implemeted");
+			return;
+	}
+
+	tst_resm(TFAIL, "swapon(2) failed to produce expected error:"
+	         " %d, errno: %s and got %d.", test->exp_errno,
+	         test->exp_errval, TEST_ERRNO);
 }
 
 int main(int ac, char **av)
@@ -120,7 +127,6 @@ static void cleanup01(void)
 
 static void setup(void)
 {
-	long type;
 	struct passwd *nobody;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -134,12 +140,12 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((type = tst_fs_type(cleanup, "."))) {
+	switch ((fs_type = tst_fs_type(cleanup, "."))) {
 	case TST_NFS_MAGIC:
 	case TST_TMPFS_MAGIC:
 		tst_brkm(TCONF, cleanup,
 			 "Cannot do swapon on a file on %s filesystem",
-			 tst_fs_type_name(type));
+			 tst_fs_type_name(fs_type));
 	break;
 	}
 
@@ -147,10 +153,12 @@ static void setup(void)
 	make_swapfile(cleanup, "swapfile01");
 	make_swapfile(cleanup, "alreadyused");
 
-	if (ltp_syscall(__NR_swapon, "alreadyused", 0))
-		tst_resm(TWARN | TERRNO, "swapon(alreadyused) failed");
-	else
+	if (ltp_syscall(__NR_swapon, "alreadyused", 0)) {
+		if (fs_type != TST_BTRFS_MAGIC || errno != EINVAL)
+			tst_resm(TWARN | TERRNO, "swapon(alreadyused) failed");
+	} else {
 		do_swapoff = 1;
+	}
 
 	TEST_PAUSE;
 }

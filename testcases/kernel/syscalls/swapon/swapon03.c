@@ -56,6 +56,8 @@ static int exp_enos[] = { EPERM, 0 };
 
 static int swapfiles;
 
+static long fs_type;
+
 int testfiles = 3;
 static struct swap_testfile_t {
 	char *filename;
@@ -221,6 +223,9 @@ static int setup_swap(void)
 			/* turn on the swap file */
 			res = ltp_syscall(__NR_swapon, filename, 0);
 			if (res != 0) {
+				if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL)
+					exit(2);
+
 				if (errno == EPERM) {
 					printf("Successfully created %d "
 					       "swapfiles\n", j);
@@ -236,8 +241,15 @@ static int setup_swap(void)
 	} else
 		waitpid(pid, &status, 0);
 
-	if (WEXITSTATUS(status)) {
+	switch (WEXITSTATUS(status)) {
+	case 0:
+	break;
+	case 2:
+		tst_brkm(TCONF, cleanup, "Swapfile on BTRFS not implemeted");
+	break;
+	default:
 		tst_brkm(TFAIL, cleanup, "Failed to setup swaps");
+	break;
 	}
 
 	/* Create all needed extra swapfiles for testing */
@@ -320,8 +332,6 @@ static int check_and_swapoff(const char *filename)
 
 static void setup(void)
 {
-	long type;
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_EXP_ENOS(exp_enos);
@@ -330,12 +340,12 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((type = tst_fs_type(cleanup, "."))) {
+	switch ((fs_type = tst_fs_type(cleanup, "."))) {
 	case TST_NFS_MAGIC:
 	case TST_TMPFS_MAGIC:
 		tst_brkm(TCONF, cleanup,
 			 "Cannot do swapon on a file on %s filesystem",
-			 tst_fs_type_name(type));
+			 tst_fs_type_name(fs_type));
 	break;
 	}
 
