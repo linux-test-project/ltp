@@ -35,6 +35,8 @@ static void verify_swapoff(void);
 char *TCID = "swapoff01";
 int TST_TOTAL = 1;
 
+static long fs_type;
+
 int main(int ac, char **av)
 {
 	int lc;
@@ -57,7 +59,12 @@ int main(int ac, char **av)
 static void verify_swapoff(void)
 {
 	if (ltp_syscall(__NR_swapon, "./swapfile01", 0) != 0) {
-		tst_resm(TWARN, "Failed to turn on the swap file"
+		if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL) {
+			tst_brkm(TCONF, cleanup,
+			         "Swapfiles on BTRFS are not implemented");
+		}
+
+		tst_resm(TBROK, "Failed to turn on the swap file"
 			 ", skipping test iteration");
 		return;
 	}
@@ -75,8 +82,6 @@ static void verify_swapoff(void)
 
 static void setup(void)
 {
-	long type;
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
@@ -85,12 +90,12 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((type = tst_fs_type(cleanup, "."))) {
+	switch ((fs_type = tst_fs_type(cleanup, "."))) {
 	case TST_NFS_MAGIC:
 	case TST_TMPFS_MAGIC:
 		tst_brkm(TCONF, cleanup,
 			 "Cannot do swapoff on a file on %s filesystem",
-			 tst_fs_type_name(type));
+			 tst_fs_type_name(fs_type));
 	break;
 	}
 
