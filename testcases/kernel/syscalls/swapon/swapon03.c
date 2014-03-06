@@ -1,62 +1,29 @@
 /******************************************************************************
  *
- *   Copyright (c) International Business Machines  Corp., 2007
+ * Copyright (c) International Business Machines  Corp., 2007
+ *  Created by <rsalveti@linux.vnet.ibm.com>
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * NAME
- *      swapon03.c
+ ******************************************************************************/
+
+/*
+ * This test case checks whether swapon(2) system call returns:
+ *  - EPERM when there are more than MAX_SWAPFILES already in use.
  *
- * DESCRIPTION
- *      This test case checks whether swapon(2) system call returns:
- *        - EPERM when there are more than MAX_SWAPFILES already in use.
- *
- *	Setup:
- *		Setup signal handling.
- *		Pause for SIGUSR1 if option specified.
- * 		Create MAX_SWAPFILES - 2 (to support latest kernels) swapfiles
- *
- *	Test:
- *		Loop if the proper options are given.
- *		Execute system call.
- *		Check return code, if system call fails with errno == expected errno
- *	 	Issue syscall passed with expected errno
- *		Otherwise,
- *		Issue syscall failed to produce expected errno
- *
- * 	Cleanup:
- * 		    Do cleanup for the test.
- *
- * USAGE:  <for command-line>
- *  swapon03 [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where
- *		  -e   : Turn on errno logging.
- *		  -i n : Execute test n times.
- *		  -I x : Execute test for x seconds.
- *		  -p   : Pause for SIGUSR1 before starting
- *		  -P x : Pause for x seconds between iterations.
- *		  -t   : Turn on syscall timing.
- *
- * Author
- *	Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com> based on
- *	swapon02 created by Aniruddha Marathe
- *
- * History
- *      16/08/2007      Created <rsalveti@linux.vnet.ibm.com>
- *
-******************************************************************************/
+ */
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -71,7 +38,6 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
-#include "config.h"
 #include "linux_syscall_numbers.h"
 #include "tst_fs_type.h"
 #include "swaponoff.h"
@@ -88,20 +54,17 @@ int TST_TOTAL = 1;
 
 static int exp_enos[] = { EPERM, 0 };
 
-static int swapfiles;		/* Number of swapfiles turned on */
+static int swapfiles;
 
-/* Paths for files that we'll use to test */
 int testfiles = 3;
 static struct swap_testfile_t {
 	char *filename;
 } swap_testfiles[] = {
-	{
-	"firstswapfile"}, {
-	"secondswapfile"}, {
-	"thirdswapfile"}
+	{"firstswapfile"},
+	{"secondswapfile"},
+	{"thirdswapfile"}
 };
 
-/* Expected errno when doing the test */
 int expected_errno = EPERM;
 
 int main(int ac, char **av)
@@ -117,17 +80,14 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		/* do the test setup */
 		if (setup_swap() < 0) {
 			clean_swap();
 			tst_brkm(TBROK, cleanup,
 				 "Setup failed, quitting the test");
 		}
 
-		/* Call swapon sys call for the first time */
 		TEST(ltp_syscall(__NR_swapon, swap_testfiles[0].filename, 0));
 
-		/* Check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == expected_errno)) {
 			tst_resm(TPASS, "swapon(2) got expected failure (%d),",
 				 expected_errno);
@@ -177,7 +137,6 @@ int main(int ac, char **av)
 			}
 		}
 
-		/* do the clean */
 		if (clean_swap() < 0)
 			tst_brkm(TBROK, cleanup,
 				 "Cleanup failed, quitting the test");
