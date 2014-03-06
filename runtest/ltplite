@@ -467,6 +467,7 @@ modify_ldt03 modify_ldt03
 mprotect01 mprotect01
 mprotect02 mprotect02
 mprotect03 mprotect03
+mprotect04 mprotect04
 
 mremap01 mremap01
 mremap02 mremap02

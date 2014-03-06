@@ -618,6 +618,7 @@ move_pages11 cd $LTPROOT/testcases/bin && chown root move_pages11 && chmod 04755
 mprotect01 mprotect01
 mprotect02 mprotect02
 mprotect03 mprotect03
+mprotect04 mprotect04
 
 mq_notify01 mq_notify01
 mq_notify02 mq_notify02
