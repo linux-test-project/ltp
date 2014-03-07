@@ -14,12 +14,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+
 /*
- *    DESCRIPTION
- *	This test case checks whether swapoff(2) system call  returns
- *	1. EINVAL when the path does not exist
- *	2. ENOENT when the path exists but is invalid
- *	3. EPERM when user is not a superuser
+ * This test case checks whether swapoff(2) system call  returns
+ *  1. EINVAL when the path does not exist
+ *  2. ENOENT when the path exists but is invalid
+ *  3. EPERM when user is not a superuser
  */
 
 #include <unistd.h>
@@ -29,45 +29,40 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <string.h>
+#include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
-#include <stdlib.h>
-#include "config.h"
 #include "linux_syscall_numbers.h"
+#include "safe_macros.h"
 #include "tst_fs_type.h"
-#include "swaponoff.h"
 
 static void setup(void);
 static void cleanup(void);
 static int setup01(void);
-static int cleanup01(void);
-static int setup02(void);
+static void cleanup01(void);
 
 char *TCID = "swapoff02";
 int TST_TOTAL = 3;
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
+
+static uid_t nobody_uid;
 
 static int exp_enos[] = { EPERM, EINVAL, ENOENT, 0 };
 
 static struct test_case_t {
-	char *err_desc;		/* error description */
-	int exp_errno;		/* expected error number */
-	char *exp_errval;	/* Expected errorvalue string */
-	char *path;		/* path for swapon */
-	int (*setupfunc) ();	/* Test setup function */
-	int (*cleanfunc) ();	/* Test cleanup function */
+	char *err_desc;
+	int exp_errno;
+	char *exp_errval;
+	char *path;
+	int (*setup)(void);
+	void (*cleanup)(void);
 } testcase[] = {
-	{
-	"path does not exist", ENOENT, "ENOENT", "./abcd", NULL, NULL}, {
-	"Invalid path", EINVAL, "EINVAL ", "./nofile", setup02, NULL}, {
-	"Permission denied", EPERM, "EPERM ", "./swapfile01",
-		    setup01, cleanup01}
+	{"path does not exist", ENOENT, "ENOENT", "./doesnotexist", NULL, NULL},
+	{"Invalid file", EINVAL, "EINVAL", "./swapfile01", NULL, NULL},
+	{"Permission denied", EPERM, "EPERM", "./swapfile01", setup01, cleanup01}
 };
 
 int main(int ac, char **av)
 {
-
 	int lc, i;
 	char *msg;
 
@@ -82,24 +77,15 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			if (testcase[i].setupfunc &&
-			    testcase[i].setupfunc() == -1) {
-				tst_resm(TWARN, "Failed to setup test %d."
-					 " Skipping test", i);
-				continue;
-			} else {
-				TEST(ltp_syscall(__NR_swapoff,
-					testcase[i].path));
-			}
+			if (testcase[i].setup)
+				testcase[i].setup();
 
-			if (testcase[i].cleanfunc &&
-			    testcase[i].cleanfunc() == -1) {
-				tst_brkm(TBROK, cleanup, "cleanup failed,"
-					 " quitting the test");
-			}
+			TEST(ltp_syscall(__NR_swapoff, testcase[i].path));
 
-			/* check return code */
-			if ((TEST_RETURN == -1)
+			if (testcase[i].cleanup)
+				testcase[i].cleanup();
+
+			if (TEST_RETURN == -1
 			    && (TEST_ERRNO == testcase[i].exp_errno)) {
 				tst_resm(TPASS,
 					 "swapoff(2) expected failure;"
@@ -135,50 +121,28 @@ int main(int ac, char **av)
 
 static int setup01(void)
 {
-	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-		tst_resm(TWARN, "\"nobody\" user not present. skipping test");
-		return -1;
-	}
-
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TWARN, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-		return -1;
-	}
-
+	SAFE_SETEUID(cleanup, nobody_uid);
 	return 0;
 }
 
-static int cleanup01(void)
+static void cleanup01(void)
 {
-	if (seteuid(0) == -1) {
-		tst_brkm(TBROK, cleanup, "seteuid failed to set uid to root");
-		perror("seteuid");
-		return -1;
-	}
-
-	return 0;
-}
-
-static int setup02(void)
-{
-	int fd;
-	fd = creat("nofile", S_IRWXU);
-	if (fd == -1)
-		tst_resm(TWARN, "Failed to create temporary file");
-	return 0;
+	SAFE_SETEUID(cleanup, 0);
 }
 
 static void setup(void)
 {
 	long type;
+	struct passwd *nobody;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_EXP_ENOS(exp_enos);
 
 	tst_require_root(NULL);
+
+	nobody = SAFE_GETPWNAM(NULL, "nobody");
+	nobody_uid = nobody->pw_uid;
 
 	TEST_PAUSE;
 

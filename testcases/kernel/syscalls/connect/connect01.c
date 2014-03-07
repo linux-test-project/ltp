@@ -216,6 +216,7 @@ void setup0(void)
 
 void cleanup0(void)
 {
+	close(s);
 	s = -1;
 }
 
@@ -277,7 +278,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 	return -1;
 }
 
-void do_child()
+void do_child(void)
 {
 	struct sockaddr_in fsin;
 	fd_set afds, rfds;

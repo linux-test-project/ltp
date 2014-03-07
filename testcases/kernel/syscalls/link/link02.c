@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *  AUTHOR		: William Roske
+ *  CO-PILOT		: Dave Fenner
+ * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -28,86 +31,11 @@
  * For further information regarding this notice, see:
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- *
  */
-/* $Id: link02.c,v 1.5 2009/10/26 14:55:47 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: link02
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for link(2)
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 1
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: William Roske
- *
- *    CO-PILOT		: Dave Fenner
- *
- *    DATE STARTED	: 03/30/92
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- * 	1.) link(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *$
- *    DURATION
- * 	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- * 	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
- *
- *    INTERCASE DEPENDENCIES
- * 	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the link(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	link(2).
- *
- * 	Setup:
- * 	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- * 	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+
+/*
+ * Tests that link(2) succeds.
+ */
 
 #include <sys/types.h>
 #include <sys/fcntl.h>
@@ -117,136 +45,75 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "link02";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
+#define OLDPATH "oldpath"
+#define NEWPATH "newpath"
 
-char Fname[255], Lname[255];
+static void verify_link(void)
+{
+	struct stat fbuf, lbuf;
 
-/***********************************************************************
- * Main
- ***********************************************************************/
+	TEST(link(OLDPATH, NEWPATH));
+
+	if (TEST_RETURN == 0) {
+		SAFE_STAT(cleanup, OLDPATH, &fbuf);
+		SAFE_STAT(cleanup, NEWPATH, &lbuf);
+		if (fbuf.st_nlink > 1 && lbuf.st_nlink > 1 &&
+		    fbuf.st_nlink == lbuf.st_nlink) {
+			tst_resm(TPASS, "link("OLDPATH","NEWPATH") "
+			         "returned 0 and link counts match");
+		} else {
+			tst_resm(TFAIL, "link("OLDPATH","NEWPATH") returned 0"
+				 " but stat lin count do not match %d %d",
+				 (int)fbuf.st_nlink, (int)lbuf.st_nlink);
+		}
+		SAFE_UNLINK(cleanup, NEWPATH);
+	} else {
+		tst_resm(TFAIL | TTERRNO,
+		         "link("OLDPATH","NEWPATH") returned %ld",
+		         TEST_RETURN);
+	}
+}
+
 int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
-	struct stat fbuf, lbuf;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	}
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
-
-		/*
-		 *  Call link(2)
-		 */
-		TEST(link(Fname, Lname));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "link(%s, %s) Failed, errno=%d : %s",
-				 Fname, Lname, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
-		} else {
-
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				stat(Fname, &fbuf);
-				stat(Lname, &lbuf);
-				if (fbuf.st_nlink > 1 && lbuf.st_nlink > 1 &&
-				    fbuf.st_nlink == lbuf.st_nlink)
-
-					tst_resm(TPASS,
-						 "link(%s, %s) returned %ld and link cnts match",
-						 Fname, Lname, TEST_RETURN);
-				else {
-					tst_resm(TFAIL,
-						 "link(%s, %s) returned %ld, stat link cnts do not match %d %d",
-						 Fname, Lname, TEST_RETURN,
-						 fbuf.st_nlink, lbuf.st_nlink);
-				}
-			}
-			if (unlink(Lname) == -1) {
-				tst_resm(TWARN,
-					 "unlink(%s) Failed, errno=%d : %s",
-					 Fname, errno, strerror(errno));
-			}
-		}
-
+		verify_link();
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+static void setup(void)
 {
-	int fd;
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	strcpy(Fname, "tfile");
-	if ((fd = open(Fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0700) Failed, errno=%d : %s",
-			 Fname, errno, strerror(errno));
-	} else if (close(fd) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-			 Fname, errno, strerror(errno));
-	}
-	strcpy(Lname, "lfile");
+	SAFE_TOUCH(cleanup, OLDPATH, 0700, NULL);
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
 }

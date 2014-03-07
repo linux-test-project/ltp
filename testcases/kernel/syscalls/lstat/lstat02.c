@@ -29,6 +29,8 @@
  *	component is too long.
  *   5) lstat(2) returns -1 and sets errno to ENOTDIR if the directory
  *	component in pathname is not a directory.
+ *   6) lstat(2) returns -1 and sets errno to ELOOP if the pathname has too
+ *	many symbolic links encountered while traversing.
  */
 
 #include <stdio.h>
@@ -53,8 +55,10 @@
 #define TEST_EACCES	TEST_DIR"/test_eacces"
 #define TEST_ENOENT	""
 #define TEST_ENOTDIR	"test_file/test_enotdir"
+#define TEST_ELOOP	"/test_eloop"
 
 static char longpathname[PATH_MAX + 2];
+static char elooppathname[sizeof(TEST_ELOOP) * 43] = ".";
 
 #if !defined(UCLINUX)
 static void bad_addr_setup(int);
@@ -74,11 +78,13 @@ static struct test_case_t {
 #endif
 	{longpathname, ENAMETOOLONG, NULL},
 	{TEST_ENOTDIR, ENOTDIR, NULL},
+	{elooppathname, ELOOP, NULL},
 };
 
 char *TCID = "lstat02";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0 };
+static int exp_enos[] = { EACCES, EFAULT, ENAMETOOLONG, ENOENT,
+			  ENOTDIR, ELOOP, 0 };
 
 static void setup(void);
 static void lstat_verify(int);
@@ -110,6 +116,7 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	int i;
 	struct passwd *ltpuser;
 
 	tst_require_root(NULL);
@@ -131,6 +138,15 @@ static void setup(void)
 	SAFE_TOUCH(cleanup, "test_file", MODE_RWX, NULL);
 
 	memset(longpathname, 'a', PATH_MAX+1);
+
+	SAFE_MKDIR(cleanup, "test_eloop", MODE_RWX);
+	SAFE_SYMLINK(cleanup, "../test_eloop", "test_eloop/test_eloop");
+	/*
+	 * NOTE: the ELOOP test is written based on that the consecutive
+	 * symlinks limits in kernel is hardwired to 40.
+	 */
+	for (i = 0; i < 43; i++)
+		strcat(elooppathname, TEST_ELOOP);
 }
 
 #if !defined(UCLINUX)

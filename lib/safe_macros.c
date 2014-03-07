@@ -500,3 +500,63 @@ int safe_lstat(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_getrlimit(const char *file, const int lineno,
+		   void (cleanup_fn)(void), int resource, struct rlimit *rlim)
+{
+	int rval;
+
+	rval = getrlimit(resource, rlim);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "getrlimit failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_setrlimit(const char *file, const int lineno, void (cleanup_fn)(void),
+		   int resource, const struct rlimit *rlim)
+{
+	int rval;
+
+	rval = setrlimit(resource, rlim);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "setrlimit failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_chmod(const char *file, const int lineno,
+               void (cleanup_fn)(void), const char *path, mode_t mode)
+{
+	int rval;
+
+	rval = chmod(path, mode);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "chmod failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_fchmod(const char *file, const int lineno,
+                void (cleanup_fn)(void), int fd, mode_t mode)
+{
+	int rval;
+
+	rval = fchmod(fd, mode);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "fchmod failed at %s:%d", file, lineno);
+	}
+
+	return rval;
+}

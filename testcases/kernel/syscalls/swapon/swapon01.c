@@ -24,10 +24,8 @@
 #include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
-#include "config.h"
 #include "linux_syscall_numbers.h"
 #include "tst_fs_type.h"
-#include "swaponoff.h"
 #include "libswapon.h"
 
 static void setup(void);
@@ -35,6 +33,30 @@ static void cleanup(void);
 
 char *TCID = "swapon01";
 int TST_TOTAL = 1;
+
+static long fs_type;
+
+static void verify_swapon(void)
+{
+	TEST(ltp_syscall(__NR_swapon, "./swapfile01", 0));
+
+	if (TEST_RETURN == -1) {
+		if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL) {
+			tst_brkm(TCONF, cleanup,
+			         "Swapfile on BTRFS not implemeted");
+			return;
+		}
+		tst_resm(TFAIL | TTERRNO, "Failed to turn on swapfile");
+	} else {
+		tst_resm(TPASS, "Succeeded to turn on swapfile");
+		/*we need to turn this swap file off for -i option */
+		if (ltp_syscall(__NR_swapoff, "./swapfile01") != 0) {
+			tst_brkm(TBROK, cleanup, "Failed to turn off swapfile,"
+			         " system reboot after execution of LTP "
+				 "test suite is recommended.");
+		}
+	}
+}
 
 int main(int ac, char **av)
 {
@@ -48,27 +70,8 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
-
-		TEST(ltp_syscall(__NR_swapon, "./swapfile01", 0));
-
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "swapon(2) Failed to turn on"
-				 " swapfile.");
-		} else {
-			tst_resm(TPASS, "swapon(2) passed and turned on"
-				 " swapfile");
-			/*we need to turn this swap file off for -i option */
-			if (ltp_syscall(__NR_swapoff, "./swapfile01") != 0) {
-				tst_brkm(TBROK, cleanup, "Failed to turn off"
-					 " swapfile. system"
-					 " reboot after"
-					 " execution of LTP"
-					 " test suite is" " recommended.");
-			}
-		}
+		verify_swapon();
 	}
 
 	cleanup();
@@ -77,8 +80,6 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	long type;
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
@@ -87,12 +88,12 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((type = tst_fs_type(cleanup, "."))) {
+	switch ((fs_type = tst_fs_type(cleanup, "."))) {
 	case TST_NFS_MAGIC:
 	case TST_TMPFS_MAGIC:
 		tst_brkm(TCONF, cleanup,
 			 "Cannot do swapon on a file on %s filesystem",
-			 tst_fs_type_name(type));
+			 tst_fs_type_name(fs_type));
 	break;
 	}
 

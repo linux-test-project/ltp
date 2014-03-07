@@ -27,13 +27,15 @@
 #include "config.h"
 #include "linux_syscall_numbers.h"
 #include "tst_fs_type.h"
-#include "swaponoff.h"
 
 static void setup(void);
 static void cleanup(void);
+static void verify_swapoff(void);
 
 char *TCID = "swapoff01";
 int TST_TOTAL = 1;
+
+static long fs_type;
 
 int main(int ac, char **av)
 {
@@ -46,39 +48,40 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
-
-		if (ltp_syscall(__NR_swapon, "./swapfile01", 0) != 0) {
-			tst_resm(TWARN, "Failed to turn on the swap file"
-				 ", skipping test iteration");
-			continue;
-		}
-
-		TEST(ltp_syscall(__NR_swapoff, "./swapfile01"));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "swapoff(2) Failed to turn off"
-				 " swapfile. System reboot after execution"
-				 " of LTP test suite is recommended.");
-			tst_resm(TWARN, "It is recommended not to run"
-				 " swapon01 and swapon02");
-		} else {
-			tst_resm(TPASS, "swapoff(2) passed and turned off"
-				 " swapfile.");
-		}
+		verify_swapoff();
 	}
 
 	cleanup();
 	tst_exit();
 }
 
+static void verify_swapoff(void)
+{
+	if (ltp_syscall(__NR_swapon, "./swapfile01", 0) != 0) {
+		if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL) {
+			tst_brkm(TCONF, cleanup,
+			         "Swapfiles on BTRFS are not implemented");
+		}
+
+		tst_resm(TBROK, "Failed to turn on the swap file"
+			 ", skipping test iteration");
+		return;
+	}
+
+	TEST(ltp_syscall(__NR_swapoff, "./swapfile01"));
+
+	if (TEST_RETURN == -1) {
+		tst_resm(TFAIL | TTERRNO, "Failed to turn off swapfile,"
+		         " system reboot after execution of LTP "
+			 "test suite is recommended.");
+	} else {
+		tst_resm(TPASS, "Succeeded to turn off swapfile");
+	}
+}
+
 static void setup(void)
 {
-	long type;
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
@@ -87,12 +90,12 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((type = tst_fs_type(cleanup, "."))) {
+	switch ((fs_type = tst_fs_type(cleanup, "."))) {
 	case TST_NFS_MAGIC:
 	case TST_TMPFS_MAGIC:
 		tst_brkm(TCONF, cleanup,
 			 "Cannot do swapoff on a file on %s filesystem",
-			 tst_fs_type_name(type));
+			 tst_fs_type_name(fs_type));
 	break;
 	}
 
@@ -101,14 +104,11 @@ static void setup(void)
 			 "Insufficient disk space to create swap file");
 	}
 
-	/*create file */
 	if (tst_fill_file("swapfile01", 0x00, 1024, 65536))
 		tst_brkm(TBROK, cleanup, "Failed to create file for swap");
 
-	/* make above file a swap file */
-	if (system("mkswap swapfile01 > tmpfile 2>&1") != 0) {
+	if (system("mkswap swapfile01 > tmpfile 2>&1") != 0)
 		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
-	}
 }
 
 static void cleanup(void)
