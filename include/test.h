@@ -288,6 +288,13 @@ int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
 uid_t tst_get_unused_uid(void);
 gid_t tst_get_unused_gid(void);
 
+/* lib/tst_net.c
+ *
+ * Return unused port
+ */
+unsigned short tst_get_unused_port(void (cleanup_fn)(void),
+	unsigned short family, int type);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL
