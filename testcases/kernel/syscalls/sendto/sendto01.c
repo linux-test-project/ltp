@@ -237,15 +237,19 @@ static char *argv0;
 
 static pid_t start_server(struct sockaddr_in *sin0)
 {
-	struct sockaddr_in sin1 = *sin0;
 	pid_t pid;
+	socklen_t slen = sizeof(*sin0);
+
+	sin0->sin_family = AF_INET;
+	sin0->sin_port = 0; /* pick random free port */
+	sin0->sin_addr.s_addr = INADDR_ANY;
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server socket failed");
 		return -1;
 	}
-	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
+	if (bind(sfd, (struct sockaddr *)sin0, sizeof(*sin0)) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server bind failed");
 		return -1;
 	}
@@ -253,6 +257,9 @@ static pid_t start_server(struct sockaddr_in *sin0)
 		tst_brkm(TBROK | TERRNO, cleanup, "server listen failed");
 		return -1;
 	}
+	if (getsockname(sfd, (struct sockaddr *)sin0, &slen) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "getsockname failed");
+
 	switch ((pid = FORK_OR_VFORK())) {
 	case 0:
 #ifdef UCLINUX
@@ -372,10 +379,6 @@ static void setup(void)
 {
 	TEST_PAUSE;
 
-	/* initialize sockaddr's */
-	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) + 11000);
-	sin1.sin_addr.s_addr = INADDR_ANY;
 	server_pid = start_server(&sin1);
 
 	signal(SIGPIPE, SIG_IGN);

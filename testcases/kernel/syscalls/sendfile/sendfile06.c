@@ -204,6 +204,7 @@ void cleanup()
 int create_server(void)
 {
 	static int count = 0;
+	socklen_t slen = sizeof(sin1);
 
 	sockfd = socket(PF_INET, SOCK_DGRAM, 0);
 	if (sockfd < 0) {
@@ -212,7 +213,7 @@ int create_server(void)
 		return -1;
 	}
 	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) + 11000 + count);
+	sin1.sin_port = 0; /* pick random free port */
 	sin1.sin_addr.s_addr = INADDR_ANY;
 	count++;
 	if (bind(sockfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
@@ -220,6 +221,9 @@ int create_server(void)
 			 strerror(errno));
 		return -1;
 	}
+	if (getsockname(sockfd, (struct sockaddr *)&sin1, &slen) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "getsockname failed");
+
 	child_pid = FORK_OR_VFORK();
 	if (child_pid < 0) {
 		tst_brkm(TBROK, cleanup, "client/server fork failed: %s",

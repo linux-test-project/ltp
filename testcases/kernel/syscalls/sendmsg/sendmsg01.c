@@ -461,8 +461,12 @@ int main(int argc, char *argv[])
 
 static pid_t start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 {
-	struct sockaddr_in sin1 = *sin0;
 	pid_t pid;
+	socklen_t slen = sizeof(*sin0);
+
+	sin0->sin_family = AF_INET;
+	sin0->sin_port = 0; /* pick random free port */
+	sin0->sin_addr.s_addr = INADDR_ANY;
 
 	/* set up inet socket */
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -471,7 +475,7 @@ static pid_t start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 			 strerror(errno));
 		return -1;
 	}
-	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
+	if (bind(sfd, (struct sockaddr *)sin0, sizeof(*sin0)) < 0) {
 		tst_brkm(TBROK, cleanup, "server bind failed: %s",
 			 strerror(errno));
 		return -1;
@@ -481,6 +485,9 @@ static pid_t start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 			 strerror(errno));
 		return -1;
 	}
+	if (getsockname(sfd, (struct sockaddr *)sin0, &slen) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "getsockname failed");
+
 	/* set up UNIX-domain socket */
 	ufd = socket(PF_UNIX, SOCK_DGRAM, 0);
 	if (ufd < 0) {
@@ -577,10 +584,6 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
-	/* initialize sockaddr's */
-	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) + 11000);
-	sin1.sin_addr.s_addr = INADDR_ANY;
 
 	tst_tmpdir();
 	snprintf(tmpsunpath, 1024, "udsock%ld", (long)time(NULL));
@@ -713,7 +716,7 @@ static void setup5(void)
 	 * 5-tuple than already connected
 	 */
 	sin2 = sin1;
-	sin2.sin_port++;
+	sin2.sin_port = tst_get_unused_port(cleanup, AF_INET, SOCK_STREAM);
 }
 
 static void setup6(void)

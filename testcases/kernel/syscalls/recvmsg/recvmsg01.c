@@ -260,10 +260,6 @@ void setup(void)
 	int tfd;
 	TEST_PAUSE;
 
-	/* initialize sockaddr's */
-	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) + 11000);
-	sin1.sin_addr.s_addr = INADDR_ANY;
 	tst_tmpdir();
 	(void)strcpy(tmpsunpath, "udsockXXXXXX");
 	tfd = mkstemp(tmpsunpath);
@@ -380,6 +376,11 @@ void cleanup2(void)
 pid_t start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 {
 	pid_t pid;
+	socklen_t slen = sizeof(*ssin);
+
+	ssin->sin_family = AF_INET;
+	ssin->sin_port = 0; /* pick random free port */
+	ssin->sin_addr.s_addr = INADDR_ANY;
 
 	/* set up inet socket */
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -395,6 +396,9 @@ pid_t start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 		tst_brkm(TBROK | TERRNO, cleanup, "server listen failed");
 		return -1;
 	}
+	if (getsockname(sfd, (struct sockaddr *)ssin, &slen) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "getsockname failed");
+
 	/* set up UNIX-domain socket */
 	ufd = socket(PF_UNIX, SOCK_STREAM, 0);
 	if (ufd < 0) {

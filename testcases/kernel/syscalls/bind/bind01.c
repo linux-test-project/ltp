@@ -162,7 +162,7 @@ void setup(void)
 	/* initialize sockaddr's */
 	sin1.sin_family = AF_INET;
 	/* this port must be unused! */
-	sin1.sin_port = htons((getpid() % 32768) + 10000);
+	sin1.sin_port = tst_get_unused_port(NULL, AF_INET, SOCK_STREAM);
 	sin1.sin_addr.s_addr = INADDR_ANY;
 
 	sin2.sin_family = AF_INET;

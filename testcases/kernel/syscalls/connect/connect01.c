@@ -175,15 +175,11 @@ void setup(void)
 {
 	TEST_PAUSE;		/* if -p option specified */
 
-	/* initialize sockaddr's */
-	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) + 11000);
-	sin1.sin_addr.s_addr = INADDR_ANY;
 	pid = start_server(&sin1);
 
 	sin2.sin_family = AF_INET;
 	/* this port must be unused! */
-	sin2.sin_port = htons((getpid() % 32768) + 10000);
+	sin2.sin_port = tst_get_unused_port(NULL, AF_INET, SOCK_STREAM);
 	sin2.sin_addr.s_addr = INADDR_ANY;
 
 	sin3.sin_family = AF_INET;
@@ -243,15 +239,19 @@ void setup2(void)
 
 pid_t start_server(struct sockaddr_in *sin0)
 {
-	struct sockaddr_in sin1 = *sin0;
 	pid_t pid;
+	socklen_t slen = sizeof(*sin0);
+
+	sin0->sin_family = AF_INET;
+	sin0->sin_port = 0; /* pick random free port */
+	sin0->sin_addr.s_addr = INADDR_ANY;
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server socket failed");
 		return -1;
 	}
-	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
+	if (bind(sfd, (struct sockaddr *)sin0, sizeof(*sin0)) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server bind failed");
 		return -1;
 	}
@@ -259,6 +259,9 @@ pid_t start_server(struct sockaddr_in *sin0)
 		tst_brkm(TBROK | TERRNO, cleanup, "server listen failed");
 		return -1;
 	}
+	if (getsockname(sfd, (struct sockaddr *)sin0, &slen) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "getsockname failed");
+
 	switch ((pid = FORK_OR_VFORK())) {
 	case 0:		/* child */
 #ifdef UCLINUX
