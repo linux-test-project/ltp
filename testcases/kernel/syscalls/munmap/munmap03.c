@@ -18,53 +18,16 @@
  */
 
 /*
- * Test Name: munmap03
- *
  * Test Description:
- *  Verify that, munmap call will fail to unmap a mapped file or anonymous
- *  shared memory region from the calling process's address space if the
- *  address and the length of the region to be unmapped points outside the
- *  calling process's address space
- *
- * Expected Result:
- *  munmap call should fail with return value -1 and sets errno EINVAL.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
- *		Issue sys call fails with unexpected errno.
- *   Otherwise,
- *	Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory(s)/file(s) created.
- *
- * Usage:  <for command-line>
- *  munmap03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
+ *  Verify that,
+ *   1. munmap() fails with -1 return value and sets errno to EINVAL
+ *      if addresses in the range [addr,addr+len) are outside the valid
+ *	range for the address space of a process.
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
  */
+
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -74,175 +37,85 @@
 
 #include "test.h"
 #include "usctest.h"
-
-#define TEMPFILE	"mmapfile"
+#include "safe_macros.h"
 
 char *TCID = "munmap03";
-int TST_TOTAL = 1;
 
-size_t page_sz;			/* system page size */
-char *addr;			/* addr of memory mapped region */
-char *faddr;			/* addr of memory mapped region */
-int fildes;			/* file descriptor for tempfile */
-size_t map_len;			/* length of the region to be mapped */
+static size_t page_sz;
+static int exp_enos[] = { EINVAL, 0 };
 
-int exp_enos[] = { EINVAL, 0 };
+static void setup(void);
+static void cleanup(void);
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+static void test_einval1(void);
+static void (*testfunc[])(void) = { test_einval1 };
+int TST_TOTAL = ARRAY_SIZE(testfunc);
 
 int main(int ac, char **av)
 {
-	int lc;
+	int i, lc;
 	char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
-		setup();
-
-		/*
-		 * Attempt to unmap the mapped region of the temporary file
-		 * from the address that points outside the process's
-		 * address space.
-		 */
-		TEST(munmap(addr, map_len));
-
-		/* Check for the return value of munmap() */
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "munmap() returned %ld, expected -1",
-				 TEST_RETURN);
-			continue;
-		}
-
-		/* Check for expected errno. */
-		if (TEST_ERRNO == EINVAL) {
-			tst_resm(TPASS | TTERRNO, "munmap failed as expected");
-		} else {
-			tst_resm(TPASS | TTERRNO,
-				 "munmap didn't fail as expected");
-		}
-
-		cleanup();
-
+		for (i = 0; i < TST_TOTAL; i++)
+			(*testfunc[i])();
 	}
+
+	cleanup();
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- * Get system page size, create a temporary file for reading/writing,
- * write one byte data into it, map the open file for the specified
- * map length.
- */
-void setup()
+static void setup(void)
 {
-	struct rlimit brkval;	/* variable to hold max. break val */
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
-	/* call getrlimit function to get the maximum possible break value */
-	getrlimit(RLIMIT_DATA, &brkval);
-
-	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "getpagesize() fails to get system page size");
-	}
-
-	/*
-	 * Get the length of the open file to be mapped into process
-	 * address space.
-	 */
-	map_len = 3 * page_sz;
-
-	tst_tmpdir();
-
-	/* Creat a temporary file used for mapping */
-	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
-		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
-
-	/*
-	 * move the file pointer to maplength position from the beginning
-	 * of the file.
-	 */
-	if (lseek(fildes, map_len, SEEK_SET) == -1) {
-		tst_brkm(TBROK, cleanup, "lseek() fails on %s, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
-
-	/* Write one byte into temporary file */
-	if (write(fildes, "a", 1) != 1) {
-		tst_brkm(TBROK, cleanup, "write() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
-
-	/*
-	 * map the open file 'TEMPFILE' from its beginning up to the maplength
-	 * into the calling process's address space at the system choosen
-	 * with read/write permissions to the the mapped region.
-	 */
-#ifdef UCLINUX
-	/* MAP_SHARED not implemented on uClinux */
-	faddr = mmap(0, map_len, PROT_READ | PROT_WRITE,
-		     MAP_FILE | MAP_PRIVATE, fildes, 0);
-#else
-	faddr = mmap(0, map_len, PROT_READ | PROT_WRITE,
-		     MAP_FILE | MAP_SHARED, fildes, 0);
-#endif
-
-	/* check for the return value of mmap system call */
-	if (faddr == (char *)MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap() Failed on %s, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
-	}
-
-	/* convert the MAX. possible break value */
-	addr = (char *)brkval.rlim_max;
+	page_sz = (size_t)sysconf(_SC_PAGESIZE);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *  	       Unmap the mapped region of the file.
- *  	       Close the temporary file.
- *  	       Remove the temporary directory.
- */
-void cleanup()
+static void check_and_print(int expected_errno)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+	if (TEST_RETURN == -1) {
+		if (TEST_ERRNO == expected_errno) {
+			tst_resm(TPASS | TTERRNO, "failed as expected");
+		} else {
+			tst_resm(TFAIL | TTERRNO,
+				 "failed unexpectedly; expected - %d : %s",
+				 expected_errno, strerror(expected_errno));
+		}
+	} else {
+		tst_resm(TFAIL, "munmap succeeded unexpectedly");
+	}
+}
+
+static void test_einval1(void)
+{
+	struct rlimit brkval;
+	char *addr;
+	size_t map_len;
+
+	SAFE_GETRLIMIT(cleanup, RLIMIT_DATA, &brkval);
+
+	addr = (char *)brkval.rlim_max;
+	map_len = page_sz * 2;
+
+	TEST(munmap(addr, map_len));
+
+	check_and_print(EINVAL);
+}
+
+static void cleanup(void)
+{
 	TEST_CLEANUP;
 
-	/*
-	 * unmap the mapped region of the file from the process
-	 * address space
-	 */
-	if (munmap(faddr, map_len) < 0) {
-		tst_brkm(TBROK, NULL, "munmap() fails to unmap the mapped "
-			 "region of the file");
-	}
-
-	/* Close the temporary file */
-	if (close(fildes) < 0) {
-		tst_brkm(TBROK, NULL, "close() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
-
-	tst_rmdir();
 }
