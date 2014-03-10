@@ -19,6 +19,9 @@
 * assume they are not enabled.  Kernels after that, check for -EINVAL
 * when trying to use CLONE_NEWNET and CLONE_NEWNS.
 ***************************************************************************/
+
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <sched.h>
 #include "config.h"
