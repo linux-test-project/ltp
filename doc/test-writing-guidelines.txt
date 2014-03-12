@@ -42,6 +42,9 @@ architecture or similarly complicated code, put it into a header instead.
 1.3 Coding style
 ~~~~~~~~~~~~~~~~
 
+1.3.1 C coding style
+^^^^^^^^^^^^^^^^^^^^
+
 LTP adopted Linux kernel coding style. If you aren't familiar with its rules
 locate 'linux/Documentation/CodingStyle' in the kernel sources and read it,
 it's a well written introduction.
@@ -52,7 +55,27 @@ be used to check your patches before the submission.
 NOTE: If checkpatch does not report any problems, the code still may be wrong
       as the tool only looks for common mistakes.
 
-TODO: bash code coding style?
+1.3.2 Shell coding style
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+When writing testcases in shell write in portable shell only, it's a good idea
+to try to run the test using alternative shell (alternative to bash, for
+example dash) too.
+
+Here are some common sense style rules for shell
+
+* Keep lines under 80 chars
+
+* Use tabs for indentation
+
+* Keep things simple, avoid unnecessary shubshells
+
+* Don't do confusing things (i.e. don't name your functions like common shell
+  commands, etc.)
+
+* Quote variables
+
+* Be consistent
 
 1.4 Commenting code
 ~~~~~~~~~~~~~~~~~~~
@@ -646,6 +669,99 @@ bellow:
 		         tst_fs_type_name(type));
 	break;
 	}
+-------------------------------------------------------------------------------
+
+2.3 Writing a testcase in shell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LTP supports testcases to be written in a portable shell too.
+
+There is a shell library modeled closely to the C interface (the source is
+located at 'testcases/lib/test.sh') and is installed to the same directory as
+the rest of the LTP test binaries.
+
+WARNING: All identifiers starting with TST_ or tst_ are reserved for the
+         'test.sh' library.
+
+2.3.1 Basic shell test structure
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# This is a basic test for true shell buildin
+#
+
+TCID=true01
+TST_TOTAL=1
+. test.sh
+
+true
+ret=$?
+
+if [ $ret -eq 0 ]; then
+	tst_resm TPASS "true returned 0"
+else
+	tst_resm TFAIL "true rturned $ret"
+fi
+
+tst_exit
+-------------------------------------------------------------------------------
+
+TIP: To execute this test the 'test.sh' library must be in '$PATH'. If you are
+     executing the test from a git checkout you can run it as
+     'PATH="$PATH:../../lib" ./foo01.sh'
+
+WARNING: Do not forget to add the 'tst_exit' at the end of the test,
+         otherwise the test return value would be the return value of last
+	 executed command.
+
+2.3.2 Basic test interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Following functions similar to the LTP C intearface are available.
+
+* tst_resm()
+* tst_brkm()
+* tst_exit()
+* tst_require_root()
+* tst_tmpdir()
+* tst_rmdir()
+
+There is one more function called 'tst_check_cmds()' that gets unspecified
+number of parameters and asserts that each parameter is a name of an
+executable in '$PATH' and exits the test with 'TCONF' on first missing.
+
+2.3.3 Cleanup
+^^^^^^^^^^^^^
+
+Due to differencies in C and shell, the cleanup callback is done using a
+'TST_CLEANUP' shell variable that, if not empty, is evaluated before the test
+exits (either after calling 'tst_exit()' or 'tst_brkm()'). See example below.
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# Test cleanup example
+#
+
+TCID=true01
+TST_TOTAL=1
+. test.sh
+
+cleanup()
+{
+	tst_rmdir
+}
+
+tst_tmpdir
+TST_CLEANUP=cleanup
+
+# Do the test here
+
+tst_exit
 -------------------------------------------------------------------------------
 
 3. Test Contribution Checklist
