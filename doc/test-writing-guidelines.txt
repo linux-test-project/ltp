@@ -764,7 +764,25 @@ TST_CLEANUP=cleanup
 tst_exit
 -------------------------------------------------------------------------------
 
-3. Test Contribution Checklist
+
+3. Common problems
+------------------
+
+This chapter describes common problems/misuses and less obvious desing patters
+(quirks) in UNIX interfaces. Read it carefully :)
+
+3.1 umask()
+~~~~~~~~~~~
+
+I've been hit by this one several times already... When you are creating files
+with 'open()' or 'creat()' etc, the mode specified as the last parameter *is
+not* the mode the file is created with. The mode depends on current 'umask()'
+settings which may clear some of the bits. If your test depends on specific
+file permissions you need to 'chmod()' the file afterwards or use SAFE_TOUCH()
+that does the 'chmod()' for you.
+
+
+4. Test Contribution Checklist
 ------------------------------
 
 1. Test compiles and runs fine (check with -i 10 too)
@@ -772,3 +790,14 @@ tst_exit
 3. The runtest entires are in place
 4. Test files are added into corresponding .gitignore files
 5. Patches apply over the latest git
+
+
+4.1 About .gitignore files
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are numerous '.gitignore' files in the LTP tree. Usually there is a
+'.gitignore' file per a group of tests. The reason for this setup is simple.
+It's easier to maintain a '.gitignore' file per directory with tests rather
+than having single file in the project root directory. This way we don't have
+to update them when moving directories and they gets deleted automatically
+when a directory with tests is removed.
