@@ -51,4 +51,8 @@
 # define AT_SYMLINK_NOFOLLOW 0x100
 #endif
 
+#ifndef O_NOATIME
+# define O_NOATIME 01000000
+#endif
+
 #endif /* __LAPI_FCNTL_H__ */
