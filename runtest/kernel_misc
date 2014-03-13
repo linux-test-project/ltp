@@ -7,3 +7,4 @@ tbio tbio
 ltp_acpi ltp_acpi
 ltp_acpi_cpufreq ltp_acpi_cpufreq
 uaccess uaccess
+rcu_torture rcu_torture.sh
