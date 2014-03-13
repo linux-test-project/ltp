@@ -19,30 +19,40 @@
 /*
  * DESCRIPTION
  *	1. open a new file without O_CREAT, ENOENT should be returned.
+ *	2. open a file with O_RDONLY | O_NOATIME and the caller was not
+ *	   privileged, EPERM should be returned.
  */
+
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <sys/fcntl.h>
+#include <pwd.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
+#include "lapi/fcntl.h"
 
 #define TEST_FILE	"test_file"
+#define TEST_FILE2	"test_file2"
 
 char *TCID = "open02";
 
-static int exp_enos[] = { ENOENT, 0 };
+static int exp_enos[] = { ENOENT, EPERM, 0 };
 
 static void cleanup(void);
 static void setup(void);
 
 static struct test_case_t {
 	char *filename;
+	int flag;
 	int exp_errno;
 } test_cases[] = {
-	{TEST_FILE, ENOENT},
+	{TEST_FILE, O_RDWR, ENOENT},
+	{TEST_FILE2, O_RDONLY | O_NOATIME, EPERM},
 };
 
 int TST_TOTAL = ARRAY_SIZE(test_cases);
@@ -74,14 +84,26 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	struct passwd *ltpuser;
+
+	tst_require_root(NULL);
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
+
+	tst_tmpdir();
+
+	SAFE_TOUCH(cleanup, TEST_FILE2, 0644, NULL);
+
+	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
+
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 }
 
 static void open_verify(const struct test_case_t *test)
 {
-	TEST(open(test->filename, O_RDWR, 0444));
+	TEST(open(test->filename, test->flag, 0444));
 
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "open(%s) succeeded unexpectedly",
@@ -102,5 +124,10 @@ static void open_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
+	if (seteuid(0))
+		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
+
 	TEST_CLEANUP;
+
+	tst_rmdir();
 }
