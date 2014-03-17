@@ -23,25 +23,40 @@
 ##                                                                            ##
 ################################################################################
 
+. cmdlib.sh
+
 ext4_setup()
 {
+	tst_kvercmp 2 6 31
+	if [ $? -eq 0 ]; then
+		tst_brkm TCONF ignored "kernel is below 2.6.31"
+		exit 0
+	fi
+
+	tst_require_root
+
+	EXT4_KERNEL_SUPPORT=`grep -w ext4 /proc/filesystems | cut -f2`
+	if [ "$EXT4_KERNEL_SUPPORT" != "ext4" ]; then
+		modprobe ext4 > /dev/null 2>&1
+		if [ $? -ne 0 ]; then
+			tst_brkm TCONF ignored "Ext4 is not supported"
+			exit 0
+		fi
+	fi
+
+	exists ffsb
+
+	if [ -z "$LTP_BIG_DEV" ];then
+		tst_brkm TCONF ignored "tests need a big block device(5G-10G)"
+		exit 0
+	else
+		EXT4_DEV=$LTP_BIG_DEV
+	fi
+
 	mkdir mnt_point
 }
 
 ext4_cleanup()
 {
-	rmdir mnt_point
+	rm -rf mnt_point
 }
-
-# $1: the config file
-read_config()
-{
-	while read config
-	do
-		echo $config | grep -q -E ".*=.*"
-		if [ $? -eq 0 ]; then
-			export $config
-		fi
-	done < $1
-}
-

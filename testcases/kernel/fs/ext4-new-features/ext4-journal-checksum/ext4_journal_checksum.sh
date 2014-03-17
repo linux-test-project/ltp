@@ -31,11 +31,8 @@ export TCID="ext4-journal-checksum"
 export TST_TOTAL=36
 export TST_COUNT=1
 
-# $1: the test config
-
 export TEST_DIR=$PWD
 
-read_config $1
 
 # Use ffsb to test journal checksumming
 # $1: journal mode: writeback, ordered, journal

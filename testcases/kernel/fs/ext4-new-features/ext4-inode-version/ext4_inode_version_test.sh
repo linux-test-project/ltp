@@ -33,9 +33,6 @@ export TST_COUNT=1
 
 export TEST_DIR=$PWD
 
-# $1: the test config
-read_config $1
-
 # Test that inode version is not 32 bits with 128 inode size
 ext4_test_128_inode_version()
 {

@@ -33,9 +33,6 @@ export TST_COUNT=1
 
 export TEST_DIR=$PWD
 
-# $1: the test config
-read_config $1
-
 # The test path of fallocate
 export TMPDIR=$PWD/mnt_point/
 

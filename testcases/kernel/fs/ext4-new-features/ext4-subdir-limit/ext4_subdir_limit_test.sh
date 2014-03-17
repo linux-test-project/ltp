@@ -31,8 +31,6 @@ export TCID="ext4-subdir-limit"
 export TST_TOTAL=10
 export TST_COUNT=1
 
-# $1: the test config
-read_config $1
 
 TEST_DIR=$PWD
 SHORT_DIR=1

@@ -29,8 +29,6 @@ export TST_TOTAL=24
 export TST_COUNT=1
 
 export TEST_DIR=$PWD
-# $1: the test config
-read_config $1
 
 # How to age filesystem
 EMPTY=1

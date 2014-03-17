@@ -28,11 +28,8 @@ export TCID="ext4-delalloc-mballoc"
 export TST_TOTAL=17
 export TST_COUNT=1
 
-# $1: the test config
-
 export TEST_DIR=$PWD
 
-read_config $1
 
 # Case 17: mount ext4 partition to ext3
 ext4_test_remount()

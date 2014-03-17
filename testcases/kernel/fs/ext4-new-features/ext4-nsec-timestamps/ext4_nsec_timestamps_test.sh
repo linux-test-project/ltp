@@ -31,8 +31,6 @@ export TCID="ext4-nsec-timestamps"
 export TST_TOTAL=2
 export TST_COUNT=1
 
-# $1: the test config
-read_config $1
 
 TEST_DIR=$PWD
 
