@@ -530,6 +530,7 @@
 /mmap/mmap14
 /modify_ldt/modify_ldt01
 /modify_ldt/modify_ldt02
+/modify_ldt/modify_ldt03
 /mount/mount01
 /mount/mount02
 /mount/mount03

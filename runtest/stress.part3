@@ -384,6 +384,7 @@ mmap09 mmap09
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
+modify_ldt03 modify_ldt03
 
 mprotect01 mprotect01
 mprotect02 mprotect02
