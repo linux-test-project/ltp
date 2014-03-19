@@ -22,7 +22,7 @@
 #
 
 export LTP_RET_VAL=0
-export LTP_TST_CNT=1
+export TST_COUNT=1
 
 # Exit values map
 tst_flag2mask()
@@ -45,11 +45,11 @@ tst_resm()
 	local mask=$?
 	LTP_RET_VAL=$((LTP_RET_VAL|mask))
 
-	echo "$TCID $LTP_TST_CNT $1 : $2"
+	echo "$TCID $TST_COUNT $1 : $2"
 
 	case "$1" in
 	TPASS|TFAIL)
-	LTP_TST_CNT=$((LTP_TST_CNT+1));;
+	TST_COUNT=$((TST_COUNT+1));;
 	esac
 }
 
@@ -121,6 +121,9 @@ fi
 if [ -z "$TST_TOTAL" ]; then
 	tst_brkm TBROK "TST_TOTAL is not defined"
 fi
+
+export TCID="$TCID"
+export TST_TOTAL="$TST_TOTAL"
 
 # Setup LTPROOT, default to current directory if not set
 if [ -z "$LTPROOT" ]; then
