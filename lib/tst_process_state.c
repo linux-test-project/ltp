@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Cyril Hrubis chrubis@suse.cz
+ * Copyright (C) 2012-2014 Cyril Hrubis chrubis@suse.cz
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -21,6 +21,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+
 #include "tst_process_state.h"
 
 void tst_process_state_wait(const char *file, const int lineno,
@@ -31,9 +35,37 @@ void tst_process_state_wait(const char *file, const int lineno,
 
 	snprintf(proc_path, sizeof(proc_path), "/proc/%i/stat", pid);
 
-	do {
+	for (;;) {
 		safe_file_scanf(file, lineno, cleanup_fn, proc_path,
 		                "%*i %*s %c", &cur_state);
+
+		if (state == cur_state)
+			return;
+
 		usleep(10000);
-	} while (state != cur_state);
+	}
+}
+
+int tst_process_state_wait2(pid_t pid, const char state)
+{
+	char proc_path[128], cur_state;
+
+	snprintf(proc_path, sizeof(proc_path), "/proc/%i/stat", pid);
+
+	for (;;) {
+		FILE *f = fopen(proc_path, "r");
+		if (!f) {
+			fprintf(stderr, "Failed to open '%s': %s\n",
+			        proc_path, strerror(errno));
+			return 1;
+		}
+
+		fscanf(f, "%*i %*s %c", &cur_state);
+		fclose(f);
+
+		if (state == cur_state)
+			return 0;
+
+		usleep(10000);
+	}
 }
