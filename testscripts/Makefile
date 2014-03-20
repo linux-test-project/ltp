@@ -28,7 +28,7 @@ INSTALL_DIR		:= testscripts
 
 INSTALL_MODE		:= 00755
 
-INSTALL_TARGETS		:= *.sh fs_ro_tests
+INSTALL_TARGETS		:= *.sh
 
 MAKE_TARGETS		:=
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 #   Copyright (c) International Business Machines  Corp., 2008
 #
@@ -23,15 +23,15 @@
 #   FUNCTIONALITY:  File system tests for normal mount, bind mount and RO mount
 #
 #   DESCRIPTION:    Performs filesystems tests for RO mount.
-#     For filesystem's like ext2, ext3, reiserfs, jfs & xfs.
-#     This test creates an image-file and
+#     For filesystem, like ext2, ext3, reiserfs, jfs & xfs,
+#     This test needs a big block device(>=500MB is ok), and you can specify
+#     it by -z option when running runltp.
 #        a)  mounts on dir1,
 #        b)  mount --bind dir2
 #        c)  mount -o remount,ro
 #       It verifies the tests on a) and b) works correctly.
-#     For the c) option it checks that the tests are not able to write into dir.
-#     Then it executes the tests from flat-file  {LTPROOT}/testscripts/fs_ro_tests
-#     Check the logs /tmp/fs$$/errs.log and /tmp/fs$$/pass.log for pass/failures.
+#       For the c) option it checks that the tests are not able to write
+#       into dir.
 #===============================================================================
 #
 # CHANGE HISTORY:
@@ -41,161 +41,134 @@
 # This script is based on the Dave Hansen script for testing the robind.
 #*******************************************************************************
 
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
+export TCID="test_robind"
+export TST_TOTAL=3
 
-# The test case ID, the test case count and the total number of test case
-TCID=${TCID:-test_robind.sh}
-TST_TOTAL=1
-TST_COUNT=1
-export TCID
-export TST_COUNT
-export TST_TOTAL
+DIRS="dir1 dir2-bound dir3-ro"
+dir1_mount_flag=0
+dir2_bound_mount_flag=0
+dir3_ro_mount_flag=0
+
+. test.sh
 
 usage()
 {
-  cat << EOF
-  usage: $0 [ext3,ext2,jfs,xfs,reiserfs,ramfs]
+	cat << EOF
+	usage: $0 -c command [ext3,ext2,jfs,xfs,reiserfs,ramfs]
 
-  This script verifies ReadOnly-filesystem, by mounting imagefile and
-  executing the filesystem tests.
+	This script verifies ReadOnly-filesystem, by mounting block device and
+	executing the filesystem tests.
 
-  OPTIONS
-    -h    display this message and exit
+	OPTIONS
+		-h    display this message and exit
+		-c    command to be executed
+
 EOF
+	exit 1
 }
 
-DIRS="dir1 dir2-bound dir3-ro"
-TMPDIR=/tmp/fs$$
-trap cleanup ERR
-trap cleanup INT
-
-#==============================================================================
-# FUNCTION NAME:    cleanup
-#
-# FUNCTION DESCRIPTION: Unmounts dir, Removes dir's, files created by the tests.
-#
-# PARAMETERS:       The $fs_image .
-#
-# RETURNS:      None.
-#==============================================================================
-function cleanup
+umount_mntpoint()
 {
-    umount ${TMPDIR}/dir3-ro 2> /dev/null > /dev/null
-    umount ${TMPDIR}/dir2-bound 2> /dev/null 1> /dev/null
-    umount ${TMPDIR}/dir1 2> /dev/null 1> /dev/null
-    if [ ! -z $1 ]; then {
-        rm -rf $1 || true
-    }
-    fi
+	if [ $dir3_ro_mount_flag -eq 1 ];then
+		umount dir3-ro
+		if [ $? -ne 0 ];then
+			tst_resm TWARN "umount dir3-ro failed"
+		else
+			dir3_ro_mount_flag=0
+		fi
+	fi
+
+	if [ $dir2_bound_mount_flag -eq 1 ];then
+		umount dir2-bound
+		if [ $? -ne 0 ];then
+			tst_resm TWARN "umount dir2-bound failed"
+		else
+			dir2_bound_mount_flag=0
+		fi
+	fi
+
+	if [ $dir1_mount_flag -eq 1 ];then
+		umount dir1
+		if [ $? -ne 0 ];then
+			tst_resm TWARN "umount dir1"
+		else
+			dir1_mount_flag=0
+		fi
+	fi
 }
 
-#===============================================================================
-# FUNCTION NAME:    setup
-#
-# FUNCTION DESCRIPTION: Does the initailization
-#
-# PARAMETERS:   File_systems (if any )
-#
-# RETURNS:      None.
-#===============================================================================
-function setup
+cleanup()
 {
-    mkdir ${TMPDIR}
-    FAILLOG="$TMPDIR/errs.log"
-    PASSLOG="$TMPDIR/pass.log"
-
-    for i in $DIRS; do
-        rm -rf ${TMPDIR}/$i || true
-        mkdir -p ${TMPDIR}/$i
-    done;
-
-    # Populating the default FS as ext3, if FS is not given
-    if [ -z "$*" ]; then
-        FSTYPES="ext3"
-    else
-        FSTYPES="$*"
-    fi
-
-    # set the LTPROOT directory
-    cd `dirname $0`
-    echo "${PWD}" | grep testscripts > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        cd ..
-        export LTPROOT="${PWD}"
-        export PATH="${PATH}:${LTPROOT}/testcases/bin"
-    fi
-
-    FS_Tests="${LTPROOT}/testscripts/fs_ro_tests"
-    cd ${TMPDIR}
+	umount_mntpoint
+	tst_rmdir
 }
 
-#=============================================================================
-# FUNCTION NAME:    testdir
-#
-# FUNCTION DESCRIPTION: The core function where it runs the tests
-#
-# PARAMETERS:   dir_name, file_systems, Read_only flag = [true|false]
-#
-# RETURNS:      None.
-#=============================================================================
-function testdir
+# parameters: file_systems (if any )
+setup()
 {
-    dir=$1
-    fs=$2
-    RO=$3
-    pushd $dir
-    testnums=`wc -l $FS_Tests | cut -f1 -d" "`
-    status=0
+	tst_require_root
 
-    echo "---------------------------------------------------" >> $FAILLOG ;
-    echo "Running RO-FileSystem Tests for $dir $fs filesystem" >> $FAILLOG ;
-    echo "---------------------------------------------------" >> $FAILLOG ;
+	if [ -z "$LTP_BIG_DEV" ];then
+		tst_brkm TCONF "tests need a big block device(>=500MB)"
+	else
+		device=$LTP_BIG_DEV
+	fi
 
-    echo "---------------------------------------------------" >> $PASSLOG ;
-    echo "Running RO-FileSystem Tests for $dir $fs filesystem" >> $PASSLOG ;
-    echo "---------------------------------------------------" >> $PASSLOG ;
+	tst_tmpdir
+	TST_CLEANUP=cleanup
 
-    export TDIRECTORY=$PWD ;
-    echo TDIR is $TDIRECTORY;
-    if [ $RO == false ] ; then                          # Testing Read-Write dir
-        for tests in `seq $testnums` ; do
-            cmd=`cat $FS_Tests | head -$tests | tail -n 1`
-#            eval $cmd 2>&1 /dev/null
-            eval $cmd 2> /dev/null 1> /dev/null
-            if [ $? -eq 0 ]; then
-                echo "$tests. '$cmd' PASS" >> $PASSLOG
-            else
-                echo "$tests. '$cmd' FAIL " >> $FAILLOG
-                echo "TDIR is $TDIRECTORY" >> $FAILLOG;
-                status=1
-            fi
-        done
+	for dir in $DIRS
+	do
+		rm -rf $dir
+		mkdir -p $dir
+	done
 
-    else                                                # Testing Read-Only dir
-        for tests in `seq $testnums` ; do
-            cmd=`cat $FS_Tests | head -$tests | tail -n 1`
-            eval $cmd 2> /dev/null 1> /dev/null
-            if [ $? -ne 0 ]; then
-                echo "$tests. '$cmd' PASS " >> $PASSLOG
-            else
-                 echo "$tests. '$cmd' FAIL" >> $FAILLOG
-                 status=1
-            fi
-        done
-    fi
-    if [ $status == 1 ] ; then
-        echo "RO-FileSystem Tests FAILED for $dir $fs filesystem" >> $FAILLOG
-        echo >> $FAILLOG
-        retcode=$status
-    else
-        echo "RO-FileSystem Tests PASSed for $dir $fs filesystem" >> $PASSLOG
-        echo >> $PASSLOG
-    fi
-    # Remove all the temp-files created.
-    eval rm -rf ${TMPDIR}/${dir}/* > /dev/null 2>&1 || true
-    unset TDIRECTORY
-    popd
+	# populating the default FS as ext3, if FS is not given
+	if [ -z "$*" ]; then
+		FSTYPES="ext3"
+	else
+		FSTYPES="$*"
+	fi
+}
+
+# the core function where it runs the tests
+# $1 - directory where to run tests
+# $2 - file system type
+# $3 - read-only flag [true|false]
+testdir()
+{
+	local dir=$1
+	local fs_type=$2
+	local RO=$3
+	local tst_result=0
+	local curdir=$(pwd)
+
+	cd $dir
+	tst_resm TINFO "command: $command"
+
+	# we need to export TMPDIR, in case test calls tst_rmdir()
+	export TMPDIR=$curdir/$dir
+
+	eval $command > $curdir/test.log 2>&1
+	tst_result=$?
+
+	# if tst_result isn't 0 and read-only flag is false, the test failed
+	# or if tst_result is 0 and read-only flag is true, the test failed.
+	if [ "$RO" = "false" -a $tst_result -ne 0 -o "$RO" = "true" -a \
+	     $tst_result -eq 0 ];then
+		tst_resm TINFO "error info:"
+		cat $curdir/test.log
+		tst_resm TFAIL "RO-FileSystem Tests FAILED for \
+				$dir $fs_type read-only flag: $RO"
+	else
+		tst_resm TPASS "RO-FileSystem Tests PASSED for \
+				$dir $fs_type read-only flag: $RO"
+	fi
+
+	# remove all the temp files created.
+	cd ..
+	rm -f $curdir/test.log
+	rm -rf $curdir/$dir/*
 }
 
 #=============================================================================
@@ -203,63 +176,66 @@ function testdir
 #     See the description, purpose, and design of this test under TEST
 #     in this test's prolog.
 #=============================================================================
-retcode=0
-while getopts h: OPTION; do
-  case $OPTION in
-    h)
-      usage
-      exit 1
-      ;;
-    ?)
-      usage
-      exit 1
-      ;;
-  esac
+
+while getopts c:h: OPTION; do
+	case $OPTION in
+	c)
+		command=$OPTARG;;
+	h)
+		usage;;
+	?)
+		usage;;
+	esac
 done
-# Does the initial setups
-oldpwd=${PWD}
+shift $((OPTIND-1))
+
 setup $*
 
 # Executes the tests for differnt FS's
-# Creates an image file of 500 MB and mounts it.
 for fstype in $FSTYPES; do
-    image=$fstype.img
-    dd if=/dev/zero of=$image bs=$((1<<20)) count=500 2> /dev/null 1> /dev/null
-    if [ $? -ne 0 ] ; then
-        tst_resm, TFAIL "Unable to create image "
-        tst_resm, TFAIL "Free Disk space of 512MB is required in /tmp fs"
-        tst_resm, TFAIL "Please free it and rerun thank you.."
-        rm -f $image
-        exit -1
-    fi
+	opts="-F"
+	if [ "$fstype" = "reiserfs" ]; then
+		opts="-f --journal-size 513 -q"
+	elif [ "$fstype" = "jfs" ]; then
+		opts="-f"
+	elif [ "$fstype" = "xfs" ]; then
+		opts=""
+	fi
 
-    OPTS="-F"
-    if [ "$fstype" == "reiserfs" ]; then
-    OPTS="-f --journal-size 513 -q"
-    elif [ "$fstype" == "jfs" ]; then
-    OPTS="-f"
-    elif [ "$fstype" == "xfs" ]; then
-    OPTS=""
-    fi
+	if [ "$fstype" != "ramfs" ]; then
+		mkfs.$fstype $opts $device > /dev/null
+	fi
 
-    if [ "$fstype" != "ramfs" ] ; then
-        mkfs.$fstype $OPTS $image 2> /dev/null 1> /dev/null
-    fi
+	mount -t $fstype $device  dir1
+	if [ $? -ne 0 ];then
+		tst_brkm TBROK "mount $device to dir1 failed"
+	else
+		dir1_mount_flag=1
+	fi
 
-    mount -t $fstype -o loop $image dir1
-    mount --bind dir1 dir2-bound || exit -1
-    mount --bind dir1 dir3-ro    || exit -1
-    mount -o remount,ro dir3-ro  || exit -1
+	mount --bind dir1 dir2-bound
+	if [ $? -ne 0 ];then
+		tst_brkm TBROK "mount --bind dir1 dir2-bound failed"
+	else
+		dir2_bound_mount_flag=1
+	fi
 
-    testdir dir1 $fstype false
-    testdir dir2-bound $fstype false
-    testdir dir3-ro $fstype true
-    cleanup $image
+	mount --bind dir1 dir3-ro
+	if [ $? -ne 0 ];then
+		tst_brkm TBROK "mount --bind dir1 dir3-ro failed"
+	else
+		dir3_ro_mount_flag=1
+	fi
+
+	mount -o remount,ro,bind dir1 dir3-ro
+	if [ $? -ne 0 ];then
+		tst_brkm TBROK "mount -o remount,ro,bind dir1 dir3-ro failed"
+	fi
+
+	testdir dir1 $fstype false
+	testdir dir2-bound $fstype false
+	testdir dir3-ro $fstype true
+	umount_mntpoint
 done
 
-    for i in $DIRS; do
-        rm -rf ./$i || true
-    done;
-    cd $oldpwd || true
-    exit $retcode
-
+tst_exit
