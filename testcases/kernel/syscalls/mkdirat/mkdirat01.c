@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright (c) International Business Machines  Corp., 2006
- *  Author i Yang <yyangcdl@cn.ibm.com>
+ *  Author: Yi Yang <yyangcdl@cn.ibm.com>
  * Copyright (c) Cyril Hrubis 2014 <chrubis@suse.cz>
  *
  * This program is free software;  you can redistribute it and/or modify
