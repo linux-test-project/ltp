@@ -28,6 +28,7 @@
 static const char *strerrnodef(int err)
 {
 	struct pair errno_pairs[] = {
+		{.name = "SUCCESS", .val = 0},
 		/* asm-generic/errno-base.h */
 		PAIR(EPERM)
 		PAIR(ENOENT)
