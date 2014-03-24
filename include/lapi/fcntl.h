@@ -28,11 +28,15 @@
 #endif
 
 #ifndef F_SETPIPE_SZ
-#define F_SETPIPE_SZ 1031
+# define F_SETPIPE_SZ 1031
 #endif
 
 #ifndef F_GETPIPE_SZ
-#define F_GETPIPE_SZ 1032
+# define F_GETPIPE_SZ 1032
+#endif
+
+#ifndef F_OWNER_PGRP
+# define F_OWNER_PGRP 2
 #endif
 
 #ifndef AT_FDCWD
