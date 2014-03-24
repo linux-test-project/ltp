@@ -37,7 +37,7 @@
 #
 #
 
-source "$(dirname $0)/runltp"
+. "$(dirname $0)/runltp"
 
 setup()
 {

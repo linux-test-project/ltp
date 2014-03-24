@@ -995,10 +995,8 @@ cleanup()
 
 LTP_SCRIPT="$(basename $0)"
 
-if [[ "$LTP_SCRIPT" == "runltp" ]]; then
+if [ "$LTP_SCRIPT" = "runltp" ]; then
     trap "cleanup" 0
     setup
     main "$@"
 fi
-
-#vim: syntax=sh
