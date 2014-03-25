@@ -42,6 +42,8 @@ YACC			:= bison -y
 #NUMA_CPPFLAGS		:= -DNUMA_VERSION1_COMPATIBILITY
 #NUMA_LIBS		:= -lnuma
 #SELINUX_LIBS		:= -lselinux
+#TIRPC_CPPFLAGS		:= -I/usr/include/tirpc
+#TIRPC_LIBS		:= -ltirpc
 
 prefix			:= /opt/ltp
 
