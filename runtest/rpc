@@ -2,7 +2,6 @@
 #
 # PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
 #
-run_rpc_tests.sh run_rpc_tests.sh
 rpc01 rpc01
 rpcinfo rpcinfo01
 rup rup01
