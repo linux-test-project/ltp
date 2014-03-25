@@ -68,8 +68,8 @@ int main(int argn, char *argc[])
 	sin.sin_addr.s_addr = *(u_int *) hp->h_addr;
 	port = pmap_getport(&sin, progNum, VERSNUM, IPPROTO_UDP);
 
-	tv.tv_sec = 0;
-	tv.tv_usec = 100;
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 
 	if (run_mode) {
 		printf("port : %d\n", port);

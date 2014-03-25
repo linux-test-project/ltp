@@ -58,8 +58,8 @@ int main(int argn, char *argc[])
 		printf("client : %d\n", client);
 	}
 
-	tv.tv_sec = 0;
-	tv.tv_usec = 100;
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 
 	client = clnt_create(argc[1], progNum, VERSNUM, nettype);	/* Call SysErr RP */
 
