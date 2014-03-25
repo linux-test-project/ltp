@@ -1,0 +1,56 @@
+rpc_pmap_set rpc_test.sh -c rpc_pmap_set
+rpc_pmap_unset rpc_test.sh -c rpc_pmap_unset
+rpc_pmap_getport rpc_test.sh -s rpc_svc_1 -c rpc_pmap_getport
+rpc_pmap_getmaps rpc_test.sh -s rpc_svc_1 -c rpc_pmap_getmaps
+rpc_pmap_rmtcall rpc_test.sh -s rpc_svc_1 -c rpc_pmap_rmtcall
+rpc_get_myaddress rpc_test.sh -c rpc_get_myaddress
+
+rpc_authnone_create rpc_test.sh -c rpc_authnone_create
+rpc_authunix_create rpc_test.sh -c rpc_authunix_create
+rpc_authunix_create_default rpc_test.sh -c rpc_authunix_create_default
+rpc_auth_destroy rpc_test.sh -c rpc_auth_destroy
+
+rpc_clnt_broadcast rpc_test.sh -s rpc_svc_1 -c rpc_clnt_broadcast
+
+rpc_svc_destroy rpc_test.sh -c rpc_svc_destroy
+rpc_svcfd_create rpc_test.sh -c rpc_svcfd_create
+rpc_svctcp_create rpc_test.sh -c rpc_svctcp_create
+rpc_svcudp_create rpc_test.sh -c rpc_svcudp_create
+rpc_svcraw_create rpc_test.sh -c rpc_svcraw_create
+rpc_svcudp_bufcreate rpc_test.sh -c rpc_svcudp_bufcreate
+rpc_clnt_destroy rpc_test.sh -s rpc_svc_1 -c rpc_clnt_destroy
+rpc_clnt_create rpc_test.sh -s rpc_svc_1 -c rpc_clnt_create
+rpc_clntraw_create rpc_test.sh -s rpc_svc_1 -c rpc_clntraw_create
+rpc_clnttcp_create rpc_test.sh -s rpc_svc_1 -c rpc_clnttcp_create
+rpc_clntudp_create rpc_test.sh -s rpc_svc_1 -c rpc_clntudp_create
+rpc_clntudp_bufcreate rpc_test.sh -s rpc_svc_1 -c rpc_clntudp_bufcreate
+
+rpc_clnt_pcreateerror rpc_test.sh -s rpc_svc_1 -c rpc_clnt_pcreateerror
+rpc_clnt_perrno rpc_test.sh -s rpc_svc_1 -c rpc_clnt_perrno
+rpc_clnt_perror rpc_test.sh -s rpc_svc_1 -c rpc_clnt_perror
+rpc_clnt_spcreateerror rpc_test.sh -s rpc_svc_1 -c rpc_clnt_spcreateerror
+rpc_clnt_sperrno rpc_test.sh -s rpc_svc_1 -c rpc_clnt_sperrno
+rpc_clnt_sperror rpc_test.sh -s rpc_svc_1 -c rpc_clnt_sperror
+rpc_svcerr_noproc rpc_test.sh -s rpc_svc_1 -c rpc_svcerr_noproc
+rpc_svcerr_noprog rpc_test.sh -c rpc_svcerr_noprog
+rpc_svcerr_progvers rpc_test.sh -s rpc_svc_1 -c rpc_svcerr_progvers
+rpc_svcerr_systemerr rpc_test.sh -s rpc_svc_1 -c rpc_svcerr_systemerr
+rpc_svcerr_auth rpc_test.sh -s rpc_svc_1 -c rpc_svcerr_auth
+rpc_svcerr_weakauth rpc_test.sh -s rpc_svc_1 -c rpc_svcerr_weakauth
+
+rpc_xprt_register rpc_test.sh -c rpc_xprt_register
+rpc_xprt_unregister rpc_test.sh -c rpc_xprt_unregister
+rpc_svc_register rpc_test.sh -c rpc_svc_register
+rpc_svc_unregister rpc_test.sh -c rpc_svc_unregister
+rpc_registerrpc rpc_test.sh -c rpc_registerrpc
+
+rpc_clnt_call rpc_test.sh -s rpc_svc_1 -c rpc_clnt_call
+rpc_callrpc rpc_test.sh -s rpc_svc_1 -c rpc_callrpc
+rpc_clnt_freeres rpc_test.sh -s rpc_svc_1 -c rpc_clnt_freeres
+rpc_clnt_geterr rpc_test.sh -s rpc_svc_1 -c rpc_clnt_geterr
+rpc_clnt_control rpc_test.sh -s rpc_svc_1 -c rpc_clnt_control
+rpc_svc_getcaller rpc_test.sh -s rpc_svc_1 -c rpc_svc_getcaller
+rpc_svc_freeargs rpc_test.sh -s rpc_svc_1 -c rpc_svc_freeargs
+#TODO
+#rpc_svc_getargs
+#rpc_svc_sendreply

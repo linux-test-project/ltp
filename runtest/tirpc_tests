@@ -1,0 +1,50 @@
+tirpc_rpcb_getaddr rpc_test.sh -s tirpc_svc_3 -c tirpc_rpcb_getaddr
+tirpc_rpcb_getmaps rpc_test.sh -s tirpc_svc_3 -c tirpc_rpcb_getmaps
+
+tirpc_authnone_create rpc_test.sh -c tirpc_authnone_create
+tirpc_authsys_create rpc_test.sh -s tirpc_svc_1 -c tirpc_authsys_create
+tirpc_authsys_create_default rpc_test.sh -c tirpc_authsys_create_default
+tirpc_authdes_create rpc_test.sh -s tirpc_svc_1 -c tirpc_authdes_create
+tirpc_authdes_seccreate rpc_test.sh -s tirpc_svc_1 -c tirpc_authdes_seccreate
+
+tirpc_clnt_dg_create rpc_test.sh -s tirpc_svc_5 -c tirpc_clnt_dg_create
+tirpc_svc_dg_create rpc_test.sh -c tirpc_svc_dg_create
+tirpc_clnt_vc_create rpc_test.sh -s tirpc_svc_5 -c tirpc_clnt_vc_create
+tirpc_svc_vc_create rpc_test.sh -c tirpc_svc_vc_create
+tirpc_bottomlevel_clnt_call rpc_test.sh -s tirpc_svc_5 -c tirpc_bottomlevel_clnt_call
+
+tirpc_clnt_pcreateerror rpc_test.sh -s tirpc_svc_11 -c tirpc_clnt_pcreateerror
+tirpc_clnt_perrno rpc_test.sh -s tirpc_svc_11 -c tirpc_clnt_perrno
+tirpc_clnt_perror rpc_test.sh -s tirpc_svc_11 -c tirpc_clnt_perror
+tirpc_svcerr_noproc rpc_test.sh -s tirpc_svc_11 -c tirpc_svcerr_noproc
+tirpc_svcerr_noprog rpc_test.sh -s tirpc_svc_11 -c tirpc_svcerr_noprog
+tirpc_svcerr_progvers rpc_test.sh -s tirpc_svc_11 -c tirpc_svcerr_progvers
+tirpc_svcerr_systemerr rpc_test.sh -s tirpc_svc_11 -c tirpc_svcerr_systemerr
+tirpc_svcerr_weakauth rpc_test.sh -s tirpc_svc_11 -c tirpc_svcerr_weakauth
+
+tirpc_clnt_tli_create rpc_test.sh -s tirpc_svc_4 -c tirpc_clnt_tli_create
+tirpc_svc_tli_create rpc_test.sh -c tirpc_svc_tli_create
+tirpc_rpcb_set rpc_test.sh -c tirpc_rpcb_set
+tirpc_rpcb_unset rpc_test.sh -c tirpc_rpcb_unset
+tirpc_rpcb_rmtcall rpc_test.sh -s tirpc_svc_4 -c tirpc_rpcb_rmtcall
+tirpc_svc_reg rpc_test.sh -c tirpc_svc_reg
+tirpc_svc_unreg rpc_test.sh -c tirpc_svc_unreg
+tirpc_expertlevel_clnt_call rpc_test.sh -s tirpc_svc_4 -c tirpc_expertlevel_clnt_call
+
+tirpc_clnt_tp_create rpc_test.sh -s tirpc_svc_3 -c tirpc_clnt_tp_create
+tirpc_clnt_tp_create_timed rpc_test.sh -s tirpc_svc_3 -c tirpc_clnt_tp_create_timed
+tirpc_svc_tp_create rpc_test.sh -c tirpc_svc_tp_create
+tirpc_interlevel_clnt_call rpc_test.sh -s tirpc_svc_3 -c tirpc_interlevel_clnt_call
+tirpc_clnt_control rpc_test.sh -s tirpc_svc_3 -c tirpc_clnt_control
+
+tirpc_rpc_reg rpc_test.sh -c tirpc_rpc_reg
+tirpc_rpc_call rpc_test.sh -s tirpc_svc_1 -c tirpc_rpc_call
+tirpc_rpc_broadcast rpc_test.sh -s tirpc_svc_1 -c tirpc_rpc_broadcast
+tirpc_rpc_broadcast_exp rpc_test.sh -s tirpc_svc_1 -c tirpc_rpc_broadcast_exp -e "1 2"
+
+tirpc_clnt_create rpc_test.sh -s tirpc_svc_2 -c tirpc_clnt_create
+tirpc_clnt_create_timed rpc_test.sh -s tirpc_svc_2 -c tirpc_clnt_create_timed
+tirpc_svc_create rpc_test.sh -c tirpc_svc_create
+tirpc_toplevel_clnt_call rpc_test.sh -s tirpc_svc_2 -c tirpc_toplevel_clnt_call
+tirpc_clnt_destroy rpc_test.sh -s tirpc_svc_2 -c tirpc_clnt_destroy
+tirpc_svc_destroy rpc_test.sh -c tirpc_svc_destroy
