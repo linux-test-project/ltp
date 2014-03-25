@@ -54,7 +54,7 @@ if test -f "$LINUX_DIR/Makefile"; then
 ^PATCHLEVEL = ,,p' ${LINUX_DIR}/Makefile`
 fi
 
-if [[ -n "$LINUX_VERSION_MAJOR" -a -n "$LINUX_VERSION_PATCH" ]]; then
+if test -n "$LINUX_VERSION_MAJOR" -a -n "$LINUX_VERSION_PATCH"; then
 	WITH_MODULES="yes"
 else
 	WITH_MODULES="no"
