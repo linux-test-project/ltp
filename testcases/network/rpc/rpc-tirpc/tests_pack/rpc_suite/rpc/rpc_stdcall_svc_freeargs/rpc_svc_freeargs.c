@@ -67,5 +67,5 @@ int main(int argn, char *argc[])
 	//normally should be 0: test has passed or 1: test has failed
 	//printf("%d\n", test_status);
 
-	tst_exit();		//test_status;
+	return 0;		//test_status;
 }
