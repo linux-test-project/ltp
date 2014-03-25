@@ -67,8 +67,8 @@ int main(int argn, char *argc[])
 		printf("nconf : %d\n", nconf);
 	}
 
-	tv.tv_sec = 0;
-	tv.tv_usec = 100;
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 
 	nconf = getnetconfigent("udp");
 	if (nconf == (struct netconfig *)NULL) {
