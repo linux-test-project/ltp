@@ -51,6 +51,5 @@ rpc_clnt_geterr rpc_test.sh -s rpc_svc_1 -c rpc_clnt_geterr
 rpc_clnt_control rpc_test.sh -s rpc_svc_1 -c rpc_clnt_control
 rpc_svc_getcaller rpc_test.sh -s rpc_svc_1 -c rpc_svc_getcaller
 rpc_svc_freeargs rpc_test.sh -s rpc_svc_1 -c rpc_svc_freeargs
-#TODO
-#rpc_svc_getargs
-#rpc_svc_sendreply
+rpc_svc_getargs rpc_test.sh -s rpc_svc_getargs -c rpc_svc_getargs_client
+rpc_svc_sendreply rpc_test.sh -s rpc_svc_sendreply -c rpc_svc_sendreply_client

@@ -134,5 +134,4 @@ void rcp_service(register struct svc_req *rqstp, register SVCXPRT * transp)
 	//normally should be 0: test has passed or 1: test has failed
 	printf("%d\n", test_status);
 
-	exit(test_status);
 }

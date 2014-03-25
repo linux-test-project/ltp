@@ -48,6 +48,7 @@ int main(int argn, char *argc[])
 	int progNum = atoi(argc[2]);
 	enum clnt_stat cs;
 	int varSnd = 1;
+	int varRcv = 0;
 
 	//Initialization
 	if (run_mode == 1) {
@@ -56,16 +57,19 @@ int main(int argn, char *argc[])
 
 	cs = callrpc(argc[1], progNum, VERSNUM, PROCNUM,
 		     (xdrproc_t) xdr_int, (char *)&varSnd,
-		     (xdrproc_t) xdr_int, (char *)&varSnd);
+		     (xdrproc_t) xdr_int, (char *)&varRcv);
 
 	//test_status = varSnd;
 
 	if (cs != RPC_SUCCESS)
 		clnt_perrno(cs);
 
+	if (varSnd == varRcv)
+		test_status = 0;
+
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
 	//printf("%d\n", test_status);
 
-	return 0;		//test_status;
+	return test_status;
 }
