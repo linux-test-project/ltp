@@ -1,3 +1,5 @@
+/tests_pack/rpc_cleaner
+/tests_pack/tirpc_cleaner
 /tests_pack/rpc_svc_1/rpc_svc_1
 /tests_pack/rpc_svc_2/rpc_svc_2
 /tests_pack/tirpc_svc_1/tirpc_svc_1
