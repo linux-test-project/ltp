@@ -160,7 +160,7 @@ test_wait()
 	}
 }
 
-trap clean_up_exit SIGINT
+trap clean_up_exit INT
 
 # Should be run by root user
 if [ `id -ru` != 0 ]; then

@@ -66,7 +66,7 @@ modprobe rcutorture > /dev/null 2>&1 || \
 	tst_brkm TCONF "Test requires rcutorture module"
 rmmod rcutorture > /dev/null 2>&1
 
-trap cleanup SIGINT
+trap cleanup INT
 
 rcu_type="rcu rcu_sync rcu_expedited rcu_bh rcu_bh_sync rcu_bh_expedited \
           srcu srcu_sync srcu_expedited srcu_raw srcu_raw_sync sched \
@@ -95,7 +95,7 @@ for type in $rcu_type; do
 
 	# check module status in dmesg
 	result_str=`dmesg | sed -nE '$s/.*End of test: ([A-Z]+):.*/\1/p'`
-	if [ "$result_str" == "SUCCESS" ]; then
+	if [ "$result_str" = "SUCCESS" ]; then
 		tst_resm TPASS "$type: completed"
 	else
 		tst_resm TFAIL "$type: $result_str, see dmesg"
