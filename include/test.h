@@ -266,10 +266,10 @@ void tst_run_cmd(void (cleanup_fn)(void),
  *
  * @dev: path to a device
  * @fs_type: filesystem type
- * @fs_opts: extra mkfs options
+ * @fs_opts: NULL or NULL terminated array of extra mkfs options
  */
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
-              const char *fs_type, const char *fs_opts);
+	      const char *fs_type, const char *const fs_opts[]);
 
 /* lib/tst_fill_file.c
  *

@@ -705,6 +705,23 @@ void test01(void)
 }
 -------------------------------------------------------------------------------
 
+2.2.13 Formatting a device with a filesystem
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+void tst_mkfs(void (cleanup_fn)(void), const char *dev,
+              const char *fs_type, const char *const fs_opts[]);
+-------------------------------------------------------------------------------
+
+This function takes a path to a device, filesystem type and an array of extra
+options passed to mkfs.
+
+The extra options 'fs_opts' should either be 'NULL' if there are none or a
+'NULL' terminated array of strings such as '{"-b", "1024", NULL}'.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

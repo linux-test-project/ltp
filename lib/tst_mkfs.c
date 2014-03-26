@@ -18,17 +18,17 @@
 
 #include "test.h"
 
+#define OPTS_MAX 32u
+
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
-              const char *fs_type, const char *fs_opts)
+	      const char *fs_type, const char *const fs_opts[])
 {
-	tst_resm(TINFO, "Formatting %s with %s extra opts='%s'",
-	        dev, fs_type, fs_opts ? fs_opts : "");
+	int i, pos = 3;
+	const char *argv[OPTS_MAX] = {"mkfs", "-t", fs_type};
+	char fs_opts_str[1024] = "";
 
 	if (!fs_type)
 		tst_brkm(TBROK, cleanup_fn, "No fs_type specified");
-
-	const char *argv[] = {"mkfs", "-t", fs_type, NULL, NULL, NULL, NULL};
-	int pos = 3;
 
 	/*
 	 * mkfs.xfs and mkfs.btrfs aborts if it finds a filesystem
@@ -40,10 +40,25 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 		argv[pos++] = "-f";
 	}
 
-	if (fs_opts)
-		argv[pos++] = fs_opts;
+	if (fs_opts) {
+		for (i = 0; fs_opts[i]; i++) {
+			argv[pos++] = fs_opts[i];
 
-	argv[pos] = dev;
+			if (pos + 2 > OPTS_MAX) {
+				tst_brkm(TBROK, cleanup_fn,
+				         "Too much mkfs options");
+			}
 
+			if (i)
+				strcat(fs_opts_str, " ");
+			strcat(fs_opts_str, fs_opts[i]);
+		}
+	}
+
+	argv[pos++] = dev;
+	argv[pos] = NULL;
+
+	tst_resm(TINFO, "Formatting %s with %s extra opts='%s'",
+		 dev, fs_type, fs_opts_str);
 	tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL);
 }
