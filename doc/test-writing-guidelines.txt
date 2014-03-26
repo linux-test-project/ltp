@@ -764,6 +764,56 @@ TST_CLEANUP=cleanup
 tst_exit
 -------------------------------------------------------------------------------
 
+2.3.4 Restarting daemons
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Restarting system daemons is a complicated task for two reasons.
+
+* There are different init systems
+  (SysV init, systemd, etc...)
+
+* Daemon names are not unified between distributions
+  (apache vs httpd, cron vs crond, various syslog variations)
+
+To solve these problems LTP has 'testcases/lib/daemonlib.sh' library that
+provides functions to start/stop/query daemons as well as variables that store
+correct daemon name.
+
+.Supported operations
+|==============================================================================
+| start_daemon()   | Starts daemon, name is passed as first parameter.
+| stop_daemon()    | Stops daemon, name is passed as first parameter.
+| restart_daemon() | Restarts daemon, name is passed as first parameter.
+| status_daemon()  | Returns daemon status, TODO: what is return value?
+|==============================================================================
+
+.Variables with detected names
+|==============================================================================
+| CROND_DAEMON | Cron daemon name (cron, crond).
+| SYSLOG_DAEMON | Syslog daemon name (syslog, syslog-ng, rsyslog).
+|==============================================================================
+
+.Cron daemon restart example
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# Cron daemon restart example
+#
+TCID=cron01
+TST_COUNT=1
+. test.sh
+. daemonlib.sh
+
+...
+
+restart_daemon $CROND_DAEMON
+
+...
+
+tst_exit
+-------------------------------------------------------------------------------
+
 
 3. Common problems
 ------------------
