@@ -61,12 +61,12 @@ do_setup()
 
     [ "$LUSER" = "root" ] || end_testcase "MUST BE root to run the test!"
 
-    FINGER=$(netstat -a | grep "*:finger" |awk '{print $6}')
+    FINGER=$(netstat -a | grep ":finger" |awk '{print $6}')
     if [ "$FINGER" != "LISTEN" ]; then
         end_testcase "Please start fingerd locally."
     fi
 
-    FINGER=$(rsh -n $RHOST netstat -a |grep "*:finger"|awk '{print $6}')
+    FINGER=$(rsh -n $RHOST netstat -a |grep ":finger"|awk '{print $6}')
     if [ "$FINGER" != "LISTEN" ]; then
         end_testcase "Please start fingerd on remote host."
     fi
