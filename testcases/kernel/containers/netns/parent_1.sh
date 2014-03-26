@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 ##                                                                            ##
@@ -40,7 +40,7 @@ export TST_TOTAL
     vnet1=$dev1
     if [ -z "$vnet0" -o -z "$vnet1" ] ; then
         tst_resm TFAIL  "Error: unable to create veth pair in $0"
-        exit -1
+        exit 1
     else
         debug "INFO: vnet0 = $vnet0 , vnet1 = $vnet1"
     fi

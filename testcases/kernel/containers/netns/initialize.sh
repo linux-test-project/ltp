@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 ##                                                                            ##
@@ -49,13 +49,13 @@ if [ -n "${LTPROOT:-}" ]; then
     fi
 else
     tst_resm TFAIL "Please set the LTP root env variable, and retry again"
-    exit -1
+    exit 1
 fi
 
 IPver=`ip -V | awk  -F"-" ' { print $2 } '` ;
 if ! printf "%s\n%s\n" "ss080417" "$IPver" | sort -c ; then
     tst_resm  TINFO "ip version should be atleast ss080417"
-    exit -1
+    exit 1
 fi
 i=1
 while [ $i -le 6 ] ; do
@@ -68,7 +68,7 @@ netdev=`ip addr show | awk '/^[0-9]*:.*UP/ { a=$2 } /inet / { b=$2 ; \
 netdev=`basename $netdev ":"`
 if [ -z "$netdev" ] ; then
     tst_resm  TINFO "Not able to determine the ethernet dev name"
-    exit -1
+    exit 1
 fi
 
 # copying the values for restoring it later.

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # kernbench by Con Kolivas <kernbench@kolivas.org>
 # based on a benchmark by Martin J. Bligh
 trap 'echo "ABORTING";exit' 1 2 15

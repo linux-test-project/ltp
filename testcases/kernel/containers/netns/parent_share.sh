@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 ##                                                                            ##
@@ -47,5 +47,5 @@ ret=0
     $smount /tmp/mnt shared > /dev/null || ret=1
     if [ $ret -ne 0 ] ; then
         tst_resm TFAIL "Error while doing shared mount"
-        exit -1
+        exit 1
     fi

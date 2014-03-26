@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #*********************************************************************
 #   Copyright (c) International Business Machines  Corp., 2003, 2004
 #
@@ -28,6 +28,8 @@
 #    10/01/04 Kris Wilson     Port to Red Hat
 #
 #*********************************************************************
+
+echo "This script contains bashism that needs to be fixed!"
 
 if [ -z ${TCbin} ]
 then

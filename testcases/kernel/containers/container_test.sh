@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This test performs capability tests for file operations.
 #
