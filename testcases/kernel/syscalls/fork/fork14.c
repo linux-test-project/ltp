@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 char *TCID = "fork14";
 int TST_TOTAL = 1;
@@ -45,13 +46,15 @@ int TST_TOTAL = 1;
 #define LARGE		(16 * 1024)
 #define EXTENT		(16 * 1024 + 10)
 
+static char **pointer_vec;
+
 static void setup(void);
 static void cleanup(void);
 static int  fork_test(void);
 
 int main(int ac, char **av)
 {
-	int lc, ret;
+	int lc, reproduced;
 	char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
@@ -68,8 +71,8 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		ret = fork_test();
-		if (ret == 0)
+		reproduced = fork_test();
+		if (reproduced == 0)
 			tst_resm(TPASS, "fork failed as expected.");
 	}
 	cleanup();
@@ -80,36 +83,65 @@ static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
+
+	pointer_vec = SAFE_MALLOC(cleanup, EXTENT * sizeof(char *));
 }
 
 static void cleanup(void)
 {
+	free(pointer_vec);
 	TEST_CLEANUP;
 }
 
 static int fork_test(void)
 {
-	int i, ret = 0;
+	int i, j, prev_failed = 0, fails = 0;
+	int reproduced = 0;
+	void *addr;
 
 	for (i = 0; i < EXTENT; i++) {
-		mmap(NULL, 1 * GB, PROT_READ | PROT_WRITE,
-		     MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-		switch (fork()) {
+		addr = mmap(NULL, 1 * GB, PROT_READ | PROT_WRITE,
+			    MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+		if (addr == MAP_FAILED) {
+			pointer_vec[i] = NULL;
+			fails++;
+			/*
+			 * EXTENT is "16*1024+10", if fails count exceeds 10,
+			 * we are almost impossible to get an vm_area_struct
+			 * sized 16TB
+			 */
+			if (fails == 11) {
+				tst_brkm(TCONF, cleanup, "mmap() fails too many"
+					 "times, so we are almost impossible to"
+					 " get an vm_area_struct sized 16TB.");
+			}
+		} else {
+			pointer_vec[i] = addr;
+		}
+
+		switch (tst_fork()) {
 		case -1:
-			break;
+			prev_failed = 1;
+		break;
 		case 0:
 			exit(0);
 		default:
 			if (waitpid(-1, NULL, 0) == -1)
-				tst_brkm(TBROK|TERRNO,
-					cleanup, "waitpid");
+				tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 
-			if (i >= LARGE) {
-				tst_brkm(TFAIL, NULL,
-					"Fork succeeds incorrectly");
-				ret++;
+			if (prev_failed > 0 && i >= LARGE) {
+				tst_resm(TFAIL, "Fork succeeds incorrectly");
+				reproduced = 1;
+				goto clear_memory_map;
 			}
 		}
 	}
-	return ret;
+
+clear_memory_map:
+	for (j = 0; j <= i; j++) {
+		if (pointer_vec[j])
+			SAFE_MUNMAP(cleanup, pointer_vec[j], 1 * GB);
+	}
+
+	return reproduced;
 }
