@@ -62,7 +62,7 @@ safe_creat(const char *file, const int lineno, void (*cleanup_fn) (void),
 
 	rval = creat(pathname, mode);
 	if (rval == -1)
-		tst_brkm(TBROK | TERRNO, cleanup_fn, "pipe failed at %s:%d",
+		tst_brkm(TBROK | TERRNO, cleanup_fn, "creat failed at %s:%d",
 			 file, lineno);
 
 	return (rval);
