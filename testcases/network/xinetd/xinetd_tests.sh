@@ -63,6 +63,7 @@ init()
     export TST_TOTAL=2
     export TCID="xinetd"
     export TST_COUNT=0
+    . daemonlib.sh
 
     # Inititalize cleanup function.
     trap "cleanup" 0
@@ -226,7 +227,7 @@ cleanup()
         sleep 1s
 
         # restoring original services
-        /etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.err 2>&1
+        restart_daemon xinetd > $LTPTMP/tst_xinetd.err 2>&1
         RC=$?
         if [ $RC -ne 0 ]
         then
@@ -285,7 +286,7 @@ test01()
     sleep 1s
 
     # restart xinetd to re-start the services
-    /etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.out 2>&1
+    restart_daemon xinetd > $LTPTMP/tst_xinetd.out 2>&1
     RC=$?
     if [ $RC -ne 0 ]
     then
@@ -352,7 +353,7 @@ test01()
     sleep 1s
 
     # restart services.
-    /etc/init.d/xinetd restart > $LTPTMP/tst_xinetd.out 2>&1
+    restart_daemon xinetd > $LTPTMP/tst_xinetd.out 2>&1
     RC=$?
     if [ $RC -ne 0 ]
     then
