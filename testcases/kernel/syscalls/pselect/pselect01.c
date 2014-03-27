@@ -14,23 +14,11 @@
  * with this program; if not, write the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- */
-/**********************************************************
+ * AUTHORS:
+ *    Prashant P Yendigeri <prashant.yendigeri@wipro.com>
+ *    Robbie Williamson <robbiew@us.ibm.com>
  *
- *    TEST IDENTIFIER   : pselect01
- *
- *    EXECUTED BY       : root / superuser
- *
- *    TEST TITLE        : Basic tests for pselect01(2)
- *
- *    TEST CASE TOTAL   : 1
- *
- *    AUTHOR            : Prashant P Yendigeri
- *                        <prashant.yendigeri@wipro.com>
- *                        Robbie Williamson
- *                        <robbiew@us.ibm.com>
- *
- *    DESCRIPTION
+ * DESCRIPTION
  *      This is a Phase I test for the pselect01(2) system call.
  *      It is intended to provide a limited exposure of the system call.
  *
@@ -48,48 +36,36 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
-char *TCID = "pselect01";
-int TST_TOTAL = 1;
+TCID_DEFINE(pselect01);
+int TST_TOTAL = 9;
 
 #define FILENAME "pselect01_test"
 #define LOOP_COUNT 4
 
-int main()
+static int fd;
+
+static void pselect_verify(void)
 {
-	int ret_pselect, fd;
 	fd_set readfds;
-	int retval;
 	struct timespec tv, tv_start, tv_end;
 	long real_nsec, total_nsec;
 	double real_sec;
-	int total_sec;
-
-	setup();
-
-	fd = open(FILENAME, O_CREAT | O_RDWR, 0777);
-	if (fd < 0) {
-		tst_resm(TBROK, "Opening %s...Failed....err %d", FILENAME,
-			 errno);
-		cleanup();
-	}
+	int total_sec, retval;
 	FD_ZERO(&readfds);
 	FD_SET(fd, &readfds);
 	tv.tv_sec = 0;
 	tv.tv_nsec = 0;
 
-	ret_pselect = pselect(fd, &readfds, 0, 0, &tv, NULL);
-	if (ret_pselect >= 0) {
-		tst_resm(TPASS, "Basic pselect syscall testing....OK");
-	} else
-		tst_resm(TFAIL,
-			 "Basic pselect syscall testing....FAILED, err %d",
-			 errno);
-	close(fd);
-	remove(FILENAME);
+	retval = pselect(fd, &readfds, 0, 0, &tv, NULL);
+	if (retval >= 0)
+		tst_resm(TPASS, "pselect() succeeded retval=%i", retval);
+	else
+		tst_resm(TFAIL | TERRNO, "pselect() failed unexpectedly");
 
 	for (total_sec = 1; total_sec <= LOOP_COUNT; total_sec++) {
 		FD_ZERO(&readfds);
@@ -102,7 +78,7 @@ int main()
 			 "Testing basic pselect sanity,Sleeping for %jd secs",
 			 (intmax_t) tv.tv_sec);
 		clock_gettime(CLOCK_REALTIME, &tv_start);
-		retval = pselect(0, &readfds, NULL, NULL, &tv, NULL);
+		pselect(0, &readfds, NULL, NULL, &tv, NULL);
 		clock_gettime(CLOCK_REALTIME, &tv_end);
 
 		real_sec = (0.5 + (tv_end.tv_sec - tv_start.tv_sec +
@@ -130,18 +106,16 @@ int main()
 			 "Testing basic pselect sanity,Sleeping for %ld nano secs",
 			 tv.tv_nsec);
 		clock_gettime(CLOCK_REALTIME, &tv_start);
-		retval = pselect(0, &readfds, NULL, NULL, &tv, NULL);
+		pselect(0, &readfds, NULL, NULL, &tv, NULL);
 		clock_gettime(CLOCK_REALTIME, &tv_end);
-
-		/* Changed total_sec compare to an at least vs an exact compare */
 
 		real_nsec = (tv_end.tv_sec - tv_start.tv_sec) * 1e9 +
 		    tv_end.tv_nsec - tv_start.tv_nsec;
 
 		/* allow 20% error */
-		if (abs(real_nsec - tv.tv_nsec) < 0.2 * total_nsec)
+		if (abs(real_nsec - tv.tv_nsec) < 0.2 * total_nsec) {
 			tst_resm(TPASS, "Sleep time was correct");
-		else {
+		} else {
 			tst_resm(TWARN,
 				 "This test could fail if the system was under load");
 			tst_resm(TWARN,
@@ -152,38 +126,43 @@ int main()
 				 real_nsec, total_nsec);
 		}
 	}
-	cleanup();
-	tst_exit();
-	tst_exit();
-
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup()
+int main(int argc, char *argv[])
 {
+	char *msg;
+	int lc;
 
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	setup();
+
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		tst_count = 0;
+		pselect_verify();
+	}
+
+	cleanup();
+	tst_exit();
+}
+
+static void setup(void)
+{
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* create temporary directory */
 	tst_tmpdir();
+
+	fd = SAFE_OPEN(cleanup, FILENAME, O_CREAT | O_RDWR, 0777);
 
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *              completion or premature exit.
- ***************************************************************/
-void cleanup()
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
+	if (fd && close(fd))
+		tst_resm(TWARN | TERRNO, "close() failed");
 
 	tst_rmdir();
-
+	TEST_CLEANUP;
 }
