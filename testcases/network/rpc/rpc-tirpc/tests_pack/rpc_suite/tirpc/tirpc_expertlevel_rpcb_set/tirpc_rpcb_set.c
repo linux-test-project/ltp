@@ -47,8 +47,6 @@ int main(int argn, char *argc[])
 	int progNum = atoi(argc[2]);
 	SVCXPRT *transp = NULL;
 	struct netconfig *nconf = NULL;
-	struct netbuf svcaddr;
-
 
 	nconf = getnetconfigent("udp");
 	if (nconf == (struct netconfig *)NULL) {
@@ -57,8 +55,17 @@ int main(int argn, char *argc[])
 	}
 
 	transp = svc_tli_create(RPC_ANYFD, nconf, (struct t_bind *)NULL, 0, 0);
+	if (transp == NULL) {
+		printf("svc_tli_create() failed\n");
+		exit(1);
+	}
 
-	test_status = !rpcb_set(progNum, VERSNUM, nconf, &svcaddr);
+	test_status = !rpcb_set(progNum, VERSNUM, nconf, &(transp->xp_ltaddr));
+
+	if (!rpcb_unset(progNum, VERSNUM, nconf)) {
+		printf("rpcb_unset() failed\n");
+		exit(1);
+	}
 
 	printf("%d\n", test_status);
 
