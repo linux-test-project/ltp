@@ -21,6 +21,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 SUBDIRS		:= acpi \
 		   block \
 		   pci \
+		   rcu \
 		   rtc \
 		   tbio \
 		   uaccess
