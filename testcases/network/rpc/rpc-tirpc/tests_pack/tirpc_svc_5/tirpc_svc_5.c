@@ -35,27 +35,17 @@
 #include <errno.h>
 #include <netinet/in.h>
 
-//Standard define
 #define VERSNUM 1
 #define PROCSIMPLEPING	1
 
-static void exm_proc();
+static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp);
 
-//****************************************//
-//***           Main Function          ***//
-//****************************************//
 int main(int argn, char *argc[])
 {
-	//Server parameter is : argc[1] : Server Program Number
-	//                                          others arguments depend on server program
-	int run_mode = 0;
 	int progNum = atoi(argc[1]);
-	bool_t rslt;
 	SVCXPRT *transp = NULL;
 	struct netconfig *nconf;
-	struct netbuf svcaddr;
 
-	//Initialization
 	svc_unreg(progNum, VERSNUM);
 
 	if ((nconf = getnetconfigent("udp")) == NULL) {
@@ -83,37 +73,29 @@ int main(int argn, char *argc[])
 	return 1;
 }
 
-//****************************************//
-//***        Remotes Procedures        ***//
-//****************************************//
+/* Remote Procedures */
 char *simplePing(char *in)
 {
-	//printf("*** in Ping Func.\n");
-	//Simple function, returns what received
 	static int result = 0;
 	result = *in;
 	return (char *)&result;
 }
 
-//****************************************//
-//***       Dispatch Function          ***//
-//****************************************//
-static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
+/* Dispatch Function */
+static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 {
-	//printf("* in Dispatch Func.\n");
 	union {
 		int varIn;
 	} argument;
 
 	char *result;
-	xdrproc_t xdr_argument;
-	xdrproc_t xdr_result;
+	xdrproc_t xdr_argument = NULL;
+	xdrproc_t xdr_result = NULL;
 	char *(*proc) (char *);
 
 	switch (rqstp->rq_proc) {
 	case PROCSIMPLEPING:
 		{
-			//printf("** in PROCPONG dispatch Func.\n");
 			xdr_argument = (xdrproc_t) xdr_int;
 			xdr_result = (xdrproc_t) xdr_int;
 			proc = (char *(*)(char *))simplePing;
