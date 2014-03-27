@@ -14,7 +14,7 @@ guide and it's not, by any means, a substitute for common sense.
 
 For all it's worth keep the testcases simple or better as simple as possible.
 The kernel and libc are tricky beasts and the complexity imposed by their
-interfaces is is quite high. Concentrate on the interface you want to test and
+interfaces is quite high. Concentrate on the interface you want to test and
 follow the UNIX philosophy. It's a good idea to make the test as
 self-contained as possible too (it should not depend on tools or libraries
 that are not widely available).
@@ -669,6 +669,40 @@ bellow:
 		         tst_fs_type_name(type));
 	break;
 	}
+-------------------------------------------------------------------------------
+
+2.2.12 Thread-safety in the LTP library
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is safe to use library 'tst_' functions in multi-threaded tests.
+Synchronization mechanism is enabled only if the test is linked with pthread
+library, otherwise no-op stubs (defined in libc) are used.
+
+Also, LTP has a helper "TST_DECLARE_ONCE_FN" macro to declare a function which
+must be run only once (e.g. init or cleanup function), but might be called by
+multiple threads at the same time. See example below:
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+...
+
+void do_cleanup(void)
+{
+	/* cleanup code */
+	...
+}
+TST_DECLARE_ONCE_FN(cleanup, do_cleanup);
+
+...
+
+void test01(void)
+{
+	sfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sfd == -1)
+		tst_brkm(TBROK, cleanup, "Failed to create a socket");
+}
 -------------------------------------------------------------------------------
 
 2.3 Writing a testcase in shell
