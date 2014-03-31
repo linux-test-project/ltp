@@ -36,7 +36,6 @@ if [ $? -eq 0 ]; then
  export LTPROOT=${PWD}
 fi
 export TMPBASE="/tmp"
-export TMP="${TMPBASE}/ltpstress-$$"
 export PATH=$LTPROOT/testcases/bin:$PATH
 memsize=0
 hours=24
@@ -57,7 +56,7 @@ usage()
 {
 
 	cat <<-END >&2
-	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -I iofile ] [ -l logfile ] [ -m # (in Mb) ] [ -n ] [ -t duration ] [ [-S]|[-T] ]
+	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -I iofile ] [ -l logfile ] [ -m # (in Mb) ] [ -n ] [ -t duration ] [ -x TMPDIR ] [ [-S]|[-T] ]
 
     -d datafile     Data file for 'sar' or 'top' to log to. Default is "/tmp/ltpstress.data".
     -i # (in sec)   Interval that 'sar' or 'top' should take snapshots. Default is 10 seconds.
@@ -68,6 +67,7 @@ usage()
     -S              Use 'sar' to measure data.
     -T              Use LTP's modified 'top' tool to measure data.
     -t duration     Execute the testsuite for given duration in hours. Default is 24.
+    -x TMPDIR       Directory where temporary files will be created.
 
 	example: ${0##*/} -d /tmp/sardata -l /tmp/ltplog.$$ -m 128 -t 24 -S
 	END
@@ -84,16 +84,7 @@ check_memsize()
   leftover_memsize=$memsize
 }
 
-
-mkdir -p ${TMP}
-
-cd ${TMP}
-if [ $? -ne 0 ]; then
-  echo "could not cd ${TMP} ... exiting"
-  exit
-fi
-
-while getopts d:hi:I:l:STt:m:n\? arg
+while getopts d:hi:I:l:STt:m:nx:\? arg
 do  case $arg in
 
 	d)	datafile="$OPTARG";;
@@ -137,10 +128,29 @@ do  case $arg in
         t)      hours=$OPTARG
 		duration=$(($hours * 60 * 60));;
 
+	x)	export TMPBASE=$(readlink -f ${OPTARG});;
+
         \?)     echo "Help info:"
 		usage;;
         esac
 done
+
+export TMP="${TMPBASE}/ltpstress-$$"
+export TMPDIR=${TMP}
+mkdir -p ${TMP}
+
+# to write as user nobody into tst_tmpdir()
+chmod 777 $TMP || \
+{
+	echo "unable to chmod 777 $TMP ... aborting"
+	exit 1
+}
+
+cd $TMP || \
+{
+	echo "could not cd ${TMP} ... exiting"
+	exit 1
+}
 
 if [ $NO_NETWORK -eq 0 ];then
   # Networking setup
