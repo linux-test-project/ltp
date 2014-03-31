@@ -50,13 +50,15 @@ Sar=0
 Top=0
 Iostat=0
 LOGGING=0
+PRETTY_PRT=""
+QUIET_MODE=""
 NO_NETWORK=0
 
 usage()
 {
 
 	cat <<-END >&2
-	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -I iofile ] [ -l logfile ] [ -m # (in Mb) ] [ -n ] [ -t duration ] [ -x TMPDIR ] [ [-S]|[-T] ]
+	usage: ${0##*/} [ -d datafile ] [ -i # (in seconds) ] [ -I iofile ] [ -l logfile ] [ -m # (in Mb) ] [ -n ] [ -p ] [ -q ] [ -t duration ] [ -x TMPDIR ] [ [-S]|[-T] ]
 
     -d datafile     Data file for 'sar' or 'top' to log to. Default is "/tmp/ltpstress.data".
     -i # (in sec)   Interval that 'sar' or 'top' should take snapshots. Default is 10 seconds.
@@ -64,6 +66,8 @@ usage()
     -l logfile      Log results of test in a logfile. Default is "/tmp/ltpstress.log"
     -m # (in Mb)    Specify the _minimum_ memory load of # megabytes in background. Default is all the RAM + 1/2 swap.
     -n              Disable networking stress.
+    -p              Human readable format logfiles.
+    -q              Print less verbose output to the output files.
     -S              Use 'sar' to measure data.
     -T              Use LTP's modified 'top' tool to measure data.
     -t duration     Execute the testsuite for given duration in hours. Default is 24.
@@ -84,7 +88,7 @@ check_memsize()
   leftover_memsize=$memsize
 }
 
-while getopts d:hi:I:l:STt:m:nx:\? arg
+while getopts d:hi:I:l:STt:m:npqx:\? arg
 do  case $arg in
 
 	d)	datafile="$OPTARG";;
@@ -104,6 +108,10 @@ do  case $arg in
 		check_memsize;;
 
 	n)	NO_NETWORK=1;;
+
+	p)	PRETTY_PRT=" -p ";;
+
+	q)	QUIET_MODE=" -q ";;
 
         S)      if [ $Top -eq 0 ]; then
                   Sar=1
@@ -285,9 +293,9 @@ output1=${TMPBASE}/ltpstress.$$.output1
 output2=${TMPBASE}/ltpstress.$$.output2
 output3=${TMPBASE}/ltpstress.$$.output3
 
-${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 &
-${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 -l $logfile -f ${TMP}/stress.part2 -o $output2 &
-${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 -l $logfile -f ${TMP}/stress.part3 -o $output3 &
+${LTPROOT}/bin/ltp-pan -e ${PRETTY_PRT} ${QUIET_MODE} -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 &
+${LTPROOT}/bin/ltp-pan -e ${PRETTY_PRT} ${QUIET_MODE} -S -t ${hours}h -a stress2 -n stress2 -l $logfile -f ${TMP}/stress.part2 -o $output2 &
+${LTPROOT}/bin/ltp-pan -e ${PRETTY_PRT} ${QUIET_MODE} -S -t ${hours}h -a stress3 -n stress3 -l $logfile -f ${TMP}/stress.part3 -o $output3 &
 
 echo "Running LTP Stress for $hours hour(s) using $(($memsize/1024)) Mb"
 echo ""
@@ -317,7 +325,12 @@ fi
 rm -rf ${TMP}
 echo "Testing done"
 if [ $LOGGING -eq 1 ];then
-  grep FAIL $logfile >/dev/null 2>&1
+  if [ ! -z $PRETTY_PRT ]; then
+    grep FAIL $logfile > /dev/null 2>&1
+  else
+    grep 'stat=' $logfile | grep -v 'stat=0' > /dev/null 2>&1
+  fi
+
   if [ $? -eq 1 ]; then
     echo "All Tests PASSED!"
   else
