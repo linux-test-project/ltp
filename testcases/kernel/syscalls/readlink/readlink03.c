@@ -31,6 +31,10 @@
  *	pathname component of symbolic link is too long (ie, > PATH_MAX).
  *   5) readlink(2) returns -1 and sets errno to ENOENT if the component of
  *	symbolic link points to an empty string.
+ *   6) readlink(2) returns -1 and sets errno to ENOTDIR if a component of
+ *	the path prefix is not a directory.
+ *   7) readlink(2) returns -1 and sets errno to ELOOP if too many symbolic
+ *	links were encountered in translating the pathname.
  */
 
 #include <stdio.h>
@@ -53,9 +57,13 @@
 #define SYM_FILE1	"testdir_1/sfile_1"
 #define TEST_FILE2	"tfile_2"
 #define SYM_FILE2	"sfile_2"
+#define TEST_FILE3	"tfile_3"
+#define SYM_FILE3	"tfile_3/sfile_3"
+#define ELOOPFILE	"/test_eloop"
 #define MAX_SIZE	256
 
 static char longpathname[PATH_MAX + 2];
+static char elooppathname[sizeof(ELOOPFILE) * 43] = ".";
 
 static struct test_case_t {
 	char *link;
@@ -75,6 +83,8 @@ static struct test_case_t {
 	{TEST_FILE2, 1, EINVAL},
 	{longpathname, 1, ENAMETOOLONG},
 	{"", 1, ENOENT},
+	{SYM_FILE3, 1, ENOTDIR},
+	{elooppathname, 1, ELOOP},
 };
 
 static void setup(void);
@@ -83,7 +93,8 @@ static void cleanup(void);
 
 char *TCID = "readlink03";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EACCES, EINVAL, ENAMETOOLONG, ENOENT, 0 };
+static int exp_enos[] = { EACCES, EINVAL, ENAMETOOLONG, ENOENT,
+							ENOTDIR, ELOOP, 0 };
 
 int main(int ac, char **av)
 {
@@ -112,6 +123,7 @@ int main(int ac, char **av)
 void setup(void)
 {
 	struct passwd *ltpuser;
+	int i;
 
 	tst_require_root(NULL);
 
@@ -133,6 +145,17 @@ void setup(void)
 	SAFE_SYMLINK(cleanup, TEST_FILE2, SYM_FILE2);
 
 	memset(longpathname, 'a', PATH_MAX + 1);
+
+	SAFE_TOUCH(cleanup, TEST_FILE3, 0666, NULL);
+
+	/*
+	 * NOTE: the ELOOP test is written based on that the consecutive
+	 * symlinks limit in kernel is hardwired to 40.
+	 */
+	SAFE_MKDIR(cleanup, "test_eloop", MODE_RWX);
+	SAFE_SYMLINK(cleanup, "../test_eloop", "test_eloop/test_eloop");
+	for (i = 0; i < 43; i++)
+		strcat(elooppathname, ELOOPFILE);
 }
 
 void readlink_verify(struct test_case_t *tc)
