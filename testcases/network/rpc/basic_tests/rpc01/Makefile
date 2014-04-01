@@ -32,7 +32,7 @@ SUBDIRS			:= datafiles
 
 LIBSRCS			:= $(abs_srcdir)/librpc01.c
 INTERNAL_LIB		:= librpc01.a
-LDFLAGS			+= -L$(abs_srcdir)
+LDFLAGS			+= -L$(abs_builddir)
 LDLIBS			+= -lrpc01
 
 MAKE_TARGETS		:= rpc1 rpc_server

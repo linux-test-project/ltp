@@ -28,18 +28,16 @@ FFSBDIR			:= ffsb-6.0-rc2
 FILTER_OUT_DIRS		:= $(FFSBDIR)
 FFSB			:= $(FFSBDIR)/ffsb
 
-$(FFSB): $(FFSBDIR)
-	cd $^; ./configure
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
-	cp $(FFSBDIR)/ffsb ffsb
+$(FFSB): $(abs_srcdir)/$(FFSBDIR)
+	mkdir -p $(FFSBDIR)
+	cd $(FFSBDIR) && "$^/configure" && $(MAKE) top_srcdir="$^" all
 
 trunk-all: $(FFSB)
 
 trunk-clean:: | ffsb-clean
 
-ffsb-clean:: $(FFSBDIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
-	rm -rf ffsb
+ffsb-clean:: $(abs_srcdir)/$(FFSBDIR)
+	cd $(FFSBDIR); $(MAKE) top_srcdir="$^" clean
 
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

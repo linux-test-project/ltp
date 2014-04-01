@@ -16,10 +16,13 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-KERNEL_DIR		:= $(top_srcdir)/testcases/kernel
+KERNEL_SRCDIR		:= $(abs_top_srcdir)/testcases/kernel
+LIBKERNTEST_SRCDIR	:= $(KERNEL_SRCDIR)/lib
+
+KERNEL_DIR		:= $(abs_top_builddir)/testcases/kernel
 LIBKERNTEST_DIR		:= $(KERNEL_DIR)/lib
 LIBKERNTEST		:= $(KERNEL_DIR)/libkerntest.a
-CPPFLAGS		+= $(NUMA_CPPFLAGS) -I$(KERNEL_DIR)/include
+CPPFLAGS		+= $(NUMA_CPPFLAGS) -I$(KERNEL_SRCDIR)/include
 LDLIBS			+= $(NUMA_LIBS) -lkerntest -lltp
 LDFLAGS			+= -L$(LIBKERNTEST_DIR)
 
@@ -27,11 +30,11 @@ $(LIBKERNTEST_DIR):
 	mkdir -p "$@"
 
 $(LIBKERNTEST): $(LIBKERNTEST_DIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
+	$(MAKE) -C $^ -f "$(LIBKERNTEST_SRCDIR)/Makefile" all
 
 MAKE_DEPS		+= $(LIBKERNTEST)
 
 trunk-clean:: | lib-clean
 
 lib-clean:: $(LIBKERNTEST_DIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
+	$(MAKE) -C $^ -f "$(LIBKERNTEST_SRCDIR)/Makefile" clean

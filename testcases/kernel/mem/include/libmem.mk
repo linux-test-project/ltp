@@ -16,11 +16,14 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-MEM_DIR			:= $(top_srcdir)/testcases/kernel/mem
+MEM_SRCDIR		:= $(top_srcdir)/testcases/kernel/mem
+LIBMEM_SRCDIR		:= $(MEM_SRCDIR)/lib
+
+MEM_DIR			:= $(top_builddir)/testcases/kernel/mem
 LIBMEM_DIR		:= $(MEM_DIR)/lib
 LIBMEM			:= $(LIBMEM_DIR)/libmem.a
 FILTER_OUT_DIRS		:= $(LIBMEM_DIR)
-CFLAGS			+= -I$(MEM_DIR)/include
+CFLAGS			+= -I$(MEM_SRCDIR)/include
 LDLIBS			+= $(NUMA_LIBS) -lmem -lltp
 LDFLAGS			+= -L$(LIBMEM_DIR)
 
@@ -28,13 +31,13 @@ $(LIBMEM_DIR):
 	mkdir -p "$@"
 
 $(LIBMEM): $(LIBMEM_DIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
+	$(MAKE) -C $^ -f "$(LIBMEM_SRCDIR)/Makefile" all
 
 MAKE_DEPS		+= $(LIBMEM)
 
 trunk-clean:: | lib-clean
 
 lib-clean:: $(LIBMEM_DIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
+	$(MAKE) -C $^ -f "$(LIBMEM_SRCDIR)/Makefile" clean
 
 include $(top_srcdir)/testcases/kernel/include/lib.mk
