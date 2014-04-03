@@ -23,6 +23,7 @@
 
 export LTP_RET_VAL=0
 export TST_COUNT=1
+export TST_LIB_LOADED=1
 
 # Exit values map
 tst_flag2mask()
