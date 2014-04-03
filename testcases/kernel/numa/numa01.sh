@@ -577,7 +577,7 @@ test07()
         COUNTER=$[$COUNTER+1]
     done
 
-    numademo -c msize > $LTPTMP/demolog
+    numademo -c ${msize}k > $LTPTMP/demolog
     sleep 2s        #In RHEL collection of statistics takes more time.
 
     numastat > $LTPTMP/numalog
@@ -596,7 +596,7 @@ test07()
         fi
         COUNTER=$[$COUNTER+1]
     done
-    if [ $x -eq 1 ]
+    if [ $x -eq 0 ]
     then
         tst_resm TPASS "NUMADEMO policies  -TEST07 PASSED !!"
         return 0
