@@ -817,6 +817,7 @@ readlink04 readlink04
 
 #readlinkat test cases
 readlinkat01 readlinkat01
+readlinkat02 readlinkat02
 
 readv01 readv01
 readv02 readv02
