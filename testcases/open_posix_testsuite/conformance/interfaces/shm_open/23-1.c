@@ -105,7 +105,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	create_cnt = mmap(NULL, sizeof(*create_cnt), PROT_WRITE,
+	create_cnt = mmap(NULL, sizeof(*create_cnt), PROT_WRITE | PROT_READ,
 			  MAP_SHARED, result_fd, 0);
 	if (create_cnt == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
