@@ -166,7 +166,7 @@ int main(int ac, char **av)
 /*
  * setup_test() - This function sets the user as nobdy
  */
-int setup_test()
+int setup_test(void)
 {
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_resm(TWARN, "\"nobody\" user not present. skipping test");
@@ -182,7 +182,7 @@ int setup_test()
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -203,7 +203,7 @@ void setup()
 * cleanup() - Performs one time cleanup for this test at
 * completion or premature exit
 */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -61,9 +61,7 @@ int TST_TOTAL = 1;
 int kidpid[2];
 int parent_pid;
 
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
 	int pid;
 	sigset_t set;
@@ -159,7 +157,7 @@ char *argv[];
 
 /* FUNCTIONS GO HERE */
 
-int term()
+int term(void)
 {
 	if (parent_pid != getpid())
 		exit(0);
@@ -170,7 +168,7 @@ int term()
 	return 0;
 }
 
-int al()
+int al(void)
 {
 	if (kidpid[0])
 		return (kill(kidpid[0], SIGTERM));
@@ -179,7 +177,7 @@ int al()
 	return 0;
 }
 
-void dochild1()
+void dochild1(void)
 {
 	int fd;
 
@@ -190,7 +188,7 @@ void dochild1()
 	}
 }
 
-void dochild2()
+void dochild2(void)
 {
 	for (;;) {
 		rename("./rename14", "./rename14xyz");

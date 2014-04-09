@@ -345,18 +345,18 @@ void dochild(int kid)
 #ifdef UCLINUX
 static int kid_uc;
 
-void dochild_uc()
+void dochild_uc(void)
 {
 	dochild(kid_uc);
 }
 #endif
 
-void catch_alarm()
+void catch_alarm(void)
 {
 	alarm_flag = 1;
 }
 
-void catch_usr1()
+void catch_usr1(void)
 {				/* invoked on catching SIGUSR1 */
 	/*
 	 * Set flag to let parent know that child #1 is ready to have the
@@ -365,7 +365,7 @@ void catch_usr1()
 	child_flag1 = 1;
 }
 
-void catch_usr2()
+void catch_usr2(void)
 {				/* invoked on catching SIGUSR2 */
 	/*
 	 * Set flag to let parent know that child #2 is ready to have the
@@ -374,7 +374,7 @@ void catch_usr2()
 	child_flag2 = 1;
 }
 
-void catch_int()
+void catch_int(void)
 {				/* invoked on child catching SIGUSR1 */
 	/*
 	 * Set flag to interrupt fcntl call in child and force a controlled

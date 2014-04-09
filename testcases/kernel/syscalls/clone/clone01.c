@@ -91,7 +91,7 @@ static void cleanup(void)
 	TEST_CLEANUP;
 }
 
-static int do_child()
+static int do_child(void)
 {
 	exit(0);
 }

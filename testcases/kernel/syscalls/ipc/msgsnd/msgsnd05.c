@@ -165,7 +165,7 @@ int main(int ac, char **av)
 /*
  * do_child()
  */
-void do_child()
+void do_child(void)
 {
 	if (sync_pipe_notify(sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
@@ -209,7 +209,7 @@ void sighandler(int sig)
 /*
  * do_child_uclinux() - capture signals, initialize buffer, then run do_child()
  */
-void do_child_uclinux()
+void do_child_uclinux(void)
 {
 	/* initialize the message buffer */
 	init_buf(&msg_buf, MSGTYPE, MSGSIZE);

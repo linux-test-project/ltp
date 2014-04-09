@@ -266,7 +266,7 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -56,14 +56,14 @@ char *TCID = "tkill01";
 int testno;
 int TST_TOTAL = 2;
 
-void cleanup()
+void cleanup(void)
 {
 
 	TEST_CLEANUP;
 	tst_rmdir();
 }
 
-void setup()
+void setup(void)
 {
 	TEST_PAUSE;
 	tst_tmpdir();

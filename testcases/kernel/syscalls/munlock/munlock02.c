@@ -153,7 +153,7 @@ int main(int ac, char **av)
 
 /* setup() - performs all ONE TIME setup for this test. */
 
-void setup()
+void setup(void)
 {
 
 	char *address;
@@ -191,7 +191,7 @@ void setup()
 
 #else
 
-int main()
+int main(void)
 {
 	tst_resm(TINFO, "test is not available on uClinux");
 	tst_exit();
@@ -203,7 +203,7 @@ int main()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

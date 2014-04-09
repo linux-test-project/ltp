@@ -99,13 +99,13 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void setup()
+static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 }

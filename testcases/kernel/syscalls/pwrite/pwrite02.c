@@ -86,12 +86,12 @@ char *write_buf[NBUFS];		/* buffer to hold data to be written */
 int pfd[2];			/* pair of file descriptors */
 int fd1;			/* file descriptor of temporary file */
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-int setup1();			/* setup function for test #1 */
-int setup2();			/* setup function for test #2 */
-int no_setup();
-void init_buffers();		/* function to initialize/allocate buffers */
+void setup(void);			/* Main setup function of test */
+void cleanup(void);			/* cleanup function for the test */
+int setup1(void);			/* setup function for test #1 */
+int setup2(void);			/* setup function for test #2 */
+int no_setup(void);
+void init_buffers(void);		/* function to initialize/allocate buffers */
 
 int exp_enos[] = { ESPIPE, EINVAL, EBADF, 0 };
 
@@ -189,7 +189,7 @@ int main(int ac, char **av)
  * test case passes on a machine running RedHat 6.2 but it will fail
  * on a machine running RedHat 7.1.
  */
-void sighandler(sig)
+void sighandler(int sig)
 {
 	if (sig != SIGXFSZ) {
 		printf("wrong signal\n");
@@ -204,7 +204,7 @@ void sighandler(sig)
  *  Initialize/allocate write buffer.
  *  Call individual setup function.
  */
-void setup()
+void setup(void)
 {
 	int i;
 
@@ -230,7 +230,7 @@ void setup()
 /*
  * no_setup() - This function simply returns.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -242,7 +242,7 @@ int no_setup()
  *  Create an unnamed pipe using pipe().
  *  return 0.
  */
-int setup1()
+int setup1(void)
 {
 	/* Create an unnamed pipe */
 	if (pipe(pfd) < 0) {
@@ -259,7 +259,7 @@ int setup1()
  *  Create a temporary directory and a file under it.
  *  return 0.
  */
-int setup2()
+int setup2(void)
 {
 
 	tst_tmpdir();
@@ -281,7 +281,7 @@ int setup2()
  *    write_buf[0] has 0's, write_buf[1] has 1's, write_buf[2] has 2's
  *    write_buf[3] has 3's.
  */
-void init_buffers()
+void init_buffers(void)
 {
 	int count;		/* counter variable for loop */
 
@@ -305,7 +305,7 @@ void init_buffers()
  * Close the temporary file.
  * Remove the temporary directory created.
  */
-void cleanup()
+void cleanup(void)
 {
 	int count;		/* index for the loop */
 

@@ -192,7 +192,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -211,7 +211,7 @@ void setup()
 /*
  * setup2() - set up the files and directories for the tests
  */
-void setup2()
+void setup2(void)
 {
 	/* create the old file */
 	do_file_setup(fname);
@@ -252,7 +252,7 @@ void setup2()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

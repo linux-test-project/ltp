@@ -220,7 +220,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	unsigned long max_size;
 	int ncpus;
@@ -289,7 +289,7 @@ void setup()
 
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 
@@ -297,7 +297,7 @@ void cleanup()
 
 #else
 
-int main()
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "test is not available on uClinux");
 }

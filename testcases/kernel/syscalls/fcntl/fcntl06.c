@@ -117,7 +117,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	char *buf = STRING;
 	char template[PATH_MAX];
@@ -150,7 +150,7 @@ int do_lock(int cmd, short type, short whence, int start, int len)
 	return (fcntl(fd, cmd, &fl));
 }
 
-void unlock_file()
+void unlock_file(void)
 {
 	if (do_lock(F_RSETLK, (short)F_UNLCK, (short)0, 0, 0) == -1) {
 		/* Same as FIXME comment above. */
@@ -158,7 +158,7 @@ void unlock_file()
 	}
 }
 
-void cleanup()
+void cleanup(void)
 {
 
 	if (close(fd) == -1)

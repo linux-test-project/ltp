@@ -199,7 +199,7 @@ int main(int ac, char **av)
 	return (0);
 }
 
-static void setup_every_copy()
+static void setup_every_copy(void)
 {
 	close(newdirfd);
 	rmobj(TEST_DIR2, NULL);
@@ -280,7 +280,7 @@ static void mysymlinkat_test(struct test_struct *desc)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-static void setup()
+static void setup(void)
 {
 	char *tmp;
 
@@ -313,7 +313,7 @@ static void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  ***************************************************************/
-static void cleanup()
+static void cleanup(void)
 {
 	tst_rmdir();
 	/*

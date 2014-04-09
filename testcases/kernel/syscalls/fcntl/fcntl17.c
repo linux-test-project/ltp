@@ -95,7 +95,7 @@ void catch_child();
 void catch_alarm();
 char *str_type();
 
-int setup()
+int setup(void)
 {
 	char *buf = STRING;
 	char template[PATH_MAX];
@@ -159,14 +159,14 @@ int setup()
 	return 0;
 }
 
-void cleanup()
+void cleanup(void)
 {
 	close(file_fd);
 	tst_rmdir();
 
 }
 
-void do_child1()
+void do_child1(void)
 {
 	int err;
 
@@ -198,7 +198,7 @@ void do_child1()
 	exit(1);
 }
 
-void do_child2()
+void do_child2(void)
 {
 	int err;
 
@@ -236,7 +236,7 @@ void do_child2()
 	exit(1);
 }
 
-void do_child3()
+void do_child3(void)
 {
 	int err;
 
@@ -347,7 +347,7 @@ void parent_free(int arg)
 	}
 }
 
-int parent_wait()
+int parent_wait(void)
 {
 	int arg;
 
@@ -378,7 +378,7 @@ void child_wait(int fd)
 	}
 }
 
-void stop_children()
+void stop_children(void)
 {
 	int arg;
 
@@ -390,13 +390,13 @@ void stop_children()
 	wait(0);
 }
 
-void catch_child()
+void catch_child(void)
 {
 	tst_resm(TFAIL, "Unexpected death of child process");
 	cleanup();
 }
 
-void catch_alarm()
+void catch_alarm(void)
 {
 	sighold(SIGCHLD);
 	/*

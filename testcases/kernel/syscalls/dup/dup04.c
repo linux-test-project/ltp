@@ -191,7 +191,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	fd[0] = -1;
 
@@ -205,7 +205,7 @@ void setup()
 		tst_brkm(TBROK | TERRNO, cleanup, "pipe failed");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	int i;
 

@@ -220,7 +220,7 @@ int main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call test specific setup functions.
  */
-void setup()
+void setup(void)
 {
 	int i;
 
@@ -253,7 +253,7 @@ void setup()
 /*
  * no_setup() - Some test conditions for readlink(2) do not any setup.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -268,7 +268,7 @@ int no_setup()
  *  Modify the mode permissions on test directory such that process will not
  *  have search permissions on test directory.
  */
-int setup1()
+int setup1(void)
 {
 	int fd;			/* file handle for testfile */
 
@@ -305,7 +305,7 @@ int setup1()
  *	Create a testfile under temporary directory and create a symlink
  *	file of it.
  */
-int setup2()
+int setup2(void)
 {
 	int fd;			/* file handle for testfile */
 
@@ -332,7 +332,7 @@ int setup2()
  * lpath_setup() - setup to create a node with a name length exceeding
  *		   the MAX. length of PATH_MAX.
  */
-int lpath_setup()
+int lpath_setup(void)
 {
 	int i;
 
@@ -349,7 +349,7 @@ int lpath_setup()
  *  Restore the mode permissions on test directory.
  *  Remove the temporary directory created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -121,19 +121,19 @@ extern int sigrelse(int __sig);
 #define SIGCANCEL 32
 #define SIGTIMER 33
 
-void setup();
-void cleanup();
-static void parent();
-static void child();
-static void timeout();
-static int setup_sigs();
-static void handler();
-static void wait_a_while();
-static char *read_pipe();
-static int write_pipe();
-static int set_timeout();
-static void clear_timeout();
-static void getout();
+void setup(void);
+void cleanup(void);
+static void parent(void);
+static void child(void);
+static void timeout(void);
+static int setup_sigs(void);
+static void handler(int sig);
+static void wait_a_while(void);
+static char *read_pipe(int fd);
+static int write_pipe(int fd, char *msg);
+static int set_timeout(void);
+static void clear_timeout(void);
+static void getout(void);
 int choose_sig(int sig);
 
 #define TRUE  1
@@ -242,7 +242,7 @@ int main(int argc, char **argv)
  * parent() : wait for "ready" from child, send signals to child, wait for
  *    child to exit and report what happened.
  ***************************************************************************/
-static void parent()
+static void parent(void)
 {
 	int term_stat;		/* child return status */
 	int rv;			/* function return value */
@@ -382,7 +382,7 @@ static void parent()
  *   and wait for them to be caught.  Send results back to parent
  *   for processing.
  ***************************************************************************/
-static void child()
+static void child(void)
 {
 	int rv;			/* return value from sighold() and sigrelse() */
 	int sig;		/* signal value */
@@ -532,7 +532,7 @@ static void child()
  *       section is executed after the signals have been released (should
  *       be executed for each signal).
  ****************************************************************************/
-static int setup_sigs()
+static int setup_sigs(void)
 {
 	int sig;
 
@@ -597,8 +597,7 @@ static void handler(int sig)
  *      put message in mesg and return NULL.  Note: this routine sets a
  *      timeout signal in case the pipe is blocked.
  ****************************************************************************/
-static char *read_pipe(fd)
-int fd;
+static char *read_pipe(int fd)
 {
 	static char buf[MAXMESG];	/* buffer for pipe read */
 	int ret;
@@ -659,7 +658,7 @@ static int write_pipe(int fd, char *msg)
  *       will be executed.  If all goes ok, return 0, else load message
  *       into mesg and return -1.
  ****************************************************************************/
-static int set_timeout()
+static int set_timeout(void)
 {
 	if (signal(SIGALRM, timeout) == SIG_ERR) {
 		(void)sprintf(mesg,
@@ -676,7 +675,7 @@ static int set_timeout()
 /*****************************************************************************
  *  clear_timeout() : turn off the alarm so that SIGALRM will not get sent.
  ****************************************************************************/
-static void clear_timeout()
+static void clear_timeout(void)
 {
 	(void)alarm(0);
 
@@ -687,7 +686,7 @@ static void clear_timeout()
  *      caught.  It does nothing but return - the read() on the pipe
  *      will fail.
  ****************************************************************************/
-static void timeout()
+static void timeout(void)
 {
 #if DEBUG > 0
 	printf("timeout: pid=%d sigalrm caught.\n", getpid());
@@ -697,7 +696,7 @@ static void timeout()
 /*****************************************************************************
  *  wait_a_while () : wait a while before returning.
  ****************************************************************************/
-static void wait_a_while()
+static void wait_a_while(void)
 {
 	long btime;
 
@@ -708,7 +707,7 @@ static void wait_a_while()
 	}
 }				/* end of wait_a_while */
 
-static void getout()
+static void getout(void)
 {
 	if (pid > 0 && kill(pid, SIGKILL) < 0)
 		tst_resm(TWARN, "kill(%d, SIGKILL) failed", pid);
@@ -763,7 +762,7 @@ int choose_sig(int sig)
 
 }
 
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -795,7 +794,7 @@ void setup()
 			 "fcntl(Fds[0], F_SETFL, O_NONBLOCK) failed");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

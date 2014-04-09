@@ -182,7 +182,7 @@ int main(int ac, char **av)
  *   on hold and then sends the signal SIGUSR1 to itself so that it is in
  *   pending state.
  */
-void setup()
+void setup(void)
 {
 	sigset_t PendSig;	/* variable to hold pending signal */
 
@@ -227,7 +227,7 @@ void setup()
  *   This is a null function and used only to catch the above signal
  *   generated in parent process.
  */
-void sig_handler()
+void sig_handler(void)
 {
 }
 
@@ -237,7 +237,7 @@ void sig_handler()
  *             completion or premature exit.
  *  Release the signal 'SIGUSR1'  if still in pending state.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

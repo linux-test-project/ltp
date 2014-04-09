@@ -118,7 +118,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 
 	tst_require_root(NULL);
@@ -157,7 +157,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/* reset the process ID to the saved ID (root) */
 	if (setuid(0) == -1) {

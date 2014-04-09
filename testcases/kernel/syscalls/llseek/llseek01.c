@@ -179,7 +179,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	struct sigaction act;	/* struct. to hold signal */
 	struct rlimit rlp;	/* resource for file size limit */
@@ -220,7 +220,7 @@ void setup()
 	SAFE_WRITE(cleanup, 1, fildes, write_buff, BUFSIZ);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	SAFE_CLOSE(NULL, fildes);
 

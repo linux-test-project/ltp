@@ -107,7 +107,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	int c_total = 0, nwrite = 0;	/* no. of bytes to be written */
 	char tst_buf[BUF_SIZE];
@@ -147,7 +147,7 @@ void setup()
 		tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

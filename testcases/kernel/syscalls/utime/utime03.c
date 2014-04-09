@@ -256,7 +256,7 @@ int main(int ac, char **av)
  *  Change the ownership of testfile to that of "bin" user.
  *  Record the current time.
  */
-void setup()
+void setup(void)
 {
 	int fildes;		/* file handle for temp file */
 	char *tmpd = NULL;
@@ -349,7 +349,7 @@ void setup()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	seteuid(0);
 	/*

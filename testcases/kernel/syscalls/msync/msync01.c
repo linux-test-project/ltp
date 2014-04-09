@@ -157,7 +157,7 @@ int main(int ac, char **av)
  * Write 1 page size char data into file.
  * Initialize paged region (256 bytes) from the specified offset pos.
  */
-void setup()
+void setup(void)
 {
 	int c_total = 0, nwrite = 0;	/* no. of bytes to be written */
 
@@ -196,7 +196,7 @@ void setup()
 	memset(addr + 100, 1, 256);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

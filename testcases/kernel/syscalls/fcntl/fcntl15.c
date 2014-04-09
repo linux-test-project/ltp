@@ -82,7 +82,7 @@ static char *argv0;		/* set by main, passed to self_exec */
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -92,7 +92,7 @@ void cleanup()
 
 }
 
-void alarm_sig()
+void alarm_sig(void)
 {
 	signal(SIGALRM, (void (*)())alarm_sig);
 	alarm_flag = 1;
@@ -103,13 +103,13 @@ void alarm_sig()
 	}
 }
 
-void child_sig()
+void child_sig(void)
 {
 	signal(SIGUSR1, (void (*)())child_sig);
 	child_flag++;
 }
 
-void parent_sig()
+void parent_sig(void)
 {
 	signal(SIGUSR2, (void (*)())parent_sig);
 	parent_flag++;
@@ -184,12 +184,12 @@ int dochild1(int file_flag, int file_mode)
 #ifdef UCLINUX
 int uc_file_flag, uc_file_mode, uc_dup_flag;
 
-void dochild1_uc()
+void dochild1_uc(void)
 {
 	dochild1(uc_file_flag, uc_file_mode);
 }
 
-void dochild2_uc()
+void dochild2_uc(void)
 {
 	dochild2(uc_file_flag, uc_dup_flag);
 }
@@ -366,7 +366,7 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);

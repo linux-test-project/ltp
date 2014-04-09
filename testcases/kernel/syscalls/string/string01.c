@@ -243,18 +243,18 @@ int blenter();
 int blexit();
 int anyfail();
 
-void setup()
+void setup(void)
 {
 	temp = stderr;
 }
 
-int blenter()
+int blenter(void)
 {
 	local_flag = PASSED;
 	return 0;
 }
 
-int blexit()
+int blexit(void)
 {
 	(local_flag == PASSED) ? tst_resm(TPASS,
 					  "Test passed") : tst_resm(TFAIL,
@@ -262,7 +262,7 @@ int blexit()
 	return 0;
 }
 
-int anyfail()
+int anyfail(void)
 {
 	tst_exit();
 	return 0;
@@ -272,10 +272,7 @@ int anyfail()
 
 /*--------------------------------------------------------------*/
 
-int main(argc, argv)
-int argc;
-char *argv[];
-
+int main(int argc, char *argv[])
 {
 	register int n, i;
 	char *s, *pr;

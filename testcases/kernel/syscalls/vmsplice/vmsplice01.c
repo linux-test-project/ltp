@@ -80,7 +80,7 @@ static long myvmsplice(int fd, struct iovec *v, unsigned long nregs,
 	return ltp_syscall(__NR_vmsplice, fd, v, nregs, flags);
 }
 
-static void setup_every_copy()
+static void setup_every_copy(void)
 {
 	/* Initialize test file names */
 	sprintf(testfile, "vmsplicetest%d.txt", getpid());
@@ -258,7 +258,7 @@ static int vmsplice_test(void)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -270,7 +270,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/* Remove them */
 	unlink(testfile);

@@ -207,7 +207,7 @@ int main(int ac, char **av)
  *	to set group id bit on it.
  *	Set the effective uid/gid of the process to that of guest user.
  */
-void setup()
+void setup(void)
 {
 
 	/* Capture unexpected signals */
@@ -314,7 +314,7 @@ void setup()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

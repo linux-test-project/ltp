@@ -199,7 +199,7 @@ void sighandler(int sig)
 /*
  * do_child()
  */
-void do_child()
+void do_child(void)
 {
 	int exno = 1;
 

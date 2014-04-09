@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 /***************************************************************
  *  * setup() - performs all ONE TIME setup for this test.
  *   ****************************************************************/
-void setup()
+void setup(void)
 {
 	/* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
@@ -154,7 +154,7 @@ void setup()
  *  *  * cleanup() - performs all ONE TIME cleanup for this test at
  *   *   *              completion or premature exit.
  *    *    ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	int status;
 

@@ -254,7 +254,7 @@ int main(int ac, char **av)
  *	Invoke iividual test setup functions according to the order
  *	set in struct. definition.
  */
-void setup()
+void setup(void)
 {
 	int i;
 
@@ -308,7 +308,7 @@ void setup()
  *  program to change the ownership of testfile to that of "ltpuser2" user.
  *
  */
-int setup1()
+int setup1(void)
 {
 	int fd;
 
@@ -340,7 +340,7 @@ int setup1()
  *
  *  The function returns 0.
  */
-int setup2()
+int setup2(void)
 {
 	int fd;			/* file handle for testfile */
 
@@ -372,7 +372,7 @@ int setup2()
  *  change mode of a testfile "tfile_3" under "t_file" which happens to be
  *  another regular file.
  */
-int setup3()
+int setup3(void)
 {
 	int fd;
 
@@ -387,7 +387,7 @@ int setup3()
 	return 0;
 }
 
-int longpath_setup()
+int longpath_setup(void)
 {
 	int i;
 
@@ -396,7 +396,7 @@ int longpath_setup()
 	return 0;
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

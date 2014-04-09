@@ -157,7 +157,7 @@ void setup1(void)
 }
 
 /* setup() - performs all ONE TIME setup for this test. */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -169,7 +169,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 
@@ -179,7 +179,7 @@ void cleanup()
 
 int TST_TOTAL = 0;
 
-int main()
+int main(void)
 {
 	tst_resm(TPASS, "socket call test on this architecture disabled.");
 	tst_exit();

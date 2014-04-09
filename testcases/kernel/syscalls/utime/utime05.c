@@ -182,7 +182,7 @@ int main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
  */
-void setup()
+void setup(void)
 {
 	int fildes;		/* file handle for temp file */
 
@@ -229,7 +229,7 @@ void setup()
  *		completion or premature exit.
  *		Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

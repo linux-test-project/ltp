@@ -151,7 +151,7 @@ int main(int ac, char **av)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void setup()
+void setup(void)
 {
 	struct sched_param p = { 1 };
 
@@ -170,7 +170,7 @@ void setup()
  *cleanup() -   performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 
 	/*
@@ -184,7 +184,7 @@ void cleanup()
  * verify_priority() -  This function checks whether the priority is
  *			set correctly
  */
-int verify_priority()
+int verify_priority(void)
 {
 	struct sched_param p;
 

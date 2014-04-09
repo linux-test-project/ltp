@@ -616,14 +616,14 @@ void wake_parent(void)
 	}
 }
 
-void do_usleep_child()
+void do_usleep_child(void)
 {
 	usleep(100000);		/* XXX how long is long enough? */
 	wake_parent();
 	exit(0);
 }
 
-void dochild()
+void dochild(void)
 {				/* child process */
 	int rc;
 	pid_t pid;
@@ -938,7 +938,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 	unlink(tmpname);
 }
 
-void catch_alarm()
+void catch_alarm(void)
 {
 	/*
 	 * Timer has runout and child has not signaled, need
@@ -953,7 +953,7 @@ void catch_alarm()
 	}
 }
 
-void catch1()
+void catch1(void)
 {				/* invoked on catching SIGUSR1 */
 	struct sigaction act;
 

@@ -296,7 +296,7 @@ int main(int ac, char **av)
  *  This is the parents routine.  The parent waits for the children 1 and 2 to
  *  get set up. Then sends the signal and checks the outcome.
  *********************************************************************************/
-void parent_rout()
+void parent_rout(void)
 {
 	/*
 	 *  Set to catch the alarm signal SIGALRM.
@@ -448,7 +448,7 @@ void parent_rout()
 
 }				/*End of parent_rout */
 
-void child1_rout()
+void child1_rout(void)
 {
 	who_am_i = '1';
 
@@ -590,7 +590,7 @@ void child1_rout()
 /*******************************************************************************
  *  This is the routine for child 2, which should not receive the parents signal.
  ******************************************************************************/
-void child2_rout()
+void child2_rout(void)
 {
 	who_am_i = '2';
 
@@ -622,7 +622,7 @@ void child2_rout()
 /*******************************************************************************
  *  This is the routine for child A, which should receive the parents signal.
  ******************************************************************************/
-void childA_rout()
+void childA_rout(void)
 {
 	who_am_i = 'A';
 
@@ -641,7 +641,7 @@ void childA_rout()
 /*******************************************************************************
  *  This is the routine for child A after self_exec
  ******************************************************************************/
-void childA_rout_uclinux()
+void childA_rout_uclinux(void)
 {
 	/* Setup the signal handler again */
 	if (signal(SIGUSR1, usr1_rout) == SIG_ERR) {
@@ -658,7 +658,7 @@ void childA_rout_uclinux()
 /*******************************************************************************
  *  This is the routine for child B, which should not receive the parents signal.
  ******************************************************************************/
-void childB_rout()
+void childB_rout(void)
 {
 	who_am_i = 'B';
 
@@ -683,7 +683,7 @@ void childB_rout()
 /*******************************************************************************
  *  This is the routine for child B after self_exec
  ******************************************************************************/
-void childB_rout_uclinux()
+void childB_rout_uclinux(void)
 {
 	/* Setup the signal handler again */
 	if (signal(SIGUSR1, usr1_rout) == SIG_ERR) {
@@ -701,7 +701,7 @@ void childB_rout_uclinux()
  *  This routine sets up the interprocess communication pipes, signal handling,
  *  and process group information.
  ******************************************************************************/
-void setup()
+void setup(void)
 {
 	int errno_buf;		/*indicates the errno if pipe set up fails.             */
 	int err_flag = FALSE;	/*Indicates if an error has occurred in pipe set up.    */
@@ -778,7 +778,7 @@ void setup()
 /***********************************************************
  *  This routine indicates that the process caught SIGUSR1.
  **********************************************************/
-void usr1_rout()
+void usr1_rout(void)
 {
 	switch (who_am_i) {
 	case '1':
@@ -815,7 +815,7 @@ void usr1_rout()
  *  which occurs when the child fails to notify the parent
  *  the status of set up.
  **********************************************************/
-void notify_timeout()
+void notify_timeout(void)
 {
 	alarm_flag = TRUE;
 
@@ -825,7 +825,7 @@ void notify_timeout()
  *  This routine handles the procedure for removing the
  *  children forked off during this test.
  **********************************************************/
-void par_kill()
+void par_kill(void)
 {
 	int status;
 
@@ -853,7 +853,7 @@ void par_kill()
  *  This routine is executed by child 1 when the parent tells it to
  *  remove it's children and itself.
  ********************************************************************/
-void chld1_kill()
+void chld1_kill(void)
 {
 	/*
 	 *  Remove children A & B.
@@ -878,7 +878,7 @@ void chld1_kill()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -435,7 +435,7 @@ pid_t start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 	exit(1);
 }
 
-void do_child()
+void do_child(void)
 {
 	struct sockaddr_in fsin;
 	struct sockaddr_un fsun;

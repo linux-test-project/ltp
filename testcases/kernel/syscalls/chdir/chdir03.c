@@ -168,7 +168,7 @@ int main(int ac, char **av)
 
 }
 
-void setup()
+void setup(void)
 {
 	char *cur_dir = NULL;
 
@@ -189,7 +189,7 @@ void setup()
 	ltpuser2 = my_getpwnam(user2name);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

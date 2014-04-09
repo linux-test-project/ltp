@@ -221,7 +221,7 @@ int main(int ac, char **av)
  * Add the signal SIGINT to the exclude list of system-defined
  * signals for the test process.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -282,7 +282,7 @@ void sig_handler(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

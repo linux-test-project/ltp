@@ -151,7 +151,7 @@ int main(int ac, char **av)
 /*
  * do_child_1()
  */
-void do_child_1()
+void do_child_1(void)
 {
 	int exno = 0;
 	int retval, ret, status;
@@ -210,7 +210,7 @@ void do_child_1()
 /*
  * do_child_2()
  */
-void do_child_2()
+void do_child_2(void)
 {
 	for (;;) ;
 }

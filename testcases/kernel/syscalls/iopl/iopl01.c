@@ -123,7 +123,7 @@ int main(int ac, char **av)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -141,7 +141,7 @@ void setup()
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 
 	/*
@@ -166,7 +166,7 @@ void cleanup()
 
 int TST_TOTAL = 0;
 
-int main()
+int main(void)
 {
 	tst_resm(TPASS,
 		 "LSB v1.3 does not specify iopl() for this architecture.");

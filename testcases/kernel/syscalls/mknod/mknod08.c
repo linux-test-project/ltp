@@ -204,7 +204,7 @@ int main(int ac, char **av)
  *	of test directory to nobody user.
  *	Set the effective uid/gid of the process to that of nobody user.
  */
-void setup()
+void setup(void)
 {
 
 	/* Capture unexpected signals */
@@ -309,7 +309,7 @@ void setup()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

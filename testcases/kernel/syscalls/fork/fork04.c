@@ -118,13 +118,13 @@ char *environ_list[] = { "TERM", "NoTSetzWq", "TESTPROG" };
 #define NUMBER_OF_ENVIRON (sizeof(environ_list)/sizeof(char *))
 int TST_TOTAL = NUMBER_OF_ENVIRON;
 
-static void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 	tst_rmdir();
 }
 
-static void setup()
+static void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -135,7 +135,7 @@ static void setup()
 	putenv("TESTPROG=FRKTCS04");
 }
 
-static void child_environment()
+static void child_environment(void)
 {
 
 	int fildes;
@@ -233,7 +233,7 @@ static int cmp_env_strings(char *pstring, char *cstring)
  *        read the values determined by the child
  *        compare values
  ***************************************************************/
-void parent_environment()
+void parent_environment(void)
 {
 
 	int fildes;

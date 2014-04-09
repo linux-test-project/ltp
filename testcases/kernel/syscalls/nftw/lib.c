@@ -37,7 +37,7 @@ extern FILE *temp;
 /*
  * Cleanup the ./tmp
  */
-void remove_test_ENOTDIR_files()
+void remove_test_ENOTDIR_files(void)
 {
 	(void)unlink(is_a_file);
 }

@@ -171,7 +171,7 @@ refork:
 /*
  * do_child()
  */
-void do_child()
+void do_child(void)
 {
 	int nread;
 
@@ -193,7 +193,7 @@ void do_child()
 /*
  * do_child_uclinux() - as above, but mallocs rdbuf first
  */
-void do_child_uclinux()
+void do_child_uclinux(void)
 {
 	if ((rdbuf = (char *)malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc of rdbuf failed");
@@ -205,7 +205,7 @@ void do_child_uclinux()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 	int i, j;
 
@@ -249,7 +249,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

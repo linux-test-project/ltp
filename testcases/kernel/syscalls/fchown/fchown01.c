@@ -155,7 +155,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	char fname[1024];
 
@@ -170,7 +170,7 @@ void setup()
 		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	close(fd);
 

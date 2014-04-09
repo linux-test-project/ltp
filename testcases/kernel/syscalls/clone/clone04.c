@@ -116,7 +116,7 @@ static void cleanup(void)
 	free(child_stack);
 }
 
-static int child_fn()
+static int child_fn(void)
 {
 	exit(1);
 }

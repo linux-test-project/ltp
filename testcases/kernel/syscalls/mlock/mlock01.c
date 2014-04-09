@@ -128,14 +128,14 @@ int main(int ac, char **av)
 
 #else
 
-int main()
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "test is not available on uClinux");
 }
 
 #endif /* if !defined(UCLINUX) */
 
-void setup()
+void setup(void)
 {
 	TEST_PAUSE;
 }
@@ -147,7 +147,7 @@ void setup1(int len)
 		tst_brkm(TFAIL, cleanup, "malloc failed");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

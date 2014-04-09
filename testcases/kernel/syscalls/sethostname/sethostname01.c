@@ -125,7 +125,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all one time setup for this test.
  */
-void setup()
+void setup(void)
 {
 	int ret;
 
@@ -150,7 +150,7 @@ void setup()
  * cleanup() -	performs all one time cleanup for this test
  *		completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	int ret;
 

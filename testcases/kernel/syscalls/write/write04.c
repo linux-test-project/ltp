@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 	tst_exit();
 }
 
-void alarm_handler()
+void alarm_handler(void)
 {
 	siglongjmp(jmp, 1);
 }
@@ -238,7 +238,7 @@ void setup(void)
 
 }
 
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print errno log if that option was specified.

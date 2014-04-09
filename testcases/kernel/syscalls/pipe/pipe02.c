@@ -158,7 +158,7 @@ void catch_usr2(int sig)
 /*
  * do_child()
  */
-void do_child()
+void do_child(void)
 {
 	char wbuf[BUFSIZ];
 	int len;
@@ -181,7 +181,7 @@ void do_child()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -194,7 +194,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

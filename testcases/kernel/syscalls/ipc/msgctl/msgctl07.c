@@ -248,7 +248,7 @@ sighandler_t alrm(int sig)
 
 /*--------------------------------------------------------------*/
 
-void do_child_1()
+void do_child_1(void)
 {
 	int i;
 	int size;
@@ -270,7 +270,7 @@ void do_child_1()
 	exit(0);
 }
 
-void do_child_2()
+void do_child_2(void)
 {
 	int i, j, k;
 	int size;
@@ -324,7 +324,7 @@ void do_child_2()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ****************************************************************/
-void setup()
+void setup(void)
 {
 	/* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
@@ -349,7 +349,7 @@ void setup()
  *  * cleanup() - performs all ONE TIME cleanup for this test at
  *   *              completion or premature exit.
  *    ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 
 	tst_rmdir();

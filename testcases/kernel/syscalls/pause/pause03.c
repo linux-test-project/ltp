@@ -181,7 +181,7 @@ int main(int ac, char **av)
 /*
  * do_child()
  */
-void do_child()
+void do_child(void)
 {
 	/* Suspend the child using pause() */
 	TEST(pause());
@@ -196,7 +196,7 @@ void do_child()
  * setup() - performs all ONE TIME setup for this test.
  *	     Setup signal handler to catch SIGCLD signal.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -227,7 +227,7 @@ void sig_handle(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

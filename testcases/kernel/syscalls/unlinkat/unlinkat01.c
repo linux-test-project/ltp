@@ -156,7 +156,7 @@ int main(int ac, char **av)
 	return (0);
 }
 
-void setup_every_copy()
+void setup_every_copy(void)
 {
 	/* Initialize test dir and file names */
 	char tmppathname[256] = "";
@@ -220,7 +220,7 @@ void setup_every_copy()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -232,7 +232,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/* Remove them */
 	char tmppathname[256] = "";

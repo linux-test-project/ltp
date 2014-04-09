@@ -211,7 +211,7 @@ int main(int ac, char **av)
  *  Initialize/allocate read/write buffers.
  *  Create a temporary directory and a file under it and
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -238,7 +238,7 @@ void setup()
  *    write_buf[0] has 0's, write_buf[1] has 1's, write_buf[2] has 2's
  *    write_buf[3] has 3's.
  */
-void init_buffers()
+void init_buffers(void)
 {
 	int count;		/* counter variable for loop */
 
@@ -277,7 +277,7 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
  *  The contents of the file are verified by using a plain read() and
  *  Compare the data read with the original write_buf[] contents.
  */
-void check_file_contents()
+void check_file_contents(void)
 {
 	int count, err_flg = 0;	/* index variable and error flag */
 	int nread;		/* return value of read() */
@@ -331,7 +331,7 @@ void check_file_contents()
  * Close the temporary file.
  * Remove the temporary directory created.
  */
-void cleanup()
+void cleanup(void)
 {
 	int count;		/* index for the loop */
 

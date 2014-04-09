@@ -302,7 +302,7 @@ int main(int ac, char **av)
  *  This function gets real/effective/saved uid/gid, umask, the device/inode
  *  number of '/' and current working directory for the parent process.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -362,7 +362,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

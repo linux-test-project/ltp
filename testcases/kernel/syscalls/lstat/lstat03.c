@@ -163,7 +163,7 @@ int main(int ac, char **av)
  *	      temporary directory.
  *	      Get uid/gid of test process.
  */
-void setup()
+void setup(void)
 {
 	int i, fd;		/* file handle for test file */
 	char tst_buff[BUF_SIZE];	/* data buffer */
@@ -230,7 +230,7 @@ void setup()
  *	       completion or premature exit.
  *	       Remove the symlink file, test file and temporary directory.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

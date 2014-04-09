@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 /*--------------------------------------------------------------*/
 /* FUNCTIONS GO HERE */
 
-void fill()
+void fill(void)
 {
 	register int i;
 	for (i = 0; i < BSIZE; i++)

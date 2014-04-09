@@ -167,7 +167,7 @@ int main(int ac, char **av)
  *  Create a test file under temporary directory and write some
  *  data into it.
  */
-void setup()
+void setup(void)
 {
 	int i;
 	int c, c_total = 0;	/* bytes to be written to file */
@@ -209,7 +209,7 @@ void setup()
  *  Close the temporary file.
  *  Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

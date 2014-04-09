@@ -280,7 +280,7 @@ void setup(char *path)
 	SAFE_PIPE(cleanup, pipe_fds);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 
@@ -292,7 +292,7 @@ void cleanup()
 
 }
 
-void help()
+void help(void)
 {
 	printf
 	    ("-T fd     : If this option is given, the program runs as 'test_open'\n");

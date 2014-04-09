@@ -168,7 +168,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	long maxfds;
 
@@ -211,7 +211,7 @@ void setup()
 			 "tried %ld", maxfds);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	int i;
 

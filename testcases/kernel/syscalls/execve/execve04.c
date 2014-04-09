@@ -190,7 +190,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void help()
+void help(void)
 {
 	printf("  -F <test name> : for example, 'execve04 -F test3'\n");
 }
@@ -227,7 +227,7 @@ void setup(char *argv0)
 	free(cmd);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 
@@ -235,7 +235,7 @@ void cleanup()
 
 }
 
-void do_child_1()
+void do_child_1(void)
 {
 	int fildes;
 

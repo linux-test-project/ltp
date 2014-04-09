@@ -90,14 +90,14 @@ void sighandler(int sig)
 		tst_brkm(TBROK, NULL, "received unexpected signal %d", sig);
 }
 
-void cleanup()
+void cleanup(void)
 {
 
 	TEST_CLEANUP;
 	tst_rmdir();
 }
 
-void setup()
+void setup(void)
 {
 	tst_sig(FORK, sighandler, cleanup);
 

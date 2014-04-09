@@ -229,7 +229,7 @@ int main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call test specific setup functions.
  */
-void setup()
+void setup(void)
 {
 	int ind;
 
@@ -273,7 +273,7 @@ void setup()
  *              Hence, this function just returns 0.
  *  This function simply returns 0.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -289,7 +289,7 @@ int no_setup()
  *
  *  The function returns 0.
  */
-int setup1()
+int setup1(void)
 {
 	int fd;			/* file handle for testfile */
 
@@ -319,7 +319,7 @@ int setup1()
  * int
  * setup2() - EEXIST
  */
-int setup2()
+int setup2(void)
 {
 	int fd;			/* file handle for testfile */
 
@@ -348,7 +348,7 @@ int setup2()
  *                    the MAX. length of PATH_MAX.
  *   This function retruns 0.
  */
-int longpath_setup()
+int longpath_setup(void)
 {
 	int ind;		/* counter variable */
 
@@ -367,7 +367,7 @@ int longpath_setup()
  *  create symlink file "tfile_3" under "t_file" which happens to be
  *  another symlink file.
  */
-int setup3()
+int setup3(void)
 {
 	int fd;			/* file handle for testfile */
 
@@ -391,7 +391,7 @@ int setup3()
  *  Restore the mode permissions on test directory.
  *  Remove the temporary directory created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

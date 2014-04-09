@@ -112,7 +112,7 @@ void cleanup(void)
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup()
+void setup(void)
 {
 	/* Capture signals if any */
 	/* Create temporary directories */

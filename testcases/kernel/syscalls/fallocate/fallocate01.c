@@ -121,7 +121,7 @@ int buf_size;
  * files, removes all temporary directories exits the test with
  * appropriate return code by calling tst_exit() function.
 ******************************************************************************/
-void cleanup()
+void cleanup(void)
 {
 
 	if (close(fd_mode1) == -1)
@@ -136,7 +136,7 @@ void cleanup()
  * used to create temporary dirs and temporary files
  * that may be used in the course of this test
  ******************************************************************************/
-void setup()
+void setup(void)
 {
 	/* Create temporary directories */
 	TEST_PAUSE;

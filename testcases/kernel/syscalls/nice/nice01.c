@@ -149,7 +149,7 @@ int main(int ac, char **av)
  *  	     Make sure the test process uid is super user.
  *  	     Get the current priority value.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -169,7 +169,7 @@ void setup()
  *             completion or premature exit.
  *  	       Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

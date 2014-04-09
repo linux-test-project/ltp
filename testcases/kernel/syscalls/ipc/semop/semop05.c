@@ -268,7 +268,7 @@ void sighandler(int sig)
  * do_child_uclinux() - capture signals, re-initialize s_buf then call do_child
  *                      with the appropriate argument
  */
-void do_child_uclinux()
+void do_child_uclinux(void)
 {
 	int i = i_uclinux;
 

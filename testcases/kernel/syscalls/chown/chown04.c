@@ -105,10 +105,10 @@
 #define TEST_FILE4		 "test_eloop1"
 #define TEST_FILE5		 "mntpoint"
 
-void setup1();
-void setup2();
-void setup3();
-void longpath_setup();
+void setup1(void);
+void setup2(void);
+void setup3(void);
+void longpath_setup(void);
 static void help(void);
 
 char Longpathname[PATH_MAX + 2];
@@ -149,8 +149,8 @@ struct passwd *ltpuser;
 
 char *bad_addr = 0;
 
-void setup();
-void cleanup();
+void setup(void);
+void cleanup(void);
 
 int main(int ac, char **av)
 {
@@ -207,7 +207,7 @@ int main(int ac, char **av)
 
 }
 
-void setup()
+void setup(void)
 {
 	int i;
 	int fd;
@@ -254,7 +254,7 @@ void setup()
 			test_cases[i].setupfunc();
 }
 
-void setup1()
+void setup1(void)
 {
 	int fd;
 	uid_t old_uid;
@@ -281,7 +281,7 @@ void setup1()
 
 }
 
-void setup2()
+void setup2(void)
 {
 	int fd;
 	uid_t old_uid;
@@ -307,7 +307,7 @@ void setup2()
 
 }
 
-void setup3()
+void setup3(void)
 {
 	int fd;
 
@@ -317,7 +317,7 @@ void setup3()
 		tst_brkm(TBROK | TERRNO, cleanup, "closing \"t_file\" failed");
 }
 
-void longpath_setup()
+void longpath_setup(void)
 {
 	int i;
 
@@ -325,7 +325,7 @@ void longpath_setup()
 		Longpathname[i] = 'a';
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

@@ -74,7 +74,7 @@ int TST_TOTAL = 1;
 
 int fail;
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 
@@ -82,7 +82,7 @@ void cleanup()
 
 }
 
-void setup()
+void setup(void)
 {
 	char *buf = STRING;
 	char template[PATH_MAX];
@@ -114,7 +114,7 @@ void setup()
 			 "sigaction(SIGCLD, ..) failed");
 }
 
-void do_child()
+void do_child(void)
 {
 	struct flock fl;
 
@@ -177,7 +177,7 @@ compare_lock(struct flock *fl, short type, short whence, int start, int len,
 			 pid, fl->l_pid);
 }
 
-void unlock_file()
+void unlock_file(void)
 {
 	struct flock fl;
 
@@ -226,7 +226,7 @@ void child_get(struct flock *l)
 		exit(0);
 }
 
-void stop_child()
+void stop_child(void)
 {
 	struct flock fl;
 
@@ -236,7 +236,7 @@ void stop_child()
 	wait(0);
 }
 
-void catch_child()
+void catch_child(void)
 {
 	tst_brkm(TFAIL, cleanup, "Unexpected death of child process");
 }

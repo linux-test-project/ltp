@@ -134,7 +134,7 @@ int main(int ac, char **av)
 /*
  * do_child - make the call as the child process
  */
-void do_child()
+void do_child(void)
 {
 	int i, lc;
 

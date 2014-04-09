@@ -136,7 +136,7 @@ int main(int ac, char **av)
  *      Create a testfile under temporary directory.
  *      Close the testfile.
  */
-void setup()
+void setup(void)
 {
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -167,7 +167,7 @@ void setup()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

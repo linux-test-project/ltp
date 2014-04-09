@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 /*--------------------------------------------------------------*/
 /* FUNCTIONS GO HERE */
 
-void clearit()
+void clearit(void)
 {
 	register int i;
 
@@ -222,24 +222,24 @@ int checkit(char *str)
 	return (0);
 }
 
-int anyfail()
+int anyfail(void)
 {
 	tst_exit();
 	return 0;
 }
 
-void setup()
+void setup(void)
 {
 	temp = stderr;
 }
 
-int blenter()
+int blenter(void)
 {
 	local_flag = PASSED;
 	return 0;
 }
 
-int blexit()
+int blexit(void)
 {
 	(local_flag == FAILED) ? tst_resm(TFAIL,
 					  "Test failed") : tst_resm(TPASS,

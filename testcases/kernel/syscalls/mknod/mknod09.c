@@ -137,7 +137,7 @@ int main(int ac, char **av)
 /*
  * setup(void)
  */
-void setup()
+void setup(void)
 {
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -157,7 +157,7 @@ void setup()
 /*
  * cleanup()
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

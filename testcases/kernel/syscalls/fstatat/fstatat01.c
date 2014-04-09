@@ -148,7 +148,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup_every_copy()
+void setup_every_copy(void)
 {
 	/* Initialize test dir and file names */
 	sprintf(pathname, "fstatattestdir%d", getpid());
@@ -198,7 +198,7 @@ void setup_every_copy()
 	filenames[1] = testfile3;
 }
 
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -206,7 +206,7 @@ void setup()
 	TEST_PAUSE;
 }
 
-void cleanup()
+void cleanup(void)
 {
 	unlink(testfile2);
 	unlink(testfile3);

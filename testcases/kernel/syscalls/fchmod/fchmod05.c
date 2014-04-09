@@ -174,7 +174,7 @@ int main(int ac, char **av)
  *  on test directory.
  *  Open the test directory for reading.
  */
-void setup()
+void setup(void)
 {
 	struct passwd *nobody_u;
 	struct group *bin_group;
@@ -241,7 +241,7 @@ void setup()
  *  Remove the test directory and temporary directory created in
  *  in the setup().
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -74,7 +74,7 @@ char nobody_uid[] = "nobody";
 
 int rc;
 
-void try_bind()
+void try_bind(void)
 {
 	struct sockaddr_in servaddr;
 	int sockfd, r_value;

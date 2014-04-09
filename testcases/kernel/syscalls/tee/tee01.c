@@ -271,7 +271,7 @@ static int tee_test(void)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 
 	tst_tmpdir();
@@ -289,7 +289,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/* Remove them */
 	unlink(testfile1);

@@ -169,15 +169,16 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup();
-void cleanup();
-void do_test();
-void do_child();
-void sigdfl_test();
-void update_timings();
-void p_timeout_handler();
-void c_timeout_handler();
-void catchsig();
+void setup(void);
+void cleanup(void);
+void do_test(int test_case, int tst_cnt);
+void do_child(int test_case);
+void sigdfl_test(void);
+struct tblock;
+void update_timings(struct tblock atblock);
+void p_timeout_handler(void);
+void c_timeout_handler(void);
+void catchsig(void);
 
 #if defined(linux)
 #define SIG_PF sig_t		/* This might need to be sighandler_t on some systems */
@@ -222,16 +223,14 @@ sighandler_t Tret;
 #ifdef UCLINUX
 static char *argv0;
 
-void do_child_uclinux();
+void do_child_uclinux(void);
 static int test_case_uclinux;
 #endif
 
 /***********************************************************************
  *   M A I N
  ***********************************************************************/
-int main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char *argv[])
 {
 	int lc;
 	char *msg;
@@ -265,17 +264,17 @@ char **argv;
 		/*
 		 * Call catch_test to test setup and catching of SIGKILL.
 		 */
-		(void)do_test(CATCH_TEST, tst_count);
+		do_test(CATCH_TEST, tst_count);
 
 		/*
 		 * Call ignore_test to test setup and ignoring of SIGKILL.
 		 */
-		(void)do_test(IGNORE_TEST, tst_count);
+		do_test(IGNORE_TEST, tst_count);
 
 		/*
 		 * Call sigdfl_test to test setting SIGKILL to default.
 		 */
-		(void)sigdfl_test();
+		sigdfl_test();
 
 	}
 
@@ -287,9 +286,7 @@ char **argv;
 /***********************************************************************
  *
  ***********************************************************************/
-void do_test(test_case, tst_cnt)
-int test_case;
-int tst_cnt;
+void do_test(int test_case, int tst_cnt)
 {
 	int term_stat;		/* Termination status of the child returned to   */
 	/* the parent.                                   */
@@ -453,8 +450,7 @@ int tst_cnt;
 /***********************************************************************
  * do_child()
  ***********************************************************************/
-void do_child(test_case)
-int test_case;
+void do_child(int test_case)
 {
 	char string[30];
 
@@ -525,7 +521,7 @@ int test_case;
 /***********************************************************************
  * do_child_uclinux(): call do_child with the global used to store test_case
  ***********************************************************************/
-void do_child_uclinux()
+void do_child_uclinux(void)
 {
 	do_child(test_case_uclinux);
 }
@@ -534,7 +530,7 @@ void do_child_uclinux()
 /***********************************************************************
  * sigdfl_test - test for attempt to set SIGKILL to default
  ***********************************************************************/
-void sigdfl_test()
+void sigdfl_test(void)
 {
 	/*
 	 * Try to set SIGKILL to default and check the return values.
@@ -568,7 +564,7 @@ void sigdfl_test()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -584,7 +580,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 
 	/*
@@ -608,7 +604,7 @@ void cleanup()
  *  a time out situation.  It will attempt to kill the child and
  *  call cleanup.
  ***********************************************************************/
-void p_timeout_handler()
+void p_timeout_handler(void)
 {
 	kill(Pid, SIGKILL);
 	cleanup();
@@ -619,7 +615,7 @@ void p_timeout_handler()
  * a time out situation.  It will set a global varaible and return
  * if called.
  ***********************************************************************/
-void c_timeout_handler()
+void c_timeout_handler(void)
 {
 	exit_val = TIMED_OUT;
 	return;
@@ -629,7 +625,7 @@ void c_timeout_handler()
  * This signal handling routine will set a global variable and return
  * if called.
  ***********************************************************************/
-void catchsig()
+void catchsig(void)
 {
 	exit_val = SIG_CAUGHT;
 	return;
@@ -638,8 +634,7 @@ void catchsig()
 /***********************************************************************
  * Update timing information
  ***********************************************************************/
-void update_timings(atblock)
-struct tblock atblock;
+void update_timings(struct tblock atblock)
 {
 	tblock.tb_max += atblock.tb_max;
 	tblock.tb_min += atblock.tb_min;

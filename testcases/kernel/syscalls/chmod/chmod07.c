@@ -162,7 +162,7 @@ int main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  Change the ownership of test file to that of "ltpuser1" user.
  */
-void setup()
+void setup(void)
 {
 	struct passwd *ltpuser;	/* password struct for ltpuser1 */
 	struct group *ltpgroup;	/* group struct for ltpuser1 */
@@ -203,7 +203,7 @@ void setup()
 			 group1_gid);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

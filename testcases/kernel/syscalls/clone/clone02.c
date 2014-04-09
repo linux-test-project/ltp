@@ -268,7 +268,7 @@ static void test_cleanup(void)
 
 }
 
-static int child_fn()
+static int child_fn(void)
 {
 
 	/* save child pid */
@@ -477,6 +477,6 @@ static void sig_child_defined_handler(int pid)
 }
 
 /* sig_default_handler() - Default handler for parent */
-static void sig_default_handler()
+static void sig_default_handler(void)
 {
 }

@@ -220,7 +220,7 @@ int main(int ac, char **av)
  *  into it, close it.
  *  Call individual test specific setup functions.
  */
-void setup()
+void setup(void)
 {
 	int fd, i, ind;		/* file handler for testfile */
 	int c, c_total = 0;	/* no. of bytes written to file */
@@ -298,7 +298,7 @@ void setup()
  *              Hence, this function just returns 0.
  *  This function simply returns 0.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -312,7 +312,7 @@ int no_setup()
  *
  *  The function returns 0.
  */
-int setup1()
+int setup1(void)
 {
 	/* Change mode permissions on test file */
 	if (chmod(TEST_FILE1, NEW_MODE) < 0) {
@@ -331,7 +331,7 @@ int setup1()
  *  truncate testfile under "t_file" which happens to be another regular file.
  *  The function returns 0.
  */
-int setup2()
+int setup2(void)
 {
 	int fildes;
 
@@ -356,7 +356,7 @@ int setup2()
  *                    the MAX. length of PATH_MAX.
  *   This function retruns 0.
  */
-int longpath_setup()
+int longpath_setup(void)
 {
 	int ind;		/* counter variable */
 
@@ -372,7 +372,7 @@ int longpath_setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

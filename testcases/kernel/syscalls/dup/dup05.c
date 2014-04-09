@@ -167,7 +167,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	fd = -1;
 
@@ -184,7 +184,7 @@ void setup()
 		tst_brkm(TBROK, cleanup, "open failed");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

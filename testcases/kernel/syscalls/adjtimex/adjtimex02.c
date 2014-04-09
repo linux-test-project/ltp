@@ -96,14 +96,14 @@
 #define SET_MODE ( ADJ_OFFSET | ADJ_FREQUENCY | ADJ_MAXERROR | ADJ_ESTERROR | \
 	ADJ_STATUS | ADJ_TIMECONST | ADJ_TICK )
 
-static void setup();
-static int setup2();
-static int setup3();
-static int setup4();
-static int setup5();
-static int setup6();
-static void cleanup();
-static void cleanup6();
+static void setup(void);
+static int setup2(void);
+static int setup3(void);
+static int setup4(void);
+static int setup5(void);
+static int setup6(void);
+static void cleanup(void);
+static void cleanup6(void);
 
 char *TCID = "adjtimex02";
 
@@ -201,7 +201,7 @@ int main(int ac, char **av)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void setup()
+void setup(void)
 {
 
 	tim_save.modes = 0;
@@ -234,7 +234,7 @@ void setup()
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 
 	tim_save.modes = SET_MODE;
@@ -249,31 +249,31 @@ void cleanup()
 	TEST_CLEANUP;
 }
 
-int setup2()
+int setup2(void)
 {
 	buff.tick = 900000 / hz - 1;
 	return 0;
 }
 
-int setup3()
+int setup3(void)
 {
 	buff.tick = 1100000 / hz + 1;
 	return 0;
 }
 
-int setup4()
+int setup4(void)
 {
 	buff.offset = 512000L + 1;
 	return 0;
 }
 
-int setup5()
+int setup5(void)
 {
 	buff.offset = (-1) * (512000L) - 1;
 	return 0;
 }
 
-int setup6()
+int setup6(void)
 {
 	/* Switch to nobody user for correct error code collection */
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
@@ -286,7 +286,7 @@ int setup6()
 	return 0;
 }
 
-void cleanup6()
+void cleanup6(void)
 {
 	/* Set effective user id back to root */
 	if (seteuid(0) == -1) {

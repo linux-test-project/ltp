@@ -119,23 +119,23 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup();
-void cleanup();
+void setup(void);
+void cleanup(void);
 
 char *TCID = "unlink08";
 int TST_TOTAL = 3;
 
 int exp_enos[] = { 0, 0 };
 
-int unwrite_dir_setup();
-int unsearch_dir_setup();
-int dir_setup();
-int no_setup();
+int unwrite_dir_setup(int flag);
+int unsearch_dir_setup(int flag);
+int dir_setup(int flag);
+int no_setup(int flag);
 
 struct test_case_t {
 	char *pathname;
 	char *desc;
-	int (*setupfunc) ();
+	int (*setupfunc) (int flag);
 	int exp_ret;		/* -1 means error, 0 means != -1 */
 	int exp_errno;
 } Test_cases[] = {
@@ -252,7 +252,7 @@ int main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 	int ind;
 	int postest = 0;
@@ -279,7 +279,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	chmod("unwrite_dir", 0777);
 	chmod("unsearch_dir", 0777);
@@ -297,8 +297,7 @@ void cleanup()
 /******************************************************************
  *
  ******************************************************************/
-int unwrite_dir_setup(flag)
-int flag;
+int unwrite_dir_setup(int flag)
 {
 	int fd;
 
@@ -347,8 +346,7 @@ int flag;
 /******************************************************************
  *
  ******************************************************************/
-int unsearch_dir_setup(flag)
-int flag;
+int unsearch_dir_setup(int flag)
 {
 	int fd;
 
@@ -397,8 +395,7 @@ int flag;
 /******************************************************************
  *
  ******************************************************************/
-int dir_setup(flag)
-int flag;
+int dir_setup(int flag)
 {
 	if (mkdir("regdir", 0777) == -1) {
 		tst_brkm(TBROK, cleanup,
@@ -411,8 +408,7 @@ int flag;
 /******************************************************************
  *
  ******************************************************************/
-int no_setup(flag)
-int flag;
+int no_setup(int flag)
 {
 	return 0;
 }

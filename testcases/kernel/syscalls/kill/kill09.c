@@ -182,7 +182,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void do_child()
+void do_child(void)
 {
 	/*
 	 * Setup alarm signal if we don't get the signal to prevent this process
@@ -194,7 +194,7 @@ void do_child()
 	exit(1);
 }
 
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -205,7 +205,7 @@ void setup()
 
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

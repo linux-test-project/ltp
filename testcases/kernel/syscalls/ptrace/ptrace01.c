@@ -218,7 +218,7 @@ int main(int ac, char **av)
 }
 
 /* do_child() */
-void do_child()
+void do_child(void)
 {
 	struct sigaction child_act;
 
@@ -249,7 +249,7 @@ void do_child()
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -262,7 +262,7 @@ void setup()
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 
 	/*
@@ -276,7 +276,7 @@ void cleanup()
 /*
  * child_handler() - Signal handler for child
  */
-void child_handler()
+void child_handler(void)
 {
 
 	if ((kill(getppid(), SIGUSR2)) == -1) {
@@ -288,7 +288,7 @@ void child_handler()
 /*
  * parent_handler() - Signal handler for parent
  */
-void parent_handler()
+void parent_handler(void)
 {
 
 	got_signal = 1;

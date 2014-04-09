@@ -240,7 +240,7 @@ int main(int ac, char **av)
 /*
  * dochild1()
  */
-void dochild1()
+void dochild1(void)
 {
 	int retval = 0;
 	struct passwd *nobody = my_getpwnam(user1name);
@@ -280,7 +280,7 @@ void dochild1()
 /*
  * dochild1()
  */
-void dochild2()
+void dochild2(void)
 {
 	int retval = 0;
 	struct passwd *nobody = my_getpwnam(user1name);
@@ -319,7 +319,7 @@ void dochild2()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 	/* test must be run as root */
 	if (geteuid() != 0) {
@@ -345,7 +345,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

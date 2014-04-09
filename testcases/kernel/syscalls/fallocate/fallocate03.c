@@ -140,7 +140,7 @@ int buf_size;
  * files, removes all temporary directories exits the test with
  * appropriate return code by calling tst_exit() function.
 ******************************************************************************/
-extern void cleanup()
+void cleanup(void)
 {
 	/* Close all open file descriptors. */
 	if (close(fd) == -1)
@@ -156,7 +156,7 @@ extern void cleanup()
  * that may be used in the course of this test
  ******************************************************************************/
 
-void setup()
+void setup(void)
 {
 	/* Create temporary directories */
 	TEST_PAUSE;
@@ -201,7 +201,7 @@ void file_seek(off_t offset)
 /*****************************************************************************
  * Writes data into the file
  ******************************************************************************/
-void populate_file()
+void populate_file(void)
 {
 	char buf[buf_size + 1];
 	int index;

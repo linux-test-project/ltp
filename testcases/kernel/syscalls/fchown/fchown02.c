@@ -234,7 +234,7 @@ int main(int ac, char **av)
  *	     Create a temporary directory and change directory to it.
  *	     Call test specific setup functions.
  */
-void setup()
+void setup(void)
 {
 	int ind;
 
@@ -261,7 +261,7 @@ void setup()
  *	      set on an executable file will not be cleared.
  *	      Creat a testfile and set setuid/gid bits on it.
  */
-int setup1()
+int setup1(void)
 {
 	/* Creat a testfile under temporary directory */
 	if ((Fd1 = open(TESTFILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
@@ -283,7 +283,7 @@ int setup1()
  *	      set on non-group executable file will not be cleared.
  *	      Creat a testfile and set setgid bit on it.
  */
-int setup2()
+int setup2(void)
 {
 	/* Creat a testfile under temporary directory */
 	if ((Fd2 = open(TESTFILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
@@ -305,7 +305,7 @@ int setup2()
  *		Hence, this function just returns 0.
  *		This function simply returns 0.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -316,7 +316,7 @@ int no_setup()
  *	       Close the temporary files.
  *	       Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

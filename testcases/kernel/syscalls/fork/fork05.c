@@ -144,7 +144,7 @@ modify_ldt: \n\
 	pop    %ebx \n\
 	ret");
 
-int main()
+int main(void)
 {
 	struct modify_ldt_ldt_s ldt0;
 	int lo;
@@ -197,7 +197,7 @@ int main()
 
 #else /* if defined(linux) && defined(__i386__) */
 
-int main()
+int main(void)
 {
 	tst_resm(TINFO, "%%fs test only for ix86");
 

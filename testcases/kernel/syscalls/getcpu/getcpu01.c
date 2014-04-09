@@ -84,7 +84,7 @@ int sys_support = 0;
 void cleanup(void);
 void setup(void);
 static inline int getcpu(unsigned int *, unsigned int *, void *);
-unsigned int set_cpu_affinity();
+unsigned int set_cpu_affinity(void);
 unsigned int get_nodeid(unsigned int);
 unsigned int max_cpuid(size_t, cpu_set_t *);
 
@@ -188,7 +188,7 @@ void setup(void)
  * This will set the affinity to max cpu on which process can run
  * and return that cpu id to the calling process
  */
-unsigned int set_cpu_affinity()
+unsigned int set_cpu_affinity(void)
 {
 	unsigned cpu_max;
 	cpu_set_t *set;

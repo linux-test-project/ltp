@@ -143,7 +143,7 @@ int main(int ac, char **av)
 /*
  * setup(void) - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 
 	/* Capture unexpected signals */
@@ -178,7 +178,7 @@ void setup()
 /*
  * cleanup() - Performs all ONE TIME cleanup for this test at
  */
-void cleanup()
+void cleanup(void)
 {
 
 	/*

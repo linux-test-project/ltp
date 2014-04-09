@@ -175,7 +175,7 @@ int main(int ac, char **av)
  * calling process. The segment is attached at the first available address as
  * selected by the system.
  */
-void setup()
+void setup(void)
 {
 	key_t shmkey;
 
@@ -226,7 +226,7 @@ void setup()
  *	       Detach the shared memory segment and remove the shared memory
  *	       identifier associated with the shared memory.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

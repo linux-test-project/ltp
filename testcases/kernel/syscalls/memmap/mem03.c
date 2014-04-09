@@ -68,7 +68,7 @@ int f1 = -1, f2 = -1;
 char *mm1 = NULL, *mm2 = NULL;
 
 /*--------------------------------------------------------------------*/
-int main()
+int main(void)
 {
 	char tmp1[] = "./tmp.file.1";
 	char tmp2[] = "./tmp.file.2";

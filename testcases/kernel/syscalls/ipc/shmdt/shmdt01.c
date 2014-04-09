@@ -129,7 +129,7 @@ int main(int ac, char **av)
 /*
  * check_functionality() - make sure the memory is detached correctly
  */
-void check_functionality()
+void check_functionality(void)
 {
 	/* stat the shared memory segment */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1)
@@ -166,7 +166,7 @@ void check_functionality()
 	}
 }
 
-void sighandler(sig)
+void sighandler(int sig)
 {
 	/* if we have received a SIGSEGV, we are almost done */
 	if (sig == SIGSEGV) {

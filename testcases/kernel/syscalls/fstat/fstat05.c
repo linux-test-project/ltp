@@ -187,7 +187,7 @@ int main(int ac, char **av)
 
 #else
 
-int main()
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "test is not available on uClinux");
 }
@@ -200,7 +200,7 @@ int main()
  *	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
  */
-void setup()
+void setup(void)
 {
 	int i;
 
@@ -238,7 +238,7 @@ void setup()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

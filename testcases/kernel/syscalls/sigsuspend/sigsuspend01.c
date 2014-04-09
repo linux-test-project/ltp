@@ -171,7 +171,7 @@ int main(int ac, char **av)
  * Set the signal handler to catch SIGALRM signal.
  * Get the current signal mask of test process using sigprocmask().
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -227,7 +227,7 @@ void sig_handler(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

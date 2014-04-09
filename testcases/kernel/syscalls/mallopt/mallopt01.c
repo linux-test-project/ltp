@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-void printinfo()
+void printinfo(void)
 {
 
 	fprintf(stderr, "mallinfo structure:\n");
@@ -120,7 +120,7 @@ void printinfo()
 }
 
 #else
-int main()
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "test is not available on uClinux");
 }

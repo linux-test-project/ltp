@@ -125,7 +125,7 @@ static void cleanup(void)
 
 #else
 
-int main()
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "test not available on UCLINUX");
 }

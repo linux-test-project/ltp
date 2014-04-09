@@ -186,13 +186,13 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void help()
+static void help(void)
 {
 	printf("  -N n    Create n children each iteration\n");
 	printf("  -v      Verbose mode\n");
 }
 
-static void setup()
+static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	umask(0);
@@ -204,7 +204,7 @@ static void setup()
 	strcat(fnamebuf, pbuf);
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	int waitstatus;
 	TEST_CLEANUP;

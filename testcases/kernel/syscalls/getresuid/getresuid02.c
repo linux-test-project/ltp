@@ -153,7 +153,7 @@ int main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *	     Get the real/effective/saved user id of the calling process.
  */
-void setup()
+void setup(void)
 {
 	struct passwd *user_id;	/* passwd struct for test user */
 
@@ -198,7 +198,7 @@ void setup()
  *             completion or premature exit.
  *	       Restore the test process uid to root.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

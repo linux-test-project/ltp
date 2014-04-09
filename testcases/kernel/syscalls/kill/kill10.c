@@ -279,7 +279,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void help()
+void help(void)
 {
 	printf("  -g n    Create n process groups (default: %d)\n", num_pgrps);
 	printf
@@ -288,7 +288,7 @@ void help()
 	printf("  -d n    Set debug level to n (default: %d)\n", debug_flag);
 }
 
-void setup()
+void setup(void)
 {
 	struct sigaction sa;
 	int i;
@@ -429,7 +429,7 @@ void ack_done(int sig, siginfo_t * si, void *data)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	int i;
 	/* send SIGHUP to all pgroups */

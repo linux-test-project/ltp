@@ -93,9 +93,9 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup();
-void cleanup();
-void alarm_received();
+void setup(void);
+void cleanup(void);
+void alarm_received(void);
 
 char *TCID = "alarm02";
 int TST_TOTAL = 3;
@@ -165,7 +165,7 @@ int main(int ac, char **av)
 
 }
 
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -174,12 +174,12 @@ void setup()
 
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 }
 
-void alarm_received()
+void alarm_received(void)
 {
 	received_alarm = 1;
 }

@@ -266,7 +266,7 @@ int setup04(int test)
  * setup() - performs all ONE TIME setup for this test
  * - creates a defaul mmaped area to be able to run remap_file_pages
  */
-void setup()
+void setup(void)
 {
 	int i, j;
 
@@ -327,7 +327,7 @@ void setup()
 * cleanup() - Performs one time cleanup for this test at
 * completion or premature exit
 */
-void cleanup()
+void cleanup(void)
 {
 	/* Close the file descriptor */
 	close(fd);

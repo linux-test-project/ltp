@@ -47,7 +47,7 @@
  * getipckey() - generates and returns a message key used by the "get"
  *		 calls to create an IPC resource.
  */
-key_t getipckey()
+key_t getipckey(void)
 {
 	const char a = 'a';
 	int ascii_a = (int)a;
@@ -183,7 +183,7 @@ void rm_shm(int shm_id)
 /*
  * Get the number of message queues already in use
  */
-int get_used_msgqueues()
+int get_used_msgqueues(void)
 {
 	FILE *f;
 	int used_queues;
@@ -206,7 +206,7 @@ int get_used_msgqueues()
 /*
  * Get the max number of message queues allowed on system
  */
-int get_max_msgqueues()
+int get_max_msgqueues(void)
 {
 	FILE *f;
 	char buff[BUFSIZE];

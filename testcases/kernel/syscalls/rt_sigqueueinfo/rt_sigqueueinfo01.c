@@ -56,7 +56,7 @@ char *TCID = "rt_sigqueueinfo01";
 int testno;
 int TST_TOTAL = 2;
 
-extern void cleanup()
+void cleanup(void)
 {
 
 	TEST_CLEANUP;
@@ -64,7 +64,7 @@ extern void cleanup()
 
 }
 
-void setup()
+void setup(void)
 {
 	TEST_PAUSE;
 	tst_tmpdir();

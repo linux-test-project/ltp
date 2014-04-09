@@ -146,7 +146,7 @@ int main(int ac, char **av)
 
 }
 
-void setup()
+void setup(void)
 {
 	int fd;
 
@@ -186,7 +186,7 @@ void setup()
  *		completion or premature exit.
  *  Delete the testfile and temporary directory created in setup().
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -197,7 +197,7 @@ int main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Get the current time and system's new time to be set in the test.
  */
-void setup()
+void setup(void)
 {
 
 	/* Check that the test process id is super/root  */
@@ -214,7 +214,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

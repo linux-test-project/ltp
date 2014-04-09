@@ -172,7 +172,7 @@ int main(int ac, char **av)
 /*
  * do_child()
  */
-void do_child()
+void do_child(void)
 {
 	unsigned long req, rem, elapsed;	/* usec */
 	struct timeval otime;	/* time before child execution suspended */
@@ -275,7 +275,7 @@ void do_child()
  *  to child process.
  *  Initialise time structure elements.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -303,7 +303,7 @@ void setup()
  *   to child to awake it from sleep.
  *   This function just returns without doing anything.
  */
-void sig_handler()
+void sig_handler(void)
 {
 }
 
@@ -312,7 +312,7 @@ void sig_handler()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

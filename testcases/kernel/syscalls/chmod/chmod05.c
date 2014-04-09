@@ -182,7 +182,7 @@ int main(int ac, char **av)
  *  Invoke setuid to root program to modify group ownership
  *  on test directory.
  */
-void setup()
+void setup(void)
 {
 	struct passwd *nobody_u;
 	struct group *bin_group;
@@ -228,7 +228,7 @@ void setup()
 			 "Couldn't switch to nobody:nobody");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

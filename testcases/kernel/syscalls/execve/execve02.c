@@ -157,7 +157,7 @@ int main(int ac, char **av)
  * help() - Prints out the help message for the -F option defined
  *          by this test.
  */
-void help()
+void help(void)
 {
 	printf("  -F <test file> : for example, 'execve02 -F test3'\n");
 }
@@ -200,7 +200,7 @@ void setup(char *argv0)
 	ltpuser1 = my_getpwnam(user1name);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

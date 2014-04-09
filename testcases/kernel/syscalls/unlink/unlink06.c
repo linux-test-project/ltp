@@ -198,7 +198,7 @@ int main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -215,7 +215,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -230,7 +230,7 @@ void cleanup()
 /******************************************************************
  *
  ******************************************************************/
-void create_file()
+void create_file(void)
 {
 	if (mkfifo(Fname, 0777) == -1) {
 		tst_brkm(TBROK, cleanup,

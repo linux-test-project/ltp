@@ -252,7 +252,7 @@ int main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 	int ind;
 
@@ -278,7 +278,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	chmod("unwrite_dir", 0777);
 	chmod("unsearch_dir", 0777);
@@ -296,7 +296,7 @@ void cleanup()
 /******************************************************************
  *
  ******************************************************************/
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -304,7 +304,7 @@ int no_setup()
 /******************************************************************
  *
  ******************************************************************/
-int longpath_setup()
+int longpath_setup(void)
 {
 	int ind;
 
@@ -318,7 +318,7 @@ int longpath_setup()
 /******************************************************************
  *
  ******************************************************************/
-int filepath_setup()
+int filepath_setup(void)
 {
 	int fd;
 

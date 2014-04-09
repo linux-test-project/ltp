@@ -156,7 +156,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 	/* free blocks avail to non-superuser */
 	unsigned long f_bavail;
@@ -191,7 +191,7 @@ void setup()
 #endif
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

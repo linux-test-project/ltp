@@ -151,7 +151,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void setup()
+static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	umask(0);
@@ -163,7 +163,7 @@ static void setup()
 	strcat(fnamebuf, pidbuf);
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	TEST_CLEANUP;
 	tst_rmdir();

@@ -99,12 +99,12 @@ extern char *optarg;
 extern int optind, opterr;
 int local_flag;
 
-void usr1hndlr()
+void usr1hndlr(void)
 {
 	usrcnt++;
 }
 
-void cleanup()
+void cleanup(void)
 {
 	kill(cpid, SIGKILL);
 	unlink(filename);
@@ -112,7 +112,7 @@ void cleanup()
 
 }
 
-void doparent()
+void doparent(void)
 {
 	int fd;
 	struct stat sb;
@@ -240,7 +240,7 @@ void doparent()
 	close(fd);
 }
 
-void dochild()
+void dochild(void)
 {
 	int fd;
 	struct flock flocks;

@@ -275,7 +275,7 @@ int main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 	int ind;
 
@@ -304,7 +304,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -319,7 +319,7 @@ void cleanup()
 /******************************************************************
  * no_setup() - does nothing
  ******************************************************************/
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -329,7 +329,7 @@ int no_setup()
 /******************************************************************
  * high_address_setup() - generates an address that should cause a segfault
  ******************************************************************/
-int high_address_setup()
+int high_address_setup(void)
 {
 	int ind;
 
@@ -348,7 +348,7 @@ int high_address_setup()
 /******************************************************************
  * longpath_setup() - creates a filename that is too long
  ******************************************************************/
-int longpath_setup()
+int longpath_setup(void)
 {
 	int ind;
 
@@ -362,7 +362,7 @@ int longpath_setup()
 /******************************************************************
  * filepath_setup() creates a file the exists that we will treat as a directory
  ******************************************************************/
-int filepath_setup()
+int filepath_setup(void)
 {
 	int fd;
 

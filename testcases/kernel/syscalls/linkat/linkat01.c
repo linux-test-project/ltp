@@ -239,7 +239,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void setup_every_copy()
+static void setup_every_copy(void)
 {
 	close(newdirfd);
 	rmobj(TEST_DIR2, NULL);
@@ -303,7 +303,7 @@ static void mylinkat_test(struct test_struct *desc)
 	}
 }
 
-void setup()
+void setup(void)
 {
 	char *cwd;
 

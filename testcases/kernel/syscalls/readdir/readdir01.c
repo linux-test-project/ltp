@@ -300,7 +300,7 @@ int main(int ac, char **av)
  * standard out.  Your help function will be called after the standard options
  * have been printed
  */
-void help()
+void help(void)
 {
 	printf("  -N #files : create #files files every iteration\n");
 }
@@ -308,7 +308,7 @@ void help()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 	/* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
@@ -335,7 +335,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

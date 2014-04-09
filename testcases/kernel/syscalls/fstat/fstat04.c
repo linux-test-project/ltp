@@ -153,7 +153,7 @@ int main(int ac, char **av)
  *  Creat a test file and write some data into it.
  *  Get the user/group id info. of test process.
  */
-void setup()
+void setup(void)
 {
 	char tst_buff[BUF_SIZE];	/* data buffer */
 	int wbytes;		/* no. of bytes written */
@@ -191,7 +191,7 @@ void setup()
 
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

@@ -207,7 +207,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -219,7 +219,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -228,7 +228,7 @@ void cleanup()
 	TEST_CLEANUP;
 }
 
-void c1func()
+void c1func(void)
 {
 	if (close(fildes[0]) == -1)
 		tst_resm(TWARN, "Could not close fildes[0] - errno %d", errno);
@@ -237,7 +237,7 @@ void c1func()
 			tst_resm(TBROK | TERRNO, "[child 1] pipe write failed");
 }
 
-void c2func()
+void c2func(void)
 {
 	if (close(fildes[0]) == -1)
 		tst_resm(TWARN, "Could not close fildes[0] - errno %d", errno);

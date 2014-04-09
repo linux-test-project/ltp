@@ -408,12 +408,12 @@ static void cleanup(void)
 	TEST_CLEANUP;
 }
 
-static void alrmhandlr()
+static void alrmhandlr(void)
 {
 	alrmintr++;
 }
 
-static void inthandlr()
+static void inthandlr(void)
 {
 	intintr++;
 }

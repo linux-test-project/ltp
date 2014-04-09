@@ -165,7 +165,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void setupfunc_test1()
+static void setupfunc_test1(void)
 {
 	char file1[100], file2[100];
 
@@ -181,7 +181,7 @@ static void setupfunc_test1()
 	strcpy(TC[0].filename, file2);
 }
 
-static void setupfunc_test2()
+static void setupfunc_test2(void)
 {
 	char file1[100], file2[100];
 
@@ -196,7 +196,7 @@ static void setupfunc_test2()
 	strcpy(TC[1].filename, file2);
 }
 
-static void setupfunc_test3()
+static void setupfunc_test3(void)
 {
 	char file1[100], file2[100], file3[100];
 
@@ -216,7 +216,7 @@ static void setupfunc_test3()
 	strcpy(TC[2].filename, file3);
 }
 
-static void setupfunc_test4()
+static void setupfunc_test4(void)
 {
 	char file1[100], file2[100], file3[100];
 
@@ -235,7 +235,7 @@ static void setupfunc_test4()
 	strcpy(TC[3].filename, file3);
 }
 
-static void setupfunc_test5()
+static void setupfunc_test5(void)
 {
 	char file1[100], file2[100];
 

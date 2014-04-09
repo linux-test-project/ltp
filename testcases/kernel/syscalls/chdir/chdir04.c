@@ -146,7 +146,7 @@ int main(int ac, char **av)
 
 }
 
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -164,7 +164,7 @@ void setup()
 #endif
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

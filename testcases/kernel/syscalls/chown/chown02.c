@@ -216,7 +216,7 @@ int main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
  */
-void setup()
+void setup(void)
 {
 	int i;
 
@@ -239,7 +239,7 @@ void setup()
  *	      set on an executable file will not be cleared.
  *  Creat a testfile and set setuid/setgid bits on the mode of file.$
  */
-int setup1()
+int setup1(void)
 {
 	int fd;			/* File descriptor for testfile1 */
 
@@ -265,7 +265,7 @@ int setup1()
  *	      set on non-group executable file will not be cleared.
  *  Creat a testfile and set setgid bit on the mode of file.
  */
-int setup2()
+int setup2(void)
 {
 	int fd;			/* File descriptor for testfile2 */
 
@@ -290,7 +290,7 @@ int setup2()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

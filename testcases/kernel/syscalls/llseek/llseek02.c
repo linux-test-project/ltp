@@ -190,7 +190,7 @@ int main(int ac, char **av)
  *           Invoke individual test setup functions according to the order
  *           set in test struct. definition.
  */
-void setup()
+void setup(void)
 {
 	int ind;
 
@@ -209,7 +209,7 @@ void setup()
 /*
  * no_setup() - This is a dummy function which simply returns 0.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -221,7 +221,7 @@ int no_setup()
  *            into it.
  *            This function returns 0 on success.
  */
-int setup1()
+int setup1(void)
 {
 	char write_buff[BUFSIZ];	/* buffer to hold data */
 
@@ -250,7 +250,7 @@ int setup1()
  *            Creat a temporary file for reading/writing and close it.
  *            This function returns 0 on success.
  */
-int setup2()
+int setup2(void)
 {
 	/* Creat/open a temporary file under above directory */
 	if ((fd2 = open(TEMP_FILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
@@ -274,7 +274,7 @@ int setup2()
  *             Close the temporary file.
  *             Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

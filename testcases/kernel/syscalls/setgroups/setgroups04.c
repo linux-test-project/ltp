@@ -142,7 +142,7 @@ int main(int ac, char **av)
 
 #else
 
-int main()
+int main(void)
 {
 	tst_resm(TINFO, "test is not available on uClinux");
 	tst_exit();
@@ -153,7 +153,7 @@ int main()
 /*
  * setup()
  */
-void setup()
+void setup(void)
 {
 
 	/* check root user */
@@ -170,7 +170,7 @@ void setup()
 /*
  * cleanup()
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

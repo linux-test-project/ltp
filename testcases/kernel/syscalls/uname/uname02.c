@@ -123,7 +123,7 @@ void cleanup(void)
 
 }
 #else
-int main()
+int main(void)
 {
 	tst_resm(TCONF, NULL, "test is not available on uClinux");
 }

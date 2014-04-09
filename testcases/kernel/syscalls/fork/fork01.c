@@ -110,7 +110,7 @@ int TST_TOTAL = 2;
  * child_pid - the child side of the test
  *             determine the PID and write to a file
  */
-static void child_pid()
+static void child_pid(void)
 {
 
 	int fildes;
@@ -128,7 +128,7 @@ static void child_pid()
  *              read the value determined by the child
  *              compare and report results
  */
-static void parent_pid()
+static void parent_pid(void)
 {
 
 	int fildes;
@@ -227,7 +227,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void setup()
+static void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -237,7 +237,7 @@ static void setup()
 	tst_tmpdir();
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

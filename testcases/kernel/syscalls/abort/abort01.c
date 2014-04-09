@@ -139,14 +139,14 @@ static void cleanup(void)
 	tst_rmdir();
 }
 
-static void do_child()
+static void do_child(void)
 {
 	abort();
 	fprintf(stderr, "\tchild - abort failed.\n");
 	exit(1);
 }
 
-static int instress()
+static int instress(void)
 {
 	tst_resm(TINFO,
 		 "System resources may be too low; fork(), select() etc are likely to fail.");

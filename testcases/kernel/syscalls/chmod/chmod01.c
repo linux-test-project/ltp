@@ -146,7 +146,7 @@ int main(int ac, char **av)
 
 }
 
-void setup()
+void setup(void)
 {
 	int fd;
 
@@ -166,7 +166,7 @@ void setup()
 
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

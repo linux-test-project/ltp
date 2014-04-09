@@ -221,7 +221,7 @@ void cleanup(void)
 #else
 int TST_TOTAL = 0;
 
-int main()
+int main(void)
 {
 
 	tst_resm(TCONF, "This test needs a kernel that has sysctl syscall.");

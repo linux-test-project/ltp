@@ -183,7 +183,7 @@ static int cma_check_errno(long expected_errno)
 	return 0;
 }
 
-static struct process_vm_params *cma_alloc_sane_params()
+static struct process_vm_params *cma_alloc_sane_params(void)
 {
 	struct process_vm_params *sane_params;
 	int len;
@@ -416,7 +416,7 @@ static void cma_test_invalid_protection(void)
 	cma_free_params(sane_params);
 }
 
-static void cma_test_errnos()
+static void cma_test_errnos(void)
 {
 	cma_test_sane_params();
 	cma_test_flags();

@@ -216,7 +216,7 @@ int main(int ac, char **av)
  *	Invoke individual test setup functions according to the order
  *	set in struct. definition.
  */
-void setup()
+void setup(void)
 {
 	int ind;
 
@@ -252,7 +252,7 @@ void setup()
  * no_setup() - Some test conditions for mknod(2) do not any setup.
  *		Hence, this function just returns 0.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -262,7 +262,7 @@ int no_setup()
  *		      the MAX. length of PATH_MAX.
  *   This function retruns 0.
  */
-int longpath_setup()
+int longpath_setup(void)
 {
 	int ind;		/* counter variable */
 
@@ -279,7 +279,7 @@ int longpath_setup()
  *  same node in the test and fails with above errno.
  *  This function returns 0.
  */
-int setup1()
+int setup1(void)
 {
 	/* Create a node using mknod */
 	if (mknod("tnode_1", MODE_RWX, 0) < 0) {
@@ -297,7 +297,7 @@ int setup1()
  *  with ENOTDIR as the node created here is a regular file.
  *  This function returns 0.
  */
-int setup3()
+int setup3(void)
 {
 	/* Create a node using mknod */
 	if (mknod("tnode", MODE_RWX, 0) < 0) {
@@ -315,7 +315,7 @@ int setup3()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

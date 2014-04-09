@@ -131,6 +131,6 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 }

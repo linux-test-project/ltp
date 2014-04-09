@@ -120,7 +120,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void functest1()
+void functest1(void)
 {
 	if (write(TEST_RETURN, "A", 1) != 1)
 		tst_resm(TFAIL, "write was unsuccessful");
@@ -128,7 +128,7 @@ void functest1()
 		tst_resm(TPASS, "file was created and written to successfully");
 }
 
-void functest2()
+void functest2(void)
 {
 	struct stat buf;
 
@@ -140,7 +140,7 @@ void functest2()
 		tst_resm(TFAIL, "creat FAILED to truncate file to 0 bytes");
 }
 
-void setup()
+void setup(void)
 {
 	fd = -1;
 
@@ -163,7 +163,7 @@ void setup()
 	sprintf(filename, "creat01.%d", getpid());
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

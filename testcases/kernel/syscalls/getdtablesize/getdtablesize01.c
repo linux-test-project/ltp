@@ -53,7 +53,7 @@ void cleanup();
 char *TCID = "getdtablesize01";
 int TST_TOTAL = 1;
 
-int main()
+int main(void)
 {
 	int table_size, loop, fd, count = 0;
 	int max_val_opfiles;
@@ -108,7 +108,7 @@ int main()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -120,7 +120,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

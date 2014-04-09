@@ -155,7 +155,7 @@ int main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *           create temporary directory and open it
  */
-void setup()
+void setup(void)
 {
 	char *cur_dir = NULL;
 
@@ -197,7 +197,7 @@ void setup()
  *
  *  Allocate read buffer.
  */
-void init_buffers()
+void init_buffers(void)
 {
 	int count;		/* counter variable for loop */
 
@@ -218,7 +218,7 @@ void init_buffers()
  *
  *  Close/Remove the temporary directory created.
  */
-void cleanup()
+void cleanup(void)
 {
 	int count;		/* index for the loop */
 

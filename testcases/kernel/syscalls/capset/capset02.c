@@ -97,10 +97,10 @@
 
 #define INVALID_VERSION 0
 
-static void setup();
-static void cleanup();
+static void setup(void);
+static void cleanup(void);
 static void test_setup(int, char *);
-static void child_func();
+static void child_func(void);
 
 static pid_t child_pid = -1;
 
@@ -176,7 +176,7 @@ int main(int ac, char **av)
 
 }
 
-void setup()
+void setup(void)
 {
 
 	TEST_EXP_ENOS(exp_enos);
@@ -192,7 +192,7 @@ void setup()
 		tst_brkm(TBROK | TERRNO, NULL, "capget failed");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	if (0 < child_pid) {
 		kill(child_pid, SIGTERM);
@@ -201,7 +201,7 @@ void cleanup()
 	TEST_CLEANUP;
 }
 
-void child_func()
+void child_func(void)
 {
 	for (;;) {
 		sleep(10);

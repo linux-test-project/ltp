@@ -41,7 +41,7 @@ option_t options[] = {
 	{NULL, NULL, NULL}	/* NULL required to end array */
 };
 
-void help()
+void help(void)
 {
 	printf("  -v       verbose\n");
 }

@@ -81,7 +81,7 @@ int fail = 0;
  * setup
  *	performs all ONE TIME setup for this test
  */
-void setup()
+void setup(void)
 {
 	char *buf = STRING;
 	char template[PATH_MAX];
@@ -115,7 +115,7 @@ void setup()
 		tst_brkm(TFAIL | TERRNO, cleanup, "SIGCLD signal setup failed");
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 
@@ -125,7 +125,7 @@ void cleanup()
 
 }
 
-void do_child()
+void do_child(void)
 {
 	struct flock fl;
 
@@ -200,7 +200,7 @@ compare_lock(struct flock *fl, short type, short whence, int start, int len,
 	}
 }
 
-void unlock_file()
+void unlock_file(void)
 {
 	struct flock fl;
 
@@ -263,7 +263,7 @@ void child_get(struct flock *l)
 	}
 }
 
-void stop_child()
+void stop_child(void)
 {
 	struct flock fl;
 
@@ -273,7 +273,7 @@ void stop_child()
 	wait(0);
 }
 
-void catch_child()
+void catch_child(void)
 {
 	tst_resm(TFAIL, "Unexpected death of child process");
 	cleanup();

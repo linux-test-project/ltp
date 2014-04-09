@@ -171,7 +171,7 @@ int main(int ac, char **av)
  *  Modify the mode permissions of testfile such that test process
  *  has read-only access to testfile.
  */
-void setup()
+void setup(void)
 {
 	int i, fd;		/* counter, file handle for file */
 	char tst_buff[BUF_SIZE];	/* data buffer for file */
@@ -242,7 +242,7 @@ void setup()
  *	       completion or premature exit.
  *  Remove the temporary directory and file created.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

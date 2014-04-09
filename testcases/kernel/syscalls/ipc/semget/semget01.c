@@ -119,7 +119,7 @@ int main(int ac, char **av)
 /*
  * check_functionality() - check the functionality of the tested system call.
  */
-void check_functionality()
+void check_functionality(void)
 {
 	struct semid_ds semary;
 	union semun un_arg;	/* union defined in ipcsem.h */

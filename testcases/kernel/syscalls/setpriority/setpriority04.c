@@ -67,7 +67,7 @@ int TST_TOTAL = 1;
 int exp_enos[] = { ESRCH, 0 };
 
 /* Get the max number of message queues allowed on system */
-static long get_pid_max()
+static long get_pid_max(void)
 {
 	FILE *fp;
 	char buff[512];

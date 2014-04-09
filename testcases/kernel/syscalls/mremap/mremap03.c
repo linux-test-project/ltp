@@ -158,7 +158,7 @@ int main(int ac, char **av)
  * Get system page size.
  * Set the old address point some high address which is not mapped.
  */
-void setup()
+void setup(void)
 {
 	int page_sz;		/* system page size */
 
@@ -189,7 +189,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -203,7 +203,7 @@ void cleanup()
 
 #else
 
-int main()
+int main(void)
 {
 	tst_resm(TINFO, "test is not available on uClinux");
 	tst_exit();

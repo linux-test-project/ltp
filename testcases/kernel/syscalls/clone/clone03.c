@@ -130,7 +130,7 @@ static void cleanup(void)
 	TEST_CLEANUP;
 }
 
-static int child_fn()
+static int child_fn(void)
 {
 	char pid[10];
 

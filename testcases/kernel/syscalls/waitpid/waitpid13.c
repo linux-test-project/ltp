@@ -359,7 +359,7 @@ static void cleanup(void)
 	TEST_CLEANUP;
 }
 
-static void inthandlr()
+static void inthandlr(void)
 {
 	intintr++;
 }

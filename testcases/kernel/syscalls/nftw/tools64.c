@@ -262,7 +262,7 @@ void do_info(const char *path_name)
  *
  * Exit on failure
  */
-void fail_exit()
+void fail_exit(void)
 {
 	tst_resm(TFAIL, "Test failed");
 	tst_exit();

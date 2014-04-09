@@ -94,9 +94,7 @@ int loops_completed;
 int ucount, scount;
 
 /*--------------------------------------------------------------*/
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
 	register int i;
 	int count, loc;
@@ -254,13 +252,13 @@ char *argv[];
 
 /*--------------------------------------------------------------*/
 
-void alrm()
+void alrm(void)
 {
 	t_flag++;
 }
 
 /*****	LTP Port	*****/
-int anyfail()
+int anyfail(void)
 {
 	(local_flag == FAILED) ? tst_resm(TFAIL,
 					  "Test failed") : tst_resm(TPASS,
@@ -269,19 +267,19 @@ int anyfail()
 	return 0;
 }
 
-void setup()
+void setup(void)
 {
 	temp = stderr;
 }
 
-int blenter()
+int blenter(void)
 {
 	//tst_resm(TINFO, "Enter block %d", block_number);
 	local_flag = PASSED;
 	return 0;
 }
 
-int blexit()
+int blexit(void)
 {
 	//tst_resm(TINFO, "Exitng test");
 	(local_flag == FAILED) ? tst_resm(TFAIL,
@@ -295,7 +293,7 @@ void terror(char *message)
 	tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
 }
 
-void fail_exit()
+void fail_exit(void)
 {
 	local_flag = FAILED;
 	anyfail();

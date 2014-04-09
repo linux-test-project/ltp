@@ -149,7 +149,7 @@ int main(int ac, char **av)
 
 #else
 
-int main()
+int main(void)
 {
 	tst_resm(TINFO, "munmap02 test is not available on uClinux");
 	tst_exit();
@@ -164,7 +164,7 @@ int main()
  * write one byte data into it, map the open file for the specified
  * map length.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -256,7 +256,7 @@ void setup()
  *   this function is invoked when SIGSEGV generated and it calls test
  *   cleanup function and exit the program.
  */
-void sig_handler()
+void sig_handler(void)
 {
 	tst_resm(TPASS, "Functionality of munmap() successful");
 
@@ -273,7 +273,7 @@ void sig_handler()
  *  Close the temporary file.
  *  Remove the temporary directory.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

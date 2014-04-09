@@ -142,7 +142,7 @@ void do_sendfile(void)
 /*
  * do_child
  */
-void do_child()
+void do_child(void)
 {
 	int lc;
 	socklen_t length;
@@ -159,7 +159,7 @@ void do_child()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 	int fd;
 	char buf[100];
@@ -187,7 +187,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

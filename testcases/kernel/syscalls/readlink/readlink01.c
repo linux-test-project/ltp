@@ -161,7 +161,7 @@ int main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  Create a symbolic link of testfile.
  */
-void setup()
+void setup(void)
 {
 	int fd;			/* file handle for testfile */
 
@@ -206,7 +206,7 @@ void setup()
  *
  *  Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

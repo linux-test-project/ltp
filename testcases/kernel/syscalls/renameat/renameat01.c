@@ -142,7 +142,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup_every_copy()
+void setup_every_copy(void)
 {
 	/* Initialize test dir and file names */
 	sprintf(pathname, "renameattestdir%d", getpid());
@@ -217,7 +217,7 @@ void setup_every_copy()
 	newfilenames[1] = dtestfile3;
 }
 
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -225,7 +225,7 @@ void setup()
 	TEST_PAUSE;
 }
 
-void cleanup()
+void cleanup(void)
 {
 	/* Remove them */
 	unlink(testfile2);

@@ -112,13 +112,13 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-static void setup()
+static void setup(void)
 {
 	tst_sig(FORK, fork12_sigs, cleanup);
 	TEST_PAUSE;
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	int waitstatus;
 

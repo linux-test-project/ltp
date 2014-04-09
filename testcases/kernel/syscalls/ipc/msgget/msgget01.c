@@ -123,7 +123,7 @@ int main(int ac, char **av)
 /*
  * check_functionality() - check the functionality of the tested system call.
  */
-void check_functionality()
+void check_functionality(void)
 {
 	int i = 0;
 	MSGBUF snd_buf, rcv_buf;

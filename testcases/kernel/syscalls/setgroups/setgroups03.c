@@ -180,7 +180,7 @@ int main(int ac, char **av)
  *
  *  Call individual test specific setup functions.
  */
-void setup()
+void setup(void)
 {
 
 	if (geteuid() != 0) {
@@ -200,7 +200,7 @@ void setup()
  *  Get the user info. from /etc/passwd file.
  *  This function returns 0 on success.
  */
-int setup1()
+int setup1(void)
 {
 	struct passwd *user_info;	/* struct. to hold test user info */
 
@@ -229,7 +229,7 @@ int setup1()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

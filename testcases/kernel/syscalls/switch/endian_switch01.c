@@ -64,7 +64,7 @@ char *TCID = "endian_switch01";
 int TST_TOTAL = 1;
 
 #if defined (__powerpc64__) || (__powerpc__)
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -77,7 +77,7 @@ extern int main4(int ac, char **av, char **envp, unsigned long *auxv)
 __asm("main");
 #endif
 
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -140,7 +140,7 @@ int main4(int ac, char **av, char **envp, unsigned long *auxv)
 
 #else
 
-int main()
+int main(void)
 {
 
 	tst_brkm(TCONF, cleanup,

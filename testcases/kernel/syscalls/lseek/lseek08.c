@@ -161,7 +161,7 @@ int main(int ac, char **av)
  *	     data into it.
  *	     Get the size of the file using fstat().
  */
-void setup()
+void setup(void)
 {
 	struct stat stat_buf;	/* struct. buffer for stat(2) */
 	char write_buf[BUFSIZ];	/* buffer to hold data */
@@ -202,7 +202,7 @@ void setup()
  *             completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

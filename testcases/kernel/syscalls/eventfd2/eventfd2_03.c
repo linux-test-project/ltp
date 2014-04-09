@@ -47,7 +47,7 @@ int TST_TOTAL = 1;
 #endif
 
 /* Dummy function as syscall from linux_syscall_numbers.h uses cleanup(). */
-void cleanup()
+void cleanup(void)
 {
 }
 

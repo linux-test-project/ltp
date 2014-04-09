@@ -165,7 +165,7 @@ int main(int ac, char **av)
  * write 1 byte (\0). Map the temporary file for the length of virtual
  * memory (memsize) into memory.
  */
-void setup()
+void setup(void)
 {
 	int pagesz;		/* system's page size */
 
@@ -235,7 +235,7 @@ void setup()
  *	       Close the temporary file.
  *	       Remove the temporary directory.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

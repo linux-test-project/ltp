@@ -188,7 +188,7 @@ int main(int ac, char **av)
  *	     Create a test file under temporary directory and close it
  *	     Change the ownership on testfile.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -234,7 +234,7 @@ void setup()
  *	       Close the temporary file.
  *	       Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

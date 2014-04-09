@@ -302,7 +302,7 @@ static void dotest(key_t key)
 }
 
 #ifdef UCLINUX
-void do_child()
+void do_child(void)
 {
 	int i;
 	char *tok;
@@ -405,7 +405,7 @@ static void dosemas(int id)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  *****************************************************************/
-void setup()
+void setup(void)
 {
 	/* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
@@ -430,7 +430,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  * completion or premature exit.
  ****************************************************************/
-void cleanup()
+void cleanup(void)
 {
 
 	tst_rmdir();

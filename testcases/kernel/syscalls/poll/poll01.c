@@ -202,7 +202,7 @@ int main(int ac, char **av)
  * 	     Creat read/write pipe using pipe().
  * 	     Set poll data structures to check writing to the pipe.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -225,7 +225,7 @@ void setup()
  *             completion or premature exit.
  * 	       close read end of pipe if still open.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

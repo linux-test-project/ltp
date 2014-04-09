@@ -58,7 +58,7 @@
 TCID_DEFINE(ftruncate03);
 int TST_TOTAL = 3;
 
-int main()
+int main(void)
 {
 	int wjh_ret = -1, wjh_f = -1, count = 0;
 	//used for the 2nd test

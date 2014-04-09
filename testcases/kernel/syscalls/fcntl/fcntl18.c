@@ -171,7 +171,7 @@ int main(int ac, char **av)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -191,7 +191,7 @@ void setup()
  *	performs all the ONE TIME cleanup for this test at completion or
  *	or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

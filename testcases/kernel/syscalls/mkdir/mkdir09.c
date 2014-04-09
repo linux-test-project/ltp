@@ -81,34 +81,32 @@ int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
 int child_groups, test_time, nfiles;
 char testdir[MAXPATHLEN];
 int parent_pid, sigchld, sigterm, jump;
-void term();
-void chld();
+void term(void);
+void chld(void);
 int *pidlist, child_count;
 jmp_buf env_buf;
 
 int getchild(int group, int child, int children);
-int dochild1();
-int dochild2();
+int dochild1(void);
+int dochild2(void);
 int dochild3(int group);
-int massmurder();
-int runtest();
-void setup();
-void cleanup();
+int massmurder(void);
+int runtest(void);
+void setup(void);
+void cleanup(void);
 
 #ifdef UCLINUX
 static char *argv0;
-void dochild1_uclinux();
-void dochild2_uclinux();
-void dochild3_uclinux();
+void dochild1_uclinux(void);
+void dochild2_uclinux(void);
+void dochild3_uclinux(void);
 static int group_uclinux;
 #endif
 
 /*--------------------------------------------------------------*/
 /*--------------------------------------------------------------*/
 /*--------------------------------------------------------------*/
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
 	int c;
 
@@ -182,7 +180,7 @@ char *argv[];
 
 /*--------------------------------------------------------------*/
 
-int runtest()
+int runtest(void)
 {
 	int i, j;
 	int count, child, status;
@@ -320,8 +318,7 @@ int runtest()
 	return 0;
 }
 
-int getchild(group, child, children)
-int group, child, children;
+int getchild(int group, int child, int children)
 {
 	int pid;
 
@@ -380,7 +377,7 @@ int group, child, children;
 	return 0;
 }
 
-void term()
+void term(void)
 {
 	/* Routine to handle SIGTERM signal. */
 
@@ -394,7 +391,7 @@ void term()
 	}
 }
 
-void chld()
+void chld(void)
 {
 	/* Routine to handle SIGCLD signal. */
 
@@ -404,7 +401,7 @@ void chld()
 	}
 }
 
-int dochild1()
+int dochild1(void)
 {
 	/* Child routine which attempts to create directories in the test
 	 * directory that already exist. Runs until a SIGTERM signal is
@@ -440,7 +437,7 @@ int dochild1()
 }
 
 #ifdef UCLINUX
-void dochild1_uclinux()
+void dochild1_uclinux(void)
 {
 	/* Set up to catch SIGTERM signal */
 	if (signal(SIGTERM, term) == SIG_ERR) {
@@ -453,7 +450,7 @@ void dochild1_uclinux()
 }
 #endif
 
-int dochild2()
+int dochild2(void)
 {
 	/* Child routine which attempts to remove directories from the
 	 * test directory which do not exist. Runs until a SIGTERM
@@ -488,7 +485,7 @@ int dochild2()
 }
 
 #ifdef UCLINUX
-void dochild2_uclinux()
+void dochild2_uclinux(void)
 {
 	/* Set up to catch SIGTERM signal */
 	if (signal(SIGTERM, term) == SIG_ERR) {
@@ -501,8 +498,7 @@ void dochild2_uclinux()
 }
 #endif
 
-int dochild3(group)
-int group;
+int dochild3(int group)
 {
 	/* Child routine which creates and deletes directories in the
 	 * test directory. Runs until a SIGTERM signal is received, then
@@ -546,7 +542,7 @@ int group;
 }
 
 #ifdef UCLINUX
-void dochild3_uclinux()
+void dochild3_uclinux(void)
 {
 	/* Set up to catch SIGTERM signal */
 	if (signal(SIGTERM, term) == SIG_ERR) {
@@ -559,7 +555,7 @@ void dochild3_uclinux()
 }
 #endif
 
-int massmurder()
+int massmurder(void)
 {
 	register int j;
 	for (j = 0; j < child_count; j++) {
@@ -578,7 +574,7 @@ int massmurder()
 /***************************************************************
  *  * setup() - performs all ONE TIME setup for this test.
  *   ***************************************************************/
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -594,7 +590,7 @@ void setup()
  *  * cleanup() - performs all ONE TIME cleanup for this test at
  *   *              completion or premature exit.
  *    ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 *      * print timing stats if that option was specified.

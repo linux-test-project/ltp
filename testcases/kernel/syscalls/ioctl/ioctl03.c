@@ -89,7 +89,7 @@ static struct {
 	IFF_MULTI_QUEUE, "MULTI_QUEUE"}
 };
 
-int main()
+int main(void)
 {
 	unsigned int features, i;
 

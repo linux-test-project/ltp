@@ -154,7 +154,7 @@ int main(int ac, char **av)
 
 #else
 
-int main()
+int main(void)
 {
 	tst_resm(TINFO, "test is not available on uClinux");
 	tst_exit();
@@ -167,7 +167,7 @@ int main()
  *
  *  Initialize/allocate write buffer.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -190,7 +190,7 @@ void setup()
  * Close the temporary file.
  * Remove the temporary directory created.
  */
-void cleanup()
+void cleanup(void)
 {
 
 	/*

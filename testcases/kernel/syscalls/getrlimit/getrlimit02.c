@@ -149,7 +149,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all one time setup for this test.
  */
-void setup()
+void setup(void)
 {
 	TEST_EXP_ENOS(exp_enos);
 
@@ -164,7 +164,7 @@ void setup()
  * cleanup()  - performs all one time cleanup for this test
  *		completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

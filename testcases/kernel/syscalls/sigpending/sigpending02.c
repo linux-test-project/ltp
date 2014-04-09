@@ -132,7 +132,7 @@ int main(int ac, char **av)
 /***************************************************************
  * help
  ***************************************************************/
-void help()
+void help(void)
 {
 	printf("test\n");
 }
@@ -140,7 +140,7 @@ void help()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+void setup(void)
 {
 	TEST_PAUSE;
 }
@@ -149,7 +149,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

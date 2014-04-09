@@ -147,7 +147,7 @@ int main(int ac, char **av)
  *  Get the current nice value of test process and save it in a file.
  *  Read the nice value from file into a variable.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -162,7 +162,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

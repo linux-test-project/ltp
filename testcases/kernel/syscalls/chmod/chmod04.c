@@ -165,7 +165,7 @@ int main(int ac, char **av)
  *  Create a temporary directory and cd to it.
  *  Create another test directory under temporary directory.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -194,7 +194,7 @@ void setup()
  *		completion or premature exit.
  *  Remove the test directory and temporary directory created in setup().
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -155,7 +155,7 @@ int main(int ac, char **av)
  *	     Get the user info. of test user "ltpuser1" from /etc/passwd file.
  *	     Set the eff. user id of test process to that of "ltpuser1" user.
  */
-void setup()
+void setup(void)
 {
 	struct passwd *user_id;	/* passwd struct for test user */
 
@@ -199,7 +199,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

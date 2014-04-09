@@ -159,7 +159,7 @@ int main(int ac, char **av)
  *  Make sure the test process uid is root.
  *  Get the supplimentrary group id of test user from /etc/passwd file.
  */
-void setup()
+void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -189,7 +189,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

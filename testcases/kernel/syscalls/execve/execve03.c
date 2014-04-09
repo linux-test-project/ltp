@@ -170,7 +170,7 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup()
+void setup(void)
 {
 	char *cwdname = NULL;
 	int fd;
@@ -207,7 +207,7 @@ void setup()
 #endif
 }
 
-void cleanup()
+void cleanup(void)
 {
 #ifndef UCLINUX
 	SAFE_MUNMAP(NULL, bad_addr, 1);

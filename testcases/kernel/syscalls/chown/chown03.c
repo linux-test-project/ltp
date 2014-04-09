@@ -160,7 +160,7 @@ int main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  Change the group ownership on testfile.
  */
-void setup()
+void setup(void)
 {
 	int fd;			/* file handler for testfile */
 
@@ -205,7 +205,7 @@ void setup()
 			 TESTFILE);
 }
 
-void cleanup()
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

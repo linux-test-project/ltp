@@ -223,7 +223,7 @@ int main(int ac, char **av)
  *	Invoke individual test setup functions according to the order
  *	set in struct. definition.
  */
-void setup()
+void setup(void)
 {
 	int ind;
 
@@ -272,7 +272,7 @@ void setup()
  *              Hence, this function just returns 0.
  *  This function simply returns 0.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -288,7 +288,7 @@ int no_setup()
  *
  *  The function returns 0.
  */
-int setup1()
+int setup1(void)
 {
 	int fd;			/* file handle for testfile */
 
@@ -326,7 +326,7 @@ int setup1()
  *  change mode of a testfile "tfile_2" under "t_file" which happens to be
  *  another regular file.
  */
-int setup2()
+int setup2(void)
 {
 	int fd;			/* File handle for test file */
 
@@ -351,7 +351,7 @@ int setup2()
  *                    the MAX. length of PATH_MAX.
  *   This function retruns 0.
  */
-int longpath_setup()
+int longpath_setup(void)
 {
 	int ind;		/* counter variable */
 
@@ -370,7 +370,7 @@ int longpath_setup()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

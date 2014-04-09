@@ -234,7 +234,7 @@ void cleanup(void)
 
 }
 #elif HAVE_MODIFY_LDT
-int main()
+int main(void)
 {
 	tst_resm(TCONF,
 		 "modify_ldt is available but not tested on the platform than __i386__");
@@ -243,7 +243,7 @@ int main()
 
 #else /* if defined(__i386__) */
 
-int main()
+int main(void)
 {
 	tst_resm(TINFO, "modify_ldt02 test only for ix86");
 	tst_exit();

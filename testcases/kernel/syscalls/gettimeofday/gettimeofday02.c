@@ -75,7 +75,7 @@ void cleanup(void)
 
 }
 
-void help()
+void help(void)
 {
 	printf("  -T len  seconds to test gettimeofday (default %s)\n", tlen);
 }

@@ -217,7 +217,7 @@ void do_master_child(char **av)
 	exit(1);
 }
 
-void do_child()
+void do_child(void)
 {
 	wait_for_flag(2);
 	exit(0);

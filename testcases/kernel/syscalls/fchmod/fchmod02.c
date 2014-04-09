@@ -169,7 +169,7 @@ int main(int ac, char **av)
  *  Create a test file under temporary directory.
  *  Change the ownership of test file to that of "ltpuser1" user.
  */
-void setup()
+void setup(void)
 {
 	struct passwd *ltpuser;	/* password struct for ltpuser1 */
 	struct group *ltpgroup;	/* group struct for ltpuser1 */
@@ -228,7 +228,7 @@ void setup()
  *  Close the testfile created in the setup.
  *  Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

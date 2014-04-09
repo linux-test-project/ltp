@@ -317,7 +317,7 @@ void setup(char *path)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void cleanup()
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -335,7 +335,7 @@ void cleanup()
 /***************************************************************************
  * issue a help message
  ***************************************************************************/
-void help()
+void help(void)
 {
 	printf
 	    ("-T fd     : If this option is given, the program runs as 'test_open'\n");

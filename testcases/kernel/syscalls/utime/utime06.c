@@ -227,7 +227,7 @@ int main(int ac, char **av)
  *  Invoke individual test setup functions according to the order
  *  set in test struct. definition.
  */
-void setup()
+void setup(void)
 {
 	int ind;
 
@@ -254,7 +254,7 @@ void setup()
  * no_setup() - Some test conditions for utime(2) do not any setup.
  *              Hence, this function just returns 0.
  */
-int no_setup()
+int no_setup(void)
 {
 	return 0;
 }
@@ -266,7 +266,7 @@ int no_setup()
  *  Create a testfile under temporary directory and change the ownership of
  *  testfile to "bin".
  */
-int setup1()
+int setup1(void)
 {
 	int fildes;		/* file handle for temp file */
 
@@ -305,7 +305,7 @@ int setup1()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
 	seteuid(0);
 	/*

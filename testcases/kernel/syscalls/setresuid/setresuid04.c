@@ -99,7 +99,7 @@ int main(int ac, char **av)
 /*
  * do_master_child()
  */
-void do_master_child()
+void do_master_child(void)
 {
 	int lc;
 	int pid;

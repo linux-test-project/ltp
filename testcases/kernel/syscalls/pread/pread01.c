@@ -199,7 +199,7 @@ int main(int ac, char **av)
  *  Create a temporary directory and a file under it and
  *  write know data at different offset positions.
  */
-void setup()
+void setup(void)
 {
 	int nwrite = 0;		/* no. of bytes written by pwrite() */
 
@@ -271,7 +271,7 @@ void setup()
  *    write_buf[0] has 0's, write_buf[1] has 1's, write_buf[2] has 2's
  *    write_buf[3] has 3's.
  */
-void init_buffers()
+void init_buffers(void)
 {
 	int count;		/* counter variable for loop */
 
@@ -316,7 +316,7 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
  *  This function does memcmp of read/write buffer and display message
  *  about the functionality of pread().
  */
-void compare_bufers()
+void compare_bufers(void)
 {
 	int count;		/* index for the loop */
 	int err_flg = 0;	/* flag to indicate error */
@@ -342,7 +342,7 @@ void compare_bufers()
  *             Close the temporary file.
  *             Remove the temporary directory created.
  */
-void cleanup()
+void cleanup(void)
 {
 	int count;		/* index for the loop */
 

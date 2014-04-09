@@ -237,7 +237,7 @@ static int splice_test(void)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup()
+void setup(void)
 {
 	/* Initialize test file names */
 	sprintf(testfile1, "splicetest%d_1.txt", getpid());
@@ -252,7 +252,7 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void cleanup()
+void cleanup(void)
 {
 	/* Remove them */
 	unlink(testfile1);
