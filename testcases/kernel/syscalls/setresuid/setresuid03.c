@@ -75,7 +75,6 @@
 char *TCID = "setresuid03";
 
 uid_t neg_one = -1;
-uid_t inval_user;
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;
@@ -108,11 +107,8 @@ struct test_data_t {
 	&neg_one, &neg_one, &nobody_pw_uid, EPERM, &root, &bin, &bin,
 		    "After setresuid(-1, -1, bin),"}, {
 	&neg_one, &nobody_pw_uid, &neg_one, EPERM, &root, &bin, &bin,
-		    "After setresuid(-1, -1, bin),"}, {
-	&neg_one, &neg_one, &inval_user, EPERM, &root, &bin, &bin,
-		    "After setresuid(-1, -1, bin),"}, {
-&neg_one, &inval_user, &neg_one, EPERM, &root, &bin, &bin,
-		    "After setresuid(-1, -1, bin),"},};
+		    "After setresuid(-1, -1, bin),"}
+};
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
@@ -233,10 +229,6 @@ void setup(void)
 
 	bin = *(getpwnam("bin"));
 	bin_pw_uid = bin.pw_uid;
-
-	inval_user = GET_UNUSED_UID();
-	if (inval_user == -1)
-		tst_brkm(TBROK, NULL, "No free uid found");
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.

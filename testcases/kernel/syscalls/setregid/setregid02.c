@@ -39,7 +39,6 @@ TCID_DEFINE(setregid02);
 
 static gid_t neg_one = -1;
 
-static gid_t inval_user;
 static struct passwd *ltpuser;
 
 static struct group nobody, root, bin;
@@ -69,11 +68,8 @@ struct test_data_t {
 	&root.gr_gid, &bin.gr_gid, EPERM, &nobody, &nobody,
 		    "After setregid(root, bin)"}, {
 	&bin.gr_gid, &root.gr_gid, EPERM, &nobody, &nobody,
-		    "After setregid(bin, root),"}, {
-	&inval_user, &neg_one, EINVAL, &nobody, &nobody,
-		    "After setregid(invalid group, -1),"}, {
-	&neg_one, &inval_user, EINVAL, &nobody, &nobody,
-		    "After setregid(-1, invalid group),"},};
+		    "After setregid(bin, root),"}
+};
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
@@ -104,11 +100,6 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == test_data[i].exp_errno) {
-					tst_resm(TPASS, "setregid(%d, %d) "
-						 "failed as expected.",
-						 *test_data[i].real_gid,
-						 *test_data[i].eff_gid);
-				} else if (TEST_ERRNO == test_data[0].exp_errno) {
 					tst_resm(TPASS, "setregid(%d, %d) "
 						 "failed as expected.",
 						 *test_data[i].real_gid,
@@ -176,10 +167,6 @@ static void setup(void)
 	GET_GID(root);
 	GET_GID(nobody);
 	GET_GID(bin);
-
-	inval_user = GET_UNUSED_GID();
-	if (inval_user == -1)
-		tst_brkm(TBROK, NULL, "No free gid found");
 
 	TEST_PAUSE;
 }

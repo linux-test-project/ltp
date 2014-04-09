@@ -45,24 +45,4 @@ int GID_SIZE_CHECK(gid_t gid LTP_ATTRIBUTE_UNUSED)
 
 #endif
 
-/* for 16-bit syscalls testing we can only
- * use gids <= 0xFFFE */
-gid_t GET_UNUSED_GID(void)
-{
-	gid_t r;
-	r = tst_get_unused_gid();
-
-#ifdef TST_USE_COMPAT16_SYSCALL
-	if (!GID_SIZE_CHECK(r))
-		return -1;
-
-	/* kernel low2highgid() converts
-	 * 0xFFFF to (gid_t)-1 */
-	if (r == (GID_T)-1)
-		return -1;
-#endif
-
-	return r;
-}
-
 #endif /* __SETGID_COMPAT_16_H__ */
