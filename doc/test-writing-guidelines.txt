@@ -218,6 +218,7 @@ Let's start with an example, following code is a simple test for a getenv().
  */
 
 #include "test.h"
+#include "usctest.h"
 
 char *TCID = "getenv01";
 int TST_TOTAL = 2;
@@ -236,7 +237,7 @@ static void test(void)
 {
 	char *ret;
 
-	ret = getenv(TEST_EVN);
+	ret = getenv(TEST_ENV);
 
 	if (ret) {
 		if (!strcmp(ret, TEST_ENV_VAL))
@@ -254,7 +255,7 @@ static void test(void)
 	if (ret)
 		tst_resm(TFAIL, "getenv(" TEST_NE_ENV ") = '%s'", ret);
 	else
-		tst_resm(TPASS, "getenv(" TEST_NE_ENV ")" = NULL);
+		tst_resm(TPASS, "getenv(" TEST_NE_ENV ") = NULL");
 }
 
 int main(int argc, char *argv[])
@@ -262,7 +263,7 @@ int main(int argc, char *argv[])
 	const char *msg;
 	int lc;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL))
+	if ((msg = parse_opts(argc, argv, NULL, NULL)))
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
