@@ -1031,3 +1031,5 @@
 /fanotify/fanotify03
 /fanotify/fanotify04
 /fanotify/fanotify05
+/perf_event_open/perf_event_open01
+/perf_event_open/perf_event_open02

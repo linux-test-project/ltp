@@ -1,6 +1,4 @@
 #
-#    kernel/performance_counters testcases Makefile.
-#
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -20,7 +18,7 @@
 # Garrett Cooper, July 2009
 #
 
-top_srcdir	?= ../../..
+top_srcdir	?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 

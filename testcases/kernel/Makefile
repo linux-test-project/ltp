@@ -47,7 +47,6 @@ SUBDIRS			+= connectors \
 			   logging \
 			   mem \
 			   numa \
-			   performance_counters \
 			   pty \
 			   sched \
 			   security \
