@@ -22,13 +22,13 @@
  * Very simple performance counter testcase.
  * Picked up from: http://lkml.org/lkml/2008/12/5/17
  */
+
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/uio.h>
 #include <linux/unistd.h>
-
 #include <assert.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -36,73 +36,162 @@
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include "config.h"
+#if HAVE_PERF_EVENT_ATTR
+# include <linux/perf_event.h>
+#endif
 
-/* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "safe_macros.h"
 
-/* Extern Global Variables */
-extern int tst_count;
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
-/* Global Variables */
-char *TCID = "performance_counter01";	/* test program identifier.          */
-int TST_TOTAL = 1;
+char *TCID = "performance_counter01";
+int TST_TOTAL = 6;
 
-enum hw_event_types {
-	PERF_COUNT_CYCLES,
-	PERF_COUNT_INSTRUCTIONS,
-	PERF_COUNT_CACHE_REFERENCES,
-	PERF_COUNT_CACHE_MISSES,
-	PERF_COUNT_BRANCH_INSTRUCTIONS,
-	PERF_COUNT_BRANCH_MISSES,
+#if HAVE_PERF_EVENT_ATTR
+static void setup(void);
+static void cleanup(void);
+
+static struct test_case_t {
+	const char *name;
+	unsigned long long val;
+} hw_event_types[] = {
+	{ "PERF_COUNT_HW_CPU_CYCLES", PERF_COUNT_HW_CPU_CYCLES },
+	{ "PERF_COUNT_HW_INSTRUCTIONS", PERF_COUNT_HW_INSTRUCTIONS },
+	{ "PERF_COUNT_HW_CACHE_REFERENCES", PERF_COUNT_HW_CACHE_REFERENCES },
+	{ "PERF_COUNT_HW_CACHE_MISSES", PERF_COUNT_HW_CACHE_MISSES },
+	{ "PERF_COUNT_HW_BRANCH_INSTRUCTIONS",
+	  PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
+	{ "PERF_COUNT_HW_BRANCH_MISSES", PERF_COUNT_HW_BRANCH_MISSES },
 };
 
-void cleanup(void)
-{				/* Stub function. */
+static void verify(struct test_case_t *tc);
+static struct perf_event_attr pe;
+
+int main(int ac, char **av)
+{
+	int i, lc;
+	char *msg;
+
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	setup();
+
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		tst_count = 0;
+
+		for (i = 0; i < TST_TOTAL; i++)
+			verify(&hw_event_types[i]);
+	}
+
+	cleanup();
+	tst_exit();
 }
+
+static void setup(void)
+{
+	/*
+	 * According to perf_event_open's manpage, the official way of
+	 * knowing if perf_event_open() support is enabled is checking for
+	 * the existence of the file /proc/sys/kernel/perf_event_paranoid.
+	 */
+	if (access("/proc/sys/kernel/perf_event_paranoid", F_OK) == -1)
+		tst_brkm(TCONF, NULL, "Kernel doesn't have perf_event support");
+
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	TEST_PAUSE;
+
+	pe.type = PERF_TYPE_HARDWARE;
+	pe.size = sizeof(struct perf_event_attr);
+	pe.disabled = 1;
+	pe.exclude_kernel = 1;
+	pe.exclude_hv = 1;
+}
+
+
+static int perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
+		int cpu, int group_fd, unsigned long flags)
+{
+	int ret;
+
+	ret = ltp_syscall(__NR_perf_event_open, hw_event, pid, cpu,
+			  group_fd, flags);
+	return ret;
+}
+
+/* do_work() is copied form performance_counter02.c */
+#define LOOPS	1000000000
+
+static void do_work(void)
+{
+	int i;
+
+	for (i = 0; i < LOOPS; ++i)
+		asm volatile ("" : : "g" (i));
+}
+
+static void verify(struct test_case_t *tc)
+{
+	unsigned long long count;
+	int fd, ret;
+
+	pe.config = tc->val;
+
+	TEST(perf_event_open(&pe, 0, -1, -1, 0));
+	if (TEST_RETURN == -1) {
+		tst_brkm(TFAIL | TTERRNO, cleanup,
+			 "perf_event_open failed unexpectedly");
+		return;
+	}
+
+	fd = TEST_RETURN;
+
+	if (ioctl(fd, PERF_EVENT_IOC_RESET, 0) == -1) {
+		tst_brkm(TFAIL | TTERRNO, cleanup,
+			 "ioctl set PERF_EVENT_IOC_RESET failed");
+	}
+
+	if (ioctl(fd, PERF_EVENT_IOC_ENABLE, 0) == -1) {
+		tst_brkm(TFAIL | TTERRNO, cleanup,
+			 "ioctl set PERF_EVENT_IOC_ENABLE failed");
+	}
+
+	do_work();
+
+	if (ioctl(fd, PERF_EVENT_IOC_DISABLE, 0) == -1) {
+		tst_brkm(TFAIL | TTERRNO, cleanup,
+			 "ioctl set PERF_EVENT_IOC_RESET failed");
+	}
+
+	ret = read(fd, &count, sizeof(count));
+	if (ret == sizeof(count)) {
+		tst_resm(TINFO, "read event counter succeeded, "
+			 "value: %llu", count);
+		tst_resm(TPASS, "test PERF_TYPE_HARDWARE: %s succeeded",
+			 tc->name);
+	} else {
+		tst_resm(TFAIL | TERRNO, "read event counter failed");
+	}
+
+	SAFE_CLOSE(cleanup, fd);
+
+}
+
+static void cleanup(void)
+{
+	TEST_CLEANUP;
+}
+
+#else
 
 int main(void)
 {
-
-	unsigned long long count1, count2;
-	int fd1, fd2, ret;
-
-	fd1 = ltp_syscall(__NR_perf_event_open,
-		      PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
-	if (fd1 < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "Failed to create PERF_COUNT_INSTRUCTIONS fd");
-	}
-	fd2 = ltp_syscall(__NR_perf_event_open,
-		      PERF_COUNT_CACHE_MISSES, 0, 0, 0, -1);
-	if (fd2 < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "Failed to create PERF_COUNT_CACHE_MISSES fd");
-	}
-
-	do {
-
-		ret = read(fd1, &count1, sizeof(count1));
-
-		if (ret == sizeof(count1)) {
-
-			ret = read(fd2, &count2, sizeof(count2));
-
-			if (ret == sizeof(count2)) {
-				tst_resm(TINFO,
-					 "counter1 value: %Ld instructions",
-					 count1);
-				tst_resm(TINFO,
-					 "counter2 value: %Ld cachemisses",
-					 count2);
-				sleep(1);
-			}
-
-		}
-
-	} while (ret == sizeof(unsigned long long));
-
-	tst_exit();
-
+	tst_brkm(TCONF, NULL, "This system doesn't have "
+		 "header file:<linux/perf_event.h> or "
+		 "no struct perf_event_attr defined");
 }
+#endif
