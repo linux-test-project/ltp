@@ -1356,3 +1356,4 @@ writev05 writev05
 writev06 writev06
 
 perf_event_open01 perf_event_open01
+perf_event_open02 perf_event_open02
