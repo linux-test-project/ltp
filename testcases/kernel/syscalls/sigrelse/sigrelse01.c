@@ -125,7 +125,7 @@ void setup(void);
 void cleanup(void);
 static void parent(void);
 static void child(void);
-static void timeout(void);
+static void timeout(int sig);
 static int setup_sigs(void);
 static void handler(int sig);
 static void wait_a_while(void);
@@ -686,7 +686,7 @@ static void clear_timeout(void)
  *      caught.  It does nothing but return - the read() on the pipe
  *      will fail.
  ****************************************************************************/
-static void timeout(void)
+static void timeout(int sig)
 {
 #if DEBUG > 0
 	printf("timeout: pid=%d sigalrm caught.\n", getpid());
@@ -700,8 +700,8 @@ static void wait_a_while(void)
 {
 	long btime;
 
-	btime = time((long *)0);
-	while (time((long *)0) - btime < (long)TIMEOUT) {
+	btime = time(NULL);
+	while (time(NULL) - btime < TIMEOUT) {
 		if (sig_caught == TRUE)
 			break;
 	}

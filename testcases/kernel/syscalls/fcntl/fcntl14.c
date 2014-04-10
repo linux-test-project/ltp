@@ -541,8 +541,8 @@ static char tmpname[40];
 
 #define FILEDATA	"ten bytes!"
 
-extern void catch1();		/* signal catching subroutine */
-extern void catch_alarm();
+void catch1(int sig);		/* signal catching subroutine */
+void catch_alarm(int sig);
 
 char *TCID = "fcntl14";
 int TST_TOTAL = 1;
@@ -938,7 +938,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 	unlink(tmpname);
 }
 
-void catch_alarm(void)
+void catch_alarm(int sig)
 {
 	/*
 	 * Timer has runout and child has not signaled, need
@@ -953,7 +953,7 @@ void catch_alarm(void)
 	}
 }
 
-void catch1(void)
+void catch1(int sig)
 {				/* invoked on catching SIGUSR1 */
 	struct sigaction act;
 

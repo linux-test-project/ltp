@@ -176,9 +176,9 @@ void do_child(int test_case);
 void sigdfl_test(void);
 struct tblock;
 void update_timings(struct tblock atblock);
-void p_timeout_handler(void);
-void c_timeout_handler(void);
-void catchsig(void);
+void p_timeout_handler(int sig);
+void c_timeout_handler(int sig);
+void catchsig(int sig);
 
 #if defined(linux)
 #define SIG_PF sig_t		/* This might need to be sighandler_t on some systems */
@@ -604,7 +604,7 @@ void cleanup(void)
  *  a time out situation.  It will attempt to kill the child and
  *  call cleanup.
  ***********************************************************************/
-void p_timeout_handler(void)
+void p_timeout_handler(int sig)
 {
 	kill(Pid, SIGKILL);
 	cleanup();
@@ -615,7 +615,7 @@ void p_timeout_handler(void)
  * a time out situation.  It will set a global varaible and return
  * if called.
  ***********************************************************************/
-void c_timeout_handler(void)
+void c_timeout_handler(int sig)
 {
 	exit_val = TIMED_OUT;
 	return;
@@ -625,7 +625,7 @@ void c_timeout_handler(void)
  * This signal handling routine will set a global variable and return
  * if called.
  ***********************************************************************/
-void catchsig(void)
+void catchsig(int sig)
 {
 	exit_val = SIG_CAUGHT;
 	return;

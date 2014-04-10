@@ -143,7 +143,7 @@ void do_child(void);
 void setup(void);
 void cleanup(void);
 static void getout(void);
-static void timeout(void);
+static void timeout(int sig);
 static int read_pipe(int fd);
 static int write_pipe(int fd);
 static int setup_sigs(char *mesg);
@@ -511,7 +511,7 @@ static void clear_timeout(void)
  *      system call, a -1 will be returned by the read().
  ****************************************************************************/
 
-static void timeout(void)
+static void timeout(int sig)
 {
 #ifdef debug
 	printf("timeout: sigalrm caught.\n");

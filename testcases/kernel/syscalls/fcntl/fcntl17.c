@@ -382,7 +382,7 @@ void stop_children(void)
 {
 	int arg;
 
-	(void)signal(SIGCLD, (void (*)())SIG_DFL);
+	signal(SIGCLD, SIG_DFL);
 	arg = STOP;
 	child_free(child_pipe1[1], arg);
 	child_free(child_pipe2[1], arg);

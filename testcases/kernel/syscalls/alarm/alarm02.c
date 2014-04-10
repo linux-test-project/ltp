@@ -95,7 +95,7 @@
 
 void setup(void);
 void cleanup(void);
-void alarm_received(void);
+void alarm_received(int sig);
 
 char *TCID = "alarm02";
 int TST_TOTAL = 3;
@@ -179,7 +179,7 @@ void cleanup(void)
 	TEST_CLEANUP;
 }
 
-void alarm_received(void)
+void alarm_received(int sig)
 {
 	received_alarm = 1;
 }

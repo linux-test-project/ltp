@@ -272,10 +272,7 @@ static char tmpname[40];
 
 #define	FILEDATA	"tenbytes!"
 
-extern void catch_usr1();	/* signal catching subroutine */
-extern void catch_usr2();	/* signal catching subroutine */
-extern void catch_int();	/* signal catching subroutine */
-extern void catch_alarm();	/* signal catching subroutine */
+extern void catch_int(int sig);	/* signal catching subroutine */
 
 char *TCID = "fcntl16";
 int TST_TOTAL = 1;
@@ -351,12 +348,12 @@ void dochild_uc(void)
 }
 #endif
 
-void catch_alarm(void)
+void catch_alarm(int sig)
 {
 	alarm_flag = 1;
 }
 
-void catch_usr1(void)
+void catch_usr1(int sig)
 {				/* invoked on catching SIGUSR1 */
 	/*
 	 * Set flag to let parent know that child #1 is ready to have the
@@ -365,7 +362,7 @@ void catch_usr1(void)
 	child_flag1 = 1;
 }
 
-void catch_usr2(void)
+void catch_usr2(int sig)
 {				/* invoked on catching SIGUSR2 */
 	/*
 	 * Set flag to let parent know that child #2 is ready to have the
@@ -374,7 +371,7 @@ void catch_usr2(void)
 	child_flag2 = 1;
 }
 
-void catch_int(void)
+void catch_int(int sig)
 {				/* invoked on child catching SIGUSR1 */
 	/*
 	 * Set flag to interrupt fcntl call in child and force a controlled

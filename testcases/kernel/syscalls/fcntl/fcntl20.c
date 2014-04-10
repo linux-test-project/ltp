@@ -267,7 +267,7 @@ void stop_child(void)
 {
 	struct flock fl;
 
-	(void)signal(SIGCLD, (void (*)())SIG_DFL);
+	signal(SIGCLD, SIG_DFL);
 	fl.l_type = STOP;
 	parent_put(&fl);
 	wait(0);

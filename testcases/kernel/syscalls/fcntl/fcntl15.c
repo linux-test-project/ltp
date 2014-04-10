@@ -92,9 +92,9 @@ void cleanup(void)
 
 }
 
-void alarm_sig(void)
+void alarm_sig(int sig)
 {
-	signal(SIGALRM, (void (*)())alarm_sig);
+	signal(SIGALRM, alarm_sig);
 	alarm_flag = 1;
 	if ((syscall(__NR_gettid)) == parent) {
 		tst_resm(TINFO, "Alarm caught by parent");
@@ -103,15 +103,15 @@ void alarm_sig(void)
 	}
 }
 
-void child_sig(void)
+void child_sig(int sig)
 {
-	signal(SIGUSR1, (void (*)())child_sig);
+	signal(SIGUSR1, child_sig);
 	child_flag++;
 }
 
-void parent_sig(void)
+void parent_sig(int sig)
 {
-	signal(SIGUSR2, (void (*)())parent_sig);
+	signal(SIGUSR2, parent_sig);
 	parent_flag++;
 }
 

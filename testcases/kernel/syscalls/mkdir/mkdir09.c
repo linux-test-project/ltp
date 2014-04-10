@@ -81,8 +81,8 @@ int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
 int child_groups, test_time, nfiles;
 char testdir[MAXPATHLEN];
 int parent_pid, sigchld, sigterm, jump;
-void term(void);
-void chld(void);
+void term(int sig);
+void chld(int sig);
 int *pidlist, child_count;
 jmp_buf env_buf;
 
@@ -377,7 +377,7 @@ int getchild(int group, int child, int children)
 	return 0;
 }
 
-void term(void)
+void term(int sig)
 {
 	/* Routine to handle SIGTERM signal. */
 
@@ -391,7 +391,7 @@ void term(void)
 	}
 }
 
-void chld(void)
+void chld(int sig)
 {
 	/* Routine to handle SIGCLD signal. */
 
