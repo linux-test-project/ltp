@@ -82,7 +82,7 @@ static char *sym_error = NULL;
  * mknode(...) allocates a new symbol table entry
  */
 
-SYM newsym()
+SYM newsym(void)
 {
 	SYM h;
 

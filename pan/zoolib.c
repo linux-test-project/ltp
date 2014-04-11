@@ -71,7 +71,7 @@ static int zoo_unlock(zoo_t z);
 char *cat_args(int argc, char **argv);
 
 /* zoo_getname(): create a filename to use for the zoo */
-char *zoo_getname()
+char *zoo_getname(void)
 {
 	char buf[1024];
 	char *zoo;

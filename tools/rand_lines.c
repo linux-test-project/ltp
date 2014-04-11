@@ -117,7 +117,7 @@ struct offset_t {
 };
 
 void usage(FILE * stream);
-void help();
+void help(void);
 int rnd_file(FILE * infile, int numlines, long seed);
 int get_numlines(FILE * infile);
 int rnd_insert(struct offset_t offsets[], long offset, int size);
@@ -134,9 +134,7 @@ char *Progname = NULL;
 /***********************************************************************
  *  MAIN
  ***********************************************************************/
-int main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char *argv[])
 {
 	FILE *infile;
 	int c;
@@ -230,7 +228,7 @@ void usage(FILE * stream)
 /***********************************************************************
  * Print help message to stdout.
  ***********************************************************************/
-void help()
+void help(void)
 {
 	usage(stdout);
 	printf("This tool will print lines in random order (max line len %d).\n\
@@ -246,8 +244,7 @@ void help()
  * counts the number of lines in already open file.
  * Note: File must be seekable (not stdin or a pipe).
  ***********************************************************************/
-int get_numlines(infile)
-FILE *infile;
+int get_numlines(FILE *infile)
 {
 	char line[MAX_LN_SZ];	/* max size of a line */
 	int cnt = 0;
@@ -270,12 +267,11 @@ FILE *infile;
  * It will then print each line in the array stored order.
  *
  ***********************************************************************/
-int rnd_file(infile, numlines, seed)
-FILE *infile;
-int numlines;			/* can be more or less than num lines in file */
+int rnd_file(FILE *infile,
+	int numlines,	/* can be more or less than num lines in file */
 			/* most opt randomized when num lines in files */
 			/* or just a bit bigger */
-long seed;
+	long seed)
 {
 
 	char line[MAX_LN_SZ];	/* max size of a line */
@@ -359,10 +355,7 @@ long seed;
  * open array element.
  *
  ***********************************************************************/
-int rnd_insert(offsets, offset, size)
-struct offset_t offsets[];
-long offset;
-int size;
+int rnd_insert(struct offset_t offsets[], long offset, int size)
 {
 	int rand_num;
 	int quick = 0;
@@ -414,14 +407,13 @@ int size;
  * file (i.e stdin).
  *
  ***********************************************************************/
-int rnd_stdin(infile, space, numlines, seed)
-FILE *infile;
-int space;			/* amount of space to use to read file into memory, */
+int rnd_stdin(FILE *infile,
+	int space,	/* amount of space to use to read file into memory, */
 			/* randomized and print.  randomize in chunks */
-int numlines;			/* can be more or less than num lines in file */
+	int numlines,	/* can be more or less than num lines in file */
 			/* most opt randomized when num lines in files */
 			/* or just a bit bigger */
-long seed;
+	long seed)
 {
 
 	char line[MAX_LN_SZ];	/* max size of a line */

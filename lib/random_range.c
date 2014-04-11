@@ -98,14 +98,8 @@ struct range {
 static int str_to_int();
 static long long divider(long long, long long, long long, long long);
 
-int parse_ranges(str, defmin, defmax, defmult, parse_func, rangeptr, errptr)
-char *str;
-int defmin;
-int defmax;
-int defmult;
-int (*parse_func) ();
-char **rangeptr;
-char **errptr;
+int parse_ranges(char *str, int defmin, int defmax, int defmult,
+		int (*parse_func)(), char **rangeptr, char **errptr)
 {
 	int ncommas;
 	char *tmpstr, *cp, *tok, *n1str, *n2str, *multstr;
@@ -224,9 +218,7 @@ char **errptr;
  * The default integer-parsing function
  */
 
-static int str_to_int(str, ip)
-char *str;
-int *ip;
+static int str_to_int(char *str, int *ip)
 {
 	char c;
 
@@ -243,23 +235,17 @@ int *ip;
  * and that r is a valid range within that buffer.
  */
 
-int range_min(rbuf, r)
-char *rbuf;
-int r;
+int range_min(char *rbuf, int r)
 {
 	return ((struct range *)rbuf)[r].min;
 }
 
-int range_max(rbuf, r)
-char *rbuf;
-int r;
+int range_max(char *rbuf, int r)
 {
 	return ((struct range *)rbuf)[r].max;
 }
 
-int range_mult(rbuf, r)
-char *rbuf;
-int r;
+int range_mult(char *rbuf, int r)
 {
 	return ((struct range *)rbuf)[r].mult;
 }
@@ -289,11 +275,7 @@ int r;
  *          setting the seed.
  *****************************************************************************/
 
-long random_range(min, max, mult, errp)
-int min;
-int max;
-int mult;
-char **errp;
+long random_range(int min, int max, int mult, char **errp)
 {
 	int r, nmults, orig_min, orig_max, orig_mult, tmp;
 	extern long lrand48();
@@ -380,11 +362,7 @@ char **errp;
 /*
  * Just like random_range, but all values are longs.
  */
-long random_rangel(min, max, mult, errp)
-long min;
-long max;
-long mult;
-char **errp;
+long random_rangel(long min, long max, long mult, char **errp)
 {
 	long r, nmults, orig_min, orig_max, orig_mult, tmp;
 	extern long lrand48();
@@ -470,11 +448,8 @@ char **errp;
 /*
  *  Attempts to be just like random_range, but everything is long long (64 bit)
  */
-long long random_rangell(min, max, mult, errp)
-long long min;
-long long max;
-long long mult;
-char **errp;
+long long random_rangell(long long min, long long max,
+			long long mult, char **errp)
 {
 	long long r, nmults, orig_min, orig_max, orig_mult, tmp;
 	long long randnum;
@@ -634,8 +609,7 @@ divider(long long min, long long max, long long cnt, long long rand)
  * be used in random_range().
  *****************************************************************************/
 
-void random_range_seed(s)
-long s;
+void random_range_seed(long s)
 {
 	extern void srand48();
 

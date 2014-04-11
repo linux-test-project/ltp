@@ -632,7 +632,7 @@ void STD_opts_help(void)
 /*
  * routine to goto when we get the SIGUSR1 for STD_PAUSE
  */
-void STD_go()
+void STD_go(int sig)
 {
 	return;
 }

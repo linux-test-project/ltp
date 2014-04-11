@@ -81,11 +81,7 @@ static char Errmsg[80];
  * thus, offset 16 is the start of  the second full word
  * Thus, offset 8 is in middle of word 1
  ***********************************************************************/
-int datapidgen(pid, buffer, bsize, offset)
-int pid;
-char *buffer;
-int bsize;
-int offset;
+int datapidgen(int pid, char *buffer, int bsize, int offset)
 {
 #if CRAY
 
@@ -182,12 +178,7 @@ int offset;
  *
  *
  ***********************************************************************/
-int datapidchk(pid, buffer, bsize, offset, errmsg)
-int pid;
-char *buffer;
-int bsize;
-int offset;
-char **errmsg;
+int datapidchk(int pid, char *buffer, int bsize, int offset, char **errmsg)
 {
 #if CRAY
 

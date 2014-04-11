@@ -52,10 +52,7 @@ static char *worst_case(char *, char *);
  *  This is the central results reporting function.  All standard report
  *  format results are printed thru test_result.
  */
-int test_result(tag, tcid, tc, result, tags)
-char *tag, *tcid, *tc;
-char *result;
-SYM tags;
+int test_result(char *tag, char *tcid, char *tc, char *result, SYM tags)
 {
 	char *expert, expkey[KEYSIZE];
 	register char *c;
@@ -109,9 +106,7 @@ SYM tags;
  *	report an error if they don't match.
  */
 
-int cuts_report(tags, keys, at, tag)
-SYM tags, keys;
-char *at, *tag;
+int cuts_report(SYM tags, SYM keys, char *at, char *tag)
 {
 	DBT Key, Data;
 
@@ -227,8 +222,7 @@ char *at, *tag;
  *  (4) go thru all tags and report each as described at the beginning of
  *      this file
  */
-int tag_report(alltags, ctag, keys)
-SYM alltags, ctag, keys;
+int tag_report(SYM alltags, SYM ctag, SYM keys)
 {
 
 	extern int extended;
@@ -380,8 +374,7 @@ SYM alltags, ctag, keys;
  *  Print a header made up of the RTS keywords
  *  In "extended" mode, print the header to stderr.
  */
-int print_header(tags)
-SYM tags;
+int print_header(SYM tags)
 {
 	DBT Key, Data;
 	char key_get[255];
@@ -422,8 +415,7 @@ SYM tags;
  * This is passed s SYM for the current tag and the initiation keys.
  * The text seen by lex is in yytext (global).
  */
-int cuts_testcase(tag, keys)
-SYM tag, keys;
+int cuts_testcase(SYM tag, SYM keys)
 {
 	char *cuts_info[6];
 	char key[KEYSIZE];
@@ -462,8 +454,7 @@ SYM tag, keys;
 /*
  * Determine a "worst case" status from two given statuses.
  */
-static char *worst_case(t1, t2)
-char *t1, *t2;
+static char *worst_case(char *t1, char *t2)
 {
 	/* NULL-terminated table, ordered from worst-case to best-case */
 	static char *worst[] = {

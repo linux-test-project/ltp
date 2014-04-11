@@ -216,13 +216,8 @@ static int Debug_level = 0;
  * (maule, 11/16/95)
  ***********************************************************************/
 
-int stride_bounds(offset, stride, nstrides, bytes_per_stride, min, max)
-int offset;
-int stride;
-int nstrides;
-int bytes_per_stride;
-int *min;
-int *max;
+int stride_bounds(int offset, int stride, int nstrides, int bytes_per_stride,
+		int *min, int *max)
 {
 	int nbytes, min_byte, max_byte;
 
@@ -268,7 +263,7 @@ int *max;
 /***********************************************************************
  * This function will allow someone to set the debug level.
  ***********************************************************************/
-int lio_set_debug(level)
+int lio_set_debug(int level)
 {
 	int old;
 
@@ -539,14 +534,13 @@ static void wait4sync_io(int fd, int read)
  *
  * (rrl 04/96)
  ***********************************************************************/
-int lio_write_buffer(fd, method, buffer, size, sig, errmsg, wrd)
-int fd;				/* open file descriptor */
-int method;			/* contains io type and wait method bitmask */
-char *buffer;			/* pointer to buffer */
-int size;			/* the size of the io */
-int sig;			/* signal to use if async io */
-char **errmsg;			/* char pointer that will be updated to point to err message */
-long wrd;			/* to allow future features, use zero for now */
+int lio_write_buffer(int fd,		/* open file descriptor */
+		int method,	/* contains io type and wait method bitmask */
+		char *buffer,	/* pointer to buffer */
+		int size,	/* the size of the io */
+		int sig,	/* signal to use if async io */
+		char **errmsg,	/* char pointer that will be updated to point to err message */
+		long wrd)	/* to allow future features, use zero for now */
 {
 	int ret = 0;		/* syscall return or used to get random method */
 	char *io_type;		/* Holds string of type of io */
@@ -1110,14 +1104,13 @@ long wrd;			/* to allow future features, use zero for now */
  *
  * (rrl 04/96)
  ***********************************************************************/
-int lio_read_buffer(fd, method, buffer, size, sig, errmsg, wrd)
-int fd;				/* open file descriptor */
-int method;			/* contains io type and wait method bitmask */
-char *buffer;			/* pointer to buffer */
-int size;			/* the size of the io */
-int sig;			/* signal to use if async io */
-char **errmsg;			/* char pointer that will be updated to point to err message */
-long wrd;			/* to allow future features, use zero for now */
+int lio_read_buffer(int fd,	/* open file descriptor */
+		int method,	/* contains io type and wait method bitmask*/
+		char *buffer,	/* pointer to buffer */
+		int size,	/* the size of the io */
+		int sig,	/* signal to use if async io */
+		char **errmsg,	/* char pointer that will be updated to point to err message */
+		long wrd)	/* to allow future features, use zero for now */
 {
 	int ret = 0;		/* syscall return or used to get random method */
 	char *io_type;		/* Holds string of type of io */

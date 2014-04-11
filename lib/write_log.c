@@ -110,10 +110,7 @@ static int wlog_rec_unpack();
  * umask.
  */
 
-int wlog_open(wfile, trunc, mode)
-struct wlog_file *wfile;
-int trunc;
-int mode;
+int wlog_open(struct wlog_file *wfile, int trunc, int mode)
 {
 	int omask, oflags;
 
@@ -159,8 +156,7 @@ int mode;
  * with the wlog_open() call.
  */
 
-int wlog_close(wfile)
-struct wlog_file *wfile;
+int wlog_close(struct wlog_file *wfile)
 {
 	close(wfile->w_afd);
 	close(wfile->w_rfd);
@@ -193,10 +189,8 @@ struct wlog_file *wfile;
  * place before the record is written.
  */
 
-int wlog_record_write(wfile, wrec, offset)
-struct wlog_file *wfile;
-struct wlog_rec *wrec;
-long offset;
+int wlog_record_write(struct wlog_file *wfile, struct wlog_rec *wrec,
+			long offset)
 {
 	int reclen;
 	char wbuf[WLOG_REC_MAX_SIZE + 2];
@@ -264,11 +258,8 @@ long offset;
  * will be passed a single parameter - a wlog_rec structure .
  */
 
-int wlog_scan_backward(wfile, nrecs, func, data)
-struct wlog_file *wfile;
-int nrecs;
-int (*func) ();
-long data;
+int wlog_scan_backward(struct wlog_file *wfile, int nrecs,
+			int (*func)(), long data)
 {
 	int fd, leftover, nbytes, offset, recnum, reclen, rval;
 	char buf[BSIZE * 32], *bufend, *cp, *bufstart;
@@ -410,10 +401,7 @@ long data;
  * these routines must be reflected in the other.
  */
 
-static int wlog_rec_pack(wrec, buf, flag)
-struct wlog_rec *wrec;
-char *buf;
-int flag;
+static int wlog_rec_pack(struct wlog_rec *wrec, char *buf, int flag)
 {
 	char *file, *host, *pattern;
 	struct wlog_rec_disk *wrecd;
@@ -460,9 +448,7 @@ int flag;
 	}
 }
 
-static int wlog_rec_unpack(wrec, buf)
-struct wlog_rec *wrec;
-char *buf;
+static int wlog_rec_unpack(struct wlog_rec *wrec, char *buf)
 {
 	char *file, *host, *pattern;
 	struct wlog_rec_disk *wrecd;

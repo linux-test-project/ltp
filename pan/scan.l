@@ -285,7 +285,7 @@ S	[ \t]+
  * BEGIN the CUTS state.
  */
 int
-begin_cuts()
+begin_cuts(void)
 {
     BEGIN CUTS;
     return 0;
@@ -295,8 +295,7 @@ begin_cuts()
  * Calls lex repeatedly until all input is seen.
  */
 int
-scanner(tags)
-    SYM tags;
+scanner(SYM tags)
 {
     alltags = tags;		/* move into global scope for lex actions */
 
@@ -313,8 +312,7 @@ scanner(tags)
  *  toss all the output.
  */
 static int
-test_output(tag, keys)
-    SYM tag, keys;
+test_output(SYM tag, SYM keys)
 {
     char *at;
 
@@ -433,7 +431,7 @@ lex_files(char **names)
  *  return "-1" and lex will end.
  */
 int
-yywrap()
+yywrap(void)
 {
     extern FILE *yyin;
     extern int yylineno;	/* Line number from Lex */

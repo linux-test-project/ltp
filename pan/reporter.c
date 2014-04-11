@@ -79,8 +79,7 @@ static int (*test_end_func) (SYM, SYM, SYM) = scanner_test_end;
  *  (4) go thru all tags and report each as described at the beginning of
  *      this file
  */
-static int scanner_reporter(tags)
-SYM tags;
+static int scanner_reporter(SYM tags)
 {
 	DBT Key, Data;
 	SYM Tag, Keys;
@@ -179,8 +178,7 @@ SYM tags;
  * under another key tree with almost zero brainwork because a SYM
  * is what the DATA area points to.
  */
-static int scanner_test_end(alltags, ctag, keys)
-SYM alltags, ctag, keys;
+static int scanner_test_end(SYM alltags, SYM ctag, SYM keys)
 {
 	static int notag = 0;	/* counter for records with no tag (error) */
 	char tagname[KEYSIZE];	/* used when creating name (see above) */
@@ -233,14 +231,12 @@ SYM alltags, ctag, keys;
 	return 0;
 }
 
-static int iscanner_reporter(tags)
-SYM tags;
+static int iscanner_reporter(SYM tags)
 {
 	return 0;
 }
 
-static int iscanner_test_end(alltags, ctag, keys)
-SYM alltags, ctag, keys;
+static int iscanner_test_end(SYM alltags, SYM ctag, SYM keys)
 {
 	if (alltags == NULL || keys == NULL || ctag == NULL)
 		return -1;	/* for really messed up test output */
