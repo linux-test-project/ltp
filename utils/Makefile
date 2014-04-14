@@ -22,7 +22,7 @@ top_srcdir		?= ..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS         += ffsb
+MAKE_TARGETS         += ffsb
 
 FFSBDIR			:= ffsb-6.0-rc2
 FILTER_OUT_DIRS		:= $(FFSBDIR)
@@ -32,12 +32,14 @@ $(FFSB): $(abs_srcdir)/$(FFSBDIR)
 	mkdir -p $(FFSBDIR)
 	cd $(FFSBDIR) && "$^/configure" && $(MAKE) top_srcdir="$^" all
 
+ffsb: $(FFSB)
+	cp $(FFSB) ffsb
+
 trunk-all: $(FFSB)
 
 trunk-clean:: | ffsb-clean
 
 ffsb-clean:: $(abs_srcdir)/$(FFSBDIR)
 	cd $(FFSBDIR); $(MAKE) top_srcdir="$^" clean
-
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
