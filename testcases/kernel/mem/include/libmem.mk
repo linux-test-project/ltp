@@ -16,7 +16,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-MEM_SRCDIR		:= $(top_srcdir)/testcases/kernel/mem
+MEM_SRCDIR		:= $(abs_top_srcdir)/testcases/kernel/mem
 LIBMEM_SRCDIR		:= $(MEM_SRCDIR)/lib
 
 MEM_DIR			:= $(top_builddir)/testcases/kernel/mem
