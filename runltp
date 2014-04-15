@@ -81,9 +81,7 @@ setup()
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
     export LTP_DEV=""
-    export LTP_BIG_DEV=""
     export LTP_DEV_FS_TYPE="ext2"
-    export LTP_BIG_DEV_FS_TYPE="ext2"
 
     [ -d "$LTPROOT/testcases/bin" ] ||
     {
@@ -433,7 +431,7 @@ main()
         b) DEVICE=$OPTARG;;
         B) LTP_DEV_FS_TYPE=$OPTARG;;
         z) BIG_DEVICE=$OPTARG;;
-        Z) LTP_BIG_DEV_FS_TYPE=$OPTARG;;
+        Z) BIG_DEVICE_FS_TYPE=$OPTARG;;
         \?) usage;;
         esac
     done
@@ -696,7 +694,12 @@ main()
         echo "Tests which require a big block device are disabled."
         echo "You can specify it with option -z"
     else
-        LTP_BIG_DEV=$BIG_DEVICE
+        export LTP_BIG_DEV=$BIG_DEVICE
+        if [ -z "$BIG_DEVICE_FS_TYPE" ]; then
+            export LTP_BIG_DEV_FS_TYPE="ext2"
+        else
+            export LTP_BIG_DEV_FS_TYPE=$BIG_DEVICE_FS_TYPE
+        fi
     fi
 
     if [ $RUN_REPEATED -gt 1 ]; then # You need to specify at least more than 1 sequential run, else it runs default
