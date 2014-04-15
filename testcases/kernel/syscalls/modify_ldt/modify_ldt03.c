@@ -28,7 +28,7 @@ int TST_TOTAL = 1;
 #if defined(__i386__) && defined(HAVE_MODIFY_LDT)
 
 #ifdef HAVE_ASM_LDT_H
-#include <asm/ldt.h>
+# include <asm/ldt.h>
 #endif
 extern int modify_ldt(int, void *, unsigned long);
 
@@ -38,7 +38,13 @@ extern int modify_ldt(int, void *, unsigned long);
 #include <errno.h>
 #include "safe_macros.h"
 
-static char buf[sizeof(struct user_desc)];
+#ifdef HAVE_STRUCT_USER_DESC
+# define SIZE sizeof(struct user_desc)
+#else
+# define SIZE 16
+#endif
+
+static char buf[SIZE];
 static void cleanup(void);
 static void setup(void);
 
@@ -57,7 +63,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(modify_ldt(0, buf, sizeof(struct user_desc)));
+		TEST(modify_ldt(0, buf, SIZE));
 
 		if (TEST_RETURN < 0) {
 			tst_resm(TFAIL | TTERRNO,
