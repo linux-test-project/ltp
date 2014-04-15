@@ -33,6 +33,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "lapi/posix_clocks.h"
 #include "safe_macros.h"
 
 char *TCID = "tcp_fastopen";
