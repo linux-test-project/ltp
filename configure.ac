@@ -142,6 +142,8 @@ else
     AC_SUBST([WITH_REALTIME_TESTSUITE],["no"])
 fi
 
+AC_CONFIG_SUBDIRS([utils/ffsb-6.0-rc2])
+
 # END testsuites knobs
 LTP_CHECK_FORTIFY_SOURCE
 LTP_CHECK_CC_WARN_OLDSTYLE

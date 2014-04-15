@@ -30,7 +30,7 @@ FFSB			:= $(FFSBDIR)/ffsb
 
 $(FFSB): $(abs_srcdir)/$(FFSBDIR)
 	mkdir -p $(FFSBDIR)
-	cd $(FFSBDIR) && "$^/configure" && $(MAKE) top_srcdir="$^" all
+	cd $(FFSBDIR) && $(MAKE) top_srcdir="$^" all
 
 ffsb: $(FFSB)
 	cp $(FFSB) ffsb
