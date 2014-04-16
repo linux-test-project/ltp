@@ -103,6 +103,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "fallocate.h"
+#include "lapi/fcntl.h"
 
 #define BLOCKS_WRITTEN 12
 
@@ -198,8 +199,6 @@ void populate_files(int fd)
 
 int main(int ac, char **av)
 {
-	int fd;
-	enum { DEFAULT, FALLOC_FL_KEEP_SIZE } mode;
 	loff_t expected_size;
 	int lc;
 	char *msg;
@@ -210,23 +209,13 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
-		for (mode = DEFAULT; mode <= FALLOC_FL_KEEP_SIZE; mode++) {
-			switch (mode) {
-			case DEFAULT:
-				fd = fd_mode1;
-				expected_size =
-				    BLOCKS_WRITTEN * block_size + block_size;
-				break;
-			case FALLOC_FL_KEEP_SIZE:
-				fd = fd_mode2;
-				expected_size = BLOCKS_WRITTEN * block_size;
-				break;
-			}
-			runtest(mode, fd, expected_size);
-		}
+		expected_size = BLOCKS_WRITTEN * block_size + block_size;
+		runtest(0, fd_mode1, expected_size);
+
+		expected_size = BLOCKS_WRITTEN * block_size;
+		runtest(FALLOC_FL_KEEP_SIZE, fd_mode2, expected_size);
 	}
 
 	cleanup();
