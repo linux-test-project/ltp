@@ -24,23 +24,22 @@
 #include <sys/types.h>
 #include <endian.h>
 #include "config.h"
+#include "lapi/abisize.h"
 #include "linux_syscall_numbers.h"
 
 #if !defined(HAVE_FALLOCATE)
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
 	/* Deal with 32bit ABIs that have 64bit syscalls. */
-#if (defined(__mips__) && _MIPS_SIM == _ABIN32) || \
-     (defined(__x86_64__) && defined(__ILP32__)) || \
-     __WORDSIZE == 64
+# if LTP_USE_64_ABI
 	return ltp_syscall(__NR_fallocate, fd, mode, offset, len);
-#else
+# else
 	return (long)ltp_syscall(__NR_fallocate, fd, mode,
 				 __LONG_LONG_PAIR((off_t) (offset >> 32),
 						  (off_t) offset),
 				 __LONG_LONG_PAIR((off_t) (len >> 32),
 						  (off_t) len));
-#endif
+# endif
 }
 #endif
 
