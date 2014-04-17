@@ -18,11 +18,11 @@
  */
 /*
  * Description:
- *   1) create a directory tstdir1, create a file under it. call
- *      rmdir(), verify the return value is -1 and the errno is
- *      ENOTEMPTY.
- *   2) create a directory with long path, call rmdir(), verify
- *      the return value is -1 and the errno is ENAMETOOLONG.
+ *   1) create a directory tstdir1, create a file under it.
+ *      call rmdir(tstdir1), verify the return value is -1
+ *      and the errno is ENOTEMPTY.
+ *   2) create a directory with long path, call rmdir(tstdir1),
+ *      verify the return value is -1 and the errno is ENAMETOOLONG.
  *   3) pass a pathname containing non-exist directory component
  *      to rmdir(), verify the return value is -1 and the errno
  *      is ENOENT.
@@ -35,6 +35,14 @@
  *   6) attempt to pass an invalid pathname with NULL, as the
  *      argument to rmdir(), verify the return value is -1 and
  *      the errno is EFAULT.
+ *   7) pass a pathname with too many symbolic links to rmdir(),
+ *      verify the return value is -1 and the errno is ELOOP.
+ *   8) pass a pathname which refers to a directory on a read-only
+ *      file system to rmdir(), verify the return value is -1 and
+ *      the errno is EROFS.
+ *   9) pass a pathname which is currently used as a mount point
+ *      to rmdir(), verify the return value is -1 and the errno is
+ *      EBUSY.
  */
 
 #include <errno.h>
@@ -43,6 +51,8 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <pwd.h>
+#include <sys/mount.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -54,10 +64,24 @@
 #define TESTDIR		"testdir"
 #define TESTDIR2	"nosuchdir/testdir2"
 #define TESTDIR3	"testfile2/testdir3"
+#define TESTDIR4	"/loopdir"
+#define MNTPOINT	"mntpoint"
+#define TESTDIR5	"mntpoint/testdir5"
 #define TESTFILE    "testdir/testfile"
 #define TESTFILE2   "testfile2"
 
 static char longpathname[PATH_MAX + 2];
+static char looppathname[sizeof(TESTDIR4) * 43] = ".";
+
+static char *fstype = "ext2";
+static char *device;
+static int mount_flag;
+
+static option_t options[] = {
+	{"T:", NULL, &fstype},
+	{"D:", NULL, &device},
+	{NULL, NULL, NULL},
+};
 
 static struct test_case_t {
 	char *dir;
@@ -71,25 +95,34 @@ static struct test_case_t {
 	{(char *)-1, EFAULT},
 #endif
 	{NULL, EFAULT},
+	{looppathname, ELOOP},
+	{TESTDIR5, EROFS},
+	{MNTPOINT, EBUSY},
 };
 
 static void setup(void);
 static void rmdir_verify(struct test_case_t *tc);
 static void cleanup(void);
+static void help(void);
 
 char *TCID = "rmdir02";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
 static int exp_enos[] = { ENOTEMPTY, ENAMETOOLONG, ENOENT, ENOTDIR,
-				EFAULT, 0 };
+			EFAULT, ELOOP, EROFS, EBUSY, 0 };
 
 int main(int ac, char **av)
 {
 	int i, lc;
 	char *msg;
 
-	msg = parse_opts(ac, av, NULL, NULL);
+	msg = parse_opts(ac, av, options, help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	if (!device) {
+		tst_brkm(TCONF, NULL, "you must specify the device "
+			"used for mounting with -D option");
+	}
 
 	setup();
 
@@ -108,11 +141,29 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	int i;
+
+	tst_require_root(NULL);
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
+
+	tst_mkfs(NULL, device, fstype, NULL);
+	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
+	if (mount(device, MNTPOINT, fstype, 0, NULL) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			"mount device:%s failed", device);
+	}
+	SAFE_MKDIR(cleanup, TESTDIR5, DIR_MODE);
+	if (mount(device, MNTPOINT, fstype, MS_REMOUNT | MS_RDONLY,
+			NULL) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			"mount device:%s failed", device);
+	}
+	mount_flag = 1;
 
 	SAFE_MKDIR(cleanup, TESTDIR, DIR_MODE);
 	SAFE_TOUCH(cleanup, TESTFILE, FILE_MODE, NULL);
@@ -125,6 +176,16 @@ static void setup(void)
 	test_cases[4].dir = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
 		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 #endif
+
+	/*
+	 * NOTE: the ELOOP test is written based on that the
+	 * consecutive symlinks limit in kernel is hardwired
+	 * to 40.
+	 */
+	SAFE_MKDIR(cleanup, "loopdir", DIR_MODE);
+	SAFE_SYMLINK(cleanup, "../loopdir", "loopdir/loopdir");
+	for (i = 0; i < 43; i++)
+		strcat(looppathname, TESTDIR4);
 }
 
 static void rmdir_verify(struct test_case_t *tc)
@@ -153,5 +214,15 @@ static void cleanup(void)
 {
 	TEST_CLEANUP;
 
+	if (mount_flag && umount(MNTPOINT) == -1)
+		tst_resm(TWARN | TERRNO, "umount %s failed", MNTPOINT);
+
 	tst_rmdir();
+}
+
+static void help(void)
+{
+	printf("-T type   : specifies the type of filesystem to be mounted. "
+		"Default ext2.\n");
+	printf("-D device : device used for mounting.\n");
 }
