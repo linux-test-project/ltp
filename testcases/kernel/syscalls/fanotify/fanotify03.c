@@ -296,7 +296,9 @@ static void setup(void)
 			    FAN_OPEN_PERM, AT_FDCWD, fname) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS_PERM | "
-			 "FAN_OPEN_PERM, AT_FDCWD, %s) failed", fd_notify, fname);
+			 "FAN_OPEN_PERM, AT_FDCWD, %s) failed. "
+			 "CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
+			 "configured in kernel?", fd_notify, fname);
 	}
 
 }
