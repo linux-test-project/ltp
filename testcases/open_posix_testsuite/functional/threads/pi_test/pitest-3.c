@@ -68,8 +68,8 @@ struct thread_param {
 } tp[] = {
 	{
 	0, 0, 0, 1, SCHED_FIFO, "TL", 0, 0, 0, 0}, {
-	1, 0, 100, 2, SCHED_FIFO, "TP1", 0, 0, 0, 0}, {
-	1, 0, 100, 5, SCHED_FIFO, "TP2", 0, 0, 0, 0}, {
+	1, 0, 500, 2, SCHED_FIFO, "TP1", 0, 0, 0, 0}, {
+	1, 0, 500, 5, SCHED_FIFO, "TP2", 0, 0, 0, 0}, {
 	2, 0, 0, 3, SCHED_FIFO, "TF", 1, 0, 0, 0}, {
 	3, 0, 0, 3, SCHED_FIFO, "TF", 2, 0, 0, 0}, {
 	4, 0, 0, 3, SCHED_FIFO, "TF", 3, 0, 0, 0}, {
