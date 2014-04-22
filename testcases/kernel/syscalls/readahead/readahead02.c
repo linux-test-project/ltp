@@ -213,8 +213,13 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 		tst_brkm(TBROK | TERRNO, cleanup, "Failed to open %s", fname);
 
 	if (do_readahead) {
-		TEST(ltp_syscall(__NR_readahead, fd, (off64_t) 0,
-			(size_t) fsize));
+		/* read ahead in chunks, 2MB is maximum since 3.15-rc1 */
+		for (i = 0; i < fsize; i += 2*1024*1024) {
+			TEST(ltp_syscall(__NR_readahead, fd,
+				(off64_t) i, 2*1024*1024));
+			if (TEST_RETURN != 0)
+				break;
+		}
 		check_ret(0);
 		*cached = get_cached_size();
 
