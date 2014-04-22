@@ -120,7 +120,7 @@ static void drop_caches(void)
 	}
 }
 
-static long parse_entry(const char *fname, const char *entry)
+static unsigned long parse_entry(const char *fname, const char *entry)
 {
 	FILE *f;
 	long value = -1;
@@ -140,17 +140,17 @@ static long parse_entry(const char *fname, const char *entry)
 	return value;
 }
 
-static long get_bytes_read(void)
+static unsigned long get_bytes_read(void)
 {
 	char fname[128];
-	char entry[] = "read_bytes: %ld";
+	char entry[] = "read_bytes: %lu";
 	sprintf(fname, "/proc/%u/io", getpid());
 	return parse_entry(fname, entry);
 }
 
-static long get_cached_size(void)
+static unsigned long get_cached_size(void)
 {
-	char entry[] = "Cached: %ld";
+	char entry[] = "Cached: %lu";
 	return parse_entry(meminfo_fname, entry);
 }
 
@@ -158,7 +158,7 @@ static void create_testfile(void)
 {
 	FILE *f;
 	char *tmp;
-	int i;
+	size_t i;
 
 	tst_resm(TINFO, "creating test file of size: %ld", testfile_size);
 	tmp = SAFE_MALLOC(cleanup, pagesize);
@@ -197,9 +197,11 @@ static void create_testfile(void)
  * @cached: returns cached kB from /proc/meminfo
  */
 static void read_testfile(int do_readahead, const char *fname, size_t fsize,
-			  long *read_bytes, long *usec, long *cached)
+			  unsigned long *read_bytes, long *usec,
+			  unsigned long *cached)
 {
-	int fd, i;
+	int fd;
+	size_t i;
 	long read_bytes_start;
 	unsigned char *p, tmp;
 	unsigned long time_start_usec, time_end_usec;
@@ -261,9 +263,9 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 
 static void test_readahead(void)
 {
-	long read_bytes, read_bytes_ra;
+	unsigned long read_bytes, read_bytes_ra;
 	long usec, usec_ra;
-	long cached_max, cached_low, cached, cached_ra;
+	unsigned long cached_max, cached_low, cached, cached_ra;
 	char proc_io_fname[128];
 	sprintf(proc_io_fname, "/proc/%u/io", getpid());
 
