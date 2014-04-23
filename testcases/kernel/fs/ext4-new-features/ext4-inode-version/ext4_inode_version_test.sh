@@ -23,15 +23,10 @@
 ##                                                                            ##
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-. ./ext4_funcs.sh
-
 export TCID="ext4-inode-version"
 export TST_TOTAL=8
-export TST_COUNT=1
 
-export TEST_DIR=$PWD
+. ext4_funcs.sh
 
 # Test that inode version is not 32 bits with 128 inode size
 ext4_test_128_inode_version()
@@ -41,7 +36,7 @@ ext4_test_128_inode_version()
 	mkfs.ext4 -I 128 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
 	tune2fs -O extents $EXT4_DEV &> /dev/null
@@ -49,18 +44,18 @@ ext4_test_128_inode_version()
 	mount -t ext4 -o i_version $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	# inode version > 0
 	touch mnt_point/tmp_file
 	sync
-	version=`./ext4_get_inode_version.sh tmp_file`
+	version=`ext4_get_inode_version.sh tmp_file`
 
 	if [ $version -lt 1 ]; then
 		tst_resm TFAIL "inode version is smaller than 1"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	# inode version is 32 bits: 0x00000000
@@ -72,13 +67,13 @@ ext4_test_128_inode_version()
 	if [ $len -ne 8 ]; then
 		tst_resm TFAIL "inode version is not 32 bits"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	tst_resm TPASS "32 bits inode version with 128 inode size test pass"
@@ -91,50 +86,50 @@ test_inode_version()
 	mkfs.ext3 -I 256 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
 	mount -t ext4 -o i_version $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	# Check the inode version after some file operation
-	old_version=`./ext4_test_inode_version $1 mnt_point/tmp_file tmp_file`
+	old_version=`ext4_test_inode_version $1 mnt_point/tmp_file tmp_file`
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "inode version is wrong"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	# Test mount to ext3 and then mount back to ext4
 	mount -t ext3 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount to ext3"
-		return 1
+		return
 	fi
 	umount mnt_point
 
 	mount -t ext4 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount back to ext4"
-		return 1
+		return
 	fi
 
-	version=`./ext4_get_inode_version.sh tmp_file`
+	version=`ext4_get_inode_version.sh tmp_file`
 #	echo "remount: old - $old_version"
 #	echo "remount: new - $version"
 	if [ $old_version -ne $version ]; then
 		tst_resm TFAIL "inode version has changed unexpected"
 		umount mnt_point
-		return 1
+		return
 	else
 		tst_resm TPASS "inode version with 256 inode size test pass"
 		umount mnt_point
@@ -144,57 +139,20 @@ test_inode_version()
 # main
 ext4_setup
 
-RET=0
-
 ext4_test_128_inode_version
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
 test_inode_version create
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
 test_inode_version chmod
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
 test_inode_version chown
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
 test_inode_version read
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
 test_inode_version write
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
 test_inode_version mmap_read
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
 test_inode_version mmap_write
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
-ext4_cleanup
-
-exit $RET
-
+tst_exit

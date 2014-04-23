@@ -20,16 +20,10 @@
 #                                                                              #
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-. ./ext4_funcs.sh
-
 export TCID="ext4-delalloc-mballoc"
 export TST_TOTAL=17
-export TST_COUNT=1
 
-export TEST_DIR=$PWD
-
+. ext4_funcs.sh
 
 # Case 17: mount ext4 partition to ext3
 ext4_test_remount()
@@ -37,20 +31,20 @@ ext4_test_remount()
 	mkfs.ext3 -I 256 -b 1024 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
 	mount -t ext4 -o delalloc,auto_da_alloc $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
-	./ffsb ffsb-config0 > /dev/null
+	ffsb ffsb-config0 > /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "ffsb returned failure"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
@@ -62,14 +56,14 @@ ext4_test_remount()
 	mount -t ext3 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount to ext3"
-		return 1
+		return
 	fi
 	umount mnt_point
 
 	fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
-		return 1
+		return
 	fi
 
 	tst_resm TPASS "remount test pass"
@@ -87,7 +81,7 @@ ext4_test_delalloc_mballoc()
 	mkfs.ext4 -I 256 -b $3 /$EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
 	tune2fs -O extents $EXT4_DEV &> /dev/null
@@ -95,26 +89,26 @@ ext4_test_delalloc_mballoc()
 	mount -t ext4 -o $1,$4 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
-	./ffsb ffsb-config$2 > /dev/null
+	ffsb ffsb-config$2 > /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "ffsb returned failure"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
-		return 1
+		return
 	fi
 
 	tst_resm TPASS "delalloc/mballoc test pass"
@@ -123,12 +117,12 @@ ext4_test_delalloc_mballoc()
 # main
 ext4_setup
 
+tst_check_cmds ffsb
+
 DELALLOC=( "delalloc" "nodelalloc" )
 DIRECT_IO=( 0 1 )
 BLOCK_SIZE=( 1024 4096 )
 BLOCK_AUTO_DA_ALLOC=( "auto_da_alloc=1" "noauto_da_alloc" )
-
-RET=0
 
 for ((i = 0; i < 2; i++))
 {
@@ -142,20 +136,11 @@ for ((i = 0; i < 2; i++))
 						${DIRECT_IO[$j]} \
 						${BLOCK_SIZE[$i]} \
 						${BLOCK_AUTO_DA_ALLOC[$l]}
-				if [ $? -ne 0 ]; then
-					RET=1
-				fi
-				: $((TST_COUNT++))
 			}
 		}
 	}
 }
 
 ext4_test_remount
-if [ $? -ne 0 ]; then
-	RET=1
-fi
 
-ext4_cleanup
-
-exit $RET
+tst_exit

@@ -23,16 +23,12 @@
 ##                                                                            ##
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-. ./ext4_funcs.sh
 
 export TCID="ext4-subdir-limit"
 export TST_TOTAL=10
-export TST_COUNT=1
 
+. ext4_funcs.sh
 
-TEST_DIR=$PWD
 SHORT_DIR=1
 LONG_DIR=2
 
@@ -66,7 +62,7 @@ ext4_run_case()
 		mkfs.ext4 -b $4 -I 256 $EXT4_DEV &> /dev/null
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL "failed to create ext4 filesystem"
-			return 1
+			return
 		fi
 		prev_block_size=$4
 
@@ -79,23 +75,23 @@ ext4_run_case()
 	mount -t ext4 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	# create directories
 	mkdir -p $3 2> /dev/null
 
 	if [ $2 -eq $SHORT_DIR ]; then
-		./create_short_dirs $1 $3
+		create_short_dirs $1 $3
 	else
-		./create_long_dirs $1 $3
+		create_long_dirs $1 $3
 	fi
 
 	if [ $? -ne 0 ]; then
 		nr_dirs=`ls $3 | wc -l`
 		tst_resm TFAIL "failed to create directories - $nr_dirs"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	# delete directories
@@ -103,32 +99,31 @@ ext4_run_case()
 	ls | xargs rmdir
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to remove directories"
-
-		cd $TEST_DIR
+		cd -
 		umount mnt_point
-		return 1
+		return
 	fi
-	cd $TEST_DIR
+	cd -
 
 	# unmount ext4 filesystem
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	# run fsck to make sure the filesystem has no errors
 	e2fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck: the filesystem has errors"
-		return 1
+		return
 	fi
 
 	# check dir_nlink is set
 	dumpe2fs $EXT4_DEV 2> /dev/null | grep '^Filesystem features' | grep -q dir_nlink
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "feature dir_nlink is not set"
-		return 1
+		return
 	fi
 
 	prev_result=$PASS
@@ -142,8 +137,6 @@ DIR_LEN=( $SHORT_DIR $LONG_DIR )
 PARENT_DIR=( "mnt_point" "mnt_point/sub" )
 BLOCK_SIZE=( 1024 2048 4096 )
 
-RET=0
-
 for ((i = 0; i < 3; i++))
 {
 	for ((j = 0; j < 2; j++))
@@ -156,14 +149,8 @@ for ((i = 0; i < 3; i++))
 			fi
 			ext4_run_case 65537 ${DIR_LEN[$k]} ${PARENT_DIR[$j]} \
 					${BLOCK_SIZE[$i]}
-			if [ $? -ne 0 ]; then
-				RET=1
-			fi
-			: $((TST_COUNT++))
 		}
 	}
 }
 
-ext4_cleanup
-
-exit $RET
+tst_exit

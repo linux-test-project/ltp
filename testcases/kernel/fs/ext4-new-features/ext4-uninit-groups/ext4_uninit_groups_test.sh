@@ -20,41 +20,27 @@
 #                                                                              #
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-. ./ext4_funcs.sh
-
 export TCID="ext4-uninit-groups"
 export TST_TOTAL=24
-export TST_COUNT=1
 
-export TEST_DIR=$PWD
+. ext4_funcs.sh
 
 # How to age filesystem
 EMPTY=1
 SMALL=2
 LARGE=3
 
-# filesystem free size in bytes: blocks_size * free_blocks
-filesystem_free_size()
-{
-	bsize=`dumpe2fs -h $EXT4_DEV 2> /dev/null | grep 'Block size' | awk '{ print $2 }'`
-	blocks=`dumpe2fs -h $EXT4_DEV 2> /dev/null | grep 'Free blocks'| awk '{ print $2 }'`
-
-	echo $bsize * $blocks
-}
-
 age_filesystem()
 {
 	if [ $1 -eq $EMPTY ]; then
 		# aging, then del
-		./ffsb ffsb-config3 > /dev/null
+		ffsb ffsb-config3 > /dev/null
 		rm -rf mnt_point/*
 	elif [ $1 -eq $SMALL ]; then
 		# age filesystem from 0.0 to 0.2 -> 0.4 -> 0.6 -> 0.8 -> 1.0
 		for ((n = 3; n < 8; n++))
 		{
-			./ffsb ffsb-config$n > /dev/null
+			ffsb ffsb-config$n > /dev/null
 			mv mnt_point/data mnt_point/data$n
 		}
 	elif [ $1 -eq $LARGE ]; then
@@ -78,12 +64,12 @@ age_filesystem()
 # $4: age filesystem: $EMPTY, $SMALL, $LARGE
 ext4_test_uninit_groups()
 {
-	echo "Test $TST_COUNT" >> $LTPROOT/output/ext4_uninit_groups_result.txt
+	echo "Test $TST_COUNT" >> ext4_uninit_groups_result.txt
 
 	mkfs.ext4 -I 256 -m 0 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
 	if [ $3 == "no_flex_bg" ]; then
@@ -100,26 +86,26 @@ ext4_test_uninit_groups()
 	mount -t ext4 -o $1,$2 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
-	age_filesystem $4 >> $LTPROOT/output/ext4_uninit_groups_result.txt 2>&1
+	age_filesystem $4 >> ext4_uninit_groups_result.txt 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "age filesystem failed"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
-		return 1
+		return
 	fi
 
 	tst_resm TPASS "ext4 uninit groups test pass"
@@ -128,14 +114,13 @@ ext4_test_uninit_groups()
 # main
 ext4_setup
 
+tst_check_cmds ffsb
+
 ORLOV=( "orlov" "oldalloc" )
 DELALLOC=( "delalloc" "nodelalloc" )
 FLEX_BG=( "flex_bg" "no_flex_bg" )
 AGING=( $EMPTY $SMALL $LARGE )
 
-RET=0
-
-rm -f $LTPROOT/output/ext4_uninit_groups_result.txt
 
 for ((i = 0; i < 2; i++))
 {
@@ -149,15 +134,9 @@ for ((i = 0; i < 2; i++))
 							${DELALLOC[$j]} \
 							${FLEX_BG[$k]} \
 							${AGING[$l]}
-				if [ $? -ne 0 ]; then
-					RET=1
-				fi
-				: $((TST_COUNT++))
 			}
 		}
 	}
 }
 
-ext4_cleanup
-
-exit $RET
+tst_exit

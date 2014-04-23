@@ -23,16 +23,10 @@
 ##                                                                            ##
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-. ./ext4_funcs.sh
-
 export TCID="ext4-nsec-timestamps"
 export TST_TOTAL=2
-export TST_COUNT=1
 
-
-TEST_DIR=$PWD
+. ext4_funcs.sh
 
 # Test that file timestamps is second with 128 inode size
 ext4_test_sec_timestamps()
@@ -42,7 +36,7 @@ ext4_test_sec_timestamps()
 	mkfs.ext4 -I 128 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
 	tune2fs -O extents $EXT4_DEV &> /dev/null
@@ -50,26 +44,26 @@ ext4_test_sec_timestamps()
 	mount -t ext4 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	touch mnt_point/tmp_file
 
-	atime=`./ext4_file_time mnt_point/tmp_file atime nsec`
-	mtime=`./ext4_file_time mnt_point/tmp_file mtime nsec`
-	ctime=`./ext4_file_time mnt_point/tmp_file ctime nsec`
+	atime=`ext4_file_time mnt_point/tmp_file atime nsec`
+	mtime=`ext4_file_time mnt_point/tmp_file mtime nsec`
+	ctime=`ext4_file_time mnt_point/tmp_file ctime nsec`
 
 	if [ $atime -ne 0 -o $mtime -ne 0 -o $ctime -ne 0 ]; then
 		tst_resm TFAIL "Timestamp is not second(atime: $atime, mtime: \
 				$mtime, ctime: $ctime)"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	tst_resm TPASS "Ext4 nanosecond timestamps test with 128 inode size pass"
@@ -83,13 +77,13 @@ ext4_test_nsec_timestamps()
 	mkfs.ext3 -I 256 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
 	mount -t ext4 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	# Create file
@@ -103,19 +97,19 @@ ext4_test_nsec_timestamps()
 	sec=`echo $cur_time | awk {'print $1'}`
 	nsec=`echo $cur_time | awk {'print $2'}`
 
-	sec_atime=`./ext4_file_time mnt_point/tmp_file atime sec`
-	sec_mtime=`./ext4_file_time mnt_point/tmp_file mtime sec`
-	sec_ctime=`./ext4_file_time mnt_point/tmp_file ctime sec`
-	nsec_atime=`./ext4_file_time mnt_point/tmp_file atime nsec`
-	nsec_mtime=`./ext4_file_time mnt_point/tmp_file mtime nsec`
-	nsec_ctime=`./ext4_file_time mnt_point/tmp_file ctime nsec`
+	sec_atime=`ext4_file_time mnt_point/tmp_file atime sec`
+	sec_mtime=`ext4_file_time mnt_point/tmp_file mtime sec`
+	sec_ctime=`ext4_file_time mnt_point/tmp_file ctime sec`
+	nsec_atime=`ext4_file_time mnt_point/tmp_file atime nsec`
+	nsec_mtime=`ext4_file_time mnt_point/tmp_file mtime nsec`
+	nsec_ctime=`ext4_file_time mnt_point/tmp_file ctime nsec`
 
 	# Test nanosecond
 	if [ $nsec_atime -eq 0 -a $nsec_mtime -eq 0 -a $nsec_ctime -eq 0 ]
 	then
 		tst_resm TFAIL "The timestamp is not nanosecond(nsec_atime: $nsec_atime, nsec_mtime: $nsec_mtime, nsec_ctime: $nsec_ctime)"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	diff1=$(( $sec_atime - $sec ))
@@ -129,32 +123,32 @@ ext4_test_nsec_timestamps()
 			sec_mtime: $sec_mtime, sec_ctime: $sec_ctime, \
 			cur_time[s]: $sec)"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	# Test mount to ext3 and then mount back to ext4
 	mount -t ext3 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount to ext3"
-		return 1
+		return
 	fi
 	umount mnt_point
 
 	mount -t ext4 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount back to ext4"
-		return 1
+		return
 	fi
 
-	nsec_atime2=`./ext4_file_time mnt_point/tmp_file atime nsec`
-	nsec_mtime2=`./ext4_file_time mnt_point/tmp_file mtime nsec`
-	nsec_ctime2=`./ext4_file_time mnt_point/tmp_file mtime nsec`
+	nsec_atime2=`ext4_file_time mnt_point/tmp_file atime nsec`
+	nsec_mtime2=`ext4_file_time mnt_point/tmp_file mtime nsec`
+	nsec_ctime2=`ext4_file_time mnt_point/tmp_file mtime nsec`
 
 	if [ $nsec_atime -ne $nsec_atime2 -o $nsec_ctime -ne $nsec_ctime2 -o \
 	     $nsec_mtime -ne $nsec_mtime2 ]; then
@@ -163,7 +157,7 @@ ext4_test_nsec_timestamps()
 			$nsec_mtime $nsec_ctime, After[atime mtime ctime]: \
 			$nsec_atime2 $nsec_mtime2 $nsec_ctime2)"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
@@ -173,20 +167,7 @@ ext4_test_nsec_timestamps()
 # main
 ext4_setup
 
-RET=0
-
 ext4_test_sec_timestamps
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
-
 ext4_test_nsec_timestamps
-if [ $? -ne 0 ]; then
-	RET=1
-fi
-: $((TST_COUNT++))
 
-ext4_cleanup
-exit $RET
-
+tst_exit

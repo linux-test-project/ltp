@@ -20,15 +20,10 @@
 #                                                                              #
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-. ./ext4_funcs.sh
-
 export TCID="ext4-online-defrag"
 export TST_TOTAL=18
-export TST_COUNT=1
 
-export TEST_DIR=$PWD
+. ext4_funcs.sh
 
 # How to age filesystem
 EMPTY=1
@@ -39,11 +34,9 @@ LARGE=3
 FILE=1
 DIR=2
 FILESYSTEM=3
+
+tst_check_cmds e4defrag
 E4DEFRAG=`which e4defrag`
-if [ -z $E4DEFRAG ]; then
-	echo "Please install the e2fsprogs, for the e4defrag command."
-	exit 1
-fi
 
 age_filesystem()
 {
@@ -65,7 +58,7 @@ age_filesystem()
 		# age filesystem from 0.0 to 0.2 -> 0.4 -> 0.6 -> 0.8 -> 1.0
 		for ((idx = 3; idx < 8; idx++))
 		{
-			./ffsb ffsb-config$idx > /dev/null
+			ffsb ffsb-config$idx > /dev/null
 			dirId=$((idx - 3))
 			mv mnt_point/data mnt_point/data$dirId
 		}
@@ -123,47 +116,43 @@ my_e4defrag()
 # $3: block size
 ext4_test_online_defrag()
 {
-	echo Test $TST_COUNT start >> \
-		 $LTPROOT/output/ext4_online_defrag_result.txt
+	echo Test $TST_COUNT start >> ext4_online_defrag_result.txt
 
 	tst_resm TINFO "defrag type: $1, defrag obj: $2, block size: $3"
 
-	mkfs.ext4 -m 0 -b $3 -O ^flex_bg $EXT4_DEV >> \
-		$LTPROOT/output/ext4_online_defrag_result.txt 2>&1
+	mkfs.ext4 -m 0 -b $3 -O ^flex_bg $EXT4_DEV >> ext4_online_defrag_result.txt 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
-	tune2fs -O extents $EXT4_DEV >> \
-		 $LTPROOT/output/ext4_online_defrag_result.txt 2>&1
+	tune2fs -O extents $EXT4_DEV >> ext4_online_defrag_result.txt 2>&1
 
 	mount -t ext4 -o nodelalloc $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL"failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
-	age_filesystem $2 $1 >> $LTPROOT/output/ext4_online_defrag_result.txt 2>&1
+	age_filesystem $2 $1 >> ext4_online_defrag_result.txt 2>&1
 
-	my_e4defrag $1 $2 >> $LTPROOT/output/ext4_online_defrag_result.txt
+	my_e4defrag $1 $2 >> ext4_online_defrag_result.txt
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "e4defrag returned failure"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
-	e2fsck -p $EXT4_DEV >> \
-		 $LTPROOT/output/ext4_online_defrag_result.txt 2>&1
+	e2fsck -p $EXT4_DEV >> ext4_online_defrag_result.txt 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
-		return 1
+		return
 	fi
 
 	tst_resm TPASS "ext4 online defrag test pass"
@@ -172,13 +161,11 @@ ext4_test_online_defrag()
 # main
 ext4_setup
 
-rm -f $LTPROOT/output/ext4_online_defrag_result.txt
+tst_check_cmds ffsb
 
 DEFRAG=( $FILE $DIR $FILESYSTEM )
 AGING=( $EMPTY $SMALL $LARGE )
 BLOCK_SIZE=( 1024 4096 )
-
-RET=0
 
 for ((i = 0; i < 2; i++))
 {
@@ -188,15 +175,8 @@ for ((i = 0; i < 2; i++))
 		{
 			ext4_test_online_defrag ${DEFRAG[$j]} ${AGING[$k]} \
 						${BLOCK_SIZE[$i]}
-			if [ $? -ne 0 ]; then
-				RET=1
-			fi
-			: $((TST_COUNT++))
 		}
 	}
 }
 
-ext4_cleanup
-
-exit $RET
-
+tst_exit

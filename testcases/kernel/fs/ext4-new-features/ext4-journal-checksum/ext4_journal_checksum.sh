@@ -23,16 +23,11 @@
 ##                                                                            ##
 ################################################################################
 
-cd $LTPROOT/testcases/bin
-
-. ./ext4_funcs.sh
 
 export TCID="ext4-journal-checksum"
 export TST_TOTAL=36
-export TST_COUNT=1
 
-export TEST_DIR=$PWD
-
+. ext4_funcs.sh
 
 # Use ffsb to test journal checksumming
 # $1: journal mode: writeback, ordered, journal
@@ -63,7 +58,7 @@ ext4_test_journal_checksum()
 	mkfs.ext4 -I 256 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
-		return 1
+		return
 	fi
 
 	tune2fs -O extents $EXT4_DEV &> /dev/null
@@ -71,26 +66,26 @@ ext4_test_journal_checksum()
 	mount -t ext4 -o data=$1,commit=$2,$3,$4,barrier=$5 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to mount ext4 filesystem"
-		return 1
+		return
 	fi
 
-	./ffsb ffsb-config2 > /dev/null
+	ffsb ffsb-config2 > /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "ffsb returned failure"
 		umount mnt_point
-		return 1
+		return
 	fi
 
 	umount mnt_point
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return 1
+		return
 	fi
 
 	e2fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
-		return 1
+		return
 	fi
 
 	tst_resm TPASS "ext4 journal checksum test pass"
@@ -99,13 +94,13 @@ ext4_test_journal_checksum()
 # main
 ext4_setup
 
+tst_check_cmds ffsb
+
 DATA=( "writeback" "ordered" "journal" )
 COMMIT=( 1 100 )
 JOURNAL_CHECKSUM=( "journal_checksum" "" )
 JOURNAL_ASYNC_COMMIT=( "journal_async_commit" "" )
 BARRIER=( 0 1 )
-
-RET=0
 
 for ((i = 0; i < 2; i++))
 {
@@ -129,17 +124,10 @@ for ((i = 0; i < 2; i++))
 						"${JOURNAL_CHECKSUM[$k]}" \
 						"${JOURNAL_ASYNC_COMMIT[$j]}" \
 						${BARRIER[$i]}
-					if [ $? -ne 0 ]; then
-						RET=1
-					fi
-
-					: $((TST_COUNT++))
 				}
 			}
 		}
 	}
 }
 
-ext4_cleanup
-
-exit $RET
+tst_exit
