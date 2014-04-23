@@ -872,6 +872,7 @@ rt_sigqueueinfo01 rt_sigqueueinfo01
 rt_sigsuspend01 rt_sigsuspend01
 
 sbrk01 sbrk01
+sbrk02 sbrk02
 
 sched_get_priority_max01 sched_get_priority_max01
 sched_get_priority_max02 sched_get_priority_max02
