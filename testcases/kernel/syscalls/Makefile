@@ -26,7 +26,7 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 
 ifeq ($(UCLINUX),1)
 FILTER_OUT_DIRS	+= capget capset chmod chown clone fork getcontext llseek \
-		   nftw profil remap_file_pages mincore mprotect
+		   mincore mprotect nftw profil remap_file_pages sbrk
 endif
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
