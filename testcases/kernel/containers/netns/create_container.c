@@ -27,6 +27,7 @@
 * Author: Sudhir Kumar <skumar@linux.vnet.ibm.com>   26/08/2008
 * ============================================================================*/
 
+#include <stdio.h>
 #include "common.h"
 
 const char *TCID = "create_container";

@@ -51,7 +51,7 @@
 char *TCID = "netns_2children";
 int TST_TOTAL = 1;
 
-int main()
+int main(void)
 {
 	int ret, pid[2], status, i;
 	long long flags = 0;

@@ -49,7 +49,7 @@
 char *TCID = "netns_ipv6";
 int TST_TOTAL = 1;
 
-int main()
+int main(void)
 {
 	int pid, status = 0, ret;
 	long int flags = 0;
