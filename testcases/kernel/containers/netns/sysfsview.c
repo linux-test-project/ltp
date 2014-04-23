@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "libclone.h"
+#include "common.h"
 
 const char *TCID = "sysfsview";
 

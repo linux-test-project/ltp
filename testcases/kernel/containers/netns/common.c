@@ -43,6 +43,7 @@
 #include "libclone.h"
 #include "test.h"
 #include "config.h"
+#include "common.h"
 
 static int child_fn(void *c1);
 

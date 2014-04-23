@@ -46,8 +46,7 @@
 #include "test.h"
 #include "libclone.h"
 #include "config.h"
-
-extern int crtchild(char *);
+#include "common.h"
 
 char *TCID = "netns_2children";
 int TST_TOTAL = 1;
@@ -109,7 +108,7 @@ int main()
 				return ret;
 			}
 #endif
-			return crtchild(child[i]);
+			return crtchild(child[i], NULL);
 		} else {
 			//Parent
 

@@ -29,7 +29,7 @@
 *                      31/07/2008
 * =========================================================================*/
 
-#include "libclone.h"
+#include "common.h"
 
 const char *TCID = "crtchild_delchild";
 

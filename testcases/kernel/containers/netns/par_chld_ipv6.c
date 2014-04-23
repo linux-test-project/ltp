@@ -44,8 +44,7 @@
 #include <sys/wait.h>
 #include "test.h"
 #include "config.h"
-
-extern int crtchild(char *);
+#include "common.h"
 
 char *TCID = "netns_ipv6";
 int TST_TOTAL = 1;
@@ -95,7 +94,7 @@ int main()
 #else
 		tst_resm(TCONF, "System doesn't have unshare support");
 #endif
-		return crtchild(child);
+		return crtchild(child, NULL);
 	} else {
 
 		//parent
