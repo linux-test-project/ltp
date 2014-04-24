@@ -216,5 +216,15 @@ int safe_fchmod(const char *file, const int lineno, void (cleanup_fn)(void),
 #define SAFE_FCHMOD(cleanup_fn, fd, mode) \
 	safe_fchmod(__FILE__, __LINE__, (cleanup_fn), (fd), (mode))
 
+pid_t safe_wait(const char *file, const int lineno, void (cleanup_fn)(void),
+                int *status);
+#define SAFE_WAIT(cleanup_fn, status) \
+        safe_wait(__FILE__, __LINE__, (cleanup_fn), (status))
+
+pid_t safe_waitpid(const char *file, const int lineno, void (cleanup_fn)(void),
+                   pid_t pid, int *status, int opts);
+#define SAFE_WAITPID(cleanup_fn, pid, status, opts) \
+        safe_waitpid(__FILE__, __LINE__, (cleanup_fn), (pid), (status), (opts))
+
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */

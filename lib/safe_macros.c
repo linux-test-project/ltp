@@ -2,6 +2,7 @@
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
@@ -609,6 +610,36 @@ int safe_fchmod(const char *file, const int lineno,
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: fchmod(%d,0%o) failed",
 			 file, lineno, fd, mode);
+	}
+
+	return rval;
+}
+
+pid_t safe_wait(const char *file, const int lineno, void (cleanup_fn)(void),
+                int *status)
+{
+	pid_t rval;
+
+	rval = wait(status);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: wait(%p) failed",
+			 file, lineno, status);
+	}
+
+	return rval;
+}
+
+pid_t safe_waitpid(const char *file, const int lineno, void (cleanup_fn)(void),
+                   pid_t pid, int *status, int opts)
+{
+	pid_t rval;
+
+	rval = waitpid(pid, status, opts);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: waitpid(%d,%p,%d) failed",
+			 file, lineno, pid, status, opts);
 	}
 
 	return rval;
