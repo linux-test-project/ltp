@@ -27,7 +27,8 @@
  */
 void make_swapfile(void (cleanup)(void), const char *swapfile)
 {
-	if (!tst_cwd_has_free(sysconf(_SC_PAGESIZE)*10)) {
+	if (!tst_fs_has_free(NULL, ".", sysconf(_SC_PAGESIZE) * 10,
+	    TST_BYTES)) {
 		tst_brkm(TBROK, cleanup,
 			"Insufficient disk space to create swap file");
 	}

@@ -99,7 +99,7 @@ static void setup(void)
 	break;
 	}
 
-	if (!tst_cwd_has_free(65536)) {
+	if (!tst_fs_has_free(NULL, ".", 64, TST_MB)) {
 		tst_brkm(TBROK, cleanup,
 			 "Insufficient disk space to create swap file");
 	}

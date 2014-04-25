@@ -39,6 +39,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "compiler.h"
 
@@ -204,8 +205,21 @@ struct tst_kern_exv {
 
 int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers);
 
-/* lib/tst_cwd_has_free.c */
-int tst_cwd_has_free(int required_kib);
+enum {
+	TST_BYTES = 1,
+	TST_KB = 1024,
+	TST_MB = 1048576,
+	TST_GB = 1073741824,
+};
+
+/* lib/tst_fs_has_free.c
+ *
+ * @path: path is the pathname of any file within the mounted file system
+ * @mult: mult should be TST_KB, TST_MB or TST_GB
+ * the required free space is calculated by @size * @mult
+ */
+int tst_fs_has_free(void (*cleanup)(void), const char *path,
+		    unsigned int size, unsigned int mult);
 
 int tst_is_virt(int virt_type);
 
