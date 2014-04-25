@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
@@ -321,6 +322,36 @@ int safe_setuid(const char *file, const int lineno, void (*cleanup_fn) (void),
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: setuid(%u) failed",
 			 file, lineno, (unsigned) uid);
+	}
+
+	return rval;
+}
+
+int safe_getresuid(const char *file, const int lineno, void (*cleanup_fn)(void),
+		   uid_t *ruid, uid_t *euid, uid_t *suid)
+{
+	int rval;
+
+	rval = getresuid(ruid, euid, suid);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: getresuid(%p, %p, %p) failed",
+			 file, lineno, ruid, euid, suid);
+	}
+
+	return rval;
+}
+
+int safe_getresgid(const char *file, const int lineno, void (*cleanup_fn)(void),
+		   gid_t *rgid, gid_t *egid, gid_t *sgid)
+{
+	int rval;
+
+	rval = getresgid(rgid, egid, sgid);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: getresgid(%p, %p, %p) failed",
+			 file, lineno, rgid, egid, sgid);
 	}
 
 	return rval;

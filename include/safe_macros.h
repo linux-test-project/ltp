@@ -131,6 +131,16 @@ int	safe_setuid(const char *file, const int lineno,
 #define SAFE_SETUID(cleanup_fn, uid) \
 	safe_setuid(__FILE__, __LINE__, cleanup_fn, (uid))
 
+int	safe_getresuid(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), uid_t *ruid, uid_t *euid, uid_t *suid);
+#define SAFE_GETRESUID(cleanup_fn, ruid, euid, suid) \
+	safe_getresuid(__FILE__, __LINE__, cleanup_fn, (ruid), (euid), (suid))
+
+int	safe_getresgid(const char *file, const int lineno,
+	    void (*cleanup_fn)(void), gid_t *rgid, gid_t *egid, gid_t *sgid);
+#define SAFE_GETRESGID(cleanup_fn, rgid, egid, sgid) \
+	safe_getresgid(__FILE__, __LINE__, cleanup_fn, (rgid), (egid), (sgid))
+
 int	safe_unlink(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), const char *pathname);
 #define SAFE_UNLINK(cleanup_fn, pathname) \
