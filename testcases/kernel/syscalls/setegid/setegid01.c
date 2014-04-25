@@ -1,19 +1,19 @@
 /*
- *   Copyright (c) Dan Kegel 2003
+ * Copyright (c) Dan Kegel 2003
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -31,76 +31,71 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 char *TCID = "setegid01";
-int TST_TOTAL = 1;		/* is this number right? */
-int verbose = 0;
+int TST_TOTAL = 1;
+static void setup(void);
+static void setegid_verify(void);
+static void cleanup(void);
 
-option_t options[] = {
-	{"v", &verbose, NULL},	/* No argument */
-	{NULL, NULL, NULL}	/* NULL required to end array */
-};
-
-void help(void)
-{
-	printf("  -v       verbose\n");
-}
+static gid_t nobody_gid;
 
 int main(int argc, char **argv)
 {
-	struct passwd nobody;
-	gid_t nobody_gid;
-	gid_t cur_rgid, cur_egid, cur_sgid;
-	gid_t orig_rgid, orig_egid, orig_sgid;
+	int lc;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, options, help)) != NULL) {
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "Option parsing error - %s", msg);
-		tst_exit();
+
+	setup();
+
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		tst_count = 0;
+		setegid_verify();
 	}
 
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-		tst_exit();
-	}
+	cleanup();
+	tst_exit();
+}
 
-	nobody = *getpwnam("nobody");
-	nobody_gid = nobody.pw_gid;
+static void setup(void)
+{
+	struct passwd *nobody;
 
-	TEST(getresgid(&orig_rgid, &orig_egid, &orig_sgid));
-	if (TEST_RETURN == -1) {
-		tst_resm(TBROK, "getresgid() Failed, errno=%d : %s", TEST_ERRNO,
-			 strerror(TEST_ERRNO));
-		tst_exit();
-	}
-	if (verbose) {
-		printf("getresgid reports rgid %d, egid %d, sgid %d\n",
-		       orig_rgid, orig_egid, orig_sgid);
-		printf("calling setegid(nobody_gid %d)\n", nobody_gid);
-	}
-	TEST(setegid(nobody_gid));
-	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL, "setegid() Failed, errno=%d : %s", TEST_ERRNO,
-			 strerror(TEST_ERRNO));
-		tst_exit();
-	}
+	tst_require_root(NULL);
 
-	TEST(getresgid(&cur_rgid, &cur_egid, &cur_sgid));
-	if (TEST_RETURN == -1) {
-		tst_resm(TBROK, "setegid() Failed, errno=%d : %s", TEST_ERRNO,
-			 strerror(TEST_ERRNO));
-		tst_exit();
-	}
-	if (verbose) {
-		printf("getresgid reports rgid %d, egid %d, sgid %d\n",
-		       cur_rgid, cur_egid, cur_sgid);
-	}
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	TEST_PAUSE;
+
+	nobody = SAFE_GETPWNAM(cleanup, "nobody");
+
+	nobody_gid = nobody->pw_gid;
+}
+
+static void setegid_verify(void)
+{
+	gid_t cur_rgid, cur_egid, cur_sgid;
+	gid_t orig_rgid, orig_egid, orig_sgid;
+
+	SAFE_GETRESGID(cleanup, &orig_rgid, &orig_egid, &orig_sgid);
+	tst_resm(TINFO, "getresgid reports rgid %d, egid %d, sgid %d",
+		 orig_rgid, orig_egid, orig_sgid);
+
+	tst_resm(TINFO, "calling setegid(nobody_gid %d)", nobody_gid);
+	SAFE_SETEGID(cleanup, nobody_gid);
+
+	SAFE_GETRESGID(cleanup, &cur_rgid, &cur_egid, &cur_sgid);
+	tst_resm(TINFO, "getresgid reports rgid %d, egid %d, sgid %d", cur_rgid,
+		 cur_egid, cur_sgid);
 
 	/* make sure it at least does what its name says */
 	if (nobody_gid != cur_egid) {
-		tst_resm(TFAIL,
-			 "setegid() Failed functional test: it failed to change the effective gid");
-		tst_exit();
+		tst_resm(TFAIL, "setegid() failed to change the effective gid");
+		return;
 	}
 
 	/* SUSv3 says the real group ID and saved set-gid must
@@ -108,16 +103,27 @@ int main(int argc, char **argv)
 	 * http://www.opengroup.org/onlinepubs/007904975/functions/setegid.html
 	 */
 	if (orig_sgid != cur_sgid) {
-		tst_resm(TFAIL,
-			 "setegid() Failed functional test: it changed the saved set-gid");
-		tst_exit();
+		tst_resm(TFAIL, "setegid() changed the saved set-gid");
+		return;
 	}
 	if (orig_rgid != cur_rgid) {
-		tst_resm(TFAIL,
-			 "setegid() Failed functional test: it changed the real gid");
-		tst_exit();
+		tst_resm(TFAIL, "setegid() changed the real gid");
+		return;
 	}
+
+	SAFE_SETEGID(cleanup, orig_egid);
+
+	SAFE_GETRESGID(cleanup, &cur_rgid, &cur_egid, &orig_sgid);
+
+	if (orig_egid != cur_egid) {
+		tst_resm(TFAIL, "setegid() failed to reset effective gid back");
+		return;
+	}
+
 	tst_resm(TPASS, "setegid() passed functional test");
-	tst_exit();
-	tst_exit();
+}
+
+static void cleanup(void)
+{
+	TEST_CLEANUP;
 }
