@@ -73,6 +73,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
@@ -324,6 +325,42 @@ err:
 	exit(1);
 }
 
+int apicmd_fs_has_free(int argc, char *argv[])
+{
+	if (argc != 3) {
+		fprintf(stderr, "Usage: tst_fs_has_free path required_bytes\n"
+			"path: the pathname of the mounted filesystem\n"
+			"required_bytes: the required free space"
+			" (supports kB, MB and GB suffixes)\n");
+		exit(2);
+	}
+
+	char *endptr;
+	unsigned int required_kib = strtoull(argv[1], &endptr, 0);
+	unsigned int mul = TST_BYTES;
+
+	if (*argv[1] == '\0')
+		goto fs_has_free_err;
+
+	if (*endptr != '\0') {
+		if (!strcasecmp(endptr, "kB")) {
+			mul = TST_KB;
+		} else if (!strcasecmp(endptr, "MB")) {
+			mul = TST_MB;
+		} else if (!strcasecmp(endptr, "GB")) {
+			mul = TST_GB;
+		} else {
+			goto fs_has_free_err;
+		}
+	}
+
+	exit(!tst_fs_has_free(NULL, argv[0], required_kib, mul));
+
+fs_has_free_err:
+	fprintf(stderr, "%s is not a valid size\n", argv[1]);
+	exit(2);
+}
+
 /*
  * Function:    main - entry point of this program
  *
@@ -359,6 +396,7 @@ int main(int argc, char *argv[])
 	if (TCID == NULL || tst_total == NULL || tst_cntstr == NULL) {
 		if (!strcmp(cmd_name, "tst_kvercmp") &&
 		    !strcmp(cmd_name, "tst_kvercmp2") &&
+		    !strcmp(cmd_name, "tst_fs_has_free") &&
 		    !strcmp(cmd_name, "tst_get_unused_port")) {
 			fprintf(stderr,
 				"\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
@@ -409,6 +447,8 @@ int main(int argc, char *argv[])
 		printf("%li\n", tst_ncpus_max());
 	} else if (strcmp(cmd_name, "tst_get_unused_port") == 0) {
 		printf("%u\n", apicmd_get_unused_port(argc, argv));
+	} else if (strcmp(cmd_name, "tst_fs_has_free") == 0) {
+		apicmd_fs_has_free(argc, argv);
 	}
 
 	exit(0);
