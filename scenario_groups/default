@@ -27,3 +27,4 @@ hyperthreading
 kernel_misc
 modules
 fs_ext4
+pipes
