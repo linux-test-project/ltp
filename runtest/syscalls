@@ -979,6 +979,7 @@ setgid03 setgid03
 setgid03_16 setgid03_16
 
 setegid01 setegid01
+setegid02 setegid02
 
 sgetmask01 sgetmask01
 

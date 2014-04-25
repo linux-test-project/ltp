@@ -640,6 +640,7 @@ setgid02 setgid02
 setgid03 setgid03
 
 setegid01 setegid01
+setegid02 setegid02
 
 setgroups01 setgroups01
 setgroups02 setgroups02
