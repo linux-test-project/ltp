@@ -89,8 +89,7 @@ int main(void)
 			kill(pid, SIGCONT);
 		}
 
-		/* POSIX specifies default action to be abnormal termination */
-		kill(pid, SIGHUP);
+		kill(pid, SIGKILL);
 		waitpid(pid, &s, 0);
 	}
 
