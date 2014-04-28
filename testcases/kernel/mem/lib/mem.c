@@ -21,7 +21,6 @@
 #include "usctest.h"
 #include "safe_macros.h"
 #include "safe_file_ops.h"
-#include "_private.h"
 #include "mem.h"
 #include "numa_helper.h"
 
@@ -256,15 +255,15 @@ void write_memcg(void)
 	SAFE_FILE_PRINTF(NULL, MEMCG_PATH_NEW "/tasks", "%d", getpid());
 }
 
-static struct ksm_merge_data {
+struct ksm_merge_data {
 	char data;
-	int mergeable_size;
+	unsigned int mergeable_size;
 };
 
 static void ksm_child_memset(int child_num, int size, int total_unit,
 		 struct ksm_merge_data ksm_merge_data, char **memory)
 {
-	int i, j;
+	int i = 0, j;
 	int unit = size / total_unit;
 
 	tst_resm(TINFO, "child %d continues...", child_num);
@@ -280,7 +279,7 @@ static void ksm_child_memset(int child_num, int size, int total_unit,
 	}
 
 	for (j = 0; j < total_unit; j++) {
-		for (i = 0; i < unit * MB; i++)
+		for (i = 0; (unsigned int)i < unit * MB; i++)
 			memory[j][i] = ksm_merge_data.data;
 	}
 
@@ -358,7 +357,7 @@ static void stop_ksm_children(int *child, int num)
 
 static void resume_ksm_children(int *child, int num)
 {
-	int k, status;
+	int k;
 
 	tst_resm(TINFO, "resume all children.");
 	for (k = 0; k < num; k++) {
@@ -474,7 +473,11 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 	int num_nodes, *nodes;
 	unsigned long length;
 	unsigned long pagesize;
+
+#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
+	&& HAVE_MPOL_CONSTANTS
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
+#endif
 
 	ret = get_allowed_nodes_arr(NH_MEMS|NH_CPUS, &num_nodes, &nodes);
 	if (ret != 0)
@@ -620,7 +623,8 @@ static int alloc_transparent_hugepages(int nr_thps, int hg_aligned)
 static void khugepaged_scan_done(void)
 {
 	int changing = 1, count = 0, interval;
-	long old_pages_collapsed, old_max_ptes_none, old_pages_to_scan;
+	long old_pages_collapsed = 0, old_max_ptes_none = 0,
+		old_pages_to_scan = 0;
 	long pages_collapsed = 0, max_ptes_none = 0, pages_to_scan = 0;
 
 	/*
@@ -703,6 +707,7 @@ void test_transparent_hugepage(int nr_children, int nr_thps,
 		tst_resm(TCONF, "Not enough memory for testing");
 
 	hugepagesize = read_meminfo("Hugepagesize:");
+	tst_resm(TINFO, "The current Hugepagesize is %luMB", hugepagesize / KB);
 
 	pids = malloc(nr_children * sizeof(int));
 	if (pids == NULL)
@@ -853,7 +858,7 @@ void write_cpuset_files(char *prefix, char *filename, char *buf)
 		} else
 			tst_brkm(TBROK | TERRNO, cleanup, "open %s", path);
 	}
-	if (write(fd, buf, strlen(buf)) != strlen(buf))
+	if (write(fd, buf, strlen(buf)) != (ssize_t)strlen(buf))
 		tst_brkm(TBROK | TERRNO, cleanup, "write %s", path);
 	close(fd);
 }
@@ -902,7 +907,7 @@ void umount_mem(char *path, char *path_new)
 	if ((fd != -1) && (fp != NULL)) {
 		while (fgets(value, BUFSIZ, fp) != NULL)
 			if (write(fd, value, strlen(value) - 1)
-			    != strlen(value) - 1)
+			    != (ssize_t)strlen(value) - 1)
 				tst_resm(TWARN | TERRNO, "write %s", s);
 	}
 	if (fd != -1)
@@ -957,7 +962,7 @@ unsigned int get_a_numa_node(void (*cleanup_fn) (void))
 	ret = get_allowed_nodes(NH_MEMS | NH_CPUS, 1, &nd1);
 	switch (ret) {
 	case 0:
-		tst_resm(TINFO, "get node%lu.", nd1);
+		tst_resm(TINFO, "get node%u.", nd1);
 		return nd1;
 	case -3:
 		tst_brkm(TCONF, cleanup_fn, "requires a NUMA system that has "

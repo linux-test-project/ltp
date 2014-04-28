@@ -23,7 +23,7 @@ static inline void set_node(unsigned long *array, unsigned int node)
 
 static inline void clean_node(unsigned long *array)
 {
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < MAXNODES / BITS_PER_LONG; i++)
 		array[i] &= 0UL;
