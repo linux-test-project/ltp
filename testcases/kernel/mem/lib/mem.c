@@ -145,11 +145,13 @@ void testoom(int mempolicy, int lite)
 	tst_resm(TINFO, "start OOM testing for mlocked pages.");
 	oom(MLOCK, lite);
 
-	if (access(PATH_KSM, F_OK) == -1)
-		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
-
-	tst_resm(TINFO, "start OOM testing for KSM pages.");
-	oom(KSM, lite);
+	if (access(PATH_KSM, F_OK) == -1) {
+		tst_resm(TINFO, "KSM configuration is not enabled, "
+			 "skip OOM test for KSM pags");
+	} else {
+		tst_resm(TINFO, "start OOM testing for KSM pages.");
+		oom(KSM, lite);
+	}
 }
 
 /* KSM */
