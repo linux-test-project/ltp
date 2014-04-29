@@ -41,7 +41,7 @@ static int alloc_mem(long int length, int testcase)
 			tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 	}
 	if (testcase == MLOCK && mlock(s, length) == -1)
-		tst_brkm(TINFO | TERRNO, cleanup, "mlock");
+		tst_brkm(TBROK | TERRNO, cleanup, "mlock");
 #ifdef HAVE_MADV_MERGEABLE
 	if (testcase == KSM && madvise(s, length, MADV_MERGEABLE) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "madvise");
