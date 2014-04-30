@@ -238,6 +238,11 @@ static void test_clone_stopped(int t)
 	int flag;
 	pid_t child;
 
+	if (tst_kvercmp(2, 6, 38) >= 0) {
+		tst_resm(TINFO, "CLONE_STOPPED skipped for kernels >= 2.6.38");
+		return;
+	}
+
 	stopped_flag = 0;
 	child = clone_child(&test_cases[t], 1);
 
