@@ -272,7 +272,7 @@ ${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/stress.part3 > ${TMP}/stress.par
 sleep 2
 
 if [ $Sar -eq 1 ]; then
-  sar -o $datafile $interval 0 &
+  sar -o $datafile $interval > /dev/null &
 fi
 
 if [ $Top -eq 1 ]; then
