@@ -212,7 +212,7 @@ main()
     local EMAIL_TO=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
-    local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+    local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%m_%d-%Hh_%Mm_%Ss"`
     local scenfile=
 
     version_date=$(cat "$LTPROOT/Version")
@@ -438,7 +438,7 @@ main()
 
     ## It would be nice to create a default log file even if the user has not mentioned
     if [ ! "$LOGFILE" ]; then                                ## User has not mentioned about Log File name
-       LOGFILE_NAME=$DEFAULT_FILE_NAME_GENERATION_TIME
+       LOGFILE_NAME="$DEFAULT_FILE_NAME_GENERATION_TIME"
        LOGFILE="-l $LTPROOT/results/LTP_RUN_ON-$LOGFILE_NAME.log"
        ALT_DIR_RES=1
        PRETTY_PRT=" -p "
@@ -450,7 +450,7 @@ main()
          ALT_DIR_OUT=1
          if [ ! "$OUTPUTFILE" ]; then		             ## User has not mentioned about Output File name either
             if [ ! "$LOGFILE" ]; then                        ## User has not mentioned about Log File name either
-               FAILED_FILE_NAME=$DEFAULT_FILE_NAME_GENERATION_TIME
+               FAILED_FILE_NAME="$DEFAULT_FILE_NAME_GENERATION_TIME"
                FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
             else					     ## User Fortunately wanted a log file,
                FAILED_FILE_NAME=`basename $LOGFILE_NAME`     ## Extract log file name and use it to construct Failed file name
@@ -466,7 +466,7 @@ main()
        QUIET_MODE=""                                         ## Suppressing this guy as it will prevent generation of proper output
                                                              ## which the HTML parser will require
        if [ ! "$OUTPUTFILE" ]; then                          ## User has not mentioned about the Outputfile name, then we need to definitely generate one
-          OUTPUTFILE_NAME=$DEFAULT_FILE_NAME_GENERATION_TIME
+          OUTPUTFILE_NAME="$DEFAULT_FILE_NAME_GENERATION_TIME"
           OUTPUTFILE="-o $LTPROOT/output/LTP_RUN_ON-$OUTPUTFILE_NAME.output"
           ALT_DIR_OUT=1
           if [ ! "$HTMLFILE" ] ; then                        ## User has not mentioned HTML File name, We need to create one
