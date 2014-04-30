@@ -1,48 +1,24 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	fstatfs02.c
- *
  * DESCRIPTION
  *	Testcase to check fstatfs() sets errno correctly.
- *
- * ALGORITHM
- *	1. Pass -1 as the "fd" parameter for fstatfs(), and expect EBADF.
- *	2. Pass an invalid address (outside the address space of the process),
- *	   as the buf paramter of fstatfs(), and expect EFAULT.
- *
- * USAGE:  <for command-line>
- *  fstatfs02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	NONE
  */
 
 #include <sys/vfs.h>
@@ -52,16 +28,16 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "fstatfs02";
 
-int exp_enos[] = { EBADF, EFAULT, 0 };
+static int exp_enos[] = { EBADF, EFAULT, 0 };
 
-struct statfs buf;
+static struct statfs buf;
 
-struct test_case_t {
+static struct test_case_t {
 	int fd;
 	struct statfs *sbuf;
 	int error;
@@ -91,14 +67,12 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set up the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
 
-		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			TEST(fstatfs(TC[i].fd, TC[i].sbuf));
@@ -126,33 +100,18 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
-	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* delete the test directory created in setup() */
 	tst_rmdir();
-
 }
