@@ -32,6 +32,8 @@
 #include <netinet/in.h>
 #include <tirpc/rpc/svc.h>
 #include <errno.h>
+#include <unistd.h>
+#include "librpc-tirpc.h"
 
 #define PROCNUM 1
 #define VERSNUM 1
@@ -40,9 +42,26 @@ int main(int argn, char *argc[])
 {
 	int test_status = 1;
 	SVCXPRT *transp = NULL;
+	int sock;
 
-	transp = svc_vc_create(RPC_ANYFD, 0, 0);
+	sock = bound_socket(AF_INET, SOCK_STREAM);
+	if (sock < 0) {
+		perror("bound_socket() failed");
+		return 1;
+	}
+
+	if (listen(sock, 10) < 0) {
+		perror("listen() failed");
+		return 1;
+	}
+
+	transp = svc_vc_create(sock, 0, 0);
 	test_status = ((SVCXPRT *) transp != NULL) ? 0 : 1;
+
+	if (transp != NULL)
+		svc_destroy(transp);
+
+	close(sock);
 
 	printf("%d\n", test_status);
 

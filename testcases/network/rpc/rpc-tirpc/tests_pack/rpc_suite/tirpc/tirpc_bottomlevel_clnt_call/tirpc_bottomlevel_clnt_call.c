@@ -32,6 +32,8 @@
 #include <netinet/in.h>
 #include <tirpc/rpc/svc.h>
 #include <errno.h>
+#include <unistd.h>
+#include "librpc-tirpc.h"
 
 #define PROCNUM 1
 #define VERSNUM 1
@@ -54,9 +56,10 @@ int main(int argn, char *argc[])
 	int var_snd = 10;
 	int var_rec = -1;
 	struct timeval tv;
+	int sock;
 
-	tv.tv_sec = 0;
-	tv.tv_usec = 100;
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 
 	nconf = getnetconfigent("udp");
 	if (nconf == NULL) {
@@ -75,12 +78,19 @@ int main(int argn, char *argc[])
 		exit(1);
 	}
 
-	client = clnt_dg_create(RPC_ANYFD, &svcaddr,
+	sock = bound_socket(AF_INET, SOCK_DGRAM);
+	if (sock < 0) {
+		perror("bound_socket() failed");
+		exit(1);
+	}
+
+	client = clnt_dg_create(sock, &svcaddr,
 				progNum, VERSNUM, 1024, 1024);
 
 	if (client == NULL) {
 		clnt_pcreateerror("ERR");
 		printf("5\n");
+		close(sock);
 		exit(1);
 	}
 
@@ -93,6 +103,8 @@ int main(int argn, char *argc[])
 	printf("%d\n", test_status);
 
 	clnt_destroy(client);
+
+	close(sock);
 
 	return test_status;
 }

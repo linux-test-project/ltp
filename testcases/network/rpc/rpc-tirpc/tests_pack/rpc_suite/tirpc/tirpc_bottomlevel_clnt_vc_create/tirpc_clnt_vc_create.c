@@ -32,6 +32,8 @@
 #include <netinet/in.h>
 #include <tirpc/rpc/svc.h>
 #include <errno.h>
+#include <unistd.h>
+#include "librpc-tirpc.h"
 
 //Standard define
 #define PROCNUM 1
@@ -53,8 +55,9 @@ int main(int argn, char *argc[])
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
 	char addrbuf[ADDRBUFSIZE];
+	int sock;
 
-	nconf = getnetconfigent("udp");
+	nconf = getnetconfigent("tcp");
 	if (nconf == NULL) {
 		printf("err nconf\n");
 		exit(1);
@@ -69,9 +72,20 @@ int main(int argn, char *argc[])
 		exit(1);
 	}
 
-	client = clnt_vc_create(RPC_ANYFD, &svcaddr,
+	sock = bound_socket(AF_INET, SOCK_DGRAM);
+	if (sock < 0) {
+		perror("bound_socket() failed");
+		exit(1);
+	}
+
+	client = clnt_vc_create(sock, &svcaddr,
 				progNum, VERSNUM, 1024, 1024);
 	test_status = ((CLIENT *) client != NULL) ? 0 : 1;
+
+	if (client != NULL)
+		clnt_destroy(client);
+
+	close(sock);
 
 	printf("%d\n", test_status);
 
