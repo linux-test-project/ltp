@@ -16,24 +16,10 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-top_srcdir		?= ../../../../..
+top_srcdir             ?= ../../../../../..
 
-include	$(top_srcdir)/include/mk/env_pre.mk
+include        $(top_srcdir)/include/mk/env_pre.mk
 
-LIBDIR			:= lib
-FILTER_OUT_DIRS		:= $(LIBDIR)
-LIB			:= $(LIBDIR)/librpc-tirpc.a
+LIB	:= librpc-tirpc.a
 
-$(LIBDIR):
-	mkdir -p "$@"
-
-$(LIB): $(LIBDIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
-
-trunk-clean:: | lib-clean
-
-lib-clean:: $(LIBDIR)
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
-
-include ./Makefile.inc
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+include $(top_srcdir)/include/mk/lib.mk

@@ -16,5 +16,19 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-LDLIBS		+= $(TIRPC_LIBS)
-CPPFLAGS	+= $(TIRPC_CPPFLAGS) -pthread
+LIBRELDIR	:= testcases/network/rpc/rpc-tirpc/tests_pack/lib
+LIBDIR		:= $(abs_top_builddir)/$(LIBRELDIR)
+LIBSRCDIR	:= $(abs_top_srcdir)/$(LIBRELDIR)
+LIBRPC-TIRPC	:= $(LIBDIR)/librpc-tirpc.a
+
+$(LIBDDIR):
+	mkdir -p "$@"
+
+$(LIBRPC-TIRPC): $(LIBDIR)
+	$(MAKE) -C $^ -f "$(LIBSRCDIR)/Makefile" all
+
+MAKE_DEPS	+= $(LIBRPC-TIRPC)
+
+LDFLAGS		+= -L$(LIBDIR)
+LDLIBS		+= $(TIRPC_LIBS) -lrpc-tirpc
+CPPFLAGS	+= $(TIRPC_CPPFLAGS) -I$(LIBSRCDIR) -pthread
