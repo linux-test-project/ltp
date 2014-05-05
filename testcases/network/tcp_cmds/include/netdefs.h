@@ -37,7 +37,7 @@ typedef struct sockaddr_in6	sai_t;
 #define AFI			AF_INET6
 #define IERP			ICMP6_ECHO_REPLY
 #define IERQ			ICMP6_ECHO_REQUEST
-#define ICMP_PROTO		"ipv6-imcp"
+#define ICMP_PROTO		"ipv6-icmp"
 #define PFI			PF_INET6
 
 #else
@@ -52,7 +52,7 @@ typedef struct sockaddr_in	sai_t;
 #define AFI			AF_INET
 #define IERP			ICMP_ECHOREPLY
 #define IERQ			ICMP_ECHO
-#define ICMP_PROTO		"imcp"
+#define ICMP_PROTO		"icmp"
 #define PFI			PF_INET
 
 #endif
