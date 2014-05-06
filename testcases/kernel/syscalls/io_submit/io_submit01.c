@@ -96,10 +96,7 @@ int main(int argc, char *argv[])
 	char buf[256];
 	struct iocb iocb;
 	struct iocb *iocbs[1];
-
 	io_context_t ctx;
-
-	memset(&ctx, 0, sizeof(ctx));
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -111,6 +108,7 @@ int main(int argc, char *argv[])
 
 		/* 1 - EINVAL */
 		/* 1.1 - EINVAL: invalid ctx */
+		memset(&ctx, 0, sizeof(ctx));
 		TEST(io_submit(ctx, 0, NULL));
 		check_result(-EINVAL, TEST_RETURN);
 
