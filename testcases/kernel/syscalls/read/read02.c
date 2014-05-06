@@ -27,6 +27,16 @@
  *
  *	test 3:
  *	Buf is outside the accessible address space, expect an EFAULT.
+ *
+ *	test 4:
+ *	The file was opened with the O_DIRECT flag, and transfer sizes was not
+ *	multiples of the logical block size of the file system, expect an
+ *	EINVAL.
+ *
+ *	test 5:
+ *	The file was opened with the O_DIRECT flag, and the alignment of the
+ *	user buffer was not multiples of the logical block size of the file
+ *	system, expect an EINVAL.
  */
 
 #define _GNU_SOURCE
@@ -39,25 +49,31 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "tst_fs_type.h"
 
 char *TCID = "read02";
 
 static int badfd = -1;
-static int fd2, fd3;
+static int fd2, fd3, fd4;
 static char buf[BUFSIZ];
 static void *outside_buf = (void *)-1;
-static int exp_enos[] = { EBADF, EISDIR, EFAULT, 0 };
+static void *addr4;
+static void *addr5;
+static int exp_enos[] = { EBADF, EISDIR, EFAULT, EINVAL, 0 };
 
 static struct test_case_t {
 	int *fd;
 	void **buf;
+	size_t count;
 	int exp_error;
 } TC[] = {
-	{&badfd, (void **)&buf, EBADF},
-	{&fd2, (void **)&buf, EISDIR},
+	{&badfd, (void **)&buf, 1, EBADF},
+	{&fd2, (void **)&buf, 1, EISDIR},
 #ifndef UCLINUX
-	{&fd3, &outside_buf, EFAULT},
+	{&fd3, &outside_buf, 1, EFAULT},
 #endif
+	{&fd4, &addr4, 1, EINVAL},
+	{&fd4, &addr5, 4096, EINVAL},
 };
 
 int TST_TOTAL = ARRAY_SIZE(TC);
@@ -96,7 +112,12 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	fd2 = SAFE_OPEN(cleanup, "/tmp", O_DIRECTORY);
+	if (tst_fs_type(cleanup, ".") == TST_TMPFS_MAGIC) {
+		tst_brkm(TCONF, cleanup,
+			 "Test not supported on tmpfs filesystem");
+	}
+
+	fd2 = SAFE_OPEN(cleanup, ".", O_DIRECTORY);
 
 	SAFE_FILE_PRINTF(cleanup, "test_file", "A");
 
@@ -106,11 +127,16 @@ static void setup(void)
 	outside_buf = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
 				MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 #endif
+
+	addr4 = SAFE_MEMALIGN(cleanup, getpagesize(), (4096 * 10));
+	addr5 = addr4 + 1;
+
+	fd4 = SAFE_OPEN(cleanup, "test_file", O_RDWR | O_DIRECT);
 }
 
 static void read_verify(const struct test_case_t *test)
 {
-	TEST(read(*test->fd, *test->buf, 1));
+	TEST(read(*test->fd, *test->buf, test->count));
 
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -130,6 +156,11 @@ static void read_verify(const struct test_case_t *test)
 static void cleanup(void)
 {
 	TEST_CLEANUP;
+
+	free(addr4);
+
+	if (fd4 > 0)
+		close(fd4);
 
 	if (fd3 > 0)
 		close(fd3);
