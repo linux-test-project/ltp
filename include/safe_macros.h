@@ -241,5 +241,10 @@ pid_t safe_waitpid(const char *file, const int lineno, void (cleanup_fn)(void),
 #define SAFE_WAITPID(cleanup_fn, pid, status, opts) \
         safe_waitpid(__FILE__, __LINE__, (cleanup_fn), (pid), (status), (opts))
 
+void *safe_memalign(const char *file, const int lineno,
+		    void (*cleanup_fn)(void), size_t alignment, size_t size);
+#define SAFE_MEMALIGN(cleanup_fn, alignment, size) \
+	safe_memalign(__FILE__, __LINE__, (cleanup_fn), (alignment), (size))
+
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */

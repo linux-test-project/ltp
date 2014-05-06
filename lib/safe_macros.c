@@ -12,6 +12,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <malloc.h>
 #include "test.h"
 #include "safe_macros.h"
 
@@ -687,6 +688,19 @@ pid_t safe_waitpid(const char *file, const int lineno, void (cleanup_fn)(void),
 			 "%s:%d: waitpid(%d,%p,%d) failed",
 			 file, lineno, pid, status, opts);
 	}
+
+	return rval;
+}
+
+void *safe_memalign(const char *file, const int lineno,
+		    void (*cleanup_fn) (void), size_t alignment, size_t size)
+{
+	void *rval;
+
+	rval = memalign(alignment, size);
+	if (rval == NULL)
+		tst_brkm(TBROK | TERRNO, cleanup_fn, "memalign failed at %s:%d",
+			 file, lineno);
 
 	return rval;
 }
