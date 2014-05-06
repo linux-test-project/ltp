@@ -123,6 +123,12 @@ int main(int argc, char *argv[])
 
 		/* 1.3 - EINVAL: uninitialized iocb */
 		iocbs[0] = &iocb;
+
+		/* There are multiple checks we can hit with uninitialized
+		 * iocb, but with "random" data it's not 100%. Make sure we
+		 * fail eventually in opcode check. */
+		iocb.aio_lio_opcode = -1;
+
 		TEST(io_submit(ctx, 1, iocbs));
 		switch (TEST_RETURN) {
 		case -EINVAL:
