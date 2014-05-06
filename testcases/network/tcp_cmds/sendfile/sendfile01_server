@@ -3,4 +3,4 @@
 cd $3
 exec 1< /dev/null       # open descriptor 1
 exec 2< /dev/null       # open descriptor 1
-nohup ./testsf_s $1 $2 &
+nohup ./$4 $1 $2 &
