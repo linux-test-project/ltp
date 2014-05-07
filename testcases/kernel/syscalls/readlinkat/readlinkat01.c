@@ -1,44 +1,25 @@
 /******************************************************************************
  *
- *   Copyright (c) International Business Machines  Corp., 2006
+ * Copyright (c) International Business Machines  Corp., 2006
+ *  Author: Yi Yang <yyangcdl@cn.ibm.com>
+ * Copyright (c) Cyril Hrubis 2014 <chrubis@suse.cz>
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * NAME
- *      readlinkat01.c
- *
- * DESCRIPTION
- *	This test case will verify basic function of readlinkat
- *	added by kernel 2.6.16 or up.
- *
- * USAGE:  <for command-line>
- * readlinkat01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- *      -c n : Run n copies simultaneously.
- *      -e   : Turn on errno logging.
- *      -i n : Execute test n times.
- *      -I x : Execute test for x seconds.
- *      -p   : Pause for SIGUSR1 before starting
- *      -P x : Pause for x seconds between iterations.
- *      -t   : Turn on syscall timing.
- *
- * Author
- *	Yi Yang <yyangcdl@cn.ibm.com>
- *
- * History
- *      08/28/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
+ * This test case will verify basic function of readlinkat
+ * added by kernel 2.6.16 or up.
  *
  *****************************************************************************/
 
@@ -55,43 +36,68 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
+#include "safe_macros.h"
+#include "lapi/readlinkat.h"
 
-#define TEST_CASES 5
-#define BUFF_SIZE 256
-#define MYRETCODE -999
-#ifndef AT_FDCWD
-#define AT_FDCWD -100
-#endif
-#ifndef AT_REMOVEDIR
-#define AT_REMOVEDIR 0x200
-#endif
-
-void setup();
-void cleanup();
-void setup_every_copy();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "readlinkat01";
-int TST_TOTAL = TEST_CASES;
-char pathname[256];
-char dpathname[256];
-char testfile[256];
-char dtestfile[256];
-char testfile2[256];
-char dtestfile2[256];
-char testfile3[256];
-char dtestfile3[256];
-int dirfd, fd, ret;
-int fds[TEST_CASES];
-char *filenames[TEST_CASES];
-int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
 
-char expected_buff[TEST_CASES][256];
-char buffer[BUFF_SIZE];
+static int dirfd, fd;
+static int fd_invalid = 100;
+static int fd_atcwd = AT_FDCWD;
 
-int myreadlinkat(int dirfd, const char *filename, char *buffer, size_t bufsize)
+#define TEST_SYMLINK "readlink_symlink"
+#define TEST_FILE "readlink_file"
+
+static char abspath[1024];
+
+static struct test_case {
+	int *dirfd;
+	const char *path;
+	const char *exp_buf;
+	int exp_ret;
+	int exp_errno;
+} test_cases[] = {
+	{&dirfd, TEST_SYMLINK, TEST_FILE, sizeof(TEST_FILE)-1, 0},
+	{&dirfd, abspath, TEST_FILE, sizeof(TEST_FILE)-1, 0},
+	{&fd, TEST_SYMLINK, NULL, -1, ENOTDIR},
+	{&fd_invalid, TEST_SYMLINK, NULL, -1, EBADF},
+	{&fd_atcwd, TEST_SYMLINK, TEST_FILE, sizeof(TEST_FILE)-1, 0},
+};
+
+int TST_TOTAL = ARRAY_SIZE(test_cases);
+
+static void verify_readlinkat(struct test_case *test)
 {
-	return ltp_syscall(__NR_readlinkat, dirfd, filename, buffer, bufsize);
+	char buf[1024];
+
+	memset(buf, 0, sizeof(buf));
+
+	TEST(readlinkat(*test->dirfd, test->path, buf, sizeof(buf)));
+
+	if (TEST_RETURN != test->exp_ret) {
+		tst_resm(TFAIL | TTERRNO,
+		         "readlinkat() returned %ld, expected %d",
+		         TEST_RETURN, test->exp_ret);
+		return;
+	}
+
+	if (TEST_ERRNO != test->exp_errno) {
+		tst_resm(TFAIL | TTERRNO,
+		         "readlinkat() returned %ld, expected %d",
+		         TEST_RETURN, test->exp_ret);
+		return;
+	}
+
+	if (test->exp_ret > 0 && strcmp(test->exp_buf, buf)) {
+		tst_resm(TFAIL, "Unexpected buffer have '%s', expected '%s'",
+		         buf, test->exp_buf);
+		return;
+	}
+
+	tst_resm(TPASS | TTERRNO, "readlinkat() returned %ld", TEST_RETURN);
 }
 
 int main(int ac, char **av)
@@ -100,202 +106,44 @@ int main(int ac, char **av)
 	char *msg;
 	int i;
 
-	/* Disable test if the version of the kernel is less than 2.6.16 */
-	if ((tst_kvercmp(2, 6, 16)) < 0) {
-		tst_resm(TWARN, "This test can only run on kernels that are ");
-		tst_resm(TWARN, "2.6.16 and higher");
-		exit(0);
-	}
-
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/***************************************************************
-	 * perform global setup for test
-	 ***************************************************************/
 	setup();
 
-	/***************************************************************
-	 * check looping state if -c option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		setup_every_copy();
-
-		tst_count = 0;
-
-		/*
-		 * Call readlinkat
-		 */
-		for (i = 0; i < TST_TOTAL; i++) {
-			buffer[0] = '\0';
-			TEST(myreadlinkat
-			     (fds[i], filenames[i], buffer, BUFF_SIZE));
-
-			if (TEST_RETURN >= 0) {
-				buffer[TEST_RETURN] = '\0';
-			}
-
-			/* check return code */
-			if (TEST_ERRNO == expected_errno[i]
-			    && (strcmp(expected_buff[i], buffer) == 0)) {
-
-				/***************************************************************
-				 * only perform functional verification if flag set (-f not given)
-				 ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "readlinkat() returned the expected  errno %d: %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				}
-			} else {
-				if (TEST_RETURN >= 0) {
-					tst_resm(TINFO,
-						 "The link readlinkat got isn't as same as the expected");
-				}
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL,
-					 "readlinkat() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
-		}
-
+		for (i = 0; i < TST_TOTAL; i++)
+			verify_readlinkat(&test_cases[i]);
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
-
-	return (0);
+	tst_exit();
 }
 
-void setup_every_copy(void)
+static void setup(void)
 {
-	int i;
-	char tmpfilename[256] = "";
+	tst_tmpdir();
+	char *tmpdir = get_tst_tmpdir();
 
-	/* Initialize test dir and file names */
-	sprintf(pathname, "readlinkattestdir%d", getpid());
-	sprintf(dpathname, "dreadlinkattestdir%d", getpid());
-	sprintf(testfile, "readlinkattestfile%d.txt", getpid());
-	sprintf(dtestfile, "dreadlinkattestfile%d.txt", getpid());
-	sprintf(testfile2, "readlinkattestdir%d/readlinkattestfile%d.txt",
-		getpid(), getpid());
-	sprintf(dtestfile2, "dreadlinkattestdir%d/dreadlinkattestfile%d.txt",
-		getpid(), getpid());
-	sprintf(testfile3, "/tmp/readlinkattestfile%d.txt", getpid());
-	sprintf(dtestfile3, "/tmp/dreadlinkattestfile%d.txt", getpid());
+	snprintf(abspath, sizeof(abspath), "%s/" TEST_SYMLINK, tmpdir);
+	free(tmpdir);
 
-	ret = mkdir(pathname, 0700);
-	if (ret < 0) {
-		perror("mkdir: ");
-		exit(-1);
-	}
-
-	ret = mkdir(dpathname, 0700);
-	if (ret < 0) {
-		perror("mkdir: ");
-		exit(-1);
-	}
-
-	dirfd = open(dpathname, O_DIRECTORY);
-	if (dirfd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	fd = open(testfile, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	ret = symlink(testfile, dtestfile);
-	if (ret < 0) {
-		perror("symlink: ");
-		exit(-1);
-	}
-
-	fd = open(testfile2, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	tmpfilename[0] = '\0';
-	strcat(strcat(tmpfilename, "../"), testfile2);
-	ret = symlink(tmpfilename, dtestfile2);
-	if (ret < 0) {
-		perror("symlink: ");
-		exit(-1);
-	}
-
-	fd = open(testfile3, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	ret = symlink(testfile3, dtestfile3);
-	if (ret < 0) {
-		perror("symlink: ");
-		exit(-1);
-	}
-
-	fds[0] = fds[1] = dirfd;
-	fds[2] = fd;
-	fds[3] = 100;
-	fds[4] = AT_FDCWD;
-
-	filenames[0] = filenames[2] = filenames[3] = filenames[4] = dtestfile;
-	filenames[1] = dtestfile3;
-
-	for (i = 0; i < TEST_CASES; i++)
-		expected_buff[i][0] = '\0';
-
-	strcat(strcat(expected_buff[0], "../"), testfile2);
-	strcat(expected_buff[1], testfile3);
-	strcat(expected_buff[2], "");
-	strcat(expected_buff[3], "");
-	strcat(expected_buff[4], testfile);
-}
-
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup(void)
-{
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	fd = SAFE_OPEN(cleanup, TEST_FILE, O_CREAT, 0600);
+	SAFE_SYMLINK(cleanup, TEST_FILE, TEST_SYMLINK);
+	dirfd = SAFE_OPEN(cleanup, ".", O_DIRECTORY);
 
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- ***************************************************************/
-void cleanup(void)
+static void cleanup(void)
 {
-	/* Remove them */
-	unlink(testfile2);
-	unlink(dtestfile2);
-	unlink(testfile3);
-	unlink(dtestfile3);
-	unlink(testfile);
-	unlink(dtestfile);
-	rmdir(pathname);
-	rmdir(dpathname);
+	if (fd > 0 && close(fd))
+		tst_resm(TWARN | TERRNO, "Failed to close fd");
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+	if (dirfd > 0 && close(dirfd))
+		tst_resm(TWARN | TERRNO, "Failed to close dirfd");
+
+	tst_rmdir();
+
 	TEST_CLEANUP;
-
 }
