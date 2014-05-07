@@ -99,8 +99,7 @@ static void setup(void)
 
 	SAFE_MKDIR(cleanup, TEST_DIR, DIR_MODE);
 	del_dir_fd = SAFE_OPEN(cleanup, TEST_DIR, O_RDONLY | O_DIRECTORY);
-	if (rmdir(TEST_DIR) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "rmdir failed");
+	SAFE_RMDIR(cleanup, TEST_DIR);
 
 	file_fd = SAFE_OPEN(cleanup, TEST_FILE, O_RDWR | O_CREAT, 0777);
 }

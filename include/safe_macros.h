@@ -76,6 +76,11 @@ int	safe_mkdir(const char *file, const int lineno,
 #define SAFE_MKDIR(cleanup_fn, pathname, mode)	\
 	safe_mkdir(__FILE__, __LINE__, (cleanup_fn), (pathname), (mode))
 
+int     safe_rmdir(const char *file, const int lineno,
+                   void (*cleanup_fn)(void), const char *pathname);
+#define SAFE_RMDIR(cleanup_fn, pathname) \
+	safe_rmdir(__FILE__, __LINE__, (cleanup_fn), (pathname))
+
 void*	safe_mmap(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), void *addr, size_t length, int prot,
 	    int flags, int fd, off_t offset);

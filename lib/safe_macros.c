@@ -168,6 +168,21 @@ int safe_mkdir(const char *file, const int lineno, void (*cleanup_fn) (void),
 	return (rval);
 }
 
+int safe_rmdir(const char *file, const int lineno, void (*cleanup_fn) (void),
+               const char *pathname)
+{
+	int rval;
+
+	rval = rmdir(pathname);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: rmdir(%s) failed",
+			 file, lineno, pathname);
+	}
+
+	return (rval);
+}
+
 void *safe_mmap(const char *file, const int lineno, void (*cleanup_fn) (void),
 		void *addr, size_t length, int prot, int flags, int fd,
 		off_t offset)
