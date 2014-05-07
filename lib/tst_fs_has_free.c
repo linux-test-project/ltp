@@ -35,7 +35,7 @@ int tst_fs_has_free(void (*cleanup)(void), const char *path,
 			 "tst_fs_has_free: failed to statfs(%s)", path);
 	}
 
-	if ((uint64_t)sf.f_bfree * sf.f_bsize >= (uint64_t)size * mult)
+	if ((uint64_t)sf.f_bavail * sf.f_bsize >= (uint64_t)size * mult)
 		return 1;
 
 	return 0;
