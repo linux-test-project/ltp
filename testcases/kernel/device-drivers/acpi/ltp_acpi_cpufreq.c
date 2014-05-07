@@ -31,6 +31,9 @@
 #include <sched.h>
 #include <sys/time.h>
 #include <pthread.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -69,12 +72,15 @@ static void cleanup(void)
 
 static void setup(void)
 {
+	int fd;
 	tst_require_root(NULL);
 
-	if (access(boost, R_OK | W_OK)) {
+	fd = open(boost, O_RDWR);
+	if (fd == -1) {
 		tst_brkm(TCONF, NULL,
 			"acpi-cpufreq not loaded or overclock not supported");
 	}
+	close(fd);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
