@@ -808,6 +808,7 @@ readahead02 readahead02
 
 readdir01 readdir01
 readdir02 readdir02
+readdir21 readdir21
 
 readlink01A symlink01 -T readlink01
 readlink01 readlink01
