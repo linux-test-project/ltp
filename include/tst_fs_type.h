@@ -32,6 +32,7 @@
 #define TST_RAMFS_MAGIC 0x858458f6
 #define TST_TMPFS_MAGIC 0x01021994
 #define TST_V9FS_MAGIC  0x01021997
+#define TST_XFS_MAGIC   0x58465342
 
 /*
  * Returns filesystem magick for a given path.

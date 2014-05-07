@@ -55,6 +55,8 @@ const char *tst_fs_type_name(long f_type)
 		return "RAMFS";
 	case TST_BTRFS_MAGIC:
 		return "BTRFS";
+	case TST_XFS_MAGIC:
+		return "XFS";
 	default:
 		return "Unknown";
 	}
