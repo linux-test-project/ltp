@@ -723,6 +723,36 @@ options passed to mkfs.
 The extra options 'fs_opts' should either be 'NULL' if there are none or a
 'NULL' terminated array of strings such as '{"-b", "1024", NULL}'.
 
+2.2.14 Verifying a filesystem's free space
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some tests have size requirements for the filesystem's free space. If these
+requirements are not satisfied the tests are not appropriate to run.
+Especially when you run runltp with "-z" option to specify a big block device,
+different tests have different requirements for the free space of this block
+device.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+int tst_fs_has_free(void (*cleanup)(void), const char *path,
+		    unsigned int size, unsigned int mult);
+-------------------------------------------------------------------------------
+
+The 'tst_fs_has_free()' function returns 1 if there is enough space and 0 if
+there is not.
+
+The 'path' is the pathname of any directory/file within filesystem you want to
+verify its free space.
+
+The 'mult' is multiplier one of 'TST_BYTES', 'TST_KB', 'TST_MB' or 'TST_GB'.
+
+The required free space is calculated by 'size * mult', e.g.
+'tst_fs_has_free(cleanup, "/tmp/testfile", 64, TST_MB)' will return 1 if the
+filesystem, which '"/tmp/testfile"' is in, has 64MB free space at least, and 0
+if not.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -780,10 +810,31 @@ Following functions similar to the LTP C intearface are available.
 * tst_require_root()
 * tst_tmpdir()
 * tst_rmdir()
+* tst_fs_has_free()
 
 There is one more function called 'tst_check_cmds()' that gets unspecified
 number of parameters and asserts that each parameter is a name of an
 executable in '$PATH' and exits the test with 'TCONF' on first missing.
+
+.tst_fs_has_free
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+
+...
+
+# whether current directory has 100MB free space at least.
+if ! tst_fs_has_free . 100MB; then
+	tst_brkm TCONF "Not enough free space"
+fi
+
+...
+-------------------------------------------------------------------------------
+
+The tst_fs_has_free shell interface returns 0 if the specified free space is
+satisfied, 1 if not, and 2 on error.
+
+The second argument supports suffixes kB, MB and GB, the default unit is Byte.
 
 2.3.3 Cleanup
 ^^^^^^^^^^^^^
