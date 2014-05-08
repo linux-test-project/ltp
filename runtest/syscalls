@@ -711,6 +711,7 @@ open12 open12
 
 #openat test cases
 openat01 openat01
+openat02 openat02
 
 mincore01 mincore01
 mincore02 mincore02

@@ -55,11 +55,11 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "lapi/fcntl.h"
+#include "openat.h"
 
 #define TEST_CASES 5
-#ifndef AT_FDCWD
-#define AT_FDCWD -100
-#endif
+
 void setup();
 void cleanup();
 void setup_every_copy();
@@ -74,11 +74,6 @@ int dirfd, fd, ret;
 int fds[TEST_CASES];
 char *filenames[TEST_CASES];
 int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0 };
-
-int myopenat(int dirfd, const char *filename, int flags, int mode)
-{
-	return ltp_syscall(__NR_openat, dirfd, filename, flags, mode);
-}
 
 int main(int ac, char **av)
 {
@@ -116,7 +111,7 @@ int main(int ac, char **av)
 		 * Call openat
 		 */
 		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(myopenat
+			TEST(openat
 			     (fds[i], filenames[i], O_CREAT | O_WRONLY, 0600));
 
 			/* check return code */
