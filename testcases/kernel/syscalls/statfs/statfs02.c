@@ -28,6 +28,8 @@
  *		the process, and expect EFAULT.
  *	5.	Pass a pointer to the buf paramter outside the address space
  *		of the process, and expect EFAULT.
+ *	6.	Pass a filename which has too many symbolic links, and expect
+ *		ELOOP.
  */
 
 #include <sys/types.h>
@@ -48,6 +50,7 @@ static int exp_enos[] = {
 #if !defined(UCLINUX)
 	EFAULT,
 #endif
+	ELOOP,
 	0
 };
 
@@ -56,6 +59,7 @@ static int fd;
 #define TEST_FILE		"statfs_file"
 #define TEST_FILE1		TEST_FILE"/statfs_file1"
 #define TEST_NOEXIST		"statfs_noexist"
+#define TEST_SYMLINK		"statfs_symlink"
 
 static char test_toolong[PATH_MAX+2];
 static struct statfs buf;
@@ -72,6 +76,7 @@ static struct test_case_t {
 	{(char *)-1, &buf, EFAULT},
 	{TEST_FILE, (struct statfs *)-1, EFAULT},
 #endif
+	{TEST_SYMLINK, &buf, ELOOP},
 };
 
 int TST_TOTAL = ARRAY_SIZE(TC);
@@ -119,6 +124,9 @@ static void setup(void)
 	TC[3].path = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
 			       MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 #endif
+
+	SAFE_SYMLINK(cleanup, TEST_SYMLINK, "statfs_symlink_2");
+	SAFE_SYMLINK(cleanup, "statfs_symlink_2", TEST_SYMLINK);
 }
 
 static void statfs_verify(const struct test_case_t *test)
