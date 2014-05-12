@@ -30,7 +30,8 @@ FILE *safe_fopen(const char *file, const int lineno, void (cleanup_fn)(void),
 
 	if (f == NULL) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "fopen(%s) failed at %s:%d", path, file, lineno);
+			 "%s:%d: fopen(%s,%s) failed",
+			 file, lineno, path, mode);
 		return NULL;
 	}
 
@@ -46,7 +47,7 @@ int safe_fclose(const char *file, const int lineno, void (cleanup_fn)(void),
 
 	if (ret) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "fclose failed at %s:%d", file, lineno);
+			 "%s:%d: fclose(%p) failed", file, lineno, f);
 	}
 
 	return ret;
@@ -64,7 +65,7 @@ int safe_asprintf(const char *file, const int lineno, void (cleanup_fn)(void),
 
 	if (ret < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "asprintf failed at %s:%d", file, lineno);
+			 "%s:%d: asprintf(%s,...) failed", file, lineno, fmt);
 	}
 
 	return ret;
