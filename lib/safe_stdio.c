@@ -19,6 +19,7 @@
 #define _GNU_SOURCE
 #include <stdarg.h>
 #include <stdio.h>
+#include <errno.h>
 #include "test.h"
 #include "safe_stdio.h"
 
@@ -67,4 +68,30 @@ int safe_asprintf(const char *file, const int lineno, void (cleanup_fn)(void),
 	}
 
 	return ret;
+}
+
+FILE *safe_popen(const char *file, const int lineno, void (cleanup_fn)(void),
+		 const char *command, const char *type)
+{
+	FILE *stream;
+	const int saved_errno = errno;
+
+	errno = 0;
+	stream = popen(command, type);
+
+	if (stream == NULL) {
+		if (errno != 0) {
+			tst_brkm(TBROK | TERRNO, cleanup_fn,
+				 "%s:%d: popen(%s,%s) failed",
+				 file, lineno, command, type);
+		} else {
+			tst_brkm(TBROK, cleanup_fn,
+				 "%s:%d: popen(%s,%s) failed: Out of memory",
+				 file, lineno, command, type);
+		}
+	}
+
+	errno = saved_errno;
+
+	return stream;
 }

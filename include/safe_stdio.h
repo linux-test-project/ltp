@@ -36,4 +36,9 @@ int safe_asprintf(const char *file, const int lineno, void (cleanup_fn)(void),
 #define SAFE_ASPRINTF(cleanup_fn, strp, fmt, ...) \
 	safe_asprintf(__FILE__, __LINE__, cleanup_fn, strp, fmt, __VA_ARGS__)
 
+FILE *safe_popen(const char *file, const int lineno, void (cleanup_fn)(void),
+		 const char *command, const char *type);
+#define SAFE_POPEN(cleanup_fn, command, type) \
+	safe_popen(__FILE__, __LINE__, cleanup_fn, command, type)
+
 #endif /* __SAFE_STDIO_H__ */
