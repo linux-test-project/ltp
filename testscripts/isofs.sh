@@ -98,7 +98,7 @@ for mkisofs_opt in \
 	"-allow-lowercase -allow-multidot -iso-level 3 -f -l -D -J -L -R"
 do
 	rm -f isofs.iso
-	mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR
+	mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR 2> /dev/null
 	if [ $? -eq 0 ]; then
 		tst_resm TPASS \
 			"mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR"
@@ -128,9 +128,10 @@ do
 			continue
 		fi
 
-		ls -lR $MNT_POINT
-		exportfs -i -o no_root_squash,rw *:$MNT_POINT
-		exportfs -u :$MNT_POINT
+		ls -lR $MNT_POINT > /dev/null
+		if [ $? -ne 0 ]; then
+			tst_resm TFAIL "ls -lR $MNT_POINT"
+		fi
 
 		umount $MNT_POINT
 		if [ $? -ne 0 ]; then
