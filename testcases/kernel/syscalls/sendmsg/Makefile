@@ -20,4 +20,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
+CPPFLAGS		+= -I$(abs_srcdir)/../utils
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

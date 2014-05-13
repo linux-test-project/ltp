@@ -30,20 +30,6 @@
  *	05/2003 Modified by Manoj Iyer - Make setup function set up lo device.
  */
 
-/*
- * The #ifndef code below is for 2.5 64-bit kernels, where
- * the MSG_CMSG_COMPAT flag must be 0 in order for the syscall
- * and this test to function correctly.
- */
-#ifndef MSG_CMSG_COMPAT
-#if defined(__powerpc64__) || defined(__mips64) || defined(__x86_64__) || \
-     defined(__sparc64__) || defined(__ia64__) || defined(__s390x__)
-#define MSG_CMSG_COMPAT 0x80000000
-#else
-#define MSG_CMSG_COMPAT 0
-#endif
-#endif /* MSG_CMSG_COMPAT */
-
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -63,6 +49,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "msg_common.h"
 
 char *TCID = "sendmsg01";
 int testno;

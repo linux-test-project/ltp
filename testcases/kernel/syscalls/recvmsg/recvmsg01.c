@@ -40,20 +40,6 @@
  *
  */
 
-/* The #ifndef code below is for 2.5 64-bit kernels, where     */
-/* the MSG_CMSG_COMPAT flag must be 0 in order for the syscall */
-/* and this test to function correctly.                        */
-#ifndef MSG_CMSG_COMPAT
-
-#if defined (__powerpc64__) || defined (__mips64) || defined (__x86_64__) || defined (__sparc64__)
-#define MSG_CMSG_COMPAT 0x80000000
-#else
-#define MSG_CMSG_COMPAT 0
-#endif
-
-#endif
-/***************************************************/
-
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -71,6 +57,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "msg_common.h"
 
 char *TCID = "recvmsg01";
 int testno;
