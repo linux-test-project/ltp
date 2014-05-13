@@ -246,7 +246,8 @@ static void def_handler(int sig)
 	 * Break remaining test cases, do any cleanup, then exit
 	 */
 	tst_brkm(TBROK, T_cleanup,
-		 "unexpected signal %d received (pid = %d).", sig, getpid());
+		 "unexpected signal %s(%d) received (pid = %d).",
+		 tst_strsig(sig), sig, getpid());
 }
 
 /*

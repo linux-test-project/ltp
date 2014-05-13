@@ -302,6 +302,13 @@ int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
 unsigned short tst_get_unused_port(void (cleanup_fn)(void),
 	unsigned short family, int type);
 
+/* lib/tst_res.c
+ * tst_strsig converts signal's value to corresponding string.
+ * tst_strerrno converts errno to corresponding string.
+ */
+const char *tst_strsig(int sig);
+const char *tst_strerrno(int err);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL

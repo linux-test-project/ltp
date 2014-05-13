@@ -189,6 +189,7 @@ struct pair {
 };
 
 #define PAIR(def) [def] = {.name = #def, .val = def},
+#define STRPAIR(key, value) [key] = {.name = value, .val = key},
 
 #define PAIR_LOOKUP(pair_arr, idx) do {                       \
 	if (idx < 0 || (size_t)idx >= ARRAY_SIZE(pair_arr) || \
@@ -216,9 +217,12 @@ const char *strttype(int ttype)
 }
 
 /*
- * Include table of errnos and strerrnodef() function.
+ * Include table of errnos and tst_strerrno() function.
  */
 #include "errnos.h"
+
+/* Include table of signals and tst_strsig() function*/
+#include "signame.h"
 
 /*
  * tst_res() - Main result reporting function.  Handle test information
@@ -459,7 +463,7 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 
 	if (ttype & TERRNO) {
 		size += snprintf(message + size, sizeof(message) - size,
-				 ": errno=%s(%i): %s", strerrnodef(err),
+				 ": errno=%s(%i): %s", tst_strerrno(err),
 				 err, strerror(err));
 	}
 
@@ -471,7 +475,7 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 	if (ttype & TTERRNO) {
 		size += snprintf(message + size, sizeof(message) - size,
 				 ": TEST_ERRNO=%s(%i): %s",
-				 strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
+				 tst_strerrno(TEST_ERRNO), (int)TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 	}
 

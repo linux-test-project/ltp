@@ -25,10 +25,10 @@
  * Mountain View, CA  94043, or:
  */
 
-static const char *strerrnodef(int err)
+const char *tst_strerrno(int err)
 {
-	struct pair errno_pairs[] = {
-		{.name = "SUCCESS", .val = 0},
+	static const struct pair errno_pairs[] = {
+		STRPAIR(0, "SUCCESS")
 		/* asm-generic/errno-base.h */
 		PAIR(EPERM)
 		PAIR(ENOENT)

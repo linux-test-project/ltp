@@ -61,3 +61,5 @@ logfile.*
 /lib/tests/tst_process_state
 /lib/tests/tst_cleanup_once
 /lib/tests/tst_safe_macros
+/lib/tests/tst_strsig
+/lib/tests/tst_strerrno
