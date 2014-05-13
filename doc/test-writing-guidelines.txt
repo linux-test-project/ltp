@@ -883,6 +883,14 @@ settings which may clear some of the bits. If your test depends on specific
 file permissions you need to 'chmod()' the file afterwards or use SAFE_TOUCH()
 that does the 'chmod()' for you.
 
+3.2 access()
+~~~~~~~~~~~
+
+If 'access(some_file, W_OK)' is executed by root it will return success even
+if the file doesn't have write permission bits set (the same holds for R_OK
+too). For sysfs files you can use 'open()' as a workaround to check file's
+read/write permissions. It might not work for other filesystems, for these you
+have to use 'stat()', 'lstat()' or 'fstat()'.
 
 4. Test Contribution Checklist
 ------------------------------
