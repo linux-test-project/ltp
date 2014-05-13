@@ -35,9 +35,20 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	 * superblock on the device, which is the case here as we
 	 * reuse one device for all tests.
 	 */
-	if (!strcmp(fs_type, "xfs") || !strcmp(fs_type, "btrfs")) {
+	if (!strcmp(fs_type, "xfs")) {
 		tst_resm(TINFO, "Appending '-f' flag to mkfs.%s", fs_type);
 		argv[pos++] = "-f";
+	}
+
+	if (!strcmp(fs_type, "btrfs")) {
+		/*
+		 * The -f option was added to btrfs-progs v3.12
+		 */
+		if (system("mkfs.btrfs 2>&1 | grep '\\-f ' >/dev/null") == 0) {
+			tst_resm(TINFO, "Appending '-f' flag to mkfs.%s",
+				fs_type);
+			argv[pos++] = "-f";
+		}
 	}
 
 	if (fs_opts) {
