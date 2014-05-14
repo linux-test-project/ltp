@@ -36,6 +36,7 @@
 #include "linux_syscall_numbers.h"
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
+#include "tst_fs_type.h"
 
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
 			 S_IXGRP|S_IROTH|S_IXOTH)
@@ -95,6 +96,8 @@ static void linkat_verify(const struct test_struct *);
 static int exp_enos[] = { ENAMETOOLONG, EEXIST, ELOOP,
 			  EACCES, EROFS, EMLINK, 0 };
 
+static long fs_type;
+
 int main(int ac, char **av)
 {
 	int lc;
@@ -127,8 +130,15 @@ int main(int ac, char **av)
 
 static void linkat_verify(const struct test_struct *desc)
 {
-	if (desc->setupfunc != NULL)
-		desc->setupfunc();
+	if (desc->setupfunc != NULL) {
+		if (desc->setupfunc == setup_emlink &&
+		    fs_type == TST_XFS_MAGIC) {
+			tst_resm(TCONF, "Test skipped XFS filesystem.");
+			return;
+		} else {
+			desc->setupfunc();
+		}
+	}
 
 	TEST(ltp_syscall(__NR_linkat, AT_FDCWD, desc->oldfname,
 			 AT_FDCWD, desc->newfname, desc->flags));
@@ -193,6 +203,10 @@ static void setup(void)
 	mount_flag = 1;
 
 	SAFE_TOUCH(cleanup, TEST_EMLINK, 0666, NULL);
+
+	fs_type = tst_fs_type(cleanup, "mntpoint");
+	if (fs_type == TST_XFS_MAGIC)
+		return;
 
 	while (1) {
 		sprintf(lname, "%s%ld", BASENAME, ++link_max);
