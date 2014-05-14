@@ -46,6 +46,10 @@ int tst_path_has_mnt_flags(void (cleanup_fn)(void),
 	}
 
 	while ((mnt = getmntent(f))) {
+		/* ignore duplicit record for root fs */
+		if (!strcmp(mnt->mnt_fsname, "rootfs"))
+			continue;
+
 		prefix_len = strlen(mnt->mnt_dir);
 
 		if (strncmp(path, mnt->mnt_dir, prefix_len) == 0

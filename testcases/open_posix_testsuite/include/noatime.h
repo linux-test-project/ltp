@@ -21,7 +21,7 @@ int strpref(const char *str, const char *pref)
 		/* string ended too soon */
 		if (str[i] == 0)
 			return -1;
-	
+
 		/* string is diferent */
 		if (str[i] != pref[i])
 			return -1;
@@ -44,8 +44,8 @@ int mounted_noatime(const char *path)
 	int prefix_max = 0, prefix;
 	int has_noatime;
 	FILE *f;
-	
-	f = setmntent("/proc/mounts", "r");	
+
+	f = setmntent("/proc/mounts", "r");
 
 	if (f == NULL) {
 		printf("Couldn't mount /proc/mounts\n");
@@ -53,11 +53,10 @@ int mounted_noatime(const char *path)
 	}
 
 	while ((mnt = getmntent(f))) {
-		
-		/* ignore all pseudo fs */
-		if (mnt->mnt_fsname[0] != '/')
+		/* ignore duplicit record for root fs */
+		if (!strcmp(mnt->mnt_fsname, "rootfs"))
 			continue;
-		
+
 		prefix = strpref(path, mnt->mnt_dir);
 
 		if (prefix > prefix_max) {
