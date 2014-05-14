@@ -313,7 +313,7 @@ const char *tst_strerrno(int err);
  *
  * Check whether a path is on a filesystem that is mounted with
  * specified flags
- * @path: path to file
+ * @path: path to file, if path is NULL tst_tmpdir is used.
  * @flags: NULL or NULL terminated array of mount flags
  *
  * Return: 0..n - number of flags matched

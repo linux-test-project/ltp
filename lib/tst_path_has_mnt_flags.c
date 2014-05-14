@@ -33,6 +33,13 @@ int tst_path_has_mnt_flags(void (cleanup_fn)(void),
 	int flags_matched = 0;
 	FILE *f;
 	int i;
+	char *tmpdir = NULL;
+
+	/*
+	 * Default parameter is test temporary directory
+	 */
+	if (path == NULL)
+		path = tmpdir = get_tst_tmpdir();
 
 	if (access(path, F_OK) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
@@ -67,6 +74,8 @@ int tst_path_has_mnt_flags(void (cleanup_fn)(void),
 	}
 
 	endmntent(f);
+
+	free(tmpdir);
 
 	return flags_matched;
 }
