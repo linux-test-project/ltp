@@ -435,6 +435,21 @@ Exits the tests, note that this function has no parameters, the PASSES/FAILS
 reported by the 'tst_resm()' interfaces were stored and are used for the exit
 value.
 
+[source,c]
+-------------------------------------------------------------------------------
+const char *tst_strsig(int sig);
+-------------------------------------------------------------------------------
+
+Return the given signal number's corresponding string.
+
+
+[source,c]
+-------------------------------------------------------------------------------
+const char *tst_strerrno(int err);
+-------------------------------------------------------------------------------
+
+Return the given errno number's corresponding string.
+
 
 2.2.3 Test temporary directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
