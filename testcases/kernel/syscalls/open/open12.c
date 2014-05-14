@@ -73,8 +73,6 @@ int main(int argc, char **argv)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
-
 	TEST_PAUSE;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -173,7 +171,7 @@ static void test_cloexec(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
 
 	if (pid == 0) {
-		if (execlp("open12_cloexec", "open12_cloexec", buf, NULL))
+		if (execlp("open12_child", "open12_child", buf, NULL))
 			exit(2);
 	}
 
@@ -195,7 +193,7 @@ static void test_cloexec(void)
 		}
 	} else {
 		tst_brkm(TBROK, cleanup,
-				 "open12_cloexec exits with unexpected error");
+				 "open12_child exits with unexpected error");
 	}
 }
 

@@ -107,8 +107,6 @@ int main(int ac, char **av)
 
 void setup(void)
 {
-	tst_require_root(NULL);
-
 	TEST_PAUSE;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
