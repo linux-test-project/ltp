@@ -103,7 +103,7 @@ int tst_tmpdir_created(void)
 	return TESTDIR != NULL;
 }
 
-char *get_tst_tmpdir(void)
+char *tst_get_tmpdir(void)
 {
 	/* Smack the user for calling things out of order. */
 	if (TESTDIR == NULL)

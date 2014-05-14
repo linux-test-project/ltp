@@ -350,9 +350,9 @@ static int test_FS(void)
 	char *test_tmpdir;
 	int rval;
 
-	test_tmpdir = get_tst_tmpdir();
+	test_tmpdir = tst_get_tmpdir();
 	if (test_tmpdir == NULL) {
-		tst_resm(TWARN | TERRNO, "get_tst_tmpdir failed");
+		tst_resm(TWARN | TERRNO, "tst_get_tmpdir failed");
 		rval = -1;
 	} else if (chdir(test_tmpdir) == -1) {
 		tst_resm(TWARN | TERRNO, "chdir failed in test_FS");

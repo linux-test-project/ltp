@@ -39,7 +39,7 @@ int tst_path_has_mnt_flags(void (cleanup_fn)(void),
 	 * Default parameter is test temporary directory
 	 */
 	if (path == NULL)
-		path = tmpdir = get_tst_tmpdir();
+		path = tmpdir = tst_get_tmpdir();
 
 	if (access(path, F_OK) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,

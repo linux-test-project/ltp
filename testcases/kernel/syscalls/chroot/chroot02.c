@@ -87,7 +87,7 @@ int main(int ac, char **av)
 		if (pid == 0) {
 			retval = 0;
 
-			if (chroot(get_tst_tmpdir()) == -1) {
+			if (chroot(tst_get_tmpdir()) == -1) {
 				perror("chroot failed");
 				retval = 1;
 			} else {

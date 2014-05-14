@@ -1116,7 +1116,7 @@ void do_ENOENT(struct all_test_cases *tc_ptr)
 				 "directory through a symbolic link file was not received:",
 				 errno, strerror(errno));
 			/* FIXME (garrcoop): memory leak */
-			chdir(get_tst_tmpdir());
+			chdir(tst_get_tmpdir());
 		}
 	} else if (cktcsid(tc_ptr->tcid, LINK)) {
 
@@ -1220,7 +1220,7 @@ void do_ELOOP(struct all_test_cases *tc_ptr)
 				 "Expected ELOOP error condition when chdir(2) a nested symbolic link:",
 				 errno, strerror(errno));
 			/* FIXME (garrcoop): memory leak */
-			chdir(get_tst_tmpdir());
+			chdir(tst_get_tmpdir());
 		}
 	} else if (cktcsid(tc_ptr->tcid, LINK)) {
 
@@ -1573,7 +1573,7 @@ void do_chdir(struct all_test_cases *tc_ptr)
 			 *  Build expected current directory position
 			 */
 			/* FIXME (garrcoop): memory leak */
-			strcpy(expected_location, get_tst_tmpdir());
+			strcpy(expected_location, tst_get_tmpdir());
 			strcat(expected_location, "/");
 			strcat(expected_location, tc_ptr->fn_arg[2]);
 
@@ -1594,7 +1594,7 @@ void do_chdir(struct all_test_cases *tc_ptr)
 					 cwd, expected_location);
 			}
 			/* FIXME (garrcoop): memory leak */
-			chdir(get_tst_tmpdir());
+			chdir(tst_get_tmpdir());
 		}
 		rmdir(tc_ptr->fn_arg[2]);
 	}

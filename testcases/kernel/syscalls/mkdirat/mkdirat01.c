@@ -89,7 +89,7 @@ static void verify_mkdirat(struct test_case *test)
 static void setup_iteration(int i)
 {
 	static char testdir[256];
-	char *tmpdir = get_tst_tmpdir();
+	char *tmpdir = tst_get_tmpdir();
 
 	/* Initialize test dir and file names */
 	sprintf(testdir, "mkdirattestdir%d_%d", getpid(), i);

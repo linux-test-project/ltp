@@ -160,7 +160,7 @@ static void overcommit(void)
 			tst_brkm(TBROK | TERRNO, cleanup, "shmget");
 	} else {
 		/* XXX (garrcoop): memory leak. */
-		snprintf(s, BUFSIZ, "%s/hugemmap05/file", get_tst_tmpdir());
+		snprintf(s, BUFSIZ, "%s/hugemmap05/file", tst_get_tmpdir());
 		fd = open(s, O_CREAT | O_RDWR, 0755);
 		if (fd == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "open");
@@ -281,7 +281,7 @@ static void cleanup(void)
 	close(fd);
 
 	/* XXX (garrcoop): memory leak. */
-	snprintf(buf, BUFSIZ, "%s/hugemmap05", get_tst_tmpdir());
+	snprintf(buf, BUFSIZ, "%s/hugemmap05", tst_get_tmpdir());
 	if (umount(buf) == -1)
 		tst_resm(TWARN | TERRNO, "umount");
 	if (shmid != -1) {
@@ -380,7 +380,7 @@ static void setup(void)
 	close(fd);
 
 	/* XXX (garrcoop): memory leak. */
-	snprintf(buf, BUFSIZ, "%s/hugemmap05", get_tst_tmpdir());
+	snprintf(buf, BUFSIZ, "%s/hugemmap05", tst_get_tmpdir());
 	if (mkdir(buf, 0700) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "mkdir");
 	if (mount(NULL, buf, "hugetlbfs", 0, NULL) == -1)

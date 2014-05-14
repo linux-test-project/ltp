@@ -123,7 +123,7 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	tst_tmpdir();
-	char *tmpdir = get_tst_tmpdir();
+	char *tmpdir = tst_get_tmpdir();
 
 	snprintf(abspath, sizeof(abspath), "%s/" TEST_SYMLINK, tmpdir);
 	free(tmpdir);

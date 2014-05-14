@@ -178,14 +178,14 @@ void tst_tmpdir(void);
  * This function is intended ONLY as a companion to tst_tmpdir().
  */
 void tst_rmdir(void);
-/* get_tst_tmpdir()
+/* tst_get_tmpdir()
  *
  * Return a copy of the test temp directory as seen by LTP. This is for
  * path-oriented tests like chroot, etc, that may munge the path a bit.
  *
  * FREE VARIABLE AFTER USE IF IT IS REUSED!
  */
-char *get_tst_tmpdir(void);
+char *tst_get_tmpdir(void);
 /*
  * Returns 1 if temp directory was created.
  */

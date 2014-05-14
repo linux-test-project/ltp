@@ -55,7 +55,7 @@ int main(void)
 
 	tst_tmpdir();
 
-	tmp_dir = get_tst_tmpdir();
+	tmp_dir = tst_get_tmpdir();
 	changed_dir = getcwd(NULL, PATH_MAX);
 
 	if (strcmp(tmp_dir, changed_dir) == 0 &&

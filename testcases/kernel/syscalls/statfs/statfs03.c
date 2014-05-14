@@ -129,9 +129,9 @@ void setup(void)
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
-	if (chmod(get_tst_tmpdir(), S_IRWXU) == -1)
+	if (chmod(tst_get_tmpdir(), S_IRWXU) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, 700) failed",
-			 get_tst_tmpdir());
+			 tst_get_tmpdir());
 
 	/* create a test file */
 	sprintf(fname, "%s.%d", fname, getpid());

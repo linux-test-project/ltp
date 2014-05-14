@@ -133,7 +133,7 @@ static void setup(void)
 	tst_tmpdir();
 
 	/* Initialize test dir and file names */
-	tmpdir = get_tst_tmpdir();
+	tmpdir = tst_get_tmpdir();
 	sprintf(testfilepath, PATHNAME"/mknodattestfile%d", getpid());
 	sprintf(testfile, "mknodattestfile%d", getpid());
 	sprintf(testfile2, "mknodattestfile2%d", getpid());

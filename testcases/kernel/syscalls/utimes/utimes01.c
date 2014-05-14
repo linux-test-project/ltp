@@ -212,8 +212,8 @@ static int do_test(struct test_case *tc)
 	struct stat st;
 	uid_t old_uid;
 
-	/* XXX (garrcoop): memory leak with get_tst_tmpdir. */
-	TEST(rc = setup_file(get_tst_tmpdir(), "test.file", fpath));
+	/* XXX (garrcoop): memory leak with tst_get_tmpdir. */
+	TEST(rc = setup_file(tst_get_tmpdir(), "test.file", fpath));
 	if (rc < 0)
 		return 1;
 	/* The test just needs the file, so no need to keep it open. */

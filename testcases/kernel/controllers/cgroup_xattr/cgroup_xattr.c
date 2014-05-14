@@ -223,7 +223,7 @@ static void cleanup(void)
 			tst_brkm(TBROK, NULL, "Failed to close dir\n");
 	}
 
-	char *cwd = get_tst_tmpdir();
+	char *cwd = tst_get_tmpdir();
 	SAFE_CHDIR(NULL, cwd);
 	free(cwd);
 

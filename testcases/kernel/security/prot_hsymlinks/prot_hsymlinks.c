@@ -347,7 +347,7 @@ static void create_sub_dir(const char *path,
 
 static void init_base_dirs(void)
 {
-	char *cwd = get_tst_tmpdir();
+	char *cwd = tst_get_tmpdir();
 	cwd_offset = strlen(cwd);
 
 	mode_t mode = S_IRWXU | S_IRWXG | S_IRWXO;

@@ -84,7 +84,7 @@ int main(int ac, char **av)
 
 	if (!Hflag) {
 		tst_tmpdir();
-		Hopt = get_tst_tmpdir();
+		Hopt = tst_get_tmpdir();
 	}
 	if (sflag)
 		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
