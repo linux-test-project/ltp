@@ -20,6 +20,9 @@
  *   1. Creat a directory and open it, then delete the directory, ENOENT would
  *	return.
  *   2. File descriptor does not refer to a directory, ENOTDIR would return.
+ *   3. Invalid file descriptor fd, EBADF would return.
+ *   4. Argument points outside the calling process's address space, EFAULT
+ *	would return.
  *
  *  PS:
  *   This file is for readdir(2) and the other files(readdir01.c and
@@ -34,6 +37,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <sys/mman.h>
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
@@ -43,11 +47,14 @@
 char *TCID = "readdir21";
 
 #define TEST_DIR	"test_dir"
+#define TEST_DIR4	"test_dir4"
 #define TEST_FILE	"test_file"
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
 			 S_IXGRP|S_IROTH|S_IXOTH)
 
 static unsigned int del_dir_fd, file_fd;
+static unsigned int invalid_fd = 999;
+static unsigned int dir_fd;
 static struct old_linux_dirent dirp;
 static void setup(void);
 static void cleanup(void);
@@ -60,6 +67,11 @@ static struct test_case_t {
 } test_cases[] = {
 	{&del_dir_fd, &dirp, sizeof(struct old_linux_dirent), ENOENT},
 	{&file_fd, &dirp, sizeof(struct old_linux_dirent), ENOTDIR},
+	{&invalid_fd, &dirp, sizeof(struct old_linux_dirent), EBADF},
+#if !defined(UCLINUX)
+	{&dir_fd, (struct old_linux_dirent *)-1,
+	 sizeof(struct old_linux_dirent), EFAULT},
+#endif
 };
 
 int TST_TOTAL = ARRAY_SIZE(test_cases);
@@ -102,6 +114,14 @@ static void setup(void)
 	SAFE_RMDIR(cleanup, TEST_DIR);
 
 	file_fd = SAFE_OPEN(cleanup, TEST_FILE, O_RDWR | O_CREAT, 0777);
+
+	SAFE_MKDIR(cleanup, TEST_DIR4, DIR_MODE);
+	dir_fd = SAFE_OPEN(cleanup, TEST_DIR4, O_RDONLY | O_DIRECTORY);
+
+#if !defined(UCLINUX)
+	test_cases[3].dirp = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
+				       MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+#endif
 }
 
 static void readdir_verify(const struct test_case_t *test)
@@ -125,6 +145,9 @@ static void readdir_verify(const struct test_case_t *test)
 static void cleanup(void)
 {
 	TEST_CLEANUP;
+
+	if (dir_fd > 0)
+		close(dir_fd);
 
 	if (del_dir_fd > 0)
 		close(del_dir_fd);
