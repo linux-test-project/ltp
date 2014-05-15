@@ -22,7 +22,7 @@ AC_DEFUN([LTP_CHECK_CC_WARN_OLDSTYLE],[dnl
 AC_MSG_CHECKING([if $CC supports -Wold-style-definition])
 
 backup_cflags="$CFLAGS"
-CFLAGS="-Wold-style-definition"
+CFLAGS+=" -Wold-style-definition"
 
 AC_LINK_IFELSE(
 	[AC_LANG_PROGRAM([])],
