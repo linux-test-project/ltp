@@ -679,6 +679,7 @@ setresuid01 setresuid01
 setresuid02 setresuid02
 setresuid03 setresuid03
 setresuid04 setresuid04
+setresuid05 setresuid05
 
 setreuid01 setreuid01
 setreuid02 setreuid02

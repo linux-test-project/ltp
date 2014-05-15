@@ -831,6 +831,8 @@
 /setresuid/setresuid03_16
 /setresuid/setresuid04
 /setresuid/setresuid04_16
+/setresuid/setresuid05
+/setresuid/setresuid05_16
 /setreuid/setreuid01
 /setreuid/setreuid01_16
 /setreuid/setreuid02
