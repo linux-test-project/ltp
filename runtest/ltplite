@@ -770,6 +770,7 @@ setregid04 setregid04
 setresgid01 setresgid01
 setresgid02 setresgid02
 setresgid03 setresgid03
+setresgid04 setresgid04
 
 setresuid01 setresuid01
 setresuid02 setresuid02

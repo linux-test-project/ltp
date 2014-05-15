@@ -1029,6 +1029,8 @@ setresgid02 setresgid02
 setresgid02_16 setresgid02_16
 setresgid03 setresgid03
 setresgid03_16 setresgid03_16
+setresgid04 setresgid04
+setresgid04_16 setresgid04_16
 
 setresuid01 setresuid01
 setresuid01_16 setresuid01_16
