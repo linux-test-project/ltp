@@ -241,6 +241,11 @@ pid_t safe_waitpid(const char *file, const int lineno, void (cleanup_fn)(void),
 #define SAFE_WAITPID(cleanup_fn, pid, status, opts) \
         safe_waitpid(__FILE__, __LINE__, (cleanup_fn), (pid), (status), (opts))
 
+int safe_kill(const char *file, const int lineno, void (cleanup_fn)(void),
+		  pid_t pid, int sig);
+#define SAFE_KILL(cleanup_fn, pid, sig) \
+	safe_kill(__FILE__, __LINE__, (cleanup_fn), (pid), (sig))
+
 void *safe_memalign(const char *file, const int lineno,
 		    void (*cleanup_fn)(void), size_t alignment, size_t size);
 #define SAFE_MEMALIGN(cleanup_fn, alignment, size) \

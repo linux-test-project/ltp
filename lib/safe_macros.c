@@ -704,3 +704,19 @@ void *safe_memalign(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_kill(const char *file, const int lineno, void (cleanup_fn)(void),
+	      pid_t pid, int sig)
+{
+	int rval;
+
+	rval = kill(pid, sig);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: kill(%d,%s) failed",
+			 file, lineno, pid, tst_strsig(sig));
+	}
+
+	return rval;
+}
