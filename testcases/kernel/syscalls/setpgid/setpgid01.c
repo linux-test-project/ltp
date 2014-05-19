@@ -36,12 +36,14 @@
  * Description:
  * Verify that:
  *   1. Basic functionality test for setpgid(2).
+ *   2. Check functioning of setpgid(2) with pid = 0 and pgid = 0.
  */
 
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -51,7 +53,8 @@ static void cleanup(void);
 char *TCID = "setpgid01";
 
 static void setpgid_test1(void);
-static void (*testfunc[])(void) = { setpgid_test1};
+static void setpgid_test2(void);
+static void (*testfunc[])(void) = { setpgid_test1, setpgid_test2};
 int TST_TOTAL = ARRAY_SIZE(testfunc);
 
 int main(int ac, char **av)
@@ -91,9 +94,56 @@ static void setpgid_test1(void)
 	}
 }
 
+static int wait4child(pid_t child)
+{
+	int status;
+
+	if (waitpid(child, &status, 0) == -1)
+		tst_resm(TBROK|TERRNO, "waitpid");
+	if (WIFEXITED(status))
+		return WEXITSTATUS(status);
+	else
+		return status;
+}
+
+static void setpgid_test2(void)
+{
+	int ret;
+	pid_t pgid, pid;
+
+	pid = FORK_OR_VFORK();
+	if (pid == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "fork()");
+
+	if (pid != 0) {
+		ret = wait4child(pid);
+	} else {
+		pid = getpid();
+		TEST(setpgid(0, 0));
+		pgid = getpgrp();
+		if (TEST_RETURN == -1) {
+			fprintf(stderr, "setpgid(0, 0) fails in "
+				"child process: %s\n", strerror(TEST_ERRNO));
+			exit(1);
+		} else if (pgid != pid) {
+			fprintf(stderr, "setpgid(0, 0) fails to make PGID"
+				"equal to PID\n");
+			exit(1);
+		} else {
+			exit(0);
+		}
+	}
+
+	if (ret == 0)
+		tst_resm(TPASS, "test setpgid(0, 0) success");
+	else
+		tst_resm(TFAIL, "test setpgid(0, 0) fail");
+}
+
+
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
