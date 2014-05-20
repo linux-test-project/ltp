@@ -49,5 +49,4 @@ int tst_is_virt(int virt_type)
 		return is_xen();
 	}
 	tst_brkm(TBROK, NULL, "invalid virt_type flag: %d", virt_type);
-	return 0;
 }

@@ -32,7 +32,6 @@ FILE *safe_fopen(const char *file, const int lineno, void (cleanup_fn)(void),
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: fopen(%s,%s) failed",
 			 file, lineno, path, mode);
-		return NULL;
 	}
 
 	return f;
