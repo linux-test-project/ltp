@@ -54,12 +54,14 @@
 char *TCID = "read02";
 
 static int badfd = -1;
-static int fd2, fd3, fd4;
+static int fd2, fd3, fd4 = -1;
 static char buf[BUFSIZ];
 static void *outside_buf = (void *)-1;
 static void *addr4;
 static void *addr5;
 static int exp_enos[] = { EBADF, EISDIR, EFAULT, EINVAL, 0 };
+
+static long fs_type;
 
 static struct test_case_t {
 	int *fd;
@@ -112,11 +114,6 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	if (tst_fs_type(cleanup, ".") == TST_TMPFS_MAGIC) {
-		tst_brkm(TCONF, cleanup,
-			 "Test not supported on tmpfs filesystem");
-	}
-
 	fd2 = SAFE_OPEN(cleanup, ".", O_DIRECTORY);
 
 	SAFE_FILE_PRINTF(cleanup, "test_file", "A");
@@ -131,11 +128,19 @@ static void setup(void)
 	addr4 = SAFE_MEMALIGN(cleanup, getpagesize(), (4096 * 10));
 	addr5 = addr4 + 1;
 
-	fd4 = SAFE_OPEN(cleanup, "test_file", O_RDWR | O_DIRECT);
+	fs_type = tst_fs_type(cleanup, ".");
+	if (fs_type != TST_TMPFS_MAGIC)
+		fd4 = SAFE_OPEN(cleanup, "test_file", O_RDWR | O_DIRECT);
 }
 
 static void read_verify(const struct test_case_t *test)
 {
+	if (test->fd == &fd4 && *test->fd == -1) {
+		tst_resm(TCONF, "O_DIRECT not supported on %s filesystem",
+		         tst_fs_type_name(fs_type));
+		return;
+	}
+
 	TEST(read(*test->fd, *test->buf, test->count));
 
 	if (TEST_RETURN != -1) {
