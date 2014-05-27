@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *    AUTHOR		: William Roske/Richard Logan
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -30,44 +31,6 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.14 2009/08/28 09:59:52 vapier Exp $ */
-
-/**********************************************************
- *
- *    OS Testing - Silicon Graphics, Inc.
- *
- *    FUNCTION NAME	: parse_opts
- *
- *    FUNCTION TITLE	: parse standard & user options for system call tests
- *
- *    SYNOPSIS:
- *	#include "usctest.h"
- *
- *	char *parse_opts(ac, av, user_optarr, uhf)
- *	int    ac;
- *	char **av;
- *	option_t user_optarr[];
- *	void (*uhf)();
- *
- *    AUTHOR		: William Roske/Richard Logan
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    DESCRIPTION
- *	The parse_opts library routine takes that argc and argv parameters
- *	recevied by main() and an array of structures defining user options.
- *	It parses the command line setting flag and argument locations
- *      associated with the options.  It uses getopt to do the actual cmd line
- *      parsing.  uhf() is a function to print user define help
- *
- *      This module contains the functions usc_global_setup_hook and
- *      usc_test_looping, which are called by marcos defined in usctest.h.
- *
- *    RETURN VALUE
- *	parse_opts returns a pointer to an error message if an error occurs.
- *	This pointer is (char *)NULL if parsing is successful.
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 #include "config.h"
 #include <errno.h>
 #include <stdlib.h>
@@ -148,27 +111,21 @@ struct std_option_t {
 	char *flag;
 	char **arg;
 } std_options[] = {
-	{
-	"c:", "  -c n    Run n copies concurrently\n", NULL, NULL}, {
-	"e", "  -e      Turn on errno logging\n", NULL, NULL}, {
-	"f", "  -f      Turn off functional testing\n", NULL, NULL}, {
-	"h", "  -h      Show this help screen\n", NULL, NULL}, {
-	"i:", "  -i n    Execute test n times\n", NULL, NULL}, {
-	"I:", "  -I x    Execute test for x seconds\n", NULL, NULL}, {
-	"p", "  -p      Pause for SIGUSR1 before starting\n", NULL, NULL}, {
-	"P:", "  -P x    Pause for x seconds between iterations\n", NULL, NULL},
-	{
-	"t", "  -t      Turn on syscall timing\n", NULL, NULL},
+	{"c:", "  -c n    Run n copies concurrently\n", NULL, NULL},
+	{"e", "  -e      Turn on errno logging\n", NULL, NULL},
+	{"f", "  -f      Turn off functional testing\n", NULL, NULL},
+	{"h", "  -h      Show this help screen\n", NULL, NULL},
+	{"i:", "  -i n    Execute test n times\n", NULL, NULL},
+	{"I:", "  -I x    Execute test for x seconds\n", NULL, NULL},
+	{"p", "  -p      Pause for SIGUSR1 before starting\n", NULL, NULL},
+	{"P:", "  -P x    Pause for x seconds between iterations\n", NULL, NULL},
+	{"t", "  -t      Turn on syscall timing\n", NULL, NULL},
 #ifdef UCLINUX
-	{
-	"C:",
-		    "  -C ARG  Run the child process with arguments ARG (for internal use)\n",
+	{"C:",
+	      "  -C ARG  Run the child process with arguments ARG (for internal use)\n",
 		    NULL, NULL},
 #endif
-	{
-NULL, NULL, NULL, NULL}};
-
-void print_help(void (*user_help) ());
+	{NULL, NULL, NULL, NULL}};
 
 /*
  * Structure for usc_recressive_func argument
@@ -195,22 +152,35 @@ static void usc_recressive_func();
 /*
  * Define bits for options that might have env variable default
  */
-#define  OPT_iteration 		01
-#define  OPT_nofunccheck	02
-#define  OPT_duration		04
-#define  OPT_delay		010
-#define  OPT_copies		020
+#define OPT_iteration		01
+#define OPT_nofunccheck		02
+#define OPT_duration		04
+#define OPT_delay		010
+#define OPT_copies		020
 
 #ifdef UCLINUX
 /* Allocated and used in self_exec.c: */
 extern char *child_args;	/* Arguments to child when -C is used */
 #endif
 
+static void print_help(void (*user_help)(void))
+{
+	int i;
+
+	for (i = 0; std_options[i].optstr; ++i) {
+		if (std_options[i].help)
+			printf("%s", std_options[i].help);
+	}
+
+	if (user_help)
+		user_help();
+}
+
 /**********************************************************************
  * parse_opts:
  **********************************************************************/
-char *parse_opts(int ac, char **av, const option_t * user_optarr,
-		 void (*uhf) ())
+const char *parse_opts(int ac, char **av, const option_t * user_optarr,
+                       void (*uhf)(void))
 {
 	int found;		/* flag to indicate that an option specified was */
 	/* found in the user's list */
@@ -220,7 +190,7 @@ char *parse_opts(int ac, char **av, const option_t * user_optarr,
 	int options = 0;	/* no options specified */
 	int optstrlen, i;
 	char *optionstr;
-	int opt;		/* return of getopt */
+	int opt;
 
 	/*
 	 * If not the first time this function is called, release the old STD_opt_arr
@@ -367,7 +337,7 @@ char *parse_opts(int ac, char **av, const option_t * user_optarr,
 			}
 		}
 
-	}			/* end of while */
+	}
 	free(optionstr);
 
 	STD_argind = optind;
@@ -601,39 +571,15 @@ char *parse_opts(int ac, char **av, const option_t * user_optarr,
 	printf("STD_PAUSE           = %d\n", STD_PAUSE);
 #endif
 
-	return ((char *)NULL);
-
-}				/* end of parse_opts */
-
-/*********************************************************************
- * print_help() - print help message and user help message
- *********************************************************************/
-void print_help(void (*user_help) ())
-{
-	STD_opts_help();
-
-	if (user_help)
-		user_help();
-}
-
-/*********************************************************************
- * STD_opts_help() - return a help string for the STD_OPTIONS.
- *********************************************************************/
-void STD_opts_help(void)
-{
-	int i;
-
-	for (i = 0; std_options[i].optstr; ++i) {
-		if (std_options[i].help)
-			printf("%s", std_options[i].help);
-	}
+	return NULL;
 }
 
 /*
  * routine to goto when we get the SIGUSR1 for STD_PAUSE
  */
-void STD_go(int sig)
+static void STD_go(int sig)
 {
+	(void)sig;
 	return;
 }
 
@@ -660,11 +606,10 @@ int usc_global_setup_hook(void)
 			fprintf(stderr, "%s: fork failed: %d - %s\n",
 				__FILE__, errno, strerror(errno));
 			break;
-		case 0:	/* child */
+		case 0:
 			cnt = STD_COPIES;	/* to stop the forking */
 			break;
-
-		default:	/* parent */
+		default:
 			break;
 		}
 	}
@@ -677,18 +622,15 @@ int usc_global_setup_hook(void)
 		pause();
 		signal(SIGUSR1, (void (*)())_TMP_FUNC);
 	}
-#if !defined(UCLINUX)
 
-	if (STD_TP_sbrk || STD_LP_sbrk) {
+	if (STD_TP_sbrk || STD_LP_sbrk)
 		STD_start_break = sbrk(0);	/* get original sbreak size */
-	}
 
 	if (STD_TP_sbrk) {
 		sbrk(STD_TP_sbrk);
 		if (Debug)
 			printf("after sbrk(%d)\n", STD_TP_sbrk);
 	}
-#endif /* if !defined(UCLINUX) */
 #endif
 	return 0;
 }
@@ -814,7 +756,7 @@ int usc_test_looping(int counter)
 	if (keepgoing)
 		return 1;
 	else
-		return 0;	/* done - stop iterating */
+		return 0;
 }
 
 /*

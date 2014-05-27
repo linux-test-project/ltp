@@ -48,17 +48,6 @@
 #endif
 
 /***********************************************************************
- * Define option_t structure type.
- * Entries in this struct are used by the parse_opts routine
- * to indicate valid options and return option arguments
- ***********************************************************************/
-typedef struct {
-  char *option;		/* Valid option string (one option only) like "a:" */
-  int  *flag;		/* pointer to location to set true if option given */
-  char **arg;		/* pointer to location to place argument, if needed */
-} option_t;
-
-/***********************************************************************
  * The following globals are defined in parse_opts.c but must be
  * externed here because they are used in the macros defined below.
  ***********************************************************************/
@@ -77,7 +66,23 @@ extern float STD_LOOP_DURATION, /* wall clock time to iterate */
 
 #define USC_MAX_ERRNO	2000
 
-char *parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)());
+typedef struct {
+	char *option;	/* Valid option string (one option only) like "a:"  */
+	int  *flag;	/* Pointer to location to set true if option given  */
+	char **arg;	/* Pointer to location to place argument, if needed */
+} option_t;
+
+/*
+ * The parse_opts library routine takes that argc and argv parameters recevied
+ * by main() and an array of structures defining user options. It parses the
+ * command line setting flag and argument locations associated with the
+ * options. The uhf() is a function called to print user defined help.
+ *
+ * The function returns a pointer to an error message if an error occurs or in
+ * case of success NULL.
+ */
+const char *parse_opts(int ac, char **av, const option_t *user_optarr, void
+                       (*uhf)(void));
 
 struct usc_errno_t {
     int flag;
@@ -102,8 +107,6 @@ struct tblock {
  * in the macros that follow.
  ***********************************************************************/
 extern struct tblock tblock;
-extern void STD_go();
-extern void STD_opts_help();
 
 /***********************************************************************
  * TEST: calls a system call
