@@ -85,7 +85,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t cpid;		/* Child process id */
 	struct timeval otime;	/* time before child execution suspended */
 	struct timeval ntime;	/* time after child resumes execution */

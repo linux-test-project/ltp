@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	int lc;
 	int i;
 	int exp_eno;
-	char *msg;
+	const char *msg;
 	char buf[BUFSIZ];
 
 	msg = parse_opts(argc, argv, NULL, NULL);

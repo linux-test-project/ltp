@@ -135,7 +135,7 @@ void cleanup();			/* cleanup function for the tests */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char *node_name;	/* ptr. for node name created */
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */

@@ -82,7 +82,7 @@ int TST_TOTAL = ARRAY_SIZE(test_cases);
 
 int main(int ac, char **av)
 {
-	char *msg;
+	const char *msg;
 	int i, lc;
 
 	msg = parse_opts(ac, av, NULL, NULL);

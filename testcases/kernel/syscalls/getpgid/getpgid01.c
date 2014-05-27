@@ -60,7 +60,7 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;		/* message returned by parse_opts */
+	const char *msg;		/* message returned by parse_opts */
 
 	register int pgid_0, pgid_1;
 	register int my_pid, my_ppid;

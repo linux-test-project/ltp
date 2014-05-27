@@ -65,7 +65,7 @@ static char event_buf[EVENT_BUF_LEN];
 int main(int ac, char **av)
 {
 	int lc, i;
-	char *msg;
+	const char *msg;
 	int len, stop;
 
 	msg = parse_opts(ac, av, NULL, NULL);

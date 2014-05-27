@@ -285,7 +285,7 @@ int main(int ac, char **av)
 	int tlen = 0;
 	struct sigaction act;
 	int lc;
-	char *msg;
+	const char *msg;
 	struct statvfs fs;
 
 	/*

@@ -70,7 +70,7 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct itimerval *value, *ovalue;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

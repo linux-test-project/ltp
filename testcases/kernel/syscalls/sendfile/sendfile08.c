@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 {
 	int lc;
 	int ret;
-	char *msg;
+	const char *msg;
 	char buf[BUFSIZ];
 
 	msg = parse_opts(argc, argv, NULL, NULL);

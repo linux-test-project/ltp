@@ -146,7 +146,7 @@ static void setup(void)
 
 int main(int argc, char **argv)
 {
-	char *msg;
+	const char *msg;
 	size_t len;
 	int i, test_num;
 

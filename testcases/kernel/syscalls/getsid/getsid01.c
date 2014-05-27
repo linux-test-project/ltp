@@ -74,7 +74,7 @@ pid_t p_sid;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid, c_pid, c_sid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

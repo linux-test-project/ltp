@@ -319,7 +319,7 @@ static void test_migrate_other_process(int node1, int node2, int cap_sys_nice)
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, options, NULL);
 	if (msg != NULL)

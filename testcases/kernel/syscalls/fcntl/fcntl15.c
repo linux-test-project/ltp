@@ -543,7 +543,7 @@ int run_test(int file_flag, int file_mode, int dup_flag)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int fail = 0;
 

@@ -67,7 +67,7 @@ static void sighandler(int signo LTP_ATTRIBUTE_UNUSED);
 
 int main(int argc, char *argv[])
 {
-	char *msg;
+	const char *msg;
 	int lc, pid, status;
 	struct sigaction sa;
 

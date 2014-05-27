@@ -96,7 +96,7 @@ static int exp_enos[] = { EROFS, ELOOP, 0 };
 int main(int ac, char **av)
 {
 	int lc, i;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, options, help);
 	if (msg != NULL)

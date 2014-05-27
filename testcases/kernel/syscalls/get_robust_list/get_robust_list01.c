@@ -76,7 +76,7 @@ void cleanup(void);
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct robust_list_head head;
 	size_t len_ptr;		/* size of structure struct robust_list_head */
 

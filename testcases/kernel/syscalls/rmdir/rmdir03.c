@@ -97,7 +97,7 @@ int exp_enos[] = { EPERM, EACCES, 0 };	/* List must end with 0 */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid;
 	struct stat buf1;
 	int e_code, status, status2;

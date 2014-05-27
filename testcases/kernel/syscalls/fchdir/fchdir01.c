@@ -79,7 +79,7 @@ const char *TEST_DIR = "alpha";
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	void check_functionality(void);
 	int r_val;
 

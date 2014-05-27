@@ -163,7 +163,7 @@ static void test_flag(int clone_flag, int ns_flag, int (*fn) (void *arg))
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)

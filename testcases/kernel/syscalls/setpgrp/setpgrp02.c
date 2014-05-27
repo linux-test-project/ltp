@@ -58,7 +58,7 @@ void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;		/* message returned by parse_opts */
+	const char *msg;		/* message returned by parse_opts */
 
 	int pid, oldpgrp;
 	int e_code, status, retval = 0;

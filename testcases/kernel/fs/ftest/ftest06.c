@@ -104,7 +104,7 @@ int main(int ac, char *av[])
 	char name[3];
 
 	int lc;
-	char *msg;
+	const char *msg;
 
 	/*
 	 * parse standard options

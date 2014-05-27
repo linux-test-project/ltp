@@ -106,7 +106,7 @@ struct testcases {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 	int ret = 0;
 

@@ -87,7 +87,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int New_nice;		/* priority of process after nice() */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

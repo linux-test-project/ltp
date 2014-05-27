@@ -234,7 +234,7 @@ void cleanup(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;		/* message got from parse_opts */
+	const char *msg;		/* message got from parse_opts */
 	int i;
 	int test_flags[] = { SA_RESETHAND | SA_SIGINFO, SA_RESETHAND,
 		SA_RESETHAND | SA_SIGINFO, SA_RESETHAND | SA_SIGINFO

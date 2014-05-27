@@ -76,7 +76,7 @@ static void max_map_count_test(void);
 
 int main(int argc, char *argv[])
 {
-	char *msg;
+	const char *msg;
 	int lc;
 
 	msg = parse_opts(argc, argv, NULL, NULL);

@@ -129,7 +129,7 @@ int Fds[] = { -1, 1500 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int nfds = sizeof(Fds) / sizeof(int);
 	int ind;
 

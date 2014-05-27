@@ -121,7 +121,7 @@ uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int status;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

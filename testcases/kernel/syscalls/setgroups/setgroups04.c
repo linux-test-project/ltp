@@ -86,7 +86,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int gidsetsize;		/* total no. of groups */
 	char *test_desc;	/* test specific error message */
 

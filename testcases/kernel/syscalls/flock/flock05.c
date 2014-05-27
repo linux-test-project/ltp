@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 {
 	int lc, retval;
 	/* loop counter */
-	char *msg;
+	const char *msg;
 	pid_t pid;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {

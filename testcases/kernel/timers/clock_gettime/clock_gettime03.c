@@ -92,7 +92,7 @@ int testcase[6] = {
 int main(int ac, char **av)
 {
 	int i, lc;		/* loop counter */
-	char *msg;
+	const char *msg;
 	struct timespec spec, *temp;
 
 	clockid_t clocks[] = {

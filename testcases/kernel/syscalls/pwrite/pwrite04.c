@@ -71,7 +71,7 @@ int main(int ac, char *av[])
 	char *wbuf[NBUFS];
 	struct stat statbuf;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	strcpy(name, DATA_FILE);
 	sprintf(fname, "%s.%d", name, getpid());

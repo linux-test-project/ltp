@@ -74,7 +74,7 @@ do { \
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)

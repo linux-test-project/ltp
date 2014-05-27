@@ -77,7 +77,7 @@ void setup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;		/* parse_opts() return message */
+	const char *msg;		/* parse_opts() return message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

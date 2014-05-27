@@ -87,7 +87,7 @@ static void usage(void);
 int main(int argc, char **argv)
 {
 	int lc, node, err;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, options, usage);
 	if (msg != NULL)

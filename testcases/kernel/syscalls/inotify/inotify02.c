@@ -82,7 +82,7 @@ static char event_buf[EVENT_BUF_LEN];
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	unsigned int stored_cookie = UINT_MAX;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

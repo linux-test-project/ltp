@@ -72,7 +72,7 @@ int main(int ac, char **av)
 	int len, rlen;
 	int rval = 0;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	/*
 	 * parse standard options

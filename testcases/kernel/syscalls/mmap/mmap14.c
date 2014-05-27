@@ -47,7 +47,7 @@ static void cleanup(void);
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	unsigned int sz_before;
 	unsigned int sz_after;
 	unsigned int sz_ch;

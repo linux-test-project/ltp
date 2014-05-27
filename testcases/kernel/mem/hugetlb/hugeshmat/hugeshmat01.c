@@ -100,7 +100,7 @@ static void check_functionality(int i);
 int main(int ac, char **av)
 {
 	int lc, i;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, options, &help);
 	if (msg != NULL)

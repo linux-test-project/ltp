@@ -103,7 +103,7 @@ extern int getipckey();
 
 int main(int ac, char **av)
 {
-	char *msg;
+	const char *msg;
 	pid_t pid;
 	int status;
 

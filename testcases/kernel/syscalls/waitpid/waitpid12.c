@@ -69,7 +69,7 @@ static int fail;
 
 int main(int argc, char **argv)
 {
-	char *msg;
+	const char *msg;
 
 	int kid_count, ret_val, status;
 	int i, j, k, found;

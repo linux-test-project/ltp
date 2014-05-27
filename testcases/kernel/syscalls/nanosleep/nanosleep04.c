@@ -83,7 +83,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t cpid;		/* Child process id */
 	int status;		/* child exit status */
 

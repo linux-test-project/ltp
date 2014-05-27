@@ -100,7 +100,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat struct. */
 	int lc;
-	char *msg;
+	const char *msg;
 	mode_t file_mode;	/* mode permissions set on testfile */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

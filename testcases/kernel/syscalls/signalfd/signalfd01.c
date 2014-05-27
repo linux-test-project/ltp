@@ -273,7 +273,7 @@ out:
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int sfd;
 
 	if ((tst_kvercmp(2, 6, 22)) < 0) {

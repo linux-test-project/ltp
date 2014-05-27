@@ -80,7 +80,7 @@ void cleanup(void);
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	suseconds_t delta;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {

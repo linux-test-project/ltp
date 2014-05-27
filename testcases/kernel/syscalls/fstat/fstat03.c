@@ -75,7 +75,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {

@@ -45,7 +45,7 @@ static struct passwd *ltpuser;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	uid_t uid;
 

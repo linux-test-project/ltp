@@ -84,7 +84,7 @@ int myfchmodat(int dirfd, const char *filename, mode_t mode)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	/* Disable test if the version of the kernel is less than 2.6.16 */

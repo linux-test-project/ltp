@@ -109,7 +109,7 @@ int exp_enos[] = { EFAULT, EINVAL, ENOTSOCK, EADDRINUSE, EADDRNOTAVAIL, 0 };
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {

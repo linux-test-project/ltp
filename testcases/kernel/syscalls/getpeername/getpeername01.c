@@ -85,7 +85,7 @@ static int exp_enos[] = { EBADF, ENOTSOCK, ENOTCONN, EFAULT, EINVAL, 0 };
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	msg = parse_opts(argc, argv, NULL, NULL);

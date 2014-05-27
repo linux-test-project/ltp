@@ -84,7 +84,7 @@ static void sighandler(int sig);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, options, &help);
 	if (msg != NULL)

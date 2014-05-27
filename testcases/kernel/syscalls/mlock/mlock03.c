@@ -50,7 +50,7 @@ static void cleanup(void);
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	long from, to;
 	long first = -1, last = -1;
 	char b[KB];

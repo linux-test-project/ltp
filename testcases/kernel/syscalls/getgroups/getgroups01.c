@@ -69,7 +69,7 @@ static GID_T cmpset[NGROUPS];
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	GID_T group;
 	int i;
 	int entries;

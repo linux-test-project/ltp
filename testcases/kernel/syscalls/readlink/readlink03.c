@@ -99,7 +99,7 @@ static int exp_enos[] = { EACCES, EINVAL, ENAMETOOLONG, ENOENT,
 int main(int ac, char **av)
 {
 	int i, lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)

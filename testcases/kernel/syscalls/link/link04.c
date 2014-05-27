@@ -103,7 +103,7 @@ static void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char *fname1, *fname2;
 	char *desc1, *desc2;
 	int i;

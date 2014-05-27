@@ -178,7 +178,7 @@ int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char *fname;
 	char *desc;
 	int ind;

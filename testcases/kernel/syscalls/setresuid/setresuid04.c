@@ -71,7 +71,7 @@ void do_master_child();
 int main(int ac, char **av)
 {
 	pid_t pid;
-	char *msg;
+	const char *msg;
 	int status;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

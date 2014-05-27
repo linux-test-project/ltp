@@ -77,7 +77,7 @@ static option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct shmid_ds buf;
 
 	msg = parse_opts(ac, av, options, &help);

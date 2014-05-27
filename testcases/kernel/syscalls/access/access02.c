@@ -80,7 +80,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	int i;
-	char *msg;
+	const char *msg;
 	mode_t access_mode;
 	char *file_name;
 

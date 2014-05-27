@@ -116,7 +116,7 @@ int main(int ac, char **av)
 	struct stat stat_buf;	/* struct buffer to hold file info. */
 	int lc;
 	long type;
-	char *msg;
+	const char *msg;
 	time_t modf_time, access_time;
 	time_t pres_time;	/* file modification/access/present time */
 	pid_t pid;

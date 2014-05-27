@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	int j;
 	int ret_val = 0;
 #ifdef UCLINUX
-	char *msg;
+	const char *msg;
 #endif
 	signum[1] = SIGHUP;
 	signum[2] = SIGINT;

@@ -90,7 +90,7 @@ static void check_result(long exp, long act)
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int rval, fd;
 	char buf[256];

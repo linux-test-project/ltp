@@ -93,7 +93,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char read_buf[1];	/* data read from temp. file */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

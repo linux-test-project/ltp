@@ -152,7 +152,7 @@ option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	TST_TOTAL = (sizeof(args) / sizeof(args[0])) - 1;
 

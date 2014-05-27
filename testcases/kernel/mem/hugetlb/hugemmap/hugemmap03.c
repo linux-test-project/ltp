@@ -72,7 +72,7 @@ static void help(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 #if __WORDSIZE == 32
 	tst_brkm(TCONF, NULL, "This test is only for 64bit");

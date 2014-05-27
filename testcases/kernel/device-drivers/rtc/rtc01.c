@@ -211,7 +211,7 @@ void update_interrupts_test(void)
 
 int main(int argc, char *argv[])
 {
-	char *msg;
+	const char *msg;
 	msg = parse_opts(argc, argv, options, help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -85,7 +85,7 @@ void sigproc(int sig);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int time_sec1 = 10;	/* time for which 1st alarm is set */
 	int time_sec2 = 0;	/* time for which 2nd alarm is set */
 	int ret_val1, ret_val2;	/* return values for alarm() calls */

@@ -41,7 +41,7 @@ static void setup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid;
 	int status = 1;
 	struct rusage rusage;

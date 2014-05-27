@@ -96,7 +96,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;
-	char *msg;
+	const char *msg;
 	off_t file_length2;	/* test file length */
 	off_t file_length1;	/* test file length */
 	int rbytes, i;		/* bytes read from testfile */

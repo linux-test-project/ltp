@@ -70,7 +70,7 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int fd[2];		/* fds for pipe read/write */
 	char wrbuf[BUFSIZ], rebuf[BUFSIZ];

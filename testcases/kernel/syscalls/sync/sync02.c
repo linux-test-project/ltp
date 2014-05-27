@@ -92,7 +92,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char read_buffer[BUFSIZ];	/* buffer used to read data from file */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

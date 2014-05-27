@@ -111,7 +111,7 @@ int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	if ((tst_kvercmp(2, 6, 16)) < 0)

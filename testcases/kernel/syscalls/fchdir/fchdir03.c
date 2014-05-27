@@ -83,7 +83,7 @@ extern struct passwd *my_getpwnam(char *);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	pid_t pid;
 	int status;

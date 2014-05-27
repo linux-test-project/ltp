@@ -83,7 +83,7 @@ void help(void)
 int main(int ac, char **av)
 {
 	struct timeval tv1, tv2;
-	char *msg;
+	const char *msg;
 
 	if ((msg = parse_opts(ac, av, opts, help)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

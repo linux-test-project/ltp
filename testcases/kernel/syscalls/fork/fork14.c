@@ -55,7 +55,7 @@ static int  fork_test(void);
 int main(int ac, char **av)
 {
 	int lc, reproduced;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)

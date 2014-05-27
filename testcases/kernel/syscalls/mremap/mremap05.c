@@ -53,7 +53,7 @@ struct test_case_t {
 	size_t old_size;	/* in pages */
 	size_t new_size;	/* in pages */
 	int flags;
-	const char *msg;
+	const const char *msg;
 	void *exp_ret;
 	int exp_errno;
 	char *ret;
@@ -215,7 +215,7 @@ static void cleanup1(struct test_case_t *t)
 
 int main(int ac, char **av)
 {
-	char *msg;
+	const char *msg;
 	int lc, testno;
 
 	msg = parse_opts(ac, av, NULL, NULL);

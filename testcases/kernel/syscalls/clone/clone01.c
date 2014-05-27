@@ -42,7 +42,7 @@ int TST_TOTAL = 1;
 
 int main(int ac, char **av)
 {
-	char *msg;
+	const char *msg;
 	void *child_stack;
 	int status, child_pid;
 

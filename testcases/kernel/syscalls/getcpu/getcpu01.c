@@ -94,7 +94,7 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	unsigned int cpu_id, node_id = 0;
 	unsigned int cpu_set;
 #ifdef __i386__

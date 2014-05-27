@@ -70,7 +70,7 @@ int exp_enos[] = { EFAULT, 0 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	sigset_t *sigset;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

@@ -92,7 +92,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;
-	char *msg;
+	const char *msg;
 	int ind;		/* counter variable for chmod(2) tests */
 	int mode;		/* file mode permission */
 

@@ -102,7 +102,7 @@ void check_file_contents();	/* function to verify the contents of file */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int nwrite;		/* no. of bytes written by pwrite() */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

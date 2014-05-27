@@ -50,7 +50,7 @@ int main(int ac, char **av)
 {
 
 	int lc, status;
-	char *msg;
+	const char *msg;
 	void *child_stack;
 
 	msg = parse_opts(ac, av, NULL, NULL);

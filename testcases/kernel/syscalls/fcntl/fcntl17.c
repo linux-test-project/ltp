@@ -422,7 +422,7 @@ int main(int ac, char **av)
 {
 	int ans;
 	int lc;
-	char *msg;
+	const char *msg;
 	int fail = 0;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

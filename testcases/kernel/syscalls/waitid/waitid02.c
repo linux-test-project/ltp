@@ -278,7 +278,7 @@ static void test_waitid(struct testcase_t *t)
 int main(int ac, char **av)
 {
 	int lc, testno;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {

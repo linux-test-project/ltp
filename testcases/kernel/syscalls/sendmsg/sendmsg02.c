@@ -193,7 +193,7 @@ static void help(void)
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	long seconds;
 
 	msg = parse_opts(argc, argv, options, &help);

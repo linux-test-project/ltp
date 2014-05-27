@@ -61,7 +61,7 @@ int main(int ac, char **av)
 	FILE *rea, *writ;
 
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)

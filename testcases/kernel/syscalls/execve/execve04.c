@@ -97,7 +97,7 @@ option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid, pid1;
 	int retval = 3, status;
 	char *argv[1], *env[1];

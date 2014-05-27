@@ -58,7 +58,7 @@ int main(int ac, char **av)
 {
 
 	int lc;
-	char *msg;
+	const char *msg;
 	void *child_stack;
 	char buff[10];
 	int child_pid, status;

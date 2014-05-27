@@ -75,7 +75,7 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid1, pid2;
 	int exno, status, nsig, i;
 

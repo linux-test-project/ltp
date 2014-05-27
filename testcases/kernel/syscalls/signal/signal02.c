@@ -74,7 +74,7 @@ int exp_enos[] = { 22, 0 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

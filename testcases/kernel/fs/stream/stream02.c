@@ -53,7 +53,7 @@ int main(int ac, char *av[])
 	FILE *stream;
 	int fd;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	/*
 	 * parse standard options

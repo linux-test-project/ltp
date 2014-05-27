@@ -130,7 +130,7 @@ int fd;
 
 int main(int ac, char **av)
 {
-	char *msg;
+	const char *msg;
 	int lc;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

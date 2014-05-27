@@ -161,7 +161,7 @@ struct test_case_t {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char *fname;
 	char *desc;
 	int ind;

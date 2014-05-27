@@ -69,7 +69,7 @@ option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct stat buf;
 	int i, links;
 	char lname[255];

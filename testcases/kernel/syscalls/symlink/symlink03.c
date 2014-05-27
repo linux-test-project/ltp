@@ -151,7 +151,7 @@ void cleanup();
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char *test_file;	/* testfile name */
 	char *sym_file;		/* symbolic link file name */
 	char *test_desc;	/* test specific error message */

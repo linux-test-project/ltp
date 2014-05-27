@@ -61,7 +61,7 @@ struct fanotify_event_metadata event;
 int main(int ac, char **av)
 {
 	int lc, i;
-	char *msg;
+	const char *msg;
 	int len;
 
 	msg = parse_opts(ac, av, NULL, NULL);

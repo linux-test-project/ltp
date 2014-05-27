@@ -70,7 +70,7 @@ static option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 	int status;

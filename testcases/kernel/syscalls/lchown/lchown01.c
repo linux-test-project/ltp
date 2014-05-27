@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 {
 	struct stat stat_buf;
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)

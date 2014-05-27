@@ -121,7 +121,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int fildes;		/* file handle for testfile */
 	int whence;		/* position of file handle in the file */
 	char *test_desc;	/* test specific error message */

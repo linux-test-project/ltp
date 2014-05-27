@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	void *addr1;
 	long shm_size = 0;
 
-	char *msg = NULL;
+	const char *msg = NULL;
 	char filename[64];
 	char *progname = NULL;
 	char *str_for_file = "abcdefghijklmnopqrstuvwxyz12345\n";

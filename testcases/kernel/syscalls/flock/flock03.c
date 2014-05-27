@@ -62,7 +62,7 @@ static struct tst_checkpoint checkpoint;
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid;
 	int status;
 	int fd;

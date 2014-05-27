@@ -70,7 +70,7 @@ int exp_enos[] = { 14, 0 };	/* 0 terminated list of expected errnos */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

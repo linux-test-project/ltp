@@ -146,7 +146,7 @@ int main(int ac, char **av)
 	int ret_val;
 	int eok;		/* everything is ok flag */
 	int lc;
-	char *msg;
+	const char *msg;
 	int flag_cnt;
 
 	Num_flags = sizeof(Flags) / sizeof(int);

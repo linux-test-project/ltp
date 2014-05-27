@@ -76,7 +76,7 @@ int exp_enos[] = { ESRCH, 0 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid, fake_pid;
 	int exno, status, fake_status, nsig;
 

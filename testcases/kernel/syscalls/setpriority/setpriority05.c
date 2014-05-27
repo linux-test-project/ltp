@@ -73,7 +73,7 @@ int exp_enos[] = { EPERM, 0 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int new_val = 2;
 	int init_val = 1;	/* the init process = id 1 */
 

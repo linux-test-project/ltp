@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	int node, err, lc;
 	char buf[BUFSIZ];
 	struct bitmask *nmask = numa_allocate_nodemask();
-	char *msg;
+	const char *msg;
 
 	pagesize = getpagesize();
 	msg = parse_opts(argc, argv, options, usage);

@@ -48,7 +48,7 @@ static void setup(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	struct sigevent ev;
 	struct itimerspec spec;

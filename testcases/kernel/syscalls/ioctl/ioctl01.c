@@ -112,7 +112,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	int i;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, options, &help);
 	if (msg != NULL)

@@ -59,7 +59,7 @@ static char buf[] = "abcdefghijklmnopqrstuvwxyz";
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int bytes_to_write, fd, num_bytes;
 	pid_t pid;

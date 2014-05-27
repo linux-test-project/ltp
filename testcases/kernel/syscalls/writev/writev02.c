@@ -96,7 +96,7 @@ int fail;
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int nbytes;
 

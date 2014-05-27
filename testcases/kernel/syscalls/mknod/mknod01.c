@@ -153,7 +153,7 @@ int tcases[] = {		/* modes to give nodes created (1 per text case) */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	TST_TOTAL = (sizeof(tcases) / sizeof(tcases[0]));
     /***************************************************************

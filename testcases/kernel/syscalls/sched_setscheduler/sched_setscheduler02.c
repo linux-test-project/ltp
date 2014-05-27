@@ -71,7 +71,7 @@ char user1name[] = "nobody";
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	struct passwd *nobody;
 	pid_t pid;

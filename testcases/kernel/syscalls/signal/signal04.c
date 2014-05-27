@@ -85,7 +85,7 @@ sighandler_t Tret;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 	sighandler_t rval, first;
 

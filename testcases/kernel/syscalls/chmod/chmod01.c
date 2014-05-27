@@ -93,7 +93,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 	int mode;
 

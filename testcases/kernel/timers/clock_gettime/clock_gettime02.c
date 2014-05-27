@@ -80,7 +80,7 @@ int TST_TOTAL;			/* Total number of test cases. */
 int main(int ac, char **av)
 {
 	int lc, i;
-	char *msg;
+	const char *msg;
 	struct timespec spec;
 	clockid_t clocks[2] = { CLOCK_REALTIME, CLOCK_MONOTONIC };
 

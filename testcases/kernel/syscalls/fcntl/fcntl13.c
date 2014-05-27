@@ -51,7 +51,7 @@ void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	struct flock flock;
 

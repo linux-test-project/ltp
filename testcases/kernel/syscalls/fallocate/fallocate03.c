@@ -228,7 +228,7 @@ int main(int ac, char **av)
 {
 	int test_index = 0;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	/***************************************************************
 	 * parse standard options

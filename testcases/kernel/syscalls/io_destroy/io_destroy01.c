@@ -64,7 +64,7 @@ static void setup(void)
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	io_context_t ctx;
 

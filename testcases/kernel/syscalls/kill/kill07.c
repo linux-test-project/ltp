@@ -87,7 +87,7 @@ extern void rm_shm(int);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid;
 	int exno, status, nsig, asig, ret;
 	struct sigaction my_act, old_act;

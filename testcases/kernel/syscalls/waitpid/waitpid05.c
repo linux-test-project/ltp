@@ -79,7 +79,7 @@ int main(int ac, char **av)
 	int pid, npid, sig, nsig;
 	int exno, nexno, status;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)

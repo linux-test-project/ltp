@@ -78,7 +78,7 @@ char tstdir[100];
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct stat buf;
 
 	/*

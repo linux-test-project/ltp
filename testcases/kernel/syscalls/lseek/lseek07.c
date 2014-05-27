@@ -96,7 +96,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char read_buf[BUFSIZ];	/* data read from temp. file */
 	off_t offset;		/* byte position in temporary file */
 

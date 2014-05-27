@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 #ifdef __NR_set_robust_list
 	int lc;
 #endif
-	char *msg;
+	const char *msg;
 #ifdef __NR_set_robust_list
 	struct robust_list_head head;
 	size_t len;		/* size of structure struct robust_list_head */

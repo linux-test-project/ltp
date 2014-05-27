@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in6 sin6;
 	struct sockaddr_storage ss;
 	int i;
-	char *msg;
+	const char *msg;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, NULL, NULL);

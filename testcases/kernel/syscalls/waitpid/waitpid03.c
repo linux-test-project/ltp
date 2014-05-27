@@ -75,7 +75,7 @@ static int ikids_uclinux;
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int status, pid[25], ret;
 

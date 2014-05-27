@@ -107,7 +107,7 @@ int main(int ac, char **av)
 
 	/* Parameters for usc code  */
 	int lc;
-	char *msg;
+	const char *msg;
 
 	/* Parameters for alarm test */
 	char *buf[] = { "-1", "ULONG_MAX", "ULONG_MAX+1" };

@@ -86,7 +86,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	uid_t real_uid,		/* real/eff./saved user id from getresuid() */
 	 eff_uid, sav_uid;
 

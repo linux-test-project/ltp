@@ -65,7 +65,7 @@ extern struct passwd *my_getpwnam(char *);
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	pid_t pid;
 	int retval, status;

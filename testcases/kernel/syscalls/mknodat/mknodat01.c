@@ -97,7 +97,7 @@ static void verify_mknodat(struct test_case *test)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

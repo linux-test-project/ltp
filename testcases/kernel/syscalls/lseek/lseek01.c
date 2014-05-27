@@ -134,7 +134,7 @@ int Whence[] = { SEEK_SET, SEEK_CUR, SEEK_END, -1 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int ind;
 	int offset;

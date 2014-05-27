@@ -133,7 +133,7 @@ fd_set Readfds, Writefds;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct timeval timeout;
 	long test_time = 0;	/* in usecs */
 

@@ -48,7 +48,7 @@ int main(int ac, char *av[])
 	char pbuf[BUFSIZ];
 
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)

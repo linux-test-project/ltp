@@ -87,7 +87,7 @@ static option_t options[] = {
 
 int main(int argc, char *argv[])
 {
-	char *msg;
+	const char *msg;
 	int ret;
 	int len, i, test_num;
 

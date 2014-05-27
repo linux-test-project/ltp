@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
 	size_t i;
 	long ret;
 	int saved_errno;
-	char *msg;
+	const char *msg;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)))
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

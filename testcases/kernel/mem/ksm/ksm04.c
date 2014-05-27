@@ -87,7 +87,7 @@ option_t ksm_options[] = {
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int size = 128, num = 3, unit = 1;
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 	unsigned int node;

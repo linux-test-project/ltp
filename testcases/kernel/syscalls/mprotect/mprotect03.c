@@ -65,7 +65,7 @@ char file1[BUFSIZ];
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	char *addr;
 	int fd, pid;

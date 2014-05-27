@@ -98,7 +98,7 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	char *msg;
+	const char *msg;
 	int ind;		/* counter variable */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

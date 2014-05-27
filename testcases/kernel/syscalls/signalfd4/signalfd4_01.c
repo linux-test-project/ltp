@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 	int fd, coe;
 	sigset_t ss;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {

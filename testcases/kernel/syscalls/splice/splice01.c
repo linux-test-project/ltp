@@ -75,7 +75,7 @@ static inline long splice(int fd_in, loff_t * off_in,
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int results;
 
 	/* Disable test if the version of the kernel is less than 2.6.17 */

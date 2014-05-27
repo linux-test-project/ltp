@@ -84,7 +84,7 @@ void sig_handle(int sig);	/* signal handler for SIGCLD */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int status;		/* child process exit status */
 	int ret_val;
 

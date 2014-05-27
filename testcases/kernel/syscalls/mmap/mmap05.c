@@ -68,7 +68,7 @@ static void sig_handler(int sig);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char file_content;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

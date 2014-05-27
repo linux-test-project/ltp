@@ -144,7 +144,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;
-	char *msg;
+	const char *msg;
 	char *file_name;	/* ptr. for file name whose mode is modified */
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */

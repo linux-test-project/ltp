@@ -128,7 +128,7 @@ void timeout(int sig)
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct sigaction sa;
 	int ret;
 

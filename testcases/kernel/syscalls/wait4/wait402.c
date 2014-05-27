@@ -53,7 +53,7 @@ static long get_pid_max(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t epid = get_pid_max() + 1;
 
 	int status = 1;

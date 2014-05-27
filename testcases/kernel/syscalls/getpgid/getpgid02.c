@@ -80,7 +80,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	int i;
-	char *msg;		/* message returned by parse_opts */
+	const char *msg;		/* message returned by parse_opts */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

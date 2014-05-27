@@ -113,7 +113,7 @@ static int exp_enos[] = { ENOTEMPTY, ENAMETOOLONG, ENOENT, ENOTDIR,
 int main(int ac, char **av)
 {
 	int i, lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, options, help);
 	if (msg != NULL)

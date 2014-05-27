@@ -74,7 +74,7 @@ static void check(void);
 int main(int argc, char *argv[])
 {
 	/* message returned from parse_opts */
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)

@@ -63,7 +63,7 @@ void sig11_handler(int sig);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct sigaction sa, osa;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

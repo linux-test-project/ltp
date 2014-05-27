@@ -81,7 +81,7 @@ int pp[2];			/* pipe descriptor */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char rbuf[BUFSIZ], wbuf[BUFSIZ];
 	int pid, ret, len, rlen, status;
 	int sig = 0;

@@ -66,7 +66,7 @@ static void readlinkat_verify(const struct test_case_t *);
 int main(int argc, char **argv)
 {
 	int i, lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)

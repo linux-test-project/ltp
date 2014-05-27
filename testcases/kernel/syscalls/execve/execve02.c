@@ -91,7 +91,7 @@ struct passwd *ltpuser1;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int status, retval = 0;
 	pid_t pid;
 

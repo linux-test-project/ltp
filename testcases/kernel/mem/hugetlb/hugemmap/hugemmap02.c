@@ -80,7 +80,7 @@ static void help(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int Hflag = 0;
 	long page_sz, map_sz;
 	int sflag = 0;

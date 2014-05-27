@@ -81,7 +81,7 @@ int TST_TOTAL = 1;		/* Total number of test cases. */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	kernel_timer_t timer_id;
 
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {

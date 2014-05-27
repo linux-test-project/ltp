@@ -184,7 +184,7 @@ static int sig_array[NUMSIGS];
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	/* gcc -Wall complains about sig_caught not being ref'd because of the
 	   external declarations. */

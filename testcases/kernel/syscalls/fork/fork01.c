@@ -164,7 +164,7 @@ static void parent_pid(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int fails;
 	int kid_status, wait_status;
 

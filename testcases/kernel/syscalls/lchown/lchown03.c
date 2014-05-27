@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 {
 	int lc;
 	int i;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, options, help);
 	if (msg != NULL)

@@ -78,7 +78,7 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t c1pid, c2pid;
 	int wtstatus;
 	int bytesread;

@@ -87,7 +87,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	int retval = 0;
-	char *msg;
+	const char *msg;
 
 	pid_t pid, pid1;
 	int i, status, fd;

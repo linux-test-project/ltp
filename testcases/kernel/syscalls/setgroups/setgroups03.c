@@ -108,7 +108,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int gidsetsize;		/* total no. of groups */
 	int i;
 	char *test_desc;	/* test specific error message */

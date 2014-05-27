@@ -49,7 +49,7 @@ static void setup(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int timer;
 	struct sigevent ev;
 

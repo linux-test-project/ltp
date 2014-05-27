@@ -90,7 +90,7 @@ int main(int ac, char **av)
 {
 
 	int lc;
-	char *msg;
+	const char *msg;
 	int status;
 	pid_t child_pid;
 

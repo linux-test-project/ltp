@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	struct rusage usage;
 	unsigned long ulast, udelta, slast, sdelta;
 	int i, lc;
-	char *msg;
+	const char *msg;
 	char msg_string[BUFSIZ];
 
 	msg = parse_opts(argc, argv, child_options, fusage);

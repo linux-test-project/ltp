@@ -105,7 +105,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* struct buffer to hold file info. */
 	int lc;
-	char *msg;
+	const char *msg;
 	time_t modf_time, access_time;
 	/* file modification/access time */
 

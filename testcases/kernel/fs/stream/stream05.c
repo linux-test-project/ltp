@@ -60,7 +60,7 @@ int main(int ac, char *av[])
 	int nr, fd;
 
 	int lc;
-	char *msg;
+	const char *msg;
 
 	/*
 	 * parse standard options

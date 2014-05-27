@@ -134,7 +134,7 @@ int Fd;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
     /***************************************************************
      * parse standard options

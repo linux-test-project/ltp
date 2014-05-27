@@ -163,7 +163,7 @@ option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int cnt;
 	int nfiles, fd;
 	char fname[255];

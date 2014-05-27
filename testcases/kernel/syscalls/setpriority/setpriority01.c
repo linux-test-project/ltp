@@ -71,7 +71,7 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int priority;
 	int new_val = 2;	/* lower our priority from 0 to new_val */
 

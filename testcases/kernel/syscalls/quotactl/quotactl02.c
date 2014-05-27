@@ -91,7 +91,7 @@ static struct test_case_t {
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, options, &help);
 	if (msg != NULL)

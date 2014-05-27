@@ -64,7 +64,7 @@ void sighandler(int);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int pipefd[2];		/* fds for pipe read/write */
 	char wrbuf[BUFSIZ];

@@ -97,7 +97,7 @@ static int exp_enos[] = { EISDIR, EACCES, ENOENT, ENOTDIR, EPERM,
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	msg = parse_opts(argc, argv, options, help);

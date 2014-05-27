@@ -106,7 +106,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int ind;		/* counter variable for test case looping */
 	char *test_desc;	/* test specific error message */
 	int which;		/* process priority category */

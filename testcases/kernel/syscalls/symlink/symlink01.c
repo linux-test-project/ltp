@@ -275,7 +275,7 @@ struct tcses *get_tcs_info(char *ptr);
 /*
  * Lets be optimistic and only define messages for passing test cases
  */
-char *msgs[] = {
+const char *msgs[] = {
 	"Creation of symbolic link file to no object file is ok",
 	"Creation of symbolic link file and object file via symbolic link is ok",
 	"Creating an existing symbolic link file error is caught",
@@ -519,7 +519,7 @@ int main(int argc, char *argv[])
 {
 	struct tcses *tcs_ptr;
 	int lc;
-	char *msg;
+	const char *msg;
 
    /***************************************************************
     * parse standard options, and exit if there is an error

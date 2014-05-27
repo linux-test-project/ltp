@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	int failflag = 0;
 	int bflag = 0, nflag = 0, Fflag = 0;
 	char *optb, *optn, *optF;
-	char *msg;		/* for parse_opts */
+	const char *msg;
 	struct io_event event;
 	static struct timespec ts;
 	struct timeval stv, etv;

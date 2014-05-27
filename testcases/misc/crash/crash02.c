@@ -144,7 +144,7 @@ void record_errno(unsigned int n);
 
 int main(int argc, char *argv[])
 {
-	char *msg;
+	const char *msg;
 	int lc;
 
 	if ((msg = parse_opts(argc, argv, options, help)) != NULL)

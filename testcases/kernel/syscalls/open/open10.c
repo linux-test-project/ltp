@@ -77,7 +77,7 @@ int main(int ac, char *av[])
 	pid_t mypid;
 
 	int lc;
-	char *msg;
+	const char *msg;
 	int fail_count = 0;
 
 	msg = parse_opts(ac, av, NULL, NULL);

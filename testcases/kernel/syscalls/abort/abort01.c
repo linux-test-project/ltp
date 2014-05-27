@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	register int i;
 	int status, count, child, kidpid;
 	int sig, ex;
-	char *msg;
+	const char *msg;
 
 #ifdef WCOREDUMP
 	int core;

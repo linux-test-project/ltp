@@ -84,7 +84,7 @@ int main(int ac, char **av)
 {
 	struct sysinfo *sys_buf;
 	int lc;
-	char *msg;
+	const char *msg;
 	float l1, l2, l3;
 	unsigned long l1_up, l2_up, l3_up;
 

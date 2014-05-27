@@ -79,7 +79,7 @@ int csum_test(char *rhost);
 
 int main(int argc, char *argv[])
 {
-	char *msg;
+	const char *msg;
 	int lc;
 
 	/* Parse standard options given to run the test. */

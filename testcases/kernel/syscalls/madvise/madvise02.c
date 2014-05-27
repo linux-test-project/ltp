@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 {
 	int lc;
 	int i;
-	char *msg = NULL;
+	const char *msg = NULL;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)

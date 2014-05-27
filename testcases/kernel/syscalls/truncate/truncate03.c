@@ -143,7 +143,7 @@ void cleanup();			/* Main cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char *file_name;	/* testfile name */
 	char *test_desc;	/* test specific error message */
 	int ind;

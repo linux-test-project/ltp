@@ -61,7 +61,7 @@ int TST_TOTAL = 1;
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int pid, npid, sig, nsig;
 	int exno, nexno, status;

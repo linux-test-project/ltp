@@ -155,7 +155,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	int i;
-	char *msg;
+	const char *msg;
 	int tmp;
 
 	TST_TOTAL = sizeof(Scenarios) / sizeof(struct limits_t);

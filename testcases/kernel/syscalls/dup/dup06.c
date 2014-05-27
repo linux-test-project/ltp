@@ -58,7 +58,7 @@ int main(int ac, char **av)
 	int min;
 	int freefds;
 	int lc;
-	char *msg;
+	const char *msg;
 	const char *pfilname = "dup06";
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

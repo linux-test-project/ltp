@@ -233,7 +233,7 @@ static int test_case_uclinux;
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
     /***************************************************************
     * parse standard options

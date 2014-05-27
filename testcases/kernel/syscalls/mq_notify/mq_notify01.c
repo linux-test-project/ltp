@@ -301,7 +301,7 @@ int main(int ac, char **av)
 	int c;
 	int i;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	struct option long_options[] = {
 		{"debug", no_argument, 0, 'd'},

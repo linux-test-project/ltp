@@ -73,7 +73,7 @@ char filename[100];
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	char wbuf[BUFSIZ], rbuf[BUFSIZ];
 	int fd;

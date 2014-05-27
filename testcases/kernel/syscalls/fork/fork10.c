@@ -63,7 +63,7 @@ int main(int ac, char **av)
 	char chilchar[2];
 
 	int lc;
-	char *msg;
+	const char *msg;
 
 	fildes = -1;
 

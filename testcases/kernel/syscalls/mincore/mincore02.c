@@ -103,7 +103,7 @@ static void setup(void)
 int main(int argc, char **argv)
 {
 	int lock_pages, counter;
-	char *msg;
+	const char *msg;
 	int lc;
 
 	msg = parse_opts(argc, argv, NULL, NULL);

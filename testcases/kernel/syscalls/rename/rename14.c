@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	void dochild2();
 
 #ifdef UCLINUX
-	char *msg;
+	const char *msg;
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

@@ -98,7 +98,7 @@ void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char *test_desc;	/* test specific error message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

@@ -83,7 +83,7 @@ static void do_exit_uclinux(void);
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int fail, pid, status, ret;
 

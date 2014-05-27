@@ -57,7 +57,7 @@ void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	pid_t pid;
 	int fd, i, status, max_files;

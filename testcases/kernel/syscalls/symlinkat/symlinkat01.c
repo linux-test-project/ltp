@@ -152,7 +152,7 @@ static int mysymlinkat(const char *oldfilename,
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	/* Disable test if the version of the kernel is less than 2.6.16 */

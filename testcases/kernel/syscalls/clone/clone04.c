@@ -56,7 +56,7 @@ int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 int main(int ac, char **av)
 {
 	int lc, ind;
-	char *msg;
+	const char *msg;
 	void *test_stack;
 
 	msg = parse_opts(ac, av, NULL, NULL);

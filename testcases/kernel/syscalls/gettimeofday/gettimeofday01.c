@@ -66,7 +66,7 @@ void setup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int ret;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

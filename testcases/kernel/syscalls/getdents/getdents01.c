@@ -83,7 +83,7 @@ struct testcase testcases[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int rval, fd;
 	struct linux_dirent64 *dirp64;
 	struct linux_dirent *dirp;

@@ -96,7 +96,7 @@ void sig_handler(int);		/* signal catching function */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	void *alt_stk;		/* address of alternate stack for signal */
 
 	msg = parse_opts(ac, av, NULL, NULL);

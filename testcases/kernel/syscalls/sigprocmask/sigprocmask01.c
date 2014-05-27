@@ -99,7 +99,7 @@ sigset_t sigset2;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t my_pid;		/* test process id */
 
 	msg = parse_opts(ac, av, NULL, NULL);

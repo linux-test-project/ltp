@@ -34,7 +34,7 @@ int main(int ac, char **av)
 {
 	struct passwd *pwent;
 	int lc;
-	char *msg;
+	const char *msg;
 	uid_t uid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

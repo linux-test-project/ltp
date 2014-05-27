@@ -95,7 +95,7 @@ char user2name[] = "bin";
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct stat buf, buf1;
 	pid_t pid, pid1;
 	struct passwd *ltpuser1;

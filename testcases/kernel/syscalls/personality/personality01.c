@@ -77,7 +77,7 @@ int pers[] = { PER_LINUX, PER_LINUX_32BIT, PER_SVR4, PER_SVR3, PER_SCOSVR3,
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i, start_pers;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

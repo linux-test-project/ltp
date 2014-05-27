@@ -70,7 +70,7 @@ static int nlinks = 1000;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct stat fbuf, lbuf;
 	int cnt;
 	char lname[255];

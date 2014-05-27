@@ -159,7 +159,7 @@ static void check_child(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int fd_notify_backup = -1;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

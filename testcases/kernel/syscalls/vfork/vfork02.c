@@ -91,7 +91,7 @@ void sig_handler();		/* signal catching function */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t cpid;		/* process id of the child process */
 	int exit_status;	/* exit status of child process */
 	sigset_t PendSig;	/* variable to hold pending signal */

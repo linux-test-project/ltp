@@ -54,7 +54,7 @@ int exp_enos[] = { 0 };		/* must be a 0 terminated list */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int size, ret_sysconf;
 	/***************************************************************

@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 {
 	int fd[2], i, coe;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {

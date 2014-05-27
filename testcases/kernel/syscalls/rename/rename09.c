@@ -103,7 +103,7 @@ int exp_enos[] = { EACCES, 0 };	/* List must end with 0 */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int rval;
 	pid_t pid, pid1;
 	int status;

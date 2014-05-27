@@ -65,7 +65,7 @@ char pfiln[40] = "";
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int cwrite;
 	int fild;

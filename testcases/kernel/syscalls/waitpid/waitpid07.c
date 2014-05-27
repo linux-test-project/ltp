@@ -76,7 +76,7 @@ static void do_child_2_uclinux(void);
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int status;
 	int fail = 0;

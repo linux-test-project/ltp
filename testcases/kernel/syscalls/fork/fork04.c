@@ -276,7 +276,7 @@ void parent_environment(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int kid_status;
 	int wait_status;
 	int fails;

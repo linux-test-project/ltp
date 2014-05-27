@@ -79,7 +79,7 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	char buf[40];		/* 40 bytes suffice to store fs name */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

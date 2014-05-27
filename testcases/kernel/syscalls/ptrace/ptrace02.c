@@ -114,7 +114,7 @@ int main(int ac, char **av)
 {
 
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t child_pid;
 	int status;
 	struct sigaction parent_act;

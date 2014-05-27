@@ -101,7 +101,7 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;
 	int lc;
-	char *msg;
+	const char *msg;
 	mode_t file_mode;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

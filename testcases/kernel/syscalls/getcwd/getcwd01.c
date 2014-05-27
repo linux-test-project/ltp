@@ -90,7 +90,7 @@ int main(int ac, char **av)
 {
 	int i;
 	int lc;
-	char *msg;		/* parse_opts() return message */
+	const char *msg;		/* parse_opts() return message */
 	char *test_erg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

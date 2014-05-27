@@ -62,7 +62,7 @@ void cleanup(void);
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int uret = 0, i, mskval = 0000;
 	int failcnt = 0;

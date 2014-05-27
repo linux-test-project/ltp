@@ -111,7 +111,7 @@ int main(int ac, char **av)
 {
 	int lc, expected_result = -1;	/* loop counter, expected */
 	/* result from system call */
-	char *msg;
+	const char *msg;
     /***************************************************************
      * parse standard options
      ***************************************************************/

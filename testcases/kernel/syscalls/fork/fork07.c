@@ -77,7 +77,7 @@ int main(int ac, char **av)
 	int c_pass, c_fail;
 
 	int lc;
-	char *msg;
+	const char *msg;
 
 	rea = NULL;
 	writ = NULL;

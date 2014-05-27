@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 {
 	int lc, status;
 	long ps;
-	char *msg;
+	const char *msg;
 	pid_t pid;
 	void *ptr;
 

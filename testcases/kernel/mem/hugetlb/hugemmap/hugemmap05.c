@@ -113,7 +113,7 @@ static void init_sys_sz_paths(void);
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	init_hugepagesize();
 	init_sys_sz_paths();

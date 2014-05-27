@@ -75,7 +75,7 @@ struct test_case_t {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;		/* message returned by parse_opts */
+	const char *msg;		/* message returned by parse_opts */
 
 	int i;
 	struct sched_param param;

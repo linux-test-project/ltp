@@ -56,7 +56,7 @@ int main(int ac, char **av)
 	int i, pid, status, childpid, succeed, fail;
 
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)

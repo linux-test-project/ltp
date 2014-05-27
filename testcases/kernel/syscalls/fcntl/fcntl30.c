@@ -45,7 +45,7 @@ static void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int pipe_fds[2], test_fd;
 	int orig_pipe_size, new_pipe_size;
 

@@ -127,7 +127,7 @@ long Beg_brk_val;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int incr;		/* increment */
 	long nbrkpt;		/* new brk point value */
 	long cur_brk_val;	/* current size returned by sbrk */

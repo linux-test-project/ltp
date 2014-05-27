@@ -65,7 +65,7 @@ void cleanup(void);
 int main(int argc, char **argv)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	struct stat statbuf;
 	int mskval = 0000;

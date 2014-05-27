@@ -54,7 +54,7 @@ static void setup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int e_code, status, retval = 0;
 	pid_t pid;
 

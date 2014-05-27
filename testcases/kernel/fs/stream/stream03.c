@@ -55,7 +55,7 @@ int main(int ac, char *av[])
 	long pos;
 	off_t opos;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	/*
 	 * parse standard options

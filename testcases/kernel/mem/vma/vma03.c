@@ -67,7 +67,7 @@ static void cleanup(void);
 
 int main(int argc, char *argv[])
 {
-	char *msg;
+	const char *msg;
 	int lc;
 	void *map, *remap;
 	off_t pgoff;

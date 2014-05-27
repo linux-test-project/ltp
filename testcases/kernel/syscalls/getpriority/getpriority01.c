@@ -87,7 +87,7 @@ int prio_which[] = { PRIO_PROCESS, PRIO_PGRP, PRIO_USER };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int ind;
 	int which;		/* scheduling priority category */
 

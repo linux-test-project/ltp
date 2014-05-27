@@ -105,7 +105,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	int fflag;		/* functionality flag variable */
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {

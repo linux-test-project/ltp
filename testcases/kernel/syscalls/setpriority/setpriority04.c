@@ -88,7 +88,7 @@ static long get_pid_max(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int new_val = 2;
 	int pid_max = get_pid_max();
 

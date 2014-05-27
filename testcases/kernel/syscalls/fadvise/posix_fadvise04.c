@@ -78,7 +78,7 @@ int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	/* Check this system has fadvise64 system which is used

@@ -58,7 +58,7 @@ int main(int ac, char *av[])
 	int serrno;
 
 	int lc;
-	char *msg;
+	const char *msg;
 
 	ifile = -1;
 

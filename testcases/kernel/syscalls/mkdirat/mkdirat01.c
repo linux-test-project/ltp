@@ -110,7 +110,7 @@ static void cleanup_iteration(void)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

@@ -91,7 +91,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	gid_t real_gid,		/* real/eff./saved user id from getresgid() */
 	 eff_gid, sav_gid;
 

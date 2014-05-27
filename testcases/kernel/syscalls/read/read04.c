@@ -67,7 +67,7 @@ int fild;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	int rfild;
 	char prbuf[BUFSIZ];

@@ -66,7 +66,7 @@ static int exp_enos[] = { EBADF, 0 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	DIR *test_dir;
 	struct dirent *dptr;
 

@@ -87,7 +87,7 @@ struct test_case_t {
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i, ofd;
 	struct stat oldbuf, newbuf;
 

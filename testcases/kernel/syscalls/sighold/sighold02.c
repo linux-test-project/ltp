@@ -161,7 +161,7 @@ int main(int ac, char **av)
 	int term_stat;		/* child return status */
 	int sig;		/* current signal */
 	int lc;
-	char *msg;
+	const char *msg;
 
     /***************************************************************
      * parse standard options, and exit if there is an error

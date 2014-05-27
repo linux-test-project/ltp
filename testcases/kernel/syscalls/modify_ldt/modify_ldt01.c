@@ -95,7 +95,7 @@ void setup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	void *ptr;
 	int retval, func;

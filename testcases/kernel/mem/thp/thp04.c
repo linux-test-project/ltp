@@ -66,7 +66,7 @@ static char pre_thp_enabled[BUFSIZ];
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int nr_children = 2, nr_thps = 64;
 
 	msg = parse_opts(argc, argv, thp_options, thp_usage);

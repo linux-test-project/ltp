@@ -44,7 +44,7 @@ static void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int status;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

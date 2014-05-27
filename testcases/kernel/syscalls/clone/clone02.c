@@ -115,7 +115,7 @@ int main(int ac, char **av)
 {
 
 	int lc;
-	char *msg;
+	const char *msg;
 	void *child_stack;
 	int status, i;
 

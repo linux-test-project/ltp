@@ -49,7 +49,7 @@ static struct tst_checkpoint checkpoint;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t pid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

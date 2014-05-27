@@ -48,7 +48,7 @@ int TST_TOTAL = 1;
 
 int main(int argc, char *argv[])
 {
-	char *msg;
+	const char *msg;
 	int lc;
 	int swap_acc_on = 1;
 

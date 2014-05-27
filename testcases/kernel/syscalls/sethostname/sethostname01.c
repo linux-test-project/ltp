@@ -84,7 +84,7 @@ static char hname[MAX_LENGTH];	/* host name */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	char ltphost[] = "ltphost";	/* temporary host name to set */
 

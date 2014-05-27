@@ -58,7 +58,7 @@ int main(int ac, char **av)
 	int forks, pid1, fork_errno, waitstatus;
 	int ret, status;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)

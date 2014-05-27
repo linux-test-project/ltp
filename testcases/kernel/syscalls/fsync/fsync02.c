@@ -75,7 +75,7 @@ struct statvfs stat_buf;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 
 	off_t offsetret, offset;
 	char pbuf[BUFSIZ];

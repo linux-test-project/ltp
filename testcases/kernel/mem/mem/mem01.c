@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 
 	int i;
 	int lc;
-	char *msg;
+	const char *msg;
 	char *p, *bigmalloc;
 	int loop_count;		/* limited to 16Go on 32 bits systems */
 

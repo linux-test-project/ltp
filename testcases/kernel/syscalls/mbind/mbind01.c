@@ -181,7 +181,7 @@ static void cleanup(void);
 
 int main(int argc, char **argv)
 {
-	char *msg;
+	const char *msg;
 	int lc, i, ret;
 
 	msg = parse_opts(argc, argv, NULL, NULL);

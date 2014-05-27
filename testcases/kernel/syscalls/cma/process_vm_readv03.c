@@ -64,7 +64,7 @@ static void help(void);
 int main(int argc, char **argv)
 {
 	int lc, status;
-	char *msg;
+	const char *msg;
 	int *bufsz_arr;
 
 	msg = parse_opts(argc, argv, options, &help);

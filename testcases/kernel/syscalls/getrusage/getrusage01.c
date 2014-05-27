@@ -82,7 +82,7 @@ int main(int ac, char **av)
 {
 
 	int lc, i;
-	char *msg;
+	const char *msg;
 	struct rusage usage;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

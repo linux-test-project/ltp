@@ -82,7 +82,7 @@ static struct timespec saved;	/* Used to reset the time */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct timespec spec;	/* Used to specify time for test */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

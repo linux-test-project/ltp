@@ -88,7 +88,7 @@ int exp_enos[] = { 0 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	time_t tloc;		/* time_t variables for time(2) */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)

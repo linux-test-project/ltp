@@ -64,7 +64,7 @@ int exp_enos[] = { EPERM, 0 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct rlimit rlim;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

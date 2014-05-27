@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 	sigset_t ss;
 	int fd, fl;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {

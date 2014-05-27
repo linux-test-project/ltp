@@ -85,7 +85,7 @@ int main(int ac, char **av)
 {
 	struct sysinfo *sysinfo_buf;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	sysinfo_buf = (void *)INVALID_ADDRESS;
 

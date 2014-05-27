@@ -69,7 +69,7 @@ int exp_enos[] = { EINVAL, 0 };
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	struct itimerval *value, *ovalue;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {

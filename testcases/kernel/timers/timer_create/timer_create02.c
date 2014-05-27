@@ -83,7 +83,7 @@ static struct sigevent evp, *evp_ptr;
 int main(int ac, char **av)
 {
 	int lc, i, j;		/* loop counter */
-	char *msg;
+	const char *msg;
 	kernel_timer_t created_timer_id;	/* holds the returned timer_id */
 	char *message[3] = {
 		"SIGEV_SIGNAL",

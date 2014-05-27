@@ -99,7 +99,7 @@ int main(int ac, char **av)
 {
 	int exp_eno;
 	int lc;
-	char *msg;
+	const char *msg;
 
 	char osname[OSNAMESZ];
 	int osnamelth, status;
