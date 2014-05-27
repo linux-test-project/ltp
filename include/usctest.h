@@ -34,10 +34,6 @@
 #ifndef __USCTEST_H__
 #define __USCTEST_H__
 
-#ifndef _SC_CLK_TCK
-#include <unistd.h>
-#endif
-
 #include <sys/param.h>
 
 /*
