@@ -70,21 +70,20 @@ extern pid_t spawned_program_pid;
 #endif
 
 /* Define flags and args for standard options */
-int STD_FUNCTIONAL_TEST = 1,	/* flag indicating to do functional testing code */
-    STD_TIMING_ON = 0,		/* flag indicating to print timing stats */
-    STD_PAUSE = 0,		/* flag indicating to pause before actual start, */
+int STD_FUNCTIONAL_TEST = 1;	/* flag indicating to do functional testing code */
+int STD_TIMING_ON = 0;		/* flag indicating to print timing stats */
+static int STD_PAUSE = 0;	/* flag indicating to pause before actual start, */
     /* for contention mode */
-    STD_INFINITE = 0,		/* flag indciating to loop forever */
-    STD_LOOP_COUNT = 1,		/* number of iterations */
-    STD_COPIES = 1,		/* number of copies */
-    STD_ERRNO_LOG = 0;		/* flag indicating to do errno logging */
+static int STD_INFINITE = 0;	/* flag indciating to loop forever */
+int STD_LOOP_COUNT = 1;		/* number of iterations */
+int STD_COPIES = 1;		/* number of copies */
+int STD_ERRNO_LOG = 0;		/* flag indicating to do errno logging */
 
-float STD_LOOP_DURATION = 0.0,	/* duration value in fractional seconds */
-    STD_LOOP_DELAY = 0.0;	/* loop delay value in fractional seconds */
+static float STD_LOOP_DURATION = 0.0;	/* duration value in fractional seconds */
+static float STD_LOOP_DELAY = 0.0;	/* loop delay value in fractional seconds */
 
-char **STD_opt_arr = NULL;	/* array of option strings */
-int STD_nopts = 0,		/* number of elements in STD_opt_arr */
-    STD_argind = 1;		/* argv index to next argv element */
+static char **STD_opt_arr = NULL;	/* array of option strings */
+static int STD_argind = 1;	/* argv index to next argv element */
 				/* (first argument) */
 				/* To getopt users, it is like optind */
 
@@ -105,7 +104,7 @@ static int STD_LP_sbrk = 0;	/* do sbrk in TEST_LOOPING */
 static char *STD_start_break = 0;	/* original sbrk size */
 static int Debug = 0;
 
-struct std_option_t {
+static struct std_option_t {
 	char *optstr;
 	char *help;
 	char *flag;
@@ -125,7 +124,8 @@ struct std_option_t {
 	      "  -C ARG  Run the child process with arguments ARG (for internal use)\n",
 		    NULL, NULL},
 #endif
-	{NULL, NULL, NULL, NULL}};
+	{NULL, NULL, NULL, NULL}
+};
 
 /*
  * Structure for usc_recressive_func argument

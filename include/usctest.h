@@ -53,16 +53,10 @@
  ***********************************************************************/
 extern int STD_FUNCTIONAL_TEST,	/* turned off by -f to not do functional test */
            STD_TIMING_ON,	/* turned on by -t to print timing stats */
-           STD_PAUSE,		/* turned on by -p to pause before loop */
-           STD_INFINITE,	/* turned on by -i0 to loop forever */
            STD_LOOP_COUNT,	/* changed by -in to set loop count to n */
            STD_ERRNO_LOG,	/* turned on by -e to log errnos returned */
            STD_ERRNO_LIST[],	/* counts of errnos returned.  indexed by errno */
-	   STD_COPIES,
-	   STD_argind;
-
-extern float STD_LOOP_DURATION, /* wall clock time to iterate */
-	     STD_LOOP_DELAY;    /* delay time after each iteration */
+	   STD_COPIES;
 
 #define USC_MAX_ERRNO	2000
 
