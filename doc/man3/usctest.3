@@ -45,8 +45,6 @@ char *\fBparse_opts(\fI...\fB)\fR
 .br
 \fBTEST_PAUSE\fR
 .br
-\fBTEST_PAUSEF(\fIhand\fB)\fR
-.br
 \fBTEST(\fIsyscall\fB)\fR
 .br
 .\"\fBTEST_CALLER(\fIsyscall\fB, \fIpid\fB)\fR
@@ -75,11 +73,6 @@ int \fBTEST_ERRNO\fR;	/* set by the \fBTEST\fR macro to the value of \fBerrno\fR
 .SH DESCRIPTION
 The \fBTEST_PAUSE\fR macro checks if the global variable STD_PAUSE is set.  If so, it
 pauses for a SIGUSR1 before continuing execution.  The signal handler used does nothing.
-After the signal is processed, the previous action is replaced for SIGUSR1.
-.sp
-The \fBTEST_PAUSEF(\fIhand\fB)\fR macro checks if the global variable STD_PAUSE is set.  If so, it
-pauses for a SIGUSR1 before continuing execution.  The \fIhand\fR argument is a function to be used
-to handle the SIGUSR1 signal when it is received.
 After the signal is processed, the previous action is replaced for SIGUSR1.
 .sp
 The \fBTEST(\fIsyscall\fB)\fR macro executes (\fIsyscall\fR) and times its execution.
@@ -163,7 +156,9 @@ int main(int argc, char *argv[])
 parse_opts(3).
 
 .SH "RETURN VALUES"
-The TEST_LOOPING macro evaluates to TRUE (1) or FALSE (0), and is intended for use in while or
-for loops.  The TEST macro places the return value from \fIsyscall\fR in the global variable TEST_RETURN
-and the errno in the global variable TEST_ERRNO.  The \fBTEST_PAUSE\fR, \fBTEST_PAUSEF\fR,
-\fBTEST_CLEANUP\fR, \fBTEST_ERROR_LOG\fR, and \fBTEST_EXP_ENOS\fR macros do not have any return values.
+The TEST_LOOPING macro evaluates to TRUE (1) or FALSE (0), and is intended for
+use in while or for loops.  The TEST macro places the return value from
+\fIsyscall\fR in the global variable TEST_RETURN and the errno in the global
+variable TEST_ERRNO.  The \fBTEST_PAUSE\fR, \fBTEST_CLEANUP\fR,
+\fBTEST_ERROR_LOG\fR, and \fBTEST_EXP_ENOS\fR macros do not have any return
+values.

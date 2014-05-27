@@ -103,9 +103,7 @@ struct tblock {
  ***********************************************************************/
 extern struct tblock tblock;
 extern void STD_go();
-extern int (*_TMP_FUNC)(void);
 extern void STD_opts_help();
-
 
 /***********************************************************************
  * TEST: calls a system call
@@ -155,24 +153,6 @@ do { \
 		tst_resm(TINFO, "ERRNO %d:\tReceived %d Times%s", \
 			i, STD_ERRNO_LIST[i], \
 			TEST_VALID_ENO[i].flag ? "" : " ** UNEXPECTED **"); \
-	} \
-} while (0)
-
-/***********************************************************************
- * TEST_PAUSEF: Pause for SIGUSR1 if the pause flag is set.
- *		 Set the user specified function as the interrupt
- *		 handler instead of "STD_go"
- *
- * parameters:
- *	none
- *
- ***********************************************************************/
-#define TEST_PAUSEF(HANDLER) \
-do { \
-	if (STD_PAUSE) { \
-		_TMP_FUNC = (int (*)())signal(SIGUSR1, HANDLER); \
-		pause(); \
-		signal(SIGUSR1, (void (*)())_TMP_FUNC); \
 	} \
 } while (0)
 
