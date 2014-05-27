@@ -42,24 +42,12 @@
 #include <sys/time.h>
 #include <stdint.h>
 
-#if UNIT_TEST
-#include <time.h>
-#endif /* UNIT_TEST */
-
 #include "test.h"
 #include "ltp_priv.h"
 #include "usctest.h"
 
-#ifndef USC_COPIES
-#define USC_COPIES   "USC_COPIES"
-#endif
-
 #ifndef UNIT_TEST
 #define UNIT_TEST	0
-#endif
-
-#ifndef DEBUG
-#define DEBUG	0
 #endif
 
 /* The timing information block. */
@@ -234,19 +222,12 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 			if (strchr(optionstr, user_optarr[i].option[0]) == NULL)
 				strcat(optionstr, user_optarr[i].option);
 
-#if DEBUG > 1
-	printf("STD_nopts = %d\n", STD_nopts);
-#endif
-
 	/*
 	 *  Loop through av parsing options.
 	 */
 	while ((opt = getopt(ac, av, optionstr)) > 0) {
 
 		STD_argind = optind;
-#if DEBUG > 0
-		printf("parse_opts: getopt returned '%c'\n", opt);
-#endif
 
 		switch (opt) {
 		case '?':	/* Unknown option */
@@ -770,6 +751,8 @@ static void usc_recressive_func(int cnt, int max, struct usc_bigstack_t bstack)
 }
 
 #if UNIT_TEST
+#include <time.h>
+
 /******************************************************************************
  * UNIT TEST CODE
  * UNIT TEST CODE
