@@ -26,7 +26,8 @@
  *	returns EINVAL.
  *   3) pwrite() fails if fd is not a valid file descriptor,
  *	returns EBADF.
- *   4) pwrite() fails when attempted to write with buf outside
+ *   4) pwrite() fails if fd is not open for writing, return EBADF.
+ *   5) pwrite() fails when attempted to write with buf outside
  *      accessible address space, returns EFAULT.
  */
 
@@ -59,14 +60,15 @@ static int exp_enos[] = {
 
 static void test_espipe(void);
 static void test_einval(void);
-static void test_ebadf(void);
+static void test_ebadf1(void);
+static void test_ebadf2(void);
 
 #if !defined(UCLINUX)
 static void test_efault(void);
 #endif
 
 static void (*testfunc[])(void) = {
-	test_espipe, test_einval, test_ebadf,
+	test_espipe, test_einval, test_ebadf1, test_ebadf2,
 #if !defined(UCLINUX)
 	test_efault
 #endif
@@ -182,13 +184,26 @@ static void test_einval(void)
 	SAFE_CLOSE(cleanup, fd);
 }
 
-static void test_ebadf(void)
+static void test_ebadf1(void)
 {
 	int fd = -1;
 
 	TEST(pwrite(fd, write_buf, K1, 0));
 
 	print_test_result(errno, EBADF);
+}
+
+static void test_ebadf2(void)
+{
+	int fd;
+
+	fd = SAFE_OPEN(cleanup, TEMPFILE, O_RDONLY | O_CREAT, 0666);
+
+	TEST(pwrite(fd, write_buf, K1, 0));
+
+	print_test_result(errno, EBADF);
+
+	SAFE_CLOSE(cleanup, fd);
 }
 
 #if !defined(UCLINUX)
