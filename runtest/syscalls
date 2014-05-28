@@ -789,12 +789,10 @@ ptrace05 ptrace05
 
 pwrite01 pwrite01
 pwrite02 pwrite02
-pwrite03 pwrite03
 pwrite04 pwrite04
 
 pwrite01_64 pwrite01_64
 pwrite02_64 pwrite02_64
-pwrite03_64 pwrite03_64
 pwrite04_64 pwrite04_64
 
 quotactl01 quotactl01

@@ -18,52 +18,16 @@
  */
 
 /*
- * Test Name: pwrite02
- *
  * Test Description:
  *  Verify that,
- *   1) pwrite() fails when attempted to write to an unnamed pipe.
- *   2) pwrite() fails if the specified offset position was invalid.
- *
- * Expected Result:
- *  1) pwrite() should return -1 and set errno to ESPIPE.
- *  2) pwrite() should return -1 and set errno to EINVAL.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create a temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *      if errno set == expected errno
- *              Issue sys call fails with expected return value and errno.
- *      Otherwise,
- *              Issue sys call fails with unexpected errno.
- *   Otherwise,
- *      Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory(s)/file(s) created.
- *
- * Usage:  <for command-line>
- *  pwrite02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
+ *   1) pwrite() fails when attempted to write to an unnamed pipe,
+ *      returns ESPIPE.
+ *   2) pwrite() fails if the specified offset position was invalid,
+ *	returns EINVAL.
+ *   3) pwrite() fails if fd is not a valid file descriptor,
+ *	returns EBADF.
+ *   4) pwrite() fails when attempted to write with buf outside
+ *      accessible address space, returns EFAULT.
  */
 
 #define _XOPEN_SOURCE 500
@@ -74,111 +38,60 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 #define TEMPFILE	"pwrite_file"
-#define K1              1024
-#define NBUFS           4
+#define K1		1024
 
-char *TCID = "pwrite02";
-int TST_TOTAL = 2;
+TCID_DEFINE(pwrite02);
 
-char *write_buf[NBUFS];		/* buffer to hold data to be written */
-int pfd[2];			/* pair of file descriptors */
-int fd1;			/* file descriptor of temporary file */
+static char write_buf[K1];
 
-void setup(void);			/* Main setup function of test */
-void cleanup(void);			/* cleanup function for the test */
-int setup1(void);			/* setup function for test #1 */
-int setup2(void);			/* setup function for test #2 */
-int no_setup(void);
-void init_buffers(void);		/* function to initialize/allocate buffers */
+static void setup(void);
+static void cleanup(void);
 
-int exp_enos[] = { ESPIPE, EINVAL, EBADF, 0 };
+static int exp_enos[] = {
+	ESPIPE, EINVAL, EBADF,
+#if !defined(UCLINUX)
+	EFAULT,
+#endif
+0 };
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's */
-	int fd;
-	size_t nb;
-	off_t offst;
-	char *desc;
-	int exp_errno;
-	int (*setupfunc) ();
-} Test_cases[] = {
-	{
-	1, K1, 0, "file descriptor is a PIPE or FIFO", ESPIPE, setup1}, {
-	2, K1, -1, "specified offset is -ve or invalid", EINVAL, setup2}, {
-	3, K1, 0, "file descriptor is bad", EBADF, no_setup}, {
-	0, 0, 0, NULL, 0, no_setup}
+static void test_espipe(void);
+static void test_einval(void);
+static void test_ebadf(void);
+
+#if !defined(UCLINUX)
+static void test_efault(void);
+#endif
+
+static void (*testfunc[])(void) = {
+	test_espipe, test_einval, test_ebadf,
+#if !defined(UCLINUX)
+	test_efault
+#endif
 };
+
+int TST_TOTAL = ARRAY_SIZE(testfunc);
 
 int main(int ac, char **av)
 {
-	int lc;
+	int i, lc;
 	const char *msg;
-	int i;
-	int fildes;		/* file descriptor of test file */
-	size_t nbytes;		/* no. of bytes to be written */
-	off_t offset;		/* offset position in the specified file */
-	char *test_desc;	/* test specific error message */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
-		for (i = 0; Test_cases[i].desc != NULL; i++) {
-			fildes = Test_cases[i].fd;
-			test_desc = Test_cases[i].desc;
-			nbytes = Test_cases[i].nb;
-			offset = Test_cases[i].offst;
-
-			if (fildes == 1) {
-				fildes = pfd[1];
-			} else if (fildes == 2) {
-				fildes = fd1;
-			} else {
-				fildes = -1;
-			}
-
-			/*
-			 * Call pwrite() with the specified file descriptor,
-			 * no. of bytes to be written at specified offset.
-			 * and verify that call should fail with appropriate
-			 * errno. set.
-			 */
-			TEST(pwrite(fildes, write_buf[0], nbytes, offset));
-
-			/* Check for the return code of pwrite() */
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "pwrite() returned %ld, "
-					 "expected -1, errno:%d",
-					 TEST_RETURN, Test_cases[i].exp_errno);
-				continue;
-			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			/*
-			 * Verify whether expected errno is set.
-			 */
-			if (TEST_ERRNO == Test_cases[i].exp_errno) {
-				tst_resm(TPASS, "%s, errno:%d",
-					 test_desc, TEST_ERRNO);
-			} else {
-				tst_resm(TFAIL, "%s, unexpected"
-					 " errno:%d, expected:%d", test_desc,
-					 TEST_ERRNO, Test_cases[i].exp_errno);
-			}
-		}
+		for (i = 0; i < TST_TOTAL; i++)
+			(*testfunc[i])();
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
@@ -189,144 +102,114 @@ int main(int ac, char **av)
  * test case passes on a machine running RedHat 6.2 but it will fail
  * on a machine running RedHat 7.1.
  */
-void sighandler(int sig)
+static void sighandler(int sig)
 {
+	int ret;
+
 	if (sig != SIGXFSZ) {
-		printf("wrong signal\n");
+		ret = write(STDOUT_FILENO, "get wrong signal\n",
+		            sizeof("get wrong signal\n"));
 	} else {
-		printf("caught SIGXFSZ\n");
+		ret = write(STDOUT_FILENO, "caught SIGXFSZ\n",
+		            sizeof("caught SIGXFSZ\n"));
 	}
+
+	(void)ret;
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *
- *  Initialize/allocate write buffer.
- *  Call individual setup function.
- */
-void setup(void)
+static void setup(void)
 {
-	int i;
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* see the comment in the sighandler() function */
 	/* call signal() to trap the signal generated */
-	if (signal(SIGXFSZ, sighandler) == SIG_ERR) {
+	if (signal(SIGXFSZ, sighandler) == SIG_ERR)
 		tst_brkm(TBROK, cleanup, "signal() failed");
-	}
+
+	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
-	/* Allocate/Initialize the write buffer with known data */
-	init_buffers();
-
-	/* Call individual setup functions */
-	for (i = 0; Test_cases[i].desc != NULL; i++) {
-		Test_cases[i].setupfunc();
-	}
-}
-
-/*
- * no_setup() - This function simply returns.
- */
-int no_setup(void)
-{
-	return 0;
-}
-
-/*
- * setup1() - setup function for a test condition for which pwrite()
- *	      returns -ve value and sets errno to ESPIPE.
- *
- *  Create an unnamed pipe using pipe().
- *  return 0.
- */
-int setup1(void)
-{
-	/* Create an unnamed pipe */
-	if (pipe(pfd) < 0) {
-		tst_brkm(TBROK, cleanup, "pipe() failed, error:%d", errno);
-	}
-
-	return 0;
-}
-
-/*
- * setup2 - setup function for a test condition for which pwrite()
- * 	    returns -ve value and sets errno to EINVAL.
- *
- *  Create a temporary directory and a file under it.
- *  return 0.
- */
-int setup2(void)
-{
-
 	tst_tmpdir();
 
-	/* Creat a temporary file used for mapping */
-	if ((fd1 = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
-		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
-
-	return 0;
+	memset(write_buf, 'a', K1);
 }
 
-/*
- * init_buffers() - allocate/Initialize write_buf array.
- *
- *  Allocate write buffer.
- *  Fill the write buffer with the following data like,
- *    write_buf[0] has 0's, write_buf[1] has 1's, write_buf[2] has 2's
- *    write_buf[3] has 3's.
- */
-void init_buffers(void)
+static void print_test_result(int err, int exp_errno)
 {
-	int count;		/* counter variable for loop */
+	if (err == 0) {
+		tst_resm(TFAIL, "call succeeded unexpectedly");
+		return;
+	}
 
-	/* Allocate and Initialize write buffer with known data */
-	for (count = 0; count < NBUFS; count++) {
-		write_buf[count] = (char *)malloc(K1);
+	TEST_ERROR_LOG(err);
 
-		if (write_buf[count] == NULL) {
-			tst_brkm(TBROK, NULL,
-				 "malloc() failed on write buffer");
-		}
-		memset(write_buf[count], count, K1);
+	if (err == exp_errno) {
+		tst_resm(TPASS, "pwrite failed as expected: %d - %s",
+			 err, strerror(err));
+	} else {
+		tst_resm(TFAIL, "pwrite failed unexpectedly; expected: %d - %s"
+			 "return: %d - %s", exp_errno, strerror(exp_errno),
+			 err, strerror(err));
 	}
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *
- * Deallocate the memory allocated to write buffer.
- * Close the temporary file.
- * Remove the temporary directory created.
- */
-void cleanup(void)
+static void test_espipe(void)
 {
-	int count;		/* index for the loop */
+	int pipe_fds[2];
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
+	SAFE_PIPE(cleanup, pipe_fds);
+
+	TEST(pwrite(pipe_fds[1], write_buf, K1, 0));
+
+	print_test_result(errno, ESPIPE);
+
+	SAFE_CLOSE(cleanup, pipe_fds[0]);
+	SAFE_CLOSE(cleanup, pipe_fds[1]);
+}
+
+static void test_einval(void)
+{
+	int fd;
+
+	fd = SAFE_OPEN(cleanup, TEMPFILE, O_RDWR | O_CREAT, 0666);
+
+	/* the specified offset was invalid */
+	TEST(pwrite(fd, write_buf, K1, -1));
+
+	print_test_result(errno, EINVAL);
+
+	SAFE_CLOSE(cleanup, fd);
+}
+
+static void test_ebadf(void)
+{
+	int fd = -1;
+
+	TEST(pwrite(fd, write_buf, K1, 0));
+
+	print_test_result(errno, EBADF);
+}
+
+#if !defined(UCLINUX)
+static void test_efault(void)
+{
+	int fd;
+	char *buf = sbrk(0);
+
+	fd = SAFE_OPEN(cleanup, TEMPFILE, O_RDWR | O_CREAT, 0666);
+
+	TEST(pwrite(fd, buf, K1, 0));
+
+	print_test_result(errno, EFAULT);
+
+	SAFE_CLOSE(cleanup, fd);
+}
+#endif
+
+static void cleanup(void)
+{
 	TEST_CLEANUP;
 
-	/* Free the memory allocated for the write buffer */
-	for (count = 0; count < NBUFS; count++) {
-		free(write_buf[count]);
-	}
-
-	/* Close the temporary file created in setup2 */
-	if (close(fd1) < 0) {
-		tst_brkm(TBROK, NULL,
-			 "close() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
-
 	tst_rmdir();
-
 }
