@@ -400,6 +400,9 @@ Printf-like function to report test result, it's mostly used with ttype:
 | 'TINFO' | General message.
 |==============================
 
+The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
+'errno', 'TEST_ERRNO' respectively.
+
 [source,c]
 -------------------------------------------------------------------------------
 void tst_brkm(int ttype, void (*cleanup)(void), char *arg_fmt, ...);
@@ -414,6 +417,8 @@ Printf-like function to report error and exit the test, it can be used with ttyp
 | 'TFAIL' | test has failed
 |============================================================
 
+The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
+'errno', 'TEST_ERRNO' respectively.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -946,8 +951,8 @@ I've been hit by this one several times already... When you are creating files
 with 'open()' or 'creat()' etc, the mode specified as the last parameter *is
 not* the mode the file is created with. The mode depends on current 'umask()'
 settings which may clear some of the bits. If your test depends on specific
-file permissions you need to 'chmod()' the file afterwards or use SAFE_TOUCH()
-that does the 'chmod()' for you.
+file permissions you need either to change umask to 0 or 'chmod()' the file
+afterwards or use SAFE_TOUCH() that does the 'chmod()' for you.
 
 3.2 access()
 ~~~~~~~~~~~
