@@ -29,3 +29,4 @@ modules
 fs_ext4
 pipes
 dma_thread_diotest
+cpuacct

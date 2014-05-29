@@ -15,8 +15,8 @@
 #  the GNU General Public License for more details.                            #
 #                                                                              #
 #  You should have received a copy of the GNU General Public License           #
-#  along with this program;  if not, write to the Free Software                #
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA     #
+#  along with this program;  if not, write to the Free Software Foundation,    #
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA            #
 #                                                                              #
 ################################################################################
 ################################################################################
@@ -45,18 +45,29 @@
 #                                                                              #
 ################################################################################
 
+# umount cpuacct if it has been mounted.
+umount_cpuacct_mounted()
+{
+	dir=`cat /proc/mounts | grep cpuacct | awk '{print $2}'`
+	if [ -n "$dir" ]; then
+		umount "$dir" 2> /dev/null
+	fi
+}
+
 # The cleanup function
-cleanup ()
+cleanup()
 {
 	echo "Cleanup called"
 	rm -rf txt*
 	rmdir /dev/cpuacct/group*/group* 2> /dev/null
 	rmdir /dev/cpuacct/group* 2> /dev/null
 	umount /dev/cpuacct/ 2> /dev/null
+	umount_cpuacct_mounted
 	rmdir /dev/cpuacct 2> /dev/null
 	rm -rf tmp2 2> /dev/null
 }
-task_kill ()
+
+task_kill()
 {
 	for i in `ps -e | grep cpuacct_task | awk '{print $1}'`
 	do
@@ -70,33 +81,31 @@ task_kill ()
 
 #clean any group created eralier (if any)
 
-setup ()
+setup()
 {
-	if [ -e /dev/cpuacct ]
-	then
+	if [ -e /dev/cpuacct ]; then
 		echo "WARN:/dev/cpuacct already exist..overwriting"
 		rmdir /dev/cpuacct/group*/group* 2> /dev/null
-	        rmdir /dev/cpuacct/group* 2> /dev/null
+		rmdir /dev/cpuacct/group* 2> /dev/null
         	umount /dev/cpuacct/ 2> /dev/null
-	        rmdir /dev/cpuacct 2> /dev/null
-
+		rmdir /dev/cpuacct 2> /dev/null
 		mkdir /dev/cpuacct
 	else
 		mkdir /dev/cpuacct
 	fi
+	umount_cpuacct_mounted
 	mount -t cgroup -ocpuacct none /dev/cpuacct 2> /dev/null
 	if [ $? -ne 0 ]
 	then
 		echo "TFAIL: Could not mount cgroup filesystem"
 		echo "Exiting test"
 		cleanup
-		exit -1
+		exit 1
 	fi
 
 	# Group created earlier may again be visible if not cleaned properly.
 	#so clean them
-	if [ -e /dev/cpuacct/group_1 ]
-	then
+	if [ -e /dev/cpuacct/group_1 ]; then
 		rmdir /dev/cpuacct/group*/group* 2> /dev/null
 		rmdir /dev/cpuacct/group* 2> /dev/null
 		echo "WARN: Earlier groups found and removed...";
@@ -108,6 +117,6 @@ setup ()
 usage()
 {
 	echo "Could not start cpu account controller test";
-	echo "usage: run_cpuacct_test.sh $TEST_NUM ";
+	echo "usage: run_cpuacct_test.sh <TEST_NUM>";
 	echo "Skipping the cpu account controller test...";
 }

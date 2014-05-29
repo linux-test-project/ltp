@@ -1,2 +1,2 @@
-CPUACCT01 $LTPROOT/testcases/bin/run_cpuacct_test.sh 1
-CPUACCT02 $LTPROOT/testcases/bin/run_cpuacct_test.sh 2
+cpuacct01 run_cpuacct_test.sh 1
+cpuacct02 run_cpuacct_test.sh 2
