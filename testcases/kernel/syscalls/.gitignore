@@ -900,6 +900,7 @@
 /sockioctl/sockioctl01
 /splice/splice01
 /splice/splice02
+/splice/splice03
 /ssetmask/ssetmask01
 /stat/stat01
 /stat/stat01_64

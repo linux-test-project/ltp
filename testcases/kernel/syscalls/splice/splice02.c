@@ -40,18 +40,11 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "splice.h"
 
 char *TCID = "splice02";
 int testno;
 int TST_TOTAL = 1;
-
-static inline long ltp_splice(int fd_in, loff_t * off_in,
-			      int fd_out, loff_t * off_out,
-			      size_t len, unsigned int flags)
-{
-	return ltp_syscall(__NR_splice, fd_in, off_in, fd_out, off_out,
-		len, flags);
-}
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -135,7 +128,7 @@ int main(int ac, char **av)
 	}
 
 	do {
-		TEST(ltp_splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
+		TEST(splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
 		if (TEST_RETURN < 0) {
 			tst_resm(TFAIL, "splice failed - errno = %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));

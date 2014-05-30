@@ -42,6 +42,8 @@
  *
  */
 
+#define _GNU_SOURCE
+
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -52,6 +54,7 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "tst_fs_type.h"
+#include "splice.h"
 
 #define SPLICE_TEST_BLOCK_SIZE 1024
 
@@ -63,14 +66,6 @@ char *TCID = "splice01";
 int TST_TOTAL = 1;
 char testfile1[256];
 char testfile2[256];
-
-static inline long splice(int fd_in, loff_t * off_in,
-			  int fd_out, loff_t * off_out,
-			  size_t len, unsigned int flags)
-{
-	return ltp_syscall(__NR_splice, fd_in, off_in, fd_out, off_out,
-		len, flags);
-}
 
 int main(int ac, char **av)
 {
