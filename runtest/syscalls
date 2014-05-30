@@ -1152,6 +1152,7 @@ splice01 splice01
 splice02 seq 1 10000000 | splice02 splice02-temp
 
 tee01 tee01
+tee02 tee02
 
 ssetmask01 ssetmask01
 

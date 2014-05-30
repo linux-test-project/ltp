@@ -954,6 +954,7 @@
 /syslog/syslog12
 /syslog/syslogtst
 /tee/tee01
+/tee/tee02
 /time/time01
 /time/time02
 /timer_getoverrun/timer_getoverrun01
