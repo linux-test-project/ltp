@@ -919,6 +919,7 @@
 /statfs/statfs03
 /statfs/statfs03_64
 /statvfs/statvfs01
+/statvfs/statvfs02
 /stime/stime01
 /stime/stime02
 /string/string01

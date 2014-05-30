@@ -1177,6 +1177,7 @@ statfs03 statfs03
 statfs03_64 statfs03_64
 
 statvfs01 statvfs01
+statvfs02 statvfs02
 
 stime01 stime01
 stime02 stime02

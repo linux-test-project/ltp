@@ -867,6 +867,7 @@ statfs02 statfs02
 statfs03 statfs03
 
 statvfs01 statvfs01
+statvfs02 statvfs02
 
 # This syscall is obsoleted by settimeofday.
 #stime01 stime01
