@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *    AUTHOR		: William Roske
+ *    CO-PILOT		: Dave Fenner
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -30,72 +32,6 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: brk01.c,v 1.8 2009/08/28 11:24:25 vapier Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: brk01
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for brk(2)
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 1
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: William Roske
- *
- *    CO-PILOT		: Dave Fenner
- *
- *    DATE STARTED	: 03/30/92
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- * 	1.) brk(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *$
- *    ENVIRONMENTAL NEEDS
- * 	The libcuts.a and libsys.a libraries must be included in
- *	the compilation of this test.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the brk(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	brk(2).
- *
- * 	Setup:
- * 	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- * 	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <unistd.h>
 #include <errno.h>
@@ -128,7 +64,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
-	int incr;		/* increment */
+	int incr;
 	long nbrkpt;		/* new brk point value */
 	long cur_brk_val;	/* current size returned by sbrk */
 	long aft_brk_val;	/* current size returned by sbrk */
@@ -181,12 +117,8 @@ int main(int ac, char **av)
 	cur_brk_val, nbrkpt, incr, lc);
 ****/
 
-		/*
-		 * Call brk(2)
-		 */
 		TEST(brk((char *)nbrkpt));
 
-		/* check return code */
 		if (TEST_RETURN == -1) {
 
 			aft_brk_val = (long)sbrk(0);
@@ -216,7 +148,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
@@ -238,26 +169,15 @@ void setup(void)
 			 "getrlimit(RLIMIT_DATA,%p) failed", &lim);
 	ulim_sz = lim.rlim_cur;
 
-#ifdef CRAY
-	if ((usr_mem_sz = sysconf(_SC_CRAY_USRMEM)) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "sysconf(_SC_CRAY_USRMEM) failed");
-
-	usr_mem_sz *= 8;	/* convert to bytes */
-#else
 	/*
 	 * On IRIX, which is a demand paged system, memory is managed
 	 * different than on Crays systems.  For now, pick some value.
 	 */
 	usr_mem_sz = 1024 * 1024 * sizeof(long);
-#endif
 
-#ifdef __linux__
-#define _SC_NPROC_ONLN _SC_NPROCESSORS_ONLN
-#endif
-	if ((ncpus = sysconf(_SC_NPROC_ONLN)) == -1)
+	if ((ncpus = sysconf(_SC_NPROCESSORS_ONLN)) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup,
-			 "sysconf(_SC_NPROC_ONLN) failed");
+			 "sysconf(_SC_NPROCESSORS_ONLN) failed");
 
 	/*
 	 * allow 2*ncpus copies to run.
