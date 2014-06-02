@@ -75,7 +75,7 @@
 
 #define MAXMESG 150		/* size of mesg string sent to tst_res */
 
-void (*T_cleanup) ();		/* pointer to cleanup function */
+static void (*T_cleanup) ();
 
 /****************************************************************************
  * STD_COPIES is defined in parse_opts.c but is externed here in order to
@@ -176,11 +176,6 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 		case __SIGRTMAX - 1:
 		case __SIGRTMAX:
 #endif
-#ifdef CRAY
-		case SIGINFO:
-		case SIGRECOVERY:	/* allow chkpnt/restart */
-#endif /* CRAY */
-
 #ifdef SIGSWAP
 		case SIGSWAP:
 #endif /* SIGSWAP */
@@ -226,13 +221,7 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 					 "signal failed for signal %d", sig);
 			break;
 		}
-#ifdef __sgi
-		/* On irix  (07/96), signal() fails when signo is 33 or higher */
-		if (sig + 1 >= 33)
-			break;
-#endif /*  __sgi */
-
-	}			/* endfor */
+	}
 }
 
 /****************************************************************************
