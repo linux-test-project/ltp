@@ -84,13 +84,13 @@ MSGBUF msg_buf;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	pid_t c_pid;
 	int status, e_code;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+
 #ifdef UCLINUX
 #define PIPE_NAME	"msgsnd06"
 	maybe_run_child(&do_child, "d", &msg_q_1);

@@ -76,13 +76,12 @@ int TC[] = { IPC_SET, IPC_RMID };
 
 int main(int ac, char **av)
 {
-	char *msg;
+	const char *msg;
 	pid_t pid;
 	void do_child(void);
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();		/* global setup */
 

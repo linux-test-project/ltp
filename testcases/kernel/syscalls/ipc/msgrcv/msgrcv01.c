@@ -80,13 +80,13 @@ pid_t c_pid;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	void check_functionality(void);
 	int status, e_code;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "d", &msg_q_1);
 #endif

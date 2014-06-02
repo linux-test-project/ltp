@@ -76,12 +76,11 @@ int num_sems = 0;		/* count the semaphores created */
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	FILE *fp;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	/* Set the MAXIDS for the specific machine by reading the system limit
 	 * for SEMMNI - The maximum number of sempahore sets

@@ -107,13 +107,14 @@ static int i_uclinux;
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 	pid_t pid;
 	void do_child();
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "dd", &i_uclinux, &sem_id_1);
 #endif

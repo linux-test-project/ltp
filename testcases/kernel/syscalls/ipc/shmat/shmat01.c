@@ -70,7 +70,7 @@ static void check_functionality(int);
 int main(int argc, char *argv[])
 {
 	int lc, i;
-	char *msg;
+	const char *msg;
 	void *attchaddr;
 
 	msg = parse_opts(argc, argv, NULL, NULL);

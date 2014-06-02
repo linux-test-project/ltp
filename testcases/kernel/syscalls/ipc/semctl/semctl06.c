@@ -112,10 +112,9 @@ static char *maxsemstring;
 	int count, child, status, nwait;
 
 #ifdef UCLINUX
-	char *msg;
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
+	const char *msg;
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	argv0 = argv[0];
 	maybe_run_child(&do_child, "dS", &id_uclinux, &maxsemstring);

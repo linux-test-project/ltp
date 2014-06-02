@@ -131,7 +131,7 @@ static int stat_i;
 int main(int argc, char *argv[])
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	msg = parse_opts(argc, argv, NULL, NULL);

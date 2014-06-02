@@ -105,7 +105,7 @@ static void setup_tc(int i, struct test_case_t *tc)
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 	struct test_case_t *tc;
 

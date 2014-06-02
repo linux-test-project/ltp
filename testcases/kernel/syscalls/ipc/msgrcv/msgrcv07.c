@@ -45,7 +45,7 @@ int TST_TOTAL = ARRAY_SIZE(testfunc);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;
+	const char *msg;
 	int i;
 
 	msg = parse_opts(ac, av, NULL, NULL);
