@@ -392,19 +392,6 @@ Ltp-scanner is a results analysis tool that understands the rts
 style output which ltp-pan generates by default. It will produce
 a table summarizing which tests passed and which failed.
 
-
-5.3 The Quick-hitter Package
-
-Many of the tests released use the Quick-hitter test package
-to perform tasks like create and move to a temporary directory,
-handle some common command line parameters, loop, run in
-parallel, handle signals, and clean up.
-
-There is an example test case, doc/examples/quickhit.c, which
-shows how the quick-hitter package can be used. The file
-is meant to be a supplement to the documentation, not a
-working test case. Use any of the tests in tests/ as a template.
-
 6 To Do
 
 There are a lot of things that still need to be done to make
