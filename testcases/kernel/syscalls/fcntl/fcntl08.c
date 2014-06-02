@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *  AUTHOR		: William Roske
+ *  CO-PILOT		: Dave Fenner
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -30,84 +32,6 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl08.c,v 1.6 2009/10/26 14:55:46 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: fcntl08
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for fcntl(2) using F_SETFL argument.
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 1
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: William Roske
- *
- *    CO-PILOT		: Dave Fenner
- *
- *    DATE STARTED	: 03/30/92
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- *	1.) fcntl(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- *	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *
- *    DURATION
- *	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- *	Uses SIGUSR1 to pause before test if option set.
- *	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- *	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- *	None
- *
- *    INTERCASE DEPENDENCIES
- *	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the fcntl(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	fcntl(2).
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- *	Test:
- *	 Loop if the proper options are given.
- *	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- *	Cleanup:
- *        close file
- *        remove temp directory
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -116,17 +40,18 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "fcntl08";
 int TST_TOTAL = 1;
 
-char fname[255];
-int arg, fd;
+static int fd;
 
 int main(int ac, char **av)
 {
@@ -142,11 +67,11 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(fcntl(fd, F_SETFL, arg));
+		TEST(fcntl(fd, F_SETFL, O_NDELAY | O_APPEND | O_NONBLOCK));
 
-		if (TEST_RETURN == -1)
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "fcntl failed");
-		else {
+		} else {
 			tst_resm(TPASS, "fcntl returned %ld",
 				 TEST_RETURN);
 		}
@@ -166,23 +91,7 @@ void setup(void)
 
 	tst_tmpdir();
 
-	sprintf(fname, "tfile_%d", getpid());
-	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
-
-	/* set the flags to be used */
-#ifdef CRAY
-	arg = (O_NDELAY | O_APPEND | O_RAW | O_NONBLOCK);
-#else /* ! CRAY */
-#ifdef __hpux
-	/* HP-UX doesn't allow O_NDELAY and O_NONBLOCK;
-	   we choose O_NONBLOCK (POSIX style) */
-	arg = (O_APPEND | O_NONBLOCK);
-#else /* ! __hpux */
-	arg = (O_NDELAY | O_APPEND | O_NONBLOCK);
-#endif /* ! __hpux */
-#endif /* ! CRAY */
-
+	fd = SAFE_OPEN(cleanup, "test_file", O_RDWR | O_CREAT, 0700);
 }
 
 void cleanup(void)
@@ -193,5 +102,4 @@ void cleanup(void)
 		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
-
 }
