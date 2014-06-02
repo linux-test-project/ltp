@@ -103,11 +103,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				check_functionality();
-			} else {
-				tst_resm(TPASS, "call succeeded");
-			}
+			check_functionality();
 		}
 
 		/* reattach the shared memory segment in case we are looping */

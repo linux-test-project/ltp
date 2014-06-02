@@ -149,15 +149,13 @@ int main(int ac, char **av)
 			TEST(dup(Fds[ind]));
 
 			if (TEST_RETURN == -1) {
-				if (STD_FUNCTIONAL_TEST) {
-					if (TEST_ERRNO == EBADF)
-						tst_resm(TPASS,
-							 "dup failed as expected "
-							 "with EBADF");
-					else
-						tst_resm(TFAIL | TTERRNO,
-							 "dup failed unexpectedly");
-				}
+				if (TEST_ERRNO == EBADF)
+					tst_resm(TPASS,
+						 "dup failed as expected "
+						 "with EBADF");
+				else
+					tst_resm(TFAIL | TTERRNO,
+						 "dup failed unexpectedly");
 			} else {
 				tst_resm(TFAIL, "dup succeeded unexpectedly");
 
@@ -169,7 +167,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

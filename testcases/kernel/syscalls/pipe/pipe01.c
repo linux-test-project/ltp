@@ -94,42 +94,37 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
+		strcpy(wrbuf, "abcdefghijklmnopqrstuvwxyz");
+		length = strlen(wrbuf);
 
-			strcpy(wrbuf, "abcdefghijklmnopqrstuvwxyz");
-			length = strlen(wrbuf);
-
-			if ((written = write(fildes[1], wrbuf, length)) == -1) {
-				tst_brkm(TBROK, cleanup, "write() failed");
-			}
-
-			if (written < 0 || written > 26) {
-				tst_resm(TFAIL, "Condition #1 test failed");
-				continue;
-			}
-
-			if ((red = safe_read(fildes[0], rebuf, written)) == -1) {
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "read() failed");
-			}
-
-			if (red < 0 || red > written) {
-				tst_resm(TFAIL, "Condition #2 test failed");
-				continue;
-			}
-
-			/* are the strings written and read equal */
-			if ((greater = strncmp(rebuf, wrbuf, red)) != 0) {
-				tst_resm(TFAIL, "Condition #3 test failed");
-				continue;
-			}
-			tst_resm(TPASS, "pipe() functionality is correct");
-		} else {
-			tst_resm(TPASS, "call succeeded");
+		if ((written = write(fildes[1], wrbuf, length)) == -1) {
+			tst_brkm(TBROK, cleanup, "write() failed");
 		}
-	}
-	cleanup();
 
+		if (written < 0 || written > 26) {
+			tst_resm(TFAIL, "Condition #1 test failed");
+			continue;
+		}
+
+		if ((red = safe_read(fildes[0], rebuf, written)) == -1) {
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "read() failed");
+		}
+
+		if (red < 0 || red > written) {
+			tst_resm(TFAIL, "Condition #2 test failed");
+			continue;
+		}
+
+		/* are the strings written and read equal */
+		if ((greater = strncmp(rebuf, wrbuf, red)) != 0) {
+			tst_resm(TFAIL, "Condition #3 test failed");
+			continue;
+		}
+		tst_resm(TPASS, "pipe() functionality is correct");
+	}
+
+	cleanup();
 	tst_exit();
 }
 

@@ -255,31 +255,27 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 			if (set_handler(test_flags[i], 0) == 0) {
-				if (STD_FUNCTIONAL_TEST) {
-					testcase_no++;
-					switch (i) {
-					case 0:
-					 /*FALLTHROUGH*/ case 1:
-						(void)kill(getpid(), SIGUSR1);
-						break;
-					case 2:
-					 /*FALLTHROUGH*/ case 3:
-						(void)
-						    pthread_kill(pthread_self(),
-								 SIGUSR1);
-						break;
-					default:
-						tst_brkm(TBROK, cleanup,
-							 "illegal case number");
-						break;
-					}
-				} else {
-					tst_resm(TPASS, "call succeeded");
+				testcase_no++;
+				switch (i) {
+				case 0:
+				 /*FALLTHROUGH*/ case 1:
+					(void)kill(getpid(), SIGUSR1);
+					break;
+				case 2:
+				 /*FALLTHROUGH*/ case 3:
+					(void)
+					    pthread_kill(pthread_self(),
+							 SIGUSR1);
+					break;
+				default:
+					tst_brkm(TBROK, cleanup,
+						 "illegal case number");
+					break;
 				}
 			}
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }

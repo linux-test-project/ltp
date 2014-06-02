@@ -58,26 +58,22 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "This should never happen");
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			uid = getuid();
-			pwent = getpwuid(uid);
+		uid = getuid();
+		pwent = getpwuid(uid);
 
-			if (pwent == NULL)
-				tst_brkm(TBROK, cleanup, "getuid() returned "
-					 "unexpected value %d", uid);
+		if (pwent == NULL)
+			tst_brkm(TBROK, cleanup, "getuid() returned "
+				 "unexpected value %d", uid);
 
-			GID16_CHECK(pwent->pw_gid, getgid, cleanup);
+		GID16_CHECK(pwent->pw_gid, getgid, cleanup);
 
-			if (pwent->pw_gid != TEST_RETURN) {
-				tst_resm(TFAIL, "getgid() return value "
-					 "%ld unexpected - expected %d",
-					 TEST_RETURN, pwent->pw_gid);
-			} else {
-				tst_resm(TPASS, "values from getuid "
-					 "and getpwuid match");
-			}
+		if (pwent->pw_gid != TEST_RETURN) {
+			tst_resm(TFAIL, "getgid() return value "
+				 "%ld unexpected - expected %d",
+				 TEST_RETURN, pwent->pw_gid);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "values from getuid "
+				 "and getpwuid match");
 		}
 	}
 

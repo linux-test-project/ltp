@@ -90,11 +90,6 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (!STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS, "call succeeded");
-				continue;
-			}
-
 			if (getpgrp() == oldpgrp) {
 				retval = 1;
 				tst_resm(TFAIL, "setpgrp() FAILED to set "

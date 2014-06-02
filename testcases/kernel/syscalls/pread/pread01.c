@@ -168,19 +168,11 @@ int main(int ac, char **av)
 		l_seek(fildes, 0, SEEK_CUR, K1);
 
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Compare the read buffer data read
+		 * with the data written to write buffer
+		 * in the setup.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Compare the read buffer data read
-			 * with the data written to write buffer
-			 * in the setup.
-			 */
-			compare_bufers();
-		} else {
-			tst_resm(TPASS, "calls to pread() succeeded");
-		}
+		compare_bufers();
 
 		/* reset our location to offset K4 in case we are looping */
 		l_seek(fildes, K4, SEEK_SET, K4);
@@ -188,8 +180,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*

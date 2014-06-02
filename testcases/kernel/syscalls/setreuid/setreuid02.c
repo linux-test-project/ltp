@@ -91,13 +91,9 @@ int main(int ac, char **av)
 					 *test_data[i].real_uid,
 					 *test_data[i].eff_uid);
 			} else {
-				if (STD_FUNCTIONAL_TEST) {
-					uid_verify(test_data[i].exp_real_usr,
-						   test_data[i].exp_eff_usr,
-						   test_data[i].test_msg);
-				} else {
-					tst_resm(TPASS, "Call succeeded.");
-				}
+				uid_verify(test_data[i].exp_real_usr,
+					   test_data[i].exp_eff_usr,
+					   test_data[i].test_msg);
 			}
 		}
 	}

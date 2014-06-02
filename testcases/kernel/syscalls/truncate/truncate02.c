@@ -135,101 +135,93 @@ int main(int ac, char **av)
 				 strerror(TEST_ERRNO));
 		} else {
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Get the testfile information using
+			 * stat(2).
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the testfile information using
-				 * stat(2).
-				 */
-				if (stat(TESTFILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "stat(2) of "
-						 "%s failed after 1st truncate, "
-						 "error:%d", TESTFILE, errno);
-				}
-				file_length1 = stat_buf.st_size;
+			if (stat(TESTFILE, &stat_buf) < 0) {
+				tst_brkm(TFAIL, cleanup, "stat(2) of "
+					 "%s failed after 1st truncate, "
+					 "error:%d", TESTFILE, errno);
+			}
+			file_length1 = stat_buf.st_size;
 
-				/*
-				 * Set the file pointer of testfile to the
-				 * beginning of the file.
-				 */
-				if (lseek(fd, 0, SEEK_SET) < 0) {
-					tst_brkm(TFAIL, cleanup, "lseek(2) on "
-						 "%s failed after 1st truncate, "
-						 "error:%d", TESTFILE, errno);
-				}
+			/*
+			 * Set the file pointer of testfile to the
+			 * beginning of the file.
+			 */
+			if (lseek(fd, 0, SEEK_SET) < 0) {
+				tst_brkm(TFAIL, cleanup, "lseek(2) on "
+					 "%s failed after 1st truncate, "
+					 "error:%d", TESTFILE, errno);
+			}
 
-				/* Read the testfile from the beginning. */
-				while ((rbytes = read(fd, tst_buff,
-						      sizeof(tst_buff))) > 0) {
-					read_len += rbytes;
-				}
+			/* Read the testfile from the beginning. */
+			while ((rbytes = read(fd, tst_buff,
+					      sizeof(tst_buff))) > 0) {
+				read_len += rbytes;
+			}
 
-				/*
-				 * Execute truncate(2) again to truncate
-				 * testfile to a size TRUNC_LEN2.
-				 */
-				TEST(truncate(TESTFILE, TRUNC_LEN2));
+			/*
+			 * Execute truncate(2) again to truncate
+			 * testfile to a size TRUNC_LEN2.
+			 */
+			TEST(truncate(TESTFILE, TRUNC_LEN2));
 
-				if (TEST_RETURN == -1) {
-					TEST_ERROR_LOG(TEST_ERRNO);
-					tst_resm(TFAIL, "truncate of %s to "
-						 "size %d Failed, errno=%d : %s",
-						 TESTFILE, TRUNC_LEN2,
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				}
+			if (TEST_RETURN == -1) {
+				TEST_ERROR_LOG(TEST_ERRNO);
+				tst_resm(TFAIL, "truncate of %s to "
+					 "size %d Failed, errno=%d : %s",
+					 TESTFILE, TRUNC_LEN2,
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			}
 
-				/*
-				 * Get the testfile information using
-				 * stat(2)
-				 */
-				if (stat(TESTFILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "stat(2) of "
-						 "%s failed after 2nd truncate, "
-						 "error:%d", TESTFILE, errno);
-				}
-				file_length2 = stat_buf.st_size;
+			/*
+			 * Get the testfile information using
+			 * stat(2)
+			 */
+			if (stat(TESTFILE, &stat_buf) < 0) {
+				tst_brkm(TFAIL, cleanup, "stat(2) of "
+					 "%s failed after 2nd truncate, "
+					 "error:%d", TESTFILE, errno);
+			}
+			file_length2 = stat_buf.st_size;
 
-				/*
-				 * Set the file pointer of testfile to the
-				 * offset TRUNC_LEN1 of testfile.
-				 */
-				if (lseek(fd, TRUNC_LEN1, SEEK_SET) < 0) {
-					tst_brkm(TFAIL, cleanup, "lseek(2) on "
-						 "%s failed after 2nd truncate, "
-						 "error:%d", TESTFILE, errno);
-				}
+			/*
+			 * Set the file pointer of testfile to the
+			 * offset TRUNC_LEN1 of testfile.
+			 */
+			if (lseek(fd, TRUNC_LEN1, SEEK_SET) < 0) {
+				tst_brkm(TFAIL, cleanup, "lseek(2) on "
+					 "%s failed after 2nd truncate, "
+					 "error:%d", TESTFILE, errno);
+			}
 
-				/* Read the testfile contents till EOF */
-				while ((rbytes = read(fd, tst_buff,
-						      sizeof(tst_buff))) > 0) {
-					for (i = 0; i < rbytes; i++) {
-						if (tst_buff[i] != 0) {
-							err_flag++;
-						}
+			/* Read the testfile contents till EOF */
+			while ((rbytes = read(fd, tst_buff,
+					      sizeof(tst_buff))) > 0) {
+				for (i = 0; i < rbytes; i++) {
+					if (tst_buff[i] != 0) {
+						err_flag++;
 					}
 				}
+			}
 
-				/*
-				 * Check for expected size of testfile after
-				 * issuing truncate(2) on it.
-				 */
-				if ((file_length1 != TRUNC_LEN1) ||
-				    (file_length2 != TRUNC_LEN2) ||
-				    (read_len != TRUNC_LEN1) ||
-				    (err_flag != 0)) {
-					tst_resm(TFAIL, "Functionality of "
-						 "truncate(2) on %s Failed",
-						 TESTFILE);
-				} else {
-					tst_resm(TPASS,
-						 "Functionality of truncate(2) "
-						 "on %s successful", TESTFILE);
-				}
+			/*
+			 * Check for expected size of testfile after
+			 * issuing truncate(2) on it.
+			 */
+			if ((file_length1 != TRUNC_LEN1) ||
+			    (file_length2 != TRUNC_LEN2) ||
+			    (read_len != TRUNC_LEN1) ||
+			    (err_flag != 0)) {
+				tst_resm(TFAIL, "Functionality of "
+					 "truncate(2) on %s Failed",
+					 TESTFILE);
 			} else {
-				tst_resm(TPASS, "%s call succeeded", TCID);
+				tst_resm(TPASS,
+					 "Functionality of truncate(2) "
+					 "on %s successful", TESTFILE);
 			}
 		}
 		tst_count++;	/* incr. TEST_LOOP counter */
@@ -237,7 +229,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

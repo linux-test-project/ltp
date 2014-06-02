@@ -128,39 +128,31 @@ int main(int ac, char **av)
 				 strerror(TEST_ERRNO));
 		} else {
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Get the testfile information using
+			 * stat(2).
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the testfile information using
-				 * stat(2).
-				 */
-				if (stat(TESTFILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "stat(2) of "
-						 "%s failed, error:%d",
-						 TESTFILE, errno);
-				}
-				stat_buf.st_mode &= ~S_IFREG;
-				file_length = stat_buf.st_size;
+			if (stat(TESTFILE, &stat_buf) < 0) {
+				tst_brkm(TFAIL, cleanup, "stat(2) of "
+					 "%s failed, error:%d",
+					 TESTFILE, errno);
+			}
+			stat_buf.st_mode &= ~S_IFREG;
+			file_length = stat_buf.st_size;
 
-				/*
-				 * Check for expected size of testfile after
-				 * truncate(2) on it.
-				 */
-				if (file_length != TRUNC_LEN) {
-					tst_resm(TFAIL, "%s: Incorrect file "
-						 "size %" PRId64
-						 ", Expected %d", TESTFILE,
-						 (int64_t) file_length,
-						 TRUNC_LEN);
-				} else {
-					tst_resm(TPASS, "Functionality of "
-						 "truncate(%s, %d) successful",
-						 TESTFILE, TRUNC_LEN);
-				}
+			/*
+			 * Check for expected size of testfile after
+			 * truncate(2) on it.
+			 */
+			if (file_length != TRUNC_LEN) {
+				tst_resm(TFAIL, "%s: Incorrect file "
+					 "size %" PRId64
+					 ", Expected %d", TESTFILE,
+					 (int64_t) file_length,
+					 TRUNC_LEN);
 			} else {
-				tst_resm(TPASS, "%s call succeeded", TCID);
+				tst_resm(TPASS, "Functionality of "
+					 "truncate(%s, %d) successful",
+					 TESTFILE, TRUNC_LEN);
 			}
 		}
 		tst_count++;	/* incr TEST_LOOP counter */
@@ -168,7 +160,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

@@ -165,13 +165,6 @@ static int test_functionality(uid_t exp_rgid, uid_t exp_egid, uid_t exp_sgid)
 {
 	uid_t cur_rgid, cur_egid, cur_sgid;
 
-	/*
-	 * Perform functional verification, if STD_FUNCTIONAL_TEST is
-	 * set (-f options is not used)
-	 */
-	if (STD_FUNCTIONAL_TEST == 0) {
-		return 0;
-	}
 	/* Get current real, effective and saved group id's */
 	if (getresgid(&cur_rgid, &cur_egid, &cur_sgid) == -1) {
 		tst_brkm(TBROK, cleanup, "getresgid() failed");

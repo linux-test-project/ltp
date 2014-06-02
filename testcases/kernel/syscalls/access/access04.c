@@ -75,16 +75,12 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (stat(TESTFILE, &stat_buf) < 0) {
-				tst_resm(TFAIL | TERRNO, "stat(%s) failed",
-					 TESTFILE);
-			} else {
-				tst_resm(TPASS, "functionality of "
-					 "access(%s, F_OK) ok", TESTFILE);
-			}
+		if (stat(TESTFILE, &stat_buf) < 0) {
+			tst_resm(TFAIL | TERRNO, "stat(%s) failed",
+				 TESTFILE);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "functionality of "
+				 "access(%s, F_OK) ok", TESTFILE);
 		}
 	}
 

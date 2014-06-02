@@ -177,26 +177,11 @@ int main(int argc, char *argv[])
 					 strerror(TEST_ERRNO));
 				continue;
 			}
-			if (STD_FUNCTIONAL_TEST) {
-				(*TC[i].func_test) (TEST_RETURN);
-			} else {
-				tst_resm(TPASS, "call succeeded");
-
-				/* now perform command related cleanup */
-				switch (TC[i].cmd) {
-				case IPC_STAT:
-					stat_cleanup();
-					break;
-				case IPC_RMID:
-					shm_id_1 = -1;
-					break;
-				}
-			}
+			(*TC[i].func_test) (TEST_RETURN);
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

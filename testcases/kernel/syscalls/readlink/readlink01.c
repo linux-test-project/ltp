@@ -119,39 +119,30 @@ int main(int ac, char **av)
 		}
 
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Compare the return value of readlink()
+		 * with the expected value which is the
+		 * strlen() of testfile.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Compare the return value of readlink()
-			 * with the expected value which is the
-			 * strlen() of testfile.
-			 */
-			if (TEST_RETURN == exp_val) {
-				/* Check for the contents of buffer */
-				if (memcmp(buffer, TESTFILE, exp_val) != 0) {
-					tst_resm(TFAIL, "Pathname %s and buffer"
-						 " contents %s differ",
-						 TESTFILE, buffer);
-				} else {
-					tst_resm(TPASS, "readlink() "
-						 "functionality on '%s' is "
-						 "correct", SYMFILE);
-				}
+		if (TEST_RETURN == exp_val) {
+			/* Check for the contents of buffer */
+			if (memcmp(buffer, TESTFILE, exp_val) != 0) {
+				tst_resm(TFAIL, "Pathname %s and buffer"
+					 " contents %s differ",
+					 TESTFILE, buffer);
 			} else {
-				tst_resm(TFAIL, "readlink() return value %ld "
-					 "does't match, Expected %d",
-					 TEST_RETURN, exp_val);
+				tst_resm(TPASS, "readlink() "
+					 "functionality on '%s' is "
+					 "correct", SYMFILE);
 			}
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TFAIL, "readlink() return value %ld "
+				 "does't match, Expected %d",
+				 TEST_RETURN, exp_val);
 		}
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

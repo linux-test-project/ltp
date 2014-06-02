@@ -153,15 +153,13 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL | TTERRNO, "fcntl failed");
 		else {
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "fcntl returned %ld",
-					 TEST_RETURN);
+			tst_resm(TPASS, "fcntl returned %ld",
+				 TEST_RETURN);
 		}
 
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

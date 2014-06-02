@@ -137,35 +137,27 @@ int main(int ac, char **av)
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Get the modification and access times of
+			 * temporary file using stat(2).
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the modification and access times of
-				 * temporary file using stat(2).
-				 */
-				if (stat(TEMP_FILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "stat(2) of "
-						 "%s failed, error:%d",
-						 TEMP_FILE, TEST_ERRNO);
-				}
-				modf_time = stat_buf.st_mtime;
-				access_time = stat_buf.st_atime;
+			if (stat(TEMP_FILE, &stat_buf) < 0) {
+				tst_brkm(TFAIL, cleanup, "stat(2) of "
+					 "%s failed, error:%d",
+					 TEMP_FILE, TEST_ERRNO);
+			}
+			modf_time = stat_buf.st_mtime;
+			access_time = stat_buf.st_atime;
 
-				/* Now do the actual verification */
-				if ((modf_time != NEW_TIME) ||
-				    (access_time != NEW_TIME)) {
-					tst_resm(TFAIL, "%s access and "
-						 "modification times not set",
-						 TEMP_FILE);
-				} else {
-					tst_resm(TPASS, "Functionality of "
-						 "utime(%s, &times) successful",
-						 TEMP_FILE);
-				}
+			/* Now do the actual verification */
+			if ((modf_time != NEW_TIME) ||
+			    (access_time != NEW_TIME)) {
+				tst_resm(TFAIL, "%s access and "
+					 "modification times not set",
+					 TEMP_FILE);
 			} else {
-				tst_resm(TPASS, "%s call succeeded", TCID);
+				tst_resm(TPASS, "Functionality of "
+					 "utime(%s, &times) successful",
+					 TEMP_FILE);
 			}
 		}
 		tst_count++;	/* incr TEST_LOOP counter */
@@ -173,7 +165,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

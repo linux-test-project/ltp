@@ -125,33 +125,25 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Get the testfile information using
+		 * stat(2).
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the testfile information using
-			 * stat(2).
-			 */
-			if (stat(TESTFILE, &stat_buf) == -1)
-				tst_brkm(TFAIL | TTERRNO, cleanup,
-					 "stat failed");
+		if (stat(TESTFILE, &stat_buf) == -1)
+			tst_brkm(TFAIL | TTERRNO, cleanup,
+				 "stat failed");
 
-			/* Check for expected mode permissions */
-			if ((stat_buf.st_mode & PERMS) == PERMS)
-				tst_resm(TPASS, "Functionality of "
-					 "chmod(%s, %#o) successful",
-					 TESTFILE, PERMS);
-			else
-				tst_resm(TFAIL, "%s: Incorrect modes 0%03o; "
-					 "expected 0%03o", TESTFILE,
-					 stat_buf.st_mode, PERMS);
-		} else
-			tst_resm(TPASS, "call succeeded");
+		/* Check for expected mode permissions */
+		if ((stat_buf.st_mode & PERMS) == PERMS)
+			tst_resm(TPASS, "Functionality of "
+				 "chmod(%s, %#o) successful",
+				 TESTFILE, PERMS);
+		else
+			tst_resm(TFAIL, "%s: Incorrect modes 0%03o; "
+				 "expected 0%03o", TESTFILE,
+				 stat_buf.st_mode, PERMS);
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

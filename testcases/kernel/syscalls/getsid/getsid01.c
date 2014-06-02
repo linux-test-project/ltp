@@ -99,52 +99,46 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
+		/* save the return value in a global variable */
+		p_sid = TEST_RETURN;
 
-			/* save the return value in a global variable */
-			p_sid = TEST_RETURN;
+		if ((pid = FORK_OR_VFORK()) == -1) {
+			tst_brkm(TBROK, cleanup, "could not fork");
+		}
 
-			if ((pid = FORK_OR_VFORK()) == -1) {
-				tst_brkm(TBROK, cleanup, "could not fork");
+		if (pid == 0) {	/* child */
+			if ((c_pid = getpid()) == -1) {
+				tst_resm(TINFO, "getpid failed in "
+					 "functionality test");
+				exit(1);
 			}
 
-			if (pid == 0) {	/* child */
-				if ((c_pid = getpid()) == -1) {
-					tst_resm(TINFO, "getpid failed in "
-						 "functionality test");
-					exit(1);
-				}
+			/*
+			 * if the session ID of the child is the
+			 * same as the parent then things look good
+			 */
 
-				/*
-				 * if the session ID of the child is the
-				 * same as the parent then things look good
-				 */
+			if ((c_sid = getsid(0)) == -1) {
+				tst_resm(TINFO, "getsid failed in "
+					 "functionality test");
+				exit(2);
+			}
 
-				if ((c_sid = getsid(0)) == -1) {
-					tst_resm(TINFO, "getsid failed in "
-						 "functionality test");
-					exit(2);
-				}
-
-				if (c_sid == p_sid) {
-					tst_resm(TPASS, "session ID is "
-						 "correct");
-				} else {
-					tst_resm(TFAIL, "session ID is "
-						 "not correct");
-				}
-				exit(0);
-
+			if (c_sid == p_sid) {
+				tst_resm(TPASS, "session ID is "
+					 "correct");
 			} else {
-				waitpid(pid, NULL, 0);
+				tst_resm(TFAIL, "session ID is "
+					 "not correct");
 			}
+			exit(0);
+
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			waitpid(pid, NULL, 0);
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

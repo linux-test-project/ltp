@@ -188,24 +188,14 @@ int main(int ac, char **av)
 				 lc, test_time, errno);
 		}
 
-	/***************************************************************
-	 * only perform functional verification if flag set (-f not given)
-	 ***************************************************************/
-		if (STD_FUNCTIONAL_TEST) {
-			/* Perform functional verification here */
-			tst_resm(TPASS,
-				 "select(4, &Readfds, 0, 0, &timeout) timeout = %ld usecs",
-				 test_time);
-		}
+		tst_resm(TPASS,
+			 "select(4, &Readfds, 0, 0, &timeout) timeout = %ld usecs",
+			 test_time);
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

@@ -79,22 +79,17 @@ int main(int argc, char *argv[])
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-
-			if (page_check())
-				tst_resm(TFAIL, "Not all pages are present");
-			else
-				tst_resm(TPASS, "Functionality of mmap() "
+		if (page_check())
+			tst_resm(TFAIL, "Not all pages are present");
+		else
+			tst_resm(TPASS, "Functionality of mmap() "
 						"successful");
-		}
-
 		if (munmap(addr, MMAPSIZE) != 0)
 			tst_brkm(TFAIL | TERRNO, NULL, "munmap failed");
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 static int page_check(void)

@@ -133,26 +133,22 @@ int main(int ac, char **av)
 			}
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check to see if the process was terminated with the
-			 * expected signal.
-			 */
-			nsig = WTERMSIG(status);
-			if (nsig == TEST_SIG) {
-				tst_resm(TPASS, "received expected signal %d",
-					 nsig);
-			} else {
-				tst_resm(TFAIL,
-					 "expected signal %d received %d",
-					 TEST_SIG, nsig);
-			}
+		/*
+		 * Check to see if the process was terminated with the
+		 * expected signal.
+		 */
+		nsig = WTERMSIG(status);
+		if (nsig == TEST_SIG) {
+			tst_resm(TPASS, "received expected signal %d",
+				 nsig);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TFAIL,
+				 "expected signal %d received %d",
+				 TEST_SIG, nsig);
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 

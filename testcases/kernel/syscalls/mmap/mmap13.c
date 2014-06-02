@@ -81,22 +81,17 @@ int main(int argc, char *argv[])
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-
-			if (sigsetjmp(env, 1) == 0) {
-				ch = addr + page_sz + 1;
-				*ch = 0;
-			}
-
-			if (pass)
-				tst_resm(TPASS, "Got SIGBUS "
-						"as expected");
-			else
-				tst_resm(TFAIL, "Invalid access not "
-						"rise SIGBUS");
-		} else {
-			tst_resm(TPASS, "call succeeded");
+		if (sigsetjmp(env, 1) == 0) {
+			ch = addr + page_sz + 1;
+			*ch = 0;
 		}
+
+		if (pass)
+			tst_resm(TPASS, "Got SIGBUS "
+					"as expected");
+		else
+			tst_resm(TFAIL, "Invalid access not "
+						"rise SIGBUS");
 
 		if (munmap(addr, page_sz * 2) != 0)
 			tst_brkm(TFAIL | TERRNO, cleanup,

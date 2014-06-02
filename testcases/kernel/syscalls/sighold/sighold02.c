@@ -221,10 +221,8 @@ int main(int ac, char **av)
 			if (p_p.result != TPASS) {
 				/* child setup did not go well */
 				tst_brkm(p_p.result, getout, "%s", p_p.mesg);
-			} else if (STD_FUNCTIONAL_TEST) {
+			} else {
 				tst_resm(p_p.result, "%s", p_p.mesg);
-			} else {	/* no pass results being issued */
-				tst_count++;
 			}
 
 			/*
@@ -276,14 +274,7 @@ int main(int ac, char **av)
 				tst_brkm(TBROK, getout, "%s", p_p.mesg);
 			}
 
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(p_p.result, "%s", p_p.mesg);
-
-			else if (p_p.result != TPASS)
-				tst_resm(p_p.result, "%s", p_p.mesg);
-
-			else
-				tst_count++;
+			tst_resm(p_p.result, "%s", p_p.mesg);
 
 			/*
 			 * wait for child

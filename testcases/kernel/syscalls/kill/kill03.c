@@ -123,26 +123,24 @@ int main(int ac, char **av)
 				 TEST_RETURN);
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check to see if the errno was set to the expected
-			 * value of 22 : EINVAL.
-			 */
-			TEST_ERROR_LOG(TEST_ERRNO);
-			if (TEST_ERRNO == EINVAL) {
-				tst_resm(TPASS, "errno set to %d : %s, as "
-					 "expected", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL, "errno set to %d : %s expected "
-					 "%d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO), 22,
-					 strerror(22));
-			}
+		/*
+		 * Check to see if the errno was set to the expected
+		 * value of 22 : EINVAL.
+		 */
+		TEST_ERROR_LOG(TEST_ERRNO);
+		if (TEST_ERRNO == EINVAL) {
+			tst_resm(TPASS, "errno set to %d : %s, as "
+				 "expected", TEST_ERRNO,
+				 strerror(TEST_ERRNO));
+		} else {
+			tst_resm(TFAIL, "errno set to %d : %s expected "
+				 "%d : %s", TEST_ERRNO,
+				 strerror(TEST_ERRNO), 22,
+				 strerror(22));
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 

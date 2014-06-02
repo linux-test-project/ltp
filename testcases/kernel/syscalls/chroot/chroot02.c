@@ -91,11 +91,9 @@ int main(int ac, char **av)
 				perror("chroot failed");
 				retval = 1;
 			} else {
-				if (STD_FUNCTIONAL_TEST) {
-					if (stat("/" TMP_FILENAME, &buf) == -1) {
-						retval = 1;
-						perror("stat failed");
-					}
+				if (stat("/" TMP_FILENAME, &buf) == -1) {
+					retval = 1;
+					perror("stat failed");
 				}
 			}
 

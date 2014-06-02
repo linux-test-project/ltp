@@ -162,15 +162,8 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "nice(%d) Failed, errno=%d : %s", val,
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "nice(%d) returned %ld", val,
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "nice(%d) returned %ld", val,
+				 TEST_RETURN);
 		}
 	}
 
@@ -179,7 +172,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

@@ -118,10 +118,7 @@ int main(int ac, char **av)
 			if (addr == (void *)-1) {
 				tst_brkm(TFAIL | TERRNO, cleanup, "shmat");
 			} else {
-				if (STD_FUNCTIONAL_TEST)
-					check_functionality(i);
-				else
-					tst_resm(TPASS, "shmat call succeeded");
+				check_functionality(i);
 			}
 
 			/*

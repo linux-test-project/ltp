@@ -126,28 +126,19 @@ int main(int ac, char **av)
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == EINTR)) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Read the current signal mask of process,
+			 * Check whether previous signal mask preserved
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Read the current signal mask of process,
-				 * Check whether previous signal mask preserved
-				 */
-				if (sigprocmask(SIG_UNBLOCK, 0, &sigset2) == -1) {
-					tst_resm(TFAIL, "sigprocmask() Failed "
-						 "to get previous signal mask "
-						 "of process");
-				} else if (sigset2.__val[0] != sigset1.__val[0]) {
-					tst_resm(TFAIL, "sigsuspend failed to "
-						 "preserve signal mask");
-				} else {
-					tst_resm(TPASS, "Functionality of "
-						 "sigsuspend() successful");
-				}
+			if (sigprocmask(SIG_UNBLOCK, 0, &sigset2) == -1) {
+				tst_resm(TFAIL, "sigprocmask() Failed "
+					 "to get previous signal mask "
+					 "of process");
+			} else if (sigset2.__val[0] != sigset1.__val[0]) {
+				tst_resm(TFAIL, "sigsuspend failed to "
+					 "preserve signal mask");
 			} else {
-				tst_resm(TPASS,
-					 "Received expected return value.");
+				tst_resm(TPASS, "Functionality of "
+					 "sigsuspend() successful");
 			}
 		} else {
 			tst_resm(TFAIL | TTERRNO,
@@ -160,7 +151,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

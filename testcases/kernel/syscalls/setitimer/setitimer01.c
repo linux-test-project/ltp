@@ -120,33 +120,28 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * call setitimer again with new values.
-			 * the old values should be stored in ovalue
-			 */
-			value->it_value.tv_sec = SEC2;
-			value->it_value.tv_usec = SEC0;
+		/*
+		 * call setitimer again with new values.
+		 * the old values should be stored in ovalue
+		 */
+		value->it_value.tv_sec = SEC2;
+		value->it_value.tv_usec = SEC0;
 
-			if ((setitimer(ITIMER_REAL, value, ovalue)) == -1) {
-				tst_brkm(TBROK, cleanup, "second setitimer "
-					 "call failed");
-			}
+		if ((setitimer(ITIMER_REAL, value, ovalue)) == -1) {
+			tst_brkm(TBROK, cleanup, "second setitimer "
+				 "call failed");
+		}
 
-			if (ovalue->it_value.tv_sec <= SEC1) {
-				tst_resm(TPASS, "functionality is correct");
-			} else {
-				tst_brkm(TFAIL, cleanup, "old timer value is "
-					 "not equal to expected value");
-			}
+		if (ovalue->it_value.tv_sec <= SEC1) {
+			tst_resm(TPASS, "functionality is correct");
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_brkm(TFAIL, cleanup, "old timer value is "
+				 "not equal to expected value");
 		}
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

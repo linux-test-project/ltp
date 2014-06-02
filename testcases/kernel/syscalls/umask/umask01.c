@@ -148,10 +148,8 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "umask(022) Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS, "umask(022) returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "umask(022) returned %ld",
+				 TEST_RETURN);
 		}
 	}
 	cleanup();

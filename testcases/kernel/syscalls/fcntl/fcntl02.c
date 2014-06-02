@@ -152,10 +152,9 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TTERRNO,
 				 "fcntl(%s, F_DUPFD, 0) failed", fname);
 		else {
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS,
-					 "fcntl(%s, F_DUPFD, 0) returned %ld",
-					 fname, TEST_RETURN);
+			tst_resm(TPASS,
+				 "fcntl(%s, F_DUPFD, 0) returned %ld",
+				 fname, TEST_RETURN);
 			if (close(TEST_RETURN) == -1)
 				tst_resm(TWARN | TERRNO, "close failed");
 		}
@@ -163,7 +162,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

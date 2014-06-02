@@ -100,12 +100,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (!STD_FUNCTIONAL_TEST) {
-			tst_resm(TWARN, "-f option should not be used");
-			tst_resm(TPASS, "call succeeded");
-			continue;
-		}
-
 		if ((fork_1 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
 		}

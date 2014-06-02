@@ -98,48 +98,43 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Read the file contents into the dummy
-			 * variable.
-			 */
-			if (read(fildes, dummy, page_sz) < 0) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "reading %s failed", TEMPFILE);
-			}
-
-			/*
-			 * Check whether the mapped memory region
-			 * has the file contents.
-			 *
-			 * with ia64 and PARISC/hppa, this should
-			 * generate a SIGSEGV which will be caught below.
-			 *
-			 */
-
-			if (sigsetjmp(env, 1) == 0) {
-				if (memcmp(dummy, addr, page_sz)) {
-					tst_resm(TFAIL,
-						 "mapped memory region "
-						 "contains invalid data");
-				} else {
-					tst_resm(TPASS,
-						 "mmap() functionality is "
-						 "correct");
-				}
-			}
-#if defined(__ia64__) || defined(__hppa__)
-			if (pass) {
-				tst_resm(TPASS, "Got SIGSEGV as expected");
-			} else {
-				tst_resm(TFAIL, "Mapped memory region with NO "
-					 "access is accessible");
-			}
-#endif
-
-		} else {
-			tst_resm(TPASS, "call succeeded");
+		/*
+		 * Read the file contents into the dummy
+		 * variable.
+		 */
+		if (read(fildes, dummy, page_sz) < 0) {
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "reading %s failed", TEMPFILE);
 		}
+
+		/*
+		 * Check whether the mapped memory region
+		 * has the file contents.
+		 *
+		 * with ia64 and PARISC/hppa, this should
+		 * generate a SIGSEGV which will be caught below.
+		 *
+		 */
+
+		if (sigsetjmp(env, 1) == 0) {
+			if (memcmp(dummy, addr, page_sz)) {
+				tst_resm(TFAIL,
+					 "mapped memory region "
+					 "contains invalid data");
+			} else {
+				tst_resm(TPASS,
+					 "mmap() functionality is "
+					 "correct");
+			}
+		}
+#if defined(__ia64__) || defined(__hppa__)
+		if (pass) {
+			tst_resm(TPASS, "Got SIGSEGV as expected");
+		} else {
+			tst_resm(TFAIL, "Mapped memory region with NO "
+				 "access is accessible");
+		}
+#endif
 
 		/* Clean up things in case we are looping */
 		/* Unmap the mapped memory */
@@ -153,7 +148,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 static void setup(void)

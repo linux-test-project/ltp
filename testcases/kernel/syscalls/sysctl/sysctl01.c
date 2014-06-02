@@ -148,11 +148,6 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (!STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS, "call succeeded");
-				continue;
-			}
-
 			if (strcmp(TC[i].oldval, comp_string) != 0) {
 				tst_resm(TFAIL, "strings don't match - %s : %s",
 					 TC[i].oldval, comp_string);
@@ -164,8 +159,8 @@ int main(int ac, char **av)
 			}
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 

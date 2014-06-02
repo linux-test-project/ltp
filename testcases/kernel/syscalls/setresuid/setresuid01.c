@@ -151,21 +151,14 @@ int main(int ac, char **av)
 					 *test_data[i].eff_uid,
 					 *test_data[i].sav_uid);
 			} else {
-				/*
-				 * Perform functional verification if test
-				 * executed without (-f) option.
-				 */
-				if (STD_FUNCTIONAL_TEST) {
-					uid_verify(test_data[i].exp_real_usr,
-						   test_data[i].exp_eff_usr,
-						   test_data[i].exp_sav_usr,
-						   test_data[i].test_msg);
-				} else {
-					tst_resm(TPASS, "Call succeeded.");
-				}
+				uid_verify(test_data[i].exp_real_usr,
+					   test_data[i].exp_eff_usr,
+					   test_data[i].exp_sav_usr,
+					   test_data[i].test_msg);
 			}
 		}
 	}
+
 	cleanup();
 	tst_exit();
 }

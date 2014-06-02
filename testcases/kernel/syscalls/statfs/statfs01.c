@@ -159,16 +159,8 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TERRNO, "statfs(%s, ..) failed",
 				 fname);
 		} else {
-
-			/*
-			 * only perform functional verification if flag set
-			 * (-f not given)
-			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "statfs(%s, ..) returned %ld",
-					 fname, TEST_RETURN);
-			}
+			tst_resm(TPASS, "statfs(%s, ..) returned %ld",
+				 fname, TEST_RETURN);
 		}
 
 	}

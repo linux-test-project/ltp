@@ -113,32 +113,28 @@ int main(int ac, char **av)
 
 		sleep(sleep_time);
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (cpid == 0) {
-				if (alarms_received == 0)
-					exit(0);
-				else {
-					printf("alarm request not cleared in "
-					       "child; alarms received:%d\n",
-					       alarms_received);
-					exit(1);
-				}
-			} else {
-				/* Wait for child to complete execution */
-				if (wait(&status) == -1)
-					tst_brkm(TBROK | TERRNO, cleanup,
-						 "wait failed");
-				if (!WIFEXITED(status) ||
-				    WEXITSTATUS(status) != 0)
-					tst_brkm(TBROK | TERRNO, cleanup,
-						 "child exited abnormally");
+		if (cpid == 0) {
+			if (alarms_received == 0)
+				exit(0);
+			else {
+				printf("alarm request not cleared in "
+				       "child; alarms received:%d\n",
+				       alarms_received);
+				exit(1);
 			}
-		} else
-			tst_resm(TPASS, "call returned %ld", TEST_RETURN);
+		} else {
+			/* Wait for child to complete execution */
+			if (wait(&status) == -1)
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "wait failed");
+			if (!WIFEXITED(status) ||
+			    WEXITSTATUS(status) != 0)
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "child exited abnormally");
+		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

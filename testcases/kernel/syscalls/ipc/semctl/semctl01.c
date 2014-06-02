@@ -172,28 +172,23 @@ int main(int argc, char *argv[])
 					 ": %s", TCID, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else {
-				if (STD_FUNCTIONAL_TEST) {
-					/*
-					 * call the appropriate test function
-					 * and pass the return value where it
-					 * is needed to perform certain tests.
-					 */
-					switch (TC[i].cmd) {
-					case GETNCNT:
-					case GETZCNT:
-					case GETPID:
-					case GETVAL:
-					case IPC_INFO:
-					case SEM_STAT:
-						(*TC[i].func_test)
-						    (TEST_RETURN);
-						break;
-					default:
-						(*TC[i].func_test) ();
-						break;
-					}
-				} else {
-					tst_resm(TPASS, "call succeeded");
+				/*
+				 * call the appropriate test function
+				 * and pass the return value where it
+				 * is needed to perform certain tests.
+				 */
+				switch (TC[i].cmd) {
+				case GETNCNT:
+				case GETZCNT:
+				case GETPID:
+				case GETVAL:
+				case IPC_INFO:
+				case SEM_STAT:
+					(*TC[i].func_test) (TEST_RETURN);
+					break;
+				default:
+					(*TC[i].func_test) ();
+					break;
 				}
 			}
 

@@ -151,19 +151,11 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL | TTERRNO, "fstat failed");
-		else {
-
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "fstat returned %ld",
-					 TEST_RETURN);
-			}
-		}
-
+		else
+			tst_resm(TPASS, "fstat returned %ld", TEST_RETURN);
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

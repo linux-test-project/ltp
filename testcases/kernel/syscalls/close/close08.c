@@ -154,11 +154,8 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL | TTERRNO, "close(%s) failed", fname);
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "close(%s) returned %ld", fname,
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "close(%s) returned %ld", fname,
+				 TEST_RETURN);
 		}
 
 		if (unlink(fname) == -1) {
@@ -168,7 +165,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

@@ -125,29 +125,21 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TTERRNO, "fchmod failed");
 			continue;
 		}
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
-		if (STD_FUNCTIONAL_TEST) {
-			if (fstat(fd, &stat_buf) == -1)
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "fstat failed");
-			dir_mode = stat_buf.st_mode;
+		if (fstat(fd, &stat_buf) == -1)
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "fstat failed");
+		dir_mode = stat_buf.st_mode;
 
-			if ((dir_mode & PERMS) == PERMS)
-				tst_resm(TPASS, "Functionality of fchmod(%d, "
-					 "%#o) successful", fd, PERMS);
-			else
-				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
-					 "Expected 0%03o",
-					 TESTDIR, dir_mode, PERMS);
-		} else
-			tst_resm(TPASS, "call succeeded");
+		if ((dir_mode & PERMS) == PERMS)
+			tst_resm(TPASS, "Functionality of fchmod(%d, "
+				 "%#o) successful", fd, PERMS);
+		else
+			tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
+				 "Expected 0%03o",
+				 TESTDIR, dir_mode, PERMS);
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

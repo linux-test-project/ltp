@@ -174,18 +174,10 @@ int main(int ac, char **av)
 					 fname, type ? "F_RDLCK" : "F_WRLCK",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			} else {
-
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "fcntl(%s, F_SETLKW, &flocks) flocks.l_type = %s returned %ld",
-						 fname,
-						 type ? "F_RDLCK" : "F_WRLCK",
-						 TEST_RETURN);
-				}
+				tst_resm(TPASS,
+					 "fcntl(%s, F_SETLKW, &flocks) flocks.l_type = %s returned %ld",
+					 fname, type ? "F_RDLCK" : "F_WRLCK",
+					 TEST_RETURN);
 			}
 
 			flocks.l_type = F_UNLCK;
@@ -203,26 +195,16 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 			} else {
 
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "fcntl(%s, F_SETLKW, &flocks) flocks.l_type = F_UNLCK returned %ld",
-						 fname, TEST_RETURN);
-				}
+				tst_resm(TPASS,
+					 "fcntl(%s, F_SETLKW, &flocks) flocks.l_type = F_UNLCK returned %ld",
+					 fname, TEST_RETURN);
 			}
 
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

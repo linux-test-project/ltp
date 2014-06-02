@@ -83,19 +83,15 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (fstat(TEST_RETURN, &statbuf) == -1) {
-				tst_brkm(TBROK, cleanup, "fstat() failed");
-			}
-			filmode = statbuf.st_mode;
-			tst_resm(TINFO, "Created file has mode = 0%o", filmode);
-			if ((filmode & S_ISVTX) != 0) {
-				tst_resm(TFAIL, "save text bit not cleared");
-			} else {
-				tst_resm(TPASS, "save text bit cleared");
-			}
+		if (fstat(TEST_RETURN, &statbuf) == -1) {
+			tst_brkm(TBROK, cleanup, "fstat() failed");
+		}
+		filmode = statbuf.st_mode;
+		tst_resm(TINFO, "Created file has mode = 0%o", filmode);
+		if ((filmode & S_ISVTX) != 0) {
+			tst_resm(TFAIL, "save text bit not cleared");
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "save text bit cleared");
 		}
 
 		close(TEST_RETURN);
@@ -105,9 +101,9 @@ int main(int ac, char **av)
 				 "couldn't remove file");
 		}
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
 /*

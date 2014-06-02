@@ -134,10 +134,8 @@ int main(int ac, char **av)
 			     (fds[i], filenames[i], &statbuf, flags[i]));
 
 			if (TEST_ERRNO == expected_errno[i]) {
-
-				if (STD_FUNCTIONAL_TEST)
-					tst_resm(TPASS | TTERRNO,
-						 "fstatat failed as expected");
+				tst_resm(TPASS | TTERRNO,
+					 "fstatat failed as expected");
 			} else
 				tst_resm(TFAIL | TTERRNO, "fstatat failed");
 		}

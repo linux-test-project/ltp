@@ -132,36 +132,27 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Get the directory information using
+		 * fstat(2).
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the directory information using
-			 * fstat(2).
-			 */
-			if (fstat(fd, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "fstat(2) of %s failed, errno:%d",
-					 TESTDIR, TEST_ERRNO);
-			}
-			dir_mode = stat_buf.st_mode;
-			if ((PERMS & ~S_ISGID) != dir_mode) {
-				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
-					 "Expected 0%03o",
-					 TESTDIR, dir_mode, PERMS & ~S_ISGID);
-			} else {
-				tst_resm(TPASS, "Functionality of fchmod(%d, "
-					 "%#o) successful", fd,
-					 PERMS & ~S_ISGID);
-			}
+		if (fstat(fd, &stat_buf) < 0) {
+			tst_brkm(TFAIL, cleanup,
+				 "fstat(2) of %s failed, errno:%d",
+				 TESTDIR, TEST_ERRNO);
+		}
+		dir_mode = stat_buf.st_mode;
+		if ((PERMS & ~S_ISGID) != dir_mode) {
+			tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
+				 "Expected 0%03o",
+				 TESTDIR, dir_mode, PERMS & ~S_ISGID);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "Functionality of fchmod(%d, "
+				 "%#o) successful", fd,
+				 PERMS & ~S_ISGID);
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

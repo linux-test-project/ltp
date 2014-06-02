@@ -66,27 +66,21 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed - errno = %d - %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 
-			if (STD_FUNCTIONAL_TEST) {
-
-				/*
-				 * Since ITIMER is effectively disabled (we did
-				 * not set it before the getitimer call), the
-				 * elements in it_value should be zero.
-				 */
-				if ((value.it_value.tv_sec == 0) &&
-					(value.it_value.tv_usec == 0)) {
-					tst_resm(TPASS, "functionality is ok");
-				} else {
-					tst_resm(TFAIL, "timer are non zero");
-				}
+			/*
+			 * Since ITIMER is effectively disabled (we did
+			 * not set it before the getitimer call), the
+			 * elements in it_value should be zero.
+			 */
+			if ((value.it_value.tv_sec == 0) &&
+				(value.it_value.tv_usec == 0)) {
+				tst_resm(TPASS, "functionality is ok");
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_resm(TFAIL, "timer are non zero");
 			}
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

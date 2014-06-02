@@ -50,24 +50,21 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1)
 			tst_brkm(TBROK | TTERRNO, cleanup, "geteuid* failed");
 
-		if (STD_FUNCTIONAL_TEST) {
-			uid = geteuid();
-			pwent = getpwuid(uid);
+		uid = geteuid();
+		pwent = getpwuid(uid);
 
-			if (pwent == NULL)
-				tst_resm(TFAIL | TERRNO, "getpwuid failed");
+		if (pwent == NULL)
+			tst_resm(TFAIL | TERRNO, "getpwuid failed");
 
-			UID16_CHECK(pwent->pw_uid, geteuid, cleanup);
-			if (pwent->pw_uid != TEST_RETURN)
-				tst_resm(TFAIL, "getpwuid value, %d, "
-					 "does not match geteuid "
-					 "value, %ld", pwent->pw_uid,
-					 TEST_RETURN);
-			else
-				tst_resm(TPASS, "values from geteuid "
-					 "and getpwuid match");
-		} else
-			tst_resm(TPASS, "call succeeded");
+		UID16_CHECK(pwent->pw_uid, geteuid, cleanup);
+		if (pwent->pw_uid != TEST_RETURN)
+			tst_resm(TFAIL, "getpwuid value, %d, "
+				 "does not match geteuid "
+				 "value, %ld", pwent->pw_uid,
+				 TEST_RETURN);
+		else
+			tst_resm(TPASS, "values from geteuid "
+				 "and getpwuid match");
 	}
 
 	cleanup();

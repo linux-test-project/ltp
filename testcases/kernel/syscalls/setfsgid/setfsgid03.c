@@ -72,11 +72,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (!STD_FUNCTIONAL_TEST) {
-			tst_resm(TPASS, "setfsgid() succeeded");
-			continue;
-		}
-
 		if (TEST_RETURN == gid) {
 			tst_resm(TFAIL,
 				 "setfsgid() returned %ld, expected anything but %d",

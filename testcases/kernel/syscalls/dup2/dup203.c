@@ -107,7 +107,7 @@ int main(int ac, char **av)
 
 		if ((fd2 = TEST_RETURN) == -1) {
 			tst_resm(TFAIL, "call failed unexpectedly");
-		} else if (STD_FUNCTIONAL_TEST) {
+		} else {
 			if (fd1 != fd2) {
 				tst_resm(TFAIL, "file descriptors don't match");
 				break;
@@ -119,8 +119,7 @@ int main(int ac, char **av)
 			if (strcmp(buf, filename0) != 0)
 				tst_resm(TFAIL, "read from file got bad data");
 			tst_resm(TPASS, "dup2 test 1 functionality is correct");
-		} else
-			tst_resm(TPASS, "call succeeded");
+		}
 
 		close(fd0);
 		close(fd1);
@@ -157,7 +156,7 @@ int main(int ac, char **av)
 
 		if ((fd1 = TEST_RETURN) == -1) {
 			tst_resm(TFAIL, "call failed unexpectedly");
-		} else if (STD_FUNCTIONAL_TEST) {
+		} else {
 			if (fd1 != fd2) {
 				tst_resm(TFAIL, "bad dup2 descriptor %d", fd1);
 				break;
@@ -176,9 +175,8 @@ int main(int ac, char **av)
 					 rval);
 			}
 			tst_resm(TPASS, "dup2 test 2 functionality is correct");
-		} else {
-			tst_resm(TPASS, "call succeeded");
 		}
+
 		close(fd0);
 		close(fd1);
 
@@ -186,8 +184,8 @@ int main(int ac, char **av)
 		unlink(filename1);
 		tst_resm(TINFO, "Exit block 2");
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 

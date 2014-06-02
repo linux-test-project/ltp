@@ -99,17 +99,12 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "%s failed - errno = %d - %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-
-			if (STD_FUNCTIONAL_TEST) {
-				if ((strcmp(buf->sysname, LINUX)) == 0) {
-					tst_resm(TPASS, "%s functionality test "
-						 "succeeded", TCID);
-				} else {
-					tst_resm(TFAIL, "%s functionality test "
-						 "failed", TCID);
-				}
+			if ((strcmp(buf->sysname, LINUX)) == 0) {
+				tst_resm(TPASS, "%s functionality test "
+					 "succeeded", TCID);
 			} else {
-				tst_resm(TPASS, "%s call succeeded", TCID);
+				tst_resm(TFAIL, "%s functionality test "
+					 "failed", TCID);
 			}
 		}
 	}
@@ -118,9 +113,7 @@ int main(int ac, char **av)
 	buf = NULL;
 
 	cleanup();
-
 	tst_exit();
-
 }
 
 /*

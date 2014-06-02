@@ -59,11 +59,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (!STD_FUNCTIONAL_TEST) {
-			tst_resm(TPASS, "call succeeded");
-			continue;
-		}
-
 		if (getgid() != ltpuser1pwent->pw_gid) {
 			tst_resm(TFAIL, "setgid failed to set gid to "
 				 "ltpuser1's gid");

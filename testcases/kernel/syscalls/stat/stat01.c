@@ -105,37 +105,28 @@ int main(int ac, char **av)
 				 "stat(%s, &stat_buf) Failed, errno=%d : %s",
 				 TESTFILE, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
+			stat_buf.st_mode &= ~S_IFREG;
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Verify the data returned by stat(2)
+			 * aganist the expected data.
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				stat_buf.st_mode &= ~S_IFREG;
-				/*
-				 * Verify the data returned by stat(2)
-				 * aganist the expected data.
-				 */
-				if ((stat_buf.st_uid != user_id) ||
-				    (stat_buf.st_gid != group_id) ||
-				    (stat_buf.st_size != FILE_SIZE) ||
-				    ((stat_buf.st_mode & MASK) != FILE_MODE)) {
-					tst_resm(TFAIL, "Functionality of "
-						 "stat(2) on '%s' Failed",
-						 TESTFILE);
-				} else {
-					tst_resm(TPASS, "Functionality of "
-						 "stat(2) on '%s' Succcessful",
-						 TESTFILE);
-				}
+			if ((stat_buf.st_uid != user_id) ||
+			    (stat_buf.st_gid != group_id) ||
+			    (stat_buf.st_size != FILE_SIZE) ||
+			    ((stat_buf.st_mode & MASK) != FILE_MODE)) {
+				tst_resm(TFAIL, "Functionality of "
+					 "stat(2) on '%s' Failed",
+					 TESTFILE);
 			} else {
-				tst_resm(TINFO, "Call succeeded");
+				tst_resm(TPASS, "Functionality of "
+					 "stat(2) on '%s' Succcessful",
+					 TESTFILE);
 			}
 		}
 		tst_count++;
 	}
 
 	cleanup();
-	tst_exit();
 	tst_exit();
 }
 

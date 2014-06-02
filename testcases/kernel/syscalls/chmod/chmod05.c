@@ -136,41 +136,32 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Get the directory information using
+		 * stat(2).
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the directory information using
-			 * stat(2).
-			 */
-			if (stat(TESTDIR, &stat_buf) < 0) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "stat(%s) failed", TESTDIR);
-			}
-			dir_mode = stat_buf.st_mode;
+		if (stat(TESTDIR, &stat_buf) < 0) {
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "stat(%s) failed", TESTDIR);
+		}
+		dir_mode = stat_buf.st_mode;
 #if DEBUG
-			printf("DIR_MODE = 0%03o\n", DIR_MODE);
-			printf("MODE_RWX = 0%03o\n", MODE_RWX);
-			printf("PERMS = 0%03o\n", PERMS);
-			printf("dir_mode = 0%03o\n", dir_mode);
+		printf("DIR_MODE = 0%03o\n", DIR_MODE);
+		printf("MODE_RWX = 0%03o\n", MODE_RWX);
+		printf("PERMS = 0%03o\n", PERMS);
+		printf("dir_mode = 0%03o\n", dir_mode);
 #endif
-			if ((PERMS & ~S_ISGID) != dir_mode)
-				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
-					 "Expected 0%03o", TESTDIR, dir_mode,
-					 PERMS & ~S_ISGID);
-			else
-				tst_resm(TPASS,
-					 "Functionality of chmod(%s, %#o) successful",
+		if ((PERMS & ~S_ISGID) != dir_mode)
+			tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
+				 "Expected 0%03o", TESTDIR, dir_mode,
+				 PERMS & ~S_ISGID);
+		else
+			tst_resm(TPASS,
+				 "Functionality of chmod(%s, %#o) successful",
 					 TESTDIR, PERMS);
-		} else
-			tst_resm(TPASS, "call succeeded");
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
 /*

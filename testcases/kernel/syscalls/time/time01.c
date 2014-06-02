@@ -152,17 +152,13 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "time(0) Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "time(0) returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "time(0) returned %ld",
+				 TEST_RETURN);
 		}
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

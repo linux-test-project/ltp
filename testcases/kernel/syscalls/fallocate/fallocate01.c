@@ -247,13 +247,10 @@ void runtest(int mode, int fd, loff_t expected_size)
 			 fd, mode, offset, len);
 		return;
 	} else {
-		if (STD_FUNCTIONAL_TEST) {
-			/* No Verification test, yet... */
-			tst_resm(TPASS,
-				 "fallocate(%d, %d, %" PRId64 ", %" PRId64
-				 ") returned %ld", fd, mode, offset, len,
-				 TEST_RETURN);
-		}
+		tst_resm(TPASS,
+			 "fallocate(%d, %d, %" PRId64 ", %" PRId64
+			 ") returned %ld", fd, mode, offset, len,
+			 TEST_RETURN);
 	}
 
 	if (fstat(fd, &file_stat) < 0)
@@ -281,12 +278,9 @@ void runtest(int mode, int fd, loff_t expected_size)
 			 "write fails in fallocate(%d, %d, %" PRId64 ", %"
 			 PRId64 ") failed", fd, mode, offset, len);
 	} else {
-		if (STD_FUNCTIONAL_TEST) {
-			/* No Verification test, yet... */
-			tst_resm(TPASS,
-				 "write operation on fallocated(%d, %d, %"
-				 PRId64 ", %" PRId64 ") returned %ld", fd, mode,
-				 offset, len, TEST_RETURN);
-		}
+		tst_resm(TPASS,
+			 "write operation on fallocated(%d, %d, %"
+			 PRId64 ", %" PRId64 ") returned %ld", fd, mode,
+			 offset, len, TEST_RETURN);
 	}
 }

@@ -166,15 +166,8 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "mkdir(%s) Failed, errno=%d : %s",
 				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "mkdir(%s) returned %ld", fname,
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "mkdir(%s) returned %ld", fname,
+				 TEST_RETURN);
 			if (rmdir(fname) == -1) {
 				tst_brkm(TBROK, cleanup,
 					 "rmdir(%s) Failed, errno=%d : %s",
@@ -184,12 +177,8 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

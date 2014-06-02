@@ -80,10 +80,9 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "fstatfs failed");
 		} else {
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS,
-					 "fstatfs(%d, &stats, sizeof(struct statfs), 0) returned %ld",
-					 fd, TEST_RETURN);
+			tst_resm(TPASS,
+				 "fstatfs(%d, &stats, sizeof(struct statfs), 0) returned %ld",
+				 fd, TEST_RETURN);
 		}
 
 	}

@@ -94,16 +94,12 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "msgctl() call failed");
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				if (qs_buf.msg_qbytes > 0) {
-					tst_resm(TPASS, "qs_buf.msg_qbytes is"
-						 " a positive value");
-				} else {
-					tst_resm(TFAIL, "qs_buf.msg_qbytes did"
-						 " not change");
-				}
+			if (qs_buf.msg_qbytes > 0) {
+				tst_resm(TPASS, "qs_buf.msg_qbytes is"
+					 " a positive value");
 			} else {
-				tst_resm(TPASS, "msgctl() call succeeded");
+				tst_resm(TFAIL, "qs_buf.msg_qbytes did"
+					 " not change");
 			}
 		}
 

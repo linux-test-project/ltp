@@ -265,21 +265,19 @@ int main(int ac, char **av)
 					 test_data[test_index].len *
 					 block_size);
 			} else {
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "fallocate(%s, %d, %" PRId64
-						 ", %" PRId64 ") returned %ld",
-						 fname,
-						 test_data[test_index].mode,
-						 test_data[test_index].offset *
-						 block_size,
-						 test_data[test_index].len *
-						 block_size, TEST_RETURN);
-				}
+				tst_resm(TPASS,
+					 "fallocate(%s, %d, %" PRId64
+					 ", %" PRId64 ") returned %ld",
+					 fname,
+					 test_data[test_index].mode,
+					 test_data[test_index].offset *
+					 block_size,
+					 test_data[test_index].len *
+					 block_size, TEST_RETURN);
 			}
 		}
 	}
+
 	cleanup();
 	tst_exit();
 }

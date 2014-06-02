@@ -87,32 +87,29 @@ int main(int argc, char **argv)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO & (EBUSY | ENOTEMPTY)) {
-					/* For functionality tests, verify that the
-					 * directory wasn't removed.
-					 */
-					if (stat(".", &stat_buf) == -1) {
-						tst_resm(TFAIL,
-							 "rmdir(\".\") removed the current working directory when it should have failed.");
-					} else {
-						tst_resm(TPASS,
-							 "rmdir(\".\") failed to remove the current working directory. Returned %d : %s",
-							 TEST_ERRNO,
-							 strerror(TEST_ERRNO));
-					}
-				} else {
+		if (TEST_RETURN == -1) {
+			if (TEST_ERRNO & (EBUSY | ENOTEMPTY)) {
+				/* For functionality tests, verify that the
+				 * directory wasn't removed.
+				 */
+				if (stat(".", &stat_buf) == -1) {
 					tst_resm(TFAIL,
-						 "rmdir(\".\") failed with errno %d : %s but expected %d (EBUSY)",
+						 "rmdir(\".\") removed the current working directory when it should have failed.");
+				} else {
+					tst_resm(TPASS,
+						 "rmdir(\".\") failed to remove the current working directory. Returned %d : %s",
 						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EBUSY);
+						 strerror(TEST_ERRNO));
 				}
 			} else {
 				tst_resm(TFAIL,
-					 "rmdir(\".\") succeeded unexpectedly.");
+					 "rmdir(\".\") failed with errno %d : %s but expected %d (EBUSY)",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO), EBUSY);
 			}
+		} else {
+			tst_resm(TFAIL,
+				 "rmdir(\".\") succeeded unexpectedly.");
 		}
 
 		/*
@@ -135,24 +132,21 @@ int main(int argc, char **argv)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "rmdir() - path argument points below the minimum allocated address space failed as expected with errno %d : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "rmdir() - path argument points below the minimum allocated address space failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
+		if (TEST_RETURN == -1) {
+			if (TEST_ERRNO == EFAULT) {
+				tst_resm(TPASS,
+					 "rmdir() - path argument points below the minimum allocated address space failed as expected with errno %d : %s",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TFAIL,
-					 "rmdir() - path argument points below the minimum allocated address space succeeded unexpectedly.");
+					 "rmdir() - path argument points below the minimum allocated address space failed with errno %d : %s but expected %d (EFAULT)",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO), EFAULT);
 			}
+		} else {
+			tst_resm(TFAIL,
+				 "rmdir() - path argument points below the minimum allocated address space succeeded unexpectedly.");
 		}
 
 		/*
@@ -166,24 +160,21 @@ int main(int argc, char **argv)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == EFAULT) {
-					tst_resm(TPASS,
-						 "rmdir() - path argument points above the maximum allocated address space failed as expected with errno %d : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TFAIL,
-						 "rmdir() - path argument points above the maximum allocated address space failed with errno %d : %s but expected %d (EFAULT)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EFAULT);
-				}
+		if (TEST_RETURN == -1) {
+			if (TEST_ERRNO == EFAULT) {
+				tst_resm(TPASS,
+					 "rmdir() - path argument points above the maximum allocated address space failed as expected with errno %d : %s",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TFAIL,
-					 "rmdir() - path argument points above the maximum allocated address space succeeded unexpectedly.");
+					 "rmdir() - path argument points above the maximum allocated address space failed with errno %d : %s but expected %d (EFAULT)",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO), EFAULT);
 			}
+		} else {
+			tst_resm(TFAIL,
+				 "rmdir() - path argument points above the maximum allocated address space succeeded unexpectedly.");
 		}
 #endif
 
@@ -206,19 +197,15 @@ int main(int argc, char **argv)
 				 "rmdir(\"%s\") failed when it should have passed. Returned %d : %s",
 				 dir_name, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-
-			if (STD_FUNCTIONAL_TEST) {
-
-				/* Verify the directory was removed. */
-				if (stat(dir_name, &stat_buf) != 0) {
-					tst_resm(TPASS,
-						 "rmdir(\"%s\") removed the directory as expected.",
-						 dir_name);
-				} else {
-					tst_resm(TFAIL,
-						 "rmdir(\"%s\") returned a zero exit status but failed to remove the directory.",
-						 dir_name);
-				}
+			/* Verify the directory was removed. */
+			if (stat(dir_name, &stat_buf) != 0) {
+				tst_resm(TPASS,
+					 "rmdir(\"%s\") removed the directory as expected.",
+					 dir_name);
+			} else {
+				tst_resm(TFAIL,
+					 "rmdir(\"%s\") returned a zero exit status but failed to remove the directory.",
+					 dir_name);
 			}
 		}
 

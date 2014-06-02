@@ -113,37 +113,29 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "%s, Failed, errno=%d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
-			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/* Set the file ptr to b'nning of file */
-				if (lseek(fildes, 0, SEEK_SET) < 0) {
-					tst_brkm(TFAIL, cleanup, "lseek() "
-						 "failed on %s, error=%d",
-						 TEMP_FILE, errno);
-				}
+			/* Set the file ptr to b'nning of file */
+			if (lseek(fildes, 0, SEEK_SET) < 0) {
+				tst_brkm(TFAIL, cleanup, "lseek() "
+					 "failed on %s, error=%d",
+					 TEMP_FILE, errno);
+			}
 
-				/* Read the contents of file */
-				if (read(fildes, read_buffer,
-					 sizeof(read_buffer)) > 0) {
-					if (strcmp(read_buffer, write_buffer)) {
-						tst_resm(TFAIL, "Data read "
-							 "from %s doesn't match "
-							 "with witten data",
-							 TEMP_FILE);
-					} else {
-						tst_resm(TPASS, "Functionality "
-							 "of sync() successful");
-					}
+			/* Read the contents of file */
+			if (read(fildes, read_buffer,
+				 sizeof(read_buffer)) > 0) {
+				if (strcmp(read_buffer, write_buffer)) {
+					tst_resm(TFAIL, "Data read "
+						 "from %s doesn't match "
+						 "with witten data",
+						 TEMP_FILE);
 				} else {
-					tst_brkm(TFAIL, cleanup,
-						 "read() Fails on %s, error=%d",
-						 TEMP_FILE, errno);
+					tst_resm(TPASS, "Functionality "
+						 "of sync() successful");
 				}
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_brkm(TFAIL, cleanup,
+					 "read() Fails on %s, error=%d",
+					 TEMP_FILE, errno);
 			}
 		}
 		tst_count++;	/* incr. TEST_LOOP counter */
@@ -151,7 +143,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

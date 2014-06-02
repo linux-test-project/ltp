@@ -217,20 +217,17 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				if (STD_FUNCTIONAL_TEST) {
-					if (TEST_ERRNO ==
-					    Test_cases[ind].exp_errno)
-						tst_resm(TPASS,
-							 "unlink(<%s>) Failed, errno=%d",
-							 desc, TEST_ERRNO);
-					else
-						tst_resm(TFAIL,
-							 "unlink(<%s>) Failed, errno=%d, expected errno:%d",
-							 desc, TEST_ERRNO,
-							 Test_cases
-							 [ind].exp_errno);
-				} else
-					tst_count++;
+				if (TEST_ERRNO ==
+				    Test_cases[ind].exp_errno)
+					tst_resm(TPASS,
+						 "unlink(<%s>) Failed, errno=%d",
+						 desc, TEST_ERRNO);
+				else
+					tst_resm(TFAIL,
+						 "unlink(<%s>) Failed, errno=%d, expected errno:%d",
+						 desc, TEST_ERRNO,
+						 Test_cases
+						 [ind].exp_errno);
 			} else {
 				tst_resm(TFAIL,
 					 "unlink(<%s>) returned %ld, expected -1, errno:%d",
@@ -241,11 +238,7 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
 

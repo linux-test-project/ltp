@@ -116,11 +116,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (!STD_FUNCTIONAL_TEST) {
-			tst_resm(TPASS, "call succeeded");
-			continue;
-		}
-
 		written = write(fd[1], wrbuf, szcharbuf);
 		if (written != szcharbuf) {
 			tst_brkm(TBROK, cleanup, "write to pipe failed");

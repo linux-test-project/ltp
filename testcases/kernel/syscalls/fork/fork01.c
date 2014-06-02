@@ -181,45 +181,39 @@ int main(int ac, char **av)
 		TEST(fork());
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TFAIL, "fork() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-				tst_resm(TBROK, "unable to continue");
-			}
+			tst_resm(TFAIL, "fork() Failed, errno=%d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TBROK, "unable to continue");
 		}
 		if (TEST_RETURN == 0) {
 			/* child */
-			if (STD_FUNCTIONAL_TEST)
-				child_pid();
+			child_pid();
 			exit(KIDEXIT);
 		} else {
 			/* parent */
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS, "fork() returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "fork() returned %ld",
+				 TEST_RETURN);
 			/* wait for the child to complete */
 			wait_status = waitpid(TEST_RETURN, &kid_status, 0);
-			if (STD_FUNCTIONAL_TEST) {
-				if (wait_status == TEST_RETURN) {
-					if (kid_status != KIDEXIT << 8) {
-						tst_resm(TBROK,
-							 "incorrect child status returned on wait(): %d",
-							 kid_status);
-						fails++;
-					}
-				} else {
+
+			if (wait_status == TEST_RETURN) {
+				if (kid_status != KIDEXIT << 8) {
 					tst_resm(TBROK,
-						 "wait() for child status failed with %d errno: %d : %s",
-						 wait_status, errno,
-						 strerror(errno));
+						 "incorrect child status returned on wait(): %d",
+						 kid_status);
 					fails++;
 				}
-				if (fails == 0) {
-					/* verification tests */
-					parent_pid();
-				}
-			}	/* STD_FUNCTIONAL_TEST */
+			} else {
+				tst_resm(TBROK,
+					 "wait() for child status failed with %d errno: %d : %s",
+					 wait_status, errno,
+					 strerror(errno));
+				fails++;
+			}
+			if (fails == 0) {
+				/* verification tests */
+				parent_pid();
+			}
 		}		/* TEST_RETURN */
 	}
 

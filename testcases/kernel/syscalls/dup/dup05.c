@@ -147,13 +147,11 @@ int main(int ac, char **av)
 
 		TEST(dup(fd));
 
-		if (TEST_RETURN == -1)
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "dup failed");
-		else {
-
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "dup returned %ld",
-					 TEST_RETURN);
+		} else {
+			tst_resm(TPASS, "dup returned %ld",
+				 TEST_RETURN);
 
 			if (close(TEST_RETURN) == -1)
 				tst_brkm(TBROK | TERRNO, cleanup,
@@ -163,7 +161,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

@@ -102,30 +102,24 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-
-				/* get the values and make sure they */
-				/* are the same as what was set      */
-				if (semctl(sem_id_1, 0, GETALL, get_arr) == -1) {
-					tst_brkm(TBROK, cleanup,
-						 "semctl() failed in functional test");
-				}
-
-				for (i = 0; i < NSEMS; i++) {
-					if (get_arr.array[i] != i * i) {
-						fail = 1;
-					}
-				}
-				if (fail)
-					tst_resm(TFAIL,
-						 "semaphore values are wrong");
-				else
-					tst_resm(TPASS,
-						 "semaphore values are correct");
-
-			} else {
-				tst_resm(TPASS, "call succeeded");
+			/* get the values and make sure they */
+			/* are the same as what was set      */
+			if (semctl(sem_id_1, 0, GETALL, get_arr) == -1) {
+				tst_brkm(TBROK, cleanup,
+					 "semctl() failed in functional test");
 			}
+
+			for (i = 0; i < NSEMS; i++) {
+				if (get_arr.array[i] != i * i) {
+					fail = 1;
+				}
+			}
+			if (fail)
+				tst_resm(TFAIL,
+					 "semaphore values are wrong");
+			else
+				tst_resm(TPASS,
+					 "semaphore values are correct");
 		}
 
 		/*

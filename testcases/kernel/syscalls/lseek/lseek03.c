@@ -71,25 +71,20 @@ int main(int ac, char **av)
 			/* Call lseek(2) */
 			TEST(lseek(fd, (off_t) 1, whences[i]));
 
-			/* check return code */
 			if (TEST_RETURN == -1) {
-				if (STD_FUNCTIONAL_TEST) {
-					if (TEST_ERRNO == EINVAL) {
-						tst_resm(TPASS,
-							 "lseek(%s, 1, %d) Failed, errno=%d : %s",
-							 fname, whences[i],
-							 TEST_ERRNO,
-							 strerror(TEST_ERRNO));
-					} else {
-						tst_resm(TFAIL,
-							 "lseek(%s, 1, %d) Failed, errno=%d %s, expected %d(EINVAL)",
-							 fname, whences[i],
-							 TEST_ERRNO,
-							 strerror(TEST_ERRNO),
-							 EINVAL);
-					}
+				if (TEST_ERRNO == EINVAL) {
+					tst_resm(TPASS,
+						 "lseek(%s, 1, %d) Failed, errno=%d : %s",
+						 fname, whences[i],
+						 TEST_ERRNO,
+						 strerror(TEST_ERRNO));
 				} else {
-					tst_count++;
+					tst_resm(TFAIL,
+						 "lseek(%s, 1, %d) Failed, errno=%d %s, expected %d(EINVAL)",
+						 fname, whences[i],
+						 TEST_ERRNO,
+						 strerror(TEST_ERRNO),
+						 EINVAL);
 				}
 			} else {
 				tst_resm(TFAIL, "lseek(%s, 1, %d) returned %ld",

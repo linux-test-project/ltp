@@ -109,10 +109,7 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (STD_FUNCTIONAL_TEST)
-				access_verify(i);
-			else
-				tst_resm(TPASS, "call succeeded");
+			access_verify(i);
 		}
 	}
 

@@ -213,14 +213,6 @@ int test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 	char *modname;
 	unsigned long *vals;
 
-	/*
-	 * Don't perform functional verification, if STD_FUNCTIONAL_TEST is
-	 * turned off
-	 */
-	if (STD_FUNCTIONAL_TEST == 0) {
-		return 0;
-	}
-
 	switch (which) {
 	case 0:
 		/* Always return SUCCESS */

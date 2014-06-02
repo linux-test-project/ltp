@@ -131,12 +131,12 @@ int main(int ac, char **av)
 
 			TEST(alarm(sec[i]));
 			alarm(0);
-			if (TEST_RETURN != 0)
+			if (TEST_RETURN != 0) {
 				tst_resm(TFAIL,
 					 "alarm(%lu) returned %ld, when %u was "
 					 "expected for value %s",
 					 sec[i], TEST_RETURN, exp[i], buf[i]);
-			else if (STD_FUNCTIONAL_TEST) {
+			} else {
 				if (received_alarm == 1) {
 					tst_resm(TFAIL,
 						 "alarm(%lu) returned %ldu but an "
@@ -162,7 +162,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 void setup(void)

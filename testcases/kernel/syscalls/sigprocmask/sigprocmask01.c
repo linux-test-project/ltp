@@ -137,70 +137,62 @@ int main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Check whether process received the signal.
+			 * If yes! signal handler was executed and
+			 * incremented 'sig_catch' variable.
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Check whether process received the signal.
-				 * If yes! signal handler was executed and
-				 * incremented 'sig_catch' variable.
-				 */
-				if (sig_catch) {
-					tst_resm(TFAIL, "sigprocmask fails to "
-						 "change process's signal mask");
-				} else {
-					/*
-					 * Check whether specified signal
-					 * 'SIGINT' is pending for the process.
-					 */
-					errno = 0;
-					if (sigpending(&sigset2) == -1) {
-						tst_brkm(TFAIL, cleanup,
-							 "blocked signal not "
-							 "in pending state, "
-							 "error:%d", errno);
-					}
-
-					/*
-					 * Check whether specified signal
-					 * is the member of signal set.
-					 */
-					errno = 0;
-					if (!sigismember(&sigset2, SIGINT)) {
-						tst_brkm(TFAIL, cleanup,
-							 "sigismember() failed, "
-							 "error:%d", errno);
-					}
-
-					/*
-					 * Invoke sigprocmask() again to
-					 * unblock the specified signal.
-					 * so that, signal is delivered and
-					 * signal handler executed.
-					 */
-					errno = 0;
-					if (sigprocmask(SIG_UNBLOCK,
-							&sigset, 0) == -1) {
-						tst_brkm(TFAIL, cleanup,
-							 "sigprocmask() failed "
-							 "to unblock signal, "
-							 "error=%d", errno);
-					}
-					if (sig_catch) {
-						tst_resm(TPASS, "Functionality "
-							 "of sigprocmask() "
-							 "Successful");
-					} else {
-						tst_resm(TFAIL, "Functionality "
-							 "of sigprocmask() "
-							 "Failed");
-					}
-					/* set sig_catch back to 0 */
-					sig_catch = 0;
-				}
+			if (sig_catch) {
+				tst_resm(TFAIL, "sigprocmask fails to "
+					 "change process's signal mask");
 			} else {
-				tst_resm(TPASS, "Call succeeded");
+				/*
+				 * Check whether specified signal
+				 * 'SIGINT' is pending for the process.
+				 */
+				errno = 0;
+				if (sigpending(&sigset2) == -1) {
+					tst_brkm(TFAIL, cleanup,
+						 "blocked signal not "
+						 "in pending state, "
+						 "error:%d", errno);
+				}
+
+				/*
+				 * Check whether specified signal
+				 * is the member of signal set.
+				 */
+				errno = 0;
+				if (!sigismember(&sigset2, SIGINT)) {
+					tst_brkm(TFAIL, cleanup,
+						 "sigismember() failed, "
+						 "error:%d", errno);
+				}
+
+				/*
+				 * Invoke sigprocmask() again to
+				 * unblock the specified signal.
+				 * so that, signal is delivered and
+				 * signal handler executed.
+				 */
+				errno = 0;
+				if (sigprocmask(SIG_UNBLOCK,
+						&sigset, 0) == -1) {
+					tst_brkm(TFAIL, cleanup,
+						 "sigprocmask() failed "
+						 "to unblock signal, "
+						 "error=%d", errno);
+				}
+				if (sig_catch) {
+					tst_resm(TPASS, "Functionality "
+						 "of sigprocmask() "
+						 "Successful");
+				} else {
+					tst_resm(TFAIL, "Functionality "
+						 "of sigprocmask() "
+						 "Failed");
+				}
+				/* set sig_catch back to 0 */
+				sig_catch = 0;
 			}
 		}
 
@@ -209,7 +201,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

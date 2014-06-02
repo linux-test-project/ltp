@@ -120,30 +120,25 @@ int main(int ac, char **av)
 				 TESTFILE, PERMS);
 			continue;
 		}
+		if (stat(TESTFILE, &stat_buf) < 0) {
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "stat(%s) failed", TESTFILE);
+		}
+		file_mode = stat_buf.st_mode;
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (stat(TESTFILE, &stat_buf) < 0) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "stat(%s) failed", TESTFILE);
-			}
-			file_mode = stat_buf.st_mode;
-
-			/* Verify STICKY BIT set on testfile */
-			if ((file_mode & PERMS) != PERMS) {
-				tst_resm(TFAIL, "%s: Incorrect modes 0%3o, "
-					 "Expected 0777", TESTFILE, file_mode);
-			} else {
-				tst_resm(TPASS, "Functionality of "
-					 "chmod(%s, %#o) successful",
-					 TESTFILE, PERMS);
-			}
-		} else
-			tst_resm(TPASS, "call succeeded");
+		/* Verify STICKY BIT set on testfile */
+		if ((file_mode & PERMS) != PERMS) {
+			tst_resm(TFAIL, "%s: Incorrect modes 0%3o, "
+				 "Expected 0777", TESTFILE, file_mode);
+		} else {
+			tst_resm(TPASS, "Functionality of "
+				 "chmod(%s, %#o) successful",
+				 TESTFILE, PERMS);
+		}
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 void setup(void)

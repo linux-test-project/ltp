@@ -202,22 +202,19 @@ int main(int ac, char **av)
 			/* check return code */
 			if (TEST_RETURN == -1) {
 				if (Test_cases[ind].exp_ret == -1) {	/* neg test */
-					if (STD_FUNCTIONAL_TEST) {
-						if (TEST_ERRNO ==
-						    Test_cases[ind].exp_errno)
-							tst_resm(TPASS,
-								 "unlink(<%s>) Failed, errno=%d",
-								 desc,
-								 TEST_ERRNO);
-						else
-							tst_resm(TFAIL,
-								 "unlink(<%s>) Failed, errno=%d, expected errno:%d",
-								 desc,
-								 TEST_ERRNO,
-								 Test_cases
-								 [ind].exp_errno);
-					} else
-						tst_count++;
+					if (TEST_ERRNO ==
+					    Test_cases[ind].exp_errno)
+						tst_resm(TPASS,
+							 "unlink(<%s>) Failed, errno=%d",
+							 desc,
+							 TEST_ERRNO);
+					else
+						tst_resm(TFAIL,
+							 "unlink(<%s>) Failed, errno=%d, expected errno:%d",
+							 desc,
+							 TEST_ERRNO,
+							 Test_cases
+							 [ind].exp_errno);
 				} else {
 					tst_resm(TFAIL,
 						 "unlink(<%s>) Failed, errno=%d",
@@ -229,23 +226,18 @@ int main(int ac, char **av)
 						 "unlink(<%s>) returned %ld, expected -1, errno:%d",
 						 desc, TEST_RETURN,
 						 Test_cases[ind].exp_errno);
-				} else if (STD_FUNCTIONAL_TEST) {
+				} else {
 					tst_resm(TPASS,
 						 "unlink(<%s>) returned %ld",
 						 desc, TEST_RETURN);
-				} else
-					tst_count++;
+				}
 				Test_cases[ind].setupfunc(1);
 			}
 		}
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
 

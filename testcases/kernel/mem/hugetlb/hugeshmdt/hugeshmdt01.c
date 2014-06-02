@@ -100,10 +100,7 @@ int main(int ac, char **av)
 		if (shmdt(shared) == -1) {
 			tst_resm(TFAIL | TERRNO, "shmdt");
 		} else {
-			if (STD_FUNCTIONAL_TEST)
-				check_functionality();
-			else
-				tst_resm(TPASS, "call succeeded");
+			check_functionality();
 		}
 
 		/* reattach the shared memory segment in case we are looping */

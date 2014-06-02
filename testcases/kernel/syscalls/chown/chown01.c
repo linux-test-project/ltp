@@ -147,20 +147,18 @@ int main(int ac, char **av)
 
 		TEST(chown(fname, uid, gid));
 
-		if (TEST_RETURN == -1)
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "chown(%s, %d,%d) failed",
 				 fname, uid, gid);
-		else {
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "chown(%s, %d,%d) returned %ld",
-					 fname, uid, gid, TEST_RETURN);
+		} else {
+			tst_resm(TPASS, "chown(%s, %d,%d) returned %ld",
+				 fname, uid, gid, TEST_RETURN);
 		}
 
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 static void setup(void)

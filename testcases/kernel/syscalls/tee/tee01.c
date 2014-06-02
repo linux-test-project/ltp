@@ -128,15 +128,8 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "tee() Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-
-			/*
-			 * only perform functional verification if flag set (-f not given)
-			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "tee() returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "tee() returned %ld",
+				 TEST_RETURN);
 		}
 
 	}

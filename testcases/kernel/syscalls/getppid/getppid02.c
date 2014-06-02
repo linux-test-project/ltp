@@ -76,15 +76,12 @@ int main(int ac, char **av)
 		if (pid == 0) {
 			TEST(getppid());
 
-			if (STD_FUNCTIONAL_TEST) {
-				if (TEST_RETURN != ppid)
-					errx(1, "getppid failed (%ld != %d)",
-					     TEST_RETURN, ppid);
-				else
-					printf("return value and parent's pid "
-					       "value match\n");
-			} else
-				tst_resm(TPASS, "call succeeded");
+			if (TEST_RETURN != ppid)
+				errx(1, "getppid failed (%ld != %d)",
+				     TEST_RETURN, ppid);
+			else
+				printf("return value and parent's pid "
+				       "value match\n");
 			exit(0);
 		} else {
 			if (wait(&status) == -1)

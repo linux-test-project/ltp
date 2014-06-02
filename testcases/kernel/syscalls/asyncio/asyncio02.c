@@ -168,10 +168,9 @@ int main(int ac, char **av)
 			 */
 
 			filename = FNAME1;
-			if (testrun(Flags[flag_cnt], BUFSIZ + 1, 1) != OK)
+			if (testrun(Flags[flag_cnt], BUFSIZ + 1, 1) != OK) {
 				tst_resm(TFAIL, ERR_MSG1);
-
-			else if (STD_FUNCTIONAL_TEST) {
+			} else {
 				tst_resm(TPASS,
 					 "More than BUFSIZE bytes multiple synchronous writes to a file check out ok");
 			}
@@ -183,7 +182,7 @@ int main(int ac, char **av)
 			filename = FNAME2;
 			if (testrun(Flags[flag_cnt], BUFSIZ, 2) != OK) {
 				tst_resm(TFAIL, ERR_MSG1);
-			} else if (STD_FUNCTIONAL_TEST) {
+			} else {
 				tst_resm(TPASS,
 					 "BUFSIZE bytes multiple synchronous writes to a file checks out ok");
 			}
@@ -203,10 +202,10 @@ int main(int ac, char **av)
 				}
 			}
 
-			if (eok && STD_FUNCTIONAL_TEST)
+			if (eok) {
 				tst_resm(TPASS,
 					 "Less than BUFSIZE bytes multiple synchronous writes to a file checks out ok");
-
+			}
 		}
 	}
 	cleanup();
@@ -249,20 +248,18 @@ int testrun(int flag, int bytes, int ti)
 	}
 
 	ret = OK;
-	if (STD_FUNCTIONAL_TEST) {
 
-		/*
-		 *  Now check to see if the number of bytes written is the
-		 *  same as the number of bytes in the file.
-		 */
+	/*
+	 *  Now check to see if the number of bytes written is the
+	 *  same as the number of bytes in the file.
+	 */
 
-		if (stat(filename, &buffer) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup, "stat() failed");
-		}
+	if (stat(filename, &buffer) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup, "stat() failed");
+	}
 
-		if (buffer.st_size != (off_t) (bytes * WRITES)) {
-			ret = (int)buffer.st_size;
-		}
+	if (buffer.st_size != (off_t) (bytes * WRITES)) {
+		ret = (int)buffer.st_size;
 	}
 
 	if (unlink(filename) == -1) {

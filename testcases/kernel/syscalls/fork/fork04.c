@@ -297,43 +297,38 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 			/* fork failed */
-			if (STD_FUNCTIONAL_TEST) {
-				tst_brkm(TFAIL, cleanup,
-					 "fork() failed with %d (%s)",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
+			tst_brkm(TFAIL, cleanup,
+				 "fork() failed with %d (%s)",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else if (TEST_RETURN == 0) {
 			/* child */
-			if (STD_FUNCTIONAL_TEST)
-				/* determine environment variables */
-				child_environment();
+			/* determine environment variables */
+			child_environment();
 			/* exit with known value */
 			exit(KIDEXIT);
 		} else {
 			/* parent of successful fork */
 			/* wait for the child to complete */
 			wait_status = waitpid(TEST_RETURN, &kid_status, 0);
-			if (STD_FUNCTIONAL_TEST) {
-				/* validate the child exit status */
-				if (wait_status == TEST_RETURN) {
-					if (kid_status != KIDEXIT << 8) {
-						tst_brkm(TBROK, cleanup,
-							 "fork(): Incorrect child status returned on wait(): %d",
-							 kid_status);
-						fails++;
-					}
-				} else {
+			/* validate the child exit status */
+			if (wait_status == TEST_RETURN) {
+				if (kid_status != KIDEXIT << 8) {
 					tst_brkm(TBROK, cleanup,
-						 "fork(): wait() for child status failed with %d errno: %d : %s",
-						 wait_status, errno,
-						 strerror(errno));
+						 "fork(): Incorrect child status returned on wait(): %d",
+						 kid_status);
 					fails++;
 				}
+			} else {
+				tst_brkm(TBROK, cleanup,
+					 "fork(): wait() for child status failed with %d errno: %d : %s",
+					 wait_status, errno,
+					 strerror(errno));
+				fails++;
+			}
 
-				if (fails == 0) {
-					/* verification tests */
-					parent_environment();
-				}
+			if (fails == 0) {
+				/* verification tests */
+				parent_environment();
 			}
 		}
 

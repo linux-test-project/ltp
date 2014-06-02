@@ -71,7 +71,7 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL | TTERRNO, "getuid failed");
-		else if (STD_FUNCTIONAL_TEST)
+		else
 			tst_resm(TPASS, "getuid returned %ld", TEST_RETURN);
 
 	}

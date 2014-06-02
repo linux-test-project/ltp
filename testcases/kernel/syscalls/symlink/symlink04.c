@@ -123,32 +123,24 @@ int main(int ac, char **av)
 				 strerror(TEST_ERRNO));
 		} else {
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Get the symlink file status information
+			 * using lstat(2).
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the symlink file status information
-				 * using lstat(2).
-				 */
-				if (lstat(SYMFILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "lstat(2) of "
-						 "%s failed, error:%d", SYMFILE,
-						 errno);
-				}
+			if (lstat(SYMFILE, &stat_buf) < 0) {
+				tst_brkm(TFAIL, cleanup, "lstat(2) of "
+					 "%s failed, error:%d", SYMFILE,
+					 errno);
+			}
 
-				/* Check if the st_mode contains a link  */
-				if (!S_ISLNK(stat_buf.st_mode)) {
-					tst_resm(TFAIL,
-						 "symlink of %s doesn't exist",
-						 TESTFILE);
-				} else {
-					tst_resm(TPASS, "symlink(%s, %s) "
-						 "functionality successful",
-						 TESTFILE, SYMFILE);
-				}
+			/* Check if the st_mode contains a link  */
+			if (!S_ISLNK(stat_buf.st_mode)) {
+				tst_resm(TFAIL,
+					 "symlink of %s doesn't exist",
+					 TESTFILE);
 			} else {
-				tst_resm(TPASS, "Call succeeded");
+				tst_resm(TPASS, "symlink(%s, %s) "
+					 "functionality successful",
+					 TESTFILE, SYMFILE);
 			}
 		}
 

@@ -97,11 +97,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (!STD_FUNCTIONAL_TEST) {
-			tst_resm(TPASS, "call succeeded");
-			continue;
-		}
-
 		strcpy(wrbuf, "abcdefghijklmnopqrstuvwxyz");
 		length = strlen(wrbuf) + 1;
 

@@ -120,27 +120,17 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/* check whether tstdir been removed */
-			if (stat(tstdir, &buf) != -1) {
-				tst_resm(TFAIL, "directory %s still exists",
-					 tstdir);
-				continue;
-			} else {
-				tst_resm(TPASS, "directory has been removed");
-			}
+		if (stat(tstdir, &buf) != -1) {
+			tst_resm(TFAIL, "directory %s still exists",
+				 tstdir);
+			continue;
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "directory has been removed");
 		}
-
 	}
 
-	/*
-	 * cleanup and exit
-	 */
 	cleanup();
 	tst_exit();
-
 }
 
 /*

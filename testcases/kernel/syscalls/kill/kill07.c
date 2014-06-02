@@ -153,35 +153,34 @@ int main(int ac, char **av)
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check to see if the process was terminated with the
-			 * expected signal.
-			 */
-			nsig = WTERMSIG(status);
-			asig = WIFSIGNALED(status);
-			if ((asig == 0) & (*flag == 1)) {
-				tst_resm(TFAIL, "SIGKILL was unexpectedly"
-					 " caught");
-			} else if ((asig == 1) & (nsig == TEST_SIG)) {
-				tst_resm(TINFO, "received expected signal %d",
-					 nsig);
-				tst_resm(TPASS,
-					 "Did not catch signal as expected");
-			} else if (nsig) {
-				tst_resm(TFAIL,
-					 "expected signal %d received %d",
-					 TEST_SIG, nsig);
-			} else {
-				tst_resm(TFAIL, "No signals received");
-			}
+		/*
+		 * Check to see if the process was terminated with the
+		 * expected signal.
+		 */
+		nsig = WTERMSIG(status);
+		asig = WIFSIGNALED(status);
+		if ((asig == 0) & (*flag == 1)) {
+			tst_resm(TFAIL, "SIGKILL was unexpectedly"
+				 " caught");
+		} else if ((asig == 1) & (nsig == TEST_SIG)) {
+			tst_resm(TINFO, "received expected signal %d",
+				 nsig);
+			tst_resm(TPASS,
+				 "Did not catch signal as expected");
+		} else if (nsig) {
+			tst_resm(TFAIL,
+				 "expected signal %d received %d",
+				 TEST_SIG, nsig);
+		} else {
+			tst_resm(TFAIL, "No signals received");
 		}
+
 		if (shmdt(flag)) {
 			tst_brkm(TBROK, cleanup, "shmdt failed ");
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 

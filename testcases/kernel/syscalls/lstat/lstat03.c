@@ -126,33 +126,23 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Verify the data returned by lstat(2)
+		 * aganist the expected data.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Verify the data returned by lstat(2)
-			 * aganist the expected data.
-			 */
-			if ((stat_buf.st_uid != user_id) ||
-			    (stat_buf.st_gid != group_id) ||
-			    (!(stat_buf.st_mode && S_IFLNK)) ||
-			    (stat_buf.st_size != strlen(TESTFILE))) {
-				tst_resm(TFAIL, "Functionality of lstat(2) on "
-					 "'%s' Failed", SFILE);
-			} else {
-				tst_resm(TPASS, "Functionality of lstat(2) on "
-					 "'%s' Succcessful", SFILE);
-			}
+		if ((stat_buf.st_uid != user_id) ||
+		    (stat_buf.st_gid != group_id) ||
+		    (!(stat_buf.st_mode && S_IFLNK)) ||
+		    (stat_buf.st_size != strlen(TESTFILE))) {
+			tst_resm(TFAIL, "Functionality of lstat(2) on "
+				 "'%s' Failed", SFILE);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "Functionality of lstat(2) on "
+				 "'%s' Succcessful", SFILE);
 		}
 	}
 
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*

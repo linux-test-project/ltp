@@ -123,34 +123,30 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (stat(TESTFILE, &stat_buf) == -1)
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "stat failed");
+		if (stat(TESTFILE, &stat_buf) == -1)
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "stat failed");
 
-			if (stat_buf.st_uid != user_id ||
-			    stat_buf.st_gid != group_id)
-				tst_resm(TFAIL, "%s: Incorrect ownership"
-					 "set to %d %d, Expected %d %d",
-					 TESTFILE, stat_buf.st_uid,
-					 stat_buf.st_gid, user_id, group_id);
+		if (stat_buf.st_uid != user_id ||
+		    stat_buf.st_gid != group_id)
+			tst_resm(TFAIL, "%s: Incorrect ownership"
+				 "set to %d %d, Expected %d %d",
+				 TESTFILE, stat_buf.st_uid,
+				 stat_buf.st_gid, user_id, group_id);
 
-			if (stat_buf.st_mode !=
-			    (NEW_PERMS & ~(S_ISUID | S_ISGID)))
-				tst_resm(TFAIL, "%s: incorrect mode permissions"
-					 " %#o, Expected %#o", TESTFILE,
-					 stat_buf.st_mode,
-					 NEW_PERMS & ~(S_ISUID | S_ISGID));
-			else
-				tst_resm(TPASS, "chown(%s, ..) was successful",
-					 TESTFILE);
-		} else
-			tst_resm(TPASS, "call succeeded");
+		if (stat_buf.st_mode !=
+		    (NEW_PERMS & ~(S_ISUID | S_ISGID)))
+			tst_resm(TFAIL, "%s: incorrect mode permissions"
+				 " %#o, Expected %#o", TESTFILE,
+				 stat_buf.st_mode,
+				 NEW_PERMS & ~(S_ISUID | S_ISGID));
+		else
+			tst_resm(TPASS, "chown(%s, ..) was successful",
+				 TESTFILE);
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

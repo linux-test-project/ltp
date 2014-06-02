@@ -166,23 +166,17 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			if (STD_FUNCTIONAL_TEST) {
+			if (TEST_ERRNO == EBADF)
 
-				if (TEST_ERRNO == EBADF)
-
-					tst_resm(TPASS,
-						 "lseek(-1, 1, SEEK_SET) Failed, errno=%d : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				else
-					tst_resm(TFAIL,
-						 "lseek(-1, 1, SEEK_SET) Failed, errno=%d : %s, expected %d(EBADF)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EBADF);
-
-			} else
-				tst_count++;
-
+				tst_resm(TPASS,
+					 "lseek(-1, 1, SEEK_SET) Failed, errno=%d : %s",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			else
+				tst_resm(TFAIL,
+					 "lseek(-1, 1, SEEK_SET) Failed, errno=%d : %s, expected %d(EBADF)",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO), EBADF);
 		} else {
 
 			tst_resm(TFAIL, "lseek(-1, 1, SEEK_SET) returned %ld",
@@ -191,12 +185,8 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

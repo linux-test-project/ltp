@@ -133,45 +133,37 @@ int main(int ac, char **av)
 				 strerror(TEST_ERRNO));
 			continue;
 		}
-		/*
-		 * Perform functional verification if test executed
-		 * without (-f) option.
-		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/* Set the functionality flag */
-			fflag = 1;
+		/* Set the functionality flag */
+		fflag = 1;
 
-			/* Check for node's creation */
-			if (stat(node_name, &buf) < 0) {
-				tst_resm(TFAIL,
-					 "stat() of %s failed, errno:%d",
-					 node_name, TEST_ERRNO);
-				/* unset flag as functionality fails */
-				fflag = 0;
-			}
+		/* Check for node's creation */
+		if (stat(node_name, &buf) < 0) {
+			tst_resm(TFAIL,
+				 "stat() of %s failed, errno:%d",
+				 node_name, TEST_ERRNO);
+			/* unset flag as functionality fails */
+			fflag = 0;
+		}
 
-			/* Verify mode permissions of node */
-			if (buf.st_mode & S_ISGID) {
-				tst_resm(TFAIL, "%s: Incorrect modes, setgid "
-					 "bit set", node_name);
-				/* unset flag as functionality fails */
-				fflag = 0;
-			}
+		/* Verify mode permissions of node */
+		if (buf.st_mode & S_ISGID) {
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid "
+				 "bit set", node_name);
+			/* unset flag as functionality fails */
+			fflag = 0;
+		}
 
-			/* Verify group ID */
-			if (buf.st_gid != mygid) {
-				tst_resm(TFAIL, "%s: Incorrect group",
-					 node_name);
-				/* unset flag as functionality fails */
-				fflag = 0;
-			}
-			if (fflag) {
-				tst_resm(TPASS, "Functionality of mknod(%s, "
-					 "%#o, 0) successful",
-					 node_name, MODE_RWX);
-			}
-		} else {
-			tst_resm(TPASS, "call succeeded");
+		/* Verify group ID */
+		if (buf.st_gid != mygid) {
+			tst_resm(TFAIL, "%s: Incorrect group",
+				 node_name);
+			/* unset flag as functionality fails */
+			fflag = 0;
+		}
+		if (fflag) {
+			tst_resm(TPASS, "Functionality of mknod(%s, "
+				 "%#o, 0) successful",
+				 node_name, MODE_RWX);
 		}
 
 		/* Remove the node for the next go `round */

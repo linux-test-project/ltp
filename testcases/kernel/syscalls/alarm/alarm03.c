@@ -140,7 +140,7 @@ int main(int ac, char **av)
 				printf("%d: alarm(100), fork, alarm(0) child's "
 				       "alarm returned %ld\n",
 				       getpid(), TEST_RETURN);
-			} else if (STD_FUNCTIONAL_TEST) {
+			} else {
 				printf("%d: alarm(100), fork, alarm(0) child's "
 				       "alarm returned %ld\n",
 				       getpid(), TEST_RETURN);
@@ -158,7 +158,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL,
 					 "alarm(100), fork, alarm(0) parent's alarm returned %ld",
 					 TEST_RETURN);
-			} else if (STD_FUNCTIONAL_TEST) {
+			} else {
 				tst_resm(TPASS,
 					 "alarm(100), fork, alarm(0) parent's alarm returned %ld",
 					 TEST_RETURN);
@@ -174,7 +174,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

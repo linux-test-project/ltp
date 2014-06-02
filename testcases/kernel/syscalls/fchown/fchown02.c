@@ -167,59 +167,51 @@ int main(int ac, char **av)
 				continue;
 			}
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Get the testfile information using
+			 * fstat(2).
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the testfile information using
-				 * fstat(2).
-				 */
-				if (fstat(fildes, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "fstat(2) of "
-						 "%s failed, errno=%d",
-						 file_name, TEST_ERRNO);
-				}
+			if (fstat(fildes, &stat_buf) < 0) {
+				tst_brkm(TFAIL, cleanup, "fstat(2) of "
+					 "%s failed, errno=%d",
+					 file_name, TEST_ERRNO);
+			}
 
-				/*
-				 * Check for expected Ownership ids
-				 * set on testfile.
-				 */
-				if ((stat_buf.st_uid != user_id) ||
-				    (stat_buf.st_gid != group_id)) {
-					tst_resm(TFAIL, "%s: Incorrect"
-						 " ownership set, Expected %d "
-						 "%d", file_name,
-						 user_id, group_id);
-				}
+			/*
+			 * Check for expected Ownership ids
+			 * set on testfile.
+			 */
+			if ((stat_buf.st_uid != user_id) ||
+			    (stat_buf.st_gid != group_id)) {
+				tst_resm(TFAIL, "%s: Incorrect"
+					 " ownership set, Expected %d "
+					 "%d", file_name,
+					 user_id, group_id);
+			}
 
-				/*
-				 * Verify that S_ISUID/S_ISGID bits
-				 * set on the testfile(s) in setup()s
-				 * are cleared by chown().
-				 */
-				if ((test_flag == 1) && ((stat_buf.st_mode &
-							  (S_ISUID | S_ISGID))))
-				{
-					tst_resm(TFAIL,
-						 "%s: Incorrect mode "
-						 "permissions %#o, Expected "
-						 "%#o", file_name, NEW_PERMS1,
-						 EXP_PERMS);
-				} else if ((test_flag == 2)
-					   && (!(stat_buf.st_mode & S_ISGID))) {
-					tst_resm(TFAIL,
-						 "%s: Incorrect mode "
-						 "permissions %#o, Expected "
-						 "%#o", file_name,
-						 stat_buf.st_mode, NEW_PERMS2);
-				} else {
-					tst_resm(TPASS,
-						 "fchown() on %s succeeds : %s",
-						 file_name, test_desc);
-				}
+			/*
+			 * Verify that S_ISUID/S_ISGID bits
+			 * set on the testfile(s) in setup()s
+			 * are cleared by chown().
+			 */
+			if ((test_flag == 1) && ((stat_buf.st_mode &
+						  (S_ISUID | S_ISGID))))
+			{
+				tst_resm(TFAIL,
+					 "%s: Incorrect mode "
+					 "permissions %#o, Expected "
+					 "%#o", file_name, NEW_PERMS1,
+					 EXP_PERMS);
+			} else if ((test_flag == 2)
+				   && (!(stat_buf.st_mode & S_ISGID))) {
+				tst_resm(TFAIL,
+					 "%s: Incorrect mode "
+					 "permissions %#o, Expected "
+					 "%#o", file_name,
+					 stat_buf.st_mode, NEW_PERMS2);
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_resm(TPASS,
+					 "fchown() on %s succeeds : %s",
+					 file_name, test_desc);
 			}
 		}
 	}

@@ -81,25 +81,21 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN == exp_val) {
-				/* Check for the contents of buffer */
-				if (memcmp(buffer, TESTFILE, exp_val) != 0) {
-					tst_brkm(TFAIL, cleanup, "TESTFILE %s "
-						 "and buffer contents %s "
-						 "differ", TESTFILE, buffer);
-				} else {
-					tst_resm(TPASS, "readlink() "
-						 "functionality on '%s' is "
-						 "correct", SYMFILE);
-				}
+		if (TEST_RETURN == exp_val) {
+			/* Check for the contents of buffer */
+			if (memcmp(buffer, TESTFILE, exp_val) != 0) {
+				tst_brkm(TFAIL, cleanup, "TESTFILE %s "
+					 "and buffer contents %s "
+					 "differ", TESTFILE, buffer);
 			} else {
-				tst_resm(TFAIL, "readlink() return value %ld "
-					 "doesn't match, Expected %d",
-					 TEST_RETURN, exp_val);
+				tst_resm(TPASS, "readlink() "
+					 "functionality on '%s' is "
+					 "correct", SYMFILE);
 			}
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TFAIL, "readlink() return value %ld "
+				 "doesn't match, Expected %d",
+				 TEST_RETURN, exp_val);
 		}
 	}
 

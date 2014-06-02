@@ -121,11 +121,7 @@ int main(int argc, char *argv[])
 				tst_resm(TFAIL | TERRNO,
 					 "cmd=0x%x failed", TC[i].cmd);
 
-			if (STD_FUNCTIONAL_TEST)
-				(*TC[i].func_test) ();
-			else
-				tst_resm(TPASS, "quotactl call succeeded");
-
+			(*TC[i].func_test) ();
 		}
 	}
 	cleanup();

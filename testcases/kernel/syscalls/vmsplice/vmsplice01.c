@@ -132,21 +132,12 @@ int main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 
-			/***************************************************************
-			 * only perform functional verification if flag set (-f not given)
-			 ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "vmsplice() returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "vmsplice() returned %ld",
+				 TEST_RETURN);
 		}
 
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
 
 	return (0);

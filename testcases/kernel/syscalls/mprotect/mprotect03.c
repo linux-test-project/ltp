@@ -98,28 +98,24 @@ int main(int ac, char **av)
 		TEST(mprotect(addr, strlen(buf), PROT_READ));
 
 		if (TEST_RETURN != -1) {
-			if (STD_FUNCTIONAL_TEST) {
-				if ((pid = FORK_OR_VFORK()) == -1) {
-					tst_brkm(TBROK, cleanup, "fork failed");
-				}
+			if ((pid = FORK_OR_VFORK()) == -1) {
+				tst_brkm(TBROK, cleanup, "fork failed");
+			}
 
-				if (pid == 0) {
-					memcpy(addr, buf, strlen(buf));
-					tst_resm(TINFO, "memcpy() did "
-						 "not generate SIGSEGV");
-					exit(1);
-				}
+			if (pid == 0) {
+				memcpy(addr, buf, strlen(buf));
+				tst_resm(TINFO, "memcpy() did "
+					 "not generate SIGSEGV");
+				exit(1);
+			}
 
-				waitpid(pid, &status, 0);
-				if (WEXITSTATUS(status) != 0) {
-					tst_resm(TFAIL, "child returned "
-						 "unexpected status");
-				} else {
-					tst_resm(TPASS, "SIGSEGV generated "
-						 "as expected");
-				}
+			waitpid(pid, &status, 0);
+			if (WEXITSTATUS(status) != 0) {
+				tst_resm(TFAIL, "child returned "
+					 "unexpected status");
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_resm(TPASS, "SIGSEGV generated "
+					 "as expected");
 			}
 		} else {
 			tst_resm(TFAIL, "mprotect failed "
@@ -137,7 +133,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "unlink failed");
 		}
 	}
-	
+
 	cleanup();
 	tst_exit();
 }

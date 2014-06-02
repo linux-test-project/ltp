@@ -127,29 +127,25 @@ int main(int ac, char **av)
 				tst_resm(TFAIL | TTERRNO, "chown failed");
 				continue;
 			}
-			if (STD_FUNCTIONAL_TEST) {
-				if (stat(TESTFILE, &stat_buf) == -1)
-					tst_brkm(TFAIL, cleanup, "stat failed");
-				if (user_id == -1)
-					user_id = test_cases[i - 1].user_id;
-				if (group_id == -1)
-					group_id = test_cases[i - 1].group_id;
+			if (stat(TESTFILE, &stat_buf) == -1)
+				tst_brkm(TFAIL, cleanup, "stat failed");
+			if (user_id == -1)
+				user_id = test_cases[i - 1].user_id;
+			if (group_id == -1)
+				group_id = test_cases[i - 1].group_id;
 
-				if (stat_buf.st_uid != user_id ||
-				    stat_buf.st_gid != group_id)
-					tst_resm(TFAIL, "%s: incorrect "
-						 "ownership set, Expected %d "
-						 "%d", TESTFILE, user_id,
-						 group_id);
-				else
-					tst_resm(TPASS, "chown succeeded");
-			} else
-				tst_resm(TPASS, "call succeeded");
+			if (stat_buf.st_uid != user_id ||
+			    stat_buf.st_gid != group_id)
+				tst_resm(TFAIL, "%s: incorrect "
+					 "ownership set, Expected %d "
+					 "%d", TESTFILE, user_id,
+					 group_id);
+			else
+				tst_resm(TPASS, "chown succeeded");
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

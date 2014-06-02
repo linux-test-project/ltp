@@ -75,22 +75,21 @@ int main(int ac, char **av)
 				 strerror(TEST_ERRNO));
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (WIFEXITED(status) == 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "%s call succeeded but "
-					 "WIFEXITED() did not return expected value "
-					 "- %d", TCID, WIFEXITED(status));
-			} else if (TEST_RETURN != pid) {
-				tst_resm(TFAIL, "%s did not return the "
-					 "expected value (%d), actual: %ld",
-					 TCID, pid, TEST_RETURN);
-			} else {
+		if (WIFEXITED(status) == 0) {
+			tst_brkm(TFAIL, cleanup,
+				 "%s call succeeded but "
+				 "WIFEXITED() did not return expected value "
+				 "- %d", TCID, WIFEXITED(status));
+		} else if (TEST_RETURN != pid) {
+			tst_resm(TFAIL, "%s did not return the "
+				 "expected value (%d), actual: %ld",
+				 TCID, pid, TEST_RETURN);
+		} else {
 
-				tst_resm(TPASS,
-					 "Received child pid as expected.");
-			}
+			tst_resm(TPASS,
+				 "Received child pid as expected.");
 		}
+
 		tst_resm(TPASS, "%s call succeeded", TCID);
 	}
 

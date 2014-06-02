@@ -150,7 +150,7 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL | TTERRNO, "fcntl failed");
-		else if (STD_FUNCTIONAL_TEST)
+		else
 			tst_resm(TPASS,
 				 "fcntl(%s, F_GETFD, 0) returned %ld",
 				 fname, TEST_RETURN);
@@ -158,7 +158,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

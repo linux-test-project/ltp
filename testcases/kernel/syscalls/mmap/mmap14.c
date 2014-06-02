@@ -73,21 +73,16 @@ int main(int argc, char *argv[])
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
+		getvmlck(&sz_after);
 
-			getvmlck(&sz_after);
-
-			sz_ch = sz_after - sz_before;
-			if (sz_ch == MMAPSIZE / 1024)
-				tst_resm(TPASS, "Functionality of mmap() "
-						"successful");
-			else
-				tst_resm(TFAIL, "Expected %luK locked, "
-						"get %uK locked",
-						MMAPSIZE / 1024, sz_ch);
-
+		sz_ch = sz_after - sz_before;
+		if (sz_ch == MMAPSIZE / 1024) {
+			tst_resm(TPASS, "Functionality of mmap() "
+					"successful");
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TFAIL, "Expected %luK locked, "
+					"get %uK locked",
+					MMAPSIZE / 1024, sz_ch);
 		}
 
 		if (munmap(addr, MMAPSIZE) != 0)
@@ -96,7 +91,6 @@ int main(int argc, char *argv[])
 
 	cleanup();
 	tst_exit();
-
 }
 
 void getvmlck(unsigned int *lock_sz)

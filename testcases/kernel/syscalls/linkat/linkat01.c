@@ -258,40 +258,35 @@ static void mylinkat_test(struct test_struct *desc)
 	      desc->flags));
 
 	if (TEST_ERRNO == desc->expected_errno) {
+		if (TEST_RETURN == 0 && desc->referencefn1 != NULL) {
+			int tnum = rand(), vnum = ~tnum;
+			fd = SAFE_OPEN(cleanup, desc->referencefn1,
+				       O_RDWR);
+			SAFE_WRITE(cleanup, 1, fd, &tnum, sizeof(tnum));
+			SAFE_CLOSE(cleanup, fd);
 
-		if (STD_FUNCTIONAL_TEST) {
+			fd = SAFE_OPEN(cleanup, desc->referencefn2,
+				       O_RDONLY);
+			SAFE_READ(cleanup, 1, fd, &vnum, sizeof(vnum));
+			SAFE_CLOSE(cleanup, fd);
 
-			if (TEST_RETURN == 0 && desc->referencefn1 != NULL) {
-				int tnum = rand(), vnum = ~tnum;
-				fd = SAFE_OPEN(cleanup, desc->referencefn1,
-					       O_RDWR);
-				SAFE_WRITE(cleanup, 1, fd, &tnum, sizeof(tnum));
-				SAFE_CLOSE(cleanup, fd);
-
-				fd = SAFE_OPEN(cleanup, desc->referencefn2,
-					       O_RDONLY);
-				SAFE_READ(cleanup, 1, fd, &vnum, sizeof(vnum));
-				SAFE_CLOSE(cleanup, fd);
-
-				if (tnum == vnum)
-					tst_resm(TPASS,
-						 "linkat is functionality correct");
-				else {
-					tst_resm(TFAIL,
-						 "The link file's content isn't "
-						 "as same as the original file's "
-						 "although linkat returned 0");
-				}
-			} else {
-				if (TEST_RETURN == 0)
-					tst_resm(TPASS,
-						 "linkat succeeded as expected");
-				else
-					tst_resm(TPASS | TTERRNO,
-						 "linkat failed as expected");
+			if (tnum == vnum)
+				tst_resm(TPASS,
+					 "linkat is functionality correct");
+			else {
+				tst_resm(TFAIL,
+					 "The link file's content isn't "
+					 "as same as the original file's "
+					 "although linkat returned 0");
 			}
-		} else
-			tst_resm(TPASS, "Test passed");
+		} else {
+			if (TEST_RETURN == 0)
+				tst_resm(TPASS,
+					 "linkat succeeded as expected");
+			else
+				tst_resm(TPASS | TTERRNO,
+					 "linkat failed as expected");
+		}
 	} else {
 		if (TEST_RETURN == 0)
 			tst_resm(TFAIL, "linkat succeeded unexpectedly");

@@ -115,30 +115,21 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Verify the real/effective/saved gid values returned
+		 * by getresgid with the expected values.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Verify the real/effective/saved gid values returned
-			 * by getresgid with the expected values.
-			 */
-			if ((real_gid != pr_gid) || (eff_gid != pe_gid) ||
-			    (sav_gid != ps_gid)) {
-				tst_resm(TFAIL, "real:%d, effective:%d, "
-					 "saved-user:%d ids differ",
-					 real_gid, eff_gid, sav_gid);
-			} else {
-				tst_resm(TPASS, "Functionality of getresgid() "
-					 "successful");
-			}
+		if ((real_gid != pr_gid) || (eff_gid != pe_gid) ||
+		    (sav_gid != ps_gid)) {
+			tst_resm(TFAIL, "real:%d, effective:%d, "
+				 "saved-user:%d ids differ",
+				 real_gid, eff_gid, sav_gid);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "Functionality of getresgid() "
+				 "successful");
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

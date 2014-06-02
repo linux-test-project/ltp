@@ -200,17 +200,10 @@ int main(int ac, char **av)
 					 path, args[i].define_tag, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else {
-
-		/***************************************************************
-		 * only perform functional verification if flag set (-f not given)
-		 ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "pathconf(%s, %s) returned %ld",
-						 path, args[i].define_tag,
-						 TEST_RETURN);
-				}
+				tst_resm(TPASS,
+					 "pathconf(%s, %s) returned %ld",
+					 path, args[i].define_tag,
+					 TEST_RETURN);
 			}
 		}
 	}

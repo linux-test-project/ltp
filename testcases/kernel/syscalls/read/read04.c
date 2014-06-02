@@ -95,28 +95,25 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_RETURN != TST_SIZE) {
-				tst_resm(TFAIL, "Bad read count - got %ld - "
-					 "expected %d", TEST_RETURN, TST_SIZE);
-				continue;
-			}
-			if (memcmp(palfa, prbuf, TST_SIZE) != 0) {
-				tst_resm(TFAIL, "read buffer not equal "
-					 "to write buffer");
-				continue;
-			}
-			tst_resm(TPASS, "functionality of read() is correct");
-		} else {
-			tst_resm(TPASS, "call succeeded");
+		if (TEST_RETURN != TST_SIZE) {
+			tst_resm(TFAIL, "Bad read count - got %ld - "
+				 "expected %d", TEST_RETURN, TST_SIZE);
+			continue;
 		}
+		if (memcmp(palfa, prbuf, TST_SIZE) != 0) {
+			tst_resm(TFAIL, "read buffer not equal "
+				 "to write buffer");
+			continue;
+		}
+		tst_resm(TPASS, "functionality of read() is correct");
+
 		if (close(rfild) == -1) {
 			tst_brkm(TBROK, cleanup, "close() failed");
 		}
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
 /*

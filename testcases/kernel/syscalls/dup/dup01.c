@@ -156,12 +156,8 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "dup(%s) Failed, errno=%d : %s",
 				 filename, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "dup(%s) returned %ld",
-					 filename, TEST_RETURN);
-			}
+			tst_resm(TPASS, "dup(%s) returned %ld",
+				 filename, TEST_RETURN);
 
 			/* close the new file so loops do not open too many files */
 			if (close(TEST_RETURN) == -1) {
@@ -173,7 +169,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

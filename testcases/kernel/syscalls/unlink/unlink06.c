@@ -173,7 +173,7 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "unlink(%s) Failed, errno=%d : %s",
 				 Fname, TEST_ERRNO, strerror(TEST_ERRNO));
-		} else if (STD_FUNCTIONAL_TEST) {
+		} else {
 			if (access(Fname, F_OK) != -1) {
 				tst_resm(TFAIL,
 					 "unlink(%s) returned %ld, but access says file still exists.",
@@ -182,17 +182,11 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "unlink(%s) returned %ld",
 					 Fname, TEST_RETURN);
 			}
-		} else
-			tst_count++;
-
+		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

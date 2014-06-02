@@ -127,21 +127,17 @@ int main(int ac, char **av)
 				 nbrkpt, cur_brk_val, aft_brk_val);
 
 		} else {
+			aft_brk_val = (long)sbrk(0);
+			if (aft_brk_val == nbrkpt) {
 
-			if (STD_FUNCTIONAL_TEST) {
-
-				aft_brk_val = (long)sbrk(0);
-				if (aft_brk_val == nbrkpt) {
-
-					tst_resm(TPASS,
-						 "brk(%ld) returned %ld, new size verified by sbrk",
-						 nbrkpt, TEST_RETURN);
-				} else {
-					tst_resm(TFAIL,
-						 "brk(%ld) returned %ld, sbrk before %ld, after %ld",
-						 nbrkpt, TEST_RETURN,
-						 cur_brk_val, aft_brk_val);
-				}
+				tst_resm(TPASS,
+					 "brk(%ld) returned %ld, new size verified by sbrk",
+					 nbrkpt, TEST_RETURN);
+			} else {
+				tst_resm(TFAIL,
+					 "brk(%ld) returned %ld, sbrk before %ld, after %ld",
+					 nbrkpt, TEST_RETURN,
+					 cur_brk_val, aft_brk_val);
 			}
 		}
 

@@ -144,22 +144,17 @@ int main(int ac, char **av)
 
 		TEST(fchmod(fd, 0700));
 
-		if (TEST_RETURN == -1)
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO,
 				 "fchmod(%s, 0700) failed", fname);
-		else {
-
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "fchmod(%s, 0700) returned %ld",
-					 fname, TEST_RETURN);
-			}
+		} else {
+			tst_resm(TPASS, "fchmod(%s, 0700) returned %ld",
+				 fname, TEST_RETURN);
 		}
 
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

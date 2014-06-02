@@ -124,82 +124,73 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Check if the return value from lseek(2)
+		 * is equal to the specified offset value.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check if the return value from lseek(2)
-			 * is equal to the specified offset value.
-			 */
-			if (TEST_RETURN != offset) {
-				tst_resm(TFAIL, "lseek() returned "
-					 "incorrect value %ld, expected "
-					 "%" PRId64, TEST_RETURN,
-					 (int64_t) offset);
-				continue;
-			}
-			/*
-			 * The return value is okay, now write some data at
-			 * the current offset position.
-			 */
-			if (write(fildes, write_buf2, strlen(write_buf2)) !=
-			    strlen(write_buf2)) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "write() failed to write additional data");
-			}
+		if (TEST_RETURN != offset) {
+			tst_resm(TFAIL, "lseek() returned "
+				 "incorrect value %ld, expected "
+				 "%" PRId64, TEST_RETURN,
+				 (int64_t) offset);
+			continue;
+		}
+		/*
+		 * The return value is okay, now write some data at
+		 * the current offset position.
+		 */
+		if (write(fildes, write_buf2, strlen(write_buf2)) !=
+		    strlen(write_buf2)) {
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "write() failed to write additional data");
+		}
 
-			/*
-			 * Now close the file and open it again
-			 * and read all of the data.
-			 */
-			if (close(fildes) < 0) {
-				tst_brkm(TFAIL, cleanup, "close() on %s Failed,"
-					 " errno = %d", TEMP_FILE, errno);
-			}
+		/*
+		 * Now close the file and open it again
+		 * and read all of the data.
+		 */
+		if (close(fildes) < 0) {
+			tst_brkm(TFAIL, cleanup, "close() on %s Failed,"
+				 " errno = %d", TEMP_FILE, errno);
+		}
 
-			/* Open the file again in read/write mode */
-			if ((fildes = open(TEMP_FILE, O_RDWR)) < 0) {
-				tst_brkm(TFAIL, cleanup, "Could not open the "
-					 "%s readonly, error = %d",
-					 TEMP_FILE, errno);
-			}
+		/* Open the file again in read/write mode */
+		if ((fildes = open(TEMP_FILE, O_RDWR)) < 0) {
+			tst_brkm(TFAIL, cleanup, "Could not open the "
+				 "%s readonly, error = %d",
+				 TEMP_FILE, errno);
+		}
 
-			/*
-			 * Now read all of the data.  The size should be the
-			 * offset + strlen(write_buf2).
-			 */
-			if (read(fildes, &read_buf, (offset +
-						     strlen(write_buf2))) < 0) {
-				tst_brkm(TFAIL, cleanup, "read() failed on %s, "
-					 "error=%d", TEMP_FILE, errno);
-			} else {
-				/*
-				 * Check data read is the complete data and not
-				 * the only portion written.
-				 */
-				if ((strncmp(read_buf, write_buf1,
-					     strlen(write_buf1))) != 0) {
-					tst_brkm(TFAIL, cleanup,
-						 "Incorrect data read #1 from "
-						 "file %s", TEMP_FILE);
-				}
-				if ((strncmp(&read_buf[offset], write_buf2,
-					     strlen(write_buf2))) != 0) {
-					tst_brkm(TFAIL, cleanup,
-						 "Incorrect data read #2 from "
-						 "file %s", TEMP_FILE);
-				}
-				tst_resm(TPASS, "Functionality of "
-					 "lseek() on %s successful", TEMP_FILE);
-			}
+		/*
+		 * Now read all of the data.  The size should be the
+		 * offset + strlen(write_buf2).
+		 */
+		if (read(fildes, &read_buf, (offset +
+					     strlen(write_buf2))) < 0) {
+			tst_brkm(TFAIL, cleanup, "read() failed on %s, "
+				 "error=%d", TEMP_FILE, errno);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			/*
+			 * Check data read is the complete data and not
+			 * the only portion written.
+			 */
+			if ((strncmp(read_buf, write_buf1,
+				     strlen(write_buf1))) != 0) {
+				tst_brkm(TFAIL, cleanup,
+					 "Incorrect data read #1 from "
+					 "file %s", TEMP_FILE);
+			}
+			if ((strncmp(&read_buf[offset], write_buf2,
+				     strlen(write_buf2))) != 0) {
+				tst_brkm(TFAIL, cleanup,
+					 "Incorrect data read #2 from "
+					 "file %s", TEMP_FILE);
+			}
+			tst_resm(TPASS, "Functionality of "
+				 "lseek() on %s successful", TEMP_FILE);
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

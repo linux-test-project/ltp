@@ -92,48 +92,44 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check if mapped memory area beyond EOF are
-			 * zeros and changes beyond EOF are not written
-			 * to file.
-			 */
-			if (memcmp(&addr[file_sz], dummy, page_sz - file_sz)) {
-				tst_brkm(TFAIL, cleanup,
-					 "mapped memory area contains invalid "
-					 "data");
-			}
+		/*
+		 * Check if mapped memory area beyond EOF are
+		 * zeros and changes beyond EOF are not written
+		 * to file.
+		 */
+		if (memcmp(&addr[file_sz], dummy, page_sz - file_sz)) {
+			tst_brkm(TFAIL, cleanup,
+				 "mapped memory area contains invalid "
+				 "data");
+		}
 
-			/*
-			 * Initialize memory beyond file size
-			 */
-			addr[file_sz] = 'X';
-			addr[file_sz + 1] = 'Y';
-			addr[file_sz + 2] = 'Z';
+		/*
+		 * Initialize memory beyond file size
+		 */
+		addr[file_sz] = 'X';
+		addr[file_sz + 1] = 'Y';
+		addr[file_sz + 2] = 'Z';
 
-			/*
-			 * Synchronize the mapped memory region
-			 * with the file.
-			 */
-			if (msync(addr, page_sz, MS_SYNC) != 0) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "failed to synchronize mapped file");
-			}
+		/*
+		 * Synchronize the mapped memory region
+		 * with the file.
+		 */
+		if (msync(addr, page_sz, MS_SYNC) != 0) {
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "failed to synchronize mapped file");
+		}
 
-			/*
-			 * Now, Search for the pattern 'XYZ' in the
-			 * temporary file.  The pattern should not be
-			 * found and the return value should be 1.
-			 */
-			if (system(cmd_buffer) != 0) {
-				tst_resm(TPASS,
-					 "Functionality of mmap() successful");
-			} else {
-				tst_resm(TFAIL,
-					 "Specified pattern found in file");
-			}
+		/*
+		 * Now, Search for the pattern 'XYZ' in the
+		 * temporary file.  The pattern should not be
+		 * found and the return value should be 1.
+		 */
+		if (system(cmd_buffer) != 0) {
+			tst_resm(TPASS,
+				 "Functionality of mmap() successful");
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TFAIL,
+				 "Specified pattern found in file");
 		}
 
 		/* Clean up things in case we are looping */
@@ -145,7 +141,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 static void setup(void)

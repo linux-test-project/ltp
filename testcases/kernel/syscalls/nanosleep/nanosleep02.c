@@ -230,12 +230,7 @@ void do_child(void)
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "nanosleep() failed");
-		}
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
-		else if (STD_FUNCTIONAL_TEST) {
+		} else {
 			/*
 			 * Verify whether child execution was
 			 * actually suspended for the remaining

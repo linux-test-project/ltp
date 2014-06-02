@@ -86,12 +86,9 @@ int main(int ac, char **av)
 				 "setreuid -  Don't change either real or effective uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS,
-					 "setreuid -  Don't change either real or effective uid returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setreuid -  Don't change either real or effective uid returned %ld",
+				 TEST_RETURN);
 		}
 
 		/*
@@ -107,11 +104,9 @@ int main(int ac, char **av)
 				 "setreuid -  change effective to effective uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "setreuid -  change effective to effective uid returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setreuid -  change effective to effective uid returned %ld",
+				 TEST_RETURN);
 		}
 
 		/*
@@ -127,11 +122,9 @@ int main(int ac, char **av)
 				 "setreuid -  change real to real uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "setreuid -  change real to real uid returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setreuid -  change real to real uid returned %ld",
+				 TEST_RETURN);
 		}
 
 		/*
@@ -147,11 +140,9 @@ int main(int ac, char **av)
 				 "setreuid -  change effective to real uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "setreuid -  change effective to real uid returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setreuid -  change effective to real uid returned %ld",
+				 TEST_RETURN);
 		}
 
 		/*
@@ -167,11 +158,9 @@ int main(int ac, char **av)
 				 "setreuid -  try to change real to current real failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "setreuid -  try to change real to current real returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setreuid -  try to change real to current real returned %ld",
+				 TEST_RETURN);
 		}
 
 	}

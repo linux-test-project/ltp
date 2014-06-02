@@ -356,11 +356,8 @@ void do_test(int test_case, int tst_cnt)
 				return;
 			} else if (Ipc_info.status == PASS_FLAG) {
 
-				if (STD_FUNCTIONAL_TEST)
-					tst_resm(TPASS, "From child: %s",
-						 Ipc_info.mesg);
-				else
-					tst_count++;
+				tst_resm(TPASS, "From child: %s",
+					 Ipc_info.mesg);
 				update_timings(Ipc_info.timings);
 			} else if (Ipc_info.status == FAIL_FLAG) {
 				tst_resm(TFAIL, "From child: %s",
@@ -392,7 +389,7 @@ void do_test(int test_case, int tst_cnt)
 			tst_resm(TBROK | TERRNO, "wait() failed");
 			close(fd1[0]);
 			return;
-		} else if (STD_FUNCTIONAL_TEST) {
+		} else {
 			if ((term_stat & 0377) == SIGKILL) {
 				/*
 				 * The child was killed by the signal sent,
@@ -418,8 +415,6 @@ void do_test(int test_case, int tst_cnt)
 						 term_stat, term_stat);
 				}
 			}
-		} else {
-			tst_count++;	/* increment test counter */
 		}
 		close(fd1[0]);
 
@@ -541,18 +536,15 @@ void sigdfl_test(void)
 	TEST_ERRNO = errno;
 
 	if (Tret == SIG_ERR) {
-		if (STD_FUNCTIONAL_TEST) {
-			if (TEST_ERRNO != EINVAL) {
-				tst_resm(TFAIL | TTERRNO,
-					 "signal(SIGKILL,SIG_DFL) expected ret:-1, errno:EINVAL, got ret:%p",
-					 Tret);
-			} else {
-				tst_resm(TPASS,
-					 "signal(SIGKILL,SIG_DFL) ret:%p, errno EINVAL as expected",
-					 Tret);
-			}
-		} else
-			tst_count++;
+		if (TEST_ERRNO != EINVAL) {
+			tst_resm(TFAIL | TTERRNO,
+				 "signal(SIGKILL,SIG_DFL) expected ret:-1, errno:EINVAL, got ret:%p",
+				 Tret);
+		} else {
+			tst_resm(TPASS,
+				 "signal(SIGKILL,SIG_DFL) ret:%p, errno EINVAL as expected",
+				 Tret);
+		}
 	} else {
 		tst_resm(TFAIL,
 			 "signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",

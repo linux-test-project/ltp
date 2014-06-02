@@ -133,41 +133,35 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (STD_FUNCTIONAL_TEST) {
+			if (stat(TC[i].name2, &buf2) == -1) {
+				tst_brkm(TBROK, cleanup, "stat of %s "
+					 "failed", TC[i].desc);
 
-				if (stat(TC[i].name2, &buf2) == -1) {
-					tst_brkm(TBROK, cleanup, "stat of %s "
-						 "failed", TC[i].desc);
-
-				}
-
-				/*
-				 * verify the new file or directory is the
-				 * same as the old one
-				 */
-				if (buf2.st_dev != *TC[i].olddev ||
-				    buf2.st_ino != *TC[i].oldino) {
-					tst_resm(TFAIL, "rename() failed: the "
-						 "new %s points to a different "
-						 "inode/location", TC[i].desc);
-					continue;
-				}
-				/*
-				 * verify that the old file or directory
-				 * does not exist
-				 */
-				if (stat(fname, &buf2) != -1) {
-					tst_resm(TFAIL, "the old %s still "
-						 "exists", TC[i].desc);
-					continue;
-				}
-
-				tst_resm(TPASS, "functionality is correct "
-					 "for renaming a %s", TC[i].desc);
-			} else {
-				tst_resm(TPASS, "call succeeded on %s rename",
-					 TC[i].desc);
 			}
+
+			/*
+			 * verify the new file or directory is the
+			 * same as the old one
+			 */
+			if (buf2.st_dev != *TC[i].olddev ||
+			    buf2.st_ino != *TC[i].oldino) {
+				tst_resm(TFAIL, "rename() failed: the "
+					 "new %s points to a different "
+					 "inode/location", TC[i].desc);
+				continue;
+			}
+			/*
+			 * verify that the old file or directory
+			 * does not exist
+			 */
+			if (stat(fname, &buf2) != -1) {
+				tst_resm(TFAIL, "the old %s still "
+					 "exists", TC[i].desc);
+				continue;
+			}
+
+			tst_resm(TPASS, "functionality is correct "
+				 "for renaming a %s", TC[i].desc);
 		}
 
 		/* reset things in case we are looping */

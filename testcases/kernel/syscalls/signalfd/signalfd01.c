@@ -122,7 +122,7 @@ int do_test1(int ntst, int sig)
 		sfd_for_next = -1;
 		return sfd_for_next;
 
-	} else if (!STD_FUNCTIONAL_TEST) {
+	} else {
 		tst_resm(TPASS, "signalfd is created successfully");
 		sfd_for_next = sfd;
 		goto out;
@@ -220,7 +220,7 @@ void do_test2(int ntst, int fd, int sig)
 		close(sfd);
 		return;
 
-	} else if (!STD_FUNCTIONAL_TEST) {
+	} else {
 		tst_resm(TPASS, "signalfd is successfully reassigned");
 		goto out;
 	}

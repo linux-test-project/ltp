@@ -138,35 +138,32 @@ int main(int ac, char **av)
 		 * sigproc() executed when SIGALRM received by the
 		 * process, the variable alarms_received is set.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			if ((alarms_received == 1) &&
-			    (ret_val2 == (time_sec1 - sleep_time1))) {
+		if ((alarms_received == 1) &&
+		    (ret_val2 == (time_sec1 - sleep_time1))) {
 
-				/*
-				 *  Make sure the system cleaned up the alarm
-				 *  after it delivered it.
-				 */
-				TEST(alarm(0));
-				ret_val3 = TEST_RETURN;
+			/*
+			 *  Make sure the system cleaned up the alarm
+			 *  after it delivered it.
+			 */
+			TEST(alarm(0));
+			ret_val3 = TEST_RETURN;
 
-				if (ret_val3 != 0)
-					tst_resm(TFAIL, "System did not "
-						 "clean up delivered " "alarm");
-				else {
-					tst_resm(TPASS, "Functionality of "
-						 "alarm(%u) successful",
-						 time_sec2);
-				}
-			} else
-				tst_resm(TFAIL, "alarm(%u) fails, returned %d, "
-					 "alarms_received:%d",
-					 time_sec2, ret_val2, alarms_received);
-		} else
-			tst_resm(TPASS, "call succeeded");
+			if (ret_val3 != 0)
+				tst_resm(TFAIL, "System did not "
+					 "clean up delivered " "alarm");
+			else {
+				tst_resm(TPASS, "Functionality of "
+					 "alarm(%u) successful",
+					 time_sec2);
+			}
+		} else {
+			tst_resm(TFAIL, "alarm(%u) fails, returned %d, "
+				 "alarms_received:%d",
+				 time_sec2, ret_val2, alarms_received);
+		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

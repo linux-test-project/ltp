@@ -116,22 +116,19 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TTERRNO, "fstat(%s) failed", TESTFILE);
 			continue;
 		}
-		if (STD_FUNCTIONAL_TEST) {
-			if (stat_buf.st_uid != user_id ||
-			    stat_buf.st_gid != group_id ||
-			    stat_buf.st_size != FILE_SIZE ||
-			    (stat_buf.st_mode & MASK) != FILE_MODE) {
-				tst_resm(TFAIL,
-					 "functionality of fstat incorrect");
-			} else
-				tst_resm(TPASS,
-					 "functionality of fstat correct");
-		} else
-			tst_resm(TPASS, "call succeeded");
+		if (stat_buf.st_uid != user_id ||
+		    stat_buf.st_gid != group_id ||
+		    stat_buf.st_size != FILE_SIZE ||
+		    (stat_buf.st_mode & MASK) != FILE_MODE) {
+			tst_resm(TFAIL,
+				 "functionality of fstat incorrect");
+		} else {
+			tst_resm(TPASS,
+				 "functionality of fstat correct");
+		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

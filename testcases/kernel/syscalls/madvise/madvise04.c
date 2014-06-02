@@ -126,7 +126,7 @@ static void check_and_print(char *advice)
 			 "madvise test for %s failed with "
 			 "return = %ld, errno = %d : %s",
 			 advice, TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO));
-	} else if (STD_FUNCTIONAL_TEST) {
+	} else {
 		tst_resm(TPASS, "madvise test for %s PASSED", advice);
 	}
 }

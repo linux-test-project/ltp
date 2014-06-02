@@ -81,13 +81,9 @@ int main(int ac, char **av)
 				tst_resm(TFAIL | TTERRNO,
 					 "chmod(%s, %#o) failed", FNAME, modes[i]);
 			} else {
-
-				if (STD_FUNCTIONAL_TEST) {
-					tst_resm(TPASS,
-						 "chmod(%s, %#o) returned %ld",
-						 FNAME, modes[i], TEST_RETURN);
-				} else
-					tst_count++;
+				tst_resm(TPASS,
+					 "chmod(%s, %#o) returned %ld",
+					 FNAME, modes[i], TEST_RETURN);
 			}
 		}
 

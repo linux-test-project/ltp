@@ -131,30 +131,25 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 			}
 
-			if (STD_FUNCTIONAL_TEST) {
-				/* now set the handler back to our own */
-				if ((rval = signal(siglist[i], &sighandler))
-				    == SIG_ERR) {
-					tst_brkm(TBROK, cleanup, "initial "
-						 "signal call failed");
-				}
+			/* now set the handler back to our own */
+			if ((rval = signal(siglist[i], &sighandler))
+			    == SIG_ERR) {
+				tst_brkm(TBROK, cleanup, "initial "
+					 "signal call failed");
+			}
 
-				/*
-				 * the first return value should equal the
-				 * second one.
-				 */
-				if (rval == first) {
-					tst_resm(TPASS, "%s call succeeded "
-						 "received %p.", TCID, rval);
-				} else {
-					tst_brkm(TFAIL, cleanup, "return "
-						 "values for signal(%d) don't "
-						 "match. Got %p, expected %p.",
-						 siglist[i], rval, first);
-				}
+			/*
+			 * the first return value should equal the
+			 * second one.
+			 */
+			if (rval == first) {
+				tst_resm(TPASS, "%s call succeeded "
+					 "received %p.", TCID, rval);
 			} else {
-				tst_resm(TPASS, "Call of signal(%d) succeeded",
-					 siglist[i]);
+				tst_brkm(TFAIL, cleanup, "return "
+					 "values for signal(%d) don't "
+					 "match. Got %p, expected %p.",
+					 siglist[i], rval, first);
 			}
 		}
 	}

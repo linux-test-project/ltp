@@ -103,37 +103,25 @@ void do_sendfile(void)
 			 "lseek after invoking sendfile failed: %d", errno);
 	}
 
-	if (STD_FUNCTIONAL_TEST) {
-		/* Close the sockets */
-		shutdown(sockfd, SHUT_RDWR);
-		shutdown(s, SHUT_RDWR);
-		if (TEST_RETURN != sb.st_size) {
-			tst_resm(TFAIL, "sendfile(2) failed to return "
-				 "expected value, expected: %" PRId64 ", "
-				 "got: %ld", (int64_t) sb.st_size, TEST_RETURN);
-			kill(child_pid, SIGKILL);
-		} else if (after_pos != sb.st_size) {
-			tst_resm(TFAIL, "sendfile(2) failed to update "
-				 " the file position of in_fd, "
-				 "expected file position: %" PRId64 ", "
-				 "actual file position %" PRId64,
-				 (int64_t) sb.st_size, (int64_t) after_pos);
-			kill(child_pid, SIGKILL);
-		} else {
-			tst_resm(TPASS, "functionality of sendfile() is "
-				 "correct");
-			wait_status = waitpid(-1, &wait_stat, 0);
-		}
+	/* Close the sockets */
+	shutdown(sockfd, SHUT_RDWR);
+	shutdown(s, SHUT_RDWR);
+	if (TEST_RETURN != sb.st_size) {
+		tst_resm(TFAIL, "sendfile(2) failed to return "
+			 "expected value, expected: %" PRId64 ", "
+			 "got: %ld", (int64_t) sb.st_size, TEST_RETURN);
+		kill(child_pid, SIGKILL);
+	} else if (after_pos != sb.st_size) {
+		tst_resm(TFAIL, "sendfile(2) failed to update "
+			 " the file position of in_fd, "
+			 "expected file position: %" PRId64 ", "
+			 "actual file position %" PRId64,
+			 (int64_t) sb.st_size, (int64_t) after_pos);
+		kill(child_pid, SIGKILL);
 	} else {
-		tst_resm(TPASS, "call succeeded");
-		/* Close the sockets */
-		shutdown(sockfd, SHUT_RDWR);
-		shutdown(s, SHUT_RDWR);
-		if (TEST_RETURN != sb.st_size) {
-			kill(child_pid, SIGKILL);
-		} else {
-			wait_status = waitpid(-1, &wait_stat, 0);
-		}
+		tst_resm(TPASS, "functionality of sendfile() is "
+			 "correct");
+		wait_status = waitpid(-1, &wait_stat, 0);
 	}
 
 	close(in_fd);

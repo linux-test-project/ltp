@@ -144,18 +144,13 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL | TTERRNO, "alarm(1) failed");
 		else {
-
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "alarm(1) returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "alarm(1) returned %ld",
+				 TEST_RETURN);
 		}
 
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

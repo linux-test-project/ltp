@@ -161,13 +161,9 @@ int main(int ac, char **av)
 					TEST_ERROR_LOG(TEST_ERRNO);
 				}
 
-				if (STD_FUNCTIONAL_TEST) {
-					gid_verify(test_data[i].exp_real_usr,
-						   test_data[i].exp_eff_usr,
-						   test_data[i].test_msg);
-				} else {
-					tst_resm(TINFO, "Call succeeded.");
-				}
+				gid_verify(test_data[i].exp_real_usr,
+					   test_data[i].exp_eff_usr,
+					   test_data[i].test_msg);
 			}
 			exit(flag);
 		} else {	/* parent */

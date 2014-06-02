@@ -125,57 +125,49 @@ int main(int ac, char **av)
 				 "sigaltstack() Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
+			/* Set up the signal handler for 'SIGUSR1' */
+			act.sa_flags = SA_ONSTACK;
+			act.sa_handler = (void (*)())sig_handler;
+			if ((sigaction(SIGUSR1, &act, &oact)) == -1) {
+				tst_brkm(TFAIL, cleanup, "sigaction() "
+					 "fails to trap signal "
+					 "delivered on alt. stack, "
+					 "error=%d", errno);
+			}
+
+			/* Deliver signal onto the alternate stack */
+			kill(my_pid, SIGUSR1);
+
+			/* wait till the signal arrives */
+			while (!got_signal) ;
+
+			got_signal = 0;
+			alt_stk = addr;
+
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * First,
+			 * Check that alt_stk is within the
+			 * alternate stk boundaries
+			 *
+			 * Second,
+			 * Check that main_stk is outside the
+			 * alternate stk boundaries.
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/* Set up the signal handler for 'SIGUSR1' */
-				act.sa_flags = SA_ONSTACK;
-				act.sa_handler = (void (*)())sig_handler;
-				if ((sigaction(SIGUSR1, &act, &oact)) == -1) {
-					tst_brkm(TFAIL, cleanup, "sigaction() "
-						 "fails to trap signal "
-						 "delivered on alt. stack, "
-						 "error=%d", errno);
-				}
-
-				/* Deliver signal onto the alternate stack */
-				kill(my_pid, SIGUSR1);
-
-				/* wait till the signal arrives */
-				while (!got_signal) ;
-
-				got_signal = 0;
-				alt_stk = addr;
-
-				/*
-				 * First,
-				 * Check that alt_stk is within the
-				 * alternate stk boundaries
-				 *
-				 * Second,
-				 * Check that main_stk is outside the
-				 * alternate stk boundaries.
-				 */
-				if ((alt_stk < sigstk.ss_sp) &&
-				    (alt_stk > (sigstk.ss_sp + SIGSTKSZ))) {
-					tst_resm(TFAIL,
-						 "alt. stack is not within the "
-						 "alternate stk boundaries");
-				} else if ((main_stk >= sigstk.ss_sp) &&
-					   (main_stk <=
-					    (sigstk.ss_sp + SIGSTKSZ))) {
-					tst_resm(TFAIL,
-						 "main stk. not outside the "
-						 "alt. stack boundaries");
-				} else {
-					tst_resm(TPASS,
-						 "Functionality of "
-						 "sigaltstack() successful");
-				}
+			if ((alt_stk < sigstk.ss_sp) &&
+			    (alt_stk > (sigstk.ss_sp + SIGSTKSZ))) {
+				tst_resm(TFAIL,
+					 "alt. stack is not within the "
+					 "alternate stk boundaries");
+			} else if ((main_stk >= sigstk.ss_sp) &&
+				   (main_stk <=
+				    (sigstk.ss_sp + SIGSTKSZ))) {
+				tst_resm(TFAIL,
+					 "main stk. not outside the "
+					 "alt. stack boundaries");
 			} else {
-				tst_resm(TPASS, "CALL succeeded.");
+				tst_resm(TPASS,
+					 "Functionality of "
+					 "sigaltstack() successful");
 			}
 		}
 		tst_count++;	/* incr. TEST_LOOP counter */
@@ -183,7 +175,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

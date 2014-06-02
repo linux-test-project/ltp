@@ -126,23 +126,20 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (time_end < time_start)
-				tst_resm(TBROK,
-					 "timer broken end %ld < start %ld",
-					 time_end, time_start);
+		if (time_end < time_start)
+			tst_resm(TBROK,
+				 "timer broken end %ld < start %ld",
+				 time_end, time_start);
 
-			if ((time_delta =
-			     difftime(time_end, time_start)) > TIME_LIMIT)
-				tst_resm(TFAIL,
-					 "fsync took too long: %lf seconds; "
-					 "max_block: %d; data_blocks: %d",
-					 time_delta, max_block, data_blocks);
-			else
-				tst_resm(TPASS, "fsync succeeded in an "
-					 "acceptable amount of time");
-		} else
-			tst_resm(TPASS, "call succeeded");
+		if ((time_delta =
+		     difftime(time_end, time_start)) > TIME_LIMIT)
+			tst_resm(TFAIL,
+				 "fsync took too long: %lf seconds; "
+				 "max_block: %d; data_blocks: %d",
+				 time_delta, max_block, data_blocks);
+		else
+			tst_resm(TPASS, "fsync succeeded in an "
+				 "acceptable amount of time");
 
 		if (ftruncate(fd, 0) == -1)
 			tst_brkm(TBROK, cleanup, "ftruncate failed");

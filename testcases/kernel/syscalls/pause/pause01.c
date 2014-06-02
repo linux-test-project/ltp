@@ -165,28 +165,18 @@ int main(int ac, char **av)
 		} else {
 			/* log the errno */
 			TEST_ERROR_LOG(TEST_ERRNO);
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* check the errno */
-				if (TEST_ERRNO == EINTR)
-					tst_resm(TPASS, "pause() returned %ld",
-						 TEST_RETURN);
-				else
-					tst_resm(TFAIL,
-						 "pause() returned %ld. Expected %d (EINTR)",
-						 TEST_RETURN, EINTR);
-			}
+			if (TEST_ERRNO == EINTR)
+				tst_resm(TPASS, "pause() returned %ld",
+					 TEST_RETURN);
+			else
+				tst_resm(TFAIL,
+					 "pause() returned %ld. Expected %d (EINTR)",
+					 TEST_RETURN, EINTR);
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

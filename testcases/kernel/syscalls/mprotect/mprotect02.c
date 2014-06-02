@@ -123,32 +123,25 @@ int main(int ac, char **av)
 		TEST(mprotect(addr, sizeof(buf), PROT_WRITE));
 
 		if (TEST_RETURN != -1) {
+			if ((pid = FORK_OR_VFORK()) == -1)
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "fork #2 failed");
 
-			if (STD_FUNCTIONAL_TEST) {
+			if (pid == 0) {
+				memcpy(addr, buf, strlen(buf));
+				exit(0);
+			}
 
-				if ((pid = FORK_OR_VFORK()) == -1)
-					tst_brkm(TBROK | TERRNO, cleanup,
-						 "fork #2 failed");
+			if (waitpid(pid, &status, 0) == -1)
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "waitpid failed");
 
-				if (pid == 0) {
-					memcpy(addr, buf, strlen(buf));
-					exit(0);
-				}
-
-				if (waitpid(pid, &status, 0) == -1)
-					tst_brkm(TBROK | TERRNO, cleanup,
-						 "waitpid failed");
-
-				if (WIFEXITED(status) &&
-				    WEXITSTATUS(status) == 0)
-					tst_resm(TPASS, "didn't get SIGSEGV");
-				else
-					tst_brkm(TBROK, cleanup,
-						 "child exited abnormally");
-
-			} else
-				tst_resm(TPASS, "call succeeded");
-
+			if (WIFEXITED(status) &&
+			    WEXITSTATUS(status) == 0)
+				tst_resm(TPASS, "didn't get SIGSEGV");
+			else
+				tst_brkm(TBROK, cleanup,
+					 "child exited abnormally");
 		} else {
 			tst_resm(TFAIL | TERRNO, "mprotect failed");
 			continue;

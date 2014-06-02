@@ -125,17 +125,10 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_ERRNO == expected_errno[i]) {
-
-			/***************************************************************
-			 * only perform functional verification if flag set (-f not given)
-			 ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "futimesat() returned the expected  errno %d: %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				}
+				tst_resm(TPASS,
+					 "futimesat() returned the expected  errno %d: %s",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			} else {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
@@ -146,9 +139,6 @@ int main(int ac, char **av)
 
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
 
 	return (0);

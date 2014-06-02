@@ -117,49 +117,40 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Check if the return value from lseek(2)
+		 * is equal to the specified OFFSET value.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check if the return value from lseek(2)
-			 * is equal to the specified OFFSET value.
-			 */
-			if (TEST_RETURN != OFFSET) {
-				tst_resm(TFAIL, "lseek() returned incorrect "
-					 "value %ld, expected %d",
-					 TEST_RETURN, OFFSET);
-				continue;
-			}
-			/*
-			 * The return value is good, now check data.
-			 * Read the data byte from this location.
-			 */
-			if (read(fildes, &read_buf, sizeof(read_buf)) < 0) {
-				tst_brkm(TFAIL, cleanup, "read() failed "
-					 "on %s, error=%d", TEMP_FILE, errno);
-			} else {
-				/*
-				 * Check if read byte is the expected character.
-				 * For pos 4 ---> 'e'
-				 */
-				if (read_buf[0] != 'e') {
-					tst_resm(TFAIL, "Incorrect data read "
-						 "from file %s", TEMP_FILE);
-				} else {
-					tst_resm(TPASS, "Functionality "
-						 "of lseek() on %s "
-						 "successful", TEMP_FILE);
-				}
-			}
+		if (TEST_RETURN != OFFSET) {
+			tst_resm(TFAIL, "lseek() returned incorrect "
+				 "value %ld, expected %d",
+				 TEST_RETURN, OFFSET);
+			continue;
+		}
+		/*
+		 * The return value is good, now check data.
+		 * Read the data byte from this location.
+		 */
+		if (read(fildes, &read_buf, sizeof(read_buf)) < 0) {
+			tst_brkm(TFAIL, cleanup, "read() failed "
+				 "on %s, error=%d", TEMP_FILE, errno);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			/*
+			 * Check if read byte is the expected character.
+			 * For pos 4 ---> 'e'
+			 */
+			if (read_buf[0] != 'e') {
+				tst_resm(TFAIL, "Incorrect data read "
+					 "from file %s", TEMP_FILE);
+			} else {
+				tst_resm(TPASS, "Functionality "
+					 "of lseek() on %s "
+					 "successful", TEMP_FILE);
+			}
 		}
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

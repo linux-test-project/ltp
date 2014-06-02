@@ -167,26 +167,15 @@ int main(int ac, char **av)
 				 "setgroups(%d, list) Failed, errno=%d : %s",
 				 len, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS,
-					 "setgroups(%d, list) returned %ld",
-					 len, TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setgroups(%d, list) returned %ld",
+				 len, TEST_RETURN);
 		}
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /***************************************************************

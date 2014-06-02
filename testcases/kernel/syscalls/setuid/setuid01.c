@@ -77,12 +77,9 @@ int main(int ac, char **av)
 				 "setuid -  Set the effective user ID to the current real uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS,
-					 "setuid -  Set the effective user ID to the current real uid returned %ld",
+			tst_resm(TPASS,
+				 "setuid -  Set the effective user ID to the current real uid returned %ld",
 					 TEST_RETURN);
-			}
 		}
 
 	}

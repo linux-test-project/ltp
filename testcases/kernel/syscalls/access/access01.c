@@ -92,13 +92,11 @@ int main(int ac, char **av)
 					 test_cases[tc].string, TEST_RETURN,
 					 test_cases[tc].experrno);
 			} else {
-				if (STD_FUNCTIONAL_TEST) {
-					tst_resm(TPASS,
-						 "access(%s, %s) returned %ld",
-						 test_cases[tc].file,
-						 test_cases[tc].string,
-						 TEST_RETURN);
-				}
+				tst_resm(TPASS,
+					 "access(%s, %s) returned %ld",
+					 test_cases[tc].file,
+					 test_cases[tc].string,
+					 TEST_RETURN);
 			}
 		}
 

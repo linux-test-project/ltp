@@ -148,11 +148,8 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "creat(%s, 0700) returned %ld",
-					 fname, TEST_RETURN);
-			}
+			tst_resm(TPASS, "creat(%s, 0700) returned %ld",
+				 fname, TEST_RETURN);
 		}
 
 		/* close and remove file, possibly for next loop */

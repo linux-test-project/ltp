@@ -191,26 +191,15 @@ int main(int ac, char **av)
 				 "%d select(5, &Readfds, &Writefds, 0, &timeout) failed errno=%d\n",
 				 lc, errno);
 		} else {
-
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* Perform functional verification here */
-				tst_resm(TPASS,
-					 "select(5, &Readfds, &Writefds, 0, &timeout) timeout = %ld usecs",
-					 test_time);
-			}
+			tst_resm(TPASS,
+				 "select(5, &Readfds, &Writefds, 0, &timeout) timeout = %ld usecs",
+				 test_time);
 		}
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

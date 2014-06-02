@@ -74,10 +74,6 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	if (!STD_FUNCTIONAL_TEST) {
-		tst_resm(TWARN, "-f option should not be used");
-	}
-
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

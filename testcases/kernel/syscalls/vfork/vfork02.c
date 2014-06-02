@@ -123,34 +123,28 @@ int main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else if (cpid == 0) {	/* Child process */
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Check whether the pending signal SIGUSR1
+			 * in the parent is also pending in the child
+			 * process by storing it in a variable.
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Check whether the pending signal SIGUSR1
-				 * in the parent is also pending in the child
-				 * process by storing it in a variable.
-				 */
-				if (sigpending(&PendSig) == -1) {
-					tst_resm(TFAIL, "sigpending function "
-						 "failed in child");
-					_exit(1);
-				}
-
-				/* Check if SIGUSR1 is pending in child */
-				if (sigismember(&PendSig, SIGUSR1) != 0) {
-					tst_resm(TFAIL, "SIGUSR1 also pending "
-						 "in child process");
-					_exit(1);
-				}
-
-				/*
-				 * Exit with normal exit code if everything
-				 * fine
-				 */
-				_exit(0);
+			if (sigpending(&PendSig) == -1) {
+				tst_resm(TFAIL, "sigpending function "
+					 "failed in child");
+				_exit(1);
 			}
+
+			/* Check if SIGUSR1 is pending in child */
+			if (sigismember(&PendSig, SIGUSR1) != 0) {
+				tst_resm(TFAIL, "SIGUSR1 also pending "
+					 "in child process");
+				_exit(1);
+			}
+
+			/*
+			 * Exit with normal exit code if everything
+			 * fine
+			 */
+			_exit(0);
 		} else {	/* parent process */
 			/*
 			 * Let the parent process wait till child completes

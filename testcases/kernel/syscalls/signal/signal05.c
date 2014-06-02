@@ -123,35 +123,29 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Send the signals and make sure they are
-				 * handled in our handler.
-				 */
-				pid = getpid();
+			/*
+			 * Send the signals and make sure they are
+			 * handled in our handler.
+			 */
+			pid = getpid();
 
-				if ((rval = kill(pid, siglist[i])) != 0) {
-					tst_brkm(TBROK, cleanup,
-						 "call to kill failed");
-				}
+			if ((rval = kill(pid, siglist[i])) != 0) {
+				tst_brkm(TBROK, cleanup,
+					 "call to kill failed");
+			}
 
-				if (siglist[i] == pass) {
-					tst_resm(TPASS,
-						 "%s call succeeded", TCID);
-				} else {
-					tst_resm(TFAIL,
-						 "received unexpected signal");
-				}
+			if (siglist[i] == pass) {
+				tst_resm(TPASS,
+					 "%s call succeeded", TCID);
 			} else {
-				tst_resm(TPASS, "Call succeeded");
+				tst_resm(TFAIL,
+					 "received unexpected signal");
 			}
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
 /*

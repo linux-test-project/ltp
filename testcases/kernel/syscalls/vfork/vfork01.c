@@ -140,140 +140,135 @@ int main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else if (cpid == 0) {	/* Child process */
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Get the euid, ruid, egid, rgid, umask value
+			 * and the current working directory of the
+			 * child process
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the euid, ruid, egid, rgid, umask value
-				 * and the current working directory of the
-				 * child process
-				 */
-				if (getresuid(&Cruid, &Ceuid, &Csuid) < 0) {
-					tst_resm(TFAIL, "getresuid() fails to "
-						 "get real/eff./saved uid of "
-						 "child process");
-					_exit(1);
-				}
-
-				if (getresgid(&Crgid, &Cegid, &Csgid) < 0) {
-					tst_resm(TFAIL, "getresgid() fails to "
-						 "get real/eff./saved gid of "
-						 "child process");
-					_exit(1);
-				}
-
-				/*
-				 * Get the file mode creation mask value of
-				 * child process by setting value zero and
-				 * restore the previous mask value.
-				 */
-				Cumask = umask(0);
-
-				/*
-				 * Restore the process mask of child to
-				 * previous value.
-				 */
-				umask(Cumask);
-
-				/*
-				 * Get the pathname of current working
-				 * directory for the child process.
-				 */
-				if ((Ccwd = (char *)getcwd(NULL,
-							   BUFSIZ)) == NULL) {
-					tst_resm(TFAIL, "getcwd failed for the "
-						 "child process");
-					_exit(1);
-				}
-
-				/*
-				 * Get the device number and the inode
-				 * number of "/" directory for the child
-				 * process.
-				 */
-				if (stat("/", &StatCbuf) < 0) {
-					tst_resm(TFAIL, "stat(2) failed to get "
-						 "info. of'/' in the child "
-						 "process");
-					_exit(1);
-				}
-
-				/*
-				 * Get the device/inode number of "."
-				 * (working directory) for the child process.
-				 */
-				if (stat(Ccwd, &Stat_cwd_Cbuf) < 0) {
-					tst_resm(TFAIL, "stat(2) failed to get "
-						 "info. of working irectory in "
-						 "the child");
-					_exit(1);
-				}
-
-				/* Now, do the actual comparision */
-				if (Peuid != Ceuid || Pegid != Cegid ||
-				    Psuid != Csuid || Psgid != Csgid ||
-				    Pruid != Cruid || Prgid != Crgid ||
-				    Pumask != Cumask) {
-					tst_resm(TFAIL, "Attribute values of "
-						 "parent and child don't match");
-					_exit(1);
-				} else {
-					tst_resm(TINFO, "Attribute values of "
-						 "parent and child match");
-				}
-
-				/* Check for the same working directories */
-				if (strcmp(Pcwd, Ccwd) != 0) {
-					tst_resm(TFAIL, "Working directories "
-						 "of parent and child don't "
-						 "match");
-					_exit(1);
-				} else {
-					tst_resm(TINFO, "Working directories "
-						 "of parent and child match");
-				}
-
-				/*
-				 * Check for the same device/inode number of
-				 * '/' directory.
-				 */
-				if ((StatPbuf.st_ino != StatCbuf.st_ino) ||
-				    (StatPbuf.st_dev != StatCbuf.st_dev)) {
-					tst_resm(TFAIL, "Device/inode number "
-						 "of parent and childs '/' "
-						 " don't match");
-					_exit(1);
-				} else {
-					tst_resm(TINFO, "Device/inode number "
-						 "of parent and childs '/' "
-						 "match");
-				}
-
-				/*
-				 * Check for the same device and inode number
-				 *  of "." (current working directory.
-				 */
-				if ((Stat_cwd_Pbuf.st_ino !=
-				     Stat_cwd_Cbuf.st_ino) ||
-				    (Stat_cwd_Pbuf.st_dev !=
-				     Stat_cwd_Cbuf.st_dev)) {
-					tst_resm(TFAIL, "Device/inode number "
-						 "of parent and childs '.' "
-						 "don't match");
-					_exit(1);
-				} else {
-					tst_resm(TINFO, "Device/inode number "
-						 "of parent and childs '.' "
-						 "don't match");
-				}
-
-				/*
-				 * Exit with normal exit code if everything
-				 * fine
-				 */
-				_exit(0);
+			if (getresuid(&Cruid, &Ceuid, &Csuid) < 0) {
+				tst_resm(TFAIL, "getresuid() fails to "
+					 "get real/eff./saved uid of "
+					 "child process");
+				_exit(1);
 			}
+
+			if (getresgid(&Crgid, &Cegid, &Csgid) < 0) {
+				tst_resm(TFAIL, "getresgid() fails to "
+					 "get real/eff./saved gid of "
+					 "child process");
+				_exit(1);
+			}
+
+			/*
+			 * Get the file mode creation mask value of
+			 * child process by setting value zero and
+			 * restore the previous mask value.
+			 */
+			Cumask = umask(0);
+
+			/*
+			 * Restore the process mask of child to
+			 * previous value.
+			 */
+			umask(Cumask);
+
+			/*
+			 * Get the pathname of current working
+			 * directory for the child process.
+			 */
+			if ((Ccwd = (char *)getcwd(NULL,
+						   BUFSIZ)) == NULL) {
+				tst_resm(TFAIL, "getcwd failed for the "
+					 "child process");
+				_exit(1);
+			}
+
+			/*
+			 * Get the device number and the inode
+			 * number of "/" directory for the child
+			 * process.
+			 */
+			if (stat("/", &StatCbuf) < 0) {
+				tst_resm(TFAIL, "stat(2) failed to get "
+					 "info. of'/' in the child "
+					 "process");
+				_exit(1);
+			}
+
+			/*
+			 * Get the device/inode number of "."
+			 * (working directory) for the child process.
+			 */
+			if (stat(Ccwd, &Stat_cwd_Cbuf) < 0) {
+				tst_resm(TFAIL, "stat(2) failed to get "
+					 "info. of working irectory in "
+					 "the child");
+				_exit(1);
+			}
+
+			/* Now, do the actual comparision */
+			if (Peuid != Ceuid || Pegid != Cegid ||
+			    Psuid != Csuid || Psgid != Csgid ||
+			    Pruid != Cruid || Prgid != Crgid ||
+			    Pumask != Cumask) {
+				tst_resm(TFAIL, "Attribute values of "
+					 "parent and child don't match");
+				_exit(1);
+			} else {
+				tst_resm(TINFO, "Attribute values of "
+					 "parent and child match");
+			}
+
+			/* Check for the same working directories */
+			if (strcmp(Pcwd, Ccwd) != 0) {
+				tst_resm(TFAIL, "Working directories "
+					 "of parent and child don't "
+					 "match");
+				_exit(1);
+			} else {
+				tst_resm(TINFO, "Working directories "
+					 "of parent and child match");
+			}
+
+			/*
+			 * Check for the same device/inode number of
+			 * '/' directory.
+			 */
+			if ((StatPbuf.st_ino != StatCbuf.st_ino) ||
+			    (StatPbuf.st_dev != StatCbuf.st_dev)) {
+				tst_resm(TFAIL, "Device/inode number "
+					 "of parent and childs '/' "
+					 " don't match");
+				_exit(1);
+			} else {
+				tst_resm(TINFO, "Device/inode number "
+					 "of parent and childs '/' "
+					 "match");
+			}
+
+			/*
+			 * Check for the same device and inode number
+			 *  of "." (current working directory.
+			 */
+			if ((Stat_cwd_Pbuf.st_ino !=
+			     Stat_cwd_Cbuf.st_ino) ||
+			    (Stat_cwd_Pbuf.st_dev !=
+			     Stat_cwd_Cbuf.st_dev)) {
+				tst_resm(TFAIL, "Device/inode number "
+					 "of parent and childs '.' "
+					 "don't match");
+				_exit(1);
+			} else {
+				tst_resm(TINFO, "Device/inode number "
+					 "of parent and childs '.' "
+					 "don't match");
+			}
+
+			/*
+			 * Exit with normal exit code if everything
+			 * fine
+			 */
+			_exit(0);
+
 		} else {	/* parent process */
 			/*
 			 * Let the parent process wait till child completes

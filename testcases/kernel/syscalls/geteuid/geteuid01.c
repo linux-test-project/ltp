@@ -72,8 +72,7 @@ int main(int ac, char **av)
 			continue;	/* next loop for MTKERNEL */
 		}
 
-		if (STD_FUNCTIONAL_TEST)
-			tst_resm(TPASS, "geteuid returned %ld", TEST_RETURN);
+		tst_resm(TPASS, "geteuid returned %ld", TEST_RETURN);
 	}
 
 	cleanup();

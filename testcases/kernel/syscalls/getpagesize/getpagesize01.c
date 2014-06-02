@@ -79,27 +79,24 @@ int main(int ac, char **av)
 			continue;	/* next loop for MTKERNEL */
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			size = getpagesize();
-			tst_resm(TINFO, "Page Size is %d", size);
-			ret_sysconf = sysconf(_SC_PAGESIZE);
+		size = getpagesize();
+		tst_resm(TINFO, "Page Size is %d", size);
+		ret_sysconf = sysconf(_SC_PAGESIZE);
 #ifdef DEBUG
-			tst_resm(TINFO,
-				 "Checking whether getpagesize returned same as sysconf");
+		tst_resm(TINFO,
+			 "Checking whether getpagesize returned same as sysconf");
 #endif
-			if (size == ret_sysconf)
-				tst_resm(TPASS,
-					 "getpagesize - Page size returned %d",
-					 ret_sysconf);
-			else
-				tst_resm(TFAIL,
-					 "getpagesize - Page size returned %d",
-					 ret_sysconf);
-		}
+		if (size == ret_sysconf)
+			tst_resm(TPASS,
+				 "getpagesize - Page size returned %d",
+				 ret_sysconf);
+		else
+			tst_resm(TFAIL,
+				 "getpagesize - Page size returned %d",
+				 ret_sysconf);
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

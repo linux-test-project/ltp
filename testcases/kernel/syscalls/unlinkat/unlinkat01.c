@@ -125,19 +125,10 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(myunlinkat(fds[i], filenames[i], flags[i]));
 
-			/* check return code */
 			if (TEST_ERRNO == expected_errno[i]) {
-
-				/***************************************************************
-				 * only perform functional verification if flag set (-f not given)
-				 ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "unlinkat() returned the expected  errno %d: %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				}
+				tst_resm(TPASS,
+					 "unlinkat() returned the expected  errno %d: %s",
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 			} else {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,

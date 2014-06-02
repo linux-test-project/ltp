@@ -116,50 +116,42 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/* check the existence of "new", and get the status */
-			if (stat(mname, &buf2) == -1) {
-				tst_brkm(TBROK, cleanup, "failed to stat file "
-					 "%s in rename()", mname);
+		/* check the existence of "new", and get the status */
+		if (stat(mname, &buf2) == -1) {
+			tst_brkm(TBROK, cleanup, "failed to stat file "
+				 "%s in rename()", mname);
 
-			}
-
-			/* check the existence of "old", and get the status */
-			if (stat(fname, &buf1) == -1) {
-				tst_brkm(TBROK, cleanup, "failed to stat file "
-					 "%s in rename()", fname);
-
-			}
-
-			/* verify the new file is the same as the original */
-			if (buf2.st_dev != olddev || buf2.st_ino != oldino) {
-				tst_resm(TFAIL,
-					 "rename() failed: new file does "
-					 "not point to the same file as old "
-					 "file");
-				continue;
-			}
-
-			/* verify the old file is unchanged */
-			if (buf1.st_dev != olddev || buf1.st_ino != oldino) {
-				tst_resm(TFAIL,
-					 "rename() failed: old file does "
-					 "not point to the original file");
-				continue;
-			}
-
-			tst_resm(TPASS, "functionality of rename() is correct");
-		} else {
-			tst_resm(TPASS, "call succeeded");
 		}
+
+		/* check the existence of "old", and get the status */
+		if (stat(fname, &buf1) == -1) {
+			tst_brkm(TBROK, cleanup, "failed to stat file "
+				 "%s in rename()", fname);
+
+		}
+
+		/* verify the new file is the same as the original */
+		if (buf2.st_dev != olddev || buf2.st_ino != oldino) {
+			tst_resm(TFAIL,
+				 "rename() failed: new file does "
+				 "not point to the same file as old "
+				 "file");
+			continue;
+		}
+
+		/* verify the old file is unchanged */
+		if (buf1.st_dev != olddev || buf1.st_ino != oldino) {
+			tst_resm(TFAIL,
+				 "rename() failed: old file does "
+				 "not point to the original file");
+			continue;
+		}
+
+		tst_resm(TPASS, "functionality of rename() is correct");
 	}
 
-	/*
-	 * cleanup and exit
-	 */
 	cleanup();
 	tst_exit();
-
 }
 
 /*

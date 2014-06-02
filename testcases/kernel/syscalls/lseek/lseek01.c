@@ -179,29 +179,17 @@ int main(int ac, char **av)
 					 Fname, offset, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else {
-
-		/***************************************************************
-	         * only perform functional verification if flag set (-f not given)
-	         ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "lseek(%s, %d, %d) returned %ld",
-						 Fname, offset, Whence[ind],
-						 TEST_RETURN);
-				} else
-					tst_count++;
+				tst_resm(TPASS,
+					 "lseek(%s, %d, %d) returned %ld",
+					 Fname, offset, Whence[ind],
+					 TEST_RETURN);
 			}
 		}
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

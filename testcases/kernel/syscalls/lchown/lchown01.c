@@ -103,51 +103,42 @@ int main(int argc, char *argv[])
 					 test_desc, TEST_ERRNO);
 				continue;
 			}
-			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
-			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the testfile information using
-				 * lstat(2).
-				 */
-				if (lstat(SFILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "lstat(2) "
-						 "%s failed, errno %d",
-						 SFILE, TEST_ERRNO);
-				}
-				if (user_id == -1) {
-					if (i > 0)
-						user_id =
-						    test_cases[i - 1].user_id;
-					else
-						user_id = geteuid();
-				}
-				if (group_id == -1) {
-					if (i > 0)
-						group_id =
-						    test_cases[i - 1].group_id;
-					else
-						group_id = getegid();
-				}
 
-				/*
-				 * Check for expected Ownership ids
-				 * set on testfile.
-				 */
-				if ((stat_buf.st_uid != user_id) ||
-				    (stat_buf.st_gid != group_id)) {
-					tst_resm(TFAIL,
-						 "%s: incorrect ownership set, "
-						 "Expected %d %d", SFILE,
-						 user_id, group_id);
-				} else {
-					tst_resm(TPASS, "lchown() succeeds to "
-						 "%s of %s", test_desc, SFILE);
-				}
+			if (lstat(SFILE, &stat_buf) < 0) {
+				tst_brkm(TFAIL, cleanup, "lstat(2) "
+					 "%s failed, errno %d",
+					 SFILE, TEST_ERRNO);
+			}
+
+			if (user_id == -1) {
+				if (i > 0)
+					user_id =
+					    test_cases[i - 1].user_id;
+				else
+					user_id = geteuid();
+			}
+
+			if (group_id == -1) {
+				if (i > 0)
+					group_id =
+					    test_cases[i - 1].group_id;
+				else
+					group_id = getegid();
+			}
+
+			/*
+			 * Check for expected Ownership ids
+			 * set on testfile.
+			 */
+			if ((stat_buf.st_uid != user_id) ||
+			    (stat_buf.st_gid != group_id)) {
+				tst_resm(TFAIL,
+					 "%s: incorrect ownership set, "
+					 "Expected %d %d", SFILE,
+					 user_id, group_id);
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_resm(TPASS, "lchown() succeeds to "
+					 "%s of %s", test_desc, SFILE);
 			}
 		}
 	}

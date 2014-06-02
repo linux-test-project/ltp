@@ -113,23 +113,19 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * check to make sure that the return value
-				 * is the previous personality in our list.
-				 *
-				 * i == 0 is a special case since the return
-				 * value should equal pers[0].
-				 */
-				if (TEST_RETURN == pers[i == 0 ? 0 : i - 1]) {
-					tst_resm(TPASS, "personality set "
-						 "correctly");
-				} else {
-					tst_resm(TFAIL, "returned persona "
-						 "was not expected");
-				}
+			/*
+			 * check to make sure that the return value
+			 * is the previous personality in our list.
+			 *
+			 * i == 0 is a special case since the return
+			 * value should equal pers[0].
+			 */
+			if (TEST_RETURN == pers[i == 0 ? 0 : i - 1]) {
+				tst_resm(TPASS, "personality set "
+					 "correctly");
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_resm(TFAIL, "returned persona "
+					 "was not expected");
 			}
 		}
 		/*
@@ -139,8 +135,8 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "failed personality reset");
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 

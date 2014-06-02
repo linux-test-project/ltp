@@ -126,45 +126,36 @@ int main(int ac, char **av)
 				continue;
 			}
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Get the testfile information using
+			 * fstat(2).
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Get the testfile information using
-				 * fstat(2).
-				 */
-				if (fstat(fd, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup,
-						 "fstat(2) of "
-						 "%s failed, errno:%d",
-						 TESTFILE, TEST_ERRNO);
-				}
-				stat_buf.st_mode &= ~S_IFREG;
+			if (fstat(fd, &stat_buf) < 0) {
+				tst_brkm(TFAIL, cleanup,
+					 "fstat(2) of "
+					 "%s failed, errno:%d",
+					 TESTFILE, TEST_ERRNO);
+			}
+			stat_buf.st_mode &= ~S_IFREG;
 
-				/*
-				 * Check for expected mode permissions
-				 * on testfile.
-				 */
-				if (stat_buf.st_mode == mode) {
-					tst_resm(TPASS,
-						 "Functionality of "
-						 "fchmod(%d, %#o) successful",
-						 fd, mode);
-				} else {
-					tst_resm(TFAIL, "%s: Incorrect modes "
-						 "0%03o, Expected 0%03o",
-						 TESTFILE, stat_buf.st_mode,
-						 mode);
-				}
+			/*
+			 * Check for expected mode permissions
+			 * on testfile.
+			 */
+			if (stat_buf.st_mode == mode) {
+				tst_resm(TPASS,
+					 "Functionality of "
+					 "fchmod(%d, %#o) successful",
+					 fd, mode);
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_resm(TFAIL, "%s: Incorrect modes "
+					 "0%03o, Expected 0%03o",
+					 TESTFILE, stat_buf.st_mode,
+					 mode);
 			}
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

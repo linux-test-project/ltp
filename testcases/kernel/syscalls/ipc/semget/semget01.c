@@ -94,11 +94,7 @@ int main(int ac, char **av)
 			/* get the semaphore ID */
 			sem_id_1 = TEST_RETURN;
 
-			if (STD_FUNCTIONAL_TEST) {
-				check_functionality();
-			} else {
-				tst_resm(TPASS, "semaphore was created");
-			}
+			check_functionality();
 		}
 
 		/*

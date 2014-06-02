@@ -168,27 +168,15 @@ int main(int ac, char **av)
 				 "lstat(%s, &statter) Failed, errno=%d : %s",
 				 symlnk, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS,
-					 "lstat(%s, &statter) returned %ld",
-					 symlnk, TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "lstat(%s, &statter) returned %ld",
+				 symlnk, TEST_RETURN);
 		}
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /***************************************************************

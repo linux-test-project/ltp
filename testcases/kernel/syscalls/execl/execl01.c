@@ -167,12 +167,9 @@ int main(int ac, char **av)
 				tst_brkm(TBROK | TERRNO, cleanup,
 					 "waitpid failed");
 			if (WIFEXITED(status)) {
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "execl - properly exec's a simple "
-						 "program..");
-				}
+				tst_resm(TPASS,
+					 "execl - properly exec's a simple "
+					 "program..");
 			} else {
 				tst_resm(TFAIL,
 					 "child exited abnormally; wait status=%d",
@@ -181,8 +178,6 @@ int main(int ac, char **av)
 		}
 
 	}
-
-	cleanup();
 
 	tst_exit();
 }

@@ -96,29 +96,24 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
+		/*
+		 * Try to access the mapped region.  This should
+		 * generate a SIGSEGV which will be caught below.
+		 *
+		 * This is wrapped by the sigsetjmp() call that will
+		 * take care of restoring the program's context in an
+		 * elegant way in conjunction with the call to
+		 * siglongjmp() in the signal handler.
+		 */
+		if (sigsetjmp(env, 1) == 0) {
+			file_content = addr[0];
+		}
 
-			/*
-			 * Try to access the mapped region.  This should
-			 * generate a SIGSEGV which will be caught below.
-			 *
-			 * This is wrapped by the sigsetjmp() call that will
-			 * take care of restoring the program's context in an
-			 * elegant way in conjunction with the call to
-			 * siglongjmp() in the signal handler.
-			 */
-			if (sigsetjmp(env, 1) == 0) {
-				file_content = addr[0];
-			}
-
-			if (pass) {
-				tst_resm(TPASS, "Got SIGSEGV as expected");
-			} else {
-				tst_resm(TFAIL, "Mapped memory region with NO "
-					 "access is accessible");
-			}
+		if (pass) {
+			tst_resm(TPASS, "Got SIGSEGV as expected");
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TFAIL, "Mapped memory region with NO "
+				 "access is accessible");
 		}
 
 		/* Unmap mapped memory and reset pass in case we are looping */
@@ -128,6 +123,7 @@ int main(int ac, char **av)
 		pass = 0;
 
 	}
+
 	cleanup();
 	tst_exit();
 }

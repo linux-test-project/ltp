@@ -72,12 +72,9 @@ int main(int ac, char **av)
 				 "setpgrp -  Call the setpgrp system call failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS,
-					 "setpgrp -  Call the setpgrp system call returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setpgrp -  Call the setpgrp system call returned %ld",
+				 TEST_RETURN);
 		}
 
 	}

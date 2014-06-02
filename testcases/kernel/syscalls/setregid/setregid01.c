@@ -86,11 +86,9 @@ int main(int ac, char **av)
 				 "setregid -  Dont change either real or effective gid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "setregid -  Dont change either real or effective gid returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setregid -  Dont change either real or effective gid returned %ld",
+				 TEST_RETURN);
 		}
 
 		/*
@@ -106,11 +104,9 @@ int main(int ac, char **av)
 				 "setregid -  change effective to effective gid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "setregid -  change effective to effective gid returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setregid -  change effective to effective gid returned %ld",
+				 TEST_RETURN);
 		}
 
 		/*
@@ -126,11 +122,9 @@ int main(int ac, char **av)
 				 "setregid -  change real to real gid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "setregid -  change real to real gid returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setregid -  change real to real gid returned %ld",
+				 TEST_RETURN);
 		}
 
 		/*
@@ -146,11 +140,9 @@ int main(int ac, char **av)
 				 "setregid -  change effective to real gid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "setregid -  change effective to real gid returned %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "setregid -  change effective to real gid returned %ld",
+				 TEST_RETURN);
 		}
 
 		/*
@@ -164,10 +156,8 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL | TTERRNO, "setregid failed");
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS, "setregid return %ld",
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "setregid return %ld",
+				 TEST_RETURN);
 		}
 
 	}

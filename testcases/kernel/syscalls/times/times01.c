@@ -147,7 +147,7 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL | TTERRNO, "times failed");
-		else if (STD_FUNCTIONAL_TEST)
+		else
 			tst_resm(TPASS, "times(&mytimes) returned %ld",
 				 TEST_RETURN);
 

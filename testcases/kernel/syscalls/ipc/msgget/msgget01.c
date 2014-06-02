@@ -93,16 +93,12 @@ int main(int ac, char **av)
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			msg_q_1 = TEST_RETURN;
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * write a message to the queue.
-				 * read back the message.
-				 * PASS the test if they are the same.
-				 */
-				check_functionality();
-			} else {
-				tst_resm(TPASS, "message queue was created");
-			}
+			/*
+			 * write a message to the queue.
+			 * read back the message.
+			 * PASS the test if they are the same.
+			 */
+			check_functionality();
 		}
 
 		/*
@@ -116,7 +112,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

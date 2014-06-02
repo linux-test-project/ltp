@@ -153,23 +153,19 @@ void do_child(void)
 		tst_resm(TFAIL, "%s call failed - errno = %d : %s",
 			 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Build a new message and compare it
-			 * with the one received.
-			 */
-			init_buf(&cmp_buf, MSGTYPE, MSGSIZE);
+		/*
+		 * Build a new message and compare it
+		 * with the one received.
+		 */
+		init_buf(&cmp_buf, MSGTYPE, MSGSIZE);
 
-			if (strcmp(rcv_buf.mtext, cmp_buf.mtext) == 0) {
-				tst_resm(TPASS,
-					 "message received = " "message sent");
-			} else {
-				retval = 1;
-				tst_resm(TFAIL,
-					 "message received != " "message sent");
-			}
+		if (strcmp(rcv_buf.mtext, cmp_buf.mtext) == 0) {
+			tst_resm(TPASS,
+				 "message received = " "message sent");
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			retval = 1;
+			tst_resm(TFAIL,
+				 "message received != " "message sent");
 		}
 	}
 	exit(retval);

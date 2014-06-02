@@ -115,33 +115,23 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "time(0) Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			/*
-			 * Perform functional verification if test executed
-			 * without (-f) option.
-			 */
-			if (STD_FUNCTIONAL_TEST) {
-				if (tloc == TEST_RETURN) {
-					tst_resm(TPASS, "time() returned value "
-						 "%ld, stored value %jd are same",
-						 TEST_RETURN, (intmax_t) tloc);
-				} else {
-					tst_resm(TFAIL, "time() returned value "
-						 "%ld, stored value %jd are "
-						 "different", TEST_RETURN,
-						 (intmax_t) tloc);
-				}
+			if (tloc == TEST_RETURN) {
+				tst_resm(TPASS, "time() returned value "
+					 "%ld, stored value %jd are same",
+					 TEST_RETURN, (intmax_t) tloc);
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_resm(TFAIL, "time() returned value "
+					 "%ld, stored value %jd are "
+					 "different", TEST_RETURN,
+					 (intmax_t) tloc);
 			}
 
 		}
 		tst_count++;	/* incr. TEST_LOOP counter */
 	}
 
-	/* cleanup and exit */
 	cleanup();
 	tst_exit();
-
 }
 
 /*

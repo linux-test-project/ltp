@@ -124,11 +124,8 @@ int main(int ac, char **av)
 			/* check return code */
 			if (TEST_ERRNO == expected_errno[i]) {
 
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS | TTERRNO,
-						 "renameat failed as expected");
-				}
+				tst_resm(TPASS | TTERRNO,
+					 "renameat failed as expected");
 			} else {
 				tst_resm(TFAIL | TTERRNO,
 					 "renameat failed unexpectedly");
@@ -138,7 +135,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

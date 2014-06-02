@@ -147,18 +147,14 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TTERRNO, "chdir(%s) failed",
 				 dirs[lc % 2]);
 		} else {
-
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS, "chdir(%s) returned %ld",
-					 dirs[lc % 2], TEST_RETURN);
-			}
+			tst_resm(TPASS, "chdir(%s) returned %ld",
+				 dirs[lc % 2], TEST_RETURN);
 		}
 
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 void setup(void)

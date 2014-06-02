@@ -193,11 +193,9 @@ int main(int ac, char **av)
 			/* check return code */
 			if (TEST_RETURN == -1) {
 				if (Scenarios[i].exp_fail) {
-					if (STD_FUNCTIONAL_TEST) {
-						tst_resm(TPASS | TTERRNO,
-							 "ulimit(%d, %ld) Failed expectedly",
-							 cmd, limit);
-					}
+					tst_resm(TPASS | TTERRNO,
+						 "ulimit(%d, %ld) Failed expectedly",
+						 cmd, limit);
 				} else {
 					tst_resm(TFAIL | TTERRNO,
 						 "ulimit(%d, %ld) Failed",
@@ -208,7 +206,7 @@ int main(int ac, char **av)
 					tst_resm(TFAIL,
 						 "ulimit(%d, %ld) returned %ld, succeeded unexpectedly",
 						 cmd, limit, TEST_RETURN);
-				} else if (STD_FUNCTIONAL_TEST) {
+				} else {
 					tst_resm(TPASS,
 						 "ulimit(%d, %ld) returned %ld",
 						 cmd, limit, TEST_RETURN);

@@ -114,97 +114,90 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
-	if (times(&buf1) == -1)
+	if (times(&buf1) == -1) {
 		tst_resm(TFAIL | TERRNO, "times failed");
-	else {
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
-		if (STD_FUNCTIONAL_TEST) {
-			if (buf1.tms_utime == 0)
-				tst_resm(TFAIL, "times report " "0 user time");
-			if (buf1.tms_stime == 0)
-				tst_resm(TFAIL, "times report "
-					 "0 system time");
-			if (buf1.tms_cutime != 0)
-				tst_resm(TFAIL, "times report "
-					 "%ld child user time",
-					 buf1.tms_cutime);
-			if (buf1.tms_cstime != 0)
-				tst_resm(TFAIL,
-					 "times report "
-					 "%ld child system time",
-					 buf1.tms_cstime);
+	} else {
+		if (buf1.tms_utime == 0)
+			tst_resm(TFAIL, "times report " "0 user time");
+		if (buf1.tms_stime == 0)
+			tst_resm(TFAIL, "times report "
+				 "0 system time");
+		if (buf1.tms_cutime != 0)
+			tst_resm(TFAIL, "times report "
+				 "%ld child user time",
+				 buf1.tms_cutime);
+		if (buf1.tms_cstime != 0)
+			tst_resm(TFAIL,
+				 "times report "
+				 "%ld child system time",
+				 buf1.tms_cstime);
 
-			pid2 = FORK_OR_VFORK();
-			if (pid2 < 0) {
-				tst_brkm(TFAIL, cleanup, "Fork failed");
-			} else if (pid2 == 0) {
+		pid2 = FORK_OR_VFORK();
+		if (pid2 < 0) {
+			tst_brkm(TFAIL, cleanup, "Fork failed");
+		} else if (pid2 == 0) {
 
-				/* Spend some cycles in userspace */
+			/* Spend some cycles in userspace */
 
-				timeout = 0;
-				alarm(3);
+			timeout = 0;
+			alarm(3);
 
-				work();
+			work();
 
-				/*
-				 * Atleast some CPU system ime must be used
-				 * even in the child process (thereby
-				 * making it independent of the
-				 * processor speed). In fact the child
-				 * uses twice as much CPU time.
-				 */
-				start_time = time(NULL);
-				for (;;) {
-					if (times(&buf2) == -1) {
-						tst_resm(TFAIL,
-							 "Call to times "
-							 "failed, "
-							 "errno = %d", errno);
-						exit(1);
-					}
-					end_time = time(NULL);
-					if ((end_time - start_time)
-					    > 10) {
-						break;
-					}
+			/*
+			 * Atleast some CPU system ime must be used
+			 * even in the child process (thereby
+			 * making it independent of the
+			 * processor speed). In fact the child
+			 * uses twice as much CPU time.
+			 */
+			start_time = time(NULL);
+			for (;;) {
+				if (times(&buf2) == -1) {
+					tst_resm(TFAIL,
+						 "Call to times "
+						 "failed, "
+						 "errno = %d", errno);
+					exit(1);
 				}
-				exit(0);
+				end_time = time(NULL);
+				if ((end_time - start_time)
+				    > 10) {
+					break;
+				}
 			}
+			exit(0);
+		}
 
-			waitpid(pid2, &status, 0);
-			if (WEXITSTATUS(status) != 0) {
-				tst_resm(TFAIL, "Call to times(2) "
-					 "failed in child");
-			}
-			if (times(&buf2) == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL | TTERRNO, "times failed");
-			}
-			if (buf1.tms_utime > buf2.tms_utime)
-				tst_resm(TFAIL, "Error: parents's "
-					 "user time(%ld) before child "
-					 "> parent's user time (%ld) "
-					 "after child",
-					 buf1.tms_utime, buf2.tms_utime);
-			if (buf2.tms_cutime == 0)
-				tst_resm(TFAIL, "times "
-					 "report %ld child user "
-					 "time should be > than "
-					 "zero", buf2.tms_cutime);
-			if (buf2.tms_cstime == 0)
-				tst_resm(TFAIL, "times "
-					 "report %ld child system time "
-					 "should be > than zero",
-					 buf2.tms_cstime);
-		} else
-			tst_resm(TPASS, "utimes call succeeded");
+		waitpid(pid2, &status, 0);
+		if (WEXITSTATUS(status) != 0) {
+			tst_resm(TFAIL, "Call to times(2) "
+				 "failed in child");
+		}
+		if (times(&buf2) == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL | TTERRNO, "times failed");
+		}
+		if (buf1.tms_utime > buf2.tms_utime)
+			tst_resm(TFAIL, "Error: parents's "
+				 "user time(%ld) before child "
+				 "> parent's user time (%ld) "
+				 "after child",
+				 buf1.tms_utime, buf2.tms_utime);
+		if (buf2.tms_cutime == 0)
+			tst_resm(TFAIL, "times "
+				 "report %ld child user "
+				 "time should be > than "
+				 "zero", buf2.tms_cutime);
+		if (buf2.tms_cstime == 0)
+			tst_resm(TFAIL, "times "
+				 "report %ld child system time "
+				 "should be > than zero",
+				 buf2.tms_cstime);
 	}
+
 	cleanup();
 	tst_exit();
-
 }
 
 /*

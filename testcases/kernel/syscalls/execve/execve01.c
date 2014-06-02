@@ -159,10 +159,8 @@ int main(int ac, char **av, char **environ)
 		default:
 			waitpid(pid, &status, 0);
 			if (WIFEXITED(status)) {
-				if (STD_FUNCTIONAL_TEST) {
-					tst_resm(TPASS,
-						 "execve - properly exec's a simple program..");
-				}
+				tst_resm(TPASS,
+					 "execve - properly exec's a simple program..");
 			} else {
 				TEST_ERROR_LOG(WEXITSTATUS(status));
 				tst_resm(TFAIL,
@@ -175,7 +173,6 @@ int main(int ac, char **av, char **environ)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

@@ -122,25 +122,16 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Check whether further reference is possible
+		 * to the unmapped memory region by writing
+		 * to the first byte of region with
+		 * some arbitrary number.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check whether further reference is possible
-			 * to the unmapped memory region by writing
-			 * to the first byte of region with
-			 * some arbitrary number.
-			 */
-			*addr = 50;
+		*addr = 50;
 
-			/* This message is printed if no SIGSEGV */
-			tst_resm(TFAIL, "process succeeds to refer unmapped "
-				 "memory region");
-		} else {
-			tst_resm(TPASS, "call succeeded");
-		}
-
+		/* This message is printed if no SIGSEGV */
+		tst_resm(TFAIL, "process succeeds to refer unmapped "
+			 "memory region");
 		cleanup();
 
 	}

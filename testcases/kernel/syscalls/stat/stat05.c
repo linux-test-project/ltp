@@ -157,20 +157,15 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "stat(%s, &statter) failed", fname);
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS,
-					 "stat(%s, &statter) returned %ld",
-					 fname, TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "stat(%s, &statter) returned %ld",
+				 fname, TEST_RETURN);
 		}
 
 	}
 
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /***************************************************************

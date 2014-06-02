@@ -117,41 +117,32 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Check if the return value from lseek(2)
+		 * is equal to the file_size.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check if the return value from lseek(2)
-			 * is equal to the file_size.
-			 */
-			if (TEST_RETURN != file_size) {
-				tst_resm(TFAIL, "lseek() returned incorrect "
-					 "value %ld, expected %zu",
-					 TEST_RETURN, file_size);
-				continue;
-			}
-			/*
-			 * The return value is okay, now attempt to read data
-			 * from the file.  This should fail as the file pointer
-			 * should be pointing to END OF FILE.
-			 */
-			read_buf[0] = '\0';
-			if (read(fildes, &read_buf, sizeof(read_buf)) > 0) {
-				tst_resm(TFAIL, "read() successful on %s",
-					 TEMP_FILE);
-			} else {
-				tst_resm(TPASS, "Functionality of lseek() on "
-					 "%s successful", TEMP_FILE);
-			}
+		if (TEST_RETURN != file_size) {
+			tst_resm(TFAIL, "lseek() returned incorrect "
+				 "value %ld, expected %zu",
+				 TEST_RETURN, file_size);
+			continue;
+		}
+		/*
+		 * The return value is okay, now attempt to read data
+		 * from the file.  This should fail as the file pointer
+		 * should be pointing to END OF FILE.
+		 */
+		read_buf[0] = '\0';
+		if (read(fildes, &read_buf, sizeof(read_buf)) > 0) {
+			tst_resm(TFAIL, "read() successful on %s",
+				 TEMP_FILE);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "Functionality of lseek() on "
+				 "%s successful", TEMP_FILE);
 		}
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

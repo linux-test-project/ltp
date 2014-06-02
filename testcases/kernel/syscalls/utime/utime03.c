@@ -174,60 +174,51 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 			} else {
 				/*
-				 * Perform functional verification if test
-				 * executed without (-f) option.
+				 * Sleep for a second so that mod time
+				 * and access times will be different
+				 * from the current time.
 				 */
-				if (STD_FUNCTIONAL_TEST) {
-					/*
-					 * Sleep for a second so that mod time
-					 * and access times will be different
-					 * from the current time.
-					 */
-					sleep(2);
+				sleep(2);
 
-					/*
-					 * Get the current time now, after
-					 * calling utime(2)
-					 */
-					if ((pres_time = time(&tloc)) < 0) {
-						tst_brkm(TFAIL, cleanup,
-							 "time() failed to get "
-							 "present time after "
-							 "utime, error=%d",
-							 errno);
-					}
+				/*
+				 * Get the current time now, after
+				 * calling utime(2)
+				 */
+				if ((pres_time = time(&tloc)) < 0) {
+					tst_brkm(TFAIL, cleanup,
+						 "time() failed to get "
+						 "present time after "
+						 "utime, error=%d",
+						 errno);
+				}
 
-					/*
-					 * Get the modification and access
-					 * times of temporary file using
-					 * stat(2).
-					 */
-					if (stat(TEMP_FILE, &stat_buf) < 0) {
-						tst_brkm(TFAIL, cleanup,
-							 "stat(2) of %s failed, "
-							 "error:%d", TEMP_FILE,
-							 TEST_ERRNO);
-					}
-					modf_time = stat_buf.st_mtime;
-					access_time = stat_buf.st_atime;
+				/*
+				 * Get the modification and access
+				 * times of temporary file using
+				 * stat(2).
+				 */
+				if (stat(TEMP_FILE, &stat_buf) < 0) {
+					tst_brkm(TFAIL, cleanup,
+						 "stat(2) of %s failed, "
+						 "error:%d", TEMP_FILE,
+						 TEST_ERRNO);
+				}
+				modf_time = stat_buf.st_mtime;
+				access_time = stat_buf.st_atime;
 
-					/* Now do the actual verification */
-					if (modf_time <= curr_time ||
-					    modf_time >= pres_time ||
-					    access_time <= curr_time ||
-					    access_time >= pres_time) {
-						tst_resm(TFAIL, "%s access and "
-							 "modification times "
-							 "not set", TEMP_FILE);
-					} else {
-						tst_resm(TPASS, "Functionality "
-							 "of utime(%s, NULL) "
-							 "successful",
-							 TEMP_FILE);
-					}
+				/* Now do the actual verification */
+				if (modf_time <= curr_time ||
+				    modf_time >= pres_time ||
+				    access_time <= curr_time ||
+				    access_time >= pres_time) {
+					tst_resm(TFAIL, "%s access and "
+						 "modification times "
+						 "not set", TEMP_FILE);
 				} else {
-					tst_resm(TPASS, "%s call succeeded",
-						 TCID);
+					tst_resm(TPASS, "Functionality "
+						 "of utime(%s, NULL) "
+						 "successful",
+						 TEMP_FILE);
 				}
 			}
 			tst_count++;	/* incr. TEST_LOOP counter */

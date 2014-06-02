@@ -49,9 +49,6 @@
  *
  *    CPU TYPES		: ALL
  *
- *    AUTHOR		: Richard Logan
- *
- *    CO-PILOT		: William Roske
  *
  *    DATE STARTED	: 06/94
  *
@@ -144,15 +141,13 @@ int main(int ac, char **av)
 		TEST(dup(fd[0]));
 
 		if (TEST_RETURN == -1) {
-			if (STD_FUNCTIONAL_TEST) {
-				if (TEST_ERRNO == EMFILE)
-					tst_resm(TPASS,
-						 "dup failed as expected with "
-						 "EMFILE");
-				else
-					tst_resm(TFAIL | TTERRNO,
-						 "dup failed unexpectedly");
-			}
+			if (TEST_ERRNO == EMFILE)
+				tst_resm(TPASS,
+					 "dup failed as expected with "
+					 "EMFILE");
+			else
+				tst_resm(TFAIL | TTERRNO,
+					 "dup failed unexpectedly");
 		} else {
 			tst_resm(TFAIL, "dup succeeded unexpectedly");
 
@@ -164,7 +159,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

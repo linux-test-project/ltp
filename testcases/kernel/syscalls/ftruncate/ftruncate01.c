@@ -121,42 +121,33 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Get the testfile information using
+		 * fstat(2).
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the testfile information using
-			 * fstat(2).
-			 */
-			if (fstat(fildes, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "stat(2) of %s failed, error:%d",
-					 TESTFILE, errno);
-			}
-			stat_buf.st_mode &= ~S_IFREG;
-			file_length = stat_buf.st_size;
+		if (fstat(fildes, &stat_buf) < 0) {
+			tst_brkm(TFAIL, cleanup,
+				 "stat(2) of %s failed, error:%d",
+				 TESTFILE, errno);
+		}
+		stat_buf.st_mode &= ~S_IFREG;
+		file_length = stat_buf.st_size;
 
-			/*
-			 * Check for expected size of testfile after
-			 * truncate(2) on it.
-			 */
-			if (file_length != TRUNC_LEN) {
-				tst_resm(TFAIL,
-					 "%s: Incorrect file size %" PRId64 ", "
-					 "Expected %d", TESTFILE,
-					 (int64_t) file_length, TRUNC_LEN);
-			} else {
-				tst_resm(TPASS, "Functionality of ftruncate() "
-					 "on %s successful", TESTFILE);
-			}
+		/*
+		 * Check for expected size of testfile after
+		 * truncate(2) on it.
+		 */
+		if (file_length != TRUNC_LEN) {
+			tst_resm(TFAIL,
+				 "%s: Incorrect file size %" PRId64 ", "
+				 "Expected %d", TESTFILE,
+				 (int64_t) file_length, TRUNC_LEN);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "Functionality of ftruncate() "
+				 "on %s successful", TESTFILE);
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

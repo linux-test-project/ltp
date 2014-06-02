@@ -122,37 +122,31 @@ int main(int ac, char **av)
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Send the signal.  If the signal is truly set
-				 * to be ignored, then the signal handler will
-				 * never be invoked and the test will pass.
-				 */
-				pid = getpid();
+			/*
+			 * Send the signal.  If the signal is truly set
+			 * to be ignored, then the signal handler will
+			 * never be invoked and the test will pass.
+			 */
+			pid = getpid();
 
-				if ((rval = kill(pid, siglist[i])) != 0) {
-					tst_brkm(TBROK, cleanup, "call to "
-						 "kill failed");
-				}
+			if ((rval = kill(pid, siglist[i])) != 0) {
+				tst_brkm(TBROK, cleanup, "call to "
+					 "kill failed");
+			}
 
-				if (fail == 0) {
-					tst_resm(TPASS, "%s call succeeded",
-						 TCID);
-				} else {
-					/* the signal was caught so we fail */
-					tst_resm(TFAIL, "signal caught when "
-						 "suppose to be ignored");
-				}
+			if (fail == 0) {
+				tst_resm(TPASS, "%s call succeeded",
+					 TCID);
 			} else {
-				tst_resm(TPASS, "Call succeeded");
+				/* the signal was caught so we fail */
+				tst_resm(TFAIL, "signal caught when "
+					 "suppose to be ignored");
 			}
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
 /*

@@ -153,13 +153,9 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TERRNO,
 				 "dup of read side of pipe failed");
 		else {
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "dup(%d) read side of syspipe returned %ld",
-					 fd[0], TEST_RETURN);
-
-			} else
-				tst_count++;
+			tst_resm(TPASS,
+				 "dup(%d) read side of syspipe returned %ld",
+				 fd[0], TEST_RETURN);
 
 			if (close(TEST_RETURN) == -1)
 				tst_brkm(TBROK, cleanup, "close failed");
@@ -167,18 +163,14 @@ int main(int ac, char **av)
 
 		TEST(dup(fd[1]));
 
-		if (TEST_RETURN == -1)
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO,
 				 "dup of write side of pipe failed");
-		else {
+		} else {
+			tst_resm(TPASS,
+				 "dup(%d) write side of syspipe returned %ld",
+				 fd[1], TEST_RETURN);
 
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "dup(%d) write side of syspipe returned %ld",
-					 fd[1], TEST_RETURN);
-
-			} else
-				tst_count++;
 
 			if (close(TEST_RETURN) == -1)
 				tst_brkm(TBROK | TTERRNO, cleanup,

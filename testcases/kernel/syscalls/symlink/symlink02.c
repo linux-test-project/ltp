@@ -166,14 +166,6 @@ int main(int ac, char **av)
 				 fname, symlnk, TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "symlink(%s, %s) returned %ld",
-					 fname, symlnk, TEST_RETURN);
-			}
 			if (unlink(symlnk) == -1) {
 				tst_brkm(TBROK, cleanup,
 					 "unlink(%s) Failed, errno=%d : %s",

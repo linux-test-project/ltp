@@ -128,120 +128,110 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Get the testfile information using
+		 * fstat(2).
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the testfile information using
-			 * fstat(2).
-			 */
-			if (fstat(fd, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup, "fstat(2) of %s failed"
-					 " after 1st truncate, error:%d",
-					 TESTFILE, errno);
-			}
-			stat_buf.st_mode &= ~S_IFREG;
-			file_length1 = stat_buf.st_size;
+		if (fstat(fd, &stat_buf) < 0) {
+			tst_brkm(TFAIL, cleanup, "fstat(2) of %s failed"
+				 " after 1st truncate, error:%d",
+				 TESTFILE, errno);
+		}
+		stat_buf.st_mode &= ~S_IFREG;
+		file_length1 = stat_buf.st_size;
 
-			/*
-			 * Set the file pointer of testfile to the
-			 * beginning of the file.
-			 */
-			if (lseek(fd, 0, SEEK_SET) < 0) {
-				tst_brkm(TFAIL, cleanup, "lseek(2) on %s failed"
-					 " after 1st ftruncate, error:%d",
-					 TESTFILE, errno);
-			}
+		/*
+		 * Set the file pointer of testfile to the
+		 * beginning of the file.
+		 */
+		if (lseek(fd, 0, SEEK_SET) < 0) {
+			tst_brkm(TFAIL, cleanup, "lseek(2) on %s failed"
+				 " after 1st ftruncate, error:%d",
+				 TESTFILE, errno);
+		}
 
-			/* Read the testfile from the beginning. */
-			while ((rbytes = read(fd, tst_buff,
-					      sizeof(tst_buff))) > 0) {
-				read_len += rbytes;
-			}
+		/* Read the testfile from the beginning. */
+		while ((rbytes = read(fd, tst_buff,
+				      sizeof(tst_buff))) > 0) {
+			read_len += rbytes;
+		}
 
-			/*
-			 * Execute ftruncate(2) again to truncate
-			 * testfile to a size TRUNC_LEN2.
-			 */
-			TEST(ftruncate(fd, TRUNC_LEN2));
+		/*
+		 * Execute ftruncate(2) again to truncate
+		 * testfile to a size TRUNC_LEN2.
+		 */
+		TEST(ftruncate(fd, TRUNC_LEN2));
 
-			/*
-			 * Get the testfile information using
-			 * fstat(2)
-			 */
-			if (fstat(fd, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup, "fstat(2) of %s failed"
-					 " after 2nd truncate, error:%d",
-					 TESTFILE, errno);
-			}
-			stat_buf.st_mode &= ~S_IFREG;
-			file_length2 = stat_buf.st_size;
+		/*
+		 * Get the testfile information using
+		 * fstat(2)
+		 */
+		if (fstat(fd, &stat_buf) < 0) {
+			tst_brkm(TFAIL, cleanup, "fstat(2) of %s failed"
+				 " after 2nd truncate, error:%d",
+				 TESTFILE, errno);
+		}
+		stat_buf.st_mode &= ~S_IFREG;
+		file_length2 = stat_buf.st_size;
 
-			/*
-			 * Set the file pointer of testfile to the
-			 * offset TRUNC_LEN1 of testfile.
-			 */
-			if (lseek(fd, TRUNC_LEN1, SEEK_SET) < 0) {
-				tst_brkm(TFAIL, cleanup, "lseek(2) on %s failed"
-					 " after 2nd ftruncate, error:%d",
-					 TESTFILE, errno);
-			}
+		/*
+		 * Set the file pointer of testfile to the
+		 * offset TRUNC_LEN1 of testfile.
+		 */
+		if (lseek(fd, TRUNC_LEN1, SEEK_SET) < 0) {
+			tst_brkm(TFAIL, cleanup, "lseek(2) on %s failed"
+				 " after 2nd ftruncate, error:%d",
+				 TESTFILE, errno);
+		}
 
-			/* Read the testfile contents till EOF */
-			while ((rbytes = read(fd, tst_buff,
-					      sizeof(tst_buff))) > 0) {
-				for (i = 0; i < rbytes; i++) {
-					if (tst_buff[i] != 0) {
-						err_flag++;
-					}
+		/* Read the testfile contents till EOF */
+		while ((rbytes = read(fd, tst_buff,
+				      sizeof(tst_buff))) > 0) {
+			for (i = 0; i < rbytes; i++) {
+				if (tst_buff[i] != 0) {
+					err_flag++;
 				}
 			}
+		}
 
-			/*
-			 * Check for expected size of testfile after
-			 * issuing ftruncate(2) on it. If the ftruncate(2)
-			 * to a smaller file passed, then check to see
-			 * if file size was increased. If the ftruncate(2)
-			 * to a smaller file failed, then don't check.
-			 * Both results are allowed according to the SUS.
-			 */
+		/*
+		 * Check for expected size of testfile after
+		 * issuing ftruncate(2) on it. If the ftruncate(2)
+		 * to a smaller file passed, then check to see
+		 * if file size was increased. If the ftruncate(2)
+		 * to a smaller file failed, then don't check.
+		 * Both results are allowed according to the SUS.
+		 */
 
-			if (TEST_RETURN != -1) {
-				if ((file_length1 != TRUNC_LEN1) ||
-				    (file_length2 != TRUNC_LEN2) ||
-				    (read_len != TRUNC_LEN1) ||
-				    (err_flag != 0)) {
-					tst_resm(TFAIL,
-						 "Functionality of ftruncate(2) "
-						 "on %s Failed", TESTFILE);
-				} else {
-					tst_resm(TPASS,
-						 "Functionality of ftruncate(2) "
-						 "on %s successful", TESTFILE);
-				}
+		if (TEST_RETURN != -1) {
+			if ((file_length1 != TRUNC_LEN1) ||
+			    (file_length2 != TRUNC_LEN2) ||
+			    (read_len != TRUNC_LEN1) ||
+			    (err_flag != 0)) {
+				tst_resm(TFAIL,
+					 "Functionality of ftruncate(2) "
+					 "on %s Failed", TESTFILE);
+			} else {
+				tst_resm(TPASS,
+					 "Functionality of ftruncate(2) "
+					 "on %s successful", TESTFILE);
 			}
-			if (TEST_RETURN == -1) {
-				if ((file_length1 != TRUNC_LEN1) ||
-				    (read_len != TRUNC_LEN1) ||
-				    (err_flag != 0)) {
-					tst_resm(TFAIL,
-						 "Functionality of ftruncate(2) "
-						 "on %s Failed", TESTFILE);
-				} else {
-					tst_resm(TPASS,
-						 "Functionality of ftruncate(2) "
-						 "on %s successful", TESTFILE);
-				}
+		}
+		if (TEST_RETURN == -1) {
+			if ((file_length1 != TRUNC_LEN1) ||
+			    (read_len != TRUNC_LEN1) ||
+			    (err_flag != 0)) {
+				tst_resm(TFAIL,
+					 "Functionality of ftruncate(2) "
+					 "on %s Failed", TESTFILE);
+			} else {
+				tst_resm(TPASS,
+					 "Functionality of ftruncate(2) "
+					 "on %s successful", TESTFILE);
 			}
-
-		} else {
-			tst_resm(TPASS, "call succeeded");
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

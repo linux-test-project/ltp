@@ -402,11 +402,8 @@ void parent_rout(void)
 			 *  Both processes, 1 and A, that were supposed to receive
 			 *  the signal did receive the signal.
 			 */
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS,
-					 "The signal was sent to all processes in the process group.");
-			else
-				tst_count++;
+			tst_resm(TPASS,
+				 "The signal was sent to all processes in the process group.");
 		} else {	/*Process A didn't receive the signal. */
 			tst_resm(TFAIL,
 				 "Process A did not receive the signal.");
@@ -424,11 +421,8 @@ void parent_rout(void)
 			/*
 			 *  Both processes, 2 and B did not receive the signal.
 			 */
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS,
-					 "The signal was not sent to selective processes that were not in the process group.");
-			else
-				tst_count++;
+			tst_resm(TPASS,
+				 "The signal was not sent to selective processes that were not in the process group.");
 		} else {	/*Process B received the signal. */
 			tst_resm(TFAIL, "Process B received the signal.");
 		}

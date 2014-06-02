@@ -142,13 +142,9 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 			}
-			if (STD_FUNCTIONAL_TEST) {
-				uid_verify(test_data[i].exp_real_usr,
-					   test_data[i].exp_eff_usr,
-					   test_data[i].test_msg);
-			} else {
-				tst_resm(TINFO, "Call succeeded.");
-			}
+			uid_verify(test_data[i].exp_real_usr,
+				   test_data[i].exp_eff_usr,
+				   test_data[i].test_msg);
 		}
 	}
 

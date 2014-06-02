@@ -158,11 +158,8 @@ int main(int ac, char **av)
 				 fname, mname, TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "rename(%s, %s) returned %ld",
-					 fname, mname, TEST_RETURN);
-			}
+			tst_resm(TPASS, "rename(%s, %s) returned %ld",
+				 fname, mname, TEST_RETURN);
 			if (unlink(mname) == -1) {
 				tst_resm(TWARN,
 					 "unlink(%s) Failed, errno=%d : %s",

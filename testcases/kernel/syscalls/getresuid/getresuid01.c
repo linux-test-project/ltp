@@ -113,32 +113,19 @@ int main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Verify the real/effective/saved uid
-			 * values returned by getresuid with the
-			 * expected values.
-			 */
-			if ((real_uid != pr_uid) || (eff_uid != pe_uid) ||
-			    (sav_uid != ps_uid)) {
-				tst_resm(TFAIL, "real:%d, effective:%d, "
-					 "saved-user:%d ids differ",
-					 real_uid, eff_uid, sav_uid);
-			} else {
-				tst_resm(TPASS, "Functionality of getresuid() "
-					 "successful");
-			}
+
+		if ((real_uid != pr_uid) || (eff_uid != pe_uid) ||
+		    (sav_uid != ps_uid)) {
+			tst_resm(TFAIL, "real:%d, effective:%d, "
+				 "saved-user:%d ids differ",
+				 real_uid, eff_uid, sav_uid);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "Functionality of getresuid() "
+				 "successful");
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

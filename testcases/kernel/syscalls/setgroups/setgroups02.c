@@ -115,42 +115,32 @@ int main(int ac, char **av)
 		}
 
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Call getgroups(2) to verify that
+		 * setgroups(2) successfully set the
+		 * supp. gids of TESTUSER.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Call getgroups(2) to verify that
-			 * setgroups(2) successfully set the
-			 * supp. gids of TESTUSER.
-			 */
-			groups_list[0] = '\0';
-			if (GETGROUPS(cleanup, gidsetsize, groups_list) < 0) {
-				tst_brkm(TFAIL, cleanup, "getgroups() Fails, "
-					 "error=%d", errno);
+		groups_list[0] = '\0';
+		if (GETGROUPS(cleanup, gidsetsize, groups_list) < 0) {
+			tst_brkm(TFAIL, cleanup, "getgroups() Fails, "
+				 "error=%d", errno);
+		}
+		for (i = 0; i < NGROUPS; i++) {
+			if (groups_list[i] == user_info->pw_gid) {
+				tst_resm(TPASS,
+					 "Functionality of setgroups"
+					 "(%d, groups_list) successful",
+					 gidsetsize);
+				PASS_FLAG = 1;
 			}
-			for (i = 0; i < NGROUPS; i++) {
-				if (groups_list[i] == user_info->pw_gid) {
-					tst_resm(TPASS,
-						 "Functionality of setgroups"
-						 "(%d, groups_list) successful",
-						 gidsetsize);
-					PASS_FLAG = 1;
-				}
-			}
-			if (PASS_FLAG == 0) {
-				tst_resm(TFAIL, "Supplimentary gid %d not set "
-					 "for the process", user_info->pw_gid);
-			}
-		} else {
-			tst_resm(TPASS, "call succeeded");
+		}
+		if (PASS_FLAG == 0) {
+			tst_resm(TFAIL, "Supplimentary gid %d not set "
+				 "for the process", user_info->pw_gid);
 		}
 	}
 
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*

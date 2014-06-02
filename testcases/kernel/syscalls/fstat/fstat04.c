@@ -121,28 +121,20 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Verify the data returned by fstat(2)
+		 * aganist the expected data.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Verify the data returned by fstat(2)
-			 * aganist the expected data.
-			 */
-			if (stat_buf.st_uid != user_id ||
-			    stat_buf.st_gid != group_id ||
-			    stat_buf.st_size != FILE_SIZE ||
-			    (stat_buf.st_mode & MASK) != FILE_MODE) {
-				tst_resm(TFAIL,
-					 "fstat functionality incorrect");
-			} else
-				tst_resm(TPASS, "fstat functionality correct");
+		if (stat_buf.st_uid != user_id ||
+		    stat_buf.st_gid != group_id ||
+		    stat_buf.st_size != FILE_SIZE ||
+		    (stat_buf.st_mode & MASK) != FILE_MODE) {
+			tst_resm(TFAIL,
+				 "fstat functionality incorrect");
 		} else
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "fstat functionality correct");
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

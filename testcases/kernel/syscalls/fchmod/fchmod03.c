@@ -119,32 +119,24 @@ int main(int ac, char **av)
 			continue;
 		}
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Get the file information using
+		 * fstat(2).
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the file information using
-			 * fstat(2).
-			 */
-			if (fstat(fd, &stat_buf) == -1)
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "fstat failed");
-			file_mode = stat_buf.st_mode;
+		if (fstat(fd, &stat_buf) == -1)
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "fstat failed");
+		file_mode = stat_buf.st_mode;
 
-			/* Verify STICKY BIT set on testfile */
-			if ((file_mode & PERMS) != PERMS)
-				tst_resm(TFAIL, "%s: Incorrect modes 0%3o, "
-					 "Expected 0777", TESTFILE, file_mode);
-			else
-				tst_resm(TPASS, "Functionality of fchmod(%d, "
-					 "%#o) successful", fd, PERMS);
-		} else
-			tst_resm(TPASS, "call succeeded");
+		/* Verify STICKY BIT set on testfile */
+		if ((file_mode & PERMS) != PERMS)
+			tst_resm(TFAIL, "%s: Incorrect modes 0%3o, "
+				 "Expected 0777", TESTFILE, file_mode);
+		else
+			tst_resm(TPASS, "Functionality of fchmod(%d, "
+				 "%#o) successful", fd, PERMS);
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

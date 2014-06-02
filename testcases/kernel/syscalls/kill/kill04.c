@@ -139,26 +139,24 @@ int main(int ac, char **av)
 				 TEST_RETURN);
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check to see if the errno was set to the expected
-			 * value of 3 : ESRCH
-			 */
-			nsig = WTERMSIG(status);
-			TEST_ERROR_LOG(TEST_ERRNO);
-			if (TEST_ERRNO == ESRCH) {
-				tst_resm(TPASS, "errno set to %d : %s, as "
-					 "expected", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL, "errno set to %d : %s expected "
-					 "%d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO), 3, strerror(3));
-			}
+		/*
+		 * Check to see if the errno was set to the expected
+		 * value of 3 : ESRCH
+		 */
+		nsig = WTERMSIG(status);
+		TEST_ERROR_LOG(TEST_ERRNO);
+		if (TEST_ERRNO == ESRCH) {
+			tst_resm(TPASS, "errno set to %d : %s, as "
+				 "expected", TEST_ERRNO,
+				 strerror(TEST_ERRNO));
+		} else {
+			tst_resm(TFAIL, "errno set to %d : %s expected "
+				 "%d : %s", TEST_ERRNO,
+				 strerror(TEST_ERRNO), 3, strerror(3));
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 

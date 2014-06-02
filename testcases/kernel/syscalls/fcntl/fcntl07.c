@@ -225,44 +225,40 @@ int main(int ac, char **av)
 					 "failed", *tcd, **tcp);
 			} else {
 
-				if (STD_FUNCTIONAL_TEST) {
+				exec_return =
+				    do_exec(subprog_path, **tcp, *tcd);
 
-					exec_return =
-					    do_exec(subprog_path, **tcp, *tcd);
-
-					switch (exec_return) {
-					case -1:
-						tst_resm(TBROK,
-							 "fork failed.  Errno %s [%d]",
-							 strerror(errno),
-							 errno);
-						break;
-					case 1:
-						tst_resm(TBROK,
-							 "waitpid return was 0%o",
-							 stat_loc);
-						break;
-					case 2:
-						tst_resm(TBROK, "exec failed");	/* errno was in child */
-						break;
-					case 0:
-						tst_resm(TPASS,
-							 "%s child exited 0, indicating that the file was closed",
-							 *tcd);
-						break;
-					default:
-						tst_resm(TFAIL,
-							 "%s child exited non-zero, %d",
-							 *tcd, exec_return);
-						break;
-					}
+				switch (exec_return) {
+				case -1:
+					tst_resm(TBROK,
+						 "fork failed.  Errno %s [%d]",
+						 strerror(errno),
+						 errno);
+					break;
+				case 1:
+					tst_resm(TBROK,
+						 "waitpid return was 0%o",
+						 stat_loc);
+					break;
+				case 2:
+					tst_resm(TBROK, "exec failed");	/* errno was in child */
+					break;
+				case 0:
+					tst_resm(TPASS,
+						 "%s child exited 0, indicating that the file was closed",
+						 *tcd);
+					break;
+				default:
+					tst_resm(TFAIL,
+						 "%s child exited non-zero, %d",
+						 *tcd, exec_return);
+					break;
 				}
 			}
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

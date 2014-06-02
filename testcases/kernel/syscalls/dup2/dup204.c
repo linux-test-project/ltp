@@ -86,30 +86,27 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (STD_FUNCTIONAL_TEST) {
-				if (fstat(fd[i], &oldbuf) == -1)
-					tst_brkm(TBROK, cleanup, "fstat() #1 "
-						 "failed");
-				if (fstat(nfd[i], &newbuf) == -1)
-					tst_brkm(TBROK, cleanup, "fstat() #2 "
-						 "failed");
+			if (fstat(fd[i], &oldbuf) == -1)
+				tst_brkm(TBROK, cleanup, "fstat() #1 "
+					 "failed");
+			if (fstat(nfd[i], &newbuf) == -1)
+				tst_brkm(TBROK, cleanup, "fstat() #2 "
+					 "failed");
 
-				if (oldbuf.st_ino != newbuf.st_ino)
-					tst_resm(TFAIL, "original and duped "
-						 "inodes do not match");
-				else
-					tst_resm(TPASS, "original and duped "
-						 "inodes are the same");
-			} else
-				tst_resm(TPASS, "call succeeded");
+			if (oldbuf.st_ino != newbuf.st_ino)
+				tst_resm(TFAIL, "original and duped "
+					 "inodes do not match");
+			else
+				tst_resm(TPASS, "original and duped "
+					 "inodes are the same");
 
 			if (close(TEST_RETURN) == -1)
 				tst_brkm(TBROK | TERRNO, cleanup,
 					 "close failed");
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 

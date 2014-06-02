@@ -166,25 +166,15 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "unlink(%s) Failed, errno=%d : %s",
 				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "unlink(%s) returned %ld",
-					 fname, TEST_RETURN);
-			}
+			tst_resm(TPASS, "unlink(%s) returned %ld",
+				 fname, TEST_RETURN);
 			/* recreate file for next loop */
 			create_file();
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

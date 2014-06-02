@@ -158,11 +158,8 @@ int main(int ac, char **av)
 		default:
 			waitpid(pid, &status, 0);
 			if (WIFEXITED(status)) {
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "execv - properly exec's a simple program..");
-				}
+				tst_resm(TPASS,
+					 "execv - properly exec's a simple program..");
 			} else {
 				TEST_ERROR_LOG(WEXITSTATUS(status));
 				tst_resm(TFAIL,

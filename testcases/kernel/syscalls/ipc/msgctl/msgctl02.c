@@ -96,27 +96,22 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "msgctl() call failed");
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
+			/* do a stat to get current queue values */
+			if ((msgctl(msg_q_1, IPC_STAT, &qs_buf) == -1)) {
+				tst_resm(TBROK, "stat on queue failed");
+				continue;
+			}
 
-				/* do a stat to get current queue values */
-				if ((msgctl(msg_q_1, IPC_STAT, &qs_buf) == -1)) {
-					tst_resm(TBROK, "stat on queue failed");
-					continue;
-				}
-
-				if (qs_buf.msg_qbytes == new_bytes) {
-					tst_resm(TPASS, "qs_buf.msg_qbytes is"
-						 " the new value - %ld",
-						 qs_buf.msg_qbytes);
-				} else {
-					tst_resm(TFAIL, "qs_buf.msg_qbytes "
-						 "value is not expected");
-					tst_resm(TINFO, "expected - %ld, "
-						 "received - %ld", new_bytes,
-						 qs_buf.msg_qbytes);
-				}
+			if (qs_buf.msg_qbytes == new_bytes) {
+				tst_resm(TPASS, "qs_buf.msg_qbytes is"
+					 " the new value - %ld",
+					 qs_buf.msg_qbytes);
 			} else {
-				tst_resm(TPASS, "msgctl() call succeeded");
+				tst_resm(TFAIL, "qs_buf.msg_qbytes "
+					 "value is not expected");
+				tst_resm(TINFO, "expected - %ld, "
+					 "received - %ld", new_bytes,
+					 qs_buf.msg_qbytes);
 			}
 		}
 

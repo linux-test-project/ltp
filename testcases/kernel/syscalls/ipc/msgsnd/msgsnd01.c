@@ -102,27 +102,22 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-
-			/* get the queue status */
-			if (msgctl(msg_q_1, IPC_STAT, &qs_buf) == -1) {
-				tst_brkm(TBROK, cleanup, "Could not "
-					 "get queue status");
-			}
-
-			if (qs_buf.msg_cbytes != MSGSIZE) {
-				tst_resm(TFAIL, "queue bytes != MSGSIZE");
-			}
-
-			if (qs_buf.msg_qnum != 1) {
-				tst_resm(TFAIL, "queue message != 1");
-			}
-
-			tst_resm(TPASS, "queue bytes = MSGSIZE and "
-				 "queue messages = 1");
-		} else {
-			tst_resm(TPASS, "call succeeded");
+		/* get the queue status */
+		if (msgctl(msg_q_1, IPC_STAT, &qs_buf) == -1) {
+			tst_brkm(TBROK, cleanup, "Could not "
+				 "get queue status");
 		}
+
+		if (qs_buf.msg_cbytes != MSGSIZE) {
+			tst_resm(TFAIL, "queue bytes != MSGSIZE");
+		}
+
+		if (qs_buf.msg_qnum != 1) {
+			tst_resm(TFAIL, "queue message != 1");
+		}
+
+		tst_resm(TPASS, "queue bytes = MSGSIZE and "
+			 "queue messages = 1");
 
 		/*
 		 * remove the message by reading from the queue
@@ -133,7 +128,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

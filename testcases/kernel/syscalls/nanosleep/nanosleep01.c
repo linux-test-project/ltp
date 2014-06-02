@@ -134,34 +134,26 @@ int main(int ac, char **av)
 			}
 
 			/*
-			 * Perform functional verification if test
-			 * executed without (-f) option.
+			 * Verify whether child execution was
+			 * actually suspended to desired interval.
 			 */
-			if (STD_FUNCTIONAL_TEST) {
-				/*
-				 * Verify whether child execution was
-				 * actually suspended to desired interval.
-				 */
-				long want_ms, got_ms;
-				want_ms =
-				    timereq.tv_sec * 1000 +
-				    timereq.tv_nsec / 1000000;
-				got_ms =
-				    ntime.tv_sec * 1000 + ntime.tv_usec / 1000;
-				got_ms -=
-				    otime.tv_sec * 1000 + otime.tv_usec / 1000;
-				if (got_ms < want_ms) {
-					retval = 1;
-					tst_resm(TFAIL, "Child execution not "
-						 "suspended for %jd seconds.  (Wanted %ld ms, got %ld ms)",
-						 (intmax_t) timereq.tv_sec,
-						 want_ms, got_ms);
-				} else {
-					tst_resm(TPASS, "nanosleep "
-						 "functionality is correct");
-				}
+			long want_ms, got_ms;
+			want_ms =
+			    timereq.tv_sec * 1000 +
+			    timereq.tv_nsec / 1000000;
+			got_ms =
+			    ntime.tv_sec * 1000 + ntime.tv_usec / 1000;
+			got_ms -=
+			    otime.tv_sec * 1000 + otime.tv_usec / 1000;
+			if (got_ms < want_ms) {
+				retval = 1;
+				tst_resm(TFAIL, "Child execution not "
+					 "suspended for %jd seconds.  (Wanted %ld ms, got %ld ms)",
+					 (intmax_t) timereq.tv_sec,
+					 want_ms, got_ms);
 			} else {
-				tst_resm(TPASS, "call succeeded");
+				tst_resm(TPASS, "nanosleep "
+					 "functionality is correct");
 			}
 			exit(retval);
 		} else {	/* parent process */

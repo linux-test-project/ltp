@@ -87,29 +87,25 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Read the file contents into the dummy
-			 * string.
-			 */
-			if (read(fildes, dummy, page_sz) < 0) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "reading %s failed", TEMPFILE);
-			}
+		/*
+		 * Read the file contents into the dummy
+		 * string.
+		 */
+		if (read(fildes, dummy, page_sz) < 0) {
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "reading %s failed", TEMPFILE);
+		}
 
-			/*
-			 * Check whether mapped memory region has
-			 * the file contents.
-			 */
-			if (memcmp(dummy, addr, page_sz)) {
-				tst_resm(TFAIL, "mapped memory area contains "
-					 "invalid data");
-			} else {
-				tst_resm(TPASS,
-					 "Functionality of mmap() successful");
-			}
+		/*
+		 * Check whether mapped memory region has
+		 * the file contents.
+		 */
+		if (memcmp(dummy, addr, page_sz)) {
+			tst_resm(TFAIL, "mapped memory area contains "
+				 "invalid data");
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS,
+				 "Functionality of mmap() successful");
 		}
 
 		/* Clean up things in case we are looping */
@@ -117,7 +113,6 @@ int main(int ac, char **av)
 		if (munmap(addr, page_sz) != 0) {
 			tst_brkm(TFAIL | TERRNO, cleanup, "munmapping failed");
 		}
-
 	}
 
 	cleanup();

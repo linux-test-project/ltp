@@ -100,11 +100,6 @@ static void test1(void)
 		return;
 	}
 
-	if (!STD_FUNCTIONAL_TEST) {
-		tst_resm(TPASS, "call succeeded");
-		return;
-	}
-
 	nofiles = getdtablesize();
 
 	if (nofiles != 100) {
@@ -218,11 +213,6 @@ static void test3(void)
 		return;
 	}
 
-	if (!STD_FUNCTIONAL_TEST) {
-		tst_resm(TPASS, "call succeeded");
-		return;
-	}
-
 	if ((getrlimit(RLIMIT_NPROC, &rlim1)) == -1) {
 		tst_brkm(TBROK, cleanup, "getrlimit failed to get "
 			 "values for RLIMIT_NPROC, errno = %d", errno);
@@ -265,11 +255,6 @@ static void test4(void)
 
 	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL | TERRNO, "setrlimit failed to set RLIMIT_CORE");
-		return;
-	}
-
-	if (!STD_FUNCTIONAL_TEST) {
-		tst_resm(TPASS, "call succeeded");
 		return;
 	}
 

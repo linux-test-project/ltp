@@ -78,10 +78,7 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST)
-			verify_groups(TEST_RETURN);
-		else
-			tst_resm(TPASS, "getgroups succeeded");
+		verify_groups(TEST_RETURN);
 	}
 
 	cleanup();

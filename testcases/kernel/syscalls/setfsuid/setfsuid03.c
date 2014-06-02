@@ -72,11 +72,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (!STD_FUNCTIONAL_TEST) {
-			tst_resm(TPASS, "setfsuid() succeeded");
-			continue;
-		}
-
 		if (TEST_RETURN == uid) {
 			tst_resm(TFAIL,
 				 "setfsuid() returned %ld, expected anything but %d",

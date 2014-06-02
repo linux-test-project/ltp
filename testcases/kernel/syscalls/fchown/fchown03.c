@@ -133,52 +133,44 @@ int main(int ac, char **av)
 				 TESTFILE, TEST_ERRNO);
 			continue;
 		}
+
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Get the testfile information using
+		 * fstat(2).
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the testfile information using
-			 * fstat(2).
-			 */
-			if (fstat(fildes, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup, "fstat(2) of %s "
-					 "failed, errno:%d",
-					 TESTFILE, TEST_ERRNO);
-			}
+		if (fstat(fildes, &stat_buf) < 0) {
+			tst_brkm(TFAIL, cleanup, "fstat(2) of %s "
+				 "failed, errno:%d",
+				 TESTFILE, TEST_ERRNO);
+		}
 
-			/*
-			 * Check for expected Ownership ids
-			 * set on testfile.
-			 */
-			if ((stat_buf.st_uid != user_id) ||
-			    (stat_buf.st_gid != group_id)) {
-				tst_resm(TFAIL, "%s: Incorrect "
-					 "ownership set, Expected %d %d",
-					 TESTFILE, user_id, group_id);
-			}
+		/*
+		 * Check for expected Ownership ids
+		 * set on testfile.
+		 */
+		if ((stat_buf.st_uid != user_id) ||
+		    (stat_buf.st_gid != group_id)) {
+			tst_resm(TFAIL, "%s: Incorrect "
+				 "ownership set, Expected %d %d",
+				 TESTFILE, user_id, group_id);
+		}
 
-			/*
-			 * Verify that setuid/setgid bits
-			 * set on the testfile in setup() are
-			 * cleared by fchown()
-			 */
-			if (stat_buf.st_mode != FCHOWN_PERMS) {
-				tst_resm(TFAIL, "%s: Incorrect mode permissions"
-					 " %#o, Expected %#o", TESTFILE,
-					 stat_buf.st_mode, FCHOWN_PERMS);
-			} else {
-				tst_resm(TPASS, "fchown() on %s succeeds: "
-					 "Setuid/gid bits cleared", TESTFILE);
-			}
+		/*
+		 * Verify that setuid/setgid bits
+		 * set on the testfile in setup() are
+		 * cleared by fchown()
+		 */
+		if (stat_buf.st_mode != FCHOWN_PERMS) {
+			tst_resm(TFAIL, "%s: Incorrect mode permissions"
+				 " %#o, Expected %#o", TESTFILE,
+				 stat_buf.st_mode, FCHOWN_PERMS);
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "fchown() on %s succeeds: "
+				 "Setuid/gid bits cleared", TESTFILE);
 		}
 	}
 
 	cleanup();
-
 	return (0);
 }
 

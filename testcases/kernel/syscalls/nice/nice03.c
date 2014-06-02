@@ -113,30 +113,21 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
-		 */
-		if (STD_FUNCTIONAL_TEST) {
-			New_nice = getpriority(PRIO_PROCESS, 0);
+		New_nice = getpriority(PRIO_PROCESS, 0);
 
-			/* Validate functionality of the nice() */
-			if (New_nice != (Org_nice + NICEINC)) {
-				tst_resm(TFAIL, "nice() failed to modify the "
-					 "priority of process");
-			} else {
-				tst_resm(TPASS, "Functionality of nice(%d) is "
-					 "correct", NICEINC);
-			}
-			Org_nice = New_nice;
+		/* Validate functionality of the nice() */
+		if (New_nice != (Org_nice + NICEINC)) {
+			tst_resm(TFAIL, "nice() failed to modify the "
+				 "priority of process");
 		} else {
-			tst_resm(TPASS, "call succeeded");
+			tst_resm(TPASS, "Functionality of nice(%d) is "
+				 "correct", NICEINC);
 		}
+		Org_nice = New_nice;
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

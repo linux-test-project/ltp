@@ -145,33 +145,29 @@ int main(int argc, char *argv[])
 			tst_resm(TPASS, "mmap() completed successfully.");
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
+		tst_resm(TINFO, "touching mmaped memory");
 
-			tst_resm(TINFO, "touching mmaped memory");
-
-			for (i = 0; i < memsize; i++) {
-				array[i] = (char)i;
-			}
-
-			/*
-			 * seems that if the map area was bad, we'd get SEGV,
-			 * hence we can indicate a PASS.
-			 */
-			tst_resm(TPASS,
-				 "we're still here, mmaped area must be good");
-
-			TEST(msync(array, memsize, MS_SYNC));
-
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL | TTERRNO,
-					 "synchronizing mmapped page failed");
-			} else {
-				tst_resm(TPASS,
-					 "synchronizing mmapped page passed");
-			}
-
+		for (i = 0; i < memsize; i++) {
+			array[i] = (char)i;
 		}
-		/* STD_FUNCTIONAL_TEST */
+
+		/*
+		 * seems that if the map area was bad, we'd get SEGV,
+		 * hence we can indicate a PASS.
+		 */
+		tst_resm(TPASS,
+			 "we're still here, mmaped area must be good");
+
+		TEST(msync(array, memsize, MS_SYNC));
+
+		if (TEST_RETURN == -1) {
+			tst_resm(TFAIL | TTERRNO,
+				 "synchronizing mmapped page failed");
+		} else {
+			tst_resm(TPASS,
+				 "synchronizing mmapped page passed");
+		}
+
 		TEST(munmap(array, memsize));
 
 		if (TEST_RETURN == -1) {

@@ -101,33 +101,29 @@ int main(int ac, char **av)
 
 		proc_id = TEST_RETURN;
 
-		if (STD_FUNCTIONAL_TEST) {
-			if ((pid = FORK_OR_VFORK()) == -1)
-				tst_resm(TFAIL | TERRNO, "fork failed");
-			else if (pid == 0) {
-				pproc_id = getppid();
+		if ((pid = FORK_OR_VFORK()) == -1)
+			tst_resm(TFAIL | TERRNO, "fork failed");
+		else if (pid == 0) {
+			pproc_id = getppid();
 
-				if (pproc_id != proc_id)
-					exit(1);
-				exit(0);
-			} else {
-				if (wait(&status) == -1)
-					tst_brkm(TBROK | TERRNO, cleanup,
-						 "wait failed");
-				if (!WIFEXITED(status) ||
-				    WEXITSTATUS(status) != 0)
-					tst_resm(TFAIL, "getpid() returned "
-						 "invalid pid %d", proc_id);
-				else
-					tst_resm(TPASS,
-						 "getpid functionality is correct");
-			}
-		} else
-			tst_resm(TPASS, "call succeeded");
+			if (pproc_id != proc_id)
+				exit(1);
+			exit(0);
+		} else {
+			if (wait(&status) == -1)
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "wait failed");
+			if (!WIFEXITED(status) ||
+			    WEXITSTATUS(status) != 0)
+				tst_resm(TFAIL, "getpid() returned "
+					 "invalid pid %d", proc_id);
+			else
+				tst_resm(TPASS,
+					 "getpid functionality is correct");
+		}
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

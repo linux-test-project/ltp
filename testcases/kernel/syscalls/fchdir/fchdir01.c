@@ -107,14 +107,11 @@ int main(int ac, char **av)
 
 		TEST(fchdir(fd));
 
-		if (TEST_RETURN == -1)
+		if (TEST_RETURN == -1) {
 			tst_brkm(TFAIL | TTERRNO, cleanup,
 				 "fchdir call failed");
-		else {
-			if (STD_FUNCTIONAL_TEST)
+		} else {
 				check_functionality();
-			else
-				tst_resm(TPASS, "call succeeded");
 		}
 
 		/*
@@ -140,7 +137,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 

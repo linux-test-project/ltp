@@ -142,27 +142,18 @@ int main(int ac, char **av)
 			/* Check return code from sigaltstack() */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				/*
-				 * Perform functional verification if test
-				 * executed without (-f) option.
-				 */
-				if (STD_FUNCTIONAL_TEST) {
-					if (TEST_ERRNO ==
-					    Test_cases[ind].exp_errno) {
-						tst_resm(TPASS, "stgaltstack() "
-							 "fails, %s, errno:%d",
-							 test_desc, TEST_ERRNO);
-					} else {
-						tst_resm(TFAIL, "sigaltstack() "
-							 "fails, %s, errno:%d, "
-							 "expected errno:%d",
-							 test_desc, TEST_ERRNO,
-							 Test_cases
-							 [ind].exp_errno);
-					}
+				if (TEST_ERRNO ==
+				    Test_cases[ind].exp_errno) {
+					tst_resm(TPASS, "stgaltstack() "
+						 "fails, %s, errno:%d",
+						 test_desc, TEST_ERRNO);
 				} else {
-					tst_resm(TPASS, "Call returned -1 as "
-						 "expected.");
+					tst_resm(TFAIL, "sigaltstack() "
+						 "fails, %s, errno:%d, "
+						 "expected errno:%d",
+						 test_desc, TEST_ERRNO,
+						 Test_cases
+						 [ind].exp_errno);
 				}
 			} else {
 				tst_resm(TFAIL, "sigaltstack() returned %ld, "

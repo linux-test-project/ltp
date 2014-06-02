@@ -126,33 +126,26 @@ int main(int ac, char **av)
 		}
 
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Get the file information using
+		 * stat(2).
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Get the file information using
-			 * stat(2).
-			 */
-			if (stat(TESTDIR, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "stat(2) of %s failed, errno:%d",
-					 TESTDIR, TEST_ERRNO);
-			}
-			dir_mode = stat_buf.st_mode;
+		if (stat(TESTDIR, &stat_buf) < 0) {
+			tst_brkm(TFAIL, cleanup,
+				 "stat(2) of %s failed, errno:%d",
+				 TESTDIR, TEST_ERRNO);
+		}
+		dir_mode = stat_buf.st_mode;
 
-			/* Verify STICKY BIT SET on directory */
-			if ((dir_mode & PERMS) == PERMS) {
-				tst_resm(TPASS, "Functionality of "
-					 "chmod(%s, %#o) successful",
-					 TESTDIR, PERMS);
-			} else {
-				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
-					 "Expected 0%03o",
-					 TESTDIR, dir_mode, PERMS);
-			}
-		} else
-			tst_resm(TPASS, "call succeeded");
+		/* Verify STICKY BIT SET on directory */
+		if ((dir_mode & PERMS) == PERMS) {
+			tst_resm(TPASS, "Functionality of "
+				 "chmod(%s, %#o) successful",
+				 TESTDIR, PERMS);
+		} else {
+			tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
+				 "Expected 0%03o",
+				 TESTDIR, dir_mode, PERMS);
+		}
 	}
 
 	cleanup();

@@ -97,18 +97,14 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			fstat(fildes, &statbuf);
-			filmode = statbuf.st_mode;
-			if (!(filmode & S_ISVTX)) {
-				tst_resm(TFAIL, "Save test bit cleared, but "
-					 "should not have been");
-			} else {
-				tst_resm(TPASS, "Save text bit not cleared "
-					 "as expected");
-			}
+		fstat(fildes, &statbuf);
+		filmode = statbuf.st_mode;
+		if (!(filmode & S_ISVTX)) {
+			tst_resm(TFAIL, "Save test bit cleared, but "
+				 "should not have been");
 		} else {
-			tst_resm(TPASS, "open call succeeded");
+			tst_resm(TPASS, "Save text bit not cleared "
+				 "as expected");
 		}
 
 		/* test #2 */
@@ -120,18 +116,14 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			fstat(TEST_RETURN, &statbuf);
-			filmode = statbuf.st_mode;
-			if (!(filmode & S_IFDIR)) {
-				tst_resm(TFAIL, "directory bit cleared, but "
-					 "should not have been");
-			} else {
-				tst_resm(TPASS, "directory bit is set "
-					 "as expected");
-			}
+		fstat(TEST_RETURN, &statbuf);
+		filmode = statbuf.st_mode;
+		if (!(filmode & S_IFDIR)) {
+			tst_resm(TFAIL, "directory bit cleared, but "
+				 "should not have been");
 		} else {
-			tst_resm(TPASS, "open of /tmp succeeded");
+			tst_resm(TPASS, "directory bit is set "
+				 "as expected");
 		}
 
 		/* clean up things is case we are looping */

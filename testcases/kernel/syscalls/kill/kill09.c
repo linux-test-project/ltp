@@ -166,12 +166,9 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1)
 			tst_resm(TFAIL | TTERRNO, "kill(.., SIGKILL) failed");
 		else {
-
-			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "kill(%d, SIGKILL) returned %ld",
-					 fork_pid, TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "kill(%d, SIGKILL) returned %ld",
+				 fork_pid, TEST_RETURN);
 		}
 
 		waitpid(0, &status, WNOHANG);

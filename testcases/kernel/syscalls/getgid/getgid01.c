@@ -70,14 +70,12 @@ int main(int ac, char **av)
 
 		TEST(GETGID(cleanup));
 
-		if (TEST_RETURN == -1)
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "getgid failed");
-		else {
-			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, "getgid returned %ld",
-					 TEST_RETURN);
+		} else {
+			tst_resm(TPASS, "getgid returned %ld",
+				 TEST_RETURN);
 		}
-
 	}
 
 	cleanup();

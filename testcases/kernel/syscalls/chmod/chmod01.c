@@ -120,30 +120,25 @@ int main(int ac, char **av)
 					 mode);
 				continue;
 			}
-			if (STD_FUNCTIONAL_TEST) {
-				if (stat(TESTFILE, &stat_buf) < 0)
-					tst_brkm(TFAIL | TERRNO, cleanup,
-						 "stat(%s) failed", TESTFILE);
-				stat_buf.st_mode &= ~S_IFREG;
+			if (stat(TESTFILE, &stat_buf) < 0)
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "stat(%s) failed", TESTFILE);
+			stat_buf.st_mode &= ~S_IFREG;
 
-				if (stat_buf.st_mode == mode)
-					tst_resm(TPASS, "Functionality of "
-						 "chmod(%s, %#o) successful",
-						 TESTFILE, mode);
-				else
-					tst_resm(TFAIL, "%s: Incorrect "
-						 "modes 0%03o, Expected 0%03o",
-						 TESTFILE, stat_buf.st_mode,
-						 mode);
-			} else
-				tst_resm(TPASS, "call succeeded");
+			if (stat_buf.st_mode == mode)
+				tst_resm(TPASS, "Functionality of "
+					 "chmod(%s, %#o) successful",
+					 TESTFILE, mode);
+			else
+				tst_resm(TFAIL, "%s: Incorrect "
+					 "modes 0%03o, Expected 0%03o",
+					 TESTFILE, stat_buf.st_mode,
+					 mode);
 		}
 	}
 
 	cleanup();
-
 	tst_exit();
-
 }
 
 void setup(void)

@@ -58,7 +58,6 @@ extern pid_t spawned_program_pid;
 #endif
 
 /* Define flags and args for standard options */
-int STD_FUNCTIONAL_TEST = 1;	/* flag indicating to do functional testing code */
 int STD_TIMING_ON = 0;		/* flag indicating to print timing stats */
 static int STD_PAUSE = 0;	/* flag indicating to pause before actual start, */
     /* for contention mode */
@@ -100,7 +99,6 @@ static struct std_option_t {
 } std_options[] = {
 	{"c:", "  -c n    Run n copies concurrently\n", NULL, NULL},
 	{"e", "  -e      Turn on errno logging\n", NULL, NULL},
-	{"f", "  -f      Turn off functional testing\n", NULL, NULL},
 	{"h", "  -h      Show this help screen\n", NULL, NULL},
 	{"i:", "  -i n    Execute test n times\n", NULL, NULL},
 	{"I:", "  -I x    Execute test for x seconds\n", NULL, NULL},
@@ -266,9 +264,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 			options |= OPT_copies;
 			STD_COPIES = atoi(optarg);
 			break;
-		case 'f':	/* Functional testing */
-			STD_FUNCTIONAL_TEST = 0;
-			break;
 		case 'p':	/* Pause for SIGUSR1 */
 			STD_PAUSE = 1;
 			break;
@@ -357,18 +352,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 					     USC_ITERATION_ENV, k);
 			}
 		}
-	}
-
-	/*
-	 * If the USC_NO_FUNC_CHECK environmental variable is set, we'll
-	 * unset the STD_FUNCTIONAL_TEST variable.
-	 */
-	if (!(options & OPT_nofunccheck) &&
-	    getenv(USC_NO_FUNC_CHECK) != NULL) {
-		STD_FUNCTIONAL_TEST = 0;	/* Turn off functional testing */
-		if (Debug)
-			printf("Using env %s, set STD_FUNCTIONAL_TEST to 0\n",
-			       USC_NO_FUNC_CHECK);
 	}
 
 	/*
@@ -541,7 +524,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 	}
 #if UNIT_TEST
 	printf("The following variables after option and env parsing:\n");
-	printf("STD_FUNCTIONAL_TEST = %d\n", STD_FUNCTIONAL_TEST);
 	printf("STD_LOOP_DURATION   = %f\n", STD_LOOP_DURATION);
 	printf("STD_LOOP_DELAY      = %f\n", STD_LOOP_DELAY);
 	printf("STD_COPIES          = %d\n", STD_COPIES);

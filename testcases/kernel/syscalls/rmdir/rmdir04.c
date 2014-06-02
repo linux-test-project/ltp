@@ -173,23 +173,13 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "rmdir(%s) Failed, errno=%d : %s",
 				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS, "rmdir(%s) returned %ld", fname,
-					 TEST_RETURN);
-			}
+			tst_resm(TPASS, "rmdir(%s) returned %ld", fname,
+				 TEST_RETURN);
 		}
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

@@ -99,10 +99,7 @@ int main(int argc, char *argv[])
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "shmat call failed");
 			} else {
-				if (STD_FUNCTIONAL_TEST)
-					check_functionality(i);
-				else
-					tst_resm(TPASS, "call succeeded");
+				check_functionality(i);
 			}
 
 			if (shmdt(addr) == -1)

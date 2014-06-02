@@ -179,20 +179,12 @@ int main(int ac, char **av)
 		}
 
 		/*
-		 * Perform functional verification if test
-		 * executed without (-f) option.
+		 * Check the contents of temporary file
+		 * to which data written using pwrite().
+		 * Compare the data read with the original
+		 * write_buf[] contents.
 		 */
-		if (STD_FUNCTIONAL_TEST) {
-			/*
-			 * Check the contents of temporary file
-			 * to which data written using pwrite().
-			 * Compare the data read with the original
-			 * write_buf[] contents.
-			 */
-			check_file_contents();
-		} else {
-			tst_resm(TPASS, "calls to pwrite() succeeded");
-		}
+		check_file_contents();
 
 		/* reset to offset 0 in case we are looping */
 		l_seek(fildes, 0, SEEK_SET, 0);
@@ -201,8 +193,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-	tst_exit();
-
 }
 
 /*

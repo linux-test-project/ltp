@@ -51,8 +51,7 @@
  * The following globals are defined in parse_opts.c but must be
  * externed here because they are used in the macros defined below.
  ***********************************************************************/
-extern int STD_FUNCTIONAL_TEST,	/* turned off by -f to not do functional test */
-           STD_TIMING_ON,	/* turned on by -t to print timing stats */
+extern int STD_TIMING_ON,	/* turned on by -t to print timing stats */
            STD_LOOP_COUNT,	/* changed by -in to set loop count to n */
            STD_ERRNO_LOG,	/* turned on by -e to log errnos returned */
            STD_ERRNO_LIST[],	/* counts of errnos returned.  indexed by errno */

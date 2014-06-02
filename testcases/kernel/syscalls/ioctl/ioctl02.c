@@ -261,19 +261,14 @@ static int run_ptest(void)
 		return -1;
 	}
 
-	if (STD_FUNCTIONAL_TEST) {
-		/* Get termio and see if all parameters actually got set */
-		rval = ioctl(parentfd, TCGETA, &termio);
-		if (rval < 0) {
-			tst_resm(TFAIL, "ioctl TCGETA failed.  Ending test.");
-			return -1;
-		}
-
-		return chk_tty_parms();
-	} else {
-		tst_resm(TINFO, "call succeeded");
-		return 0;
+	/* Get termio and see if all parameters actually got set */
+	rval = ioctl(parentfd, TCGETA, &termio);
+	if (rval < 0) {
+		tst_resm(TFAIL, "ioctl TCGETA failed.  Ending test.");
+		return -1;
 	}
+
+	return chk_tty_parms();
 }
 
 static int run_ctest(void)

@@ -89,7 +89,7 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "getgroups succeeded unexpectedly");
-		} else if (STD_FUNCTIONAL_TEST) {
+		} else {
 			if (errno == EINVAL)
 				tst_resm(TPASS,
 					 "getgroups failed as expected with EINVAL");
@@ -109,7 +109,7 @@ int main(int ac, char **av)
 		TEST(GETGROUPS(cleanup, 0, gidset));
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "getgroups failed unexpectedly");
-		} else if (STD_FUNCTIONAL_TEST) {
+		} else {
 			if (memcmp(cmpset, gidset, NGROUPS * sizeof(GID_T)) != 0)
 				tst_resm(TFAIL,
 					 "getgroups modified the gidset array");
@@ -130,16 +130,14 @@ int main(int ac, char **av)
 		} else {
 			TEST(GETGROUPS(cleanup, TEST_RETURN - 1, gidset));
 			if (TEST_RETURN == -1) {
-				if (STD_FUNCTIONAL_TEST) {
-					if (errno == EINVAL)
-						tst_resm(TPASS,
-							 "getgroups failed as "
-							 "expected with EINVAL");
-					else
-						tst_resm(TFAIL | TERRNO,
-							 "getgroups didn't fail "
-							 "with EINVAL");
-				}
+				if (errno == EINVAL)
+					tst_resm(TPASS,
+						 "getgroups failed as "
+						 "expected with EINVAL");
+				else
+					tst_resm(TFAIL | TERRNO,
+						 "getgroups didn't fail "
+						 "with EINVAL");
 			} else {
 				tst_resm(TFAIL,
 					 "getgroups succeeded unexpectedly with %ld",
@@ -151,7 +149,7 @@ int main(int ac, char **av)
 		if ((entries = TEST_RETURN) == -1) {
 			tst_resm(TFAIL | TTERRNO,
 				 "getgroups failed unexpectedly");
-		} else if (STD_FUNCTIONAL_TEST) {
+		} else {
 
 			group = getgid();
 

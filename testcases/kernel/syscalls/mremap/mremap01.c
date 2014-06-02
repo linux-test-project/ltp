@@ -115,43 +115,33 @@ int main(int ac, char **av)
 	addr = mremap(addr, memsize, newsize, MREMAP_MAYMOVE);
 
 	/* Check for the return value of mremap() */
-	if (addr == MAP_FAILED) {
+	if (addr == MAP_FAILED)
 		tst_brkm(TFAIL | TERRNO, cleanup, "mremap failed");
+
+	/*
+	 * Attempt to initialize the expanded memory
+	 * mapped region with data. If the map area
+	 * was bad, we'd get SIGSEGV.
+	 */
+	for (ind = 0; ind < newsize; ind++) {
+		addr[ind] = (char)ind;
 	}
 
 	/*
-	 * Perform functional verification if test
-	 * executed without (-f) option.
+	 * Memory mapped area is good. Now, attempt
+	 * to synchronize the mapped memory region
+	 * with the file.
 	 */
-	if (STD_FUNCTIONAL_TEST) {
-		/*
-		 * Attempt to initialize the expanded memory
-		 * mapped region with data. If the map area
-		 * was bad, we'd get SIGSEGV.
-		 */
-		for (ind = 0; ind < newsize; ind++) {
-			addr[ind] = (char)ind;
-		}
-
-		/*
-		 * Memory mapped area is good. Now, attempt
-		 * to synchronize the mapped memory region
-		 * with the file.
-		 */
-		if (msync(addr, newsize, MS_SYNC) != 0) {
-			tst_resm(TFAIL | TERRNO, "msync failed to synch "
-				 "mapped file");
-		} else {
-			tst_resm(TPASS, "Functionality of "
-				 "mremap() is correct");
-		}
+	if (msync(addr, newsize, MS_SYNC) != 0) {
+		tst_resm(TFAIL | TERRNO, "msync failed to synch "
+			 "mapped file");
 	} else {
-		tst_resm(TPASS, "call succeeded");
+		tst_resm(TPASS, "Functionality of "
+			 "mremap() is correct");
 	}
 
 	cleanup();
 	tst_exit();
-
 }
 
 /*

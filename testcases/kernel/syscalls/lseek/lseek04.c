@@ -165,20 +165,16 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			if (STD_FUNCTIONAL_TEST) {
-
-				if (TEST_ERRNO == ESPIPE)
-					tst_resm(TPASS,
-						 "lseek(fifofd, 1, SEEK_SET) Failed, errno=%d : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				else
-					tst_resm(TFAIL,
-						 "lseek(fifofd, 1, SEEK_SET) Failed, errno=%d %s, expected %d(ESPIPE)",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO), EINVAL);
-			} else
-				tst_count++;
+			if (TEST_ERRNO == ESPIPE)
+				tst_resm(TPASS,
+					 "lseek(fifofd, 1, SEEK_SET) Failed, errno=%d : %s",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			else
+				tst_resm(TFAIL,
+					 "lseek(fifofd, 1, SEEK_SET) Failed, errno=%d %s, expected %d(ESPIPE)",
+					 TEST_ERRNO,
+					 strerror(TEST_ERRNO), EINVAL);
 		} else {
 
 			tst_resm(TFAIL,
@@ -188,12 +184,8 @@ int main(int ac, char **av)
 
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

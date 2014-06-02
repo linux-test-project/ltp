@@ -110,38 +110,35 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (STD_FUNCTIONAL_TEST) {
-			if (lseek(fildes, (off_t) 100, SEEK_SET) != 100)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "lseek failed");
+		if (lseek(fildes, (off_t) 100, SEEK_SET) != 100)
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "lseek failed");
 
+		/*
+		 * Seeking to specified offset. successful.
+		 * Now, read the data (256 bytes) and compare
+		 * them with the expected.
+		 */
+		nread = read(fildes, read_buf, sizeof(read_buf));
+		if (nread != BUF_SIZE)
+			tst_brkm(TBROK, cleanup, "read failed");
+		else {
 			/*
-			 * Seeking to specified offset. successful.
-			 * Now, read the data (256 bytes) and compare
-			 * them with the expected.
+			 * Check whether read data (from mapped
+			 * file) contains the expected data
+			 * which was initialised in the setup.
 			 */
-			nread = read(fildes, read_buf, sizeof(read_buf));
-			if (nread != BUF_SIZE)
-				tst_brkm(TBROK, cleanup, "read failed");
-			else {
-				/*
-				 * Check whether read data (from mapped
-				 * file) contains the expected data
-				 * which was initialised in the setup.
-				 */
-				for (count = 0; count < nread; count++)
-					if (read_buf[count] != 1)
-						err_flg++;
-			}
+			for (count = 0; count < nread; count++)
+				if (read_buf[count] != 1)
+					err_flg++;
+		}
 
-			if (err_flg != 0)
-				tst_resm(TFAIL,
-					 "data read from file doesn't match");
-			else
-				tst_resm(TPASS,
-					 "Functionality of msync() successful");
-		} else
-			tst_resm(TPASS, "call succeeded");
+		if (err_flg != 0)
+			tst_resm(TFAIL,
+				 "data read from file doesn't match");
+		else
+			tst_resm(TPASS,
+				 "Functionality of msync() successful");
 
 		cleanup();
 

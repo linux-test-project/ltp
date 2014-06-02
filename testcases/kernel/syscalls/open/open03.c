@@ -69,12 +69,9 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TTERRNO,
 				 "open(%s,O_RDWR|O_CREAT,0700) failed", fname);
 		} else {
-			if (STD_FUNCTIONAL_TEST) {
-				/* No Verification test, yet... */
-				tst_resm(TPASS,
-					 "open(%s, O_RDWR|O_CREAT,0700) returned %ld",
-					 fname, TEST_RETURN);
-			}
+			tst_resm(TPASS,
+				 "open(%s, O_RDWR|O_CREAT,0700) returned %ld",
+				 fname, TEST_RETURN);
 
 			if (close(fd) == -1)
 				tst_brkm(TBROK | TERRNO, cleanup,

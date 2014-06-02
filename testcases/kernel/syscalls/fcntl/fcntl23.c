@@ -152,27 +152,23 @@ int main(int ac, char **av)
 				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
-			if (STD_FUNCTIONAL_TEST) {
-				TEST(fcntl(fd, F_GETLEASE));
-				if (TEST_RETURN != F_RDLCK)
+			TEST(fcntl(fd, F_GETLEASE));
+			if (TEST_RETURN != F_RDLCK)
+				tst_resm(TFAIL,
+					 "fcntl(%s, F_GETLEASE) did not return F_RDLCK, returned %ld",
+					 fname, TEST_RETURN);
+			else {
+				TEST(fcntl(fd, F_SETLEASE, F_UNLCK));
+				if (TEST_RETURN != 0)
 					tst_resm(TFAIL,
-						 "fcntl(%s, F_GETLEASE) did not return F_RDLCK, returned %ld",
+						 "fcntl(%s, F_SETLEASE, F_UNLCK) did not return 0, returned %ld",
 						 fname, TEST_RETURN);
-				else {
-					TEST(fcntl(fd, F_SETLEASE, F_UNLCK));
-					if (TEST_RETURN != 0)
-						tst_resm(TFAIL,
-							 "fcntl(%s, F_SETLEASE, F_UNLCK) did not return 0, returned %ld",
-							 fname, TEST_RETURN);
-					else
-						tst_resm(TPASS,
-							 "fcntl(%s, F_SETLEASE, F_RDLCK)",
-							 fname);
-				}
+				else
+					tst_resm(TPASS,
+						 "fcntl(%s, F_SETLEASE, F_RDLCK)",
+						 fname);
 			}
+
 			if (close(TEST_RETURN) == -1) {
 				tst_resm(TWARN,
 					 "close(%s) Failed, errno=%d : %s",
@@ -184,12 +180,8 @@ int main(int ac, char **av)
 #endif
 	}
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 	tst_exit();
-
 }
 
 /***************************************************************

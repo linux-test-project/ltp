@@ -218,55 +218,47 @@ static void mysymlinkat_test(struct test_struct *desc)
 
 	/* check return code */
 	if (TEST_ERRNO == desc->expected_errno) {
+		if (TEST_RETURN == 0 && desc->referencefn1 != NULL) {
+			int tnum = rand(), vnum = ~tnum;
+			int len;
+			fd = SUCCEED_OR_DIE(open,
+					    "open(%s, 0x%x) failed: %s",
+					    desc->referencefn1, O_RDWR);
+			if ((len =
+			     write(fd, &tnum,
+				   sizeof(tnum))) != sizeof(tnum))
+				tst_brkm(TBROK, cleanup,
+					 "write() failed: expected %zu, returned %d; error: %s",
+					 sizeof(tnum), len,
+					 strerror(errno));
+			SUCCEED_OR_DIE(close, "close(%d) failed: %s",
+				       fd);
 
-		/***************************************************************
-		 * only perform functional verification if flag set (-f not given)
-		 ***************************************************************/
-		if (STD_FUNCTIONAL_TEST) {
-			/* No Verification test, yet... */
+			fd = SUCCEED_OR_DIE(open,
+					    "open(%s, 0x%x) failed: %s",
+					    desc->referencefn2,
+					    O_RDONLY);
+			if ((len =
+			     read(fd, &vnum,
+				  sizeof(vnum))) != sizeof(tnum))
+				tst_brkm(TBROK, cleanup,
+					 "read() failed: expected %zu, returned %d; error: %s",
+					 sizeof(vnum), len,
+					 strerror(errno));
+			SUCCEED_OR_DIE(close, "close(%d) failed: %s",
+				       fd);
 
-			if (TEST_RETURN == 0 && desc->referencefn1 != NULL) {
-				int tnum = rand(), vnum = ~tnum;
-				int len;
-				fd = SUCCEED_OR_DIE(open,
-						    "open(%s, 0x%x) failed: %s",
-						    desc->referencefn1, O_RDWR);
-				if ((len =
-				     write(fd, &tnum,
-					   sizeof(tnum))) != sizeof(tnum))
-					tst_brkm(TBROK, cleanup,
-						 "write() failed: expected %zu, returned %d; error: %s",
-						 sizeof(tnum), len,
-						 strerror(errno));
-				SUCCEED_OR_DIE(close, "close(%d) failed: %s",
-					       fd);
-
-				fd = SUCCEED_OR_DIE(open,
-						    "open(%s, 0x%x) failed: %s",
-						    desc->referencefn2,
-						    O_RDONLY);
-				if ((len =
-				     read(fd, &vnum,
-					  sizeof(vnum))) != sizeof(tnum))
-					tst_brkm(TBROK, cleanup,
-						 "read() failed: expected %zu, returned %d; error: %s",
-						 sizeof(vnum), len,
-						 strerror(errno));
-				SUCCEED_OR_DIE(close, "close(%d) failed: %s",
-					       fd);
-
-				if (tnum == vnum)
-					tst_resm(TPASS, "Test passed");
-				else
-					tst_resm(TFAIL,
-						 "The link file's content isn't as same as the original file's "
-						 "although symlinkat returned 0");
-			} else
-				tst_resm(TPASS,
-					 "symlinkat() returned the expected  errno %d: %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-		} else
-			tst_resm(TPASS, "Test passed");
+			if (tnum == vnum)
+				tst_resm(TPASS, "Test passed");
+			else
+				tst_resm(TFAIL,
+					 "The link file's content isn't as same as the original file's "
+					 "although symlinkat returned 0");
+		} else {
+			tst_resm(TPASS,
+				 "symlinkat() returned the expected  errno %d: %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+		}
 	} else {
 		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_resm(TFAIL,

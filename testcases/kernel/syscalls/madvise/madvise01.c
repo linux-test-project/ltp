@@ -140,6 +140,6 @@ static void check_and_print(char *advice)
 {
 	if (TEST_RETURN == -1)
 		tst_resm(TFAIL | TTERRNO, "madvise test for %s failed", advice);
-	else if (STD_FUNCTIONAL_TEST)
+	else
 		tst_resm(TPASS, "madvise test for %s PASSED", advice);
 }
