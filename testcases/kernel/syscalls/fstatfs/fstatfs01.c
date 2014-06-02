@@ -30,7 +30,6 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fstatfs01.c,v 1.7 2009/10/26 14:55:47 subrata_modak Exp $ */
 /*
  * DETAILED DESCRIPTION
  *   This is a Phase I test for the fstatfs(2) system call.  It is intended
@@ -76,16 +75,11 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-#ifdef __linux__
-#define FSTATFSCALL fstatfs(fd, &stats)
-#else
-#define FSTATFSCALL fstatfs(fd, &stats, sizeof(struct statfs), 0)
-#endif
-		TEST(FSTATFSCALL);
+		TEST(fstatfs(fd, &stats));
 
-		if (TEST_RETURN == -1)
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "fstatfs failed");
-		else {
+		} else {
 			if (STD_FUNCTIONAL_TEST)
 				tst_resm(TPASS,
 					 "fstatfs(%d, &stats, sizeof(struct statfs), 0) returned %ld",
@@ -95,7 +89,6 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
