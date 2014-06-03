@@ -66,6 +66,7 @@
 #endif
 
 #include "lapi/splice.h"
+#include "lapi/vmsplice.h"
 #include "lapi/tee.h"
 
 #endif /* __LAPI_FCNTL_H__ */
