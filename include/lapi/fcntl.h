@@ -59,4 +59,13 @@
 # define FALLOC_FL_KEEP_SIZE 1
 #endif
 
+/* splice, vmsplice, tee */
+
+#ifndef SPLICE_F_NONBLOCK
+# define SPLICE_F_NONBLOCK 2
+#endif
+
+#include "lapi/splice.h"
+#include "lapi/tee.h"
+
 #endif /* __LAPI_FCNTL_H__ */
