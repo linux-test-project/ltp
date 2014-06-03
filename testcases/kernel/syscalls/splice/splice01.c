@@ -54,7 +54,7 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "tst_fs_type.h"
-#include "splice.h"
+#include "lapi/splice.h"
 
 #define SPLICE_TEST_BLOCK_SIZE 1024
 

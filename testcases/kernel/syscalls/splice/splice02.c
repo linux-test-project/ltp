@@ -40,7 +40,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-#include "splice.h"
+#include "lapi/splice.h"
 
 char *TCID = "splice02";
 int testno;

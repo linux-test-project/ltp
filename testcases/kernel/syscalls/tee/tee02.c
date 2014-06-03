@@ -35,7 +35,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "tee.h"
+#include "lapi/tee.h"
 
 #define TEST_FILE "testfile"
 

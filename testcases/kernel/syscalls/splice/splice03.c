@@ -20,7 +20,7 @@
  *   1) splice() returns -1 and sets errno to EBADF if the file
  *      descriptor fd_in is not valid.
  *   2) splice() returns -1 and sets errno to EBADF if the file
- *      descriptor fd_out is not valid..
+ *      descriptor fd_out is not valid.
  *   3) splice() returns -1 and sets errno to EBADF if the file
  *      descriptor fd_in does not have proper read-write mode.
  *   4) splice() returns -1 and sets errno to EINVAL if target
@@ -43,7 +43,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "splice.h"
+#include "lapi/splice.h"
 
 #define TEST_FILE "testfile"
 #define TEST_FILE2 "testfile2"
