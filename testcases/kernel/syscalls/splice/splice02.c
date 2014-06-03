@@ -14,8 +14,8 @@
 /* the GNU General Public License for more details.                           */
 /*                                                                            */
 /* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
+/* along with this program;  if not, write to the Free Software Foundation,   */
+/* Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           */
 /*                                                                            */
 /******************************************************************************/
 /******************************************************************************/
@@ -32,6 +32,7 @@
 /* Test Name:   splice02                                                      */
 /******************************************************************************/
 #define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -39,62 +40,25 @@
 
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
+#include "safe_macros.h"
 #include "lapi/splice.h"
 
 char *TCID = "splice02";
-int testno;
 int TST_TOTAL = 1;
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-void cleanup(void)
+static void cleanup(void)
 {
-
 	TEST_CLEANUP;
 	tst_rmdir();
-
-	tst_exit();
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
-void setup(void)
+static void setup(void)
 {
-	/* Capture signals if any */
-	/* Create temporary directories */
+	if ((tst_kvercmp(2, 6, 17)) < 0) {
+		tst_brkm(TCONF, cleanup, "This test can only run on kernels "
+			"that are 2.6.17 or higher");
+	}
+
 	TEST_PAUSE;
 	tst_tmpdir();
 }
@@ -103,15 +67,7 @@ void setup(void)
 
 int main(int ac, char **av)
 {
-	int fd = 0;
-	int results = 0;
-
-	/* Disable test if the version of the kernel is less than 2.6.17 */
-	if (((results = tst_kvercmp(2, 6, 17)) < 0)) {
-		tst_resm(TINFO, "This test can only run on kernels that are ");
-		tst_resm(TINFO, "2.6.17 and higher");
-		exit(0);
-	}
+	int fd;
 
 	setup();
 
@@ -119,26 +75,19 @@ int main(int ac, char **av)
 		tst_resm(TFAIL, "%s failed - Usage: %s outfile", TCID, av[0]);
 		tst_exit();
 	}
-	fd = open(av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd < 0) {
-		tst_resm(TFAIL, "open(%s) failed - errno = %d : %s", av[1],
-			 errno, strerror(errno));
-		cleanup();
-		tst_exit();
+
+	fd = SAFE_OPEN(cleanup, av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+	TEST(splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
+	if (TEST_RETURN < 0) {
+		tst_resm(TFAIL, "splice failed - errno = %d : %s",
+			 TEST_ERRNO, strerror(TEST_ERRNO));
+	} else {
+		tst_resm(TPASS, "splice() system call Passed");
 	}
 
-	do {
-		TEST(splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
-		if (TEST_RETURN < 0) {
-			tst_resm(TFAIL, "splice failed - errno = %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			cleanup();
-			tst_exit();
-		} else if (TEST_RETURN == 0) {
-			tst_resm(TPASS, "splice() system call Passed");
-			close(fd);
-			cleanup();
-			tst_exit();
-		}
-	} while (1);
+	SAFE_CLOSE(cleanup, fd);
+
+	cleanup();
+	tst_exit();
 }
