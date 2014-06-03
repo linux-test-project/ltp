@@ -1,46 +1,30 @@
-/****************
+/****************************************************************************
  *
- *   Copyright (c) International Business Machines  Corp., 2006
+ * Copyright (c) International Business Machines  Corp., 2006
+ *  Author Yi Yang <yyangcdl@cn.ibm.com>
+ * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * NAME
- *      tee01.c
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  * DESCRIPTION
  *	This test case will verify basic function of tee(2)
  *	added by kernel 2.6.17 or up.
  *
- * USAGE:  <for command-line>
- * tee01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- *      -c n : Run n copies simultaneously.
- *      -e   : Turn on errno logging.
- *      -i n : Execute test n times.
- *      -I x : Execute test for x seconds.
- *      -p   : Pause for SIGUSR1 before starting
- *      -P x : Pause for x seconds between iterations.
- *      -t   : Turn on syscall timing.
- *
- * Author
- *	Yi Yang <yyangcdl@cn.ibm.com>
- *
- * History
- *      08/18/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
- *
- ***************/
+ ***************************************************************************/
+
+#define _GNU_SOURCE
 
 #include <errno.h>
 #include <string.h>
@@ -48,252 +32,143 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/syscall.h>
+
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "safe_macros.h"
 #include "tst_fs_type.h"
+#include "lapi/fcntl.h"
 
-#define SPLICE_TEST_BLOCK_SIZE 1024
-#define SPLICE_F_NONBLOCK (0x02)
+static void tee_test(void);
+static void setup(void);
+static void cleanup(void);
 
-static int tee_test(void);
-void setup();
-void cleanup();
+#define TEST_BLOCK_SIZE 1024
+
+#define TESTFILE1 "tee_test_file_1"
+#define TESTFILE2 "tee_test_file_2"
+
+static int fd_in, fd_out;
+static char buffer[TEST_BLOCK_SIZE];
 
 char *TCID = "tee01";
 int TST_TOTAL = 1;
-char testfile1[256];
-char testfile2[256];
-
-static inline long splice(int fd_in, loff_t * off_in,
-			  int fd_out, loff_t * off_out,
-			  size_t len, unsigned int flags)
-{
-	return ltp_syscall(__NR_splice, fd_in, off_in, fd_out, off_out,
-		len, flags);
-}
-
-static inline int tee(int fdin, int fdout, size_t len, unsigned int flags)
-{
-	return ltp_syscall(__NR_tee, fdin, fdout, len, flags);
-}
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
-	int results;
 
-	/* Disable test if the version of the kernel is less than 2.6.17 */
-	if (((results = tst_kvercmp(2, 6, 17)) < 0)) {
-		tst_resm(TWARN, "This test can only run on kernels that are ");
-		tst_resm(TWARN, "2.6.17 and higher");
-		exit(0);
-	}
-
-	/*
-	 * parse standard options
-	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/*
-	 * perform global setup for test
-	 */
 	setup();
+
+	for (lc = 0; TEST_LOOPING(lc); lc++)
+		tee_test();
+
+	cleanup();
+	tst_exit();
+}
+
+static void check_file(void)
+{
+	int i;
+	char teebuffer[TEST_BLOCK_SIZE];
+
+	fd_out = SAFE_OPEN(cleanup, TESTFILE2, O_RDONLY);
+	SAFE_READ(cleanup, 1, fd_out, teebuffer, TEST_BLOCK_SIZE);
+
+	for (i = 0; i < TEST_BLOCK_SIZE; i++) {
+		if (buffer[i] != teebuffer[i])
+			break;
+	}
+
+	if (i < TEST_BLOCK_SIZE)
+		tst_resm(TFAIL, "Wrong data read from the buffer at %i", i);
+	else
+		tst_resm(TPASS, "Written data has been read back correctly");
+
+	close(fd_out);
+	fd_out = 0;
+}
+
+static void tee_test(void)
+{
+	int pipe1[2];
+	int pipe2[2];
+	int ret = 0;
+
+	fd_in = SAFE_OPEN(cleanup, TESTFILE1, O_RDONLY);
+	fd_out = SAFE_OPEN(cleanup, TESTFILE2, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+
+	SAFE_PIPE(cleanup, pipe1);
+	SAFE_PIPE(cleanup, pipe2);
+
+	ret = splice(fd_in, NULL, pipe1[1], NULL, TEST_BLOCK_SIZE, 0);
+	if (ret < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "splice(fd_in, pipe1) failed");
+
+	ret = tee(pipe1[0], pipe2[1], TEST_BLOCK_SIZE, SPLICE_F_NONBLOCK);
+	if (ret < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "tee() failed");
+
+	ret = splice(pipe2[0], NULL, fd_out, NULL, TEST_BLOCK_SIZE, 0);
+	if (ret < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "splice(pipe2, fd_out) failed");
+
+	close(pipe2[0]);
+	close(pipe2[1]);
+	close(pipe1[0]);
+	close(pipe1[1]);
+	close(fd_out);
+	close(fd_in);
+
+	fd_out = 0;
+	fd_in = 0;
+
+	check_file();
+}
+
+static void setup(void)
+{
+	int i;
+
+	if ((tst_kvercmp(2, 6, 17)) < 0) {
+		tst_brkm(TCONF, cleanup, "This test can only run on kernels "
+			"that are 2.6.17 or higher");
+	}
+
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	TEST_PAUSE;
+
+	tst_tmpdir();
 
 	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC) {
 		tst_brkm(TCONF, cleanup,
 			 "Cannot do tee on a file on NFS filesystem");
 	}
 
-	/*
-	 * check looping state if -c option given
-	 */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		/*
-		 * Call tee_test
-		 */
-		TEST(tee_test());
-
-		/* check return code */
-		if (TEST_RETURN < 0) {
-			if (TEST_RETURN != -1) {
-				TEST_ERRNO = -TEST_RETURN;
-			}
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "tee() Failed, errno=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
-			tst_resm(TPASS, "tee() returned %ld",
-				 TEST_RETURN);
-		}
-
-	}
-
-	/*
-	 * cleanup and exit
-	 */
-	cleanup();
-
-	return (0);
-}
-
-static int tee_test(void)
-{
-	char buffer[SPLICE_TEST_BLOCK_SIZE];
-	char teebuffer[SPLICE_TEST_BLOCK_SIZE];
-	int pipe1[2];
-	int pipe2[2];
-	int ret;
-	int i, len;
-	int fd_in, fd_out;
-
-	for (i = 0; i < SPLICE_TEST_BLOCK_SIZE; i++) {
+	for (i = 0; i < TEST_BLOCK_SIZE; i++)
 		buffer[i] = i & 0xff;
-	}
 
-	fd_in = open(testfile1, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (fd_in < 0) {
-		perror("open: ");
-		return -1;
-	}
-	len = write(fd_in, buffer, SPLICE_TEST_BLOCK_SIZE);
-	if (len < SPLICE_TEST_BLOCK_SIZE) {
-		perror("write: ");
-		close(fd_in);
-		return -1;
-	}
-	close(fd_in);
-
-	fd_in = open(testfile1, O_RDONLY);
-	if (fd_in < 0) {
-		perror("open: ");
-		return -1;
-	}
-
-	ret = pipe(pipe1);
-	if (ret < 0) {
-		perror("pipe: ");
-		close(fd_in);
-		return -1;
-	}
-
-	ret = pipe(pipe2);
-	if (ret < 0) {
-		perror("pipe: ");
-		close(pipe1[0]);
-		close(pipe1[1]);
-		close(fd_in);
-		return -1;
-	}
-
-	fd_out = open(testfile2, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (fd_out < 0) {
-		close(fd_in);
-		close(pipe1[0]);
-		close(pipe1[1]);
-		close(pipe2[0]);
-		close(pipe2[1]);
-		perror("open: ");
-		return -1;
-	}
-	ret = splice(fd_in, NULL, pipe1[1], NULL, SPLICE_TEST_BLOCK_SIZE, 0);
-	if (ret < 0) {
-		ret = -errno;
-		close(fd_in);
-		close(fd_out);
-		close(pipe1[0]);
-		close(pipe1[1]);
-		close(pipe2[0]);
-		close(pipe2[1]);
-		return ret;
-	}
-
-	ret =
-	    tee(pipe1[0], pipe2[1], SPLICE_TEST_BLOCK_SIZE, SPLICE_F_NONBLOCK);
-	if (ret < 0) {
-		ret = -errno;
-		close(fd_in);
-		close(fd_out);
-		close(pipe1[0]);
-		close(pipe1[1]);
-		close(pipe2[0]);
-		close(pipe2[1]);
-		return ret;
-	}
-
-	ret = splice(pipe2[0], NULL, fd_out, NULL, SPLICE_TEST_BLOCK_SIZE, 0);
-	if (ret < 0) {
-		ret = -errno;
-		close(fd_in);
-		close(fd_out);
-		close(pipe1[0]);
-		close(pipe1[1]);
-		close(pipe2[0]);
-		close(pipe2[1]);
-		return ret;
-	}
-
-	close(fd_in);
-	close(fd_out);
-	close(pipe1[0]);
-	close(pipe1[1]);
-	close(pipe2[0]);
-	close(pipe2[1]);
-
-	fd_out = open(testfile2, O_RDONLY);
-	if (fd_out < 0) {
-		perror("open: ");
-		return -1;
-	}
-	read(fd_out, teebuffer, SPLICE_TEST_BLOCK_SIZE);
-	for (i = 0; i < SPLICE_TEST_BLOCK_SIZE; i++) {
-		if (buffer[i] != teebuffer[i])
-			break;
-	}
-	if (i < SPLICE_TEST_BLOCK_SIZE) {
-		return -1;
-	}
-	return 0;
+	fd_in = SAFE_OPEN(cleanup, TESTFILE1, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	SAFE_WRITE(cleanup, 1, fd_in, buffer, TEST_BLOCK_SIZE);
+	SAFE_CLOSE(cleanup, fd_in);
+	fd_in = 0;
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup(void)
+static void cleanup(void)
 {
-
-	tst_tmpdir();
-
-	/* Initialize test file names */
-	sprintf(testfile1, "teetest%d_1.txt", getpid());
-	sprintf(testfile2, "teetest%d_2.txt", getpid());
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
-void cleanup(void)
-{
-	/* Remove them */
-	unlink(testfile1);
-	unlink(testfile2);
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	tst_rmdir();
+	if (fd_in > 0 && close(fd_in))
+		tst_resm(TWARN, "Failed to close fd_in");
 
+	if (fd_out > 0 && close(fd_out))
+		tst_resm(TWARN, "Failed to close fd_out");
+
+	tst_rmdir();
 }
