@@ -932,7 +932,6 @@ times03 times03
 truncate01 truncate01
 truncate02 truncate02
 truncate03 truncate03
-truncate04 truncate04
 
 # This syscall is obsolete.  The latest glibc does not even
 # include the ulimit.h file anymore.  The test will fail

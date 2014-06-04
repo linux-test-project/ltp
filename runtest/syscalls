@@ -1263,8 +1263,6 @@ truncate02 truncate02
 truncate02_64 truncate02_64
 truncate03 truncate03
 truncate03_64 truncate03_64
-truncate04 truncate04
-truncate04_64 truncate04_64
 
 # This syscall is obsolete.  The latest glibc does not even
 # include the ulimit.h file anymore.  The test will fail
