@@ -231,6 +231,11 @@ int safe_fchmod(const char *file, const int lineno, void (cleanup_fn)(void),
 #define SAFE_FCHMOD(cleanup_fn, fd, mode) \
 	safe_fchmod(__FILE__, __LINE__, (cleanup_fn), (fd), (mode))
 
+int safe_fchown(const char *file, const int lineno, void (cleanup_fn)(void),
+                int fd, uid_t owner, gid_t group);
+#define SAFE_FCHOWN(cleanup_fn, fd, owner, group) \
+	safe_fchown(__FILE__, __LINE__, (cleanup_fn), (fd), (owner), (group))
+
 pid_t safe_wait(const char *file, const int lineno, void (cleanup_fn)(void),
                 int *status);
 #define SAFE_WAIT(cleanup_fn, status) \

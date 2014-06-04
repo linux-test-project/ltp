@@ -662,6 +662,23 @@ int safe_fchmod(const char *file, const int lineno,
 	return rval;
 }
 
+
+int safe_fchown(const char *file, const int lineno, void (cleanup_fn)(void),
+                int fd, uid_t owner, gid_t group)
+{
+	int rval;
+
+	rval = fchown(fd, owner, group);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "%s:%d: fchown(%d,%d,%d) failed",
+			 file, lineno, fd, owner, group);
+	}
+
+	return rval;
+}
+
 pid_t safe_wait(const char *file, const int lineno, void (cleanup_fn)(void),
                 int *status)
 {
