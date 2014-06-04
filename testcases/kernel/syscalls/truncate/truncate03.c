@@ -33,7 +33,13 @@
  *        does not exist.
  *     6) truncate(2) returns -1 and sets errno to EISDIR if the named file
  *        is a directory.
+ *     7) truncate(2) returns -1 and sets errno to EFBIG if the argument length
+ *        is larger than the maximum file size.
+ *     8) truncate(2) returns -1 and sets errno to ELOOP if too many symbolic
+ *        links were encountered in translating the pathname.
  */
+
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -51,6 +57,9 @@
 
 #define TEST_FILE1	"testfile"
 #define TEST_FILE2	"t_file/testfile"
+#define TEST_FILE3	"testfile3"
+#define TEST_SYM1	"testsymlink1"
+#define TEST_SYM2	"testsymlink2"
 #define TEST_DIR1	"testdir"
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define NEW_MODE	S_IRUSR | S_IRGRP | S_IROTH
@@ -72,7 +81,9 @@ static struct test_case_t {
 #endif
 	{ long_pathname, TRUNC_LEN, ENAMETOOLONG },
 	{ "", TRUNC_LEN, ENOENT },
-	{ TEST_DIR1, TRUNC_LEN, EISDIR }
+	{ TEST_DIR1, TRUNC_LEN, EISDIR },
+	{ TEST_FILE3, LLONG_MAX, EFBIG },
+	{ TEST_SYM1, TRUNC_LEN, ELOOP }
 };
 
 static void setup(void);
@@ -82,7 +93,7 @@ static void truncate_verify(struct test_case_t *);
 char *TCID = "truncate03";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
 static int exp_enos[] = { EACCES, ENOTDIR, EFAULT, ENAMETOOLONG,
-			  ENOENT, EISDIR, 0 };
+			  ENOENT, EISDIR, EFBIG, ELOOP, 0 };
 
 int main(int ac, char **av)
 {
@@ -140,6 +151,11 @@ void setup(void)
 	memset(long_pathname, 'a', PATH_MAX + 1);
 
 	SAFE_MKDIR(cleanup, TEST_DIR1, DIR_MODE);
+
+	SAFE_TOUCH(cleanup, TEST_FILE3, FILE_MODE, NULL);
+
+	SAFE_SYMLINK(cleanup, TEST_SYM1, TEST_SYM2);
+	SAFE_SYMLINK(cleanup, TEST_SYM2, TEST_SYM1);
 }
 
 void truncate_verify(struct test_case_t *tc)
