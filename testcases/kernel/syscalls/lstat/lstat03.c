@@ -131,7 +131,7 @@ int main(int ac, char **av)
 		 */
 		if ((stat_buf.st_uid != user_id) ||
 		    (stat_buf.st_gid != group_id) ||
-		    (!(stat_buf.st_mode && S_IFLNK)) ||
+		    ((stat_buf.st_mode & S_IFMT) != S_IFLNK) ||
 		    (stat_buf.st_size != strlen(TESTFILE))) {
 			tst_resm(TFAIL, "Functionality of lstat(2) on "
 				 "'%s' Failed", SFILE);
