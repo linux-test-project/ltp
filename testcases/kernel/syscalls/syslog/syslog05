@@ -59,12 +59,12 @@ syslog_case5()
 	restart_syslog_daemon
 
 	# check if /var/log/messages script exists
-	if [ "$CONFIG_FILE" != "/etc/syslog-ng/syslog-ng.conf" -a ! -e /var/log/messages ]
-	then
-		tst_resm TBROK "/var/log/messages no such log file"
-		cleanup 1
+	if [ -e /var/log/messages ]; then
+		oldvalue=`grep -c "syslogtst: info to console test." /var/log/messages`
+	else
+		oldvalue=0
 	fi
-	oldvalue=`grep -c "syslogtst: info to console test." /var/log/messages`
+
 	# syslogtst does the disabling of /dev/syslog, sends the message and
 	# enables /dev/syslog.
 	if ! syslogtst 5 2>/dev/null; then

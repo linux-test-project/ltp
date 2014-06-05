@@ -65,15 +65,6 @@ syslog_case2()
 
 		restart_syslog_daemon
 
-		# Grepping pattern is as follows:
-		# syslogtst: mail $level test.
-		# check if $MAILLOG script exists
-		if [ "$CONFIG_FILE" != "/etc/syslog-ng/syslog-ng.conf" -a ! -e $MAILLOG ]; then
-			tst_resm TBROK "$MAILLOG no such log file"
-			cleanup 1
-		fi
-
-
 		# Grepping pattern has to be changed whenever the executable name
 		# changes, ex: syslogtst executable.
 		# This check is neccessary for syslog-ng because $MAILLOG is

@@ -57,11 +57,6 @@ syslog_case10()
 
 	restart_syslog_daemon
 
-	if [ ! -e /var/log/messages ]; then
-		tst_resm TBROK "/var/log/messages no such log file"
-		cleanup 1
-	fi
-
 	if [ -e /var/log/messages ]; then
 		allow1=`grep -c "syslogtst:10 error level is logged" /var/log/messages`
 		donot_allow1=`grep -c "syslogtst:10 warning level not to be logged" /var/log/messages`
