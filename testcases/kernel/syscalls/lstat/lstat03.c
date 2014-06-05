@@ -1,20 +1,20 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -27,43 +27,6 @@
  * Expected Result:
  *  lstat() should return value 0 on success and the stat structure elements
  *  should be filled with the symlink file information.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
- *   Otherwise,
- *   	Verify the Functionality of system call
- *      if successful,
- *      	Issue Functionality-Pass message.
- *      Otherwise,
- *		Issue Functionality-Fail message.
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  lstat03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  This test should be run by 'non-super-user' only.
- *
  */
 #include <stdio.h>
 #include <sys/types.h>
@@ -76,6 +39,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define TESTFILE	"testfile"
@@ -86,49 +50,37 @@
 
 char *TCID = "lstat03";
 int TST_TOTAL = 1;
-uid_t user_id;			/* user id/group id of test process */
-gid_t group_id;
+static uid_t user_id;
+static gid_t group_id;
 
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
+static char nobody_uid[] = "nobody";
+static struct passwd *ltpuser;
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 int main(int ac, char **av)
 {
-	struct stat stat_buf;	/* stat structure buffer */
+	struct stat stat_buf;
 	int lc;
 	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
-		/*
-		 * Call lstat(2) to get the status of
-		 * symlink file into stat structure.
-		 */
 		TEST(lstat(SFILE, &stat_buf));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL,
-				 "lstat(%s, &stat_buf) Failed, errno=%d : %s",
-				 SFILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL | TTERRNO, "lstat(%s) failed", SFILE);
 			continue;
 		}
-		/*
-		 * Verify the data returned by lstat(2)
-		 * aganist the expected data.
-		 */
+
 		if ((stat_buf.st_uid != user_id) ||
 		    (stat_buf.st_gid != group_id) ||
 		    ((stat_buf.st_mode & S_IFMT) != S_IFLNK) ||
@@ -145,89 +97,31 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() -  Performs setup function for the test.
- *	      Creat a temporary directory and chdir to it.
- *	      Creat a test file and write some known data into it.
- *	      Close the test file and creat a symlink of test file under
- *	      temporary directory.
- *	      Get uid/gid of test process.
- */
-void setup(void)
+static void setup(void)
 {
-	int i, fd;		/* file handle for test file */
-	char tst_buff[BUF_SIZE];	/* data buffer */
-	int wbytes;		/* no. of bytes to be written */
-	int write_len = 0;	/* size of data */
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
-	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	tst_require_root(NULL);
+
+	ltpuser = SAFE_GETPWNAM(NULL, nobody_uid);
+	SAFE_SETUID(NULL, ltpuser->pw_uid);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
+	if (tst_fill_file(TESTFILE, 'a', 1024, 1))
+		tst_brkm(TBROK, cleanup, "Failed to create " TESTFILE);
 
-	/* Fill the test buffer with the known data */
-	for (i = 0; i < BUF_SIZE; i++) {
-		tst_buff[i] = 'a';
-	}
+	SAFE_SYMLINK(cleanup, TESTFILE, SFILE);
 
-	/* Write to the file 1k data from the buffer */
-	while (write_len < FILE_SIZE) {
-		if ((wbytes = write(fd, tst_buff, sizeof(tst_buff))) <= 0) {
-			tst_brkm(TBROK, cleanup,
-				 "write(2) on %s Failed, errno=%d : %s",
-				 TESTFILE, errno, strerror(errno));
-		} else {
-			write_len += wbytes;
-		}
-	}
-
-	if (close(fd) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
-
-	/* Create a symlink of testfile */
-	if (symlink(TESTFILE, SFILE) < 0) {
-		tst_brkm(TBROK, cleanup, "symlink() of %s Failed, errno=%d : "
-			 "%s", TESTFILE, errno, strerror(errno));
-	}
-
-	/* Get the uid/gid of the process */
 	user_id = getuid();
 	group_id = getgid();
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- *	       Remove the symlink file, test file and temporary directory.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
 
 	tst_rmdir();
-
 }
