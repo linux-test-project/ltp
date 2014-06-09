@@ -63,3 +63,5 @@ logfile.*
 /lib/tests/tst_safe_macros
 /lib/tests/tst_strsig
 /lib/tests/tst_strerrno
+/lib/tests/tst_fs_fill_subdirs
+/lib/tests/tst_fs_fill_hardlinks

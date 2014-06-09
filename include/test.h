@@ -317,6 +317,47 @@ const char *tst_strerrno(int err);
 int tst_path_has_mnt_flags(void (cleanup_fn)(void),
 		const char *path, const char *flags[]);
 
+/*
+ * lib/tst_fs_link_count.c
+ *
+ * Try to get maximum number of hard links to a regular file inside the @dir.
+ *
+ * Note: This number depends on the filesystem @dir is on.
+ *
+ * The code uses link(2) to create hard links to a single file until it gets
+ * EMLINK or creates 65535 links.
+ *
+ * If limit is hit maximal number of hardlinks is returned and the the @dir is
+ * filled with hardlinks in format "testfile%i" where i belongs to [0, limit)
+ * interval.
+ *
+ * If no limit is hit (succed to create 65535 without error) or if link()
+ * failed with ENOSPC or EDQUOT zero is returned previously created files are
+ * removed.
+ */
+int tst_fs_fill_hardlinks(void (*cleanup) (void), const char *dir);
+
+/*
+ * lib/tst_fs_link_count.c
+ *
+ * Try to get maximum number of subdirectories in directory.
+ *
+ * Note: This number depends on the filesystem @dir is on.
+ *
+ * The code uses mkdir(2) to create directories in @dir until it gets EMLINK
+ * or creates 65535 directories.
+ *
+ * If limit is hit the maximal number of subdirectories is returned and the
+ * @dir is filled with subdirectories in format "testdir%i" where i belongs to
+ * [0, limit - 2) interval (because each newly created dir has two links
+ * allready the '.' and link from parent dir).
+ *
+ * If no limit is hit or mkdir() failed with ENOSPC or EDQUOT zero is returned
+ * previously created directories are removed.
+ *
+ */
+int tst_fs_fill_subdirs(void (*cleanup) (void), const char *dir);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL
