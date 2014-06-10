@@ -77,12 +77,6 @@
 
 static void (*T_cleanup) ();
 
-/****************************************************************************
- * STD_COPIES is defined in parse_opts.c but is externed here in order to
- * test whether SIGCHILD should be ignored or not.
- ***************************************************************************/
-extern int STD_COPIES;
-
 static void def_handler();	/* default signal handler */
 static void (*tst_setup_signal(int, void (*)(int))) (int);
 
@@ -210,11 +204,6 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 		case _SIGGFAULT:
 #endif
 			break;
-
-		case SIGCLD:
-			if (fork_flag == FORK || STD_COPIES > 1)
-				continue;
-
 		default:
 			if (tst_setup_signal(sig, handler) == SIG_ERR)
 				tst_resm(TWARN | TERRNO,

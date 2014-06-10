@@ -111,13 +111,6 @@ static void setup(void)
 	tst_module_load(cleanup, DUMMY_MOD_DEP_KO, NULL);
 	dummy_mod_dep_loaded = 1;
 
-	if (STD_COPIES != 1) {
-		tst_resm(TINFO, "-c option has no effect for this testcase - "
-			 "doesn't allow running more than one instance "
-			 "at a time");
-		STD_COPIES = 1;
-	}
-
 	TEST_PAUSE;
 }
 

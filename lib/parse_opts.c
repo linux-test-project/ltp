@@ -63,7 +63,6 @@ static int STD_PAUSE = 0;	/* flag indicating to pause before actual start, */
     /* for contention mode */
 static int STD_INFINITE = 0;	/* flag indciating to loop forever */
 int STD_LOOP_COUNT = 1;		/* number of iterations */
-int STD_COPIES = 1;		/* number of copies */
 int STD_ERRNO_LOG = 0;		/* flag indicating to do errno logging */
 
 static float STD_LOOP_DURATION = 0.0;	/* duration value in fractional seconds */
@@ -97,7 +96,6 @@ static struct std_option_t {
 	char *flag;
 	char **arg;
 } std_options[] = {
-	{"c:", "  -c n    Run n copies concurrently\n", NULL, NULL},
 	{"e", "  -e      Turn on errno logging\n", NULL, NULL},
 	{"h", "  -h      Show this help screen\n", NULL, NULL},
 	{"i:", "  -i n    Execute test n times\n", NULL, NULL},
@@ -250,20 +248,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 			if (STD_LOOP_DURATION == 0.0)
 				STD_INFINITE = 1;
 			break;
-		case 'c':	/* Copies */
-			fprintf(stderr,
-				"WARNING * WARNING * WARNING * WARNING * "
-				"WARNING * WARNING * WARNING * WARNING\n\n"
-				"The -c option is broken by desing. See:\n\n"
-				"http://www.mail-archive.com/"
-				"ltp-list@lists.sourceforge.net/msg13418.html\n"
-				"\nIn short don't use it in runtest files "
-				"as the option will be removed.\n\n"
-				"WARNING * WARNING * WARNING * WARNING * "
-				"WARNING * WARNING * WARNING * WARNING\n\n");
-			options |= OPT_copies;
-			STD_COPIES = atoi(optarg);
-			break;
 		case 'p':	/* Pause for SIGUSR1 */
 			STD_PAUSE = 1;
 			break;
@@ -408,19 +392,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 	}
 
 	/*
-	 * If the USC_COPIES environmental variable is set,
-	 * use that number as copies (same as -c option).
-	 * The -c option with arg will be used even if this env var is set.
-	 */
-	if (!(options & OPT_copies) && (ptr = getenv(USC_COPIES)) != NULL) {
-		if (sscanf(ptr, "%d", &STD_COPIES) == 1 && STD_COPIES >= 0) {
-			if (Debug)
-				printf("Using env %s, set STD_COPIES = %d\n",
-				       USC_COPIES, STD_COPIES);
-		}
-	}
-
-	/*
 	 * The following are special system testing envs to turn on special
 	 * hooks in the code.
 	 */
@@ -526,7 +497,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 	printf("The following variables after option and env parsing:\n");
 	printf("STD_LOOP_DURATION   = %f\n", STD_LOOP_DURATION);
 	printf("STD_LOOP_DELAY      = %f\n", STD_LOOP_DELAY);
-	printf("STD_COPIES          = %d\n", STD_COPIES);
 	printf("STD_LOOP_COUNT      = %d\n", STD_LOOP_COUNT);
 	printf("STD_INFINITE        = %d\n", STD_INFINITE);
 	printf("STD_TIMING_ON       = %d\n", STD_TIMING_ON);
@@ -556,26 +526,8 @@ static void STD_go(int sig)
 int usc_global_setup_hook(void)
 {
 #ifndef UCLINUX
-	int cnt;
 	/* temp variable to store old signal action to be restored after pause */
 	int (*_TMP_FUNC) (void);
-
-	/*
-	 * Fork STD_COPIES-1 copies.
-	 */
-	for (cnt = 1; cnt < STD_COPIES; cnt++) {
-		switch (fork()) {
-		case -1:
-			fprintf(stderr, "%s: fork failed: %d - %s\n",
-				__FILE__, errno, strerror(errno));
-			break;
-		case 0:
-			cnt = STD_COPIES;	/* to stop the forking */
-			break;
-		default:
-			break;
-		}
-	}
 
 	/*
 	 * pause waiting for sigusr1.

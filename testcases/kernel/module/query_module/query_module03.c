@@ -159,13 +159,6 @@ int main(int argc, char **argv)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	if (STD_COPIES != 1) {
-		tst_resm(TINFO, "-c option has no effect for this testcase - "
-			 "doesn't allow running more than one instance "
-			 "at a time");
-		STD_COPIES = 1;
-	}
-
 	tst_tmpdir();
 	setup();
 

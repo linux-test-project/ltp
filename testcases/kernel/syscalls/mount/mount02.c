@@ -107,13 +107,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
 			 " mounting with -D option.");
 
-	if (STD_COPIES != 1) {
-		tst_resm(TINFO, "-c option has no effect for this testcase - "
-			 "%s doesn't allow running more than one instance "
-			 "at a time", TCID);
-		STD_COPIES = 1;
-	}
-
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

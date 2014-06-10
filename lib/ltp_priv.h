@@ -41,6 +41,5 @@ const char *tst_get_startwd(void);
 #define USC_LOOP_WALLTIME	"USC_LOOP_WALLTIME"
 #define USC_NO_FUNC_CHECK	"USC_NO_FUNC_CHECK"
 #define USC_LOOP_DELAY		"USC_LOOP_DELAY"
-#define USC_COPIES		"USC_COPIES"
 
 #endif /* __LTP_PRIV_H__ */
