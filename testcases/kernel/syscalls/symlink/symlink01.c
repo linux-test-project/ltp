@@ -1045,10 +1045,7 @@ void do_EEXIST(struct all_test_cases *tc_ptr)
 		TEST(mkdir(tc_ptr->fn_arg[1], MODE));
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == EEXIST)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 
 			tst_resm(TFAIL, "%s %s",
@@ -1061,10 +1058,7 @@ void do_EEXIST(struct all_test_cases *tc_ptr)
 		TEST(open(tc_ptr->fn_arg[1], (O_EXCL | O_CREAT), 0666));
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == EEXIST)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected EEXIST error for exclusively opening an object file",
@@ -1089,10 +1083,7 @@ void do_ENOENT(struct all_test_cases *tc_ptr)
 
 		if ((stat(tc_ptr->fn_arg[1], &asymlink) == -1)
 		    && (errno == ENOENT)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error for stating a non-existent directory",
@@ -1101,10 +1092,7 @@ void do_ENOENT(struct all_test_cases *tc_ptr)
 		}
 	} else if (cktcsid(tc_ptr->tcid, CHDIR)) {
 		if ((chdir(tc_ptr->fn_arg[1]) == -1) && (errno == ENOENT)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error for changing to a non-existent",
@@ -1117,10 +1105,7 @@ void do_ENOENT(struct all_test_cases *tc_ptr)
 
 		if ((link(tc_ptr->fn_arg[1], "nick") == -1)
 		    && (errno == ENOENT)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error condition when link(2) a symbolic",
@@ -1131,10 +1116,7 @@ void do_ENOENT(struct all_test_cases *tc_ptr)
 	} else if (cktcsid(tc_ptr->tcid, CHMOD)) {
 
 		if ((chmod(tc_ptr->fn_arg[1], MODE) == -1) && (errno == ENOENT)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error condition when chmod(2) a symbolic",
@@ -1144,10 +1126,7 @@ void do_ENOENT(struct all_test_cases *tc_ptr)
 	} else if (cktcsid(tc_ptr->tcid, UTIME)) {
 
 		if ((utime(tc_ptr->fn_arg[1], NULL) == -1) && (errno == ENOENT)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error condition when utime(2) a symbolic",
@@ -1158,10 +1137,7 @@ void do_ENOENT(struct all_test_cases *tc_ptr)
 
 		if ((open(tc_ptr->fn_arg[1], O_RDWR) == -1)
 		    && (errno == ENOENT)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
 				 "Expected ENOENT error for opening a non-existent object",
@@ -1187,11 +1163,8 @@ void do_ELOOP(struct all_test_cases *tc_ptr)
 		TEST(stat(tc_ptr->fn_arg[1], &asymlink));
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ELOOP)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
-		} else if (TEST_RESULT != TPASS) {
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
+		} else {
 			tst_resm(TEST_RESULT, "%s errno:%d %s",
 				 "Expected ELOOP errno from stat(2) (nested symb link),",
 				 errno, strerror(errno));
@@ -1201,10 +1174,7 @@ void do_ELOOP(struct all_test_cases *tc_ptr)
 		TEST(chdir(tc_ptr->fn_arg[1]));
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ELOOP)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 
 			tst_resm(TFAIL, "%s errno:%d %s",
@@ -1218,10 +1188,7 @@ void do_ELOOP(struct all_test_cases *tc_ptr)
 		TEST(link(tc_ptr->fn_arg[1], O_FILE));
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ELOOP)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when link(2) a nested symbolic link:",
@@ -1232,10 +1199,7 @@ void do_ELOOP(struct all_test_cases *tc_ptr)
 		TEST(chmod(tc_ptr->fn_arg[1], MODE));
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ELOOP)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when chmod(2) a nested symbolic link:",
@@ -1248,10 +1212,7 @@ void do_ELOOP(struct all_test_cases *tc_ptr)
 		errno = TEST_ERRNO;
 
 		if ((TEST_RETURN == -1) && (errno == ELOOP)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when utime(2) a nested symbolic link:",
@@ -1264,10 +1225,7 @@ void do_ELOOP(struct all_test_cases *tc_ptr)
 		fd = TEST_RETURN;
 		errno = TEST_ERRNO;
 		if ((fd == -1) && (errno == ELOOP)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s errno:%d %s",
 				 "Expected ELOOP error condition when open(2) a nested symbolic link:",
@@ -1295,11 +1253,7 @@ void do_ENOTDIR(struct all_test_cases *tc_ptr)
 			tst_resm(TBROK, "mkdir(2) Failure when creating %s",
 				 tc_ptr->fn_arg[0]);
 		else if ((rmdir(tc_ptr->fn_arg[1]) == -1) && (errno == ENOTDIR)) {
-
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			rmdir(tc_ptr->fn_arg[0]);
 		} else {
 			tst_resm(TFAIL, "%s %s errno:%d %s",
@@ -1327,10 +1281,7 @@ void do_EXDEV(struct all_test_cases *tc_ptr)
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == EXDEV)) {
 			if (see_if_a_symlink(Y_A_S_FILE) == -1) {
-				if (TEST_RESULT != TPASS) {
-					tst_resm(TEST_RESULT, "%s",
-						 msgs[tc_ptr->pass_msg]);
-				}
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			} else {
 				tst_resm(TFAIL,
 					 "%s %s %s file outside of current file system",
@@ -1367,10 +1318,7 @@ void do_ENAMETOOLONG(struct all_test_cases *tc_ptr)
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ENAMETOOLONG)) {
 			if (see_if_a_symlink(full_path) == -1) {
-				if (TEST_RESULT != TPASS) {
-					tst_resm(TEST_RESULT, "%s",
-						 msgs[tc_ptr->pass_msg]);
-				}
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			} else {
 				tst_resm(TFAIL, "%s %s %d %s",
 					 "symlink(2) returned -1 when trying to create a symbolic",
@@ -1389,10 +1337,7 @@ void do_ENAMETOOLONG(struct all_test_cases *tc_ptr)
 
 		ret = readlink(full_path, scratch, strlen(full_path));
 		if ((ret == -1) && (errno == ENAMETOOLONG)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL,
 				 "Expected ENAMETOOLONG error when reading %s symbolic link file with a path exceeding %d characters: errno:%d %s",
@@ -1418,10 +1363,7 @@ void do_EINVAL(struct all_test_cases *tc_ptr)
 		errno = TEST_ERRNO;
 		if (TEST_RETURN == -1) {
 			if (errno == EINVAL) {
-				if (TEST_RESULT != TPASS) {
-					tst_resm(TEST_RESULT, "%s",
-						 msgs[tc_ptr->pass_msg]);
-				}
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			} else {
 				tst_resm(TFAIL,
 					 "readlink(2) ret:-1, errno:%d, : Exp errno:%d",
@@ -1468,7 +1410,7 @@ void do_readlink(struct all_test_cases *tc_ptr)
 		tst_resm(TFAIL,
 			 "readlink(2) Error : Expected %s symbolic link file contents but %s actual contents were returned",
 			 tc_ptr->fn_arg[0], scratch);
-	} else if (TEST_RESULT != TPASS) {
+	} else {
 		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 	}
 }
@@ -1528,7 +1470,7 @@ void do_stat(struct all_test_cases *tc_ptr)
 		tst_resm(TFAIL,
 			 "stat of symbolic link reference to object change time %ld != stat of object file change time %ld",
 			 statter.st_atime, asymlink.st_atime);
-	else if (TEST_RESULT != TPASS)
+	else
 		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 }
 
@@ -1569,10 +1511,7 @@ void do_chdir(struct all_test_cases *tc_ptr)
 			if ((cwd = getcwd(NULL, 0)) == NULL) {
 				tst_resm(TFAIL, "getcwd(3) FAILURE");
 			} else if (strcmp(cwd, expected_location) == 0) {
-				if (TEST_RESULT != TPASS) {
-					tst_resm(TEST_RESULT, "%s",
-						 msgs[tc_ptr->pass_msg]);
-				}
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			} else {
 				tst_resm(TFAIL,
 					 "%s%s %s %s not equal to expected %s",
@@ -1622,12 +1561,8 @@ void do_link(struct all_test_cases *tc_ptr)
 		} else {
 			if (statter.st_ino == asymlink.st_ino) {
 				if ((statter.st_nlink == 2) && (asymlink.st_nlink == 2)) {
-					if (TEST_RESULT != TPASS) {
-						tst_resm(TEST_RESULT,
-							 "%s",
-							 msgs[tc_ptr->
-							      pass_msg]);
-					}
+					tst_resm(TEST_RESULT, "%s",
+					         msgs[tc_ptr->pass_msg]);
 				} else {
 					lstat(tc_ptr->fn_arg[2],
 					      &stbuf);
@@ -1676,10 +1611,7 @@ void do_unlink(struct all_test_cases *tc_ptr)
 			 (statter.st_dev == asymlink.st_dev) &&
 			 (statter.st_size == asymlink.st_size)) {
 
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s%s %s %s", Buffer,
 				 "unlink(2) failed because it not only removed symbolic link",
@@ -1717,10 +1649,7 @@ void do_chmod(struct all_test_cases *tc_ptr)
 				 tc_ptr->fn_arg[2]);
 		} else if ((statter.st_mode == (MODE | MASK))
 			 && (statter.st_mode != asymlink.st_mode)) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s%s %o to %o %s", Buffer,
 				 "chmod(2) failed to change object file permissions from",
@@ -1773,11 +1702,8 @@ void do_utime(struct all_test_cases *tc_ptr)
 				    temp;
 
 				if (!diff) {
-					if (TEST_RESULT != TPASS) {
-						tst_resm(TEST_RESULT, "%s",
-							 msgs[tc_ptr->
-							      pass_msg]);
-					}
+					tst_resm(TEST_RESULT, "%s",
+					         msgs[tc_ptr->pass_msg]);
 				} else {
 					tst_resm(TFAIL,
 						 "%s %s %jd greater than original times",
@@ -1812,10 +1738,7 @@ void do_rename(struct all_test_cases *tc_ptr)
 			 tc_ptr->fn_arg[2], A_S_FILE);
 	} else if (pts_at_object) {
 		if (ck_both(tc_ptr->fn_arg[0], A_S_FILE, tc_ptr->fn_arg[2])) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {
 			tst_resm(TFAIL, "%s", test_msg);
 		}
@@ -1825,7 +1748,7 @@ void do_rename(struct all_test_cases *tc_ptr)
 		tst_resm(TFAIL,
 			 "rename(3) did not remove %s when renaming to %s",
 			 tc_ptr->fn_arg[1], A_S_FILE);
-	} else if (TEST_RESULT != TPASS) {
+	} else {
 		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 	}
 }
@@ -1916,18 +1839,13 @@ void do_open(struct all_test_cases *tc_ptr)
 				 "Content of write(2) and read(2) Failed to object file through symbolic link file was not as expected. Expected %s and read returned %s",
 				 BIG_STRING, scratch);
 		} else if (pts_at_object) {
-			if (TEST_RESULT != TPASS) {
-				tst_resm(TEST_RESULT, "%s",
-					 msgs[tc_ptr->pass_msg]);
-			}
+			tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 		} else {	/* Insure newly created object file is pointed at */
 			if (ck_both
 			    (tc_ptr->fn_arg[0], tc_ptr->fn_arg[1],
 			     tc_ptr->fn_arg[0])) {
-				if (TEST_RESULT != TPASS) {
-					tst_resm(TEST_RESULT, "%s",
-						 msgs[tc_ptr->pass_msg]);
-				}
+				tst_resm(TEST_RESULT, "%s",
+					 msgs[tc_ptr->pass_msg]);
 			} else {
 				tst_resm(TFAIL, "%s", test_msg);
 			}
