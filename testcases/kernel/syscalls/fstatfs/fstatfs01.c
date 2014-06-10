@@ -44,25 +44,36 @@
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
+
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 static void setup(void);
 static void cleanup(void);
 
 char *TCID = "fstatfs01";
-int TST_TOTAL = 1;
 
 static int exp_enos[] = { 0, 0 };
 
-static char fname[255];
-static int fd;
-static struct statfs stats;
+static int file_fd;
+static int pipe_fd;
+
+static struct tcase {
+	int *fd;
+	const char *msg;
+} tcases[2] = {
+	{&file_fd, "fstatfs() on a file"},
+	{&pipe_fd, "fstatfs() on a pipe"},
+};
+
+int TST_TOTAL = ARRAY_SIZE(tcases);
 
 int main(int ac, char **av)
 {
-	int lc;
+	int lc, i;
 	const char *msg;
+	struct statfs stats;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -72,19 +83,18 @@ int main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
-		TEST(fstatfs(fd, &stats));
+		for (i = 0; i < TST_TOTAL; i++) {
+			TEST(fstatfs(*tcases[i].fd, &stats));
 
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "fstatfs failed");
-		} else {
-			tst_resm(TPASS,
-				 "fstatfs(%d, &stats, sizeof(struct statfs), 0) returned %ld",
-				 fd, TEST_RETURN);
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL | TTERRNO, "%s", tcases[i].msg);
+			} else {
+				tst_resm(TPASS, "%s - f_type=%lx",
+				         tcases[i].msg, stats.f_type);
+			}
 		}
-
 	}
 
 	cleanup();
@@ -93,23 +103,30 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	int pipe[2];
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	sprintf(fname, "tfile_%d", getpid());
-	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
+	file_fd = SAFE_OPEN(cleanup, "test_file", O_RDWR | O_CREAT, 0700);
+
+	SAFE_PIPE(cleanup, pipe);
+	pipe_fd = pipe[0];
+	SAFE_CLOSE(cleanup, pipe[1]);
 }
 
 static void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	if (close(fd) == -1)
-		tst_resm(TWARN | TERRNO, "close failed");
+	if (file_fd > 0 && close(file_fd))
+		tst_resm(TWARN | TERRNO, "close(file_fd) failed");
+
+	if (pipe_fd > 0 && close(pipe_fd))
+		tst_resm(TWARN | TERRNO, "close(pipe_fd) failed");
 
 	tst_rmdir();
 }
