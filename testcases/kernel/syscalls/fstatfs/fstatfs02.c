@@ -27,6 +27,7 @@
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
 
 static void setup(void);
 static void cleanup(void);
@@ -49,7 +50,7 @@ static struct test_case_t {
 	    /* Skip since uClinux does not implement memory protection */
 	    /* EFAULT - address for buf is invalid */
 	{
-	1, (void *)-1, EFAULT}
+	-1, (void *)-1, EFAULT}
 #endif
 };
 
@@ -107,11 +108,19 @@ static void setup(void)
 	TEST_PAUSE;
 
 	tst_tmpdir();
+#ifndef UCLINUX
+	TC[1].fd = SAFE_OPEN(cleanup, "tempfile", O_RDWR | O_CREAT, 0700);
+#endif
 }
 
 static void cleanup(void)
 {
 	TEST_CLEANUP;
+
+#ifndef UCLINUX
+	if (TC[1].fd > 0 && close(TC[1].fd))
+		tst_resm(TWARN | TERRNO, "Failed to close fd");
+#endif
 
 	tst_rmdir();
 }
