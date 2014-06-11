@@ -215,12 +215,15 @@ $trace_logic
 
    echo "Unmounting EXPORTDIR"
    /usr/sbin/exportfs -u $HOST:$EXPORTDIR
-   umount $EXPORTDIR
-   sleep 3
-   rm -rf $EXPORTDIR
+
    if [ "x$NFS_TYPE" = "xnfs4" ]; then
+       umount $EXPORTDIR
+       sleep 3
        rm -rf /export$EXPORTDIR
    fi
+
+   rm -rf $EXPORTDIR
+
 }
 
 #=============================================================================
