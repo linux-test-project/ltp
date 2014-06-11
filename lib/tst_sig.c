@@ -204,6 +204,11 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 		case _SIGGFAULT:
 #endif
 			break;
+
+		case SIGCLD:
+			if (fork_flag == FORK)
+				continue;
+
 		default:
 			if (tst_setup_signal(sig, handler) == SIG_ERR)
 				tst_resm(TWARN | TERRNO,
