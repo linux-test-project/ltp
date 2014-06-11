@@ -238,10 +238,6 @@ int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
 		void *arg);
 #define clone(...) use_the_ltp_clone_functions,do_not_use_clone
 
-/* Functions from lib/mount_utils.c */
-char *get_block_device(const char *path);
-char *get_mountpoint(const char *path);
-
 /* Function from lib/get_path.c */
 int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
 
