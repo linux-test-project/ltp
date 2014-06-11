@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *  AUTHOR		: Glen Overby
+ *  CO-PILOT		: William Roske
+ * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -28,108 +31,14 @@
  * For further information regarding this notice, see:
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- *
  */
-/* $Id: fcntl07.c,v 1.12 2009/03/23 13:35:41 subrata_modak Exp $ */
-/**********************************************************
+/*
+ * TEST CASES
  *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: fcntl07
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Close-On-Exec functional test
- *
- *    PARENT DOCUMENT	: none
- *
- *    TEST CASE TOTAL	: 2
- *
- *    WALL CLOCK TIME	: 5
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: Glen Overby
- *
- *    CO-PILOT		: William Roske
- *
- *    DATE STARTED	: 08/11/93
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- *	1.) test close-on-exec with a regular file
- *	2.) test close-on-exec with a system pipe
- *
- *    INPUT SPECIFICATIONS
- *
- *	Standard arguments accepted by parse_opts(3).
- *
- *	The -t (timing) and -e options apply to the fcntl(.., F_SETFD, ..)
- *	system call.
- *
- *	-T fd	  : If this option is given, the program runs as "test_open",
- *		    testing <fd> to see if it is open or not and exiting
- *		    accordingly:
- *			0	not open (EBADF from fcntl(..., F_GETFD, ...))
- *			3	no error from fcntl
- *			errno	fcntl returned an error other than EBADF
- *
- *	-F name   : File to open.  Must be an absolute path
- *		    and the file must be writable;
- *	-n program: path to the 'test_open' program
- *
- *    OUTPUT SPECIFICATIONS
- *        This test uses the cuts-style test_res format output consisting of:
- *
- *                 test-name   PASS/FAIL/BROK	message
- *
- *        the message will tell what type of test and, if it failed, indicate
- *        what the failure was.
- *
- *    DURATION
- *	Terminates
- *
- *    SIGNALS
- *	None
- *
- *    RESOURCES
- *	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *	If this test is not called with a full pathname, it must be able
- *	to find itself on $PATH
- *
- *    INTERCASE DEPENDENCIES
- *	none
- *
- *    DETAILED DESCRIPTION
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Create and make current a temporary directory.
- *	  Open a regular file for writing
- *	  Create a system pipe
- *	  Create a named pipe and open it for writing
- *
- *	Test:
- *	  Set the file descriptor for close-on-exec
- *	  Fork
- *		Child execlp's the program "test_open".
- *		If the exec fails, exit "2"
- *	        Parent waits
- *	  Report results.
- *
- *	Cleanup:
- *	  Close file and pipes
- *	  Remove the temporary directory
- *
- *    BUGS
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+ * 1. test close-on-exec with a regular file
+ * 2. test close-on-exec with a pipe
+ * 3. test close-on-exec with a fifo
+ */
 
 #include <errno.h>
 #include <string.h>
@@ -144,216 +53,153 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "search_path.h"
 
-void setup();
-void cleanup();
-void help();
+static void setup(void);
+static void cleanup(void);
+static void help(void);
 
 char *TCID = "fcntl07";
-int TST_TOTAL = 2;
 
-int fflag, Tflag;		/* binary flags: opt or not */
-char *fopt, *Topt;		/* option arguments */
+static char *t_opt;
 
 option_t options[] = {
-	{"F:", &fflag, &fopt},	/* -F filename */
-	{"T:", &Tflag, &Topt},	/* -T <fd>  exec'ed by test: test FD */
+	{"T:", NULL, &t_opt},
 	{NULL, NULL, NULL}
 };
 
-int stat_loc;			/* for waitpid() */
+static int file_fd, pipe_fds[2], fifo_fd;
 
-int file_fd, pipe_fds[2];
-	/* file descriptors for a file and a system pipe */
-#define DEFAULT_FILE "DefaultFileName"
-char *File1 = DEFAULT_FILE;
+#define FIFONAME "fifo"
 
-#define DEFAULT_SUBPROG "test_open"
-char *openck = DEFAULT_SUBPROG;	/* support program name to check for open FD */
-
-#ifndef _POSIX_PATH_MAX
-#define _POSIX_PATH_MAX 256
-#endif
-char subprog_path[_POSIX_PATH_MAX];	/* path to exec "openck" with */
-
-#define STRSIZE 255
-
-int *testfds[] = {
-	&file_fd, &pipe_fds[1], 0
+static struct tcase {
+	int *fd;
+	const char *msg;
+} tcases[] = {
+	{&file_fd, "regular file"},
+	{pipe_fds, "pipe (write end)"},
+	{pipe_fds+1, "pipe (read end)"},
+	{&fifo_fd, "fifo"},
 };
 
-char *testfdtypes[] = {
-	"regular file",
-	"write side of system pipe",
-};
+int TST_TOTAL = ARRAY_SIZE(tcases);
 
-int test_open(char *arg);
-int do_exec(char *prog, int fd, char *tcd);
+static int test_open(char *arg);
+
+static void verify_cloexec(struct tcase *tc)
+{
+	int fd = *(tc->fd);
+	char pidname[255];
+	int status, pid;
+
+	TEST(fcntl(fd, F_SETFD, FD_CLOEXEC));
+
+	if (TEST_RETURN == -1) {
+		tst_resm(TFAIL | TTERRNO,
+			 "fcntl(%s[%d], F_SETFD, FD_CLOEXEC) failed",
+			 tc->msg, fd);
+		return;
+	}
+
+	sprintf(pidname, "%d", fd);
+
+	switch (pid = FORK_OR_VFORK()) {
+	case -1:
+		tst_resm(TBROK | TERRNO, "fork() failed");
+		return;
+	case 0:
+		execlp(TCID, TCID, "-T", pidname, NULL);
+
+		/* the ONLY reason to do this is to get the errno printed out */
+		fprintf(stderr, "exec(%s, %s, -T, %s) failed.  Errno %s [%d]\n",
+			TCID, TCID, pidname, strerror(errno), errno);
+		exit(2);
+	default:
+	break;
+	}
+
+	waitpid(pid, &status, 0);
+
+	if (!WIFEXITED(status)) {
+		tst_resm(TBROK, "waitpid return was 0%o", status);
+		return;
+	}
+
+	switch ((WEXITSTATUS(status))) {
+	case 2:
+		tst_resm(TBROK, "exec failed");
+	break;
+	case 0:
+		tst_resm(TPASS, "%s CLOEXEC fd was closed after exec()",
+			 tc->msg);
+	break;
+	default:
+		tst_resm(TFAIL, "%s child exited non-zero, %d",
+			 tc->msg, WEXITSTATUS(status));
+	}
+}
 
 int main(int ac, char **av)
 {
-	int lc;
+	int lc, i;
 	const char *msg;
-
-	int exec_return;	/* return from do_exec */
-	int **tcp;		/* testcase pointer (pointer to FD) */
-	char **tcd;		/* testcase description pointer */
 
 	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	if (fflag)
-		File1 = fopt;
+	if (t_opt)
+		exit(test_open(t_opt));
 
-	if (Tflag)
-		exit(test_open(Topt));
-
-	setup(av[0]);
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
-		for (tcp = testfds, tcd = testfdtypes; *tcp; tcp++, tcd++) {
-
-			TEST(fcntl(**tcp, F_SETFD, FD_CLOEXEC));
-
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL | TTERRNO,
-					 "fcntl(%s[%d], F_SETFD, FD_CLOEXEC) "
-					 "failed", *tcd, **tcp);
-			} else {
-
-				exec_return =
-				    do_exec(subprog_path, **tcp, *tcd);
-
-				switch (exec_return) {
-				case -1:
-					tst_resm(TBROK,
-						 "fork failed.  Errno %s [%d]",
-						 strerror(errno),
-						 errno);
-					break;
-				case 1:
-					tst_resm(TBROK,
-						 "waitpid return was 0%o",
-						 stat_loc);
-					break;
-				case 2:
-					tst_resm(TBROK, "exec failed");	/* errno was in child */
-					break;
-				case 0:
-					tst_resm(TPASS,
-						 "%s child exited 0, indicating that the file was closed",
-						 *tcd);
-					break;
-				default:
-					tst_resm(TFAIL,
-						 "%s child exited non-zero, %d",
-						 *tcd, exec_return);
-					break;
-				}
-			}
-		}
+		for (i = 0; i < TST_TOTAL; i++)
+			verify_cloexec(tcases + i);
 	}
 
 	cleanup();
 	tst_exit();
 }
 
-void setup(char *path)
+void setup(void)
 {
-	search_path(path, subprog_path, X_OK, 1);
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	file_fd = SAFE_OPEN(cleanup, File1, O_CREAT | O_RDWR, 0666);
+	file_fd = SAFE_OPEN(cleanup, "test_file", O_CREAT | O_RDWR, 0666);
 	SAFE_PIPE(cleanup, pipe_fds);
+	SAFE_MKFIFO(cleanup, FIFONAME, 0666);
+	fifo_fd = SAFE_OPEN(cleanup, FIFONAME, O_RDWR, 0666);
 }
 
 void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	SAFE_CLOSE(NULL, file_fd);
-	SAFE_CLOSE(NULL, pipe_fds[0]);
-	SAFE_CLOSE(NULL, pipe_fds[1]);
+	if (file_fd > 0 && close(file_fd))
+		tst_resm(TWARN | TERRNO, "close(file_fd) failed");
+
+	if (pipe_fds[0] > 0 && close(pipe_fds[0]))
+		tst_resm(TWARN | TERRNO, "close(pipe_fds[0]) failed");
+
+	if (pipe_fds[1] > 0 && close(pipe_fds[1]))
+		tst_resm(TWARN | TERRNO, "close(pipe_fds[1]) failed");
+
+	if (fifo_fd > 0 && close(fifo_fd))
+		tst_resm(TWARN | TERRNO, "close(fifo_fd) failed");
 
 	tst_rmdir();
-
 }
 
 void help(void)
 {
-	printf
-	    ("-T fd     : If this option is given, the program runs as 'test_open'\n");
-	printf
-	    ("            testing <fd> to see if it is open or not and exiting accordingly\n");
-	printf("-F name   : File to open.  Must be an absolute path,\n");
-	printf("            and the file must be writable\n");
-	printf("-n program: path to the 'test_open' program\n");
+	printf("  -T fd   The program runs as 'test_open()'\n");
 }
 
-/*---------------------------------------------------------------------------*/
-/* Perform an exec, then wait for the child to terminate.
- * The child's termination status determines the success of the test
- *
- * Return codes:
- *	-1	BROK	fork failed
- *	1	BROK	waitpid returned != exit status
- *	<else>	????	exit code from child:
- *	2	BROK	exec failed
- *	0	PASS	fd was properly closed
- *
- */
-
-int do_exec(char *prog, int fd, char *tcd)
-{
-	int pid;
-	char pidname[STRSIZE];
-#ifdef DEBUG
-	int rc, status;		/* for the fcntl */
-#endif
-
-	/* set up arguments to exec'ed child */
-	sprintf(pidname, "%d", fd);
-
-#ifdef DEBUG
-	rc = fcntl(fd, F_GETFD, &status);
-	printf("%s: fd = %d rc = %d status= %d, errno= %d\n", tcd, fd, rc,
-	       status, errno);
-#endif
-
-	switch (pid = FORK_OR_VFORK()) {
-	case -1:
-		return (-1);
-	case 0:		/* child */
-		execlp(prog, openck, "-T", pidname, NULL);
-
-		/* the ONLY reason to do this is to get the errno printed out */
-		fprintf(stderr, "exec(%s, %s, -T, %s) failed.  Errno %s [%d]\n",
-			prog, openck, pidname, strerror(errno), errno);
-		exit(2);
-	default:		/* parent */
-		waitpid(pid, &stat_loc, 0);
-		if (WIFEXITED(stat_loc)) {
-			return (WEXITSTATUS(stat_loc));
-		} else {
-			return 1;
-		}
-	}
-}
-
-/*
- *    PROGRAM TITLE	: Test if a named file descriptor is open
- *    This function is called when fcntcs07 is called with the -T option.
- *    It tests if a file descriptor is open and exits accordingly.
- */
 int test_open(char *arg)
 {
 	int fd, rc;
@@ -363,18 +209,11 @@ int test_open(char *arg)
 
 	rc = fcntl(fd, F_GETFD, &status);
 
-#ifdef DEBUG_T
-	printf("%s: fd = %d rc = %d status= %d, errno= %d\n", openck, fd, rc,
-	       status, errno);
-#endif
+	if (rc == -1 && errno == EBADF)
+		return 0;
 
-	if (rc == -1 && errno == EBADF) {
-		exit(0);
-	}
+	fprintf(stderr, "fcntl() returned %i, errno %s(%i)\n",
+		rc, tst_strerrno(errno), errno);
 
-	if (rc != -1)
-		exit(3);
-
-	exit(errno);
-	return -1;		/* to remove compiler warning on IRIX */
+	return 1;
 }

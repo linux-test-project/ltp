@@ -209,8 +209,6 @@ fcntl06 fcntl06
 fcntl06_64 fcntl06_64
 fcntl07 fcntl07
 fcntl07_64 fcntl07_64
-fcntl07B fcntl07B
-fcntl07B_64 fcntl07B_64
 fcntl08 fcntl08
 fcntl08_64 fcntl08_64
 fcntl09 fcntl09

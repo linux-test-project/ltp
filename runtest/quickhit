@@ -104,14 +104,7 @@ fcntl04 fcntl04
 fcntl05 fcntl05
 # Basic test for fcntl(2) using F_GETLK argument
 fcntl07 fcntl07
-# Close-On-Exec functional test
-#    TEST CASES
-# 	1.) test close-on-exec with a regular file
-# 	2.) test close-on-exec with a system pipe
-fcntl07B fcntl07B
 # Close-On-Exec of named pipe functional test
-#    TEST CASES
-#	1.) test close-on-exec with a named pipe
 fcntl08 fcntl08
 # Basic test for fcntl(2) using F_SETFL argument
 fcntl09 fcntl09
