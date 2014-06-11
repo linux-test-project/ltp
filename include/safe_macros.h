@@ -256,5 +256,10 @@ void *safe_memalign(const char *file, const int lineno,
 #define SAFE_MEMALIGN(cleanup_fn, alignment, size) \
 	safe_memalign(__FILE__, __LINE__, (cleanup_fn), (alignment), (size))
 
+int safe_mkfifo(const char *file, const int lineno,
+		void (*cleanup_fn)(void), const char *pathname, mode_t mode);
+#define SAFE_MKFIFO(cleanup_fn, pathname, mode) \
+	safe_mkfifo(__FILE__, __LINE__, (cleanup_fn), (pathname), (mode))
+
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */

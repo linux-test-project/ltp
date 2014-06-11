@@ -737,3 +737,19 @@ int safe_kill(const char *file, const int lineno, void (cleanup_fn)(void),
 
 	return rval;
 }
+
+int safe_mkfifo(const char *file, const int lineno,
+                void (*cleanup_fn)(void), const char *pathname, mode_t mode)
+{
+	int rval;
+
+	rval = mkfifo(pathname, mode);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "%s:%d: mkfifo(%s, 0%o) failed",
+			 file, lineno, pathname, mode);
+	}
+
+	return rval;
+}
