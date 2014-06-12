@@ -56,6 +56,8 @@ status=0
         debug "INFO: vnet0 = $vnet0 , vnet1 = $vnet1"
     fi
 
+    enable_veth_ipv6 $vnet0
+    vnet0_orig_status=$?
 
     ifconfig $vnet0 $IP1/24 up > /dev/null 2>&1
     route add -host $IP2 dev $vnet0
@@ -89,5 +91,8 @@ status=0
         status=$ret
     fi
 
+    if [ $vnet0_orig_status -eq 1 ];then
+       disable_veth_ipv6 $vnet0
+    fi
 debug "INFO: Done with executing parent script $0 "
 exit $status

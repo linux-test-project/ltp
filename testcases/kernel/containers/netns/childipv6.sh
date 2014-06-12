@@ -45,6 +45,9 @@ status=0
 
     # waiting for the virt-eth devname and IPv6 addr from parent
     vnet1=`cat /tmp/FIFO2`
+    enable_veth_ipv6 $vnet1
+    vnet1_orig_status=$?
+
     # Assigning the dev addresses
     ifconfig $vnet1 $IP2/24 up > /dev/null 2>&1
     ifconfig lo up
@@ -75,6 +78,11 @@ status=0
                status=1
             fi
     echo $status > /tmp/FIFO6
+
+    if [ $vnet1_orig_status -eq 1 ];then
+       disable_veth_ipv6 $vnet1
+    fi
+
     debug "INFO: Done with executing child script $0"
     cleanup $sshpid $vnet1
     exit $status

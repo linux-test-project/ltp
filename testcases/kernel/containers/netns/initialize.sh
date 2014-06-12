@@ -114,3 +114,36 @@ create_veth()
     ip link show > /tmp/net2
     eval `diff /tmp/net1 /tmp/net2 | awk -F": "  '/^> [0-9]*:/ { print "dev" i+0 "=" $2; i++  }'`
 }
+
+# return 1 if disabled originally, 0 for enabled originally.
+enable_veth_ipv6()
+{
+    local veth=$1
+    local veth_ipv6_status=$(cat /proc/sys/net/ipv6/conf/$veth/disable_ipv6)
+    if [ -z "$veth_ipv6_status" ];then
+        tst_resm TFAIL "Error: cat /proc/sys/net/ipv6/conf/$veth/disable_ipv6"\
+            "failed"
+        exit 1
+    elif [ "$veth_ipv6_status" = "1" ]; then
+        echo 0 > /proc/sys/net/ipv6/conf/$veth/disable_ipv6
+        if [ $? -ne 0 ];then
+            tst_resm TFAIL "Error: set " \
+                "/proc/sys/net/ipv6/conf/$veth/disable_ipv6 to 0 failed"
+            exit 1
+        fi
+        return 1
+    else
+        return 0
+    fi
+}
+
+disable_veth_ipv6()
+{
+    local veth=$1
+    echo 1 > /proc/sys/net/ipv6/conf/$veth/disable_ipv6
+    if [ $? -ne 0 ];then
+        tst_resm TFAIL "Error: set " \
+            "/proc/sys/net/ipv6/conf/$veth/disable_ipv6 to 1 failed"
+        exit 1
+    fi
+}
