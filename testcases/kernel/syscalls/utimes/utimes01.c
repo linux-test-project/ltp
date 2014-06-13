@@ -28,6 +28,11 @@
  *      does not exist.
  *   3) utimes() returns -1 and sets errno to EFAULT if filename
  *      is NULL.
+ *   4) utimes() returns -1 and sets errno to EPERM if times is
+ *      not NULL, the caller's effective UID does not match the
+ *      owner of the file, and the caller is not privileged.
+ *   5) utimes() returns -1 and sets errno to EROFS if path resides
+ *      on a read-only file system.
  */
 
 #include <sys/types.h>
@@ -41,19 +46,33 @@
 #include <errno.h>
 #include <stdio.h>
 #include <pwd.h>
+#include <sys/mount.h>
 
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
 
+#define MNTPOINT "mntpoint"
 #define TESTFILE1 "testfile1"
 #define TESTFILE2 "testfile2"
+#define TESTFILE3 "mntpoint/testfile"
 #define FILE_MODE (S_IRWXU | S_IRGRP | S_IXGRP | \
 					S_IROTH | S_IXOTH)
+#define DIR_MODE (S_IRWXU | S_IRWXG | S_IRWXO)
 
 #define LTPUSER1 "nobody"
 #define LTPUSER2 "bin"
+
+static char *fstype = "ext2";
+static char *device;
+static int mount_flag;
+
+static option_t options[] = {
+	{"T:", NULL, &fstype},
+	{"D:", NULL, &device},
+	{NULL, NULL, NULL}
+};
 
 static struct timeval a_tv[2] = { {0, 0}, {1000, 0} };
 static struct timeval m_tv[2] = { {1000, 0}, {0, 0} };
@@ -69,24 +88,33 @@ static struct test_case_t {
 	{ TESTFILE2, NULL, EACCES },
 	{ "notexistfile", tv, ENOENT },
 	{ NULL, tv, EFAULT },
+	{ TESTFILE2, tv, EPERM },
+	{ TESTFILE3, tv, EROFS },
 };
 
 static void setup(void);
 static void cleanup(void);
 static void utimes_verify(const struct test_case_t *);
+static void help(void);
 
 char *TCID = "utimes01";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EACCES, ENOENT, EFAULT, 0 };
+static int exp_enos[] = { EACCES, ENOENT, EFAULT,
+							EPERM, EROFS, 0 };
 
 int main(int ac, char **av)
 {
 	int i, lc;
 	const char *msg;
 
-	msg = parse_opts(ac, av, NULL, NULL);
+	msg = parse_opts(ac, av, options, help);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	if (!device) {
+		tst_brkm(TCONF, NULL, "you must specify the device "
+			"used for mounting with -D option");
+	}
 
 	setup();
 
@@ -124,6 +152,23 @@ void setup(void)
 	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER2);
 	SAFE_CHOWN(cleanup, TESTFILE2, ltpuser->pw_uid,
 		ltpuser->pw_gid);
+
+	tst_mkfs(NULL, device, fstype, NULL);
+	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
+	if (mount(device, MNTPOINT, fstype, 0, NULL) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			"mount device:%s failed", device);
+	}
+	SAFE_TOUCH(cleanup, TESTFILE3, FILE_MODE, NULL);
+	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER1);
+	SAFE_CHOWN(cleanup, TESTFILE3, ltpuser->pw_uid,
+		ltpuser->pw_gid);
+	if (mount(device, MNTPOINT, fstype,
+			MS_REMOUNT | MS_RDONLY, NULL) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			"mount device:%s failed", device);
+	}
+	mount_flag = 1;
 
 	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER1);
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
@@ -164,7 +209,17 @@ void cleanup(void)
 	if (seteuid(0) == -1)
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 
+	if (mount_flag && umount(MNTPOINT) == -1)
+		tst_resm(TWARN | TERRNO, "umount %s failed", MNTPOINT);
+
 	TEST_CLEANUP;
 
 	tst_rmdir();
+}
+
+static void help(void)
+{
+	printf("-T type   : specifies the type of filesystem to be mounted. "
+		"Default ext2.\n");
+	printf("-D device : device used for mounting.\n");
 }

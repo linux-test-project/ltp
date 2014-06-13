@@ -1311,7 +1311,7 @@ utime04 utime04
 utime05 utime05
 utime06 utime06
 
-utimes01 utimes01
+utimes01 utimes01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
 # Introduced from Kernel 2.6.22 onwards
 utimensat01 utimensat_tests.sh
