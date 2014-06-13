@@ -662,6 +662,21 @@ int safe_fchmod(const char *file, const int lineno,
 	return rval;
 }
 
+int safe_chown(const char *file, const int lineno, void (cleanup_fn)(void),
+			const char *path, uid_t owner, gid_t group)
+{
+	int rval;
+
+	rval = chown(path, owner, group);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			"%s:%d: chown(%s,%d,%d) failed",
+			file, lineno, path, owner, group);
+	}
+
+	return rval;
+}
 
 int safe_fchown(const char *file, const int lineno, void (cleanup_fn)(void),
                 int fd, uid_t owner, gid_t group)
