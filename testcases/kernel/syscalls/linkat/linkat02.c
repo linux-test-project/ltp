@@ -36,7 +36,6 @@
 #include "linux_syscall_numbers.h"
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
-#include "tst_fs_type.h"
 
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
 			 S_IXGRP|S_IROTH|S_IXOTH)
@@ -47,21 +46,21 @@
 #define TEST_EACCES2	"./tmp/testeeacces2"
 #define TEST_EROFS	"mntpoint"
 #define TEST_EROFS2	"mntpoint/testerofs2"
-#define TEST_EMLINK	"mntpoint/testemlink"
+#define TEST_EMLINK	"emlink_dir/testfile0"
+#define TEST_EMLINK2	"emlink_dir/testfile"
 #define BASENAME	"mntpoint/basename"
 
-static char lname[PATH_MAX];
 static char nametoolong[PATH_MAX+2];
 static char *fstype = "ext2";
 static char *device;
 static int mount_flag;
+static int max_hardlinks;
 
 static void setup(void);
 static void cleanup(void);
 static void setup_eacces(void);
 static void cleanup_eacces(void);
 static void setup_erofs(void);
-static void setup_emlink(void);
 static void help(void);
 
 static option_t options[] = {
@@ -84,7 +83,7 @@ static struct test_struct {
 	{TEST_ELOOP, TEST_FILE, AT_SYMLINK_FOLLOW, ELOOP, NULL, NULL},
 	{TEST_EACCES, TEST_EACCES2, 0, EACCES, setup_eacces, cleanup_eacces},
 	{TEST_EROFS, TEST_EROFS2, 0, EROFS, setup_erofs, NULL},
-	{TEST_EMLINK, lname, 0, EMLINK, setup_emlink, NULL},
+	{TEST_EMLINK, TEST_EMLINK2, 0, EMLINK, NULL, NULL},
 };
 
 char *TCID = "linkat02";
@@ -95,8 +94,6 @@ static void linkat_verify(const struct test_struct *);
 
 static int exp_enos[] = { ENAMETOOLONG, EEXIST, ELOOP,
 			  EACCES, EROFS, EMLINK, 0 };
-
-static long fs_type;
 
 int main(int ac, char **av)
 {
@@ -130,14 +127,13 @@ int main(int ac, char **av)
 
 static void linkat_verify(const struct test_struct *desc)
 {
+	if (desc->expected_errno == EMLINK && max_hardlinks == 0) {
+		tst_resm(TCONF, "EMLINK test is not appropriate");
+		return;
+	}
+
 	if (desc->setupfunc != NULL) {
-		if (desc->setupfunc == setup_emlink &&
-		    fs_type == TST_XFS_MAGIC) {
-			tst_resm(TCONF, "Test skipped XFS filesystem.");
-			return;
-		} else {
-			desc->setupfunc();
-		}
+		desc->setupfunc();
 	}
 
 	TEST(ltp_syscall(__NR_linkat, AT_FDCWD, desc->oldfname,
@@ -166,8 +162,6 @@ static void linkat_verify(const struct test_struct *desc)
 
 static void setup(void)
 {
-	long link_max = 0;
-
 	if ((tst_kvercmp(2, 6, 16)) < 0)
 		tst_brkm(TCONF, NULL, "This test needs kernel 2.6.16 or newer");
 
@@ -202,38 +196,7 @@ static void setup(void)
 	}
 	mount_flag = 1;
 
-	SAFE_TOUCH(cleanup, TEST_EMLINK, 0666, NULL);
-
-	fs_type = tst_fs_type(cleanup, "mntpoint");
-	if (fs_type == TST_XFS_MAGIC)
-		return;
-
-	while (1) {
-		sprintf(lname, "%s%ld", BASENAME, ++link_max);
-		TEST(link(TEST_EMLINK, lname));
-		if (TEST_RETURN == -1) {
-			switch (TEST_ERRNO) {
-			case EMLINK:
-				tst_resm(TINFO, "for %s the max links is %ld",
-					 fstype, link_max);
-				break;
-			default:
-				tst_brkm(TBROK | TTERRNO, cleanup,
-					 "Unexpected error: ");
-				break;
-			}
-			break;
-		}
-	}
-}
-
-static void setup_emlink(void)
-{
-	if (mount(device, "mntpoint", fstype, MS_REMOUNT, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "remount device:%s failed", device);
-	}
-	mount_flag = 1;
+	max_hardlinks = tst_fs_fill_hardlinks(cleanup, "emlink_dir");
 }
 
 static void setup_eacces(void)
