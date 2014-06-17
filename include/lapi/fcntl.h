@@ -51,6 +51,10 @@
 # define AT_SYMLINK_NOFOLLOW 0x100
 #endif
 
+#ifndef AT_REMOVEDIR
+# define AT_REMOVEDIR 0x200
+#endif
+
 #ifndef O_NOATIME
 # define O_NOATIME 01000000
 #endif
