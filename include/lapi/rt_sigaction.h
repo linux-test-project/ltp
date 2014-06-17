@@ -97,6 +97,46 @@ static inline int sig_initial(int sig)
 
 #endif /* __x86_64__ */
 
+#ifdef __sparc__
+# if defined __arch64__ || defined __sparcv9
+
+/*
+ * From glibc/sysdeps/unix/sysv/linux/sparc/sparc64/sigaction.c
+ */
+
+static void __rt_sigreturn_stub(void)
+{
+	__asm__ ("mov %0, %%g1\n\t"
+		"ta  0x6d\n\t"
+		: /* no outputs */
+		: "i" (__NR_rt_sigreturn));
+}
+
+# else /* sparc32 */
+
+/*
+ * From glibc/sysdeps/unix/sysv/linux/sparc/sparc32/sigaction.c
+ */
+
+static void __rt_sigreturn_stub(void)
+{
+	__asm__ ("mov %0, %%g1\n\t"
+		"ta  0x10\n\t"
+		: /* no outputs */
+		: "i" (__NR_rt_sigreturn));
+}
+
+static void __sigreturn_stub(void)
+{
+	__asm__ ("mov %0, %%g1\n\t"
+		"ta  0x10\n\t"
+		: /* no outputs */
+		: "i" (__NR_sigreturn));
+}
+
+# endif
+#endif /* __sparc__ */
+
 /* This is a wrapper for __NR_rt_sigaction syscall.
  * act/oact values of INVAL_SA_PTR is used to pass
  * an invalid pointer to syscall(__NR_rt_sigaction)
@@ -134,9 +174,28 @@ static int ltp_rt_sigaction(int signum, const struct sigaction *act,
 	kact.sa_restorer = restore_rt;
 #endif
 
+#ifdef __sparc__
+	unsigned long stub = 0;
+# if defined __arch64__ || defined __sparcv9
+	stub = ((unsigned long) &__rt_sigreturn_stub) - 8;
+# else /* sparc32 */
+	if ((kact.sa_flags & SA_SIGINFO) != 0)
+		stub = ((unsigned long) &__rt_sigreturn_stub) - 8;
+	else
+		stub = ((unsigned long) &__sigreturn_stub) - 8;
+# endif
+#endif
+
+
+#ifdef __sparc__
+	ret = ltp_syscall(__NR_rt_sigaction, signum,
+			kact_p, koact_p,
+			stub, sigsetsize);
+#else
 	ret = ltp_syscall(__NR_rt_sigaction, signum,
 			kact_p, koact_p,
 			sigsetsize);
+#endif
 
 	if (ret >= 0) {
 		if (oact && (oact != INVAL_SA_PTR)) {
