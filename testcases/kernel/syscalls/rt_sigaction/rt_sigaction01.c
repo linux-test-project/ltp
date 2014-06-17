@@ -36,11 +36,10 @@
 #include <sys/syscall.h>
 #include <string.h>
 
-#define LTP_RT_SIG_TEST
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-#include "ltp_signal.h"
+#include "lapi/rt_sigaction.h"
 
 char *TCID = "rt_sigaction01";
 static int testno;
@@ -73,20 +72,14 @@ static void handler(int sig)
 
 static int set_handler(int sig, int sig_to_mask, int mask_flags)
 {
-#ifdef __x86_64__
-	struct kernel_sigaction sa, oldaction;
-	mask_flags |= SA_RESTORER;
-	sa.sa_restorer = restore_rt;
-	sa.k_sa_handler = (void *)handler;
-#else
 	struct sigaction sa, oldaction;
+
 	sa.sa_handler = (void *)handler;
-#endif
 	sa.sa_flags = mask_flags;
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, sig);
 
-	return ltp_syscall(__NR_rt_sigaction, sig, &sa, &oldaction, SIGSETSIZE);
+	return ltp_rt_sigaction(sig, &sa, &oldaction, SIGSETSIZE);
 }
 
 int main(int ac, char **av)
@@ -109,11 +102,6 @@ int main(int ac, char **av)
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 			for (signal = SIGRTMIN; signal <= SIGRTMAX; signal++) {
-
-#ifdef __x86_64__
-				sig_initial(signal);
-#endif
-
 				for (flag = 0;
 				     flag <
 				     (sizeof(test_flags) /

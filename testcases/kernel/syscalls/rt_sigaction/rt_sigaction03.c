@@ -35,7 +35,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-#include "ltp_signal.h"
+#include "lapi/rt_sigaction.h"
 
 #define INVAL_SIGSETSIZE -1
 
@@ -92,8 +92,7 @@ static int set_handler(int sig, int sig_to_mask, int mask_flags)
 	 * sigsetsize was not equivalent to the size of a sigset_t type *
 	 */
 
-	return ltp_syscall(__NR_rt_sigaction, sig, &sa, &oldaction,
-			INVAL_SIGSETSIZE);
+	return ltp_rt_sigaction(sig, &sa, &oldaction, INVAL_SIGSETSIZE);
 }
 
 int main(int ac, char **av)

@@ -46,8 +46,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-#define LTP_RT_SIG_TEST
-#include "ltp_signal.h"
+#include "lapi/rt_sigaction.h"
 
 char *TCID = "rt_sigprocmask01";
 static int testno;
@@ -76,18 +75,11 @@ void sig_handler(int sig)
 
 int main(int ac, char **av)
 {
-#if __x86_64
-	struct kernel_sigaction act, oact;
-	sig_initial(TEST_SIG);
-	act.sa_flags |= SA_RESTORER;
-	act.sa_restorer = restore_rt;
-	act.k_sa_handler = sig_handler;
-#else
 	struct sigaction act, oact;
 	memset(&act, 0, sizeof(act));
 	memset(&oact, 0, sizeof(oact));
 	act.sa_handler = sig_handler;
-#endif
+
 	sigset_t set, oset;
 	int lc;
 	const char *msg;
@@ -111,8 +103,8 @@ int main(int ac, char **av)
 					 "sigaddset call failed");
 
 			/* call rt_sigaction() */
-			TEST(ltp_syscall(__NR_rt_sigaction, TEST_SIG, &act,
-				&oact, SIGSETSIZE));
+			TEST(ltp_rt_sigaction(TEST_SIG, &act, &oact,
+						SIGSETSIZE));
 			if (TEST_RETURN < 0)
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "rt_sigaction call failed");

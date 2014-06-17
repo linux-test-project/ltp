@@ -35,9 +35,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-#include "ltp_signal.h"
-
-#define INVAL_STRUCT -1
+#include "lapi/rt_sigaction.h"
 
 char *TCID = "rt_sigaction02";
 static int testno;
@@ -100,9 +98,8 @@ int main(int ac, char **av)
 					 * An invalid act or oact value was specified                   *
 					 */
 
-					TEST(ltp_syscall
-					     (__NR_rt_sigaction, signal,
-					      INVAL_STRUCT, NULL, SIGSETSIZE));
+					TEST(ltp_rt_sigaction(signal,
+						INVAL_SA_PTR, NULL, SIGSETSIZE));
 					if ((TEST_RETURN == -1)
 					    && (TEST_ERRNO ==
 						test_cases[0].exp_errno)) {

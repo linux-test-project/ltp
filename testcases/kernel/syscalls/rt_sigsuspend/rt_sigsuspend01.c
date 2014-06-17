@@ -30,8 +30,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-#define LTP_RT_SIG_TEST
-#include "ltp_signal.h"
+#include "lapi/rt_sigaction.h"
 
 char *TCID = "rt_sigsuspend01";
 int TST_TOTAL = 1;
@@ -70,23 +69,12 @@ int main(int ac, char **av)
 
 		if (sigemptyset(&set) < 0)
 			tst_brkm(TFAIL | TERRNO, cleanup, "sigemptyset failed");
-#ifdef __x86_64__
-		struct kernel_sigaction act, oact;
-		sig_initial(SIGALRM);
-		memset(&act, 0, sizeof(act));
-		memset(&oact, 0, sizeof(oact));
-		act.sa_flags |= SA_RESTORER;
-		act.sa_restorer = restore_rt;
-		act.k_sa_handler = sig_handler;
-#else
 		struct sigaction act, oact;
 		memset(&act, 0, sizeof(act));
 		memset(&oact, 0, sizeof(oact));
 		act.sa_handler = sig_handler;
-#endif
 
-		TEST(ltp_syscall(__NR_rt_sigaction, SIGALRM, &act, &oact,
-			     SIGSETSIZE));
+		TEST(ltp_rt_sigaction(SIGALRM, &act, &oact, SIGSETSIZE));
 		if (TEST_RETURN == -1)
 			tst_brkm(TFAIL | TTERRNO, cleanup,
 				 "rt_sigaction failed");
