@@ -59,7 +59,6 @@ mmap10_1 mmap10 -a
 mmap10_2 mmap10 -s
 mmap10_3 mmap10 -a -s
 mmap10_4 mmap10 -a -s -i 60
-mmap10_5 mmap10 -a -s -c 200
 
 ksm01 ksm01
 ksm01_1 ksm01 -u 128
