@@ -12,36 +12,22 @@
 /* the GNU General Public License for more details.                           */
 /*                                                                            */
 /* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
+/* along with this program;  if not, write to the Free Software Foundation,   */
+/* Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           */
 /*                                                                            */
+/* History:     Porting from Crackerjack to LTP is done by                    */
+/*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
+
 /******************************************************************************/
-/*                                                                            */
-/* File:        rt_sigaction01.c                                              */
-/*                                                                            */
 /* Description: This tests the rt_sigaction() syscall                         */
 /*		rt_sigaction alters an action taken by a process on receipt   */
 /* 		of a particular signal. The action is specified by the        */
 /*		sigaction structure. The previous action on the signal is     */
 /*		saved in oact.sigsetsize should indicate the size of a        */
 /*		sigset_t type.                       			      */
-/*                                                                            */
-/* Usage:  <for command-line>                                                 */
-/* rt_sigaction01 [-c n] [-e][-i n] [-I x] [-p x] [-t]                        */
-/*      where,  -c n : Run n copies concurrently.                             */
-/*              -e   : Turn on errno logging.                                 */
-/*              -i n : Execute test n times.                                  */
-/*              -I x : Execute test for x seconds.                            */
-/*              -P x : Pause for x seconds between iterations.                */
-/*              -t   : Turn on syscall timing.                                */
-/*                                                                            */
-/* Total Tests: 1                                                             */
-/*                                                                            */
-/* Test Name:   rt_sigaction01                                             */
-/* History:     Porting from Crackerjack to LTP is done by                    */
-/*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -57,75 +43,35 @@
 #include "ltp_signal.h"
 
 char *TCID = "rt_sigaction01";
-int testno;
+static int testno;
 int TST_TOTAL = 1;
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-void cleanup(void)
+static void cleanup(void)
 {
-
 	TEST_CLEANUP;
 	tst_rmdir();
-
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
-void setup(void)
+static void setup(void)
 {
-	/* Capture signals if any */
-	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
 }
 
-int test_flags[] =
+static int test_flags[] =
     { SA_RESETHAND | SA_SIGINFO, SA_RESETHAND, SA_RESETHAND | SA_SIGINFO,
 SA_RESETHAND | SA_SIGINFO, SA_NOMASK };
 char *test_flags_list[] =
     { "SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND", "SA_RESETHAND|SA_SIGINFO",
 "SA_RESETHAND|SA_SIGINFO", "SA_NOMASK" };
 
-void handler(int sig)
+static void handler(int sig)
 {
 	tst_resm(TINFO, "Signal Handler Called with signal number %d\n", sig);
 	return;
 }
 
-int set_handler(int sig, int sig_to_mask, int mask_flags)
+static int set_handler(int sig, int sig_to_mask, int mask_flags)
 {
 #ifdef __x86_64__
 	struct kernel_sigaction sa, oldaction;
@@ -141,18 +87,18 @@ int set_handler(int sig, int sig_to_mask, int mask_flags)
 	sigaddset(&sa.sa_mask, sig);
 
 	return ltp_syscall(__NR_rt_sigaction, sig, &sa, &oldaction, SIGSETSIZE);
-
 }
 
 int main(int ac, char **av)
 {
-	int signal, flag;
+	unsigned int flag;
+	int signal;
 	int lc;
 	const char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 
 	setup();
 
@@ -162,7 +108,7 @@ int main(int ac, char **av)
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for (signal = SIGRTMIN; signal <= (SIGRTMAX); signal++) {	//signal for 34 to 65
+			for (signal = SIGRTMIN; signal <= SIGRTMAX; signal++) {
 
 #ifdef __x86_64__
 				sig_initial(signal);
