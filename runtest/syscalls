@@ -584,6 +584,7 @@ mmap13 mmap13
 mmap14 mmap14
 # test is broken, mask it for now.
 #mmap11 mmap11 -i 30000
+mmap15 mmap15
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02

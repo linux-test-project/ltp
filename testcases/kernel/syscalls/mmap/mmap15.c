@@ -38,7 +38,7 @@
 #include "usctest.h"
 #include "safe_macros.h"
 
-char *TCID = "hugemmap03";
+char *TCID = "mmap15";
 int TST_TOTAL = 1;
 
 #define HIGH_ADDR	(void *)(0x1000000000000)

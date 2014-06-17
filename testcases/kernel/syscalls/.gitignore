@@ -530,6 +530,7 @@
 /mmap/mmap12
 /mmap/mmap13
 /mmap/mmap14
+/mmap/mmap15
 /modify_ldt/modify_ldt01
 /modify_ldt/modify_ldt02
 /modify_ldt/modify_ldt03

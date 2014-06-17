@@ -1,7 +1,6 @@
 hugemmap01 hugemmap01
 # test is broken in design
 #hugemmap02 hugemmap02
-hugemmap03 hugemmap03 -I2
 hugemmap04 hugemmap04
 hugemmap05 hugemmap05
 hugemmap05_1 hugemmap05 -m
