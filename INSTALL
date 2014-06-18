@@ -37,7 +37,8 @@ downloaded from:
 
 Configuration
 -------------------
-Using autoconf:
+
+Using autoconf (preferred):
 	$ make autotools # This must be run from "$TOP_SRCDIR"!
 	$ test -d "$TOP_BUILDDIR" || mkdir -p "$TOP_BUILDDIR"
 	$ cd "$TOP_BUILDDIR" && "$TOP_SRCDIR/configure" \
@@ -106,7 +107,7 @@ following information,
 
  1. The error output before the failure.
  2. If you used configure:
- 	i.   include/config.h
+	i.   include/config.h
 	ii.  include/mk/config.mk
 	iii. config.log
 
@@ -238,26 +239,26 @@ contributions are welcome.
 
    You can now successfully execute the networktests.sh script.
    When you would like to run the whole network tests, specify -w option:
-   	# ./networktests.sh -w
+	# ./networktests.sh -w
 
    When you would like to run the same tests which networktests.sh ran till
    2008, specify no option or -d option:
-   	# ./networktests.sh
+	# ./networktests.sh
 
    You can run the test category which you are interested in, -h option shows
    the list of the test category:
-   	# ./netwoktests.sh -h
+	# ./netwoktests.sh -h
 
 
 Cross compiling
 ---------------
 
-To cross compile, you must specify the correct variables:
+To cross compile, you must specify the correct variables when running configure.
+e.g. CC, CXX, CXXFLAGS, LDFLAGS, etc...
 
-1. When running configure (CC, CXX, CXXFLAGS, LDLIBS, etc).
-2. Manually edit include/mk/config.mk, as described in Configuration.
-
-Note: Do not specify variables on the command-line. Use config.mk instead.
+After configure has run, it will generate include/mk/config.mk. You can tweak
+settings in there if need be, but you should not specificy settings on the
+command-line when running make.
 
 uClinux Users
 --------------
