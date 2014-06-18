@@ -65,3 +65,4 @@ logfile.*
 /lib/tests/tst_strerrno
 /lib/tests/tst_fs_fill_subdirs
 /lib/tests/tst_fs_fill_hardlinks
+/lib/tests/tst_device

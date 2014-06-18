@@ -726,7 +726,48 @@ void test01(void)
 }
 -------------------------------------------------------------------------------
 
-2.2.13 Formatting a device with a filesystem
+2.2.13 Acquiring a block device
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some tests needs a block device (inotify tests, syscall 'EROFS' failures,
+etc.). For your convenience LTP library includes a function to acquire and
+release a testing device.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+const char *tst_acquire_device(void (cleanup_fn)(void));
+-------------------------------------------------------------------------------
+
+This function returns a path to small block device suitable for formatting and
+mounting.
+
+WARNING: You can acquire only one device, calling it for second time without
+         releasing the device first will abort the test.
+
+In case that 'LTP_DEV' is passed to the test in environment the function just
+checks that the file exists and that it's block device.
+
+Otherwise temp file is created and attached to a free loop device.
+
+In case that that there are no unused loop devices 'NULL' is returned. The
+test should skip the particular part of the test that needs the device with
+'TCONF'.
+
+WARNING: Because 'tst_acquire_device()' may create temporary file you must
+         call 'tst_tmpdir()' before you call 'tst_acquire_device()'
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+void tst_release_device(void (cleanup_fn)(void), const char *dev);
+-------------------------------------------------------------------------------
+
+Releases the device acquired by 'tst_acquire_device()'.
+
+2.2.14 Formatting a device with a filesystem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
@@ -743,7 +784,7 @@ options passed to mkfs.
 The extra options 'fs_opts' should either be 'NULL' if there are none or a
 'NULL' terminated array of strings such as '{"-b", "1024", NULL}'.
 
-2.2.14 Verifying a filesystem's free space
+2.2.15 Verifying a filesystem's free space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests have size requirements for the filesystem's free space. If these
@@ -773,7 +814,7 @@ The required free space is calculated by 'size * mult', e.g.
 filesystem, which '"/tmp/testfile"' is in, has 64MB free space at least, and 0
 if not.
 
-2.2.15 Getting maximal number of links to a regular file or directory
+2.2.16 Getting maximal number of links to a regular file or directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests need to know the maximal count of links to a regular file or

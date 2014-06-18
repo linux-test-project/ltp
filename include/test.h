@@ -281,6 +281,28 @@ void tst_run_cmd(void (cleanup_fn)(void),
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	      const char *fs_type, const char *const fs_opts[]);
 
+/* lib/tst_device.c
+ *
+ * Acquires test device.
+ *
+ * Can be used only once, i.e. you cannot get two different devices.
+ *
+ * Looks for LTP_DEV env variable first (which may be passed by the test
+ * driver or by a user) and returns just it's value if found.
+ *
+ * Otherwise creates a temp file and loop device.
+ *
+ * Note that you have to call tst_tmpdir() beforehand.
+ *
+ * Returns path to the device or NULL if it cannot be created.
+ */
+const char *tst_acquire_device(void (cleanup_fn)(void));
+
+/* lib/tst_device.c
+ * @dev: device path returned by the tst_acquire_device()
+ */
+void tst_release_device(void (cleanup_fn)(void), const char *dev);
+
 /* lib/tst_fill_file.c
  *
  * Creates/ovewrites a file with specified pattern
