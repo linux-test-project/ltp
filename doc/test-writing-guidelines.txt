@@ -773,6 +773,49 @@ The required free space is calculated by 'size * mult', e.g.
 filesystem, which '"/tmp/testfile"' is in, has 64MB free space at least, and 0
 if not.
 
+2.2.15 Getting maximal number of links to a regular file or directory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some tests need to know the maximal count of links to a regular file or
+directory, such as 'rename(2)' or 'linkat(2)' to test 'EMLINK' error.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+int tst_fs_fill_hardlinks(void (*cleanup)(void), const char *dir);
+-------------------------------------------------------------------------------
+
+Try to get maximal count of hard links to a regular file inside the 'dir'.
+
+NOTE: This number depends on the filesystem 'dir' is on.
+
+This function uses 'link(2)' to create hard links to a single file until it
+gets 'EMLINK' or creates 65535 links. If limit is hit maximal number of
+hardlinks is returned and the 'dir' is filled with hardlinks in format
+"testfile%i" where i belongs to [0, limit) interval. If no limit is hit or if
+'link(2)' failed with 'ENOSPC' or 'EDQUOT', zero is returned and previously
+created files are removed.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+int tst_fs_fill_subdirs(void (*cleanup)(void), const char *dir);
+-------------------------------------------------------------------------------
+
+Try to get maximum number of subdirectories in directory.
+
+NOTE: This number depends on the filesystem 'dir' is on.
+
+This function uses 'mkdir(2)' to create directories in 'dir' until it gets
+'EMLINK' or creates 65535 directories. If limit is hit the maximal number of
+subdirectories is returned and the 'dir' is filled with subdirectories in
+format "testdir%i" where i belongs to [0, limit - 2) interval (because each
+newly created dir has two links allready the '.' and the link from parent
+dir). If no limit is hit or 'mkdir(2)' failed with 'ENOSPC' or 'EDQUOT', zero
+is returned previously created directories are removed.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
