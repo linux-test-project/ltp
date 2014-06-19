@@ -10,7 +10,7 @@ access04 access04
 access05 access05
 access06 access06
 
-acct01 acct01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+acct01 acct01
 
 adjtimex01 adjtimex01
 adjtimex02 adjtimex02
