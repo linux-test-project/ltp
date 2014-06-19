@@ -645,7 +645,7 @@ rename13 rename13
 rename14 rename14
 
 rmdir01 rmdir01
-rmdir02 rmdir02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+rmdir02 rmdir02
 rmdir03 rmdir03
 rmdir03A symlink01 -T rmdir03
 rmdir04 rmdir04
