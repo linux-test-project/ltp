@@ -35,7 +35,6 @@
 
 static void setup(void);
 static void cleanup(void);
-static void help(void);
 
 #define TEST_FILE1	"mntpoint/test_file1"
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
@@ -46,16 +45,10 @@ char *TCID = "mkdirat02";
 static int dir_fd;
 static int cur_fd = AT_FDCWD;
 static char test_file2[PATH_MAX] = ".";
-static char *fstype = "ext2";
-static char *device;
+static const char *device;
 static int mount_flag_dir;
 static int mount_flag_cur;
 
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", NULL, &device},
-	{NULL, NULL, NULL}
-};
 static int exp_enos[] = { ELOOP, EROFS, 0 };
 
 static struct test_case_t {
@@ -78,15 +71,9 @@ int main(int ac, char **av)
 	int i;
 	const char *msg;
 
-	msg = parse_opts(ac, av, options, help);
+	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	if (!device) {
-		tst_brkm(TBROK, NULL,
-			 "you must specify the device used for mounting with "
-			 "-D option");
-	}
 
 	setup();
 
@@ -103,6 +90,7 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	int i;
+	const char *fs_type;
 
 	tst_require_root(NULL);
 
@@ -111,6 +99,12 @@ static void setup(void)
 	TEST_PAUSE;
 
 	tst_tmpdir();
+
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to acquire device");
 
 	SAFE_MKDIR(cleanup, "test_dir", DIR_MODE);
 	dir_fd = SAFE_OPEN(cleanup, "test_dir", O_DIRECTORY);
@@ -128,17 +122,17 @@ static void setup(void)
 	for (i = 0; i < 43; i++)
 		strcat(test_file2, "/test_eloop");
 
-	tst_mkfs(NULL, device, fstype, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL);
 
 	SAFE_MKDIR(cleanup, "test_dir/mntpoint", DIR_MODE);
-	if (mount(device, "test_dir/mntpoint", fstype, MS_RDONLY, NULL) < 0) {
+	if (mount(device, "test_dir/mntpoint", fs_type, MS_RDONLY, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "mount device:%s failed", device);
 	}
 	mount_flag_dir = 1;
 
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
-	if (mount(device, "mntpoint", fstype, MS_RDONLY, NULL) < 0) {
+	if (mount(device, "mntpoint", fs_type, MS_RDONLY, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "mount device:%s failed", device);
 	}
@@ -178,12 +172,8 @@ static void cleanup(void)
 	if (mount_flag_cur && umount("test_dir/mntpoint") < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 
-	tst_rmdir();
-}
+	if (device)
+		tst_release_device(NULL, device);
 
-static void help(void)
-{
-	printf("-T type   : specifies the type of filesystem to be mounted. "
-	       "Default ext2.\n");
-	printf("-D device : device used for mounting.\n");
+	tst_rmdir();
 }
