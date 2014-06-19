@@ -26,6 +26,13 @@
  *	 - The user ID of the process is not "root".
  * 2. Verify that the system call utime() fails to set the modification
  *    and access times of a file if the specified file doesn't exist.
+ * 3. Verify that the system call utime() fails to set the modification
+ *    and access times of a file to the current time, under the following
+ *    constraints,
+ *	 - The times argument is not null.
+ *	 - The user ID of the process is not "root".
+ * 4. Verify that the system call utime() fails to set the modification
+ *    and access times of a file that resides on a read-only file system.
  */
 
 #include <errno.h>
@@ -40,24 +47,35 @@
 #include <wait.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/mount.h>
 
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
 
 #define TEMP_FILE	"tmp_file"
+#define MNT_POINT	"mntpoint"
 
 char *TCID = "utime06";
-static int exp_enos[] = { EACCES, ENOENT, 0 };
-
+static int exp_enos[] = { EACCES, ENOENT, EPERM, EROFS, 0 };
 static struct passwd *ltpuser;
+static const struct utimbuf times;
+static const char *dev;
+static int mount_flag;
+static void setup_nobody(void);
+static void cleanup_nobody(void);
 
 struct test_case_t {
 	char *pathname;
 	int exp_errno;
+	const struct utimbuf *times;
+	void (*setup_func)(void);
+	void (*cleanup_func)(void);
 } Test_cases[] = {
-	{TEMP_FILE, EACCES},
-	{"", ENOENT},
+	{TEMP_FILE, EACCES, NULL, setup_nobody, cleanup_nobody},
+	{"", ENOENT, NULL, NULL, NULL},
+	{TEMP_FILE, EPERM, &times, setup_nobody, cleanup_nobody},
+	{MNT_POINT, EROFS, NULL, NULL, NULL},
 };
 
 int TST_TOTAL = ARRAY_SIZE(Test_cases);
@@ -89,6 +107,8 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	const char *fs_type;
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
@@ -101,14 +121,32 @@ static void setup(void)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
+	fs_type = tst_dev_fs_type();
+	dev = tst_acquire_device(cleanup);
+	if (!dev)
+		tst_brkm(TCONF, cleanup, "Failed to acquire test device");
 
-	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
+	tst_mkfs(cleanup, dev, fs_type, NULL);
+
+	SAFE_MKDIR(cleanup, MNT_POINT, 0644);
+	if (mount(dev, MNT_POINT, fs_type, MS_RDONLY, NULL) < 0) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "mount device:%s failed", dev);
+	}
+	mount_flag = 1;
+
+	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
 }
 
 static void utime_verify(const struct test_case_t *test)
 {
-	TEST(utime(test->pathname, NULL));
+	if (test->setup_func != NULL)
+		test->setup_func();
+
+	TEST(utime(test->pathname, test->times));
+
+	if (test->cleanup_func != NULL)
+		test->cleanup_func();
 
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "utime succeeded unexpectedly");
@@ -124,12 +162,25 @@ static void utime_verify(const struct test_case_t *test)
 	}
 }
 
+static void setup_nobody(void)
+{
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
+}
+
+static void cleanup_nobody(void)
+{
+	SAFE_SETEUID(cleanup, 0);
+}
+
 static void cleanup(void)
 {
-	if (seteuid(0) != 0)
-		tst_resm(TWARN | TERRNO, "seteuid failed");
-
 	TEST_CLEANUP;
+
+	if (mount_flag && umount(MNT_POINT) < 0)
+		tst_resm(TWARN | TERRNO, "umount device:%s failed", dev);
+
+	if (dev)
+		tst_release_device(NULL, dev);
 
 	tst_rmdir();
 }
