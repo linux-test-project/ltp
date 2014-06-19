@@ -58,7 +58,6 @@ int TST_TOTAL = 3;
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN		(EVENT_MAX * (EVENT_SIZE + 16))
 
-static void help(void);
 static void setup(void);
 static void cleanup(void);
 
@@ -75,15 +74,8 @@ static char event_buf[EVENT_BUF_LEN];
 
 static char *mntpoint = "mntpoint";
 static int mount_flag;
-static char *fstype = "ext2";
-static char *device;
-static int dflag;
-
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", &dflag, &device},
-	{NULL, NULL, NULL}
-};
+static const char *device;
+static const char *fs_type;
 
 int main(int argc, char *argv[])
 {
@@ -91,15 +83,9 @@ int main(int argc, char *argv[])
 	int ret;
 	int len, i, test_num;
 
-	msg = parse_opts(argc, argv, options, &help);
+	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	/* Check for mandatory option of the testcase */
-	if (!dflag)
-		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
-			 " mounting with -D option, Run '%s  -h' for option "
-			 " information.", TCID);
 
 	setup();
 
@@ -186,11 +172,18 @@ static void setup(void)
 	int ret;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	tst_mkfs(cleanup, device, fstype, NULL);
 
 	TEST_PAUSE;
 
+	fs_type = tst_dev_fs_type();
+
 	tst_tmpdir();
+
+	device = tst_acquire_device(cleanup);
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, device, fs_type, NULL);
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",
@@ -198,8 +191,8 @@ static void setup(void)
 	}
 
 	/* Call mount(2) */
-	tst_resm(TINFO, "mount %s to %s fstype=%s", device, mntpoint, fstype);
-	TEST(mount(device, mntpoint, fstype, 0, NULL));
+	tst_resm(TINFO, "mount %s to %s fs_type=%s", device, mntpoint, fs_type);
+	TEST(mount(device, mntpoint, fs_type, 0, NULL));
 
 	/* check return code */
 	if (TEST_RETURN != 0) {
@@ -245,7 +238,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (close(fd_notify) == -1)
+	if (fd_notify > 0 && close(fd_notify) == -1)
 		tst_resm(TWARN | TERRNO, "close(%d) failed", fd_notify);
 
 	if (mount_flag) {
@@ -255,16 +248,11 @@ static void cleanup(void)
 				 mntpoint);
 	}
 
+	tst_release_device(NULL, device);
+
 	TEST_CLEANUP;
 
 	tst_rmdir();
-}
-
-static void help(void)
-{
-	printf("-T type : specifies the type of filesystem to be mounted."
-	       " Default ext2.\n");
-	printf("-D device : device used for mounting.\n");
 }
 
 #else
