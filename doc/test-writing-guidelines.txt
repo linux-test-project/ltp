@@ -774,6 +774,20 @@ Releases the device acquired by 'tst_acquire_device()'.
 -------------------------------------------------------------------------------
 #include "test.h"
 
+const char *tst_dev_fs_type(void);
+-------------------------------------------------------------------------------
+
+Returns name of filesystem that should be used for tests. Unless is your test
+designed to test specific filesystem you should use this function to select
+filesystem for the 'tst_mkfs()'.
+
+NOTE: The default filesytem is hardcoded to 'ext2' in the sources and can be
+      overridden by setting 'LTP_DEV_FS_TYPE' environment variable.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
               const char *fs_type, const char *const fs_opts[]);
 -------------------------------------------------------------------------------

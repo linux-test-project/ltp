@@ -281,6 +281,16 @@ void tst_run_cmd(void (cleanup_fn)(void),
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	      const char *fs_type, const char *const fs_opts[]);
 
+/*
+ * Returns filesystem type to be used for the testing. Unless your test is
+ * designed for specific filesystem you should use this function to the tested
+ * filesytem.
+ *
+ * If TST_DEV_FS_TYPE is set the function returns it's content,
+ * otherwise default fs type hardcoded in the library is returned.
+ */
+const char *tst_dev_fs_type(void);
+
 /* lib/tst_device.c
  *
  * Acquires test device.

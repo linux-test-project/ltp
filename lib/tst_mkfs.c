@@ -17,8 +17,9 @@
  */
 
 #include "test.h"
+#include "ltp_priv.h"
 
-#define OPTS_MAX 32u
+#define OPTS_MAX 32
 
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	      const char *fs_type, const char *const fs_opts[])
@@ -72,4 +73,16 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	tst_resm(TINFO, "Formatting %s with %s extra opts='%s'",
 		 dev, fs_type, fs_opts_str);
 	tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL);
+}
+
+const char *tst_dev_fs_type(void)
+{
+	const char *fs_type;
+
+	fs_type = getenv("LTP_DEV_FS_TYPE");
+
+	if (fs_type)
+		return fs_type;
+
+	return DEFAULT_FS_TYPE;
 }
