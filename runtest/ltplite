@@ -111,7 +111,7 @@ chmod07 chmod07
 chown01 chown01
 chown02 chown02
 chown03 chown03
-chown04 chown04 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+chown04 chown04
 chown05 chown05
 
 chroot01 chroot01
