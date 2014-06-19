@@ -315,7 +315,7 @@ link04 link04
 link05 link05
 link06 link06
 link07 link07
-link08 link08 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+link08 link08
 
 listen01 listen01
 
