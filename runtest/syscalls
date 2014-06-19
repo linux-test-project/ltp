@@ -562,7 +562,7 @@ mknod09 mknod09
 
 #mknodat test cases
 mknodat01 mknodat01
-mknodat02 mknodat02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+mknodat02 mknodat02
 
 mlock01 mlock01
 mlock02 mlock02
