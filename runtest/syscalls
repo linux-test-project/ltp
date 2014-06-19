@@ -494,7 +494,7 @@ link08 link08
 
 #linkat test cases
 linkat01 linkat01
-linkat02 linkat02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+linkat02 linkat02
 
 listen01 listen01
 
