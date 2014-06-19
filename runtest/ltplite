@@ -66,7 +66,7 @@ access02 access02
 access03 access03
 access04 access04
 access05 access05
-access06 access06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+access06 access06
 
 acct01 acct01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 
