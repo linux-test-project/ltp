@@ -306,7 +306,7 @@ kill12 kill12
 
 lchown01 lchown01
 lchown02 lchown02
-lchown03 lchown03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+lchown03 lchown03
 
 link01 symlink01 -T link01
 link02 link02

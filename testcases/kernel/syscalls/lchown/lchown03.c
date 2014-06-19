@@ -46,15 +46,8 @@
 #define TEST_EROFS	"mntpoint"
 
 static char test_eloop[PATH_MAX] = ".";
-static char *fstype = "ext2";
-static char *device;
+static const char *device;
 static int mount_flag;
-
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", NULL, &device},
-	{NULL, NULL, NULL}
-};
 
 static struct test_case_t {
 	char *pathname;
@@ -71,7 +64,6 @@ static int exp_enos[] = { ELOOP, EROFS, 0 };
 static void setup(void);
 static void lchown_verify(const struct test_case_t *);
 static void cleanup(void);
-static void help(void);
 
 int main(int argc, char *argv[])
 {
@@ -79,15 +71,9 @@ int main(int argc, char *argv[])
 	int i;
 	const char *msg;
 
-	msg = parse_opts(argc, argv, options, help);
+	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	if (!device) {
-		tst_brkm(TBROK, NULL,
-			 "you must specify the device used for mounting with "
-			 "-D option");
-	}
 
 	setup();
 
@@ -106,6 +92,7 @@ int main(int argc, char *argv[])
 static void setup(void)
 {
 	int i;
+	const char *fs_type;
 
 	tst_require_root(NULL);
 
@@ -115,14 +102,20 @@ static void setup(void)
 
 	tst_tmpdir();
 
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to acquire device");
+
 	SAFE_MKDIR(cleanup, "test_eloop", DIR_MODE);
 	SAFE_SYMLINK(cleanup, "../test_eloop", "test_eloop/test_eloop");
 	for (i = 0; i < 43; i++)
 		strcat(test_eloop, "/test_eloop");
 
-	tst_mkfs(NULL, device, fstype, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL);
 	SAFE_MKDIR(cleanup, TEST_EROFS, DIR_MODE);
-	if (mount(device, TEST_EROFS, fstype, MS_RDONLY, NULL) < 0) {
+	if (mount(device, TEST_EROFS, fs_type, MS_RDONLY, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "mount device:%s failed", device);
 	}
@@ -158,12 +151,8 @@ static void cleanup(void)
 	if (mount_flag && umount(TEST_EROFS) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 
-	tst_rmdir();
-}
+	if (device)
+		tst_release_device(NULL, device);
 
-static void help(void)
-{
-	printf("-T type   : specifies the type of filesystem to be mounted. "
-	       "Default ext2.\n");
-	printf("-D device : device used for mounting.\n");
+	tst_rmdir();
 }
