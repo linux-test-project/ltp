@@ -192,12 +192,9 @@ void setup(void)
 {
 	struct passwd *passwd_p;
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_require_root(NULL);
 
-	/* Check whether we are root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-	}
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	if ((passwd_p = getpwnam("root")) == NULL) {
 		tst_brkm(TBROK, NULL, "getpwnam() failed for root");

@@ -114,6 +114,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -123,9 +124,6 @@ void setup(void)
 	TEST_PAUSE;
 
 	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TINFO, "setuid failed to "

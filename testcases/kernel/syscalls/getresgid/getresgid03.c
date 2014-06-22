@@ -151,14 +151,11 @@ void setup(void)
 {
 	struct passwd *user_id;	/* passwd struct for test user */
 
+	tst_require_root(NULL);
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, cleanup, "Must be super/root for this test!");
-	}
 
 	/* Real user-id of the calling process */
 	pr_gid = getgid();

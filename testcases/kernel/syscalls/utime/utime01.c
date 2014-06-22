@@ -201,13 +201,9 @@ void setup(void)
 {
 	int fildes;		/* file handle for temp file */
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_require_root(NULL);
 
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-		tst_exit();
-	}
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 

@@ -129,12 +129,9 @@ void setup(void)
 {
 	int ret;
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_require_root(NULL);
 
-	/* Test should be executed as root user */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Store the existing hostname to retain it before exiting */
 	if ((ret = gethostname(hname, sizeof(hname))) < 0) {

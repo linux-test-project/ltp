@@ -178,11 +178,7 @@ void setup(void)
 	struct passwd *nobody_u;
 	struct group *bin_group;
 
-//wjh Improper comment! This makes sure we _are_ "root" not "nobody"
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 

@@ -151,16 +151,11 @@ int main(void)
 
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
-
 	/* set the expected errnos... */
-
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;

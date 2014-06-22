@@ -215,18 +215,13 @@ void cleanup1(void)
  */
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Check whether we are root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-	}
 
 	/* Check for nobody_uid user id */
 	if ((ltpuser = getpwnam("nobody")) == NULL) {
 		tst_brkm(TBROK, NULL, "nobody user id doesn't exist");
-
 	}
 
 	/* set the expected errnos... */

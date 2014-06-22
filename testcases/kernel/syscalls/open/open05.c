@@ -123,9 +123,7 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	/* test must be run as root */
-	if (geteuid() != 0)
-		tst_brkm(TBROK, NULL, "Must run test as root");
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

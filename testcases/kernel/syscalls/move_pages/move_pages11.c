@@ -207,14 +207,11 @@ void setup(void)
 {
 	struct passwd *ltpuser;
 
+	tst_require_root(NULL);
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	check_config(TEST_NODES);
-
-	if (geteuid() != 0) {
-		tst_resm(TBROK, "test must be run as root");
-		tst_exit();
-	}
 
 	if ((ltpuser = getpwnam("nobody")) == NULL) {
 		tst_resm(TBROK, "'nobody' user not present");

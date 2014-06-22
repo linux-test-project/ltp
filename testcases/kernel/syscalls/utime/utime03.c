@@ -252,13 +252,9 @@ void setup(void)
 	int fildes;		/* file handle for temp file */
 	char *tmpd = NULL;
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_require_root(NULL);
 
-	/* Check that the test process id is not super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-		tst_exit();
-	}
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.

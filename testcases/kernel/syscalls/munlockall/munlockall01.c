@@ -124,15 +124,12 @@ int main(void)
 /* setup() - performs all ONE TIME setup for this test. */
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/*set the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
-
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be tested as root");
-	}
 
 	TEST_PAUSE;
 }

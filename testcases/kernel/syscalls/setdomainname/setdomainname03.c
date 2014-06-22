@@ -145,6 +145,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -153,9 +154,6 @@ void setup(void)
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, NULL, "\"nobody\" user not present");
 	}

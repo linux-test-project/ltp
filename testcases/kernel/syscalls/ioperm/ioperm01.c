@@ -127,13 +127,9 @@ int main(int ac, char **av)
 /* setup() - performs all ONE TIME setup for this test */
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Check whether we are root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-	}
 
 	/*
 	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed

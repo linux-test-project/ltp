@@ -321,10 +321,7 @@ void dochild2(void)
  */
 void setup(void)
 {
-	/* test must be run as root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "test must be run as root");
-	}
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

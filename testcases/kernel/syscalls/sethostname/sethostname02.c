@@ -167,15 +167,12 @@ void setup(void)
 {
 	int ret;
 
+	tst_require_root(NULL);
+
 	TEST_EXP_ENOS(exp_enos);
 
 	/* capture the signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Test should be executed as root user */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 
 	/* Keep the host name before starting the test */
 	if ((ret = gethostname(hname, sizeof(hname))) < 0) {

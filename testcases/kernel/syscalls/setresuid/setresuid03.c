@@ -194,6 +194,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -204,12 +205,6 @@ void setup(void)
 
 	if (getpwnam("bin") == NULL) {
 		tst_brkm(TBROK, NULL, "bin must be a valid user.");
-		tst_exit();
-	}
-
-	/* Check that the test process id is root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
 	}
 

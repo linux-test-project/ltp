@@ -189,11 +189,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "you must be root to execute this test!");
-	}
+	tst_require_root(NULL);
 
 	TEST_PAUSE;
 

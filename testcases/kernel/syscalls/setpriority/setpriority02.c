@@ -126,10 +126,9 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
+	tst_require_root(NULL);
+
+	/* Switch to nobody user for correct error code collection */
 	ltpuser = getpwnam(nobody_uid);
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TINFO, "setreuid failed to "

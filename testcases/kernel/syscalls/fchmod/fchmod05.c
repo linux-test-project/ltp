@@ -170,13 +170,9 @@ void setup(void)
 	struct passwd *nobody_u;
 	struct group *bin_group;
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_require_root(NULL);
 
-	/* Check that the test process id is not super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-		tst_exit();
-	}
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 

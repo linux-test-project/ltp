@@ -167,15 +167,11 @@ void setup(void)
 	gid_t group1_gid;	/* user and process group id's */
 	uid_t user1_uid;
 
+	tst_require_root(NULL);
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-		tst_exit();
-	}
 
 	tst_tmpdir();
 

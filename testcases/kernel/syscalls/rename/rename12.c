@@ -186,10 +186,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	/* must run as root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must run this as root");
-	}
+	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

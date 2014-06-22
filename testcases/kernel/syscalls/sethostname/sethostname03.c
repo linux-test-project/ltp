@@ -136,15 +136,12 @@ void setup(void)
 {
 	int ret;
 
+	tst_require_root(NULL);
+
 	/* set up expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Test should be executed as root user */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 
 	/* Switch to nobody user for correct error code collection */
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {

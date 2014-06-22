@@ -184,16 +184,12 @@ int setup_test(void)
 /* setup() - performs all ONE TIME setup for this test */
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-
-	/* Check whether we are root */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Test must be run as root");
-	}
 
 	TEST_PAUSE;
 

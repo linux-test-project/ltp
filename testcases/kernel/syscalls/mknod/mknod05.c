@@ -199,15 +199,10 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	tst_require_root(NULL);
 
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-		tst_exit();
-	}
 
 	TEST_PAUSE;
 
