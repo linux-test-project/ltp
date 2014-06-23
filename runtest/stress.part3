@@ -857,6 +857,7 @@ vfork02 vfork02
 vhangup01 vhangup01
 vhangup02 vhangup02
 
+wait01 wait01
 wait02 wait02
 
 wait401 wait401
