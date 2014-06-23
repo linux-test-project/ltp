@@ -480,7 +480,7 @@ void tst_rmdir(void);
 
 Removes the directory recursively. It's usually called from test 'cleanup()'.
 
-It's important to close all file descriptors (that points to files in test
+It's important to close all file descriptors (that point to files in test
 temporary directory, even the unlinked ones) before the test calls
 'tst_rmdir()' otherwise the test may break on NFS mounted temp dir (look for
 "NFS silly rename").
@@ -488,13 +488,13 @@ temporary directory, even the unlinked ones) before the test calls
 2.2.4 Safe macros
 ^^^^^^^^^^^^^^^^^
 
-Safe macros aids to simplify error checking in test preparation. Instead of
+Safe macros aim to simplify error checking in test preparation. Instead of
 calling system API functions, checking for their return value and aborting the
-test if operation has failed you just use corresponding safe macro.
+test if the operation has failed, you just use corresponding safe macros.
 
 Use them whenever it's possible.
 
-NOTE: You cannot use safe macros from a child processes because they call test
+NOTE: You cannot use safe macros from child processes, because they call test
       'tst_' API.
 
 Instead of writing:
@@ -514,7 +514,7 @@ You write just:
 -------------------------------------------------------------------------------
 
 They can also simplify reading and writing of sysfs files, you can, for
-example do:
+example, do:
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -525,8 +525,8 @@ See 'include/safe_macros.h', 'include/safe_stdio.h' and
 'include/safe_file_ops.h' for a complete list.
 
 NOTE: It's wise NOT to use safe macros in test cleanup(). This is because
-      all safe macros calls tst_brkm() which exits the test immediately which
-      may exit the cleanup() prematurely. (Actually this is hacked around in
+      all safe macros call tst_brkm(), which exits the test immediately, making
+      the cleanup() exit prematurely. (Actually, this is hacked around in
       the test library at the moment so that the cleanup() will finish, but
       the hack will be removed in the future).
 
@@ -546,7 +546,7 @@ int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers);
 -------------------------------------------------------------------------------
 
 These two functions are intended for runtime kernel version detection. They
-parse the output from 'uname()' and compare them with the passed values.
+parse the output from 'uname()' and compare it to the passed values.
 
 The return value is similar to the 'strcmp()' function, i.e. zero means equal,
 negative value means that the kernel is older than than the expected value and
@@ -560,21 +560,21 @@ test may be relevant even if the kernel version does not suggests so. See
 2.2.6 Fork()-ing
 ^^^^^^^^^^^^^^^^
 
-Be wary that if the test forks and there are were messages printed by tst_*
-interfaces the data may still be in kernel buffers and these are NOT flushed
+Be wary that if the test forks and there are were messages printed by the tst_*
+interfaces, the data may still be in kernel buffers and these are NOT flushed
 automatically.
 
-This happens when 'stdout' gets redirected to a file. In this case the
-'stdout' is not line buffered but block buffered and buffered messages will be
-printed by the parent and by each of the children.
+This happens when 'stdout' gets redirected to a file. In this case, the
+'stdout' is not line buffered, but block buffered, and buffered messages will be
+printed by the parent and each of the children.
 
-To avoid that you should either call 'tst_flush()' right before the 'fork()'
-or even better use 'tst_fork()' instead.
+To avoid that, you should either call 'tst_flush()' right before the 'fork()',
+or even better - use 'tst_fork()' instead.
 
 2.2.7 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As LTP tests are written for Linux most of the test involves fork()-ing and
+As LTP tests are written for Linux, most of the test involves fork()-ing and
 parent-child process synchronization. But first of all:
 
 WARNING: Usage of test interface ('tst_resm()', 'tst_brkm()', 'tst_exit()',
@@ -584,58 +584,62 @@ If you happen to use the interface from a child process the outcome would
 likely be disastrous. Just to name a few examples:
 
 * Imagine the 'cleanup()' is called both from the parent and child, the test
-  will likely fail in 'tst_rmdir()' because the directory was removed
+  will likely fail in 'tst_rmdir()', because the directory was removed
   already by the child.
 
 * The test failures reported via 'tst_resm()' are not propagated from the
   child to the parent (how could they, it's just a static variable in the
-  test library). And the test will report success even when the test in child
-  process has reported failure.
+  test library). And the test will report success even when the test in the
+  child process has reported failure.
 
 * And many more...
 
 Now to the child-parent synchronization. We have a checkpoint library code
 that works even for two different processes, all they need to is to run with
 the same working directory (they use FIFO for synchronization). The checkpoint
-interface provides two pairs or signal and wait functions. One pair to be used
+interface provides two pairs of signal and wait functions. One pair to be used
 to signal child from parent and second to signal parent from child.
 
-For the details of the interface look into the 'include/tst_checkpoint.h' and
+For the details of the interface, look into the 'include/tst_checkpoint.h' and
 'lib/tests/tst_checkpoint_*'.
 
 There is also an interface that allows parent to wait until child is blocked
-in kernel (for example waits in 'pause()') see 'include/tst_process_state.h'
+in kernel (for example waits in 'pause()'), see 'include/tst_process_state.h'
 for more.
 
 2.2.8 Signal handlers
 ^^^^^^^^^^^^^^^^^^^^^
 
-If you need to use signal handlers keep the code short and simple. Don't
+If you need to use signal handlers, keep the code short and simple. Don't
 forget that the signal handler code runs concurrently to the rest of your code.
+
+TODO: [needs citation] - explain/reference how (on what archs) can signal
+      handler code run *concurrently* (=simultaneously) to normal code within
+      a single thread - reentrance is something different
 
 If you call a non-async-safe function from a signal handler (functions that
 have global state or locks, such as 'malloc()', 'free()', any operations on
-'FILE' and many more...) the test will run fine in most of the cases but will
+'FILE' and many more...), the test will run fine in most of the cases, but will
 deadlock occasionally.
 
 Quite common mistake is to call 'exit(3)' from a signal handler. Note that this
 function is not signal-async-safe as it flushes buffers, etc. If you need to
 exit a test immediately from a signal handler use '_exit(2)' instead.
 
-TIP: See 'man 7 singnal' for the list of signal-async-safe functions.
+TIP: See 'man 7 signal' for the list of signal-async-safe functions.
 
-If signal handler sets a variable it's declaration must be 'volatile'
-otherwise compiler may misoptimize the code because the variable may not be
+If a signal handler sets a variable, its declaration must be 'volatile',
+otherwise compiler may misoptimize the code, because the variable may not be
 changed in the code flow analysis. There is 'sig_atomic_t' type defined in C99
-but this one DOES NOT imply volatile (it's just a typedef to int). So correct
-type for a flag that is changed from a signal handler is either of 'volatile
-int' or 'volatile sig_atomic_t'.
+but this one DOES NOT imply volatile (it's just a typedef to int). So the
+correct type for a flag that is changed from a signal handler is either
+'volatile int' or 'volatile sig_atomic_t'.
 
 2.2.9 Kernel Modules
 ^^^^^^^^^^^^^^^^^^^^
 
-There are certain cases where the test needs a kernel part and user space part,
-happily LTP can build a kernel module and then insert it to the kernel on test
+There are certain cases where the test needs a kernel part and userspace part,
+happily, LTP can build a kernel module and then insert it to the kernel on test
 start for you. See 'testcases/kernel/device-drivers/block' for details.
 
 2.2.10 Usefull macros
@@ -662,8 +666,8 @@ Aligns the x to be next multiple of a. The a must be power of 2.
 Some tests are known to fail on certain filesytems (you cannot swap on TMPFS,
 there are unimplemented fcntl() etc.).
 
-If your test needs to be skipped on certain filesystems use the interface
-bellow:
+If your test needs to be skipped on certain filesystems, use the interface
+below:
 
 [source,c]
 -------------------------------------------------------------------------------
