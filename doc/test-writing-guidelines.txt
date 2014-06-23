@@ -22,8 +22,8 @@ that are not widely available).
 Do not reinvent the wheel
 
 * Use LTP standard interface
-* Do roll add custom PASS/FAIL reporting functions
-* Do not write Makefiles from scratch
+* Do not add custom PASS/FAIL reporting functions
+* Do not write Makefiles from scratch,
   use LTP build system instead, etc.
 * ...
 
@@ -68,7 +68,7 @@ Here are some common sense style rules for shell
 
 * Use tabs for indentation
 
-* Keep things simple, avoid unnecessary shubshells
+* Keep things simple, avoid unnecessary subshells
 
 * Don't do confusing things (i.e. don't name your functions like common shell
   commands, etc.)
@@ -95,8 +95,8 @@ description somewhere at the beginning of the file (usually right under the GPL
 header). This helps other people to understand the overall goal of the test
 before they dive into the technical details.
 
-1.5 Backward compatibility
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+1.5 Backwards compatibility
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 LTP test should be as backward compatible as possible. Think of an enterprise
 distributions with long term support (more than five years since the initial
@@ -149,7 +149,7 @@ any later version).
 ~~~~~~~~~~~~~~~~~
 
 The structure of LTP is quite simple. Each test is a binary written either in
-portable shell (no bashishm) or C. The test gets a configuration via
+portable shell (no bashism) or C. The test gets a configuration via
 environment variables and/or command line parameters, it prints additional
 information into the stdout and reports overall success/failure via the exit
 value.
@@ -167,7 +167,7 @@ features.
 The list of tests to be executed is stored in runtest files under the
 'runtest/' directory. The default set of runtest files to be executed is
 stored in 'scenario_groups/default'. When you add a test you should add
-corresponding entires into some runtest files as well.
+corresponding entries into some runtest file(s) as well.
 
 For syscall tests (these placed under 'testcases/kernel/syscalls/') use
 'runtest/syscalls' file, for kernel related tests for memory management we
@@ -191,12 +191,12 @@ NOTE: There may be some convenience interface added later.
 2.1.3 Subexecutables
 ^^^^^^^^^^^^^^^^^^^^
 
-If you test needs to execute a binary place it in the same directory as the
+If you test needs to execute a binary, place it in the same directory as the
 testcase and name the file starting with testname_ ('TCID_' see below).
-Once the test is executed by the framework the path to the directory with all
-LTP binaries is added to the '$PATH' and you can execute it just by it's name.
+Once the test is executed by the framework, the path to the directory with all
+LTP binaries is added to the '$PATH' and you can execute it just by its name.
 
-TIP: If you need to execute such test from the LTP tree you can add path to
+TIP: If you need to execute such test from the LTP tree, you can add path to
      current directory to '$PATH' manually with: 'PATH="$PATH:$PWD" ./foo01'.
 
 2.2 Writing a test in C
