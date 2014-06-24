@@ -563,7 +563,7 @@ void tst_exit(void)
 	tst_flush();
 
 	/* Mask out TRETR, TINFO, and TCONF results from the exit status. */
-	exit(T_exitval & ~(TRETR | TINFO | TCONF));
+	exit(T_exitval & ~(TRETR | TINFO));
 }
 
 pid_t tst_fork(void)

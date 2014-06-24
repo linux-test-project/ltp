@@ -82,7 +82,7 @@ tst_exit()
 	fi
 
 	# Mask out TRETR, TINFO and TCONF
-	exit $((LTP_RET_VAL & ~(8 | 16 | 32)))
+	exit $((LTP_RET_VAL & ~(8 | 16)))
 }
 
 tst_tmpdir()

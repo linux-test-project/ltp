@@ -67,6 +67,7 @@
 
 #include "splitstr.h"
 #include "zoolib.h"
+#include "tst_res_flags.h"
 
 /* One entry in the command line collection.  */
 struct coll_entry {
@@ -104,7 +105,7 @@ static void pids_running(struct tag_pgrp *running, int keep_active);
 static int check_pids(struct tag_pgrp *running, int *num_active,
 		      int keep_active, FILE * logfile, FILE * failcmdfile,
 		      struct orphan_pgrp *orphans, int fmt_print,
-		      int *failcnt, int quiet_mode);
+		      int *failcnt, int *tconfcnt, int quiet_mode);
 static void propagate_signal(struct tag_pgrp *running, int keep_active,
 			     struct orphan_pgrp *orphans);
 static void dump_coll(struct collection *coll);
@@ -159,7 +160,8 @@ int main(int argc, char **argv)
 	FILE *failcmdfile = NULL;
 	int keep_active = 1;
 	int num_active = 0;
-	int failcnt = 0;	/* count of total testcases that failed. */
+	int failcnt = 0;  /* count of total testcases that failed. */
+	int tconfcnt = 0; /* count of total testcases that return TCONF */
 	int err, i;
 	int starts = -1;
 	int timed = 0;
@@ -563,7 +565,7 @@ int main(int argc, char **argv)
 
 		err = check_pids(running, &num_active, keep_active, logfile,
 				 failcmdfile, orphans, fmt_print, &failcnt,
-				 quiet_mode);
+				 &tconfcnt, quiet_mode);
 		if (Debug & Drunning) {
 			pids_running(running, keep_active);
 			orphans_running(orphans);
@@ -623,6 +625,7 @@ int main(int argc, char **argv)
 		fprintf(logfile,
 			"\n-----------------------------------------------\n");
 		fprintf(logfile, "Total Tests: %d\n", coll->cnt);
+		fprintf(logfile, "Total Skipped Tests: %d\n", tconfcnt);
 		fprintf(logfile, "Total Failures: %d\n", failcnt);
 		fprintf(logfile, "Kernel Version: %s\n", unamebuf.release);
 		fprintf(logfile, "Machine Architecture: %s\n",
@@ -674,7 +677,7 @@ propagate_signal(struct tag_pgrp *running, int keep_active,
 static int
 check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 	   FILE * logfile, FILE * failcmdfile, struct orphan_pgrp *orphans,
-	   int fmt_print, int *failcnt, int quiet_mode)
+	   int fmt_print, int *failcnt, int *tconfcnt, int quiet_mode)
 {
 	int w;
 	pid_t cpid;
@@ -683,6 +686,7 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 	int i;
 	time_t t;
 	char *status;
+	char *result_str;
 	int signaled = 0;
 	struct tms tms1, tms2;
 	clock_t tck;
@@ -730,7 +734,7 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 					"child %d exited with status %d\n",
 					cpid, w);
 			--*num_active;
-			if (w != 0)
+			if (w != 0 && w != TCONF)
 				ret++;
 		} else if (WIFSTOPPED(stat_loc)) {	/* should never happen */
 			w = WSTOPSIG(stat_loc);
@@ -777,13 +781,21 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 							(int)(tms2.tms_cstime -
 							      tms1.tms_cstime));
 					else {
-						if (w != 0)
-							++ * failcnt;
+						if (strcmp(status, "exited") ==
+						    0 && w == TCONF) {
+							++*tconfcnt;
+							result_str = "CONF";
+						} else if (w != 0) {
+							++*failcnt;
+							result_str = "FAIL";
+						} else {
+							result_str = "PASS";
+						}
+
 						fprintf(logfile,
 							"%-30.30s %-10.10s %-5d\n",
 							running[i].cmd->name,
-							((w !=
-							  0) ? "FAIL" : "PASS"),
+							result_str,
 							w);
 					}
 

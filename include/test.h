@@ -47,22 +47,7 @@
 #include "tst_checkpoint.h"
 #include "tst_process_state.h"
 #include "tst_resource.h"
-
-/* Use low 6 bits to encode test type */
-#define TTYPE_MASK 0x3f
-#define TPASS      0    /* Test passed flag */
-#define TFAIL      1    /* Test failed flag */
-#define TBROK      2    /* Test broken flag */
-#define TWARN      4    /* Test warning flag */
-#define TRETR      8    /* Test retire flag */
-#define TINFO      16   /* Test information flag */
-#define TCONF      32   /* Test not appropriate for configuration flag */
-#define TTYPE_RESULT(ttype) ((ttype) & TTYPE_MASK)
-
-#define TERRNO     0x100   /* Append errno information to output */
-#define TTERRNO    0x200   /* Append TEST_ERRNO information to output */
-#define TRERRNO    0x300   /* Capture errno information from TEST_RETURN to
-			      output; useful for pthread-like APIs :). */
+#include "tst_res_flags.h"
 
 /* virt types for tst_is_virt() */
 #define VIRT_XEN	1	/* xen dom0/domU */
