@@ -56,7 +56,10 @@ ext4_test_persist_prealloc()
 			return
 		fi
 
-		fallocate0${i} | grep -q "CONF"
+		temp_tmpdir=$TMPDIR
+		TMPDIR=mnt_point; fallocate0${i} | grep -q "CONF"
+		TMPDIR=$temp_tmpdir
+
 		if [ $? -ne $ret ]; then
 			tst_resm TFAIL "fallocate's return value is not expected"
 			umount mnt_point
