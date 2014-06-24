@@ -750,16 +750,16 @@ mounting.
 WARNING: You can acquire only one device, calling it for second time without
          releasing the device first will abort the test.
 
-In case that 'LTP_DEV' is passed to the test in environment the function just
-checks that the file exists and that it's block device.
+In case that 'LTP_DEV' is passed to the test in environment, the function just
+checks that the file exists and that it's a block device.
 
-Otherwise temp file is created and attached to a free loop device.
+Otherwise a temporary file is created and attached to a free loop device.
 
-In case that that there are no unused loop devices 'NULL' is returned. The
+In case that that there are no unused loop devices, 'NULL' is returned. The
 test should skip the particular part of the test that needs the device with
 'TCONF'.
 
-WARNING: Because 'tst_acquire_device()' may create temporary file you must
+WARNING: Because 'tst_acquire_device()' may create temporary file, you must
          call 'tst_tmpdir()' before you call 'tst_acquire_device()'
 
 [source,c]
@@ -799,14 +799,14 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 This function takes a path to a device, filesystem type and an array of extra
 options passed to mkfs.
 
-The extra options 'fs_opts' should either be 'NULL' if there are none or a
+The extra options 'fs_opts' should either be 'NULL' if there are none, or a
 'NULL' terminated array of strings such as '{"-b", "1024", NULL}'.
 
 2.2.15 Verifying a filesystem's free space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests have size requirements for the filesystem's free space. If these
-requirements are not satisfied the tests are not appropriate to run.
+requirements are not satisfied, the tests are not appropriate to run.
 Especially when you run runltp with "-z" option to specify a big block device,
 different tests have different requirements for the free space of this block
 device.
@@ -822,20 +822,20 @@ int tst_fs_has_free(void (*cleanup)(void), const char *path,
 The 'tst_fs_has_free()' function returns 1 if there is enough space and 0 if
 there is not.
 
-The 'path' is the pathname of any directory/file within filesystem you want to
-verify its free space.
+The 'path' is the pathname of any directory/file within a filesystem you want to
+verify its free space of.
 
-The 'mult' is multiplier one of 'TST_BYTES', 'TST_KB', 'TST_MB' or 'TST_GB'.
+The 'mult' is a multiplier, one of 'TST_BYTES', 'TST_KB', 'TST_MB' or 'TST_GB'.
 
 The required free space is calculated by 'size * mult', e.g.
 'tst_fs_has_free(cleanup, "/tmp/testfile", 64, TST_MB)' will return 1 if the
 filesystem, which '"/tmp/testfile"' is in, has 64MB free space at least, and 0
 if not.
 
-2.2.16 Getting maximal number of links to a regular file or directory
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2.2.16 Getting the maximum number of links to a regular file or directory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Some tests need to know the maximal count of links to a regular file or
+Some tests need to know the maximum count of links to a regular file or
 directory, such as 'rename(2)' or 'linkat(2)' to test 'EMLINK' error.
 
 [source,c]
@@ -845,14 +845,14 @@ directory, such as 'rename(2)' or 'linkat(2)' to test 'EMLINK' error.
 int tst_fs_fill_hardlinks(void (*cleanup)(void), const char *dir);
 -------------------------------------------------------------------------------
 
-Try to get maximal count of hard links to a regular file inside the 'dir'.
+Try to get maximum count of hard links to a regular file inside the 'dir'.
 
 NOTE: This number depends on the filesystem 'dir' is on.
 
 This function uses 'link(2)' to create hard links to a single file until it
-gets 'EMLINK' or creates 65535 links. If limit is hit maximal number of
+gets 'EMLINK' or creates 65535 links. If the limit is hit, the maximum number of
 hardlinks is returned and the 'dir' is filled with hardlinks in format
-"testfile%i" where i belongs to [0, limit) interval. If no limit is hit or if
+"testfile%i", where i belongs to [0, limit) interval. If no limit is hit or if
 'link(2)' failed with 'ENOSPC' or 'EDQUOT', zero is returned and previously
 created files are removed.
 
@@ -868,12 +868,12 @@ Try to get maximum number of subdirectories in directory.
 NOTE: This number depends on the filesystem 'dir' is on.
 
 This function uses 'mkdir(2)' to create directories in 'dir' until it gets
-'EMLINK' or creates 65535 directories. If limit is hit the maximal number of
-subdirectories is returned and the 'dir' is filled with subdirectories in
-format "testdir%i" where i belongs to [0, limit - 2) interval (because each
-newly created dir has two links allready the '.' and the link from parent
-dir). If no limit is hit or 'mkdir(2)' failed with 'ENOSPC' or 'EDQUOT', zero
-is returned previously created directories are removed.
+'EMLINK' or creates 65535 directories. If the limit is hit, the maximum number
+of subdirectories is returned and the 'dir' is filled with subdirectories in
+format "testdir%i", where i belongs to [0, limit - 2) interval (because each
+newly created dir has two links already - the '.' and the link from parent
+dir). If no limit is hit or if 'mkdir(2)' failed with 'ENOSPC' or 'EDQUOT',
+zero is returned and previously created directories are removed.
 
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -961,7 +961,7 @@ The second argument supports suffixes kB, MB and GB, the default unit is Byte.
 2.3.3 Cleanup
 ^^^^^^^^^^^^^
 
-Due to differencies in C and shell, the cleanup callback is done using a
+Due to differences between C and shell, the cleanup callback is done using a
 'TST_CLEANUP' shell variable that, if not empty, is evaluated before the test
 exits (either after calling 'tst_exit()' or 'tst_brkm()'). See example below.
 
@@ -1043,13 +1043,13 @@ tst_exit
 3. Common problems
 ------------------
 
-This chapter describes common problems/misuses and less obvious desing patters
+This chapter describes common problems/misuses and less obvious design patters
 (quirks) in UNIX interfaces. Read it carefully :)
 
 3.1 umask()
 ~~~~~~~~~~~
 
-I've been hit by this one several times already... When you are creating files
+I've been hit by this one several times already... When you create files
 with 'open()' or 'creat()' etc, the mode specified as the last parameter *is
 not* the mode the file is created with. The mode depends on current 'umask()'
 settings which may clear some of the bits. If your test depends on specific
@@ -1059,9 +1059,9 @@ afterwards or use SAFE_TOUCH() that does the 'chmod()' for you.
 3.2 access()
 ~~~~~~~~~~~
 
-If 'access(some_file, W_OK)' is executed by root it will return success even
+If 'access(some_file, W_OK)' is executed by root, it will return success even
 if the file doesn't have write permission bits set (the same holds for R_OK
-too). For sysfs files you can use 'open()' as a workaround to check file's
+too). For sysfs files you can use 'open()' as a workaround to check file
 read/write permissions. It might not work for other filesystems, for these you
 have to use 'stat()', 'lstat()' or 'fstat()'.
 
@@ -1080,7 +1080,7 @@ have to use 'stat()', 'lstat()' or 'fstat()'.
 
 There are numerous '.gitignore' files in the LTP tree. Usually there is a
 '.gitignore' file per a group of tests. The reason for this setup is simple.
-It's easier to maintain a '.gitignore' file per directory with tests rather
-than having single file in the project root directory. This way we don't have
-to update them when moving directories and they gets deleted automatically
-when a directory with tests is removed.
+It's easier to maintain a '.gitignore' file per directory with tests, rather
+than having single file in the project root directory. This way, we don't have
+to update all the gitignore files when moving directories, and they get deleted
+automatically when a directory with tests is removed.
