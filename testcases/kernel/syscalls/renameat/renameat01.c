@@ -158,6 +158,9 @@ static void setup(void)
 	fs_type = tst_dev_fs_type();
 	device = tst_acquire_device(cleanup);
 
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
 	TEST_PAUSE;
 
 	SAFE_TOUCH(cleanup, TESTFILE, FILEMODE, NULL);
@@ -188,7 +191,7 @@ static void setup(void)
 	for (i = 0; i < 43; i++)
 		strcat(looppathname, TESTDIR2);
 
-	tst_mkfs(NULL, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL);
 	SAFE_MKDIR(cleanup, MNTPOINT, DIRMODE);
 	if (mount(device, MNTPOINT, fs_type, 0, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
