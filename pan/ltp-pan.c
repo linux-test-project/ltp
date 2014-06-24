@@ -453,13 +453,6 @@ int main(int argc, char **argv)
 	 * this is an "active file cleanliness" thing
 	 */
 	{
-		char *av[2], bigarg[82];
-
-		memset(bigarg, '.', 81);
-		bigarg[81] = '\0';
-		av[0] = bigarg;
-		av[1] = NULL;
-
 		for (c = 0; c < keep_active; c++) {
 			if (zoo_mark_cmdline(zoofile, c, panname, "")) {
 				fprintf(stderr, "pan(%s): %s\n", panname,
@@ -1026,7 +1019,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode,
 		char *termtype;
 		struct tms notime = { 0, 0, 0, 0 };
 
-		read(errpipe[0], errbuf, errlen);
+		if (read(errpipe[0], errbuf, errlen) < 0)
+			fprintf(stderr, "Failed to read from errpipe[0]\n");
 		close(errpipe[0]);
 		errbuf[errlen] = '\0';
 		/* fprintf(stderr, "%s", errbuf); */
