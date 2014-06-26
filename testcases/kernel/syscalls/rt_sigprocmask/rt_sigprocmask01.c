@@ -29,11 +29,11 @@
 /*									      */
 /*		SIG_BLOCK						      */
 /*		    The set of blocked signals is the union of the current set*/
-/*		    and the set argument. 				      */
+/*		    and the set argument.				      */
 /*		SIG_UNBLOCK						      */
 /*		    The signals in set are removed from the current set of    */
 /*		    blocked signals. It is okay to unblock a signal that is   */
-/*		    not blocked. 					      */
+/*		    not blocked.					      */
 /*		SIG_SETMASK						      */
 /*		    The set of blocked signals is set to the set argument.    */
 /*		    sigsetsize should indicate the size of a sigset_t type.   */
@@ -52,7 +52,7 @@ char *TCID = "rt_sigprocmask01";
 static int testno;
 int TST_TOTAL = 8;
 
-static int sig_count;
+static volatile sig_atomic_t sig_count;
 
 #define TEST_SIG SIGRTMIN+1
 
