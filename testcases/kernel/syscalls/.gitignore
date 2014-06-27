@@ -968,6 +968,9 @@
 /timerfd/timerfd01
 /timerfd/timerfd02
 /timerfd/timerfd03
+/timerfd/timerfd_create01
+/timerfd/timerfd_gettime01
+/timerfd/timerfd_settime01
 /times/times01
 /times/times03
 /tkill/tkill01

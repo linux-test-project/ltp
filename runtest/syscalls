@@ -1251,6 +1251,9 @@ times03 times03
 timerfd01 timerfd01
 timerfd02 timerfd02
 timerfd03 timerfd03
+timerfd_create01 timerfd_create01
+timerfd_gettime01 timerfd_gettime01
+timerfd_settime01 timerfd_settime01
 
 timer_getoverrun01 timer_getoverrun01
 timer_gettime01 timer_gettime01
