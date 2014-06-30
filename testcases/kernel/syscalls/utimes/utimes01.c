@@ -64,15 +64,8 @@
 #define LTPUSER1 "nobody"
 #define LTPUSER2 "bin"
 
-static char *fstype = "ext2";
-static char *device;
+static const char *device;
 static int mount_flag;
-
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", NULL, &device},
-	{NULL, NULL, NULL}
-};
 
 static struct timeval a_tv[2] = { {0, 0}, {1000, 0} };
 static struct timeval m_tv[2] = { {1000, 0}, {0, 0} };
@@ -95,26 +88,19 @@ static struct test_case_t {
 static void setup(void);
 static void cleanup(void);
 static void utimes_verify(const struct test_case_t *);
-static void help(void);
 
 char *TCID = "utimes01";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EACCES, ENOENT, EFAULT,
-							EPERM, EROFS, 0 };
+static int exp_enos[] = { EACCES, ENOENT, EFAULT, EPERM, EROFS, 0 };
 
 int main(int ac, char **av)
 {
 	int i, lc;
 	const char *msg;
 
-	msg = parse_opts(ac, av, options, help);
+	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	if (!device) {
-		tst_brkm(TCONF, NULL, "you must specify the device "
-			"used for mounting with -D option");
-	}
 
 	setup();
 
@@ -131,9 +117,10 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-void setup(void)
+static void setup(void)
 {
 	struct passwd *ltpuser;
+	const char *fs_type;
 
 	tst_require_root(NULL);
 
@@ -142,6 +129,12 @@ void setup(void)
 	TEST_PAUSE;
 
 	tst_tmpdir();
+
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
 
 	SAFE_TOUCH(cleanup, TESTFILE1, FILE_MODE, NULL);
 	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER1);
@@ -153,22 +146,22 @@ void setup(void)
 	SAFE_CHOWN(cleanup, TESTFILE2, ltpuser->pw_uid,
 		ltpuser->pw_gid);
 
-	tst_mkfs(NULL, device, fstype, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL);
 	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
-	if (mount(device, MNTPOINT, fstype, 0, NULL) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			"mount device:%s failed", device);
-	}
-	SAFE_TOUCH(cleanup, TESTFILE3, FILE_MODE, NULL);
-	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER1);
-	SAFE_CHOWN(cleanup, TESTFILE3, ltpuser->pw_uid,
-		ltpuser->pw_gid);
-	if (mount(device, MNTPOINT, fstype,
-			MS_REMOUNT | MS_RDONLY, NULL) == -1) {
+	if (mount(device, MNTPOINT, fs_type, 0, NULL) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			"mount device:%s failed", device);
 	}
 	mount_flag = 1;
+	SAFE_TOUCH(cleanup, TESTFILE3, FILE_MODE, NULL);
+	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER1);
+	SAFE_CHOWN(cleanup, TESTFILE3, ltpuser->pw_uid,
+		ltpuser->pw_gid);
+	if (mount(device, MNTPOINT, fs_type,
+			MS_REMOUNT | MS_RDONLY, NULL) == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			"mount device:%s failed", device);
+	}
 
 	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER1);
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
@@ -204,7 +197,7 @@ static void utimes_verify(const struct test_case_t *tc)
 			tst_brkm(TBROK | TERRNO, cleanup, "utimes() failed.");
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	if (seteuid(0) == -1)
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
@@ -212,14 +205,11 @@ void cleanup(void)
 	if (mount_flag && umount(MNTPOINT) == -1)
 		tst_resm(TWARN | TERRNO, "umount %s failed", MNTPOINT);
 
+
+	if (device)
+		tst_release_device(NULL, device);
+
 	TEST_CLEANUP;
 
 	tst_rmdir();
-}
-
-static void help(void)
-{
-	printf("-T type   : specifies the type of filesystem to be mounted. "
-		"Default ext2.\n");
-	printf("-D device : device used for mounting.\n");
 }
