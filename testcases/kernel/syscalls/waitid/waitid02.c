@@ -130,6 +130,16 @@ struct testcase_t tdat[] = {
 		.setup = setup6,
 		.cleanup = cleanup6
 	},
+	{
+		.msg = "P_PID, WEXITED not a child of the calling process",
+		.idtype = P_PID,
+		.id = 1,
+		.options = WEXITED,
+		.exp_ret = -1,
+		.exp_errno = ECHILD,
+		.setup = setup2,
+		.cleanup = cleanup2
+	},
 
 };
 
@@ -281,13 +291,12 @@ int main(int ac, char **av)
 	const char *msg;
 
 	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; testno++)
 			test_waitid(&tdat[testno]);
 	}
