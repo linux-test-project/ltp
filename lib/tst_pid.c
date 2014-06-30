@@ -33,7 +33,7 @@
 
 #define BUFSIZE 512
 
-int get_max_pids(void)
+int tst_get_max_pids(void)
 {
 #ifdef __linux__
 
@@ -57,7 +57,7 @@ int get_max_pids(void)
 #endif
 }
 
-int get_free_pids(void)
+int tst_get_free_pids(void)
 {
 	FILE *f;
 	int rc, used_pids, max_pids;
@@ -76,7 +76,7 @@ int get_free_pids(void)
 		return -1;
 	}
 
-	max_pids = get_max_pids();
+	max_pids = tst_get_max_pids();
 
 	if (max_pids < 0)
 		return -1;

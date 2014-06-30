@@ -40,7 +40,6 @@
 #include "usctest.h"
 #include "ipcmsg.h"
 #include "../lib/libmsgctl.h"
-#include "system_specific_process_info.h"
 
 char *TCID = "msgctl11";
 int TST_TOTAL = 1;
@@ -475,7 +474,7 @@ void setup(void)
 
 	tst_resm(TINFO, "Found %d available message queues", MSGMNI);
 
-	free_pids = get_free_pids();
+	free_pids = tst_get_free_pids();
 	if (free_pids < 0) {
 		tst_brkm(TBROK, cleanup, "Can't obtain free_pid count");
 	} else if (!free_pids) {

@@ -375,6 +375,21 @@ int tst_fs_fill_hardlinks(void (*cleanup) (void), const char *dir);
  */
 int tst_fs_fill_subdirs(void (*cleanup) (void), const char *dir);
 
+/*
+ * lib/tst_pid.c
+ *
+ * Returns max pid count obtained from reading /proc/sys/kernel/pid_max
+ */
+int tst_get_max_pids(void);
+
+/*
+ * lib/tst_pid.c
+ *
+ * Returns number of free pids by substarction the number of pid
+ * currently used ('ps -eT') from max_pids
+ */
+int tst_get_free_pids(void);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL
