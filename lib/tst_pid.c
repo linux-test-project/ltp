@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2009
+ *   Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,47 +18,24 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*
- *   DESCRIPTION
- *	get_max_pids(): Return the maximum number of pids for this system by
- *			reading /proc/sys/kernel/pid_max
- *
- *	get_free_pids(): Return number of free pids by subtracting the number
- *			 of pids currently used ('ps -eT') from max_pids
- */
-
 #include <fcntl.h>
 #include <limits.h>
 #include <sys/types.h>
 #include "test.h"
+#include "safe_file_ops.h"
 
-#define BUFSIZE 512
+#define PID_MAX_PATH "/proc/sys/kernel/pid_max"
 
-int tst_get_max_pids(void)
+pid_t tst_get_unused_pid(void (*cleanup_fn) (void))
 {
-#ifdef __linux__
+	pid_t pid;
 
-	FILE *f;
-	char buf[BUFSIZE];
+	SAFE_FILE_SCANF(cleanup_fn, PID_MAX_PATH, "%d", &pid);
 
-	f = fopen("/proc/sys/kernel/pid_max", "r");
-	if (!f) {
-		tst_resm(TBROK, "Could not open /proc/sys/kernel/pid_max");
-		return -1;
-	}
-	if (!fgets(buf, BUFSIZE, f)) {
-		fclose(f);
-		tst_resm(TBROK, "Could not read /proc/sys/kernel/pid_max");
-		return -1;
-	}
-	fclose(f);
-	return atoi(buf);
-#else
-	return SHRT_MAX;
-#endif
+	return pid;
 }
 
-int tst_get_free_pids(void)
+int tst_get_free_pids(void (*cleanup_fn) (void))
 {
 	FILE *f;
 	int rc, used_pids, max_pids;
@@ -76,10 +54,10 @@ int tst_get_free_pids(void)
 		return -1;
 	}
 
-	max_pids = tst_get_max_pids();
+	SAFE_FILE_SCANF(cleanup_fn, PID_MAX_PATH, "%d", &max_pids);
 
-	if (max_pids < 0)
-		return -1;
-
+	/* max_pids contains the maximum PID + 1,
+	 * used_pids contains used PIDs + 1,
+	 * so this additional '1' is eliminated by the substraction */
 	return max_pids - used_pids;
 }

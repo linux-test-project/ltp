@@ -378,17 +378,17 @@ int tst_fs_fill_subdirs(void (*cleanup) (void), const char *dir);
 /*
  * lib/tst_pid.c
  *
- * Returns max pid count obtained from reading /proc/sys/kernel/pid_max
+ * Get a pid value not used by the OS
  */
-int tst_get_max_pids(void);
+pid_t tst_get_unused_pid(void (*cleanup_fn) (void));
 
 /*
  * lib/tst_pid.c
  *
- * Returns number of free pids by substarction the number of pid
+ * Returns number of free pids by substarction of the number of pids
  * currently used ('ps -eT') from max_pids
  */
-int tst_get_free_pids(void);
+int tst_get_free_pids(void (*cleanup_fn) (void));
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
