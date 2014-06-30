@@ -591,7 +591,7 @@ modify_ldt02 modify_ldt02
 modify_ldt03 modify_ldt03
 
 mount01 mount01
-mount02 mount02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+mount02 mount02
 mount03 mount03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 mount04 mount04 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 mount05 mount05
