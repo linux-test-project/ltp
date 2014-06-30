@@ -77,15 +77,11 @@ int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
-	pid_t pid, fake_pid;
-	int exno, status, fake_status, nsig;
+	pid_t fake_pid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "");
-#endif
 
 	setup();		/* global setup */
 
@@ -96,41 +92,9 @@ int main(int ac, char **av)
 
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
-		status = 1;
-		exno = 1;
-		pid = FORK_OR_VFORK();
-		if (pid < 0) {
-			tst_brkm(TBROK, cleanup, "Fork failed");
-		} else if (pid == 0) {
-#ifdef UCLINUX
-			if (self_exec(av[0], "") < 0) {
-				tst_brkm(TBROK, cleanup,
-					 "self_exec of child failed");
-			}
-#else
-			do_child();
-#endif
-		} else {
-			fake_pid = FORK_OR_VFORK();
-			if (fake_pid < 0) {
-				tst_brkm(TBROK, cleanup, "Second fork failed");
-			} else if (fake_pid == 0) {
-#ifdef UCLINUX
-				if (self_exec(av[0], "") < 0) {
-					tst_brkm(TBROK, cleanup,
-						 "second self_exec "
-						 "of child failed");
-				}
-#else
-				do_child();
-#endif
-			}
-			kill(fake_pid, TEST_SIG);
-			waitpid(fake_pid, &fake_status, 0);
-			TEST(kill(fake_pid, TEST_SIG));
-			kill(pid, TEST_SIG);
-			waitpid(pid, &status, 0);
-		}
+
+		fake_pid = tst_get_unused_pid(cleanup);
+		TEST(kill(fake_pid, TEST_SIG));
 
 		if (TEST_RETURN != -1) {
 			tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s "
@@ -143,7 +107,6 @@ int main(int ac, char **av)
 		 * Check to see if the errno was set to the expected
 		 * value of 3 : ESRCH
 		 */
-		nsig = WTERMSIG(status);
 		TEST_ERROR_LOG(TEST_ERRNO);
 		if (TEST_ERRNO == ESRCH) {
 			tst_resm(TPASS, "errno set to %d : %s, as "
@@ -158,17 +121,6 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-}
-
-/*
- * do_child()
- */
-void do_child(void)
-{
-	int exno = 1;
-
-	pause();
-	exit(exno);
 }
 
 /*

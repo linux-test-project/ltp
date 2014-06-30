@@ -75,8 +75,6 @@
 #include "test.h"
 #include "usctest.h"
 
-#define PID_DONT_EXISTS 999999
-
 static void setup();
 static void cleanup();
 
@@ -84,18 +82,22 @@ char *TCID = "sched_rr_get_interval03";
 struct timespec tp;
 static int exp_enos[] = { EINVAL, ESRCH, EFAULT, 0 };
 
+static pid_t unused_pid;
+static pid_t inval_pid = -1;
+static pid_t zero_pid;
+
 struct test_cases_t {
-	pid_t pid;
+	pid_t *pid;
 	struct timespec *tp;
 	int exp_errno;
 } test_cases[] = {
 	{
-	-1, &tp, EINVAL}, {
-	PID_DONT_EXISTS, &tp, ESRCH},
+	&inval_pid, &tp, EINVAL}, {
+	&unused_pid, &tp, ESRCH},
 #ifndef UCLINUX
 	    /* Skip since uClinux does not implement memory protection */
 	{
-	0, (struct timespec *)-1, EFAULT}
+	&zero_pid, (struct timespec *)-1, EFAULT}
 #endif
 };
 
@@ -120,7 +122,7 @@ int main(int ac, char **av)
 			/*
 			 * Call sched_rr_get_interval(2)
 			 */
-			TEST(sched_rr_get_interval(test_cases[i].pid,
+			TEST(sched_rr_get_interval(*(test_cases[i].pid),
 						   test_cases[i].tp));
 
 			if ((TEST_RETURN == -1) &&
@@ -161,6 +163,8 @@ void setup(void)
 	if ((sched_setscheduler(0, SCHED_RR, &p)) == -1) {
 		tst_brkm(TBROK, cleanup, "sched_setscheduler() failed");
 	}
+
+	unused_pid = tst_get_unused_pid(cleanup);
 }
 
 /*

@@ -59,7 +59,6 @@
 #include "usctest.h"
 
 #define SCHED_INVALID	99
-#define INVALID_PID	999999
 
 char *TCID = "sched_setscheduler01";
 
@@ -70,27 +69,31 @@ int exp_enos[] = { ESRCH, EINVAL, EFAULT, 0 };
 void setup(void);
 void cleanup(void);
 
+static pid_t unused_pid;
+static pid_t init_pid = 1;
+static pid_t zero_pid;
+
 struct test_case_t {
-	pid_t pid;
+	pid_t *pid;
 	int policy;
 	struct sched_param *p;
 	int error;
 } TC[] = {
 	/* The pid is invalid - ESRCH */
 	{
-	INVALID_PID, SCHED_OTHER, &param, ESRCH},
+	&unused_pid, SCHED_OTHER, &param, ESRCH},
 	    /* The policy is invalid - EINVAL */
 	{
-	1, SCHED_INVALID, &param, EINVAL},
+	&init_pid, SCHED_INVALID, &param, EINVAL},
 #ifndef UCLINUX
 	    /* Skip since uClinux does not implement memory protection */
 	    /* The param address is invalid - EFAULT */
 	{
-	1, SCHED_OTHER, (struct sched_param *)-1, EFAULT},
+	&init_pid, SCHED_OTHER, (struct sched_param *)-1, EFAULT},
 #endif
 	    /* The priority value in param invalid - EINVAL */
 	{
-	0, SCHED_OTHER, &param1, EINVAL}
+	&zero_pid, SCHED_OTHER, &param1, EINVAL}
 };
 
 int TST_TOTAL = sizeof(TC) / sizeof(*TC);
@@ -118,7 +121,7 @@ int main(int ac, char **av)
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			TEST(sched_setscheduler(TC[i].pid, TC[i].policy,
+			TEST(sched_setscheduler(*(TC[i].pid), TC[i].policy,
 						TC[i].p));
 
 			if (TEST_RETURN != -1) {
@@ -150,6 +153,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	unused_pid = tst_get_unused_pid(cleanup);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

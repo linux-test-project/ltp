@@ -80,8 +80,6 @@
 #include <sched.h>
 #include <pwd.h>
 
-#define LARGE_PID 999999
-
 static void cleanup(void);
 static void setup(void);
 
@@ -93,18 +91,22 @@ char *TCID = "sched_setparam04";
 static int exp_enos[] = { EINVAL, ESRCH, 0 };	/* 0 terminated list of *
 						 * expected errnos */
 
+static pid_t unused_pid;
+static pid_t inval_pid = -1;
+static pid_t zero_pid;
+
 static struct test_case_t {
 	char *desc;
-	pid_t pid;
+	pid_t *pid;
 	struct sched_param *p;
 	int exp_errno;
 	char err_desc[10];
 } test_cases[] = {
 	{
-	"test with non-existing pid", LARGE_PID, &param, ESRCH, "ESRCH"}, {
-	"test invalid pid value", -1, &param, EINVAL, "EINVAL"}, {
-	"test with invalid address for p", 0, NULL, EINVAL, "EINVAL"}, {
-	"test with invalid p.sched_priority", 0, &param1, EINVAL,
+	"test with non-existing pid", &unused_pid, &param, ESRCH, "ESRCH"}, {
+	"test invalid pid value", &inval_pid, &param, EINVAL, "EINVAL"}, {
+	"test with invalid address for p", &zero_pid, NULL, EINVAL, "EINVAL"}, {
+	"test with invalid p.sched_priority", &zero_pid, &param1, EINVAL,
 		    "EINVAL"}
 };
 
@@ -129,7 +131,7 @@ int main(int ac, char **av)
 			/*
 			 * call the system call with the TEST() macro
 			 */
-			TEST(sched_setparam(test_cases[ind].pid,
+			TEST(sched_setparam(*(test_cases[ind].pid),
 					    test_cases[ind].p));
 
 			if ((TEST_RETURN == -1) &&
@@ -157,6 +159,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	unused_pid = tst_get_unused_pid(cleanup);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

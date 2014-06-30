@@ -312,11 +312,8 @@ static void cma_test_iov_invalid(void)
 
 static void cma_test_invalid_pid(void)
 {
-	const char pid_max[] = "/proc/sys/kernel/pid_max";
 	pid_t invalid_pid = -1;
 	struct process_vm_params *params;
-	FILE *fp;
-	char buff[512];
 
 	params = cma_alloc_sane_params();
 	tst_resm(TINFO, "test_invalid_pid");
@@ -326,13 +323,7 @@ static void cma_test_invalid_pid(void)
 	cma_check_errno(ESRCH);
 	cma_free_params(params);
 
-	fp = fopen(pid_max, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK, cleanup, "Could not open %s", pid_max);
-	if (!fgets(buff, sizeof(buff), fp))
-		tst_brkm(TBROK, cleanup, "Could not read %s", pid_max);
-	fclose(fp);
-	invalid_pid = atol(buff) + 1;
+	invalid_pid = tst_get_unused_pid(cleanup);
 
 	params = cma_alloc_sane_params();
 	params->pid = invalid_pid;

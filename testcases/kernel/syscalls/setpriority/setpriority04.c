@@ -66,37 +66,20 @@ int TST_TOTAL = 1;
 
 int exp_enos[] = { ESRCH, 0 };
 
-/* Get the max number of message queues allowed on system */
-static long get_pid_max(void)
-{
-	FILE *fp;
-	char buff[512];
-
-	/* Get the max number of message queues allowed on system */
-	fp = fopen("/proc/sys/kernel/pid_max", "r");
-	if (fp == NULL)
-		tst_brkm(TBROK, cleanup,
-			 "Could not open /proc/sys/kernel/pid_max");
-	if (!fgets(buff, sizeof(buff), fp))
-		tst_brkm(TBROK, cleanup,
-			 "Could not read /proc/sys/kernel/pid_max");
-	fclose(fp);
-
-	return atol(buff);
-}
-
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
 	int new_val = 2;
-	int pid_max = get_pid_max();
+	pid_t unused_pid;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();		/* global setup */
+
+	unused_pid = tst_get_unused_pid(cleanup);
 
 	/* The following loop checks looping state if -i option given */
 
@@ -110,7 +93,7 @@ int main(int ac, char **av)
 		 */
 
 		/* call the system call with the TEST() macro */
-		TEST(setpriority(PRIO_PROCESS, pid_max + 1, new_val));
+		TEST(setpriority(PRIO_PROCESS, unused_pid, new_val));
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call failed to produce expected error "

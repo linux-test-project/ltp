@@ -55,16 +55,17 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup();
-void cleanup();
+static void setup(void);
+static void cleanup(void);
 
 char *TCID = "setpgid02";
 int TST_TOTAL = 3;
 
-pid_t pgid, pid;
-pid_t bad_pid = -1;
-pid_t zero_pid = 0;
-pid_t inval_pid = 99999;
+static pid_t pgid, pid;
+static pid_t bad_pid = -1;
+static pid_t zero_pid;
+static pid_t unused_pid;
+static pid_t inval_pid = 99999;
 
 int exp_enos[] = { EINVAL, ESRCH, EPERM, 0 };
 
@@ -78,7 +79,7 @@ struct test_case_t {
 	&pid, &bad_pid, EINVAL},
 	    /* pid doesn't match any process - ESRCH */
 	{
-	&bad_pid, &pgid, ESRCH},
+	&unused_pid, &pgid, ESRCH},
 	    /* pgid doesn't exist - EPERM */
 	{
 	&zero_pid, &inval_pid, EPERM}
@@ -135,7 +136,7 @@ int main(int ac, char **av)
 /*
  * setup - performs all ONE TIME setup for this test
  */
-void setup(void)
+static void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -144,13 +145,15 @@ void setup(void)
 
 	pgid = getpgrp();
 	pid = getpid();
+
+	unused_pid = tst_get_unused_pid(cleanup);
 }
 
 /*
  * cleanup - Performs all ONE TIME cleanup for this test at completion or
  * 	     premature exit
  */
-void cleanup(void)
+static void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified

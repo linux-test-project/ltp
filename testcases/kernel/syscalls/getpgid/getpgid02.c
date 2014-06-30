@@ -135,18 +135,7 @@ void setup(void)
 
 	pgid_0 = BADPID;
 
-	/*
-	 * Find a pid that isn't currently being used.  Start
-	 * at 'our pid - 1' and go backwards until we find one.
-	 * In this way, we can be reasonably sure that the pid
-	 * we find won't be reused for a while as new pids are
-	 * allocated counting up to PID_MAX.
-	 */
-	for (pgid_1 = getpid() - 1; --pgid_1 > 0;) {
-		if (kill(pgid_1, 0) < 0 && errno == ESRCH) {
-			break;
-		}
-	}
+	pgid_1 = tst_get_unused_pid(cleanup);
 }
 
 /*

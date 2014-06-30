@@ -88,8 +88,6 @@
 /*   version, then you may want to try switching to it. -Robbie W.        */
 /**************************************************************************/
 
-#define INVALID_PID 999999
-
 static void setup();
 static void cleanup();
 static void test_setup(int);
@@ -203,7 +201,7 @@ void test_setup(int i)
 		break;
 	case 4:
 		header.version = _LINUX_CAPABILITY_VERSION;
-		header.pid = INVALID_PID;
+		header.pid = tst_get_unused_pid(cleanup);
 		break;
 	}
 }

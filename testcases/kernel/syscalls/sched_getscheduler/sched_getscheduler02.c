@@ -46,12 +46,12 @@
 #include "test.h"
 #include "usctest.h"
 
-#define INVALID_PID	999999
-
 char *TCID = "sched_getscheduler02";
 int TST_TOTAL = 1;
 
 int exp_enos[] = { ESRCH, 0 };
+
+static pid_t unused_pid;
 
 void setup(void);
 void cleanup(void);
@@ -73,7 +73,7 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		TEST(sched_getscheduler(INVALID_PID));
+		TEST(sched_getscheduler(unused_pid));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "sched_getscheduler(2) passed "
@@ -99,6 +99,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	unused_pid = tst_get_unused_pid(cleanup);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

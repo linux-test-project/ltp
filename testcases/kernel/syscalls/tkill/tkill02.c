@@ -52,6 +52,10 @@
 char *TCID = "tkill02";
 int testno;
 
+static pid_t inval_tid = -1;
+static pid_t unused_tid;
+
+
 /* Extern Global Functions */
 /******************************************************************************/
 /*									    */
@@ -101,15 +105,17 @@ void setup(void)
 	/* Create temporary directories */
 	TEST_PAUSE;
 	tst_tmpdir();
+
+	unused_tid = tst_get_unused_pid(cleanup);
 }
 
 struct test_case_t {
-	int tid;
+	int *tid;
 	int exp_errno;
 } test_cases[] = {
 	{
-	-1, EINVAL}, {
-	99999, ESRCH}
+	&inval_tid, EINVAL}, {
+	&unused_tid, ESRCH}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
@@ -122,22 +128,22 @@ int main(int ac, char **av)
 
 	for (i = 0; i < TST_TOTAL; i++) {
 
-		TEST(ltp_syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
+		TEST(ltp_syscall(__NR_tkill, *(test_cases[i].tid), SIGUSR1));
 
 		if (TEST_RETURN == -1) {
 			if (TEST_ERRNO == test_cases[i].exp_errno) {
 				tst_resm(TPASS | TTERRNO,
 					 "tkill(%d, SIGUSR1) failed as expected",
-					 test_cases[i].tid);
+					 *(test_cases[i].tid));
 			} else {
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "tkill(%d, SIGUSR1) failed unexpectedly",
-					 test_cases[i].tid);
+					 *(test_cases[i].tid));
 			}
 		} else {
 			tst_brkm(TFAIL, cleanup,
 				 "tkill(%d) succeeded unexpectedly",
-				 test_cases[i].tid);
+				 *(test_cases[i].tid));
 		}
 	}
 	cleanup();

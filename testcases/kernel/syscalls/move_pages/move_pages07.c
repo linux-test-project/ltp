@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 		void *pages[TEST_PAGES] = { 0 };
 		int nodes[TEST_PAGES];
 		int status[TEST_PAGES];
-		int ipid;
+		pid_t ipid;
 
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
@@ -107,15 +107,7 @@ int main(int argc, char **argv)
 		for (i = 0; i < TEST_PAGES; i++)
 			nodes[i] = to_node;
 
-		ipid = fork();
-		if (ipid == -1) {
-			tst_resm(TBROK | TERRNO, "fork failed");
-			goto err_free_pages;
-		}
-		if (ipid == 0)
-			exit(0);
-
-		wait(NULL);
+		ipid = tst_get_unused_pid(cleanup);
 
 		ret = numa_move_pages(ipid, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE);
@@ -126,7 +118,6 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL|TERRNO, "move pages did not fail "
 				 "with ESRCH ret: %d", ret);
 
-err_free_pages:
 		free_pages(pages, TEST_PAGES);
 	}
 #else

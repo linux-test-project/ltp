@@ -75,9 +75,6 @@ static void test_sane_nodes(void)
 
 static void test_invalid_pid(void)
 {
-	const char pid_max[] = "/proc/sys/kernel/pid_max";
-	FILE *fp;
-	char buff[512];
 	pid_t invalid_pid = -1;
 
 	tst_resm(TINFO, "test_invalid_pid -1");
@@ -86,14 +83,8 @@ static void test_invalid_pid(void)
 	check_ret(-1);
 	check_errno(ESRCH);
 
-	tst_resm(TINFO, "test_invalid_pid pid_max+1");
-	fp = fopen(pid_max, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK, cleanup, "Could not open %s", pid_max);
-	if (!fgets(buff, sizeof(buff), fp))
-		tst_brkm(TBROK, cleanup, "Could not read %s", pid_max);
-	fclose(fp);
-	invalid_pid = atol(buff) + 1;
+	tst_resm(TINFO, "test_invalid_pid unused pid");
+	invalid_pid = tst_get_unused_pid(cleanup);
 	TEST(ltp_syscall(__NR_migrate_pages, invalid_pid, sane_max_node,
 		     sane_old_nodes, sane_new_nodes));
 	check_ret(-1);
