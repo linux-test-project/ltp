@@ -590,12 +590,7 @@ modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
 modify_ldt03 modify_ldt03
 
-#
-# These tests require an unmounted block device
-# to run correctly. Please see individual test
-# code for more information.
-#
-mount01 mount01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+mount01 mount01
 mount02 mount02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 mount03 mount03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 mount04 mount04 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
