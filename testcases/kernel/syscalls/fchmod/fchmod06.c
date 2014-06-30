@@ -23,7 +23,7 @@
  */
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+# define _GNU_SOURCE
 #endif
 
 #include <sys/types.h>
@@ -47,16 +47,8 @@
 static int fd1;
 static int fd2;
 static int fd3;
-static char *fstype = "ext2";
-static char *device;
-static int dflag;
+static const char *device;
 static int mount_flag;
-
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", &dflag, &device},
-	{NULL, NULL, NULL}
-};
 
 static struct test_case_t {
 	char *name;
@@ -75,7 +67,6 @@ static int exp_enos[] = { EPERM, EBADF, EROFS, 0 };
 
 static void setup(void);
 static void cleanup(void);
-static void help(void);
 
 int main(int ac, char **av)
 {
@@ -83,16 +74,9 @@ int main(int ac, char **av)
 	const char *msg;
 	int i;
 
-	msg = parse_opts(ac, av, options, help);
+	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	/* Check for mandatory option of the testcase */
-	if (!dflag) {
-		tst_brkm(TBROK, NULL,
-			 "you must specify the device used for mounting with "
-			 "-D option");
-	}
 
 	setup();
 
@@ -128,13 +112,13 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
 static void setup(void)
 {
-	static struct passwd *ltpuser;
+	struct passwd *ltpuser;
+	const char *fs_type;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -144,11 +128,17 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	tst_mkfs(NULL, device, fstype, NULL);
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, device, fs_type, NULL);
 
 	SAFE_MKDIR(cleanup, "mntpoint", 0755);
 
-	if (mount(device, "mntpoint", fstype, 0, NULL) < 0) {
+	if (mount(device, "mntpoint", fs_type, 0, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "mount device:%s failed", device);
 	}
@@ -157,12 +147,11 @@ static void setup(void)
 	/* Create a file in the file system, then remount it as read-only */
 	SAFE_TOUCH(cleanup, "mntpoint/tfile_3", 0644, NULL);
 
-	if (mount(device, "mntpoint", fstype,
+	if (mount(device, "mntpoint", fs_type,
 		  MS_REMOUNT | MS_RDONLY, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "mount device:%s failed", device);
 	}
-	mount_flag = 1;
 
 	fd3 = SAFE_OPEN(cleanup, "mntpoint/tfile_3", O_RDONLY);
 
@@ -179,25 +168,24 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_SETEUID(NULL, 0);
+	if (seteuid(0))
+		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 
 	TEST_CLEANUP;
 
-	SAFE_CLOSE(NULL, fd1);
+	if (fd1 > 0 && close(fd1))
+		tst_resm(TWARN | TERRNO, "close(fd1) failed");
 
-	SAFE_CLOSE(NULL, fd3);
+	if (fd3 > 0 && close(fd3))
+		tst_resm(TWARN | TERRNO, "close(fd1) failed");
 
 	if (mount_flag && umount("mntpoint") < 0) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "umount device:%s failed", device);
 	}
 
-	tst_rmdir();
-}
+	if (device)
+		tst_release_device(NULL, device);
 
-static void help(void)
-{
-	printf("-T type   : specifies the type of filesystem to be mounted. "
-	       "Default ext2.\n");
-	printf("-D device : device used for mounting.\n");
+	tst_rmdir();
 }

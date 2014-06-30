@@ -125,7 +125,7 @@ fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
 fchmod05 fchmod05
-fchmod06 fchmod06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+fchmod06 fchmod06
 fchmod07 fchmod07
 
 fchown01 fchown01
