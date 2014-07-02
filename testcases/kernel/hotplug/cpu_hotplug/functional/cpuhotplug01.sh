@@ -5,21 +5,13 @@
 # Based on script by Ashok Raj <ashok.raj@intel.com>
 # Modified by Mark D and Bryce, Aug '05.
 
-HOTPLUG01_LOOPS=${HOTPLUG01_LOOPS:-${LOOPS}}
 export TCID="cpuhotplug01"
-export TST_COUNT=1
-export TST_TOTAL=${HOTPLUG01_LOOPS:-1}
-
-CPU_TO_TEST=${CPU_TO_TEST:-1}
-if [ -z "${CPU_TO_TEST}" ]; then
-	echo "usage: ${0##*/} <CPU to online>"
-	exit 1
-fi
+export TST_TOTAL=1
 
 # Includes:
-LHCS_PATH=${LHCS_PATH:-$LTPROOT/testcases/bin/cpu_hotplug}
-. $LHCS_PATH/include/cpuhotplug_testsuite.sh
-. $LHCS_PATH/include/cpuhotplug_hotplug.sh
+. test.sh
+. cpuhotplug_testsuite.sh
+. cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -28,40 +20,21 @@ Desc:   What happens to disk controller interrupts when offlining CPUs?
 
 EOF
 
-# Time delay after an online of cpu
-TM_ONLINE=${HOTPLUG01_TM_ONLINE:-1}
+usage()
+{
+	cat << EOF
+	usage: $0 -c cpu -l loop -n timeon -f timeoff -e timed
 
-# Time delay after offline of cpu
-TM_OFFLINE=${HOTPLUG01_TM_OFFLINE:-1}
+	OPTIONS
+		-c  cpu which is specified for testing
+		-l  number of cycle test
+		-n	time delay after an online of cpu
+		-f	time delay after offline of cpu
+		-e	time delay before start of entire new cycle
 
-# Time delay before start of entire new cycle.
-TM_DLY=${HOTPLUG01_TM_DLY:-6}
-
-if ! type -P perl > /dev/null; then
-	tst_brk TCONF "analysis script - cpuhotplug_report_proc_interrupts - \
-					requires perl"
+EOF
 	exit 1
-fi
-
-if ! get_all_cpus >/dev/null 2>&1; then
-	tst_brkm TCONF "system doesn't have required CPU hotplug support"
-	exit 1
-fi
-
-# Validate the specified CPU exists
-if ! cpu_is_valid "${CPU_TO_TEST}" ; then
-	tst_resm TFAIL "cpu${CPU_TO_TEST} not found"
-	exit 1
-fi
-
-CPU_COUNT=0
-
-if ! cpu_is_online "${CPU_TO_TEST}" ; then
-	if ! online_cpu ${CPU_TO_TEST} ; then
-		tst_resm TFAIL "Could not online cpu $CPU_TO_TEST"
-		exit_clean 1
-	fi
-fi
+}
 
 # do_clean()
 #
@@ -73,12 +46,11 @@ do_clean()
 	kill_pid ${WRL_ID}
 
 	# Turns off the cpus that were off before the test start
-	tst_resm TINFO "Return to previous state. CPU count = ${CPU_COUNT}"
 	until [ $CPU_COUNT -eq 0 ]; do
 		offline_cpu=$(eval "echo \$OFFLINE_CPU_${CPU_COUNT}")
 		tst_resm TINFO "CPU = $CPU_COUNT @on = $offline_cpu"
 		offline_cpu $offline_cpu
-		: $(( CPU_COUNT -= 1 ))
+		CPU_COUNT=$((CPU_COUNT-1))
 	done
 }
 
@@ -96,7 +68,7 @@ do_offline()
 	offline_cpu ${CPU}
 	if [ $? -ne 0 ]; then
 		if [ "$CPU" -ne 0 ]; then
-			: $(( CPU_COUNT += 1 ))
+			CPU_COUNT=$((CPU_COUNT+1))
 			eval "OFFLINE_CPU_${CPU_COUNT}=$1"
 		fi
 		return 1
@@ -123,12 +95,55 @@ do_online()
 	fi
 }
 
+while getopts c:l:n:f:e: OPTION; do
+	case $OPTION in
+	c)
+		CPU_TO_TEST=$OPTARG;;
+	l)
+		HOTPLUG01_LOOPS=$OPTARG;;
+	n)
+		TM_ONLINE=$OPTARG;;
+	f)
+		TM_OFFLINE=$OPTARG;;
+	e)
+		TM_DLY=$OPTARG;;
+	?)
+		usage;;
+	esac
+done
+
+LOOP_COUNT=1
+
+tst_check_cmds perl
+
+if ! get_all_cpus >/dev/null 2>&1; then
+	tst_brkm TCONF "system doesn't have required CPU hotplug support"
+fi
+
+if [ -z "${CPU_TO_TEST}" ]; then
+	tst_brkm TBROK "usage: ${0##*/} <CPU to online>"
+fi
+
+# Validate the specified CPU exists
+if ! cpu_is_valid "${CPU_TO_TEST}" ; then
+	tst_brkm TBROK "cpu${CPU_TO_TEST} not found"
+fi
+
+if ! cpu_is_online "${CPU_TO_TEST}" ; then
+	if ! online_cpu ${CPU_TO_TEST} ; then
+		tst_brkm TBROK "Could not online cpu $CPU_TO_TEST"
+	fi
+fi
+
+TST_CLEANUP=do_clean
+
+CPU_COUNT=0
+
 # Start up a process that writes to disk; keep track of its PID
-$LHCS_PATH/tools/cpuhotplug_do_disk_write_loop > /dev/null 2>&1 &
+cpuhotplug_do_disk_write_loop > /dev/null 2>&1 &
 WRL_ID=$!
 
-RC=0
-until [ $TST_COUNT -gt $TST_TOTAL -o $RC -ne 0 ]
+until [ $LOOP_COUNT -gt $HOTPLUG01_LOOPS ]
 do
 
 	tst_resm TINFO "Starting loop"
@@ -142,15 +157,12 @@ do
 		do_offline $cpu
 		err=$?
 		if [ $err -ne 0 ]; then
-			tst_resm TBROK "offlining $cpu failed: $err"
-			RC=2
+			tst_brkm TBROK "offlining $cpu failed: $err"
 		else
 			tst_resm TINFO "offlining $cpu was ok"
 		fi
 		sleep $TM_OFFLINE
 	done
-
-	#IRQ_MID=`cat /proc/interrupts`
 
 	# Attempt to online all CPUs
 	for cpu in $( get_all_cpus ); do
@@ -160,8 +172,7 @@ do
 		do_online $cpu
 		err=$?
 		if [ $err -ne 0 ]; then
-			tst_resm TBROK "onlining $cpu failed: $err"
-			RC=2
+			tst_brkm TBROK "onlining $cpu failed: $err"
 		else
 			tst_resm TINFO "onlining $cpu was ok"
 		fi
@@ -173,21 +184,14 @@ do
 	# Print out a report showing the changes in IRQs
 	echo
 	echo
-	$LHCS_PATH/tools/cpuhotplug_report_proc_interrupts "$IRQ_START" \
-		"$IRQ_END"
+	cpuhotplug_report_proc_interrupts "$IRQ_START" "$IRQ_END"
 	echo
 
-	if [ $RC -eq 0 ] ; then
-
-		sleep $TM_DLY
-		: $(( TST_COUNT += 1 ))
-
-	fi
+	sleep $TM_DLY
+	LOOP_COUNT=$((LOOP_COUNT+1))
 
 done
 
-if [ "$RC" -eq 0 ];then
-        tst_resm TPASS "online and offline cpu${CPU} when writing disk"
-fi
+tst_resm TPASS "online and offline cpu${CPU} when writing disk"
 
-exit_clean $RC
+tst_exit

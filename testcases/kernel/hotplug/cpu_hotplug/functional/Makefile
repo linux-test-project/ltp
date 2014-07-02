@@ -1,6 +1,5 @@
 #
-#    kernel/hotplug/cpu_hotplug test suite Makefile.
-#    Maxin B. John, March 2010
+#    Copyright (c) 2014 Fujitsu Ltd.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,9 +16,10 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-top_srcdir                      ?= ../../../..
+top_srcdir                      ?= ../../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+INSTALL_TARGETS		:= *.sh
 
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

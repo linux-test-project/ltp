@@ -3,21 +3,13 @@
 # Test Case 3
 #
 
-HOTPLUG03_LOOPS=${HOTPLUG03_LOOPS:-${LOOPS}}
-export TST_COUNT=1
-export TST_TOTAL=${HOTPLUG03_LOOPS:-1}
 export TCID="cpuhotplug03"
-
-CPU_TO_TEST=${CPU_TO_TEST:-1}
-if [ -z $CPU_TO_TEST ]; then
-	echo "usage: ${0##*} <CPU to online>"
-	exit 1
-fi
+export TST_TOTAL=1
 
 # Includes:
-LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
-. $LHCS_PATH/include/cpuhotplug_testsuite.sh
-. $LHCS_PATH/include/cpuhotplug_hotplug.sh
+. test.sh
+. cpuhotplug_testsuite.sh
+. cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -26,11 +18,18 @@ Desc:   Do tasks get scheduled to a newly on-lined CPU?
 
 EOF
 
-# Verify the specified CPU exists
-if ! cpu_is_valid "${CPU_TO_TEST}" ; then
-	tst_resm TCONF "CPU${CPU_TO_TEST} not found"
-	exit_clean 1
-fi
+usage()
+{
+	cat << EOF
+	usage: $0 -c cpu -l loop
+
+	OPTIONS
+		-c  cpu which is specified for testing
+		-l  number of cycle test
+
+EOF
+	exit 1
+}
 
 # do_clean()
 #
@@ -50,11 +49,35 @@ do_clean()
 	# Turn off the CPUs that were off before the test start
 	until [ $cpu -eq 0 ];do
 		offline_cpu $(eval "echo \$on_${cpu}")
-		: $(( cpu -= 1 ))
+		cpu=$((cpu-1))
 	done
 }
 
-until [ $TST_COUNT -gt $TST_TOTAL ]; do
+while getopts c:l: OPTION; do
+case $OPTION in
+	c)
+		CPU_TO_TEST=$OPTARG;;
+	l)
+		HOTPLUG03_LOOPS=$OPTARG;;
+	?)
+		usage;;
+	esac
+done
+
+LOOP_COUNT=1
+
+if [ -z $CPU_TO_TEST ]; then
+	tst_brkm TBROK "usage: ${0##*} <CPU to online>"
+fi
+
+# Verify the specified CPU exists
+if ! cpu_is_valid "${CPU_TO_TEST}" ; then
+	tst_brkm TBROK "CPU${CPU_TO_TEST} not found"
+fi
+
+TST_CLEANUP=do_clean
+
+until [ $LOOP_COUNT -gt $HOTPLUG03_LOOPS ]; do
 	cpu=0
 	number_of_cpus=0
 
@@ -64,30 +87,28 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
                 continue
             fi
             if ! cpu_is_online $i; then
-		if ! online_cpu $i; then
-                    tst_resm TFAIL "Could not online cpu $i"
-                    exit_clean 1
+				if ! online_cpu $i; then
+                    tst_brkm TBROK "Could not online cpu $i"
                 fi
-                : $(( cpu += 1 ))
+				cpu=$((cpu+1))
                 eval "on_${cpu}=$i"
             fi
-		: $(( number_of_cpus += 1 ))
+		number_of_cpus=$((number_of_cpus+1))
 	done
 
 	if ! offline_cpu ${CPU_TO_TEST} ; then
-		tst_resm TFAIL "CPU${CPU_TO_TEST} cannot be offlined"
-		exit_clean 1
+		tst_resm TBROK "CPU${CPU_TO_TEST} cannot be offlined"
 	fi
 
 	# Start up a number of processes equal to twice the number of
 	# CPUs we have.  This is to help ensure we've got enough processes
 	# that at least one will migrate to the new CPU.  Store the PIDs
 	# so we can kill them later.
-	: $(( number_of_cpus *= 2 ))
+	number_of_cpus=$((number_of_cpus*2))
 	until [ $number_of_cpus -eq 0 ]; do
-		$LHCS_PATH/tools/cpuhotplug_do_spin_loop > /dev/null 2>&1 &
+		cpuhotplug_do_spin_loop > /dev/null 2>&1 &
 		echo $! >> /var/run/hotplug4_$$.pid
-		: $(( number_of_cpus -= 1 ))
+		number_of_cpus=$((number_of_cpus-1))
 	done
 
 	ps aux | head -n 1
@@ -95,35 +116,33 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 
 	# Online the CPU
 	tst_resm TINFO "Onlining CPU ${CPU_TO_TEST}"
-	online_cpu ${CPU_TO_TEST}
-	RC=$?
-	if [ $RC -ne 0 ]; then
-		tst_resm TFAIL "CPU${CPU_TO_TEST} cannot be onlined"
-		exit_clean 1
+	if ! online_cpu ${CPU_TO_TEST}; then
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined"
 	fi
 
 	sleep 1
 
 	# Verify at least one process has migrated to the new CPU
 	ps -o psr -o command --no-headers -C cpuhotplug_do_spin_loop
-	RC=$?
-	NUM=`ps -o psr -o command --no-headers -C cpuhotplug_do_spin_loop | \
-		sed -e "s/^ *//" | cut -d' ' -f 1 | grep "^${CPU_TO_TEST}$" | \
-		wc -l`
-	if [ $RC -ne 0 ]; then
-		tst_resm TBROK "No cpuhotplug_do_spin_loop processes found on \
-			any processor"
-	elif [ $NUM -lt 1 ]; then
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK "No cpuhotplug_do_spin_loop processes \
+			found on any processor"
+	fi
+	NUM=`ps -o psr -o command --no-headers -C cpuhotplug_do_spin_loop \
+		| sed -e "s/^ *//" | cut -d' ' -f 1 | grep "^${CPU_TO_TEST}$" \
+		| wc -l`
+	if [ $NUM -lt 1 ]; then
 		tst_resm TFAIL "No cpuhotplug_do_spin_loop processes found on \
 			CPU${CPU_TO_TEST}"
-	else
-		tst_resm TPASS "$NUM cpuhotplug_do_spin_loop processes found \
-			on CPU${CPU_TO_TEST}"
+		tst_exit
 	fi
 
 	do_clean
 
-	: $(( TST_COUNT +=1 ))
+	LOOP_COUNT=$((LOOP_COUNT+1))
 done
 
-exit_clean
+tst_resm TPASS "$NUM cpuhotplug_do_spin_loop processes found on \
+	CPU${CPU_TO_TEST}"
+
+tst_exit

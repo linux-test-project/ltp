@@ -5,15 +5,13 @@
 # Runs continuous offline/online of CPUs along with
 # a kernel compilation load.
 
-TST_TOTAL=${HOTPLUG07_LOOPS:-${LOOPS}}
 export TCID="cpuhotplug07"
-export TST_COUNT=1
-export TST_TOTAL=${HOTPLUG07_LOOPS:-1}
+export TST_TOTAL=1
 
 # Includes:
-LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
-. $LHCS_PATH/include/cpuhotplug_testsuite.sh
-. $LHCS_PATH/include/cpuhotplug_hotplug.sh
+. test.sh
+. cpuhotplug_testsuite.sh
+. cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -23,37 +21,66 @@ Issue:  Hotplug bugs have been found during kernel compiles
 
 EOF
 
-CPU_TO_TEST=${CPU_TO_TEST:-1}
-KERNEL_DIR=${2:-/usr/src/linux}
-if [ -z "${CPU_TO_TEST}" ]; then
-	echo "usage: ${0##*/} <CPU to offline> <Kernel source code directory>"
-	exit_clean 1
-fi
-if [ ! -d "${KERNEL_DIR}" ]; then
-	tst_resm TCONF "kernel directory - $KERNEL_DIR - does not exist"
-	exit_clean 1
-fi
+usage()
+{
+	cat << EOF
+	usage: $0 -c cpu -l loop -d directory
+
+	OPTIONS
+		-c	cpu which is specified for testing
+		-l	number of cycle test
+		-d	kernel directory where run this test
+
+EOF
+	exit 1
+}
 
 do_clean()
 {
 	kill_pid ${KCOMPILE_LOOP_PID}
 }
 
-$LHCS_PATH/tools/cpuhotplug_do_kcompile_loop $KERNEL_DIR > /dev/null 2>&1 &
-KCOMPILE_LOOP_PID=$!
+while getopts c:l:d: OPTION; do
+	case $OPTION in
+	c)
+		CPU_TO_TEST=$OPTARG;;
+	l)
+		HOTPLUG07_LOOPS=$OPTARG;;
+	d)
+		KERNEL_DIR=$OPTARG;;
+	?)
+		usage;;
+	esac
+done
 
-tst_resm TINFO "initial CPU affinity for kernel compile is: $(get_affinity_mask ${KCOMPILE_LOOP_PID})"
+LOOP_COUNT=1
+
+if [ ! -d "${KERNEL_DIR}" ]; then
+	tst_brkm TCONF "kernel directory - $KERNEL_DIR - does not exist"
+fi
+
+if [ -z "${CPU_TO_TEST}" ]; then
+	tst_brkm TBROK "usage: ${0##*/} <CPU to offline> <Kernel \
+		source code directory>"
+fi
 
 if ! cpu_is_online ${CPU_TO_TEST}; then
 	if ! online_cpu ${CPU_TO_TEST}; then
-		tst_resm TBROK "CPU${CPU_TO_TEST} cannot be onlined"
-		exit_clean 1
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined"
 	fi
 fi
 
+TST_CLEANUP=do_clean
+
+cpuhotplug_do_kcompile_loop $KERNEL_DIR > /dev/null 2>&1 &
+KCOMPILE_LOOP_PID=$!
+
+tst_resm TINFO "initial CPU affinity for kernel compile is: \
+	$(get_affinity_mask ${KCOMPILE_LOOP_PID})"
+
 sleep 2
 
-until [ $TST_COUNT -gt $TST_TOTAL ]; do
+until [ $LOOP_COUNT -gt $HOTPLUG07_LOOPS ]; do
 
 	tst_resm TINFO "Starting loop"
 
@@ -66,23 +93,24 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 
 	NEW_CPU=`ps --pid=${KCOMPILE_LOOP_PID} -o psr --no-headers`
 	if [ -z "${NEW_CPU}" ]; then
-		tst_resm TBROK "PID ${KCOMPILE_LOOP_PID} no longer running"
-		exit_clean 1
-	elif [ "${CPU_TO_TEST}" = "${NEW_CPU}" ]; then
+		tst_brkm TBROK "PID ${KCOMPILE_LOOP_PID} no longer running"
+	fi
+	if [ "${CPU_TO_TEST}" = "${NEW_CPU}" ]; then
 		tst_resm TFAIL "process did not change from CPU ${NEW_CPU}"
-	else
-		tst_resm TPASS "turned off CPU ${CPU_TO_TEST}, process migrated to CPU ${NEW_CPU}"
+		tst_exit
 	fi
 
 	online_cpu ${CPU_TO_TEST}
 	RC=$?
+	echo "Onlining cpu${CPU_TO_TEST}: Return Code = ${RC}"
 
-	tst_resm TINFO "Onlining cpu${CPU_TO_TEST}: Return Code = ${RC}"
-
-	: $(( TST_COUNT += 1 ))
+	LOOP_COUNT=$((LOOP_COUNT+1))
 
 done
 
+tst_resm TPASS "turned off CPU ${CPU_TO_TEST}, process migrated to \
+	CPU ${NEW_CPU}"
+
 sleep 2
 
-exit_clean
+tst_exit

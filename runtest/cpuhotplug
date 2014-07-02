@@ -1,9 +1,9 @@
 ## Run the CPUHOTPLUG tests here
 
-cpuhotplug01 export CPU_TO_TEST=1; $LTPROOT/testcases/bin/cpu_hotplug/functional/cpuhotplug01.sh
-cpuhotplug02 export CPU_TO_TEST=1; $LTPROOT/testcases/bin/cpu_hotplug/functional/cpuhotplug02.sh
-cpuhotplug03 export CPU_TO_TEST=1; $LTPROOT/testcases/bin/cpu_hotplug/functional/cpuhotplug03.sh
-cpuhotplug04 export CPU_TO_TEST=1; $LTPROOT/testcases/bin/cpu_hotplug/functional/cpuhotplug04.sh
-cpuhotplug05 export CPU_TO_TEST=1; $LTPROOT/testcases/bin/cpu_hotplug/functional/cpuhotplug05.sh
-cpuhotplug06 export CPU_TO_TEST=1; $LTPROOT/testcases/bin/cpu_hotplug/functional/cpuhotplug06.sh
-cpuhotplug07 export CPU_TO_TEST=1; $LTPROOT/testcases/bin/cpu_hotplug/functional/cpuhotplug07.sh
+#cpuhotplug01 cpuhotplug01.sh -c 1 -l 1 -n 1 -f 1 -e 6
+cpuhotplug02 cpuhotplug02.sh -c 1 -l 1
+cpuhotplug03 cpuhotplug03.sh -c 1 -l 1
+cpuhotplug04 cpuhotplug04.sh -l 1
+cpuhotplug05 cpuhotplug05.sh -c 1 -l 1 -d /tmp
+cpuhotplug06 cpuhotplug06.sh -c 1 -l 1
+cpuhotplug07 cpuhotplug07.sh -c 1 -l 1 -d /usr/src/linux

@@ -1,24 +1,15 @@
 #!/bin/sh
 #
-# Test Case 6 - sar
+# Test Case 5 - sar
 #
 
-TST_TOTAL=${HOTPLUG06_LOOPS:-${LOOPS}}
 export TCID="cpuhotplug05"
-export TMP=${TMP:=/tmp}
-export TST_COUNT=1
-export TST_TOTAL=${HOTPLUG06_LOOPS:-1}
-
-CPU_TO_TEST=${CPU_TO_TEST:-1}
-if [ -z "$CPU_TO_TEST" ]; then
-	echo "usage: ${0##*} <CPU to offline>"
-	exit 1
-fi
+export TST_TOTAL=1
 
 # Includes:
-LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
-. $LHCS_PATH/include/cpuhotplug_testsuite.sh
-. $LHCS_PATH/include/cpuhotplug_hotplug.sh
+. test.sh
+. cpuhotplug_testsuite.sh
+. cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -27,55 +18,91 @@ Desc:   Does sar behave properly during CPU hotplug events?
 
 EOF
 
-which sar > /dev/null 2>&1 || {
-        tst_resm TCONF "sar does not exist"
-        exit_clean 1
+usage()
+{
+	cat << EOF
+	usage: $0 -c cpu -l loop -d directory
+
+	OPTIONS
+		-c  cpu which is specified for testing
+		-l  number of cycle test
+		-d  directory used to lay file
+
+EOF
+	exit 1
 }
+
+do_clean()
+{
+	pid_is_valid ${SAR_PID} && kill_pid ${SAR_PID}
+}
+
+while getopts c:l:d: OPTION; do
+	case $OPTION in
+	c)
+		CPU_TO_TEST=$OPTARG;;
+	l)
+		HOTPLUG05_LOOPS=$OPTARG;;
+	d)
+		TMP=$OPTARG;;
+	?)
+		usage;;
+	esac
+done
+
+LOOP_COUNT=1
+
+tst_check_cmds sar
+
+if [ -z "$CPU_TO_TEST" ]; then
+	tst_brkm TBROK "usage: ${0##*} <CPU to offline>"
+fi
 
 # Verify the specified CPU is available
 if ! cpu_is_valid "${CPU_TO_TEST}" ; then
-	tst_resm TBROK"CPU${CPU_TO_TEST} not found"
-	exit_clean 1
+	tst_brkm TBROK "CPU${CPU_TO_TEST} not found"
 fi
 
 # Check that the specified CPU is offline; if not, offline it
 if cpu_is_online "${CPU_TO_TEST}" ; then
 	if ! offline_cpu ${CPU_TO_TEST} ; then
-		tst_resm TBROK "CPU${CPU_TO_TEST} cannot be offlined"
-		exit_clean 1
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be offlined"
 	fi
 fi
 
-do_clean()
-{
-	kill_pid ${SAR_PID}
-}
+TST_CLEANUP=do_clean
 
-until [ $TST_COUNT -gt $TST_TOTAL ]; do
+until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
+
 	# Start up SAR and give it a couple cycles to run
-	sar -P ALL 1 0 > $TMP/log_$$ &
+	sar 1 0 &>/dev/null &
+	sleep 2
+	if ps -C sar &>/dev/null; then
+		pkill sar
+		sar -P ALL 1 0 > $TMP/log_$$ &
+	else
+		sar -P ALL 1 > $TMP/log_$$ &
+	fi
 	sleep 2
 	SAR_PID=$!
 
-	# Verify that SAR has correctly listed the missing CPU as 'nan'
-	while ! grep -iq nan $TMP/log_$$; do
-		tst_resm TFAIL "CPU${CPU_TO_TEST} Not Found on SAR!"
-		exit_clean 1
+	# Verify that SAR has correctly listed the missing CPU
+	while ! awk '{print $9}' $TMP/log_$$ | grep -i "^0.00"; do
+		tst_brkm TBROK "CPU${CPU_TO_TEST} Not Found on SAR!"
 	done
 	time=`date +%X`
 	sleep .5
 
 	# Verify that at least some of the CPUs are offline
-	NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$ | grep -i nan | wc -l)
+	NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$ | awk '{print $9}' \
+		|grep -i "^0.00" | wc -l)
 	if [ ${NUMBER_CPU_OFF} -eq 0 ]; then
-		tst_resm TBROK "no CPUs found offline"
-		exit_clean 1
+		tst_brkm TBROK "no CPUs found offline"
 	fi
 
 	# Online the CPU
 	if ! online_cpu ${CPU_TO_TEST}; then
-		tst_resm TFAIL "CPU${CPU_TO_TEST} cannot be onlined line"
-		exit_clean 1
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined line"
 	fi
 
 	sleep 1
@@ -83,16 +110,21 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	sleep .5
 
 	# Check that SAR registered the change in CPU online/offline states
-	NEW_NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$ | grep -i nan | wc -l)
-	: $(( NUMBER_CPU_OFF -= 1 ))
-	if [ "$NUMBER_CPU_OFF" = "$NEW_NUMBER_CPU_OFF" ]; then
-		tst_resm TPASS "CPU was found after turned on."
-	else
+	NEW_NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$|awk '{print $9}' \
+		| grep -i "^0.00"| wc -l)
+	NUMBER_CPU_OFF=$((NUMBER_CPU_OFF-1))
+	if [ "$NUMBER_CPU_OFF" != "$NEW_NUMBER_CPU_OFF" ]; then
 		tst_resm TFAIL "no change in number of offline CPUs was found."
+		tst_exit
 	fi
 
-	: $(( TST_COUNT += 1 ))
+	offline_cpu ${CPU_TO_TEST}
+	kill_pid ${SAR_PID}
+
+	LOOP_COUNT=$((LOOP_COUNT+1))
 
 done
 
-exit_clean
+tst_resm TPASS "CPU was found after turned on."
+
+tst_exit

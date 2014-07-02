@@ -3,15 +3,13 @@
 # Test Case 4
 #
 
-HOTPLUG04_LOOPS=${HOTPLUG04_LOOPS:-${LOOPS}}
 export TCID="cpuhotplug04"
-export TST_COUNT=1
-export TST_TOTAL=${HOTPLUG04_LOOPS:-1}
+export TST_TOTAL=1
 
 # Includes:
-LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
-. $LHCS_PATH/include/cpuhotplug_testsuite.sh
-. $LHCS_PATH/include/cpuhotplug_hotplug.sh
+. test.sh
+. cpuhotplug_testsuite.sh
+. cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -20,41 +18,24 @@ Desc:   Does it prevent us from offlining the last CPU?
 
 EOF
 
-cpu=0
-until [ $TST_COUNT -gt $TST_TOTAL ]; do
-	cpustate=1
+usage()
+{
+	cat << EOF
+	usage: $0 -l loop
 
-	# Online all the CPUs' keep track of which were already on
-	for i in $(get_all_cpus); do
-		online_cpu $i
-		RC=$?
-		if [ $RC -ne 0 ]; then
-			: $(( cpu += 1 ))
-			eval "on_${cpu}=$i"
-			echo $i
-		fi
-		if [ $RC -eq 0 -a "$i" = "cpu0" ]; then
-			cpustate=0
-		fi
-	done
+	OPTIONS
+		-l  number of cycle test
 
-	# Now offline all the CPUs
-	for i in $(get_all_cpus); do
-		offline_cpu $i
-		RC=$?
-		if [ $RC -eq 1 ]; then
-			if [ "x$i" != "xcpu0" ]; then
-				tst_resm TFAIL "Did not offline first CPU (offlined $i instead)"
-			else
-				tst_resm TPASS "Successfully offlined first CPU, $i"
-			fi
-		fi
-	done
+EOF
+	exit 1
+}
 
+do_clean()
+{
 	# Online the ones that were on initially
 	until [ $cpu -eq 0 ]; do
 		online_cpu $(eval "echo \$on_${cpu}")
-		: $(( cpu -= 1 ))
+		cpu=$((cpu-1))
 	done
 
 	# Return CPU 0 to its initial state
@@ -63,9 +44,57 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	else
 		offline_cpu 0
 	fi
+}
 
-	: $(( TST_COUNT += 1 ))
+while getopts l: OPTION; do
+	case $OPTION in
+	l)
+		HOTPLUG04_LOOPS=$OPTARG;;
+	?)
+		usage;;
+	esac
+done
+
+LOOP_COUNT=1
+
+TST_CLEANUP=do_clean
+
+until [ $LOOP_COUNT -gt $HOTPLUG04_LOOPS ]; do
+	cpu=0
+	cpustate=1
+
+	# Online all the CPUs' keep track of which were already on
+	for i in $(get_all_cpus); do
+		if [ "$i" != "cpu0" ]; then
+			if ! cpu_is_online $i; then
+				if ! online_cpu $i; then
+					tst_brkm TBROK "$i cannot be onlined"
+				fi
+			fi
+			cpu=$((cpu+1))
+			eval "on_${cpu}=$i"
+			echo $i
+		else
+			if online_cpu $i; then
+				cpustate=0
+			fi
+		fi
+	done
+
+	# Now offline all the CPUs
+	for i in $(get_all_cpus); do
+		if ! offline_cpu $i; then
+			if [ "x$i" != "xcpu0" ]; then
+				tst_resm TFAIL "Did not offline first CPU (offlined $i instead)"
+				tst_exit
+			fi
+		fi
+	done
+
+	LOOP_COUNT=$((LOOP_COUNT+1))
 
 done
 
-exit_clean
+tst_resm TPASS "Successfully offlined first CPU, $i"
+
+tst_exit
