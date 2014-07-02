@@ -18,8 +18,8 @@ fi
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-$LTPROOT/testcases/bin/cpu_hotplug}
-. $LHCS_PATH/include/testsuite.fns
-. $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/cpuhotplug_testsuite.sh
+. $LHCS_PATH/include/cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -38,7 +38,8 @@ TM_OFFLINE=${HOTPLUG01_TM_OFFLINE:-1}
 TM_DLY=${HOTPLUG01_TM_DLY:-6}
 
 if ! type -P perl > /dev/null; then
-	tst_brk TCONF "analysis script - report_proc_interrupts - requires perl"
+	tst_brk TCONF "analysis script - cpuhotplug_report_proc_interrupts - \
+					requires perl"
 	exit 1
 fi
 
@@ -123,7 +124,7 @@ do_online()
 }
 
 # Start up a process that writes to disk; keep track of its PID
-$LHCS_PATH/tools/do_disk_write_loop > /dev/null 2>&1 &
+$LHCS_PATH/tools/cpuhotplug_do_disk_write_loop > /dev/null 2>&1 &
 WRL_ID=$!
 
 RC=0
@@ -172,7 +173,8 @@ do
 	# Print out a report showing the changes in IRQs
 	echo
 	echo
-	$LHCS_PATH/tools/report_proc_interrupts "$IRQ_START" "$IRQ_END"
+	$LHCS_PATH/tools/cpuhotplug_report_proc_interrupts "$IRQ_START" \
+		"$IRQ_END"
 	echo
 
 	if [ $RC -eq 0 ] ; then

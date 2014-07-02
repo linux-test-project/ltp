@@ -12,8 +12,8 @@ export TST_TOTAL=${HOTPLUG07_LOOPS:-1}
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
-. $LHCS_PATH/include/testsuite.fns
-. $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/cpuhotplug_testsuite.sh
+. $LHCS_PATH/include/cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -39,7 +39,7 @@ do_clean()
 	kill_pid ${KCOMPILE_LOOP_PID}
 }
 
-$LHCS_PATH/tools/do_kcompile_loop $KERNEL_DIR > /dev/null 2>&1 &
+$LHCS_PATH/tools/cpuhotplug_do_kcompile_loop $KERNEL_DIR > /dev/null 2>&1 &
 KCOMPILE_LOOP_PID=$!
 
 tst_resm TINFO "initial CPU affinity for kernel compile is: $(get_affinity_mask ${KCOMPILE_LOOP_PID})"

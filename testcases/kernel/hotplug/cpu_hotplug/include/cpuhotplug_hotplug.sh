@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# hotplug.fns - Collection of functions for hotplugging
+# cpuhotplug_hotplug.sh - Collection of functions for hotplugging
 # operations.
 
 # Routines in this library are set up to allow timing to be done
@@ -122,7 +122,8 @@ get_all_cpus()
 #
 get_all_cpu_states()
 {
-    echo `cd /sys/devices/system/cpu/ && grep '' */online | sed -e 's/\/online//'`
+    echo `cd /sys/devices/system/cpu/ && grep '' */online | \
+		sed -e 's/\/online//'`
     return
 }
 

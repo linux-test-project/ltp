@@ -16,8 +16,8 @@ fi
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
-. $LHCS_PATH/include/testsuite.fns
-. $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/cpuhotplug_testsuite.sh
+. $LHCS_PATH/include/cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -85,13 +85,13 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	# so we can kill them later.
 	: $(( number_of_cpus *= 2 ))
 	until [ $number_of_cpus -eq 0 ]; do
-		$LHCS_PATH/tools/do_spin_loop > /dev/null 2>&1 &
+		$LHCS_PATH/tools/cpuhotplug_do_spin_loop > /dev/null 2>&1 &
 		echo $! >> /var/run/hotplug4_$$.pid
 		: $(( number_of_cpus -= 1 ))
 	done
 
 	ps aux | head -n 1
-	ps aux | grep do_spin_loop
+	ps aux | grep cpuhotplug_do_spin_loop
 
 	# Online the CPU
 	tst_resm TINFO "Onlining CPU ${CPU_TO_TEST}"
@@ -105,15 +105,20 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	sleep 1
 
 	# Verify at least one process has migrated to the new CPU
-	ps -o psr -o command --no-headers -C do_spin_loop
+	ps -o psr -o command --no-headers -C cpuhotplug_do_spin_loop
 	RC=$?
-	NUM=`ps -o psr -o command --no-headers -C do_spin_loop | sed -e "s/^ *//" | cut -d' ' -f 1 | grep "^${CPU_TO_TEST}$" | wc -l`
+	NUM=`ps -o psr -o command --no-headers -C cpuhotplug_do_spin_loop | \
+		sed -e "s/^ *//" | cut -d' ' -f 1 | grep "^${CPU_TO_TEST}$" | \
+		wc -l`
 	if [ $RC -ne 0 ]; then
-		tst_resm TBROK "No do_spin_loop processes found on any processor"
+		tst_resm TBROK "No cpuhotplug_do_spin_loop processes found on \
+			any processor"
 	elif [ $NUM -lt 1 ]; then
-		tst_resm TFAIL "No do_spin_loop processes found on CPU${CPU_TO_TEST}"
+		tst_resm TFAIL "No cpuhotplug_do_spin_loop processes found on \
+			CPU${CPU_TO_TEST}"
 	else
-		tst_resm TPASS "$NUM do_spin_loop processes found on CPU${CPU_TO_TEST}"
+		tst_resm TPASS "$NUM cpuhotplug_do_spin_loop processes found \
+			on CPU${CPU_TO_TEST}"
 	fi
 
 	do_clean

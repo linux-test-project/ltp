@@ -16,8 +16,8 @@ fi
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-$LTPROOT/testcases/bin/cpu_hotplug}
-. $LHCS_PATH/include/testsuite.fns
-. $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/cpuhotplug_testsuite.sh
+. $LHCS_PATH/include/cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
@@ -27,7 +27,7 @@ Desc:   What happens to a process when its CPU is offlined?
 EOF
 
 # Start up a process that just uses CPU cycles
-$LHCS_PATH/tools/do_spin_loop > /dev/null&
+$LHCS_PATH/tools/cpuhotplug_do_spin_loop > /dev/null&
 SPIN_LOOP_PID=$!
 
 # Validate the specified CPU exists

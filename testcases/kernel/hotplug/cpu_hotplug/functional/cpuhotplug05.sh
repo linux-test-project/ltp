@@ -17,8 +17,8 @@ fi
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
-. $LHCS_PATH/include/testsuite.fns
-. $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/cpuhotplug_testsuite.sh
+. $LHCS_PATH/include/cpuhotplug_hotplug.sh
 
 cat <<EOF
 Name:   $TCID
