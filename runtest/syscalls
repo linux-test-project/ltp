@@ -895,6 +895,7 @@ sched_setscheduler02 sched_setscheduler02
 
 sched_yield01 sched_yield01
 
+sched_setaffinity01 sched_setaffinity01
 sched_getaffinity01 sched_getaffinity01
 
 select01 select01

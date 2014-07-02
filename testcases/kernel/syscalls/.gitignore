@@ -724,6 +724,7 @@
 /sched_rr_get_interval/sched_rr_get_interval01
 /sched_rr_get_interval/sched_rr_get_interval02
 /sched_rr_get_interval/sched_rr_get_interval03
+/sched_setaffinity/sched_setaffinity01
 /sched_setparam/sched_setparam01
 /sched_setparam/sched_setparam02
 /sched_setparam/sched_setparam03
