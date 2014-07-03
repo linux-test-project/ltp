@@ -25,7 +25,7 @@
 
 # Application specifying variables. You should never have to change these.
 AR			:= ar
-CC			:= gcc
+CC			:= cc
 LEX			:= flex
 RANLIB			:= ranlib
 STRIP			:= strip
