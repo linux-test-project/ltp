@@ -875,6 +875,22 @@ newly created dir has two links already - the '.' and the link from parent
 dir). If no limit is hit or if 'mkdir(2)' failed with 'ENOSPC' or 'EDQUOT',
 zero is returned and previously created directories are removed.
 
+2.2.17 Getting an unused PID number
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some tests require a 'PID', which is not used by the OS (does not belong to
+any process within it). For example, kill(2) should set errno to 'ESRCH' if
+it's passed such 'PID'.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+pid_t tst_get_unused_pid(void (*cleanup)(void));
+-------------------------------------------------------------------------------
+
+Return a 'PID' value not used by the OS or any process within it.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
