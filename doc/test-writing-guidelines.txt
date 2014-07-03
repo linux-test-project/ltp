@@ -560,7 +560,7 @@ test may be relevant even if the kernel version does not suggests so. See
 2.2.6 Fork()-ing
 ^^^^^^^^^^^^^^^^
 
-Be wary that if the test forks and there are were messages printed by the tst_*
+Be wary that if the test forks and there were messages printed by the tst_*
 interfaces, the data may still be in kernel buffers and these are NOT flushed
 automatically.
 
@@ -611,16 +611,21 @@ for more.
 ^^^^^^^^^^^^^^^^^^^^^
 
 If you need to use signal handlers, keep the code short and simple. Don't
-forget that the signal handler code runs concurrently to the rest of your code.
+forget that the signal handler is called asynchronously and can interrupt the
+code execution at any place.
 
-TODO: [needs citation] - explain/reference how (on what archs) can signal
-      handler code run *concurrently* (=simultaneously) to normal code within
-      a single thread - reentrance is something different
+This means that problems arise when global state is changed both from the test
+code and signal handler, which will occasionally lead to:
 
-If you call a non-async-safe function from a signal handler (functions that
-have global state or locks, such as 'malloc()', 'free()', any operations on
-'FILE' and many more...), the test will run fine in most of the cases, but will
-deadlock occasionally.
+* Data corruption (data gets into inconsistent state), this may happen, for
+  example, for any operations on 'FILE' objects.
+
+* Deadlock, this happens, for example, if you call 'malloc(2)', 'free(2)',
+  etc. from both the test code and the signal handler at the same time because
+  'malloc' has global lock for it's internal data structures. (Be wary that
+  'malloc(2)' is used by the libc functions internally too.)
+
+* Any other unreproducible and unexpected behavior.
 
 Quite common mistake is to call 'exit(3)' from a signal handler. Note that this
 function is not signal-async-safe as it flushes buffers, etc. If you need to
