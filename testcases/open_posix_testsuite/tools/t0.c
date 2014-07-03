@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 		perror("fork failed");
 		exit(1);
 	case 0:
-		setpgrp(0, 0);
+		setpgid(0, 0);
 		execvp(argv[2], &argv[2]);
 		perror("execvp failed");
 		exit(1);
