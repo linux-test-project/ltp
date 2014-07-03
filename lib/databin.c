@@ -36,7 +36,7 @@
 #include "databin.h"
 
 #if UNIT_TEST
-#include <malloc.h>
+#include <stdlib.h>
 #endif
 
 static char Errmsg[80];
