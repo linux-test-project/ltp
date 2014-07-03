@@ -25,14 +25,15 @@ static const int sigs[] = {-1, -10000, INT32_MIN, INT32_MIN + 1};
 int main(void)
 {
 	sigset_t signalset;
-	int i, ret, err = 0;
+	int ret, err = 0;
+	unsigned int i;
 
 	if (sigemptyset(&signalset) == -1) {
 		perror("sigemptyset failed -- test aborted");
 		return PTS_UNRESOLVED;
 	}
 
-	for (i = 0; i < sizeof(sigs) / sizeof(int); i++) {
+	for (i = 0; i < (sizeof(sigs) / sizeof(*sigs)); i++) {
 		ret = sigaddset(&signalset, sigs[i]);
 
 		if (ret != -1 || errno != EINVAL) {

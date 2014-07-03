@@ -7,11 +7,19 @@
  */
 
 #ifdef __linux__
-
 #include <mntent.h>
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#include <sys/param.h>
+#include <sys/mount.h>
+#include <errno.h>
+#include <string.h>
+#endif
+#include <stdio.h>
+
+#ifdef __linux__
 
 /*
- * Returns if prefix is prefix of a string and the lenght of prefix.
+ * Returns if prefix is prefix of a string and the length of prefix.
  */
 int strpref(const char *str, const char *pref)
 {
@@ -27,11 +35,9 @@ int strpref(const char *str, const char *pref)
 			return -1;
 	}
 
-	/* returns lenght of prefix */
+	/* returns length of prefix */
 	return i;
 }
-
-#endif /* __linux__ */
 
 /*
  * Scans through mounted filesystems and check for longest prefix
@@ -39,7 +45,6 @@ int strpref(const char *str, const char *pref)
  */
 int mounted_noatime(const char *path)
 {
-#ifdef __linux__
 	struct mntent *mnt;
 	int prefix_max = 0, prefix;
 	int has_noatime;
@@ -66,7 +71,22 @@ int mounted_noatime(const char *path)
 	}
 
 	return has_noatime;
-#else
-	return 0;
-#endif /* __linux__ */
 }
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+int mounted_noatime(const char *path)
+{
+	struct statfs _statfs;
+
+	if (statfs(path, &_statfs) == -1) {
+		printf("statfs for %s failed: %s", strerror(errno));
+		return -1;
+	}
+
+	return (_statfs.f_flags & MNT_NOATIME);
+}
+#else
+int mounted_noatime(const char *path)
+{
+	return 0;
+}
+#endif
