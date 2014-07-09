@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
 	}
 
 	if ((mapaddr = mmap(0, mapsize, PROT_READ | PROT_WRITE,
-			    MAP_ANONYMOUS | MAP_SHARED, 0, 0))
+			    MAP_ANONYMOUS | MAP_SHARED, -1, 0))
 	    == (caddr_t) - 1) {
 		perror("mmap error");
 		anyfail();

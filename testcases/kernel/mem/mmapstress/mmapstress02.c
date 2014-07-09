@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 	CATCH_SIG(SIGINT);
 	CATCH_SIG(SIGQUIT);
 	CATCH_SIG(SIGTERM);
-	if (sbrk(2 * pagesize - ((ulong) sbrk(0) & (pagesize - 1))) ==
+	if (sbrk(2 * pagesize - ((unsigned long) sbrk(0) & (pagesize - 1))) ==
 	    (char *)-1) {
 		CLEANERROR("couldn't round up brk");
 		anyfail();

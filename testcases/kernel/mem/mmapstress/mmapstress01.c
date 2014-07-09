@@ -111,7 +111,9 @@ char *usage =
     "-p nprocs [-t minutes -f filesize -S sparseoffset -r -o -m -l -d]";
 
 typedef unsigned char uchar_t;
+#ifndef	SIZE_MAX
 #define SIZE_MAX UINT_MAX
+#endif
 
 unsigned int initrand(void);
 void finish(int sig);

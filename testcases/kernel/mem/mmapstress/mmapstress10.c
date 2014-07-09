@@ -109,7 +109,9 @@ void ok_exit();
 #define roundup(x, y)	((((x)+((y)-1))/(y))*(y))
 #define min(x, y)	(((x) < (y)) ? (x) : (y))
 
+#ifndef	SIZE_MAX
 #define SIZE_MAX UINT_MAX
+#endif
 
 extern time_t time(time_t *);
 extern char *ctime(const time_t *);

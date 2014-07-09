@@ -89,8 +89,8 @@ static char *progname;
 		ERROR("initial sbrk failed");
 		anyfail();
 	}
-	if ((u_long) brk_start % (u_long) pagesize) {
-		if (sbrk(pagesize - ((u_long) brk_start % (u_long) pagesize))
+	if ((unsigned long) brk_start % (unsigned long) pagesize) {
+		if (sbrk(pagesize - ((unsigned long) brk_start % (unsigned long) pagesize))
 		    == NEG1) {
 			ERROR("couldn't round up brk to a page boundary");
 			anyfail();
@@ -156,7 +156,7 @@ static char *progname;
 	if (mmap((caddr_t) (1UL << (POINTER_SIZE - 1)) - pagesize,
 		 (size_t) ((1UL << (POINTER_SIZE - 1)) - pagesize),
 		 PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_FIXED | MAP_SHARED,
-		 0, 0)
+		 -1, 0)
 	    != (caddr_t) - 1) {
 		ERROR("really large mmap didn't fail");
 		anyfail();
@@ -180,7 +180,7 @@ void do_test(caddr_t brk_max, long pagesize)
 {
 	if (mmap((caddr_t) ((long)brk_max - 3 * pagesize), (2 * pagesize),
 		 PROT_READ | PROT_WRITE,
-		 MAP_ANONYMOUS | MAP_FIXED | MAP_PRIVATE, 0, 0)
+		 MAP_ANONYMOUS | MAP_FIXED | MAP_PRIVATE, -1, 0)
 	    == (caddr_t) - 1) {
 		ERROR("mmap failed");
 		anyfail();
@@ -188,7 +188,7 @@ void do_test(caddr_t brk_max, long pagesize)
 	/* extend mmap */
 	if (mmap((caddr_t) ((long)brk_max - 2 * pagesize), (2 * pagesize),
 		 PROT_READ | PROT_WRITE,
-		 MAP_ANONYMOUS | MAP_FIXED | MAP_PRIVATE, 0, 0)
+		 MAP_ANONYMOUS | MAP_FIXED | MAP_PRIVATE, -1, 0)
 	    == (caddr_t) - 1) {
 		ERROR("mmap failed");
 		anyfail();
