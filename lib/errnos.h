@@ -25,8 +25,6 @@
  * Mountain View, CA  94043, or:
  */
 
-#include <string.h>
-
 #if defined(__linux__)
 const char *tst_strerrno(int err)
 {
