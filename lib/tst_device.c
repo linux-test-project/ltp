@@ -27,9 +27,15 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
+#ifdef __linux__
 #include <linux/loop.h>
+#endif
 #include "test.h"
 #include "safe_macros.h"
+
+static int device_acquired;
+
+#ifdef __linux__
 
 #ifndef LOOP_CTL_GET_FREE
 # define LOOP_CTL_GET_FREE 0x4C82
@@ -40,7 +46,6 @@
 #define DEV_FILE "test_dev.img"
 
 static char dev_path[1024];
-static int device_acquired;
 
 static const char *dev_variants[] = {
 	"/dev/loop%i",
@@ -217,3 +222,16 @@ void tst_release_device(void (cleanup_fn)(void), const char *dev)
 
 	device_acquired = 0;
 }
+#else
+const char *tst_acquire_device(void (cleanup_fn)(void))
+{
+
+	return NULL;
+}
+
+void tst_release_device(void (cleanup_fn)(void), const char *dev)
+{
+
+	device_acquired = 0;
+}
+#endif

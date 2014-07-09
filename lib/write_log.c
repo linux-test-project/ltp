@@ -279,7 +279,7 @@ int wlog_scan_backward(struct wlog_file *wfile, int nrecs,
 		return -1;
 	}
 	offset = lseek(fd, 0, SEEK_CUR);
-	if ((offset == -1)) {
+	if (offset == -1) {
 		sprintf(Wlog_Error_String,
 			"Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
 			wfile->w_file, strerror(errno));

@@ -134,6 +134,7 @@ static void lio_async_signal_handler();
 static void lio_async_callback_handler();
 #endif
 
+#ifdef __linux__
 /*
  * Define the structure as used in lio_parse_arg1 and lio_help1
  */
@@ -2162,4 +2163,5 @@ char **argv;
 
 	exit(exit_status);
 }
+#endif
 #endif

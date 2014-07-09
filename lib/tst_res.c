@@ -134,7 +134,30 @@ struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
 	assert(strlen(buf) > 0);		\
 } while (0)
 
+#ifdef __GLIBC__
 static pthread_mutex_t tmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#define	INITIALIZE_TMUTEX
+#else
+static pthread_mutex_t tmutex;
+static pthread_mutexattr_t tmutexattr;
+static int tmutex_initialized = 1;
+
+static inline void initialize_tmutex(void)
+{
+	if (tmutex_initialized)
+		return;
+
+	tmutex_initialized = 1;
+
+	assert(pthread_mutexattr_init(&tmutexattr) == 0);
+	assert(pthread_mutexattr_settype(&tmutexattr,
+		PTHREAD_MUTEX_RECURSIVE) == 0);
+	assert(pthread_mutex_init(&tmutex, &tmutexattr) == 0);
+}
+
+#define	INITIALIZE_TMUTEX	initialize_tmutex
+
+#endif
 
 /*
  * Define local function prototypes.
@@ -228,6 +251,7 @@ const char *strttype(int ttype)
  */
 void tst_res(int ttype, const char *fname, const char *arg_fmt, ...)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
@@ -356,6 +380,7 @@ static void tst_condense(int tnum, int ttype, const char *tmesg)
  */
 void tst_flush(void)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 #if DEBUG
@@ -525,6 +550,7 @@ static void check_env(void)
  */
 void tst_exit(void)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 #if DEBUG
@@ -558,6 +584,7 @@ pid_t tst_vfork(void)
  */
 int tst_environ(void)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 	int ret = 0;
 	if ((T_out = fdopen(dup(fileno(stdout)), "w")) == NULL)
@@ -579,6 +606,7 @@ static int tst_brk_entered = 0;
  */
 void tst_brk(int ttype, const char *fname, void (*func) (void), const char *arg_fmt, ...)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
@@ -655,6 +683,7 @@ void tst_resm(int ttype, const char *arg_fmt, ...)
  */
 void tst_resm_hexd(int ttype, const void *buf, size_t size, const char *arg_fmt, ...)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];

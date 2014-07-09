@@ -12,7 +12,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <malloc.h>
 #include "test.h"
 #include "safe_macros.h"
 
@@ -225,7 +224,8 @@ int safe_open(const char *file, const int lineno, void (*cleanup_fn) (void),
 	mode_t mode;
 
 	va_start(ap, oflags);
-	mode = va_arg(ap, mode_t);
+	/* Inspired by: http://patchwork.ozlabs.org/patch/350432/ */
+	mode = va_arg(ap, __typeof__(+(mode_t)0));
 	va_end(ap);
 
 	rval = open(pathname, oflags, mode);
@@ -724,6 +724,7 @@ pid_t safe_waitpid(const char *file, const int lineno, void (cleanup_fn)(void),
 	return rval;
 }
 
+#ifdef __linux__
 void *safe_memalign(const char *file, const int lineno,
 		    void (*cleanup_fn) (void), size_t alignment, size_t size)
 {
@@ -736,6 +737,7 @@ void *safe_memalign(const char *file, const int lineno,
 
 	return rval;
 }
+#endif
 
 int safe_kill(const char *file, const int lineno, void (cleanup_fn)(void),
 	      pid_t pid, int sig)

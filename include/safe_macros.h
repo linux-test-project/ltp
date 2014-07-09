@@ -256,10 +256,12 @@ int safe_kill(const char *file, const int lineno, void (cleanup_fn)(void),
 #define SAFE_KILL(cleanup_fn, pid, sig) \
 	safe_kill(__FILE__, __LINE__, (cleanup_fn), (pid), (sig))
 
+#ifdef __linux__
 void *safe_memalign(const char *file, const int lineno,
 		    void (*cleanup_fn)(void), size_t alignment, size_t size);
 #define SAFE_MEMALIGN(cleanup_fn, alignment, size) \
 	safe_memalign(__FILE__, __LINE__, (cleanup_fn), (alignment), (size))
+#endif
 
 int safe_mkfifo(const char *file, const int lineno,
 		void (*cleanup_fn)(void), const char *pathname, mode_t mode);

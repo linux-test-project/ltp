@@ -25,6 +25,9 @@
  * Mountain View, CA  94043, or:
  */
 
+#include <string.h>
+
+#if defined(__linux__)
 const char *tst_strerrno(int err)
 {
 	static const struct pair errno_pairs[] = {
@@ -184,3 +187,10 @@ const char *tst_strerrno(int err)
 
 	PAIR_LOOKUP(errno_pairs, err);
 }
+#elif defined(__FreeBSD__)
+const char *tst_strerrno(int err)
+{
+
+	return sys_errlist[err];
+}
+#endif

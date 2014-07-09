@@ -29,8 +29,9 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-#include <stdio.h>
 #include <sys/param.h>
+#include <sys/stat.h>
+#include <stdio.h>
 
 #include "bytes_by_prefix.h"
 
@@ -66,6 +67,8 @@
 #define B_MULT	DEV_BSIZE	/* block size */
 #elif defined(_AIX)
 #define B_MULT UBSIZE
+#elif defined(__FreeBSD__)
+#define	B_MULT	S_BLKSIZE
 #endif
 
 #define K_MULT	1024		/* Kilo or 2^10 */
