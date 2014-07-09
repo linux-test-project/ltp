@@ -134,9 +134,7 @@ struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
 	assert(strlen(buf) > 0);		\
 } while (0)
 
-#if HAVE_PTHREAD_RECURSIVE_MUTEX_INITIALIZER
 static pthread_mutex_t tmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-#endif
 
 /*
  * Define local function prototypes.
