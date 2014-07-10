@@ -67,7 +67,7 @@ int usage(char *);
 int bd_arg(char *);
 int runtest();
 int dotest(int, int);
-int bfill(char *, char, int);
+int bfill(register char *, char, register int);
 int dumpbuf(char *);
 void dumpbits(char *, int);
 
@@ -334,10 +334,7 @@ int dotest(int testers, int me)
 	return 0;
 }
 
-int bfill(buf, val, size)
-register char *buf;
-char val;
-register int size;
+int bfill(register char *buf, char val, register int size)
 {
 	register int i;
 
