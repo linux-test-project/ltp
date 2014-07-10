@@ -49,7 +49,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
-#ifdef LINUX
+#ifdef __linux__
 #include <endian.h>
 #endif
 
@@ -272,7 +272,7 @@ OFF_T getByteOrderedData(const OFF_T data)
 	off_tpat = data;
 #endif
 
-#ifdef LINUX
+#ifdef __linux__
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 	unsigned char *ucharpattern;
 	size_t i = 0;
@@ -382,7 +382,7 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len,
 		    (((OFF_T) (ucharpattern[(8 - pattern_len) + i])) << 8 *
 		     (7 - ((j * pattern_len) + i)));
 #endif
-#ifdef LINUX
+#ifdef __linux__
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 		off_tpat |=
 		    (((OFF_T) (ucharpattern[i])) << 8 *
@@ -415,7 +415,7 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len,
 			    (((OFF_T) (ucharpattern[(8 - pattern_len) + i])) <<
 			     8 * (7 - i));
 #endif
-#ifdef LINUX
+#ifdef __linux__
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 			off_tpat |=
 			    (((OFF_T) (ucharpattern[i])) << 8 * (7 - i));

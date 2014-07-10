@@ -90,8 +90,10 @@ OFF_T SeekEnd(fd_t fd)
 
 #ifdef WINDOWS
 	return_lba = (OFF_T) FileSeek64(fd, 0, FILE_END);
-#else
+#elif defined(AIX) || defined(__linux__)
 	return_lba = (OFF_T) lseek64(fd, 0, SEEK_END);
+#elif defined(__FreeBSD__)
+	return_lba = lseek(fd, 0, SEEK_END);
 #endif
 	return (return_lba);
 }
@@ -102,8 +104,10 @@ OFF_T Seek(fd_t fd, OFF_T lba)
 
 #ifdef WINDOWS
 	return_lba = (OFF_T) FileSeek64(fd, lba, FILE_BEGIN);
-#else
+#elif defined(AIX) || defined(__linux__)
 	return_lba = (OFF_T) lseek64(fd, lba, SEEK_SET);
+#elif defined(__FreeBSD__)
+	return_lba = lseek(fd, lba, SEEK_SET);
 #endif
 	return (return_lba);
 }
@@ -151,7 +155,11 @@ fd_t Open(const char *filespec, const OFF_T flags)
 			OPEN_READ_WRITE,
 			OPEN_SHARE, NULL, OPEN_DISPO, OPEN_FLAGS, NULL);
 #else
+#if defined(AIX) || defined(__linux__)
 	int OPEN_MASK = O_LARGEFILE;
+#elif defined(__FreeBSD__)
+	int OPEN_MASK = 0;
+#endif
 	if ((flags & CLD_FLG_R) && !(flags & CLD_FLG_W))
 		OPEN_MASK |= O_RDONLY;
 	else if (!(flags & CLD_FLG_R) && (flags & CLD_FLG_W))
