@@ -28,15 +28,13 @@
 #include <time.h>
 #include <unistd.h>
 
-#ifndef _LINUX
-			/* LINUX INCLUDES */
-#include <sys/mode.h>
-#include <sys/timers.h>
-#else
 #include <sys/stat.h>
+#ifdef __linux__
 #include <time.h>
 #include <sys/time.h>
 #include <sys/ipc.h>
+#else
+#include <sys/timers.h>
 #endif
 #include <sys/msg.h>
 #include <sys/resource.h>
@@ -55,17 +53,7 @@
 #define MAXDVAL 11
 #define SLOTDIR "./slot/"
 
-#ifdef _LINUX
-			/* LINUX #defnes */
-#ifndef TRUE
-#define TRUE 1
-#endif
-#ifndef FALSE
-#define FALSE 0
-#endif
-#endif
-
-#if defined _LINUX && defined DEBUG
+#if defined __linux__ && defined DEBUG
 #define prtln()	printf("At line number: %d\n", __LINE__); \
 		fflush(NULL)
 #define dprt(fmt, args...) printf(fmt, ## args)
@@ -80,7 +68,7 @@
 #define    DVAL  (*edat[DNDX].eval.vint)	/* depth of process tree */
 #define    TVAL  (*edat[TNDX].eval.vint)	/* timer value */
 
-#ifdef _LINUX
+#ifdef __linux__
 typedef long mtyp_t;
 #endif
 
@@ -147,13 +135,8 @@ timer_t timer;			/* timer structure */
 
 Pinfo *shmaddr;			/* Start address  of shared memory */
 
-#ifndef _LINUX
-FILE *errfp = stderr;		/* error file pointer, probably not necessary */
-FILE *debugfp = stderr;		/* debug file pointer, used if AUSDEBUG set */
-#else
 #define errfp stderr
 #define debugfp stderr
-#endif
 
 struct envstruct *edat = envdata;	/* pointer to environment data */
 
@@ -227,7 +210,7 @@ int send_message(int id, mtyp_t type, char *text)
 
 	strcpy(sndbuf.mtext, text);
 	sndbuf.mtyp = type;
-	while (TRUE) {
+	while (1) {
 		rc = msgsnd(id, &sndbuf, sizeof(struct messagebuf), IPC_NOWAIT);
 		if (rc == -1 && errno == EAGAIN) {
 			debugout("msgqueue %d of mtyp %d not ready to send\n",
@@ -361,7 +344,7 @@ void nextofkin(int sig, int code, struct sigcontext *scp)
 		severe("msgsnd failed: %d msgid %d mtyp %d mtext %d\n",
 		       errno, msgerr, 3, mtext);
 	}
-#ifndef _LINUX
+#ifndef __linux__
 	reltimerid(timer);
 #endif
 	exit(1);
@@ -809,7 +792,7 @@ void set_signals(void *sighandler())
 
 	action.sa_handler = (void *)sighandler;
 
-#ifdef _LINUX
+#ifdef __linux__
 	sigfillset(&action.sa_mask);
 #else
 	SIGINITSET(action.sa_mask);
@@ -817,13 +800,13 @@ void set_signals(void *sighandler())
 	action.sa_flags = 0;
 
 	/* Set the signal handler up */
-#ifdef _LINUX
+#ifdef __linux__
 	sigaddset(&action.sa_mask, SIGTERM);
 #else
 	SIGADDSET(action.sa_mask, SIGTERM);
 #endif
 	for (i = 0; siginfo[i].signum != -1; i++) {
-#ifdef _LINUX
+#ifdef __linux__
 		sigaddset(&action.sa_mask, siginfo[i].signum);
 #else
 		SIGADDSET(action.sa_mask, siginfo[i].signum);
@@ -843,7 +826,7 @@ void set_signals(void *sighandler())
 /*
 * Get and set a timer for current process.
 */
-#ifndef _LINUX
+#ifndef __linux__
 void set_timer(void)
 {
 	struct itimerstruc_t itimer, old_itimer;
@@ -1059,7 +1042,7 @@ void messenger(void)
 	 *  Infinite loop used to receive error messages from children and
 	 *  to terminate process tree.
 	 */
-	while (TRUE) {
+	while (1) {
 		rc = msgrcv(msgerr, &rcvbuf, sizeof(struct messagebuf), 0, 0);
 		if (rc == -1) {
 			switch (errno) {
@@ -1167,7 +1150,7 @@ void doit(void)
 #endif
 		/* set the process group so we can terminate all children */
 		set_signals((void *)nextofkin);	/* set up signal handlers and initialize pgrp */
-#ifndef _LINUX
+#ifndef __linux__
 		procgrp = setpgrp(0, 0);
 #else
 		procgrp = setpgrp();
@@ -1249,7 +1232,7 @@ int main(int argc, char *argv[])
 	parse_args(argc, argv);	/* Get all command line arguments */
 	dprt("value of BVAL = %d, value of DVAL = %d\n", BVAL, DVAL);
 	nodesum = sumit(BVAL, DVAL);
-#ifdef _LINUX
+#ifdef __linux__
 	if (nodesum > 250) {
 		printf("total number of process to be created "
 		       "nodesum (%d) is greater\n than the allowed "
