@@ -83,7 +83,7 @@
 char *TCID = "munmap02";
 int TST_TOTAL = 1;
 
-size_t page_sz;			/* system page size */
+long page_sz;			/* system page size */
 char *addr;			/* addr of memory mapped region */
 int fildes;			/* file descriptor for tempfile */
 unsigned int map_len;		/* length of the region to be mapped */
@@ -169,9 +169,9 @@ void setup(void)
 	TEST_PAUSE;
 
 	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
+	if ((page_sz = sysconf(_SC_PAGE_SIZE)) < 0) {
 		tst_brkm(TBROK, cleanup,
-			 "getpagesize() fails to get system page size");
+			 "failed to get system page size");
 		tst_exit();
 	}
 

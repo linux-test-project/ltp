@@ -152,7 +152,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	size_t page_sz;		/* system page size */
+	long page_sz;		/* system page size */
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -165,9 +165,9 @@ void setup(void)
 	TEST_PAUSE;
 
 	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
+	if ((page_sz = sysconf(_SC_PAGE_SIZE)) < 0) {
 		tst_brkm(TBROK, cleanup,
-			 "getpagesize() fails to get system page size");
+			 "failed to get system page size");
 		tst_exit();
 	}
 
