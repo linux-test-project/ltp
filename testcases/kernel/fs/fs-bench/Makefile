@@ -24,7 +24,7 @@ top_srcdir			?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS			:= modaltr.sh test.sh test2.sh
+INSTALL_TARGETS			:= modaltr.sh fs-bench-test.sh fs-bench-test2.sh
 
 LDLIBS				+= -lm
 
