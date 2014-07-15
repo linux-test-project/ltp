@@ -119,11 +119,15 @@ int main(int argc, char **argv)
 	tmpname = argv[1];
 
 	if (argc >= 3) {
+#if defined(__linux__)
 #ifdef LARGE_FILE
 		holesize = atoll(argv[2]);
 #else /* LARGE_FILE */
 		holesize = atoi(argv[2]);
 #endif /* LARGE_FILE */
+#elif defined(__FreeBSD__)
+		holesize = atol(argv[2]);
+#endif
 	} else
 		holesize = pagesize;
 
@@ -133,11 +137,15 @@ int main(int argc, char **argv)
 		e_pageskip = 1;
 
 	if (argc >= 5) {
+#if defined(__linux__)
 #ifdef LARGE_FILE
 		sparseoff = atoll(argv[4]);
 #else /* LARGE_FILE */
 		sparseoff = atoi(argv[4]);
 #endif /* LARGE_FILE */
+#elif defined(__FreeBSD__)
+		sparseoff = atol(argv[2]);
+#endif
 	} else
 		sparseoff = pagesize * 2;
 

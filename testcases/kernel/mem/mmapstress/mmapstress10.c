@@ -228,11 +228,16 @@ int main(int argc, char *argv[])
 			}
 			break;
 		case 'f':
+#if defined(__linux__)
 #ifdef LARGE_FILE
 			filesize = atoll(optarg);
 #else /* LARGE_FILE */
 			filesize = atoi(optarg);
 #endif /* LARGE_FILE */
+#elif defined(__FreeBSD__)
+#else
+			filesize = atol(optarg);
+#endif
 			if (filesize < 0) {
 				(void)fprintf(stderr, "error: negative "
 					      "filesize\n");
@@ -249,11 +254,16 @@ int main(int argc, char *argv[])
 			do_offset = 1;
 			break;
 		case 'S':
+#if defined(__linux__)
 #ifdef LARGE_FILE
 			sparseoffset = atoll(optarg);
 #else /* LARGE_FILE */
 			sparseoffset = atoi(optarg);
 #endif /* LARGE_FILE */
+#elif defined(__FreeBSD__)
+#else
+			sparseoffset = atol(optarg);
+#endif
 			if (sparseoffset % pagesize != 0) {
 				fprintf(stderr,
 					"sparseoffset must be pagesize multiple\n");
