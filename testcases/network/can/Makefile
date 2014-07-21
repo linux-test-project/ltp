@@ -1,4 +1,6 @@
 #
+#    network/can test suite Makefile.
+#
 #    Copyright (c) 2014 Fujitsu Ltd.
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -15,14 +17,11 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-#  Send feedback to <socketcan-users@lists.berlios.de>
 
-top_srcdir		?= ../../../..
+top_srcdir		?= ../../..
 
-include $(top_srcdir)/include/mk/testcases.mk
-
-CPPFLAGS		+= -DETH_P_CAN=0x000C -DPF_CAN=29 -DAF_CAN=PF_CAN
+include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= *.sh
 
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

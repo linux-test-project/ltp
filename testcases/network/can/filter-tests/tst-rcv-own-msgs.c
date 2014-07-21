@@ -1,8 +1,4 @@
 /*
- *  $Id: tst-rcv-own-msgs.c 1193 2010-08-09 14:00:21Z hartkopp $
- */
-
-/*
  * tst-rcv-own-msgs.c
  *
  * Copyright (c) 2010 Volkswagen Group Electronic Research
@@ -56,13 +52,14 @@
 #include <sys/time.h>
 #include <net/if.h>
 #include "config.h"
+#include "tst_res_flags.h"
 
 #ifdef HAVE_LINUX_CAN_H
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-#define max(a,b) (a > b ? a : b)
+#define max(a, b) ((a) > (b) ? (a) : (b))
 
 struct rxs {
 	int s;
@@ -141,13 +138,13 @@ struct rxs test_sockets(int s, int t, canid_t can_id)
 
 void setopts(int s, int loopback, int recv_own_msgs)
 {
-	setsockopt(s, SOL_CAN_RAW, CAN_RAW_LOOPBACK,
-		   &loopback, sizeof(loopback));
-	setsockopt(s, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS,
-		   &recv_own_msgs, sizeof(recv_own_msgs));
+	setsockopt(s, SOL_CAN_RAW, CAN_RAW_LOOPBACK, &loopback,
+		   sizeof(loopback));
+	setsockopt(s, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs,
+		   sizeof(recv_own_msgs));
 
-	printf("check loopback %d recv_own_msgs %d ... ",
-	       loopback, recv_own_msgs);
+	printf("check loopback %d recv_own_msgs %d ... ", loopback,
+	       recv_own_msgs);
 }
 
 int main(int argc, char **argv)
@@ -160,33 +157,35 @@ int main(int argc, char **argv)
 	/* check command line options */
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s <device>\n", argv[0]);
-		return 1;
+		return TFAIL;
 	}
 
-	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+	s = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+	if (s < 0) {
 		perror("socket");
-		return 1;
+		return TFAIL;
 	}
-	if ((t = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+	t = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+	if (t < 0) {
 		perror("socket");
-		return 1;
+		return TFAIL;
 	}
 
 	strcpy(ifr.ifr_name, argv[1]);
 	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
 		perror("SIOCGIFINDEX");
-		return 1;
+		return TFAIL;
 	}
 	addr.can_ifindex = ifr.ifr_ifindex;
 	addr.can_family = AF_CAN;
 
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");
-		return 1;
+		return TFAIL;
 	}
 	if (bind(t, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");
-		return 1;
+		return TFAIL;
 	}
 
 	printf("Starting PF_CAN frame flow test.\n");
@@ -196,7 +195,7 @@ int main(int argc, char **argv)
 		printf("ok.\n");
 	else {
 		printf("failure!\n");
-		return 1;
+		return TFAIL;
 	}
 
 	/* check loopback 0 recv_own_msgs 0 */
@@ -206,7 +205,7 @@ int main(int argc, char **argv)
 		printf("ok.\n");
 	else {
 		printf("failure!\n");
-		return 1;
+		return TFAIL;
 	}
 
 	/* check loopback 0 recv_own_msgs 1 */
@@ -216,7 +215,7 @@ int main(int argc, char **argv)
 		printf("ok.\n");
 	else {
 		printf("failure!\n");
-		return 1;
+		return TFAIL;
 	}
 
 	/* check loopback 1 recv_own_msgs 0 */
@@ -226,7 +225,7 @@ int main(int argc, char **argv)
 		printf("ok.\n");
 	else {
 		printf("failure!\n");
-		return 1;
+		return TFAIL;
 	}
 
 	/* check loopback 1 recv_own_msgs 1 */
@@ -236,7 +235,7 @@ int main(int argc, char **argv)
 		printf("ok.\n");
 	else {
 		printf("failure!\n");
-		return 1;
+		return TFAIL;
 	}
 
 	printf("PF_CAN frame flow test was successful.\n");
@@ -244,7 +243,7 @@ int main(int argc, char **argv)
 	close(s);
 	close(t);
 
-	return 0;
+	return TPASS;
 }
 
 #else
@@ -252,7 +251,7 @@ int main(int argc, char **argv)
 int main(void)
 {
 	printf("The linux/can.h was missing upon compilation.\n");
-	return 32;
+	return TCONF;
 }
 
 #endif /* HAVE_LINUX_CAN_H */

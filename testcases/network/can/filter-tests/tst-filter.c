@@ -1,8 +1,4 @@
 /*
- *  $Id: tst-filter.c 1263 2011-07-09 18:00:41Z hartkopp $
- */
-
-/*
  * tst-filter.c
  *
  * Copyright (c) 2011 Volkswagen Group Electronic Research
@@ -56,6 +52,7 @@
 #include <sys/time.h>
 #include <net/if.h>
 #include "config.h"
+#include "tst_res_flags.h"
 
 #ifdef HAVE_LINUX_CAN_H
 
@@ -66,9 +63,8 @@
 #define TC 18			/* # of testcases */
 
 const int rx_res[TC] = { 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
-const int rxbits_res[TC] =
-    { 4369, 4369, 4369, 4369, 17, 4352, 17, 4352, 257, 257, 4112, 4112, 1, 256,
-16, 4096, 1, 256 };
+const int rxbits_res[TC] = { 4369, 4369, 4369, 4369, 17, 4352, 17, 4352, 257,
+			     257, 4112, 4112, 1, 256, 16, 4096, 1, 256 };
 
 canid_t calc_id(int testcase)
 {
@@ -87,7 +83,7 @@ canid_t calc_mask(int testcase)
 	canid_t mask = CAN_SFF_MASK;
 
 	if (testcase > 15)
-		return (CAN_EFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG);
+		return CAN_EFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG;
 
 	if (testcase & 4)
 		mask |= CAN_EFF_FLAG;
@@ -116,18 +112,19 @@ int main(int argc, char **argv)
 	/* check command line options */
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s <device>\n", argv[0]);
-		return 1;
+		return TFAIL;
 	}
 
-	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+	s = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+	if (s < 0) {
 		perror("socket");
-		return 1;
+		return TFAIL;
 	}
 
 	strcpy(ifr.ifr_name, argv[1]);
 	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
 		perror("SIOCGIFINDEX");
-		return 1;
+		return TFAIL;
 	}
 	addr.can_family = AF_CAN;
 	addr.can_ifindex = ifr.ifr_ifindex;
@@ -137,7 +134,7 @@ int main(int argc, char **argv)
 
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");
-		return 1;
+		return TFAIL;
 	}
 
 	printf("---\n");
@@ -149,9 +146,8 @@ int main(int argc, char **argv)
 		setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER,
 			   &rfilter, sizeof(rfilter));
 
-		printf
-		    ("testcase %2d filters : can_id = 0x%08X can_mask = 0x%08X\n",
-		     testcase, rfilter.can_id, rfilter.can_mask);
+		printf("testcase %2d filters : can_id = 0x%08X can_mask = "
+		       "0x%08X\n", testcase, rfilter.can_id, rfilter.can_mask);
 
 		printf("testcase %2d sending patterns ... ", testcase);
 
@@ -218,11 +214,9 @@ int main(int argc, char **argv)
 				}
 
 				/* test & calc rxbits */
-				rxbitval =
-				    1 <<
-				    ((frame.
-				      can_id & (CAN_EFF_FLAG | CAN_RTR_FLAG |
-						CAN_ERR_FLAG)) >> 28);
+				rxbitval = 1 << ((frame.can_id &
+						 (CAN_EFF_FLAG | CAN_RTR_FLAG |
+						  CAN_ERR_FLAG)) >> 28);
 
 				/* only receive a rxbitval once */
 				if ((rxbits & rxbitval) == rxbitval) {
@@ -234,22 +228,23 @@ int main(int argc, char **argv)
 				rxbits |= rxbitval;
 				rx++;
 
-				printf
-				    ("testcase %2d rx : can_id = 0x%08X rx = %d rxbits = %d\n",
-				     testcase, frame.can_id, rx, rxbits);
+				printf("testcase %2d rx : can_id = 0x%08X rx = "
+				       "%d rxbits = %d\n", testcase,
+				       frame.can_id, rx, rxbits);
 			}
 		}
 		/* rx timed out -> check the received results */
 		if (rx_res[testcase] != rx) {
 			fprintf(stderr,
-				"wrong rx value in testcase %d : %d (expected %d)\n",
-				testcase, rx, rx_res[testcase]);
+				"wrong rx value in testcase %d : %d (expected "
+				"%d)\n", testcase, rx, rx_res[testcase]);
 			exit(1);
 		}
 		if (rxbits_res[testcase] != rxbits) {
 			fprintf(stderr,
-				"wrong rxbits value in testcase %d : %d (expected %d)\n",
-				testcase, rxbits, rxbits_res[testcase]);
+				"wrong rxbits value in testcase %d : %d "
+				"(expected %d)\n", testcase, rxbits,
+				rxbits_res[testcase]);
 			exit(1);
 		}
 		printf("testcase %2d ok\n---\n", testcase);
@@ -257,7 +252,7 @@ int main(int argc, char **argv)
 
 	close(s);
 
-	return 0;
+	return TPASS;
 }
 
 #else
@@ -265,7 +260,7 @@ int main(int argc, char **argv)
 int main(void)
 {
 	printf("The linux/can.h was missing upon compilation.\n");
-	return 32;
+	return TCONF;
 }
 
 #endif /* HAVE_LINUX_CAN_H */
