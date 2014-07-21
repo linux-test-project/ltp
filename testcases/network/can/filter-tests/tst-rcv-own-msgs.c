@@ -55,6 +55,9 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <net/if.h>
+#include "config.h"
+
+#ifdef HAVE_LINUX_CAN_H
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
@@ -243,3 +246,13 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+#else
+
+int main(void)
+{
+	printf("The linux/can.h was missing upon compilation.\n");
+	return 32;
+}
+
+#endif /* HAVE_LINUX_CAN_H */
