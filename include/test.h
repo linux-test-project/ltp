@@ -118,16 +118,42 @@ extern int Forker_npids;
 
 /* lib/tst_res.c */
 const char *strttype(int ttype);
-void tst_res(int ttype, const char *fname, const char *arg_fmt, ...)
-	__attribute__ ((format (printf, 3, 4)));
-void tst_resm(int ttype, const char *arg_fmt, ...)
-	__attribute__ ((format (printf, 2, 3)));
-void tst_resm_hexd(int ttype, const void *buf, size_t size, const char *arg_fmt, ...)
+void tst_res_(const char *file, const int lineno, int ttype,
+	const char *fname, const char *arg_fmt, ...)
+	__attribute__ ((format (printf, 5, 6)));
+
+#define tst_res(ttype, fname, arg_fmt, ...) \
+	tst_res_(__FILE__, __LINE__, (ttype), (fname), \
+		 (arg_fmt), ##__VA_ARGS__)
+
+void tst_resm_(const char *file, const int lineno, int ttype,
+	const char *arg_fmt, ...)
 	__attribute__ ((format (printf, 4, 5)));
-void tst_brk(int ttype, const char *fname, void (*func)(void), const char *arg_fmt, ...)
-	__attribute__ ((format (printf, 4, 5)));
-void tst_brkm(int ttype, void (*func)(void), const char *arg_fmt, ...)
-	__attribute__ ((format (printf, 3, 4))) LTP_ATTRIBUTE_NORETURN;
+#define tst_resm(ttype, arg_fmt, ...) \
+	tst_resm_(__FILE__, __LINE__, (ttype), \
+		  (arg_fmt), ##__VA_ARGS__)
+
+void tst_resm_hexd_(const char *file, const int lineno, int ttype,
+	const void *buf, size_t size, const char *arg_fmt, ...)
+	__attribute__ ((format (printf, 6, 7)));
+#define tst_resm_hexd(ttype, buf, size, arg_fmt, ...) \
+	tst_resm_hexd_(__FILE__, __LINE__, (ttype), (buf), (size), \
+		       (arg_fmt), ##__VA_ARGS__)
+
+void tst_brk_(const char *file, const int lineno, int ttype,
+	const char *fname, void (*func)(void), const char *arg_fmt, ...)
+	__attribute__ ((format (printf, 6, 7)));
+#define tst_brk(ttype, fname, func, arg_fmt, ...) \
+	tst_brk_(__FILE__, __LINE__, (ttype), (fname), (func), \
+		 (arg_fmt), ##__VA_ARGS__)
+
+void tst_brkm_(const char *file, const int lineno, int ttype,
+	void (*func)(void), const char *arg_fmt, ...)
+	__attribute__ ((format (printf, 5, 6))) LTP_ATTRIBUTE_NORETURN;
+#define tst_brkm(ttype, func, arg_fmt, ...) \
+	tst_brkm_(__FILE__, __LINE__, (ttype), (func), \
+		  (arg_fmt), ##__VA_ARGS__)
+
 void tst_require_root(void (*func)(void));
 int  tst_environ(void);
 void tst_exit(void) LTP_ATTRIBUTE_NORETURN;
