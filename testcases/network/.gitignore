@@ -1,3 +1,5 @@
+/can/filter-tests/can_filter
+/can/filter-tests/can_rcv_own_msgs
 /datafiles/
 /lib6/asapi_01
 /lib6/asapi_02
