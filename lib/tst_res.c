@@ -207,7 +207,6 @@ const char *strttype(int ttype)
 		PAIR(TPASS)
 		PAIR(TFAIL)
 		PAIR(TBROK)
-		PAIR(TRETR)
 		PAIR(TCONF)
 		PAIR(TWARN)
 		PAIR(TINFO)
@@ -562,8 +561,8 @@ void tst_exit(void)
 	/* Call tst_flush() flush any output in the buffer. */
 	tst_flush();
 
-	/* Mask out TRETR, TINFO, and TCONF results from the exit status. */
-	exit(T_exitval & ~(TRETR | TINFO));
+	/* Mask out TINFO result from the exit status. */
+	exit(T_exitval & ~TINFO);
 }
 
 pid_t tst_fork(void)
@@ -622,7 +621,7 @@ void tst_brk(int ttype, const char *fname, void (*func) (void), const char *arg_
 	 * Only FAIL, BROK, CONF, and RETR are supported by tst_brk().
 	 */
 	if (ttype_result != TFAIL && ttype_result != TBROK &&
-	    ttype_result != TCONF && ttype_result != TRETR) {
+	    ttype_result != TCONF) {
 		sprintf(Warn_mesg, "%s: Invalid Type: %d. Using TBROK",
 			__func__, ttype_result);
 		tst_print(TCID, 0, TWARN, Warn_mesg);
@@ -636,8 +635,6 @@ void tst_brk(int ttype, const char *fname, void (*func) (void), const char *arg_
 			tst_res(ttype, NULL,
 				"Remaining cases not appropriate for "
 				"configuration");
-		else if (ttype_result == TRETR)
-			tst_res(ttype, NULL, "Remaining cases retired");
 		else if (ttype_result == TBROK)
 			tst_res(TBROK, NULL, "Remaining cases broken");
 	}
@@ -828,13 +825,13 @@ int main(void)
 	       %2i : call tst_res(TFAIL, ...)\n\
 	       %2i : call tst_res(TBROK, ...)\n\
 	       %2i : call tst_res(TWARN, ...)\n\
-	       %2i : call tst_res(TRETR, ...)\n\
 	       %2i : call tst_res(TINFO, ...)\n\
-	       %2i : call tst_res(TCONF, ...)\n\n", TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
+	       %2i : call tst_res(TCONF, ...)\n\n", TPASS, TFAIL, TBROK,
+	       TWARN, TINFO, TCONF);
 
 	while (1) {
-		printf("Enter ttype (-5,-4,-3,-2,-1,%i,%i,%i,%i,%i,%i,%i): ",
-		       TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
+		printf("Enter ttype(-5, -4, -3, -2, -1, %i, %i, %i, %i, %i, %i)"
+		       " : ", TPASS, TFAIL, TBROK, TWARN, TINFO, TCONF);
 		scanf("%d%c", &ttype, &chr);
 
 		switch (ttype) {
@@ -848,8 +845,8 @@ int main(void)
 
 		case -3:
 			printf
-			    ("Enter the current type (%i=FAIL, %i=BROK, %i=RETR, %i=CONF): ",
-			     TFAIL, TBROK, TRETR, TCONF);
+			    ("Enter the current type (%i=FAIL, %i=BROK, "
+			     "%i=CONF): ", TFAIL, TBROK, TCONF);
 			scanf("%d%c", &ttype, &chr);
 			printf("Enter file name (<cr> for none): ");
 			gets(fname);
@@ -862,8 +859,8 @@ int main(void)
 
 		case -4:
 			printf
-			    ("Enter the current type (%i,%i,%i,%i,%i,%i,%i): ",
-			     TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
+			    ("Enter the current type (%i,%i,%i,%i,%i,%i): ",
+			     TPASS, TFAIL, TBROK, TWARN, TINFO, TCONF);
 			scanf("%d%c", &ttype, &chr);
 		default:
 			printf("Enter file name (<cr> for none): ");

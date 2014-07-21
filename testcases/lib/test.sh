@@ -33,7 +33,6 @@ tst_flag2mask()
 	TFAIL) return 1;;
 	TBROK) return 2;;
 	TWARN) return 4;;
-	TRETR) return 8;;
 	TINFO) return 16;;
 	TCONF) return 32;;
 	*) tst_brkm TBROK "Invalid resm type '$1'";;
@@ -60,7 +59,6 @@ tst_brkm()
 	TFAIL) ;;
 	TBROK) ;;
 	TCONF) ;;
-	TRETR) ;;
 	*) tst_brkm TBROK "Invalid tst_brkm type '$1'";;
 	esac
 
@@ -81,8 +79,8 @@ tst_exit()
 		$TST_CLEANUP
 	fi
 
-	# Mask out TRETR, TINFO and TCONF
-	exit $((LTP_RET_VAL & ~(8 | 16)))
+	# Mask out TINFO
+	exit $((LTP_RET_VAL & ~16))
 }
 
 tst_tmpdir()

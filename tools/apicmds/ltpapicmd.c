@@ -93,7 +93,7 @@ static char *tst_cntstr;	/* sets the value of tst_count with this value */
  *              the string that is entered by the user to an integer value that
  *              is understood by the API's.
  *
- * Return:      test type TPASS, TFAIL, TBROK, TCONF, TRETR, TWARN, or TINFO
+ * Return:      test type TPASS, TFAIL, TBROK, TCONF, TWARN, or TINFO
  *              on success
  *              -1 on failure
  */
@@ -108,8 +108,6 @@ int ident_ttype(char *tstype)
 		return TPASS;
 	else if (strcmp(tstype, "TCONF") == 0)
 		return TCONF;
-	else if (strcmp(tstype, "TRETR") == 0)
-		return TRETR;
 	else if (strcmp(tstype, "TWARN") == 0)
 		return TWARN;
 	else if (strcmp(tstype, "TINFO") == 0)
@@ -125,8 +123,8 @@ void apicmd_brk(int argc, char *argv[])
 
 	if (argc < 5) {
 		fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
-			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-			"and TRETR.\n"
+			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK "
+			"and TCONF.\n"
 			"\tFNAME  - Print contents of this file after the message\n"
 			"\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
 			"\tSTRING - Message explaining the test result\n",
@@ -146,8 +144,8 @@ void apicmd_res(int argc, char *argv[])
 
 	if (argc < 4) {
 		fprintf(stderr, "Usage: %s TTYPE FNAME STRING\n"
-			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-			"and  TRETR.\n"
+			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK "
+			"and  TCONF.\n"
 			"\tFNAME  - Print contents of this file after the message\n"
 			"\tSTRING - Message explaining the test result\n",
 			cmd_name);
@@ -164,8 +162,8 @@ void apicmd_brkm(int argc, char *argv[])
 
 	if (argc < 4) {
 		fprintf(stderr, "Usage: %s TTYPE FUNC STRING\n"
-			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-			"and TRETR.\n"
+			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK "
+			"and TCONF.\n"
 			"\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
 			"\tSTRING - Message explaining the test result\n",
 			cmd_name);
@@ -182,8 +180,8 @@ void apicmd_resm(int argc, char *argv[])
 
 	if (argc < 3) {
 		fprintf(stderr, "Usage: %s TTYPE STRING\n"
-			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-			"and TRETR.\n"
+			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK"
+			"and TCONF.\n"
 			"\tSTRING - Message explaining the test result\n",
 			cmd_name);
 		exit(1);

@@ -25,7 +25,6 @@
 <li><b>TFAIL -</b> Indicates that the test case had an unexpected result and failed.</li>
 <li><b>TBROK -</b> Indicates that the remaining test cases are broken and will not execute correctly, because some precondition not met, such as a resource not being available.</li>
 <li><b>TCONF -</b> Indicates that the test case was not written to run on the current harware or software configuration such as machine type, or, kernel version.</li>
-<li><b>TRETR -</b> Indicates that the test cases has been retired and should not be executed any longer.</li>
 <li><b>TWARN -</b> Indicates that the test case experienced an unexpected or undesirable event that should not affect the test itself such as being unable to cleanup resources after the test finished.</li>
 <li><b>TINFO -</b> Specifies useful information about the status of the test that does not affect the result and does not indicate a problem.</li>
 <hr>

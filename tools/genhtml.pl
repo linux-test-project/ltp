@@ -197,12 +197,6 @@ foreach my $file (@ARGV) {
 				    $warn_test_counter++;
 				    $warn_test_counter_flag=1;
 				}
-			    } elsif ($line =~ /\ TRETR\ / ) {
-				$detected_retr = 1;
-				if ( $retr_test_counter_flag == 0 ) {
-				    $retr_test_counter++;
-				    $retr_test_counter_flag=1;
-				}
 			    } elsif ($line =~ /\ TCONF\ / ) {
 				$detected_conf = 1;
 				if ( $conf_test_counter_flag == 0 ) {
@@ -244,7 +238,6 @@ print "<tr><td><strong>Total Test TPASS:</strong></td><td><strong> $test_passed 
 print "<tr><td><strong>Total Test TFAIL:</strong></td><td><strong> $failed_test_counter </strong></td></tr>\n";
 print "<tr><td><strong>Total Test TBROK</strong></td><td><strong> $brok_test_counter </strong></td></tr>\n";
 print "<tr><td><strong>Total Test TWARN</strong></td><td><strong> $warn_test_counter </strong></td></tr>\n";
-print "<tr><td><strong>Total Test TRETR</strong></td><td><strong> $retr_test_counter </strong></td></tr>\n";
 print "<tr><td><strong>Total Test TCONF</strong></td><td><strong> $conf_test_counter </strong></td></tr>\n";
 print "<tr><td><strong>Kernel Version</strong></td><td><strong> $ENV{KERNEL_VERSION}  </strong></td></tr>\n";
 print "<tr><td><strong>Machine Architecture</strong></td><td><strong> $ENV{MACHINE_ARCH} </strong></td></tr>\n";
