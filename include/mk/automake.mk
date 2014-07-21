@@ -42,7 +42,7 @@ autotools: aclocal autoconf autoheader automake $(addsuffix /configure,$(AUTOCON
 aclocal: aclocal.m4
 
 aclocal.m4: $(wildcard m4/*.m4) m4/ltp-version.m4
-	$(ACLOCAL)
+	$(ACLOCAL) -I m4
 
 .PHONY: autoconf
 autoconf: configure
