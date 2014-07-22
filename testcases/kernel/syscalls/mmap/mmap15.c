@@ -41,7 +41,7 @@
 char *TCID = "mmap15";
 int TST_TOTAL = 1;
 
-#define HIGH_ADDR	(void *)(0x1000000000000)
+#define HIGH_ADDR	(void *)(1L << 53)
 
 static long map_sz;
 
