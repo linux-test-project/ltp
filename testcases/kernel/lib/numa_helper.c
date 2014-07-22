@@ -259,7 +259,7 @@ static void print_node_info(int flag)
 /*
  * nh_dump_nodes - dump info about nodes to stdout
  */
-void nh_dump_nodes()
+void nh_dump_nodes(void)
 {
 	print_node_info(0);
 	print_node_info(NH_MEMS);
