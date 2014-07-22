@@ -56,6 +56,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "test.h"
@@ -120,29 +121,31 @@ void cleanup(void)
 /* This is a filter to exclude map entries which aren't accounted
  * for in the vm_area_struct's map_count.
  */
-#if defined(__x86_64__) || defined(__x86__)
-static int filter_map(char *line)
+static bool filter_map(const char *line)
 {
 	char buf[BUFSIZ];
 	int ret;
 
 	ret = sscanf(line, "%*p-%*p %*4s %*p %*2d:%*2d %*d %s", buf);
 	if (ret != 1)
-		return 0;
+		return false;
 
-	return strcmp(buf, "[vsyscall]") == 0;
-}
+#if defined(__x86_64__) || defined(__x86__)
+	/* On x86, there's an old compat vsyscall page */
+	if (!strcmp(buf, "[vsyscall]"))
+		return true;
+#elif defined(__ia64__)
+	/* On ia64, the vdso is not a proper mapping */
+	if (!strcmp(buf, "[vdso]"))
+		return true;
 #elif defined(__arm__)
-static int filter_map(char *line)
-{
-	return strncmp(line, "ffff0000-ffff1000", 17) == 0;
-}
-#else
-static int filter_map(char *line)
-{
-	return 0;
-}
+	/* Older arm kernels didn't label their vdso maps */
+	if (!strncmp(line, "ffff0000-ffff1000", 17))
+		return true;
 #endif
+
+	return false;
+}
 
 static long count_maps(pid_t pid)
 {
