@@ -613,6 +613,7 @@ then
 #####
     MATCHED=""
     grep -iq "$TEST_ARCH" $LTPTMP/file.out && MATCHED="y"
+    grep -iq "linux" $LTPTMP/file.out && MATCHED="y"
     grep -iq "kernel" $LTPTMP/file.out && MATCHED="y"
     grep -iq "compressed data" $LTPTMP/file.out && MATCHED="y"
     grep -iq "x86 boot sector" $LTPTMP/file.out && MATCHED="y"
