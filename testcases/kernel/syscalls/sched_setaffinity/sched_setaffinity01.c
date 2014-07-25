@@ -42,6 +42,7 @@
 #include "usctest.h"
 #include "safe_macros.h"
 #include "sched_setaffinity.h"
+#include "linux_syscall_numbers.h"
 
 char *TCID = "sched_setaffinity01";
 
@@ -151,9 +152,13 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(sched_setaffinity(*(test_cases[i].pid),
-						*(test_cases[i].mask_size),
-						*(test_cases[i].mask)));
+			/* Avoid calling glibc wrapper function, as it may
+			 * try to read/validate data in cpu mask. This test
+			 * is passing invalid pointer on purpose. */
+			TEST(ltp_syscall(__NR_sched_setaffinity,
+				*(test_cases[i].pid),
+				*(test_cases[i].mask_size),
+				*(test_cases[i].mask)));
 
 			if (TEST_RETURN != -1)
 				tst_resm(TFAIL,
