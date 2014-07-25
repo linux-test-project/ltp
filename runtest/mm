@@ -73,8 +73,6 @@ ksm06 ksm06
 ksm06_1 ksm06 -n 10
 ksm06_2 ksm06 -n 10000
 
-cpuset01 cpuset01 -I 3600
-
 oom01 oom01
 oom02 oom02
 oom03 oom03

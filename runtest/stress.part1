@@ -23,7 +23,6 @@ mem02 mem02
 # -s(seconds) settings, if default not desired
 mmap-corruption01 mmap-corruption01 -h1 -m1 -s1
 
-
 page01 page01
 page02 page02
 
@@ -39,6 +38,9 @@ shmt07 shmt07
 shmt08 shmt08
 shmt09 shmt09
 shmt10 shmt10
+
+cpuset01 cpuset01 -I 3600
+
 fsx-linux export TCbin=$LTPROOT/testcases/bin;fsxtest02 10000
 #fsx-ext2 fsxtest $SCRATCHDEV ext2 10000
 #fsx-ext3 fsxtest $SCRATCHDEV ext3 10000
