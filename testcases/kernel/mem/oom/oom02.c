@@ -65,13 +65,13 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 
 		tst_resm(TINFO, "OOM on MPOL_BIND mempolicy...");
-		testoom(MPOL_BIND, 0);
+		testoom(MPOL_BIND, 0, ENOMEM, 1);
 
 		tst_resm(TINFO, "OOM on MPOL_INTERLEAVE mempolicy...");
-		testoom(MPOL_INTERLEAVE, 0);
+		testoom(MPOL_INTERLEAVE, 0, ENOMEM, 1);
 
 		tst_resm(TINFO, "OOM on MPOL_PREFERRED mempolicy...");
-		testoom(MPOL_PREFERRED, 0);
+		testoom(MPOL_PREFERRED, 0, ENOMEM, 1);
 	}
 	cleanup();
 	tst_exit();

@@ -31,19 +31,17 @@ static int alloc_mem(long int length, int testcase)
 	void *s;
 
 	tst_resm(TINFO, "allocating %ld bytes.", length);
+
 	s = mmap(NULL, length, PROT_READ | PROT_WRITE,
 		 MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-	if (s == MAP_FAILED) {
-		if (testcase == OVERCOMMIT && errno == ENOMEM)
-			return 1;
-		else
-			tst_brkm(TBROK | TERRNO, cleanup, "mmap");
-	}
+	if (s == MAP_FAILED)
+		return errno;
+
 	if (testcase == MLOCK && mlock(s, length) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "mlock");
+		return errno;
 #ifdef HAVE_MADV_MERGEABLE
 	if (testcase == KSM && madvise(s, length, MADV_MERGEABLE) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "madvise");
+		return errno;
 #endif
 	memset(s, '\a', length);
 
@@ -52,15 +50,34 @@ static int alloc_mem(long int length, int testcase)
 
 static void test_alloc(int testcase, int lite)
 {
-	if (lite)
-		alloc_mem(TESTMEM + MB, testcase);
-	else
-		while (1)
-			if (alloc_mem(LENGTH, testcase))
-				return;
+	int ret;
+
+	if (lite) {
+		ret = alloc_mem(TESTMEM + MB, testcase);
+	} else {
+		ret = 0;
+		while (!ret)
+			ret = alloc_mem(LENGTH, testcase);
+	}
+	exit(ret);
 }
 
-void oom(int testcase, int lite)
+/*
+ * oom - allocates memory according to specified testcase and checks
+ *       desired outcome (e.g. child killed, operation failed with ENOMEM)
+ * @testcase: selects how child allocates memory
+ *            valid choices are: OVERCOMMIT, NORMAL, MLOCK and KSM
+ * @lite: if non-zero, child makes only single TESTMEM+MB allocation
+ *        if zero, child keeps allocating memory until it gets killed
+ *        or some operation fails
+ * @retcode: expected return code of child process
+ *           if matches child ret code, this function reports PASS,
+ *           otherwise it reports FAIL
+ * @allow_sigkill: if zero and child is killed, this function reports FAIL
+ *                 if non-zero, then if child is killed by SIGKILL
+ *                 it is considered as PASS
+ */
+void oom(int testcase, int lite, int retcode, int allow_sigkill)
 {
 	pid_t pid;
 	int status;
@@ -70,7 +87,6 @@ void oom(int testcase, int lite)
 		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
 		test_alloc(testcase, lite);
-		exit(0);
 	default:
 		break;
 	}
@@ -79,14 +95,22 @@ void oom(int testcase, int lite)
 	if (waitpid(-1, &status, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 
-	if (testcase == OVERCOMMIT) {
-		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-			tst_resm(TFAIL, "the victim unexpectedly failed: %d",
-				 status);
+	if (WIFSIGNALED(status)) {
+		if (allow_sigkill && WTERMSIG(status) == SIGKILL) {
+			tst_resm(TPASS, "victim signalled: (%d) %s",
+				SIGKILL,
+				tst_strsig(SIGKILL));
+		} else {
+			tst_resm(TFAIL, "victim signalled: (%d) %s",
+				WTERMSIG(status),
+				tst_strsig(WTERMSIG(status)));
+		}
+	} else	if (WIFEXITED(status) && WEXITSTATUS(status) == retcode) {
+		tst_resm(TPASS, "victim retcode: (%d) %s",
+				retcode, strerror(retcode));
 	} else {
-		if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
-			tst_resm(TFAIL, "the victim unexpectedly failed: %d",
-				 status);
+		tst_resm(TFAIL, "victim unexpectedly ended with retcode: %d, "
+				"expected: %d", WEXITSTATUS(status), retcode);
 	}
 }
 
@@ -135,22 +159,22 @@ static void set_global_mempolicy(int mempolicy)
 #endif
 }
 
-void testoom(int mempolicy, int lite)
+void testoom(int mempolicy, int lite, int retcode, int allow_sigkill)
 {
 	set_global_mempolicy(mempolicy);
 
 	tst_resm(TINFO, "start normal OOM testing.");
-	oom(NORMAL, lite);
+	oom(NORMAL, lite, retcode, allow_sigkill);
 
 	tst_resm(TINFO, "start OOM testing for mlocked pages.");
-	oom(MLOCK, lite);
+	oom(MLOCK, lite, retcode, allow_sigkill);
 
 	if (access(PATH_KSM, F_OK) == -1) {
 		tst_resm(TINFO, "KSM configuration is not enabled, "
 			 "skip OOM test for KSM pags");
 	} else {
 		tst_resm(TINFO, "start OOM testing for KSM pages.");
-		oom(KSM, lite);
+		oom(KSM, lite, retcode, allow_sigkill);
 	}
 }
 

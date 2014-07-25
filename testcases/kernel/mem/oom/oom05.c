@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 
 		tst_resm(TINFO, "OOM on CPUSET & MEMCG...");
-		testoom(0, 0);
+		testoom(0, 0, ENOMEM, 1);
 
 		/*
 		 * Under NUMA system, the migration of cpuset's memory
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 			write_cpuset_files(CPATH_NEW, "memory_migrate", "1");
 			tst_resm(TINFO, "OOM on CPUSET & MEMCG with "
 					"cpuset.memory_migrate=1");
-			testoom(0, 0);
+			testoom(0, 0, ENOMEM, 1);
 		}
 
 		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
@@ -93,12 +93,12 @@ int main(int argc, char *argv[])
 			tst_resm(TINFO, "OOM on CPUSET & MEMCG with "
 					"special memswap limitation:");
 			SAFE_FILE_PRINTF(cleanup, MEMCG_SW_LIMIT, "%ld", TESTMEM);
-			testoom(0, 0);
+			testoom(0, 0, ENOMEM, 1);
 
 			tst_resm(TINFO, "OOM on CPUSET & MEMCG with "
 					"disabled memswap limitation:");
 			SAFE_FILE_PRINTF(cleanup, MEMCG_SW_LIMIT, "-1");
-			testoom(0, 0);
+			testoom(0, 0, ENOMEM, 1);
 		}
 	}
 

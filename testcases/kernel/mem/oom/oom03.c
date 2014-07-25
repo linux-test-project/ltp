@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 				 "%d", getpid());
 		SAFE_FILE_PRINTF(cleanup, MEMCG_LIMIT, "%ld", TESTMEM);
 
-		testoom(0, 0);
+		testoom(0, 0, ENOMEM, 1);
 
 		if (access(MEMCG_SW_LIMIT, F_OK) == -1) {
 			if (errno == ENOENT)
@@ -77,15 +77,15 @@ int main(int argc, char *argv[])
 		} else {
 			SAFE_FILE_PRINTF(cleanup, MEMCG_SW_LIMIT,
 					 "%ld", TESTMEM);
-			testoom(0, 1);
+			testoom(0, 1, ENOMEM, 1);
 		}
 
 		/* OOM for MEMCG with mempolicy */
 		if (is_numa(cleanup)) {
 			tst_resm(TINFO, "OOM on MEMCG & mempolicy...");
-			testoom(MPOL_BIND, 0);
-			testoom(MPOL_INTERLEAVE, 0);
-			testoom(MPOL_PREFERRED, 0);
+			testoom(MPOL_BIND, 0, ENOMEM, 1);
+			testoom(MPOL_INTERLEAVE, 0, ENOMEM, 1);
+			testoom(MPOL_PREFERRED, 0, ENOMEM, 1);
 		}
 	}
 	cleanup();

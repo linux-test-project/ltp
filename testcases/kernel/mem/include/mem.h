@@ -39,8 +39,8 @@ static inline void clean_node(unsigned long *array)
 #define KSM			4
 
 long overcommit;
-void oom(int testcase, int lite);
-void testoom(int mempolicy, int lite);
+void oom(int testcase, int lite, int retcode, int allow_sigkill);
+void testoom(int mempolicy, int lite, int retcode, int allow_sigkill);
 
 /* KSM */
 
