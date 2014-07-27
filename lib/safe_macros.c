@@ -768,3 +768,19 @@ int safe_mkfifo(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_rename(const char *file, const int lineno, void (*cleanup_fn)(void),
+		const char *oldpath, const char *newpath)
+{
+	int rval;
+
+	rval = rename(oldpath, newpath);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: rename(%s, %s) failed",
+			 file, lineno, oldpath, newpath);
+	}
+
+	return rval;
+}

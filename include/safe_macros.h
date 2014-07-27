@@ -266,5 +266,10 @@ int safe_mkfifo(const char *file, const int lineno,
 #define SAFE_MKFIFO(cleanup_fn, pathname, mode) \
 	safe_mkfifo(__FILE__, __LINE__, (cleanup_fn), (pathname), (mode))
 
+int safe_rename(const char *file, const int lineno, void (*cleanup_fn)(void),
+		const char *oldpath, const char *newpath);
+#define SAFE_RENAME(cleanup_fn, oldpath, newpath) \
+	safe_rename(__FILE__, __LINE__, (cleanup_fn), (oldpath), (newpath))
+
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */
