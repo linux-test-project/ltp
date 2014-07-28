@@ -161,8 +161,24 @@ void tst_flush(void);
 
 /*
  * tst_flush() + fork
+ * NOTE: tst_fork() will reset T_exitval to 0 for child process.
  */
 pid_t tst_fork(void);
+
+/* lib/tst_res.c */
+/*
+ * In case we need do real test work in child process parent process can use
+ * tst_record_childstatus() to make child process's test results propagated to
+ * parent process correctly.
+ *
+ * The child can use tst_resm(), tst_brkm() followed by the tst_exit() or
+ * plain old exit() (with TPASS, TFAIL and TBROK).
+ *
+ * WARNING: Be wary that the child cleanup function passed to tst_brkm()
+ *          must clean only resources the child has allocated. E.g. the
+ *          child cleanup is different function from the parent cleanup.
+ */
+void tst_record_childstatus(void (*cleanup)(void), pid_t child);
 
 extern int tst_count;
 

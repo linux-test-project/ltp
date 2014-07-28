@@ -72,6 +72,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include "test.h"
 #include "usctest.h"
 #include "ltp_priv.h"
@@ -542,8 +545,46 @@ void tst_exit(void)
 
 pid_t tst_fork(void)
 {
+	pid_t child;
+
 	tst_flush();
-	return fork();
+
+	child = fork();
+	if (child == 0)
+		T_exitval = 0;
+
+	return child;
+}
+
+void tst_record_childstatus(void (*cleanup)(void), pid_t child)
+{
+	int status, ttype_result;
+
+	if (waitpid(child, &status, 0) < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "waitpid(%d) failed", child);
+
+	if (WIFEXITED(status)) {
+		ttype_result = WEXITSTATUS(status);
+		ttype_result = TTYPE_RESULT(ttype_result);
+		T_exitval |= ttype_result;
+
+		if (ttype_result == TPASS)
+			tst_resm(TINFO, "Child process returned TPASS");
+
+		if (ttype_result & TFAIL)
+			tst_resm(TINFO, "Child process returned TFAIL");
+
+		if (ttype_result & TBROK)
+			tst_resm(TINFO, "Child process returned TBROK");
+
+		if (ttype_result & TCONF)
+			tst_resm(TINFO, "Child process returned TCONF");
+
+	} else {
+		tst_brkm(TBROK, cleanup, "child process(%d) killed by "
+			 "unexpected signal %s(%d)", child,
+			 tst_strsig(WTERMSIG(status)), WTERMSIG(status));
+	}
 }
 
 pid_t tst_vfork(void)
