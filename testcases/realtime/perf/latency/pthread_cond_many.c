@@ -256,7 +256,7 @@ void usage(void)
 
 int parse_args(int c, char *v)
 {
-	int handled;
+	int handled = 1;
 	switch (c) {
 	case 'h':
 		usage();
