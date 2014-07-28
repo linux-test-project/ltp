@@ -55,7 +55,6 @@ int main(int ac, char **av)
 {
 	pid_t pid;
 	const char *msg;
-	int status;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -69,10 +68,7 @@ int main(int ac, char **av)
 	if (pid == 0)
 		do_master_child();
 
-	if (waitpid(pid, &status, 0) == -1)
-		tst_resm(TBROK | TERRNO, "waitpid failed");
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
-		tst_resm(TFAIL, "child process terminated abnormally");
+	tst_record_childstatus(cleanup, pid);
 
 	cleanup();
 	tst_exit();
@@ -91,7 +87,7 @@ static void do_master_child(void)
 
 		if (SETREUID(NULL, 0, ltpuser->pw_uid) == -1) {
 			perror("setreuid failed");
-			exit(1);
+			exit(TFAIL);
 		}
 
 		/* Test 1: Check the process with new uid cannot open the file
@@ -102,14 +98,14 @@ static void do_master_child(void)
 		if (TEST_RETURN != -1) {
 			printf("open succeeded unexpectedly\n");
 			close(tst_fd);
-			exit(1);
+			exit(TFAIL);
 		}
 
 		if (TEST_ERRNO == EACCES) {
 			printf("open failed with EACCES as expected\n");
 		} else {
 			perror("open failed unexpectedly");
-			exit(1);
+			exit(TFAIL);
 		}
 
 		/* Test 2: Check a son process cannot open the file
@@ -128,23 +124,23 @@ static void do_master_child(void)
 			if (TEST_RETURN != -1) {
 				printf("call succeeded unexpectedly\n");
 				close(tst_fd2);
-				exit(1);
+				exit(TFAIL);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == EACCES) {
 				printf("open failed with EACCES as expected\n");
-				exit(0);
+				exit(TPASS);
 			} else {
 				printf("open failed unexpectedly\n");
-				exit(1);
+				exit(TFAIL);
 			}
 		} else {
 			/* Wait for son completion */
 			if (waitpid(pid, &status, 0) == -1) {
 				perror("waitpid failed");
-				exit(1);
+				exit(TFAIL);
 			}
 			if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
 				exit(WEXITSTATUS(status));
@@ -156,20 +152,20 @@ static void do_master_child(void)
 		tst_count++;
 		if (SETREUID(NULL, 0, 0) == -1) {
 			perror("setreuid failed");
-			exit(1);
+			exit(TFAIL);
 		}
 
 		TEST(tst_fd = open(testfile, O_RDWR));
 
 		if (TEST_RETURN == -1) {
 			perror("open failed unexpectedly");
-			exit(1);
+			exit(TFAIL);
 		} else {
 			printf("open call succeeded\n");
 			close(tst_fd);
 		}
 	}
-	exit(0);
+	exit(TPASS);
 }
 
 static void setup(void)

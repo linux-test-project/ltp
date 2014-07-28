@@ -34,9 +34,6 @@
 
 TCID_DEFINE(setreuid05);
 
-/* flag to tell parent if child passed or failed. */
-int flag = 0;
-
 static int fail = -1;
 static int pass;
 static uid_t neg_one = -1;
@@ -99,7 +96,7 @@ int main(int argc, char **argv)
 	pass = 0;
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		int i, pid, status;
+		int i, pid;
 
 		tst_count = 0;
 
@@ -122,7 +119,6 @@ int main(int argc, char **argv)
 								 [i].real_uid,
 								 *test_data
 								 [i].eff_uid);
-							flag = -1;
 							continue;
 						}
 						tst_resm(TPASS,
@@ -142,7 +138,6 @@ int main(int argc, char **argv)
 						 "did not return as expected.",
 						 *test_data[i].real_uid,
 						 *test_data[i].eff_uid);
-					flag = -1;
 				}
 
 				if (TEST_RETURN == -1) {
@@ -152,13 +147,9 @@ int main(int argc, char **argv)
 					   test_data[i].exp_eff_usr,
 					   test_data[i].test_msg);
 			}
-			exit(flag);
+			tst_exit();
 		} else {	/* parent */
-			waitpid(pid, &status, 0);
-			if (WEXITSTATUS(status) != 0) {
-				tst_resm(TFAIL, "test failed within "
-					 "child process.");
-			}
+			tst_record_childstatus(cleanup, pid);
 		}
 	}
 	cleanup();
@@ -207,6 +198,5 @@ static void uid_verify(struct passwd *ru, struct passwd *eu, char *when)
 			 when, getuid(), geteuid());
 		tst_resm(TINFO, "Expected: real uid = %d; effective uid = %d",
 			 ru->pw_uid, eu->pw_uid);
-		flag = -1;
 	}
 }

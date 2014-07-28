@@ -58,7 +58,6 @@ int main(int ac, char **av)
 {
 	pid_t pid;
 	const char *msg;
-	int status;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -72,12 +71,7 @@ int main(int ac, char **av)
 	if (pid == 0)
 		do_master_child();
 
-	if (waitpid(pid, &status, 0) == -1)
-		tst_resm(TBROK | TERRNO, "waitpid failed");
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
-		tst_resm(TFAIL, "child process terminated abnormally");
-	else
-		tst_resm(TPASS, "Test passed");
+	tst_record_childstatus(cleanup, pid);
 
 	cleanup();
 	tst_exit();
@@ -90,7 +84,7 @@ static void do_master_child(void)
 
 	if (SETFSUID(NULL, ltpuser->pw_uid) == -1) {
 		perror("setfsuid failed");
-		exit(1);
+		exit(TFAIL);
 	}
 
 	/* Test 1: Check the process with new uid cannot open the file
@@ -101,14 +95,14 @@ static void do_master_child(void)
 	if (TEST_RETURN != -1) {
 		close(TEST_RETURN);
 		printf("open succeeded unexpectedly\n");
-		exit(1);
+		exit(TFAIL);
 	}
 
 	if (TEST_ERRNO == EACCES) {
 		printf("open failed with EACCESS as expected\n");
 	} else {
 		printf("open returned unexpected errno - %d\n", TEST_ERRNO);
-		exit(1);
+		exit(TFAIL);
 	}
 
 	/* Test 2: Check a son process cannot open the file
@@ -117,7 +111,7 @@ static void do_master_child(void)
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		perror("Fork failed");
-		exit(1);
+		exit(TFAIL);
 	}
 
 	if (pid == 0) {
@@ -127,7 +121,7 @@ static void do_master_child(void)
 		if (TEST_RETURN != -1) {
 			close(TEST_RETURN);
 			printf("open succeeded unexpectedly\n");
-			exit(1);
+			exit(TFAIL);
 		}
 
 		if (TEST_ERRNO == EACCES) {
@@ -135,13 +129,13 @@ static void do_master_child(void)
 		} else {
 			printf("open returned unexpected errno - %d\n",
 			       TEST_ERRNO);
-			exit(1);
+			exit(TFAIL);
 		}
 	} else {
 		/* Wait for son completion */
 		if (waitpid(pid, &status, 0) == -1) {
 			perror("waitpid failed");
-			exit(1);
+			exit(TFAIL);
 		}
 
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
@@ -154,19 +148,19 @@ static void do_master_child(void)
 	tst_count++;
 	if (SETFSUID(NULL, 0) == -1) {
 		perror("setfsuid failed");
-		exit(1);
+		exit(TFAIL);
 	}
 
 	TEST(open(testfile, O_RDWR));
 
 	if (TEST_RETURN == -1) {
 		perror("open failed unexpectedly");
-		exit(1);
+		exit(TFAIL);
 	} else {
 		printf("open call succeeded\n");
 		close(TEST_RETURN);
 	}
-	exit(0);
+	exit(TPASS);
 }
 
 static void setup(void)
