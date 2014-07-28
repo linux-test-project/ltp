@@ -485,6 +485,7 @@ temporary directory, even the unlinked ones) before the test calls
 'tst_rmdir()' otherwise the test may break on NFS mounted temp dir (look for
 "NFS silly rename").
 
+[[2.2.4]]
 2.2.4 Safe macros
 ^^^^^^^^^^^^^^^^^
 
@@ -494,8 +495,8 @@ test if the operation has failed, you just use corresponding safe macros.
 
 Use them whenever it's possible.
 
-NOTE: You cannot use safe macros from child processes, because they call test
-      'tst_' API.
+NOTE: Have a look at the the xref:2.2.7[doing real test in the child process]
+      if you want to use safe macros from within a child process.
 
 Instead of writing:
 
@@ -571,30 +572,51 @@ printed by the parent and each of the children.
 To avoid that, you should either call 'tst_flush()' right before the 'fork()',
 or even better - use 'tst_fork()' instead.
 
-2.2.7 Fork() and Parent-child synchronization
+[[2.2.7]]
+2.2.7 Doing real test in the child process
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have to do the test in a child process you have two possibilities:
+
+* You can use test interface ('tst_resm()', 'tst_brkm()', 'tst_exit()', ...)
+  but there are some rules to obey:
+
+** If you use 'tst_resm()' to record test the results in child process, you
+   *MUST* use either 'tst_exit()' or 'tst_brkm()' to exit the child process.
+
+** If you use 'tst_brkm()' with a non-NULL cleanup argument in the child
+   process, you're strongly recommended to create a separate cleanup function
+   for child process that will only clean up what has been allocated in child
+   process. Otherwise the 'cleanup()' will be called both from the parent and
+   child and the test will likely fail (for example in 'tst_rmdir()' because
+   both parent and child will attempt to remove the directory and one of them
+   will fail).
+
+** The same applies to xref:2.2.4[safe macros] because they call 'tst_brkm()'
+   when anything goes wrong.
+
+* Or you can stick to plain old 'exit()' with 'TPASS', 'TBROK', 'TFAIL' and
+  'TCONF' constants.
+
+Then you call 'tst_record_childstatus()' to records the result of the test
+(done in child process) which propagates the child result (child exit status)
+to the parent process correctly.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+void tst_record_childstatus(void (*cleanup)(void), pid_t child);
+-------------------------------------------------------------------------------
+
+This function does a 'waitpid()' on child process and record child process's
+return value into the overall test result.
+
+2.2.8 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As LTP tests are written for Linux, most of the test involves fork()-ing and
-parent-child process synchronization. But first of all:
-
-WARNING: Usage of test interface ('tst_resm()', 'tst_brkm()', 'tst_exit()',
-         ...) from child process is forbidden.
-
-If you happen to use the interface from a child process the outcome would
-likely be disastrous. Just to name a few examples:
-
-* Imagine the 'cleanup()' is called both from the parent and child, the test
-  will likely fail in 'tst_rmdir()', because the directory was removed
-  already by the child.
-
-* The test failures reported via 'tst_resm()' are not propagated from the
-  child to the parent (how could they, it's just a static variable in the
-  test library). And the test will report success even when the test in the
-  child process has reported failure.
-
-* And many more...
-
-Now to the child-parent synchronization. We have a checkpoint library code
+parent-child process synchronization. We have a checkpoint library code
 that works even for two different processes, all they need to is to run with
 the same working directory (they use FIFO for synchronization). The checkpoint
 interface provides two pairs of signal and wait functions. One pair to be used
@@ -607,7 +629,7 @@ There is also an interface that allows parent to wait until child is blocked
 in kernel (for example waits in 'pause()'), see 'include/tst_process_state.h'
 for more.
 
-2.2.8 Signal handlers
+2.2.9 Signal handlers
 ^^^^^^^^^^^^^^^^^^^^^
 
 If you need to use signal handlers, keep the code short and simple. Don't
@@ -640,14 +662,14 @@ but this one DOES NOT imply volatile (it's just a typedef to int). So the
 correct type for a flag that is changed from a signal handler is either
 'volatile int' or 'volatile sig_atomic_t'.
 
-2.2.9 Kernel Modules
-^^^^^^^^^^^^^^^^^^^^
+2.2.10 Kernel Modules
+^^^^^^^^^^^^^^^^^^^^^
 
 There are certain cases where the test needs a kernel part and userspace part,
 happily, LTP can build a kernel module and then insert it to the kernel on test
 start for you. See 'testcases/kernel/device-drivers/block' for details.
 
-2.2.10 Usefull macros
+2.2.11 Usefull macros
 ^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
@@ -665,7 +687,7 @@ LTP_ALIGN(x, a)
 
 Aligns the x to be next multiple of a. The a must be power of 2.
 
-2.2.11 Filesystem type detection
+2.2.12 Filesystem type detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests are known to fail on certain filesytems (you cannot swap on TMPFS,
@@ -701,7 +723,7 @@ below:
 	}
 -------------------------------------------------------------------------------
 
-2.2.12 Thread-safety in the LTP library
+2.2.13 Thread-safety in the LTP library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It is safe to use library 'tst_' functions in multi-threaded tests.
@@ -735,7 +757,7 @@ void test01(void)
 }
 -------------------------------------------------------------------------------
 
-2.2.13 Acquiring a block device
+2.2.14 Acquiring a block device
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests needs a block device (inotify tests, syscall 'EROFS' failures,
@@ -776,7 +798,7 @@ void tst_release_device(void (cleanup_fn)(void), const char *dev);
 
 Releases the device acquired by 'tst_acquire_device()'.
 
-2.2.14 Formatting a device with a filesystem
+2.2.15 Formatting a device with a filesystem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
@@ -807,7 +829,7 @@ options passed to mkfs.
 The extra options 'fs_opts' should either be 'NULL' if there are none, or a
 'NULL' terminated array of strings such as '{"-b", "1024", NULL}'.
 
-2.2.15 Verifying a filesystem's free space
+2.2.16 Verifying a filesystem's free space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests have size requirements for the filesystem's free space. If these
@@ -837,7 +859,7 @@ The required free space is calculated by 'size * mult', e.g.
 filesystem, which '"/tmp/testfile"' is in, has 64MB free space at least, and 0
 if not.
 
-2.2.16 Getting the maximum number of links to a regular file or directory
+2.2.17 Getting the maximum number of links to a regular file or directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests need to know the maximum count of links to a regular file or
@@ -880,7 +902,7 @@ newly created dir has two links already - the '.' and the link from parent
 dir). If no limit is hit or if 'mkdir(2)' failed with 'ENOSPC' or 'EDQUOT',
 zero is returned and previously created directories are removed.
 
-2.2.17 Getting an unused PID number
+2.2.18 Getting an unused PID number
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests require a 'PID', which is not used by the OS (does not belong to
