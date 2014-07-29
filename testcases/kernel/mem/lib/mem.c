@@ -28,7 +28,8 @@
 
 static int alloc_mem(long int length, int testcase)
 {
-	void *s;
+	char *s;
+	long i, pagesz = getpagesize();
 
 	tst_resm(TINFO, "allocating %ld bytes.", length);
 
@@ -43,7 +44,8 @@ static int alloc_mem(long int length, int testcase)
 	if (testcase == KSM && madvise(s, length, MADV_MERGEABLE) == -1)
 		return errno;
 #endif
-	memset(s, '\a', length);
+	for (i = 0; i < length; i += pagesz)
+		s[i] = '\a';
 
 	return 0;
 }
