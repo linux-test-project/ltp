@@ -79,7 +79,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		if (myfanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS |
+		if (fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS |
 				    FAN_MODIFY | FAN_CLOSE | FAN_OPEN |
 				    FAN_EVENT_ON_CHILD, AT_FDCWD, ".") < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
@@ -134,7 +134,7 @@ int main(int ac, char **av)
 		/*
 		 * now remove child mark
 		 */
-		if (myfanotify_mark(fd_notify, FAN_MARK_REMOVE,
+		if (fanotify_mark(fd_notify, FAN_MARK_REMOVE,
 				    FAN_EVENT_ON_CHILD, AT_FDCWD, ".") < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 			    "fanotify_mark (%d, FAN_MARK REMOVE, "
@@ -232,7 +232,7 @@ static void setup(void)
 	tst_tmpdir();
 	sprintf(fname, "fname_%d", getpid());
 
-	if ((fd_notify = myfanotify_init(FAN_CLASS_NOTIF, O_RDONLY)) < 0) {
+	if ((fd_notify = fanotify_init(FAN_CLASS_NOTIF, O_RDONLY)) < 0) {
 		if (errno == ENOSYS) {
 			tst_brkm(TCONF, cleanup,
 				 "fanotify is not configured in this kernel.");

@@ -142,7 +142,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	fd_notify = myfanotify_init(FAN_CLASS_NOTIF | FAN_NONBLOCK, O_RDONLY);
+	fd_notify = fanotify_init(FAN_CLASS_NOTIF | FAN_NONBLOCK, O_RDONLY);
 	if (fd_notify < 0) {
 		if (errno == ENOSYS) {
 			tst_brkm(TCONF, cleanup,
@@ -153,7 +153,7 @@ static void setup(void)
 		}
 	}
 
-	if (myfanotify_mark(fd_notify, FAN_MARK_MOUNT | FAN_MARK_ADD, FAN_OPEN,
+	if (fanotify_mark(fd_notify, FAN_MARK_MOUNT | FAN_MARK_ADD, FAN_OPEN,
 			    AT_FDCWD, ".") < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "fanotify_mark (%d, FAN_MARK_MOUNT | FAN_MARK_ADD, "

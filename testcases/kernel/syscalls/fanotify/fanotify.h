@@ -28,27 +28,30 @@
 #ifndef	__FANOTIFY_H__
 #define	__FANOTIFY_H__
 
-#include <stdint.h>
-#include <endian.h>
-#include "lapi/abisize.h"
-#include "linux_syscall_numbers.h"
+#include "config.h"
+
+#if defined(HAVE_SYS_FANOTIFY_H)
+
+#include <sys/fanotify.h>
+
+#else /* HAVE_SYS_FANOTIFY_H */
 
 /* fanotify(7) wrappers */
 
-#define	myfanotify_init(flags, event_f_flags) \
-	syscall(__NR_fanotify_init, flags, event_f_flags)
+#include <stdint.h>
+#include "linux_syscall_numbers.h"
 
-long myfanotify_mark(int fd, unsigned int flags, uint64_t mask,
+static int fanotify_init(unsigned int flags, unsigned int event_f_flags)
+{
+	return syscall(__NR_fanotify_init, flags, event_f_flags);
+}
+
+static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
                      int dfd, const char *pathname)
 {
-#if LTP_USE_64_ABI
-	return ltp_syscall(__NR_fanotify_mark, fd, flags, mask, dfd, pathname);
-#else
-	return ltp_syscall(__NR_fanotify_mark, fd, flags,
-			 __LONG_LONG_PAIR((unsigned long) (mask >> 32),
-					  (unsigned long) mask),
-			 dfd, (unsigned long) pathname);
-#endif
+	return syscall(__NR_fanotify_mark, fd, flags, mask, dfd, pathname);
 }
+
+#endif /* HAVE_SYS_FANOTIFY_H */
 
 #endif /* __FANOTIFY_H__ */

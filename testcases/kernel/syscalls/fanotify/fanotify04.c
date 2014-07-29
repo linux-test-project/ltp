@@ -81,7 +81,7 @@ static char *expect_str_pass(int expect)
 static void check_mark(char *file, unsigned long long flag, char *flagstr,
 		       int expect, void (*test_event)(char *))
 {
-	if (myfanotify_mark(fd_notify, FAN_MARK_ADD | flag, FAN_OPEN, AT_FDCWD,
+	if (fanotify_mark(fd_notify, FAN_MARK_ADD | flag, FAN_OPEN, AT_FDCWD,
 			    file) != expect) {
 		tst_resm(TFAIL,
 		    "fanotify_mark (%d, FAN_MARK_ADD | %s, FAN_OPEN, AT_FDCWD, "
@@ -98,7 +98,7 @@ static void check_mark(char *file, unsigned long long flag, char *flagstr,
 		if (test_event)
 			test_event(file);
 
-		if (myfanotify_mark(fd_notify, FAN_MARK_REMOVE | flag,
+		if (fanotify_mark(fd_notify, FAN_MARK_REMOVE | flag,
 				    FAN_OPEN, AT_FDCWD, file) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 			    "fanotify_mark (%d, FAN_MARK_REMOVE | %s, "
@@ -223,13 +223,13 @@ int main(int ac, char **av)
 		CHECK_MARK(sname, 0, 0, test_open_file);
 
 		/* Verify FAN_MARK_FLUSH destroys all inode marks */
-		if (myfanotify_mark(fd_notify, FAN_MARK_ADD,
+		if (fanotify_mark(fd_notify, FAN_MARK_ADD,
 				    FAN_OPEN, AT_FDCWD, fname) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 			    "fanotify_mark (%d, FAN_MARK_ADD, FAN_OPEN, "
 			    "AT_FDCWD, '%s') failed", fd_notify, fname);
 		}
-		if (myfanotify_mark(fd_notify, FAN_MARK_ADD,
+		if (fanotify_mark(fd_notify, FAN_MARK_ADD,
 				    FAN_OPEN | FAN_ONDIR, AT_FDCWD, dir) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 			    "fanotify_mark (%d, FAN_MARK_ADD, FAN_OPEN | "
@@ -240,7 +240,7 @@ int main(int ac, char **av)
 		verify_event(S_IFREG);
 		open_dir(dir);
 		verify_event(S_IFDIR);
-		if (myfanotify_mark(fd_notify, FAN_MARK_FLUSH,
+		if (fanotify_mark(fd_notify, FAN_MARK_FLUSH,
 				    0, AT_FDCWD, ".") < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 			    "fanotify_mark (%d, FAN_MARK_FLUSH, 0, "
@@ -274,7 +274,7 @@ static void setup(void)
 	sprintf(dir, "dir_%d", getpid());
 	SAFE_MKDIR(cleanup, dir, 0755);
 
-	if ((fd_notify = myfanotify_init(FAN_CLASS_NOTIF | FAN_NONBLOCK,
+	if ((fd_notify = fanotify_init(FAN_CLASS_NOTIF | FAN_NONBLOCK,
 					 O_RDONLY)) < 0) {
 		if (errno == ENOSYS) {
 			tst_brkm(TCONF, cleanup,

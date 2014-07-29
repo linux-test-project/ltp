@@ -79,7 +79,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		if (myfanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS | FAN_MODIFY |
+		if (fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS | FAN_MODIFY |
 				    FAN_CLOSE | FAN_OPEN, AT_FDCWD, fname) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 			    "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS | "
@@ -133,7 +133,7 @@ int main(int ac, char **av)
 		 */
 
 		/* Ignore access events */
-		if (myfanotify_mark(fd_notify,
+		if (fanotify_mark(fd_notify,
 				    FAN_MARK_ADD | FAN_MARK_IGNORED_MASK,
 				    FAN_ACCESS, AT_FDCWD, fname) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
@@ -183,7 +183,7 @@ int main(int ac, char **av)
 		 * Now ignore open & close events regardless of file
 		 * modifications
 		 */
-		if (myfanotify_mark(fd_notify,
+		if (fanotify_mark(fd_notify,
 				    FAN_MARK_ADD | FAN_MARK_IGNORED_MASK | FAN_MARK_IGNORED_SURV_MODIFY,
 				    FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
@@ -213,7 +213,7 @@ int main(int ac, char **av)
 		len += ret;
 
 		/* Now remove open and close from ignored mask */
-		if (myfanotify_mark(fd_notify,
+		if (fanotify_mark(fd_notify,
 				    FAN_MARK_REMOVE | FAN_MARK_IGNORED_MASK,
 				    FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
@@ -315,7 +315,7 @@ pass:
 
 		}
 		/* Remove mark to clear FAN_MARK_IGNORED_SURV_MODIFY */
-		if (myfanotify_mark(fd_notify, FAN_MARK_REMOVE, FAN_ACCESS | FAN_MODIFY |
+		if (fanotify_mark(fd_notify, FAN_MARK_REMOVE, FAN_ACCESS | FAN_MODIFY |
 				    FAN_CLOSE | FAN_OPEN, AT_FDCWD, fname) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 			    "fanotify_mark (%d, FAN_MARK_REMOVE, FAN_ACCESS | "
@@ -344,7 +344,7 @@ static void setup(void)
 	/* close the file we have open */
 	SAFE_CLOSE(cleanup, fd);
 
-	if ((fd_notify = myfanotify_init(FAN_CLASS_NOTIF, O_RDONLY)) < 0) {
+	if ((fd_notify = fanotify_init(FAN_CLASS_NOTIF, O_RDONLY)) < 0) {
 		if (errno == ENOSYS) {
 			tst_brkm(TCONF, cleanup,
 				 "fanotify is not configured in this kernel.");

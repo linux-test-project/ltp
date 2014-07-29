@@ -282,7 +282,7 @@ static void setup(void)
 	SAFE_WRITE(cleanup, 1, fd, fname, 1);
 	SAFE_CLOSE(cleanup, fd);
 
-	if ((fd_notify = myfanotify_init(FAN_CLASS_CONTENT, O_RDONLY)) < 0) {
+	if ((fd_notify = fanotify_init(FAN_CLASS_CONTENT, O_RDONLY)) < 0) {
 		if (errno == ENOSYS) {
 			tst_brkm(TCONF, cleanup,
 				 "fanotify is not configured in this kernel.");
@@ -292,13 +292,17 @@ static void setup(void)
 		}
 	}
 
-	if (myfanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS_PERM |
+	if (fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS_PERM |
 			    FAN_OPEN_PERM, AT_FDCWD, fname) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS_PERM | "
-			 "FAN_OPEN_PERM, AT_FDCWD, %s) failed. "
-			 "CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
-			 "configured in kernel?", fd_notify, fname);
+		if (errno == EINVAL) {
+			tst_brkm(TCONF | TERRNO, cleanup,
+				 "CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
+				 "configured in kernel?");
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS_PERM | "
+				 "FAN_OPEN_PERM, AT_FDCWD, %s) failed.", fd_notify, fname);
+		}
 	}
 
 }
