@@ -50,6 +50,7 @@
 #include "usctest.h"
 #include "test.h"
 #include <libclone.h>
+#include "pidns_helper.h"
 
 #define INIT_PID	1
 #define CINIT_PID	1
@@ -191,12 +192,20 @@ void kill_nested_containers()
 	}
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 int main(int argc, char *argv[])
 {
 	int ret, nbytes, status;
 	char readbuffer[80];
 	pid_t pid, pgid;
 	int count = MAX_DEPTH;
+
+	setup();
 
 	/*
 	 * XXX (garrcoop): why in the hell is this fork-wait written this way?

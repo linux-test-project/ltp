@@ -49,6 +49,7 @@
 #include "usctest.h"
 #include "test.h"
 #include <libclone.h>
+#include "pidns_helper.h"
 
 char *TCID = "pidns20";
 int TST_TOTAL = 1;
@@ -152,11 +153,19 @@ int child_fn(void *arg)
 	exit(0);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 int main(int argc, char *argv[])
 {
 	int status;
 	char buf[5];
 	pid_t cpid;
+
+	setup();
 
 	/* Create pipes for intercommunication */
 	if (pipe(parent_cinit) == -1 || pipe(cinit_parent) == -1) {

@@ -49,6 +49,8 @@
 #include "usctest.h"
 #include "test.h"
 #include <libclone.h>
+#include "pidns_helper.h"
+
 #define CHILD_PID	1
 #define PARENT_PID	0
 
@@ -129,6 +131,12 @@ int child_fn(void *ttype)
 	_exit(10);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 /***********************************************************************
 *   M A I N
 ***********************************************************************/
@@ -136,6 +144,8 @@ int main(int argc, char *argv[])
 {
 	int status;
 	pid_t cpid;
+
+	setup();
 
 	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
 

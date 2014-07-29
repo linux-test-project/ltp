@@ -45,6 +45,7 @@
 #include "test.h"
 #define CLEANUP cleanup
 #include "libclone.h"
+#include "pidns_helper.h"
 
 char *TCID = "pidns10";
 int TST_TOTAL = 1;
@@ -83,10 +84,18 @@ int child_fn(void *arg)
 	exit(exit_val);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 int main(int argc, char *argv[])
 {
 	int status;
 	pid_t pid;
+
+	setup();
 
 	pid = getpid();
 

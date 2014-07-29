@@ -48,6 +48,7 @@
 #include "usctest.h"
 #include "test.h"
 #include <libclone.h>
+#include "pidns_helper.h"
 
 char *TCID = "pidns13";
 int TST_TOTAL = 1;
@@ -185,6 +186,12 @@ int child_fn(void *arg)
 	exit(0);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 /***********************************************************************
 *   M A I N
 ***********************************************************************/
@@ -194,6 +201,8 @@ int main(int argc, char *argv[])
 	int status;
 	int *cinit_no = malloc(sizeof(int));
 	pid_t cpid1, cpid2;
+
+	setup();
 
 	/* create pipe */
 	if (pipe(pipe_fd) == -1) {

@@ -45,6 +45,7 @@
 #include "usctest.h"
 #include "test.h"
 #include <libclone.h>
+#include "pidns_helper.h"
 
 char *TCID = "pidns12";
 int TST_TOTAL = 1;
@@ -124,6 +125,12 @@ int child_fn(void *arg)
 	exit(0);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 /***********************************************************************
 *   M A I N
 ***********************************************************************/
@@ -133,6 +140,8 @@ int main(int argc, char *argv[])
 	int status;
 	pid_t pid, cpid;
 	char buf[5];
+
+	setup();
 
 	pid = getpid();
 	tst_resm(TINFO, "parent: PID is %d", pid);

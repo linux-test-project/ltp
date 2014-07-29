@@ -57,6 +57,7 @@
 #include "test.h"
 #include "linux_syscall_numbers.h"
 #include "libclone.h"
+#include "pidns_helper.h"
 
 char *TCID = "pidns31";
 int TST_TOTAL = 1;
@@ -243,6 +244,12 @@ static void father_signal_handler(int sig, siginfo_t * si, void *unused)
 		mq_receive(info->mqd, buf, attr.mq_msgsize, NULL);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 /***********************************************************************
 *   M A I N
 ***********************************************************************/
@@ -255,6 +262,8 @@ int main(int argc, char *argv[])
 	struct sigaction sa;
 	int status;
 	struct notify_info info;
+
+	setup();
 
 	if (pipe(father_to_child) == -1) {
 		tst_resm(TBROK, "parent: pipe() failed. aborting!");

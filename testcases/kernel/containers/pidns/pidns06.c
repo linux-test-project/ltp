@@ -45,6 +45,7 @@
 #include "test.h"
 #include <libclone.h>
 #include <signal.h>
+#include "pidns_helper.h"
 
 #define CINIT_PID       1
 #define PARENT_PID      0
@@ -113,9 +114,18 @@ static int kill_pid_in_childfun(void *vtest)
 	exit(0);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 int main()
 {
 	int status;
+
+	setup();
+
 	pid_t pid = getpid();
 
 	tst_resm(TINFO, "Parent: Passing the pid of the process %d", pid);

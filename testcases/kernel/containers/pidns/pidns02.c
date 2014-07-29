@@ -54,6 +54,7 @@
 #include "test.h"
 #define CLEANUP cleanup
 #include "libclone.h"
+#include "pidns_helper.h"
 
 char *TCID = "pid_namespace2";
 int TST_TOTAL = 1;
@@ -85,9 +86,17 @@ int child_fn1(void *vtest)
 	}
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 int main(int argc, char *argv[])
 {
 	int status;
+
+	setup();
 
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
 	if (TEST_RETURN == -1) {

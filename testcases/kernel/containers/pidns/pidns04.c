@@ -60,6 +60,7 @@
 #include "test.h"
 #define CLEANUP cleanup
 #include "libclone.h"
+#include "pidns_helper.h"
 
 #define INIT_PID	1
 #define CHILD_PID       1
@@ -100,10 +101,18 @@ static int child_fn1(void *ttype)
 	exit(exit_val);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 int main(int argc, char *argv[])
 {
 	int nbytes, status;
 	char readbuffer[80];
+
+	setup();
 
 	pipe(fd);
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));

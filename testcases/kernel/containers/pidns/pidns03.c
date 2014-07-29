@@ -35,7 +35,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "libclone.h"
-
+#include "pidns_helper.h"
 
 #define PROCDIR "proc"
 char *TCID	= "pidns03";
@@ -50,6 +50,7 @@ static void cleanup(void)
 static void setup(void)
 {
 	tst_require_root(NULL);
+	check_newpid();
 	tst_tmpdir();
 	SAFE_MKDIR(cleanup, PROCDIR, 0555);
 }

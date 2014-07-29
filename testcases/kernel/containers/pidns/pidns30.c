@@ -55,6 +55,7 @@
 #include "test.h"
 #include "linux_syscall_numbers.h"
 #include "libclone.h"
+#include "pidns_helper.h"
 
 char *TCID = "pidns30";
 int TST_TOTAL = 1;
@@ -234,11 +235,19 @@ int child_fn(void *arg)
 	exit(0);
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newpid();
+}
+
 int main(int argc, char *argv[])
 {
 	int status;
 	char buf[5];
 	pid_t cpid;
+
+	setup();
 
 	if (pipe(child_to_father) == -1 || pipe(father_to_child) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup, "pipe failed");
