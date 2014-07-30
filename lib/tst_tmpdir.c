@@ -236,7 +236,7 @@ void tst_rmdir(void)
  */
 static void tmpdir_cleanup(void)
 {
-	tst_brkm(TWARN, NULL,
+	tst_resm(TWARN,
 		 "%s: no user cleanup function called before exiting",
 		 __func__);
 }
