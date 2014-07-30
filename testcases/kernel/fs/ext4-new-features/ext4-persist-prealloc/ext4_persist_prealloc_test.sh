@@ -15,8 +15,8 @@
 ## for more details.                                                          ##
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
+## along with this program;  if not, write to the Free Software Foundation,   ##
+## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           ##
 ##                                                                            ##
 ## Author: Li Zefan <lizf@cn.fujitsu.com>                                     ##
 ##         Miao Xie <miaox@cn.fujitsu.com>                                    ##
@@ -44,8 +44,6 @@ ext4_test_persist_prealloc()
 		return
 	fi
 
-	ret=1
-
 	for ((i = 1; i <= 3; i++))
 	{
 		if ! command -v fallocate0${i} > /dev/null 2>&1; then
@@ -57,10 +55,11 @@ ext4_test_persist_prealloc()
 		fi
 
 		temp_tmpdir=$TMPDIR
-		TMPDIR=mnt_point; fallocate0${i} | grep -q "CONF"
+		TMPDIR=mnt_point; fallocate0${i} > /dev/null 2>&1
+		ret=$?
 		TMPDIR=$temp_tmpdir
 
-		if [ $? -ne $ret ]; then
+		if [ $ret -ne 0 ]; then
 			tst_resm TFAIL "fallocate's return value is not expected"
 			umount mnt_point
 			return
