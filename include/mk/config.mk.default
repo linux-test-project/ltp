@@ -24,11 +24,11 @@
 # http://www.gnu.org/software/hello/manual/autoconf/Particular-Programs.html
 
 # Application specifying variables. You should never have to change these.
-AR			:= ar
-CC			:= cc
+AR			:= $(CROSS_COMPILE)ar
+CC			:= $(CROSS_COMPILE)cc
 LEX			:= flex
-RANLIB			:= ranlib
-STRIP			:= strip
+RANLIB			:= $(CROSS_COMPILE)ranlib
+STRIP			:= $(CROSS_COMPILE)strip
 YACC			:= bison -y
 
 #JAR			:= jar
