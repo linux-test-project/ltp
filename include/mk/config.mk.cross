@@ -1,0 +1,64 @@
+#
+#    config.mk.cross.
+#
+#    Copyright (C) Meizu Telecom Equipment Co., Ltd., 2014 
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program
+#
+#    Zhengwang Ruan <ruan.zhengwang@gmail.com>
+#
+
+# Application specifying variables. You should never have to change these.
+AR			:= $(CROSS_COMPILE)ar
+CC			:= $(CROSS_COMPILE)cc
+LEX			:= flex
+RANLIB			:= $(CROSS_COMPILE)ranlib
+STRIP			:= $(CROSS_COMPILE)strip
+YACC			:= bison -y
+
+prefix			:= /opt/ltp
+
+datarootdir		:= ${prefix}/share
+includedir		:= ${prefix}/include
+exec_prefix		:= ${prefix}
+bindir			:= ${exec_prefix}/bin
+libdir			:= ${exec_prefix}/lib
+mandir			:= ${datarootdir}/man
+
+CPPFLAGS		:=
+CFLAGS			:= -g -O2
+LDLIBS			:=
+LDFLAGS			:= -static -pthread
+
+DEBUG_CFLAGS		?= -g
+DEBUG_CXXFLAGS		?= $(DEBUG_CFLAGS)
+
+# Please see README.mk-devel about -fstrict-aliasing.
+OPT_CFLAGS		?= -O2 -fno-strict-aliasing -pipe
+OPT_CXXFLAGS		?= $(OPT_CFLAGS)
+
+WCFLAGS			?= -Wall
+WCXXFLAGS		?= $(WCFLAGS)
+
+LDFLAGS			+= $(WLDFLAGS)
+CFLAGS			+= $(DEBUG_CFLAGS) $(OPT_CFLAGS) $(WCFLAGS)
+CXXFLAGS		+= $(DEBUG_CXXFLAGS) $(OPT_CXXFLAGS) $(WCXXFLAGS)
+
+LINUX_VERSION		:=
+LINUX_DIR		:=
+LINUX_VERSION_MAJOR	:=
+LINUX_VERSION_PATCH	:=
+WITH_MODULES		:= no
+
+export datarootdir includedir libdir mandir prefix
