@@ -46,22 +46,28 @@ set RUSER "Invaild_User"
 spawn ssh -l $RUSER $RHOST whoami
 
 while 1 {
-    sleep 2
-    expect {
+	sleep 2
+	expect {
 
-        "Are you sure you want to continue connecting (yes/no)?" { exp_send "yes\r"}
-        "assword:" {exp_send "$PASSWD\r"}
-        -re "Permission denied (.*)\." {
-            send_user "SSH would not allow $RUSER to login with invalid password, Test Passed \n"
-            send_user "\nTEST_PASSED\n"
-            exit 0
-        }
-        "$RUSER" {
-            send_user "SSH allowed $RUSER to login with invalid pass, Test Failed \n"
-            exit 1
-        }
-    }
-    sleep 1
+		"Are you sure you want to continue connecting (yes/no)?" {
+			exp_send "yes\r"
+		}
+		"assword:" {
+			exp_send "$PASSWD\r"
+		}
+		-re "Permission denied (.*)\." {
+			send_user "SSH would not allow $RUSER to login with\
+				   invalid password, Test Passed \n"
+			send_user "\nTEST_PASSED\n"
+			exit 0
+		}
+		"$RUSER" {
+			send_user "SSH allowed $RUSER to login with invalid\
+				   pass, Test Failed \n"
+			exit 1
+		}
+	}
+	sleep 1
 }
 
 exit 1

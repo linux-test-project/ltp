@@ -25,69 +25,33 @@
 #  HISTORY:
 #    03/03 Jerone Young (jeroney@us.ibm.com)
 #
+# DESCRIPTION:
+#	Create Test User
+#	Make sure an invalid user can not have access
+#	Cleanup Test User from system
+#	Exit with exit code of script called upon
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_setup
-#-----------------------------------------------------------------------
-
-do_setup()
+setup()
 {
-    export RHOST="localhost"
-    export TEST_USER="ssh_usr2"
-    export TEST_USER_PASSWD="now_this_is_a_good_ltp_test_password"
-    export TEST_USER_HOMEDIR="/home/$TEST_USER"
-
-    exists expect ssh ssh02_s1 useradd userdel
-
-    trap do_cleanup EXIT
-
-    # erase user if he/she already exists, so we can have a clean env
-    userdel -r $TEST_USER
-    [ -d "$TEST_USER_HOMEDIR" ] && rm -rf "$TEST_USER_HOMEDIR"
-    sleep 1
-
-    tst_setup
-
-    if ! useradd -m -d "$TEST_USER_HOMEDIR" $TEST_USER; then
-        end_testcase "Could not add test user $TEST_USER to system $RHOST."
-    fi
-
-    echo "$TEST_USER_PASSWD" | passwd --stdin $TEST_USER
-
-    # create users home diretory (SLES 8 does not do this, even when specified
-    # in adduser)
-    if [ ! -d "$TEST_USER_HOMEDIR" ]; then
-        USER_UID=$(id -u $TEST_USER)
-        USER_GID=$(id -g $TEST_USER)
-        if ! mkdir -p "$TEST_USER_HOMEDIR"; then
-            end_testcase "Failed to create $TEST_USER_HOMEDIR"
-        fi
-        chown -Rf $USER_UID.$USER_GID "$TEST_USER_HOMEDIR"
-    fi
+	tst_check_cmds ssh02_s1
+	export TEST_USER="ssh_usr2"
 }
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_cleanup
-#-----------------------------------------------------------------------
+TCID="ssh02"
+TST_TOTAL=1
 
-do_cleanup()
-{
-    userdel -r $TEST_USER
-    [ -d "$TEST_USER_HOMEDIR" ] && rm -rf "$TEST_USER_HOMEDIR"
-    tst_cleanup
-}
+. test.sh
+. ssh_setup
 
-#-----------------------------------------------------------------------
-# FUNCTION:  MAIN
-#
-# DESCRIPTION: Create Test User
-#          Call upon script to make sure an invalid user can not have access
-#          Cleanup Test User from system
-#          Exit with exit code of script called upon
-#-----------------------------------------------------------------------
-. net_cmdlib.sh
-
-read_opts $*
+setup
 do_setup
-ssh02_s1 || end_testcase "Testcase failed"
-do_cleanup
+TST_CLEANUP=do_cleanup
+
+ssh02_s1
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Test $TCID FAIL"
+else
+	tst_resm TPASS "Test $TCID PASS"
+fi
+
+tst_exit
