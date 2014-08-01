@@ -236,16 +236,16 @@ case ${TEST_NUM} in
 	mkdir $cg_path/group_1/group_11/ 2> /dev/null
 	if [ $? -ne 0 ]; then
 		echo "TFAIL Cannot create cpuacct cgroups Exiting Test"
-		cleanup
 		task_kill 2> /dev/null
+		cleanup
 		exit 1
 	fi
 	echo $pid > $cg_path/group_1/group_11/tasks 2> /dev/null
 	if [ $? -ne 0 ]; then
 		echo "TFAIL Not able to move a task to the cgroup"
 		echo "Exiting Test"
-		cleanup 2> /dev/null
 		task_kill 2> /dev/null
+		cleanup
 		exit 1
 	fi
 	sleep 5
@@ -262,13 +262,14 @@ case ${TEST_NUM} in
 	if [ $status -eq 0 ]; then
 		echo
 		tst_resm TPASS "$mes test executed successfully"
-		cleanup 2> /dev/null
 		task_kill 2> /dev/null
+		cleanup
 		exit 0
 	else
 		echo
 		tst_resm TFAIL "$mes test execution Failed"
-		cleanup 2> /dev/null
+		task_kill 2> /dev/null
+		cleanup
 		exit 1
 	fi
 	;;
@@ -279,8 +280,8 @@ case ${TEST_NUM} in
 	mkdir $cg_path/group_1/group_12 2> /dev/null
 	if [ $? -ne 0 ]; then
 		echo "TFAIL Cannot create cpuacct cgroups Exiting Test"
-		cleanup 2> /dev/null
 		task_kill 2> /dev/null
+		cleanup
 		exit 1
 	fi
 
@@ -292,8 +293,8 @@ case ${TEST_NUM} in
 		if [ $? -ne 0 ]; then
 			echo "TFAIL Not able to move task to cgroup"
 			echo "Exiting Test"
-			cleanup 2> /dev/null
 			task_kill 2> /dev/null
+			cleanup
 			exit 1
 		fi
 		nr_tasks
@@ -301,8 +302,8 @@ case ${TEST_NUM} in
 		if [ $? -ne 0 ]; then
 			echo "TFAIL Not able to move task to cgroup"
 			echo "Exiting Test"
-			cleanup 2> /dev/null
 			task_kill 2> /dev/null
+			cleanup
 			exit 1
 		fi
 		sleep 2
@@ -321,14 +322,14 @@ case ${TEST_NUM} in
 	if [ $status -eq 0 ]; then
 		echo
 		tst_resm TPASS "$mes test executed successfully"
-		cleanup 2> /dev/null
 		task_kill 2> /dev/null
+		cleanup
 		exit 0
 	else
 		echo
 		tst_resm TFAIL "$mes test execution Failed"
-		cleanup 2> /dev/null
 		task_kill 2> /dev/null
+		cleanup
 		exit 1
 	fi
 	;;
