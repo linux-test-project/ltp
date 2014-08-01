@@ -30,96 +30,82 @@
 #  NOTE:
 #	This version is intended for EAL certification, it will need modification
 #	to conform with LTP standards in the offical LTP tree.
-
-do_setup()
-{
-    RHOST="localhost"
-    TEST_USER="anonymous"
-    TEST_USER_PASSWD="noone@nowhere.com"
-    VSFTP_CONF=
-
-    tst_setup
-
-    exists expect ftp vsftpd
-
-    for vsftp_conf in /etc/vsftpd /etc; do
-
-        if [ -r "$vsftp_confdir/vsftp.conf" ]; then
-            VSFTP_CONF="$vsftp_confdir/vsftp.conf"
-            break
-        fi
-
-    done
-    if [ ! -r "$VSFTP_CONF" ] ; then
-        end_testcase "vsftpd.conf not found."
-    fi
-    ANONYMOUS_ENABLE=$(awk -F= '/^anonymous_enable=/ {print $2}' "$VSFTP_CONF")
-    if [ "$ANONYMOUS_ENABLE" != "NO" ]; then
-        ANONYMOUS_ENABLE="YES"
-    fi
-}
-
-#-----------------------------------------------------------------------
-# FUNCTION   : do_test
 #
-# DESCRIPTION: The anonymous user will ftp in and create a directory in his/her
-#              home directory on the remote host.
-#-----------------------------------------------------------------------
+# DESCRIPTION:
+#	The anonymous user will ftp in and create a directory in his/her
+#	home directory on the remote host.
+#
+
+setup()
+{
+	tst_check_cmds expect ftp vsftpd
+	TEST_USER="anonymous"
+}
 
 do_test()
 {
-    tst_resm TINFO "Ftp into a remote host as anonymous user; ANONYMOUS_ENABLE=$ANONYMOUS_ENABLE"
+	FAIL_530="==> TEST : FAIL (ftp rejected login attempt)"
+	PASS_230="==> TEST : PASS (ftp allowed login attempt)"
+	FAIL_230="==> TEST : FAIL (ftp allowed login attempt)"
+	PASS_500="==> TEST : PASS (ftp rejected login attempt)"
+	PASS_530="==> TEST : PASS (ftp rejected login attempt)"
 
-    if [ "$ANONYMOUS_ENABLE" = "YES" ]; then
-        expect -c "
-            spawn ftp $RHOST
-            sleep 1
-            expect -re \": \"
-            send \"$TEST_USER\r\"
-            expect -re \"Password:\"
-            send \"$TEST_USER_PASSWD\r\"
-            expect {
-                # 530 - Login failed
-                \"530\" {send_user \"==> TEST \#$TEST : FAIL (ftp rejected login attempt)\n\";exit 1}
-                # 230 - Login successful
-                \"230\" {send_user \"==> TEST \#$TEST : PASS (ftp allowed login attempt)\n\";exit 0}
-            }
-            expect \"ftp> \"
-            send \"quit\r\"
+	echo "Ftp into a remote host as anonymous user;"
+	echo "ANONYMOUS_ENABLE=$ANONYMOUS_ENABLE"
+
+	if [ "$ANONYMOUS_ENABLE" = "YES" ]; then
+	expect -c "
+		spawn ftp $RHOST
+		sleep 1
+		expect -re \": \"
+		send \"$TEST_USER\r\"
+		expect -re \"Password:\"
+		send \"$TEST_USER_PASSWD\r\"
+		expect {
+			# 530 - Login failed
+			\"530\" {send_user \"$FAIL_530\n\";exit 1}
+			# 230 - Login successful
+			\"230\" {send_user \"$PASS_230\n\";exit 0}
+		}
+		expect \"ftp> \"
+		send \"quit\r\"
 	"
-    else
-        expect -c "
-            spawn ftp $RHOST
-            sleep 1
-            expect -re \": \"
-            send \"$TEST_USER\r\"
-            expect -re \"Password:\"
-            send \"$TEST_USER_PASSWD\r\"
-            expect {
-                # 230 - Login successful
-                \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1}
-                # 500 - Login failed
-                \"500\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
-                # 530 - Login failed
-                \"530\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
-            }
-            expect \"ftp> \"
-            send \"quit\r\"
-        "
-    fi
-
-    [ $? -eq 0 ] || end_testcase "Testcase failed."
-
+	else
+	expect -c "
+		spawn ftp $RHOST
+		sleep 1
+		expect -re \": \"
+		send \"$TEST_USER\r\"
+		expect -re \"Password:\"
+		send \"$TEST_USER_PASSWD\r\"
+		expect {
+			# 230 - Login successful
+			\"230\" {send_user \"$FAIL_230\n\";exit 1}
+			# 500 - Login failed
+			\"500\" {send_user \"$PASS_500\n\";exit 0}
+			# 530 - Login failed
+			\"530\" {send_user \"$PASS_530\n\";exit 0}
+		}
+		expect \"ftp> \"
+		send \"quit\r\"
+	"
+	fi
 }
 
-#----------------------------------------------------------------------
-# FUNCTION: MAIN
-# PURPOSE:  To invoke the functions to perform the tasks described in
-#           the prologue.
-#----------------------------------------------------------------------
-. net_cmdlib.sh
+TCID="ftp05"
+TST_TOTAL=1
 
-read_opts $*
+. test.sh
+. ftp_setup
+
+setup
 do_setup
+
 do_test
-end_testcase
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Test $TCID FAIL"
+else
+	tst_resm TPASS "Test $TCID PASS"
+fi
+
+tst_exit

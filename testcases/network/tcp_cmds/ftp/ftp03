@@ -31,130 +31,77 @@
 #	This version is intended for EAL certification, it will need modification
 #	to conform with LTP standards in the offical LTP tree.
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_setup
-#-----------------------------------------------------------------------
-
-do_setup()
+setup()
 {
-
-    RHOST="localhost"
-    TEST_USER="ftpuser1"
-    TCtmp=/home/$TEST_USER
-    TEST_USER_PASSWD="eal"
-    TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
-    TEST_USER_HOMEDIR="/home/$TEST_USER"
-    VSFTP_CONF=
-
-    tst_setup
-
-    exists ftp useradd userdel vftpd
-
-    for vsftp_conf in /etc/vsftpd /etc; do
-
-        if [ -r "$vsftp_confdir/vsftp.conf" ]; then
-            VSFTP_CONF="$vsftp_confdir/vsftp.conf"
-            break
-        fi
-
-    done
-    if [ ! -r "$VSFTP_CONF" ] ; then
-        end_testcase "vsftpd.conf not found."
-    fi
-    LOCAL_ENABLE=$(awk -F= '/^local_enable=/ {print $2}' "$VSFTP_CONF")
-
-    [ "$LOCAL_ENABLE" != "YES" ] && LOCAL_ENABLE="NO"
-
-    userdel $TEST_USER
-    sleep 1
-
-    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then
-        end_testcase "Could not add test user $TEST_USER on system $RHOST."
-    fi
-
-    trap do_cleanup QUIT
-
-    # create users home diretory (SLES 8 does not do this, even when specified
-    # in adduser)
-    USER_UID=$(id -u $TEST_USER)
-    USER_GID=$(id -g $TEST_USER)
-    mkdir -p "$TEST_USER_HOMEDIR"
-    chown -R $USER_UID:$USER_GID $TEST_USER_HOMEDIR
-
+	tst_check_cmds ftp useradd userdel vsftpd
+	export TEST_USER="ftpuser3"
 }
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_cleanup
-#-----------------------------------------------------------------------
-
-do_cleanup()
+do_test()
 {
-    userdel $TEST_USER
-    tst_cleanup
-}
+	FAIL_530="==> TEST : FAIL (ftp rejected login attempt)"
+	PASS_230="==> TEST : PASS (ftp allowed login attempt)"
+	FAIL_230="==> TEST : FAIL (ftp allowed login attempt)"
+	PASS_500="==> TEST : PASS (ftp rejected login attempt)"
+	PASS_530="==> TEST : PASS (ftp rejected login attempt)"
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_test
-#
-# DESCRIPTION: The test user will ftp in and create a directory in his home directory on the remote host.
-#              The directory is then checked on the remote hosts to see if it is owned
-#	       by the test user.
-#-----------------------------------------------------------------------
+	echo "TEST: Ftp into a remote host as a local user (other than root),"
+	echo "LOCAL_ENABLE=$LOCAL_ENABLE"
 
-do_test(){
-    tst_resm TINFO "TEST: Ftp into a remote host as a local user (other than root), LOCAL_ENABLE=$LOCAL_ENABLE"
-
-    if [ "$LOCAL_ENABLE" = "YES" ]; then
+	if [ "$LOCAL_ENABLE" = "YES" ]; then
 	expect -c "
-            spawn ftp $RHOST
-            sleep 1
-            expect -re \": \"
-            send \"$TEST_USER\r\"
-            expect -re \"Password:\"
-            send \"$TEST_USER_PASSWD\r\"
-            expect {
-                # 530 - Login failed
-                \"530\" {send_user \"==> TEST \#$TEST : FAIL (ftp rejected login attempt)\n\";exit 1}
-                # 230 - Login successful
-                \"230\" {send_user \"==> TEST \#$TEST : PASS (ftp allowed login attempt)\n\";exit 0}
-            }
-            expect \"ftp> \"
-            send \"quit\r\"
+		spawn ftp $RHOST
+		sleep 1
+		expect -re \": \"
+		send \"$TEST_USER\r\"
+		expect -re \"Password:\"
+		send \"$TEST_USER_PASSWD\r\"
+		expect {
+			# 530 - Login failed
+			\"530\" {send_user \"$FAIL_530\n\";exit 1}
+			# 230 - Login successful
+			\"230\" {send_user \"$PASS_230\n\";exit 0}
+		}
+		expect \"ftp> \"
+		send \"quit\r\"
 	"
-    else
-        expect -c "
-            spawn ftp $RHOST
-            sleep 1
-            expect -re \": \"
-            send \"$TEST_USER\r\"
-            expect -re \"Password:\"
-            send \"$TEST_USER_PASSWD\r\"
-            expect {
-                # 230 - Login successful
-                \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1}
-                # 500 - Login failed
-                \"500\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
-                # 530 - Login failed
-                \"530\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
-            }
-            expect \"ftp> \"
-            send \"quit\r\"
-        "
-    fi
-
-    if [ $? != 0 ]; then
-        end_testcase "Testcase failed"
-    fi
+	else
+	expect -c "
+		spawn ftp $RHOST
+		sleep 1
+		expect -re \": \"
+		send \"$TEST_USER\r\"
+		expect -re \"Password:\"
+		send \"$TEST_USER_PASSWD\r\"
+		expect {
+			# 230 - Login successful
+			\"230\" {send_user \"$FAIL_230\n\";exit 1}
+			# 500 - Login failed
+			\"500\" {send_user \"$PASS_500\n\";exit 0}
+			# 530 - Login failed
+			\"530\" {send_user \"$PASS_530\n\";exit 0}
+		}
+		expect \"ftp> \"
+		send \"quit\r\"
+	"
+	fi
 }
 
-#----------------------------------------------------------------------
-# FUNCTION: MAIN
-# PURPOSE:  To invoke the functions to perform the tasks described in
-#           the prologue.
-#----------------------------------------------------------------------
-. net_cmdlib.sh
+TCID="ftp03"
+TST_TOTAL=1
 
-read_opts $*
+. test.sh
+. ftp_setup
+
+setup
 do_setup
+TST_CLEANUP=do_cleanup
+
 do_test
-end_testcase
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Test $TCID FAIL"
+else
+	tst_resm TPASS "Test $TCID PASS"
+fi
+
+tst_exit

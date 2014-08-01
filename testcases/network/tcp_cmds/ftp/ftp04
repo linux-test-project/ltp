@@ -28,77 +28,64 @@
 #   03/04/03 Jerone Young (jeroney@us.ibm.com)
 #   09/21/05 Kris Wilson (krisw@us.ibm.com) Check if vsftpd is on system.
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_setup
-#-----------------------------------------------------------------------
-
-do_setup()
+setup()
 {
+	tst_check_cmds awk expect ftp vsftpd
 
-    tvar=${MACHTYPE%-*}
-    tvar=${tvar#*-}
+	TEST_USER=root
 
-    RHOST=localhost
-    TEST_USER=root
+	tvar=${MACHTYPE%-*}
+	tvar=${tvar#*-}
 
-    tst_setup
-
-    if [ -n "$PASSWD" ]; then
-        TEST_USER_PASSWORD=$PASSWD
-    else
-        end_testcase "You must set your password via the PASSWD variable."
-        exit 1
-    fi
-
-    exists awk expect ftp vsftpd
-
-    if [ $tvar = "redhat" -o $tvar = "redhat-linux" ]; then
-        echo "Verifying test user $TEST_USER is in /etc/vsftpd.ftpusers database..."
-        FTPUSERS=$(awk "/$TEST_USER/" /etc/vsftpd.ftpusers)
-    else
-        echo "Verifying test user $TEST_USER is in /etc/ftpusers database..."
-        FTPUSERS=$(awk "/$TEST_USER/" /etc/ftpusers)
-    fi
-    if [ -z "$FTPUSERS" ] ; then
-        end_testcase "Test user $TEST_USER not found in /etc/ftpusers unable to run TEST, exiting 0 ..."
-    fi
-
+	if [ $tvar = "redhat" -o $tvar = "redhat-linux" ]; then
+		ftpusers="/etc/vsftpd/ftpusers"
+	else
+		ftpusers="/etc/ftpusers"
+	fi
+	echo "Verifying test user $TEST_USER is in ${ftpusers} database..."
+	FTPUSERS=$(awk "/$TEST_USER/" ${ftpusers})
+	if [ -z "$FTPUSERS" ] ; then
+		tst_brkm TBROK "$TEST_USER not found in $ftpusers exiting 0 ..."
+	fi
 }
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_test
-#-----------------------------------------------------------------------
 do_test()
 {
-
-    tst_resm TINFO "Ftp should reject $TEST_USER from loging in successfully"
-    expect -c "
-        spawn ftp $RHOST
-        sleep 1
-        expect -re \": \"
-        send \"$TEST_USER\r\"
-        expect -re \"Password:\"
-        send \"$TEST_USER_PASSWD\r\"
-        expect {
-            # 230 - Login successful
-            \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1}
-            # 530 - Login failed
-            \"530\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
-        }
-        expect \"ftp> \"
-        send \"quit\r\"
-    "
-
-    [ $? -eq 0 ] || end_testcase "Testcase failed."
-
+	FAIL_230="==> TEST : FAIL (ftp allowed login attempt)"
+	PASS_530="==> TEST : PASS (ftp rejected login attempt)"
+	echo "Ftp should reject $TEST_USER from loging in successfully"
+	expect -c "
+		spawn ftp $RHOST
+		sleep 1
+		expect -re \": \"
+		send \"$TEST_USER\r\"
+		expect -re \"Password:\"
+		send \"$TEST_USER_PASSWD\r\"
+		expect {
+			# 230 - Login successful
+			\"230\" {send_user \"$FAIL_230\n\";exit 1}
+			# 530 - Login failed
+			\"530\" {send_user \"$PASS_530\n\";exit 0}
+		}
+		expect \"ftp> \"
+		send \"quit\r\"
+	"
 }
 
-#----------------------------------------------------------------------
-# FUNCTION: MAIN
-#----------------------------------------------------------------------
-. net_cmdlib.sh
+TCID="ftp04"
+TST_TOTAL=1
 
-read_opts $*
+. test.sh
+. ftp_setup
+
+setup
 do_setup
+
 do_test
-end_testcase
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Test $TCID FAIL"
+else
+	tst_resm TPASS "Test $TCID PASS"
+fi
+
+tst_exit

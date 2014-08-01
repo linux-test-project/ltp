@@ -28,59 +28,72 @@
 #  NOTE:
 #       This version is intended for EAL certification, it will need modification
 #       to conform with LTP standards in the offical LTP tree.
-
-#-----------------------------------------------------------------------
-# FUNCTION:  do_setup
-#-----------------------------------------------------------------------
-
-do_setup()
-{
-
-    export RHOST="localhost"
-    export TEST_USER="ftpuser2"
-    export TEST_USER_PASSWD="eal"
-    export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
-    export TEST_USER_HOMEDIR="/home/$TEST_USER"
-
-    # erase user if he may exist, so we can have a clean env
-    TCtmp="/home/$TEST_USER"
-
-    tst_setup
-
-    exists expect ftp ftp02_s1 useradd userdel
-
-    userdel $TEST_USER
-    sleep 1
-
-    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then
-        end_testcase "Could not add test user $TEST_USER to system $RHOST."
-    fi
-
-    trap do_cleanup EXIT
-
-}
-
-#-----------------------------------------------------------------------
-# FUNCTION:  do_cleanup
-#-----------------------------------------------------------------------
-
-do_cleanup()
-{
-    userdel $TEST_USER
-    tst_cleanup
-}
-
-#-----------------------------------------------------------------------
-# FUNCTION:  MAIN
 #
-# DESCRIPTION: Create Test User
-#              Call upon script to make sure test user cannont log in with invalid password
-#	       Cleanup Test User from system
-#              Exit with exit code of script called upon
-#-----------------------------------------------------------------------
-. net_cmdlib.sh
+# DESCRIPTION:
+#	Create Test User
+#	Make sure test user cannont log in with invalid password
+#	Cleanup Test User from system
+#	Exit with exit code of script called upon
+#
 
-read_opts $*
+setup()
+{
+	tst_check_cmds expect ftp useradd userdel
+	export TEST_USER="ftpuser2"
+}
+
+do_test()
+{
+	CONNECTION_FAILED="Connection failed; test FAILED"
+	EXPECTED="Login failed as expected; test PASSED"
+	UNEXPECTED="Login succeeded unexpectedly; test FAILED"
+
+	set PASSWD "invaild_password?!!"
+	set timeout 90
+
+	expect -c "
+		#ftp to host
+		spawn ftp $RHOST
+		sleep 1
+		# Check if connection succeeded.
+		expect {
+			\"Name\" {}
+			timeout {send_user \"\n$CONNECTION_FAILED\n\";exit 1}
+		}
+
+		send \"$RUSER\r\"
+		sleep 1
+		expect -re \"Password:\"
+		send \"$PASSWD\r\"
+		sleep 1
+
+		expect {
+			# 530 - Login failed
+			\"530\" {send_user \"$EXPECTED\n\";exit 0}
+			# 230 - Login successful
+			\"230\" {send_user \"$UNEXPECTED\n\"; exit 1}
+		}
+
+		expect \"ftp>\"
+		send \"exit\r\"
+	"
+}
+
+TCID="ftp02"
+TST_TOTAL=1
+
+. test.sh
+. ftp_setup
+
+setup
 do_setup
-ftp02_s1 || end_testcase "Testcase failed."
-end_testcase
+TST_CLEANUP=do_cleanup
+
+do_test
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Test $TCID FAIL"
+else
+	tst_resm TPASS "Test $TCID PASS"
+fi
+
+tst_exit
