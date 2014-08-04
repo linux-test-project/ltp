@@ -525,7 +525,6 @@ for ((cur = 1; cur <= $TST_TOTAL; cur++))
 	test_$cur
 }
 
-rmdir -p cgroup/*
+find cgroup/ -maxdepth 1 -depth -exec rmdir {} +
 
 exit $failed
-
