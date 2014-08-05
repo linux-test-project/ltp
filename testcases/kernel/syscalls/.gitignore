@@ -479,6 +479,7 @@
 /madvise/madvise02
 /madvise/madvise03
 /madvise/madvise04
+/madvise/madvise05
 /mallopt/mallopt01
 /mbind/mbind01
 /memcmp/memcmp01
