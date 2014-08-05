@@ -30,7 +30,7 @@ export TCID="memcg_use_hierarchy_test"
 export TST_TOTAL=3
 export TST_COUNT=0
 
-. ./memcg_lib.sh || exit 1
+. memcg_lib.sh || exit 1
 
 # test if one of the ancestors goes over its limit, the proces will be killed
 testcase_1()

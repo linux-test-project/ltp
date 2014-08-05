@@ -30,7 +30,7 @@ export TCID="memcg_memsw_limit_in_bytes_test"
 export TST_TOTAL=12
 export TST_COUNT=0
 
-. ./memcg_lib.sh || exit 1
+. memcg_lib.sh || exit 1
 
 MEM_SWAP_FLAG=0
 

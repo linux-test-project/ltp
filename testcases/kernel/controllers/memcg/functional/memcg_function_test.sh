@@ -29,7 +29,7 @@ export TCID="memcg_function_test"
 export TST_TOTAL=38
 export TST_COUNT=0
 
-. ./memcg_lib.sh || exit 1
+. memcg_lib.sh || exit 1
 
 # Case 1 - 10: Test the management and counting of memory
 testcase_1()

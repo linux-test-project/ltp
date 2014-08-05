@@ -30,7 +30,7 @@ export TCID="memcg_move_charge_at_immigrate_test"
 export TST_TOTAL=4
 export TST_COUNT=0
 
-. ./memcg_lib.sh || exit 1
+. memcg_lib.sh || exit 1
 
 # Test disable moving charges
 testcase_1()
