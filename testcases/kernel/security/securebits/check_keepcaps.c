@@ -38,6 +38,16 @@ static int eff_caps_empty(cap_t c)
 
 	for (i = 0; i < CAP_LAST_CAP; i++) {
 		ret = cap_get_flag(c, i, CAP_PERMITTED, &v);
+		/*
+		 * If the value of CAP_LAST_CAP in linux/capability.h is greater
+		 * than the value in the capability.h which is used to create
+		 * libcap.so. Then cap_get_flag returns -1, and errno is set to
+		 * EINVAL.
+		 */
+		if (ret == -1) {
+			tst_brkm(TBROK | TERRNO, NULL,
+				"Not expected. Please check arguments.");
+		}
 		if (ret || v)
 			empty = 0;
 	}
