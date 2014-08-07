@@ -83,7 +83,7 @@ cd $LTPROOT/testcases/bin/
 #################################################################################
 
 # First of all check if the system has sufficient memory
-MEM_AVAIL=`cat /proc/meminfo | grep MemTotal | tr -s [:space:] | cut -d" " -f2`;
+MEM_AVAIL=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`;
 if [ $MEM_AVAIL -lt 262144 ]	# 256MB(as test requires some ~200MB)
 then
 	echo System does not have sufficient free memory.;
