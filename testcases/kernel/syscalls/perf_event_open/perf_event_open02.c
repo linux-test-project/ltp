@@ -74,7 +74,7 @@ The -v flag makes it print out the values of each counter.
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
 
-char *TCID = "performance_counter02";
+char *TCID = "perf_event_open02";
 int TST_TOTAL = 1;
 
 #if HAVE_PERF_EVENT_ATTR

@@ -46,7 +46,7 @@
 #include "linux_syscall_numbers.h"
 #include "safe_macros.h"
 
-char *TCID = "performance_counter01";
+char *TCID = "perf_event_open01";
 int TST_TOTAL = 6;
 
 #if HAVE_PERF_EVENT_ATTR
