@@ -120,7 +120,7 @@
 #define PATTERN		(0xfa)
 #define PAGE_SIZE	getpagesize()
 
-char *TCID = "dma_thread_diotest7";
+char *TCID = "dma_thread_diotest";
 int TST_TOTAL = 1;
 
 static void setup(void);
