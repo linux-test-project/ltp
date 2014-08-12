@@ -1,5 +1,5 @@
 #DESCRIPTION:Kernel system calls
-abort01 ulimit -c 1024;abort01
+abort01 abort01
 
 accept01 accept01
 accept4_01 accept4_01

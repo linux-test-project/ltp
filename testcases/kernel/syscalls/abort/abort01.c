@@ -33,9 +33,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/resource.h>
 
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
+
 #define NUM 3
 
 char *TCID = "abort01";
@@ -128,8 +131,21 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
+/* 1024 GNU blocks */
+#define MIN_RLIMIT_CORE (1024 * 1024)
+
 static void setup(void)
 {
+	struct rlimit rlim;
+
+	SAFE_GETRLIMIT(NULL, RLIMIT_CORE, &rlim);
+
+	if (rlim.rlim_cur < MIN_RLIMIT_CORE) {
+		tst_resm(TINFO, "Adjusting RLIMIT_CORE to %i", MIN_RLIMIT_CORE);
+		rlim.rlim_cur = MIN_RLIMIT_CORE;
+		SAFE_SETRLIMIT(NULL, RLIMIT_CORE, &rlim);
+	}
+
 	tst_tmpdir();
 }
 
