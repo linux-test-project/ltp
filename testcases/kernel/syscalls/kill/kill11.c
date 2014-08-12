@@ -39,11 +39,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/resource.h>
 
 /*****  LTP Port        *****/
 #include <errno.h>
 #include "test.h"
 #include "usctest.h"
+#include "safe_macros.h"
+
 #define ITER    3
 #define FAILED 0
 #define PASSED 1
@@ -259,8 +262,21 @@ void do_child(void)
 	_exit(exno);
 }
 
+/* 1024 GNU blocks */
+#define MIN_RLIMIT_CORE (1024 * 1024)
+
 void setup(void)
 {
+	struct rlimit rlim;
+
+	SAFE_GETRLIMIT(NULL, RLIMIT_CORE, &rlim);
+
+	if (rlim.rlim_cur < MIN_RLIMIT_CORE) {
+		tst_resm(TINFO, "Adjusting RLIMIT_CORE to %i", MIN_RLIMIT_CORE);
+		rlim.rlim_cur = MIN_RLIMIT_CORE;
+		SAFE_SETRLIMIT(NULL, RLIMIT_CORE, &rlim);
+	}
+
 	temp = stderr;
 	tst_tmpdir();
 }
