@@ -1,9 +1,9 @@
-/* IBM Corporation */
-/* 01/02/2003	Port to LTP	avenkat@us.ibm.com */
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
-/*
+/* IBM Corporation
+ * 01/02/2003	Port to LTP	avenkat@us.ibm.com
+ * 06/30/2001	Port to Linux	nsharoff@us.ibm.com
  *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *   Copyright (c) Cyril Hrubis <chrubis@suse.cz> 2014
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,20 +20,17 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-			   /*kill1.c */
-/*======================================================================
->KEYS:  < kill(), wait()
->WHAT:  < Check that when a child is killed by its parent, it returns
-        < the correct values to the waiting parent--default behaviour
-	< assumed by child
->HOW:   < For each signal: send that signal to a child, check that the
-	< child returns the correct value to the waiting parent.
->BUGS:  <
->REQUIREMENT(S):  Need to set ulimit to multiples of 1024.
-======================================================================*/
+/*
+
+  Test check that when a child is killed by its parent, it returns the correct
+  values to the waiting parent--default behaviour assumed by child.
+
+ */
+
 #define _GNU_SOURCE 1
 
 #include <stdio.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -41,13 +38,10 @@
 #include <sys/wait.h>
 #include <sys/resource.h>
 
-/*****  LTP Port        *****/
-#include <errno.h>
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
 
-#define ITER    3
 #define FAILED 0
 #define PASSED 1
 
@@ -59,207 +53,146 @@ FILE *temp;
 int TST_TOTAL = 1;
 static int sig;
 
-int anyfail();
-int blenter();
-void setup();
-void terror();
-void fail_exit();
-int forkfail();
-void do_child();
+void setup(void);
+void do_child(void);
 
-/*****  **      **      *****/
+/*
+ * These signals terminate process by default, some create core file.
+ */
+struct tcase {
+	int sig;
+	int dumps_core;
+} tcases[] = {
+	{SIGHUP, 0},
+	{SIGINT, 0},
+	{SIGQUIT, 1},
+	{SIGILL, 1},
+	{SIGTRAP, 1},
+	{SIGABRT, 1},
+	{SIGIOT, 1},
+	{SIGBUS, 1},
+	{SIGFPE, 1},
+	{SIGKILL, 0},
+	{SIGUSR1, 0},
+	{SIGSEGV, 1},
+	{SIGUSR2, 0},
+	{SIGPIPE, 0},
+	{SIGALRM, 0},
+	{SIGTERM, 0},
+	{SIGXCPU, 1},
+	{SIGXFSZ, 1},
+	{SIGVTALRM, 0},
+	{SIGPROF, 0},
+	{SIGIO, 0},
+	{SIGPWR, 0},
+	{SIGSYS, 1},
+};
 
-//char progname[] = "kill1()";
-
-/*--------------------------------------------------------------------*/
-int main(int argc, char **argv)
+static void verify_kill(struct tcase *t)
 {
-/***** BEGINNING OF MAIN. *****/
 	int core;
 	int pid, npid;
-	int nsig, exno, nexno, status;
-	/*SIGIOT is 6, but since linux doesn't have SIGEMT, just using
-	   SIGIOT for place filling */
-	int signum[15];
-	int j;
-	int ret_val = 0;
-#ifdef UCLINUX
-	const char *msg;
-#endif
-	signum[1] = SIGHUP;
-	signum[2] = SIGINT;
-	signum[3] = SIGQUIT;
-	signum[4] = SIGILL;
-	signum[5] = SIGTRAP;
-	signum[6] = SIGABRT;
-	signum[7] = SIGIOT;
-	signum[8] = SIGFPE;
-	signum[9] = SIGKILL;
-	signum[10] = SIGBUS;
-	signum[11] = SIGSEGV;
-	signum[12] = SIGSYS;
-	signum[13] = SIGPIPE;
-	signum[14] = SIGALRM;
+	int nsig, nexno, status;
 
+	if (t->sig != SIGKILL) {
+#ifndef BCS
+		if (t->sig != SIGSTOP)
+#endif
+			if (sigset(t->sig, SIG_DFL) == SIG_ERR) {
+				tst_brkm(TBROK | TERRNO, tst_rmdir,
+				         "sigset(%d) failed", sig);
+			}
+	}
+
+	pid = FORK_OR_VFORK();
+	if (pid < 0)
+		tst_brkm(TBROK | TERRNO, tst_rmdir, "fork() failed");
+
+	if (pid == 0) {
 #ifdef UCLINUX
+		if (self_exec(argv[0], "dd", t->sig) < 0)
+			exit(1);
+#else
+		do_child();
+#endif
+	}
+
+	kill(pid, t->sig);
+	npid = wait(&status);
+
+	if (npid != pid) {
+		tst_resm(TFAIL, "wait() returned %d, expected %d", npid, pid);
+		return;
+	}
+
+	nsig = WTERMSIG(status);
+#ifdef WCOREDUMP
+	core = WCOREDUMP(status);
+#endif
+	nexno = WIFEXITED(status);
+
+	if (t->dumps_core) {
+		if (!core) {
+			tst_resm(TFAIL, "core dump bit not set for %s", tst_strsig(t->sig));
+			return;
+		}
+	} else {
+		if (core) {
+			tst_resm(TFAIL, "core dump bit set for %s", tst_strsig(t->sig));
+			return;
+		}
+	}
+
+	if (nsig != t->sig) {
+		tst_resm(TFAIL, "wait: unexpected signal %d returned, expected %d", nsig, t->sig);
+		return;
+	}
+
+	if (nexno != 0) {
+		tst_resm(TFAIL,
+			"signal: unexpected exit number %d returned, expected 0\n",
+			nexno);
+		return;
+	}
+
+	tst_resm(TPASS, "signal %-16s%s", tst_strsig(t->sig),
+	         t->dumps_core ? " dumped core" : "");
+}
+
+int main(int argc, char **argv)
+{
+	int lc;
+	unsigned int i;
+	const char *msg;
+
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	maybe_run_child(&do_child, "dd", &temp, &sig);
+#ifdef UCLINUX
+	maybe_run_child(&do_child, "dd", &sig);
 #endif
 
 	setup();
-	// tempdir();           /* move to new directory */
-	blenter();
 
-	exno = 1;
-	unlink("core");
-
-	for (j = 1; j < sizeof(signum) / sizeof(*signum); j++) {
-		sig = signum[j];
-		if (sig != SIGKILL)
-#ifndef BCS
-			if (sig != SIGSTOP)
-#endif
-				if (sigset(sig, SIG_DFL) == SIG_ERR) {
-					fprintf(temp, "\tsigset(%d,,) fails\n",
-						sig);
-					local_flag = FAILED;
-					fail_exit();
-				}
-		fflush(temp);
-		pid = FORK_OR_VFORK();
-
-		if (pid < 0) {
-			forkfail();
-		}
-
-		/*
-		 * Child process sleeps for up to 3 minutes giving the
-		 * parent process a chance to kill it.
-		 */
-		if (pid == 0) {
-#ifdef UCLINUX
-			if (self_exec(argv[0], "dd", temp, sig) < 0) {
-				tst_resm(TBROK, "self_exec FAILED - "
-					 "terminating test.");
-				tst_exit();
-				tst_exit();
-			}
-#else
-			do_child();
-#endif
-		}
-
-		/*
-		 * Parent process sends signal to child.
-		 */
-
-		//fprintf(temp, "Testing signal %d\n", sig); 12/12/02
-		kill(pid, sig);
-		npid = wait(&status);
-
-		if (npid != pid) {
-			fprintf(temp, "wait error: unexpected pid returned\n");
-			ret_val = 1;
-		}
-		/* 12/20/02.
-		   nsig = status & 0177;
-		   core = status & 0200;
-		   nexno = (status & 0xff00) >> 8;
-		 */
-		/*****  LTP Port        *****/
-		nsig = WTERMSIG(status);
-#ifdef WCOREDUMP
-		core = WCOREDUMP(status);
-#endif
-		nexno = WIFEXITED(status);
-		/*****  **      **      *****/
-
-		//printf("nsig=%x, core=%x, status=%x\n", nsig,core, status); 12/12/2002
-
-		/* to check if the core dump bit has been set, bit # 7 */
-	/*****	LTP Port	*****/
-		/*  12/12/02: avenkat@us.ibm.com
-		 *  SIGILL when is not caught or not ignored it causes
-		 *  a core dump and program termination.  So moved the condition to
-		 *  else part of the program.
-		 *  SIGQUIT like SIGABRT normally causes a program to quit and
-		 *  and dumps core.  So moved the condition to else part of the
-		 *  program.
-		 */
-	/*****	**	**	*****/
-		if (core) {
-			if ((sig == 1) || (sig == 2)
-			    /*|| (sig == 3) || */
-			    /*(sig == 4) */
-			    || (sig == 9) ||
-			    (sig == 13) || (sig == 14) || (sig == 15)) {
-				fprintf(temp,
-					"signal error: core dump bit set for exception number %d\n",
-					sig);
-				ret_val = 1;
-			}
-		} else {
-			if ((sig == 3) || (sig == 4) || (sig == 5) || (sig == 6)
-			    || (sig == 7) || (sig == 8) || (sig == 10)
-			    || (sig == 11) || (sig == 12)) {
-				fprintf(temp,
-					"signal error: core dump bit not set for exception number %d\n",
-					sig);
-				ret_val = 1;
-			}
-		}
-
-		/* nsig is the signal number returned by wait */
-
-		if (nsig != sig) {
-			fprintf(temp,
-				"wait error: unexpected signal %d returned, expected %d\n",
-				nsig, sig);
-			ret_val = 1;
-		}
-
-		/* nexno is the exit number returned by wait  */
-
-		if (nexno != 0) {
-			fprintf(temp,
-				"signal error: unexpected exit number %d returned, expected 0\n",
-				nexno);
-			ret_val = 1;
-		}
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		for (i = 0; i < ARRAY_SIZE(tcases); i++)
+			verify_kill(tcases + i);
 	}
-	unlink("core");
-	fflush(temp);
-	if (ret_val)
-		local_flag = FAILED;
-	unlink("core");
-	tst_rmdir();
-/*--------------------------------------------------------------------*/
-	anyfail();
-	tst_exit();
-}
 
-/****** LTP Port        *****/
-int anyfail(void)
-{
-	(local_flag == FAILED) ? tst_resm(TFAIL,
-					  "Test failed") : tst_resm(TPASS,
-								    "Test passed");
+	tst_rmdir();
 	tst_exit();
-	return 0;
 }
 
 void do_child(void)
 {
-	register int i;
-	int exno = 1;
+	int i;
 
 	for (i = 0; i < 180; i++)
 		sleep(1);
-	fprintf(temp, "\tChild missed sig %d\n", sig);
-	fflush(temp);
-	_exit(exno);
+
+	fprintf(stderr, "Child missed siggnal");
+	fflush(stderr);
+	exit(1);
 }
 
 /* 1024 GNU blocks */
@@ -280,31 +213,3 @@ void setup(void)
 	temp = stderr;
 	tst_tmpdir();
 }
-
-int blenter(void)
-{
-	//tst_resm(TINFO, "Enter block %d", block_number);
-	local_flag = PASSED;
-	return 0;
-}
-
-void terror(char *message)
-{
-	tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
-}
-
-void fail_exit(void)
-{
-	local_flag = FAILED;
-	anyfail();
-
-}
-
-int forkfail(void)
-{
-	tst_resm(TBROK, "FORK FAILED - terminating test.");
-	tst_exit();
-	return 0;
-}
-
-/****** ** **   *******/
