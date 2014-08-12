@@ -40,6 +40,11 @@ struct kernel_sigaction {
 	sigset_t sa_mask;
 };
 
+/* This macro marks if (struct sigaction) has .sa_restorer member */
+#if !defined(__ia64__) && !defined(__alpha__) && !defined(__hppa__)
+# define HAVE_SA_RESTORER
+#endif
+
 #ifdef __x86_64__
 
 /*
@@ -59,7 +64,6 @@ struct kernel_sigaction {
  * (struct sigaction).sa_restorer for this architecture.
  */
 #undef SA_RESTORER
-#define HAVE_SA_RESTORER
 #define SA_RESTORER     0x04000000
 
 void (*restore_rt)(void);
@@ -203,7 +207,9 @@ static int ltp_rt_sigaction(int signum, const struct sigaction *act,
 			memcpy(&oact->sa_mask, &koact.sa_mask,
 				sizeof(sigset_t));
 			oact->sa_flags = koact.sa_flags;
+#ifdef HAVE_SA_RESTORER
 			oact->sa_restorer = koact.sa_restorer;
+#endif
 		}
 	}
 
