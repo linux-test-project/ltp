@@ -16,27 +16,26 @@
 * Author: Rishikesh K Rajak <risrajak@in.ibm.com>
 ***************************************************************************/
 #include <sched.h>
-#include <stdio.h>
 #include "../libclone/libclone.h"
 #include "test.h"
+#include "safe_macros.h"
 
-const char *TCID = "check_ipcns_enabled";
-
-int dummy(void *v)
+static int dummy_child(void *v)
 {
+	(void) v;
 	return 0;
 }
 
-int main(void)
+static void check_newipc(void)
 {
-	int pid;
+	int pid, status;
 
 	if (tst_kvercmp(2, 6, 19) < 0)
-		return 1;
+		tst_brkm(TCONF, NULL, "CLONE_NEWIPC not supported");
 
-	pid = ltp_clone_quick(CLONE_NEWIPC, dummy, NULL);
-
+	pid = do_clone_unshare_test(T_CLONE, CLONE_NEWIPC, dummy_child, NULL);
 	if (pid == -1)
-		return 3;
-	return 0;
+		tst_brkm(TCONF | TERRNO, NULL, "CLONE_NEWIPC not supported");
+
+	SAFE_WAIT(NULL, &status);
 }

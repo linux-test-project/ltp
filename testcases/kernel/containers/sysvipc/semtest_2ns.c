@@ -45,6 +45,7 @@
 #include <sys/sem.h>
 #include <libclone.h>
 #include "test.h"
+#include "ipcns_helper.h"
 
 #define MY_KEY     124326L
 #define UNSHARESTR "unshare"
@@ -93,6 +94,8 @@ int check_sem1(void *vtest)
 {
 	int id1;
 
+	(void) vtest;
+
 	close(p1[0]);
 	/* 1. Create (or fetch if existing) the binary semaphore */
 	id1 = semget(MY_KEY, 1, IPC_CREAT | IPC_EXCL | 0666);
@@ -126,6 +129,8 @@ int check_sem2(void *vtest)
 	char buf[3];
 	int id2;
 
+	(void) vtest;
+
 	close(p1[1]);
 	close(p2[0]);
 	read(p1[0], buf, 3);
@@ -154,11 +159,19 @@ int check_sem2(void *vtest)
 	return 0;
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newipc();
+}
+
 int main(int argc, char *argv[])
 {
 	int ret, id, use_clone = T_NONE;
 	char *tsttype = NONESTR;
 	char buf[7];
+
+	setup();
 
 	if (argc != 2) {
 		tst_resm(TINFO, "Usage: %s <clone| unshare| none>", argv[0]);

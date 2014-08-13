@@ -37,11 +37,3 @@ fi
 #else
 	#echo "User namespaces not enabled in kernel.  Not running userns tests."
 #fi
-
-check_ipcns_enabled
-if [ $? -eq 0 ]; then
-	echo "Running ipcns tests."
-	runipcnstest.sh
-else
-	echo "ipc namespaces not enabled in kernel.  Not running ipcns tests."
-fi

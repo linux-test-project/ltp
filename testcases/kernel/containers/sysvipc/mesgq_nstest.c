@@ -32,6 +32,7 @@
 #include <sys/msg.h>
 #include <libclone.h>
 #include "test.h"
+#include "ipcns_helper.h"
 
 #define KEY_VAL		154326L
 #define UNSHARESTR	"unshare"
@@ -47,7 +48,7 @@ struct msg_buf {
 	char mtext[80];		/* text of the message */
 } msg;
 
-void mesgq_read(id)
+void mesgq_read(int id)
 {
 	int READMAX = 80;
 	int n;
@@ -66,6 +67,8 @@ int check_mesgq(void *vtest)
 	char buf[3];
 	int id;
 
+	(void) vtest;
+
 	close(p1[1]);
 	close(p2[0]);
 
@@ -82,11 +85,19 @@ int check_mesgq(void *vtest)
 	return 0;
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newipc();
+}
+
 int main(int argc, char *argv[])
 {
 	int ret, use_clone = T_NONE, id, n;
 	char *tsttype = NONESTR;
 	char buf[7];
+
+	setup();
 
 	if (argc != 2) {
 		tst_resm(TFAIL, "Usage: %s <clone|unshare|none>", argv[0]);

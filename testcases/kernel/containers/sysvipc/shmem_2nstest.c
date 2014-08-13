@@ -45,6 +45,7 @@
 #include <sys/shm.h>
 #include <libclone.h>
 #include "test.h"
+#include "ipcns_helper.h"
 
 #define TESTKEY    124426L
 #define UNSHARESTR "unshare"
@@ -62,6 +63,9 @@ int p1[2];
 int check_shmem1(void *vtest)
 {
 	int id1;
+
+	(void) vtest;
+
 	close(p1[0]);
 
 	/* first create the key */
@@ -81,6 +85,9 @@ int check_shmem2(void *vtest)
 {
 	char buf[3];
 	int id2;
+
+	(void) vtest;
+
 	close(p1[1]);
 	close(p2[0]);
 
@@ -102,12 +109,20 @@ int check_shmem2(void *vtest)
 	tst_exit();
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newipc();
+}
+
 int main(int argc, char *argv[])
 {
 	int ret, use_clone = T_NONE;
 	char *tsttype = NONESTR;
 	char buf[7];
 	int id;
+
+	setup();
 
 	if (argc != 2) {
 		tst_resm(TINFO, "Usage: %s <clone| unshare| none>", argv[0]);

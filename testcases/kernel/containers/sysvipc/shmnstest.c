@@ -33,6 +33,7 @@
 #include <sys/shm.h>
 #include "test.h"
 #include <libclone.h>
+#include "ipcns_helper.h"
 
 char *TCID = "sysvipc_namespace";
 int TST_TOTAL = 1;
@@ -45,6 +46,8 @@ int check_shmid(void *vtest)
 {
 	char buf[3];
 	int id;
+
+	(void) vtest;
 
 	close(p1[1]);
 	close(p2[0]);
@@ -61,6 +64,12 @@ int check_shmid(void *vtest)
 	tst_exit();
 }
 
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_newipc();
+}
+
 #define UNSHARESTR "unshare"
 #define CLONESTR "clone"
 #define NONESTR "none"
@@ -70,6 +79,8 @@ int main(int argc, char *argv[])
 	int id;
 	char *tsttype = NONESTR;
 	char buf[7];
+
+	setup();
 
 	if (argc != 2) {
 		tst_resm(TFAIL, "Usage: %s <clone|unshare|none>", argv[0]);

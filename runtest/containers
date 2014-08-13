@@ -29,4 +29,20 @@ crtchild_delchild crtchild_delchild
 par_chld_ipv6 par_chld_ipv6
 par_chld_ftp par_chld_ftp.sh
 
+shmnstest_none shmnstest none
+shmnstest_clone shmnstest clone
+shmnstest_unshare shmnstest unshare
+shmem_2nstest_none shmem_2nstest none
+shmem_2nstest_clone shmem_2nstest clone
+shmem_2nstest_unshare shmem_2nstest unshare
+mesgq_nstest_none mesgq_nstest none
+mesgq_nstest_clone mesgq_nstest clone
+mesgq_nstest_unshare mesgq_nstest unshare
+sem_nstest_none sem_nstest none
+sem_nstest_clone sem_nstest clone
+sem_nstest_unshare sem_nstest unshare
+semtest_2ns_none semtest_2ns none
+semtest_2ns_clone semtest_2ns clone
+semtest_2ns_unshare semtest_2ns unshare
+
 Containers	container_test.sh
