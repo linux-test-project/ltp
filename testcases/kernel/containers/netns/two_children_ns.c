@@ -47,9 +47,17 @@
 #include "libclone.h"
 #include "config.h"
 #include "common.h"
+#include "netns_helper.h"
 
 char *TCID = "netns_2children";
 int TST_TOTAL = 1;
+
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_iproute();
+	check_netns();
+}
 
 int main(void)
 {
@@ -57,6 +65,8 @@ int main(void)
 	long long flags = 0;
 	char *child[2], *par[2];
 	char *ltproot;
+
+	setup();
 
 	flags |= CLONE_NEWNS;
 	flags |= CLONE_NEWNET;
@@ -133,5 +143,7 @@ int main(void)
 			exit(status);
 		}
 	}
-	exit(0);
+
+	tst_resm(TPASS, "two children ns");
+	tst_exit();
 }

@@ -23,4 +23,10 @@ mqns_03_clone mqns_03 -clone
 mqns_04 mqns_04
 mqns_04_clone mqns_04 -clone
 
+crtchild crtchild
+two_children_ns two_children_ns
+crtchild_delchild crtchild_delchild
+par_chld_ipv6 par_chld_ipv6
+par_chld_ftp par_chld_ftp.sh
+
 Containers	container_test.sh

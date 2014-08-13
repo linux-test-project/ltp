@@ -29,6 +29,8 @@ export TCID=${TCID:-initialize}
 export TST_TOTAL=1
 export TST_COUNT=1
 
+. test.sh
+
 TEST_SUBNET=${TEST_SUBNET:=192.168.0}
 i=1
 while [ $i -le 4 ] ; do
@@ -52,11 +54,6 @@ else
     exit 1
 fi
 
-IPver=`ip -V | awk  -F"-" ' { print $2 } '` ;
-if ! printf "%s\n%s\n" "ss080417" "$IPver" | sort -c ; then
-    tst_resm  TINFO "ip version should be atleast ss080417"
-    exit 1
-fi
 i=1
 while [ $i -le 6 ] ; do
     mkfifo /tmp/FIFO$i 2> /dev/null

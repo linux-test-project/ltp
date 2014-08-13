@@ -33,6 +33,8 @@
 # The test case ID, the test case count and the total number of test case
 
 export TCID=${TCID:-childns.sh}
+export TST_COUNT=1
+export TST_TOTAL=1
 . cmdlib.sh
 exists awk grep ip ping sshd
 . initialize.sh

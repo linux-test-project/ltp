@@ -45,11 +45,3 @@ if [ $? -eq 0 ]; then
 else
 	echo "ipc namespaces not enabled in kernel.  Not running ipcns tests."
 fi
-
-check_netns_enabled
-if [ $? -eq 0 ]; then
-	echo "Running netns tests."
-	runnetnstest.sh
-else
-	echo "Network namespaces not enabled in kernel.  Not running netns tests."
-fi

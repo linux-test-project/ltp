@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
@@ -19,18 +21,34 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
-top_srcdir		?= ../../../..
+export TCID=${TCID:-par_chld_ftp.sh}
+export TST_COUNT=1
+export TST_TOTAL=1
 
-include $(top_srcdir)/include/mk/testcases.mk
-include $(abs_srcdir)/../Makefile.inc
+. test.sh
+. daemonlib.sh
 
-INSTALL_TARGETS		:= *.sh container_ftp.pl
+flag=0
 
-LDLIBS			+= -lclone
+status_daemon vsftpd
+if [ $? -ne 0 ]; then
+	start_daemon vsftpd
+	if [ $? -ne 0 ]; then
+		TST_CLEANUP=""
+		tst_brkm TCONF "Can't start vsftp"
+	fi
+	flag=1
+fi
 
-MAKE_TARGETS		:= create_container crtchild crtchild_delchild \
-			   par_chld_ftp par_chld_ipv6 sysfsview two_children_ns
+par_chld_ftp
+if [ $? -eq 0 ]; then
+	tst_resm TPASS "par_child_ftp"
+else
+	tst_resm TFAIL "par_child_ftp"
+fi
 
-$(MAKE_TARGETS): %: common.o %.o
+if [ $flag -eq 1 ]; then
+	stop_daemon vsftpd
+fi
 
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+tst_exit

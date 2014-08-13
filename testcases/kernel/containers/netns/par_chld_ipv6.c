@@ -45,15 +45,25 @@
 #include "test.h"
 #include "config.h"
 #include "common.h"
+#include "netns_helper.h"
 
 char *TCID = "netns_ipv6";
 int TST_TOTAL = 1;
+
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_iproute();
+	check_netns();
+}
 
 int main(void)
 {
 	int pid, status = 0, ret;
 	long int flags = 0;
 	char *ltproot, *par, *child;
+
+	setup();
 
 	flags |= CLONE_NEWNS;
 	flags |= CLONE_NEWNET;
@@ -116,6 +126,7 @@ parent & child NS");
 				 errno);
 			status = errno;
 		}
+		tst_resm(TPASS, "par child ipv6");
 		return status;
 	}
 }

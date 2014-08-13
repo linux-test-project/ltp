@@ -30,12 +30,25 @@
 * =========================================================================*/
 
 #include "common.h"
+#include "netns_helper.h"
 
 const char *TCID = "crtchild_delchild";
+
+static void setup(void)
+{
+	tst_require_root(NULL);
+	check_iproute();
+	check_netns();
+}
 
 int main(void)
 {
 	int status;
+	setup();
 	status = create_net_namespace("delchild.sh", "rename_net.sh");
-	return status;
+	if (status == 0)
+		tst_resm(TPASS, "create_net_namespace");
+	else
+		tst_resm(TFAIL, "create_net_namespace");
+	tst_exit();
 }

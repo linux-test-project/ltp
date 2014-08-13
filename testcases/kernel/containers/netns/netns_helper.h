@@ -22,35 +22,51 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
 #include <sched.h>
 #include "config.h"
 #include "libclone.h"
 #include "linux_syscall_numbers.h"
 #include "test.h"
-
-char *TCID = "check_netns_enabled";
-int TST_COUNT = 1;
-int TST_TOTAL = 1;
-
-#ifndef CLONE_NEWNET
-#define CLONE_NEWNET -1
-#endif
+#include "safe_macros.h"
 
 #ifndef CLONE_NEWNS
 #define CLONE_NEWNS -1
 #endif
 
-int main(void)
+#define IPROUTE_MIN_VER 80725
+
+static void check_iproute(void)
 {
+	FILE *ipf;
+	int n;
+	unsigned int ipver = 0;
+
+	ipf = popen("ip -V", "r");
+	if (ipf == NULL)
+		tst_brkm(TCONF, NULL,
+				"Failed while opening pipe for iproute check");
+
+	n = fscanf(ipf, "ip utility, iproute2-ss%u", &ipver);
+	if (n < 1 || ipver < IPROUTE_MIN_VER)
+		tst_brkm(TCONF, NULL,
+			"iproute tools do not support setting network namespaces");
+
+	pclose(ipf);
+}
+
+static void check_netns(void)
+{
+	int pid, status;
 	/* Checking if the kernel supports unshare with netns capabilities. */
-	if (CLONE_NEWNET == -1 || CLONE_NEWNS == -1)
-		tst_resm(TBROK | TERRNO,
-			 "CLONE_NEWNET (%d) or CLONE_NEWNS (%d) not supported",
-			 CLONE_NEWNET, CLONE_NEWNS);
-	else if (ltp_syscall(__NR_unshare, CLONE_NEWNET | CLONE_NEWNS) == -1)
-		tst_resm(TFAIL | TERRNO, "unshare syscall smoke test failed");
-	else
-		tst_resm(TPASS, "unshare syscall smoke test passed");
-	tst_exit();
+	if (CLONE_NEWNS == -1)
+		tst_brkm(TCONF | TERRNO, NULL, "CLONE_NEWNS (%d) not supported",
+			 CLONE_NEWNS);
+
+	pid = do_clone_unshare_test(T_UNSHARE, CLONE_NEWNET | CLONE_NEWNS, NULL,
+			NULL);
+	if (pid == -1)
+		tst_brkm(TCONF | TERRNO, NULL,
+				"unshare syscall smoke test failed");
+
+	SAFE_WAIT(NULL, &status);
 }
