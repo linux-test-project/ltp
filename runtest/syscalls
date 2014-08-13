@@ -596,7 +596,7 @@ mount02 mount02
 mount03 mount03
 mount04 mount04
 mount05 mount05
-mount06 mount06 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+mount06 mount06
 
 move_pages01 move_pages.sh 01
 move_pages02 move_pages.sh 02

@@ -47,39 +47,25 @@
 static int ismount(char *mntpoint);
 static void setup(void);
 static void cleanup(void);
-static void help(void);
 
 char *TCID = "mount06";
 int TST_TOTAL = 1;
 
-static char *fstype = "ext2";
-
-static int dflag;
-static char *device;
+static const char *fs_type;
+static const char *device;
 static char path_name[PATH_MAX];
 static char mntpoint_src[PATH_MAX];
 static char mntpoint_des[PATH_MAX];
-
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", &dflag, &device},
-	{NULL, NULL, NULL},
-};
+static int mount_flag;
 
 int main(int argc, char *argv[])
 {
 	int lc;
 	const char *msg;
 
-	msg = parse_opts(argc, argv, options, &help);
+	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	/* Check for mandatory option of the testcase */
-	if (!dflag)
-		tst_brkm(TBROK, NULL,
-			 "you must specify the device used for mounting with "
-			 "the -D option");
 
 	setup();
 
@@ -87,11 +73,11 @@ int main(int argc, char *argv[])
 
 		tst_count = 0;
 
-		if (mount(device, mntpoint_src, fstype, 0, NULL) == -1)
+		if (mount(device, mntpoint_src, fs_type, 0, NULL) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "mount %s failed",
 				 mntpoint_src);
 
-		TEST(mount(mntpoint_src, mntpoint_des, fstype, MS_MOVE, NULL));
+		TEST(mount(mntpoint_src, mntpoint_des, fs_type, MS_MOVE, NULL));
 
 		if (TEST_RETURN != 0) {
 			tst_resm(TFAIL | TTERRNO, "mount(2) failed");
@@ -108,8 +94,8 @@ int main(int argc, char *argv[])
 					 "umount(2) failed");
 		}
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
@@ -133,14 +119,21 @@ int ismount(char *mntpoint)
 	return ret;
 }
 
-void setup(void)
+static void setup(void)
 {
 	tst_require_root(NULL);
-	tst_mkfs(NULL, device, fstype, NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_tmpdir();
+
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, device, fs_type, NULL);
 
 	if (getcwd(path_name, sizeof(path_name)) == NULL)
 		tst_brkm(TBROK, cleanup, "getcwd failed");
@@ -151,6 +144,8 @@ void setup(void)
 	 */
 	if (mount(path_name, path_name, "none", MS_BIND, NULL) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "bind mount failed");
+
+	mount_flag = 1;
 
 	if (mount("none", path_name, "none", MS_PRIVATE, NULL) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "mount private failed");
@@ -164,20 +159,15 @@ void setup(void)
 	TEST_PAUSE;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
-	if (umount(path_name) != 0)
-		tst_brkm(TBROK | TERRNO, NULL, "umount(2) %s failed",
-			 path_name);
+	if (mount_flag && umount(path_name) != 0)
+		tst_resm(TWARN | TERRNO, "umount(2) %s failed", path_name);
 
 	TEST_CLEANUP;
 
-	tst_rmdir();
-}
+	if (device)
+		tst_release_device(NULL, device);
 
-void help(void)
-{
-	printf("-T type	  : specifies the type of filesystem to be mounted. "
-	       "Default ext2.\n");
-	printf("-D device : device used for mounting.\n");
+	tst_rmdir();
 }
