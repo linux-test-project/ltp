@@ -55,5 +55,3 @@ utstest_clone_2 utstest clone 2
 utstest_clone_3 utstest clone 3
 utstest_clone_4 utstest clone 4
 utstest_clone_5 utstest clone 5
-
-Containers	container_test.sh
