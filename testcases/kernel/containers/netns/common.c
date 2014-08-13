@@ -45,6 +45,9 @@
 #include "config.h"
 #include "common.h"
 
+#define PARENTNS_SCRIPT "parentns.sh"
+#define CHILDNS_SCRIPT "childns.sh"
+
 static int child_fn(void *c1);
 
 int crtchild(char *s1, char *s2)
@@ -58,11 +61,11 @@ int crtchild(char *s1, char *s2)
 int create_net_namespace(char *p1, char *c1)
 {
 	int pid, status = 0, ret;
-	char *ltproot, *par;
+	char par[FILENAME_MAX];
 	long int clone_flags = 0;
 
 	if (tst_kvercmp(2, 6, 19) < 0)
-		return 1;
+		tst_brkm(TCONF, NULL, "CLONE_NEWPID not supported");
 
 	clone_flags |= CLONE_NEWNS;
 /* Enable other namespaces too optionally */
@@ -77,32 +80,15 @@ int create_net_namespace(char *p1, char *c1)
 		return -1;
 	}
 
-	/* This code will be executed in parent */
-	ltproot = getenv("LTPROOT");
-
-	if (!ltproot) {
-		printf("LTPROOT env variable is not set\n");
-		printf("Please set LTPROOT and re-run the test.. Thankyou\n");
-		return -1;
-	}
-
-	par = malloc(FILENAME_MAX);
-
-	if (par == NULL) {
-		printf("FAIL: error while allocating memory");
-		exit(1);
-	}
-
 	/* We need to pass the child pid to the parentns.sh script */
-	sprintf(par, "%s/testcases/bin/parentns.sh %s %" PRId32, ltproot, p1,
-		pid);
+	sprintf(par, "%s %s %" PRId32, PARENTNS_SCRIPT, p1, pid);
 
 	ret = system(par);
 	status = WEXITSTATUS(ret);
 	if (ret == -1 || status != 0) {
-		printf("Error while running the script\n");
+		tst_resm(TFAIL, "Error while running the script\n");
 		fflush(stdout);
-		exit(1);
+		tst_exit();
 	}
 	fflush(stdout);
 
@@ -118,7 +104,6 @@ int create_net_namespace(char *p1, char *c1)
 /* The function to be executed in the child namespace */
 int child_fn(void *c1)
 {
-	char *ltproot, *child;
 	unsigned long flags = 0;
 #if HAVE_UNSHARE
 	int ret;
@@ -130,22 +115,6 @@ int child_fn(void *c1)
 	flags |= CLONE_NEWUTS;
 	flags |= CLONE_FS;
 
-	ltproot = getenv("LTPROOT");
-
-	if (!ltproot) {
-		printf("LTPROOT env variable is not set\n");
-		printf("Please set LTPROOT and re-run the test..\n");
-		return -1;
-	}
-
-	child = malloc(FILENAME_MAX);
-	if (child == NULL) {
-		printf("FAIL: error while allocating memory");
-		exit(1);
-	}
-
-	sprintf(child, "%s/testcases/bin/childns.sh", ltproot);
-
 	/* Unshare the network namespace in the child */
 #if HAVE_UNSHARE
 	ret = unshare(flags);
@@ -153,7 +122,7 @@ int child_fn(void *c1)
 		perror("Failed to unshare for netns...");
 		return 1;
 	}
-	return crtchild(child, c1);
+	return crtchild(CHILDNS_SCRIPT, c1);
 #else
 	printf("System doesn't support unshare.\n");
 	return -1;

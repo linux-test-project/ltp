@@ -63,8 +63,7 @@ int main(void)
 {
 	int ret, pid[2], status, i;
 	long long flags = 0;
-	char *child[2], *par[2];
-	char *ltproot;
+	char child[2][FILENAME_MAX], par[2][FILENAME_MAX];
 
 	setup();
 
@@ -78,30 +77,12 @@ int main(void)
 
 	/* Checking for Kernel Version */
 	if (tst_kvercmp(2, 6, 19) < 0)
-		return 1;
+		tst_brkm(TCONF, NULL, "CLONE_NEWPID not supported");
 
-	ltproot = getenv("LTPROOT");
-	if (!ltproot) {
-		tst_resm(TINFO, "LTPROOT env variable is not set");
-		tst_resm(TINFO,
-			 "Please set LTPROOT and re-run the test.. Thankyou");
-		return -1;
-	}
-
-	child[0] = malloc(FILENAME_MAX);
-	child[1] = malloc(FILENAME_MAX);
-	par[0] = malloc(FILENAME_MAX);
-	par[1] = malloc(FILENAME_MAX);
-	if (child[0] == NULL || child[1] == NULL ||
-	    par[0] == NULL || par[1] == NULL) {
-		tst_resm(TFAIL, "error while allocating mem");
-		exit(1);
-	}
-
-	sprintf(child[0], "%s/testcases/bin/child_1.sh", ltproot);
-	sprintf(child[1], "%s/testcases/bin/child_2.sh", ltproot);
-	sprintf(par[0], "%s/testcases/bin/parent_1.sh", ltproot);
-	sprintf(par[1], "%s/testcases/bin/parent_2.sh", ltproot);
+	strcpy(child[0], "child_1.sh");
+	strcpy(child[1], "child_2.sh");
+	strcpy(par[0], "parent_1.sh");
+	strcpy(par[1], "parent_2.sh");
 
 	/* Loop for creating two child Network Namespaces */
 	for (i = 0; i < 2; i++) {
@@ -115,10 +96,13 @@ int main(void)
 				perror("Unshare");
 				tst_resm(TFAIL,
 					 "Error:Unshare syscall failed for network namespace");
-				return ret;
+				tst_exit();
 			}
 #endif
-			return crtchild(child[i], NULL);
+			if (crtchild(child[i], NULL) != 0) {
+				tst_resm(TFAIL, "Failed running child script");
+				tst_exit();
+			}
 		} else {
 			//Parent
 
@@ -127,7 +111,7 @@ int main(void)
 			if (ret == -1 || status != 0) {
 				tst_resm(TFAIL,
 					 "Error while running the scripts");
-				exit(status);
+				tst_exit();
 			}
 		}
 	}			//End of FOR Loop
@@ -140,7 +124,7 @@ int main(void)
 			tst_resm(TFAIL, "waitpid() returns %d, errno %d", ret,
 				 status);
 			fflush(stdout);
-			exit(status);
+			tst_exit();
 		}
 	}
 

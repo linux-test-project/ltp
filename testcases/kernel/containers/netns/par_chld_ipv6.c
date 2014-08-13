@@ -50,6 +50,9 @@
 char *TCID = "netns_ipv6";
 int TST_TOTAL = 1;
 
+#define PARENT_SCRIPT "paripv6.sh"
+#define CHILD_SCRIPT "childipv6.sh"
+
 static void setup(void)
 {
 	tst_require_root(NULL);
@@ -61,7 +64,6 @@ int main(void)
 {
 	int pid, status = 0, ret;
 	long int flags = 0;
-	char *ltproot, *par, *child;
 
 	setup();
 
@@ -69,26 +71,7 @@ int main(void)
 	flags |= CLONE_NEWNET;
 
 	if (tst_kvercmp(2, 6, 19) < 0)
-		return 1;
-
-	ltproot = getenv("LTPROOT");
-
-	if (!ltproot) {
-		tst_resm(TINFO, "LTPROOT env variable is not set");
-		tst_resm(TINFO,
-			 "Please set LTPROOT and re-run the test.. Thankyou");
-		return -1;
-	}
-
-	par = malloc(FILENAME_MAX);
-	child = malloc(FILENAME_MAX);
-
-	if (par == NULL || child == NULL) {
-		tst_resm(TFAIL, "error while allocating mem");
-		exit(1);
-	}
-	sprintf(par, "%s/testcases/bin/paripv6.sh", ltproot);
-	sprintf(child, "%s/testcases/bin/childipv6.sh", ltproot);
+		tst_brkm(TCONF, NULL, "CLONE_NEWPID not supported");
 
 	if ((pid = fork()) == 0) {
 
@@ -99,23 +82,26 @@ int main(void)
 			perror("unshare");
 			tst_resm(TFAIL,
 				 "Error:Unshare syscall failed for network namespace");
-			return 1;
+			tst_exit();
 		}
 #else
 		tst_resm(TCONF, "System doesn't have unshare support");
 #endif
-		return crtchild(child, NULL);
+		if (crtchild(CHILD_SCRIPT, NULL) != 0) {
+			tst_resm(TFAIL, "Failed running child script");
+			tst_exit();
+		}
 	} else {
 
 		//parent
-		ret = system(par);
+		ret = system(PARENT_SCRIPT);
 		status = WEXITSTATUS(ret);
 		if (ret == -1 || status != 0) {
 			tst_resm(TFAIL,
 				 "Error: While running the IPv6 tests between \
 parent & child NS");
 			fflush(stdout);
-			exit(1);
+			tst_exit();
 		}
 		fflush(stdout);
 
@@ -124,9 +110,10 @@ parent & child NS");
 		if (status != 0 || ret == -1) {
 			tst_resm(TFAIL, "waitpid() returns %d, errno %d", ret,
 				 errno);
-			status = errno;
+			tst_exit();
 		}
 		tst_resm(TPASS, "par child ipv6");
-		return status;
+		tst_exit();
 	}
+	tst_exit();
 }
