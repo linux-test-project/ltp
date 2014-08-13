@@ -1,5 +1,4 @@
 /*
- * Copyright (c) International Business Machines  Corp., 2007
  * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software;  you can redistribute it and/or modify
@@ -18,20 +17,18 @@
  *
  */
 
-#ifndef VMSPLICE_H
-#define VMSPLICE_H
+#ifndef IOVEC_H
+#define IOVEC_H
 
 #include "config.h"
-#include "linux_syscall_numbers.h"
 
-#include "lapi/iovec.h"
-
-#if !defined(HAVE_VMSPLICE)
-ssize_t vmsplice(int fd, const struct iovec *iov,
-	         unsigned long nr_segs, unsigned int flags)
-{
-	return ltp_syscall(__NR_vmsplice, fd, iov, nr_segs, flags);
-}
+#if !defined(HAVE_STRUCT_IOVEC)
+struct iovec {
+	void *iov_base;
+	size_t iov_len;
+};
+#else
+# include <sys/uio.h>
 #endif
 
-#endif /* VMSPLICE_H */
+#endif /* IOVEC_H */
