@@ -15,13 +15,6 @@ if [ $? -eq 1 ]; then
 	echo "Unshare not supported.  Not running container tests"
 	exit 0
 fi
-check_utsns_enabled
-if [ $? -eq 0 ]; then
-	echo "Running utsns tests."
-	runutstest.sh
-else
-	echo "Uts namespaces not enabled in kernel.  Not running utsns tests."
-fi
 
 #check_userns_enabled
 #if [ $? -eq 0 ]; then

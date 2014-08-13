@@ -54,11 +54,32 @@
 #include <errno.h>
 #include "test.h"
 #include <libclone.h>
+#include "safe_macros.h"
 
 char *TCID = "uts_namespace";
 int TST_TOTAL = 1;
 
-int drop_root()
+static int dummy_child(void *v)
+{
+	(void) v;
+	return 0;
+}
+
+static void check_newuts(void)
+{
+	int pid, status;
+
+	if (tst_kvercmp(2, 6, 19) < 0)
+		tst_brkm(TCONF, NULL, "CLONE_NEWUTS not supported");
+
+	pid = do_clone_unshare_test(T_CLONE, CLONE_NEWUTS, dummy_child, NULL);
+	if (pid == -1)
+		tst_brkm(TCONF | TERRNO, NULL, "CLONE_NEWUTS not supported");
+
+	SAFE_WAIT(NULL, &status);
+}
+
+int drop_root(void)
 {
 	int ret;
 	ret = setresuid(1000, 1000, 1000);
@@ -69,12 +90,13 @@ int drop_root()
 	return 1;
 }
 
-int p1fd[2], p2fd[2];
-pid_t cpid;
-
 #define HLEN 100
 #define NAME1 "serge1"
 #define NAME2 "serge2"
+
+int p1fd[2], p2fd[2];
+static char oldhost[HLEN];
+pid_t cpid;
 
 void picknewhostname(char *orig, char *new)
 {
@@ -198,7 +220,7 @@ int P1(void *vtest)
 	default:
 		break;
 	}
-	return -1;
+	tst_exit();
 }
 
 int P2(void *vtest)
@@ -234,8 +256,7 @@ int P2(void *vtest)
 		}
 		if (hostname[0] == '0') {
 			tst_resm(TPASS, "P2: P1 claims error");
-			tst_exit();
-			exit(0);
+			return 0;
 		}
 		gethostname(hostname, HLEN);
 		picknewhostname(hostname, newhostname);
@@ -246,8 +267,19 @@ int P2(void *vtest)
 		tst_resm(TFAIL, "undefined test: %d", testnum);
 		break;
 	}
-	tst_exit();
 	return 0;
+}
+
+static void setup(void)
+{
+	gethostname(oldhost, HLEN);
+	tst_require_root(NULL);
+	check_newuts();
+}
+
+static void cleanup(void)
+{
+	sethostname(oldhost, strlen(oldhost));
 }
 
 #define UNSHARESTR "unshare"
@@ -258,6 +290,7 @@ int main(int argc, char *argv[])
 	int testnum;
 	void *vtest;
 
+	setup();
 	if (argc != 3) {
 		tst_resm(TFAIL, "Usage: %s <clone|unshare> <testnum>",
 			 argv[0]);
@@ -304,7 +337,6 @@ int main(int argc, char *argv[])
 			if (!drop_root()) {
 				tst_resm(TFAIL, "failed to drop root.");
 				tst_exit();
-				exit(1);
 			}
 			r = do_clone_unshare_test(use_clone, CLONE_NEWUTS,
 						  P1, vtest);
@@ -320,5 +352,6 @@ int main(int argc, char *argv[])
 		break;
 	}
 
+	cleanup();
 	tst_exit();
 }
