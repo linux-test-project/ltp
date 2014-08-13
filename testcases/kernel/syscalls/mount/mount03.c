@@ -48,7 +48,6 @@
 #include "usctest.h"
 #include "safe_macros.h"
 
-static void help(void);
 static void setup(void);
 static void cleanup(void);
 static int test_rwflag(int, int);
@@ -63,9 +62,8 @@ int TST_TOTAL = 7;
 #define SUID_MODE	(S_ISUID|S_IRUSR|S_IXUSR|S_IXGRP|S_IXOTH)
 
 static const char mntpoint[] = "mntpoint";
-static char *fstype = "ext2";
-static char *device;
-static int dflag;
+static const char *device;
+static const char *fs_type;
 static int fildes;
 
 static char write_buffer[BUFSIZ];
@@ -83,26 +81,14 @@ long rwflags[] = {
 	MS_NOATIME,
 };
 
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", &dflag, &device},
-	{NULL, NULL, NULL}
-};
-
 int main(int argc, char *argv[])
 {
 	int lc, i;
 	const char *msg;
 
-	msg = parse_opts(argc, argv, options, &help);
+	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	/* Check for mandatory option of the testcase */
-	if (!dflag)
-		tst_brkm(TBROK, NULL,
-			 "you must specify the device used for mounting with -D "
-			 "option");
 
 	setup();
 
@@ -112,7 +98,7 @@ int main(int argc, char *argv[])
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 
-			TEST(mount(device, mntpoint, fstype, rwflags[i],
+			TEST(mount(device, mntpoint, fs_type, rwflags[i],
 				   NULL));
 
 			if (TEST_RETURN != 0) {
@@ -259,7 +245,7 @@ int test_rwflag(int i, int cnt)
 	case 4:
 		/* Validate MS_REMOUNT flag of mount call */
 
-		TEST(mount(device, mntpoint, fstype, MS_REMOUNT, NULL));
+		TEST(mount(device, mntpoint, fs_type, MS_REMOUNT, NULL));
 		if (TEST_RETURN != 0) {
 			tst_resm(TWARN | TTERRNO, "mount(2) failed to remount");
 			return 1;
@@ -364,9 +350,16 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
-	tst_mkfs(NULL, device, fstype, NULL);
 
 	tst_tmpdir();
+
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, device, fs_type, NULL);
 
 	SAFE_MKDIR(cleanup, mntpoint, DIR_MODE);
 
@@ -386,12 +379,9 @@ static void setup(void)
 static void cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_rmdir();
-}
 
-static void help(void)
-{
-	printf("-T type	  : specifies the type of filesystem to be mounted. "
-	       "Default ext2.\n");
-	printf("-D device : device used for mounting.\n");
+	if (device)
+		tst_release_device(NULL, device);
+
+	tst_rmdir();
 }
