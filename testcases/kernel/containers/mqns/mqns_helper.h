@@ -19,39 +19,37 @@
 #include <sys/mount.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <stdio.h>
 #include "../libclone/libclone.h"
 #include "test.h"
 #include "mqns.h"
+#include "safe_macros.h"
 
-const char *TCID = "check_mqns_enabled";
-
-int dummy(void *v)
+static int dummy_child(void *v)
 {
+	(void) v;
 	return 0;
 }
 
-int main(void)
+static void check_mqns(void)
 {
-	int pid;
+	int pid, status;
 	mqd_t mqd;
 
 	if (tst_kvercmp(2, 6, 30) < 0)
-		return 1;
+		tst_brkm(TCONF, NULL, "Kernel version is lower than expected");
 
 	mq_unlink("/checkmqnsenabled");
 	mqd =
 	    mq_open("/checkmqnsenabled", O_RDWR | O_CREAT | O_EXCL, 0777, NULL);
-	if (mqd == -1) {
-		perror("mq_open");
-		return 3;
-	}
+	if (mqd == -1)
+		tst_brkm(TCONF, NULL, "mq_open check failed");
+
 	mq_close(mqd);
 	mq_unlink("/checkmqnsenabled");
 
-	pid = ltp_clone_quick(CLONE_NEWIPC, dummy, NULL);
+	pid = do_clone_unshare_test(T_CLONE, CLONE_NEWIPC, dummy_child, NULL);
 	if (pid == -1)
-		return 5;
+		tst_brkm(TCONF | TERRNO, NULL, "CLONE_NEWIPC not supported");
 
-	return 0;
+	SAFE_WAIT(NULL, &status);
 }

@@ -14,4 +14,13 @@ pidns20 pidns20
 pidns30 pidns30
 pidns31 pidns31
 
+mqns_01 mqns_01
+mqns_01_clone mqns_01 -clone
+mqns_02 mqns_02
+mqns_02_clone mqns_02 -clone
+mqns_03 mqns_03
+mqns_03_clone mqns_03 -clone
+mqns_04 mqns_04
+mqns_04_clone mqns_04 -clone
+
 Containers	container_test.sh
