@@ -26,11 +26,6 @@
  *	3) ENOENT if pathname was empty or has a nonexistent component.
  *	4) EINVAL if specialfile or device is invalid or not a mount point.
  *	5) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
- *
- * RESTRICTIONS
- *	test must be run with the -D option
- *	test doesn't support -c option to run it in parallel, as mount
- *	syscall is not supposed to run in parallel.
  *****************************************************************************/
 
 #include <errno.h>
@@ -44,7 +39,6 @@
 #include "usctest.h"
 #include "safe_macros.h"
 
-static void help(void);
 static void setup(void);
 static void cleanup(void);
 
@@ -58,9 +52,7 @@ static char long_path[PATH_MAX + 2];
 static int mount_flag;
 static int fd;
 
-static char *fstype;
-static char *device;
-static int Dflag = 0;
+static const char *device;
 
 static struct test_case_t {
 	char *err_desc;
@@ -79,26 +71,13 @@ int TST_TOTAL = ARRAY_SIZE(testcases);
 
 static int exp_enos[] = { EBUSY, EINVAL, EFAULT, ENAMETOOLONG, ENOENT, 0 };
 
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", &Dflag, &device},
-	{NULL, NULL, NULL}
-};
-
 int main(int ac, char **av)
 {
 	int lc, i;
 	const char *msg;
 
-	if ((msg = parse_opts(ac, av, options, &help)))
+	if ((msg = parse_opts(ac, av, NULL, NULL)))
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	/* Check for mandatory option of the testcase */
-	if (Dflag == 0) {
-		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
-			 " mounting with -D option, Run '%s  -h' for option "
-			 " information.", TCID);
-	}
 
 	setup();
 
@@ -129,18 +108,27 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	const char *fs_type;
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
-	tst_mkfs(NULL, device, fstype, NULL);
 
 	tst_tmpdir();
+
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, device, fs_type, NULL);
 
 	memset(long_path, 'a', PATH_MAX + 1);
 
 	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
 
-	if (mount(device, MNTPOINT, fstype, 0, NULL))
+	if (mount(device, MNTPOINT, fs_type, 0, NULL))
 		tst_brkm(TBROK | TERRNO, cleanup, "mount() failed");
 	mount_flag = 1;
 
@@ -161,12 +149,8 @@ static void cleanup(void)
 	if (mount_flag && umount(MNTPOINT))
 		tst_resm(TWARN | TERRNO, "umount() failed");
 
-	tst_rmdir();
-}
+	if (device)
+		tst_release_device(NULL, device);
 
-static void help(void)
-{
-	printf("-T type	  : specifies the type of filesystem to be mounted."
-	       " Default ext2. \n");
-	printf("-D device : device used for mounting \n");
+	tst_rmdir();
 }
