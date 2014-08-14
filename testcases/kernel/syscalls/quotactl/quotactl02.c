@@ -37,7 +37,7 @@
 
 #include "config.h"
 #if defined(HAVE_XFS_QUOTA)
-#include <xfs/xqm.h>
+# include <xfs/xqm.h>
 #endif
 #include "test.h"
 #include "usctest.h"
@@ -59,21 +59,15 @@ static void check_getqstat(void);
 
 static void setup(void);
 static void cleanup(void);
-static void help(void);
 
 static int i;
 static int uid;
-static int dflag;
-static char *block_dev;
+static const char *block_dev;
+static int mount_flag;
 static struct fs_disk_quota dquota;
 static struct fs_quota_stat qstat;
 static unsigned int qflag = XFS_QUOTA_UDQ_ENFD;
 static const char mntpoint[] = "mnt_point";
-
-static option_t options[] = {
-	{"D:", &dflag, &block_dev},
-	{NULL, NULL, NULL},
-};
 
 static struct test_case_t {
 	int cmd;
@@ -93,14 +87,9 @@ int main(int argc, char *argv[])
 	int lc;
 	const char *msg;
 
-	msg = parse_opts(argc, argv, options, &help);
+	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	if (!dflag)
-		tst_brkm(TBROK, NULL,
-			 "you must specify the device used for mounting with "
-			 "the -D option");
 
 	setup();
 
@@ -217,25 +206,28 @@ static void setup(void)
 
 	SAFE_MKDIR(cleanup, mntpoint, 0755);
 
-	tst_mkfs(NULL, block_dev, "xfs", NULL);
+	block_dev = tst_acquire_device(cleanup);
+
+	if (!block_dev)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, block_dev, "xfs", NULL);
 
 	if (mount(block_dev, mntpoint, "xfs", 0, "uquota") < 0)
 		tst_brkm(TFAIL | TERRNO, NULL, "mount(2) fail");
-
+	mount_flag = 1;
 }
 
 static void cleanup(void)
 {
-	if (umount(mntpoint) < 0)
-		tst_resm(TFAIL | TERRNO, "umount(2) fail");
+	if (mount_flag && umount(mntpoint) < 0)
+		tst_resm(TWARN | TERRNO, "umount(2) failed");
+
+	if (block_dev)
+		tst_release_device(NULL, block_dev);
 
 	TEST_CLEANUP;
 	tst_rmdir();
-}
-
-static void help(void)
-{
-	printf("-D device : device used for mounting.\n");
 }
 #else
 int main(void)
