@@ -37,7 +37,6 @@
 #include "usctest.h"
 #include "safe_macros.h"
 
-static void help(void);
 static void setup(void);
 static void cleanup(void);
 
@@ -47,34 +46,20 @@ char *TCID = "umount03";
 #define DIR_MODE	S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH
 #define MNTPOINT	"mntpoint"
 
-static char *fstype = "ext2";
-static char *device;
+static const char *device;
 static int mount_flag;
-static int Dflag = 0;
 
 int TST_TOTAL = 1;
 
 static int exp_enos[] = { EPERM, 0 };
-
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", &Dflag, &device},
-	{NULL, NULL, NULL}
-};
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
 
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	if (Dflag == 0) {
-		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
-			 " mounting with -D option, Run '%s  -h' for option "
-			 " information.", TCID);
-	}
 
 	setup();
 
@@ -103,21 +88,28 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	const char *fs_type;
 	struct passwd *ltpuser;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_EXP_ENOS(exp_enos);
 
 	tst_require_root(NULL);
-	tst_mkfs(NULL, device, fstype, NULL);
 
-	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
+	ltpuser = SAFE_GETPWNAM(NULL, "nobody");
 
 	tst_tmpdir();
 
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, device, fs_type, NULL);
+
 	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
 
-	if (mount(device, MNTPOINT, fstype, 0, NULL))
+	if (mount(device, MNTPOINT, fs_type, 0, NULL))
 		tst_brkm(TBROK | TERRNO, cleanup, "mount() failed");
 	mount_flag = 1;
 
@@ -133,13 +125,9 @@ static void cleanup(void)
 	if (mount_flag && umount(MNTPOINT))
 		tst_resm(TWARN | TERRNO, "umount() failed");
 
+	if (device)
+		tst_release_device(NULL, device);
+
 	TEST_CLEANUP;
 	tst_rmdir();
-}
-
-static void help(void)
-{
-	printf("-T type	  : specifies the type of filesystem to be mounted."
-	       " Default ext2. \n");
-	printf("-D device : device used for mounting \n");
 }

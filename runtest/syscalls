@@ -1302,7 +1302,7 @@ unshare02 unshare02
 #
 umount01 umount01
 umount02 umount02
-umount03 umount03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+umount03 umount03
 
 ustat01 ustat01
 ustat02 ustat02
