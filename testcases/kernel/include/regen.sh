@@ -59,7 +59,11 @@ for arch in $(cat "${srcdir}/order") ; do
 
 	(
 	echo
-	echo "#ifdef __${arch}__"
+	case ${arch} in
+		sparc64) echo "#if defined(__sparc__) && defined(__arch64__)" ;;
+		sparc) echo "#if defined(__sparc__) && !defined(__arch64__)" ;;
+		*) echo "#ifdef __${arch}__" ;;
+	esac
 	while read line ; do
 		set -- ${line}
 		nr="__NR_$1"

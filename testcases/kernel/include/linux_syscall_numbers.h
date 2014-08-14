@@ -8880,7 +8880,7 @@
 #endif
 
 
-#ifdef __sparc64__
+#if defined(__sparc__) && defined(__arch64__)
 # ifndef __NR_restart_syscall
 #  define __NR_restart_syscall 0
 # endif
@@ -8974,20 +8974,11 @@
 # ifndef __NR_utime
 #  define __NR_utime 30
 # endif
-# ifndef __NR_lchown32
-#  define __NR_lchown32 31
-# endif
-# ifndef __NR_fchown32
-#  define __NR_fchown32 32
-# endif
 # ifndef __NR_access
 #  define __NR_access 33
 # endif
 # ifndef __NR_nice
 #  define __NR_nice 34
-# endif
-# ifndef __NR_chown32
-#  define __NR_chown32 35
 # endif
 # ifndef __NR_sync
 #  define __NR_sync 36
@@ -9013,9 +9004,6 @@
 # ifndef __NR_times
 #  define __NR_times 43
 # endif
-# ifndef __NR_getuid32
-#  define __NR_getuid32 44
-# endif
 # ifndef __NR_umount2
 #  define __NR_umount2 45
 # endif
@@ -9036,9 +9024,6 @@
 # endif
 # ifndef __NR_acct
 #  define __NR_acct 51
-# endif
-# ifndef __NR_getgid32
-#  define __NR_getgid32 53
 # endif
 # ifndef __NR_memory_ordering
 #  define __NR_memory_ordering 52
@@ -9088,17 +9073,8 @@
 # ifndef __NR_pwrite64
 #  define __NR_pwrite64 68
 # endif
-# ifndef __NR_geteuid32
-#  define __NR_geteuid32 69
-# endif
-# ifndef __NR_getegid32
-#  define __NR_getegid32 70
-# endif
 # ifndef __NR_mmap
 #  define __NR_mmap 71
-# endif
-# ifndef __NR_setreuid32
-#  define __NR_setreuid32 72
 # endif
 # ifndef __NR_munmap
 #  define __NR_munmap 73
@@ -9112,9 +9088,6 @@
 # ifndef __NR_vhangup
 #  define __NR_vhangup 76
 # endif
-# ifndef __NR_truncate64
-#  define __NR_truncate64 77
-# endif
 # ifndef __NR_mincore
 #  define __NR_mincore 78
 # endif
@@ -9127,14 +9100,8 @@
 # ifndef __NR_getpgrp
 #  define __NR_getpgrp 81
 # endif
-# ifndef __NR_setgroups32
-#  define __NR_setgroups32 82
-# endif
 # ifndef __NR_setitimer
 #  define __NR_setitimer 83
-# endif
-# ifndef __NR_ftruncate64
-#  define __NR_ftruncate64 84
 # endif
 # ifndef __NR_swapon
 #  define __NR_swapon 85
@@ -9142,29 +9109,17 @@
 # ifndef __NR_getitimer
 #  define __NR_getitimer 86
 # endif
-# ifndef __NR_setuid32
-#  define __NR_setuid32 87
-# endif
 # ifndef __NR_sethostname
 #  define __NR_sethostname 88
 # endif
-# ifndef __NR_setgid32
-#  define __NR_setgid32 89
-# endif
 # ifndef __NR_dup2
 #  define __NR_dup2 90
-# endif
-# ifndef __NR_setfsuid32
-#  define __NR_setfsuid32 91
 # endif
 # ifndef __NR_fcntl
 #  define __NR_fcntl 92
 # endif
 # ifndef __NR_select
 #  define __NR_select 93
-# endif
-# ifndef __NR_setfsgid32
-#  define __NR_setfsgid32 94
 # endif
 # ifndef __NR_fsync
 #  define __NR_fsync 95
@@ -9205,21 +9160,6 @@
 # ifndef __NR_rt_sigsuspend
 #  define __NR_rt_sigsuspend 107
 # endif
-# ifndef __NR_setresuid32
-#  define __NR_setresuid32 108
-# endif
-# ifndef __NR_getresuid32
-#  define __NR_getresuid32 109
-# endif
-# ifndef __NR_setresgid32
-#  define __NR_setresgid32 110
-# endif
-# ifndef __NR_getresgid32
-#  define __NR_getresgid32 111
-# endif
-# ifndef __NR_setregid32
-#  define __NR_setregid32 112
-# endif
 # ifndef __NR_setresuid
 #  define __NR_setresuid 108
 # endif
@@ -9237,9 +9177,6 @@
 # endif
 # ifndef __NR_sendmsg
 #  define __NR_sendmsg 114
-# endif
-# ifndef __NR_getgroups32
-#  define __NR_getgroups32 115
 # endif
 # ifndef __NR_gettimeofday
 #  define __NR_gettimeofday 116
@@ -9357,9 +9294,6 @@
 # endif
 # ifndef __NR_getdents64
 #  define __NR_getdents64 154
-# endif
-# ifndef __NR_fcntl64
-#  define __NR_fcntl64 155
 # endif
 # ifndef __NR_inotify_rm_watch
 #  define __NR_inotify_rm_watch 156
@@ -9582,12 +9516,6 @@
 # endif
 # ifndef __NR_setfsgid
 #  define __NR_setfsgid 229
-# endif
-# ifndef __NR_time
-#  define __NR_time 231
-# endif
-# ifndef __NR_time
-#  define __NR_time 231
 # endif
 # ifndef __NR_splice
 #  define __NR_splice 232
@@ -9883,7 +9811,7 @@
 #endif
 
 
-#ifdef __sparc__
+#if defined(__sparc__) && !defined(__arch64__)
 # ifndef __NR_restart_syscall
 #  define __NR_restart_syscall 0
 # endif
