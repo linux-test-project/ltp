@@ -1300,7 +1300,7 @@ unshare02 unshare02
 # to run correctly. Please see individual test
 # code for more information.
 #
-umount01 umount01 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
+umount01 umount01
 umount02 umount02 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 umount03 umount03 -D $LTP_DEV -T $LTP_DEV_FS_TYPE
 

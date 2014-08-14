@@ -18,11 +18,6 @@
  * DESCRIPTION
  *	This is a Phase I test for the umount(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- *
- * RESTRICTIONS
- *	test must run with the -D option
- *	test doesn't support -c option to run it in parallel, as mount
- *	syscall is not supposed to run in parallel.
  *****************************************************************************/
 
 #include <errno.h>
@@ -32,7 +27,6 @@
 #include "test.h"
 #include "usctest.h"
 
-static void help(void);
 static void setup(void);
 static void cleanup(void);
 
@@ -42,37 +36,24 @@ int TST_TOTAL = 1;
 #define DEFAULT_FSTYPE	"ext2"
 #define DIR_MODE	S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH
 
-static char *mntpoint = "mntpoint";
-static char *fstype = "ext2";
-static char *device;
-static int Dflag = 0;
-
-static option_t options[] = {
-	{"T:", NULL, &fstype},
-	{"D:", &Dflag, &device},
-	{NULL, NULL, NULL}
-};
+static const char *mntpoint = "mntpoint";
+static const char *fs_type;
+static const char *device;
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
 
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	if (Dflag == 0) {
-		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
-			 " mounting with -D option, Run '%s  -h' for option "
-			 " information.", TCID);
-	}
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		TEST(mount(device, mntpoint, fstype, 0, NULL));
+		TEST(mount(device, mntpoint, fs_type, 0, NULL));
 
 		if (TEST_RETURN != 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
@@ -103,9 +84,16 @@ static void setup(void)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_require_root(NULL);
-	tst_mkfs(NULL, device, fstype, NULL);
 
 	tst_tmpdir();
+
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, device, fs_type, NULL);
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
@@ -119,12 +107,9 @@ static void setup(void)
 static void cleanup(void)
 {
 	TEST_CLEANUP;
-	tst_rmdir();
-}
 
-static void help(void)
-{
-	printf("-T type	  : specifies the type of filesystem to be mounted."
-	       " Default ext2. \n");
-	printf("-D device : device used for mounting \n");
+	if (device)
+		tst_release_device(NULL, device);
+
+	tst_rmdir();
 }
