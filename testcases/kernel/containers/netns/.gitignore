@@ -1,4 +1,3 @@
-/check_netns_enabled
 /create_container
 /crtchild
 /crtchild_delchild
