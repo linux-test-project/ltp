@@ -21,40 +21,38 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
-# This script verifies the contents of child sysfs is visible in parent NS.
+# This testcase creates the net devices
 
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-parent_view.sh}
+TCID=${TCID:-netns_parent_1.sh}
 TST_TOTAL=1
 TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
 
-    #capture parent /sys contents
-
-    debug "INFO: Parent SYSFS view"
-    ls /sys/class/net > /tmp/parent_sysfs
-    echo PROPAGATE > /tmp/FIFO4
-
-    PROPAGATED=`cat /tmp/FIFO5`
-    ls /tmp/mnt/sys/class/net > /tmp/child_sysfs_in_parent
-    diff /tmp/child_sysfs_in_parent /tmp/child_sysfs
-    if [ $? -eq 0 ]
-    then
-        tst_resm TINFO "Pass: Parent is able to view child sysfs"
-        status=0
+    . netns_initialize.sh
+    echo 1 > /proc/sys/net/ipv4/ip_forward
+    echo 1 > /proc/sys/net/ipv4/conf/$netdev/proxy_arp
+    create_veth
+    vnet0=$dev0
+    vnet1=$dev1
+    if [ -z "$vnet0" -o -z "$vnet1" ] ; then
+        tst_resm TFAIL  "Error: unable to create veth pair in $0"
+        exit 1
     else
-        tst_resm TFAIL "Fail: Parent is not able to view Child-NS sysfs"
-        status=-1
+        debug "INFO: vnet0 = $vnet0 , vnet1 = $vnet1"
     fi
 
-    #cleanup temp files
+    ifconfig $vnet0 $IP1$mask up > /dev/null 2>&1
+    route add -host $IP2 dev $vnet0
+    echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
 
-    rm -f /tmp/child_sysfs_in_parent /tmp/child_sysfs
-    umount /tmp/par_sysfs
-    umount /tmp/mnt
-    sleep 1
-    rm -rf /tmp/par_sysfs /tmp/mnt > /dev/null 2>&1 || true
-    cleanup $sshpid $vnet0
+    pid=`cat /tmp/FIFO2`
+    debug "INFO: The pid of CHILD1 is $pid"
+    ip link set $vnet1 netns $pid
+    echo $vnet1 > /tmp/FIFO1
+
+    debug "INFO: PARENT_1: End of $0"
+    exit 0

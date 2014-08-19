@@ -38,37 +38,23 @@
 #include <sys/wait.h>
 #include "common.h"
 
-const char *TCID = "sysfsview";
+const char *TCID = "netns_sysfsview";
+
+#define SCRIPT "netns_parent_share.sh"
 
 int main(void)
 {
 	int ret, status = 0;
-	char *script, *ltproot;
-
-	ltproot = getenv("LTPROOT");
-	if (!ltproot) {
-		printf("LTPROOT env variable is not set\n");
-		printf("Please set LTPROOT and re-run the test.. Thankyou\n");
-		return -1;
-	}
-
-	script = malloc(FILENAME_MAX);
-	if (script == NULL) {
-		printf("FAIL: error while allocating mem");
-		exit(1);
-	}
-
-	sprintf(script, "%s/testcases/bin/parent_share.sh", ltproot);
 
 	/* Parent should be able to view child sysfs and vice versa */
-	ret = system(script);
+	ret = system(SCRIPT);
 	status = WEXITSTATUS(ret);
 	if (ret == -1 || status != 0) {
-		printf("Error while executing the script %s\n", script);
+		printf("Error while executing the script %s\n", SCRIPT);
 		fflush(stdout);
 		exit(1);
 	}
 
-	status = create_net_namespace("parent_view.sh", "child_propagate.sh");
+	status = create_net_namespace("netns_parent_view.sh", "netns_child_propagate.sh");
 	return status;
 }

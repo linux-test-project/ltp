@@ -18,48 +18,60 @@
 ## along with this program;  if not, write to the Free Software               ##
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
-## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################
+## Author:      Veerendra <veeren@linux.vnet.ibm.com>
 
-# This script Renames the net device of the child ns to $NewNetDev.
+# This script is pinging the child NS.
 
-# set -x
-TCID=${TCID:-rename_net.sh}
+TCID=${TCID:-netns_child_2.sh}
 TST_TOTAL=1
 TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
+. netns_initialize.sh
+status=0
 
-    # Find the free dev name
-    for i in `seq 1 100`
-    do
-        newdev=veth$i
-        ip link show | grep -qw $newdev
-        # On finding free device break.
-        if [ $? != 0 ] ; then
-                break
-        fi
-    done
+    # Writing child PID number into /tmp/FIFO4
+    echo $$ > /tmp/FIFO4
 
-    ifconfig $vnet1 down
-    ip link set $vnet1 name $newdev
-    ifconfig $newdev $IP2/24 up > /dev/null 2>&1
+    # Reading device name from parent
+    vnet2=`cat /tmp/FIFO3`;
+    debug "INFO: CHILD2: Network dev name received $vnet2";
 
-    if [ $? = 0 ] ; then
-        tst_resm TINFO "Successfully Renamed device to $newdev"
-        if [ "$DEBUG" = 1 ]; then
-                ifconfig
+    # By now networking is working
+    ifconfig $vnet2 $IP4$mask up 2> /dev/null
+    ifconfig lo up
+
+    # Creating ssh session
+    /usr/sbin/sshd -p $PORT2
+    if [ $? ]; then
+        debug "INFO: Started the sshd in CHILD2"
+        sshpid2=`ps -ef | grep "sshd -p $PORT2" | awk '{ print $2 ; exit 0} ' `
+
+        ping -qc 2 $IP3 > /dev/null
+        if [ $? -ne 0 ] ; then
+            tst_resm TFAIL "FAIL: Unable to ping Parent2 from Child2"
+            status=-1
         fi
     else
-        tst_resm TFAIL "Renaming of device failed: FAIL"
+        tst_resm TFAIL "FAIL: Unable to start sshd in child1"
+        status=-1
+    fi
+    # Pinging CHILD1 from CHILD2
+    debug "INFO: Trying for pinging CHILD1..."
+
+    ping -qc 2 $IP2 > /dev/null
+    if [ $? -eq 0 ]; then
+        tst_resm TINFO "PASS: CHILD1 is pinging from CHILD2 ! "
+        # Using /tmp/FIFO5 to synchronize with CHILD1
+        echo 0 > /tmp/FIFO5
+        sleep 2
+    else
+        tst_resm TFAIL "FAIL: Unable to ping Child1NS from Child2NS !"
+        echo 1 > /tmp/FIFO5
         status=-1
     fi
 
-    if [ $status = 0 ] ; then
-        echo $sshpid > /tmp/FIFO3
-        echo $newdev > /tmp/FIFO4
-    else
-        echo FAIL > /tmp/FIFO3
-        echo -1 > /tmp/FIFO4
-    fi
+    cleanup $sshpid2 $vnet2
+    debug "INFO: ********End of Child-2 $0********"
+    exit $status

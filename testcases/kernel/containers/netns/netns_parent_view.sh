@@ -21,23 +21,40 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
-# This script checks that the parent namespace is reachable from the child
+# This script verifies the contents of child sysfs is visible in parent NS.
 
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-child.sh}
+TCID=${TCID:-netns_parent_view.sh}
 TST_TOTAL=1
 TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
 
-    ping -qc 2 $IP1 >  /dev/null
+    #capture parent /sys contents
 
-    if [ $? = 0 ] ; then
-        tst_resm TINFO "PASS: Pinging ParentNS from ChildNS"
+    debug "INFO: Parent SYSFS view"
+    ls /sys/class/net > /tmp/parent_sysfs
+    echo PROPAGATE > /tmp/FIFO4
+
+    PROPAGATED=`cat /tmp/FIFO5`
+    ls /tmp/mnt/sys/class/net > /tmp/child_sysfs_in_parent
+    diff /tmp/child_sysfs_in_parent /tmp/child_sysfs
+    if [ $? -eq 0 ]
+    then
+        tst_resm TINFO "Pass: Parent is able to view child sysfs"
         status=0
     else
-        tst_resm TFAIL "FAIL: Unable to ping ParentNS from ChildNS"
-        status=1
+        tst_resm TFAIL "Fail: Parent is not able to view Child-NS sysfs"
+        status=-1
     fi
+
+    #cleanup temp files
+
+    rm -f /tmp/child_sysfs_in_parent /tmp/child_sysfs
+    umount /tmp/par_sysfs
+    umount /tmp/mnt
+    sleep 1
+    rm -rf /tmp/par_sysfs /tmp/mnt > /dev/null 2>&1 || true
+    cleanup $sshpid $vnet0

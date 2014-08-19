@@ -19,7 +19,7 @@
 * It creates veth pair veth8 & veth9. Also assigns IP addresses to the childNS.
 * Also it starts the sshd daemon @ port 7890
 *
-* Scripts Used: parentns.sh childns.sh
+* Scripts Used: netns_parentns.sh netns_childns.sh
 *
 * Author:	  Veerendra <veeren@linux.vnet.ibm.com>
 =========================================================================*/
@@ -45,8 +45,8 @@
 #include "config.h"
 #include "common.h"
 
-#define PARENTNS_SCRIPT "parentns.sh"
-#define CHILDNS_SCRIPT "childns.sh"
+#define PARENTNS_SCRIPT "netns_parentns.sh"
+#define CHILDNS_SCRIPT "netns_childns.sh"
 
 static int child_fn(void *c1);
 

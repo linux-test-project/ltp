@@ -29,7 +29,7 @@
 echo "*****************************************************"
 echo "Running network testcases under containers..."
 
-if ! create_container; then
+if ! netns_create_container; then
 	echo "some of the network testcases under netns failed"
 	exit 1;
 fi

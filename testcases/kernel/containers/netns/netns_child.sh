@@ -19,70 +19,25 @@
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
+################################################################################
 
-################################################################################
-# This test scripts passes the PID of the child NS to the parent NS.
-# Also it assigns the device address and starts the sshd daemon
-# It checks for basic network connection between parent and child.
-# It renames the network device of the child
-#
-# Arguments:    Accepts an argument 'script' and executes on top of this
-################################################################################
-#set -x
+# This script checks that the parent namespace is reachable from the child
+
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-childipv6.sh}
+TCID=${TCID:-netns_child.sh}
 TST_TOTAL=1
 TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-.  initialize.sh
-status=0
 
-    # Passing the PID of child
-    echo $$ > /tmp/FIFO1
+    ping -qc 2 $IP1 >  /dev/null
 
-    # waiting for the virt-eth devname and IPv6 addr from parent
-    vnet1=`cat /tmp/FIFO2`
-    enable_veth_ipv6 $vnet1
-    vnet1_orig_status=$?
-
-    # Assigning the dev addresses
-    ifconfig $vnet1 $IP2/24 up > /dev/null 2>&1
-    ifconfig lo up
-    sleep 2
-
-    #starting the sshd inside the child NS
-    /usr/sbin/sshd -p $PORT
-    if [ $? = 0 ]; then
-        debug "INFO: started the sshd @ port no $PORT"
-        sshpid=`ps -ef | grep "sshd -p $PORT" | awk '{ print $2 ; exit 0} ' `
+    if [ $? = 0 ] ; then
+        tst_resm TINFO "PASS: Pinging ParentNS from ChildNS"
+        status=0
     else
-        tst_resm TFAIL "Failed in starting ssh @ port $PORT"
+        tst_resm TFAIL "FAIL: Unable to ping ParentNS from ChildNS"
         status=1
     fi
-
-    childIPv6=`ip -6 addr show dev $vnet1 | awk ' /inet6/ { print $2 } ' | awk -F"/" ' { print $1 } '`
-    echo $childIPv6 >> /tmp/FIFO3
-
-    parIPv6=`cat /tmp/FIFO4`
-    debug "INFO: Received the Ipv6 addr $parIPv6"
-
-    # checking if parent ns responding
-    ping6 -I $vnet1 -qc 2 $parIPv6 >/dev/null 2>&1
-           if [ $? = 0 ] ; then
-               tst_resm TINFO "IPv6: Pinging Parent from Child: PASS"
-            else
-               tst_resm TFAIL "IPv6: Pinging Parent from Child: FAIL"
-               status=1
-            fi
-    echo $status > /tmp/FIFO6
-
-    if [ $vnet1_orig_status -eq 1 ];then
-       disable_veth_ipv6 $vnet1
-    fi
-
-    debug "INFO: Done with executing child script $0"
-    cleanup $sshpid $vnet1
-    exit $status

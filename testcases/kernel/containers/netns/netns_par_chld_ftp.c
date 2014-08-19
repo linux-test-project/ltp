@@ -20,7 +20,8 @@
 * After creating the NS, this program verifies that the network is reachable
 * from parent-NS to child-NS and vice-versa.
 *
-* Scripts Used: parentns.sh, childns.sh, par_ftp.sh , ch_ftp.sh container_ftp.pl
+* Scripts Used: netns_parentns.sh, netns_childns.sh, netns_par_ftp.sh,
+* netns_ch_ftp.sh, netns_container_ftp.pl
 *
 * Author: Veerendra C <vechandr@in.ibm.com>
 *                      31/07/2008
@@ -29,7 +30,7 @@
 #include "common.h"
 #include "netns_helper.h"
 
-const char *TCID = "par_chld_ftp";
+const char *TCID = "netns_par_chld_ftp";
 
 static void setup(void)
 {
@@ -44,7 +45,7 @@ int main(void)
 
 	setup();
 
-	status = create_net_namespace("par_ftp.sh", "ch_ftp.sh");
+	status = create_net_namespace("netns_par_ftp.sh", "netns_ch_ftp.sh");
 	if (status == 0)
 		tst_resm(TPASS, "create_net_namespace");
 	else

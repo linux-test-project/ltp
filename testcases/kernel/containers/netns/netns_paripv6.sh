@@ -33,13 +33,13 @@
 
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-paripv6.sh}
+TCID=${TCID:-netns_paripv6.sh}
 TST_TOTAL=1
 TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-. initialize.sh
+. netns_initialize.sh
 status=0
 
     # Sets up the infrastructure for creating network NS

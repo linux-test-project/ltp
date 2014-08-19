@@ -20,7 +20,7 @@
 * After creating the NS, this program verifies that the network is reachable
 * from parent-NS to child-NS and vice-versa.
 *
-* Scripts Used: parentns.sh, childns.sh ,  parent.sh , child.sh.
+* Scripts Used: netns_parentns.sh, netns_childns.sh, netns_parent.sh, netns_child.sh.
 *
 * Author: Veerendra C <vechandr@in.ibm.com>
 *                      31/07/2008
@@ -29,7 +29,7 @@
 #include "common.h"
 #include "netns_helper.h"
 
-const char *TCID = "crtchild";
+const char *TCID = "netns_crtchild";
 
 static void setup(void)
 {
@@ -43,7 +43,7 @@ int main(void)
 	int status;
 
 	setup();
-	status = create_net_namespace("parent.sh", "child.sh");
+	status = create_net_namespace("netns_parent.sh", "netns_child.sh");
 	if (status == 0)
 		tst_resm(TPASS, "create_net_namespace");
 	else

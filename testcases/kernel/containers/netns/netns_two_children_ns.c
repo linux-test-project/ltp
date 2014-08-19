@@ -79,10 +79,10 @@ int main(void)
 	if (tst_kvercmp(2, 6, 19) < 0)
 		tst_brkm(TCONF, NULL, "CLONE_NEWPID not supported");
 
-	strcpy(child[0], "child_1.sh");
-	strcpy(child[1], "child_2.sh");
-	strcpy(par[0], "parent_1.sh");
-	strcpy(par[1], "parent_2.sh");
+	strcpy(child[0], "netns_child_1.sh");
+	strcpy(child[1], "netns_child_2.sh");
+	strcpy(par[0], "netns_parent_1.sh");
+	strcpy(par[1], "netns_parent_2.sh");
 
 	/* Loop for creating two child Network Namespaces */
 	for (i = 0; i < 2; i++) {

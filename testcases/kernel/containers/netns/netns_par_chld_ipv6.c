@@ -19,7 +19,7 @@
 * It creates veth pair . Also assigns IP addresses to the childNS.
 * Also it starts the sshd daemon @ port 7890
 *
-* Scripts Used: paripv6.sh childipv6.sh
+* Scripts Used: netns_paripv6.sh childipv6.sh
 *
 * Author: Veerendra C <vechandr@in.ibm.com>
 *                      31/07/2008
@@ -50,8 +50,8 @@
 char *TCID = "netns_ipv6";
 int TST_TOTAL = 1;
 
-#define PARENT_SCRIPT "paripv6.sh"
-#define CHILD_SCRIPT "childipv6.sh"
+#define PARENT_SCRIPT "netns_paripv6.sh"
+#define CHILD_SCRIPT "netns_childipv6.sh"
 
 static void setup(void)
 {

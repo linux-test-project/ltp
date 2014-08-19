@@ -21,52 +21,48 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
-# This script deletes the child ns, and checks the device
-# returned to the parent ns.
-
-# Reading contents of the sys fs to file in Parent
-# set -x
+# This script propagates the child sysfs contents to be visible for parent
+# Also it will check the parent sysfs contents are visible.
+#Propagate child sys directory
 
 # The test case ID, the test case count and the total number of test case
-
-TCID=${TCID:-delchild.sh}
+TCID=${TCID:-netns_child_propagate.sh}
 TST_TOTAL=1
 TST_COUNT=1
+#set -x
 export TCID
 export TST_COUNT
 export TST_TOTAL
 
-    sshpid=`cat /tmp/FIFO3`
-    debug "INFO: ssh pid is  $sshpid"
-    newnet=`cat /tmp/FIFO4`
-    debug "INFO: new dev is  $newnet"
+    ret=0
+    PROPAGATE=`cat /tmp/FIFO4`
+    debug "INFO: CHILD propagated.."
+    mount -t sysfs none /sys || ret=1
+    mkdir -p /tmp/mnt/sys || ret=1
+    mount --bind /sys /tmp/mnt/sys > /dev/null || ret=1
 
-    if [ $newnet = -1 ] ; then
-        status=-1
+    if [ $ret -ne 0 ]; then
+        status=1
+        tst_resm TFAIL "error while doing bind mount"
+        exit $status
     fi
+    #Capture childs sysfs contents
+    ls /sys/class/net > /tmp/child_sysfs
+    echo propagated > /tmp/FIFO5
 
-    ls /sys/class/net > /tmp/sys_b4_child_killed
-    sleep 2
-
-    debug "INFO: Deleting the child NS created.. "
-    debug "INFO: Killing processes $sshpid $pid"
-    kill -9 $sshpid $pid > /dev/null 2>&1
-    sleep 1
-
-    ls /sys/class/net > /tmp/sys_aftr_child_killed
-    diff -q /tmp/sys_b4_child_killed /tmp/sys_aftr_child_killed
-
-    if [ $? = 0 ] ; then
-        debug "INFO: No difference in the contents of sysfs after deleting the child"
+    #Capture parent sysfs in child
+    ls /tmp/par_sysfs/class/net > /tmp/parent_sysfs_in_child
+    diff /tmp/parent_sysfs_in_child /tmp/parent_sysfs > /dev/null 2>&1
+    if [ $? -eq 0 ]
+    then
+        tst_resm TINFO "Pass:Child is able to view parent sysfs"
+        status=0
     else
-        grep -qw $newnet /tmp/sys_aftr_child_killed
-        if [ $? = 0 ]; then
-            debug "INFO: Device $newnet is moved to ParentNS"
-        else
-            debug "INFO: Device $newnet is moved under diff name in ParentNS"
-        fi
+        tst_resm TFAIL "Fail:Child view of sysfs is not same as parent sysfs"
+        status=1
     fi
-    # Cleanup
-    ip link delete $vnet0
-    rm -f /tmp/sys_b4_child_killed /tmp/sys_aftr_child_killed /tmp/FIFO6 > /dev/null
 
+    #cleanup
+    rm -f /tmp/parent_sysfs_in_child /tmp/parent_sysfs
+    umount /tmp/mnt/sys
+    rm -rf /tmp/mnt  > /dev/null 2>&1 || true

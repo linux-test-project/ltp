@@ -21,31 +21,34 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
-# This script is executed in the parent NS.
-# It binds and does sharable mount of sysfs .
-#
-#For child to refer parent sys
-# set -x
-
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-parent_share.sh}
+TCID=${TCID:-netns_parent_2.sh}
 TST_TOTAL=1
 TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-ret=0
-. initialize.sh
+. netns_initialize.sh
 
-    mkdir -p /tmp/par_sysfs /tmp/mnt || ret=1
-    mount --bind /sys /tmp/par_sysfs || ret=1
+    create_veth
+    vnet2=$dev0
+    vnet3=$dev1
 
-    #share parent namespace
-    mount --bind /tmp/mnt /tmp/mnt || ret=1
-    #mount --make-shared /mnt
-    $smount /tmp/mnt shared > /dev/null || ret=1
-    if [ $ret -ne 0 ] ; then
-        tst_resm TFAIL "Error while doing shared mount"
+    if [ -z "$vnet2" -o -z "$vnet3" ] ; then
+        tst_resm TFAIL  "Error: unable to create veth pair in $0"
         exit 1
+    else
+        debug "INFO: vnet2 = $vnet2 , vnet3 = $vnet3"
     fi
+    ifconfig $vnet2 $IP3$mask up > /dev/null 2>&1
+    route add -host $IP4 dev $vnet2
+    echo 1 > /proc/sys/net/ipv4/conf/$vnet2/proxy_arp
+
+    pid=`cat /tmp/FIFO4`
+    debug "INFO: The pid of CHILD2 is $pid"
+    ip link set $vnet3 netns $pid
+    echo $vnet3 > /tmp/FIFO3
+
+    debug "INFO: PARENT-2: End of $0"
+    exit 0

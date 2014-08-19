@@ -21,76 +21,73 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
+
 ################################################################################
-# This script creates 2 veth devices.
-# It will assign $IP1 to vnet0 .
-# And defines the $IP2 as route to vnet1
-# Also it assigns the $vnet1 to child network-NS
+# This test scripts passes the PID of the child NS to the parent NS.
+# Also it assigns the device address and starts the sshd daemon
+# It checks for basic network connection between parent and child.
 #
 # Arguments:    Accepts an argument 'script' and executes on top of this
 ################################################################################
-
+# set -x
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-parentns.sh}
-TST_TOTAL=1
-TST_COUNT=1
-export TCID
-export TST_COUNT
-export TST_TOTAL
-#set -x
-. initialize.sh
+export TCID=${TCID:-netns_childns.sh}
+export TST_COUNT=1
+export TST_TOTAL=1
+. cmdlib.sh
+exists awk grep ip ping sshd
+. netns_initialize.sh
 status=0
 
-    # Checks if any script is passed as argument.
-    if [ $# = 2 ]; then
-        scrpt=$1
-        debug "INFO: Script to be executed in parent NS is $scrpt"
+SSHD=`which sshd`
+
+if [ $# -eq 1 ] ; then
+    childscrpt=$1
+    debug "INFO: The script to be executed in child NS is $childscrpt"
+fi
+
+# Passing the PID of child
+echo "child ready" > /tmp/FIFO1;
+
+# waiting for the device name from parent
+vnet1=`cat /tmp/FIFO2`;
+debug "INFO: network dev name received $vnet1";
+# Assigning the dev addresses
+if ! ifconfig $vnet1 $IP2/24 up > /dev/null 2>&1 ; then
+    debug "Failed to make interface $vnet1 up in child....."
+fi
+
+ifconfig lo up
+sleep 2
+
+#starting the sshd inside the child NS
+if $SSHD -p $PORT; then
+    debug "INFO: started the sshd @ port no $PORT"
+    sshpid=`ps -ef | grep "sshd -p $PORT" | grep -v grep | awk '{ print $2 ; exit 0} ' `
+else
+    tst_resm TFAIL "Failed in starting ssh @ port $PORT"
+    cleanup $vnet1
+    status=1
+fi
+
+if [ $status -eq 0 ] ; then
+
+    # checking if parent ns responding
+    if ! ping -q -c 2 $IP1 > /dev/null ; then
+        tst_resm TFAIL "FAIL: ParentNS not responding"
+        status=1
+        cleanup $sshpid $vnet1
+        exit $status
     fi
 
-    # Sets up the infrastructure for creating network NS
-
-    echo 1 > /proc/sys/net/ipv4/ip_forward
-    echo 1 > /proc/sys/net/ipv4/conf/$netdev/proxy_arp
-
-    create_veth
-    vnet0=$dev0
-    vnet1=$dev1
-    if [ -z "$vnet0" -o -z "$vnet1" ] ; then
-        tst_resm TFAIL  "Error: unable to create veth pair"
-        exit 1
-    else
-        debug "INFO: vnet0 = $vnet0 , vnet1 = $vnet1"
-    fi
-    sleep 2
-
-    ifconfig $vnet0 $IP1/24 up > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		debug "Failed to make interface $vnet0 up in parent....."
-	fi
-    route add -host $IP2 dev $vnet0
-	if [ $? -ne 0 ]; then
-		debug "Failed to add route to child in parent for $vnet0....."
-	fi
-    echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
-
-    # Waits for the Child-NS to get created and reads the PID
-    tmp=`cat /tmp/FIFO1`;
-    pid=$2;
-    debug "INFO: the pid of child is $pid"
-    ip link set $vnet1 netns $pid
-    if [ $? -ne 0 ]; then
-	echo "Failed to assign network device to child .........."
+    if [ -f "$childscrpt" ]; then
+        . "$childscrpt"
     fi
 
-    # Passes the device name to Child NS
-    echo $vnet1 > /tmp/FIFO2
+    cleanup $sshpid $vnet1
+    debug "INFO: Done with executing child script $0, status is $status"
 
-    # Executes the script if it is passed as an argument.
-    if [ ! -z $scrpt ] && [ -f $scrpt ] ;  then
-        . $scrpt
-    fi
+fi
 
-    debug "INFO: Done executing parent script $0, status is $status "
-    exit $status
-
+exit $status

@@ -24,12 +24,14 @@ top_srcdir		?= ../../../..
 include $(top_srcdir)/include/mk/testcases.mk
 include $(abs_srcdir)/../Makefile.inc
 
-INSTALL_TARGETS		:= *.sh container_ftp.pl
+INSTALL_TARGETS		:= *.sh netns_container_ftp.pl
 
 LDLIBS			+= -lclone
 
-MAKE_TARGETS		:= create_container crtchild crtchild_delchild \
-			   par_chld_ftp par_chld_ipv6 sysfsview two_children_ns
+MAKE_TARGETS		:= netns_create_container netns_crtchild \
+			   netns_crtchild_delchild netns_par_chld_ftp \
+			   netns_par_chld_ipv6 netns_sysfsview \
+			   netns_two_children_ns
 
 $(MAKE_TARGETS): %: common.o %.o
 

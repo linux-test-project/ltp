@@ -25,7 +25,7 @@
 
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-parent.sh}
+TCID=${TCID:-netns_parent.sh}
 TST_TOTAL=1
 TST_COUNT=1
 export TCID

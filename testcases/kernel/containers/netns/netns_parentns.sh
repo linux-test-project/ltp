@@ -21,38 +21,76 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
-# This testcase creates the net devices
+################################################################################
+# This script creates 2 veth devices.
+# It will assign $IP1 to vnet0 .
+# And defines the $IP2 as route to vnet1
+# Also it assigns the $vnet1 to child network-NS
+#
+# Arguments:    Accepts an argument 'script' and executes on top of this
+################################################################################
 
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-parent_1.sh}
+TCID=${TCID:-netns_parentns.sh}
 TST_TOTAL=1
 TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
+#set -x
+. netns_initialize.sh
+status=0
 
-    . initialize.sh
+    # Checks if any script is passed as argument.
+    if [ $# = 2 ]; then
+        scrpt=$1
+        debug "INFO: Script to be executed in parent NS is $scrpt"
+    fi
+
+    # Sets up the infrastructure for creating network NS
+
     echo 1 > /proc/sys/net/ipv4/ip_forward
     echo 1 > /proc/sys/net/ipv4/conf/$netdev/proxy_arp
+
     create_veth
     vnet0=$dev0
     vnet1=$dev1
     if [ -z "$vnet0" -o -z "$vnet1" ] ; then
-        tst_resm TFAIL  "Error: unable to create veth pair in $0"
+        tst_resm TFAIL  "Error: unable to create veth pair"
         exit 1
     else
         debug "INFO: vnet0 = $vnet0 , vnet1 = $vnet1"
     fi
+    sleep 2
 
-    ifconfig $vnet0 $IP1$mask up > /dev/null 2>&1
+    ifconfig $vnet0 $IP1/24 up > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		debug "Failed to make interface $vnet0 up in parent....."
+	fi
     route add -host $IP2 dev $vnet0
+	if [ $? -ne 0 ]; then
+		debug "Failed to add route to child in parent for $vnet0....."
+	fi
     echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
 
-    pid=`cat /tmp/FIFO2`
-    debug "INFO: The pid of CHILD1 is $pid"
+    # Waits for the Child-NS to get created and reads the PID
+    tmp=`cat /tmp/FIFO1`;
+    pid=$2;
+    debug "INFO: the pid of child is $pid"
     ip link set $vnet1 netns $pid
-    echo $vnet1 > /tmp/FIFO1
+    if [ $? -ne 0 ]; then
+	echo "Failed to assign network device to child .........."
+    fi
 
-    debug "INFO: PARENT_1: End of $0"
-    exit 0
+    # Passes the device name to Child NS
+    echo $vnet1 > /tmp/FIFO2
+
+    # Executes the script if it is passed as an argument.
+    if [ ! -z $scrpt ] && [ -f $scrpt ] ;  then
+        . $scrpt
+    fi
+
+    debug "INFO: Done executing parent script $0, status is $status "
+    exit $status
+

@@ -91,7 +91,7 @@ cleanup()
     #Restoring the orignial values .
     echo "$ipfwd" > /proc/sys/net/ipv4/ip_forward
     if [ -f /proc/sys/net/ipv4/conf/$netdev/proxy_arp ] ; then
-    	echo $arpproxy > /proc/sys/net/ipv4/conf/$netdev/proxy_arp
+        echo $arpproxy > /proc/sys/net/ipv4/conf/$netdev/proxy_arp
     fi
     ( kill -s KILL $pid ) 2> /dev/null
     rm -f /tmp/FIFO1 /tmp/FIFO2 /tmp/FIFO3 /tmp/FIFO4 /tmp/FIFO5 /tmp/FIFO6

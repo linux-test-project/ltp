@@ -23,7 +23,8 @@
 * The system should remain stable and also checks sysfs contents of parent NS.
 * It returns PASS on Success else returns FAIL.
 *
-* Scripts used: parentns.sh, childns.sh , delchild.sh rename_net.sh
+* Scripts used: netns_parentns.sh, netns_childns.sh , netns_delchild.sh
+* netns_rename_net.sh
 *
 * Author: Veerendra C <vechandr@in.ibm.com>
 *                      31/07/2008
@@ -32,7 +33,7 @@
 #include "common.h"
 #include "netns_helper.h"
 
-const char *TCID = "crtchild_delchild";
+const char *TCID = "netns_crtchild_delchild";
 
 static void setup(void)
 {
@@ -45,7 +46,7 @@ int main(void)
 {
 	int status;
 	setup();
-	status = create_net_namespace("delchild.sh", "rename_net.sh");
+	status = create_net_namespace("netns_delchild.sh", "netns_rename_net.sh");
 	if (status == 0)
 		tst_resm(TPASS, "create_net_namespace");
 	else

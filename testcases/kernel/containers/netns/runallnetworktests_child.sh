@@ -33,7 +33,7 @@ if [ $? -ne 0 ]; then
 	exit 1;
 fi
 
-. initialize.sh;
+. netns_initialize.sh;
 
 /etc/init.d/xinetd restart;
 if [ $? -ne 0 ]; then

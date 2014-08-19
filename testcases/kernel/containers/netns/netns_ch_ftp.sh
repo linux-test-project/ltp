@@ -1,5 +1,4 @@
 #!/bin/bash
-
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2008                 ##
@@ -18,37 +17,28 @@
 ## along with this program;  if not, write to the Free Software               ##
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
 ##                                                                            ##
-## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
-################################################################################
 
-export TCID=${TCID:-par_chld_ftp.sh}
-export TST_COUNT=1
-export TST_TOTAL=1
+## This script checks that the parent namespace is reachable from the child
+## Author:      Veerendra <veeren@linux.vnet.ibm.com>
 
-. test.sh
-. daemonlib.sh
+TCID=${TCID:-netns_ch_ftp.sh}
+TST_TOTAL=1
+TST_COUNT=1
+export TCID
+export TST_COUNT
+export TST_TOTAL
 
-flag=0
-
-status_daemon vsftpd
-if [ $? -ne 0 ]; then
-	start_daemon vsftpd
-	if [ $? -ne 0 ]; then
-		TST_CLEANUP=""
-		tst_brkm TCONF "Can't start vsftp"
-	fi
-	flag=1
-fi
-
-par_chld_ftp
-if [ $? -eq 0 ]; then
-	tst_resm TPASS "par_child_ftp"
-else
-	tst_resm TFAIL "par_child_ftp"
-fi
-
-if [ $flag -eq 1 ]; then
-	stop_daemon vsftpd
-fi
-
-tst_exit
+    ping -q -c 2 $IP1 > /dev/null
+    if [ $? -ne 0 ] ; then
+        tst_resm TFAIL "Pinging parent NS from child : FAIL"
+        status=-1
+    else
+        debug "INFO: Pinging parent NS from child "
+        eval netns_container_ftp.pl $IP1
+        status=$?
+        if [ $status -ne 0 ] ; then
+            tst_resm TFAIL "ftp failed"
+            status=1
+        fi
+    fi
+    echo $status > /tmp/FIFO6
