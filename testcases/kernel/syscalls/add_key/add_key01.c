@@ -24,16 +24,21 @@
  *	      Manas Kumar Nayak maknayak@in.ibm.com>
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <errno.h>
-#include <linux/keyctl.h>
-
+#ifdef HAVE_LINUX_KEYCTL_H
+# include <linux/keyctl.h>
+#endif
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 char *TCID = "add_key01";
 int TST_TOTAL = 1;
+
+#ifdef HAVE_LINUX_KEYCTL_H
 
 static void cleanup(void)
 {
@@ -68,3 +73,9 @@ int main(int ac, char **av)
 	cleanup();
 	tst_exit();
 }
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "linux/keyctl.h was missing upon compilation.");
+}
+#endif /* HAVE_LINUX_KEYCTL_H */
