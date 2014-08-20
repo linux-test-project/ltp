@@ -50,6 +50,7 @@
 #include <string.h>
 #include <signal.h>
 #include <pwd.h>
+#include <sys/resource.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -65,6 +66,7 @@
 #define NEW_MODE	S_IRUSR | S_IRGRP | S_IROTH
 #define DIR_MODE	S_IRWXU
 #define TRUNC_LEN	256
+#define MAX_FSIZE	(16*1024*1024)
 
 static char long_pathname[PATH_MAX + 2];
 
@@ -82,7 +84,7 @@ static struct test_case_t {
 	{ long_pathname, TRUNC_LEN, ENAMETOOLONG },
 	{ "", TRUNC_LEN, ENOENT },
 	{ TEST_DIR1, TRUNC_LEN, EISDIR },
-	{ TEST_FILE3, LLONG_MAX, EFBIG },
+	{ TEST_FILE3, MAX_FSIZE*2, EFBIG },
 	{ TEST_SYM1, TRUNC_LEN, ELOOP }
 };
 
@@ -124,6 +126,8 @@ void setup(void)
 {
 	struct passwd *ltpuser;
 	char *bad_addr;
+	struct rlimit rlim;
+	sigset_t sigset;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -156,6 +160,16 @@ void setup(void)
 
 	SAFE_SYMLINK(cleanup, TEST_SYM1, TEST_SYM2);
 	SAFE_SYMLINK(cleanup, TEST_SYM2, TEST_SYM1);
+
+	rlim.rlim_cur = MAX_FSIZE;
+	rlim.rlim_max = MAX_FSIZE;
+	SAFE_SETRLIMIT(cleanup, RLIMIT_FSIZE, &rlim);
+
+	sigemptyset(&sigset);
+	sigaddset(&sigset, SIGXFSZ);
+	TEST(sigprocmask(SIG_BLOCK, &sigset, NULL));
+	if (TEST_RETURN != 0)
+		tst_brkm(TBROK | TTERRNO, cleanup, "sigprocmask");
 }
 
 void truncate_verify(struct test_case_t *tc)
