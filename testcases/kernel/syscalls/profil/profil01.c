@@ -31,9 +31,11 @@
 
 #define PROFIL_TIME 5
 
-/* should be large enough to hold data for test_profil() .text
- * on x86_64 this is ~600 bytes, so 16k should enough for all arches */
-#define PROFIL_BUFLEN (16*1024)
+/* Should be large enough to hold data for test_profil() .text,
+ * on x86_64 this is ~600 bytes, so 16k should enough for all arches.
+ * We will monitor 16k on each side around current pc value,
+ * just in case compiler put call to get_pc() below "data shuffling" code */
+#define PROFIL_BUFLEN (32*1024)
 
 char *TCID = "profil01";
 int TST_TOTAL = 1;
@@ -46,11 +48,16 @@ static void alrm_handler(int sig)
 	profil_done = 1;
 }
 
+static void __attribute__ ((noinline)) *get_pc(void)
+{
+	return __builtin_return_address(0);
+}
+
 static void test_profil(void)
 {
 	unsigned short buf[PROFIL_BUFLEN] = { 0 };
 	volatile int data[8] = { 0 };
-	size_t offset = (size_t) &test_profil, count = 0;
+	size_t offset = (size_t) get_pc() - PROFIL_BUFLEN/2, count = 0;
 	int ret, i;
 
 	/* reset for test looping */
