@@ -26,15 +26,13 @@
 
 #include "config.h"
 #include <sys/types.h>
-#if HAVE_KEYCTL_SYSCALL
-#include <linux/keyctl.h>
-#endif
 #include <errno.h>
-#if HAVE_KEYCTL_SYSCALL
-#include <keyutils.h>
-#endif
 #include <limits.h>
 #include <stdio.h>
+#include <stdint.h>
+#ifdef HAVE_LINUX_KEYCTL_H
+# include <linux/keyctl.h>
+#endif
 
 #include "test.h"
 #include "usctest.h"
@@ -44,7 +42,7 @@ char *TCID = "keyctl01";
 int testno;
 int TST_TOTAL = 2;
 
-#if HAVE_KEYCTL_SYSCALL
+#ifdef HAVE_LINUX_KEYCTL_H
 
 static void cleanup(void)
 {
@@ -62,7 +60,7 @@ int main(int ac, char **av)
 {
 	int ret;
 	int lc;
-	key_serial_t ne_key;
+	int32_t ne_key;
 	const char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -124,4 +122,4 @@ int main(void)
 {
 	tst_brkm(TCONF, NULL, "keyctl syscall support not available on system");
 }
-#endif
+#endif /* HAVE_LINUX_KEYCTL_H */
