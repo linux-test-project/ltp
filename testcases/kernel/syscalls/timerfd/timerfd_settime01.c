@@ -58,6 +58,7 @@ static void setup(void);
 static void timerfd_settime_verify(const struct test_case_t *);
 static void cleanup(void);
 static int exp_enos[] = { EBADF, EFAULT, EINVAL, 0 };
+static struct itimerspec new_value;
 
 int main(int argc, char *argv[])
 {
@@ -103,7 +104,6 @@ static void setup(void)
 
 static void timerfd_settime_verify(const struct test_case_t *test)
 {
-	struct itimerspec new_value;
 	TEST(timerfd_settime(*test->fd, test->flags, &new_value,
 			     test->old_value));
 
