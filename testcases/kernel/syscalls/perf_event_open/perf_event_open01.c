@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*                                                                            */
-/* Ingo Molnar <mingo@elte.hu>, 2009					      */
+/* Ingo Molnar <mingo@elte.hu>, 2009                                          */
 /*                                                                            */
 /* This program is free software;  you can redistribute it and/or modify      */
 /* it under the terms of the GNU General Public License as published by       */
@@ -36,6 +36,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <stdint.h>
 #include "config.h"
 #if HAVE_PERF_EVENT_ATTR
 # include <linux/perf_event.h>
@@ -47,24 +48,33 @@
 #include "safe_macros.h"
 
 char *TCID = "perf_event_open01";
-int TST_TOTAL = 6;
 
 #if HAVE_PERF_EVENT_ATTR
 static void setup(void);
 static void cleanup(void);
 
 static struct test_case_t {
-	const char *name;
-	unsigned long long val;
-} hw_event_types[] = {
-	{ "PERF_COUNT_HW_CPU_CYCLES", PERF_COUNT_HW_CPU_CYCLES },
-	{ "PERF_COUNT_HW_INSTRUCTIONS", PERF_COUNT_HW_INSTRUCTIONS },
-	{ "PERF_COUNT_HW_CACHE_REFERENCES", PERF_COUNT_HW_CACHE_REFERENCES },
-	{ "PERF_COUNT_HW_CACHE_MISSES", PERF_COUNT_HW_CACHE_MISSES },
-	{ "PERF_COUNT_HW_BRANCH_INSTRUCTIONS",
+	uint32_t type;
+	const char *config_name;
+	unsigned long long config;
+} event_types[] = {
+	{ PERF_TYPE_HARDWARE, "PERF_COUNT_HW_INSTRUCTIONS",
+	  PERF_COUNT_HW_INSTRUCTIONS },
+	{ PERF_TYPE_HARDWARE, "PERF_COUNT_HW_CACHE_REFERENCES",
+	  PERF_COUNT_HW_CACHE_REFERENCES },
+	{ PERF_TYPE_HARDWARE, "PERF_COUNT_HW_CACHE_MISSES",
+	  PERF_COUNT_HW_CACHE_MISSES },
+	{ PERF_TYPE_HARDWARE, "PERF_COUNT_HW_BRANCH_INSTRUCTIONS",
 	  PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
-	{ "PERF_COUNT_HW_BRANCH_MISSES", PERF_COUNT_HW_BRANCH_MISSES },
+	{ PERF_TYPE_HARDWARE, "PERF_COUNT_HW_BRANCH_MISSES",
+	  PERF_COUNT_HW_BRANCH_MISSES },
+	{ PERF_TYPE_SOFTWARE, "PERF_COUNT_SW_CPU_CLOCK",
+	  PERF_COUNT_SW_CPU_CLOCK },
+	{ PERF_TYPE_SOFTWARE, "PERF_COUNT_SW_TASK_CLOCK",
+	  PERF_COUNT_SW_TASK_CLOCK },
 };
+
+int TST_TOTAL = ARRAY_SIZE(event_types);
 
 static void verify(struct test_case_t *tc);
 static struct perf_event_attr pe;
@@ -84,7 +94,7 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++)
-			verify(&hw_event_types[i]);
+			verify(&event_types[i]);
 	}
 
 	cleanup();
@@ -105,7 +115,6 @@ static void setup(void)
 
 	TEST_PAUSE;
 
-	pe.type = PERF_TYPE_HARDWARE;
 	pe.size = sizeof(struct perf_event_attr);
 	pe.disabled = 1;
 	pe.exclude_kernel = 1;
@@ -139,12 +148,19 @@ static void verify(struct test_case_t *tc)
 	unsigned long long count;
 	int fd, ret;
 
-	pe.config = tc->val;
+	pe.type = tc->type;
+	pe.config = tc->config;
 
 	TEST(perf_event_open(&pe, 0, -1, -1, 0));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL | TTERRNO, cleanup,
-			 "perf_event_open failed unexpectedly");
+		if (TEST_ERRNO == ENOENT) {
+			tst_resm(TCONF,
+			         "perf_event_open for %s not supported",
+			         tc->config_name);
+		} else {
+			tst_brkm(TFAIL | TTERRNO, cleanup,
+				 "perf_event_open failed unexpectedly");
+		}
 		return;
 	}
 
@@ -172,7 +188,7 @@ static void verify(struct test_case_t *tc)
 		tst_resm(TINFO, "read event counter succeeded, "
 			 "value: %llu", count);
 		tst_resm(TPASS, "test PERF_TYPE_HARDWARE: %s succeeded",
-			 tc->name);
+			 tc->config_name);
 	} else {
 		tst_resm(TFAIL | TERRNO, "read event counter failed");
 	}
