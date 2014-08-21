@@ -47,11 +47,8 @@ AC_ARG_WITH([linux-dir],
 AC_SUBST(LINUX_DIR)
 
 if test -f "$LINUX_DIR/Makefile"; then
-	LINUX_VERSION_MAJOR=`sed -n '0,/^VERSION = [[0-9]]*/s,\
-^VERSION = ,,p' ${LINUX_DIR}/Makefile`
-
-	LINUX_VERSION_PATCH=`sed -n '0,/^PATCHLEVEL = [[0-9]]*/s,\
-^PATCHLEVEL = ,,p' ${LINUX_DIR}/Makefile`
+	LINUX_VERSION_MAJOR=`make -C ${LINUX_DIR} -s kernelversion | cut -d. -f1`
+	LINUX_VERSION_PATCH=`make -C ${LINUX_DIR} -s kernelversion | cut -d. -f2`
 fi
 
 if test -n "$LINUX_VERSION_MAJOR" -a -n "$LINUX_VERSION_PATCH"; then
