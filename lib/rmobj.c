@@ -77,6 +77,7 @@
  *      NULL) and return -1.  Otherwise it will return 0.
  *
  ************************************************************/
+#define _GNU_SOURCE
 #include <errno.h>		/* for errno */
 #include <stdio.h>		/* for NULL */
 #include <stdlib.h>		/* for malloc() */
@@ -84,6 +85,7 @@
 #include <limits.h>		/* for PATH_MAX */
 #include <sys/types.h>		/* for opendir(), readdir(), closedir(), stat() */
 #include <sys/stat.h>		/* for [l]stat() */
+#include <fcntl.h>
 #include <dirent.h>		/* for opendir(), readdir(), closedir() */
 #include <unistd.h>		/* for rmdir(), unlink() */
 #include "rmobj.h"
@@ -98,19 +100,13 @@ int rmobj(char *obj, char **errmsg)
 	char dirobj[PATH_MAX];	/* object inside directory to modify */
 	struct stat statbuf;	/* used to hold stat information */
 	static char err_msg[1024];	/* error message */
+	int fd;
 
 	/* Determine the file type */
-	if (lstat(obj, &statbuf) < 0) {
-		if (errmsg != NULL) {
-			sprintf(err_msg, "lstat(%s) failed; errno=%d: %s",
-				obj, errno, SYSERR);
-			*errmsg = err_msg;
-		}
-		return -1;
-	}
 
-	/* Take appropriate action, depending on the file type */
-	if ((statbuf.st_mode & S_IFMT) == S_IFDIR) {
+	fd = open(obj, O_DIRECTORY | O_NOFOLLOW);
+	if (fd != -1) {
+		close(fd);
 		/* object is a directory */
 
 		/* Do NOT perform the request if the directory is "/" */
