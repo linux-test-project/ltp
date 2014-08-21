@@ -185,23 +185,6 @@ int safe_rmdir(const char *file, const int lineno, void (*cleanup_fn) (void),
 	return (rval);
 }
 
-void *safe_mmap(const char *file, const int lineno, void (*cleanup_fn) (void),
-		void *addr, size_t length, int prot, int flags, int fd,
-		off_t offset)
-{
-	void *rval;
-
-	rval = mmap(addr, length, prot, flags, fd, offset);
-	if (rval == MAP_FAILED) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: mmap(%p,%zu,%d,%d,%d,%ld) failed",
-			 file, lineno, addr, length, prot, flags, fd,
-			 (long) offset);
-	}
-
-	return rval;
-}
-
 int safe_munmap(const char *file, const int lineno, void (*cleanup_fn) (void),
                 void *addr, size_t length)
 {
@@ -391,23 +374,6 @@ int safe_link(const char *file, const int lineno,
 	return rval;
 }
 
-off_t safe_lseek(const char *file, const int lineno,
-                 void (cleanup_fn)(void), int fd,
-                 off_t offset, int whence)
-{
-	off_t rval;
-
-	rval = lseek(fd, offset, whence);
-
-	if (rval == (off_t) -1) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "%s:%d: lseek(%d,%ld,%d) failed",
-			 file, lineno, fd, (long)offset, whence);
-	}
-
-	return rval;
-}
-
 int safe_symlink(const char *file, const int lineno,
                  void (cleanup_fn)(void), const char *oldpath,
                  const char *newpath)
@@ -435,36 +401,6 @@ ssize_t safe_write(const char *file, const int lineno, void (cleanup_fn) (void),
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: write(%d,%p,%zu) failed",
 		         file, lineno, fildes, buf, rval);
-	}
-
-	return rval;
-}
-
-int safe_ftruncate(const char *file, const int lineno,
-		   void (cleanup_fn) (void), int fd, off_t length)
-{
-	int rval;
-
-	rval = ftruncate(fd, length);
-	if (rval == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: ftruncate(%d,%ld) failed",
-			 file, lineno, fd, (long)length);
-	}
-
-	return rval;
-}
-
-int safe_truncate(const char *file, const int lineno,
-		  void (cleanup_fn) (void), const char *path, off_t length)
-{
-	int rval;
-
-	rval = truncate(path, length);
-	if (rval == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: truncate(%s,%ld) failed",
-			 file, lineno, path, (long)length);
 	}
 
 	return rval;
@@ -548,51 +484,6 @@ long safe_sysconf(const char *file, const int lineno,
 				 " or there is no definite limit",
 				 file, lineno, name);
 		}
-	}
-
-	return rval;
-}
-
-int safe_stat(const char *file, const int lineno,
-	      void (cleanup_fn)(void), const char *path, struct stat *buf)
-{
-	int rval;
-
-	rval = stat(path, buf);
-
-	if (rval == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: stat(%s,%p) failed", file, lineno, path, buf);
-	}
-
-	return rval;
-}
-
-int safe_fstat(const char *file, const int lineno,
-	       void (cleanup_fn)(void), int fd, struct stat *buf)
-{
-	int rval;
-
-	rval = fstat(fd, buf);
-
-	if (rval == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: fstat(%d,%p) failed", file, lineno, fd, buf);
-	}
-
-	return rval;
-}
-
-int safe_lstat(const char *file, const int lineno,
-	       void (cleanup_fn)(void), const char *path, struct stat *buf)
-{
-	int rval;
-
-	rval = lstat(path, buf);
-
-	if (rval == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: lstat(%s,%p) failed", file, lineno, path, buf);
 	}
 
 	return rval;
