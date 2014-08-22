@@ -34,7 +34,7 @@ static void sbrk_verify(void);
 static void cleanup(void);
 static int exp_enos[] = { ENOMEM, 0 };
 
-static long increment;
+static long increment = INC;
 
 int main(int argc, char *argv[])
 {
@@ -60,12 +60,19 @@ int main(int argc, char *argv[])
 
 static void setup(void)
 {
+	void *ret = NULL;
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
-	for (increment = INC; errno == 0; increment+=INC)
-		sbrk(increment);
+	/* call sbrk until it fails or increment overflows */
+	while (ret != (void *)-1 && increment > 0) {
+		ret = sbrk(increment);
+		increment += INC;
+	}
+	tst_resm(TINFO | TERRNO, "setup() bailing inc: %ld, ret: %p, sbrk: %p",
+		increment, ret, sbrk(0));
 
 	errno = 0;
 
