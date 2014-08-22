@@ -46,6 +46,12 @@
 #include "usctest.h"
 #include "safe_macros.h"
 
+union semun {
+	int val;
+	struct semid_ds *buf;
+	unsigned short int *array;
+};
+
 char *TCID = "sendmsg02";
 
 static int sem_id;
@@ -126,10 +132,12 @@ static void reproduce(int seconds)
 	int child_count = 0;
 	int *child_pids;
 	int child_pid;
+	union semun u;
 
 	child_pids = SAFE_MALLOC(cleanup, sizeof(int) * child_pairs * 2);
 
-	if (semctl(sem_id, 0, SETVAL, 1) == -1)
+	u.val = 1;
+	if (semctl(sem_id, 0, SETVAL, u) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "couldn't set semval to 1");
 
 	/* fork child for each client/server pair */
@@ -168,7 +176,8 @@ static void reproduce(int seconds)
 	if (child_count == child_pairs*2)
 		sleep(seconds);
 
-	if (semctl(sem_id, 0, SETVAL, 0) == -1) {
+	u.val = 0;
+	if (semctl(sem_id, 0, SETVAL, u) == -1) {
 		/* kill children if setting semval failed */
 		for (i = 0; i < child_count; i++)
 			kill(child_pids[i], SIGKILL);
