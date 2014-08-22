@@ -71,9 +71,11 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "tst_fs_type.h"
 
 char *TCID = "diotest4";	/* Test program identifier.    */
 int TST_TOTAL = 17;		/* Total number of test conditions */
+int NO_NFS = 1;			/* Test on NFS or not */
 
 #ifdef O_DIRECT
 
@@ -265,13 +267,12 @@ int main(int argc, char *argv[])
 	if (write(fd, buf2, 4096) == -1) {
 		tst_resm(TFAIL, "can't write to file %d", ret);
 	}
-	ret = runtest_f(fd, buf2, offset, count, EINVAL, 3, "odd count");
-	if (ret != 0) {
-		failed = TRUE;
-		fail_count++;
-		tst_resm(TFAIL, "Odd count of read and write");
+	if (NO_NFS) {
+		ret = runtest_f(fd, buf2, offset, count, EINVAL, 3, "odd count");
+		testcheck_end(ret, &failed, &fail_count,
+					"Odd count of read and write");
 	} else
-		tst_resm(TPASS, "Odd count of read and write");
+		tst_resm(TCONF, "NFS support odd count IO");
 	total++;
 
 	/* Test-4: Read beyond the file size */
@@ -432,39 +433,19 @@ int main(int argc, char *argv[])
 	/* Test-14: read, write with non-aligned buffer */
 	offset = 4096;
 	count = bufsize;
-	l_fail = 0;
 	if ((fd = open(filename, O_DIRECT | O_RDWR)) < 0) {
 		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			 filename, strerror(errno));
 	}
-	if (lseek(fd, offset, SEEK_SET) < 0) {
-		tst_resm(TFAIL, "lseek before read failed: %s",
-			 strerror(errno));
-		l_fail = TRUE;
-	} else {
-		if ((ret = read(fd, buf2 + 1, count)) != -1) {
-			tst_resm(TFAIL,
-				 "allows read nonaligned buf. returns %d: %s",
-				 ret, strerror(errno));
-			l_fail = TRUE;
-		}
-	}
-	if (lseek(fd, offset, SEEK_SET) < 0) {
-		tst_resm(TFAIL, "lseek before read failed: %s",
-			 strerror(errno));
-		l_fail = TRUE;
-	} else {
-		if ((ret = write(fd, buf2 + 1, count)) != -1) {
-			tst_resm(TFAIL,
-				 "allows write nonaligned buf. returns %d: %s",
-				 ret, strerror(errno));
-			l_fail = TRUE;
-		}
-	}
-	testcheck_end(l_fail, &failed, &fail_count,
+	if (NO_NFS) {
+		ret = runtest_f(fd, buf2 + 1, offset, count, EINVAL, 14,
+					" nonaligned buf");
+		testcheck_end(ret, &failed, &fail_count,
 				"read, write with non-aligned buffer");
-	total++;
+	} else
+		tst_resm(TCONF, "NFS support read, write with non-aligned buffer");
 	close(fd);
+	total++;
 
 	/* Test-15: read, write buffer in read-only space */
 	offset = 4096;
@@ -573,6 +554,10 @@ static void setup(void)
 			 strerror(errno));
 	}
 	close(fd1);
+
+	/* On NFS or not */
+	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC)
+		NO_NFS = 0;
 }
 
 static void cleanup(void)
