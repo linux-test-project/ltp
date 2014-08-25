@@ -18,6 +18,7 @@
 
 #include <sys/mman.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -174,16 +175,6 @@ long safe_sysconf(const char *file, const int lineno,
 		  void (cleanup_fn)(void), int name);
 #define SAFE_SYSCONF(cleanup_fn, name) \
 	safe_sysconf(__FILE__, __LINE__, cleanup_fn, name)
-
-int safe_getrlimit(const char *file, const int lineno, void (cleanup_fn)(void),
-		   int resource, struct rlimit *rlim);
-#define SAFE_GETRLIMIT(cleanup_fn, resource, rlim) \
-	safe_getrlimit(__FILE__, __LINE__, (cleanup_fn), (resource), (rlim))
-
-int safe_setrlimit(const char *file, const int lineno, void (cleanup_fn)(void),
-		   int resource, const struct rlimit *rlim);
-#define SAFE_SETRLIMIT(cleanup_fn, resource, rlim) \
-	safe_setrlimit(__FILE__, __LINE__, (cleanup_fn), (resource), (rlim))
 
 int safe_chmod(const char *file, const int lineno, void (cleanup_fn)(void),
 	       const char *path, mode_t mode);
@@ -363,6 +354,42 @@ static inline off_t safe_lseek(const char *file, const int lineno,
 #define SAFE_LSEEK(cleanup_fn, fd, offset, whence) \
 	safe_lseek(__FILE__, __LINE__, cleanup_fn, (fd), (offset), (whence))
 
+
+static inline int safe_getrlimit(const char *file, const int lineno,
+	void (cleanup_fn)(void), int resource, struct rlimit *rlim)
+{
+	int rval;
+
+	rval = getrlimit(resource, rlim);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: getrlimit(%d,%p) failed",
+			 file, lineno, resource, rlim);
+	}
+
+	return rval;
+}
+#define SAFE_GETRLIMIT(cleanup_fn, resource, rlim) \
+	safe_getrlimit(__FILE__, __LINE__, (cleanup_fn), (resource), (rlim))
+
+static inline int safe_setrlimit(const char *file, const int lineno,
+	void (cleanup_fn)(void), int resource, const struct rlimit *rlim)
+{
+	int rval;
+
+	rval = setrlimit(resource, rlim);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: setrlimit(%d,%p) failed",
+			 file, lineno, resource, rlim);
+	}
+
+	return rval;
+}
+#define SAFE_SETRLIMIT(cleanup_fn, resource, rlim) \
+	safe_setrlimit(__FILE__, __LINE__, (cleanup_fn), (resource), (rlim))
 
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */

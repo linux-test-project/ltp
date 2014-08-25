@@ -489,38 +489,6 @@ long safe_sysconf(const char *file, const int lineno,
 	return rval;
 }
 
-int safe_getrlimit(const char *file, const int lineno,
-		   void (cleanup_fn)(void), int resource, struct rlimit *rlim)
-{
-	int rval;
-
-	rval = getrlimit(resource, rlim);
-
-	if (rval == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: getrlimit(%d,%p) failed",
-			 file, lineno, resource, rlim);
-	}
-
-	return rval;
-}
-
-int safe_setrlimit(const char *file, const int lineno, void (cleanup_fn)(void),
-		   int resource, const struct rlimit *rlim)
-{
-	int rval;
-
-	rval = setrlimit(resource, rlim);
-
-	if (rval == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: setrlimit(%d,%p) failed",
-			 file, lineno, resource, rlim);
-	}
-
-	return rval;
-}
-
 int safe_chmod(const char *file, const int lineno,
                void (cleanup_fn)(void), const char *path, mode_t mode)
 {
