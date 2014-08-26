@@ -33,13 +33,35 @@ long tst_ncpus(void)
 	return ncpus;
 }
 
+#define KERNEL_MAX "/sys/devices/system/cpu/kernel_max"
+
 long tst_ncpus_max(void)
 {
 	long ncpus_max = -1;
+	struct stat buf;
+
+	/* sched_getaffinity() and sched_setaffinity() cares about number of
+	 * possible CPUs the OS or hardware can support, which can be larger
+	 * than what sysconf(_SC_NPROCESSORS_CONF) currently provides
+	 * (by enumarating /sys/devices/system/cpu/cpu* entries).
+	 *
+	 *  Use /sys/devices/system/cpu/kernel_max, if available. This
+	 *  represents NR_CPUS-1, a compile time option which specifies
+	 *  "maximum number of CPUs which this kernel will support".
+	 *  This should provide cpu mask size large enough for any purposes. */
+	if (stat(KERNEL_MAX, &buf) == 0) {
+		SAFE_FILE_SCANF(NULL, KERNEL_MAX, "%ld", &ncpus_max);
+		/* this is maximum CPU index allowed by the kernel
+		 * configuration, so # of cpus allowed by config is +1 */
+		ncpus_max++;
+	} else {
+		/* fall back to _SC_NPROCESSORS_CONF */
 #ifdef _SC_NPROCESSORS_CONF
-	ncpus_max = SAFE_SYSCONF(NULL, _SC_NPROCESSORS_CONF);
+		ncpus_max = SAFE_SYSCONF(NULL, _SC_NPROCESSORS_CONF);
 #else
-	tst_brkm(TBROK, NULL, "could not determine number of CPUs configured");
+		tst_brkm(TBROK, NULL, "could not determine number of CPUs"
+			" configured");
 #endif
+	}
 	return ncpus_max;
 }
