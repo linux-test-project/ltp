@@ -51,6 +51,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include "tst_fs_type.h"
+
 #define SKIPVAL 0x0f00
 //#define       SKIP    SKIPVAL, 0, 0L, 0L, IGNORED
 #define SKIP 0,0,0L,0L,0
@@ -62,6 +64,7 @@
 #define	NOBLOCK		2	/* immediate success */
 #define	WILLBLOCK	3	/* blocks, succeeds, parent unlocks records */
 #define	TIME_OUT	10
+int NO_NFS = 1;			/* Test on NFS or not */
 
 typedef struct {
 	struct flock parent_a;
@@ -412,6 +415,10 @@ void setup(void)
 
 	tst_tmpdir();
 
+	/* On NFS or not */
+	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC)
+		NO_NFS = 0;
+
 	/* set up temp filename */
 	sprintf(tmpname, "fcntl4.%d", parent);
 
@@ -689,13 +696,17 @@ int main(int ac, char **av)
 		 * locking
 		 */
 		tst_resm(TINFO, "Entering block 2");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, S_ISGID |
+		if (NO_NFS && run_test(O_CREAT | O_RDWR | O_TRUNC, S_ISGID |
 			     S_IRUSR | S_IWUSR, 0, 11)) {
 			tst_resm(TINFO, "Test case 2: with mandatory record "
 				 "locking FAILED");
 		} else {
-			tst_resm(TINFO, "Test case 2: with mandatory record "
-				 "locking PASSED");
+			if (NO_NFS)
+				tst_resm(TINFO, "Test case 2: with mandatory"
+					 " record locking PASSED");
+			else
+				tst_resm(TCONF, "Test case 2: NFS does not"
+					 " support mandatory locking");
 		}
 		tst_resm(TINFO, "Exiting block 2");
 
@@ -705,13 +716,17 @@ int main(int ac, char **av)
 		 * and no delay
 		 */
 		tst_resm(TINFO, "Entering block 3");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC | O_NDELAY,
+		if (NO_NFS && run_test(O_CREAT | O_RDWR | O_TRUNC | O_NDELAY,
 			     S_ISGID | S_IRUSR | S_IWUSR, 0, 11)) {
 			tst_resm(TINFO, "Test case 3: mandatory locking with "
 				 "NODELAY FAILED");
 		} else {
-			tst_resm(TINFO, "Test case 3: mandatory locking with "
-				 "NODELAY PASSED");
+			if (NO_NFS)
+				tst_resm(TINFO, "Test case 3: mandatory"
+					 " locking with NODELAY PASSED");
+			else
+				tst_resm(TCONF, "Test case 3: NFS does not"
+					 " support mandatory locking");
 		}
 		tst_resm(TINFO, "Exiting block 3");
 	}
