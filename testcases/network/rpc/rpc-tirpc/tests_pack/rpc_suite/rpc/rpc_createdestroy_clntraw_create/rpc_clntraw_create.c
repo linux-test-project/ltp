@@ -46,14 +46,13 @@ int main(int argn, char *argc[])
 	int run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
-	char proto[8] = "tcp";
 	CLIENT *clnt = NULL;
 
 	//First of all, create a client
 	clnt = clntraw_create(progNum, VERSNUM);
 
 	if (run_mode == 1) {
-		printf("CLIENT : %d\n", clnt);
+		printf("CLIENT : %p\n", clnt);
 	}
 	//If we are here, macro call was successful
 	test_status = (clnt != NULL) ? 0 : 1;

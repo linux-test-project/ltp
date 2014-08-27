@@ -46,7 +46,7 @@ int main(int argn, char *argc[])
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
-	int fd;
+	int fd = 0;
 	SVCXPRT *svcr = NULL;
 	int nbCall = atoi(argc[3]);
 	int nbOk = 0;

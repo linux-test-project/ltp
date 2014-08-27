@@ -33,6 +33,7 @@
 #include <tirpc/rpc/xdr.h>
 #include <tirpc/rpc/svc.h>
 #include <errno.h>
+#include <pthread.h>
 #include <netinet/in.h>
 
 //Standard define
@@ -55,7 +56,7 @@ void *server_thread_process(void *arg)
 		printf("Server Nb : %d\n", progNum + atoi(arg));
 	}
 
-	svc_unreg(progNum + atoi(arg), VERSNUM);
+	svc_unreg(progNum + (long)arg, VERSNUM);
 
 	err = svc_create(exm_proc, progNum + atoi(arg), VERSNUM, "VISIBLE");
 
@@ -82,7 +83,7 @@ int main(int argn, char *argc[])
 	//                                          others arguments depend on server program
 	run_mode = 0;
 	int threadNb = atoi(argc[2]);
-	int i;
+	long i;
 	//Thread declaration
 	pthread_t *pThreadArray;
 	void *ret;
@@ -92,9 +93,9 @@ int main(int argn, char *argc[])
 	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
 	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
-			fprintf(stderr, "Try to create Thread Server %d\n", i);
+			fprintf(stderr, "Try to create Thread Server %ld\n", i);
 		if (pthread_create
-		    (&pThreadArray[i], NULL, server_thread_process, i) < 0) {
+		    (&pThreadArray[i], NULL, server_thread_process, (void*)i) < 0) {
 			fprintf(stderr, "pthread_create error for thread 1\n");
 			exit(1);
 		}

@@ -76,7 +76,7 @@ int main(int argn, char *argc[])
 			   &sock);
 
 	if (run_mode == 1) {
-		printf("CLIENT : %d\n", clnt);
+		printf("CLIENT : %p\n", clnt);
 	}
 	//If we are here, macro call was successful
 	test_status = (clnt != NULL) ? 0 : 1;

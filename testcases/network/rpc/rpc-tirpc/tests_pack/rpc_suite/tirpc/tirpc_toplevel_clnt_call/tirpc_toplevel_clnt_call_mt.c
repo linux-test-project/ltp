@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <pthread.h>
 #include <tirpc/netconfig.h>
 #include <tirpc/rpc/rpc.h>
 #include <tirpc/rpc/types.h>
@@ -56,7 +57,7 @@ void *my_thread_process(void *arg)
 	int i;
 
 	if (run_mode == 1) {
-		fprintf(stderr, "Thread %d\n", atoi(arg));
+		fprintf(stderr, "Thread %ld\n", (long)arg);
 	}
 	//Initialisation
 	total_timeout.tv_sec = 1;
@@ -68,7 +69,7 @@ void *my_thread_process(void *arg)
 	if (clnt == NULL) {
 		clnt_pcreateerror("ERR");
 		thread_array_result[atoi(arg)] = 0;
-		pthread_exit(5);
+		pthread_exit((void*)5l);
 	}
 	//Then call remote procedure
 	for (i = 0; i < callNb; i++) {
@@ -97,7 +98,7 @@ int main(int argn, char *argc[])
 	run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
 	int threadNb = atoi(argc[3]);
-	int i;
+	long i;
 	pthread_t *pThreadArray;
 	void *ret;
 
@@ -120,8 +121,8 @@ int main(int argn, char *argc[])
 	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
 	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
-			fprintf(stderr, "Try to create thread %d\n", i);
-		if (pthread_create(&pThreadArray[i], NULL, my_thread_process, i)
+			fprintf(stderr, "Try to create thread %ld\n", i);
+		if (pthread_create(&pThreadArray[i], NULL, my_thread_process, (void*)i)
 		    < 0) {
 			fprintf(stderr, "pthread_create error for thread 1\n");
 			exit(1);
@@ -144,7 +145,7 @@ int main(int argn, char *argc[])
 
 	if (run_mode == 1) {
 		for (i = 0; i < threadNb; i++) {
-			fprintf(stderr, "Result[%d]=%d\n", i,
+			fprintf(stderr, "Result[%ld]=%d\n", i,
 				thread_array_result[i]);
 		}
 	}

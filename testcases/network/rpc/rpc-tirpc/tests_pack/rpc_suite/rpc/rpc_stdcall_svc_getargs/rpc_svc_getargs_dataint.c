@@ -48,14 +48,8 @@ int main(int argn, char *argc[])
 	int progNum = atoi(argc[2]);
 	//Sent variables
 	int intSnd;
-	double dblSnd;
-	long lngSnd;
-	char *strSnd;
 	//Received variables
 	int intRec;
-	double dblRec;
-	long lngRec;
-	char *strRec;
 
 	intSnd = 1;
 

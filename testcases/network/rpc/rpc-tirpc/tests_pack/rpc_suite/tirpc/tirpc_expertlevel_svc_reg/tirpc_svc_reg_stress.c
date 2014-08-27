@@ -54,7 +54,6 @@ int main(int argn, char *argc[])
 	int progNum = atoi(argc[2]);
 	SVCXPRT *transp = NULL;
 	struct netconfig *nconf = NULL;
-	struct netbuf svcaddr;
 	int nbCall = atoi(argc[3]);
 	int nbOk = 0;
 	int i;
@@ -62,7 +61,6 @@ int main(int argn, char *argc[])
 	//Initialization
 	if (run_mode) {
 		printf("Before creation\n");
-		printf("nconf : %d\n", nconf);
 	}
 
 	nconf = getnetconfigent("udp");

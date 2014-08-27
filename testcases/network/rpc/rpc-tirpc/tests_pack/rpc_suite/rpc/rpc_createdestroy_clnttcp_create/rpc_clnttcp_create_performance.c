@@ -126,7 +126,7 @@ int main(int argn, char *argc[])
 		    clnttcp_create(&server_addr, progNum, VERSNUM, &sock, 0, 0);
 
 		if (run_mode == 1) {
-			printf("CLIENT : %d\n", clnt);
+			printf("CLIENT : %p\n", clnt);
 		}
 		//Toc
 		gettimeofday(&tv2, &tz);

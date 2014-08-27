@@ -45,13 +45,7 @@ static void exm_proc();
 //****************************************//
 int main(int argn, char *argc[])
 {
-	//Server parameter is : argc[1] : Server Program Number
-	//                                          others arguments depend on server program
-	int run_mode = 0;
 	int progNum = atoi(argc[1]);
-	//char *simplePing_proc();
-	bool_t rslt;
-	//char nettype[16] = "visible";
 
 	SVCXPRT *transp;
 	struct netconfig *nconf;

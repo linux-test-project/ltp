@@ -64,7 +64,6 @@ int main(int argn, char *argc[])
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
 	char addrbuf[ADDRBUFSIZE];
-	bool_t rpcb_rslt;
 
 	//Test initialization
 	nconf = getnetconfigent("udp");

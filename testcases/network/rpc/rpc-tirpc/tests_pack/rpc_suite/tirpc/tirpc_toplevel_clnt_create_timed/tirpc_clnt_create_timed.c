@@ -60,7 +60,6 @@ int main(int argn, char *argc[])
 		printf("Server : %s\n", argc[1]);
 		printf("Server # %d\n", progNum);
 		printf("Net : %s\n", nettype);
-		printf("Client : %d\n", (CLIENT *) clnt);
 	}
 
 	tv.tv_sec = 1;
@@ -69,7 +68,7 @@ int main(int argn, char *argc[])
 	clnt = clnt_create_timed(argc[1], progNum, VERSNUM, nettype, &tv);
 
 	if (run_mode == 1) {
-		printf("Client after creation : %d\n", (CLIENT *) clnt);
+		printf("Client after creation : %p\n", clnt);
 	}
 
 	test_status = ((CLIENT *) clnt != NULL) ? 0 : 1;

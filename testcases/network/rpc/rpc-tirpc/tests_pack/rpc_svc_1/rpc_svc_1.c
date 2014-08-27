@@ -60,9 +60,6 @@ union u_argument {
 //****************************************//
 int main(int argn, char *argc[])
 {
-	//Server parameter is : argc[1] : Server Program Number
-	//                                          others arguments depend on server program
-	int run_mode = 1;
 	int progNum = atoi(argc[1]);
 	SVCXPRT *transpTCP = NULL;
 	SVCXPRT *transpUDP = NULL;
@@ -76,11 +73,6 @@ int main(int argn, char *argc[])
 	//                  simplePing, xdr_int, xdr_int);
 	transpTCP = svctcp_create(RPC_ANYSOCK, 1000, 1000);
 	transpUDP = svcudp_create(RPC_ANYSOCK);
-
-	if (run_mode) {
-		printf("SVC TCP : %d\n", transpTCP);
-		printf("SVC UDP : %d\n", transpUDP);
-	}
 
 	if (!svc_register
 	    (transpTCP, progNum, VERSNUM, (void *)rcp_service, IPPROTO_TCP)) {
@@ -171,7 +163,7 @@ char *svcGetargsProc(union u_argument *in, SVCXPRT * transp)
 
 	if ((svc_getargs(transp, (xdrproc_t) xdr_int, (char *)&args)) == FALSE) {
 		svcerr_decode(transp);
-		return;
+		return NULL;
 	}
 	//printf("%s\n", result);
 	return (char *)&result;

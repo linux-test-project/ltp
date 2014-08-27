@@ -47,7 +47,6 @@ int main(int argn, char *argc[])
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
-	int progNum = atoi(argc[2]);
 	struct pmaplist *ml = NULL;
 	struct hostent *hp = NULL;
 	struct sockaddr_in sin;
@@ -63,7 +62,7 @@ int main(int argn, char *argc[])
 	ml = pmap_getmaps(&sin);
 
 	if (run_mode) {
-		printf("List. %d\n", ml);
+		printf("List. %p\n", ml);
 		printf("Addr. %u\n", sin.sin_addr.s_addr);
 	}
 

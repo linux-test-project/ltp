@@ -50,12 +50,9 @@ int main(int argn, char *argc[])
 {
 	//Server parameter is : argc[1] : Server Program Number
 	//                                          others arguments depend on server program
-	int run_mode = 0;
 	int progNum = atoi(argc[1]);
-	bool_t rslt;
 	SVCXPRT *transp = NULL;
 	struct netconfig *nconf;
-	struct netbuf svcaddr;
 
 	//Initialization
 	svc_unreg(progNum, VERSNUM);

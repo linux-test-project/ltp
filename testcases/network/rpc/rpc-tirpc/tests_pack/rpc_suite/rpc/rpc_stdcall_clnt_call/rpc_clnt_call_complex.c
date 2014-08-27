@@ -55,7 +55,7 @@ bool_t xdr_datas(XDR * pt_xdr, struct datas *pt)
 		xdr_double(pt_xdr, &(pt->b)) && xdr_double(pt_xdr, &(pt->c)));
 }
 
-double getRand()
+double getRand(void)
 {
 	return (drand48() * 1000);
 }
@@ -76,7 +76,6 @@ int main(int argn, char *argc[])
 	CLIENT *clnt = NULL;
 	enum clnt_stat cs;
 	struct timeval to;
-	int varSnd = 0;
 	int i;
 	struct RES resTbl[MAXCALC];
 	struct datas vars;
@@ -89,7 +88,7 @@ int main(int argn, char *argc[])
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
 
 	if (run_mode == 1) {
-		printf("CLIENT : %d\n", clnt);
+		printf("CLIENT : %p\n", clnt);
 		printf("progNum : %d\n", progNum);
 		printf("Proto : %s\n", proto);
 	}

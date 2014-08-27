@@ -52,7 +52,6 @@ int main(int argn, char *argc[])
 	int run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
-	CLIENT *client = NULL;
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
 	char addrbuf[ADDRBUFSIZE];
@@ -64,8 +63,6 @@ int main(int argn, char *argc[])
 	//Initialization
 	if (run_mode) {
 		printf("Before creation\n");
-		printf("client : %d\n", client);
-		printf("nconf : %d\n", nconf);
 	}
 
 	tv.tv_sec = 1;

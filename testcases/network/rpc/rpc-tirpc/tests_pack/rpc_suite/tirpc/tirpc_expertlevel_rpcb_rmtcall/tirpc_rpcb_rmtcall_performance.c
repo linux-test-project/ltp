@@ -98,7 +98,6 @@ int main(int argn, char *argc[])
 	long long diff;
 	double rslt;
 	int progNum = atoi(argc[2]);
-	CLIENT *client = NULL;
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
 	char addrbuf[ADDRBUFSIZE];

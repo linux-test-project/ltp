@@ -82,8 +82,8 @@ int main(int argc, char **argv)
 	}
 
 	if (run_mode == 1) {
-		printf("CLNT %d\n", clnt);
-		printf("SVC %d\n", svc);
+		printf("CLNT %p\n", clnt);
+		printf("SVC %p\n", svc);
 	}
 	//Call RPC using testing mode (raw)
 	for (i = 0; i < MAXITER; i++) {
@@ -112,11 +112,13 @@ int main(int argc, char **argv)
 		}
 		sum += resTbl[i];
 		if (run_mode == 1)
-			fprintf(stderr, "%d\n", resTbl[i]);
+			fprintf(stderr, "%lld\n", resTbl[i]);
 	}
 	sum = (int)(sum / MAXITER);
 
 	printf("%d\n", test_status);
+
+	return test_status;
 }
 
 static void serverDisp(struct svc_req *rqstp, SVCXPRT * transp)

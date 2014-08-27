@@ -54,7 +54,6 @@ int main(int argn, char *argc[])
 	int run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
-	char nettype[16] = "visible";
 	SVCXPRT *svcr;
 	struct netconfig *nconf;
 

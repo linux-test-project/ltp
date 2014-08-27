@@ -76,7 +76,7 @@ int main(int argn, char *argc[])
 	tv.tv_usec = 100;
 
 	if (run_mode) {
-		printf("port : %d\n", port);
+		printf("port : %lu\n", (unsigned long)port);
 	}
 
 	for (i = 0; i < nbCall; i++) {

@@ -51,7 +51,6 @@ int main(int argn, char *argc[])
 	int progNum = atoi(argc[2]);
 	char nettype[16] = "visible";
 	CLIENT *clnt = NULL;
-	enum clnt_stat rslt;
 	struct timeval total_timeout;
 	//Sent variables
 	int intSnd;

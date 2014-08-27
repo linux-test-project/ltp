@@ -113,8 +113,6 @@ int main(int argn, char *argc[])
 
 	if (run_mode) {
 		printf("Before creation\n");
-		printf("client : %d\n", client);
-		printf("nconf : %d\n", nconf);
 	}
 
 	tv.tv_sec = 0;

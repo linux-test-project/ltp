@@ -55,7 +55,6 @@ int main(int argn, char *argc[])
 	char nettype[16] = "visible";
 	int sndVar = 0;
 	int recVar = -1;
-	struct timeval total_timeout;
 	enum clnt_stat rslt;
 
 	if (run_mode == 1) {
@@ -63,9 +62,6 @@ int main(int argn, char *argc[])
 		printf("Server # %d\n", progNum);
 		printf("Net : %s\n", nettype);
 	}
-	//Initialisation
-	total_timeout.tv_sec = 1;
-	total_timeout.tv_usec = 1;
 	/**/
 	    //Multiple test case
 	    rslt = rpc_call(argc[1], progNum, VERSNUM, PROCNUM,

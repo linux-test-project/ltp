@@ -26,6 +26,7 @@
 */
 
 #include <stdio.h>
+#include <pthread.h>
 #include <tirpc/netconfig.h>
 #include <sys/socket.h>
 #include <tirpc/rpc/rpc.h>
@@ -37,7 +38,7 @@
 
 //Standard define
 #define VERSNUM 1
-#define PINGPROC    	1
+#define PINGPROC	1
 #define PROGSYSERROR	10
 #define PROGAUTHERROR	100
 
@@ -49,10 +50,11 @@ void *server_thread_process(void *arg)
 {
 	//Server process in a thread
 	int err = 0;
+	int i = (long)arg;
 
 	if (run_mode == 1) {
-		printf("Server #%d launched\n", atoi(arg));
-		printf("Server Nb : %d\n", progNum + atoi(arg));
+		printf("Server #%d launched\n", i);
+		printf("Server Nb : %d\n", progNum + i);
 	}
 
 	svc_unreg(progNum + atoi(arg), VERSNUM);
@@ -82,7 +84,7 @@ int main(int argn, char *argc[])
 	//                                          others arguments depend on server program
 	run_mode = 0;
 	int threadNb = atoi(argc[2]);
-	int i;
+	long i;
 	//Thread declaration
 	pthread_t *pThreadArray;
 	void *ret;
@@ -92,9 +94,9 @@ int main(int argn, char *argc[])
 	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
 	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
-			fprintf(stderr, "Try to create Thread Server %d\n", i);
+			fprintf(stderr, "Try to create Thread Server %ld\n", i);
 		if (pthread_create
-		    (&pThreadArray[i], NULL, server_thread_process, i) < 0) {
+		    (&pThreadArray[i], NULL, server_thread_process, (void*)i) < 0) {
 			fprintf(stderr, "pthread_create error for thread 1\n");
 			exit(1);
 		}

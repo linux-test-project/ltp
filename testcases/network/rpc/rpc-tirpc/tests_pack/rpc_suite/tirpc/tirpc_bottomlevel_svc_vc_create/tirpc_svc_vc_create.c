@@ -38,7 +38,7 @@
 #define PROCNUM 1
 #define VERSNUM 1
 
-int main(int argn, char *argc[])
+int main(void)
 {
 	int test_status = 1;
 	SVCXPRT *transp = NULL;

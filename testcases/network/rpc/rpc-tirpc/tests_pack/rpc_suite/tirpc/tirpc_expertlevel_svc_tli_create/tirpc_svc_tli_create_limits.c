@@ -43,7 +43,7 @@ typedef struct {
 	int bufmax;
 } params;
 
-int main(int argn, char *argc[])
+int main(void)
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//                                         argc[2] : Server Program Number
@@ -54,7 +54,6 @@ int main(int argn, char *argc[])
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
 	int test_status = 0;	//Default test result set to PASS
-	int progNum = atoi(argc[2]);
 	int i;
 	params paramList[NBCASE];
 	SVCXPRT *transp = NULL;
@@ -63,7 +62,6 @@ int main(int argn, char *argc[])
 	//Initialization
 	if (run_mode) {
 		printf("Before creation\n");
-		printf("nconf : %d\n", nconf);
 	}
 
 	nconf = getnetconfigent("udp");

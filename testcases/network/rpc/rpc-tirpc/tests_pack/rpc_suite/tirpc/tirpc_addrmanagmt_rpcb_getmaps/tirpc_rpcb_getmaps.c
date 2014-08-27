@@ -59,7 +59,6 @@ int main(int argn, char *argc[])
 	if (run_mode) {
 		printf("Host : %s\n", argc[1]);
 		printf("ProgNum : %d\n", progNum);
-		printf("RList @ %d\n", rl);
 	}
 
 	if ((nconf = getnetconfigent("udp")) == (struct netconfig *)NULL) {
@@ -70,7 +69,7 @@ int main(int argn, char *argc[])
 	rl = rpcb_getmaps(nconf, argc[1]);
 
 	if (run_mode) {
-		printf("RList @ %d\n", rl);
+		printf("RList @ %p\n", rl);
 	}
 
 	test_status = (rl != NULL) ? 0 : 1;

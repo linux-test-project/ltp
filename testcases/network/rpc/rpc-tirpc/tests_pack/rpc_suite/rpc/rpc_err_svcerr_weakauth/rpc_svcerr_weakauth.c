@@ -55,7 +55,6 @@ int main(int argn, char *argc[])
 	//Initialization
 	if (run_mode) {
 		printf("Before creation\n");
-		printf("client : %d\n", client);
 	}
 
 	tv.tv_sec = 1;

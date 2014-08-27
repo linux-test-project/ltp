@@ -40,8 +40,6 @@
 #define PROCNUM 1
 #define VERSNUM 1
 
-static void exm_proc();
-
 int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
@@ -61,7 +59,6 @@ int main(int argn, char *argc[])
 		printf("Server : %s\n", argc[1]);
 		printf("Server # %d\n", progNum);
 		printf("Net : %s\n", nettype);
-		printf("Client : %d\n", (CLIENT *) clnt);
 	}
 	//first create client
 	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
@@ -77,9 +74,4 @@ int main(int argn, char *argc[])
 	printf("%d\n", test_status);
 
 	return test_status;
-}
-
-static void exm_proc(struct svc_req *rqstp, SVCXPRT * transp)
-{
-	//Nothing to do
 }

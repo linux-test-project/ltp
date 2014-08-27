@@ -52,7 +52,6 @@ int main(int argn, char *argc[])
 	int run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
-	char nettype[16] = "visible";
 	CLIENT *client = NULL;
 	struct netconfig *nconf = NULL;
 	struct timeval tv;
@@ -77,8 +76,8 @@ int main(int argn, char *argc[])
 	//Call routine
 	rslt = clnt_control(client, CLGET_FD, (int *)&fd);
 	if (run_mode) {
-		printf("client : %d\n", client);
-		printf("nconf : %d\n", nconf);
+		printf("client : %p\n", client);
+		printf("nconf : %p\n", nconf);
 		printf("F. Desc. : %d\n", fd);
 	}
 

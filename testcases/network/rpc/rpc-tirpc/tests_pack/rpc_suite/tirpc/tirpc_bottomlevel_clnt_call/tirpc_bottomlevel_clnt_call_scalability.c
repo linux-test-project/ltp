@@ -128,7 +128,7 @@ int main(int argn, char *argc[])
 	//0 : launch by shell script as test case, only one printf -> result status
 	run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
-	int i, rthcreate;
+	int i;
 	long j;
 	int threadNb = atoi((char *)argc[3]);
 	int curThd = 1;
@@ -188,7 +188,7 @@ int main(int argn, char *argc[])
 			    (&pThreadArray[j], &thread_attr, my_thread_process,
 			     (void *)j) != 0) {
 				fprintf(stderr,
-					"pthread_create error for thread %d\n",
+					"pthread_create error for thread %ld\n",
 					j);
 				printf("1\n");
 				exit(1);
@@ -200,7 +200,7 @@ int main(int argn, char *argc[])
 			if ((pthread_t *) pThreadArray[j] != NULL) {
 				(void)pthread_join(pThreadArray[j], &ret);
 			} else {
-				fprintf(stderr, "pThread Join Err : %d\n", j);
+				fprintf(stderr, "pThread Join Err : %ld\n", j);
 			}
 		}
 

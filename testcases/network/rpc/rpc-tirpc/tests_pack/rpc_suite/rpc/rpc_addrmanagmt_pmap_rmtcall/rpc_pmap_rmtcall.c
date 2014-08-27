@@ -72,7 +72,7 @@ int main(int argn, char *argc[])
 	tv.tv_usec = 0;
 
 	if (run_mode) {
-		printf("port : %d\n", port);
+		printf("port : %lu\n", (unsigned long)port);
 	}
 
 	cs = pmap_rmtcall(&sin, progNum, VERSNUM, PROCNUM,

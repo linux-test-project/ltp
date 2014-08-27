@@ -49,7 +49,6 @@ int main(int argn, char *argc[])
 	int run_mode = 0;
 	int test_status = 0;	//Default test result set to PASSED
 	int progNum = atoi(argc[2]);
-	int recVar = -1;
 	CLIENT *client = NULL;
 	struct netconfig *nconf = NULL;
 	struct timeval tv;

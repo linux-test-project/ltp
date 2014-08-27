@@ -95,7 +95,6 @@ int main(int argn, char *argc[])
 	long long diff;
 	double rslt;
 	int progNum = atoi(argc[2]);
-	char proto[8] = "tcp";
 	CLIENT *clnt = NULL;
 
 	//Test initialisation

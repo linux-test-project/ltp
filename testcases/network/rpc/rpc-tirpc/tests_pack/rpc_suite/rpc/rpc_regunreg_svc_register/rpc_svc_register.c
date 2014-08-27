@@ -52,7 +52,6 @@ int main(int argn, char *argc[])
 	int test_status = 1;	//Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	SVCXPRT *svcr = NULL;
-	int sock = 0;
 
 	//Initialisation
 	pmap_unset(progNum, VERSNUM);
@@ -64,7 +63,7 @@ int main(int argn, char *argc[])
 	    !svc_register(svcr, progNum, VERSNUM, dispatch, IPPROTO_TCP);
 
 	if (run_mode) {
-		printf("SVC : %d\n", svcr);
+		printf("SVC : %p\n", svcr);
 	}
 	//clean up
 	svc_destroy(svcr);

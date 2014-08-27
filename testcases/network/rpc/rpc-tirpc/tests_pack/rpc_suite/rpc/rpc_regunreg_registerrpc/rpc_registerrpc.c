@@ -73,7 +73,7 @@ int main(int argn, char *argc[])
 			xdr_int);
 
 	if (run_mode) {
-		printf("SVC : %d\n", svcr);
+		printf("SVC : %p\n", svcr);
 		printf("rslt : %d\n", rslt);
 	}
 

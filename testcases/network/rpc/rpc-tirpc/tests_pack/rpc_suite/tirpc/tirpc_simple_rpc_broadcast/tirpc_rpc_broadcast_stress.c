@@ -42,6 +42,7 @@
 int eachresult(char *out, struct sockaddr_in *addr)
 {
 	//Nothing to do for that test
+	return 0;
 }
 
 int main(int argn, char *argc[])

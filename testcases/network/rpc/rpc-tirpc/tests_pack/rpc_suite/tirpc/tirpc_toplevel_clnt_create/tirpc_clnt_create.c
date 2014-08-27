@@ -58,12 +58,11 @@ int main(int argn, char *argc[])
 		printf("Server : %s\n", argc[1]);
 		printf("Server # %d\n", progNum);
 		printf("Net : %s\n", nettype);
-		printf("Client : %d\n", (CLIENT *) clnt);
 	}
 	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
 
 	if (run_mode == 1) {
-		printf("Client after creation : %d\n", (CLIENT *) clnt);
+		printf("Client after creation : %p\n", clnt);
 	}
 
 	test_status = ((CLIENT *) clnt != NULL) ? 0 : 1;

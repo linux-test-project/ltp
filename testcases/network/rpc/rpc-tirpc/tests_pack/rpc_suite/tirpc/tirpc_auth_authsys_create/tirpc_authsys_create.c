@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #include <tirpc/rpc/rpc.h>
 #include <netdb.h>
 
@@ -41,15 +42,10 @@ int main(int argn, char *argc[])
 	//                                         argc[2] : Server Program Number
 	//                                         other arguments depend on test case
 
-	//run_mode can switch into stand alone program or program launch by shell script
-	//1 : stand alone, debug mode, more screen information
-	//0 : launch by shell script as test case, only one printf -> result status
-	int run_mode = 0;
 	int test_status = 1;	//Default test result set to FAILED
-	int progNum = atoi(argc[2]);
 	AUTH *authSys = NULL;
 	uid_t uid;
-	gid_t gid, *aup_gids;
+	gid_t gid, aup_gids[NGRPS];
 	int len;
 
 	//Initialization

@@ -54,7 +54,7 @@ int main(int argn, char *argc[])
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
 
 	if (run_mode == 1) {
-		printf("CLIENT : %d\n", clnt);
+		printf("CLIENT : %p\n", clnt);
 	}
 	//Call tested routine
 	clnt_geterr(clnt, &err);

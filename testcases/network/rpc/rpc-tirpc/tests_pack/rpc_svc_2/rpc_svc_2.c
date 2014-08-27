@@ -72,8 +72,8 @@ int main(int argn, char *argc[])
 	transpUDP = svcudp_create(RPC_ANYSOCK);
 
 	if (run_mode) {
-		printf("SVC TCP : %d\n", transpTCP);
-		printf("SVC UDP : %d\n", transpUDP);
+		printf("SVC TCP : %p\n", transpTCP);
+		printf("SVC UDP : %p\n", transpUDP);
 	}
 
 	if (!svc_register
@@ -116,7 +116,6 @@ void rcp_service(register struct svc_req *rqstp, register SVCXPRT * transp)
 	xdrproc_t xdr_argument;
 	xdrproc_t xdr_result;
 	char *(*proc) (struct datas *, SVCXPRT *);
-	enum auth_stat why;
 
 	switch (rqstp->rq_proc) {
 	case CALCPROC:

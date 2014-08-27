@@ -64,7 +64,7 @@ int main(int argn, char *argc[])
 	transpUDP = svcudp_create(RPC_ANYSOCK);
 
 	if (run_mode) {
-		printf("SVC TCP : %d\n", transpUDP);
+		printf("SVC TCP : %p\n", transpUDP);
 	}
 
 	if (!svc_register

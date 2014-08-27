@@ -55,7 +55,7 @@ int main(int argn, char *argc[])
 	clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
 
 	if (run_mode) {
-		printf("CLIENT : %d\n", clnt);
+		printf("CLIENT : %p\n", clnt);
 	}
 
 	tvSet.tv_sec = 1000;
@@ -68,10 +68,10 @@ int main(int argn, char *argc[])
 		test_status = 1;
 
 	if (run_mode) {
-		printf("Time Set : %d sec %d usec\n", tvSet.tv_sec,
-		       tvSet.tv_usec);
-		printf("Time Get : %d sec %d usec\n", tvGet.tv_sec,
-		       tvGet.tv_usec);
+		printf("Time Set : %ld sec %ld usec\n",
+		       (long)tvSet.tv_sec, (long)tvSet.tv_usec);
+		printf("Time Get : %ld sec %ld usec\n",
+		       (long)tvGet.tv_sec, (long)tvGet.tv_usec);
 	}
 
 	tvSet.tv_sec = 4000;
@@ -84,10 +84,10 @@ int main(int argn, char *argc[])
 		test_status = 1;
 
 	if (run_mode) {
-		printf("Time Set : %d sec %d usec\n", tvSet.tv_sec,
-		       tvSet.tv_usec);
-		printf("Time Get : %d sec %d usec\n", tvGet.tv_sec,
-		       tvGet.tv_usec);
+		printf("Time Set : %ld sec %ld usec\n",
+		       (long)tvSet.tv_sec, (long)tvSet.tv_usec);
+		printf("Time Get : %ld sec %ld usec\n",
+		       (long)tvGet.tv_sec, (long)tvGet.tv_usec);
 	}
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

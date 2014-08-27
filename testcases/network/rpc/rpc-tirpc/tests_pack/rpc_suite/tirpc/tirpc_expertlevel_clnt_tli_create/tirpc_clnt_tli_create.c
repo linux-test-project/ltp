@@ -56,13 +56,10 @@ int main(int argn, char *argc[])
 	struct netconfig *nconf = NULL;
 	struct netbuf svcaddr;
 	char addrbuf[ADDRBUFSIZE];
-	bool_t rpcb_rslt;
 
 	//Initialization
 	if (run_mode) {
 		printf("Before creation\n");
-		printf("client : %d\n", client);
-		printf("nconf : %d\n", nconf);
 	}
 
 	nconf = getnetconfigent("udp");
