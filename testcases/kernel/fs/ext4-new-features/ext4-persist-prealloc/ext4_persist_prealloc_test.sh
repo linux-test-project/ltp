@@ -55,7 +55,7 @@ ext4_test_persist_prealloc()
 		fi
 
 		temp_tmpdir=$TMPDIR
-		TMPDIR=mnt_point; fallocate0${i} > /dev/null 2>&1
+		TMPDIR=${PWD}/mnt_point; fallocate0${i} > /dev/null 2>&1
 		ret=$?
 		TMPDIR=$temp_tmpdir
 
