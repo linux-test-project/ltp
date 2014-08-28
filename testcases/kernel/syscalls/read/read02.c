@@ -143,6 +143,12 @@ static void read_verify(const struct test_case_t *test)
 
 	TEST(read(*test->fd, *test->buf, test->count));
 
+	if (*test->fd == fd4 && TEST_RETURN >= 0) {
+		tst_resm(TPASS,
+			 "O_DIRECT unaligned reads fallbacks to buffered I/O");
+		return;
+	}
+
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "call succeeded unexpectedly");
 		return;
