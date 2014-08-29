@@ -4,6 +4,7 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <sys/mount.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
@@ -639,6 +640,41 @@ int safe_rename(const char *file, const int lineno, void (*cleanup_fn)(void),
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: rename(%s, %s) failed",
 			 file, lineno, oldpath, newpath);
+	}
+
+	return rval;
+}
+
+int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
+	       const char *source, const char *target,
+	       const char *filesystemtype, unsigned long mountflags,
+	       const void *data)
+{
+	int rval;
+
+	rval = mount(source, target, filesystemtype, mountflags, data);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: mount(%s, %s, %s, %lu, %p) failed",
+			 file, lineno, source, target, filesystemtype,
+			 mountflags, data);
+	}
+
+	return rval;
+}
+
+int safe_umount(const char *file, const int lineno, void (*cleanup_fn)(void),
+		const char *target)
+{
+	int rval;
+
+	rval = umount(target);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: umount(%s) failed",
+			 file, lineno, target);
 	}
 
 	return rval;

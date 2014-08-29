@@ -226,6 +226,20 @@ int safe_rename(const char *file, const int lineno, void (*cleanup_fn)(void),
 #define SAFE_RENAME(cleanup_fn, oldpath, newpath) \
 	safe_rename(__FILE__, __LINE__, (cleanup_fn), (oldpath), (newpath))
 
+int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
+	       const char *source, const char *target,
+	       const char *filesystemtype, unsigned long mountflags,
+	       const void *data);
+#define SAFE_MOUNT(cleanup_fn, source, target, filesystemtype, \
+		   mountflags, data) \
+	safe_mount(__FILE__, __LINE__, (cleanup_fn), (source), (target), \
+		   (filesystemtype), (mountflags), (data))
+
+int safe_umount(const char *file, const int lineno, void (*cleanup_fn)(void),
+		const char *target);
+#define SAFE_UMOUNT(cleanup_fn, target) \
+	safe_umount(__FILE__, __LINE__, (cleanup_fn), (target))
+
 /*
  * following functions are inline because the behaviour may depend on
  * -D_FILE_OFFSET_BITS=64 -DOFF_T=__off64_t compile flags
@@ -353,7 +367,6 @@ static inline off_t safe_lseek(const char *file, const int lineno,
 }
 #define SAFE_LSEEK(cleanup_fn, fd, offset, whence) \
 	safe_lseek(__FILE__, __LINE__, cleanup_fn, (fd), (offset), (whence))
-
 
 static inline int safe_getrlimit(const char *file, const int lineno,
 	void (cleanup_fn)(void), int resource, struct rlimit *rlim)
