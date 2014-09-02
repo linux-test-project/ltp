@@ -101,7 +101,7 @@ tst_rmdir()
 }
 
 #
-# Checks if coomands passed as arguments exists
+# Checks if commands passed as arguments exists
 #
 tst_check_cmds()
 {
