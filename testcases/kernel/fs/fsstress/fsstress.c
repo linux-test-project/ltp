@@ -160,35 +160,35 @@ opdesc_t ops[] = {
 	{OP_BULKSTAT, "bulkstat", bulkstat_f, 1, 0, 1},
 	{OP_BULKSTAT1, "bulkstat1", bulkstat1_f, 1, 0, 1},
 #endif
-	{OP_CHOWN, "chown", chown_f, 3, 1},
-	{OP_CREAT, "creat", creat_f, 4, 1},
-	{OP_DREAD, "dread", dread_f, 4, 0},
-	{OP_DWRITE, "dwrite", dwrite_f, 4, 1},
-	{OP_FDATASYNC, "fdatasync", fdatasync_f, 1, 1},
+	{OP_CHOWN, "chown", chown_f, 3, 1, 0},
+	{OP_CREAT, "creat", creat_f, 4, 1, 0},
+	{OP_DREAD, "dread", dread_f, 4, 0, 0},
+	{OP_DWRITE, "dwrite", dwrite_f, 4, 1, 0},
+	{OP_FDATASYNC, "fdatasync", fdatasync_f, 1, 1, 0},
 #ifndef NO_XFS
 	{OP_FREESP, "freesp", freesp_f, 1, 1, 1},
 #endif
-	{OP_FSYNC, "fsync", fsync_f, 1, 1},
-	{OP_GETDENTS, "getdents", getdents_f, 1, 0},
-	{OP_LINK, "link", link_f, 1, 1},
-	{OP_MKDIR, "mkdir", mkdir_f, 2, 1},
-	{OP_MKNOD, "mknod", mknod_f, 2, 1},
-	{OP_READ, "read", read_f, 1, 0},
-	{OP_READLINK, "readlink", readlink_f, 1, 0},
-	{OP_RENAME, "rename", rename_f, 2, 1},
+	{OP_FSYNC, "fsync", fsync_f, 1, 1, 0},
+	{OP_GETDENTS, "getdents", getdents_f, 1, 0, 0},
+	{OP_LINK, "link", link_f, 1, 1, 0},
+	{OP_MKDIR, "mkdir", mkdir_f, 2, 1, 0},
+	{OP_MKNOD, "mknod", mknod_f, 2, 1, 0},
+	{OP_READ, "read", read_f, 1, 0, 0},
+	{OP_READLINK, "readlink", readlink_f, 1, 0, 0},
+	{OP_RENAME, "rename", rename_f, 2, 1, 0},
 #ifndef NO_XFS
 	{OP_RESVSP, "resvsp", resvsp_f, 1, 1, 1},
 #endif
-	{OP_RMDIR, "rmdir", rmdir_f, 1, 1},
-	{OP_STAT, "stat", stat_f, 1, 0},
-	{OP_SYMLINK, "symlink", symlink_f, 2, 1},
-	{OP_SYNC, "sync", sync_f, 1, 0},
-	{OP_TRUNCATE, "truncate", truncate_f, 2, 1},
-	{OP_UNLINK, "unlink", unlink_f, 1, 1},
+	{OP_RMDIR, "rmdir", rmdir_f, 1, 1, 0},
+	{OP_STAT, "stat", stat_f, 1, 0, 0},
+	{OP_SYMLINK, "symlink", symlink_f, 2, 1, 0},
+	{OP_SYNC, "sync", sync_f, 1, 0, 0},
+	{OP_TRUNCATE, "truncate", truncate_f, 2, 1, 0},
+	{OP_UNLINK, "unlink", unlink_f, 1, 1, 0},
 #ifndef NO_XFS
 	{OP_UNRESVSP, "unresvsp", unresvsp_f, 1, 1, 1},
 #endif
-	{OP_WRITE, "write", write_f, 4, 1},
+	{OP_WRITE, "write", write_f, 4, 1, 0},
 }, *ops_end;
 
 flist_t flist[FT_nft] = {
