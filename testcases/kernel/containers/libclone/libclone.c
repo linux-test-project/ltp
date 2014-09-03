@@ -97,7 +97,7 @@ int do_plain_tests(int (*fn1) (void *arg), void *arg1,
 		return -1;
 	}
 	if (pid == 0)
-		return fn1(arg1);
+		exit(fn1(arg1));
 	if (fn2)
 		ret = fn2(arg2);
 	return ret;
