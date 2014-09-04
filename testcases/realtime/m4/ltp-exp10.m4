@@ -24,10 +24,14 @@ AC_DEFUN([LTP_CHECK_EXP10],[
 AH_TEMPLATE(HAVE_EXP10,
 [Define to 1 if you have 'exp10' function.])
 AC_MSG_CHECKING([for exp10])
+backup_ldlibs="$LIBS"
+LIBS+=" -lm"
 AC_TRY_LINK([#define _GNU_SOURCE
              #include <math.h>],
             [
-             exp10(0.00);
+             volatile float val;
+             exp10(val);
             ],
              AC_DEFINE(HAVE_EXP10) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+LIBS="$backup_ldlibs"
 ])
