@@ -26,10 +26,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifdef __linux__
 #include <sys/vfs.h>
+#endif
 #include "test.h"
 #include "tst_fs_type.h"
 
+#ifdef __linux__
 long tst_fs_type(void (*cleanup)(void), const char *path)
 {
 	struct statfs sbuf;
@@ -61,3 +64,18 @@ const char *tst_fs_type_name(long f_type)
 		return "Unknown";
 	}
 }
+#else
+long tst_fs_type(void (*cleanup)(void), const char *path)
+{
+	tst_brkm(TBROK | TERRNO, cleanup,
+		 "tst_fs_type: XXX: this function is stubbed out");
+	/* NOTREACHED */
+	return -1;
+}
+
+const char *tst_fs_type_name(long f_type)
+{
+
+	return "Unknown";
+}
+#endif

@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 
 		fd = open(filename, O_RDWR | O_CREAT, 0666);
-		if ((fd == -1))
+		if (fd == -1)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "opening %s failed", filename);
 

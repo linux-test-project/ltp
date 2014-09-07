@@ -501,7 +501,7 @@ int main(int argc, char *argv[])
 		l_fail = TRUE;
 	} else {
 		ret =
-		    read(fd, (char *)((ulong) ADDRESS_OF_MAIN & pagemask),
+		    read(fd, (char *)((unsigned long) ADDRESS_OF_MAIN & pagemask),
 			 count);
 		if (ret >= 0 || errno != EFAULT) {
 			tst_resm(TFAIL,
@@ -516,7 +516,7 @@ int main(int argc, char *argv[])
 		l_fail = TRUE;
 	} else {
 		ret =
-		    write(fd, (char *)((ulong) ADDRESS_OF_MAIN & pagemask),
+		    write(fd, (char *)((unsigned long) ADDRESS_OF_MAIN & pagemask),
 			  count);
 		if (ret < 0) {
 			tst_resm(TFAIL,

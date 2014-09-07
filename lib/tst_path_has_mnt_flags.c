@@ -16,11 +16,14 @@
  */
 
 #include <unistd.h>
+#ifdef __linux__
 #include <mntent.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 #include "test.h"
 
+#ifdef __linux__
 /*
  * Check whether a path is on a filesystem that is mounted with
  * specified flags.
@@ -79,3 +82,11 @@ int tst_path_has_mnt_flags(void (cleanup_fn)(void),
 
 	return flags_matched;
 }
+#else
+int tst_path_has_mnt_flags(void (cleanup_fn)(void),
+		const char *path, const char *flags[])
+{
+
+	return 0;
+}
+#endif

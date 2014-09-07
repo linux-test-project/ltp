@@ -35,7 +35,7 @@
 #include "defs.h"
 
 #ifdef PPC
-#ifdef LINUX
+#ifdef __linux__
 /* for linux on power 2.4 O_DIRECT is only defined in asm/fcntl.h */
 #ifndef O_DIRECT
 #define O_DIRECT 0400000

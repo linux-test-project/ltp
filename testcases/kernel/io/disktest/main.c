@@ -396,7 +396,7 @@ void *threadedMain(void *vtest)
 		if (signal_action & SIGNAL_STOP) {
 			break;
 		}		/* user request to stop */
-		if ((glb_run == 0)) {
+		if (glb_run == 0) {
 			break;
 		}
 		/* global request to stop */

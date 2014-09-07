@@ -22,12 +22,13 @@
 
 #define _GNU_SOURCE
 
-#include <errno.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/mman.h>
-#include <fcntl.h>
 #include <sys/mount.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"

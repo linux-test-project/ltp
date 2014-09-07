@@ -118,7 +118,6 @@
 #define MIN_WORKERS	2
 #define MAX_WORKERS	256
 #define PATTERN		(0xfa)
-#define PAGE_SIZE	getpagesize()
 
 char *TCID = "dma_thread_diotest";
 int TST_TOTAL = 1;
@@ -271,14 +270,14 @@ static void dma_thread_diotest_verify(void)
 		for (offset = 0; offset < FILESIZE; offset += READSIZE) {
 			memset(buffer, PATTERN, READSIZE + align);
 			for (j = 0; j < workers; j++) {
-				worker[j].offset = offset + j * PAGE_SIZE;
+				worker[j].offset = offset + j * sysconf(_SC_PAGESIZE);
 				worker[j].buffer =
-				    buffer + align + j * PAGE_SIZE;
-				worker[j].length = PAGE_SIZE;
+				    buffer + align + j * sysconf(_SC_PAGESIZE);
+				worker[j].length = sysconf(_SC_PAGESIZE);
 			}
 			/* The final worker reads whatever is left over. */
 			worker[workers - 1].length =
-			    READSIZE - PAGE_SIZE * (workers - 1);
+			    READSIZE - sysconf(_SC_PAGESIZE) * (workers - 1);
 
 			done = 0;
 
@@ -348,9 +347,12 @@ static void setup(void)
 	int n, j, fd, directflag = 1;
 	long type;
 
+	if (sysconf(_SC_PAGESIZE) < 0)
+		tst_brkm(TCONF, NULL, "Could not query _SC_PAGESIZE");
+
 	if (align_str) {
 		align = atoi(align_str);
-		if (align < 0 || align > PAGE_SIZE)
+		if (align < 0 || align > sysconf(_SC_PAGESIZE))
 			tst_brkm(TCONF, NULL, "Bad alignment %d.", align);
 	}
 	tst_resm(TINFO, "using alignment %d", align);
@@ -425,7 +427,7 @@ static void setup(void)
 		}
 	}
 
-	if (posix_memalign((void **)&buffer, PAGE_SIZE, READSIZE + align) != 0)
+	if (posix_memalign((void **)&buffer, sysconf(_SC_PAGESIZE), READSIZE + align) != 0)
 		tst_brkm(TBROK, cleanup, "call posix_memalign failed");
 }
 

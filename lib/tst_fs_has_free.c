@@ -21,8 +21,13 @@
  *	if it is, tst_fs_has_free() returns 1, otherwise 0.
  */
 
-#include <stdint.h>
+#if defined(__linux__)
 #include <sys/vfs.h>
+#elif defined(__FreeBSD__)
+#include <sys/param.h>
+#include <sys/mount.h>
+#endif
+#include <stdint.h>
 #include "test.h"
 
 int tst_fs_has_free(void (*cleanup)(void), const char *path,

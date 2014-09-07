@@ -23,7 +23,4 @@
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
-
-CPPFLAGS		+= -D_LINUX
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

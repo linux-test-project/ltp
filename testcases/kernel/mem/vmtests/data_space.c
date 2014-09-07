@@ -77,7 +77,7 @@ int parent_pid;
 int usage(char *);
 int runtest();
 int dotest(int, int);
-void bfill(char *, char, int);
+void bfill(register char *, char, register int);
 int dumpbuf(char *);
 void dumpbits(char *, int);
 int massmurder();
@@ -360,10 +360,7 @@ int me;
 	return 0;
 }
 
-void bfill(buf, val, size)
-register char *buf;
-char val;
-register int size;
+void bfill(register char *buf, char val, register int size)
 {
 	register int i;
 

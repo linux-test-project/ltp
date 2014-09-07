@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	}
 	(void)time(&t);
 //      (void)printf("%s: Started %s", argv[0], ctime(&t));  LTP Port
-	if (sbrk(pagesize - ((ulong) sbrk(0) & (pagesize - 1))) == (char *)-1) {
+	if (sbrk(pagesize - ((unsigned long) sbrk(0) & (pagesize - 1))) == (char *)-1) {
 		ERROR("couldn't round up brk");
 		anyfail();
 	}
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 	/* mmapaddr is now on a page boundary after the brk segment */
 	if (mmap
 	    (mmapaddr, (ANON_GRAN_PAGES_MAX * NMFPTEPG + 1) * pagesize,
-	     PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_SHARED, 0,
+	     PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_SHARED, -1,
 	     0) == (caddr_t) - 1) {
 		ERROR("large mmap failed");
 		printf("for this test to run, it needs a mmap space of\n");

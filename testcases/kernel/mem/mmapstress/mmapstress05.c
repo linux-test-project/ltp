@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 	(void)time(&t);
 //      (void)printf("%s: Started %s", argv[0], ctime(&t)); LTP Port
-	if (sbrk(pagesize - ((ulong) sbrk(0) & (pagesize - 1))) == (char *)-1) {
+	if (sbrk(pagesize - ((unsigned long) sbrk(0) & (pagesize - 1))) == (char *)-1) {
 		ERROR("couldn't round up brk");
 		anyfail();
 	}

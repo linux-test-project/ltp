@@ -26,11 +26,16 @@
  *	page thus requires another page table.  The pages are then unmapped to
  *	switch back to small swap space allocations.
  */
+#include <sys/param.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
+#ifdef __FreeBSD__
+#include <vm/pmap.h>
+#endif
+
 /*****	LTP Port	*****/
 #include "test.h"
 #include "usctest.h"
@@ -47,7 +52,9 @@ int anyfail();
 void ok_exit();
 /*****  **      **      *****/
 
+#ifndef	NPTEPG
 #define NPTEPG		(1024)
+#endif
 /*#define GRAN_NUMBER	(1<<2)*/
 
 #define GRAN_NUMBER	(1<<8)
@@ -87,7 +94,7 @@ extern long sysconf(int name);
 	/* This should switch to large anonymous swap space granularity */
 	for (i = 0; i < GRAN_NUMBER; i++) {
 		if (mmap(mmapaddr, pagesize, PROT_READ | PROT_WRITE,
-			 MAP_ANONYMOUS | MAP_PRIVATE, 0, 0) == (caddr_t) - 1) {
+			 MAP_ANONYMOUS | MAP_PRIVATE, -1, 0) == (caddr_t) - 1) {
 			ERROR("mmap failed");
 			local_flag = FAILED;
 			anyfail();

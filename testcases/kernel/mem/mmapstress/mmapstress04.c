@@ -124,11 +124,15 @@ int main(int argc, char *argv[])
 	filename = argv[1];
 
 	if (argc >= 3) {
+#if defined(__linux__)
 #ifdef LARGE_FILE
 		startoffset = atoll(argv[2]);
 #else /* LARGE_FILE */
 		startoffset = atoi(argv[2]);
 #endif /* LARGE_FILE */
+#elif defined(__FreeBSD__)
+		startoffset = atol(argv[2]);
+#endif
 	} else
 		startoffset = pagesize;
 
@@ -143,7 +147,7 @@ int main(int argc, char *argv[])
 		ERROR("couldn't allocate buf");
 		anyfail();	//LTP Port
 	}
-	if (sbrk(pagesize - ((ulong) sbrk(0) & (pagesize - 1))) == (char *)-1) {
+	if (sbrk(pagesize - ((unsigned long) sbrk(0) & (pagesize - 1))) == (char *)-1) {
 		ERROR("couldn't round up brk");
 		anyfail();	//LTP Port
 	}

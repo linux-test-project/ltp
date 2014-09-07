@@ -83,11 +83,6 @@ long TEST_RETURN;
 int TEST_ERRNO;
 struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
 
-/* Break bad habits. */
-#ifdef GARRETT_IS_A_PEDANTIC_BASTARD
-pid_t spawned_program_pid;
-#endif
-
 #define VERBOSE      1		/* flag values for the T_mode variable */
 #define NOPASS       3
 #define DISCARD      4
@@ -113,7 +108,30 @@ pid_t spawned_program_pid;
 	assert(strlen(buf) > 0);		\
 } while (0)
 
+#ifdef __GLIBC__
 static pthread_mutex_t tmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#define	INITIALIZE_TMUTEX
+#else
+static pthread_mutex_t tmutex;
+static pthread_mutexattr_t tmutexattr;
+static int tmutex_initialized = 1;
+
+static inline void initialize_tmutex(void)
+{
+	if (tmutex_initialized)
+		return;
+
+	tmutex_initialized = 1;
+
+	assert(pthread_mutexattr_init(&tmutexattr) == 0);
+	assert(pthread_mutexattr_settype(&tmutexattr,
+		PTHREAD_MUTEX_RECURSIVE) == 0);
+	assert(pthread_mutex_init(&tmutex, &tmutexattr) == 0);
+}
+
+#define	INITIALIZE_TMUTEX	initialize_tmutex
+
+#endif
 
 /*
  * Define local function prototypes.
@@ -207,6 +225,7 @@ const char *strttype(int ttype)
 void tst_res_(const char *file, const int lineno, int ttype,
 	const char *fname, const char *arg_fmt, ...)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
@@ -338,6 +357,7 @@ static void tst_condense(int tnum, int ttype, const char *tmesg)
  */
 void tst_flush(void)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 #if DEBUG
@@ -372,27 +392,6 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 	int ttype_result = TTYPE_RESULT(ttype);
 	char message[USERMESG];
 	size_t size;
-
-#ifdef GARRETT_IS_A_PEDANTIC_BASTARD
-	/* Don't execute these APIs unless you have the same pid as main! */
-	if (spawned_program_pid != 0) {
-		/*
-		 * Die quickly and noisily so people get the cluebat that the
-		 * test needs to be fixed. These APIs should _not_ be called
-		 * from forked processes because of the fact that it can confuse
-		 * end-users with printouts, cleanup will potentially blow away
-		 * directories and/or files still in use introducing
-		 * non-determinism, etc.
-		 *
-		 * assert will not return (by design in accordance with POSIX
-		 * 1003.1) if the assertion fails. Read abort(3) for more
-		 * details. So don't worry about saving / restoring the signal
-		 * handler, unless you have a buggy OS that you've hacked 15
-		 * different ways to Sunday.
-		 */
-		assert(spawned_program_pid == getpid());
-	}
-#endif
 
 #if DEBUG
 	printf("IN tst_print: tnum = %d, ttype = %d, tmesg = %s\n",
@@ -528,6 +527,7 @@ static void check_env(void)
  */
 void tst_exit(void)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 #if DEBUG
@@ -599,6 +599,7 @@ pid_t tst_vfork(void)
  */
 int tst_environ(void)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 	int ret = 0;
 	if ((T_out = fdopen(dup(fileno(stdout)), "w")) == NULL)
@@ -621,6 +622,7 @@ static int tst_brk_entered = 0;
 void tst_brk_(const char *file, const int lineno, int ttype, const char *fname,
 	void (*func)(void), const char *arg_fmt, ...)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
@@ -699,6 +701,7 @@ void tst_resm_(const char *file, const int lineno, int ttype,
 void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 	const void *buf, size_t size, const char *arg_fmt, ...)
 {
+	INITIALIZE_TMUTEX;
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
