@@ -270,6 +270,7 @@ int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
 
 /* lib/tst_cpu.c */
 long tst_ncpus(void);
+long tst_ncpus_conf(void);
 long tst_ncpus_max(void);
 
 /* lib/tst_run_cmd.c

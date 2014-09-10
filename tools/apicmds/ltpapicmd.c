@@ -441,6 +441,8 @@ int main(int argc, char *argv[])
 		apicmd_kvercmp2(argc, argv);
 	} else if (strcmp(cmd_name, "tst_ncpus") == 0) {
 		printf("%li\n", tst_ncpus());
+	} else if (strcmp(cmd_name, "tst_ncpus_conf") == 0) {
+		printf("%li\n", tst_ncpus_conf());
 	} else if (strcmp(cmd_name, "tst_ncpus_max") == 0) {
 		printf("%li\n", tst_ncpus_max());
 	} else if (strcmp(cmd_name, "tst_get_unused_port") == 0) {

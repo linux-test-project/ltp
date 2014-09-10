@@ -54,7 +54,7 @@ else
 fi
 
 no_of_processor=`tst_ncpus`
-no_of_cpu=`tst_ncpus_max`
+no_of_cpu=`tst_ncpus_conf`
 
 if [ $no_of_processor -lt $no_of_cpu ];then
 

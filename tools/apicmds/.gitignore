@@ -6,6 +6,7 @@ tst_get_unused_port
 tst_kvercmp
 tst_kvercmp2
 tst_ncpus
+tst_ncpus_conf
 tst_ncpus_max
 tst_res
 tst_resm

@@ -33,6 +33,17 @@ long tst_ncpus(void)
 	return ncpus;
 }
 
+long tst_ncpus_conf(void)
+{
+	long ncpus_conf = -1;
+#ifdef _SC_NPROCESSORS_CONF
+	ncpus_conf = SAFE_SYSCONF(NULL, _SC_NPROCESSORS_CONF);
+#else
+	tst_brkm(TBROK, NULL, "could not determine number of CPUs configured");
+#endif
+	return ncpus_conf;
+}
+
 #define KERNEL_MAX "/sys/devices/system/cpu/kernel_max"
 
 long tst_ncpus_max(void)
@@ -56,12 +67,7 @@ long tst_ncpus_max(void)
 		ncpus_max++;
 	} else {
 		/* fall back to _SC_NPROCESSORS_CONF */
-#ifdef _SC_NPROCESSORS_CONF
-		ncpus_max = SAFE_SYSCONF(NULL, _SC_NPROCESSORS_CONF);
-#else
-		tst_brkm(TBROK, NULL, "could not determine number of CPUs"
-			" configured");
-#endif
+		ncpus_max = tst_ncpus_conf();
 	}
 	return ncpus_max;
 }
