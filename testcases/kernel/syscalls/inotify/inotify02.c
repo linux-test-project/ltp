@@ -69,7 +69,7 @@ static int wd;
 
 struct event_t {
 	char name[BUF_SIZE];
-	int mask;
+	unsigned int mask;
 	int len;
 };
 #define FILE_NAME1 "test_file1"

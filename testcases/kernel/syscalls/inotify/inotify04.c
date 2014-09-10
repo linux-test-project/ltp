@@ -66,8 +66,8 @@ int TST_TOTAL = 4;
 
 struct event_t {
 	char name[BUF_SIZE];
-	int mask;
-	size_t len;
+	unsigned int mask;
+	unsigned int len;
 };
 
 #define	TEST_DIR	"test_dir"
@@ -147,8 +147,7 @@ static void setup(void)
 int main(int argc, char **argv)
 {
 	const char *msg;
-	size_t len;
-	int i, test_num;
+	int i, test_num, len;
 
 	i = 0;
 	test_num = 0;
