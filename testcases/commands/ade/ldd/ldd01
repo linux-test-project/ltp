@@ -32,67 +32,37 @@
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
-CC=${CC:=gcc}
 LDD=${LDD:=ldd}
-TCdat=${TCdat:-`pwd`}
-TCtmp=${TCtmp:-/tmp/ldd01-$$}
+TCID=ldd01
+TST_TOTAL=1
 
-do_cleanup()
-{
-	rm -rf $TCtmp
-}
-
-do_setup()
-{
-	mkdir $TCtmp
-
-	# Check for ppc64 architecture or x86_64 architecture
-	if uname -a | grep -iq powerpc; then
-		file lddfile1.obj | grep 64-bit >/dev/null 2>&1
-		if [ $? -eq 0 ]; then
-			CFLAGS="-m64"
-		fi
-	elif uname -a | grep -iq x86_64; then
-		file lddfile1.obj | grep 32-bit >/dev/null 2>&1
-		if [ $? -eq 0 ]; then
-			CFLAGS="-m32"
-		fi
-	fi
-	$CC $CFLAGS -shared -o $TCtmp/lddfile1.obj.so $TCdat/lddfile1.obj
-	$CC $CFLAGS -shared -o $TCtmp/lddfile2.obj.so $TCdat/lddfile2.obj
-	$CC $CFLAGS -shared -o $TCtmp/lddfile3.obj.so $TCdat/lddfile3.obj
-	$CC $CFLAGS -shared -o $TCtmp/lddfile4.obj.so $TCdat/lddfile4.obj
-	$CC $CFLAGS -shared -o $TCtmp/lddfile5.obj.so $TCdat/lddfile5.obj
-	$CC $CFLAGS -O -o $TCtmp/a.out $TCtmp/lddfile*.obj.so $TCdat/main.obj
-}
+. test.sh
 
 do_test()
 {
-	echo "  ASSERTION 1  "
 
-	$LDD $TCtmp/a.out | grep -E "lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so"
+	export LD_LIBRARY_PATH="$LTP_DATAROOT:$LD_LIBRARY_PATH"
+	LDDTESTFILE="$LTP_DATAROOT/lddfile.out"
+
+	echo "  ASSERTION 1  "
+	$LDD $LDDTESTFILE | grep -E "lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so"
 	if [ $? -eq 0 ]; then
 		echo "ASSERTION #1 PASS"
 	else
 		echo "ASSERTION #1 FAIL"
-		do_cleanup
 		return 1
 	fi
 
 	echo " ASSERTION 2  "
-
-	$LDD -v $TCtmp/a.out | grep -E "GLIBC|lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so"
+	$LDD -v $LDDTESTFILE | grep -E "GLIBC|lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so"
 	if [ $? -eq 0 ]; then
 		echo "ASSERTION #2 PASS"
 	else
 		echo "ASSERTION #2 FAIL"
-		do_cleanup
 		return 1
 	fi
 
 	echo "TEST PASSES"
-	do_cleanup
 	return 0
 }
-do_setup
 do_test

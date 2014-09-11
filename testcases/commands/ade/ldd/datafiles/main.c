@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-void file1();
-void file2();
-void file3();
-void file4();
-void file5();
+void file1(void);
+void file2(void);
+void file3(void);
+void file4(void);
+void file5(void);
 
-int main()
+int main(void)
 {
 	file1();
 	file2();
