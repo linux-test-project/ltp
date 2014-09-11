@@ -70,7 +70,6 @@ static int wd;
 struct event_t {
 	char name[BUF_SIZE];
 	unsigned int mask;
-	int len;
 };
 #define FILE_NAME1 "test_file1"
 #define FILE_NAME2 "test_file2"
@@ -216,8 +215,8 @@ int main(int ac, char **av)
 				tst_resm(TFAIL,
 					 "get unnecessary event: "
 					 "wd=%d mask=%x cookie=%u len=%u"
-					 "name=\"%s\"", event->wd, event->mask,
-					 event->cookie, event->len,
+					 "name=\"%.*s\"", event->wd, event->mask,
+					 event->cookie, event->len, event->len,
 					 event->name);
 
 			} else if ((event_set[test_num].mask == event->mask)
@@ -244,10 +243,10 @@ int main(int ac, char **av)
 				if (!fail) {
 					tst_resm(TPASS,
 						 "get event: wd=%d mask=%x "
-						 "cookie=%u len=%u name=\"%s\"",
+						 "cookie=%u len=%u name=\"%.*s\"",
 						 event->wd, event->mask,
 						 event->cookie, event->len,
-						 event->name);
+						 event->len, event->name);
 				} else {
 					tst_resm(TFAIL,
 						 "get event: wd=%d mask=%x "

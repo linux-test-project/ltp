@@ -67,7 +67,6 @@ int TST_TOTAL = 4;
 struct event_t {
 	char name[BUF_SIZE];
 	unsigned int mask;
-	unsigned int len;
 };
 
 #define	TEST_DIR	"test_dir"
@@ -223,8 +222,8 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL,
 				 "got unnecessary event: "
 				 "wd=%d mask=%x cookie=%u len=%u "
-				 "name=\"%s\"", event->wd, event->mask,
-				 event->cookie, event->len, event->name);
+				 "name=\"%.*s\"", event->wd, event->mask,
+				 event->cookie, event->len, event->len, event->name);
 
 		} else if ((event_set[test_num].mask == event->mask)
 			   &&
@@ -233,19 +232,20 @@ int main(int argc, char **argv)
 			     event->len))) {
 			tst_resm(TPASS,
 				 "got event: wd=%d mask=%x "
-				 "cookie=%u len=%u name=\"%s\"",
+				 "cookie=%u len=%u name=\"%.*s\"",
 				 event->wd, event->mask, event->cookie,
-				 event->len, event->name);
+				 event->len, event->len, event->name);
 
 		} else {
 			tst_resm(TFAIL, "got event: wd=%d mask=%x "
 				 "(expected %x) cookie=%u len=%u "
-				 "name=\"%s\" (expected \"%s\") %d",
+				 "name=\"%.*s\" (expected \"%s\") %d",
 				 event->wd, event->mask,
 				 event_set[test_num].mask,
-				 event->cookie, event->len, event->name,
+				 event->cookie, event->len,
+				 event->len, event->name,
 				 event_set[test_num].name,
-				 strcmp(event_set[test_num].name, event->name));
+				 strncmp(event_set[test_num].name, event->name, event->len));
 		}
 		test_num++;
 		i += EVENT_SIZE + event->len;
