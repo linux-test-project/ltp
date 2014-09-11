@@ -456,6 +456,18 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 				 strerror(TEST_ERRNO));
 	}
 
+	if (size >= sizeof(message)) {
+		printf("%s: %i: line too long\n", __func__, __LINE__);
+		abort();
+	}
+
+	if (ttype & TRERRNO) {
+		size += snprintf(message + size, sizeof(message) - size,
+				 ": TEST_RETURN=%s(%i): %s",
+				 tst_strerrno(TEST_RETURN), (int)TEST_RETURN,
+				 strerror(TEST_RETURN));
+	}
+
 	if (size + 1 >= sizeof(message)) {
 		printf("%s: %i: line too long\n", __func__, __LINE__);
 		abort();

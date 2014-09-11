@@ -23,7 +23,7 @@
 
 #define TERRNO	0x100	/* Append errno information to output */
 #define TTERRNO	0x200	/* Append TEST_ERRNO information to output */
-#define TRERRNO	0x300	/* Capture errno information from TEST_RETURN to
+#define TRERRNO	0x400	/* Capture errno information from TEST_RETURN to
 			   output; useful for pthread-like APIs :). */
 
 #endif /* TST_RES_FLAGS_H */

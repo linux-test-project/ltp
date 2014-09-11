@@ -67,3 +67,4 @@ logfile.*
 /lib/tests/tst_fs_fill_hardlinks
 /lib/tests/tst_device
 /lib/tests/tst_record_childstatus
+/lib/tests/trerrno
