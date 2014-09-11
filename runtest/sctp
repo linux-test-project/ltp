@@ -3,6 +3,7 @@
 test_1_to_1_accept_close test_1_to_1_accept_close
 test_1_to_1_addrs test_1_to_1_addrs
 test_1_to_1_connect test_1_to_1_connect
+test_1_to_1_connectx test_1_to_1_connectx
 test_1_to_1_events test_1_to_1_events
 test_1_to_1_initmsg_connect test_1_to_1_initmsg_connect
 test_1_to_1_nonblock test_1_to_1_nonblock
@@ -22,6 +23,7 @@ test_autoclose test_autoclose
 test_basic test_basic
 test_basic_v6 test_basic_v6
 test_connect test_connect
+test_connectx test_connectx
 test_fragments test_fragments
 test_fragments_v6 test_fragments_v6
 test_getname test_getname
