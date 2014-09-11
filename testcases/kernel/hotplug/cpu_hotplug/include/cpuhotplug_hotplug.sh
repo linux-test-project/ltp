@@ -97,6 +97,18 @@ offline_cpu()
     return $RC
 }
 
+# get_cpus_num()
+#
+#  Prints the number of all available CPUs, regardless of whether they're
+#  currently online or offline.
+#
+get_cpus_num()
+{
+	[ -d /sys/devices/system/cpu/cpu0 ] || return -1
+	NUM=`ls /sys/devices/system/cpu/ \
+			| grep -c "cpu[0-9][0-9]*"`
+	return $NUM
+}
 
 # get_all_cpus()
 #

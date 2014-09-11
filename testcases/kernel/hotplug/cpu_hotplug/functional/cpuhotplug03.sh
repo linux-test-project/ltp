@@ -66,13 +66,18 @@ done
 
 LOOP_COUNT=1
 
+get_cpus_num
+if [ $? -lt 2 ]; then
+	tst_brkm TCONF "system doesn't have required CPU hotplug support"
+fi
+
 if [ -z $CPU_TO_TEST ]; then
 	tst_brkm TBROK "usage: ${0##*} <CPU to online>"
 fi
 
-# Verify the specified CPU exists
+# Validate the specified CPU is available
 if ! cpu_is_valid "${CPU_TO_TEST}" ; then
-	tst_brkm TBROK "CPU${CPU_TO_TEST} not found"
+	tst_brkm TCONF "cpu${CPU_TO_TEST} doesn't support hotplug"
 fi
 
 TST_CLEANUP=do_clean

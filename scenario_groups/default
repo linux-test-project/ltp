@@ -31,3 +31,4 @@ pipes
 dma_thread_diotest
 cpuacct
 can
+cpuhotplug

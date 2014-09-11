@@ -55,6 +55,11 @@ done
 
 LOOP_COUNT=1
 
+get_cpus_num
+if [ $? -lt 2 ]; then
+	tst_brkm TCONF "system doesn't have required CPU hotplug support"
+fi
+
 if [ ! -d "${KERNEL_DIR}" ]; then
 	tst_brkm TCONF "kernel directory - $KERNEL_DIR - does not exist"
 fi
@@ -62,6 +67,11 @@ fi
 if [ -z "${CPU_TO_TEST}" ]; then
 	tst_brkm TBROK "usage: ${0##*/} <CPU to offline> <Kernel \
 		source code directory>"
+fi
+
+# Validate the specified CPU is available
+if ! cpu_is_valid "${CPU_TO_TEST}" ; then
+	tst_brkm TCONF "cpu${CPU_TO_TEST} doesn't support hotplug"
 fi
 
 if ! cpu_is_online ${CPU_TO_TEST}; then

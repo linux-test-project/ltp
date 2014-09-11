@@ -57,6 +57,11 @@ done
 
 LOOP_COUNT=1
 
+get_cpus_num
+if [ $? -lt 2 ]; then
+	tst_brkm TCONF "system doesn't have required CPU hotplug support"
+fi
+
 TST_CLEANUP=do_clean
 
 until [ $LOOP_COUNT -gt $HOTPLUG04_LOOPS ]; do

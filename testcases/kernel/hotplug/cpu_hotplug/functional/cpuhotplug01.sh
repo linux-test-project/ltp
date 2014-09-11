@@ -116,7 +116,8 @@ LOOP_COUNT=1
 
 tst_check_cmds perl
 
-if ! get_all_cpus >/dev/null 2>&1; then
+get_cpus_num
+if [ $? -lt 2 ]; then
 	tst_brkm TCONF "system doesn't have required CPU hotplug support"
 fi
 
@@ -124,9 +125,9 @@ if [ -z "${CPU_TO_TEST}" ]; then
 	tst_brkm TBROK "usage: ${0##*/} <CPU to online>"
 fi
 
-# Validate the specified CPU exists
+# Validate the specified CPU is available
 if ! cpu_is_valid "${CPU_TO_TEST}" ; then
-	tst_brkm TBROK "cpu${CPU_TO_TEST} not found"
+	tst_brkm TCONF "cpu${CPU_TO_TEST} doesn't support hotplug"
 fi
 
 if ! cpu_is_online "${CPU_TO_TEST}" ; then
