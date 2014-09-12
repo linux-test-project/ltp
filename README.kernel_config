@@ -67,17 +67,6 @@ Enabling Kernel Configuration to test filecaps security feature
 ---------------------------------
 CONFIG_SECURITY_FILE_CAPABILITIES=y
 ---------------------------------
-Enabling Kernel Configuration to test p9auth security feature
----------------------------------
-CONFIG_CRYPTO=y
-CONFIG_STAGING=y
-# CONFIG_STAGING_EXCLUDE_BUILD is not set
-CONFIG_PLAN9AUTH=m
-(Or CONFIG_PLAN9AUTH=y)
-You also will need openssl installed.
-You will also need to have an user named 'ltp'
-created to execute this test.
----------------------------------
 Enabling Kernel Configuration to test SELinux security feature
 ---------------------------------
 Your Kernel should have been built with the following options to
