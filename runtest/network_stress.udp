@@ -65,7 +65,3 @@ udp6-multi-diffnic04 udp6-multi-diffnic04
 udp6-multi-diffnic05 udp6-multi-diffnic05
 udp6-multi-diffnic06 udp6-multi-diffnic06
 udp6-multi-diffnic07 udp6-multi-diffnic07
-
-vxlan01 vxlan01.sh
-vxlan02 vxlan02.sh
-vxlan03 vxlan03.sh

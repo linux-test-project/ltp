@@ -1,23 +1,8 @@
 #!/bin/sh
 # This will run all the network tests, with the status logged in /tmp/netpan.log
 
-# ---***** THESE MUST BE SET FOR CORRECT OPERATION *****---
-export RHOST=
-export PASSWD=
-# ---***************************************************---
-
-cd `dirname $0`
-export LTPROOT=${PWD}
-echo $LTPROOT | grep testscripts > /dev/null 2>&1
-if [ $? -eq 0 ]; then
- cd ..
- export LTPROOT=${PWD}
-fi
-
-export TMPDIR=/tmp/netpan-$$
-mkdir -p $TMPDIR
-CMDFILE=${TMPDIR}/network.tests
-VERBOSE="no"
+cd $(dirname $0)
+. ./network.sh
 
 # For bitwise operation to determine which testsets run
 CMD_IPV6=1		# 0x0001
@@ -109,8 +94,6 @@ if [ $(($CMD&$CMD_TCPCMDS_ADD)) -ne 0 ]; then
 fi
 
 cd $TMPDIR
-
-export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
 if [ ${VERBOSE} = "yes" ]; then
     echo "Network parameters:"

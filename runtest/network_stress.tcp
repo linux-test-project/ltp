@@ -331,5 +331,3 @@ tcp6-multi-diffnic11 tcp6-multi-diffnic11
 tcp6-multi-diffnic12 tcp6-multi-diffnic12
 tcp6-multi-diffnic13 tcp6-multi-diffnic13
 tcp6-multi-diffnic14 tcp6-multi-diffnic14
-
-tcp_fastopen tcp_fastopen_run.sh

@@ -75,3 +75,65 @@ tst_rhost_run()
 
 	return $ret
 }
+
+# Get test interface names for local/remote host.
+# tst_get_ifaces [TYPE]
+# TYPE: { lhost | rhost }; Default value is 'lhost'.
+tst_get_ifaces()
+{
+	local type=${1:-"lhost"}
+	if [ "$type" = "lhost" ]; then
+		echo "$LHOST_IFACES"
+	else
+		echo "$RHOST_IFACES"
+	fi
+}
+
+# Get HW addresses from defined test interface names.
+# tst_get_hwaddrs [TYPE]
+# TYPE: { lhost | rhost }; Default value is 'lhost'.
+tst_get_hwaddrs()
+{
+	local type=${1:-"lhost"}
+	local addr=
+	local list=
+
+	for eth in $(tst_get_ifaces $type); do
+
+		local addr_path="/sys/class/net/${eth}/address"
+
+		case $type in
+		lhost) addr=$(cat $addr_path) ;;
+		rhost) addr=$(tst_rhost_run -s -c "cat $addr_path")
+		esac
+
+		[ -z "$list" ] && list="$addr" || list="$list $addr"
+	done
+	echo "$list"
+}
+
+# Get test HW address.
+# tst_hwaddr [TYPE] [LINK]
+# TYPE: { lhost | rhost }; Default value is 'lhost'.
+# LINK: link number starting from 0. Default value is '0'.
+tst_hwaddr()
+{
+	local type=${1:-"lhost"}
+	local link_num=${2:-"0"}
+	local hwaddrs=
+	link_num=$(( $link_num + 1 ))
+	[ "$type" = "lhost" ] && hwaddrs=$LHOST_HWADDRS || hwaddrs=$RHOST_HWADDRS
+	echo "$hwaddrs" | awk '{ print $'"$link_num"' }'
+}
+
+# Get test interface name.
+# tst_iface [TYPE] [LINK]
+# TYPE: { lhost | rhost }; Default value is 'lhost'.
+# LINK: link number starting from 0. Default value is '0'.
+tst_iface()
+{
+	local type=${1:-"lhost"}
+	local link_num=${2:-"0"}
+	link_num=$(( $link_num + 1 ))
+	echo "$(tst_get_ifaces $type)" | awk '{ print $'"$link_num"' }'
+}

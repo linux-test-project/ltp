@@ -4,40 +4,11 @@
 #
 # Please read ltp-yyyymmdd/testcases/network/stress/README before running
 
-cd `dirname $0`
-export LTPROOT=${PWD}
-echo $LTPROOT | grep testscripts > /dev/null 2>&1
-if [ $? -eq 0 ]; then
- cd ..
- export LTPROOT=${PWD}
-fi
-
-export TMPDIR=/tmp/netst-$$
-mkdir $TMPDIR
-VERBOSE="no"
-INTERFACE="eth0"
-
-#===========================================================================
-# Network parameters
-export RHOST=
-export RHOST_HWADDRS=
-export HTTP_DOWNLOAD_DIR=
-export FTP_DOWNLOAD_DIR=
-export FTP_UPLOAD_DIR=
-export FTP_UPLOAD_URLDIR=
-
-# Set firt three octets of the network address, by default 10.0.0
-export IPV4_NETWORK=
-# Set local host last octet, by default 2
-export LHOST_IPV4_HOST=
-# Set remote host last octet, by default 1
-export RHOST_IPV4_HOST=
-# Set the reverse of IPV4_NETWORK, by default 0.0.10
-export IPV4_NETWORK_REVERSE=
+cd $(dirname $0)
+. ./network.sh
 
 #===========================================================================
 # Default Test Settings
-# export LTP_RSH=rsh
 # export NS_DURATION=3600	# 1 hour
 # export NS_TIMES=10000
 # export CONNECTION_TOTAL=4000
@@ -67,17 +38,17 @@ usage () {
     echo " -R|r: Stress test for routing table"
     echo " -B|b: Stress Broken IP packets"
     echo " -M|m: Multicast stress tests"
+    echo " -F|f: Stress test for network features"
     echo " -S|s: Run selected tests"
     echo " -W|w: Run whole network stress tests"
     echo " -D|d: Test duration (default ${NS_DURATION} sec)"
-    echo " -N|n: Select the network interface (default: $INTERFACE)"
     echo " -V|v: Enable verbose"
     echo " -H|h: This Usage"
     echo ""
     exit 1
 }
 
-while getopts AaEeTtIiUuRrMmSsWwBbVvN:n:D:d: OPTION
+while getopts AaEeTtIiUuRrMmFfSsWwBbVvD:d: OPTION
 do
     case $OPTION in
 	A|a) TEST_CASE="network_stress.appl";;
@@ -88,10 +59,10 @@ do
 	U|u) TEST_CASE="network_stress.udp";;
 	R|r) TEST_CASE="network_stress.route";;
 	M|m) TEST_CASE="network_stress.multicast";;
+	F|f) TEST_CASE="network_stress.features";;
 	S|s) TEST_CASE="network_stress.selected";;
 	W|w) TEST_CASE="network_stress.whole";;
 	V|v) VERBOSE="yes";;
-	N|n) INTERFACE=${OPTARG};;
 	D|d) NS_DURATION=${OPTARG};;
 	H|h) usage;;
 	*) echo "Error: invalid option..."; usage; exit 1 ;;
@@ -101,8 +72,6 @@ done
 if [ -z ${TEST_CASE} ]; then
 	usage
 fi
-
-export LHOST_HWADDRS=`ifconfig | grep ${INTERFACE} | grep HWaddr |awk '{print $5}'`
 
 if [ -z ${RHOST} ]; then
 	## Just a silly check
@@ -115,13 +84,10 @@ cat ${LTPROOT}/runtest/${TEST_CASE} > $TMPDIR/network_stress.tests
 
 cd $TMPDIR
 
-export PATH="${PATH}:${LTPROOT}/testcases/bin"
-
 if [ ${VERBOSE} = "yes" ]; then
 	echo "Network parameters:"
-	echo " - ${INTERFACE} local interface (MAC address: ${LHOST_HWADDRS})"
-	echo " - Remote IP address: ${RHOST}"
-	echo " - Remote MAC address: ${RHOST_HWADDRS}"
+	echo " - ${LHOST_IFACES} local interface (MAC address: ${LHOST_HWADDRS})"
+	echo " - ${RHOST_IFACES} remote interface (MAC address: ${RHOST_HWADDRS})"
 
 	cat $TMPDIR/network_stress.tests
 	${LTPROOT}/ver_linux

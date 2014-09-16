@@ -1,0 +1,9 @@
+#
+# Stress tests for various network features
+#
+
+tcp_fastopen tcp_fastopen_run.sh
+
+vxlan01 vxlan01.sh
+vxlan02 vxlan02.sh
+vxlan03 vxlan03.sh
