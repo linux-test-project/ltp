@@ -66,6 +66,25 @@ tst_brkm()
 	tst_exit
 }
 
+tst_record_childstatus()
+{
+	if [ $# -ne 1 ];then
+		tst_resm TWARN "child process id is not valid"
+		return
+	fi
+
+	local child=$1
+	local ret=0
+
+	wait $child
+	ret=$?
+	if [ $ret -eq 127 ];then
+		tst_resm TWARN "child process($child) does not exist"
+		return
+	fi
+	LTP_RET_VAL=$((LTP_RET_VAL|ret))
+}
+
 tst_require_root()
 {
 	if [ "$(id -ru)" != 0 ]; then

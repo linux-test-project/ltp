@@ -40,12 +40,8 @@ if [ $? -ne 0 ]; then
 	flag=1
 fi
 
-netns_par_chld_ftp
-if [ $? -eq 0 ]; then
-	tst_resm TPASS "netns_par_child_ftp"
-else
-	tst_resm TFAIL "netns_par_child_ftp"
-fi
+netns_par_chld_ftp &
+tst_record_childstatus $!
 
 if [ $flag -eq 1 ]; then
 	stop_daemon vsftpd
