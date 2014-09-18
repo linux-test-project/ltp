@@ -16,20 +16,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write the Free Software Foundation,
 # Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#
-# Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-TCID=broken_ip4-protocol01
-TST_TOTAL=1
+. test_net.sh
 
-. broken_ip4_lib.sh
+TST_IPV6=6
 
-tst_resm TINFO "Verify that the kernel is not crashed with receiving \
-a large number of IPv4 packets that have wrong value in the protocol field"
+tst_resm TINFO "Test duration is $NS_DURATION [sec]"
 
-tst_rhost_run -s -c "ns-icmpv4_sender -I $(tst_iface rhost) -S $rhost_addr \
--M $(tst_hwaddr lhost) -D $lhost_addr -s 56 -t $NS_DURATION -p"
+tst_restore_ipaddr
+tst_restore_ipaddr rhost
 
-tst_resm TPASS "Test is finished successfully."
+lhost_addr=$(tst_ipaddr)
+rhost_addr=$(tst_ipaddr rhost)
 
-tst_exit
+tst_rhost_run -s -c \
+	"check_icmpv6_connectivity $(tst_iface rhost) $lhost_addr"
