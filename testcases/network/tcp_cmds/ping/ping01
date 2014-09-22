@@ -1,25 +1,20 @@
 #! /bin/sh
-#***********************************************************************
+# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2000
 #
-#   Copyright (c) International Business Machines  Corp., 2000
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-#   This program is free software;  you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
-#   the GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-#
-#
-#
-#  FILE   : ping
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 #  PURPOSE: To test the basic functionality of the `ping` command.
 #
@@ -30,57 +25,37 @@
 #    - Modified testcase to use test APIs and also fixed minor bugs
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
-#
-#
-#***********************************************************************
 
-#-----------------------------------------------------------------------
-#
-# FUNCTION: do_setup
-#
-#-----------------------------------------------------------------------
+TST_TOTAL=1
+TCID="ping01"
+
+. test_net.sh
 
 do_setup()
 {
-    COUNT=${COUNT:-5}
-    SLEEPTIME=${SLEEPTIME:-1}
-    PACKETSIZES=${PACKETSIZES:-"8 16 32 64 128 256 512 1024 2048 4064"}
+	COUNT=${COUNT:-3}
+	PACKETSIZES=${PACKETSIZES:-"8 16 32 64 128 256 512 1024 2048 4064"}
 
-    tst_setup
+	PING_CMD=ping${TST_IPV6}
 
-    exists ping
-
-    RHOST=${RHOST:-127.0.0.1}
+	tst_check_cmds $PING_CMD
 }
-
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  do_test
-# PURPOSE:   Executes the testcases.
-#
-#-----------------------------------------------------------------------
 
 do_test()
 {
-    tst_resm TINFO "ping with $PACKETSIZES ICMP packets"
-    for packetsize in $PACKETSIZES; do
-        tst_resm TINFO "calling ping with packet size = $packetsize"
-        if ! ping -R -c $COUNT -s $packetsize $RHOST 2>&1 1>/dev/null; then
-            end_testcase "failed: ping -c $COUNT -s $packetsize $RHOST"
-        fi
-        sleep $SLEEPTIME
-    done
+	tst_resm TINFO "$PING_CMD with $PACKETSIZES ICMP packets"
+	local ipaddr=$(tst_ipaddr rhost)
+	for packetsize in $PACKETSIZES; do
+		tst_resm TINFO "call $PING_CMD with packet size = $packetsize"
+		$PING_CMD -c $COUNT -s $packetsize $ipaddr > /dev/null 2>&1
+		if [ $? -ne 0 ]; then
+			tst_resm TFAIL "$PING_CMD -c $COUNT -s $packetsize $ipaddr"
+			return
+		fi
+	done
 }
 
-#*******************************************************************************
-#
-# FUNCTION:  MAIN
-#
-#*******************************************************************************
-. net_cmdlib.sh
-
-read_opts $*
 do_setup
 do_test
-end_testcase
+
+tst_exit
