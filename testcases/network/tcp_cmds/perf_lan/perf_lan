@@ -115,7 +115,7 @@ interrupt_testcase()
 #-----------------------------------------------------------------------
 . net_cmdlib.sh
 
-read_args $*
+read_opts $*
 
 do_setup
 do_test
