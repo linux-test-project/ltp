@@ -8,6 +8,6 @@ rcp6 export TCbin=$LTPROOT/testcases/network/ipv6/rcp6; rcp01
 rlogin6 rlogin01
 rsh6 rsh01
 rwho6 rwho01
-sendfile6 export TCbin=$LTPROOT/testcases/network/ipv6/sendfile6; sendfile601
+sendfile6 sendfile01 -6
 tcpdump6 tcpdump601
 telnet6 telnet01
