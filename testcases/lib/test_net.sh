@@ -154,3 +154,25 @@ tst_read_opts()
 }
 
 tst_read_opts $*
+
+# Get IP address
+# tst_ipaddr [TYPE]
+# TYPE: { lhost | rhost }; Default value is 'lhost'.
+tst_ipaddr()
+{
+	local type=${1:-"lhost"}
+	local ipv=${TST_IPV6:-"4"}
+	local tst_host=
+
+	if [ "$type" = "lhost" ]; then
+		eval "tst_host=\$LHOST_IPV${ipv}_HOST"
+	else
+		eval "tst_host=\$RHOST_IPV${ipv}_HOST"
+	fi
+
+	if [ "$TST_IPV6" ]; then
+		echo "${IPV6_NETWORK}:${tst_host}"
+	else
+		echo "${IPV4_NETWORK}.${tst_host}"
+	fi
+}
