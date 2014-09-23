@@ -203,7 +203,6 @@ int main(int argc, char *argv[])
 	unlink(outfile);
 	tst_resm(TPASS, "Test passed");
 	tst_exit();
-	tst_exit();
 }
 
 #else /* O_DIRECT */

@@ -159,6 +159,4 @@ int main(int argc, char *argv[])
 
 	try_bind();
 	tst_exit();
-
-	tst_exit();
 }

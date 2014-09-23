@@ -220,8 +220,6 @@ char *argv[];
 	    : tst_resm(TPASS, "Test passed");
 	tst_rmdir();
 	tst_exit();
-	/**NOT REACHED**/
-	tst_exit();
 
 }
 

@@ -230,6 +230,4 @@ int main(int ac, char *av[])
 	}			/* end for */
 	tst_rmdir();
 	tst_exit();
-
-	tst_exit();
 }

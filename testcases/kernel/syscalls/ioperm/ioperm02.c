@@ -261,7 +261,6 @@ int main(void)
 	tst_resm(TPASS,
 		 "LSB v1.3 does not specify ioperm() for this architecture.");
 	tst_exit();
-	tst_exit();
 }
 
 #endif /* __i386__ */

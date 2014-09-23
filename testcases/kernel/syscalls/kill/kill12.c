@@ -122,7 +122,6 @@ int main(int argc, char **argv)
 				tst_resm(TBROK, "self_exec FAILED - "
 					 "terminating test.");
 				tst_exit();
-				tst_exit();
 			}
 #else
 			do_child();

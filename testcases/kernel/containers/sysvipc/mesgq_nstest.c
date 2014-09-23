@@ -176,6 +176,4 @@ int main(int argc, char *argv[])
 	msgctl(id, IPC_RMID, NULL);
 
 	tst_exit();
-
-	tst_exit();
 }

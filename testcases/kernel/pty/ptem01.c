@@ -518,6 +518,4 @@ int main(int argc, char **argv)
 	 * all done
 	 */
 	tst_exit();
-
-	tst_exit();
 }

@@ -176,7 +176,6 @@ int main(void)
 {
 	tst_resm(TPASS, "socket call test on this architecture disabled.");
 	tst_exit();
-	tst_exit();
 }
 
 #endif

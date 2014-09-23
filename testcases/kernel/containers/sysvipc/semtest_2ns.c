@@ -235,6 +235,4 @@ int main(int argc, char *argv[])
 	id = semget(MY_KEY, 1, 0);
 	semctl(id, IPC_RMID, 0);
 	tst_exit();
-
-	tst_exit();
 }
