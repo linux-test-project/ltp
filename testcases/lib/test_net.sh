@@ -137,3 +137,20 @@ tst_iface()
 	link_num=$(( $link_num + 1 ))
 	echo "$(tst_get_ifaces $type)" | awk '{ print $'"$link_num"' }'
 }
+
+# Blank for an IPV4 test; 6 for an IPV6 test.
+TST_IPV6=
+
+tst_read_opts()
+{
+	OPTIND=0
+	while getopts ":6" opt; do
+		case "$opt" in
+		6)
+			TST_IPV6=6;;
+		esac
+	done
+	OPTIND=0
+}
+
+tst_read_opts $*
