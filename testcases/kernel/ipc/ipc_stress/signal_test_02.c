@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 	reset_valid_sig();
 
 	sigemptyset(&setsig);
-	if (sigprocmask(SIG_SETMASK, &setsig, (sigset_t *) NULL) < 0)
+	if (sigprocmask(SIG_SETMASK, &setsig, NULL) < 0)
 		sys_error("sigprocmask failed", __LINE__);
 
 	/*
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 	if (sigaddset(&setsig, SIGALRM) < 0)
 		sys_error("sigaddset (SIGALRM) failed", __LINE__);
 
-	if (sigprocmask(SIG_SETMASK, &setsig, (sigset_t *) NULL) < 0)
+	if (sigprocmask(SIG_SETMASK, &setsig, NULL) < 0)
 		sys_error("sigaddset (SIGALRM) failed", __LINE__);
 
 	valid_sig[SIGFPE] = 1;
@@ -303,7 +303,7 @@ void init_sig()
 		sigemptyset(&invec.sa_mask);
 		invec.sa_flags = 0;
 
-		if (sigaction(i, &invec, (struct sigaction *)NULL) < 0) {
+		if (sigaction(i, &invec, NULL) < 0) {
 			sprintf(msg, "sigaction failed on signal %d", i);
 			error(msg, __LINE__);
 		}

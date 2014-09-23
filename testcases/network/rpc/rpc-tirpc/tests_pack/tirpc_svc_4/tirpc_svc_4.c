@@ -63,7 +63,7 @@ int main(int argn, char *argc[])
 		exit(1);
 	}
 
-	transp = svc_tli_create(RPC_ANYFD, nconf, (struct t_bind *)NULL, 0, 0);
+	transp = svc_tli_create(RPC_ANYFD, nconf, NULL, 0, 0);
 
 	if (transp == NULL) {
 		fprintf(stderr, "Cannot create service.\n");

@@ -69,7 +69,7 @@ void *my_thread_process(void *arg)
 	tv.tv_usec = 100;
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *)NULL) {
+	if (nconf == NULL) {
 		printf("err nconf\n");
 		pthread_exit((void*)1l);
 	}

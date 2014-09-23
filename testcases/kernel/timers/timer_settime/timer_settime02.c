@@ -88,7 +88,7 @@ int main(int ac, char **av)
 	int lc, i;
 	const char *msg;
 
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -133,7 +133,7 @@ static int setup_test(int option)
 		 * make flags equal to zero
 		 * use one-shot timer
 		 */
-		old_temp = (struct itimerspec *)NULL;
+		old_temp = NULL;
 		new_set.it_interval.tv_sec = 0;
 		new_set.it_interval.tv_nsec = 0;
 		new_set.it_value.tv_sec = 5;

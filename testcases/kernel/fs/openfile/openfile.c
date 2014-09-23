@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 
 	/* Create threads */
 	for (i = 0; i < numthreads; i++)
-		if (pthread_create(&th_id, (pthread_attr_t *) NULL, threads,
+		if (pthread_create(&th_id, NULL, threads,
 				   (void *)(uintptr_t) i)) {
 			tst_resm(TFAIL,
 				 "failed creating a pthread; increase limits");

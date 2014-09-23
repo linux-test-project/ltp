@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 		usage_error(argv[0]);
 	}
 	hp = gethostbyname(server);
-	if (hp == (struct hostent *)NULL) {
+	if (hp == NULL) {
 		fprintf(stderr, "server %s unknown\n", server);
 		usage_error(argv[0]);
 	}
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 	timeout.tv_usec = 0;
 	timeout.tv_sec = 10;
 	clnt = clntudp_create(&server_sin, program, version, timeout, &sock);
-	if (clnt == (CLIENT *) NULL) {
+	if (clnt == NULL) {
 		fprintf(stderr, "clntudp_create failed\n");
 		exit(1);
 	}
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 	server_sin.sin_port = 0;
 	sock = RPC_ANYSOCK;
 	clnt = clnttcp_create(&server_sin, program, version, &sock, 0, 0);
-	if (clnt == (CLIENT *) NULL) {
+	if (clnt == NULL) {
 		fprintf(stderr, "clntudp_create failed\n");
 		exit(1);
 	}

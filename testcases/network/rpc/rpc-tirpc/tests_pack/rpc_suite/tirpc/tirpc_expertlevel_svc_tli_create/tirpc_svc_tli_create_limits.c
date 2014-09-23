@@ -65,7 +65,7 @@ int main(void)
 	}
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *)NULL) {
+	if (nconf == NULL) {
 		//syslog(LOG_ERR, "getnetconfigent for udp failed");
 		fprintf(stderr, "err nconf\n");
 		printf("5\n");
@@ -89,7 +89,7 @@ int main(void)
 		}
 		//Call function
 		transp = svc_tli_create(RPC_ANYFD, nconf,
-					(struct t_bind *)NULL,
+					NULL,
 					paramList[i].bufmin,
 					paramList[i].bufmax);
 

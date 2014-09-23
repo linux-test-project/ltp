@@ -61,7 +61,7 @@ int main(void)
 	int shmid, shmid1;
 	char *cp, *cp1;
 
-	srand48((getpid() << 16) + (unsigned)time((time_t *) NULL));
+	srand48((getpid() << 16) + (unsigned)time(NULL));
 
 	key[0] = (key_t) lrand48();
 	key[1] = (key_t) lrand48();

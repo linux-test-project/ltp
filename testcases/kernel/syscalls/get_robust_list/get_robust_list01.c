@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 
 		TEST(ltp_syscall(__NR_get_robust_list, 0,
 				      (struct robust_list_head *)&head,
-				      (size_t *) NULL));
+				      NULL));
 
 		if (TEST_RETURN == -1) {
 			if (TEST_ERRNO == EFAULT)
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 				 "get_robust_list succeeded unexpectedly");
 
 		TEST(ltp_syscall(__NR_get_robust_list, 0,
-				      (struct robust_list_head **)NULL,
+				      NULL,
 				      &len_ptr));
 
 		if (TEST_RETURN) {

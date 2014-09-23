@@ -70,7 +70,7 @@ int main(int ac, char **av)
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			if (test_cases[ind].child_stack == NULL) {
-				test_stack = (void *)NULL;
+				test_stack = NULL;
 			} else if (*test_cases[ind].child_stack == NULL) {
 				tst_resm(TWARN, "Can not allocate stack for"
 					 "child, skipping test case");

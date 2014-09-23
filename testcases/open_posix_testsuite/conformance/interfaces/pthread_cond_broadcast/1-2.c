@@ -519,7 +519,7 @@ int main(void)
 		if (td->fork == 0) {
 			do {
 				tmp = malloc(sizeof(children_t));
-				if (tmp != (children_t *) NULL) {
+				if (tmp != NULL) {
 					ret = pthread_create(&(tmp->data.t),
 							     &ta, child, NULL);
 					if (ret != 0) {
@@ -544,7 +544,7 @@ int main(void)
 		} else {
 			do {
 				tmp = malloc(sizeof(children_t));
-				if (tmp != (children_t *) NULL) {
+				if (tmp != NULL) {
 					tmp->data.p = fork();
 					if (tmp->data.p == 0) {
 						child(NULL);

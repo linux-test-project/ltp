@@ -144,7 +144,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			temp_ev = (struct sigevent *)NULL;
+			temp_ev = NULL;
 			temp_id = &timer_id;
 
 			switch (i) {

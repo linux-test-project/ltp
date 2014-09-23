@@ -57,13 +57,13 @@ void *my_thread_process(void *arg)
 	}
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *)NULL) {
+	if (nconf == NULL) {
 		//syslog(LOG_ERR, "getnetconfigent for udp failed");
 		printf("err nconf\n");
 		pthread_exit((void*)1l);
 	}
 
-	transp = svc_tli_create(RPC_ANYFD, nconf, (struct t_bind *)NULL, 0, 0);
+	transp = svc_tli_create(RPC_ANYFD, nconf, NULL, 0, 0);
 
 	for (i = 0; i < callNb; i++) {
 		svc_unreg(progNum + atoi(arg), VERSNUM);

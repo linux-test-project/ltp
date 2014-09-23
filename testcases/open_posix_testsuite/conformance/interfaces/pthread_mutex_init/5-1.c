@@ -136,7 +136,7 @@ int main(void)
 	if (ret) {
 		UNRESOLVED(ret, "Mutex attribute init failed");
 	}
-	pma[4] = (pthread_mutexattr_t *) NULL;
+	pma[4] = NULL;
 
 	if ((ret = pthread_mutexattr_settype(pma[0], PTHREAD_MUTEX_NORMAL))) {
 		UNRESOLVED(ret, "Mutex attribute NORMAL failed");

@@ -235,7 +235,7 @@ struct event *nextevent()
 		eventtab[imin].type = NULLEVENT;
 		return (&rtrevent);
 	} else
-		return ((struct event *)NULL);
+		return (NULL);
 }
 
 /*

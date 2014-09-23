@@ -583,10 +583,10 @@ void setup_signal_handlers()
 	sigemptyset(&invec.sa_mask);
 	invec.sa_flags = 0;
 
-	if (sigaction(SIGINT, &invec, (struct sigaction *)NULL) < 0)
+	if (sigaction(SIGINT, &invec, NULL) < 0)
 		sys_error("sigaction failed", __LINE__);
 
-	if (sigaction(SIGPIPE, &invec, (struct sigaction *)NULL) < 0)
+	if (sigaction(SIGPIPE, &invec, NULL) < 0)
 		sys_error("sigaction failed", __LINE__);
 }
 

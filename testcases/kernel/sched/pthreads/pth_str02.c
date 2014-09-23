@@ -149,7 +149,7 @@ void *thread(void *parm)
 			} else
 				sys_error("pthread_create failed", __LINE__);
 		}
-		pthread_join(th, (void *)NULL);
+		pthread_join(th, NULL);
 	}
 
 	return 0;

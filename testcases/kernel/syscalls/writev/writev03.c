@@ -70,7 +70,7 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 	{buf1 + (CHUNK * 6), CHUNK},
 	{(caddr_t) - 1, CHUNK},
 	{buf1 + (CHUNK * 8), CHUNK},
-	{(caddr_t) NULL, 0}
+	{NULL, 0}
 };
 
 /* 0 terminated list of expected errnos */

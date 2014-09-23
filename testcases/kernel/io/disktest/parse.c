@@ -537,7 +537,7 @@ int fill_cld_args(int argc, char **argv, child_args_t * args)
 				}
 			} else {
 				args->delayTimeMin =
-				    strtoul(optarg, (char **)NULL, 10);
+				    strtoul(optarg, NULL, 10);
 				args->delayTimeMax = args->delayTimeMin;
 			}
 			break;

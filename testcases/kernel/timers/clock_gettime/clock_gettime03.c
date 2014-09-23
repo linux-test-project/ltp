@@ -133,9 +133,9 @@ int main(int ac, char **av)
 			if (i == 0) {
 				temp = (struct timespec *)-1;
 			} else if (i == 1) {
-				temp = (struct timespec *)NULL;
+				temp = NULL;
 			} else if ((i >= 4) && (tst_kvercmp(2, 6, 12) >= 0)) {
-				temp = (struct timespec *)NULL;
+				temp = NULL;
 			}
 
 			TEST(ltp_syscall(__NR_clock_gettime, clocks[i], temp));

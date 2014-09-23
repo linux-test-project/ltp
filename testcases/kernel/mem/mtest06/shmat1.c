@@ -451,7 +451,7 @@ int main(int argc,		/* number of input parameters.                        */
 	for (sig_ndx = 0; sig_info[sig_ndx].signum != -1; sig_ndx++) {
 		sigaddset(&sigptr.sa_mask, sig_info[sig_ndx].signum);
 		if (sigaction(sig_info[sig_ndx].signum, &sigptr,
-			      (struct sigaction *)NULL) == -1) {
+			      NULL) == -1) {
 			perror("man(): sigaction()");
 			fprintf(stderr,
 				"could not set handler for SIGALRM, errno = %d\n",

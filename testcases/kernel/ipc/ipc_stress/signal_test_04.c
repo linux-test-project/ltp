@@ -322,7 +322,7 @@ void signal_init()
 		sigfillset(&action.sa_mask);
 		action.sa_flags = SA_RESTART;
 
-		if (sigaction(i, &action, (struct sigaction *)NULL) < 0) {
+		if (sigaction(i, &action, NULL) < 0) {
 			sprintf(msg, "sigaction failed on signal %d", i);
 			error(msg, __LINE__);
 		}
@@ -336,19 +336,19 @@ void signal_init()
 	/*action.sa_flags = 0; */
 	action.sa_flags = SA_RESTART;
 
-	if (sigaction(SIGCHLD, &action, (struct sigaction *)NULL) < 0)
+	if (sigaction(SIGCHLD, &action, NULL) < 0)
 		sys_error("sigaction (SIGCHLD) failed", __LINE__);
 
 	/* changing */
 	action.sa_flags = SA_RESTART;
 	/* end of changing */
 
-	if (sigaction(SIGUSR1, &action, (struct sigaction *)NULL) < 0)
+	if (sigaction(SIGUSR1, &action, NULL) < 0)
 		sys_error("sigaction (SIGUSR1) failed", __LINE__);
 
 	/* Setup signal handler for SIGALRM */
 	action.sa_handler = (void (*)(int))handler;
-	if (sigaction(SIGALRM, &action, (struct sigaction *)NULL) < 0)
+	if (sigaction(SIGALRM, &action, NULL) < 0)
 		sys_error("sigaction (SIGCHLD) failed", __LINE__);
 }
 

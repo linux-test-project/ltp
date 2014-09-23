@@ -374,7 +374,7 @@ int process_slots_in_use()
 	/*
 	 * Open the output file
 	 */
-	if ((psfile = fopen("ps.out", "r")) == (FILE *) NULL) {
+	if ((psfile = fopen("ps.out", "r")) == NULL) {
 		exit(-1);
 	}
 
@@ -452,7 +452,7 @@ float *t2;			/* if sched_tc6:  second time returned from testcase */
 	 * Open the temporary file to get the returned number of seconds
 	 */
 
-	if ((datafile = fopen("sch.measure", "r")) == (FILE *) NULL) {
+	if ((datafile = fopen("sch.measure", "r")) == NULL) {
 		sys_error("cannot open sch.measure", __FILE__, __LINE__);
 	}
 

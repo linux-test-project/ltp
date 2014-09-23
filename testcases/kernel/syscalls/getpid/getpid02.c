@@ -88,7 +88,7 @@ int main(int ac, char **av)
 	pid_t pproc_id;		/* parent process id */
 	int status;		/* exit status of child process */
 
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();

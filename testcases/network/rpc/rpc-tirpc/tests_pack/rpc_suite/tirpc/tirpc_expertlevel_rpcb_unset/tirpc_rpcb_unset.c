@@ -49,12 +49,12 @@ int main(int argn, char *argc[])
 	struct netconfig *nconf = NULL;
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *)NULL) {
+	if (nconf == NULL) {
 		printf("err nconf\n");
 		exit(1);
 	}
 
-	transp = svc_tli_create(RPC_ANYFD, nconf, (struct t_bind *)NULL, 0, 0);
+	transp = svc_tli_create(RPC_ANYFD, nconf, NULL, 0, 0);
 	if (transp == NULL) {
 		printf("svc_tli_create() failed\n");
 		exit(1);

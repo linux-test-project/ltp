@@ -72,7 +72,7 @@ int main(int argc, char *argv[], char *env[])
 	if (!hp || !hp->ai_addr || hp->ai_addr->sa_family != AFI)
 		tst_brkm(TBROK, NULL, "getaddrinfo failed");
 
-	i = (unsigned int)strtol(argv[3], (char **)NULL, 10);
+	i = (unsigned int)strtol(argv[3], NULL, 10);
 	j = 0;
 	while (i-- > 0) {
 		switch (pid = fork()) {
@@ -90,7 +90,7 @@ int main(int argc, char *argv[], char *env[])
 			break;
 		}
 	}
-	finish = (unsigned int)strtol(argv[3], (char **)NULL, 10);
+	finish = (unsigned int)strtol(argv[3], NULL, 10);
 	i = finish;
 	/* Consume all operating threads until we're done... */
 	while (finish != 0) {

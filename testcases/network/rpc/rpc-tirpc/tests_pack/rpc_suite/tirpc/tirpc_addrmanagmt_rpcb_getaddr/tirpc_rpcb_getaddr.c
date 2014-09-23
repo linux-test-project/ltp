@@ -67,7 +67,7 @@ int main(int argn, char *argc[])
 	}
 
 	/* Returns a pointer to nconf corresponding to NETCONF */
-	if ((nconf = getnetconfigent("udp")) == (struct netconfig *)NULL) {
+	if ((nconf = getnetconfigent("udp")) == NULL) {
 		fprintf(stderr, "Cannot get netconfig entry for UDP\n");
 		exit(1);
 	}

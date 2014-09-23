@@ -69,7 +69,7 @@ int main(int argn, char *argc[])
 	tv.tv_usec = 0;
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *)NULL) {
+	if (nconf == NULL) {
 		//syslog(LOG_ERR, "getnetconfigent for udp failed");
 		printf("err nconf\n");
 		exit(1);

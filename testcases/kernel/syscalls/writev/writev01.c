@@ -103,8 +103,8 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 	{(buf1 + CHUNK * 13), 0},
 
 	/* testcase# 7 */
-	{(caddr_t) NULL, 0},
-	{(caddr_t) NULL, 0}
+	{NULL, 0},
+	{NULL, 0}
 };
 
 char name[K_1], f_name[K_1];

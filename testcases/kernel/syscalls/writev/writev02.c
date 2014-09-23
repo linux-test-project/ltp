@@ -73,7 +73,7 @@ char *bad_addr = 0;
 
 struct iovec wr_iovec[MAX_IOVEC] = {
 	{(caddr_t) - 1, CHUNK},
-	{(caddr_t) NULL, 0},
+	{NULL, 0},
 };
 
 char name[K_1], f_name[K_1];

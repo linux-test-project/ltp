@@ -58,7 +58,7 @@ int main(int argn, char *argc[])
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 
-	if ((nconf = getnetconfigent("udp")) == (struct netconfig *)NULL) {
+	if ((nconf = getnetconfigent("udp")) == NULL) {
 		fprintf(stderr, "Cannot get netconfig entry for UDP\n");
 		printf("5\n");
 		exit(1);

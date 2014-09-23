@@ -67,7 +67,7 @@ int main(int argn, char *argc[])
 
 	//Test initialization
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *)NULL) {
+	if (nconf == NULL) {
 		//syslog(LOG_ERR, "getnetconfigent for udp failed");
 		fprintf(stderr, "err nconf\n");
 		printf("5\n");

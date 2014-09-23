@@ -196,7 +196,7 @@ void init_sig()
 		sigemptyset(&invec.sa_mask);
 		invec.sa_flags = 0;
 
-		if (sigaction(i, &invec, (struct sigaction *)NULL) < 0) {
+		if (sigaction(i, &invec, NULL) < 0) {
 			sprintf(msg, "sigaction failed on signal %d", i);
 			error(msg, __LINE__);
 		}

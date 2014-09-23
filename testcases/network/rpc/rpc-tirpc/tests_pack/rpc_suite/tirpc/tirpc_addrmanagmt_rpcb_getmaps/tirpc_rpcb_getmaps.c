@@ -61,7 +61,7 @@ int main(int argn, char *argc[])
 		printf("ProgNum : %d\n", progNum);
 	}
 
-	if ((nconf = getnetconfigent("udp")) == (struct netconfig *)NULL) {
+	if ((nconf = getnetconfigent("udp")) == NULL) {
 		fprintf(stderr, "Cannot get netconfig entry for UDP\n");
 		exit(1);
 	}

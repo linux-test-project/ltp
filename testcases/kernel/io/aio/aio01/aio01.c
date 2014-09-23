@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 	};
 
 	msg = parse_opts(argc, argv, options, &help);
-	if (msg != (char *)NULL) {
+	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}

@@ -289,7 +289,7 @@ int fork_realtime(char **args)
 		/* child process */
 	case 0:
 		if (execl(*args, *args, REAL_TIME, results_file, priority,
-			  NO_FORK, (char *)NULL) < 0)
+			  NO_FORK, NULL) < 0)
 			sys_error("execl failed", __FILE__, __LINE__);
 
 		/* parent process */

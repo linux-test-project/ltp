@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 			lp++;
 		}
 		nbuf[count] = '\0';
-		flen = strtol(number, (char **)NULL, 10);
+		flen = strtol(number, NULL, 10);
 
 		/* the file name */
 		lp++;

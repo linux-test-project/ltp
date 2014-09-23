@@ -188,7 +188,7 @@ void setup_handler()
 	sigemptyset(&invec.sa_mask);
 	invec.sa_flags = 0;
 
-	if (sigaction(SIGPIPE, &invec, (struct sigaction *)NULL) < 0)
+	if (sigaction(SIGPIPE, &invec, NULL) < 0)
 		sys_error("sigaction failed", __LINE__);
 }
 

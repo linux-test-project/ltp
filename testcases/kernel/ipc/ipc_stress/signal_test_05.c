@@ -271,7 +271,7 @@ void ignore_signals()
 		sigfillset(&action.sa_mask);
 		action.sa_flags = SA_RESTART;
 
-		if (sigaction(i, &action, (struct sigaction *)NULL) < 0) {
+		if (sigaction(i, &action, NULL) < 0) {
 			perror("ignore_signals: sigaction");
 			sprintf(msg, "sigaction failed on signal %d", i);
 			error(msg, __LINE__);
@@ -282,7 +282,7 @@ void ignore_signals()
 	action.sa_handler = (void (*)(int))handler;
 	sigfillset(&action.sa_mask);
 	action.sa_flags = SA_RESTART;
-	if (sigaction(SIGCHLD, &action, (struct sigaction *)NULL) < 0)
+	if (sigaction(SIGCHLD, &action, NULL) < 0)
 		sys_error("sigaction (SIGCHLD) failed", __LINE__);
 }
 

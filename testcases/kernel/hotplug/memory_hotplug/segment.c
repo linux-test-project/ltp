@@ -136,7 +136,7 @@ static segment_t *get_seg_slot(void)
 	}
 
 	fprintf(stderr, "%s:  segment table full\n", gcp->program_name);
-	return (segment_t *) NULL;
+	return NULL;
 }
 
 static void unmap_segment(segment_t * segp)
@@ -491,7 +491,7 @@ segment_t *segment_get(char *name)
 		}
 	}
 
-	return (segment_t *) NULL;
+	return NULL;
 }
 
 /*

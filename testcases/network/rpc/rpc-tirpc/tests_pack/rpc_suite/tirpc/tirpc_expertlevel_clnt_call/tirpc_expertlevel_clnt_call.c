@@ -70,7 +70,7 @@ int main(int argn, char *argc[])
 	tv.tv_usec = 0;
 
 	nconf = getnetconfigent("udp");
-	if (nconf == (struct netconfig *)NULL) {
+	if (nconf == NULL) {
 		fprintf(stderr, "err nconf\n");
 		printf("5\n");
 		exit(5);

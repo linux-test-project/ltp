@@ -142,7 +142,7 @@ void setup_test(int option)
 	switch (option) {
 	case 0:
 		/* Pass NULL structure as new setting */
-		new_temp = (struct itimerspec *)NULL;
+		new_temp = NULL;
 		tim = timer;
 		old_temp = &old_set;
 		break;
