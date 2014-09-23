@@ -219,7 +219,6 @@ int main(int argc, char **argv)
 
 	cleanup();
 	tst_exit();
-
 }
 
 #ifdef UCLINUX
@@ -312,10 +311,6 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
-	 * fork the test with the -c option.  You want to make sure you do this
-	 * before you create your temporary directory.
-	 */
 	TEST_PAUSE;
 
 	nr_msgqs = get_max_msgqueues();
@@ -340,9 +335,7 @@ void setup(void)
 void cleanup(void)
 {
 	int status;
-	/*
-	 *  Remove the message queue from the system
-	 */
+
 #ifdef DEBUG
 	tst_resm(TINFO, "Removing the message queue");
 #endif

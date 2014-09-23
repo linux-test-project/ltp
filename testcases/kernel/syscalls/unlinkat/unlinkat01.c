@@ -23,17 +23,6 @@
  *	This test case will verify basic function of unlinkat
  *	added by kernel 2.6.16 or up.
  *
- * USAGE:  <for command-line>
- * unlinkat01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- *      -c n : Run n copies simultaneously.
- *      -e   : Turn on errno logging.
- *      -i n : Execute test n times.
- *      -I x : Execute test for x seconds.
- *      -p   : Pause for SIGUSR1 before starting
- *      -P x : Pause for x seconds between iterations.
- *      -t   : Turn on syscall timing.
- *
  * Author
  *	Yi Yang <yyangcdl@cn.ibm.com>
  *
@@ -100,28 +89,16 @@ int main(int ac, char **av)
 		exit(0);
 	}
 
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/***************************************************************
-	 * perform global setup for test
-	 ***************************************************************/
 	setup();
 
-	/***************************************************************
-	 * check looping state if -c option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		setup_every_copy();
 
 		tst_count = 0;
 
-		/*
-		 * Call unlinkat
-		 */
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(myunlinkat(fds[i], filenames[i], flags[i]));
 
@@ -139,11 +116,7 @@ int main(int ac, char **av)
 
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
 
@@ -208,24 +181,14 @@ void setup_every_copy(void)
 	filenames[6] = subpathname;
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- ***************************************************************/
 void cleanup(void)
 {
-	/* Remove them */
 	char tmppathname[256] = "";
 	strcat(strcat(strcat(tmppathname, pathname), "/"), subpathname);
 	rmdir(tmppathname);
@@ -233,11 +196,5 @@ void cleanup(void)
 	unlink(testfile3);
 	unlink(testfile);
 	rmdir(pathname);
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }

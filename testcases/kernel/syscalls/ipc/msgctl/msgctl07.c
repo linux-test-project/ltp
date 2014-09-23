@@ -35,12 +35,12 @@
  *
  */
 
-#include <sys/types.h>		/* needed for test              */
-#include <sys/ipc.h>		/* needed for test              */
-#include <sys/msg.h>		/* needed for test              */
-#include <signal.h>		/* needed for test              */
-#include <wait.h>		/* needed for test              */
-#include <stdio.h>		/* needed by testhead.h         */
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <signal.h>
+#include <wait.h>
+#include <stdio.h>
 #include "test.h"
 #include "usctest.h"
 #include "ipcmsg.h"
@@ -59,12 +59,8 @@ void cleanup();
 void do_child_1();
 void do_child_2();
 
-/*
- *  *  *  * These globals must be defined in the test.
- *   *   *   */
-
-char *TCID = "msgctl07";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+char *TCID = "msgctl07";
+int TST_TOTAL = 1;
 
 /* Used by main() and do_child_1(): */
 static int msqid;
@@ -72,8 +68,6 @@ struct my_msgbuf {
 	long type;
 	char text[BYTES];
 } p1_msgp, p2_msgp, p3_msgp, c1_msgp, c2_msgp, c3_msgp;
-
-/*--------------------------------------------------------------*/
 
 int main(int argc, char *argv[])
 {
@@ -237,15 +231,11 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-/*--------------------------------------------------------------*/
-
 sighandler_t alrm(int sig)
 {
 	ready++;
 	return 0;
 }
-
-/*--------------------------------------------------------------*/
 
 void do_child_1(void)
 {
@@ -320,43 +310,18 @@ void do_child_2(void)
 	exit(0);
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ****************************************************************/
 void setup(void)
 {
-	/* You will want to enable some signal handling so you can capture
-	 * unexpected signals like SIGSEGV.
-	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
-	 * fork the test with the -c option.  You want to make sure you do this
-	 * before you create your temporary directory.
-	 */
 	TEST_PAUSE;
 
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
 	tst_tmpdir();
 }
 
-/***************************************************************
- *  * cleanup() - performs all ONE TIME cleanup for this test at
- *   *              completion or premature exit.
- *    ***************************************************************/
 void cleanup(void)
 {
-
 	tst_rmdir();
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }

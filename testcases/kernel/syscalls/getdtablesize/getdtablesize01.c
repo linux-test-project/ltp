@@ -100,32 +100,19 @@ int main(void)
 		tst_resm(TPASS, "%d = %d", count, (max_val_opfiles - 1));
 	else
 		tst_resm(TFAIL, "%d != %d", count, (max_val_opfiles - 1));
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *              completion or premature exit.
- ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }

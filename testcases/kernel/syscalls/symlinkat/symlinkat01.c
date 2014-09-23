@@ -23,17 +23,6 @@
  *	This test case will verify basic function of symlinkat
  *	added by kernel 2.6.16 or up.
  *
- * USAGE:  <for command-line>
- * symlinkat01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- *      -c n : Run n copies simultaneously.
- *      -e   : Turn on errno logging.
- *      -i n : Execute test n times.
- *      -I x : Execute test for x seconds.
- *      -p   : Pause for SIGUSR1 before starting
- *      -P x : Pause for x seconds between iterations.
- *      -t   : Turn on syscall timing.
- *
  * Author
  *	Yi Yang <yyangcdl@cn.ibm.com>
  *
@@ -162,27 +151,15 @@ int main(int ac, char **av)
 		exit(0);
 	}
 
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/***************************************************************
-	 * perform global setup for test
-	 ***************************************************************/
 	setup();
 
-	/***************************************************************
-	 * check looping state if -c option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
 
-		/*
-		 * Call symlinkat
-		 */
 		for (i = 0; i < TST_TOTAL; i++) {
 			setup_every_copy();
 			mysymlinkat_test(&test_desc[i]);
@@ -191,11 +168,7 @@ int main(int ac, char **av)
 
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
 
@@ -269,9 +242,6 @@ static void mysymlinkat_test(struct test_struct *desc)
 	}
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 static void setup(void)
 {
 	char *tmp;
@@ -301,17 +271,8 @@ static void setup(void)
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- ***************************************************************/
 static void cleanup(void)
 {
 	tst_rmdir();
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }

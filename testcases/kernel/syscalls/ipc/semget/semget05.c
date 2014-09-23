@@ -35,14 +35,6 @@
  *	call cleanup
  *
  * USAGE:  <for command-line>
- *  semget05 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *      07/2006 - Changes By Michael Reed
@@ -68,7 +60,7 @@ int TST_TOTAL = 1;
 
 int MAXIDS = 2048;
 
-int exp_enos[] = { ENOSPC, 0 };	/* 0 terminated list of expected errnos */
+int exp_enos[] = { ENOSPC, 0 };
 
 int *sem_id_arr = NULL;
 int num_sems = 0;		/* count the semaphores created */
@@ -97,18 +89,13 @@ int main(int ac, char **av)
 	if (sem_id_arr == NULL)
 		tst_brkm(TBROK, cleanup, "malloc failed");
 
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		/* use the TEST macro to make the call */
 
 		TEST(semget(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA));
-		//      printf("rc = %ld \n",   TEST_RETURN);
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
@@ -133,31 +120,18 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
 void setup(void)
 {
 	int sem_q;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
 	tst_tmpdir();
 
-	/*
-	 * Use a while loop to create the maximum number of semaphore sets.
-	 * If the loop exceeds MAXIDS, then break the test and cleanup.
-	 */
 	while ((sem_q = semget(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL)) != -1) {
 		sem_id_arr[num_sems++] = sem_q;
 		if (num_sems == MAXIDS) {
@@ -167,38 +141,22 @@ void setup(void)
 		}
 	}
 
-	/*
-	 * If the errno is other than ENOSPC, then something else is wrong.
-	 */
-
 	if (errno != ENOSPC) {
 		tst_brkm(TBROK, cleanup, "Didn't get ENOSPC in test setup"
 			 " - errno = %d : %s", errno, strerror(errno));
 	}
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
 void cleanup(void)
 {
 	int i;
 
-	/* remove the semaphore resources that were created */
 	for (i = 0; i < num_sems; i++) {
 		rm_sema(sem_id_arr[i]);
 	}
 
-	/* free malloced memory */
 	free(sem_id_arr);
-
 	tst_rmdir();
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }

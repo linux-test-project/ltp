@@ -33,21 +33,12 @@
  *	otherwise,
  *	  if doing functionality testing
  *		get the semaphore values and compare with expected values
- *	  	if correct,
+ *		if correct,
  *			issue a PASS message
  *		otherwise
  *			issue a FAIL message
  *	  else issue a PASS message
  *	call cleanup
- *
- * USAGE:  <for command-line>
- *  semop01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
  *
  * HISTORY
  *	03/2001  - Written by Wayne Boyer
@@ -71,7 +62,7 @@ int TST_TOTAL = 1;
 int sem_id_1 = -1;		/* a semaphore set with read & alter permissions */
 
 union semun get_arr;
-struct sembuf sops[PSEMS];	/* an array of sembuf structures */
+struct sembuf sops[PSEMS];
 
 int main(int ac, char **av)
 {
@@ -83,17 +74,10 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
-
-		/*
-		 * Use TEST macro to make the call
-		 */
 
 		TEST(semop(sem_id_1, sops, NSEMS));
 
@@ -134,13 +118,9 @@ int main(int ac, char **av)
 	}
 
 	cleanup();
-
 	tst_exit();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
 void setup(void)
 {
 	int i;
@@ -149,52 +129,31 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
 	tst_tmpdir();
 
-	/* allocate memory */
 	get_arr.array = malloc(sizeof(unsigned short int) * PSEMS);
 	if (get_arr.array == NULL)
 		tst_brkm(TBROK, cleanup, "malloc failed");
 
-	/* get an IPC resource key */
 	semkey = getipckey();
 
-	/* create a semaphore set with read and alter permissions */
 	sem_id_1 = semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
 	if (sem_id_1 == -1)
 		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");
 
-	/* set up some values for the first four primitive semaphores */
 	for (i = 0; i < NSEMS; i++) {
 		sops[i].sem_num = i;
-		sops[i].sem_op = i * i;	/* 0, 1, 4, 9, */
+		sops[i].sem_op = i * i;
 		sops[i].sem_flg = SEM_UNDO;
 	}
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
 void cleanup(void)
 {
-	/* if it exists, remove the semaphore resouce */
 	rm_sema(sem_id_1);
 
-	/* free malloced memory */
 	free(get_arr.array);
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }

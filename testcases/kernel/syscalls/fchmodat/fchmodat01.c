@@ -23,17 +23,6 @@
  *	This test case will verify basic function of fchmodat
  *	added by kernel 2.6.16 or up.
  *
- * USAGE:  <for command-line>
- * fchmodat01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- *      -c n : Run n copies simultaneously.
- *      -e   : Turn on errno logging.
- *      -i n : Execute test n times.
- *      -I x : Execute test for x seconds.
- *      -p   : Pause for SIGUSR1 before starting
- *      -P x : Pause for x seconds between iterations.
- *      -t   : Turn on syscall timing.
- *
  * Author
  *	Yi Yang <yyangcdl@cn.ibm.com>
  *
@@ -94,32 +83,19 @@ int main(int ac, char **av)
 		exit(0);
 	}
 
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
-	/***************************************************************
-	 * perform global setup for test
-	 ***************************************************************/
 	setup();
 
-	/***************************************************************
-	 * check looping state if -c option given
-	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		setup_every_copy();
 
 		tst_count = 0;
 
-		/*
-		 * Call fchmodat
-		 */
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(myfchmodat(fds[i], filenames[i], 0600));
 
-			/* check return code */
 			if (TEST_ERRNO == expected_errno[i]) {
 				tst_resm(TPASS,
 					 "fchmodat() returned the expected  errno %d: %s",
@@ -134,11 +110,7 @@ int main(int ac, char **av)
 
 	}
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
-
 	tst_exit();
 }
 
@@ -191,9 +163,6 @@ void setup_every_copy(void)
 	filenames[5] = testfile3;
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup(void)
 {
 
@@ -202,23 +171,13 @@ void setup(void)
 	TEST_PAUSE;
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- ***************************************************************/
 void cleanup(void)
 {
-	/* Remove them */
 	close(fd);
 	unlink(testfile);
 	unlink(testfile2);
 	unlink(testfile3);
 	rmdir(pathname);
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
 	TEST_CLEANUP;
-
 }
