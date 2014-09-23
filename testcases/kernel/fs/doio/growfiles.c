@@ -810,7 +810,7 @@ int main(int argc, char **argv)
 				cptr = filename;
 				cptr++;
 			}
-			Seeds = (int *)malloc(Nseeds * sizeof(int));
+			Seeds = malloc(Nseeds * sizeof(int));
 
 			/*
 			 * check that each seed is valid and put them in
@@ -1213,7 +1213,7 @@ no whole file checking will be performed!\n", Progname, TagName,
 		if (exec_path == NULL) {
 			exec_path = argv[0];
 			/* Get space for cmd (2 extra, 1 for - and 1 fro NULL */
-			argv[0] = (char *)malloc(strlen(exec_path) + 2);
+			argv[0] = malloc(strlen(exec_path) + 2);
 			sprintf(argv[0], "-%s", exec_path);
 		}
 
@@ -1251,7 +1251,7 @@ no whole file checking will be performed!\n", Progname, TagName,
 	/*
 	 * get space for file names
 	 */
-	if ((filenames = (char *)malloc(num_files * PATH_MAX)) == NULL) {
+	if ((filenames = malloc(num_files * PATH_MAX)) == NULL) {
 		fprintf(stderr, "%s%s: %d %s/%d: malloc(%d) failed: %s\n",
 			Progname, TagName, Pid, __FILE__, __LINE__,
 			num_files * PATH_MAX, strerror(errno));
@@ -1301,7 +1301,7 @@ no whole file checking will be performed!\n", Progname, TagName,
 	 * get space for I/O buffer
 	 */
 	if (grow_incr) {
-		if ((Buffer = (char *)malloc(grow_incr + Alignment)) == NULL) {
+		if ((Buffer = malloc(grow_incr + Alignment)) == NULL) {
 			fprintf(stderr,
 				"%s%s: %d %s/%d: malloc(%d) failed: %s\n",
 				Progname, TagName, Pid, __FILE__, __LINE__,
@@ -2742,7 +2742,7 @@ int check_file(int fd, int cf_inter, char *filename, int no_file_check)
 		 * read the file in MAX_FC_READ chuncks.
 		 */
 
-		if ((buf = (char *)malloc(MAX_FC_READ)) == NULL) {
+		if ((buf = malloc(MAX_FC_READ)) == NULL) {
 			fprintf(stderr, "%s%s: %s/%d: malloc(%d) failed: %s\n",
 				Progname, TagName, __FILE__, __LINE__,
 				MAX_FC_READ, strerror(errno));
@@ -2840,7 +2840,7 @@ int check_file(int fd, int cf_inter, char *filename, int no_file_check)
 		/*
 		 * Read the whole file in a single read
 		 */
-		if ((buf = (char *)malloc(fsize)) == NULL) {
+		if ((buf = malloc(fsize)) == NULL) {
 			fprintf(stderr, "%s%s: %s/%d: malloc(%d) failed: %s\n",
 				Progname, TagName, __FILE__, __LINE__, fsize,
 				strerror(errno));

@@ -93,9 +93,7 @@ int main(int ac, char **av)
 
 		/* allocate some space for the timer structure */
 
-		if ((value = (struct itimerval *)malloc((size_t)
-							sizeof(struct
-							       itimerval))) ==
+		if ((value = malloc((size_t)sizeof(struct itimerval))) ==
 		    NULL) {
 			tst_brkm(TBROK, cleanup, "value malloc failed");
 		}

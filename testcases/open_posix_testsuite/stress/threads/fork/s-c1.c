@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
 		/* add to the measure list if nprocesses % resolution == 0 */
 		if (((nprocesses % RESOLUTION) == 0) && (nprocesses != 0)) {
 			/* Create an empty new element */
-			m_tmp = (mes_t *) malloc(sizeof(mes_t));
+			m_tmp = malloc(sizeof(mes_t));
 
 			if (m_tmp == NULL) {
 				sem_post(sem_ending);

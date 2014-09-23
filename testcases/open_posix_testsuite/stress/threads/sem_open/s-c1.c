@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 
 	while (1) {		/* we will break */
 		/* Create a new block */
-		sems_tmp = (test_t *) malloc(sizeof(test_t));
+		sems_tmp = malloc(sizeof(test_t));
 
 		if (sems_tmp == NULL) {
 			/* We stop here */
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 		sems_cur->next = NULL;
 
 		/* add to the measure list */
-		m_tmp = (mes_t *) malloc(sizeof(mes_t));
+		m_tmp = malloc(sizeof(mes_t));
 
 		if (m_tmp == NULL) {
 			/* We stop here */

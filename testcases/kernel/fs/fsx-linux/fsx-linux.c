@@ -1306,18 +1306,18 @@ int main(int argc, char **argv)
 			exit(95);
 		}
 	}
-	original_buf = (char *)malloc(maxfilelen);
+	original_buf = malloc(maxfilelen);
 	if (original_buf == NULL)
 		exit(96);
 	for (i = 0; i < maxfilelen; i++)
 		original_buf[i] = random() % 256;
 
-	good_buf = (char *)malloc(maxfilelen);
+	good_buf = malloc(maxfilelen);
 	if (good_buf == NULL)
 		exit(97);
 	memset(good_buf, '\0', maxfilelen);
 
-	temp_buf = (char *)malloc(maxoplen);
+	temp_buf = malloc(maxoplen);
 	if (temp_buf == NULL)
 		exit(99);
 	memset(temp_buf, '\0', maxoplen);

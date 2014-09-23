@@ -518,7 +518,7 @@ int main(void)
 		/* Create all the children */
 		if (td->fork == 0) {
 			do {
-				tmp = (children_t *) malloc(sizeof(children_t));
+				tmp = malloc(sizeof(children_t));
 				if (tmp != (children_t *) NULL) {
 					ret = pthread_create(&(tmp->data.t),
 							     &ta, child, NULL);
@@ -543,7 +543,7 @@ int main(void)
 				UNRESOLVED(ret, "Unable to create any thread");
 		} else {
 			do {
-				tmp = (children_t *) malloc(sizeof(children_t));
+				tmp = malloc(sizeof(children_t));
 				if (tmp != (children_t *) NULL) {
 					tmp->data.p = fork();
 					if (tmp->data.p == 0) {

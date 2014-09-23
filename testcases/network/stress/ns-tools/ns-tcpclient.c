@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
 			recvbuf_size);
 
 	/* Prepare a buffer to receive bytes */
-	recvbuf = (char *)malloc(recvbuf_size);
+	recvbuf = malloc(recvbuf_size);
 	if (recvbuf == NULL) {
 		fprintf(stderr, "malloc() is failed.\n");
 		exit(EXIT_FAILURE);

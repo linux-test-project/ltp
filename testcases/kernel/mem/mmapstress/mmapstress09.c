@@ -198,8 +198,8 @@ int main(int argc, char *argv[])
 		anyfail();
 	}
 
-	if ((buf = (uchar_t *) malloc(pagesize)) == NULL
-	    || (pidarray = (pid_t *) malloc(nprocs * sizeof(pid_t))) == NULL) {
+	if ((buf = malloc(pagesize)) == NULL
+	    || (pidarray = malloc(nprocs * sizeof(pid_t))) == NULL) {
 		perror("malloc error");
 		anyfail();
 	}

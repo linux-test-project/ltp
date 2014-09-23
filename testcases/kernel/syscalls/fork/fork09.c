@@ -75,7 +75,7 @@ int main(int ac, char **av)
 
 	setup();
 
-	fildeses = (FILE **) malloc((OPEN_MAX + 10) * sizeof(FILE *));
+	fildeses = malloc((OPEN_MAX + 10) * sizeof(FILE *));
 	if (fildeses == NULL)
 		tst_brkm(TBROK, cleanup, "malloc failed");
 

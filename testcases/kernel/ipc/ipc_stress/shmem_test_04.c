@@ -480,7 +480,7 @@ static int mkemptyfile(uint size)
 {
 #ifdef _LINUX_
 
-	filename = (char *)malloc(256);
+	filename = malloc(256);
 
 	sprintf(filename, "%s/%sXXXXXX", TEMPDIR, TEMPNAME);
 	fd = mkstemp(filename);

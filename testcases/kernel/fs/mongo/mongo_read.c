@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	buf = (char *)malloc(bufsize);
+	buf = malloc(bufsize);
 	if (buf == 0) {
 		printf("Malloc failed on %d\n", bufsize);
 		return 0;

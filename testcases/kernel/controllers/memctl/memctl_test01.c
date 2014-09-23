@@ -174,7 +174,7 @@ int allocate_memory()
 	 */
 
 	for (i = 0; i < num_of_chunks; ++i) {
-		array_of_chunks[i] = (record_t *) malloc(chunk_size);
+		array_of_chunks[i] = malloc(chunk_size);
 		if (array_of_chunks[i] == NULL)
 			tst_brkm(TBROK, cleanup,
 				 "Memory allocation failed for chunks. Try smaller chunk size");

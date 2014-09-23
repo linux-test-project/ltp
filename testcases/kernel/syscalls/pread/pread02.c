@@ -269,8 +269,8 @@ void init_buffers(void)
 
 	/* Allocate and Initialize write buffer with known data */
 	for (count = 0; count < NBUFS; count++) {
-		write_buf[count] = (char *)malloc(K1);
-		read_buf[count] = (char *)malloc(K1);
+		write_buf[count] = malloc(K1);
+		read_buf[count] = malloc(K1);
 
 		if ((write_buf[count] == NULL) || (read_buf[count] == NULL)) {
 			tst_brkm(TBROK, NULL,

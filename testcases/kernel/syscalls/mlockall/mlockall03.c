@@ -121,8 +121,7 @@ int main(int ac, char **av)
 	}
 
 	/* allocate some space for buf */
-	if ((buf = (struct utsname *)malloc((size_t)
-					    sizeof(struct utsname))) == NULL) {
+	if ((buf = malloc((size_t)sizeof(struct utsname))) == NULL) {
 		tst_resm(TFAIL, "malloc failed for buf");
 		tst_exit();
 	}

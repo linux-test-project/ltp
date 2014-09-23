@@ -84,7 +84,7 @@ static char *get_long_name_buffer(size_t * length, size_t extra)
 		fail_exit();
 	}
 
-	if ((buffer = (char *)malloc(path_length + extra)) == NULL) {
+	if ((buffer = malloc(path_length + extra)) == NULL) {
 		tst_resm(TFAIL, "malloc(%zi) failed: %s", path_length + extra,
 			 strerror(errno));
 		cleanup_function();
@@ -191,7 +191,7 @@ test_ENAMETOOLONG_path(char *name, int (*callback) (const char *), int expected)
 		tmp_path, pcPathMax);
 #endif
 
-	if ((path = (char *)malloc(pcPathMax + 2)) == NULL) {
+	if ((path = malloc(pcPathMax + 2)) == NULL) {
 		tst_resm(TFAIL, "malloc(%zu) for path failed: %s",
 			 pcPathMax + 2, strerror(errno));
 		cleanup_function();

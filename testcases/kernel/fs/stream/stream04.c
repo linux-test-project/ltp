@@ -103,7 +103,7 @@ int main(int ac, char *av[])
 			tst_rmdir();
 			tst_exit();
 		}
-		if ((inbuf = (char *)malloc(strlen(junk))) == 0) {
+		if ((inbuf = malloc(strlen(junk))) == 0) {
 			tst_resm(TBROK, "test failed because of malloc: %s",
 				 strerror(errno));
 			tst_rmdir();

@@ -44,7 +44,7 @@ int main(void)
 
 	/* Make sure the file is removed when it is closed */
 	unlink(tmpfname);
-	data = (char *)malloc(total_size);
+	data = malloc(total_size);
 	memset(data, 'a', total_size);
 	if (write(fd, data, total_size) != total_size) {
 		printf(TNAME "Error at write(): %s\n", strerror(errno));

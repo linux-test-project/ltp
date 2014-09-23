@@ -74,8 +74,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "%d sessions already exist\n",
 				    nexist);
 
-			if ((psid =
-			     malloc(nexist * sizeof(dm_sessid_t))) != NULL) {
+			if ((psid = malloc(nexist * sizeof(dm_sessid_t))) != NULL) {
 				if ((rc =
 				     dm_getall_sessions(nexist, psid,
 							&nexist)) == 0) {

@@ -239,7 +239,7 @@ void setup(void)
 	/* Set the cache size */
 	cache_pages = 1024;
 	cache_sz = cache_pages * page_sz;
-	cache_contents = (char *)malloc(cache_sz * sizeof(char));
+	cache_contents = malloc(cache_sz * sizeof(char));
 
 	/* Set the window size */
 	window_pages = 16;

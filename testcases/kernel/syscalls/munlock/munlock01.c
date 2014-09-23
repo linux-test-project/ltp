@@ -138,7 +138,7 @@ int main(int ac, char **av)
 
 void setup1(int i)
 {
-	addr1 = (char *)malloc(TC[i].len);
+	addr1 = malloc(TC[i].len);
 	if (addr1 == NULL)
 		tst_brkm(TFAIL, cleanup, "malloc failed");
 	TEST(mlock(*(TC[i].addr), TC[i].len));

@@ -133,7 +133,7 @@ int main(int argn, char *argc[])
 
 	//String test : call STRPROCNUM RPC
 	strSnd = "text to send.";
-	strRec = (char *)malloc(64 * sizeof(char));
+	strRec = malloc(64 * sizeof(char));
 
 	cs = clnt_call(clnt, STRPROCNUM,
 		       (xdrproc_t) xdr_wrapstring, (char *)&strSnd,

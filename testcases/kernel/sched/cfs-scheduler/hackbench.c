@@ -239,8 +239,7 @@ static unsigned int group(pthread_t * pth,
 			  unsigned int num_fds, int ready_out, int wakefd)
 {
 	unsigned int i;
-	struct sender_context *snd_ctx = malloc(sizeof(struct sender_context)
-						+ num_fds * sizeof(int));
+	struct sender_context *snd_ctx = malloc(sizeof(struct sender_context) + num_fds * sizeof(int));
 	if (!snd_ctx)
 		barf("malloc()");
 	else

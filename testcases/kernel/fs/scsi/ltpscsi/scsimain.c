@@ -1616,8 +1616,7 @@ void leaf_dir(const char *lf, unsigned int *larr)
 				lf);
 			return;
 		}
-		de_entry = (struct dirent *)malloc(sizeof(struct dirent) +
-						   NAME_LEN_MAX);
+		de_entry = malloc(sizeof(struct dirent) + NAME_LEN_MAX);
 		if (NULL == de_entry)
 			return;
 		res = 0;
@@ -1712,8 +1711,7 @@ int hbtl_scan(const char *path, int level, unsigned int *larr)
 		fprintf(stderr, "hbtl_scan: opendir of %s: failed\n", path);
 		return -1;
 	}
-	de_entry =
-	    (struct dirent *)malloc(sizeof(struct dirent) + NAME_LEN_MAX);
+	de_entry = malloc(sizeof(struct dirent) + NAME_LEN_MAX);
 	if (NULL == de_entry)
 		return -3;
 	res = 0;

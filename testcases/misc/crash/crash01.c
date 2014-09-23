@@ -351,7 +351,7 @@ void badboy_loop()
 char *bad_malloc(int n)
 {
 	char *data;
-	data = (char *)malloc(n);
+	data = malloc(n);
 #ifdef pyr
 	if (mprotect(((int)data / PAGSIZ) * PAGSIZ, (n / PAGSIZ + 1) * PAGSIZ,
 		     PROT_READ | PROT_WRITE | PROT_EXEC))

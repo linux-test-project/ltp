@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 		numcpus = sysconf(_SC_NPROCESSORS_ONLN);
 		rt_threads = numcpus;
 	}
-	wakeup.arr = (int *)malloc(rt_threads * sizeof(int));
+	wakeup.arr = malloc(rt_threads * sizeof(int));
 	wakeup.counter = 0;
 	printf("\n-----------------------\n");
 	printf("Priority Ordered Wakeup\n");

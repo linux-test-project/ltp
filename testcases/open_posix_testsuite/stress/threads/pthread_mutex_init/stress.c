@@ -108,7 +108,7 @@ void *threaded(void *arg)
 	if (loc) {
 		pmtx = &mtx;
 	} else {
-		pmtx = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+		pmtx = malloc(sizeof(pthread_mutex_t));
 		if (pmtx == NULL) {
 			UNRESOLVED(errno, "Memory allocation for mutex failed");
 		}

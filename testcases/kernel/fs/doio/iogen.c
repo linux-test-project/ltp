@@ -1256,7 +1256,7 @@ int create_file(char *path, int nbytes)
 				return -1;
 			}
 
-			b = buf = (char *)malloc(finfo.d_miniosz + finfo.d_mem);
+			b = buf = malloc(finfo.d_miniosz + finfo.d_mem);
 
 			if (((long)buf % finfo.d_mem != 0)) {
 				buf += finfo.d_mem - ((long)buf % finfo.d_mem);
@@ -1774,8 +1774,7 @@ int parse_cmdline(int argc, char **argv, char *opts)
 		 * space for the File_List array, then fill it in.
 		 */
 
-		File_List = (struct file_info *)
-		    malloc((argc - optind) * sizeof(struct file_info));
+		File_List = malloc((argc - optind) * sizeof(struct file_info));
 
 		if (File_List == NULL) {
 			fprintf(stderr,

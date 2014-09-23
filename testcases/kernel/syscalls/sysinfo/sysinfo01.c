@@ -88,7 +88,7 @@ int main(int ac, char **av)
 	float l1, l2, l3;
 	unsigned long l1_up, l2_up, l3_up;
 
-	sys_buf = (struct sysinfo *)malloc(sizeof(struct sysinfo));
+	sys_buf = malloc(sizeof(struct sysinfo));
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);

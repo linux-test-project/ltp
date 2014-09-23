@@ -334,8 +334,8 @@ int main(int argc, char *argv[])
 		anyfail();
 	}
 
-	if ((buf = (uchar_t *) malloc(pagesize + growsize)) == NULL
-	    || (pidarray = (pid_t *) malloc(nprocs * sizeof(pid_t))) == NULL) {
+	if ((buf = malloc(pagesize + growsize)) == NULL
+	    || (pidarray = malloc(nprocs * sizeof(pid_t))) == NULL) {
 		perror("malloc error");
 		anyfail();
 	}
@@ -825,7 +825,7 @@ int fileokay(char *file, uchar_t * expbuf)
 		exit(1);
 	}
 
-	readbuf = (uchar_t *) malloc(pagesize);
+	readbuf = malloc(pagesize);
 
 	if (statbuf.st_size - sparseoffset > SIZE_MAX) {
 		fprintf(stderr, "size_t overflow when setting up map\n");

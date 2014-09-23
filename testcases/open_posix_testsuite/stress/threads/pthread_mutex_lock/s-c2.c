@@ -305,7 +305,7 @@ int main(int argc, char *argv[])
 
 	/* create the threads */
 	while (1) {
-		tmp = (testdata_t *) malloc(sizeof(testdata_t));
+		tmp = malloc(sizeof(testdata_t));
 		if (tmp == NULL) {
 			/* We cannot create anymore testdata */
 			break;

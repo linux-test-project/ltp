@@ -376,8 +376,7 @@ return_icmp4_redirect(int sd, struct eth_frame *rcveth_p, size_t rcveth_size,
 	/* If MAC address in received frame is changed, update the gateway info */
 	if (memcmp(rcveth_p->hdr.h_dest, new_gw_p->hd_addr, ETH_ALEN) == 0) {
 		if (gw_p == NULL)
-			if ((gw_p =
-			     malloc(sizeof(struct ip4_gateway_info))) == NULL)
+			if ((gw_p = malloc(sizeof(struct ip4_gateway_info))) == NULL)
 				fatal_error("malloc()");
 		*gw_p = *new_gw_p;
 	} else if (gw_p == NULL

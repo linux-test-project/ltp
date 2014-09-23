@@ -25,7 +25,7 @@ bool_t xdr_receive_data(XDR *xdrs, struct data **buffer)
 	int i, rc;
 	char *p;
 
-	bp = *buffer = (struct data *)malloc(sizeof(struct data));
+	bp = *buffer = malloc(sizeof(struct data));
 	rc = xdr_long(xdrs, &(bp->address));
 	rc = rc && xdr_long(xdrs, &bp->request_id);
 	rc = rc && xdr_long(xdrs, &bp->data_length);

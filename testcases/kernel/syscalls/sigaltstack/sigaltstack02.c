@@ -182,7 +182,7 @@ void setup(void)
 	TEST_PAUSE;
 
 	/* Allocate memory for the alternate stack */
-	if ((sigstk.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
+	if ((sigstk.ss_sp = malloc(SIGSTKSZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "could not allocate memory for the alternate stack");
 	}

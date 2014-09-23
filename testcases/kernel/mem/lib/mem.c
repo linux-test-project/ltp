@@ -328,7 +328,7 @@ static void create_ksm_child(int child_num, int size, int unit,
 	total_unit = size / unit;
 
 	/* Apply for the space for memory */
-	memory = (char **)malloc(total_unit * sizeof(char *));
+	memory = malloc(total_unit * sizeof(char *));
 	for (j = 0; j < total_unit; j++) {
 		memory[j] = mmap(NULL, unit * MB, PROT_READ|PROT_WRITE,
 			MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
@@ -414,12 +414,10 @@ void create_same_memory(int size, int num, int unit)
 	ps = sysconf(_SC_PAGE_SIZE);
 	pages = MB / ps;
 
-	ksm_data = (struct ksm_merge_data **)malloc
-		   ((num - 3) * sizeof(struct ksm_merge_data *));
+	ksm_data = malloc((num - 3) * sizeof(struct ksm_merge_data *));
 	/* Since from third child, the data is same with the first child's */
 	for (i = 0; i < num - 3; i++) {
-		ksm_data[i] = (struct ksm_merge_data *)malloc
-			      (4 * sizeof(struct ksm_merge_data));
+		ksm_data[i] = malloc(4 * sizeof(struct ksm_merge_data));
 		for (j = 0; j < 4; j++) {
 			ksm_data[i][j].data = ksm_data0[j].data;
 			ksm_data[i][j].mergeable_size =
@@ -427,7 +425,7 @@ void create_same_memory(int size, int num, int unit)
 		}
 	}
 
-	child = (int *)malloc(num * sizeof(int));
+	child = malloc(num * sizeof(int));
 	if (child == NULL)
 		tst_brkm(TBROK | TERRNO, cleanup, "malloc");
 
@@ -519,7 +517,7 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 	pagesize = sysconf(_SC_PAGE_SIZE);
 	length = nr_pages * pagesize;
 
-	memory = (char **)malloc(num_nodes * sizeof(char *));
+	memory = malloc(num_nodes * sizeof(char *));
 	for (i = 0; i < num_nodes; i++) {
 		memory[i] = mmap(NULL, length, PROT_READ|PROT_WRITE,
 			    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);

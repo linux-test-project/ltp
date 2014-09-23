@@ -104,7 +104,7 @@ int main(int argn, char *argc[])
 
 	progNum = atoi(argc[1]);
 
-	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
+	pThreadArray = malloc(threadNb * sizeof(pthread_t));
 	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
 			fprintf(stderr, "Try to create Thread Server %ld\n", i);

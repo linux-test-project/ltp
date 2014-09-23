@@ -156,7 +156,7 @@ void respond_to_client(sock_fd)
 	}
 
 	/* Allocate the memory for a message */
-	msgbuf = (char *)malloc(msgbuf_size + 1);
+	msgbuf = malloc(msgbuf_size + 1);
 	if (msgbuf == NULL) {
 		fprintf(stderr, "malloc() is failed.\n");
 		close(sock_fd);

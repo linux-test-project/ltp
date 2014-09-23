@@ -572,7 +572,7 @@ int main(int argc, char *argv[])
 	 */
 	total = num_nodes(breadth, depth);
 	tst_resm(TINFO, "Allocating %d nodes.", total);
-	if ((child_info = (c_info *) malloc(total * sizeof(c_info)))
+	if ((child_info = malloc(total * sizeof(c_info)))
 	    == NULL) {
 		perror("malloc child_info");
 		testexit(10);
@@ -589,8 +589,7 @@ int main(int argc, char *argv[])
 	 */
 	for (ind = 0; ind < total; ind++) {
 
-		if ((child_info[ind].threads =
-		     (pthread_t *) malloc(breadth * sizeof(pthread_t)))
+		if ((child_info[ind].threads = malloc(breadth * sizeof(pthread_t)))
 		    == NULL) {
 			perror("malloc threads");
 			testexit(11);
@@ -598,8 +597,7 @@ int main(int argc, char *argv[])
 		memset(child_info[ind].threads, 0x00,
 		       breadth * sizeof(pthread_t));
 
-		if ((child_info[ind].child_ptrs =
-		     (c_info **) malloc(breadth * sizeof(c_info *))) == NULL) {
+		if ((child_info[ind].child_ptrs = malloc(breadth * sizeof(c_info *))) == NULL) {
 			perror("malloc child_ptrs");
 			testexit(12);
 		}

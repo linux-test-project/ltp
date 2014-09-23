@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	size_t line_buffer_size = 0;
 	int size = 1;
 
-	if ((buffer = (char *)malloc(size + 1)) == NULL) {
+	if ((buffer = malloc(size + 1)) == NULL) {
 		perror("checklink: malloc failed");
 		return 1;
 	}

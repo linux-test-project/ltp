@@ -196,7 +196,7 @@ void test_signal(long iter, long nthreads)
 
 	stats_container_init(&dat, iter * nthreads);
 
-	pt = (pthread_t *) malloc(sizeof(*pt) * nthreads);
+	pt = malloc(sizeof(*pt) * nthreads);
 	if (pt == NULL) {
 		fprintf(stderr, "Out of memory\n");
 		exit(-1);
@@ -304,8 +304,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	child_waiting = (int *)malloc(sizeof(*child_waiting) * nthreads);
-	condlist = (pthread_cond_t *) malloc(sizeof(*condlist) * nthreads);
+	child_waiting = malloc(sizeof(*child_waiting) * nthreads);
+	condlist = malloc(sizeof(*condlist) * nthreads);
 	if ((child_waiting == NULL) || (condlist == NULL)) {
 		fprintf(stderr, "Out of memory\n");
 		exit(-1);

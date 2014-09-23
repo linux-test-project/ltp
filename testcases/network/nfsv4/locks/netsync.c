@@ -137,7 +137,7 @@ int setupClients(int type, char *fname, int nThread)
 int configureServeur(int max)
 {
 	maxClients = max;
-	fdClient = (int *)malloc(sizeof(int) * max);
+	fdClient = malloc(sizeof(int) * max);
 
 	setupConnectionServeur();
 

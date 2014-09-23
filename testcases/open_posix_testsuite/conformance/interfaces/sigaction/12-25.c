@@ -56,7 +56,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if ((alt_ss.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
+	if ((alt_ss.ss_sp = malloc(SIGSTKSZ)) == NULL) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;

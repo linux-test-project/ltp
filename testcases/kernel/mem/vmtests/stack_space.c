@@ -224,7 +224,7 @@ int dotest(int testers, int me)
 	char mondobuf[MAXSIZE];
 
 	nchunks = MAXSIZE / csize;
-	bits = (char *)malloc((nchunks + 7) / 8);
+	bits = malloc((nchunks + 7) / 8);
 	val_buf = (char *)(malloc(csize));
 	zero_buf = (char *)(malloc(csize));
 

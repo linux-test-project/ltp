@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 	int lock_value = 1;
 	buf_t *buf;
 	pthread_t con, pro;
-	buf = (buf_t *) malloc(sizeof(buf_t));
+	buf = malloc(sizeof(buf_t));
 
 #ifndef  _POSIX_SEMAPHORES
 	printf("_POSIX_SEMAPHORES is not defined \n");

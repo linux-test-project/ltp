@@ -142,7 +142,7 @@ void setup(void)
 	/* get the maximum number of files that we can open */
 	max_open = getdtablesize();
 	/* Allocate memory for stat and ustat structure variables */
-	if ((buf = (int *)malloc(sizeof(int) * max_open - first)) == NULL) {
+	if ((buf = malloc(sizeof(int) * max_open - first)) == NULL) {
 		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
 	}
 

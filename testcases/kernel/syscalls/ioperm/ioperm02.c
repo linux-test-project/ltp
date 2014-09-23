@@ -209,8 +209,7 @@ void setup(void)
 	 *
 	 * Ricky Ng-Adam, rngadam@yahoo.com
 	 * */
-	test_cases =
-	    (struct test_cases_t *)malloc(sizeof(struct test_cases_t) * 2);
+	test_cases = malloc(sizeof(struct test_cases_t) * 2);
 	test_cases[0].num = NUM_BYTES;
 	test_cases[0].turn_on = TURN_ON;
 	test_cases[0].desc = "Invalid I/O address";

@@ -109,7 +109,7 @@ int main(int argn, char *argc[])
 
 	//Test initialisation
 	maxIter = atoi(argc[3]);
-	resultTbl = (double *)malloc(maxIter * sizeof(double));
+	resultTbl = malloc(maxIter * sizeof(double));
 
 	if (run_mode) {
 		printf("Before creation\n");

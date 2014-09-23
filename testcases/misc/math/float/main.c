@@ -84,8 +84,7 @@ int generate(char *datadir, char *bin_path)
 	char *cmdline;
 	char *fmt = "cd %s; %s/%s %s";
 
-	cmdline = malloc(2 * strlen(bin_path) + strlen(datadir) +
-			 strlen(GENERATOR) + strlen(fmt));
+	cmdline = malloc(2 * strlen(bin_path) + strlen(datadir) + strlen(GENERATOR) + strlen(fmt));
 	if (cmdline == NULL)
 		return (1);
 	sprintf(cmdline, fmt, datadir, bin_path, GENERATOR, bin_path);

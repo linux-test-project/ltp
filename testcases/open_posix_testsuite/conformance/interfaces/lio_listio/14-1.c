@@ -80,7 +80,7 @@ int main(void)
 
 	unlink(tmpfname);
 
-	bufs = (char *)malloc(NUM_AIOCBS * BUF_SIZE);
+	bufs = malloc(NUM_AIOCBS * BUF_SIZE);
 
 	if (bufs == NULL) {
 		printf(TNAME " Error at malloc(): %s\n", strerror(errno));

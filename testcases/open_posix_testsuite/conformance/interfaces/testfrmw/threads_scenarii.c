@@ -384,8 +384,7 @@ void scenar_init(void)
 				 * it upon test termination.
 				 * We will alloc with a simulated guardsize
 				 * of 1 pagesize */
-				scenarii[i].bottom = malloc(minstacksize +
-							    pagesize);
+				scenarii[i].bottom = malloc(minstacksize + pagesize);
 				if (scenarii[i].bottom == NULL)
 					UNRESOLVED(errno, "Unable to alloc"
 						   " enough memory for"

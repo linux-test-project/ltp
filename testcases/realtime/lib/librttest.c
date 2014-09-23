@@ -242,7 +242,7 @@ int rt_init(const char *options, int (*parse_arg) (int option, char *value),
 
 void buffer_init(void)
 {
-	_print_buffer = (char *)malloc(PRINT_BUFFER_SIZE);
+	_print_buffer = malloc(PRINT_BUFFER_SIZE);
 	if (!_print_buffer)
 		fprintf(stderr,
 			"insufficient memory for print buffer - printing directly to stderr\n");

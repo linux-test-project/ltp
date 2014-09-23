@@ -1029,7 +1029,7 @@ int getenv_val(void)
 			c++;
 
 		if (*c == '\0') {
-			(envd->eval.vint) = (int *)malloc(sizeof(int));
+			(envd->eval.vint) = malloc(sizeof(int));
 			*(envd->eval.vint) = atoi(val.chptr);
 		} else {
 			envd->eval.chptr = malloc(strlen(val.chptr) + 1);

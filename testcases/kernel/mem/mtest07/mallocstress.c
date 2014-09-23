@@ -185,7 +185,7 @@ int allocate_free(int repeat,	/* number of times to repeat allocate/free    */
 			      getpid(), loop, repeat, num_alloc, size));
 
 			/* Malloc the next block */
-			ptrs[num_alloc] = (long *)malloc(size);
+			ptrs[num_alloc] = malloc(size);
 			if (ptrs[num_alloc] == NULL) {
 				/* terminate loop if malloc couldn't give us the memory we asked for */
 				break;

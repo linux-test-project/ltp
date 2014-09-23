@@ -100,7 +100,7 @@ void *threaded(void *arg)
 	if (loc) {
 		pcnd = &cnd;
 	} else {
-		pcnd = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+		pcnd = malloc(sizeof(pthread_cond_t));
 		if (pcnd == NULL) {
 			UNRESOLVED(errno,
 				   "Memory allocation for condvar failed");

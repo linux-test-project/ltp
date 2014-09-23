@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 	return PTS_UNRESOLVED;
 #endif
 
-	buf = (buf_t *) malloc(sizeof(buf_t));
+	buf = malloc(sizeof(buf_t));
 
 	if ((2 != argc) || ((num = atoi(argv[1])) <= 0)) {
 		fprintf(stderr, "Usage: %s number_of_threads\n", argv[0]);

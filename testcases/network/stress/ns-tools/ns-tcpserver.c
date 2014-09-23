@@ -313,7 +313,7 @@ int communicate_client(struct server_info *info_p, int sock_fd)
 		fprintf(stderr, "sndbuf size is %d\n", sndbuf_size);
 
 	/* Define the message */
-	sendmsg = (char *)malloc(sndbuf_size);
+	sendmsg = malloc(sndbuf_size);
 	if (sendmsg == NULL) {
 		fprintf(stderr, "malloc() is failed.\n");
 		if (close(sock_fd))

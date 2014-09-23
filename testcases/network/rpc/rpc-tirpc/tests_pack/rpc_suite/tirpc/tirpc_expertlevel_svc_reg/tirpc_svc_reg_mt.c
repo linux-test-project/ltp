@@ -101,12 +101,12 @@ int main(int argn, char *argc[])
 	}
 	//Initialization : create threads results array, init elements to 0
 	//Each thread will put function result (pas/fail) into array
-	thread_array_result = (int *)malloc(threadNb * sizeof(int));
+	thread_array_result = malloc(threadNb * sizeof(int));
 	memset(&thread_array_result[0], 0, threadNb * sizeof(int));
 
 	//Create all threads
 	//Run all threads
-	pThreadArray = (pthread_t *) malloc(threadNb * sizeof(pthread_t));
+	pThreadArray = malloc(threadNb * sizeof(pthread_t));
 	for (i = 0; i < threadNb; i++) {
 		if (run_mode == 1)
 			fprintf(stderr, "Try to create thread %ld\n", i);

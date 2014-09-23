@@ -77,7 +77,7 @@ int init_iocb(int n, int iosize)
 
 	for (i = 0; i < n; i++) {
 		if (!
-		    (iocb_free[i] = (struct iocb *)malloc(sizeof(struct iocb))))
+		    (iocb_free[i] = malloc(sizeof(struct iocb))))
 			return -1;
 		if (posix_memalign(&buf, alignment, iosize))
 			return -1;

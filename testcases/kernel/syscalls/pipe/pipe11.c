@@ -190,7 +190,7 @@ void do_child(void)
  */
 void do_child_uclinux(void)
 {
-	if ((rdbuf = (char *)malloc(szcharbuf)) == (char *)0) {
+	if ((rdbuf = malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc of rdbuf failed");
 	}
 
@@ -222,11 +222,11 @@ void setup(void)
 		ncperchild = szcharbuf / numchild;
 	}
 
-	if ((wrbuf = (char *)malloc(szcharbuf)) == (char *)0) {
+	if ((wrbuf = malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc failed");
 	}
 
-	if ((rdbuf = (char *)malloc(szcharbuf)) == (char *)0) {
+	if ((rdbuf = malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc of rdbuf failed");
 	}
 

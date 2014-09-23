@@ -469,7 +469,7 @@ int main(int argc, char *argv[])
 	}
 
 	write_buffer_size = atoi(argv[8]);
-	write_buffer = (char *)malloc(write_buffer_size);
+	write_buffer = malloc(write_buffer_size);
 	memset(write_buffer, 'a', write_buffer_size);
 
 	/* the number of bytes that we desire this tree to consume.  It will actually

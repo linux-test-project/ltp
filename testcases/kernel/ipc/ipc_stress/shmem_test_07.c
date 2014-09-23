@@ -326,11 +326,8 @@ int main(int argc, char **argv)
 	/*
 	 * Create threads array...
 	 */
-	writer_th =
-	    (pthread_t *) malloc((size_t) (num_writers * sizeof(pthread_t)));
-	reader_th =
-	    (pthread_t *)
-	    malloc((size_t) (num_writers * num_readers * sizeof(pthread_t)));
+	writer_th = malloc((size_t)(num_writers * sizeof(pthread_t)));
+	reader_th = malloc((size_t)(num_writers * num_readers * sizeof(pthread_t)));
 	/*
 	 * Initializes mutexes and sets their attributes
 	 */

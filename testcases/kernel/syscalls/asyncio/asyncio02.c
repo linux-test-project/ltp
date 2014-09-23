@@ -291,7 +291,7 @@ void setup(void)
 	 *  Attempt to get some memory to work with.
 	 */
 
-	if ((dp = (char *)malloc((unsigned)BUFSIZ + 1)) == NULL) {
+	if ((dp = malloc((unsigned)BUFSIZ + 1)) == NULL) {
 		tst_brkm(TBROK | TERRNO, cleanup, "malloc() failed");
 	}
 

@@ -616,7 +616,7 @@ int main(int argc, char *argv[])
 		nth += 100 * SCALABILITY_FACTOR;
 
 		/* Create a new measure item */
-		m_tmp = (mes_t *) malloc(sizeof(mes_t));
+		m_tmp = malloc(sizeof(mes_t));
 		if (m_tmp == NULL) {
 			UNRESOLVED(errno,
 				   "Unable to alloc memory for measure saving");

@@ -144,7 +144,7 @@ int getuserid(char *user)
 	struct passwd *ent;
 
 	/* allocate some space for the passwd struct */
-	if ((ent = (struct passwd *)malloc(sizeof(struct passwd))) == NULL) {
+	if ((ent = malloc(sizeof(struct passwd))) == NULL) {
 		tst_brkm(TBROK, cleanup, "couldn't allocate space for passwd"
 			 " structure");
 	}

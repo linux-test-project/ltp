@@ -351,7 +351,7 @@ void create_udp_datagram(struct udp_info *udp_p)
 	}
 
 	/* Make the payload */
-	udp_p->msg = (unsigned char *)malloc(udp_p->msgsize);
+	udp_p->msg = malloc(udp_p->msgsize);
 	if (udp_p->msg == NULL) {
 		fatal_error("malloc()");
 		exit(EXIT_FAILURE);

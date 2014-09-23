@@ -121,7 +121,7 @@ int main(int ac, char **av)
 		 */
 		tst_resm(TINFO, "Enter block 1");
 		flag = 0;
-		ptr = (void *)malloc(10);
+		ptr = malloc(10);
 		func = 100;
 		retval = modify_ldt(func, ptr, sizeof(ptr));
 		if (retval < 0) {

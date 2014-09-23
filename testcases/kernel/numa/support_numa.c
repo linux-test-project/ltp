@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 		printf("%d", PAGE_SIZE);
 		tst_exit();
 	case 2:
-		buf = (char *)malloc(MB);
+		buf = malloc(MB);
 		if (!buf) {
 			tst_resm(TINFO, "#Memory is not available\n");
 			tst_exit();

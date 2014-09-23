@@ -118,8 +118,8 @@ int main(int argc, char **argv)
 	/* Create num_thread threads... */
 	printf("\tThread [main] Creating %d threads\n", num_threads);
 
-	array = (pthread_t *) malloc(sizeof(pthread_t) * num_threads);
-	arg = (int *)malloc(sizeof(int) * num_threads);
+	array = malloc(sizeof(pthread_t) * num_threads);
+	arg = malloc(sizeof(int) * num_threads);
 	assert(array);
 	assert(arg);
 	for (i = 0; i < num_threads; i++) {
@@ -218,7 +218,7 @@ int read_data(int num, unsigned long cksum)
 	if ((fd = open(file, O_RDONLY, NULL)) < 0)
 		sys_error("open failed /dev/cdrom", __LINE__);
 
-	buffer = (char *)malloc(sizeof(char) * bufSize);
+	buffer = malloc(sizeof(char) * bufSize);
 	assert(buffer);
 
 	lseek(fd, 1024 * 36, SEEK_SET);

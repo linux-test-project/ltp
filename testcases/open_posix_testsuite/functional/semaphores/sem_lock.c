@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 		       DEFAULT_THREADS);
 		num = DEFAULT_THREADS;
 	}
-	if ((sem_lock = (sem_t *) malloc(sizeof(sem_t))) == NULL) {
+	if ((sem_lock = malloc(sizeof(sem_t))) == NULL) {
 		perror("malloc");
 		return PTS_UNRESOLVED;
 	}

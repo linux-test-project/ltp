@@ -128,8 +128,7 @@ char *argv[];
 			/*                              */
 			/********************************/
 
-			memory_pointer =
-			    (int *)malloc(memory_size * sizeof(int));
+			memory_pointer = malloc(memory_size * sizeof(int));
 			if (memory_pointer == 0) {
 				tst_resm(TBROK, "\tCannot malloc memory.\n");
 				if (i < 2) {

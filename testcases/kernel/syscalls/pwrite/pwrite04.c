@@ -231,7 +231,7 @@ void init_buffers(char *wbuf[])
 	int i;
 
 	for (i = 0; i < NBUFS; i++) {
-		wbuf[i] = (char *)malloc(K1);
+		wbuf[i] = malloc(K1);
 		if (wbuf[i] == NULL) {
 			tst_resm(TBROK, "ib: malloc failed: errno=%d", errno);
 			tst_exit();

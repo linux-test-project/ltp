@@ -145,12 +145,12 @@ int main(int argn, char *argc[])
 	pthread_attr_setstacksize(&thread_attr, 40000);	//Set thread stack size to 40 KB
 
 	//Init results table
-	thread_time_result = (double *)malloc((threadNb) * sizeof(double));
+	thread_time_result = malloc((threadNb) * sizeof(double));
 	memset(&thread_time_result[0], (double)0, (threadNb) * sizeof(double));
 
 	//Create all threads
 	//Run all threads
-	pThreadArray = (pthread_t *) malloc(maxThd * sizeof(pthread_t));
+	pThreadArray = malloc(maxThd * sizeof(pthread_t));
 
 	for (i = 0; i < threadNb; i++) {
 		if (run_mode)

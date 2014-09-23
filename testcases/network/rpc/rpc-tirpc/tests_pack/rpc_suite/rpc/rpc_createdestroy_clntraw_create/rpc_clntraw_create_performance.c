@@ -99,7 +99,7 @@ int main(int argn, char *argc[])
 
 	//Test initialisation
 	maxIter = atoi(argc[3]);
-	resultTbl = (double *)malloc(maxIter * sizeof(double));
+	resultTbl = malloc(maxIter * sizeof(double));
 
 	//Call tested function several times
 	for (i = 0; i < maxIter; i++) {

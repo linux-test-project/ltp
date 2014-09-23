@@ -209,14 +209,14 @@ struct donneesFils *initClientFork(int i)
 
 	/* Initialisation des champs de donnees */
 	/* Initialize private data fields */
-	dpr = (struct donneesPriv *)malloc(sizeof(struct donneesPriv));
-	df = (struct donneesFils *)malloc(sizeof(struct donneesFils));
+	dpr = malloc(sizeof(struct donneesPriv));
+	df = malloc(sizeof(struct donneesFils));
 	dpr->whoami = i;
 	df->dp = &dp;
 	df->dpr = dpr;
 	/* Initialisation du tubes de synchronisation */
 	/* Initialize master to client pipe */
-	dp.lclnt[i] = (int *)malloc(sizeof(int) * 2);
+	dp.lclnt[i] = malloc(sizeof(int) * 2);
 	if (pipe(dp.lclnt[i]) < 0) {
 		perror("Impossible to create pipe\n");
 		exit(1);
@@ -233,8 +233,8 @@ int initialise(int clnt)
 	/* Initialize private data fields */
 	printf("Init\n");
 	dp.nclnt = clnt;
-	dp.lclnt = (int **)malloc(sizeof(int *) * clnt);
-	dp.lthreads = (pthread_t *) malloc(sizeof(pthread_t) * clnt);
+	dp.lclnt = malloc(sizeof(int *) * clnt);
+	dp.lthreads = malloc(sizeof(pthread_t) * clnt);
 
 	/* initialisation de la communication avec le maitre */
 	/* Initialize client to master pipe */
@@ -723,7 +723,7 @@ void maitre()
 			 */
 			/* Create a string to record in the test file. Length is exactly the number of sub process */
 			P("Maitre: BYTELOCK: %d\n", etat);
-			buf = (char *)malloc(clnt * (maxClients + 1));
+			buf = malloc(clnt * (maxClients + 1));
 			memset(buf, '*', clnt);
 			write(dp.fd, buf, clnt);
 			free(buf);
@@ -1090,7 +1090,7 @@ int main(int argc, char **argv)
 		}
 	} else {
 		configureClient(host);
-		dp.fname = (char *)malloc(512);
+		dp.fname = malloc(512);
 		memset(dp.fname, 0, 512);
 		getConfiguration(&type, dp.fname, &nThread);
 	}

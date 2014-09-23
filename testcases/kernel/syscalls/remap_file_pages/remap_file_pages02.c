@@ -290,7 +290,7 @@ void setup(void)
 	/* Set the cache size */
 	cache_pages = 32;
 	cache_sz = cache_pages * page_sz;
-	cache_contents = (char *)malloc(cache_sz * sizeof(char));
+	cache_contents = malloc(cache_sz * sizeof(char));
 
 	for (i = 0; i < cache_pages; i++) {
 		char *page = cache_contents + i * page_sz;

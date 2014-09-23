@@ -46,7 +46,7 @@ int main(void)
 #else
 	int max = 256;
 #endif
-	tids = (timer_t *) malloc(max * sizeof(timer_t));
+	tids = malloc(max * sizeof(timer_t));
 	if (tids == NULL) {
 		perror("malloc failed\n");
 		return PTS_UNRESOLVED;

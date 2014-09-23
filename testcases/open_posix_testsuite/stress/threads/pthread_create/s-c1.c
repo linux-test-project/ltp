@@ -305,10 +305,7 @@ int main(int argc, char *argv[])
 					if ((nthreads % RESOLUTION) == 0) {
 						if (m_cur->next == NULL) {
 							/* Create an empty new element */
-							m_tmp =
-							    (mes_t *)
-							    malloc(sizeof
-								   (mes_t));
+							m_tmp = malloc(sizeof(mes_t));
 							if (m_tmp == NULL) {
 								UNRESOLVED
 								    (errno,

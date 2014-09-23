@@ -118,8 +118,7 @@ int eph_close(int sfd)
 
 static int eph_new_conn(int sfd, void *func)
 {
-	struct eph_conn *conn =
-	    (struct eph_conn *)malloc(sizeof(struct eph_conn));
+	struct eph_conn *conn = malloc(sizeof(struct eph_conn));
 	struct epoll_event ev;
 
 	if (!conn)
@@ -373,7 +372,7 @@ static int eph_send_response(struct eph_conn *conn)
 	if (resp == NULL) {
 		msgsize = ((msgsize + 63) / 64) * 64;
 
-		resp = (char *)malloc(msgsize + 256);
+		resp = malloc(msgsize + 256);
 
 		sprintf(resp,
 			"HTTP/1.1 200 OK\r\n"
@@ -478,9 +477,7 @@ int eph_init(void)
 	int i;
 
 	if (!
-	    (events =
-	     (struct epoll_event *)malloc(maxsfd *
-					  sizeof(struct epoll_event)))) {
+	    (events = malloc(maxsfd * sizeof(struct epoll_event)))) {
 		perror("malloc()");
 		return -1;
 	}
@@ -491,8 +488,7 @@ int eph_init(void)
 	}
 
 	if (!
-	    (chash =
-	     (struct list_head *)malloc(maxsfd * sizeof(struct list_head)))) {
+	    (chash = malloc(maxsfd * sizeof(struct list_head)))) {
 		perror("malloc()");
 		free(events);
 		close(kdpfd);
@@ -872,7 +868,7 @@ int eph_createpipetest(int size, int tsleep, int ttime, void *func)
 		return -1;
 	} else if (chpid == 0) {
 		int i;
-		char *buff = (char *)malloc(size + 1);
+		char *buff = malloc(size + 1);
 		close(fds[0]);
 		dup2(fds[1], 1);
 		close(fds[1]);

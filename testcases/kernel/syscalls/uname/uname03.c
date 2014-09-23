@@ -80,8 +80,7 @@ int main(int ac, char **av)
 
 	/* allocate some space for buf */
 
-	if ((buf = (struct utsname *)malloc((size_t)
-					    sizeof(struct utsname))) == NULL) {
+	if ((buf = malloc((size_t)sizeof(struct utsname))) == NULL) {
 		tst_brkm(TBROK, cleanup, "malloc failed for buf");
 	}
 

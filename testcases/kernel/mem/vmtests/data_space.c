@@ -243,7 +243,7 @@ int me;
 	 */
 
 	nchunks = max_size / csize;
-	bits = (char *)malloc((nchunks + 7) / 8);
+	bits = malloc((nchunks + 7) / 8);
 	if (bits == 0)
 		okexit(me);
 	val_buf = (char *)(malloc(csize));
@@ -252,7 +252,7 @@ int me;
 	zero_buf = (char *)(malloc(csize));
 	if (zero_buf == 0)
 		okexit(me);
-	mondobuf = (char *)malloc(max_size);
+	mondobuf = malloc(max_size);
 	if (mondobuf == 0)
 		okexit(me);
 

@@ -47,7 +47,7 @@ static int get_cpu_baseinfo(void)
 	}
 
 	/* allocate the memory space for cpus */
-	cpus = (struct cpuinfo *)malloc(sizeof(*cpus) * ncpus);
+	cpus = malloc(sizeof(*cpus) * ncpus);
 	if (cpus == NULL)
 		return -1;
 	memset(cpus, 0, sizeof(*cpus) * ncpus);
@@ -396,7 +396,7 @@ int partition_domains(void)
 		goto errcpusc;
 	}
 
-	cpusets = (struct cpuset **)malloc(num_cpusets * sizeof(*cpusets));
+	cpusets = malloc(num_cpusets * sizeof(*cpusets));
 	if (cpusets == NULL) {
 		warnx("alloc cpusets space failed.");
 		ret = -1;
@@ -408,7 +408,7 @@ int partition_domains(void)
 		goto errfindcpusets;
 	}
 
-	flg = (int *)malloc(num_cpusets * sizeof(int));
+	flg = malloc(num_cpusets * sizeof(int));
 	if (flg == NULL) {
 		warnx("alloc flg failed.");
 		ret = -1;
@@ -443,7 +443,7 @@ restart:
 		}
 	}
 
-	domains = (struct bitmask **)malloc(ndomains * sizeof(*domains));
+	domains = malloc(ndomains * sizeof(*domains));
 	if (domains == NULL) {
 		warnx("alloc domains space failed.");
 		ret = -1;

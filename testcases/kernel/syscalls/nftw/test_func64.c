@@ -45,7 +45,7 @@ test_func1(const char *path_name, const struct stat64 *stat_pointer,
 	const char *p;
 	temp = stderr;
 
-	if ((s = (char *)malloc((size_t) (strlen((char *)path_name) + 1)))
+	if ((s = malloc((size_t)(strlen((char *)path_name) + 1)))
 	    == NULL) {
 		perror("malloc in test_func1");
 		return 999;

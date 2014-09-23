@@ -64,7 +64,7 @@ int main(void)
 
 	unlink(tmpfname);
 
-	bufs = (char *)malloc(NUM_AIOCBS * BUF_SIZE);
+	bufs = malloc(NUM_AIOCBS * BUF_SIZE);
 
 	if (bufs == NULL) {
 		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
@@ -75,7 +75,7 @@ int main(void)
 	/* Queue up a bunch of aio writes */
 	for (i = 0; i < NUM_AIOCBS; i++) {
 
-		aiocbs[i] = (struct aiocb *)malloc(sizeof(struct aiocb));
+		aiocbs[i] = malloc(sizeof(struct aiocb));
 		memset(aiocbs[i], 0, sizeof(struct aiocb));
 
 		aiocbs[i]->aio_fildes = fd;

@@ -234,7 +234,7 @@ void init_buffers(void)
 
 	/* Allocate and Initialize write buffer with known data */
 	for (count = 0; count < NBUFS; count++) {
-		write_buf[count] = (char *)malloc(K1);
+		write_buf[count] = malloc(K1);
 
 		if (write_buf[count] == NULL) {
 			tst_brkm(TBROK, NULL, "malloc() failed ");
@@ -275,7 +275,7 @@ void check_file_contents(void)
 	char *read_buf;		/* buffer to hold read data */
 
 	/* Allocate space for read buffer */
-	read_buf = (char *)malloc(K1);
+	read_buf = malloc(K1);
 	if (read_buf == NULL) {
 		tst_brkm(TBROK, cleanup, "malloc() failed on read buffer");
 	}

@@ -281,14 +281,14 @@ int main(int argc, char *argv[])
 		fatal_error("setsockopt()");
 
 	/* Create a message */
-	message = (char *)malloc(MESSAGE_LEN);
+	message = malloc(MESSAGE_LEN);
 	if (debug) {
 		strncpy(message, "Hello!", MESSAGE_LEN);
 		message[MESSAGE_LEN - 1] = '\0';
 	}
 
 	/* Prepare the buffer to store the received message */
-	recvbuf = (char *)malloc(MESSAGE_LEN + 1);
+	recvbuf = malloc(MESSAGE_LEN + 1);
 	if (recvbuf == NULL) {
 		fprintf(stderr, "malloc() is failed.\n");
 		exit(EXIT_FAILURE);

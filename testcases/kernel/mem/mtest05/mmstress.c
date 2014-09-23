@@ -386,7 +386,7 @@ RETINFO_t *map_and_thread(char *tmpfile,	/* name of temporary file to be created
 		}
 
 		/* Write pagesize * pages_num bytes to the file */
-		empty_buf = (char *)malloc(pagesize * pages_num);
+		empty_buf = malloc(pagesize * pages_num);
 		if (write(fd, empty_buf, pagesize * pages_num) !=
 		    (pagesize * pages_num)) {
 			perror("map_and_thread(): write()");

@@ -212,8 +212,7 @@ void setup(char *argv0)
 		free(pwd);
 	}
 
-	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") +
-		     1);
+	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") + 1);
 	if (cmd == NULL)
 		tst_brkm(TBROK | TERRNO, NULL, "Cannot alloc command string");
 

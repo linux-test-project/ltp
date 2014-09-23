@@ -266,7 +266,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	childpids = (pid_t *) malloc((nprocs) * sizeof(pid_t));
+	childpids = malloc((nprocs) * sizeof(pid_t));
 	if (childpids == NULL) {
 		warn("alloc for child pids failed");
 		report_result("2\n");
