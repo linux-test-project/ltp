@@ -68,19 +68,17 @@ tst_brkm()
 
 tst_record_childstatus()
 {
-	if [ $# -ne 1 ];then
-		tst_resm TWARN "child process id is not valid"
-		return
+	if [ $# -ne 1 ]; then
+		tst_brkm TBROK "Requires child pid as parameter"
 	fi
 
-	local child=$1
+	local child_pid=$1
 	local ret=0
 
-	wait $child
+	wait $child_pid
 	ret=$?
-	if [ $ret -eq 127 ];then
-		tst_resm TWARN "child process($child) does not exist"
-		return
+	if [ $ret -eq 127 ]; then
+		tst_brkm TBROK "Child process pid='$child_pid' does not exist"
 	fi
 	LTP_RET_VAL=$((LTP_RET_VAL|ret))
 }
