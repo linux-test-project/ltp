@@ -104,8 +104,9 @@ static struct collection *get_collection(char *file, int optind, int argc,
 static void pids_running(struct tag_pgrp *running, int keep_active);
 static int check_pids(struct tag_pgrp *running, int *num_active,
 		      int keep_active, FILE * logfile, FILE * failcmdfile,
-		      struct orphan_pgrp *orphans, int fmt_print,
-		      int *failcnt, int *tconfcnt, int quiet_mode);
+		      FILE *tconfcmdfile, struct orphan_pgrp *orphans,
+		      int fmt_print, int *failcnt, int *tconfcnt,
+		      int quiet_mode);
 static void propagate_signal(struct tag_pgrp *running, int keep_active,
 			     struct orphan_pgrp *orphans);
 static void dump_coll(struct collection *coll);
@@ -151,6 +152,7 @@ int main(int argc, char **argv)
 	char *filename = "/dev/null";	/* filename to read test tags from */
 	char *logfilename = NULL;
 	char *failcmdfilename = NULL;
+	char *tconfcmdfilename = NULL;
 	char *outputfilename = NULL;
 	struct collection *coll = NULL;
 	struct tag_pgrp *running;
@@ -158,6 +160,7 @@ int main(int argc, char **argv)
 	struct utsname unamebuf;
 	FILE *logfile = NULL;
 	FILE *failcmdfile = NULL;
+	FILE *tconfcmdfile = NULL;
 	int keep_active = 1;
 	int num_active = 0;
 	int failcnt = 0;  /* count of total testcases that failed. */
@@ -182,7 +185,8 @@ int main(int argc, char **argv)
 	struct sigaction sa;
 
 	while ((c =
-		getopt(argc, argv, "AO:Sa:C:d:ef:hl:n:o:pqr:s:t:x:y")) != -1) {
+		getopt(argc, argv, "AO:Sa:C:T:d:ef:hl:n:o:pqr:s:t:x:y"))
+		       != -1) {
 		switch (c) {
 		case 'A':	/* all-stop flag */
 			has_brakes = 1;
@@ -199,6 +203,13 @@ int main(int argc, char **argv)
 			break;
 		case 'C':	/* name of the file where all failed commands will be */
 			failcmdfilename = strdup(optarg);
+			break;
+		case 'T':
+			/*
+			 * test cases that are not fully tested will be recorded
+			 * in this file
+			 */
+			tconfcmdfilename = strdup(optarg);
 			break;
 		case 'd':	/* debug options */
 			sscanf(optarg, "%i", &Debug);
@@ -442,6 +453,16 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (tconfcmdfilename) {
+		tconfcmdfile = fopen(tconfcmdfilename, "a+");
+		if (!tconfcmdfile) {
+			fprintf(stderr, "pan(%s): Error %s (%d) opening "
+				"tconf cmd file '%s'\n", panname,
+				strerror(errno), errno, tconfcmdfilename);
+			exit(1);
+		}
+	}
+
 	if ((zoofile = zoo_open(zooname)) == NULL) {
 		fprintf(stderr, "pan(%s): %s\n", panname, zoo_error);
 		exit(1);
@@ -564,8 +585,8 @@ int main(int argc, char **argv)
 		}
 
 		err = check_pids(running, &num_active, keep_active, logfile,
-				 failcmdfile, orphans, fmt_print, &failcnt,
-				 &tconfcnt, quiet_mode);
+				 failcmdfile, tconfcmdfile, orphans, fmt_print,
+				 &failcnt, &tconfcnt, quiet_mode);
 		if (Debug & Drunning) {
 			pids_running(running, keep_active);
 			orphans_running(orphans);
@@ -635,6 +656,11 @@ int main(int argc, char **argv)
 	if (logfile && (logfile != stdout))
 		fclose(logfile);
 
+	if (failcmdfile)
+		fclose(failcmdfile);
+
+	if (tconfcmdfile)
+		fclose(tconfcmdfile);
 	exit(exit_stat);
 }
 
@@ -676,8 +702,9 @@ propagate_signal(struct tag_pgrp *running, int keep_active,
 
 static int
 check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
-	   FILE * logfile, FILE * failcmdfile, struct orphan_pgrp *orphans,
-	   int fmt_print, int *failcnt, int *tconfcnt, int quiet_mode)
+	   FILE *logfile, FILE *failcmdfile, FILE *tconfcmdfile,
+	   struct orphan_pgrp *orphans, int fmt_print, int *failcnt,
+	   int *tconfcnt, int quiet_mode)
 {
 	int w;
 	pid_t cpid;
@@ -802,10 +829,17 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 					fflush(logfile);
 				}
 
-				if ((failcmdfile != NULL) && (w != 0)) {
-					fprintf(failcmdfile, "%s %s\n",
+				if (w != 0) {
+					if (tconfcmdfile != NULL &&
+					    w == TCONF) {
+						fprintf(tconfcmdfile, "%s %s\n",
 						running[i].cmd->name,
 						running[i].cmd->cmdline);
+					} else if (failcmdfile != NULL) {
+						fprintf(failcmdfile, "%s %s\n",
+						running[i].cmd->name,
+						running[i].cmd->cmdline);
+					}
 				}
 
 				if (running[i].stopping)

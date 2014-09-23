@@ -108,9 +108,9 @@ usage()
 {
     cat <<-EOF >&2
 
-    usage: ${0##*/} [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
-    [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ] [ -g HTMLFILE]
-    [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ]
+    usage: ${0##*/} [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -T TCONFCMDFILE ]
+    [ -d TMPDIR ] [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ]
+    [ -g HTMLFILE] [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ]
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
     -v [ -w CMDFILEADDR ] [ -x INSTANCES ] [ -b DEVICE ] [-B LTP_DEV_FS_TYPE]
 	[ -F LOOPS,PERCENTAGE ] [ -z BIG_DEVICE ] [-Z  LTP_BIG_DEV_FS_TYPE]
@@ -120,6 +120,7 @@ usage()
                     [NUM_PROCS = no. of processes creating the CPU Load by spinning over sqrt()
                                  (Defaults to 1 when value)]
     -C FAILCMDFILE  Command file with all failed test cases.
+    -T TCONFCMDFILE Command file with all test cases that are not fully tested.
     -d TMPDIR       Directory where temporary files will be created.
     -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG
                     Run LTP under additional background Load on Secondary Storage (Seperate by comma)
@@ -197,6 +198,7 @@ main()
     local DURATION=""
     local CMDFILEADDR=""
     local FAILCMDFILE=""
+    local TCONFCMDFILE=""
     local INJECT_KERNEL_FAULT=""
     local INJECT_KERNEL_FAULT_PERCENTAGE=""
     local INJECT_FAULT_LOOPS_PER_TEST=""
@@ -217,7 +219,7 @@ main()
 
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:c:C:d:D:f:F:ehi:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B:z:Z: arg
+    while getopts a:c:C:T:d:D:f:F:ehi:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B:z:Z: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -237,6 +239,15 @@ main()
                 FAILCMDFILE="-C $OPTARG" ;;
             *)
                 FAILCMDFILE="-C $LTPROOT/output/$OPTARG"
+                ALT_DIR_OUT=1 ;;
+            esac ;;
+
+        T)
+            case $OPTARG in
+            /*)
+                TCONFCMDFILE="-T $OPTARG" ;;
+            *)
+                TCONFCMDFILE="-T $LTPROOT/output/$OPTARG"
                 ALT_DIR_OUT=1 ;;
             esac ;;
 
@@ -459,6 +470,22 @@ main()
          else                                                ## User Fortunately wanted a Output file
                FAILED_FILE_NAME=`basename $OUTPUTFILE_NAME`  ## Extract output file name and use it to construct Failed file name
                FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
+         fi
+    fi
+
+    if [ ! "$TCONFCMDFILE" ]; then
+         ALT_DIR_OUT=1
+         if [ ! "$OUTPUTFILE" ]; then
+            if [ ! "$LOGFILE" ]; then
+               TCONF_FILE_NAME="$DEFAULT_FILE_NAME_GENERATION_TIME"
+               TCONFCMDFILE="-T $LTPROOT/output/LTP_RUN_ON-${TCONF_FILE_NAME}.tconf"
+            else
+               TCONF_FILE_NAME=`basename $LOGFILE_NAME`
+               TCONFCMDFILE="-T $LTPROOT/output/LTP_RUN_ON-${TCONF_FILE_NAME}.tconf"
+            fi
+         else
+               TCONF_FILE_NAME=`basename $OUTPUTFILE_NAME`
+               TCONFCMDFILE="-T $LTPROOT/output/LTP_RUN_ON-${TCONF_FILE_NAME}.tconf"
          fi
     fi
 
@@ -716,7 +743,7 @@ main()
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
     PAN_COMMAND="${LTPROOT}/bin/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
-    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE"
+    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE $TCONFCMDFILE"
     echo "COMMAND:    $PAN_COMMAND"
     if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
       echo "INFO: Restricted to $TAG_RESTRICT_STRING"
@@ -734,6 +761,9 @@ main()
 
     printf "FAILED COMMAND File: "
     echo $FAILCMDFILE | cut -b4-
+
+   printf "TCONF COMMAND File: "
+   echo $TCONFCMDFILE | cut -b4-
 
     if [ "$HTMLFILE" ]; then
        echo "HTML File: $HTMLFILE"
@@ -808,7 +838,7 @@ main()
 	fi
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
-    "${LTPROOT}/bin/ltp-pan" $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
+    "${LTPROOT}/bin/ltp-pan" $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE $TCONFCMDFILE
 
     if [ $? -eq 0 ]; then
       echo "INFO: ltp-pan reported all tests PASS"
