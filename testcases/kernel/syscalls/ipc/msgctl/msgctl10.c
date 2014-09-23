@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 	tst_resm(TPASS, "msgctl10 ran successfully!");
 
 	cleanup();
-	return (0);
+	tst_exit();
 
 }
 

@@ -139,7 +139,7 @@ int main(int ac, char **av)
 	 ***************************************************************/
 	cleanup();
 
-	return (0);
+	tst_exit();
 }
 
 void setup_every_copy(void)

@@ -102,7 +102,7 @@ int main(void)
 		tst_resm(TFAIL, "%d != %d", count, (max_val_opfiles - 1));
 	cleanup();
 
-	return EXIT_SUCCESS;
+	tst_exit();
 }
 
 /***************************************************************

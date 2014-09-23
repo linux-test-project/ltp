@@ -183,7 +183,7 @@ static char *maxsemstring;
 
 	cleanup();
 
-	return (0);		/* shut lint up */
+	tst_exit();		/* shut lint up */
 }
 
 /*--------------------------------------------------------------*/

@@ -218,7 +218,7 @@ int main(int argc, char **argv)
 	tst_resm(TPASS, "msgctl08 ran successfully!");
 
 	cleanup();
-	return (0);
+	tst_exit();
 
 }
 
