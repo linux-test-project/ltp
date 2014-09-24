@@ -33,7 +33,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	for (i = 0; i < (sizeof(sigs) / sizeof(*sigs)); i++) {
+	for (i = 0; i < ARRAY_SIZE(sigs); i++) {
 		ret = sigaddset(&signalset, sigs[i]);
 
 		if (ret != -1 || errno != EINVAL) {

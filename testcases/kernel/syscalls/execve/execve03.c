@@ -125,7 +125,7 @@ struct test_case_t {
 	test_name6, ENOEXEC}
 };
 
-int TST_TOTAL = sizeof(TC) / sizeof(*TC);
+int TST_TOTAL = ARRAY_SIZE(TC);
 
 int main(int ac, char **av)
 {

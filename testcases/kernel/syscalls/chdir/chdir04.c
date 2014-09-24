@@ -96,7 +96,7 @@ struct test_case_t {
 #endif
 };
 
-int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
+int TST_TOTAL = ARRAY_SIZE(TC);
 
 int flag;
 #define	FAILED	1

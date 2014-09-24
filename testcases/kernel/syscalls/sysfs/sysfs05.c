@@ -93,7 +93,7 @@ static struct test_case_t {
 	"Address is out of your address space", EFAULT, "EFAULT "}
 };
 
-int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);
+int TST_TOTAL = ARRAY_SIZE(testcase);
 
 int main(int ac, char **av)
 {

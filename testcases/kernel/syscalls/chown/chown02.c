@@ -106,7 +106,7 @@ struct test_case_t {
 	{
 TESTFILE2, 700, 701, 2, setup2},};
 
-int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
+int TST_TOTAL = ARRAY_SIZE(test_cases);
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */

@@ -77,7 +77,7 @@ struct test_case_t {
 	RLIMIT_NOFILE, &rlim, EPERM}
 };
 
-int TST_TOTAL = sizeof(TC) / sizeof(*TC);
+int TST_TOTAL = ARRAY_SIZE(TC);
 
 int main(int ac, char **av)
 {

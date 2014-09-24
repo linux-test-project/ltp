@@ -127,7 +127,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 };
 
 char *TCID = "stat03";
-int TST_TOTAL = (sizeof(Test_cases) / sizeof(*Test_cases));
+int TST_TOTAL = ARRAY_SIZE(Test_cases);
 int exp_enos[] = { EACCES,
 #if !defined(UCLINUX)
 	EFAULT, ENAMETOOLONG,

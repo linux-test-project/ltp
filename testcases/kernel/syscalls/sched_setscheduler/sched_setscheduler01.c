@@ -96,7 +96,7 @@ struct test_case_t {
 	&zero_pid, SCHED_OTHER, &param1, EINVAL}
 };
 
-int TST_TOTAL = sizeof(TC) / sizeof(*TC);
+int TST_TOTAL = ARRAY_SIZE(TC);
 
 int main(int ac, char **av)
 {

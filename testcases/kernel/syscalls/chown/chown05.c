@@ -94,7 +94,7 @@ struct test_case_t {
 	-1, 704}, {
 703, 705},};
 
-int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
+int TST_TOTAL = ARRAY_SIZE(test_cases);
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */

@@ -443,7 +443,7 @@ const char *TCID = "sigtimedwait01";
 const char *TCID = "sigwait01";
 #endif
 
-int TST_TOTAL = sizeof(tests) / sizeof(*tests);
+int TST_TOTAL = ARRAY_SIZE(tests);
 
 int main(int argc, char **argv)
 {
@@ -459,7 +459,7 @@ int main(int argc, char **argv)
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
 
-		for (i = 0; i < sizeof(tests) / sizeof(*tests); i++) {
+		for (i = 0; i < ARRAY_SIZE(tests); i++) {
 			alarm(10);	/* arrange a 10 second timeout */
 			tst_resm(TINFO, "%p, %d", tests[i].swi, tests[i].signo);
 			tests[i].tf(tests[i].swi, tests[i].signo);

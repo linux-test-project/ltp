@@ -94,7 +94,7 @@ static struct test_case_t {
 	"buf is outside your accessible address space", EFAULT, "EFAULT"}
 };
 
-int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);
+int TST_TOTAL = ARRAY_SIZE(testcase);
 
 char *bad_addr = 0;
 

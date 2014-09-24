@@ -98,7 +98,7 @@ struct test_cases_t {
 #endif
 };
 
-int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
+int TST_TOTAL = ARRAY_SIZE(test_cases);
 
 int main(int ac, char **av)
 {

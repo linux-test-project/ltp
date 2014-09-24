@@ -54,7 +54,7 @@ int testcases[] = {
 };
 
 char *TCID = "clock_settime03";
-int TST_TOTAL = sizeof(testcases) / sizeof(*testcases);
+int TST_TOTAL = ARRAY_SIZE(testcases);
 
 static int exp_enos[] = { EINVAL, EFAULT, EPERM, 0 };
 

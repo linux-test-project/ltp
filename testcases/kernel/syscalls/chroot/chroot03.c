@@ -93,7 +93,7 @@ struct test_case_t {
 	{symbolic_dir, ELOOP}
 };
 
-int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
+int TST_TOTAL = ARRAY_SIZE(TC);
 
 static char *bad_addr;
 

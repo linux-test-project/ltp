@@ -203,7 +203,7 @@ int main(int argc, char **argv)
 	setup();
 
 	ret = 0;
-	testno = (int)(sizeof(tcase) / sizeof(*tcase));
+	testno = (int)ARRAY_SIZE(tcase);
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 

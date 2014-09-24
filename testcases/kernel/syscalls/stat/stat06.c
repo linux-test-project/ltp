@@ -170,7 +170,7 @@ struct test_case_t {
 	NULL, NULL, NULL, 0, no_setup}
 };
 
-int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);
+int TST_TOTAL = ARRAY_SIZE(Test_cases);
 
 /***********************************************************************
  * Main

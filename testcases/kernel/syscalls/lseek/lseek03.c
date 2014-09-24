@@ -49,7 +49,7 @@ static int fd;
 static int whences[] = { 5, -1, 7 };
 
 char *TCID = "lseek03";
-int TST_TOTAL = sizeof(whences) / sizeof(*whences);
+int TST_TOTAL = ARRAY_SIZE(whences);
 
 int main(int ac, char **av)
 {

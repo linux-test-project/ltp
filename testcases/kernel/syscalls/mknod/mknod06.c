@@ -119,7 +119,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 };
 
 char *TCID = "mknod06";
-int TST_TOTAL = (sizeof(Test_cases) / sizeof(*Test_cases));
+int TST_TOTAL = ARRAY_SIZE(Test_cases);
 #if !defined(UCLINUX)
 extern char *get_high_address();
 int exp_enos[] = { EEXIST, EFAULT, ENOENT, ENAMETOOLONG, ENOTDIR, 0 };

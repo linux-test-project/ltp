@@ -84,7 +84,7 @@ struct test_case_t {
 
 int exp_enos[] = { EFAULT, ENOMEM, EINVAL, ERANGE, 0 };
 
-int TST_TOTAL = sizeof(testcases) / sizeof(*testcases);
+int TST_TOTAL = ARRAY_SIZE(testcases);
 
 int main(int ac, char **av)
 {

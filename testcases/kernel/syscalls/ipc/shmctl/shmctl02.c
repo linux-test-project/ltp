@@ -100,7 +100,7 @@ struct test_case_t {
 	&shm_id_2, SHM_UNLOCK, &buf, EPERM}
 };
 
-int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
+int TST_TOTAL = ARRAY_SIZE(TC);
 
 int main(int ac, char **av)
 {
