@@ -305,7 +305,6 @@ void parent_rout(void)
 		(void)par_kill();
 		tst_brkm(TBROK, NULL,
 			 "Could not set to catch the parents time out alarm.");
-		tst_exit();
 	}
 
 	/*
@@ -717,13 +716,11 @@ void setup(void)
 	if (signal(SIGUSR1, SIG_IGN) == SIG_ERR) {
 		tst_brkm(TBROK | TFAIL, NULL,
 			 "signal(SIGUSR1, SIG_IGN) failed");
-		tst_exit();
 	}
 
 	if (signal(SIGCLD, SIG_IGN) == SIG_ERR) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "signal(SIGCLD, SIG_IGN) failed");
-		tst_exit();
 	}
 
 	/* Indicate which errnos are expected */
@@ -763,7 +760,6 @@ void setup(void)
 	 */
 	if (err_flag == TRUE) {
 		tst_brkm(TBROK | TERRNO, NULL, "pipe() failed");
-		tst_exit();
 	}
 	return;
 

@@ -135,7 +135,6 @@ int main(int argc, char *argv[])
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
 	}
 	if ((tst_kvercmp(2, 6, 27)) < 0) {
 		tst_resm(TCONF,
@@ -159,7 +158,6 @@ int main(int argc, char *argv[])
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
 			}
 			if (coe & FD_CLOEXEC) {
 				tst_resm(TFAIL,
@@ -180,7 +178,6 @@ int main(int argc, char *argv[])
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
 			}
 			if ((coe & FD_CLOEXEC) == 0) {
 				tst_resm(TFAIL,

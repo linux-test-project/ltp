@@ -163,7 +163,6 @@ void setup(void)
 	/* call signal function to trap the signal generated */
 	if (signal(SIGSEGV, sig_handler) == SIG_ERR) {
 		tst_brkm(TBROK, cleanup, "signal fails to catch signal");
-		tst_exit();
 	}
 
 	TEST_PAUSE;
@@ -172,7 +171,6 @@ void setup(void)
 	if ((page_sz = getpagesize()) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "getpagesize() fails to get system page size");
-		tst_exit();
 	}
 
 	/*
@@ -187,7 +185,6 @@ void setup(void)
 	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
 		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
 			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
 	}
 
 	/*
@@ -197,14 +194,12 @@ void setup(void)
 	if (lseek(fildes, map_len, SEEK_SET) == -1) {
 		tst_brkm(TBROK, cleanup, "lseek() fails on %s, errno=%d : %s",
 			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
 	}
 
 	/* Write one byte into temporary file */
 	if (write(fildes, "a", 1) != 1) {
 		tst_brkm(TBROK, cleanup, "write() on %s Failed, errno=%d : %s",
 			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
 	}
 
 	/*
@@ -225,7 +220,6 @@ void setup(void)
 	if (addr == (char *)MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap() Failed on %s, errno=%d : %s",
 			 TEMPFILE, errno, strerror(errno));
-		tst_exit();
 	}
 
 	/*

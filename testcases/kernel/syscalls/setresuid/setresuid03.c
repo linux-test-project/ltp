@@ -200,12 +200,10 @@ void setup(void)
 
 	if (getpwnam("nobody") == NULL) {
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
-		tst_exit();
 	}
 
 	if (getpwnam("bin") == NULL) {
 		tst_brkm(TBROK, NULL, "bin must be a valid user.");
-		tst_exit();
 	}
 
 	root = *(getpwnam("root"));

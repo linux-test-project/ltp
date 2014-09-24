@@ -128,7 +128,6 @@ int main(int argc, char *argv[])
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
 	}
 #ifdef UCLINUX
 	argv0 = argv[0];

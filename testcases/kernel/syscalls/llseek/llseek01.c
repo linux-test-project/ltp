@@ -189,7 +189,6 @@ void setup(void)
 	sigemptyset(&act.sa_mask);
 	if (sigaction(SIGXFSZ, &act, NULL) == -1) {
 		tst_brkm(TFAIL, NULL, "sigaction() Failed to ignore SIGXFSZ");
-		tst_exit();
 	}
 
 	tst_tmpdir();

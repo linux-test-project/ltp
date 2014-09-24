@@ -113,6 +113,5 @@ int main(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
 	tst_brkm(TCONF, NULL, "System doesn't have libaio support");
-	tst_exit();
 }
 #endif

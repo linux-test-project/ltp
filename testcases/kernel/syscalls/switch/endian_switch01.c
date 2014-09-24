@@ -125,7 +125,6 @@ int main4(int ac, char **av, char **envp, unsigned long *auxv)
 	if (!(auxv[0] == AT_HWCAP && (auxv[1] & PPC_FEATURE_TRUE_LE))) {
 		tst_brkm(TCONF, cleanup,
 			 "Processor does not support little-endian mode");
-		tst_exit();
 	}
 	signal(SIGILL, sigill);
 	if (sigsetjmp(jb, 1) == 0)
@@ -145,7 +144,6 @@ int main(void)
 
 	tst_brkm(TCONF, cleanup,
 		 "This system does not support running of switch() syscall");
-	tst_exit();
 }
 
 #endif

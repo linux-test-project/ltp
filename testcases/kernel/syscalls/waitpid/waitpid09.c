@@ -268,7 +268,6 @@ static void setup_sigint(void)
 	if ((sig_t) signal(SIGINT, inthandlr) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup, "signal SIGINT failed, errno = %d",
 			 errno);
-		tst_exit();
 	}
 }
 

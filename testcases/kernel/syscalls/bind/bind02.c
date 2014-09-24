@@ -82,16 +82,13 @@ void try_bind(void)
 	// Set effective user/group
 	if ((rc = setegid(gid)) == -1) {
 		tst_brkm(TBROK | TERRNO, 0, "setegid(%u) failed", gid);
-		tst_exit();
 	}
 	if ((rc = seteuid(uid)) == -1) {
 		tst_brkm(TBROK | TERRNO, 0, "seteuid(%u) failed", uid);
-		tst_exit();
 	}
 
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		tst_brkm(TBROK | TERRNO, 0, "socket() failed");
-		tst_exit();
 	}
 
 	memset(&servaddr, 0, sizeof(servaddr));
@@ -114,14 +111,12 @@ void try_bind(void)
 	// Set effective user/group
 	if ((rc = setegid(0)) == -1) {
 		tst_brkm(TBROK | TERRNO, 0, "setegid(0) reset failed");
-		tst_exit();
 	}
 	if ((rc = seteuid(uid)) == -1) {
 		/* XXX: is this seteuid() correct !?  it isnt a reset if we
 		 *      made the same exact call above ...
 		 */
 		tst_brkm(TBROK | TERRNO, 0, "seteuid(%u) reset failed", uid);
-		tst_exit();
 	}
 
 }
@@ -143,12 +138,10 @@ int main(int argc, char *argv[])
 
 	if ((pw = getpwnam(username)) == NULL) {
 		tst_brkm(TBROK, 0, "Username - %s - not found", username);
-		tst_exit();
 	}
 
 	if ((gr = getgrgid(pw->pw_gid)) == NULL) {
 		tst_brkm(TBROK | TERRNO, 0, "getgrgid(%u) failed", pw->pw_gid);
-		tst_exit();
 	}
 
 	uid = pw->pw_uid;

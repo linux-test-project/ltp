@@ -138,7 +138,6 @@ int main(int argc, char *argv[])
 	msg = parse_opts(argc, argv, NULL, NULL);
 	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
 	}
 	if ((tst_kvercmp(2, 6, 27)) < 0) {
 		tst_resm(TCONF,
@@ -153,12 +152,10 @@ int main(int argc, char *argv[])
 			fd = socket(PF_INET, SOCK_STREAM, 0);
 			if (fd == -1) {
 				tst_brkm(TBROK, cleanup, "socket(0) failed");
-				tst_exit();
 			}
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
 			}
 			if (coe & FD_CLOEXEC) {
 				tst_resm(TFAIL,
@@ -177,7 +174,6 @@ int main(int argc, char *argv[])
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
 			}
 			if ((coe & FD_CLOEXEC) == 0) {
 				tst_resm(TFAIL,
@@ -190,14 +186,12 @@ int main(int argc, char *argv[])
 			if (socketpair(PF_UNIX, SOCK_STREAM, 0, fds) == -1) {
 				tst_brkm(TBROK, cleanup,
 					 "socketpair(0) failed");
-				tst_exit();
 			}
 			for (i = 0; i < 2; ++i) {
 				coe = fcntl(fds[i], F_GETFD);
 				if (coe == -1) {
 					tst_brkm(TBROK, cleanup,
 						 "fcntl failed");
-					tst_exit();
 				}
 				if (coe & FD_CLOEXEC) {
 					tst_resm(TFAIL,
@@ -214,14 +208,12 @@ int main(int argc, char *argv[])
 			     fds) == -1) {
 				tst_brkm(TBROK, cleanup,
 					 "socketpair(SOCK_CLOEXEC) failed");
-				tst_exit();
 			}
 			for (i = 0; i < 2; ++i) {
 				coe = fcntl(fds[i], F_GETFD);
 				if (coe == -1) {
 					tst_brkm(TBROK, cleanup,
 						 "fcntl failed");
-					tst_exit();
 				}
 				if ((coe & FD_CLOEXEC) == 0) {
 					tst_resm(TFAIL,

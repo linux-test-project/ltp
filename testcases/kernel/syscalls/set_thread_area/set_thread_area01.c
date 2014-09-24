@@ -120,6 +120,5 @@ int main(void)
 {
 	tst_brkm(TCONF, NULL,
 		 "set_thread_area isn't available for this architecture");
-	tst_exit();
 }
 #endif

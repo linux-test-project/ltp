@@ -586,7 +586,6 @@ static void setup(void)
 		if (WEXITSTATUS(ret) != 0) {
 			tst_brkm(TBROK, cleanup,
 			    "ip/ifconfig failed to bring up loop back device");
-			tst_exit();
 		}
 	}
 

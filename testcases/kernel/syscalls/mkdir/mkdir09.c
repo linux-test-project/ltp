@@ -196,14 +196,12 @@ int runtest(void)
 			tst_brkm(TFAIL, cleanup,
 				 "Error creating permanent directories, ERRNO = %d",
 				 TEST_ERRNO);
-			tst_exit();
 		}
 		if ((j % NCHILD) != 0) {
 			if (rmdir(tmpdir) < 0) {
 				tst_brkm(TFAIL, cleanup,
 					 "Error removing directory, ERRNO = %d",
 					 errno);
-				tst_exit();
 			}
 		}
 	}
@@ -247,12 +245,10 @@ int runtest(void)
 	if (signal(SIGTERM, SIG_IGN) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
 			 "Error resetting SIGTERM signal, ERRNO = %d", errno);
-		tst_exit();
 	}
 	if (signal(SIGCLD, SIG_DFL) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
 			 "Error resetting SIGCLD signal, ERRNO = %d", errno);
-		tst_exit();
 	}
 
 	if (test_time) {
@@ -328,7 +324,6 @@ int getchild(int group, int child, int children)
 		massmurder();	/* kill the kids */
 		tst_brkm(TBROK, cleanup,
 			 "\tFork failed (may be OK if under stress)");
-		tst_exit();
 	} else if (pid == 0) {	/* child does this */
 		switch (children % NCHILD) {
 		case 0:
@@ -336,7 +331,6 @@ int getchild(int group, int child, int children)
 			if (self_exec(argv0, "nd", 1, nfiles) < 0) {
 				massmurder();
 				tst_brkm(TBROK, cleanup, "\tself_exec failed");
-				tst_exit();
 			}
 #else
 			dochild1();	/* create existing directories */
@@ -347,7 +341,6 @@ int getchild(int group, int child, int children)
 			if (self_exec(argv0, "n", 2) < 0) {
 				massmurder();
 				tst_brkm(TBROK, cleanup, "\tself_exec failed");
-				tst_exit();
 			}
 #else
 			dochild2();	/* remove nonexistant directories */
@@ -358,7 +351,6 @@ int getchild(int group, int child, int children)
 			if (self_exec(argv0, "nd", 3, group) < 0) {
 				massmurder();
 				tst_brkm(TBROK, cleanup, "\tself_exec failed");
-				tst_exit();
 			}
 #else
 			dochild3(group);	/* create/delete directories */
@@ -442,7 +434,6 @@ void dochild1_uclinux(void)
 	if (signal(SIGTERM, term) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
 			 "Error setting up SIGTERM signal, ERRNO = %d", errno);
-		tst_exit();
 	}
 
 	dochild1();
@@ -490,7 +481,6 @@ void dochild2_uclinux(void)
 	if (signal(SIGTERM, term) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
 			 "Error setting up SIGTERM signal, ERRNO = %d", errno);
-		tst_exit();
 	}
 
 	dochild2();
@@ -547,7 +537,6 @@ void dochild3_uclinux(void)
 	if (signal(SIGTERM, term) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
 			 "Error setting up SIGTERM signal, ERRNO = %d", errno);
-		tst_exit();
 	}
 
 	dochild3(group_uclinux);
@@ -563,7 +552,6 @@ int massmurder(void)
 				tst_brkm(TFAIL, cleanup,
 					 "Error killing child %d, ERRNO = %d",
 					 j, errno);
-				tst_exit();
 			}
 		}
 	}

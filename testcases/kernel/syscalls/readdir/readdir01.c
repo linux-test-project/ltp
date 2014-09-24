@@ -179,13 +179,11 @@ int main(int ac, char **av)
 	 */
 	if ((msg = parse_opts(ac, av, options, &help)) != 0) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
 	}
 
 	if (Nflag) {
 		if (sscanf(Nfilearg, "%i", &Nfiles) != 1) {
 			tst_brkm(TBROK, NULL, "--N option arg is not a number");
-			tst_exit();
 		}
 	}
 
