@@ -98,7 +98,6 @@ char *prog;
 		 prog);
 	tst_resm(TCONF, "DEFAULTS: 10 1024*1024 4096 25");
 	tst_exit();
-	return 0;
 }
 
 int main(argc, argv)

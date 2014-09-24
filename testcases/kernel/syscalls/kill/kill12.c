@@ -220,7 +220,6 @@ int anyfail(void)
 					  "Test failed") : tst_resm(TPASS,
 								    "Test passed");
 	tst_exit();
-	return 0;
 }
 
 void do_child(void)
@@ -270,7 +269,6 @@ int forkfail(void)
 {
 	tst_resm(TBROK, "FORK FAILED - terminating test.");
 	tst_exit();
-	return 0;
 }
 
 /****** ** **   *******/

@@ -238,7 +238,6 @@ int anyfail(void)
 								    "Test passed");
 	tst_rmdir();
 	tst_exit();
-	return 0;
 }
 
 void setup(void)

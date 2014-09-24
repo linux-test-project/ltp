@@ -112,9 +112,6 @@ int main(void)
 	rm_shm(shmid1);
 
 	tst_exit();
-
-/*-------------------------------------------------------*/
-	return (0);
 }
 
 int rm_shm(shmid)

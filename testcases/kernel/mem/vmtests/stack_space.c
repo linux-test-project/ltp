@@ -78,7 +78,6 @@ int usage(char *prog)
 	tst_resm(TCONF, "Usage: %s <nchild> <chunk_size> <iterations>", prog);
 	tst_resm(TCONF, "DEFAULTS: 20 1024 50");
 	tst_exit();
-	return 0;
 }
 
 int main(argc, argv)
@@ -135,7 +134,6 @@ char *str;
 	tst_resm(TCONF, "Bad argument - %s - could not parse as number.\n",
 		 str);
 	tst_exit();
-	return 0;
 }
 
 int runtest()
@@ -193,9 +191,6 @@ int runtest()
 	sync();			/* safeness */
 	tst_rmdir();
 	tst_exit();
-
-	/**NOT REACHED**/
-	return 0;
 
 }
 

@@ -228,8 +228,6 @@ char *str;
 {
 	tst_resm(TCONF, "\tCannot parse %s as a number.\n", str);
 	tst_exit();
-	/**NOT REACHED**/
-	return 0;
 }
 
 int chld()

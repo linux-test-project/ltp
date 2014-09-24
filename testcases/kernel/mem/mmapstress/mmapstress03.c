@@ -226,7 +226,6 @@ int anyfail()
 {
 	tst_resm(TFAIL, "Test failed");
 	tst_exit();
-	return 0;
 }
 
 /*****  **      **      *****/

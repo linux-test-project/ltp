@@ -81,8 +81,6 @@ int check_mesgq(void *vtest)
 		mesgq_read(id);
 	}
 	tst_exit();
-
-	return 0;
 }
 
 static void setup(void)

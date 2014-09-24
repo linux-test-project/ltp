@@ -117,7 +117,6 @@ int check_sem1(void *vtest)
 	write(p1[1], "go", 3);
 	tst_resm(TINFO, "Cont1: Able to create semaphore");
 	tst_exit();
-	return 0;
 }
 
 /*
@@ -156,7 +155,6 @@ int check_sem2(void *vtest)
 	}
 
 	tst_exit();
-	return 0;
 }
 
 static void setup(void)

@@ -233,7 +233,6 @@ int anyfail(void)
 					  "Test failed") : tst_resm(TPASS,
 								    "Test passed");
 	tst_exit();
-	return 0;
 }
 
 void setup(void)

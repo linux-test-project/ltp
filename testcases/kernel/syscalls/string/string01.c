@@ -265,7 +265,6 @@ int blexit(void)
 int anyfail(void)
 {
 	tst_exit();
-	return 0;
 }
 
 /*****	**	**	*****/

@@ -225,7 +225,6 @@ int checkit(char *str)
 int anyfail(void)
 {
 	tst_exit();
-	return 0;
 }
 
 void setup(void)

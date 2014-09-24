@@ -64,8 +64,6 @@ int check_semaphore(void *vtest)
 			 getpid(), id);
 	}
 	tst_exit();
-
-	return 0;
 }
 
 static void setup(void)
