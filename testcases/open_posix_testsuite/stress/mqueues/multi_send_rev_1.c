@@ -53,7 +53,7 @@ int *send(void *info)
 		printf("[%d] send '%s' in thread send [%d]. \n", i + 1,
 		       s_msg_ptr[i], send_info.ThreadID);
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 
 }
 
@@ -71,13 +71,13 @@ int *receive(void *info)
 		if (-1 ==
 		    mq_receive(recv_info.mqID, r_msg_ptr[i], MSG_SIZE, NULL)) {
 			perror("mq_receive doesn't return success \n");
-			pthread_exit((void *)0);
+			pthread_exit(NULL);
 		}
 		printf("[%d] receive '%s' in thread receive recv [%d]. \n",
 		       i + 1, r_msg_ptr[i], recv_info.ThreadID);
 	}
 
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[])

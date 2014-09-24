@@ -255,10 +255,10 @@ int main(int argc, char *argv[])
 
 	init_pi_mutex(&lock);
 
-	if ((ret = create_fifo_thread(low_prio_thread, (void *)0, LOWPRIO)) < 0)
+	if ((ret = create_fifo_thread(low_prio_thread, NULL, LOWPRIO)) < 0)
 		exit(ret);
 	if ((ret =
-	     create_fifo_thread(high_prio_thread, (void *)0, HIGHPRIO)) < 0)
+	     create_fifo_thread(high_prio_thread, NULL, HIGHPRIO)) < 0)
 		exit(ret);
 
 	for (i = 0; i < num_busy; i++) {

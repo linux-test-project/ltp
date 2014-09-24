@@ -48,7 +48,7 @@ int main(void)
 	alternate_s.ss_flags = 0;
 	alternate_s.ss_size = SIGSTKSZ;
 
-	if (sigaltstack(&alternate_s, (stack_t *) 0) != 0) {
+	if (sigaltstack(&alternate_s, NULL) != 0) {
 		printf("Test FAILED: sigaltstack didn't return 0.\n");
 		return PTS_FAIL;
 	}

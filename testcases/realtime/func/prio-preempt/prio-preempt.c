@@ -238,7 +238,7 @@ void *master_thread(void *arg)
 	if (int_threads) {
 		pri_boost = 90;
 		for (i = 0; i < rt_threads; i++) {
-			create_fifo_thread(int_thread, (void *)0,
+			create_fifo_thread(int_thread, NULL,
 					   sched_get_priority_min(SCHED_FIFO) +
 					   pri_boost);
 		}
@@ -318,7 +318,7 @@ int main(int argc, char *argv[])
 	printf("Worker Threads: %d\n\n", NUM_WORKERS);
 
 	pri_boost = 81;
-	create_fifo_thread(master_thread, (void *)0,
+	create_fifo_thread(master_thread, NULL,
 			   sched_get_priority_min(SCHED_FIFO) + pri_boost);
 
 	/* wait for threads to complete */

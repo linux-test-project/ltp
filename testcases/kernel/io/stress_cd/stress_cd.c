@@ -192,7 +192,7 @@ void *thread(int *parm)
 	if (debug)
 		printf("\tThread [%d]: done\n", num);
 
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 	return (NULL);
 }
 

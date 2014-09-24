@@ -199,7 +199,7 @@ void *map_write_unmap(void *ptr)
 		}
 	}
 
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 void *read_mem(void *ptr)
@@ -246,7 +246,7 @@ void *read_mem(void *ptr)
 		}
 	}
 
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 static void usage(char *progname)

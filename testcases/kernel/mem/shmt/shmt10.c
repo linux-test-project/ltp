@@ -114,7 +114,7 @@ char *argv[];
 	}
 
 	for (i = 0; i < iter; i++) {
-		if ((c1 = (char *)shmat(shmid, (void *)0, 0)) == (char *)-1) {
+		if ((c1 = (char *)shmat(shmid, NULL, 0)) == (char *)-1) {
 			tst_resm(TFAIL,
 				 "Error shmat: iter %d, shmid = %d\n", i,
 				 shmid);
@@ -153,7 +153,7 @@ int iter;
 	char *c1;
 
 	for (i = 0; i < iter; i++) {
-		if ((c1 = (char *)shmat(shmid, (void *)0, 0)) == (char *)-1) {
+		if ((c1 = (char *)shmat(shmid, NULL, 0)) == (char *)-1) {
 			tst_resm(TFAIL,
 				 "Error:child proc: shmat: iter %d, shmid = %d\n",
 				 i, shmid);

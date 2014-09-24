@@ -239,7 +239,7 @@ void *map_write_unmap(void *args)
 		}
 		close(fd);
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 /******************************************************************************/

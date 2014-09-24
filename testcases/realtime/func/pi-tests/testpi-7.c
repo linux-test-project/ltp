@@ -291,10 +291,10 @@ int main(int argc, char *argv[])
 
 	init_pi_mutex(&pi_mutex);
 
-	create_fifo_thread(low_prio_rt_thread, (void *)0, LOW_PRIO);
+	create_fifo_thread(low_prio_rt_thread, NULL, LOW_PRIO);
 	create_fifo_thread(high_prio_rt_thread, (void *)iterations, HIGH_PRIO);
 	for (i = 0; i < med_threads; i++) {
-		create_fifo_thread(med_prio_thread, (void *)0, MED_PRIO);
+		create_fifo_thread(med_prio_thread, NULL, MED_PRIO);
 	}
 
 	while (phase_flag != END_OF_GAME)

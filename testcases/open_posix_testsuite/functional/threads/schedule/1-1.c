@@ -106,7 +106,7 @@ void *hi_priority_thread(void *tmp)
 	if (low_done != 1)
 		woken_up = 1;
 
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 void *low_priority_thread(void *tmp)
@@ -141,7 +141,7 @@ void *low_priority_thread(void *tmp)
 	}
 	low_done = 1;
 
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int main()

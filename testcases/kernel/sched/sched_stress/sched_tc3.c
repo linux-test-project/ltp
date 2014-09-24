@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 	 * Continuously multiply matrix as time permits...
 	 */
 	i = 0;
-	start_time = time((long *)0);
+	start_time = time(NULL);
 
 	/*
 	 * Continuously read through file until interrupted...

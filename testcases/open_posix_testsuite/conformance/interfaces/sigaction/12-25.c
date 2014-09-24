@@ -31,7 +31,7 @@ void handler(int signo)
 
 	printf("Caught SIGXCPU\n");
 
-	if (sigaltstack((stack_t *) 0, &ss) == -1) {
+	if (sigaltstack(NULL, &ss) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		exit(-1);
@@ -64,7 +64,7 @@ int main(void)
 	alt_ss.ss_size = SIGSTKSZ;
 	alt_ss.ss_flags = 0;
 
-	if (sigaltstack(&alt_ss, (stack_t *) 0) == -1) {
+	if (sigaltstack(&alt_ss, NULL) == -1) {
 		perror("Unexpected error while attempting to setup test "
 		       "pre-conditions");
 		return PTS_UNRESOLVED;

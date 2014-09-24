@@ -71,7 +71,7 @@ struct test_case_t {
 #ifndef UCLINUX
 	{-1, (struct sockaddr *)-1, &sinlen, -1, EFAULT, setup4, cleanup4,
 	 "EFAULT"},
-	{-1, (struct sockaddr *)&fsin1, (socklen_t *)0, -1, EFAULT, setup4,
+	{-1, (struct sockaddr *)&fsin1, NULL, -1, EFAULT, setup4,
 	 cleanup4, "EFAULT"},
 	{-1, (struct sockaddr *)&fsin1, (socklen_t *)1, -1, EFAULT, setup4,
 	 cleanup4, "EFAULT"},

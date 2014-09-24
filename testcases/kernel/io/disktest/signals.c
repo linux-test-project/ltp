@@ -118,7 +118,7 @@ void *sig_handler(void *arg)
 		}
 #ifndef WINDOWS
 	}
-	return (void *)0;
+	return NULL;
 #endif
 }
 

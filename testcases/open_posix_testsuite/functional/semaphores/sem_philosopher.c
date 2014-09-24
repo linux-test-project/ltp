@@ -111,7 +111,7 @@ int philosopher(void *ID)
 			pthread_exit((void *)1);
 		}
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[])

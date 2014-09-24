@@ -83,7 +83,7 @@ int *reader(void *ID)
 	}
 	printf("Reader Thread [%d] exit...reader_count=%d \n", ThID,
 	       reader_count);
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int *writer(void *ID)
@@ -102,7 +102,7 @@ int *writer(void *ID)
 		pthread_exit((void *)1);
 	}
 	printf("Writer Thread [%d] exit...\n", ThID);
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[])

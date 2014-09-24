@@ -216,8 +216,8 @@ int main(int argc, char *argv[])
 
 	atomic_set(CHILD_START, &step);
 	handler_id =
-	    create_fifo_thread(handler_thread, (void *)0, HANDLER_PRIO);
-	signal_id = create_fifo_thread(signal_thread, (void *)0, SIGNAL_PRIO);
+	    create_fifo_thread(handler_thread, NULL, HANDLER_PRIO);
+	signal_id = create_fifo_thread(signal_thread, NULL, SIGNAL_PRIO);
 
 	join_threads();
 

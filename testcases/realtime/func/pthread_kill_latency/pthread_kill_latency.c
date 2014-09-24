@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
 	debug(DBG_DEBUG, "Main creating threads\n");
 	fflush(stdout);
 
-	thr_id1 = create_fifo_thread(signal_receiving_thread, (void *)0, PRIO);
+	thr_id1 = create_fifo_thread(signal_receiving_thread, NULL, PRIO);
 	thr_id2 =
 	    create_fifo_thread(signal_sending_thread,
 			       (void *)(intptr_t) thr_id1, PRIO - 1);

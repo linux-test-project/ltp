@@ -70,14 +70,14 @@ int main()
 		tst_exit();
 	}
 
-	cp = (char *)shmat(shmid, (void *)0, 0);
+	cp = (char *)shmat(shmid, NULL, 0);
 	if (cp == (char *)-1) {
 		tst_resm(TFAIL, "shmat1 Failed");
 		rm_shm(shmid);
 		tst_exit();
 	}
 
-	cp1 = (char *)shmat(shmid, (void *)0, 0);
+	cp1 = (char *)shmat(shmid, NULL, 0);
 	if (cp1 == (char *)-1) {
 		perror("shmat2");
 		rm_shm(shmid);

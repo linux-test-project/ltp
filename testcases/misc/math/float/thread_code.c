@@ -69,7 +69,7 @@ static size_t read_file(char *fname, void **data)
 		return (size_t) 0;
 	}
 
-	while ((buffer = malloc(fsize)) == (void *)0) {
+	while ((buffer = malloc(fsize)) == NULL) {
 		if (errno == EINTR || errno == 0) {
 			printf("Error malloc'ing: %s\n", strerror(errno));
 			pthread_testcancel();
@@ -278,7 +278,7 @@ void *thread_code(void *arg)
 {
 	TH_DATA *th_data = (TH_DATA *) arg;
 	size_t fsize, fsize2, fsize3;
-	double *din, *dex, *dex2 = (double *)0;
+	double *din, *dex, *dex2 = NULL;
 	int imax, index;
 
 	fsize = read_file(th_data->th_func.din_fname, (void **)&din);
@@ -408,5 +408,5 @@ file_size_error:
 	SAFE_FREE(dex);
 	if (fsize3)
 		SAFE_FREE(dex2);
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }

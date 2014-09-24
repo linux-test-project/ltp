@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 
 	rt_init("h", parse_args, argc, argv);
 
-	create_other_thread(master_thread, (void *)0);
+	create_other_thread(master_thread, NULL);
 
 	/* wait for the slaves to quit */
 	while (atomic_get(&slave_order_c) < NUM_SLAVES)

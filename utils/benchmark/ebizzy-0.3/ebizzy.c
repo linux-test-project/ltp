@@ -241,7 +241,7 @@ static void *alloc_mem(size_t size)
 	int err = 0;
 
 	if (always_mmap) {
-		p = mmap((void *)0, size, (PROT_READ | PROT_WRITE),
+		p = mmap(NULL, size, (PROT_READ | PROT_WRITE),
 			 (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 		if (p == MAP_FAILED)
 			err = 1;

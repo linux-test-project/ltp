@@ -213,7 +213,7 @@ void setup(void)
 	 * the calling process at the first available address as selected
 	 * by the system.
 	 */
-	shmaddr = (char *)shmat(shmid, (char *)0, 0);
+	shmaddr = (char *)shmat(shmid, NULL, 0);
 	if (shmaddr == (void *)-1) {
 		tst_brkm(TBROK, cleanup, "shmat() Failed to attach shared "
 			 "memory, error:%d", errno);

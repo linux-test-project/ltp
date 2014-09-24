@@ -133,8 +133,8 @@ int main(int argc, char *argv[])
 
 	tst_tmpdir();
 
-	setbuf(stdout, (char *)0);
-	setbuf(stderr, (char *)0);
+	setbuf(stdout, NULL);
+	setbuf(stderr, NULL);
 	datadir[0] = '.';
 	datadir[1] = '\0';
 

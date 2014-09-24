@@ -128,7 +128,7 @@ static void do_child(void)
 		 * use TEST macro to make the call
 		 */
 		errno = 0;
-		addr = shmat(shm_id_1, (const void *)0, 0);
+		addr = shmat(shm_id_1, NULL, 0);
 		TEST_ERRNO = errno;
 
 		if (addr != (char *)-1) {

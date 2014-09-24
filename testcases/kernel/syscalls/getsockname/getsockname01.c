@@ -86,12 +86,12 @@ struct test_case_t {		/* test case structure */
 #ifndef UCLINUX
 	    /* Skip since uClinux does not implement memory protection */
 	{
-	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)0,
+	PF_INET, SOCK_STREAM, 0, NULL,
 		    &sinlen, -1, EFAULT, setup1, cleanup1,
 		    "invalid socket buffer"}, {
 		/* invalid salen test for aligned input */
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		    (socklen_t *) 0, -1, EFAULT, setup1, cleanup1,
+		    NULL, -1, EFAULT, setup1, cleanup1,
 		    "invalid aligned salen"}, {
 		/* invalid salen test for unaligned input */
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,

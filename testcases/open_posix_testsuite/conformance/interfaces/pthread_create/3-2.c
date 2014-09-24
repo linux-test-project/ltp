@@ -156,7 +156,7 @@ void *overflow(void *arg)
 			output
 			    ("Growing up stack started below %p and we are currently up to %p\n",
 			     arg, &current);
-			return (void *)0;
+			return NULL;
 		}
 	} else {
 		/* the stack is growing down */
@@ -164,7 +164,7 @@ void *overflow(void *arg)
 			output
 			    ("Growing down stack started upon %p and we are currently down to %p\n",
 			     arg, &current);
-			return (void *)0;
+			return NULL;
 		}
 	}
 
@@ -300,7 +300,7 @@ int test_stack(pthread_attr_t * ta, size_t newsize)
 			if (ret != 0) {
 				UNRESOLVED(ret, "Unable to join a thread");
 			}
-			if (rc != (void *)0) {
+			if (rc != NULL) {
 				UNRESOLVED((int)(long)rc,
 					   "The overflow function returned an unexpected value");
 			}

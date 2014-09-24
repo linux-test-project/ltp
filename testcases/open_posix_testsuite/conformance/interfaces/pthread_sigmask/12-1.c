@@ -107,7 +107,7 @@ void *a_thread_func()
 */
 
 	printf("PASS: signal mask was not changed.\n");
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 
 	/* To please some compilers */
 	return NULL;

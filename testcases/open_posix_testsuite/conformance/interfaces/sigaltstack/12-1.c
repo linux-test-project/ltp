@@ -61,7 +61,7 @@ int main(void)
 	 */
 	altstack1.ss_size = 2048 - 1;
 
-	if (sigaltstack(&altstack1, (stack_t *) 0) != -1) {
+	if (sigaltstack(&altstack1, NULL) != -1) {
 		printf("Test FAILED: Expected return value of -1.\n");
 		return PTS_FAIL;
 	}

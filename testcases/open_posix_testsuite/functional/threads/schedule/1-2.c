@@ -111,7 +111,7 @@ void *hi_priority_thread(void *tmp)
 		printf(ERROR_PREFIX "pthread_mutex_unlock\n");
 		exit(PTS_UNRESOLVED);
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 void *low_priority_thread(void *tmp)
@@ -149,7 +149,7 @@ void *low_priority_thread(void *tmp)
 			break;
 	}
 	low_done = 1;
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int main()

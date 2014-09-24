@@ -49,7 +49,7 @@ int *send(void *ID)
 		printf("[%d] send '%s' in thread send %d. \n", i + 1,
 		       s_msg_ptr[i], ThreadID);
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 
 }
 
@@ -69,7 +69,7 @@ int *receive(void *ID)
 		       r_msg_ptr[ThreadID][i], ThreadID);
 	}
 	printf("receive[%d] quit ...\n", ThreadID);
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[])

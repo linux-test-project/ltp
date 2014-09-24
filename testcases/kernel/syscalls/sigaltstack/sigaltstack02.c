@@ -136,7 +136,7 @@ int main(int ac, char **av)
 			test_desc = Test_cases[ind].desc;
 
 			/* Verify sigaltstack() fails and sets errno */
-			TEST(sigaltstack(&sigstk, (stack_t *) 0));
+			TEST(sigaltstack(&sigstk, NULL));
 
 			/* Check return code from sigaltstack() */
 			if (TEST_RETURN == -1) {

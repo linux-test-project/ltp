@@ -42,7 +42,7 @@ void handler()
 	altstack2.ss_flags = 0;
 	altstack2.ss_size = SIGSTKSZ;
 
-	if (sigaltstack(&altstack2, (stack_t *) 0) != -1) {
+	if (sigaltstack(&altstack2, NULL) != -1) {
 		printf
 		    ("Test FAILED: Attempt to set change alternate stack while inside handler succeeded.\n");
 		exit(PTS_FAIL);
@@ -72,7 +72,7 @@ int main(void)
 	altstack1.ss_flags = 0;
 	altstack1.ss_size = SIGSTKSZ;
 
-	if (sigaltstack(&altstack1, (stack_t *) 0) == -1) {
+	if (sigaltstack(&altstack1, NULL) == -1) {
 		perror
 		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;

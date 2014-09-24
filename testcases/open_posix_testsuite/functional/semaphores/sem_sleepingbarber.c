@@ -89,7 +89,7 @@ void *barbers(void *unused)
 		}
 
 	}
-	return (void *)0;
+	return NULL;
 }
 
 void *customers(void *ID)
@@ -132,7 +132,7 @@ void *customers(void *ID)
 			pthread_exit((void *)1);
 		}
 	}
-	return (void *)0;
+	return NULL;
 }
 
 int main(int argc, char *argv[])

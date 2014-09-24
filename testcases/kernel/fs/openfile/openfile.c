@@ -263,5 +263,5 @@ void *threads(void *thread_id_)
 	/* Close file handles and exit */
 	close_files(fd_list, numfiles);
 	unlink(filename);
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }

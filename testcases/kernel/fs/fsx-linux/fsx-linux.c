@@ -1086,7 +1086,7 @@ int getnum(char *s, char **e)
 {
 	int ret = -1;
 
-	*e = (char *)0;
+	*e = NULL;
 	ret = strtol(s, e, 0);
 	if (*e)
 		switch (**e) {
@@ -1126,7 +1126,7 @@ int main(int argc, char **argv)
 	page_size = getpagesize();
 	page_mask = page_size - 1;
 
-	setvbuf(stdout, (char *)0, _IOLBF, 0);	/* line buffered stdout */
+	setvbuf(stdout, NULL, _IOLBF, 0);	/* line buffered stdout */
 
 	while ((ch = getopt(argc, argv,
 			    "b:c:dl:m:no:p:qr:s:t:w:D:I:LN:OP:RS:W"))

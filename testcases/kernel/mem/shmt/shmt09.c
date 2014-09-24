@@ -100,7 +100,7 @@ int main()
 		tst_exit();
 	}
 
-	c1 = (char *)shmat(shmid, (void *)0, 0);
+	c1 = (char *)shmat(shmid, NULL, 0);
 	if (c1 == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL,

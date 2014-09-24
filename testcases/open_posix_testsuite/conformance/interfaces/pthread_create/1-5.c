@@ -136,7 +136,7 @@ void *overflow(void *arg)
 			output
 			    ("Growing up stack started below %p and we are currently up to %p\n",
 			     arg, &current);
-			return (void *)0;
+			return NULL;
 		}
 	} else {
 		/* the stack is growing down */
@@ -144,7 +144,7 @@ void *overflow(void *arg)
 			output
 			    ("Growing down stack started upon %p and we are currently down to %p\n",
 			     arg, &current);
-			return (void *)0;
+			return NULL;
 		}
 	}
 

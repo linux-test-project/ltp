@@ -27,9 +27,9 @@ int main(int argc, char **argv)
 		printf("Failed in forking, Errno = %d", errno);
 		exit(2);
 	} else if (pid == 0) {	/* child */
-		execl(argv[1], Prog, "0", argv[2], (char *)0);
+		execl(argv[1], Prog, "0", argv[2], NULL);
 	} else {		/* parent */
-		execl(argv[1], Prog, "1", argv[2], (char *)0);
+		execl(argv[1], Prog, "1", argv[2], NULL);
 	}
 
 	/*if (waitpid(pid, NULL, 0) != pid)

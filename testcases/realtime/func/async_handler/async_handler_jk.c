@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 	pass_criteria = PASS_US;
 	rt_init("h", parse_args, argc, argv);
 
-	aes_id = create_fifo_thread(async_event_server, (void *)0, 83);
+	aes_id = create_fifo_thread(async_event_server, NULL, 83);
 	server = get_thread(aes_id);
 
 	user_id =

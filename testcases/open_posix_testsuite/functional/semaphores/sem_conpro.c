@@ -62,7 +62,7 @@ int *producer(buf_t * buf)
 			pthread_exit((void *)1);
 		}
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int *consumer(buf_t * buf)

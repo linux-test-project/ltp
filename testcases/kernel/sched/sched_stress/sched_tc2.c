@@ -140,15 +140,15 @@ int main(int argc, char **argv)
 	 * Continuously multiply matrix as time permits...
 	 */
 	i = 0;
-	start_time = time((long *)0);
+	start_time = time(NULL);
 
 	if (debug)
 		printf("\n");
-	while ((time((long *)0) - start_time) < execution_time) {
+	while ((time(NULL) - start_time) < execution_time) {
 		if (debug) {
 			printf("\r\tmultiplying matrix [%d], time left: %ld",
 			       i++,
-			       execution_time - (time((long *)0) - start_time));
+			       execution_time - (time(NULL) - start_time));
 			fflush(stdout);
 		}
 		multiply_matrices();

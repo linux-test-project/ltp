@@ -52,7 +52,7 @@ static int child_fn(void *c1);
 
 int crtchild(char *s1, char *s2)
 {
-	char *cmd[] = { "--", s1, s2, (char *)0 };
+	char *cmd[] = { "--", s1, s2, NULL };
 	execve("/bin/sh", cmd, __environ);
 	fprintf(stderr, "Failed to execve(%s, %s): %m\n", s1, s2);
 	return 1;

@@ -211,7 +211,7 @@ int runtest(void)
 	/* allocate space for list of child pid's */
 
 	if ((pidlist = malloc((child_groups * NCHILD) * sizeof(int))) ==
-	    (int *)0) {
+	    NULL) {
 		tst_resm(TWARN, "\tMalloc failed (may be OK if under stress)");
 		tst_exit();
 	}

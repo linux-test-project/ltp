@@ -100,7 +100,7 @@ void *threaded(void *arg)
 
 	/* wait for the cond - bind the cond to the mutex m1 */
 	do {
-		if (arg == (void *)0)
+		if (arg == NULL)
 			ret = pthread_cond_wait(&(data.cnd), &(data.mtx1));
 		else
 			ret = pthread_cond_timedwait(&(data.cnd), &(data.mtx1),
@@ -135,7 +135,7 @@ void *threaded(void *arg)
 
 	/* wait for the cond - bind the cond to the mutex m2 */
 	do {
-		if (arg == (void *)0)
+		if (arg == NULL)
 			ret = pthread_cond_wait(&(data.cnd), &(data.mtx2));
 		else
 			ret = pthread_cond_timedwait(&(data.cnd), &(data.mtx2),

@@ -1024,7 +1024,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode,
 		 * cmd directly.
 		 */
 		if (strpbrk(c_cmdline, "\"';|<>$\\")) {
-			execlp("sh", "sh", "-c", c_cmdline, (char *)0);
+			execlp("sh", "sh", "-c", c_cmdline, NULL);
 			errlen = sprintf(errbuf,
 					 "pan(%s): execlp of '%s' (tag %s) failed.  errno:%d %s",
 					 panname, c_cmdline, colle->name, errno,

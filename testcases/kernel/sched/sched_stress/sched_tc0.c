@@ -138,15 +138,15 @@ int main(int argc, char **argv)
 	 * Continuously read through file as time permits...
 	 */
 	i = 0;
-	start_time = time((long *)0);
+	start_time = time(NULL);
 
 	if (debug)
 		printf("\n");
-	while ((time((long *)0) - start_time) < execution_time) {
+	while ((time(NULL) - start_time) < execution_time) {
 		if (debug) {
 			printf("\r\tprocessing file [%d], time left: %ld",
 			       i++,
-			       execution_time - (time((long *)0) - start_time));
+			       execution_time - (time(NULL) - start_time));
 			fflush(stdout);
 		}
 		process_file(filename);

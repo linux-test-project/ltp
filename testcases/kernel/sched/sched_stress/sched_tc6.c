@@ -229,7 +229,7 @@ int main(int argc, char **argv)
 			    ("parent waiting on child process %d to complete\n",
 			     pid);
 
-		while ((rc = wait((void *)0)) != pid)
+		while ((rc = wait(NULL)) != pid)
 			if (rc == -1)
 				sys_error("wait failed", __FILE__, __LINE__);
 /*

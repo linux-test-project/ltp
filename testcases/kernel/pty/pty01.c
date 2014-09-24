@@ -206,7 +206,7 @@ static void test2(void)
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
+	if (slavename == NULL) {
 		tst_brkm(TBROK | TERRNO, NULL, "ptsname() call failed");
 	}
 
@@ -267,7 +267,7 @@ static void test3(void)
 		tst_brkm(TBROK, NULL, MASTERCLONE);
 	}
 
-	if (ioctl(masterfd, TIOCGWINSZ, (char *)0) == 0) {
+	if (ioctl(masterfd, TIOCGWINSZ, NULL) == 0) {
 		tst_brkm(TFAIL | TERRNO, NULL,
 			 "trying TIOCGWINSZ on master with no open slave "
 			 "succeeded unexpectedly");
@@ -293,7 +293,7 @@ static void test4(void)
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
+	if (slavename == NULL) {
 		tst_resm(TBROK, "ptsname() call failed");
 		tst_exit();
 	}

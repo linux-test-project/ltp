@@ -245,7 +245,7 @@ void *shmat_shmdt(void *args)
 				STR_SHMAT, pthread_self(), fsize);
 		}
 
-		if ((map_address = shmat(shmid, (void *)0, 0))
+		if ((map_address = shmat(shmid, NULL, 0))
 		    == (void *)-1) {
 			fprintf(stderr, "shmat_shmat(): map address = %p\n",
 				map_address);
@@ -281,7 +281,7 @@ void *shmat_shmdt(void *args)
 			pthread_exit((void *)-1);
 		}
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 /******************************************************************************/
@@ -321,7 +321,7 @@ void *write_to_mem(void *args)
 		usleep(1);
 		sched_yield();
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 /******************************************************************************/
@@ -368,7 +368,7 @@ void *read_from_mem(void *args)
 		usleep(1);
 		sched_yield();
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 /******************************************************************************/

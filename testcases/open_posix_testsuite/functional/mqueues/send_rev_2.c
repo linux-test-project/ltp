@@ -50,7 +50,7 @@ int *send_1(void *mq)
 		printf("[%d] send '%s' in thread send_1. \n", i + 1,
 		       s_msg_ptr[i]);
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 
 }
 
@@ -68,7 +68,7 @@ int *send_2(void *mq)
 		printf("[%d] send '%s' in thread send_2. \n", i + 1,
 		       s_msg_ptr[i]);
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int *receive_1(void *mq)
@@ -85,7 +85,7 @@ int *receive_1(void *mq)
 		printf("[%d] receive '%s' in thread receive_1. \n", i + 1,
 		       r_msg_ptr_1[i]);
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int *receive_2(void *mq)
@@ -102,7 +102,7 @@ int *receive_2(void *mq)
 		printf("[%d] receive '%s' in thread receive_2. \n", i + 1,
 		       r_msg_ptr_2[i]);
 	}
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[])

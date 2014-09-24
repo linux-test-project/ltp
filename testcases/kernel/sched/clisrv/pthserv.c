@@ -179,5 +179,5 @@ void *new_thread(void *arg_)
 #else
 	sched_yield();
 #endif
-	pthread_exit((void *)0);
+	pthread_exit(NULL);
 }

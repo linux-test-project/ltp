@@ -66,7 +66,7 @@ int main(void)
 	alternate_s.ss_flags = 0;
 	alternate_s.ss_size = SIGSTKSZ;
 
-	if (sigaltstack(&alternate_s, (stack_t *) 0) == -1) {
+	if (sigaltstack(&alternate_s, NULL) == -1) {
 		perror
 		    ("Unexpected error while attempting to setup test pre-conditions");
 		return PTS_UNRESOLVED;

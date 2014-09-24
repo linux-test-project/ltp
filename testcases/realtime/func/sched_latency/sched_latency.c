@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
 
 	/* wait one quarter second to execute */
 	start = rt_gettime() + 250 * NS_PER_MS;
-	per_id = create_fifo_thread(periodic_thread, (void *)0, PRIO);
+	per_id = create_fifo_thread(periodic_thread, NULL, PRIO);
 
 	join_thread(per_id);
 	join_threads();

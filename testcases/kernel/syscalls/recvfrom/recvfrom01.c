@@ -305,8 +305,8 @@ void do_child(void)
 
 		memcpy(&rfds, &afds, sizeof(rfds));
 
-		if (select(nfds, &rfds, (fd_set *) 0, (fd_set *) 0,
-			   (struct timeval *)0) < 0)
+		if (select(nfds, &rfds, NULL, NULL,
+			   NULL) < 0)
 			if (errno != EINTR)
 				exit(1);
 		if (FD_ISSET(sfd, &rfds)) {

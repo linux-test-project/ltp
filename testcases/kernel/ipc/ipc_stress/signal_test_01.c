@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 	if (sigaltstack(&stack, NULL) < 0)
 		sys_error("sigaltstack failed", __LINE__);
 #else
-	if (sigstack(&stack, (struct sigstack *)0) < 0)
+	if (sigstack(&stack, NULL) < 0)
 		sys_error("sigstack failed", __LINE__);
 #endif
 	/*
@@ -307,7 +307,7 @@ void init_sig_vec()
 		//sigaction.sa_mask = 0;
 		invec.sa_flags = 0;
 
-		if (sigaction(i, &invec, (struct sigaction *)0)) {
+		if (sigaction(i, &invec, NULL)) {
 			sprintf(errmsg,
 				"init_sig_vec: sigaction failed on signal (%d)",
 				i);
@@ -337,7 +337,7 @@ void init_sig_vec()
 #else
 		invec.sv_onstack = 1;
 #endif
-		if (sigvec(i, &invec, (struct sigvec *)0)) {
+		if (sigvec(i, &invec, NULL)) {
 			sprintf(errmsg,
 				"init_sig_vec: sigvec failed on signal (%d)",
 				i);

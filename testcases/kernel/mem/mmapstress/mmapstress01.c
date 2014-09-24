@@ -719,7 +719,7 @@ unsigned int initrand(void)
 	 */
 	srand((unsigned int)getpid());
 	seed = rand();
-	srand((unsigned int)time((time_t *) 0));
+	srand((unsigned int)time(NULL));
 	seed = (seed ^ rand()) % 100000;
 	srand48((long int)seed);
 	return (seed);
