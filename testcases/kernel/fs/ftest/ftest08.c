@@ -94,7 +94,7 @@ int main(int ac, char *av[])
 	const char *msg;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
