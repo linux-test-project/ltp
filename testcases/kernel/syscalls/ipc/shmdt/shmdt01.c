@@ -106,7 +106,7 @@ int main(int ac, char **av)
 		}
 
 		/* reattach the shared memory segment in case we are looping */
-		shared = (int *)shmat(shm_id_1, 0, 0);
+		shared = shmat(shm_id_1, 0, 0);
 
 		if (shared == (void *)-1) {
 			tst_brkm(TBROK, cleanup, "memory reattach failed");
@@ -201,7 +201,7 @@ void setup(void)
 	}
 
 	/* attach the shared memory segment */
-	shared = (int *)shmat(shm_id_1, 0, 0);
+	shared = shmat(shm_id_1, 0, 0);
 
 	if (shared == (void *)-1) {
 		tst_brkm(TBROK, cleanup, "Couldn't attach shared memory");

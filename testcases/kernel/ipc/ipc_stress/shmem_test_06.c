@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 
 		printf("\n\tAttach shared memory segment to process\n");
 
-		if ((long)(shmptr[i] = (char *)shmat(shmid[i], NULL, 0)) == -1) {
+		if ((long)(shmptr[i] = shmat(shmid[i], NULL, 0)) == -1) {
 			/* If shmat(2) failed, we need the currect process address
 			   space layout to debug. The failure can be random. */
 			sprintf(tmpstr, "cat /proc/%d/maps >&2", (int)getpid());

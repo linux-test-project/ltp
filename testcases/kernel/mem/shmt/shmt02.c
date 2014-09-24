@@ -76,7 +76,7 @@ int main()
 
 /*----------------------------------------------------------------*/
 
-	cp = (char *)shmat(shmid, NULL, 0);
+	cp = shmat(shmid, NULL, 0);
 
 	if (cp == (char *)-1) {
 		perror("shmat");

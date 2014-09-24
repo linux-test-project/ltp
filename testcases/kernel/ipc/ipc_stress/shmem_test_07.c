@@ -277,7 +277,7 @@ int main(int argc, char **argv)
 		if ((shmid[j] = shmget(IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
 			sys_error("read_count shmget failed", __LINE__);
 
-		if ((long)(read_count[i] = (int *)shmat(shmid[j], 0, 0)) == -1)
+		if ((long)(read_count[i] = shmat(shmid[j], 0, 0)) == -1)
 			sys_error("shmat failed", __LINE__);
 
 		*(read_count[i]) = 0;
@@ -293,7 +293,7 @@ int main(int argc, char **argv)
 		if ((shmid[j] = shmget(IPC_PRIVATE, Size, SHMEM_MODE)) < 0)
 			sys_error("checksum shmget failed", __LINE__);
 
-		if ((long)(checksum[i] = (unsigned long *)shmat(shmid[j], 0, 0))
+		if ((long)(checksum[i] = shmat(shmid[j], 0, 0))
 		    == -1)
 			sys_error("shmat failed", __LINE__);
 

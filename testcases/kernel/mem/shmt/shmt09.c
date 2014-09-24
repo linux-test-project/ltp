@@ -100,7 +100,7 @@ int main()
 		tst_exit();
 	}
 
-	c1 = (char *)shmat(shmid, NULL, 0);
+	c1 = shmat(shmid, NULL, 0);
 	if (c1 == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL,
@@ -121,7 +121,7 @@ int main()
 		tst_exit();
 	}
 	vp = (void *)((char *)sbrk(0) - 2 * K_1);
-	c2 = (char *)shmat(shmid, vp, 0);
+	c2 = shmat(shmid, vp, 0);
 	if (c2 != (char *)-1) {
 		tst_resm(TFAIL,
 			 "ERROR: shmat: succeeded!: shmid = %d, shmaddr = %p, "
@@ -149,7 +149,7 @@ int main()
 	vp = (void *)SHMALIGN((char *)sbrk(0) + 1);
 #endif
 
-	c3 = (char *)shmat(shmid, vp, SHM_RND);
+	c3 = shmat(shmid, vp, SHM_RND);
 	if (c3 == (char *)-1) {
 		perror("shmat1");
 		tst_resm(TFAIL,

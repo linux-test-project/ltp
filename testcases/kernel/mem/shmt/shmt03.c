@@ -77,7 +77,7 @@ int main()
 
 /*------------------------------------------------------------*/
 
-	if ((cp1 = (char *)shmat(shmid, NULL, 0)) == (char *)-1) {
+	if ((cp1 = shmat(shmid, NULL, 0)) == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d\n",
 			 shmid, errno);
@@ -91,7 +91,7 @@ int main()
 
 /*------------------------------------------------------------*/
 
-	if ((cp2 = (char *)shmat(shmid, NULL, 0)) == (char *)-1) {
+	if ((cp2 = shmat(shmid, NULL, 0)) == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d\n",
 			 shmid, errno);

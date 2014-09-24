@@ -118,7 +118,7 @@ int main(int ac, char **av)
 				 "Failed to setup shared memory");
 		}
 
-		if (*(flag = (int *)shmat(shmid1, 0, 0)) == -1) {
+		if (*(flag = shmat(shmid1, 0, 0)) == -1) {
 			tst_brkm(TBROK, cleanup,
 				 "Failed to attatch shared memory:%d", *flag);
 		}

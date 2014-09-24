@@ -199,7 +199,7 @@ static void *shmat_rd_wr(void *args)
 			"success got segment id %d\n", getpid(), shm_id);
 
 		/* get shared memory segment */
-		if ((shmat_addr = (char *)shmat(shm_id, NULL, 0)) == (void *)-1) {
+		if ((shmat_addr = shmat(shm_id, NULL, 0)) == (void *)-1) {
 			rm_shared_mem(shm_id, shmat_addr, 0);
 			fprintf(stderr,
 				"pid[%d]: do_shmat_shmadt(): shmat_addr = %#lx\n",

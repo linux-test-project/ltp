@@ -77,7 +77,7 @@ int main(void)
 			 "Error: shmget: shmid = %d, errno = %d\n",
 			 shmid, errno);
 	} else {
-		cp = (char *)shmat(shmid, NULL, 0);
+		cp = shmat(shmid, NULL, 0);
 
 		if (cp == (char *)-1) {
 			tst_resm(TFAIL, "shmat");
@@ -95,7 +95,7 @@ int main(void)
 			 "Error: shmget: shmid1 = %d, errno = %d\n",
 			 shmid1, errno);
 	} else {
-		cp1 = (char *)shmat(shmid1, cp + (SIZE / 2), 0);
+		cp1 = shmat(shmid1, cp + (SIZE / 2), 0);
 		if (cp1 != (char *)-1) {
 			perror("shmat");
 			tst_resm(TFAIL,

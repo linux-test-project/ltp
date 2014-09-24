@@ -95,7 +95,7 @@ int main()
 		 */
 		(void)kill(pid, SIGINT);
 	} else {
-		cp = (char *)shmat(shmid, NULL, 0);
+		cp = shmat(shmid, NULL, 0);
 
 		if (cp == (char *)-1) {
 			perror("shmat");
@@ -158,7 +158,7 @@ int child()
 			 "Error: shmget: errno=%d, shmid=%d, child_pid=%d\n",
 			 errno, shmid, chld_pid);
 	} else {
-		cp = (char *)shmat(shmid, NULL, 0);
+		cp = shmat(shmid, NULL, 0);
 
 		if (cp == (char *)-1) {
 			perror("shmat:child process");
@@ -184,7 +184,7 @@ int child()
 		 * Attach the segment to a different addresse
 		 * and verify it's contents again.
 		 */
-		cp = (char *)shmat(shmid, NULL, 0);
+		cp = shmat(shmid, NULL, 0);
 
 		if (cp == (char *)-1) {
 			perror("shmat:child process");

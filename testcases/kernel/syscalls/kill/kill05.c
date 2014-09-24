@@ -236,7 +236,7 @@ void setup(void)
 	if ((shmid1 = shmget(semkey, getpagesize(), 0666 | IPC_CREAT)) == -1)
 		tst_brkm(TBROK, cleanup, "Failed to setup shared memory");
 
-	if ((flag = (int *)shmat(shmid1, 0, 0)) == (int *)-1)
+	if ((flag = shmat(shmid1, 0, 0)) == (int *)-1)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "Failed to attach shared memory:%d", shmid1);
 }

@@ -746,7 +746,7 @@ void setup_shm(void)
 
 	/* allocate shared memory */
 
-	if ((shmad = (Pinfo *) shmat(shmid, (char *)shmad, 0)) == MAP_FAILED) {
+	if ((shmad = shmat(shmid, (char *)shmad, 0)) == MAP_FAILED) {
 		printf("SEVERE : shmat failed\n");
 		exit(1);
 	} else {
