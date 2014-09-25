@@ -121,11 +121,16 @@ int main(int ac, char **av)
 
 	switch ((type = tst_fs_type(cleanup, "."))) {
 	case TST_NFS_MAGIC:
+		if (tst_kvercmp(2, 6, 18) < 0)
+			tst_brkm(TCONF, cleanup, "Cannot do utime on a file"
+				" on %s filesystem before 2.6.18",
+				 tst_fs_type_name(type));
+		break;
 	case TST_V9FS_MAGIC:
 		tst_brkm(TCONF, cleanup,
 			 "Cannot do utime on a file on %s filesystem",
 			 tst_fs_type_name(type));
-	break;
+		break;
 	}
 
 	/* set the expected errnos... */

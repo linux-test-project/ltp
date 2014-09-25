@@ -147,8 +147,9 @@ static void setup(void)
 	tst_tmpdir();
 
 	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC) {
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do tee on a file on NFS filesystem");
+		if ((tst_kvercmp(2, 6, 32)) < 0)
+			tst_brkm(TCONF, cleanup, "Cannot do tee on a file"
+				" on NFS filesystem before 2.6.32");
 	}
 
 	for (i = 0; i < TEST_BLOCK_SIZE; i++)
