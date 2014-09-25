@@ -969,6 +969,15 @@ void catch1(int sig)
 	got1++;
 }
 
+static void testcheck_end(int check_fail, char *msg)
+{
+	if (check_fail) {
+		tst_resm(TFAIL, "%s FAILED", msg);
+	} else {
+		tst_resm(TPASS, "%s PASSED", msg);
+	}
+}
+
 int main(int ac, char **av)
 {
 	int lc;
@@ -1009,20 +1018,11 @@ int main(int ac, char **av)
 		 * mandatory locking
 		 */
 		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 0, 0, 36);
-		if (fail) {
-			tst_resm(TFAIL, "Block 1, test 1 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 1, test 1 PASSED");
-		}
+		testcheck_end(fail, "Block 1, test 1");
 
 		/* Now try with negative values for L_start and L_len */
 		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 5, 36, 45);
-
-		if (fail) {
-			tst_resm(TFAIL, "Block 1, test 2 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 1, test 2 PASSED");
-		}
+		testcheck_end(fail, "Block 1, test 2");
 
 		tst_resm(TINFO, "Exit block 1");
 
@@ -1035,20 +1035,12 @@ int main(int ac, char **av)
 		 */
 		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
 			       S_IWUSR, 0, 0, 36);
-		if (fail) {
-			tst_resm(TFAIL, "Block 2, test 1 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 2, test 1 PASSED");
-		}
+		testcheck_end(fail, "Block 2, test 1");
 
 		/* Now try negative values for L_start and L_len */
 		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
 			       S_IWUSR, 5, 36, 45);
-		if (fail) {
-			tst_resm(TFAIL, "Block 2, test 2 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 2, test 2 PASSED");
-		}
+		testcheck_end(fail, "Block 2, test 2");
 
 		tst_resm(TINFO, "Exit block 2");
 
@@ -1094,13 +1086,7 @@ int main(int ac, char **av)
 		close(fd);
 		unlink(tmpname);
 
-		if (fail) {
-			tst_resm(TINFO, "Test with mandatory "
-				 "locking FAILED");
-		} else {
-			tst_resm(TINFO, "Test with mandatory "
-				 "locking PASSED");
-		}
+		testcheck_end(fail, "Test with negative whence locking");
 		tst_resm(TINFO, "Exit block 3");
 
 /* //block4: */
@@ -1223,11 +1209,7 @@ int main(int ac, char **av)
 		close(fd);
 		unlink(tmpname);
 
-		if (fail) {
-			tst_resm(TINFO, "Test of locks on file FAILED");
-		} else {
-			tst_resm(TINFO, "Test of locks on file PASSED");
-		}
+		testcheck_end(fail, "Test of locks on file");
 		tst_resm(TINFO, "Exit block 4");
 	}
 	cleanup();
