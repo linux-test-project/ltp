@@ -546,6 +546,7 @@ void catch_alarm(int sig);
 
 char *TCID = "fcntl14";
 int TST_TOTAL = 1;
+int NO_NFS = 1;
 
 #ifdef UCLINUX
 static char *argv0;		/* Set by main(), passed to self_exec() */
@@ -1000,10 +1001,9 @@ int main(int ac, char **av)
 
 	setup();		/* global setup */
 
-	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC) {
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do fcntl on a file on NFS filesystem");
-	}
+	/* Check if test on NFS or not*/
+	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC)
+		NO_NFS = 0;
 
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -1027,21 +1027,29 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exit block 1");
 
 /* //block2: */
-		tst_resm(TINFO, "Enter block 2: with mandatory locking");
-		fail = 0;
 		/*
-		 * Try various locks on a file with mandatory record locking
-		 * this should behave the same as an ordinary file
+		 * Skip block2 if test on NFS, since NFS does not support
+		 * mandatory locking
 		 */
-		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
-			       S_IWUSR, 0, 0, 36);
-		testcheck_end(fail, "Block 2, test 1");
+		tst_resm(TINFO, "Enter block 2: with mandatory locking");
+		if (NO_NFS) {
+			fail = 0;
+			/*
+			 * Try various locks on a file with mandatory
+			 * record locking this should behave the same
+			 * as an ordinary file
+			 */
+			(void)run_test(O_CREAT | O_RDWR | O_TRUNC,
+				S_ENFMT | S_IRUSR | S_IWUSR, 0, 0, 36);
+			testcheck_end(fail, "Block 2, test 1");
 
-		/* Now try negative values for L_start and L_len */
-		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
-			       S_IWUSR, 5, 36, 45);
-		testcheck_end(fail, "Block 2, test 2");
-
+			/* Now try negative values for L_start and L_len */
+			(void)run_test(O_CREAT | O_RDWR | O_TRUNC,
+				S_ENFMT | S_IRUSR | S_IWUSR, 5, 36, 45);
+			testcheck_end(fail, "Block 2, test 2");
+		} else
+			tst_resm(TCONF, "Skip block 2 as NFS does not"
+				" support mandatory locking");
 		tst_resm(TINFO, "Exit block 2");
 
 /* //block3: */
