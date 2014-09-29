@@ -40,7 +40,7 @@ ext4_test_remount()
 		return
 	fi
 
-	ffsb ffsb-config0 > /dev/null
+	ffsb $LTPROOT/testcases/data/ext4-ffsb/ffsb-config0 > /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "ffsb returned failure"
 		umount mnt_point
@@ -92,7 +92,7 @@ ext4_test_delalloc_mballoc()
 		return
 	fi
 
-	ffsb ffsb-config$2 > /dev/null
+	ffsb $LTPROOT/testcases/data/ext4-ffsb/ffsb-config$2 > /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "ffsb returned failure"
 		umount mnt_point

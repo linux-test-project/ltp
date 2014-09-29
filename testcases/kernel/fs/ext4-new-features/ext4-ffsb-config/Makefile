@@ -20,6 +20,7 @@ top_srcdir              ?= ../../../../..
 include $(top_srcdir)/include/mk/testcases.mk
 
 MAKE_TARGETS		:=
+INSTALL_DIR	:= testcases/data/ext4-ffsb/
 INSTALL_TARGETS		?= ffsb-config[0-7]
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
