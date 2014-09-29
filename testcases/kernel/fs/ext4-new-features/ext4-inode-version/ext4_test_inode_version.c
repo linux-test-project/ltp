@@ -41,7 +41,7 @@ int get_inode_version(void)
 {
 	char buf[1024];
 
-	sprintf(buf, "./ext4_get_inode_version.sh %s 1", filename);
+	sprintf(buf, "ext4_get_inode_version.sh %s 1", filename);
 
 	/* sync before run debugfs to get inode version */
 	sync();
