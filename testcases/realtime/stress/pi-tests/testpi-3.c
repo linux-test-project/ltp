@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
 
 	printf("Start %s\n", argv[0]);
 
-#if HAVE_DECL_PTHREAD_PRIO_INHERIT
+#if HAS_PRIORITY_INHERIT
 	if (!nopi) {
 		pthread_mutexattr_t mutexattr;
 		int protocol;

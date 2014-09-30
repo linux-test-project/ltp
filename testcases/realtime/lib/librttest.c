@@ -586,7 +586,7 @@ void *busy_work_us(int us)
 
 void init_pi_mutex(pthread_mutex_t * m)
 {
-#if HAVE_DECL_PTHREAD_PRIO_INHERIT
+#if HAS_PRIORITY_INHERIT
 	pthread_mutexattr_t attr;
 	int ret;
 	int protocol;
