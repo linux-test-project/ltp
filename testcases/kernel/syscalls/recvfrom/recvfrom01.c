@@ -115,9 +115,14 @@ struct test_case_t {		/* test case structure */
 		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"},
 /* 6 */
 	{
-	PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), -1,
+	PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), MSG_OOB,
 		    (struct sockaddr *)&from, &fromlen,
-		    -1, EINVAL, setup1, cleanup1, "invalid flags set"},};
+		    -1, EINVAL, setup1, cleanup1, "invalid MSG_OOB flag set"},
+/* 7 */
+	{
+	PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), MSG_ERRQUEUE,
+		    (struct sockaddr *)&from, &fromlen,
+		    -1, EAGAIN, setup1, cleanup1, "invalid MSG_ERRQUEUE flag set"},};
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
