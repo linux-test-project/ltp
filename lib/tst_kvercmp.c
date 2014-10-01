@@ -47,10 +47,13 @@ void get_kver(int *k1, int *k2, int *k3)
 	r1 = strsep(&kver, ".");
 	r2 = strsep(&kver, ".");
 	r3 = strsep(&kver, ".");
-
 	*k1 = atoi(r1);
 	*k2 = atoi(r2);
-	*k3 = atoi(r3);
+
+	if (r3)
+		*k3 = atoi(r3);
+	else
+		*k3 = 0;
 }
 
 int tst_kvercmp(int r1, int r2, int r3)
