@@ -50,6 +50,7 @@ sem_nstest_unshare sem_nstest unshare
 semtest_2ns_none semtest_2ns none
 semtest_2ns_clone semtest_2ns clone
 semtest_2ns_unshare semtest_2ns unshare
+sem_comm sem_comm
 
 utstest_unshare_1 utstest unshare 1
 utstest_unshare_2 utstest unshare 2
