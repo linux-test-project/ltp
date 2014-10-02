@@ -5,3 +5,4 @@
 /netns_par_chld_ipv6
 /netns_sysfsview
 /netns_two_children_ns
+/netns_netlink

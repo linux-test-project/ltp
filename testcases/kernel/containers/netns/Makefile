@@ -31,7 +31,7 @@ LDLIBS			+= -lclone
 MAKE_TARGETS		:= netns_create_container netns_crtchild \
 			   netns_crtchild_delchild netns_par_chld_ftp \
 			   netns_par_chld_ipv6 netns_sysfsview \
-			   netns_two_children_ns
+			   netns_two_children_ns netns_netlink
 
 $(MAKE_TARGETS): %: common.o %.o
 
