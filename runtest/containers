@@ -43,6 +43,7 @@ shm_comm shm_comm
 mesgq_nstest_none mesgq_nstest none
 mesgq_nstest_clone mesgq_nstest clone
 mesgq_nstest_unshare mesgq_nstest unshare
+msg_comm msg_comm
 sem_nstest_none sem_nstest none
 sem_nstest_clone sem_nstest clone
 sem_nstest_unshare sem_nstest unshare
