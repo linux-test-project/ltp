@@ -39,6 +39,7 @@ shmnstest_unshare shmnstest unshare
 shmem_2nstest_none shmem_2nstest none
 shmem_2nstest_clone shmem_2nstest clone
 shmem_2nstest_unshare shmem_2nstest unshare
+shm_comm shm_comm
 mesgq_nstest_none mesgq_nstest none
 mesgq_nstest_clone mesgq_nstest clone
 mesgq_nstest_unshare mesgq_nstest unshare
