@@ -180,13 +180,26 @@ IMPORTANT: The runtest files should have one entry per a test. Creating a
 2.1.2 Datafiles
 ^^^^^^^^^^^^^^^
 
-If your test needs datafiles to work, these should be generally put into a
-subdirectory named test name ('TCID' see below) and install it into the
-'testcases/data/' directory. The datafiles can be accessed as
-'$LTPROOT/testcases/data/TCID/...'. See
-'testcases/network/rpc/basic_tests/rpc01/' for example.
+If your test needs datafiles to work, these should be put into a subdirectory
+named "datafiles" and installed into the 'testcases/data/$TCID' directory.
 
-NOTE: There may be some convenience interface added later.
+You can obtain path to datafiles via $LTP_DATAROOT provided by test.sh
+  '$LTP_DATAROOT/...'
+or via C function tst_dataroot() provided by libltp
+  const char *dataroot = tst_dataroot();
+
+Datafiles can also be accessed as '$LTPROOT/testcases/data/$TCID/...',
+but $LTP_DATAROOT and tst_dataroot() are preffered as these can be used
+when running testcases directly in git tree as well as from install
+location.
+
+The path is constructed according to these rules:
+1. if $LTPROOT is set, return '$LTPROOT/testcases/data/$TCID'
+2. else if tst_tmpdir() was called return '$STARTWD/datafiles'
+   (where $STARTWD is initial working directory as recorded by tst_tmdir())
+3. else return '$CWD/datafiles'
+
+See 'testcases/commands/ade/ldd/ldd01' for example.
 
 2.1.3 Subexecutables
 ^^^^^^^^^^^^^^^^^^^^

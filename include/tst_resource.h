@@ -41,6 +41,8 @@
 
 #include "test.h"
 
+const char *tst_dataroot(void);
+
 /*
  * Copy a file to the CWD. The destination is apended to CWD.
  */

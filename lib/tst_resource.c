@@ -21,8 +21,60 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <pthread.h>
 #include "tst_resource.h"
 #include "ltp_priv.h"
+
+#ifndef PATH_MAX
+#ifdef MAXPATHLEN
+#define PATH_MAX	MAXPATHLEN
+#else
+#define PATH_MAX	1024
+#endif
+#endif
+
+static pthread_mutex_t tmutex = PTHREAD_MUTEX_INITIALIZER;
+static char dataroot[PATH_MAX];
+extern char *TCID;
+
+static void tst_dataroot_init(void)
+{
+	const char *ltproot = getenv("LTPROOT");
+	char curdir[PATH_MAX];
+	const char *startdir;
+	int ret;
+
+	/* 1. if LTPROOT is set, use $LTPROOT/testcases/data/$TCID
+	 * 2. else if startwd is set by tst_tmdir(), use $STARWD/datafiles
+	 * 3. else use $CWD/datafiles */
+	if (ltproot) {
+		ret = snprintf(dataroot, PATH_MAX, "%s/testcases/data/%s",
+			ltproot, TCID);
+	} else {
+		startdir = tst_get_startwd();
+		if (startdir[0] == 0) {
+			if (getcwd(curdir, PATH_MAX) == NULL)
+				tst_brkm(TBROK | TERRNO, NULL,
+					"tst_dataroot getcwd");
+			startdir = curdir;
+		}
+		ret = snprintf(dataroot, PATH_MAX, "%s/datafiles", startdir);
+	}
+
+	if (ret < 0 || ret >= PATH_MAX)
+		tst_brkm(TBROK, NULL, "tst_dataroot snprintf: %d", ret);
+}
+
+const char *tst_dataroot(void)
+{
+	if (dataroot[0] == 0) {
+		pthread_mutex_lock(&tmutex);
+		if (dataroot[0] == 0)
+			tst_dataroot_init();
+		pthread_mutex_unlock(&tmutex);
+	}
+	return dataroot;
+}
 
 static int file_copy(const char *file, const int lineno,
                      void (*cleanup_fn)(void), const char *path,
@@ -56,15 +108,15 @@ void tst_resource_copy(const char *file, const int lineno,
 		dest = ".";
 
 	const char *ltproot = getenv("LTPROOT");
+	const char *dataroot = tst_dataroot();
+
+	/* look for data files in $LTP_DATAROOT, $LTPROOT/testcases/bin
+	 * and $CWD */
+	if (file_copy(file, lineno, cleanup_fn, dataroot, filename, dest))
+		return;
 
 	if (ltproot != NULL) {
-		/* the data are either in testcases/data or testcases/bin */
 		char buf[strlen(ltproot) + 64];
-
-		snprintf(buf, sizeof(buf), "%s/testcases/data", ltproot);
-
-		if (file_copy(file, lineno, cleanup_fn, buf, filename, dest))
-			return;
 		
 		snprintf(buf, sizeof(buf), "%s/testcases/bin", ltproot);
 		
@@ -72,9 +124,8 @@ void tst_resource_copy(const char *file, const int lineno,
 			return;
 	}
 
+	/* try directory test started in as last resort */
 	const char *startwd = tst_get_startwd();
-
-	/* try directory test started int first */
 	if (file_copy(file, lineno, cleanup_fn, startwd, filename, dest))
 		return;
 

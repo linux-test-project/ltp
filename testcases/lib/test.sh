@@ -144,4 +144,7 @@ export TST_TOTAL="$TST_TOTAL"
 # Setup LTPROOT, default to current directory if not set
 if [ -z "$LTPROOT" ]; then
 	export LTPROOT="$PWD"
+	export LTP_DATAROOT="$LTPROOT/datafiles"
+else
+	export LTP_DATAROOT="$LTPROOT/testcases/data/$TCID"
 fi
