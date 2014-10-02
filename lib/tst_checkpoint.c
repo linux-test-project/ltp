@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Cyril Hrubis chrubis@suse.cz
+ * Copyright (C) 2014 Matus Marhefka mmarhefk@redhat.com
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -70,6 +71,9 @@ int open_wronly_timed(const char *path, unsigned int timeout)
 void tst_checkpoint_init(const char *file, const int lineno,
                          struct tst_checkpoint *self)
 {
+	static unsigned int fifo_counter = 0;
+	int rval;
+
 	if (!tst_tmpdir_created()) {
 		tst_brkm(TBROK, NULL, "Checkpoint could be used only in test "
 		                      "temporary directory at %s:%d",
@@ -77,15 +81,20 @@ void tst_checkpoint_init(const char *file, const int lineno,
 	}
 	
 	/* default values */
+	rval = snprintf(self->file, TST_FIFO_LEN, "tst_checkopoint_fifo_%u",
+			fifo_counter++);
+	if (rval < 0) {
+		tst_brkm(TBROK, NULL,
+			 "Failed to create a unique temp file name at %s:%d",
+			 file, lineno);
+	}
 	self->retval = 1;
 	self->timeout = 5000;
 
-	unlink(TST_CHECKPOINT_FIFO);
-
-	if (mkfifo(TST_CHECKPOINT_FIFO, 0666)) {
+	if (mkfifo(self->file, 0666)) {
 		tst_brkm(TBROK | TERRNO, NULL,
 		         "Failed to create fifo '%s' at %s:%d",
-		         TST_CHECKPOINT_FIFO, file, lineno);
+		         self->file, file, lineno);
 	}
 }
 
@@ -97,12 +106,12 @@ void tst_checkpoint_parent_wait(const char *file, const int lineno,
 	char ch;
 	struct pollfd fd;
 
-	fd.fd = open(TST_CHECKPOINT_FIFO, O_RDONLY | O_NONBLOCK);
+	fd.fd = open(self->file, O_RDONLY | O_NONBLOCK);
 
 	if (fd.fd < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 		         "Failed to open fifo '%s' at %s:%d",
-		         TST_CHECKPOINT_FIFO, file, lineno);
+		         self->file, file, lineno);
 	}
 
 	fd.events = POLLIN;
@@ -121,7 +130,7 @@ void tst_checkpoint_parent_wait(const char *file, const int lineno,
 	default:
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 		         "Poll failed for fifo '%s' at %s:%d",
-			 TST_CHECKPOINT_FIFO, file, lineno);
+			 self->file, file, lineno);
 	}
 
 	ret = read(fd.fd, &ch, 1);
@@ -157,11 +166,11 @@ void tst_checkpoint_child_wait(const char *file, const int lineno,
 	int ret, fd;
 	char ch;
 
-	fd = open(TST_CHECKPOINT_FIFO, O_RDONLY);
+	fd = open(self->file, O_RDONLY);
 
 	if (fd < 0) {
 		fprintf(stderr, "CHILD: Failed to open fifo '%s': %s at "
-		        "%s:%d\n", TST_CHECKPOINT_FIFO, strerror(errno),
+		        "%s:%d\n", self->file, strerror(errno),
 		        file, lineno);
 		exit(self->retval);
 	}
@@ -170,7 +179,7 @@ void tst_checkpoint_child_wait(const char *file, const int lineno,
 
 	if (ret == -1) {
 		fprintf(stderr, "CHILD: Failed to read from fifo '%s': %s "
-		        "at %s:%d\n", TST_CHECKPOINT_FIFO, strerror(errno),
+		        "at %s:%d\n", self->file, strerror(errno),
 		        file, lineno);
 		goto err;
 	}
@@ -193,11 +202,11 @@ void tst_checkpoint_signal_parent(const char *file, const int lineno,
 {
 	int ret, fd;
 	
-	fd = open(TST_CHECKPOINT_FIFO, O_WRONLY);
+	fd = open(self->file, O_WRONLY);
 
 	if (fd < 0) {
 		fprintf(stderr, "CHILD: Failed to open fifo '%s': %s at %s:%d",
-		        TST_CHECKPOINT_FIFO, strerror(errno), file, lineno);
+		        self->file, strerror(errno), file, lineno);
 		exit(self->retval);
 	}
 
@@ -229,12 +238,12 @@ void tst_checkpoint_signal_child(const char *file, const int lineno,
 {
 	int ret, fd;
 	
-	fd = open_wronly_timed(TST_CHECKPOINT_FIFO, self->timeout);
+	fd = open_wronly_timed(self->file, self->timeout);
 
 	if (fd < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 		         "Failed to open fifo '%s' at %s:%d",
-		         TST_CHECKPOINT_FIFO, file, lineno);
+		         self->file, file, lineno);
 	}
 
 	ret = write(fd, "p", 1);
