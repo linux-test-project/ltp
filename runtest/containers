@@ -29,6 +29,8 @@ netns_crtchild_delchild netns_crtchild_delchild
 netns_par_chld_ipv6 netns_par_chld_ipv6
 netns_par_chld_ftp netns_par_chld_ftp.sh
 netns_netlink netns_netlink
+netns_devices netns_devices.sh
+netns_devices2 netns_devices2.sh
 
 shmnstest_none shmnstest none
 shmnstest_clone shmnstest clone
