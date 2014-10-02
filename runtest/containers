@@ -57,3 +57,4 @@ utstest_clone_4 utstest clone 4
 utstest_clone_5 utstest clone 5
 
 mountns01 mountns01
+mountns02 mountns02
