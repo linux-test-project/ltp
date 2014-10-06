@@ -51,10 +51,16 @@ struct tst_checkpoint {
  * Checkpoint initializaton, must be done first.
  */
 #define TST_CHECKPOINT_INIT(self) \
-        tst_checkpoint_init(__FILE__, __LINE__, self)
+	tst_checkpoint_init(__FILE__, __LINE__, self)
 
 void tst_checkpoint_init(const char *file, const int lineno,
-                         struct tst_checkpoint *self);
+			 struct tst_checkpoint *self);
+
+#define TST_CHECKPOINT_CREATE(self) \
+	tst_checkpoint_create(__FILE__, __LINE__, self)
+
+void tst_checkpoint_create(const char *file, const int lineno,
+			   struct tst_checkpoint *self);
 
 /*
  * Wait called from parent. In case parent waits for child.

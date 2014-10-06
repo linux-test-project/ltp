@@ -240,7 +240,7 @@ static void setup(void)
 {
 	TEST_PAUSE;
 	tst_tmpdir();
-	TST_CHECKPOINT_INIT(&checkpoint);
+	TST_CHECKPOINT_CREATE(&checkpoint);
 }
 
 static void cleanup(void)

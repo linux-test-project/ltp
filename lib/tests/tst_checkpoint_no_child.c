@@ -39,7 +39,7 @@ int main(void)
 
 	tst_tmpdir();
 
-	TST_CHECKPOINT_INIT(&checkpoint);
+	TST_CHECKPOINT_CREATE(&checkpoint);
 	TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint);
 	fprintf(stderr, "Parent: checkpoint reached\n");
 

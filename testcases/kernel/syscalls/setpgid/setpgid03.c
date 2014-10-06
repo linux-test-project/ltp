@@ -155,7 +155,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	TST_CHECKPOINT_INIT(&checkpoint);
+	TST_CHECKPOINT_CREATE(&checkpoint);
 	checkpoint.timeout = 10000;
 
 	umask(0);

@@ -186,7 +186,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	TST_CHECKPOINT_INIT(&checkpoint);
+	TST_CHECKPOINT_CREATE(&checkpoint);
 
 	fd = creat(FILE_NAME, 0666);
 	if (fd < 0) {

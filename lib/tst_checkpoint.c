@@ -74,12 +74,6 @@ void tst_checkpoint_init(const char *file, const int lineno,
 	static unsigned int fifo_counter = 0;
 	int rval;
 
-	if (!tst_tmpdir_created()) {
-		tst_brkm(TBROK, NULL, "Checkpoint could be used only in test "
-		                      "temporary directory at %s:%d",
-				      file, lineno);
-	}
-	
 	/* default values */
 	rval = snprintf(self->file, TST_FIFO_LEN, "tst_checkopoint_fifo_%u",
 			fifo_counter++);
@@ -90,6 +84,20 @@ void tst_checkpoint_init(const char *file, const int lineno,
 	}
 	self->retval = 1;
 	self->timeout = 5000;
+}
+
+void tst_checkpoint_create(const char *file, const int lineno,
+			   struct tst_checkpoint *self)
+
+{
+
+	if (!tst_tmpdir_created()) {
+		tst_brkm(TBROK, NULL, "Checkpoint could be used only in test "
+				      "temporary directory at %s:%d",
+				      file, lineno);
+	}
+
+	tst_checkpoint_init(file, lineno, self);
 
 	if (mkfifo(self->file, 0666)) {
 		tst_brkm(TBROK | TERRNO, NULL,

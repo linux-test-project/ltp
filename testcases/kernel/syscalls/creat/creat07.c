@@ -108,7 +108,7 @@ static void setup(char *app)
 
 	TST_RESOURCE_COPY(cleanup, TEST_APP, NULL);
 	
-	TST_CHECKPOINT_INIT(&checkpoint);
+	TST_CHECKPOINT_CREATE(&checkpoint);
 
 	TEST_PAUSE;
 }

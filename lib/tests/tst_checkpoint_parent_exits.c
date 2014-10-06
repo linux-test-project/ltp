@@ -35,7 +35,7 @@ int main(void)
 
 	tst_tmpdir();
 
-	TST_CHECKPOINT_INIT(&checkpoint);
+	TST_CHECKPOINT_CREATE(&checkpoint);
 
 	pid = fork();
 
