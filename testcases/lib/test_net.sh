@@ -176,3 +176,67 @@ tst_ipaddr()
 		echo "${IPV4_NETWORK}.${tst_host}"
 	fi
 }
+
+# tst_init_iface [TYPE] [LINK]
+# TYPE: { lhost | rhost }; Default value is 'lhost'.
+# LINK: link number starting from 0. Default value is '0'.
+tst_init_iface()
+{
+	local type=${1:-"lhost"}
+	local link_num=${2:-"0"}
+
+	local iface=$(tst_iface $type $link_num)
+	tst_resm TINFO "initialize '$type' '$iface' interface"
+
+	if [ "$type" = "lhost" ]; then
+		ip link set $iface down || tst_brkm TBROK "iface down failed"
+		ip route flush dev $iface || tst_brkm TBROK "route flush failed"
+		ip addr flush dev $iface || tst_brkm TBROK "addr flush failed"
+		ip link set $iface up || tst_brkm TBROK "iface up failed"
+		return
+	fi
+
+	tst_rhost_run -s -c "ip link set $iface down"
+	tst_rhost_run -s -c "ip route flush dev $iface"
+	tst_rhost_run -s -c "ip addr flush dev $iface"
+	tst_rhost_run -s -c "ip link set $iface up"
+}
+
+# tst_add_ipaddr [TYPE] [LINK]
+# TYPE: { lhost | rhost }; Default value is 'lhost'.
+# LINK: link number starting from 0. Default value is '0'.
+tst_add_ipaddr()
+{
+	local type=${1:-"lhost"}
+	local link_num=${2:-"0"}
+
+	local mask=24
+	[ "$TST_IPV6" ] && mask=64
+
+	if [ $type = "lhost" ]; then
+		tst_resm TINFO "set local addr $(tst_ipaddr)/$mask"
+		ip addr add $(tst_ipaddr)/$mask dev $iface || \
+			tst_brkm TBROK "failed to add IP address"
+		return
+	fi
+
+	tst_resm TINFO "set remote addr $(tst_ipaddr rhost)/$mask"
+	tst_rhost_run -s -c "ip addr add $(tst_ipaddr rhost)/$mask dev $iface"
+}
+
+# tst_restore_ipaddr [TYPE] [LINK]
+# Restore default ip addresses defined in network.sh
+# TYPE: { lhost | rhost }; Default value is 'lhost'.
+# LINK: link number starting from 0. Default value is '0'.
+tst_restore_ipaddr()
+{
+	local type=${1:-"lhost"}
+	local link_num=${2:-"0"}
+
+	tst_init_iface $type $link_num
+
+	local iface=$(tst_iface $type $link_num)
+
+	TST_IPV6= tst_add_ipaddr $type $link_num
+	TST_IPV6=6 tst_add_ipaddr $type $link_num
+}
