@@ -7,23 +7,21 @@
 cd $(dirname $0)
 . ./network.sh
 
-#===========================================================================
-# Default Test Settings
-# export NS_DURATION=3600	# 1 hour
-# export NS_TIMES=10000
-# export CONNECTION_TOTAL=4000
-# export IP_TOTAL=10000
-# export IP_TOTAL_FOR_TCPIP=100
-# export ROUTE_TOTAL=10000
-# export MTU_CHANGE_TIMES=1000
-# export IF_UPDOWN_TIMES=10000
-# export DOWNLOAD_BIGFILESIZE=2147483647	# 2G byte - 1byte
-# export DOWNLOAD_REGFILESIZE=1048576		# 1M byte
-# export UPLOAD_BIGFILESIZE=2147483647		# 2G byte - 1byte
-# export UPLOAD_REGFILESIZE=1024		# 1K byte
-# export MCASTNUM_NORMAL=20
-# export MCASTNUM_HEAVY=40000
-#===========================================================================
+# Test Settings
+export NS_DURATION=${NS_DURATION:-"3600"}
+export NS_TIMES=${NS_TIMES:-"10000"}
+export CONNECTION_TOTAL=${CONNECTION_TOTAL:-"4000"}
+export IP_TOTAL=${IP_TOTAL:-"10000"}
+export IP_TOTAL_FOR_TCPIP=${IP_TOTAL_FOR_TCPIP:-"100"}
+export ROUTE_TOTAL=${ROUTE_TOTAL:-"10000"}
+export MTU_CHANGE_TIMES=${MTU_CHANGE_TIMES:-"1000"}
+export IF_UPDOWN_TIMES=${IF_UPDOWN_TIMES:-"10000"}
+export DOWNLOAD_BIGFILESIZE=${DOWNLOAD_BIGFILESIZE:-"2147483647"}
+export DOWNLOAD_REGFILESIZE=${DOWNLOAD_REGFILESIZE:-"1048576"}
+export UPLOAD_BIGFILESIZE=${UPLOAD_BIGFILESIZE:-"2147483647"}
+export UPLOAD_REGFILESIZE=${UPLOAD_REGFILESIZE:-"1024"}
+export MCASTNUM_NORMAL=${MCASTNUM_NORMAL:-"20"}
+export MCASTNUM_HEAVY=${MCASTNUM_HEAVY:-"40000"}
 
 usage () {
     echo ""
