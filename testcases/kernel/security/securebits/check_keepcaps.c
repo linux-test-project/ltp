@@ -5,7 +5,6 @@
 #include <sys/capability.h>
 #endif
 #include <sys/prctl.h>
-#include <linux/securebits.h>
 #include "usctest.h"
 #include "test.h"
 
@@ -30,7 +29,9 @@
 char *TCID = "keepcaps";
 int TST_TOTAL = 1;
 
-#ifdef HAVE_LIBCAP
+#if (HAVE_LINUX_SECUREBITS_H && HAVE_LIBCAP)
+#include <linux/securebits.h>
+
 static int eff_caps_empty(cap_t c)
 {
 	int i, ret, empty = 1;
@@ -75,10 +76,8 @@ static void do_setuid(int expect_privs)
 	int have_privs;
 
 	ret = setuid(1000);
-	if (ret) {
-		tst_resm(TERRNO | TFAIL, "setuid failed");
-		tst_exit();
-	}
+	if (ret)
+		tst_brkm(TERRNO | TFAIL, NULL, "setuid failed");
 
 	have_privs = am_privileged();
 	if (have_privs && expect_privs == EXPECT_PRIVS) {
@@ -95,8 +94,7 @@ static void do_setuid(int expect_privs)
 	}
 
 	/* have_privs && EXPECT_NOPRIVS */
-	tst_resm(TFAIL, "expected to drop privs but did not");
-	tst_exit();
+	tst_brkm(TFAIL, NULL, "expected to drop privs but did not");
 }
 
 int main(int argc, char *argv[])
@@ -106,64 +104,54 @@ int main(int argc, char *argv[])
 	tst_require_root(NULL);
 
 	ret = prctl(PR_GET_KEEPCAPS);
-	if (ret) {
-		tst_resm(TBROK, "keepcaps was already set?\n");
-		tst_exit();
-	}
+	if (ret)
+		tst_brkm(TBROK, NULL, "keepcaps was already set?");
 
-	if (argc < 2) {
-		tst_resm(TBROK, "Usage: %s <tescase_num>", argv[0]);
-		tst_exit();
-	}
+	if (argc < 2)
+		tst_brkm(TBROK, NULL, "Usage: %s <tescase_num>", argv[0]);
+
 	whichtest = atoi(argv[1]);
-	if (whichtest < 1 || whichtest > 3) {
-		tst_resm(TFAIL, "Valid tests are 1-3\n");
-		tst_exit();
-	}
+	if (whichtest < 1 || whichtest > 3)
+		tst_brkm(TFAIL, NULL, "Valid tests are 1-3");
+
 	switch (whichtest) {
 	case 1:
 		do_setuid(EXPECT_NOPRIVS);	/* does not return */
 	case 2:
 		ret = prctl(PR_SET_KEEPCAPS, 1);
 		if (ret == -1) {
-			tst_resm(TFAIL | TERRNO, "PR_SET_KEEPCAPS failed\n");
-			tst_exit();
+			tst_brkm(TFAIL | TERRNO, NULL,
+				 "PR_SET_KEEPCAPS failed");
 		}
 		ret = prctl(PR_GET_KEEPCAPS);
 		if (!ret) {
-			tst_resm(TFAIL | TERRNO,
-				 "PR_SET_KEEPCAPS did not set keepcaps\n");
-			tst_exit();
+			tst_brkm(TFAIL | TERRNO, NULL,
+				 "PR_SET_KEEPCAPS did not set keepcaps");
 		}
 		do_setuid(EXPECT_PRIVS);	/* does not return */
 	case 3:
 		ret = prctl(PR_GET_SECUREBITS);
 		ret = prctl(PR_SET_SECUREBITS, ret | SECBIT_KEEP_CAPS);
 		if (ret == -1) {
-			tst_resm(TFAIL | TERRNO, "PR_SET_SECUREBITS failed\n");
-			tst_exit();
+			tst_brkm(TFAIL | TERRNO, NULL,
+				 "PR_SET_SECUREBITS failed");
 		}
 		ret = prctl(PR_GET_KEEPCAPS);
 		if (!ret) {
-			tst_resm(TFAIL | TERRNO,
-				 "PR_SET_SECUREBITS did not set keepcaps\n");
-			tst_exit();
+			tst_brkm(TFAIL | TERRNO, NULL,
+				 "PR_SET_SECUREBITS did not set keepcaps");
 		}
 		do_setuid(EXPECT_PRIVS);	/* does not return */
 	default:
-		tst_resm(TFAIL, "should not reach here\n");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Valid tests are 1-3");
 	}
-	tst_resm(TFAIL, "should not reach here\n");
-	tst_exit();
 }
 
 #else
 
 int main(void)
 {
-	tst_resm(TCONF, "Test was compiled without libcap.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "linux/securebits.h or libcap does not exist.");
 }
 
 #endif /* HAVE_LIBCAP */
