@@ -520,7 +520,7 @@ static void do_child(void)
 	FD_SET(sfd, &afds);
 	FD_SET(ufd, &afds);
 
-	nfds = getdtablesize();
+	nfds = MAX(sfd + 1, ufd + 1);
 
 	/* accept connections until killed */
 	while (1) {
@@ -536,8 +536,10 @@ static void do_child(void)
 
 			fromlen = sizeof(fsin);
 			newfd = accept(sfd, (struct sockaddr *)&fsin, &fromlen);
-			if (newfd >= 0)
+			if (newfd >= 0) {
 				FD_SET(newfd, &afds);
+				nfds = MAX(nfds, newfd + 1);
+			}
 		}
 		if (FD_ISSET(ufd, &rfds)) {
 			int newfd;

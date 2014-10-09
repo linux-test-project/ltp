@@ -297,7 +297,7 @@ void do_child(void)
 	FD_ZERO(&afds);
 	FD_SET(sfd, &afds);
 
-	nfds = getdtablesize();
+	nfds = sfd + 1;
 
 	/* accept connections until killed */
 	while (1) {
@@ -314,10 +314,12 @@ void do_child(void)
 
 			fromlen = sizeof(fsin);
 			newfd = accept(sfd, (struct sockaddr *)&fsin, &fromlen);
-			if (newfd >= 0)
+			if (newfd >= 0) {
 				FD_SET(newfd, &afds);
-			/* send something back */
-			(void)write(newfd, "hoser\n", 6);
+				nfds = MAX(nfds, newfd + 1);
+				/* send something back */
+				(void)write(newfd, "hoser\n", 6);
+			}
 		}
 		for (fd = 0; fd < nfds; ++fd)
 			if (fd != sfd && FD_ISSET(fd, &rfds)) {

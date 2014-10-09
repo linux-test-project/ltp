@@ -433,7 +433,7 @@ void do_child(void)
 	FD_SET(sfd, &afds);
 	FD_SET(ufd, &afds);
 
-	nfds = getdtablesize();
+	nfds = MAX(sfd + 1, ufd + 1);
 
 	/* accept connections until killed */
 	while (1) {
@@ -456,6 +456,7 @@ void do_child(void)
 			newfd = accept(sfd, (struct sockaddr *)&fsin, &fromlen);
 			if (newfd >= 0) {
 				FD_SET(newfd, &afds);
+				nfds = MAX(nfds, newfd + 1);
 				/* send something back */
 				(void)write(newfd, "hoser\n", 6);
 			}
