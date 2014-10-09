@@ -112,16 +112,14 @@ do_test2()
     BADHOST="xxxx"
 
     tst_resm TINFO "finger -badflag default "
-    finger -x 2>&1 1>/dev/null && end_testcase "finger -x should fail"
+    finger -x 2> /dev/null && end_testcase "finger -x should fail"
 
     tst_resm TINFO "finger -bad user "
-    finger $BADUSER 2>&1 1>/dev/null || end_testcase "finger $BADUSER"
-    finger @$BADHOST 2>&1 1>/dev/null | grep "finger: unknown host" \
-        || end_testcase "finger @$BADHOST"
-    if ! finger $BADUSER@$BADHOST 2>&1 1>/dev/null \
-        | grep "finger: unknown host"; then
+    [ "$(finger $BADUSER 2>&1 1>/dev/null)" ] || end_testcase "finger $BADUSER"
+    [ "$(finger @$BADHOST 2>&1 1>/dev/null)" ] || \
+        end_testcase "finger @$BADHOST"
+    [ "$(finger $BADUSER@$BADHOST 2>&1 1>/dev/null)" ] || \
         end_testcase "finger $BADUSER@$BADHOST"
-    fi
 }
 
 #-----------------------------------------------------------------------
