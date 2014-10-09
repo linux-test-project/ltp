@@ -36,3 +36,6 @@
 #define PTS_UNSUPPORTED 4
 #define PTS_UNTESTED    5
 
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+#endif
