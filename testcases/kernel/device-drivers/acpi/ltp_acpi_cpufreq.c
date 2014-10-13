@@ -54,18 +54,12 @@ const char setspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_setspeed";
 const char curspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/cpuinfo_cur_freq";
 const char maxspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_max_freq";
 
-const char up_limit[]	= SYSFS_CPU_DIR "cpufreq/ondemand/up_threshold";
-static int threshold;
-
 static void cleanup(void)
 {
 	SAFE_FILE_PRINTF(NULL, boost, "%d", boost_value);
 
 	if (governor[0] != '\0')
 		SAFE_FILE_PRINTF(NULL, governor, "%s", governor_name);
-
-	if (threshold)
-		SAFE_FILE_PRINTF(NULL, up_limit, "%d", threshold);
 
 	TEST_CLEANUP;
 }
@@ -86,8 +80,6 @@ static void setup(void)
 
 	SAFE_FILE_SCANF(NULL, boost, "%d", &boost_value);
 
-	SAFE_FILE_SCANF(NULL, up_limit, "%d", &threshold);
-
 	/* change cpu0 scaling governor */
 	SAFE_FILE_SCANF(NULL, governor, "%s", governor_name);
 	SAFE_FILE_PRINTF(cleanup, governor, "%s", "userspace");
@@ -98,8 +90,6 @@ static void setup(void)
 	CPU_SET(0, &set);
 	if (sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "failed to set CPU0");
-
-	SAFE_FILE_PRINTF(cleanup, up_limit, "11");
 }
 
 static void set_speed(int freq)
