@@ -20,20 +20,16 @@
  * Check support for disabling dynamic overclocking in acpi_cpufreq driver.
  * Required Linux 3.7+.
  *
- * The test loads CPU0 in a thread. When the loading approaches to the end
- * (2/3 elapsed), the test will check processor frequency. if boost is enabled
- * we can get a slightly higher speed under load.
+ * The test compares time spent on sum calculation with/without
+ * boost-disable bit. If boost is enabled we can get a slightly shorter
+ * time period. Measure elapsed time instead of sysfs cpuinfo_cur_freq value,
+ * because after the upstream commit 8673b83bf2f013379453b4779047bf3c6ae387e4,
+ * current cpu frequency became target cpu frequency.
  */
 
 #define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
 #include <sched.h>
-#include <sys/time.h>
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <time.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -51,7 +47,6 @@ const char governor[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_governor";
 static char governor_name[16];
 
 const char setspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_setspeed";
-const char curspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/cpuinfo_cur_freq";
 const char maxspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_max_freq";
 
 static void cleanup(void)
@@ -90,6 +85,13 @@ static void setup(void)
 	CPU_SET(0, &set);
 	if (sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "failed to set CPU0");
+
+	struct sched_param params;
+	params.sched_priority = sched_get_priority_max(SCHED_FIFO);
+	if (sched_setscheduler(getpid(), SCHED_FIFO, &params)) {
+		tst_resm(TWARN | TERRNO,
+			"failed to set FIFO sched with max priority");
+	}
 }
 
 static void set_speed(int freq)
@@ -98,78 +100,63 @@ static void set_speed(int freq)
 	SAFE_FILE_SCANF(cleanup, setspeed, "%d", &set_freq);
 
 	if (set_freq != freq) {
-		tst_resm(TINFO, "change speed from %d to %d...",
+		tst_resm(TINFO, "change target speed from %d KHz to %d KHz",
 			set_freq, freq);
 		SAFE_FILE_PRINTF(cleanup, setspeed, "%d", freq);
 	} else {
-		tst_resm(TINFO, "set speed is %d", set_freq);
+		tst_resm(TINFO, "target speed is %d KHz", set_freq);
 	}
 }
 
-void *thread_fn(void *val)
+static int load_cpu(int max_freq_khz)
 {
-	struct timeval tv_start;
-	struct timeval tv_end;
-	int i, res = 0;
-	intptr_t timeout = (intptr_t) val;
+	int sum = 0, i = 0, total_time_ms;
+	struct timespec tv_start, tv_end;
 
-	gettimeofday(&tv_start, NULL);
-	tst_resm(TINFO, "load CPU0 for %ld sec...", timeout);
+	const int max_sum = max_freq_khz / 1000;
+	const int units = 1000000; /* Mhz */
+
+	clock_gettime(CLOCK_MONOTONIC_RAW, &tv_start);
 
 	do {
-		for (i = 1; i < 10000; ++i)
-			res += i * i;
-		gettimeofday(&tv_end, NULL);
-		sched_yield();
-	} while ((tv_end.tv_sec - tv_start.tv_sec) < timeout);
+		for (i = 0; i < units; ++i)
+			asm ("" : : : "memory");
+	} while (++sum < max_sum);
 
-	tst_resm(TINFO, "CPU0 load done: insignificant value '%d'", res);
+	clock_gettime(CLOCK_MONOTONIC_RAW, &tv_end);
 
-	return NULL;
-}
+	total_time_ms = (tv_end.tv_sec - tv_start.tv_sec) * 1000 +
+		(tv_end.tv_nsec - tv_start.tv_nsec) / 1000000;
 
-static int load_cpu(intptr_t timeout)
-{
-	pthread_t thread_id;
+	if (!total_time_ms)
+		tst_brkm(TBROK, cleanup, "time period is 0");
 
-	if (pthread_create(&thread_id, 0, thread_fn,
-		(void *) timeout) != 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			"pthread_create failed at %s:%d",
-			__FILE__, __LINE__);
-	}
+	tst_resm(TINFO, "elapsed time is %d ms", total_time_ms);
 
-	sleep(2 * timeout / 3);
-
-	int cur_freq;
-	SAFE_FILE_SCANF(cleanup, curspeed, "%d", &cur_freq);
-	tst_resm(TINFO, "got cpu freq under load: %d", cur_freq);
-
-	pthread_join(thread_id, NULL);
-
-	return cur_freq;
+	return total_time_ms;
 }
 
 static void test_run(void)
 {
-	int cur_freq, max_freq;
-	SAFE_FILE_SCANF(cleanup, maxspeed, "%d", &max_freq);
-	set_speed(max_freq);
+	int boost_time, boost_off_time, max_freq_khz;
+	SAFE_FILE_SCANF(cleanup, maxspeed, "%d", &max_freq_khz);
+	set_speed(max_freq_khz);
 
 	/* Enable boost */
 	if (boost_value == 0)
 		SAFE_FILE_PRINTF(cleanup, boost, "1");
-	cur_freq = load_cpu(30);
-	tst_resm((cur_freq >= max_freq) ? TPASS : TFAIL,
-		"compare current speed %d and max speed %d",
-		cur_freq, max_freq);
+	tst_resm(TINFO, "load CPU0 with boost enabled");
+	boost_time = load_cpu(max_freq_khz);
 
 	/* Disable boost */
 	SAFE_FILE_PRINTF(cleanup, boost, "0");
-	cur_freq = load_cpu(30);
-	tst_resm((cur_freq < max_freq) ? TPASS : TFAIL,
-		"compare current speed %d and max speed %d",
-		cur_freq, max_freq);
+	tst_resm(TINFO, "load CPU0 with boost disabled");
+	boost_off_time = load_cpu(max_freq_khz);
+
+	boost_off_time *= .98;
+
+	tst_resm((boost_time < boost_off_time) ? TPASS : TFAIL,
+		"compare time spent with and without boost (-2%%)");
 }
 
 int main(int argc, char *argv[])
