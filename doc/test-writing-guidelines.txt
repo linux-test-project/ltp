@@ -181,22 +181,29 @@ IMPORTANT: The runtest files should have one entry per a test. Creating a
 ^^^^^^^^^^^^^^^
 
 If your test needs datafiles to work, these should be put into a subdirectory
-named "datafiles" and installed into the 'testcases/data/$TCID' directory.
+named 'datafiles' and installed into the 'testcases/data/$TCID' directory (to
+do that you have to add 'INSTALL_DIR := testcases/data/TCID' into the
+'datafiles/Makefile').
 
 You can obtain path to datafiles via $LTP_DATAROOT provided by test.sh
-  '$LTP_DATAROOT/...'
-or via C function tst_dataroot() provided by libltp
-  const char *dataroot = tst_dataroot();
+'$LTP_DATAROOT/...'
+or via C function 'tst_dataroot()' provided by libltp:
+
+[source,c]
+-------------------------------------------------------------------------------
+const char *dataroot = tst_dataroot();
+-------------------------------------------------------------------------------
 
 Datafiles can also be accessed as '$LTPROOT/testcases/data/$TCID/...',
-but $LTP_DATAROOT and tst_dataroot() are preffered as these can be used
+but '$LTP_DATAROOT' and 'tst_dataroot()' are preffered as these can be used
 when running testcases directly in git tree as well as from install
 location.
 
 The path is constructed according to these rules:
-1. if $LTPROOT is set, return '$LTPROOT/testcases/data/$TCID'
-2. else if tst_tmpdir() was called return '$STARTWD/datafiles'
-   (where $STARTWD is initial working directory as recorded by tst_tmdir())
+
+1. if '$LTPROOT' is set, return '$LTPROOT/testcases/data/$TCID'
+2. else if 'tst_tmpdir()' was called return '$STARTWD/datafiles'
+   (where '$STARTWD' is initial working directory as recorded by 'tst_tmdir()')
 3. else return '$CWD/datafiles'
 
 See 'testcases/commands/ade/ldd/ldd01' for example.
