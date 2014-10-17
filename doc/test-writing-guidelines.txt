@@ -642,6 +642,44 @@ the same working directory (they use FIFO for synchronization). The checkpoint
 interface provides two pairs of signal and wait functions. One pair to be used
 to signal child from parent and second to signal parent from child.
 
+Checkpoint is represented by 'struct tst_checkpoint', which has to be
+initialized before first usage and FIFO has to be created. This is
+usually done in parent process in single step by calling
+'tst_checkpoint_create()'.
+
+Child processes created via fork() are ready to use tst_checkpoint_*
+synchronization functions, as they inherited already initialized
+'struct tst_checkpoint'.
+
+Child processes started via exec*, or any other process can use already
+created FIFO, provided they initialize 'struct tst_checkpoint' first by
+call to 'tst_checkpoint_init()'. This function does not create any FIFO,
+it relies on fact, that it was already created by some other process.
+Note, that if you use multiple FIFOs in this scenario, these should be
+initialized in same order as in process you are sychronizing against.
+
+IMPORTANT: Be aware, that following scenario is _NOT_ safe when using
+           only single checkpoint. You are advised to use two checkpoints
+           in this case.
+
+* tst_checkpoint_signal_child() followed by tst_checkpoint_parent_wait()
+
+             parent            |            child
+-------------------------------+-------------------------------
+                               | tst_checkpoint_child_wait()
+                               |   blocking read, waits until
+                               |   parent opens write side
+tst_checkpoint_signal_child()  |
+  NONBLOCK write               |
+                               |   child is now able to read
+                               |   from FIFO
+tst_checkpoint_parent_wait()   |
+  NONBLOCK read parent able to |
+  read from FIFO and can race  |
+  with read in child           |
+                               | tst_checkpoint_signal_parent()
+-------------------------------+--------------------------------
+
 For the details of the interface, look into the 'include/tst_checkpoint.h' and
 'lib/tests/tst_checkpoint_*'.
 
