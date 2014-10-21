@@ -20,7 +20,7 @@
 #
 #  FILE             : mc_cmds
 #  TEST DESCRIPTION : To determine the stability of the IP Multicast product
-#                and to verify the accuracy and usablility of IP Multicast
+#                and to verify the accuracy and usability of IP Multicast
 #                related publications associated with changes and/or
 #                additions to command level interfaces for this implementations
 #                of IP Multicast.
@@ -30,181 +30,112 @@
 #
 #*******************************************************************************
 
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
 TC=mc_cmds
-TCtmp=${TCtmp:-$TMPDIR/$TC$$}
 PING_OUT=${TCtmp}/PING_OUT
-HOSTNAME=`hostname`
-CLEANUP=${CLEANUP:-ON}
 
 export TCID=$TC
 export TST_TOTAL=1
 export TST_COUNT=1
 
+. test.sh
+
 setup()
 {
-   mkdir -p $TCtmp || { tst_brkm TBROK NULL "Could not create $TCtmp"; exit 1; }
+	tst_check_cmds netstat
+
+	val=$(cat /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts)
+	if [ $val -ne 0 ]; then
+		tst_brkm TCONF "Multicast ping disabled on this system."
+	fi
+
+	tst_tmpdir
 }
 
-#*******************************************************************************
-#
-# FUNCTION:  do_test
-# PURPOSE:   Test changes to ifconfig, netstat, and ping commands
-# INPUT:     None
-# OUTPUT:    Error messages are logged when any verification test
-#            fails.
-#
-#-----------------------------------------------------------------------
 do_test()
 {
-   $trace_logic
-   echo "Getting ALL enabled interfaces which are configured !"
+	tst_resm TINFO "Getting ALL enabled interfaces which are configured !"
 
-   IFNAME=${IFNAME:-$(netstat -i -n | grep "^[b-z]\{2,4\}[0-9][^*]"|\
-      awk '{print $1}')}
-   INTERFACE=${INTERFACE:-$(mc_gethost `hostname` | grep addresses: | awk '{print $2}')}
-
-   echo "Testing ifconfig and netstat"
-
-# Commented begin
-#   # See if interface can be used for IP Multicast
-#   ifconfig $IFNAME | grep -q MULTICAST
-#   if [ $? != 0 ]; then
-#	end_testcase "Multicast not listed for $IFNAME"
-#   fi
-#   netstat -gn | grep $IFNAME | grep -q 224.0.0.1
-#   [ $? = 0 ] || end_testcase "all-host-group for $IFNAME not joined"
-# Commented end
-
-#Finds the active ethernet interface
-for eth in $IFNAME
-    do
-         ifconfig $eth | grep -q $INTERFACE
-          if [ $? -eq 0 ]
-          then
-                INTERFACE_DEVICE=$eth
-		break
-           fi
-    done
-
-# Added for support for more adapters configured
-    MulticastAdap=
-    for eth in $IFNAME
-    do
-
-	$trace_logic
-	ifconfig $eth | grep -q MULTICAST
-	if [ $? -eq 0 ]
-	then
-	    $trace_logic
-	    MulticastAdap=$eth
-	    break
+	IFNAME=${IFNAME:-$(netstat -i -n | \
+			   grep "^[b-z][[:alnum:]]\{1,3\}[0-9][^*]" | \
+			   awk '{print $1}')}
+	INTERFACE=${INTERFACE:-$(mc_gethost `hostname` | grep addresses: | \
+				 awk '{print $2}')}
+	if [ -z $INTERFACE ]; then
+		tst_brkm TCONF "$(hostname) is not found in /etc/hosts"
 	fi
-    done
-    if [ -z $MulticastAdap ]
-    then
-	end_testcase "Multicast not listed for $IFNAME"
-    fi
-    MulticastAdapJoined=
-    for eth in $IFNAME
-    do
-	$trace_logic
-	netstat -gn | grep $eth | grep -q 224.0.0.1
-	if [ $? -eq 0 ]
-	then
-	    $trace_logic
-	    MulticastAdapJoined=1
-	    break
+
+	tst_resm TINFO "Testing ifconfig and netstat"
+
+	# Finds the active ethernet interface
+	for eth in $IFNAME
+	do
+		ifconfig $eth | grep -q $INTERFACE
+		if [ $? -eq 0 ]; then
+			INTERFACE_DEVICE=$eth
+			break
+		fi
+	done
+
+	MulticastAdap=
+	for eth in $IFNAME
+	do
+		ifconfig $eth | grep -q MULTICAST
+		if [ $? -eq 0 ]; then
+			MulticastAdap=$eth
+			break
+		fi
+	done
+	if [ -z $MulticastAdap ]; then
+		tst_brkm TFAIL "Multicast not listed for $IFNAME"
 	fi
-    done
-    if [ -z $MulticastAdapJoined ]
-    then
-	end_testcase "all-host-group for $IFNAME not joined"
-    fi
-# Added end
+	MulticastAdapJoined=
+	for eth in $IFNAME
+	do
+		netstat -gn | grep $eth | grep -q 224.0.0.1
+		if [ $? -eq 0 ]; then
+			MulticastAdapJoined=1
+			break
+		fi
+	done
+	if [ -z $MulticastAdapJoined ]; then
+		tst_brkm TFAIL "all-host-group for $IFNAME not joined"
+	fi
 
-   cat /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts | grep 1 > /dev/null
-   if [ $? -eq 0 ]
-   then
-       tst_resm TCONF "Multicast ping disabled on this system (this is normal on post year:2005 kernels)"
-       rm -rf $TCtmp
-       exit 0
-   fi
+	# Do the ping tests: Execute ping 224.0.0.1 - Verify that the proper
+	# number of responses are returned.
+	tst_resm TINFO "Ping all-host-groups address(over default route!)"
+	ping -c2 224.0.0.1 > $PING_OUT
+	if [ $? -ne 0 ]; then
+		tst_brkm TFAIL "No response from MC hosts to ping 224.0.0.1"
+	fi
 
-   # Do the ping tests: Execute ping 224.0.0.1 - Verify that the proper
-   # number of responses are returned.
+	tst_resm TINFO "Ping all-host-groups over specified interface"
+	ping -c2 -I $INTERFACE 224.0.0.1 > $PING_OUT
+	if [ $? -ne 0 ]; then
+		tst_resm TINFO "Trying to ping with $INTERFACE_DEVICE"\
+			       "with the -I option instead of IP address"
+		ping -c2 -I $INTERFACE_DEVICE 224.0.0.1 > $PING_OUT
+		if [ $? -ne 0 ]; then
+			tst_brkm TFAIL "No response from MC hosts to ping -c2 "\
+				       "-I$INTERFACE 224.0.0.1"
+		fi
+	fi
+	grep -q $INTERFACE $PING_OUT
+	if [ $? -ne 0 ]; then
+		tst_brkm TFAIL "Local host did not respond to ping -c2 "\
+			       "-I$INTERFACE 224.0.0.1"
+	fi
 
-   echo "Ping all-host-groups address(over default route!)"
-   ping -c2 224.0.0.1 > $PING_OUT
-   [ $? = 0 ] || end_testcase "No response from MC hosts to ping 224.0.0.1"
-
-   echo "Ping all-host-groups over specified interface"
-   ping -c2 -I $INTERFACE 224.0.0.1 > $PING_OUT
-  if [ $? -ne 0 ]
-   then
-        echo "Trying to ping with $INTERFACE_DEVICE instead of IP address"
-        echo "with the -I option"
-        ping -c2 -I $INTERFACE_DEVICE 224.0.0.1 > $PING_OUT
-   [ $? = 0 ] || end_testcase "No response from MC hosts to ping -c2 -I$INTERFACE 224.0.0.1"
-fi
-   grep -q $INTERFACE $PING_OUT
-   [ $? = 0 ] || end_testcase "Local host did not respond to ping -c2 -I$INTERFACE 224.0.0.1"
-
-
+	tst_resm TPASS "Test Successful"
+	tst_exit
 }
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:     do_cleanup
-# PURPOSE:      Called when the testcase is interrupted by the user
-#               or by interrupt_testcase() when time limit expired
-# INPUT:        None.
-# OUTPUT:       None.
-#
-#-----------------------------------------------------------------------
 
 do_cleanup()
 {
-   $trace_logic
-   echo "$this_file: doing $0."
-   rm -rf $TCtmp
+	tst_rmdir
 }
 
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{
-   $trace_logic
-   echo "$this_file: doing $0."
-
-   # Call other cleanup functions
-   [ $CLEANUP = "ON" ] && do_cleanup
-
-   [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
-}
-
-#*******************************************************************************
-#
-# FUNCTION:  MAIN
-# PURPOSE:   To invoke functions that perform the tasks as described in
-#            the design in the prolog above.
-# INPUT:     See SETUP in the prolog above.
-# OUTPUT:    Logged run results written to testcase run log
-#
-#*******************************************************************************
 setup
+TST_CLEANUP=do_cleanup
+
 do_test
-end_testcase
