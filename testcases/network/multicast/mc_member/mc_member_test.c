@@ -9,17 +9,14 @@
 #include <netdb.h>
 #include <unistd.h>
 
-char *prog;
-int errors = 0;
-int ttl_no = 255;
+static char *prog;
+static int errors;
 
-int join_group(int, char *, struct ip_mreq *);
-int leave_group(int, char *, struct ip_mreq *);
-void usage(void);
+static int join_group(int, char *, struct ip_mreq *);
+static int leave_group(int, char *, struct ip_mreq *);
+static void usage(void);
 
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
 	int s;
 	struct ip_mreq imr;
@@ -27,12 +24,9 @@ char *argv[];
 	char *group_list = NULL, *interface = NULL;
 	unsigned i1, i2, i3, i4;
 	struct hostent *hp, *gethostbyname();
-	int c, n;
-	/*int errors=0; */
+	int c;
 	int lflg = 0, jflg = 0, sflg = 0;
 
-	extern int optind;
-	extern char *optarg;
 	prog = argv[0];
 	if (argc == 1)
 		usage();
@@ -72,21 +66,22 @@ char *argv[];
 		exit(1);
 	}
 
-	if ((s = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+	s = socket(AF_INET, SOCK_DGRAM, 0);
+	if (s == -1) {
 		perror("can not open socket");
 		exit(1);
 	}
 
-	if ((hp = gethostbyname(interface))) {
+	hp = gethostbyname(interface);
+	if (hp != NULL) {
 		memcpy(&imr.imr_interface.s_addr, hp->h_addr, hp->h_length);
-	} else
-	    if ((n =
-		 sscanf(interface, "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
+	} else if (sscanf(interface, "%u.%u.%u.%u", &i1, &i2, &i3, &i4) != 4) {
 		fprintf(stderr, "bad group address\n");
 		exit(1);
-	} else
+	} else {
 		imr.imr_interface.s_addr =
 		    htonl((i1 << 24) | (i2 << 16) | (i3 << 8) | i4);
+	}
 	/* verify socket options */
 	if (setsockopt(s, IPPROTO_IP, IP_MULTICAST_IF,
 		       &imr.imr_interface.s_addr,
@@ -108,17 +103,18 @@ char *argv[];
 	close(s);
 	if (errors)
 		exit(1);
-	return (0);
+	return 0;
 }
 
-int join_group(int s, char *glist, struct ip_mreq *imr)
+static int join_group(int s, char *glist, struct ip_mreq *imr)
 {
 	char buf[40];
 	unsigned g1, g2, g3, g4;
 	FILE *fd;
 	char group[40], itf[40];
 
-	if ((fd = fopen(glist, "r")) == NULL)
+	fd = fopen(glist, "r");
+	if (fd == NULL)
 		printf("Error: unable to open %s\n", glist);
 
 	while (fgets(buf, sizeof(buf), fd) != NULL) {
@@ -132,7 +128,7 @@ int join_group(int s, char *glist, struct ip_mreq *imr)
 
 		if (setsockopt(s, IPPROTO_IP, IP_ADD_MEMBERSHIP,
 			       imr, sizeof(struct ip_mreq)) == -1) {
-			fprintf(stderr, "errno is %d \n", errno);
+			fprintf(stderr, "errno is %d\n", errno);
 			perror("can't join group");
 			errors++;
 		} else {
@@ -142,17 +138,18 @@ int join_group(int s, char *glist, struct ip_mreq *imr)
 			       itf);
 		}
 	}
-	return (0);
+	return 0;
 }
 
-int leave_group(int s, char *glist, struct ip_mreq *imr)
+static int leave_group(int s, char *glist, struct ip_mreq *imr)
 {
 	char buf[40];
 	unsigned g1, g2, g3, g4;
 	FILE *fd;
 	char group[40], itf[40];
 
-	if ((fd = fopen(glist, "r")) == NULL)
+	fd = fopen(glist, "r");
+	if (fd == NULL)
 		printf("Error: unable to open %s\n", glist);
 
 	while (fgets(buf, sizeof(buf), fd) != NULL) {
@@ -175,10 +172,10 @@ int leave_group(int s, char *glist, struct ip_mreq *imr)
 			       group, itf);
 		}
 	}
-	return (0);
+	return 0;
 }
 
-void usage()
+static void usage(void)
 {
 	fprintf(stderr,
 		"usage: %s [ -j -l ] -g group_list [-s time_to_sleep] -i interface_name (or i.i.i.i)\n",
