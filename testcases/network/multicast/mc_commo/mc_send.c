@@ -12,12 +12,10 @@
 
 #define	MAXBUFSIZ	8096
 
-char buf[MAXBUFSIZ];
-int Num_Loops = 100;
+static char buf[MAXBUFSIZ];
+static int Num_Loops = 100;
 
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
 	struct ip_mreq imr;
 	struct sockaddr_in sin, mcast_out;

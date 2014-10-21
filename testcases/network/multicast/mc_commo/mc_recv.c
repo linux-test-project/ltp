@@ -11,7 +11,7 @@
 
 #define	MAXBUFSIZ	8096
 
-char buf[MAXBUFSIZ];
+static char buf[MAXBUFSIZ];
 
 int main(int argc, char *argv[])
 {
