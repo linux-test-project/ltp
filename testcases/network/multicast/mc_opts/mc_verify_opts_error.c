@@ -8,13 +8,7 @@
 #include <unistd.h>
 #include <netdb.h>
 
-#define	MAXBUFSIZ	8096
-
-char buff[MAXBUFSIZ];
-
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
 	int s;
 	struct in_addr simr, gimr;
@@ -25,21 +19,22 @@ char *argv[];
 	unsigned char ttl;
 	char no_loop = 0, do_loop = 1;
 	unsigned long len = 0;
-	int n = 0;
 
 	if (argc != 2) {
 		fprintf(stderr,
 			"usage: %s interface_name  (or i.i.i.i)\n", argv[0]);
 		exit(1);
 	}
-	if ((s = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+	s = socket(AF_INET, SOCK_DGRAM, 0);
+	if (s == -1) {
 		perror("can't open socket");
 		exit(1);
 	}
 
-	if ((hp = gethostbyname(argv[1])))
+	hp = gethostbyname(argv[1]);
+	if (hp)
 		memcpy(&simr.s_addr, hp->h_addr, hp->h_length);
-	else if ((n = sscanf(argv[1], "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
+	else if (sscanf(argv[1], "%u.%u.%u.%u", &i1, &i2, &i3, &i4) != 4) {
 		fprintf(stderr, "Bad interface address\n");
 		exit(1);
 	} else
@@ -51,12 +46,12 @@ char *argv[];
 		perror("Setting IP_MULTICAST_IF"), exit(1);
 	len = sizeof(gimr);
 	if (getsockopt
-	    (s, IPPROTO_IP, IP_MULTICAST_IF, &gimr, (socklen_t *) & len) != 0)
+	    (s, IPPROTO_IP, IP_MULTICAST_IF, &gimr, (socklen_t *)&len) != 0)
 		perror("Getting IP_MULTICAST_IF"), exit(1);
 
 	len = sizeof(ttl);
 	if (getsockopt
-	    (s, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, (socklen_t *) & len) != 0)
+	    (s, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, (socklen_t *)&len) != 0)
 		perror("Getting IP_MULTICAST_TTL"), exit(1);
 
 	ttl = 10;		/* Set ttl to 10 */
@@ -73,7 +68,7 @@ char *argv[];
 	len = sizeof(no_loop);
 	if (getsockopt
 	    (s, IPPROTO_IP, IP_MULTICAST_LOOP, &no_loop,
-	     (socklen_t *) & len) != 0)
+	     (socklen_t *)&len) != 0)
 		perror("Getting IP_MULTICAST_LOOP"), exit(1);
 
 	close(s);

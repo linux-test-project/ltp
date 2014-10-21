@@ -35,142 +35,50 @@ unset LIBPATH
 #      -Ported
 #
 #******************************************************************************
-#Uncomment the line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
 
-if [ -z $LTPBIN ]; then
-  PATH=../../../bin/:./:$PATH
-fi
 TC=mc_opts
-TCtmp=${TCtmp:-$LTPROOT/bin/$TC$$}
-CLEANUP=${CLEANUP:-ON}
-EXECUTABLES=${EXECUTABLES:-"opts opts_e"}
-NUMLOOPS=${NUMLOOPS:-10}
+EXECUTABLES=${EXECUTABLES:-"mc_verify_opts mc_verify_opts_error"}
 IPADDR=${IPADDR:-$(mc_gethost `hostname`| grep address |awk '{ print $2 }')}
 
 export TCID=$TC
 export TST_TOTAL=1
 export TST_COUNT=1
 
-this_file=${0##*/}
-trap "interrupt_test" 2
+. test.sh
 
-setup()
-{
-  mkdir -p $TCtmp
-  for i in $EXECUTABLES
-  do
-    install -m 0755 "$LTPROOT/testcases/bin/$i" "$TCtmp/."
-  done
-}
+if [ -z $IPADDR ]; then
+	tst_brkm TCONF "Not found $(hostname) in /etc/hosts"
+fi
 
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  do_test
-# PURPOSE:   Executes the testcases.
-# INPUT:     Number of iterations
-# OUTPUT:    Error messages are logged when any verification test
-#            fails.
-#
-#-----------------------------------------------------------------------
+tst_resm TINFO "doing test."
 
-do_test()
-{
-   $trace_logic
-   echo "$this_file: doing $0."
+COUNT=1
+while [ $COUNT -le 10 ]
+do
+	# Run setsockopt/getsockopt test
+	tst_resm TINFO "Running $EXECUTABLES on $IPADDR"
+	for i in $EXECUTABLES
+	do
+		$i $IPADDR > /dev/null 2>&1
+		if [ $? -ne 0 ]; then
+			tst_brkm TFAIL "$i $IPADDR failed"
+		fi
+	done
 
-   COUNT=1
-   while [ $COUNT -le $NUMLOOPS ]
-   do
-      # Run setsockopt/getsockopt test
-      echo "Running mc_$EXECUTABLES on $IPADDR"
-      for i in $EXECUTABLES
-      do
-        $TCtmp/$i $IPADDR
-        [ $? = 0 ] || end_testcase "$i $IPADDR failed"
-      done
+	tst_resm TINFO "Running ping with bad values"
+	ping -T 777 224.0.0.1 > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_brkm TFAIL "Multicast range should be out of range"
+	fi
 
-      echo "Running ping with bad values"
-      ping -T 777 224.0.0.1 > /dev/null 2>&1
-      [ $? = 0 ] && end_testcase "Multicast range should be out of range"
+	tst_resm TINFO "Running ping on a invalid interface!"
+	ping -I 3.3.3.3 224.0.0.1 > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		tst_brkm TFAIL "ping on bogus interface should fail"
+	fi
 
-      echo "Running ping on a invalid interface!"
-      ping -I 3.3.3.3 224.0.0.1 > /dev/null 2>&1
-      [ $? = 0 ] && end_testcase "ping on bogus interface should fail"
+	COUNT=$(( $COUNT + 1 ))
+done
 
-      COUNT=$(( $COUNT + 1 ))
-   done
-}
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:     do_cleanup
-# PURPOSE:      Called when the testcase is interrupted by the user
-#               or by interrupt_testcase() when time limit expired
-# INPUT:        None.
-# OUTPUT:       None.
-#
-#-----------------------------------------------------------------------
-
-do_cleanup()
-{
-   $trace_logic
-   echo "$this_file: doing $0."
-
-   cd /
-   if [ "x$TCtmp" != "x$TCsrc" ]; then
-      rm -rf $TCtmp
-   fi
-}
-
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{
-   $trace_logic
-   echo "$this_file: doing $0."
-
-   # Call other cleanup functions
-   [ $CLEANUP = "ON" ] && do_cleanup
-
-   [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
-}
-
-#******************************************************************************
-#
-# FUNCTION:  interrupt_test
-# PURPOSE:   Handle process interrupts set by trap.
-# INPUT:     none
-# OUTPUT:    none
-#
-#******************************************************************************
-
-interrupt_test()
-{
-   echo "test interrupted"
-   end_testcase
-}
-
-#******************************************************************************
-#
-# FUNCTION:  MAIN
-# PURPOSE:   To invoke functions that perform the tasks as described in
-#            the design in the prolog above.
-# INPUT:     See SETUP in the prolog above.
-# OUTPUT:    Logged run results written to testcase run log
-#
-#******************************************************************************
-setup
-do_test
-end_testcase
+tst_resm TPASS "Test Successful"
+tst_exit
