@@ -3,6 +3,7 @@
 #
 
 tcp_fastopen tcp_fastopen_run.sh
+tcp_fastopen6 tcp_fastopen_run.sh -6
 
 vxlan01 vxlan01.sh
 vxlan02 vxlan02.sh

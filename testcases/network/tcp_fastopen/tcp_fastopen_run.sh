@@ -21,7 +21,6 @@
 
 # default command-line options
 user_name="root"
-remote_addr=$RHOST
 use_ssh=0
 clients_num=2
 client_requests=2000000
@@ -35,28 +34,27 @@ TCID="tcp_fastopen"
 bind_timeout=5
 tfo_result="${TMPDIR}/tfo_result"
 
-while getopts :hu:H:sr:p:n:R: opt; do
+while getopts :hu:sr:p:n:R:6 opt; do
 	case "$opt" in
 	h)
 		echo "Usage:"
 		echo "h        help"
 		echo "u x      server user name"
-		echo "H x      server hostname or IP address"
 		echo "s        use ssh to run remote cmds"
 		echo "n x      num of clients running in parallel"
 		echo "r x      the number of client requests"
 		echo "R x      num of requests, after which conn. closed"
+		echo "6        run over IPv6"
 		exit 0
 	;;
 	u) user_name=$OPTARG ;;
-	H) remote_addr=$OPTARG ;;
 	s) export TST_USE_SSH=1 ;;
 	n) clients_num=$OPTARG ;;
 	r) client_requests=$OPTARG ;;
 	R) max_requests=$OPTARG ;;
-	*)
-		tst_brkm TBROK "unknown option: $opt"
+	6) # skip, test_net library already processed it
 	;;
+	*) tst_brkm TBROK "unknown option: $opt" ;;
 	esac
 done
 
@@ -88,7 +86,7 @@ run_client_server()
 	# kill tcp server on remote machine
 	tst_rhost_run -c "pkill -9 tcp_fastopen\$"
 
-	port=$(tst_rhost_run -c "tst_get_unused_port ipv4 stream")
+	port=$(tst_rhost_run -c "tst_get_unused_port ipv6 stream")
 	[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
 
 	# run tcp server on remote machine
@@ -97,7 +95,7 @@ run_client_server()
 
 	# run local tcp client
 	tcp_fastopen -a $clients_num -r $client_requests -l \
--H $remote_addr $1 -g $port -d $tfo_result
+		-H $(tst_ipaddr rhost) $1 -g $port -d $tfo_result
 	[ "$?" -ne 0 ] && tst_brkm TBROK "Last test has failed"
 
 	run_time=$(read_result_file)
@@ -111,7 +109,9 @@ tst_require_root
 tst_kvercmp 3 7 0
 [ $? -eq 0 ] && tst_brkm TCONF "test must be run with kernel 3.7 or newer"
 
-[ -z $remote_addr ] && tst_brkm TBROK "you must specify server address"
+tst_kvercmp 3 16 0
+[ $? -eq 0 -a "$TST_IPV6" ] && \
+	tst_brkm TCONF "test must be run with kernel 3.16 or newer"
 
 run_client_server "-o -O"
 time_tfo_off=$run_time

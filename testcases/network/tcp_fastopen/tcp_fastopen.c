@@ -269,7 +269,7 @@ static int client_recv(int *fd, char *buf)
 
 static int client_connect_send(const char *msg, int size)
 {
-	int cfd = socket(AF_INET, SOCK_STREAM, 0);
+	int cfd = socket(remote_addrinfo->ai_family, SOCK_STREAM, 0);
 	const int flag = 1;
 	setsockopt(cfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
 
@@ -422,10 +422,15 @@ static void client_init(void)
 
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
-	if (getaddrinfo(server_addr, tcp_port, &hints, &remote_addrinfo) != 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "getaddrinfo failed");
+	int err = getaddrinfo(server_addr, tcp_port, &hints, &remote_addrinfo);
+	if (err) {
+		tst_brkm(TBROK, cleanup, "getaddrinfo of '%s' failed, %s",
+			server_addr, gai_strerror(err));
+	}
+
+	tst_resm(TINFO, "TCP Fast Open over IPv%s",
+		(remote_addrinfo->ai_family == AF_INET6) ? "6" : "4");
 
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv_client_start);
 	int i;
@@ -586,13 +591,14 @@ static void server_init(void)
 {
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_INET;
+	hints.ai_family = AF_INET6;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 	if (getaddrinfo(NULL, tcp_port, &hints, &local_addrinfo) != 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "getaddrinfo failed");
 
-	sfd = socket(AF_INET, SOCK_STREAM, 0);
+	/* IPv6 socket is also able to access IPv4 protocol stack */
+	sfd = socket(AF_INET6, SOCK_STREAM, 0);
 	if (sfd == -1)
 		tst_brkm(TBROK, cleanup, "Failed to create a socket");
 
@@ -628,8 +634,10 @@ static void server_cleanup(void)
 
 static void server_run(void)
 {
-	struct sockaddr_in client_addr;
-	socklen_t addr_size = sizeof(client_addr);
+	/* IPv4 source address will be mapped to IPv6 address */
+	struct sockaddr_in6 addr6;
+	socklen_t addr_size = sizeof(addr6);
+
 	pthread_attr_init(&attr);
 
 	/*
@@ -640,18 +648,19 @@ static void server_run(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "setdetachstate failed");
 
 	while (1) {
-		int client_fd = accept(sfd, (struct sockaddr *) &client_addr,
+		int client_fd = accept(sfd, (struct sockaddr *)&addr6,
 			&addr_size);
+
 		if (client_fd == -1)
 			tst_brkm(TBROK, cleanup, "Can't create client socket");
 
-		if (client_addr.sin_family == AF_INET) {
-			if (verbose) {
-				tst_resm(TINFO, "conn: port '%d', addr '%s'",
-					client_addr.sin_port,
-					inet_ntoa(client_addr.sin_addr));
-			}
+		if (verbose) {
+			char addr_buf[INET6_ADDRSTRLEN];
+			tst_resm(TINFO, "conn: port '%d', addr '%s'",
+				addr6.sin6_port, inet_ntop(AF_INET6,
+				&addr6.sin6_addr, addr_buf, INET6_ADDRSTRLEN));
 		}
+
 		server_thread_add(client_fd);
 	}
 }
@@ -731,8 +740,8 @@ static void setup(int argc, char *argv[])
 		tfo_bit_num = 2;
 	break;
 	case TCP_CLIENT:
-		tst_resm(TINFO, "connection: %s:%s",
-		server_addr, tcp_port);
+		tst_resm(TINFO, "connection: addr '%s', port '%s'",
+			server_addr, tcp_port);
 		tst_resm(TINFO, "client max req: %d", client_max_requests);
 		tst_resm(TINFO, "clients num: %d", clients_num);
 		tst_resm(TINFO, "client msg size: %d", client_msg_size);
