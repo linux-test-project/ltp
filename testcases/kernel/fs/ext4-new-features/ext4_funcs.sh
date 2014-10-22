@@ -45,7 +45,7 @@ ext4_setup()
 	if [ -z "$LTP_BIG_DEV" ];then
 		tst_brkm TCONF "tests need a big block device(5G-10G)"
 	else
-		EXT4_DEV=$LTP_BIG_DEV
+		export EXT4_DEV=$LTP_BIG_DEV
 	fi
 
 	tst_tmpdir
