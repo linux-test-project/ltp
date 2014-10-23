@@ -18,9 +18,9 @@
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
-# Test-case 1: Requires remote host, test will setup virtual sub-net
-#              192.168.124.*/24 between two hosts, then will compare
-#              TCP performance with and without VXLAN (tcp_fastopen test).
+# Test-case 1: It requires remote host. Test will setup IPv4 and IPv6 virtual
+#              sub-nets between two hosts, then will compare TCP performance
+#              with and without VxLAN using ping or tcp_fastopen test.
 #
 # Test-case 2: The same as above but must fail, because VXLAN allows
 #              to communicate only within the same VXLAN segment.
