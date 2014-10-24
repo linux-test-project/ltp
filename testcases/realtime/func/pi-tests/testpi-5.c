@@ -69,7 +69,7 @@ int do_test(int argc, char **argv)
 	pthread_mutexattr_t mutexattr;
 	int retc, protocol;
 
-#if HAS_PTHREAD_MUTEXATTR_PROTOCOL_FUNCTIONS
+#if HAS_PRIORITY_INHERIT
 
 	if (pthread_mutexattr_init(&mutexattr) != 0)
 		printf("Failed to init mutexattr\n");
