@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <librttest.h>
 
-#if defined(PTHREAD_MUTEX_ROBUST_NP)
+#if HAS_PTHREAD_MUTEXTATTR_ROBUST_APIS
 pthread_mutex_t child_mutex;
 
 void *child_thread(void *arg)
