@@ -132,7 +132,7 @@ init()
 		domain-name
 		"dhcptest.net";
 	}
-	ddns-update-style ad-hoc;
+	ddns-update-style interim;
 	EOF
 	if [ $RC -ne 0 ]
 	then
