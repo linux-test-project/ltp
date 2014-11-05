@@ -75,20 +75,17 @@
 # -------
 #   Similar test(as Test02) is performed with C program text
 #
-# Test06: Test if file command can recognize ELF binay executables
+# Test06: Test if file command can recognize ELF binary executables
 # -------
-# 1) Grep for 'm68k' or 'sparc' or 'mips' or 'mipseb' or 'sh.eb'
-#    or 'powerpc' or 'ppc' or 's390' from the output of the command
-#    'uname -m'
-# 2) If the above step is successful, assign string 'MSB' to variable
-#    TARGET_ARCH else assign string 'LSB'
-# 3) Write small C program to a known '.c' file
-# 4) Compile it using "cc"
+# 1) Use readelf to determine if the host is big- or little-endian
+#    and assign TEST_ARCH the string "MSB" or "LSB" respectively
+# 2) Write small C program to a known '.c' file
+# 3) Compile it using "cc"
 #    Ex: cc xyz xyz.c
-# 5) Use file command to get the type of the object file
-# 6) Grep for the string "ELF .*-bit $TEST_ARCH executable, .*"
+# 4) Use file command to get the type of the object file
+# 5) Grep for the string "ELF .*-bit $TEST_ARCH executable, .*"
 #    in the output of the 'file' command
-# 7) If the above command is successful, declare test as PASS
+# 6) If the above command is successful, declare test as PASS
 #    else declare test as FAIL
 #
 # Test07: Test if file command can recognize tar files
@@ -332,16 +329,7 @@ fi
 
 
 # TEST #6
-# Test if file command can recognize ELF binay executables
-
-# Check ppc architecture
-  TEST_ARCH=LSB   # Assume the architecture is Intel
-
-  if uname -m |
-    grep -qe '\(m68k\)\|\(sparc\)\|\(mips\b\)\|\(mipseb\)\|\(sh.eb\)' \
-         -e '\(powerpc\)\|\(ppc\)\|\(s390\)\|\(parisc\)'; then
-     TEST_ARCH=MSB
-  fi
+# Test if file command can recognize ELF binary executables
 
 export TCID=file06
 export TST_COUNT=6
@@ -349,6 +337,19 @@ export TST_COUNT=6
 $LTPBIN/tst_resm TINFO \
         "TEST #6: file command recognizes ELF executables"
 
+# check for CPU endianness
+case $(readelf -h /bin/sh) in
+    *Data:*"big endian"*)
+        TEST_ARCH=MSB
+        ;;
+    *Data:*"little endian"*)
+        TEST_ARCH=LSB
+        ;;
+    *)
+        TEST_ARCH=NULL
+        $LTPBIN/tst_resm TFAIL "file: Could not determine CPU endianness"
+        ;;
+esac
 
 cat > $LTPTMP/cprog.c <<EOF
 #include <stdio.h>
