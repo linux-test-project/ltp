@@ -331,21 +331,18 @@ test_spread_page2()
 init_memsinfo_array
 freemem_check
 if [ $? -ne 0 ]; then
-	tst_brkm TFAIL ignored "Some node doesn't has enough free memory(100MB) to do test(MemFree_For_Nodes(KB): ${memsinfo[*]})."
-	exit 1
+	tst_brkm TCONF "Some node doesn't has enough free memory(100MB) to do test(MemFree_For_Nodes(KB): ${memsinfo[*]})."
 fi
 
 dd if=/dev/zero of=./DATAFILE bs=1M count=100
 if [ $? -ne 0 ]; then
-	tst_brkm TFAIL ignored "Creating DATAFILE failed."
-	exit 1
+	tst_brkm TFAIL "Creating DATAFILE failed."
 fi
 
 mkfifo $FIFO
 if [ $? -ne 0 ]; then
 	rm -f DATAFILE
-	tst_brkm TFAIL ignored "failed to mkfifo $FIFO"
-	exit 1
+	tst_brkm TFAIL "failed to mkfifo $FIFO"
 fi
 
 test_spread_page1

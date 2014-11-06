@@ -150,7 +150,7 @@ general_cpu_hotplug_test()
 	cpu_hotplug $HOTPLUG_CPU $cpuhotplug 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
-		tst_resm TFAIL ignored "$cpuoffline CPU#$HOTPLUG_CPU failed."
+		tst_resm TFAIL "$cpuoffline CPU#$HOTPLUG_CPU failed."
 		/bin/kill -s SIGKILL $tst_pid
 		return 1
 	fi
