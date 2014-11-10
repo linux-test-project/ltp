@@ -128,7 +128,7 @@ void sigint_handler(int __attribute__ ((unused)) signo)
 void test_setaffinity(void)
 {
 	cpu_set_t tmask;
-	int i;
+	unsigned int i;
 	CPU_ZERO(&tmask);
 	for (i = 0; i < 8 * sizeof(mask); i++) {
 		if ((1 << i) & mask)
@@ -140,7 +140,7 @@ void test_setaffinity(void)
 void test_getaffinity(void)
 {
 	cpu_set_t tmask;
-	int i;
+	unsigned int i;
 	CPU_ZERO(&tmask);
 	ret = sched_getaffinity(0, sizeof(tmask), &tmask);
 	for (i = 0; i < 8 * sizeof(mask); i++) {
@@ -190,7 +190,8 @@ void test_get_mempolicy(void)
 	ret = get_mempolicy(NULL, bitmask_mask(nmask), bitmask_nbits(nmask), 0,
 			    MPOL_F_MEMS_ALLOWED);
 #else
-	ret = -1;
+	tst_resm(TCONF, "don't have MPOL_F_MEMS_ALLOWED");
+	ret = TCONF;
 #endif
 
 	bitmask_displaylist(str, 256, nmask);
@@ -243,7 +244,6 @@ int main(int argc, char *argv[])
 #else
 int main(void)
 {
-	printf("System doesn't have required mempolicy support\n");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "System doesn't have required mempolicy support");
 }
 #endif
