@@ -2,3 +2,4 @@
 ping601 ping01 -6
 sendfile601 sendfile01 -6
 tcpdump601 tcpdump01 -6
+dhcpd6 dhcpd_tests.sh -6
