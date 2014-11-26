@@ -177,11 +177,13 @@ main(int argc, char *argv[])
 
 	/*accept() TEST5: On a established socket EINVAL, Expected error*/
 	error = accept(acpt_sk, (struct sockaddr *) &acpt_addr, &len);
-	if (error != -1 || errno != EINVAL)
+	if (error != -1 || (errno != EINVAL && errno != EACCES)) {
 		tst_brkm(TBROK, tst_exit, "accept on an established socket"
-                         "error:%d, errno:%d", error, errno);
+		         "error:%d, errno:%d", error, errno);
+	}
 
-	tst_resm(TPASS, "accept() on an established socket - EINVAL");
+	tst_resm(TPASS, "accept() on an established socket - %s",
+		tst_strerrno(errno));
 
 	/*Closing the previously established association*/
 	close(acpt_sk);
