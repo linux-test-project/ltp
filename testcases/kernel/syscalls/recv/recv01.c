@@ -95,8 +95,12 @@ struct test_case_t {		/* test case structure */
 	,
 #endif
 	{
-	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), -1,
-		    -1, EINVAL, setup1, cleanup1, "invalid flags set"}
+	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), MSG_OOB,
+		    -1, EINVAL, setup1, cleanup1, "invalid MSG_OOB flag set"}
+	,
+	{
+	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), MSG_ERRQUEUE,
+		    -1, EAGAIN, setup1, cleanup1, "invalid MSG_ERRQUEUE flag set"}
 ,};
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
