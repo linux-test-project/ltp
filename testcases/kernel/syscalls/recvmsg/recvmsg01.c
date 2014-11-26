@@ -157,17 +157,24 @@ struct test_case_t {		/* test case structure */
 /* 9 */
 	{
 	PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf),
-		    &msgdat, ~MSG_CMSG_COMPAT, (struct sockaddr *)&from,
+		    &msgdat, MSG_OOB, (struct sockaddr *)&from,
 		    sizeof(from), -1, EINVAL, setup1, cleanup1,
-		    "invalid flags set"}
+		    "invalid MSG_OOB flag set"}
 	,
 /* 10 */
+	{
+	PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf),
+		    &msgdat, MSG_ERRQUEUE, (struct sockaddr *)&from,
+		    sizeof(from), -1, EAGAIN, setup1, cleanup1,
+		    "invalid MSG_ERRQUEUE flag set"}
+	,
+/* 11 */
 	{
 	PF_UNIX, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf),
 		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
 		    0, EINVAL, setup3, cleanup2, "invalid cmsg length"}
 	,
-/* 11 */
+/* 12 */
 	{
 	PF_UNIX, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf),
 		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
