@@ -122,7 +122,6 @@ int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
-	int status;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -150,7 +149,7 @@ int main(int ac, char **av)
 			for (i = 0; i < TST_TOTAL; i++) {
 
 				/* Set the real, effective or saved user id */
-				TEST(SETRESUID(cleanup, *test_data[i].real_uid,
+				TEST(SETRESUID(NULL, *test_data[i].real_uid,
 					       *test_data[i].eff_uid,
 					       *test_data[i].sav_uid));
 
@@ -177,11 +176,7 @@ int main(int ac, char **av)
 			}
 			exit(flag);
 		} else {	/* parent */
-			waitpid(pid, &status, 0);
-			if (WEXITSTATUS(status) != 0) {
-				tst_resm(TFAIL, "test failed within "
-					 "child process.");
-			}
+			tst_record_childstatus(cleanup, pid);
 		}
 	}
 	cleanup();

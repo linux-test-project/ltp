@@ -34,6 +34,10 @@
 #include "compat_uid.h"
 #include "linux_syscall_numbers.h"
 
+int setresuid(uid_t ruid, uid_t euid, uid_t suid);
+int setresgid(gid_t rgid, gid_t egid, gid_t sgid);
+
+
 /* If the platform has __NR_sys_name32 defined it
  * means that __NR_sys_name is a 16-bit version of
  * sys_name() syscall
