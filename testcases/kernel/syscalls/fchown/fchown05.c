@@ -34,11 +34,12 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
 #define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define TESTFILE	"testfile"
 
-char *TCID = "fchown05";
+TCID_DEFINE(fchown05);
 
 static struct test_case_t {
 	char *desc;
@@ -80,7 +81,7 @@ int main(int ac, char **av)
 			user_id = tc[i].user_id;
 			group_id = tc[i].group_id;
 
-			TEST(fchown(fildes, user_id, group_id));
+			TEST(FCHOWN(cleanup, fildes, user_id, group_id));
 
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL | TTERRNO,

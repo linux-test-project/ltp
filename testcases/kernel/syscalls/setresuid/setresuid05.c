@@ -30,8 +30,9 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
-char *TCID = "setresuid05";
+TCID_DEFINE(setresuid05);
 int TST_TOTAL = 1;
 static struct passwd *ltpuser;
 static void setup(void);
@@ -70,13 +71,15 @@ static void setup(void)
 	tst_tmpdir();
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
+
+	UID16_CHECK(ltpuser->pw_uid, "setresuid", cleanup)
 }
 
 static void setresuid_verify(void)
 {
 	struct stat buf;
 
-	TEST(setresuid(-1, ltpuser->pw_uid, -1));
+	TEST(SETRESUID(cleanup, -1, ltpuser->pw_uid, -1));
 
 	if (TEST_RETURN != 0) {
 		tst_resm(TFAIL | TTERRNO, "setresuid failed unexpectedly");

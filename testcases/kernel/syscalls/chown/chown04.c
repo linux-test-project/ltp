@@ -55,6 +55,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
 #define MODE_RWX		 (S_IRWXU|S_IRWXG|S_IRWXO)
 #define FILE_MODE		 (S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
@@ -85,7 +86,7 @@ static struct test_case_t {
 	{TEST_FILE5, EROFS}
 };
 
-char *TCID = "chown04";
+TCID_DEFINE(chown04);
 int TST_TOTAL = ARRAY_SIZE(tc);
 static int exp_enos[] = { EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR,
 		          ELOOP, EROFS, 0 };
@@ -111,14 +112,14 @@ int main(int ac, char **av)
 
 	TEST_EXP_ENOS(exp_enos);
 
-	user_id = geteuid();
-	group_id = getegid();
+	UID16_CHECK((user_id = geteuid()), "chown", cleanup)
+	GID16_CHECK((group_id = getegid()), "chown", cleanup)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(chown(tc[i].pathname, user_id, group_id));
+			TEST(CHOWN(cleanup, tc[i].pathname, user_id, group_id));
 
 			if (TEST_RETURN == 0) {
 				tst_resm(TFAIL, "chown succeeded unexpectedly");

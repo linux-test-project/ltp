@@ -77,11 +77,12 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 #define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define TESTFILE	"testfile"
 
-char *TCID = "chown05";
+TCID_DEFINE(chown05);
 
 struct test_case_t {
 	uid_t user_id;
@@ -121,7 +122,7 @@ int main(int ac, char **av)
 			user_id = test_cases[i].user_id;
 			group_id = test_cases[i].group_id;
 
-			TEST(chown(TESTFILE, user_id, group_id));
+			TEST(CHOWN(cleanup, TESTFILE, user_id, group_id));
 
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL | TTERRNO, "chown failed");

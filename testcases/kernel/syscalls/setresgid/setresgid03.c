@@ -81,6 +81,7 @@
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 #define EXP_RET_VAL	-1
 #define EXP_ERRNO	EPERM
@@ -95,7 +96,7 @@ struct test_case_t {		/* test case structure */
 	struct passwd *exp_sgid;	/* Expected saved GID */
 };
 
-char *TCID = "setresgid03";
+TCID_DEFINE(setresgid03);
 static int testno;
 static struct passwd nobody, bin, root;
 static uid_t nobody_gid, bin_gid, neg = -1;
@@ -131,7 +132,7 @@ int main(int argc, char **argv)
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			TEST(setresgid(*tdat[testno].rgid, *tdat[testno].egid,
+			TEST(SETRESGID(cleanup, *tdat[testno].rgid, *tdat[testno].egid,
 				       *tdat[testno].sgid));
 
 			TEST_ERROR_LOG(TEST_ERRNO);
@@ -207,14 +208,14 @@ void setup(void)
 
 	}
 	bin = *passwd_p;
-	bin_gid = bin.pw_gid;
+	GID16_CHECK((bin_gid = bin.pw_gid), "setresgid", cleanup)
 
 	if ((passwd_p = getpwnam("nobody")) == NULL) {
 		tst_brkm(TBROK, NULL, "nobody user id doesn't exist");
 
 	}
 	nobody = *passwd_p;
-	nobody_gid = nobody.pw_gid;
+	GID16_CHECK((nobody_gid = nobody.pw_gid), "setresgid", cleanup)
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);

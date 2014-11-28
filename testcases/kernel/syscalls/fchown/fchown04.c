@@ -45,6 +45,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
 			 S_IXGRP|S_IROTH|S_IXOTH)
@@ -64,7 +65,7 @@ static struct test_case_t {
 	{&fd3, EROFS},
 };
 
-char *TCID = "fchown04";
+TCID_DEFINE(fchown04);
 int TST_TOTAL = ARRAY_SIZE(test_cases);
 static int exp_enos[] = { EPERM, EBADF, EROFS, 0 };
 
@@ -140,7 +141,10 @@ static void setup(void)
 
 static void fchown_verify(int i)
 {
-	TEST(fchown(*test_cases[i].fd, geteuid(), getegid()));
+	UID16_CHECK(geteuid(), "fchown", cleanup)
+	GID16_CHECK(getegid(), "fchown", cleanup)
+
+	TEST(FCHOWN(cleanup, *test_cases[i].fd, geteuid(), getegid()));
 
 	if (TEST_RETURN == -1) {
 		if (TEST_ERRNO == test_cases[i].exp_errno) {

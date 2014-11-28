@@ -53,8 +53,9 @@
 #include "test.h"
 #include "usctest.h"
 #include <pwd.h>
+#include "compat_16.h"
 
-char *TCID = "setresuid04";
+TCID_DEFINE(setresuid04);
 int TST_TOTAL = 1;
 char nobody_uid[] = "nobody";
 char testfile[256] = "";
@@ -111,8 +112,8 @@ void do_master_child(void)
 		/* Reset tst_count in case we are looping */
 		tst_count = 0;
 
-		if (setresuid(0, ltpuser->pw_uid, 0) == -1) {
-			perror("setfsuid failed");
+		if (SETRESUID(cleanup, 0, ltpuser->pw_uid, 0) == -1) {
+			perror("setresuid failed");
 			exit(1);
 		}
 
@@ -176,8 +177,8 @@ void do_master_child(void)
 		 *         the file with RDWR permissions.
 		 */
 		tst_count++;
-		if (setresuid(0, 0, 0) == -1) {
-			perror("setfsuid failed");
+		if (SETRESUID(cleanup, 0, 0, 0) == -1) {
+			perror("setresuid failed");
 			exit(1);
 		}
 
@@ -202,6 +203,8 @@ void setup(void)
 	tst_require_root(NULL);
 
 	ltpuser = getpwnam(nobody_uid);
+
+	UID16_CHECK(ltpuser->pw_uid, "setresuid", cleanup)
 
 	tst_tmpdir();
 

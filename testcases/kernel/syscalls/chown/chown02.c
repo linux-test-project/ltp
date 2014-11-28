@@ -79,6 +79,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 #define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define NEW_PERMS1	(S_IFREG|S_IRWXU|S_IRWXG|S_ISUID|S_ISGID)
@@ -87,7 +88,7 @@
 #define TESTFILE1	"testfile1"
 #define TESTFILE2	"testfile2"
 
-char *TCID = "chown02";
+TCID_DEFINE(chown02);
 
 int setup1();			/* Test specific setup functions */
 int setup2();
@@ -142,7 +143,7 @@ int main(int ac, char **av)
 			 * Call chown(2) with different user id and
 			 * group id (numeric values) to set it on testfile.
 			 */
-			TEST(chown(file_name, user_id, group_id));
+			TEST(CHOWN(cleanup, file_name, user_id, group_id));
 
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL | TTERRNO,

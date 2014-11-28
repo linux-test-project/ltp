@@ -42,11 +42,12 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "fchown01";
+TCID_DEFINE(fchown01);
 int TST_TOTAL = 1;
 
 static int fd;
@@ -65,7 +66,10 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(fchown(fd, geteuid(), getegid()));
+		UID16_CHECK(geteuid(), "fchown", cleanup)
+		GID16_CHECK(getegid(), "fchown", cleanup)
+
+		TEST(FCHOWN(cleanup, fd, geteuid(), getegid()));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "fchown failed");

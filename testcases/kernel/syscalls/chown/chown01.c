@@ -117,8 +117,9 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
-char *TCID = "chown01";
+TCID_DEFINE(chown01);
 int TST_TOTAL = 1;
 
 int exp_enos[] = { 0, 0 };
@@ -145,7 +146,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		TEST(chown(fname, uid, gid));
+		TEST(CHOWN(cleanup, fname, uid, gid));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "chown(%s, %d,%d) failed",
@@ -170,8 +171,8 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	uid = geteuid();
-	gid = getegid();
+	UID16_CHECK((uid = geteuid()), "chown", cleanup)
+	GID16_CHECK((gid = getegid()), "chown", cleanup)
 
 	sprintf(fname, "t_%d", getpid());
 

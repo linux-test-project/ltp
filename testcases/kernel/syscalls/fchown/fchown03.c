@@ -41,13 +41,14 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
 #define FILE_MODE (mode_t)(S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define NEW_PERMS (mode_t)(S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID)
 #define FCHOWN_PERMS	(mode_t)(NEW_PERMS & ~(S_ISUID | S_ISGID))
 #define TESTFILE	"testfile"
 
-char *TCID = "fchown03";
+TCID_DEFINE(fchown03);
 int TST_TOTAL = 1;
 
 static int fildes;
@@ -75,9 +76,9 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		user_id = geteuid();
-		group_id = getegid();
+		GID16_CHECK((group_id = getegid()), "fchown", cleanup)
 
-		TEST(fchown(fildes, -1, group_id));
+		TEST(FCHOWN(cleanup, fildes, -1, group_id));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "fchown() on %s Fails, errno=%d",

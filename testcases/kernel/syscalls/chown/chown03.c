@@ -82,12 +82,13 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "compat_16.h"
 
 #define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define NEW_PERMS	(S_IFREG|S_IRWXU|S_IRWXG|S_ISUID|S_ISGID)
 #define TESTFILE	"testfile"
 
-char *TCID = "chown03";
+TCID_DEFINE(chown03);
 int TST_TOTAL = 1;		/* Total number of test conditions */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -112,10 +113,10 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		user_id = geteuid();
-		group_id = getegid();
+		UID16_CHECK((user_id = geteuid()), "chown", cleanup)
+		GID16_CHECK((group_id = getegid()), "chown", cleanup)
 
-		TEST(chown(TESTFILE, -1, group_id));
+		TEST(CHOWN(cleanup, TESTFILE, -1, group_id));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "chown(%s, ..) failed",

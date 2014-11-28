@@ -40,6 +40,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
 			 S_IXGRP|S_IROTH|S_IXOTH)
@@ -57,7 +58,7 @@ static struct test_case_t {
 	{TEST_EROFS, EROFS},
 };
 
-char *TCID = "lchown03";
+TCID_DEFINE(lchown03);
 int TST_TOTAL = ARRAY_SIZE(test_cases);
 static int exp_enos[] = { ELOOP, EROFS, 0 };
 
@@ -124,7 +125,10 @@ static void setup(void)
 
 static void lchown_verify(const struct test_case_t *test)
 {
-	TEST(lchown(test->pathname, geteuid(), getegid()));
+	UID16_CHECK(geteuid(), "lchown", cleanup)
+	GID16_CHECK(getegid(), "lchown", cleanup)
+
+	TEST(LCHOWN(cleanup, test->pathname, geteuid(), getegid()));
 
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "lchown() returned %ld, expected -1, errno=%d",

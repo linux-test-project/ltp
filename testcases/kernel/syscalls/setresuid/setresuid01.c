@@ -69,8 +69,9 @@
 #include "test.h"
 #include "usctest.h"
 #include <errno.h>
+#include "compat_16.h"
 
-char *TCID = "setresuid01";
+TCID_DEFINE(setresuid01);
 
 uid_t nobody_pw_uid, root_pw_uid, bin_pw_uid;
 uid_t neg_one = -1;
@@ -140,7 +141,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 			/* Set the real, effective or user id */
-			TEST(setresuid(*test_data[i].real_uid,
+			TEST(SETRESUID(cleanup, *test_data[i].real_uid,
 				       *test_data[i].eff_uid,
 				       *test_data[i].sav_uid));
 
@@ -185,13 +186,13 @@ void setup(void)
 	TEST_EXP_ENOS(exp_enos);
 
 	root = *(getpwnam("root"));
-	root_pw_uid = root.pw_uid;
+	UID16_CHECK((root_pw_uid = root.pw_uid), "setresuid", cleanup)
 
 	nobody = *(getpwnam("nobody"));
-	nobody_pw_uid = nobody.pw_uid;
+	UID16_CHECK((nobody_pw_uid = nobody.pw_uid), "setresuid", cleanup)
 
 	bin = *(getpwnam("bin"));
-	bin_pw_uid = bin.pw_uid;
+	UID16_CHECK((bin_pw_uid = bin.pw_uid), "setresuid", cleanup)
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.

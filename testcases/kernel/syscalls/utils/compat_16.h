@@ -127,8 +127,28 @@ int SETREGID(void (cleanup)(void), GID_T rgid, GID_T egid)
 	LTP_CREATE_SYSCALL(setregid, cleanup, rgid, egid);
 }
 
+int SETRESUID(void (cleanup)(void), UID_T ruid, UID_T euid, UID_T suid)
+{
+	LTP_CREATE_SYSCALL(setresuid, cleanup, ruid, euid, suid);
+}
+
+int SETRESGID(void (cleanup)(void), GID_T rgid, GID_T egid, GID_T sgid)
+{
+	LTP_CREATE_SYSCALL(setresgid, cleanup, rgid, egid, sgid);
+}
+
+int FCHOWN(void (cleanup)(void), unsigned int fd, UID_T owner, GID_T group)
+{
+	LTP_CREATE_SYSCALL(fchown, cleanup, fd, owner, group);
+}
+
 int LCHOWN(void (cleanup)(void), const char *path, UID_T owner, GID_T group)
 {
 	LTP_CREATE_SYSCALL(lchown, cleanup, path, owner, group);
+}
+
+int CHOWN(void (cleanup)(void), const char *path, UID_T owner, GID_T group)
+{
+	LTP_CREATE_SYSCALL(chown, cleanup, path, owner, group);
 }
 #endif /* __LTP_COMPAT_16_H__ */

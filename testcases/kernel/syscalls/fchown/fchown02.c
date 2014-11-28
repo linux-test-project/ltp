@@ -38,6 +38,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
+#include "compat_16.h"
 
 #define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define NEW_PERMS1	S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID
@@ -46,7 +47,7 @@
 #define TESTFILE1	"testfile1"
 #define TESTFILE2	"testfile2"
 
-char *TCID = "fchown02";
+TCID_DEFINE(fchown02);
 int TST_TOTAL = 2;
 static int fd1;
 static int fd2;
@@ -71,7 +72,7 @@ static void verify_fchown(struct test_case *t)
 {
 	struct stat stat_buf;
 
-	TEST(fchown(*t->fd, t->user_id, t->group_id));
+	TEST(FCHOWN(cleanup, *t->fd, t->user_id, t->group_id));
 
 	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL | TTERRNO, "fchown() Fails on %s", t->pathname);
