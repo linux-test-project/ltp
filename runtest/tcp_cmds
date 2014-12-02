@@ -20,3 +20,4 @@ tcpdump tcpdump01
 telnet telnet01
 iptables iptables_tests.sh
 dhcpd dhcpd_tests.sh
+dnsmasq dnsmasq_tests.sh
