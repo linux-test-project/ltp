@@ -159,7 +159,7 @@ void cleanup(void)
 	for (i = 0; i < num_shms; i++)
 		rm_shm(shm_id_arr[i]);
 
-	SAFE_FILE_PRINTF(NULL, PATH_SHMMNI, "%ld", orig_shmmni);
+	FILE_PRINTF(PATH_SHMMNI, "%ld", orig_shmmni);
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
 
 	tst_rmdir();

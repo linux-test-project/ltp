@@ -120,10 +120,10 @@ void setup(void)
 
 void cleanup(void)
 {
-	SAFE_FILE_PRINTF(NULL, PATH_KHPD "scan_sleep_millisecs",
+	FILE_PRINTF(PATH_KHPD "scan_sleep_millisecs",
 			 "%d", pre_thp_scan_sleep_millisecs);
 
-	SAFE_FILE_PRINTF(NULL, PATH_KHPD "alloc_sleep_millisecs",
+	FILE_PRINTF(PATH_KHPD "alloc_sleep_millisecs",
 			 "%d", pre_thp_alloc_sleep_millisecs);
 
 	/*
@@ -132,11 +132,11 @@ void cleanup(void)
 	 * the three mode: always, madvise, never.
 	 */
 	if (strcmp(pre_thp_enabled, "[always] madvise never") == 0)
-		SAFE_FILE_PRINTF(NULL, PATH_THP "enabled", "always");
+		FILE_PRINTF(PATH_THP "enabled", "always");
 	else if (strcmp(pre_thp_enabled, "always [madvise] never") == 0)
-		SAFE_FILE_PRINTF(NULL, PATH_THP "enabled", "madvise");
+		FILE_PRINTF(PATH_THP "enabled", "madvise");
 	else
-		SAFE_FILE_PRINTF(NULL, PATH_THP "enabled", "never");
+		FILE_PRINTF(PATH_THP "enabled", "never");
 
 	TEST_CLEANUP;
 }

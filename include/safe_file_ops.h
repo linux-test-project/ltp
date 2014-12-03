@@ -42,6 +42,14 @@
 /*
  * All-in-one function to scanf value(s) from a file.
  */
+int file_scanf(const char *file, const int lineno,
+		const char *path, const char *fmt, ...)
+		__attribute__ ((format (scanf, 4, 5)));
+
+#define FILE_SCANF(path, fmt, ...) \
+	file_scanf(__FILE__, __LINE__, \
+	           (path), (fmt), ## __VA_ARGS__)
+
 void safe_file_scanf(const char *file, const int lineno,
                      void (*cleanup_fn)(void),
 		     const char *path, const char *fmt, ...)
@@ -54,6 +62,14 @@ void safe_file_scanf(const char *file, const int lineno,
 /*
  * All-in-one function that lets you printf directly into a file.
  */
+int file_printf(const char *file, const int lineno,
+                      const char *path, const char *fmt, ...)
+                      __attribute__ ((format (printf, 4, 5)));
+
+#define FILE_PRINTF(path, fmt, ...) \
+	file_printf(__FILE__, __LINE__, \
+	            (path), (fmt), ## __VA_ARGS__)
+
 void safe_file_printf(const char *file, const int lineno,
                       void (*cleanup_fn)(void),
                       const char *path, const char *fmt, ...)

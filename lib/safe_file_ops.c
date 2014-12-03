@@ -73,6 +73,60 @@ static int count_scanf_conversions(const char *fmt)
 	return cnt;
 }
 
+int file_scanf(const char *file, const int lineno,
+		     const char *path, const char *fmt, ...)
+{
+	va_list va;
+	FILE *f;
+	int exp_convs, ret;
+
+	f = fopen(path, "r");
+
+	if (f == NULL) {
+		tst_resm(TWARN,
+			"Failed to open FILE '%s' at %s:%d",
+			 path, file, lineno);
+		return 1;
+	}
+
+	exp_convs = count_scanf_conversions(fmt);
+
+	va_start(va, fmt);
+	ret = vfscanf(f, fmt, va);
+	va_end(va);
+
+	if (ret == EOF) {
+		tst_resm(TWARN,
+			 "The FILE '%s' ended prematurely at %s:%d",
+			 path, file, lineno);
+		goto err;
+	}
+
+	if (ret != exp_convs) {
+		tst_resm(TWARN,
+			"Expected %i conversions got %i FILE '%s' at %s:%d",
+			 exp_convs, ret, path, file, lineno);
+		goto err;
+	}
+
+	if (fclose(f)) {
+		tst_resm(TWARN,
+			 "Failed to close FILE '%s' at %s:%d",
+			 path, file, lineno);
+		return 1;
+	}
+
+	return 0;
+
+err:
+	if (fclose(f)) {
+		tst_resm(TWARN,
+			 "Failed to close FILE '%s' at %s:%d",
+			 path, file, lineno);
+	}
+	return 1;
+}
+
 void safe_file_scanf(const char *file, const int lineno,
 		     void (*cleanup_fn) (void),
 		     const char *path, const char *fmt, ...)
@@ -107,6 +161,55 @@ void safe_file_scanf(const char *file, const int lineno,
 			 exp_convs, ret, path, file, lineno);
 	}
 
+	if (fclose(f)) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "Failed to close FILE '%s' at %s:%d",
+			 path, file, lineno);
+	}
+}
+
+int file_printf(const char *file, const int lineno,
+		      const char *path, const char *fmt, ...)
+{
+	va_list va;
+	FILE *f;
+
+	f = fopen(path, "w");
+
+	if (f == NULL) {
+		tst_resm(TWARN,
+			 "Failed to open FILE '%s' at %s:%d",
+			 path, file, lineno);
+		return 1;
+	}
+
+	va_start(va, fmt);
+
+	if (vfprintf(f, fmt, va) < 0) {
+		tst_resm(TWARN,
+			"Failed to print to FILE '%s' at %s:%d",
+			 path, file, lineno);
+		goto err;
+	}
+
+	va_end(va);
+
+	if (fclose(f)) {
+		tst_resm(TWARN,
+			 "Failed to close FILE '%s' at %s:%d",
+			 path, file, lineno);
+		return 1;
+	}
+
+	return 0;
+
+err:
+	if (fclose(f)) {
+		tst_resm(TWARN,
+			 "Failed to close FILE '%s' at %s:%d",
+			 path, file, lineno);
+	}
+	return 1;
 }
 
 void safe_file_printf(const char *file, const int lineno,

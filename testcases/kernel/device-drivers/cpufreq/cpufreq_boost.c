@@ -63,10 +63,10 @@ const char maxspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_max_freq";
 
 static void cleanup(void)
 {
-	SAFE_FILE_PRINTF(NULL, cdrv[id].file, "%d", boost_value);
+	FILE_PRINTF(cdrv[id].file, "%d", boost_value);
 
 	if (governor[0] != '\0')
-		SAFE_FILE_PRINTF(NULL, governor, "%s", governor_name);
+		FILE_PRINTF(governor, "%s", governor_name);
 
 	TEST_CLEANUP;
 }

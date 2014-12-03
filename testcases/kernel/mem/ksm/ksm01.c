@@ -130,7 +130,7 @@ void setup(void)
 void cleanup(void)
 {
 	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0)
-		SAFE_FILE_PRINTF(NULL, PATH_KSM "merge_across_nodes",
+		FILE_PRINTF(PATH_KSM "merge_across_nodes",
 				 "%d", merge_across_nodes);
 
 	TEST_CLEANUP;

@@ -149,7 +149,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	/* Restore pid_max value. */
-	SAFE_FILE_PRINTF(NULL, PID_MAX_PATH, "%lu", pid_max);
+	FILE_PRINTF(PID_MAX_PATH, "%lu", pid_max);
 
 	TEST_CLEANUP;
 }

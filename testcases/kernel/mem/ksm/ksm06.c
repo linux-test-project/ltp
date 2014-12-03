@@ -114,11 +114,11 @@ void setup(void)
 
 void cleanup(void)
 {
-	SAFE_FILE_PRINTF(NULL, PATH_KSM "merge_across_nodes",
+	FILE_PRINTF(PATH_KSM "merge_across_nodes",
 			 "%d", merge_across_nodes);
-	SAFE_FILE_PRINTF(NULL, PATH_KSM "sleep_millisecs",
+	FILE_PRINTF(PATH_KSM "sleep_millisecs",
 			 "%d", sleep_millisecs);
-	SAFE_FILE_PRINTF(NULL, PATH_KSM "run", "%d", run);
+	FILE_PRINTF(PATH_KSM "run", "%d", run);
 
 	TEST_CLEANUP;
 }
