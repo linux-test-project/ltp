@@ -83,11 +83,6 @@ long TEST_RETURN;
 int TEST_ERRNO;
 struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
 
-/* Break bad habits. */
-#ifdef GARRETT_IS_A_PEDANTIC_BASTARD
-pid_t spawned_program_pid;
-#endif
-
 #define VERBOSE      1		/* flag values for the T_mode variable */
 #define NOPASS       3
 #define DISCARD      4
@@ -372,27 +367,6 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 	int ttype_result = TTYPE_RESULT(ttype);
 	char message[USERMESG];
 	size_t size;
-
-#ifdef GARRETT_IS_A_PEDANTIC_BASTARD
-	/* Don't execute these APIs unless you have the same pid as main! */
-	if (spawned_program_pid != 0) {
-		/*
-		 * Die quickly and noisily so people get the cluebat that the
-		 * test needs to be fixed. These APIs should _not_ be called
-		 * from forked processes because of the fact that it can confuse
-		 * end-users with printouts, cleanup will potentially blow away
-		 * directories and/or files still in use introducing
-		 * non-determinism, etc.
-		 *
-		 * assert will not return (by design in accordance with POSIX
-		 * 1003.1) if the assertion fails. Read abort(3) for more
-		 * details. So don't worry about saving / restoring the signal
-		 * handler, unless you have a buggy OS that you've hacked 15
-		 * different ways to Sunday.
-		 */
-		assert(spawned_program_pid == getpid());
-	}
-#endif
 
 #if DEBUG
 	printf("IN tst_print: tnum = %d, ttype = %d, tmesg = %s\n",

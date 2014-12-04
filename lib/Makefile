@@ -26,8 +26,6 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 CFLAGS			+= -I.
 
-#CPPFLAGS		+= -DGARRETT_IS_A_PEDANTIC_BASTARD
-
 FILTER_OUT_LIBSRCS	:= mount_utils.c
 
 LIB			:= libltp.a
