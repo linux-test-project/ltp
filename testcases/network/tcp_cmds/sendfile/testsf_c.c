@@ -39,9 +39,9 @@ int main(int argc, char *argv[])
 	int port;
 
 	if (argc != 6) {
-		tst_resm(TBROK,
+		tst_brkm(TBROK,
+			 NULL,
 			 "usage: server-ip port client-file server-file file-len");
-		tst_exit();
 	}
 
 	int i;
@@ -50,8 +50,7 @@ int main(int argc, char *argv[])
 
 	/* open socket to server */
 	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0) {
-		tst_resm(TBROK, "socket error = %d\n", errno);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "socket error = %d\n", errno);
 	}
 
 	clnt_fname = argv[3];	/* filename to create */
@@ -76,8 +75,7 @@ int main(int argc, char *argv[])
 			 argv[1], gai_strerror(gai));
 	}
 	if (!hp || !hp->ai_addr || hp->ai_addr->sa_family != AFI) {
-		tst_resm(TBROK, "getaddrinfo failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "getaddrinfo failed");
 	}
 
 	tst_resm(TINFO, "rbuf => %s\n", rbuf);
@@ -113,9 +111,9 @@ int main(int argc, char *argv[])
 	while ((nbyte = read(s, rbuf, PATH_MAX)) > 0) {
 		nlen += nbyte;
 		if (write(fd, rbuf, nbyte) != nbyte) {
-			tst_resm(TBROK, "Error writing to file %s on client\n",
+			tst_brkm(TBROK, NULL,
+				 "Error writing to file %s on client\n",
 				 clnt_fname);
-			tst_exit();
 		}
 	}
 

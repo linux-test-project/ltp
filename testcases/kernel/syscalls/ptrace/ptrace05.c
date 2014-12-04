@@ -67,18 +67,18 @@ int main(int argc, char **argv)
 		end_signum = (int)strtol((const char *)*(argv + 2), NULL, 10);
 		/* Parse the signal value. */
 		if (end_signum == 0 && errno != 0) {
-			tst_resm(TBROK, "argument (%s) isn't a valid number.\n",
+			tst_brkm(TBROK, NULL,
+				 "argument (%s) isn't a valid number.\n",
 				 *(argv + 2));
-			tst_exit();
 		}
 		/* FALLTHROUGH */
 	case 2:
 		start_signum = (int)strtol((const char *)*(argv + 1), NULL, 10);
 		/* Parse the signal value. */
 		if (end_signum == 0 && errno != 0) {
-			tst_resm(TBROK, "argument (%s) isn't a valid number.\n",
+			tst_brkm(TBROK, NULL,
+				 "argument (%s) isn't a valid number.\n",
 				 *(argv + 1));
-			tst_exit();
 		}
 		break;
 	case 1:

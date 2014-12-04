@@ -96,8 +96,7 @@ char *prog;
 {
 	tst_resm(TCONF, "Usage: %s <nchild> <size> <chunk_size> <iterations>",
 		 prog);
-	tst_resm(TCONF, "DEFAULTS: 10 1024*1024 4096 25");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "DEFAULTS: 10 1024*1024 4096 25");
 }
 
 int main(argc, argv)
@@ -493,9 +492,9 @@ int me;
 		tst_resm(TINFO, "\tThis is ok - probably swap space limit.\n");
 		tst_exit();
 	} else {
-		tst_resm(TBROK,
+		tst_brkm(TBROK,
+			 NULL,
 			 "\tThis is not ok for first child - check parameters.\n");
-		tst_exit();
 	}
 
 	return 0;

@@ -65,9 +65,9 @@ int main()
 
 	if ((shmid = shmget(key, 24 * K_1, IPC_CREAT | 0666)) < 0) {
 		perror("shmget");
-		tst_resm(TFAIL, "Error: shmget: shmid = %d, errno = %d\n",
+		tst_brkm(TFAIL, NULL,
+			 "Error: shmget: shmid = %d, errno = %d\n",
 			 shmid, errno);
-		tst_exit();
 	}
 
 	cp = shmat(shmid, NULL, 0);
@@ -110,10 +110,10 @@ int shmid;
 {
 	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
 		perror("shmctl");
-		tst_resm(TFAIL,
+		tst_brkm(TFAIL,
+			 NULL,
 			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
 			 shmid, errno);
-		tst_exit();
 	}
 	return (0);
 }

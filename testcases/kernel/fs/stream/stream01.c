@@ -71,9 +71,9 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 		//block0:
 		if ((stream = fopen(tempfile1, "a+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) a+ failed: %s", tempfile1,
+			tst_brkm(TFAIL, NULL, "fopen(%s) a+ failed: %s",
+				 tempfile1,
 				 strerror(errno));
-			tst_exit();
 		}
 		fwrite("a", 1, 1, stream);
 		if ((stream = freopen(tempfile2, "a+", stream)) == NULL) {

@@ -215,9 +215,8 @@ static void dotest(key_t key)
 				if (asprintf(&maxsemstring, "%s%s%d",
 					     maxsemstring, (j ? ":" : ""),
 					     maxsemvals[j]) < 0) {
-					tst_resm(TBROK, "Could not serialize "
+					tst_brkm(TBROK, NULL, "Could not serialize "
 						 "maxsemvals");
-					tst_exit();
 				}
 			}
 			if (self_exec(argv0, "dS", id, maxsemstring) < 0) {
@@ -298,14 +297,12 @@ void do_child(void)
 	tok = strtok(maxsemstring, ":");
 	for (i = 0; i < NSEMS; i++) {
 		if (strlen(tok) == 0) {
-			tst_resm(TBROK, "Invalid argument to -C option");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "Invalid argument to -C option");
 		}
 
 		maxsemvals[i] = strtol(tok, &endptr, 10);
 		if (*endptr != '\0') {
-			tst_resm(TBROK, "Invalid argument to -C option");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "Invalid argument to -C option");
 		}
 		tok = strtok(NULL, ":");
 	}

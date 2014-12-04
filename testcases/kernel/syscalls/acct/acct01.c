@@ -115,11 +115,9 @@ static void check_acct_in_kernel(void)
 	/* check if acct is implemented in kernel */
 	if (acct(NULL) == -1) {
 		if (errno == ENOSYS) {
-			tst_resm(TCONF,
-				 "BSD process accounting is not configured in "
+			tst_brkm(TCONF,
+				 NULL, "BSD process accounting is not configured in "
 				 "this kernel");
-
-			tst_exit();
 		}
 	}
 }

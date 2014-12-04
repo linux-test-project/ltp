@@ -117,10 +117,10 @@ int main(int argc, char **argv)
 			nprocs = atoi(argv[2]);
 		}
 	} else {
-		tst_resm(TCONF,
+		tst_brkm(TCONF,
+			 NULL,
 			 " Usage: %s [ number of iterations  number of processes ]",
 			 argv[0]);
-		tst_exit();
 	}
 
 	srand(getpid());
@@ -166,9 +166,9 @@ int main(int argc, char **argv)
 	for (i = 0; i < nprocs; i++) {
 		fflush(stdout);
 		if ((pid = FORK_OR_VFORK()) < 0) {
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "\tFork failed (may be OK if under stress)");
-			tst_exit();
 		}
 		/* Child does this */
 		if (pid == 0) {
@@ -187,9 +187,9 @@ int main(int argc, char **argv)
 	while (1) {
 		if ((wait(&status)) > 0) {
 			if (status >> 8 != 0) {
-				tst_resm(TFAIL, "Child exit status = %d",
+				tst_brkm(TFAIL, NULL,
+					 "Child exit status = %d",
 					 status >> 8);
-				tst_exit();
 			}
 			count++;
 		} else {
@@ -203,10 +203,10 @@ int main(int argc, char **argv)
 	}
 	/* Make sure proper number of children exited */
 	if (count != nprocs) {
-		tst_resm(TFAIL,
+		tst_brkm(TFAIL,
+			 NULL,
 			 "Wrong number of children exited, Saw %d, Expected %d",
 			 count, nprocs);
-		tst_exit();
 	}
 
 	tst_resm(TPASS, "msgctl10 ran successfully!");

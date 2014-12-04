@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
 	tst_resm(TINFO, "After exec() in child");
 	errno = 0;
 	if (ptrace(PTRACE_SYSCALL, pid, NULL, NULL) && errno) {
-		tst_resm(TFAIL, "PTRACE_SYSCALL failed: %s", strerror(errno));
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "PTRACE_SYSCALL failed: %s",
+			 strerror(errno));
 	}
 	compare_registers(0x00);
 	compare_registers(0xff);

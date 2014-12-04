@@ -79,8 +79,7 @@ int TST_TOTAL = 1;
 #ifdef USE_STUB
 int main(int argc, char **argv)
 {
-	tst_resm(TCONF, "System doesn't support execution of the test");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
 }
 
 #else

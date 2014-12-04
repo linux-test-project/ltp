@@ -263,9 +263,9 @@ void cleanup(void)
 #elif HAVE_MODIFY_LDT
 int main(void)
 {
-	tst_resm(TCONF,
+	tst_brkm(TCONF,
+		 NULL,
 		 "modify_ldt is available but not tested on the platform than __i386__");
-	tst_exit();
 }
 
 #else

@@ -48,9 +48,9 @@ int check_remaining_caps(int lastdropped)
 		ret = -1;
 #endif
 		if (ret == -1) {
-			tst_resm(TBROK,
+			tst_brkm(TBROK,
+				 NULL,
 				 "Failed to read bounding set during sanity check\n");
-			tst_exit();
 		}
 		if (ret == 1) {
 			tst_resm(TFAIL,
@@ -68,9 +68,9 @@ int check_remaining_caps(int lastdropped)
 		ret = -1;
 #endif
 		if (ret == -1) {
-			tst_resm(TBROK,
+			tst_brkm(TBROK,
+				 NULL,
 				 "Failed to read bounding set during sanity check\n");
-			tst_exit();
 		}
 		if (ret == 0) {
 			tst_resm(TFAIL,
@@ -96,9 +96,9 @@ int main(int argc, char *argv[])
 	ret = -1;
 #endif
 	if (ret != -1) {
-		tst_resm(TFAIL, "prctl(PR_CAPBSET_DROP, -1) returned %d\n",
+		tst_brkm(TFAIL, NULL,
+			 "prctl(PR_CAPBSET_DROP, -1) returned %d\n",
 			 ret);
-		tst_exit();
 	}
 	/* Ideally I'd check CAP_LAST_CAP+1, but userspace
 	 * tends to be far too unreliable to trust CAP_LAST_CAP>
@@ -136,15 +136,15 @@ int main(int argc, char *argv[])
 		}
 		ret = check_remaining_caps(i);
 		if (ret > 0) {
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "after dropping bits 0..%d, %d was still in bounding set\n",
 				 i, ret);
-			tst_exit();
 		} else if (ret < 0) {
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "after dropping bits 0..%d, %d was not in bounding set\n",
 				 i, -ret);
-			tst_exit();
 		}
 	}
 	tst_resm(TPASS, "PR_CAPBSET_DROP tests passed\n");

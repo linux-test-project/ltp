@@ -80,16 +80,15 @@ int main(void)
 		ret = unshare(flags);
 		if (ret < 0) {
 			perror("unshare");
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "Error:Unshare syscall failed for network namespace");
-			tst_exit();
 		}
 #else
 		tst_resm(TCONF, "System doesn't have unshare support");
 #endif
 		if (crtchild(CHILD_SCRIPT, NULL) != 0) {
-			tst_resm(TFAIL, "Failed running child script");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "Failed running child script");
 		}
 	} else {
 
@@ -108,9 +107,9 @@ parent & child NS");
 		ret = waitpid(pid, &status, __WALL);
 		status = WEXITSTATUS(status);
 		if (status != 0 || ret == -1) {
-			tst_resm(TFAIL, "waitpid() returns %d, errno %d", ret,
+			tst_brkm(TFAIL, NULL,
+				 "waitpid() returns %d, errno %d", ret,
 				 errno);
-			tst_exit();
 		}
 		tst_resm(TPASS, "par child ipv6");
 		tst_exit();

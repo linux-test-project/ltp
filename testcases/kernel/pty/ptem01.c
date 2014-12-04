@@ -61,84 +61,68 @@ int test1(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK, "%s", MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK | TERRNO, "ptsname() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "ptsname() call failed");
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK | TERRNO, "grantpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "grantpt() call failed");
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK, "unlockpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "unlockpt() call failed");
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TFAIL, "Could not open %s", slavename);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Could not open %s", slavename);
 	}
 
 	if (ioctl(slavefd, TCGETS, &termios) != 0) {
-		tst_resm(TFAIL, "TCGETS");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCGETS");
 	}
 
 	if (ioctl(slavefd, TCSETS, &termios) != 0) {
-		tst_resm(TFAIL, "TCSETS");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCSETS");
 	}
 
 	if (ioctl(slavefd, TCSETSW, &termios) != 0) {
-		tst_resm(TFAIL, "TCSETSW");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCSETSW");
 	}
 
 	if (ioctl(slavefd, TCSETSF, &termios) != 0) {
-		tst_resm(TFAIL, "TCSETSF");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCSETSF");
 	}
 
 	if (ioctl(slavefd, TCSETS, &termios) != 0) {
-		tst_resm(TFAIL, "TCSETS");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCSETS");
 	}
 
 	if (ioctl(slavefd, TCGETA, &termio) != 0) {
-		tst_resm(TFAIL, "TCGETA");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCGETA");
 	}
 
 	if (ioctl(slavefd, TCSETA, &termio) != 0) {
-		tst_resm(TFAIL, "TCSETA");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCSETA");
 	}
 
 	if (ioctl(slavefd, TCSETAW, &termio) != 0) {
-		tst_resm(TFAIL, "TCSETAW");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCSETAW");
 	}
 
 	if (ioctl(slavefd, TCSETAF, &termio) != 0) {
-		tst_resm(TFAIL, "TCSETAF");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCSETAF");
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK, "close slave");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close slave");
 	}
 
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK, "close master");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close master");
 	}
 	tst_resm(TPASS, "test1");
 
@@ -159,85 +143,70 @@ int test2(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK, "%s", MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK | TERRNO, "ptsname() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "ptsname() call failed");
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK | TERRNO, "grantpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "grantpt() call failed");
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK, "unlockpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "unlockpt() call failed");
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK, "Could not open %s", slavename);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Could not open %s", slavename);
 	}
 
 	if (ioctl(masterfd, TIOCSWINSZ, &wsz1) != 0) {
-		tst_resm(TFAIL, "TIOCSWINSZ");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TIOCSWINSZ");
 	}
 
 	if (ioctl(slavefd, TIOCGWINSZ, &wsz) != 0) {
-		tst_resm(TFAIL, "TIOCGWINSZ");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TIOCGWINSZ");
 	}
 
 	if (wsz.ws_row != wsz1.ws_row || wsz.ws_col != wsz1.ws_col ||
 	    wsz.ws_xpixel != wsz1.ws_xpixel ||
 	    wsz.ws_ypixel != wsz1.ws_ypixel) {
-		tst_resm(TFAIL, "unexpected window size returned");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "unexpected window size returned");
 	}
 
 	if (ioctl(masterfd, TIOCGWINSZ, &wsz) != 0) {
-		tst_resm(TFAIL, "TIOCGWINSZ");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TIOCGWINSZ");
 	}
 
 	if (wsz.ws_row != wsz1.ws_row || wsz.ws_col != wsz1.ws_col ||
 	    wsz.ws_xpixel != wsz1.ws_xpixel ||
 	    wsz.ws_ypixel != wsz1.ws_ypixel) {
-		tst_resm(TFAIL, "unexpected window size returned");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "unexpected window size returned");
 	}
 
 	if (ioctl(slavefd, TIOCSWINSZ, &wsz2) != 0) {
-		tst_resm(TFAIL, "TIOCSWINSZ");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TIOCSWINSZ");
 	}
 
 	if (ioctl(slavefd, TIOCGWINSZ, &wsz) != 0) {
-		tst_resm(TFAIL, "TIOCGWINSZ");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TIOCGWINSZ");
 	}
 
 	if (wsz.ws_row != wsz2.ws_row || wsz.ws_col != wsz2.ws_col ||
 	    wsz.ws_xpixel != wsz2.ws_xpixel ||
 	    wsz.ws_ypixel != wsz2.ws_ypixel) {
-		tst_resm(TFAIL, "unexpected window size returned");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "unexpected window size returned");
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK, "close");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close");
 	}
 
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK, "close");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close");
 	}
 	tst_resm(TPASS, "test2");
 
@@ -255,49 +224,40 @@ int test3(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK, "%s", MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK | TERRNO, "ptsname() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "ptsname() call failed");
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK | TERRNO, "grantpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "grantpt() call failed");
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK, "unlockpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "unlockpt() call failed");
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK, "Could not open %s", slavename);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Could not open %s", slavename);
 	}
 
 	if (tcsendbreak(masterfd, 10) != 0) {
-		tst_resm(TFAIL, "tcsendbreak");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "tcsendbreak");
 	}
 
 	if (tcsendbreak(slavefd, 10) != 0) {
-		tst_resm(TFAIL, "tcsendbreak");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "tcsendbreak");
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK, "close slave");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close slave");
 	}
 
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK, "close master");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close master");
 	}
 	tst_resm(TPASS, "test3");
 
@@ -315,56 +275,46 @@ int test4(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK, "%s", MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK | TERRNO, "ptsname() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "ptsname() call failed");
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK | TERRNO, "grantpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "grantpt() call failed");
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK, "unlockpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "unlockpt() call failed");
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK, "Could not open %s", slavename);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Could not open %s", slavename);
 	}
 
 	if ((slavefd2 = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TFAIL, "Could not open %s (again)", slavename);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Could not open %s (again)", slavename);
 	}
 
 	if ((slavefd3 = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TFAIL, "Could not open %s (once more)", slavename);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Could not open %s (once more)",
+			 slavename);
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK, "close slave");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close slave");
 	}
 	if (close(slavefd2) != 0) {
-		tst_resm(TBROK, "close slave again");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close slave again");
 	}
 	if (close(slavefd3) != 0) {
-		tst_resm(TBROK, "close slave once more");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close slave once more");
 	}
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK, "close master");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close master");
 	}
 	tst_resm(TPASS, "test4");
 
@@ -402,36 +352,33 @@ int test5(void)
 
 		slavename = ptsname(masterfd[i]);
 		if (slavename == NULL) {
-			tst_resm(TBROK | TERRNO, "ptsname() call failed");
-			tst_exit();
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "ptsname() call failed");
 		}
 
 		if (grantpt(masterfd[i]) != 0) {
-			tst_resm(TBROK | TERRNO, "grantpt() call failed");
-			tst_exit();
+			tst_brkm(TBROK | TERRNO, NULL,
+				 "grantpt() call failed");
 		}
 
 		if (unlockpt(masterfd[i]) != 0) {
-			tst_resm(TBROK, "unlockpt() call failed");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "unlockpt() call failed");
 		}
 
 		if ((slavefd[i] = open(slavename, O_RDWR)) < 0) {
-			tst_resm(TFAIL, "Iteration %d: Could not open %s", i,
+			tst_brkm(TFAIL, NULL,
+				 "Iteration %d: Could not open %s", i,
 				 slavename);
-			tst_exit();
 		}
 
 	}
 
 	for (i = 0; i < NUMOPENS; ++i) {
 		if (close(slavefd[i]) != 0) {
-			tst_resm(TBROK, "Iteration %d: close slave", i);
-			tst_exit();
+			tst_brkm(TBROK, NULL, "Iteration %d: close slave", i);
 		}
 		if (close(masterfd[i]) != 0) {
-			tst_resm(TBROK, "close master");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "close master");
 		}
 	}
 	tst_resm(TPASS, "test5");
@@ -452,50 +399,41 @@ int test6(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK, "%s", MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
-		tst_resm(TBROK | TERRNO, "ptsname() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "ptsname() call failed");
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK | TERRNO, "grantpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK | TERRNO, NULL, "grantpt() call failed");
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK, "unlockpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "unlockpt() call failed");
 	}
 
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK, "Could not open %s", slavename);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Could not open %s", slavename);
 	}
 
 	if (ioctl(slavefd, TCGETS, &termios) != 0) {
-		tst_resm(TFAIL, "TCGETS");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCGETS");
 	}
 
 	termios.c_cflag &= ~CBAUD;
 	termios.c_cflag |= B0 & CBAUD;
 	if (ioctl(slavefd, TCSETS, &termios) != 0) {
-		tst_resm(TFAIL, "TCGETS");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "TCGETS");
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK, "close");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close");
 	}
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK, "close");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close");
 	}
 	tst_resm(TPASS, "test6");
 

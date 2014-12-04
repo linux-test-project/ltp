@@ -56,9 +56,9 @@ int main(int argc, char *argv[])
 		if (!ret)
 			ret = cap_set_proc(cur);
 		if (ret) {
-			tst_resm(TBROK,
+			tst_brkm(TBROK,
+				 NULL,
 				 "Failed to drop cap_sys_admin from pI\n");
-			tst_exit();
 		}
 	} else if (ret) {
 		tst_brkm(TBROK | TERRNO, NULL, "Failed to add \

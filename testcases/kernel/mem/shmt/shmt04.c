@@ -79,8 +79,7 @@ int main()
 	pid = fork();
 	switch (pid) {
 	case -1:
-		tst_resm(TBROK, "fork failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "fork failed");
 	case 0:
 		child();
 	}
@@ -191,10 +190,10 @@ int shmid;
 {
 	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
 		perror("shmctl");
-		tst_resm(TFAIL,
+		tst_brkm(TFAIL,
+			 NULL,
 			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
 			 shmid, errno);
-		tst_exit();
 	}
 	return (0);
 }

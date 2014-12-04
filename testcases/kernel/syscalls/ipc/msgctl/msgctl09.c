@@ -134,10 +134,10 @@ int main(int argc, char **argv)
 			nkids = atoi(argv[3]);
 		}
 	} else {
-		tst_resm(TCONF,
+		tst_brkm(TCONF,
+			 NULL,
 			 " Usage: %s [ number of iterations  number of processes number of read/write pairs ]",
 			 argv[0]);
-		tst_exit();
 	}
 
 	procstat = 0;
@@ -146,8 +146,7 @@ int main(int argc, char **argv)
 
 	/* Setup signal handleing routine */
 	if (sigset(SIGTERM, term) == SIG_ERR) {
-		tst_resm(TFAIL, "Sigset SIGTERM failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Sigset SIGTERM failed");
 	}
 	/* Set up array of unique keys for use in allocating message
 	 * queues
@@ -180,16 +179,15 @@ int main(int argc, char **argv)
 	for (i = 0; i < nprocs; i++) {
 		fflush(stdout);
 		if ((pid = FORK_OR_VFORK()) < 0) {
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "\tFork failed (may be OK if under stress)");
-			tst_exit();
 		}
 		/* Child does this */
 		if (pid == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv[0], "ndd", 1, keyarray[i], i) < 0) {
-				tst_resm(TFAIL, "\tself_exec failed");
-				tst_exit();
+				tst_brkm(TFAIL, NULL, "\tself_exec failed");
 			}
 #else
 			procstat = 1;
@@ -203,9 +201,9 @@ int main(int argc, char **argv)
 	while (1) {
 		if ((wait(&status)) > 0) {
 			if (status >> 8 != PASS) {
-				tst_resm(TFAIL, "Child exit status = %d",
+				tst_brkm(TFAIL, NULL,
+					 "Child exit status = %d",
 					 status >> 8);
-				tst_exit();
 			}
 			count++;
 		} else {
@@ -219,10 +217,10 @@ int main(int argc, char **argv)
 	}
 	/* Make sure proper number of children exited */
 	if (count != nprocs) {
-		tst_resm(TFAIL,
+		tst_brkm(TFAIL,
+			 NULL,
 			 "Wrong number of children exited, Saw %d, Expected %d",
 			 count, nprocs);
-		tst_exit();
 	}
 
 	tst_resm(TPASS, "msgctl09 ran successfully!");
@@ -271,8 +269,7 @@ static void cleanup_msgqueue(int i, int tid)
 	}
 
 	if (msgctl(tid, IPC_RMID, 0) < 0) {
-		tst_resm(TFAIL | TERRNO, "Msgctl error in cleanup");
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, NULL, "Msgctl error in cleanup");
 	}
 }
 

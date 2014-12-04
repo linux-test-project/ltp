@@ -109,8 +109,7 @@ int main(int argc, char *argv[])
 		0777, NULL);
 	if (mqd == -1) {
 		perror("mq_open");
-		tst_resm(TFAIL, "mq_open failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "mq_open failed");
 	}
 
 	tst_resm(TINFO, "Checking namespaces isolation from parent to child");

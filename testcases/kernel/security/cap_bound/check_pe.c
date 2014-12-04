@@ -49,20 +49,18 @@ int main(int argc, char *argv[])
 	int n;
 
 	if (argc != 2) {
-		tst_resm(TBROK, "Usage: check_pe [0|1]\n");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Usage: check_pe [0|1]\n");
 	}
 	n = atoi(argv[1]);
 	if (n != 0 && n != 1) {
-		tst_resm(TBROK, "Usage: check_pe [0|1]\n");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Usage: check_pe [0|1]\n");
 	}
 
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_EFFECTIVE, &f);
 	if (ret) {
-		tst_resm(TBROK, "cap_get_flag failed (errno %d)\n", errno);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "cap_get_flag failed (errno %d)\n",
+			 errno);
 	}
 
 	cap_free(cur);
@@ -71,8 +69,7 @@ int main(int argc, char *argv[])
 			tst_resm(TPASS, "cap is in pE\n");
 			tst_exit();
 		}
-		tst_resm(TFAIL, "cap is not in pE\n");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "cap is not in pE\n");
 	}
 	if (f == CAP_CLEAR) {
 		tst_resm(TPASS, "cap is not in pE\n");

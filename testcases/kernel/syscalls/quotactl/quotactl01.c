@@ -189,8 +189,7 @@ void setup(void)
 #ifdef BROKEN_QUOTACTL
 int main(void)
 {
-	tst_resm(TBROK, "This system doesn't support quota v2");
-	tst_exit();
+	tst_brkm(TBROK, NULL, "This system doesn't support quota v2");
 }
 #else
 int cmd[] = {

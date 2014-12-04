@@ -201,8 +201,7 @@ realloc:
 	set = malloc(sizeof(cpu_set_t));
 #endif
 	if (set == NULL) {
-		tst_resm(TFAIL, "CPU_ALLOC:errno:%d", errno);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "CPU_ALLOC:errno:%d", errno);
 	}
 #if __GLIBC_PREREQ(2, 7)
 	size = CPU_ALLOC_SIZE(nrcpus);
@@ -237,8 +236,7 @@ realloc:
 #endif
 	if (sched_setaffinity(0, size, set) < 0) {
 		CPU_FREE(set);
-		tst_resm(TFAIL, "sched_setaffinity:errno:%d", errno);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "sched_setaffinity:errno:%d", errno);
 	}
 	CPU_FREE(set);
 	return cpu_max;

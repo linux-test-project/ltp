@@ -85,8 +85,7 @@ int main(int argc, char *argv[])
 	act.sa_mask = set;
 	act.sa_flags = 0;
 	if (sigaction(SIGTERM, &act, &oact)) {
-		tst_resm(TBROK, "Sigaction(SIGTERM)");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Sigaction(SIGTERM)");
 	}
 
 	sigemptyset(&set);
@@ -94,8 +93,7 @@ int main(int argc, char *argv[])
 	act.sa_mask = set;
 	act.sa_flags = 0;
 	if (sigaction(SIGALRM, &act, 0)) {
-		tst_resm(TBROK, "Sigaction(SIGALRM)");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Sigaction(SIGALRM)");
 	}
 	parent_pid = getpid();
 	tst_tmpdir();
@@ -103,8 +101,7 @@ int main(int argc, char *argv[])
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
-		tst_resm(TBROK, "fork() returned %d", pid);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "fork() returned %d", pid);
 	}
 	if (pid == 0) {
 #ifdef UCLINUX
@@ -120,8 +117,7 @@ int main(int argc, char *argv[])
 	if (pid < 0) {
 		(void)kill(kidpid[0], SIGTERM);
 		(void)unlink("./rename14");
-		tst_resm(TBROK, "fork() returned %d", pid);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "fork() returned %d", pid);
 	}
 	if (pid == 0) {
 #ifdef UCLINUX

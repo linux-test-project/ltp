@@ -63,12 +63,10 @@ int main(int ac, char **av)
 			TEST(umount(mntpoint));
 			if (TEST_RETURN != 0) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "umount(2) Failed while "
+				tst_brkm(TFAIL, NULL, "umount(2) Failed while "
 					 " unmounting %s errno = %d : %s",
 					 mntpoint, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
-				/* Exit here, otherwise subsequent test fails */
-				tst_exit();
 			} else {
 				tst_resm(TPASS, "umount(2) Passed ");
 			}

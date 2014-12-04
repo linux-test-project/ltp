@@ -82,9 +82,8 @@ int main(int argc, char *argv[])
 
 	if (argc != 2) {
 		tst_resm(TFAIL, "Usage: %s <clone| unshare| none>", argv[0]);
-		tst_resm(TFAIL, " where clone, unshare, or fork specifies"
+		tst_brkm(TFAIL, NULL, " where clone, unshare, or fork specifies"
 			 " unshare method.");
-		tst_exit();
 	}
 
 	/* Using PIPE's to sync between container and Parent */
@@ -111,14 +110,12 @@ int main(int argc, char *argv[])
 		perror("Semaphore create");
 		if (errno != EEXIST) {
 			perror("semget failure");
-			tst_resm(TBROK, "Semaphore creation failed");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "Semaphore creation failed");
 		}
 		id = semget(MY_KEY, 1, 0);
 		if (id == -1) {
 			perror("Semaphore create");
-			tst_resm(TBROK, "Semaphore operation failed");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "Semaphore operation failed");
 		}
 	}
 
@@ -128,8 +125,7 @@ int main(int argc, char *argv[])
 	    do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_semaphore,
 				  NULL);
 	if (ret < 0) {
-		tst_resm(TFAIL, "%s failed", tsttype);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "%s failed", tsttype);
 	}
 
 	close(p1[0]);

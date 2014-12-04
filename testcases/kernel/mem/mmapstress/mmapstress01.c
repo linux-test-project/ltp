@@ -164,8 +164,7 @@ int main(int argc, char *argv[])
 	progname = *argv;
 	tst_tmpdir();
 	if (argc < 2) {
-		tst_resm(TBROK, "usage: %s %s\n", progname, usage);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "usage: %s %s\n", progname, usage);
 	}
 
 	while ((c = getopt(argc, argv, "S:omdlrf:p:t:")) != -1) {

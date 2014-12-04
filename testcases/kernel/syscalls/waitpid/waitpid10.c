@@ -467,14 +467,13 @@ static void do_fork(void)
 	for (i = 0; i < 50; i++) {
 		fork_pid = FORK_OR_VFORK();
 		if (fork_pid < 0) {
-			tst_resm(TFAIL, "Fork failed");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "Fork failed");
 		}
 		if (fork_pid == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv0, "n", 5) < 0) {
-				tst_resm(TFAIL, "do_fork self_exec failed");
-				tst_exit();
+				tst_brkm(TFAIL, NULL,
+					 "do_fork self_exec failed");
 			}
 #else
 			do_mkdir();

@@ -344,9 +344,9 @@ static void fussdir(int me, int count)
 	val = rmdir(dir);
 
 	if (val >= 0) {
-		tst_resm(TFAIL, "Test[%d]: rmdir of non-empty %s succeeds!", me,
+		tst_brkm(TFAIL, NULL,
+			 "Test[%d]: rmdir of non-empty %s succeeds!", me,
 			 dir);
-		tst_exit();
 	}
 
 	val = chdir(dir);
@@ -411,9 +411,8 @@ static void dowarn(int me, char *m1, char *m2)
 {
 	int err = errno;
 
-	tst_resm(TBROK, "Test[%d]: error %d on %s %s",
+	tst_brkm(TBROK, NULL, "Test[%d]: error %d on %s %s",
 		 me, err, m1, (m2 ? m2 : ""));
-	tst_exit();
 }
 
 /*
@@ -430,8 +429,7 @@ static void term(int sig LTP_ATTRIBUTE_UNUSED)
 		return;
 	}
 
-	tst_resm(TBROK, "Child process exiting.");
-	tst_exit();
+	tst_brkm(TBROK, NULL, "Child process exiting.");
 }
 
 static void cleanup(void)

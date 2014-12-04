@@ -140,9 +140,9 @@ int main(int ac, char **av)
 			} else {
 				TEST(waitid(P_ALL, getpid(), &infop, WEXITED));
 				if (TEST_RETURN == -1) {
-					tst_resm(TFAIL | TTERRNO,
+					tst_brkm(TFAIL | TTERRNO,
+						 NULL,
 						 "waitid(getpid()) failed");
-					tst_exit();
 				} else
 					display_status(&infop);	//CLD_EXITED = 1
 			}
@@ -155,9 +155,8 @@ int main(int ac, char **av)
 			} else {
 				TEST(waitid(P_ALL, 0, &infop, WEXITED));
 				if (TEST_RETURN == -1) {
-					tst_resm(TFAIL | TTERRNO,
-						 "waitid(0) failed");
-					tst_exit();
+					tst_brkm(TFAIL | TTERRNO,
+						 NULL, "waitid(0) failed");
 				} else
 					display_status(&infop);	//CLD_DUMPED = 3 ; SIGFPE = 8
 			}
@@ -170,8 +169,8 @@ int main(int ac, char **av)
 			TEST(kill(pid, SIGHUP));
 			TEST(waitid(P_ALL, 0, &infop, WEXITED));
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL | TTERRNO, "waitid(0) failed");
-				tst_exit();
+				tst_brkm(TFAIL | TTERRNO, NULL,
+					 "waitid(0) failed");
 			} else
 				display_status(&infop);	//CLD_KILLED = 2 ; SIGHUP = 1
 		}

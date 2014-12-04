@@ -49,24 +49,23 @@ int main(int argc, char *argv[])
 	/* Make sure CAP_SYS_ADMIN is in pI */
 	cur = cap_from_text("all=eip");
 	if (!cur) {
-		tst_resm(TBROK,
+		tst_brkm(TBROK,
+			 NULL,
 			 "Failed to create cap_sys_admin+i cap_t (errno %d)\n",
 			 errno);
-		tst_exit();
 	}
 	ret = cap_set_proc(cur);
 	if (ret) {
-		tst_resm(TBROK,
+		tst_brkm(TBROK,
+			 NULL,
 			 "Failed to cap_set_proc with cap_sys_admin+i (ret %d errno %d)\n",
 			 ret, errno);
-		tst_exit();
 	}
 	cap_free(cur);
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_INHERITABLE, &f);
 	if (ret || f != CAP_SET) {
-		tst_resm(TBROK, "Failed to add CAP_SYS_ADMIN to pI\n");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Failed to add CAP_SYS_ADMIN to pI\n");
 	}
 	cap_free(cur);
 

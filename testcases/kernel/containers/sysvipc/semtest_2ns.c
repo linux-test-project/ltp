@@ -75,15 +75,13 @@ void sem_lock(int id)
 	/* Checking the semlock and simulating as if the crit-sec is updated */
 	if (semop(id, &semop_lock[0], 2) < 0) {
 		perror("sem lock error");
-		tst_resm(TBROK, "semop failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "semop failed");
 	}
 	tst_resm(TINFO, "Sem1: File locked, Critical section is updated...");
 	sleep(2);
 	if (semop(id, &semop_unlock[0], 1) < 0) {
 		perror("sem unlock error");
-		tst_resm(TBROK, "semop failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "semop failed");
 	}
 }
 
@@ -103,14 +101,12 @@ int check_sem1(void *vtest)
 		perror("Semaphore create");
 		if (errno != EEXIST) {
 			perror("semget failure");
-			tst_resm(TBROK, "semget failure");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "semget failure");
 		}
 		id1 = semget(MY_KEY, 1, 0);
 		if (id1 == -1) {
 			perror("Semaphore create");
-			tst_resm(TBROK, "semget failure");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "semget failure");
 		}
 	}
 
@@ -201,14 +197,12 @@ int main(int argc, char *argv[])
 	/* Create 2 containers */
 	ret = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_sem1, NULL);
 	if (ret < 0) {
-		tst_resm(TFAIL, "clone/unshare failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "clone/unshare failed");
 	}
 
 	ret = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_sem2, NULL);
 	if (ret < 0) {
-		tst_resm(TFAIL, "clone/unshare failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "clone/unshare failed");
 	}
 	close(p2[1]);
 	read(p2[0], buf, 7);

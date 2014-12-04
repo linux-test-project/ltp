@@ -68,8 +68,7 @@ void prg_usage()
 {
 	fprintf(stderr,
 		"Usage: diotest1 [-b bufsize] [-n numblks] [-i infile] [-o outfile]\n");
-	tst_resm(TBROK, "usage");
-	tst_exit();
+	tst_brkm(TBROK, NULL, "usage");
 }
 
 /*
@@ -81,8 +80,7 @@ void fail_clean(int fd1, int fd2, char *infile, char *outfile)
 	close(fd2);
 	unlink(infile);
 	unlink(outfile);
-	tst_resm(TFAIL, "Test failed");
-	tst_exit();
+	tst_brkm(TFAIL, NULL, "Test failed");
 }
 
 int main(int argc, char *argv[])
@@ -130,24 +128,24 @@ int main(int argc, char *argv[])
 
 	/* Test for filesystem support of O_DIRECT */
 	if ((fd = open(infile, O_DIRECT | O_RDWR | O_CREAT, 0666)) < 0) {
-		tst_resm(TCONF,
+		tst_brkm(TCONF,
+			 NULL,
 			 "O_DIRECT is not supported by this filesystem.");
-		tst_exit();
 	} else {
 		close(fd);
 	}
 
 	/* Open files */
 	if ((fd1 = open(infile, O_DIRECT | O_RDWR | O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "open infile failed: %s", strerror(errno));
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "open infile failed: %s",
+			 strerror(errno));
 	}
 
 	if ((fd2 = open(outfile, O_DIRECT | O_RDWR | O_CREAT, 0666)) < 0) {
 		close(fd1);
 		unlink(infile);
-		tst_resm(TFAIL, "open outfile failed: %s", strerror(errno));
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "open outfile failed: %s",
+			 strerror(errno));
 	}
 
 	/* Allocate for buf, Create input file */
@@ -209,7 +207,6 @@ int main(int argc, char *argv[])
 
 int main()
 {
-	tst_resm(TCONF, "O_DIRECT is not defined.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "O_DIRECT is not defined.");
 }
 #endif /* O_DIRECT */

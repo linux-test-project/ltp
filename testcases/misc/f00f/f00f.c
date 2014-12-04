@@ -68,16 +68,15 @@ int main()
 	 * we shouldn't get here, the f00f instruction should trigger
 	 * a SIGILL or lock the system.
 	 */
-	tst_resm(TFAIL, "f00f instruction did not properly cause SIGILL");
-	tst_exit();
+	tst_brkm(TFAIL, NULL,
+		 "f00f instruction did not properly cause SIGILL");
 }
 
 #else /* __i386__ */
 
 int main()
 {
-	tst_resm(TCONF, "f00f bug test only for i386");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "f00f bug test only for i386");
 }
 
 #endif /* __i386__ */

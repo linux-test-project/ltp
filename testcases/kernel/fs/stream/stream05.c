@@ -77,17 +77,17 @@ int main(int ac, char *av[])
 	/*--------------------------------------------------------------------*/
 		//block0:
 		if ((stream = fopen(tempfile, "a+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) a+ failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) a+ failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 		fprintf(stream, "a");
 		fclose(stream);
 
 		if ((stream = fopen(tempfile, "r+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) r+ failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) r+ failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 
 		/* check that ferror returns zero */
@@ -111,8 +111,8 @@ int main(int ac, char *av[])
 		/* check that fileno returns valid file descriptor */
 		fd = fileno(stream);
 		if ((nr = read(fd, buf, 1)) < 0) {
-			tst_resm(TFAIL, "read failed: %s", strerror(errno));
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "read failed: %s",
+				 strerror(errno));
 		}
 		if (nr != 1) {
 			tst_resm(TFAIL, "read did not read right number");
@@ -136,9 +136,9 @@ int main(int ac, char *av[])
 		fclose(stream);
 
 		if ((stream = fopen(tempfile, "r+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) r+ failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) r+ failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 		if (feof(stream) != 0) {
 			tst_resm(TFAIL,
@@ -183,44 +183,44 @@ int main(int ac, char *av[])
 		(void)fclose(stream);
 
 		if ((stream = fopen(tempfile, "rb")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) rb failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) rb failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 		(void)fclose(stream);
 
 		if ((stream = fopen(tempfile, "wb")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) wb failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) wb failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 		(void)fclose(stream);
 
 		if ((stream = fopen(tempfile, "ab")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) ab failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) ab failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 		(void)fclose(stream);
 
 		if ((stream = fopen(tempfile, "rb+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) rb+ failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) rb+ failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 		(void)fclose(stream);
 
 		if ((stream = fopen(tempfile, "wb+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) wb+ failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) wb+ failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 		(void)fclose(stream);
 
 		if ((stream = fopen(tempfile, "ab+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) ab+ failed: %s", tempfile,
+			tst_brkm(TFAIL, NULL, "fopen(%s) ab+ failed: %s",
+				 tempfile,
 				 strerror(errno));
-			tst_exit();
 		}
 		(void)fclose(stream);
 

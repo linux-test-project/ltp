@@ -226,15 +226,13 @@ char *argv[];
 int bd_arg(str)
 char *str;
 {
-	tst_resm(TCONF, "\tCannot parse %s as a number.\n", str);
-	tst_exit();
+	tst_brkm(TCONF, NULL, "\tCannot parse %s as a number.\n", str);
 }
 
 int chld()
 {
 	if (signal(SIGUSR1, (void (*)())chld) == SIG_ERR) {
-		tst_resm(TBROK, "signal failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "signal failed");
 	}
 	chld_flag++;
 	return 0;

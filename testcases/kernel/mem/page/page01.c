@@ -126,14 +126,14 @@ char *argv[];
 				if (i < 2) {
 					tst_resm(TBROK,
 						 "This should not happen for first two children.\n");
-					tst_resm(TFAIL, "Child %d - fail.\n",
+					tst_brkm(TFAIL, NULL,
+						 "Child %d - fail.\n",
 						 i);
-					tst_exit();
 				} else {
 					tst_resm(TCONF,
 						 "This is ok for all but first two children.\n");
-					tst_resm(TCONF, "Child %d - ok.\n", i);
-					tst_exit();
+					tst_brkm(TCONF, NULL,
+						 "Child %d - ok.\n", i);
 				}
 			}
 			number_pointer = memory_pointer;

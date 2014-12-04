@@ -71,8 +71,7 @@ int main(void)
 	flags |= CLONE_NEWNET;
 
 #if ! HAVE_UNSHARE
-	tst_resm(TCONF, "System doesn't support unshare.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "System doesn't support unshare.");
 #endif
 
 	/* Checking for Kernel Version */
@@ -94,14 +93,14 @@ int main(void)
 			ret = unshare(flags);
 			if (ret < 0) {
 				perror("Unshare");
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 NULL,
 					 "Error:Unshare syscall failed for network namespace");
-				tst_exit();
 			}
 #endif
 			if (crtchild(child[i], NULL) != 0) {
-				tst_resm(TFAIL, "Failed running child script");
-				tst_exit();
+				tst_brkm(TFAIL, NULL,
+					 "Failed running child script");
 			}
 		} else {
 			//Parent
@@ -109,9 +108,9 @@ int main(void)
 			ret = system(par[i]);
 			status = WEXITSTATUS(ret);
 			if (ret == -1 || status != 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 NULL,
 					 "Error while running the scripts");
-				tst_exit();
 			}
 		}
 	}			//End of FOR Loop

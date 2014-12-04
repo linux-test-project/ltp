@@ -153,8 +153,8 @@ static void setup(void)
 	mkdir(fuss, 0755);
 
 	if (chdir(fuss) < 0) {
-		tst_resm(TBROK, "\tCan't chdir(%s), error %d.", fuss, errno);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "\tCan't chdir(%s), error %d.", fuss,
+			 errno);
 	}
 
 	/*
@@ -168,8 +168,7 @@ static void setup(void)
 
 	if (sigset(SIGTERM, term) == SIG_ERR) {
 		perror("sigset failed");
-		tst_resm(TBROK, " sigset failed: signo = 15");
-		tst_exit();
+		tst_brkm(TBROK, NULL, " sigset failed: signo = 15");
 	}
 }
 
@@ -188,9 +187,9 @@ static void runtest(void)
 		fd = open(test_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
 
 		if (fd < 0) {
-			tst_resm(TBROK, "\tError %d creating %s/%s.", errno,
+			tst_brkm(TBROK, NULL, "\tError %d creating %s/%s.",
+				 errno,
 				 fuss, test_name);
-			tst_exit();
 		}
 
 		if ((child = fork()) == 0) {
@@ -304,13 +303,11 @@ static void dotest(int testers, int me, int fd)
 	whenmisc = 0;
 
 	if ((bits = malloc((nchunks + 7) / 8)) == 0) {
-		tst_resm(TBROK, "\tmalloc failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "\tmalloc failed");
 	}
 
 	if ((hold_bits = malloc((nchunks + 7) / 8)) == 0) {
-		tst_resm(TBROK, "\tmalloc failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "\tmalloc failed");
 	}
 
 	/*Allocate memory for the iovec buffers and init the iovec arrays */
@@ -334,27 +331,23 @@ static void dotest(int testers, int me, int fd)
 		}
 
 		if ((val_iovec[i].iov_base = calloc(w_ioveclen, 1)) == 0) {
-			tst_resm(TBROK, "\tmalloc failed");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "\tmalloc failed");
 		}
 
 		val_iovec[i].iov_len = w_ioveclen;
 
 		if (malloc((i + 1) * 8) == NULL) {
-			tst_resm(TBROK, "\tmalloc failed");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "\tmalloc failed");
 		}
 
 		if ((zero_iovec[i].iov_base = calloc(w_ioveclen, 1)) == 0) {
-			tst_resm(TBROK, "\tmalloc failed");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "\tmalloc failed");
 		}
 
 		zero_iovec[i].iov_len = w_ioveclen;
 
 		if (malloc((i + 1) * 8) == NULL) {
-			tst_resm(TBROK, "\tmalloc failed");
-			tst_exit();
+			tst_brkm(TBROK, NULL, "\tmalloc failed");
 		}
 	}
 	/*
@@ -411,16 +404,16 @@ static void dotest(int testers, int me, int fd)
 			 * Read it.
 			 */
 			if (lseek(fd, CHUNK(chunk), 0) < 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 NULL,
 					 "\tTest[%d]: lseek(0) fail at %x, errno = %d.",
 					 me, CHUNK(chunk), errno);
-				tst_exit();
 			}
 			if ((xfr = readv(fd, &r_iovec[0], MAXIOVCNT)) < 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 NULL,
 					 "\tTest[%d]: readv fail at %x, errno = %d.",
 					 me, CHUNK(chunk), errno);
-				tst_exit();
 			}
 			/*
 			 * If chunk beyond EOF just write on it.
@@ -432,10 +425,10 @@ static void dotest(int testers, int me, int fd)
 				++count;
 			} else if ((bits[chunk / 8] & (1 << (chunk % 8))) == 0) {
 				if (xfr != csize) {
-					tst_resm(TFAIL,
+					tst_brkm(TFAIL,
+						 NULL,
 						 "\tTest[%d]: xfr=%d != %d, zero read.",
 						 me, xfr, csize);
-					tst_exit();
 				}
 				for (i = 0; i < MAXIOVCNT; i++) {
 					if (memcmp
@@ -465,10 +458,10 @@ static void dotest(int testers, int me, int fd)
 				++count;
 			} else {
 				if (xfr != csize) {
-					tst_resm(TFAIL,
+					tst_brkm(TFAIL,
+						 NULL,
 						 "\tTest[%d]: xfr=%d != %d, val read.",
 						 me, xfr, csize);
-					tst_exit();
 				}
 				++collide;
 				for (i = 0; i < MAXIOVCNT; i++) {
@@ -500,10 +493,10 @@ static void dotest(int testers, int me, int fd)
 			 * Writev it.
 			 */
 			if (lseek(fd, -xfr, 1) < 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 NULL,
 					 "\tTest[%d]: lseek(1) fail at %x, errno = %d.",
 					 me, CHUNK(chunk), errno);
-				tst_exit();
 			}
 			if ((xfr =
 			     writev(fd, &val_iovec[0], MAXIOVCNT)) < csize) {
@@ -514,10 +507,10 @@ static void dotest(int testers, int me, int fd)
 					fsync(fd);
 					tst_exit();
 				}
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 NULL,
 					 "\tTest[%d]: writev fail at %x xfr %d, errno = %d.",
 					 me, CHUNK(chunk), xfr, errno);
-				tst_exit();
 			}
 			if (CHUNK(chunk) + csize > file_max)
 				file_max = CHUNK(chunk) + csize;
@@ -561,9 +554,9 @@ static void domisc(int me, int fd, char *bits)
 	switch (type) {
 	case m_fsync:
 		if (fsync(fd) < 0) {
-			tst_resm(TFAIL, "\tTest[%d]: fsync error %d.", me,
+			tst_brkm(TFAIL, NULL, "\tTest[%d]: fsync error %d.",
+				 me,
 				 errno);
-			tst_exit();
 		}
 		break;
 	case m_trunc:
@@ -572,18 +565,18 @@ static void domisc(int me, int fd, char *bits)
 		last_trunc = file_max;
 		if (tr_flag) {
 			if (ftruncate(fd, file_max) < 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 NULL,
 					 "\tTest[%d]: ftruncate error %d @ 0x%x.",
 					 me, errno, file_max);
-				tst_exit();
 			}
 			tr_flag = 0;
 		} else {
 			if (truncate(test_name, file_max) < 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 NULL,
 					 "\tTest[%d]: truncate error %d @ 0x%x.",
 					 me, errno, file_max);
-				tst_exit();
 			}
 			tr_flag = 1;
 		}
@@ -594,16 +587,15 @@ static void domisc(int me, int fd, char *bits)
 		break;
 	case m_fstat:
 		if (fstat(fd, &sb) < 0) {
-			tst_resm(TFAIL, "\tTest[%d]: fstat() error %d.", me,
+			tst_brkm(TFAIL, NULL, "\tTest[%d]: fstat() error %d.",
+				 me,
 				 errno);
-			tst_exit();
 		}
 		if (sb.st_size != file_max) {
-			tst_resm(TFAIL,
-				 "\tTest[%d]: fstat() mismatch; st_size=%"
+			tst_brkm(TFAIL,
+				 NULL, "\tTest[%d]: fstat() mismatch; st_size=%"
 				 PRIx64 ",file_max=%x.", me,
 				 (int64_t) sb.st_size, file_max);
-			tst_exit();
 		}
 		break;
 	}

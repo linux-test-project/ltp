@@ -91,21 +91,19 @@ int main(int argc, char *argv[])
 
 	key = getipckey();
 	if ((msqid = msgget(key, IPC_CREAT | IPC_EXCL)) == -1) {
-		tst_resm(TFAIL | TERRNO, "msgget() failed");
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, NULL, "msgget() failed");
 
 	}
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		(void)msgctl(msqid, IPC_RMID, NULL);
-		tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
-		tst_exit();
+		tst_brkm(TFAIL, NULL,
+			 "\tFork failed (may be OK if under stress)");
 	} else if (pid == 0) {
 #ifdef UCLINUX
 		if (self_exec(argv[0], "ndd", 1, msqid, c1_msgp.type) < 0) {
-			tst_resm(TFAIL, "\tself_exec failed");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "\tself_exec failed");
 		}
 #else
 		do_child_1();
@@ -139,21 +137,20 @@ int main(int argc, char *argv[])
 		wait(&status);
 	}
 	if ((status >> 8) == 1) {
-		tst_resm(TFAIL, "test failed. status = %d", (status >> 8));
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "test failed. status = %d",
+			 (status >> 8));
 	}
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		(void)msgctl(msqid, IPC_RMID, NULL);
-		tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
-		tst_exit();
+		tst_brkm(TFAIL, NULL,
+			 "\tFork failed (may be OK if under stress)");
 	} else if (pid == 0) {
 #ifdef UCLINUX
 		if (self_exec(argv[0], "ndddd", 1, msqid, c1_msgp.type,
 			      c2_msgp.type, c3_msgp.type) < 0) {
-			tst_resm(TFAIL, "\tself_exec failed");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "\tself_exec failed");
 		}
 #else
 		do_child_2();
@@ -205,8 +202,8 @@ int main(int argc, char *argv[])
 		wait(&status);
 	}
 	if ((status >> 8) == 1) {
-		tst_resm(TFAIL, "test failed. status = %d", (status >> 8));
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "test failed. status = %d",
+			 (status >> 8));
 	}
 	/*
 	 * Remove the message queue from the system
@@ -218,8 +215,7 @@ int main(int argc, char *argv[])
 	(void)msgctl(msqid, IPC_RMID, NULL);
 	if ((status = msgctl(msqid, IPC_STAT, NULL)) != -1) {
 		(void)msgctl(msqid, IPC_RMID, NULL);
-		tst_resm(TFAIL, "msgctl(msqid, IPC_RMID) failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "msgctl(msqid, IPC_RMID) failed");
 
 	}
 
@@ -243,18 +239,16 @@ void do_child_1(void)
 	int size;
 
 	if ((size = msgrcv(msqid, &c1_msgp, BYTES, 0, 0)) == -1) {
-		tst_resm(TFAIL | TERRNO, "msgrcv() failed");
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, NULL, "msgrcv() failed");
 	}
 	if (size != BYTES) {
-		tst_resm(TFAIL, "error: received %d bytes expected %d", size,
+		tst_brkm(TFAIL, NULL, "error: received %d bytes expected %d",
+			 size,
 			 BYTES);
-		tst_exit();
 	}
 	for (i = 0; i < BYTES; i++)
 		if (c1_msgp.text[i] != 'i') {
-			tst_resm(TFAIL, "error: corrup message");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "error: corrup message");
 		}
 	exit(0);
 }
@@ -265,46 +259,40 @@ void do_child_2(void)
 	int size;
 
 	if ((size = msgrcv(msqid, &c3_msgp, BYTES, 3, 0)) == -1) {
-		tst_resm(TFAIL | TERRNO, "msgrcv() failed");
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, NULL, "msgrcv() failed");
 	}
 	if (size != BYTES) {
-		tst_resm(TFAIL, "error: received %d bytes expected %d", size,
+		tst_brkm(TFAIL, NULL, "error: received %d bytes expected %d",
+			 size,
 			 BYTES);
-		tst_exit();
 	}
 	for (k = 0; k < BYTES; k++)
 		if (c3_msgp.text[k] != 'k') {
-			tst_resm(TFAIL, "error: corrupt message");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "error: corrupt message");
 		}
 	if ((size = msgrcv(msqid, &c2_msgp, BYTES, 2, 0)) == -1) {
-		tst_resm(TFAIL | TERRNO, "msgrcv() failed");
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, NULL, "msgrcv() failed");
 	}
 	if (size != BYTES) {
-		tst_resm(TFAIL, "error: received %d bytes expected %d", size,
+		tst_brkm(TFAIL, NULL, "error: received %d bytes expected %d",
+			 size,
 			 BYTES);
-		tst_exit();
 	}
 	for (j = 0; j < BYTES; j++)
 		if (c2_msgp.text[j] != 'j') {
-			tst_resm(TFAIL, "error: corrupt message");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "error: corrupt message");
 		}
 	if ((size = msgrcv(msqid, &c1_msgp, BYTES, 1, 0)) == -1) {
-		tst_resm(TFAIL | TERRNO, "msgrcv() failed");
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, NULL, "msgrcv() failed");
 	}
 	if (size != BYTES) {
-		tst_resm(TFAIL, "error: received %d bytes expected %d", size,
+		tst_brkm(TFAIL, NULL, "error: received %d bytes expected %d",
+			 size,
 			 BYTES);
-		tst_exit();
 	}
 	for (i = 0; i < BYTES; i++)
 		if (c1_msgp.text[i] != 'i') {
-			tst_resm(TFAIL, "error: corrupt message");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "error: corrupt message");
 		}
 
 	exit(0);

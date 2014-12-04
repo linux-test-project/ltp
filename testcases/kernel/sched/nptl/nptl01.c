@@ -287,8 +287,8 @@ int main(int argc, char **argv)
 	cleanup();
 
 #else
-	tst_resm(TCONF, "Skipping Execution - This system is not using NPTL");
-	tst_exit();
+	tst_brkm(TCONF, NULL,
+		 "Skipping Execution - This system is not using NPTL");
 #endif
 
 	return 1;

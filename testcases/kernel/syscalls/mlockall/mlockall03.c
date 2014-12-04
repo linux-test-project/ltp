@@ -121,8 +121,7 @@ int main(int ac, char **av)
 
 	/* allocate some space for buf */
 	if ((buf = malloc((size_t)sizeof(struct utsname))) == NULL) {
-		tst_resm(TFAIL, "malloc failed for buf");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "malloc failed for buf");
 	}
 
 	if (uname(buf) < 0) {
@@ -130,9 +129,9 @@ int main(int ac, char **av)
 	}
 
 	if ((compare(ref_release, buf->release)) <= 0) {
-		tst_resm(TCONF,
+		tst_brkm(TCONF,
+			 NULL,
 			 "In Linux 2.6.8 and earlier this test will not run.");
-		tst_exit();
 	}
 
 	setup();

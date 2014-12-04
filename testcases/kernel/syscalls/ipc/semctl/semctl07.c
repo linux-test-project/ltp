@@ -171,8 +171,7 @@ void setup(void)
 	nsems = 1;
 
 	if ((semid = semget(key, nsems, SEM_RA | IPC_CREAT)) == -1) {
-		tst_resm(TFAIL, "semget() failed errno = %d", errno);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "semget() failed errno = %d", errno);
 	}
 }
 

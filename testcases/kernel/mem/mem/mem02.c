@@ -99,15 +99,14 @@ int main(int argc, char **argv)
 	/* check out calloc/free */
 	if ((pm2 = pm1 = calloc(memsize, 1)) == NULL) {
 
-		tst_resm(TFAIL, "calloc - alloc of %dMB failed",
+		tst_brkm(TFAIL, NULL, "calloc - alloc of %dMB failed",
 			 memsize / 1024 / 1024);
-		tst_exit();
 	}
 
 	for (i = 0; i < memsize; i++)
 		if (*pm2++ != 0) {
-			tst_resm(TFAIL, "calloc returned non zero memory");
-			tst_exit();
+			tst_brkm(TFAIL, NULL,
+				 "calloc returned non zero memory");
 		}
 
 	pm2 = pm1;
@@ -116,8 +115,8 @@ int main(int argc, char **argv)
 	pm2 = pm1;
 	for (i = 0; i < memsize; i++)
 		if (*pm2++ != 'X') {
-			tst_resm(TFAIL, "could not write/verify memory ");
-			tst_exit();
+			tst_brkm(TFAIL, NULL,
+				 "could not write/verify memory ");
 		}
 
 	free(pm1);
@@ -129,8 +128,7 @@ int main(int argc, char **argv)
 
 	/* check out malloc/free */
 	if ((pm2 = pm1 = malloc(memsize)) == NULL) {
-		tst_resm(TFAIL, "malloc did not alloc memory ");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "malloc did not alloc memory ");
 	}
 
 	for (i = 0; i < memsize; i++)
@@ -138,8 +136,8 @@ int main(int argc, char **argv)
 	pm2 = pm1;
 	for (i = 0; i < memsize; i++)
 		if (*pm2++ != 'X') {
-			tst_resm(TFAIL, "could not write/verify memory ");
-			tst_exit();
+			tst_brkm(TFAIL, NULL,
+				 "could not write/verify memory ");
 		}
 
 	free(pm1);
@@ -162,8 +160,8 @@ int main(int argc, char **argv)
 	/* verify contents did not change */
 	for (i = 0; i < 5; i++) {
 		if (*pm4++ != 'X') {
-			tst_resm(TFAIL, "realloc changed memory contents");
-			tst_exit();
+			tst_brkm(TFAIL, NULL,
+				 "realloc changed memory contents");
 		}
 	}
 
@@ -176,8 +174,8 @@ int main(int argc, char **argv)
 	/* verify contents did not change */
 	for (i = 0; i < 5; i++) {
 		if (*pm3++ != 'X') {
-			tst_resm(TFAIL, "realloc changed memory contents");
-			tst_exit();
+			tst_brkm(TFAIL, NULL,
+				 "realloc changed memory contents");
 		}
 	}
 
@@ -194,8 +192,8 @@ int main(int argc, char **argv)
 	 * be dumped on failures.
 	 */
 	if ((signal(SIGSEGV, on_mem_fault)) == SIG_ERR) {
-		tst_resm(TFAIL, "Could not get signal handler for SIGSEGV");
-		tst_exit();
+		tst_brkm(TFAIL, NULL,
+			 "Could not get signal handler for SIGSEGV");
 	}
 
 	srand(1);		/* Ensure Determinism         */
@@ -215,8 +213,8 @@ int main(int argc, char **argv)
 		 */
 		laddr = (long)memptr;
 		if (((laddr >> pagesize) << pagesize) != laddr) {
-			tst_resm(TFAIL, "Valloc returned unaligned data");
-			tst_exit();
+			tst_brkm(TFAIL, NULL,
+				 "Valloc returned unaligned data");
 		}
 
 		free(memptr);
@@ -235,6 +233,5 @@ int main(int argc, char **argv)
  */
 void on_mem_fault(int sig)
 {
-	tst_resm(TFAIL, "\tTest failed on receipt of a SIGSEGV signal");
-	tst_exit();
+	tst_brkm(TFAIL, NULL, "\tTest failed on receipt of a SIGSEGV signal");
 }

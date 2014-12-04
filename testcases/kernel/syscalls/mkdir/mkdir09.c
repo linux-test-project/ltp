@@ -212,8 +212,8 @@ int runtest(void)
 
 	if ((pidlist = malloc((child_groups * NCHILD) * sizeof(int))) ==
 	    NULL) {
-		tst_resm(TWARN, "\tMalloc failed (may be OK if under stress)");
-		tst_exit();
+		tst_brkm(TWARN, NULL,
+			 "\tMalloc failed (may be OK if under stress)");
 	}
 
 	child_count = 0;
@@ -265,10 +265,10 @@ int runtest(void)
 	while (1) {
 		if ((child = wait(&status)) > 0) {
 			if (status != 0) {
-				tst_resm(TWARN,
+				tst_brkm(TWARN,
+					 NULL,
 					 "\tChild{%d} exited status = %0x",
 					 child, status);
-				tst_exit();
 			}
 			count++;
 		} else {
@@ -285,15 +285,14 @@ int runtest(void)
 
 	if (count != child_count) {
 		tst_resm(TWARN, "\tWrong number of children waited on!");
-		tst_resm(TWARN, "\tSaw %d, expected %d", count, NCHILD);
-		tst_exit();
+		tst_brkm(TWARN, NULL, "\tSaw %d, expected %d", count,
+			 NCHILD);
 	}
 
 	/* Check for core file in test directory. */
 
 	if (access("core", 0) == 0) {
-		tst_resm(TWARN, "\tCore file found in test directory.");
-		tst_exit();
+		tst_brkm(TWARN, NULL, "\tCore file found in test directory.");
 	}
 
 	/* Remove expected files */
@@ -301,10 +300,10 @@ int runtest(void)
 	for (j = 0; j < nfiles; j += NCHILD) {
 		sprintf(tmpdir, DIR_NAME, j);
 		if (rmdir(tmpdir) < 0) {
-			tst_resm(TWARN,
+			tst_brkm(TWARN,
+				 NULL,
 				 "\tError removing expected directory, ERRNO = %d",
 				 errno);
-			tst_exit();
 		}
 	}
 
@@ -373,8 +372,7 @@ void term(int sig)
 	/* Routine to handle SIGTERM signal. */
 
 	if (parent_pid == getpid()) {
-		tst_resm(TWARN, "\tsignal SIGTERM received by parent.");
-		tst_exit();
+		tst_brkm(TWARN, NULL, "\tsignal SIGTERM received by parent.");
 	}
 	sigterm++;
 	if (jump) {

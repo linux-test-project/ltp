@@ -119,9 +119,8 @@ int main(int argc, char **argv)
 		if (pid == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv[0], "dd", temp, sig) < 0) {
-				tst_resm(TBROK, "self_exec FAILED - "
+				tst_brkm(TBROK, NULL, "self_exec FAILED - "
 					 "terminating test.");
-				tst_exit();
 			}
 #else
 			do_child();
@@ -267,8 +266,7 @@ void fail_exit(void)
 
 int forkfail(void)
 {
-	tst_resm(TBROK, "FORK FAILED - terminating test.");
-	tst_exit();
+	tst_brkm(TBROK, NULL, "FORK FAILED - terminating test.");
 }
 
 /****** ** **   *******/

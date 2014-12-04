@@ -252,8 +252,7 @@ void dochild(void)
 #endif
 
 	if ((fd = open(filename, O_RDWR)) < 0) {
-		tst_resm(TFAIL, "child open");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "child open");
 	}
 	lseek(fd, 0, SEEK_SET);
 	flocks.l_type = F_WRLCK;
@@ -261,13 +260,11 @@ void dochild(void)
 	flocks.l_start = recstart;
 	flocks.l_len = reclen;
 	if (fcntl(fd, F_SETLKW, &flocks) < 0) {
-		tst_resm(TFAIL, "child fcntl failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "child fcntl failed");
 	}
 
 	if (kill(ppid, SIGUSR1) < 0) {
-		tst_resm(TFAIL, "child kill");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "child kill");
 	}
 
 	if (sync_pipe_notify(sync_pipes) == -1)
@@ -292,8 +289,7 @@ int main(int ac, char **av)
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	}
 #ifdef UCLINUX

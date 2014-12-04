@@ -65,9 +65,9 @@ int main(int argc, char *argv[])
 	ret = -1;
 #endif
 	if (ret != -1) {
-		tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, -1) returned %d\n",
+		tst_brkm(TFAIL, NULL,
+			 "prctl(PR_CAPBSET_READ, -1) returned %d\n",
 			 ret);
-		tst_exit();
 	}
 
 	/* Ideally I'd check CAP_LAST_CAP+1, but userspace

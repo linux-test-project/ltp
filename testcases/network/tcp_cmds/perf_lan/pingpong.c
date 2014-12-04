@@ -133,9 +133,8 @@ int main(int argc, char *argv[])
 #endif
 			hostname = hp->h_name;
 		} else {
-			tst_resm(TBROK, "%s: unknown host, couldn't get "
+			tst_brkm(TBROK, NULL, "%s: unknown host, couldn't get "
 				 "address", argv[0]);
-			tst_exit();
 		}
 
 	}
@@ -146,16 +145,14 @@ int main(int argc, char *argv[])
 	if (argc >= 3)
 		datalen = atoi(argv[2]);
 	if (datalen < 0) {
-		tst_resm(TBROK, "datalen must be an integer.");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "datalen must be an integer.");
 	} else
 		datalen = 64;
 
 	datalen -= 8;
 
 	if (datalen > MAXPACKET) {
-		tst_resm(TBROK, "packet size too large");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "packet size too large");
 	}
 	if (datalen >= sizeof(struct timeval))
 		timing = 1;

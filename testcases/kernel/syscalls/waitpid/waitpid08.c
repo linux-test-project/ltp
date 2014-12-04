@@ -208,9 +208,8 @@ static void do_child_1(void)
 	 */
 	for (i = 0; i < MAXKIDS; i++) {
 		if (kill(fork_kid_pid[i], SIGINT) < 0) {
-			tst_resm(TFAIL, "Kill of child %d "
+			tst_brkm(TFAIL, NULL, "Kill of child %d "
 				 "failed, errno = %d", i, errno);
-			tst_exit();
 		}
 	}
 

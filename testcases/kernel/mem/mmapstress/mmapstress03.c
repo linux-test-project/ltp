@@ -224,8 +224,7 @@ void ok_exit()
 
 int anyfail()
 {
-	tst_resm(TFAIL, "Test failed");
-	tst_exit();
+	tst_brkm(TFAIL, NULL, "Test failed");
 }
 
 /*****  **      **      *****/

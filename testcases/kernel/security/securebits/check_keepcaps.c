@@ -85,8 +85,7 @@ static void do_setuid(int expect_privs)
 		tst_exit();
 	}
 	if (!have_privs && expect_privs == EXPECT_PRIVS) {
-		tst_resm(TFAIL, "expected to keep privs but did not");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "expected to keep privs but did not");
 	}
 	if (!have_privs && expect_privs == EXPECT_NOPRIVS) {
 		tst_resm(TPASS, "dropped privs as expected");

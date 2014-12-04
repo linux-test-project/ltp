@@ -99,8 +99,7 @@ static void setup(void)
 	/* Disable test if the version of the kernel is less than 2.6.33 */
 	if ((tst_kvercmp(2, 6, 33)) < 0) {
 		tst_resm(TCONF, "The out_fd must be socket before kernel");
-		tst_resm(TCONF, "2.6.33, see kernel commit cc56f7d");
-		tst_exit();
+		tst_brkm(TCONF, NULL, "2.6.33, see kernel commit cc56f7d");
 	}
 
 	TEST_PAUSE;

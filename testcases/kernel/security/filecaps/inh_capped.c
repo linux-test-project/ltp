@@ -68,38 +68,33 @@ int main()
 	ret = set_caps_from_text("all=eip");
 	debug_print_caps("after raising all caps");
 	if (ret) {
-		tst_resm(TFAIL, "failed to raise all caps");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "failed to raise all caps");
 	}
 
 	ret = set_caps_from_text("all=iep cap_sys_admin-iep");
 	debug_print_caps("after first drop cap_sys_admin");
 	if (ret) {
-		tst_resm(TFAIL, "failed to drop capsysadmin from pI");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "failed to drop capsysadmin from pI");
 	}
 
 	/* we can't regain cap_sys_admin in pE or pP, only pI */
 	ret = set_caps_from_text("all=eip cap_sys_admin-ep+i");
 	debug_print_caps("after first raise cap_sys_admin");
 	if (ret) {
-		tst_resm(TFAIL, "failed to raise capsysadmin in pI");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "failed to raise capsysadmin in pI");
 	}
 
 	ret = set_caps_from_text("all=ip cap_setpcap-e+ip cap_sys_admin+i-ep");
 	debug_print_caps("after drop cappset");
 	if (ret) {
-		tst_resm(TFAIL, "failed to drop cappset from pE");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "failed to drop cappset from pE");
 	}
 
 	ret = set_caps_from_text("all=iep cap_sys_admin-iep cap_setpcap-e+ip");
 	debug_print_caps("after second drop cap_sys_admin");
 	if (ret) {
-		tst_resm(TFAIL, "failed to drop capsysadmin from pI "
+		tst_brkm(TFAIL, NULL, "failed to drop capsysadmin from pI "
 			 "after dropping cappset from pE");
-		tst_exit();
 	}
 
 	ret = set_caps_from_text("all=iep cap_sys_admin-ep+i cap_setpcap-e+ip");

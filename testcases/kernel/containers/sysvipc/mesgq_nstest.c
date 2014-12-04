@@ -99,9 +99,8 @@ int main(int argc, char *argv[])
 
 	if (argc != 2) {
 		tst_resm(TFAIL, "Usage: %s <clone|unshare|none>", argv[0]);
-		tst_resm(TFAIL, " where clone, unshare, or fork specifies"
+		tst_brkm(TFAIL, NULL, " where clone, unshare, or fork specifies"
 			 " unshare method.");
-		tst_exit();
 	}
 
 	/* Using PIPE's to sync between container and Parent */
@@ -143,8 +142,7 @@ int main(int argc, char *argv[])
 	/* fire off the test */
 	ret = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mesgq, NULL);
 	if (ret < 0) {
-		tst_resm(TFAIL, "%s failed", tsttype);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "%s failed", tsttype);
 	}
 
 	close(p1[0]);

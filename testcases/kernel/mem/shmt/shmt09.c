@@ -82,22 +82,22 @@ int main()
 
 	if ((unsigned long)sbrk(16384) >= (-4095UL)) {
 		perror("sbrk");
-		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Error: sbrk failed, errno = %d\n",
+			 errno);
 	}
 
 	if ((unsigned long)sbrk(-4097) >= (-4095UL)) {
 		perror("sbrk");
-		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Error: sbrk failed, errno = %d\n",
+			 errno);
 	}
 
 	if ((shmid = shmget(key, 10 * K_1, IPC_CREAT | 0666)) < 0) {
 		perror("shmget");
-		tst_resm(TFAIL,
+		tst_brkm(TFAIL,
+			 NULL,
 			 "Error: shmget Failed, shmid = %d, errno = %d\n",
 			 shmid, errno);
-		tst_exit();
 	}
 
 	c1 = shmat(shmid, NULL, 0);
@@ -192,10 +192,10 @@ int shmid;
 {
 	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
 		perror("shmctl");
-		tst_resm(TFAIL,
+		tst_brkm(TFAIL,
+			 NULL,
 			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
 			 shmid, errno);
-		tst_exit();
 	}
 	return (0);
 }

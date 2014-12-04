@@ -134,18 +134,18 @@ int P1(void *vtest)
 			tst_resm(TPASS, "test 1 (%s): success", tsttype);
 			tst_exit();
 		}
-		tst_resm(TFAIL, "test 1 (%s): hostname 1 %s, hostname 2 %s",
+		tst_brkm(TFAIL, NULL,
+			 "test 1 (%s): hostname 1 %s, hostname 2 %s",
 			 tsttype, hostname, rhostname);
-		tst_exit();
 	case 2:
 		gethostname(hostname, HLEN);
 		picknewhostname(hostname, newhostname);
 		err = sethostname(newhostname, strlen(newhostname));
 		write(p2fd[1], "1", 1);
 		if (err == -1) {
-			tst_resm(TFAIL, "test 2 (%s): failed to sethostname",
+			tst_brkm(TFAIL, NULL,
+				 "test 2 (%s): failed to sethostname",
 				 tsttype);
-			tst_exit();
 		}
 		zeroize(rhostname);
 		len = read(p1fd[0], rhostname, HLEN);
@@ -153,36 +153,36 @@ int P1(void *vtest)
 			tst_resm(TPASS, "test 2 (%s): success", tsttype);
 			tst_exit();
 		}
-		tst_resm(TFAIL, "test 2 (%s) hostname 1 %s, hostname 2 %s",
+		tst_brkm(TFAIL, NULL,
+			 "test 2 (%s) hostname 1 %s, hostname 2 %s",
 			 tsttype, newhostname, rhostname);
-		tst_exit();
 	case 3:
 		gethostname(hostname, HLEN);
 		picknewhostname(hostname, newhostname);
 		err = sethostname(newhostname, strlen(newhostname));
 		write(p2fd[1], "1", 1);
 		if (err == -1) {
-			tst_resm(TFAIL, "test 3 (%s): failed to sethostname",
+			tst_brkm(TFAIL, NULL,
+				 "test 3 (%s): failed to sethostname",
 				 tsttype);
-			tst_exit();
 		}
 
 		zeroize(rhostname);
 		len = read(p1fd[0], rhostname, HLEN);
 		if (strcmp(newhostname, rhostname) == 0) {
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "test 3 (%s): hostname 1 %s, hostname 2 %s, these should have been different",
 				 tsttype, newhostname, rhostname);
-			tst_exit();
 		}
 		if (strcmp(hostname, rhostname) == 0) {
 			tst_resm(TPASS, "test 3 (%s): success", tsttype);
 			tst_exit();
 		}
-		tst_resm(TFAIL,
+		tst_brkm(TFAIL,
+			 NULL,
 			 "test 3 (%s): hostname 1 %s, hostname 2 %s, should have been same",
 			 tsttype, hostname, rhostname);
-		tst_exit();
 
 	case 4:
 		gethostname(hostname, HLEN);
@@ -191,16 +191,16 @@ int P1(void *vtest)
 		len = read(p1fd[0], rhostname, HLEN);
 		gethostname(newhostname, HLEN);
 		if (strcmp(hostname, newhostname) != 0) {
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "test 4 (%s): hostname 1 %s, hostname 2 %s, should be same",
 				 tsttype, hostname, newhostname);
-			tst_exit();
 		}
 		if (strcmp(hostname, rhostname) == 0) {
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "test 4 (%s): hostname 1 %s, hostname 2 %s, should be different",
 				 tsttype, hostname, rhostname);
-			tst_exit();
 		}
 		tst_resm(TPASS, "test 4 (%s): successful", tsttype);
 		tst_exit();
@@ -210,10 +210,10 @@ int P1(void *vtest)
 		len = read(p1fd[0], rhostname, HLEN);
 		gethostname(newhostname, HLEN);
 		if (strcmp(rhostname, newhostname) != 0) {
-			tst_resm(TFAIL,
+			tst_brkm(TFAIL,
+				 NULL,
 				 "test 5 (%s): hostnames %s and %s should be same",
 				 tsttype, rhostname, newhostname);
-			tst_exit();
 		}
 		tst_resm(TPASS, "test 5 (%s): successful", tsttype);
 		tst_exit();
@@ -335,8 +335,7 @@ int main(int argc, char *argv[])
 		}
 		if (pid == 0) {
 			if (!drop_root()) {
-				tst_resm(TFAIL, "failed to drop root.");
-				tst_exit();
+				tst_brkm(TFAIL, NULL, "failed to drop root.");
 			}
 			r = do_clone_unshare_test(use_clone, CLONE_NEWUTS,
 						  P1, vtest);

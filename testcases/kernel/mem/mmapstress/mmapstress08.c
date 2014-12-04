@@ -115,15 +115,13 @@ void ok_exit()
 
 int anyfail()
 {
-	tst_resm(TFAIL, "Test failed\n");
-	tst_exit();
+	tst_brkm(TFAIL, NULL, "Test failed\n");
 }
 
 #else /* defined(__i386__) || defined(__x86_64__) */
 int main(void)
 {
-	tst_resm(TCONF, "Test is only applicable for IA-32 and x86-64.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "Test is only applicable for IA-32 and x86-64.");
 }
 #endif
 /*****  **      **      *****/

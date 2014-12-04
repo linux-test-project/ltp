@@ -165,14 +165,12 @@ void do_child_1(void)
 	}
 
 	if ((pid = FORK_OR_VFORK()) == -1) {
-		tst_resm(TFAIL, "Fork failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "Fork failed");
 	}
 	if (pid == 0) {
 #ifdef UCLINUX
 		if (self_exec(argv0, "n", 2) < 0) {
-			tst_resm(TFAIL, "self_exec failed");
-			tst_exit();
+			tst_brkm(TFAIL, NULL, "self_exec failed");
 		}
 #else
 		do_child_2();

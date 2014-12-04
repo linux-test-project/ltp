@@ -72,8 +72,8 @@ int main(int ac, char **av)
 	setup();
 
 	if (ac < 2) {
-		tst_resm(TFAIL, "%s failed - Usage: %s outfile", TCID, av[0]);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "%s failed - Usage: %s outfile", TCID,
+			 av[0]);
 	}
 
 	fd = SAFE_OPEN(cleanup, av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);

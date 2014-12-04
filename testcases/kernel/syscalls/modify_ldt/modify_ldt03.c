@@ -94,10 +94,9 @@ static void cleanup(void)
 
 int main(void)
 {
-	tst_resm(TCONF,
-		 "modify_ldt is available but not tested on the platform than "
+	tst_brkm(TCONF,
+		 NULL, "modify_ldt is available but not tested on the platform than "
 		 "__i386__");
-	tst_exit();
 }
 
 #else /* if defined(__i386__) */

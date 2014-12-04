@@ -84,9 +84,9 @@ int main(int argc, char *argv[])
 
 	if (argc != 2) {
 		tst_resm(TFAIL, "Usage: %s <clone|unshare|none>", argv[0]);
-		tst_resm(TFAIL,
+		tst_brkm(TFAIL,
+			 NULL,
 			 " where clone, unshare, or fork specifies unshare method.");
-		tst_exit();
 	}
 	if (pipe(p1) == -1) {
 		perror("pipe");
@@ -109,16 +109,14 @@ int main(int argc, char *argv[])
 	id = shmget(TESTKEY, 100, IPC_CREAT);
 	if (id == -1) {
 		perror("shmget");
-		tst_resm(TFAIL, "shmget failed");
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "shmget failed");
 	}
 
 	tst_resm(TINFO, "shmid namespaces test : %s", tsttype);
 	/* fire off the test */
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmid, NULL);
 	if (r < 0) {
-		tst_resm(TFAIL, "%s failed", tsttype);
-		tst_exit();
+		tst_brkm(TFAIL, NULL, "%s failed", tsttype);
 	}
 
 	close(p1[0]);

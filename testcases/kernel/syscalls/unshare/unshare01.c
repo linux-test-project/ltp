@@ -293,7 +293,6 @@ int main(int ac, char **av)
 #else
 int main(void)
 {
-	tst_resm(TCONF, "unshare is undefined.");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "unshare is undefined.");
 }
 #endif

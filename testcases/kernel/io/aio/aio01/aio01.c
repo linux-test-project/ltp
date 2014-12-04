@@ -435,8 +435,7 @@ static void cleanup(void)
 
 int main(void)
 {
-	tst_resm(TCONF, "libaio missing");
-	tst_exit();
+	tst_brkm(TCONF, NULL, "libaio missing");
 }
 
 #endif

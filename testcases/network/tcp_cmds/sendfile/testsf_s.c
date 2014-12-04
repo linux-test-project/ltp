@@ -44,14 +44,12 @@ int main(int argc, char *argv[])
 	int port;
 
 	if (argc != 3) {
-		tst_resm(TBROK, "usage: listen-address listen-port");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "usage: listen-address listen-port");
 	}
 
 	/* open socket */
 	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0) {
-		tst_resm(TBROK, "socket error = %d\n", errno);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "socket error = %d\n", errno);
 	}
 
 	signal(SIGCHLD, SIG_IGN);	/* ignore signals from children */
@@ -59,12 +57,10 @@ int main(int argc, char *argv[])
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = PFI;
 	if ((gai = getaddrinfo(argv[1], NULL, &hints, &hp)) != 0) {
-		tst_resm(TBROK, "getaddrinfo failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "getaddrinfo failed");
 	}
 	if (!hp || !hp->ai_addr || hp->ai_addr->sa_family != AFI) {
-		tst_resm(TBROK, "getaddrinfo failed");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "getaddrinfo failed");
 	}
 
 	/* server IP and port */

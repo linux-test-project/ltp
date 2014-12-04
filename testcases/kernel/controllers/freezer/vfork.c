@@ -105,8 +105,7 @@ int do_vfork(int count)
 		else if (child > 0)
 			count--;
 		else {
-			tst_resm(TFAIL | TERRNO, "vfork failed");
-			tst_exit();
+			tst_brkm(TFAIL | TERRNO, NULL, "vfork failed");
 		}
 	}
 
@@ -340,9 +339,8 @@ int main(int argc, char **argv)
 
 			/* Set up ptrace */
 			if (ptrace(PTRACE_ATTACH, child, NULL, NULL) == -1) {
-				tst_resm(TBROK | TERRNO,
-					 "ptrace(ATTACH) failed");
-				tst_exit();
+				tst_brkm(TBROK | TERRNO,
+					 NULL, "ptrace(ATTACH) failed");
 			}
 			if (waitpid(child, NULL, 0) != child) {
 				tst_resm(TBROK | TERRNO, "waitpid(%d) failed",
