@@ -1,6 +1,5 @@
 /ltp_acpi_cmds.ko
 /ltp_acpi
-/ltp_acpi_cpufreq
 /*.mod.c
 /modules.order
 /.tmp_versions

@@ -20,6 +20,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 SUBDIRS		:= acpi \
 		   block \
+		   cpufreq \
 		   pci \
 		   rcu \
 		   rtc \

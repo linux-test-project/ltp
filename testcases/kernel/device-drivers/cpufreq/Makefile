@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -14,20 +14,9 @@
 # along with this program; if not, write the Free Software Foundation,
 # Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-ifneq ($(KERNELRELEASE),)
-
-obj-m := ltp_acpi_cmds.o
-
-else
-
 top_srcdir	?= ../../../..
 include $(top_srcdir)/include/mk/testcases.mk
 
-REQ_VERSION_MAJOR	:= 2
-REQ_VERSION_PATCH	:= 6
-MAKE_TARGETS		:= ltp_acpi ltp_acpi_cmds.ko
+LDLIBS += -lrt
 
-include $(top_srcdir)/include/mk/module.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
-
-endif

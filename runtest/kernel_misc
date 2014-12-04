@@ -5,6 +5,6 @@ block_dev block_dev
 tpci tpci
 tbio tbio
 ltp_acpi ltp_acpi
-ltp_acpi_cpufreq ltp_acpi_cpufreq
+cpufreq_boost cpufreq_boost
 uaccess uaccess
 rcu_torture rcu_torture.sh
