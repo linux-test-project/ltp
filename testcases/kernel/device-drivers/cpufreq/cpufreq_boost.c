@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) 2013-2014 Oracle and/or its affiliates. All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -37,22 +37,33 @@
 #include "safe_macros.h"
 #include "safe_stdio.h"
 
-char *TCID = "ltp_acpi_cpufreq";
+char *TCID = "cpufreq_boost";
 
 #define SYSFS_CPU_DIR "/sys/devices/system/cpu/"
 
-const char boost[]	= SYSFS_CPU_DIR "cpufreq/boost";
+struct cpufreq_driver_info {
+	char *name;
+	int off;
+	char *on_str;
+	char *off_str;
+	char *file;
+};
+static const struct cpufreq_driver_info cdrv[] = {
+	{ "acpi_cpufreq", 0, "1", "0", SYSFS_CPU_DIR "cpufreq/boost" },
+	{ "intel_pstate", 1, "0", "1", SYSFS_CPU_DIR "intel_pstate/no_turbo" },
+};
+static int id = -1;
+
 static int boost_value;
 
 const char governor[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_governor";
 static char governor_name[16];
 
-const char setspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_setspeed";
 const char maxspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_max_freq";
 
 static void cleanup(void)
 {
-	SAFE_FILE_PRINTF(NULL, boost, "%d", boost_value);
+	SAFE_FILE_PRINTF(NULL, cdrv[id].file, "%d", boost_value);
 
 	if (governor[0] != '\0')
 		SAFE_FILE_PRINTF(NULL, governor, "%s", governor_name);
@@ -63,22 +74,32 @@ static void cleanup(void)
 static void setup(void)
 {
 	int fd;
+	unsigned int i;
 	tst_require_root(NULL);
 
-	fd = open(boost, O_RDWR);
-	if (fd == -1) {
-		tst_brkm(TCONF, NULL,
-			"acpi-cpufreq not loaded or overclock not supported");
+	for (i = 0; i < ARRAY_SIZE(cdrv); ++i) {
+		fd = open(cdrv[i].file, O_RDWR);
+		if (fd == -1)
+			continue;
+
+		id = i;
+		close(fd);
+		break;
 	}
-	close(fd);
+
+	if (id == -1)
+		tst_brkm(TCONF, NULL, "overclock not supported");
+
+	tst_resm(TINFO, "found '%s' driver, sysfs knob '%s'",
+		cdrv[id].name, cdrv[id].file);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	SAFE_FILE_SCANF(NULL, boost, "%d", &boost_value);
+	SAFE_FILE_SCANF(NULL, cdrv[i].file, "%d", &boost_value);
 
 	/* change cpu0 scaling governor */
 	SAFE_FILE_SCANF(NULL, governor, "%s", governor_name);
-	SAFE_FILE_PRINTF(cleanup, governor, "%s", "userspace");
+	SAFE_FILE_PRINTF(cleanup, governor, "%s", "performance");
 
 	/* use only cpu0 */
 	cpu_set_t set;
@@ -92,20 +113,6 @@ static void setup(void)
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &params)) {
 		tst_resm(TWARN | TERRNO,
 			"failed to set FIFO sched with max priority");
-	}
-}
-
-static void set_speed(int freq)
-{
-	int set_freq;
-	SAFE_FILE_SCANF(cleanup, setspeed, "%d", &set_freq);
-
-	if (set_freq != freq) {
-		tst_resm(TINFO, "change target speed from %d KHz to %d KHz",
-			set_freq, freq);
-		SAFE_FILE_PRINTF(cleanup, setspeed, "%d", freq);
-	} else {
-		tst_resm(TINFO, "target speed is %d KHz", set_freq);
 	}
 }
 
@@ -141,16 +148,16 @@ static void test_run(void)
 {
 	int boost_time, boost_off_time, max_freq_khz;
 	SAFE_FILE_SCANF(cleanup, maxspeed, "%d", &max_freq_khz);
-	set_speed(max_freq_khz);
+	tst_resm(TINFO, "maximum speed is %d KHz", max_freq_khz);
 
 	/* Enable boost */
-	if (boost_value == 0)
-		SAFE_FILE_PRINTF(cleanup, boost, "1");
+	if (boost_value == cdrv[id].off)
+		SAFE_FILE_PRINTF(cleanup, cdrv[id].file, cdrv[id].on_str);
 	tst_resm(TINFO, "load CPU0 with boost enabled");
 	boost_time = load_cpu(max_freq_khz);
 
 	/* Disable boost */
-	SAFE_FILE_PRINTF(cleanup, boost, "0");
+	SAFE_FILE_PRINTF(cleanup, cdrv[id].file, cdrv[id].off_str);
 	tst_resm(TINFO, "load CPU0 with boost disabled");
 	boost_off_time = load_cpu(max_freq_khz);
 
