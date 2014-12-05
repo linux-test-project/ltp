@@ -74,8 +74,6 @@ int main(int ac, char **av)
 	int i;
 	int entries;
 
-	initgroups("root", 0);
-
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
@@ -183,6 +181,9 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
+
+	gid_t init_gidset[3] = {0, 1, 2};
+	setgroups(3, init_gidset);
 }
 
 static void cleanup(void)
