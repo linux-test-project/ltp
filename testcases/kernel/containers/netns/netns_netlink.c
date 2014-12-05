@@ -47,6 +47,8 @@
 
 
 #define MAX_TRIES 1000
+#define IP_TUNTAP_MIN_VER 100519
+
 char *TCID	= "netns_netlink";
 int TST_TOTAL	= 1;
 struct tst_checkpoint checkpoint;
@@ -60,6 +62,7 @@ static void cleanup(void)
 static void setup(void)
 {
 	tst_require_root(NULL);
+	check_iproute(IP_TUNTAP_MIN_VER);
 	check_netns();
 	tst_tmpdir();
 	TST_CHECKPOINT_CREATE(&checkpoint);
