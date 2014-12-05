@@ -24,6 +24,7 @@
 TCID=netns_isolation
 TST_TOTAL=3
 . test.sh
+. netns_helper.sh
 IP=192.168.0.2
 
 
@@ -40,6 +41,7 @@ cleanup()
 # SETUP
 tst_require_root
 tst_check_cmds ip
+tst_check_iproute 111010
 TST_CLEANUP=cleanup
 
 

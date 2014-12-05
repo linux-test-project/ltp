@@ -29,6 +29,7 @@
 TCID=netns_devices
 TST_TOTAL=3
 . test.sh
+. netns_helper.sh
 IP0=192.168.0.1
 IP1=192.168.0.2
 
@@ -46,6 +47,7 @@ cleanup()
 # SETUP
 tst_require_root
 tst_check_cmds ip
+tst_check_iproute 111010
 TST_CLEANUP=cleanup
 
 # creates a new network namespace "myns0" (man 8 ip-netns)
