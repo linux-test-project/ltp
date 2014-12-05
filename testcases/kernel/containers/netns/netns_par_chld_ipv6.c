@@ -50,13 +50,14 @@
 char *TCID = "netns_ipv6";
 int TST_TOTAL = 1;
 
+#define IPROUTE_MIN_VER 80725
 #define PARENT_SCRIPT "netns_paripv6.sh"
 #define CHILD_SCRIPT "netns_childipv6.sh"
 
 static void setup(void)
 {
 	tst_require_root(NULL);
-	check_iproute();
+	check_iproute(IPROUTE_MIN_VER);
 	check_netns();
 }
 

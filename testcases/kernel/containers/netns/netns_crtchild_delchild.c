@@ -33,12 +33,14 @@
 #include "common.h"
 #include "netns_helper.h"
 
+#define IPROUTE_MIN_VER 80725
+
 const char *TCID = "netns_crtchild_delchild";
 
 static void setup(void)
 {
 	tst_require_root(NULL);
-	check_iproute();
+	check_iproute(IPROUTE_MIN_VER);
 	check_netns();
 }
 

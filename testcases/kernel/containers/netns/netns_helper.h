@@ -33,9 +33,7 @@
 #define CLONE_NEWNS -1
 #endif
 
-#define IPROUTE_MIN_VER 80725
-
-static void check_iproute(void)
+static void check_iproute(unsigned int spe_ipver)
 {
 	FILE *ipf;
 	int n;
@@ -47,9 +45,14 @@ static void check_iproute(void)
 				"Failed while opening pipe for iproute check");
 
 	n = fscanf(ipf, "ip utility, iproute2-ss%u", &ipver);
-	if (n < 1 || ipver < IPROUTE_MIN_VER)
+	if (n < 1) {
 		tst_brkm(TCONF, NULL,
-			"iproute tools do not support setting network namespaces");
+			"Failed while obtaining version for iproute check");
+	}
+	if (ipver < spe_ipver) {
+		tst_brkm(TCONF, NULL, "The commands in iproute tools do "
+			"not support required objects");
+	}
 
 	pclose(ipf);
 }
