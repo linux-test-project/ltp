@@ -24,7 +24,7 @@ top_srcdir		?= ../../../../../..
 
 include	$(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_DIR		:= testcases/bin/policy
+INSTALL_DIR		:= testcases/data/ima_policy
 
 INSTALL_TARGETS		:= measure*
 
