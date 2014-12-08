@@ -7,4 +7,9 @@ tcp_fastopen6 tcp_fastopen_run.sh -6
 
 vxlan01 vxlan01.sh
 vxlan02 vxlan02.sh
-vxlan03 vxlan03.sh
+
+vxlan_multi_03 vxlan03.sh -d multi
+vxlan_uni_03 vxlan03.sh -d uni
+
+vxlan_ipv6_multi_03 vxlan03.sh -6 -d multi
+vxlan_ipv6_uni_03 vxlan03.sh -6 -d uni
