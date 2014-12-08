@@ -28,14 +28,12 @@
 #          them in cleanup function. See "start_vni" variable which can
 #          solve it.
 
-user_name="root"
-
-ip_local=${IPV4_NETWORK}.${LHOST_IPV4_HOST}
+ip_local=$(tst_ipaddr)
 ip_vxlan_local="192.168.124.1"
 ip6_vxlan_local="fe80::381c:c0ff:fea8:7c01"
 mac_vxlan_local="3A:1C:C0:A8:7C:01"
 
-ip_remote=${IPV4_NETWORK}.${RHOST_IPV4_HOST}
+ip_remote=$(tst_ipaddr rhost)
 ip_vxlan_remote="192.168.124.2"
 ip6_vxlan_remote="fe80::381c:c0ff:fea8:7c02"
 mac_vxlan_remote="3A:1C:C0:A8:7C:02"
@@ -53,7 +51,10 @@ net_load="TFO"
 # will be an error in VXLAN.
 vxlan_threshold=60
 
-while getopts :hsx:i:r:c:R:p:n:l:t: opt; do
+# Destination address, can be unicast or multicast address
+vxlan_dst_addr="uni"
+
+while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
 	case "$opt" in
 	h)
 		echo "Usage:"
@@ -68,6 +69,8 @@ while getopts :hsx:i:r:c:R:p:n:l:t: opt; do
 		echo "n x      VXLAN network 192.168.x"
 		echo "l x      network load: x is PING or TFO(tcp_fastopen)"
 		echo "t x      VXLAN performance threshold, default is 60%"
+		echo "d x      VXLAN destination address, 'uni' or 'multi'"
+		echo "6        run over IPv6"
 		exit 0
 	;;
 	s) TST_USE_SSH=1 ;;
@@ -83,6 +86,9 @@ while getopts :hsx:i:r:c:R:p:n:l:t: opt; do
 	;;
 	l) net_load=$OPTARG ;;
 	t) vxlan_threshold=$OPTARG ;;
+	d) vxlan_dst_addr=$OPTARG ;;
+	6) # skip, test_net library already processed it
+	;;
 	*)
 		tst_brkm TBROK "unknown option: $opt"
 	;;
@@ -109,35 +115,45 @@ safe_run()
 	fi
 }
 
-vxlan_setup_subnet()
+vxlan_setup_subnet_uni()
 {
-	tst_resm TINFO "virtual bridge & VXLAN, connect 2 hosts"
-	local opt="rsc proxy nolearning"
-	local neigh_opt="nud permanent"
+	[ "$(ip li add type vxlan help 2>&1 | grep remote)" ] || \
+		tst_brkm TCONF "iproute doesn't support remote unicast address"
+
+	local opt="remote $(tst_ipaddr rhost)"
+
+	tst_resm TINFO "setup VxLANv$ipver with unicast address: '$opt'"
 
 	safe_run "ip li add ltp_vxl0 type vxlan id $1 $opt"
 	safe_run "ip li set ltp_vxl0 address $mac_vxlan_local"
 	safe_run "ip addr add ${ip_vxlan_local}/24 dev ltp_vxl0"
 	safe_run "ip li set up ltp_vxl0"
 
-	safe_run "ip neigh add $ip_vxlan_remote \
-	          lladdr $mac_vxlan_remote $neigh_opt dev ltp_vxl0"
-	safe_run "ip neigh add $ip6_vxlan_remote \
-	          lladdr $mac_vxlan_remote $neigh_opt dev ltp_vxl0"
-	safe_run "bridge fdb add to $mac_vxlan_remote dst $ip_remote \
-	          dev ltp_vxl0"
+	opt="remote $(tst_ipaddr)"
 
 	tst_rhost_run -s -c "ip li add ltp_vxl0 type vxlan id $2 $opt"
 	tst_rhost_run -s -c "ip li set ltp_vxl0 address $mac_vxlan_remote"
 	tst_rhost_run -s -c "ip addr add ${ip_vxlan_remote}/24 dev ltp_vxl0"
 	tst_rhost_run -s -c "ip li set up ltp_vxl0"
+}
 
-	tst_rhost_run -s -c "ip neigh add $ip_vxlan_local \
-	                     lladdr $mac_vxlan_local $neigh_opt dev ltp_vxl0"
-	tst_rhost_run -s -c "ip neigh add $ip6_vxlan_local \
-	                     lladdr $mac_vxlan_local $neigh_opt dev ltp_vxl0"
-	tst_rhost_run -s -c "bridge fdb add to $mac_vxlan_local dst $ip_local \
-	                     dev ltp_vxl0"
+vxlan_setup_subnet_multi()
+{
+	local opt=
+	[ "$TST_IPV6" ] && opt="group ff05::111" || opt="group 239.1.1.1"
+
+	tst_resm TINFO "setup VxLANv$ipver with multicast address: '$opt'"
+
+	safe_run "ip li add ltp_vxl0 type vxlan id $1 $opt dev $(tst_iface)"
+	safe_run "ip li set ltp_vxl0 address $mac_vxlan_local"
+	safe_run "ip addr add ${ip_vxlan_local}/24 dev ltp_vxl0"
+	safe_run "ip li set up ltp_vxl0"
+
+	tst_rhost_run -s -c "ip li add ltp_vxl0 type vxlan id $2 $opt \
+	                     dev $(tst_iface rhost)"
+	tst_rhost_run -s -c "ip li set ltp_vxl0 address $mac_vxlan_remote"
+	tst_rhost_run -s -c "ip addr add ${ip_vxlan_remote}/24 dev ltp_vxl0"
+	tst_rhost_run -s -c "ip li set up ltp_vxl0"
 }
 
 netload_test()
@@ -169,7 +185,7 @@ netload_test()
 
 		# run local tcp client
 		tcp_fastopen -a $clients_num -r $client_requests -l \
-			-H $ip_addr -g $port -d $rfile > /dev/null 2>&1 || ret=1
+			-H $ip_addr -g $port -d $rfile > /dev/null || ret=1
 
 		if [ $ret -eq 0 -a ! -f $rfile ]; then
 			tst_brkm TBROK "can't read $rfile"
@@ -203,8 +219,8 @@ vxlan_compare_netperf()
 	per=$(( $vt * 100 / $lt - 100 ))
 	per6=$(( $vt6 * 100 / $lt - 100 ))
 
-	tst_resm TINFO "IPv4 VxLAN over IPv4 slower by $per %"
-	tst_resm TINFO "IPv6 VxLAN over IPv4 slower by $per6 %"
+	tst_resm TINFO "IPv4 VxLAN over IPv$ipver slower by $per %"
+	tst_resm TINFO "IPv6 VxLAN over IPv$ipver slower by $per6 %"
 
 	[ "$per" -ge "$vxlan_threshold" -o "$per6" -ge "$vxlan_threshold" ] \
 		&& ret=1
@@ -214,10 +230,15 @@ vxlan_compare_netperf()
 
 tst_require_root
 
-tst_kvercmp 3 8 0
-if [ $? -eq 0 ]; then
+tst_kvercmp 3 8 0 && \
 	tst_brkm TCONF "test must be run with kernel 3.8 or newer"
+
+if [ "$TST_IPV6" ]; then
+	tst_kvercmp 3 12 0 && \
+		tst_brkm TCONF "test must be run with kernel 3.12 or newer"
 fi
+
+ipver=${TST_IPV6:-'4'}
 
 tst_check_cmds "ip"
 

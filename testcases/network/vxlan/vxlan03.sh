@@ -52,14 +52,19 @@ fi
 tst_resm TINFO "networks with the same VNI must work"
 # VNI is 24 bits long, so max value, which is not reserved, is 0xFFFFFE
 res="TPASS"
-vxlan_setup_subnet "0xFFFFFE" "0xFFFFFE"
+
+if [ "$vxlan_dst_addr" != 'uni' -a $vxlan_dst_addr != 'multi' ]; then
+	tst_brkm TBROK "wrong destination address, can be 'uni' or 'multi'"
+fi
+
+vxlan_setup_subnet_$vxlan_dst_addr "0xFFFFFE" "0xFFFFFE"
 vxlan_compare_netperf || res="TFAIL"
 
 tst_resm $res "done"
 
 tst_resm TINFO "different VNI shall not work together"
 res="TPASS"
-vxlan_setup_subnet "0xFFFFFE" "0xFFFFFD"
+vxlan_setup_subnet_$vxlan_dst_addr "0xFFFFFE" "0xFFFFFD"
 vxlan_compare_netperf && res="TFAIL"
 
 tst_resm $res "done"
