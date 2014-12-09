@@ -96,13 +96,13 @@ static void cleanup(void)
 			 "inotify_rm_watch(%d, %d) [2] failed", fd_notify,
 			 wd_file);
 
-	if (close(fd_notify) == -1)
+	if (fd_notify > 0 && close(fd_notify))
 		tst_resm(TWARN, "close(%d) [1] failed", fd_notify);
 
-	if (close(wd_dir) == -1)
+	if (wd_dir > 0 && close(wd_dir))
 		tst_resm(TWARN, "close(%d) [2] failed", wd_dir);
 
-	if (close(wd_file) == -1)
+	if (wd_file > 0 && close(wd_file))
 		tst_resm(TWARN, "close(%d) [3] failed", wd_file);
 
 	TEST_CLEANUP;
@@ -120,8 +120,15 @@ static void setup(void)
 	tst_tmpdir();
 
 	fd_notify = myinotify_init();
-	if (fd_notify == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "inotify_init() failed");
+	if (fd_notify == -1) {
+		if (errno == ENOSYS) {
+			tst_brkm(TCONF, cleanup,
+				 "inotify is not configured in this kernel.");
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "inotify_init failed");
+		}
+	}
 
 	SAFE_MKDIR(cleanup, TEST_DIR, 00700);
 

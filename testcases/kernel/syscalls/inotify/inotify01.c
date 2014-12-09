@@ -61,7 +61,7 @@ static void cleanup(void);
 static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
 static int fd, fd_notify;
-static int wd;
+static int wd, reap_wd;
 
 static int event_set[EVENT_MAX];
 
@@ -232,21 +232,21 @@ static void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed",
 			 fd_notify, fname);
+		reap_wd = 1;
 	};
 
 }
 
 static void cleanup(void)
 {
-	if (myinotify_rm_watch(fd_notify, wd) < 0) {
+	if (reap_wd && myinotify_rm_watch(fd_notify, wd) < 0) {
 		tst_resm(TWARN | TERRNO, "inotify_rm_watch (%d, %d) failed",
 			 fd_notify, wd);
 
 	}
 
-	if (close(fd_notify) == -1) {
+	if (fd_notify > 0 && close(fd_notify))
 		tst_resm(TWARN, "close(%d) failed", fd_notify);
-	}
 
 	TEST_CLEANUP;
 	tst_rmdir();
