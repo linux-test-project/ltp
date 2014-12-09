@@ -107,6 +107,7 @@ runtest_f(int fd, char *buf, int offset, int count, int errnum, int testnum,
 			l_fail = TRUE;
 		}
 	} else {
+		errno = 0;
 		ret = read(fd, buf, count);
 		if (ret >= 0 || errno != errnum) {
 			tst_resm(TFAIL, "read allows %s. returns %d: %s",
@@ -121,6 +122,7 @@ runtest_f(int fd, char *buf, int offset, int count, int errnum, int testnum,
 			l_fail = TRUE;
 		}
 	} else {
+		errno = 0;
 		ret = write(fd, buf, count);
 		if (ret >= 0 || errno != errnum) {
 			tst_resm(TFAIL, "write allows %s.returns %d: %s",
@@ -247,6 +249,7 @@ int main(int argc, char *argv[])
 	/* Test-1: Negative Offset */
 	offset = -1;
 	count = bufsize;
+	errno = 0;
 	ret = lseek(fd, offset, SEEK_SET);
 	if ((ret >= 0) || (errno != EINVAL)) {
 		tst_resm(TFAIL, "lseek allows negative offset. returns %d:%s",
@@ -284,6 +287,7 @@ int main(int argc, char *argv[])
 		fail_count++;
 		tst_resm(TFAIL, "Read beyond the file size");
 	} else {
+		errno = 0;
 		ret = read(fd, buf2, count);
 		if (ret > 0 || (ret < 0 && errno != EINVAL)) {
 			tst_resm(TFAIL,
@@ -392,6 +396,7 @@ int main(int argc, char *argv[])
 		failed = TRUE;
 		fail_count++;
 	} else {
+		errno = 0;
 		ret = read(fd, buf2, count);
 		if (ret >= 0 || errno != EBADF) {
 			tst_resm(TFAIL,
@@ -417,6 +422,7 @@ int main(int argc, char *argv[])
 		failed = TRUE;
 		fail_count++;
 	} else {
+		errno = 0;
 		ret = write(fd, buf2, count);
 		if (ret >= 0 || errno != EBADF) {
 			tst_resm(TFAIL,
@@ -460,6 +466,7 @@ int main(int argc, char *argv[])
 			 strerror(errno));
 		l_fail = TRUE;
 	} else {
+		errno = 0;
 		ret = read(fd, (char *)((ulong) ADDRESS_OF_MAIN & pagemask),
 			 count);
 		if (ret >= 0 || errno != EFAULT) {
