@@ -80,7 +80,6 @@ setup()
     export TMPBASE="/tmp"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-    export LTP_DEV=""
     export LTP_DEV_FS_TYPE="ext2"
 
     [ -d "$LTPROOT/testcases/bin" ] ||
