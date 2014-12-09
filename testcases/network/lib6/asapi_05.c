@@ -415,7 +415,7 @@ void icmp6_ft(void)
 			tst_resm(TFAIL, "%s: rv %d != expected %d",
 				 ftab[i].ft_tname, rv, ftab[i].ft_expected);
 		else
-			tst_resm(TPASS, ftab[i].ft_tname);
+			tst_resm(TPASS, "%s", ftab[i].ft_tname);
 	}
 }
 
