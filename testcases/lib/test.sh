@@ -45,9 +45,11 @@ tst_resm()
 	local mask=$?
 	LTP_RET_VAL=$((LTP_RET_VAL|mask))
 
-	echo "$TCID $TST_COUNT $1 : $2"
+	local ret=$1
+	shift
+	echo "$TCID $TST_COUNT $ret : $@"
 
-	case "$1" in
+	case "$ret" in
 	TPASS|TFAIL)
 	TST_COUNT=$((TST_COUNT+1));;
 	esac
@@ -62,7 +64,9 @@ tst_brkm()
 	*) tst_brkm TBROK "Invalid tst_brkm type '$1'";;
 	esac
 
-	tst_resm "$1" "$2"
+	local ret=$1
+	shift
+	tst_resm "$ret" "$@"
 	tst_exit
 }
 
