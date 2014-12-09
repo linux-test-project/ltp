@@ -80,7 +80,6 @@ setup()
     export TMPBASE="/tmp"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-    export LTP_DEV=""
     export LTP_DEV_FS_TYPE="ext2"
 
     [ -d "$LTPROOT/testcases/bin" ] ||
@@ -1012,10 +1011,10 @@ set_block_device()
             echo "Tests which require block device are disabled."
             echo "You can specify it with option -b"
 	else
-            LTP_DEV=$DEVICE
+            export LTP_DEV=$DEVICE
         fi
     else
-        LTP_DEV=$DEVICE
+        export LTP_DEV=$DEVICE
     fi
 }
 
