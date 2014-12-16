@@ -151,39 +151,35 @@ int main(int argc, char *argv[])
 			fd = ltp_syscall(__NR_signalfd4, -1, &ss,
 				SIGSETSIZE, 0);
 			if (fd == -1) {
-				tst_resm(TFAIL, "signalfd4(0) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					 "signalfd4(0) failed");
 			}
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if (coe & FD_CLOEXEC) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "signalfd4(0) set close-on-exec flag");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 
 			fd = ltp_syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE,
 				     SFD_CLOEXEC);
 			if (fd == -1) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "signalfd4(SFD_CLOEXEC) failed");
-				cleanup();
-				tst_exit();
 			}
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if ((coe & FD_CLOEXEC) == 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "signalfd4(SFD_CLOEXEC) does not set close-on-exec flag");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 			tst_resm(TPASS, "signalfd4(SFD_CLOEXEC) Passed");

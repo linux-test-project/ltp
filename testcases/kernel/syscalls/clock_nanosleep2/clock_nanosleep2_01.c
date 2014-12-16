@@ -134,12 +134,10 @@ int main(int ac, char **av)
 				TEST(clock_nanosleep2
 				     (CLOCK_TO_USE, TIMER_ABSTIME, &ts, NULL));
 				if (TEST_ERRNO) {
-					tst_resm(TFAIL,
-						 "%s failed - errno = %d : %s",
+					tst_brkm(TFAIL,
+						 cleanup, "%s failed - errno = %d : %s",
 						 TCID, TEST_ERRNO,
 						 strerror(TEST_ERRNO));
-					cleanup();
-					tst_exit();
 				}
 				tst_resm(TINFO, "Iteration = %i", i);
 			}

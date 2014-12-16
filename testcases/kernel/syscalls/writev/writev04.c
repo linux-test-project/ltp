@@ -151,10 +151,8 @@ int main(int argc, char **argv)
 		}
 
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) < 0) {
-			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
+			tst_brkm(TFAIL, cleanup, "open failed: fname = %s, errno = %d",
 				 f_name, errno);
-			cleanup();
-			tst_exit();
 		}
 //block1:
 		tst_resm(TINFO, "Enter block 1");

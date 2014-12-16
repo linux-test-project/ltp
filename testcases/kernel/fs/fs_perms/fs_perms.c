@@ -220,10 +220,7 @@ int main(int argc, char *argv[])
 
 	res1 = testfperm(TEST_FILE_NAME1, 0, user_id, group_id, fperm);
 
-	tst_resm((exp_res == res1) && res2 ? TPASS : TFAIL,
-		 "%c a %03o file owned by (%d/%d) as user/group (%d/%d)",
+	tst_brkm((exp_res == res1) && res2 ? TPASS : TFAIL,
+		 tst_rmdir, "%c a %03o file owned by (%d/%d) as user/group (%d/%d)",
 		 fperm[0], fmode, fuser_id, fgroup_id, user_id, group_id);
-
-	tst_rmdir();
-	tst_exit();
 }

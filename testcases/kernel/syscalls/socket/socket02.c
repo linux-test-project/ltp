@@ -158,28 +158,25 @@ int main(int argc, char *argv[])
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if (coe & FD_CLOEXEC) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "socket(0) set close-on-exec flag");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 
 			fd = socket(PF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
 			if (fd == -1) {
-				tst_resm(TFAIL, "socket(SOCK_CLOEXEC) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					 "socket(SOCK_CLOEXEC) failed");
 			}
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if ((coe & FD_CLOEXEC) == 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "socket(SOCK_CLOEXEC) does not set close-on-exec flag");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 
@@ -194,11 +191,9 @@ int main(int argc, char *argv[])
 						 "fcntl failed");
 				}
 				if (coe & FD_CLOEXEC) {
-					tst_resm(TFAIL,
-						 "socketpair(0) set close-on-exec flag for fds[%d]\n",
+					tst_brkm(TFAIL,
+						 cleanup, "socketpair(0) set close-on-exec flag for fds[%d]\n",
 						 i);
-					cleanup();
-					tst_exit();
 				}
 				close(fds[i]);
 			}
@@ -216,11 +211,9 @@ int main(int argc, char *argv[])
 						 "fcntl failed");
 				}
 				if ((coe & FD_CLOEXEC) == 0) {
-					tst_resm(TFAIL,
-						 "socketpair(SOCK_CLOEXEC) does not set close-on-exec flag for fds[%d]\n",
+					tst_brkm(TFAIL,
+						 cleanup, "socketpair(SOCK_CLOEXEC) does not set close-on-exec flag for fds[%d]\n",
 						 i);
-					cleanup();
-					tst_exit();
 				}
 				close(fds[i]);
 			}

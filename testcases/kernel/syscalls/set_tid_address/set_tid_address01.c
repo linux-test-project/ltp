@@ -123,11 +123,9 @@ int main(int ac, char **av)
 					 "set_tid_address call succeeded:  as expected %ld",
 					 TEST_RETURN);
 			} else {
-				tst_resm(TFAIL, "%s failed - errno = %d : %s",
+				tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s",
 					 TCID, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
-				cleanup();
-				tst_exit();
 			}
 		}
 	}

@@ -184,9 +184,7 @@ void ok_exit()
 
 int anyfail()
 {
-	tst_resm(TFAIL, "Test failed");
-	tst_rmdir();
-	tst_exit();
+	tst_brkm(TFAIL, tst_rmdir, "Test failed");
 }
 
 /*****  **      **      *****/

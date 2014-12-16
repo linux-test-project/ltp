@@ -255,9 +255,7 @@ void ok_exit()
  */
 void forkfail()
 {
-	tst_resm(TBROK, "Reason: %s\n", strerror(errno));
-	tst_rmdir();
-	tst_exit();
+	tst_brkm(TBROK, tst_rmdir, "Reason: %s\n", strerror(errno));
 }
 
 /*

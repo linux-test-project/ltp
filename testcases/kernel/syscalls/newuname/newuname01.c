@@ -122,11 +122,9 @@ int main(int ac, char **av)
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			TEST(ltp_syscall(__NR_uname, &name));
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL, "%s failed - errno = %d : %s",
+				tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s",
 					 TCID, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
-				cleanup();
-				tst_exit();
 			} else {
 				tst_resm(TPASS,
 					 "newuname call succeed: return value = %ld ",

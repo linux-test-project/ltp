@@ -110,9 +110,8 @@ int main(void)
 	errno = 0;
 	wjh_f = open(TESTFILE, O_RDWR | O_CREAT, 0644);
 	if (wjh_f == -1) {
-		tst_resm(TFAIL | TERRNO, "open(%s) failed", TESTFILE);
-		tst_rmdir();
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, tst_rmdir, "open(%s) failed",
+			 TESTFILE);
 	}
 	while (count < strlen(str)) {
 		if ((count += write(wjh_f, str, strlen(str))) == -1) {
@@ -135,9 +134,8 @@ int main(void)
 
 	wjh_f = open(TESTFILE, flag);
 	if (wjh_f == -1) {
-		tst_resm(TFAIL | TERRNO, "open(%s) failed", TESTFILE);
-		tst_rmdir();
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, tst_rmdir, "open(%s) failed",
+			 TESTFILE);
 	}
 	wjh_ret = ftruncate(wjh_f, trunc_size);
 #ifdef DEBUG

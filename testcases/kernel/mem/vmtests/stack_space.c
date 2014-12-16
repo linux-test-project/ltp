@@ -150,9 +150,8 @@ int runtest()
 			tst_resm(TBROK,
 				 "Fork failed (may be OK if under stress)");
 			tst_resm(TINFO, "System resource may be too low.\n");
-			tst_resm(TBROK, "Reason: %s\n", strerror(errno));
-			tst_rmdir();
-			tst_exit();
+			tst_brkm(TBROK, tst_rmdir, "Reason: %s\n",
+				 strerror(errno));
 
 		}
 	}

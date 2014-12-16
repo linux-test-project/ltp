@@ -140,9 +140,7 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			if (ltp_syscall(__NR_pipe2, fds, 0) == -1) {
-				tst_resm(TFAIL, "pipe2(0) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup, "pipe2(0) failed");
 			}
 			for (i = 0; i < 2; ++i) {
 				fl = fcntl(fds[i], F_GETFL);
@@ -151,19 +149,16 @@ int main(int argc, char *argv[])
 						 "fcntl failed");
 				}
 				if (fl & O_NONBLOCK) {
-					tst_resm(TFAIL,
-						 "pipe2(0) set non-blocking mode for fds[%d]",
+					tst_brkm(TFAIL,
+						 cleanup, "pipe2(0) set non-blocking mode for fds[%d]",
 						 i);
-					cleanup();
-					tst_exit();
 				}
 				close(fds[i]);
 			}
 
 			if (ltp_syscall(__NR_pipe2, fds, O_NONBLOCK) == -1) {
-				tst_resm(TFAIL, "pipe2(O_NONBLOCK) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					 "pipe2(O_NONBLOCK) failed");
 			}
 			for (i = 0; i < 2; ++i) {
 				fl = fcntl(fds[i], F_GETFL);
@@ -172,11 +167,9 @@ int main(int argc, char *argv[])
 						 "fcntl failed");
 				}
 				if ((fl & O_NONBLOCK) == 0) {
-					tst_resm(TFAIL,
-						 "pipe2(O_NONBLOCK) does not set non-blocking mode for fds[%d]\n",
+					tst_brkm(TFAIL,
+						 cleanup, "pipe2(O_NONBLOCK) does not set non-blocking mode for fds[%d]\n",
 						 i);
-					cleanup();
-					tst_exit();
 				}
 				close(fds[i]);
 			}

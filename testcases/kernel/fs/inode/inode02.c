@@ -848,9 +848,7 @@ void setup()
  */
 void fail_exit()
 {
-	tst_resm(TFAIL, "Test failed\n");
-	tst_rmdir();
-	tst_exit();
+	tst_brkm(TFAIL, tst_rmdir, "Test failed\n");
 }
 
 /*
@@ -885,9 +883,7 @@ void ok_exit()
  */
 void forkfail()
 {
-	tst_resm(TBROK, "Reason: %s\n", strerror(errno));
-	tst_rmdir();
-	tst_exit();
+	tst_brkm(TBROK, tst_rmdir, "Reason: %s\n", strerror(errno));
 }
 
 /*

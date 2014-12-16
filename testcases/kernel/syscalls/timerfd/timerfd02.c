@@ -147,39 +147,35 @@ int main(int argc, char *argv[])
 			fd = ltp_syscall(__NR_timerfd_create,
 				CLOCK_REALTIME, 0);
 			if (fd == -1) {
-				tst_resm(TFAIL, "timerfd_create(0) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					 "timerfd_create(0) failed");
 			}
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if (coe & FD_CLOEXEC) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "timerfd_create(0) set close-on-exec flag");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 
 			fd = ltp_syscall(__NR_timerfd_create, CLOCK_REALTIME,
 				     TFD_CLOEXEC);
 			if (fd == -1) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "timerfd_create(TFD_CLOEXEC) failed");
-				cleanup();
-				tst_exit();
 			}
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if ((coe & FD_CLOEXEC) == 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "timerfd_create(TFD_CLOEXEC) set close-on-exec flag");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 			tst_resm(TPASS, "timerfd_create(TFD_CLOEXEC) Passed");

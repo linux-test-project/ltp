@@ -138,37 +138,32 @@ int main(int argc, char *argv[])
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			fd = socket(PF_INET, SOCK_STREAM, 0);
 			if (fd == -1) {
-				tst_resm(TFAIL, "socket(0) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup, "socket(0) failed");
 			}
 			fl = fcntl(fd, F_GETFL);
 			if (fl == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if (fl & O_NONBLOCK) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "socket(0) set non-blocking mode");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 
 			fd = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 			if (fd == -1) {
-				tst_resm(TFAIL, "socket(SOCK_NONBLOCK) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					 "socket(SOCK_NONBLOCK) failed");
 			}
 			fl = fcntl(fd, F_GETFL);
 			if (fl == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if ((fl & O_NONBLOCK) == 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "socket(SOCK_NONBLOCK) does not set non-blocking mode");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 			tst_resm(TPASS, "socket(SOCK_NONBLOCK) PASSED");

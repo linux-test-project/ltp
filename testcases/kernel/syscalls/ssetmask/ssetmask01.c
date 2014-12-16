@@ -120,15 +120,13 @@ int main(int ac, char **av)
 			ltp_syscall(__NR_ssetmask, SIGALRM);
 			TEST(ltp_syscall(__NR_sgetmask));
 			if (TEST_RETURN != SIGALRM) {
-				tst_resm(TFAIL | TTERRNO, "sgetmask() failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "sgetmask() failed");
 			}
 			TEST(ltp_syscall(__NR_ssetmask, SIGUSR1));
 			if (TEST_RETURN != SIGALRM) {
-				tst_resm(TFAIL | TTERRNO, "ssetmask() failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL | TTERRNO, cleanup,
+					 "ssetmask() failed");
 			}
 			tst_resm(TPASS, "Got SIGALRM--Test PASS ");
 		}

@@ -299,16 +299,12 @@ int main(int ac, char **av)
 	local_flag = PASSED;
 	tst_tmpdir();
 	if (statvfs(".", &fs) == -1) {
-		tst_resm(TFAIL | TERRNO, "statvfs failed");
-		tst_rmdir();
-		tst_exit();
+		tst_brkm(TFAIL | TERRNO, tst_rmdir, "statvfs failed");
 	}
 	if ((fs.f_flag & MS_MANDLOCK) == 0) {
-		tst_resm(TCONF,
-			 "The filesystem where /tmp is mounted does"
+		tst_brkm(TCONF,
+			 tst_rmdir, "The filesystem where /tmp is mounted does"
 			 " not support mandatory locks. Cannot run this test.");
-		tst_rmdir();
-		tst_exit();
 
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -322,19 +318,16 @@ int main(int ac, char **av)
 		act.sa_mask = set;
 		act.sa_flags = 0;
 		if (sigaction(SIGUSR1, &act, 0)) {
-			tst_resm(TBROK, "Sigaction for SIGUSR1 failed");
-			tst_rmdir();
-			tst_exit();
+			tst_brkm(TBROK, tst_rmdir,
+				 "Sigaction for SIGUSR1 failed");
 		}		/* end if */
 		if (sigaddset(&set, SIGUSR1)) {
-			tst_resm(TBROK, "sigaddset for SIGUSR1 failed");
-			tst_rmdir();
-			tst_exit();
+			tst_brkm(TBROK, tst_rmdir,
+				 "sigaddset for SIGUSR1 failed");
 		}
 		if (sigprocmask(SIG_SETMASK, &set, 0)) {
-			tst_resm(TBROK, "sigprocmask for SIGUSR1 failed");
-			tst_rmdir();
-			tst_exit();
+			tst_brkm(TBROK, tst_rmdir,
+				 "sigprocmask for SIGUSR1 failed");
 		}
 		for (i = 0; i < iterations; i++) {
 			sprintf(filename, "%s.%d.%d\n", progname, ppid, i);
@@ -380,10 +373,9 @@ int main(int ac, char **av)
 				tst_resm(TINFO,
 					 "System resource may be too low, fork() malloc()"
 					 " etc are likely to fail.");
-				tst_resm(TBROK,
+				tst_brkm(TBROK,
+					 tst_rmdir,
 					 "Test broken due to inability of fork.");
-				tst_rmdir();
-				tst_exit();
 			}
 
 			if (cpid == 0) {
@@ -392,9 +384,8 @@ int main(int ac, char **av)
 				    (av[0], "dddd", filename, recstart, reclen,
 				     ppid) < -1) {
 					unlink(filename);
-					tst_resm(TBROK, "self_exec failed.");
-					tst_rmdir();
-					tst_exit();
+					tst_brkm(TBROK, tst_rmdir,
+						 "self_exec failed.");
 				}
 #else
 				dochild();

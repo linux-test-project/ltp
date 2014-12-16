@@ -149,9 +149,7 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			if (ltp_syscall(__NR_pipe2, fd, 0) != 0) {
-				tst_resm(TFAIL, "pipe2(0) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup, "pipe2(0) failed");
 			}
 			for (i = 0; i < 2; ++i) {
 				coe = fcntl(fd[i], F_GETFD);
@@ -160,20 +158,17 @@ int main(int argc, char *argv[])
 						 "fcntl failed");
 				}
 				if (coe & FD_CLOEXEC) {
-					tst_resm(TFAIL,
-						 "pipe2(0) set close-on-exit for fd[%d]",
+					tst_brkm(TFAIL,
+						 cleanup, "pipe2(0) set close-on-exit for fd[%d]",
 						 i);
-					cleanup();
-					tst_exit();
 				}
 			}
 			close(fd[0]);
 			close(fd[1]);
 
 			if (ltp_syscall(__NR_pipe2, fd, O_CLOEXEC) != 0) {
-				tst_resm(TFAIL, "pipe2(O_CLOEXEC) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					 "pipe2(O_CLOEXEC) failed");
 			}
 			for (i = 0; i < 2; ++i) {
 				coe = fcntl(fd[i], F_GETFD);
@@ -182,11 +177,9 @@ int main(int argc, char *argv[])
 						 "fcntl failed");
 				}
 				if ((coe & FD_CLOEXEC) == 0) {
-					tst_resm(TFAIL,
-						 "pipe2(O_CLOEXEC) does not set close-on-exit for fd[%d]",
+					tst_brkm(TFAIL,
+						 cleanup, "pipe2(O_CLOEXEC) does not set close-on-exit for fd[%d]",
 						 i);
-					cleanup();
-					tst_exit();
 				}
 			}
 			close(fd[0]);

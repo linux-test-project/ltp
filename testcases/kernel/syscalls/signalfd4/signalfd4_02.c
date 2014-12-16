@@ -146,39 +146,35 @@ int main(int argc, char *argv[])
 			fd = ltp_syscall(__NR_signalfd4, -1, &ss,
 				SIGSETSIZE, 0);
 			if (fd == -1) {
-				tst_resm(TFAIL, "signalfd4(0) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					 "signalfd4(0) failed");
 			}
 			fl = fcntl(fd, F_GETFL);
 			if (fl == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if (fl & O_NONBLOCK) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "signalfd4(0) set non-blocking mode");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 
 			fd = ltp_syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE,
 				     SFD_NONBLOCK);
 			if (fd == -1) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "signalfd4(SFD_NONBLOCK) failed");
-				cleanup();
-				tst_exit();
 			}
 			fl = fcntl(fd, F_GETFL);
 			if (fl == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
 			}
 			if ((fl & O_NONBLOCK) == 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL,
+					 cleanup,
 					 "signalfd4(SFD_NONBLOCK) does not set non-blocking mode");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 			tst_resm(TPASS, "signalfd4(SFD_NONBLOCK) PASSED");

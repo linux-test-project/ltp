@@ -314,9 +314,7 @@ static int checkchars(int fd, char val, int n)
 /*****	**	LTP Port	**	*****/
 int anyfail()
 {
-	tst_resm(TFAIL, "Test failed\n");
-	tst_rmdir();
-	tst_exit();
+	tst_brkm(TFAIL, tst_rmdir, "Test failed\n");
 }
 
 void ok_exit()
