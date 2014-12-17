@@ -25,7 +25,7 @@ AC_DEFUN([LTP_CHECK_TIRPC],[
 	TIRPC_LIBS=""
 
 	AC_CHECK_HEADER(tirpc/netconfig.h,[
-		TIRPC_CPPFLAGS="-I/usr/include/tirpc"
+		TIRPC_CPPFLAGS="-I${SYSROOT}/usr/include/tirpc"
 		AC_DEFINE(HAVE_LIBTIRPC, 1, [Define to 1 if you have libtirpc headers installed])
 		AC_CHECK_LIB(tirpc, rpcb_set, [TIRPC_LIBS="-ltirpc"])])
 
