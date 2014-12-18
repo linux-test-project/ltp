@@ -125,3 +125,20 @@ void tst_run_cmd(void (cleanup_fn)(void),
 			"close() on %s failed at %s:%d",
 			stderr_path, __FILE__, __LINE__);
 }
+
+int tst_system(const char *command)
+{
+	int ret = 0;
+
+	/*
+	 *Temporarily disable SIGCHLD of user defined handler, so the
+	 *system(3) function will not cause unexpected SIGCHLD signal
+	 *callback function for test cases.
+	 */
+	void *old_handler = signal(SIGCHLD, SIG_DFL);
+
+	ret = system(command);
+
+	signal(SIGCHLD, old_handler);
+	return ret;
+}

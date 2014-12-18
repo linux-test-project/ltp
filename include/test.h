@@ -300,6 +300,11 @@ void tst_run_cmd(void (cleanup_fn)(void),
 		const char *stdout_path,
 		const char *stderr_path);
 
+/* Wrapper function for system(3), ignorcing SIGCLD signal.
+ * @command: the command to be run.
+ */
+int tst_system(const char *command);
+
 /* lib/tst_mkfs.c
  *
  * @dev: path to a device
