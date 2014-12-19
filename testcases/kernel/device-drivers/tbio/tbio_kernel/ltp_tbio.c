@@ -376,14 +376,11 @@ static int tbio_ioctl(struct block_device *blk, fmode_t mode,
 {
 	int err = 0;
 
-	tbio_dev.bdev = blkdev_get_by_path(
-		DEVICE_NAME, FMODE_READ | FMODE_WRITE, NULL);
-
 	switch (cmd) {
 	case LTP_TBIO_DO_IO:
 		prk_info("TEST-CASE: LTP_TBIO_DO_IO:");
 		err = tbio_io(tbio_dev.bdev, (struct tbio_interface *)arg);
-	break;
+		break;
 	case LTP_TBIO_CLONE:
 		prk_info("TEST-CASE: LTP_TBIO_CLONE:");
 		err = test_bio_clone();
@@ -412,7 +409,6 @@ static int tbio_ioctl(struct block_device *blk, fmode_t mode,
 	}
 
 	prk_info("TEST-CASE DONE");
-	blkdev_put(tbio_dev.bdev, FMODE_READ | FMODE_WRITE);
 	return err;
 }
 
@@ -475,6 +471,8 @@ static void tbio_request(struct request_queue *q)
 
 static int tbio_open(struct block_device *blk, fmode_t mode)
 {
+	tbio_dev.bdev = blk;
+
 	return 0;
 }
 
