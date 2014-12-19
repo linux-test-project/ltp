@@ -66,6 +66,6 @@ struct tbio_interface {
 	int data_len;	/* input data length */
 	int direction;	/* read or write form DEV */
 	char *cmd;	/* read or write */
-	int cmd_len;	/* length of cmd */
+	unsigned short cmd_len;	/* length of cmd */
 };
 typedef struct tbio_interface tbio_interface_t;

@@ -85,14 +85,19 @@ static int send_request(struct request_queue *q, struct bio *bio,
 		return -EFAULT;
 	}
 
+	if ((!inter->cmd_len) || (inter->cmd_len > rq->cmd_len)) {
+		prk_err("invalid inter->cmd_len");
+		return -EFAULT;
+	}
+
 	rq->cmd_len = inter->cmd_len;
 
 	if (copy_from_user(rq->cmd, inter->cmd, inter->cmd_len))
 		goto out_request;
 
-	if (sizeof(rq->cmd) != inter->cmd_len) {
-		memset(rq->cmd + inter->cmd_len, 0,
-			sizeof(rq->cmd) - inter->cmd_len);
+	if (*(rq->cmd + rq->cmd_len - 1)) {
+		prk_err("rq->cmd is not null-terminated");
+		return -EFAULT;
 	}
 
 	rq->__sector = bio->bi_sector;

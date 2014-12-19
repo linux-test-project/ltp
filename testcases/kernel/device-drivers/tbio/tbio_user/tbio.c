@@ -202,14 +202,14 @@ int tbio_from_dev(int fd, int flag)
 
 	bif.data_len = 1024;
 	bif.direction = TBIO_FROM_DEV;
-	bif.cmd = SAFE_MALLOC(cleanup, 6);
+	bif.cmd = SAFE_MALLOC(cleanup, 5);
 	if (bif.cmd == NULL) {
 		tst_resm(TINFO, "malloc cmd space failed");
 		free(bif.data);
 		return -1;
 	}
 	strcpy(bif.cmd, "READ");
-	bif.cmd_len = 6;
+	bif.cmd_len = 5;
 
 	rc = ioctl(fd, flag, &bif);
 	if (rc) {
