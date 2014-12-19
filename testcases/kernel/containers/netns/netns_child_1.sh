@@ -33,10 +33,16 @@ export TST_TOTAL
 status=0
 
     # Writing child PID number into /tmp/FIFO
-    echo $$ > /tmp/FIFO2
+    tst_timeout "echo $$ > /tmp/FIFO2" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
     # Reading device name from parent
-    vnet1=`cat /tmp/FIFO1`;
+    vnet1=$(tst_timeout "cat /tmp/FIFO1" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     debug "INFO: CHILD1: Network dev name received $vnet1";
 
     # By now network is working
@@ -60,13 +66,16 @@ status=0
     fi
 
     # Waiting for CHILD2
-    ret=`cat /tmp/FIFO5`
+    ret=$(tst_timeout "cat /tmp/FIFO5" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
-    if [ $ret -eq 0 ]; then
+    if [ "$ret" = "0" ]; then
         # Pinging CHILD2 from CHILD1
-        debug "INFO: Trying for pinging CHILD2..."
+        debug "INFO: Trying to ping CHILD2..."
         ping -qc 2 $IP4 > /dev/null
-        if [ $? = 0 ];
+        if [ $? -eq 0 ];
         then
             tst_resm TINFO "PASS: Child2 is pinging from CHILD1 !"
         else

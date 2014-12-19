@@ -75,7 +75,10 @@ status=0
     echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
 
     # Waits for the Child-NS to get created and reads the PID
-    tmp=`cat /tmp/FIFO1`;
+    tmp=$(tst_timeout "cat /tmp/FIFO1" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     pid=$2;
     debug "INFO: the pid of child is $pid"
     ip link set $vnet1 netns $pid
@@ -84,7 +87,10 @@ status=0
     fi
 
     # Passes the device name to Child NS
-    echo $vnet1 > /tmp/FIFO2
+    tst_timeout "echo $vnet1 > /tmp/FIFO2" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
     # Executes the script if it is passed as an argument.
     if [ ! -z $scrpt ] && [ -f $scrpt ] ;  then

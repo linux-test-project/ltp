@@ -64,18 +64,30 @@ status=0
     echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
 
     # Waits for the Child-NS to get created and reads the PID
-    pid=`cat /tmp/FIFO1`
+    pid=$(tst_timeout "cat /tmp/FIFO1" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     debug "INFO: the pid of child is $pid"
     ip link set $vnet1 netns $pid
 
-    echo $vnet1 > /tmp/FIFO2
+    tst_timeout "echo $vnet1 > /tmp/FIFO2" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
-    childIPv6=`cat /tmp/FIFO3`
+    childIPv6=$(tst_timeout "cat /tmp/FIFO3" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     debug "INFO: The ipv6 addr of child is $childIPv6"
     # Passes the IPv6 addr to Child NS
     parIPv6=`ip -6 addr show dev $vnet0 | awk ' /inet6/ { print $2 } ' | awk -F"/" ' { print $1 } '`
 
-    echo $parIPv6 > /tmp/FIFO4
+    tst_timeout "echo $parIPv6 > /tmp/FIFO4" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     ping6 -I $vnet0 -qc 2 $childIPv6 >/dev/null 2>&1
 
     if [ $? = 0 ] ; then
@@ -86,9 +98,16 @@ status=0
        status=-1
 
     fi
-    ret=`cat /tmp/FIFO6`
-    if [ $ret != 0 ] ; then
-        status=$ret
+    ret=$(tst_timeout "cat /tmp/FIFO6" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
+    if [ -z "$ret" ]; then
+        ret="-1"
+    fi
+
+    if [ "$ret" != "0" ] ; then
+        status=$(expr "$ret")
     fi
 
     if [ $vnet0_orig_status -eq 1 ];then

@@ -36,12 +36,18 @@ export TCID
 export TST_COUNT
 export TST_TOTAL
 
-    sshpid=`cat /tmp/FIFO3`
+    sshpid=$(tst_timeout "cat /tmp/FIFO3" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+       tst_brkm TBROK "timeout reached!"
+    fi
     debug "INFO: ssh pid is  $sshpid"
-    newnet=`cat /tmp/FIFO4`
+    newnet=$(tst_timeout "cat /tmp/FIFO4" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     debug "INFO: new dev is  $newnet"
 
-    if [ $newnet = -1 ] ; then
+    if [ "$newnet" = "-1" ] ; then
         status=-1
     fi
 

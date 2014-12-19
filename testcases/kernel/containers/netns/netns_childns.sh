@@ -48,10 +48,16 @@ if [ $# -eq 1 ] ; then
 fi
 
 # Passing the PID of child
-echo "child ready" > /tmp/FIFO1;
+tst_timeout "echo 'child ready' > /tmp/FIFO1" $NETNS_TIMEOUT
+if [ $? -ne 0 ]; then
+    tst_brkm TBROK "timeout reached!"
+fi
 
 # waiting for the device name from parent
-vnet1=`cat /tmp/FIFO2`;
+vnet1=$(tst_timeout "cat /tmp/FIFO2" $NETNS_TIMEOUT)
+if [ $? -ne 0 ]; then
+    tst_brkm TBROK "timeout reached!"
+fi
 debug "INFO: network dev name received $vnet1";
 # Assigning the dev addresses
 if ! ifconfig $vnet1 $IP2/24 up > /dev/null 2>&1 ; then

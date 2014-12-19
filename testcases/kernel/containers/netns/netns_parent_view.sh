@@ -36,9 +36,15 @@ export TST_TOTAL
 
     debug "INFO: Parent SYSFS view"
     ls /sys/class/net > /tmp/parent_sysfs
-    echo PROPAGATE > /tmp/FIFO4
+    tst_timeout "echo 'PROPAGATE' > /tmp/FIFO4" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
-    PROPAGATED=`cat /tmp/FIFO5`
+    PROPAGATED=$(tst_timeout "cat /tmp/FIFO5" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     ls /tmp/mnt/sys/class/net > /tmp/child_sysfs_in_parent
     diff /tmp/child_sysfs_in_parent /tmp/child_sysfs
     if [ $? -eq 0 ]

@@ -41,10 +41,16 @@ export TST_TOTAL
 status=0
 
     # Passing the PID of child
-    echo $$ > /tmp/FIFO1
+    tst_timeout "echo $$ > /tmp/FIFO1" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
     # waiting for the virt-eth devname and IPv6 addr from parent
-    vnet1=`cat /tmp/FIFO2`
+    vnet1=$(tst_timeout "cat /tmp/FIFO2" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     enable_veth_ipv6 $vnet1
     vnet1_orig_status=$?
 
@@ -64,9 +70,15 @@ status=0
     fi
 
     childIPv6=`ip -6 addr show dev $vnet1 | awk ' /inet6/ { print $2 } ' | awk -F"/" ' { print $1 } '`
-    echo $childIPv6 >> /tmp/FIFO3
+    tst_timeout "echo $childIPv6 >> /tmp/FIFO3" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
-    parIPv6=`cat /tmp/FIFO4`
+    parIPv6=$(tst_timeout "cat /tmp/FIFO4" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then                       
+        tst_brkm TBROK "timeout reached!"
+    fi
     debug "INFO: Received the Ipv6 addr $parIPv6"
 
     # checking if parent ns responding
@@ -77,7 +89,10 @@ status=0
                tst_resm TFAIL "IPv6: Pinging Parent from Child: FAIL"
                status=1
             fi
-    echo $status > /tmp/FIFO6
+    tst_timeout "echo $status > /tmp/FIFO6" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
     if [ $vnet1_orig_status -eq 1 ];then
        disable_veth_ipv6 $vnet1

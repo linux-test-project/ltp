@@ -42,6 +42,9 @@ PORT=7890
 PORT2=9876
 DEBUG=0
 
+# Maximum amount of time (in seconds) to wait for FIFO read/write operations
+NETNS_TIMEOUT=60
+
 # set the LTPROOT directory
 cd "$(dirname "$0")"
 if [ -n "${LTPROOT:-}" ]; then
@@ -137,10 +140,13 @@ enable_veth_ipv6()
 disable_veth_ipv6()
 {
     local veth=$1
-    echo 1 > /proc/sys/net/ipv6/conf/$veth/disable_ipv6
-    if [ $? -ne 0 ];then
-        tst_resm TFAIL "Error: set " \
-            "/proc/sys/net/ipv6/conf/$veth/disable_ipv6 to 1 failed"
-        exit 1
+    veth_exist=$(ip a | grep $veth)
+    if [ -n "$veth_exist" ]; then
+        echo 1 > /proc/sys/net/ipv6/conf/$veth/disable_ipv6
+        if [ $? -ne 0 ];then
+            tst_resm TFAIL "Error: set " \
+                "/proc/sys/net/ipv6/conf/$veth/disable_ipv6 to 1 failed"
+            exit 1
+        fi
     fi
 }

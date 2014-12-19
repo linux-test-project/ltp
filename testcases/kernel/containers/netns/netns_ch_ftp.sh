@@ -41,4 +41,7 @@ export TST_TOTAL
             status=1
         fi
     fi
-    echo $status > /tmp/FIFO6
+    tst_timeout "echo $status > /tmp/FIFO6" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi

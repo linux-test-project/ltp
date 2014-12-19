@@ -35,7 +35,10 @@ export TST_COUNT
 export TST_TOTAL
 
     ret=0
-    PROPAGATE=`cat /tmp/FIFO4`
+    PROPAGATE=$(tst_timeout "cat /tmp/FIFO4" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     debug "INFO: CHILD propagated.."
     mount -t sysfs none /sys || ret=1
     mkdir -p /tmp/mnt/sys || ret=1
@@ -48,7 +51,10 @@ export TST_TOTAL
     fi
     #Capture childs sysfs contents
     ls /sys/class/net > /tmp/child_sysfs
-    echo propagated > /tmp/FIFO5
+    tst_timeout "echo 'propagated' > /tmp/FIFO5" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
     #Capture parent sysfs in child
     ls /tmp/par_sysfs/class/net > /tmp/parent_sysfs_in_child

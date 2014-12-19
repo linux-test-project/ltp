@@ -49,10 +49,16 @@ export TST_TOTAL
     route add -host $IP2 dev $vnet0
     echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
 
-    pid=`cat /tmp/FIFO2`
+    pid=$(tst_timeout "cat /tmp/FIFO2" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
     debug "INFO: The pid of CHILD1 is $pid"
     ip link set $vnet1 netns $pid
-    echo $vnet1 > /tmp/FIFO1
+    tst_timeout "echo $vnet1 > /tmp/FIFO1" $NETNS_TIMEOUT
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
 
     debug "INFO: PARENT_1: End of $0"
     exit 0

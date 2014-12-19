@@ -57,9 +57,21 @@ export TST_TOTAL
     fi
 
     if [ $status = 0 ] ; then
-        echo $sshpid > /tmp/FIFO3
-        echo $newdev > /tmp/FIFO4
+        tst_timeout "echo $sshpid > /tmp/FIFO3" $NETNS_TIMEOUT
+	if [ $? -ne 0 ]; then
+            tst_brkm TBROK "timeout reached!"
+        fi
+        tst_timeout "echo $newdev > /tmp/FIFO4" $NETNS_TIMEOUT
+	if [ $? -ne 0 ]; then
+            tst_brkm TBROK "timeout reached!"
+        fi
     else
-        echo FAIL > /tmp/FIFO3
-        echo -1 > /tmp/FIFO4
+        tst_timeout "echo 'FAIL' > /tmp/FIFO3" $NETNS_TIMEOUT
+	if [ $? -ne 0 ]; then
+            tst_brkm TBROK "timeout reached!"
+        fi
+        tst_timeout "echo -1 > /tmp/FIFO4" $NETNS_TIMEOUT
+	if [ $? -ne 0 ]; then
+            tst_brkm TBROK "timeout reached!"
+        fi
     fi

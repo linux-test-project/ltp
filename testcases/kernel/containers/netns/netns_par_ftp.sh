@@ -42,9 +42,15 @@ export TST_TOTAL
         tst_resm TFAIL "Error: Unable to ping ChildNS from ParentNS"
         status=-1
     fi
-    stat=`cat /tmp/FIFO6`
-    if [ $stat != 0 ] ; then
-        status=$stat
+    stat=$(tst_timeout "cat /tmp/FIFO6" $NETNS_TIMEOUT)
+    if [ $? -ne 0 ]; then
+        tst_brkm TBROK "timeout reached!"
+    fi
+    if [ -z "$stat" ]; then
+        stat="-1"
+    fi
+    if [ "$stat" != "0" ] ; then
+        status=$(expr "$stat")
     fi
 
     exit $status
