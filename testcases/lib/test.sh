@@ -133,6 +133,49 @@ tst_check_cmds()
 	done
 }
 
+# tst_timeout "command arg1 arg2 ..." timeout
+# Runs command for specified timeout (in seconds).
+# Function returns retcode of command or 1 if arguments are invalid.
+tst_timeout()
+{
+	local command=$1
+	local timeout=$(echo $2 | grep -o "^[0-9]\+$")
+
+	# command must be non-empty string with command to run
+	if [ -z "$command" ]; then
+		echo "first argument must be non-empty string"
+		return 1
+	fi
+
+	# accept only numbers as timeout
+	if [ -z "$timeout" ]; then
+		echo "only numbers as second argument"
+		return 1
+	fi
+
+	setsid sh -c "eval $command" 2>&1 &
+	local pid=$!
+	while [ $timeout -gt 0 ]; do
+		kill -s 0 $pid 2>/dev/null
+		if [ $? -ne 0 ]; then
+			break
+		fi
+		timeout=$((timeout - 1))
+		sleep 1
+	done
+
+	local ret=0
+	if [ $timeout -le 0 ]; then
+		ret=128
+		kill -TERM -- -$pid
+	fi
+
+	wait $pid
+	ret=$((ret | $?))
+
+	return $ret
+}
+
 # Check that test name is set
 if [ -z "$TCID" ]; then
 	tst_brkm TBROK "TCID is not defined"
