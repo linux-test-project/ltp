@@ -1,461 +1,149 @@
 #!/bin/sh
 
-################################################################################
-##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2005                 ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
-##                                                                            ##
-##                                                                            ##
-################################################################################
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2005
 #
-# File:
-#   ssh4-stress
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-# Description:
-#   Stress test for SSH over IPv4
-#   test01 - Verify the ssh server or the kernel is not down after a large
-#            number of ssh sessions are created.
-#   test02 - Verify the ssh server or the kernel is not down after a large
-#            number of clients log in/out asynchronously for a long time.
-#   test03 - Verify the ssh server or the kernek is not down after a TCP
-#            traffic is forwarded via ssh port-forwarding for a long time
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# Author:
-#   Mitsuru Chinen <mitch@jp.ibm.com>
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# History:
-#	Oct 19 2005 - Created (Mitsuru Chinen)
+# Author: Mitsuru Chinen <mitch@jp.ibm.com>
 #
-#-----------------------------------------------------------------------
-# Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
 
-# Make sure the value of LTPROOT
-LTPROOT=${LTPROOT:-`(cd ../../../../ ; pwd)`}
-export LTPROOT
-
-# Total number of the test case
+TCID=ssh-stress
 TST_TOTAL=3
-export TST_TOTAL
+TST_CLEANUP="cleanup"
 
-# The version of IP
-IP_VER=${IP_VER:-4}
+. test_net.sh
 
-# Default of the test case ID and the test case count
-TCID=ssh${IP_VER}-stress
-TST_COUNT=0
-export TCID
-export TST_COUNT
+# Temporary directory to store sshd setting or ssh key
+# Note: ssh doesn't work when those directory is under /tmp.
+TMPDIR="/root"
 
-# Check the environmanet variable
-. check_envval || exit $TST_TOTAL
-
-# Dulation of the test [sec]
-NS_DURATION=${NS_DURATION:-3600}      # 1 hour
-
-# Quantity of the connection for multi connection test
-CONNECTION_TOTAL=${CONNECTION_TOTAL:-4000}
-
-# Temporary direcotry to store sshd setting or ssh key
-# Note: ssh doesn't work when those directory are under /tmp.
-SSH_TMPDIR_PARENT="/root"
-
-# The number of the test link where tests run
-LINK_NUM=${LINK_NUM:-0}
-
-# Network portion of the IPv4 address
-IPV4_NETWORK=${IPV4_NETWORK:-"10.0.0"}
-
-# Host portion of the IPv4 address on the local host
-LHOST_IPV4_HOST=${LHOST_IPV4_HOST:-"2"}
-
-# Host portion of the IPv4 address on the remote host
-RHOST_IPV4_HOST=${RHOST_IPV4_HOST:-"1"}
-
-# Network portion of the IPv6 address
-IPV6_NETWORK="fd00:1:1:1"
-
-# Host portion of the IPv6 address of the local host
-LHOST_IPV6_HOST=":2"
-
-# Host portion of the IPv6 address of the remote host
-RHOST_IPV6_HOST=":1"
-
-#-----------------------------------------------------------------------
-#
-# Function:
-#   do_cleanup
-#
-# Description:
-#   Clean up after running ssh stress test
-#
-#-----------------------------------------------------------------------
-do_cleanup()
+cleanup()
 {
-    # Stop the ssh daemon
-    kill `cat ${sshd_dir}/sshd.pid`
-
-    # Delete the dictory that stores configuration files
-    rm -rf $sshd_dir
-    $LTP_RSH $RHOST "rm -rf $rhost_ssh_dir"
-
-    # Delete the temporary files
-    rm -f $message_file
-
-    # Initialize the interface
-    initialize_if lhost ${LINK_NUM}
-    initialize_if rhost ${LINK_NUM}
-
-    # Kill the tcp traffic server
-    killall_tcp_traffic
+	# Stop the ssh daemon
+	test -s sshd.pid && kill $(cat sshd.pid)
+	test "$server_pid" && kill -9 $server_pid > /dev/null 2>&1
+	tst_rmdir
+	[ "$rtmpdir" ] && tst_rhost_run -c "rm -rf $rtmpdir"
+	TMPDIR=
 }
 
-
-#-----------------------------------------------------------------------
-#
-# Function:
-#   do_setup
-#
-# Description:
-#   Setup for the ssh stress tests
-#   - Assign IP address to the interfaces belong to the specified Link
-#   - Run a sshd daemon for testing
-#   - Create keys for password-less login
-#
-# Set Values:
-#   lhost_addr:   IP address of the local host
-#   rhost_addr:   IP address of the remote host
-#   rhost_config: ssh_config at the remote host
-#
-#-----------------------------------------------------------------------
-do_setup()
+setup()
 {
-    trap do_cleanup 0
+	trap "tst_brkm TBROK 'test interrupted'" INT
 
-    # Get the sshd command with absolute path
-    SSHD=`which sshd`
-    if [ x"${SSHD}" = x ]; then
-	tst_resm TBROK "sshd daemon is not found"
-	exit $TST_TOTAL
-    fi
+	tst_require_root
+	tst_check_cmds sshd ssh od
 
-    # Kill the tcp traffic server
-    killall_tcp_traffic
+	ipver=${TST_IPV6:-"4"}
 
-    # Initialize the interface
-    initialize_if lhost ${LINK_NUM}
-    initialize_if rhost ${LINK_NUM}
+	# Get the sshd command with absolute path
+	SSHD=$(which sshd)
+	test "$SSHD" || tst_brkm TBROK "sshd daemon is not found"
 
-    # Get the Interface name
-    lhost_ifname=`get_ifname lhost ${LINK_NUM}`
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to get the interface name at the local host"
-	exit $TST_TOTAL
-    fi
+	check_icmpv${ipver}_connectivity $(tst_iface) $(tst_ipaddr rhost) || \
+		tst_brkm TBROK "Failed to ping to $(tst_ipaddr rhost)"
 
-    case $IP_VER in
-	4)
-	# Set IPv4 address to the interfaces
-	set_ipv4addr lhost $LINK_NUM ${IPV4_NETWORK} ${LHOST_IPV4_HOST}
-	if [ $? -ne 0 ]; then
-	    tst_resm TBROK "Failed to add any IP address at the local host"
-	    exit 1
-	fi
-	set_ipv4addr rhost $LINK_NUM ${IPV4_NETWORK} ${RHOST_IPV4_HOST}
-	if [ $? -ne 0 ]; then
-	    tst_resm TBROK "Failed to add any IP address at the remote host"
-	    exit 1
-	fi
+	port=$(tst_rhost_run -c "tst_get_unused_port ipv${ipver} stream")
 
-	lhost_addr="${IPV4_NETWORK}.${LHOST_IPV4_HOST}"
-	rhost_addr="${IPV4_NETWORK}.${RHOST_IPV4_HOST}"
-	check_icmpv4_connectivity $lhost_ifname $rhost_addr
-	if [ $? -ne 0 ]; then
-	    tst_resm TBROK "Failed to ping to $rhost_addr"
-	    exit 1
-	fi
-	;;
+	tst_tmpdir
 
-	6)
-	# Set IPv6 address to the interfaces
-	add_ipv6addr lhost $LINK_NUM ${IPV6_NETWORK} ${LHOST_IPV6_HOST}
-	if [ $? -ne 0 ]; then
-	    tst_resm TBROK "Failed to add any IP address at the local host"
-	    exit 1
-	fi
-	add_ipv6addr rhost $LINK_NUM ${IPV6_NETWORK} ${RHOST_IPV6_HOST}
-	if [ $? -ne 0 ]; then
-	    tst_resm TBROK "Failed to add any IP address at the remote host"
-	    exit 1
-	fi
+	tmpdir=$TST_TMPDIR
 
-	lhost_addr="${IPV6_NETWORK}:${LHOST_IPV6_HOST}"
-	rhost_addr="${IPV6_NETWORK}:${RHOST_IPV6_HOST}"
-	check_icmpv6_connectivity $lhost_ifname $rhost_addr
-	if [ $? -ne 0 ]; then
-	    tst_resm TBROK "Failed to ping to $rhost_addr"
-	    exit 1
-	fi
-	;;
-
-	*)
-	tst_resm TBROK "Unknown IP version: $IP_VER"
-	exit 1
-	;;
-    esac
-
-    #
-    # Start sshd for testing
-    #
-    port=`find_portbundle tcp 1025 1`
-    if [ $? -ne 0 ]; then
-	tst_resm TFAIL "No port is available."
-	exit 1
-    fi
-    sshd_dir=`TMPDIR="$SSH_TMPDIR_PARENT" mktemp -d`
-    cat << EOD > ${sshd_dir}/sshd_config
+	cat << EOD > $tmpdir/sshd_config
 Port $port
-ListenAddress $lhost_addr
+ListenAddress $(tst_ipaddr)
 PermitRootLogin yes
-AuthorizedKeysFile ${sshd_dir}/authorized_keys
+AuthorizedKeysFile $tmpdir/authorized_keys
 PasswordAuthentication no
 AllowTcpForwarding yes
 TCPKeepAlive yes
 UseDNS no
-PidFile ${sshd_dir}/sshd.pid
+PidFile $tmpdir/sshd.pid
 EOD
 
+	$SSHD -f $tmpdir/sshd_config || \
+		tst_brkm TBROK "Failed to run sshd daemon"
 
-    $SSHD -f ${sshd_dir}/sshd_config
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to run sshd daemon."
-	exit 1
-    fi
+	tst_resm TINFO "Generate configuration file and key at the remote host"
+	rtmpdir=$(tst_rhost_run -c "mktemp -d -p $TMPDIR")
+	tst_rhost_run -s -c "ssh-keygen -t rsa -N \"\" -f $rtmpdir/id_rsa > /dev/null"
 
-    #
-    # Generate configuration file and key at the remote host
-    #
-    rhost_ssh_dir=`$LTP_RSH $RHOST "mktemp -d -p $SSH_TMPDIR_PARENT"`
-    ret=`$LTP_RSH $RHOST '( cd '$rhost_ssh_dir' && ssh-keygen -t rsa -N "" -f id_rsa ) >/dev/null 2>&1 ; echo $?'`
-    if [ $ret -ne 0 ]; then
-	tst_resm TBROK "Failed to generate key."
-	exit 1
-    fi
+	rconfig=$rtmpdir/ssh_config
 
-    rhost_config=${rhost_ssh_dir}/ssh_config
-    rmtshell="$LTP_RSH"
-    echo $LTP_RSH | grep "rsh.*-n" >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
-	rmtshell="`echo $LTP_RSH | sed "s/-n//"`"
-    fi
+	tst_rhost_run -s -c "printf \"\
+Port $port\n\
+StrictHostKeyChecking no\n\
+PasswordAuthentication no\n\
+UserKnownHostsFile $rtmpdir/known_hosts\n\
+IdentityFile $rtmpdir/id_rsa\n\" > $rconfig"
 
-    cat << EOD | $rmtshell $RHOST "cat > $rhost_config"
-Port $port
-StrictHostKeyChecking no
-PasswordAuthentication no
-UserKnownHostsFile $rhost_ssh_dir/known_hosts
-IdentityFile $rhost_ssh_dir/id_rsa
-EOD
-    $LTP_RSH $RHOST "cd $rhost_ssh_dir && cat id_rsa.pub" > ${sshd_dir}/authorized_keys
-    $LTP_RSH $RHOST "chmod 700 $rhost_ssh_dir ; chmod 600 $rhost_ssh_dir/*"
+	tst_rhost_run -s -c "chmod 700 $rtmpdir; chmod 600 $rtmpdir/*"
 
-    chmod 700 $sshd_dir
-    chmod 600 $sshd_dir/*
+	tst_resm TINFO "Generate authorized_keys"
+	tst_rhost_run -c "cat ${rtmpdir}/id_rsa.pub" > $tmpdir/authorized_keys
+
+	tst_resm TINFO "restore context of authorized_keys"
+	local rc=$(which restorecon)
+	test "$rc" && $rc $tmpdir/authorized_keys
+
+	chmod 700 $tmpdir
+	chmod 600 $tmpdir/*
 }
 
-
-#-----------------------------------------------------------------------
-#
-# Function:
-#   test01
-#
-# Description:
-#   Verify the ssh connectivity is not broken after creating a large
-#   number of ssh sessions
-#
-#-----------------------------------------------------------------------
 test01()
 {
-    TCID=ssh${IP_VER}-stress01
-    TST_COUNT=1
-    tst_resm TINFO "Verify the ssh connectivity over IPv${IP_VER} is not broken after creating ${CONNECTION_TOTAL} ssh sessions"
+	tst_resm TINFO "Creating '$CONNECTION_TOTAL' ssh sessions"
 
-    # Script name at the remote host
-    rmtscript="ssh-stress01-rmt"
+	tst_rhost_run -s -c "ssh-stress01-rmt $ipver $(tst_ipaddr) \
+		$rconfig $CONNECTION_TOTAL"
 
-    # Run the script at the remote host
-    message_file=`mktemp -p $TMPDIR`
-    not_run_rmtscript=true
-    for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
-	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
-	if [ $ret -eq 0 ]; then
-	    not_run_rmtscript=false
-	    $LTP_RSH $RHOST "${rmtdir}/${rmtscript} $IP_VER $lhost_addr $rhost_config $CONNECTION_TOTAL" > $message_file
-	    break
-	fi
-    done
-    if $not_run_rmtscript ; then
-	tst_resm TBROK "Failed to run the test script at the remote host"
-	rm -f $message_file
-	exit 1
-    fi
-
-    if [ -s $message_file ]; then
-	tst_resm TFAIL "`cat $message_file`"
-	rm -f $message_file
-	return 1
-    else
-	tst_resm TPASS "Test is finished successfully."
-	rm -f $message_file
-	return 0
-    fi
-
+	tst_resm TPASS "Test is finished successfully"
 }
 
-
-#-----------------------------------------------------------------------
-#
-# Function:
-#   test02
-#
-# Description:
-#   Verify the ssh connectivity is not broken after logged in/out
-#   by many clients asynchronously for a long time
-#
-#-----------------------------------------------------------------------
 test02()
 {
-    TCID=ssh${IP_VER}-stress02
-    TST_COUNT=2
-    tst_resm TINFO "Verify the ssh connectivity over IPv${IP_VER} is not broken after logged in/out by many clients asynchronously in ${NS_DURATION}[sec]"
-    tst_resm TINFO "The number of client is not over $CONNECTION_TOTAL"
+	tst_resm TINFO "Log in/out by many clients asynchronously"
+	tst_resm TINFO "'$CONNECTION_TOTAL' clients, time $NS_DURATION sec"
 
-    # Script name at the remote host
-    rmtscript="ssh-stress02-rmt"
+	tst_rhost_run -s -c "ssh-stress02-rmt $ipver $(tst_ipaddr) \
+		$rconfig $CONNECTION_TOTAL $NS_DURATION"
 
-    # Run the script at the remote host
-    message_file=`mktemp -p $TMPDIR`
-    not_run_rmtscript=true
-    for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
-	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
-	if [ $ret -eq 0 ]; then
-	    not_run_rmtscript=false
-	    $LTP_RSH $RHOST "${rmtdir}/${rmtscript} $IP_VER $lhost_addr $rhost_config $CONNECTION_TOTAL $NS_DURATION" > $message_file
-	    break
-	fi
-    done
-    if $not_run_rmtscript ; then
-	tst_resm TBROK "Failed to run the test script at the remote host"
-	rm -f $message_file
-	exit 1
-    fi
-
-    if [ -s $message_file ]; then
-	tst_resm TFAIL "`cat $message_file`"
-	rm -f $message_file
-	return 1
-    else
-	tst_resm TPASS "Test is finished successfully."
-	rm -f $message_file
-	return 0
-    fi
+	tst_resm TPASS "Test is finished successfully"
 }
 
-
-#-----------------------------------------------------------------------
-#
-# Function:
-#   test03
-#
-# Description:
-#   Verify the ssh connectivity is not broken after forwarding TCP traffic
-#   for a long time
-#
-#-----------------------------------------------------------------------
 test03()
 {
-    TCID=ssh${IP_VER}-stress03
-    TST_COUNT=3
-    tst_resm TINFO "Verify the ssh connectivity over IPv${IP_VER} is not broken after forwarding TCP traffic in ${NS_DURATION}[sec]"
+	tst_resm TINFO "Forwarding TCP traffic in $NS_DURATION sec"
 
-    # Script name at the remote host
-    rmtscript="ssh-stress03-rmt"
+	# Run a TCP traffic server
+	port=$(tst_get_unused_port ipv${ipver} stream)
 
-    # Run a TCP traffic server
-    traffic_port=`find_portbundle tcp 1025 1` || exit 1
-    info_file=`mktemp -p $TMPDIR`
-    ns-tcpserver -b -f $IP_VER -p $traffic_port -o $info_file
-    if [ $? -ne 0 ]; then
-	tst_resm TFAIL "Failed to run a tcp traffic server."
-	rm -f $info_file
-	exit 1
-    fi
+	ns-tcpserver -b -f $ipver -p $port -o info_file || \
+		tst_brkm TBROK "Failed to run a tcp traffic server"
+	server_pid=$(grep 'PID:' info_file | cut -f 2 -d ' ')
+	tst_rhost_run -s -c "ssh-stress03-rmt $ipver $(tst_ipaddr) \
+		$rconfig $port $NS_DURATION"
 
-    while true ; do
-	if [ -s $info_file ]; then
-	    break
-	fi
-    done
-
-    server_pid=`grep PID: $info_file | cut -f 2 -d ' '`
-    rm -f $info_file
-
-    # Run the script at the remote host
-    message_file=`mktemp -p $TMPDIR`
-    not_run_rmtscript=true
-    for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
-	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
-	if [ $ret -eq 0 ]; then
-	    not_run_rmtscript=false
-	    $LTP_RSH $RHOST "${rmtdir}/${rmtscript} $LTPROOT $IP_VER $lhost_addr $rhost_config $traffic_port $NS_DURATION" > $message_file
-	    break
-	fi
-    done
-    if $not_run_rmtscript ; then
-	tst_resm TBROK "Failed to run the test script at the remote host"
-	rm -f $message_file
-	exit 1
-    fi
-
-    if [ -s $message_file ]; then
-	tst_resm TFAIL "`cat $message_file`"
-	rm -f $message_file
-	return 1
-    else
-	tst_resm TPASS "Test is finished successfully."
-	rm -f $message_file
-	return 0
-    fi
+	tst_resm TPASS "Test is finished successfully"
 }
 
+setup
 
-#-----------------------------------------------------------------------
-#
-# Main
-#
-# Exit Value:
-#   The number of the failure
-#
-#-----------------------------------------------------------------------
+test01
+test02
+test03
 
-RC=0
-do_setup
-test01 || RC=`expr $RC + 1`
-test02 || RC=`expr $RC + 1`
-test03 || RC=`expr $RC + 1`
-
-exit $RC
+tst_exit
