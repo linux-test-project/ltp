@@ -1,366 +1,217 @@
 #!/bin/sh
 
-################################################################################
-##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2005                 ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
-##                                                                            ##
-##                                                                            ##
-################################################################################
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2005
 #
-# File:
-#   dns4-stress
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-# Description:
-#   Stress test for dns over IPv4
-#   test01 - Verify the dns server or the kernel is not down after the dns
-#            server handles a large number of name lookup querys
-#   test02 - Verify the dns server or the kernel is not down after the dns
-#            server handles a large number of reverse lookup querys
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# Author:
-#   Mitsuru Chinen <mitch@jp.ibm.com>
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# History:
-#	Oct 19 2005 - Created (Mitsuru Chinen)
-#
-#-----------------------------------------------------------------------
-# Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
+# Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-# Make sure the value of LTPROOT
-LTPROOT=${LTPROOT:-`(cd ../../../../ ; pwd)`}
-export LTPROOT
-
-# Total number of the test case
+TCID=dns-stress
 TST_TOTAL=2
-export TST_TOTAL
+TST_CLEANUP="cleanup"
 
-# Default of the test case ID and the test case count
-TCID=dns4-stress
-TST_COUNT=0
-export TCID
-export TST_COUNT
+. test_net.sh
 
-# Check the environmanet variable
-. check_envval || exit $TST_TOTAL
-
-# The times of query
-NS_TIMES=${NS_TIMES:-10000}
-
-# The number of the test link where tests run
-LINK_NUM=0
-
-# Network portion of the IPv4 address
-IPV4_NETWORK=${IPV4_NETWORK:-"10.0.0"}
-
-# Reverse network portion of the IPv4 address
-IPV4_NETWORK_REVERSE=${IPV4_NETWORK_REVERSE:-"0.0.10"}
-
-# Host portion of the IPv4 address on the local host
-LHOST_IPV4_HOST=${LHOST_IPV4_HOST:-"2"}
-
-# Host portion of the IPv4 address on the remote host
-RHOST_IPV4_HOST=${RHOST_IPV4_HOST:-"1"}
-
-# Minumum host ID in the zone file. The ID is used as the host portion of
-# of the address
-MINIMUM_ID=3
-
+# Minimum host ID in the zone file.
+# The ID is used as the host portion of the address
+MIN_ID=3
 # Maximum host ID in the zone file.
-MAXIMUM_ID=254
-
+MAX_ID=254
 # Domain name for testing
 DOMAIN="ltp-ns.org"
 
-
-#-----------------------------------------------------------------------
-#
-# Function:
-#   do_cleanup
-#
-# Description:
-#   Clean up after running dns stress test
-#
-#-----------------------------------------------------------------------
-do_cleanup()
+cleanup()
 {
-    # Stop the dns daemon
-    kill `cat ${named_dir}/named.pid` >/dev/null 2>&1
-
-    # Delete the temprary files/direcrories
-    rm -rf $named_dir
-    rm -f $message_file
-
-    # Initialize the interface
-    initialize_if lhost $LINK_NUM
-    initialize_if rhost $LINK_NUM
+	# Stop the dns daemon
+	test -s named.pid && kill -9 $(cat named.pid) > /dev/null
+	tst_rmdir
 }
 
-
-#-----------------------------------------------------------------------
-#
-# Function:
-#   do_setup
-#
-# Description:
-#   Setup for the dns stress tests
-#   - Assign IP address to the interfaces belong to the specified Link
-#   - Run a named daemon for testing
-#
-# Set Values:
-#   lhost_addr: IP address of the local host
-#   rhost_addr: IP address of the remote host
-#   port:	port number to accept the dns query
-#
-#-----------------------------------------------------------------------
-do_setup()
+common_setup()
 {
-    trap do_cleanup 0
+	tst_require_root
+	tst_check_cmds named dig
 
-    # Initialize the interface
-    initialize_if lhost $LINK_NUM
-    initialize_if rhost $LINK_NUM
+	ipver=${TST_IPV6:-'4'}
 
-    # Get the Interface name
-    lhost_ifname=`get_ifname lhost $LINK_NUM`
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to get the interface name at the local host"
-	exit $TST_TOTAL
-    fi
-
-    # Set IPv4 address to the interfaces
-    set_ipv4addr lhost $LINK_NUM $IPV4_NETWORK $LHOST_IPV4_HOST
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to set an IPv4 address at the local host"
-	exit $TST_TOTAL
-    fi
-    set_ipv4addr rhost $LINK_NUM $IPV4_NETWORK $RHOST_IPV4_HOST
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to set an IPv4 address at the remote host"
-	exit $TST_TOTAL
-    fi
-
-    lhost_addr="${IPV4_NETWORK}.${LHOST_IPV4_HOST}"
-    rhost_addr="${IPV4_NETWORK}.${RHOST_IPV4_HOST}"
-    check_icmpv4_connectivity $lhost_ifname $rhost_addr
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to ping to $rhost_addr"
-	exit 1
-    fi
-
-    #
-    # Start named for testing
-    #
-    port=`find_portbundle tcp 1025 1`
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "No port is available."
-	exit 1
-    fi
-
-    named_dir=`mktemp -d -p $TMPDIR`
-
-    # named.conf
-    cat << EOD > ${named_dir}/named.conf
-options {
-    directory "${named_dir}";
-    pid-file "${named_dir}/named.pid";
-    recursion no;
-};
-
-zone "${DOMAIN}" {
-    type master;
-    file "ltp-ns.zone";
-};
-
-zone "${IPV4_NETWORK_REVERSE}.in-addr.arpa" {
-    type master;
-    file "ltp-ns.rev";
-};
-EOD
-
-    # zone file
-    cat << EOD > ${named_dir}/ltp-ns.zone
-\$TTL 10
-@	IN	SOA dns.${DOMAIN}. root.${DOMAIN}. (
-	2005092701 ; serial
-	3600       ; dummy value
-	900        ; dummy value
-	604800     ; dummy value
-	86400      ; dummy value
-)
-	IN	NS	dns.${DOMAIN}.
-dns	IN	A	${lhost_addr}
-client	IN	A	${rhost_addr}
-EOD
-    id=$MINIMUM_ID
-    while [ $id -le $MAXIMUM_ID ]; do
-	printf "node${id}\tIN\tA\t${IPV4_NETWORK}.${id}\n" >> ${named_dir}/ltp-ns.zone
-	id=`expr $id + 1`
-    done
-
-    # reverse zone file
-    cat << EOD > ${named_dir}/ltp-ns.rev
-\$TTL 10
-@	IN	SOA dns.${DOMAIN}. root.${DOMAIN}. (
-	2005092701 ; serial
-	3600       ; dummy value
-	900        ; dummy value
-	604800     ; dummy value
-	86400      ; dummy value
-)
-        IN      NS      dns.${DOMAIN}.
-$LHOST_IPV4_HOST	IN	PTR	dns.${DOMAIN}.
-$RHOST_IPV4_HOST	IN	PTR	client.${DOMAIN}.
-EOD
-    id=$MINIMUM_ID
-    while [ $id -le $MAXIMUM_ID ]; do
-	printf "${id}\tIN\tPTR\tnode${id}.${DOMAIN}.\n" >> ${named_dir}/ltp-ns.rev
-	id=`expr $id + 1`
-    done
-
-    chmod 770 $named_dir
-    chmod 660 $named_dir/*
-
-    # Start named daemon
-    named -c ${named_dir}/named.conf -p $port
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to run named daemon."
-	exit 1
-    fi
-
-    # Make sure named.pid is crated.
-    while true ; do
-	if [ -s ${named_dir}/named.pid ]; then
-	    break
+	if [ "$TST_IPV6" ]; then
+		record="AAAA"
+		net="$IPV6_NETWORK"
+		net_rev="$IPV6_NET_REV"
+	else
+		record="A"
+		net="$IPV4_NETWORK"
+		net_rev="$IPV4_NET_REV"
 	fi
-    done
 
+	trap "tst_brkm TBROK 'test interrupted'" INT
+
+	check_icmpv${ipver}_connectivity $(tst_iface) $(tst_ipaddr rhost) || \
+		tst_brkm TBROK "Failed to ping to $(tst_ipaddr rhost)"
+
+	tst_tmpdir
+
+	ip6_opt=
+	[ "$TST_IPV6" ] && ip6_opt="listen-on-v6 { any; };"
+
+	ip_zone_opt="in-addr"
+	[ "$TST_IPV6" ] && ip_zone_opt="ip6"
+
+	cat << EOD > named.conf
+	options {
+		directory "$(pwd)";
+		pid-file "$(pwd)/named.pid";
+		recursion no;
+		$ip6_opt
+	};
+
+	zone "$DOMAIN" {
+		type master;
+		file "ltp-ns.zone";
+	};
+
+	zone "$net_rev.$ip_zone_opt.arpa" {
+		type master;
+		file "ltp-ns.rev";
+	};
+EOD
+
+	# zone file
+	cat << EOD > ltp-ns.zone
+\$TTL 10
+@	IN	SOA dns.$DOMAIN. root.$DOMAIN. (
+	2005092701 ; serial
+	3600       ; dummy value
+	900        ; dummy value
+	604800     ; dummy value
+	86400      ; dummy value
+)
+	IN	NS	dns.$DOMAIN.
+dns	IN	$record	$(tst_ipaddr)
+client	IN	$record	$(tst_ipaddr rhost)
+EOD
 }
 
+setup_4()
+{
+	id=$MIN_ID
+	while [ $id -le $MAX_ID ]; do
+		printf "node$id\tIN\tA\t$IPV4_NETWORK.$id\n" >> ltp-ns.zone
+		id=$(($id + 1))
+	done
 
-#-----------------------------------------------------------------------
-#
-# Function:
-#   test01
-#
-# Description:
-#   Verify the dns server or the kernel is not down after handling
-#   a large number of name lookup querys
-#
-#-----------------------------------------------------------------------
+	# reverse zone file
+	cat << EOD > ltp-ns.rev
+\$TTL 10
+@	IN	SOA dns.$DOMAIN. root.$DOMAIN. (
+	2005092701 ; serial
+	3600       ; dummy value
+	900        ; dummy value
+	604800     ; dummy value
+	86400      ; dummy value
+)
+        IN      NS      dns.$DOMAIN.
+$LHOST_IPV4_HOST	IN	PTR	dns.$DOMAIN.
+$RHOST_IPV4_HOST	IN	PTR	client.$DOMAIN.
+EOD
+
+	id=$MIN_ID
+	while [ $id -le $MAX_ID ]; do
+		printf "$id\tIN\tPTR\tnode$id.$DOMAIN.\n" >> ltp-ns.rev
+		id=$(($id + 1))
+	done
+}
+
+setup_6()
+{
+	id=$MIN_ID
+	while [ $id -le $MAX_ID ]; do
+		printf "node$id\tIN\tAAAA\t$IPV6_NETWORK::%x\n" $id >> ltp-ns.zone
+		id=$(($id + 1))
+	done
+
+	# reverse zone file
+	cat << EOD > ltp-ns.rev
+\$TTL 10
+@	IN	SOA dns.$DOMAIN. root.$DOMAIN. (
+	2005092701 ; serial
+	3600       ; dummy value
+	900        ; dummy value
+	604800     ; dummy value
+	86400      ; dummy value
+)
+        IN      NS      dns.$DOMAIN.
+$LHOST_IPV6_REV	IN	PTR	dns.$DOMAIN.
+$RHOST_IPV6_REV	IN	PTR	client.$DOMAIN.
+EOD
+
+	id=$MIN_ID
+	while [ $id -le $MAX_ID ]; do
+		local rev_ip="0.0.0.0.0.0.0.0.0.0.0.0.0.0"
+		printf "%x.%x.$rev_ip\tIN\tPTR\tnode$id.$DOMAIN.\n" \
+			$(($id % 16)) $(($id / 16)) >> ltp-ns.rev
+		id=$(($id + 1))
+	done
+}
+
+start_named()
+{
+	chmod 770 $TST_TMPDIR
+	chmod 660 $TST_TMPDIR/*
+
+	port=$(tst_get_unused_port ipv${ipver} stream)
+
+	# Start named daemon
+	named -$ipver -c named.conf -p $port || \
+		tst_brkm TBROK "Failed to run named daemon"
+
+	# Make sure named.pid is created.
+	while true ; do
+		test -s named.pid && break
+		sleep 1
+	done
+}
+
 test01()
 {
-    TCID=dns4-stress01
-    TST_COUNT=1
-    tst_resm TINFO "Verify the dns server or the kernel is not down after handling $NS_TIMES name lookup querys"
+	tst_resm TINFO "Handling name lookup queries '$NS_TIMES' times"
 
-    # Script name at the remote host
-    rmtscript="dns-stress01-rmt"
+	tst_rhost_run -s -c "dns-stress01-rmt $ipver $(tst_ipaddr) $port \
+		$DOMAIN $MIN_ID $MAX_ID $NS_TIMES"
 
-    # Run the script at the remote host
-    message_file=`mktemp -p $TMPDIR`
-    not_run_rmtscript=true
-    for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
-	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
-	if [ $ret -eq 0 ]; then
-	    not_run_rmtscript=false
-	    $LTP_RSH $RHOST "${rmtdir}/${rmtscript} 4 $lhost_addr $port $DOMAIN $MINIMUM_ID $MAXIMUM_ID $NS_TIMES" > $message_file
-	    break
-	fi
-    done
-    if $not_run_rmtscript ; then
-	tst_resm TBROK "Failed to run the test script at the remote host"
-	rm -f $message_file
-	exit 1
-    fi
-
-    if [ -s $message_file ]; then
-	tst_resm TFAIL "`cat $message_file`"
-	rm -f $message_file
-	return 1
-    else
-	tst_resm TPASS "Test is finished successfully."
-	rm -f $message_file
-	return 0
-    fi
+	tst_resm TPASS "Test is finished successfully"
 }
 
-
-#-----------------------------------------------------------------------
-#
-# Function:
-#   test02
-#
-# Description:
-#   Verify the dns server or the kernel is not down after handling
-#   a large number of reverse lookup querys
-#
-#-----------------------------------------------------------------------
 test02()
 {
-    TCID=dns4-stress02
-    TST_COUNT=2
-    tst_resm TINFO "Verify the dns server or the kernel is not down after handling $NS_TIMES reverse lookup querys"
+	tst_resm TINFO "Handling reverse lookup queries '$NS_TIMES' times"
 
-    # Script name at the remote host
-    rmtscript="dns-stress02-rmt"
+	tst_rhost_run -s -c "dns-stress02-rmt $ipver $(tst_ipaddr) $port $net \
+		$MIN_ID $MAX_ID $NS_TIMES"
 
-    # Run the script at the remote host
-    message_file=`mktemp -p $TMPDIR`
-    not_run_rmtscript=true
-    for rmtdir in ${LTPROOT}/testcases/bin ${PWD} ; do
-	ret=`$LTP_RSH $RHOST 'test -x '${rmtdir}/${rmtscript}' ; echo $?'`
-	if [ $ret -eq 0 ]; then
-	    not_run_rmtscript=false
-	    $LTP_RSH $RHOST "${rmtdir}/${rmtscript} 4 $lhost_addr $port $IPV4_NETWORK $MINIMUM_ID $MAXIMUM_ID $NS_TIMES" > $message_file
-	    break
-	fi
-    done
-    if $not_run_rmtscript ; then
-	tst_resm TBROK "Failed to run the test script at the remote host"
-	rm -f $message_file
-	exit 1
-    fi
-
-    if [ -s $message_file ]; then
-	tst_resm TFAIL "`cat $message_file`"
-	rm -f $message_file
-	return 1
-    else
-	tst_resm TPASS "Test is finished successfully."
-	rm -f $message_file
-	return 0
-    fi
+	tst_resm TPASS "Test is finished successfully"
 }
 
+common_setup
 
-#-----------------------------------------------------------------------
-#
-# Main
-#
-# Exit Value:
-#   The number of the failure
-#
-#-----------------------------------------------------------------------
+setup_$ipver
 
-RC=0
-do_setup
-test01 || RC=`expr $RC + 1`
-test02 || RC=`expr $RC + 1`
+start_named
 
-exit $RC
+test01
+test02
+
+tst_exit

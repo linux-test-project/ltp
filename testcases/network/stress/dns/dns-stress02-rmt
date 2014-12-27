@@ -1,106 +1,72 @@
 #!/bin/sh
 
-################################################################################
-##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2005                 ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
-##                                                                            ##
-##                                                                            ##
-################################################################################
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2006
 #
-# File:
-#   dns-stress02-rmt
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-# Description:
-#   This is the remote script for dns-ipv${IP_VER}-stress02
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# Author:
-#   Mitsuru Chinen <mitch@jp.ibm.com>
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# Arguments:
-#
-# Exit Value:
-#    0: Success
-#   >0: Fail
-#
-# History:
-#	Oct 19 2005 - Created (Mitsuru Chinen)
-#
-#-----------------------------------------------------------------------
-# Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
+# Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-# Check the arguments
+TCID=dns-stress02-rmt
+TST_TOTAL=1
+
+. test_net.sh
+
 if [ $# -ne 7 ]; then
-    echo "Usage: $0 ip_ver server_ipaddr port network_portion minimum_id maximum_id connect_quantity"
-    exit 1
+	tst_brkm TBROK "Usage: $0 ip_ver srv_ipaddr port net \
+min_id max_id connect_quantity"
 fi
 
 ip_ver="$1"
-server_ipaddr="$2"
+srv_ipaddr="$2"
 port="$3"
-network_portion="$4"
-minimum_id="$5"
-maximum_id="$6"
-connect_quontity="$7"
+net="$4"
+min_id="$5"
+max_id="$6"
+connect_quantity="$7"
 
-# Specify the option of dns accoring to the version of IP
+# Specify the option of dns according to the version of IP
 case $ip_ver in
-    4)
-    opt=""
-    separator="."
-    ;;
-    6)
-    opt="-n"
-    separator="::"
-    ;;
-    *)
-    echo "$ver_opt is unknown IP version"
-    exit 1
-    ;;
+4)
+	opt=""
+	sep="."
+;;
+6)
+	opt="-n"
+	sep="::"
+;;
+*)
+	tst_brkm TBROK "$ver_opt is unknown IP version" ;;
 esac
 
-
 # Check the connectivity first
-dig @$server_ipaddr $opt -p $port -x ${network_portion}${separator}${minimum_id} $record >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "Failed to connect $server_ipaddr"
-    exit 1
-fi
+dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${min_id} $record > /dev/null || \
+	tst_brkm TBROK "Failed to connect $srv_ipaddr"
 
-#
-# Loop for a large number of reverse name lookup querys
-#
+# Loop for a large number of reverse name lookup queries
 num=0
-id=$minimum_id
-while [ $num -lt $connect_quontity ]; do
-    dig @$server_ipaddr $opt -p $port -x ${network_portion}${separator}${id} $record >/dev/null 2>&1
-    id=`expr $id + 1`
-    if [ $id -gt $maximum_id ]; then
-	id=$minimum_id
-    fi
-    num=`expr $num + 1`
+id=$min_id
+while [ $num -lt $connect_quantity ]; do
+	dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${id} $record > /dev/null
+	id=$(($id + 1))
+	[ $id -gt $max_id ] && id=$min_id
+	num=$(($num + 1))
 done
 
 # Check the connectivity again
-dig @$server_ipaddr $opt -p $port -x ${network_portion}${separator}${minimum_id} $record >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "Failed to connect $server_ipaddr. dns server seems down."
-    exit 1
-fi
+dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${min_id} $record > /dev/null || \
+	tst_brkm TBROK "Failed to connect $srv_ipaddr. dns server seems down."
 
-exit 0
+tst_exit
