@@ -1,58 +1,32 @@
 #!/bin/sh
 
-################################################################################
-##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2005                 ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
-##                                                                            ##
-##                                                                            ##
-################################################################################
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2005
 #
-# File:
-#   ftp-upload-stress02-rmt
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-# Description:
-#   This is the remote script for ftp-upload-ipv${IP_VER}-stress02
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# Author:
-#   Mitsuru Chinen <mitch@jp.ibm.com>
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# Arguments:
-#   $1: ip address of the server
-#   $2: filename to upload
-#   $3: duration
-#   $4: connect quantity
-#
-# Exit Value:
-#    0: Success
-#   >0: Fail
-#
-# History:
-#	Oct 19 2005 - Created (Mitsuru Chinen)
-#
-#-----------------------------------------------------------------------
-# Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
+# Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-# Check the arguments
-if [ $# -ne 6 ]; then
-  echo "Usage: $0 server_addr urldir filename filesize duration client_num"
-    exit 1
-fi
+TCID=ftp-upload-stress02-rmt
+TST_TOTAL=1
+TST_CLEANUP="cleanup"
+
+. test_net.sh
+
+tst_check_cmds killall
+
 server_ipaddr="$1"
 urldir="$2"
 filename="$3"
@@ -60,58 +34,50 @@ filesize="$4"
 duration="$5"
 client_num="$6"
 
-echo $server_ipaddr | fgrep ':' >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    server_ipaddr='['$server_ipaddr']'
-fi
+cleanup()
+{
+	rm -f $filename
+}
 
-# Unset the maximum number of processes
-ulimit -u unlimited
+echo $server_ipaddr | grep ':' > /dev/null
+if [ $? -eq 0 ]; then
+	server_ipaddr='['$server_ipaddr']'
+fi
 
 # Create a file to upload
 echo -n "A" > $filename
-echo -n "Z" | dd of=$filename bs=1 seek=`expr $filesize - 1` >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "Failed to create $filename"
-    exit 1
-fi
+echo -n "Z" | dd of=$filename bs=1 seek=$(($filesize - 1)) > /dev/null 2>&1 || \
+	tst_brkm TBROK "Failed to create $filename"
 
-#
-# Main loop
-#
-start_epoc=`date +%s`
+start_epoc=$(date +%s)
 while true ; do
-    # Exit when the specified seconds have passed.
-    current_epoc=`date +%s`
-    elapse_epoc=`expr $current_epoc - $start_epoc`
-    if [ $elapse_epoc -ge $duration ]; then
-	break
-    fi
-
-    num=0
-    while [ $num -lt $client_num ]; do
-	ps auxw | grep -l -- "curl.*${filename}${num}" >/dev/null 2>&1
-	if [ $? -eq 0 ]; then
-	    num=`expr $num + 1`
-	    continue
+	# Exit when the specified seconds have passed.
+	current_epoc=$(date +%s)
+	elapse_epoc=$(($current_epoc - $start_epoc))
+	if [ $elapse_epoc -ge $duration ]; then
+		break
 	fi
-	curl -u anonymous:ftp@ltp-ns.org -T $filename -g "ftp://${server_ipaddr}/${urldir}/${filename}${num}" >/dev/null 2>&1
-	num=`expr $num + 1`
-    done
+
+	num=0
+	while [ $num -lt $client_num ]; do
+		ps auxw | grep -l -- "curl.*${filename}${num}" >/dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			num=$(($num + 1))
+			continue
+		fi
+		curl -u anonymous:ftp@ltp-ns.org -T $filename \
+			-g "ftp://${server_ipaddr}/${urldir}/${filename}${num}" \
+			>/dev/null 2>&1 &
+		num=$(($num + 1))
+	done
 done
 
-# kill the curl command
-killall -SIGINT curl >/dev/null 2>&1
-sleep 3
-killall -SIGKILL curl >/dev/null 2>&1
-wait
+killall -qw -s SIGPIPE curl
 
-# Check the test file is abole to be uploaded
-curl -u anonymous:ftp@ltp-ns.org -T $filename -g "ftp://${server_ipaddr}/${urldir}/" >/dev/null 2>&1
+curl -u anonymous:ftp@ltp-ns.org -T $filename \
+	-g "ftp://$server_ipaddr/$urldir/" >/dev/null 2>&1
 if [ $? -ne 0 ]; then
-    echo "Failed to upload the file to ftp://${server_ipaddr}/${urldir}/"
-    rm -f $filename
-    exit 1
+	tst_brkm TBROK "Failed to upload ftp://$server_ipaddr/$urldir/"
 fi
 
-exit 0
+tst_exit
