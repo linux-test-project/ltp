@@ -72,6 +72,9 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(ustat(*tc[i].dev, tc[i].buf));
 
+			if (TEST_RETURN == -1 && TEST_ERRNO == ENOSYS)
+				tst_brkm(TCONF, cleanup, "ustat not supported");
+
 			if ((TEST_RETURN == -1)
 			    && (TEST_ERRNO == tc[i].exp_errno)) {
 				tst_resm(TPASS,
