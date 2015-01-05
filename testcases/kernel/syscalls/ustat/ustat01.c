@@ -54,6 +54,9 @@ int main(int argc, char *argv[])
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(ustat(dev_num, &ubuf));
 
+			if (TEST_RETURN == -1 && TEST_ERRNO == ENOSYS)
+				tst_brkm(TCONF, cleanup, "ustat not supported");
+
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "ustat(2) failed and set"
