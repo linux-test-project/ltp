@@ -84,7 +84,7 @@ static struct sig_info sigs[] = {
 	{-1, NULL, 0}		/* add  real time sigs? */
 };
 
-static int ready;
+static volatile int ready;
 static sem_t sem;
 
 /* Lookup */
@@ -210,7 +210,7 @@ done:
 
 int main(void)
 {
-	int rc;
+	int rc = 0;
 	struct sig_info *s = &sigs[0];
 	struct sigaction sa;
 	struct sigaction sa_org;
