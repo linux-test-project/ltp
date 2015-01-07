@@ -1,7 +1,8 @@
 /*
 * Copyright (c) 2004, Bull S.A..  All rights reserved.
 * Created by: Sebastien Decugis
-
+* Copyright (c) 2015 Cyril Hrubis <chrubis@suse.cz>
+*
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of version 2 of the GNU General Public License as
 * published by the Free Software Foundation.
@@ -43,31 +44,27 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-#include "../testfrmw/testfrmw.h"
-#include "../testfrmw/testfrmw.c"
-
-#ifndef VERBOSE
-#define VERBOSE 1
-#endif
+#include "posixtest.h"
 
 static void *threaded(void *arg)
 {
 	int ret;
-	
+	long res;
+
 	(void) arg;
-	
+
 	ret = ftrylockfile(stdout);
 
-	if (ret != 0) {
-		FAILED("The child process is owning the file lock.");
+	if (ret) {
+		res = PTS_FAIL;
+		printf("FAIL: The child process inherited the lock\n");
+	} else {
+		res = PTS_PASS;
 	}
-#if VERBOSE > 1
 
-	output("The file lock was not inherited in the child process\n");
+	funlockfile(stdout);
 
-#endif
-
-	return NULL;
+	return (void*)res;
 }
 
 int main(void)
@@ -75,57 +72,61 @@ int main(void)
 	int ret, status;
 	pid_t child, ctl;
 	pthread_t ch;
-
-	output_init();
+	long res;
 
 	/* lock the stdout file */
 	flockfile(stdout);
 
-	/* Create the child */
 	child = fork();
 
 	if (child == -1) {
-		UNRESOLVED(errno, "Failed to fork");
+		funlockfile(stdout);
+		perror("fork");
+		return PTS_UNRESOLVED;
 	}
 
-	/* child */
 	if (child == 0) {
+		/* Setup timeout in case the thread hangs in the lock */
+		alarm(1);
 
+		/*
+		 * We have to try to acquire the lock from different thread
+		 * because the file locks are recursive.
+		 */
 		ret = pthread_create(&ch, NULL, threaded, NULL);
 
 		if (ret != 0) {
-			UNRESOLVED(ret, "Failed to create a thread");
+			printf("pthread_create: %s\n", strerror(ret));
+			exit(PTS_UNRESOLVED);
 		}
 
-		ret = pthread_join(ch, NULL);
+		ret = pthread_join(ch, (void*)&res);
 
 		if (ret != 0) {
-			UNRESOLVED(ret, "Failed to join the thread");
+			printf("pthread_join: %s\n", strerror(ret));
+			exit(PTS_UNRESOLVED);
 		}
 
-		/* We're done */
-		exit(PTS_PASS);
+		exit(res);
 	}
-
-	/* Parent sleeps for a while to create contension in case the file lock is inherited */
-	sleep(1);
 
 	funlockfile(stdout);
 
-	/* Parent joins the child */
 	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child) {
-		UNRESOLVED(errno, "Waitpid returned the wrong PID");
+		printf("Waitpid returned the wrong PID\n");
+		return PTS_UNRESOLVED;
 	}
 
-	if (!WIFEXITED(status) || (WEXITSTATUS(status) != PTS_PASS)) {
-		FAILED("Child exited abnormally");
+	if (!WIFEXITED(status)) {
+		printf("FAIL: Child exited abnormaly, timeout?\n");
+		return PTS_FAIL;
 	}
 
-#if VERBOSE > 0
-	output("Test passed\n");
-#endif
+	if (WEXITSTATUS(status) != PTS_PASS)
+		return WEXITSTATUS(status);
 
-	PASSED;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
