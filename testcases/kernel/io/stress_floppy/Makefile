@@ -20,19 +20,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CLEAN_TARGETS		:= 10*K_file dumpdir
-
-INSTALL_DEPS		:= dumpdir
-
 INSTALL_TARGETS		:= stress_floppy
 
-MAKE_TARGETS		:=
-
-# dumpdir's a directory.
-RM			+= -r
-
-dumpdir:
-	@mkdir -p "$@"
-	@$(SHELL) "$(abs_srcdir)/generate.sh"
-
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

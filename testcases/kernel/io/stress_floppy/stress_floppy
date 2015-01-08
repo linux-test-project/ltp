@@ -30,7 +30,7 @@
 #
 #---------------------------------------------------------------------------
 
-TCdat=${TCdat:-$(pwd)}
+TCdat=${TCdat:-$LTP_DATAROOT}
 
 TCID="io_floppy"
 TST_TOTAL=7
@@ -82,7 +82,7 @@ test_tar()
 	for the_file in 1K_file 10K_file 100K_file 1000K_file
 	do
 		tst_resm TINFO "Testing $the_file tar..."
-		tar -C $TCdat -cvf /dev/fd0 $the_file
+		tar -C $TCdat/dumpdir -cvf /dev/fd0 $the_file
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL "$the_file Tar write failed!"
 			return
@@ -96,7 +96,7 @@ test_tar()
 		else
 			tst_resm TINFO "$the_file Tar read passed."
 		fi
-		diff $TCdat/$the_file $the_file 2>&1 >/dev/null
+		diff $TCdat/dumpdir/$the_file $the_file 2>&1 >/dev/null
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL "Diff of the $the_file tar files failed!"
 			return
@@ -140,7 +140,7 @@ test_dump()
 
 	for the_file in 1K_file 10K_file 100K_file
 	do
-		diff dumpdir/$the_file /$TCdat/$the_file 2>&1 >/dev/null
+		diff dumpdir/$the_file /$TCdat/dumpdir/$the_file 2>&1 >/dev/null
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL \
 				 "Diff of the $the_file backup files failed!"
@@ -160,7 +160,7 @@ test_cpio()
 	for the_file in 1K_file 10K_file 100K_file 1000K_file
 	do
 		tst_resm TINFO "Testing $the_file cpio..."
-		cd $TCdat
+		cd $TCdat/dumpdir
 		echo $the_file | cpio -o > /dev/fd0
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL "$the_file cpio write failed!"
@@ -180,7 +180,7 @@ test_cpio()
 		else
 			tst_resm TINFO "$the_file cpio read passed."
 		fi
-		diff $TCdat/$the_file $the_file 2>&1 >/dev/null
+		diff $TCdat/dumpdir/$the_file $the_file 2>&1 >/dev/null
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL \
 				 "Diff of the $the_file cpio files failed!"
