@@ -22,7 +22,6 @@ EOF
 
 run_option_group_tests()
 {
-	set -x
 	for test_script in $(find $1 -name run.sh); do
 		(cd "$(dirname "$test_script")" && ./$(basename "$test_script"))
 	done
