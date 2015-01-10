@@ -480,8 +480,10 @@ void do_child(void)
 
 			fromlen = sizeof(fsun);
 			newfd = accept(ufd, (struct sockaddr *)&fsun, &fromlen);
-			if (newfd >= 0)
+			if (newfd >= 0) {
 				FD_SET(newfd, &afds);
+				nfds = MAX(nfds, newfd + 1);
+			}
 		}
 		for (fd = 0; fd < nfds; ++fd)
 			if (fd != sfd && fd != ufd && FD_ISSET(fd, &rfds)) {
