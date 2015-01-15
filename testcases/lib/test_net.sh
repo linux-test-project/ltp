@@ -45,7 +45,10 @@ tst_rhost_run()
 			post_cmd=" > /dev/null 2>&1 &"
 			out="1> /dev/null"
 		;;
-		s) safe=1 ;;
+		s)
+			safe=1
+			post_cmd=' || echo TERR'
+		;;
 		c) cmd=$OPTARG ;;
 		u) user=$OPTARG ;;
 		*)
@@ -62,14 +65,14 @@ tst_rhost_run()
 	local ret=
 	if [ -n "$TST_USE_SSH" ]; then
 		output=`ssh -n -q $user@$RHOST "sh -c \
-			'$pre_cmd $cmd $post_cmd'" $out 2> /dev/null`
+			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'TERR'`
 	else
 		output=`rsh -n -l $user $RHOST "sh -c \
-			'$pre_cmd $cmd $post_cmd'" $out 2> /dev/null`
+			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'TERR'`
 	fi
-	ret=$?
-	[ "$ret" -ne 0 -a "$safe" -eq 1 ] && \
-		tst_brkm TBROK "failed to run '$cmd' on '$RHOST'"
+	echo "$output" | grep -q 'TERR$' && ret=1 || ret=0
+	[ $ret -eq 1 -a "$safe" -eq 1 ] && \
+		tst_brkm TBROK "failed to run '$cmd' on '$RHOST': '$output'"
 
 	[ -z "$out" -a -n "$output" ] && echo "$output"
 
