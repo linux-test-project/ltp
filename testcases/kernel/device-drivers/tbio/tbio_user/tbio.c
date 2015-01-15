@@ -75,12 +75,19 @@ void cleanup(void)
 	if (module_loaded)
 		tst_module_unload(NULL, module_name);
 
+	if (unlink(DEVICE_NAME) && (errno != ENOENT))
+		tst_brkm(TBROK | TERRNO, NULL, "unlink failed");
+
 	TEST_CLEANUP;
 }
 
 
 void setup(void)
 {
+	dev_t devt;
+	struct stat st;
+	unsigned int i, valid_node_created;
+
 	tst_require_root(NULL);
 
 	if (tst_kvercmp(2, 6, 0) < 0) {
@@ -91,50 +98,41 @@ void setup(void)
 	tst_module_load(cleanup, module_name, NULL);
 	module_loaded = 1;
 
-	dev_t devt;
-	struct stat st;
-
 	SAFE_FILE_SCANF(cleanup, "/sys/class/block/tbio/dev",
 		"%d:0", &TBIO_MAJOR);
 
 	devt = makedev(TBIO_MAJOR, 0);
+
 	/*
-	 * Check for the /dev/tbase node, and create if it does not
-	 * exist.
+	 * Wait until udev creates the device node.
+	 * If the node is not created or invalid, create it manually.
 	 */
-	errno = 0;
-	if (stat(DEVICE_NAME, &st)) {
-		if (errno == ENOENT) {
-			/* dev node does not exist */
-			if (mknod(DEVICE_NAME, S_IFCHR | S_IRUSR | S_IWUSR |
-				S_IRGRP | S_IWGRP, devt)) {
+	valid_node_created = 0;
+	for (i = 0; i < 50; i++) {
+		if (stat(DEVICE_NAME, &st)) {
+			if (errno != ENOENT)
 				tst_brkm(TBROK | TERRNO, cleanup,
-					"mknod failed at %s:%d",
-					__FILE__, __LINE__);
-			}
+					 "stat() failed");
 		} else {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				"problem with tbase device node directory");
-		}
-	} else {
-		/*
-		 * /dev/tbio CHR device exists.  Check to make sure it is for a
-		 * block device and that it has the right major and minor.
-		 */
-		if ((!(st.st_mode & S_IFCHR)) || (st.st_rdev != devt)) {
-			/* Recreate the dev node */
-			if (!unlink(DEVICE_NAME)) {
-				if (mknod(DEVICE_NAME, S_IFCHR | S_IRUSR |
-					S_IWUSR | S_IRGRP | S_IWGRP, devt)) {
-					tst_brkm(TBROK | TERRNO, cleanup,
-						"mknod failed at %s:%d",
-						__FILE__, __LINE__);
-				}
-			} else {
-				tst_brkm(TBROK | TERRNO, cleanup,
-					"unlink failed");
+			if ((st.st_mode & S_IFBLK) && (st.st_rdev == devt)) {
+				valid_node_created = 1;
+				break;
 			}
 		}
+
+		usleep(100000);
+	}
+
+	if (!valid_node_created) {
+		tst_resm(TINFO,
+			 "The device file was not created by udev, "
+			 "proceeding with manual creation");
+
+		if (unlink(DEVICE_NAME) && (errno != ENOENT))
+			tst_brkm(TBROK | TERRNO, cleanup, "unlink() failed");
+		if (mknod(DEVICE_NAME, S_IFBLK | S_IRUSR | S_IWUSR |
+			  S_IRGRP | S_IWGRP, devt))
+			tst_brkm(TBROK | TERRNO, cleanup, "mknod() failed");
 	}
 
 	tbio_fd = open(DEVICE_NAME, O_RDWR);
