@@ -8,8 +8,8 @@ ssh6-stress ssh-stress -6
 dns4-stress dns-stress
 dns6-stress dns-stress -6
 
-http4-stress http4-stress
-http6-stress http6-stress
+http4-stress http-stress
+http6-stress http-stress -6
 
 ftp4-download-stress ftp4-download-stress
 ftp6-download-stress ftp6-download-stress
