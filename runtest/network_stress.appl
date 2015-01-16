@@ -11,8 +11,8 @@ dns6-stress dns-stress -6
 http4-stress http-stress
 http6-stress http-stress -6
 
-ftp4-download-stress ftp4-download-stress
-ftp6-download-stress ftp6-download-stress
+ftp4-download-stress ftp-download-stress
+ftp6-download-stress ftp-download-stress -6
 
-ftp4-upload-stress ftp4-upload-stress
-ftp6-upload-stress ftp6-upload-stress
+ftp4-upload-stress ftp-upload-stress
+ftp6-upload-stress ftp-upload-stress -6
