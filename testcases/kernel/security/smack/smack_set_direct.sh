@@ -10,29 +10,31 @@
 #	CAP_MAC_ADMIN
 #
 
-source smack_common.sh
+export TCID=smack_set_direct
+export TST_TOTAL=1
 
-NotTheStartValue="17"
-StartValue=`cat "$smackfsdir/direct" 2>/dev/null`
+. test.sh
 
-echo "$NotTheStartValue" 2>/dev/null > "$smackfsdir/direct"
+. smack_common.sh
 
-DirectValue=`cat "$smackfsdir/direct" 2>/dev/null`
-if [ "$DirectValue" != "$NotTheStartValue" ]; then
-	cat <<EOM
-The CIPSO direct level reported is "$DirectValue",
-not the expected "$NotTheStartValue".
-EOM
-	exit 1
+not_start_value="17"
+start_value=$(cat "$smackfsdir/direct" 2>/dev/null)
+
+echo "$not_start_value" 2>/dev/null > "$smackfsdir/direct"
+
+direct_value=$(cat "$smackfsdir/direct" 2>/dev/null)
+if [ "$direct_value" != "$not_start_value" ]; then
+	tst_brkm TFAIL "The CIPSO direct level reported is \"$direct_value\"," \
+		       "not the expected \"$not_start_value\"."
 fi
 
-echo "$StartValue" 2>/dev/null> "$smackfsdir/direct"
+echo "$start_value" 2>/dev/null> "$smackfsdir/direct"
 
-DirectValue=`cat "$smackfsdir/direct" 2>/dev/null`
-if [ "$DirectValue" != "$StartValue" ]; then
-	cat <<EOM
-The CIPSO direct level reported is "$DirectValue",
-not the expected "$StartValue".
-EOM
-	exit 1
+direct_value=$(cat "$smackfsdir/direct" 2>/dev/null)
+if [ "$direct_value" != "$start_value" ]; then
+	tst_brkm TFAIL "The CIPSO direct level reported is \"$direct_value\"," \
+		       "not the expected \"$start_value\"."
 fi
+
+tst_resm TPASS "Test \"$TCID\" success."
+tst_exit
