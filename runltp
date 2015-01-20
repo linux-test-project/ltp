@@ -1011,10 +1011,10 @@ set_block_device()
             echo "Tests which require block device are disabled."
             echo "You can specify it with option -b"
 	else
-            LTP_DEV=$DEVICE
+            export LTP_DEV=$DEVICE
         fi
     else
-        LTP_DEV=$DEVICE
+        export LTP_DEV=$DEVICE
     fi
 }
 
