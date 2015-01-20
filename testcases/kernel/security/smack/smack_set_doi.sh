@@ -10,31 +10,31 @@
 #	CAP_MAC_ADMIN
 #
 
-source smack_common.sh
+export TCID=smack_set_doi
+export TST_TOTAL=1
 
-NotTheStartValue="17"
-StartValue=`cat "$smackfsdir/doi" 2>/dev/null`
+. test.sh
 
-echo "$NotTheStartValue" 2>/dev/null > "$smackfsdir/doi"
+. smack_common.sh
 
-DirectValue=`cat "$smackfsdir/doi" 2>/dev/null`
-if [ "$DirectValue" != "$NotTheStartValue" ]; then
-	cat <<EOM
-The CIPSO doi reported is "$DirectValue",
-not the expected "$NotTheStartValue".
-EOM
-	exit 1
+not_start_value="17"
+start_value=$(cat "$smackfsdir/doi" 2>/dev/null)
+
+echo "$not_start_value" 2>/dev/null > "$smackfsdir/doi"
+
+direct_value=$(cat "$smackfsdir/doi" 2>/dev/null)
+if [ "$direct_value" != "$not_start_value" ]; then
+	tst_brkm TFAIL "The CIPSO doi reported is \"$direct_value\", not the" \
+		       "expected \"$not_start_value\"."
 fi
 
-echo "$StartValue" 2>/dev/null > "$smackfsdir/doi"
+echo "$start_value" 2>/dev/null > "$smackfsdir/doi"
 
-DirectValue=`cat "$smackfsdir/doi" 2>/dev/null`
-if [ "$DirectValue" != "$StartValue" ]; then
-	cat <<EOM
-The CIPSO doi reported is "$DirectValue",
-not the expected "$StartValue".
-EOM
-	exit 1
+direct_value=$(cat "$smackfsdir/doi" 2>/dev/null)
+if [ "$direct_value" != "$start_value" ]; then
+	tst_brkm TFAIL "The CIPSO doi reported is \"$direct_value\", not the" \
+		       "expected \"$start_value\"."
 fi
 
-exit 0
+tst_resm TPASS "Test \"$TCID\" success."
+tst_exit
