@@ -14,106 +14,80 @@
 #               1         2         3         4         5         6
 #      123456789012345678901234567890123456789012345678901234567890123456789
 
-source smack_common.sh
+export TCID=smack_file_access
+export TST_TOTAL=1
 
-RuleA="TheOne                  TheOther                r---"
-RuleB="TheOne                  TheOther                rw--"
+. test.sh
 
-Where="./testdir"
-What="testfile"
-TestFile="$Where/$What"
+. smack_common.sh
+
+cleanup()
+{
+	tst_rmdir
+}
+
+rule_a="TheOne                  TheOther                r---"
+rule_b="TheOne                  TheOther                rw--"
+
 CAT=/bin/cat
+testfile="testfile"
 
-if [ ! -d "$Where" ]; then
-	if [ -e "$Where" ]; then
-		echo "Test directory \"$Where\" exists but is not a directory."
-		exit 1
-	fi
-	mkdir -m 777 "$Where"
-	if [ ! -d "$Where" ]; then
-		echo "Test directory \"$Where\" can not be created."
-		exit 1
-	fi
+tst_tmpdir
+TST_CLEANUP=cleanup
+
+notroot /bin/sh -c "echo InitialData 2>/tmp/smack_fail.log > $testfile"
+if [ ! -f "$testfile" ]; then
+	tst_brkm TFAIL "Test file \"$testfile\" can not be created."
 fi
 
-if [ ! -f "$TestFile" ]; then
-	if [ -e "$TestFile" ]; then
-		echo "Test file \"$TestFile\" exists but is not a file."
-		rm -rf "$Where"
-		exit 1
-	fi
-	./notroot /bin/sh -c "echo InitialData 2>/dev/null > $TestFile"
-	if [ ! -d "$TestFile" ]; then
-		echo "Test file \"$TestFile\" can not be created."
-		rm -rf "$Where"
-		exit 1
-	fi
+setfattr --name=security.SMACK64 --value=TheOther "$testfile"
+setto=$(getfattr --only-values -n security.SMACK64 -e text $testfile)
+
+if [ "TheOther" != "$setto" ]; then
+	tst_brkm TFAIL "Test file \"$testfile\" labeled \"$setto\" incorrectly."
 fi
 
-setfattr --name=security.SMACK64 --value=TheOther "$TestFile"
-SetTo=`getfattr --only-values -n security.SMACK64 -e text $TestFile`
-SetTo=`echo $SetTo`
+old_rule=$(grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther ')
 
-if [ "TheOther" != "$SetTo" ]; then
-	echo "Test file \"$TestFile\" labeled \"$SetTo\" incorrectly."
-	rm -rf "$Where"
-	exit 1
+echo -n "$rule_a" > "$smackfsdir/load"
+new_rule=$(grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther ')
+if [ "$new_rule" = "" ]; then
+	tst_brkm TFAIL "Rule did not get set."
 fi
-
-OldRule=`grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther '`
-
-echo -n "$RuleA" > "$smackfsdir/load"
-NewRule=`grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther '`
-if [ "$NewRule" = "" ]; then
-	echo "Rule did not get set."
-	rm -rf "$Where"
-	exit 1
+mode=$(echo $new_rule | sed -e 's/.* //')
+if [ "$mode" != "r" ]; then
+	tst_brkm TFAIL "Rule \"$new_rule\" is not set correctly."
 fi
-Mode=`echo $NewRule | sed -e 's/.* //'`
-if [ "$Mode" != "r" ]; then
-	echo "Rule \"$NewRule\" is not set correctly."
-	rm -rf "$Where"
-	exit 1
-fi
-
-OldProc=`cat /proc/self/attr/current 2>/dev/null`
 
 echo TheOne 2>/dev/null > /proc/self/attr/current
-GotRead=`./notroot $CAT "$TestFile"`
+got_read=$(smack_notroot $CAT "$testfile")
 
-if [ "$GotRead" != "InitialData" ]; then
-	echo "Read failed for \"$TestFile\" labeled \"TheOther\"."
-	rm -rf "$Where"
-	exit 1
+if [ "$got_read" != "InitialData" ]; then
+	tst_brkm TFAIL "Read failed for \"$testfile\" labeled \"TheOther\"."
 fi
 
 echo NotTheOne 2>/dev/null > /proc/self/attr/current
-GotRead=`./notroot $CAT "$TestFile"`
+got_read=$(smack_notroot $CAT "$testfile" 2> /dev/null)
 
-if [ "$GotRead" = "InitialData" ]; then
-	echo "Read should have failed for \"$TestFile\" labeled \"TheOther\"."
-	rm -rf "$Where"
-	exit 1
+if [ "$got_read" = "InitialData" ]; then
+	tst_brkm TFAIL "Read should have failed for \"$testfile\" labeled" \
+		       "\"TheOther\"."
 fi
 
-echo -n "$RuleB" 2>/dev/null > "$smackfsdir/load"
-NewRule=`grep "^TheOne" $smackfsdir/load 2>/dev/null | grep ' TheOther '`
-if [ "$NewRule" = "" ]; then
-	echo "Rule did not get set."
-	rm -rf "$Where"
-	exit 1
+echo -n "$rule_b" 2>/dev/null > "$smackfsdir/load"
+new_rule=$(grep "^TheOne" $smackfsdir/load 2>/dev/null | grep ' TheOther ')
+if [ "$new_rule" = "" ]; then
+	tst_brkm TFAIL "Rule did not get set."
 fi
-Mode=`echo $NewRule | sed -e 's/.* //'`
-if [ "$Mode" != "rw" ]; then
-	echo "Rule \"$NewRule\" is not set correctly."
-	rm -rf "$Where"
-	exit 1
+mode=$(echo $new_rule | sed -e 's/.* //')
+if [ "$mode" != "rw" ]; then
+	tst_brkm TFAIL "Rule \"$new_rule\" is not set correctly."
 fi
 
-if [ "$OldRule" != "$NewRule" ]; then
-	cat <<EOM
-Notice: Test access rule changed from "$OldRule" to "$NewRule".
-EOM
+if [ "$old_rule" != "$new_rule" ]; then
+	tst_resm TINFO "Notice: Test access rule changed from \"$old_rule\"" \
+		       "to \"$new_rule\"."
 fi
 
-rm -rf "$Where"
+tst_resm TPASS "Test \"$TCID\" success."
+tst_exit
