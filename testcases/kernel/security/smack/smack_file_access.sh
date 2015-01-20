@@ -35,7 +35,7 @@ testfile="testfile"
 tst_tmpdir
 TST_CLEANUP=cleanup
 
-notroot /bin/sh -c "echo InitialData 2>/tmp/smack_fail.log > $testfile"
+smack_notroot /bin/sh -c "echo InitialData 2>/tmp/smack_fail.log > $testfile"
 if [ ! -f "$testfile" ]; then
 	tst_brkm TFAIL "Test file \"$testfile\" can not be created."
 fi
