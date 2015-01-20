@@ -10,39 +10,41 @@
 #	CAP_MAC_ADMIN
 #
 
-source smack_common.sh
+export TCID=smack_set_netlabel
+export TST_TOTAL=1
 
-RuleA="191.191.191.191 TheOne"
-RuleA1="191.191.191.191/32 TheOne"
-RuleB="191.190.190.0/24 TheOne"
+. test.sh
 
-Old32=`grep "^191.191.191.191/32" "$smackfsdir/netlabel" 2>/dev/null`
-Old24=`grep "^191.190.190.0/24" "$smackfsdir/netlabel" 2>/dev/null`
+. smack_common.sh
 
-echo -n "$RuleA" 2>/dev/null > "$smackfsdir/netlabel"
-New32=`grep "$RuleA1" $smackfsdir/netlabel 2>/dev/null`
-if [ "$New32" != "$RuleA1" ]; then
-	echo "Rule \"$RuleA\" did not get set."
-	exit 1
+rule_a="191.191.191.191 TheOne"
+rule_a1="191.191.191.191/32 TheOne"
+rule_b="191.190.190.0/24 TheOne"
+
+old32=$(grep "^191.191.191.191/32" "$smackfsdir/netlabel" 2>/dev/null)
+old24=$(grep "^191.190.190.0/24" "$smackfsdir/netlabel" 2>/dev/null)
+
+echo -n "$rule_a" 2>/dev/null > "$smackfsdir/netlabel"
+new32=$(grep "$rule_a1" $smackfsdir/netlabel 2>/dev/null)
+if [ "$new32" != "$rule_a1" ]; then
+	tst_brkm TFAIL "Rule \"$rule_a\" did not get set."
 fi
 
-echo -n "$RuleB" 2>/dev/null > "$smackfsdir/netlabel"
-New24=`grep "$RuleB" "$smackfsdir/netlabel" 2>/dev/null`
-if [ "$New24" != "$RuleB" ]; then
-	echo "Rule \"$RuleB\" did not get set."
-	exit 1
+echo -n "$rule_b" 2>/dev/null > "$smackfsdir/netlabel"
+new24=$(grep "$rule_b" "$smackfsdir/netlabel" 2>/dev/null)
+if [ "$new24" != "$rule_b" ]; then
+	tst_brkm TFAIL "Rule \"$rule_b\" did not get set."
 fi
 
-if [ "$Old24" != "$New24" ]; then
-	cat <<EOM
-Notice: Test access rule changed from
-"$Old24" to "$New24".
-EOM
+if [ "$old24" != "$new24" ]; then
+	tst_resm TINFO "Notice: Test access rule changed from \"$old24\" to" \
+		       "\"$new24\"."
 fi
 
-if [ "$Old32" != "$New32" ]; then
-	cat <<EOM
-Notice: Test access rule changed from
-"$Old32" to "$New32".
-EOM
+if [ "$old32" != "$new32" ]; then
+	tst_resm TINFO "Notice: Test access rule changed from \"$old32\" to \
+\"$new32\"."
 fi
+
+tst_resm TPASS "Test \"$TCID\" success."
+tst_exit
