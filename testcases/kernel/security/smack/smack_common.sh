@@ -27,20 +27,20 @@
 
 smackfsdir=${smackfsdir:=/smack}
 
-check_mounted() {
-	if ! expr "$smackfsdir" : "$(df -P | awk "\$NF == \"$smackfsdir\""'{ print $NF }')"; then
-		echo "smackfs not mounted at $smackfsdir"
-		exit 1
+check_mounted()
+{
+	grep -q $smackfsdir /proc/mounts
+	if [ $? -ne 0 ]; then
+		tst_brkm TCONF "smackfs not mounted at \"$smackfsdir\""
 	fi
 }
 
-check_onlycap() {
-	onlycap=`cat "$smackfsdir/onlycap" 2>/dev/null`
-	if [ "$onlycap" != "" ]; then
-		cat <<EOM
-The smack label reported for $smackfsdir/onlycap is "$onlycap", not the expected "".
-EOM
-		exit 1
+check_onlycap()
+{
+	onlycap=$(cat "$smackfsdir/onlycap" 2>/dev/null)
+	if [ -n "$onlycap" ]; then
+		tst_brkm TCONF "\"$smackfsdir/onlycap\" is \"$onlycap\", not" \
+			       "the expected \"\"."
 	fi
 }
 
