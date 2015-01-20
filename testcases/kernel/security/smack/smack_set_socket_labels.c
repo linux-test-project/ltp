@@ -28,10 +28,16 @@
 #endif
 
 #include <sys/xattr.h>
+#include <sys/vfs.h>
+
+#include "test.h"
+#include "usctest.h"
+
+char *TCID = "smack_set_socket_labels";
+int TST_TOTAL = 1;
 
 int main(int argc, char *argv[])
 {
-	char message[256];
 	char *anin = "security.SMACK64IPIN";
 	char *anout = "security.SMACK64IPOUT";
 	char *annot = "security.SMACK64IPNOT";
@@ -40,35 +46,36 @@ int main(int argc, char *argv[])
 	char *avnot = "TheBadValue";
 	int sock;
 	int rc;
+	char buf[256];
 
-	if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-		sprintf(message, "%s Socket creation failure", argv[0]);
-		perror(message);
-		exit(1);
-	}
+	sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (sock < 0)
+		tst_brkm(TFAIL, NULL, "%s Socket creation failure", argv[0]);
+
+	flistxattr(sock, buf, 256);
+	if (strstr(buf, "security.SMACK64") == NULL)
+		tst_brkm(TCONF, NULL, "smackfs not set.");
 
 	rc = fsetxattr(sock, anin, avin, strlen(avin) + 1, 0);
 	if (rc < 0) {
-		sprintf(message, "%s fsetxattr of %s to %s failure",
-			argv[0], anin, avin);
-		perror(message);
-		exit(1);
+		tst_brkm(TFAIL, NULL, "%s fsetxattr of %s to %s failure",
+			 argv[0], anin, avin);
 	}
 
 	rc = fsetxattr(sock, anout, avout, strlen(avout) + 1, 0);
 	if (rc < 0) {
-		sprintf(message, "%s fsetxattr of %s to %s failure",
-			argv[0], anout, avout);
-		perror(message);
-		exit(1);
+		tst_brkm(TFAIL, NULL, "%s fsetxattr of %s to %s failure",
+			 argv[0], anout, avout);
 	}
 
 	rc = fsetxattr(sock, annot, avnot, strlen(avnot) + 1, 0);
 	if (rc >= 0) {
-		sprintf(message, "%s fsetxattr of %s to %s succeeded in error",
-			argv[0], anout, avout);
-		perror(message);
-		exit(1);
+		tst_brkm(TFAIL, NULL,
+			 "%s fsetxattr of %s to %s succeeded in error",
+			 argv[0], anout, avout);
 	}
-	exit(0);
+
+	tst_resm(TPASS, "Test %s success.", TCID);
+
+	tst_exit();
 }
