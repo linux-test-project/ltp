@@ -14,40 +14,42 @@
 #               1         2         3         4         5         6
 #      123456789012345678901234567890123456789012345678901234567890123456789
 
-source smack_common.sh
+export TCID=smack_set_load
+export TST_TOTAL=1
 
-RuleA="TheOne                  TheOther                rwxa"
-RuleB="TheOne                  TheOther                r---"
+. test.sh
 
-OldRule=`grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther '`
+. smack_common.sh
 
-echo -n "$RuleA" 2>/dev/null > "$smackfsdir/load"
-NewRule=`grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther '`
-if [ "$NewRule" = "" ]; then
-	echo "Rule did not get set."
-	exit 1
+rule_a="TheOne                  TheOther                rwxa"
+rule_b="TheOne                  TheOther                r---"
+
+old_rule=$(grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther ')
+
+echo -n "$rule_a" 2>/dev/null > "$smackfsdir/load"
+new_rule=$(grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther ')
+if [ "$new_rule" = "" ]; then
+	tst_brkm TFAIL "Rule did not get set."
 fi
-Mode=`echo "$NewRule" | sed -e 's/.* //'`
-if [ "$Mode" != "rwxa" ]; then
-	echo "Rule \"$NewRule\" is not set correctly."
-	exit 1
-fi
-
-echo -n "$RuleB" 2>/dev/null > "$smackfsdir/load"
-NewRule=`grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther '`
-if [ "$NewRule" = "" ]; then
-	echo "Rule did not get set."
-	exit 1
-fi
-Mode=`echo "$NewRule" | sed -e 's/.* //'`
-if [ "$Mode" != "r" ]; then
-	echo "Rule \"$NewRule\" is not set correctly."
-	exit 1
+mode=$(echo "$new_rule" | sed -e 's/.* //')
+if [ "$mode" != "rwxa" ]; then
+	tst_brkm TFAIL "Rule \"$new_rule\" is not set correctly."
 fi
 
-if [ "$OldRule" != "$NewRule" ]; then
-	cat <<EOM
-Notice: Test access rule changed from
-"$OldRule" to "$NewRule".
-EOM
+echo -n "$rule_b" 2>/dev/null > "$smackfsdir/load"
+new_rule=$(grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther ')
+if [ "$new_rule" = "" ]; then
+	tst_brkm TFAIL "Rule did not get set."
 fi
+mode=$(echo "$new_rule" | sed -e 's/.* //')
+if [ "$mode" != "r" ]; then
+	tst_brkm TFAIL "Rule \"$new_rule\" is not set correctly."
+fi
+
+if [ "$old_rule" != "$new_rule" ]; then
+	tst_resm TINFO "Notice: Test access rule changed from \"$old_rule\"" \
+		       "to \"$new_rule\"."
+fi
+
+tst_resm TPASS "Test \"$TCID\" success."
+tst_exit
