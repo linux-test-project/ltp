@@ -14,52 +14,53 @@
 #               1         2    llllCCCCccccCCCCcccc     5         6
 #      123456789012345678901234567890123456789012345678901234567890123456789
 
-source smack_common.sh
+export TCID=smack_set_cipso
+export TST_TOTAL=1
 
-RuleA="TheOne                  2   0   "
-RuleB="TheOne                  3   1   55  "
-RuleC="TheOne                  4   2   17  33  "
+. test.sh
 
-OldRule=`grep "^TheOne" "$smackfsdir/cipso" 2>/dev/null`
+. smack_common.sh
 
-echo -n "$RuleA" 2>/dev/null > "$smackfsdir/cipso"
-NewRule=`grep "^TheOne" "$smackfsdir/cipso" 2>/dev/null`
-if [ "$NewRule" = "" ]; then
-	echo "Rule did not get set."
-	exit 1
+rule_a="TheOne                  2   0   "
+rule_b="TheOne                  3   1   55  "
+rule_c="TheOne                  4   2   17  33  "
+
+old_rule=$(grep "^TheOne" "$smackfsdir/cipso" 2>/dev/null)
+
+echo -n "$rule_a" 2>/dev/null > "$smackfsdir/cipso"
+new_rule=$(grep "^TheOne" "$smackfsdir/cipso" 2>/dev/null)
+if [ "$new_rule" = "" ]; then
+	tst_brkm TFAIL "Rule did not get set."
 fi
-Right=`echo "$NewRule" | grep ' 2'`
-if [ "$Right" = "" ]; then
-	echo "Rule \"$NewRule\" is not set correctly."
-	exit 1
-fi
-
-echo -n "$RuleB" 2>/dev/null > "$smackfsdir/cipso"
-NewRule=`grep "^TheOne" "$smackfsdir/cipso" 2>/dev/null`
-if [ "$NewRule" = "" ]; then
-	echo "Rule did not get set."
-	exit 1
-fi
-Right=`echo $NewRule | grep '/55'`
-if [ "$Right" = "" ]; then
-	echo "Rule \"$NewRule\" is not set correctly."
-	exit 1
+right=$(echo "$new_rule" | grep ' 2')
+if [ "$right" = "" ]; then
+	tst_brkm TFAIL "Rule \"$new_rule\" is not set correctly."
 fi
 
-echo -n "$RuleC" 2>/dev/null > "$smackfsdir/cipso"
-NewRule=`grep "^TheOne" "$smackfsdir/cipso" 2>/dev/null`
-if [ "$NewRule" = "" ]; then
-	echo "Rule did not get set."
-	exit 1
+echo -n "$rule_b" 2>/dev/null > "$smackfsdir/cipso"
+new_rule=$(grep "^TheOne" "$smackfsdir/cipso" 2>/dev/null)
+if [ "$new_rule" = "" ]; then
+	tst_brkm TFAIL "Rule did not get set."
 fi
-Right=`echo "$NewRule" | grep '/17,33'`
-if [ "$Right" = "" ]; then
-	echo "Rule \"$NewRule\" is not set correctly."
-	exit 1
+right=$(echo $new_rule | grep '/55')
+if [ "$right" = "" ]; then
+	tst_brkm TFAIL "Rule \"$new_rule\" is not set correctly."
 fi
 
-if [ "$OldRule" != "$NewRule" ]; then
-	cat <<EOM
-Notice: Test access rule changed from "$OldRule" to "$NewRule".
-EOM
+echo -n "$rule_c" 2>/dev/null > "$smackfsdir/cipso"
+new_rule=$(grep "^TheOne" "$smackfsdir/cipso" 2>/dev/null)
+if [ "$new_rule" = "" ]; then
+	tst_brkm TFAIL "Rule did not get set."
 fi
+right=$(echo "$new_rule" | grep '/17,33')
+if [ "$right" = "" ]; then
+	tst_brkm TFAIL "Rule \"$new_rule\" is not set correctly."
+fi
+
+if [ "$old_rule" != "$new_rule" ]; then
+	tst_resm TINFO "Notice: Test access rule changed from \"$old_rule\"" \
+		       "to \"$new_rule\"."
+fi
+
+tst_resm TPASS "Test \"$TCID\" success."
+tst_exit
