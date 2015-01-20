@@ -112,6 +112,7 @@ tst_tmpdir()
 
 	TST_TMPDIR=$(mktemp -d "$TMPDIR/$TCID.XXXXXXXXXX")
 
+	chmod 777 "$TST_TMPDIR"
 	cd "$TST_TMPDIR"
 }
 
