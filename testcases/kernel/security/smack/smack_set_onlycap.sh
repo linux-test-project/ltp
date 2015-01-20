@@ -10,29 +10,31 @@
 #	CAP_MAC_ADMIN
 #
 
-source smack_common.sh
+export TCID=smack_set_onlycap
+export TST_TOTAL=1
 
-MyLabel=`cat /proc/self/attr/current 2>/dev/null`
-StartLabel=`cat "$smackfsdir/onlycap" 2>/dev/null`
+. test.sh
 
-echo "$MyLabel" 2>/dev/null > "$smackfsdir/onlycap"
+. smack_common.sh
 
-label=`cat "$smackfsdir/onlycap" 2>/dev/null`
-if [ "$label" != "$MyLabel" ]; then
-	cat <<EOM
-The smack label reported for $smackfsdir/onlycap is "$label",
-not the expected "$MyLabel".
-EOM
-	exit 1
+my_label=$(cat /proc/self/attr/current 2>/dev/null)
+start_label=$(cat "$smackfsdir/onlycap" 2>/dev/null)
+
+echo "$my_label" 2>/dev/null > "$smackfsdir/onlycap"
+
+label=$(cat "$smackfsdir/onlycap" 2>/dev/null)
+if [ "$label" != "$my_label" ]; then
+	tst_brkm TFAIL "The smack label reported for \"$smackfsdir/onlycap\" "
+		       "is \"$label\", not the expected \"$my_label\"."
 fi
 
-echo "$StartLabel" 2>/dev/null > "$smackfsdir/onlycap"
+echo "$start_label" 2>/dev/null > "$smackfsdir/onlycap"
 
-label=`cat "$smackfsdir/onlycap" 2>/dev/null`
-if [ "$label" != "$StartLabel" ]; then
-	cat <<EOM
-The smack label reported for the current process is "$label",
-not the expected "$StartLabel".
-EOM
-	exit 1
+label=$(cat "$smackfsdir/onlycap" 2>/dev/null)
+if [ "$label" != "$start_label" ]; then
+	tst_brkm TFAIL "The smack label reported for the current process is "
+		       "\"$label\", not the expected \"$start_label\"."
 fi
+
+tst_resm TPASS "Test \"$TCID\" success."
+tst_exit
