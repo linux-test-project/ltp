@@ -10,28 +10,31 @@
 #	CAP_MAC_ADMIN
 #
 
-source smack_common.sh
+export TCID=smack_set_ambient
+export TST_TOTAL=1
 
-NotTheFloorLabel="XYZZY"
-StartLabel=`cat "$smackfsdir/ambient" 2>/dev/null`
+. test.sh
 
-echo "$NotTheFloorLabel" 2>/dev/null > "$smackfsdir/ambient"
+. smack_common.sh
 
-label=`cat "$smackfsdir/ambient" 2>/dev/null`
-if [ "$label" != "$NotTheFloorLabel" ]; then
-	cat <<EOM
-The smack label reported for the current process is "$label", not the expected
-"$NotTheFloorLabel".
-EOM
-	exit 1
+not_floor_label="XYZZY"
+start_label=$(cat "$smackfsdir/ambient" 2>/dev/null)
+
+echo "$not_floor_label" 2>/dev/null > "$smackfsdir/ambient"
+
+label=$(cat "$smackfsdir/ambient" 2>/dev/null)
+if [ "$label" != "$not_floor_label" ]; then
+	tst_brkm TFAIL "The smack label reported for the current process is" \
+		       "\"$label\", not the expected \"$not_floor_label\"."
 fi
 
-echo "$StartLabel" 2>/dev/null > "$smackfsdir/ambient"
+echo "$start_label" 2>/dev/null > "$smackfsdir/ambient"
 
-label=`cat "$smackfsdir/ambient" 2>/dev/null`
-if [ "$label" != "$StartLabel" ]; then
-	cat <<EOM
-The smack label reported for the current process is "$label",  not the expected "$StartLabel".
-EOM
-	exit 1
+label=$(cat "$smackfsdir/ambient" 2>/dev/null)
+if [ "$label" != "$start_label" ]; then
+	tst_brkm TFAIL "The smack label reported for the current process is" \
+		       "\"$label\",  not the expected \"$start_label\"."
 fi
+
+tst_resm TPASS "Test \"$TCID\" success."
+tst_exit
