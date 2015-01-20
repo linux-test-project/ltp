@@ -144,19 +144,30 @@ static void attach_device(void (*cleanup_fn)(void),
 
 static void detach_device(void (*cleanup_fn)(void), const char *dev)
 {
-	int dev_fd, err;
+	int dev_fd, err, i;
 
 	dev_fd = SAFE_OPEN(cleanup_fn, dev, O_RDONLY);
 
-	if (ioctl(dev_fd, LOOP_CLR_FD, 0) < 0) {
-		err = errno;
-		close(dev_fd);
-		tst_brkm(TBROK, cleanup_fn,
-		         "ioctl(%s, LOOP_CLR_FD, 0) failed: %s",
-			 dev, tst_strerrno(err));
+	/* keep trying to clear LOOPDEV fd if EBUSY, a quick succession
+	 * of attach/detach might not give udev enough time to complete */
+	for (i = 0; i < 40; i++) {
+		if (ioctl(dev_fd, LOOP_CLR_FD, 0) == 0) {
+			close(dev_fd);
+			return;
+		}
+		if (errno != EBUSY) {
+			err = errno;
+			close(dev_fd);
+			tst_brkm(TBROK, cleanup_fn,
+				"ioctl(%s, LOOP_CLR_FD, 0) failed: %s",
+				dev, tst_strerrno(err));
+		}
+		usleep(50000);
 	}
 
 	close(dev_fd);
+	tst_brkm(TBROK, cleanup_fn,
+		"ioctl(%s, LOOP_CLR_FD, 0) EBUSY for too long",	dev);
 }
 
 const char *tst_acquire_device(void (cleanup_fn)(void))
