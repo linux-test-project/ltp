@@ -36,7 +36,38 @@
 char *TCID = "smack_set_socket_labels";
 int TST_TOTAL = 1;
 
+static void setup(void);
+static void cleanup(void);
+static void set_socket_labels(char **);
+
 int main(int argc, char *argv[])
+{
+	int lc;
+	const char *msg;
+
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
+	setup();
+
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		tst_count = 0;
+		set_socket_labels(argv);
+	}
+
+	cleanup();
+	tst_exit();
+}
+
+static void setup(void)
+{
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	TEST_PAUSE;
+}
+
+static void set_socket_labels(char **argv)
 {
 	char *anin = "security.SMACK64IPIN";
 	char *anout = "security.SMACK64IPOUT";
@@ -76,6 +107,9 @@ int main(int argc, char *argv[])
 	}
 
 	tst_resm(TPASS, "Test %s success.", TCID);
+}
 
-	tst_exit();
+static void cleanup(void)
+{
+	TEST_CLEANUP;
 }
