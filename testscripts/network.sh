@@ -50,9 +50,9 @@ export LHOST_IPV6_REV=${LHOST_IPV6_REV:-"2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"}
 export RHOST_IPV6_REV=${RHOST_IPV6_REV:-"1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"}
 
 export HTTP_DOWNLOAD_DIR=${HTTP_DOWNLOAD_DIR:-"/var/www/html"}
-export FTP_DOWNLOAD_DIR=${FTP_DOWNLOAD_DIR:-""}
-export FTP_UPLOAD_DIR=${FTP_UPLOAD_DIR:-""}
-export FTP_UPLOAD_URLDIR=${FTP_UPLOAD_URLDIR:-""}
+export FTP_DOWNLOAD_DIR=${FTP_DOWNLOAD_DIR:-"/var/ftp"}
+export FTP_UPLOAD_DIR=${FTP_UPLOAD_DIR:-"/var/ftp/pub"}
+export FTP_UPLOAD_URLDIR=${FTP_UPLOAD_URLDIR:-"pub"}
 
 # More information about network parameters can be found
 # in the following document: testcases/network/stress/README
