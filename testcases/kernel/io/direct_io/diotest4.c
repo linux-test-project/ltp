@@ -180,9 +180,9 @@ static void testcheck_end(int ret, int *failed, int *fail_count, char *msg)
 	if (ret != 0) {
 		*failed = TRUE;
 		(*fail_count)++;
-		tst_resm(TFAIL, msg);
+		tst_resm(TFAIL, "%s", msg);
 	} else
-		tst_resm(TPASS, msg);
+		tst_resm(TPASS, "%s", msg);
 }
 
 static void setup(void);
