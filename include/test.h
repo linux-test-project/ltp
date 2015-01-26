@@ -283,22 +283,30 @@ long tst_ncpus_max(void);
  * redirection is not needed.
  * @stderr_fd: file descriptor where to redirect stderr. Set -1 if
  * redirection is not needed.
+ * @pass_exit_val: if it's non-zero, this function will return the program
+ * exit code, otherwise it will call cleanup_fn() if the program
+ * exit code is not zero.
  */
-void tst_run_cmd_fds(void (cleanup_fn)(void),
+int tst_run_cmd_fds(void (cleanup_fn)(void),
 			const char *const argv[],
 			int stdout_fd,
-			int stderr_fd);
+			int stderr_fd,
+			int pass_exit_val);
 
 /* Executes tst_run_cmd_fds() and redirects its output to a file
  * @stdout_path: path where to redirect stdout. Set NULL if redirection is
  * not needed.
  * @stderr_path: path where to redirect stderr. Set NULL if redirection is
  * not needed.
+ * @pass_exit_val: if it's non-zero, this function will return the program
+ * exit code, otherwise it will call cleanup_fn() if the program
+ * exit code is not zero.
  */
-void tst_run_cmd(void (cleanup_fn)(void),
+int tst_run_cmd(void (cleanup_fn)(void),
 		const char *const argv[],
 		const char *stdout_path,
-		const char *stderr_path);
+		const char *stderr_path,
+		int pass_exit_val);
 
 /* Wrapper function for system(3), ignorcing SIGCLD signal.
  * @command: the command to be run.

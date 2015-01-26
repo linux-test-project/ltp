@@ -72,7 +72,7 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 
 	tst_resm(TINFO, "Formatting %s with %s extra opts='%s'",
 		 dev, fs_type, fs_opts_str);
-	tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL);
+	tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL, 0);
 }
 
 const char *tst_dev_fs_type(void)

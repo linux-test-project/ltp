@@ -45,5 +45,5 @@ void make_swapfile(void (cleanup)(void), const char *swapfile)
 	argv[1] = swapfile;
 	argv[2] = NULL;
 
-	tst_run_cmd(cleanup, argv, "/dev/null", "/dev/null");
+	tst_run_cmd(cleanup, argv, "/dev/null", "/dev/null", 0);
 }
