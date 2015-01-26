@@ -152,12 +152,12 @@ static void test_run(void)
 
 	/* Enable boost */
 	if (boost_value == cdrv[id].off)
-		SAFE_FILE_PRINTF(cleanup, cdrv[id].file, cdrv[id].on_str);
+		SAFE_FILE_PRINTF(cleanup, cdrv[id].file, "%s", cdrv[id].on_str);
 	tst_resm(TINFO, "load CPU0 with boost enabled");
 	boost_time = load_cpu(max_freq_khz);
 
 	/* Disable boost */
-	SAFE_FILE_PRINTF(cleanup, cdrv[id].file, cdrv[id].off_str);
+	SAFE_FILE_PRINTF(cleanup, cdrv[id].file, "%s", cdrv[id].off_str);
 	tst_resm(TINFO, "load CPU0 with boost disabled");
 	boost_off_time = load_cpu(max_freq_khz);
 
