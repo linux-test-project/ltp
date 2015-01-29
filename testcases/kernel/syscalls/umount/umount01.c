@@ -61,6 +61,13 @@ int main(int ac, char **av)
 				 "%s ", TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			TEST(umount(mntpoint));
+
+			if (TEST_RETURN != 0 && TEST_ERRNO == EBUSY) {
+				tst_resm(TINFO, "umount() failed with EBUSY "
+				         "possibly some daemon (gvfsd-trash) "
+				         "is probing newly mounted dirs");
+			}
+
 			if (TEST_RETURN != 0) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_brkm(TFAIL, NULL, "umount(2) Failed while "
