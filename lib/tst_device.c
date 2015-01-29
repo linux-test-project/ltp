@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <sys/mount.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -227,4 +228,31 @@ void tst_release_device(void (cleanup_fn)(void), const char *dev)
 	detach_device(cleanup_fn, dev);
 
 	device_acquired = 0;
+}
+
+int tst_umount(const char *path)
+{
+	int err, ret, i;
+
+	for (i = 0; i < 50; i++) {
+		ret = umount(path);
+		err = errno;
+
+		if (!ret)
+			return 0;
+
+		tst_resm(TINFO, "umount('%s') failed with %s, try %2i...",
+		         path, tst_strerrno(err), i+1);
+
+		if (i == 0 && err == EBUSY) {
+			tst_resm(TINFO, "Likely gvfsd-trash is probing newly "
+			         "mounted fs, kill it to speed up tests.");
+		}
+
+		usleep(100000);
+	}
+
+	tst_resm(TWARN, "Failed to umount('%s') after 50 retries", path);
+	errno = err;
+	return -1;
 }

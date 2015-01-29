@@ -976,6 +976,24 @@ pid_t tst_get_unused_pid(void (*cleanup)(void));
 
 Return a 'PID' value not used by the OS or any process within it.
 
+2.2.19 Umounting devices
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+int tst_umount(const char *path);
+-------------------------------------------------------------------------------
+
+Since various desktop deamons (gvfsd-trash is known for that) may be stupid
+enough to probe all newly mounted filesystem which results in 'umount(2)'
+failing with 'EBUSY' LTP library includes 'tst_umount()' function that behaves
+exactly as 'umount(2)' but retries several times on a failure.
+
+IMPORTANT: All testcases should use 'tst_umount()' instead of 'umount(2)' to
+           umount filesystems.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1165,6 +1183,15 @@ if the file doesn't have write permission bits set (the same holds for R_OK
 too). For sysfs files you can use 'open()' as a workaround to check file
 read/write permissions. It might not work for other filesystems, for these you
 have to use 'stat()', 'lstat()' or 'fstat()'.
+
+3.3 umount() EBUSY
+~~~~~~~~~~~~~~~~~~
+
+Various desktop deamons (gvfsd-trash is known for that) may be stupid enough
+to probe all newly mounted filesystem which results in 'umount(2)' failing
+with 'EBUSY'; use 'tst_umount()' described in 2.2.19 that retries in this case
+instead of plain 'umount(2)'.
+
 
 4. Test Contribution Checklist
 ------------------------------

@@ -346,6 +346,13 @@ const char *tst_acquire_device(void (cleanup_fn)(void));
  */
 void tst_release_device(void (cleanup_fn)(void), const char *dev);
 
+/* lib/tst_device.c
+ *
+ * Just like umount() but retries several times on failure.
+ * @path: Path to umount
+ */
+int tst_umount(const char *path);
+
 /* lib/tst_fill_file.c
  *
  * Creates/ovewrites a file with specified pattern
