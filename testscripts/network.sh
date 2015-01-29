@@ -49,7 +49,7 @@ export LHOST_IPV6_REV=${LHOST_IPV6_REV:-"2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"}
 # Reverse host portion of the IPv6 address of the remote host
 export RHOST_IPV6_REV=${RHOST_IPV6_REV:-"1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"}
 
-export HTTP_DOWNLOAD_DIR=${HTTP_DOWNLOAD_DIR:-""}
+export HTTP_DOWNLOAD_DIR=${HTTP_DOWNLOAD_DIR:-"/var/www/html"}
 export FTP_DOWNLOAD_DIR=${FTP_DOWNLOAD_DIR:-""}
 export FTP_UPLOAD_DIR=${FTP_UPLOAD_DIR:-""}
 export FTP_UPLOAD_URLDIR=${FTP_UPLOAD_URLDIR:-""}
