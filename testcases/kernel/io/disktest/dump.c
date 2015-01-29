@@ -173,7 +173,7 @@ int dump_data(FILE * stream, const char *buff, const size_t buff_siz,
 
 int do_dump(child_args_t * args)
 {
-	size_t NumBytes = 0;
+	ssize_t NumBytes = 0;
 	OFF_T TargetLBA, TotalBytes = 0;
 	char *buff;
 	fd_t fd;

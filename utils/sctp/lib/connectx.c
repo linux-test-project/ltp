@@ -66,7 +66,7 @@ static int __connectx_addrsize(const struct sockaddr *addrs,
 
 int __sctp_connectx(int fd, struct sockaddr *addrs, int addrcnt)
 {
-	socklen_t addrs_size = __connectx_addrsize(addrs, addrcnt);
+	int addrs_size = __connectx_addrsize(addrs, addrcnt);
 
 	if (addrs_size < 0)
 		return addrs_size;
@@ -117,7 +117,7 @@ static int __connectx(int fd, struct sockaddr *addrs, socklen_t addrs_size,
 int sctp_connectx2(int fd, struct sockaddr *addrs, int addrcnt,
 		      sctp_assoc_t *id)
 {
-	socklen_t addrs_size = __connectx_addrsize(addrs, addrcnt);
+	int addrs_size = __connectx_addrsize(addrs, addrcnt);
 
 	if (addrs_size < 0)
 		return addrs_size;
@@ -128,7 +128,7 @@ int sctp_connectx2(int fd, struct sockaddr *addrs, int addrcnt,
 int sctp_connectx3(int fd, struct sockaddr *addrs, int addrcnt,
 		      sctp_assoc_t *id)
 {
-	socklen_t addrs_size = __connectx_addrsize(addrs, addrcnt);
+	int addrs_size = __connectx_addrsize(addrs, addrcnt);
 	int status;
 	struct sctp_getaddrs_old param;
 	socklen_t opt_len = sizeof(param);

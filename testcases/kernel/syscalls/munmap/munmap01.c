@@ -152,7 +152,7 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	size_t page_sz;		/* system page size */
+	size_t page_sz;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -164,10 +164,7 @@ void setup(void)
 	TEST_PAUSE;
 
 	/* Get the system page size */
-	if ((page_sz = getpagesize()) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "getpagesize() fails to get system page size");
-	}
+	page_sz = getpagesize();
 
 	/*
 	 * Get the length of the open file to be mapped into process

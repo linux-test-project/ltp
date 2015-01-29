@@ -83,7 +83,7 @@
 /* Test case defines */
 #define WINDOW_START 0x48000000
 
-size_t page_sz;
+static int page_sz;
 size_t page_words;
 size_t cache_pages;
 size_t cache_sz;
