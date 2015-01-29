@@ -186,6 +186,19 @@ case $attach_operation in
 	do
 		cur_pid=`sed -n "$i""p" $TMPFILE`
 		if [ -e /proc/$cur_pid/ ];then
+			#For kernel 3.4.0 and higher, kernel disallow attaching kthreadd or
+			#threads with flag 0x04000000 to cgroups.
+			#kernel commit:
+			#c4c27fbdda4e8ba87806c415b6d15266b07bce4b
+			#14a40ffccd6163bbcd1d6f32b28a88ffe6149fc6
+			tst_kvercmp 3 4 0
+			if [ $? -ne 0 ]; then
+				thread_flag=$(awk '{print $9}' /proc/$cur_pid/stat)
+				thread_name=$(awk '{print $2}' /proc/$cur_pid/status | head -1)
+				if [ "$thread_name" = "kthreadd" -o $((${thread_flag}&0x04000000)) -ne 0 ];then
+					continue
+				fi
+			fi
 			do_echo 1 1 "$cur_pid" /dev/cgroup/subgroup_1/tasks
 		fi
 	done
