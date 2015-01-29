@@ -220,7 +220,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (mount_flag && umount(mntpoint) < 0)
+	if (mount_flag && tst_umount(mntpoint) < 0)
 		tst_resm(TWARN | TERRNO, "umount(2) failed");
 
 	if (block_dev)

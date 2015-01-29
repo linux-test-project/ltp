@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 	tst_count = 0;
 
 	tst_resm(TINFO, "umount %s", device);
-	TEST(umount(mntpoint));
+	TEST(tst_umount(mntpoint));
 	if (TEST_RETURN != 0) {
 		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_brkm(TBROK, cleanup, "umount(2) Failed "
@@ -242,7 +242,7 @@ static void cleanup(void)
 		tst_resm(TWARN | TERRNO, "close(%d) failed", fd_notify);
 
 	if (mount_flag) {
-		TEST(umount(mntpoint));
+		TEST(tst_umount(mntpoint));
 		if (TEST_RETURN != 0)
 			tst_resm(TWARN | TTERRNO, "umount(%s) failed",
 				 mntpoint);

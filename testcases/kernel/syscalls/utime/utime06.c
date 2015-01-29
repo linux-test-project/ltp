@@ -176,7 +176,7 @@ static void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	if (mount_flag && umount(MNT_POINT) < 0)
+	if (mount_flag && tst_umount(MNT_POINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", dev);
 
 	if (dev)

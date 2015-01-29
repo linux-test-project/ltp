@@ -122,7 +122,7 @@ static void cleanup(void)
 	if (seteuid(0))
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 
-	if (mount_flag && umount(MNTPOINT))
+	if (mount_flag && tst_umount(MNTPOINT))
 		tst_resm(TWARN | TERRNO, "umount() failed");
 
 	if (device)

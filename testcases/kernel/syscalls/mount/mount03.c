@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 				tst_resm(TPASS, "mount(2) passed with "
 					 "rwflag = %ld", rwflags[i]);
 
-			TEST(umount(mntpoint));
+			TEST(tst_umount(mntpoint));
 			if (TEST_RETURN != 0)
 				tst_brkm(TBROK | TTERRNO, cleanup,
 					 "umount(2) failed for %s", mntpoint);

@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 				tst_resm(TFAIL, "file %s is not available",
 					 file_des);
 
-			TEST(umount(mntpoint_des));
+			TEST(tst_umount(mntpoint_des));
 			if (TEST_RETURN != 0)
 				tst_brkm(TBROK | TTERRNO, cleanup,
 					 "umount(2) failed");
@@ -122,7 +122,7 @@ void setup(void)
 void cleanup(void)
 {
 	if (dflag)
-		if (umount(mntpoint_src) != 0)
+		if (tst_umount(mntpoint_src) != 0)
 			tst_brkm(TBROK | TTERRNO, NULL, "umount(2) failed");
 
 	TEST_CLEANUP;

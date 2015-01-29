@@ -174,7 +174,7 @@ static void close_umount(void)
 
 static void do_umount(void)
 {
-	if (umount(mntpoint))
+	if (tst_umount(mntpoint))
 		tst_brkm(TBROK | TERRNO, cleanup, "Failed to umount(mntpoint)");
 }
 

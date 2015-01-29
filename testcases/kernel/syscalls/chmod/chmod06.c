@@ -229,7 +229,7 @@ static void cleanup(void)
 	if (chmod(DIR_TEMP, MODE_RWX) == -1)
 		tst_resm(TBROK | TERRNO, "chmod(%s) failed", DIR_TEMP);
 
-	if (mount_flag && umount(MNT_POINT) < 0) {
+	if (mount_flag && tst_umount(MNT_POINT) < 0) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "umount device:%s failed", device);
 	}

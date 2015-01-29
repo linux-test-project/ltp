@@ -260,7 +260,7 @@ static void cleanup(void)
 	if (filefd > 0 && close(filefd) < 0)
 		tst_resm(TWARN | TERRNO, "close filefd failed");
 
-	if (mount_flag && umount(MNTPOINT) < 0)
+	if (mount_flag && tst_umount(MNTPOINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount %s failed", MNTPOINT);
 
 	if (device)

@@ -166,10 +166,10 @@ static void cleanup(void)
 {
 	TEST_CLEANUP;
 
-	if (mount_flag_dir && umount("mntpoint") < 0)
+	if (mount_flag_dir && tst_umount("mntpoint") < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 
-	if (mount_flag_cur && umount("test_dir/mntpoint") < 0)
+	if (mount_flag_cur && tst_umount("test_dir/mntpoint") < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 
 	if (device)

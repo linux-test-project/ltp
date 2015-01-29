@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 			else
 				tst_resm(TFAIL, "move mount does not work");
 
-			TEST(umount(mntpoint_des));
+			TEST(tst_umount(mntpoint_des));
 			if (TEST_RETURN != 0)
 				tst_brkm(TBROK | TTERRNO, cleanup,
 					 "umount(2) failed");
@@ -161,7 +161,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (mount_flag && umount(path_name) != 0)
+	if (mount_flag && tst_umount(path_name) != 0)
 		tst_resm(TWARN | TERRNO, "umount(2) %s failed", path_name);
 
 	TEST_CLEANUP;

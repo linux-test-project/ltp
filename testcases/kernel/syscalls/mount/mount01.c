@@ -60,7 +60,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL | TTERRNO, "mount(2) failed");
 		} else {
 			tst_resm(TPASS, "mount(2) passed ");
-			TEST(umount(MNTPOINT));
+			TEST(tst_umount(MNTPOINT));
 			if (TEST_RETURN != 0) {
 				tst_brkm(TBROK | TTERRNO, cleanup,
 					 "umount(2) failed");

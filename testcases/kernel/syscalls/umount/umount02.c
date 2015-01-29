@@ -146,7 +146,7 @@ static void cleanup(void)
 	if (fd > 0 && close(fd))
 		tst_resm(TWARN | TERRNO, "Failed to close file");
 
-	if (mount_flag && umount(MNTPOINT))
+	if (mount_flag && tst_umount(MNTPOINT))
 		tst_resm(TWARN | TERRNO, "umount() failed");
 
 	if (device)

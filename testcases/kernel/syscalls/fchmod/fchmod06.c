@@ -179,7 +179,7 @@ static void cleanup(void)
 	if (fd3 > 0 && close(fd3))
 		tst_resm(TWARN | TERRNO, "close(fd1) failed");
 
-	if (mount_flag && umount("mntpoint") < 0) {
+	if (mount_flag && tst_umount("mntpoint") < 0) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "umount device:%s failed", device);
 	}

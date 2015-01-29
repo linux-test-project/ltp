@@ -59,7 +59,7 @@ static void verify_mount(void)
 
 	if (TEST_RETURN == 0) {
 		tst_resm(TFAIL, "mount() succeeded unexpectedly");
-		if (umount(mntpoint))
+		if (tst_umount(mntpoint))
 			tst_brkm(TBROK, cleanup, "umount() failed");
 		return;
 	}
