@@ -24,20 +24,29 @@ TST_TOTAL=1
 
 . test_net.sh
 
-tst_check_cmds curl
+tst_check_cmds awk curl
 
 # Check the arguments
-[ $# -ne 2 ] && tst_brkm TBROK "Usage: $0 server_ipaddr filename"
+[ $# -ne 3 ] && tst_brkm TBROK "Usage: $0 server_ipaddr filename filesize"
 
 server_ipaddr="$1"
 filename="$2"
+filesize="$3"
 
 echo $server_ipaddr | grep -F ':' > /dev/null
 if [ $? -eq 0 ]; then
 	server_ipaddr='['$server_ipaddr']'
 fi
 
-curl -g "http://$server_ipaddr/$filename" -o /dev/null || \
+out=$(curl --noproxy '*' -sS -g "http://$server_ipaddr/$filename" -o /dev/null \
+	-w "time=%{time_total} size=%{size_download} speed=%{speed_download}")
+
+tst_resm TINFO "stat: $out"
+recv_filesize=$(echo "$out" | awk '{print $2}')
+
+if [ $recv_filesize != "size=$filesize" ]; then
+	tst_resm TINFO "expected file size '$filesize'"
 	tst_brkm TBROK "Failed to get http://${server_ipaddr}/${filename}"
+fi
 
 tst_exit

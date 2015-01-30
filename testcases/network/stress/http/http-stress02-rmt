@@ -24,16 +24,17 @@ TST_TOTAL=1
 
 . test_net.sh
 
-tst_check_cmds curl
+tst_check_cmds awk curl
 
-if [ $# -ne 4 ]; then
-	tst_brkm TBROK "Usage: $0 server_addr filename duration connections"
+if [ $# -ne 5 ]; then
+	tst_brkm TBROK "Usage: $0 server_addr fname fsize duration connections"
 fi
 
 server_ipaddr="$1"
 filename="$2"
-duration="$3"
-connections="$4"
+filesize="$3"
+duration="$4"
+connections="$5"
 
 echo $server_ipaddr | grep -F ':' > /dev/null
 if [ $? -eq 0 ]; then
@@ -55,13 +56,21 @@ while true ; do
 		continue;
 	fi
 
-	# Login to the server
-	curl -s -g "http://$server_ipaddr/$filename" > /dev/null 2>&1 &
+	curl --noproxy '*' -s -g "http://$server_ipaddr/$filename" \
+		-o /dev/null &
 done
 
 killall -qw -s SIGPIPE curl
 
-curl -g "http://$server_ipaddr/$filename" -o /dev/null || \
+out=$(curl --noproxy '*' -sS -g "http://$server_ipaddr/$filename" -o /dev/null \
+	-w "time=%{time_total} size=%{size_download} speed=%{speed_download}")
+
+tst_resm TINFO "stat: $out"
+recv_filesize=$(echo "$out" | awk '{print $2}')
+
+if [ $recv_filesize != "size=$filesize" ]; then
+	tst_resm TINFO "expected file size '$filesize'"
 	tst_brkm TBROK "Failed to get http://$server_ipaddr/$filename"
+fi
 
 tst_exit
