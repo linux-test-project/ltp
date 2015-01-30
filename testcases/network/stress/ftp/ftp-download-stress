@@ -71,7 +71,7 @@ test01()
 
 	# Run the script at the remote host
 	tst_rhost_run -s -c "ftp-download-stress01-rmt \
-		$(tst_ipaddr) ftp_file"
+		$(tst_ipaddr) ftp_file $DOWNLOAD_BIGFILESIZE"
 
 	tst_resm TPASS "Test is finished successfully"
 }
@@ -84,7 +84,8 @@ test02()
 		tst_resm TBROK "Failed to create test file"
 
 	tst_rhost_run -s -c "ftp-download-stress02-rmt $(tst_ipaddr) \
-		ftp_reg_file $NS_DURATION $CONNECTION_TOTAL"
+		ftp_reg_file $DOWNLOAD_REGFILESIZE \
+		$NS_DURATION $CONNECTION_TOTAL"
 
 	tst_resm TPASS "Test is finished successfully"
 }

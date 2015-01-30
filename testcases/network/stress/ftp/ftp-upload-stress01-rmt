@@ -47,10 +47,16 @@ echo -n "A" > $filename
 echo -n "Z" | dd of=$filename bs=1 seek=$(($filesize - 1)) > /dev/null 2>&1 || \
 	tst_brkm TBROK "Failed to create $filename"
 
-curl -u anonymous:ftp@ltp-ns.org -T $filename \
-	-g "ftp://$server_ipaddr/$urldir/" > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-	tst_brkm TBROK "Failed to upload ftp://$server_ipaddr/$urldir/"
+out=$(curl --noproxy '*' -sS -u anonymous:ftp@ltp-ns.org -T $filename \
+	-g "ftp://$server_ipaddr/$urldir/" \
+	-w "time=%{time_total} size=%{size_upload} speed=%{speed_upload}")
+
+tst_resm TINFO "stat: $out"
+send_filesize=$(echo "$out" | awk '{print $2}')
+
+if [ "$send_filesize" != "size=$filesize" ]; then
+	tst_resm TINFO "Expected file size '$filesize'"
+	tst_brkm TBROK "Failed to upload to ftp://$server_ipaddr/$urldir/"
 fi
 
 tst_exit

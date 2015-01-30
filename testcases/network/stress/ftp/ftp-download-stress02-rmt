@@ -24,12 +24,13 @@ TST_TOTAL=1
 
 . test_net.sh
 
-tst_check_cmds killall
+tst_check_cmds awk killall
 
 server_ipaddr="$1"
 filename="$2"
-duration="$3"
-connect_quantity="$4"
+filesize="$3"
+duration="$4"
+connect_quantity="$5"
 
 echo $server_ipaddr | grep ':' > /dev/null
 if [ $? -eq 0 ]; then
@@ -53,14 +54,22 @@ while true ; do
 	fi
 
 	# Login to the server
-	curl -s -g "ftp://${server_ipaddr}/${filename}" \
-		-o /dev/null >/dev/null 2>&1 &
+	curl --noproxy '*' -s -g "ftp://${server_ipaddr}/${filename}" \
+		-o /dev/null &
 done
 
 killall -qw -s SIGPIPE curl
 
-# Check the test file
-curl -g "ftp://${server_ipaddr}/${filename}" -o /dev/null || \
-	tst_brkm TBROK "Failed to download ftp://${server_ipaddr}/${filename}"
+# Download the test file
+out=$(curl --noproxy '*' -sS -g "ftp://$server_ipaddr/$filename" -o /dev/null \
+	-w "time=%{time_total} size=%{size_download} speed=%{speed_download}")
+
+tst_resm TINFO "stat: $out"
+recv_filesize=$(echo "$out" | awk '{print $2}')
+
+if [ "$recv_filesize" != "size=$filesize" ]; then
+	tst_resm TINFO "Expected file size '$filesize'"
+	tst_brkm TBROK "Failed to download ftp://$server_ipaddr/$filename"
+fi
 
 tst_exit
