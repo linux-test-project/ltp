@@ -1,129 +1,77 @@
 #! /bin/sh
-#
-#   Copyright (c) International Business Machines  Corp., 2000
-#
-#   This program is free software;  you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
-#   the GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-#
-#
-#
-#  FILE             : mc_cmds
-#  TEST DESCRIPTION : To determine the stability of the IP Multicast product
-#                and to verify the accuracy and usability of IP Multicast
-#                related publications associated with changes and/or
-#                additions to command level interfaces for this implementations
-#                of IP Multicast.
-#  HISTORY:
-#    03/26/01 Robbie Williamson (robbiew@us.ibm.com)
-#      -Ported
-#
-#*******************************************************************************
 
-TC=mc_cmds
-PING_OUT=${TCtmp}/PING_OUT
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2000
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# TEST DESCRIPTION :
+#     To determine the stability of the IP Multicast product
+#     and to verify the accuracy and usability of IP Multicast
+#     related publications associated with changes and/or
+#     additions to command level interfaces for this implementations
+#     of IP Multicast.
+#
+# Robbie Williamson (robbiew@us.ibm.com)
 
-export TCID=$TC
-export TST_TOTAL=1
-export TST_COUNT=1
+TCID=mc_cmds
+TST_TOTAL=1
 
-. test.sh
+. test_net.sh
+
+sysctl_path="/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts"
+knob_changed=
 
 setup()
 {
-	tst_check_cmds netstat
-
-	val=$(cat /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts)
+	val=$(cat $sysctl_path)
 	if [ $val -ne 0 ]; then
-		tst_brkm TCONF "Multicast ping disabled on this system."
+		echo 0 > $sysctl_path || \
+			tst_brkm TBROK "failed to unset '$sysctl_path'"
+		knob_changed=1
 	fi
-
 	tst_tmpdir
 }
 
 do_test()
 {
-	tst_resm TINFO "Getting ALL enabled interfaces which are configured !"
+	ip addr show $(tst_iface) | grep -q 'MULTICAST' || \
+		tst_brkm TFAIL "Multicast not listed for $(tst_iface)"
 
-	IFNAME=${IFNAME:-$(netstat -i -n | \
-			   grep "^[b-z][[:alnum:]]\{1,3\}[0-9][^*]" | \
-			   awk '{print $1}')}
-	INTERFACE=${INTERFACE:-$(mc_gethost `hostname` | grep addresses: | \
-				 awk '{print $2}')}
-	if [ -z $INTERFACE ]; then
-		tst_brkm TCONF "$(hostname) is not found in /etc/hosts"
-	fi
-
-	tst_resm TINFO "Testing ifconfig and netstat"
-
-	# Finds the active ethernet interface
-	for eth in $IFNAME
-	do
-		ifconfig $eth | grep -q $INTERFACE
-		if [ $? -eq 0 ]; then
-			INTERFACE_DEVICE=$eth
-			break
-		fi
-	done
-
-	MulticastAdap=
-	for eth in $IFNAME
-	do
-		ifconfig $eth | grep -q MULTICAST
-		if [ $? -eq 0 ]; then
-			MulticastAdap=$eth
-			break
-		fi
-	done
-	if [ -z $MulticastAdap ]; then
-		tst_brkm TFAIL "Multicast not listed for $IFNAME"
-	fi
-	MulticastAdapJoined=
-	for eth in $IFNAME
-	do
-		netstat -gn | grep $eth | grep -q 224.0.0.1
-		if [ $? -eq 0 ]; then
-			MulticastAdapJoined=1
-			break
-		fi
-	done
-	if [ -z $MulticastAdapJoined ]; then
+	ip maddr show $(tst_iface) | grep -q '224.0.0.1' || \
 		tst_brkm TFAIL "all-host-group for $IFNAME not joined"
-	fi
 
 	# Do the ping tests: Execute ping 224.0.0.1 - Verify that the proper
 	# number of responses are returned.
 	tst_resm TINFO "Ping all-host-groups address(over default route!)"
-	ping -c2 224.0.0.1 > $PING_OUT
-	if [ $? -ne 0 ]; then
+	ping -c2 224.0.0.1 > ping_out.log || \
 		tst_brkm TFAIL "No response from MC hosts to ping 224.0.0.1"
-	fi
 
 	tst_resm TINFO "Ping all-host-groups over specified interface"
-	ping -c2 -I $INTERFACE 224.0.0.1 > $PING_OUT
+	ping -c2 -I $(tst_ipaddr) 224.0.0.1 > ping_out.log
 	if [ $? -ne 0 ]; then
-		tst_resm TINFO "Trying to ping with $INTERFACE_DEVICE"\
+		tst_resm TINFO "Trying to ping with $(tst_iface)"\
 			       "with the -I option instead of IP address"
-		ping -c2 -I $INTERFACE_DEVICE 224.0.0.1 > $PING_OUT
-		if [ $? -ne 0 ]; then
+		ping -c2 -I $(tst_iface) 224.0.0.1 > ping_out.log || \
 			tst_brkm TFAIL "No response from MC hosts to ping -c2 "\
-				       "-I$INTERFACE 224.0.0.1"
-		fi
+				       "-I $(tst_ipaddr) 224.0.0.1"
 	fi
-	grep -q $INTERFACE $PING_OUT
+	grep -q $(tst_ipaddr) ping_out.log
 	if [ $? -ne 0 ]; then
 		tst_brkm TFAIL "Local host did not respond to ping -c2 "\
-			       "-I$INTERFACE 224.0.0.1"
+			       "-I $(tst_iface) 224.0.0.1"
 	fi
 
 	tst_resm TPASS "Test Successful"
@@ -132,6 +80,7 @@ do_test()
 
 do_cleanup()
 {
+	[ "$knob_changed" ] && echo 1 > $sysctl_path
 	tst_rmdir
 }
 
