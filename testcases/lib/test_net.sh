@@ -216,6 +216,8 @@ tst_add_ipaddr()
 	local mask=24
 	[ "$TST_IPV6" ] && mask=64
 
+	local iface=$(tst_iface $type $link_num)
+
 	if [ $type = "lhost" ]; then
 		tst_resm TINFO "set local addr $(tst_ipaddr)/$mask"
 		ip addr add $(tst_ipaddr)/$mask dev $iface || \
@@ -238,8 +240,10 @@ tst_restore_ipaddr()
 
 	tst_init_iface $type $link_num
 
-	local iface=$(tst_iface $type $link_num)
+	local backup_tst_ipv6=$TST_IPV6
 
 	TST_IPV6= tst_add_ipaddr $type $link_num
 	TST_IPV6=6 tst_add_ipaddr $type $link_num
+
+	TST_IPV6=$backup_tst_ipv6
 }
