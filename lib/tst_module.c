@@ -100,6 +100,21 @@ void tst_module_load(void (cleanup_fn)(void),
 
 void tst_module_unload(void (cleanup_fn)(void), const char *mod_name)
 {
+	int i, rc;
+
 	const char *const argv[] = { "rmmod", mod_name, NULL };
-	tst_run_cmd(cleanup_fn, argv, NULL, NULL, 0);
+
+	rc = 1;
+	for (i = 0; i < 50; i++) {
+		rc = tst_run_cmd(NULL, argv, "/dev/null", "/dev/null", 1);
+		if (!rc)
+			break;
+
+		usleep(20000);
+	}
+
+	if (rc) {
+		tst_brkm(TBROK, cleanup_fn,
+			 "could not unload %s module", mod_name);
+	}
 }
