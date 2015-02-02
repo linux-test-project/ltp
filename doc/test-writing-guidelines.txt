@@ -950,7 +950,10 @@ int tst_fs_fill_subdirs(void (*cleanup)(void), const char *dir);
 
 Try to get maximum number of subdirectories in directory.
 
-NOTE: This number depends on the filesystem 'dir' is on.
+NOTE: This number depends on the filesystem 'dir' is on. For current kernel,
+subdir limit is not availiable for all filesystems (availiable for ext2, ext3,
+minix, sysv and more). If the test runs on some other filesystems, like ramfs,
+tmpfs, it will not even try to reach the limit and return 0.
 
 This function uses 'mkdir(2)' to create directories in 'dir' until it gets
 'EMLINK' or creates 65535 directories. If the limit is hit, the maximum number
