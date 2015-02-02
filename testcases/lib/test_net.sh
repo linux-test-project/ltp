@@ -187,22 +187,21 @@ tst_init_iface()
 {
 	local type=${1:-"lhost"}
 	local link_num=${2:-"0"}
-
 	local iface=$(tst_iface $type $link_num)
 	tst_resm TINFO "initialize '$type' '$iface' interface"
 
 	if [ "$type" = "lhost" ]; then
-		ip link set $iface down || tst_brkm TBROK "iface down failed"
-		ip route flush dev $iface || tst_brkm TBROK "route flush failed"
-		ip addr flush dev $iface || tst_brkm TBROK "addr flush failed"
-		ip link set $iface up || tst_brkm TBROK "iface up failed"
-		return
+		ip link set $iface down || return $?
+		ip route flush dev $iface || return $?
+		ip addr flush dev $iface || return $?
+		ip link set $iface up
+		return $?
 	fi
 
-	tst_rhost_run -s -c "ip link set $iface down"
-	tst_rhost_run -s -c "ip route flush dev $iface"
-	tst_rhost_run -s -c "ip addr flush dev $iface"
-	tst_rhost_run -s -c "ip link set $iface up"
+	tst_rhost_run -c "ip link set $iface down" || return $?
+	tst_rhost_run -c "ip route flush dev $iface" || return $?
+	tst_rhost_run -c "ip addr flush dev $iface" || return $?
+	tst_rhost_run -c "ip link set $iface up"
 }
 
 # tst_add_ipaddr [TYPE] [LINK]
@@ -220,13 +219,12 @@ tst_add_ipaddr()
 
 	if [ $type = "lhost" ]; then
 		tst_resm TINFO "set local addr $(tst_ipaddr)/$mask"
-		ip addr add $(tst_ipaddr)/$mask dev $iface || \
-			tst_brkm TBROK "failed to add IP address"
-		return
+		ip addr add $(tst_ipaddr)/$mask dev $iface
+		return $?
 	fi
 
 	tst_resm TINFO "set remote addr $(tst_ipaddr rhost)/$mask"
-	tst_rhost_run -s -c "ip addr add $(tst_ipaddr rhost)/$mask dev $iface"
+	tst_rhost_run -c "ip addr add $(tst_ipaddr rhost)/$mask dev $iface"
 }
 
 # tst_restore_ipaddr [TYPE] [LINK]
@@ -238,12 +236,13 @@ tst_restore_ipaddr()
 	local type=${1:-"lhost"}
 	local link_num=${2:-"0"}
 
-	tst_init_iface $type $link_num
+	tst_init_iface $type $link_num || return $?
 
+	local ret=0
 	local backup_tst_ipv6=$TST_IPV6
-
-	TST_IPV6= tst_add_ipaddr $type $link_num
-	TST_IPV6=6 tst_add_ipaddr $type $link_num
-
+	TST_IPV6= tst_add_ipaddr $type $link_num || ret=$?
+	TST_IPV6=6 tst_add_ipaddr $type $link_num || ret=$?
 	TST_IPV6=$backup_tst_ipv6
+
+	return $ret
 }
