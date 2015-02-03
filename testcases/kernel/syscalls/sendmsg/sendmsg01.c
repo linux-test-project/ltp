@@ -48,7 +48,6 @@
 #include <netinet/in.h>
 
 #include "test.h"
-#include "msg_common.h"
 
 char *TCID = "sendmsg01";
 int testno;
@@ -303,23 +302,6 @@ struct test_case_t tdat[] = {
 	 .setup = setup4,
 	 .cleanup = cleanup4,
 	 .desc = "rights passing"}
-	,
-	{.domain = PF_UNIX,
-	 .type = SOCK_DGRAM,
-	 .proto = 0,
-	 .iov = iov,
-	 .iovcnt = 1,
-	 .buf = buf,
-	 .buflen = sizeof(buf),
-	 .msg = &msgdat,
-	 .flags = ~MSG_CMSG_COMPAT,
-	 .to = (struct sockaddr *)&sun1,
-	 .tolen = sizeof(sun1),
-	 .retval = -1,
-	 .experrno = EOPNOTSUPP,
-	 .setup = setup4,
-	 .cleanup = cleanup4,
-	 .desc = "invalid flags set w/ control"}
 	,
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,

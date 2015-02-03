@@ -56,7 +56,6 @@
 #include <netinet/in.h>
 
 #include "test.h"
-#include "msg_common.h"
 
 char *TCID = "recvmsg01";
 int testno;
