@@ -53,6 +53,7 @@
 
 /* virt types for tst_is_virt() */
 #define VIRT_XEN	1	/* xen dom0/domU */
+#define VIRT_KVM	2	/* only default virtual CPU */
 
 /*
  * Ensure that NUMSIGS is defined.

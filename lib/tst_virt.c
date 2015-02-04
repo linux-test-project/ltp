@@ -24,6 +24,28 @@
 
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
+
+static int is_kvm(void)
+{
+	FILE *cpuinfo;
+	char line[64];
+	int found;
+
+	/* this doesn't work with custom -cpu values, since there's
+	 * no easy, reasonable or reliable way to work around those */
+	cpuinfo = SAFE_FOPEN(NULL, "/proc/cpuinfo", "r");
+	found = 0;
+	while (fgets(line, sizeof(line), cpuinfo) != NULL) {
+		if (strstr(line, "QEMU Virtual CPU")) {
+			found = 1;
+			break;
+		}
+	}
+
+	SAFE_FCLOSE(NULL, cpuinfo);
+	return found;
+}
 
 static int is_xen(void)
 {
@@ -47,6 +69,8 @@ int tst_is_virt(int virt_type)
 	switch (virt_type) {
 	case VIRT_XEN:
 		return is_xen();
+	case VIRT_KVM:
+		return is_kvm();
 	}
 	tst_brkm(TBROK, NULL, "invalid virt_type flag: %d", virt_type);
 }
