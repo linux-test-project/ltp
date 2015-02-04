@@ -107,6 +107,12 @@ ssize_t	safe_read(const char *file, const int lineno,
 	safe_read(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
 	    (buf), (nbyte))
 
+ssize_t safe_pread(const char *file, const int lineno, void (*cleanup_fn)(void),
+	    char len_strict, int fildes, void *buf, size_t nbyte, off_t offset);
+#define SAFE_PREAD(cleanup_fn, len_strict, fildes, buf, nbyte)   \
+	safe_pread(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
+	    (buf), (nbyte), (offset))
+
 int	safe_setegid(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), gid_t egid);
 #define SAFE_SETEGID(cleanup_fn, egid)	\
@@ -160,6 +166,13 @@ ssize_t	safe_write(const char *file, const int lineno,
 #define SAFE_WRITE(cleanup_fn, len_strict, fildes, buf, nbyte)	\
 	safe_write(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
 	    (buf), (nbyte))
+
+ssize_t safe_pwrite(const char *file, const int lineno, void (cleanup_fn)(void),
+	    char len_strict, int fildes, const void *buf, size_t nbyte,
+	    off_t offset);
+#define SAFE_PWRITE(cleanup_fn, len_strict, fildes, buf, nbyte, offset) \
+	safe_pwrite(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
+	    (buf), (nbyte), (offset))
 
 long safe_strtol(const char *file, const int lineno,
 	    void (cleanup_fn)(void), char *str, long min, long max);

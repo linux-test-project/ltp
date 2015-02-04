@@ -252,6 +252,22 @@ ssize_t safe_read(const char *file, const int lineno, void (*cleanup_fn) (void),
 	return rval;
 }
 
+ssize_t safe_pread(const char *file, const int lineno, void (*cleanup_fn)(void),
+		   char len_strict, int fildes, void *buf, size_t nbyte,
+		   off_t offset)
+{
+	ssize_t rval;
+
+	rval = pread(fildes, buf, nbyte, offset);
+	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: read(%d,%p,%zu,%ld) failed, returned %zd",
+			 file, lineno, fildes, buf, nbyte, offset, rval);
+	}
+
+	return rval;
+}
+
 int safe_setegid(const char *file, const int lineno, void (*cleanup_fn) (void),
                  gid_t egid)
 {
@@ -402,6 +418,22 @@ ssize_t safe_write(const char *file, const int lineno, void (cleanup_fn) (void),
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: write(%d,%p,%zu) failed",
 		         file, lineno, fildes, buf, rval);
+	}
+
+	return rval;
+}
+
+ssize_t safe_pwrite(const char *file, const int lineno,
+		    void (cleanup_fn) (void), char len_strict, int fildes,
+		    const void *buf, size_t nbyte, off_t offset)
+{
+	ssize_t rval;
+
+	rval = pwrite(fildes, buf, nbyte, offset);
+	if ((len_strict == 0 && rval == -1) || (size_t)rval != nbyte) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: pwrite(%d,%p,%zu,%ld) failed",
+			 file, lineno, fildes, buf, rval, offset);
 	}
 
 	return rval;
