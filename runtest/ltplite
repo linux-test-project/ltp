@@ -449,6 +449,7 @@ mmap06 mmap06
 mmap07 mmap07
 mmap08 mmap08
 mmap09 mmap09
+mmap16 mmap16
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
