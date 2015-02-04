@@ -31,7 +31,6 @@
 #include <sys/vfs.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "smack_set_socket_labels";
 int TST_TOTAL = 1;

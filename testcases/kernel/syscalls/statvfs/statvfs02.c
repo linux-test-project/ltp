@@ -31,7 +31,6 @@
 #include <sys/mman.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define TEST_SYMLINK	"statvfs_symlink"

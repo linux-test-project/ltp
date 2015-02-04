@@ -28,7 +28,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "compat_16.h"
 
 #define ROOT_USER	0

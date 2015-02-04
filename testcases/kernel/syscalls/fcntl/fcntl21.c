@@ -45,7 +45,6 @@
 #include <sys/wait.h>
 #include <inttypes.h>
 #include "test.h"
-#include "usctest.h"
 
 #define STRINGSIZE	27
 #define STRING		"abcdefghijklmnopqrstuvwxyz\n"

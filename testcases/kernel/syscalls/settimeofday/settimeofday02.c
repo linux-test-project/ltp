@@ -60,7 +60,6 @@
 #include <sys/time.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include <pwd.h>
 
 #define	VAL_SEC		100

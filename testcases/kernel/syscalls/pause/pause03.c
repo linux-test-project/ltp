@@ -68,7 +68,6 @@
 #include <wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 int cflag;			/* flag to indicate child process status */
 pid_t cpid;			/* child process id */

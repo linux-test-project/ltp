@@ -98,7 +98,6 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 void setup();
 void cleanup();

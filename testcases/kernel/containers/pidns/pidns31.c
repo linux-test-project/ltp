@@ -53,7 +53,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <mqueue.h>
-#include "usctest.h"
 #include "test.h"
 #include "linux_syscall_numbers.h"
 #include "libclone.h"

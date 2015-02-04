@@ -33,7 +33,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "lapi/readlinkat.h"
 #include "linux_syscall_numbers.h"

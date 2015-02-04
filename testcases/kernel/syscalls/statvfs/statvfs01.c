@@ -29,7 +29,6 @@
 #include <stdint.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TEST_PATH "/"
 

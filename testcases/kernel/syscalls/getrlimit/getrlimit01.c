@@ -27,7 +27,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include "test.h"
-#include "usctest.h"
 
 static void cleanup(void);
 static void setup(void);

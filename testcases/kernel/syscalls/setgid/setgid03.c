@@ -25,7 +25,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include <compat_16.h>
 
 TCID_DEFINE(setgid03);

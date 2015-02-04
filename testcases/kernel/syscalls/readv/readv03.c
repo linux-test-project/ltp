@@ -55,7 +55,6 @@
 #include <sys/stat.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define	K_1	1024
 #define MODES   S_IRWXU

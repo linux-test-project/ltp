@@ -35,7 +35,6 @@
 #include <sys/uio.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
 #include "tst_fs_type.h"

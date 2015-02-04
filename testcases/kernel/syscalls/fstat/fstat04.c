@@ -74,7 +74,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define FILE_MODE	0644
 #define TESTFILE	"testfile"

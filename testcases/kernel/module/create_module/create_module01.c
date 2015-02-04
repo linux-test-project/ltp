@@ -68,7 +68,6 @@
 #include <asm/atomic.h>
 #include <linux/module.h>
 #include "test.h"
-#include "usctest.h"
 
 #define MODSIZE 10000		/* Arbitrarily selected MODSIZE */
 #define BASEMODNAME "dummy"

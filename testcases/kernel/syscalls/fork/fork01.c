@@ -94,7 +94,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 #define	KIDEXIT	42
 static void setup();

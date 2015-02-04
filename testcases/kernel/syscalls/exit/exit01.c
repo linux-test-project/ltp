@@ -28,7 +28,6 @@
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 static void cleanup(void);
 static void setup(void);

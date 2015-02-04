@@ -73,7 +73,6 @@
 #include <errno.h>
 #include <sched.h>
 #include "test.h"
-#include "usctest.h"
 
 static void setup();
 static void cleanup();

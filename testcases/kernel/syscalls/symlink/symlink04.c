@@ -76,7 +76,6 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "usctest.h"
 
 #define  TESTFILE	"testfile"
 #define  SYMFILE	"slink_file"

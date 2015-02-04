@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include "test.h"
-#include "usctest.h"
 #include "common_timers.h"
 
 #define SECONDS_BEFORE_LEAP 2

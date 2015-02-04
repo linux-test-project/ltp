@@ -41,7 +41,6 @@
 #include <string.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "compat_16.h"
 
 static void setup(void);

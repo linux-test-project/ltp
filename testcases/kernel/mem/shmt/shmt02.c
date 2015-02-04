@@ -43,7 +43,6 @@
 
 /** LTP Port **/
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "shmt02";		/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */

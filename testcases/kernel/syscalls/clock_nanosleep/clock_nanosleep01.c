@@ -58,7 +58,6 @@
 #include "../utils/include_j_h.h"
 
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 char *TCID = "clock_nanosleep01";

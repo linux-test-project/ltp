@@ -87,7 +87,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define MODE_RWX	S_IRWXU | S_IRWXG | S_IRWXO
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH

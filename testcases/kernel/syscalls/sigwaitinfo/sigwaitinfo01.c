@@ -21,7 +21,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 #include "test.h"
-#include "usctest.h"
 #include <errno.h>
 #include <signal.h>
 #include "../utils/include_j_h.h"

@@ -78,7 +78,6 @@
 #include <linux/reboot.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define INVALID_PARAMETER 100
 

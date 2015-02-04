@@ -47,7 +47,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 #define	MAXKIDS	8
 

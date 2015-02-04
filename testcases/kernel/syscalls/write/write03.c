@@ -52,7 +52,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include <sys/mman.h>
 
 char *TCID = "write03";

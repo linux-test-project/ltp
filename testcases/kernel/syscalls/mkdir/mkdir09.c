@@ -52,7 +52,6 @@
 #include <unistd.h>
 #include <setjmp.h>
 #include "test.h"
-#include "usctest.h"
 
 #include <stdlib.h>
 #include <stdlib.h>

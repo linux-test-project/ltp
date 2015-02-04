@@ -30,7 +30,6 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include "test.h"
-#include "usctest.h"
 #include "clone_platform.h"
 
 #define MAX_LINE_LENGTH 256

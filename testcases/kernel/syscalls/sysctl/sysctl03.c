@@ -62,7 +62,6 @@
  *	Test must be run as root.
  */
 #include "test.h"
-#include "usctest.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>

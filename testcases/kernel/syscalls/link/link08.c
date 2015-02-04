@@ -46,7 +46,6 @@
 #include <sys/mount.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \

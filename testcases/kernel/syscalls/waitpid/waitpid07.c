@@ -50,7 +50,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 static void setup_sigint(void);
 static void do_child_1(void);

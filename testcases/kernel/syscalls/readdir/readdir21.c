@@ -39,7 +39,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
 #include "lapi/readdir.h"

@@ -22,7 +22,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define INC 16*1024*1024
 

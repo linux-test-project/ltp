@@ -83,7 +83,6 @@
 #include <inttypes.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define TEMP_FILE	"tmp_file"

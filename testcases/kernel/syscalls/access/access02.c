@@ -39,7 +39,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TEMP_FILE	"temp_file"
 #define SYM_FILE	"sym_file"

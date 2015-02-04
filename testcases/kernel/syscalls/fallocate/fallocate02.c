@@ -38,7 +38,6 @@
 #include <sys/utsname.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "fallocate.h"
 

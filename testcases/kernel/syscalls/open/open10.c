@@ -41,7 +41,6 @@
 #include <errno.h>
 #include <grp.h>
 #include <pwd.h>
-#include "usctest.h"
 #include "test.h"
 
 char *TCID = "open10";

@@ -38,7 +38,6 @@
 #include <sys/time.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include <sys/syscall.h>
 #include <unistd.h>
 

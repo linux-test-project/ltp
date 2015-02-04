@@ -80,7 +80,6 @@
 #include <signal.h>
 #include <linux/unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define EXP_RET_VAL	-1
 

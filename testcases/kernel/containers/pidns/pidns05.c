@@ -47,7 +47,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include "usctest.h"
 #include "test.h"
 #include <libclone.h>
 #include "pidns_helper.h"

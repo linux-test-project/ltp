@@ -116,7 +116,6 @@
 #include <signal.h>
 #include <string.h>
 #include "test.h"
-#include "usctest.h"
 
 /*
  * Set READ_BLOCK_SIZE to the block size of the system.

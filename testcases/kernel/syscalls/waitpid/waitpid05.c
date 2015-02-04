@@ -60,7 +60,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 static void do_child(int);
 static void setup(void);

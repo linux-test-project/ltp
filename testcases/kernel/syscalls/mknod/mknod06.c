@@ -85,7 +85,6 @@
 #include <sys/mman.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define MODE_RWX		S_IFIFO | S_IRWXU | S_IRWXG | S_IRWXO
 

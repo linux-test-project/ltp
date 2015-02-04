@@ -91,7 +91,6 @@
 #include <unistd.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define SET_MODE ( ADJ_OFFSET | ADJ_FREQUENCY | ADJ_MAXERROR | ADJ_ESTERROR | \
 	ADJ_STATUS | ADJ_TIMECONST | ADJ_TICK )

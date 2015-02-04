@@ -53,7 +53,6 @@
 #include <netinet/in.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "recvfrom01";
 int testno;

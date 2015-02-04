@@ -2,7 +2,6 @@
 #define _MEM_H
 #include "config.h"
 #include "test.h"
-#include "usctest.h"
 
 #if defined(__powerpc__) || defined(__powerpc64__)
 #define MAXNODES		256

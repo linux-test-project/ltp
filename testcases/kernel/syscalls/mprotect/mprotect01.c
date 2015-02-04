@@ -43,7 +43,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "mprotect01";
 int TST_TOTAL = 3;

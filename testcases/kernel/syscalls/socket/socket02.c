@@ -63,7 +63,6 @@
 #include <sys/socket.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "lapi/fcntl.h"
 
 #define PORT 57392

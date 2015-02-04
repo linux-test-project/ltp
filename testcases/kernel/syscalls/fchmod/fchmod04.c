@@ -80,7 +80,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define DIR_MODE 	S_IRWXU | S_IRWXG | S_IRWXO
 #define PERMS		01777	/*

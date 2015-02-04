@@ -56,7 +56,6 @@
 #include <sys/mman.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "usctest.h"
 #include "test.h"
 
 #ifndef OFF_T

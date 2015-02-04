@@ -46,7 +46,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fork07";
 int TST_TOTAL = 1;

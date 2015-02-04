@@ -37,7 +37,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define TEST_APP "setpgid03_child"
 

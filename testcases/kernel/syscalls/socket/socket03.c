@@ -54,7 +54,6 @@
 #include <sys/syscall.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #ifndef SOCK_NONBLOCK
 #define SOCK_NONBLOCK O_NONBLOCK

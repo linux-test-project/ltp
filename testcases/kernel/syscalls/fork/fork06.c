@@ -41,7 +41,6 @@
 #include <sys/wait.h>
 #include <stdio.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fork06";
 int TST_TOTAL = 1;

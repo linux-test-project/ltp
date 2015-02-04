@@ -68,7 +68,6 @@
 #include <sched.h>
 #include <sys/resource.h>
 #include "test.h"
-#include "usctest.h"
 
 static void setup();
 static void cleanup();

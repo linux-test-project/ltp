@@ -70,7 +70,6 @@ The -v flag makes it print out the values of each counter.
 #endif
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
 

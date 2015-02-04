@@ -40,7 +40,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "compat_16.h"
 
 #define TESTUSER "root"

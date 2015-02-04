@@ -50,7 +50,6 @@
 #include <linux/fs.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "setxattr03";
 

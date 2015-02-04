@@ -73,7 +73,6 @@
 #include <syscall.h>
 #include <sys/mman.h>
 #include "test.h"
-#include "usctest.h"
 
 static void setup();
 static void cleanup();

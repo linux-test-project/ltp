@@ -55,7 +55,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fork13";
 int TST_TOTAL = 1;

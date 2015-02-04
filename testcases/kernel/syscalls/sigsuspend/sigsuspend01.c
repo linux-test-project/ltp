@@ -78,7 +78,6 @@
 #include <ucontext.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "sigsuspend01";
 int TST_TOTAL = 1;

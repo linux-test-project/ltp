@@ -51,7 +51,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 void cleanup(void);
 void setup(void);

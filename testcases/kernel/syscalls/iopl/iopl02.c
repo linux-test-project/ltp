@@ -78,7 +78,6 @@ char *TCID = "iopl02";
 #include <sys/io.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define INVALID_LEVEL 4		/* Invalid privilege level */
 #define EXP_RET_VAL -1
@@ -211,7 +210,6 @@ void cleanup(void)
 #else /* __i386__ */
 
 #include "test.h"
-#include "usctest.h"
 
 int TST_TOTAL = 0;
 

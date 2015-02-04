@@ -54,7 +54,6 @@
 #include <inttypes.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fcntl17";
 int TST_TOTAL = 1;

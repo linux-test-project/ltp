@@ -81,7 +81,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define LTPUSER		"nobody"
 #define LTPGRP		"users"

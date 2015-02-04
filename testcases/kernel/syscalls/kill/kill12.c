@@ -49,7 +49,6 @@
 //char progname[] = "kill2()";
 /*****  LTP Port        *****/
 #include "test.h"
-#include "usctest.h"
 #define ITER    3
 #define FAILED 0
 #define PASSED 1

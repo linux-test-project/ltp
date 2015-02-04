@@ -61,7 +61,6 @@
 #include <wait.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 void cleanup(void);
 void setup(void);

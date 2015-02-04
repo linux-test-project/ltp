@@ -27,7 +27,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 char *TCID = "timer_gettime01";

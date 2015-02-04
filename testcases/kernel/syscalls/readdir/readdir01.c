@@ -115,12 +115,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
- /* test.h and usctest.h are the two header files that are required by the
-  * quickhit package.  They contain function and macro declarations which you
-  * can use in your test programs
-  */
 #include "test.h"
-#include "usctest.h"
 
  /* The setup and cleanup functions are basic parts of a test case.  These
   * steps are usually put in separate functions for clarity.  The help function

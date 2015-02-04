@@ -75,7 +75,6 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include "test.h"
-#include "usctest.h"
 
 static void setup();
 static void cleanup();

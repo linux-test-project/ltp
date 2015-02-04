@@ -47,7 +47,6 @@
 #include <linux/if_tun.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #ifndef TUNGETFEATURES
 #define TUNGETFEATURES _IOR('T', 207, unsigned int)

@@ -38,7 +38,6 @@
 #include <signal.h>
 #include <sys/syscall.h>
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "fanotify.h"
 #include "safe_macros.h"

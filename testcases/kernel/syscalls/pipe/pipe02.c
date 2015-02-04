@@ -53,7 +53,6 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "pipe02";
 int TST_TOTAL = 1;

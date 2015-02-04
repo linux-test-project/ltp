@@ -65,7 +65,6 @@
 #include <string.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 #include "mem.h"
 
 char *TCID = "ksm05";

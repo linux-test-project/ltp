@@ -52,7 +52,6 @@
 #include <signal.h>
 #include <string.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "pipe08";
 int TST_TOTAL = 1;

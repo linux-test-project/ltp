@@ -28,7 +28,6 @@
 #include <fcntl.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "madvise04";
 

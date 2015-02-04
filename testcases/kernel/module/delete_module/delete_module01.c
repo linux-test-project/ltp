@@ -26,7 +26,6 @@
 
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include "tst_module.h"
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"

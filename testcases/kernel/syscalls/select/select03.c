@@ -117,7 +117,6 @@
 #include <sys/stat.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define FILENAME	"select03"
 

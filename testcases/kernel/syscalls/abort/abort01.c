@@ -36,7 +36,6 @@
 #include <sys/resource.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define NUM 3

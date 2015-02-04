@@ -78,7 +78,6 @@
 #include <wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "vfork02";
 int TST_TOTAL = 1;

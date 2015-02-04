@@ -48,7 +48,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "test.h"
-#include "usctest.h"
 #include "mem.h"
 
 #define MAP_SIZE (1UL<<20)

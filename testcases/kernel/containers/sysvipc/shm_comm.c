@@ -33,7 +33,6 @@
 #include <sys/wait.h>
 #include <stdio.h>
 #include <errno.h>
-#include "usctest.h"
 #include "test.h"
 #include "safe_macros.h"
 #include "libclone.h"

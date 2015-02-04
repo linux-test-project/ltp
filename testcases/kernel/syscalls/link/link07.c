@@ -36,7 +36,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define MODE_TO S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IWGRP|S_IXGRP|S_IXOTH|S_IROTH|S_IWOTH

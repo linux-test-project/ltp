@@ -72,7 +72,6 @@
 #include <pwd.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 void dochild1();
 void dochild2();

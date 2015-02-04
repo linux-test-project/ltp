@@ -62,7 +62,6 @@
 #include <pwd.h>
 #include <stdlib.h>
 #include "test.h"
-#include "usctest.h"
 #include <errno.h>
 #include <sys/wait.h>
 #include "compat_16.h"

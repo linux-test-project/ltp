@@ -44,7 +44,6 @@
 #endif
 
 #include "test.h"
-#include "usctest.h"
 
 #define MAX_BUFF_SIZE 65536
 #define MAX_FUNC_NAME 256

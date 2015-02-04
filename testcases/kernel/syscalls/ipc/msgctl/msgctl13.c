@@ -24,7 +24,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "ipcmsg.h"
 
 char *TCID = "msgctl13";

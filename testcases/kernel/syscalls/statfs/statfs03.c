@@ -54,7 +54,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include "test.h"
-#include "usctest.h"
 #include <pwd.h>
 
 char *TCID = "statfs03";

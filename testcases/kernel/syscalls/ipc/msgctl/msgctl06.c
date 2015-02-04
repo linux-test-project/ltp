@@ -40,7 +40,6 @@
 #include <sys/msg.h>		/* needed for test              */
 #include <stdio.h>		/* needed by testhead.h         */
 #include "test.h"
-#include "usctest.h"
 #include "ipcmsg.h"
 
 void setup();

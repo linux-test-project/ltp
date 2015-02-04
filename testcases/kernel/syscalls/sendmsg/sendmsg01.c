@@ -48,7 +48,6 @@
 #include <netinet/in.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "msg_common.h"
 
 char *TCID = "sendmsg01";

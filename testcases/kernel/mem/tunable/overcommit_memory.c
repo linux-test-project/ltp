@@ -81,7 +81,6 @@
 #include <stdlib.h>
 #include "test.h"
 #include "safe_macros.h"
-#include "usctest.h"
 #include "mem.h"
 
 #define DEFAULT_OVER_RATIO	50L

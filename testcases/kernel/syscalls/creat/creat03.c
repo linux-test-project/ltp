@@ -49,7 +49,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "creat03";
 int TST_TOTAL = 1;

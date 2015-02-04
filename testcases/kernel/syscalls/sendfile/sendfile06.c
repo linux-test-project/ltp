@@ -39,7 +39,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
-#include "usctest.h"
 #include "test.h"
 #include "safe_macros.h"
 

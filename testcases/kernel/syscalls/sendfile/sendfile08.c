@@ -33,8 +33,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "usctest.h"
 #include "test.h"
 
 #define TEST_MSG_IN "world"

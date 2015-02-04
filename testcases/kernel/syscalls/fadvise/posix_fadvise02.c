@@ -40,7 +40,6 @@
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 #include "linux_syscall_numbers.h"
 #ifndef _FILE_OFFSET_BITS

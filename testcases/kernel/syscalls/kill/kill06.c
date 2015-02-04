@@ -57,7 +57,6 @@
  */
 
 #include "test.h"
-#include "usctest.h"
 
 #include <signal.h>
 #include <errno.h>

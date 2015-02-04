@@ -47,7 +47,6 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "tst_fs_type.h"
 

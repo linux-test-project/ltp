@@ -38,7 +38,6 @@
 #include <sys/fcntl.h>
 #include <memory.h>
 #include <errno.h>
-#include "usctest.h"
 #include "test.h"
 
 char *TCID = "pwrite04";

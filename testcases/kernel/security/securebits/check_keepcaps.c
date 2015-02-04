@@ -5,7 +5,6 @@
 #include <sys/capability.h>
 #endif
 #include <sys/prctl.h>
-#include "usctest.h"
 #include "test.h"
 
 #ifndef SECBIT_KEEP_CAPS

@@ -46,7 +46,6 @@ int bd_arg(char *);
 
 /** LTP Port **/
 #include "test.h"
-#include "usctest.h"
 
 void blenter(void);
 void setup(void);

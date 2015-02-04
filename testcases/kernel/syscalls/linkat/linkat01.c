@@ -57,7 +57,6 @@
 #include <inttypes.h>
 #include <limits.h>
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "rmobj.h"
 #include "safe_macros.h"

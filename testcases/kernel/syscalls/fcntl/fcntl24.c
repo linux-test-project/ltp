@@ -93,7 +93,6 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 #include "tst_fs_type.h"
 
 void setup();

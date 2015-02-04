@@ -60,7 +60,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "include_j_h.h"
 #include "numa_helper.h"

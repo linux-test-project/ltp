@@ -23,7 +23,6 @@
 
 #include "config.h"
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "io_getevents01";
 

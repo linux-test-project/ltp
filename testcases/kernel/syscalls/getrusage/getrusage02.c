@@ -71,7 +71,6 @@
 #include <sched.h>
 #include <sys/resource.h>
 #include "test.h"
-#include "usctest.h"
 
 #ifndef RUSAGE_BOTH		/* Removed from user space on RHEL4 */
 #define RUSAGE_BOTH (-2)	/* still works on SuSE      */

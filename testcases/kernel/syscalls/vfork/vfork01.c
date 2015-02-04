@@ -82,7 +82,6 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "vfork01";
 int TST_TOTAL = 1;

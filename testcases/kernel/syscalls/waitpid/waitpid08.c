@@ -51,7 +51,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 static void inthandlr();
 static void do_exit(void);

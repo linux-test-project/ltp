@@ -46,7 +46,6 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include "test.h"
-#include "usctest.h"
 #include <fcntl.h>
 #include "safe_macros.h"
 

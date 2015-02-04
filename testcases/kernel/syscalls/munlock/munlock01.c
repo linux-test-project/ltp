@@ -67,7 +67,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include "test.h"
-#include "usctest.h"
 
 void setup();
 void setup1(int);

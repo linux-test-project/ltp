@@ -27,7 +27,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "lapi/timerfd.h"
 
 char *TCID = "timerfd_create01";

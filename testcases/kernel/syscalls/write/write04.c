@@ -52,7 +52,6 @@
 #include <errno.h>
 #include <string.h>
 #include "test.h"
-#include "usctest.h"
 
 #define PIPE_SIZE_TEST getpagesize()
 

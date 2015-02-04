@@ -38,7 +38,6 @@
 #include <fcntl.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define TEMPFILE	"pwrite_file"

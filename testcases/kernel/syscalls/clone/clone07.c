@@ -28,7 +28,6 @@
 #include <sched.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 #include "clone_platform.h"
 
 #define TRUE 1

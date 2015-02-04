@@ -72,7 +72,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 
 void setup();
 void cleanup();

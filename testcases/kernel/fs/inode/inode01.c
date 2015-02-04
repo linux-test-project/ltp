@@ -63,7 +63,6 @@ CALLS:	mkdir, stat, open
 
 /** LTP Port **/
 #include "test.h"
-#include "usctest.h"
 
 void blexit(void);
 void blenter(void);

@@ -66,7 +66,6 @@ struct robust_list_head {
 #endif
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "set_robust_list01";
 int TST_TOTAL = 2;

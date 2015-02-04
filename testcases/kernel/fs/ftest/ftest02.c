@@ -54,7 +54,6 @@
 #include <signal.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 #include "libftest.h"
 
 #define MAXCHILD	25

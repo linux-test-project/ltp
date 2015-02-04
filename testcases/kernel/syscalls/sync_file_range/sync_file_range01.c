@@ -92,7 +92,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 #ifndef SYNC_FILE_RANGE_WAIT_BEFORE

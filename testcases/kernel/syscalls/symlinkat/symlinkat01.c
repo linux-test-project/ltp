@@ -43,7 +43,6 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 #include "rmobj.h"
 #include "linux_syscall_numbers.h"
 

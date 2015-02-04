@@ -40,7 +40,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include "usctest.h"
 #include "test.h"
 #include "safe_macros.h"
 #include "netns_helper.h"

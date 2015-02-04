@@ -96,7 +96,6 @@
 #include <sys/utsname.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "fallocate.h"
 
 #define BLOCKS_WRITTEN 12

@@ -81,7 +81,6 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define OPTION_INVALID 999
 #define INVALID_ARG 999

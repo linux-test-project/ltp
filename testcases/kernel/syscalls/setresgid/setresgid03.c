@@ -80,7 +80,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 #include "compat_16.h"
 
 #define EXP_RET_VAL	-1

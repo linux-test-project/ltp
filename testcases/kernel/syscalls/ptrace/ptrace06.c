@@ -21,7 +21,6 @@
 #include "ptrace.h"
 
 #include "test.h"
-#include "usctest.h"
 #include "spawn_ptrace_child.h"
 #include "config.h"
 

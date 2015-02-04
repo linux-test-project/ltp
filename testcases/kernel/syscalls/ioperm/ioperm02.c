@@ -77,7 +77,6 @@ char *TCID = "ioperm02";
 #include <sys/io.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define NUM_BYTES 3
 #define TURN_ON 1
@@ -240,7 +239,6 @@ void cleanup(void)
 #else /* __i386__ */
 
 #include "test.h"
-#include "usctest.h"
 
 int TST_TOTAL = 0;
 

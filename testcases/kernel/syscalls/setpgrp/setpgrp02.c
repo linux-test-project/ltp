@@ -47,7 +47,6 @@
 #include <errno.h>
 #include <wait.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "setpgrp02";
 int TST_TOTAL = 1;

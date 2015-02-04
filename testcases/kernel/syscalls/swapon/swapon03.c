@@ -37,7 +37,6 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "tst_fs_type.h"
 #include "swaponoff.h"

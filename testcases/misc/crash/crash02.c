@@ -63,7 +63,6 @@ TODO:
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "crash02";
 int TST_TOTAL = 1;

@@ -50,7 +50,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/sendfile.h>
-#include "usctest.h"
 #include "test.h"
 
 #define FAILED 1

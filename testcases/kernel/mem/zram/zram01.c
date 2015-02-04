@@ -32,7 +32,6 @@
 #include <string.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "zram01";
 int TST_TOTAL = 1;

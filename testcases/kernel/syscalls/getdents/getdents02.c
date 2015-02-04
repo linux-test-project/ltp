@@ -41,7 +41,6 @@
 #include <fcntl.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "getdents.h"
 #include "safe_macros.h"
 

@@ -21,7 +21,6 @@
 
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 #include <errno.h>
 #include <stdlib.h>
 #include "config.h"

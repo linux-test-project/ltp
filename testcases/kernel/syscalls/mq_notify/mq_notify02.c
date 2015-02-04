@@ -25,7 +25,6 @@
 #include <errno.h>
 #include <mqueue.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "mq_notify02";
 static void setup(void);

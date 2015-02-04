@@ -71,7 +71,6 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "alarm07";
 int TST_TOTAL = 1;

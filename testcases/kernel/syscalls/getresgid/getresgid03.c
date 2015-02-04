@@ -77,7 +77,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 extern int getresgid(gid_t *, gid_t *, gid_t *);
 extern int setresgid(gid_t, gid_t, gid_t);

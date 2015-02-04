@@ -76,7 +76,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 extern int getresuid(uid_t *, uid_t *, uid_t *);
 extern int setresuid(uid_t, uid_t, uid_t);

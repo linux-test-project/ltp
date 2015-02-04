@@ -51,7 +51,6 @@
 #include <wait.h>
 #include <sys/types.h>
 #include "test.h"
-#include "usctest.h"
 
 void setup(void);
 void cleanup(void);

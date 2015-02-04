@@ -42,7 +42,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 static void setup(void);

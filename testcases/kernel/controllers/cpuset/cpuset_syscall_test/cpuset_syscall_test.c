@@ -47,7 +47,6 @@
 #endif
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "cpuset_syscall_test";
 int TST_TOTAL = 1;

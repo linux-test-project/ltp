@@ -46,7 +46,6 @@
 #include "numa_helper.h"
 #include "test.h"
 #include "safe_macros.h"
-#include "usctest.h"
 #include "mem.h"
 
 char *TCID = "ksm06";

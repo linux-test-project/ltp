@@ -44,7 +44,6 @@
 #include <sched.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "sched_getscheduler02";
 int TST_TOTAL = 1;

@@ -48,7 +48,6 @@
 #include <net/if.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "in6_02";		/* Test program identifier.    */
 int testno;

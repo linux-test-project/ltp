@@ -47,7 +47,6 @@
 #include <errno.h>
 #include <setjmp.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "pipe05";
 int TST_TOTAL = 1;

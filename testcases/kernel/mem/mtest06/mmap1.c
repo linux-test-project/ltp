@@ -53,7 +53,6 @@
 #include <signal.h>
 #include <string.h>
 #include "test.h"
-#include "usctest.h"
 
 #define OPT_MISSING(prog, opt) do { \
 	fprintf(stderr, "%s: option -%c ", prog, opt); \

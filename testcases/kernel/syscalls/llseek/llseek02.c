@@ -82,7 +82,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TEMP_FILE1	"tmp_file1"
 #define TEMP_FILE2	"tmp_file2"

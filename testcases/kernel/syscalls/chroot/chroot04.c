@@ -48,7 +48,6 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "usctest.h"
 #include <pwd.h>
 
 char *TCID = "chroot04";

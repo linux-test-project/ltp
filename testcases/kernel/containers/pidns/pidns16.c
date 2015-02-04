@@ -46,7 +46,6 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
-#include "usctest.h"
 #include "test.h"
 #include <libclone.h>
 #include "pidns_helper.h"

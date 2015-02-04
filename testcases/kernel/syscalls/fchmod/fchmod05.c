@@ -87,7 +87,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define MODE_RWX	(S_IRWXU | S_IRWXG | S_IRWXO)
 #define PERMS		043777

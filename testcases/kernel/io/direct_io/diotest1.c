@@ -49,7 +49,6 @@
 #include "diotest_routines.h"
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "diotest01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test conditions */

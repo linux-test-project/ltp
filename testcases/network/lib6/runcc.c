@@ -36,7 +36,6 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char fieldref[1024];
 char program[8192];

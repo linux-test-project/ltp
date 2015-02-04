@@ -69,7 +69,6 @@
 #include <stdint.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define INVALID_ADDRESS ((uintptr_t)-1)
 

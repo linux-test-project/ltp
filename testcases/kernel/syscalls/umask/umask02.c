@@ -51,7 +51,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "umask02";
 int TST_TOTAL = 1;

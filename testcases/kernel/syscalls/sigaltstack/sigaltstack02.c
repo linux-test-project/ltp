@@ -78,7 +78,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define INVAL_FLAGS	9999
 

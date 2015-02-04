@@ -76,7 +76,6 @@
 #include <stdint.h>
 
 #include "test.h"
-#include "usctest.h"
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */

@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "dup205";
 int TST_TOTAL = 1;

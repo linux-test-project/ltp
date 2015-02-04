@@ -67,7 +67,6 @@
 #include <sys/ioctl.h>
 #include <sys/termios.h>
 #include "test.h"
-#include "usctest.h"
 
 #define	CNUL	0
 

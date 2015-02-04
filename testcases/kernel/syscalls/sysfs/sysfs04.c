@@ -71,7 +71,6 @@
 #include <errno.h>
 #include  <syscall.h>
 #include "test.h"
-#include "usctest.h"
 
 #define INVALID_OPTION 100
 static void setup();

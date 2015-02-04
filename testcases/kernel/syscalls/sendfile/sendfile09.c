@@ -49,8 +49,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <inttypes.h>
-
-#include "usctest.h"
 #include "test.h"
 #include "safe_macros.h"
 

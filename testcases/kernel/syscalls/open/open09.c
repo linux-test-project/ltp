@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "open09";
 int TST_TOTAL = 2;

@@ -103,7 +103,6 @@
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fork04";
 

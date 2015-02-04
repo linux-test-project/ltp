@@ -38,7 +38,6 @@
 #include <sys/file.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 #define FILE_NAME "flock03"
 

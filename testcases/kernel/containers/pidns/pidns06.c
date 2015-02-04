@@ -41,7 +41,6 @@
 #include <assert.h>
 #include <unistd.h>
 #include <errno.h>
-#include "usctest.h"
 #include "test.h"
 #include <libclone.h>
 #include <signal.h>

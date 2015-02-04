@@ -71,7 +71,6 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */

@@ -77,7 +77,6 @@
 #include <sys/time.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define INCR_TIME	30	/* increment in the system's current time */
 

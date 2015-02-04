@@ -19,7 +19,6 @@
 #include <sched.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 #include "clone_platform.h"
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"

@@ -40,7 +40,6 @@
 #include "include_j_h.h"
 
 #include "test.h"
-#include "usctest.h"
 #include "lapi/posix_clocks.h"
 
 #define NORMAL		1

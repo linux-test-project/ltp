@@ -61,7 +61,6 @@ benchmark.
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "crash01";
 int TST_TOTAL = 1;

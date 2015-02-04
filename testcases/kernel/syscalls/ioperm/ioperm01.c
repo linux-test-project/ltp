@@ -72,7 +72,6 @@ char *TCID = "ioperm01";
 #include <sys/io.h>
 
 #include "test.h"
-#include "usctest.h"
 
 unsigned long io_addr;		/*kernel version dependant io start address */
 #define NUM_BYTES 3		/* number of bytes from start address */
@@ -168,7 +167,6 @@ void cleanup(void)
 #else /* __i386__ */
 
 #include "test.h"
-#include "usctest.h"
 
 int TST_TOTAL = 0;
 

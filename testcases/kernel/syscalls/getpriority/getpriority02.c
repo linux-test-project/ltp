@@ -77,7 +77,6 @@
 #include <sys/resource.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define INVAL_PID	-1
 #define INVAL_FLAG      -1

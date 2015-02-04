@@ -77,7 +77,6 @@
 #include <pwd.h>
 #include <sys/mman.h>
 #include "test.h"
-#include "usctest.h"
 #include <sys/resource.h>
 
 void setup();

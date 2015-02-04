@@ -58,7 +58,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #define CLEANUP cleanup
 #include "linux_syscall_numbers.h"
 

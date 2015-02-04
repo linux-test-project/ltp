@@ -36,7 +36,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "mincore02";
 int TST_TOTAL = 1;

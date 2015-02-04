@@ -32,7 +32,6 @@
 # include <linux/keyctl.h>
 #endif
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 char *TCID = "add_key01";

@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 #include "config.h"
 
 #define TEST_NAME "aio_tio"

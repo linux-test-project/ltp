@@ -57,7 +57,6 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "usctest.h"
 
 void cleanup(void);
 void setup(void);

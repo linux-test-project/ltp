@@ -108,7 +108,6 @@
 #include <time.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #ifdef __linux__

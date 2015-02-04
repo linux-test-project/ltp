@@ -56,7 +56,6 @@
 #include <sched.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define SCHED_INVALID	99
 

@@ -136,7 +136,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "test.h"
-#include "usctest.h"
 
 #define CHAR_SET_FAILED	"0"	/*Set up failing status transferred through the pipe.   */
 #define CHAR_SET_PASSED	"1"	/*Set up passing status transferred through the pipe.   */

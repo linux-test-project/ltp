@@ -48,7 +48,6 @@
 #include "mem.h"
 #include "safe_macros.h"
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "thp03";
 int TST_TOTAL = 1;

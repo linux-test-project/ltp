@@ -39,7 +39,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "sched_setaffinity.h"
 #include "linux_syscall_numbers.h"

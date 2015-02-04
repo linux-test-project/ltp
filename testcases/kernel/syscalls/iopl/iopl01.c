@@ -72,7 +72,6 @@ char *TCID = "iopl01";
 #include <sys/io.h>
 
 #include "test.h"
-#include "usctest.h"
 
 static void setup();
 static void cleanup();
@@ -152,7 +151,6 @@ void cleanup(void)
 #else /* __i386__ */
 
 #include "test.h"
-#include "usctest.h"
 
 int TST_TOTAL = 0;
 

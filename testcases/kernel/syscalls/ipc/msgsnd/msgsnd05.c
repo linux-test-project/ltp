@@ -60,7 +60,6 @@
  */
 
 #include "test.h"
-#include "usctest.h"
 
 #include "ipcmsg.h"
 #include "libtestsuite.h"

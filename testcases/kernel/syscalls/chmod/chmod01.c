@@ -76,7 +76,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define TESTFILE	"testfile"

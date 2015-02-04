@@ -57,7 +57,6 @@
 #include <arpa/inet.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "asapi_06";	/* Test program identifier.    */
 

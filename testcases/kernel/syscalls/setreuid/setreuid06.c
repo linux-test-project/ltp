@@ -33,7 +33,6 @@
 #include <sys/stat.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "compat_16.h"
 
 #define INVAL_USER		 (USHRT_MAX-2)

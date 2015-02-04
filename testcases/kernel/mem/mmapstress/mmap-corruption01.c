@@ -52,7 +52,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 
 /* Extern Global Variables */
 extern int tst_count;

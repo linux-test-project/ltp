@@ -33,7 +33,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "stream02";
 int TST_TOTAL = 1;

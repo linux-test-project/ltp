@@ -44,7 +44,6 @@
 #include <netinet/ip6.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "runcc.h"
 
 char *TCID = "asapi_02";	/* Test program identifier.    */

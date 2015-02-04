@@ -51,7 +51,6 @@
 #include <wait.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 #define	PIPEWRTCNT	100	/* must be an even number */
 

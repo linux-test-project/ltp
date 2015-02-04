@@ -59,7 +59,6 @@
 #include <errno.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 #include "move_pages_support.h"
 
 #define TEST_PAGES 2

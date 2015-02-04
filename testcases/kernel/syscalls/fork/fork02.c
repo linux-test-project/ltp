@@ -45,7 +45,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 static void setup(void);
 static void cleanup(void);

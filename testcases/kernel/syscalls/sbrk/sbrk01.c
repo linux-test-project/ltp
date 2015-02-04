@@ -45,7 +45,6 @@
 #include <sys/types.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "sbrk01";
 

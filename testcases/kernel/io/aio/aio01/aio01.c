@@ -48,7 +48,6 @@
 #define _XOPEN_SOURCE 600
 
 #include "test.h"
-#include "usctest.h"
 #include "config.h"
 
 char *TCID = "aio01";

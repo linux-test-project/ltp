@@ -74,7 +74,6 @@
 #include <linux/utsname.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define MAX_LENGTH __NEW_UTS_LEN
 

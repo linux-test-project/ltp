@@ -68,7 +68,6 @@
 #include <string.h>
 #include <sys/utsname.h>
 #include "test.h"
-#include "usctest.h"
 
 #define MAX_NAME_LEN _UTSNAME_DOMAIN_LENGTH
 

@@ -44,7 +44,6 @@
 #include <err.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "getppid02";
 int TST_TOTAL = 1;

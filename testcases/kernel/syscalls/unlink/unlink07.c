@@ -119,7 +119,6 @@
 #include <unistd.h>
 #include <sys/param.h>		/* for PATH_MAX */
 #include "test.h"
-#include "usctest.h"
 
 void setup();
 void cleanup();

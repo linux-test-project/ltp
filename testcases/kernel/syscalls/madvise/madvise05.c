@@ -28,7 +28,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define ALLOC_SIZE (32 * 1024 * 1024)

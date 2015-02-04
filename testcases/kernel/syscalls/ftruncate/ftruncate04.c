@@ -69,7 +69,6 @@
 #include <sys/mount.h>
 #include <sys/statvfs.h>
 #include "test.h"
-#include "usctest.h"
 #include "libtestsuite.h"
 
 char progname[] = "ftruncate04()";

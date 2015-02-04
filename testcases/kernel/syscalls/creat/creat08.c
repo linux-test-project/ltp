@@ -52,7 +52,6 @@
 #include <grp.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "creat08";
 int TST_TOTAL = 1;

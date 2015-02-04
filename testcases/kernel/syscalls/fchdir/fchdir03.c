@@ -51,7 +51,6 @@
  */
 
 #include "test.h"
-#include "usctest.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

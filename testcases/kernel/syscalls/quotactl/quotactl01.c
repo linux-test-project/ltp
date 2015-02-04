@@ -61,7 +61,6 @@
 #endif
 
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 char *TCID = "quotactl01";

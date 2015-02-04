@@ -48,7 +48,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "test.h"
-#include "usctest.h"
 
 #define PROTECTION		(PROT_READ | PROT_WRITE)
 #define PATH_MEMINFO		"/proc/meminfo"

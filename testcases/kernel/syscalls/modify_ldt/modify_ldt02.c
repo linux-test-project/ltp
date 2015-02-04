@@ -45,7 +45,6 @@
 
 #include "config.h"
 #include "test.h"
-#include "usctest.h"
 
 TCID_DEFINE(modify_ldt02);
 int TST_TOTAL = 1;

@@ -39,7 +39,6 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include "test.h"
-#include "usctest.h"
 
 #define mapsize (1 << 14)
 

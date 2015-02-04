@@ -104,7 +104,6 @@ int TST_TOTAL = 1;
 #ifdef HAVE_SYS_EPOLL_H
 
 #include <sys/epoll.h>
-#include "usctest.h"
 
 /* Local Defines */
 #if !defined(TRUE) && !defined(FALSE)

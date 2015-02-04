@@ -97,7 +97,6 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "test.h"
-#include "usctest.h"
 
 #define FLAG O_RDWR | O_CREAT | O_TRUNC	/* Flags used when opening temp tile */
 #define MODE  0777		/* Mode to open file with */

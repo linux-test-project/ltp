@@ -29,7 +29,6 @@
 #include <string.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "mmap001";
 int TST_TOTAL = 5;

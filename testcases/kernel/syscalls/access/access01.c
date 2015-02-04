@@ -36,7 +36,6 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "usctest.h"
 
 
 char *TCID = "access01";

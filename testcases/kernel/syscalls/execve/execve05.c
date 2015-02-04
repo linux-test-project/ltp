@@ -44,7 +44,6 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 #undef DEBUG			/* change this to #define if needed */
 

@@ -42,7 +42,6 @@
 #include <attr/xattr.h>
 #endif
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "getxattr03";
 

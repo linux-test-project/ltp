@@ -44,7 +44,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define INVAL_FLAG	-1
 #define INVAL_MIN	(-2147483647L-1L)

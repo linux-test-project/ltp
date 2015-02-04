@@ -72,7 +72,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "alarm06";
 int TST_TOTAL = 1;

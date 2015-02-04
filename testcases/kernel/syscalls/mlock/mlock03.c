@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "test.h"
-#include "usctest.h"
 
 #define KB 1024
 

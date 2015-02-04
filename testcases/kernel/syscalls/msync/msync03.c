@@ -44,7 +44,6 @@
 #include <sys/resource.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define INV_SYNC	-1

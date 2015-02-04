@@ -18,7 +18,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "safe_file_ops.h"
 #include "mem.h"

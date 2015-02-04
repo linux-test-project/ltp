@@ -79,7 +79,6 @@
 #include <sys/file.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define PREAD_TEMPDIR	"test"
 #define K1              2048

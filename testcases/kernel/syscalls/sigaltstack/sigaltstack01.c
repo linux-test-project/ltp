@@ -76,7 +76,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "sigaltstack01";
 int TST_TOTAL = 1;

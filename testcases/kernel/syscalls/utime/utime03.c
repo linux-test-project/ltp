@@ -89,7 +89,6 @@
 #include <time.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "tst_fs_type.h"
 
 #define TEMP_FILE	"tmp_file"

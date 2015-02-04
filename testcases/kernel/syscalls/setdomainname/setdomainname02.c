@@ -77,7 +77,6 @@
  *********************************************************************/
 
 #include "test.h"
-#include "usctest.h"
 
 #include <errno.h>
 #include <sys/utsname.h>

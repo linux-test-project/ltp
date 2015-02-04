@@ -44,7 +44,6 @@
 #include <sys/mman.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TEMPFILE	"mmapfile"
 

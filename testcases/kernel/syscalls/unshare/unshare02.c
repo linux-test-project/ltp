@@ -54,7 +54,6 @@
 #include <stdio.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "config.h"
 
 char *TCID = "unshare02";

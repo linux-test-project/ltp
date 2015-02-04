@@ -97,7 +97,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define DEBUG 0
 

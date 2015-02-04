@@ -124,7 +124,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define HOSTIDLEN 40
 /* Bitmasks for the 64 bit operating system checks */

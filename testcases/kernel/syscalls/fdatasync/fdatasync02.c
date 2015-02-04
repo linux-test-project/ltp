@@ -76,7 +76,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define EXP_RET_VAL	-1
 #define SPL_FILE	"/dev/null"

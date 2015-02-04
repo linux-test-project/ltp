@@ -74,7 +74,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define INCR_TIME	10	/* increment in the system's current time */
 

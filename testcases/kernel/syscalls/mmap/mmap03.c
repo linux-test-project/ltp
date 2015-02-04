@@ -51,7 +51,6 @@
 #include <setjmp.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TEMPFILE	"mmapfile"
 

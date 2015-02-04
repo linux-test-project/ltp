@@ -45,7 +45,6 @@
 #include <sys/mount.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define DIR_TEMP		"testdir_1"

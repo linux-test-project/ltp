@@ -34,7 +34,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "compat_16.h"
 
 char *TCID = "setuid04";

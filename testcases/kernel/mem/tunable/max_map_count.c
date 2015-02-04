@@ -60,7 +60,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "test.h"
-#include "usctest.h"
 #include "mem.h"
 
 #define MAP_COUNT_DEFAULT	64

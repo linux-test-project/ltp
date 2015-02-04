@@ -47,7 +47,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <inttypes.h>
-#include "usctest.h"
 #include "test.h"
 #include "tst_fs_type.h"
 

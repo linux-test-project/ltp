@@ -62,7 +62,6 @@
 #include <stdlib.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "waitpid09";
 int TST_TOTAL = 1;

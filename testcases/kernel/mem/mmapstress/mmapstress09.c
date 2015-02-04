@@ -29,7 +29,6 @@
 #include <errno.h>
 /*****  LTP Port        *****/
 #include "test.h"
-#include "usctest.h"
 #define FAILED 0
 #define PASSED 1
 

@@ -44,7 +44,6 @@
 #include <signal.h>
 #include <stdlib.h>
 #include "test.h"
-#include "usctest.h"
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>

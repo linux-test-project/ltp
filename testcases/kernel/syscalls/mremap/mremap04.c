@@ -86,7 +86,6 @@
 #include <sys/shm.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define SHM_MODE	(SHM_R | SHM_W)	/* mode permissions of shared memory */
 

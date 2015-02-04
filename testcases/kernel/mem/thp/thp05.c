@@ -48,7 +48,6 @@
 #include <unistd.h>
 #include "numa_helper.h"
 #include "test.h"
-#include "usctest.h"
 #include "mem.h"
 
 char *TCID = "thp05";

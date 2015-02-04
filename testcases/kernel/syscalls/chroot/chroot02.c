@@ -51,7 +51,6 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include <fcntl.h>
 
 char *TCID = "chroot02";

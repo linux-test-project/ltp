@@ -56,8 +56,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <inttypes.h>
-
-#include "usctest.h"
 #include "test.h"
 
 #ifndef OFF_T

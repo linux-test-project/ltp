@@ -46,7 +46,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 #define MODE_RWX	S_IRWXU | S_IRWXG | S_IRWXO

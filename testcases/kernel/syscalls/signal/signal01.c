@@ -167,7 +167,6 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 void setup(void);
 void cleanup(void);

@@ -93,7 +93,6 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TEST_FILE       "testfile"
 

@@ -42,7 +42,6 @@
 #include <sys/syscall.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "inotify.h"
 

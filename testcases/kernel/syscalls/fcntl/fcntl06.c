@@ -52,7 +52,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "usctest.h"
 
 #define F_RGETLK 10		/* kludge code */
 #define F_RSETLK 11		/* kludge code */

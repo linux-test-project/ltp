@@ -48,7 +48,6 @@
 #include <errno.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 #include "libftest.h"
 
 char *TCID = "ftest04";

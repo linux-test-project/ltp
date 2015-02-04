@@ -51,7 +51,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 #define SCHED_INVALID	99
 #define INVALID_PID	999999

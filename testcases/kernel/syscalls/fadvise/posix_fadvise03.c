@@ -41,7 +41,6 @@
 #include <errno.h>
 #include <limits.h>
 #include "test.h"
-#include "usctest.h"
 
 #include "linux_syscall_numbers.h"
 #ifndef _FILE_OFFSET_BITS

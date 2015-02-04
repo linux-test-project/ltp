@@ -39,7 +39,6 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include "test.h"
-#include "usctest.h"
 #include "ipcmsg.h"
 #include "../lib/libmsgctl.h"
 

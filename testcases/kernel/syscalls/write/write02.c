@@ -52,7 +52,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "write02";
 int TST_TOTAL = 1;

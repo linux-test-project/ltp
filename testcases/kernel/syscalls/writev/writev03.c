@@ -53,7 +53,6 @@
 #include <memory.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 #define	K_1	1024
 

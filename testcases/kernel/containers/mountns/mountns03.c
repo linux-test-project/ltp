@@ -45,7 +45,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include "libclone.h"
 #include "safe_macros.h"
 #include "safe_file_ops.h"

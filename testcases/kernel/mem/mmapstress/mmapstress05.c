@@ -37,7 +37,6 @@
 
 /*****	LTP Port	*****/
 #include "test.h"
-#include "usctest.h"
 /*****	**	**	*****/
 
 #ifndef MMU_NARROWPTEPG

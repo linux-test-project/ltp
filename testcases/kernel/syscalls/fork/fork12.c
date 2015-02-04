@@ -44,7 +44,6 @@
 #include <errno.h>
 #include <string.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fork12";
 int TST_TOTAL = 1;

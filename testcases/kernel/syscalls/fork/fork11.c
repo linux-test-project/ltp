@@ -40,7 +40,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fork11";
 int TST_TOTAL = 1;

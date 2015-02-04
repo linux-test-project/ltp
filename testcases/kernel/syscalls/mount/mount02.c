@@ -43,7 +43,6 @@
 #include <sys/stat.h>
 #include <sys/fcntl.h>
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 static void setup(void);

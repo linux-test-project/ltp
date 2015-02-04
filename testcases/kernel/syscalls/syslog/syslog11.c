@@ -70,7 +70,6 @@
 #include <unistd.h>
 #include <linux/unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 #define UNEXP_RET_VAL	-1
 

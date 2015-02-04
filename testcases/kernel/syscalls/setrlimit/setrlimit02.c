@@ -45,7 +45,6 @@
 #include <errno.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "setrlimit02";
 

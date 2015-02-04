@@ -40,7 +40,6 @@
 #include <sys/mman.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 char *TCID = "statfs02";

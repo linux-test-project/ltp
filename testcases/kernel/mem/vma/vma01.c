@@ -51,7 +51,6 @@
 #include <string.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define MAPS_FILE "/proc/self/maps"
 

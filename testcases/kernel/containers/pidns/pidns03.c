@@ -31,7 +31,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
-#include "usctest.h"
 #include "test.h"
 #include "safe_macros.h"
 #include "libclone.h"

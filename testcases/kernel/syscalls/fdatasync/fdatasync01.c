@@ -70,7 +70,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 static int fd;
 static char filename[30];

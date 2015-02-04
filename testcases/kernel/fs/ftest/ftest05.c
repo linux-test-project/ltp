@@ -62,7 +62,6 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include "test.h"
-#include "usctest.h"
 #include "libftest.h"
 
 char *TCID = "ftest05";

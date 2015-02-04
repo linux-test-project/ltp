@@ -51,7 +51,6 @@
 #include <sys/fcntl.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TESTFILE	"ftruncate03_tst_file"
 

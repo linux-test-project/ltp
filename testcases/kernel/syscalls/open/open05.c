@@ -34,7 +34,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 static char user1name[] = "nobody";
 

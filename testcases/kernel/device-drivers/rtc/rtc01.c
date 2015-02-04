@@ -33,7 +33,6 @@
 #include <time.h>
 
 #include "test.h"
-#include "usctest.h"
 
 int rtc_fd = -1;
 char *TCID = "rtc01";

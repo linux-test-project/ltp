@@ -58,7 +58,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "ltp_signal.h"
 

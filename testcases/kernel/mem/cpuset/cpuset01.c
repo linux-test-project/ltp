@@ -49,7 +49,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "mem.h"
 #include "numa_helper.h"
 

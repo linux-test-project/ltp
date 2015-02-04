@@ -80,7 +80,6 @@
 #include <sys/stat.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define LTPUSER		"nobody"
 #define MODE_RWX	S_IFIFO | S_IRWXU | S_IRWXG | S_IRWXO

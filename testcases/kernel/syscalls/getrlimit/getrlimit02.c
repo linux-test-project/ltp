@@ -72,7 +72,6 @@
 #include <errno.h>
 #include <sys/resource.h>
 #include "test.h"
-#include "usctest.h"
 
 #define RLIMIT_TOO_HIGH 1000
 

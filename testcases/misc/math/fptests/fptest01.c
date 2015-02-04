@@ -60,7 +60,6 @@
 
 /** LTP Port **/
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fptest01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */

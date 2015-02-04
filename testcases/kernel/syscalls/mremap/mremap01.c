@@ -82,7 +82,6 @@
 #include <fcntl.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TEMPFILE	"mremapfile"
 

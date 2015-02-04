@@ -47,7 +47,6 @@
 #include <errno.h>
 #include <unistd.h>		/* for _SC_OPEN_MAX */
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fork09";
 int TST_TOTAL = 1;

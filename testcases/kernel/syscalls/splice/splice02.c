@@ -39,7 +39,6 @@
 #include <fcntl.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "lapi/splice.h"
 

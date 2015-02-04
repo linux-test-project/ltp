@@ -43,7 +43,6 @@
  *	None
  */
 #include "test.h"
-#include "usctest.h"
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>

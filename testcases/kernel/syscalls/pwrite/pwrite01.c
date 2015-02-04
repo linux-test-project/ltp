@@ -78,7 +78,6 @@
 #include <inttypes.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define _XOPEN_SOURCE 500
 #define TEMPFILE	"pwrite_file"

@@ -77,7 +77,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define OFFSET		4
 #define TEMP_FILE	"tmp_file"

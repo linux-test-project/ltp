@@ -56,7 +56,6 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 static void do_child(void);
 static void setup(void);

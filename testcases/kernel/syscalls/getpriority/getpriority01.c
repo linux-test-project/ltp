@@ -74,7 +74,6 @@
 #include <sys/resource.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "getpriority01";
 int TST_TOTAL = 1;

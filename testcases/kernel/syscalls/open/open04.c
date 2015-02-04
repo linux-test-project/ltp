@@ -34,7 +34,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "open04";
 int TST_TOTAL = 1;

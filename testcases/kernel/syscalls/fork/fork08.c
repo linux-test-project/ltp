@@ -43,7 +43,6 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "fork08";
 int TST_TOTAL = 1;

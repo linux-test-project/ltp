@@ -45,7 +45,6 @@
 #include <time.h>
 #include <sys/time.h>
 #include "test.h"
-#include "usctest.h"
 
 #define MAXTIME 72000		/* Maximum # of secs to wait before failing */
 #define NUMLOOPS 100000		/* # of loops */

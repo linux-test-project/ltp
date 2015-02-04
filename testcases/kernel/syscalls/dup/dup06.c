@@ -33,7 +33,6 @@
 #include <sys/stat.h>
 #include <sys/param.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "dup06";
 int TST_TOTAL = 1;

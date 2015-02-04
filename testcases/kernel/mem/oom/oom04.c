@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include "numa_helper.h"
 #include "test.h"
-#include "usctest.h"
 #include "mem.h"
 
 char *TCID = "oom04";

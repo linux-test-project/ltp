@@ -101,7 +101,6 @@
 #include <sys/utsname.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "fallocate.h"
 #include "lapi/fcntl.h"
 

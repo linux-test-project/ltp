@@ -32,7 +32,6 @@
 #include <libgen.h>
 #include <stdio.h>
 #include "test.h"
-#include "usctest.h"
 
 #define TEST_APP "creat07_child"
 

@@ -40,7 +40,6 @@
 #include <limits.h>
 
 #include "test.h"
-#include "usctest.h"
 
 /* in KB */
 #define PROGRESS_LEAP 100

@@ -47,7 +47,6 @@
 #include <errno.h>
 #include <string.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "pipe01";
 int TST_TOTAL = 1;

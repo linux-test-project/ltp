@@ -70,7 +70,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "common_timers.h"
 
 void setup(void);

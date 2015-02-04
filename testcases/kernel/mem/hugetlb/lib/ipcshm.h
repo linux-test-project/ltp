@@ -29,7 +29,6 @@
 #include <errno.h>
 #include <wait.h>
 #include "test.h"
-#include "usctest.h"
 
 #define SHM_RD	0400
 #define SHM_WR	0200

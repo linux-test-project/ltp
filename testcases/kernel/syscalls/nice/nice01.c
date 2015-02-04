@@ -72,7 +72,6 @@
 #include <sys/resource.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define	NICEINC		-12
 #define TEMPFILE	"temp_file"

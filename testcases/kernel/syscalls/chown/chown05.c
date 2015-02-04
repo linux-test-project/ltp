@@ -76,7 +76,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "compat_16.h"
 
 #define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)

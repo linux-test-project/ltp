@@ -70,7 +70,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "common_timers.h"
 
 #define INVALID_ID ((kernel_timer_t)-1)

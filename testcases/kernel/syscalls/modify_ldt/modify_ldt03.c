@@ -20,7 +20,6 @@
 
 #include "config.h"
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "modify_ldt03";
 int TST_TOTAL = 1;

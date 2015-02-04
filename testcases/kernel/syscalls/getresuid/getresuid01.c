@@ -72,7 +72,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 
 extern int getresuid(uid_t *, uid_t *, uid_t *);
 

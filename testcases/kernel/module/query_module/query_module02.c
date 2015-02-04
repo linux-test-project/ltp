@@ -82,7 +82,6 @@
 #include <asm/atomic.h>
 #include <linux/module.h>
 #include "test.h"
-#include "usctest.h"
 
 #ifndef PAGE_SIZE
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)

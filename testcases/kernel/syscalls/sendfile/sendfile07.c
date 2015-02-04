@@ -53,8 +53,6 @@
 #include <fcntl.h>
 #include <sys/sendfile.h>
 #include <sys/socket.h>
-
-#include "usctest.h"
 #include "test.h"
 
 #ifndef OFF_T

@@ -47,7 +47,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define	K_1	1024
 #define	M_1	K_1 * K_1

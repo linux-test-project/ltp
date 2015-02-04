@@ -22,7 +22,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "common_timers.h"
 
 static void setup(void);

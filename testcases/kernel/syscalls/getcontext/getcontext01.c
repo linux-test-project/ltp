@@ -23,7 +23,6 @@
 #include <ucontext.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "getcontext01";
 

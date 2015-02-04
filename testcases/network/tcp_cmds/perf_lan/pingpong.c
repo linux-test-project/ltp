@@ -47,7 +47,6 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include "test.h"
-#include "usctest.h"
 #include "netdefs.h"
 
 #define	MAXPACKET	4096	/* max packet size */

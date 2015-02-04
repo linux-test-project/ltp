@@ -52,7 +52,6 @@
  */
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 #include "ipcmsg.h"
 

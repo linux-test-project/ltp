@@ -69,7 +69,6 @@
 #include <sys/poll.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define BUF_SIZE	512
 

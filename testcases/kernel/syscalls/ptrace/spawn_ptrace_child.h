@@ -24,7 +24,6 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "usctest.h"
 
 static pid_t pid;
 

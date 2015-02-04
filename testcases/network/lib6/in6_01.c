@@ -43,7 +43,6 @@
 #include <arpa/inet.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "in6_01";		/* Test program identifier.    */
 

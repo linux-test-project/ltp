@@ -33,7 +33,6 @@
 #include <sys/utsname.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "safe_macros.h"
 #include "tst_fs_type.h"

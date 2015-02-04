@@ -52,7 +52,6 @@
 #include <stdio.h>
 #include <limits.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "pipe11";
 int TST_TOTAL = 1;

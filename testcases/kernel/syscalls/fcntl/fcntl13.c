@@ -37,7 +37,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 #define F_BADCMD 99999
 

@@ -54,7 +54,6 @@
 #include <string.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "getcwd01";
 char buf[100];

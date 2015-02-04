@@ -38,7 +38,6 @@
 #include <dirent.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 char *TCID = "pipe07";

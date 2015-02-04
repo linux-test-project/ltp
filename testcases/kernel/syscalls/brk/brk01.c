@@ -41,7 +41,6 @@
 #include <sys/resource.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #ifndef BSIZE
 #define BSIZE  BBSIZE

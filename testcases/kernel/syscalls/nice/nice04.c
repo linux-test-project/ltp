@@ -68,7 +68,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "nice04";
 int TST_TOTAL = 1;

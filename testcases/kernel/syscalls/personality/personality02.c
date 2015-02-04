@@ -62,7 +62,6 @@
  */
 
 #include "test.h"
-#include "usctest.h"
 
 #include <errno.h>
 #include <linux/personality.h>

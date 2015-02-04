@@ -91,7 +91,6 @@
 #include "ptrace.h"
 
 #include "test.h"
-#include "usctest.h"
 
 static void setup(void);
 static void cleanup(void);

@@ -43,7 +43,6 @@
 #include <signal.h>
 #include "config.h"
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 union semun {

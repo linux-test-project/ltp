@@ -23,7 +23,6 @@
  */
 
 #include "test.h"
-#include "usctest.h"
 #include "migrate_pages_common.h"
 
 void set_bit(unsigned long *b, unsigned int n, unsigned int v)

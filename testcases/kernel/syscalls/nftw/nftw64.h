@@ -45,8 +45,6 @@
 #include <stdio.h>
 
 #include "test.h"
-#include "usctest.h"
-
 
 #define STRLEN          512
 #define MAX_FD          20

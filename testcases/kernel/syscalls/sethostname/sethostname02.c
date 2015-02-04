@@ -81,7 +81,6 @@
 #include <errno.h>
 #include <sys/utsname.h>
 #include "test.h"
-#include "usctest.h"
 
 #define LARGE_LENGTH MAX_LENGTH + 1
 #define MAX_LENGTH _UTSNAME_LENGTH - 1

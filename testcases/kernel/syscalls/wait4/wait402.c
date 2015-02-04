@@ -23,7 +23,6 @@
   */
 
 #include "test.h"
-#include "usctest.h"
 
 #include <errno.h>
 #define _USE_BSD

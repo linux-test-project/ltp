@@ -32,7 +32,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "lapi/posix_clocks.h"
 #include "safe_macros.h"
 

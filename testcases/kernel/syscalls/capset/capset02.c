@@ -81,7 +81,6 @@
 #include <string.h>
 #include <unistd.h>
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 /**************************************************************************/

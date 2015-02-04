@@ -57,7 +57,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 #include <wait.h>
 #include "ipcsem.h"
 

@@ -53,7 +53,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "mem.h"
 

@@ -43,7 +43,6 @@
 #include <pwd.h>
 #include "config.h"
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
 #include "numa_helper.h"

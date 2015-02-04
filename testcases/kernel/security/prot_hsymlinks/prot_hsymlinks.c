@@ -43,7 +43,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "safe_file_ops.h"
 

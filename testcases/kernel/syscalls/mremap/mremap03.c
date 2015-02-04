@@ -81,7 +81,6 @@
 #undef __USE_GNU
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "mremap03";
 int TST_TOTAL = 1;

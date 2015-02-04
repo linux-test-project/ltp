@@ -27,7 +27,6 @@
 #include <sys/types.h>
 #include "test.h"
 #include "safe_macros.h"
-#include "usctest.h"
 
 #define PROFIL_TIME 5
 

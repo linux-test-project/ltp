@@ -52,7 +52,6 @@
 #include <netinet/in.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "socket01";
 int testno;

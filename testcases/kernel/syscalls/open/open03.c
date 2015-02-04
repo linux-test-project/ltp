@@ -31,7 +31,6 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 
 static void setup(void);
 static void cleanup(void);

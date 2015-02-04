@@ -42,7 +42,6 @@
 #include <wait.h>
 #include <stdio.h>
 #include "test.h"
-#include "usctest.h"
 #include "ipcmsg.h"
 #include <stdlib.h>
 #include <unistd.h>

@@ -56,7 +56,6 @@
 #include <netinet/in.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "bind02";
 int testno;

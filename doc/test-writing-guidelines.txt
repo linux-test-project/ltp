@@ -238,7 +238,6 @@ Let's start with an example, following code is a simple test for a getenv().
  */
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "getenv01";
 int TST_TOTAL = 2;

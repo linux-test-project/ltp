@@ -78,7 +78,6 @@
 #include <linux/unistd.h>
 
 #include "test.h"		/*LTP Specific Include File */
-#include "usctest.h"		/*LTP Specific Include File */
 
 /* Test case defines */
 #define WINDOW_START 0x48000000

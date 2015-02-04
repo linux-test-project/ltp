@@ -95,7 +95,6 @@
 #include "ptrace.h"
 
 #include "test.h"
-#include "usctest.h"
 
 static void do_child(void);
 static void setup(void);

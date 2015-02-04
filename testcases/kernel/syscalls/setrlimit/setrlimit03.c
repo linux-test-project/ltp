@@ -45,7 +45,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include <linux/fs.h>
 
 char *TCID = "setrlimit03";

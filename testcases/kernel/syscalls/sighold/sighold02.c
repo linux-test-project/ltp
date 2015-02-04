@@ -85,7 +85,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 /* Needed for NPTL */
 #define SIGCANCEL 32

@@ -62,7 +62,6 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include "test.h"
-#include "usctest.h"
 #include "config.h"
 
 #define SIZE (5*1024*1024)

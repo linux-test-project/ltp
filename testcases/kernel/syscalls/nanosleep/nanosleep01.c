@@ -72,7 +72,6 @@
 #include <stdint.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "nanosleep01";
 int TST_TOTAL = 1;

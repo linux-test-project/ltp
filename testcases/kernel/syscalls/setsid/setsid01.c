@@ -39,7 +39,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "usctest.h"
 
 #define INVAL_FLAG	-1
 #define USER2		301

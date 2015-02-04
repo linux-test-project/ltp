@@ -32,7 +32,6 @@
 #include <errno.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 #include "numa_helper.h"
 #include "linux_syscall_numbers.h"

@@ -119,7 +119,6 @@
 #include <sys/time.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define FILENAME	"select01"
 

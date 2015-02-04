@@ -30,7 +30,6 @@
 #include <sys/shm.h>
 
 #include "test.h"
-#include "usctest.h"
 
 void cleanup(void);
 void setup(void);

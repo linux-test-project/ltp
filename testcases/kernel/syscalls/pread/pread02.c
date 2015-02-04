@@ -72,7 +72,6 @@
 #include <fcntl.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #define TEMPFILE	"pread_file"
 #define K1              1024

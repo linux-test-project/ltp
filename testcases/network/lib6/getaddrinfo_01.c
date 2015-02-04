@@ -48,7 +48,6 @@
 #include <arpa/inet.h>
 
 #include "test.h"
-#include "usctest.h"
 
 #ifndef AI_V4MAPPED
 #define AI_V4MAPPED    0x0008	/* IPv4 mapped addresses are acceptable.  */

@@ -27,7 +27,6 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "tst_module.h"
 #include "safe_macros.h"
 #include "safe_stdio.h"

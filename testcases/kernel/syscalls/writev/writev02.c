@@ -56,7 +56,6 @@
 #include <memory.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 #include <sys/mman.h>
 
 #define	K_1	8192

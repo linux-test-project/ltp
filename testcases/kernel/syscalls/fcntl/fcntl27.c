@@ -94,7 +94,6 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "usctest.h"
 
 void setup();
 void cleanup();

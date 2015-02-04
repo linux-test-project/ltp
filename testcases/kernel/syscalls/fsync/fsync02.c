@@ -53,7 +53,6 @@
 #include <errno.h>
 #include <sys/resource.h>
 #include "test.h"
-#include "usctest.h"
 #include <time.h>
 
 #define BLOCKSIZE 8192

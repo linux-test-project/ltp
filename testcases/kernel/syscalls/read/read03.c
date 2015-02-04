@@ -49,7 +49,6 @@
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "read03";
 int TST_TOTAL = 1;

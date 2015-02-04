@@ -43,7 +43,6 @@
 #endif
 
 #include "test.h"
-#include "usctest.h"
 #include "linux_syscall_numbers.h"
 #include "safe_macros.h"
 

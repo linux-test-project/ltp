@@ -46,7 +46,6 @@
 #include <signal.h>
 
 #include "test.h"
-#include "usctest.h"
 #include "safe_macros.h"
 
 static int modes[] = { 0, 07, 070, 0700, 0777, 02777, 04777, 06777 };

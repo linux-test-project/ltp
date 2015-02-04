@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <pwd.h>
 #include "test.h"
-#include "usctest.h"
 
 void setup();
 void cleanup();

@@ -40,7 +40,6 @@
 #include <net/if.h>
 
 #include "test.h"
-#include "usctest.h"
 
 char *TCID = "sockioctl01";
 int testno;

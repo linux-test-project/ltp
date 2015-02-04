@@ -73,7 +73,6 @@
 #include <sched.h>
 #include <sys/wait.h>
 #include "test.h"
-#include "usctest.h"
 
 #define NEW_PRIORITY 5
 
