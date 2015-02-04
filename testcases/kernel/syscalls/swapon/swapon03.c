@@ -52,8 +52,6 @@ static int check_and_swapoff(const char *filename);
 char *TCID = "swapon03";
 int TST_TOTAL = 1;
 
-static int exp_enos[] = { EPERM, 0 };
-
 static int swapfiles;
 
 static long fs_type;
@@ -142,8 +140,6 @@ int main(int ac, char **av)
 		if (clean_swap() < 0)
 			tst_brkm(TBROK, cleanup,
 				 "Cleanup failed, quitting the test");
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 	}
 
@@ -334,8 +330,6 @@ static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	tst_require_root(NULL);
 
 	tst_tmpdir();
@@ -354,8 +348,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	clean_swap();
 
 	tst_rmdir();

@@ -77,8 +77,6 @@ void do_child_uclinux(void);
 char *TCID = "msgrcv06";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EIDRM, 0 };	/* 0 terminated list of expected errnos */
-
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
 int sync_pipes[2];
@@ -182,8 +180,6 @@ void do_child(void)
 		exit(-1);
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	switch (TEST_ERRNO) {
 	case EIDRM:
 		tst_resm(TPASS, "expected failure - errno = %d : %s",
@@ -228,9 +224,6 @@ void setup(void)
 
 	tst_sig(FORK, SIG_IGN, cleanup);
 
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/*
@@ -249,11 +242,5 @@ void cleanup(void)
 {
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

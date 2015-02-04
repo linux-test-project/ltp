@@ -103,8 +103,6 @@ void cleanup();
 char *TCID = "fcntl26";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
-
 char fname[255];
 int fd;
 
@@ -135,9 +133,6 @@ int main(int ac, char **av)
 	break;
 	}
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
@@ -153,7 +148,6 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "fcntl(%s, F_SETLEASE, F_WRLCK) Failed, errno=%d : %s",
 				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
@@ -210,11 +204,6 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* close the file we've had open */
 	if (close(fd) == -1) {

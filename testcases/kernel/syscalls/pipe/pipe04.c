@@ -54,8 +54,6 @@
 char *TCID = "pipe04";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EBADF, 0 };
-
 int fildes[2];			/* fds for pipe read and write */
 
 void setup(void);
@@ -221,11 +219,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 }
 
 void c1func(void)

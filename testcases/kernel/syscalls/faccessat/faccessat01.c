@@ -106,7 +106,6 @@ int main(int ac, char **av)
 					 TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
 					 "faccessdat() Failed, errno=%d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -183,6 +182,4 @@ void cleanup(void)
 	unlink(testfile2);
 	unlink(testfile3);
 	rmdir(pathname);
-
-	TEST_CLEANUP;
 }

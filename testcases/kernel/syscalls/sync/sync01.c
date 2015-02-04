@@ -121,8 +121,6 @@ void cleanup();
 char *TCID = "sync01";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -139,9 +137,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
@@ -156,7 +151,6 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "sync() Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
@@ -187,10 +181,5 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

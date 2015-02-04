@@ -145,8 +145,6 @@ void setup(void)
 void cleanup(void)
 {
 	umount_mem(CPATH, CPATH_NEW);
-
-	TEST_CLEANUP;
 }
 
 static void sighandler(int signo LTP_ATTRIBUTE_UNUSED)

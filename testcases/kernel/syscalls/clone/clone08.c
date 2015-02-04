@@ -117,8 +117,6 @@ static void cleanup(void)
 	free(child_stack);
 
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }
 
 static long clone_child(const struct test_case *t, int use_tst)

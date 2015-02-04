@@ -114,8 +114,6 @@ void cleanup(void)
 {
 	set_sys_tune("overcommit_memory", old_overcommit, 0);
 	set_sys_tune("max_map_count", old_max_map_count, 0);
-
-	TEST_CLEANUP;
 }
 
 /* This is a filter to exclude map entries which aren't accounted

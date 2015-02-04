@@ -51,8 +51,6 @@ static int mount_flag;
 
 int TST_TOTAL = 1;
 
-static int exp_enos[] = { EPERM, 0 };
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -92,7 +90,6 @@ static void setup(void)
 	struct passwd *ltpuser;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	TEST_EXP_ENOS(exp_enos);
 
 	tst_require_root(NULL);
 
@@ -128,6 +125,5 @@ static void cleanup(void)
 	if (device)
 		tst_release_device(NULL, device);
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }

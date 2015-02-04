@@ -88,8 +88,6 @@ static struct test_case_t {
 
 TCID_DEFINE(chown04);
 int TST_TOTAL = ARRAY_SIZE(tc);
-static int exp_enos[] = { EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR,
-		          ELOOP, EROFS, 0 };
 
 static char *bad_addr;
 
@@ -109,8 +107,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	UID16_CHECK((user_id = geteuid()), "chown", cleanup)
 	GID16_CHECK((group_id = getegid()), "chown", cleanup)
@@ -191,8 +187,6 @@ static void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (seteuid(0) == -1)
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 

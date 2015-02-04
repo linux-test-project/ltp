@@ -59,8 +59,6 @@ void cleanup();
 char *TCID = "mlock01";
 int TST_TOTAL = 4;
 
-int exp_enos[] = { 0 };
-
 void *addr1;
 
 struct test_case_t {
@@ -90,8 +88,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	/*
 	 * FIXME (garrcoop): this should really test out whether or not the
@@ -149,6 +145,4 @@ void setup1(int len)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }

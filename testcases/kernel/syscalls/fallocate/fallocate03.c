@@ -255,7 +255,6 @@ int main(int ac, char **av)
 					tst_brkm(TCONF, cleanup,
 						 "fallocate system call is not implemented");
 				}
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL | TTERRNO,
 					 "fallocate(%s, %d, %" PRId64 ", %"
 					 PRId64 ") failed", fname,

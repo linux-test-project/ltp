@@ -191,10 +191,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Close the test directory opened during setup() */
 	if (close(fd) == -1) {

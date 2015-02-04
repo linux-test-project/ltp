@@ -246,5 +246,4 @@ static void verify_groups(int ret_ngroups)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

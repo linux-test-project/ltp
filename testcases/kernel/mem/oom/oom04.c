@@ -113,8 +113,6 @@ void cleanup(void)
 {
 	set_sys_tune("overcommit_memory", overcommit, 0);
 	umount_mem(CPATH, CPATH_NEW);
-
-	TEST_CLEANUP;
 }
 
 #else /* no NUMA */

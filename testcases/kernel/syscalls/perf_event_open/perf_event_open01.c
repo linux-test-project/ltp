@@ -199,7 +199,6 @@ static void verify(struct test_case_t *tc)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 #else

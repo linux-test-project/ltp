@@ -253,7 +253,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	cleanup_fanotify_groups();
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

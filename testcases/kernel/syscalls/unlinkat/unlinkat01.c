@@ -107,7 +107,6 @@ int main(int ac, char **av)
 					 "unlinkat() returned the expected  errno %d: %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
 					 "unlinkat() Failed, errno=%d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -196,5 +195,4 @@ void cleanup(void)
 	unlink(testfile3);
 	unlink(testfile);
 	rmdir(pathname);
-	TEST_CLEANUP;
 }

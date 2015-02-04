@@ -58,7 +58,6 @@ static volatile sig_atomic_t sig_count;
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

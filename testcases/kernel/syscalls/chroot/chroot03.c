@@ -58,8 +58,6 @@ static char good_dir[100] = "/tmp/testdir";
 static char bad_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 static char symbolic_dir[] = "sym_dir1";
 
-static int exp_enos[] = { ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, ELOOP, 0 };
-
 struct test_case_t {
 	char *dir;
 	int error;
@@ -111,8 +109,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -180,6 +176,5 @@ static void setup(void)
 static void cleanup(void)
 {
 	close(fd);
-	TEST_CLEANUP;
 	tst_rmdir();
 }

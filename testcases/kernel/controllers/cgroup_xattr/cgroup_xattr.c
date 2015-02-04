@@ -245,7 +245,6 @@ static void cleanup(void)
 	}
 
 	tst_rmdir();
-	TEST_CLEANUP;
 }
 
 int mount_cgroup(void)

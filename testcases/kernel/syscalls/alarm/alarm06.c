@@ -156,5 +156,4 @@ void sigproc(int sig)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

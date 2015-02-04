@@ -191,7 +191,6 @@ static void setup(void)
 	fd = creat(FILE_NAME, 0666);
 	if (fd < 0) {
 		tst_resm(TBROK, "creating a new file failed");
-		TEST_CLEANUP;
 		cleanup();
 	}
 	close(fd);
@@ -199,7 +198,5 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

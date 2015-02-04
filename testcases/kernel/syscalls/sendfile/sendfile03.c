@@ -85,8 +85,6 @@ struct test_case_t {
 		    0, EBADF}
 };
 
-int exp_enos[] = { EBADF, 0 };
-
 int main(int ac, char **av)
 {
 	int i;
@@ -98,8 +96,6 @@ int main(int ac, char **av)
 	}
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	/*
 	 * The following loop checks looping state if -c option given
@@ -119,8 +115,6 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != testcases[i].exp_errno) {
 				tst_resm(TFAIL, "sendfile returned unexpected "
@@ -182,8 +176,6 @@ void cleanup(void)
 	 */
 	close(out_fd);
 	close(in_fd);
-
-	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();

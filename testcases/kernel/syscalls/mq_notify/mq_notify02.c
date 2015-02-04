@@ -41,7 +41,6 @@ static struct test_case_t {
 
 int TST_TOTAL = ARRAY_SIZE(test_cases);
 static void mq_notify_verify(struct test_case_t *);
-static int exp_enos[] = { EINVAL, 0 };
 
 int main(int argc, char **argv)
 {
@@ -54,8 +53,6 @@ int main(int argc, char **argv)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -93,5 +90,4 @@ static void mq_notify_verify(struct test_case_t *test)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

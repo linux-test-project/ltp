@@ -90,7 +90,6 @@ static void setup(void);
 static void cleanup(void);
 
 char *TCID = "prctl02";
-static int exp_enos[] = { EINVAL, EINVAL, 0 };
 
 struct test_cases_t {
 	int option;
@@ -161,7 +160,6 @@ int main(int ac, char **av)
 				} else {
 					tst_resm(TFAIL, "Test Failed");
 				}
-				TEST_ERROR_LOG(WEXITSTATUS(status));
 
 			}
 		}
@@ -180,9 +178,6 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 }
@@ -193,11 +188,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

@@ -84,7 +84,6 @@
 
 char *TCID = "getpriority02";
 int TST_TOTAL = 4;
-int exp_enos[] = { EINVAL, ESRCH, 0 };
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int pro_which;
@@ -120,9 +119,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -146,7 +142,6 @@ int main(int ac, char **av)
 
 			/* check return code from getpriority(2) */
 			if (TEST_RETURN < 0) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
 					tst_resm(TPASS, "getpriority(2) fails, "
 						 "%s, errno:%d",
@@ -188,10 +183,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

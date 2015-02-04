@@ -33,8 +33,6 @@
 
 char *TCID = "pause02";
 int TST_TOTAL = 1;
-
-static int exp_enos[] = {EINTR, 0};
 static pid_t cpid;
 
 static void do_child(void);
@@ -136,8 +134,6 @@ static void do_child(void)
 
 	TEST(pause());
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_RETURN == -1) {
 		if (TEST_ERRNO == EINTR)
 			exit(0);
@@ -156,11 +152,8 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-	
-	TEST_EXP_ENOS(exp_enos);
 }
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

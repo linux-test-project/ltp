@@ -182,7 +182,6 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "%d select(4, &Readfds, 0, 0, &timeout), timeout = %ld usecs, errno=%d",
 				 lc, test_time, errno);
@@ -230,11 +229,6 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	if (Fd >= 0) {
 		if (close(Fd) == -1)

@@ -112,8 +112,6 @@ int main(int ac, char **av)
 				 "bad personality passed");
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		/*
 		 * set our personality back to PER_LINUX
 		 */
@@ -144,9 +142,4 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 }

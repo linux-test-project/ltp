@@ -84,7 +84,6 @@
 
 char *TCID = "sigaltstack02";
 int TST_TOTAL = 2;
-int exp_enos[] = { EINVAL, ENOMEM, 0 };
 
 stack_t sigstk;			/* signal stack storing struct. */
 
@@ -123,9 +122,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -140,7 +136,6 @@ int main(int ac, char **av)
 
 			/* Check return code from sigaltstack() */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO ==
 				    Test_cases[ind].exp_errno) {
 					tst_resm(TPASS, "stgaltstack() "
@@ -195,11 +190,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	free(sigstk.ss_sp);
 

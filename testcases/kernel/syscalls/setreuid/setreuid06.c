@@ -63,11 +63,9 @@ int main(int argc, char **argv)
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "%s did not fail as expected", TCID);
 		} else if (TEST_ERRNO == EPERM) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TPASS, "setreuid set errno to EPERM as "
 				 "expected");
 		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "setreuid FAILED, expected 1 but "
 				 "returned %d", TEST_ERRNO);
 		}
@@ -98,5 +96,4 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

@@ -81,7 +81,6 @@ int main(int ac, char **av)
 		TEST(SETREGID(cleanup, -1, -1));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setregid -  Dont change either real or effective gid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -99,7 +98,6 @@ int main(int ac, char **av)
 		TEST(SETREGID(cleanup, -1, egid));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setregid -  change effective to effective gid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -117,7 +115,6 @@ int main(int ac, char **av)
 		TEST(SETREGID(cleanup, gid, -1));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setregid -  change real to real gid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -135,7 +132,6 @@ int main(int ac, char **av)
 		TEST(SETREGID(cleanup, -1, gid));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setregid -  change effective to real gid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -153,7 +149,6 @@ int main(int ac, char **av)
 		TEST(SETREGID(cleanup, gid, gid));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL | TTERRNO, "setregid failed");
 		} else {
 			tst_resm(TPASS, "setregid return %ld",
@@ -177,7 +172,5 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

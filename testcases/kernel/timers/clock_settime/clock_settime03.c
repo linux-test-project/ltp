@@ -56,8 +56,6 @@ int testcases[] = {
 char *TCID = "clock_settime03";
 int TST_TOTAL = ARRAY_SIZE(testcases);
 
-static int exp_enos[] = { EINVAL, EFAULT, EPERM, 0 };
-
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static struct timespec spec, *temp, saved;
@@ -170,7 +168,6 @@ static void setup(void)
 	if (ltp_syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
 		tst_brkm(TBROK, NULL, "Clock gettime failed");
 
-	TEST_EXP_ENOS(exp_enos);
 	spec.tv_sec = 1;
 	spec.tv_nsec = 0;
 
@@ -179,5 +176,4 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

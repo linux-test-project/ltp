@@ -97,11 +97,6 @@ const int nbytes = 2000;
 
 void cleanup()
 {
-	/*
-	 * remove the tmp directory and exit
-	 */
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

@@ -178,8 +178,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (addr != MAP_FAILED) {
 		SAFE_MUNMAP(NULL, addr, sizeof(buf));
 		SAFE_CLOSE(NULL, fd);

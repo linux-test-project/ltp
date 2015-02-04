@@ -241,6 +241,4 @@ void cleanup(void)
 		free(TC);
 
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }

@@ -241,7 +241,6 @@ void runtest(int mode, int fd, loff_t expected_size)
 			tst_brkm(TCONF, cleanup,
 				 "fallocate system call is not implemented");
 		}
-		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_resm(TFAIL | TTERRNO,
 			 "fallocate(%d, %d, %" PRId64 ", %" PRId64 ") failed",
 			 fd, mode, offset, len);
@@ -273,7 +272,6 @@ void runtest(int mode, int fd, loff_t expected_size)
 	TEST(write(fd, "A", 1));
 	/* check return code */
 	if (TEST_RETURN == -1) {
-		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_resm(TFAIL | TTERRNO,
 			 "write fails in fallocate(%d, %d, %" PRId64 ", %"
 			 PRId64 ") failed", fd, mode, offset, len);

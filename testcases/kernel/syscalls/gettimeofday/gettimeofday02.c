@@ -71,8 +71,6 @@ void breakout(int sig)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }
 
 void help(void)

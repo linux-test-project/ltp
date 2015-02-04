@@ -90,5 +90,4 @@ static void cleanup(void)
 {
 	if (module_loaded == 1)
 		tst_module_unload(NULL, MODULE_NAME_KO);
-	TEST_CLEANUP;
 }

@@ -189,8 +189,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	unlink(TEMPFILE);
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
 

@@ -119,8 +119,6 @@ void cleanup(void)
 	FILE_PRINTF(PATH_KSM "sleep_millisecs",
 			 "%d", sleep_millisecs);
 	FILE_PRINTF(PATH_KSM "run", "%d", run);
-
-	TEST_CLEANUP;
 }
 
 static void usage(void)

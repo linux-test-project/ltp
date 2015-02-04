@@ -101,7 +101,6 @@ struct test_case_t {
 
 char *TCID = "chmod06";
 int TST_TOTAL = ARRAY_SIZE(tc);
-int exp_enos[] = {EPERM, EACCES, EFAULT, ENAMETOOLONG, ENOENT, ENOTDIR, 0};
 
 static char *bad_addr = 0;
 
@@ -119,8 +118,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -224,8 +221,6 @@ void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (chmod(DIR_TEMP, MODE_RWX) == -1)
 		tst_resm(TBROK | TERRNO, "chmod(%s) failed", DIR_TEMP);
 

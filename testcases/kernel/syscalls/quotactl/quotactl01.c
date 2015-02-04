@@ -104,7 +104,6 @@ struct dqblk dq;
 void cleanup(void)
 {
 
-	TEST_CLEANUP;
 	tst_rmdir();
 
 	if (block_dev) {

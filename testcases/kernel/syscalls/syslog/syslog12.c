@@ -96,7 +96,6 @@ struct test_case_t {		/* test case structure */
 
 char *TCID = "syslog12";
 static int testno;
-static int exp_enos[] = { EPERM, EINVAL, 0 };
 
 static char buf;
 static struct passwd *ltpuser;
@@ -160,8 +159,6 @@ int main(int argc, char **argv)
 				    tdat[testno].len));
 
 			alarm(0);
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 			/* syslog returns an int, so we need to turn the long
 			 * TEST_RETURN into an int to test with */
 			ret = TEST_RETURN;
@@ -224,9 +221,6 @@ void setup(void)
 		tst_brkm(TBROK, NULL, "nobody user id doesn't exist");
 	}
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
@@ -240,11 +234,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-
-	TEST_CLEANUP;
 
 }

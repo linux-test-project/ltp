@@ -60,8 +60,6 @@ int TST_TOTAL = 1;
 
 int MAXIDS = 2048;
 
-int exp_enos[] = { ENOSPC, 0 };
-
 int *sem_id_arr = NULL;
 int num_sems = 0;		/* count the semaphores created */
 
@@ -101,8 +99,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		switch (TEST_ERRNO) {
 		case ENOSPC:
 			tst_resm(TPASS, "expected failure - errno "
@@ -125,8 +121,6 @@ void setup(void)
 	int sem_q;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -157,6 +151,4 @@ void cleanup(void)
 
 	free(sem_id_arr);
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }

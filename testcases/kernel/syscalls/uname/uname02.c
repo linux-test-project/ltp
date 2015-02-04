@@ -63,8 +63,6 @@ void setup(void);
 char *TCID = "uname02";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 14, 0 };	/* 0 terminated list of expected errnos */
-
 #if !defined(UCLINUX)
 
 int main(int ac, char **av)
@@ -90,8 +88,6 @@ int main(int ac, char **av)
 		if (TEST_RETURN == 0)
 			tst_resm(TFAIL, "call succeed when failure expected");
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		switch (TEST_ERRNO) {
 		case EFAULT:
 			tst_resm(TPASS | TTERRNO, "uname failed as expected");
@@ -112,15 +108,11 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }
 #else
 int main(void)

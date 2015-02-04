@@ -65,8 +65,6 @@
 char *TCID = "semctl04";
 int TST_TOTAL = 2;
 
-int exp_enos[] = { EPERM, 0 };	/* 0 terminated list of expected errnos */
-
 int sem_id_1 = -1;
 
 uid_t ltp_uid;
@@ -148,8 +146,6 @@ void do_child(void)
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			switch (TEST_ERRNO) {
 			case EPERM:
 				tst_resm(TPASS, "expected failure - errno ="
@@ -174,9 +170,6 @@ void setup(void)
 	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -205,10 +198,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

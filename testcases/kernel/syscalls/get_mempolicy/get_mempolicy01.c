@@ -333,7 +333,6 @@ TEST_END:
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

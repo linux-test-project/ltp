@@ -204,8 +204,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }
 
 void alarm_handler(int sig)

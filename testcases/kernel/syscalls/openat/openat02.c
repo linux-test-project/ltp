@@ -301,7 +301,5 @@ void testfunc_trunc(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

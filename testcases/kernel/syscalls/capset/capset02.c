@@ -105,7 +105,6 @@ static void child_func(void);
 static pid_t child_pid = -1;
 
 char *TCID = "capset02";
-static int exp_enos[] = { EFAULT, EINVAL, EPERM, 0 };
 
 static struct __user_cap_header_struct header;
 static struct __user_cap_data_struct data;
@@ -179,8 +178,6 @@ int main(int ac, char **av)
 void setup(void)
 {
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/*
@@ -198,7 +195,6 @@ void cleanup(void)
 		kill(child_pid, SIGTERM);
 		wait(NULL);
 	}
-	TEST_CLEANUP;
 }
 
 void child_func(void)

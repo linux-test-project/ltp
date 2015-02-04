@@ -81,7 +81,6 @@ static void cleanup();
 char *TCID = "sysfs06";
 static int option[3] = { 2, 4, 2 };	/* valid and invalid option */
 static int fsindex[3] = { 10000, 0, 1 };	/*invalid and valid fsindex */
-static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
 static struct test_case_t {
 	char *err_desc;		/*error description */
@@ -133,7 +132,6 @@ int main(int ac, char **av)
 					 testcase[i].exp_errno,
 					 testcase[i].exp_errval, TEST_ERRNO);
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}		/*End of TEST LOOPS */
 	}
 #else
@@ -153,9 +151,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Setting up expected errnos */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	bad_addr =
@@ -171,10 +166,5 @@ void setup(void)
 */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

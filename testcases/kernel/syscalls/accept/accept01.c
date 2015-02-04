@@ -91,8 +91,6 @@ struct test_case_t {		/* test case structure */
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int exp_enos[] = { EBADF, ENOTSOCK, EINVAL, EOPNOTSUPP, 0 };
-
 int main(int ac, char *av[])
 {
 	int lc;
@@ -111,7 +109,6 @@ int main(int ac, char *av[])
 
 			TEST(accept(s, tdat[testno].sockaddr,
 				    tdat[testno].salen));
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_RETURN > 0)
 				TEST_RETURN = 0;
 			if (TEST_RETURN != tdat[testno].retval ||
@@ -138,8 +135,6 @@ static void setup(void)
 {
 	TEST_PAUSE;
 
-	TEST_EXP_ENOS(exp_enos);
-
 	/* initialize local sockaddr */
 	sin0.sin_family = AF_INET;
 	sin0.sin_port = 0;
@@ -148,7 +143,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static void setup0(void)

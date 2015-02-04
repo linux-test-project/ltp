@@ -150,8 +150,6 @@ static void cleanup(void)
 {
 	/* Restore pid_max value. */
 	FILE_PRINTF(PID_MAX_PATH, "%lu", pid_max);
-
-	TEST_CLEANUP;
 }
 
 /* The distance mod PIDMAX between two pids, where the first pid is

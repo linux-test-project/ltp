@@ -186,7 +186,6 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "%d select(5, &Readfds, &Writefds, 0, &timeout) failed errno=%d\n",
 				 lc, errno);
@@ -249,8 +248,6 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	close(Fd);
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

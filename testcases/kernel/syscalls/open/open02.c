@@ -41,8 +41,6 @@
 
 char *TCID = "open02";
 
-static int exp_enos[] = { ENOENT, EPERM, 0 };
-
 static void cleanup(void);
 static void setup(void);
 
@@ -69,8 +67,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -111,8 +107,6 @@ static void open_verify(const struct test_case_t *test)
 		return;
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO != test->exp_errno) {
 		tst_resm(TFAIL | TTERRNO,
 			 "open() failed unexpectedly; expected: %d - %s",
@@ -126,8 +120,6 @@ static void cleanup(void)
 {
 	if (seteuid(0))
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 }

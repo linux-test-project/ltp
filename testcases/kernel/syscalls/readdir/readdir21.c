@@ -75,7 +75,6 @@ static struct test_case_t {
 };
 
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { ENOENT, ENOTDIR, 0 };
 static void readdir_verify(const struct test_case_t *);
 
 int main(int argc, char **argv)
@@ -102,8 +101,6 @@ int main(int argc, char **argv)
 static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -144,8 +141,6 @@ static void readdir_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (dir_fd > 0)
 		close(dir_fd);
 

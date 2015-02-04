@@ -127,8 +127,6 @@ static void do_master_child(void)
 				exit(TFAIL);
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			if (TEST_ERRNO == EACCES) {
 				printf("open failed with EACCES as expected\n");
 				exit(TPASS);
@@ -194,8 +192,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	close(fd);
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 }

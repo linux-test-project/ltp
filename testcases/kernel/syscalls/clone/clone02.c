@@ -199,8 +199,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (unlink(file_name) == -1)
 		tst_resm(TWARN | TERRNO, "unlink(%s) failed", file_name);
 	tst_rmdir();

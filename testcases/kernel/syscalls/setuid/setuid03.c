@@ -39,8 +39,6 @@ int TST_TOTAL = 1;
 static char nobody_uid[] = "nobody";
 static struct passwd *ltpuser;
 
-static int exp_enos[] = { EPERM, 0 };
-
 static void setup(void);
 static void cleanup(void);
 
@@ -54,8 +52,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
@@ -65,8 +61,6 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO == EPERM) {
 			tst_resm(TPASS, "setuid returned errno EPERM");
@@ -105,5 +99,4 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

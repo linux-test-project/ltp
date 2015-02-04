@@ -50,7 +50,6 @@ static struct test_case_t {
 };
 
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EBADF, EINVAL, 0 };
 
 static void setup(void);
 static void cleanup(void);
@@ -82,8 +81,6 @@ static void setup(void)
 	int fd;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -121,7 +118,5 @@ static void pselect_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

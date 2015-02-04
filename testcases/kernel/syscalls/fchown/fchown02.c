@@ -152,8 +152,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (fd1 > 0 && close(fd1))
 		tst_resm(TWARN | TERRNO, "Failed to close fd1");
 

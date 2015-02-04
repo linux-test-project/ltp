@@ -185,7 +185,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	close(fildes);
-	TEST_CLEANUP;
 	free(dummy);
 	tst_rmdir();
 }

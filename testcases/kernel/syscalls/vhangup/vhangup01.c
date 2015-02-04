@@ -55,9 +55,6 @@ void cleanup(void);
 char *TCID = "vhangup01";
 int TST_TOTAL = 1;
 
-/* 0 terminated list of expected errnos */
-int exp_enos[] = { EPERM, 0 };
-
 int fail;
 char user1name[] = "nobody";
 extern struct passwd *my_getpwnam(char *);
@@ -107,10 +104,8 @@ int main(int argc, char **argv)
 				tst_brkm(TFAIL, cleanup, "vhangup() failed to "
 					 "fail");
 			} else if (TEST_ERRNO == EPERM) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TPASS, "Got EPERM as expected.");
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "expected EPERM got %d",
 					 TEST_ERRNO);
 			}
@@ -127,11 +122,6 @@ int main(int argc, char **argv)
  */
 void setup(void)
 {
-	TEST_EXP_ENOS(exp_enos);
-
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
 	TEST_PAUSE;
 }
 
@@ -142,10 +132,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

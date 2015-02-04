@@ -83,7 +83,6 @@ int TST_TOTAL = 1;
 
 static char ltpthost[] = "ltphost";
 static char hname[MAX_LENGTH];
-static int exp_enos[] = { EPERM, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -119,7 +118,6 @@ int main(int ac, char **av)
 				 "expected error;  errno: %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		}
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 	}
 
@@ -137,9 +135,6 @@ void setup(void)
 	int ret;
 
 	tst_require_root(NULL);
-
-	/* set up expected errnos */
-	TEST_EXP_ENOS(exp_enos);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -172,11 +167,6 @@ void setup(void)
 void cleanup(void)
 {
 	int ret;
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Set effective user id back to root/super user */
 	if (seteuid(0) == -1) {

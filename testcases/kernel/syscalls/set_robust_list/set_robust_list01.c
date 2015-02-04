@@ -71,8 +71,6 @@ struct robust_list_head {
 char *TCID = "set_robust_list01";
 int TST_TOTAL = 2;
 
-int exp_enos[] = { EINVAL, 0 };
-
 void setup(void);
 void cleanup(void);
 
@@ -161,13 +159,9 @@ int main(int argc, char **argv)
 
 void setup(void)
 {
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }

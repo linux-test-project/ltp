@@ -431,8 +431,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	free(buffer);
 
 	if (mount_flag && umount(MNT_POINT) < 0)

@@ -56,8 +56,6 @@ int TST_TOTAL = 1;
 
 #define TEST_TMPDIR	"chroot04_tmpdir"
 
-int exp_enos[] = { EACCES, 0 };
-
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -73,9 +71,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	/* set up expected errnos */
-	TEST_EXP_ENOS(exp_enos);
 
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -139,11 +134,6 @@ void cleanup(void)
 	if (rmdir(TEST_TMPDIR) != 0) {
 		tst_brkm(TFAIL | TERRNO, NULL, "rmdir(%s) failed", TEST_TMPDIR);
 	}
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();

@@ -104,5 +104,4 @@ static void wait_verify(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

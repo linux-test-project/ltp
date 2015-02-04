@@ -88,6 +88,4 @@ void setup(void)
 void cleanup(void)
 {
 	set_sys_tune("overcommit_memory", overcommit, 0);
-
-	TEST_CLEANUP;
 }

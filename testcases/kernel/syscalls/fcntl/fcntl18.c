@@ -199,8 +199,6 @@ void cleanup(void)
 	 */
 	close(fd);
 
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 	unlink("temp.dat");

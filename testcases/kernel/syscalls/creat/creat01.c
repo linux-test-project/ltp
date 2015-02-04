@@ -162,8 +162,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (fd != -1)
 		close(fd);
 

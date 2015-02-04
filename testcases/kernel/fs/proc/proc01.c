@@ -181,7 +181,6 @@ static int found_errno(const char *syscall, const char *obj, int tmperr)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

@@ -123,8 +123,6 @@ void cleanup(void)
 {
 	close(fild);
 
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 }

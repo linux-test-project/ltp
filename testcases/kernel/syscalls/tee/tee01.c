@@ -163,8 +163,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (fd_in > 0 && close(fd_in))
 		tst_resm(TWARN, "Failed to close fd_in");
 

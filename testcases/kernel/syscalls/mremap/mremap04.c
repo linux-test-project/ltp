@@ -96,8 +96,7 @@ char *addr;			/* addr of memory mapped region */
 char *shmaddr;			/* pointer to shared memory segment */
 int shmid;			/* shared memory identifier. */
 int memsize;			/* memory mapped size */
-int newsize;			/* new size of virtual memory blcok */
-int exp_enos[] = { ENOMEM, 0 };
+int newsize;			/* new size of virtual memory block */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -113,9 +112,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -145,8 +141,6 @@ int main(int ac, char **av)
 			}
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO == ENOMEM) {
 			tst_resm(TPASS, "mremap() failed, "
@@ -228,11 +222,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/*
 	 * Detach the shared memory segment attached to

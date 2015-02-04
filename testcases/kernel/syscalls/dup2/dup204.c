@@ -128,8 +128,6 @@ void cleanup(void)
 {
 	int i;
 
-	TEST_CLEANUP;
-
 	for (i = 0; i < (sizeof(fd) / sizeof(fd[0])); i++) {
 		close(fd[i]);
 		close(nfd[i]);

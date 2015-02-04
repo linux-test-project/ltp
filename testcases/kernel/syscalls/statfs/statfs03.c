@@ -61,8 +61,6 @@ char *TCID = "statfs03";
 int TST_TOTAL = 1;
 int fileHandle = 0;
 
-int exp_enos[] = { EACCES, 0 };
-
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -83,9 +81,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set up the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -97,8 +92,6 @@ int main(int ac, char **av)
 
 		} else {
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			if (TEST_ERRNO == EACCES) {
 				tst_resm(TPASS, "expected failure - "
 					 "errno = %d : %s", TEST_ERRNO,
@@ -106,7 +99,7 @@ int main(int ac, char **av)
 			} else {
 				tst_resm(TFAIL, "unexpected error - %d : %s - "
 					 "expected %d", TEST_ERRNO,
-					 strerror(TEST_ERRNO), exp_enos[0]);
+					 strerror(TEST_ERRNO), EACCES);
 			}
 		}
 	}
@@ -169,8 +162,6 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	close(fileHandle);
-
-	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();

@@ -220,7 +220,6 @@ static void cleanup(void)
 		close(ns_uts_fd);
 
 	shmctl(shmid, IPC_RMID, NULL);
-	TEST_CLEANUP;
 }
 #else
 int main(int argc, char *argv[])

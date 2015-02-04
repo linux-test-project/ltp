@@ -54,8 +54,6 @@ static void cleanup(void);
 
 char *TCID = "fstatfs01";
 
-static int exp_enos[] = { 0, 0 };
-
 static int file_fd;
 static int pipe_fd;
 
@@ -79,8 +77,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -120,8 +116,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (file_fd > 0 && close(file_fd))
 		tst_resm(TWARN | TERRNO, "close(file_fd) failed");
 

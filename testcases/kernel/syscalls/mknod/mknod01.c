@@ -81,7 +81,6 @@ int main(int ac, char **av)
 			TEST(mknod(PATH, tcases[i], 0));
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
 					 "mknod(%s, %#o, 0) failed, errno=%d : %s",
 					 PATH, tcases[i], TEST_ERRNO,
@@ -113,6 +112,5 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }

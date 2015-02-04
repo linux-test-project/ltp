@@ -164,5 +164,4 @@ static void cleanup(void)
 		tst_resm(TWARN | TERRNO, "close() failed");
 
 	tst_rmdir();
-	TEST_CLEANUP;
 }

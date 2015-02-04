@@ -63,8 +63,6 @@ static int v_opt = 0;		/* verbose progress indication */
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 	tst_exit();
 }

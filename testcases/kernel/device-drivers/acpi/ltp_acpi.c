@@ -43,8 +43,6 @@ static void cleanup(void)
 {
 	if (module_loaded)
 		tst_module_unload(NULL, module_name);
-
-	TEST_CLEANUP;
 }
 
 static int read_sysfs_file(const char *name, char *buf, int size)

@@ -133,7 +133,6 @@ void cleanup(void)
 
 	umount_mem(CPATH, CPATH_NEW);
 	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
-	TEST_CLEANUP;
 }
 
 void setup(void)

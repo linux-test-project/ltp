@@ -128,7 +128,6 @@ static void setup(char *argv[])
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static void help(void)

@@ -76,8 +76,6 @@ int fail;
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 }

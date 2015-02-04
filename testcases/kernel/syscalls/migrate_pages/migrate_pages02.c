@@ -408,7 +408,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	free(nodes);
-	TEST_CLEANUP;
 }
 
 #else /* __NR_migrate_pages */

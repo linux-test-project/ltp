@@ -120,7 +120,6 @@ int TST_TOTAL = NUMBER_OF_ENVIRON;
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

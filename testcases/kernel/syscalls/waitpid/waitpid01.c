@@ -143,5 +143,4 @@ static void setup(void)
 static void cleanup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	TEST_CLEANUP;
 }

@@ -559,11 +559,6 @@ static char *argv0;		/* Set by main(), passed to self_exec() */
  */
 void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

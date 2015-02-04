@@ -96,5 +96,4 @@ static void setpriority_verify(const int new_prio)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

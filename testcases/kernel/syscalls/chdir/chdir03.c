@@ -69,8 +69,6 @@ void cleanup(void);
 char user1name[] = "nobody";
 char user2name[] = "bin";
 
-int exp_enos[] = { EACCES, 0 };
-
 char good_dir[100];
 
 struct passwd *ltpuser1, *ltpuser2;
@@ -89,8 +87,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -191,8 +187,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 }

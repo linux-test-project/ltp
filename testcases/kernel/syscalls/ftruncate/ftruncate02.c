@@ -284,10 +284,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Close the testfile after writing data into it */
 	if (close(fd) == -1)

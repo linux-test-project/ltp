@@ -90,8 +90,7 @@ int TST_TOTAL = 1;
 
 char *read_buf[NBUFS];		/* buffer to hold data read from file */
 char test_dir[100];
-int fd1;			/* file descriptor of temporary file */
-int exp_enos[] = { EISDIR, 0 };
+int fd1;
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -109,8 +108,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -130,19 +127,17 @@ int main(int ac, char **av)
 				 TEST_RETURN, EISDIR);
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		/*
 		 * Verify whether expected errno is set.
 		 */
-		if (TEST_ERRNO == exp_enos[0]) {
+		if (TEST_ERRNO == EISDIR) {
 			tst_resm(TPASS,
 				 "pread() fails with expected error EISDIR errno:%d",
 				 TEST_ERRNO);
 		} else {
 			tst_resm(TFAIL, "pread() fails, %s, unexpected "
 				 "errno:%d, expected:%d\n", test_desc,
-				 TEST_ERRNO, exp_enos[0]);
+				 TEST_ERRNO, EISDIR);
 		}
 	}
 
@@ -220,13 +215,7 @@ void init_buffers(void)
  */
 void cleanup(void)
 {
-	int count;		/* index for the loop */
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
+	int count;
 
 	/* Free the memory allocated for the read buffer */
 	for (count = 0; count < NBUFS; count++) {

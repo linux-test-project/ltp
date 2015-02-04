@@ -56,7 +56,6 @@ int main(int ac, char **av)
 		TEST(mount(device, mntpoint, fs_type, 0, NULL));
 
 		if (TEST_RETURN != 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_brkm(TBROK, cleanup, "mount(2) Failed errno = %d :"
 				 "%s ", TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
@@ -69,7 +68,6 @@ int main(int ac, char **av)
 			}
 
 			if (TEST_RETURN != 0) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_brkm(TFAIL, NULL, "umount(2) Failed while "
 					 " unmounting %s errno = %d : %s",
 					 mntpoint, TEST_ERRNO,
@@ -111,8 +109,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (device)
 		tst_release_device(NULL, device);
 

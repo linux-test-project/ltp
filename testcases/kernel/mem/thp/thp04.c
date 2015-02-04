@@ -137,6 +137,4 @@ void cleanup(void)
 		FILE_PRINTF(PATH_THP "enabled", "madvise");
 	else
 		FILE_PRINTF(PATH_THP "enabled", "never");
-
-	TEST_CLEANUP;
 }

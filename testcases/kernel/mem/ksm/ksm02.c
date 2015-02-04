@@ -130,7 +130,6 @@ void cleanup(void)
 				 "%d", merge_across_nodes);
 
 	umount_mem(CPATH, CPATH_NEW);
-	TEST_CLEANUP;
 }
 
 void setup(void)

@@ -148,6 +148,5 @@ int main(int argc, char *argv[])
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	close(fd[0]);
 }

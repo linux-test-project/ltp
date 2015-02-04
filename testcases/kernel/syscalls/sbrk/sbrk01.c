@@ -112,5 +112,4 @@ static void sbrk_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

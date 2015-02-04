@@ -60,7 +60,6 @@ static struct test_case_t {
 
 char *TCID = "dup3_02";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = {EINVAL, 0};
 
 int main(int ac, char **av)
 {
@@ -73,8 +72,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -118,8 +115,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (old_fd > 0)
 		SAFE_CLOSE(NULL, old_fd);
 

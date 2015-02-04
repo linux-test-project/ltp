@@ -45,15 +45,6 @@
 
 char *TCID = "statfs02";
 
-static int exp_enos[] = {
-	ENOTDIR, ENOENT, ENAMETOOLONG,
-#if !defined(UCLINUX)
-	EFAULT,
-#endif
-	ELOOP,
-	0
-};
-
 static int fd;
 
 #define TEST_FILE		"statfs_file"
@@ -96,8 +87,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 		for (i = 0; i < TST_TOTAL; i++)
@@ -138,8 +127,6 @@ static void statfs_verify(const struct test_case_t *test)
 		return;
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO == test->exp_error) {
 		tst_resm(TPASS | TTERRNO, "expected failure");
 	} else {
@@ -152,8 +139,6 @@ static void cleanup(void)
 {
 	if (fd > 0)
 		close(fd);
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 }

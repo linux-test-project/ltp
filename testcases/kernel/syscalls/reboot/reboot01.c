@@ -108,7 +108,6 @@ int main(int ac, char **av)
 			TEST(reboot(flag[i]));
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "reboot(2) Failed for "
 					 "option %s", option_message[i]);
 			} else {
@@ -142,10 +141,5 @@ void setup(void)
 
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

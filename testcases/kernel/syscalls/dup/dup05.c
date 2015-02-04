@@ -124,8 +124,6 @@ void cleanup();
 char *TCID = "dup05";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
-
 char Fname[255];
 int fd;
 
@@ -138,8 +136,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -183,8 +179,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (fd != -1)
 		if (close(fd) == -1)
 			tst_resm(TWARN | TERRNO, "close failed");

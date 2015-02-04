@@ -103,7 +103,6 @@ extern struct passwd *my_getpwnam(char *);
 
 char *TCID = "fstat05";
 int TST_TOTAL = 1;
-int exp_enos[] = { EFAULT, 0 };
 
 int fildes;			/* testfile descriptor */
 
@@ -148,9 +147,6 @@ int main(int ac, char **av)
 	 */
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -164,7 +160,6 @@ int main(int ac, char **av)
 
 		/* Check return code from fstat(2) */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EFAULT)
 				tst_resm(TPASS,
 					 "fstat failed with EFAULT as expected");
@@ -240,11 +235,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	if (close(fildes) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed",

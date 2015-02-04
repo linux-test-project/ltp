@@ -323,13 +323,7 @@ void check_file_contents(void)
  */
 void cleanup(void)
 {
-	int count;		/* index for the loop */
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
+	int count;
 
 	/* Free the memory allocated for the write buffer */
 	for (count = 0; count < NBUFS; count++) {

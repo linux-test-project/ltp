@@ -117,8 +117,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	SAFE_CLOSE(NULL, fd);
 
 	tst_rmdir();

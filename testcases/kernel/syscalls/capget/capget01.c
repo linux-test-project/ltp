@@ -127,5 +127,4 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

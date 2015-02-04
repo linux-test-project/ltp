@@ -69,14 +69,8 @@ extern int optind, opterr;
 char *goodopts = "c:t:d:";
 int errflg;
 
-/*
- *  * These globals must be defined in the test.
- *   */
-
 char *TCID = "mkdir09";
 int TST_TOTAL = 1;
-
-int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
 
 int child_groups, test_time, nfiles;
 char testdir[MAXPATHLEN];
@@ -577,11 +571,6 @@ void setup(void)
  *    ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 *      * print timing stats if that option was specified.
-	 *           * print errno log if that option was specified.
-	 *                */
-	TEST_CLEANUP;
 
 	/*
 	 *      * Remove the temporary directory.

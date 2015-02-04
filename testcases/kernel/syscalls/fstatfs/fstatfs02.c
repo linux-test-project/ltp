@@ -34,8 +34,6 @@ static void cleanup(void);
 
 char *TCID = "fstatfs02";
 
-static int exp_enos[] = { EBADF, EFAULT, 0 };
-
 static struct statfs buf;
 
 static struct test_case_t {
@@ -68,8 +66,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -82,8 +78,6 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
@@ -115,8 +109,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 #ifndef UCLINUX
 	if (TC[1].fd > 0 && close(TC[1].fd))
 		tst_resm(TWARN | TERRNO, "Failed to close fd");

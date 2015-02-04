@@ -342,5 +342,4 @@ void setup(void)
 static void cleanup(void)
 {
 	tst_rmdir();
-	TEST_CLEANUP;
 }

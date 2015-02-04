@@ -158,7 +158,6 @@ int main(int ac, char **av)
 					flag = -1;
 				}
 				if (test_ret == -1) {
-					TEST_ERROR_LOG(TEST_ERRNO);
 				}
 
 				gid_verify(test_data[i].exp_real_usr,
@@ -208,7 +207,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static void gid_verify(struct group *rg, struct group *eg, char *when)

@@ -225,7 +225,5 @@ static void test_largefile(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

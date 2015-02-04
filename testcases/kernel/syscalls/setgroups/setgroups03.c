@@ -83,9 +83,7 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 TCID_DEFINE(setgroups03);
-int TST_TOTAL = 2;		/* Total number of test conditions */
-
-int exp_enos[] = { EINVAL, EPERM, 0 };
+int TST_TOTAL = 2;
 
 GID_T *groups_list;		/* Array to hold gids for getgroups() */
 
@@ -125,9 +123,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -153,8 +148,6 @@ int main(int ac, char **av)
 					 TEST_RETURN, Test_cases[i].exp_errno);
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == Test_cases[i].exp_errno) {
 				tst_resm(TPASS,
@@ -228,9 +221,5 @@ int setup1(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

@@ -68,9 +68,6 @@ char *TCID = "waitpid09";
 int TST_TOTAL = 1;
 volatile int intintr;
 
-/* 0 terminated list of expected errnos */
-static int exp_enos[] = { 10, 0 };
-
 static void setup(void);
 static void cleanup(void);
 static void inthandlr();
@@ -220,7 +217,6 @@ int main(int argc, char **argv)
 				tst_resm(TFAIL, "Expected -1 got %d", ret);
 				fail = 1;
 			}
-			TEST_ERROR_LOG(errno);
 			if (errno != ECHILD) {
 				tst_resm(TFAIL, "Expected ECHILD got %d",
 					 errno);
@@ -233,7 +229,6 @@ int main(int argc, char **argv)
 					 ret);
 				fail = 1;
 			}
-			TEST_ERROR_LOG(errno);
 			if (errno != ECHILD) {
 				tst_resm(TFAIL, "WNOHANG: Expected ECHILD got "
 					 "%d", errno);
@@ -273,13 +268,11 @@ static void setup_sigint(void)
 
 static void setup(void)
 {
-	TEST_EXP_ENOS(exp_enos);
 	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static void inthandlr(void)

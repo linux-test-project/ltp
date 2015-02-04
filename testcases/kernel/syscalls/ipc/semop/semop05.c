@@ -69,8 +69,6 @@
 char *TCID = "semop05";
 int TST_TOTAL = 4;
 
-int exp_enos[] = { EINTR, EIDRM, 0 };	/* 0 terminated list of expected errnos */
-
 int sem_id_1 = -1;
 
 int sync_pipes[2];
@@ -243,8 +241,6 @@ void do_child(int i)
 		exit(-1);
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO == TC[i].error) {
 		tst_resm(TPASS, "expected failure - errno = %d"
 			 " : %s", TEST_ERRNO, strerror(TEST_ERRNO));
@@ -292,9 +288,6 @@ void setup(void)
 
 	tst_sig(FORK, sighandler, cleanup);
 
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/*
@@ -325,11 +318,5 @@ void cleanup(void)
 	rm_sema(sem_id_1);
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

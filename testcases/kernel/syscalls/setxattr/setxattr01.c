@@ -223,7 +223,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 #else /* HAVE_ATTR_XATTR_H */

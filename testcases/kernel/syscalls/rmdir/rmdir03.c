@@ -92,8 +92,6 @@ char tstdir2[255];
 char tstdir3[255];
 char tstdir4[255];
 
-int exp_enos[] = { EPERM, EACCES, 0 };	/* List must end with 0 */
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -117,9 +115,6 @@ int main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	/*
 	 * check looping state if -i option given
@@ -256,7 +251,6 @@ void dochild1(void)
 	TEST(rmdir(tstdir2));
 
 	if (TEST_ERRNO) {
-		TEST_ERROR_LOG(TEST_ERRNO);
 	}
 
 	if (TEST_RETURN != -1) {
@@ -296,7 +290,6 @@ void dochild2(void)
 	TEST(rmdir(tstdir4));
 
 	if (TEST_ERRNO) {
-		TEST_ERROR_LOG(TEST_ERRNO);
 	}
 
 	if (TEST_RETURN != -1) {
@@ -344,11 +337,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/*
 	 * Remove the temporary directory.

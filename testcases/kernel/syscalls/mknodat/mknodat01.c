@@ -162,6 +162,4 @@ static void cleanup(void)
 		tst_resm(TWARN | TERRNO, "Failed to close(fd)");
 
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }

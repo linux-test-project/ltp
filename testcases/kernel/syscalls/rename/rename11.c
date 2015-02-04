@@ -58,8 +58,6 @@ static const char *device;
 static const char *fs_type;
 static int mount_flag;
 
-static int exp_enos[] = { ELOOP, EROFS, EMLINK, 0 };
-
 static void cleanup(void);
 static void setup(void);
 static void test_eloop(void);
@@ -101,8 +99,6 @@ static void setup(void)
 	tst_require_root(NULL);
 
 	tst_tmpdir();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -193,8 +189,6 @@ static void test_emlink(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (mount_flag && tst_umount(MNTPOINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 

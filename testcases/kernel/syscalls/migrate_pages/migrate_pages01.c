@@ -255,7 +255,6 @@ static void cleanup(void)
 {
 	free(sane_old_nodes);
 	free(sane_new_nodes);
-	TEST_CLEANUP;
 }
 
 #else /* __NR_migrate_pages */

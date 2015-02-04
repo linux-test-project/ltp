@@ -59,8 +59,6 @@
 char *TCID = "sched_setscheduler02";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EPERM, 0 };
-
 extern struct passwd *my_getpwnam(char *);
 
 void setup(void);
@@ -84,8 +82,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset tst_count in case we are looping */
@@ -107,7 +103,6 @@ int main(int ac, char **av)
 			TEST(sched_setscheduler(pid, SCHED_FIFO, &param));
 
 			if (TEST_ERRNO) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 			}
 
 			if (TEST_RETURN != -1) {
@@ -156,10 +151,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

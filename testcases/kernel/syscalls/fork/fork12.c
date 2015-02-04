@@ -125,7 +125,6 @@ static void cleanup(void)
 	/* collect our kids */
 	kill(0, SIGQUIT);
 	while (wait(&waitstatus) > 0) ;
-	TEST_CLEANUP;
 }
 
 static void fork12_sigs(int signum)

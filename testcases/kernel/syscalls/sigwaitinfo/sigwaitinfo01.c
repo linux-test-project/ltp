@@ -87,8 +87,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-
-	TEST_CLEANUP;
 }
 
 typedef int (*swi_func) (const sigset_t * set, siginfo_t * info,

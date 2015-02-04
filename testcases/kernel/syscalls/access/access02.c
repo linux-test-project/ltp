@@ -319,9 +319,6 @@ static int access_verify(int i)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
-	/* Close the testfile(s) created in the setup()s */
 	if (close(fd1) == -1)
 		tst_brkm(TFAIL | TERRNO, NULL, "close(%s) failed", TEST_FILE1);
 	if (close(fd2) == -1)

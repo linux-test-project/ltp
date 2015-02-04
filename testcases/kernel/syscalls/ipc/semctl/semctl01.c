@@ -606,6 +606,4 @@ void cleanup(void)
 	rm_sema(sem_id_1);
 
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }

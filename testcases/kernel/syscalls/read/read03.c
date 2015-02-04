@@ -58,8 +58,6 @@ char fifo[100] = "fifo";
 int rfd, wfd;
 struct stat buf;
 
-int exp_enos[] = { EAGAIN, 0 };
-
 void alarm_handler();
 void setup();
 void cleanup();
@@ -77,8 +75,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	/*
 	 * The following loop checks looping state if -i option given
 	 */
@@ -93,8 +89,6 @@ int main(int ac, char **av)
 				 "is written to a pipe");
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO != EAGAIN) {
 			tst_resm(TFAIL, "read set bad errno, expected "
@@ -145,11 +139,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	close(rfd);
 	close(wfd);

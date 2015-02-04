@@ -64,8 +64,6 @@ void remove_files(int);
 void setup(void);
 void cleanup(void);
 
-int exp_enos[] = { EMFILE, 0 };
-
 int fd, ifile, mypid, first;
 int *buf;
 char fname[40];
@@ -81,8 +79,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset tst_count in case we are looping */
@@ -94,8 +90,6 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO == EMFILE) {
 			tst_resm(TPASS, "call failed with expected error - "
@@ -188,8 +182,6 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	close(first);
-
-	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();

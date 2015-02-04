@@ -98,12 +98,6 @@ static struct test_case {
 
 int TST_TOTAL = ARRAY_SIZE(tc);
 
-static int exp_enos[] = {
-	ENODEV, ENOTBLK, EBUSY, EBUSY, EINVAL,
-	EINVAL, EINVAL, EFAULT, EFAULT, ENAMETOOLONG,
-	ENOENT, ENOENT, ENOTDIR, 0
-};
-
 static void verify_mount(struct test_case *tc)
 {
 	if (tc->setup)
@@ -205,15 +199,11 @@ static void setup(void)
 		         "failed to mknod(char_dev, S_IFCHR | FILE_MODE, 0)");
 	}
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (device)
 		tst_release_device(NULL, device);
 

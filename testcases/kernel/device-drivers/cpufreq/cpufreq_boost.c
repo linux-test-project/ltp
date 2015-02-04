@@ -67,8 +67,6 @@ static void cleanup(void)
 
 	if (governor[0] != '\0')
 		FILE_PRINTF(governor, "%s", governor_name);
-
-	TEST_CLEANUP;
 }
 
 static void setup(void)

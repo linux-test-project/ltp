@@ -35,7 +35,6 @@ int TST_TOTAL = 3;
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

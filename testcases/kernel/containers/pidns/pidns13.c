@@ -63,8 +63,6 @@ int pipe_fd[2];
  */
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants */
-	TEST_CLEANUP;
 
 }
 

@@ -164,6 +164,4 @@ void *poster(void *foo)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }

@@ -107,8 +107,6 @@ static void cleanup(void)
 	}
 	remove_pipe(father_to_child);
 	remove_pipe(child_to_father);
-
-	TEST_CLEANUP;
 }
 
 static void cleanup_child(void)

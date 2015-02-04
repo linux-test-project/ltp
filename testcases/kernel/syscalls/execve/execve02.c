@@ -73,8 +73,6 @@ void setup(char *);
 void cleanup(void);
 void help(void);
 
-int exp_enos[] = { EACCES, 0 };
-
 int Fflag = 0;
 char *test_app;
 
@@ -103,8 +101,6 @@ int main(int ac, char **av)
 			 "the -F option.");
 
 	setup(av[0]);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -201,7 +197,5 @@ void setup(char *argv0)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

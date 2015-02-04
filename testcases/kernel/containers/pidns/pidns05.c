@@ -63,7 +63,6 @@ int fd[2];
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 int max_pid(void)

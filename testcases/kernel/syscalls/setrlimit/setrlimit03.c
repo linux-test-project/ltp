@@ -59,8 +59,6 @@ int TST_TOTAL = 1;
 void setup();
 void cleanup();
 
-int exp_enos[] = { EPERM, 0 };
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -72,9 +70,6 @@ int main(int ac, char **av)
 	}
 
 	setup();
-
-	/* set up the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -91,8 +86,6 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO != EPERM) {
 			tst_resm(TFAIL, "Expected EPERM, got %d", TEST_ERRNO);
@@ -123,10 +116,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

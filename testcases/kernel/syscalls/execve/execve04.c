@@ -74,8 +74,6 @@ void help(void);
 void do_child_1(void);
 void do_child_2(void);
 
-int exp_enos[] = { ETXTBSY, 0 };
-
 int start_sync_pipes[2];
 int end_sync_pipes[2];
 
@@ -113,8 +111,6 @@ int main(int ac, char **av)
 			 "You must specify an executable file with the -F option.");
 
 	setup(*av);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -162,8 +158,6 @@ int main(int ac, char **av)
 			sync_pipe_close(end_sync_pipes, PIPE_NAME_END);
 
 			TEST(execve(test_app, argv, env));
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != ETXTBSY) {
 				retval = 1;
@@ -228,8 +222,6 @@ void setup(char *argv0)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 }

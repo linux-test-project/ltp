@@ -492,8 +492,6 @@ static void setup(int argc, char *argv[])
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	SAFE_FREE(writebuf);
 	SAFE_FREE(readbuf);
 

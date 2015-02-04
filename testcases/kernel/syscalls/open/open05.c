@@ -46,8 +46,6 @@ static char fname[20];
 static struct passwd *nobody;
 static int fd;
 
-static int exp_enos[] = { EACCES, 0 };
-
 static void cleanup(void);
 static void setup(void);
 
@@ -63,8 +61,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset tst_count in case we are looping */
@@ -86,8 +82,6 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "open succeeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != EACCES) {
 				retval = 1;
@@ -143,8 +137,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	unlink(fname);
 
 	/* delete the test directory created in setup() */

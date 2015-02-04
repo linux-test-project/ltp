@@ -76,7 +76,6 @@
 
 char *TCID = "mknod09";
 int TST_TOTAL = 1;
-int exp_enos[] = { EINVAL, 0 };
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -95,9 +94,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		test_desc = "EINVAL";
 
@@ -114,17 +110,15 @@ int main(int ac, char **av)
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "mknod() returned %ld,"
 				 "expected -1, errno=%d", TEST_RETURN,
-				 exp_enos[0]);
+				 EINVAL);
 		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
-
-			if (TEST_ERRNO == exp_enos[0]) {
+			if (TEST_ERRNO == EINVAL) {
 				tst_resm(TPASS, "mknod() fails with expected "
 					 "error EINVAL errno:%d", TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "mknod() fails, %s, "
 					 "errno=%d, expected errno=%d",
-					 test_desc, TEST_ERRNO, exp_enos[0]);
+					 test_desc, TEST_ERRNO, EINVAL);
 			}
 		}
 	}
@@ -155,11 +149,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

@@ -227,11 +227,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* close read end of pipe if still open */
 	if (close(fildes[0]) < 0) {

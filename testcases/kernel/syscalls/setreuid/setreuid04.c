@@ -132,8 +132,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }
 
 static void uid_verify(struct passwd *ru, struct passwd *eu, char *when)

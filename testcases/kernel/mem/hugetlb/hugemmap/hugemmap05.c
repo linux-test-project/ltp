@@ -288,7 +288,6 @@ static void cleanup(void)
 		tst_resm(TINFO, "shmdt cleaning");
 		shmctl(shmid, IPC_RMID, NULL);
 	}
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

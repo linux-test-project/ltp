@@ -143,9 +143,6 @@ void cleanup_mqueue(int result, int step, mqd_t mqd)
 	if (step != NO_STEP)
 		cleanup_resources(step, mqd);
 
-	/* Clean the test testcase as LTP wants */
-	TEST_CLEANUP;
-
 	tst_exit();
 }
 

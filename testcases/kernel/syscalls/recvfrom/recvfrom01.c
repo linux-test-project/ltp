@@ -126,8 +126,6 @@ struct test_case_t {		/* test case structure */
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, EINVAL, 0 };
-
 #ifdef UCLINUX
 static char *argv0;
 #endif
@@ -146,8 +144,6 @@ int main(int argc, char *argv[])
 #endif
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
@@ -175,7 +171,6 @@ int main(int argc, char *argv[])
 					 TEST_RETURN, tdat[testno].retval,
 					 TEST_ERRNO, tdat[testno].experrno);
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TPASS, "%s successful",
 					 tdat[testno].desc);
 			}
@@ -198,8 +193,7 @@ void setup(void)
 
 void cleanup(void)
 {
-	(void)kill(pid, SIGKILL);	/* kill server */
-	TEST_CLEANUP;
+	(void)kill(pid, SIGKILL);
 
 }
 

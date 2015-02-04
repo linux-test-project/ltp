@@ -90,7 +90,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static int child_fn(void *unused __attribute__((unused)))

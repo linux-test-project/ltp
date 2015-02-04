@@ -373,6 +373,5 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }

@@ -196,8 +196,6 @@ static void cleanup(void)
 {
 	if (modprobe == 1)
 		system("rmmod zram");
-
-	TEST_CLEANUP;
 }
 
 static void print(char *string)

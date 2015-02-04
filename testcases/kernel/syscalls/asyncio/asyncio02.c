@@ -122,8 +122,6 @@ int testrun(int flag, int bytes, int ti);
 char *TCID = "asyncio02";
 int TST_TOTAL = 6;
 
-int exp_enos[] = { 0 };		/* Array of expected errnos */
-
 char *filename;			/* name of the temporary file */
 
 char *Progname;
@@ -284,9 +282,6 @@ void setup(void)
 	/* create a temporary directory and go to it */
 	tst_tmpdir();
 
-	/* Indicate which errnos are expected */
-	TEST_EXP_ENOS(exp_enos);
-
 	/*
 	 *  Attempt to get some memory to work with.
 	 */
@@ -303,11 +298,6 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 }

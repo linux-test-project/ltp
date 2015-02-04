@@ -76,8 +76,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		tst_resm(TFAIL, "SHM_INFO call failed with an unexpected error"
 			 " - %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
 
@@ -115,11 +113,5 @@ void cleanup(void)
 {
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

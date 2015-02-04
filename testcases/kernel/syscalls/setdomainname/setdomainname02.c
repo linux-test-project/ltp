@@ -90,9 +90,6 @@ static void setup(void);
 char *TCID = "setdomainname02";
 int TST_TOTAL = 3;
 
-static int exp_enos[] = { EINVAL, EFAULT, 0 };	/* 0 terminated list of *
-						 * expected errnos */
-
 static char old_domain_name[MAX_NAME_LEN];
 static struct test_case_t {
 	char *desc;
@@ -144,7 +141,6 @@ int main(int ac, char **av)
 					 test_cases[ind].exp_errno,
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 	}
 
@@ -163,8 +159,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	/* Save current domainname */
 	if ((getdomainname(old_domain_name, MAX_NAME_LEN)) < 0) {
 		tst_brkm(TBROK, NULL, "getdomainname() failed while"
@@ -181,12 +175,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Restore domain name */
 	if ((setdomainname(old_domain_name, sizeof(old_domain_name)))

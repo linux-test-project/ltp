@@ -142,6 +142,5 @@ static void sig_handler(int sig)
 static void cleanup(void)
 {
 	close(fildes);
-	TEST_CLEANUP;
 	tst_rmdir();
 }

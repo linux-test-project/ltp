@@ -495,8 +495,6 @@ void cleanup(void)
 {
 	int status;
 
-	TEST_CLEANUP;
-
 	/*
 	 * Remove the message queue from the system
 	 */

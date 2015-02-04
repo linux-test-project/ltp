@@ -39,8 +39,6 @@ static int child_fn();
 
 static void *child_stack;
 
-static int exp_enos[] = { EINVAL, 0 };
-
 static struct test_case_t {
 	int (*child_fn) ();
 	void **child_stack;
@@ -93,7 +91,6 @@ int main(int ac, char **av)
 					 test_cases[ind].exp_errno,
 					 TEST_RETURN);
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 	}
 
@@ -104,7 +101,6 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	TEST_EXP_ENOS(exp_enos);
 	TEST_PAUSE;
 
 	child_stack = malloc(CHILD_STACK_SIZE);
@@ -112,7 +108,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	free(child_stack);
 }
 

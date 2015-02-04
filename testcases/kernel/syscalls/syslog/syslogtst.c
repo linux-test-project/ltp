@@ -30,14 +30,9 @@
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
-/*
- *These globals must be defined in the test.
- */
 
 char *TCID = "syslogtst";
 int TST_TOTAL = 1;
-
-int exp_enos[] = { 0 };		/* List must end with 0 */
 
 void sig_handler(int signal);
 

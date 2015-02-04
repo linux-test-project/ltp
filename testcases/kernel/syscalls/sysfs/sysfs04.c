@@ -79,7 +79,6 @@ static void cleanup();
 
 char *TCID = "sysfs04";
 int TST_TOTAL = 1;
-static int exp_enos[] = { EINVAL, 0 };
 
 int main(int ac, char **av)
 {
@@ -107,8 +106,6 @@ int main(int ac, char **av)
 				 " expected error; %d, errno"
 				 " : EINVAL and got %d", EINVAL, TEST_ERRNO);
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 	}
 #else
 	tst_resm(TWARN,
@@ -127,9 +124,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/*set the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
@@ -139,10 +133,5 @@ void setup(void)
 */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

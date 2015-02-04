@@ -169,7 +169,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

@@ -65,8 +65,6 @@
 char *TCID = "msgctl05";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EPERM, 0 };	/* 0 terminated list of expected errnos */
-
 int msg_q_1 = -1;		/* The message queue id created in setup */
 uid_t ltp_uid;			/* The user ID for a non root user */
 char *ltp_user = "nobody";	/* A non root user */
@@ -137,8 +135,6 @@ void do_child(void)
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			switch (TEST_ERRNO) {
 			case EPERM:
 				tst_resm(TPASS, "expected error = %d : %s",
@@ -162,9 +158,6 @@ void setup(void)
 	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -192,10 +185,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

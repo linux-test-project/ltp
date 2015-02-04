@@ -81,7 +81,6 @@ int TST_TOTAL = 2;
 void cleanup(void)
 {
 
-	TEST_CLEANUP;
 	tst_rmdir();
 
 	tst_exit();

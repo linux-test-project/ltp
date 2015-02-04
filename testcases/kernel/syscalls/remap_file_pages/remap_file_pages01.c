@@ -277,12 +277,6 @@ void cleanup(char *data)
 	/* Remove the /dev/shm/cache_<pid> file */
 	unlink(fname);
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 }

@@ -212,7 +212,6 @@ static void cleanup(void)
 	close(immu_fd);
 	close(append_fd);
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 #else

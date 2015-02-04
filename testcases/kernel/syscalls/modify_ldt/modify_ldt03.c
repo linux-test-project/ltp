@@ -87,7 +87,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 #elif HAVE_MODIFY_LDT

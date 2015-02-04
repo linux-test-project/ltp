@@ -144,6 +144,4 @@ static void cleanup(void)
 		tst_resm(TWARN | TERRNO, "Failed to close dirfd");
 
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }

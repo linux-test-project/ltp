@@ -39,8 +39,6 @@ static void cleanup(void);
 char *TCID = "open03";
 int TST_TOTAL = 1;
 
-static int exp_enos[] = { 0, 0 };
-
 static char fname[255];
 static int fd;
 
@@ -55,9 +53,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
@@ -65,7 +60,6 @@ int main(int ac, char **av)
 		fd = TEST_RETURN;
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL | TTERRNO,
 				 "open(%s,O_RDWR|O_CREAT,0700) failed", fname);
 		} else {
@@ -99,6 +93,5 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }

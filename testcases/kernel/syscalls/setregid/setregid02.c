@@ -98,7 +98,6 @@ int main(int ac, char **av)
 				      *test_data[i].eff_gid));
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == test_data[i].exp_errno) {
 					tst_resm(TPASS, "setregid(%d, %d) "
 						 "failed as expected.",
@@ -169,7 +168,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 void gid_verify(struct group *rg, struct group *eg, char *when)

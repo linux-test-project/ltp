@@ -32,7 +32,6 @@ int TST_TOTAL = 1;
 static void setup(void);
 static void sbrk_verify(void);
 static void cleanup(void);
-static int exp_enos[] = { ENOMEM, 0 };
 
 static long increment = INC;
 
@@ -75,8 +74,6 @@ static void setup(void)
 		increment, ret, sbrk(0));
 
 	errno = 0;
-
-	TEST_EXP_ENOS(exp_enos);
 }
 
 static void sbrk_verify(void)
@@ -93,8 +90,6 @@ static void sbrk_verify(void)
 		return;
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO == ENOMEM) {
 		tst_resm(TPASS | TTERRNO, "sbrk(%ld) failed as expected",
 			 increment);
@@ -107,5 +102,4 @@ static void sbrk_verify(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

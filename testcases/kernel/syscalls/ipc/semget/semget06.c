@@ -58,8 +58,6 @@ int TST_TOTAL = 2;
 #define LARGENUM	1024 * 32
 #define SMALLNUM	-1
 
-int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of expected errnos */
-
 int sem_id_1 = -1;
 
 int num_sems[] = { LARGENUM, SMALLNUM };
@@ -93,8 +91,6 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			switch (TEST_ERRNO) {
 			case EINVAL:
 				tst_resm(TPASS, "expected failure - errno "
@@ -122,9 +118,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/*
@@ -148,11 +141,5 @@ void cleanup(void)
 	rm_sema(sem_id_1);
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

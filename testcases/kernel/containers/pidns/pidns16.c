@@ -63,8 +63,6 @@ int TST_TOTAL = 3;
  */
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants */
-	TEST_CLEANUP;
 
 }
 

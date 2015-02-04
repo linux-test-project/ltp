@@ -91,11 +91,6 @@ int ntries = 100;
 
 void cleanup()
 {
-	/*
-	 * remove the tmp directory and exit
-	 */
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

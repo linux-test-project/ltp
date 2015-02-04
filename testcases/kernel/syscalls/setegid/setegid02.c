@@ -28,8 +28,6 @@
 
 char *TCID = "setegid02";
 int TST_TOTAL = 1;
-
-static int exp_enos[] = { EPERM, 0 };
 static void setup(void);
 static void setegid_verify(void);
 static void cleanup(void);
@@ -67,8 +65,6 @@ static void setup(void)
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
 
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
-
-	TEST_EXP_ENOS(exp_enos);
 }
 
 static void setegid_verify(void)
@@ -92,5 +88,4 @@ static void setegid_verify(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

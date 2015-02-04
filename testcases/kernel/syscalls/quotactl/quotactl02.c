@@ -226,7 +226,6 @@ static void cleanup(void)
 	if (block_dev)
 		tst_release_device(NULL, block_dev);
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 #else

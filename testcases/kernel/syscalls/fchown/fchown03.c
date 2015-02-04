@@ -136,8 +136,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (fildes > 0 && close(fildes))
 		tst_resm(TWARN | TERRNO, "close(%s) Failed", TESTFILE);
 

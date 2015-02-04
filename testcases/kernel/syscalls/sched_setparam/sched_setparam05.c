@@ -85,7 +85,6 @@ char *TCID = "sched_setparam05";
 int TST_TOTAL = 1;
 
 static struct sched_param param = { 0 };
-static int exp_enos[] = { EPERM, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -135,14 +134,12 @@ int main(int ac, char **av)
 			TEST(sched_setparam(getppid(), &param));
 
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == EPERM)) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				exit(0);
 			}
 
 			tst_resm(TWARN | TTERRNO,
 				 "Test failed, sched_setparam()"
 				 " returned : %ld", TEST_RETURN);
-			TEST_ERROR_LOG(TEST_ERRNO);
 			exit(1);
 
 		default:
@@ -171,9 +168,6 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 }
@@ -184,10 +178,4 @@ void setup(void)
  */
 void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 }

@@ -120,8 +120,6 @@ void cleanup();
 char *TCID = "pause01";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EINTR, 0 };
-
 void go();
 
 int main(int ac, char **av)
@@ -139,9 +137,6 @@ int main(int ac, char **av)
      * perform global setup for test
      ***************************************************************/
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
@@ -164,7 +159,6 @@ int main(int ac, char **av)
 				 TEST_ERRNO);
 		} else {
 			/* log the errno */
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EINTR)
 				tst_resm(TPASS, "pause() returned %ld",
 					 TEST_RETURN);
@@ -196,11 +190,6 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }
 

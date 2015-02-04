@@ -154,8 +154,6 @@ void cleanup(void)
 {
 	int i;
 
-	TEST_CLEANUP;
-
 	for (i = 0; i < num_shms; i++)
 		rm_shm(shm_id_arr[i]);
 

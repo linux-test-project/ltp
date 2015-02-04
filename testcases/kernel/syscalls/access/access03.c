@@ -41,8 +41,6 @@ static void cleanup(void);
 char *TCID = "access03";
 int TST_TOTAL = 8;
 
-int exp_enos[] = { EFAULT, 0 };	/* List must end with 0 */
-
 /* XXX (garrcoop): uh, this isn't a bad address yo. */
 static void *low_addr;
 static void *high_addr;
@@ -59,9 +57,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	/* set the expected errnos. */
-	TEST_EXP_ENOS(exp_enos);
 
 #define TEST_ACCESS(addr, mode) \
 { \
@@ -119,7 +114,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

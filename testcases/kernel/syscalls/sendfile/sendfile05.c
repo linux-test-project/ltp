@@ -99,8 +99,6 @@ void do_sendfile(void)
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "call succeeded unexpectedly");
 	} else {
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		if (TEST_ERRNO != EINVAL) {
 			tst_resm(TFAIL, "sendfile returned unexpected "
 				 "errno, expected: %d, got: %d",
@@ -167,11 +165,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	close(out_fd);
 	/* delete the test directory created in setup() */

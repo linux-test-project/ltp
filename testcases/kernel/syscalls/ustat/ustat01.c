@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
 				tst_brkm(TCONF, cleanup, "ustat not supported");
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "ustat(2) failed and set"
 					 "the errno to %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -88,5 +87,4 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

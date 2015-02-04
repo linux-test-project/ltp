@@ -100,7 +100,6 @@ TCID_DEFINE(setresgid03);
 static int testno;
 static struct passwd nobody, bin, root;
 static uid_t nobody_gid, bin_gid, neg = -1;
-static int exp_enos[] = { EPERM, 0 };
 
 static int test_functionality(uid_t, uid_t, uid_t);
 static void setup(void);
@@ -135,7 +134,6 @@ int main(int argc, char **argv)
 			TEST(SETRESGID(cleanup, *tdat[testno].rgid, *tdat[testno].egid,
 				       *tdat[testno].sgid));
 
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if ((TEST_RETURN == EXP_RET_VAL) &&
 			    (TEST_ERRNO == EXP_ERRNO)) {
 
@@ -217,14 +215,10 @@ void setup(void)
 	nobody = *passwd_p;
 	GID16_CHECK((nobody_gid = nobody.pw_gid), "setresgid", cleanup)
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	/* Set real/effective/saved gid to nobody */
 	if (setresgid(nobody_gid, nobody_gid, nobody_gid) == -1) {
 		tst_brkm(TBROK, NULL, "setup() failed for setting while"
 			 " setting real/effective/saved gid");
-
 	}
 	/* Set euid to nobody */
 	if (setuid(nobody.pw_uid) == -1) {
@@ -245,11 +239,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-
-	TEST_CLEANUP;
 
 }

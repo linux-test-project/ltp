@@ -61,8 +61,6 @@
 char *TCID = "chdir01";
 int TST_TOTAL = 2;
 
-int exp_enos[] = { ENOTDIR, ELOOP, 0 };
-
 void setup(void);
 void cleanup(void);
 static void checknames(char **, int, DIR *);
@@ -83,8 +81,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -162,8 +158,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 

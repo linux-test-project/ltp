@@ -90,7 +90,6 @@ char *TCID = "reboot02";
 int TST_TOTAL = 2;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-static int exp_enos[] = { EINVAL, EPERM, 0 };
 
 static struct test_case_t {
 	char *err_desc;		/*error description */
@@ -152,8 +151,6 @@ int main(int ac, char **av)
 					 testcase[i].exp_errno,
 					 testcase[i].exp_errval, TEST_ERRNO);
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}		/*End of TEST LOOPS */
 	}
 
@@ -188,9 +185,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 }
@@ -201,10 +195,5 @@ void setup(void)
 */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

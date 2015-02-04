@@ -140,7 +140,6 @@ int main(int argc, char **argv)
 			TEST(io_submit(io_ctx, 1, iocbs));
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 1: io_submit failed - retval=%ld"
 				 ", errno=%d", TEST_RETURN, TEST_ERRNO);
 			failflag = 1;
@@ -172,7 +171,6 @@ int main(int argc, char **argv)
 			TEST(io_submit(io_ctx, 1, iocbs));
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 2: io_submit failed - retval=%ld"
 				 ", errno=%d", TEST_RETURN, TEST_ERRNO);
 			failflag = 1;
@@ -204,7 +202,6 @@ int main(int argc, char **argv)
 			TEST(io_submit(io_ctx, 1, iocbs));
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 3: io_submit failed - retval=%ld"
 				 ", errno=%d", TEST_RETURN, TEST_ERRNO);
 			failflag = 1;
@@ -236,7 +233,6 @@ int main(int argc, char **argv)
 			TEST(io_submit(io_ctx, 1, iocbs));
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 4: io_submit failed - retval=%ld"
 				 ", errno=%d", TEST_RETURN, TEST_ERRNO);
 			failflag = 1;
@@ -268,7 +264,6 @@ int main(int argc, char **argv)
 			TEST(io_submit(io_ctx, 1, iocbs));
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: write io_submit failed - "
 				 "retval=%ld, errno=%d", TEST_RETURN,
 				 TEST_ERRNO);
@@ -283,7 +278,6 @@ int main(int argc, char **argv)
 			TEST(io_submit(io_ctx, 1, iocbs));
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: read io_submit failed - "
 				 "retval=%ld, errno=%d", TEST_RETURN,
 				 TEST_ERRNO);
@@ -316,7 +310,6 @@ int main(int argc, char **argv)
 			TEST(io_submit(io_ctx, 1, iocbs));
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: write io_submit failed - "
 				 "retval=%ld, errno=%d", TEST_RETURN,
 				 TEST_ERRNO);
@@ -331,7 +324,6 @@ int main(int argc, char **argv)
 			TEST(io_submit(io_ctx, 1, iocbs));
 		} while (TEST_RETURN == -EAGAIN);
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: read io_submit failed - "
 				 "retval=%ld, errno=%d", TEST_RETURN,
 				 TEST_ERRNO);
@@ -420,7 +412,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	free(dstbuf);
 	free(srcbuf);
 	free(iocbs[0]);

@@ -66,8 +66,6 @@ void setup(void);
 char *TCID = "fchdir02";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EBADF, 0 };
-
 int main(int ac, char **av)
 {
 	const int bad_fd = -5;
@@ -107,13 +105,9 @@ void setup(void)
 	TEST_PAUSE;
 
 	tst_tmpdir();
-
-	TEST_EXP_ENOS(exp_enos);
 }
 
 void cleanup(void)
 {
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }

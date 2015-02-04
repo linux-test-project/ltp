@@ -64,7 +64,6 @@ char *TCID = "sched_setscheduler01";
 
 struct sched_param param;
 struct sched_param param1 = { 1 };
-int exp_enos[] = { ESRCH, EINVAL, EFAULT, 0 };
 
 void setup(void);
 void cleanup(void);
@@ -115,9 +114,6 @@ int main(int ac, char **av)
 
 		setup();
 
-		/* set up the expected errnos */
-		TEST_EXP_ENOS(exp_enos);
-
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
@@ -128,8 +124,6 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
@@ -166,10 +160,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

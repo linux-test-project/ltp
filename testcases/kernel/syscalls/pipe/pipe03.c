@@ -50,8 +50,6 @@
 char *TCID = "pipe03";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EBADF, 0 };
-
 void setup(void);
 void cleanup(void);
 
@@ -129,9 +127,4 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 }

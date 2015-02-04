@@ -50,7 +50,6 @@
 #define LONGMODNAMECHAR	'm'	/* Arbitrarily selected */
 
 char *TCID = "delete_module02";
-static int exp_enos[] = { EPERM, ENOENT, EFAULT, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -102,7 +101,6 @@ int main(int argc, char **argv)
 			tst_resm(TINFO, "test %s", tdat[i].desc);
 			TEST(ltp_syscall(__NR_delete_module,
 			     tdat[i].modname, 0));
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "delete_module() "
@@ -143,8 +141,6 @@ static void setup(void)
 
 	ltpuser = SAFE_GETPWNAM(cleanup, nobody_uid);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/* Initialize longmodname to LONGMODNAMECHAR character */
@@ -160,5 +156,4 @@ static void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

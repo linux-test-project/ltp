@@ -170,10 +170,4 @@ void cleanup(void)
 
 	tst_rmdir();
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
-
 }

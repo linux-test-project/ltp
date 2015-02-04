@@ -145,12 +145,6 @@ void setup(void)
 void cleanup(void)
 {
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
-
 	/* Restore domain name */
 	if ((setdomainname(old_domain_name, strlen(old_domain_name))) < 0) {
 		tst_resm(TWARN, "setdomainname() failed while restoring"

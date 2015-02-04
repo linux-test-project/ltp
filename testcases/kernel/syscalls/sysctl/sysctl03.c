@@ -93,8 +93,6 @@ int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
 void setup(void);
 void cleanup(void);
 
-int exp_enos[] = { EPERM, 0 };
-
 int main(int ac, char **av)
 {
 	int exp_eno;
@@ -123,8 +121,6 @@ int main(int ac, char **av)
 		exp_enos[0] = EACCES;
 	}
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset tst_count in case we are looping */
@@ -138,8 +134,6 @@ int main(int ac, char **av)
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "sysctl(2) succeeded unexpectedly");
 		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			if (TEST_ERRNO == exp_eno) {
 				tst_resm(TPASS | TTERRNO, "Got expected error");
 			} else if (errno == ENOSYS) {
@@ -173,8 +167,6 @@ int main(int ac, char **av)
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
-
 				if (TEST_ERRNO == exp_eno) {
 					tst_resm(TPASS | TTERRNO,
 						 "Got expected error");
@@ -215,7 +207,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 #else

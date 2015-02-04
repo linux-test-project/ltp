@@ -86,7 +86,6 @@ int main(int ac, char **av)
 				      *test_data[i].eff_uid));
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TBROK, "setreuid(%d, %d) failed",
 					 *test_data[i].real_uid,
 					 *test_data[i].eff_uid);
@@ -133,7 +132,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static void uid_verify(struct passwd *ru, struct passwd *eu, char *when)

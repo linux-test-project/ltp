@@ -67,8 +67,6 @@ static pid_t zero_pid;
 static pid_t unused_pid;
 static pid_t inval_pid = 99999;
 
-int exp_enos[] = { EINVAL, ESRCH, EPERM, 0 };
-
 struct test_case_t {
 	pid_t *pid;
 	pid_t *pgid;
@@ -97,9 +95,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set up the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset tst_count in case we are looping */
@@ -114,8 +109,6 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
@@ -155,10 +148,5 @@ static void setup(void)
  */
 static void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
-	TEST_CLEANUP;
 
 }

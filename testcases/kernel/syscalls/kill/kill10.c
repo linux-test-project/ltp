@@ -191,8 +191,6 @@ inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa);
 char *TCID = "kill10";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
-
 int num_procs = 10;
 int num_pgrps = 2;
 int pgrps_ready = 0;
@@ -243,8 +241,6 @@ int main(int ac, char **av)
 	}
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -439,11 +435,6 @@ void cleanup(void)
 		waitpid(child_checklist[i].pid, NULL, 0);
 	}
 	free(child_checklist);
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }
 

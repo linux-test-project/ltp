@@ -273,8 +273,6 @@ static void cleanup(void)
 {
 	int i;
 
-	TEST_CLEANUP;
-
 	for (i = 0; i < n; i++) {
 		if (hwfd[i] > 0 && close(hwfd[i]) == -1)
 			tst_resm(TWARN | TERRNO, "close(%d) failed", hwfd[i]);

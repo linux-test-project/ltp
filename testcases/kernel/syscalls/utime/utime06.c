@@ -57,7 +57,6 @@
 #define MNT_POINT	"mntpoint"
 
 char *TCID = "utime06";
-static int exp_enos[] = { EACCES, ENOENT, EPERM, EROFS, 0 };
 static struct passwd *ltpuser;
 static const struct utimbuf times;
 static const char *dev;
@@ -119,8 +118,6 @@ static void setup(void)
 
 	SAFE_TOUCH(cleanup, TEMP_FILE, 0644, NULL);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	fs_type = tst_dev_fs_type();
 	dev = tst_acquire_device(cleanup);
 	if (!dev)
@@ -174,8 +171,6 @@ static void cleanup_nobody(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (mount_flag && tst_umount(MNT_POINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", dev);
 

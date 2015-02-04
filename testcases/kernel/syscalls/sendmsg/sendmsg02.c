@@ -233,7 +233,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	semctl(sem_id, 0, IPC_RMID);
 	tst_rmdir();
 }

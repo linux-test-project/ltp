@@ -41,8 +41,6 @@ static void cleanup(void)
 {
 	free(filename);
 
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 

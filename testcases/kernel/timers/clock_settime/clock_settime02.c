@@ -136,10 +136,4 @@ void cleanup(void)
 		tst_resm(TWARN, "FATAL COULD NOT RESET THE CLOCK");
 		tst_resm(TFAIL, "Error Setting Time, errno=%d", errno);
 	}
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 }

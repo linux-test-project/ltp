@@ -512,6 +512,4 @@ void cleanup(void)
 	rm_shm(shm_id_1);
 
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }

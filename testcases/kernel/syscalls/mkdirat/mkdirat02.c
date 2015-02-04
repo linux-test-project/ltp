@@ -49,8 +49,6 @@ static const char *device;
 static int mount_flag_dir;
 static int mount_flag_cur;
 
-static int exp_enos[] = { ELOOP, EROFS, 0 };
-
 static struct test_case_t {
 	int *dirfd;
 	char *pathname;
@@ -137,8 +135,6 @@ static void setup(void)
 			 "mount device:%s failed", device);
 	}
 	mount_flag_cur = 1;
-
-	TEST_EXP_ENOS(exp_enos);
 }
 
 static void mkdirat_verify(const struct test_case_t *test)
@@ -151,8 +147,6 @@ static void mkdirat_verify(const struct test_case_t *test)
 		return;
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO == test->exp_errno) {
 		tst_resm(TPASS | TTERRNO, "mkdirat() failed as expected");
 	} else {
@@ -164,8 +158,6 @@ static void mkdirat_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (mount_flag_dir && tst_umount("mntpoint") < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 

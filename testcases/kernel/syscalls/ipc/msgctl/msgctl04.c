@@ -67,8 +67,6 @@ int TST_TOTAL = 6;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-int exp_enos[] = { EACCES, EFAULT, EINVAL, 0 };
-
 int msg_q_1 = -1;		/* The message queue id created in setup */
 int msg_q_2 = -1;		/* Another queue id created in setup */
 int bad_q = -1;			/* a value to use as a bad queue id */
@@ -131,8 +129,6 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			if (TEST_ERRNO == TC[i].error) {
 				tst_resm(TPASS | TTERRNO, "expected failure");
 			} else {
@@ -158,9 +154,6 @@ void setup(void)
 	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -209,11 +202,5 @@ void cleanup(void)
 	rm_queue(msg_q_2);
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

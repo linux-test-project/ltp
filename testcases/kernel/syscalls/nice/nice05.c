@@ -158,7 +158,6 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "nice(%d) Failed, errno=%d : %s", val,
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
@@ -192,10 +191,5 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

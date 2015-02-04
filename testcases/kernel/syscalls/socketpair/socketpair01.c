@@ -56,7 +56,6 @@
 
 char *TCID = "socketpair01";
 int testno;
-int exp_enos[] = { EINVAL, EPERM, EFAULT, EOPNOTSUPP, EPROTONOSUPPORT, 0 };
 
 int sv[2];
 
@@ -113,7 +112,6 @@ int main(int argc, char *argv[])
 			if (TEST_RETURN >= 0) {
 				TEST_RETURN = 0;	/* > 0 equivalent */
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
 			}
 			if (TEST_RETURN != tdat[testno].retval ||
 			    (TEST_RETURN &&
@@ -140,13 +138,10 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 }
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

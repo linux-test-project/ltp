@@ -117,6 +117,5 @@ static void cleanup(void)
 	if (seteuid(0))
 		tst_resm(TWARN | TERRNO, "seteuid(o) failed");
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }

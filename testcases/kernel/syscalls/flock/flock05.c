@@ -81,9 +81,6 @@
 void setup(void);
 void cleanup(void);
 
-/* 0 terminated list of expected errnos */
-int exp_enos[] = { EWOULDBLOCK, EAGAIN, 0 };
-
 char *TCID = "flock05";
 int TST_TOTAL = 2;
 char filename[100];
@@ -177,8 +174,6 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
 	 * You want to make sure you do this before you create your temporary
@@ -196,8 +191,6 @@ void setup(void)
 	if (fd == -1) {
 		tst_resm(TFAIL, "creating a new file failed");
 
-		TEST_CLEANUP;
-
 		/* Removing temp dir */
 		tst_rmdir();
 
@@ -211,11 +204,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	unlink(filename);
 

@@ -347,6 +347,5 @@ void cleanup(void)
 
 	fflush(stdout);
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }

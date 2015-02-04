@@ -36,7 +36,6 @@ int TST_TOTAL = 4;
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static void setup(void)

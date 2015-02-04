@@ -80,7 +80,6 @@ static void cleanup();
 
 char *TCID = "sched_rr_get_interval03";
 struct timespec tp;
-static int exp_enos[] = { EINVAL, ESRCH, EFAULT, 0 };
 
 static pid_t unused_pid;
 static pid_t inval_pid = -1;
@@ -133,7 +132,6 @@ int main(int ac, char **av)
 					 " sched_rr_get_interval() returned %ld",
 					 TEST_RETURN);
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 	}
 
@@ -155,8 +153,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/* Change scheduling policy to SCHED_RR */
@@ -173,11 +169,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

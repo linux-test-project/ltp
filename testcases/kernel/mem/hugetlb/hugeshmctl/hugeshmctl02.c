@@ -159,8 +159,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	rm_shm(shm_id_1);
 	rm_shm(shm_id_2);
 

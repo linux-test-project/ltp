@@ -84,9 +84,7 @@ int TST_TOTAL = 2;
 char *write_buf[NBUFS];		/* buffer to hold data to be written */
 char *read_buf[NBUFS];		/* buffer to hold data read from file */
 int pfd[2];			/* pair of file descriptors */
-int fd1;			/* file descriptor of temporary file */
-
-int exp_enos[] = { ESPIPE, EINVAL, 0 };
+int fd1;
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -124,8 +122,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -157,8 +153,6 @@ int main(int ac, char **av)
 					 "%ld, expected -1, errno:%d",
 					 TEST_RETURN, Test_cases[i].exp_errno);
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			/*
 			 * Verify whether expected errno is set.
@@ -290,13 +284,7 @@ void init_buffers(void)
  */
 void cleanup(void)
 {
-	int count;		/* index for the loop */
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
+	int count;
 
 	/* Free the memory allocated for the read/write buffer */
 	for (count = 0; count < NBUFS; count++) {

@@ -149,8 +149,6 @@ static void cleanup(void)
 			tst_resm(TBROK | TERRNO,
 				 "shmctl(.., IPC_RMID, ..) failed");
 
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 

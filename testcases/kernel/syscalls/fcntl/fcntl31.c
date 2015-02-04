@@ -383,8 +383,6 @@ static void check_io_signal(char *des)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (sigprocmask(SIG_SETMASK, &oldset, NULL) < 0)
 		tst_resm(TWARN | TERRNO, "sigprocmask restore oldset failed");
 

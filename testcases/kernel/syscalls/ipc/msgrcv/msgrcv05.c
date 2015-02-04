@@ -75,8 +75,6 @@ void do_child_uclinux(void);
 char *TCID = "msgrcv05";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { EINTR, 0 };	/* 0 terminated list of expected errnos */
-
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
 int sync_pipes[2];
@@ -209,9 +207,6 @@ void setup(void)
 
 	tst_sig(FORK, sighandler, cleanup);
 
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/*
@@ -238,11 +233,5 @@ void cleanup(void)
 	rm_queue(msg_q_1);
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

@@ -126,8 +126,6 @@ void cleanup();
 char *TCID = "execv01";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
-
 pid_t pid;			/* process id from fork */
 int status;			/* status returned from waitpid */
 char *args[2] = { "/bin/test", 0 };	/* argument list for execv call */
@@ -141,8 +139,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -161,7 +157,6 @@ int main(int ac, char **av)
 				tst_resm(TPASS,
 					 "execv - properly exec's a simple program..");
 			} else {
-				TEST_ERROR_LOG(WEXITSTATUS(status));
 				tst_resm(TFAIL,
 					 "Child process did not terminate properly, status=%d",
 					 status);
@@ -195,7 +190,5 @@ The TEST macro is NOT used.");
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

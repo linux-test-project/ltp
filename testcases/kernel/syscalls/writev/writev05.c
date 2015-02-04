@@ -72,9 +72,6 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 	{NULL, 0}
 };
 
-/* 0 terminated list of expected errnos */
-int exp_enos[] = { 14, 0 };
-
 char name[K_1], f_name[K_1];
 int fd[2], in_sighandler;
 char *buf_list[NBUFS];
@@ -167,7 +164,6 @@ int main(int argc, char **argv)
 		l_seek(fd[0], 0, 0);
 		TEST(writev(fd[0], wr_iovec, 2));
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EFAULT) {
 				tst_resm(TINFO, "Received EFAULT as expected");
 			} else {
@@ -219,8 +215,6 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	/* Pause if that option was specified.
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
 	 * You want to make sure you do this before you create your temporary
@@ -250,11 +244,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	if (unlink(f_name) < 0) {
 		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",

@@ -101,6 +101,4 @@ void setup(void)
 void cleanup(void)
 {
 	rm_queue(msg_q);
-
-	TEST_CLEANUP;
 }

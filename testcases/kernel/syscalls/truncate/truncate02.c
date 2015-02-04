@@ -90,7 +90,6 @@ TCID_DEFINE(truncate02);
 int TST_TOTAL = 1;		/* Total number of test conditions */
 int fd;				/* file descriptor of testfile */
 char tst_buff[BUF_SIZE];	/* buffer to hold testfile contents */
-int exp_enos[] = { 0 };
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -114,9 +113,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -128,7 +124,6 @@ int main(int ac, char **av)
 		TEST(truncate(TESTFILE, TRUNC_LEN1));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "truncate(%s, %d) Failed, errno=%d : %s",
 				 TESTFILE, TRUNC_LEN1, TEST_ERRNO,
@@ -168,7 +163,6 @@ int main(int ac, char **av)
 			TEST(truncate(TESTFILE, TRUNC_LEN2));
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "truncate of %s to "
 					 "size %d Failed, errno=%d : %s",
 					 TESTFILE, TRUNC_LEN2,
@@ -288,10 +282,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Close the testfile after writing data into it */
 	if (close(fd) == -1) {

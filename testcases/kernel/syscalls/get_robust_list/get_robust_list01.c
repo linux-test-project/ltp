@@ -66,8 +66,6 @@ struct robust_list_head {
 	long futex_offset;
 	struct robust_list *list_op_pending;
 };
-
-int exp_enos[] = { ESRCH, EPERM, EFAULT, 0 };
 static pid_t unused_pid;
 
 void setup(void);
@@ -190,8 +188,6 @@ void setup(void)
 {
 	tst_require_root(NULL);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	unused_pid = tst_get_unused_pid(cleanup);
 
 	TEST_PAUSE;
@@ -199,5 +195,4 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

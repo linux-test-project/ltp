@@ -190,8 +190,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (close(fd) == -1)
 		tst_resm(TWARN | TERRNO, "close failed");
 

@@ -160,8 +160,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	rm_shm(shm_id_1);
 
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);

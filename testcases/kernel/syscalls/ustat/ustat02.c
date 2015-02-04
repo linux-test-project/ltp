@@ -34,8 +34,6 @@ static void cleanup(void);
 
 char *TCID = "ustat02";
 
-static int exp_enos[] = { EINVAL, EFAULT, 0 };
-
 static dev_t invalid_dev = -1;
 static dev_t root_dev;
 struct ustat ubuf;
@@ -88,8 +86,6 @@ int main(int ac, char **av)
 					 ": %s",
 					 tc[i].exp_errno, tc[i].exp_errval);
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 	}
 
@@ -103,8 +99,6 @@ static void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/* Find a valid device number */
@@ -115,5 +109,4 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

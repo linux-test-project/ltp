@@ -82,7 +82,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 #else /* systems that dont support obsolete getcontext */

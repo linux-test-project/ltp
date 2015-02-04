@@ -88,8 +88,6 @@ void cleanup();
 char *TCID = "mlockall02";
 int TST_TOTAL = 3;
 
-int exp_enos[] = { ENOMEM, EPERM, EINVAL, 0 };
-
 struct test_case_t {
 	int flag;		/* flag value                   */
 	int error;		/* error description            */
@@ -131,7 +129,6 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO != TC[i].error)
 					tst_brkm(TFAIL, cleanup,
 						 "mlock() Failed with wrong "
@@ -172,9 +169,6 @@ void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -272,8 +266,6 @@ void cleanup_test(int i)
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	return;
 }
 

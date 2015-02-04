@@ -52,7 +52,6 @@ static void cleanup(void)
 	free(vec);
 	munlock(addr, page_size * num_pages);
 	munmap(addr, page_size * num_pages);
-	TEST_CLEANUP;
 	close(fd);
 	tst_rmdir();
 }

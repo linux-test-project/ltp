@@ -78,9 +78,7 @@
 void setup(void);
 
 char *TCID = "timer_delete03";	/* Test program identifier.    */
-int TST_TOTAL;			/* Total number of test cases. */
-
-static int exp_enos[] = { EINVAL, 0 };
+int TST_TOTAL;
 
 int testcase[] = {
 	EINVAL			/* Invalid timer ID */
@@ -133,9 +131,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
@@ -145,9 +140,4 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 }

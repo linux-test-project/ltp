@@ -203,7 +203,6 @@ static void cleanup(void)
 	if (fd_notify > 0 && close(fd_notify) == -1)
 		tst_resm(TWARN, "close(%d) failed", fd_notify);
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

@@ -95,7 +95,6 @@ int TST_TOTAL = 3;
 #if !defined(UCLINUX)
 
 char *ref_release = "2.6.8\0";
-int exp_enos[] = { ENOMEM, EPERM, EINVAL, 0 };
 
 struct test_case_t {
 	int flag;		/* flag value                   */
@@ -153,7 +152,6 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO != TC[i].error)
 					tst_brkm(TFAIL, cleanup,
 						 "mlockall() Failed with wrong "
@@ -190,9 +188,6 @@ void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -320,7 +315,5 @@ int main(void)
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	return;
 }

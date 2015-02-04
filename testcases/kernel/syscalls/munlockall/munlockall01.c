@@ -71,7 +71,6 @@ void cleanup();
 
 char *TCID = "munlockall01";
 int TST_TOTAL = 1;
-int exp_enos[] = { 0 };
 
 #if !defined(UCLINUX)
 
@@ -128,9 +127,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/*set the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
@@ -140,6 +136,4 @@ void setup(void)
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }

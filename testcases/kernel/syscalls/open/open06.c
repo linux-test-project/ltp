@@ -42,8 +42,6 @@ static void cleanup(void);
 
 static char fname[100] = "fifo";
 
-static int exp_enos[] = { ENXIO, 0 };
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -55,8 +53,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
@@ -65,8 +61,6 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "open(2) succeeded unexpectedly");
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO != ENXIO)
 			tst_resm(TFAIL, "Expected ENXIO got %d", TEST_ERRNO);
@@ -94,8 +88,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	unlink(fname);
 
 	tst_rmdir();

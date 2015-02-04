@@ -107,8 +107,6 @@ void cleanup(void)
 {
 	set_sys_tune("overcommit_memory", overcommit, 0);
 	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
-
-	TEST_CLEANUP;
 }
 
 #else

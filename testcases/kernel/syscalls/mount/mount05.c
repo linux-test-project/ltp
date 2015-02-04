@@ -125,8 +125,6 @@ void cleanup(void)
 		if (tst_umount(mntpoint_src) != 0)
 			tst_brkm(TBROK | TTERRNO, NULL, "umount(2) failed");
 
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 

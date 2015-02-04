@@ -168,6 +168,5 @@ static void setup(void)
 static void cleanup(void)
 {
 	close(fildes);
-	TEST_CLEANUP;
 	tst_rmdir();
 }

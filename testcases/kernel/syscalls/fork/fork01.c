@@ -180,7 +180,6 @@ int main(int ac, char **av)
 
 		TEST(fork());
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "fork() Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			tst_resm(TBROK, "unable to continue");
@@ -233,11 +232,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

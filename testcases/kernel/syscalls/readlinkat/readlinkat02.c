@@ -58,7 +58,6 @@ static struct test_case_t {
 
 char *TCID = "readlinkat02";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EINVAL, ENOTDIR, 0 };
 static void setup(void);
 static void cleanup(void);
 static void readlinkat_verify(const struct test_case_t *);
@@ -87,8 +86,6 @@ int main(int argc, char **argv)
 static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -122,7 +119,5 @@ static void readlinkat_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

@@ -188,8 +188,6 @@ static void cleanup(void)
 	}
 
 	tst_module_unload(NULL, module_name);
-
-	TEST_CLEANUP;
 }
 
 static void create_firmware(char *const fw_paths[])

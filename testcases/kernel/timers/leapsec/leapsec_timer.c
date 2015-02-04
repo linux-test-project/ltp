@@ -218,5 +218,4 @@ static void cleanup(void)
 	/* Calls clock_was_set() in kernel to revert inconsistency.
 	 * The only possible EPERM doesn't matter here. */
 	clock_settime(CLOCK_REALTIME, &now);
-	TEST_CLEANUP;
 }

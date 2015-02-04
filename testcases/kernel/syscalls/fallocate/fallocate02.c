@@ -157,8 +157,6 @@ static void fallocate_verify(int i)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (fdw > 0)
 		SAFE_CLOSE(NULL, fdw);
 	if (fdr > 0)

@@ -69,8 +69,6 @@ static struct test_case_t {
 
 int TST_TOTAL = ARRAY_SIZE(testcases);
 
-static int exp_enos[] = { EBUSY, EINVAL, EFAULT, ENAMETOOLONG, ENOENT, 0 };
-
 int main(int ac, char **av)
 {
 	int lc, i;
@@ -134,15 +132,11 @@ static void setup(void)
 
 	fd = SAFE_OPEN(cleanup, MNTPOINT "/file", O_CREAT | O_RDWR);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (fd > 0 && close(fd))
 		tst_resm(TWARN | TERRNO, "Failed to close file");
 

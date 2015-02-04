@@ -146,7 +146,6 @@ void cleanup(void)
 	 */
 	close(fileHandle);
 
-	TEST_CLEANUP;
 	tst_rmdir();
 
 }

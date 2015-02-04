@@ -159,9 +159,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
-	/* set the process id back to root in order to remove the tmp dir */
 	if (seteuid(0) == -1)
 		tst_brkm(TBROK, NULL, "failed to set process id to root");
 

@@ -125,8 +125,6 @@ void cleanup();
 char *TCID = "fcntl10";
 int TST_TOTAL = 2;
 
-int exp_enos[] = { 0, 0 };
-
 char fname[255];
 int fd;
 struct flock flocks;
@@ -147,9 +145,6 @@ int main(int ac, char **av)
      ***************************************************************/
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
@@ -168,7 +163,6 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
 					 "fcntl(%s, F_SETLKW, &flocks) flocks.l_type = %s Failed, errno=%d : %s",
 					 fname, type ? "F_RDLCK" : "F_WRLCK",
@@ -188,7 +182,6 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
 					 "fcntl(%s, F_SETLKW, &flocks) flocks.l_type = F_UNLCK Failed, errno=%d : %s",
 					 fname, TEST_ERRNO,
@@ -246,11 +239,6 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	if (close(fd) == -1) {
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno,

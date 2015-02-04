@@ -38,8 +38,6 @@
 char *TCID = "semop02";
 
 static void semop_verify(int i);
-
-static int exp_enos[] = { E2BIG, EACCES, EFAULT, EINVAL, ERANGE, 0 };
 int sem_id_1 = -1;	/* a semaphore set with read & alter permissions */
 int sem_id_2 = -1;	/* a semaphore set without read & alter permissions */
 int bad_id = -1;
@@ -105,8 +103,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	tst_tmpdir();
@@ -151,8 +147,6 @@ static void semop_verify(int i)
 		return;
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO == TC[i].error) {
 		tst_resm(TPASS | TTERRNO, "semop failed as expected");
 	} else {
@@ -167,8 +161,6 @@ void cleanup(void)
 	/* if they exist, remove the semaphore resources */
 	rm_sema(sem_id_1);
 	rm_sema(sem_id_2);
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 }

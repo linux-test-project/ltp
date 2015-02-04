@@ -128,12 +128,6 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 
 char *TCID = "stat03";
 int TST_TOTAL = ARRAY_SIZE(Test_cases);
-int exp_enos[] = { EACCES,
-#if !defined(UCLINUX)
-	EFAULT, ENAMETOOLONG,
-#endif
-	ENOENT, ENOTDIR, 0
-};
 
 char *bad_addr = 0;
 
@@ -158,9 +152,6 @@ int main(int ac, char **av)
 	 */
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -184,7 +175,6 @@ int main(int ac, char **av)
 
 			/* Check return code from stat(2) */
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
 					tst_resm(TPASS,
 						 "stat() fails, %s, errno:%d",
@@ -370,11 +360,6 @@ int longpath_setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Restore mode permissions on test directory created in setup2() */
 	if (chmod(DIR_TEMP, MODE_RWX) < 0) {

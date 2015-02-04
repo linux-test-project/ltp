@@ -151,12 +151,6 @@ void cleanup(void)
 {
 	int ret;
 
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
-
 	/* Set the host name back to original name */
 	if ((ret = sethostname(hname, strlen(hname))) < 0) {
 		tst_resm(TWARN, "sethostname() failed while restoring"

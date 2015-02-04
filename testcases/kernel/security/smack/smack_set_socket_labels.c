@@ -111,5 +111,4 @@ static void set_socket_labels(char **argv)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

@@ -268,11 +268,6 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

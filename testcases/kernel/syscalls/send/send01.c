@@ -157,8 +157,6 @@ static struct test_case_t tdat[] = {
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int exp_enos[] = { EBADF, ENOTSOCK, EFAULT, EMSGSIZE, EPIPE, EINVAL, 0 };
-
 #ifdef UCLINUX
 static char *argv0;
 #endif
@@ -265,8 +263,6 @@ int main(int ac, char *av[])
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 
 		tst_count = 0;
@@ -281,8 +277,6 @@ int main(int ac, char *av[])
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != tdat[testno].experrno) {
 				tst_resm(TFAIL, "%s ; returned"
@@ -316,7 +310,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	kill(server_pid, SIGKILL);
-	TEST_CLEANUP;
 
 }
 

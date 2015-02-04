@@ -122,9 +122,7 @@ char *TCID = "mknod06";
 int TST_TOTAL = ARRAY_SIZE(Test_cases);
 #if !defined(UCLINUX)
 extern char *get_high_address();
-int exp_enos[] = { EEXIST, EFAULT, ENOENT, ENAMETOOLONG, ENOTDIR, 0 };
 #else
-int exp_enos[] = { EEXIST, ENOENT, ENAMETOOLONG, ENOTDIR, 0 };
 #endif
 
 char *bad_addr = 0;
@@ -151,9 +149,6 @@ int main(int ac, char **av)
 	 * for the test which run as root/super-user.
 	 */
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -184,8 +179,6 @@ int main(int ac, char **av)
 					 Test_cases[ind].exp_errno);
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
 				tst_resm(TPASS, "mknod() fails, %s, errno:%d",
@@ -313,11 +306,6 @@ int setup3(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

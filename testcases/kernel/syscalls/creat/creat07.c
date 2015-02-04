@@ -42,8 +42,6 @@ int TST_TOTAL = 1;
 static void setup(char *);
 static void cleanup(void);
 
-static int exp_enos[] = {ETXTBSY, 0};
-
 static struct tst_checkpoint checkpoint;
 
 int main(int ac, char **av)
@@ -56,8 +54,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup(av[0]);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -115,7 +111,5 @@ static void setup(char *app)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

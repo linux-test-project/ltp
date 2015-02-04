@@ -111,7 +111,6 @@ static int hz;			/* HZ from sysconf */
 
 static struct timex tim_save;
 static struct timex buff;
-static int exp_enos[] = { EPERM, EINVAL, EFAULT, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -186,7 +185,6 @@ int main(int ac, char **av)
 					 "Test Failed, adjtimex() returned %ld",
 					 TEST_RETURN);
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (test_cases[i].cleanup) {
 				test_cases[i].cleanup();
 			}
@@ -208,9 +206,6 @@ void setup(void)
 	tim_save.modes = 0;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	/* set the HZ from sysconf */
 	hz = sysconf(_SC_CLK_TCK);
@@ -238,11 +233,6 @@ void cleanup(void)
 	if ((adjtimex(&tim_save)) == -1) {
 		tst_resm(TWARN, "Failed to restore saved parameters");
 	}
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 }
 
 int setup2(void)

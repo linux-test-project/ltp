@@ -207,7 +207,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	int waitstatus;
-	TEST_CLEANUP;
 
 	/* collect our zombies */
 	while (wait(&waitstatus) > 0) ;

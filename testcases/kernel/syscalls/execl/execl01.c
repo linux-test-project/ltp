@@ -125,8 +125,6 @@ void cleanup();
 char *TCID = "execl01";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
-
 pid_t pid;			/* process id from fork */
 int status;			/* status returned from waitpid */
 
@@ -139,9 +137,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -201,7 +196,5 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

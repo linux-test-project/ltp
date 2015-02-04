@@ -79,7 +79,6 @@
 
 static void setup();
 static void cleanup();
-static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
 char *TCID = "getrusage02";
 
@@ -139,15 +138,11 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 }
 
 void cleanup(void)
 {
-
-	TEST_CLEANUP;
 
 }

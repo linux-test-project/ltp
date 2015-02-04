@@ -124,8 +124,6 @@ void cleanup();
 char *TCID = "lseek02";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
-
 char fname[255];
 int fd;
 
@@ -148,9 +146,6 @@ int main(int ac, char **av)
      * perform global setup for test
      ***************************************************************/
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
@@ -209,11 +204,6 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

@@ -98,8 +98,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		if (TEST_ERRNO != EAGAIN) {
 			tst_resm(TFAIL, "sendfile returned unexpected "
 				 "errno, expected: %d, got: %d",
@@ -194,8 +192,6 @@ void cleanup(void)
 	if (ignored_fd)
 		close(ignored_fd);
 	close(in_fd);
-
-	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();

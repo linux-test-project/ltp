@@ -191,7 +191,6 @@ static void do_cleanup(void)
 		SAFE_FILE_PRINTF(NULL, tcp_tw_reuse, "0");
 		tst_resm(TINFO, "unset '%s' back to '0'", tcp_tw_reuse);
 	}
-	TEST_CLEANUP;
 }
 TST_DECLARE_ONCE_FN(cleanup, do_cleanup)
 

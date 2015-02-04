@@ -210,6 +210,4 @@ void cleanup(void)
 	unlink(testfile3);
 	unlink(testfile);
 	rmdir(pathname);
-
-	TEST_CLEANUP;
 }

@@ -90,8 +90,7 @@
 char *TCID = "utime01";
 int TST_TOTAL = 1;
 time_t curr_time;		/* current time in seconds */
-time_t tloc;			/* argument var. for time() */
-int exp_enos[] = { 0 };
+time_t tloc;
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -127,9 +126,6 @@ int main(int ac, char **av)
 		break;
 	}
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -141,7 +137,6 @@ int main(int ac, char **av)
 		TEST(utime(TEMP_FILE, NULL));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "utime(%s) Failed, errno=%d : %s",
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
@@ -250,11 +245,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

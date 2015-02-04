@@ -81,8 +81,6 @@
 void setup(void);
 void cleanup(void);
 
-int exp_enos[] = { EWOULDBLOCK, EAGAIN, 0 };
-
 char *TCID = "flock04";
 int TST_TOTAL = 2;
 char filename[100];
@@ -163,8 +161,6 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	tst_tmpdir();
@@ -178,8 +174,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	unlink(filename);
 
 	tst_rmdir();

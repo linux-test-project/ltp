@@ -84,7 +84,6 @@ int main(int argc, char **argv)
 		TEST(rmdir("."));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
 		if (TEST_RETURN == -1) {
@@ -129,7 +128,6 @@ int main(int argc, char **argv)
 		TEST(rmdir(bad_addr));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
 		if (TEST_RETURN == -1) {
@@ -157,7 +155,6 @@ int main(int argc, char **argv)
 		TEST(rmdir(get_high_address()));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 
 		if (TEST_RETURN == -1) {
@@ -192,7 +189,6 @@ int main(int argc, char **argv)
 		TEST(rmdir(dir_name));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "rmdir(\"%s\") failed when it should have passed. Returned %d : %s",
 				 dir_name, TEST_ERRNO, strerror(TEST_ERRNO));
@@ -242,7 +238,5 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

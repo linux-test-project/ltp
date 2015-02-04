@@ -229,7 +229,6 @@ static void cleanup(void)
 {
 	close_ns_fds();
 	tst_rmdir();
-	TEST_CLEANUP;
 }
 #else
 int main(int argc, char *argv[])

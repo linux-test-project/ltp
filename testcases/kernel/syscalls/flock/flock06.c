@@ -167,8 +167,6 @@ void setup(void)
 	if (fd < 0) {
 		tst_resm(TFAIL, "creating a new file failed");
 
-		TEST_CLEANUP;
-
 		/* Removing temp dir */
 		tst_rmdir();
 
@@ -184,11 +182,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	unlink(filename);
 	tst_rmdir();

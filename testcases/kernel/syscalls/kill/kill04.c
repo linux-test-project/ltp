@@ -69,8 +69,6 @@ void do_child(void);
 char *TCID = "kill04";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { ESRCH, 0 };
-
 #define TEST_SIG SIGKILL
 
 int main(int ac, char **av)
@@ -83,9 +81,7 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();		/* global setup */
-
-	TEST_EXP_ENOS(exp_enos);
+	setup();
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -107,7 +103,6 @@ int main(int ac, char **av)
 		 * Check to see if the errno was set to the expected
 		 * value of 3 : ESRCH
 		 */
-		TEST_ERROR_LOG(TEST_ERRNO);
 		if (TEST_ERRNO == ESRCH) {
 			tst_resm(TPASS, "errno set to %d : %s, as "
 				 "expected", TEST_ERRNO,
@@ -138,10 +133,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing status if that option was specified.
-	 * print errno log if that option was specified
-	 */
-	TEST_CLEANUP;
 
 }

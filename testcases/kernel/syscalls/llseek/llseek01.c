@@ -219,8 +219,6 @@ void cleanup(void)
 {
 	SAFE_CLOSE(NULL, fildes);
 
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 	if (setrlimit(RLIMIT_FSIZE, &rlp_orig) == -1)

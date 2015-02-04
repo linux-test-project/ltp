@@ -100,8 +100,7 @@
 char *TCID = "utime03";
 int TST_TOTAL = 1;
 time_t curr_time;		/* current time in seconds */
-time_t tloc;			/* argument var. for time() */
-int exp_enos[] = { 0 };
+time_t tloc;
 
 struct passwd *ltpuser;		/* password struct for ltpusers */
 uid_t user_uid;			/* user id of ltpuser */
@@ -143,9 +142,6 @@ int main(int ac, char **av)
 		break;
 	}
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	pid = FORK_OR_VFORK();
 
 	if (pid == -1) {
@@ -172,7 +168,6 @@ int main(int ac, char **av)
 			TEST(utime(TEMP_FILE, NULL));
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
 					 "utime(%s) Failed, errno=%d : %s",
 					 TEMP_FILE, TEST_ERRNO,
@@ -344,11 +339,6 @@ void setup(void)
 void cleanup(void)
 {
 	seteuid(0);
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

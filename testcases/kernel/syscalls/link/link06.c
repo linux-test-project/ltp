@@ -49,8 +49,6 @@ static void cleanup(void);
 char *TCID = "link06";
 int TST_TOTAL = 1;
 
-static int exp_enos[] = { EACCES, 0 };
-
 #define OLDPATH "oldpath"
 #define NEWPATH "newpath"
 
@@ -72,7 +70,7 @@ int main(int ac, char **av)
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "link() returned %ld,"
 				 "expected -1, errno=%d", TEST_RETURN,
-				 exp_enos[0]);
+				 EACCES);
 		} else {
 			if (TEST_ERRNO == EACCES) {
 				tst_resm(TPASS, "link() fails with expected "
@@ -114,6 +112,5 @@ static void cleanup(void)
 	if (seteuid(0))
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }

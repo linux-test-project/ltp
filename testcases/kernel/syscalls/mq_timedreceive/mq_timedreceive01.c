@@ -106,7 +106,6 @@ void sighandler(int sig)
 void cleanup(void)
 {
 
-	TEST_CLEANUP;
 	tst_rmdir();
 
 }

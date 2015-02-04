@@ -49,8 +49,6 @@ static void cleanup(void)
 {
 	if (module_loaded)
 		tst_module_unload(NULL, module_name);
-
-	TEST_CLEANUP;
 }
 
 static void help(void)

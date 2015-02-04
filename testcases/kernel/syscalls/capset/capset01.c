@@ -88,7 +88,6 @@ static void cleanup();
 
 char *TCID = "capset01";
 int TST_TOTAL = 1;
-static int exp_enos[] = { EFAULT, EINVAL, EPERM, 0 };
 
 static struct __user_cap_header_struct header;	/* cap_user_header_t is a pointer
 						   to __user_cap_header_struct */
@@ -133,8 +132,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	header.version = _LINUX_CAPABILITY_VERSION;
@@ -145,5 +142,4 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

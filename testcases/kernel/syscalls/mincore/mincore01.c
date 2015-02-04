@@ -219,8 +219,6 @@ static void mincore_verify(struct test_case_t *tc)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	free(global_vec);
 
 	if (munmap(global_pointer, global_len) == -1)

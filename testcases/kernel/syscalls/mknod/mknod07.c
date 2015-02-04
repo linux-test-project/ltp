@@ -81,7 +81,6 @@ static struct test_case_t {
 
 char *TCID = "mknod07";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EPERM, EACCES, EROFS, ELOOP, 0 };
 
 static void setup(void);
 static void mknod_verify(const struct test_case_t *test_case);
@@ -119,8 +118,6 @@ static void setup(void)
 	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	tst_tmpdir();
 
@@ -178,8 +175,6 @@ static void mknod_verify(const struct test_case_t *test_case)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (seteuid(0) == -1)
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 

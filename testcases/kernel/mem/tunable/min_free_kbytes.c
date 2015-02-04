@@ -255,6 +255,4 @@ void cleanup(void)
 {
 	set_sys_tune("min_free_kbytes", default_tune, 0);
 	set_sys_tune("overcommit_memory", orig_overcommit, 0);
-
-	TEST_CLEANUP;
 }

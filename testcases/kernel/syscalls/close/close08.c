@@ -123,8 +123,6 @@ void cleanup();
 char *TCID = "close08";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0, 0 };
-
 char fname[255];
 int fd;
 
@@ -138,8 +136,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -151,7 +147,6 @@ int main(int ac, char **av)
 		TEST(close(fd));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL | TTERRNO, "close(%s) failed", fname);
 		} else {
 			tst_resm(TPASS, "close(%s) returned %ld", fname,
@@ -182,8 +177,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 }

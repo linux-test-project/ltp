@@ -67,8 +67,6 @@ void cleanup(void);
 #define FMODE	0444
 #define DMODE	00700
 
-int exp_enos[] = { EACCES, 0 };
-
 char user1name[] = "nobody";
 char good_dir[40] = "testdir";
 char fname[40], fname1[40];
@@ -96,8 +94,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -154,8 +150,6 @@ int main(int ac, char **av)
 						 "unexpectedly");
 					continue;
 				}
-
-				TEST_ERROR_LOG(TEST_ERRNO);
 
 				if (TEST_ERRNO != EACCES) {
 					retval = 1;
@@ -214,11 +208,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* delete the test directory created in setup() */
 	tst_rmdir();

@@ -41,8 +41,6 @@ static const char *device;
 
 int TST_TOTAL = 1;
 
-static int exp_enos[] = { EPERM, 0 };
-
 static void verify_mount(void)
 {
 
@@ -109,15 +107,11 @@ static void setup(void)
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 	SAFE_MKDIR(cleanup, mntpoint, DIR_MODE);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (seteuid(0))
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
 

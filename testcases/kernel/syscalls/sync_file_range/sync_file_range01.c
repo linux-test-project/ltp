@@ -146,11 +146,6 @@ int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 /******************************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* close the file we have open */
 	if (close(filed) == -1) {
@@ -279,8 +274,6 @@ int main(int ac, char **av)
 				 TEST_RETURN);
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO == test_data[test_index].error) {
 			tst_resm(TPASS | TTERRNO, "got expected error");

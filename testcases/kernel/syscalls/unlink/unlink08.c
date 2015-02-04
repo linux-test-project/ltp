@@ -125,8 +125,6 @@ void cleanup(void);
 char *TCID = "unlink08";
 int TST_TOTAL = 3;
 
-int exp_enos[] = { 0, 0 };
-
 int unwrite_dir_setup(int flag);
 int unsearch_dir_setup(int flag);
 int dir_setup(int flag);
@@ -177,9 +175,6 @@ int main(int ac, char **av)
      * perform global setup for test
      ***************************************************************/
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
@@ -274,12 +269,6 @@ void cleanup(void)
 {
 	chmod("unwrite_dir", 0777);
 	chmod("unsearch_dir", 0777);
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

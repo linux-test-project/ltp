@@ -44,8 +44,6 @@
 char *TCID = "pipe07";
 int TST_TOTAL = 1;
 
-static int exp_enos[] = { EMFILE, 0 };
-
 /* used to record file descriptors open at the test start */
 static int rec_fds[128];
 static int rec_fds_max;
@@ -103,7 +101,6 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	TEST_EXP_ENOS(exp_enos);
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
@@ -179,5 +176,4 @@ static void close_test_fds(int max_fd)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

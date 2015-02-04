@@ -101,7 +101,5 @@ static void setresgid_verify(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

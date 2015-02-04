@@ -61,7 +61,6 @@ static void tee_verify(const struct test_case_t *);
 
 char *TCID = "tee02";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EINVAL, 0 };
 
 int main(int ac, char **av)
 {
@@ -73,8 +72,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -117,8 +114,6 @@ static void tee_verify(const struct test_case_t *tc)
 		return;
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO == tc->exp_errno) {
 		tst_resm(TPASS | TTERRNO, "tee() failed as expected");
 	} else {
@@ -130,8 +125,6 @@ static void tee_verify(const struct test_case_t *tc)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (fd && close(fd) < 0)
 		tst_resm(TWARN | TERRNO, "close fd failed");
 

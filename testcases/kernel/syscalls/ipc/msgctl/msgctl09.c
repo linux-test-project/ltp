@@ -459,8 +459,6 @@ void cleanup(void)
 {
 	int status;
 
-	TEST_CLEANUP;
-
 #ifdef DEBUG
 	tst_resm(TINFO, "Removing the message queue");
 #endif

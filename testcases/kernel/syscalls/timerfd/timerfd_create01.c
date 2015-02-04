@@ -45,7 +45,6 @@ int TST_TOTAL = ARRAY_SIZE(test_cases);
 static void setup(void);
 static void timerfd_create_verify(const struct test_case_t *);
 static void cleanup(void);
-static int exp_enos[] = { EINVAL, 0 };
 
 int main(int argc, char *argv[])
 {
@@ -77,8 +76,6 @@ static void setup(void)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
-	TEST_EXP_ENOS(exp_enos);
 }
 
 static void timerfd_create_verify(const struct test_case_t *test)
@@ -102,5 +99,4 @@ static void timerfd_create_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

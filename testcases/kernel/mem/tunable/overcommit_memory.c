@@ -174,8 +174,6 @@ void cleanup(void)
 {
 	set_sys_tune("overcommit_memory", old_overcommit_memory, 0);
 	set_sys_tune("overcommit_ratio", old_overcommit_ratio, 0);
-
-	TEST_CLEANUP;
 }
 
 static void usage(void)

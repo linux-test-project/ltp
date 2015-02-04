@@ -117,9 +117,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
-	/* close the file we have open */
 	if (close(fd) == -1) {
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno,
 			 strerror(errno));

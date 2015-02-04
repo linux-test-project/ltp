@@ -55,8 +55,6 @@ static void print_test_result(int err, int exp_errno);
 
 char *TCID = "getdents02";
 
-static int exp_enos[] = { EBADF, EINVAL, ENOTDIR, ENOENT, 0 };
-
 static void test_ebadf(void);
 static void test_einval(void);
 static void test_enotdir(void);
@@ -107,14 +105,11 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
 static void print_test_result(int err, int exp_errno)
 {
-	TEST_ERROR_LOG(err);
 	if (err == 0) {
 		tst_resm(TFAIL, "call succeeded unexpectedly");
 	} else if  (err == exp_errno) {
@@ -204,7 +199,5 @@ static void test_enoent(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

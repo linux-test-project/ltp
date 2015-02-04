@@ -129,5 +129,4 @@ void cleanup(void)
 				 "%d", merge_across_nodes);
 
 	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
-	TEST_CLEANUP;
 }

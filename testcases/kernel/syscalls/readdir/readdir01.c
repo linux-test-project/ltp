@@ -133,8 +133,6 @@ void cleanup();
 char *TCID = "readdir01";
 int TST_TOTAL = 2;
 
-int exp_enos[] = { 0, 0 };
-
 #define BASENAME	"readdirfile"
 
 char Basename[255];
@@ -194,9 +192,6 @@ int main(int ac, char **av)
 	 * sane.
 	 */
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state
@@ -335,11 +330,6 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* If you use a temporary directory, you need to be sure you remove it. Use
 	 * tst_rmdir() to do it automatically.$

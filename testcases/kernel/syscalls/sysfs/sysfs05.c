@@ -80,7 +80,6 @@ static void cleanup();
 char *TCID = "sysfs05";
 static int option[3] = { 1, 4, 1 };	/* valid and invalid option */
 static char *fsname[] = { "ext0", " ext2", (char *)-1 };
-static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
 static struct test_case_t {
 	char *err_desc;		/*error description */
@@ -129,7 +128,6 @@ int main(int ac, char **av)
 					 testcase[i].exp_errno,
 					 testcase[i].exp_errval, TEST_ERRNO);
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 		}		/*End of TEST LOOPS */
 	}
@@ -150,9 +148,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* set the expected erronos */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
@@ -162,10 +157,5 @@ void setup(void)
 */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

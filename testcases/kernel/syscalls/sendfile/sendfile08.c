@@ -132,7 +132,5 @@ static void cleanup(void)
 	close(out_fd);
 	close(in_fd);
 
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

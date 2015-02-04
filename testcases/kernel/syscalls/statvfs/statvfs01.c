@@ -39,8 +39,6 @@ static void cleanup(void);
 char *TCID = "statvfs01";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { 0 };
-
 int main(int ac, char **av)
 {
 	struct statvfs buf;
@@ -51,8 +49,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -96,5 +92,4 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

@@ -90,7 +90,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	free(pointer_vec);
-	TEST_CLEANUP;
 }
 
 static int fork_test(void)

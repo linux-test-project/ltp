@@ -89,7 +89,6 @@ void setup();
 void cleanup();
 
 int TST_TOTAL = 1;
-int exp_enos[] = { EINVAL, 0 };
 
 struct test_case_t {
 	int call;
@@ -119,8 +118,6 @@ int main(int ac, char **av)
 
 		TEST(socketcall(TC.call, TC.args));
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		/* check return code */
 		if ((TEST_RETURN == -1)
 		    && (TEST_ERRNO == TC.experrno)) {
@@ -146,9 +143,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/*set the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
@@ -158,8 +152,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }
 
 #else

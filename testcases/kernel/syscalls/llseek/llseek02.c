@@ -113,8 +113,6 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	0, 0, NULL, 0, no_setup}
 };
 
-int exp_enos[] = { EINVAL, EBADF, 0 };
-
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
@@ -134,8 +132,6 @@ int main(int ac, char **av)
 	}
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -167,7 +163,6 @@ int main(int ac, char **av)
 					 Test_cases[ind].exp_errno);
 				continue;
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
 				tst_resm(TPASS, "llseek() fails, %s, errno:%d",
 					 test_desc, TEST_ERRNO);
@@ -276,11 +271,6 @@ int setup2(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Close the temporary file(s) created in setup1/setup2 */
 	if (close(fd1) < 0) {

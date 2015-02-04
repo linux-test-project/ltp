@@ -65,9 +65,6 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 	{(caddr_t) - 1, 1}
 };
 
-/* 0 terminated list of expected errnos */
-int exp_enos[] = { 0 };
-
 char name[K_1], f_name[K_1];
 int fd[2], in_sighandler;
 
@@ -140,7 +137,6 @@ int main(int argc, char **argv)
 				fail = 1;
 			}
 		} else {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL | TTERRNO,
 				 "Error writev return value = %ld",
 				 TEST_RETURN);
@@ -166,8 +162,6 @@ void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	/* Pause if that option was specified.
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
@@ -222,11 +216,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	close(fd[0]);
 

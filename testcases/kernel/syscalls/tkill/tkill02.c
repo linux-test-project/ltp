@@ -77,7 +77,6 @@ static pid_t unused_tid;
 void cleanup(void)
 {
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

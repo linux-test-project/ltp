@@ -172,8 +172,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (close(fildes) == -1)
 		tst_resm(TWARN | TERRNO, "close failed");
 

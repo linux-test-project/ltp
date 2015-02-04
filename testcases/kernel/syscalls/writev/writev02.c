@@ -78,9 +78,6 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 
 char name[K_1], f_name[K_1];
 
-/* 0 terminated list of expected errnos */
-int exp_enos[] = { 14, 0 };
-
 int fd[2], in_sighandler;
 char *buf_list[NBUFS];
 
@@ -154,7 +151,6 @@ int main(int argc, char **argv)
 		l_seek(fd[0], 0, 0);
 		TEST(writev(fd[0], wr_iovec, 2));
 		if (TEST_RETURN < 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EFAULT) {
 				tst_resm(TPASS, "Received EFAULT as expected");
 			} else if (TEST_ERRNO != EFAULT) {
@@ -184,8 +180,6 @@ void setup(void)
 {
 	tst_sig(FORK, sighandler, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	tst_tmpdir();
@@ -203,8 +197,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	close(fd[0]);
 	close(fd[1]);
 

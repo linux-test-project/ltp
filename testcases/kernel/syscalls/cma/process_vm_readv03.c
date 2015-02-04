@@ -271,7 +271,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	clean_sem(semid);
-	TEST_CLEANUP;
 }
 
 static void help(void)

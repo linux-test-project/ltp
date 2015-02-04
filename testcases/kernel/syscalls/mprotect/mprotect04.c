@@ -178,5 +178,4 @@ static void testfunc_protexec(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

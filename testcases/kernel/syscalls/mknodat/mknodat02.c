@@ -83,7 +83,6 @@ static void mknodat_verify(struct test_case_t *tc);
 
 char *TCID = "mknodat";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EROFS, ELOOP, 0 };
 
 int main(int ac, char **av)
 {
@@ -120,8 +119,6 @@ static void setup(void)
 	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	tst_tmpdir();
 
@@ -183,8 +180,6 @@ static void mknodat_verify(struct test_case_t *tc)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (dirfd > 0 && close(dirfd) < 0)
 		tst_resm(TWARN | TERRNO, "close(%d) failed", dirfd);
 	if (mount_flag && tst_umount(MNT_POINT) < 0)

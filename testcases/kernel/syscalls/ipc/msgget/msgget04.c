@@ -64,8 +64,6 @@ int TST_TOTAL = 3;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-int exp_enos[] = { EACCES, 0 };	/* 0 terminated list of expected errnos */
-
 int msg_q_1 = -1;		/* to hold the message queue id */
 
 int test_flags[] = { MSG_RD, MSG_WR, MSG_RD | MSG_WR };
@@ -103,8 +101,6 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			switch (TEST_ERRNO) {
 			case EACCES:
 				tst_resm(TPASS, "expected failure - errno = "
@@ -133,9 +129,6 @@ void setup(void)
 	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Set up the expected error numbers for -e option */
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -175,11 +168,5 @@ void cleanup(void)
 	rm_queue(msg_q_1);
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

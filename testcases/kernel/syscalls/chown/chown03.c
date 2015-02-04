@@ -204,8 +204,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (setegid(0) == -1)
 		tst_resm(TWARN | TERRNO, "setegid(0) failed");
 	if (seteuid(0) == -1)

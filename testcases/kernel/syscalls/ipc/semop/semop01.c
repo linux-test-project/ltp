@@ -155,5 +155,4 @@ void cleanup(void)
 	free(get_arr.array);
 
 	tst_rmdir();
-	TEST_CLEANUP;
 }

@@ -72,7 +72,6 @@ int main(int ac, char **av)
 		TEST(SETUID(cleanup, uid));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "setuid -  Set the effective user ID to the current real uid failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -96,5 +95,4 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

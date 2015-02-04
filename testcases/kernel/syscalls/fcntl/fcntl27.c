@@ -105,8 +105,6 @@ int TST_TOTAL = 1;
 char fname[255];
 int fd;
 
-int exp_enos[] = { 0 };
-
 int main(int ac, char **av)
 {
 	int lc, expected_result = -1;	/* loop counter, expected */
@@ -122,8 +120,6 @@ int main(int ac, char **av)
      * perform global setup for test
      ***************************************************************/
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	expected_result = -1;
 
@@ -142,7 +138,6 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == expected_result) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TPASS,
 				 "fcntl(fd, F_SETLEASE, F_RDLCK) succeeded");
 		} else {
@@ -189,11 +184,6 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* close the file we've had open */
 	if (close(fd) == -1) {

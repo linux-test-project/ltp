@@ -64,8 +64,6 @@ int broken = 1;			/* broken should be 0 when test completes properly */
 
 void cleanup()
 {
-	/* Clean the test testcase as LTP wants */
-	TEST_CLEANUP;
 }
 
 /*

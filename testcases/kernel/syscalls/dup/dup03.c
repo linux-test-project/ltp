@@ -209,8 +209,6 @@ void cleanup(void)
 {
 	int i;
 
-	TEST_CLEANUP;
-
 	for (i = 0; i <= nfds; i++)
 		close(fd[i]);
 

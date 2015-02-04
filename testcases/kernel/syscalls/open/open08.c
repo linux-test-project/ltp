@@ -67,9 +67,6 @@ char *TCID = "open08";
 static char nobody_uid[] = "nobody";
 static struct passwd *ltpuser;
 
-static int exp_enos[] = {EEXIST, EISDIR, ENOTDIR, ENAMETOOLONG,
-			 EACCES, EFAULT, 0};
-
 static char *bad_addr;
 
 static char filename[40] = "";
@@ -105,8 +102,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
@@ -118,8 +113,6 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
@@ -181,6 +174,5 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	tst_rmdir();
 }

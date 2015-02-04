@@ -88,8 +88,6 @@ static int setup1(void);
 static void cleanup1();
 static void cleanup();
 
-static int exp_enos[] = { EINVAL, EPERM, 0 };
-
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -149,8 +147,6 @@ int main(int ac, char **av)
 					 TEST_ERRNO, test_cases[i].exp_errno);
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			if (i == 1) {
 				/* revert back to super user */
 				cleanup1();
@@ -199,8 +195,6 @@ void setup(void)
 		tst_brkm(TBROK, NULL, "\"nobody\" user id doesn't exist");
 	}
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 }
@@ -211,12 +205,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }
 

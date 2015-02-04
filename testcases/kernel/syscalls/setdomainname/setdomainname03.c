@@ -83,7 +83,6 @@
 
 char *TCID = "setdomainname03";
 int TST_TOTAL = 1;
-static int exp_enos[] = { EPERM, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -127,7 +126,6 @@ int main(int ac, char **av)
 				 "Got : %d, %s", EPERM, TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 		}
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 	}
 
@@ -149,9 +147,6 @@ void setup(void)
 
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	/* Switch to nobody user for correct error code collection */
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
@@ -178,12 +173,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Set effective user id back to root */
 	if (seteuid(0) == -1) {

@@ -49,7 +49,6 @@ char *TCID = "munmap03";
 static size_t page_sz;
 static char *global_addr;
 static size_t global_maplen;
-static int exp_enos[] = { EINVAL, 0 };
 
 static void setup(void);
 static void cleanup(void);
@@ -84,8 +83,6 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 
@@ -157,8 +154,6 @@ static void test_einval3(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (munmap(global_addr, global_maplen) == -1)
 		tst_resm(TWARN | TERRNO, "munmap failed");
 }

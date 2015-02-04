@@ -92,7 +92,6 @@
 
 char *TCID = "lseek10";
 int TST_TOTAL = 3;
-int exp_enos[] = { ESPIPE, EINVAL, EBADF, 0 };
 
 int no_setup();
 int setup1();			/* setup function to test lseek() for ESPIPE */
@@ -135,9 +134,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -169,7 +165,6 @@ int main(int ac, char **av)
 					 Test_cases[ind].exp_errno);
 				continue;
 			}
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
 				tst_resm(TPASS, "lseek() fails, %s, errno:%d",
 					 test_desc, TEST_ERRNO);
@@ -305,11 +300,6 @@ int setup3(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Close the temporary file(s) created in setup1/setup2 */
 	if (close(fd1) < 0) {

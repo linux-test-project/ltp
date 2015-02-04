@@ -73,10 +73,8 @@
 char *TCID = "nanosleep03";
 int TST_TOTAL = 1;
 
-struct timespec timereq;	/* time struct. buffer for nanosleep() */
-struct timespec timerem;	/* time struct. buffer for nanosleep() */
-
-int exp_enos[] = { EINTR, 0 };
+struct timespec timereq;
+struct timespec timerem;
 
 void do_child();		/* Child process */
 void setup();			/* Main setup function of test */
@@ -98,9 +96,6 @@ int main(int ac, char **av)
 #endif
 
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -167,8 +162,6 @@ void do_child(void)
 
 	if (TEST_RETURN == -1) {
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		/* Check for expected errno is set */
 		if (TEST_ERRNO != EINTR) {
 			tst_resm(TFAIL | TTERRNO,
@@ -227,10 +220,5 @@ void sig_handler(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

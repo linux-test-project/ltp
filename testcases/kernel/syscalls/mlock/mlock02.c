@@ -60,7 +60,6 @@ static struct passwd *ltpuser;
 static void (*test_func[])(void) = { test_enomem1, test_enomem2, test_eperm };
 
 int TST_TOTAL = ARRAY_SIZE(test_func);
-static int exp_enos[] = { ENOMEM, EPERM, 0 };
 
 int main(int ac, char **av)
 {
@@ -71,8 +70,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -209,7 +206,6 @@ static void mlock_verify(const void *addr, const size_t len, const int error)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 #else

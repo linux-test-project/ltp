@@ -105,8 +105,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (test_fd > 0)
 		SAFE_CLOSE(NULL, test_fd);
 

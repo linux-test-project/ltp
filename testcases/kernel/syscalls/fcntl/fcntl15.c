@@ -84,11 +84,6 @@ static char *argv0;		/* set by main, passed to self_exec */
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }
 

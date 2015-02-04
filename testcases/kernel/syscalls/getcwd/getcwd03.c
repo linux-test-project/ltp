@@ -216,9 +216,6 @@ void cleanup(void)
 {
 	/* remove the test directory */
 	tst_rmdir();
-
-	/* print timing stats if that option was specified */
-	TEST_CLEANUP;
 }
 
 char *getpwd(void)

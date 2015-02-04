@@ -80,7 +80,6 @@
 
 char *TCID = "stime02";
 int TST_TOTAL = 1;
-int exp_enos[] = { EPERM, 0 };
 
 time_t curr_time;		/* system's current time in seconds */
 time_t new_time;		/* system's new time */
@@ -104,9 +103,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -118,7 +114,6 @@ int main(int ac, char **av)
 		TEST(stime(&new_time));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EPERM) {
 				tst_resm(TPASS, "stime(2) fails, Caller not "
 					 "root, errno:%d", TEST_ERRNO);
@@ -177,10 +172,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

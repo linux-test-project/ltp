@@ -61,8 +61,6 @@ char nobody_uid[] = "nobody";
 char testfile[256] = "";
 struct passwd *ltpuser;
 
-int exp_enos[] = { EACCES, 0 };
-
 int fd = -1;
 
 void setup(void);
@@ -77,8 +75,6 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0)
@@ -149,8 +145,6 @@ void do_master_child(void)
 				close(tst_fd2);
 				exit(TFAIL);
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == EACCES) {
 				printf("open failed with EACCES as expected\n");
@@ -227,12 +221,6 @@ void setup(void)
 void cleanup(void)
 {
 	close(fd);
-
-	/*
-	 * print timing status if that option was specified
-	 * print errno log if that option was specified
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

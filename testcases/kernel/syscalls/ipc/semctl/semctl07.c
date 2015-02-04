@@ -179,5 +179,4 @@ void cleanup(void)
 {
 	rm_sema(semid);
 	tst_rmdir();
-	TEST_CLEANUP;
 }

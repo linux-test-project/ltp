@@ -51,13 +51,6 @@ static char write_buf[K1];
 static void setup(void);
 static void cleanup(void);
 
-static int exp_enos[] = {
-	ESPIPE, EINVAL, EBADF,
-#if !defined(UCLINUX)
-	EFAULT,
-#endif
-0 };
-
 static void test_espipe(void);
 static void test_einval(void);
 static void test_ebadf1(void);
@@ -128,8 +121,6 @@ static void setup(void)
 	if (signal(SIGXFSZ, sighandler) == SIG_ERR)
 		tst_brkm(TBROK, cleanup, "signal() failed");
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	tst_tmpdir();
@@ -143,8 +134,6 @@ static void print_test_result(int err, int exp_errno)
 		tst_resm(TFAIL, "call succeeded unexpectedly");
 		return;
 	}
-
-	TEST_ERROR_LOG(err);
 
 	if (err == exp_errno) {
 		tst_resm(TPASS, "pwrite failed as expected: %d - %s",
@@ -224,7 +213,5 @@ static void test_efault(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

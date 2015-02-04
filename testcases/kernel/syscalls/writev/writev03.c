@@ -73,9 +73,6 @@ struct iovec wr_iovec[MAX_IOVEC] = {
 	{NULL, 0}
 };
 
-/* 0 terminated list of expected errnos */
-int exp_enos[] = { 0 };
-
 char name[K_1], f_name[K_1];
 int fd[2], in_sighandler;
 char *buf_list[NBUFS];
@@ -193,7 +190,6 @@ int main(int argc, char **argv)
 
 		l_seek(fd[0], 8192, 0);
 		if (writev(fd[0], wr_iovec, 3) == -1) {
-			TEST_ERROR_LOG(errno);
 			if (errno == EFAULT)
 				tst_resm(TFAIL, "Got EFAULT");
 		} else {
@@ -218,8 +214,6 @@ void setup(void)
 {
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	/* Pause if that option was specified.
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
@@ -246,8 +240,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	close(fd[0]);
 	close(fd[1]);
 

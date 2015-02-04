@@ -88,7 +88,6 @@
 
 char *TCID = "utime04";
 int TST_TOTAL = 1;
-int exp_enos[] = { 0 };
 
 struct utimbuf times;		/* struct. buffer for utime() */
 
@@ -111,9 +110,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -126,7 +122,6 @@ int main(int ac, char **av)
 		TEST(utime(TEMP_FILE, &times));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "utime(%s) Failed, errno=%d : %s",
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
@@ -208,11 +203,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	tst_rmdir();
 

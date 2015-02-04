@@ -61,10 +61,6 @@ char *TCID = "shmat02";
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-int exp_enos[] = { EINVAL, EACCES, 0 };	/* 0 terminated list of */
-
-					/* expected errnos      */
-
 int shm_id_1 = -1;
 int shm_id_2 = -1;
 int shm_id_3 = -1;
@@ -166,8 +162,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	tst_tmpdir();
@@ -194,11 +188,5 @@ void cleanup(void)
 	rm_shm(shm_id_3);
 
 	tst_rmdir();
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

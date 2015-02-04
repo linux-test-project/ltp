@@ -91,7 +91,6 @@ static void utimes_verify(const struct test_case_t *);
 
 char *TCID = "utimes01";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EACCES, ENOENT, EFAULT, EPERM, EROFS, 0 };
 
 int main(int ac, char **av)
 {
@@ -103,8 +102,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
@@ -183,8 +180,6 @@ static void utimes_verify(const struct test_case_t *tc)
 
 	TEST(utimes(tc->pathname, tc->times));
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO == tc->exp_errno) {
 		tst_resm(TPASS | TTERRNO, "utimes() worked as expected");
 	} else {
@@ -208,8 +203,6 @@ static void cleanup(void)
 
 	if (device)
 		tst_release_device(NULL, device);
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 }

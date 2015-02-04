@@ -140,7 +140,6 @@ int main(int ac, char **av)
 			}
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 			}
 			uid_verify(test_data[i].exp_real_usr,
 				   test_data[i].exp_eff_usr,
@@ -181,7 +180,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static void uid_verify(struct passwd *ru, struct passwd *eu, char *when)

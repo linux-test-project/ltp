@@ -190,7 +190,6 @@ void mmapzero(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 void setup(void)

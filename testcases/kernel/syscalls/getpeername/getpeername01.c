@@ -80,7 +80,6 @@ struct test_case_t {
 
 char *TCID = "getpeername01";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EBADF, ENOTSOCK, ENOTCONN, EFAULT, EINVAL, 0 };
 
 int main(int argc, char *argv[])
 {
@@ -94,8 +93,6 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 
 		tst_count = 0;
@@ -108,8 +105,6 @@ int main(int argc, char *argv[])
 			TEST(getpeername(test_cases[i].sockfd,
 					 test_cases[i].sockaddr,
 					 test_cases[i].addrlen));
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_RETURN == test_cases[i].expretval &&
 			    TEST_ERRNO == test_cases[i].experrno) {
@@ -148,7 +143,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 static void setup2(int i)

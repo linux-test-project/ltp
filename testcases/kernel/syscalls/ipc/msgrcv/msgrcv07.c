@@ -173,5 +173,4 @@ static void wait4child(pid_t child, char *tst_flag)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

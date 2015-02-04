@@ -49,8 +49,6 @@ int TST_TOTAL = 1;
 
 #if !defined UCLINUX
 
-int exp_enos[] = { EFAULT, 0 };
-
 void cleanup(void);
 void setup(void);
 
@@ -65,8 +63,6 @@ int main(int ac, char **av)
 	}
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -83,7 +79,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
 		if (TEST_ERRNO == EFAULT)
 			tst_resm(TPASS,
 				 "gettimeofday(2) set the errno EFAULT correctly");
@@ -107,7 +102,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 #else
 

@@ -95,8 +95,6 @@ int fail;
 char tstdir1[100];
 char tstdir2[100];
 
-int exp_enos[] = { EACCES, 0 };	/* List must end with 0 */
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -117,9 +115,6 @@ int main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	/*
 	 * check looping state if -i option given
@@ -237,11 +232,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/*
 	 * Remove the temporary directory.

@@ -69,7 +69,6 @@ typedef void (*sighandler_t) (int);
 
 sighandler_t Tret;
 int sigs[] = { _NSIG + 1, SIGKILL, SIGSTOP };
-int exp_enos[] = { 22, 0 };
 
 int main(int ac, char **av)
 {
@@ -104,8 +103,6 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO);
-
 			switch (TEST_ERRNO) {
 			case EINVAL:
 				tst_resm(TPASS, "expected failure - errno = "
@@ -136,9 +133,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* set expected errnos for -e option */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
@@ -148,10 +142,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

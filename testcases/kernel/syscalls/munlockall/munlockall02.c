@@ -77,7 +77,6 @@ void cleanup();
 
 char *TCID = "munlockall02";
 int TST_TOTAL = 1;
-static int exp_enos[] = { EPERM, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -102,8 +101,6 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		TEST(munlockall());
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 		/* check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == EPERM)) {
 			tst_resm(TPASS, "munlockall() failed"
@@ -128,9 +125,6 @@ void setup(void)
 	tst_require_root(NULL);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/*set the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
 
 	/* switch to nobody user */
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
@@ -161,9 +155,6 @@ int main(void)
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
-	/*set effective userid back to root */
 	if (seteuid(0) == -1) {
 		tst_resm(TWARN, "seteuid failed to "
 			 "to set the effective uid to root");

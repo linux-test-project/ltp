@@ -45,14 +45,9 @@
 
 void setup();
 void cleanup();
-/*
- *  *  * These globals must be defined in the test.
- *   *   */
 
-char *TCID = "msgctl06";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
-
-int exp_enos[] = { 0 };		/* List must end with 0 */
+char *TCID = "msgctl06";
+int TST_TOTAL = 1;
 
 /*
  * msgctl3_t -- union of msgctl(2)'s possible argument # 3 types.
@@ -155,12 +150,6 @@ void setup(void)
 void cleanup(void)
 {
 	int status;
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/*
 	 * Remove the message queue from the system

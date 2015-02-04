@@ -108,7 +108,6 @@ int main(int argc, char *argv[])
 	tst_resm(TINFO, "umount %s", device);
 	TEST(tst_umount(mntpoint));
 	if (TEST_RETURN != 0) {
-		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_brkm(TBROK, cleanup, "umount(2) Failed "
 			 "while unmounting errno = %d : %s",
 			 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -196,7 +195,6 @@ static void setup(void)
 
 	/* check return code */
 	if (TEST_RETURN != 0) {
-		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_brkm(TBROK | TTERRNO, cleanup, "mount(2) failed");
 	}
 	mount_flag = 1;
@@ -249,8 +247,6 @@ static void cleanup(void)
 	}
 
 	tst_release_device(NULL, device);
-
-	TEST_CLEANUP;
 
 	tst_rmdir();
 }

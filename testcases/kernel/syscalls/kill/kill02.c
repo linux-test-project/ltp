@@ -204,8 +204,6 @@ void cleanup();
 char *TCID = "kill02";
 int TST_TOTAL = 2;
 
-int exp_enos[] = { 0 };		/* Array of expected errnos */
-
 #ifdef UCLINUX
 static char *argv0;
 void childA_rout_uclinux();
@@ -723,9 +721,6 @@ void setup(void)
 			 "signal(SIGCLD, SIG_IGN) failed");
 	}
 
-	/* Indicate which errnos are expected */
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	/*
@@ -870,10 +865,5 @@ void chld1_kill(void)
  ***************************************************************/
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

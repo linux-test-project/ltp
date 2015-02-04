@@ -89,7 +89,6 @@ struct test_case_t {		/* test case structure */
 };
 
 char *TCID = "fdatasync02";
-static int exp_enos[] = { EBADF, EINVAL, 0 };
 
 static int testno;
 static int fd;
@@ -130,7 +129,6 @@ int main(int argc, char **argv)
 
 			/* Test the system call */
 			TEST(fdatasync(fd));
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if ((TEST_RETURN == EXP_RET_VAL) &&
 			    (TEST_ERRNO == tdat[testno].experrno)) {
 				tst_resm(TPASS, "Expected failure for %s, "
@@ -186,9 +184,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
@@ -203,10 +198,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

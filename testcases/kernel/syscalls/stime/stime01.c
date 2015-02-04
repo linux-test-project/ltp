@@ -86,8 +86,7 @@
 char *TCID = "stime01";
 int TST_TOTAL = 1;
 struct timeval real_time_tv, pres_time_tv;
-time_t new_time;		/* system's new time */
-int exp_enos[] = { 0 };
+time_t new_time;
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -104,9 +103,6 @@ int main(int ac, char **av)
 	}
 
 	setup();
-
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -202,11 +198,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Restore the original system time. */
 	if (settimeofday(&real_time_tv, NULL) != 0) {

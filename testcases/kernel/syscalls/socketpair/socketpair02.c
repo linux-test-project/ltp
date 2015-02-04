@@ -84,7 +84,6 @@ char *TCID = "socketpair02";
 void cleanup(void)
 {
 
-	TEST_CLEANUP;
 	tst_rmdir();
 }
 

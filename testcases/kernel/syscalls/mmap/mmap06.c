@@ -50,8 +50,6 @@
 char *TCID = "mmap06";
 int TST_TOTAL = 1;
 
-static int exp_enos[] = { EACCES, 0 };
-
 static size_t page_sz;
 static char *addr;
 static int fildes;
@@ -68,8 +66,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -96,7 +92,6 @@ int main(int ac, char **av)
 			}
 			continue;
 		}
-		TEST_ERROR_LOG(TEST_ERRNO);
 		if (TEST_ERRNO == EACCES) {
 			tst_resm(TPASS, "mmap failed with EACCES");
 		} else {
@@ -147,6 +142,5 @@ static void setup(void)
 static void cleanup(void)
 {
 	close(fildes);
-	TEST_CLEANUP;
 	tst_rmdir();
 }

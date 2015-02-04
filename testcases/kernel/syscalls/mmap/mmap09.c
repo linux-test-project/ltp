@@ -78,7 +78,6 @@ int main(int argc, char **argv)
 			TEST(ftruncate(fd, TC[i].newsize));
 
 			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL | TTERRNO, "%s", TC[i].desc);
 			} else {
 				tst_resm(TPASS, "%s", TC[i].desc);
@@ -117,7 +116,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 	munmap(maddr, mapsize);
 	close(fd);
 	tst_rmdir();

@@ -164,8 +164,6 @@ static void cleanup(void)
 	if (mount_flag && tst_umount(path_name) != 0)
 		tst_resm(TWARN | TERRNO, "umount(2) %s failed", path_name);
 
-	TEST_CLEANUP;
-
 	if (device)
 		tst_release_device(NULL, device);
 

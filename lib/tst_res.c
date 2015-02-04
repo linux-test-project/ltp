@@ -81,7 +81,6 @@
 
 long TEST_RETURN;
 int TEST_ERRNO;
-struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
 
 #define VERBOSE      1		/* flag values for the T_mode variable */
 #define NOPASS       3

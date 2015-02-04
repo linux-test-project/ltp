@@ -45,8 +45,6 @@ static void cleanup(void)
 {
 	if (module_loaded)
 		tst_module_unload(NULL, module_name);
-
-	TEST_CLEANUP;
 }
 
 static int set_ptr_to_sysfs(int id, const void *ptr, const char *descr)

@@ -233,7 +233,6 @@ static void mysymlinkat_test(struct test_struct *desc)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		}
 	} else {
-		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_resm(TFAIL,
 			 TEST_RETURN ==
 			 0 ? "symlinkat() surprisingly succeeded" :
@@ -274,5 +273,4 @@ static void setup(void)
 static void cleanup(void)
 {
 	tst_rmdir();
-	TEST_CLEANUP;
 }

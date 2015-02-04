@@ -177,8 +177,6 @@ void cleanup(void)
 	/* restore /sys/kernel/mm/ksm/run value */
 	if (ksm_run_orig != 1)
 		write_ksm_run(ksm_run_orig);
-
-	TEST_CLEANUP;
 }
 #else
 int main(void)

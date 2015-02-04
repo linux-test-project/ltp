@@ -85,5 +85,4 @@ static void msgctl_verify(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

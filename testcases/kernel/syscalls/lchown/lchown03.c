@@ -60,7 +60,6 @@ static struct test_case_t {
 
 TCID_DEFINE(lchown03);
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { ELOOP, EROFS, 0 };
 
 static void setup(void);
 static void lchown_verify(const struct test_case_t *);
@@ -77,8 +76,6 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
-
-	TEST_EXP_ENOS(exp_enos);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -136,8 +133,6 @@ static void lchown_verify(const struct test_case_t *test)
 		return;
 	}
 
-	TEST_ERROR_LOG(TEST_ERRNO);
-
 	if (TEST_ERRNO == test->exp_errno) {
 		tst_resm(TPASS | TTERRNO, "lchown() failed as expected");
 	} else {
@@ -150,8 +145,6 @@ static void lchown_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (mount_flag && tst_umount(TEST_EROFS) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 

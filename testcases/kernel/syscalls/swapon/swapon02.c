@@ -51,8 +51,6 @@ static uid_t nobody_uid;
 static int do_swapoff;
 static long fs_type;
 
-static int exp_enos[] = { EPERM, EINVAL, ENOENT, EBUSY, 0 };
-
 static struct test_case_t {
 	char *err_desc;
 	int exp_errno;
@@ -131,8 +129,6 @@ static void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	tst_require_root(NULL);
 
 	nobody = SAFE_GETPWNAM(cleanup, "nobody");
@@ -165,8 +161,6 @@ static void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (do_swapoff && ltp_syscall(__NR_swapoff, "alreadyused"))
 		tst_resm(TWARN | TERRNO, "swapoff(alreadyused) failed");
 

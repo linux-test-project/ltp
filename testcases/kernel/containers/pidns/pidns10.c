@@ -122,7 +122,5 @@ int main(int argc, char *argv[])
  */
 static void cleanup()
 {
-	/* Clean the test testcase as LTP wants */
-	TEST_CLEANUP;
 
 }

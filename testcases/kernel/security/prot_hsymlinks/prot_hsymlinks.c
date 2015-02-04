@@ -290,7 +290,6 @@ static void cleanup(void)
 	}
 
 	tst_rmdir();
-	TEST_CLEANUP;
 }
 
 static int get_protected_hlinks(void)

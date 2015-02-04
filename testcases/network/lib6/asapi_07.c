@@ -175,7 +175,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 int TST_TOTAL = ETCOUNT;

@@ -33,8 +33,6 @@ static pid_t unused_pid;
 static void cleanup(void);
 static void setup(void);
 
-int exp_enos[] = { ESRCH, 0 };
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -78,12 +76,9 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }

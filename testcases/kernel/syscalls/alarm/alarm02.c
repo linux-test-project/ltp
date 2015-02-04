@@ -175,7 +175,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 void alarm_received(int sig)

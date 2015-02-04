@@ -125,5 +125,4 @@ static void setegid_verify(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }

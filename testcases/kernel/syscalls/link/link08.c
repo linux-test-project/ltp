@@ -79,7 +79,6 @@ static void link_verify(const struct test_case_t *);
 
 char *TCID = "link08";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-static int exp_enos[] = { EPERM, EXDEV, EROFS, 0 };
 
 int main(int ac, char **av)
 {
@@ -131,8 +130,6 @@ static void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 	tst_tmpdir();
@@ -168,8 +165,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	if (mount_flag && tst_umount(MNT_POINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 

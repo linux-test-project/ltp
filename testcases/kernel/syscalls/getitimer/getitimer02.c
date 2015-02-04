@@ -40,8 +40,6 @@ int TST_TOTAL = 1;
 static void cleanup(void);
 static void setup(void);
 
-int exp_enos[] = { EFAULT, 0 };
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -66,8 +64,6 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
 		switch (TEST_ERRNO) {
 		case EFAULT:
 			tst_resm(TPASS, "expected failure - errno = %d - %s",
@@ -89,14 +85,11 @@ static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
 }
 
 #else

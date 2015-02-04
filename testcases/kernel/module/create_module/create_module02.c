@@ -116,8 +116,6 @@ struct test_case_t {		/* test case structure */
 };
 
 char *TCID = "create_module02";
-static int exp_enos[] =
-    { EFAULT, EPERM, EEXIST, EINVAL, ENOMEM, ENAMETOOLONG, 0 };
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static char longmodname[MODNAMEMAX];
@@ -181,7 +179,6 @@ int main(int argc, char **argv)
 
 			TEST(create_module(tdat[testno].modname,
 					   tdat[testno].size));
-			TEST_ERROR_LOG(TEST_ERRNO);
 			if ((TEST_RETURN == (int)tdat[testno].retval) &&
 			    (TEST_ERRNO == tdat[testno].experrno)) {
 				tst_resm(TPASS, "Expected results for %s, "
@@ -267,9 +264,6 @@ void setup(void)
 	/* Initialize longmodname to LONGMODNAMECHAR character */
 	memset(longmodname, LONGMODNAMECHAR, MODNAMEMAX - 1);
 
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
-
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
@@ -288,9 +282,4 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 }

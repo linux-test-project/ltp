@@ -190,11 +190,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	/* Reset the effective/saved gid of the calling process */
 	if (setregid(-1, pr_gid) < 0) {

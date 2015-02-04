@@ -56,7 +56,6 @@
 
 char *TCID = "socket01";
 int testno;
-int exp_enos[] = { EINVAL, EPERM, EPROTONOSUPPORT, 0 };
 
 void setup(void), cleanup(void);
 
@@ -103,7 +102,6 @@ int main(int argc, char *argv[])
 			if (TEST_RETURN >= 0) {
 				TEST_RETURN = 0;	/* > 0 equivalent */
 			} else {
-				TEST_ERROR_LOG(TEST_ERRNO);
 			}
 			if (TEST_RETURN != tdat[testno].retval || (TEST_RETURN < 0 && (TEST_ERRNO != tdat[testno].experrno && TEST_ERRNO != EPROTONOSUPPORT))) {	/* Change for defect 21065 for kernel change */
 				tst_resm(TFAIL, "%s ; returned"	/* of return code for this test but don't want */
@@ -125,14 +123,10 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
-	/* set the expected errnos... */
-	TEST_EXP_ENOS(exp_enos);
 
 	TEST_PAUSE;
 }
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }

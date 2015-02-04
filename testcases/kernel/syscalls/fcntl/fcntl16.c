@@ -290,8 +290,6 @@ static char *argv0;
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 
 }

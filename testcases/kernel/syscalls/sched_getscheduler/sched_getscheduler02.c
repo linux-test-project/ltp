@@ -49,8 +49,6 @@
 char *TCID = "sched_getscheduler02";
 int TST_TOTAL = 1;
 
-int exp_enos[] = { ESRCH, 0 };
-
 static pid_t unused_pid;
 
 void setup(void);
@@ -67,8 +65,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
@@ -80,8 +76,6 @@ int main(int ac, char **av)
 				 "unexpectedly");
 			continue;
 		}
-
-		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (errno != ESRCH) {
 			tst_resm(TFAIL, "Expected ESRCH, got %d", errno);
@@ -112,10 +106,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

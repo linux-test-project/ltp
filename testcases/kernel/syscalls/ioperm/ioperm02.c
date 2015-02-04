@@ -93,8 +93,6 @@ static int setup1(void);
 static void cleanup1();
 static void cleanup();
 
-static int exp_enos[] = { EINVAL, EPERM, 0 };
-
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -151,8 +149,6 @@ int main(int ac, char **av)
 					 TEST_RETURN, EXP_RET_VAL,
 					 TEST_ERRNO, test_cases[i].exp_errno);
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (i == 1) {
 				/* revert back to super user */
@@ -232,20 +228,12 @@ void setup(void)
 		test_cases[1].from = IO_BITMAP_BITS_16 - NUM_BYTES;
 	}
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 }
 
 void cleanup(void)
 {
-
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }
 

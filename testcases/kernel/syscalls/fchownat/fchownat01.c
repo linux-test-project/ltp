@@ -139,6 +139,4 @@ static void cleanup(void)
 		close(dirfd);
 
 	tst_rmdir();
-
-	TEST_CLEANUP;
 }

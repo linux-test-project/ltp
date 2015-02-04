@@ -46,8 +46,6 @@ int TST_TOTAL = 3;
 
 static uid_t nobody_uid;
 
-static int exp_enos[] = { EPERM, EINVAL, ENOENT, 0 };
-
 static struct test_case_t {
 	char *err_desc;
 	int exp_errno;
@@ -110,8 +108,6 @@ int main(int ac, char **av)
 					}
 				}
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}
 	}
 
@@ -136,8 +132,6 @@ static void setup(void)
 	struct passwd *nobody;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_EXP_ENOS(exp_enos);
 
 	tst_require_root(NULL);
 
@@ -168,7 +162,5 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

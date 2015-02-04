@@ -95,8 +95,6 @@ int shmid1 = -1;
 extern key_t semkey;
 int *flag;
 
-int exp_enos[] = { EPERM, 0 };
-
 extern int getipckey();
 
 #define TEST_SIG SIGKILL
@@ -153,8 +151,6 @@ void do_master_child(char **av)
 	char user2name[] = "bin";
 
 	struct passwd *ltpuser1, *ltpuser2;
-
-	TEST_EXP_ENOS(exp_enos);
 
 	tst_count = 0;
 
@@ -243,8 +239,6 @@ void setup(void)
 
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	rm_shm(shmid1);
 
 	tst_rmdir();

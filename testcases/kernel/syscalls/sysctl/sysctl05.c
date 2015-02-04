@@ -75,8 +75,6 @@ int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
 char osname[BUFSIZ];
 size_t osnamelth;
 
-int exp_enos[] = { EFAULT, 0 };
-
 void setup(void);
 void cleanup(void);
 
@@ -116,8 +114,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset tst_count in case we are looping */
@@ -137,8 +133,6 @@ int main(int ac, char **av)
 					 testcases[i].exp_retval, ret);
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == ENOSYS) {
 				tst_resm(TCONF,
@@ -190,11 +184,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }
 

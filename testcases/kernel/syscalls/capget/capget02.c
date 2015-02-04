@@ -93,7 +93,6 @@ static void cleanup();
 static void test_setup(int);
 
 char *TCID = "capget02";
-static int exp_enos[] = { EFAULT, EINVAL, ESRCH, 0 };
 
 static struct __user_cap_header_struct header;
 static struct __user_cap_data_struct data;
@@ -162,8 +161,6 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	TEST_EXP_ENOS(exp_enos);
-
 	TEST_PAUSE;
 
 }
@@ -174,8 +171,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	TEST_CLEANUP;
-
 }
 
 void test_setup(int i)

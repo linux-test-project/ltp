@@ -475,9 +475,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
-	/* Restore the device information that was saved in setup() */
 	if (!closed) {
 		if (ioctl(parentfd, TCSETA, &save_io) == -1)
 			tst_resm(TINFO, "ioctl restore failed in cleanup()");

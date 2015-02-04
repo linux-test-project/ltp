@@ -105,8 +105,6 @@ static void cleanup(void)
 	if (wd_file > 0 && close(wd_file))
 		tst_resm(TWARN, "close(%d) [3] failed", wd_file);
 
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }
 

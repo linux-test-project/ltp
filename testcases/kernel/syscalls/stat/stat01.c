@@ -66,7 +66,6 @@
 
 char *TCID = "stat01";
 int TST_TOTAL = 1;
-int exp_enos[] = { 0 };
 
 uid_t user_id;
 gid_t group_id;
@@ -87,8 +86,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
@@ -100,7 +97,6 @@ int main(int ac, char **av)
 		TEST(stat(TESTFILE, &stat_buf));
 
 		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,
 				 "stat(%s, &stat_buf) Failed, errno=%d : %s",
 				 TESTFILE, TEST_ERRNO, strerror(TEST_ERRNO));
@@ -192,7 +188,5 @@ void setup(void)
 
 static void cleanup(void)
 {
-	TEST_CLEANUP;
-
 	tst_rmdir();
 }

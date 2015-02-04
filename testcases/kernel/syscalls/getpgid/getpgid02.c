@@ -62,8 +62,6 @@ int TST_TOTAL = 2;
 int pgid_0, pgid_1;
 #define BADPID -99
 
-int exp_enos[] = { ESRCH, 0 };
-
 struct test_case_t {
 	int *id;
 	int error;
@@ -88,9 +86,6 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* set up the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
@@ -104,8 +99,6 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-
-			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
@@ -144,10 +137,5 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 }

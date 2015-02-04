@@ -99,7 +99,6 @@ int main(int argc, char **argv)
 		}
 		for (iws = BUFSIZ; iws > 0; iws--) {
 			if ((cwrite = write(fild, pwbuf, iws)) != iws) {
-				TEST_ERROR_LOG(errno);
 				badcount++;
 				tst_resm(TINFO, "bad write count");
 			}
@@ -144,11 +143,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 * print errno log if that option was specified.
-	 */
-	TEST_CLEANUP;
 
 	unlink(pfiln);
 
