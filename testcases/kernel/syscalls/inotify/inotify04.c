@@ -51,6 +51,7 @@
 #include "safe_macros.h"
 
 char *TCID = "inotify04";
+int TST_TOTAL = 4;
 
 #if defined(HAVE_SYS_INOTIFY_H)
 
@@ -60,7 +61,6 @@ char *TCID = "inotify04";
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * (EVENT_SIZE + 16))
 
-int TST_TOTAL = 4;
 
 #define BUF_SIZE 256
 
@@ -265,9 +265,6 @@ int main(int argc, char **argv)
 	tst_exit();
 }
 #else
-
-int TST_TOTAL;
-
 int main(void)
 {
 	tst_brkm(TCONF, NULL, "system doesn't have required inotify support");

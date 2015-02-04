@@ -78,15 +78,15 @@
 
 void setup(void);
 
-char *TCID = "clock_gettime03";	/* Test program identifier.    */
-int TST_TOTAL;
-
 int testcase[6] = {
 	EFAULT,			/* Bad timespec   */
 	EFAULT,			/* Bad timespec   */
 	EINVAL,			/* MAX_CLOCKS     */
 	EINVAL			/* MAX_CLOCKS + 1 */
 };
+
+char *TCID = "clock_gettime03";	/* Test program identifier.    */
+int TST_TOTAL = ARRAY_SIZE(testcase);
 
 int main(int ac, char **av)
 {
@@ -105,8 +105,6 @@ int main(int ac, char **av)
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
 	/*
 	 * PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on

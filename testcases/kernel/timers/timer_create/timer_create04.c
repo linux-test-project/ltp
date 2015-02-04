@@ -78,15 +78,15 @@
 
 void setup(void);
 
-char *TCID = "timer_create04";	/* Test program identifier.    */
-int TST_TOTAL;
-
 int testcase[6] = {
 	EINVAL,			/* MAX_CLOCKS     */
 	EINVAL,			/* MAX_CLOCKS + 1 */
 	EFAULT,			/* bad sigevent   */
 	EFAULT			/* bad timer_id   */
 };
+
+char *TCID = "timer_create04";	/* Test program identifier.    */
+int TST_TOTAL = ARRAY_SIZE(testcase);
 
 /*
  * cleanup() - Performs one time cleanup for this test at

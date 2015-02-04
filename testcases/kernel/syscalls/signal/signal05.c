@@ -65,13 +65,6 @@ void cleanup(void);
 void setup(void);
 void sighandler(int);
 
-char *TCID = "signal05";
-int TST_TOTAL;
-
-typedef void (*sighandler_t) (int);
-
-sighandler_t Tret;
-
 int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
 	SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,
 	SIGTERM,
@@ -85,6 +78,13 @@ int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
 	SIGUNUSED
 #endif
 };
+
+char *TCID = "signal05";
+int TST_TOTAL = ARRAY_SIZE(siglist);
+
+typedef void (*sighandler_t) (int);
+
+sighandler_t Tret;
 
 int pass = 0;
 
@@ -162,8 +162,6 @@ void sighandler(int sig)
  */
 void setup(void)
 {
-	TST_TOTAL = sizeof(siglist) / sizeof(int);
-
 	TEST_PAUSE;
 }
 

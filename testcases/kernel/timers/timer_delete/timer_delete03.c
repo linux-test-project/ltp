@@ -77,12 +77,12 @@
 
 void setup(void);
 
-char *TCID = "timer_delete03";	/* Test program identifier.    */
-int TST_TOTAL;
-
 int testcase[] = {
 	EINVAL			/* Invalid timer ID */
 };
+
+char *TCID = "timer_delete03";
+int TST_TOTAL = ARRAY_SIZE(testcase);
 
 int main(int ac, char **av)
 {
@@ -93,8 +93,6 @@ int main(int ac, char **av)
 	    != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
-
-	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
 	setup();
 

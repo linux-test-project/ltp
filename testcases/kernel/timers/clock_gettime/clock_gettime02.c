@@ -73,21 +73,19 @@
 #include "common_timers.h"
 
 void setup(void);
+static clockid_t clocks[2] = { CLOCK_REALTIME, CLOCK_MONOTONIC };
 
-char *TCID = "clock_gettime02";	/* Test program identifier.    */
-int TST_TOTAL;			/* Total number of test cases. */
+char *TCID = "clock_gettime02";
+int TST_TOTAL = ARRAY_SIZE(clocks);
 
 int main(int ac, char **av)
 {
 	int lc, i;
 	const char *msg;
 	struct timespec spec;
-	clockid_t clocks[2] = { CLOCK_REALTIME, CLOCK_MONOTONIC };
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	TST_TOTAL = sizeof(clocks) / sizeof(clocks[0]);
 
 	setup();
 

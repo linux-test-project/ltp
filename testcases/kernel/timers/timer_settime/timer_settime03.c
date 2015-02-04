@@ -76,12 +76,6 @@
 void setup(void);
 void setup_test(int option);
 
-char *TCID = "timer_settime03";	/* Test program identifier.    */
-int TST_TOTAL;			/* Total number of test cases. */
-
-static struct itimerspec new_set, old_set, *old_temp, *new_temp;
-static kernel_timer_t timer, tim;
-
 int testcase[] = {
 	EINVAL,			/* New setting null */
 	EINVAL,			/* tv_nsec < 0 */
@@ -90,6 +84,12 @@ int testcase[] = {
 	EFAULT,			/* bad newsetting * */
 	EFAULT			/* bad oldsetting * */
 };
+
+char *TCID = "timer_settime03";
+int TST_TOTAL = ARRAY_SIZE(testcase);
+
+static struct itimerspec new_set, old_set, *old_temp, *new_temp;
+static kernel_timer_t timer, tim;
 
 int main(int ac, char **av)
 {
@@ -102,8 +102,6 @@ int main(int ac, char **av)
 	}
 
 	setup();
-
-	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 

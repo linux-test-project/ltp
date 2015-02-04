@@ -120,11 +120,6 @@ void setup();
 void cleanup();
 void help();
 
-char *TCID = "pathconf01";
-int TST_TOTAL;
-
-int i;
-
 struct pathconf_args {
 	char *define_tag;
 	int value;
@@ -139,6 +134,12 @@ struct pathconf_args {
 	NULL, 0}
 };
 
+char *TCID = "pathconf01";
+int TST_TOTAL = ARRAY_SIZE(args);
+
+int i;
+
+
 int lflag;
 char *path;
 
@@ -152,7 +153,6 @@ int main(int ac, char **av)
 	int lc;
 	const char *msg;
 
-	TST_TOTAL = (sizeof(args) / sizeof(args[0])) - 1;
 
     /***************************************************************
      * parse standard options
