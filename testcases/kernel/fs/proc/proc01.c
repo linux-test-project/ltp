@@ -364,7 +364,7 @@ static long readproc(const char *obj)
 		/* Skip files does not honor O_NONBLOCK. */
 		for (i = 0; error_nonblock[i][0] != '\0'; i++) {
 			if (!strcmp(obj, error_nonblock[i])) {
-				tst_resm(TWARN, "%s: does not honor "
+				tst_resm(TINFO, "%s: does not honor "
 					 "O_NONBLOCK", obj);
 				return 0;
 			}
