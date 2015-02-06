@@ -28,9 +28,8 @@
 
 tst_rhost_run()
 {
-	# this is needed to run tools/apicmds on remote host
 	local pre_cmd=
-	local post_cmd=
+	local post_cmd=' || echo RTERR'
 	local out=
 	local user="root"
 	local cmd=
@@ -45,34 +44,39 @@ tst_rhost_run()
 			post_cmd=" > /dev/null 2>&1 &"
 			out="1> /dev/null"
 		;;
-		s)
-			safe=1
-			post_cmd=' || echo TERR'
-		;;
+		s) safe=1 ;;
 		c) cmd=$OPTARG ;;
 		u) user=$OPTARG ;;
 		*)
-			tst_brkm TBROK "tst_rhost_run: unknown option: $opt"
+			tst_brkm TBROK "tst_rhost_run: unknown option: $OPTARG"
 		;;
 		esac
 	done
 
 	OPTIND=0
 
-	[ -z "$cmd" ] && tst_brkm TBROK "command not defined"
+	if [ -z "$cmd" ]; then
+		[ "$safe" -eq 1 ] && \
+			tst_brkm TBROK "tst_rhost_run: command not defined"
+		tst_resm TWARN "tst_rhost_run: command not defined"
+		return 1
+	fi
 
 	local output=
-	local ret=
+	local ret=0
 	if [ -n "$TST_USE_SSH" ]; then
 		output=`ssh -n -q $user@$RHOST "sh -c \
-			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'TERR'`
+			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'RTERR'`
 	else
 		output=`rsh -n -l $user $RHOST "sh -c \
-			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'TERR'`
+			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'RTERR'`
 	fi
-	echo "$output" | grep -q 'TERR$' && ret=1 || ret=0
-	[ $ret -eq 1 -a "$safe" -eq 1 ] && \
-		tst_brkm TBROK "failed to run '$cmd' on '$RHOST': '$output'"
+	echo "$output" | grep -q 'RTERR$' && ret=1
+	if [ $ret -eq 1 ]; then
+		output=$(echo "$output" | sed 's/RTERR//')
+		[ "$safe" -eq 1 ] && \
+			tst_brkm TBROK "'$cmd' failed on '$RHOST': '$output'"
+	fi
 
 	[ -z "$out" -a -n "$output" ] && echo "$output"
 
