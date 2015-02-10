@@ -25,6 +25,7 @@
 #include <libgen.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <dirent.h>
 
 #include "safe_stdio.h"
 
@@ -416,6 +417,21 @@ static inline int safe_setrlimit(const char *file, const int lineno,
 }
 #define SAFE_SETRLIMIT(cleanup_fn, resource, rlim) \
 	safe_setrlimit(__FILE__, __LINE__, (cleanup_fn), (resource), (rlim))
+
+DIR* safe_opendir(const char *file, const int lineno, void (cleanup_fn)(void),
+                  const char *name);
+#define SAFE_OPENDIR(cleanup_fn, name) \
+	safe_opendir(__FILE__, __LINE__, (cleanup_fn), (name))
+
+int safe_closedir(const char *file, const int lineno, void (cleanup_fn)(void),
+                  DIR *dirp);
+#define SAFE_CLOSEDIR(cleanup_fn, dirp) \
+	safe_closedir(__FILE__, __LINE__, (cleanup_fn), (dirp))
+
+struct dirent *safe_readdir(const char *file, const int lineno, void (cleanup_fn)(void),
+                            DIR *dirp);
+#define SAFE_READDIR(cleanup_fn, dirp) \
+	safe_readdir(__FILE__, __LINE__, (cleanup_fn), (dirp))
 
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */

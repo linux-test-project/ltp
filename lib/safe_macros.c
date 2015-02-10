@@ -711,3 +711,51 @@ int safe_umount(const char *file, const int lineno, void (*cleanup_fn)(void),
 
 	return rval;
 }
+
+DIR* safe_opendir(const char *file, const int lineno, void (cleanup_fn)(void),
+                  const char *name)
+{
+	DIR *rval;
+
+	rval = opendir(name);
+
+	if (!rval) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "%s:%d: opendir(%s) failed", file, lineno, name);
+	}
+
+	return rval;
+}
+
+int safe_closedir(const char *file, const int lineno, void (cleanup_fn)(void),
+                  DIR *dirp)
+{
+	int rval;
+
+	rval = closedir(dirp);
+
+	if (rval) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "%s:%d: closedir(%p) failed", file, lineno, dirp);
+	}
+
+	return rval;
+}
+
+struct dirent *safe_readdir(const char *file, const int lineno, void (cleanup_fn)(void),
+                            DIR *dirp)
+{
+	struct dirent *rval;
+	int err = errno;
+
+	errno = 0;
+	rval = readdir(dirp);
+
+	if (!rval && errno) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		         "%s:%d: readdir(%p) failed", file, lineno, dirp);
+	}
+
+	errno = err;
+	return rval;
+}
