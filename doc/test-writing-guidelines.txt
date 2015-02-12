@@ -263,7 +263,7 @@ static void test(void)
 			tst_resm(TPASS, "getenv(" TEST_ENV ") = '"
 			         TEST_ENV_VAL "'");
 		else
-			tst_resm(TFAIL, "getenv(" TEST_ENV "} = '%s', "
+			tst_resm(TFAIL, "getenv(" TEST_ENV ") = '%s', "
 			         "expected '" TEST_ENV_VAL "'", ret);
 	} else {
 		tst_resm(TFAIL, "getenv(" TEST_ENV ") = NULL");
