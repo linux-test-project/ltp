@@ -49,6 +49,10 @@ export LHOST_IPV6_REV=${LHOST_IPV6_REV:-"2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"}
 # Reverse host portion of the IPv6 address of the remote host
 export RHOST_IPV6_REV=${RHOST_IPV6_REV:-"1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"}
 
+# Networks that aren't reachable through the test links
+export IPV4_NET16_UNUSED=${IPV4_NET16_UNUSED:-"10.23"}
+export IPV6_NET32_UNUSED=${IPV6_NET32_UNUSED:-"fd00:23"}
+
 export HTTP_DOWNLOAD_DIR=${HTTP_DOWNLOAD_DIR:-"/var/www/html"}
 export FTP_DOWNLOAD_DIR=${FTP_DOWNLOAD_DIR:-"/var/ftp"}
 export FTP_UPLOAD_DIR=${FTP_UPLOAD_DIR:-"/var/ftp/pub"}
