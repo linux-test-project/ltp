@@ -1,293 +1,97 @@
 #!/bin/sh
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2005
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-################################################################################
-##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2005                 ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
-##                                                                            ##
-##                                                                            ##
-################################################################################
-#
-# File:
-#   if4-route-adddel
-#
-# Description:
-#   Verify the IPv4 connectivity is not broken with adding and deleting
-#   an IPv4 route many times
-#    test01 - by route command
-#    test02 - by ip command
-#
-# Setup:
-#   See ltp-yyyymmdd/testcases/network/stress/README
-#
-# Author:
-#   Mitsuru Chinen <mitch@jp.ibm.com>
-#
-# History:
-#	Oct 19 2005 - Created (Mitsuru Chinen)
-#
-#-----------------------------------------------------------------------
-# Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-# Make sure the value of LTPROOT
-LTPROOT=${LTPROOT:-`(cd ../../../../ ; pwd)`}
-export LTPROOT
-
-# Total number of the test case
 TST_TOTAL=2
-export TST_TOTAL
+TCID=if-route-adddel
 
-# Default of the test case ID and the test case count
-TCID=if4-route-adddel
-TST_COUNT=0
-export TCID
-export TST_COUNT
+. if-lib.sh
 
-# Check the environmanet variable
-. check_envval || exit $TST_TOTAL
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 100))}
 
-# The number of the add/delete IPv4 alias
-NS_TIMES=${NS_TIMES:-10000}
-
-# The interval of the check interface activity
-CHECK_INTERVAL=${CHECK_INTERVAL:-`expr $NS_TIMES \/ 100`}
-
-# The number of the test link where tests run
-LINK_NUM=0
-
-# Network portion of the IPv4 address
-IPV4_NETWORK=${IPV4_NETWORK:-"10.0.0"}
-
-# Netmask of for the tested network
-IPV4_NETMASK="255.255.255.0"
-IPV4_NETMASK_NUM=24
-
-# Broadcast address of the tested network
-IPV4_BROADCAST=${IPV4_NETWORK}.255
-
-# Host portion of the IPv4 address
-LHOST_IPV4_HOST=${LHOST_IPV4_HOST:-"2"}
-RHOST_IPV4_HOST=${RHOST_IPV4_HOST:-"1"}
-
-# The destination network to add and delete
-ADDDEL_ROUTE="10.10.10.0"
-
-
-#-----------------------------------------------------------------------
-#
-# NAME:
-#   do_setup
-#
-# DESCRIPTION:
-#   Make a IPv4 connectivity
-#
-# SET VALUES:
-#   rhost_ipv4addr	- IPv4 Address of the remote host
-#   lhost_ifname	- Interface name of the local host
-#   rhost_ifname	- Interface name of the remote host
-#
-#-----------------------------------------------------------------------
-do_setup()
-{
-    TCID=if4-route-adddel
-    TST_COUNT=0
-
-    # Initialize the interfaces of the remote host
-    initialize_if rhost ${LINK_NUM}
-
-    # Make sure the TCP traffic server/client doesn't run
-    bg_tcp_traffic killall
-
-    # Set IPv4 address to the interfaces
-    set_ipv4addr rhost ${LINK_NUM} ${IPV4_NETWORK} ${RHOST_IPV4_HOST}
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to add an IPv4 address the remote host"
-	exit $TST_TOTAL
-    fi
-
-    # IPv4 address of the remote host
-    rhost_ipv4addr="${IPV4_NETWORK}.${RHOST_IPV4_HOST}"
-
-    # Get the Interface name of local host
-    lhost_ifname=`get_ifname lhost ${LINK_NUM}`
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to get the interface name at the local host"
-	exit $TST_TOTAL
-    fi
-
-    # Get the Interface name of remote host
-    rhost_ifname=`get_ifname rhost ${LINK_NUM}`
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to get the interface name at the remote host"
-	exit $TST_TOTAL
-    fi
-}
-
-
-
-#-----------------------------------------------------------------------
-#
-# NAME:
-#   do_cleanup
-#
-# DESCRIPTION:
-#   Recover the tested interfaces
-#
-#-----------------------------------------------------------------------
-do_cleanup()
-{
-    # Make sure the TCP traffic server/client doesn't run
-    bg_tcp_traffic killall
-
-    # Initialize the interfaces
-    initialize_if lhost ${LINK_NUM}
-    initialize_if rhost ${LINK_NUM}
-}
-
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:
-#   test_body
-#
-# DESCRIPTION:
-#   main code of the test
-#
-# Arguments:
-#   $1: define the test type
-#       1 - route command case
-#       2 - ip command case
-#
-#-----------------------------------------------------------------------
 test_body()
 {
-    test_type=$1
+	local cmd_type=$1
 
-    TCID=if4-route-adddel0${test_type}
-    TST_COUNT=$test_type
-
-    case $test_type in
-	1)
-	test_command="route"
-	;;
-	2)
-	test_command="ip"
-	;;
-	*)
-	tst_resm TBROK "unspecified case"
-	return 1
-	;;
-    esac
-
-    tst_resm TINFO "Verify the IPv4 connectivity is not broken when the $test_command command adds, then and deletes an IPv4 route $NS_TIMES times"
-
-    # Initialize the interface of the local host
-    initialize_if lhost ${LINK_NUM}
-
-    # Assign IPv4 address to the interface of the local host
-    set_ipv4addr lhost ${LINK_NUM} ${IPV4_NETWORK} ${LHOST_IPV4_HOST}
-    if [ $? -ne 0 ]; then
-	tst_resm TBROK "Failed to assign an IPv4 address at the local host"
-	return 1
-    fi
-    lhost_ipv4addr="${IPV4_NETWORK}.${LHOST_IPV4_HOST}"
-
-    # Check the connctivity
-    ret=`$LTP_RSH $RHOST ${LTPROOT}/testcases/bin/check_icmpv4_connectivity $rhost_ifname $lhost_ipv4addr' ; echo $?'`
-    if [ $ret -ne 0 ]; then
-	tst_resm TBROK "Test Link $LINK_NUM is somthing wrong."
-	return 1
-    fi
-
-    # Make a background TCP traffic from the non-alias address
-    server_pid=`bg_tcp_traffic make $lhost_ipv4addr`
-
-    # Start the loop
-    cnt=0
-    while [ $cnt -lt $NS_TIMES ]; do
-	# Add the route
-	case $test_type in
-	    1)
-	    route add -net $ADDDEL_ROUTE netmask $IPV4_NETMASK dev $lhost_ifname
-	    ;;
-	    2)
-	    ip route add ${ADDDEL_ROUTE}/${IPV4_NETMASK_NUM} dev $lhost_ifname
-	    ;;
+	case $cmd_type in
+	rt_cmd) local cmd_name='route' ;;
+	ip_cmd) local cmd_name='ip' ;;
+	*) tst_brkm TBROK "Unknown test parameter '$cmd_type'"
 	esac
-	if [ $? -ne 0 ]; then
-	    tst_resm TFAIL "Failed to add the route to ${ADDDEL_ROUTE}"
-	    return 1
+
+	local iface=$(tst_iface)
+	local inet="inet$TST_IPV6"
+	local new_rt=
+	local opt_rt=
+	if [ "$TST_IPV6" ]; then
+		new_rt=${IPV6_NET32_UNUSED}::
+		opt_rt="/64"
+	else
+		new_rt="${IPV4_NET16_UNUSED}.23.0"
+		case $cmd_type in
+		rt_cmd) ;;
+		ip_cmd) opt_rt='/24' ;;
+		esac
 	fi
 
-	# Check the connectivity
-	cnt=`expr $cnt + 1`
-	if [ $CHECK_INTERVAL -ne 0 ]; then
-	    if [ `expr $cnt % ${CHECK_INTERVAL}` -eq 0 ]; then
-		check_icmpv4_connectivity $lhost_ifname $rhost_ipv4addr
+	tst_resm TINFO "'$cmd_name' add/del ${new_rt}${opt_rt} $NS_TIMES times"
+
+	tst_restore_ipaddr || \
+		tst_resm TBROK "Failed to set default IP addresses"
+
+	make_background_tcp_traffic
+
+	local cnt=1
+	while [ $cnt -le $NS_TIMES ]; do
+		case $cmd_type in
+		rt_cmd) route -A $inet add ${new_rt}${opt_rt} dev $iface ;;
+		ip_cmd) ip route add ${new_rt}${opt_rt} dev $iface ;;
+		esac
 		if [ $? -ne 0 ]; then
-		    tst_resm TFAIL "The route is broken at ${cnt} time"
-		    return 1
+			tst_resm TFAIL "Can't add route $new_rt to $iface"
+			return
 		fi
-	    fi
-	fi
 
-	# Check the background TCP traffic
-	bg_tcp_traffic check $server_pid
-	if [ $? -ne 0 ]; then
-	    server_pid=`bg_tcp_traffic make $lhost_ipv4addr`
-	fi
+		case $cmd_type in
+		rt_cmd) route -A $inet del ${new_rt}${opt_rt} dev $iface ;;
+		ip_cmd) ip route del ${new_rt}${opt_rt} dev $iface ;;
+		esac
+		if [ $? -ne 0 ]; then
+			tst_resm TFAIL "Can't del route $new_rt from $iface"
+			return
+		fi
 
-	# Delete the route
-	case $test_type in
-	    1)
-	    route del -net $ADDDEL_ROUTE netmask $IPV4_NETMASK dev $lhost_ifname
-	    ;;
-	    2)
-	    ip route del ${ADDDEL_ROUTE}/${IPV4_NETMASK_NUM} dev $lhost_ifname
-	    ;;
-	esac
-	if [ $? -ne 0 ]; then
-	    tst_resm TFAIL "Cannot delte the route to ${ADDDEL_ROUTE}"
-	    return 1
-	fi
-    done
+		check_connectivity $cnt || return
 
-    # Stop the background TCP traffic
-    bg_tcp_traffic killall
+		# Check the background TCP traffic
+		pgrep -x tcp_fastopen > /dev/null || make_background_tcp_traffic
 
-    tst_resm TPASS "Test is finished correctly."
-    return 0
+		cnt=$(($cnt + 1))
+	done
+
+	tst_resm TPASS "Test is finished correctly"
 }
 
+setup
 
-#-----------------------------------------------------------------------
-#
-# Main
-#
-# Exit Value:
-#   The number of the failure
-#
-#-----------------------------------------------------------------------
+tst_check_cmds route
 
-RC=0
-do_setup
-test_body 1 || RC=`expr $RC + 1`      # Case of route command
-test_body 2 || RC=`expr $RC + 1`      # Case of ip command
-do_cleanup
+test_body 'rt_cmd'
+test_body 'ip_cmd'
 
-exit $RC
+tst_exit
