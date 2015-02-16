@@ -726,7 +726,7 @@ There are certain cases where the test needs a kernel part and userspace part,
 happily, LTP can build a kernel module and then insert it to the kernel on test
 start for you. See 'testcases/kernel/device-drivers/block' for details.
 
-2.2.11 Usefull macros
+2.2.11 Useful macros
 ^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
@@ -774,7 +774,7 @@ below:
 	case TST_NFS_MAGIC:
 	case TST_TMPFS_MAGIC:
 	case TST_RAMFS_MAGIC:
-		tst_brkm(TCONF, cleanup, "Test not supported on %s filesytem",
+		tst_brkm(TCONF, cleanup, "Test not supported on %s filesystem",
 		         tst_fs_type_name(type));
 	break;
 	}
@@ -950,7 +950,7 @@ int tst_fs_fill_subdirs(void (*cleanup)(void), const char *dir);
 Try to get maximum number of subdirectories in directory.
 
 NOTE: This number depends on the filesystem 'dir' is on. For current kernel,
-subdir limit is not availiable for all filesystems (availiable for ext2, ext3,
+subdir limit is not available for all filesystems (available for ext2, ext3,
 minix, sysv and more). If the test runs on some other filesystems, like ramfs,
 tmpfs, it will not even try to reach the limit and return 0.
 
@@ -1068,7 +1068,7 @@ ret=$?
 if [ $ret -eq 0 ]; then
 	tst_resm TPASS "true returned 0"
 else
-	tst_resm TFAIL "true rturned $ret"
+	tst_resm TFAIL "true returned $ret"
 fi
 
 tst_exit
@@ -1085,7 +1085,7 @@ WARNING: Do not forget to add the 'tst_exit' at the end of the test,
 2.3.2 Basic test interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Following functions similar to the LTP C intearface are available.
+Following functions similar to the LTP C interface are available.
 
 * tst_resm()
 * tst_brkm()

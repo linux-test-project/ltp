@@ -232,7 +232,7 @@ Don't use +linux/+ headers if at all possible. Usually they are replaced with
 headers get shuffled around a lot more than their +sys/+ counterparts it
 seems.
 
-15. Singnal handlers
+15. Signal handlers
 ~~~~~~~~~~~~~~~~~~~~
 
 Avoid doing tricky things in signal handlers. Calling most of the libc
@@ -294,7 +294,7 @@ New Testcases
 Do not use obvious comments ("child process", "parse options", etc). This
 leads to visual comment noise pollution.
 
-4. Inline assigments
+4. Inline assignments
 ~~~~~~~~~~~~~~~~~~~~
 
 Don't do inline assignment, i.e.
@@ -316,7 +316,7 @@ The only exception to this is when you define global variables.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Your testcase should be runnable as root and non-root. What does that mean? It
-should fail gracefull as non-root if it has insufficient privileges, or use
+should fail gracefully as non-root if it has insufficient privileges, or use
 +tst_require_root(NULL)+ if root access is absolutely required.
 
 A lot of newer testcases don't honor this fact and it causes random

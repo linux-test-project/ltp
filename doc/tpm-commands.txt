@@ -5,7 +5,7 @@ ar01
 	Construct one or more command lines which use options that do not
 	take arguments
 	For each of these invocations
-	Specify the options seperately
+	Specify the options separately
 	Group the options together
 	Compare the behavior of the two cases
 	If they behave differently, then fail
