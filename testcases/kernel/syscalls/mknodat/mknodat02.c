@@ -55,14 +55,14 @@ static void cleanup(void);
 static const char *device;
 static int mount_flag;
 
-static int dirfd;
+static int dir_fd;
 static int curfd = AT_FDCWD;
 
 #define ELOPFILE	"/test_eloop"
 static char elooppathname[sizeof(ELOPFILE) * 43] = ".";
 
 static struct test_case_t {
-	int *dirfd;
+	int *dir_fd;
 	char *pathname;
 	mode_t mode;
 	int exp_errno;
@@ -70,9 +70,9 @@ static struct test_case_t {
 	{ &curfd, "tnode1", FIFOMODE, 0 },
 	{ &curfd, "tnode2", FREGMODE, 0 },
 	{ &curfd, "tnode3", SOCKMODE, 0 },
-	{ &dirfd, "tnode4", FIFOMODE, EROFS },
-	{ &dirfd, "tnode5", FREGMODE, EROFS },
-	{ &dirfd, "tnode6", SOCKMODE, EROFS },
+	{ &dir_fd, "tnode4", FIFOMODE, EROFS },
+	{ &dir_fd, "tnode5", FREGMODE, EROFS },
+	{ &dir_fd, "tnode6", SOCKMODE, EROFS },
 	{ &curfd, elooppathname, FIFOMODE, ELOOP },
 	{ &curfd, elooppathname, FREGMODE, ELOOP },
 	{ &curfd, elooppathname, SOCKMODE, ELOOP },
@@ -140,7 +140,7 @@ static void setup(void)
 			 "mount device:%s failed", device);
 	}
 	mount_flag = 1;
-	dirfd = SAFE_OPEN(cleanup, MNT_POINT, O_DIRECTORY);
+	dir_fd = SAFE_OPEN(cleanup, MNT_POINT, O_DIRECTORY);
 
 	/*
 	 * NOTE: the ELOOP test is written based on that the consecutive
@@ -154,7 +154,7 @@ static void setup(void)
 
 static void mknodat_verify(struct test_case_t *tc)
 {
-	int fd = *(tc->dirfd);
+	int fd = *(tc->dir_fd);
 	char *pathname = tc->pathname;
 	mode_t mode = tc->mode;
 
@@ -179,8 +179,8 @@ static void mknodat_verify(struct test_case_t *tc)
 
 static void cleanup(void)
 {
-	if (dirfd > 0 && close(dirfd) < 0)
-		tst_resm(TWARN | TERRNO, "close(%d) failed", dirfd);
+	if (dir_fd > 0 && close(dir_fd) < 0)
+		tst_resm(TWARN | TERRNO, "close(%d) failed", dir_fd);
 	if (mount_flag && tst_umount(MNT_POINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 

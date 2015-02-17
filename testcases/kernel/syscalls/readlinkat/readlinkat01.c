@@ -43,7 +43,7 @@ static void cleanup(void);
 
 char *TCID = "readlinkat01";
 
-static int dirfd, fd;
+static int dir_fd, fd;
 static int fd_invalid = 100;
 static int fd_atcwd = AT_FDCWD;
 
@@ -53,14 +53,14 @@ static int fd_atcwd = AT_FDCWD;
 static char abspath[1024];
 
 static struct test_case {
-	int *dirfd;
+	int *dir_fd;
 	const char *path;
 	const char *exp_buf;
 	int exp_ret;
 	int exp_errno;
 } test_cases[] = {
-	{&dirfd, TEST_SYMLINK, TEST_FILE, sizeof(TEST_FILE)-1, 0},
-	{&dirfd, abspath, TEST_FILE, sizeof(TEST_FILE)-1, 0},
+	{&dir_fd, TEST_SYMLINK, TEST_FILE, sizeof(TEST_FILE)-1, 0},
+	{&dir_fd, abspath, TEST_FILE, sizeof(TEST_FILE)-1, 0},
 	{&fd, TEST_SYMLINK, NULL, -1, ENOTDIR},
 	{&fd_invalid, TEST_SYMLINK, NULL, -1, EBADF},
 	{&fd_atcwd, TEST_SYMLINK, TEST_FILE, sizeof(TEST_FILE)-1, 0},
@@ -74,7 +74,7 @@ static void verify_readlinkat(struct test_case *test)
 
 	memset(buf, 0, sizeof(buf));
 
-	TEST(readlinkat(*test->dirfd, test->path, buf, sizeof(buf)));
+	TEST(readlinkat(*test->dir_fd, test->path, buf, sizeof(buf)));
 
 	if (TEST_RETURN != test->exp_ret) {
 		tst_resm(TFAIL | TTERRNO,
@@ -129,7 +129,7 @@ static void setup(void)
 
 	fd = SAFE_OPEN(cleanup, TEST_FILE, O_CREAT, 0600);
 	SAFE_SYMLINK(cleanup, TEST_FILE, TEST_SYMLINK);
-	dirfd = SAFE_OPEN(cleanup, ".", O_DIRECTORY);
+	dir_fd = SAFE_OPEN(cleanup, ".", O_DIRECTORY);
 
 	TEST_PAUSE;
 }
@@ -139,8 +139,8 @@ static void cleanup(void)
 	if (fd > 0 && close(fd))
 		tst_resm(TWARN | TERRNO, "Failed to close fd");
 
-	if (dirfd > 0 && close(dirfd))
-		tst_resm(TWARN | TERRNO, "Failed to close dirfd");
+	if (dir_fd > 0 && close(dir_fd))
+		tst_resm(TWARN | TERRNO, "Failed to close dir_fd");
 
 	tst_rmdir();
 }

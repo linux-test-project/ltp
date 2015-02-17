@@ -42,7 +42,7 @@
 char *TCID = "fchownat02";
 int TST_TOTAL = 1;
 
-static int dirfd;
+static int dir_fd;
 static uid_t set_uid = 1000;
 static gid_t set_gid = 1000;
 static void setup(void);
@@ -87,7 +87,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	dirfd = SAFE_OPEN(cleanup, "./", O_DIRECTORY);
+	dir_fd = SAFE_OPEN(cleanup, "./", O_DIRECTORY);
 
 	SAFE_TOUCH(cleanup, TESTFILE, 0600, NULL);
 
@@ -107,7 +107,7 @@ static void setup(void)
 
 static void fchownat_verify(void)
 {
-	TEST(fchownat(dirfd, TESTFILE_LINK, set_uid, set_gid,
+	TEST(fchownat(dir_fd, TESTFILE_LINK, set_uid, set_gid,
 		      AT_SYMLINK_NOFOLLOW));
 
 	if (TEST_RETURN != 0) {

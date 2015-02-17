@@ -50,18 +50,18 @@ static char testfile[256];
 static char testfile2[256];
 static char testfile3[256];
 
-static int dirfd, fd;
+static int dir_fd, fd;
 static int fd_invalid = 100;
 static int fd_atcwd = AT_FDCWD;
 
 static struct test_case {
-	int *dirfd;
+	int *dir_fd;
 	const char *name;
 	int exp_ret;
 	int exp_errno;
 } test_cases[] = {
-	{&dirfd, testfile, 0, 0},
-	{&dirfd, testfile3, 0, 0},
+	{&dir_fd, testfile, 0, 0},
+	{&dir_fd, testfile3, 0, 0},
 	{&fd, testfile2, -1, ENOTDIR},
 	{&fd_invalid, testfile, -1, EBADF},
 	{&fd_atcwd, testfile, 0, 0}
@@ -74,7 +74,7 @@ static dev_t dev;
 
 static void verify_mknodat(struct test_case *test)
 {
-	TEST(mknodat(*test->dirfd, test->name, S_IFREG, dev));
+	TEST(mknodat(*test->dir_fd, test->name, S_IFREG, dev));
 
 	if (TEST_RETURN != test->exp_ret) {
 		tst_resm(TFAIL | TTERRNO,
@@ -141,7 +141,7 @@ static void setup(void)
 
 	SAFE_MKDIR(cleanup, PATHNAME, 0700);
 
-	dirfd = SAFE_OPEN(cleanup, PATHNAME, O_DIRECTORY);
+	dir_fd = SAFE_OPEN(cleanup, PATHNAME, O_DIRECTORY);
 	fd = SAFE_OPEN(cleanup, testfile2, O_CREAT | O_RDWR, 0600);
 }
 
@@ -154,8 +154,8 @@ static void clean(void)
 
 static void cleanup(void)
 {
-	if (dirfd > 0 && close(dirfd))
-		tst_resm(TWARN | TERRNO, "Failed to close(dirfd)");
+	if (dir_fd > 0 && close(dir_fd))
+		tst_resm(TWARN | TERRNO, "Failed to close(dir_fd)");
 
 	if (fd > 0 && close(fd))
 		tst_resm(TWARN | TERRNO, "Failed to close(fd)");
