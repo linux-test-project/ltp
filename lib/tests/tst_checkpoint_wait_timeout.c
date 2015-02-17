@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (C) 2012-2015 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -25,17 +25,16 @@
 
 #include "test.h"
 
-char *TCID = "tst_checkpoint_child";
+char *TCID = "tst_checkpoint_wait_timeout";
 int TST_TOTAL = 1;
 
 int main(void)
 {
 	int pid;
-	struct tst_checkpoint checkpoint;
 
 	tst_tmpdir();
 
-	TST_CHECKPOINT_CREATE(&checkpoint);
+	TST_CHECKPOINT_INIT(tst_rmdir);
 
 	pid = fork();
 
@@ -44,17 +43,16 @@ int main(void)
 		tst_brkm(TBROK | TERRNO, NULL, "Fork failed");
 	break;
 	case 0:
-		fprintf(stderr, "Child: checkpoint signaling\n");
-		TST_CHECKPOINT_SIGNAL_PARENT(&checkpoint);
+		TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
+		fprintf(stderr, "Child: checkpoint reached\n");
 		exit(0);
 	break;
 	default:
-		TST_CHECKPOINT_PARENT_WAIT(NULL, &checkpoint);
-		fprintf(stderr, "Parent: checkpoint reached\n");
+		fprintf(stderr, "Parent: exiting without signaling\n");
+		tst_rmdir();
+		exit(0);
 	break;
 	}
-		
-	wait(NULL);
-	tst_rmdir();
+
 	return 0;
 }

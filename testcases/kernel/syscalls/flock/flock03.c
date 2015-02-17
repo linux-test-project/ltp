@@ -56,8 +56,6 @@ static void childfunc_uc(void)
 char *TCID = "flock03";
 int TST_TOTAL = 3;
 
-static struct tst_checkpoint checkpoint;
-
 int main(int argc, char **argv)
 {
 	int lc;
@@ -109,7 +107,7 @@ int main(int argc, char **argv)
 			tst_resm(TPASS,
 				 "Parent: Initial attempt to flock() passed");
 
-		TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint);
+		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 
 		if ((waitpid(pid, &status, 0)) < 0) {
 			tst_resm(TFAIL, "wait() failed");
@@ -132,7 +130,7 @@ static void childfunc(int fd)
 {
 	int fd2;
 
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint);
+	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
 
 	fd2 = open(FILE_NAME, O_RDWR);
 
@@ -185,7 +183,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	TST_CHECKPOINT_CREATE(&checkpoint);
+	TST_CHECKPOINT_INIT(tst_rmdir);
 
 	fd = creat(FILE_NAME, 0666);
 	if (fd < 0) {

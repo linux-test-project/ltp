@@ -195,7 +195,7 @@ const char *dataroot = tst_dataroot();
 -------------------------------------------------------------------------------
 
 Datafiles can also be accessed as '$LTPROOT/testcases/data/$TCID/...',
-but '$LTP_DATAROOT' and 'tst_dataroot()' are preffered as these can be used
+but '$LTP_DATAROOT' and 'tst_dataroot()' are preferred as these can be used
 when running testcases directly in git tree as well as from install
 location.
 
@@ -634,50 +634,62 @@ return value into the overall test result.
 2.2.8 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As LTP tests are written for Linux, most of the test involves fork()-ing and
-parent-child process synchronization. We have a checkpoint library code
-that works even for two different processes, all they need to is to run with
-the same working directory (they use FIFO for synchronization). The checkpoint
-interface provides two pairs of signal and wait functions. One pair to be used
-to signal child from parent and second to signal parent from child.
+As LTP tests are written for Linux, most of the tests involve fork()-ing and
+parent-child process synchronization. To solve this problem LTP has checkpoint
+library that provides up to page_size / sizeof(uint32_t) wait/wake pairs. The
+checkpoint library expects all synchronized processes to run with the same
+working directory (it uses shared memory backed with a file for futex based
+synchronization).
 
-Checkpoint is represented by 'struct tst_checkpoint', which has to be
-initialized before first usage and FIFO has to be created. This is
-usually done in parent process in single step by calling
-'tst_checkpoint_create()'.
+The library must be initialized with 'TST_CHECKPOINT_INIT()' function (which
+creates a page of shared memory to be used with futexes). The function takes a
+cleanup callback as a parameter which is used to remove the test temporary
+directory before the process exits if something went wrong.
 
-Child processes created via fork() are ready to use tst_checkpoint_*
-synchronization functions, as they inherited already initialized
-'struct tst_checkpoint'.
+IMPORTANT: As the init function creates a file the 'tst_tmpdir()' must be
+           called beforehand to create a temporary directory.
 
-Child processes started via exec*, or any other process can use already
-created FIFO, provided they initialize 'struct tst_checkpoint' first by
-call to 'tst_checkpoint_init()'. This function does not create any FIFO,
-it relies on fact, that it was already created by some other process.
-Note, that if you use multiple FIFOs in this scenario, these should be
-initialized in same order as in process you are sychronizing against.
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
 
-IMPORTANT: Be aware, that following scenario is _NOT_ safe when using
-           only single checkpoint. You are advised to use two checkpoints
-           in this case.
+TST_SAFE_CHECKPOINT_WAIT(cleanup_fn, id)
 
-* tst_checkpoint_signal_child() followed by tst_checkpoint_parent_wait()
+TST_SAFE_CHECKPOINT_WAKE(cleanup_fn, id)
 
-             parent            |            child
--------------------------------+-------------------------------
-                               | tst_checkpoint_child_wait()
-                               |   blocking read, waits until
-                               |   parent opens write side
-tst_checkpoint_signal_child()  |
-  NONBLOCK write               |
-                               |   child is now able to read
-                               |   from FIFO
-tst_checkpoint_parent_wait()   |
-  NONBLOCK read parent able to |
-  read from FIFO and can race  |
-  with read in child           |
-                               | tst_checkpoint_signal_parent()
--------------------------------+--------------------------------
+TST_SAFE_CHECKPOINT_WAKE2(cleanup_fn, id, nr_wake)
+
+TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup_fn, id)
+-------------------------------------------------------------------------------
+
+The checkpoint interface provides pair of wake and wait functions. The 'id' is
+unsigned integer which specifies checkpoint to wake/wait for.
+
+The 'TST_SAFE_CHECKPOINT_WAIT()' suspends process execution until it's woken
+up or until timeout is reached.
+
+The 'TST_SAFE_CHECKPOINT_WAKE()' wakes one process waiting on the checkpoint.
+If no process is waiting the function retries until it success or until
+timeout is reached.
+
+If timeout has been reached process exits with appropriate error message (uses
+'tst_brkm()').
+
+The 'TST_SAFE_CHECKPOINT_WAKE2()' does the same as
+'TST_SAFE_CHECKPOINT_WAKE()' but can be used to wake precisely 'nr_wake'
+processes.
+
+The 'TST_SAFE_CHECKPOINT_WAKE_AND_WAIT()' is a shorthand for doing wake and
+then immediately waiting on the same checkpoint.
+
+Child processes created via fork() are ready to use the checkpoint
+synchronization functions, as they inherited the mapped page automatically.
+
+Child processes started via exec*, or any other processes must initialize the
+checkpoint by calling 'TST_CHECKPOINT_INIT()' before usage.
+
+IMPORTANT: The call to 'TST_CHECKPOINT_INIT()' from the child process must pass
+           'NULL' pointer as a cleanup callback.
 
 For the details of the interface, look into the 'include/tst_checkpoint.h' and
 'lib/tests/tst_checkpoint_*'.

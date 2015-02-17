@@ -50,7 +50,6 @@ static int mount_flag;
 static int chdir_flag;
 
 static int page_size;
-static struct tst_checkpoint checkpoint1, checkpoint2;
 static int bug_reproduced;
 
 char *TCID = "mmap16";
@@ -112,7 +111,7 @@ static void do_test(void)
 		fd = SAFE_OPEN(cleanup, "testfilep", O_RDWR);
 		memset(buf, 'a', FS_BLOCKSIZE);
 
-		TST_CHECKPOINT_PARENT_WAIT(cleanup, &checkpoint1);
+		TST_SAFE_CHECKPOINT_WAIT(cleanup, 0);
 		while (1) {
 			ret = write(fd, buf, FS_BLOCKSIZE);
 			if (ret < 0) {
@@ -125,7 +124,7 @@ static void do_test(void)
 			}
 		}
 		SAFE_CLOSE(cleanup, fd);
-		TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint2);
+		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 	}
 
 	wait(&status);
@@ -155,6 +154,8 @@ static void setup(void)
 	TEST_PAUSE;
 	tst_tmpdir();
 
+	TST_CHECKPOINT_INIT(tst_rmdir);
+
 	page_size = getpagesize();
 
 	device = tst_acquire_device(cleanup);
@@ -173,8 +174,6 @@ static void setup(void)
 	SAFE_CHDIR(cleanup, MNTPOINT);
 	chdir_flag = 1;
 
-	TST_CHECKPOINT_CREATE(&checkpoint1);
-	TST_CHECKPOINT_CREATE(&checkpoint2);
 }
 
 static void do_child(void)
@@ -222,8 +221,8 @@ static void do_child(void)
 	 * if not, the data 'A', 'B', 'C' will be silently discarded later when
 	 * kernel writepage is called, that means data corruption.
 	 */
-	TST_CHECKPOINT_SIGNAL_PARENT(&checkpoint1);
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint2);
+	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
+	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
 
 	for (offset = FS_BLOCKSIZE; offset < page_size; offset += FS_BLOCKSIZE)
 		addr[offset] = 'a';

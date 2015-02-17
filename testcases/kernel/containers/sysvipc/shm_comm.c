@@ -43,9 +43,6 @@
 #define SHMSIZE 50
 char *TCID	= "shm_comm";
 int TST_TOTAL	= 1;
-struct tst_checkpoint checkpoint1;
-struct tst_checkpoint checkpoint2;
-
 
 static void cleanup(void)
 {
@@ -57,8 +54,7 @@ static void setup(void)
 	tst_require_root(NULL);
 	check_newipc();
 	tst_tmpdir();
-	TST_CHECKPOINT_CREATE(&checkpoint1);
-	TST_CHECKPOINT_CREATE(&checkpoint2);
+	TST_CHECKPOINT_INIT(tst_rmdir);
 }
 
 int chld1_shm(void *arg)
@@ -80,18 +76,14 @@ int chld1_shm(void *arg)
 
 	*shmem = 'A';
 
-	/* tell child2 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint1);
-
-	/* wait for child2 */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint2);
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	/* if child1 shared segment has changed (by child2) report fail */
 	if (*shmem != 'A')
 		rval = 1;
 
 	/* tell child2 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint1);
+	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
 
 	shmdt(shmem);
 	shmctl(id, IPC_RMID, NULL);
@@ -116,15 +108,11 @@ int chld2_shm(void *arg)
 	}
 
 	/* wait for child1 to write to his segment */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint1);
+	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
 
 	*shmem = 'B';
 
-	/* tell child1 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint2);
-
-	/* wait for child1 */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint1);
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	shmdt(shmem);
 	shmctl(id, IPC_RMID, NULL);

@@ -43,13 +43,11 @@
 #define MSGSIZE 50
 char *TCID	= "msg_comm";
 int TST_TOTAL	= 1;
-struct tst_checkpoint checkpoint1;
-struct tst_checkpoint checkpoint2;
+
 struct sysv_msg {
 	long mtype;
 	char mtext[MSGSIZE];
 };
-
 
 static void cleanup(void)
 {
@@ -61,8 +59,7 @@ static void setup(void)
 	tst_require_root(NULL);
 	check_newipc();
 	tst_tmpdir();
-	TST_CHECKPOINT_CREATE(&checkpoint1);
-	TST_CHECKPOINT_CREATE(&checkpoint2);
+	TST_CHECKPOINT_INIT(tst_rmdir);
 }
 
 int chld1_msg(void *arg)
@@ -86,7 +83,7 @@ int chld1_msg(void *arg)
 	}
 
 	/* wait for child2 to write into the message queue */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint2);
+	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
 
 	/* if child1 message queue has changed (by child2) report fail */
 	n = msgrcv(id, &rec, sizeof(struct sysv_msg) - sizeof(long),
@@ -102,7 +99,7 @@ int chld1_msg(void *arg)
 	}
 
 	/* tell child2 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint1);
+	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
 
 	msgctl(id, IPC_RMID, NULL);
 	return rval;
@@ -127,11 +124,8 @@ int chld2_msg(void *arg)
 		return 2;
 	}
 
-	/* tell child1 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint2);
-
-	/* wait for child1 */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint1);
+	/* tell child1 to continue and wait for it */
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	msgctl(id, IPC_RMID, NULL);
 	return 0;

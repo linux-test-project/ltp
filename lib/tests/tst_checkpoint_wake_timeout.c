@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2012 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (C) 2013 Linux Test Project
+ * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -25,35 +26,16 @@
 
 #include "test.h"
 
-char *TCID = "tst_checkpoint_parent_exits";
+char *TCID = "tst_checkpoint_wake_timeout";
 int TST_TOTAL = 1;
 
 int main(void)
 {
-	int pid;
-	struct tst_checkpoint checkpoint;
-
 	tst_tmpdir();
 
-	TST_CHECKPOINT_CREATE(&checkpoint);
+	TST_CHECKPOINT_INIT(tst_rmdir);
+	TST_SAFE_CHECKPOINT_WAKE(tst_rmdir, 0);
+	fprintf(stderr, "Parent: checkpoint reached\n");
 
-	pid = fork();
-
-	switch (pid) {
-	case -1:
-		tst_brkm(TBROK | TERRNO, NULL, "Fork failed");
-	break;
-	case 0:
-		TST_CHECKPOINT_CHILD_WAIT(&checkpoint);
-		fprintf(stderr, "Child: checkpoint reached\n");
-		exit(0);
-	break;
-	default:
-		fprintf(stderr, "Parent: exiting without signaling\n");
-		tst_rmdir();
-		exit(0);
-	break;
-	}
-		
 	return 0;
 }

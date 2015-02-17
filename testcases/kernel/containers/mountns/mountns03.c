@@ -69,15 +69,13 @@ int child_func(void *arg)
 		return 1;
 	}
 
-	TST_CHECKPOINT_SIGNAL_PARENT(&checkpoint1);
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint2);
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	/* checks that shared mounts propagates to slave mount */
 	if (access(DIRA"/B", F_OK) == -1)
 		ret = 2;
 
-	TST_CHECKPOINT_SIGNAL_PARENT(&checkpoint1);
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint2);
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	/* bind mounts DIRB to DIRA making contents of DIRB visible
 	 * in DIRA */
@@ -86,8 +84,7 @@ int child_func(void *arg)
 		return 1;
 	}
 
-	TST_CHECKPOINT_SIGNAL_PARENT(&checkpoint1);
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint2);
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	umount(DIRA);
 	return ret;
@@ -113,19 +110,17 @@ static void test(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "clone failed");
 
 	/* waits for child to make a slave mount */
-	TST_CHECKPOINT_PARENT_WAIT(cleanup, &checkpoint1);
+	TST_SAFE_CHECKPOINT_WAIT(cleanup, 0);
 
 	/* bind mounts DIRB to DIRA making contents of DIRB visible
 	 * in DIRA */
 	SAFE_MOUNT(cleanup, DIRB, DIRA, "none", MS_BIND, NULL);
 
-	TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint2);
-	TST_CHECKPOINT_PARENT_WAIT(cleanup, &checkpoint1);
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup, 0);
 
 	SAFE_UMOUNT(cleanup, DIRA);
 
-	TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint2);
-	TST_CHECKPOINT_PARENT_WAIT(cleanup, &checkpoint1);
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup, 0);
 
 	/* checks that slave mount doesn't propagate to shared mount */
 	if ((access(DIRA"/A", F_OK) == 0) && (access(DIRA"/B", F_OK) == -1))
@@ -133,7 +128,7 @@ static void test(void)
 	else
 		tst_resm(TFAIL, "propagation form slave mount failed");
 
-	TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint2);
+	TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 
 
 	SAFE_WAIT(cleanup, &status);

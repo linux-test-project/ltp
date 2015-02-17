@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2012 Cyril Hrubis chrubis@suse.cz
- * Copyright (C) 2014 Matus Marhefka mmarhefk@redhat.com
+ * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -22,254 +21,124 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdint.h>
+#include <limits.h>
 #include <errno.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <poll.h>
+#include <sys/syscall.h>
+#include <linux/futex.h>
 
-#include "tst_checkpoint.h"
+#include "test.h"
+#include "safe_macros.h"
 
-/*
- * Issue open() on 'path' fifo with O_WRONLY flag and wait for
- * a reader up to 'timeout' ms.
- *
- * Returns:
- *   >= 0 - file descriptor
- *   -1  - an error has occurred (errno is set accordingly)
- *
- */
-int open_wronly_timed(const char *path, unsigned int timeout)
+#define DEFAULT_MSEC_TIMEOUT 10000
+
+typedef volatile uint32_t futex_t;
+
+static futex_t *futexes;
+static int page_size;
+
+void tst_checkpoint_init(const char *file, const int lineno,
+                         void (*cleanup_fn)(void))
 {
 	int fd;
-	unsigned int i;
-	int interval = 1; /* how often issue open(O_NONBLOCK), in ms */
 
-	for (i = 0; i < timeout; i += interval) {
-		fd = open(path, O_WRONLY | O_NONBLOCK);
-		if (fd < 0) {
-			if ((errno == ENXIO) || (errno == EINTR)) {
-				usleep(interval * 1000);
+	if (futexes) {
+		tst_brkm(TBROK, cleanup_fn,
+		         "%s: %d checkopoints allready initialized",
+		         file, lineno);
+	}
 
-				continue;
-			}
+	/*
+	 * The parent test process is responsible for creating the temporary
+	 * directory and therefore must pass non-zero cleanup (to remove the
+	 * directory if something went wrong).
+	 *
+	 * We cannot do this check unconditionally because if we need to init
+	 * the checkpoint from a binary that was started by exec() the
+	 * tst_tmpdir_created() will return false because the tmpdir was
+	 * created by parent. In this case we expect the subprogram can call
+	 * the init as a first function with NULL as cleanup function.
+	 */
+	if (cleanup_fn && !tst_tmpdir_created()) {
+		tst_brkm(TBROK, cleanup_fn,
+		         "%s:%d You have to create test temporary directory "
+		         "first (call tst_tmpdir())", file, lineno);
+	}
 
+	page_size = getpagesize();
+
+	fd = SAFE_OPEN(cleanup_fn, "checkpoint_futex_base_file",
+	               O_RDWR | O_CREAT, 0666);
+
+	SAFE_FTRUNCATE(cleanup_fn, fd, page_size);
+
+	futexes = SAFE_MMAP(cleanup_fn, NULL, page_size,
+	                    PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	SAFE_CLOSE(cleanup_fn, fd);
+}
+
+int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout)
+{
+	struct timespec timeout;
+
+	if (id >= page_size / sizeof(uint32_t)) {
+		errno = EOVERFLOW;
+		return -1;
+	}
+
+	timeout.tv_sec = msec_timeout/1000;
+	timeout.tv_nsec = (msec_timeout%1000) * 1000000;
+
+	return syscall(SYS_futex, &futexes[id], FUTEX_WAIT, futexes[id], &timeout);
+}
+
+int tst_checkpoint_wake(unsigned int id, unsigned int nr_wake,
+                        unsigned int msec_timeout)
+{
+	unsigned int msecs = 0, waked = 0;
+
+	if (id >= page_size / sizeof(uint32_t)) {
+		errno = EOVERFLOW;
+		return -1;
+	}
+
+	do {
+		waked += syscall(SYS_futex, &futexes[id], FUTEX_WAKE, INT_MAX, NULL);
+		usleep(1000);
+		msecs++;
+
+		if (msecs >= msec_timeout) {
+			errno = ETIMEDOUT;
 			return -1;
 		}
 
-		return fd;
-	}
+	} while (waked != nr_wake);
 
-	errno = ETIMEDOUT;
-	return -1;
+	return 0;
 }
 
-void tst_checkpoint_init(const char *file, const int lineno,
-                         struct tst_checkpoint *self)
+void tst_safe_checkpoint_wait(const char *file, const int lineno,
+                              void (*cleanup_fn)(void), unsigned int id)
 {
-	static unsigned int fifo_counter = 0;
-	int rval;
+	int ret = tst_checkpoint_wait(id, DEFAULT_MSEC_TIMEOUT);
 
-	/* default values */
-	rval = snprintf(self->file, TST_FIFO_LEN, "tst_checkopoint_fifo_%u",
-			fifo_counter++);
-	if (rval < 0) {
-		tst_brkm(TBROK, NULL,
-			 "Failed to create a unique temp file name at %s:%d",
-			 file, lineno);
-	}
-	self->retval = 1;
-	self->timeout = 5000;
-}
-
-void tst_checkpoint_create(const char *file, const int lineno,
-			   struct tst_checkpoint *self)
-
-{
-
-	if (!tst_tmpdir_created()) {
-		tst_brkm(TBROK, NULL, "Checkpoint could be used only in test "
-				      "temporary directory at %s:%d",
-				      file, lineno);
-	}
-
-	tst_checkpoint_init(file, lineno, self);
-
-	if (mkfifo(self->file, 0666)) {
-		tst_brkm(TBROK | TERRNO, NULL,
-		         "Failed to create fifo '%s' at %s:%d",
-		         self->file, file, lineno);
-	}
-}
-
-void tst_checkpoint_parent_wait(const char *file, const int lineno,
-                                void (*cleanup_fn)(void),
-				struct tst_checkpoint *self)
-{
-	int ret;
-	char ch;
-	struct pollfd fd;
-
-	fd.fd = open(self->file, O_RDONLY | O_NONBLOCK);
-
-	if (fd.fd < 0) {
+	if (ret) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "Failed to open fifo '%s' at %s:%d",
-		         self->file, file, lineno);
+		         "%s:%d: tst_checkpoint_wait(%u, %i)",
+		         file, lineno, id, DEFAULT_MSEC_TIMEOUT);
 	}
-
-	fd.events = POLLIN;
-	fd.revents = 0;
-
-	ret = poll(&fd, 1, self->timeout);
-
-	switch (ret) {
-	case 0:
-		close(fd.fd);
-		tst_brkm(TBROK, cleanup_fn, "Checkpoint timeouted after "
-		         "%u msecs at %s:%d", self->timeout, file, lineno);
-	break;
-	case 1:
-	break;
-	default:
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "Poll failed for fifo '%s' at %s:%d",
-			 self->file, file, lineno);
-	}
-
-	ret = read(fd.fd, &ch, 1);
-
-	switch (ret) {
-	case 0:
-		close(fd.fd);
-		tst_brkm(TBROK, cleanup_fn,
-		         "The other end of the pipe was closed "
-		         "unexpectedly at %s:%d", file, lineno);
-	break;
-	case -1:
-		close(fd.fd);
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "Failed to read from pipe at %s:%d\n",
-		         file, lineno);
-	break;
-	}
-
-	if (ch != 'c') {
-		close(fd.fd);
-		tst_brkm(TBROK, cleanup_fn,
-		         "Wrong data read from the pipe at %s:%d\n",
-		         file, lineno);
-	}
-
-	close(fd.fd);
 }
 
-void tst_checkpoint_child_wait(const char *file, const int lineno,
-                               struct tst_checkpoint *self)
+void tst_safe_checkpoint_wake(const char *file, const int lineno,
+                              void (*cleanup_fn)(void), unsigned int id,
+                              unsigned int nr_wake)
 {
-	int ret, fd;
-	char ch;
+	int ret = tst_checkpoint_wake(id, nr_wake, DEFAULT_MSEC_TIMEOUT);
 
-	fd = open(self->file, O_RDONLY);
-
-	if (fd < 0) {
-		fprintf(stderr, "CHILD: Failed to open fifo '%s': %s at "
-		        "%s:%d\n", self->file, strerror(errno),
-		        file, lineno);
-		exit(self->retval);
-	}
-	
-	ret = read(fd, &ch, 1);
-
-	if (ret == -1) {
-		fprintf(stderr, "CHILD: Failed to read from fifo '%s': %s "
-		        "at %s:%d\n", self->file, strerror(errno),
-		        file, lineno);
-		goto err;
-	}
-
-	if (ch != 'p') {
-		fprintf(stderr, "CHILD: Wrong data read from the pipe "
-		        "at %s:%d\n", file, lineno);
-		goto err;
-	}
-
-	close(fd);
-	return;
-err:
-	close(fd);
-	exit(self->retval);
-}
-
-void tst_checkpoint_signal_parent(const char *file, const int lineno,
-                                  struct tst_checkpoint *self)
-{
-	int ret, fd;
-	
-	fd = open(self->file, O_WRONLY);
-
-	if (fd < 0) {
-		fprintf(stderr, "CHILD: Failed to open fifo '%s': %s at %s:%d",
-		        self->file, strerror(errno), file, lineno);
-		exit(self->retval);
-	}
-
-	ret = write(fd, "c", 1);
-
-	switch (ret) {
-	case 0:
-		fprintf(stderr, "No data written, something is really "
-		        "screewed; at %s:%d\n", file, lineno);
-		goto err;
-	break;
-	case -1:
-		fprintf(stderr, "Failed to write to pipe: %s at %s:%d\n",
-		        strerror(errno), file, lineno);
-		goto err;
-	break;
-	}
-
-	close(fd);
-	return;
-err:
-	close(fd);
-	exit(self->retval);
-}
-
-void tst_checkpoint_signal_child(const char *file, const int lineno,
-                                 void (*cleanup_fn)(void),
-				 struct tst_checkpoint *self)
-{
-	int ret, fd;
-	
-	fd = open_wronly_timed(self->file, self->timeout);
-
-	if (fd < 0) {
+	if (ret) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "Failed to open fifo '%s' at %s:%d",
-		         self->file, file, lineno);
+		         "%s:%d: tst_checkpoint_wake(%u, %u, %i)",
+		         file, lineno, id, nr_wake, DEFAULT_MSEC_TIMEOUT);
 	}
-
-	ret = write(fd, "p", 1);
-
-	switch (ret) {
-	case 0:
-		close(fd);
-		tst_brkm(TBROK, cleanup_fn,
-		         "No data written, something is really screewed; "
-			 "at %s:%d\n", file, lineno);
-	break;
-	case -1:
-		close(fd);
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-		         "Failed to write to pipe at %s:%d\n",
-		         file, lineno);
-	break;
-	}
-	
-	close(fd);
 }

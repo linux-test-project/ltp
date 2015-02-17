@@ -37,13 +37,9 @@
 #include "libclone.h"
 #include "ipcns_helper.h"
 
-
 #define TESTKEY 124426L
 char *TCID	= "sem_comm";
 int TST_TOTAL	= 1;
-struct tst_checkpoint checkpoint1;
-struct tst_checkpoint checkpoint2;
-
 
 static void cleanup(void)
 {
@@ -55,8 +51,7 @@ static void setup(void)
 	tst_require_root(NULL);
 	check_newipc();
 	tst_tmpdir();
-	TST_CHECKPOINT_CREATE(&checkpoint1);
-	TST_CHECKPOINT_CREATE(&checkpoint2);
+	TST_CHECKPOINT_INIT(tst_rmdir);
 }
 
 int chld1_sem(void *arg)
@@ -76,11 +71,8 @@ int chld1_sem(void *arg)
 		return 2;
 	}
 
-	/* tell child2 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint1);
-
-	/* wait for child2 to create the semaphore */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint2);
+	/* tell child2 to continue and wait for it to create the semaphore */
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	sm.sem_num = 0;
 	sm.sem_op = -1;
@@ -91,11 +83,8 @@ int chld1_sem(void *arg)
 		return 2;
 	}
 
-	/* tell child2 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint1);
-
-	/* wait for child2 to lock the semaphore */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint2);
+	/* tell child2 to continue and wait for it to lock the semaphore */
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	sm.sem_op = 1;
 	semop(id, &sm, 1);
@@ -110,7 +99,7 @@ int chld2_sem(void *arg)
 	struct sembuf sm;
 
 	/* wait for child1 to create the semaphore */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint1);
+	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
 
 	id = semget(TESTKEY, 1, IPC_CREAT);
 	if (id == -1) {
@@ -124,11 +113,8 @@ int chld2_sem(void *arg)
 		return 2;
 	}
 
-	/* tell child1 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint2);
-
-	/* wait for child1 to lock the semaphore */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint1);
+	/* tell child1 to continue and wait for it to lock the semaphore */
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
 	sm.sem_num = 0;
 	sm.sem_op = -1;
@@ -144,7 +130,7 @@ int chld2_sem(void *arg)
 	}
 
 	/* tell child1 to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(NULL, &checkpoint2);
+	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
 
 	sm.sem_op = 1;
 	semop(id, &sm, 1);

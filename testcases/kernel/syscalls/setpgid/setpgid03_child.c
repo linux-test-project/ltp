@@ -23,15 +23,10 @@ char *TCID = "setpgid03_child";
 
 int main(void)
 {
-	struct tst_checkpoint checkpoint;
+	TST_CHECKPOINT_INIT(NULL);
 
-	/* we are already in tmpdir, so only initialize checkpoint,
-	 * fifo has been created by parent already. */
-	TST_CHECKPOINT_INIT(&checkpoint);
-	checkpoint.timeout = 10000;
-
-	TST_CHECKPOINT_SIGNAL_PARENT(&checkpoint);
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint);
+	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
+	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
 
 	return 0;
 }

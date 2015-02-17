@@ -50,8 +50,6 @@
 
 char *TCID	= "netns_netlink";
 int TST_TOTAL	= 1;
-struct tst_checkpoint checkpoint;
-
 
 static void cleanup(void)
 {
@@ -64,7 +62,7 @@ static void setup(void)
 	check_iproute(IP_TUNTAP_MIN_VER);
 	check_netns();
 	tst_tmpdir();
-	TST_CHECKPOINT_CREATE(&checkpoint);
+	TST_CHECKPOINT_INIT(tst_rmdir);
 }
 
 int child_func(void)
@@ -92,7 +90,7 @@ int child_func(void)
 	}
 
 	/* waits for parent to create an interface */
-	TST_CHECKPOINT_CHILD_WAIT(&checkpoint);
+	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
 
 	/* To get rid of "resource temporarily unavailable" errors
 	 * when testing with -i option */
@@ -150,7 +148,7 @@ static void test(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "system failed");
 
 	/* allow child to continue */
-	TST_CHECKPOINT_SIGNAL_CHILD(cleanup, &checkpoint);
+	TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 
 
 	SAFE_WAITPID(cleanup, pid, &status, 0);
