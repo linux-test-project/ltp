@@ -49,6 +49,7 @@
 #include "safe_macros.h"
 
 #define RECLEN	100
+#define MOUNT_DIR "dir/"
 
 const char *TCID = "ftruncate04";
 int TST_TOTAL = 6;
@@ -58,6 +59,10 @@ static char filename[80];
 
 static int recstart;
 static int reclen;
+
+static const char *device;
+static const char *fs_type;
+static int mount_flag;
 
 static void dochild(void);
 static void doparent(void);
@@ -79,7 +84,7 @@ int main(int ac, char **av)
 #endif
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		sprintf(filename, "%s.%d.%d\n", TCID, getpid(), lc);
+		sprintf(filename, MOUNT_DIR"%s.%d.%d\n", TCID, getpid(), lc);
 
 		if (tst_fill_file(filename, 0, 1024, 8)) {
 			tst_brkm(TBROK, cleanup,
@@ -219,21 +224,37 @@ static void setup(void)
 
 	tst_tmpdir();
 
+	SAFE_MKDIR(tst_rmdir, MOUNT_DIR, 0777);
+
 	TST_CHECKPOINT_INIT(tst_rmdir);
 
 	if (statvfs(".", &fs) == -1)
 		tst_brkm(TFAIL | TERRNO, tst_rmdir, "statvfs failed");
 
-	if ((fs.f_flag & MS_MANDLOCK) == 0) {
-		tst_brkm(TCONF,
-			 tst_rmdir, "The filesystem where /tmp is mounted does"
-			 " not support mandatory locks. Cannot run this test.");
+	if ((fs.f_flag & MS_MANDLOCK))
+		return;
 
-	}
+	tst_resm(TINFO, "TMPDIR does not support mandatory locks");
+
+	fs_type = tst_dev_fs_type();
+	device = tst_acquire_device(cleanup);
+
+	if (!device)
+		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
+
+	tst_mkfs(cleanup, device, fs_type, NULL);
+
+	SAFE_MOUNT(NULL, device, MOUNT_DIR, fs_type, MS_MANDLOCK, NULL);
+	mount_flag = 1;
 }
 
 static void cleanup(void)
 {
+	if (mount_flag && umount(MOUNT_DIR))
+		tst_resm(TWARN | TERRNO, "umount(%s) failed", device);
+
+	if (device)
+		tst_release_device(NULL, device);
+
 	tst_rmdir();
 }
-
