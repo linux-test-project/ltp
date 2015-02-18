@@ -1,53 +1,28 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2015 Cyril Hrubis <chrubis@suse.cz>
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
+ *  04/2008 Roy Lee <roylee@andestech.com>
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	execve04.c
- *
- * DESCRIPTION
- *	Testcase to check execve sets the following errnos correctly:
- *	1.	ETXTBSY
- *
- * ALGORITHM
- *	1.	Attempt to execve(2) a file which is being opened by another
- *		process for writing fails with ETXTBSY.
- *
- * USAGE:  <for command-line>
- *  execve04 -F <test file> [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *	04/2008 Roy Lee <roylee@andestech.com>
- *              - Fix a synchronization issue.
- *                On a loaded system, the 'execving' child can get access
- *                to the file before the 'opening' child does, hence results
- *                in an unexpected opening fail.
- *
- * RESTRICTIONS
- *	must be run with -F <test file> option
+ * Attempt to execve(2) a file which is being opened by another process for
+ * writing fails with ETXTBSY.
  */
 
 #ifndef _GNU_SOURCE
@@ -61,200 +36,98 @@
 #include <stdio.h>
 
 #include "test.h"
-#include "libtestsuite.h"
+#include "safe_macros.h"
 
-char *test_app;
+#define TEST_APP "execve_child"
+
 char *TCID = "execve04";
 int TST_TOTAL = 1;
 
-void setup(char *);
-void cleanup(void);
-void help(void);
-void do_child_1(void);
-void do_child_2(void);
-
-int start_sync_pipes[2];
-int end_sync_pipes[2];
-
-int Fflag = 0;
-
-#ifdef UCLINUX
-#define PIPE_NAME_START		"execve04_start"
-#define PIPE_NAME_END		"execve04_end"
-#else
-#define PIPE_NAME_START		NULL
-#define PIPE_NAME_END		NULL
-#endif
-
-option_t options[] = {
-	{"F:", &Fflag, &test_app},
-	{NULL, NULL, NULL}
-};
+static void setup(void);
+static void cleanup(void);
+static void do_child(void);
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
-	pid_t pid, pid1;
-	int retval = 3, status;
-	char *argv[1], *env[1];
+	pid_t pid;
+	char *argv[2] = {TEST_APP, NULL};
+	char *env[1] = {NULL};
 
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+
 #ifdef UCLINUX
-	maybe_run_child(&do_child_1, "nS", 1, &test_app);
+	maybe_run_child(&do_child, "");
 #endif
 
-	if (!Fflag)
-		tst_brkm(TBROK, NULL,
-			 "You must specify an executable file with the -F option.");
-
-	setup(*av);
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		if (sync_pipe_create(start_sync_pipes, PIPE_NAME_START) == -1)
-			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
-		if (sync_pipe_create(end_sync_pipes, PIPE_NAME_END) == -1)
-			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
-
-		/*
-		 * to test whether execve(2) sets ETXTBSY when a second
-		 * child process attempts to execve the executable opened
-		 * by the first child process
-		 */
-		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK, cleanup, "fork #1 failed");
-		else if (pid == 0) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
+			tst_brkm(TBROK, cleanup, "fork failed");
+		} else if (pid == 0) {
 #ifdef UCLINUX
-			if (self_exec(av[0], "nS", 1, test_app) < 0)
+			if (self_exec(av[0], "") < 0)
 				tst_brkm(TBROK, cleanup, "self_exec failed");
 #else
-			do_child_1();
+			do_child();
 #endif
 		}
 
-		if (sync_pipe_wait(start_sync_pipes) == -1)
-			tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+		TST_SAFE_CHECKPOINT_WAIT(cleanup, 0);
 
-		if (sync_pipe_close(start_sync_pipes, PIPE_NAME_START) == -1)
-			tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+		TEST(execve(TEST_APP, argv, env));
 
-		if ((pid1 = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK, cleanup, "fork #2 failed");
-
-		if (pid1 == 0) {
-
-			retval = 3;
-
-			argv[0] = 0;
-			env[0] = 0;
-
-			/* do not interfere with end synchronization of first
-			 * child */
-			sync_pipe_close(end_sync_pipes, PIPE_NAME_END);
-
-			TEST(execve(test_app, argv, env));
-
-			if (TEST_ERRNO != ETXTBSY) {
-				retval = 1;
-				perror("didn't get ETXTBSY\n");
-			} else
-				printf("execve failed with ETXTBSY as "
-				       "expected\n");
-			exit(retval);
-		}
-		/* wait for the child to finish */
-		if (waitpid(pid1, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid failed");
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 3)
-			tst_resm(TPASS, "execve failed as expected");
+		if (TEST_ERRNO != ETXTBSY)
+			tst_resm(TFAIL | TTERRNO, "execve succeeded, expected failure");
 		else
-			tst_resm(TFAIL, "execve succeeded, expected failure");
+			tst_resm(TPASS | TTERRNO, "execve failed as expected");
 
-		/*  terminate first child */
-		sync_pipe_notify(end_sync_pipes);
-		(void)waitpid(pid, NULL, 0);
+		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
+		SAFE_WAIT(cleanup, NULL);
 	}
-	cleanup();
 
+	cleanup();
 	tst_exit();
 }
 
-void help(void)
+void setup(void)
 {
-	printf("  -F <test name> : for example, 'execve04 -F test3'\n");
-}
+	char path[PATH_MAX];
 
-void setup(char *argv0)
-{
-	char *cmd, *pwd = NULL;
-	char test_path[MAXPATHLEN];
-
-	if (test_app[0] == '/')
-		strncpy(test_path, test_app, sizeof(test_path));
-	else {
-		if ((pwd = get_current_dir_name()) == NULL)
-			tst_brkm(TBROK | TERRNO, NULL, "getcwd failed");
-
-		snprintf(test_path, sizeof(test_path), "%s/%s",
-			 pwd, basename(test_app));
-
-		free(pwd);
+	if (tst_get_path(TEST_APP, path, sizeof(path))) {
+		tst_brkm(TBROK, NULL,
+		         "Couldn't found "TEST_APP" binary in $PATH");
 	}
-
-	cmd = malloc(strlen(test_path) + strlen("cp -p \"") + strlen("\" .") + 1);
-	if (cmd == NULL)
-		tst_brkm(TBROK | TERRNO, NULL, "Cannot alloc command string");
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_tmpdir();
 
-	sprintf(cmd, "cp -p \"%s\" .", test_path);
-	if (system(cmd) != 0)
-		tst_brkm(TBROK, NULL, "command failed: %s", cmd);
-	free(cmd);
+	TST_CHECKPOINT_INIT(tst_rmdir);
+
+	SAFE_CP(tst_rmdir, path, ".");
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	tst_rmdir();
-
 }
 
-void do_child_1(void)
+static void do_child(void)
 {
-	int fildes;
+	int fd;
 
 #ifdef UCLINUX
-	if (sync_pipe_create(start_sync_pipes, PIPE_NAME_START) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
-	if (sync_pipe_create(end_sync_pipes, PIPE_NAME_END) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+	TST_CHECKPOINT_INIT(NULL);
 #endif
 
-	if ((fildes = open(test_app, O_WRONLY)) == -1) {
-		printf("%s\n", test_app);
+	if ((fd = open(TEST_APP, O_WRONLY)) == -1) {
 		perror("open failed");
 		exit(1);
 	}
 
-	if (sync_pipe_notify(start_sync_pipes) == -1) {
-		perror("sync_pipe_notify failed");
-		exit(1);
-	}
+	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
 
-	if (sync_pipe_close(start_sync_pipes, PIPE_NAME_START) == -1) {
-		perror("sync_pipe_close failed");
-		exit(1);
-	}
-
-	if (sync_pipe_wait(end_sync_pipes) == -1) {
-		perror("sync_pipe_wait failed");
-		exit(1);
-	}
 	exit(0);
 }

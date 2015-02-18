@@ -110,8 +110,8 @@
 /execve/execve02
 /execve/execve03
 /execve/execve04
+/execve/execve_child
 /execve/execve05
-/execve/test3
 /execvp/execvp01
 /exit/exit01
 /exit/exit02

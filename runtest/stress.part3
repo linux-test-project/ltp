@@ -107,9 +107,9 @@ execlp01 execlp01
 
 execv01 execv01
 execve01 execve01
-execve02 execve02 -F $LTPROOT/testcases/bin/test3
+execve02 execve02
 execve03 execve03
-execve04 execve04 -F $LTPROOT/testcases/bin/test3
+execve04 execve04
 execve05 execve05 20 $LTPROOT/testcases/bin/execve05 $LTPROOT/testcases/bin/execve05 4
 execvp01 execvp01
 
