@@ -18,8 +18,8 @@
 
 top_srcdir		?= ../../../..
 
-futex_wait02: LDFLAGS+=-lrt
-futex_wake03: LDFLAGS+=-lrt
+futex_wait02: LDLIBS+=-lrt
+futex_wake03: LDLIBS+=-lrt
 futex_wait03: CFLAGS+=-pthread
 futex_wake02: CFLAGS+=-pthread
 
