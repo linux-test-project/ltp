@@ -1,66 +1,31 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * Test Name: nanosleep04
- *
  * Test Description:
  *  Verify that nanosleep() will fail to suspend the execution
  *  of a process if the specified pause time is invalid.
  *
  * Expected Result:
  *  nanosleep() should return with -1 value and sets errno to EINVAL.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
- *		Issue sys call fails with unexpected errno.
- *   Otherwise,
- *	Issue sys call returns unexpected value.
- *
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *
- * Usage:  <for command-line>
- *  nanosleep04 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
  */
+
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -69,20 +34,38 @@
 
 #include "test.h"
 
+static struct timespec tcases[] = {
+	{.tv_sec = -5, .tv_nsec = 9999},
+	{.tv_sec = 0, .tv_nsec = 1000000000},
+};
+
 char *TCID = "nanosleep04";
-int TST_TOTAL = 1;
+int TST_TOTAL = ARRAY_SIZE(tcases);
 
-struct timespec timereq;
+static void setup(void);
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+static void verify_nanosleep(struct timespec *tcase)
+{
+	TEST(nanosleep(tcase, NULL));
+
+	if (TEST_RETURN != -1) {
+		tst_resm(TFAIL, "nanosleep() succeded unexpectedly");
+		return;
+	}
+
+	if (TEST_ERRNO != EINVAL) {
+		tst_resm(TFAIL | TTERRNO,
+		         "nanosleep() expected failure with EINVAL");
+		return;
+	}
+
+	tst_resm(TPASS, "nanoslep() failed with EINVAL");
+}
 
 int main(int ac, char **av)
 {
-	int lc;
+	int lc, i;
 	const char *msg;
-	pid_t cpid;		/* Child process id */
-	int status;		/* child exit status */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -90,86 +73,16 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		/*
-		 * Creat a child process and suspend its
-		 * execution using nanosleep()
-		 */
-		if ((cpid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "fork() fails to create child process");
-		}
-
-		if (cpid == 0) {	/* Child process */
-			/*
-			 * Call nanosleep() to suspend child process
-			 * for specified time 'tv_sec'.
-			 */
-			TEST(nanosleep(&timereq, NULL));
-
-			if (TEST_RETURN == -1) {
-
-				/* Check for expected errno is set */
-				if (TEST_ERRNO != EINVAL) {
-					tst_resm(TFAIL, "nanosleep() failed, "
-						 "errno:%d, expected:%d",
-						 TEST_ERRNO, EINVAL);
-					exit(1);
-				}
-			} else {
-				tst_resm(TFAIL, "nanosleep() returns %ld, "
-					 "expected -1, errno:%d",
-					 TEST_RETURN, EINVAL);
-				exit(1);
-			}
-
-			/* Everything is fine, exit normally */
-			exit(0);
-		}
-
-		/* Wait for child to execute */
-		wait(&status);
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-			tst_resm(TPASS, "nanosleep() failed, when provided "
-				 "invalid pause time, with expected "
-				 "errno: %d", EINVAL);
-		} else if (WEXITSTATUS(status) == 1) {
-			tst_resm(TFAIL, "child process exited abnormally; "
-				 "status = %d", status);
-		}
+		for (i = 0; i < TST_TOTAL; i++)
+			verify_nanosleep(&tcases[i]);
 	}
 
-	cleanup();
-
 	tst_exit();
-
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *  Initialise time structure elements, such that pause time
- *  points to -ve value.
- */
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, NULL);
 
 	TEST_PAUSE;
-
-	/* Initialise time variables which used to suspend child execution */
-	timereq.tv_sec = -5;
-	timereq.tv_nsec = 9999;
-
-}
-
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
-void cleanup(void)
-{
-
 }
