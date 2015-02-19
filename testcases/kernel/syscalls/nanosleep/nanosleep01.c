@@ -1,20 +1,20 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -27,42 +27,8 @@
  * Expected Result:
  *  nanosleep() should return with value 0 and the process should be
  *  suspended for time specified by timespec structure.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *    Issue a FAIL message.
- *   Otherwise,
- *    Verify the Functionality of system call
- *      if successful,
- *       Issue Functionality-Pass message.
- *      Otherwise,
- *  Issue Functionality-Fail message.
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *
- * Usage:  <for command-line>
- *  nanosleep01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *        -i n : Execute test n times.
- *        -I x : Execute test for x seconds.
- *        -P x : Pause for x seconds between iterations.
- *        -t   : Turn on syscall timing.
- *
- * HISTORY
- * 07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
- *
  */
+
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -76,30 +42,25 @@
 char *TCID = "nanosleep01";
 int TST_TOTAL = 1;
 
-struct timespec timereq;	/* time struct. buffer for nanosleep() */
-
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
+static void setup(void);
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
-	pid_t cpid;		/* Child process id */
-	struct timeval otime;	/* time before child execution suspended */
-	struct timeval ntime;	/* time after child resumes execution */
+	pid_t cpid;
+	struct timeval otime;
+	struct timeval ntime;
 	int retval = 0, e_code, status;
+	struct timespec timereq = {.tv_sec = 2, .tv_nsec = 9999};
 
 	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if (msg != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
 
 		/*
@@ -108,11 +69,10 @@ int main(int ac, char **av)
 		 * time_t tv_sec.
 		 */
 		cpid = FORK_OR_VFORK();
-		if (cpid == -1) {
-			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
+		if (cpid == -1)
+			tst_brkm(TBROK, NULL, "fork() failed");
 
-		if (cpid == 0) {	/* Child process */
+		if (cpid == 0) {
 			/* Note down the current time */
 			gettimeofday(&otime, 0);
 			/*
@@ -155,7 +115,7 @@ int main(int ac, char **av)
 					 "functionality is correct");
 			}
 			exit(retval);
-		} else {	/* parent process */
+		} else {
 			/* wait for the child to finish */
 			wait(&status);
 			/* make sure the child returned a good exit status */
@@ -166,32 +126,12 @@ int main(int ac, char **av)
 		}
 	}
 
-	cleanup();
 	tst_exit();
-
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *        Initialize time structure elements.
- */
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, NULL);
 
 	TEST_PAUSE;
-
-	/* Initialise time variables which used to suspend child execution */
-	timereq.tv_sec = 2;
-	timereq.tv_nsec = 9999;
-}
-
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
-void cleanup(void)
-{
-
 }
