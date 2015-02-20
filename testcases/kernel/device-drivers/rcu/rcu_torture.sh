@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -25,26 +25,24 @@
 
 TCID="rcu_torture"
 TST_TOTAL=14
+TST_CLEANUP=cleanup
 
 . test.sh
 
 # default options
 test_time=60
-num_readers=10
 num_writers=5
 
-while getopts :ht:r:w: opt; do
+while getopts :ht:w: opt; do
 	case "$opt" in
 	h)
 		echo "Usage:"
 		echo "h        help"
 		echo "t x      time in seconds for each test-case"
-		echo "r x      number of readers"
 		echo "w x      number of writers"
 		exit 0
 	;;
 	t) test_time=$OPTARG ;;
-	r) num_readers=$OPTARG ;;
 	w) num_writers=$OPTARG ;;
 	*)
 		tst_brkm TBROK "unknown option: $opt"
@@ -54,9 +52,8 @@ done
 
 cleanup()
 {
-	tst_resm TINFO "test interrupted, cleanup..."
+	tst_resm TINFO "cleanup"
 	rmmod rcutorture > /dev/null 2>&1
-	tst_exit
 }
 
 tst_require_root
@@ -68,9 +65,20 @@ rmmod rcutorture > /dev/null 2>&1
 
 trap cleanup INT
 
-rcu_type="rcu rcu_sync rcu_expedited rcu_bh rcu_bh_sync rcu_bh_expedited \
-          srcu srcu_sync srcu_expedited srcu_raw srcu_raw_sync sched \
-          sched_sync sched_expedited"
+rcu_type="rcu rcu_bh srcu sched"
+
+tst_kvercmp 3 12 0
+if [ $? -eq 0 ]; then
+	rcu_type="$rcu_type rcu_sync rcu_expedited rcu_bh_sync rcu_bh_expedited \
+	          srcu_sync srcu_expedited sched_sync sched_expedited"
+
+	tst_kvercmp 3 11 0
+	if [ $? -eq 0 ]; then
+		rcu_type="$rcu_type srcu_raw srcu_raw_sync"
+	fi
+fi
+
+TST_TOTAL=$(echo "$rcu_type" | wc -w)
 
 est_time=`echo "scale=2; $test_time * $TST_TOTAL / 60 " | bc`
 tst_resm TINFO "estimate time $est_time min"
@@ -79,7 +87,7 @@ for type in $rcu_type; do
 
 	tst_resm TINFO "$type: running $test_time sec..."
 
-	modprobe rcutorture nreaders=$num_readers nfakewriters=$num_writers \
+	modprobe rcutorture nfakewriters=$num_writers \
 	         stat_interval=60 test_no_idle_hz=1 shuffle_interval=3 \
 	         stutter=5 irqreader=1 fqs_duration=0 fqs_holdoff=0 \
 	         fqs_stutter=3 test_boost=1 test_boost_interval=7 \
