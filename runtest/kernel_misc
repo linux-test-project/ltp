@@ -8,3 +8,4 @@ ltp_acpi ltp_acpi
 cpufreq_boost cpufreq_boost
 uaccess uaccess
 rcu_torture rcu_torture.sh
+lock_torture lock_torture.sh
