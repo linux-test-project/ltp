@@ -15,18 +15,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include "posixtest.h"
 
 int main(void)
 {
-	time_t time1, time0;
-
+	time_t time0;
 	double time_diff;
-	time_diff = 0;
+
 	time0 = time(NULL);
-	sleep(WAIT_DURATION);
-	time1 = time(NULL);
-	time_diff = difftime(time1, time0);
+	time_diff = difftime(time0 + 1, time0);
 
 	if (time_diff != WAIT_DURATION) {
 		perror
