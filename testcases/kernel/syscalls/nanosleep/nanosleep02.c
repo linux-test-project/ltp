@@ -1,6 +1,7 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  *  07/2001 Ported by Wayne Boyer
+ * Copyright (C) Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +23,6 @@
  *  Verify that nanosleep() will be successful to suspend the execution
  *  of a process, returns after the receipt of a signal and writes the
  *  remaining sleep time into the structure.
- *
- * Expected Result:
- *  nanosleep() should return with after receipt of a signal and write
- *  remaining sleep time into a structure. if called again, succeeds to
- *  suspend execution of process for the specified sleep time.
  */
 
 #include <errno.h>
@@ -65,14 +61,12 @@ int main(int ac, char **av)
 	int lc;
 	const char *msg;
 	pid_t cpid;
-	int status;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 #ifdef UCLINUX
-	maybe_run_child(&do_child, "dddd", &timereq.tv_sec, &timereq.tv_nsec,
-			&timerem.tv_sec, &timerem.tv_nsec);
+	maybe_run_child(&do_child, "");
 #endif
 
 	setup();
@@ -88,9 +82,7 @@ int main(int ac, char **av)
 
 		if (cpid == 0) {
 #ifdef UCLINUX
-			if (self_exec(av[0], "dddd",
-				      timereq.tv_sec, timereq.tv_nsec,
-				      timerem.tv_sec, timerem.tv_nsec) < 0) {
+			if (self_exec(av[0], "")) {
 				tst_brkm(TBROK, NULL, "self_exec failed");
 			}
 #else
@@ -107,15 +99,7 @@ int main(int ac, char **av)
 				 "kill() fails send signal to child");
 		}
 
-		/* Wait for child to execute */
-		wait(&status);
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-			tst_resm(TPASS, "Functionality of nanosleep() is "
-				 "correct");
-		} else {
-			tst_resm(TFAIL, "child process exited abnormally; "
-				 "status = %d", status);
-		}
+		tst_record_childstatus(NULL, cpid);
 	}
 
 	tst_exit();
@@ -124,92 +108,29 @@ int main(int ac, char **av)
 static void do_child(void)
 {
 	struct timespec timereq = {.tv_sec = 5, .tv_nsec = 9999};
-	struct timespec timerem;
+	struct timespec timerem, exp_rem;
 
-	unsigned long req, rem, elapsed;
-	struct timeval otime;
-	struct timeval ntime;
-
-	/* Note down the current time */
-	gettimeofday(&otime, NULL);
-	/*
-	 * Call nanosleep() to suspend child process
-	 * for specified time 'tv_sec'.
-	 * Call should return before suspending execution
-	 * for the specified time due to receipt of signal
-	 * from Parent.
-	 */
+	tst_timer_start(CLOCK_MONOTONIC);
 	TEST(nanosleep(&timereq, &timerem));
-	/* time after child resumes execution */
-	gettimeofday(&ntime, NULL);
+	tst_timer_stop();
 
-	/*
-	 * Check whether the remaining sleep of child updated
-	 * in 'timerem' structure.
-	 * The time remaining should be equal to the
-	 * Total time for sleep - time spent on sleep bfr signal
-	 * Change precision from msec to usec.
-	 */
-	req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
-	rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
-	elapsed =
-	    (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec -
-	    otime.tv_usec;
+	if (tst_timespec_lt(timereq, tst_timer_elapsed())) {
+		tst_resm(TFAIL, "nanosleep() slept more than timereq");
+		return;
+	}
 
-	if (rem - (req - elapsed) > USEC_PRECISION) {
-		tst_resm(TWARN,
-			 "This test could fail if the system was under load");
-		tst_resm(TWARN,
-			 "due to the limitation of the way it calculates the");
-		tst_resm(TWARN, "system call execution time.");
-		tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
-			 "match with the expected %lu usec time",
-			 rem, (req - elapsed));
+	exp_rem = tst_timespec_diff(timereq, tst_timer_elapsed());
+
+	if (tst_timespec_abs_diff_us(timerem, exp_rem) > USEC_PRECISION) {
+		tst_resm(TFAIL,
+		         "nanosleep() remaining time %llius, expected %llius, diff %llius",
+			 tst_timespec_to_us(timerem), tst_timespec_to_us(exp_rem),
+			 tst_timespec_abs_diff_us(timerem, exp_rem));
 	} else {
-
-		/* Record the time before suspension */
-		gettimeofday(&otime, NULL);
-
-		/*
-		 * Invoke nanosleep() again to suspend child
-		 * for the specified sleep time specified by
-		 * 'timereq' structure.
-		 */
-		TEST(nanosleep(&timereq, &timerem));
-
-		/* Record the time after suspension */
-		gettimeofday(&ntime, NULL);
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "nanosleep() failed");
-		} else {
-			/*
-			 * Verify whether child execution was
-			 * actually suspended for the remaining
-			 * sleep time specified by 'timerem'
-			 * structure.
-			 */
-			req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
-			elapsed =
-			    (ntime.tv_sec - otime.tv_sec) * 1000000 +
-			    ntime.tv_usec - otime.tv_usec;
-			if (elapsed - req > USEC_PRECISION) {
-				tst_resm(TWARN,
-					 "This test could fail if the system "
-					 "was under load due to the limitation "
-					 "of the way it calculates the system "
-					 "call execution time.");
-				tst_resm(TFAIL, "Child execution not suspended "
-					 "for %jd seconds %lu "
-					 "nanoseconds",
-					 (intmax_t) timereq.tv_sec,
-					 timereq.tv_nsec);
-			} else {
-				tst_resm(TINFO, "call succeeded");
-			}
-
-		}
-
+		tst_resm(TPASS,
+		         "nanosleep() slept for %llius, remaining time difference %llius",
+			 tst_timer_elapsed_us(),
+		         tst_timespec_abs_diff_us(timerem, exp_rem));
 	}
 
 	tst_exit();
@@ -218,6 +139,8 @@ static void do_child(void)
 static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, NULL);
+
+	tst_timer_check(CLOCK_MONOTONIC);
 
 	TEST_PAUSE;
 

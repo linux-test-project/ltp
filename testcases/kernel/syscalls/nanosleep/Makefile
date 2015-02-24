@@ -19,6 +19,7 @@
 top_srcdir		?= ../../../..
 
 nanosleep01: LDLIBS+=-lrt
+nanosleep02: LDLIBS+=-lrt
 
 include $(top_srcdir)/include/mk/testcases.mk
 
