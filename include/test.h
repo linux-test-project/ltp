@@ -50,6 +50,7 @@
 #include "tst_process_state.h"
 #include "tst_resource.h"
 #include "tst_res_flags.h"
+#include "tst_timer.h"
 
 /* virt types for tst_is_virt() */
 #define VIRT_XEN	1	/* xen dom0/domU */

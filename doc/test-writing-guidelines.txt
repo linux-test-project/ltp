@@ -1048,6 +1048,79 @@ const char *const cmd[] = { "ls", "-l", NULL };
 ...
 -------------------------------------------------------------------------------
 
+2.2.21 Measuring elapsed time and helper functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "test.h"
+
+void tst_timer_check(clockid_t clk_id);
+
+void tst_timer_start(clockid_t clk_id);
+
+void tst_timer_stop(void);
+
+struct timespec tst_timer_elapsed(void);
+
+long long tst_timer_elapsed_ms(void);
+
+long long tst_timer_elapsed_us(void);
+-------------------------------------------------------------------------------
+
+The 'tst_timer_check()' function checks if specified 'clk_id' is suppored and
+exits the test with 'TCONF' otherwise. It's expected to be used in test
+'setup()' before any resources that needs to be cleaned up are initialized,
+hence it does not include a cleanup function parameter.
+
+The 'tst_timer_start()' marks start time and stores the 'clk_id' for further
+use.
+
+The 'tst_timer_stop()' marks the stop time using the same 'clk_id' as last
+call to 'tst_timer_start()'.
+
+The 'tst_timer_elapsed*()' returns time difference between the timer start and
+last timer stop in serveral formats and units.
+
+IMPORTANT: The timer functions use 'clock_gettime()' internally which needs to
+           be linked with '-lrt' on older glibc. Please do not forget to add
+	   'LDLIBS+=-lrt' in Makefile.
+
+[source,c]
+-------------------------------------------------------------------------------
+long long tst_timespec_to_us(struct timespec t);
+long long tst_timespec_to_ms(struct timespec t);
+
+int tst_timespec_lt(struct timespec t1, struct timespec t2);
+
+struct timespec tst_timespec_add_us(struct timespec t, long long us);
+
+struct timespec tst_timespec_diff(struct timespec t1, struct timespec t2);
+long long tst_timespec_diff_us(struct timespec t1, struct timespec t2);
+long long tst_timespec_diff_ms(struct timespec t1, struct timespec t2);
+
+struct timespec tst_timespec_abs_diff(struct timespec t1, struct timespec t2);
+long long tst_timespec_abs_diff_us(struct timespec t1, struct timespec t2);
+long long tst_timespec_abs_diff_ms(struct timespec t1, struct timespec t2);
+-------------------------------------------------------------------------------
+
+The first two functions 'tst_timespec_to_us()' and 'tst_timespec_to_ms()' are
+simple conversion inline functions.
+
+The 'tst_timespec_lt()' function returns non-zero if 't1' is earlier than
+'t2'.
+
+The 'tst_timespec_add_us()' function adds 'us' microseconds to the timespec
+'t'. The 'us' is expected to be positive.
+
+The 'tst_timespec_diff*()' functions returns difference between two times, the
+'t1' is expected to be later than 't2'.
+
+The 'tst_timespec_abs_diff*()' functions returns absolute value of difference
+between two times.
+
+NOTE: All conversions to ms and us rounds the value.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
