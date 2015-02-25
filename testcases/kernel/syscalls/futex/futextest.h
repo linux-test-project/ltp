@@ -78,6 +78,10 @@ typedef volatile u_int32_t futex_t;
 					 FUTEX_PRIVATE_FLAG)
 #endif
 
+#ifndef FUTEX_CLOCK_REALTIME
+# define FUTEX_CLOCK_REALTIME 256
+#endif
+
 /**
  * futex() - SYS_futex syscall wrapper
  * @uaddr:	address of first futex
