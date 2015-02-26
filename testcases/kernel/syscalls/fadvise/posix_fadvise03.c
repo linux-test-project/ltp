@@ -65,9 +65,25 @@ int defined_advise[] = {
 	POSIX_FADV_NORMAL,
 	POSIX_FADV_SEQUENTIAL,
 	POSIX_FADV_RANDOM,
-	POSIX_FADV_NOREUSE,
 	POSIX_FADV_WILLNEED,
+#if defined(__s390__) && __WORDSIZE == 32
+	/* POSIX_FADV_DONTNEED and POSIX_FADV_NOREUSE are 6,7 on 31bit s390,
+	 * but the kernel accepts 4,5 as well and rewrites them internally,
+	 * see Linux kernel commit 068e1b94bbd268f375349f68531829c8b7c210bc
+	 *
+	 * since header definitions are incomplete - posix fcntl.h doesn't care
+	 * and defines them as 4,5 while linux/fadvise.h (which uses 6,7)
+	 * matches only 64bit - we need to hardcode the values here for
+	 * all 4 cases, unfortunately
+	 */
+	4, /* POSIX_FADV_DONTNEED */
+	5, /* POSIX_FADV_NOREUSE */
+	6, /* POSIX_FADV_DONTNEED */
+	7, /* POSIX_FADV_NOREUSE */
+#else
 	POSIX_FADV_DONTNEED,
+	POSIX_FADV_NOREUSE,
+#endif
 };
 
 #define defined_advise_total (sizeof(defined_advise) / sizeof(defined_advise[0]))
