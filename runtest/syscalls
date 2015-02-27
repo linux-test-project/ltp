@@ -361,6 +361,8 @@ getgroups01_16 getgroups01_16
 getgroups03 getgroups03
 getgroups03_16 getgroups03_16
 
+gethostbyname_r01 gethostbyname_r01
+
 gethostid01 gethostid01
 
 gethostname01 gethostname01

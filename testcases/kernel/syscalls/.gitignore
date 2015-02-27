@@ -304,6 +304,7 @@
 /getgroups/getgroups03_16
 /getgroups/getgroups04
 /getgroups/getgroups04_16
+/gethostbyname_r/gethostbyname_r01
 /gethostid/gethostid01
 /gethostname/gethostname01
 /getitimer/getitimer01
