@@ -31,14 +31,15 @@
  *      not, the test fail.
  */
 #define _GNU_SOURCE
+#include <errno.h>
 #include <sched.h>
 #include <stdio.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <time.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <errno.h>
 #include "posixtest.h"
 #include "affinity.h"
 
@@ -55,6 +56,7 @@
 
 static int nb_cpu;
 static int *shmptr;
+static int mean_prio;
 
 static int get_ncpu(void)
 {
@@ -85,6 +87,7 @@ static int get_ncpu(void)
 static void child_process(void)
 {
 	struct sched_param param;
+	time_t t1, t2;
 
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);
 	if (sched_setparam(getpid(), &param) != 0) {
@@ -92,20 +95,40 @@ static void child_process(void)
 		return;
 	}
 
-	/* to avoid blocking */
-	alarm(2);
-	while (1) ;
+	t1 = time(NULL);
+	do {
+		t2 = time(NULL);
+	} while (difftime(t2, t1) <= 2);
 }
 
 static void test_process(void)
 {
-	/* to avoid blocking */
-	alarm(2);
+	struct sched_param param;
+	time_t t1, t2;
 
-	while (1) {
-		(*shmptr)++;
+	t1 = time(NULL);
+	do {
+		sched_getparam(getpid(), &param);
+		(*shmptr) = param.sched_priority;
+		/* if we can see that our priority has changed
+		 * that means we preempted parent, so we are done */
+		if ((*shmptr) == mean_prio)
+			break;
+
+		t2 = time(NULL);
+		/* OS-es supporting set_affinity(), like Linux, will
+		 * have only one parent and child process competing
+		 * for same CPU. Since code path in parent does not
+		 * block between fork() and sched_setparam(), child
+		 * should run only after parent boosted its priority.
+		 * Situation on other OS-es is a bit less predictable,
+		 * as these will spawn ncpu-1 children, which run at max
+		 * priority and could (though unlikely) preempt parent.
+		 * Rather than risking deadlock, keep the sched_yield()
+		 * call in loop as it is harmless. */
 		sched_yield();
-	}
+	} while (difftime(t2, t1) <= 2);
+	pause();
 }
 
 static void kill_children(int *child_pid)
@@ -133,6 +156,8 @@ int main(void)
 		nb_cpu = 1;
 	}
 
+	mean_prio = (sched_get_priority_min(SCHED_FIFO) +
+		sched_get_priority_max(SCHED_FIFO)) / 2;
 	child_pid = malloc(nb_cpu * sizeof(int));
 
 	key = ftok("conformance/interfaces/sched_setparam/9-1.c", 1234);
@@ -194,11 +219,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	sleep(1);
-
-	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
-				sched_get_priority_max(SCHED_FIFO)) / 2;
-
+	param.sched_priority = mean_prio;
 	oldcount = *shmptr;
 	if (sched_setparam(child_pid[i], &param) != 0) {
 		perror("An error occurs when calling sched_setparam()");
