@@ -629,6 +629,7 @@
 /pipe2/pipe2_01
 /pipe2/pipe2_02
 /poll/poll01
+/poll/poll02
 /ppoll/ppoll01
 /prctl/prctl01
 /prctl/prctl02
