@@ -908,6 +908,7 @@ sched_getaffinity01 sched_getaffinity01
 select01 select01
 select02 select02
 select03 select03
+select04 select04
 
 semctl01 semctl01
 semctl02 semctl02

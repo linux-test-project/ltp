@@ -223,6 +223,7 @@ select01 select01
 select02 select02
 # select of system pipe fds
 select03 select03
+select04 select04
 # select of fd of a named-pipe (FIFO)
 setgid01 setgid01
 # Basic test for setgid(2)
