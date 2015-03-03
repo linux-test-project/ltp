@@ -31,6 +31,7 @@
 #ifndef TST_TIMER
 #define TST_TIMER
 
+#include <sys/time.h>
 #include <time.h>
 
 /*
@@ -47,6 +48,32 @@ static inline long long tst_timespec_to_us(struct timespec t)
 static inline long long tst_timespec_to_ms(struct timespec t)
 {
 	return t.tv_sec * 1000 + (t.tv_nsec + 500000) / 1000000;
+}
+
+/*
+ * Converts ms to struct timeval
+ */
+static inline struct timeval tst_ms_to_timeval(long long ms)
+{
+	struct timeval ret;
+
+	ret.tv_sec = ms / 1000;
+	ret.tv_usec = (ms % 1000) * 1000;
+
+	return ret;
+}
+
+/*
+ * Converts us to struct timeval
+ */
+static inline struct timeval tst_us_to_timeval(long long us)
+{
+	struct timeval ret;
+
+	ret.tv_sec = us / 1000000;
+	ret.tv_usec = us % 1000000;
+
+	return ret;
 }
 
 /*

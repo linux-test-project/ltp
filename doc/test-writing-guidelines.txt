@@ -1091,6 +1091,9 @@ IMPORTANT: The timer functions use 'clock_gettime()' internally which needs to
 long long tst_timespec_to_us(struct timespec t);
 long long tst_timespec_to_ms(struct timespec t);
 
+struct timeval tst_us_to_timeval(long long us);
+struct timeval tst_ms_to_timeval(long long ms);
+
 int tst_timespec_lt(struct timespec t1, struct timespec t2);
 
 struct timespec tst_timespec_add_us(struct timespec t, long long us);
@@ -1104,8 +1107,7 @@ long long tst_timespec_abs_diff_us(struct timespec t1, struct timespec t2);
 long long tst_timespec_abs_diff_ms(struct timespec t1, struct timespec t2);
 -------------------------------------------------------------------------------
 
-The first two functions 'tst_timespec_to_us()' and 'tst_timespec_to_ms()' are
-simple conversion inline functions.
+The first four functions are simple inline conversion functions.
 
 The 'tst_timespec_lt()' function returns non-zero if 't1' is earlier than
 't2'.
