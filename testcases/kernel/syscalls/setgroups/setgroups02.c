@@ -151,12 +151,9 @@ int main(int ac, char **av)
 void setup(void)
 {
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_require_root(NULL);
 
-	/* Make sure the calling process is super-user only */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be ROOT to run this test.");
-	}
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
