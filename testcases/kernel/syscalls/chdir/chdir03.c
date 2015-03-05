@@ -53,11 +53,13 @@
 #include <pwd.h>
 #include <errno.h>
 #include <sys/wait.h>
-#include "test.h"
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "chdir03";
 int TST_TOTAL = 1;
@@ -65,14 +67,9 @@ int TST_TOTAL = 1;
 void setup(void);
 void cleanup(void);
 
-char user1name[] = "nobody";
-char user2name[] = "bin";
-
 char good_dir[100];
 
-struct passwd *ltpuser1, *ltpuser2;
-
-extern struct passwd *my_getpwnam(char *);
+static uid_t nobody_uid, bin_uid;
 
 int main(int ac, char **av)
 {
@@ -95,7 +92,7 @@ int main(int ac, char **av)
 		}
 
 		if (pid == 0) {
-			if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) != 0) {
+			if (setreuid(nobody_uid, nobody_uid) != 0) {
 				perror("setreuid failed in child #1");
 				exit(1);
 			}
@@ -119,7 +116,7 @@ int main(int ac, char **av)
 			 * so that the ID can be changed back after the
 			 * TEST call is made.
 			 */
-			if (seteuid(ltpuser2->pw_uid) != 0) {
+			if (seteuid(bin_uid) != 0) {
 				perror("setreuid failed in child #2");
 				exit(1);
 			}
@@ -151,6 +148,7 @@ int main(int ac, char **av)
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_brkm(TBROK, cleanup,
 					 "child exited abnormally");
+			tst_resm(TPASS, "child reported success");
 		}
 		if (rmdir(good_dir) == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup,
@@ -160,14 +158,19 @@ int main(int ac, char **av)
 
 	cleanup();
 	tst_exit();
-
 }
 
 void setup(void)
 {
+	struct passwd *pw;
 	char *cur_dir = NULL;
 
 	tst_require_root(NULL);
+
+	pw = SAFE_GETPWNAM(NULL, "nobody");
+	nobody_uid = pw->pw_uid;
+	pw = SAFE_GETPWNAM(NULL, "bin");
+	bin_uid = pw->pw_uid;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -179,9 +182,6 @@ void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "getcwd failed");
 
 	sprintf(good_dir, "%s/%d", cur_dir, getpid());
-
-	ltpuser1 = my_getpwnam(user1name);
-	ltpuser2 = my_getpwnam(user2name);
 }
 
 void cleanup(void)
