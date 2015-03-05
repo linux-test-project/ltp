@@ -62,7 +62,6 @@
 #include "test.h"
 
 #include "ipcmsg.h"
-#include "libtestsuite.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -80,8 +79,6 @@ int TST_TOTAL = 1;
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
-int sync_pipes[2];
-
 MSGBUF msg_buf;
 
 int main(int ac, char **av)
@@ -98,9 +95,6 @@ int main(int ac, char **av)
 #endif
 
 	setup();		/* global setup */
-
-	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 	/* The following loop checks looping state if -i option given */
 
@@ -129,26 +123,12 @@ int main(int ac, char **av)
 #else
 			do_child();
 #endif
-		} else {	/* parent */
-
-			if (sync_pipe_wait(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup,
-					 "sync_pipe_wait failed");
-
-			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup,
-					 "sync_pipe_close failed");
-
-			/* After son has been created, give it a chance to execute the
-			 * msgsnd command before we continue. Without this sleep, on SMP machine
-			 * the father kill could be executed before the son msgsnd.
-			 */
-			sleep(2);
+		} else {
+			TST_PROCESS_STATE_WAIT(cleanup, c_pid, 'S');
 
 			/* send a signal that must be caught to the child */
-			if (kill(c_pid, SIGHUP) == -1) {
+			if (kill(c_pid, SIGHUP) == -1)
 				tst_brkm(TBROK, cleanup, "kill failed");
-			}
 
 			waitpid(c_pid, NULL, 0);
 		}
@@ -164,12 +144,6 @@ int main(int ac, char **av)
  */
 void do_child(void)
 {
-	if (sync_pipe_notify(sync_pipes) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
-
-	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
-
 	TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
 
 	if (TEST_RETURN != -1) {
@@ -208,9 +182,6 @@ void do_child_uclinux(void)
 {
 	/* initialize the message buffer */
 	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
-
-	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 	tst_sig(FORK, sighandler, cleanup);
 
