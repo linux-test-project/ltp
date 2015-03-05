@@ -71,17 +71,18 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <unistd.h>
+
 #include "test.h"
+#include "safe_macros.h"
 
 void dochild1();
 void dochild2();
 void setup();
 void cleanup();
-extern struct passwd *my_getpwnam(char *);
 
 #define PERMS		0777
 
-char user1name[] = "nobody";
+static uid_t nobody_uid;
 
 char *TCID = "rmdir03";
 int TST_TOTAL = 1;
@@ -237,13 +238,12 @@ int main(int ac, char **av)
 void dochild1(void)
 {
 	int retval = 0;
-	struct passwd *nobody = my_getpwnam(user1name);
 
 	/* set to nobody */
-	if (seteuid(nobody->pw_uid) == -1) {
+	if (seteuid(nobody_uid) == -1) {
 		retval = 1;
 		tst_brkm(TBROK, cleanup, "setreuid failed to "
-			 "set effective uid to %d", nobody->pw_uid);
+			 "set effective uid to %d", nobody_uid);
 	}
 
 	/* rmdir tstdir2 */
@@ -276,13 +276,12 @@ void dochild1(void)
 void dochild2(void)
 {
 	int retval = 0;
-	struct passwd *nobody = my_getpwnam(user1name);
 
 	/* set to nobody */
-	if (seteuid(nobody->pw_uid) == -1) {
+	if (seteuid(nobody_uid) == -1) {
 		retval = 1;
 		tst_brkm(TBROK, cleanup, "setreuid failed to "
-			 "set effective uid to %d", nobody->pw_uid);
+			 "set effective uid to %d", nobody_uid);
 	}
 
 	/* rmdir tstdir4 */
@@ -313,7 +312,12 @@ void dochild2(void)
  */
 void setup(void)
 {
+	struct passwd *pw;
+
 	tst_require_root(NULL);
+
+	pw = SAFE_GETPWNAM(NULL, "nobody");
+	nobody_uid = pw->pw_uid;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
