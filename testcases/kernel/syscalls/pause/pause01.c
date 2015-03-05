@@ -41,13 +41,16 @@
 char *TCID = "pause01";
 int TST_TOTAL = 1;
 
-static void go();
 static void setup(void);
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
+	struct itimerval it = {
+		.it_interval = {.tv_sec = 0, .tv_usec = 0},
+		.it_value = {.tv_sec = 0, .tv_usec = 1000},
+	};
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -57,8 +60,8 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		(void)signal(SIGALRM, go);
-		alarm(1);
+		if (setitimer(ITIMER_REAL, &it, NULL))
+			tst_brkm(TBROK | TERRNO, NULL, "setitimer() failed");
 
 		TEST(pause());
 
@@ -80,13 +83,15 @@ int main(int ac, char **av)
 	tst_exit();
 }
 
+static void go(int sig)
+{
+	(void)sig;
+}
+
 void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, NULL);
+	(void)signal(SIGALRM, go);
 
 	TEST_PAUSE;
-}
-
-static void go(void)
-{
 }
