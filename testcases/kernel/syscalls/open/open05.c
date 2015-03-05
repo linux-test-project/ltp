@@ -33,17 +33,17 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "test.h"
 
-static char user1name[] = "nobody";
+#include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "open05";
 int TST_TOTAL = 1;
 
-extern struct passwd *my_getpwnam(char *);
 static char fname[20];
-static struct passwd *nobody;
 static int fd;
+
+static uid_t nobody_uid;
 
 static void cleanup(void);
 static void setup(void);
@@ -70,7 +70,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed");
 
 		if (pid == 0) {
-			if (seteuid(nobody->pw_uid) == -1) {
+			if (seteuid(nobody_uid) == -1) {
 				tst_resm(TWARN, "seteuid() failed, errno: %d",
 					 errno);
 			}
@@ -116,7 +116,12 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	struct passwd *pw;
+
 	tst_require_root(NULL);
+
+	pw = SAFE_GETPWNAM(NULL, "nobody");
+	nobody_uid = pw->pw_uid;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -126,8 +131,6 @@ static void setup(void)
 	tst_tmpdir();
 
 	sprintf(fname, "file.%d", getpid());
-
-	nobody = my_getpwnam(user1name);
 
 	fd = open(fname, O_RDWR | O_CREAT, 0700);
 	if (fd == -1)
