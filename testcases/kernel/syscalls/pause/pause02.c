@@ -106,7 +106,7 @@ int main(int ac, char **av)
 
 			continue;
 		}
-			
+
 		tst_resm(TFAIL, "Pause was not interrupted");
 	}
 
@@ -136,7 +136,7 @@ static void do_child(void)
 	if (TEST_RETURN == -1) {
 		if (TEST_ERRNO == EINTR)
 			exit(0);
-			
+
 		fprintf(stderr, "Child: Pause returned -1 but errno is %d (%s)\n",
 		        TEST_ERRNO, strerror(TEST_ERRNO));
 		exit(1);

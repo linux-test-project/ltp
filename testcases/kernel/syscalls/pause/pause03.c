@@ -1,66 +1,25 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 /*
- * Test Name: pause03
- *
  * Test Description:
- *  Verify that a process is no longer accessible on receipt of SIGKILL
- *  signal after being suspended by pause().
- *
- * Expected Result:
  *  pause() does not return due to receipt of SIGKILL signal and specified
  *  process should be terminated.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	Log the errno and Issue a FAIL message.
- *   Otherwise,
- *	Verify the Functionality of system call
- *      if successful,
- *		Issue Functionality-Pass message.
- *      Otherwise,
- *		Issue Functionality-Fail message.
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *
- * Usage:  <for command-line>
- *  pause03 [-c n] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  None.
- *
  */
 #include <unistd.h>
 #include <errno.h>
@@ -69,22 +28,22 @@
 
 #include "test.h"
 
-int cflag;			/* flag to indicate child process status */
-pid_t cpid;			/* child process id */
+static volatile int cflag;
+static pid_t cpid;
 
 char *TCID = "pause03";
 int TST_TOTAL = 1;
 
-void do_child();		/* Function to run in child process */
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-void sig_handle(int sig);	/* signal handler for SIGCLD */
+static void do_child(void);
+static void setup(void);
+static void cleanup(void);
+static void sig_handle(int sig);
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
-	int status;		/* child process exit status */
+	int status;
 	int ret_val;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -96,25 +55,22 @@ int main(int ac, char **av)
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
 		tst_count = 0;
+		cflag = 0;
 
-		/* Creat a new process using fork() */
 		if ((cpid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (cpid == 0) {	/* Child process */
+		if (cpid == 0) {
 #ifdef UCLINUX
-			if (self_exec(av[0], "") < 0) {
+			if (self_exec(av[0], "") < 0)
 				tst_brkm(TBROK, cleanup, "self_exec failed");
-			}
 #else
 			do_child();
 #endif
 		}
 
-		/* Parent process */
 		/* sleep to ensure the child executes */
 		sleep(1);
 
@@ -167,9 +123,6 @@ int main(int ac, char **av)
 				 "SIGKILL, errno = %d", errno);
 		}
 
-		/* reset cflag in case we are looping */
-		cflag = 0;
-
 	}
 
 	cleanup();
@@ -177,59 +130,31 @@ int main(int ac, char **av)
 
 }
 
-/*
- * do_child()
- */
 void do_child(void)
 {
-	/* Suspend the child using pause() */
 	TEST(pause());
 
-	/* print the message if pause() returned */
 	tst_resm(TFAIL, "Unexpected return from pause()");
-	/* Loop infinitely */
+
 	while (1) ;
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- *	     Setup signal handler to catch SIGCLD signal.
- */
 void setup(void)
 {
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
-	/* Initialise cflag */
-	cflag = 0;
-
-	/* Catch SIGCLD */
 	signal(SIGCLD, sig_handle);
 }
 
-/*
- * sig_handle(int sig)
- *    This is the signal handler to handle the SIGCLD signal.
- *    When the child terminates and the parent gets the SIGCLD signal
- *    the handler gets executed and then the cflag variable is set to
- *    indicate the child has terminated.
- */
 void sig_handle(int sig)
 {
-	/* Set the cflag variable */
 	cflag = 1;
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
 void cleanup(void)
 {
-
 	/* Cleanup the child if still active */
 	kill(cpid, SIGKILL);
-
 }
