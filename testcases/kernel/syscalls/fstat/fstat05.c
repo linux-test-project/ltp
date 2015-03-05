@@ -98,7 +98,6 @@
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-extern struct passwd *my_getpwnam(char *);
 
 char *TCID = "fstat05";
 int TST_TOTAL = 1;
