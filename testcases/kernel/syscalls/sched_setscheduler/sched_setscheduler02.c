@@ -50,7 +50,9 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
 #include "test.h"
+#include "safe_macros.h"
 
 #define SCHED_INVALID	99
 #define INVALID_PID	999999
@@ -58,19 +60,15 @@
 char *TCID = "sched_setscheduler02";
 int TST_TOTAL = 1;
 
-extern struct passwd *my_getpwnam(char *);
-
 void setup(void);
 void cleanup(void);
 
-char user1name[] = "nobody";
+static uid_t nobody_uid;
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
-
-	struct passwd *nobody;
 	pid_t pid;
 	struct sched_param param;
 	int status;
@@ -93,9 +91,7 @@ int main(int ac, char **av)
 		if (pid == 0) {	/* child */
 			param.sched_priority = 1;
 
-			nobody = my_getpwnam(user1name);
-
-			if (seteuid(nobody->pw_uid) == -1) {
+			if (seteuid(nobody_uid) == -1) {
 				tst_brkm(TBROK, cleanup, "seteuid() failed");
 			}
 
@@ -137,7 +133,12 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	struct passwd *pw;
+
 	tst_require_root(NULL);
+
+	pw = SAFE_GETPWNAM(NULL, "nobody");
+	nobody_uid = pw->pw_uid;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
