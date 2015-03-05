@@ -55,7 +55,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "creat04";
 int TST_TOTAL = 2;
@@ -66,11 +68,10 @@ void cleanup(void);
 #define FMODE	0444
 #define DMODE	00700
 
-char user1name[] = "nobody";
 char good_dir[40] = "testdir";
 char fname[40], fname1[40];
-extern struct passwd *my_getpwnam(char *);
-struct passwd *ltpuser1;
+
+static uid_t nobody_uid;
 
 struct test_case_t {
 	char *fname;
@@ -126,14 +127,7 @@ int main(int ac, char **av)
 		}
 
 		if (pid1 == 0) {	/* second child */
-
-			ltpuser1 = my_getpwnam(user1name);
-
-			if (ltpuser1 == NULL) {
-				perror("getpwnam");
-				exit(1);
-			}
-			if (seteuid(ltpuser1->pw_uid) == -1) {
+			if (seteuid(nobody_uid) == -1) {
 				perror("seteuid");
 				exit(1);
 			}
@@ -187,7 +181,12 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	struct passwd *pw;
+
 	tst_require_root(NULL);
+
+	pw = SAFE_GETPWNAM(NULL, "nobody");
+	nobody_uid = pw->pw_uid;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
