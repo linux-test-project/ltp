@@ -60,7 +60,6 @@
 #include "test.h"
 
 #include "ipcmsg.h"
-#include "libtestsuite.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -78,8 +77,6 @@ int TST_TOTAL = 1;
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
-int sync_pipes[2];
-
 MSGBUF rcv_buf;
 pid_t c_pid;
 
@@ -96,9 +93,6 @@ int main(int ac, char **av)
 #endif
 
 	setup();		/* global setup */
-
-	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 	/* The following loop checks looping state if -i option given */
 
@@ -139,17 +133,8 @@ int main(int ac, char **av)
 #else
 			do_child();
 #endif
-		} else {	/* parent */
-
-			if (sync_pipe_wait(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup,
-					 "sync_pipe_wait failed");
-
-			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup,
-					 "sync_pipe_close failed");
-
-			sleep(1);
+		} else {
+			TST_PROCESS_STATE_WAIT(cleanup, c_pid, 'S');
 
 			/* remove the queue */
 			rm_queue(msg_q_1);
@@ -166,12 +151,6 @@ int main(int ac, char **av)
  */
 void do_child(void)
 {
-	if (sync_pipe_notify(sync_pipes) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
-
-	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
-
 	TEST(msgrcv(msg_q_1, &rcv_buf, MSGSIZE, 1, 0));
 
 	if (TEST_RETURN != -1) {
@@ -206,9 +185,6 @@ void do_child(void)
  */
 void do_child_uclinux(void)
 {
-	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
-
 	tst_sig(FORK, SIG_IGN, cleanup);
 
 	do_child();
