@@ -27,8 +27,8 @@
 #include <wait.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
-static volatile int cflag;
 static pid_t cpid;
 
 char *TCID = "pause03";
@@ -37,14 +37,12 @@ int TST_TOTAL = 1;
 static void do_child(void);
 static void setup(void);
 static void cleanup(void);
-static void sig_handle(int sig);
 
 int main(int ac, char **av)
 {
 	int lc;
 	const char *msg;
 	int status;
-	int ret_val;
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
@@ -56,11 +54,9 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
-		cflag = 0;
 
-		if ((cpid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork() failed");
-		}
+		if ((cpid = FORK_OR_VFORK()) == -1)
+			tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
 
 		if (cpid == 0) {
 #ifdef UCLINUX
@@ -71,58 +67,24 @@ int main(int ac, char **av)
 #endif
 		}
 
-		/* sleep to ensure the child executes */
-		sleep(1);
+		TST_PROCESS_STATE_WAIT(cleanup, cpid, 'S');
 
-		/* Check for the value of cflag */
-		if (cflag == 1) {
-			/*
-			 * Indicates that child terminated
-			 * before receipt of SIGKILL signal.
-			 */
-			tst_brkm(TFAIL, cleanup,
-				 "Child exited before SIGKILL signal");
-		}
-
-		/* Send the SIGKILL signal now */
 		kill(cpid, SIGKILL);
 
-		/* sleep to ensure the signal sent is effected */
-		sleep(1);
+		SAFE_WAIT(NULL, &status);
 
-		/* Verify again the value of cflag */
-		if (cflag == 0) {
-			/* Child still exists */
-			tst_resm(TFAIL, "Child still exists, "
-				 "pause() still active");
-			cleanup();
+		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL) {
+			tst_resm(TPASS, "pause() did not return after SIGKILL");
+			continue;
 		}
 
-		ret_val = wait(&status);
-
-		/*
-		 * Verify that wait returned after child process termination
-		 * due to receipt of SIGKILL signal.
-		 */
-		if (WTERMSIG(status) == SIGKILL) {
-			ret_val = wait(&status);
-			if ((ret_val == -1) && (errno == ECHILD)) {
-				/*
-				 * Child is no longer accessible and pause()
-				 * functionality is successful.
-				 */
-				tst_resm(TPASS, "Functionality of "
-					 "pause() is correct");
-			} else {
-				tst_resm(TFAIL, "wait() failed due to "
-					 "unkown reason, ret_val=%d, "
-					 "errno=%d", ret_val, errno);
-			}
-		} else {
-			tst_resm(TFAIL, "Child terminated not due to "
-				 "SIGKILL, errno = %d", errno);
+		if (WIFSIGNALED(status)) {
+			tst_resm(TFAIL, "child killed by %s unexpectedly",
+			         tst_strsig(WTERMSIG(status)));
+			continue;
 		}
 
+		tst_resm(TFAIL, "child exited with %i", WEXITSTATUS(status));
 	}
 
 	cleanup();
@@ -136,7 +98,7 @@ void do_child(void)
 
 	tst_resm(TFAIL, "Unexpected return from pause()");
 
-	while (1) ;
+	exit(0);
 }
 
 void setup(void)
@@ -144,17 +106,10 @@ void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
-
-	signal(SIGCLD, sig_handle);
 }
 
-void sig_handle(int sig)
-{
-	cflag = 1;
-}
 
 void cleanup(void)
 {
-	/* Cleanup the child if still active */
 	kill(cpid, SIGKILL);
 }
