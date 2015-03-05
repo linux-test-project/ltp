@@ -58,7 +58,6 @@
 #include "test.h"
 
 #include "ipcmsg.h"
-#include "libtestsuite.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -76,8 +75,6 @@ int TST_TOTAL = 1;
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
-int sync_pipes[2];
-
 MSGBUF rcv_buf;
 pid_t c_pid;
 
@@ -94,9 +91,6 @@ int main(int ac, char **av)
 #endif
 
 	setup();		/* global setup */
-
-	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
@@ -121,20 +115,7 @@ int main(int ac, char **av)
 			do_child();
 #endif
 		} else {
-
-			if (sync_pipe_wait(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup,
-					 "sync_pipe_wait failed");
-
-			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup,
-					 "sync_pipe_close failed");
-
-			/* After son has been created, give it a chance to execute the
-			 * msgrcv command before we continue. Without this sleep, on SMP machine
-			 * the father kill could be executed before the son msgrcv.
-			 */
-			sleep(1);
+			TST_PROCESS_STATE_WAIT(cleanup, c_pid, 'S');
 
 			/* send a signal that must be caught to the child */
 			if (kill(c_pid, SIGHUP) == -1)
@@ -151,12 +132,6 @@ int main(int ac, char **av)
 
 void do_child(void)
 {
-	if (sync_pipe_notify(sync_pipes) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
-
-	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
-
 	TEST(msgrcv(msg_q_1, &rcv_buf, MSGSIZE, 1, 0));
 
 	if (TEST_RETURN != -1)
@@ -189,9 +164,6 @@ void sighandler(int sig)
  */
 void do_child_uclinux(void)
 {
-	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
-
 	tst_sig(FORK, sighandler, cleanup);
 
 	do_child();
