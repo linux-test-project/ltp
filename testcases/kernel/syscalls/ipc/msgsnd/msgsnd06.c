@@ -63,7 +63,6 @@
 #include "test.h"
 
 #include "ipcmsg.h"
-#include "libtestsuite.h"
 
 void cleanup(void);
 void setup(void);
@@ -73,8 +72,6 @@ char *TCID = "msgsnd06";
 int TST_TOTAL = 1;
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
-
-int sync_pipes[2];
 
 MSGBUF msg_buf;
 
@@ -94,9 +91,6 @@ int main(int ac, char **av)
 #endif
 
 	setup();		/* global setup */
-
-	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 	/* The following loop checks looping state if -i option given */
 
@@ -137,21 +131,9 @@ int main(int ac, char **av)
 #else
 			do_child();
 #endif
-		} else {	/* parent */
+		} else {
+			TST_PROCESS_STATE_WAIT(cleanup, c_pid, 'S');
 
-			if (sync_pipe_wait(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup,
-					 "sync_pipe_wait failed");
-
-			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup,
-					 "sync_pipe_close failed");
-
-			/* After son has been created, give it a chance to execute the
-			 * msgsnd command before we continue. Without this sleep, on SMP machine
-			 * the father rm_queue could be executed before the son msgsnd.
-			 */
-			sleep(2);
 			/* remove the queue */
 			rm_queue(msg_q_1);
 
@@ -181,15 +163,7 @@ void do_child(void)
 	/* initialize the message buffer */
 	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
 
-	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 #endif
-
-	if (sync_pipe_notify(sync_pipes) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
-
-	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 	/*
 	 * Attempt to write another message to the full queue.
 	 * Without the IPC_NOWAIT flag, the child sleeps
