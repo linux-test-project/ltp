@@ -71,17 +71,14 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <unistd.h>
+
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
-extern void do_file_setup(char *);
-extern struct passwd *my_getpwnam(char *);
 
 #define PERMS		0777
-
-char user1name[] = "nobody";
-char user2name[] = "bin";
 
 char *TCID = "rename12";
 int TST_TOTAL = 1;
@@ -89,7 +86,7 @@ int TST_TOTAL = 1;
 int fd;
 char fdir[255];
 char fname[255], mname[255];
-struct passwd *nobody;
+uid_t nobody_uid;
 struct stat buf1;
 
 int main(int ac, char **av)
@@ -129,7 +126,7 @@ int main(int ac, char **av)
 
 		if (pid == 0) {	/* child */
 			/* set to nobody */
-			if (seteuid(nobody->pw_uid) == -1) {
+			if (seteuid(nobody_uid) == -1) {
 				tst_resm(TWARN, "setreuid failed");
 				perror("setreuid");
 				exit(1);
@@ -178,9 +175,14 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	struct passwd *pw;
+
 	tst_require_root(NULL);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	pw = SAFE_GETPWNAM(NULL, "nobody");
+	nobody_uid = pw->pw_uid;
 
 	TEST_PAUSE;
 
@@ -210,10 +212,7 @@ void setup(void)
 	}
 
 	/* create a file under fdir */
-	do_file_setup(fname);
-
-	/* get nobody password file info */
-	nobody = my_getpwnam(user1name);
+	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 }
 
 /*

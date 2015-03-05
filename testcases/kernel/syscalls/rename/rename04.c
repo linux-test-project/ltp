@@ -67,7 +67,6 @@
 
 void setup();
 void cleanup();
-extern void do_file_setup(char *);
 
 char *TCID = "rename04";
 int TST_TOTAL = 1;
@@ -169,8 +168,7 @@ void setup(void)
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", mdir);
 	}
 
-	/* create a file under "new" directory */
-	do_file_setup(tstfile);
+	SAFE_TOUCH(cleanup, tstfile, 0700, NULL);
 
 	if (stat(mdir, &buf2) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s "

@@ -68,7 +68,6 @@
 
 void setup();
 void cleanup();
-extern void do_file_setup(char *);
 
 char *TCID = "rename10";
 int TST_TOTAL = 2;
@@ -161,7 +160,7 @@ void setup(void)
 	sprintf(mdir, "./rndir_%d", getpid());
 	sprintf(mname, "%s/rnfile_%d", mdir, getpid());
 
-	do_file_setup(fname);
+	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 }
 
 /*

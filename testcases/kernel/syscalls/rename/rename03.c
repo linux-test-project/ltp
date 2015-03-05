@@ -73,7 +73,6 @@
 void setup();
 void setup2();
 void cleanup();
-extern void do_file_setup(char *);
 
 char *TCID = "rename03";
 int TST_TOTAL = 2;
@@ -206,8 +205,7 @@ void setup(void)
  */
 void setup2(void)
 {
-	/* create the old file */
-	do_file_setup(fname);
+	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 
 	if (stat(fname, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s"
@@ -219,8 +217,7 @@ void setup2(void)
 	f_olddev = buf1.st_dev;
 	f_oldino = buf1.st_ino;
 
-	/* create another file */
-	do_file_setup(mname);
+	SAFE_TOUCH(cleanup, mname, 0700, NULL);
 
 	/* create "old" directory */
 	if (mkdir(fdir, 00770) == -1) {

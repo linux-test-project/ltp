@@ -75,7 +75,6 @@
 
 void setup();
 void cleanup();
-extern void do_file_setup(char *);
 
 char *TCID = "rename01";
 int TST_TOTAL = 2;
@@ -198,8 +197,7 @@ void setup(void)
 	sprintf(fdir, "./tdir_%d", getpid());
 	sprintf(mdir, "./rndir_%d", getpid());
 
-	/* create the "old" file */
-	do_file_setup(fname);
+	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 
 	if (stat(fname, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s"

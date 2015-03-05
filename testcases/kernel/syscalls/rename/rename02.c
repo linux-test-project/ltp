@@ -118,7 +118,6 @@
 
 void setup();
 void cleanup();
-extern void do_file_setup(char *);
 
 char *TCID = "rename02";
 int TST_TOTAL = 1;
@@ -158,7 +157,7 @@ int main(int ac, char **av)
 					 "unlink(%s) Failed, errno=%d : %s",
 					 mname, errno, strerror(errno));
 			}
-			do_file_setup(fname);
+			SAFE_TOUCH(cleanup, fname, 0700, NULL);
 		}
 	}
 
@@ -181,8 +180,7 @@ void setup(void)
 
 	sprintf(fname, "./tfile_%d", getpid());
 	sprintf(mname, "./rnfile_%d", getpid());
-	do_file_setup(fname);
-
+	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 }
 
 /***************************************************************

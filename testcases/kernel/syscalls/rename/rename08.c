@@ -74,7 +74,6 @@
 
 void setup();
 void cleanup();
-extern void do_file_setup(char *);
 
 char *TCID = "rename08";
 
@@ -166,7 +165,7 @@ void setup(void)
 
 	sprintf(fname, "./tfile_%d", getpid());
 
-	do_file_setup(fname);
+	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
