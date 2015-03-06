@@ -49,7 +49,16 @@ static void alrm_handler(int sig)
 
 static void __attribute__ ((noinline)) *get_pc(void)
 {
+#if defined(__s390__) && __WORDSIZE == 32
+	/* taken from glibc,
+	 *   sysdeps/unix/sysv/linux/s390/s390-32/profil-counter.h
+	 * 31-bit s390 pointers don't use the 32th bit, however integers do,
+	 * so wrap the value around at 31 bits */
+	return (void *)
+		((unsigned long) __builtin_return_address(0) & 0x7fffffffUL);
+#else
 	return __builtin_return_address(0);
+#endif
 }
 
 static void test_profil(void)
