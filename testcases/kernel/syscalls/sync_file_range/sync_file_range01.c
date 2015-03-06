@@ -196,7 +196,7 @@ void setup(void)
 static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes,
 				 unsigned int flags)
 {
-
+/* arm and powerpc */
 #if (defined(__arm__) || defined(__powerpc__) || defined(__powerpc64__))
 #if (__WORDSIZE == 32)
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -210,10 +210,16 @@ static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes,
 #else
 	return ltp_syscall(__NR_sync_file_range2, fd, flags, offset, nbytes);
 #endif
+
+/* s390 */
+#elif (defined(__s390__) || defined(__s390x__)) && __WORDSIZE == 32
+	return ltp_syscall(__NR_sync_file_range, fd, (int)(offset >> 32),
+		(int)offset, (int)(nbytes >> 32), (int)nbytes, flags);
+
+/* other */
 #else
 	return ltp_syscall(__NR_sync_file_range, fd, offset, nbytes, flags);
 #endif
-
 }
 
 /******************************************************************************/
