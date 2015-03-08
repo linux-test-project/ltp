@@ -117,6 +117,9 @@ safe_run()
 
 vxlan_setup_subnet_uni()
 {
+	tst_kvercmp 3 10 0 && \
+		tst_brkm TCONF "test must be run with kernel 3.10 or newer"
+
 	[ "$(ip li add type vxlan help 2>&1 | grep remote)" ] || \
 		tst_brkm TCONF "iproute doesn't support remote unicast address"
 
