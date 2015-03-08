@@ -55,7 +55,10 @@ cleanup()
 		iptables -F -t mangle > tst_iptables.out 2>&1
 		rmmod -v ipt_limit ipt_multiport ipt_LOG ipt_REJECT \
 			 iptable_mangle iptable_nat ip_conntrack \
-			 iptable_filter ip_tables > tst_iptables.out 2>&1
+			 iptable_filter ip_tables nf_nat_ipv4 nf_nat \
+			 nf_log_ipv4 nf_log_common nf_reject_ipv4 \
+			 nf_conntrack_ipv4 nf_defrag_ipv4 nf_conntrack \
+			 > tst_iptables.out 2>&1
 	fi
 	tst_rmdir
 }
