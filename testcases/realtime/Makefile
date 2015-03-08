@@ -67,10 +67,10 @@ aclocal.m4:
 
 autoconf: configure
 
-include/realtime_config.h.in: configure.in $(wildcard m4/*.m4) aclocal.m4
+include/realtime_config.h.in: configure.ac $(wildcard m4/*.m4) aclocal.m4
 	$(AUTOHEADER)
 
-configure: configure.in aclocal.m4
+configure: configure.ac aclocal.m4
 	$(AUTOCONF)
 automake: $(AUTOMAKE_FILES)
 $(AUTOMAKE_FILES): m4/Makefile.in
