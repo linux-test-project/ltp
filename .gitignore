@@ -11,7 +11,9 @@ lib*.a
 
 /aclocal.m4
 autom4te.cache
+/compile
 /configure
+/config.cache
 /config.guess
 /config.log
 /config.mk
