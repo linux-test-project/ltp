@@ -1,61 +1,43 @@
-#! /bin/sh
-unset LIBPATH
+#!/bin/sh
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2000
 #
-#   Copyright (c) International Business Machines  Corp., 2000
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-#   This program is free software;  you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY;  without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
-#   the GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write the Free Software Foundation,
+# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-#   You should have received a copy of the GNU General Public License
-#   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+# TEST DESCRIPTION : To verify that two of the new options for level IPPROTO_IP
+#                    Service Interface allow the list of host group memberships
+#                    to be updated properly in response to the JoinHostGroup and
+#                    LeaveHostGroup requests. To test boundary conditions while
+#                    exercising IP Multicast JoinHostGroup and LeaveHostGroup
+#                    Service Interfaces.
 #
-#
-#
-#  FILE             : mc_member
-#
-#  TEST DESCRIPTION : To verify that two of the new options for level IPPROTO_IP
-#                     Service Interface allow the list of host group memberships
-#                     to be updated properly in response to the JoinHostGroup and
-#                     LeaveHostGroup requests. To test boundary conditions while
-#                     exercising IP Multicast JoinHostGroup and LeaveHostGroup
-#                     Service Interfaces.
-#
-#  HISTORY:
-#    03/26/01 Robbie Williamson (robbiew@us.ibm.com)
-#      -Ported
-#
-#******************************************************************************
+# HISTORY: 03/26/01 Robbie Williamson (robbiew@us.ibm.com) Ported
 
-TC=mc_member
-TCsrc=${TCsrc:-`pwd`}
-
-INTERFACE=${INTERFACE:-$(mc_gethost `hostname`|grep address|awk '{ print $2 }')}
 GLIST=${GLIST:-$LTPROOT/testcases/data/mc_member/ManyGroups}
 TooManyGLIST=${TooManyGLIST:-$LTPROOT/testcases/data/mc_member/TooManyGroups}
 ERRFILE=${ERRFILE:-errors}
 
-export TCID=$TC
-export TST_TOTAL=1
-export TST_COUNT=1
+TCID=mc_member
+TST_TOTAL=1
+TST_COUNT=1
 
-. test.sh
+. test_net.sh
 
 setup()
 {
 	tst_check_cmds netstat
-
-	if [ -z $INTERFACE ]; then
-		tst_brkm TCONF "$(hostname) is not found in /etc/hosts"
-	fi
-
 	tst_tmpdir
 }
 
@@ -68,7 +50,7 @@ get_address()
 do_test()
 {
 	tst_resm TINFO "doing test."
-
+	local ipaddr=$(tst_ipaddr)
 	COUNT=1
 	while [ $COUNT -le 2 ]
 	do
@@ -78,30 +60,30 @@ do_test()
 		mc_member_test -j -g $GLIST -s 30 -i $ADDRESS >/dev/null 2>&1
 
 		# Run setsockopt/getsockopt test
-		mc_member_test -g $GLIST -s 80 -i $INTERFACE > $ERRFILE 2>&1 &
+		mc_member_test -g $GLIST -s 80 -i $ipaddr > $ERRFILE 2>&1 &
 
 		# Join twice and leave once and see if the groups are still
 		# joined on all specified interfaces.
 		for agroup in `cat $GLIST`
 		do
-			tst_resm TINFO "Running (1st) member on $INTERFACE"
-			mc_member_test -j -g $GLIST -s 30 -i $INTERFACE \
+			tst_resm TINFO "Running (1st) member on $ipaddr"
+			mc_member_test -j -g $GLIST -s 30 -i $ipaddr \
 				       > $ERRFILE 2>&1 &
 			sleep 5
 			grep "cannot join group" $ERRFILE
 			if [ $? -eq 0 ]; then
 				tst_brkm TFAIL "MC group could NOT join "\
-					      "$INTERFACE"
+					      "$ipaddr"
 			fi
 
-			tst_resm TINFO "Running (2nd) member on $INTERFACE"
-			mc_member_test -g $GLIST -s 60 -i $INTERFACE \
+			tst_resm TINFO "Running (2nd) member on $ipaddr"
+			mc_member_test -g $GLIST -s 60 -i $ipaddr \
 				       > $ERRFILE 2>&1 &
 			sleep 5
 			grep "cannot join group" $ERRFILE
 			if [ $? -eq 0 ]; then
 				tst_brkm TFAIL "MC group could NOT join "\
-					      "$INTERFACE"
+					      "$ipaddr"
 			fi
 		done
 
@@ -110,7 +92,7 @@ do_test()
 		do
 			netstat -gn | grep $agroup
 			if [ $? -ne 0 ]; then
-				tst_brkm TFAIL "$agroup NOT joined to $INTERFACE"
+				tst_brkm TFAIL "$agroup NOT joined to $ipaddr"
 			fi
 		done
 
@@ -122,14 +104,14 @@ do_test()
 			netstat -gn | grep $agroup
 			if [ $? -ne 1 ]; then
 				tst_brkm TFAIL "$agroup still joined on "\
-					      "$INTERFACE"
+					      "$ipaddr"
 			fi
 		done
 
 		# Test the membership boundaries
 		tst_resm TINFO "Running member on too many groups over "\
-			       "$INTERFACE"
-		mc_member_test -j -g $TooManyGLIST -i $INTERFACE \
+			       "$ipaddr"
+		mc_member_test -j -g $TooManyGLIST -i $ipaddr \
 			       > $ERRFILE 2>&1 &
 
 		count=`grep 105 $ERRFILE | wc -l`
