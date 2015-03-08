@@ -25,7 +25,7 @@
 #include <sys/capability.h>
 #endif
 
-int main()
+int main(void)
 {
 #ifdef HAVE_LIBCAP
 	cap_t caps, caps2;

@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
 }
 
 /*****	LTP Port	*****/
-int anyfail()
+int anyfail(void)
 {
 	tst_brkm(TFAIL, tst_rmdir, "Test failed\n");
 }

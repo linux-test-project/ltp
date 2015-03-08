@@ -311,12 +311,12 @@ static int checkchars(int fd, char val, int n)
 }
 
 /*****	**	LTP Port	**	*****/
-int anyfail()
+int anyfail(void)
 {
 	tst_brkm(TFAIL, tst_rmdir, "Test failed\n");
 }
 
-void ok_exit()
+void ok_exit(void)
 {
 	tst_resm(TPASS, "Test passed\n");
 	tst_rmdir();

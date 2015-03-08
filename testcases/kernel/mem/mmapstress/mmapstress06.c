@@ -102,13 +102,13 @@ int main(int argc, char *argv[])
 }
 
 /*****	LTP Port	*****/
-void ok_exit()
+void ok_exit(void)
 {
 	tst_resm(TPASS, "Test passed\n");
 	tst_exit();
 }
 
-int anyfail()
+int anyfail(void)
 {
 	tst_brkm(TFAIL, NULL, "Test failed\n");
 }

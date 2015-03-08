@@ -37,7 +37,7 @@
 
 #define M_PIl	3.1415926535897932384626433832795029L
 
-int create_Result_file()
+static int create_Result_file(void)
 {
 
 	int i, nbVal;
@@ -68,7 +68,7 @@ int create_Result_file()
 	}
 }
 
-int create_Data_file()
+static int create_Data_file(void)
 {
 	int i, nbVal;
 	double tabDasin[20000], Inc;

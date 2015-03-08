@@ -65,17 +65,19 @@ char *TCID = "fptest01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 /**************/
 
-int init();
-int doevent();
-int term();
-int addevent();
-double gauss();
-void gaussinit();
 struct event {
 	int proc;
 	int type;
 	double time;
 };
+
+static int init(void);
+static int doevent(struct event *);
+static int term(void);
+static int addevent(int, int, double);
+
+static void gaussinit(double, double);
+static double gauss(void);
 
 struct event eventtab[EVENTMX];
 struct event rtrevent;
@@ -91,7 +93,7 @@ int ncycmax;			/* number of cycles to run */
 int critfree;			/* TRUE if critical section not occupied */
 int gcount;			/* # calls to gauss */
 
-struct event *nextevent();
+static struct event *nextevent(void);
 
 int main(int argc, char **argv)
 {
@@ -117,7 +119,7 @@ int main(int argc, char **argv)
 /*
 	initialize all processes to "entering work section"
 */
-int init()
+static int init(void)
 {
 	int p;
 	double dtw, dtwsig;
@@ -147,7 +149,7 @@ int init()
 /*
 	print edit quantities
 */
-int term()
+static int term(void)
 {
 	double avgspd;
 	double t_total = 0.0;
@@ -190,7 +192,7 @@ int term()
 /*
 	add an event to the event queue
 */
-int addevent(int type, int proc, double t)
+static int addevent(int type, int proc, double t)
 {
 	int i;
 	int ok = FALSE;
@@ -214,7 +216,7 @@ int addevent(int type, int proc, double t)
 /*
 	get earliest event in event queue
 */
-struct event *nextevent()
+static struct event *nextevent(void)
 {
 	double mintime = BIG;
 	int imin = 0;
@@ -240,8 +242,7 @@ struct event *nextevent()
 /*
 	add a processor to the waiting queue
 */
-int addwaiting(p)
-int p;
+static int addwaiting(int p)
 {
 	waiting[++nwaiting] = p;
 	return (0);
@@ -250,7 +251,7 @@ int p;
 /*
 	remove the next processor from the waiting queue
 */
-int getwaiting()
+static int getwaiting(void)
 {
 	if (nwaiting)
 		return (waiting[nwaiting--]);
@@ -258,17 +259,17 @@ int getwaiting()
 		return (0);
 }
 
-double dtcrit()
+static double dtcrit(void)
 {
 	return (dtc);
 }
 
-double dtspinoff()
+static double dtspinoff(void)
 {
 	return (dts);
 }
 
-double dtwork()
+static double dtwork(void)
 {
 	return (gauss());
 }
@@ -277,8 +278,7 @@ double dtwork()
 	take the action prescribed by 'ev', update the clock, and
 	generate any subsequent events
 */
-int doevent(ev)
-struct event *ev;
+static int doevent(struct event *ev)
 {
 	double nxttime;
 	int i, p, proc;
@@ -339,7 +339,7 @@ static double stdev;
 static double u1, u2;
 static double twopi;
 
-void gaussinit(double m, double s)
+static void gaussinit(double m, double s)
 {
 	mean = m;
 	stdev = s;
@@ -348,7 +348,7 @@ void gaussinit(double m, double s)
 	u2 = twopi / 500.0;
 }
 
-double gauss()
+static double gauss(void)
 {
 	double x1, x2;
 

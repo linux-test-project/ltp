@@ -50,7 +50,7 @@ int TST_TOTAL = 1;
 
 int errno;
 
-void usage(char *me)
+static void usage(const char *me)
 {
 	tst_resm(TFAIL, "Usage: %s <0|1> [arg]\n", me);
 	tst_resm(TINFO, "  0: set file caps without privilege\n");
@@ -62,7 +62,7 @@ void usage(char *me)
 #define KEEP_PERMS 1
 
 #ifdef HAVE_LIBCAP
-void print_my_caps()
+static void print_my_caps(void)
 {
 	cap_t cap = cap_get_proc();
 	char *txt = cap_to_text(cap, NULL);
@@ -71,7 +71,7 @@ void print_my_caps()
 	cap_free(txt);
 }
 
-void drop_root(int keep_perms)
+static void drop_root(int keep_perms)
 {
 	int ret;
 
@@ -95,7 +95,7 @@ void drop_root(int keep_perms)
 	}
 }
 
-int perms_test(void)
+static int perms_test(void)
 {
 	int ret;
 	cap_t cap;
@@ -120,7 +120,7 @@ int perms_test(void)
 }
 
 #define FIFOFILE "/tmp/caps_fifo"
-void create_fifo(void)
+static void create_fifo(void)
 {
 	int ret;
 
@@ -130,7 +130,7 @@ void create_fifo(void)
 			 FIFOFILE);
 }
 
-void write_to_fifo(char *buf)
+static void write_to_fifo(const char *buf)
 {
 	int fd;
 
@@ -139,7 +139,7 @@ void write_to_fifo(char *buf)
 	close(fd);
 }
 
-void read_from_fifo(char *buf)
+static void read_from_fifo(char *buf)
 {
 	int fd;
 
@@ -151,7 +151,7 @@ void read_from_fifo(char *buf)
 	close(fd);
 }
 
-int fork_drop_and_exec(int keepperms, cap_t expected_caps)
+static int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 {
 
 	int pid;
@@ -207,7 +207,7 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 	return ret;
 }
 
-int caps_actually_set_test(void)
+static int caps_actually_set_test(void)
 {
 	int whichcap, finalret = 0, ret;
 	cap_t fcap, pcap, cap_fullpi;

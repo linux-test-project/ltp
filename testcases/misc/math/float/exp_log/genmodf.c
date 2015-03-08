@@ -43,7 +43,7 @@
  * 1 double which is the integral part of the input: tabRI
  *
  */
-int create_Result_file()
+static int create_Result_file(void)
 {
 
 	int i, nbVal;
@@ -87,7 +87,7 @@ int create_Result_file()
 	}
 }
 
-int create_Data_file()
+static int create_Data_file(void)
 {
 	int i, nbVal;
 	double tabD[20000], Inc;

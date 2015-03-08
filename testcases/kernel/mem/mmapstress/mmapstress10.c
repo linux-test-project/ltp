@@ -928,14 +928,14 @@ unsigned int initrand(void)
 }
 
 /*****  LTP Port        *****/
-void ok_exit()
+void ok_exit(void)
 {
 	tst_resm(TPASS, "Test passed\n");
 	tst_rmdir();
 	tst_exit();
 }
 
-int anyfail()
+int anyfail(void)
 {
 	tst_brkm(TFAIL, tst_rmdir, "Test failed\n");
 }

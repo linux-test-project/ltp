@@ -59,7 +59,7 @@ int set_caps_from_text(char *capstr)
 }
 #endif
 
-int main()
+int main(void)
 {
 #ifdef HAVE_LIBCAP
 	int ret;

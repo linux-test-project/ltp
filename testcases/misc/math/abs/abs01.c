@@ -57,16 +57,14 @@ int errno;
 FILE *temp;
 int TST_TOTAL = 1;
 
-void setup();
-int blenter();
-int blexit();
+static void setup(void);
+static int blenter(void);
+static int blexit(void);
 
 /********************************/
 
 /*--------------------------------------------------------------*/
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
 	register long long i;
 	register int j, k, l, m;
@@ -114,18 +112,18 @@ char *argv[];
 /*--------------------------------------------------------------*/
 
 /*****  LTP Port	*****/
-void setup()
+static void setup(void)
 {
 	temp = stderr;
 }
 
-int blenter()
+static int blenter(void)
 {
 	local_flag = PASSED;
 	return (0);
 }
 
-int blexit()
+static int blexit(void)
 {
 	(local_flag == PASSED) ? tst_resm(TPASS,
 					  "Test passed") : tst_resm(TFAIL,

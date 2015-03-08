@@ -215,13 +215,13 @@ void do_test(caddr_t brk_max, long pagesize)
 }
 
 /*****  LTP Port        *****/
-void ok_exit()
+void ok_exit(void)
 {
 	tst_resm(TPASS, "Test passed");
 	tst_exit();
 }
 
-int anyfail()
+int anyfail(void)
 {
 	tst_brkm(TFAIL, NULL, "Test failed");
 }

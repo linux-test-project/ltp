@@ -94,14 +94,14 @@ const int nbytes = 2000;
 /* in % */
 #define BLOCK_TRIGGER 80
 
-void cleanup()
+void cleanup(void)
 {
 
 	tst_rmdir();
 
 }
 
-void setup()
+void setup(void)
 {
 	/*
 	 * setup a default signal hander and a
@@ -114,7 +114,7 @@ void setup()
 	TEST_PAUSE;
 }
 
-void help()
+void help(void)
 {
 	printf("  -x      dry run, hexdump random code instead\n");
 	printf("  -v x    verbose level\n");
@@ -219,7 +219,7 @@ void monitor_fcn(int sig)
 	}
 }
 
-void badboy_fork()
+void badboy_fork(void)
 {
 	int status, pid;
 
@@ -270,7 +270,7 @@ void record_status(unsigned int n)
 }
 
 /* may not work with -c option */
-void summarize_status()
+void summarize_status(void)
 {
 	int i;
 
@@ -306,7 +306,7 @@ void try_one_crash();
 void set_up_signals();
 
 /* badboy "entry" point */
-void badboy_loop()
+void badboy_loop(void)
 {
 	int i;
 
@@ -415,7 +415,7 @@ void my_signal(int sig, void (*func) ())
 	sigaction(sig, &act, 0);
 }
 
-void set_up_signals()
+void set_up_signals(void)
 {
 	my_signal(SIGILL, again_handler);
 #ifdef SIGTRAP
@@ -480,7 +480,7 @@ BADBOY castaway(char *dat)
 	return ((BADBOY) dat);
 }
 
-void compute_badboy()
+void compute_badboy(void)
 {
 	if (incptr == 0) {
 		compute_block_badboy(nbytes);
@@ -500,7 +500,7 @@ void compute_badboy()
 	}
 }
 
-void try_one_crash()
+void try_one_crash(void)
 {
 	/* was (nbytes < 0) */
 	if (!x_opt)

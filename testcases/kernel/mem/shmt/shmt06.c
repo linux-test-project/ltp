@@ -60,9 +60,9 @@ key_t key;
 sigset_t sigset;
 
 int child();
-int rm_shm(int);
+static int rm_shm(int);
 
-int main()
+int main(void)
 {
 	char *cp = NULL;
 	int pid, pid1, shmid;
@@ -141,7 +141,7 @@ int main()
 	tst_exit();
 }
 
-int child()
+int child(void)
 {
 	int shmid, chld_pid;
 	char *cp;
@@ -207,8 +207,7 @@ int child()
 	tst_exit();
 }
 
-int rm_shm(shmid)
-int shmid;
+static int rm_shm(int shmid)
 {
 	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
 		perror("shmctl");
