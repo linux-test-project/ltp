@@ -27,10 +27,18 @@ ifneq ($(filter install clean,$(MAKECMDGOALS)),)
 SKIP := 2
 endif
 
-SKIP ?= $(shell [ "$(WITH_MODULES)" = yes ] && \
-	[ $(LINUX_VERSION_MAJOR) -gt $(REQ_VERSION_MAJOR) ] || \
-	[ $(LINUX_VERSION_MAJOR) -eq $(REQ_VERSION_MAJOR) -a \
-	  $(LINUX_VERSION_PATCH) -ge $(REQ_VERSION_PATCH) ]; echo $$?)
+ifeq ($(WITH_MODULES),no)
+SKIP := 2
+else
+ifeq ($(LINUX_VERSION_MAJOR)$(LINUX_VERSION_PATCH),)
+SKIP := 2
+else
+SKIP ?= $(shell \
+	[ "$(LINUX_VERSION_MAJOR)" -gt "$(REQ_VERSION_MAJOR)" ] || \
+	[ "$(LINUX_VERSION_MAJOR)" -eq "$(REQ_VERSION_MAJOR)" -a \
+	  "$(LINUX_VERSION_PATCH)" -ge "$(REQ_VERSION_PATCH)" ]; echo $$?)
+endif
+endif
 
 ifneq ($(SKIP),0)
 MAKE_TARGETS := $(filter-out %.ko, $(MAKE_TARGETS))
