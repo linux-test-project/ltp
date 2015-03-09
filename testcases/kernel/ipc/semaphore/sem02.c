@@ -79,14 +79,12 @@ int err_ret;			/* This is used to determine PASS/FAIL status */
 int main(int argc, char **argv)
 {
 	int i, rc;
-	const char *msg;
 	union semun semunion;
 
 	pthread_t pt[NUMTHREADS];
 	pthread_attr_t attr;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 	/* Create the semaphore set */
 	sem_id = semget(KEY, 1, 0666 | IPC_CREAT);
 	if (sem_id < 0) {

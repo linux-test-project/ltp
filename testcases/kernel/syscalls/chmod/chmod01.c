@@ -92,15 +92,12 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;
 	int lc;
-	const char *msg;
 	int i;
 	int mode;
 
 	TST_TOTAL = sizeof(modes) / sizeof(int);
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

@@ -138,13 +138,10 @@ static void setup(void)
 
 int main(int argc, char *argv[])
 {
-	const char *msg;
 	int lc;
 	int i;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

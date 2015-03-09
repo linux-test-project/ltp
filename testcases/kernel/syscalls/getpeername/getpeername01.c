@@ -83,12 +83,9 @@ int TST_TOTAL = ARRAY_SIZE(test_cases);
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 	int i;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

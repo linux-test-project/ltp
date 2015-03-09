@@ -74,7 +74,6 @@ struct statvfs stat_buf;
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 
 	off_t offsetret, offset;
 	char pbuf[BUFSIZ];
@@ -85,8 +84,7 @@ int main(int ac, char **av)
 	int data_blocks = 0;
 	long int random_number;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

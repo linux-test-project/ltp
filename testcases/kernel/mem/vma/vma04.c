@@ -86,11 +86,8 @@ static void usage(void);
 int main(int argc, char **argv)
 {
 	int lc, node, err;
-	const char *msg;
 
-	msg = parse_opts(argc, argv, options, usage);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, usage);
 
 	nmask = numa_allocate_nodemask();
 	if (opt_node) {

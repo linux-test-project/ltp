@@ -79,11 +79,8 @@ static void readdir_verify(const struct test_case_t *);
 int main(int argc, char **argv)
 {
 	int i, lc;
-	const char *msg;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

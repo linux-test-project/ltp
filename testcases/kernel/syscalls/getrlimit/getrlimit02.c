@@ -103,11 +103,8 @@ int main(int ac, char **av)
 {
 	int i;
 	int lc;
-	const char *msg;		/* parse_opts() return message */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	/* Do initial setup */
 	setup();

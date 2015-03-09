@@ -56,10 +56,8 @@ static void do_master_child(void);
 int main(int ac, char **av)
 {
 	pid_t pid;
-	const char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

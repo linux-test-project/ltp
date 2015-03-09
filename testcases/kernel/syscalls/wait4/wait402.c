@@ -50,14 +50,12 @@ static long get_pid_max(void)
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	pid_t epid = get_pid_max() + 1;
 
 	int status = 1;
 	struct rusage rusage;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

@@ -126,12 +126,10 @@ int Fds[] = { -1, 1500 };
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int nfds = sizeof(Fds) / sizeof(int);
 	int ind;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

@@ -101,15 +101,12 @@ static void setup_tc(int i, struct test_case_t *tc)
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int i;
 	struct test_case_t *tc;
 
 	tc = NULL;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	tc = malloc(sizeof(struct test_case_t));
 	if (tc == NULL)

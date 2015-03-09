@@ -110,13 +110,9 @@ int set_handler(int sig, int sig_to_mask, int flag)
 
 int main(int ac, char **av)
 {
-	const char *msg;		/* message got from parse_opts */
-
 	int ret;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 //test1:
 	testcase_no = 1;
 

@@ -47,14 +47,11 @@ int main(int ac, char **av)
 {
 
 	int lc, status;
-	const char *msg;
 	void *child_stack;
 	char *parent_env;
 	char buff[MAX_LINE_LENGTH];
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

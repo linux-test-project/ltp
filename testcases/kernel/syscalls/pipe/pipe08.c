@@ -63,15 +63,13 @@ void sighandler(int);
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 
 	int pipefd[2];		/* fds for pipe read/write */
 	char wrbuf[BUFSIZ];
 	int written, length;
 	int close_stat;		/*  exit status of close(read fd) */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

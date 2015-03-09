@@ -117,11 +117,8 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 int main(int argc, char **argv)
 {
 	int lc;
-	const char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

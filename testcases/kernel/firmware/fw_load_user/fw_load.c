@@ -102,10 +102,8 @@ static void help(void)
 
 void setup(int argc, char *argv[])
 {
-	const char *msg;
-	msg = parse_opts(argc, argv, options, help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	
+	tst_parse_opts(argc, argv, options, help);
 
 	if (nflag) {
 		if (sscanf(narg, "%i", &fw_size) != 1)

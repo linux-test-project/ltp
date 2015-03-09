@@ -131,7 +131,6 @@ static struct test_case_t {
 int main(int ac, char **av)
 {
 	int lc, i;
-	const char *msg;
 
 #if defined (__s390__) || (__s390x__) || (__ia64__)
 	/* Disables the test in case the kernel version is lower than 2.6.12 and arch is s390 */
@@ -142,8 +141,7 @@ int main(int ac, char **av)
 	}
 #endif
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

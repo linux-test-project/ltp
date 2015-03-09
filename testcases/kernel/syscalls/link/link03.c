@@ -68,13 +68,11 @@ option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	struct stat buf;
 	int i, links;
 	char lname[255];
 
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, options, &help);
 
 	if (links_arg) {
 		nlinks = atoi(links_arg);

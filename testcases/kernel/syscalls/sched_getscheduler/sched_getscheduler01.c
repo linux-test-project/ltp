@@ -74,13 +74,10 @@ struct test_case_t {
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;		/* message returned by parse_opts */
-
 	int i;
 	struct sched_param param;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

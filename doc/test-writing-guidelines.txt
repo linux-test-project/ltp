@@ -279,11 +279,9 @@ static void test(void)
 
 int main(int argc, char *argv[])
 {
-	const char *msg;
 	int lc;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)))
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 
@@ -319,8 +317,24 @@ WARNING: Don't use 'tst_brkm()' in 'cleanup()' unless you really want to exit
          the cleanup prematurely. See discussion below for further
 	 information.
 
-The 'parse_opts()' parses the test command line arguments, it's important to
-use it even if the test has no (other than default) parameters.
+[source,c]
+-------------------------------------------------------------------------------
+typedef struct {
+        char *option;   /* Valid option string (one option only) like "a:"  */
+        int  *flag;     /* Pointer to location to set true if option given  */
+        char **arg;     /* Pointer to location to place argument, if needed */
+} option_t;
+
+void tst_parse_opts(int argc, char *argv[], const option_t *user_optarg,
+                    void (*user_help)(void));
+-------------------------------------------------------------------------------
+
+The 'tst_parse_opts()' parses the test command line arguments, it's important
+to use it even if the test has no (other than default) parameters.
+
+Test specific parameters can be passed to the function by the 'NULL' terminated
+'user_optarg' array as far as they don't conflict with the parameters used by
+the test library (these can be listed by passing '-h' to a LTP testcase).
 
 The last important thing is the 'TEST_LOOPING()' macro, each test has standard
 options so that it can be executed N times or for M seconds.

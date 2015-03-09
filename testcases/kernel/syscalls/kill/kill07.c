@@ -86,14 +86,11 @@ extern void rm_shm(int);
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	pid_t pid;
 	int exno, status, nsig, asig, ret;
 	struct sigaction my_act, old_act;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif

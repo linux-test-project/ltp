@@ -79,14 +79,9 @@ void setup(void), cleanup(void);
 
 int main(int argc, char *argv[])
 {
-	const char *msg;
 	int lc;
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(argc, argv, 0, 0);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	pid = getpid();
 
@@ -96,7 +91,6 @@ int main(int argc, char *argv[])
 		do_tests();
 
 	cleanup();
-
 	tst_exit();
 }
 

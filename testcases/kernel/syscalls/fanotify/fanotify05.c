@@ -60,12 +60,9 @@ struct fanotify_event_metadata event;
 int main(int ac, char **av)
 {
 	int lc, i;
-	const char *msg;
 	int len;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

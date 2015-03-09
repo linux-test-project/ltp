@@ -67,15 +67,12 @@ void cleanup(void);
 
 int main(int argc, char **argv)
 {
-	const char *msg;
-
 	struct tms buf1, buf2;
 	time_t start_time, end_time;
 	int pid2, status;
 	struct sigaction sa;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

@@ -183,7 +183,6 @@ static int sig_array[NUMSIGS];
 int main(int argc, char **argv)
 {
 	int lc;
-	const char *msg;
 
 	/* gcc -Wall complains about sig_caught not being ref'd because of the
 	   external declarations. */
@@ -192,10 +191,7 @@ int main(int argc, char **argv)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&child, "dd", &pipe_fd[1], &pipe_fd2[0]);
 #endif

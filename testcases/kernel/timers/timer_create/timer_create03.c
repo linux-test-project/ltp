@@ -90,7 +90,6 @@ void cleanup(void)
 int main(int ac, char **av)
 {
 	int lc, i;
-	const char *msg;
 	kernel_timer_t created_timer_id;	/* holds the returned timer_id */
 	char *message[] = {
 		"SIGEV_SIGNAL",
@@ -98,9 +97,7 @@ int main(int ac, char **av)
 		"SIGEV_NONE"
 	};
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

@@ -81,13 +81,10 @@ int main(int argc, char *argv[])
 {
 	int lc, status;
 	long ps;
-	const char *msg;
 	pid_t pid;
 	void *ptr;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	ps = sysconf(_SC_PAGESIZE);
 	setup();

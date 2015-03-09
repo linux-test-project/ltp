@@ -84,12 +84,9 @@ int main(int argc, char *argv[])
 	struct rusage usage;
 	unsigned long ulast, udelta, slast, sdelta;
 	int i, lc;
-	const char *msg;
 	char msg_string[BUFSIZ];
 
-	msg = parse_opts(argc, argv, child_options, fusage);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, child_options, fusage);
 
 #if (__powerpc__) || (__powerpc64__) || (__s390__) || (__s390x__)
 	tst_brkm(TCONF, NULL, "This test is not designed for current system");

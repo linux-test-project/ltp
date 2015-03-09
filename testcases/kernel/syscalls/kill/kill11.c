@@ -162,10 +162,8 @@ int main(int argc, char **argv)
 {
 	int lc;
 	unsigned int i;
-	const char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "dd", &sig);

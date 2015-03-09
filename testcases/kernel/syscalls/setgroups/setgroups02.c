@@ -86,13 +86,11 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
-	int lc, i;		/* loop counters */
-	const char *msg;
+	int lc, i;
 	int gidsetsize = 1;	/* only one GID, the GID of TESTUSER */
 	int PASS_FLAG = 0;	/* used for checking group array */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

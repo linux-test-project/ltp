@@ -97,18 +97,13 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc, i;
-	const char *msg;
 	off_t file_length2;	/* test file length */
 	off_t file_length1;	/* test file length */
 	int rbytes;		/* bytes read from testfile */
 	int read_len = 0;	/* total no. of bytes read from testfile */
 	int err_flag = 0;	/* error indicator flag */
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

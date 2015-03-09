@@ -99,7 +99,6 @@ void cleanup(void)
 int main(int ac, char **av)
 {
 	int lc, i;
-	const char *msg;
 	kernel_timer_t timer_id, *temp_id;	/* stores the returned timer_id */
 	struct sigevent *temp_ev;	/* used for bad address test case */
 
@@ -112,8 +111,7 @@ int main(int ac, char **av)
 		CLOCK_THREAD_CPUTIME_ID
 	};
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 

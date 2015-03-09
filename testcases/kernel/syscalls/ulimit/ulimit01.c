@@ -154,7 +154,6 @@ int main(int ac, char **av)
 {
 	int lc;
 	int i;
-	const char *msg;
 	int tmp;
 
 	TST_TOTAL = sizeof(Scenarios) / sizeof(struct limits_t);
@@ -162,9 +161,7 @@ int main(int ac, char **av)
     /***************************************************************
      * parse standard options
      ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
     /***************************************************************
      * perform global setup for test

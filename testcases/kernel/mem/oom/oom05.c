@@ -47,13 +47,10 @@ int TST_TOTAL = 1;
 
 int main(int argc, char *argv[])
 {
-	const char *msg;
 	int lc;
 	int swap_acc_on = 1;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 #if __WORDSIZE == 32
 	tst_brkm(TCONF, NULL, "test is not designed for 32-bit system.");

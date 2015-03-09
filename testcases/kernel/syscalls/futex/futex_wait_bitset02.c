@@ -36,12 +36,10 @@ const int TST_TOTAL=1;
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 
 	tst_timer_check(CLOCK_REALTIME);
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++)
 		verify_futex_wait_bitset(DEFAULT_TIMEOUT_MS, CLOCK_REALTIME);

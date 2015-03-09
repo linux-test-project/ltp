@@ -100,12 +100,10 @@ extern int getipckey();
 
 int main(int ac, char **av)
 {
-	const char *msg;
 	pid_t pid;
 	int status;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif

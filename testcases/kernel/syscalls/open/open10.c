@@ -76,12 +76,9 @@ int main(int ac, char *av[])
 	pid_t mypid;
 
 	int lc;
-	const char *msg;
 	int fail_count = 0;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

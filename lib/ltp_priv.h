@@ -47,4 +47,7 @@ const char *tst_get_startwd(void);
 #define USC_NO_FUNC_CHECK	"USC_NO_FUNC_CHECK"
 #define USC_LOOP_DELAY		"USC_LOOP_DELAY"
 
+const char *parse_opts(int ac, char **av, const option_t *user_optarr, void
+                       (*uhf)(void));
+
 #endif /* __LTP_PRIV_H__ */

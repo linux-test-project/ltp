@@ -149,17 +149,12 @@ void cleanup();
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	char *test_file;	/* testfile name */
 	char *sym_file;		/* symbolic link file name */
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	/*
 	 * Invoke setup function to call individual test setup functions

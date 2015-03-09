@@ -54,12 +54,9 @@ int main(int argc, char *argv[])
 {
 	int lc;
 	int ret;
-	const char *msg;
 	char buf[BUFSIZ];
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

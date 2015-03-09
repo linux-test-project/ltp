@@ -160,15 +160,11 @@ int main(int ac, char **av)
 	int term_stat;		/* child return status */
 	int sig;		/* current signal */
 	int lc;
-	const char *msg;
 
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "dd", &CHILDSWRITEFD, &CHILDSREADFD);
 #endif

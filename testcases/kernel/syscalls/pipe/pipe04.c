@@ -75,7 +75,6 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	pid_t c1pid, c2pid;
 	int wtstatus;
 	int bytesread;
@@ -83,8 +82,7 @@ int main(int ac, char **av)
 
 	char rbuf[BUFSIZ];
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&c1func, "ndd", 1, &fildes[0], &fildes[1]);
 	maybe_run_child(&c2func, "ndd", 2, &fildes[0], &fildes[1]);

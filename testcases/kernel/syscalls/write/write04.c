@@ -69,7 +69,6 @@ int rfd, wfd;
 int main(int argc, char **argv)
 {
 	int lc;
-	const char *msg;
 
 	struct stat buf;
 	int fail;
@@ -77,9 +76,7 @@ int main(int argc, char **argv)
 	char wbuf[17 * PIPE_SIZE_TEST];
 	struct sigaction sigptr;	/* set up signal handler */
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	/* global setup */
 	setup();

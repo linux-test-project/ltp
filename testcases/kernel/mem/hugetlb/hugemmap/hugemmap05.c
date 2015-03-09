@@ -112,14 +112,11 @@ static void init_sys_sz_paths(void);
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 
 	init_hugepagesize();
 	init_sys_sz_paths();
 
-	msg = parse_opts(argc, argv, options, usage);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, usage);
 	if (opt_sysfs) {
 		strncpy(path, path_sys_sz_huge, strlen(path_sys_sz_huge) + 1);
 		strncpy(pathover, path_sys_sz_over,

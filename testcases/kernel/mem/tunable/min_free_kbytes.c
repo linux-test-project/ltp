@@ -66,9 +66,10 @@ static void sighandler(int signo LTP_ATTRIBUTE_UNUSED);
 
 int main(int argc, char *argv[])
 {
-	const char *msg;
 	int lc, pid, status;
 	struct sigaction sa;
+
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	sa.sa_handler = sighandler;
 	if (sigemptyset(&sa.sa_mask) < 0)
@@ -77,9 +78,6 @@ int main(int argc, char *argv[])
 	if (sigaction(SIGUSR1, &sa, NULL) < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "sigaction");
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR -s %s", msg);
 	setup();
 
 	switch (pid = fork()) {

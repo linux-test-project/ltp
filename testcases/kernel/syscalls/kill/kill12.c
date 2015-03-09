@@ -86,11 +86,8 @@ int main(int argc, char **argv)
 	void chsig();
 
 #ifdef UCLINUX
-	const char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	maybe_run_child(&do_child, "dd", &temp, &sig);
 #endif

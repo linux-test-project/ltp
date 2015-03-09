@@ -96,7 +96,6 @@ int main(int ac, char **av)
 {
 	int exp_eno;
 	int lc;
-	const char *msg;
 
 	char osname[OSNAMESZ];
 	int osnamelth, status;
@@ -104,9 +103,7 @@ int main(int ac, char **av)
 	pid_t pid;
 	struct passwd *ltpuser;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

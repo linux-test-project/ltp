@@ -70,18 +70,12 @@ int main(int ac, char *av[])
 	char *wbuf[NBUFS];
 	struct stat statbuf;
 	int lc;
-	const char *msg;
 
 	strcpy(name, DATA_FILE);
 	sprintf(fname, "%s.%d", name, getpid());
 
-	/*
-	 * parse standard options
-	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
-	}
 	tst_tmpdir();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 

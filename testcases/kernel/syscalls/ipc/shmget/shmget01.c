@@ -66,11 +66,9 @@ int shm_id_1 = -1;
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	struct shmid_ds buf;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();		/* global setup */
 

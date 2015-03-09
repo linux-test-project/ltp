@@ -79,13 +79,10 @@ static void do_exit_uclinux(void);
 int main(int argc, char **argv)
 {
 	int lc;
-	const char *msg;
 
 	int fail, pid, status, ret;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 #ifdef UCLINUX
 	maybe_run_child(&do_exit_uclinux, "");

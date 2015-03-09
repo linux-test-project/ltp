@@ -60,11 +60,9 @@ void sig11_handler(int sig);
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	struct sigaction sa, osa;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

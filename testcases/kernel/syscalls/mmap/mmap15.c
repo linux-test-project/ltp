@@ -50,16 +50,13 @@ static void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc, fd;
-	const char *msg;
 	void *addr;
 
 #if __WORDSIZE == 32
 	tst_brkm(TCONF, NULL, "This test is only for 64bit");
 #endif
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

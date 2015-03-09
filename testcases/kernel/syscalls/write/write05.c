@@ -74,15 +74,12 @@ char *bad_addr = 0;
 int main(int argc, char **argv)
 {
 	int lc;
-	const char *msg;
 
 	char pbuf[BUFSIZ];
 	int pipefildes[2];
 	int status, pid;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	/* global setup */
 	setup();

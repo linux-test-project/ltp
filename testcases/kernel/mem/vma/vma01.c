@@ -69,12 +69,9 @@ static void *p;
 
 int main(int argc, char **argv)
 {
-	const char *msg;
 	int lc;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	ps = sysconf(_SC_PAGE_SIZE);
 	setup();

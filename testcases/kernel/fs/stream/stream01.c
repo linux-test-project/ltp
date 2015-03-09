@@ -53,13 +53,11 @@ int main(int ac, char *av[])
 	char buf[10];
 	int i;
 	int lc;
-	const char *msg;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	local_flag = PASSED;
 	tst_tmpdir();

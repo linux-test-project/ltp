@@ -70,11 +70,9 @@ static void usage(void);
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 
-	msg = parse_opts(argc, argv, options, &usage);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PASING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, &usage);
+
 	if (n_flag)
 		nr_pages = SAFE_STRTOUL(NULL, n_opt, 0, ULONG_MAX);
 	else

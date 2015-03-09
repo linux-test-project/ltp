@@ -180,12 +180,9 @@ static void cleanup(void);
 
 int main(int argc, char **argv)
 {
-	const char *msg;
 	int lc, i, ret;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 	testno = (int)(sizeof(tcase) / sizeof(tcase[0]));

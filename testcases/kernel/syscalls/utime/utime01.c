@@ -99,15 +99,10 @@ int main(int ac, char **av)
 	struct stat stat_buf;	/* struct buffer to hold file info. */
 	int lc;
 	long type;
-	const char *msg;
 	time_t modf_time, access_time;
 	time_t pres_time;	/* file modification/access/present time */
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

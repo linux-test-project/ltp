@@ -201,12 +201,9 @@ static void help(void)
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 	long seconds;
 
-	msg = parse_opts(argc, argv, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, &help);
 	setup();
 
 	seconds = tflag ? SAFE_STRTOL(NULL, t_opt, 1, LONG_MAX) : 15;

@@ -43,13 +43,11 @@ static void help(void);
 int main(int ac, char **av)
 {
 	int lc, treshold;
-	const char *msg;
 	long long elapsed_us, sleep_us = 100000;
 	struct timeval timeout;
 	fd_set fds;
 
-	if ((msg = parse_opts(ac, av, opts, help)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, opts, help);
 
 	if (opt_sleep_us) {
 		sleep_us = atoll(opt_sleep_us);

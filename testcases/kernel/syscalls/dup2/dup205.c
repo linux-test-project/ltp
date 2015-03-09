@@ -57,12 +57,10 @@ int main(int ac, char *av[])
 	int serrno;
 
 	int lc;
-	const char *msg;
 
 	ifile = -1;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	local_flag = PASSED;
 

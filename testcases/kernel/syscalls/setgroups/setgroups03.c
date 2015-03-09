@@ -105,14 +105,12 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int gidsetsize;		/* total no. of groups */
 	int i;
 	char *test_desc;	/* test specific error message */
 	int ngroups_max = sysconf(_SC_NGROUPS_MAX);	/* max no. of groups in the current system */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	groups_list = malloc(ngroups_max * sizeof(GID_T));
 	if (groups_list == NULL) {

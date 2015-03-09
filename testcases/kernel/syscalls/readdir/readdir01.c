@@ -134,17 +134,9 @@ char Basename[255];
 char Fname[255];
 int Nfiles = 0;
 
-/* To add command line options you need to declare a structure to pass to
- * parse_opts().  options is the structure used in this example.  The format is
- * the string that should be added to optstring in getopt(3), an integer that
- * will be used as a flag if the option is given, and a pointer to a string that
- * should receive the optarg parameter from getopt(3).  Here we add a -N
- * option.  Long options are not supported at this time.
- */
 char *Nfilearg;
 int Nflag = 0;
 
-/* for test specific parse_opts options */
 option_t options[] = {
 	{"N:", &Nflag, &Nfilearg},	/* -N #files */
 	{NULL, NULL, NULL}
@@ -156,23 +148,13 @@ option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int cnt;
 	int nfiles, fd;
 	char fname[255];
 	DIR *test_dir;
 	struct dirent *dptr;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	/* start off by parsing the command line options.  We provide a function
-	 * that understands many common options to control looping.  If you are not
-	 * adding any new options, pass NULL in place of options and &help.
-	 */
-	if ((msg = parse_opts(ac, av, options, &help)) != 0) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, options, &help);
 
 	if (Nflag) {
 		if (sscanf(Nfilearg, "%i", &Nfiles) != 1) {

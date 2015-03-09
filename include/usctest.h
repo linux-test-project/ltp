@@ -54,24 +54,6 @@
 extern int STD_TIMING_ON,	/* turned on by -t to print timing stats */
            STD_LOOP_COUNT;	/* changed by -in to set loop count to n */
 
-typedef struct {
-	char *option;	/* Valid option string (one option only) like "a:"  */
-	int  *flag;	/* Pointer to location to set true if option given  */
-	char **arg;	/* Pointer to location to place argument, if needed */
-} option_t;
-
-/*
- * The parse_opts library routine takes that argc and argv parameters recevied
- * by main() and an array of structures defining user options. It parses the
- * command line setting flag and argument locations associated with the
- * options. The uhf() is a function called to print user defined help.
- *
- * The function returns a pointer to an error message if an error occurs or in
- * case of success NULL.
- */
-const char *parse_opts(int ac, char **av, const option_t *user_optarr, void
-                       (*uhf)(void));
-
 extern long TEST_RETURN;
 extern int TEST_ERRNO;
 

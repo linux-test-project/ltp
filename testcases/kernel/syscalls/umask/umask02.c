@@ -61,14 +61,11 @@ void cleanup(void);
 int main(int argc, char **argv)
 {
 	int lc;
-	const char *msg;
 
 	int uret = 0, i, mskval = 0000;
 	int failcnt = 0;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

@@ -49,14 +49,12 @@ static void cleanup(void);
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 	long from, to;
 	long first = -1, last = -1;
 	char b[KB];
 	FILE *fp;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

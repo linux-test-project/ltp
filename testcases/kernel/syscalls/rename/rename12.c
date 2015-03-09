@@ -92,15 +92,13 @@ struct stat buf1;
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	pid_t pid;
 	int status;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	/*
 	 * perform global setup for test

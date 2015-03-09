@@ -72,9 +72,8 @@ int main(int argc, char *argv[])
 	char *msg;
 	int nr_children = 2, nr_thps = 64;
 
-	msg = parse_opts(argc, argv, thp_options, thp_usage);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, thp_options, thp_usage);
+
 	check_thp_options(&nr_children, &nr_thps);
 
 	setup();

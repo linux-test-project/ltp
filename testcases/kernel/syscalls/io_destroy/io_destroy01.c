@@ -62,14 +62,12 @@ static void setup(void)
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 
 	io_context_t ctx;
 
 	memset(&ctx, 0xff, sizeof(ctx));
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

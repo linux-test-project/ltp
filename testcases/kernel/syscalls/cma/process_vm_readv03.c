@@ -63,13 +63,9 @@ static void help(void);
 int main(int argc, char **argv)
 {
 	int lc, status;
-	const char *msg;
 	int *bufsz_arr;
 
-	msg = parse_opts(argc, argv, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s"
-			 "use -help", msg);
+	tst_parse_opts(argc, argv, options, &help);
 
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

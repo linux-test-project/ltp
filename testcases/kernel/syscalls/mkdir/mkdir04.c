@@ -97,7 +97,6 @@ char tstdir2[100];
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int rval;
 	pid_t pid, pid1;
 	int status;
@@ -105,9 +104,7 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	/*
 	 * perform global setup for test

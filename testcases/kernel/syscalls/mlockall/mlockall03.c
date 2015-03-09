@@ -110,12 +110,9 @@ struct test_case_t {
 int main(int ac, char **av)
 {
 	int lc, i;
-	const char *msg;
 	struct utsname *buf;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	/* allocate some space for buf */
 	if ((buf = malloc((size_t)sizeof(struct utsname))) == NULL) {

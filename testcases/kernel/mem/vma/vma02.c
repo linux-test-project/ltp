@@ -68,12 +68,9 @@ int main(int argc, char **argv)
 	int node, err, lc;
 	char buf[BUFSIZ];
 	struct bitmask *nmask = numa_allocate_nodemask();
-	const char *msg;
 
 	pagesize = getpagesize();
-	msg = parse_opts(argc, argv, options, usage);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, usage);
 
 	if (opt_node) {
 		node = SAFE_STRTOL(NULL, opt_nodestr, 1, LONG_MAX);

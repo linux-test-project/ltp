@@ -99,13 +99,10 @@ void compare_registers(unsigned char poison)
 
 int main(int argc, char *argv[])
 {
-	const char *msg;
-
 	if (ARRAY_SIZE(regs) == 0)
 		tst_brkm(TCONF, NULL, "test not supported for your arch (yet)");
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)))
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	make_a_baby(argc, argv);
 

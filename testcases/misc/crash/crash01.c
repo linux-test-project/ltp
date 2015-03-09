@@ -149,11 +149,9 @@ void record_status(unsigned int n);
 
 int main(int argc, char *argv[])
 {
-	const char *msg;
 	int lc;
 
-	if ((msg = parse_opts(argc, argv, options, help)) != NULL)
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, help);
 
 	if (v_opt)
 		verbose_level = atoi(v_copt);

@@ -537,13 +537,10 @@ int run_test(int file_flag, int file_mode, int dup_flag)
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 
 	int fail = 0;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&dochild1_uc, "nddds", 1, &uc_file_flag,
 			&uc_file_mode, &parent, tmpname);

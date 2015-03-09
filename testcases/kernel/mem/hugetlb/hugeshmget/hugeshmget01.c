@@ -77,12 +77,10 @@ static option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	struct shmid_ds buf;
 
-	msg = parse_opts(ac, av, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, options, &help);
+
 	if (sflag)
 		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 

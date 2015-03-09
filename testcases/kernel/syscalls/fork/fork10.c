@@ -62,13 +62,10 @@ int main(int ac, char **av)
 	char chilchar[2];
 
 	int lc;
-	const char *msg;
 
 	fildes = -1;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

@@ -140,10 +140,8 @@ static void verify_cloexec(struct tcase *tc)
 int main(int ac, char **av)
 {
 	int lc, i;
-	const char *msg;
 
-	if ((msg = parse_opts(ac, av, options, &help)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, options, &help);
 
 	if (t_opt)
 		exit(test_open(t_opt));

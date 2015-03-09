@@ -87,15 +87,12 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 
 	int i;
 	int fork_ret, status;
 	int written;		/* no of chars read and written */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "ddddd", &fd[0], &fd[1], &kidid,
 			&ncperchild, &szcharbuf);

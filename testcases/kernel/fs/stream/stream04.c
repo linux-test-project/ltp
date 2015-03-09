@@ -59,13 +59,11 @@ int main(int ac, char *av[])
 	int ret;
 
 	int lc;
-	const char *msg;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 	tst_tmpdir();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 

@@ -48,11 +48,8 @@ static void cleanup(void);
 int main(int argc, char **argv)
 {
 	int lc, status;
-	const char *msg;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

@@ -101,15 +101,12 @@ static void setup(void)
 int main(int argc, char **argv)
 {
 	int lock_pages, counter;
-	const char *msg;
 	int lc;
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, cleanup, "error parsing options: %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
-	
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 

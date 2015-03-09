@@ -54,11 +54,8 @@ static int  fork_test(void);
 int main(int ac, char **av)
 {
 	int lc, reproduced;
-	const char *msg;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 /*
  * Tested on ppc64/x86_64/i386/s390x. And only 64bit has this issue.
  * Since a 32bit program can't mmap so many memory.

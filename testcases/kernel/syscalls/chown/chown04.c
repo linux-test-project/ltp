@@ -96,14 +96,11 @@ static void cleanup(void);
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int i;
 	uid_t user_id;
 	gid_t group_id;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

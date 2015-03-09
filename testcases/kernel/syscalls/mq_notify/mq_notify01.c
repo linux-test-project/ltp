@@ -299,7 +299,6 @@ int main(int ac, char **av)
 	int c;
 	int i;
 	int lc;
-	const char *msg;
 
 	struct option long_options[] = {
 		{"debug", no_argument, 0, 'd'},
@@ -309,8 +308,7 @@ int main(int ac, char **av)
 
 	progname = basename(av[0]);
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

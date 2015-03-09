@@ -115,11 +115,9 @@ int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat struct */
 	int lc;
-	const char *msg;
 	mode_t dir_mode;	/* mode permissions set on test directory */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

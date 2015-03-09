@@ -100,11 +100,8 @@ static int hwfd[MAX_CTRS], tskfd[MAX_CTRS];
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 
-	msg = parse_opts(ac, av, options, help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, options, help);
 
 	setup();
 

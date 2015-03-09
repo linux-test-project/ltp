@@ -96,7 +96,6 @@ static void sigterm_handler(void);
 static int Devflag;
 static char *devname;
 
-/* for test specific parse_opts options - in this case "-D" */
 static option_t options[] = {
 	{"D:", &Devflag, &devname},
 	{NULL, NULL, NULL}
@@ -106,11 +105,9 @@ int main(int ac, char **av)
 {
 	int lc;
 	int rval;
-	const char *msg;
 
-	msg = parse_opts(ac, av, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, options, &help);
+
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "dS", &parentpid, &childtty);
 #endif

@@ -204,7 +204,6 @@ pid_t mypid = 0;
 char *narg, *garg, *darg;
 int nflag = 0, gflag = 0, dflag = 0;
 
-/* for test specific parse_opts options */
 option_t options[] = {
 	{"n:", &nflag, &narg},	/* -n #procs */
 	{"g:", &gflag, &garg},	/* -g #pgrps */
@@ -215,12 +214,9 @@ option_t options[] = {
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int cnt;
 
-	if ((msg = parse_opts(ac, av, options, &help))) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, options, &help);
 
 	if (nflag) {
 		if (sscanf(narg, "%i", &num_procs) != 1) {

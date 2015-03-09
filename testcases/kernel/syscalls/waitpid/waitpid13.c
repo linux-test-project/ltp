@@ -68,17 +68,13 @@ static int fail;
 
 int main(int ac, char **av)
 {
-	const char *msg;
-
 	int kid_count, ret_val, status;
 	int i, j, k, found;
 	int group1, group2;
 	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
 	int pid;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 #ifdef UCLINUX
 	maybe_run_child(&do_exit_uclinux, "");

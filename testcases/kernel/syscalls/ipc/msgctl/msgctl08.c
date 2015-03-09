@@ -82,12 +82,10 @@ int main(int argc, char **argv)
 	struct sigaction act;
 
 #ifdef UCLINUX
-	const char *msg;
 
 	argv0 = argv[0];
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux,
 			&i_uclinux);

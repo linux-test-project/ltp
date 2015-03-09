@@ -232,14 +232,11 @@ static int test_case_uclinux;
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 
     /***************************************************************
     * parse standard options
     ***************************************************************/
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 #ifdef UCLINUX
 	argv0 = argv[0];
 	maybe_run_child(&do_child_uclinux, "dd", &test_case_uclinux, &fd1[1]);

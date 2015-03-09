@@ -56,13 +56,10 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int status;
-	const char *msg;
 	char cur_cwd[PATH_MAX];
 	pid_t child;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

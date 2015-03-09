@@ -71,14 +71,11 @@ int main(int ac, char **av)
 	int len, rlen;
 	int rval = 0;
 	int lc;
-	const char *msg;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();		/* global setup for test */
 

@@ -76,14 +76,11 @@ int main(int ac, char **av)
 	int c_pass, c_fail;
 
 	int lc;
-	const char *msg;
 
 	rea = NULL;
 	writ = NULL;
 
-	msg = parse_opts(ac, av, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, options, &help);
 
 	if (Nflag) {
 		if (sscanf(Nforkarg, "%i", &Nforks) != 1)

@@ -228,15 +228,12 @@ void cleanup(void)
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;		/* message got from parse_opts */
 	int i;
 	int test_flags[] = { SA_RESETHAND | SA_SIGINFO, SA_RESETHAND,
 		SA_RESETHAND | SA_SIGINFO, SA_RESETHAND | SA_SIGINFO
 	};
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

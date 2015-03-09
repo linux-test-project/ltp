@@ -131,10 +131,8 @@ int main(int ac, char **av)
 	struct stat stat_buf;	/* stat structure buffer */
 	struct stat *ptr_str;
 	int lc;
-	const char *msg;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	/* Buffer points outside user's accessible address space. */
 	ptr_str = &stat_buf;	/* if it was for conformance testing */

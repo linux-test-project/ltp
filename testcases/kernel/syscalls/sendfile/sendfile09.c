@@ -169,7 +169,6 @@ int main(int ac, char **av)
 {
 	int i;
 	int lc;
-	const char *msg;
 
 #if __WORDSIZE == 32
 	tst_brkm(TCONF, NULL, "This test is only for 64bit");
@@ -181,8 +180,7 @@ int main(int ac, char **av)
 		return 0;
 	}
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

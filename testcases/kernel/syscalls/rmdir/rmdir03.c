@@ -95,7 +95,6 @@ char tstdir4[255];
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	pid_t pid;
 	struct stat buf1;
 	int e_code, status, status2;
@@ -103,9 +102,7 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&dochild1, "ns", 1, tstdir2);
 	maybe_run_child(&dochild2, "ns", 2, tstdir4);

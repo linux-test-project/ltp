@@ -82,13 +82,11 @@ static void do_child(void);
 
 int main(int ac, char **av)
 {
-	const char *msg;
 	pid_t pid;
 	int status;
 
-	msg = parse_opts(ac, av, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, options, &help);
+
 	if (sflag)
 		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 

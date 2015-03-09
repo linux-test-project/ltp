@@ -82,11 +82,8 @@ static void cma_test_errnos(void);
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 
-	msg = parse_opts(argc, argv, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, &help);
 
 	setup(argv);
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

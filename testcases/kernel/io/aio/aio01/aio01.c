@@ -100,7 +100,6 @@ int main(int argc, char **argv)
 	int failflag = 0;
 	int bflag = 0, nflag = 0, Fflag = 0;
 	char *optb, *optn, *optF;
-	const char *msg;
 	struct io_event event;
 	static struct timespec ts;
 	struct timeval stv, etv;
@@ -112,11 +111,7 @@ int main(int argc, char **argv)
 		{NULL, NULL, NULL}
 	};
 
-	msg = parse_opts(argc, argv, options, &help);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
+	tst_parse_opts(argc, argv, options, &help);
 
 	bufsize = (bflag ? atoi(optb) : 8192);
 	nr = (nflag ? atoi(optn) : 10);

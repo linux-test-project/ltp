@@ -152,14 +152,12 @@ int main(int argc, char *argv[])
 
 	int i;
 	int lc;
-	const char *msg;
 	char *p, *bigmalloc;
 	int loop_count;		/* limited to 16Go on 32 bits systems */
 
 	pagesize = sysconf(_SC_PAGESIZE);
 
-	if ((msg = parse_opts(argc, argv, options, help)) != NULL)
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, help);
 
 	if (m_opt) {
 		memsize = (size_t) atoi(m_copt) * 1024 * 1024;

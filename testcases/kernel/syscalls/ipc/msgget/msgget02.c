@@ -81,12 +81,10 @@ int msg_q_1 = -1;		/* The message queue id created in setup */
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int i;
 	key_t key;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();		/* global setup */
 

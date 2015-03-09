@@ -106,7 +106,6 @@ int main(int ac, char **av)
 
 	/* Parameters for usc code  */
 	int lc;
-	const char *msg;
 
 	/* Parameters for alarm test */
 	char *buf[] = { "-1", "ULONG_MAX", "ULONG_MAX+1" };
@@ -114,8 +113,7 @@ int main(int ac, char **av)
 	int exp[] = { 0, 0, 0 };
 	int i;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

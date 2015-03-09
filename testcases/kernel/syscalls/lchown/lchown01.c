@@ -72,11 +72,9 @@ int main(int argc, char *argv[])
 {
 	struct stat stat_buf;
 	int lc;
-	const char *msg;
 	int i;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

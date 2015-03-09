@@ -120,6 +120,16 @@ pid_t tst_vfork(void);
 extern int Forker_pids[];
 extern int Forker_npids;
 
+typedef struct {
+	char *option;	/* Valid option string (one option only) like "a:"  */
+	int  *flag;	/* Pointer to location to set true if option given  */
+	char **arg;	/* Pointer to location to place argument, if needed */
+} option_t;
+
+/* lib/tst_parse_opts.c */
+void tst_parse_opts(int argc, char *argv[], const option_t *user_optarg,
+                    void (*user_help)(void));
+
 /* lib/tst_res.c */
 const char *strttype(int ttype);
 void tst_res_(const char *file, const int lineno, int ttype,

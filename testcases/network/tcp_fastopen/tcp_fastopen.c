@@ -689,10 +689,8 @@ static void check_opt_l(const char *name, char *arg, long *val, long lim)
 
 static void setup(int argc, char *argv[])
 {
-	const char *msg;
-	msg = parse_opts(argc, argv, options, help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	
+	tst_parse_opts(argc, argv, options, help);
 
 	/* if client_num is not set, use num of processors */
 	clients_num = sysconf(_SC_NPROCESSORS_ONLN);

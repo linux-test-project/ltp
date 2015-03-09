@@ -87,7 +87,6 @@ static void check_result(long exp, long act)
 int main(int argc, char *argv[])
 {
 	int lc;
-	const char *msg;
 
 	int rval, fd;
 	char buf[256];
@@ -95,8 +94,7 @@ int main(int argc, char *argv[])
 	struct iocb *iocbs[1];
 	io_context_t ctx;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

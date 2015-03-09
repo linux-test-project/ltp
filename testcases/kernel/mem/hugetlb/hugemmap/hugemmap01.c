@@ -82,7 +82,6 @@ static void help(void);
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int Hflag = 0;
 	long page_sz = 0;
 	int sflag = 0;
@@ -93,10 +92,7 @@ int main(int ac, char **av)
 		{NULL, NULL, NULL}
 	};
 
-	msg = parse_opts(ac, av, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s,"
-			 "use -help", msg);
+	tst_parse_opts(ac, av, options, &help);
 
 	if (!Hflag) {
 		tst_tmpdir();

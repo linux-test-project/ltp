@@ -99,7 +99,6 @@ static struct test_case_t {
 static int Devflag;
 static char *devname;
 
-/* for test specific parse_opts options - in this case "-D" */
 static option_t options[] = {
 	{"D:", &Devflag, &devname},
 	{NULL, NULL, NULL}
@@ -109,11 +108,8 @@ int main(int ac, char **av)
 {
 	int lc;
 	int i;
-	const char *msg;
 
-	msg = parse_opts(ac, av, options, &help);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, options, &help);
 
 	if (!Devflag)
 		tst_brkm(TBROK, NULL, "You must specify a tty device with "

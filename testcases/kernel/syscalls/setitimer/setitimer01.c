@@ -69,12 +69,9 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	struct itimerval *value, *ovalue;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();		/* global setup */
 

@@ -64,12 +64,10 @@ fd_set Readfds, Writefds;
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	struct timeval timeout;
 	long test_time = 0;	/* in usecs */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

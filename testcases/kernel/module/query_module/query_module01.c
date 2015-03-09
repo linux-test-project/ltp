@@ -154,12 +154,9 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 int main(int argc, char **argv)
 {
 	int lc;
-	const char *msg;
 	size_t buflen = sizeof(out_buf);
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	tst_tmpdir();
 	setup();

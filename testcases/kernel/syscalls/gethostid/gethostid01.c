@@ -139,16 +139,14 @@ int TST_TOTAL = 1;
 int main(int ac, char **av)
 {
 	int lc, i, j;		/* loop counters */
-	int bit_64 = 0;		/* used when compiled 64bit on some 64bit machines */
-	const char *msg;
+	int bit_64 = 0;
 	char *result;
 	char name[HOSTIDLEN], name2[HOSTIDLEN], hostid[HOSTIDLEN],
 	    hostid2[HOSTIDLEN], *hostid3, hex[2] = "0x";
 	char hex_64[8] = "ffffffff";
 	FILE *fp;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

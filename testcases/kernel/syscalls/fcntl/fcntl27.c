@@ -106,14 +106,11 @@ int fd;
 
 int main(int ac, char **av)
 {
-	int lc, expected_result = -1;	/* loop counter, expected */
-	/* result from system call */
-	const char *msg;
+	int lc, expected_result = -1;
     /***************************************************************
      * parse standard options
      ***************************************************************/
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
     /***************************************************************
      * perform global setup for test

@@ -421,12 +421,9 @@ int main(int ac, char **av)
 {
 	int ans;
 	int lc;
-	const char *msg;
 	int fail = 0;
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&do_child1, "nddddddddd", 1, &file_fd,
 			&parent_pipe[0], &parent_pipe[1],

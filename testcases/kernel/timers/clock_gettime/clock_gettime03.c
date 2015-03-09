@@ -89,8 +89,7 @@ int TST_TOTAL = ARRAY_SIZE(testcase);
 
 int main(int ac, char **av)
 {
-	int i, lc;		/* loop counter */
-	const char *msg;
+	int i, lc;
 	struct timespec spec, *temp;
 
 	clockid_t clocks[] = {
@@ -102,8 +101,7 @@ int main(int ac, char **av)
 		CLOCK_THREAD_CPUTIME_ID
 	};
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	/*
 	 * PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on

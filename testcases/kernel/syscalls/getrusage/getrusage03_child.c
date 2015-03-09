@@ -64,11 +64,8 @@ int main(int argc, char *argv[])
 	long maxrss_self, maxrss_children, delta;
 	long consume_nr, grand_consume_nr, self_nr, child_nr;
 	struct rusage ru;
-	const char *msg;
 
-	msg = parse_opts(argc, argv, child_options, usage);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, child_options, usage);
 
 	setup();
 

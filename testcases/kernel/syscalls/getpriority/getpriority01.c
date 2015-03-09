@@ -86,17 +86,12 @@ int prio_which[] = { PRIO_PROCESS, PRIO_PGRP, PRIO_USER };
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 	int ind;
 	int which;		/* scheduling priority category */
 
 	TST_TOTAL = sizeof(prio_which) / sizeof(int);
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 

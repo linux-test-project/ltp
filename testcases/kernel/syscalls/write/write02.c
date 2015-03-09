@@ -64,7 +64,6 @@ char pfiln[40] = "";
 int main(int argc, char **argv)
 {
 	int lc;
-	const char *msg;
 
 	int cwrite;
 	int fild;
@@ -72,9 +71,7 @@ int main(int argc, char **argv)
 	int badcount = 0;
 	char pwbuf[BUFSIZ + 1];
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL))) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();		/* global setup for test */
 

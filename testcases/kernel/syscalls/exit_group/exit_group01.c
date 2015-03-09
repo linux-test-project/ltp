@@ -59,11 +59,8 @@ static void verify_exit_group(void)
 int main(int ac, char **av)
 {
 	int lc;
-	const char *msg;
 
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++)
 		verify_exit_group();

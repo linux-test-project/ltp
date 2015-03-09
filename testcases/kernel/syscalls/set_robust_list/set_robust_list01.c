@@ -78,18 +78,13 @@ int main(int argc, char **argv)
 #ifdef __NR_set_robust_list
 	int lc;
 #endif
-	const char *msg;
 #ifdef __NR_set_robust_list
 	struct robust_list_head head;
 	size_t len;		/* size of structure struct robust_list_head */
 	int retval;
 #endif
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

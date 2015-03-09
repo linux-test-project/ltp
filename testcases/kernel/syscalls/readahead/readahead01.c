@@ -128,12 +128,9 @@ static void test_invalid_fd(void)
 
 int main(int argc, char *argv[])
 {
-	const char *msg;
 	int lc;
 
-	msg = parse_opts(argc, argv, options, NULL);
-	if (msg != NULL)
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	tst_parse_opts(argc, argv, options, NULL);
 
 	setup();
 	for (lc = 0; TEST_LOOPING(lc); lc++) {

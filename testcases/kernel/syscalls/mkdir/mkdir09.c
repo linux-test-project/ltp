@@ -104,11 +104,8 @@ int main(int argc, char *argv[])
 	int c;
 
 #ifdef UCLINUX
-	const char *msg;
 
-	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	argv0 = argv[0];
 	maybe_run_child(&dochild1_uclinux, "nd", 1, &nfiles);
