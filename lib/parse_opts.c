@@ -50,9 +50,6 @@
 #define UNIT_TEST	0
 #endif
 
-/* The timing information block. */
-struct tblock tblock = { 0, ((long)-1) >> 1, 0, 0 };
-
 /* Define flags and args for standard options */
 int STD_TIMING_ON = 0;		/* flag indicating to print timing stats */
 static int STD_PAUSE = 0;	/* flag indicating to pause before actual start, */

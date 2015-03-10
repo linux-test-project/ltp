@@ -58,22 +58,6 @@ extern long TEST_RETURN;
 extern int TEST_ERRNO;
 
 /***********************************************************************
- * structure for timing accumulator and counters
- ***********************************************************************/
-struct tblock {
-    long tb_max;
-    long tb_min;
-    long tb_total;
-    long tb_count;
-};
-
-/***********************************************************************
- * The following globals are externed here so that they are accessable
- * in the macros that follow.
- ***********************************************************************/
-extern struct tblock tblock;
-
-/***********************************************************************
  * TEST: calls a system call
  *
  * parameters:
