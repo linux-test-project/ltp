@@ -340,7 +340,7 @@ main(void)
 			 "got value differs Set Value=%d Get Value=%d",
 			 (2*rcvbuf_val_set), rcvbuf_val_get);
 
-	sndbuf_val_set = 2048;
+	sndbuf_val_set = 5000;
 	/* TEST17: Test case for setsockopt SO_SNDBUF */
 	error = setsockopt(sk2, SOL_SOCKET, SO_SNDBUF, &sndbuf_val_set, len);
 	if (error < 0)
