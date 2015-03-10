@@ -1,5 +1,9 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *    AUTHOR		: William Roske
+ *    CO-PILOT		: Dave Fenner
+ *    DATE STARTED	: 06/01/02
+ * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -28,87 +32,7 @@
  * For further information regarding this notice, see:
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- *
  */
-/* $Id: execle01.c,v 1.7 2009/03/23 13:35:40 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: execle01
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for execle(2)
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 1
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: William Roske
- *
- *    CO-PILOT		: Dave Fenner
- *
- *    DATE STARTED	: 06/01/02
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- * 	1.) execle(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *$
- *    DURATION
- * 	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- * 	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
- *
- *    INTERCASE DEPENDENCIES
- * 	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the execle(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	execle(2).
- *
- * 	Setup:
- * 	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- * 	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
-
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
@@ -118,74 +42,41 @@
 
 #include "test.h"
 
-void setup();
-void cleanup();
+static void setup(void);
 
 char *TCID = "execle01";
 int TST_TOTAL = 1;
 
-pid_t pid;			/* process id from fork */
-int status;			/* status returned from waitpid */
-
-int main(int ac, char **av, char **environ)
+int main(int ac, char **av)
 {
 	int lc;
+	pid_t pid;
+	char *env[] = {"LTP_TEST_ENV_VAR=test"};
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
 		switch (pid = FORK_OR_VFORK()) {
-		case 0:	/* CHILD - Call execle(2) */
-			execle("test", "test", NULL, environ);
-			/* should not get here!! if we do, the parent will fail the Test Case */
-			exit(errno);
-		case -1:	/* ERROR!!! exit now!! */
-			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
-			break;
+		case 0:
+			execle("execle01_child", "execle01_child", "canary",
+			       NULL, env);
+			tst_brkm(TFAIL | TERRNO, NULL,
+			         "Failed to execute execl01_child");
+		case -1:
+			tst_brkm(TBROK | TERRNO, NULL, "fork failed");
 		default:
-			if (waitpid(pid, &status, 0) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "waitpid failed");
-			if (WIFEXITED(status)) {
-				tst_resm(TPASS,
-					 "execle - properly exec's a "
-					 "simple program..");
-			} else
-				tst_resm(TFAIL,
-					 "child process exited abnormally; wait "
-					 "status = %d", status);
-			break;
-		}		/* switch */
-
+			tst_record_childstatus(NULL, pid);
+		}
 	}
-
-	cleanup();
 
 	tst_exit();
 }
 
 void setup(void)
 {
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	if (STD_TIMING_ON)
-		tst_resm(TINFO,
-			 "There are NO timing statistics produced by this test.\n\
-This is because the test forks to create a child process which then calls execle.\n\
-The TEST macro is NOT used.");
+	tst_sig(FORK, DEF_HANDLER, NULL);
 
 	TEST_PAUSE;
-
-	tst_tmpdir();
-}
-
-void cleanup(void)
-{
-	tst_rmdir();
 }
