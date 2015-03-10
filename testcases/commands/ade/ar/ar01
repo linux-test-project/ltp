@@ -483,7 +483,7 @@ do
 	File2time=`ar -tv $TCtmp/lib.a | grep file2.in`
 
 	#sleep 5
-	touch -c -t 201503030303.55 file0.in
+	touch -c -t $(date --date='next day' +"%Y%m%d%H%M") file0.in
 
 	ar -ru $TCtmp/lib.a file0.in file2.in 2>&1 1>/dev/null
 	File1time1=`ar -tv $TCtmp/lib.a | grep file0.in`
