@@ -46,7 +46,7 @@ void setup(void);
 #define min(a, b)	(((a) < (b)) ? (a) : (b))
 
 typedef struct mbuf {		/* a generic message structure */
-	long mtype;
+	__syscall_slong_t mtype;
 	char mtext[MSGSIZE + 1];  /* add 1 here so the message can be 1024   */
 } MSGBUF;			  /* characters long with a '\0' termination */
 

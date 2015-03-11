@@ -20,11 +20,13 @@
 #ifndef __LIBMSGCTL_H__
 #define __LIBMSGCTL_H__
 
+#include <sys/types.h>
+
 #define FAIL	1
 #define PASS	0
 
 struct mbuffer {
-	long type;
+	__syscall_slong_t type;
 	struct {
 		char len;
 		char pbytes[99];
