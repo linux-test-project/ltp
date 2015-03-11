@@ -51,7 +51,6 @@
 #endif
 
 /* Define flags and args for standard options */
-int STD_TIMING_ON = 0;		/* flag indicating to print timing stats */
 static int STD_PAUSE = 0;	/* flag indicating to pause before actual start, */
     /* for contention mode */
 static int STD_INFINITE = 0;	/* flag indciating to loop forever */
@@ -93,7 +92,6 @@ static struct std_option_t {
 	{"I:", "  -I x    Execute test for x seconds\n", NULL, NULL},
 	{"p", "  -p      Pause for SIGUSR1 before starting\n", NULL, NULL},
 	{"P:", "  -P x    Pause for x seconds between iterations\n", NULL, NULL},
-	{"t", "  -t      Turn on syscall timing\n", NULL, NULL},
 #ifdef UCLINUX
 	{"C:",
 	      "  -C ARG  Run the child process with arguments ARG (for internal use)\n",
@@ -227,9 +225,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 			break;
 		case 'p':	/* Pause for SIGUSR1 */
 			STD_PAUSE = 1;
-			break;
-		case 't':	/* syscall timing */
-			STD_TIMING_ON = 1;
 			break;
 		case 'h':	/* Help */
 			print_help(uhf);
@@ -473,7 +468,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 	printf("STD_LOOP_DELAY      = %f\n", STD_LOOP_DELAY);
 	printf("STD_LOOP_COUNT      = %d\n", STD_LOOP_COUNT);
 	printf("STD_INFINITE        = %d\n", STD_INFINITE);
-	printf("STD_TIMING_ON       = %d\n", STD_TIMING_ON);
 	printf("STD_PAUSE           = %d\n", STD_PAUSE);
 #endif
 

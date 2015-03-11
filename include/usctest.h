@@ -51,8 +51,7 @@
  * The following globals are defined in parse_opts.c but must be
  * externed here because they are used in the macros defined below.
  ***********************************************************************/
-extern int STD_TIMING_ON,	/* turned on by -t to print timing stats */
-           STD_LOOP_COUNT;	/* changed by -in to set loop count to n */
+extern int STD_LOOP_COUNT; /* changed by -in to set loop count to n */
 
 extern long TEST_RETURN;
 extern int TEST_ERRNO;
