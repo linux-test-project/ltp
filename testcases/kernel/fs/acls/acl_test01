@@ -41,6 +41,8 @@ export TCID=acltest01
 export TST_TOTAL=5
 export TST_COUNT=1
 
+. test.sh
+
 TMP=${TMP:=/tmp}
 
 TEST_USER1="acltest1"
@@ -52,18 +54,33 @@ FILE_ACL="$TMP/tacl/mount-ext3/test_file"
 FILE_ACL_LINK="$TMP/tacl/mount-ext3/test_file_link"
 TCbin=`pwd`
 
+COMMAND=$(command -v "getenforce" "setenforce" |wc -l)
+if [ $COMMAND -eq 2 ]; then
+	SELINUX=$(getenforce)
+else
+	SELINUX=""
+fi
+
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
 #-----------------------------------------------------------------------
 
 do_setup(){
 
+	tst_require_root
+
 	rm -f $FILE_ACL
 	rm -f $FILE_ACL_LINK
 
+	# We couldn't consider whether the SElinux is Disable or Permissive.
+	# We only set it to Permissive when it it Enforcing.
+	if [ "$SELINUX" = "Enforcing" ]; then
+		echo "set the SElinux to Permissive."
+		setenforce 0
+	fi
+
 	if [ "x$TEST_USER1_HOMEDIR" = "x" ]; then
-		echo "Could not find user $TEST_USER1's home directory."
-		exit 1
+		tst_brkm TBROK "Could not find user $TEST_USER1's home directory."
 	fi
 
 	# XXX (garrcoop): why is cleanup junk being done in setup??? Bad test!!!
@@ -73,8 +90,7 @@ do_setup(){
 	useradd -d $TEST_USER1_HOMEDIR -m -g $TEST_USER1_GROUP $TEST_USER1 -s /bin/sh
 
 	if [ $? -ne 0 ]; then
-		echo "Could not add test user $TEST_USER1."
-		exit 1
+		tst_brkm TBROK "Could not add test user $TEST_USER1."
 	fi
 
 }
@@ -91,6 +107,12 @@ do_cleanup() {
 	mount | grep "$TMP/tacl/mount-ext3" && umount -d $TMP/tacl/mount-ext3
 	[ "x$LOOP_DEV" != x ] && losetup -d $LOOP_DEV
 	rm -rf $TMP/tacl
+
+	# We set it back to Enforcing.
+	if [ "$SELINUX" = "Enforcing" ]; then
+		echo "set the SElinux back to Enforcing."
+		setenforce 1
+	fi
 }
 
 #-----------------------------------------------------------------------
@@ -102,14 +124,10 @@ if [ "z$iam" = "z$TEST_USER1" ]
 then
 	echo ""
 else
-	if [ $(id -ru) != 0 ]; then
-		tst_resm TCONF "must be root to execute this script"
-		exit 0
-	fi
+	tst_require_root
 
 	if ! ( test -d $TMP/tacl || mkdir -m 777 $TMP/tacl) ; then
-		tst_resm TCONF "failed to create $TMP/tacl directory."
-		exit 1
+		tst_brkm TBROK "Failed to create $TMP/tacl directory."
 	fi
 
 	trap do_cleanup EXIT
@@ -119,21 +137,18 @@ else
 
 	dd if=/dev/zero of=$TMP/tacl/blkext3 bs=1k count=10240 && chmod 777 $TMP/tacl/blkext3
 	if [ $? -ne 0 ] ; then
-		tst_resm TCONF "Failed to create $TMP/tacl/blkext3"
-		exit 0
+		tst_brkm TBROK "Failed to create $TMP/tacl/blkext3"
 	fi
 
 	# Avoid hardcoded loopback device values (-f tries to find the first
 	# available loopback device name)!
 	if ! LOOP_DEV=$(losetup -f) || [ "x$LOOP_DEV" = x ]; then
-		tst_resm TCONF "[ losetup.1 ] Failed to find an available loopback device -- is the required support compiled in your kernel?"
-		exit 0
+		tst_brkm TCONF "[ losetup.1 ] Failed to find an available loopback device -- is the required support compiled in your kernel?"
 	fi
 
 	if ! losetup $LOOP_DEV $TMP/tacl/blkext3 2>&1 > /dev/null; then
 		echo ""
-		tst_resm TCONF "[ losetup.2 ] Failed to setup the device."
-		exit 0
+		tst_brkm TCONF "[ losetup.2 ] Failed to setup the device."
 	fi
 
 	mount | grep ext2
@@ -143,11 +158,9 @@ else
 		mount -t ext3 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
 		if [ $? -ne 0 ]
 		then
-			echo ""
 			tst_resm TCONF "[ mount ] Make sure that ACL (Access Control List)"
-			printf "\t and Extended Attribute are built into the kernel\n"
-			printf "\t Can not mount ext3 file system with acl and user_xattr options\n"
-			exit 1
+			tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
+			tst_brkm TCONF "\t Can not mount ext3 file system with acl and user_xattr options\n"
 		fi
 	else
 
@@ -156,11 +169,9 @@ else
 		mount -t ext2 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
 		if [ $? -ne 0 ]
 		then
-			echo ""
 			tst_resm TCONF "FAILED: [ mount ] Make sure that ACL (Access Control List)"
-			printf "\t and Extended Attribute are built into the kernel\n"
-			printf "\t Can not mount ext2 file system with acl and user_xattr options\n"
-			exit 1
+			tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
+			tst_brkm TCONF "\t Can not mount ext2 file system with acl and user_xattr options\n"
 		fi
 
 	fi
@@ -180,20 +191,18 @@ then
 	${TCbin}/acl_file_test $FILE_ACL
 	if [ $? -ne 0 ]
 	then
-		EXIT_CODE=1
-		echo "Extended acls for files (FAILED)"
+		tst_resm TFAIL "Extended acls for files."
 	else
-		echo "Extended acls for files (PASSED)"
+		tst_resm TPASS "Extended acls for files."
 	fi
 
 	echo "Trying extended acls for file links"
 	${TCbin}/acl_link_test $FILE_ACL_LINK
 	if [ $? -ne 0 ]
 	then
-		EXIT_CODE=1
-		echo "Extended acls for links (FAILED)"
+		tst_resm TFAIL "Extended acls for links."
 	else
-		echo "Extended acls for links (PASSED)"
+		tst_resm TPASS "Extended acls for links."
 	fi
 else
 	do_setup
@@ -211,20 +220,18 @@ else
 	${TCbin}/acl_file_test $FILE_ACL
 	if [ $? -ne 0 ]
 	then
-		EXIT_CODE=1
-		echo "Extended acls for files (FAILED)"
+		tst_resm TFAIL "Extended acls for files."
 	else
-		echo "Extended acls for files (PASSED)"
+		tst_resm TPASS "Extended acls for files."
 	fi
 
 	echo "Trying extended acls for file links"
 	${TCbin}/acl_link_test $FILE_ACL_LINK
 	if [ $? -ne 0 ]
 	then
-		EXIT_CODE=1
-		echo "Extended acls for links (FAILED)"
+		tst_resm TFAIL "Extended acls for links."
 	else
-		echo "Extended acls for links (PASSED)"
+		tst_resm TPASS "Extended acls for links."
 	fi
 
 	chown $TEST_USER1 $FILE_ACL
@@ -235,4 +242,4 @@ else
 	do_cleanup
 fi
 
-exit $EXIT_CODE
+tst_exit
