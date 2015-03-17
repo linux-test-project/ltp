@@ -142,8 +142,17 @@ vxlan_setup_subnet_uni()
 
 vxlan_setup_subnet_multi()
 {
+	tst_check_cmds "od"
+	local b1=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))
+	local b2=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))
+	local b3=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))
+
 	local opt=
-	[ "$TST_IPV6" ] && opt="group ff05::111" || opt="group 239.1.1.1"
+	if [ "$TST_IPV6" ]; then
+		opt="group ff05::$(printf '%x:%x%x' $b1 $b2 $b3)"
+	else
+		opt="group 239.$b1.$b2.$b3"
+	fi
 
 	tst_resm TINFO "setup VxLANv$ipver with multicast address: '$opt'"
 
