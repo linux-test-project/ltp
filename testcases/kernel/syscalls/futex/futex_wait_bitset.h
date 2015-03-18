@@ -42,6 +42,12 @@ static void verify_futex_wait_bitset(long long wait_us, clock_t clk_id)
 		return;
 	}
 
+	if (TEST_ERRNO == ENOSYS) {
+		tst_resm(TCONF, "In this kernel, futex() does not support "
+			 "FUTEX_WAIT_BITSET operation");
+		return;
+	}
+
 	if (TEST_ERRNO != ETIMEDOUT) {
 		tst_resm(TFAIL | TTERRNO, "expected %s",
 		         tst_strerrno(ETIMEDOUT));
