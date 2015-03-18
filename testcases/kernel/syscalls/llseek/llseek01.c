@@ -93,8 +93,6 @@ int TST_TOTAL = 1;
 char write_buff[BUFSIZ];	/* buffer to hold data */
 int fildes;			/* file handle for temp file */
 
-struct rlimit rlp_orig;		/* resource for original file size limit */
-
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
@@ -190,11 +188,6 @@ void setup(void)
 
 	tst_tmpdir();
 
-	/* Store the original rlimit */
-	if (getrlimit(RLIMIT_FSIZE, &rlp_orig) == -1)
-		tst_brkm(TBROK, cleanup,
-			 "Cannot get max. file size using getrlimit");
-
 	/* Set limit low, argument is # bytes */
 	rlp.rlim_cur = rlp.rlim_max = 2 * BUFSIZ;
 
@@ -217,9 +210,4 @@ void cleanup(void)
 	SAFE_CLOSE(NULL, fildes);
 
 	tst_rmdir();
-
-	if (setrlimit(RLIMIT_FSIZE, &rlp_orig) == -1)
-		tst_brkm(TBROK, NULL,
-			 "Cannot reset max. file size using setrlimit");
-
 }
