@@ -57,7 +57,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, NULL, "Invalid timeout '%s'", opt_sleep_ms);
 	}
 
-	treshold = sleep_ms / 1000 + 10;
+	treshold = sleep_ms / 100 + 10;
 
 	tst_timer_check(CLOCK_MONOTONIC);
 

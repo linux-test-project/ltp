@@ -31,7 +31,7 @@
 const char *TCID="futex_wait_bitset02";
 const int TST_TOTAL=1;
 
-#define DEFAULT_TIMEOUT_MS 100010
+#define DEFAULT_TIMEOUT_US 100010
 
 int main(int argc, char *argv[])
 {
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	tst_parse_opts(argc, argv, NULL, NULL);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++)
-		verify_futex_wait_bitset(DEFAULT_TIMEOUT_MS, CLOCK_REALTIME);
+		verify_futex_wait_bitset(DEFAULT_TIMEOUT_US, CLOCK_REALTIME);
 
 	tst_exit();
 }

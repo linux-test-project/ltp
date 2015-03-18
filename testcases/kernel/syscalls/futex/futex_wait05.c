@@ -26,14 +26,14 @@
 #include "test.h"
 #include "futextest.h"
 
-#define TRESHOLD_US 1000
+#define TRESHOLD_US 100000
 
 const char *TCID="futex_wait05";
 const int TST_TOTAL=1;
 
 static void verify_futex_wait(clock_t clk_id, int fflags)
 {
-	struct timespec to = {.tv_sec = 0, .tv_nsec = 10001000};
+	struct timespec to = {.tv_sec = 0, .tv_nsec = 100010000};
 	futex_t futex = FUTEX_INITIALIZER;
 
 	tst_timer_start(clk_id);

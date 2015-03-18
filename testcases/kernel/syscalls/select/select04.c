@@ -60,7 +60,7 @@ int main(int ac, char **av)
 
 	tst_timer_check(CLOCK_MONOTONIC);
 
-	treshold = sleep_us / 1000 + 10000;
+	treshold = sleep_us / 100 + 20000;
 
 	FD_ZERO(&fds);
 

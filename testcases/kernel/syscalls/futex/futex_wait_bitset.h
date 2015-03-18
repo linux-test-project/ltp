@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#define TRESHOLD_US 1000
+#define TRESHOLD_US 100000
 
 static void verify_futex_wait_bitset(long long wait_us, clock_t clk_id)
 {
