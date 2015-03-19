@@ -28,6 +28,7 @@
 #define LTP_USE_64_ABI \
      (defined(__mips__) && _MIPS_SIM == _ABIN32) || \
      (defined(__x86_64__) && defined(__ILP32__)) || \
+     (defined(__aarch64__) && defined(__ILP32__)) || \
      __WORDSIZE == 64
 
 #endif /* ABISIZE_H__ */
