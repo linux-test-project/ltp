@@ -52,7 +52,7 @@ int main(int ac, char **av)
 	int lc;
 	pid_t pid;
 	char *const args[] = {"execve01_child", "canary", NULL};
-	char *const env[] = {"LTP_TEST_ENV_VAR=test"};
+	char *const env[] = {"LTP_TEST_ENV_VAR=test", NULL};
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
