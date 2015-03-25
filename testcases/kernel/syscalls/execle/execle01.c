@@ -51,7 +51,7 @@ int main(int ac, char **av)
 {
 	int lc;
 	pid_t pid;
-	char *env[] = {"LTP_TEST_ENV_VAR=test"};
+	char *env[] = { "LTP_TEST_ENV_VAR=test", NULL };
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
