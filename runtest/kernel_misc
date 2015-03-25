@@ -9,3 +9,5 @@ cpufreq_boost cpufreq_boost
 uaccess uaccess
 rcu_torture rcu_torture.sh
 lock_torture lock_torture.sh
+zram01 zram01.sh
+zram02 zram02.sh

@@ -1,4 +1,5 @@
-# Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
+#!/bin/sh
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -13,20 +14,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write the Free Software Foundation,
 # Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# Test checks that we can create swap zram device.
+#
+# Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
-top_srcdir	?= ../../..
+TCID="zram02"
+TST_TOTAL=7
 
-include $(top_srcdir)/include/mk/env_pre.mk
+. test.sh
+. zram_lib.sh
 
-SUBDIRS		:= acpi \
-		   block \
-		   cpufreq \
-		   locking \
-		   pci \
-		   rcu \
-		   rtc \
-		   tbio \
-		   uaccess \
-		   zram
+# Test will create the following number of zram devices:
+dev_num=1
+# This is a list of parameters for zram devices.
+# Number of items must be equal to 'dev_num' parameter.
+zram_max_streams="2"
+zram_sizes="100G"
+zram_mem_limits="1M"
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+TST_CLEANUP="zram_cleanup"
+
+zram_load
+zram_max_streams
+zram_set_disksizes
+zram_set_memlimit
+zram_makeswap
+zram_swapoff
+
+tst_exit
