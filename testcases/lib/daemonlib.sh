@@ -48,8 +48,10 @@ start_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
 		systemctl start $1.service > /dev/null 2>&1
-	else
+	elif command -v service &> /dev/null; then
 		service $1 start > /dev/null 2>&1
+	else
+		/etc/init.d/$1 start > /dev/null 2>&1
 	fi
 }
 
@@ -57,8 +59,10 @@ stop_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
 		systemctl stop $1.service > /dev/null 2>&1
-	else
+	elif command -v service &> /dev/null; then
 		service $1 stop > /dev/null 2>&1
+	else
+		/etc/init.d/$1 stop > /dev/null 2>&1
 	fi
 }
 
@@ -66,8 +70,10 @@ status_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
 		systemctl status $1.service > /dev/null 2>&1
-	else
+	elif command -v service &> /dev/null; then
 		service $1 status > /dev/null 2>&1
+	else
+		/etc/init.d/$1 status > /dev/null 2>&1
 	fi
 }
 
@@ -75,7 +81,9 @@ restart_daemon()
 {
 	if [ $HAVE_SYSTEMCTL -eq 1 ]; then
 		systemctl restart $1.service > /dev/null 2>&1
-	else
+	elif command -v service &> /dev/null; then
 		service $1 restart > /dev/null 2>&1
+	else
+		/etc/init.d/$1 restart > /dev/null 2>&1
 	fi
 }
