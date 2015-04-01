@@ -39,14 +39,15 @@ static option_t opts[] = {
 };
 
 static void help(void);
+static void setup(void);
+static void cleanup(void);
+
+static int fds[2];
 
 int main(int ac, char **av)
 {
 	int lc, treshold;
 	long long elapsed_ms, sleep_ms = 100;
-	struct pollfd fds[] = {
-		{.fd = 1, .events = POLLIN}
-	};
 
 	tst_parse_opts(ac, av, opts, help);
 
@@ -59,11 +60,15 @@ int main(int ac, char **av)
 
 	treshold = sleep_ms / 100 + 10;
 
-	tst_timer_check(CLOCK_MONOTONIC);
+	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		struct pollfd pfds[] = {
+			{.fd = fds[0], .events = POLLIN}
+		};
+
 		tst_timer_start(CLOCK_MONOTONIC);
-		TEST(poll(fds, 1, sleep_ms));
+		TEST(poll(pfds, 1, sleep_ms));
 		tst_timer_stop();
 
 		if (TEST_RETURN != 0) {
@@ -92,7 +97,24 @@ int main(int ac, char **av)
 		         elapsed_ms, sleep_ms, treshold);
 	}
 
+	cleanup();
 	tst_exit();
+}
+
+static void setup(void)
+{
+	tst_timer_check(CLOCK_MONOTONIC);
+
+	SAFE_PIPE(NULL, fds);
+}
+
+static void cleanup(void)
+{
+	if (close(fds[0]))
+		tst_resm(TWARN | TERRNO, "close(fds[0]) failed");
+
+	if (close(fds[1]))
+		tst_resm(TWARN | TERRNO, "close(fds[1]) failed");
 }
 
 static void help(void)

@@ -39,13 +39,17 @@ static option_t opts[] = {
 };
 
 static void help(void);
+static void setup(void);
+static void cleanup(void);
+
+static int fds[2];
 
 int main(int ac, char **av)
 {
 	int lc, treshold;
 	long long elapsed_us, sleep_us = 100000;
 	struct timeval timeout;
-	fd_set fds;
+	fd_set sfds;
 
 	tst_parse_opts(ac, av, opts, help);
 
@@ -58,18 +62,18 @@ int main(int ac, char **av)
 		}
 	}
 
-	tst_timer_check(CLOCK_MONOTONIC);
-
 	treshold = sleep_us / 100 + 20000;
 
-	FD_ZERO(&fds);
+	setup();
+
+	FD_ZERO(&sfds);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		FD_SET(1, &fds);
+		FD_SET(fds[0], &sfds);
 		timeout = tst_us_to_timeval(sleep_us);
 
 		tst_timer_start(CLOCK_MONOTONIC);
-		TEST(select(1, &fds, NULL, NULL, &timeout));
+		TEST(select(1, &sfds, NULL, NULL, &timeout));
 		tst_timer_stop();
 
 		if (TEST_RETURN != 0) {
@@ -98,7 +102,24 @@ int main(int ac, char **av)
 		         elapsed_us, sleep_us, treshold);
 	}
 
+	cleanup();
 	tst_exit();
+}
+
+static void setup(void)
+{
+	tst_timer_check(CLOCK_MONOTONIC);
+
+	SAFE_PIPE(NULL, fds);
+}
+
+static void cleanup(void)
+{
+	if (close(fds[0]))
+		tst_resm(TWARN | TERRNO, "close(fds[0]) failed");
+
+	if (close(fds[1]))
+		tst_resm(TWARN | TERRNO, "close(fds[1]) failed");
 }
 
 static void help(void)
