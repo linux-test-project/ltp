@@ -139,6 +139,7 @@ int main(int argc, char *argv[])
 void setup(void)
 {
 	long mem_total, swap_total;
+	struct rlimit lim;
 
 	tst_require_root(NULL);
 
@@ -154,8 +155,6 @@ void setup(void)
 	old_overcommit_memory = get_sys_tune("overcommit_memory");
 	old_overcommit_ratio = get_sys_tune("overcommit_ratio");
 
-	set_sys_tune("overcommit_ratio", overcommit_ratio, 1);
-
 	mem_total = read_meminfo("MemTotal:");
 	tst_resm(TINFO, "MemTotal is %ld kB", mem_total);
 	swap_total = read_meminfo("SwapTotal:");
@@ -164,6 +163,19 @@ void setup(void)
 
 	commit_limit = read_meminfo("CommitLimit:");
 	tst_resm(TINFO, "CommitLimit is %ld kB", commit_limit);
+
+	SAFE_GETRLIMIT(NULL, RLIMIT_AS, &lim);
+
+	if (lim.rlim_cur != RLIM_INFINITY) {
+		lim.rlim_cur = RLIM_INFINITY;
+		lim.rlim_max = RLIM_INFINITY;
+
+		tst_resm(TINFO, "Increasing RLIM_AS to INFINITY");
+
+		SAFE_SETRLIMIT(NULL, RLIMIT_AS, &lim);
+	}
+
+	set_sys_tune("overcommit_ratio", overcommit_ratio, 1);
 }
 
 void cleanup(void)
