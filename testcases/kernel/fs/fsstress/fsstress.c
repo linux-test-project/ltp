@@ -511,11 +511,13 @@ int main(int argc, char **argv)
 			while (wait(&stat) > 0 && !should_stop) {
 				continue;
 			}
-			action.sa_flags = SA_RESTART;
-			sigaction(SIGTERM, &action, 0);
-			kill(-getpid(), SIGTERM);
-			while (wait(&stat) > 0)
-				continue;
+			if (should_stop) {
+				action.sa_flags = SA_RESTART;
+				sigaction(SIGTERM, &action, 0);
+				kill(-getpid(), SIGTERM);
+				while (wait(&stat) > 0)
+					continue;
+			}
 		}
 #ifndef NO_XFS
 		if (errtag != 0) {
