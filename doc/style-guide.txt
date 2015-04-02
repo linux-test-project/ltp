@@ -13,7 +13,7 @@ in this document.
 Changelog:
 
  * Initial version: Garrett Cooper <yanegomi@gmail.com>
- * Reformated for asciidoc: Cyril Hrubis <chrubis@suse.cz>
+ * Reformatted for asciidoc: Cyril Hrubis <chrubis@suse.cz>
 **********************************************************************
 
 Using libltp

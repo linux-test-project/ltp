@@ -1094,7 +1094,7 @@ The 'tst_timer_stop()' marks the stop time using the same 'clk_id' as last
 call to 'tst_timer_start()'.
 
 The 'tst_timer_elapsed*()' returns time difference between the timer start and
-last timer stop in serveral formats and units.
+last timer stop in several formats and units.
 
 IMPORTANT: The timer functions use 'clock_gettime()' internally which needs to
            be linked with '-lrt' on older glibc. Please do not forget to add

@@ -27,7 +27,7 @@ interface at :
 http://ltp.git.sourceforge.net/git/gitweb.cgi?p=ltp/ltp.git;a=summary
 
 The master branch is meant to contain what are very well tested and
-ready to be used in production environment. There could occassionaly be
+ready to be used in production environment. There could occasionally be
 minor breakage but they are not expected to be anything major, and more
 importantly those will be quickly and trivially fixable.
 
@@ -52,7 +52,7 @@ submitter to submit the patch once again against maint branch.
 "pu" branch is basically "proposed update" branch which will contain all
 the remainder of above branches. By the above definition of how "next"
 works, you can tell that this branch will contain quite experimental and
-obviosuly broken stuff.
+obviously broken stuff.
 
 I would like to thanks everybody who helped me to release ltp git into
 current shape. Especially i would like to thank following:

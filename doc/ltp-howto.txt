@@ -24,7 +24,7 @@ Copyright (c) 2000 by SGI, Inc.
 
 Please freely copy and distribute (sell or give away) this
 document in any format.  It's requested that corrections
-and/or comments be fowarded to the document maintainer.
+and/or comments be forwarded to the document maintainer.
 You may create a derivative work and distribute it provided
 that you:
 
