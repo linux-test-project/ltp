@@ -78,12 +78,13 @@ int main(int ac, char **av)
 
 		if (fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS |
 				    FAN_MODIFY | FAN_CLOSE | FAN_OPEN |
-				    FAN_EVENT_ON_CHILD, AT_FDCWD, ".") < 0) {
+				    FAN_EVENT_ON_CHILD | FAN_ONDIR, AT_FDCWD,
+				  ".") < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 			    "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS | "
 			    "FAN_MODIFY | FAN_CLOSE | FAN_OPEN | "
-			    "FAN_EVENT_ON_CHILD, AT_FDCWD, '.') failed",
-			    fd_notify);
+			    "FAN_EVENT_ON_CHILD | FAN_ONDIR, AT_FDCWD, '.') "
+			    "failed", fd_notify);
 		}
 
 		/*
