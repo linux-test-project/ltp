@@ -100,7 +100,7 @@ endif
 -------------------------------------------------------------------------------
 
 This is example Makefile that allows you build kernel modules inside of LTP.
-The prerequisities for the build are detected by the 'configure' script.
+The prerequisites for the build are detected by the 'configure' script.
 
 The 'REQ_VERSION_MAJOR' and 'REQ_VERSION_PATCH' describe minimal kernel
 version for which the build system tries to build the module.
