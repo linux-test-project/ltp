@@ -326,4 +326,6 @@ then
 	TFAILCNT=$(($TFAILCNT+1))
 fi
 
+rm -fr $LTPTMP/tst_gzip.*
+
 exit $TFAILCNT
