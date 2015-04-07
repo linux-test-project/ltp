@@ -54,6 +54,7 @@
 #include <string.h>
 #include "test.h"
 
+#define DISTANT_MMAP_SIZE (64*1024*1024)
 #define OPT_MISSING(prog, opt) do { \
 	fprintf(stderr, "%s: option -%c ", prog, opt); \
         fprintf(stderr, "requires an argument\n"); \
@@ -64,6 +65,7 @@ static int verbose_print = 0;
 static char *volatile map_address;
 static jmp_buf jmpbuf;
 static volatile char read_lock = 0;
+static void *distant_area;
 
 char *TCID = "mmap1";
 int TST_TOTAL = 1;
@@ -145,9 +147,8 @@ void *map_write_unmap(void *ptr)
 			 args[0], args[1], args[2]);
 
 	for (i = 0; i < args[2]; i++) {
-
-		map_address = mmap(0, (size_t) args[1], PROT_WRITE | PROT_READ,
-				   MAP_SHARED, (int)args[0], 0);
+		map_address = mmap(distant_area, (size_t) args[1],
+			PROT_WRITE | PROT_READ, MAP_SHARED, (int)args[0], 0);
 
 		if (map_address == (void *)-1) {
 			perror("map_write_unmap(): mmap()");
@@ -336,6 +337,19 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
+
+	/* We don't want other mmap calls to map into same area as is
+	 * used for test (mmap_address). The test expects read to return
+	 * test pattern or read must fail with SIGSEGV. Find an area
+	 * that we can use, which is unlikely to be chosen for other
+	 * mmap calls. */
+	distant_area = mmap(0, DISTANT_MMAP_SIZE, PROT_WRITE | PROT_READ,
+		MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+	if (distant_area == (void *)-1)
+		tst_brkm(TBROK | TERRNO, NULL, "distant_area: mmap()");
+	if (munmap(distant_area, (size_t) DISTANT_MMAP_SIZE) == -1)
+		tst_brkm(TBROK | TERRNO, NULL, "distant_area: munmap()");
+	distant_area += DISTANT_MMAP_SIZE / 2;
 
 	if (verbose_print)
 		tst_resm(TINFO, "Input parameters are: File size:  %d; "
