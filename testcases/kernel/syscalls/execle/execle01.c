@@ -52,16 +52,19 @@ int main(int ac, char **av)
 	int lc;
 	pid_t pid;
 	char *env[] = { "LTP_TEST_ENV_VAR=test", NULL };
+	char path[2048];
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 
+	if (tst_get_path("execle01_child", path, sizeof(path)))
+		tst_brkm(TCONF, NULL, "Couldn't find execle01_child in $PATH");
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		switch (pid = FORK_OR_VFORK()) {
 		case 0:
-			execle("execle01_child", "execle01_child", "canary",
-			       NULL, env);
+			execle(path, "execle01_child", "canary", NULL, env);
 			tst_brkm(TFAIL | TERRNO, NULL,
 			         "Failed to execute execl01_child");
 		case -1:

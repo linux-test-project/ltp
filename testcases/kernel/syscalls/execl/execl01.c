@@ -51,15 +51,19 @@ int main(int ac, char **av)
 {
 	int lc;
 	pid_t pid;
+	char path[2048];
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 
+	if (tst_get_path("execl01_child", path, sizeof(path)))
+		tst_brkm(TCONF, NULL, "Couldn't find execl01_child in $PATH");
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		switch (pid = FORK_OR_VFORK()) {
 		case 0:
-			execl("execl01_child", "execl01_child", "canary", NULL);
+			execl(path, "execl01_child", "canary", NULL);
 			tst_brkm(TFAIL | TERRNO, NULL,
 			         "Failed to execute execl01_child");
 		case -1:

@@ -52,15 +52,19 @@ int main(int ac, char **av)
 	int lc;
 	pid_t pid;
 	char *const args[] = { "execv01_child", "canary", NULL};
+	char path[2048];
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 
+	if (tst_get_path("execv01_child", path, sizeof(path)))
+		tst_brkm(TCONF, NULL, "Couldn't find execv01_child in $PATH");
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		switch (pid = FORK_OR_VFORK()) {
 		case 0:
-			execv("execv01_child", args);
+			execv(path, args);
 			tst_brkm(TFAIL | TERRNO, NULL,
 			         "Failed to execute execv01_child");
 		case -1:
