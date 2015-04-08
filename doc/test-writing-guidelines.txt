@@ -1142,7 +1142,7 @@ NOTE: All conversions to ms and us rounds the value.
 
 LTP supports testcases to be written in a portable shell too.
 
-There is a shell library modeled closely to the C interface (the source is
+There is a shell library modelled closely to the C interface (the source is
 located at 'testcases/lib/test.sh') and is installed to the same directory as
 the rest of the LTP test binaries.
 
