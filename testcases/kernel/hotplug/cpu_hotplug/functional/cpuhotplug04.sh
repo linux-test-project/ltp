@@ -33,17 +33,8 @@ EOF
 do_clean()
 {
 	# Online the ones that were on initially
-	until [ $cpu -eq 0 ]; do
-		online_cpu $(eval "echo \$on_${cpu}")
-		cpu=$((cpu-1))
-	done
-
-	# Return CPU 0 to its initial state
-	if [ $cpustate = 1 ]; then
-		online_cpu 0
-	else
-		offline_cpu 0
-	fi
+	# Restore CPU states
+	set_all_cpu_states "$cpu_states"
 }
 
 while getopts l: OPTION; do
@@ -64,11 +55,13 @@ fi
 
 TST_CLEANUP=do_clean
 
+cpu_states=$(get_all_cpu_states)
+
 until [ $LOOP_COUNT -gt $HOTPLUG04_LOOPS ]; do
 	cpu=0
 	cpustate=1
 
-	# Online all the CPUs' keep track of which were already on
+	# Online all the CPUs
 	for i in $(get_all_cpus); do
 		if [ "$i" != "cpu0" ]; then
 			if ! cpu_is_online $i; then
@@ -77,7 +70,6 @@ until [ $LOOP_COUNT -gt $HOTPLUG04_LOOPS ]; do
 				fi
 			fi
 			cpu=$((cpu+1))
-			eval "on_${cpu}=$i"
 			echo $i
 		else
 			if online_cpu $i; then

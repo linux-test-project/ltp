@@ -46,11 +46,8 @@ do_clean()
 		rm /var/run/hotplug4_$$.pid
 	fi
 
-	# Turn off the CPUs that were off before the test start
-	until [ $cpu -eq 0 ];do
-		offline_cpu $(eval "echo \$on_${cpu}")
-		cpu=$((cpu-1))
-	done
+	# Restore CPU states
+	set_all_cpu_states "$cpu_states"
 }
 
 while getopts c:l: OPTION; do
@@ -82,11 +79,13 @@ fi
 
 TST_CLEANUP=do_clean
 
+cpu_states=$(get_all_cpu_states)
+
 until [ $LOOP_COUNT -gt $HOTPLUG03_LOOPS ]; do
 	cpu=0
 	number_of_cpus=0
 
-	# Turns on all CPUs and saves their states
+	# Turns on all CPUs
 	for i in $( get_all_cpus ); do
             if [ "$i" = "cpu0" ]; then
                 continue
@@ -96,7 +95,6 @@ until [ $LOOP_COUNT -gt $HOTPLUG03_LOOPS ]; do
                     tst_brkm TBROK "Could not online cpu $i"
                 fi
 				cpu=$((cpu+1))
-                eval "on_${cpu}=$i"
             fi
 		number_of_cpus=$((number_of_cpus+1))
 	done

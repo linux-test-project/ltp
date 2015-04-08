@@ -73,6 +73,9 @@ online_cpu()
     if [ ! -w /sys/devices/system/cpu/cpu${CPU}/online ]; then
         return 1
     fi
+
+    cpu_is_online ${CPU} && return 0
+
     $TIME echo 1 > /sys/devices/system/cpu/cpu${CPU}/online
     RC=$?
     report_timing "Online cpu ${CPU}"
@@ -91,6 +94,9 @@ offline_cpu()
     if [ ! -w /sys/devices/system/cpu/cpu${CPU}/online ]; then
         return 1
     fi
+
+    ! cpu_is_online ${CPU} && return 0
+
     $TIME echo 0 > /sys/devices/system/cpu/cpu${CPU}/online
     RC=$?
     report_timing "Offline cpu ${CPU}"
@@ -141,20 +147,18 @@ get_all_cpu_states()
 
 # set_all_cpu_states(STATES)
 #
-#  Sets all of the CPU states according to $STATE, which must be
+#  Sets all of the CPU states according to STATES, which must be
 #  of the form "cpuX:Y", where X is the CPU number and Y its state.
 #  Each must be on a separate line.
 #
 set_all_cpu_states()
 {
-    for cpu_state in $STATE; do
-        cpu=`echo $c | cut -d: -f 1`
-        state=`echo $c | cut -d: -f 1`
+    for cpu_state in $1; do
+        cpu=`echo $cpu_state | cut -d: -f 1`
+        state=`echo $cpu_state | cut -d: -f 2`
         if [ $state = 1 ]; then
-            echo "# Re-onlining $cpu"
             online_cpu $cpu
         else
-            echo "# Re-offlining $cpu"
             offline_cpu $cpu
         fi
     done

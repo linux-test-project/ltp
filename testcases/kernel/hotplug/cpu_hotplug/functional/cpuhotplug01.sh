@@ -45,13 +45,8 @@ do_clean()
 {
 	kill_pid ${WRL_ID}
 
-	# Turns off the cpus that were off before the test start
-	until [ $CPU_COUNT -eq 0 ]; do
-		offline_cpu=$(eval "echo \$OFFLINE_CPU_${CPU_COUNT}")
-		tst_resm TINFO "CPU = $CPU_COUNT @on = $offline_cpu"
-		offline_cpu $offline_cpu
-		CPU_COUNT=$((CPU_COUNT-1))
-	done
+	# Restore CPU states
+	set_all_cpu_states "$cpu_states"
 }
 
 
@@ -137,6 +132,8 @@ if ! cpu_is_online "${CPU_TO_TEST}" ; then
 fi
 
 TST_CLEANUP=do_clean
+
+cpu_states=$(get_all_cpu_states)
 
 CPU_COUNT=0
 
