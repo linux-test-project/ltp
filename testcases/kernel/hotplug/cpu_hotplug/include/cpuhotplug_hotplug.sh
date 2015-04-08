@@ -126,11 +126,78 @@ get_cpus_num()
 #
 get_all_cpus()
 {
-    [ -d /sys/devices/system/cpu/cpu0 ] || return 1
-    ls -dr /sys/devices/system/cpu/cpu[0-9]* | \
-        sed "s/\/sys\/devices\/system\/cpu\///g" || return 2
+    [ -d /sys/devices/system/cpu ] || return 1
+    (cd /sys/devices/system/cpu; ls -d cpu[0-9]*)
 }
 
+# get_present_cpus()
+#
+#  Prints a list of present CPUs, regardless of whether they're
+#  currently online or offline.
+#
+get_present_cpus()
+{
+    local present_mask="/sys/devices/system/cpu/present"
+    local present_cpus=""
+
+    # if sysfs present mask is missing, assume all cpu are present
+    if [ ! -e "$present_mask" ]; then
+        get_all_cpus
+        return
+    fi
+
+    for part in $(cat $present_mask | tr "," " "); do
+        if echo $part | grep -q "-"; then
+            range_low=$(echo $part | cut -d - -f 1)
+            range_high=$(echo $part | cut -d - -f 2)
+        else
+            range_low=$(part)
+            range_high=$(part)
+        fi
+        for cpu in $(seq $range_low $range_high); do
+            if [ -e /sys/devices/system/cpu/cpu$cpu ]; then
+                present_cpus="$present_cpus cpu$cpu"
+            fi
+        done
+    done
+    echo $present_cpus
+}
+
+# get_present_cpus_num()
+#
+#  Prints the number of present CPUs
+#
+get_present_cpus_num()
+{
+    return $(get_present_cpus | wc -w)
+}
+
+# get_hotplug_cpus()
+#
+#  Prints a list of present hotpluggable CPUs, regardless of whether they're
+#  currently online or offline.
+#
+get_hotplug_cpus()
+{
+    local present_cpus=$(get_present_cpus)
+    local hotplug_cpus=""
+
+    for cpu in $present_cpus; do
+        if [ -e /sys/devices/system/cpu/$cpu/online ]; then
+            hotplug_cpus="$hotplug_cpus $cpu"
+	fi
+    done
+    echo $hotplug_cpus
+}
+
+# get_hotplug_cpus_num()
+#
+#  Prints the number of hotpluggable CPUs
+#
+get_hotplug_cpus_num()
+{
+    return $(get_hotplug_cpus | wc -w)
+}
 
 # get_all_cpu_states()
 #
