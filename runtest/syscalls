@@ -154,6 +154,7 @@ faccessat01 faccessat01
 fallocate01 fallocate01
 fallocate02 fallocate02
 fallocate03 fallocate03
+fallocate04 fallocate04
 
 #posix_fadvise test cases
 posix_fadvise01                      posix_fadvise01

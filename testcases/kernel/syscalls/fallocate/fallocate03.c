@@ -101,7 +101,6 @@
 #define BLOCKS_WRITTEN 12
 #define HOLE_SIZE_IN_BLOCKS 12
 #define DEFAULT_MODE 0
-#define FALLOC_FL_KEEP_SIZE 1	//Need to be removed once the glibce support is provided
 #define TRUE 0
 
 void get_blocksize(int);
