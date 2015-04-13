@@ -36,6 +36,7 @@
 #include "safe_macros.h"
 #include "libclone.h"
 #include "ipcns_helper.h"
+#include "lapi/semun.h"
 
 #define TESTKEY 124426L
 char *TCID	= "sem_comm";
@@ -57,6 +58,7 @@ static void setup(void)
 int chld1_sem(void *arg)
 {
 	int id;
+	union semun su;
 	struct sembuf sm;
 
 	id = semget(TESTKEY, 1, IPC_CREAT);
@@ -65,7 +67,8 @@ int chld1_sem(void *arg)
 		return 2;
 	}
 
-	if (semctl(id, 0, SETVAL, 1) == -1) {
+	su.val = 1;
+	if (semctl(id, 0, SETVAL, su) == -1) {
 		perror("semctl");
 		semctl(id, 0, IPC_RMID);
 		return 2;
@@ -97,6 +100,7 @@ int chld2_sem(void *arg)
 {
 	int id, rval = 0;
 	struct sembuf sm;
+	union semun su;
 
 	/* wait for child1 to create the semaphore */
 	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
@@ -107,7 +111,8 @@ int chld2_sem(void *arg)
 		return 2;
 	}
 
-	if (semctl(id, 0, SETVAL, 1) == -1) {
+	su.val = 1;
+	if (semctl(id, 0, SETVAL, su) == -1) {
 		perror("semctl");
 		semctl(id, 0, IPC_RMID);
 		return 2;
