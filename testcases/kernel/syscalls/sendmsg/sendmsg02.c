@@ -44,12 +44,7 @@
 #include "config.h"
 #include "test.h"
 #include "safe_macros.h"
-
-union semun {
-	int val;
-	struct semid_ds *buf;
-	unsigned short int *array;
-};
+#include "lapi/semun.h"
 
 char *TCID = "sendmsg02";
 

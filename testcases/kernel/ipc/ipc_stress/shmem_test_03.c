@@ -79,6 +79,7 @@
 #include <sys/signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "lapi/semun.h"
 
 /* Defines
  *
@@ -140,11 +141,7 @@ int semid;			/* semaphore id */
 int num_children = DEFAULT_NUM_CHILDREN;
 int buffer_size = DEFAULT_SHMEM_SIZE;
 
-union semun {
-	int val;
-	struct semid_ds *buf;
-	unsigned short *array;
-} arg;
+union semun arg;
 
 /*---------------------------------------------------------------------+
 |                               main                                   |

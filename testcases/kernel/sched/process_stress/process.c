@@ -45,6 +45,7 @@
 #include <sys/shm.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "lapi/semun.h"
 
 /* indexes into environment variable array */
 #define ADBG 0
@@ -103,12 +104,7 @@ typedef struct messagebuf {
 	char mtext[80];		/* message text */
 } Msgbuf;
 
-union semun {			/* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-	int val;
-	struct semid_ds *buf;
-	unsigned short *array;
-} semarg = {
-0};
+union semun semarg;
 
 /* structure of all environment variable used by program */
 struct envstruct {

@@ -77,6 +77,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <string.h>
+#include "lapi/semun.h"
 
 /*
  * Defines
@@ -120,11 +121,7 @@ int childpid[MAX_CHILDREN];
 int errors = 0;
 pid_t parent_pid;
 
-union semun {
-	int val;
-	struct semid_ds *buf;
-	unsigned short *array;
-} arg;
+union semun arg;
 
 /*---------------------------------------------------------------------+
 |                               main                                   |

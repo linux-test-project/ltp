@@ -124,7 +124,7 @@ void setup(void)
 			 "couldn't create semaphore in setup");
 	}
 
-	arr.ipc_buf = &ipc_buf;
+	arr.__buf = &ipc_buf;
 	if (semctl(sem_id_1, 0, IPC_INFO, arr) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "semctl() IPC_INFO failed");
 

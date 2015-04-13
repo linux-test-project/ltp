@@ -51,6 +51,7 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
+#include "lapi/semun.h"
 
 #define KEY IPC_PRIVATE
 
@@ -66,13 +67,6 @@ int TST_TOTAL = 1;
 
 struct sembuf Psembuf = { 0, -1, SEM_UNDO };
 struct sembuf Vsembuf = { 0, 1, SEM_UNDO };
-
-union semun {
-	int val;		/* value for SETVAL */
-	struct semid_ds *buf;	/* buffer for IPC_STAT & IPC_SET */
-	unsigned short *array;	/* array for GETALL & SETALL */
-	struct seminfo *ipc_buf;	/* buffer for IPC_INFO */
-};
 
 int sem_id;
 int err_ret;			/* This is used to determine PASS/FAIL status */

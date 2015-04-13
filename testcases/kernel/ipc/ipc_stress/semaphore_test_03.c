@@ -71,6 +71,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "lapi/semun.h"
 
 /*
  * Defines
@@ -136,11 +137,7 @@ pid_t childpid[MAX_CHILDREN];
 pid_t parent_pid;
 pid_t errpid;
 
-union semun {
-	int val;
-	struct semid_ds *buf;
-	unsigned short *array;
-} arg;
+union semun arg;
 
 /*---------------------------------------------------------------------+
 |                               main                                   |

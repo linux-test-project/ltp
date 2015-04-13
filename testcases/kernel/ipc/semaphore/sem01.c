@@ -41,12 +41,7 @@
 #include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
-
-union semun {
-	int val;
-	struct semid_ds *buf;
-	unsigned short *array;
-};
+#include "lapi/semun.h"
 
 int verbose = 0;
 int loops = 100;

@@ -53,6 +53,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/semun.h"
 
 char *TCID = "pipeio";
 int TST_TOTAL = 1;
@@ -123,11 +124,7 @@ static int write_fd;
 static int empty_read;
 static int sem_id;
 
-static union semun {
-	int val;
-	struct semid_ds *buf;
-	unsigned short int *array;
-} u;
+static union semun u;
 
 int main(int ac, char *av[])
 {
