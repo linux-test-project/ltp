@@ -31,7 +31,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <mntent.h>
 #include <sys/select.h>
+#include <sys/mount.h>
 #include "config.h"
 
 #if HAVE_LIBAIO_H
@@ -66,6 +68,62 @@ int alignment = 512;		/* buffer alignment */
 
 struct timeval delay;		/* delay between i/o */
 
+static int dev_block_size_by_path(const char *path)
+{
+	FILE *f;
+	struct mntent *mnt;
+	size_t prefix_len, prefix_max = 0;
+	char dev_name[1024];
+	int fd, size;
+
+	f = setmntent("/proc/mounts", "r");
+	if (!f) {
+		fprintf(stderr, "Failed to open /proc/mounts\n");
+		return 0;
+	}
+
+	while ((mnt = getmntent(f))) {
+		/* Skip pseudo fs */
+		if (mnt->mnt_fsname[0] != '/')
+			continue;
+
+		prefix_len = strlen(mnt->mnt_dir);
+
+		if (prefix_len > prefix_max &&
+		    !strncmp(path, mnt->mnt_dir, prefix_len)) {
+			prefix_max = prefix_len;
+			strncpy(dev_name, mnt->mnt_fsname, sizeof(dev_name));
+			dev_name[sizeof(dev_name)-1] = '\0';
+		}
+	}
+
+	endmntent(f);
+
+	if (!prefix_max) {
+		fprintf(stderr, "Path '%s' not found in /proc/mounts\n", path);
+		return 0;
+	}
+
+	printf("Path '%s' is on device '%s'\n", path, dev_name);
+
+	fd = open(dev_name, O_RDONLY);
+	if (!fd) {
+		fprintf(stderr, "open('%s'): %s\n", dev_name, strerror(errno));
+		return 0;
+	}
+
+	if (ioctl(fd, BLKSSZGET, &size)) {
+		fprintf(stderr, "ioctl(BLKSSZGET): %s\n", strerror(errno));
+		close(fd);
+		return 0;
+	}
+
+	close(fd);
+	printf("'%s' has block size %i\n", dev_name, size);
+
+	return size;
+}
+
 int init_iocb(int n, int iosize)
 {
 	void *buf;
@@ -97,7 +155,7 @@ int init_iocb(int n, int iosize)
 	return 0;
 }
 
-struct iocb *alloc_iocb()
+static struct iocb *alloc_iocb(void)
 {
 	if (!iocb_free_count)
 		return 0;
@@ -218,7 +276,7 @@ static void rd_done(io_context_t ctx, struct iocb *iocb, long res, long res2)
 		printf("%d", iosize);
 }
 
-void usage()
+static void usage(void)
 {
 	fprintf(stderr,
 		"Usage: aiocp [-a align] [-s size] [-b blksize] [-n num_io]"
@@ -376,7 +434,29 @@ int main(int argc, char *const *argv)
 	 * O_DIRECT cannot handle non-sector sizes
 	 */
 	if (dest_open_flag & O_DIRECT) {
-		leftover = length % 512;
+		int src_alignment = dev_block_size_by_path(srcname);
+		int dst_alignment = dev_block_size_by_path(dstname);
+
+		/*
+		 * Given we expect the block sizes to be multiple of 2 the
+		 * larger is always divideable by the smaller, so we only need
+		 * to care about maximum.
+		 */
+		if (src_alignment > dst_alignment)
+			dst_alignment = src_alignment;
+
+		if (alignment < dst_alignment) {
+			alignment = dst_alignment;
+			printf("Forcing aligment to %i\n", alignment);
+		}
+
+		if (aio_blksize % alignment) {
+			printf("Block size is not multiple of drive block size\n");
+			printf("Skipping the test!\n");
+			exit(0);
+		}
+
+		leftover = length % alignment;
 		if (leftover) {
 			int flag;
 
