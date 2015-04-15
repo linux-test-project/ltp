@@ -44,7 +44,7 @@ int main(void)
 	char tmpfname[256];
 #define BUF_SIZE 1024
 	char buf[BUF_SIZE];
-	int fd;
+	int fd, err;
 	struct aiocb aiocb;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
@@ -72,9 +72,15 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	if (aio_cancel(fd, NULL) == -1) {
+	switch (aio_cancel(fd, NULL)) {
+	case -1:
 		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
 		return PTS_FAIL;
+	case AIO_NOTCANCELED:
+		do {
+			usleep(10000);
+			err = aio_error(&aiocb);
+		} while (err == EINPROGRESS);
 	}
 
 	close(fd);
