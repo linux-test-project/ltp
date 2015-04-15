@@ -200,7 +200,7 @@ static void max_map_count_test(void)
 	while (max_maps <= max_iters) {
 		set_sys_tune("max_map_count", max_maps, 1);
 
-		switch (pid = fork()) {
+		switch (pid = tst_fork()) {
 		case -1:
 			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
