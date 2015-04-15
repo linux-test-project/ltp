@@ -66,7 +66,7 @@ safe_close(const char *file, const int lineno, void (*cleanup_fn) (void),
 
 int
 safe_creat(const char *file, const int lineno, void (*cleanup_fn) (void),
-	   char *pathname, mode_t mode)
+	   const char *pathname, mode_t mode)
 {
 	int rval;
 

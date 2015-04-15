@@ -45,7 +45,7 @@ int	safe_close(const char *file, const int lineno,
 	safe_close(__FILE__, __LINE__, (cleanup_fn), (fildes))
 
 int	safe_creat(const char *file, const int lineno,
-	    void (*cleanup_fn)(void), char *pathname, mode_t mode);
+	    void (*cleanup_fn)(void), const char *pathname, mode_t mode);
 #define SAFE_CREAT(cleanup_fn, pathname, mode)	\
 	safe_creat(__FILE__, __LINE__, cleanup_fn, (pathname), (mode))
 
