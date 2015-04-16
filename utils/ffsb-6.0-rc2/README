@@ -260,7 +260,7 @@ optional ones.
 
 Filesystems:
 
-Filesystems describe differnt logical sets of files residing in
+Filesystems describe different logical sets of files residing in
 different directorys.  There is no strict requirement that they
 actually be on different filesystems, only that the directory
 specified already exists.
