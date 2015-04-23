@@ -177,6 +177,22 @@ tst_timeout()
 	return $ret
 }
 
+ROD_SILENT()
+{
+	$@ > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK "$@ failed"
+	fi
+}
+
+ROD()
+{
+	$@
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK "$@ failed"
+	fi
+}
+
 # Check that test name is set
 if [ -z "$TCID" ]; then
 	tst_brkm TBROK "TCID is not defined"
