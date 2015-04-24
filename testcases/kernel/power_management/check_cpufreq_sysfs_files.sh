@@ -2,7 +2,7 @@
 
 . pm_include.sh
 
-total_cpus=$(no_of_cpus)
+total_cpus=$(tst_ncpus)
 (( total_cpus-=1 ))
 RC=0
 

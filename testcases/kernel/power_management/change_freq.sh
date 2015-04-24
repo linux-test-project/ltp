@@ -5,7 +5,7 @@ available_freq=$(get_supporting_freq)
 available_govr=$(get_supporting_govr)
 RC=0
 
-total_cpus=$(no_of_cpus)
+total_cpus=$(tst_ncpus)
 (( total_cpus-=1 ))
 
 if ( echo ${available_govr} | grep -i "userspace" 2>&1 >/dev/null ) ; then

@@ -3,7 +3,7 @@
 . pm_include.sh
 available_govr=$(get_supporting_govr)
 
-total_cpus=$(no_of_cpus)
+total_cpus=$(tst_ncpus)
 (( total_cpus-=1 ))
 RC=0
 
