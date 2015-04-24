@@ -15,9 +15,27 @@ cleanup() {
 	fi
 }
 
+check_kervel_arch() {
+	# Checking required kernel version and architecture
+	tst_kvercmp 2 6 21; rc=$?
+	if [ $rc -ne 1 -a $rc -ne 2 ] ; then
+		tst_brkm TCONF "Kernel version not supported; not " \
+			"running testcases"
+	else
+		case "$(uname -m)" in
+		i[4-6]86|x86_64)
+			;;
+		*)
+			tst_brkm TCONF "Arch not supported; not running " \
+				"testcases"
+			;;
+		esac
+	fi
+}
+
 check_config_options() {
 	if ( ! ${3} "${1}" ${2} | grep -v "#" > /dev/null ) ; then
-		echo "NOSUPPORT: current system dosen't support ${1}"
+		tst_brkm TCONF "NOSUPPORT: current system dosen't support ${1}"
 	fi
 }
 
@@ -30,7 +48,8 @@ get_topology() {
 	for cpu in $(seq 0 "${total_cpus}" )
 	do
 		cpus[$cpu]=cpu${cpu}
-		phyid[$cpu]=$(cat /sys/devices/system/cpu/cpu${cpu}/topology/physical_package_id)
+		phyid[$cpu]=$(cat \
+		/sys/devices/system/cpu/cpu${cpu}/topology/physical_package_id)
 	done
 	j=0
 	while [ "${j}" -lt "${total_cpus}" ]
@@ -50,24 +69,27 @@ check_cpufreq() {
 	for cpu in $(seq 0 "${total_cpus}" )
 	do
 		if [ ! -d /sys/devices/system/cpu/cpu${cpu}/cpufreq ] ; then
-			echo "NOSUPPORT: cpufreq support not found please check Kernel configuration or BIOS settings"
-			exit $NOSUPPORT
+			tst_brkm TCONF "NOSUPPORT: cpufreq support not " \
+				"found please check Kernel configuration " \
+				"or BIOS settings"
 		fi
 	done
 }
 
 get_supporting_freq() {
-	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_frequencies | uniq
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_frequencies \
+		| uniq
 }
 
 get_supporting_govr() {
-	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_governors | uniq
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_governors \
+		| uniq
 }
 
 is_hyper_threaded() {
 	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
 	cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
-	[ $siblings -gt $cpu_cores ]; return $?
+	[ $siblings -gt $cpu_cores ]; echo $?
 }
 
 check_input() {
@@ -102,35 +124,39 @@ check_input() {
 }
 
 is_multi_socket() {
-	no_of_sockets=`cat /sys/devices/system/cpu/cpu?/topology/physical_package_id | uniq | wc -l`
-	[ $no_of_sockets -gt 1 ] ; return $?
+	no_of_sockets=`cat \
+		/sys/devices/system/cpu/cpu?/topology/physical_package_id \
+		| uniq | wc -l`
+	[ $no_of_sockets -gt 1 ] ; echo $?
 }
 
 is_multi_core() {
 	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
 	cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
 	if [ $siblings -eq $cpu_cores ]; then
-		[ $cpu_cores -gt 1 ]; return $?
+		[ $cpu_cores -gt 1 ]; echo $?
 	else
 		: $(( num_of_cpus = siblings / cpu_cores ))
-		[ $num_of_cpus -gt 1 ]; return $?
+		[ $num_of_cpus -gt 1 ]; echo $?
 	fi
 }
 
 is_dual_core() {
 	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
-        cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
+        cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq \
+			| cut -f2 -d':'`
         if [ $siblings -eq $cpu_cores ]; then
-                [ $cpu_cores -eq 2 ]; return $?
+                [ $cpu_cores -eq 2 ]; echo $?
         else
                 : $(( num_of_cpus = siblings / cpu_cores ))
-                [ $num_of_cpus -eq 2 ]; return $?
+                [ $num_of_cpus -eq 2 ]; echo $?
         fi
 }
 
 get_kernel_version() {
 	# Get kernel minor version
-	export kernel_version=`uname -r | awk -F. '{print $1"."$2"."$3}' | cut -f1 -d'-'`
+	export kernel_version=`uname -r | awk -F. '{print $1"."$2"."$3}' \
+		| cut -f1 -d'-'`
 }
 
 get_valid_input() {
@@ -146,42 +172,46 @@ analyze_result_hyperthreaded() {
 	sched_mc=$1
     pass_count=$2
     sched_smt=$3
+	PASS="Test PASS"
+	FAIL="Test FAIL"
 
+	RC=0
 	case "$sched_mc" in
 	0)
 		case "$sched_smt" in
 		0)
 			if [ $pass_count -lt 5 ]; then
-				tst_resm TPASS "cpu consolidation failed for sched_mc=\
-$sched_mc & sched_smt=$sched_smt"
+				echo "${PASS}: cpu consolidation failed for" \
+					"sched_mc=$sched_mc & sched_smt=$sched_smt"
 			else
 				RC=1
-				tst_resm TFAIL "cpu consolidation passed for sched_mc=\
-$sched_mc & sched_smt=$sched_smt"
+				echo "${FAIL}: cpu consolidation passed for" \
+					"sched_mc=$sched_mc & sched_smt=$sched_smt"
 			fi
 			;;
 		*)
 			if [ $pass_count -lt 5 ]; then
-               	tst_resm TFAIL "cpu consolidation for sched_mc=\
-$sched_mc & sched_smt=$sched_smt"
-           	else
 				RC=1
-				tst_resm TPASS "cpu consolidation for sched_mc=\
-$sched_mc & sched_smt=$sched_smt"
+				echo "${FAIL}: cpu consolidation for" \
+					"sched_mc=$sched_mc & sched_smt=$sched_smt"
+			else
+				echo "${PASS}: cpu consolidation for" \
+					"sched_mc=$sched_mc & sched_smt=$sched_smt"
 			fi
 			;;
 		esac ;;
 	*)
 		if [ $pass_count -lt 5 ]; then
-			tst_resm TFAIL "cpu consolidation for sched_mc=\
-$sched_mc & sched_smt=$sched_smt"
-		else
 			RC=1
-			tst_resm TPASS "cpu consolidation for sched_mc=\
-$sched_mc & sched_smt=$sched_smt"
+			echo "${FAIL}: cpu consolidation for" \
+				"sched_mc=$sched_mc & sched_smt=$sched_smt"
+		else
+			echo "${PASS}: cpu consolidation for" \
+				"sched_mc=$sched_mc & sched_smt=$sched_smt"
 		fi
 		;;
 	esac
+	return $RC
 }
 
 analyze_package_consolidation_result() {
@@ -195,84 +225,104 @@ analyze_package_consolidation_result() {
 		sched_smt=-1
 	fi
 
+	PASS="Test PASS"
+	FAIL="Test FAIL"
+
+	RC=0
 	if [ $hyper_threaded -eq $YES -a $sched_smt -gt -1 ]; then
 		analyze_result_hyperthreaded $sched_mc $pass_count $sched_smt
 	else
 		case "$sched_mc" in
 	    0)
     	    if [ $pass_count -lt 5 ]; then
-        	    tst_resm TPASS "cpu consolidation failed for sched_mc=\
-$sched_mc"
+				echo "${PASS}: cpu consolidation failed for" \
+					"sched_mc=$sched_mc"
         	else
 				RC=1
-            	tst_resm TFAIL "cpu consolidation passed for sched_mc=\
-$sched_mc"
-        	fi ;;
+				echo "${FAIL}: cpu consolidation passed for" \
+					"sched_mc=$sched_mc"
+			fi
+			;;
     	*)
 			if [ $pass_count -lt 5 ]; then
-				tst_resm TFAIL "Consolidation at package level failed for \
-sched_mc=$sched_mc"
+				RC=1
+				echo "${FAIL}: consolidation at package level" \
+					"failed for sched_mc=$sched_mc"
 			else
-				tst_resm TPASS "Consolidation at package level passed for \
-sched_mc=$sched_mc"
+				echo "${PASS}: consolidation at package level" \
+					"passed for sched_mc=$sched_mc"
 			fi
         	;;
     	esac
 	fi
+	return $RC
 }
 
 analyze_core_consolidation_result() {
 	sched_smt=$1
 	pass_count=$2
+	PASS="Test PASS"
+	FAIL="Test FAIL"
 
+	RC=0
 	case "$sched_smt" in
 	0)
 		if [ $pass_count -lt 5 ]; then
-			tst_resm TPASS "Consolidation at core level failed \
-when sched_smt=$sched_smt"
+			echo "${PASS}: consolidation at core level failed" \
+				"when sched_smt=$sched_smt"
 		else
-			tst_resm TFAIL "Consolidation at core level passed for \
-sched_smt=$sched_smt"
+			RC=1
+			echo "${FAIL}: consolidation at core level passed for" \
+				"sched_smt=$sched_smt"
 		fi ;;
 	*)
 		if [ $pass_count -lt 5 ]; then
 			RC=1
-			tst_resm TFAIL "Consolidation at core level failed for \
-sched_smt=$sched_smt"
+			echo "${FAIL}: consolidation at core level failed for" \
+				"sched_smt=$sched_smt"
 		else
-			tst_resm TPASS "Consolidation at core level passed for \
-sched_smt=$sched_smt"
+			echo "${PASS}: consolidation at core level passed for" \
+				"sched_smt=$sched_smt"
 		fi ;;
 	esac
+	return $RC
 }
 
 analyze_sched_domain_result(){
 	sched_mc=$1
 	result=$2
 	sched_smt=$3
+	PASS="Test PASS"
+	FAIL="Test FAIL"
 
+	RC=0
 	if [ $hyper_threaded -eq $YES ]; then
 		if [ $sched_smt ]; then
 			if [ "$result" = 0 ];then
-				tst_resm TPASS "sched domain test for sched_mc=$sched_mc & sched_smt=$sched_smt"
+				echo "${PASS}: sched domain test for" \
+					"sched_mc=$sched_mc & sched_smt=$sched_smt"
 			else
 				RC=1
-				tst_resm TFAIL "sched domain test sched_mc=$sched_mc & sched_smt=$sched_smt"
+				echo "${FAIL}: sched domain test for" \
+					"sched_mc=$sched_mc & sched_smt=$sched_smt"
 			fi
 		else
 			if [ "$result" = 0 ];then
-				tst_resm TPASS "sched domain test for sched_mc=$sched_mc"
+				echo "${PASS}: sched domain test for" \
+					"sched_mc=$sched_mc"
 			else
 				RC=1
-				tst_resm TFAIL "sched domain test for sched_mc=$sched_mc"
+				echo "${FAIL}: sched domain test for" \
+					"sched_mc=$sched_mc"
 			fi
 		fi
 	else
 		if [ "$result" = 0 ];then
-			tst_resm TPASS "sched domain test for sched_mc=$sched_mc"
+			echo "${PASS}: sched domain test for sched_mc=$sched_mc"
 		else
 			RC=1
-			tst_resm TFAIL "sched domain test sched_mc=$sched_mc"
+			echo "${FAIL}: sched domain test for sched_mc=$sched_mc"
 		fi
 	fi
+	return $RC
 }
