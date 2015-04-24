@@ -102,20 +102,6 @@ fi
 
 # Testsuites knobs
 
-# testcases/kernel/power_management requires python.
-if test "x$with_python" = xyes; then
-    AC_ARG_WITH([power-management-testsuite],
-      [AC_HELP_STRING([--with-power-management-testsuite],
-        [compile and install the x86 power management testsuite (default=no)])],
-      [with_power_management_testsuite=yes],
-    )
-fi
-if test "x$with_power_management_testsuite" = xyes; then
-    AC_SUBST([WITH_POWER_MANAGEMENT_TESTSUITE],["yes"])
-else
-    AC_SUBST([WITH_POWER_MANAGEMENT_TESTSUITE],["no"])
-fi
-
 AC_ARG_WITH([open-posix-testsuite],
   [AC_HELP_STRING([--with-open-posix-testsuite],
     [compile and install the open posix testsuite (default=no)])],
