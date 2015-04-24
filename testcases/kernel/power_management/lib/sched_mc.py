@@ -318,51 +318,47 @@ def trigger_ebizzy (sched_smt, stress, duration, background, pinned):
     '''
     try:
         threads = get_job_count(stress, "ebizzy", sched_smt)
-        olddir = os.getcwd()
-        path = '%s/utils/benchmark' % os.environ['LTPROOT']
-        os.chdir(path)
-        wklds_avlbl = list()
         workload = "ebizzy"
-        workload_dir = ""
-
-        # Use the latest version of similar workload available
+        olddir = os.getcwd()
+        path = '%s/testcases/bin' % os.environ['LTPROOT']
+        os.chdir(path)
+        workload_file = ""
         for file_name in os.listdir('.'):
-            if file_name.find(workload) != -1:
-                wklds_avlbl.append(file_name)
-
-        wklds_avlbl.sort()
-        workload_dir = wklds_avlbl[len(wklds_avlbl)-1]
-        if workload_dir != "":
-            new_path = os.path.join(path,"%s" % workload_dir)
-            get_proc_data(stats_start)
-            get_proc_loc_count(intr_start)
-            try:
-                os.chdir(new_path)
-                if background == "yes":
-                    succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null &'
-                        % (threads, duration))
+            if file_name == workload:
+                workload_file = file_name
+                break
+        if workload_file == "":
+            print "INFO: ebizzy benchmark not found"
+            os.chdir(olddir)
+            sys.exit(1)
+        get_proc_data(stats_start)
+        get_proc_loc_count(intr_start)
+        try:
+            if background == "yes":
+                succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null &'
+                    % (threads, duration))
+            else:
+                if pinned == "yes":
+                    succ = os.system('taskset -c %s ./ebizzy -t%s -s4096 -S %s >/dev/null'
+                        % (cpu_count -1, threads, duration))
                 else:
-                    if pinned == "yes":
-                        succ = os.system('taskset -c %s ./ebizzy -t%s -s4096 -S %s >/dev/null'
-                            % (cpu_count -1, threads, duration))
-                    else:
-                        succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null'
-                            % (threads, duration))
+                    succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null'
+                        % (threads, duration))
 
-                if succ == 0:
-                    print "INFO: ebizzy workload triggerd"
-                    os.chdir(olddir)
-                    #Commented bcoz it doesnt make sense to capture it when workload triggered
-                    #in background
-                    #get_proc_loc_count(intr_stop)
-                    #get_proc_data(stats_stop)
-		else:
-                    print "INFO: ebizzy workload triggerd failed"
-                    os.chdir(olddir)
-                    sys.exit(1)
-            except Exception, details:
-                print "Ebizzy workload trigger failed ", details
+            if succ == 0:
+                print "INFO: ebizzy workload triggerd"
+                os.chdir(olddir)
+                #Commented bcoz it doesnt make sense to capture it when workload triggered
+                #in background
+                #get_proc_loc_count(intr_stop)
+                #get_proc_data(stats_stop)
+            else:
+                print "INFO: ebizzy workload triggerd failed"
+                os.chdir(olddir)
                 sys.exit(1)
+        except Exception, details:
+            print "Ebizzy workload trigger failed ", details
+            sys.exit(1)
     except Exception, details:
         print "Ebizzy workload trigger failed ", details
         sys.exit(1)
@@ -377,22 +373,21 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
         threads = get_job_count(stress, "kernbench", sched_smt)
 
         dst_path = "/root"
+        workload = "kernbench"
         olddir = os.getcwd()
-        path = '%s/utils/benchmark' % os.environ['LTPROOT']
+        path = '%s/testcases/bin' % os.environ['LTPROOT']
         os.chdir(path)
-        wklds_avlbl = list()
+        workload_file = ""
         for file_name in os.listdir('.'):
-            if file_name.find("kernbench") != -1:
-                wklds_avlbl.append(file_name)
-        if len(wklds_avlbl):
-            wklds_avlbl.sort()
-            workload_dir = wklds_avlbl[len(wklds_avlbl)-1]
-            if workload_dir != "":
-                benchmark_path = os.path.join(path,"%s" % workload_dir)
-            else:
-                print "INFO: kernbench benchmark not found"
-                sys.exit(1)
-        os.chdir(olddir)
+            if file_name == workload:
+                workload_file = file_name
+                break
+        if workload_file != "":
+            benchmark_path = path
+        else:
+            print "INFO: kernbench benchmark not found"
+            os.chdir(olddir)
+            sys.exit(1)
 
         os.chdir(dst_path)
         linux_source_dir=""
@@ -405,7 +400,7 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
         else:
             print "INFO: Linux kernel source not found in /root. Workload\
                Kernbench cannot be executed"
-	    sys.exit(1)
+            sys.exit(1)
 
         get_proc_data(stats_start)
         get_proc_loc_count(intr_start)
