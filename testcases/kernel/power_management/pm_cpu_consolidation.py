@@ -9,7 +9,7 @@ import time
 LIB_DIR = "%s/lib" % os.path.dirname(__file__)
 sys.path.append(LIB_DIR)
 from optparse import OptionParser
-from sched_mc import *
+from pm_sched_mc import *
 
 __author__ = "Poornima Nayak <mpnayak@linux.vnet.ibm.com>"
 

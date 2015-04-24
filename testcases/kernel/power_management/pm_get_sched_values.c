@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "test.h"
 
-const char *TCID = "get_sched_values";
+const char *TCID = "pm_get_sched_values";
 
 int get_supp_sched_mc(void)
 {
@@ -43,8 +43,8 @@ int main(int argc, char **argv)
 	else {
 		param = argv[1];
 		if (strcmp(param, "sched_mc") == 0)
-			return (get_supp_sched_mc());
+			return get_supp_sched_mc();
 		if (strcmp(param, "sched_smt") == 0)
-			return (get_supp_sched_smt());
+			return get_supp_sched_smt();
 	}
 }

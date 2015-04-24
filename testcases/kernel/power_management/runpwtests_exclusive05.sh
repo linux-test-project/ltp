@@ -56,7 +56,7 @@ for sched_mc in `seq 1 $max_sched_mc`; do
 		work_load="ebizzy"
 	fi
 
-	ilb_test.py -c $sched_mc -w $work_load
+	pm_ilb_test.py -c $sched_mc -w $work_load
 	if [ $? -eq 0 ]; then
 		echo "Test PASS: ILB & workload in same package for" \
 			"sched_mc=$sched_mc"
@@ -80,7 +80,7 @@ for sched_mc in `seq 1 $max_sched_mc`; do
 		work_load="ebizzy"
 	fi
 	for sched_smt in `seq 1 $max_sched_smt`; do
-		ilb_test.py -c $sched_mc -t sched_smt -w $work_load
+		pm_ilb_test.py -c $sched_mc -t sched_smt -w $work_load
 		if [ $? -eq 0 ]; then
 			echo "Test PASS: ILB & workload in same package for" \
 				"sched_mc=$sched_mc & sched_smt=$sched_smt"

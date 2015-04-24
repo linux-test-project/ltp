@@ -58,7 +58,7 @@ for sched_mc in `seq 0  $max_sched_mc`; do
 	fi
 	for repeat_test in `seq 1  10`; do
 		#Testcase to validate CPU consolidation for sched_mc
-		if cpu_consolidation.py -c $sched_mc -w $work_load ; then
+		if pm_cpu_consolidation.py -c $sched_mc -w $work_load ; then
 		: $(( sched_mc_pass_cnt += 1 ))
 		fi
 	done
@@ -83,7 +83,7 @@ for sched_mc in `seq 0  $max_sched_mc`; do
 		for repeat_test in `seq 1  10`; do
 			# Testcase to validate CPU consolidation for
 			# for sched_mc & sched_smt with stress=50%
-			if cpu_consolidation.py -c $sched_mc -t $sched_smt \
+			if pm_cpu_consolidation.py -c $sched_mc -t $sched_smt \
 				-w $work_load ; then
 				: $(( sched_mc_smt_pass_cnt += 1 ))
 			fi

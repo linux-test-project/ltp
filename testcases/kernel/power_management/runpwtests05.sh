@@ -55,7 +55,7 @@ fi
 echo "max sched mc $max_sched_mc"
 RC=0
 for sched_mc in `seq 0 $max_sched_mc`; do
-	sched_domain.py -c $sched_mc; ret=$?
+	pm_sched_domain.py -c $sched_mc; ret=$?
 	analyze_sched_domain_result $sched_mc $ret; RC=$?
 done
 if [ $RC -eq 0 ]; then
@@ -67,9 +67,9 @@ fi
 # Testcase to validate sched_domain tree
 RC=0
 for sched_mc in `seq 0 $max_sched_mc`; do
-	get_sched_values sched_smt; max_sched_smt=$?
+	pm_get_sched_values sched_smt; max_sched_smt=$?
 	for sched_smt in `seq 0 $max_sched_smt`; do
-		sched_domain.py -c $sched_mc -t $sched_smt; ret=$?
+		pm_sched_domain.py -c $sched_mc -t $sched_smt; ret=$?
 		analyze_sched_domain_result $sched_mc $ret $sched_smt; RC=$?
 	done
 done

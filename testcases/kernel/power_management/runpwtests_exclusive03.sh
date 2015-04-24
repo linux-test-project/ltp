@@ -54,7 +54,7 @@ fi
 # sched_mc is set to 0.
 RC=0
 for sched_mc in `seq 1  $max_sched_mc`; do
-	if cpu_consolidation.py -v -c $sched_mc; then
+	if pm_cpu_consolidation.py -v -c $sched_mc; then
 		echo "Test PASS: CPU consolidation test by varying" \
 			"sched_mc $sched_mc to 0"
 	else
@@ -76,7 +76,7 @@ RC=0
 for sched_mc in `seq 1  $max_sched_mc`; do
 	for sched_smt in `seq 1  $max_sched_smt`; do
 		if [ $sched_smt -eq $sched_mc ]; then
-			if cpu_consolidation.py -v -c $sched_mc \
+			if pm_cpu_consolidation.py -v -c $sched_mc \
 				-t $sched_smt; then
 				echo "Test PASS: CPU consolidation test by" \
 					"varying sched_mc & sched_smt from" \

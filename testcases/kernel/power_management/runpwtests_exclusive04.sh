@@ -40,7 +40,7 @@ fi
 # Vary only sched_smt from 1 to 0 when workload is running
 # and ensure that tasks do not consolidate to single core
 # when sched_smt is set to 0.
-if cpu_consolidation.py -v -t 1; then
+if pm_cpu_consolidation.py -v -t 1; then
 	tst_resm TPASS "CPU consolidation test by varying sched_smt from 1 to 0"
 else
 	tst_resm TFAIL "CPU consolidation test by varying sched_smt from 1 to 0"
@@ -49,7 +49,7 @@ fi
 # Vary only sched_smt from 2 to 0 when workload is running
 # and ensure that tasks do not consolidate to single core
 # when sched_smt is set to 0.
-if cpu_consolidation.py -v -t 2; then
+if pm_cpu_consolidation.py -v -t 2; then
 	tst_resm TPASS "CPU consolidation test by varying sched_smt from 2 to 0"
 else
 	tst_resm TFAIL "CPU consolidation test by varying sched_smt from 2 to 0"

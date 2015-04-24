@@ -7,7 +7,7 @@ import os
 import sys
 LIB_DIR = "%s/lib" % os.path.dirname(__file__)
 sys.path.append(LIB_DIR)
-from sched_mc import *
+from pm_sched_mc import *
 from optparse import OptionParser
 
 __author__ = "Poornima Nayak <mpnayak@linux.vnet.ibm.com>"
@@ -43,7 +43,7 @@ def main(argv=None):
             reset_schedmc()
             if is_hyper_threaded():
                 reset_schedsmt()
-        	return(status)
+                return(status)
         else:
             print "INFO: Invalid arguments given"
             return 1

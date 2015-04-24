@@ -56,7 +56,7 @@ for sched_smt in `seq 0 $max_sched_smt`; do
 	sched_smt_pass_cnt=0
 	stress="thread"
 	for repeat_test in `seq 1  10`; do
-		if cpu_consolidation.py -t $sched_smt -w $work_load \
+		if pm_cpu_consolidation.py -t $sched_smt -w $work_load \
 			-s $stress; then
 			: $(( sched_smt_pass_cnt += 1 ))
 		fi
