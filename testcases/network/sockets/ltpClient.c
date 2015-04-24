@@ -401,6 +401,7 @@ int network_listener(char *hostName, int pid)
 		}
 	}
 
+	close(rawSocket);
 	return (0);
 }
 
@@ -547,6 +548,8 @@ void ping_network(struct sockaddr_in *rawAddr, int pid)
 			break;
 		}
 	}
+
+	close(rawSocket);
 }
 
 /**********************************************************************
