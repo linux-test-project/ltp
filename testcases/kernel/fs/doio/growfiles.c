@@ -677,7 +677,7 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 			Upanic_on_error++;
-			printf("%s: Will call upanic after writes\n");
+			printf("%s%s: Will call upanic after writes\n", Progname, TagName);
 #else
 			printf
 			    ("%s%s: --P is illegal option on non-cray system\n",
