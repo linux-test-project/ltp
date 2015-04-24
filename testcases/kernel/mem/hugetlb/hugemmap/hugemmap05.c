@@ -439,6 +439,7 @@ static int checksys(char *path, char *string, int value)
 	if (atoi(buf) != value) {
 		tst_resm(TFAIL, "%s is not %d but %d.", string, value,
 			 atoi(buf));
+		fclose(fp);
 		return 1;
 	}
 	fclose(fp);
@@ -474,6 +475,7 @@ static void init_hugepagesize(void)
 		if (lookup(line, "Hugepagesize")) {
 			tst_resm(TINFO, "Hugepagesize is %s kB", buf);
 			hugepagesize = atoi(buf) * 1024;
+			fclose(fp);
 			return;
 		}
 	}
