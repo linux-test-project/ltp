@@ -24,11 +24,32 @@ export TST_TOTAL=1
 . test.sh
 . pm_include.sh
 
+check_cpuidle_sysfs_files() {
+	RC=0
+	if [ -d /sys/devices/system/cpu/cpuidle ] ; then
+		for files in current_governor_ro current_driver
+		do
+			cat /sys/devices/system/cpu/cpuidle/${files} \
+				>/dev/null 2>&1
+			if [ $? -ne 0 ] ; then
+				echo "${0}: FAIL: cat ${files}"
+				RC=1
+			fi
+		done
+	fi
+	if [ ${RC} -eq 0 ] ; then
+		echo "${0}: PASS: Checking cpu idle sysfs files"
+	else
+		echo "${0}: FAIL: Checking cpu idle sysfs files"
+	fi
+	return $RC
+}
+
 # Checking test environment
 check_kervel_arch
 
 # Checking cpuidle sysfs interface files
-if check_cpuidle_sysfs_files.sh ; then
+if check_cpuidle_sysfs_files ; then
 	tst_resm TPASS "CPUIDLE sysfs tests passed"
 else
     tst_resm TFAIL "CPUIDLE sysfs tests failed"

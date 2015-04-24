@@ -24,6 +24,27 @@ export TST_TOTAL=1
 . test.sh
 . pm_include.sh
 
+test_sched_smt() {
+	get_kernel_version
+	get_valid_input $kernel_version
+
+	invalid_input="3 4 5 6 7 8 a abcefg x1999 xffff -1 -00000
+	2000000000000000000000000000000000000000000000000000000000000000000000
+	ox324 -0xfffffffffffffffffffff"
+	test_file="/sys/devices/system/cpu/sched_smt_power_savings"
+	if [ ! -f ${test_file} ] ; then
+		tst_brkm TBROK "MISSING_FILE: missing file ${test_file}"
+	fi
+
+	echo "${0}: ---Valid test cases---"
+	check_input "${valid_input}" valid $test_file
+	RC=$?
+	echo "${0}: ---Invalid test cases---"
+	check_input "${invalid_input}" invalid $test_file
+	RC=$(( RC | $? ))
+	return $RC
+}
+
 # Checking test environment
 check_kervel_arch
 
@@ -38,7 +59,7 @@ else
 	fi
 fi
 
-if test_sched_smt.sh ; then
+if test_sched_smt ; then
 	tst_resm TPASS "SCHED_SMT sysfs test"
 else
 	tst_resm TFAIL "SCHED_SMT sysfs test"
