@@ -316,6 +316,7 @@ int main(int argc, char **argv)
 			ret = EXIT_FAILURE;
 	}
 
+	free(childpids);
 	return ret;
 }
 
