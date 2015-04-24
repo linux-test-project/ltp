@@ -5,8 +5,6 @@
 
 import os
 import sys
-LIB_DIR = "%s/lib" % os.path.dirname(__file__)
-sys.path.append(LIB_DIR)
 from pm_sched_mc import *
 from optparse import OptionParser
 
