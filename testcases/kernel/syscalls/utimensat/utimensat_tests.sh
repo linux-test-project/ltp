@@ -24,11 +24,10 @@
 export TCID=utimensat01
 export TST_TOTAL=99
 export TST_COUNT=0
+. test.sh
 
 if tst_kvercmp 2 6 22 ; then
-       tst_resm TCONF "System kernel version is less than 2.6.22"
-       tst_resm TCONF "Cannot execute test"
-       exit 0
+	tst_brkm TCONF "System kernel version is less than 2.6.22,cannot execute test"
 fi
 
 RESULT_FILE=$TMPDIR/utimensat.result
@@ -39,8 +38,7 @@ FILE=$TEST_DIR/utimensat.test_file
 TEST_PROG=utimensat01
 
 if [ ! -f $LTPROOT/testcases/bin/$TEST_PROG ]; then
-	tst_resm TWARN "$LTPROOT/testcases/bin/$TEST_PROG is missing (please check install)"
-	exit 1
+	tst_brkm TWARN "$LTPROOT/testcases/bin/$TEST_PROG is missing (please check install)"
 fi
 
 # Summary counters of all test results
@@ -107,7 +105,7 @@ setup_file()
 
 test_failed()
 {
-    echo "FAILED test $test_num"
+    tst_resm TFAIL "FAILED test $test_num"
 
     failed_cnt=$(expr $failed_cnt + 1)
     failed_list="$failed_list $test_num"
@@ -177,7 +175,7 @@ check_result()
     fi
 
     passed_cnt=$(expr $passed_cnt + 1)
-    echo "PASSED test $test_num"
+    tst_resm TPASS "PASSED test $test_num"
 }
 
 run_test()
@@ -254,15 +252,13 @@ run_test()
 # Use trap to restore this line after program terminates.
 sudoers=/etc/sudoers
 if [ ! -r $sudoers ]; then
-	tst_resm TBROK "can't read $sudoers"
-	exit 1
+	tst_brkm TBROK "can't read $sudoers"
 fi
 pattern="[[:space:]]*Defaults[[:space:]]*requiretty.*"
 if grep -q "^${pattern}" $sudoers; then
 	tst_resm TINFO "Comment requiretty in $sudoers for automated testing systems"
 	if ! sed -r -i.$$ -e "s/^($pattern)/#\1/" $sudoers; then
-		tst_resm TBROK "failed to mangle $sudoers properly"
-		exit 1
+		tst_brkm TBROK "failed to mangle $sudoers properly"
 	fi
 	trap 'trap "" EXIT; restore_sudoers' EXIT
 fi
@@ -284,8 +280,7 @@ else
 fi
 
 if ! sudo $s_arg true; then
-	tst_resm TBROK "sudo cannot be run by user non-interactively"
-	exit 1
+	tst_brkm TBROK "sudo cannot be run by user non-interactively"
 fi
 if test ! -f $sudoers
 then
@@ -494,7 +489,6 @@ date
 echo "Total tests: $test_num; passed: $passed_cnt; failed: $failed_cnt"
 if test $failed_cnt -gt 0; then
     echo "Failed tests: $failed_list"
-    exit -1
 fi
 
-exit
+tst_exit
