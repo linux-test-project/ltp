@@ -1,5 +1,5 @@
-<< First, an explaination for the perl script and the stuff >>
-<< in the template directoy                                 >>
+<< First, an explanation for the perl script and the stuff >>
+<< in the template directory                               >>
 
 I have added a cheezy perl script for generating a bunch of test cases
 where I want to do the same simple operation on each signal.
@@ -16,5 +16,3 @@ with the signal name.
 * Assertion #5: Since almost all of the test cases in this directory assume
                 that this assertion is true, I haven't bothered adding
                 a test case that just test assertion #5.
-
-
