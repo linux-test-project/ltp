@@ -1200,6 +1200,35 @@ There is one more function called 'tst_check_cmds()' that gets unspecified
 number of parameters and asserts that each parameter is a name of an
 executable in '$PATH' and exits the test with 'TCONF' on first missing.
 
+ROD and ROD_SILENT
+++++++++++++++++++
+
+These functions supply the 'SAFE_MACROS' used in C although they work and are
+named differently.
+
+[source,sh]
+-------------------------------------------------------------------------------
+ROD_SILENT command arg1 arg2 ...
+
+# is shorthand for:
+
+command arg1 arg2 ... > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+        tst_brkm TBROK "..."
+fi
+
+
+
+ROD command arg1 arg2 ...
+
+# is shorthand for:
+
+ROD arg1 arg2 ...
+if [ $? -ne 0 ]; then
+        tst_brkm TBROK "..."
+fi
+-------------------------------------------------------------------------------
+
 .tst_fs_has_free
 [source,sh]
 -------------------------------------------------------------------------------
