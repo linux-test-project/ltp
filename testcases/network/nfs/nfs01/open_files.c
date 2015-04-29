@@ -16,9 +16,7 @@ int write_something(int);
 void delete_files(void);
 void abortx(char *fmt, ...);
 
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
 	int filedes[25500];
 	int i, n, first, n_files;
@@ -84,9 +82,11 @@ char *argv[];
 int write_something(int fd)
 {
 	int rc;
+	const char msg[] = "I Love Linux!!!\n";
+	int msg_len = strlen(msg);
 
-	rc = write(fd, "I Love Linux!!!\n", 23);
-	if (rc != 23)
+	rc = write(fd, msg, msg_len);
+	if (rc != msg_len)
 		return (0);
 	if (close(fd))
 		return (0);
