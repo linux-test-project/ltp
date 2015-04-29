@@ -105,7 +105,7 @@ static int find_msg(int fd, const char *text_to_find, char *buf, int bufsize,
 	}
 
 	while (1) {
-		TEST(read(f, msg, sizeof(msg)));
+		TEST(read(f, msg, MAX_MSGSIZE));
 		if (TEST_RETURN < 0) {
 			if (TEST_ERRNO == EAGAIN)
 				/* there are no more messages */
@@ -214,7 +214,8 @@ static int timed_read_kmsg(int fd, int timeout_sec)
 		 * pipe to let parent know that it didn't block */
 		close(pipefd[0]);
 		while (1) {
-			write(pipefd[1], "", 1);
+			if (write(pipefd[1], "", 1) == -1)
+				tst_brkm(TBROK|TERRNO, NULL, "write to pipe");
 			TEST(read(fd, msg, MAX_MSGSIZE));
 			if (TEST_RETURN == 0)
 				break;
