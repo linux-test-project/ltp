@@ -76,6 +76,9 @@ static int dev_block_size_by_path(const char *path)
 	char dev_name[1024];
 	int fd, size;
 
+	if (!path)
+		return 0;
+
 	f = setmntent("/proc/mounts", "r");
 	if (!f) {
 		fprintf(stderr, "Failed to open /proc/mounts\n");
