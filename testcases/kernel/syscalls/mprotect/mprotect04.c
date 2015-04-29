@@ -135,23 +135,24 @@ static void exec_func(void)
 static void testfunc_protexec(void)
 {
 	int page_sz;
-	int (*func)(void);
+	void *p;
 
 	sig_caught = 0;
 
 	page_sz = getpagesize();
 
-	func = SAFE_MMAP(cleanup, 0, page_sz, PROT_READ | PROT_WRITE,
-					 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	p = SAFE_MMAP(cleanup, 0, page_sz, PROT_READ | PROT_WRITE,
+		 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
-	memcpy(func, exec_func, page_sz);
+	memcpy(p, exec_func, page_sz);
 
 	/* Change the protection to PROT_EXEC. */
-	TEST(mprotect(func, page_sz, PROT_EXEC));
+	TEST(mprotect(p, page_sz, PROT_EXEC));
 
 	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL | TTERRNO, "mprotect failed");
 	} else {
+		int (*func)(void) = p;
 		if (sigsetjmp(env, 1) == 0)
 			(*func)();
 
@@ -169,7 +170,7 @@ static void testfunc_protexec(void)
 		}
 	}
 
-	SAFE_MUNMAP(cleanup, func, page_sz);
+	SAFE_MUNMAP(cleanup, p, page_sz);
 }
 
 static void cleanup(void)
