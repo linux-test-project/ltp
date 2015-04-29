@@ -295,6 +295,15 @@ nuke_sudoers()
 }
 
 sudo $s_arg -u $test_user mkdir -p $TEST_DIR
+
+# Make sure chattr command is supported
+touch $TEST_DIR/tmp_file
+chattr +a $TEST_DIR/tmp_file
+if [ $? -ne 0 ] ; then
+	rm -rf $TEST_DIR
+	tst_brkm TCONF "chattr not supported"
+fi
+
 cd $TEST_DIR
 chown root $LTPROOT/testcases/bin/$TEST_PROG
 chmod ugo+x,u+s $LTPROOT/testcases/bin/$TEST_PROG
