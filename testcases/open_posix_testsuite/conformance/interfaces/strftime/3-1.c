@@ -23,7 +23,7 @@ int main(void)
 
 	(void)time(&the_time);
 	tm_ptr = localtime(&the_time);
-	result = strftime(buf, 256, "%A %d %B, %I:%S %p", tm_ptr);
+	result = strftime(buf, sizeof(buf), "%A %d %B, %I:%S %p", tm_ptr);
 
 	if (result != 0) {
 		printf("strftime gives: %s\n", buf);
