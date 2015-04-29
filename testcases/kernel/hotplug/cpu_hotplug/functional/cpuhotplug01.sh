@@ -111,7 +111,7 @@ LOOP_COUNT=1
 
 tst_check_cmds perl
 
-get_cpus_num
+get_present_cpus_num
 if [ $? -lt 2 ]; then
 	tst_brkm TCONF "system doesn't have required CPU hotplug support"
 fi
@@ -148,7 +148,7 @@ do
 	IRQ_START=$(cat /proc/interrupts)
 
 	# Attempt to offline all CPUs
-	for cpu in $( get_all_cpus ); do
+	for cpu in $( get_hotplug_cpus ); do
 		if [ "$cpu" = "cpu0" ]; then
 			continue
 		fi
@@ -163,7 +163,7 @@ do
 	done
 
 	# Attempt to online all CPUs
-	for cpu in $( get_all_cpus ); do
+	for cpu in $( get_hotplug_cpus ); do
 		if [ "$cpu" = "cpu0" ]; then
 			continue
 		fi

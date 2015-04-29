@@ -62,7 +62,7 @@ until [ $LOOP_COUNT -gt $HOTPLUG04_LOOPS ]; do
 	cpustate=1
 
 	# Online all the CPUs
-	for i in $(get_all_cpus); do
+	for i in $(get_hotplug_cpus); do
 		if [ "$i" != "cpu0" ]; then
 			if ! cpu_is_online $i; then
 				if ! online_cpu $i; then
@@ -79,7 +79,7 @@ until [ $LOOP_COUNT -gt $HOTPLUG04_LOOPS ]; do
 	done
 
 	# Now offline all the CPUs
-	for i in $(get_all_cpus); do
+	for i in $(get_hotplug_cpus); do
 		if ! offline_cpu $i; then
 			if [ "x$i" != "xcpu0" ]; then
 				tst_resm TFAIL "Did not offline first CPU (offlined $i instead)"
