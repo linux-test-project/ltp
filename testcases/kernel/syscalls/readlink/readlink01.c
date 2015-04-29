@@ -81,7 +81,7 @@
 char *TCID = "readlink01";
 int TST_TOTAL = 1;
 
-int exp_val;			/* strlen of testfile */
+const int exp_val = sizeof(TESTFILE) - 1;	/* strlen of testfile */
 
 void setup();
 void cleanup();
@@ -183,9 +183,6 @@ void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "symlink(%s, %s) failed",
 			 TESTFILE, SYMFILE);
 	}
-
-	/* Get the strlen of testfile */
-	exp_val = strlen(TESTFILE);
 }
 
 /*
