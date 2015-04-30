@@ -23,10 +23,12 @@
 # Description:  Test basic functionality of mv command
 #		- Test #1:  mv <dir1> <dir2>
 #		  move dir1 to dir2 and all its contents.
+#		- Test #2:  mv -b <file1> <file2>
+#		  move file1 to file2 and backup the file2.
 #
 
 TCID=mv01
-TST_TOTAL=1
+TST_TOTAL=2
 . test.sh
 
 setup()
@@ -139,9 +141,45 @@ test01()
 	fi
 }
 
+test02()
+{
+	tst_resm TINFO "Test #2: mv -b <file1> <file2> will move dir1 to dir2"
+
+	ROD_SILENT touch tmpfile1 tmpfile2
+
+	MD5_old=$(md5sum tmpfile2 | awk '{print $1}')
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK "Test #2: can't get the MD5 message of file2."
+	fi
+
+	if [ -f "tmpfile2~" ]; then
+		tst_brkm TBROK "Test #2: file tmpfile2~ should not exists."
+	fi
+
+	mv -b tmpfile1 tmpfile2
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK "Test #2: 'mv -b tmpfile1 tmpfile2' failed."
+	fi
+
+	# if 'mv -b file1 file2' succeed, there will be "tmpfile2~" file.
+
+	MD5_backup=$(md5sum tmpfile2 | awk '{print $1}')
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK "Test #2: can not get the MD5 message of" \
+			       "backup file2."
+	fi
+
+	if [ "$MD5_old" == "$MD5_backup" -a -f "tmpfile2~" ]; then
+		tst_resm TPASS "Test #2: mv -b success"
+	else
+		tst_resm TFAIL "Test #2: mv -b failed"
+	fi
+}
+
 setup
 TST_CLEANUP=cleanup
 
 test01
+test02
 
 tst_exit
