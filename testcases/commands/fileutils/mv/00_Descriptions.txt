@@ -1,3 +1,0 @@
-test01
-	mv <dir1> <dir2> will move dir1 to dir2 and all its contents.
-
