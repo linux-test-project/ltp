@@ -17,6 +17,7 @@
 ## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA          ##
 ##                                                                           ##
 ###############################################################################
+. daemonlib.sh
 
 do_setup()
 {
@@ -33,6 +34,14 @@ do_setup()
 	done
 	if [ ! -r "$VSFTP_CONF" ] ; then
 		tst_brkm TBROK "vsftpd.conf not found."
+	fi
+
+	status_daemon vsftpd
+	if [ $? -ne 0 ]; then
+		start_daemon vsftpd
+		if [ $? -ne 0 ]; then
+			tst_brkm TBROK "Can't start vsftp"
+		fi
 	fi
 
 	LOCAL_ENABLE=$(awk -F= '/^local_enable=/ {print $2}' "$VSFTP_CONF")
