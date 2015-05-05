@@ -47,16 +47,7 @@
 *
 *******************************************************************************************/
 #define _GNU_SOURCE
-#include <sys/wait.h>
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include "test.h"
 #define CLEANUP cleanup
-#include "libclone.h"
 #include "pidns_helper.h"
 
 char *TCID = "pid_namespace1";
