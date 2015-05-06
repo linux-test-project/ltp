@@ -43,7 +43,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include "test.h"
-#define CLEANUP cleanup
 #include "libclone.h"
 #include "pidns_helper.h"
 
@@ -146,7 +145,7 @@ int main(int argc, char *argv[])
 	/* Container creation on PID namespace */
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, NULL));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TBROK | TERRNO, CLEANUP, "clone failed");
+		tst_brkm(TBROK | TERRNO, NULL, "clone failed");
 	}
 
 	sleep(1);
@@ -160,15 +159,6 @@ int main(int argc, char *argv[])
 			 "container was signaled with signal = %d",
 			 WTERMSIG(status));
 
-	CLEANUP();
 	tst_exit();
 
-}
-
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
-void cleanup()
-{
 }

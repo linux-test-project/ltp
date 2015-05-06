@@ -55,7 +55,6 @@
 #include <string.h>
 #include <errno.h>
 #include "test.h"
-#define CLEANUP cleanup
 #include "libclone.h"
 #include "pidns_helper.h"
 
@@ -103,9 +102,9 @@ int main(int argc, char *argv[])
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
 
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL | TTERRNO, cleanup, "clone failed");
+		tst_brkm(TFAIL | TTERRNO, NULL, "clone failed");
 	} else if ((wait(&status)) == -1) {
-		tst_brkm(TWARN | TERRNO, cleanup, "wait failed");
+		tst_brkm(TWARN | TERRNO, NULL, "wait failed");
 	}
 
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
@@ -115,10 +114,6 @@ int main(int argc, char *argv[])
 			 WTERMSIG(status));
 	}
 
-	cleanup();
 	tst_exit();
 }
 
-static void cleanup(void)
-{
-}
