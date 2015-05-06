@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/mount.h>
 #include <unistd.h>
 #include <mntent.h>
 #include <errno.h>
@@ -31,10 +32,16 @@
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
 
-#define TEST_FILE	"test_file"
+#define MNTPOINT	"mntpoint"
+#define TEST_FILE	MNTPOINT"/test_file"
 #define LARGE_FILE	"large_file"
 
+#define DIR_MODE 0755
+
 char *TCID = "open12";
+
+static const char *device;
+static unsigned int mount_flag, skip_noatime;
 
 static void setup(void);
 static void cleanup(void);
@@ -69,12 +76,35 @@ int main(int argc, char **argv)
 
 static void setup(void)
 {
+	const char *mount_flags[] = {"noatime", "relatime", NULL};
+
 	TEST_PAUSE;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_tmpdir();
 
+	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
+
+	if (tst_path_has_mnt_flags(cleanup, NULL, mount_flags)) {
+		const char *fs_type;
+
+		fs_type = tst_dev_fs_type();
+		device = tst_acquire_device(cleanup);
+
+		if (!device) {
+			tst_resm(TINFO, "Failed to obtain block device");
+			skip_noatime = 1;
+			goto end;
+		}
+
+		tst_mkfs(cleanup, device, fs_type, NULL);
+
+		SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, MS_STRICTATIME, NULL);
+		mount_flag = 1;
+	}
+
+end:
 	SAFE_FILE_PRINTF(cleanup, TEST_FILE, TEST_FILE);
 }
 
@@ -104,7 +134,6 @@ static void test_noatime(void)
 {
 	char read_buf;
 	struct stat old_stat, new_stat;
-	const char *flags[] = {"noatime", "relatime", NULL};
 
 	if ((tst_kvercmp(2, 6, 8)) < 0) {
 		tst_resm(TCONF,
@@ -113,10 +142,10 @@ static void test_noatime(void)
 		return;
 	}
 
-	if (tst_path_has_mnt_flags(cleanup, NULL, flags)) {
+	if (skip_noatime) {
 		tst_resm(TCONF,
-			 "test O_NOATIME flag for open needs filesystems which "
-			 "is mounted without noatime and relatime");
+		         "test O_NOATIME flag for open needs filesystems which "
+		         "is mounted without noatime and relatime");
 		return;
 	}
 
@@ -221,5 +250,11 @@ static void test_largefile(void)
 
 static void cleanup(void)
 {
+	if (mount_flag && tst_umount(MNTPOINT) == -1)
+		tst_brkm(TWARN | TERRNO, NULL, "umount(2) failed");
+
+	if (device)
+		tst_release_device(NULL, device);
+
 	tst_rmdir();
 }
