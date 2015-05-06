@@ -55,15 +55,6 @@ int pipefd[2];
 #define PARENT_PID      0
 
 /*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
-void cleanup()
-{
-
-}
-
-/*
  * child_signal_handler() - dummy function for sigaction()
  */
 static void child_signal_handler(int sig, siginfo_t * si, void *unused)
@@ -90,7 +81,6 @@ int child_fn(void *arg)
 	ppid = getppid();
 	if (pid != CHILD_PID || ppid != PARENT_PID) {
 		tst_resm(TBROK, "cinit: pidns is not created.");
-		cleanup();
 	}
 
 	/* Close read end of pipe */
@@ -103,20 +93,17 @@ int child_fn(void *arg)
 	if (sigaction(SIGUSR1, &sa, NULL) == -1) {
 		tst_resm(TBROK, "cinit: sigaction() failed(%s).",
 			 strerror(errno));
-		cleanup();
 	}
 
 	/* Let parent to signal SIGUSR1 */
 	if (write(pipefd[1], "c:go\0", 5) != 5) {
 		tst_resm(TBROK, "cinit: pipe is broken to write");
-		cleanup();
 	}
 
 	sleep(3);
 
 	/* cleanup and exit */
 	close(pipefd[1]);
-	cleanup();
 
 	/* Control won't reach below */
 	exit(0);
@@ -146,13 +133,11 @@ int main(int argc, char *argv[])
 	/* Create pipe for intercommunication */
 	if (pipe(pipefd) == -1) {
 		tst_resm(TBROK, "parent: pipe() failed. aborting!");
-		cleanup();
 	}
 
 	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
 	if (cpid < 0) {
 		tst_resm(TBROK, "parent: clone() failed(%s).", strerror(errno));
-		cleanup();
 	}
 
 	/* Close write end of pipe */
@@ -162,13 +147,11 @@ int main(int argc, char *argv[])
 	read(pipefd[0], buf, 5);
 	if (strcmp(buf, "c:go") != 0) {
 		tst_resm(TBROK, "parent: container did not respond!");
-		cleanup();
 	}
 
 	/* Send SIGUSR1 to container init */
 	if (kill(cpid, SIGUSR1) == -1) {
 		tst_resm(TBROK, "parent: kill() failed(%s).", strerror(errno));
-		cleanup();
 	}
 
 	if (waitpid(cpid, &status, 0) < 0)
@@ -181,7 +164,6 @@ int main(int argc, char *argv[])
 
 	/* Cleanup and exit */
 	close(pipefd[0]);
-	cleanup();
 
 	/* Control won't reach below */
 	exit(0);

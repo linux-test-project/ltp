@@ -56,15 +56,6 @@
 char *TCID = "pidns16";
 int TST_TOTAL = 3;
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *			 completion or premature exit.
- */
-void cleanup()
-{
-
-}
-
 void child_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	static int c = 1;
@@ -121,7 +112,6 @@ int child_fn(void *ttype)
 		 "from parentNS ");
 	if (kill(pid, SIGUSR1) != 0) {
 		tst_resm(TFAIL, "kill(SIGUSR1) fails.");
-		cleanup();
 	}
 	tst_resm(TINFO, "Container: Resumed after sending SIGUSR1 "
 		 "from container itself");
@@ -148,13 +138,11 @@ int main(int argc, char *argv[])
 
 	if (cpid < 0) {
 		tst_resm(TBROK, "clone() failed.");
-		cleanup();
 	}
 
 	sleep(1);
 	if (kill(cpid, SIGUSR1) != 0) {
 		tst_resm(TFAIL, "kill(SIGUSR1) fails.");
-		cleanup();
 	}
 	sleep(1);
 	if (waitpid(cpid, &status, 0) < 0)
@@ -166,6 +154,5 @@ int main(int argc, char *argv[])
 	else
 		tst_resm(TFAIL, "c-init failed to continue after "
 			 "passing kill -USR1");
-	cleanup();
 	tst_exit();
 }

@@ -53,10 +53,6 @@
 char *TCID = "pidns06";
 int TST_TOTAL = 1;
 
-void cleanup()
-{
-}
-
 /*
  * kill_pid_in_childfun()
  *      Cont-init tries to kill the parent-process using parent's global Pid.
@@ -129,11 +125,10 @@ int main()
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, kill_pid_in_childfun,
 				   (void *)&pid));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL | TERRNO, cleanup, "clone failed");
+		tst_brkm(TFAIL | TERRNO, NULL, "clone failed");
 	} else if (wait(&status) == -1) {
-		tst_brkm(TFAIL | TERRNO, cleanup, "wait failed");
+		tst_brkm(TFAIL | TERRNO, NULL, "wait failed");
 	}
 
-	cleanup();
 	tst_exit();
 }
