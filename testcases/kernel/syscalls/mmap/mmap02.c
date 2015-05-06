@@ -148,7 +148,6 @@ static void setup(void)
 		free(tst_buff);
 		tst_brkm(TFAIL | TERRNO, cleanup,
 			 "writing to %s failed", TEMPFILE);
-		cleanup();
 	}
 
 	/* Free the memory allocated for test buffer */
