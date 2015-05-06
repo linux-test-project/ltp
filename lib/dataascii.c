@@ -119,7 +119,7 @@ int main(int ac, char **ag)
 	char *errmsg;
 
 	buffer = malloc(size);
-	if (buffer == NULL)
+	if (buffer == NULL) {
 		perror("malloc");
 		exit(2);
 	}
