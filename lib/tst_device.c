@@ -86,6 +86,11 @@ static int find_free_loopdev(void)
 	switch (errno) {
 	case ENOENT:
 	break;
+	case EACCES:
+		tst_resm(TINFO | TERRNO,
+		         "Not allowed to open " LOOP_CONTROL_FILE ". "
+			 "Are you root?");
+	break;
 	default:
 		tst_resm(TBROK | TERRNO, "Failed to open " LOOP_CONTROL_FILE);
 	}
