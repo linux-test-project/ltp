@@ -98,9 +98,8 @@ static void setup(void)
 	get_blocksize();
 }
 
-static void check_file_data(const char exp_buf[])
+static void check_file_data(const char exp_buf[], size_t size)
 {
-	size_t size = sizeof(exp_buf);
 	char rbuf[size];
 
 	tst_resm(TINFO, "reading the file, compare with expected buffer");
@@ -175,7 +174,7 @@ static void test02(void)
 	fill_tst_buf(exp_buf);
 	memset(exp_buf + block_size, 0, block_size);
 
-	check_file_data(exp_buf);
+	check_file_data(exp_buf, buf_size);
 
 	tst_resm(TPASS, "test-case succeeded");
 }
@@ -215,7 +214,7 @@ static void test03(void)
 	fill_tst_buf(exp_buf);
 	memset(exp_buf + block_size - 1, 0, block_size + 2);
 
-	check_file_data(exp_buf);
+	check_file_data(exp_buf, buf_size);
 
 	tst_resm(TPASS, "test-case succeeded");
 }
@@ -251,7 +250,8 @@ static void test04(void)
 	memcpy(exp_buf, tmp_buf, block_size);
 	memcpy(exp_buf + block_size, tmp_buf + size, block_size);
 
-	check_file_data(exp_buf);
+	exp_buf[block_size - 1] = exp_buf[block_size] = '\0';
+	check_file_data(exp_buf, size);
 
 	tst_resm(TPASS, "test-case succeeded");
 }
