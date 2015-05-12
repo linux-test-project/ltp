@@ -85,10 +85,6 @@ int getuserid(char *user)
 {
 	struct passwd *ent;
 
-	ent = malloc(sizeof(struct passwd));
-	if (ent == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "malloc ent");
-
 	ent = getpwnam(user);
 	if (ent == NULL)
 		tst_brkm(TBROK | TERRNO, cleanup, "getpwnam");
