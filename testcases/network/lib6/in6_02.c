@@ -255,4 +255,23 @@ void initest(void)
 void setup(void)
 {
 	TEST_PAUSE;
+
+	tst_resm(TINFO, "get interface name from LHOST_IFACES var");
+
+	char *ifnames = getenv("LHOST_IFACES");
+
+	if (!ifnames) {
+		tst_resm(TWARN, "LHOST_IFACES not defined, default to eth0");
+		return;
+	}
+
+	static char name[256];
+
+	sscanf(ifnames, "%255s", name);
+
+	if (!strcmp(name, n2i[1].name))
+		return;
+
+	tst_resm(TINFO, "change default 'eth0' name to '%s'", name);
+	n2i[1].name = name;
 }
