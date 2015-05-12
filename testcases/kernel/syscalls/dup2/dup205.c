@@ -40,6 +40,8 @@
 
 char *TCID = "dup205";
 int TST_TOTAL = 1;
+int *fildes;
+int min;
 int local_flag;
 
 #define PASSED 1
@@ -50,10 +52,8 @@ static void cleanup(void);
 
 int main(int ac, char *av[])
 {
-	int *fildes;
 	int ifile;
 	char pfilname[40];
-	int min;
 	int serrno;
 
 	int lc;
@@ -67,12 +67,6 @@ int main(int ac, char *av[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		min = getdtablesize();	/* get number of files allowed open */
-
-		fildes = malloc((min + 10) * sizeof(int));
-		if (fildes == NULL)
-			tst_brkm(TBROK | TERRNO, cleanup, "malloc error");
 
 		sprintf(pfilname, "./dup205.%d\n", getpid());
 		unlink(pfilname);
@@ -125,9 +119,16 @@ int main(int ac, char *av[])
 static void setup(void)
 {
 	tst_tmpdir();
+
+	min = getdtablesize();	/* get number of files allowed open */
+	fildes = malloc((min + 10) * sizeof(int));
+	if (fildes == NULL)
+		tst_brkm(TBROK | TERRNO, cleanup, "malloc error");
 }
 
 static void cleanup(void)
 {
+	if (fildes != NULL)
+		free(fildes);
 	tst_rmdir();
 }
