@@ -30,8 +30,13 @@ int is_cmdline_para(const char *para)
 				return 1;
 			}
 		}
-		fclose(fp);
 	}
+	/* If fopen succeeds and the pointer para is NULL,
+	 * It won't enter the above if-block.
+	 * so need to close fp here.
+	 */
+	if (fp != NULL)
+		fclose(fp);
 
 	return 0;
 }
