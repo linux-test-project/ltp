@@ -248,7 +248,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (mount_flag && umount(MOUNT_DIR))
+	if (mount_flag && tst_umount(MOUNT_DIR))
 		tst_resm(TWARN | TERRNO, "umount(%s) failed", device);
 
 	if (device)
