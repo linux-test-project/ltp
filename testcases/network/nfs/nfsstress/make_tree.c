@@ -319,7 +319,8 @@ static int init_compile(int what_todo,	/* do a compile or clean             */
 				return 1;
 			}
 
-			dprt("pid[%d]: init_compile(): status = %d\n", status);
+			dprt("pid[%d]: init_compile(): status = %d\n",
+			     gettid(), status);
 			dprt("we are here %d\n", __LINE__);
 			return status;
 		}
