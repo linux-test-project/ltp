@@ -255,7 +255,6 @@ fpathconf01 fpathconf01
 fstat01 fstat01
 fstat02 fstat02
 fstat03 fstat03
-fstat04 fstat04
 fstat05 fstat05
 
 fstatfs01 fstatfs01

@@ -2076,16 +2076,6 @@
 		ltp/testcases/kernel/syscalls/fstat/fstat03.c
 	<\test_location>
 <\testname>
-<testname=fstat04>
-	<description>
-		Verify that, fstat(2) succeeds to get the status of a file pointed by
-		file descriptor and fills the stat structure elements.
-
-	<\description>
-	<test_location>
-		ltp/testcases/kernel/syscalls/fstat/fstat04.c
-	<\test_location>
-<\testname>
 <testname=fstat05>
 	<description>
 		Verify that, if buffer points outside user's accessible address space
