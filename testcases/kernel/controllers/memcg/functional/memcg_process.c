@@ -186,6 +186,7 @@ void mmap_lock1()
 			 MAP_PRIVATE | MAP_ANONYMOUS | MAP_LOCKED, 0, 0);
 		if (p == MAP_FAILED)
 			err(1, "mmap(lock) failed");
+		touch_memory(p, memsize);
 	} else {
 		if (munmap(p, memsize) == -1)
 			err(1, "munmap(lock) failed");
