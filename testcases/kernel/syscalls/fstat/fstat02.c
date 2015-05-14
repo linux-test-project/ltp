@@ -1,69 +1,24 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 /*
- * Test Name: fstat02
- *
- * Test Description:
- *  Verify that, fstat(2) succeeds to get the status of a file and fills
- *  the stat structure elements though file pointed to by file descriptor
- *  not opened for reading.
- *
- * Expected Result:
- *  fstat() should return value 0 on success and the stat structure elements
- *  should be filled with specified 'file' information.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	Log the errno and Issue a FAIL message.
- *   Otherwise,
- *	Verify the Functionality of system call
- *      if successful,
- *		Issue Functionality-Pass message.
- *      Otherwise,
- *		Issue Functionality-Fail message.
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  fstat02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *
+ * fstat() should return value 0 on success and the stat structure elements
+ * should be filled with specified 'file' information.
  */
 #include <stdio.h>
 #include <sys/types.h>
@@ -75,6 +30,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define FILE_MODE	0644
 #define TESTFILE	"testfile"
@@ -84,72 +40,91 @@
 
 char *TCID = "fstat02";
 int TST_TOTAL = 1;
-uid_t user_id;			/* user id/group id of test process */
-gid_t group_id;
-int fildes;			/* File descriptor of testfile */
+static uid_t user_id;
+static gid_t group_id;
+static int fildes;
 
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
+static void setup(void);
+static void cleanup(void);
 
-void setup();
-void cleanup();
+static void verify(void)
+{
+	struct stat stat_buf;
+	int fail = 0;
+
+	TEST(fstat(fildes, &stat_buf));
+
+	if (TEST_RETURN == -1) {
+		tst_resm(TFAIL | TTERRNO, "fstat(%s) failed", TESTFILE);
+		return;
+	}
+
+	if (stat_buf.st_uid != user_id) {
+		tst_resm(TINFO, "stat_buf.st_uid = %i expected %i",
+		         stat_buf.st_uid, user_id);
+		fail++;
+	}
+
+	if (stat_buf.st_gid != group_id) {
+		tst_resm(TINFO, "stat_buf.st_gid = %i expected %i",
+		         stat_buf.st_gid, group_id);
+		fail++;
+	}
+
+	if (stat_buf.st_size != FILE_SIZE) {
+		tst_resm(TINFO, "stat_buf.st_size = %zu expected %i",
+		         stat_buf.st_size, FILE_SIZE);
+		fail++;
+	}
+
+        if ((stat_buf.st_mode & MASK) != FILE_MODE) {
+		tst_resm(TINFO, "stat_buf.st_mode = %o expected %o",
+		         (stat_buf.st_mode & MASK), FILE_MODE);
+		fail++;
+	}
+
+	if (fail) {
+		tst_resm(TFAIL, "functionality of fstat incorrect");
+		return;
+	}
+
+	tst_resm(TPASS, "functionality of fstat correct");
+}
 
 int main(int ac, char **av)
 {
-	struct stat stat_buf;	/* stat structure buffer */
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		TEST(fstat(fildes, &stat_buf));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "fstat(%s) failed", TESTFILE);
-			continue;
-		}
-		if (stat_buf.st_uid != user_id ||
-		    stat_buf.st_gid != group_id ||
-		    stat_buf.st_size != FILE_SIZE ||
-		    (stat_buf.st_mode & MASK) != FILE_MODE) {
-			tst_resm(TFAIL,
-				 "functionality of fstat incorrect");
-		} else {
-			tst_resm(TPASS,
-				 "functionality of fstat correct");
-		}
-	}
+	for (lc = 0; TEST_LOOPING(lc); lc++)
+		verify();
 
 	cleanup();
 	tst_exit();
 }
 
-void setup(void)
+static void setup(void)
 {
+	struct passwd *ltpuser;
 	char tst_buff[BUF_SIZE];
 	int wbytes;
 	int write_len = 0;
 
+	tst_require_root(NULL);
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	ltpuser = getpwnam(nobody_uid);
-	if (ltpuser == NULL)
-		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
-	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "setuid failed");
+	ltpuser = SAFE_GETPWNAM(NULL, "nobody");
+	SAFE_SETUID(NULL, ltpuser->pw_uid);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-	fildes = open(TESTFILE, O_WRONLY | O_CREAT, FILE_MODE);
-	if (fildes == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
+	fildes = SAFE_OPEN(tst_rmdir, TESTFILE, O_WRONLY | O_CREAT, FILE_MODE);
 
 	/* Fill the test buffer with the known data */
 	memset(tst_buff, 'a', BUF_SIZE - 1);
@@ -164,14 +139,12 @@ void setup(void)
 
 	user_id = getuid();
 	group_id = getgid();
-
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	if (close(fildes) == -1)
 		tst_resm(TWARN | TERRNO, "close failed");
 
 	tst_rmdir();
-
 }
