@@ -61,17 +61,17 @@ testcase_5()
 
 testcase_6()
 {
-	test_limit_in_bytes $((PAGESIZE-1)) $PAGESIZE 1
+	test_limit_in_bytes $((PAGESIZE-1)) 1
 }
 
 testcase_7()
 {
-	test_limit_in_bytes $((PAGESIZE+1)) $((PAGESIZE*2)) 1
+	test_limit_in_bytes $((PAGESIZE+1)) 1
 }
 
 testcase_8()
 {
-	test_limit_in_bytes 1 $PAGESIZE 1
+	test_limit_in_bytes 1 1
 }
 
 testcase_9()

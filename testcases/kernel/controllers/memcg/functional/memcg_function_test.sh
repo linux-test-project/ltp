@@ -158,17 +158,17 @@ testcase_21()
 # Case 22 - 24: Test limit_in_bytes will be aligned to PAGESIZE
 testcase_22()
 {
-	test_limit_in_bytes $((PAGESIZE-1)) $PAGESIZE 0
+	test_limit_in_bytes $((PAGESIZE-1)) 0
 }
 
 testcase_23()
 {
-	test_limit_in_bytes $((PAGESIZE+1)) $((PAGESIZE*2)) 0
+	test_limit_in_bytes $((PAGESIZE+1)) 0
 }
 
 testcase_24()
 {
-	test_limit_in_bytes 1 $PAGESIZE 0
+	test_limit_in_bytes 1 0
 }
 
 # Case 25 - 28: Test invaild memory.limit_in_bytes
