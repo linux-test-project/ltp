@@ -94,7 +94,7 @@ int main(int ac, char **av)
 
 			if (TEST_RETURN != tcase[i].ret) {
 				if (TEST_ERRNO != EINVAL) {
-					tst_resm(TFAIL,
+					tst_resm(TFAIL | TTERRNO,
 						 "clock_getres %s failed",
 						 tcase[i].name);
 				} else {
