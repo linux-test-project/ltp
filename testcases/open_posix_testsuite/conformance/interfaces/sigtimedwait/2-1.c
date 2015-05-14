@@ -36,13 +36,14 @@
 #define SIGTOTEST SIGUSR2
 #define TIMERSEC 2
 #define SIGTIMEDWAITSEC 0
-#define ERRORMARGIN 0.01
+#define ERRORMARGIN 0.1
 
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include <sys/wait.h>
 #include "posixtest.h"
 
@@ -58,7 +59,7 @@ int main(void)
 {
 	struct sigaction act;
 
-	time_t time1, time2;
+	struct timeval time1, time2;
 	double time_elapsed;
 
 	sigset_t selectset;
@@ -97,16 +98,22 @@ int main(void)
                 return PTS_UNRESOLVED;
         }
 */
-	time1 = time(NULL);
+	if (gettimeofday(&time1, NULL) == -1) {
+		perror("gettimeofday()");
+		return PTS_UNRESOLVED;
+	}
 	if (sigtimedwait(&selectset, NULL, &ts) != -1) {
 		printf
 		    ("Test FAILED: sigtimedwait() did not return with an error\n");
 		return PTS_FAIL;
 	}
+	if (gettimeofday(&time2, NULL) == -1) {
+		perror("gettimeofday()");
+		return PTS_UNRESOLVED;
+	}
 
-	time2 = time(NULL);
-
-	time_elapsed = difftime(time2, time1);
+	time_elapsed = (time2.tv_sec - time1.tv_sec
+		+ (time2.tv_usec - time1.tv_usec) / 1000000.0);
 
 	if ((time_elapsed > SIGTIMEDWAITSEC + ERRORMARGIN)
 	    || (time_elapsed < SIGTIMEDWAITSEC - ERRORMARGIN)) {
