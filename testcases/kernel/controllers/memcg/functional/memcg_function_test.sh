@@ -213,6 +213,7 @@ testcase_29()
 	sleep 1
 	echo $pid > ../tasks
 
+	# This expects that there is swap configured
 	echo 1 > memory.force_empty
 	if [ $? -eq 0 ]; then
 		result $PASS "force memory succeeded"
@@ -225,7 +226,7 @@ testcase_29()
 
 testcase_30()
 {
-	$TEST_PATH/memcg_process --mmap-anon -s $PAGESIZE &
+	$TEST_PATH/memcg_process --mmap-lock2 -s $PAGESIZE &
 	pid=$!
 	sleep 1
 	echo $pid > tasks
