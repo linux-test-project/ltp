@@ -124,6 +124,8 @@ static void setup(void)
 
 	tst_tmpdir();
 
+	umask(022);
+
 	fildes = SAFE_OPEN(tst_rmdir, TESTFILE, O_WRONLY | O_CREAT, FILE_MODE);
 
 	/* Fill the test buffer with the known data */
