@@ -17,6 +17,6 @@
 top_srcdir	?= ../../../..
 include $(top_srcdir)/include/mk/testcases.mk
 
-INSTALL_TARGETS		:= *.sh
+INSTALL_TARGETS		:= *.sh zram03
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -96,8 +96,6 @@ vma02 vma02
 vma03 vma03
 vma04 vma04
 
-zram01 zram01
-
 overcommit_memory01 overcommit_memory
 overcommit_memory02 overcommit_memory -R 0
 overcommit_memory03 overcommit_memory -R 30
