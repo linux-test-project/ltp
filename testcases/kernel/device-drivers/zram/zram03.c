@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -31,7 +32,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "zram01";
 int TST_TOTAL = 1;
@@ -77,19 +80,8 @@ int main(int argc, char *argv[])
 
 static void set_disksize(void)
 {
-	int fd;
-	char size[BUFSIZ];
-
 	tst_resm(TINFO, "create a zram device with %ld bytes in size.", SIZE);
-	fd = open(PATH_ZRAM "/disksize", O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open %s",
-			 PATH_ZRAM "/disksize");
-	sprintf(size, "%ld", SIZE);
-	if (write(fd, size, strlen(size)) != strlen(size))
-		tst_brkm(TBROK | TERRNO, cleanup, "write %s to %s", size,
-			 PATH_ZRAM "/disksize");
-	close(fd);
+	SAFE_FILE_PRINTF(cleanup, PATH_ZRAM "/disksize", "%ld", SIZE);
 }
 
 static void write_device(void)
@@ -97,71 +89,54 @@ static void write_device(void)
 	int fd;
 	char *s;
 
-	tst_resm(TINFO, "map it into memory.");
-	fd = open(DEVICE, O_RDWR);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open %s", DEVICE);
-	s = mmap(NULL, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (s == MAP_FAILED)
-		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
+	tst_resm(TINFO, "map this zram device into memory.");
+	fd = SAFE_OPEN(cleanup, DEVICE, O_RDWR);
+	s = SAFE_MMAP(cleanup, NULL, SIZE, PROT_READ | PROT_WRITE,
+		      MAP_SHARED, fd, 0);
 
 	tst_resm(TINFO, "write all the memory.");
 	memset(s, 'a', SIZE - 1);
 	s[SIZE - 1] = '\0';
 
-	if (munmap(s, SIZE) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "munmap");
-
-	close(fd);
+	SAFE_MUNMAP(cleanup, s, SIZE);
+	SAFE_CLOSE(cleanup, fd);
 }
 
 static void verify_device(void)
 {
 	int fd;
-	long i, fail;
+	long i = 0, fail = 0;
 	char *s;
 
 	tst_resm(TINFO, "verify contents from device.");
-	fd = open(DEVICE, O_RDONLY);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open %s", DEVICE);
-	s = mmap(NULL, SIZE, PROT_READ, MAP_PRIVATE, fd, 0);
-	if (s == MAP_FAILED)
-		tst_brkm(TBROK | TERRNO, cleanup, "2nd mmap");
+	fd = SAFE_OPEN(cleanup, DEVICE, O_RDONLY);
+	s = SAFE_MMAP(cleanup, NULL, SIZE, PROT_READ, MAP_PRIVATE, fd, 0);
 
-	i = 0;
-	fail = 0;
 	while (s[i] && i < SIZE - 1) {
 		if (s[i] != 'a')
 			fail++;
 		i++;
 	}
-	if (i != SIZE - 1)
+	if (i != SIZE - 1) {
 		tst_resm(TFAIL, "expect size: %ld, actual size: %ld.",
 			 SIZE - 1, i);
-	else if (s[i] != '\0')
+	} else if (s[i] != '\0') {
 		tst_resm(TFAIL, "zram device seems not null terminated");
-	if (fail)
+	} else if (fail) {
 		tst_resm(TFAIL, "%ld failed bytes found.", fail);
-	if (munmap(s, SIZE) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "2nd munmap");
+	} else {
+		tst_resm(TPASS, "data read from zram device is consistent "
+			 "with those are written");
+	}
 
-	close(fd);
+	SAFE_MUNMAP(cleanup, s, SIZE);
+	SAFE_CLOSE(cleanup, fd);
 }
 
 static void reset(void)
 {
-	int fd;
-
 	tst_resm(TINFO, "reset it.");
-	fd = open(PATH_ZRAM "/reset", O_WRONLY);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open %s",
-			 PATH_ZRAM "/reset");
-	if (write(fd, "1", 1) != 1)
-		tst_brkm(TBROK | TERRNO, cleanup, "write 1 to %s",
-			 PATH_ZRAM "/reset");
-	close(fd);
+	SAFE_FILE_PRINTF(cleanup, PATH_ZRAM "/reset", "1");
 }
 
 static void setup(void)
@@ -171,12 +146,16 @@ static void setup(void)
 	tst_require_root(NULL);
 
 retry:
-	if (access(PATH_ZRAM, R_OK | W_OK | X_OK) == -1) {
+	if (access(PATH_ZRAM, F_OK) == -1) {
 		if (errno == ENOENT) {
-			if (retried)
+			if (retried) {
 				tst_brkm(TCONF, NULL,
 					 "system has no zram device.");
-			system("modprobe zram");
+			}
+			if (system("modprobe zram") == -1) {
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "system(modprobe zram) failed");
+			}
 			modprobe = 1;
 			retried = 1;
 			goto retry;
@@ -190,26 +169,17 @@ retry:
 
 static void cleanup(void)
 {
-	if (modprobe == 1)
-		system("rmmod zram");
+	if (modprobe == 1 && system("rmmod zram") == -1)
+		tst_resm(TWARN | TERRNO, "system(rmmod zram) failed");
 }
 
 static void print(char *string)
 {
-	FILE *fp;
-	char buf[BUFSIZ], value[BUFSIZ];
+	char filename[BUFSIZ], value[BUFSIZ];
 
-	sprintf(buf, "%s/%s", PATH_ZRAM, string);
-	fp = fopen(buf, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fopen %s", buf);
-
-	if (fgets(value, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fgets %s", buf);
-	value[strlen(value) - 1] = '\0';
-	fclose(fp);
-
-	tst_resm(TINFO, "%s is %s", buf, value);
+	sprintf(filename, "%s/%s", PATH_ZRAM, string);
+	SAFE_FILE_SCANF(cleanup, filename, "%s", value);
+	tst_resm(TINFO, "%s is %s", filename, value);
 }
 
 static void dump_info(void)
