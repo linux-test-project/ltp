@@ -5,6 +5,7 @@
 
 export TCID="cpuhotplug05"
 export TST_TOTAL=1
+export LC_TIME="POSIX"
 
 # Includes:
 . test.sh
@@ -80,11 +81,11 @@ TST_CLEANUP=do_clean
 until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 
 	# Start up SAR and give it a couple cycles to run
-	sar 1 0 &>/dev/null &
+	sar 1 &>/dev/null &
 	sleep 2
 	if ps -C sar &>/dev/null; then
 		pkill sar
-		sar -P ALL 1 0 > $TMP/log_$$ &
+		sar -P ALL 1 > $TMP/log_$$ &
 	else
 		sar -P ALL 1 > $TMP/log_$$ &
 	fi
@@ -92,14 +93,14 @@ until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 	SAR_PID=$!
 
 	# Verify that SAR has correctly listed the missing CPU
-	while ! awk '{print $9}' $TMP/log_$$ | grep -i "^0.00"; do
+	while ! awk '{print $8}' $TMP/log_$$ | grep -i "^0.00"; do
 		tst_brkm TBROK "CPU${CPU_TO_TEST} Not Found on SAR!"
 	done
 	time=`date +%X`
 	sleep .5
 
 	# Verify that at least some of the CPUs are offline
-	NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$ | awk '{print $9}' \
+	NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$ | awk '{print $8}' \
 		|grep -i "^0.00" | wc -l)
 	if [ ${NUMBER_CPU_OFF} -eq 0 ]; then
 		tst_brkm TBROK "no CPUs found offline"
@@ -110,12 +111,12 @@ until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined line"
 	fi
 
-	sleep 1
+	sleep 2
 	time=$(date +%T)
 	sleep .5
 
 	# Check that SAR registered the change in CPU online/offline states
-	NEW_NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$|awk '{print $9}' \
+	NEW_NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$|awk '{print $8}' \
 		| grep -i "^0.00"| wc -l)
 	NUMBER_CPU_OFF=$((NUMBER_CPU_OFF-1))
 	if [ "$NUMBER_CPU_OFF" != "$NEW_NUMBER_CPU_OFF" ]; then
