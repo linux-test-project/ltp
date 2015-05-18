@@ -31,6 +31,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
+#include "lapi/mount.h"
 
 #define MNTPOINT	"mntpoint"
 #define TEST_FILE	MNTPOINT"/test_file"
