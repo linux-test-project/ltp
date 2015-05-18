@@ -31,7 +31,15 @@ dev_num=4
 # This is a list of parameters for zram devices.
 # Number of items must be equal to 'dev_num' parameter.
 zram_max_streams="2 3 5 8"
-zram_sizes="25M 25M 25M 25M"
+
+# The zram sysfs node 'disksize' value can be either in bytes,
+# or you can use mem suffixes. But in some old kernels, mem
+# suffixes are not supported, for example, in RHEL6.6GA's kernel
+# layer, it uses strict_strtoull() to parse disksize which does
+# not support mem suffixes, in some newer kernels, they use
+# memparse() which supports mem suffixes. So here we just use
+# bytes to make sure everything works correctly.
+zram_sizes="26214400 26214400 26214400 26214400" # 25MB
 zram_mem_limits="25M 25M 25M 25M"
 zram_filesystems="ext3 ext4 xfs btrfs"
 zram_algs="lzo lzo lzo lzo"

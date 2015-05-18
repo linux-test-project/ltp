@@ -62,7 +62,15 @@ zram_load()
 
 zram_max_streams()
 {
-	tst_resm TINFO "set max_comp_streams to zram device(s)"
+	tst_kvercmp 3 15 0
+	if [ $? -eq 0 ]; then
+		tst_resm TCONF "device attribute max_comp_streams is"\
+			"introduced since kernel v3.15, the running kernel"\
+			"does not support it"
+		return
+	else
+		tst_resm TINFO "set max_comp_streams to zram device(s)"
+	fi
 
 	local i=0
 	for max_s in $zram_max_streams; do
@@ -83,7 +91,16 @@ zram_max_streams()
 
 zram_compress_alg()
 {
-	tst_resm TINFO "test that we can set compression algorithm"
+	tst_kvercmp 3 15 0
+	if [ $? -eq 0 ]; then
+		tst_resm TCONF "device attribute comp_algorithm is"\
+			"introduced since kernel v3.15, the running kernel"\
+			"does not support it"
+		return
+	else
+		tst_resm TINFO "test that we can set compression algorithm"
+	fi
+
 	local algs=$(cat /sys/block/zram0/comp_algorithm)
 	tst_resm TINFO "supported algs: $algs"
 	local i=0
@@ -116,7 +133,16 @@ zram_set_disksizes()
 
 zram_set_memlimit()
 {
-	tst_resm TINFO "set memory limit to zram device(s)"
+	tst_kvercmp 3 18 0
+	if [ $? -eq 0 ]; then
+		tst_resm TCONF "device attribute mem_limit is"\
+			"introduced since kernel v3.18, the running kernel"\
+			"does not support it"
+		return
+	else
+		tst_resm TINFO "set memory limit to zram device(s)"
+	fi
+
 	local i=0
 	for ds in $zram_mem_limits; do
 		local sys_path="/sys/block/zram${i}/mem_limit"
