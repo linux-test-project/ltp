@@ -604,7 +604,7 @@ int fileokay(char *file, uchar_t * expbuf)
 	size_t mapsize;
 	unsigned mappages;
 	unsigned pagesize = sysconf(_SC_PAGE_SIZE);
-	char readbuf[pagesize];
+	uchar_t readbuf[pagesize];
 	int fd;
 	int cnt;
 	unsigned i, j;
