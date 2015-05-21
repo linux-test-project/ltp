@@ -67,7 +67,6 @@ int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
 	return syscall(__NR__sysctl, &args);
 }
 
-#define SIZE(x) sizeof(x)/sizeof(x[0])
 #define OSNAMESZ 100
 
 void setup(void);
@@ -98,7 +97,7 @@ int main(int ac, char **av)
 
 	setup();
 
-	osnamelth = SIZE(osname);
+	osnamelth = sizeof(osname);
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 

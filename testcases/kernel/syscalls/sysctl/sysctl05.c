@@ -69,8 +69,6 @@ int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
 	return syscall(__NR__sysctl, &args);
 }
 
-#define SIZE(x) sizeof(x)/sizeof(x[0])
-
 char osname[BUFSIZ];
 size_t osnamelth;
 
@@ -117,7 +115,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 
-			osnamelth = SIZE(osname);
+			osnamelth = sizeof(osname);
 
 			TEST(sysctl(testcases[i].name, testcases[i].size,
 				    testcases[i].oldval, testcases[i].oldlen,

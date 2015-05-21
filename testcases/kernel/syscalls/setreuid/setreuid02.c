@@ -58,7 +58,7 @@ static struct test_data_t {
 	&bin.pw_uid, &neg_one, &bin, &root, "After setreuid(bin, -1)"}, {
 &root.pw_uid, &neg_one, &root, &root, "After setreuid(-1, root)"},};
 
-int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
+int TST_TOTAL = ARRAY_SIZE(test_data);
 
 static void setup(void);
 static void cleanup(void);

@@ -83,7 +83,7 @@ static struct test_data_t {
 	&nobody.pw_uid, &bin.pw_uid, &fail, &nobody, &nobody,
 		    "After setreuid(nobody, bin),"},};
 
-int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
+int TST_TOTAL = ARRAY_SIZE(test_data);
 
 static void setup(void);
 static void cleanup(void);

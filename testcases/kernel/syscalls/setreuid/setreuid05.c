@@ -76,7 +76,7 @@ struct test_data_t {
 	&neg_one, &bin.pw_uid, &fail, &daemonpw, &daemonpw,
 		    "After setreuid(-1, bin),"},};
 
-int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
+int TST_TOTAL = ARRAY_SIZE(test_data);
 
 static void setup(void);
 static void cleanup(void);
