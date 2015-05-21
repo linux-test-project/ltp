@@ -158,9 +158,16 @@ static void test02(void)
 			tst_brkm(TFAIL | TERRNO, cleanup,
 				 "fallocate() or lseek() failed");
 		}
-		tst_resm(TWARN | TERRNO, "lseek() doesn't support SEEK_HOLE");
+		if (tst_kvercmp(3, 1, 0) < 0) {
+			tst_resm(TINFO, "lseek() doesn't support SEEK_HOLE, "
+				 "this is expected for < 3.1 kernels");
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "lseek() doesn't support SEEK_HOLE");
+		}
+	} else {
+		tst_resm(TINFO, "found a hole at '%ld' offset", ret);
 	}
-	tst_resm(TINFO, "found a hole at '%ld' offset", ret);
 
 	size_t alloc_size1 = get_allocsize();
 
