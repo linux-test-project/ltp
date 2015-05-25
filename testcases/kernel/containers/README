@@ -35,6 +35,14 @@ The container test automation suite helps run the container functionality
 (e.g: utsname etc..) tests and report results. Please refer the following
 each functionality README file for detail:
 
+mountns/*
+        Contains all the testcases related to mount namespaces tests.
+pidns/*
+        Contains all the testcases related to pid namespaces tests.
+userns/*
+        Contains all the testcases related to user namespaces tests.
+mqns/*
+	Contains all the testcases related to posix mq namespaces tests.
 sysvipc/*
 	Contains all the testcases related to IPC NS tests.
 posixmq/*
