@@ -54,7 +54,7 @@ static void setup(void)
 	SAFE_MKDIR(cleanup, PROCDIR, 0555);
 }
 
-int child_func(void *arg)
+int child_func(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	char buf[10];
 

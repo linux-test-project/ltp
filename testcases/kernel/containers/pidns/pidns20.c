@@ -64,7 +64,7 @@ int broken = 1;			/* broken should be 0 when test completes properly */
 /*
  * child_signal_handler() - to handle SIGUSR1
  */
-static void child_signal_handler(int sig, siginfo_t * si, void *unused)
+static void child_signal_handler(int sig LTP_ATTRIBUTE_UNUSED, siginfo_t * si, void *unused LTP_ATTRIBUTE_UNUSED)
 {
 	if (si->si_signo != SIGUSR1)
 		tst_resm(TBROK, "cinit: recieved %s unexpectedly!",
@@ -79,7 +79,7 @@ static void child_signal_handler(int sig, siginfo_t * si, void *unused)
 /*
  * child_fn() - Inside container
  */
-int child_fn(void *arg)
+int child_fn(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	pid_t pid, ppid;
 	sigset_t newset;
@@ -115,7 +115,8 @@ int child_fn(void *arg)
 	}
 
 	/* Check if parent has queued up SIGUSR1 */
-	read(parent_cinit[0], buf, 5);
+	if(read(parent_cinit[0], buf, 5))
+		tst_resm(TFAIL, "Failed to read.");
 	if (strcmp(buf, "p:go") != 0) {
 		printf("cinit: parent did not respond!\n");
 		exit(1);
@@ -157,6 +158,7 @@ int main(int argc, char *argv[])
 	int status;
 	char buf[5];
 	pid_t cpid;
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 
@@ -175,7 +177,9 @@ int main(int argc, char *argv[])
 	close(parent_cinit[0]);
 
 	/* Is container ready */
-	read(cinit_parent[0], buf, 5);
+	if(read(cinit_parent[0], buf, 5))
+                tst_resm(TFAIL, "Failed to read.");
+
 	if (strcmp(buf, "c:go") != 0) {
 		tst_brkm(TBROK, NULL, "parent: container did not respond!");
 	}

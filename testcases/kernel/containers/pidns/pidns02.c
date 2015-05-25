@@ -63,7 +63,7 @@ int TST_TOTAL = 1;
 /*
  * child_fn1() - Inside container
  */
-int child_fn1(void *vtest)
+int child_fn1(void *vtest LTP_ATTRIBUTE_UNUSED)
 {
 	pid_t pgid, sid;
 
@@ -93,7 +93,7 @@ static void setup(void)
 int main(int argc, char *argv[])
 {
 	int status;
-
+	tst_parse_opts(argc, argv, NULL, NULL);
 	setup();
 
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));

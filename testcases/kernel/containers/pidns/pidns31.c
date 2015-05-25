@@ -137,7 +137,7 @@ static void cleanup_resources(int step, mqd_t mqd)
  *             completion or premature exit.
  * step == -1 means no local resource to remove.
  */
-void cleanup_mqueue(int result, int step, mqd_t mqd)
+void cleanup_mqueue(int result LTP_ATTRIBUTE_UNUSED, int step, mqd_t mqd)
 {
 	if (step != NO_STEP)
 		cleanup_resources(step, mqd);
@@ -148,7 +148,7 @@ void cleanup_mqueue(int result, int step, mqd_t mqd)
 /*
  * child_fn() - Inside container
  */
-int child_fn(void *arg)
+int child_fn(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	pid_t pid, ppid;
 	mqd_t mqd;
@@ -167,7 +167,8 @@ int child_fn(void *arg)
 	close(father_to_child[1]);
 
 	/* Is parent ready to receive a message? */
-	read(father_to_child[0], buf, 5);
+	if(read(father_to_child[0], buf, 5))
+		tst_resm(TFAIL, "failed to read");
 	if (strcmp(buf, "f:ok")) {
 		tst_resm(TBROK, "cinit: parent did not send the message!");
 		cleanup_mqueue(TBROK, NO_STEP, 0);
@@ -197,7 +198,8 @@ int child_fn(void *arg)
 /*
  * father_signal_handler()
  */
-static void father_signal_handler(int sig, siginfo_t * si, void *unused)
+static void father_signal_handler(int sig LTP_ATTRIBUTE_UNUSED, siginfo_t * si,
+	void *unused LTP_ATTRIBUTE_UNUSED)
 {
 	char buf[256];
 	struct mq_attr attr;
@@ -259,6 +261,7 @@ int main(int argc, char *argv[])
 	int status;
 	struct notify_info info;
 
+	tst_parse_opts(argc, argv, NULL, NULL);
 	setup();
 
 	if (pipe(father_to_child) == -1) {

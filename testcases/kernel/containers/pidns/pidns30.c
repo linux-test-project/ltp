@@ -122,7 +122,7 @@ static void cleanup_child(void)
  * XXX (garrcoop): add calls to cleanup_child() -- or should this be handled
  * from the libltp signal handler?
  */
-static void child_signal_handler(int sig, siginfo_t * si, void *unused)
+static void child_signal_handler(int sig LTP_ATTRIBUTE_UNUSED, siginfo_t * si, void *unused LTP_ATTRIBUTE_UNUSED)
 {
 	char buf[256];
 	struct mq_attr attr;
@@ -161,7 +161,7 @@ static void child_signal_handler(int sig, siginfo_t * si, void *unused)
  *
  * XXX (garrcoop): add more calls to cleanup_child()?
  */
-int child_fn(void *arg)
+int child_fn(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	pid_t pid, ppid;
 	struct sigaction sa;
@@ -220,7 +220,8 @@ int child_fn(void *arg)
 	sleep(3);
 
 	/* Has parent sent a message? */
-	read(father_to_child[0], buf, 5);
+	if(read(father_to_child[0], buf, 5))
+		tst_resm(TFAIL, "Failed to read.");
 	if (strcmp(buf, "f:ok") != 0) {
 		printf("parent did not send the message!\n");
 		return 1;
@@ -243,7 +244,7 @@ int main(int argc, char *argv[])
 	int status;
 	char buf[5];
 	pid_t cpid;
-
+	tst_parse_opts(argc, argv, NULL, NULL);
 	setup();
 
 	if (pipe(child_to_father) == -1 || pipe(father_to_child) == -1) {
@@ -273,7 +274,8 @@ int main(int argc, char *argv[])
 	close(father_to_child[0]);
 
 	/* Is container ready */
-	read(child_to_father[0], buf, 5);
+	if(read(child_to_father[0], buf, 5))
+		tst_resm(TFAIL, "Failed to read.");
 	if (strcmp(buf, "c:ok") != 0)
 		tst_brkm(TBROK, cleanup,
 			 "container did not respond as expected!");

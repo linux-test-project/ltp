@@ -72,7 +72,7 @@ int fd[2];
 /*
  * child_fn1() - Inside container
 */
-static int child_fn1(void *ttype)
+static int child_fn1(void *ttype LTP_ATTRIBUTE_UNUSED)
 {
 	int exit_val;
 	pid_t cpid, ppid;
@@ -90,7 +90,8 @@ static int child_fn1(void *ttype)
 		   If so writing into the pipe created in the parent NS" */
 
 		/* Send "mesg" through the write side of pipe */
-		write(fd[1], mesg, (strlen(mesg) + 1));
+		if(write(fd[1], mesg, (strlen(mesg) + 1)))
+			tst_resm(TFAIL, "Failed to write.");
 		exit_val = 0;
 	} else {
 		printf("got unexpected result of cpid=%d ppid=%d\n",
@@ -110,10 +111,12 @@ int main(int argc, char *argv[])
 {
 	int nbytes, status;
 	char readbuffer[80];
-
+	tst_parse_opts(argc, argv, NULL, NULL);
 	setup();
 
-	pipe(fd);
+	if (pipe(fd) < 0)
+		tst_brkm(TBROK | TERRNO, cleanup, "pipe");
+
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
 	if (TEST_RETURN == -1) {
 		tst_brkm(TFAIL | TTERRNO, CLEANUP, "clone failed");

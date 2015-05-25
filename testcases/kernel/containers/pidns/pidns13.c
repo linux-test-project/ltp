@@ -59,7 +59,8 @@ int pipe_fd[2];
 /*
  * child_signal_handler() - dummy function for sigaction()
  */
-static void child_signal_handler(int sig, siginfo_t * si, void *unused)
+static void child_signal_handler(int sig LTP_ATTRIBUTE_UNUSED,
+	siginfo_t * si LTP_ATTRIBUTE_UNUSED, void *unused LTP_ATTRIBUTE_UNUSED)
 {
 	/* sigtimedwait() traps siginfo details, so this wont be called */
 	tst_resm(TWARN, "cinit(pid %d): control should have not reached here!",
@@ -179,6 +180,7 @@ int main(int argc, char *argv[])
 	int status;
 	int *cinit_no = malloc(sizeof(int));
 	pid_t cpid1, cpid2;
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();
 

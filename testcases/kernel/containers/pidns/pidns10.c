@@ -57,7 +57,7 @@ int child_fn(void *);
 /*
  * child_fn() - Inside container
  */
-int child_fn(void *arg)
+int child_fn(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int exit_val, ret;
 	pid_t pid, ppid;
@@ -91,11 +91,8 @@ static void setup(void)
 int main(int argc, char *argv[])
 {
 	int status;
-	pid_t pid;
-
+	tst_parse_opts(argc, argv, NULL, NULL);
 	setup();
-
-	pid = getpid();
 
 	/* Container creation on PID namespace */
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, NULL));
