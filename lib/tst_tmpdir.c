@@ -57,6 +57,7 @@
  *
  *********************************************************/
 
+#include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <assert.h>
@@ -70,6 +71,7 @@
 #include "test.h"
 #include "rmobj.h"
 #include "ltp_priv.h"
+#include "lapi/futex.h"
 
 /*
  * Define some useful macros.
@@ -97,6 +99,8 @@ static char *TESTDIR = NULL;	/* the directory created */
 
 static char test_start_work_dir[PATH_MAX];
 
+/* lib/tst_checkpoint.c */
+extern futex_t *tst_futexes;
 
 int tst_tmpdir_created(void)
 {
@@ -197,6 +201,13 @@ void tst_rmdir(void)
 			 __func__);
 		return;
 	}
+
+	/*
+	 * Unmap the backend file.
+	 * This is needed to overcome the NFS "silly rename" feature.
+	 */
+	if (tst_futexes)
+		munmap((void *)tst_futexes, getpagesize());
 
 	/*
 	 * Attempt to remove the "TESTDIR" directory, using rmobj().
