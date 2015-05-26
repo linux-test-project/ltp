@@ -38,8 +38,8 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <linux/futex.h>
+#include "lapi/futex.h"
 
-typedef volatile u_int32_t futex_t;
 #define FUTEX_INITIALIZER 0
 
 #ifndef FUTEX_CMP_REQUEUE

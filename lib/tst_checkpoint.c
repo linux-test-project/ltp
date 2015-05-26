@@ -29,10 +29,9 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/futex.h"
 
 #define DEFAULT_MSEC_TIMEOUT 10000
-
-typedef volatile uint32_t futex_t;
 
 static futex_t *futexes;
 static int page_size;
