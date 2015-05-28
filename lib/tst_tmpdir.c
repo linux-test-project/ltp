@@ -206,8 +206,10 @@ void tst_rmdir(void)
 	 * Unmap the backend file.
 	 * This is needed to overcome the NFS "silly rename" feature.
 	 */
-	if (tst_futexes)
+	if (tst_futexes) {
+		msync((void *)tst_futexes, getpagesize(), MS_SYNC);
 		munmap((void *)tst_futexes, getpagesize());
+	}
 
 	/*
 	 * Attempt to remove the "TESTDIR" directory, using rmobj().
