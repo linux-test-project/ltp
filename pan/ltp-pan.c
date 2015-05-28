@@ -1279,6 +1279,7 @@ static char *slurp(char *file)
 	if (read(fd, buf, sbuf.st_size) != sbuf.st_size) {
 		fprintf(stderr, "pan(%s): slurp failed.  errno:%d  %s\n",
 			panname, errno, strerror(errno));
+		free(buf);
 		return NULL;
 	}
 	buf[sbuf.st_size] = '\0';
