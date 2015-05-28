@@ -115,5 +115,8 @@ static void readlinkat_verify(const struct test_case_t *test)
 
 static void cleanup(void)
 {
+	close(dir_fd);
+	close(file_fd);
+
 	tst_rmdir();
 }
