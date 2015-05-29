@@ -713,6 +713,8 @@ static void do_parent(void)
 			}
 		}
 	}
+
+	SAFE_CLOSE(cleanup, read_fd);
 }
 
 static void usage(void)
