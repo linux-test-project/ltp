@@ -131,17 +131,18 @@ static void test_process(void)
 	pause();
 }
 
-static void kill_children(int *child_pid)
+static void kill_children(int *child_pid, int count)
 {
 	int i;
 
-	for (i = 0; i < nb_cpu; i++)
+	for (i = 0; i < count; i++)
 		kill(child_pid[i], SIGTERM);
+	free(child_pid);
 }
 
 int main(void)
 {
-	int *child_pid, oldcount, newcount, shm_id, i, j;
+	int *child_pid, oldcount, newcount, shm_id, i;
 	struct sched_param param;
 	key_t key;
 	int rc = set_affinity(0);
@@ -191,9 +192,7 @@ int main(void)
 		child_pid[i] = fork();
 		if (child_pid[i] == -1) {
 			perror("An error occurs when calling fork()");
-			for (j = 0; j < i; j++)
-				kill(child_pid[j], SIGTERM);
-
+			kill_children(child_pid, i);
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0) {
 
@@ -207,9 +206,7 @@ int main(void)
 	child_pid[i] = fork();
 	if (child_pid[i] == -1) {
 		perror("An error occurs when calling fork()");
-		for (j = 0; j < i; j++)
-			kill(child_pid[j], SIGTERM);
-
+		kill_children(child_pid, i);
 		return PTS_UNRESOLVED;
 	} else if (child_pid[i] == 0) {
 
@@ -223,7 +220,7 @@ int main(void)
 	oldcount = *shmptr;
 	if (sched_setparam(child_pid[i], &param) != 0) {
 		perror("An error occurs when calling sched_setparam()");
-		kill_children(child_pid);
+		kill_children(child_pid, nb_cpu);
 		return PTS_UNRESOLVED;
 	}
 	newcount = *shmptr;
@@ -231,11 +228,11 @@ int main(void)
 	if (newcount == oldcount) {
 		printf("The target process does not preempt"
 		       " the calling process\n");
-		kill_children(child_pid);
+		kill_children(child_pid, nb_cpu);
 		return PTS_FAIL;
 	}
 
 	printf("Test PASSED\n");
-	kill_children(child_pid);
+	kill_children(child_pid, nb_cpu);
 	return PTS_PASS;
 }
