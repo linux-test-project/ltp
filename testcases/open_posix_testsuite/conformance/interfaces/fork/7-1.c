@@ -94,6 +94,7 @@ static int create_catalog(void)
 
 	if (fputs(messcat_in, f) == EOF) {
 		perror("fputs");
+		fclose(f);
 		return 1;
 	}
 
