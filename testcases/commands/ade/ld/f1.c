@@ -1,5 +1,5 @@
 
-void f1()
+void f1(void)
 {
 	int i = 69;
 	i = i;

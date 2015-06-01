@@ -3,7 +3,7 @@
 
 extern void use_s1();
 
-int main()
+int main(void)
 {
 	use_s1();
 	return (0);
