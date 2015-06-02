@@ -14,7 +14,8 @@
 /*
  * Verify that:
  *  If a user ID has no mapping inside the namespace, user ID and group
- * ID will be the value defined in the file /proc/sys/kernel/overflowuid, 65534.
+ * ID will be the value defined in the file /proc/sys/kernel/overflowuid(65534)
+ * and /proc/sys/kernel/overflowgid(65534).
  */
 
 #define _GNU_SOURCE
@@ -29,17 +30,18 @@
 #include "libclone.h"
 #include "userns_helper.h"
 #define OVERFLOWUIDPATH "/proc/sys/kernel/overflowuid"
+#define OVERFLOWGIDPATH "/proc/sys/kernel/overflowgid"
 
 char *TCID = "user_namespace1";
 int TST_TOTAL = 1;
 
-char fullpath[BUFSIZ];
-long overflowuid;
+static long overflowuid;
+static long overflowgid;
 
 /*
  * child_fn1() - Inside a new user namespace
  */
-static int child_fn1(void *arg)
+static int child_fn1(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int exit_val;
 	int uid, gid;
@@ -48,7 +50,7 @@ static int child_fn1(void *arg)
 	gid = getegid();
 
 	tst_resm(TINFO, "USERNS test is running in a new user namespace.");
-	if (uid == overflowuid && gid == overflowuid) {
+	if (uid == overflowuid && gid == overflowgid) {
 		printf("Got expected uid and gid\n");
 		exit_val = 0;
 	} else {
@@ -63,6 +65,7 @@ static void setup(void)
 {
 	check_newuser();
 	SAFE_FILE_SCANF(NULL, OVERFLOWUIDPATH, "%ld", &overflowuid);
+	SAFE_FILE_SCANF(NULL, OVERFLOWGIDPATH, "%ld", &overflowgid);
 }
 
 int main(int argc, char *argv[])
