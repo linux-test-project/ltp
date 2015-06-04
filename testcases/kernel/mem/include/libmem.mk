@@ -23,7 +23,7 @@ MEM_DIR			:= $(top_builddir)/testcases/kernel/mem
 LIBMEM_DIR		:= $(MEM_DIR)/lib
 LIBMEM			:= $(LIBMEM_DIR)/libmem.a
 FILTER_OUT_DIRS		:= $(LIBMEM_DIR)
-CFLAGS			+= -I$(MEM_SRCDIR)/include
+CFLAGS			+= -I$(MEM_SRCDIR)/include -pthread
 LDLIBS			+= $(NUMA_LIBS) -lmem -lltp
 LDFLAGS			+= -L$(LIBMEM_DIR)
 
