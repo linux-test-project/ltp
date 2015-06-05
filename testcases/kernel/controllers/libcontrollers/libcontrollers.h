@@ -70,9 +70,9 @@ enum{
 	GET_TASKS
 };
 
-inline int error_function(char *msg1, char *msg2);
+inline void error_function(char *msg1, char *msg2);
 
-unsigned int read_shares_file (char *filepath);
+int read_shares_file(char *filepath);
 
 int read_file(char *filepath, int action, unsigned int *value);
 
