@@ -71,25 +71,28 @@ static void setup(void)
 int main(int argc, char *argv[])
 {
 	int status;
+	int lc;
 
 	tst_parse_opts(argc, argv, NULL, NULL);
 	setup();
 
-	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWUSER, child_fn1, NULL));
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWUSER,
+			child_fn1, NULL));
 
-	if (TEST_RETURN == -1)
-		tst_brkm(TFAIL | TTERRNO, NULL, "clone failed");
-	else if ((wait(&status)) == -1)
-		tst_brkm(TWARN | TERRNO, NULL, "wait failed");
+		if (TEST_RETURN == -1)
+			tst_brkm(TFAIL | TTERRNO, NULL, "clone failed");
+		else if ((wait(&status)) == -1)
+			tst_brkm(TWARN | TERRNO, NULL, "wait failed");
 
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		tst_resm(TFAIL, "child exited abnormally");
-	else if (WIFSIGNALED(status)) {
-		tst_resm(TFAIL, "child was killed with signal = %d",
-			 WTERMSIG(status));
+		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+			tst_resm(TFAIL, "child exited abnormally");
+		else if (WIFSIGNALED(status)) {
+			tst_resm(TFAIL, "child was killed with signal = %d",
+				 WTERMSIG(status));
+		} else
+			tst_resm(TPASS, "uid and gid are right");
 	}
-
-	tst_resm(TPASS, "the uid and the gid are right inside the container");
 	tst_exit();
 }
 
