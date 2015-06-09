@@ -370,8 +370,7 @@ int test_peer_addr(int sk, sctp_assoc_t asoc, sockaddr_storage_t *peers, int cou
 	struct sockaddr *sa_addr;
 	socklen_t addrs_size = 0;
 	void *addrbuf;
-	char *found = (char *) malloc(count);
-	memset(found, 0, count);
+	char found[count];
 
 	error = sctp_getpaddrs(sk, asoc, &addrs);
 	if (-1 == error) {
@@ -405,6 +404,8 @@ int test_peer_addr(int sk, sctp_assoc_t asoc, sockaddr_storage_t *peers, int cou
 			if (cmp_addr((sockaddr_storage_t *)sa_addr,
 				     &peers[j]) == 0) {
 				found[j] = 1;
+			} else {
+				found[j] = 0;
 			}
 		}
 	}
