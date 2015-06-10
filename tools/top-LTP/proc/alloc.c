@@ -12,8 +12,7 @@
 void *xcalloc(void *pointer, int size)
 {
 	void *ret;
-	if (pointer)
-		free(pointer);
+	free(pointer);
 	if (!(ret = calloc(1, size))) {
 		fprintf(stderr, "xcalloc: allocation error, size = %d\n", size);
 		exit(1);
