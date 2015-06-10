@@ -156,16 +156,8 @@ void setup(void)
 
 	/* creating temporary file */
 	fd = creat(filename, 0644);
-	if (fd < 0) {
-		tst_resm(TFAIL, "creating a new file failed");
-
-		/* Removing temp directory */
-		tst_rmdir();
-
-		/* exit with resturn code appropriate for result */
-		tst_exit();
-
-	}
+	if (fd < 0)
+		tst_brkm(TBROK, tst_rmdir, "creating a new file failed");
 }
 
 /*
