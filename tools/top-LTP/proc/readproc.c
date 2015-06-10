@@ -275,8 +275,7 @@ static char **file2strvec(const char *directory, const char *what)
 		if (n == 0 && rbuf == 0)
 			return NULL;	/* process died between our open and read */
 		if (n < 0) {
-			if (rbuf)
-				free(rbuf);
+			free(rbuf);
 			return NULL;	/* read error */
 		}
 		if (end_of_file && buf[n - 1])	/* last read char not null */
@@ -289,8 +288,7 @@ static char **file2strvec(const char *directory, const char *what)
 	}
 	close(fd);
 	if (n <= 0 && !end_of_file) {
-		if (rbuf)
-			free(rbuf);
+		free(rbuf);
 		return NULL;	/* read error */
 	}
 	endbuf = rbuf + tot;	/* count space for pointers */
