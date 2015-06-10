@@ -991,12 +991,9 @@ int setup_ious(struct thread_info *t,
 	return 0;
 
 free_buffers:
-	if (t->ios)
-		free(t->ios);
-	if (t->iocbs)
-		free(t->iocbs);
-	if (t->events)
-		free(t->events);
+	free(t->ios);
+	free(t->iocbs);
+	free(t->events);
 	return -1;
 }
 
