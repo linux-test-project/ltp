@@ -112,6 +112,7 @@ static struct sym *mknode(struct sym *next, char *key, void *data)
 
 	if (n->key == NULL) {
 		sym_error = "sym node strdup(key) failed!";
+		free(n);
 		return (NULL);
 	}
 	return (n);
@@ -204,8 +205,10 @@ int sym_put(SYM sym, char *key, void *data, int flags)
 	nkey = strdup(key);
 	keys = splitstr(key, ",", NULL);
 
-	if (keys == NULL)
+	if (keys == NULL) {
+		free(nkey);
 		return (EINVAL);
+	}
 
 	for (kk = (char **)keys, csym = sym;
 	     *kk != NULL && (nsym = find_key1(csym->sym, *kk)) != NULL;
