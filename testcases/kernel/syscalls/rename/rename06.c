@@ -66,7 +66,6 @@
 
 void setup();
 void cleanup();
-extern void do_file_setup(char *);
 
 char *TCID = "rename06";
 int TST_TOTAL = 1;
