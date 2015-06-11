@@ -68,8 +68,9 @@ void cleanup(void);
 #define FMODE	0444
 #define DMODE	00700
 
-char good_dir[40] = "testdir";
-char fname[40], fname1[40];
+static char fname_dir[] = "testdir";
+static char fname[] = "testdir/file";
+static char fname1[] = "testdir/file1";
 
 static uid_t nobody_uid;
 
@@ -103,7 +104,7 @@ int main(int ac, char **av)
 		}
 
 		if (pid == 0) {	/* first child */
-			if (mkdir(good_dir, DMODE) != 0) {
+			if (mkdir(fname_dir, DMODE) != 0) {
 				perror("mkdir() failed");
 				exit(1);
 			}
@@ -157,7 +158,7 @@ int main(int ac, char **av)
 			/* clean up things in case we are looping */
 			unlink(fname);
 			unlink(fname1);
-			rmdir(good_dir);
+			rmdir(fname_dir);
 			exit(retval);
 
 		} else {	/* parent */
@@ -192,10 +193,6 @@ void setup(void)
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
-
-	sprintf(good_dir, "%s.%d", good_dir, getpid());
-	sprintf(fname1, "%s/file1.%d", good_dir, getpid());
-	sprintf(fname, "%s/file.%d", good_dir, getpid());
 }
 
 /*

@@ -53,7 +53,7 @@ char *TCID = "chroot03";
 
 static int fd;
 static char fname[255];
-static char good_dir[100] = "/tmp/testdir";
+static char nonexistent_dir[100] = "testdir";
 static char bad_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 static char symbolic_dir[] = "sym_dir1";
 
@@ -78,7 +78,7 @@ struct test_case_t {
 	     * does not exist.
 	     */
 	{
-	good_dir, ENOENT},
+	nonexistent_dir, ENOENT},
 #if !defined(UCLINUX)
 	    /*
 	     * attempt to chroot to a path pointing to an invalid address
@@ -146,12 +146,6 @@ static void setup(void)
 	fd = creat(fname, 0777);
 	if (fd == -1)
 		tst_brkm(TBROK, cleanup, "Failed to creat a temp file");
-
-	/*
-	 * set up good_dir to test whether chroot() is setting ENOENT if the
-	 * directory does not exist.
-	 */
-	(void)sprintf(good_dir, "%s.%d", good_dir, getpid());
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
