@@ -114,6 +114,7 @@ int main(int argc, char *argv[])
 			tst_resm(TPASS, "the uid and the gid are right inside "
 				"the container");
 	}
+	cleanup();
 	tst_exit();
 }
 
