@@ -193,6 +193,51 @@ ROD()
 	fi
 }
 
+tst_acquire_device()
+{
+	if [ -z ${TST_TMPDIR} ]; then
+		tst_brkm "Use 'tst_tmpdir' before 'tst_acquire_device'"
+	fi
+
+	if [ -n "${LTP_DEV}" ]; then
+		tst_resm TINFO "Using test device LTP_DEV='${LTP_DEV}'"
+		if [ ! -b ${LTP_DEV} ]; then
+			tst_brkm TBROK "${LTP_DEV} is not a block device"
+		fi
+		TST_DEVICE=${LTP_DEV}
+		TST_DEVICE_FLAG=0
+		return
+	fi
+
+	ROD_SILENT dd if=/dev/zero of=test_dev.img bs=1024 count=20480
+
+	TST_DEVICE=$(losetup -f)
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK "Couldn't find free loop device"
+	fi
+
+	tst_resm TINFO "Found free device '${TST_DEVICE}'"
+
+	ROD_SILENT losetup ${TST_DEVICE} test_dev.img
+
+	TST_DEVICE_FLAG=1
+}
+
+tst_release_device()
+{
+	if [ ${TST_DEVICE_FLAG} -eq 0 ]; then
+		return
+	fi
+
+	losetup -a | grep -q ${TST_DEVICE}
+	if [ $? -eq 0 ]; then
+		losetup -d ${TST_DEVICE}
+		if [ $? -ne 0 ];then
+			tst_resm TWARN "'losetup -d ${TST_DEVICE}' failed"
+		fi
+	fi
+}
+
 # Check that test name is set
 if [ -z "$TCID" ]; then
 	tst_brkm TBROK "TCID is not defined"
