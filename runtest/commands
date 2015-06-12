@@ -21,3 +21,10 @@ sssd01 sssd01
 sssd02 sssd02
 sssd03 sssd03
 du01 du01.sh
+df01_ext2 df01.sh -f ext2
+df01_ext3 df01.sh -f ext3
+df01_ext4 df01.sh -f ext4
+df01_xfs df01.sh -f xfs
+df01_vfat df01.sh -f vfat
+df01_exfat df01.sh -f exfat
+df01_ntfs df01.sh -f ntfs
