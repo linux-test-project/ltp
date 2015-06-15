@@ -377,7 +377,7 @@ char *cat_args(int argc, char **argv)
 		size++;
 	}
 
-	if ((cmd = (char *)malloc(size)) == NULL) {
+	if ((cmd = malloc(size)) == NULL) {
 		snprintf(zoo_error, ZELEN,
 			 "Malloc Error, %s/%d", __FILE__, __LINE__);
 		return NULL;
