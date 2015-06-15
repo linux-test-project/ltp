@@ -121,7 +121,7 @@ int parse_ranges(char *str, int defmin, int defmax, int defmult,
 	}
 
 	tmpstr = strdup(str);
-	ranges = (struct range *)malloc((ncommas + 1) * sizeof(struct range));
+	ranges = malloc((ncommas + 1) * sizeof(struct range));
 	rp = ranges;
 
 	tok = strtok(tmpstr, ",");
