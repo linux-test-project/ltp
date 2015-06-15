@@ -368,8 +368,8 @@ int main(int argc, char **argv)
 
 	/* a place to store the pgrps we're watching */
 	running =
-	    (struct tag_pgrp *)malloc((keep_active + 1) *
-				      sizeof(struct tag_pgrp));
+		malloc((keep_active + 1) *
+			sizeof(struct tag_pgrp));
 	if (running == NULL) {
 		fprintf(stderr, "pan(%s): Failed to allocate memory: %s\n",
 			panname, strerror(errno));
@@ -379,7 +379,7 @@ int main(int argc, char **argv)
 	running[keep_active].pgrp = -1;	/* end sentinel */
 
 	/* a head to the orphaned pgrp list */
-	orphans = (struct orphan_pgrp *)malloc(sizeof(struct orphan_pgrp));
+	orphans = malloc(sizeof(struct orphan_pgrp));
 	memset(orphans, 0, sizeof(struct orphan_pgrp));
 
 	srand48(time(NULL) ^ (getpid() + (getpid() << 15)));
@@ -1174,7 +1174,7 @@ static struct collection *get_collection(char *file, int optind, int argc,
 	if (!buf)
 		return NULL;
 
-	coll = (struct collection *)malloc(sizeof(struct collection));
+	coll = malloc(sizeof(struct collection));
 	coll->cnt = 0;
 
 	head = p = n = NULL;
@@ -1187,8 +1187,7 @@ static struct collection *get_collection(char *file, int optind, int argc,
 
 		/* If this is line isn't a comment */
 		if ((*a != '#') && (*a != '\0') && (*a != ' ')) {
-			n = (struct coll_entry *)
-			    malloc(sizeof(struct coll_entry));
+			n = malloc(sizeof(struct coll_entry));
 			if ((n->pcnt_f = strstr(a, "%f"))) {
 				n->pcnt_f[1] = 's';
 			}
@@ -1222,7 +1221,7 @@ static struct collection *get_collection(char *file, int optind, int argc,
 			workstr_left--;
 		}
 
-		n = (struct coll_entry *)malloc(sizeof(struct coll_entry));
+		n = malloc(sizeof(struct coll_entry));
 		if ((n->pcnt_f = strstr(workstr, "%f"))) {
 			n->pcnt_f[1] = 's';
 		}
@@ -1239,8 +1238,7 @@ static struct collection *get_collection(char *file, int optind, int argc,
 	}
 
 	/* get an array */
-	coll->ary = (struct coll_entry **)malloc(coll->cnt *
-						 sizeof(struct coll_entry *));
+	coll->ary = malloc(coll->cnt * sizeof(struct coll_entry *));
 
 	/* fill the array */
 	i = 0;
@@ -1275,7 +1273,7 @@ static char *slurp(char *file)
 		return NULL;
 	}
 
-	buf = (char *)malloc(sbuf.st_size + 1);
+	buf = malloc(sbuf.st_size + 1);
 	if (read(fd, buf, sbuf.st_size) != sbuf.st_size) {
 		fprintf(stderr, "pan(%s): slurp failed.  errno:%d  %s\n",
 			panname, errno, strerror(errno));
@@ -1328,7 +1326,7 @@ static void mark_orphan(struct orphan_pgrp *orphans, pid_t cpid)
 	}
 	if (orph == NULL) {
 		/* make a new struct */
-		orph = (struct orphan_pgrp *)malloc(sizeof(struct orphan_pgrp));
+		orph = malloc(sizeof(struct orphan_pgrp));
 
 		/* plug in the new struct just after the head */
 		orph->next = orphans->next;
