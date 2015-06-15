@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	while ((c = getopt(argc, argv, "a:s:12")) != -1) {
 		switch (c) {
 		case 'a':
-			active = (char *)malloc(strlen(optarg) + 1);
+			active = malloc(strlen(optarg) + 1);
 			strcpy(active, optarg);
 			break;
 		case 's':
