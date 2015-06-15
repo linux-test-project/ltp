@@ -86,7 +86,7 @@ SYM newsym(void)
 {
 	SYM h;
 
-	if ((h = (SYM) malloc(sizeof(struct symh))) == NULL) {
+	if ((h = malloc(sizeof(struct symh))) == NULL) {
 		sym_error = "sym header malloc failed!";
 		return (NULL);
 	}
@@ -101,7 +101,7 @@ static struct sym *mknode(struct sym *next, char *key, void *data)
 {
 	struct sym *n;
 
-	if ((n = (struct sym *)malloc(sizeof(struct sym))) == NULL) {
+	if ((n = malloc(sizeof(struct sym))) == NULL) {
 		sym_error = "sym node malloc failed!";
 		return (NULL);
 	}
