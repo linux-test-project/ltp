@@ -163,6 +163,8 @@ int dump_data(FILE * stream, const char *buff, const size_t buff_siz,
 			fprintf(stream, "%s\n", obuff);
 			break;
 		default:
+			FREE(ibuff);
+			FREE(obuff);
 			return (-1);
 		}
 	}
