@@ -88,7 +88,7 @@ const char **splitstr(const char *str, const char *separator, int *argcount)
 	/*
 	 * set aside an initial char ** array for string array.
 	 */
-	arg_array = (char **)malloc(sizeof(char *) * max_toks);
+	arg_array = malloc(sizeof(char *) * max_toks);
 
 	if (arg_array == NULL) {
 		if (argcount != NULL)
