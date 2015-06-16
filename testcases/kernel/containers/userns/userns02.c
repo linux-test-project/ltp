@@ -31,6 +31,11 @@
 char *TCID = "user_namespace2";
 int TST_TOTAL = 1;
 
+static void cleanup(void)
+{
+	tst_rmdir();
+}
+
 /*
  * child_fn1() - Inside a new user namespace
  */
@@ -62,11 +67,6 @@ static void setup(void)
 	TST_CHECKPOINT_INIT(NULL);
 }
 
-static void cleanup(void)
-{
-	tst_rmdir();
-}
-
 int main(int argc, char *argv[])
 {
 	int status;
@@ -93,14 +93,16 @@ int main(int argc, char *argv[])
 		parentgid = getegid();
 		sprintf(path, "/proc/%d/uid_map", childpid);
 		sprintf(content, "100 %d 1", parentuid);
-		fd = SAFE_OPEN(NULL, path, O_WRONLY, 0644);
-		SAFE_WRITE(NULL, 1, fd, content, strlen(content));
+		fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
+		SAFE_WRITE(cleanup, 1, fd, content, strlen(content));
+		SAFE_CLOSE(cleanup, fd);
 		sprintf(path, "/proc/%d/gid_map", childpid);
 		sprintf(content, "100 %d 1", parentgid);
-		fd = SAFE_OPEN(NULL, path, O_WRONLY, 0644);
-		SAFE_WRITE(NULL, 1, fd, content, strlen(content));
+		fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
+		SAFE_WRITE(cleanup, 1, fd, content, strlen(content));
+		SAFE_CLOSE(cleanup, fd);
 
-		TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
+		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 
 		if (waitpid(childpid, &status, 0) < 0)
 			tst_brkm(TBROK | TERRNO, cleanup, "waitpid failed");
