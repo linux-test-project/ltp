@@ -388,6 +388,11 @@ getppid02 getppid02
 getpriority01 getpriority01
 getpriority02 getpriority02
 
+getrandom01 getrandom01
+getrandom02 getrandom02
+getrandom03 getrandom03
+getrandom04 getrandom04
+
 getresgid01 getresgid01
 getresgid02 getresgid02
 getresgid03 getresgid03
