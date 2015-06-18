@@ -39,6 +39,7 @@ autom4te.cache
 /pan/ltp-pan
 /pan/ltp-scanner
 
+.dep_modules
 .gitattributes
 .pc/
 patches/

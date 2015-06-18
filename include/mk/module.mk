@@ -45,10 +45,18 @@ MAKE_TARGETS := $(filter-out %.ko, $(MAKE_TARGETS))
 MAKE_TARGETS += $(if $(filter 2,$(SKIP)),$(wildcard *.ko),)
 endif
 
+CLEAN_TARGETS += .dep_modules
+
+MODULE_SOURCES := $(patsubst %.ko,%.c,$(filter %.ko, $(MAKE_TARGETS)))
+
 # Ignoring the exit status of commands is done to be forward compatible with
 # kernel internal API changes. The user-space test will return TCONF, if it
 # doesn't find the module (i.e. it wasn't built either due to kernel-devel
 # missing or module build failure).
-%.ko: %.c
+%.ko: %.c .dep_modules ;
+
+.dep_modules: $(MODULE_SOURCES)
+	@echo "Building modules: $(MODULE_SOURCES)"
 	-$(MAKE) -C $(LINUX_DIR) M=$(abs_srcdir)
 	rm -rf *.mod.c *.o *.ko.unsigned modules.order .tmp* .*.ko .*.cmd Module.symvers
+	@touch .dep_modules
