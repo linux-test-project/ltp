@@ -15,8 +15,8 @@
 /multicast/mc_commo/mc_recv
 /multicast/mc_commo/mc_send
 /multicast/mc_member/member
-/multicast/mc_opts/opts
-/multicast/mc_opts/opts_e
+/multicast/mc_opts/mc_verify_opts
+/multicast/mc_opts/mc_verify_opts_error
 /nfs/nfs01/open_files
 /nfs/nfs04/nfs04_create_file
 /nfs/nfs_fsstress/fsstress
