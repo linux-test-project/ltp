@@ -1,3 +1,5 @@
+/ade/ldd/datafiles/lddfile.out
+/ade/ldd/datafiles/*.obj.so
 /ade/objdump/test_arch_debug
 /ade/objdump/test_arch_stripped
 /ade/size/test
