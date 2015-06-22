@@ -14,7 +14,7 @@
 /multicast/mc_gethost/mc_gethost
 /multicast/mc_commo/mc_recv
 /multicast/mc_commo/mc_send
-/multicast/mc_member/member
+/multicast/mc_member/mc_member_test
 /multicast/mc_opts/mc_verify_opts
 /multicast/mc_opts/mc_verify_opts_error
 /nfs/nfs01/open_files
