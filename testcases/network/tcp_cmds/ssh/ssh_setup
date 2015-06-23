@@ -34,7 +34,7 @@ do_setup()
 		tst_brkm TBROK "Failed to add user $TEST_USER to system $RHOST."
 	fi
 
-	echo "$TEST_USER_PASSWD" | passwd --stdin $TEST_USER
+	echo "$TEST_USER:$TEST_USER_PASSWD" | chpasswd
 
 	# create users home diretory (SLES 8 does not do this, even when
 	# specified in adduser)
