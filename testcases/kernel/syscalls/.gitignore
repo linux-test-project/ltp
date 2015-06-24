@@ -326,6 +326,10 @@
 /getppid/getppid02
 /getpriority/getpriority01
 /getpriority/getpriority02
+/getrandom/getrandom01
+/getrandom/getrandom02
+/getrandom/getrandom03
+/getrandom/getrandom04
 /getresgid/getresgid01
 /getresgid/getresgid02
 /getresgid/getresgid03
