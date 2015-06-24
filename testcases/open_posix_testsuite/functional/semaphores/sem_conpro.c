@@ -100,34 +100,32 @@ int main(int argc, char *argv[])
 	int occupied_value = BUF_SIZE;
 	int empty_value = 0;
 	int lock_value = 1;
-	buf_t *buf;
+	buf_t buf;
 	pthread_t con, pro;
-	buf = malloc(sizeof(buf_t));
 
 #ifndef  _POSIX_SEMAPHORES
 	printf("_POSIX_SEMAPHORES is not defined \n");
 	return PTS_UNRESOLVED;
 #endif
-	if (-1 == sem_init(&(buf->occupied), shared, occupied_value)) {
-		perror("sem_init didn't return success \n");
-		printf("hello \n");
-		return PTS_UNRESOLVED;
-	}
-	if (-1 == sem_init(&buf->empty, shared, empty_value)) {
+	if (-1 == sem_init(&buf.occupied, shared, occupied_value)) {
 		perror("sem_init didn't return success \n");
 		return PTS_UNRESOLVED;
 	}
-	if (-1 == sem_init(&buf->lock, shared, lock_value)) {
+	if (-1 == sem_init(&buf.empty, shared, empty_value)) {
+		perror("sem_init didn't return success \n");
+		return PTS_UNRESOLVED;
+	}
+	if (-1 == sem_init(&buf.lock, shared, lock_value)) {
 		perror("sem_init didn't return success \n");
 		return PTS_UNRESOLVED;
 	}
 	in = out = 0;
 
-	pthread_create(&con, NULL, (void *)consumer, (void *)buf);
-	pthread_create(&pro, NULL, (void *)producer, (void *)buf);
+	pthread_create(&con, NULL, (void *)consumer, &buf);
+	pthread_create(&pro, NULL, (void *)producer, &buf);
 	pthread_join(con, NULL);
 	pthread_join(pro, NULL);
-	sem_destroy(&buf->occupied);
-	sem_destroy(&buf->empty);
+	sem_destroy(&buf.occupied);
+	sem_destroy(&buf.empty);
 	return PTS_PASS;
 }
