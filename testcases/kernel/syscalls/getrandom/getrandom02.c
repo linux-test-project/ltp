@@ -27,15 +27,15 @@
  *
  */
 
-#include <sys/syscall.h>
-#include <errno.h>
 #include <linux/random.h>
+#include "lapi/getrandom.h"
+#include "linux_syscall_numbers.h"
 #include "test.h"
 
-static int modes[] = {0, GRND_RANDOM, GRND_NONBLOCK,
-						GRND_RANDOM | GRND_NONBLOCK};
-
 char *TCID = "getrandom02";
+static int modes[] = { 0, GRND_RANDOM, GRND_NONBLOCK,
+		       GRND_RANDOM | GRND_NONBLOCK };
+
 int TST_TOTAL = ARRAY_SIZE(modes);
 
 static unsigned char buf[256];
@@ -57,14 +57,10 @@ int main(int ac, char **av)
 			fill();
 
 			do {
-					TEST(syscall(SYS_getrandom, buf, size,
-								modes[i]));
+				TEST(ltp_syscall(__NR_getrandom, buf, size,
+					modes[i]));
 			} while ((modes[i] & GRND_NONBLOCK) && TEST_RETURN == -1
 				&& TEST_ERRNO == EAGAIN);
-
-			if (TEST_RETURN == -1 && TEST_ERRNO == ENOSYS)
-				tst_brkm(TCONF, NULL,
-					"This test needs kernel 3.17 at least");
 
 			if (!check_content(TEST_RETURN))
 				tst_resm(TFAIL | TTERRNO, "getrandom failed");

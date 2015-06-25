@@ -69,7 +69,7 @@ for arch in $(cat "${srcdir}/order") ; do
 		nr="__NR_$1"
 		shift
 		if [ $# -eq 0 ] ; then
-			err "invalid line found"
+			err "invalid line found: $line"
 		fi
 		cat <<-EOF
 		# ifndef ${nr}

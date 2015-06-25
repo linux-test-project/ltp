@@ -1810,6 +1810,9 @@
 # ifndef __NR_prlimit64
 #  define __NR_prlimit64 (__NR_SYSCALL_BASE+369)
 # endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom (__NR_SYSCALL_BASE+384)
+# endif
 #endif
 
 
@@ -2874,6 +2877,9 @@
 # ifndef __NR_prlimit64
 #  define __NR_prlimit64 340
 # endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom 355
+# endif
 #endif
 
 
@@ -3759,6 +3765,9 @@
 # endif
 # ifndef __NR_prlimit64
 #  define __NR_prlimit64 1325
+# endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom 1339
 # endif
 #endif
 
@@ -4790,6 +4799,9 @@
 # ifndef __NR_syscalls
 #  define __NR_syscalls 345
 # endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom 359
+# endif
 #endif
 
 
@@ -5820,6 +5832,9 @@
 # ifndef __NR_syscalls
 #  define __NR_syscalls 345
 # endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom 359
+# endif
 #endif
 
 
@@ -6802,6 +6817,9 @@
 # ifndef __NR_newfstatat
 #  define __NR_newfstatat 293
 # endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom 349
+# endif
 #endif
 
 
@@ -7783,6 +7801,9 @@
 # endif
 # ifndef __NR_newfstatat
 #  define __NR_newfstatat 293
+# endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom 349
 # endif
 #endif
 
@@ -11721,6 +11742,9 @@
 # ifndef __NR_prlimit64
 #  define __NR_prlimit64 302
 # endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom 318
+# endif
 #endif
 
 
@@ -12048,6 +12072,9 @@
 # endif
 # ifndef __NR_getpriority
 #  define __NR_getpriority __LTP__NR_INVALID_SYSCALL
+# endif
+# ifndef __NR_getrandom
+#  define __NR_getrandom __LTP__NR_INVALID_SYSCALL
 # endif
 # ifndef __NR_getresgid
 #  define __NR_getresgid __LTP__NR_INVALID_SYSCALL
