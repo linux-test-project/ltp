@@ -32,7 +32,7 @@ setup()
 
 	tst_acquire_device
 
-	ROD_SILENT mkfs.${FS_TYPE} ${TST_DEVICE}
+	tst_mkfs ${FS_TYPE} ${TST_DEVICE}
 
 	ROD_SILENT mkdir -p mntpoint
 
