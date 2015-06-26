@@ -74,7 +74,7 @@ int child_fn(void *arg)
 	exit_val = 0;
 
 	/* Spawn many children */
-	for (i = 0; i < (sizeof(children) / sizeof(children[0])); i++) {
+	for (i = 0; i < ARRAY_SIZE(children); i++) {
 		switch ((children[i] = fork())) {
 		case -1:
 			perror("fork failed");
@@ -98,7 +98,7 @@ int child_fn(void *arg)
 		exit_val = 1;
 	}
 
-	for (i = 0; i < (sizeof(children) / sizeof(children[0])); i++) {
+	for (i = 0; i < ARRAY_SIZE(children); i++) {
 		if (waitpid(children[i], &status, 0) == -1) {
 			perror("cinit: waitpid failed");
 			kill(children[i], SIGTERM);
