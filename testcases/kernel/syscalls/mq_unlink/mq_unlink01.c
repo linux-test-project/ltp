@@ -280,7 +280,7 @@ int main(int ac, char **av)
 			ret = 0;
 
 			for (i = 0; ret == 0 &&
-			     i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+			     i < (int)ARRAY_SIZE(tcase); i++) {
 				ret = do_test(&tcase[i]);
 			}
 
