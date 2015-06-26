@@ -110,7 +110,7 @@ int main(int ac, char **av)
 			for (signal = SIGRTMIN; signal <= (SIGRTMAX); signal++) {
 				tst_resm(TINFO, "Signal %d", signal);
 
-				for (flag = 0; flag < (sizeof(test_flags) / sizeof(test_flags[0])); flag++) {
+				for (flag = 0; flag < ARRAY_SIZE(test_flags); flag++) {
 					TEST(set_handler
 					     (signal, 0, test_flags[flag]));
 					if ((TEST_RETURN == -1)
