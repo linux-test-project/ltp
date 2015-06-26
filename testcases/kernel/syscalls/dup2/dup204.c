@@ -125,7 +125,7 @@ void cleanup(void)
 {
 	int i;
 
-	for (i = 0; i < (sizeof(fd) / sizeof(fd[0])); i++) {
+	for (i = 0; i < ARRAY_SIZE(fd); i++) {
 		close(fd[i]);
 		close(nfd[i]);
 	}
