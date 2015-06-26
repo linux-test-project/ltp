@@ -251,10 +251,10 @@ int main(void)
 {
 	setup();		/* temp file is now open        */
 
-	npathdats = (sizeof(pathdat) / sizeof(pathdat[0]));
-	ngoods = (sizeof(goodlist) / sizeof(goodlist[0]));
-	nbads = (sizeof(badlist) / sizeof(badlist[0]));
-	nmnem = (sizeof(mnem) / sizeof(mnem[0]));
+	npathdats = ARRAY_SIZE(pathdat);
+	ngoods = ARRAY_SIZE(goodlist);
+	nbads = ARRAY_SIZE(badlist);
+	nmnem = ARRAY_SIZE(mnem);
 
 	setup_path();
 
