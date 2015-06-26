@@ -86,7 +86,7 @@ int defined_advise[] = {
 #endif
 };
 
-#define defined_advise_total (sizeof(defined_advise) / sizeof(defined_advise[0]))
+#define defined_advise_total ARRAY_SIZE(defined_advise)
 
 #if 0
 /* Too many test cases. */

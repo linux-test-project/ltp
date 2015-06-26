@@ -71,7 +71,7 @@ int defined_advise[] = {
 	POSIX_FADV_DONTNEED,
 };
 
-#define defined_advise_total (sizeof(defined_advise) / sizeof(defined_advise[0]))
+#define defined_advise_total ARRAY_SIZE(defined_advise)
 
 int TST_TOTAL = defined_advise_total;
 
