@@ -37,7 +37,7 @@
 #include "pidns_helper.h"
 
 #define PROCDIR "proc"
-char *TCID	= "pidns03";
+char *TCID = "pidns03";
 int TST_TOTAL	= 1;
 
 

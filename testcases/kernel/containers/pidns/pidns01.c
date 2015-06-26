@@ -58,7 +58,7 @@
 #include "libclone.h"
 #include "pidns_helper.h"
 
-char *TCID = "pid_namespace1";
+char *TCID = "pidns01";
 int TST_TOTAL = 1;
 
 #define CHILD_PID       1
