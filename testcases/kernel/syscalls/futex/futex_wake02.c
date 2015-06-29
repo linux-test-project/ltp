@@ -26,53 +26,12 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "futextest.h"
+#include "futex_utils.h"
 
 const char *TCID="futex_wake02";
 const int TST_TOTAL=11;
 
 static futex_t futex = FUTEX_INITIALIZER;
-
-/*
- * Wait for nr_threads to be sleeping
- */
-static int wait_for_threads(unsigned int nr_threads)
-{
-	char thread_state, name[1024];
-	DIR *dir;
-	struct dirent *dent;
-	unsigned int cnt = 0;
-
-	snprintf(name, sizeof(name), "/proc/%i/task/", getpid());
-
-	dir = SAFE_OPENDIR(NULL, name);
-
-	while ((dent = SAFE_READDIR(NULL, dir))) {
-		/* skip ".", ".." and the main thread */
-		if (atoi(dent->d_name) == getpid() || atoi(dent->d_name) == 0)
-			continue;
-
-		snprintf(name, sizeof(name), "/proc/%i/task/%s/stat",
-		         getpid(), dent->d_name);
-
-		SAFE_FILE_SCANF(NULL, name, "%*i %*s %c", &thread_state);
-
-		if (thread_state != 'S') {
-			tst_resm(TINFO, "Thread %s not sleeping yet", dent->d_name);
-			SAFE_CLOSEDIR(NULL, dir);
-			return 1;
-		}
-		cnt++;
-	}
-
-	SAFE_CLOSEDIR(NULL, dir);
-
-	if (cnt != nr_threads) {
-		tst_resm(TINFO, "%u threads sleeping, expected %u",
-	                  cnt, nr_threads);
-	}
-
-	return 0;
-}
 
 static volatile int threads_flags[55];
 
