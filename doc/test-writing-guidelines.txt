@@ -1195,6 +1195,9 @@ Following functions similar to the LTP C interface are available.
 * tst_tmpdir()
 * tst_rmdir()
 * tst_fs_has_free()
+* tst_mkfs()
+* tst_acquire_device()
+* tst_release_device()
 
 There is one more function called 'tst_check_cmds()' that gets unspecified
 number of parameters and asserts that each parameter is a name of an
