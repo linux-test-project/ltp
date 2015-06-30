@@ -24,9 +24,7 @@
 #include <string.h>
 #include <errno.h>
 #include <libgen.h>
-#include <sched.h>
 #include <sys/syscall.h>
-#include <unistd.h>
 #include <signal.h>
 #include "linux_syscall_numbers.h"
 #include "test.h"
