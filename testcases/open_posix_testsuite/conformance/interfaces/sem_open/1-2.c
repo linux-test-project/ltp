@@ -34,7 +34,7 @@ int main(void)
 
 	/* Checking if mysemp has a value returned. From sem_open */
 
-	if (&mysemp != NULL) {
+	if (mysemp != NULL) {
 		puts("TEST PASSED");
 		sem_close(mysemp);
 		sem_unlink(semname);
