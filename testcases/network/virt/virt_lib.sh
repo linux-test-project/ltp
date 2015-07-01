@@ -153,6 +153,19 @@ virt_multiple_add_test()
 	tst_resm TPASS "done"
 }
 
+virt_add_delete_test()
+{
+	local opt="$@"
+	tst_resm TINFO "create, delete $virt_type $virt_max times"
+
+	for i in $(seq 0 $virt_max); do
+		ROD_SILENT "virt_add ltp_v0 $opt"
+		ROD_SILENT "ip link set ltp_v0 up"
+		ROD_SILENT "ip link delete ltp_v0"
+	done
+	tst_resm TPASS "done"
+}
+
 virt_setup()
 {
 	local opt="$1"

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -16,22 +16,19 @@
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
-# Test-case 1: Local test, check if we can create and then delete VXLAN
-#              interface 5000 times.
+# Test-case 1: Local test, check if we can create and then delete VLAN
+#              interface 4095 times.
 #
 
-TCID=vxlan02
+TCID=vlan02
 TST_TOTAL=1
 
-virt_type="vxlan"
-start_id=16700000
-virt_max=5000
+virt_type="vlan"
+virt_max="4094"
 
 . test_net.sh
 . virt_lib.sh
 
-opt="group 239.1.1.1"
-
-virt_add_delete_test "id $start_id $opt"
+virt_add_delete_test "id 4094"
 
 tst_exit

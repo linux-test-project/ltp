@@ -20,6 +20,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= virt_lib.sh \
 			   vlan01.sh \
+			   vlan02.sh \
 			   vxlan01.sh \
 			   vxlan02.sh \
 			   vxlan03.sh \
