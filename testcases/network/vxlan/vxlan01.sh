@@ -33,13 +33,13 @@ opt="group 239.1.1.1"
 vnis=$(seq $start_vni $max)
 
 for i in $vnis; do
-	safe_run "ip link add ltp_vxl${i} type vxlan id $i $opt"
-	safe_run "ip link set ltp_vxl${i} up"
+	ROD_SILENT "ip link add ltp_vxl${i} type vxlan id $i $opt"
+	ROD_SILENT "ip link set ltp_vxl${i} up"
 done
 
 for i in $vnis; do
-	safe_run "ip link set ltp_vxl${i} down"
-	safe_run "ip link delete ltp_vxl${i}"
+	ROD_SILENT "ip link set ltp_vxl${i} down"
+	ROD_SILENT "ip link delete ltp_vxl${i}"
 done
 
 tst_resm TPASS "done"

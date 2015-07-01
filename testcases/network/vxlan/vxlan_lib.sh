@@ -107,14 +107,6 @@ cleanup_vxlans()
 TST_CLEANUP="cleanup_vxlans"
 trap "tst_brkm TBROK 'test interrupted'" INT
 
-safe_run()
-{
-	$@ > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		tst_brkm TBROK "cmd failed: $@"
-	fi
-}
-
 vxlan_setup_subnet_uni()
 {
 	tst_kvercmp 3 10 0 && \
@@ -127,10 +119,10 @@ vxlan_setup_subnet_uni()
 
 	tst_resm TINFO "setup VxLANv$ipver with unicast address: '$opt'"
 
-	safe_run "ip li add ltp_vxl0 type vxlan id $1 $opt"
-	safe_run "ip li set ltp_vxl0 address $mac_vxlan_local"
-	safe_run "ip addr add ${ip_vxlan_local}/24 dev ltp_vxl0"
-	safe_run "ip li set up ltp_vxl0"
+	ROD_SILENT "ip li add ltp_vxl0 type vxlan id $1 $opt"
+	ROD_SILENT "ip li set ltp_vxl0 address $mac_vxlan_local"
+	ROD_SILENT "ip addr add ${ip_vxlan_local}/24 dev ltp_vxl0"
+	ROD_SILENT "ip li set up ltp_vxl0"
 
 	opt="remote $(tst_ipaddr)"
 
@@ -156,10 +148,10 @@ vxlan_setup_subnet_multi()
 
 	tst_resm TINFO "setup VxLANv$ipver with multicast address: '$opt'"
 
-	safe_run "ip li add ltp_vxl0 type vxlan id $1 $opt dev $(tst_iface)"
-	safe_run "ip li set ltp_vxl0 address $mac_vxlan_local"
-	safe_run "ip addr add ${ip_vxlan_local}/24 dev ltp_vxl0"
-	safe_run "ip li set up ltp_vxl0"
+	ROD_SILENT "ip li add ltp_vxl0 type vxlan id $1 $opt dev $(tst_iface)"
+	ROD_SILENT "ip li set ltp_vxl0 address $mac_vxlan_local"
+	ROD_SILENT "ip addr add ${ip_vxlan_local}/24 dev ltp_vxl0"
+	ROD_SILENT "ip li set up ltp_vxl0"
 
 	tst_rhost_run -s -c "ip li add ltp_vxl0 type vxlan id $2 $opt \
 	                     dev $(tst_iface rhost)"
@@ -217,7 +209,7 @@ vxlan_compare_netperf()
 	netload_test $ip_vxlan_remote res_ipv4 || ret=1
 	netload_test ${ip6_vxlan_remote}%ltp_vxl0 res_ipv6 || ret=1
 
-	safe_run "ip link delete ltp_vxl0"
+	ROD_SILENT "ip link delete ltp_vxl0"
 	tst_rhost_run -s -c "ip link delete ltp_vxl0"
 	[ "$ret" -eq 1 ] && return 1
 	local vt="$(cat res_ipv4)"
@@ -258,4 +250,4 @@ ip link add ltp_vxl type vxlan id $start_vni > /dev/null 2>&1
 if [ $? -ne 0 ]; then
 	tst_brkm TCONF "iproute2 or kernel doesn't support vxlan"
 fi
-safe_run "ip link delete ltp_vxl"
+ROD_SILENT "ip link delete ltp_vxl"

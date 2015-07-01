@@ -31,9 +31,9 @@ opt="group 239.1.1.1"
 tst_resm TINFO "create, delete ltp_vxl1 $vxlan_max times"
 
 for i in $(seq 0 $vxlan_max); do
-	safe_run "ip link add ltp_vxl1 type vxlan id $start_vni $opt"
-	safe_run "ip link set ltp_vxl1 up"
-	safe_run "ip link delete ltp_vxl1"
+	ROD_SILENT "ip link add ltp_vxl1 type vxlan id $start_vni $opt"
+	ROD_SILENT "ip link set ltp_vxl1 up"
+	ROD_SILENT "ip link delete ltp_vxl1"
 done
 tst_resm TPASS "done"
 
