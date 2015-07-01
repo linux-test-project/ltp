@@ -1,6 +1,5 @@
 #!/bin/sh
-
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -13,8 +12,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
@@ -27,13 +25,26 @@
 
 TCID=vxlan03
 TST_TOTAL=2
+
+virt_type="vxlan"
+start_id=16700000
+
+# In average cases (with small packets less then 150 bytes) vxlan slower
+# by 10-30%. If hosts are too close to each one, e.g. connected to the same
+# switch the performance can be slower by 50%. Set 60% as default, the above
+# will be an error in VXLAN.
+virt_threshold=60
+
+# Destination address, can be unicast or multicast address
+vxlan_dst_addr="uni"
+
 . test_net.sh
 . vxlan_lib.sh
 
 cleanup()
 {
-	cleanup_vxlans
-	tst_rhost_run -c "ip link delete ltp_vxl0"
+	cleanup_vifaces
+	tst_rhost_run -c "ip link delete ltp_v0"
 	if [ "$net_load" = "TFO" ]; then
 		tst_rhost_run -c "pkill -9 tcp_fastopen\$"
 		pkill -9 "tcp_fastopen\$"

@@ -1,6 +1,5 @@
 #!/bin/sh
-
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -13,8 +12,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
@@ -24,16 +22,21 @@
 
 TCID=vxlan02
 TST_TOTAL=1
+
+virt_type="vxlan"
+start_id=16700000
+virt_max=5000
+
 . test_net.sh
 . vxlan_lib.sh
 
 opt="group 239.1.1.1"
-tst_resm TINFO "create, delete ltp_vxl1 $vxlan_max times"
+tst_resm TINFO "create, delete ltp_v0 $virt_max times"
 
-for i in $(seq 0 $vxlan_max); do
-	ROD_SILENT "ip link add ltp_vxl1 type vxlan id $start_vni $opt"
-	ROD_SILENT "ip link set ltp_vxl1 up"
-	ROD_SILENT "ip link delete ltp_vxl1"
+for i in $(seq 0 $virt_max); do
+	ROD_SILENT "ip link add ltp_v0 type vxlan id $start_id $opt"
+	ROD_SILENT "ip link set ltp_v0 up"
+	ROD_SILENT "ip link delete ltp_v0"
 done
 tst_resm TPASS "done"
 
