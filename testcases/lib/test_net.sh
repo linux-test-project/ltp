@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -247,6 +247,53 @@ tst_restore_ipaddr()
 	TST_IPV6= tst_add_ipaddr $type $link_num || ret=$?
 	TST_IPV6=6 tst_add_ipaddr $type $link_num || ret=$?
 	TST_IPV6=$backup_tst_ipv6
+
+	return $ret
+}
+
+# tst_netload ADDR [FILE] [TYPE]
+# Run network load test
+# ADDR: IP address
+# FILE: file with result time
+# TYPE: PING or TFO (TCP traffic)
+tst_netload()
+{
+	local ip_addr="$1"
+	local rfile=${2:-"netload.res"}
+	local type=${3:-"TFO"}
+	local ret=0
+
+	case "$type" in
+	PING)
+		local ipv6=
+		echo "$ip_addr" | grep ":" > /dev/null
+		[ $? -eq 0 ] && ipv6=6
+		tst_resm TINFO "run ping${ipv6} test with rhost '$ip_addr'..."
+		local res=
+		res=$(ping${ipv6} -f -c $client_requests $ip_addr -w 600 2>&1)
+		[ $? -ne 0 ] && return 1
+		echo $res | sed -nE 's/.*time ([0-9]+)ms.*/\1/p' > $rfile
+	;;
+	TFO)
+		local port=
+		port=$(tst_rhost_run -c 'tst_get_unused_port ipv6 stream')
+		[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
+
+		tst_resm TINFO "run tcp_fastopen with '$ip_addr', port '$port'"
+		tst_rhost_run -s -b -c "tcp_fastopen -R $max_requests -g $port"
+
+		# run local tcp client
+		tcp_fastopen -a $clients_num -r $client_requests -l \
+			-H $ip_addr -g $port -d $rfile > /dev/null || ret=1
+
+		if [ $ret -eq 0 -a ! -f $rfile ]; then
+			tst_brkm TBROK "can't read $rfile"
+		fi
+
+		tst_rhost_run -c "pkill -9 tcp_fastopen\$"
+	;;
+	*) tst_brkm TBROK "invalid net_load type '$type'" ;;
+	esac
 
 	return $ret
 }

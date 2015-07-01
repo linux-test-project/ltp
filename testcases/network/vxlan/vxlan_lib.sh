@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -160,54 +160,11 @@ vxlan_setup_subnet_multi()
 	tst_rhost_run -s -c "ip li set up ltp_vxl0"
 }
 
-netload_test()
-{
-	local ip_addr="$1"
-	local rfile="$2"
-	local ret=0
-
-	case "$net_load" in
-	PING)
-		local ipv6=
-		echo "$ip_addr" | grep ":" > /dev/null
-		[ $? -eq 0 ] && ipv6=6
-		tst_resm TINFO "run ping${ipv6} test with rhost '$ip_addr'..."
-		local res=
-		res=$(ping${ipv6} -f -c $client_requests $ip_addr -w 600 2>&1)
-		[ $? -ne 0 ] && return 1
-		echo $res | sed -nE 's/.*time ([0-9]+)ms.*/\1/p' > $rfile
-	;;
-	TFO)
-		local port=
-		port=$(tst_rhost_run -c 'tst_get_unused_port ipv6 stream')
-		[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
-
-		tst_resm TINFO "run tcp_fastopen with '$ip_addr', port '$port'"
-		tst_rhost_run -s -b -c "tcp_fastopen -R $max_requests -g $port"
-
-		sleep 5
-
-		# run local tcp client
-		tcp_fastopen -a $clients_num -r $client_requests -l \
-			-H $ip_addr -g $port -d $rfile > /dev/null || ret=1
-
-		if [ $ret -eq 0 -a ! -f $rfile ]; then
-			tst_brkm TBROK "can't read $rfile"
-		fi
-
-		tst_rhost_run -c "pkill -9 tcp_fastopen\$"
-	;;
-	*) tst_brkm TBROK "invalid net_load type '$net_load'" ;;
-	esac
-
-	return $ret
-}
-
 vxlan_compare_netperf()
 {
 	local ret=0
-	netload_test $ip_vxlan_remote res_ipv4 || ret=1
-	netload_test ${ip6_vxlan_remote}%ltp_vxl0 res_ipv6 || ret=1
+	tst_netload $ip_vxlan_remote res_ipv4 $net_load || ret=1
+	tst_netload ${ip6_vxlan_remote}%ltp_vxl0 res_ipv6 $net_load || ret=1
 
 	ROD_SILENT "ip link delete ltp_vxl0"
 	tst_rhost_run -s -c "ip link delete ltp_vxl0"
@@ -215,7 +172,7 @@ vxlan_compare_netperf()
 	local vt="$(cat res_ipv4)"
 	local vt6="$(cat res_ipv6)"
 
-	netload_test $ip_remote res_ipv4 || return 1
+	tst_netload $ip_remote res_ipv4 $net_load || return 1
 
 	local lt="$(cat res_ipv4)"
 	tst_resm TINFO "time lan($lt) vxlan IPv4($vt) and IPv6($vt6) ms"
