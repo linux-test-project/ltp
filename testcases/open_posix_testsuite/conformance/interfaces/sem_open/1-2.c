@@ -22,7 +22,6 @@
 
 #define TEST "1-2"
 #define FUNCTION "sem_open"
-#define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 int main(void)
 {
