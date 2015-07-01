@@ -99,12 +99,21 @@ trap "tst_brkm TBROK 'test interrupted'" INT
 
 virt_add()
 {
+	local vname=$1
+	local opt="${@:2}"
+
+	case $virt_type in
+	vlan|vxlan)
+		[ -z "$opt" ] && opt="id 4094"
+	;;
+	esac
+
 	case $virt_type in
 	vxlan)
-		ip li add ltp_v0 type $virt_type $@
+		ip li add $vname type $virt_type $opt
 	;;
 	*)
-		ip li add link $(tst_iface) ltp_v0 type $virt_type $@
+		ip li add link $(tst_iface) $vname type $virt_type $opt
 	;;
 	esac
 }
@@ -122,6 +131,28 @@ virt_add_rhost()
 	esac
 }
 
+virt_multiple_add_test()
+{
+	local opt="$@"
+	local max=$(($start_id + $virt_max))
+
+	tst_resm TINFO "create $virt_max $virt_type"
+
+	local vnis=$(seq $start_id $max)
+
+	for i in $vnis; do
+		ROD_SILENT "virt_add ltp_v$i id $i $opt"
+		ROD_SILENT "ip link set ltp_v$i up"
+	done
+
+	for i in $vnis; do
+		ROD_SILENT "ip link set ltp_v$i down"
+		ROD_SILENT "ip link delete ltp_v$i"
+	done
+
+	tst_resm TPASS "done"
+}
+
 virt_setup()
 {
 	local opt="$1"
@@ -129,7 +160,7 @@ virt_setup()
 
 	tst_resm TINFO "setup local ${virt_type} with '$opt'"
 
-	ROD_SILENT "virt_add $opt"
+	ROD_SILENT "virt_add ltp_v0 $opt"
 	ROD_SILENT "ip li set ltp_v0 address $mac_virt_local"
 	ROD_SILENT "ip addr add ${ip_virt_local}/24 dev ltp_v0"
 	ROD_SILENT "ip li set up ltp_v0"
@@ -229,7 +260,7 @@ ipver=${TST_IPV6:-'4'}
 
 tst_check_cmds "ip"
 
-virt_add || \
+virt_add ltp_v0 || \
 	tst_brkm TCONF "iproute2 or kernel doesn't support $virt_type"
 
 ROD_SILENT "ip link delete ltp_v0"

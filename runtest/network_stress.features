@@ -13,3 +13,5 @@ vxlan_uni_03 vxlan03.sh -d uni
 
 vxlan_ipv6_multi_03 vxlan03.sh -6 -d multi
 vxlan_ipv6_uni_03 vxlan03.sh -6 -d uni
+
+vlan01 vlan01.sh

@@ -1,4 +1,5 @@
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
+#!/bin/sh
+# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -11,17 +12,23 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: Alexey Kodanev <alexey.kodanev@oracle.com>
+#
+# Test-case 1: Local test, check if we can create 4095 VLAN interfaces.
+#
 
-top_srcdir		?= ../../..
+TCID=vlan01
+TST_TOTAL=1
 
-include $(top_srcdir)/include/mk/env_pre.mk
+virt_type="vlan"
+start_id=0
+virt_max=4094
 
-INSTALL_TARGETS		:= virt_lib.sh \
-			   vlan01.sh \
-			   vxlan01.sh \
-			   vxlan02.sh \
-			   vxlan03.sh \
+. test_net.sh
+. virt_lib.sh
 
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+virt_multiple_add_test
+
+tst_exit
