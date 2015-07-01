@@ -16,11 +16,10 @@
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
-# Test-case 1: Local test, check if we can create and then delete VXLAN
-#              interface 5000 times.
+# Test-case 1: Local test, check if we can create 5000 VXLAN interfaces.
 #
 
-TCID=vxlan02
+TCID=vxlan01
 TST_TOTAL=1
 
 virt_type="vxlan"
@@ -28,16 +27,24 @@ start_id=16700000
 virt_max=5000
 
 . test_net.sh
-. vxlan_lib.sh
+. virt_lib.sh
 
+max=$(( $start_id + $virt_max ))
+tst_resm TINFO "create $virt_max VXLANs, then delete them"
 opt="group 239.1.1.1"
-tst_resm TINFO "create, delete ltp_v0 $virt_max times"
 
-for i in $(seq 0 $virt_max); do
-	ROD_SILENT "ip link add ltp_v0 type vxlan id $start_id $opt"
-	ROD_SILENT "ip link set ltp_v0 up"
-	ROD_SILENT "ip link delete ltp_v0"
+vnis=$(seq $start_id $max)
+
+for i in $vnis; do
+	ROD_SILENT "ip link add ltp_v${i} type vxlan id $i $opt"
+	ROD_SILENT "ip link set ltp_v${i} up"
 done
+
+for i in $vnis; do
+	ROD_SILENT "ip link set ltp_v${i} down"
+	ROD_SILENT "ip link delete ltp_v${i}"
+done
+
 tst_resm TPASS "done"
 
 tst_exit

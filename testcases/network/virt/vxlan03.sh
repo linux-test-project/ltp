@@ -39,7 +39,7 @@ virt_threshold=60
 vxlan_dst_addr="uni"
 
 . test_net.sh
-. vxlan_lib.sh
+. virt_lib.sh
 
 cleanup()
 {

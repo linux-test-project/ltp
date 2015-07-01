@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -18,7 +18,7 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= vxlan_lib.sh \
+INSTALL_TARGETS		:= virt_lib.sh \
 			   vxlan01.sh \
 			   vxlan02.sh \
 			   vxlan03.sh \
