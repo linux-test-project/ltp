@@ -97,6 +97,31 @@ cleanup_vifaces()
 TST_CLEANUP="cleanup_vifaces"
 trap "tst_brkm TBROK 'test interrupted'" INT
 
+virt_add()
+{
+	case $virt_type in
+	vxlan)
+		ip li add ltp_v0 type $virt_type $@
+	;;
+	*)
+		ip li add link $(tst_iface) ltp_v0 type $virt_type $@
+	;;
+	esac
+}
+
+virt_add_rhost()
+{
+	case $virt_type in
+	vxlan)
+		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@"
+	;;
+	*)
+		tst_rhost_run -s -c "ip li add link $(tst_iface rhost) ltp_v0 \
+				     type $virt_type $@"
+	;;
+	esac
+}
+
 virt_setup()
 {
 	local opt="$1"
@@ -104,14 +129,14 @@ virt_setup()
 
 	tst_resm TINFO "setup local ${virt_type} with '$opt'"
 
-	ROD_SILENT "ip li add ltp_v0 type $virt_type $opt"
+	ROD_SILENT "virt_add $opt"
 	ROD_SILENT "ip li set ltp_v0 address $mac_virt_local"
 	ROD_SILENT "ip addr add ${ip_virt_local}/24 dev ltp_v0"
 	ROD_SILENT "ip li set up ltp_v0"
 
 	tst_resm TINFO "setup rhost ${virt_type} with '$opt_r'"
 
-	tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $opt_r"
+	virt_add_rhost "$opt_r"
 	tst_rhost_run -s -c "ip li set ltp_v0 address $mac_virt_remote"
 	tst_rhost_run -s -c "ip addr add ${ip_virt_remote}/24 dev ltp_v0"
 	tst_rhost_run -s -c "ip li set up ltp_v0"
@@ -204,8 +229,7 @@ ipver=${TST_IPV6:-'4'}
 
 tst_check_cmds "ip"
 
-ip link add ltp_v0 type $virt_type > /dev/null 2>&1
-if [ $? -ne 0 ]; then
+virt_add || \
 	tst_brkm TCONF "iproute2 or kernel doesn't support $virt_type"
-fi
+
 ROD_SILENT "ip link delete ltp_v0"
