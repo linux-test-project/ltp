@@ -24,7 +24,7 @@
 #              to communicate only within the same VLAN segment.
 
 TCID=vlan03
-TST_TOTAL=2
+TST_TOTAL=6
 
 virt_type="vlan"
 
@@ -51,19 +51,38 @@ if [ -z $ip_local -o -z $ip_remote ]; then
 fi
 
 tst_resm TINFO "networks with the same VLAN ID must work"
-
 res="TPASS"
 
-virt_setup "id 4094" "id 4094"
-virt_compare_netperf || res="TFAIL"
+p0="protocol 802.1Q"
+p1="protocol 802.1ad"
+lb0="loose_binding off"
+lb1="loose_binding on"
+rh0="reorder_hdr off"
+rh1="reorder_hdr on"
 
-tst_resm $res "done"
+opts=" ,$p0 $lb0 $rh1,$p1 $lb1 $rh1"
 
-tst_resm TINFO "different VLAN ID shall not work together"
-res="TPASS"
-virt_setup "id 4093" "id 4094"
-virt_compare_netperf && res="TFAIL"
+for n in $(seq 1 3); do
+	params="$(echo $opts | cut -d',' -f$n)"
 
-tst_resm $res "done"
+	virt_add ltp_v0 id 0 $params > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		tst_resm TCONF "iproute or kernel doesn't support '$params'"
+		continue
+	fi
+	ROD_SILENT "ip li delete ltp_v0"
+
+	virt_setup "id 4094 $params" "id 4094 $params"
+	virt_compare_netperf || res="TFAIL"
+
+	tst_resm $res "done"
+
+	tst_resm TINFO "different VLAN ID shall not work together"
+	res="TPASS"
+	virt_setup "id 4093 $params" "id 4094 $params"
+	virt_compare_netperf && res="TFAIL"
+
+	tst_resm $res "done"
+done
 
 tst_exit
