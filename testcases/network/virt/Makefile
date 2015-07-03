@@ -18,7 +18,8 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= virt_lib.sh \
+INSTALL_TARGETS		:= macvlan01.sh \
+			   virt_lib.sh \
 			   vlan01.sh \
 			   vlan02.sh \
 			   vlan03.sh \
