@@ -20,15 +20,42 @@
 #
 
 TCID=vlan01
-TST_TOTAL=1
+TST_TOTAL=9
 
 virt_type="vlan"
-start_id=0
-virt_count=4095
 
 . test_net.sh
 . virt_lib.sh
 
-virt_multiple_add_test
+p0="protocol 802.1Q"
+p1="protocol 802.1ad"
+lb0="loose_binding off"
+lb1="loose_binding on"
+rh0="reorder_hdr off"
+rh1="reorder_hdr on"
+
+opts=" ,$p0 $lb0 $rh0,$p0 $lb0 $rh1,$p0 $lb1 $rh0,$p0 $lb1 $rh1,\
+$p1 $lb0 $rh0,$p1 $lb0 $rh1,$p1 $lb1 $rh0,$p1 $lb1 $rh1,"
+
+start_id=1
+virt_count=400
+
+for n in $(seq 1 $TST_TOTAL); do
+	params="$(echo $opts | cut -d',' -f$n)"
+
+	tst_resm TINFO "add $virt_type with '$params'"
+
+	virt_add ltp_v0 id 0 $params > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		tst_resm TCONF "iproute or kernel doesn't support '$params'"
+		params=""
+	else
+		ROD_SILENT "ip li delete ltp_v0"
+	fi
+
+	virt_multiple_add_test "$params"
+
+	start_id=$(($start_id + $virt_count))
+done
 
 tst_exit
