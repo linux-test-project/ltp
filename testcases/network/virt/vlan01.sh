@@ -24,7 +24,7 @@ TST_TOTAL=1
 
 virt_type="vlan"
 start_id=0
-virt_max=4094
+virt_count=4095
 
 . test_net.sh
 . virt_lib.sh

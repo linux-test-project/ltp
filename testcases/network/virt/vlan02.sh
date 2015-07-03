@@ -24,7 +24,7 @@ TCID=vlan02
 TST_TOTAL=1
 
 virt_type="vlan"
-virt_max="4094"
+virt_count=4095
 
 . test_net.sh
 . virt_lib.sh

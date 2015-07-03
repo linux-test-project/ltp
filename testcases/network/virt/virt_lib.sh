@@ -64,7 +64,7 @@ while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
 		exit 0
 	;;
 	s) TST_USE_SSH=1 ;;
-	x) virt_max=$OPTARG ;;
+	x) virt_count=$OPTARG ;;
 	i) start_id=$OPTARG ;;
 	c) clients_num=$OPTARG ;;
 	r) client_requests=$OPTARG ;;
@@ -134,18 +134,16 @@ virt_add_rhost()
 virt_multiple_add_test()
 {
 	local opt="$@"
-	local max=$(($start_id + $virt_max))
+	local max=$(($start_id + $virt_count - 1))
 
-	tst_resm TINFO "create $virt_max $virt_type"
+	tst_resm TINFO "add $virt_count $virt_type, then delete"
 
-	local vnis=$(seq $start_id $max)
-
-	for i in $vnis; do
+	for i in $(seq $start_id $max); do
 		ROD_SILENT "virt_add ltp_v$i id $i $opt"
 		ROD_SILENT "ip link set ltp_v$i up"
 	done
 
-	for i in $vnis; do
+	for i in $(seq $start_id $max); do
 		ROD_SILENT "ip link set ltp_v$i down"
 		ROD_SILENT "ip link delete ltp_v$i"
 	done
@@ -156,9 +154,11 @@ virt_multiple_add_test()
 virt_add_delete_test()
 {
 	local opt="$@"
-	tst_resm TINFO "create, delete $virt_type $virt_max times"
+	local max=$(($virt_count - 1))
 
-	for i in $(seq 0 $virt_max); do
+	tst_resm TINFO "add/del $virt_type $virt_count times"
+
+	for i in $(seq 0 $max); do
 		ROD_SILENT "virt_add ltp_v0 $opt"
 		ROD_SILENT "ip link set ltp_v0 up"
 		ROD_SILENT "ip link delete ltp_v0"
