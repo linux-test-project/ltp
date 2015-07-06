@@ -15,7 +15,9 @@
  * Verify that:
  *  If a user ID has no mapping inside the namespace, user ID and group
  * ID will be the value defined in the file /proc/sys/kernel/overflowuid(65534)
- * and /proc/sys/kernel/overflowgid(65534).
+ * and /proc/sys/kernel/overflowgid(65534). A child process has a full set
+ * of permitted and effective capabilities, even though the program was
+ * run from an unprivileged account.
  */
 
 #define _GNU_SOURCE
@@ -29,6 +31,11 @@
 #include "test.h"
 #include "libclone.h"
 #include "userns_helper.h"
+#include "config.h"
+#if HAVE_SYS_CAPABILITY_H
+#include <sys/capability.h>
+#endif
+
 #define OVERFLOWUIDPATH "/proc/sys/kernel/overflowuid"
 #define OVERFLOWGIDPATH "/proc/sys/kernel/overflowgid"
 
@@ -43,21 +50,43 @@ static long overflowgid;
  */
 static int child_fn1(void *arg LTP_ATTRIBUTE_UNUSED)
 {
-	int exit_val;
+	int exit_val = 0;
 	int uid, gid;
+#ifdef HAVE_LIBCAP
+	cap_t caps;
+	int i, last_cap;
+	cap_flag_value_t flag_val;
+#endif
 
 	uid = geteuid();
 	gid = getegid();
 
 	tst_resm(TINFO, "USERNS test is running in a new user namespace.");
-	if (uid == overflowuid && gid == overflowgid) {
-		printf("Got expected uid and gid\n");
-		exit_val = 0;
-	} else {
+
+	if (uid != overflowuid || gid != overflowgid) {
 		printf("Got unexpected result of uid=%d gid=%d\n", uid, gid);
 		exit_val = 1;
 	}
 
+#ifdef HAVE_LIBCAP
+	caps = cap_get_proc();
+	SAFE_FILE_SCANF(NULL, "/proc/sys/kernel/cap_last_cap", "%d", &last_cap);
+	for (i = 0; i <= last_cap; i++) {
+		cap_get_flag(caps, i, CAP_EFFECTIVE, &flag_val);
+		if (flag_val == 0)
+			break;
+		cap_get_flag(caps, i, CAP_PERMITTED, &flag_val);
+		if (flag_val == 0)
+			break;
+	}
+
+	if (flag_val == 0) {
+		printf("unexpected effective/permitted caps at %d\n", i);
+		exit_val = 1;
+	}
+#else
+	printf("System is missing libcap.\n");
+#endif
 	return exit_val;
 }
 
@@ -95,4 +124,3 @@ int main(int argc, char *argv[])
 	}
 	tst_exit();
 }
-
