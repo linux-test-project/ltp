@@ -35,13 +35,7 @@ virt_count=500
 for m in $modes; do
 	tst_resm TINFO "add $virt_type with mode '$m'"
 
-	virt_add ltp_v0 mode $m > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		tst_resm TCONF "iproute or kernel doesn't support mode '$m'"
-		m=""
-	else
-		ROD_SILENT "ip li delete ltp_v0"
-	fi
+	virt_check_cmd virt_add ltp_v0 mode $m || m=""
 
 	virt_add_delete_test "mode $m"
 

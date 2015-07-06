@@ -255,6 +255,17 @@ virt_compare_netperf()
 	return $ret
 }
 
+virt_check_cmd()
+{
+	$@ > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		tst_resm TCONF "'$@' option(s) not supported, skipping it"
+		return 1
+	fi
+	ROD_SILENT "ip li delete ltp_v0"
+	return 0
+}
+
 # Check if we can create then delete virtual interface n times.
 # virt_test_01 [OPTIONS]
 # OPTIONS - different options separated by comma.
@@ -275,13 +286,7 @@ virt_test_01()
 
 		tst_resm TINFO "add $virt_type with '$p'"
 
-		virt_add ltp_v0 id 0 $p > /dev/null 2>&1
-		if [ $? -ne 0 ]; then
-			tst_resm TCONF "iproute/kernel doesn't support '$p'"
-			p=""
-		else
-			ROD_SILENT "ip li delete ltp_v0"
-		fi
+		virt_check_cmd virt_add ltp_v0 id 0 $p || continue
 
 		virt_multiple_add_test "$p"
 

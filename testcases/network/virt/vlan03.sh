@@ -65,12 +65,7 @@ opts=" ,$p0 $lb0 $rh1,$p1 $lb1 $rh1"
 for n in $(seq 1 3); do
 	params="$(echo $opts | cut -d',' -f$n)"
 
-	virt_add ltp_v0 id 0 $params > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		tst_resm TCONF "iproute or kernel doesn't support '$params'"
-		continue
-	fi
-	ROD_SILENT "ip li delete ltp_v0"
+	virt_check_cmd virt_add ltp_v0 id 0 $params || continue
 
 	virt_setup "id 4094 $params" "id 4094 $params"
 	virt_compare_netperf || res="TFAIL"

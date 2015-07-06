@@ -65,12 +65,7 @@ opts=" ,dstport 0 gbp"
 for n in $(seq 1 2); do
 	params="$(echo $opts | cut -d',' -f$n)"
 
-	virt_add ltp_v0 id 0 $params > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		tst_resm TCONF "iproute or kernel doesn't support '$params'"
-		continue
-	fi
-	ROD_SILENT "ip li delete ltp_v0"
+	virt_check_cmd virt_add ltp_v0 id 0 $params || continue
 
 	tst_resm TINFO "networks with the same VNI must work"
 	# VNI is 24 bits long, so max value, which is not reserved, is 0xFFFFFE
