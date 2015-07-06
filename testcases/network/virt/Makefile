@@ -20,6 +20,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= ipvlan01.sh \
 			   macvlan01.sh \
+			   macvtap01.sh \
 			   virt_lib.sh \
 			   vlan01.sh \
 			   vlan02.sh \

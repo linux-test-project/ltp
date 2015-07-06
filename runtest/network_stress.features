@@ -19,5 +19,6 @@ vlan02 vlan02.sh
 vlan03 vlan03.sh
 
 macvlan01 macvlan01.sh
+macvtap01 macvtap01.sh
 
 ipvlan01 ipvlan01.sh
