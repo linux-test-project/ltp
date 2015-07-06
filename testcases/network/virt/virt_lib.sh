@@ -106,11 +106,18 @@ virt_add()
 	vlan|vxlan)
 		[ -z "$opt" ] && opt="id 4094"
 	;;
+	gre|ip6gre)
+		[ -z "$opt" ] && \
+			opt="remote $(tst_ipaddr rhost) dev $(tst_iface)"
+	;;
 	esac
 
 	case $virt_type in
 	vxlan)
 		ip li add $vname type $virt_type $opt
+	;;
+	gre|ip6gre)
+		ip -f inet$TST_IPV6 tu add $vname mode $virt_type $opt
 	;;
 	*)
 		ip li add link $(tst_iface) $vname type $virt_type $opt
@@ -123,6 +130,10 @@ virt_add_rhost()
 	case $virt_type in
 	vxlan)
 		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@"
+	;;
+	gre|ip6gre)
+		tst_rhost_run -s -c "ip -f inet$TST_IPV6 tu add ltp_v0 \
+				     mode $virt_type $@"
 	;;
 	*)
 		tst_rhost_run -s -c "ip li add link $(tst_iface rhost) ltp_v0 \
@@ -172,17 +183,28 @@ virt_setup()
 	local opt_r="$2"
 
 	tst_resm TINFO "setup local ${virt_type} with '$opt'"
-
 	ROD_SILENT "virt_add ltp_v0 $opt"
-	ROD_SILENT "ip li set ltp_v0 address $mac_virt_local"
-	ROD_SILENT "ip addr add ${ip_virt_local}/24 dev ltp_v0"
-	ROD_SILENT "ip li set up ltp_v0"
 
 	tst_resm TINFO "setup rhost ${virt_type} with '$opt_r'"
-
 	virt_add_rhost "$opt_r"
-	tst_rhost_run -s -c "ip li set ltp_v0 address $mac_virt_remote"
+
+	case $virt_type in
+	gre|ip6gre)
+		# We can't set hwaddr to GRE tunnel, add IPv6 link local
+		# addresses manually.
+		ROD_SILENT "ip addr add ${ip6_virt_local}/64 dev ltp_v0"
+		tst_rhost_run -s -c "ip ad add ${ip6_virt_remote}/64 dev ltp_v0"
+	;;
+	*)
+		ROD_SILENT "ip li set ltp_v0 address $mac_virt_local"
+		tst_rhost_run -s -c "ip li set ltp_v0 address $mac_virt_remote"
+	;;
+	esac
+
+	ROD_SILENT "ip addr add ${ip_virt_local}/24 dev ltp_v0"
 	tst_rhost_run -s -c "ip addr add ${ip_virt_remote}/24 dev ltp_v0"
+
+	ROD_SILENT "ip li set up ltp_v0"
 	tst_rhost_run -s -c "ip li set up ltp_v0"
 }
 

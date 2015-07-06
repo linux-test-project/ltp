@@ -22,3 +22,6 @@ macvlan01 macvlan01.sh
 macvtap01 macvtap01.sh
 
 ipvlan01 ipvlan01.sh
+
+gre_ipv4_01 gre01.sh
+gre_ipv6_01 gre01.sh -6
