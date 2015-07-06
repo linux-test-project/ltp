@@ -194,8 +194,8 @@ vxlan_setup_subnet_uni()
 	[ "$(ip li add type vxlan help 2>&1 | grep remote)" ] || \
 		tst_brkm TCONF "iproute doesn't support remote unicast address"
 
-	local opt="id $1 remote $(tst_ipaddr rhost)"
-	local opt_r="id $2 remote $(tst_ipaddr)"
+	local opt="$1 remote $(tst_ipaddr rhost)"
+	local opt_r="$2 remote $(tst_ipaddr)"
 
 	virt_setup "$opt" "$opt_r"
 }
@@ -214,8 +214,8 @@ vxlan_setup_subnet_multi()
 		grp="group 239.$b1.$b2.$b3"
 	fi
 
-	local opt="id $1 $grp dev $(tst_iface)"
-	local opt_r="id $2 $grp dev $(tst_iface rhost)"
+	local opt="$1 $grp dev $(tst_iface)"
+	local opt_r="$2 $grp dev $(tst_iface rhost)"
 
 	virt_setup "$opt" "$opt_r"
 }

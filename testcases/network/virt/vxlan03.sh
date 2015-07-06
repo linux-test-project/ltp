@@ -63,27 +63,23 @@ fi
 opts=" ,dstport 0 gbp"
 
 for n in $(seq 1 2); do
-	params="$(echo $opts | cut -d',' -f$n)"
+	p="$(echo $opts | cut -d',' -f$n)"
 
-	virt_check_cmd virt_add ltp_v0 id 0 $params || continue
+	virt_check_cmd virt_add ltp_v0 id 0 $p || continue
 
-	tst_resm TINFO "networks with the same VNI must work"
+	tst_resm TINFO "the same VNI must work"
 	# VNI is 24 bits long, so max value, which is not reserved, is 0xFFFFFE
 	res="TPASS"
 
-	if [ "$vxlan_dst_addr" != 'uni' -a $vxlan_dst_addr != 'multi' ]; then
-		tst_brkm TBROK "wrong dst address, can be 'uni' or 'multi'"
-	fi
-
-	vxlan_setup_subnet_$vxlan_dst_addr "0xFFFFFE" "0xFFFFFE"
-	vxlan_compare_netperf || res="TFAIL"
+	vxlan_setup_subnet_$vxlan_dst_addr "id 0xFFFFFE $p" "id 0xFFFFFE $p"
+	virt_compare_netperf || res="TFAIL"
 
 	tst_resm $res "done"
 
 	tst_resm TINFO "different VNI shall not work together"
 	res="TPASS"
-	vxlan_setup_subnet_$vxlan_dst_addr "0xFFFFFE" "0xFFFFFD"
-	vxlan_compare_netperf && res="TFAIL"
+	vxlan_setup_subnet_$vxlan_dst_addr "id 0xFFFFFE $p" "id 0xFFFFFD $p"
+	virt_compare_netperf && res="TFAIL"
 
 	tst_resm $res "done"
 done
