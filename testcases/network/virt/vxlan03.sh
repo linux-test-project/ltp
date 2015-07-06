@@ -24,7 +24,7 @@
 #              to communicate only within the same VXLAN segment.
 
 TCID=vxlan03
-TST_TOTAL=2
+TST_TOTAL=4
 
 virt_type="vxlan"
 start_id=16700000
@@ -60,24 +60,37 @@ if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"
 fi
 
-tst_resm TINFO "networks with the same VNI must work"
-# VNI is 24 bits long, so max value, which is not reserved, is 0xFFFFFE
-res="TPASS"
+opts=" ,dstport 0 gbp"
 
-if [ "$vxlan_dst_addr" != 'uni' -a $vxlan_dst_addr != 'multi' ]; then
-	tst_brkm TBROK "wrong destination address, can be 'uni' or 'multi'"
-fi
+for n in $(seq 1 2); do
+	params="$(echo $opts | cut -d',' -f$n)"
 
-vxlan_setup_subnet_$vxlan_dst_addr "0xFFFFFE" "0xFFFFFE"
-vxlan_compare_netperf || res="TFAIL"
+	virt_add ltp_v0 id 0 $params > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		tst_resm TCONF "iproute or kernel doesn't support '$params'"
+		continue
+	fi
+	ROD_SILENT "ip li delete ltp_v0"
 
-tst_resm $res "done"
+	tst_resm TINFO "networks with the same VNI must work"
+	# VNI is 24 bits long, so max value, which is not reserved, is 0xFFFFFE
+	res="TPASS"
 
-tst_resm TINFO "different VNI shall not work together"
-res="TPASS"
-vxlan_setup_subnet_$vxlan_dst_addr "0xFFFFFE" "0xFFFFFD"
-vxlan_compare_netperf && res="TFAIL"
+	if [ "$vxlan_dst_addr" != 'uni' -a $vxlan_dst_addr != 'multi' ]; then
+		tst_brkm TBROK "wrong dst address, can be 'uni' or 'multi'"
+	fi
 
-tst_resm $res "done"
+	vxlan_setup_subnet_$vxlan_dst_addr "0xFFFFFE" "0xFFFFFE"
+	vxlan_compare_netperf || res="TFAIL"
+
+	tst_resm $res "done"
+
+	tst_resm TINFO "different VNI shall not work together"
+	res="TPASS"
+	vxlan_setup_subnet_$vxlan_dst_addr "0xFFFFFE" "0xFFFFFD"
+	vxlan_compare_netperf && res="TFAIL"
+
+	tst_resm $res "done"
+done
 
 tst_exit
