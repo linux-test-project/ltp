@@ -255,6 +255,40 @@ virt_compare_netperf()
 	return $ret
 }
 
+# Check if we can create then delete virtual interface n times.
+# virt_test_01 [OPTIONS]
+# OPTIONS - different options separated by comma.
+virt_test_01()
+{
+	start_id=${start_id:-"1"}
+	virt_count=${virt_count:-"400"}
+
+	local opts=${1:-""}
+	local n=0
+
+	while true; do
+		n=$((n + 1))
+		p="$(echo $opts | cut -d',' -f$n)"
+		if [ -z "$p" -a $n -gt 1 ]; then
+			break
+		fi
+
+		tst_resm TINFO "add $virt_type with '$p'"
+
+		virt_add ltp_v0 id 0 $p > /dev/null 2>&1
+		if [ $? -ne 0 ]; then
+			tst_resm TCONF "iproute/kernel doesn't support '$p'"
+			p=""
+		else
+			ROD_SILENT "ip li delete ltp_v0"
+		fi
+
+		virt_multiple_add_test "$p"
+
+		start_id=$(($start_id + $virt_count))
+	done
+}
+
 tst_require_root
 
 case "$virt_type" in
