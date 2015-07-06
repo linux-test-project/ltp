@@ -16,8 +16,8 @@
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
-# Test-case 1: Local test, check if we can create and then delete VLAN
-#              interface 4095 times.
+# Local test, check if we can create and then delete VLAN
+# interface 4095 times.
 #
 
 TCID=vlan02

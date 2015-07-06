@@ -294,6 +294,34 @@ virt_test_01()
 	done
 }
 
+# Check if we can create then delete virtual interface n times.
+# virt_test_02 [OPTIONS]
+# OPTIONS - different options separated by comma.
+virt_test_02()
+{
+	start_id=${start_id:-"1"}
+	virt_count=${virt_count:-"500"}
+
+	local opts=${1:-""}
+	local n=0
+
+	while true; do
+		n=$((n + 1))
+		p="$(echo $opts | cut -d',' -f$n)"
+		if [ -z "$p" -a $n -gt 1 ]; then
+			break
+		fi
+
+		tst_resm TINFO "add and then delete $virt_type with '$p'"
+
+		virt_check_cmd virt_add ltp_v0 $p || continue
+
+		virt_add_delete_test "$p"
+
+		start_id=$(($start_id + $virt_count))
+	done
+}
+
 tst_require_root
 
 case "$virt_type" in

@@ -16,8 +16,8 @@
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
-# Test-case 1: Local test, check if we can create and then delete ipvlan
-#              interface 500 times.
+# Local test, check if we can create and then delete ipvlan
+# interface multiple times.
 
 TCID=ipvlan01
 TST_TOTAL=2
@@ -27,19 +27,8 @@ virt_type="ipvlan"
 . test_net.sh
 . virt_lib.sh
 
-modes="l2 l3"
+options="mode l2,mode l3"
 
-start_id=1
-virt_count=500
-
-for m in $modes; do
-	tst_resm TINFO "add $virt_type with mode '$m'"
-
-	virt_check_cmd virt_add ltp_v0 mode $m || m=""
-
-	virt_add_delete_test "mode $m"
-
-	start_id=$(($start_id + $virt_count))
-done
+virt_test_02 "$options"
 
 tst_exit

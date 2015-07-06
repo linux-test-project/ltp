@@ -16,8 +16,8 @@
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
-# Test-case 1: Local test, check if we can create and then delete macvlan
-#              interface 500 times.
+# Local test, check if we can create and then delete macvlan
+# interface multiple times.
 
 TCID=macvlan01
 TST_TOTAL=4
@@ -27,19 +27,8 @@ virt_type="macvlan"
 . test_net.sh
 . virt_lib.sh
 
-modes="private vepa bridge passthru"
+options="mode private,mode vepa,mode bridge,mode passthru"
 
-start_id=1
-virt_count=500
-
-for m in $modes; do
-	tst_resm TINFO "add $virt_type with mode '$m'"
-
-	virt_check_cmd virt_add ltp_v0 mode $m || m=""
-
-	virt_add_delete_test "mode $m"
-
-	start_id=$(($start_id + $virt_count))
-done
+virt_test_02 "$options"
 
 tst_exit
