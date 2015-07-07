@@ -162,9 +162,6 @@ test01()
 	# compress the log files
 	compress
 
-	# RPM packages drop log rotation information into this directory
-	include /etc/logrotate.d
-
 	/var/log/tst_logfile {
 		rotate 5
 		weekly
@@ -201,8 +198,6 @@ test01()
 		# check if  /etc/logrotate.d is included/
 		# check if 5 rotations are forced.
         # check if compression is done.
-		grep "including /etc/logrotate.d" $LTPTMP/tst_logrotate.out \
-			> $LTPTMP/tst_logrotate.err 2>&1 || RC=$?
 		grep "reading config file $LTPTMP/tst_logrotate.conf" \
 			$LTPTMP/tst_logrotate.out   > $LTPTMP/tst_logrotate.err 2>&1 || RC=$?
 		grep "forced from command line (5 rotations)" \
