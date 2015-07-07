@@ -25,4 +25,6 @@ cpuset_memory	cpuset_memory_testset.sh
 cpuset_memory_pressure	cpuset_memory_pressure_testset.sh
 cpuset_memory_spread	cpuset_memory_spread_testset.sh
 
+cpuset_regression_test cpuset_regression_test.sh
+
 cgroup_xattr	cgroup_xattr
