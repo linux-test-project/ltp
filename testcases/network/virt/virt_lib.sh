@@ -88,7 +88,7 @@ done
 cleanup_vifaces()
 {
 	tst_resm TINFO "cleanup virtual interfaces..."
-	local viface=`ip link | sed -nE 's/^[0-9]+: (ltp_v[0-9]+):.+/\1/p'`
+	local viface=`ip li | sed -nE 's/^[0-9]+: (ltp_v[0-9]+)[@:].+/\1/p'`
 	for vx in $viface; do
 		ip link delete $vx
 	done
