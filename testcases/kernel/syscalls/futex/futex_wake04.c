@@ -46,6 +46,7 @@
 #include "safe_macros.h"
 #include "futextest.h"
 #include "futex_utils.h"
+#include "lapi/mmap.h"
 
 #define PATH_MEMINFO "/proc/meminfo"
 #define PATH_NR_HUGEPAGES "/proc/sys/vm/nr_hugepages"
@@ -62,6 +63,12 @@ static long orig_hugepages;
 static void setup(void)
 {
 	tst_require_root(NULL);
+
+	if ((tst_kvercmp(2, 6, 32)) < 0) {
+		tst_brkm(TCONF, NULL, "This test can only run on kernels "
+			"that are 2.6.32 or higher");
+	}
+
 	tst_tmpdir();
 
 	SAFE_FILE_SCANF(NULL, PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
