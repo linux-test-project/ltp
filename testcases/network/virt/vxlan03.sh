@@ -29,17 +29,17 @@ TST_TOTAL=4
 virt_type="vxlan"
 start_id=16700000
 
-# In average cases (with small packets less then 150 bytes) vxlan slower
-# by 10-30%. If hosts are too close to each one, e.g. connected to the same
-# switch the performance can be slower by 50%. Set 60% as default, the above
-# will be an error in VXLAN.
-virt_threshold=60
-
 # Destination address, can be unicast or multicast address
 vxlan_dst_addr="uni"
 
 . test_net.sh
 . virt_lib.sh
+
+# In average cases (with small packets less then 150 bytes) VxLAN slower
+# by 10-30%. If hosts are too close to each other, e.g. connected to the same
+# switch, VxLAN can be much slower when comparing to the performance without
+# any encapsulation.
+virt_threshold=160
 
 cleanup()
 {

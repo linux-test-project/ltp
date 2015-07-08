@@ -42,7 +42,7 @@ clients_num=2
 client_requests=500000
 max_requests=3
 net_load="TFO"
-virt_threshold=30
+virt_threshold=80
 
 while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
 	case "$opt" in
