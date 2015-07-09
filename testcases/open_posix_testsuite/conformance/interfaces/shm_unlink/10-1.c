@@ -27,6 +27,12 @@ int main(void)
 	char *shm_name;
 
 	name_max = pathconf("/", _PC_NAME_MAX);
+
+	if (name_max == -1) {
+		perror("pathconf() failed");
+		return PTS_UNRESOLVED;
+	}
+
 	shm_name = malloc(name_max + 3);
 
 	if (!shm_name) {

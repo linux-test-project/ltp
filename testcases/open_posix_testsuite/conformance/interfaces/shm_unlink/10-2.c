@@ -34,7 +34,7 @@ int main(void)
 
 	path_max = pathconf("/", _PC_PATH_MAX);
 	if (path_max == -1) {
-		perror("An error occurs when calling pathconf()");
+		perror("pathconf() failed");
 		return PTS_UNRESOLVED;
 	}
 	shm_name = malloc(path_max + 1);
