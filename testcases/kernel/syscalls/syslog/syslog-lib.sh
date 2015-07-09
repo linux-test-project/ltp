@@ -71,12 +71,20 @@ setup()
 		CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
 	elif [ "$SYSLOG_DAEMON" = "rsyslog" ]; then
 		CONFIG_FILE="/etc/rsyslog.conf"
-		log_socket=$(grep -ho "^\$SystemLogSocketName .*" -r /etc/rsyslog.conf /etc/rsyslog.d/ | head -1)
-		RSYSLOG_CONFIG=$(cat <<EOF
+		if grep -q -r '^\$ModLoad[[:space:]]*imjournal' /etc/rsyslog.conf /etc/rsyslog.d/ ; then
+			systemd_journal=$(grep -Ehoi "^[^#].*(imjournal|workdirectory).*" -r /etc/rsyslog.conf /etc/rsyslog.d/)
+			RSYSLOG_CONFIG=$(cat <<EOF
+$systemd_journal
+EOF
+)
+		else
+			log_socket=$(grep -ho "^\$SystemLogSocketName .*" -r /etc/rsyslog.conf /etc/rsyslog.d/ | head -1)
+			RSYSLOG_CONFIG=$(cat <<EOF
 \$ModLoad imuxsock.so
 $log_socket
 EOF
 )
+		fi
 	else
 		tst_resm TBROK "Couldn't find syslogd, syslog-ng or rsyslogd"
 		cleanup 1
