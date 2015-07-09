@@ -39,6 +39,11 @@ int main(void)
 	}
 	shm_name = malloc(path_max + 1);
 
+	if (!shm_name) {
+		perror("malloc() failed");
+		return PTS_UNRESOLVED;
+	}
+
 	for (i = 0; i < path_max; i++)
 		shm_name[i] = (i + 1) % COMPONENT_SIZE ? 'a' : '/';
 	shm_name[path_max] = 0;
