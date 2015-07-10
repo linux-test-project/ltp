@@ -23,7 +23,8 @@
  * ID-outside-ns is defined with respect to the user namespace of the process
  * opening the file.
  *
- * GID check is skipped if setgroups is allowed, see kernel commits:
+ * The string "deny" would be written to /proc/self/setgroups before GID
+ * check if setgroups is allowed, see kernel commits:
  *
  *   commit 9cc46516ddf497ea16e8d7cb986ae03a0f6b92f8
  *   Author: Eric W. Biederman <ebiederm@xmission.com>
@@ -87,17 +88,11 @@ static int child_fn2(void)
 	uid = geteuid();
 	gid = getegid();
 
-	if (uid != CHILD2UID) {
-		printf("unexpected uid=%d\n", uid);
+	if (uid != CHILD2UID || gid != CHILD2GID) {
+		printf("unexpected uid=%d gid=%d\n", uid, gid);
 		exit_val = 1;
 	}
 
-	if (setgroupstag == false) {
-		if (gid != CHILD2GID) {
-			printf("unexpected: gid=%d\n", gid);
-			exit_val = 1;
-		}
-	}
 	/*Get the uid parameters of the child_fn2 process.*/
 	SAFE_FILE_SCANF(NULL, "/proc/self/uid_map", "%d %d %d", &idinsidens,
 		&idoutsidens, &length);
@@ -127,27 +122,25 @@ static int child_fn2(void)
 		exit_val = 1;
 	}
 
-	if (setgroupstag == false) {
-		sprintf(cpid1gidpath, "/proc/%d/gid_map", cpid1);
-		SAFE_FILE_SCANF(NULL, "/proc/self/gid_map", "%d %d %d",
-			 &idinsidens, &idoutsidens, &length);
+	sprintf(cpid1gidpath, "/proc/%d/gid_map", cpid1);
+	SAFE_FILE_SCANF(NULL, "/proc/self/gid_map", "%d %d %d",
+		 &idinsidens, &idoutsidens, &length);
 
-		if (idinsidens != CHILD2GID || idoutsidens != parentgid) {
-			printf("child_fn2 checks /proc/cpid2/gid_map:\n");
-			printf("unexpected: idinsidens=%d idoutsidens=%d\n",
-				idinsidens, idoutsidens);
-			exit_val = 1;
-		}
+	if (idinsidens != CHILD2GID || idoutsidens != parentgid) {
+		printf("child_fn2 checks /proc/cpid2/gid_map:\n");
+		printf("unexpected: idinsidens=%d idoutsidens=%d\n",
+			idinsidens, idoutsidens);
+		exit_val = 1;
+	}
 
-		SAFE_FILE_SCANF(NULL, cpid1gidpath, "%d %d %d", &idinsidens,
-			&idoutsidens, &length);
+	SAFE_FILE_SCANF(NULL, cpid1gidpath, "%d %d %d", &idinsidens,
+		&idoutsidens, &length);
 
-		if (idinsidens != CHILD1GID || idoutsidens != CHILD2GID) {
-			printf("child_fn1 checks /proc/cpid1/gid_map:\n");
-			printf("unexpected: idinsidens=%d idoutsidens=%d\n",
-				idinsidens, idoutsidens);
-			exit_val = 1;
-		}
+	if (idinsidens != CHILD1GID || idoutsidens != CHILD2GID) {
+		printf("child_fn1 checks /proc/cpid1/gid_map:\n");
+		printf("unexpected: idinsidens=%d idoutsidens=%d\n",
+			idinsidens, idoutsidens);
+		exit_val = 1;
 	}
 
 	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
@@ -162,17 +155,11 @@ static void cleanup(void)
 
 static void setup(void)
 {
-	char read_buf[BUFSIZ];
-
 	check_newuser();
 	tst_tmpdir();
 	TST_CHECKPOINT_INIT(NULL);
-	if (access("/proc/self/setgroups", F_OK) == 0) {
-		SAFE_FILE_SCANF(cleanup, "/proc/self/setgroups", "%s",
-			read_buf);
-		if (strcmp(read_buf, "deny") == 0)
-			setgroupstag = false;
-	}
+	if (access("/proc/self/setgroups", F_OK) == 0)
+		setgroupstag = false;
 }
 
 static int updatemap(int cpid, bool type, int idnum, int parentmappid)
@@ -198,8 +185,10 @@ static int updatemap(int cpid, bool type, int idnum, int parentmappid)
 int main(int argc, char *argv[])
 {
 	pid_t cpid2;
+	char path[BUFSIZ];
 	int cpid1status, cpid2status;
 	int lc;
+	int fd;
 
 	tst_parse_opts(argc, argv, NULL, NULL);
 	setup();
@@ -222,13 +211,23 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK | TERRNO, cleanup,
 				"cpid2 clone failed");
 
+		if (setgroupstag == false) {
+			sprintf(path, "/proc/%d/setgroups", cpid1);
+			fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
+			SAFE_WRITE(cleanup, 1, fd, "deny", 4);
+			SAFE_CLOSE(cleanup, fd);
+
+			sprintf(path, "/proc/%d/setgroups", cpid2);
+			fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
+			SAFE_WRITE(cleanup, 1, fd, "deny", 4);
+			SAFE_CLOSE(cleanup, fd);
+		}
+
 		updatemap(cpid1, UID_MAP, CHILD1UID, parentuid);
 		updatemap(cpid2, UID_MAP, CHILD2UID, parentuid);
 
-		if (setgroupstag == false) {
-			updatemap(cpid1, GID_MAP, CHILD1GID, parentuid);
-			updatemap(cpid2, GID_MAP, CHILD2GID, parentuid);
-		}
+		updatemap(cpid1, GID_MAP, CHILD1GID, parentuid);
+		updatemap(cpid2, GID_MAP, CHILD2GID, parentuid);
 
 		TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup, 1);
 
