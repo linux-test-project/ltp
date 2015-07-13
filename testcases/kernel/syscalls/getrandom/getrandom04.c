@@ -30,7 +30,6 @@
  *  descriptors to 3 and expects success.
  */
 
-#include <linux/random.h>
 #include <sys/resource.h>
 #include "lapi/getrandom.h"
 #include "linux_syscall_numbers.h"

@@ -19,6 +19,12 @@
 #ifndef __GETRANDOM_H__
 #define __GETRANDOM_H__
 
+#include "config.h"
+
+#if HAVE_LINUX_RANDOM_H
+#include <linux/random.h>
+#endif
+
 /*
  * Flags for getrandom(2)
  *

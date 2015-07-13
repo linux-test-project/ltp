@@ -27,7 +27,6 @@
  *
  */
 
-#include <linux/random.h>
 #include "lapi/getrandom.h"
 #include "linux_syscall_numbers.h"
 #include "test.h"
