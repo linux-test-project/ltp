@@ -414,7 +414,7 @@ ssize_t safe_write(const char *file, const int lineno, void (cleanup_fn) (void),
 	ssize_t rval;
 
 	rval = write(fildes, buf, nbyte);
-	if ((len_strict == 0 && rval == -1) || (size_t)rval != nbyte) {
+	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: write(%d,%p,%zu) failed",
 		         file, lineno, fildes, buf, rval);
@@ -430,7 +430,7 @@ ssize_t safe_pwrite(const char *file, const int lineno,
 	ssize_t rval;
 
 	rval = pwrite(fildes, buf, nbyte, offset);
-	if ((len_strict == 0 && rval == -1) || (size_t)rval != nbyte) {
+	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: pwrite(%d,%p,%zu,%ld) failed",
 			 file, lineno, fildes, buf, rval, offset);
