@@ -23,4 +23,16 @@
 #define MS_STRICTATIME  1 << 24
 #endif
 
+#ifndef MNT_DETACH
+#define MNT_DETACH 2
+#endif
+
+#ifndef MNT_EXPIRE
+#define MNT_EXPIRE 4
+#endif
+
+#ifndef UMOUNT_NOFOLLOW
+#define UMOUNT_NOFOLLOW 8
+#endif
+
 #endif /* __MOUNT_H__ */

@@ -1315,6 +1315,8 @@ umount01 umount01
 umount02 umount02
 umount03 umount03
 
+umount2_01 umount2_01
+
 ustat01 ustat01
 ustat02 ustat02
 
