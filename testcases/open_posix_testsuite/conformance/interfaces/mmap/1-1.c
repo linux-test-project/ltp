@@ -30,9 +30,9 @@
 int main(void)
 {
 	char tmpfname[256];
-	char *data;
-	void *pa;
 	ssize_t len = 1024;
+	char data[len];
+	void *pa;
 	int fd;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_1_1_%d", getpid());
@@ -45,13 +45,11 @@ int main(void)
 
 	unlink(tmpfname);
 
-	data = malloc(len);
 	memset(data, 'a', len);
 	if (write(fd, data, len) != len) {
 		printf("Error at write(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	free(data);
 
 	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (pa == MAP_FAILED) {

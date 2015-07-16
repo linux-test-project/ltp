@@ -44,9 +44,9 @@ int main(void)
 {
 #ifdef _POSIX_MEMORY_PROTECTION
 	char tmpfname[256];
-	char *data;
-	void *pa;
 	ssize_t size = 1024;
+	char data[size];
+	void *pa;
 	int fd;
 
 	pid_t child;
@@ -65,13 +65,11 @@ int main(void)
 	child = fork();
 	switch (child) {
 	case 0:
-		data = malloc(size);
 		memset(data, 'a', size);
 		if (write(fd, data, size) != size) {
 			printf("Error at write(): %s\n", strerror(errno));
 			return PTS_UNRESOLVED;
 		}
-		free(data);
 
 		pa = mmap(NULL, size, PROT_NONE, MAP_SHARED, fd, 0);
 		if (pa == MAP_FAILED) {

@@ -35,10 +35,9 @@
 int main(void)
 {
 	char tmpfname[256];
-	char *data;
-
-	void *pa;
 	ssize_t size = 1024;
+	char data[size];
+	void *pa;
 	int fd;
 	struct stat stat_buff;
 
@@ -54,7 +53,6 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	data = malloc(size);
 	memset(data, 'a', size);
 	printf("Time before write(): %ld\n", time(NULL));
 	if (write(fd, data, size) != size) {
@@ -62,7 +60,6 @@ int main(void)
 		unlink(tmpfname);
 		return PTS_UNRESOLVED;
 	}
-	free(data);
 	sleep(1);
 	printf("Time before mmap(): %ld\n", time(NULL));
 	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
