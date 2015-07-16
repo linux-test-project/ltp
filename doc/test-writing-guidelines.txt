@@ -1247,10 +1247,33 @@ fi
 ...
 -------------------------------------------------------------------------------
 
-The tst_fs_has_free shell interface returns 0 if the specified free space is
+The 'tst_fs_has_free' shell interface returns 0 if the specified free space is
 satisfied, 1 if not, and 2 on error.
 
 The second argument supports suffixes kB, MB and GB, the default unit is Byte.
+
+.tst_retry
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+
+...
+
+# Retry ping command three times
+tst_retry "ping -c 1 127.0.0.1"
+
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Failed to ping 127.0.0.1"
+else
+	tst_resm TPASS "Successfully pinged 127.0.0.1"
+fi
+
+...
+-------------------------------------------------------------------------------
+
+The 'tst_retry' function allows you to retry a command after waiting small
+amount of time until it succeeds or until given amount of retries has been
+reached (default is three attempts).
 
 2.3.3 Cleanup
 ^^^^^^^^^^^^^
