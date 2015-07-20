@@ -62,7 +62,6 @@ static int child_fn1(void)
 static void setup(void)
 {
 	check_newuser();
-
 	tst_tmpdir();
 	TST_CHECKPOINT_INIT(NULL);
 }
@@ -96,6 +95,14 @@ int main(int argc, char *argv[])
 		fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
 		SAFE_WRITE(cleanup, 1, fd, content, strlen(content));
 		SAFE_CLOSE(cleanup, fd);
+
+		if (access("/proc/self/setgroups", F_OK) == 0) {
+			sprintf(path, "/proc/%d/setgroups", childpid);
+			fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
+			SAFE_WRITE(cleanup, 1, fd, "deny", 4);
+			SAFE_CLOSE(cleanup, fd);
+		}
+
 		sprintf(path, "/proc/%d/gid_map", childpid);
 		sprintf(content, "100 %d 1", parentgid);
 		fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
