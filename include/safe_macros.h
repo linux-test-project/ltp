@@ -310,7 +310,7 @@ static inline int safe_truncate(const char *file, const int lineno,
 
 	return rval;
 }
-#define SAFE_TRUNCATE(cleanup_fn, fd, length) \
+#define SAFE_TRUNCATE(cleanup_fn, path, length) \
 	safe_truncate(__FILE__, __LINE__, cleanup_fn, (path), (length))
 
 static inline int safe_stat(const char *file, const int lineno,
