@@ -59,6 +59,7 @@ static long huge_free;
 static long huge_free2;
 static long hugepages;
 static long orig_hugepages;
+static long orig_shmmax, new_shmmax;
 
 static void shared_hugepage(void);
 
@@ -128,10 +129,15 @@ void setup(void)
 	tst_require_root(NULL);
 
 	mem_total = read_meminfo("MemTotal:");
-	if (mem_total < 2L*1024*1024) {
-		tst_resm(TCONF, "Test requires more than 2GB of RAM");
-		tst_exit();
-	}
+	SAFE_FILE_SCANF(NULL, PATH_SHMMAX, "%ld", &orig_shmmax);
+	SAFE_FILE_PRINTF(NULL, PATH_SHMMAX, "%ld", (long)SIZE);
+	SAFE_FILE_SCANF(NULL, PATH_SHMMAX, "%ld", &new_shmmax);
+
+	if (mem_total < 2L*1024*1024)
+		tst_brkm(TCONF,	NULL, "Needed > 2GB RAM, have: %ld", mem_total);
+
+	if (new_shmmax < SIZE)
+		tst_brkm(TCONF,	NULL, "shmmax too low, have: %ld", new_shmmax);
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	hpage_size = read_meminfo("Hugepagesize:") * 1024;
@@ -150,4 +156,5 @@ void setup(void)
 void cleanup(void)
 {
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
+	SAFE_FILE_PRINTF(NULL, PATH_SHMMAX, "%ld", orig_shmmax);
 }
