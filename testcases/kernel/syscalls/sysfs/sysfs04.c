@@ -71,6 +71,7 @@
 #include <errno.h>
 #include  <syscall.h>
 #include "test.h"
+#include "linux_syscall_numbers.h"
 
 #define INVALID_OPTION 100
 static void setup();
@@ -87,12 +88,10 @@ int main(int ac, char **av)
 
 	setup();
 
-#ifdef __NR_sysfs
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
-		TEST(syscall(__NR_sysfs, INVALID_OPTION));
+		TEST(ltp_syscall(__NR_sysfs, INVALID_OPTION));
 
 		/* check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == EINVAL)) {
@@ -104,10 +103,6 @@ int main(int ac, char **av)
 				 " : EINVAL and got %d", EINVAL, TEST_ERRNO);
 		}
 	}
-#else
-	tst_resm(TWARN,
-		 "This test can only run on kernels that support the sysfs system call");
-#endif
 
 	/*Clean up and exit */
 	cleanup();

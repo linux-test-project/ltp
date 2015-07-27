@@ -64,10 +64,11 @@
  *There is no glibc or libc support
  *****************************************************************************/
 
-#include "test.h"
 #include <errno.h>
 #include <unistd.h>
 #include <syscall.h>
+#include "test.h"
+#include "linux_syscall_numbers.h"
 
 static void setup();
 static void cleanup();
@@ -84,14 +85,12 @@ int main(int ac, char **av)
 
 	setup();
 
-#ifdef __NR_sysfs
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
 
 		/*option 2 buf holds fs name */
-		TEST(syscall(__NR_sysfs, 2, 0, buf));
+		TEST(ltp_syscall(__NR_sysfs, 2, 0, buf));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
@@ -102,10 +101,6 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "sysfs(2) Passed for option 2");
 		}
 	}			/*End of TEST_LOOPING */
-#else
-	tst_resm(TWARN,
-		 "This test can only run on kernels that support the sysfs system call");
-#endif
 
 	/*Clean up and exit */
 	cleanup();
