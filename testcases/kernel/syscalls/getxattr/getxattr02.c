@@ -119,7 +119,7 @@ static void setup(void)
 {
 	int fd;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_tmpdir();
 

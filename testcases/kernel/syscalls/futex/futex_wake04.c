@@ -62,7 +62,7 @@ static long orig_hugepages;
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if ((tst_kvercmp(2, 6, 32)) < 0) {
 		tst_brkm(TCONF, NULL, "This test can only run on kernels "

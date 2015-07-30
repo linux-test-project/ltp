@@ -130,7 +130,7 @@ static void setup(void)
 {
 	int fildes;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

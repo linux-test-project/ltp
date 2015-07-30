@@ -109,7 +109,7 @@ static int kill_pid_in_childfun(void *vtest)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_newpid();
 }
 

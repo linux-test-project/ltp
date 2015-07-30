@@ -116,7 +116,7 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "You must specify a tty device with "
 			 "the -D option.");
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	setup();
 

@@ -108,7 +108,7 @@ static void setup(void)
 	char *tmp_dir = NULL;
 	struct passwd *pwent;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	TEST_PAUSE;
 

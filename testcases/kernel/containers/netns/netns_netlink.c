@@ -58,7 +58,7 @@ static void cleanup(void)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_iproute(IP_TUNTAP_MIN_VER);
 	check_netns();
 	tst_tmpdir();

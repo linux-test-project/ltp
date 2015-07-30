@@ -50,7 +50,7 @@ static void cleanup(void)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_newns();
 	tst_tmpdir();
 	TST_CHECKPOINT_INIT(tst_rmdir);

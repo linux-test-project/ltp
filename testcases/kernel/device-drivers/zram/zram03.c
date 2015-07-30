@@ -143,7 +143,7 @@ static void setup(void)
 {
 	int retried = 0;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 retry:
 	if (access(PATH_ZRAM, F_OK) == -1) {

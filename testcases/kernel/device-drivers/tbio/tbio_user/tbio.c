@@ -85,7 +85,7 @@ void setup(void)
 	struct stat st;
 	unsigned int i, valid_node_created;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (tst_kvercmp(2, 6, 0) < 0) {
 		tst_brkm(TCONF, NULL,

@@ -150,7 +150,7 @@ static void child_invoke(void)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 #if !defined(__NR_process_vm_readv)
 	tst_brkm(TCONF, NULL, "process_vm_readv does not exist "

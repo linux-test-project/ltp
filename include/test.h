@@ -168,7 +168,7 @@ void tst_brkm_(const char *file, const int lineno, int ttype,
 	tst_brkm_(__FILE__, __LINE__, (ttype), (func), \
 		  (arg_fmt), ##__VA_ARGS__)
 
-void tst_require_root(void (*func)(void));
+void tst_require_root(void);
 int  tst_environ(void);
 void tst_exit(void) LTP_ATTRIBUTE_NORETURN;
 void tst_flush(void);

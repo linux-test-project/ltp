@@ -92,7 +92,7 @@ int main(void)
 	unsigned int features, i;
 
 	setup();
-	tst_require_root(NULL);
+	tst_require_root();
 
 	int netfd = open("/dev/net/tun", O_RDWR);
 	if (netfd < 0)

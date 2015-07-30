@@ -193,7 +193,7 @@ void icmp6_et(void)
 void setup(void)
 {
 	TEST_PAUSE;		/* if -P option specified */
-	tst_require_root(NULL);
+	tst_require_root();
 }
 
 void cleanup(void)

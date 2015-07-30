@@ -93,7 +93,7 @@ void setup(void)
 	struct seminfo ipc_buf;
 	union semun arr;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	ltpuser = SAFE_GETPWNAM(NULL, nobody_uid);
 	SAFE_SETUID(NULL, ltpuser->pw_uid);

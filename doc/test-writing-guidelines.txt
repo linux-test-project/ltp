@@ -455,7 +455,7 @@ The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
 
 [source,c]
 -------------------------------------------------------------------------------
-void tst_require_root(void (*cleanup)(void));
+void tst_require_root(void);
 -------------------------------------------------------------------------------
 
 Abort the test if it's not executed with root privileges. If needed this should

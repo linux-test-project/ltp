@@ -154,7 +154,7 @@ void setup(void)
 
 	char *cur_dir = NULL;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	pw = SAFE_GETPWNAM(NULL, "nobody");
 	nobody_uid = pw->pw_uid;

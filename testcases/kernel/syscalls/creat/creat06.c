@@ -152,7 +152,7 @@ static void setup(void)
 {
 	const char *fs_type;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
 

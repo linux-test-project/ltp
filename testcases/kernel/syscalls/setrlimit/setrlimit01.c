@@ -289,7 +289,7 @@ static void sighandler(int sig)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	umask(0);
 

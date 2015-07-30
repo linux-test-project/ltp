@@ -102,7 +102,7 @@ static void setup(void)
 	char path[PATH_MAX];
 	struct passwd *pwd;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (tst_get_path(TEST_APP, path, sizeof(path))) {
 		tst_brkm(TBROK, NULL,

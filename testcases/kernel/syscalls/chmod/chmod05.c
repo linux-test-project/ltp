@@ -175,7 +175,7 @@ void setup(void)
 	struct passwd *nobody_u;
 	struct group *bin_group;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	TEST_PAUSE;
 

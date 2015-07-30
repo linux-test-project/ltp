@@ -56,7 +56,7 @@ int TST_TOTAL = 1;
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_iproute(IPROUTE_MIN_VER);
 	check_netns();
 }

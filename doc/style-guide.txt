@@ -79,7 +79,7 @@ exec'ing and descriptor inheritance, etc.
 4. Call APIs that don't require freeing up resources on failure first
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
- * +tst_require_root(NULL)+
+ * +tst_require_root()+
  * +tst_sig(...)+
  * +malloc(3)+
  * +tst_tmpdir()+
@@ -91,7 +91,7 @@ possible!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If the test need to run as root, check to make sure that you're root
-*before doing any other setup* via +tst_require_root(...)+.
+*before doing any other setup* via +tst_require_root()+.
 
 6. No custom reporting APIs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -317,7 +317,7 @@ The only exception to this is when you define global variables.
 
 Your testcase should be runnable as root and non-root. What does that mean? It
 should fail gracefully as non-root if it has insufficient privileges, or use
-+tst_require_root(NULL)+ if root access is absolutely required.
++tst_require_root()+ if root access is absolutely required.
 
 A lot of newer testcases don't honor this fact and it causes random
 unnecessary errors when run as non-privileged users.
@@ -358,7 +358,7 @@ static void setup(void)
 {
 	/* ... */
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_tmpdir();
 

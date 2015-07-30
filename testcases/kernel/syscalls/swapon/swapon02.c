@@ -126,7 +126,7 @@ static void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	nobody = SAFE_GETPWNAM(cleanup, "nobody");
 	nobody_uid = nobody->pw_uid;

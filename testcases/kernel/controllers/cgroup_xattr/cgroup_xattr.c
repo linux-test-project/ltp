@@ -143,7 +143,7 @@ void setup(int argc, char *argv[])
 {
 	tst_parse_opts(argc, argv, options, help);
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (access("/proc/cgroups", F_OK) == -1)
 		tst_brkm(TCONF, NULL, "Kernel doesn't support cgroups");

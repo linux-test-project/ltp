@@ -194,7 +194,7 @@ static void check_getqstat(void)
 static void setup(void)
 {
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	TEST_PAUSE;
 

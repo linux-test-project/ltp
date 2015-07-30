@@ -114,7 +114,7 @@ static void setup(void)
 	int write_len = 0;
 	int fd;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

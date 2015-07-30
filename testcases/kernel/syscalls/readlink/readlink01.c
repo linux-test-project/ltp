@@ -153,7 +153,7 @@ void setup(void)
 {
 	int fd;			/* file handle for testfile */
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, cleanup, "getpwname(nobody_uid) failed ");

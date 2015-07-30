@@ -99,7 +99,7 @@ static void setup(void)
 
 	TEST_PAUSE;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_tmpdir();
 

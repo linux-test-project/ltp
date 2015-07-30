@@ -247,7 +247,7 @@ static void child_invoke(int *bufsz_arr)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	nr_iovecs = nflag ? SAFE_STRTOL(NULL, nr_opt, 1, IOV_MAX) : 10;
 	bufsz = sflag ? SAFE_STRTOL(NULL, sz_opt, NUM_LOCAL_VECS, LONG_MAX)

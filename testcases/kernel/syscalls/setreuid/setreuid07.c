@@ -165,7 +165,7 @@ static void do_master_child(void)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	ltpuser = getpwnam("nobody");
 	if (ltpuser == NULL)

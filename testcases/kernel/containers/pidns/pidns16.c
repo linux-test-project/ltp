@@ -120,7 +120,7 @@ int child_fn(void *ttype)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_newpid();
 }
 

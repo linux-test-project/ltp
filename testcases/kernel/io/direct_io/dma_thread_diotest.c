@@ -362,7 +362,7 @@ static void setup(void)
 	tst_resm(TINFO, "using %d workers.", workers);
 
 	tst_sig(FORK, DEF_HANDLER, NULL);
-	tst_require_root(NULL);
+	tst_require_root();
 
 	TEST_PAUSE;
 

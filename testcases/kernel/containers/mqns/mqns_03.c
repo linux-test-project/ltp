@@ -131,7 +131,7 @@ int check_mqueue(void *vtest)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_mqns();
 }
 

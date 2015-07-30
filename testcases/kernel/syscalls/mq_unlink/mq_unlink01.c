@@ -113,7 +113,7 @@ void cleanup(void)
 /******************************************************************************/
 void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	/* Capture signals if any */
 	/* Create temporary directories */
 	TEST_PAUSE;

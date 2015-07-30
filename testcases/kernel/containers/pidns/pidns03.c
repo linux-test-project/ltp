@@ -48,7 +48,7 @@ static void cleanup(void)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_newpid();
 	tst_tmpdir();
 	SAFE_MKDIR(cleanup, PROCDIR, 0555);

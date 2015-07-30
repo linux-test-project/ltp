@@ -161,7 +161,7 @@ void setup(void)
 	gid_t group1_gid;	/* user and process group id's */
 	uid_t user1_uid;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

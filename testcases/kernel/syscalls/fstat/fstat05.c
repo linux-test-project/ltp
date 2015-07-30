@@ -195,7 +195,7 @@ void setup(void)
 {
 	int i;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	/*
 	 * Capture unexpected signals SIGSEGV included

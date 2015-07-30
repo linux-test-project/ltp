@@ -188,7 +188,7 @@ void kill_nested_containers()
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_newpid();
 }
 

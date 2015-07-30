@@ -242,7 +242,7 @@ static void father_signal_handler(int sig, siginfo_t * si, void *unused)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_newpid();
 }
 

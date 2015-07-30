@@ -578,7 +578,7 @@ int main(int argc, char *argv[])
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	if (tst_kvercmp(3, 5, 0) < 0)
 		tst_brkm(TCONF, NULL, "This test requires kernel"
 			" >= 3.5.0");

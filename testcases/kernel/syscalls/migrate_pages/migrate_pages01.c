@@ -223,7 +223,7 @@ static void setup(void)
 {
 	int node, ret;
 
-	tst_require_root(NULL);
+	tst_require_root();
 	TEST(ltp_syscall(__NR_migrate_pages, 0, 0, NULL, NULL));
 
 	if (numa_available() == -1)

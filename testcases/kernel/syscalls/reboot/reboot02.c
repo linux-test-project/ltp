@@ -178,7 +178,7 @@ int setup_test(void)
 /* setup() - performs all ONE TIME setup for this test */
 void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

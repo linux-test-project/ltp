@@ -160,7 +160,7 @@ void setup(void)
 	int wbytes;		/* no. of bytes written to file */
 	int write_len = 0;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

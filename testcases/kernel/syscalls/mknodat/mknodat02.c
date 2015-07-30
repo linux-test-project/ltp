@@ -112,7 +112,7 @@ static void setup(void)
 			 "that are 2.6.16 and higher");
 	}
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

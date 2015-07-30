@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
 void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (access(PATH_THP, F_OK) == -1)
 		tst_brkm(TCONF, NULL, "THP is not enabled");

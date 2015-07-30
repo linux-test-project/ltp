@@ -186,7 +186,7 @@ static void setup(void)
 {
 	char tmp[PATH_MAX];
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	/* runtime check if syscall is supported */
 	ltp_syscall(__NR_setns, -1, 0);

@@ -293,7 +293,7 @@ static void setup(void)
 	int fd;
 	struct stat stat_buf;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (stat(pathover, &stat_buf) == -1) {
 		if (errno == ENOENT || errno == ENOTDIR)

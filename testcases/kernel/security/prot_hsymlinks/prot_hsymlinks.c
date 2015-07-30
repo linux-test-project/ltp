@@ -192,7 +192,7 @@ static void setup(int argc, char *argv[])
 {
 	tst_parse_opts(argc, argv, options, &help);
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (tst_kvercmp(3, 7, 0) < 0)
 		tst_brkm(TCONF, NULL,

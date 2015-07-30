@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	/* runtime check if syscall is supported */
 	ltp_syscall(__NR_setns, -1, 0);

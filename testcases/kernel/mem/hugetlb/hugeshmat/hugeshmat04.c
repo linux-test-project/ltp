@@ -126,7 +126,7 @@ void setup(void)
 {
 	long mem_total, hpage_size;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	mem_total = read_meminfo("MemTotal:");
 	SAFE_FILE_SCANF(NULL, PATH_SHMMAX, "%ld", &orig_shmmax);

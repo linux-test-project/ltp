@@ -76,7 +76,7 @@ static void setup(void)
 	if ((tst_kvercmp(2, 6, 16)) < 0)
 		tst_brkm(TCONF, NULL, "This test needs kernel 2.6.16 or newer");
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

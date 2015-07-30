@@ -166,7 +166,7 @@ void setup(void)
 {
 	int fildes;		/* file handle for temp file */
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

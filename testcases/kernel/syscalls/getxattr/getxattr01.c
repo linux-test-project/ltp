@@ -136,7 +136,7 @@ static void setup(void)
 	int fd;
 	int i;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_tmpdir();
 

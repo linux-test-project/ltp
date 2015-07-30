@@ -747,10 +747,10 @@ void tst_brkm_(const char *file, const int lineno, int ttype,
 /*
  * tst_require_root() - Test for root permissions and abort if not.
  */
-void tst_require_root(void (*func) (void))
+void tst_require_root(void)
 {
 	if (geteuid() != 0)
-		tst_brkm(TCONF, func, "Test needs to be run as root");
+		tst_brkm(TCONF, NULL, "Test needs to be run as root");
 }
 
 /*

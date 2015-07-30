@@ -141,7 +141,7 @@ void setup(void)
 	long mem_total, swap_total;
 	struct rlimit lim;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

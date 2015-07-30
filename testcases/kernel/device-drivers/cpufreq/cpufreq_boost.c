@@ -72,7 +72,7 @@ static void setup(void)
 {
 	int fd;
 	unsigned int i;
-	tst_require_root(NULL);
+	tst_require_root();
 
 	for (i = 0; i < ARRAY_SIZE(cdrv); ++i) {
 		fd = open(cdrv[i].file, O_RDWR);

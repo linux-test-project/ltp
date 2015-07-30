@@ -142,7 +142,7 @@ void setup(void)
 {
 	key_t msgkey2;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

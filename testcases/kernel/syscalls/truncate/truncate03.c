@@ -123,7 +123,7 @@ void setup(void)
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);

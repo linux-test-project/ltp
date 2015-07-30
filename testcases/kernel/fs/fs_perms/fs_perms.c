@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 	int exp_res;
 	int res1, res2 = 1;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (argc != 8) {
 		print_usage(argv[0]);

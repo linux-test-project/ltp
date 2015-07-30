@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 {
 	int ret, whichtest;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	ret = prctl(PR_GET_KEEPCAPS);
 	if (ret)

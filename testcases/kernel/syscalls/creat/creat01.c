@@ -138,7 +138,7 @@ void setup(void)
 {
 	fd = -1;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)

@@ -391,7 +391,7 @@ void setup(void)
 {
 	long hpage_size;
 
-	tst_require_root(NULL);
+	tst_require_root();
 	tst_sig(FORK, sighandler, cleanup);
 	tst_tmpdir();
 

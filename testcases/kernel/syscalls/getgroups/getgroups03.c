@@ -129,7 +129,7 @@ static int readgroups(GID_T groups[NGROUPS])
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

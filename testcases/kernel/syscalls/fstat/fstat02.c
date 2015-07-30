@@ -113,7 +113,7 @@ static void setup(void)
 	int wbytes;
 	int write_len = 0;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

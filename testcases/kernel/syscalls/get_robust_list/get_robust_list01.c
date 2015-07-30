@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 
 void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	unused_pid = tst_get_unused_pid(cleanup);
 

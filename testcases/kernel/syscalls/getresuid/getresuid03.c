@@ -140,7 +140,7 @@ void setup(void)
 {
 	struct passwd *user_id;	/* passwd struct for test user */
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

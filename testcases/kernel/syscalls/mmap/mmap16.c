@@ -146,7 +146,7 @@ static void setup(void)
 	const char *fs_opts[3] = {"-b", "1024", NULL};
 
 	tst_sig(FORK, DEF_HANDLER, NULL);
-	tst_require_root(NULL);
+	tst_require_root();
 
 	TEST_PAUSE;
 	tst_tmpdir();

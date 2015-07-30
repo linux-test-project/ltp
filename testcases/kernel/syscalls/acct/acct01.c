@@ -118,7 +118,7 @@ static void setup(void)
 {
 	int fd;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	check_acct_in_kernel();
 

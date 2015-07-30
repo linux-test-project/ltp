@@ -91,7 +91,7 @@ int main(int ac, char **av)
 	 * process's mappable address space is indeed accessible by the
 	 * current user, instead of needing to be run by root all the time.
 	 */
-	tst_require_root(NULL);
+	tst_require_root();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 

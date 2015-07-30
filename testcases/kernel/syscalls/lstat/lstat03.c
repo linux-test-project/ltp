@@ -97,7 +97,7 @@ static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	ltpuser = SAFE_GETPWNAM(NULL, nobody_uid);
 	SAFE_SETUID(NULL, ltpuser->pw_uid);

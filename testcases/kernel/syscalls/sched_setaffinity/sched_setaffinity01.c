@@ -93,7 +93,7 @@ static void cleanup(void)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	uid = geteuid();
 	ncpus = tst_ncpus_max();
 

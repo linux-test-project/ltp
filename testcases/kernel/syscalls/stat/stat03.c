@@ -213,7 +213,7 @@ void setup(void)
 {
 	int ind;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);

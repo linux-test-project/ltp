@@ -183,7 +183,7 @@ int main(int ac, char **av)
 void setup(void)
 {
 	TEST_PAUSE;
-	tst_require_root(NULL);
+	tst_require_root();
 	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
 		tst_brkm(TBROK | TERRNO, NULL, "mount failed on %s", Hopt);
 	orig_hugepages = get_sys_tune("nr_hugepages");

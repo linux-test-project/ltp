@@ -111,7 +111,7 @@ static void setup(void)
 	int i;
 	struct passwd *ltpuser;
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 {
 	tst_parse_opts(argc, argv, NULL, NULL);
 
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (tst_kvercmp(2, 6, 0) < 0) {
 		tst_brkm(TCONF, NULL,

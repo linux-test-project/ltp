@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 
 static void setup(char *argv[])
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	if (rflag && wflag)
 		tst_brkm(TBROK, NULL, "Parameters -r -w can not be used"

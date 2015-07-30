@@ -148,7 +148,7 @@ int child_fn(void *arg)
 
 static void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 	check_newpid();
 }
 

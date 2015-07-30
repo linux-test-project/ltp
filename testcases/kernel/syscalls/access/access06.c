@@ -84,7 +84,7 @@ static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	tst_require_root(NULL);
+	tst_require_root();
 	tst_tmpdir();
 
 	fs_type = tst_dev_fs_type();

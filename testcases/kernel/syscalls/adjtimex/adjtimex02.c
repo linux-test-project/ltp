@@ -198,7 +198,7 @@ int main(int ac, char **av)
 /* setup() - performs all ONE TIME setup for this test */
 void setup(void)
 {
-	tst_require_root(NULL);
+	tst_require_root();
 
 	tim_save.modes = 0;
 
