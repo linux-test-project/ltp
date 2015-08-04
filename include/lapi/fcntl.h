@@ -59,6 +59,10 @@
 # define O_NOATIME 01000000
 #endif
 
+#ifndef O_PATH
+# define O_PATH 010000000
+#endif
+
 #ifndef FALLOC_FL_KEEP_SIZE
 # define FALLOC_FL_KEEP_SIZE 1
 #endif

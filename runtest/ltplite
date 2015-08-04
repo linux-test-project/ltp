@@ -545,6 +545,7 @@ open09 open09
 open10 open10
 open11 open11
 open12 open12
+open13 open13
 
 mincore01 mincore01
 #mincore02 mincore02 currently hangs and does not exit correctly
