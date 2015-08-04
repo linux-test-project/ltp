@@ -645,7 +645,7 @@ test08()
 
     numastat > $LTPTMP/numalog
     COUNTER=1
-    for node in `echo #nodes_list`; do
+    for node in `echo $nodes_list`; do
         col=$[$COUNTER+1]              #Node number in numastat o/p
         extract_numastat interleave_hit $interleave_hit $col || return 1
         Curr_value=$RC
