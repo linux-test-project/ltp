@@ -14,6 +14,10 @@
 #include "../libclone/libclone.h"
 #include "test.h"
 #include "safe_macros.h"
+#include <stdbool.h>
+
+#define UID_MAP 0
+#define GID_MAP 1
 
 static int dummy_child(void *v)
 {
@@ -33,5 +37,26 @@ static int check_newuser(void)
 		tst_brkm(TCONF | TERRNO, NULL, "CLONE_NEWUSER not supported");
 	SAFE_WAIT(NULL, &status);
 
+	return 0;
+}
+
+LTP_ATTRIBUTE_UNUSED static int updatemap(int cpid, bool type, int idnum,
+	int parentmappid, void (*cleanup)(void))
+{
+	char path[BUFSIZ];
+	char content[BUFSIZ];
+	int fd;
+
+	if (type == UID_MAP)
+		sprintf(path, "/proc/%d/uid_map", cpid);
+	else if (type == GID_MAP)
+		sprintf(path, "/proc/%d/gid_map", cpid);
+	else
+		tst_brkm(TBROK, cleanup, "invalid type parameter");
+
+	sprintf(content, "%d %d 1", idnum, parentmappid);
+	fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
+	SAFE_WRITE(cleanup, 1, fd, content, strlen(content));
+	SAFE_CLOSE(cleanup, fd);
 	return 0;
 }

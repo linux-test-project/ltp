@@ -162,26 +162,6 @@ static void setup(void)
 		setgroupstag = false;
 }
 
-static int updatemap(int cpid, bool type, int idnum, int parentmappid)
-{
-	char path[BUFSIZ];
-	char content[BUFSIZ];
-	int fd;
-
-	if (type == UID_MAP)
-		sprintf(path, "/proc/%d/uid_map", cpid);
-	else if (type == GID_MAP)
-		sprintf(path, "/proc/%d/gid_map", cpid);
-	else
-		tst_brkm(TBROK, cleanup, "invalid type parameter");
-
-	sprintf(content, "%d %d 1", idnum, parentmappid);
-	fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
-	SAFE_WRITE(cleanup, 1, fd, content, strlen(content));
-	SAFE_CLOSE(cleanup, fd);
-	return 0;
-}
-
 int main(int argc, char *argv[])
 {
 	pid_t cpid2;
@@ -223,11 +203,11 @@ int main(int argc, char *argv[])
 			SAFE_CLOSE(cleanup, fd);
 		}
 
-		updatemap(cpid1, UID_MAP, CHILD1UID, parentuid);
-		updatemap(cpid2, UID_MAP, CHILD2UID, parentuid);
+		updatemap(cpid1, UID_MAP, CHILD1UID, parentuid, cleanup);
+		updatemap(cpid2, UID_MAP, CHILD2UID, parentuid, cleanup);
 
-		updatemap(cpid1, GID_MAP, CHILD1GID, parentuid);
-		updatemap(cpid2, GID_MAP, CHILD2GID, parentuid);
+		updatemap(cpid1, GID_MAP, CHILD1GID, parentuid, cleanup);
+		updatemap(cpid2, GID_MAP, CHILD2GID, parentuid, cleanup);
 
 		TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup, 1);
 
