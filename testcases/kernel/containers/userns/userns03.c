@@ -166,7 +166,6 @@ int main(int argc, char *argv[])
 {
 	pid_t cpid2;
 	char path[BUFSIZ];
-	int cpid1status, cpid2status;
 	int lc;
 	int fd;
 
@@ -211,27 +210,8 @@ int main(int argc, char *argv[])
 
 		TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup, 1);
 
-		if ((waitpid(cpid1, &cpid1status, 0) < 0) ||
-			(waitpid(cpid2, &cpid2status, 0) < 0))
-				tst_brkm(TBROK | TERRNO, cleanup,
-				"parent: waitpid failed.");
-
-		if (WIFSIGNALED(cpid1status)) {
-			tst_resm(TFAIL, "child1 was killed with signal = %d",
-				WTERMSIG(cpid1status));
-		} else if (WIFEXITED(cpid1status) &&
-			WEXITSTATUS(cpid1status) != 0) {
-			tst_resm(TFAIL, "child1 exited abnormally");
-		}
-
-		if (WIFSIGNALED(cpid2status)) {
-			tst_resm(TFAIL, "child2 was killed with signal = %d",
-				WTERMSIG(cpid2status));
-		} else if (WIFEXITED(cpid2status) &&
-			WEXITSTATUS(cpid2status) != 0) {
-			tst_resm(TFAIL, "child2 exited abnormally");
-		} else
-			tst_resm(TPASS, "test pass");
+		tst_record_childstatus(cleanup, cpid1);
+		tst_record_childstatus(cleanup, cpid2);
 	}
 	cleanup();
 	tst_exit();

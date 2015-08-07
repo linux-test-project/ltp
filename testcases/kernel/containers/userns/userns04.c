@@ -70,29 +70,11 @@ static int child_fn2(void *arg)
 	return exit_val;
 }
 
-static int wait4child(pid_t pid, const char *msg)
-{
-	int status;
-
-	if (waitpid(pid, &status, 0) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
-	} else if (WIFSIGNALED(status)) {
-		tst_resm(TFAIL, "%s: child was killed with signal = %d",
-			msg, WTERMSIG(status));
-		return WTERMSIG(status);
-	} else if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-		tst_resm(TFAIL, "%s: child returns %d", msg, status);
-		return WEXITSTATUS(status);
-	}
-
-	return 0;
-}
-
 static void test_cap_sys_admin(void)
 {
 	pid_t cpid1, cpid2, cpid3;
 	char path[BUFSIZ];
-	int fd, status;
+	int fd;
 
 	/* child 1 */
 	cpid1 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD,
@@ -124,14 +106,9 @@ static void test_cap_sys_admin(void)
 	TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 	TST_SAFE_CHECKPOINT_WAKE(cleanup, 1);
 
-	status = 0;
-	status |= wait4child(cpid1, "child1");
-	status |= wait4child(cpid2, "child2");
-	status |= wait4child(cpid3, "child3");
-	if (status == 0)
-		tst_resm(TPASS, "The setns function works well.");
-	else
-		tst_resm(TFAIL, "Some child reported failure.");
+	tst_record_childstatus(cleanup, cpid1);
+	tst_record_childstatus(cleanup, cpid2);
+	tst_record_childstatus(cleanup, cpid3);
 
 	SAFE_CLOSE(cleanup, fd);
 

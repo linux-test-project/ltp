@@ -68,7 +68,6 @@ static void setup(void)
 
 int main(int argc, char *argv[])
 {
-	int status;
 	int lc;
 	int childpid;
 	int parentuid;
@@ -111,19 +110,8 @@ int main(int argc, char *argv[])
 
 		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 
-		if (waitpid(childpid, &status, 0) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid failed");
-
-		if (WIFSIGNALED(status)) {
-			tst_resm(TFAIL, "child was killed with signal = %d",
-				WTERMSIG(status));
-		} else if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-			tst_resm(TFAIL, "child exited abnormally");
-		else
-			tst_resm(TPASS, "the uid and the gid are right inside "
-				"the container");
+		tst_record_childstatus(cleanup, childpid);
 	}
 	cleanup();
 	tst_exit();
 }
-
