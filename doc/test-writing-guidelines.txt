@@ -645,6 +645,9 @@ void tst_record_childstatus(void (*cleanup)(void), pid_t child);
 This function does a 'waitpid()' on child process and record child process's
 return value into the overall test result.
 
+NOTE: As 'waitpid()' is used you may pass '-1' as the child pid if you
+      want to wait for any of the process children.
+
 2.2.8 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
