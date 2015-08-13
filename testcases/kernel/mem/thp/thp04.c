@@ -91,7 +91,7 @@ void setup(void)
 	tst_require_root();
 
 	if (access(PATH_THP, F_OK) == -1)
-		tst_brkm(TCONF, NULL, "THP is not enabled");
+		tst_brkm(TCONF, NULL, "THP not enabled in kernel?");
 
 	SAFE_FILE_SCANF(NULL, PATH_KHPD "scan_sleep_millisecs",
 			"%d", &pre_thp_scan_sleep_millisecs);

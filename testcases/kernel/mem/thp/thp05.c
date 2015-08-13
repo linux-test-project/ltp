@@ -105,7 +105,7 @@ void setup(void)
 	tst_require_root();
 
 	if (access(PATH_THP, F_OK) == -1)
-		tst_brkm(TCONF, NULL, "THP is not enabled");
+		tst_brkm(TCONF, NULL, "THP not enabled in kernel?");
 
 	if (!is_numa(NULL))
 		tst_brkm(TCONF, NULL, "The case need a NUMA system.");

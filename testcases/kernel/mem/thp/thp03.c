@@ -113,6 +113,9 @@ static void thp_test(void)
 
 void setup(void)
 {
+	if (access(PATH_THP, F_OK) == -1)
+		tst_brkm(TCONF, NULL, "THP not enabled in kernel?");
+
 	hugepage_size = read_meminfo("Hugepagesize:") * KB;
 	unaligned_size = hugepage_size * 4 - 1;
 	page_size = SAFE_SYSCONF(NULL, _SC_PAGESIZE);
