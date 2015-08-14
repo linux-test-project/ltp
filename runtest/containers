@@ -13,6 +13,7 @@ pidns17 pidns17
 pidns20 pidns20
 pidns30 pidns30
 pidns31 pidns31
+pidns32 pidns32
 
 mqns_01 mqns_01
 mqns_01_clone mqns_01 -clone
