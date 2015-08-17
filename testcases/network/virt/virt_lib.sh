@@ -245,16 +245,30 @@ vxlan_setup_subnet_multi()
 virt_compare_netperf()
 {
 	local ret=0
+	local expected_result=${1:-"pass"}
+
 	tst_netload $ip_virt_remote res_ipv4 $net_load || ret=1
 	tst_netload ${ip6_virt_remote}%ltp_v0 res_ipv6 $net_load || ret=1
 
 	ROD_SILENT "ip link delete ltp_v0"
 	tst_rhost_run -s -c "ip link delete ltp_v0"
-	[ "$ret" -eq 1 ] && return 1
+
+	if [ "$ret" -eq 1 ]; then
+		if [ "$expected_result" = "pass" ]; then
+			tst_resm TFAIL "Test with virtual iface failed"
+		else
+			tst_resm TPASS "Test failed as expected"
+		fi
+		return
+	fi
 	local vt="$(cat res_ipv4)"
 	local vt6="$(cat res_ipv6)"
 
-	tst_netload $ip_remote res_ipv4 $net_load || return 1
+	tst_netload $ip_remote res_ipv4 $net_load
+	if [ $? -ne 0 ]; then
+		tst_resm TFAIL "Test with $ip_remote failed"
+		return
+	fi
 
 	local lt="$(cat res_ipv4)"
 	tst_resm TINFO "time lan($lt) $virt_type IPv4($vt) and IPv6($vt6) ms"
@@ -271,10 +285,13 @@ virt_compare_netperf()
 		tst_resm TINFO "IPv4 $virt_type slower by $per %"
 		tst_resm TINFO "IPv6 $virt_type slower by $per6 %"
 	esac
-	[ "$per" -ge "$virt_threshold" -o "$per6" -ge "$virt_threshold" ] \
-		&& ret=1
 
-	return $ret
+	if [ "$per" -ge "$virt_threshold" -o \
+	     "$per6" -ge "$virt_threshold" ]; then
+		tst_resm TFAIL "Test failed"
+	else
+		tst_resm TPASS "Test passed"
+	fi
 }
 
 virt_check_cmd()

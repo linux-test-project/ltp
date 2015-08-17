@@ -69,19 +69,12 @@ for n in $(seq 1 2); do
 
 	tst_resm TINFO "the same VNI must work"
 	# VNI is 24 bits long, so max value, which is not reserved, is 0xFFFFFE
-	res="TPASS"
-
 	vxlan_setup_subnet_$vxlan_dst_addr "id 0xFFFFFE $p" "id 0xFFFFFE $p"
-	virt_compare_netperf || res="TFAIL"
-
-	tst_resm $res "done"
+	virt_compare_netperf
 
 	tst_resm TINFO "different VNI shall not work together"
-	res="TPASS"
 	vxlan_setup_subnet_$vxlan_dst_addr "id 0xFFFFFE $p" "id 0xFFFFFD $p"
-	virt_compare_netperf && res="TFAIL"
-
-	tst_resm $res "done"
+	virt_compare_netperf "fail"
 done
 
 tst_exit

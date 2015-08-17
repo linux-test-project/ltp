@@ -50,9 +50,6 @@ if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"
 fi
 
-tst_resm TINFO "networks with the same VLAN ID must work"
-res="TPASS"
-
 p0="protocol 802.1Q"
 p1="protocol 802.1ad"
 lb0="loose_binding off"
@@ -63,21 +60,17 @@ rh1="reorder_hdr on"
 opts=" ,$p0 $lb0 $rh1,$p1 $lb1 $rh1"
 
 for n in $(seq 1 3); do
-	params="$(echo $opts | cut -d',' -f$n)"
+	p="$(echo $opts | cut -d',' -f$n)"
 
-	virt_check_cmd virt_add ltp_v0 id 0 $params || continue
+	virt_check_cmd virt_add ltp_v0 id 0 $p || continue
 
-	virt_setup "id 4094 $params" "id 4094 $params"
-	virt_compare_netperf || res="TFAIL"
-
-	tst_resm $res "done"
+	tst_resm TINFO "networks with the same VLAN ID must work"
+	virt_setup "id 4094 $p" "id 4094 $p"
+	virt_compare_netperf
 
 	tst_resm TINFO "different VLAN ID shall not work together"
-	res="TPASS"
-	virt_setup "id 4093 $params" "id 4094 $params"
-	virt_compare_netperf && res="TFAIL"
-
-	tst_resm $res "done"
+	virt_setup "id 4093 $p" "id 4094 $p"
+	virt_compare_netperf "fail"
 done
 
 tst_exit

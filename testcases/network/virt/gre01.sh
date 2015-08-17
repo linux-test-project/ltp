@@ -49,15 +49,10 @@ if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"
 fi
 
-res="TPASS"
-
 tst_resm TINFO "test $virt_type"
-
 virt_setup "remote $(tst_ipaddr rhost) dev $(tst_iface)" \
 "remote $(tst_ipaddr) dev $(tst_iface rhost)"
 
-virt_compare_netperf || res="TFAIL"
-
-tst_resm $res "done"
+virt_compare_netperf
 
 tst_exit
