@@ -105,12 +105,14 @@ static inline int sig_initial(int sig)
 # if defined __arch64__ || defined __sparcv9
 
 /*
- * From glibc/sysdeps/unix/sysv/linux/sparc/sparc64/sigaction.c
+ * Based on glibc/sysdeps/unix/sysv/linux/sparc/sparc64/sigaction.c
  */
+
+extern char *__rt_sig_stub;
 
 static void __rt_sigreturn_stub(void)
 {
-	__asm__ ("mov %0, %%g1\n\t"
+	__asm__ ("__rt_sig_stub: mov %0, %%g1\n\t"
 		"ta  0x6d\n\t"
 		: /* no outputs */
 		: "i" (__NR_rt_sigreturn));
@@ -119,12 +121,14 @@ static void __rt_sigreturn_stub(void)
 # else /* sparc32 */
 
 /*
- * From glibc/sysdeps/unix/sysv/linux/sparc/sparc32/sigaction.c
+ * Based on glibc/sysdeps/unix/sysv/linux/sparc/sparc32/sigaction.c
  */
+
+extern char *__rt_sig_stub, *__sig_stub;
 
 static void __rt_sigreturn_stub(void)
 {
-	__asm__ ("mov %0, %%g1\n\t"
+	__asm__ ("__rt_sig_stub: mov %0, %%g1\n\t"
 		"ta  0x10\n\t"
 		: /* no outputs */
 		: "i" (__NR_rt_sigreturn));
@@ -132,7 +136,7 @@ static void __rt_sigreturn_stub(void)
 
 static void __sigreturn_stub(void)
 {
-	__asm__ ("mov %0, %%g1\n\t"
+	__asm__ ("__sig_stub: mov %0, %%g1\n\t"
 		"ta  0x10\n\t"
 		: /* no outputs */
 		: "i" (__NR_sigreturn));
@@ -181,12 +185,12 @@ static int ltp_rt_sigaction(int signum, const struct sigaction *act,
 #ifdef __sparc__
 	unsigned long stub = 0;
 # if defined __arch64__ || defined __sparcv9
-	stub = ((unsigned long) &__rt_sigreturn_stub) - 8;
+	stub = ((unsigned long) &__rt_sig_stub) - 8;
 # else /* sparc32 */
 	if ((kact.sa_flags & SA_SIGINFO) != 0)
-		stub = ((unsigned long) &__rt_sigreturn_stub) - 8;
+		stub = ((unsigned long) &__rt_sig_stub) - 8;
 	else
-		stub = ((unsigned long) &__sigreturn_stub) - 8;
+		stub = ((unsigned long) &__sig_stub) - 8;
 # endif
 #endif
 
