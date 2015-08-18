@@ -24,15 +24,24 @@ mqns_03_clone mqns_03 -clone
 mqns_04 mqns_04
 mqns_04_clone mqns_04 -clone
 
-netns_crtchild netns_crtchild
-netns_two_children_ns netns_two_children_ns
-netns_crtchild_delchild netns_crtchild_delchild
-netns_par_chld_ipv6 netns_par_chld_ipv6
-netns_par_chld_ftp netns_par_chld_ftp.sh
 netns_netlink netns_netlink
-netns_devices netns_devices.sh
-netns_devices2 netns_devices2.sh
-netns_isolation netns_isolation.sh
+netns_breakns_ns_exec_ipv4_netlink netns_breakns.sh ns_exec ipv4 netlink
+netns_breakns_ns_exec_ipv6_netlink netns_breakns.sh ns_exec ipv6 netlink
+netns_breakns_ns_exec_ipv4_ioctl netns_breakns.sh ns_exec ipv4 ioctl
+netns_breakns_ns_exec_ipv6_ioctl netns_breakns.sh ns_exec ipv6 ioctl
+netns_breakns_ip_ipv4_netlink netns_breakns.sh ip ipv4 netlink
+netns_breakns_ip_ipv6_netlink netns_breakns.sh ip ipv6 netlink
+netns_breakns_ip_ipv4_ioctl netns_breakns.sh ip ipv4 ioctl
+netns_breakns_ip_ipv6_ioctl netns_breakns.sh ip ipv6 ioctl
+netns_comm_ns_exec_ipv4_netlink netns_comm.sh ns_exec ipv4 netlink
+netns_comm_ns_exec_ipv6_netlink netns_comm.sh ns_exec ipv6 netlink
+netns_comm_ns_exec_ipv4_ioctl netns_comm.sh ns_exec ipv4 ioctl
+netns_comm_ns_exec_ipv6_ioctl netns_comm.sh ns_exec ipv6 ioctl
+netns_comm_ip_ipv4_netlink netns_comm.sh ip ipv4 netlink
+netns_comm_ip_ipv6_netlink netns_comm.sh ip ipv6 netlink
+netns_comm_ip_ipv4_ioctl netns_comm.sh ip ipv4 ioctl
+netns_comm_ip_ipv6_ioctl netns_comm.sh ip ipv6 ioctl
+netns_sysfs netns_sysfs.sh
 
 shmnstest_none shmnstest none
 shmnstest_clone shmnstest clone
