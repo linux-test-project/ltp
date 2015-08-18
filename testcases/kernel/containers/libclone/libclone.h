@@ -28,6 +28,7 @@
 #include <signal.h>
 #include "linux_syscall_numbers.h"
 #include "test.h"
+#include "lapi/namespaces_constants.h"
 
 #define T_UNSHARE 0
 #define T_CLONE 1
@@ -53,26 +54,6 @@
 
 #ifndef __NR_unshare
 #define __NR_unshare SYS_unshare
-#endif
-
-#ifndef CLONE_NEWUTS
-#define CLONE_NEWUTS		0x04000000
-#endif
-
-#ifndef CLONE_NEWIPC
-#define CLONE_NEWIPC		0x08000000
-#endif
-
-#ifndef CLONE_NEWUSER
-#define CLONE_NEWUSER		0x10000000
-#endif
-
-#ifndef CLONE_NEWPID
-#define CLONE_NEWPID            0x20000000
-#endif
-
-#ifndef CLONE_NEWNET
-#define CLONE_NEWNET		0x40000000
 #endif
 
 /*

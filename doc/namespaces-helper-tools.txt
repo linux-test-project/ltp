@@ -1,0 +1,58 @@
+LTP namespaces helper tools
+===========================
+
+
+1. Introduction
+---------------
+
+LTP provides helper tools for creating and working with namespaces. These are
+located in ltp/testcases/kernel/containers/share directory and include:
+
+* ns_create
+** creates a child process in the new specified namespace(s)
+** child is then daemonized and is running in the background
+** PID of the daemonized child process is printed on the stdout
+** the new namespace(s) is(are) maintained by the daemonized child process
+** namespace(s) can be removed by killing the daemonized process
+* ns_exec
+** enters the namespace(s) of a process specified by a PID
+** then executes the indicated program inside that namespace(s)
+* ns_ifmove
+** moves a network interface to the namespace of a process specified by a PID
+
+Purpose of these helper tools is the ability to execute test cases utilizing
+namespaces even on older kernels which do not provide tooling (i.e. unshare(1)
+or nsenter(1) from util-linux) required for working with namespaces. The only
+requirement from kernel side is the support of "setns" syscall.
+
+2. Example usage
+----------------
+
+The following code shows how test cases can use the namespaces helper tools:
+
+[source,sh]
+-------------------------------------------------------------------------------
+# Creates a new network and ipc namespace and stores the PID of the daemonized
+# process inside that namespace into variable myns
+myns=$(ns_create net ipc)
+
+ip link add veth0 type veth peer name veth1
+
+# Executes command 'ip a' inside the namespace specified by PID in myns variable
+ns_exec $myns ip a
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+
+# Moves interface veth1 into the namespace specified by PID in myns variable
+ns_ifmove veth1 $myns
+ns_exec $myns ip a
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+6: veth1: <BROADCAST> mtu 1500 qdisc noop state DOWN qlen 1000
+    link/ether 6a:0a:45:ed:6e:d0 brd ff:ff:ff:ff:ff:ff
+
+# cleanup
+ip link del veth0
+# By killing the daemonized process we also delete the namespace
+kill -9 $myns
+-------------------------------------------------------------------------------
