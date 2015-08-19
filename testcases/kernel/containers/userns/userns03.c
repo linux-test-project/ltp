@@ -205,8 +205,8 @@ int main(int argc, char *argv[])
 		updatemap(cpid1, UID_MAP, CHILD1UID, parentuid, cleanup);
 		updatemap(cpid2, UID_MAP, CHILD2UID, parentuid, cleanup);
 
-		updatemap(cpid1, GID_MAP, CHILD1GID, parentuid, cleanup);
-		updatemap(cpid2, GID_MAP, CHILD2GID, parentuid, cleanup);
+		updatemap(cpid1, GID_MAP, CHILD1GID, parentgid, cleanup);
+		updatemap(cpid2, GID_MAP, CHILD2GID, parentgid, cleanup);
 
 		TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup, 1);
 
