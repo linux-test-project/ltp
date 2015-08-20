@@ -43,6 +43,7 @@ client_requests=500000
 max_requests=3
 net_load="TFO"
 virt_threshold=80
+vxlan_dstport=0
 
 while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
 	case "$opt" in
@@ -105,6 +106,7 @@ virt_add()
 	case $virt_type in
 	vlan|vxlan)
 		[ -z "$opt" ] && opt="id 4094"
+		[ "$vxlan_dstport" -eq 1 ] && opt="dstport 0 $opt"
 	;;
 	gre|ip6gre)
 		[ -z "$opt" ] && \
@@ -127,9 +129,11 @@ virt_add()
 
 virt_add_rhost()
 {
+	local opt=""
 	case $virt_type in
 	vxlan)
-		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@"
+		[ "$vxlan_dstport" -eq 1 ] && opt="dstport 0"
+		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@ $opt"
 	;;
 	gre|ip6gre)
 		tst_rhost_run -s -c "ip -f inet$TST_IPV6 tu add ltp_v0 \
@@ -372,6 +376,9 @@ vxlan)
 		tst_kvercmp 3 12 0 && \
 			tst_brkm TCONF "test must be run with kernels >= 3.12"
 	fi
+
+	# newer versions of 'ip' complain if this option not set
+	ip li add type vxlan help 2>&1 | grep -q dstport && vxlan_dstport=1
 ;;
 esac
 

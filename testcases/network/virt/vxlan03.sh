@@ -60,7 +60,7 @@ if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"
 fi
 
-opts=" ,dstport 0 gbp"
+opts=" ,gbp"
 
 for n in $(seq 1 2); do
 	p="$(echo $opts | cut -d',' -f$n)"
