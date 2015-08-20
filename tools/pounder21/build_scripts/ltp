@@ -25,47 +25,6 @@ source "$POUNDER_HOME/libpounder.sh"
 # Go up two levels to the top ltp dir.
 cd "$POUNDER_HOME/../../"
 
-# Apply a patch if this is Debian/Ubuntu.
-if [ -f /etc/debian_version ]; then
-	# Have we already patched this?
-	if [ ! -e "testcases/network/sctp/func_tests/test_1_to_1_connect.c.pounder" ]; then
-		cp -pRdu testcases/network/sctp/func_tests/test_1_to_1_connect.c testcases/network/sctp/func_tests/test_1_to_1_connect.c.pounder
-		echo "Debian/Ubuntu detected; applying build fixes..."
-		patch -p1 < $POUNDER_SRCDIR/ltp-debian-build.patch
-		RESULT=$?
-		if [ $RESULT -ne 0 ]; then
-			echo Patching failed.
-			exit 1
-		fi
-	fi
-else
-	# We need to _unpatch_ this.
-	if [ -e "testcases/network/sctp/func_tests/test_1_to_1_connect.c.pounder" ]; then
-		rm -rf testcases/network/sctp/func_tests/test_1_to_1_connect.c.pounder
-		echo "Previous Debian/Ubuntu detected; removing build fixes..."
-		patch -p1 -R < $POUNDER_SRCDIR/ltp-debian-build.patch
-		RESULT=$?
-		if [ $RESULT -ne 0 ]; then
-			echo Patching failed.
-			exit 1
-		fi
-	fi
-
-fi
-
-# NAK the setregid EPERM -> EINVAL patch, because it's
-# broken on 2.6!  May be fixed some time after 20050804 release.
-#if [ ! -e "testcases/kernel/syscalls/setregid/setregid02.c.pounder" ]; then
-#	echo "Patching some holes in ltp..."
-#	cp -pRdu testcases/kernel/syscalls/setregid/setregid02.c testcases/kernel/syscalls/setregid/setregid02.c.pounder
-#	patch -p1 < $POUNDER_SRCDIR/ltp-setregid-fix.patch
-#	RESULT=$?
-#	if [ $RESULT -ne 0 ]; then
-#		echo Patching failed.
-#		exit 1
-#	fi
-#fi
-
 # Build
 ./configure
 make -j$NR_CPUS
