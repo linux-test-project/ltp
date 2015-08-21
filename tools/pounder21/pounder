@@ -201,8 +201,8 @@ shift `expr $OPTIND - 1`
 
 # Are we already running?
 if [ -f "$POUNDER_PIDFILE" ]; then
-	echo "File $POUNDER_PIDFILE exists; pounder may already be running." > /dev/tty
-	echo "Either run 'pounder -k' to stop all tests, or remove it." > /dev/tty
+	echo "File $POUNDER_PIDFILE exists; pounder may already be running."
+	echo "Either run 'pounder -k' to stop all tests, or remove it."
 	exit 1
 fi
 
@@ -225,21 +225,21 @@ fi
 # Set up log directory
 mkdir -p "$POUNDER_LOGDIR" 2> /dev/null
 if [ ! -d "$POUNDER_LOGDIR" ]; then
-	echo "Could not create $POUNDER_LOGDIR; aborting." > /dev/tty
+	echo "Could not create $POUNDER_LOGDIR; aborting."
 	exit 1
 fi
 
 # Set up dir for optional components
 mkdir -p "$POUNDER_OPTDIR"
 if [ ! -d "$POUNDER_OPTDIR" ]; then
-	echo "Could not create $POUNDER_OPTDIR; aborting." > /dev/tty
+	echo "Could not create $POUNDER_OPTDIR; aborting."
 	exit 1
 fi
 
 # Set up tmpdir
 mkdir -p "$POUNDER_TMPDIR"
 if [ ! -d "$POUNDER_TMPDIR" ]; then
-	echo "Could not create $POUNDER_TMPDIR; aborting." > /dev/tty
+	echo "Could not create $POUNDER_TMPDIR; aborting."
 	exit 1
 fi
 
@@ -259,8 +259,8 @@ fi
 export > "$POUNDER_LOGDIR/environment"
 
 echo "Starting $POUNDER_VERSION"
-echo "STARTING TESTS." > /dev/tty
-echo "To kill all tests, run 'pounder -k' or press ^C."> /dev/tty
+echo "STARTING TESTS."
+echo "To kill all tests, run 'pounder -k' or press ^C."
 
 # Handle the duration thing...
 function kill_after {

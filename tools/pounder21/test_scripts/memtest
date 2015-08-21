@@ -22,7 +22,7 @@
 
 # Can we find the script?
 if [ ! -f "$POUNDER_OPTDIR/memtest.sh" ]; then
-	echo "Can't find memtest.sh; did you run Install?" > /dev/tty
+	echo "Can't find memtest.sh; did you run Install?"
 	exit -1
 fi
 

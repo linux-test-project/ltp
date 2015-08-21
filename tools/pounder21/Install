@@ -65,7 +65,7 @@ done
 # Set up optdir
 mkdir -p "$POUNDER_OPTDIR"
 if [ ! -d "$POUNDER_OPTDIR" ]; then
-	echo "Could not create $POUNDER_OPTDIR; aborting." > /dev/tty
+	echo "Could not create $POUNDER_OPTDIR; aborting."
 	exit 1
 fi
 
