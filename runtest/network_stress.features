@@ -2,6 +2,9 @@
 # Stress tests for various network features
 #
 
+busy_poll01 busy_poll01.sh
+busy_poll01_ipv6 busy_poll01.sh -6
+
 tcp_fastopen tcp_fastopen_run.sh
 tcp_fastopen6 tcp_fastopen_run.sh -6
 
