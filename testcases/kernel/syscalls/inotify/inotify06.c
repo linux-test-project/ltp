@@ -37,7 +37,6 @@
 #include <fcntl.h>
 #include <time.h>
 #include <signal.h>
-#include <sys/inotify.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <sys/syscall.h>
