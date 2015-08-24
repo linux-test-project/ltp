@@ -282,6 +282,17 @@ tst_netload()
 		tst_resm TINFO "run tcp_fastopen with '$ip_addr', port '$port'"
 		tst_rhost_run -s -b -c "tcp_fastopen -R $max_requests -g $port"
 
+		# check that tcp_fastopen on rhost in 'Listening' state
+		local sec_waited=
+		for sec_waited in $(seq 1 60); do
+			tst_rhost_run -c "ss -ltn | grep -q $port" && break
+			if [ $sec_waited -eq 60 ]; then
+				tst_resm TINFO "rhost not in LISTEN state"
+				return 1
+			fi
+			sleep 1
+		done
+
 		# run local tcp client
 		tcp_fastopen -a $clients_num -r $client_requests -l \
 			-H $ip_addr -g $port -d $rfile > /dev/null || ret=1
