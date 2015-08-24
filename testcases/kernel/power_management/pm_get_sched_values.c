@@ -47,4 +47,6 @@ int main(int argc, char **argv)
 		if (strcmp(param, "sched_smt") == 0)
 			return get_supp_sched_smt();
 	}
+
+	return 1;
 }
