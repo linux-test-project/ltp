@@ -17,6 +17,7 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-INSTALL_TARGETS		:= busy_poll01.sh
+INSTALL_TARGETS		:= busy_poll01.sh \
+			   busy_poll02.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
