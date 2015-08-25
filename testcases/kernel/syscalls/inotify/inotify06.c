@@ -53,7 +53,7 @@ int TST_TOTAL = 1;
 #include <sys/inotify.h>
 
 /* Number of test loops to run the test for */
-#define TEARDOWNS 100000
+#define TEARDOWNS 400
 
 /* Number of files to test (must be > 1) */
 #define FILES 5
