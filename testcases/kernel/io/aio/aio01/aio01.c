@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 	bufsize = (bflag ? atoi(optb) : 8192);
 	nr = (nflag ? atoi(optn) : 10);
 	if (Fflag) {
-		sprintf(fname, optF);
+		sprintf(fname, "%s", optF);
 	} else {
 		sprintf(fname, "aiofile");
 	}
