@@ -33,7 +33,11 @@
 #include <arpa/inet.h>
 #include "test.h"
 
+#include "config.h"
+
 char *TCID = "ns_linkset";
+
+#if HAVE_DECL_IFLA_NET_NS_PID
 
 struct {
 	struct nlmsghdr nh;
@@ -119,3 +123,12 @@ int main(int argc, char **argv)
 	close(rtnetlink_socket);
 	return 0;
 }
+
+#else
+
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "IFLA_NET_NS_PID not defined in linux/if_link.h");
+}
+
+#endif
