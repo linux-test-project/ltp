@@ -102,7 +102,6 @@ int main(int argc, char *argv[])
 	rv |= open_ns_fd(argv[1], "mnt");
 	rv |= open_ns_fd(argv[1], "net");
 	rv |= open_ns_fd(argv[1], "pid");
-	rv |= open_ns_fd(argv[1], "user");
 	rv |= open_ns_fd(argv[1], "uts");
 	if (rv != 0)
 		return 1;
