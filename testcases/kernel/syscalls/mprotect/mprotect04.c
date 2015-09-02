@@ -45,7 +45,6 @@ static void cleanup(void);
 
 static void testfunc_protnone(void);
 
-static void exec_func(void);
 static void testfunc_protexec(void);
 
 static void (*testfunc[])(void) = { testfunc_protnone, testfunc_protexec };
@@ -127,14 +126,51 @@ static void testfunc_protnone(void)
 	SAFE_MUNMAP(cleanup, addr, page_sz);
 }
 
+#ifdef __ia64__
+
+static char exec_func[] = {
+	0x11, 0x00, 0x00, 0x00, 0x01, 0x00, /* nop.m 0x0             */
+	0x00, 0x00, 0x00, 0x02, 0x00, 0x80, /* nop.i 0x0             */
+	0x08, 0x00, 0x84, 0x00,             /* br.ret.sptk.many b0;; */
+};
+
+struct func_desc {
+	uint64_t func_addr;
+	uint64_t glob_pointer;
+};
+
+static __attribute__((noinline)) void *get_func(void *mem)
+{
+	static struct func_desc fdesc;
+
+	memcpy(mem, exec_func, sizeof(exec_func));
+
+	fdesc.func_addr = (uint64_t)mem;
+	fdesc.glob_pointer = 0;
+
+	return &fdesc;
+}
+
+#else
+
 static void exec_func(void)
 {
 	return;
 }
 
+static void *get_func(void *mem)
+{
+	memcpy(mem, exec_func, getpagesize());
+
+	return mem;
+}
+
+#endif
+
 static void testfunc_protexec(void)
 {
 	int page_sz;
+	void (*func)(void);
 	void *p;
 
 	sig_caught = 0;
@@ -144,7 +180,7 @@ static void testfunc_protexec(void)
 	p = SAFE_MMAP(cleanup, 0, page_sz, PROT_READ | PROT_WRITE,
 		 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
-	memcpy(p, exec_func, page_sz);
+	func = get_func(p);
 
 	/* Change the protection to PROT_EXEC. */
 	TEST(mprotect(p, page_sz, PROT_EXEC));
@@ -152,7 +188,6 @@ static void testfunc_protexec(void)
 	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL | TTERRNO, "mprotect failed");
 	} else {
-		int (*func)(void) = p;
 		if (sigsetjmp(env, 1) == 0)
 			(*func)();
 
