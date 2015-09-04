@@ -22,14 +22,12 @@
 ##                                                                            ##
 ################################################################################
 
-subsystem_str=""
-
 exist_subsystem()
 {
 	checksubsystem=""
 	case "$#" in
 	"0" )
-		checksubsystem=$subsystem_str
+		checksubsystem=$subsystem
 		;;
 	"1" )
 		checksubsystem=$1
@@ -54,49 +52,39 @@ exist_subsystem()
 get_subsystem()
 {
 	case $subsystem in
-	"1" )
-		subsystem_str="debug";
+	"debug" )
 		exist_subsystem;
 		;;
-	"2" )
-		subsystem_str="cpuset";
+	"cpuset" )
 		exist_subsystem;
 		;;
-	"3" )
-		subsystem_str="ns";
+	"ns" )
 		exist_subsystem;
 		;;
-	"4" )
-		subsystem_str="cpu"
+	"cpu" )
 		exist_subsystem;
 		;;
-	"5" )
-		subsystem_str="cpuacct";
+	"cpuacct" )
 		exist_subsystem;
 		;;
-	"6" )
-		subsystem_str="memory";
+	"memory" )
 		exist_subsystem;
 		;;
-	"7" )
-		subsystem_str="all";
+	"all" )
 		;;
-	"8" )
-		subsystem_str=""
+	"none" )
+		subsystem=""
 		;;
-	"9" )
-		subsystem_str="debug,debug";
+	"debug,debug" )
 		exist_subsystem "debug";
 		;;
-	"10" )
-		subsystem_str="abc";
+	"nonexistent" )
+		subsystem="abc";
 		;;
-	"11" )
-		subsystem_str="freezer";
+	"freezer" )
 		exist_subsystem;
 		;;
-	"12" )
-		subsystem_str="devices";
+	"devices" )
 		exist_subsystem;
 		;;
 	 *  )
@@ -108,10 +96,10 @@ get_subsystem()
 get_remount_use()
 {
 	case $remount_use in
-	"1" )
+	"yes" )
 		remount_use_str="";
 		;;
-	"2" )
+	"no" )
 		remount_use_str="remount";
 		;;
 	 *  )
@@ -123,11 +111,11 @@ get_remount_use()
 get_noprefix_use()
 {
 	case $noprefix_use in
-	"1" )
+	"yes" )
 		noprefix_use_str="";
 		;;
-	"2" )
-		if [ $subsystem -ne 2 ]; then
+	"no" )
+		if [ $subsystem != "cpuset" ]; then
 			return -1
 		fi
 		noprefix_use_str="noprefix";
@@ -570,11 +558,11 @@ mount_cgroup ()
 {
 	expectted=1
 	PARAMETER_O="";
-	if [ $subsystem -eq 10 ]; then
+	if [ "$subsystem" == "abc" ]; then
 		expectted=0
 	fi
-	if [ "$subsystem_str" != "" ]; then
-		PARAMETER_O="$subsystem_str"
+	if [ "$subsystem" != "" ]; then
+		PARAMETER_O="$subsystem"
 	fi
 	if [ "$noprefix_use_str" != "" ]; then
 		if [ "$PARAMETER_O" != "" ]; then
