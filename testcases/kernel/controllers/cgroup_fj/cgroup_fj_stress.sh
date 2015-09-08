@@ -46,29 +46,29 @@ usage()
 	echo "usage of cgroup_fj_stress.sh: "
 	echo "  ./cgroup_fj_stress.sh -subsystem -mount_times -subgroup_num -subgroup_hiers -attach_operation"
 	echo "    subsystem's usable number"
-	echo "      1: debug"
-	echo "      2: cpuset"
-	echo "      3: ns"
-	echo "      4: cpu"
-	echo "      5: cpuacct"
-	echo "      6: memory"
-	echo "      7: all"
+	echo "      debug"
+	echo "      cpuset"
+	echo "      ns"
+	echo "      cpu"
+	echo "      cpuacct"
+	echo "      memory"
+	echo "      all"
 	echo "    mount_times's usable number"
 	echo "      1: execute once"
-	echo "      2: execute 100 times"
+	echo "      100: execute 100 times"
 	echo "    subgroup_num's usable number"
 	echo "      (subgroup number in the same hierarchy)"
-	echo "      1: 1"
-	echo "      2: 100"
+	echo "      1"
+	echo "      100"
         echo "    subgroup_hiers's usable number"
 	echo "      (number of subgroup's hierarchy)"
-	echo "      1: 1"
-	echo "      2: 100"
+	echo "      1"
+	echo "      100"
 	echo "    attach_operation's usable number"
 	echo "      1: attach one process to every subcgroup"
 	echo "      2: attach all processes in root group to one subcgroup"
 	echo "      3: attach all processes in root group to every subcgroup"
-        echo "example: ./cgroup_fj_stress.sh 1 1 1 1 1"
+        echo "example: ./cgroup_fj_stress.sh debug 1 1 1 1"
         echo "  will use "debug" to test, will mount once, will create one subgroup in same hierarchy,"
 	echo "  will create one hierarchy, will attach one process to every subcgroup"
 }
@@ -91,8 +91,7 @@ export TMPFILE=$TESTROOT/tmp_tasks
 pid=0;
 release_agent_para=1;
 release_agent_echo=1;
-subsystem_str="debug";
-get_subsystem;
+subsystem_str=$subsystem;
 if [ "$?" -ne "0" ] || [ "$#" -ne "5" ]; then
 	usage;
 	exit_parameter;
@@ -130,42 +129,24 @@ get_subgroup_path2()
 }
 
 case $mount_times in
-"1" )
-	mount_times=1
-	;;
-"2" )
-	mount_times=100
-	;;
-*  )
-	usage;
-	exit_parameter;
-	;;
+''|*[!0-9]*) 
+	usage
+	exit_parameter;;
+    *) ;;
 esac
 
 case $subgroup_num in
-"1" )
-	subgroup_num=1
-	;;
-"2" )
-	subgroup_num=100
-	;;
-*  )
-	usage;
-	exit_parameter;
-	;;
+''|*[!0-9]*) 
+	usage
+	exit_parameter;;
+    *) ;;
 esac
 
 case $subgroup_hiers in
-"1" )
-	subgroup_hiers=1
-	;;
-"2" )
-	subgroup_hiers=100
-	;;
-*  )
-	usage;
-	exit_parameter;
-	;;
+''|*[!0-9]*) 
+	usage
+	exit_parameter;;
+    *) ;;
 esac
 
 ##########################  main   #######################
@@ -186,7 +167,7 @@ cpus=0
 mems=0
 exist_cpuset=0
 exist_cpuset=`grep -w cpuset /proc/cgroups | cut -f1`;
-if [ $subsystem -eq 2 ] || [ $subsystem -eq 7 ] ; then
+if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 	if [ "$exist_cpuset" != "" ]; then
 		cpus=`cat /dev/cgroup/cpuset.cpus`
 		mems=`cat /dev/cgroup/cpuset.mems`
@@ -197,7 +178,7 @@ mkdir_subgroup;
 
 # cpuset.cpus and cpuset.mems should be specified with suitable value
 # before attachint operation if subsystem is cpuset
-if [ $subsystem -eq 2 ] || [ $subsystem -eq 7 ] ; then
+if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 	if [ "$exist_cpuset" != "" ]; then
 		do_echo 1 1 "$cpus" /dev/cgroup/subgroup_1/cpuset.cpus;
 		do_echo 1 1 "$mems" /dev/cgroup/subgroup_1/cpuset.mems;
@@ -209,7 +190,7 @@ if [ $mount_times -ne 1 ]; then
 	for i in `seq 1 $mount_times`
 	do
 		do_echo 1 1 $pid /dev/cgroup/subgroup_1/tasks
-		if [ $subsystem -eq 3 ] || [ $subsystem -eq 7 ] ; then
+		if [ "$subsystem" == "ns" ] || [ "$subsystem" == "all" ] ; then
 			do_kill 1 1 9 $pid
 			$TESTROOT/cgroup_fj_proc &
 			pid=$!
@@ -221,7 +202,7 @@ if [ $mount_times -ne 1 ]; then
 		pid=$!
 		mount_cgroup;
 		mkdir_subgroup;
-		if [ $subsystem -eq 2 ] || [ $subsystem -eq 7 ] ; then
+		if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 			if [ "$exist_cpuset" != "" ]; then
 				do_echo 1 1 "$cpus" /dev/cgroup/subgroup_1/cpuset.cpus;
 				do_echo 1 1 "$mems" /dev/cgroup/subgroup_1/cpuset.mems;
@@ -239,7 +220,7 @@ else
 	do
 		get_subgroup_path1 $i
 		do_mkdir 1 1 $cur_subgroup_path1
-		if [ $subsystem -eq 2 ] || [ $subsystem -eq 7 ] ; then
+		if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 			if [ "$exist_cpuset" != "" ]; then
 				do_echo 1 1 "$cpus" "$cur_subgroup_path1""cpuset.cpus";
 				do_echo 1 1 "$mems" "$cur_subgroup_path1""cpuset.mems";
@@ -251,7 +232,7 @@ else
 		do
 			get_subgroup_path2 $j
 			do_mkdir 1 1 "$cur_subgroup_path1""$cur_subgroup_path2" 1
-			if [ $subsystem -eq 2 ] || [ $subsystem -eq 7 ] ; then
+			if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 				if [ "$exist_cpuset" != "" ]; then
 					do_echo 1 1 "$cpus" "$cur_subgroup_path1""$cur_subgroup_path2""cpuset.cpus";
 					do_echo 1 1 "$mems" "$cur_subgroup_path1""$cur_subgroup_path2""cpuset.mems";
