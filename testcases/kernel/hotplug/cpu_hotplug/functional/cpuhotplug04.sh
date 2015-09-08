@@ -48,14 +48,12 @@ done
 
 LOOP_COUNT=1
 
-get_present_cpus_num
-cpus_num=$?
+cpus_num=$(get_present_cpus_num)
 if [ $cpus_num -lt 2 ]; then
 	tst_brkm TCONF "system doesn't have required CPU hotplug support"
 fi
 
-get_hotplug_cpus_num
-if [ $? -lt 1 ]; then
+if [ $(get_hotplug_cpus_num) -lt 1 ]; then
 	tst_brkm TCONF "system doesn't have at least one hotpluggable CPU"
 fi
 

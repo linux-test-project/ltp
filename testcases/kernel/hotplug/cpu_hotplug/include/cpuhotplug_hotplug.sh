@@ -169,7 +169,7 @@ get_present_cpus()
 #
 get_present_cpus_num()
 {
-    return $(get_present_cpus | wc -w)
+    echo $(get_present_cpus | wc -w)
 }
 
 # get_hotplug_cpus()
@@ -196,7 +196,7 @@ get_hotplug_cpus()
 #
 get_hotplug_cpus_num()
 {
-    return $(get_hotplug_cpus | wc -w)
+    echo $(get_hotplug_cpus | wc -w)
 }
 
 # get_all_cpu_states()

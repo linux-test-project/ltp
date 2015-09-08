@@ -55,8 +55,7 @@ LOOP_COUNT=1
 
 tst_check_cmds sar
 
-get_present_cpus_num
-if [ $? -lt 2 ]; then
+if [ $(get_present_cpus_num) -lt 2 ]; then
 	tst_brkm TCONF "system doesn't have required CPU hotplug support"
 fi
 
