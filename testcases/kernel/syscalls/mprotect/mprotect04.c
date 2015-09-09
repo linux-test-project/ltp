@@ -54,6 +54,7 @@ int TST_TOTAL = ARRAY_SIZE(testfunc);
 
 static volatile int sig_caught;
 static sigjmp_buf env;
+static int copy_sz;
 
 int main(int ac, char **av)
 {
@@ -83,7 +84,9 @@ static void sighandler(int sig)
 
 static void setup(void)
 {
+	tst_tmpdir();
 	tst_sig(NOFORK, sighandler, cleanup);
+	copy_sz = getpagesize() * 2;
 
 	TEST_PAUSE;
 }
@@ -158,32 +161,71 @@ static void exec_func(void)
 	return;
 }
 
+static int page_present(void *p)
+{
+	int fd;
+
+	fd = SAFE_OPEN(cleanup, "page_present", O_WRONLY|O_CREAT, 0644);
+	TEST(write(fd, p, 1));
+	SAFE_CLOSE(cleanup, fd);
+
+	if (TEST_RETURN >= 0)
+		return 1;
+
+	if (TEST_ERRNO != EFAULT)
+		tst_brkm(TBROK | TTERRNO, cleanup, "page_present write");
+
+	return 0;
+}
+
+/*
+ * Copy page where &exec_func resides. Also try to copy subsequent page
+ * in case exec_func is close to page boundary.
+ */
 static void *get_func(void *mem)
 {
-	memcpy(mem, exec_func, getpagesize());
+	uintptr_t page_sz = getpagesize();
+	uintptr_t page_mask = ~(page_sz - 1);
+	uintptr_t func_page_offset = (uintptr_t)&exec_func & (page_sz - 1);
+	void *func_copy_start = mem + func_page_offset;
+	void *page_to_copy = (void *)((uintptr_t)&exec_func & page_mask);
 
-	return mem;
+	/* copy 1st page, if it's not present something is wrong */
+	if (!page_present(page_to_copy)) {
+		tst_resm(TINFO, "exec_func: %p, page_to_copy: %p\n",
+			&exec_func, page_to_copy);
+		tst_brkm(TBROK, cleanup, "page_to_copy not present\n");
+	}
+	memcpy(mem, page_to_copy, page_sz);
+
+	/* copy 2nd page if possible */
+	mem += page_sz;
+	page_to_copy += page_sz;
+	if (page_present(page_to_copy))
+		memcpy(mem, page_to_copy, page_sz);
+	else
+		memset(mem, 0, page_sz);
+
+	/* return pointer to area where copy of exec_func resides */
+	return func_copy_start;
 }
 
 #endif
 
 static void testfunc_protexec(void)
 {
-	int page_sz;
 	void (*func)(void);
 	void *p;
 
 	sig_caught = 0;
 
-	page_sz = getpagesize();
-
-	p = SAFE_MMAP(cleanup, 0, page_sz, PROT_READ | PROT_WRITE,
+	p = SAFE_MMAP(cleanup, 0, copy_sz, PROT_READ | PROT_WRITE,
 		 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
 	func = get_func(p);
 
 	/* Change the protection to PROT_EXEC. */
-	TEST(mprotect(p, page_sz, PROT_EXEC));
+	TEST(mprotect(p, copy_sz, PROT_EXEC));
 
 	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL | TTERRNO, "mprotect failed");
@@ -205,9 +247,10 @@ static void testfunc_protexec(void)
 		}
 	}
 
-	SAFE_MUNMAP(cleanup, p, page_sz);
+	SAFE_MUNMAP(cleanup, p, copy_sz);
 }
 
 static void cleanup(void)
 {
+	tst_rmdir();
 }
