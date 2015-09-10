@@ -81,9 +81,6 @@ int main(int argc, char **argv)
 		TEST(rmdir("."));
 
 		if (TEST_RETURN == -1) {
-		}
-
-		if (TEST_RETURN == -1) {
 			if (TEST_ERRNO & (EBUSY | ENOTEMPTY)) {
 				/* For functionality tests, verify that the
 				 * directory wasn't removed.
