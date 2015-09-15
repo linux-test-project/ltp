@@ -1,5 +1,5 @@
 AC_PREREQ(2.61)
-AC_INIT([ltp], [LTP_VERSION], [ltp-list@lists.sourceforge.net])
+AC_INIT([ltp], [LTP_VERSION], [ltp@lists.linux.it])
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([include/config.h])

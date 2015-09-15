@@ -102,7 +102,7 @@ in the same directory where the source files reside.
 - Specify SKIP_IDCHECK=1 if and when you don't want to modify /etc/{group,passwd}
   on the target system's sysroot.
 
-If you get a build error, please report it to ltp-list@lists.sf.net with
+If you get a build error, please report it to ltp@lists.linux.it with
 following information,
 
  1. The error output before the failure.

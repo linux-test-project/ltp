@@ -427,13 +427,13 @@ but not on this one.
 
 URL: http://ltp.sourceforge.net/
 
-mailing list: ltp-list@lists.sourceforge.net
+mailing list: ltp@lists.linux.it
 
-list archive: https://sourceforge.net/mailarchive/forum.php?forum_name=ltp-list
+list archive: http://lists.linux.it/pipermail/ltp/
 
 Questions and comments should be sent to the LTP mailing
-list at ltp-list@lists.sourceforge.net.  To subscribe, please go to
-https://lists.sourceforge.net/lists/listinfo/ltp-list.
+list at ltp@lists.linux.it. To subscribe, please go to
+http://lists.linux.it/listinfo/ltp.
 
 The source is also available via CVS.  See the web site for
 a web interface and check out instructions.

@@ -849,15 +849,15 @@ Contact information and updates
 URL: http://ltp.sourceforge.net/
 \layout Literal
 
-mailing list: ltp-list@lists.sourceforge.net
+mailing list: ltp@lists.linux.it
 \layout Literal
 
-list archive: https://sourceforge.net/mailarchive/forum.php?forum_name=ltp-list
+list archive: http://lists.linux.it/pipermail/ltp/
 \layout Standard
 
 Questions and comments should be sent to the LTP mailing
- list at ltp-list@lists.sourceforge.net.  To subscribe, please go to
- https://lists.sourceforge.net/lists/listinfo/ltp-list.
+ list at ltp@lists.linux.it. To subscribe, please go to
+ http://lists.linux.it/pipermail/ltp/.
 
 \layout Standard
 

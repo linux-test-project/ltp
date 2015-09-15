@@ -51,7 +51,7 @@ int main(void) {
 	if test "x$has_quotav1" = xyes; then
 		AC_DEFINE(HAVE_QUOTAV1,1,[Define to 1 if you have quota v1])
 	else
-		AC_MSG_WARN(Couldn't determine quota version (please submit config.log and manpage to ltp-list@lists.sourceforge.net))
+		AC_MSG_WARN(Couldn't determine quota version (please submit config.log and manpage to ltp@lists.linux.it))
 	fi
 
 fi
