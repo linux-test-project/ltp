@@ -84,9 +84,6 @@ swapping01 swapping01 -i 5
 thp01 thp01 -I 120
 thp02 thp02
 thp03 thp03
-thp04_1 thp04
-thp04_2 thp04 -n 10 -N 20
-thp04_3 thp04 -n 1 -N 300
 thp05_1 thp05
 thp05_2 thp05 -n 10 -N 20
 thp05_3 thp05 -n 1 -N 300
