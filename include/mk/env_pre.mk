@@ -94,6 +94,13 @@ ifeq ($(srcdir),)
 srcdir				:= .
 endif
 
+# If config.mk or features.mk doesn't exist it's not an error for some targets
+# which are filtered below (e.g. clean). However these config files may be
+# needed for those targets (eg. the open posix testsuite is not cleaned even if
+# it's enabled by configure) thus it would be wise to do silent inclusion.
+-include $(abs_top_builddir)/include/mk/config.mk
+-include $(abs_top_builddir)/include/mk/features.mk
+
 # autotools, *clean, and help don't require config.mk, features.mk, etc...
 ifeq ($(filter autotools %clean .gitignore gitignore.% help,$(MAKECMDGOALS)),)
 
