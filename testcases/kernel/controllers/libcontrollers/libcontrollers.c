@@ -158,7 +158,7 @@ int read_file(char *filepath, int action, unsigned int *value)
  * Prints error message and returns -1
  */
 
-inline void error_function(char *msg1, char *msg2)
+static inline void error_function(char *msg1, char *msg2)
 {
 	fprintf(stdout, "ERROR: %s ", msg1);
 	fprintf(stdout, "%s\n", msg2);

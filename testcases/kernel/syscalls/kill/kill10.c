@@ -185,7 +185,7 @@ int child_checklist_total = 0;
 int checklist_cmp(const void *a, const void *b);
 void checklist_reset(int bit);
 
-inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa);
+static inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa);
 
 char *TCID = "kill10";
 int TST_TOTAL = 1;
@@ -756,7 +756,7 @@ void checklist_reset(int bit)
 
 }
 
-inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa)
+static inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa)
 {
 	int ret;
 	if ((ret = sigaction(sig, sa, osa)) == -1) {
