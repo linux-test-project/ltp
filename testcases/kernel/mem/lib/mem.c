@@ -30,6 +30,7 @@ static int alloc_mem(long int length, int testcase)
 {
 	char *s;
 	long i, pagesz = getpagesize();
+	int loop = 10;
 
 	tst_resm(TINFO, "thread (%lx), allocating %ld bytes.",
 		(unsigned long) pthread_self(), length);
@@ -39,8 +40,15 @@ static int alloc_mem(long int length, int testcase)
 	if (s == MAP_FAILED)
 		return errno;
 
-	if (testcase == MLOCK && mlock(s, length) == -1)
-		return errno;
+	if (testcase == MLOCK) {
+		while (mlock(s, length) == -1 && loop > 0) {
+			if (EAGAIN != errno)
+				return errno;
+			usleep(300000);
+			loop--;
+		}
+	}
+
 #ifdef HAVE_MADV_MERGEABLE
 	if (testcase == KSM && madvise(s, length, MADV_MERGEABLE) == -1)
 		return errno;
