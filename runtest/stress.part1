@@ -176,10 +176,10 @@ ftest06 ftest06
 ftest07 ftest07
 ftest08 ftest08
 
-nfs01 export VERSION=2 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/bin; nfs01
-nfs01 export VERSION=2 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/bin; nfs01
-nfs01 export VERSION=3 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/bin; nfs01
-nfs01 export VERSION=3 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/bin; nfs01
+nfs01 export VERSION=2 SOCKET_TYPE=udp; nfs01
+nfs01 export VERSION=2 SOCKET_TYPE=tcp; nfs01
+nfs01 export VERSION=3 SOCKET_TYPE=udp; nfs01
+nfs01 export VERSION=3 SOCKET_TYPE=tcp; nfs01
 
 nfs02 export VERSION=2 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/bin; nfs02
 nfs02 export VERSION=2 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/bin; nfs02
