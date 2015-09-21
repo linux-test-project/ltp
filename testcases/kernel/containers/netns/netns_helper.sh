@@ -110,6 +110,10 @@ netns_setup()
 
 	case "$1" in
 	ns_exec)
+		setns_check
+		if [ $? -eq 32 ]; then
+			tst_brkm TCONF "setns not supported"
+		fi
 		netns_ns_exec_setup
 		TST_CLEANUP=netns_ns_exec_cleanup
 		;;

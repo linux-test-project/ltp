@@ -26,6 +26,11 @@ TCID="netns_sysfs"
 TST_TOTAL=2
 . test.sh
 
+setns_check
+if [ $? -eq 32 ]; then
+	tst_brkm TCONF "setns not supported"
+fi
+
 cleanup()
 {
 	tst_rmdir
