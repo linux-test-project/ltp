@@ -24,6 +24,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= nfs01
+INSTALL_TARGETS		:= nfs_lib.sh \
+			   nfs01
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
