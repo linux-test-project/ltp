@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-setup_testcase()
+nfs_setup()
 {
 	VERSION=${VERSION:=3}
 	NFILES=${NFILES:=1000}
@@ -60,7 +60,7 @@ setup_testcase()
 	cd $TST_TMPDIR
 }
 
-cleanup()
+nfs_cleanup()
 {
 	tst_resm TINFO "Cleaning up testcase"
 	cd $LTPROOT

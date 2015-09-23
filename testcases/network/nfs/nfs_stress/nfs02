@@ -22,7 +22,7 @@
 
 TCID="nfs02"
 TST_TOTAL=3
-TST_CLEANUP="cleanup"
+TST_CLEANUP="nfs_cleanup"
 
 . nfs_lib.sh
 . test_net.sh
@@ -63,7 +63,7 @@ do_test3()
 
 LTP_DATAFILES="$LTPROOT/testcases/bin/datafiles"
 
-setup_testcase
+nfs_setup
 
 do_test1
 do_test2
