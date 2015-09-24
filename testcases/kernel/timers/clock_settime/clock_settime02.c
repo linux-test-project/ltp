@@ -92,7 +92,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		spec.tv_sec = 1;
+		spec.tv_sec = saved.tv_sec + 1;
 		spec.tv_nsec = 0;
 
 		TEST(ltp_syscall(__NR_clock_settime, CLOCK_REALTIME, &spec));
