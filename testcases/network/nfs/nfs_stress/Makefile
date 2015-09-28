@@ -20,6 +20,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= nfs_lib.sh \
 			   nfs01 \
-			   nfs02
+			   nfs02 \
+			   nfs03
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
