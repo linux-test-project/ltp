@@ -181,15 +181,15 @@ nfs01 export VERSION=2 SOCKET_TYPE=tcp; nfs01
 nfs01 export VERSION=3 SOCKET_TYPE=udp; nfs01
 nfs01 export VERSION=3 SOCKET_TYPE=tcp; nfs01
 
-nfs02 export VERSION=2 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/bin; nfs02
-nfs02 export VERSION=2 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/bin; nfs02
-nfs02 export VERSION=3 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/bin; nfs02
-nfs02 export VERSION=3 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/bin; nfs02
+nfs02 export VERSION=2 SOCKET_TYPE=udp; nfs02
+nfs02 export VERSION=2 SOCKET_TYPE=tcp; nfs02
+nfs02 export VERSION=3 SOCKET_TYPE=udp; nfs02
+nfs02 export VERSION=3 SOCKET_TYPE=tcp; nfs02
 
-nfs03 export VERSION=2 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/bin; nfs03
-nfs03 export VERSION=2 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/bin; nfs03
-nfs03 export VERSION=3 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/bin; nfs03
-nfs03 export VERSION=3 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/bin; nfs03
+nfs03 export VERSION=2 SOCKET_TYPE=udp; nfs03
+nfs03 export VERSION=2 SOCKET_TYPE=tcp; nfs03
+nfs03 export VERSION=3 SOCKET_TYPE=udp; nfs03
+nfs03 export VERSION=3 SOCKET_TYPE=tcp; nfs03
 
 nfs04 export VERSION=2 SOCKET_TYPE=udp; export TCbin=$LTPROOT/testcases/bin; nfs04
 nfs03 export VERSION=2 SOCKET_TYPE=tcp; export TCbin=$LTPROOT/testcases/bin; nfs04

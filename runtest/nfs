@@ -12,7 +12,11 @@ nfs4_02 export VERSION=4 SOCKET_TYPE=tcp; nfs02
 nfs3_ipv6_02 export VERSION=3 SOCKET_TYPE=udp; nfs02 -6
 nfs4_ipv6_02 export VERSION=4 SOCKET_TYPE=tcp; nfs02 -6
 
-nfs03 export VERSION SOCKET_TYPE; TCbin=$LTPROOT/testcases/bin nfs03
+nfs3_03 export VERSION=3 SOCKET_TYPE=udp; nfs03
+nfs4_03 export VERSION=4 SOCKET_TYPE=tcp; nfs03
+nfs3_ipv6_03 export VERSION=3 SOCKET_TYPE=udp; nfs03 -6
+nfs4_ipv6_03 export VERSION=4 SOCKET_TYPE=tcp; nfs03 -6
+
 nfs04 export VERSION SOCKET_TYPE; TCbin=$LTPROOT/testcases/bin nfs04
 nfslock01 export VERSION; TCbin=$LTPROOT/testcases/bin nfslock01
 
