@@ -18,7 +18,7 @@
 /multicast/mc_opts/mc_verify_opts
 /multicast/mc_opts/mc_verify_opts_error
 /nfs/nfs_stress/nfs01_open_files
-/nfs/nfs04/nfs04_create_file
+/nfs/nfs_stress/nfs04_create_file
 /nfs/nfs_fsstress/fsstress
 /nfs/nfslock01/nfs_flock
 /nfs/nfslock01/nfs_flock_dgen
