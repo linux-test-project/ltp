@@ -121,7 +121,7 @@ esac
 ret=$?
 if [ $ret -eq 0 ]; then
 	tst_resm TPASS "case$i($CASETYPE$CASECMD)    PASS"
-elif [ $ret -ne 9 ]; then
+elif [ $ret -ne 32 ]; then
 	tst_resm TFAIL "case$i($CASETYPE $CASECMD)    FAIL"
 fi
 

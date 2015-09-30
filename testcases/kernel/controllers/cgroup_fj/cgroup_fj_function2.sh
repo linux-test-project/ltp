@@ -45,7 +45,7 @@ usage()
 
 exit_parameter()
 {
-	echo "ERROR: Wrong inputed parameter..Exiting test"
+	echo "ERROR: Wrong input parametes... Exiting test"
 	exit -1;
 }
 

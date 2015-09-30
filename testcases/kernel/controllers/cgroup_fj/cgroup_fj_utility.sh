@@ -45,7 +45,8 @@ exist_subsystem()
 
 	exist=`grep -w $checksubsystem /proc/cgroups | cut -f1`;
 	if [ "$exist" = "" ]; then
-		exit 9
+		tst_brkm TCONF NULL "Subsystem $subsystem not supported"
+		exit 32
 	fi
 }
 
@@ -220,7 +221,7 @@ get_release_agent()
 }
 
 # check the exit status, and exit or echo info.
-# exit status	expectted value	echo info	exit or not
+# exit status	expected value	echo info	exit or not
 # 0		0		no		no
 # 0		1		yes	yes
 # not 0	0		yes	yes
@@ -266,20 +267,20 @@ do_echo()
 	fi
 
 	exit_here=$1
-	expectted=$2
+	expected=$2
 	value=$3
 	target=$4
 
 	if [ $no_debug -ne 1 ]; then
-		if [ $expectted -ge 1 ]; then
-			echo "\"echo $value > $target\" (expectted: success)"
+		if [ $expected -ge 1 ]; then
+			echo "\"echo $value > $target\" (expected: success)"
 		else
-			echo "\"echo $value > $target\" (expectted: fail)"
+			echo "\"echo $value > $target\" (expected: fail)"
 		fi
 	fi
 
 	`echo $value > $target`
-	do_exit $exit_here $expectted $?;
+	do_exit $exit_here $expected $?;
 }
 
 do_mkdir()
@@ -290,7 +291,7 @@ do_mkdir()
 	fi
 
 	exit_here=$1
-	expectted=$2
+	expected=$2
 	target=$3
 	parents=0
 	if [ "$#" -eq "4" ] && [ "$4" -ne 0 ]; then
@@ -298,10 +299,10 @@ do_mkdir()
 	fi
 
 	if [ $no_debug -ne 1 ]; then
-		if [ $expectted -ge 1 ]; then
-			echo "\"mkdir $target\" (expectted: success)"
+		if [ $expected -ge 1 ]; then
+			echo "\"mkdir $target\" (expected: success)"
 		else
-			echo "\"mkdir $target\" (expectted: fail)"
+			echo "\"mkdir $target\" (expected: fail)"
 		fi
 	fi
 
@@ -314,7 +315,7 @@ do_mkdir()
 	else
 		mkdir -p $target
 	fi
-	do_exit $exit_here $expectted $?;
+	do_exit $exit_here $expected $?;
 }
 
 do_rmdir()
@@ -325,7 +326,7 @@ do_rmdir()
 	fi
 
 	exit_here=$1
-	expectted=$2
+	expected=$2
 	target=$3
 
 	if ! [ -e $target ]; then
@@ -334,15 +335,15 @@ do_rmdir()
 	fi
 
 	if [ $no_debug -ne 1 ]; then
-		if [ $expectted -ge 1 ]; then
-			echo "\"rmdir $target\" (expectted: success)"
+		if [ $expected -ge 1 ]; then
+			echo "\"rmdir $target\" (expected: success)"
 		else
-			echo "\"rmdir $target\" (expectted: fail)"
+			echo "\"rmdir $target\" (expected: fail)"
 		fi
 	fi
 
 	rmdir $3 $4 $5
-	do_exit $exit_here $expectted $?;
+	do_exit $exit_here $expected $?;
 }
 
 do_mount()
@@ -353,7 +354,7 @@ do_mount()
 	fi
 
 	exit_here=$1
-	expectted=$2
+	expected=$2
 	para_o=$3
 	target=$4
 	something="cgroup"
@@ -362,15 +363,15 @@ do_mount()
 	fi
 
 	if [ $no_debug -ne 1 ]; then
-		if [ $expectted -ge 1 ]; then
-			echo "\"mount -t cgroup $para_o $something $target\" (expectted: success)"
+		if [ $expected -ge 1 ]; then
+			echo "\"mount -t cgroup $para_o $something $target\" (expected: success)"
 		else
-			echo "\"mount -t cgroup $para_o $something $target\" (expectted: fail)"
+			echo "\"mount -t cgroup $para_o $something $target\" (expected: fail)"
 		fi
 	fi
 
 	mount -t cgroup $para_o $something $target
-	do_exit $exit_here $expectted $?;
+	do_exit $exit_here $expected $?;
 }
 
 do_umount()
@@ -381,54 +382,54 @@ do_umount()
 	fi
 
 	exit_here=$1
-	expectted=$2
+	expected=$2
 	target=$3
 
 	if [ $no_debug -ne 1 ]; then
-		if [ $expectted -ge 1 ]; then
-			echo "\"umount $target\" (expectted: success)"
+		if [ $expected -ge 1 ]; then
+			echo "\"umount $target\" (expected: success)"
 		else
-			echo "\"umount $target\" (expectted: fail)"
+			echo "\"umount $target\" (expected: fail)"
 		fi
 	fi
 
 	umount $target
-	do_exit $exit_here $expectted $?;
+	do_exit $exit_here $expected $?;
 }
 
 do_mv()
 {
 	if [ "$#" -ne "4" ]; then
-		echo "ERROR: mv failed,your parameter is wrong..Exiting test"
+		echo "ERROR: mv failed,your parameter is wrong... Exiting test"
 		exit -1
 	fi
 
 	exit_here=$1
-	expectted=$2
+	expected=$2
 	source=$3
 	target=$4
 
 	if [ $no_debug -ne 1 ]; then
-		if [ $expectted -ge 1 ]; then
-			echo "\"mv $source $target\" (expectted: success)"
+		if [ $expected -ge 1 ]; then
+			echo "\"mv $source $target\" (expected: success)"
 		else
-			echo "\"mv $source $target\" (expectted: fail)"
+			echo "\"mv $source $target\" (expected: fail)"
 		fi
 	fi
 
 	mv $source $target
-	do_exit $exit_here $expectted $?;
+	do_exit $exit_here $expected $?;
 }
 
 do_kill()
 {
 	if [ "$#" -ne "4" ]; then
-		echo "ERROR: kill failed,your parameter is wrong..Exiting test"
+		echo "ERROR: kill failed,your parameter is wrong... Exiting test"
 		exit -1
 	fi
 
 	exit_here=$1
-	expectted=$2
+	expected=$2
 	signo=$3
 	pid=$4
 
@@ -437,15 +438,15 @@ do_kill()
 	fi
 
 	if [ $no_debug -ne 1 ]; then
-		if [ $expectted -ge 1 ]; then
-			echo "\"kill -$signo $pid\" (expectted: success)"
+		if [ $expected -ge 1 ]; then
+			echo "\"kill -$signo $pid\" (expected: success)"
 		else
-			echo "\"kill -$signo $pid\" (expectted: fail)"
+			echo "\"kill -$signo $pid\" (expected: fail)"
 		fi
 	fi
 
 	kill -s $signo $pid
-	do_exit $exit_here $expectted $?;
+	do_exit $exit_here $expected $?;
 }
 
 setup()
@@ -462,7 +463,7 @@ setup()
 		cp -f $TESTROOT/cgroup_fj_release_agent /root
 		chmod a+x /root/cgroup_fj_release_agent
 	else
-		echo "ERROR: $TESTROOT/cgroup_fj_release_agent isn't exist..Exiting test"
+		echo "ERROR: $TESTROOT/cgroup_fj_release_agent doesn't exist... Exiting test"
 		exit -1;
 	fi
 
@@ -474,7 +475,7 @@ setup()
 	then
 		chmod a+x $TESTROOT/cgroup_fj_proc
 	else
-		echo "ERROR: $TESTROOT/cgroup_fj_proc isn't exist..Exiting test"
+		echo "ERROR: $TESTROOT/cgroup_fj_proc doesn't exist... Exiting test"
 		exit -1;
 	fi
 }
@@ -545,7 +546,7 @@ reclaim_foundling()
 mkdir_subgroup()
 {
 	if ! [ -e /dev/cgroup ]; then
-		echo "ERROR: /dev/cgroup isn't exist..Exiting test"
+		echo "ERROR: /dev/cgroup doesn't exist... Exiting test"
 		exit -1;
 	fi
 
@@ -554,10 +555,10 @@ mkdir_subgroup()
 
 mount_cgroup ()
 {
-	expectted=1
+	expected=1
 	PARAMETER_O="";
 	if [ "$subsystem" == "abc" ]; then
-		expectted=0
+		expected=0
 	fi
 	if [ "$subsystem" != "" ]; then
 		PARAMETER_O="$subsystem"
@@ -591,7 +592,7 @@ mount_cgroup ()
 		PARAMETER_O="-o""$PARAMETER_O"
 	fi
 
-	do_mount 1 $expectted "$PARAMETER_O" /dev/cgroup
+	do_mount 1 $expected "$PARAMETER_O" /dev/cgroup
 }
 
 check_para()
@@ -611,7 +612,7 @@ check_para()
 
 	if [ $ret1 -ne 0 ] || [ $ret2 -ne 0 ] || [ $ret3 -ne 0 ] || [ $ret4 -ne 0 ] || [ $ret5 -ne 0 ] || [ $ret6 -ne 0 ]
 	then
-		echo "ERROR: Wrong inputed parameter..Exiting test"
+		echo "ERROR: Wrong input parameters..Exiting test"
 		return -1
 	fi
 

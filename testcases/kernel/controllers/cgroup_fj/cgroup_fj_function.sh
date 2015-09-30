@@ -38,7 +38,7 @@ release_agent_para_str="";
 notify_on_release_str="";
 release_agent_str="";
 
-expectted=1;
+expected=1;
 
 # Create some processes and move them to cgroups
 pid=0;
@@ -127,7 +127,7 @@ export TMPFILE=$TESTROOT/tmp_tasks
 
 ##########################  main   #######################
 if [ "$#" -ne "9" ]; then
-	echo "ERROR: Wrong inputed parameter..Exiting test";
+	echo "ERROR: Wrong input parameters... Exiting test";
 	usage;
 	exit -1;
 fi
@@ -204,17 +204,17 @@ esac
 # echo notify_on_release that analysed from parameter
 case $notify_on_release in
 "1"|"2"|"3")
-	expectted=1
+	expected=1
 	;;
 *)
-	expectted=0
+	expected=0
 	;;
 esac
 
 #if [ $notify_on_release -ne 0 ] && [ $notify_on_release -ne 1 ] && [ $notify_on_release -ne 2 ];then
-#	expectted=0
+#	expected=0
 #fi
-do_echo 1 $expectted $notify_on_release_str /dev/cgroup/subgroup_1/notify_on_release;
+do_echo 1 $expected $notify_on_release_str /dev/cgroup/subgroup_1/notify_on_release;
 
 # echo release_agent that analysed from parameter
 if [ $release_agent_echo -ne 1 ]; then
