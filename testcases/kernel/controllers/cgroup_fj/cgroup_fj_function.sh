@@ -120,23 +120,17 @@ usage()
 }
 
 export TESTROOT=`pwd`
-if [ "$LOGFILE" = "" ]; then
-	LOGFILE="/dev/stdout"
-fi
+
 export TMPFILE=$TESTROOT/tmp_tasks
 
 . $TESTROOT/cgroup_fj_utility.sh
 
 ##########################  main   #######################
 if [ "$#" -ne "9" ]; then
-	echo "ERROR: Wrong inputed parameter..Exiting test" >> $LOGFILE;
+	echo "ERROR: Wrong inputed parameter..Exiting test";
 	usage;
 	exit -1;
 fi
-
-echo "-------------------------------------------------------------------------" >> $LOGFILE
-echo "case no : $CASENO1" >> $LOGFILE
-echo `date` >> $LOGFILE
 
 check_para;
 if [ $? -ne 0 ]; then
@@ -144,8 +138,6 @@ if [ $? -ne 0 ]; then
 	exit -1;
 fi
 setup;
-
-echo "INFO: now we begin to test no $CASENO1 ..." >> $LOGFILE
 
 mount_cgroup;
 

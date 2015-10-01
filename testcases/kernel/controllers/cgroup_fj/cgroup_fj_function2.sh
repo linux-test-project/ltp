@@ -45,14 +45,11 @@ usage()
 
 exit_parameter()
 {
-	echo "ERROR: Wrong inputed parameter..Exiting test" >> $LOGFILE
+	echo "ERROR: Wrong inputed parameter..Exiting test"
 	exit -1;
 }
 
 export TESTROOT=`pwd`
-if [ "$LOGFILE" = "" ]; then
-	LOGFILE="/dev/stdout"
-fi
 export TMPFILE=$TESTROOT/tmp_tasks
 
 . $TESTROOT/cgroup_fj_utility.sh
@@ -303,14 +300,8 @@ if [ "$#" -ne "1" ] || [ $caseno -lt 1 ] || [ $caseno -gt 13 ]; then
 	exit_parameter;
 fi
 
-echo "-------------------------------------------------------------------------" >> $LOGFILE
-echo "case no : $CASENO1" >> $LOGFILE
-echo `date` >> $LOGFILE
-
 exist_subsystem "debug"
 setup;
-
-echo "INFO: now we begin to test no $CASENO1 ..." >> $LOGFILE
 
 if [ $caseno -lt 3 ] || [ $caseno -gt 6 ]; then
 	mount_cgroup;

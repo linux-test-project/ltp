@@ -228,7 +228,7 @@ get_release_agent()
 do_exit()
 {
 	if [ "$#" -ne "3" ]; then
-		echo "ERROR: exit failed,your parameter is wrong..Exiting test" >> $LOGFILE
+		echo "ERROR: exit failed,your parameter is wrong..Exiting test"
 		exit -1
 	fi
 
@@ -238,7 +238,6 @@ do_exit()
 
 	if [ $exit_status -eq 0 ] ;then
 		if [ $expectted -lt 1 ]; then
-			echo "								against with expectted" >> $LOGFILE
 			if [ $exit_here -ge 1 ]; then
 				cleanup;
 				exit -1
@@ -246,7 +245,6 @@ do_exit()
 		fi
 	else
 		if [ $expectted -ge 1 ]; then
-			echo "								against with expectted" >> $LOGFILE
 			if [ $exit_here -ge 1 ]; then
 				cleanup;
 				exit -1
@@ -263,7 +261,7 @@ do_exit()
 do_echo()
 {
 	if [ "$#" -ne "4" ]; then
-		echo "ERROR: echo failed,your parameter is wrong..Exiting test" >> $LOGFILE
+		echo "ERROR: echo failed,your parameter is wrong..Exiting test"
 		exit -1
 	fi
 
@@ -274,20 +272,20 @@ do_echo()
 
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
-			echo "\"echo $value > $target\" (expectted: success)" >> $LOGFILE
+			echo "\"echo $value > $target\" (expectted: success)"
 		else
-			echo "\"echo $value > $target\" (expectted: fail)" >> $LOGFILE
+			echo "\"echo $value > $target\" (expectted: fail)"
 		fi
 	fi
 
-	`echo $value > $target` >> $LOGFILE 2>&1
+	`echo $value > $target`
 	do_exit $exit_here $expectted $?;
 }
 
 do_mkdir()
 {
 	if [ "$#" -ne "3" ] && [ "$#" -ne "4" ]; then
-		echo "ERROR: mkdir failed,your parameter is wrong..Exiting test" >> $LOGFILE
+		echo "ERROR: mkdir failed,your parameter is wrong..Exiting test"
 		exit -1
 	fi
 
@@ -301,9 +299,9 @@ do_mkdir()
 
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
-			echo "\"mkdir $target\" (expectted: success)" >> $LOGFILE
+			echo "\"mkdir $target\" (expectted: success)"
 		else
-			echo "\"mkdir $target\" (expectted: fail)" >> $LOGFILE
+			echo "\"mkdir $target\" (expectted: fail)"
 		fi
 	fi
 
@@ -312,9 +310,9 @@ do_mkdir()
 	fi
 
 	if [ $parents -ne "1" ]; then
-		mkdir $target >> $LOGFILE 2>&1
+		mkdir $target
 	else
-		mkdir -p $target >> $LOGFILE 2>&1
+		mkdir -p $target
 	fi
 	do_exit $exit_here $expectted $?;
 }
@@ -322,7 +320,7 @@ do_mkdir()
 do_rmdir()
 {
 	if [ "$#" -lt "3" ]; then
-		echo "ERROR: rmdir failed,your parameter is wrong..Exiting test" >> $LOGFILE
+		echo "ERROR: rmdir failed,your parameter is wrong..Exiting test"
 		exit -1
 	fi
 
@@ -331,26 +329,26 @@ do_rmdir()
 	target=$3
 
 	if ! [ -e $target ]; then
-		echo "INFO: $target is not exist" >> $LOGFILE
+		echo "INFO: $target is not exist"
 		return
 	fi
 
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
-			echo "\"rmdir $target\" (expectted: success)" >> $LOGFILE
+			echo "\"rmdir $target\" (expectted: success)"
 		else
-			echo "\"rmdir $target\" (expectted: fail)" >> $LOGFILE
+			echo "\"rmdir $target\" (expectted: fail)"
 		fi
 	fi
 
-	rmdir $3 $4 $5 >> $LOGFILE 2>&1
+	rmdir $3 $4 $5
 	do_exit $exit_here $expectted $?;
 }
 
 do_mount()
 {
 	if [ "$#" -ne "4" ] && [ "$#" -ne "5" ] ; then
-		echo "ERROR: mount failed,your parameter is wrong..Exiting test" >> $LOGFILE
+		echo "ERROR: mount failed,your parameter is wrong..Exiting test"
 		exit -1
 	fi
 
@@ -365,20 +363,20 @@ do_mount()
 
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
-			echo "\"mount -t cgroup $para_o $something $target\" (expectted: success)" >> $LOGFILE
+			echo "\"mount -t cgroup $para_o $something $target\" (expectted: success)"
 		else
-			echo "\"mount -t cgroup $para_o $something $target\" (expectted: fail)" >> $LOGFILE
+			echo "\"mount -t cgroup $para_o $something $target\" (expectted: fail)"
 		fi
 	fi
 
-	mount -t cgroup $para_o $something $target >> $LOGFILE 2>&1
+	mount -t cgroup $para_o $something $target
 	do_exit $exit_here $expectted $?;
 }
 
 do_umount()
 {
 	if [ "$#" -ne "3" ]; then
-		echo "ERROR: umount failed,your parameter is wrong..Exiting test" >> $LOGFILE
+		echo "ERROR: umount failed,your parameter is wrong..Exiting test"
 		exit -1
 	fi
 
@@ -388,20 +386,20 @@ do_umount()
 
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
-			echo "\"umount $target\" (expectted: success)" >> $LOGFILE
+			echo "\"umount $target\" (expectted: success)"
 		else
-			echo "\"umount $target\" (expectted: fail)" >> $LOGFILE
+			echo "\"umount $target\" (expectted: fail)"
 		fi
 	fi
 
-	umount $target >> $LOGFILE 2>&1
+	umount $target
 	do_exit $exit_here $expectted $?;
 }
 
 do_mv()
 {
 	if [ "$#" -ne "4" ]; then
-		echo "ERROR: mv failed,your parameter is wrong..Exiting test" >> $LOGFILE
+		echo "ERROR: mv failed,your parameter is wrong..Exiting test"
 		exit -1
 	fi
 
@@ -412,20 +410,20 @@ do_mv()
 
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
-			echo "\"mv $source $target\" (expectted: success)" >> $LOGFILE
+			echo "\"mv $source $target\" (expectted: success)"
 		else
-			echo "\"mv $source $target\" (expectted: fail)" >> $LOGFILE
+			echo "\"mv $source $target\" (expectted: fail)"
 		fi
 	fi
 
-	mv $source $target >> $LOGFILE 2>&1
+	mv $source $target
 	do_exit $exit_here $expectted $?;
 }
 
 do_kill()
 {
 	if [ "$#" -ne "4" ]; then
-		echo "ERROR: kill failed,your parameter is wrong..Exiting test" >> $LOGFILE
+		echo "ERROR: kill failed,your parameter is wrong..Exiting test"
 		exit -1
 	fi
 
@@ -440,13 +438,13 @@ do_kill()
 
 	if [ $no_debug -ne 1 ]; then
 		if [ $expectted -ge 1 ]; then
-			echo "\"kill -$signo $pid\" (expectted: success)" >> $LOGFILE
+			echo "\"kill -$signo $pid\" (expectted: success)"
 		else
-			echo "\"kill -$signo $pid\" (expectted: fail)" >> $LOGFILE
+			echo "\"kill -$signo $pid\" (expectted: fail)"
 		fi
 	fi
 
-	kill -s $signo $pid >> $LOGFILE 2>&1
+	kill -s $signo $pid
 	do_exit $exit_here $expectted $?;
 }
 
@@ -464,7 +462,7 @@ setup()
 		cp -f $TESTROOT/cgroup_fj_release_agent /root
 		chmod a+x /root/cgroup_fj_release_agent
 	else
-		echo "ERROR: $TESTROOT/cgroup_fj_release_agent isn't exist..Exiting test" >> $LOGFILE
+		echo "ERROR: $TESTROOT/cgroup_fj_release_agent isn't exist..Exiting test"
 		exit -1;
 	fi
 
@@ -476,7 +474,7 @@ setup()
 	then
 		chmod a+x $TESTROOT/cgroup_fj_proc
 	else
-		echo "ERROR: $TESTROOT/cgroup_fj_proc isn't exist..Exiting test" >> $LOGFILE
+		echo "ERROR: $TESTROOT/cgroup_fj_proc isn't exist..Exiting test"
 		exit -1;
 	fi
 }
@@ -484,7 +482,7 @@ setup()
 cleanup()
 {
 	if [ $no_debug -ne 1 ]; then
-		echo "INFO: we now cleanup ..." >> $LOGFILE
+		echo "INFO: we now cleanup ..."
 	fi
 
 	export LANG=en_US.UTF-8
@@ -547,7 +545,7 @@ reclaim_foundling()
 mkdir_subgroup()
 {
 	if ! [ -e /dev/cgroup ]; then
-		echo "ERROR: /dev/cgroup isn't exist..Exiting test" >> $LOGFILE
+		echo "ERROR: /dev/cgroup isn't exist..Exiting test"
 		exit -1;
 	fi
 
@@ -613,7 +611,7 @@ check_para()
 
 	if [ $ret1 -ne 0 ] || [ $ret2 -ne 0 ] || [ $ret3 -ne 0 ] || [ $ret4 -ne 0 ] || [ $ret5 -ne 0 ] || [ $ret6 -ne 0 ]
 	then
-		echo "ERROR: Wrong inputed parameter..Exiting test" >> $LOGFILE
+		echo "ERROR: Wrong inputed parameter..Exiting test"
 		return -1
 	fi
 

@@ -23,12 +23,22 @@
 ################################################################################
 cd $LTPROOT/testcases/bin
 
-export TCID="cgroup_test_fj"
-export TST_TOTAL=194
+cnt=1
+for arg; do
+	if [ $cnt -gt 1 ]; then
+		NAME+="_"
+		NAME+=$arg
+	fi
+	cnt=$(( $cnt + 1 ))
+done
+
+PREFIX="cgroup_fj_"
+
+export TCID=$PREFIX$1$NAME
+export TST_TOTAL=1
 export TST_COUNT=1
 
 export TESTROOT=`pwd`
-export LOGFILE=$LTPROOT/output/cgroup_fj_log_`date +%F`.txt
 export TMPFILE=$TESTROOT/tmp_tasks
 export CASENO1=0
 export CASENO2=0
@@ -86,47 +96,33 @@ if [ "$SYBSYSCOMPILED" = "" ];then	# Warning and exit if all cgroup subsystem ar
 	exit -2;
 fi
 
-echo "Now, we start the test for cgroup...";
+CASETYPE=$1
+shift
+CASECMD=$@
 
-rm -f $LOGFILE 2>/dev/null
-echo `date` > $LOGFILE
-echo `uname -a` >> $LOGFILE
+case $CASETYPE in
+"function" )
+	: $(( CASENO1 += 1 ))
+	export CASENO1=$CASENO1
+	cgroup_fj_function.sh $CASECMD
+	;;
+"function2" )
+	: $(( CASENO1 += 1 ))
+	export CASENO1=$CASENO1
+	cgroup_fj_function2.sh $CASECMD
+	;;
+"stress" )
+	: $(( CASENO2 += 1 ))
+	export CASENO2=$CASENO2
+	cgroup_fj_stress.sh $CASECMD
+	;;
+esac
 
-echo "" >> $LOGFILE
-echo "Now, we start the test for basic function of cgroup..." >> $LOGFILE
-
-nlines=`cat cgroup_fj_testcases.sh | wc -l`
-for i in `seq 1 $nlines`
-do
-	CASETYPE=`sed -n "$i""p" cgroup_fj_testcases.sh | cut -f1`
-	CASECMD=`sed -n "$i""p" cgroup_fj_testcases.sh | cut -f2`
-	echo $CASETYPE | grep "#"
-	if [ $? -ne 0 ]; then
-		case $CASETYPE in
-		"function" )
-			: $(( CASENO1 += 1 ))
-			export CASENO1=$CASENO1
-			$TESTROOT/cgroup_fj_function.sh $CASECMD
-			;;
-		"function2" )
-			: $(( CASENO1 += 1 ))
-			export CASENO1=$CASENO1
-			$TESTROOT/cgroup_fj_function2.sh $CASECMD
-			;;
-		"stress" )
-			: $(( CASENO2 += 1 ))
-			export CASENO2=$CASENO2
-			$TESTROOT/cgroup_fj_stress.sh $CASECMD
-			;;
-		esac
-
-		ret=$?
-		if [ $ret -eq 0 ]; then
-			tst_resm TPASS "case$i(`sed -n "$i""p" cgroup_fj_testcases.sh`)    PASS"
-		elif [ $ret -ne 9 ]; then
-			tst_resm TFAIL "case$i(`sed -n "$i""p" cgroup_fj_testcases.sh`)    FAIL"
-		fi
-	fi
-done
+ret=$?
+if [ $ret -eq 0 ]; then
+	tst_resm TPASS "case$i($CASETYPE$CASECMD)    PASS"
+elif [ $ret -ne 9 ]; then
+	tst_resm TFAIL "case$i($CASETYPE $CASECMD)    FAIL"
+fi
 
 exit $ret;

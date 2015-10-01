@@ -76,14 +76,11 @@ usage()
 
 exit_parameter()
 {
-	echo "ERROR: Wrong inputed parameter..Exiting test" >> $LOGFILE
+	echo "ERROR: Wrong inputed parameter..Exiting test"
 	exit -1;
 }
 
 export TESTROOT=`pwd`
-if [ "$LOGFILE" = "" ]; then
-	LOGFILE="/dev/stdout"
-fi
 export TMPFILE=$TESTROOT/tmp_tasks
 
 . $TESTROOT/cgroup_fj_utility.sh
@@ -150,13 +147,8 @@ case $subgroup_hiers in
 esac
 
 ##########################  main   #######################
-echo "-------------------------------------------------------------------------" >> $LOGFILE
-echo "case no : $CASENO2" >> $LOGFILE
-echo `date` >> $LOGFILE
 
 setup;
-
-echo "INFO: now we begin to stress test no $CASENO2 ..." >> $LOGFILE
 
 mount_cgroup;
 
@@ -209,9 +201,9 @@ if [ $mount_times -ne 1 ]; then
 			fi
 		fi
 		let "count = $count + 1"
-		echo "$count .. OK" >> $LOGFILE
+		echo "$count .. OK"
 	done
-	echo "...executed $count times" >> $LOGFILE
+	echo "...executed $count times"
 else
 	get_subgroup_path2 $subgroup_hiers
 	count=0
@@ -242,7 +234,7 @@ else
 			pathes[$count]="$cur_subgroup_path1""$cur_subgroup_path2"
 		done
 	done
-	echo "...mkdired $count times" >> $LOGFILE
+	echo "...mkdired $count times"
 
 	sleep 1
 
