@@ -67,6 +67,18 @@
 # define FALLOC_FL_KEEP_SIZE 1
 #endif
 
+#ifndef RENAME_NOREPLACE
+# define RENAME_NOREPLACE	(1 << 0)
+#endif
+
+#ifndef RENAME_EXCHANGE
+# define RENAME_EXCHANGE		(1 << 1)
+#endif
+
+#ifndef RENAME_WHITEOUT
+# define RENAME_WHITEOUT		(1 << 2)
+#endif
+
 /* splice, vmsplice, tee */
 
 #ifndef SPLICE_F_NONBLOCK

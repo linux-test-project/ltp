@@ -300,4 +300,5 @@ recvmmsg 299
 fanotify_init 300
 fanotify_mark 301
 prlimit64 302
+renameat2 316
 getrandom 318
