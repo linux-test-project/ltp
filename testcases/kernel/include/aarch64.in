@@ -253,3 +253,4 @@ clock_adjtime 266
 syncfs 267
 setns 268
 sendmmsg 269
+getrandom 384
