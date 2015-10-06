@@ -46,7 +46,6 @@
 #include "compat_16.h"
 
 static void setup(void);
-static void cleanup(void);
 
 TCID_DEFINE(setregid01);
 int TST_TOTAL = 5;
@@ -70,12 +69,12 @@ int main(int ac, char **av)
 		 *  Dont change either real or effective gid
 		 */
 		gid = getgid();
-		GID16_CHECK(gid, setregid, cleanup);
+		GID16_CHECK(gid, setregid, NULL);
 
 		egid = getegid();
-		GID16_CHECK(egid, setregid, cleanup);
+		GID16_CHECK(egid, setregid, NULL);
 
-		TEST(SETREGID(cleanup, -1, -1));
+		TEST(SETREGID(NULL, -1, -1));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL,
@@ -92,7 +91,7 @@ int main(int ac, char **av)
 		 *  change effective to effective gid
 		 */
 
-		TEST(SETREGID(cleanup, -1, egid));
+		TEST(SETREGID(NULL, -1, egid));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL,
@@ -109,7 +108,7 @@ int main(int ac, char **av)
 		 *  change real to real gid
 		 */
 
-		TEST(SETREGID(cleanup, gid, -1));
+		TEST(SETREGID(NULL, gid, -1));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL,
@@ -126,7 +125,7 @@ int main(int ac, char **av)
 		 *  change effective to real gid
 		 */
 
-		TEST(SETREGID(cleanup, -1, gid));
+		TEST(SETREGID(NULL, -1, gid));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL,
@@ -143,7 +142,7 @@ int main(int ac, char **av)
 		 *  try to change real to current real
 		 */
 
-		TEST(SETREGID(cleanup, gid, gid));
+		TEST(SETREGID(NULL, gid, gid));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL | TTERRNO, "setregid failed");
@@ -154,20 +153,12 @@ int main(int ac, char **av)
 
 	}
 
-	cleanup();
 	tst_exit();
 }
 
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(NOFORK, DEF_HANDLER, NULL);
 
 	TEST_PAUSE;
-
-	tst_tmpdir();
-}
-
-static void cleanup(void)
-{
-	tst_rmdir();
 }

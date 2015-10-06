@@ -70,10 +70,9 @@ struct test_data_t {
 		    "After setregid(bin, root),"}
 };
 
-int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
+int TST_TOTAL = ARRAY_SIZE(test_data);
 
 static void setup(void);
-static void cleanup(void);
 static void gid_verify(struct group *ru, struct group *eu, char *when);
 static struct group get_group_by_name(const char *name);
 static struct group get_group_by_gid(gid_t gid);
@@ -93,7 +92,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 			/* Set the real or effective group id */
-			TEST(SETREGID(cleanup, *test_data[i].real_gid,
+			TEST(SETREGID(NULL, *test_data[i].real_gid,
 				      *test_data[i].eff_gid));
 
 			if (TEST_RETURN == -1) {
@@ -122,7 +121,7 @@ int main(int ac, char **av)
 				   test_data[i].test_msg);
 		}
 	}
-	cleanup();
+
 	tst_exit();
 }
 
@@ -130,7 +129,7 @@ static void setup(void)
 {
 	tst_require_root();
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, NULL);
 
 	ltpuser = getpwnam("nobody");
 	if (ltpuser == NULL)
@@ -176,10 +175,6 @@ static struct group get_group_by_gid(gid_t gid)
 	GID16_CHECK(ret->gr_gid, setregid, NULL);
 
 	return *ret;
-}
-
-static void cleanup(void)
-{
 }
 
 void gid_verify(struct group *rg, struct group *eg, char *when)
