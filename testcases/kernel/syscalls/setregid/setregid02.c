@@ -40,7 +40,7 @@ static gid_t neg_one = -1;
 
 static struct passwd *ltpuser;
 
-static struct group nobody, root, bin;
+static struct group ltpgroup, root, bin;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -56,17 +56,17 @@ struct test_data_t {
 	char *test_msg;
 } test_data[] = {
 	{
-	&neg_one, &root.gr_gid, EPERM, &nobody, &nobody,
+	&neg_one, &root.gr_gid, EPERM, &ltpgroup, &ltpgroup,
 		    "After setregid(-1, root),"}, {
-	&neg_one, &bin.gr_gid, EPERM, &nobody, &nobody,
+	&neg_one, &bin.gr_gid, EPERM, &ltpgroup, &ltpgroup,
 		    "After setregid(-1, bin)"}, {
-	&root.gr_gid, &neg_one, EPERM, &nobody, &nobody,
+	&root.gr_gid, &neg_one, EPERM, &ltpgroup, &ltpgroup,
 		    "After setregid(root,-1),"}, {
-	&bin.gr_gid, &neg_one, EPERM, &nobody, &nobody,
+	&bin.gr_gid, &neg_one, EPERM, &ltpgroup, &ltpgroup,
 		    "After setregid(bin, -1),"}, {
-	&root.gr_gid, &bin.gr_gid, EPERM, &nobody, &nobody,
+	&root.gr_gid, &bin.gr_gid, EPERM, &ltpgroup, &ltpgroup,
 		    "After setregid(root, bin)"}, {
-	&bin.gr_gid, &root.gr_gid, EPERM, &nobody, &nobody,
+	&bin.gr_gid, &root.gr_gid, EPERM, &ltpgroup, &ltpgroup,
 		    "After setregid(bin, root),"}
 };
 
@@ -75,6 +75,8 @@ int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 static void setup(void);
 static void cleanup(void);
 static void gid_verify(struct group *ru, struct group *eu, char *when);
+static struct group get_group_by_name(const char *name);
+static struct group get_group_by_gid(gid_t gid);
 
 int main(int ac, char **av)
 {
@@ -126,8 +128,6 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	struct group *junk;
-
 	tst_require_root();
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -147,20 +147,35 @@ static void setup(void)
 			 ltpuser->pw_uid);
 	}
 
-#define GET_GID(group)	do {		\
-	junk = getgrnam(#group);	\
-	if (junk == NULL) {		\
-		tst_brkm(TBROK|TERRNO, NULL, "getgrnam(\"%s\") failed", #group); \
-	}				\
-	GID16_CHECK(junk->gr_gid, setregid, NULL); \
-	group = *(junk); \
-} while (0)
-
-	GET_GID(root);
-	GET_GID(nobody);
-	GET_GID(bin);
+	root = get_group_by_name("root");
+	ltpgroup = get_group_by_gid(ltpuser->pw_gid);
+	bin = get_group_by_name("bin");
 
 	TEST_PAUSE;
+}
+
+static struct group get_group_by_name(const char *name)
+{
+	struct group *ret = getgrnam(name);
+
+	if (ret == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getgrnam(\"%s\") failed", name);
+
+	GID16_CHECK(ret->gr_gid, setregid, NULL);
+
+	return *ret;
+}
+
+static struct group get_group_by_gid(gid_t gid)
+{
+	struct group *ret = getgrgid(gid);
+
+	if (ret == NULL)
+		tst_brkm(TBROK|TERRNO, NULL, "getgrgid(\"%d\") failed", gid);
+
+	GID16_CHECK(ret->gr_gid, setregid, NULL);
+
+	return *ret;
 }
 
 static void cleanup(void)
