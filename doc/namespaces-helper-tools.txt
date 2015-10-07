@@ -14,6 +14,8 @@ located in ltp/testcases/kernel/containers/share directory and include:
 ** PID of the daemonized child process is printed on the stdout
 ** the new namespace(s) is(are) maintained by the daemonized child process
 ** namespace(s) can be removed by killing the daemonized process
+* setns_check
+** check for setns() availability, should be called before using ns_exec
 * ns_exec
 ** enters the namespace(s) of a process specified by a PID
 ** then executes the indicated program inside that namespace(s)
@@ -34,18 +36,18 @@ The following code shows how test cases can use the namespaces helper tools:
 -------------------------------------------------------------------------------
 # Creates a new network and ipc namespace and stores the PID of the daemonized
 # process inside that namespace into variable myns
-myns=$(ns_create net ipc)
+myns=$(ns_create net,ipc)
 
 ip link add veth0 type veth peer name veth1
 
 # Executes command 'ip a' inside the namespace specified by PID in myns variable
-ns_exec $myns ip a
+ns_exec $myns net,ipc ip a
 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
 
 # Moves interface veth1 into the namespace specified by PID in myns variable
 ns_ifmove veth1 $myns
-ns_exec $myns ip a
+ns_exec $myns net,ipc ip a
 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
 6: veth1: <BROADCAST> mtu 1500 qdisc noop state DOWN qlen 1000

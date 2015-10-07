@@ -29,40 +29,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
 #include <strings.h>
 #include <errno.h>
 #include "test.h"
 #include "lapi/namespaces_constants.h"
+#include "ns_common.h"
 
 char *TCID = "ns_create";
 
-struct param {
-	const char *name;
-	int flag;
-};
-
-struct param params[] = {
-	{"ipc",  CLONE_NEWIPC},
-	{"mnt",  CLONE_NEWNS},
-	{"net",  CLONE_NEWNET},
-	{"pid",  CLONE_NEWPID},
-	{"user", CLONE_NEWUSER},
-	{"uts",  CLONE_NEWUTS},
-	{NULL,   0}
-};
-
-
-struct param *get_param(const char *name)
-{
-	int i;
-
-	for (i = 0; params[i].name; i++) {
-		if (!strcasecmp(params[i].name, name))
-			return params + i;
-	}
-
-	return NULL;
-}
 
 void print_help(void)
 {
@@ -71,8 +46,9 @@ void print_help(void)
 	printf("usage: ns_create <%s", params[0].name);
 
 	for (i = 1; params[i].name; i++)
-		printf("|%s", params[i].name);
-	printf(">\n");
+		printf("|,%s", params[i].name);
+	printf(">\nThe only argument is a comma separated list "
+	       "of namespaces to create.\nExample: ns_create net,ipc\n");
 }
 
 static int child_fn(void *arg LTP_ATTRIBUTE_UNUSED)
@@ -98,12 +74,12 @@ static int child_fn(void *arg LTP_ATTRIBUTE_UNUSED)
 }
 
 /*
- * ./ns_create <ipc|mnt|net|pid|user|uts>
- * where all possible namespaces are: ipc, mnt, net, pid, user, uts.
+ * ./ns_create <ipc,mnt,net,pid,user,uts>
  */
 int main(int argc, char *argv[])
 {
-	int pid, flags, i;
+	int pid, flags;
+	char *token;
 
 	if (argc < 2) {
 		print_help();
@@ -111,11 +87,11 @@ int main(int argc, char *argv[])
 	}
 
 	flags = 0;
-	for (i = 1; argv[i]; i++) {
-		struct param *p = get_param(argv[i]);
+	while ((token = strsep(&argv[1], ","))) {
+		struct param *p = get_param(token);
 
 		if (!p) {
-			tst_resm(TINFO, "Unknown parameter: %s", argv[i]);
+			tst_resm(TINFO, "Unknown namespace: %s", token);
 			print_help();
 			return 1;
 		}

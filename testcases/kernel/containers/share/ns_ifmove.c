@@ -35,7 +35,7 @@
 
 #include "config.h"
 
-char *TCID = "ns_linkset";
+char *TCID = "ns_ifmove";
 
 #if HAVE_DECL_IFLA_NET_NS_PID
 

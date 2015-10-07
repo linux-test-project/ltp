@@ -32,6 +32,10 @@ USE_IFCONFIG=0
 # netns_setup() function call.
 NS_EXEC=""
 
+# Set to "net" for ns_create/ns_exec as their options requires
+# to specify a namespace type. Empty for ip command.
+NS_TYPE=""
+
 # IP addresses of veth0 (IP0) and veth1 (IP1) devices (ipv4/ipv6 variant
 # is determined according to the IP_VERSION argument specified in netns_setup()
 # function call.
@@ -114,6 +118,7 @@ netns_setup()
 		if [ $? -eq 32 ]; then
 			tst_brkm TCONF "setns not supported"
 		fi
+		NS_TYPE="net"
 		netns_ns_exec_setup
 		TST_CLEANUP=netns_ns_exec_cleanup
 		;;
@@ -180,22 +185,22 @@ netns_ns_exec_setup()
 {
 	NS_EXEC="ns_exec"
 
-	NS_HANDLE0=$(ns_create net)
+	NS_HANDLE0=$(ns_create $NS_TYPE)
 	if [ $? -eq 1 ]; then
 		tst_resm TINFO "$NS_HANDLE0"
 		tst_brkm TBROK "unable to create a new network namespace"
 	fi
 
-	NS_HANDLE1=$(ns_create net)
+	NS_HANDLE1=$(ns_create $NS_TYPE)
 	if [ $? -eq 1 ]; then
 		tst_resm TINFO "$NS_HANDLE1"
 		tst_brkm TBROK "unable to create a new network namespace"
 	fi
 
-	$NS_EXEC $NS_HANDLE0 ip link add veth0 type veth peer name veth1 || \
+	$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link add veth0 type veth peer name veth1 || \
 		tst_brkm TBROK "unable to create veth pair devices"
 
-	$NS_EXEC $NS_HANDLE0 ns_ifmove veth1 $NS_HANDLE1
+	$NS_EXEC $NS_HANDLE0 $NS_TYPE ns_ifmove veth1 $NS_HANDLE1
 	if [ $? -eq 0 ]; then
 		return;
 	fi
@@ -239,9 +244,6 @@ netns_ip_setup()
 # of them (IPv4/IPv6 variant is decided by netns_setup() function).
 netns_set_ip()
 {
-	local state
-	local counter
-
 	if [ -z "$NS_EXEC" ]; then
 		tst_brkm TBROK "netns_setup() function must be called first"
 	fi
@@ -253,32 +255,32 @@ netns_set_ip()
 	# there is no other host with the same address, the address is
 	# considered to be "tentative" (attempts to bind() to the address fail
 	# with EADDRNOTAVAIL) which may cause problems for tests using ipv6.
-	echo 0 | $NS_EXEC $NS_HANDLE0 \
+	echo 0 | $NS_EXEC $NS_HANDLE0 $NS_TYPE \
 		tee /proc/sys/net/ipv6/conf/veth0/accept_dad \
 		/proc/sys/net/ipv6/conf/veth0/accept_ra >/dev/null
-	echo 0 | $NS_EXEC $NS_HANDLE1 \
+	echo 0 | $NS_EXEC $NS_HANDLE1 $NS_TYPE \
 		tee /proc/sys/net/ipv6/conf/veth1/accept_dad \
 		/proc/sys/net/ipv6/conf/veth1/accept_ra >/dev/null
 
 	case $USE_IFCONFIG in
 	1)
-		$NS_EXEC $NS_HANDLE0 ifconfig veth0 $IFCONF_IN6_ARG $IP0/$NETMASK ||
+		$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth0 $IFCONF_IN6_ARG $IP0/$NETMASK ||
 			tst_brkm TBROK "adding address to veth0 failed"
-		$NS_EXEC $NS_HANDLE1 ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK ||
+		$NS_EXEC $NS_HANDLE1 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK ||
 			tst_brkm TBROK "adding address to veth1 failed"
-		$NS_EXEC $NS_HANDLE0 ifconfig veth0 up ||
+		$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth0 up ||
 			tst_brkm TBROK "enabling veth0 device failed"
-		$NS_EXEC $NS_HANDLE1 ifconfig veth1 up ||
+		$NS_EXEC $NS_HANDLE1 $NS_TYPE ifconfig veth1 up ||
 			tst_brkm TBROK "enabling veth1 device failed"
 		;;
 	*)
-		$NS_EXEC $NS_HANDLE0 ip address add $IP0/$NETMASK dev veth0 ||
+		$NS_EXEC $NS_HANDLE0 $NS_TYPE ip address add $IP0/$NETMASK dev veth0 ||
 			tst_brkm TBROK "adding address to veth0 failed"
-		$NS_EXEC $NS_HANDLE1 ip address add $IP1/$NETMASK dev veth1 ||
+		$NS_EXEC $NS_HANDLE1 $NS_TYPE ip address add $IP1/$NETMASK dev veth1 ||
 			tst_brkm TBROK "adding address to veth1 failed"
-		$NS_EXEC $NS_HANDLE0 ip link set veth0 up ||
+		$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link set veth0 up ||
 			tst_brkm TBROK "enabling veth0 device failed"
-		$NS_EXEC $NS_HANDLE1 ip link set veth1 up ||
+		$NS_EXEC $NS_HANDLE1 $NS_TYPE ip link set veth1 up ||
 			tst_brkm TBROK "enabling veth1 device failed"
 		;;
 	esac
@@ -291,7 +293,7 @@ netns_ns_exec_cleanup()
 	fi
 
 	# removes veth0 device (which also removes the paired veth1 device)
-	$NS_EXEC $NS_HANDLE0 ip link delete veth0
+	$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link delete veth0
 
 	kill -9 $NS_HANDLE0 2>/dev/null
 	kill -9 $NS_HANDLE1 2>/dev/null

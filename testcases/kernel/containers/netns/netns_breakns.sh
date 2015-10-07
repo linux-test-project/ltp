@@ -52,7 +52,7 @@ tst_resm TINFO "NS interaction: $1 | devices setup: $3"
 
 
 # TEST CASE #1
-$NS_EXEC $NS_HANDLE0 ip address add $IP1/$NETMASK dev veth1 2>/dev/null
+$NS_EXEC $NS_HANDLE0 $NS_TYPE ip address add $IP1/$NETMASK dev veth1 2>/dev/null
 if [ $? -ne 0 ]; then
 	tst_resm TPASS "controlling device over netlink"
 else
@@ -62,7 +62,7 @@ fi
 
 # TEST CASE #2
 tst_check_cmds ifconfig
-$NS_EXEC $NS_HANDLE0 ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK 2>/dev/null
+$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK 2>/dev/null
 if [ $? -ne 0 ]; then
 	tst_resm TPASS "controlling device over ioctl"
 else

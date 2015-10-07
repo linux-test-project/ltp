@@ -32,14 +32,26 @@
 #include "test.h"
 #include "linux_syscall_numbers.h"
 #include "lapi/namespaces_constants.h"
-
-#define PROC_PATH "/proc"
-#define NS_TOTAL 6
+#include "ns_common.h"
 
 char *TCID = "ns_exec";
 int ns_fd[NS_TOTAL];
 int ns_fds;
 
+
+void print_help(void)
+{
+	int i;
+
+	printf("usage: ns_exec <NS_PID> <%s", params[0].name);
+
+	for (i = 1; params[i].name; i++)
+		printf("|,%s", params[i].name);
+	printf("> <PROGRAM> [ARGS]\nSecond argument indicates the types"
+	       " of a namespaces maintained by NS_PID\nand is specified"
+	       " as a comma separated list.\nExample: ns_exec 1234 net,ipc"
+	       " ip a\n");
+}
 
 static int open_ns_fd(const char *pid, const char *ns)
 {
@@ -73,17 +85,18 @@ static int child_fn(void *arg)
 {
 	char **args = (char **)arg;
 
-	execvp(args[2], args+2);
+	execvp(args[3], args+3);
 	tst_resm(TINFO | TERRNO, "execvp");
 	return 1;
 }
 
 /*
- * ./ns_exec <NS_PID> <PROGRAM> [ARGS]
+ * ./ns_exec <NS_PID> <ipc,mnt,net,pid,user,uts> <PROGRAM> [ARGS]
  */
 int main(int argc, char *argv[])
 {
 	int i, rv, pid;
+	char *token;
 
 	rv = syscall(__NR_setns, -1, 0);
 	if (rv == -1 && errno == ENOSYS) {
@@ -91,25 +104,28 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	if (argc < 3) {
-		tst_resm(TINFO, "%s <NS_PID> <PROGRAM> [ARGS]\n", argv[0]);
+	if (argc < 4) {
+		print_help();
 		return 1;
 	}
 
-	rv = 0;
 	memset(ns_fd, 0, sizeof(ns_fd));
-	rv |= open_ns_fd(argv[1], "ipc");
-	rv |= open_ns_fd(argv[1], "mnt");
-	rv |= open_ns_fd(argv[1], "net");
-	rv |= open_ns_fd(argv[1], "pid");
-	rv |= open_ns_fd(argv[1], "uts");
-	if (rv != 0)
-		return 1;
+	while ((token = strsep(&argv[2], ","))) {
+		struct param *p = get_param(token);
+
+		if (!p) {
+			tst_resm(TINFO, "Unknown namespace: %s", token);
+			print_help();
+			return 1;
+		}
+
+		if (open_ns_fd(argv[1], token) != 0)
+			return 1;
+	}
 
 	if (ns_fds == 0) {
 		tst_resm(TINFO, "no namespace entries in /proc/%s/ns/",
 			 argv[1]);
-		close_ns_fd();
 		return 1;
 	}
 

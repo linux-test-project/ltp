@@ -55,7 +55,7 @@ tst_resm TINFO "NS interaction: $1 | devices setup: $3"
 
 
 # TEST CASE #1
-$NS_EXEC $NS_HANDLE0 $tping -q -c2 -I veth0 $IP1 1>/dev/null
+$NS_EXEC $NS_HANDLE0 $NS_TYPE $tping -q -c2 -I veth0 $IP1 1>/dev/null
 if [ $? -eq 0 ]; then
 	tst_resm TPASS "configuration and communication over veth0"
 else
@@ -64,7 +64,7 @@ fi
 
 
 # TEST CASE #2
-$NS_EXEC $NS_HANDLE1 $tping -q -c2 -I veth1 $IP0 1>/dev/null
+$NS_EXEC $NS_HANDLE1 $NS_TYPE $tping -q -c2 -I veth1 $IP0 1>/dev/null
 if [ $? -eq 0 ]; then
 	tst_resm TPASS "configuration and communication over veth1"
 else
@@ -79,15 +79,15 @@ ipv6) IP_LO="::1" ;;
 esac
 case "$3" in
 netlink)
-	$NS_EXEC $NS_HANDLE0 ip link set dev lo up || \
+	$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link set dev lo up || \
 		tst_brkm TBROK "enabling lo device failed"
 	;;
 ioctl)
-	$NS_EXEC $NS_HANDLE0 ifconfig lo up || \
+	$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig lo up || \
 		tst_brkm TBROK "enabling lo device failed"
 	;;
 esac
-$NS_EXEC $NS_HANDLE0 $tping -q -c2 -I lo $IP_LO 1>/dev/null
+$NS_EXEC $NS_HANDLE0 $NS_TYPE $tping -q -c2 -I lo $IP_LO 1>/dev/null
 if [ $? -eq 0 ]; then
 	tst_resm TPASS "configuration and communication over localhost"
 else
