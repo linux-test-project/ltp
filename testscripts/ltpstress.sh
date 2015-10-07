@@ -265,10 +265,10 @@ fi
 ulimit -u unlimited
 
 if [ $PROC_NUM -gt 0 ];then
-  genload --vm $PROC_NUM --vm-bytes 1073741824 2>&1 1>/dev/null &
+  genload --vm $PROC_NUM --vm-bytes 1073741824 >/dev/null 2>&1 &
 fi
 if [ $leftover_memsize -gt 0 ];then
-  genload --vm 1 --vm-bytes $(($leftover_memsize * 1024)) 2>&1 1>/dev/null &
+  genload --vm 1 --vm-bytes $(($leftover_memsize * 1024)) >/dev/null 2>&1 &
 fi
 
 if [ $NO_NETWORK -eq 0 ];then
