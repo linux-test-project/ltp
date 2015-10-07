@@ -25,6 +25,7 @@
 #define _GNU_SOURCE
 
 #include "test.h"
+#include "tst_fs_type.h"
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
 #include "renameat2.h"
@@ -43,6 +44,7 @@ static int fd = -1;
 static int cnt;
 
 static const char content[] = "content";
+static long fs_type;
 
 
 int TST_TOTAL = 1;
@@ -85,6 +87,8 @@ static void setup(void)
 
 	tst_tmpdir();
 
+	fs_type = tst_fs_type(cleanup, ".");
+
 	SAFE_MKDIR(cleanup, TEST_DIR, 0700);
 	SAFE_MKDIR(cleanup, TEST_DIR2, 0700);
 
@@ -120,8 +124,14 @@ static void renameat2_verify(void)
 	char *emptyfile;
 	char *contentfile;
 
+	if (TEST_ERRNO == EINVAL && TST_BTRFS_MAGIC == fs_type) {
+		tst_brkm(TCONF, cleanup,
+			"RENAME_EXCHANGE flag is not implemeted on %s",
+			tst_fs_type_name(fs_type));
+	}
+
 	if (TEST_RETURN != 0) {
-		tst_resm(TFAIL, "renameat2() failed unexpectedly");
+		tst_resm(TFAIL | TTERRNO, "renameat2() failed unexpectedly");
 		return;
 	}
 
