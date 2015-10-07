@@ -27,8 +27,7 @@ migrate_irq()
     CPU=${1#cpu}
     MASK=$((1<<${CPU}))
     IRQS=$2
-    for irq in ${IRQS}
-      do
+    for irq in ${IRQS}; do
       echo $MASK > /proc/irq/${irq}/smp_affinity || \
         tst_resm TINFO "It is NOT permitted to change the IRQ $irq smp_affinity"
     done
