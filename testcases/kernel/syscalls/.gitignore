@@ -440,6 +440,8 @@
 /ipc/shmget/shmget04
 /ipc/shmget/shmget05
 /keyctl/keyctl01
+/kcmp/kcmp01
+/kcmp/kcmp02
 /kill/kill01
 /kill/kill02
 /kill/kill03

@@ -361,3 +361,4 @@ accept4 366
 fanotify_init 367
 fanotify_mark 368
 prlimit64 369
+kcmp 378

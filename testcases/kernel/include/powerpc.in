@@ -340,5 +340,6 @@ recvmsg 342
 recvmmsg 343
 accept4 344
 syscalls 345
+kcmp 354
 renameat2 357
 getrandom 359
