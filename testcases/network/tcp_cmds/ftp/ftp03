@@ -33,7 +33,6 @@
 
 setup()
 {
-	tst_check_cmds ftp useradd userdel vsftpd
 	export TEST_USER="ftpuser3"
 }
 
