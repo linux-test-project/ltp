@@ -300,5 +300,7 @@ recvmmsg 299
 fanotify_init 300
 fanotify_mark 301
 prlimit64 302
+sched_setattr 314
+sched_getattr 315
 renameat2 316
 getrandom 318

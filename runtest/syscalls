@@ -915,6 +915,8 @@ sched_yield01 sched_yield01
 sched_setaffinity01 sched_setaffinity01
 sched_getaffinity01 sched_getaffinity01
 
+sched_getattr01 sched_getattr01
+
 select01 select01
 select02 select02
 select03 select03

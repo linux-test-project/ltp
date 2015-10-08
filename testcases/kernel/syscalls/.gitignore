@@ -735,6 +735,7 @@
 /sched_get_priority_min/sched_get_priority_min01
 /sched_get_priority_min/sched_get_priority_min02
 /sched_getaffinity/sched_getaffinity01
+/sched_getattr/sched_getattr01
 /sched_getparam/sched_getparam01
 /sched_getparam/sched_getparam02
 /sched_getparam/sched_getparam03
