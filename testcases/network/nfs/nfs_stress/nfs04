@@ -34,5 +34,6 @@ nfs_setup
 
 tst_resm TINFO "create 10M file"
 ROD nfs04_create_file 10 nfs04.testfile
+tst_resm TPASS "Test finished"
 
 tst_exit
