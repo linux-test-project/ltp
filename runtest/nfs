@@ -22,10 +22,12 @@ nfs4_04 export VERSION=4 SOCKET_TYPE=tcp; nfs04
 nfs3_ipv6_04 export VERSION=3 SOCKET_TYPE=udp; nfs04 -6
 nfs4_ipv6_04 export VERSION=4 SOCKET_TYPE=tcp; nfs04 -6
 
-nfslock01 export VERSION; TCbin=$LTPROOT/testcases/bin nfslock01
+nfs3_05 export VERSION=3 SOCKET_TYPE=udp; nfs05
+nfs4_05 export VERSION=4 SOCKET_TYPE=tcp; nfs05
+nfs3_ipv6_05 export VERSION=3 SOCKET_TYPE=udp; nfs05 -6
+nfs4_ipv6_05 export VERSION=4 SOCKET_TYPE=tcp; nfs05 -6
 
-# This will run 1 thread on 20 directories with 50 files in each.
-nfsstress export VERSION SOCKET_TYPE; TCbin=$LTPROOT/testcases/bin nfsstress 20 50 1
+nfslock01 export VERSION; TCbin=$LTPROOT/testcases/bin nfslock01
 
 nfsstat01 export VERSION; TCbin=$LTPROOT/testcases/bin nfsstat01
 nfsx-linux export VERSION SOCKET_TYPE; TCbin=$LTPROOT/testcases/bin fsx.sh
