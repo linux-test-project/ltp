@@ -164,6 +164,7 @@ fcntl26 fcntl26
 fcntl29 fcntl29
 fcntl30 fcntl30
 fcntl31 fcntl31
+fcntl32 fcntl32
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02

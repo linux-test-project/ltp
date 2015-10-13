@@ -258,6 +258,8 @@ fcntl30 fcntl30
 fcntl30_64 fcntl30_64
 fcntl31 fcntl31
 fcntl31_64 fcntl31_64
+fcntl32 fcntl32
+fcntl32_64 fcntl32_64
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
