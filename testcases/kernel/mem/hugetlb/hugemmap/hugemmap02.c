@@ -56,8 +56,8 @@
 #include "safe_macros.h"
 #include "mem.h"
 
-#define LOW_ADDR       (void *)(0x80000000)
-#define LOW_ADDR2      (void *)(0x90000000)
+#define LOW_ADDR       0x80000000
+#define LOW_ADDR2      0x90000000
 
 static char TEMPFILE[MAXPATHLEN];
 
@@ -65,6 +65,8 @@ char *TCID = "hugemmap02";
 int TST_TOTAL = 1;
 static unsigned long *addr;
 static unsigned long *addr2;
+static unsigned long low_addr = LOW_ADDR;
+static unsigned long low_addr2 = LOW_ADDR2;
 static unsigned long *addrlist[5];
 static int i;
 static int fildes;
@@ -127,15 +129,29 @@ int main(int ac, char **av)
 			addrlist[i] = addr;
 		}
 
+		while (range_is_mapped(cleanup, low_addr, low_addr + map_sz) == 1) {
+			low_addr = low_addr + 0x10000000;
+
+			if (low_addr < LOW_ADDR)
+				tst_brkm(TBROK | TERRNO, cleanup,
+						"no empty region to use");
+		}
 		/* mmap using normal pages and a low memory address */
-		addr = mmap(LOW_ADDR, page_sz, PROT_READ,
+		addr = mmap((void *)low_addr, page_sz, PROT_READ,
 			    MAP_SHARED | MAP_FIXED, nfildes, 0);
 		if (addr == MAP_FAILED)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "mmap failed on nfildes");
 
+		while (range_is_mapped(cleanup, low_addr2, low_addr2 + map_sz) == 1) {
+			low_addr2 = low_addr2 + 0x10000000;
+
+			if (low_addr2 < LOW_ADDR2)
+				tst_brkm(TBROK | TERRNO, cleanup,
+						"no empty region to use");
+		}
 		/* Attempt to mmap a huge page into a low memory address */
-		addr2 = mmap(LOW_ADDR2, map_sz, PROT_READ | PROT_WRITE,
+		addr2 = mmap((void *)low_addr2, map_sz, PROT_READ | PROT_WRITE,
 			     MAP_SHARED, fildes, 0);
 #if __WORDSIZE == 64		/* 64-bit process */
 		if (addr2 == MAP_FAILED) {

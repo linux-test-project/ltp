@@ -100,4 +100,6 @@ void setup(void);
 
 void update_shm_size(size_t *shm_size);
 
+/* MMAP */
+int range_is_mapped(void (*cleanup_fn) (void), unsigned long low, unsigned long high);
 #endif
