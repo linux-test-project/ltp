@@ -19,28 +19,26 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <string.h>
 #include "posixtest.h"
 
-void *a_thread_func();
-
-pthread_t self_th;		/* Save the value of the function call pthread_self()
-				   within the thread.  Keeping it global so 'main' can
-				   see it too. */
+static void *a_thread_func();
+static pthread_t self_th;
 
 int main(void)
 {
 	pthread_t new_th;
+	int ret;
 
-	/* Create a new thread */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
-		perror("Error creating thread\n");
+	ret = pthread_create(&new_th, NULL, a_thread_func, NULL);
+	if (ret) {
+		fprintf(stderr, "pthread_create(): %s\n", strerror(ret));
 		return PTS_UNRESOLVED;
 	}
 
-	/* Wait for the thread function to return to make sure we got
-	 * the thread ID value from pthread_self(). */
-	if (pthread_join(new_th, NULL) != 0) {
-		perror("Error calling pthread_join()\n");
+	ret = pthread_join(new_th, NULL);
+	if (ret) {
+		fprintf(stderr, "pthread_join(): %s\n", strerror(ret));
 		return PTS_UNRESOLVED;
 	}
 
@@ -55,10 +53,8 @@ int main(void)
 	return PTS_PASS;
 }
 
-/* The thread function that calls pthread_self() to obtain its thread ID */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	self_th = pthread_self();
-	pthread_exit(0);
 	return NULL;
 }
