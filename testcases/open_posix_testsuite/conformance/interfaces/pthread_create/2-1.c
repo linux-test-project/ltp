@@ -23,35 +23,31 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 #include "posixtest.h"
 
 void *a_thread_func()
 {
-
-	pthread_exit(0);
 	return NULL;
 }
 
 int main(void)
 {
 	pthread_t new_th;
+	int ret;
 
 	/* Create a new thread.  The default attribute should be that
 	 * it is joinable. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
-		perror("Error creating thread\n");
+	ret = pthread_create(&new_th, NULL, a_thread_func, NULL);
+	if (ret) {
+		fprintf(stderr, "ptread_create(): %s\n", strerror(ret));
 		return PTS_UNRESOLVED;
 	}
 
 	/* The new thread should be able to be joined. */
-	if (pthread_join(new_th, NULL) == EINVAL) {
-		printf("Test FAILED\n");
-		return PTS_FAIL;
-	}
-
-	/* The new thread should be able to be detached. */
-	if (pthread_detach(new_th) == EINVAL) {
-		printf("Test FAILED\n");
+	ret = pthread_join(new_th, NULL);
+	if (ret) {
+		printf("Test FAILED (pthread_join(): %s)\n", strerror(ret));
 		return PTS_FAIL;
 	}
 
