@@ -18,34 +18,40 @@
 #include <stdint.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <string.h>
 #include "posixtest.h"
 
 #define NUM_THREADS 5
 
-/* The thread start routine. */
-void *a_thread_func(void *num)
+static void *a_thread_func(void *num)
 {
-	intptr_t i = (intptr_t) num;
-	printf("Passed argument for thread: %d\n", (int)i);
-
-	pthread_exit(0);
-	return NULL;
+	printf("arg = %li\n", (long)num);
+	return num;
 }
 
 int main(void)
 {
 	pthread_t new_th;
 	long i;
+	void *res;
+	int ret;
 
 	for (i = 1; i < NUM_THREADS + 1; i++) {
-		if (pthread_create(&new_th, NULL, a_thread_func, (void *)i) !=
-		    0) {
-			printf("Error creating thread\n");
+		ret = pthread_create(&new_th, NULL, a_thread_func, (void *)i);
+
+		if (ret) {
+			fprintf(stderr, "pthread_create(): %s\n",
+			        strerror(ret));
 			return PTS_FAIL;
 		}
 
-		/* Wait for thread to end execution */
-		pthread_join(new_th, NULL);
+		pthread_join(new_th, &res);
+
+		if ((long)res != i) {
+			printf("Test FAILED: Returned value did not match %li != %li",
+			       (long)res, i);
+			return PTS_FAIL;
+		}
 	}
 
 	printf("Test PASSED\n");
