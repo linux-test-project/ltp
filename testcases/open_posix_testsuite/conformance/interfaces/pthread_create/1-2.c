@@ -19,32 +19,37 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include "posixtest.h"
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	sleep(10);
 
 	/* Shouldn't reach here.  If we do, then the pthread_cancel()
 	 * function did not succeed. */
-	perror("Could not send cancel request correctly\n");
-	pthread_exit(0);
+	fprintf(stderr, "Could not send cancel request correctly\n");
+
 	return NULL;
 }
 
 int main(void)
 {
 	pthread_t new_th;
+	int ret;
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) < 0) {
-		perror("Error creating thread\n");
+	ret = pthread_create(&new_th, NULL, a_thread_func, NULL);
+	if (ret) {
+		fprintf(stderr, "pthread_create(): %s\n", strerror(ret));
 		return PTS_UNRESOLVED;
 	}
 
 	/* Try to cancel the newly created thread.  If an error is returned,
 	 * then the thread wasn't created successfully. */
-	if (pthread_cancel(new_th) != 0) {
-		printf("Test FAILED: A new thread wasn't created\n");
+	ret = pthread_cancel(new_th);
+	if (ret) {
+		printf("Test FAILED: A new thread wasn't created: %s\n",
+		       strerror(ret));
 		return PTS_FAIL;
 	}
 
