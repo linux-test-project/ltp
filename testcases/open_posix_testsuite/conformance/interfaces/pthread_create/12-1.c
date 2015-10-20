@@ -17,12 +17,11 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 #include "posixtest.h"
 
-/* Thread starting routine that really does nothing. */
-void *a_thread_func()
+static void *a_thread_func()
 {
-	pthread_exit(0);
 	return NULL;
 }
 
@@ -31,12 +30,10 @@ int main(void)
 	pthread_t new_th;
 	int ret;
 
-	/* Create new thread and check the return value. */
 	ret = pthread_create(&new_th, NULL, a_thread_func, NULL);
 	if (ret != 0) {
-		if ((ret != EINVAL) && (ret != EAGAIN) && (ret != EPERM))
-
-			printf("Test FAILED: Wrong return code: %d\n", ret);
+		printf("Test FAILED: pthread_create(): %d %s\n",
+		       ret, strerror(ret));
 		return PTS_FAIL;
 	}
 
