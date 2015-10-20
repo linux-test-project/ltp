@@ -23,22 +23,21 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <signal.h>
+#include <string.h>
+#include <stdlib.h>
 #include "posixtest.h"
 
-sigset_t th_pendingset, th_sigmask;
+static sigset_t th_pendingset, th_sigmask;
 
-void *a_thread_func()
+static void *a_thread_func()
 {
-	/* Obtain the signal mask of this thread. */
 	pthread_sigmask(SIG_SETMASK, NULL, &th_sigmask);
 
-	/* Obtain the pending signals of this thread. It should be empty. */
 	if (sigpending(&th_pendingset) != 0) {
 		printf("Error calling sigpending()\n");
-		return (void *)PTS_UNRESOLVED;
+		exit(PTS_UNRESOLVED);
 	}
 
-	pthread_exit(0);
 	return NULL;
 }
 
@@ -48,101 +47,86 @@ int main(void)
 	sigset_t main_sigmask, main_pendingset;
 	int ret;
 
-	/* Empty set of signal mask and blocked signals */
 	if ((sigemptyset(&main_sigmask) != 0) ||
 	    (sigemptyset(&main_pendingset) != 0)) {
-		perror("Error in sigemptyset()\n");
+		perror("sigemptyset()");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Add SIGCONT, SIGUSR1 and SIGUSR2 to the set of blocked signals */
 	if (sigaddset(&main_sigmask, SIGUSR1) != 0) {
-		perror("Error in sigaddset()\n");
+		perror("sigaddset(SIGUSR1)");
 		return PTS_UNRESOLVED;
 	}
 
 	if (sigaddset(&main_sigmask, SIGUSR2) != 0) {
-		perror("Error in sigaddset()\n");
+		perror("sigaddset(SIGUSR2)");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Block those signals. */
-	if (pthread_sigmask(SIG_SETMASK, &main_sigmask, NULL) != 0) {
-		printf("Error in pthread_sigmask()\n");
+	ret = pthread_sigmask(SIG_SETMASK, &main_sigmask, NULL);
+	if (ret) {
+		fprintf(stderr, "pthread_sigmask(): %s\n", strerror(ret));
 		return PTS_UNRESOLVED;
 	}
 
-	/* Raise those signals so they are now pending. */
 	if (raise(SIGUSR1) != 0) {
 		printf("Could not raise SIGALRM\n");
-		return -1;
+		return PTS_UNRESOLVED;
 	}
 	if (raise(SIGUSR2) != 0) {
 		printf("Could not raise SIGALRM\n");
-		return -1;
-	}
-
-	/* Create a new thread. */
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
-		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Wait until the thread has finished execution. */
-	if (pthread_join(new_th, NULL) != 0) {
-		perror("Error in pthread_join()\n");
+	ret = pthread_create(&new_th, NULL, a_thread_func, NULL);
+	if (ret) {
+		fprintf(stderr, "pthread_create(): %s\n", strerror(ret));
 		return PTS_UNRESOLVED;
 	}
 
-	/* Check to make sure that the sigmask of the thread is the same as the main thread */
+	ret = pthread_join(new_th, NULL);
+	if (ret) {
+		fprintf(stderr, "pthread_join(): %s\n", strerror(ret));
+		return PTS_UNRESOLVED;
+	}
+
 	ret = sigismember(&th_sigmask, SIGUSR1);
+	if (ret == 0) {
+		printf("FAIL: SIGUSR1 not a member of new thread sigmask.\n");
+		return PTS_FAIL;
+	}
 	if (ret != 1) {
-		if (ret == 0) {
-			printf
-			    ("Error: Thread did not inherit main()s signal mask. SIGUSR1 not a member of the signal set.\n");
-			return PTS_FAIL;
-		}
-
-		perror("Error is sigismember()\n");
+		perror("sigismember(sigmask, SIGUSR1)");
 		return PTS_UNRESOLVED;
 	}
 
 	ret = sigismember(&th_sigmask, SIGUSR2);
+	if (ret == 0) {
+		printf("FAIL: SIGUSR2 not a member of new thread sigmask.\n");
+		return PTS_FAIL;
+	}
 	if (ret != 1) {
-		if (ret == 0) {
-			printf
-			    ("Test FAILED: Thread did not inherit main()s signal mask. SIGUSR2 not a member of the signal set.\n");
-			return PTS_FAIL;
-		}
-
-		perror("Error is sigismember()\n");
+		perror("sigismember(sigmask, SIGUSR2)");
 		return PTS_UNRESOLVED;
 	}
 
-	/* Check to make sure that the pending set of the thread does not contain SIGUSR1 or
-	 * SIGUSR2. */
-
 	ret = sigismember(&th_pendingset, SIGUSR1);
+	if (ret == 1) {
+		printf("FAIL: SIGUSR1 is member of new thread pendingset.\n");
+		return PTS_FAIL;
+	}
 	if (ret != 0) {
-		if (ret == 1) {
-			printf
-			    ("Error: Thread did not inherit main()s signal mask. SIGUSR1 not a member of the signal set.\n");
-			return PTS_FAIL;
-		}
-
-		perror("Error is sigismember()\n");
+		perror("sigismember(pendingset, SIGUSR1)");
 		return PTS_UNRESOLVED;
 	}
 
 	ret = sigismember(&th_pendingset, SIGUSR2);
+	if (ret == 1) {
+		printf("FAIL: SIGUSR1 is member of new thread pendingset.\n");
+		return PTS_FAIL;
+	}
 	if (ret != 0) {
-		if (ret == 1) {
-			printf
-			    ("Test FAILED: Thread did not inherit main()s signal mask. SIGUSR2 not a member of the signal set.\n");
-			return PTS_FAIL;
-		}
-
-		perror("Error is sigismember()\n");
+		perror("sigismember(pendingset, SIGUSR2)");
 		return PTS_UNRESOLVED;
 	}
 
