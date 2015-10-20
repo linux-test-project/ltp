@@ -31,3 +31,6 @@ ipvlan01 ipvlan01.sh
 
 gre_ipv4_01 gre01.sh
 gre_ipv6_01 gre01.sh -6
+
+dctcp_ipv4_01 dctcp01.sh
+dctcp_ipv6_01 dctcp01.sh -6
