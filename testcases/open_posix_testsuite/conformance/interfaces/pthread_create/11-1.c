@@ -9,10 +9,12 @@
  * if _POSIX_THREAD_CPUTIME is defined, the new thread shall have a CPU-time
  * clock accessible, and the initial value of this clock shall be set to 0.
  */
- /* Create a new thread and get the time of the thread CUP-time clock
+ /* Do some work in the main thread so that it's clock value is non zero.
+  * Create a new thread and get the time of the thread CUP-time clock
   * using clock_gettime().
   * Note, the tv_nsec cannot be exactly 0 at the time of calling
-  * clock_gettime() since the thread has executed some time. */
+  * clock_gettime() since the thread has executed some time.
+  */
 
 #define _XOPEN_SOURCE 600
 #include <unistd.h>
@@ -20,26 +22,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/time.h>
 #include "posixtest.h"
 
-void *a_thread_func()
+static void *a_thread_func()
 {
-	clockid_t cpuclock;
 	struct timespec ts = {.tv_sec = 1,.tv_nsec = 1 };
-	pthread_getcpuclockid(pthread_self(), &cpuclock);
-	clock_gettime(cpuclock, &ts);
-	/* Just test the tv_sec field here. */
-	if (ts.tv_sec != 0) {
-		printf("ts.tv_sec: %ld, ts.tv_nsec: %ld\n",
+
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
+
+	/* We expect the clock to be less than 0.1s */
+	if (ts.tv_sec != 0 || ts.tv_nsec >= 100000000) {
+		printf("FAIL: ts.tv_sec: %ld, ts.tv_nsec: %ld\n",
 		       ts.tv_sec, ts.tv_nsec);
 		exit(PTS_FAIL);
 	}
-	pthread_exit(0);
+
 	return NULL;
+}
+
+static volatile sig_atomic_t flag = 1;
+
+static void alarm_handler()
+{
+	flag = 0;
 }
 
 int main(void)
 {
+	int ret;
+	struct itimerval it = {.it_value = {.tv_sec = 0, .tv_usec = 100000}};
+
 #if _POSIX_THREAD_CPUTIME == -1
 	printf("_POSIX_THREAD_CPUTIME not supported\n");
 	return PTS_UNSUPPORTED;
@@ -51,8 +66,22 @@ int main(void)
 		return PTS_UNSUPPORTED;
 	}
 
-	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0) {
-		perror("Error creating thread\n");
+	/* Let's do some work in the main thread so that it's cputime > 0 */
+	if (signal(SIGVTALRM, alarm_handler)) {
+		perror("signal()");
+		return PTS_UNRESOLVED;
+	}
+
+	if (setitimer(ITIMER_VIRTUAL, &it, NULL)) {
+		perror("setitimer(ITIMER_VIRTUAL, ...)");
+		return PTS_UNRESOLVED;
+	}
+
+	while (flag);
+
+	ret = pthread_create(&new_th, NULL, a_thread_func, NULL);
+	if (ret) {
+		fprintf(stderr, "pthread_create(): %s\n", strerror(ret));
 		return PTS_UNRESOLVED;
 	}
 
