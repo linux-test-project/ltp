@@ -28,6 +28,7 @@
 #include <dirent.h>
 
 #include "safe_stdio.h"
+#include "safe_net.h"
 
 char*	safe_basename(const char *file, const int lineno,
 	    void (*cleanup_fn)(void), char *path);
