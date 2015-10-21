@@ -1,13 +1,9 @@
 /can/filter-tests/can_filter
 /can/filter-tests/can_rcv_own_msgs
 /datafiles/
-/lib6/asapi_01
-/lib6/asapi_02
-/lib6/asapi_03
 /lib6/asapi_04
 /lib6/asapi_05
 /lib6/asapi_06
-/lib6/asapi_07
 /lib6/getaddrinfo_01
 /lib6/in6_01
 /lib6/in6_02

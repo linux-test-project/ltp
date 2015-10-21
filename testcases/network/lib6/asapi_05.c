@@ -47,14 +47,12 @@
 #include <netinet/icmp6.h>
 
 #include "test.h"
-#include "runcc.h"
 
 char *TCID = "asapi_05";	/* Test program identifier.    */
 
 void setup(void);
 void cleanup(void);
 
-void icmp6_et(void);
 void icmp6_ft(void);
 
 int main(int argc, char *argv[])
@@ -67,127 +65,12 @@ int main(int argc, char *argv[])
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		icmp6_et();
 		icmp6_ft();
 	}
 
 	cleanup();
 
 	tst_exit();
-}
-
-enum ttype { EXISTS, ALIAS, VALUE, DEFINED };
-
-struct etent {
-	char *et_tname;		/* test name */
-	int et_type;		/* test type */
-	char *et_incl;		/* include file list */
-	char *et_struct;	/* structure name */
-	char *et_field;		/* field name */
-	char *et_offset;	/* field offset */
-	union {
-		char *fu_value;	/* field size or value */
-		char *fu_dname;	/* #define name */
-	} ftun;
-#define et_value	ftun.fu_value
-#define et_dname	ftun.fu_dname
-} etab[] = {
-/* existence checks, RFC 3542 section 3 */
-	{
-		"icmp6_filter icmp6_filt", EXISTS, ICMP6_H, "icmp6_filter",
-		    "icmp6_filt", "0", {
-	"32"}}, {
-		"icmp6_filter icmp6_filt[0]", EXISTS, ICMP6_H, "icmp6_filter",
-		    "icmp6_filt[0]", "0", {
-	"4"}}, {
-		"ICMP6_FILTER_WILLPASS", DEFINED, ICMP6_H,
-		    "ICMP6_FILTER_WILLPASS", NULL, NULL, {
-	0}}, {
-		"ICMP6_FILTER_WILLBLOCK", DEFINED, ICMP6_H,
-		    "ICMP6_FILTER_WILLBLOCK", NULL, NULL, {
-	0}}, {
-		"ICMP6_FILTER_SETPASS", DEFINED, ICMP6_H,
-		    "ICMP6_FILTER_SETPASS", NULL, NULL, {
-	0}}, {
-		"ICMP6_FILTER_SETBLOCK", DEFINED, ICMP6_H,
-		    "ICMP6_FILTER_SETBLOCK", NULL, NULL, {
-	0}}, {
-		"ICMP6_FILTER_SETPASSALL", DEFINED, ICMP6_H,
-		    "ICMP6_FILTER_SETPASSALL", NULL, NULL, {
-	0}}, {
-		"ICMP6_FILTER_SETBLOCKALL", DEFINED, ICMP6_H,
-		    "ICMP6_FILTER_SETBLOCKALL", NULL, NULL, {
-	0}}, {
-		"ICMP6_FILTER", DEFINED, ICMP6_H, "ICMP6_FILTER", NULL, NULL, {
-	0}},
-/* existence checks, RFC 3542 section 4 */
-/* socket options */
-	{
-		"IPV6_RECVPKTINFO", VALUE, IN_H, "IPV6_RECVPKTINFO", NULL, NULL, {
-	"IPV6_RECVPKTINFO"}}, {
-		"IPV6_RECVHOPLIMIT", VALUE, IN_H, "IPV6_RECVHOPLIMIT", NULL,
-		    NULL, {
-	"IPV6_RECVHOPLIMIT"}}, {
-		"IPV6_RECVRTHDR", VALUE, IN_H, "IPV6_RECVRTHDR", NULL, NULL, {
-	"IPV6_RECVRTHDR"}}, {
-		"IPV6_RECVHOPOPTS", VALUE, IN_H, "IPV6_RECVHOPOPTS", NULL, NULL, {
-	"IPV6_RECVHOPOPTS"}}, {
-		"IPV6_RECVDSTOPTS", VALUE, IN_H, "IPV6_RECVDSTOPTS", NULL, NULL, {
-	"IPV6_RECVDSTOPTS"}}, {
-		"IPV6_RECVTCLASS", VALUE, IN_H, "IPV6_RECVTCLASS", NULL, NULL, {
-	"IPV6_RECVTCLASS"}},
-/* cmsg types */
-	{
-		"IPV6_PKTINFO", DEFINED, IN_H, "IPV6_PKTINFO", NULL, NULL, {
-	0}}, {
-		"IPV6_HOPLIMIT", DEFINED, IN_H, "IPV6_HOPLIMIT", NULL, NULL, {
-	0}}, {
-		"IPV6_NEXTHOP", DEFINED, IN_H, "IPV6_NEXTHOP", NULL, NULL, {
-	0}}, {
-		"IPV6_RTHDR", DEFINED, IN_H, "IPV6_RTHDR", NULL, NULL, {
-	0}}, {
-		"IPV6_HOPOPTS", DEFINED, IN_H, "IPV6_HOPOPTS", NULL, NULL, {
-	0}}, {
-		"IPV6_DSTOPTS", DEFINED, IN_H, "IPV6_DSTOPTS", NULL, NULL, {
-	0}}, {
-		"IPV6_RTHDRDSTOPTS", DEFINED, IN_H, "IPV6_RTHDRDSTOPTS", NULL,
-		    NULL, {
-	0}}, {
-		"IPV6_TCLASS", DEFINED, IN_H, "IPV6_TCLASS", NULL, NULL, {
-0}},};
-
-#define ETCOUNT	(sizeof(etab)/sizeof(etab[0]))
-
-/*  existence tests */
-void icmp6_et(void)
-{
-	int i;
-
-	for (i = 0; i < ETCOUNT; ++i) {
-		switch (etab[i].et_type) {
-		case EXISTS:
-			structcheck(etab[i].et_tname, etab[i].et_incl,
-				    etab[i].et_struct, etab[i].et_field,
-				    etab[i].et_offset, etab[i].et_value);
-			break;
-		case ALIAS:
-			aliascheck(etab[i].et_tname, etab[i].et_incl,
-				   etab[i].et_struct, etab[i].et_field,
-				   etab[i].et_dname);
-			break;
-		case VALUE:
-			valuecheck(etab[i].et_tname, etab[i].et_incl,
-				   etab[i].et_struct, etab[i].et_dname);
-			break;
-		case DEFINED:
-			funccheck(etab[i].et_tname, etab[i].et_incl,
-				  etab[i].et_struct);
-			break;
-		default:
-			tst_resm(TBROK, "invalid type %d", etab[i].et_type);
-			break;
-		}
-	}
 }
 
 void setup(void)
@@ -414,4 +297,4 @@ void icmp6_ft(void)
 	}
 }
 
-int TST_TOTAL = ETCOUNT;
+int TST_TOTAL = FTCOUNT;
