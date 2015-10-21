@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2004, Bull S.A..  All rights reserved.
- * Created by: Sebastien Decugis
-
+ * Copyright (c) 2015, Cyril Hrubis <chrubis@suse.cz>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -13,306 +12,266 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
+ *
  * This sample test aims to check the following assertion:
  *
  * pthread_create creates a thread with attributes as specified in the attr parameter.
-
+ *
+ * This test tests scheduller attributes are set correctly and schedulling works.
+ *
  * The steps are:
  *
- * -> See test 1-5.c for details
- * -> This one will test the scheduling behavior is correct.
-
+ *  - create thread with given scheduler policy and minimal priority for the
+ *    scheduling policy
+ *
+ *  - get the scheduler attributes of the running thread and check
+ *    that they are set as requested
+ *
+ *  - start a thread(s) with higher priority and check that the thread with
+ *    lower priority does not finish until the high priority threads finished
  */
 
  /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
 #define _POSIX_C_SOURCE 200112L
 
- /* Some routines are part of the XSI Extensions */
-#ifndef WITHOUT_XOPEN
-#define _XOPEN_SOURCE	600
-#endif
-/********************************************************************************************/
-/****************************** standard includes *****************************************/
-/********************************************************************************************/
+/* Must be included first */
+#include "affinity.h"
+
 #include <pthread.h>
-#include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include "posixtest.h"
+#include "ncpu.h"
 
-#include <sched.h>
-#include <semaphore.h>
-#include <errno.h>
-#include <assert.h>
-#include <sys/wait.h>
-/********************************************************************************************/
-/******************************   Test framework   *****************************************/
-/********************************************************************************************/
-#include "../testfrmw/testfrmw.h"
-#include "../testfrmw/testfrmw.c"
- /* This header is responsible for defining the following macros:
-  * UNRESOLVED(ret, descr);
-  *    where descr is a description of the error and ret is an int (error code for example)
-  * FAILED(descr);
-  *    where descr is a short text saying why the test has failed.
-  * PASSED();
-  *    No parameter.
-  *
-  * Both three macros shall terminate the calling process.
-  * The testcase shall not terminate in any other maneer.
-  *
-  * The other file defines the functions
-  * void output_init()
-  * void output(char * string, ...)
-  *
-  * Those may be used to output information.
-  */
+static volatile sig_atomic_t flag;
+static int n_threads;
 
-/********************************************************************************************/
-/********************************** Configuration ******************************************/
-/********************************************************************************************/
-#ifndef VERBOSE
-#define VERBOSE 1
-#endif
-
-/* The value below shall be >= to the # of CPU on the test architecture */
-#define NCPU 	(4)
-
-/********************************************************************************************/
-/***********************************    Test cases  *****************************************/
-/********************************************************************************************/
-#define STD_MAIN		/* This allows main() to be defined in the included file */
-
-#include "../testfrmw/threads_scenarii.c"
-
-/* This file will define the following objects:
- * scenarii: array of struct __scenario type.
- * NSCENAR : macro giving the total # of scenarii
- * scenar_init(): function to call before use the scenarii array.
- * scenar_fini(): function to call after end of use of the scenarii array.
- */
-
-/********************************************************************************************/
-/***********************************    Real Test   *****************************************/
-/********************************************************************************************/
-
-/* The 2 following functions are used for the scheduling tests */
-void *lp_func(void *arg)
+static void alarm_handler()
 {
-	int *ctrl = (int *)arg;
-	*ctrl = 2;
+	flag = 0;
+}
+
+void *do_work(void *arg)
+{
+	(void) arg;
+
+	while (flag)
+		sched_yield();
+
 	return NULL;
 }
 
-void *hp_func(void *arg)
+static void init_attr(pthread_attr_t *attr, int sched_policy, int prio)
 {
-	volatile int *ctrl = (int *)arg;
-	int dummy = 0, i;
-	do {
-		/* some dummy task */
-		dummy += 3;
-		dummy %= 17;
-		dummy *= 47;
-		for (i = 0; i < 1000000000; i++) ;
-#if VERBOSE > 6
-		output("%p\n", pthread_self());
-#endif
+	struct sched_param sched_param = {.sched_priority = prio};
+	int ret;
+
+	ret = pthread_attr_init(attr);
+	if (ret) {
+		fprintf(stderr, "pthread_attr_init(): %s\n", strerror(ret));
+		exit(PTS_UNRESOLVED);
 	}
-	while (*ctrl == 0);
+
+	ret = pthread_attr_setschedpolicy(attr, sched_policy);
+	if (ret) {
+		fprintf(stderr, "pthread_setschedpolicy(): %s\n", strerror(ret));
+		exit(PTS_UNRESOLVED);
+	}
+
+	ret = pthread_attr_setinheritsched(attr, PTHREAD_EXPLICIT_SCHED);
+	if (ret) {
+		fprintf(stderr, "pthread_attr_setinheritsched(): %s\n", strerror(ret));
+		exit(PTS_UNRESOLVED);
+	}
+
+	ret = pthread_attr_setschedparam(attr, &sched_param);
+	if (ret) {
+		fprintf(stderr, "pthread_attr_setschedparam(): %s\n", strerror(ret));
+		exit(PTS_UNRESOLVED);
+	}
+}
+
+static void run_hp_threads(int sched_policy, int sched_prio)
+{
+	struct itimerval it;
+	pthread_t threads[n_threads];
+	pthread_attr_t attr;
+	int i, ret;
+
+	flag = 1;
+
+	it.it_interval.tv_sec = 0;
+	it.it_interval.tv_usec = 0;
+	it.it_value.tv_sec = n_threads / 20;
+	it.it_value.tv_usec = (n_threads % 20) * 50000;
+
+	init_attr(&attr, sched_policy, sched_prio);
+
+	if (signal(SIGPROF, alarm_handler) == SIG_ERR) {
+		perror("signal()");
+		exit(PTS_UNRESOLVED);
+	}
+
+	if (setitimer(ITIMER_PROF, &it, NULL)) {
+		perror("setitimer(ITIMER_VIRTUAL, ...)");
+		exit(PTS_UNRESOLVED);
+	}
+
+	for (i = 0; i < n_threads; i++) {
+		ret = pthread_create(&threads[i], &attr, do_work, NULL);
+		if (ret) {
+			fprintf(stderr, "pthread_create(): %s\n",
+			        strerror(ret));
+			exit(PTS_UNRESOLVED);
+		}
+	}
+
+	if (flag) {
+		printf("FAILED: low priority thread scheduled\n");
+		exit(PTS_FAIL);
+	}
+
+	pthread_attr_destroy(&attr);
+
+	for (i = 0; i < n_threads; i++)
+		pthread_join(threads[i], NULL);
+
+}
+
+struct params {
+	int sched_policy;
+	int sched_priority;
+};
+
+static void *do_test(void *arg)
+{
+	int ret, sched_policy;
+	struct sched_param param;
+	struct params *p = arg;
+
+	/* First check that the scheduler parameters are set correctly */
+	ret = pthread_getschedparam(pthread_self(), &sched_policy, &param);
+	if (ret) {
+		fprintf(stderr, "pthread_getschedparam(): %s\n", strerror(ret));
+		exit(PTS_UNRESOLVED);
+	}
+
+	if (p->sched_policy != sched_policy) {
+		printf("FAILED: have scheduler policy %i expected %i\n",
+		       sched_policy, p->sched_policy);
+		exit(PTS_FAIL);
+	}
+
+	if (p->sched_priority != param.sched_priority) {
+		printf("FAILED: have scheduler priority %i expected %i\n",
+		       p->sched_priority, param.sched_priority);
+		exit(PTS_FAIL);
+	}
+
+	/* Now check that priorities actually work */
+	run_hp_threads(p->sched_policy, p->sched_priority + 1);
+
 	return NULL;
 }
 
-void *threaded(void *arg)
+struct tcase {
+	int sched_policy;
+	int prio;
+};
+
+enum tprio {
+	MIN,
+	HALF,
+	MAX_1,
+};
+
+struct tcase tcases[] = {
+	{SCHED_FIFO, MIN},
+	{SCHED_FIFO, HALF},
+	{SCHED_FIFO, MAX_1},
+	{SCHED_RR, MIN},
+	{SCHED_RR, HALF},
+	{SCHED_RR, MAX_1},
+};
+
+static int get_prio(struct tcase *self)
 {
-	int ret = 0;
-
-#if VERBOSE > 4
-	output("Thread %i starting...\n", sc);
-#endif
-
-	/* Scheduling (priority) tests */
-	if ((sysconf(_SC_THREAD_PRIORITY_SCHEDULING) > 0)
-	    && (scenarii[sc].explicitsched != 0)
-	    && (scenarii[sc].schedpolicy != 0)
-	    && (scenarii[sc].schedparam == 1)) {
-		/* We will create NCPU threads running with a high priority with the same sched policy policy
-		   and one with a low-priority.
-		   The low-priority thread should not run until the other threads stop running,
-		   unless the machine has more than NCPU processors... */
-
-		pthread_t hpth[NCPU];	/* High priority threads */
-		pthread_t lpth;	/* Low Priority thread */
-		int ctrl;	/* Check value */
-		pthread_attr_t ta;
-		struct sched_param sp;
-		int policy;
-		int i = 0;
-		struct timespec now, timeout;
-
-		/* Start with checking we are executing with the required parameters */
-		ret = pthread_getschedparam(pthread_self(), &policy, &sp);
-		if (ret != 0) {
-			UNRESOLVED(ret, "Failed to get current thread policy");
-		}
-
-		if (((scenarii[sc].schedpolicy == 1) && (policy != SCHED_FIFO))
-		    || ((scenarii[sc].schedpolicy == 2)
-			&& (policy != SCHED_RR))) {
-			FAILED
-			    ("The thread is not using the scheduling policy that was required");
-		}
-		if (((scenarii[sc].schedparam == 1)
-		     && (sp.sched_priority != sched_get_priority_max(policy)))
-		    || ((scenarii[sc].schedparam == -1)
-			&& (sp.sched_priority !=
-			    sched_get_priority_min(policy)))) {
-
-			FAILED
-			    ("The thread is not using the scheduling parameter that was required");
-		}
-
-		ctrl = 0;	/* Initial state */
-
-		/* Get the policy information */
-		ret = pthread_attr_getschedpolicy(&scenarii[sc].ta, &policy);
-		if (ret != 0) {
-			UNRESOLVED(ret, "Failed to read sched policy");
-		}
-
-		/* We put a timeout cause the test might lock the machine when it runs */
-		alarm(60);
-
-		/* Create the high priority threads */
-		ret = pthread_attr_init(&ta);
-		if (ret != 0) {
-			UNRESOLVED(ret,
-				   "Failed to initialize a thread attribute object");
-		}
-
-		ret = pthread_attr_setinheritsched(&ta, PTHREAD_EXPLICIT_SCHED);
-		if (ret != 0) {
-			UNRESOLVED(ret, "Unable to set inheritsched attribute");
-		}
-
-		ret = pthread_attr_setschedpolicy(&ta, policy);
-		if (ret != 0) {
-			UNRESOLVED(ret, "Unable to set the sched policy");
-		}
-
-		sp.sched_priority = sched_get_priority_max(policy) - 1;
-
-		ret = pthread_attr_setschedparam(&ta, &sp);
-		if (ret != 0) {
-			UNRESOLVED(ret, "Failed to set the sched param");
-		}
-#if VERBOSE > 1
-		output("Starting %i high- and 1 low-priority threads.\n", NCPU);
-#endif
-		for (i = 0; i < NCPU; i++) {
-			ret = pthread_create(&hpth[i], &ta, hp_func, &ctrl);
-			if (ret != 0) {
-				UNRESOLVED(ret,
-					   "Failed to create enough threads");
-			}
-		}
-#if VERBOSE > 5
-		output("The %i high-priority threads are running\n", NCPU);
-#endif
-
-		/* Create the low-priority thread */
-		sp.sched_priority = sched_get_priority_min(policy);
-
-		ret = pthread_attr_setschedparam(&ta, &sp);
-		if (ret != 0) {
-			UNRESOLVED(ret, "Failed to set the sched param");
-		}
-
-		ret = pthread_create(&lpth, &ta, lp_func, &ctrl);
-		if (ret != 0) {
-			UNRESOLVED(ret, "Failed to create enough threads");
-		}
-
-		/* Keep going */
-		ret = clock_gettime(CLOCK_REALTIME, &now);
-		if (ret != 0) {
-			UNRESOLVED(errno, "Failed to read current time");
-		}
-
-		timeout.tv_sec = now.tv_sec;
-		timeout.tv_nsec = now.tv_nsec + 500000000;
-		while (timeout.tv_nsec >= 1000000000) {
-			timeout.tv_sec++;
-			timeout.tv_nsec -= 1000000000;
-		}
-
-		do {
-			if (ctrl != 0) {
-				output
-				    ("The low priority thread executed. This might be normal if you have more than %i CPU.\n",
-				     NCPU + 1);
-				FAILED
-				    ("Low priority thread executed -- the sched parameters are ignored?");
-			}
-			ret = clock_gettime(CLOCK_REALTIME, &now);
-			if (ret != 0) {
-				UNRESOLVED(errno,
-					   "Failed to read current time");
-			}
-#if VERBOSE > 5
-			output("Time: %d.%09d (to: %d.%09d)\n", now.tv_sec,
-			       now.tv_nsec, timeout.tv_sec, timeout.tv_nsec);
-#endif
-		}
-		while ((now.tv_sec <= timeout.tv_sec)
-		       && (now.tv_nsec <= timeout.tv_nsec));
-
-		/* Ok the low priority thread did not execute :) */
-
-		/* tell the other high priority to terminate */
-		ctrl = 1;
-
-		for (i = 0; i < NCPU; i++) {
-			ret = pthread_join(hpth[i], NULL);
-			if (ret != 0) {
-				UNRESOLVED(ret, "Failed to join a thread");
-			}
-		}
-
-		/* Ok so now the low priority should execute when we stop this one (or earlier). */
-		ret = pthread_join(lpth, NULL);
-		if (ret != 0) {
-			UNRESOLVED(ret,
-				   "Failed to join the low priority thread");
-		}
-
-		/* We just check that it executed */
-		if (ctrl != 2) {
-			FAILED
-			    ("Joined the low-priority thread but it did not execute.");
-		}
-#if VERBOSE > 1
-		output
-		    ("The scheduling parameter was set accordingly to the thread attribute.\n");
-#endif
-
-		/* We're done. */
-		ret = pthread_attr_destroy(&ta);
-		if (ret != 0) {
-			UNRESOLVED(ret,
-				   "Failed to destroy a thread attribute object");
-		}
+	switch (self->prio) {
+	case MIN:
+		return sched_get_priority_min(self->sched_policy);
+	break;
+	case HALF:
+		 return (sched_get_priority_min(self->sched_policy) +
+		         sched_get_priority_max(self->sched_policy)) / 2;
+	break;
+	case MAX_1:
+		return sched_get_priority_max(self->sched_policy) - 1;
+	break;
 	}
 
-	/* Post the semaphore to unlock the main thread in case of a detached thread */
-	do {
-		ret = sem_post(&scenarii[sc].sem);
+	printf("Wrong self->prio %i\n", self->prio);
+	exit(PTS_UNRESOLVED);
+}
+
+static const char *sched_policy_name(int policy)
+{
+	switch (policy) {
+	case SCHED_FIFO:
+		return "SCHED_FIFO";
+	case SCHED_RR:
+		return "SCHED_RR";
+	default:
+		return "UNKNOWN";
 	}
-	while ((ret == -1) && (errno == EINTR));
-	if (ret == -1) {
-		UNRESOLVED(errno, "Failed to post the semaphore");
+}
+
+int main(void)
+{
+	pthread_attr_t attr;
+	pthread_t th;
+	struct params p;
+	int ret;
+	unsigned int i;
+
+	ret = set_affinity(0);
+	if (ret) {
+		n_threads = get_ncpu();
+		if (n_threads == -1) {
+			printf("Cannot get number of CPUs\n");
+			return PTS_UNRESOLVED;
+		}
+		printf("INFO: Affinity not supported, running %i threads.\n",
+		       n_threads);
+	} else {
+		printf("INFO: Affinity works, will use only one thread.\n");
+		n_threads = 1;
 	}
 
-	return arg;
+	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
+		p.sched_policy = tcases[i].sched_policy;
+		p.sched_priority = get_prio(&tcases[i]);
+
+		init_attr(&attr, p.sched_policy, p.sched_priority);
+
+		printf("INFO: Testing %s prio %i\n",
+		       sched_policy_name(p.sched_policy), p.sched_priority);
+
+		ret = pthread_create(&th, &attr, do_test, &p);
+		if (ret) {
+			fprintf(stderr, "pthread_create(): %s\n", strerror(ret));
+			return PTS_UNRESOLVED;
+		}
+
+		pthread_join(th, NULL);
+
+		pthread_attr_destroy(&attr);
+	}
+
+	printf("Test PASSED\n");
+	return 0;
 }
