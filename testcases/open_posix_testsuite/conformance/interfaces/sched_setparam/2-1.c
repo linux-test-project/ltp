@@ -37,19 +37,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "posixtest.h"
-
-#ifdef BSD
-#include <sys/types.h>
-#include <sys/param.h>
-#include <sys/sysctl.h>
-#endif
-
-#ifdef HPUX
-#include <sys/param.h>
-#include <sys/pstat.h>
-#endif
-
-#include <affinity.h>
+#include "affinity.h"
+#include "ncpu.h"
 
 #define NB_LOOP         20000000
 #define NB_LOOP_CHILD  200000000	/* shall be much greater than NB_LOOP */
@@ -63,33 +52,6 @@
 int nb_child;			/* Number of child processes == number of CPUs */
 int count = 0;
 int the_pipe[2];
-
-/* Get the number of CPUs */
-int get_ncpu()
-{
-	int ncpu = -1;
-
-	/* This syscall is not POSIX but it should work on many system */
-#ifdef _SC_NPROCESSORS_ONLN
-	ncpu = sysconf(_SC_NPROCESSORS_ONLN);
-#else
-#ifdef BSD
-	int mib[2];
-	size_t len = sizeof(ncpu);
-	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU;
-	sysctl(mib, 2, &ncpu, &len, NULL, 0);
-#else
-#ifdef HPUX
-	struct pst_dynamic psd;
-	pstat_getdynamic(&psd, sizeof(psd), 1, 0);
-	ncpu = (int)psd.psd_proc_cnt;
-#endif /* HPUX */
-#endif /* BSD */
-#endif /* _SC_NPROCESSORS_ONLN */
-
-	return ncpu;
-}
 
 void child_process(int id)
 {
