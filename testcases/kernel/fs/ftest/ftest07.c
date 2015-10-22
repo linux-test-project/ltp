@@ -431,7 +431,7 @@ static void dotest(int testers, int me, int fd)
 						tst_resm(TINFO,
 							 "\tTest[%d]: last_trunc = 0x%x",
 							 me, last_trunc);
-						fstat( fd, &stat );
+						fstat(fd, &stat);
 						tst_resm(TINFO,
 							 "\tStat: size=%llx, ino=%x",
 							 stat.st_size, (unsigned)stat.st_ino);
@@ -467,8 +467,12 @@ static void dotest(int testers, int me, int fd)
 							 me, CHUNK(chunk), val,
 							 count, xfr, file_max);
 						tst_resm(TINFO,
-							 "\tTest[%d]: last_trunc = 0x%x.",
+							 "\tTest[%d]: last_trunc = 0x%x",
 							 me, last_trunc);
+						fstat(fd, &stat);
+						tst_resm(TINFO,
+							 "\tStat: size=%llx, ino=%x",
+							 stat.st_size, (unsigned)stat.st_ino);
 						sync();
 						ft_dumpiov(&r_iovec[i]);
 						ft_dumpbits(bits,

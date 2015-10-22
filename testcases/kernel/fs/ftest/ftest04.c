@@ -232,6 +232,7 @@ static void dotest(int testers, int me, int fd)
 	struct iovec val0_iovec[MAXIOVCNT];
 	struct iovec val_iovec[MAXIOVCNT];
 	int w_ioveclen;
+	struct stat stat;
 
 	nchunks = max_size / (testers * csize);
 	whenmisc = 0;
@@ -361,6 +362,10 @@ static void dotest(int testers, int me, int fd)
 							 "\tTest[%d] bad verify @ 0x%x for val %d count %d xfr %d.",
 							 me, CHUNK(chunk), val0,
 							 count, xfr);
+						fstat(fd, &stat);
+						tst_resm(TINFO,
+							 "\tStat: size=%llx, ino=%x",
+							 stat.st_size, (unsigned)stat.st_ino);
 						ft_dumpiov(&r_iovec[i]);
 						ft_dumpbits(bits,
 							    (nchunks + 7) / 8);
@@ -386,6 +391,10 @@ static void dotest(int testers, int me, int fd)
 							 "\tTest[%d] bad verify @ 0x%x for val %d count %d xfr %d.",
 							 me, CHUNK(chunk), val,
 							 count, xfr);
+						fstat(fd, &stat);
+						tst_resm(TINFO,
+							 "\tStat: size=%llx, ino=%x",
+							 stat.st_size, (unsigned)stat.st_ino);
 						ft_dumpiov(&r_iovec[i]);
 						ft_dumpbits(bits,
 							    (nchunks + 7) / 8);
