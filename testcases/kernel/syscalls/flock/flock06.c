@@ -93,20 +93,20 @@ int main(int argc, char **argv)
 
 		fd1 = open(filename, O_RDWR);
 		if (fd1 == -1)
-			tst_brkm(TFAIL, cleanup, "failed to open the"
-				 "file, errno %d", errno);
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "failed to open the file");
 
 		TEST(flock(fd1, LOCK_EX | LOCK_NB));
 		if (TEST_RETURN != 0)
-			tst_resm(TFAIL, "First attempt to flock() failed, "
-				 "errno %d", TEST_ERRNO);
+			tst_resm(TFAIL | TTERRNO,
+				 "First attempt to flock() failed");
 		else
 			tst_resm(TPASS, "First attempt to flock() passed");
 
 		fd2 = open(filename, O_RDWR);
 		if (fd2 == -1)
-			tst_brkm(TFAIL, cleanup, "failed to open the"
-				 "file, errno %d", errno);
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "failed to open the file");
 
 		TEST(flock(fd2, LOCK_EX | LOCK_NB));
 		if (TEST_RETURN == -1)
@@ -116,8 +116,7 @@ int main(int argc, char **argv)
 
 		TEST(flock(fd1, LOCK_UN));
 		if (TEST_RETURN == -1)
-			tst_resm(TFAIL, "Failed to unlock fd1, errno %d",
-				 TEST_ERRNO);
+			tst_resm(TFAIL | TTERRNO, "Failed to unlock fd1");
 		else
 			tst_resm(TPASS, "Unlocked fd1");
 
