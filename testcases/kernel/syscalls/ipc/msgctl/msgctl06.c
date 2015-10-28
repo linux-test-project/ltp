@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
  *   ****************************************************************/
 void setup(void)
 {
+	tst_require_root();
+
 	/* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
 	 */
