@@ -171,6 +171,8 @@ void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
+	tst_require_root();
+
 	umask(0);
 
 	TEST_PAUSE;

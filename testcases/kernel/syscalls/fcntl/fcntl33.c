@@ -112,6 +112,8 @@ static void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
+	tst_require_root();
+
 	tst_timer_check(CLOCK_MONOTONIC);
 
 	/* Backup and set the lease-break-time. */
