@@ -166,6 +166,8 @@ void setup(void)
 	char *cwdname = NULL;
 	int fd;
 
+	tst_require_root();
+
 	umask(0);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
