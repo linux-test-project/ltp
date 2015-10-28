@@ -127,6 +127,8 @@ int main(int argc, char *argv[])
 	 * Linux doesn't have that limitation apparently. */
 	char *username = NULL;
 
+	tst_require_root();
+
 	if (argc != 2) {
 		tst_resm(TINFO, "Defaulting to user nobody");
 		username = strdup(nobody_uid);
