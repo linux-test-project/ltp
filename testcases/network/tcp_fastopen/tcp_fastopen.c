@@ -596,19 +596,14 @@ static void server_init(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "getaddrinfo failed");
 
 	/* IPv6 socket is also able to access IPv4 protocol stack */
-	sfd = socket(AF_INET6, SOCK_STREAM, 0);
-	if (sfd == -1)
-		tst_brkm(TBROK, cleanup, "Failed to create a socket");
+	sfd = SAFE_SOCKET(cleanup, AF_INET6, SOCK_STREAM, 0);
 
 	tst_resm(TINFO, "assigning a name to the server socket...");
 	if (!local_addrinfo)
 		tst_brkm(TBROK, cleanup, "failed to get the address");
 
-	while (bind(sfd, local_addrinfo->ai_addr,
-		local_addrinfo->ai_addrlen) == -1) {
-		usleep(100000);
-	}
-	tst_resm(TINFO, "the name assigned");
+	SAFE_BIND(cleanup, sfd, local_addrinfo->ai_addr,
+		local_addrinfo->ai_addrlen);
 
 	freeaddrinfo(local_addrinfo);
 
@@ -621,7 +616,7 @@ static void server_init(void)
 			tst_brkm(TBROK, cleanup, "Can't set TFO sock. options");
 	}
 
-	listen(sfd, max_queue_len);
+	SAFE_LISTEN(cleanup, sfd, max_queue_len);
 	tst_resm(TINFO, "Listen on the socket '%d', port '%s'", sfd, tcp_port);
 }
 

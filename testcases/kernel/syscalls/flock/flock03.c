@@ -77,19 +77,18 @@ int main(int argc, char **argv)
 		fd = open(FILE_NAME, O_RDWR);
 
 		if (fd == -1)
-			tst_brkm(TFAIL, cleanup, "parent failed to open the"
-				 "file, errno %d", errno);
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "parent failed to open the file");
 
 		pid = FORK_OR_VFORK();
 
 		if (pid == -1)
-			tst_brkm(TFAIL, cleanup, "fork() failed, errno %d",
-				 errno);
+			tst_brkm(TFAIL | TERRNO, cleanup, "fork() failed");
 		if (pid == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv[0], "ds", fd, FILE_NAME) < 0)
-				tst_brkm(TFAIL, cleanup, "self_exec failed, "
-					 "errno &d", errno);
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "self_exec failed");
 #else
 			childfunc(fd);
 #endif
@@ -98,9 +97,8 @@ int main(int argc, char **argv)
 		TEST(flock(fd, LOCK_EX | LOCK_NB));
 
 		if (TEST_RETURN != 0)
-			tst_resm(TFAIL,
-				 "Parent: Initial attempt to flock() failed, "
-				 "errno %d", TEST_ERRNO);
+			tst_resm(TFAIL | TTERRNO,
+				 "Parent: Initial attempt to flock() failed");
 		else
 			tst_resm(TPASS,
 				 "Parent: Initial attempt to flock() passed");

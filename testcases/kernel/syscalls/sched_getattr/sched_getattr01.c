@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd., 2015
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU General Public License for more details.
+ */
+
 #define _GNU_SOURCE
 #include <unistd.h>
 #include <stdio.h>
@@ -38,9 +51,9 @@ void *run_deadline(void *data LTP_ATTRIBUTE_UNUSED)
 
 	/* This creates a 10ms/30ms reservation */
 	attr.sched_policy = SCHED_DEADLINE;
-	attr.sched_runtime = 10 * 1000 * 1000;
-	attr.sched_period = 30 * 1000 * 1000;
-	attr.sched_deadline = 30 * 1000 * 1000;
+	attr.sched_runtime = RUNTIME_VAL;
+	attr.sched_period = PERIOD_VAL;
+	attr.sched_deadline = DEADLINE_VAL;
 
 	ret = sched_setattr(0, &attr, flags);
 	if (ret < 0)
