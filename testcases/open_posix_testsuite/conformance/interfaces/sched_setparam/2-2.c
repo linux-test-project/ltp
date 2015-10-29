@@ -29,7 +29,8 @@
  *
  */
 
-#define _GNU_SOURCE
+#include "affinity.h"
+
 #include <sched.h>
 #include <stdio.h>
 #include <signal.h>
@@ -37,7 +38,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "posixtest.h"
-#include "affinity.h"
 #include "ncpu.h"
 
 #define NB_LOOP         20000000

@@ -20,7 +20,8 @@
  *   Date:  20/05/2011
  */
 
-#define _GNU_SOURCE
+#include "affinity.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
@@ -28,7 +29,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <posixtest.h>
-#include <affinity.h>
 
 /* Priorities for the threads, must be unique, non-zero, and ordered */
 #define PRIO_HIGH	20

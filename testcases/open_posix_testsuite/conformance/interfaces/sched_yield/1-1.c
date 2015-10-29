@@ -19,7 +19,8 @@
  *   Date:    11/08/2011
  */
 
-#define _GNU_SOURCE
+#include "affinity.h"
+
 #include <stdio.h>
 #include <sys/wait.h>
 #include <errno.h>
@@ -32,7 +33,6 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-#include <affinity.h>
 
 #define ERR_LOG(l, rc)   printf("Failed: %s rc: %d errno: %s\n", \
 					l, rc, strerror(errno))

@@ -24,7 +24,9 @@
  */
 
 #ifdef __linux__
-#include <sched.h>
+# define _GNU_SOURCE
+# define AFFINITY_NEEDS_GNU_SOURCE 1
+# include <sched.h>
 
 static int set_affinity(int cpu)
 {

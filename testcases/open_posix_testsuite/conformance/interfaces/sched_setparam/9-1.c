@@ -30,7 +30,8 @@
  *   5. Check if the shared value has been changed by the child process. If
  *      not, the test fail.
  */
-#define _GNU_SOURCE
+#include "affinity.h"
+
 #include <errno.h>
 #include <sched.h>
 #include <stdio.h>
@@ -41,7 +42,6 @@
 #include <time.h>
 #include <unistd.h>
 #include "posixtest.h"
-#include "affinity.h"
 #include "ncpu.h"
 
 static int nb_cpu;
