@@ -111,7 +111,7 @@ ssize_t	safe_read(const char *file, const int lineno,
 
 ssize_t safe_pread(const char *file, const int lineno, void (*cleanup_fn)(void),
 	    char len_strict, int fildes, void *buf, size_t nbyte, off_t offset);
-#define SAFE_PREAD(cleanup_fn, len_strict, fildes, buf, nbyte)   \
+#define SAFE_PREAD(cleanup_fn, len_strict, fildes, buf, nbyte, offset)   \
 	safe_pread(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
 	    (buf), (nbyte), (offset))
 
