@@ -123,9 +123,10 @@ setup()
 		mkdir -p $dir
 	done
 
-	# populating the default FS as ext3, if FS is not given
+	# populating the default FS as $LTP_BIG_DEV_FS_TYPE
+	# (or ext3 if it's not set), if FS is not given
 	if [ -z "$*" ]; then
-		FSTYPES="ext3"
+		FSTYPES=${LTP_BIG_DEV_FS_TYPE:-ext3}
 	else
 		FSTYPES="$*"
 	fi
