@@ -508,8 +508,8 @@ cleanup()
 
 	killall -9 cgroup_fj_proc 1>/dev/null 2>&1;
 
-	if [ -e $mount_point/subgroup_1 ]; then
-		cat $mount_point/subgroup_1/tasks > $TMPFILE
+	if [ -e $mount_point/ltp_subgroup_1 ]; then
+		cat $mount_point/ltp_subgroup_1/tasks > $TMPFILE
 		nlines=`cat $TMPFILE | wc -l`
 		for i in `seq 1 $nlines`
 		do
@@ -518,7 +518,7 @@ cleanup()
 				do_echo 0 1 "$cur_pid" $mount_point/tasks
 			fi
 		done
-		do_rmdir 0 1 $mount_point/subgroup_*
+		do_rmdir 0 1 $mount_point/ltp_subgroup_*
 	fi
 
 	if [ -e $TMPFILE ]; then
@@ -539,11 +539,11 @@ cleanup()
 
 reclaim_foundling()
 {
-	if ! [ -e $mount_point/subgroup_1 ]; then
+	if ! [ -e $mount_point/ltp_subgroup_1 ]; then
 		return
 	fi
 	foundlings=0
-	cat `find $mount_point/subgroup_* -name "tasks"` > $TMPFILE
+	cat `find $mount_point/ltp_subgroup_* -name "tasks"` > $TMPFILE
 	nlines=`cat "$TMPFILE" | wc -l`
 	for k in `seq 1 $nlines`
 	do
@@ -567,7 +567,7 @@ mkdir_subgroup()
 		exit -1;
 	fi
 
-	do_mkdir 1 1 $mount_point/subgroup_1
+	do_mkdir 1 1 $mount_point/ltp_subgroup_1
 }
 
 mount_cgroup ()

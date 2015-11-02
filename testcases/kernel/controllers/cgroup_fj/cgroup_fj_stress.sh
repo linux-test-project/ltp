@@ -108,9 +108,8 @@ get_subgroup_path1()
 		return;
 	fi
 
-	cur_subgroup_path1="$mount_point/subgroup_$1/"
+	cur_subgroup_path1="$mount_point/ltp_subgroup_$1/"
 }
-
 
 get_subgroup_path2()
 {
@@ -174,8 +173,8 @@ mkdir_subgroup;
 # before attachint operation if subsystem is cpuset
 if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 	if [ "$exist_cpuset" != "" ]; then
-		do_echo 1 1 "$cpus" $mount_point/subgroup_1/cpuset.cpus;
-		do_echo 1 1 "$mems" $mount_point/subgroup_1/cpuset.mems;
+		do_echo 1 1 "$cpus" $mount_point/ltp_subgroup_1/cpuset.cpus;
+		do_echo 1 1 "$mems" $mount_point/ltp_subgroup_1/cpuset.mems;
 	fi
 fi
 
@@ -183,7 +182,7 @@ if [ $mount_times -ne 1 ]; then
 	count=0
 	for i in `seq 1 $mount_times`
 	do
-		do_echo 1 1 $pid $mount_point/subgroup_1/tasks
+		do_echo 1 1 $pid $mount_point/ltp_subgroup_1/tasks
 		if [ "$subsystem" == "ns" ] || [ "$subsystem" == "all" ] ; then
 			do_kill 1 1 9 $pid
 			$TESTROOT/cgroup_fj_proc &
@@ -200,8 +199,8 @@ if [ $mount_times -ne 1 ]; then
 		mkdir_subgroup;
 		if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 			if [ "$exist_cpuset" != "" ]; then
-				do_echo 1 1 "$cpus" $mount_point/subgroup_1/cpuset.cpus;
-				do_echo 1 1 "$mems" $mount_point/subgroup_1/cpuset.mems;
+				do_echo 1 1 "$cpus" $mount_point/ltp_subgroup_1/cpuset.cpus;
+				do_echo 1 1 "$mems" $mount_point/ltp_subgroup_1/cpuset.mems;
 			fi
 		fi
 		let "count = $count + 1"
@@ -307,7 +306,7 @@ else
 	done
 fi
 
-do_rmdir 0 1 $mount_point/subgroup_*
+do_rmdir 0 1 $mount_point/ltp_subgroup_*
 
 sleep 1
 
