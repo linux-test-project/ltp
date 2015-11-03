@@ -108,8 +108,15 @@ static int page_check(void)
 	index = (vmstart / page_sz) * sizeof(uint64_t);
 
 	pm = open("/proc/self/pagemap", O_RDONLY);
-	if (pm == -1)
-		tst_brkm(TFAIL | TERRNO, NULL, "Open dev pagemap failed");
+	if (pm == -1) {
+		if ((errno == EPERM) && (geteuid() != 0)) {
+			tst_brkm(TCONF | TERRNO, NULL,
+				"don't have permission to open dev pagemap");
+		} else {
+			tst_brkm(TFAIL | TERRNO, NULL,
+				"Open dev pagemap failed");
+		}
+	}
 
 	offset = lseek(pm, index, SEEK_SET);
 	if (offset != index)
