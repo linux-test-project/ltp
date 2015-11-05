@@ -194,17 +194,14 @@ setup $*
 
 # Executes the tests for differnt FS's
 for fstype in $FSTYPES; do
-	opts="-F"
 	if [ "$fstype" = "reiserfs" ]; then
 		opts="-f --journal-size 513 -q"
-	elif [ "$fstype" = "jfs" ]; then
-		opts="-f"
-	elif [ "$fstype" = "xfs" ]; then
-		opts=""
+	elif echo "$fstype" | grep -q "ext"; then
+		opts="-F"
 	fi
 
 	if [ "$fstype" != "ramfs" ]; then
-		mkfs.$fstype $opts $device > /dev/null
+		tst_mkfs $fstype $device $opts
 	fi
 
 	mount -t $fstype $device  dir1
