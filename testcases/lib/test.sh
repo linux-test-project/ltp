@@ -271,7 +271,7 @@ tst_mkfs()
 	local device=$2
 	local fs_opts=""
 
-	if [ $fs_type = "xfs" ]; then
+	if [ $fs_type = "xfs" -o $fs_type = "jfs" ]; then
 		tst_resm TINFO "Appending '-f' flag to mkfs.$fs_type"
 		fs_opts="-f"
 	fi
