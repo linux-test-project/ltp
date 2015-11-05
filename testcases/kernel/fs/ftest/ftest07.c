@@ -267,14 +267,17 @@ static void runtest(void)
 enum m_type { m_fsync, m_trunc, m_sync, m_fstat };
 char *m_str[] = { "fsync", "trunc", "sync", "fstat" };
 
-int misc_cnt[NMISC];		/* counts # of each kind of misc */
-int file_max;			/* file-max size */
+int misc_cnt[NMISC];			/* counts # of each kind of misc */
+long long unsigned int file_max;	/* file-max size */
 int nchunks;
 int last_trunc = -1;
 int tr_flag;
 enum m_type type = m_fsync;
 
-#define	CHUNK(i)	(((off64_t)i) * csize)
+static inline long long unsigned int CHUNK(off64_t i)
+{
+	return (long long unsigned int) i * csize;
+}
 #define	NEXTMISC	((rand() % misc_intvl) + 5)
 
 static void dotest(int testers, int me, int fd)
@@ -425,7 +428,7 @@ static void dotest(int testers, int me, int fd)
 					     zero_iovec[i].iov_base,
 					     r_iovec[i].iov_len)) {
 						tst_resm(TFAIL,
-							 "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d file_max 0x%x, should be 0.",
+							 "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d file_max 0x%llx, should be 0.",
 							 me, CHUNK(chunk), val,
 							 count, xfr, file_max);
 						tst_resm(TINFO,
@@ -463,7 +466,7 @@ static void dotest(int testers, int me, int fd)
 					     val_iovec[i].iov_base,
 					     r_iovec[i].iov_len)) {
 						tst_resm(TFAIL,
-							 "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d file_max 0x%x.",
+							 "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d file_max 0x%llx.",
 							 me, CHUNK(chunk), val,
 							 count, xfr, file_max);
 						tst_resm(TINFO,
@@ -563,7 +566,7 @@ static void domisc(int me, int fd, char *bits)
 			if (ftruncate(fd, file_max) < 0) {
 				tst_brkm(TFAIL,
 					 NULL,
-					 "\tTest[%d]: ftruncate error %d @ 0x%x.",
+					 "\tTest[%d]: ftruncate error %d @ 0x%llx.",
 					 me, errno, file_max);
 			}
 			tr_flag = 0;
@@ -571,7 +574,7 @@ static void domisc(int me, int fd, char *bits)
 			if (truncate(test_name, file_max) < 0) {
 				tst_brkm(TFAIL,
 					 NULL,
-					 "\tTest[%d]: truncate error %d @ 0x%x.",
+					 "\tTest[%d]: truncate error %d @ 0x%llx.",
 					 me, errno, file_max);
 			}
 			tr_flag = 1;
@@ -593,7 +596,7 @@ static void domisc(int me, int fd, char *bits)
 		if (sb.st_size != file_max) {
 			tst_brkm(TFAIL,
 				 NULL, "\tTest[%d]: fstat() mismatch; st_size=%"
-				 PRIx64 ",file_max=%x.", me,
+				 PRIx64 ",file_max=%llx.", me,
 				 (int64_t) sb.st_size, file_max);
 		}
 		break;
