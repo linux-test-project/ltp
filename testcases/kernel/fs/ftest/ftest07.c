@@ -396,13 +396,13 @@ static void dotest(int testers, int me, int fd)
 				tst_brkm(TFAIL,
 					 NULL,
 					 "\tTest[%d]: lseek64(0) fail at %Lx, errno = %d.",
-					 me, CHUNK(chunk), errno);
+					 me, (long long unsigned int)CHUNK(chunk), errno);
 			}
 			if ((xfr = readv(fd, &r_iovec[0], MAXIOVCNT)) < 0) {
 				tst_brkm(TFAIL,
 					 NULL,
 					 "\tTest[%d]: readv fail at %Lx, errno = %d.",
-					 me, CHUNK(chunk), errno);
+					 me, (long long unsigned int)CHUNK(chunk), errno);
 			}
 			/*
 			 * If chunk beyond EOF just write on it.
@@ -426,7 +426,7 @@ static void dotest(int testers, int me, int fd)
 					     r_iovec[i].iov_len)) {
 						tst_resm(TFAIL,
 							 "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d file_max 0x%x, should be 0.",
-							 me, CHUNK(chunk), val,
+							 me, (long long unsigned int)CHUNK(chunk), val,
 							 count, xfr, file_max);
 						tst_resm(TINFO,
 							 "\tTest[%d]: last_trunc = 0x%x",
@@ -464,7 +464,7 @@ static void dotest(int testers, int me, int fd)
 					     r_iovec[i].iov_len)) {
 						tst_resm(TFAIL,
 							 "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d file_max 0x%x.",
-							 me, CHUNK(chunk), val,
+							 me, (long long unsigned int)CHUNK(chunk), val,
 							 count, xfr, file_max);
 						tst_resm(TINFO,
 							 "\tTest[%d]: last_trunc = 0x%x",
@@ -493,7 +493,7 @@ static void dotest(int testers, int me, int fd)
 				tst_brkm(TFAIL,
 					 NULL,
 					 "\tTest[%d]: lseek64(1) fail at %Lx, errno = %d.",
-					 me, CHUNK(chunk), errno);
+					 me, (long long unsigned int)CHUNK(chunk), errno);
 			}
 			if ((xfr =
 			     writev(fd, &val_iovec[0], MAXIOVCNT)) < csize) {
@@ -507,7 +507,7 @@ static void dotest(int testers, int me, int fd)
 				tst_brkm(TFAIL,
 					 NULL,
 					 "\tTest[%d]: writev fail at %Lx xfr %d, errno = %d.",
-					 me, CHUNK(chunk), xfr, errno);
+					 me, (long long unsigned int)CHUNK(chunk), xfr, errno);
 			}
 			if (CHUNK(chunk) + csize > file_max)
 				file_max = CHUNK(chunk) + csize;
