@@ -11,6 +11,14 @@
  * the GNU General Public License for more details.
  */
 
+ /* Description:
+ *   Verify that:
+ *              1) sched_getattr fails with unused pid
+ *              2) sched_getattr fails with invalid address
+ *              3) sched_getattr fails with invalid value
+ *              4) sched_getattr fails with invalid flag
+ */
+
 #define _GNU_SOURCE
 
 #include <unistd.h>
