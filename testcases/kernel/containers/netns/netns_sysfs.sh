@@ -47,6 +47,11 @@ if [ $? -eq 1 ]; then
 	tst_brkm TBROK "unable to create a new network namespace"
 fi
 TST_CLEANUP=cleanup
+
+# exclude dummy0 (dummy1, etc.) from comparison as it gets automatically created
+# by the dummy device driver upon insmod/modprobe (during ip link add)
+ls /sys/class/net | grep -v 'dummy[0-9]\+' >sysfs_before
+
 ls /sys/class/net >sysfs_before
 
 ns_exec $NS_HANDLE $NS_TYPE mount --make-rprivate /sys
@@ -84,7 +89,7 @@ fi
 
 
 # TEST CASE #3
-ls /sys/class/net >sysfs_after
+ls /sys/class/net | grep -v 'dummy[0-9]\+' >sysfs_after
 diff sysfs_before sysfs_after
 if [ $? -eq 0 ]; then
 	tst_resm TPASS "sysfs not affected by a separate namespace"
