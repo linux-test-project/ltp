@@ -188,7 +188,7 @@ test7()
 	do_syscall_test 0 0 --mbind=1 0 || return $?
 	memory_addr="$(cat $TEST_OUTPUT)"
 	memory_addr=${memory_addr##*0x}
-	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
+	allowed_list=$(grep "$memory_addr" $TEST_PROCNUMA | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 	test "$allowed_list" = "0" || return 1
@@ -204,7 +204,7 @@ test8()
 	do_syscall_test 0 0-1 --mbind=1 0 || return $?
 	memory_addr="$(cat $TEST_OUTPUT)"
 	memory_addr=${memory_addr##*0x}
-	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
+	allowed_list=$(grep "$memory_addr" $TEST_PROCNUMA | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 	test "$allowed_list" = "0"
@@ -220,7 +220,7 @@ test9()
 	do_syscall_test 0 0-1 --mbind=6 0 || return $?
 	memory_addr="$(cat $TEST_OUTPUT)"
 	memory_addr=${memory_addr##*0x}
-	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
+	allowed_list=$(grep "$memory_addr" $TEST_PROCNUMA | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 	test "$allowed_list" = "1"
@@ -236,11 +236,11 @@ test10()
 	do_syscall_test 0 0 --mbind=6 1 || return $?
 	memory_addr="$(cat $TEST_OUTPUT)"
 	memory_addr=${memory_addr##*0x}
-	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
+	allowed_list=$(grep "$memory_addr" $TEST_PROCNUMA | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 
-	task_policy=$(cat $TEST_PROCNUMA | grep -e "  *stack  *anon" | \
+	task_policy=$(grep -e "  *stack  *anon" $TEST_PROCNUMA | \
 			awk '{print $2}')
 
 	test "$allowed_list" = "$task_policy"
