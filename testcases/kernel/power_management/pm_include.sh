@@ -87,8 +87,8 @@ get_supporting_govr() {
 }
 
 is_hyper_threaded() {
-	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
-	cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
+	siblings=`grep siblings /proc/cpuinfo | uniq | cut -f2 -d':'`
+	cpu_cores=`grep "cpu cores" /proc/cpuinfo | uniq | cut -f2 -d':'`
 	[ $siblings -gt $cpu_cores ]; echo $?
 }
 
@@ -131,8 +131,8 @@ is_multi_socket() {
 }
 
 is_multi_core() {
-	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
-	cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
+	siblings=`grep siblings /proc/cpuinfo | uniq | cut -f2 -d':'`
+	cpu_cores=`grep "cpu cores" /proc/cpuinfo | uniq | cut -f2 -d':'`
 	if [ $siblings -eq $cpu_cores ]; then
 		[ $cpu_cores -gt 1 ]; echo $?
 	else
@@ -142,8 +142,8 @@ is_multi_core() {
 }
 
 is_dual_core() {
-	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
-        cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq \
+	siblings=`grep siblings /proc/cpuinfo | uniq | cut -f2 -d':'`
+	cpu_cores=`grep "cpu cores" /proc/cpuinfo | uniq \
 			| cut -f2 -d':'`
         if [ $siblings -eq $cpu_cores ]; then
                 [ $cpu_cores -eq 2 ]; echo $?
