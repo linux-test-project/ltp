@@ -208,6 +208,13 @@ cgroup_fj_stress_memory_1_100_100_2 run_cgroup_test_fj.sh stress memory 1 100 10
 
 controllers	test_controllers.sh
 
+cpuacct_1_1 cpuacct.sh 1 1
+cpuacct_1_10 cpuacct.sh 1 10
+cpuacct_10_10 cpuacct.sh 10 10
+cpuacct_1_100 cpuacct.sh 1 100
+cpuacct_100_1 cpuacct.sh 100 1
+cpuacct_100_100 cpuacct.sh 100 100
+
 cpuset_base_ops	cpuset_base_ops_testset.sh
 cpuset_inherit	cpuset_inherit_testset.sh
 cpuset_exclusive	cpuset_exclusive_test.sh
