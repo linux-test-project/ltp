@@ -40,6 +40,7 @@ subgroup_hiers=$4		#number of subgroup's hierarchy
 attach_operation=$5		# 1: attach one process to every subcgroup
 				# 2: attach all processes in root group to one subcgroup
 				# 3: attach all processes in root group to every subcgroup
+mounted=1
 
 usage()
 {
@@ -72,7 +73,6 @@ usage()
         echo "  will use "debug" to test, will mount once, will create one subgroup in same hierarchy,"
 	echo "  will create one hierarchy, will attach one process to every subcgroup"
 }
-
 
 exit_parameter()
 {
@@ -108,7 +108,7 @@ get_subgroup_path1()
 		return;
 	fi
 
-	cur_subgroup_path1="/dev/cgroup/subgroup_$1/"
+	cur_subgroup_path1="$mount_point/subgroup_$1/"
 }
 
 
@@ -148,9 +148,11 @@ esac
 
 ##########################  main   #######################
 
-setup;
+if ! [ "$subsystem" == "all" ] && ! [ "$subsystem" == "none" ] ; then
+	exist_subsystem;
+fi
 
-mount_cgroup;
+setup;
 
 $TESTROOT/cgroup_fj_proc &
 pid=$!
@@ -161,8 +163,8 @@ exist_cpuset=0
 exist_cpuset=`grep -w cpuset /proc/cgroups | cut -f1`;
 if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 	if [ "$exist_cpuset" != "" ]; then
-		cpus=`cat /dev/cgroup/cpuset.cpus`
-		mems=`cat /dev/cgroup/cpuset.mems`
+		cpus=`cat $mount_point/cpuset.cpus`
+		mems=`cat $mount_point/cpuset.mems`
 	fi
 fi
 
@@ -172,8 +174,8 @@ mkdir_subgroup;
 # before attachint operation if subsystem is cpuset
 if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 	if [ "$exist_cpuset" != "" ]; then
-		do_echo 1 1 "$cpus" /dev/cgroup/subgroup_1/cpuset.cpus;
-		do_echo 1 1 "$mems" /dev/cgroup/subgroup_1/cpuset.mems;
+		do_echo 1 1 "$cpus" $mount_point/subgroup_1/cpuset.cpus;
+		do_echo 1 1 "$mems" $mount_point/subgroup_1/cpuset.mems;
 	fi
 fi
 
@@ -181,23 +183,25 @@ if [ $mount_times -ne 1 ]; then
 	count=0
 	for i in `seq 1 $mount_times`
 	do
-		do_echo 1 1 $pid /dev/cgroup/subgroup_1/tasks
+		do_echo 1 1 $pid $mount_point/subgroup_1/tasks
 		if [ "$subsystem" == "ns" ] || [ "$subsystem" == "all" ] ; then
 			do_kill 1 1 9 $pid
 			$TESTROOT/cgroup_fj_proc &
 			pid=$!
 		else
-			do_echo 1 1 $pid /dev/cgroup/tasks
+			do_echo 1 1 $pid $mount_point/tasks
 		fi
 		setup;
 		$TESTROOT/cgroup_fj_proc &
 		pid=$!
-		mount_cgroup;
+		if [ $mounted -ne 1 ]; then
+			mount_cgroup;
+		fi
 		mkdir_subgroup;
 		if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
 			if [ "$exist_cpuset" != "" ]; then
-				do_echo 1 1 "$cpus" /dev/cgroup/subgroup_1/cpuset.cpus;
-				do_echo 1 1 "$mems" /dev/cgroup/subgroup_1/cpuset.mems;
+				do_echo 1 1 "$cpus" $mount_point/subgroup_1/cpuset.cpus;
+				do_echo 1 1 "$mems" $mount_point/subgroup_1/cpuset.mems;
 			fi
 		fi
 		let "count = $count + 1"
@@ -244,12 +248,12 @@ else
 		do
 			do_echo 1 1 $pid "${pathes[$i]}""tasks"
 		done
-		do_echo 1 1 $pid /dev/cgroup/tasks
+		do_echo 1 1 $pid $mount_point/tasks
 		;;
 	"2" )
-		pathes2[0]="/dev/cgroup/"
+		pathes2[0]="$mount_point"
 		pathes2[1]="${pathes[$count]}"
-		pathes2[3]="/dev/cgroup/"
+		pathes2[3]="$mount_point/"
 		for i in `seq 1 $nlines`
 		do
 			j=$i
@@ -271,8 +275,8 @@ else
 	"3" )
 		count2=$count
 		let "count2 = $count2 + 1"
-		pathes[0]="/dev/cgroup/"
-		pathes[$count2]="/dev/cgroup/"
+		pathes[0]="$mount_point/"
+		pathes[$count2]="$mount_point/"
 		for i in `seq 0 $count`
 		do
 			j=$i
@@ -303,7 +307,7 @@ else
 	done
 fi
 
-do_rmdir 0 1 /dev/cgroup/subgroup_*
+do_rmdir 0 1 $mount_point/subgroup_*
 
 sleep 1
 

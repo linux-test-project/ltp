@@ -37,6 +37,7 @@ noprefix_use_str="";
 release_agent_para_str="";
 notify_on_release_str="";
 release_agent_str="";
+mounted=1;
 
 expected=1;
 
@@ -139,8 +140,6 @@ if [ $? -ne 0 ]; then
 fi
 setup;
 
-mount_cgroup;
-
 $TESTROOT/cgroup_fj_proc &
 pid=$!
 
@@ -148,15 +147,15 @@ mkdir_subgroup;
 
 # cpuset.cpus and cpuset.mems should be specified with suitable value
 # before attaching operation if subsystem is cpuset
-if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] || [ $subsystem == "none" ] ; then
+if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] || [ "$subsystem" == "none" ] ; then
 	exist=`grep -w cpuset /proc/cgroups | cut -f1`;
 	if [ "$exist" != "" ]; then
 		if [ "$noprefix_use" == "no" ]; then
-			do_echo 1 1 `cat /dev/cgroup/cpus` /dev/cgroup/subgroup_1/cpus;
-			do_echo 1 1 `cat /dev/cgroup/mems` /dev/cgroup/subgroup_1/mems;
+			do_echo 1 1 `cat $mount_point/cpus` $mount_point/subgroup_1/cpus;
+			do_echo 1 1 `cat $mount_point/mems` $mount_point/subgroup_1/mems;
 		else
-			do_echo 1 1 `cat /dev/cgroup/cpuset.cpus` /dev/cgroup/subgroup_1/cpuset.cpus;
-			do_echo 1 1 `cat /dev/cgroup/cpuset.mems` /dev/cgroup/subgroup_1/cpuset.mems;
+			do_echo 1 1 `cat $mount_point/cpuset.cpus` $mount_point/subgroup_1/cpuset.cpus;
+			do_echo 1 1 `cat $mount_point/cpuset.mems` $mount_point/subgroup_1/cpuset.mems;
 		fi
 	fi
 fi
@@ -166,12 +165,12 @@ case $attach_operation in
 "1" )
 	;;
 "2" )
-	do_echo 1 1 $pid /dev/cgroup/subgroup_1/tasks;
+	do_echo 1 1 $pid $mount_point/subgroup_1/tasks;
 	;;
 "3" )
 	$TESTROOT/cgroup_fj_proc &
 	pid2=$!
-	cat /dev/cgroup/tasks > $TMPFILE
+	cat $mount_point/tasks > $TMPFILE
 	nlines=`cat $TMPFILE | wc -l`
 	for i in `seq 1 $nlines`
 	do
@@ -190,12 +189,12 @@ case $attach_operation in
 					continue
 				fi
 			fi
-			do_echo 1 1 "$cur_pid" /dev/cgroup/subgroup_1/tasks
+			do_echo 1 1 "$cur_pid" $mount_point/subgroup_1/tasks
 		fi
 	done
 	;;
 "4" )
-	do_echo 1 1 $pid /dev/cgroup/subgroup_1/tasks;
+	do_echo 1 1 $pid $mount_point/subgroup_1/tasks;
 	sleep 1
 	do_kill 1 1 10 $pid
 	;;
@@ -214,18 +213,18 @@ esac
 #if [ $notify_on_release -ne 0 ] && [ $notify_on_release -ne 1 ] && [ $notify_on_release -ne 2 ];then
 #	expected=0
 #fi
-do_echo 1 $expected $notify_on_release_str /dev/cgroup/subgroup_1/notify_on_release;
+do_echo 1 $expected $notify_on_release_str $mount_point/subgroup_1/notify_on_release;
 
 # echo release_agent that analysed from parameter
 if [ $release_agent_echo -ne 1 ]; then
-	do_echo 1 1 $release_agent_str /dev/cgroup/release_agent;
+	do_echo 1 1 $release_agent_str $mount_point/release_agent;
 fi
 
 sleep 1
 
 # pid could not be echoed from subgroup if subsystem is ( or include ) ns,
 # so we kill them here
-if [ "$subsystem" == "ns" ] || [ "$subsystem" == "all" ] || [ $subsystem == "none" ] ; then
+if [ "$subsystem" == "ns" ] || [ "$subsystem" == "all" ] || [ "$subsystem" == "none" ] ; then
 	do_kill 1 1 9 $pid
 	do_kill 1 1 9 $pid2
 # removing operation
@@ -234,20 +233,20 @@ else
 	"1" )
 		;;
 	"2" )
-		do_echo 1 1 $pid /dev/cgroup/tasks
+		do_echo 1 1 $pid $mount_point/tasks
 		if [ $pid2 -ne 0 ]  ; then
-			do_echo 1 1 $pid2 /dev/cgroup/tasks
+			do_echo 1 1 $pid2 $mount_point/tasks
 		fi
 		;;
 	"3" )
-		cat /dev/cgroup/subgroup_1/tasks > $TMPFILE
+		cat $mount_point/subgroup_1/tasks > $TMPFILE
 		nlines=`cat $TMPFILE | wc -l`
 		if [ $nlines -ne 0 ]; then
 			for i in `seq 1 $nlines`
 			do
 				cur_pid=`sed -n "$i""p" $TMPFILE`
 				if [ -e /proc/$cur_pid/ ];then
-					do_echo 1 1 "$cur_pid" /dev/cgroup/tasks
+					do_echo 1 1 "$cur_pid" $mount_point/tasks
 				fi
 			done
 		fi
@@ -264,7 +263,7 @@ fi
 
 sleep 1
 
-do_rmdir 0 1 /dev/cgroup/subgroup_*
+do_rmdir 0 1 $mount_point/subgroup_*
 
 cleanup;
 do_kill 1 1 9 $pid
