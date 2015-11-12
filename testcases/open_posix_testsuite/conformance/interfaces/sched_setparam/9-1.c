@@ -109,7 +109,7 @@ int main(void)
 	int *child_pid, oldcount, newcount, shm_id, i;
 	struct sched_param param;
 	key_t key;
-	int rc = set_affinity(0);
+	int rc = set_affinity_single();
 	if (rc) {
 		nb_cpu = get_ncpu();
 		if (nb_cpu == -1) {

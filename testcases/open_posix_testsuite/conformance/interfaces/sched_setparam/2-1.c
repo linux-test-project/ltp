@@ -93,7 +93,7 @@ int main(void)
 	   There is no guarantee that the LOOP of the child
 	   can be certainly big enough on any device at any time.
 	 */
-	int rc = set_affinity(0);
+	int rc = set_affinity_single();
 	if (rc) {
 		nb_child = get_ncpu();
 		if (nb_child == -1) {

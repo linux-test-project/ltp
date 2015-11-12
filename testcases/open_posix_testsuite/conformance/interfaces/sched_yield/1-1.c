@@ -85,9 +85,9 @@ int main(void)
 	}
 
 	/* Must only use a single CPU */
-	rc = set_affinity(0);
+	rc = set_affinity_single();
 	if (rc) {
-		ERR_LOG("set_affinity", rc);
+		ERR_LOG("set_affinity_single", rc);
 		return status;
 	}
 

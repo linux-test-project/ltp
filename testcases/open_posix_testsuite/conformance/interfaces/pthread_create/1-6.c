@@ -238,7 +238,7 @@ int main(void)
 	int ret;
 	unsigned int i;
 
-	ret = set_affinity(0);
+	ret = set_affinity_single();
 	if (ret) {
 		n_threads = get_ncpu();
 		if (n_threads == -1) {

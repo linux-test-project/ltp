@@ -27,6 +27,7 @@
 # define _GNU_SOURCE
 # define AFFINITY_NEEDS_GNU_SOURCE 1
 # include <sched.h>
+# include <stdio.h>
 
 static int set_affinity(int cpu)
 {
@@ -37,8 +38,68 @@ static int set_affinity(int cpu)
 
 	return (sched_setaffinity(0, sizeof(cpu_set_t), &mask));
 }
+
+static int get_online_cpu_from_sysfs(void)
+{
+	FILE *f;
+	int cpu = -1;
+
+	f = fopen("/sys/devices/system/cpu/online", "r");
+	if (!f)
+		return -1;
+	fscanf(f, "%d", &cpu);
+	fclose(f);
+
+	return cpu;
+}
+
+static int get_online_cpu_from_cpuinfo(void)
+{
+	FILE *f;
+	int cpu = -1;
+	char line[4096];
+
+	f = fopen("/proc/cpuinfo", "r");
+	if (!f)
+		return -1;
+
+	while (!feof(f)) {
+		if (!fgets(line, sizeof(line), f))
+			return -1;
+		/*
+		 * cpuinfo output is not consistent across all archictures,
+		 * it can be "processor        : N", but for example on s390
+		 * it's: "processor N: ...", so ignore any non-number
+		 * after "processor"
+		 */
+		if (sscanf(line, "processor%*[^0123456789]%d", &cpu) == 1)
+			break;
+	}
+	fclose(f);
+
+	return cpu;
+}
+
+static int set_affinity_single(void)
+{
+	int cpu;
+
+	cpu = get_online_cpu_from_sysfs();
+	if (cpu >= 0)
+		goto set_affinity;
+
+	cpu = get_online_cpu_from_cpuinfo();
+	if (cpu >= 0)
+		goto set_affinity;
+
+	fprintf(stderr, "WARNING: Failed to detect online cpu, using cpu=0\n");
+	cpu = 0;
+set_affinity:
+	return set_affinity(cpu);
+}
+
 #else
-static int set_affinity(int cpu)
+static int set_affinity_single(void)
 {
 	errno = ENOSYS;
 	return -1;

@@ -150,9 +150,9 @@ int main(void)
 	status = PTS_UNRESOLVED;
 
 
-	rc = set_affinity(0);
+	rc = set_affinity_single();
 	if (rc)
-		FAIL_AND_EXIT("set_affinity", errno);
+		FAIL_AND_EXIT("set_affinity_single", errno);
 
 	sp.sched_priority = PRIO_MAIN;
 	rc = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
