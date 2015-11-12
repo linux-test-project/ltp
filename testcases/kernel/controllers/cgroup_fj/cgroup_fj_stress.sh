@@ -28,7 +28,6 @@ subsystem=$1			# 1: debug
 				# 4: cpu
 				# 5: cpuacct
 				# 6: memory
-				# 7: all
 mount_times=$2			#1: execute once
 				#2: execute 100 times
 subgroup_num=$3			#subgroup number in the same hierarchy
@@ -53,7 +52,6 @@ usage()
 	echo "      cpu"
 	echo "      cpuacct"
 	echo "      memory"
-	echo "      all"
 	echo "    mount_times's usable number"
 	echo "      1: execute once"
 	echo "      100: execute 100 times"
@@ -146,11 +144,7 @@ case $subgroup_hiers in
 esac
 
 ##########################  main   #######################
-
-if ! [ "$subsystem" == "all" ] && ! [ "$subsystem" == "none" ] ; then
-	exist_subsystem;
-fi
-
+exist_subsystem;
 setup;
 
 $TESTROOT/cgroup_fj_proc &
@@ -160,7 +154,7 @@ cpus=0
 mems=0
 exist_cpuset=0
 exist_cpuset=`grep -w cpuset /proc/cgroups | cut -f1`;
-if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
+if [ "$subsystem" == "cpuset" ]; then
 	if [ "$exist_cpuset" != "" ]; then
 		cpus=`cat $mount_point/cpuset.cpus`
 		mems=`cat $mount_point/cpuset.mems`
@@ -171,7 +165,7 @@ mkdir_subgroup;
 
 # cpuset.cpus and cpuset.mems should be specified with suitable value
 # before attachint operation if subsystem is cpuset
-if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
+if [ "$subsystem" == "cpuset" ]; then
 	if [ "$exist_cpuset" != "" ]; then
 		do_echo 1 1 "$cpus" $mount_point/ltp_subgroup_1/cpuset.cpus;
 		do_echo 1 1 "$mems" $mount_point/ltp_subgroup_1/cpuset.mems;
@@ -183,7 +177,7 @@ if [ $mount_times -ne 1 ]; then
 	for i in `seq 1 $mount_times`
 	do
 		do_echo 1 1 $pid $mount_point/ltp_subgroup_1/tasks
-		if [ "$subsystem" == "ns" ] || [ "$subsystem" == "all" ] ; then
+		if [ "$subsystem" == "ns" ]; then
 			do_kill 1 1 9 $pid
 			$TESTROOT/cgroup_fj_proc &
 			pid=$!
@@ -197,7 +191,7 @@ if [ $mount_times -ne 1 ]; then
 			mount_cgroup;
 		fi
 		mkdir_subgroup;
-		if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
+		if [ "$subsystem" == "cpuset" ]; then
 			if [ "$exist_cpuset" != "" ]; then
 				do_echo 1 1 "$cpus" $mount_point/ltp_subgroup_1/cpuset.cpus;
 				do_echo 1 1 "$mems" $mount_point/ltp_subgroup_1/cpuset.mems;
@@ -215,7 +209,7 @@ else
 	do
 		get_subgroup_path1 $i
 		do_mkdir 1 1 $cur_subgroup_path1
-		if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
+		if [ "$subsystem" == "cpuset" ]; then
 			if [ "$exist_cpuset" != "" ]; then
 				do_echo 1 1 "$cpus" "$cur_subgroup_path1""cpuset.cpus";
 				do_echo 1 1 "$mems" "$cur_subgroup_path1""cpuset.mems";
@@ -227,7 +221,7 @@ else
 		do
 			get_subgroup_path2 $j
 			do_mkdir 1 1 "$cur_subgroup_path1""$cur_subgroup_path2" 1
-			if [ "$subsystem" == "cpuset" ] || [ "$subsystem" == "all" ] ; then
+			if [ "$subsystem" == "cpuset" ]; then
 				if [ "$exist_cpuset" != "" ]; then
 					do_echo 1 1 "$cpus" "$cur_subgroup_path1""$cur_subgroup_path2""cpuset.cpus";
 					do_echo 1 1 "$mems" "$cur_subgroup_path1""$cur_subgroup_path2""cpuset.mems";

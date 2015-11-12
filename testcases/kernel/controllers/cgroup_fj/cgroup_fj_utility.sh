@@ -77,11 +77,6 @@ get_subsystem()
 	"memory" )
 		exist_subsystem;
 		;;
-	"all" )
-		;;
-	"none" )
-		subsystem=""
-		;;
 	"debug,debug" )
 		exist_subsystem "debug";
 		;;
