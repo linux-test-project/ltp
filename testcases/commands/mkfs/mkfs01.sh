@@ -93,7 +93,7 @@ mkfs_verify_type()
 		blkid $2 -t TYPE="ext2" >/dev/null
 	else
 		if [ "$1" = "msdos" ]; then
-			blkid $2 -t SEC_TYPE="$1" >/dev/null
+			blkid $2 -t TYPE="vfat" >/dev/null
 		else
 			blkid $2 -t TYPE="$1" >/dev/null
 		fi
