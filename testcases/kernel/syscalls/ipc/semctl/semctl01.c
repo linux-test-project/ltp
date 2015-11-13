@@ -45,10 +45,10 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+#include <sys/wait.h>
 #include "ipcsem.h"
 
 char *TCID = "semctl01";
-int TST_TOTAL = 13;
 
 static int sem_id_1 = -1;
 static int sem_index;
@@ -120,10 +120,30 @@ static struct test_case_t {
 	{&sem_id_1, 0, IPC_RMID, func_rmid, SEMUN_CAST & buf, NULL},
 };
 
+int TST_TOTAL = ARRAY_SIZE(TC);
+
+static void kill_all_children(void)
+{
+	int j, status;
+
+	for (j = 0; j < NCHILD; j++) {
+		if (kill(pid_arr[j], SIGKILL) == -1)
+			tst_brkm(TBROK | TERRNO, cleanup, "child kill failed");
+	}
+
+	/*
+	 * make sure children finished before we proceed with next testcase
+	 */
+	for (j = 0; j < NCHILD; j++) {
+		if (wait(&status) == -1)
+			tst_brkm(TBROK | TERRNO, cleanup, "wait() failed");
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	int lc;
-	int i, j;
+	int i;
 
 	tst_parse_opts(argc, argv, NULL, NULL);
 
@@ -192,11 +212,7 @@ int main(int argc, char *argv[])
 			switch (TC[i].cmd) {
 			case GETNCNT:
 			case GETZCNT:
-				for (j = 0; j < NCHILD; j++) {
-					if (kill(pid_arr[j], SIGKILL) == -1)
-						tst_brkm(TBROK, cleanup,
-							 "child kill failed");
-				}
+				kill_all_children();
 				break;
 			}
 		}
