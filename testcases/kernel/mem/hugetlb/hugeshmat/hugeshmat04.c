@@ -54,7 +54,6 @@
 char *TCID = "hugeshmat04";
 int TST_TOTAL = 3;
 
-static long huge_total;
 static long huge_free;
 static long huge_free2;
 static long hugepages;
@@ -144,11 +143,6 @@ void setup(void)
 
 	hugepages = (orig_hugepages * hpage_size + SIZE) / hpage_size;
 	set_sys_tune("nr_hugepages", hugepages, 1);
-
-	huge_total = read_meminfo("HugePages_Total:");
-	if (huge_total != hugepages)
-		tst_brkm(TCONF, cleanup,
-			"Maybe huge pages not enough for test.");
 
 	TEST_PAUSE;
 }
