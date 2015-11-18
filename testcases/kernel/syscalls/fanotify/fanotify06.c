@@ -25,6 +25,14 @@
  * DESCRIPTION
  *     Check that fanotify properly merges ignore mask of an inode and
  *     mountpoint.
+ *
+ * This is a regression test for:
+ *
+ *  commit 8edc6e1688fc8f02c8c1f53a2ec4928cb1055f4d
+ *  Author: Jan Kara <jack@suse.cz>
+ *  Date:   Thu Nov 13 15:19:33 2014 -0800
+ *
+ *      fanotify: fix notification of groups with inode & mount marks
  */
 #include "config.h"
 
