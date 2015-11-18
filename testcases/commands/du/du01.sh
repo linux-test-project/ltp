@@ -26,11 +26,10 @@ TST_TOTAL=23
 
 setup()
 {
-	tst_require_root
-
 	tst_check_cmds dd du stat
 
 	tst_tmpdir
+	TST_CLEANUP=cleanup
 
 	ROD_SILENT dd if=/dev/zero of=testfile bs=1M count=10
 
@@ -54,145 +53,30 @@ du_test()
 {
 	local test_return
 
-	$1 > ${TCID}.temp 2>&1
+	$1 > temp 2>&1
 	test_return=$?
 
 	if [ ${test_return} -ne 0 ]; then
-		grep -q -E "unrecognized option|invalid option" ${TCID}.temp
+		grep -q -E "unrecognized option|invalid option" temp
 		if [ $? -eq 0 ]; then
-			tst_resm TCONF "'$1'" "not supported."
-			return
+			tst_resm TCONF "'$1' not supported"
 		else
-			tst_resm TFAIL "'$1'" "failed."
-			return
+			tst_resm TFAIL "'$1' failed"
 		fi
+		return
 	fi
 
-	grep -q $2 ${TCID}.temp
+	grep -q $2 temp
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "'$1'" "passed."
+		tst_resm TPASS "'$1' passed"
 	else
-		tst_resm TFAIL "'$1'" "failed."
+		tst_resm TFAIL "'$1' failed"
+		tst_resm TINFO "Looking for '$2' in:"
+		cat temp
 	fi
-}
-
-test1()
-{
-	du_test "du" ${check1}
-}
-
-test2()
-{
-	du_test "du testfile" ${check2}
-}
-
-test3()
-{
-	du_test "du -a" ${check3}
-}
-
-test4()
-{
-	du_test "du --all" ${check3}
-}
-
-test5()
-{
-	du_test "du -B ${block_size}" ${check5}
-}
-
-test6()
-{
-	du_test "du --block-size=${block_size}" ${check5}
-}
-
-test7()
-{
-	du_test "du -b" ${check7}
-}
-
-test8()
-{
-	du_test "du --bytes" ${check7}
-}
-
-test9()
-{
-	du_test "du -c" ${check9}
-}
-
-test10()
-{
-	du_test "du --total" ${check9}
-}
-
-test11()
-{
-	du_test "du -D testdir/testfile" ${check11}
-}
-
-test12()
-{
-	du_test "du --dereference-args testdir/testfile" ${check11}
-}
-
-test13()
-{
-	du_test "du --max-depth=1" ${check1}
-}
-
-test14()
-{
-	du_test "du --human-readable" ${check14}
-}
-
-test15()
-{
-	du_test "du -k" ${check1}
-}
-
-test16()
-{
-	du_test "du -L testdir/" ${check16}
-}
-
-test17()
-{
-	du_test "du --dereference testdir/" ${check16}
-}
-
-test18()
-{
-	du_test "du -P" ${check1}
-}
-
-test19()
-{
-	du_test "du --no-dereference" ${check1}
-}
-
-test20()
-{
-	du_test "du --si" ${check20}
-}
-
-test21()
-{
-	du_test "du -s" ${check1}
-}
-
-test22()
-{
-	du_test "du --summarize" ${check1}
-}
-
-test23()
-{
-	du_test "du --exclude=testfile" ${check23}
 }
 
 setup
-TST_CLEANUP=cleanup
 
 block_size=512
 
@@ -211,9 +95,28 @@ check16="10[2-3][0-9][0-9][[:space:]]testdir\/"
 check20="11M[[:space:]]\."
 check23="[0-9]\{1,2\}[[:space:]]\."
 
-for i in $(seq 1 ${TST_TOTAL})
-do
-	test$i
-done
+du_test "du" ${check1}
+du_test "du testfile" ${check2}
+du_test "du -a" ${check3}
+du_test "du --all" ${check3}
+du_test "du -B ${block_size}" ${check5}
+du_test "du --block-size=${block_size}" ${check5}
+du_test "du -b" ${check7}
+du_test "du --bytes" ${check7}
+du_test "du -c" ${check9}
+du_test "du --total" ${check9}
+du_test "du -D testdir/testfile" ${check11}
+du_test "du --dereference-args testdir/testfile" ${check11}
+du_test "du --max-depth=1" ${check1}
+du_test "du --human-readable" ${check14}
+du_test "du -k" ${check1}
+du_test "du -L testdir/" ${check16}
+du_test "du --dereference testdir/" ${check16}
+du_test "du -P" ${check1}
+du_test "du --no-dereference" ${check1}
+du_test "du --si" ${check20}
+du_test "du -s" ${check1}
+du_test "du --summarize" ${check1}
+du_test "du --exclude=testfile" ${check23}
 
 tst_exit
