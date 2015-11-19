@@ -1,2 +1,0 @@
-cpuacct01 run_cpuacct_test.sh 1
-cpuacct02 run_cpuacct_test.sh 2
