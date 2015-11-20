@@ -48,6 +48,11 @@ setup()
 {
 	tst_require_root
 
+	grep -q -w cpuacct /proc/cgroups
+	if [ $? -ne 0 ]; then
+		tst_brkm TCONF "cpuacct not supported on this system"
+	fi
+
 	mount_point=`grep -w cpuacct /proc/mounts | cut -f 2 | cut -d " " -f2`
 	tst_resm TINFO "cpuacct: $mount_point"
 	if [ "$mount_point" = "" ]; then
