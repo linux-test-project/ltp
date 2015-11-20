@@ -38,3 +38,4 @@ mkfs01_minix mkfs01.sh -f minix
 mkfs01_msdos mkfs01.sh -f msdos
 mkfs01_vfat mkfs01.sh -f vfat
 mkfs01_ntfs mkfs01.sh -f ntfs
+mkswap01 mkswap01.sh
