@@ -59,38 +59,14 @@ get_mount_point()
 get_subsystem()
 {
 	case $subsystem in
-	"debug" )
-		exist_subsystem;
-		;;
-	"cpuset" )
-		exist_subsystem;
-		;;
-	"ns" )
-		exist_subsystem;
-		;;
-	"cpu" )
-		exist_subsystem;
-		;;
-	"cpuacct" )
-		exist_subsystem;
-		;;
-	"memory" )
-		exist_subsystem;
-		;;
 	"debug,debug" )
 		exist_subsystem "debug";
 		;;
 	"nonexistent" )
 		subsystem="abc";
 		;;
-	"freezer" )
-		exist_subsystem;
-		;;
-	"devices" )
-		exist_subsystem;
-		;;
 	 *  )
-		return -1
+		exist_subsystem;
 		;;
 	esac
 }

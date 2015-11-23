@@ -94,6 +94,51 @@ cgroup_fj_function_devices_yes_yes_5_yes_2_3_2_1 run_cgroup_test_fj.sh function 
 cgroup_fj_function_devices_yes_yes_6_yes_2_3_2_1 run_cgroup_test_fj.sh function devices yes yes 6 yes 2 3 2 1
 cgroup_fj_function_devices_yes_yes_7_yes_2_3_2_1 run_cgroup_test_fj.sh function devices yes yes 7 yes 2 3 2 1
 cgroup_fj_function_devices_yes_yes_8_yes_2_3_2_1 run_cgroup_test_fj.sh function devices yes yes 8 yes 2 3 2 1
+cgroup_fj_function_blkio_yes_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio yes yes 1 yes 2 3 2 1
+cgroup_fj_function_blkio_no_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio no yes 1 yes 2 3 2 1
+cgroup_fj_function_blkio_yes_yes_2_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio yes yes 2 yes 2 3 2 1
+cgroup_fj_function_blkio_yes_yes_3_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio yes yes 3 yes 2 3 2 1
+cgroup_fj_function_blkio_yes_yes_4_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio yes yes 4 yes 2 3 2 1
+cgroup_fj_function_blkio_yes_yes_5_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio yes yes 5 yes 2 3 2 1
+cgroup_fj_function_blkio_yes_yes_6_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio yes yes 6 yes 2 3 2 1
+cgroup_fj_function_blkio_yes_yes_7_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio yes yes 7 yes 2 3 2 1
+cgroup_fj_function_blkio_yes_yes_8_yes_2_3_2_1 run_cgroup_test_fj.sh function blkio yes yes 8 yes 2 3 2 1
+cgroup_fj_function_hugetlb_yes_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb yes yes 1 yes 2 3 2 1
+cgroup_fj_function_hugetlb_no_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb no yes 1 yes 2 3 2 1
+cgroup_fj_function_hugetlb_yes_yes_2_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb yes yes 2 yes 2 3 2 1
+cgroup_fj_function_hugetlb_yes_yes_3_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb yes yes 3 yes 2 3 2 1
+cgroup_fj_function_hugetlb_yes_yes_4_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb yes yes 4 yes 2 3 2 1
+cgroup_fj_function_hugetlb_yes_yes_5_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb yes yes 5 yes 2 3 2 1
+cgroup_fj_function_hugetlb_yes_yes_6_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb yes yes 6 yes 2 3 2 1
+cgroup_fj_function_hugetlb_yes_yes_7_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb yes yes 7 yes 2 3 2 1
+cgroup_fj_function_hugetlb_yes_yes_8_yes_2_3_2_1 run_cgroup_test_fj.sh function hugetlb yes yes 8 yes 2 3 2 1
+cgroup_fj_function_net_cls_yes_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls yes yes 1 yes 2 3 2 1
+cgroup_fj_function_net_cls_no_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls no yes 1 yes 2 3 2 1
+cgroup_fj_function_net_cls_yes_yes_2_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls yes yes 2 yes 2 3 2 1
+cgroup_fj_function_net_cls_yes_yes_3_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls yes yes 3 yes 2 3 2 1
+cgroup_fj_function_net_cls_yes_yes_4_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls yes yes 4 yes 2 3 2 1
+cgroup_fj_function_net_cls_yes_yes_5_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls yes yes 5 yes 2 3 2 1
+cgroup_fj_function_net_cls_yes_yes_6_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls yes yes 6 yes 2 3 2 1
+cgroup_fj_function_net_cls_yes_yes_7_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls yes yes 7 yes 2 3 2 1
+cgroup_fj_function_net_cls_yes_yes_8_yes_2_3_2_1 run_cgroup_test_fj.sh function net_cls yes yes 8 yes 2 3 2 1
+cgroup_fj_function_net_prio_yes_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio yes yes 1 yes 2 3 2 1
+cgroup_fj_function_net_prio_no_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio no yes 1 yes 2 3 2 1
+cgroup_fj_function_net_prio_yes_yes_2_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio yes yes 2 yes 2 3 2 1
+cgroup_fj_function_net_prio_yes_yes_3_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio yes yes 3 yes 2 3 2 1
+cgroup_fj_function_net_prio_yes_yes_4_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio yes yes 4 yes 2 3 2 1
+cgroup_fj_function_net_prio_yes_yes_5_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio yes yes 5 yes 2 3 2 1
+cgroup_fj_function_net_prio_yes_yes_6_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio yes yes 6 yes 2 3 2 1
+cgroup_fj_function_net_prio_yes_yes_7_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio yes yes 7 yes 2 3 2 1
+cgroup_fj_function_net_prio_yes_yes_8_yes_2_3_2_1 run_cgroup_test_fj.sh function net_prio yes yes 8 yes 2 3 2 1
+cgroup_fj_function_pids_yes_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function pids yes yes 1 yes 2 3 2 1
+cgroup_fj_function_pids_no_yes_1_yes_2_3_2_1 run_cgroup_test_fj.sh function pids no yes 1 yes 2 3 2 1
+cgroup_fj_function_pids_yes_yes_2_yes_2_3_2_1 run_cgroup_test_fj.sh function pids yes yes 2 yes 2 3 2 1
+cgroup_fj_function_pids_yes_yes_3_yes_2_3_2_1 run_cgroup_test_fj.sh function pids yes yes 3 yes 2 3 2 1
+cgroup_fj_function_pids_yes_yes_4_yes_2_3_2_1 run_cgroup_test_fj.sh function pids yes yes 4 yes 2 3 2 1
+cgroup_fj_function_pids_yes_yes_5_yes_2_3_2_1 run_cgroup_test_fj.sh function pids yes yes 5 yes 2 3 2 1
+cgroup_fj_function_pids_yes_yes_6_yes_2_3_2_1 run_cgroup_test_fj.sh function pids yes yes 6 yes 2 3 2 1
+cgroup_fj_function_pids_yes_yes_7_yes_2_3_2_1 run_cgroup_test_fj.sh function pids yes yes 7 yes 2 3 2 1
+cgroup_fj_function_pids_yes_yes_8_yes_2_3_2_1 run_cgroup_test_fj.sh function pids yes yes 8 yes 2 3 2 1
 cgroup_fj_function_debug_yes_yes_1_yes_1_2_1_1 run_cgroup_test_fj.sh function debug yes yes 1 yes 1 2 1 1
 cgroup_fj_function_debug_yes_yes_1_yes_2_2_1_1 run_cgroup_test_fj.sh function debug yes yes 1 yes 2 2 1 1
 cgroup_fj_function_debug_yes_yes_1_yes_2_3_1_1 run_cgroup_test_fj.sh function debug yes yes 1 yes 2 3 1 1
@@ -241,6 +286,62 @@ cgroup_fj_stress_memory_1_100_1_2 run_cgroup_test_fj.sh stress memory 1 100 1 2
 cgroup_fj_stress_memory_1_100_1_3 run_cgroup_test_fj.sh stress memory 1 100 1 3
 cgroup_fj_stress_memory_1_100_100_1 run_cgroup_test_fj.sh stress memory 1 100 100 1
 cgroup_fj_stress_memory_1_100_100_2 run_cgroup_test_fj.sh stress memory 1 100 100 2
+cgroup_fj_stress_blkio_1_1_100_1 run_cgroup_test_fj.sh stress blkio 1 1 100 1
+cgroup_fj_stress_blkio_1_1_100_2 run_cgroup_test_fj.sh stress blkio 1 1 100 2
+cgroup_fj_stress_blkio_1_1_100_3 run_cgroup_test_fj.sh stress blkio 1 1 100 3
+cgroup_fj_stress_blkio_1_100_1_1 run_cgroup_test_fj.sh stress blkio 1 100 1 1
+cgroup_fj_stress_blkio_1_100_1_2 run_cgroup_test_fj.sh stress blkio 1 100 1 2
+cgroup_fj_stress_blkio_1_100_1_3 run_cgroup_test_fj.sh stress blkio 1 100 1 3
+cgroup_fj_stress_blkio_1_100_100_1 run_cgroup_test_fj.sh stress blkio 1 100 100 1
+cgroup_fj_stress_blkio_1_100_100_2 run_cgroup_test_fj.sh stress blkio 1 100 100 2
+cgroup_fj_stress_hugetlb_1_1_100_1 run_cgroup_test_fj.sh stress hugetlb 1 1 100 1
+cgroup_fj_stress_hugetlb_1_1_100_2 run_cgroup_test_fj.sh stress hugetlb 1 1 100 2
+cgroup_fj_stress_hugetlb_1_1_100_3 run_cgroup_test_fj.sh stress hugetlb 1 1 100 3
+cgroup_fj_stress_hugetlb_1_100_1_1 run_cgroup_test_fj.sh stress hugetlb 1 100 1 1
+cgroup_fj_stress_hugetlb_1_100_1_2 run_cgroup_test_fj.sh stress hugetlb 1 100 1 2
+cgroup_fj_stress_hugetlb_1_100_1_3 run_cgroup_test_fj.sh stress hugetlb 1 100 1 3
+cgroup_fj_stress_hugetlb_1_100_100_1 run_cgroup_test_fj.sh stress hugetlb 1 100 100 1
+cgroup_fj_stress_hugetlb_1_100_100_2 run_cgroup_test_fj.sh stress hugetlb 1 100 100 2
+cgroup_fj_stress_net_cls_1_1_100_1 run_cgroup_test_fj.sh stress net_cls 1 1 100 1
+cgroup_fj_stress_net_cls_1_1_100_2 run_cgroup_test_fj.sh stress net_cls 1 1 100 2
+cgroup_fj_stress_net_cls_1_1_100_3 run_cgroup_test_fj.sh stress net_cls 1 1 100 3
+cgroup_fj_stress_net_cls_1_100_1_1 run_cgroup_test_fj.sh stress net_cls 1 100 1 1
+cgroup_fj_stress_net_cls_1_100_1_2 run_cgroup_test_fj.sh stress net_cls 1 100 1 2
+cgroup_fj_stress_net_cls_1_100_1_3 run_cgroup_test_fj.sh stress net_cls 1 100 1 3
+cgroup_fj_stress_net_cls_1_100_100_1 run_cgroup_test_fj.sh stress net_cls 1 100 100 1
+cgroup_fj_stress_net_cls_1_100_100_2 run_cgroup_test_fj.sh stress net_cls 1 100 100 2
+cgroup_fj_stress_net_prio_1_1_100_1 run_cgroup_test_fj.sh stress net_prio 1 1 100 1
+cgroup_fj_stress_net_prio_1_1_100_2 run_cgroup_test_fj.sh stress net_prio 1 1 100 2
+cgroup_fj_stress_net_prio_1_1_100_3 run_cgroup_test_fj.sh stress net_prio 1 1 100 3
+cgroup_fj_stress_net_prio_1_100_1_1 run_cgroup_test_fj.sh stress net_prio 1 100 1 1
+cgroup_fj_stress_net_prio_1_100_1_2 run_cgroup_test_fj.sh stress net_prio 1 100 1 2
+cgroup_fj_stress_net_prio_1_100_1_3 run_cgroup_test_fj.sh stress net_prio 1 100 1 3
+cgroup_fj_stress_net_prio_1_100_100_1 run_cgroup_test_fj.sh stress net_prio 1 100 100 1
+cgroup_fj_stress_net_prio_1_100_100_2 run_cgroup_test_fj.sh stress net_prio 1 100 100 2
+cgroup_fj_stress_pids_1_1_100_1 run_cgroup_test_fj.sh stress pids 1 1 100 1
+cgroup_fj_stress_pids_1_1_100_2 run_cgroup_test_fj.sh stress pids 1 1 100 2
+cgroup_fj_stress_pids_1_1_100_3 run_cgroup_test_fj.sh stress pids 1 1 100 3
+cgroup_fj_stress_pids_1_100_1_1 run_cgroup_test_fj.sh stress pids 1 100 1 1
+cgroup_fj_stress_pids_1_100_1_2 run_cgroup_test_fj.sh stress pids 1 100 1 2
+cgroup_fj_stress_pids_1_100_1_3 run_cgroup_test_fj.sh stress pids 1 100 1 3
+cgroup_fj_stress_pids_1_100_100_1 run_cgroup_test_fj.sh stress pids 1 100 100 1
+cgroup_fj_stress_pids_1_100_100_2 run_cgroup_test_fj.sh stress pids 1 100 100 2
+cgroup_fj_stress_freezer_1_1_100_1 run_cgroup_test_fj.sh stress freezer 1 1 100 1
+cgroup_fj_stress_freezer_1_1_100_2 run_cgroup_test_fj.sh stress freezer 1 1 100 2
+cgroup_fj_stress_freezer_1_1_100_3 run_cgroup_test_fj.sh stress freezer 1 1 100 3
+cgroup_fj_stress_freezer_1_100_1_1 run_cgroup_test_fj.sh stress freezer 1 100 1 1
+cgroup_fj_stress_freezer_1_100_1_2 run_cgroup_test_fj.sh stress freezer 1 100 1 2
+cgroup_fj_stress_freezer_1_100_1_3 run_cgroup_test_fj.sh stress freezer 1 100 1 3
+cgroup_fj_stress_freezer_1_100_100_1 run_cgroup_test_fj.sh stress freezer 1 100 100 1
+cgroup_fj_stress_freezer_1_100_100_2 run_cgroup_test_fj.sh stress freezer 1 100 100 2
+cgroup_fj_stress_devices_1_1_100_1 run_cgroup_test_fj.sh stress devices 1 1 100 1
+cgroup_fj_stress_devices_1_1_100_2 run_cgroup_test_fj.sh stress devices 1 1 100 2
+cgroup_fj_stress_devices_1_1_100_3 run_cgroup_test_fj.sh stress devices 1 1 100 3
+cgroup_fj_stress_devices_1_100_1_1 run_cgroup_test_fj.sh stress devices 1 100 1 1
+cgroup_fj_stress_devices_1_100_1_2 run_cgroup_test_fj.sh stress devices 1 100 1 2
+cgroup_fj_stress_devices_1_100_1_3 run_cgroup_test_fj.sh stress devices 1 100 1 3
+cgroup_fj_stress_devices_1_100_100_1 run_cgroup_test_fj.sh stress devices 1 100 100 1
+cgroup_fj_stress_devices_1_100_100_2 run_cgroup_test_fj.sh stress devices 1 100 100 2
 
 controllers	test_controllers.sh
 
