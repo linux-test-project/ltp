@@ -98,7 +98,10 @@ void read_alarm_test(void)
 
 	ret = ioctl(rtc_fd, RTC_ALM_SET, &rtc_tm);
 	if (ret == -1) {
-		tst_resm(TFAIL, "RTC_ALM_SET ioctl failed");
+		if (errno == EINVAL)
+			tst_resm(TCONF | TERRNO, "RTC_ALM_SET not supported");
+		else
+			tst_resm(TFAIL | TERRNO , "RTC_ALM_SET ioctl failed");
 		return;
 	}
 
@@ -168,7 +171,10 @@ void update_interrupts_test(void)
 	/*Turn on update interrupts */
 	ret = ioctl(rtc_fd, RTC_UIE_ON, 0);
 	if (ret == -1) {
-		tst_resm(TFAIL, "RTC_UIE_ON ioctl failed");
+		if (errno == EINVAL)
+			tst_resm(TCONF | TERRNO, "RTC_UIE_ON not supported");
+		else
+			tst_resm(TFAIL | TERRNO, "RTC_UIE_ON ioctl failed");
 		return;
 	}
 
