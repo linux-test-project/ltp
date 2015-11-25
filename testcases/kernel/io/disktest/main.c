@@ -501,6 +501,7 @@ test_ll_t *run()
 			     &cleanArgs,
 			     "%s is not a regular file, could not be opened for reading, or was not found.",
 			     filespec);
+			FREE(aFilespec);
 
 			return newTest;
 		}

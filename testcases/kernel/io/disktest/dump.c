@@ -192,12 +192,14 @@ int do_dump(child_args_t * args)
 		pMsg(ERR, args, "could not open %s.\n", args->device);
 		pMsg(ERR, args, "%s: Error = %u\n", args->device,
 		     GETLASTERROR());
+		FREE(buff);
 		return (-1);
 	}
 
 	TargetLBA = Seek(fd, args->start_lba * BLK_SIZE);
 	if (TargetLBA != (args->start_lba * (OFF_T) BLK_SIZE)) {
 		pMsg(ERR, args, "Could not seek to start position.\n");
+		FREE(buff);
 		CLOSE(fd);
 		return (-1);
 	}
