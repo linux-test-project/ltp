@@ -80,7 +80,7 @@ fi
 dd if=/dev/zero of=tacl/blkext2 bs=1k count=10240
 chmod 777 tacl/blkext2
 
-losetup /dev/loop0 tacl/blkext2 2>&1 > /dev/null
+losetup /dev/loop0 tacl/blkext2 >/dev/null 2>&1
 if [ $? != 0 ]
 then
 	echo ""

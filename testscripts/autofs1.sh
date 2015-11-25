@@ -199,16 +199,16 @@ fi
 
 echo "forcing error paths and conditions..."
 
-mkdir /AUTOFS/MEDIA/mydir 2>&1 > /dev/null
-rm -rf /AUTOFS 2>&1 > /dev/null
+mkdir /AUTOFS/MEDIA/mydir >/dev/null 2>&1
+rm -rf /AUTOFS >/dev/null 2>&1
 
 mkdir /AUTOFS/MEDIA/floppy/test
 cp /etc/auto.master /etc/auto.media /AUTOFS/MEDIA/floppy/test
 sync; sync
 echo "Resuming test, please wait..."
 sleep 60
-mkdir /AUTOFS/MEDIA/mydir 2>&1 > /dev/null
-rm -rf /AUTOFS            2>&1 > /dev/null
+mkdir /AUTOFS/MEDIA/mydir >/dev/null 2>&1
+rm -rf /AUTOFS >/dev/null 2>&1
 
 
 ##############################################################
@@ -234,7 +234,7 @@ sleep 60
 
 if [ -e  /AUTOFS/DISK/disk/test ]; then
   cd /AUTOFS/DISK/disk/test
-  umount /AUTOFS/DISK/disk/ 2>&1 > /dev/null
+  umount /AUTOFS/DISK/disk/ >/dev/null 2>&1
   if [ $? = 0 ]
     then
 	/etc/init.d/autofs stop

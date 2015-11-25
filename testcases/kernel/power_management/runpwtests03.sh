@@ -35,7 +35,7 @@ check_cpufreq_sysfs_files() {
 			-name "*" -type f)
 		for files in ${cpufiles}
 		do
-			cat ${files} 2>&1 >/dev/null
+			cat ${files} >/dev/null 2>&1
 			if [ $? -ne 0 ] ; then
 				echo "${0}: FAIL: cat ${files}"
 				RC=1
@@ -83,7 +83,7 @@ change_freq() {
 	(( total_cpus-=1 ))
 
 	if ( echo ${available_govr} | grep -i "userspace" \
-		2>&1 >/dev/null ); then
+		>/dev/null 2>&1 ); then
 		for cpu in $(seq 0 "${total_cpus}" )
 		do
 			echo userspace > \

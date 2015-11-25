@@ -89,7 +89,7 @@ modprobe $LOOP
 	echo "check wheather loopback device option is been compiled in the kernel"
 fi
 mkdir -p $BLOCK_DIR
-mknod $BLOCK_DIR/0 b 31 0 2>&1 > /dev/null
+mknod $BLOCK_DIR/0 b 31 0 >/dev/null 2>&1
 mount -t jffs2 $BLOCK_DIR/0 $MOUNT_DIR
 mount|grep $JFFS2
 	if [ $? -eq 0 ]; then

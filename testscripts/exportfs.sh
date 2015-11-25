@@ -98,27 +98,27 @@ fi
 # Add code here.
 
 
-ping -c 2 -w 15 $NFS_SERVER 2>&1 >/dev/null
+ping -c 2 -w 15 $NFS_SERVER >/dev/null 2>&1
 if [ $? != 0 ]
 then
 	echo "FAILED: ping $NFS_SERVER failed"
 	exit 1
 fi
 
-rsh -n -l root $NFS_SERVER "ls -l /etc" 2>&1 >/dev/null
+rsh -n -l root $NFS_SERVER "ls -l /etc" >/dev/null 2>&1
 if [ $? != 0 ]
 then
 	echo "FAILED: rsh -n -l root $NFS_SERVER "ls -l /etc" failed"
 	exit 1
 fi
 
-rsh -n -l root $NFS_SERVER "rpm -q -a | grep $FS_TYPE" | grep $FS_TYPE 2>&1 > /dev/null
+rsh -n -l root $NFS_SERVER "rpm -q -a | grep $FS_TYPE" | grep $FS_TYPE >/dev/null 2>&1
 if [ $? != 0 ]
 then
-	rsh -n -l root $NFS_SERVER "grep $FS_TYPE /etc/filesystems" | grep $FS_TYPE 2>&1 > /dev/null
+	rsh -n -l root $NFS_SERVER "grep $FS_TYPE /etc/filesystems" | grep $FS_TYPE >/dev/null 2>&1
 	if [ $? != 0 ]
 	then
-		rsh -n -l root $NFS_SERVER "grep $FS_TYPE /proc/filesystems" | grep $FS_TYPE 2>&1 > /dev/null
+		rsh -n -l root $NFS_SERVER "grep $FS_TYPE /proc/filesystems" | grep $FS_TYPE >/dev/null 2>&1
 		if [ $? != 0 ]
 		then
 			echo "FAILED: $FS_TYPE package is not installed or loaded on $NFS_SERVER"
@@ -129,17 +129,17 @@ fi
 
 if [ "$FS_TYPE" = "reiserfs" ]
 then
-#	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE --format 3.6 -f $REM_DISK_PART 2>&1 > /dev/null"
-	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE -f $REM_DISK_PART --format 3.6 2>&1 > /dev/null"
-	echo "/sbin/mkfs -t $FS_TYPE --format 3.6 -f $REM_DISK_PART 2>&1 > /dev/null"
+#	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE --format 3.6 -f $REM_DISK_PART >/dev/null 2>&1"
+	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE -f $REM_DISK_PART --format 3.6 >/dev/null 2>&1"
+	echo "/sbin/mkfs -t $FS_TYPE --format 3.6 -f $REM_DISK_PART >/dev/null 2>&1"
 else
-#	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE $REM_DISK_PART 2>&1 > /dev/null"
+#	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE $REM_DISK_PART >/dev/null 2>&1"
 	QUIETFLAG=
 	if [ "$FS_TYPE" = "jfs" ]
 	then
 		QUIETFLAG="-q"
 	fi
-	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE $QUIETFLAG $REM_DISK_PART 2>&1 > /dev/null"
+	rsh -n -l root $NFS_SERVER "/sbin/mkfs -t $FS_TYPE $QUIETFLAG $REM_DISK_PART >/dev/null 2>&1"
 	if [ $? != 0 ]
 	then
 		echo "FAILED: Could not /sbin/mkfs -t $FS_TYPE $REM_DISK_PART on $NFS_SERVER"
