@@ -162,8 +162,10 @@ static void overcommit(void)
 			tst_brkm(TBROK | TERRNO, cleanup, "open");
 		addr = mmap(ADDR, (long)(length / 2 * hugepagesize), PROTECTION,
 			    FLAGS, fd, 0);
-		if (addr == MAP_FAILED)
+		if (addr == MAP_FAILED) {
+			close(fd);
 			tst_brkm(TBROK | TERRNO, cleanup, "mmap");
+		}
 	}
 
 	if (opt_sysfs) {
