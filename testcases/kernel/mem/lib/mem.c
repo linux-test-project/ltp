@@ -90,7 +90,12 @@ static void child_alloc(int testcase, int lite, int threads)
 			(void *)((long)testcase)));
 		if (TEST_RETURN) {
 			tst_resm(TINFO | TRERRNO, "pthread_create");
-			goto out;
+			/*
+			 * Keep going if thread other than first fails to
+			 * spawn due to lack of resources.
+			 */
+			if (i == 0 || TEST_RETURN != EAGAIN)
+				goto out;
 		}
 	}
 
