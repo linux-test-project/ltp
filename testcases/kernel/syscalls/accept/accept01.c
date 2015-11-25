@@ -31,11 +31,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/signal.h>
-#include <sys/ioctl.h>
 
 #include <netinet/in.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "accept01";
 int testno;
@@ -185,8 +185,5 @@ static void setup3(void)
 	int one = 1;
 
 	setup1();
-	if (ioctl(s, FIONBIO, &one) < 0) {
-		tst_brkm(TBROK, cleanup, "socket ioctl failed for accept "
-			 "test %d: %s", testno, strerror(errno));
-	}
+	SAFE_IOCTL(cleanup, s, FIONBIO, &one);
 }
