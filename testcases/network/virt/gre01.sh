@@ -50,8 +50,8 @@ if [ -z $ip_local -o -z $ip_remote ]; then
 fi
 
 tst_resm TINFO "test $virt_type"
-virt_setup "remote $(tst_ipaddr rhost) dev $(tst_iface)" \
-"remote $(tst_ipaddr) dev $(tst_iface rhost)"
+virt_setup "local $(tst_ipaddr) remote $(tst_ipaddr rhost) dev $(tst_iface)" \
+"local $(tst_ipaddr rhost) remote $(tst_ipaddr) dev $(tst_iface rhost)"
 
 virt_compare_netperf
 
