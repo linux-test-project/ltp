@@ -367,3 +367,25 @@ cpuset_memory_spread	cpuset_memory_spread_testset.sh
 cpuset_regression_test cpuset_regression_test.sh
 
 cgroup_xattr	cgroup_xattr
+
+pids_1_1 pids.sh 1 1
+pids_1_2 pids.sh 1 2
+pids_1_10 pids.sh 1 10
+pids_1_50 pids.sh 1 50
+pids_1_100 pids.sh 1 100
+pids_2_1 pids.sh 2 1
+pids_2_2 pids.sh 2 2
+pids_2_10 pids.sh 2 10
+pids_2_50 pids.sh 2 50
+pids_2_100 pids.sh 2 100
+pids_3_1 pids.sh 3 1
+pids_3_2 pids.sh 3 2
+pids_3_10 pids.sh 3 10
+pids_3_50 pids.sh 3 50
+pids_3_100 pids.sh 3 100
+pids_4_1 pids.sh 4 1
+pids_4_2 pids.sh 4 2
+pids_4_10 pids.sh 4 10
+pids_4_50 pids.sh 4 50
+pids_4_100 pids.sh 4 100
+pids_5_1 pids.sh 5 1
