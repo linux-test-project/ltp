@@ -52,8 +52,6 @@ TST_CLEANUP=cleanup
 # by the dummy device driver upon insmod/modprobe (during ip link add)
 ls /sys/class/net | grep -v 'dummy[0-9]\+' >sysfs_before
 
-ls /sys/class/net >sysfs_before
-
 ns_exec $NS_HANDLE $NS_TYPE mount --make-rprivate /sys
 ns_exec $NS_HANDLE $NS_TYPE ip link add $DUMMYDEV type dummy || \
 	tst_brkm TBROK "failed to add a new dummy device"
