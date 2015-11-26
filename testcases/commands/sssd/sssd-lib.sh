@@ -114,7 +114,12 @@ setup()
 				$NSS_CONFIG_FILE
 		fi
 	else
-		tst_brkm TBROK NULL "$CONFIG_FILE not found!"
+		tst_resm TWARN "$CONFIG_FILE not found!"
+		touch $CONFIG_FILE
+	fi
+	chmod 0600 $CONFIG_FILE
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK NULL "fail to modify the permission of $CONFIG_FILE"
 	fi
 }
 
