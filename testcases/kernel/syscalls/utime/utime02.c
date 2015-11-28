@@ -85,6 +85,7 @@
 
 #include "test.h"
 #include "tst_fs_type.h"
+#include "safe_macros.h"
 
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IRGRP | S_IROTH
@@ -92,7 +93,6 @@
 char *TCID = "utime02";
 int TST_TOTAL = 1;
 time_t curr_time;		/* current time in seconds */
-time_t tloc;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -137,8 +137,7 @@ int main(int ac, char **av)
 		TEST(utime(TEMP_FILE, NULL));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "utime(%s) Failed, errno=%d : %s",
-				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "utime(%s) failed", TEMP_FILE);
 		} else {
 			/*
 			 * Sleep for a second so that mod time and
@@ -151,22 +150,13 @@ int main(int ac, char **av)
 			 * Get the current time now, after calling
 			 * utime(2)
 			 */
-			if ((pres_time = time(&tloc)) < 0) {
-				tst_brkm(TFAIL, cleanup, "time() "
-					 "failed to get present time "
-					 "after utime, error=%d",
-					 errno);
-			}
+			pres_time = time(NULL);
 
 			/*
 			 * Get the modification and access times of
 			 * temporary file using stat(2).
 			 */
-			if (stat(TEMP_FILE, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup, "stat(2) of "
-					 "%s failed, errno:%d",
-					 TEMP_FILE, TEST_ERRNO);
-			}
+			SAFE_STAT(cleanup, TEMP_FILE, &stat_buf);
 			modf_time = stat_buf.st_mtime;
 			access_time = stat_buf.st_atime;
 
@@ -206,12 +196,8 @@ void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
-	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	ltpuser = SAFE_GETPWNAM(NULL, nobody_uid);
+	SAFE_SETUID(NULL, ltpuser->pw_uid);
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
@@ -223,24 +209,13 @@ void setup(void)
 	tst_tmpdir();
 
 	/* Creat a temporary file under above directory */
-	if ((fildes = creat(TEMP_FILE, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "creat(%s, %#o) Failed, errno=%d :%s",
-			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-	}
+	fildes = SAFE_CREAT(cleanup, TEMP_FILE, FILE_MODE);
 
 	/* Close the temporary file created */
-	if (close(fildes) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s:",
-			 TEMP_FILE, errno, strerror(errno));
-	}
+	SAFE_CLOSE(cleanup, fildes);
 
 	/* Get the current time */
-	if ((curr_time = time(&tloc)) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "time() failed to get current time, errno=%d", errno);
-	}
+	curr_time = time(NULL);
 
 	/*
 	 * Sleep for a second so that mod time and access times will be

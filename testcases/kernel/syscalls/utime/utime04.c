@@ -80,6 +80,7 @@
 #include <signal.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IRGRP | S_IROTH
@@ -116,19 +117,13 @@ int main(int ac, char **av)
 		TEST(utime(TEMP_FILE, &times));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "utime(%s) Failed, errno=%d : %s",
-				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "utime(%s) failed", TEMP_FILE);
 		} else {
 			/*
 			 * Get the modification and access times of
 			 * temporary file using stat(2).
 			 */
-			if (stat(TEMP_FILE, &stat_buf) < 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "stat(2) of %s failed, "
-					 "error:%d", TEMP_FILE,
-					 TEST_ERRNO);
-			}
+			SAFE_STAT(cleanup, TEMP_FILE, &stat_buf);
 			modf_time = stat_buf.st_mtime;
 			access_time = stat_buf.st_atime;
 
@@ -170,18 +165,10 @@ void setup(void)
 	tst_tmpdir();
 
 	/* Creat a temporary file under above directory */
-	if ((fildes = creat(TEMP_FILE, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "creat(%s, %#o) Failed, errno=%d :%s",
-			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-	}
+	fildes = SAFE_CREAT(cleanup, TEMP_FILE, FILE_MODE);
 
 	/* Close the temporary file created */
-	if (close(fildes) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s:",
-			 TEMP_FILE, errno, strerror(errno));
-	}
+	SAFE_CLOSE(cleanup, fildes);
 
 	/* Initialize the modification and access time in the times arg */
 	times.actime = NEW_TIME;
