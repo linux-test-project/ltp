@@ -678,6 +678,8 @@
 /pwrite/pwrite02_64
 /pwrite/pwrite04
 /pwrite/pwrite04_64
+/pwritev/pwritev01
+/pwritev/pwritev01_64
 /quotactl/quotactl01
 /quotactl/quotactl02
 /read/read01

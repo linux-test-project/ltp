@@ -813,6 +813,9 @@ pwrite01_64 pwrite01_64
 pwrite02_64 pwrite02_64
 pwrite04_64 pwrite04_64
 
+pwritev01 pwritev01
+pwritev01_64 pwritev01_64
+
 quotactl01 quotactl01
 quotactl02 quotactl02
 

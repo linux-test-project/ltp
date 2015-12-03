@@ -517,6 +517,8 @@ pwrite01_64 pwrite01_64
 pwrite02_64 pwrite02_64
 pwrite04_64 pwrite04_64
 
+pwritev01 pwritev01
+
 read01 read01
 read02 read02
 read03 read03
