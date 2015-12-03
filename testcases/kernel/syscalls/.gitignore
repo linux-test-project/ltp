@@ -657,6 +657,8 @@
 /pread/pread02_64
 /pread/pread03
 /pread/pread03_64
+/preadv/preadv01
+/preadv/preadv01_64
 /profil/profil01
 /pselect/pselect01
 /pselect/pselect01_64
