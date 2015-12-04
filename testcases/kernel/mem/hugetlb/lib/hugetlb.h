@@ -18,11 +18,11 @@
  */
 
 /*
- * ipcshm.h - common definitions for the IPC shared memory tests
+ * hugetlb.h - common definitions for the hugepage tests
  */
 
-#ifndef __IPCSHM_H
-#define __IPCSHM_H
+#ifndef __HUGETLB_H
+#define __HUGETLB_H
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -58,4 +58,4 @@ int sflag;
 long orig_hugepages;
 void help(void);
 
-#endif /* ipcshm.h */
+#endif /* hugetlb.h */

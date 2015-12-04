@@ -57,7 +57,7 @@
  *	test must be run at root
  */
 
-#include "ipcshm.h"
+#include "hugetlb.h"
 #include "safe_macros.h"
 #include "mem.h"
 

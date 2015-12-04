@@ -19,10 +19,10 @@
 
 /*
  * NAME
- *	libipc.c
+ *	hugetlb.c
  *
  * DESCRIPTION
- *	common routines for the IPC system call tests.
+ *	common routines for the hugepage tests.
  *
  *	The library contains the following routines:
  *
@@ -37,7 +37,7 @@
 #include <sys/shm.h>
 #include <sys/timeb.h>
 #include <pwd.h>
-#include "ipcshm.h"
+#include "hugetlb.h"
 
 /*
  * getipckey() - generates and returns a message key used by the "get"
