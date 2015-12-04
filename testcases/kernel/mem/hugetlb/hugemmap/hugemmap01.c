@@ -60,6 +60,7 @@
 #include <unistd.h>
 
 #include "test.h"
+#include "hugetlb.h"
 #include "safe_macros.h"
 #include "mem.h"
 
@@ -70,12 +71,10 @@ int TST_TOTAL = 1;
 static long *addr;
 static int fildes;
 static char *Hopt;
-static char *nr_opt;
 static long beforetest;
 static long aftertest;
 static long hugepagesmapped;
 static long hugepages = 128;
-static long orig_hugepages;
 
 static void help(void);
 
@@ -159,6 +158,7 @@ void setup(void)
 {
 	TEST_PAUSE;
 	tst_require_root();
+	check_hugepage();
 	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
 		tst_brkm(TBROK | TERRNO, NULL, "mount failed on %s", Hopt);
 

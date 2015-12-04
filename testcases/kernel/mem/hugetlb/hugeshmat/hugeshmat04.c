@@ -47,6 +47,7 @@
 
 #include "test.h"
 #include "mem.h"
+#include "hugetlb.h"
 
 #define SIZE	(1024 * 1024 * 1024)
 #define BOUNDARY (1024 * 1024 * 1024)
@@ -57,7 +58,6 @@ int TST_TOTAL = 3;
 static long huge_free;
 static long huge_free2;
 static long hugepages;
-static long orig_hugepages;
 static long orig_shmmax, new_shmmax;
 
 static void shared_hugepage(void);
@@ -126,6 +126,7 @@ void setup(void)
 	long mem_total, hpage_size;
 
 	tst_require_root();
+	check_hugepage();
 
 	mem_total = read_meminfo("MemTotal:");
 	SAFE_FILE_SCANF(NULL, PATH_SHMMAX, "%ld", &orig_shmmax);

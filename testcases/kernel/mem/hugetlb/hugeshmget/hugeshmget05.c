@@ -85,7 +85,7 @@ int main(int ac, char **av)
 	pid_t pid;
 	int status;
 
-	tst_parse_opts(ac, av, options, &help);
+	tst_parse_opts(ac, av, options, NULL);
 
 	if (sflag)
 		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
@@ -135,6 +135,7 @@ void setup(void)
 	long hpage_size;
 
 	tst_require_root();
+	check_hugepage();
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	tst_tmpdir();
 
@@ -144,14 +145,14 @@ void setup(void)
 
 	shm_size = hpage_size * hugepages / 2;
 	update_shm_size(&shm_size);
-	shmkey = getipckey();
+	shmkey = getipckey(cleanup);
 	shm_id_1 = shmget(shmkey, shm_size,
 			  SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL);
 	if (shm_id_1 == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "shmget #setup");
 
 	/* get the userid for a non-root user */
-	ltp_uid = getuserid(ltp_user);
+	ltp_uid = getuserid(cleanup, ltp_user);
 
 	TEST_PAUSE;
 }

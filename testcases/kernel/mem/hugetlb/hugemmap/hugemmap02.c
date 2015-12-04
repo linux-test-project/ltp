@@ -55,6 +55,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "mem.h"
+#include "hugetlb.h"
 
 #define LOW_ADDR       0x80000000
 #define LOW_ADDR2      0x90000000
@@ -72,9 +73,7 @@ static int i;
 static int fildes;
 static int nfildes;
 static char *Hopt;
-static char *nr_opt;
 static long hugepages = 128;
-static long orig_hugepages;
 
 static void help(void);
 
@@ -92,6 +91,8 @@ int main(int ac, char **av)
 	};
 
 	tst_parse_opts(ac, av, options, &help);
+
+	check_hugepage();
 
 	if (!Hflag) {
 		tst_tmpdir();

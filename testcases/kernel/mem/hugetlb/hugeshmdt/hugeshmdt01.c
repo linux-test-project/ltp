@@ -85,7 +85,7 @@ int main(int ac, char **av)
 {
 	int lc;
 
-	tst_parse_opts(ac, av, options, &help);
+	tst_parse_opts(ac, av, options, NULL);
 
 	if (sflag)
 		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
@@ -165,6 +165,7 @@ void setup(void)
 	long hpage_size;
 
 	tst_require_root();
+	check_hugepage();
 	tst_sig(NOFORK, sighandler, cleanup);
 	tst_tmpdir();
 
@@ -174,7 +175,7 @@ void setup(void)
 
 	shm_size = hpage_size * hugepages / 2;
 	update_shm_size(&shm_size);
-	shmkey = getipckey();
+	shmkey = getipckey(cleanup);
 
 	/* create a shared memory resource with read and write permissions */
 	shm_id_1 = shmget(shmkey, shm_size,

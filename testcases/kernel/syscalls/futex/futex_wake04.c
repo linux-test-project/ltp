@@ -50,6 +50,7 @@
 
 #define PATH_MEMINFO "/proc/meminfo"
 #define PATH_NR_HUGEPAGES "/proc/sys/vm/nr_hugepages"
+#define PATH_HUGEPAGES	"/sys/kernel/mm/hugepages/"
 
 const char *TCID = "futex_wake04";
 const int TST_TOTAL = 1;
@@ -68,6 +69,9 @@ static void setup(void)
 		tst_brkm(TCONF, NULL, "This test can only run on kernels "
 			"that are 2.6.32 or higher");
 	}
+
+	if (access(PATH_HUGEPAGES, F_OK))
+		tst_brkm(TCONF, NULL, "Huge page is not supported.");
 
 	tst_tmpdir();
 
