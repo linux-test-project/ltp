@@ -44,7 +44,8 @@ cat << EOF > "${output_pid}"
 	} \\
 	if (__ret == -1 && errno == ENOSYS) { \\
 		tst_brkm(TCONF, CLEANUP, \\
-			"syscall " #NR " not supported on your arch"); \\
+			"syscall(%d) " #NR " not supported on your arch", \\
+			NR); \\
 		errno = ENOSYS; \\
 	} \\
 	__ret; \\
