@@ -415,11 +415,6 @@ setup()
 		mount_point=/dev/cgroup
 	fi
 
-	if [ -e $mount_point ] && [ $mounted -ne 1 ]; then
-		rm -rf $mount_point
-		cleanup
-	fi
-
 	if [ $mounted -ne 1 ]; then
 		do_mkdir 1 1 $mount_point
 		mount_cgroup
