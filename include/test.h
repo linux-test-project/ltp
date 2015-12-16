@@ -132,13 +132,6 @@ void tst_parse_opts(int argc, char *argv[], const option_t *user_optarg,
 
 /* lib/tst_res.c */
 const char *strttype(int ttype);
-void tst_res_(const char *file, const int lineno, int ttype,
-	const char *fname, const char *arg_fmt, ...)
-	__attribute__ ((format (printf, 5, 6)));
-
-#define tst_res(ttype, fname, arg_fmt, ...) \
-	tst_res_(__FILE__, __LINE__, (ttype), (fname), \
-		 (arg_fmt), ##__VA_ARGS__)
 
 void tst_resm_(const char *file, const int lineno, int ttype,
 	const char *arg_fmt, ...)
@@ -153,13 +146,6 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 #define tst_resm_hexd(ttype, buf, size, arg_fmt, ...) \
 	tst_resm_hexd_(__FILE__, __LINE__, (ttype), (buf), (size), \
 		       (arg_fmt), ##__VA_ARGS__)
-
-void tst_brk_(const char *file, const int lineno, int ttype,
-	const char *fname, void (*func)(void), const char *arg_fmt, ...)
-	__attribute__ ((format (printf, 6, 7)));
-#define tst_brk(ttype, fname, func, arg_fmt, ...) \
-	tst_brk_(__FILE__, __LINE__, (ttype), (fname), (func), \
-		 (arg_fmt), ##__VA_ARGS__)
 
 void tst_brkm_(const char *file, const int lineno, int ttype,
 	void (*func)(void), const char *arg_fmt, ...)

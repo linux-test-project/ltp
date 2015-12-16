@@ -36,11 +36,8 @@
  *    OS Testing - Silicon Graphics, Inc.
  *
  *    FUNCTION NAME     :
- *      tst_res_() -       Print result message (include file contents)
  *      tst_resm_() -      Print result message
  *      tst_resm_hexd_() - Print result message (add buffer contents in hex)
- *      tst_brk_() -       Print result message (include file contents)
- *                        and break remaining test cases
  *      tst_brkm_() -      Print result message and break remaining test
  *                        cases
  *      tst_flush() -     Print any messages pending in the output stream
@@ -191,14 +188,7 @@ const char *strttype(int ttype)
 /* Include table of signals and tst_strsig() function*/
 #include "signame.h"
 
-/*
- * tst_res_() - Main result reporting function.  Handle test information
- *             appropriately depending on output display mode.  Call
- *             tst_condense() or tst_print() to actually print results.
- *             All result functions (tst_resm_(), tst_brk_(), etc.)
- *             eventually get here to print the results.
- */
-void tst_res_(const char *file, const int lineno, int ttype,
+static void tst_res__(const char *file, const int lineno, int ttype,
 	const char *fname, const char *arg_fmt, ...)
 {
 	pthread_mutex_lock(&tmutex);
@@ -208,7 +198,7 @@ void tst_res_(const char *file, const int lineno, int ttype,
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
-	printf("IN tst_res_; tst_count = %d\n", tst_count);
+	printf("IN tst_res__; tst_count = %d\n", tst_count);
 	fflush(stdout);
 #endif
 
@@ -599,11 +589,7 @@ int tst_environ(void)
  */
 static int tst_brk_entered = 0;
 
-/*
- * tst_brk_() - Fail or break current test case, and break the remaining
- *             tests cases.
- */
-void tst_brk_(const char *file, const int lineno, int ttype, const char *fname,
+void tst_brk__(const char *file, const int lineno, int ttype, const char *fname,
 	void (*func)(void), const char *arg_fmt, ...)
 {
 	pthread_mutex_lock(&tmutex);
@@ -612,7 +598,7 @@ void tst_brk_(const char *file, const int lineno, int ttype, const char *fname,
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
-	printf("IN tst_brk_\n");
+	printf("IN tst_brk__\n");
 	fflush(stdout);
 	fflush(stdout);
 #endif
@@ -631,14 +617,14 @@ void tst_brk_(const char *file, const int lineno, int ttype, const char *fname,
 		ttype = (ttype & ~ttype_result) | TBROK;
 	}
 
-	tst_res_(file, lineno, ttype, fname, "%s", tmesg);
+	tst_res__(file, lineno, ttype, fname, "%s", tmesg);
 	if (tst_brk_entered == 0) {
 		if (ttype_result == TCONF) {
-			tst_res_(file, lineno, ttype, NULL,
+			tst_res__(file, lineno, ttype, NULL,
 				"Remaining cases not appropriate for "
 				"configuration");
 		} else if (ttype_result == TBROK) {
-			tst_res_(file, lineno, TBROK, NULL,
+			tst_res__(file, lineno, TBROK, NULL,
 				 "Remaining cases broken");
 		}
 	}
@@ -674,7 +660,7 @@ void tst_resm_(const char *file, const int lineno, int ttype,
 
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
-	tst_res_(file, lineno, ttype, NULL, "%s", tmesg);
+	tst_res__(file, lineno, ttype, NULL, "%s", tmesg);
 }
 
 /*
@@ -702,7 +688,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 
 	if (size > size_max || size == 0 ||
 		(offset + size * (symb_num + 1)) >= USERMESG)
-		tst_res_(file, lineno, ttype, NULL, "%s", tmesg);
+		tst_res__(file, lineno, ttype, NULL, "%s", tmesg);
 	else
 		pmesg += offset;
 
@@ -715,7 +701,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 		sprintf(pmesg, "%02x", ((unsigned char *)buf)[i]);
 		pmesg += symb_num;
 		if ((i + 1) % size_max == 0 || i + 1 == size) {
-			tst_res_(file, lineno, ttype, NULL, "%s", tmesg);
+			tst_res__(file, lineno, ttype, NULL, "%s", tmesg);
 			pmesg = tmesg;
 		}
 	}
@@ -739,7 +725,7 @@ void tst_brkm_(const char *file, const int lineno, int ttype,
 
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
-	tst_brk_(file, lineno, ttype, NULL, func, "%s", tmesg);
+	tst_brk__(file, lineno, ttype, NULL, func, "%s", tmesg);
 	/* Shouldn't be reach, but fixes build time warnings about noreturn. */
 	abort();
 }
@@ -804,83 +790,3 @@ static void cat_file(const char *filename)
 		tst_print(TCID, 0, TWARN, Warn_mesg);
 	}
 }
-
-#ifdef UNIT_TEST
-/****************************************************************************
- * Unit test code: Takes input from stdin and can make the following
- *                 calls: tst_res(), tst_resm(), tst_brk(), tst_brkm(),
- *                 tst_flush_buf(), tst_exit().
- ****************************************************************************/
-int TST_TOTAL = 10;
-char *TCID = "TESTTCID";
-
-#define RES  "tst_res.c UNIT TEST message; ttype = %d; contents of \"%s\":"
-#define RESM "tst_res.c UNIT TEST message; ttype = %d"
-
-int main(void)
-{
-	int ttype;
-	char chr;
-	char fname[MAXMESG];
-
-	printf("UNIT TEST of tst_res.c.  Options for ttype:\n\
-	       -1 : call tst_exit()\n\
-	       -2 : call tst_flush()\n\
-	       -3 : call tst_brk()\n\
-	       -4 : call tst_res()\n\
-	       %2i : call tst_res(TPASS, ...)\n\
-	       %2i : call tst_res(TFAIL, ...)\n\
-	       %2i : call tst_res(TBROK, ...)\n\
-	       %2i : call tst_res(TWARN, ...)\n\
-	       %2i : call tst_res(TINFO, ...)\n\
-	       %2i : call tst_res(TCONF, ...)\n\n", TPASS, TFAIL, TBROK,
-	       TWARN, TINFO, TCONF);
-
-	while (1) {
-		printf("Enter ttype(-5, -4, -3, -2, -1, %i, %i, %i, %i, %i, %i)"
-		       " : ", TPASS, TFAIL, TBROK, TWARN, TINFO, TCONF);
-		scanf("%d%c", &ttype, &chr);
-
-		switch (ttype) {
-		case -1:
-			tst_exit();
-			break;
-
-		case -2:
-			tst_flush();
-			break;
-
-		case -3:
-			printf
-			    ("Enter the current type (%i=FAIL, %i=BROK, "
-			     "%i=CONF): ", TFAIL, TBROK, TCONF);
-			scanf("%d%c", &ttype, &chr);
-			printf("Enter file name (<cr> for none): ");
-			gets(fname);
-			if (strcmp(fname, "") == 0)
-				tst_brkm(ttype, tst_exit, RESM, ttype);
-			else
-				tst_brk(ttype, fname, tst_exit, RES, ttype,
-					fname);
-			break;
-
-		case -4:
-			printf
-			    ("Enter the current type (%i,%i,%i,%i,%i,%i): ",
-			     TPASS, TFAIL, TBROK, TWARN, TINFO, TCONF);
-			scanf("%d%c", &ttype, &chr);
-		default:
-			printf("Enter file name (<cr> for none): ");
-			gets(fname);
-
-			if (strcmp(fname, "") == 0)
-				tst_resm(ttype, RESM, ttype);
-			else
-				tst_res(ttype, fname, RES, ttype, fname);
-			break;
-		}
-
-	}
-}
-
-#endif /* UNIT_TEST */

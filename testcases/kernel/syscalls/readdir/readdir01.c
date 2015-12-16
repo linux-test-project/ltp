@@ -199,7 +199,7 @@ int main(int ac, char **av)
 					 "write(%s, \"hello\\n\", 6) Failed, errno=%d : %s",
 					 fname, errno, strerror(errno));
 			} else if (close(fd) < 0) {
-				tst_res(TWARN,
+				tst_resm(TWARN,
 					"close(%s) Failed, errno=%d : %s",
 					fname, errno, strerror(errno));
 			}
@@ -247,7 +247,7 @@ int main(int ac, char **av)
 			sprintf(fname, "%s%d", Basename, cnt);
 
 			if (unlink(fname) == -1) {
-				tst_res(TWARN,
+				tst_resm(TWARN,
 					"unlink(%s) Failed, errno=%d : %s",
 					Fname, errno, strerror(errno));
 			}

@@ -31,7 +31,7 @@ When you can use libltp please observe the following guidelines:
 No, only use libltp in non-forked processes and functions +perror(3)+ /
 +exit(3)+ otherwise. Reason being:
 
- * Calling +tst_res()+ from multiple processes is messy.
+ * Calling +tst_resm()+ from multiple processes is messy.
  * Calling cleanup can break test execution.
  * Establishing a complicated scheme of tracking the testcase state
    for teardown is undesirable.
@@ -137,7 +137,7 @@ failure may be impossible.
 10. Reporting errno and the TEST() macro
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Don't roll your own +errno+ / +strerror()+ printout when you use +tst_res()+
+Don't roll your own +errno+ / +strerror()+ printout when you use +tst_resm()+
 calls. Use either +TERRNO+ or +TTERRNO+. Similarly, if a testcase passed and
 it's obvious why it passed (for example a function call returns +0+ or
 +TEST_RETURN == 0+).
@@ -206,7 +206,7 @@ in order to call +tst_exit()+.
 
 Use hard tabs for first-level indentation, and 4 spaces for every line longer
 than 80 columns. Use a linebreak with string constants in format functions
-like +*printf()+, the +tst_res()+ APIs, etc.
+like +*printf()+, the +tst_resm()+ APIs, etc.
 
 Example:
 [source,c]
