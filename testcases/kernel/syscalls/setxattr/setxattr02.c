@@ -178,6 +178,7 @@ int main(int argc, char *argv[])
 static void setup(void)
 {
 	int fd;
+	dev_t dev;
 
 	tst_require_root();
 
@@ -213,7 +214,8 @@ static void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create FIFO(%s) failed",
 			 FIFO);
 
-	if (mknod(CHR, S_IFCHR | 0777, 0) == -1)
+	dev = makedev(1, 3);
+	if (mknod(CHR, S_IFCHR | 0777, dev) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create char special(%s)"
 			 " failed", CHR);
 
