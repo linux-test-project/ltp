@@ -139,9 +139,13 @@ int main(int ac, char **av)
 
 		TEST(creat(fname, 0700));
 
-		if (TEST_RETURN == -1) {
+		if (TEST_RETURN != -1) {
 			tst_resm(TPASS, "creat(%s, 0700) returned %ld",
 				 fname, TEST_RETURN);
+		} else {
+			tst_resm(TFAIL | TTERRNO, "creat(%s, 0700) FAILED",
+				 fname);
+			continue;
 		}
 
 		/* close and remove file, possibly for next loop */
