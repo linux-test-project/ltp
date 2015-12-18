@@ -42,6 +42,7 @@ SUBDIRS			+= connectors \
 			   firmware \
 			   fs \
 			   hotplug \
+			   input \
 			   io \
 			   ipc \
 			   logging \

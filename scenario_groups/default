@@ -32,3 +32,4 @@ dma_thread_diotest
 can
 cpuhotplug
 ipv6_lib
+input
