@@ -21,9 +21,6 @@
 
 tst_resm TINFO "Test duration is $NS_DURATION [sec]"
 
-tst_restore_ipaddr
-tst_restore_ipaddr rhost
-
 lhost_addr=$(tst_ipaddr)
 rhost_addr=$(tst_ipaddr rhost)
 
