@@ -11,6 +11,7 @@ hugeshmat01 hugeshmat01 -i 5
 hugeshmat02 hugeshmat02 -i 5
 hugeshmat03 hugeshmat03 -i 5
 hugeshmat04 hugeshmat04 -i 5
+hugeshmat05 hugeshmat05 -i 5
 
 hugeshmctl01 hugeshmctl01 -i 5
 hugeshmctl02 hugeshmctl02 -i 5
