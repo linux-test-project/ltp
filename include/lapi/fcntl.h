@@ -60,7 +60,11 @@
 #endif
 
 #ifndef O_PATH
-# define O_PATH 010000000
+# ifdef __sparc__
+#  define O_PATH 0x1000000
+# else
+#  define O_PATH 010000000
+# endif
 #endif
 
 #ifndef FALLOC_FL_KEEP_SIZE
