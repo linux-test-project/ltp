@@ -110,7 +110,7 @@ static inline int sig_initial(int sig)
 
 extern char *__rt_sig_stub;
 
-static void __rt_sigreturn_stub(void)
+static void __attribute__((used)) __rt_sigreturn_stub(void)
 {
 	__asm__ ("__rt_sig_stub: mov %0, %%g1\n\t"
 		"ta  0x6d\n\t"
@@ -126,7 +126,7 @@ static void __rt_sigreturn_stub(void)
 
 extern char *__rt_sig_stub, *__sig_stub;
 
-static void __rt_sigreturn_stub(void)
+static void __attribute__((used)) __rt_sigreturn_stub(void)
 {
 	__asm__ ("__rt_sig_stub: mov %0, %%g1\n\t"
 		"ta  0x10\n\t"
@@ -134,7 +134,7 @@ static void __rt_sigreturn_stub(void)
 		: "i" (__NR_rt_sigreturn));
 }
 
-static void __sigreturn_stub(void)
+static void __attribute__((used)) __sigreturn_stub(void)
 {
 	__asm__ ("__sig_stub: mov %0, %%g1\n\t"
 		"ta  0x10\n\t"
