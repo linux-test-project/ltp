@@ -86,24 +86,6 @@ get_remount_use()
 	esac
 }
 
-get_noprefix_use()
-{
-	case $noprefix_use in
-	"yes" )
-		noprefix_use_str="";
-		;;
-	"no" )
-		if [ $subsystem != "cpuset" ]; then
-			return -1
-		fi
-		noprefix_use_str="noprefix";
-		;;
-	 *  )
-		return -1
-		;;
-	esac
-}
-
 get_release_agent_para()
 {
 	case $release_agent_para in
@@ -552,13 +534,6 @@ mount_cgroup ()
 	if [ "$subsystem" != "" ]; then
 		PARAMETER_O="$subsystem"
 	fi
-	if [ "$noprefix_use_str" != "" ]; then
-		if [ "$PARAMETER_O" != "" ]; then
-			PARAMETER_O="$PARAMETER_O"",""$noprefix_use_str"
-		else
-			PARAMETER_O="$noprefix_use_str"
-		fi
-	fi
 	if [ "$release_agent_para_str" != "" ]; then
 		if [ "$PARAMETER_O" != "" ]; then
 			PARAMETER_O="$PARAMETER_O"",release_agent=""$release_agent_para_str"
@@ -590,8 +565,6 @@ check_para()
 	ret1=$?
 	get_remount_use;
 	ret2=$?
-	get_noprefix_use;
-	ret3=$?
 	get_release_agent_para;
 	ret4=$?
 	get_notify_on_release;
@@ -599,7 +572,7 @@ check_para()
 	get_release_agent;
 	ret6=$?
 
-	if [ $ret1 -ne 0 ] || [ $ret2 -ne 0 ] || [ $ret3 -ne 0 ] || [ $ret4 -ne 0 ] || [ $ret5 -ne 0 ] || [ $ret6 -ne 0 ]
+	if [ $ret1 -ne 0 ] || [ $ret2 -ne 0 ] || [ $ret4 -ne 0 ] || [ $ret5 -ne 0 ] || [ $ret6 -ne 0 ]
 	then
 		echo "ERROR: Wrong input parameters..Exiting test"
 		return -1

@@ -24,16 +24,14 @@
 
 subsystem=$1
 remount_use=$2
-noprefix_use=$3
-release_agent_para=$4
-subgroup_exist=$5
-attach_operation=$6
-remove_operation=$7
-notify_on_release=$8
-release_agent_echo=$9
+release_agent_para=$3
+subgroup_exist=$4
+attach_operation=$5
+remove_operation=$6
+notify_on_release=$7
+release_agent_echo=$8
 
 remount_use_str="";
-noprefix_use_str="";
 release_agent_para_str="";
 notify_on_release_str="";
 release_agent_str="";
@@ -51,7 +49,7 @@ no_debug=0
 usage()
 {
 	echo "usage of cgroup_fj_function.sh: "
-	echo "  ./cgroup_fj_function.sh -subsystem -remount_use -noprefix_use -release_agent_para"
+	echo "  ./cgroup_fj_function.sh -subsystem -remount_use -release_agent_para"
 	echo "                          -subgroup_exist -attach_operation -remove_operation"
 	echo "                          -notify_on_release -release_agent_echo"
 	echo "    subsystem's usable number"
@@ -73,9 +71,6 @@ usage()
 	echo "    remount_use's usable number"
 	echo "      yes: do not use remount in "-o"'s parameter"
 	echo "      no: use it"
-	echo "    noprefix_use's usable number"
-	echo "      yes: do not use noprefix in "-o"'s parameter"
-	echo "      no: use it. only cpuset available"
 	echo "    release_agent_para's usable number"
 	echo "      1: don't use release_agent_para= in "-o"'s parameter"
 	echo "      2: empty after "=""
@@ -117,8 +112,8 @@ usage()
 	echo "      5: command in other directory"
 	echo "      6: nonexistent command"
 	echo "      7: no-permission command"
-	echo "example: ./cgroup_fj_function.sh debug yes yes 1 yes 1 1 1 1"
-	echo "  will use "debug" to test, will not use option "remount","noprefix","release_agent""
+	echo "example: ./cgroup_fj_function.sh debug yes 1 yes 1 1 1 1"
+	echo "  will use "debug" to test, will not use option "remount","release_agent""
 	echo "  in in "-o"'s parameter, will create some subgroup, will not attach/remove any process"
 	echo "  will echo 0 to notify_on_release and will not echo anything to release_agent"
 }
@@ -130,7 +125,7 @@ export TMPFILE=$TESTROOT/tmp_tasks
 . $TESTROOT/cgroup_fj_utility.sh
 
 ##########################  main   #######################
-if [ "$#" -ne "9" ]; then
+if [ "$#" -ne "8" ]; then
 	echo "ERROR: Wrong input parameters... Exiting test";
 	usage;
 	exit -1;
@@ -153,13 +148,8 @@ mkdir_subgroup;
 if [ "$subsystem" == "cpuset" ]; then
 	exist=`grep -w cpuset /proc/cgroups | cut -f1`;
 	if [ "$exist" != "" ]; then
-		if [ "$noprefix_use" == "no" ]; then
-			do_echo 1 1 `cat $mount_point/cpus` $mount_point/ltp_subgroup_1/cpus;
-			do_echo 1 1 `cat $mount_point/mems` $mount_point/ltp_subgroup_1/mems;
-		else
-			do_echo 1 1 `cat $mount_point/cpuset.cpus` $mount_point/ltp_subgroup_1/cpuset.cpus;
-			do_echo 1 1 `cat $mount_point/cpuset.mems` $mount_point/ltp_subgroup_1/cpuset.mems;
-		fi
+		do_echo 1 1 `cat $mount_point/cpuset.cpus` $mount_point/ltp_subgroup_1/cpuset.cpus;
+		do_echo 1 1 `cat $mount_point/cpuset.mems` $mount_point/ltp_subgroup_1/cpuset.mems;
 	fi
 fi
 
