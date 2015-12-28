@@ -110,7 +110,7 @@ out:
  * oom - allocates memory according to specified testcase and checks
  *       desired outcome (e.g. child killed, operation failed with ENOMEM)
  * @testcase: selects how child allocates memory
- *            valid choices are: OVERCOMMIT, NORMAL, MLOCK and KSM
+ *            valid choices are: NORMAL, MLOCK and KSM
  * @lite: if non-zero, child makes only single TESTMEM+MB allocation
  *        if zero, child keeps allocating memory until it gets killed
  *        or some operation fails

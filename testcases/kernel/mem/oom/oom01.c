@@ -58,12 +58,12 @@ int main(int argc, char *argv[])
 
 		/* we expect mmap to fail before OOM is hit */
 		set_sys_tune("overcommit_memory", 2, 1);
-		oom(OVERCOMMIT, 0, ENOMEM, 0);
+		oom(NORMAL, 0, ENOMEM, 0);
 
 		/* with overcommit_memory set to 0 or 1 there's no
 		 * guarantee that mmap fails before OOM */
 		set_sys_tune("overcommit_memory", 0, 1);
-		oom(OVERCOMMIT, 0, ENOMEM, 1);
+		oom(NORMAL, 0, ENOMEM, 1);
 
 		set_sys_tune("overcommit_memory", 1, 1);
 		testoom(0, 0, ENOMEM, 1);

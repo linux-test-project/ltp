@@ -32,10 +32,9 @@ static inline void clean_node(unsigned long *array)
 
 #define LENGTH			(3UL<<30)
 #define TESTMEM			(1UL<<30)
-#define OVERCOMMIT		1
-#define NORMAL			2
-#define MLOCK			3
-#define KSM			4
+#define NORMAL			1
+#define MLOCK			2
+#define KSM			3
 
 long overcommit;
 void oom(int testcase, int lite, int retcode, int allow_sigkill);
