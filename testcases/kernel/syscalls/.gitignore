@@ -624,9 +624,11 @@
 /open/open12
 /open/open12_child
 /open/open13
+/open/open14
 /openat/openat01
 /openat/openat02
 /openat/openat02_child
+/openat/openat03
 /pathconf/pathconf01
 /pause/pause01
 /pause/pause02
