@@ -781,6 +781,8 @@ pread03_64 pread03_64
 
 preadv01 preadv01
 preadv01_64 preadv01_64
+preadv02 preadv02
+preadv02_64 preadv02_64
 
 profil01 profil01
 
