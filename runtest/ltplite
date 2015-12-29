@@ -610,6 +610,7 @@ pwrite02_64 pwrite02_64
 pwrite04_64 pwrite04_64
 
 pwritev01 pwritev01
+pwritev02 pwritev02
 
 read01 read01
 read02 read02
