@@ -24,7 +24,7 @@
 #if !defined(HAVE_PREADV)
 int preadv(int fd, const struct iovec *iov, int iovcnt, off_t offset)
 {
-	return ltp_syscall(__NR_preadv, fd, iov, iovcnt, offset);
+	return tst_syscall(__NR_preadv, fd, iov, iovcnt, offset);
 }
 #endif
 
