@@ -23,7 +23,7 @@ wflag="-Wold-style-definition"
 AC_MSG_CHECKING([if $CC supports $wflag])
 
 backup_cflags="$CFLAGS"
-CFLAGS+=" $wflag"
+CFLAGS="$CFLAGS $wflag"
 
 AC_LINK_IFELSE(
 	[AC_LANG_PROGRAM([])],
