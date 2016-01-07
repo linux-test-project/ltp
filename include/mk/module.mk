@@ -23,15 +23,11 @@
 $(if $(REQ_VERSION_MAJOR),,$(error You must define REQ_VERSION_MAJOR))
 $(if $(REQ_VERSION_PATCH),,$(error You must define REQ_VERSION_MINOR))
 
-ifneq ($(filter install clean,$(MAKECMDGOALS)),)
-SKIP := 2
-endif
-
 ifeq ($(WITH_MODULES),no)
-SKIP := 2
+SKIP := 1
 else
 ifeq ($(LINUX_VERSION_MAJOR)$(LINUX_VERSION_PATCH),)
-SKIP := 2
+SKIP := 1
 else
 SKIP ?= $(shell \
 	[ "$(LINUX_VERSION_MAJOR)" -gt "$(REQ_VERSION_MAJOR)" ] || \
@@ -42,7 +38,11 @@ endif
 
 ifneq ($(SKIP),0)
 MAKE_TARGETS := $(filter-out %.ko, $(MAKE_TARGETS))
-MAKE_TARGETS += $(if $(filter 2,$(SKIP)),$(wildcard *.ko),)
+endif
+
+ifneq ($(filter install clean,$(MAKECMDGOALS)),)
+MAKE_TARGETS := $(filter-out %.ko, $(MAKE_TARGETS))
+MAKE_TARGETS += $(wildcard *.ko)
 endif
 
 CLEAN_TARGETS += .dep_modules
