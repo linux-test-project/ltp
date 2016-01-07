@@ -116,6 +116,49 @@ int ident_ttype(char *tstype)
 		return -1;
 }
 
+void apicmd_brk(int argc, char *argv[])
+{
+	int trestype;
+	char *file_name;
+
+	if (argc < 5) {
+		fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
+			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK "
+			"and TCONF.\n"
+			"\tFNAME  - Print contents of this file after the message\n"
+			"\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
+			"\tSTRING - Message explaining the test result\n",
+			cmd_name);
+		exit(1);
+	}
+	trestype = ident_ttype((argv++)[0]);
+	file_name = (argv++)[0];
+	tst_cat_file(file_name);
+	argv++;
+	tst_brkm(trestype, NULL, "%s", *argv);
+
+}
+
+void apicmd_res(int argc, char *argv[])
+{
+	int trestype;
+	char *file_name;
+
+	if (argc < 4) {
+		fprintf(stderr, "Usage: %s TTYPE FNAME STRING\n"
+			"\tTTYPE  - Test Result Type; one of TFAIL, TBROK "
+			"and  TCONF.\n"
+			"\tFNAME  - Print contents of this file after the message\n"
+			"\tSTRING - Message explaining the test result\n",
+			cmd_name);
+		exit(1);
+	}
+	trestype = ident_ttype((argv++)[0]);
+	file_name = (argv++)[0];
+	tst_cat_file(file_name);
+	tst_resm(trestype, "%s", *argv);
+}
+
 void apicmd_brkm(int argc, char *argv[])
 {
 	int trestype;
@@ -383,7 +426,11 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if (strcmp(cmd_name, "tst_brkm") == 0) {
+	if (strcmp(cmd_name, "tst_brk") == 0) {
+		apicmd_brk(argc, argv);
+	} else if (strcmp(cmd_name, "tst_res") == 0) {
+		apicmd_res(argc, argv);
+	} else if (strcmp(cmd_name, "tst_brkm") == 0) {
 		apicmd_brkm(argc, argv);
 	} else if (strcmp(cmd_name, "tst_resm") == 0) {
 		apicmd_resm(argc, argv);

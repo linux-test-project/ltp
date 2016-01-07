@@ -112,7 +112,6 @@ static pthread_mutex_t tmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 static void check_env(void);
 static void tst_condense(int tnum, int ttype, const char *tmesg);
 static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg);
-static void cat_file(const char *filename);
 
 /*
  * Define some static/global variables.
@@ -446,7 +445,7 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 	 * end of last printed result.
 	 */
 	if (File != NULL)
-		cat_file(File);
+		tst_cat_file(File);
 
 	File = NULL;
 }
@@ -589,8 +588,9 @@ int tst_environ(void)
  */
 static int tst_brk_entered = 0;
 
-void tst_brk__(const char *file, const int lineno, int ttype, const char *fname,
-	void (*func)(void), const char *arg_fmt, ...)
+static void tst_brk__(const char *file, const int lineno, int ttype,
+                      const char *fname, void (*func)(void),
+                      const char *arg_fmt, ...)
 {
 	pthread_mutex_lock(&tmutex);
 
@@ -742,7 +742,7 @@ void tst_require_root(void)
 /*
  * cat_file() - Print the contents of a file to standard out.
  */
-static void cat_file(const char *filename)
+void tst_cat_file(const char *filename)
 {
 	FILE *fp;
 	int b_read, b_written;
@@ -752,6 +752,13 @@ static void cat_file(const char *filename)
 	printf("IN cat_file\n");
 	fflush(stdout);
 #endif
+
+	/*
+	 * Unless T_out has already been set by tst_environ(), make tst_res()
+	 * output go to standard output.
+	 */
+	if (T_out == NULL)
+		T_out = stdout;
 
 	if ((fp = fopen(filename, "r")) == NULL) {
 		sprintf(Warn_mesg,
