@@ -81,7 +81,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <sys/kdaemon.h>
 
 #include "test.h"
 #include "linux_syscall_numbers.h"
