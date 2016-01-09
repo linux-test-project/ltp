@@ -274,9 +274,9 @@ int main(int argc, char *argv[])
 	/* Test mount(). */
 	{
 		static char buf[4096];
-		char *dev_ram_path = canonicalize_file_name("/dev/ram0");
+		char *dev_ram_path = realpath("/dev/ram0", NULL);
 		if (!dev_ram_path)
-			dev_ram_path = canonicalize_file_name("/dev/ram");
+			dev_ram_path = realpath("/dev/ram", NULL);
 		if (!dev_ram_path) {
 			dev_ram_path = "/dev/ram0";
 			mknod(dev_ram_path, S_IFBLK, MKDEV(1, 0));
