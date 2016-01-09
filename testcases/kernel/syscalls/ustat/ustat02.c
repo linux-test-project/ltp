@@ -21,8 +21,8 @@
  */
 
 #include <unistd.h>
-#include <ustat.h>
 #include <errno.h>
+#include <sys/ustat.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "test.h"
