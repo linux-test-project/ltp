@@ -31,7 +31,7 @@ CPPFLAGS		+= -Wno-error
 
 CPPFLAGS		+= -I$(abs_srcdir)
 
-LDLIBS			+= -lm $(LEXLIB)
+LDLIBS			+= -lm
 
 LFLAGS			+= -l
 
