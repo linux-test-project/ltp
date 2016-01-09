@@ -41,6 +41,7 @@
 #include <mqueue.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 #include "../utils/include_j_h.h"
 

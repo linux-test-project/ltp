@@ -72,6 +72,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <limits.h>
+#include <fcntl.h>
 #include <sys/file.h>
 #include <sys/ipc.h>
 #include <sys/mman.h>
