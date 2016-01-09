@@ -56,7 +56,7 @@ int TST_TOTAL = 2;		/* Total number of test cases. */
 /**************/
 
 key_t key;
-sigset_t sigset;
+sigset_t set;
 
 #define  SIZE  16*1024
 
@@ -71,9 +71,9 @@ int main(void)
 
 	key = (key_t) getpid();
 
-	sigemptyset(&sigset);
-	sigaddset(&sigset, SIGUSR1);
-	sigprocmask(SIG_BLOCK, &sigset, NULL);
+	sigemptyset(&set);
+	sigaddset(&set, SIGUSR1);
+	sigprocmask(SIG_BLOCK, &set, NULL);
 
 	pid = fork();
 	switch (pid) {
@@ -148,7 +148,7 @@ int child(void)
 	char *cp;
 	int sig;
 
-	sigwait(&sigset, &sig);
+	sigwait(&set, &sig);
 	chld_pid = getpid();
 /*--------------------------------------------------------*/
 
