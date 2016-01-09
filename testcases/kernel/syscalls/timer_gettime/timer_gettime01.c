@@ -55,7 +55,7 @@ int main(int ac, char **av)
 
 	setup();
 
-	ev.sigev_value = (sigval_t) 0;
+	ev.sigev_value = (union sigval) 0;
 	ev.sigev_signo = SIGALRM;
 	ev.sigev_notify = SIGEV_SIGNAL;
 	TEST(ltp_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer));

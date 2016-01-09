@@ -142,7 +142,7 @@ void setup_test(int option)
 {
 	switch (option) {
 	case 0:
-		evp.sigev_value = (sigval_t) 0;
+		evp.sigev_value = (union sigval) 0;
 		evp.sigev_signo = SIGALRM;
 		evp.sigev_notify = SIGEV_SIGNAL;
 		evp_ptr = &evp;
@@ -151,7 +151,7 @@ void setup_test(int option)
 		evp_ptr = NULL;
 		break;
 	case 2:
-		evp.sigev_value = (sigval_t) 0;
+		evp.sigev_value = (union sigval) 0;
 		evp.sigev_signo = SIGALRM;	/* any will do */
 		evp.sigev_notify = SIGEV_NONE;
 		evp_ptr = &evp;
