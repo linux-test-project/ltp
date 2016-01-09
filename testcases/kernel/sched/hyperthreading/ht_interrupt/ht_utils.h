@@ -3,6 +3,7 @@
 #define _HTUTILS_H_
 
 #include <stdlib.h>
+#include <sys/types.h>
 
 int is_cmdline_para(const char *para);
 
