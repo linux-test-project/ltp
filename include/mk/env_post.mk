@@ -25,7 +25,7 @@ ENV_PRE_LOADED			?= $(error You must load env_pre.mk before including this file)
 include $(top_srcdir)/include/mk/functions.mk
 
 ifndef ENV_POST_LOADED
-ENV_PRE_LOADED = 1
+ENV_POST_LOADED = 1
 
 # Default source search path. Modify as necessary, but I would call that
 # poor software design if you need more than one search directory, and
