@@ -35,7 +35,7 @@ setup()
 
 	ROD_SILENT mkdir -p testdir
 
-	ROD_SILENT ln -s ../testfile testdir/testfile
+	ROD_SILENT ln -s ../testfile testdir/testsymlink
 
 	# Display values are in units of the first available SIZE
 	# from --block-size, and the DU_BLOCK_SIZE, BLOCK_SIZE and
@@ -85,11 +85,11 @@ block_size=512
 # So we use the approximate value to check.
 check1="10[2-3][0-9][0-9][[:space:]]\."
 check2="10[2-3][0-9][0-9][[:space:]]testfile"
-check3="0[[:space:]]\.\/testdir\/testfile"
+check3="[0-4][[:space:]]\.\/testdir\/testsymlink"
 check5="20[4-5][0-9][0-9][[:space:]]\."
 check7="10[4-5][0-9][0-9]\{4\}[[:space:]]\."
 check9="10[2-3][0-9][0-9][[:space:]]total"
-check11="10[2-3][0-9][0-9][[:space:]]testdir\/testfile"
+check11="10[2-3][0-9][0-9][[:space:]]testdir\/testsymlink"
 check14="1[0,1]M[[:space:]]\."
 check16="10[2-3][0-9][0-9][[:space:]]testdir\/"
 check20="11M[[:space:]]\."
@@ -105,8 +105,8 @@ du_test "du -b" ${check7}
 du_test "du --bytes" ${check7}
 du_test "du -c" ${check9}
 du_test "du --total" ${check9}
-du_test "du -D testdir/testfile" ${check11}
-du_test "du --dereference-args testdir/testfile" ${check11}
+du_test "du -D testdir/testsymlink" ${check11}
+du_test "du --dereference-args testdir/testsymlink" ${check11}
 du_test "du --max-depth=1" ${check1}
 du_test "du --human-readable" ${check14}
 du_test "du -k" ${check1}
