@@ -30,6 +30,7 @@
 
 #define VIRTUAL_DEVICE_REGEX "*virtual-device-ltp*"
 
+static int uinput_loaded;
 static int check_device(void);
 
 static int try_open_device(void)
@@ -81,25 +82,89 @@ int open_device(void)
 		usleep(10000);
 	}
 
-	tst_brkm(TBROK, NULL, "unable to find the input device");
+	tst_brkm(TBROK, NULL, "Unable to find the input device");
+}
+
+static int try_load_uinput(void)
+{
+	const char *argv[] = {"modprobe", "uinput", NULL};
+	int ret;
+
+	tst_resm(TINFO, "Trying to load uinput kernel module");
+
+	ret = tst_run_cmd(NULL, argv, NULL, NULL, 1);
+	if (ret) {
+		tst_resm(TINFO, "Failed to load the uinput module");
+		return 0;
+	}
+
+	return 1;
+}
+
+static void unload_uinput(void)
+{
+	const char *argv[] = {"modprobe", "-r", "uinput", NULL};
+	int ret;
+
+	tst_resm(TINFO, "Unloading uinput kernel module");
+
+	ret = tst_run_cmd(NULL, argv, NULL, NULL, 1);
+	if (ret)
+		tst_resm(TWARN, "Failed to unload uinput module");
+}
+
+static const char *uinput_paths[] = {
+	"/dev/input/uinput",
+	"/dev/uinput",
+};
+
+static int try_open_uinput(void)
+{
+	unsigned int i;
+	int fd;
+
+	for (i = 0; i < ARRAY_SIZE(uinput_paths); i++) {
+		fd = open(uinput_paths[i], O_WRONLY | O_NONBLOCK);
+
+		if (fd > 0) {
+			tst_resm(TINFO, "Found uinput dev at %s",
+			         uinput_paths[i]);
+			return fd;
+		}
+
+		if (fd < 0 && errno != ENOENT) {
+			tst_brkm(TBROK | TERRNO, NULL,
+			         "open(%s)", uinput_paths[i]);
+		}
+	}
+
+	return -1;
 }
 
 int open_uinput(void)
 {
 	int fd;
+	int retries = 10;
 
-	fd = open("/dev/input/uinput", O_WRONLY | O_NONBLOCK);
+	fd = try_open_uinput();
+	if (fd > 0)
+		return fd;
 
-	if (fd < 0 && errno == ENOENT)
-		fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
+	if (try_load_uinput()) {
+		while (retries--) {
+			fd = try_open_uinput();
+			if (fd > 0) {
+				uinput_loaded = 1;
+				return fd;
+			}
+			tst_resm(TINFO, "Uinput dev not found, retrying...");
+			usleep(10000);
+		}
 
-	if (fd < 0 && errno == ENOENT)
-		tst_brkm(TCONF, NULL, "unable to find and open uinput");
+		unload_uinput();
+	}
 
-	if (fd < 0)
-		tst_brkm(TBROK | TERRNO, NULL, "open failed");
-
-	return fd;
+	tst_brkm(TCONF, NULL, "Unable to find and open uinput");
 }
 
 void send_event(int fd, int event, int code, int value)
@@ -143,7 +208,7 @@ void create_device(int fd)
 	}
 
 	destroy_device(fd);
-	tst_brkm(TBROK, NULL, "failed to create device");
+	tst_brkm(TBROK, NULL, "Failed to create device");
 }
 
 void setup_mouse_events(int fd)
@@ -159,6 +224,9 @@ void destroy_device(int fd)
 {
 	SAFE_IOCTL(NULL, fd, UI_DEV_DESTROY, NULL);
 	SAFE_CLOSE(NULL, fd);
+
+	if (uinput_loaded)
+		unload_uinput();
 }
 
 int no_events_queued(int fd)
