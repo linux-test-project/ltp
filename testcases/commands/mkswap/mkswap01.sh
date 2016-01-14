@@ -48,9 +48,9 @@ cleanup()
 
 mkswap_verify()
 {
-	local mkswap_op=$1
-	local op_arg=$2
-	local swapfile=$3
+	local mkswap_op="$1"
+	local op_arg="$2"
+	local swapfile="$3"
 
 	local before=`awk '/SwapTotal/ {print $2}' /proc/meminfo`
 
@@ -109,10 +109,10 @@ greater than real size."
 
 mkswap_test()
 {
-	local mkswap_op=$1
-	local op_arg=$2
-	local device=$3
-	local size=$4
+	local mkswap_op="$1"
+	local op_arg="$2"
+	local device="$3"
+	local size="$4"
 
 	local mkswap_cmd="mkswap $mkswap_op $op_arg $TST_DEVICE $size"
 
