@@ -32,42 +32,56 @@
 
 static int check_device(void);
 
-int open_device(void)
+static int try_open_device(void)
 {
-	DIR *d;
 	char path[256];
 	char name[256];
-	struct dirent *dp;
-	int fd = -1;
-	int ret = 0;
+	int ret, fd = -1;
+	unsigned int i;
 
-	d = opendir("/dev/input");
+	for (i = 0; i < 100; i++) {
+		snprintf(path, sizeof(path), "/dev/input/event%i", i);
 
-	while ((dp = readdir(d))) {
-		if (fnmatch("event[0-9]*", dp->d_name, 0))
-			continue;
-		snprintf(path, sizeof(path), "/dev/input/%s", dp->d_name);
 		fd = open(path, O_RDONLY);
+
+		if (fd < 0 && errno == ENOENT)
+			continue;
+
 		if (fd < 0) {
-			tst_resm(TINFO, "failed to open %s", path);
+			tst_resm(TINFO | TERRNO, "failed to open %s", path);
 			break;
 		}
-		ret = ioctl(fd, EVIOCGNAME(256), name);
+
+		ret = ioctl(fd, EVIOCGNAME(sizeof(name)), name);
 		if (ret < 0) {
 			tst_resm(TINFO | TERRNO,
 				"ioctl(%s, EVIOCGNAME(256), ...) failed",
-				dp->d_name);
+				path);
 			break;
 		}
+
 		if (strcmp(name, VIRTUAL_DEVICE) == 0)
-			break;
+			return fd;
+		close(fd);
 	}
 
-	closedir(d);
-	if (fd > 0 && ret >= 0)
-		return fd;
-	tst_brkm(TBROK, NULL, "unable to find the right event device");
 	return -1;
+}
+
+int open_device(void)
+{
+	int fd;
+	int retries = 2;
+
+	while (retries--) {
+		fd = try_open_device();
+		if (fd > 0)
+			return fd;
+		tst_resm(TINFO, "Device not found, retrying...");
+		usleep(10000);
+	}
+
+	tst_brkm(TBROK, NULL, "unable to find the input device");
 }
 
 int open_uinput(void)
