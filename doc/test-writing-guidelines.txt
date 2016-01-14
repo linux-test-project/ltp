@@ -1206,6 +1206,20 @@ There is one more function called 'tst_check_cmds()' that gets unspecified
 number of parameters and asserts that each parameter is a name of an
 executable in '$PATH' and exits the test with 'TCONF' on first missing.
 
+tst_sleep
++++++++++
+
+Albeit there is a sleep command available basically everywhere not all
+implementations can support sleeping for less than one second. And most of the
+time sleeping for a second is too much. Therefore LTP includes 'tst_sleep'
+that can sleep for defined amount of seconds, miliseconds or microseconds.
+
+[source,sh]
+-------------------------------------------------------------------------------
+# sleep for 100 miliseconds
+tst_sleep 100ms
+-------------------------------------------------------------------------------
+
 ROD and ROD_SILENT
 ++++++++++++++++++
 

@@ -24,8 +24,8 @@ top_srcdir		?= ../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= *.sh
+INSTALL_TARGETS		:= *.sh tst_sleep
 
-MAKE_TARGETS		:=
+MAKE_TARGETS		:= tst_sleep
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
