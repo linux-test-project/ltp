@@ -201,15 +201,16 @@ netns_ns_exec_setup()
 		tst_brkm TBROK "unable to create veth pair devices"
 
 	$NS_EXEC $NS_HANDLE0 $NS_TYPE ns_ifmove veth1 $NS_HANDLE1
-	if [ $? -eq 0 ]; then
+	ret=$?
+	if [ $ret -eq 0 ]; then
 		return;
 	fi
 
-	if [ $? -eq 32 ]; then
+	if [ $ret -eq 32 ]; then
 		tst_brkm TCONF "IFLA_NET_NS_PID not supported"
-	else
-		tst_brkm TBROK "unable to add device veth1 to the separate network namespace"
 	fi
+
+	tst_brkm TBROK "unable to add device veth1 to the separate network namespace"
 }
 
 ##
