@@ -46,11 +46,33 @@ cleanup()
 	tst_rmdir
 }
 
+wait_for_file()
+{
+	local path="$1"
+	local retries=10
+
+	if [ -z "$path" ]; then
+		return
+	fi
+
+	while [ $retries -gt 0 ]; do
+		if [ -e "$path" ]; then
+			return
+		fi
+		tst_resm TINFO "Waiting for $path to appear"
+		retries=$((retries - 1))
+		tst_sleep 10ms
+	done
+
+	tst_resm TWARN "The file $path haven't appeared"
+}
+
 mkswap_verify()
 {
 	local mkswap_op="$1"
 	local op_arg="$2"
 	local swapfile="$3"
+	local dev_file="$5"
 
 	local before=`awk '/SwapTotal/ {print $2}' /proc/meminfo`
 
@@ -62,7 +84,10 @@ mkswap_verify()
 		local pagesize=$PAGE_SIZE
 	fi
 
+	wait_for_file "$dev_file"
+
 	swapon $swapfile 2>/dev/null
+
 	if [ $? -ne 0 ]; then
 		tst_resm TINFO "Can not do swapon on $swapfile."
 		if [ $pagesize -ne $PAGE_SIZE ]; then
@@ -113,6 +138,7 @@ mkswap_test()
 	local op_arg="$2"
 	local device="$3"
 	local size="$4"
+	local dev_file="$5"
 
 	local mkswap_cmd="mkswap $mkswap_op $op_arg $TST_DEVICE $size"
 
@@ -130,7 +156,7 @@ mkswap_test()
 	fi
 
 	if [ -n "$device" ]; then
-		mkswap_verify "$mkswap_op" "$op_arg" "$device" "$size"
+		mkswap_verify "$mkswap_op" "$op_arg" "$device" "$size" "$dev_file"
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL "'${mkswap_cmd}' failed, not expected."
 			return
@@ -147,9 +173,9 @@ mkswap_test "" "" "$TST_DEVICE" "$((DEVICE_SIZE-10000))"
 mkswap_test "-f" "" "$TST_DEVICE" "$((DEVICE_SIZE+10000))"
 mkswap_test "-c" "" "$TST_DEVICE"
 mkswap_test "-p" "2048" "$TST_DEVICE"
-mkswap_test "-L" "ltp_testswap" "-L ltp_testswap"
+mkswap_test "-L" "ltp_testswap" "-L ltp_testswap" "" "/dev/disk/by-label/ltp_testswap"
 mkswap_test "-v1" "" "$TST_DEVICE"
-mkswap_test "-U" "$UUID" "-U $UUID"
+mkswap_test "-U" "$UUID" "-U $UUID" "" "/dev/disk/by-uuid/$UUID"
 mkswap_test "-V"
 mkswap_test "-h"
 
