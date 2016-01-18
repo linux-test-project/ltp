@@ -72,7 +72,7 @@ static int try_open_device(void)
 int open_device(void)
 {
 	int fd;
-	int retries = 2;
+	int retries = 10;
 
 	while (retries--) {
 		fd = try_open_device();
