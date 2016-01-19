@@ -15,8 +15,8 @@
 ## for more details.                                                          ##
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
+## along with this program;  if not, write to the Free Software Foundation,   ##
+## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           ##
 ##                                                                            ##
 ## Author: Shi Weihua <shiwh@cn.fujitsu.com>                                  ##
 ##                                                                            ##
@@ -425,26 +425,18 @@ setup()
 		mount_cgroup
 	fi
 
-	if [ -e $TESTROOT/cgroup_fj_release_agent ]; then
-		cp -f $TESTROOT/cgroup_fj_release_agent /sbin
+	if [ -e $LTPROOT/testcases/bin/cgroup_fj_release_agent ]; then
+		cp -f $LTPROOT/testcases/bin/cgroup_fj_release_agent /sbin
 		chmod a+x /sbin/cgroup_fj_release_agent
-		cp -f $TESTROOT/cgroup_fj_release_agent /root
+		cp -f $LTPROOT/testcases/bin/cgroup_fj_release_agent /root
 		chmod a+x /root/cgroup_fj_release_agent
 	else
-		echo "ERROR: $TESTROOT/cgroup_fj_release_agent doesn't exist... Exiting test"
+		echo "ERROR: $LTPROOT/testcases/bin/cgroup_fj_release_agent doesn't exist... Exiting test"
 		exit -1
 	fi
 
 	if [ $release_agent_para -eq 8 ] || [ $release_agent_echo -eq 7 ]; then
 		chmod a-x /sbin/cgroup_fj_release_agent
-	fi
-
-	if [ -e $TESTROOT/cgroup_fj_proc ]
-	then
-		chmod a+x $TESTROOT/cgroup_fj_proc
-	else
-		echo "ERROR: $TESTROOT/cgroup_fj_proc doesn't exist... Exiting test"
-		exit -1;
 	fi
 }
 
