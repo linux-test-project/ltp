@@ -21,7 +21,7 @@
 
 #include <linux/module.h>
 #include <linux/device.h>
-#include <asm-generic/uaccess.h>
+#include <linux/uaccess.h>
 #include "ltp_uaccess.h"
 
 MODULE_AUTHOR("Alexey Kodanev <alexey.kodanev@oracle.com>");
