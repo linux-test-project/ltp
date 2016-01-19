@@ -236,7 +236,7 @@ tst_acquire_device()
 		return
 	fi
 
-	ROD_SILENT dd if=/dev/zero of=test_dev.img bs=1024 count=20480
+	ROD_SILENT dd if=/dev/zero of=test_dev.img bs=1024 count=102400
 
 	TST_DEVICE=$(losetup -f)
 	if [ $? -ne 0 ]; then
