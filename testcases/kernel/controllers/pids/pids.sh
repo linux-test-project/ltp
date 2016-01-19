@@ -37,7 +37,7 @@ mounted=1
 
 cleanup()
 {
-	killall -9 pids_task2 >/dev/null
+	killall -9 pids_task2 >/dev/null 2>&1
 
 	tst_resm TINFO "removing created directories"
 	rmdir $testpath
@@ -128,11 +128,11 @@ case2()
 
 case3()
 {
-	tst_resm TINFO "limit the number of avalaible pid to $max"
-	ROD echo $max > $testpath/pids.max
+	lim=$((max + 2))
+	tst_resm TINFO "limit the number of avalaible pid to $lim"
+	ROD echo $lim > $testpath/pids.max
 
-	tmp=$((max - 2))
-	start_pids_tasks2 $tmp
+	start_pids_tasks2 $max
 
 	pids_task1 "$testpath/tasks"
 	ret=$?

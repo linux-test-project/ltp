@@ -377,8 +377,8 @@ pids_2_2 pids.sh 2 2
 pids_2_10 pids.sh 2 10
 pids_2_50 pids.sh 2 50
 pids_2_100 pids.sh 2 100
-pids_3_1 pids.sh 3 1
-pids_3_2 pids.sh 3 2
+pids_3_2 pids.sh 3 0
+pids_3_2 pids.sh 3 1
 pids_3_10 pids.sh 3 10
 pids_3_50 pids.sh 3 50
 pids_3_100 pids.sh 3 100
