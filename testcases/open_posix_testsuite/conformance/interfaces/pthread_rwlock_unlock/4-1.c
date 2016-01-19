@@ -32,6 +32,11 @@ int main(void)
 	static pthread_rwlock_t rwlock;
 	int rc;
 
+#ifdef __linux__
+	printf("Unlocking uninitialized rwlock is undefined on Linux\n");
+	return PTS_UNSUPPORTED;
+#endif
+
 	rc = pthread_rwlock_unlock(&rwlock);
 	if (rc != 0) {
 		if (rc == EINVAL) {

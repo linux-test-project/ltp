@@ -57,6 +57,11 @@ int main(void)
 
 	pthread_t un_thread;
 
+#ifdef __linux__
+	printf("Unlocking rwlock in different thread is undefined on Linux\n");
+	return PTS_UNSUPPORTED;
+#endif
+
 	if (pthread_rwlock_init(&rwlock, NULL) != 0) {
 		printf("main: Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
