@@ -15,8 +15,8 @@
 ## for more details.                                                          ##
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
+## along with this program;  if not, write to the Free Software Foundation,   ##
+## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           ##
 ##                                                                            ##
 ## Author: Shi Weihua <shiwh@cn.fujitsu.com>                                  ##
 ##                                                                            ##
@@ -85,10 +85,9 @@ exit_parameter()
 	exit -1;
 }
 
-export TESTROOT=`pwd`
-export TMPFILE=$TESTROOT/tmp_tasks
+export TMPFILE=$TMPDIR/tmp_tasks.$$
 
-. $TESTROOT/cgroup_fj_utility.sh
+. cgroup_fj_utility.sh
 
 pid=0;
 release_agent_para=1;
@@ -154,7 +153,7 @@ esac
 exist_subsystem;
 setup;
 
-$TESTROOT/cgroup_fj_proc &
+cgroup_fj_proc &
 pid=$!
 
 cpus=0
@@ -186,13 +185,13 @@ if [ $mount_times -ne 1 ]; then
 		do_echo 1 1 $pid $mount_point/ltp_subgroup_1/tasks
 		if [ "$subsystem" == "ns" ]; then
 			do_kill 1 1 9 $pid
-			$TESTROOT/cgroup_fj_proc &
+			cgroup_fj_proc &
 			pid=$!
 		else
 			do_echo 1 1 $pid $mount_point/tasks
 		fi
 		setup;
-		$TESTROOT/cgroup_fj_proc &
+		cgroup_fj_proc &
 		pid=$!
 		if [ $mounted -ne 1 ]; then
 			mount_cgroup;
@@ -240,7 +239,7 @@ else
 	done
 	echo "...mkdired $count times"
 
-	sleep 1
+	tst_sleep 100ms
 
 	case $attach_operation in
 	"1" )
@@ -309,9 +308,9 @@ fi
 
 do_rmdir 0 1 $mount_point/ltp_subgroup_*
 
-sleep 1
+tst_sleep 100ms
 
 cleanup;
 do_kill 1 1 9 $pid
-sleep 1
+tst_sleep 100ms
 exit 0;

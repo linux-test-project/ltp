@@ -50,19 +50,18 @@ exit_parameter()
 	exit -1;
 }
 
-export TESTROOT=`pwd`
-export TMPFILE=$TESTROOT/tmp_tasks
+export TMPFILE=$TMPDIR/tmp_tasks.$$
 
-. $TESTROOT/cgroup_fj_utility.sh
+. cgroup_fj_utility.sh
 
 case1()
 {
 	do_mkdir 1 1 $mount_point/ltp_subgroup_2
 
 	do_echo 1 0 $pid $mount_point/ltp_subgroup_1/tasks
-	sleep 1
+	tst_sleep 100ms
 	do_echo 1 0 $pid $mount_point/ltp_subgroup_2/tasks
-	sleep 1
+	tst_sleep 100ms
 	do_echo 1 1 $pid $mount_point/tasks
 }
 
@@ -70,9 +69,9 @@ case2()
 {
 	do_mkdir 1 1 $mount_point/ltp_subgroup_2
 
-	$TESTROOT/cgroup_fj_proc &
+	cgroup_fj_proc &
 	pid2=$!
-	sleep 1
+	tst_sleep 100ms
 
 	cat $mount_point/tasks > $TMPFILE
 	nlines=`cat $TMPFILE | wc -l`
@@ -84,7 +83,7 @@ case2()
 		fi
 	done
 
-	sleep 1
+	tst_sleep 100ms
 
 	cat $mount_point/ltp_subgroup_1/tasks > $TMPFILE
 	nlines=`cat $TMPFILE | wc -l`
@@ -96,7 +95,7 @@ case2()
 		fi
 	done
 
-	sleep 1
+	tst_sleep 100ms
 
 	cat $mount_point/ltp_subgroup_2/tasks > $TMPFILE
 	nlines=`cat $TMPFILE | wc -l`
@@ -140,7 +139,7 @@ case5()
 
 	do_mv 0 1 $mount_point/ltp_subgroup_1 $mount_point/ltp_subgroup_2
 
-	sleep 1
+	tst_sleep 100ms
 
 	do_rmdir 0 1 /dev/cgroup2/ltp_subgroup_2
 	do_rmdir 0 1 /dev/cgroup2
@@ -157,11 +156,11 @@ case7()
 {
 	do_echo 0 1 $pid $mount_point/ltp_subgroup_1/tasks
 
-	sleep 1
+	tst_sleep 100ms
 
 	do_rmdir 0 0 $mount_point/ltp_subgroup_1
 
-	sleep 1
+	tst_sleep 100ms
 
 	do_echo 1 1 $pid $mount_point/tasks
 }
@@ -170,7 +169,7 @@ case8()
 {
 	do_mkdir 0 1 $mount_point/ltp_subgroup_1/ltp_subgroup_1_1
 
-	sleep 1
+	tst_sleep 100ms
 
 	do_rmdir 0 0 $mount_point/ltp_subgroup_1
 
@@ -192,7 +191,7 @@ exist_subsystem $subsystem
 
 setup;
 
-$TESTROOT/cgroup_fj_proc &
+cgroup_fj_proc &
 pid=$!
 mkdir_subgroup;
 
@@ -200,5 +199,5 @@ case$caseno
 
 cleanup;
 do_kill 1 1 9 $pid
-sleep 1
+tst_sleep 100ms
 exit 0;

@@ -21,7 +21,6 @@
 ## Author: Shi Weihua <shiwh@cn.fujitsu.com>                                  ##
 ##                                                                            ##
 ################################################################################
-cd $LTPROOT/testcases/bin
 
 cnt=1
 for arg; do
@@ -45,15 +44,10 @@ export CASENO2=0
 
 if [ ! -f /proc/cgroups ]; then
 	tst_brkm TCONF ignored "Kernel does not support for control groups; skipping testcases";
-	exit 0
+	exit 32
 elif [ "x$(id -ru)" != x0 ]; then
 	tst_brkm TCONF ignored "Test must be run as root"
-	exit 0
-fi
-
-if [ ! -x "$TESTROOT/cgroup_fj_proc" ]; then
-	tst_resm TBROK "Test application - cgroup_fj_proc - does not exist or is not executable";
-	exit 1
+	exit 32
 fi
 
 CPUSET=`grep -w cpuset /proc/cgroups | cut -f1`;
@@ -93,7 +87,7 @@ if [ "$SYBSYSCOMPILED" = "" ];then	# Warning and exit if all cgroup subsystem ar
 	echo "CONTROLLERS TESTCASES: WARNING";
 	echo "Kernel does not support for any cgroup subsystem";
 	echo "Skipping all controllers testcases....";
-	exit -2;
+	exit 32;
 fi
 
 CASETYPE=$1

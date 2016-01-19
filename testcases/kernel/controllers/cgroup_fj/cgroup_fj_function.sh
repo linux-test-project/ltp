@@ -15,8 +15,8 @@
 ## for more details.                                                          ##
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
+## along with this program;  if not, write to the Free Software Foundation,   ##
+## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           ##
 ##                                                                            ##
 ## Author: Shi Weihua <shiwh@cn.fujitsu.com>                                  ##
 ##                                                                            ##
@@ -118,11 +118,9 @@ usage()
 	echo "  will echo 0 to notify_on_release and will not echo anything to release_agent"
 }
 
-export TESTROOT=`pwd`
+export TMPFILE=$TMPDIR/tmp_tasks.$$
 
-export TMPFILE=$TESTROOT/tmp_tasks
-
-. $TESTROOT/cgroup_fj_utility.sh
+. cgroup_fj_utility.sh
 
 ##########################  main   #######################
 if [ "$#" -ne "8" ]; then
@@ -138,7 +136,7 @@ if [ $? -ne 0 ]; then
 fi
 setup;
 
-$TESTROOT/cgroup_fj_proc &
+cgroup_fj_proc &
 pid=$!
 
 mkdir_subgroup;
@@ -161,7 +159,7 @@ case $attach_operation in
 	do_echo 1 1 $pid $mount_point/ltp_subgroup_1/tasks;
 	;;
 "3" )
-	$TESTROOT/cgroup_fj_proc &
+	cgroup_fj_proc &
 	pid2=$!
 	cat $mount_point/tasks > $TMPFILE
 	nlines=`cat $TMPFILE | wc -l`
@@ -188,7 +186,7 @@ case $attach_operation in
 	;;
 "4" )
 	do_echo 1 1 $pid $mount_point/ltp_subgroup_1/tasks;
-	sleep 1
+	tst_sleep 100ms
 	do_kill 1 1 10 $pid
 	;;
 esac
@@ -203,9 +201,6 @@ case $notify_on_release in
 	;;
 esac
 
-#if [ $notify_on_release -ne 0 ] && [ $notify_on_release -ne 1 ] && [ $notify_on_release -ne 2 ];then
-#	expected=0
-#fi
 do_echo 1 $expected $notify_on_release_str $mount_point/ltp_subgroup_1/notify_on_release;
 
 # echo release_agent that analysed from parameter
@@ -213,7 +208,7 @@ if [ $release_agent_echo -ne 1 ]; then
 	do_echo 1 1 $release_agent_str $mount_point/release_agent;
 fi
 
-sleep 1
+tst_sleep 100ms
 
 # pid could not be echoed from subgroup if subsystem is ( or include ) ns,
 # so we kill them here
@@ -254,12 +249,12 @@ else
 	esac
 fi
 
-sleep 1
+tst_sleep 100ms
 
 do_rmdir 0 1 $mount_point/ltp_subgroup_*
 
-cleanup;
+cleanup
 do_kill 1 1 9 $pid
 do_kill 1 1 9 $pid2
-sleep 1
+tst_sleep 100ms
 exit 0;
