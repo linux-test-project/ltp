@@ -51,15 +51,7 @@ setup()
 
 cleanup()
 {
-	grep -q ${TST_DEVICE} /proc/self/mounts
-	if [ $? -eq 0 ]; then
-		umount ${TST_DEVICE}
-		if [ $? -ne 0 ];then
-			tst_resm TWARN "'umount ${TST_DEVICE}' failed"
-		fi
-	else
-		tst_resm TINFO "${TST_DEVICE} is not mounted"
-	fi
+	tst_umount ${TST_DEVICE}
 
 	tst_release_device
 

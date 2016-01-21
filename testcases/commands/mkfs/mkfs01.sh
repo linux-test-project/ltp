@@ -59,19 +59,6 @@ mkfs_mount()
 	fi
 }
 
-mkfs_umount()
-{
-	grep -q ${TST_DEVICE} /proc/mounts
-	if [ $? -eq 0 ]; then
-		umount ${TST_DEVICE}
-		if [ $? -ne 0 ];then
-			tst_resm TWARN "'umount ${TST_DEVICE}' failed"
-		fi
-	else
-		tst_resm TINFO "${TST_DEVICE} is not mounted"
-	fi
-}
-
 usage()
 {
 	cat << EOF
@@ -104,7 +91,7 @@ mkfs_verify_size()
 {
 	mkfs_mount
 	local blocknum=`df -B 1k mntpoint | tail -n1 | awk '{print $2}'`
-	mkfs_umount
+	tst_umount "$TST_DEVICE"
 
 	if [ $blocknum -gt "$2" ]; then
 		return 1

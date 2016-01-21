@@ -294,6 +294,33 @@ tst_mkfs()
 	ROD_SILENT mkfs.$fs_type $fs_opts $device
 }
 
+tst_umount()
+{
+	local device="$1"
+	local i=0
+
+	if ! grep -q "$device" /proc/mounts; then
+		tst_resm TINFO "The $device is not mounted, skipping umount"
+		return
+	fi
+
+	while [ "$i" -lt 50 ]; do
+		if umount "$device" > /dev/null; then
+			return
+		fi
+
+		i=$((i+1))
+
+		tst_resm TINFO "umount($device) failed, try $i ..."
+		tst_resm TINFO "Likely gvfsd-trash is probing newly mounted "\
+			       "fs, kill it to speed up tests."
+
+		tst_sleep 100ms
+	done
+
+	tst_resm TWARN "Failed to umount($device) after 50 retries"
+}
+
 # Check that test name is set
 if [ -z "$TCID" ]; then
 	tst_brkm TBROK "TCID is not defined"
