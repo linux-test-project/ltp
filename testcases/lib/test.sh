@@ -214,7 +214,35 @@ ROD_SILENT()
 
 ROD()
 {
-	$@
+	local cmd
+	local arg
+	local file
+	local flag
+
+	for arg; do
+		file="${arg#\>}"
+		if [ "$file" != "$arg" ]; then
+			flag=1
+			if [ -n "$file" ]; then
+				break
+			fi
+			continue
+		fi
+
+		if [ -n "$flag" ]; then
+			file="$arg"
+			break
+		fi
+
+		cmd="$cmd $arg"
+	done
+
+	if [ -n "$flag" ]; then
+		$cmd > $file
+	else
+		$@
+	fi
+
 	if [ $? -ne 0 ]; then
 		tst_brkm TBROK "$@ failed"
 	fi

@@ -46,7 +46,7 @@ touch_files()
 	for j in $(seq 0 $DIR_NUM); do
 		cd dir$j
 		for k in $(seq 0 $FILE_NUM); do
-			ROD >file$j$k
+			ROD \>file$j$k
 		done
 		cd ..
 	done

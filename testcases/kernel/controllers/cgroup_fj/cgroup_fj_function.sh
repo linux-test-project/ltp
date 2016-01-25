@@ -124,7 +124,7 @@ test5()
 
     ROD rmdir "$start_path/ltp_1/a"
 
-    ROD echo "$pid" > "$start_path/tasks"
+    ROD echo "$pid" \> "$start_path/tasks"
 }
 
 # Group cannot be moved outside of hierarchy
@@ -182,7 +182,7 @@ test9()
         return
     fi
 
-    ROD echo "$notify" > "$start_path/ltp_1/notify_on_release"
+    ROD echo "$notify" \> "$start_path/ltp_1/notify_on_release"
 
     tst_resm TPASS "Set $start_path/ltp_1/notify_on_release to $value"
 }

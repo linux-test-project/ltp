@@ -109,7 +109,7 @@ case2()
 {
 	tmp=$((max - 1))
 	tst_resm TINFO "limit the number of pid to $max"
-	ROD echo $max > $testpath/pids.max
+	ROD echo $max \> $testpath/pids.max
 
 	start_pids_tasks2 $tmp
 
@@ -130,7 +130,7 @@ case3()
 {
 	lim=$((max + 2))
 	tst_resm TINFO "limit the number of avalaible pid to $lim"
-	ROD echo $lim > $testpath/pids.max
+	ROD echo $lim \> $testpath/pids.max
 
 	start_pids_tasks2 $max
 
@@ -149,7 +149,7 @@ case3()
 case4()
 {
 	tst_resm TINFO "limit the number of avalaible pid to 0"
-	ROD echo 0 > $testpath/pids.max
+	ROD echo 0 \> $testpath/pids.max
 
 	start_pids_tasks2 $max
 

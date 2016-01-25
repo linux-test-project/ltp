@@ -48,7 +48,7 @@ attach_and_check()
 
     tst_resm TINFO "Attaching task $pid to $path"
 
-    ROD echo "$pid" > "$path/tasks"
+    ROD echo "$pid" \> "$path/tasks"
 
     for task in $(cat "$path/tasks"); do
         if [ "$task" -ne "$pid" ]; then
@@ -69,8 +69,8 @@ create_subgroup()
     # cpuset.cpus and cpuset.mems must be initialized with suitable value
     # before any pids are attached
     if [ "$subsystem" == "cpuset" ]; then
-        ROD cat "$mount_point/cpuset.cpus" > "$path/cpuset.cpus"
-        ROD cat "$mount_point/cpuset.mems" > "$path/cpuset.mems"
+        ROD cat "$mount_point/cpuset.cpus" \> "$path/cpuset.cpus"
+        ROD cat "$mount_point/cpuset.mems" \> "$path/cpuset.mems"
     fi
 }
 

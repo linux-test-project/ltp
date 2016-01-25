@@ -1249,6 +1249,24 @@ if [ $? -ne 0 ]; then
 fi
 -------------------------------------------------------------------------------
 
+WARNING: Keep in mind that output redirection (to a file) happens in the
+         caller rather than in the ROD function and cannot be checked for
+         write errors by the ROD function.
+
+As a matter of a fact doing +ROD echo a > /proc/cpuinfo+ would work just fine
+since the 'ROD' function will only get the +echo a+ part that will run just
+fine.
+
+[source,sh]
+-------------------------------------------------------------------------------
+# Redirect output to a file with ROD
+ROD echo foo \> bar
+-------------------------------------------------------------------------------
+
+Note the '>' is escaped with '\', this causes that the '>' and filename are
+passed to the 'ROD' function as parameters and the 'ROD' function contains
+code to split '$@' on '>' and redirects the output to the file.
+
 .tst_fs_has_free
 [source,sh]
 -------------------------------------------------------------------------------
