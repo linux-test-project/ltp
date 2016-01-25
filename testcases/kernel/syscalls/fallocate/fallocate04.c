@@ -144,13 +144,15 @@ static void test02(void)
 
 	if (tst_kvercmp(2, 6, 38) < 0) {
 		tst_brkm(TCONF, cleanup,
-			 "Test must be run with kernel 2.6.38 or newer");
+			 "FALLOC_FL_PUNCH_HOLE needs Linux 2.6.38 or newer");
 	}
 
 	if (fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
 	    block_size, block_size) == -1) {
-		if (errno == EOPNOTSUPP)
-			tst_brkm(TCONF, cleanup, "operation not supported");
+		if (errno == EOPNOTSUPP) {
+			tst_brkm(TCONF, cleanup,
+			         "FALLOC_FL_PUNCH_HOLE not supported");
+		}
 		tst_brkm(TFAIL | TERRNO, cleanup, "fallocate() failed");
 	}
 
@@ -197,7 +199,7 @@ static void test03(void)
 
 	if (tst_kvercmp(3, 15, 0) < 0) {
 		tst_brkm(TCONF, cleanup,
-			 "Test must be run with kernel 3.15 or newer");
+			 "FALLOC_FL_ZERO_RANGE needs Linux 3.15 or newer");
 	}
 
 	size_t alloc_size0 = get_allocsize();
@@ -206,8 +208,10 @@ static void test03(void)
 
 	if (fallocate(fd, FALLOC_FL_ZERO_RANGE, block_size - 1,
 	    block_size + 2) == -1) {
-		if (errno == EOPNOTSUPP)
-			tst_brkm(TCONF, cleanup, "operation not supported");
+		if (errno == EOPNOTSUPP) {
+			tst_brkm(TCONF, cleanup,
+			         "FALLOC_FL_ZERO_RANGE not supported");
+		}
 		tst_brkm(TFAIL | TERRNO, cleanup, "fallocate failed");
 	}
 
@@ -241,8 +245,10 @@ static void test04(void)
 
 	if (fallocate(fd, FALLOC_FL_COLLAPSE_RANGE, block_size,
 	    block_size) == -1) {
-		if (errno == EOPNOTSUPP)
-			tst_brkm(TCONF, cleanup, "operation not supported");
+		if (errno == EOPNOTSUPP) {
+			tst_brkm(TCONF, cleanup,
+			         "FALLOC_FL_COLLAPSE_RANGE not supported");
+		}
 		tst_brkm(TFAIL | TERRNO, cleanup, "fallocate failed");
 	}
 
