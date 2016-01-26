@@ -43,6 +43,18 @@
 # define F_OWNER_PGRP 2
 #endif
 
+#ifndef F_OFD_GETLK
+# define F_OFD_GETLK	36
+#endif
+
+#ifndef F_OFD_SETLK
+# define F_OFD_SETLK	37
+#endif
+
+#ifndef F_OFD_SETLKW
+# define F_OFD_SETLKW	38
+#endif
+
 #ifndef AT_FDCWD
 # define AT_FDCWD -100
 #endif

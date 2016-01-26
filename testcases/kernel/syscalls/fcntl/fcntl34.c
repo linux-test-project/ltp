@@ -1,0 +1,149 @@
+/*
+ * Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it would be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Author: Alexey Kodanev <alexey.kodanev@oracle.com>
+ *
+ */
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <pthread.h>
+
+#include "lapi/fcntl.h"
+#include "tst_test.h"
+
+static int thread_cnt;
+static const int max_thread_cnt = 32;
+static const char fname[] = "tst_ofd_locks";
+const int writes_num = 100;
+const int write_size = 4096;
+
+static void setup(void)
+{
+	thread_cnt = tst_ncpus_conf() * 3;
+	if (thread_cnt > max_thread_cnt)
+		thread_cnt = max_thread_cnt;
+}
+
+static void spawn_threads(pthread_t *id, void *(*thread_fn)(void *))
+{
+	intptr_t i;
+
+	tst_res(TINFO, "spawning '%d' threads", thread_cnt);
+	for (i = 0; i < thread_cnt; ++i)
+		SAFE_PTHREAD_CREATE(id + i, NULL, thread_fn, (void *)i);
+}
+
+static void wait_threads(pthread_t *id)
+{
+	int i;
+
+	tst_res(TINFO, "waiting for '%d' threads", thread_cnt);
+	for (i = 0; i < thread_cnt; ++i)
+		SAFE_PTHREAD_JOIN(id[i], NULL);
+}
+
+void *thread_fn_01(void *arg)
+{
+	int i;
+	unsigned char buf[write_size];
+	int fd = SAFE_OPEN(fname, O_RDWR);
+
+	memset(buf, (intptr_t)arg, write_size);
+
+	struct flock lck = {
+		.l_whence = SEEK_SET,
+		.l_start  = 0,
+		.l_len    = 1,
+	};
+
+	for (i = 0; i < writes_num; ++i) {
+		lck.l_type = F_WRLCK;
+		if (fcntl(fd, F_OFD_SETLKW, &lck) == -1)
+			tst_brk(TBROK | TERRNO, "fcntl() failed");
+
+		SAFE_LSEEK(fd, 0, SEEK_END);
+		SAFE_WRITE(1, fd, buf, write_size);
+
+		lck.l_type = F_UNLCK;
+		if (fcntl(fd, F_OFD_SETLKW, &lck) == -1)
+			tst_brk(TBROK | TERRNO, "fcntl() failed");
+
+		pthread_yield();
+	}
+
+	SAFE_CLOSE(fd);
+
+	return NULL;
+}
+
+static void test01(void)
+{
+	intptr_t i;
+	int k;
+	pthread_t id[thread_cnt];
+	int res[thread_cnt];
+	unsigned char buf[write_size];
+
+	tst_res(TINFO, "write to a file inside threads with OFD locks");
+
+	int fd = SAFE_OPEN(fname, O_CREAT | O_TRUNC | O_RDWR, 0600);
+
+	memset(res, 0, sizeof(res));
+
+	spawn_threads(id, thread_fn_01);
+	wait_threads(id);
+
+	tst_res(TINFO, "verifying file's data");
+	SAFE_LSEEK(fd, 0, SEEK_SET);
+	for (i = 0; i < writes_num * thread_cnt; ++i) {
+		SAFE_READ(1, fd, buf, write_size);
+
+		if (buf[0] >= thread_cnt) {
+			tst_res(TFAIL, "unexpected data read");
+			return;
+		}
+
+		++res[buf[0]];
+
+		for (k = 1; k < write_size; ++k) {
+			if (buf[0] != buf[k]) {
+				tst_res(TFAIL, "unexpected data read");
+				return;
+			}
+		}
+	}
+
+	for (i = 0; i < thread_cnt; ++i) {
+		if (res[i] != writes_num) {
+			tst_res(TFAIL, "corrupted data found");
+			return;
+		}
+	}
+	SAFE_CLOSE(fd);
+
+	tst_res(TPASS, "OFD locks synchronized access between threads");
+}
+
+static struct tst_test test = {
+	.tid = "fcntl34",
+	.min_kver = "3.15.0",
+	.needs_tmpdir = 1,
+	.test_all = test01,
+	.setup = setup
+};
