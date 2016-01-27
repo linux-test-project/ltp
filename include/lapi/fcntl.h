@@ -23,6 +23,10 @@
 # define O_CLOEXEC 02000000
 #endif
 
+#ifndef O_TMPFILE
+# define O_TMPFILE (020000000 | O_DIRECTORY)
+#endif
+
 #ifndef F_DUPFD_CLOEXEC
 # define F_DUPFD_CLOEXEC 1030
 #endif
