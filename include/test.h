@@ -438,6 +438,14 @@ int tst_fs_fill_hardlinks(void (*cleanup) (void), const char *dir);
 int tst_fs_fill_subdirs(void (*cleanup) (void), const char *dir);
 
 /*
+ * lib/tst_dir_is_empty.c
+ *
+ * Checks if a given directory contains any entities,
+ * returns 1 if directory is empty, 0 otherwise
+ */
+int tst_dir_is_empty(void (*cleanup) (void), const char *name, int verbose);
+
+/*
  * lib/tst_pid.c
  *
  * Get a pid value not used by the OS
