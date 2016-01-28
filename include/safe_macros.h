@@ -164,6 +164,12 @@ int	safe_linkat(const char *file, const int lineno,
 	safe_linkat(__FILE__, __LINE__, cleanup_fn, (olddirfd), (oldpath), \
 		    (newdirfd), (newpath), (flags))
 
+ssize_t	safe_readlink(const char *file, const int lineno,
+		      void (cleanup_fn)(void), const char *path,
+		      char *buf, size_t bufsize);
+#define SAFE_READLINK(cleanup_fn, path, buf, bufsize) \
+	safe_readlink(__FILE__, __LINE__, cleanup_fn, (path), (buf), (bufsize))
+
 int	safe_symlink(const char *file, const int lineno,
                      void (cleanup_fn)(void), const char *oldpath,
                      const char *newpath);

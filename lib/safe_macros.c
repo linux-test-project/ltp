@@ -409,6 +409,23 @@ int safe_linkat(const char *file, const int lineno,
 	return rval;
 }
 
+ssize_t safe_readlink(const char *file, const int lineno,
+		  void (cleanup_fn)(void), const char *path,
+		  char *buf, size_t bufsize)
+{
+	ssize_t rval;
+
+	rval = readlink(path, buf, bufsize);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: readlink(%s,%p,%zu) failed",
+			 file, lineno, path, buf, bufsize);
+	}
+
+	return rval;
+}
+
 int safe_symlink(const char *file, const int lineno,
                  void (cleanup_fn)(void), const char *oldpath,
                  const char *newpath)
