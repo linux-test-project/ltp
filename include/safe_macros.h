@@ -157,6 +157,13 @@ int	safe_link(const char *file, const int lineno,
 #define SAFE_LINK(cleanup_fn, oldpath, newpath) \
         safe_link(__FILE__, __LINE__, cleanup_fn, (oldpath), (newpath))
 
+int	safe_linkat(const char *file, const int lineno,
+		    void (cleanup_fn)(void), int olddirfd, const char *oldpath,
+		    int newdirfd, const char *newpath, int flags);
+#define SAFE_LINKAT(cleanup_fn, olddirfd, oldpath, newdirfd, newpath, flags) \
+	safe_linkat(__FILE__, __LINE__, cleanup_fn, (olddirfd), (oldpath), \
+		    (newdirfd), (newpath), (flags))
+
 int	safe_symlink(const char *file, const int lineno,
                      void (cleanup_fn)(void), const char *oldpath,
                      const char *newpath);

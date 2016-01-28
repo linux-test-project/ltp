@@ -391,6 +391,24 @@ int safe_link(const char *file, const int lineno,
 	return rval;
 }
 
+int safe_linkat(const char *file, const int lineno,
+		void (cleanup_fn)(void), int olddirfd, const char *oldpath,
+		int newdirfd, const char *newpath, int flags)
+{
+	int rval;
+
+	rval = linkat(olddirfd, oldpath, newdirfd, newpath, flags);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: linkat(%d,%s,%d,%s,%d) failed",
+			 file, lineno, olddirfd, oldpath, newdirfd,
+			 newpath, flags);
+	}
+
+	return rval;
+}
+
 int safe_symlink(const char *file, const int lineno,
                  void (cleanup_fn)(void), const char *oldpath,
                  const char *newpath)
