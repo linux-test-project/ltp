@@ -125,7 +125,7 @@ void setup(void)
 	 */
 	ret = get_allowed_nodes(NH_MEMS, 1, &memnode);
 	if (ret < 0)
-		tst_brkm(TBROK, NULL, "Failed to get a memory node "
+		tst_brkm(TBROK, cleanup, "Failed to get a memory node "
 				      "using get_allowed_nodes()");
 	write_cpusets(memnode);
 }
