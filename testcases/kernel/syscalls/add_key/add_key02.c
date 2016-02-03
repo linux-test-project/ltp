@@ -20,102 +20,56 @@
 /*
  * Basic test for the add_key() syscall.
  *
- * History:     Porting from Crackerjack to LTP is done by
+ * History:   Porting from Crackerjack to LTP is done by
  *	      Manas Kumar Nayak maknayak@in.ibm.com>
  */
 
 #include "config.h"
-#include <stdio.h>
-#include <errno.h>
 #ifdef HAVE_LINUX_KEYCTL_H
 # include <linux/keyctl.h>
 #endif
-#include "test.h"
+#include "tst_test.h"
 #include "linux_syscall_numbers.h"
 
-char *TCID = "add_key02";
-int testno;
-int TST_TOTAL = 1;
-
 #ifdef HAVE_LINUX_KEYCTL_H
-
-static void cleanup(void)
-{
-	tst_rmdir();
-}
-
-static void setup(void)
-{
-	TEST_PAUSE;
-	tst_tmpdir();
-}
-
-struct test_case_t {
+struct tcase {
 	char *type;
 	char *desc;
 	void *payload;
 	int plen;
 	int exp_errno;
-} test_cases[] = {
+} tcases[] = {
 	{"user", "firstkey", NULL, 1, EINVAL}
 };
+#endif /* HAVE_LINUX_KEYCTL_H */
 
-int test_count = ARRAY_SIZE(test_cases);
-
-int main(int ac, char **av)
+static void verify_add_key(unsigned int i)
 {
-	int i;
-	int lc;
+#ifdef HAVE_LINUX_KEYCTL_H
+	TEST(tst_syscall(__NR_add_key, tcases[i].type, tcases[i].desc,
+	                 tcases[i].payload, tcases[i].plen,
+	                 KEY_SPEC_USER_KEYRING));
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-
-			for (i = 0; i < test_count; i++) {
-
-				/* Call add_key. */
-				TEST(ltp_syscall(__NR_add_key,
-					test_cases[i].type,
-					test_cases[i].desc,
-					test_cases[i].payload,
-					test_cases[i].plen,
-					KEY_SPEC_USER_KEYRING));
-
-				if (TEST_RETURN != -1) {
-					tst_resm(TINFO,
-						 "add_key passed unexpectedly");
-				} else {
-
-					if (errno == test_cases[i].exp_errno) {
-						tst_resm(TPASS | TTERRNO,
-							 "called add_key() "
-							 "with wrong args got "
-							 "EXPECTED errno");
-					} else {
-						tst_resm(TFAIL | TTERRNO,
-							 "called add_key() "
-							 "with wrong args got "
-							 "UNEXPECTED errno");
-					}
-
-				}
-
-			}
-
-		}
-
+	if (TEST_RETURN != -1) {
+		tst_res(TFAIL, "add_key() passed unexpectedly");
+		return;
 	}
 
-	cleanup();
-	tst_exit();
-}
+	if (TEST_ERRNO == tcases[i].exp_errno) {
+		tst_res(TPASS | TTERRNO, "add_key() failed expectedly");
+		return;
+	}
+
+	tst_res(TFAIL | TTERRNO,
+	        "add_key() failed unexpectedly, expected %s",
+	        tst_strerrno(tcases[i].exp_errno));
 #else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "linux/keyctl.h was missing upon compilation.");
-}
+	tst_brk(TCONF, "linux/keyctl.h was missing upon compilation.");
 #endif /* HAVE_LINUX_KEYCTL_H */
+}
+
+static struct tst_test test = {
+	.tid = "add_key01",
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_add_key,
+};
