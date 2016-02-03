@@ -116,6 +116,13 @@ int ident_ttype(char *tstype)
 		return -1;
 }
 
+void tst_cat_file(const char *filename)
+{
+	const char *cmd[] = {"cat", filename, NULL};
+
+	tst_run_cmd(NULL, cmd, NULL, NULL, 0);
+}
+
 void apicmd_brk(int argc, char *argv[])
 {
 	int trestype;

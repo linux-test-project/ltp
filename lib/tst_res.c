@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * Copyright (c) 2009-2013 Cyril Hrubis <chrubis@suse.cz>
+ *    AUTHOR            : Kent Rogers (from Dave Fenner's original)
+ *    CO-PILOT          : Rich Logan
+ *    DATE STARTED      : 05/01/90 (rewritten 1/96)
+ * Copyright (c) 2009-2016 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -31,35 +34,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/**********************************************************
- *
- *    OS Testing - Silicon Graphics, Inc.
- *
- *    FUNCTION NAME     :
- *      tst_resm_() -      Print result message
- *      tst_resm_hexd_() - Print result message (add buffer contents in hex)
- *      tst_brkm_() -      Print result message and break remaining test
- *                        cases
- *      tst_flush() -     Print any messages pending in the output stream
- *      tst_exit() -      Exit test with a meaningful exit value.
- *      tst_environ() -   Keep results coming to original stdout
- *
- *    FUNCTION TITLE    : Standard automated test result reporting mechanism
- *
- *    AUTHOR            : Kent Rogers (from Dave Fenner's original)
- *
- *    CO-PILOT          : Rich Logan
- *
- *    DATE STARTED      : 05/01/90 (rewritten 1/96)
- *
- *    MAJOR CLEANUPS BY : Cyril Hrubis
- *
- *    DESCRIPTION
- *      See the man page(s).
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
-
-#define _GNU_SOURCE		/* for asprintf */
+#define _GNU_SOURCE
 
 #include <pthread.h>
 #include <assert.h>
@@ -79,7 +54,7 @@
 long TEST_RETURN;
 int TEST_ERRNO;
 
-#define VERBOSE      1		/* flag values for the T_mode variable */
+#define VERBOSE      1
 #define NOPASS       3
 #define DISCARD      4
 
@@ -106,21 +81,13 @@ int TEST_ERRNO;
 
 static pthread_mutex_t tmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
-/*
- * Define local function prototypes.
- */
 static void check_env(void);
 static void tst_condense(int tnum, int ttype, const char *tmesg);
 static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg);
 
-/*
- * Define some static/global variables.
- */
-static FILE *T_out = NULL;	/* tst_res() output file descriptor */
-static const char *File;		/* file whose contents is part of result */
 static int T_exitval = 0;	/* exit value used by tst_exit() */
 static int T_mode = VERBOSE;	/* flag indicating print mode: VERBOSE, */
-			      /* NOPASS, DISCARD */
+				/* NOPASS, DISCARD */
 
 static char Warn_mesg[MAXMESG];	/* holds warning messages */
 
@@ -128,17 +95,13 @@ static char Warn_mesg[MAXMESG];	/* holds warning messages */
  * These are used for condensing output when NOT in verbose mode.
  */
 static int Buffered = FALSE;	/* TRUE if condensed output is currently */
-			      /* buffered (i.e. not yet printed) */
+				/* buffered (i.e. not yet printed) */
 static char *Last_tcid;		/* previous test case id */
 static int Last_num;		/* previous test case number */
 static int Last_type;		/* previous test result type */
 static char *Last_mesg;		/* previous test result message */
 
-/*
- * These globals may be externed by the test.
- */
-int tst_count = 0;		/* current count of test cases executed; NOTE: */
-			/* tst_count may be externed by other programs */
+int tst_count = 0;
 
 /*
  * These globals must be defined in the test.
@@ -162,9 +125,6 @@ struct pair {
 	return pair_arr[idx].name;                            \
 } while (0)
 
-/*
- * strttype() - convert a type result to the human readable string
- */
 const char *strttype(int ttype)
 {
 	static const struct pair ttype_pairs[] = {
@@ -179,27 +139,17 @@ const char *strttype(int ttype)
 	PAIR_LOOKUP(ttype_pairs, TTYPE_RESULT(ttype));
 }
 
-/*
- * Include table of errnos and tst_strerrno() function.
- */
 #include "errnos.h"
-
-/* Include table of signals and tst_strsig() function*/
 #include "signame.h"
 
 static void tst_res__(const char *file, const int lineno, int ttype,
-	const char *fname, const char *arg_fmt, ...)
+                      const char *arg_fmt, ...)
 {
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
 	int len = 0;
 	int ttype_result = TTYPE_RESULT(ttype);
-
-#if DEBUG
-	printf("IN tst_res__; tst_count = %d\n", tst_count);
-	fflush(stdout);
-#endif
 
 	if (file && (ttype_result != TPASS && ttype_result != TINFO))
 		len = sprintf(tmesg, "%s:%d: ", file, lineno);
@@ -211,21 +161,7 @@ static void tst_res__(const char *file, const int lineno, int ttype,
 	 */
 	T_exitval |= ttype_result;
 
-	/*
-	 * Unless T_out has already been set by tst_environ(), make tst_res()
-	 * output go to standard output.
-	 */
-	if (T_out == NULL)
-		T_out = stdout;
-
-	/*
-	 * Check TOUTPUT environment variable (if first time) and set T_mode
-	 * flag.
-	 */
 	check_env();
-
-	if (fname != NULL && access(fname, F_OK) == 0)
-		File = fname;
 
 	/*
 	 * Set the test case number and print the results, depending on the
@@ -258,42 +194,25 @@ static void tst_res__(const char *file, const int lineno, int ttype,
 	pthread_mutex_unlock(&tmutex);
 }
 
-/*
- * tst_condense() - Handle test cases in NOPASS mode (i.e.
- *                  buffer the current result and print the last result
- *                  if different than the current).  If a file was
- *                  specified, print the current result and do not
- *                  buffer it.
- */
 static void tst_condense(int tnum, int ttype, const char *tmesg)
 {
-	const char *file;
 	int ttype_result = TTYPE_RESULT(ttype);
-
-#if DEBUG
-	printf("IN tst_condense: tcid = %s, tnum = %d, ttype = %d, "
-	       "tmesg = %s\n", TCID, tnum, ttype, tmesg);
-	fflush(stdout);
-#endif
 
 	/*
 	 * If this result is the same as the previous result, return.
 	 */
 	if (Buffered == TRUE) {
 		if (strcmp(Last_tcid, TCID) == 0 && Last_type == ttype_result &&
-		    strcmp(Last_mesg, tmesg) == 0 && File == NULL)
+		    strcmp(Last_mesg, tmesg) == 0)
 			return;
 
 		/*
 		 * This result is different from the previous result.  First,
 		 * print the previous result.
 		 */
-		file = File;
-		File = NULL;
 		tst_print(Last_tcid, Last_num, Last_type, Last_mesg);
 		free(Last_tcid);
 		free(Last_mesg);
-		File = file;
 	}
 
 	/*
@@ -301,32 +220,18 @@ static void tst_condense(int tnum, int ttype, const char *tmesg)
 	 * way of retaining the file contents for comparing with future
 	 * results.  Otherwise, buffer the current result info for next time.
 	 */
-	if (File != NULL) {
-		tst_print(TCID, tnum, ttype, tmesg);
-		Buffered = FALSE;
-	} else {
-		Last_tcid = malloc(strlen(TCID) + 1);
-		strcpy(Last_tcid, TCID);
-		Last_num = tnum;
-		Last_type = ttype_result;
-		Last_mesg = malloc(strlen(tmesg) + 1);
-		strcpy(Last_mesg, tmesg);
-		Buffered = TRUE;
-	}
+	Last_tcid = malloc(strlen(TCID) + 1);
+	strcpy(Last_tcid, TCID);
+	Last_num = tnum;
+	Last_type = ttype_result;
+	Last_mesg = malloc(strlen(tmesg) + 1);
+	strcpy(Last_mesg, tmesg);
+	Buffered = TRUE;
 }
 
-/*
- * tst_flush() - Print any messages pending because due to tst_condense,
- *               and flush T_out.
- */
 void tst_flush(void)
 {
 	pthread_mutex_lock(&tmutex);
-
-#if DEBUG
-	printf("IN tst_flush\n");
-	fflush(stdout);
-#endif
 
 	/*
 	 * Print out last line if in NOPASS mode.
@@ -336,31 +241,18 @@ void tst_flush(void)
 		Buffered = FALSE;
 	}
 
-	fflush(T_out);
+	fflush(stdout);
 
 	pthread_mutex_unlock(&tmutex);
 }
 
-/*
- * tst_print() - Print a line to the output stream.
- */
 static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 {
-	/*
-	 * avoid unintended side effects from failures with fprintf when
-	 * calling write(2), et all.
-	 */
 	int err = errno;
 	const char *type;
 	int ttype_result = TTYPE_RESULT(ttype);
 	char message[USERMESG];
 	size_t size;
-
-#if DEBUG
-	printf("IN tst_print: tnum = %d, ttype = %d, tmesg = %s\n",
-	       tnum, ttype, tmesg);
-	fflush(stdout);
-#endif
 
 	/*
 	 * Save the test result type by ORing ttype into the current exit value
@@ -438,34 +330,13 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 	message[size] = '\n';
 	message[size + 1] = '\0';
 
-	fputs(message, T_out);
-
-	/*
-	 * If tst_res() was called with a file, append file contents to the
-	 * end of last printed result.
-	 */
-	if (File != NULL)
-		tst_cat_file(File);
-
-	File = NULL;
+	fputs(message, stdout);
 }
 
-/*
- * check_env() - Check the value of the environment variable TOUTPUT and
- *               set the global variable T_mode.  The TOUTPUT environment
- *               variable should be set to "VERBOSE", "NOPASS", or "DISCARD".
- *               If TOUTPUT does not exist or is not set to a valid value, the
- *               default is "VERBOSE".
- */
 static void check_env(void)
 {
 	static int first_time = 1;
 	char *value;
-
-#if DEBUG
-	printf("IN check_env\n");
-	fflush(stdout);
-#endif
 
 	if (!first_time)
 		return;
@@ -488,32 +359,16 @@ static void check_env(void)
 		return;
 	}
 
-	/* default */
 	T_mode = VERBOSE;
 	return;
 }
 
-/*
- * tst_exit() - Call exit() with the value T_exitval, set up by
- *              tst_res().  T_exitval has a bit set for most of the
- *              result types that were seen (including TPASS, TFAIL,
- *              TBROK, TWARN, TCONF).  Also, print the last result (if
- *              necessary) before exiting.
- */
 void tst_exit(void)
 {
 	pthread_mutex_lock(&tmutex);
 
-#if DEBUG
-	printf("IN tst_exit\n");
-	fflush(stdout);
-	fflush(stdout);
-#endif
-
-	/* Call tst_flush() flush any output in the buffer. */
 	tst_flush();
 
-	/* Mask out TINFO result from the exit status. */
 	exit(T_exitval & ~TINFO);
 }
 
@@ -568,40 +423,18 @@ pid_t tst_vfork(void)
 }
 
 /*
- * tst_environ() - Preserve the tst_res() output location, despite any
- *                 changes to stdout.
- */
-int tst_environ(void)
-{
-	pthread_mutex_lock(&tmutex);
-	int ret = 0;
-	if ((T_out = fdopen(dup(fileno(stdout)), "w")) == NULL)
-		ret = -1;
-
-	pthread_mutex_unlock(&tmutex);
-	return ret;
-}
-
-/*
  * Make tst_brk reentrant so that one can call the SAFE_* macros from within
  * user-defined cleanup functions.
  */
 static int tst_brk_entered = 0;
 
 static void tst_brk__(const char *file, const int lineno, int ttype,
-                      const char *fname, void (*func)(void),
-                      const char *arg_fmt, ...)
+                      void (*func)(void), const char *arg_fmt, ...)
 {
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
 	int ttype_result = TTYPE_RESULT(ttype);
-
-#if DEBUG
-	printf("IN tst_brk__\n");
-	fflush(stdout);
-	fflush(stdout);
-#endif
 
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
@@ -617,14 +450,14 @@ static void tst_brk__(const char *file, const int lineno, int ttype,
 		ttype = (ttype & ~ttype_result) | TBROK;
 	}
 
-	tst_res__(file, lineno, ttype, fname, "%s", tmesg);
+	tst_res__(file, lineno, ttype, "%s", tmesg);
 	if (tst_brk_entered == 0) {
 		if (ttype_result == TCONF) {
-			tst_res__(file, lineno, ttype, NULL,
+			tst_res__(file, lineno, ttype,
 				"Remaining cases not appropriate for "
 				"configuration");
 		} else if (ttype_result == TBROK) {
-			tst_res__(file, lineno, TBROK, NULL,
+			tst_res__(file, lineno, TBROK,
 				 "Remaining cases broken");
 		}
 	}
@@ -644,40 +477,22 @@ static void tst_brk__(const char *file, const int lineno, int ttype,
 	pthread_mutex_unlock(&tmutex);
 }
 
-/*
- * tst_resm_() - Interface to tst_res(), with no filename.
- */
 void tst_resm_(const char *file, const int lineno, int ttype,
 	const char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 
-#if DEBUG
-	printf("IN tst_resm\n");
-	fflush(stdout);
-	fflush(stdout);
-#endif
-
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
-	tst_res__(file, lineno, ttype, NULL, "%s", tmesg);
+	tst_res__(file, lineno, ttype, "%s", tmesg);
 }
 
-/*
- * tst_resm_hexd_() - Interface to tst_res(), with no filename.
- * Also, dump specified buffer in hex.
- */
 void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 	const void *buf, size_t size, const char *arg_fmt, ...)
 {
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
-
-#if DEBUG
-	printf("IN tst_resm_hexd_\n");
-	fflush(stdout);
-#endif
 
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
@@ -688,7 +503,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 
 	if (size > size_max || size == 0 ||
 		(offset + size * (symb_num + 1)) >= USERMESG)
-		tst_res__(file, lineno, ttype, NULL, "%s", tmesg);
+		tst_res__(file, lineno, ttype, "%s", tmesg);
 	else
 		pmesg += offset;
 
@@ -701,7 +516,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 		sprintf(pmesg, "%02x", ((unsigned char *)buf)[i]);
 		pmesg += symb_num;
 		if ((i + 1) % size_max == 0 || i + 1 == size) {
-			tst_res__(file, lineno, ttype, NULL, "%s", tmesg);
+			tst_res__(file, lineno, ttype, "%s", tmesg);
 			pmesg = tmesg;
 		}
 	}
@@ -709,91 +524,20 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 	pthread_mutex_unlock(&tmutex);
 }
 
-/*
- * tst_brkm_() - Interface to tst_brk(), with no filename.
- */
 void tst_brkm_(const char *file, const int lineno, int ttype,
 	void (*func)(void), const char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
 
-#if DEBUG
-	printf("IN tst_brkm_\n");
-	fflush(stdout);
-	fflush(stdout);
-#endif
-
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
-	tst_brk__(file, lineno, ttype, NULL, func, "%s", tmesg);
-	/* Shouldn't be reach, but fixes build time warnings about noreturn. */
+	tst_brk__(file, lineno, ttype, func, "%s", tmesg);
+	/* Shouldn't be reached, but fixes build time warnings about noreturn. */
 	abort();
 }
 
-/*
- * tst_require_root() - Test for root permissions and abort if not.
- */
 void tst_require_root(void)
 {
 	if (geteuid() != 0)
 		tst_brkm(TCONF, NULL, "Test needs to be run as root");
-}
-
-/*
- * cat_file() - Print the contents of a file to standard out.
- */
-void tst_cat_file(const char *filename)
-{
-	FILE *fp;
-	int b_read, b_written;
-	char buffer[BUFSIZ];
-
-#if DEBUG
-	printf("IN cat_file\n");
-	fflush(stdout);
-#endif
-
-	/*
-	 * Unless T_out has already been set by tst_environ(), make tst_res()
-	 * output go to standard output.
-	 */
-	if (T_out == NULL)
-		T_out = stdout;
-
-	if ((fp = fopen(filename, "r")) == NULL) {
-		sprintf(Warn_mesg,
-			"tst_res(): fopen(%s, \"r\") failed; errno = %d: %s",
-			filename, errno, strerror(errno));
-		tst_print(TCID, 0, TWARN, Warn_mesg);
-		return;
-	}
-
-	errno = 0;
-
-	while ((b_read = fread(buffer, 1, BUFSIZ, fp)) != 0) {
-		if ((b_written = fwrite(buffer, 1, b_read, T_out)) != b_read) {
-			sprintf(Warn_mesg,
-				"tst_res(): While trying to cat \"%s\", "
-				"fwrite() wrote only %d of %d bytes",
-				filename, b_written, b_read);
-			tst_print(TCID, 0, TWARN, Warn_mesg);
-			break;
-		}
-	}
-
-	if (!feof(fp)) {
-		sprintf(Warn_mesg,
-			"tst_res(): While trying to cat \"%s\", fread() "
-			"failed, errno = %d: %s",
-			filename, errno, strerror(errno));
-		tst_print(TCID, 0, TWARN, Warn_mesg);
-	}
-
-	if (fclose(fp) != 0) {
-		sprintf(Warn_mesg,
-			"tst_res(): While trying to cat \"%s\", fclose() "
-			"failed, errno = %d: %s",
-			filename, errno, strerror(errno));
-		tst_print(TCID, 0, TWARN, Warn_mesg);
-	}
 }
