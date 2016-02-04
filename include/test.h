@@ -51,6 +51,7 @@
 #include "tst_resource.h"
 #include "tst_res_flags.h"
 #include "tst_timer.h"
+#include "tst_kvercmp.h"
 
 /* virt types for tst_is_virt() */
 #define VIRT_XEN	1	/* xen dom0/domU */
@@ -219,17 +220,6 @@ int tst_tmpdir_created(void);
 
 /* lib/get_high_address.c */
 char *get_high_address(void);
-
-/* lib/tst_kvercmp.c */
-void tst_getkver(int *k1, int *k2, int *k3);
-int tst_kvercmp(int r1, int r2, int r3);
-
-struct tst_kern_exv {
-	char *dist_name;
-	char *extra_ver;
-};
-
-int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers);
 
 enum {
 	TST_BYTES = 1,
