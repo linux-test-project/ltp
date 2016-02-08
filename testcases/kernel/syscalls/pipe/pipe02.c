@@ -64,7 +64,7 @@ void setup(void);
 void cleanup(void);
 void catch_usr2(int);
 
-ssize_t safe_read(int fd, void *buf, size_t count)
+ssize_t do_read(int fd, void *buf, size_t count)
 {
 	ssize_t n;
 
@@ -123,7 +123,7 @@ int main(int ac, char **av)
 			/* PARENT */
 			close(pp[1]);	/* close write end of pipe */
 			memset(rbuf, 0, sizeof(rbuf));
-			rlen = safe_read(pp[0], rbuf, len);
+			rlen = do_read(pp[0], rbuf, len);
 			if (memcmp(wbuf, rbuf, len) != 0)
 				tst_resm(TFAIL, "pipe read data and pipe "
 					 "write data didn't match");

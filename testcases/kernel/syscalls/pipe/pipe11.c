@@ -73,7 +73,7 @@ int pipewrcnt;			/* chars written to pipe */
 char *wrbuf, *rdbuf;
 int fd[2];			/* fds for pipe read/write */
 
-ssize_t safe_read(int fd, void *buf, size_t count)
+ssize_t do_read(int fd, void *buf, size_t count)
 {
 	ssize_t n;
 
@@ -170,7 +170,7 @@ void do_child(void)
 		tst_resm(TINFO, "child %d " "could not close pipe", kidid);
 		exit(0);
 	}
-	nread = safe_read(fd[0], rdbuf, ncperchild);
+	nread = do_read(fd[0], rdbuf, ncperchild);
 	if (nread == ncperchild) {
 		tst_resm(TINFO, "child %d " "got %d chars", kidid, nread);
 		exit(0);

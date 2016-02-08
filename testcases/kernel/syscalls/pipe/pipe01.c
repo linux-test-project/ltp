@@ -54,7 +54,7 @@ int TST_TOTAL = 1;
 void setup(void);
 void cleanup(void);
 
-ssize_t safe_read(int fd, void *buf, size_t count)
+ssize_t do_read(int fd, void *buf, size_t count)
 {
 	ssize_t n;
 
@@ -103,7 +103,7 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if ((red = safe_read(fildes[0], rebuf, written)) == -1) {
+		if ((red = do_read(fildes[0], rebuf, written)) == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "read() failed");
 		}

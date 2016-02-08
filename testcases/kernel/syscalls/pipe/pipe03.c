@@ -52,7 +52,7 @@ int TST_TOTAL = 1;
 void setup(void);
 void cleanup(void);
 
-ssize_t safe_read(int fd, void *buf, size_t count)
+ssize_t do_read(int fd, void *buf, size_t count)
 {
 	ssize_t n;
 
@@ -94,7 +94,7 @@ int main(int ac, char **av)
 				 "success when writing to read "
 				 "end of pipe ret=%ld", TEST_RETURN);
 
-		TEST(safe_read(fildes[1], rbuf, 1));
+		TEST(do_read(fildes[1], rbuf, 1));
 		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF)
 			tst_resm(TPASS, "expected failure reading from "
 				 "write end of pipe");

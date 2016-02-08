@@ -60,7 +60,7 @@ int TST_TOTAL = 1;
 void setup(void);
 void cleanup(void);
 
-ssize_t safe_read(int fd, void *buf, size_t count)
+ssize_t do_read(int fd, void *buf, size_t count)
 {
 	ssize_t n;
 
@@ -158,7 +158,7 @@ int main(int ac, char **av)
 				 "pipefd[1] close failed");
 		}
 
-		while ((red = safe_read(pipefd[0], rebuf, 100)) > 0) {
+		while ((red = do_read(pipefd[0], rebuf, 100)) > 0) {
 			for (i = 0; i < red; i++) {
 				if (rebuf[i] == 'A') {
 					Acnt++;
