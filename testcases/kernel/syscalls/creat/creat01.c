@@ -1,168 +1,94 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- * 	creat01.c
+ * 1. creat() a file using 0444 mode, write to the fildes, write
+ *    should return a positive count.
  *
- * DESCRIPTION
- *	Testcase to check the basic functionality of the creat(2) system call.
+ * 2. creat() should truncate a file to 0 bytes if it already
+ *    exists, and should not fail.
  *
- * ALGORITHM
- * 	1.	creat() a file using 0444 mode, write to the fildes, write
- * 		should return a positive count.
- *
- * 	2.	creat() should truncate a file to 0 bytes if it already
- *		exists, and should not fail.
- *
- * USAGE:  <for command-line>
- *  creat01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- * 	None
  */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <fcntl.h>
-#include <pwd.h>
 #include <stdio.h>
-#include "test.h"
 
-void setup(void);
-void cleanup(void);
-void functest1(void);
-void functest2(void);
+#include "tst_test.h"
 
-char *TCID = "creat01";
-int TST_TOTAL = 2;
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
-
-char filename[40];
-int fd;
-
-#define MODE1 0644
-#define MODE2 0444
-
-struct test_case_t {
-	char *fname;
-	int mode;
-	void (*functest) ();
-} TC[] = {
-	{
-	filename, MODE1, functest1}, {
-	filename, MODE2, functest2}
-};
-
-int main(int ac, char **av)
-{
-	int i;
-	int lc;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(fd = creat(filename, TC[i].mode));
-
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL | TTERRNO, "creat failed");
-				continue;
-			}
-
-			(*TC[i].functest) ();
-			close(fd);
-		}
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-void functest1(void)
-{
-	if (write(TEST_RETURN, "A", 1) != 1)
-		tst_resm(TFAIL, "write was unsuccessful");
-	else
-		tst_resm(TPASS, "file was created and written to successfully");
-}
-
-void functest2(void)
-{
-	struct stat buf;
-
-	if (stat(filename, &buf) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "stat failed");
-	if (buf.st_size == 0)
-		tst_resm(TPASS, "creat truncated existing file to 0 bytes");
-	else
-		tst_resm(TFAIL, "creat FAILED to truncate file to 0 bytes");
-}
+static char filename[40];
+static int fd;
 
 void setup(void)
 {
-	fd = -1;
-
-	tst_require_root();
-
-	ltpuser = getpwnam(nobody_uid);
-	if (ltpuser == NULL)
-		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
-	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "setuid failed");
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	umask(0);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
 	sprintf(filename, "creat01.%d", getpid());
 }
 
-void cleanup(void)
+struct tcase {
+	int mode;
+} tcases[] = {
+	{0644},
+	{0444}
+};
+
+static void verify_creat(unsigned int i)
 {
-	if (fd != -1)
-		close(fd);
+	struct stat buf;
+	char c;
 
-	unlink(filename);
+	fd = creat(filename, tcases[i].mode);
 
-	tst_rmdir();
+	if (fd == -1)
+		tst_brk(TBROK | TERRNO, "creat() failed");
+
+	SAFE_STAT(filename, &buf);
+
+	if (buf.st_size != 0)
+		tst_res(TFAIL, "creat() failed to truncate file to 0 bytes");
+	else
+		tst_res(TPASS, "creat() truncated file to 0 bytes");
+
+	if (write(fd, "A", 1) != 1)
+		tst_res(TFAIL | TERRNO, "write was unsuccessful");
+	else
+		tst_res(TPASS, "file was created and written to successfully");
+
+	if (read(fd, &c, 1) != -1)
+		tst_res(TFAIL, "read succeeded unexpectedly");
+	else
+		tst_res(TPASS | TERRNO, "read failed expectedly");
+
+	SAFE_CLOSE(fd);
 }
+
+static void cleanup(void)
+{
+	if (fd > 0)
+		SAFE_CLOSE(fd);
+}
+
+static struct tst_test test = {
+	.tid = "creat01",
+	.tcnt = 2,
+	.test = verify_creat,
+	.needs_tmpdir = 1,
+	.cleanup = cleanup,
+	.setup = setup,
+};
