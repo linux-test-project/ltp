@@ -52,7 +52,6 @@
 #endif
 void setup();
 void cleanup();
-void setup_every_copy();
 
 char *TCID = "fchmodat01";
 int TST_TOTAL = TEST_CASES;
