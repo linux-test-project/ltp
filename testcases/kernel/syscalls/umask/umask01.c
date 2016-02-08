@@ -144,20 +144,10 @@ int main(int ac, char **av)
 				 TEST_RETURN);
 		}
 	}
-	cleanup();
 	tst_exit();
 }
 
 void setup(void)
 {
-	void trapper();
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
-
-}
-
-void cleanup(void)
-{
 }
