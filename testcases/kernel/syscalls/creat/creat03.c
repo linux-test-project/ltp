@@ -1,46 +1,25 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- * 	creat03.c
- *
- * DESCRIPTION
- *	Testcase to check whether the sticky bit cleared.
- *
- * ALGORITHM
- * 	Creat a new file, fstat.st_mode should have the 01000 bit off
- *
- * USAGE:  <for command-line>
- *  creat03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- * 	None
+ * Testcase to check whether the sticky bit cleared.
+ * Creat a new file, fstat.st_mode should have the 01000 bit off
  */
 
 #include <errno.h>
@@ -48,83 +27,50 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "test.h"
 
-char *TCID = "creat03";
-int TST_TOTAL = 1;
+#include "tst_test.h"
 
-char pfilname[40] = "";
-#define FMODE	0444
+static char pfilname[40];
+static int fd;
 
-void setup(void);
-void cleanup(void);
-
-int main(int ac, char **av)
+static void verify_creat(void)
 {
 	struct stat statbuf;
-	unsigned short filmode;
-	int lc;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	fd = creat(pfilname, 444);
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		TEST(creat(pfilname, FMODE));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "Cannot creat %s", pfilname);
-			continue;
-		}
-
-		if (fstat(TEST_RETURN, &statbuf) == -1) {
-			tst_brkm(TBROK, cleanup, "fstat() failed");
-		}
-		filmode = statbuf.st_mode;
-		tst_resm(TINFO, "Created file has mode = 0%o", filmode);
-		if ((filmode & S_ISVTX) != 0) {
-			tst_resm(TFAIL, "save text bit not cleared");
-		} else {
-			tst_resm(TPASS, "save text bit cleared");
-		}
-
-		close(TEST_RETURN);
-		/* clean up things in case we are looping */
-		if (unlink(pfilname) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "couldn't remove file");
-		}
+	if (fd == -1) {
+		tst_res(TFAIL | TERRNO, "creat(%s) failed", pfilname);
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	SAFE_FSTAT(fd, &statbuf);
+
+	tst_res(TINFO, "Created file has mode = 0%o", statbuf.st_mode);
+
+	if ((statbuf.st_mode & S_ISVTX) != 0)
+		tst_res(TFAIL, "save text bit not cleared");
+	else
+		tst_res(TPASS, "save text bit cleared");
+
+	SAFE_CLOSE(fd);
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/* make a temp dir and cd to it */
-	tst_tmpdir();
-
-	sprintf(pfilname, "./creat4.%d", getpid());
+	sprintf(pfilname, "./creat03.%d", getpid());
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at completion or
- *	       premature exit
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	tst_rmdir();
-
+	if (fd > 0)
+		SAFE_CLOSE(fd);
 }
+
+static struct tst_test test = {
+	.tid = "creat03",
+	.test_all = verify_creat,
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+};
