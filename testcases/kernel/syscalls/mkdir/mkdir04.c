@@ -127,16 +127,16 @@ int main(int ac, char **av)
 		if (pid == 0) {	/* first child */
 			rval = setreuid(nobody_uid, nobody_uid);
 			if (rval < 0) {
-				tst_resm(TFAIL, "setreuid failed to "
+				tst_resm(TFAIL | TERRNO, "setreuid failed to "
 					 "to set the real uid to %d and "
 					 "effective uid to %d",
 					 nobody_uid, nobody_uid);
-				perror("setreuid");
 				exit(1);
 			}
 			/* create the parent directory with 0700 permits */
 			if (mkdir(tstdir1, PERMS) == -1) {
-				tst_resm(TFAIL, "mkdir(%s, %#o) Failed",
+				tst_resm(TFAIL | TERRNO,
+					 "mkdir(%s, %#o) Failed",
 					 tstdir1, PERMS);
 				exit(1);
 			}
@@ -159,11 +159,10 @@ int main(int ac, char **av)
 		if (pid1 == 0) {	/* second child */
 			rval = setreuid(bin_uid, bin_uid);
 			if (rval < 0) {
-				tst_resm(TFAIL, "setreuid failed to "
+				tst_resm(TFAIL | TERRNO, "setreuid failed to "
 					 "to set the real uid to %d and "
 					 "effective uid to %d",
 					 bin_uid, bin_uid);
-				perror("setreuid");
 				exit(1);
 			}
 			if (mkdir(tstdir2, PERMS) != -1) {
