@@ -1236,15 +1236,6 @@
 		ltp/testcases/kernel/syscalls/creat/creat08.c
 	<\test_location>
 <\testname>
-<testname=creat09>
-	<description>
-		Basic test for creat(2) using 0700 argument.
-
-	<\description>
-	<test_location>
-		ltp/testcases/kernel/syscalls/creat/creat09.c
-	<\test_location>
-<\testname>
 <testname=dup01>
 	<description>
 		Basic test for dup(2).

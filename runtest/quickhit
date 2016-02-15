@@ -57,10 +57,6 @@ close08 close08
 # Basic test for close(2)
 #    TEST CASES
 # 	1.) close(2) returns...
-creat09 creat09
-# Basic test for creat(2) using 0700 argument.
-#    TEST CASES
-# 	1.) creat(2) returns...
 dup01 dup01
 # Basic test for dup(2)
 #    TEST CASES
