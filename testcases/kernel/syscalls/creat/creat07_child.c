@@ -17,21 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdio.h>
 #include <unistd.h>
-
-#include "test.h"
-
-char *TCID = "creat07_child";
+#define TST_NO_DEFAULT_MAIN
+#include "tst_test.h"
 
 int main(void)
 {
-	TST_CHECKPOINT_INIT(NULL);
+	tst_reinit();
 
-	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
+	TST_CHECKPOINT_WAKE(0);
 
-	for (;;) {
-		sleep(1);
-	}
+	pause();
+
 	return 0;
 }
