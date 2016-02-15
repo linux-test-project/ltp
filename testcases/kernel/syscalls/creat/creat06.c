@@ -1,20 +1,20 @@
 /*
- *   Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) International Business Machines  Corp., 2001
  *    Ported by Wayne Boyer
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software Foundation,
- *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -49,17 +49,15 @@
  *		and test for EROFS
  */
 
-#include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <pwd.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <sys/mount.h>
-#include "test.h"
-#include "safe_macros.h"
+
+#include "tst_test.h"
 
 #define	TEST_FILE	"test_dir"
 #define	NO_DIR		"testfile/testdir"
@@ -79,6 +77,7 @@ static void test6_cleanup(void);
 static void bad_addr_setup(int);
 #endif
 
+static struct passwd *ltpuser;
 static char long_name[PATH_MAX+2];
 static const char *device;
 static int mount_flag;
@@ -89,7 +88,7 @@ static struct test_case_t {
 	int error;
 	void (*setup)();
 	void (*cleanup)(void);
-} TC[] = {
+} tcases[] = {
 	{TEST_FILE, MODE1, EISDIR, NULL, NULL},
 	{long_name, MODE1, ENAMETOOLONG, NULL, NULL},
 	{NO_DIR, MODE1, ENOENT, NULL, NULL},
@@ -102,119 +101,88 @@ static struct test_case_t {
 	{TEST8_FILE, MODE1, EROFS, NULL, NULL},
 };
 
-char *TCID = "creat06";
-int TST_TOTAL = ARRAY_SIZE(TC);
-static struct passwd *ltpuser;
-
-int main(int ac, char **av)
+static void verify_creat(unsigned int i)
 {
-	int lc;
-	int i;
+	if (tcases[i].setup != NULL)
+		tcases[i].setup(i);
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	TEST(creat(tcases[i].fname, tcases[i].mode));
 
-	setup();
+	if (tcases[i].cleanup != NULL)
+		tcases[i].cleanup();
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-
-			if (TC[i].setup != NULL)
-				TC[i].setup(i);
-
-			TEST(creat(TC[i].fname, TC[i].mode));
-
-			if (TC[i].cleanup != NULL)
-				TC[i].cleanup();
-
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "call succeeded unexpectedly");
-				continue;
-			}
-
-			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS | TTERRNO,
-					 "got expected failure");
-			} else {
-				tst_resm(TFAIL | TTERRNO, "wanted errno %d",
-					 TC[i].error);
-			}
-		}
+	if (TEST_RETURN != -1) {
+		tst_res(TFAIL, "call succeeded unexpectedly");
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	if (TEST_ERRNO == tcases[i].error) {
+		tst_res(TPASS | TTERRNO, "got expected failure");
+		return;
+	}
+
+	tst_res(TFAIL | TTERRNO, "expected %s",
+	         tst_strerrno(tcases[i].error));
 }
+
 
 static void setup(void)
 {
-	const char *fs_type;
+	ltpuser = SAFE_GETPWNAM("nobody");
 
-	tst_require_root();
-
-	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
-	fs_type = tst_dev_fs_type();
-	device = tst_acquire_device(cleanup);
-
-	if (!device)
-		tst_brkm(TCONF, cleanup, "Failed to acquire device");
-
-	SAFE_MKDIR(cleanup, TEST_FILE, MODE2);
+	SAFE_MKDIR(TEST_FILE, MODE2);
 
 	memset(long_name, 'a', PATH_MAX+1);
 
-	SAFE_TOUCH(cleanup, "file1", MODE1, NULL);
+	SAFE_TOUCH("file1", MODE1, NULL);
 
-	SAFE_MKDIR(cleanup, "dir6", MODE2);
+	SAFE_MKDIR("dir6", MODE2);
 
-	SAFE_SYMLINK(cleanup, TEST7_FILE, "test_file_eloop2");
-	SAFE_SYMLINK(cleanup, "test_file_eloop2", TEST7_FILE);
+	SAFE_SYMLINK(TEST7_FILE, "test_file_eloop2");
+	SAFE_SYMLINK("test_file_eloop2", TEST7_FILE);
 
-	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
-	SAFE_MKDIR(cleanup, "mntpoint", 0777);
-	if (mount(device, "mntpoint", fs_type, MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MKFS(tst_device->dev, tst_device->fs_type, NULL, NULL);
+
+	SAFE_MKDIR("mntpoint", 0777);
+	SAFE_MOUNT(tst_device->dev, "mntpoint", tst_device->fs_type,
+	           MS_RDONLY, NULL);
 	mount_flag = 1;
 }
 
 #if !defined(UCLINUX)
 static void bad_addr_setup(int i)
 {
-	TC[i].fname = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
-			     MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	if (tcases[i].fname)
+		return;
+
+	tcases[i].fname = SAFE_MMAP(0, 1, PROT_NONE,
+	                            MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 }
 #endif
 
 static void test6_setup(void)
 {
-	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
+	SAFE_SETEUID(ltpuser->pw_uid);
 }
 
 static void test6_cleanup(void)
 {
-	SAFE_SETEUID(cleanup, 0);
+	SAFE_SETEUID(0);
 }
 
 static void cleanup(void)
 {
-	if (mount_flag && tst_umount("mntpoint") < 0) {
-		tst_brkm(TBROK | TERRNO, NULL,
-			 "umount device:%s failed", device);
-	}
-
-	if (device)
-		tst_release_device(device);
-
-	tst_rmdir();
+	if (mount_flag && tst_umount("mntpoint") < 0)
+		tst_brk(TBROK | TERRNO, "umount device:%s failed", device);
 }
+
+static struct tst_test test = {
+	.tid = "creat06",
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_creat,
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+	.needs_device = 1,
+	.cleanup = cleanup,
+	.setup = setup,
+};
