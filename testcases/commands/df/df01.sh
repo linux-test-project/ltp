@@ -75,26 +75,28 @@ EOF
 
 df_test()
 {
-	df_verify $1
+	cmd="$1 -P"
+
+	df_verify $cmd
 	if [ $? -ne 0 ]; then
 		return
 	fi
 
-	df_check $1
+	df_check $cmd
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'$1' failed, not expected."
+		tst_resm TFAIL "'$cmd' failed, not expected."
 		return
 	fi
 
 	ROD_SILENT dd if=/dev/zero of=mntpoint/testimg bs=1024 count=1024
 
-	df_verify $1
+	df_verify $cmd
 
-	df_check $1
+	df_check $cmd
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "'$1' passed."
+		tst_resm TPASS "'$cmd' passed."
 	else
-		tst_resm TFAIL "'$1' failed."
+		tst_resm TFAIL "'$cmd' failed."
 	fi
 
 	ROD_SILENT rm -rf mntpoint/testimg
@@ -121,7 +123,7 @@ df_verify()
 
 df_check()
 {
-	if [ "$(echo $@)" = "df -i" ]; then
+	if [ "$(echo $@)" = "df -i -P" ]; then
 		local total=$(stat -f mntpoint --printf=%c)
 		local free=$(stat -f mntpoint --printf=%d)
 		local used=$((total-free))
@@ -209,16 +211,18 @@ test11()
 
 test12()
 {
-	df_verify "df -x ${DF_FS_TYPE}"
+	cmd="df -x ${DF_FS_TYPE} -P"
+
+	df_verify $cmd
 	if [ $? -ne 0 ]; then
 		return
 	fi
 
 	grep ${TST_DEVICE} output | grep -q mntpoint
 	if [ $? -ne 0 ]; then
-		tst_resm TPASS "'df -x ${FS_TYPE}' passed."
+		tst_resm TPASS "'$cmd' passed."
 	else
-		tst_resm TFAIL "'df -x ${FS_TYPE}' failed."
+		tst_resm TFAIL "'$cmd' failed."
 	fi
 }
 
