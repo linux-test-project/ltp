@@ -18,6 +18,8 @@
 
 top_srcdir		?= ../../../..
 
+epoll_wait02: LDLIBS+=-lrt
+
 include $(top_srcdir)/include/mk/testcases.mk
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
