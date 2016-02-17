@@ -158,8 +158,6 @@ int main(int ac, char **av)
 		if (addr2 == MAP_FAILED) {
 			tst_resm(TFAIL | TERRNO, "huge mmap failed unexpectedly"
 				 " with %s (64-bit)", TEMPFILE);
-			close(fildes);
-			continue;
 		} else {
 			tst_resm(TPASS, "huge mmap succeeded (64-bit)");
 		}
@@ -170,8 +168,6 @@ int main(int ac, char **av)
 		else if (addr2 > 0) {
 			tst_resm(TCONF,
 				 "huge mmap failed to test the scenario");
-			close(fildes);
-			continue;
 		} else if (addr == 0)
 			tst_resm(TPASS, "huge mmap succeeded (32-bit)");
 #endif
@@ -183,13 +179,12 @@ int main(int ac, char **av)
 					 "munmap of addrlist[%d] failed", i);
 		}
 
-#if __WORDSIZE == 64
 		if (munmap(addr2, map_sz) == -1)
 			tst_brkm(TFAIL | TERRNO, NULL, "huge munmap failed");
-#endif
 		if (munmap(addr, page_sz) == -1)
 			tst_brkm(TFAIL | TERRNO, NULL, "munmap failed");
 
+		close(nfildes);
 		close(fildes);
 	}
 
