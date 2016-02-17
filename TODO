@@ -1,121 +1,39 @@
-The following things need to be rewritten/fixed
+LTP TODO
+--------
 
-quotactl01:
 
-This should generate dummy tmpfs partitions and delete them after the testcase is
-done as this test isn't executable on most systems (unless we're lucky and
-someone setup quotas on it already). A good amount of legwork was done with
-lib/mount_utils.c, but I've backed that out because it needed more polishing to
-get to a functional state, and the device *should* be generated outside of the
-quotactl01 test and destroyed at the end.
+Write more syscall tests
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following items need fixing with the new Makefile infrastructure:
+Syscalls and new syscall flags are added to Linux kernel each development cycle
+and LTP still falls behind. Unfortunately there is no single place that would
+store comprehensive list of syscalls, but there are a few places to look at:
 
-testcases/kernel/controllers/freezer/libcgroup_freezer:
-1. Uses pushd / popd, which isn't present in busybox.
+One of the options would be looking at changes in man-pages git[1] in man2/
+directory to find out newly documented functionality.
 
-testcases/kernel/fs/dmapi/Makefile:
-1. This test requires JFS support, which most systems don't have. So a set of
-   proper autoconf tests need to be added for this as well.
+Another good source of information are kernel pages in LWN[2] weekly
+editions.
 
-testcases/kernel/hotplug/cpu_hotplug/tools/report_proc_interrupts:
--  Is written in perl; should be rewritten in POSIX compliant bourne shell.
+Then there is linux-api mailing list[3] where changes in kernel userspace API
+should be discussed.
 
-testcases/kernel/hotplug/cpu_hotplug/...:
-1. Add in logic to install at runtime; you have to run it from the source tree
-   today, s.t. the runtest file is broken.
+[1] http://git.kernel.org/cgit/docs/man-pages/man-pages.git
+[2] http://lwn.net
+[3] http://dir.gmane.org/gmane.linux.kernel.api
 
-testcases/kernel/sched/nptl/Makefile:
-1. There's a $(shell ) call in the Makefile that needs to be replaced.
 
-testcases/network/multicast/...:
-1. These tests need to be fixed because they use make / install logic in the
-   tests:
+Rewrite old and add new controller testcases
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-<<<test_start>>>
-tag=mc_opts stime=1255502705
-cmdline="export TCsrc=$LTPROOT/testcases/network/multicast/mc_opts; mc_opts"
-contacts=""
-analysis=exit
-<<<test_output>>>
-gethostbyname*: Host name lookup failure
-install: cannot stat `/tests/ltp/opts': No such file or directory
-install: cannot stat `/tests/ltp/opts_e': No such file or directory
-mc_opts: doing /tests/ltp/testcases/bin/mc_opts.
-Running mc_opts opts_e on
-/tests/ltp/testcases/bin/mc_opts: line 86: /tests/ltp/bin/mc_opts13780/opts: No such file or directory
-mc_opts: doing /tests/ltp/testcases/bin/mc_opts.
-mc_opts: doing /tests/ltp/testcases/bin/mc_opts
-Test Failed: opts  failed
-<<<execution_status>>>
-initiation_status="ok"
-duration=1 termination_type=exited termination_id=1 corefile=no
-cutime=1 cstime=6
-<<<test_end>>>
+We already started working on this with rewriting cgroup_fj testcases and
+newly added pids testcases. Have a look at testcases/kernel/controllers/.
 
-testcases/network/rpc/rpc-tirpc-full-test-suite:
-1. This needs to be integrated into the build with a Makefile, as it's not
-   getting copied over with the install.
 
-testcases/network/tcp_cmds/perf_lan/Makefile:
-1. There are duplicate sourcefiles because I don't feel confident as far as
-   the changes were concerned on the sourcefiles and I was running into
-   compile issues with the IPv6 code.
+Shell tests cleanups
+~~~~~~~~~~~~~~~~~~~~
 
-testcases/network/stress/udp/...:
-1. Many of the scripts are installing themselves using the old-status quo
-   method of hardlinking into $(abs_top_srcdir)/testcases/bin, which means
-   that all of the scripts are being linked to the file
-   $(abs_top_srcdir)/testcases/bin .
-
-testcases/realtime/run.sh:
-1. Uses pushd / popd, which isn't present in busybox.
-
-tools/Makefile:
-1. netpipe* needs fixing and reorg, because it's referencing /home/mpich, etc.
-
-tools/create_kernel_faults_in_loops_and_probability.pl:
-tools/create_valgrind_check.pl:
-1. Could and should be rewritten in a unified awk wrapper.
-
-Other items of issue are listed below (from testscripts/ltp-missing-install-files.py):
-
-io-output.log: Tag | App
-io-output.log: runfstests.sh runfstests.sh
-ipv6-output.log: Tag | App
-ipv6-output.log: finger601 finger601
-ipv6-output.log: ping601 ping601
-ipv6-output.log: rlogin01 rlogin01
-ipv6-output.log: tcpdump601 tcpdump601
-ipv6-output.log: telnet01 telnet01
-ipv6_expect-output.log: Tag | App
-ipv6_expect-output.log: rlogin01 rlogin01
-ipv6_noexpect-output.log: Tag | App
-ipv6_noexpect-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratch/ltp-install5/testcases/bin/createfile
-modules-output.log: Tag | App
-modules-output.log: delete_module01 delete_module01
-modules-output.log: delete_module02 delete_module02
-modules-output.log: delete_module03 delete_module03
-multicast-output.log: Tag | App
-multicast-output.log: /scratch/ltp-install5/testcases/bin/mc_opts /scratch/ltp-install5/bin/mc_opts9521/opts
-stress.part3-output.log: Tag | App
-stress.part3-output.log: /scratch/ltp-install5/testcases/bin/mc_opts /scratch/ltp-install5/bin/mc_opts4243/opts
-tcp_cmds-output.log: Tag | App
-tcp_cmds-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratch/ltp-install5/testcases/bin/createfile
-tcp_cmds-output.log: rlogin01 rlogin01
-tcp_cmds-output.log: telnet01 telnet01
-tcp_cmds_expect-output.log: Tag | App
-tcp_cmds_expect-output.log: rlogin01 rlogin01
-tcp_cmds_expect-output.log: telnet01 telnet01
-tcp_cmds_noexpect-output.log: Tag | App
-tcp_cmds_noexpect-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratch/ltp-install5/testcases/bin/createfile
-
-/tests/ltp/output/tcp_cmds_noexpect-output.log:sendfile01    1  TFAIL  :  Test broken: gethost: command not found
-
-/tests/ltp/output/ipv6-output.log:sh: echo601: command not found
-/tests/ltp/output/ipv6-output.log:ftp01       1  TFAIL  :  Test broken: ftp: command not found
-/tests/ltp/output/ipv6-output.log:sh: perf_lan6: command not found
-/tests/ltp/output/ipv6-output.log:rcp01       1  TFAIL  :  Test broken: rcp: command not found
-/tests/ltp/output/ipv6-output.log:rsh01       1  TFAIL  :  Test broken: rsh: command not found
-/tests/ltp/output/ipv6-output.log:rwho01      1  TFAIL  :  Test broken: rsh: command not found
-/tests/ltp/output/ipv6-output.log:sh: sendfile601: command not found
+There are numerous testcases written in shell that does not follow single style
+and use the broken-by-design binaries from tools/apicmds. These should be
+cleaned up and fixed to use the test.sh test library. These include most of
+tests in testcases/commands/ for example.
