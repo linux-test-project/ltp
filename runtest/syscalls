@@ -122,6 +122,7 @@ dup3_02 dup3_02
 
 epoll_create1_01 epoll_create1_01
 epoll01 epoll-ltp
+epoll_wait01 epoll_wait01
 
 eventfd01 eventfd01
 
