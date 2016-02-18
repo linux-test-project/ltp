@@ -118,10 +118,11 @@ static void cleanup(void)
 
 static void renameat2_verify(void)
 {
-	char str[sizeof(content)];
+	char str[BUFSIZ] = { 0 };
 	struct stat st;
 	char *emptyfile;
 	char *contentfile;
+	int readn, data_len;
 
 	if (TEST_ERRNO == EINVAL && TST_BTRFS_MAGIC == fs_type) {
 		tst_brkm(TCONF, cleanup,
@@ -146,17 +147,26 @@ static void renameat2_verify(void)
 
 	SAFE_STAT(cleanup, emptyfile, &st);
 
-	SAFE_READ(cleanup, 0, fd, str, strlen(content) + 10);
+	readn = SAFE_READ(cleanup, 0, fd, str, BUFSIZ);
 
 	if (close(fd) < 0)
 		tst_brkm(TERRNO | TFAIL, cleanup, "close fd failed");
 	fd = 0;
 
-	if (str[strlen(content)] == '\0' && !strcmp(content, str)
-		&& !st.st_size)
-		tst_resm(TPASS,
-			"renameat2() swapped the content of the two files");
-	else
-		tst_resm(TFAIL,
-			"renameat2() didn't swap the content of the two files");
+	data_len = sizeof(content) - 1;
+	if (readn != data_len) {
+		tst_resm(TFAIL, "Wrong number of bytes read after renameat2(). "
+				"Expect %d, got %d", data_len, readn);
+		return;
+	}
+	if (strncmp(content, str, data_len)) {
+		tst_resm(TFAIL, "File content changed after renameat2(). "
+				"Expect '%s', got '%s'", content, str);
+		return;
+	}
+	if (st.st_size) {
+		tst_resm(TFAIL, "emptyfile has non-zero file size");
+		return;
+	}
+	tst_resm(TPASS, "renameat2() test passed");
 }
