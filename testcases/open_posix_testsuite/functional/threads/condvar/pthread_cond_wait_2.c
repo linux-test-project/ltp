@@ -39,8 +39,8 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 /* Flags that the threads use to indicate events */
-int woken_up = -1;
-int low_done = -1;
+static volatile int woken_up;
+static volatile int low_done;
 
 void signal_handler(int sig)
 {
@@ -85,7 +85,7 @@ void *hi_prio_thread(void *tmp)
 	/* This variable is unprotected because the scheduling removes
 	 * the contention
 	 */
-	if (low_done != 1)
+	if (!low_done)
 		woken_up = 1;
 
 	SAFE_PFUNC(pthread_mutex_unlock(&mutex));
@@ -109,7 +109,7 @@ void *low_prio_thread(void *tmp)
 	}
 
 	clock_gettime(CLOCK_REALTIME, &start_time);
-	while (1) {
+	while (!woken_up) {
 		clock_gettime(CLOCK_REALTIME, &current_time);
 		if (timediff(current_time, start_time) > RUNTIME)
 			break;
@@ -142,8 +142,8 @@ int main()
 	SAFE_PFUNC(pthread_join(high_id, NULL));
 	SAFE_PFUNC(pthread_join(low_id, NULL));
 
-	if (woken_up == -1) {
-		printf("Test FAILED: high priority was not woken up\\n");
+	if (!woken_up) {
+		printf("Test FAILED: high priority was not woken up\n");
 		exit(PTS_FAIL);
 	}
 

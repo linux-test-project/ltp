@@ -37,8 +37,8 @@
 #define RUNTIME 5
 
 pthread_barrier_t barrier;
-volatile int woken_up = -1;
-volatile int low_done = -1;
+static volatile int woken_up;
+static volatile int low_done;
 
 float timediff(struct timespec t2, struct timespec t1)
 {
@@ -91,7 +91,7 @@ void *hi_prio_thread(void *tmp)
 	/* This variable is unprotected because the scheduling removes
 	 * the contention
 	 */
-	if (low_done != 1)
+	if (!low_done)
 		woken_up = 1;
 
 	pthread_exit(NULL);
@@ -113,7 +113,7 @@ void *low_prio_thread(void *tmp)
 	}
 
 	clock_gettime(CLOCK_REALTIME, &start_timespec);
-	while (1) {
+	while (!woken_up) {
 		clock_gettime(CLOCK_REALTIME, &current_timespec);
 		if (timediff(current_timespec, start_timespec) > RUNTIME)
 			break;
@@ -149,7 +149,7 @@ int main()
 	SAFE_PFUNC(pthread_join(high_id, NULL));
 	SAFE_PFUNC(pthread_join(low_id, NULL));
 
-	if (woken_up == -1) {
+	if (!woken_up) {
 		printf("High priority was not woken up. Test FAILED\n");
 		exit(PTS_FAIL);
 	}
