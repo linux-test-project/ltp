@@ -70,8 +70,7 @@ void *hi_prio_thread(void *tmp)
 	void *previous_signal;
 
 	(void) tmp;
-	param.sched_priority = HIGH_PRIORITY;
-	SAFE_PFUNC(pthread_setschedparam(pthread_self(), SCHED_RR, &param));
+
 	SAFE_PFUNC(pthread_getschedparam(pthread_self(), &policy, &param));
 	if (policy != SCHED_RR || param.sched_priority != HIGH_PRIORITY) {
 		printf("Error: the policy or priority not correct\n");
@@ -104,8 +103,7 @@ void *low_prio_thread(void *tmp)
 	int policy;
 
 	(void) tmp;
-	param.sched_priority = LOW_PRIORITY;
-	SAFE_PFUNC(pthread_setschedparam(pthread_self(), SCHED_RR, &param));
+
 	SAFE_PFUNC(pthread_getschedparam(pthread_self(), &policy, &param));
 	if (policy != SCHED_RR || param.sched_priority != LOW_PRIORITY) {
 		printf("Error: the policy or priority not correct\n");
@@ -133,6 +131,7 @@ int main()
 
 	/* Create the higher priority */
 	SAFE_PFUNC(pthread_attr_init(&high_attr));
+	SAFE_PFUNC(pthread_attr_setinheritsched(&high_attr, PTHREAD_EXPLICIT_SCHED));
 	SAFE_PFUNC(pthread_attr_setschedpolicy(&high_attr, SCHED_RR));
 	param.sched_priority = HIGH_PRIORITY;
 	SAFE_PFUNC(pthread_attr_setschedparam(&high_attr, &param));
@@ -140,6 +139,7 @@ int main()
 
 	/* Create the low priority thread */
 	SAFE_PFUNC(pthread_attr_init(&low_attr));
+	SAFE_PFUNC(pthread_attr_setinheritsched(&low_attr, PTHREAD_EXPLICIT_SCHED));
 	SAFE_PFUNC(pthread_attr_setschedpolicy(&low_attr, SCHED_RR));
 	param.sched_priority = LOW_PRIORITY;
 	SAFE_PFUNC(pthread_attr_setschedparam(&low_attr, &param));
