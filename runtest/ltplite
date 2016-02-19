@@ -387,6 +387,8 @@ link08 link08
 
 listen01 listen01
 
+llistxattr01 llistxattr01
+
 llseek01 llseek01
 llseek02 llseek02
 llseek03 llseek03
