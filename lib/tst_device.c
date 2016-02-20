@@ -203,6 +203,11 @@ const char *tst_acquire_device(void (cleanup_fn)(void))
 			         "%s is not a block device", dev);
 		}
 
+		if (tst_fill_file(dev, 0, 1024, 512)) {
+			tst_brkm(TBROK | TERRNO, cleanup_fn,
+				 "Failed to clear the first 512k of %s", dev);
+		}
+
 		return dev;
 	}
 

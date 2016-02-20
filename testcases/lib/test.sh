@@ -259,6 +259,9 @@ tst_acquire_device()
 		if [ ! -b ${LTP_DEV} ]; then
 			tst_brkm TBROK "${LTP_DEV} is not a block device"
 		fi
+
+		ROD_SILENT dd if=/dev/zero of="${LTP_DEV}" bs=1024 count=512
+
 		TST_DEVICE=${LTP_DEV}
 		TST_DEVICE_FLAG=0
 		return
