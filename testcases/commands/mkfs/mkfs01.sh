@@ -90,7 +90,7 @@ mkfs_verify_type()
 mkfs_verify_size()
 {
 	mkfs_mount
-	local blocknum=`df -B 1k mntpoint | tail -n1 | awk '{print $2}'`
+	local blocknum=`df -P -B 1k mntpoint | tail -n1 | awk '{print $2}'`
 	tst_umount "$TST_DEVICE"
 
 	if [ $blocknum -gt "$2" ]; then
