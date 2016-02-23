@@ -95,8 +95,8 @@ void setup(void)
 	if (access(PATH_KSM "merge_across_nodes", F_OK) == -1)
 		tst_brkm(TCONF, NULL, "no merge_across_nodes sysfs knob");
 
-	if (!is_numa(NULL))
-		tst_brkm(TCONF, NULL, "The case need a NUMA system.");
+	if (!is_numa(NULL, NH_MEMS, 2))
+		tst_brkm(TCONF, NULL, "The case needs a NUMA system.");
 
 	/* save the current value */
 	SAFE_FILE_SCANF(NULL, PATH_KSM "run", "%d", &run);

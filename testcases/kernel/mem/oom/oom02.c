@@ -79,7 +79,7 @@ void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
-	if (!is_numa(NULL))
+	if (!is_numa(NULL, NH_MEMS, 2))
 		tst_brkm(TCONF, NULL, "The case need a NUMA system.");
 
 	overcommit = get_sys_tune("overcommit_memory");

@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 		}
 
 		/* OOM for MEMCG with mempolicy */
-		if (is_numa(cleanup)) {
+		if (is_numa(cleanup, NH_MEMS, 2)) {
 			tst_resm(TINFO, "OOM on MEMCG & mempolicy...");
 			testoom(MPOL_BIND, 0, ENOMEM, 1);
 			testoom(MPOL_INTERLEAVE, 0, ENOMEM, 1);

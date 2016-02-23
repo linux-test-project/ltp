@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 		tst_resm(TINFO, "OOM on CPUSET...");
 		testoom(0, 0, ENOMEM, 1);
 
-		if (is_numa(cleanup)) {
+		if (is_numa(cleanup, NH_MEMS, 2)) {
 			/*
 			 * Under NUMA system, the migration of cpuset's memory
 			 * is in charge of cpuset.memory_migrate, we can write
@@ -86,6 +86,9 @@ void setup(void)
 	tst_require_root();
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
+
+	if (!is_numa(NULL, NH_MEMS, 1))
+		tst_brkm(TCONF, NULL, "requires NUMA with at least 1 node");
 
 	overcommit = get_sys_tune("overcommit_memory");
 	set_sys_tune("overcommit_memory", 1, 1);

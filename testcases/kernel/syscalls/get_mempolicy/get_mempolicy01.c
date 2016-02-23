@@ -339,6 +339,9 @@ static void setup(void)
 	/* check syscall availability */
 	ltp_syscall(__NR_get_mempolicy, NULL, NULL, 0, NULL, 0);
 
+	if (!is_numa(NULL, NH_MEMS, 1))
+		tst_brkm(TCONF, NULL, "requires NUMA with at least 1 node");
+
 	TEST_PAUSE;
 	tst_tmpdir();
 }

@@ -226,8 +226,8 @@ static void setup(void)
 	tst_require_root();
 	TEST(ltp_syscall(__NR_migrate_pages, 0, 0, NULL, NULL));
 
-	if (numa_available() == -1)
-		tst_brkm(TCONF, NULL, "NUMA not available");
+	if (!is_numa(NULL, NH_MEMS, 1))
+		tst_brkm(TCONF, NULL, "requires NUMA with at least 1 node");
 
 	ret = get_allowed_nodes(NH_MEMS, 1, &node);
 	if (ret < 0)
