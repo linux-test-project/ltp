@@ -13,14 +13,15 @@
  * 1. Create a mutex and lock
  * 2. Create a high priority thread and make it wait on the mutex
  * 3. Create a low priority thread and let it busy-loop
- * 4. Unlock the mutex and make sure that the higher priority thread
- *    got woken up
+ * 4. Both low and high prio threads run on same CPU
+ * 5. Unlock the mutex and make sure that the higher priority thread
+ *    got woken up and preempted low priority thread
  */
 
+#include "affinity.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <unistd.h>
 #include <sys/time.h>
 #include "posixtest.h"
@@ -36,8 +37,6 @@
 #define RUNTIME 5
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 static volatile int woken_up;
 static volatile int low_done;
@@ -49,18 +48,13 @@ float timediff(struct timespec t2, struct timespec t1)
 	return diff;
 }
 
-void signal_handler(int sig)
-{
-	(void) sig;
-	SAFE_PFUNC(pthread_cond_signal(&cond));
-}
-
 void *hi_prio_thread(void *tmp)
 {
 	struct sched_param param;
 	int policy;
 
 	(void) tmp;
+	set_affinity_single();
 
 	SAFE_PFUNC(pthread_getschedparam(pthread_self(), &policy, &param));
 	if (policy != SCHED_RR) {
@@ -91,6 +85,7 @@ void *low_prio_thread(void *tmp)
 	int policy;
 
 	(void) tmp;
+	set_affinity_single();
 
 	SAFE_PFUNC(pthread_getschedparam(pthread_self(), &policy, &param));
 	if (policy != SCHED_RR) {
@@ -149,28 +144,19 @@ int main()
 	SAFE_PFUNC(pthread_attr_setschedparam(&low_attr, &param));
 	SAFE_PFUNC(pthread_create(&low_id, &low_attr, low_prio_thread, NULL));
 
-	/* setup a signal handler which will wakeup main later */
-	if (signal(SIGALRM, signal_handler) == SIG_ERR) {
-		perror(ERROR_PREFIX "signal");
-		exit(PTS_UNRESOLVED);
-	}
-
-	SAFE_PFUNC(pthread_mutex_lock(&cond_mutex));
-	alarm(2);
-	SAFE_PFUNC(pthread_cond_wait(&cond, &cond_mutex));
-	SAFE_PFUNC(pthread_mutex_unlock(&cond_mutex));
+	sleep(1);
 
 	/* Wake the other high priority thread up */
 	SAFE_PFUNC(pthread_mutex_unlock(&mutex));
 
 	/* Wait for the threads to exit */
-	SAFE_PFUNC(pthread_join(high_id, NULL));
 	SAFE_PFUNC(pthread_join(low_id, NULL));
-
 	if (!woken_up) {
 		printf("High priority was not woken up. Test FAILED.\n");
 		exit(PTS_FAIL);
 	}
+	SAFE_PFUNC(pthread_join(high_id, NULL));
+
 	printf("Test PASSED\n");
 	exit(PTS_PASS);
 }
