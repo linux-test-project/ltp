@@ -150,12 +150,17 @@ void oom(int testcase, int lite, int retcode, int allow_sigkill)
 				WTERMSIG(status),
 				tst_strsig(WTERMSIG(status)));
 		}
-	} else	if (WIFEXITED(status) && WEXITSTATUS(status) == retcode) {
-		tst_resm(TPASS, "victim retcode: (%d) %s",
+	} else if (WIFEXITED(status)) {
+		if (WEXITSTATUS(status) == retcode) {
+			tst_resm(TPASS, "victim retcode: (%d) %s",
 				retcode, strerror(retcode));
+		} else {
+			tst_resm(TFAIL, "victim unexpectedly ended with "
+				"retcode: %d, expected: %d",
+				WEXITSTATUS(status), retcode);
+		}
 	} else {
-		tst_resm(TFAIL, "victim unexpectedly ended with retcode: %d, "
-				"expected: %d", WEXITSTATUS(status), retcode);
+		tst_resm(TFAIL, "victim unexpectedly ended");
 	}
 }
 
