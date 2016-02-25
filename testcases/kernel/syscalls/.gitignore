@@ -476,6 +476,7 @@
 /listen/listen01
 /llistxattr/llistxattr01
 /llistxattr/llistxattr02
+/llistxattr/llistxattr03
 /llseek/llseek01
 /llseek/llseek02
 /llseek/llseek03

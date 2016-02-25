@@ -516,6 +516,7 @@ listen01 listen01
 
 llistxattr01 llistxattr01
 llistxattr02 llistxattr02
+llistxattr03 llistxattr03
 
 llseek01 llseek01
 llseek02 llseek02
