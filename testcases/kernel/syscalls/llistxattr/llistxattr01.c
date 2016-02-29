@@ -30,90 +30,18 @@
 #include <string.h>
 
 #ifdef HAVE_ATTR_XATTR_H
-#include <attr/xattr.h>
+# include <attr/xattr.h>
 #endif
 
-#include "test.h"
-#include "safe_macros.h"
-
-char *TCID = "llistxattr01";
+#include "tst_test.h"
 
 #ifdef HAVE_ATTR_XATTR_H
+
 #define SECURITY_KEY1	"security.ltptest1"
 #define SECURITY_KEY2	"security.ltptest2"
 #define VALUE	"test"
 #define VALUE_SIZE	4
 #define KEY_SIZE    17
-
-static void verify_llistxattr(void);
-static void setup(void);
-static void set_xattr(const char *, const char *);
-static int has_attribute(const char *, int, const char *);
-static void cleanup(void);
-
-int TST_TOTAL = 1;
-
-int main(int ac, char **av)
-{
-	int lc;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		verify_llistxattr();
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-static void verify_llistxattr(void)
-{
-	int size = 64;
-	char buf[size];
-
-	TEST(llistxattr("symlink", buf, size));
-	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL | TERRNO, "llistxattr() failed");
-		return;
-	}
-
-	if (has_attribute(buf, size, SECURITY_KEY1)) {
-		tst_resm(TFAIL, "get file attribute %s unexpectlly",
-			 SECURITY_KEY1);
-		return;
-	}
-
-	if (!has_attribute(buf, size, SECURITY_KEY2)) {
-		tst_resm(TFAIL, "missing attribute %s", SECURITY_KEY2);
-		return;
-	}
-
-	tst_resm(TPASS, "llistxattr() succeeded");
-}
-
-static void setup(void)
-{
-	tst_require_root();
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
-	SAFE_TOUCH(cleanup, "testfile", 0644, NULL);
-
-	SAFE_SYMLINK(cleanup, "testfile", "symlink");
-
-	set_xattr("testfile", SECURITY_KEY1);
-
-	set_xattr("symlink", SECURITY_KEY2);
-}
 
 static void set_xattr(const char *path, const char *key)
 {
@@ -122,15 +50,15 @@ static void set_xattr(const char *path, const char *key)
 	n = lsetxattr(path, key, VALUE, VALUE_SIZE, XATTR_CREATE);
 	if (n == -1) {
 		if (errno == ENOTSUP) {
-			tst_brkm(TCONF, cleanup,
+			tst_brk(TCONF,
 				 "no xattr support in fs or mounted "
 				 "without user_xattr option");
 		}
 
 		if (errno == EEXIST) {
-			tst_brkm(TBROK, cleanup, "exist attribute %s", key);
+			tst_brk(TBROK, "exist attribute %s", key);
 		} else {
-			tst_brkm(TBROK | TERRNO, cleanup,
+			tst_brk(TBROK | TERRNO,
 				 "lsetxattr() failed");
 		}
 	}
@@ -147,14 +75,51 @@ static int has_attribute(const char *list, int llen, const char *attr)
 	return 0;
 }
 
-static void cleanup(void)
+static void verify_llistxattr(void)
 {
-	tst_rmdir();
+	int size = 64;
+	char buf[size];
+
+	TEST(llistxattr("symlink", buf, size));
+	if (TEST_RETURN == -1) {
+		tst_res(TFAIL | TERRNO, "llistxattr() failed");
+		return;
+	}
+
+	if (has_attribute(buf, size, SECURITY_KEY1)) {
+		tst_res(TFAIL, "get file attribute %s unexpectlly",
+			 SECURITY_KEY1);
+		return;
+	}
+
+	if (!has_attribute(buf, size, SECURITY_KEY2)) {
+		tst_res(TFAIL, "missing attribute %s", SECURITY_KEY2);
+		return;
+	}
+
+	tst_res(TPASS, "llistxattr() succeeded");
 }
 
-#else /* HAVE_ATTR_XATTR_H */
-int main(int ac, char **av)
+static void setup(void)
 {
-	tst_brkm(TCONF, NULL, "<attr/xattr.h> does not exist.");
+	SAFE_TOUCH("testfile", 0644, NULL);
+
+	SAFE_SYMLINK("testfile", "symlink");
+
+	set_xattr("testfile", SECURITY_KEY1);
+
+	set_xattr("symlink", SECURITY_KEY2);
 }
-#endif
+
+static struct tst_test test = {
+	.tid = "llistxattr01",
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.test_all = verify_llistxattr,
+	.setup = setup,
+};
+
+#else
+	TST_TEST_TCONF("<attr/xattr.h> does not exist.");
+#endif /* HAVE_ATTR_XATTR_H */
+
