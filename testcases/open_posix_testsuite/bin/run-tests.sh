@@ -29,7 +29,7 @@ run_test_loop() {
 
 	cat <<EOF
 *******************
-Testing $(basename $CWD)
+Testing $(basename $PWD)
 *******************
 $(printf "PASS\t\t%3d" $NUM_PASS)
 $(printf "FAIL\t\t%3d" $NUM_FAIL)
