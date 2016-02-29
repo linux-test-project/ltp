@@ -717,6 +717,7 @@
 /recv/recv01
 /recvfrom/recvfrom01
 /recvmsg/recvmsg01
+/recvmsg/recvmsg02
 /remap_file_pages/remap_file_pages01
 /remap_file_pages/remap_file_pages02
 /rename/rename01
