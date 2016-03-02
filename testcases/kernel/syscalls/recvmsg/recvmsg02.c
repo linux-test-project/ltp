@@ -34,6 +34,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/socket.h"
 
 const char *TCID = "recvmsg02";
 int TST_TOTAL = 1;
@@ -101,6 +102,11 @@ void run_test(void)
 int main(int argc, char *argv[])
 {
 	int lc;
+
+	if ((tst_kvercmp(2, 6, 27)) < 0) {
+		tst_brkm(TCONF, NULL, "This test can only run on kernels"
+			 "that are 2.6.27 and higher");
+	}
 
 	tst_parse_opts(argc, argv, NULL, NULL);
 
