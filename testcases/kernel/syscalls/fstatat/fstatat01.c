@@ -33,6 +33,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include "config.h"
 #include "test.h"
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
@@ -58,40 +59,33 @@ static const char *filenames[TEST_CASES];
 static const int expected_errno[] = { 0, 0, ENOTDIR, EBADF, EINVAL, 0 };
 static const int flags[] = { 0, 0, 0, 0, 9999, 0 };
 
-/* TODO (garrcoop): properly port to fstatat64. */
-#if (defined __NR_fstatat64) && (__NR_fstatat64 != 0)
-struct stat64 statbuf;
-#else
-struct stat statbuf;
-#endif
-
-/*
- * XXX (garrcoop): NO NO NO NO NO NO NO NO NO ... use linux_syscall_numbers.h!
- */
-/* __NR_fstatat64 and __NR_fstatat64 if not defined are ALWAYS stubbed by
- *  linux_syscall_numbers.h Need to check for 0 to avoid testing with stubs */
-#if (defined __NR_fstatat64) && (__NR_fstatat64 != 0)
-int myfstatat(int dirfd, const char *filename, struct stat64 *statbuf,
-	      int flags)
+#if !defined(HAVE_FSTATAT)
+#if (__NR_fstatat64 > 0)
+int fstatat(int dirfd, const char *filename, struct stat64 *statbuf, int flags)
 {
 	return ltp_syscall(__NR_fstatat64, dirfd, filename, statbuf, flags);
 }
-#elif (defined __NR_newfstatat) && (__NR_newfstatat != 0)
-int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
+#elif (__NR_newfstatat > 0)
+int fstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
 	return ltp_syscall(__NR_newfstatat, dirfd, filename, statbuf, flags);
 }
 #else
-/* stub - will never run */
-int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
+int fstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
-	return ltp_syscall(0, dirfd, filename, statbuf, flags);
+	return ltp_syscall(__NR_fstatat, dirfd, filename, statbuf, flags);
 }
+#endif
 #endif
 
 int main(int ac, char **av)
 {
 	int lc, i;
+#if !defined(HAVE_FSTATAT) && (__NR_fstatat64 > 0)
+	static struct stat64 statbuf;
+#else
+	static struct stat statbuf;
+#endif
 
 	if (tst_kvercmp(2, 6, 16) < 0)
 		tst_brkm(TCONF, NULL, "Test must be run with kernel 2.6.16+");
@@ -104,8 +98,7 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(myfstatat
-			     (fds[i], filenames[i], &statbuf, flags[i]));
+			TEST(fstatat(fds[i], filenames[i], &statbuf, flags[i]));
 
 			if (TEST_ERRNO == expected_errno[i]) {
 				tst_resm(TPASS | TTERRNO,
@@ -156,3 +149,4 @@ void cleanup(void)
 	free(testfile3);
 	tst_rmdir();
 }
+
