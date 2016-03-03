@@ -125,6 +125,7 @@ epoll01 epoll-ltp
 epoll_wait01 epoll_wait01
 epoll_wait02 epoll_wait02
 epoll_wait03 epoll_wait03
+epoll_pwait01 epoll_pwait01
 
 eventfd01 eventfd01
 

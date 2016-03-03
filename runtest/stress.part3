@@ -104,6 +104,8 @@ epoll_wait01 epoll_wait01
 epoll_wait02 epoll_wait02
 epoll_wait03 epoll_wait03
 
+epoll_pwait01 epoll_pwait01
+
 execl01 execl01
 execle01 execle01
 execlp01 execlp01

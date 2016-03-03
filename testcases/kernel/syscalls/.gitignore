@@ -100,6 +100,7 @@
 /epoll_wait/epoll_wait01
 /epoll_wait/epoll_wait02
 /epoll_wait/epoll_wait03
+/epoll_pwait/epoll_pwait01
 /eventfd/eventfd01
 /eventfd2/eventfd2_01
 /eventfd2/eventfd2_02
