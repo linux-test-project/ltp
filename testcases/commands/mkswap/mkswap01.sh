@@ -64,7 +64,7 @@ wait_for_file()
 		tst_sleep 10ms
 	done
 
-	tst_resm TWARN "The file $path haven't appeared"
+	tst_resm TINFO "The file $path haven't appeared"
 }
 
 mkswap_verify()
