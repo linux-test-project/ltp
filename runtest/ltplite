@@ -649,6 +649,8 @@ recvfrom01 recvfrom01
 
 recvmsg01 recvmsg01
 
+removexattr01 removexattr01
+
 rename01 rename01
 rename01A symlink01 -T rename01
 rename02 rename02

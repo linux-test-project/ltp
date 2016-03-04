@@ -721,6 +721,7 @@
 /recvmsg/recvmsg02
 /remap_file_pages/remap_file_pages01
 /remap_file_pages/remap_file_pages02
+/removexattr/removexattr01
 /rename/rename01
 /rename/rename02
 /rename/rename03

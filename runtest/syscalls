@@ -871,6 +871,8 @@ recvmsg02 recvmsg02
 remap_file_pages01 remap_file_pages01
 remap_file_pages02 remap_file_pages02
 
+removexattr01 removexattr01
+
 rename01 rename01
 rename01A symlink01 -T rename01
 rename02 rename02
