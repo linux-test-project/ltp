@@ -25,6 +25,7 @@
  * DESCRIPTION
  *     Check that fanotify permission events work
  */
+#define _GNU_SOURCE
 #include "config.h"
 
 #include <stdio.h>
