@@ -25,6 +25,7 @@
  * DESCRIPTION
  *     Check that fanotify work for children of a directory
  */
+#define _GNU_SOURCE
 #include "config.h"
 
 #include <stdio.h>

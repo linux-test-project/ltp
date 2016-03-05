@@ -25,6 +25,8 @@
  * DESCRIPTION
  *     Check various fanotify special flags
  */
+
+#define _GNU_SOURCE
 #include "config.h"
 
 #include <stdio.h>
