@@ -145,6 +145,30 @@ static void __attribute__((used)) __sigreturn_stub(void)
 # endif
 #endif /* __sparc__ */
 
+#ifdef __arc__
+
+#undef SA_RESTORER
+#define SA_RESTORER     0x04000000
+
+/*
+ * based on uClibc/libc/sysdeps/linux/arc/sigaction.c
+ */
+static void
+__attribute__ ((optimize("Os"))) __attribute__((used)) restore_rt(void)
+{
+	__asm__ (
+		"mov r8, %0	\n\t"
+#ifdef __ARCHS__
+		"trap_s	0	\n\t"
+#else
+		"trap0	\n\t"
+#endif
+		: /* no outputs */
+		: "i" (__NR_rt_sigreturn)
+		: "r8");
+}
+#endif
+
 /* This is a wrapper for __NR_rt_sigaction syscall.
  * act/oact values of INVAL_SA_PTR is used to pass
  * an invalid pointer to syscall(__NR_rt_sigaction)
@@ -178,6 +202,9 @@ static int ltp_rt_sigaction(int signum, const struct sigaction *act,
 
 #ifdef __x86_64__
 	sig_initial(signum);
+#endif
+
+#if defined __x86_64__ || defined __arc__
 	kact.sa_flags |= SA_RESTORER;
 	kact.sa_restorer = restore_rt;
 #endif
