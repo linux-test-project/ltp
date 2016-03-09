@@ -32,19 +32,17 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 #include "lapi/socket.h"
-
-const char *TCID = "recvmsg02";
-int TST_TOTAL = 1;
 
 static const char msg[] = "Michael Gilfix was here\341\210\264\r\n";
 static const unsigned msglen = ARRAY_SIZE(msg) - 1;
 static unsigned char buff[25];
 static const int bufflen = ARRAY_SIZE(buff);
 
-void run_test(void)
+static int sdr, sdw;
+
+static void verify_recvmsg(void)
 {
 	struct sockaddr_in6 addr_init = {
 		.sin6_family	= AF_INET6,
@@ -66,52 +64,50 @@ void run_test(void)
 		.msg_controllen	= 0,
 		.msg_flags	= 0,
 	};
-	int sdr, sdw;
 	int R;
 
-	sdr = SAFE_SOCKET(NULL, PF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_IP);
-	SAFE_BIND(NULL, sdr, (struct sockaddr*)&addr_init, sizeof(addr_init));
+	sdr = SAFE_SOCKET(PF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_IP);
+	SAFE_BIND(sdr, (struct sockaddr*)&addr_init, sizeof(addr_init));
 	addrlen_r = sizeof(addr_r);
-	SAFE_GETSOCKNAME(NULL, sdr, (struct sockaddr*)&addr_r, &addrlen_r);
-	sdw = SAFE_SOCKET(NULL, PF_INET6, SOCK_DGRAM|SOCK_CLOEXEC, IPPROTO_IP);
-	SAFE_BIND(NULL, sdw, (struct sockaddr*)&addr_init, sizeof(addr_init));
+	SAFE_GETSOCKNAME(sdr, (struct sockaddr*)&addr_r, &addrlen_r);
+	sdw = SAFE_SOCKET(PF_INET6, SOCK_DGRAM|SOCK_CLOEXEC, IPPROTO_IP);
+	SAFE_BIND(sdw, (struct sockaddr*)&addr_init, sizeof(addr_init));
 	addrlen_w = sizeof(addr_w);
-	SAFE_GETSOCKNAME(NULL, sdw, (struct sockaddr*)&addr_w, &addrlen_w);
+	SAFE_GETSOCKNAME(sdw, (struct sockaddr*)&addr_w, &addrlen_w);
 
 	R = sendto(sdw, msg, msglen, 0, (struct sockaddr*)&addr_r, addrlen_r);
 	if (R < 0)
-		tst_brkm(TBROK | TERRNO, NULL, "sendto()");
+		tst_brk(TBROK | TERRNO, "sendto()");
 
 	R = recvmsg(sdr, &msghdr, MSG_PEEK);
 	if (R < 0) {
-		tst_resm(TFAIL | TERRNO, "recvmsg(..., MSG_PEEK)");
+		tst_res(TFAIL | TERRNO, "recvmsg(..., MSG_PEEK)");
 		return;
 	}
 
-	tst_resm(TINFO, "received %d bytes", R);
+	tst_res(TINFO, "received %d bytes", R);
 
 	if ((R == bufflen) && !memcmp(msg, buff, R))
-		tst_resm(TPASS, "recvmsg(..., MSG_PEEK) works fine");
+		tst_res(TPASS, "recvmsg(..., MSG_PEEK) works fine");
 	else
-		tst_resm(TPASS, "recvmsg(..., MSG_PEEK) failed");
+		tst_res(TPASS, "recvmsg(..., MSG_PEEK) failed");
 
-	close(sdw);
-	close(sdr);
+	SAFE_CLOSE(sdw);
+	SAFE_CLOSE(sdr);
 }
 
-int main(int argc, char *argv[])
+static void cleanup(void)
 {
-	int lc;
+	if (sdw > 0 && close(sdw))
+		tst_res(TWARN | TERRNO, "close(sdw) failed");
 
-	if ((tst_kvercmp(2, 6, 27)) < 0) {
-		tst_brkm(TCONF, NULL, "This test can only run on kernels"
-			 "that are 2.6.27 and higher");
-	}
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	for (lc = 0; TEST_LOOPING(lc); ++lc)
-		run_test();
-
-	tst_exit();
+	if (sdr > 0 && close(sdr))
+		tst_res(TWARN | TERRNO, "close(sdr) failed");
 }
+
+static struct tst_test test = {
+	.tid = "recvmsg02",
+	.min_kver = "2.6.27",
+	.test_all = verify_recvmsg,
+	.cleanup = cleanup,
+};
