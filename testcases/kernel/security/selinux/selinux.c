@@ -11,41 +11,41 @@ static int old_enforcing;
 
 static void setup(void)
 {
-	tst_require_root();
-	tst_tmpdir();
+  tst_require_root();
+  tst_tmpdir();
 
-	if (!is_selinux_enabled()) {
+  if (!is_selinux_enabled()) {
     tst_brkm(TBROK, cleanup, "selinux not enabled\n");
   }
 
   old_enforcing = security_getenforce();
 
-	int setenforce_failure = security_setenforce(1);
+  int setenforce_failure = security_setenforce(1);
   if (setenforce_failure) {
     tst_brkm(TBROK, cleanup, "unable to enforce selinux. errno: %d", errno);
   }
 
-	TEST_PAUSE;
+  TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	tst_rmdir();
-	security_setenforce(old_enforcing);
+  tst_rmdir();
+  security_setenforce(old_enforcing);
 }
 
 int main(void)
 {
-	setup();
+  setup();
 
-	int fd;
+  int fd;
   fd = creat("file", 0600);
   if (-1 == fd) {
     tst_brkm(TBROK, cleanup, "could not create file errno: %d", errno);
   } else {
-		printf("created file %d", fd);
-	}
+    printf("created file %d", fd);
+  }
 
-	cleanup();
-	tst_exit();
+  cleanup();
+  tst_exit();
 }
