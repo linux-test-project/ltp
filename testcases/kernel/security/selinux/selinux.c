@@ -43,7 +43,7 @@ int main(void)
   if (-1 == fd) {
     tst_brkm(TBROK, cleanup, "could not create file errno: %d", errno);
   } else {
-    printf("created file %d", fd);
+    printf("created file %d\n", fd);
   }
 
   cleanup();
