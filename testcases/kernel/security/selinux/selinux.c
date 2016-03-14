@@ -5,7 +5,6 @@ int TST_TOTAL = 1;
 
 static void cleanup(void);
 static void setup(void);
-int main(void);
 
 static int old_enforcing;
 
