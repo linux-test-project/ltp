@@ -15,41 +15,41 @@ static int old_enforcing;
 
 static void setup(void)
 {
-  tst_require_root();
-  tst_tmpdir();
+	tst_require_root();
+	tst_tmpdir();
 
-  if (!is_selinux_enabled()) {
-    tst_brkm(TBROK, cleanup, "selinux not enabled\n");
-  }
+	if (!is_selinux_enabled())
+		tst_brkm(TBROK, cleanup, "selinux not enabled\n");
 
-  old_enforcing = security_getenforce();
+	old_enforcing = security_getenforce();
 
-  int setenforce_failure = security_setenforce(1);
-  if (setenforce_failure) {
-    tst_brkm(TBROK, cleanup, "unable to enforce selinux. errno: %d", errno);
-  }
+	int setenforce_failure = security_setenforce(1);
 
-  TEST_PAUSE;
+	if (setenforce_failure)
+		tst_brkm(TBROK, cleanup,
+			"unable to enforce selinux: %d", errno);
+
+	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-  tst_rmdir();
-  security_setenforce(old_enforcing);
+	tst_rmdir();
+	security_setenforce(old_enforcing);
 }
 
 int main(void)
 {
-  setup();
+	setup();
 
-  int fd;
-  fd = creat("file", 0600);
-  if (-1 == fd) {
-    tst_brkm(TBROK, cleanup, "could not create file errno: %d", errno);
-  } else {
-    printf("created file %d\n", fd);
-  }
+	int fd;
 
-  cleanup();
-  tst_exit();
+	fd = creat("file", 0600);
+	if (-1 == fd)
+		tst_brkm(TBROK, cleanup, "could not create file: %d", errno);
+	else
+		printf("created file %d\n", fd);
+
+	cleanup();
+	tst_exit();
 }
