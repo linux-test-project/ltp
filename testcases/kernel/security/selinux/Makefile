@@ -4,7 +4,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 INSTALL_TARGETS		:= testall.sh
 
-SELINUX_LIBS		:= -lselinux
 LDLIBS			+= $(SELINUX_LIBS)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
