@@ -31,27 +31,6 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	if (!fs_type)
 		tst_brkm(TBROK, cleanup_fn, "No fs_type specified");
 
-	/*
-	 * mkfs.xfs and mkfs.btrfs aborts if it finds a filesystem
-	 * superblock on the device, which is the case here as we
-	 * reuse one device for all tests.
-	 */
-	if (!strcmp(fs_type, "xfs")) {
-		tst_resm(TINFO, "Appending '-f' flag to mkfs.%s", fs_type);
-		argv[pos++] = "-f";
-	}
-
-	if (!strcmp(fs_type, "btrfs")) {
-		/*
-		 * The -f option was added to btrfs-progs v3.12
-		 */
-		if (!tst_system("mkfs.btrfs 2>&1 | grep -q '\\-f[ |]'")) {
-			tst_resm(TINFO, "Appending '-f' flag to mkfs.%s",
-				fs_type);
-			argv[pos++] = "-f";
-		}
-	}
-
 	if (fs_opts) {
 		for (i = 0; fs_opts[i]; i++) {
 			argv[pos++] = fs_opts[i];

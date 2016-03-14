@@ -300,26 +300,9 @@ tst_mkfs()
 {
 	local fs_type=$1
 	local device=$2
-	local fs_opts=""
-
-	if [ $fs_type = "xfs" -o $fs_type = "jfs" ]; then
-		tst_resm TINFO "Appending '-f' flag to mkfs.$fs_type"
-		fs_opts="-f"
-	fi
-
-	if [ $fs_type = "btrfs" ]; then
-		# check if mkfs.btrfs supports -f option
-		# detect "-f --force" or "-f|--force" because btrfs-progs
-		# changes usage text in commit 3f312d500b73
-		mkfs.btrfs 2>&1 | grep -q '\-f[ |]' >/dev/null
-		if [ $? -eq 0 ]; then
-			tst_resm TINFO "Appending '-f' flag to mkfs.$fs_type"
-			fs_opts="-f"
-		fi
-	fi
-
 	shift 2
-	fs_opts="$fs_opts $@"
+	local fs_opts="$@"
+
 	tst_resm TINFO "Formatting $device with $fs_type extra opts='$fs_opts'"
 
 	ROD_SILENT mkfs.$fs_type $fs_opts $device
