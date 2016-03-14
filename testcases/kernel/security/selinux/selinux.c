@@ -1,4 +1,9 @@
-#include "include.h"
+#include <errno.h>
+#include <fcntl.h>
+
+#include "test.h"
+#include <selinux/selinux.h>
+
 
 char *TCID = "selinux";
 int TST_TOTAL = 1;
