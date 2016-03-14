@@ -31,18 +31,28 @@
 #include <sys/capability.h>
 #endif
 #include <sys/prctl.h>
+#include <unistd.h>
 #include "test.h"
+
+#define PROC_CAP_LAST "/proc/sys/kernel/cap_last_cap"
 
 char *TCID = "cap_bounds_r";
 int TST_TOTAL = 1;
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #ifdef HAVE_LIBCAP
 	int ret = 1;
 	int i;
+	int cap_last_cap = CAP_LAST_CAP;
 
-	for (i = 0; i <= CAP_LAST_CAP; i++) {
+	if (access(PROC_CAP_LAST, R_OK) == 0) {
+		SAFE_FILE_SCANF(NULL, PROC_CAP_LAST, "%d", &cap_last_cap);
+		if (cap_last_cap > CAP_LAST_CAP)
+		       cap_last_cap = CAP_LAST_CAP;
+	}
+
+	for (i = 0; i <= cap_last_cap; i++) {
 #if HAVE_DECL_PR_CAPBSET_READ
 		ret = prctl(PR_CAPBSET_READ, i);
 #else
