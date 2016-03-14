@@ -303,6 +303,14 @@ tst_mkfs()
 	shift 2
 	local fs_opts="$@"
 
+	if [ -z "$fs_type" ]; then
+		tst_brkm TBROK "No fs_type specified"
+	fi
+
+	if [ -z "$device" ]; then
+		tst_brkm TBROK "No device specified"
+	fi
+
 	tst_resm TINFO "Formatting $device with $fs_type extra opts='$fs_opts'"
 
 	ROD_SILENT mkfs.$fs_type $fs_opts $device

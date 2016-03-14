@@ -28,6 +28,9 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	const char *argv[OPTS_MAX] = {"mkfs", "-t", fs_type};
 	char fs_opts_str[1024] = "";
 
+	if (!dev)
+		tst_brkm(TBROK, cleanup_fn, "No device specified");
+
 	if (!fs_type)
 		tst_brkm(TBROK, cleanup_fn, "No fs_type specified");
 
