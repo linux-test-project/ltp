@@ -158,7 +158,7 @@ static void setup(void)
 	device = tst_acquire_device(cleanup);
 	if (!device)
 		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
-	tst_mkfs(cleanup, device, fs_type, fs_opts);
+	tst_mkfs(cleanup, device, fs_type, fs_opts, "10240");
 
 	SAFE_MKDIR(cleanup, MNTPOINT, 0755);
 	/*

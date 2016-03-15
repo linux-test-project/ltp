@@ -113,7 +113,7 @@ static void setup(void)
 
 	fd1 = SAFE_OPEN(cleanup, "tfile_1", O_RDWR | O_CREAT, 0666);
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
 	if (mount(device, "mntpoint", fs_type, 0, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,

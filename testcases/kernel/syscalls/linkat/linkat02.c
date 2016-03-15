@@ -171,7 +171,7 @@ static void setup(void)
 	SAFE_MKDIR(cleanup, "./tmp", DIR_MODE);
 	SAFE_TOUCH(cleanup, TEST_EACCES, 0666, NULL);
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
 
 	if (mount(device, "mntpoint", fs_type, 0, NULL) < 0) {

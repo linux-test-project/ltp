@@ -116,7 +116,7 @@ static void setup(void)
 	for (i = 0; i < 43; i++)
 		strcat(test_file2, "/test_eloop");
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 	SAFE_MKDIR(cleanup, "test_dir/mntpoint", DIR_MODE);
 	if (mount(device, "test_dir/mntpoint", fs_type, MS_RDONLY, NULL) < 0) {

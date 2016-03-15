@@ -137,7 +137,7 @@ static void setup(void)
 	if (!device)
 		tst_brkm(TCONF, cleanup, "Failed to acquire device");
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
 	if (mount(device, MNTPOINT, fs_type, 0, NULL) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,

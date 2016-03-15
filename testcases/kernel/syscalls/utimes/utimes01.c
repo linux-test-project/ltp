@@ -139,7 +139,7 @@ static void setup(void)
 	SAFE_CHOWN(cleanup, TESTFILE2, ltpuser->pw_uid,
 		ltpuser->pw_gid);
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
 	if (mount(device, MNTPOINT, fs_type, 0, NULL) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,

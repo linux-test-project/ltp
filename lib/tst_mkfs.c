@@ -22,7 +22,8 @@
 #define OPTS_MAX 32
 
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
-	      const char *fs_type, const char *const fs_opts[])
+              const char *fs_type, const char *const fs_opts[],
+              const char *extra_opt)
 {
 	int i, pos = 3;
 	const char *argv[OPTS_MAX] = {"mkfs", "-t", fs_type};
@@ -50,10 +51,20 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	}
 
 	argv[pos++] = dev;
+
+	if (extra_opt) {
+		argv[pos++] = extra_opt;
+
+		if (pos + 1 > OPTS_MAX) {
+			tst_brkm(TBROK, cleanup_fn,
+			         "Too much mkfs options");
+		}
+	}
+
 	argv[pos] = NULL;
 
-	tst_resm(TINFO, "Formatting %s with %s extra opts='%s'",
-		 dev, fs_type, fs_opts_str);
+	tst_resm(TINFO, "Formatting %s with %s opts='%s' extra opts='%s'",
+	         dev, fs_type, fs_opts_str, extra_opt ? extra_opt : "");
 	tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL, 0);
 }
 

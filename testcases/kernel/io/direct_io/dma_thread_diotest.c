@@ -397,7 +397,7 @@ static void setup(void)
 			tst_brkm(TCONF, NULL,
 				 "you must specify a big blockdevice(>1.3G)");
 		} else {
-			tst_mkfs(NULL, device, "ext3", NULL);
+			tst_mkfs(NULL, device, "ext3", NULL, NULL);
 		}
 
 		if (mount(device, MNT_POINT, "ext3", 0, NULL) < 0) {

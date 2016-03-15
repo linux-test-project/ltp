@@ -316,10 +316,12 @@ int tst_system(const char *command);
  *
  * @dev: path to a device
  * @fs_type: filesystem type
- * @fs_opts: NULL or NULL terminated array of extra mkfs options
+ * @fs_opts: NULL or NULL terminated array of mkfs options
+ * @extra_opt: extra mkfs option which is passed after the device name
  */
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
-	      const char *fs_type, const char *const fs_opts[]);
+              const char *fs_type, const char *const fs_opts[],
+              const char *extra_opt);
 
 /*
  * Returns filesystem type to be used for the testing. Unless your test is

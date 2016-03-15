@@ -240,7 +240,7 @@ static void setup(void)
 	if (!device)
 		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 	SAFE_MOUNT(NULL, device, MOUNT_DIR, fs_type, MS_MANDLOCK, NULL);
 	mount_flag = 1;

@@ -178,7 +178,7 @@ static void setup(void)
 	if (!device)
 		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",

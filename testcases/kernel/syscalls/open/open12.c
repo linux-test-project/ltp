@@ -107,7 +107,7 @@ static void setup(void)
 			goto end;
 		}
 
-		tst_mkfs(cleanup, device, fs_type, NULL);
+		tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 		SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, MS_STRICTATIME, NULL);
 		mount_flag = 1;

@@ -906,14 +906,19 @@ NOTE: The default filesytem is hardcoded to 'ext2' in the sources and can be
 #include "test.h"
 
 void tst_mkfs(void (cleanup_fn)(void), const char *dev,
-              const char *fs_type, const char *const fs_opts[]);
+              const char *fs_type, const char *const fs_opts[]
+              const char *extra_opt);
 -------------------------------------------------------------------------------
 
 This function takes a path to a device, filesystem type and an array of extra
 options passed to mkfs.
 
-The extra options 'fs_opts' should either be 'NULL' if there are none, or a
+The fs options 'fs_opts' should either be 'NULL' if there are none, or a
 'NULL' terminated array of strings such as '{"-b", "1024", NULL}'.
+
+The extra option 'extra_opt' should either be 'NULL' if there is none, or a
+string such as '"102400"'; 'extra_opt' will be passed after device name. e.g:
++mkfs -t ext4 -b 1024 /dev/sda1 102400+ in this case.
 
 2.2.16 Verifying a filesystem's free space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

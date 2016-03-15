@@ -107,7 +107,7 @@ static void setup(void)
 	for (i = 0; i < 43; i++)
 		strcat(test_eloop, "/test_eloop");
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, TEST_EROFS, DIR_MODE);
 	if (mount(device, TEST_EROFS, fs_type, MS_RDONLY, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,

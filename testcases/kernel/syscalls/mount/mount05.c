@@ -104,7 +104,7 @@ void setup(void)
 	SAFE_MKDIR(cleanup, mntpoint_des, DIR_MODE);
 
 	if (dflag) {
-		tst_mkfs(NULL, device, fstype, NULL);
+		tst_mkfs(NULL, device, fstype, NULL, NULL);
 
 		if (mount(device, mntpoint_src, fstype, 0, NULL) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "mount failed");

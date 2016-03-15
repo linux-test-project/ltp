@@ -192,7 +192,7 @@ void setup(void)
 	SAFE_CHMOD(cleanup, DIR_TEMP, FILE_MODE);
 	SAFE_TOUCH(cleanup, "t_file", MODE_RWX, NULL);
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 	SAFE_MKDIR(cleanup, MNT_POINT, DIR_MODE);
 

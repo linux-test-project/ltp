@@ -46,7 +46,7 @@ int main(void)
 
 	printf("Test device='%s'\n", dev);
 
-	tst_mkfs(cleanup, dev, "ext2", NULL);
+	tst_mkfs(cleanup, dev, "ext2", NULL, NULL);
 
 	cleanup();
 	tst_exit();

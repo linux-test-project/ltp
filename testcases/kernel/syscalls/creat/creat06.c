@@ -179,7 +179,7 @@ static void setup(void)
 	SAFE_SYMLINK(cleanup, TEST7_FILE, "test_file_eloop2");
 	SAFE_SYMLINK(cleanup, "test_file_eloop2", TEST7_FILE);
 
-	tst_mkfs(cleanup, device, fs_type, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, "mntpoint", 0777);
 	if (mount(device, "mntpoint", fs_type, MS_RDONLY, NULL) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
