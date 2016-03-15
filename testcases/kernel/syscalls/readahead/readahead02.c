@@ -283,7 +283,10 @@ static void test_readahead(void)
 
 	tst_resm(TINFO, "read_testfile(0)");
 	read_testfile(0, testfile, testfile_size, &read_bytes, &usec, &cached);
-	cached = cached - cached_low;
+	if (cached > cached_low)
+		cached = cached - cached_low;
+	else
+		cached = 0;
 
 	sync();
 	drop_caches();
@@ -291,7 +294,10 @@ static void test_readahead(void)
 	tst_resm(TINFO, "read_testfile(1)");
 	read_testfile(1, testfile, testfile_size, &read_bytes_ra,
 		      &usec_ra, &cached_ra);
-	cached_ra = cached_ra - cached_low;
+	if (cached_ra > cached_low)
+		cached_ra = cached_ra - cached_low;
+	else
+		cached_ra = 0;
 
 	tst_resm(TINFO, "read_testfile(0) took: %ld usec", usec);
 	tst_resm(TINFO, "read_testfile(1) took: %ld usec", usec_ra);
