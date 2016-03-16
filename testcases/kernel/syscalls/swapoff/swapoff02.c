@@ -33,7 +33,6 @@
 #include "test.h"
 #include "linux_syscall_numbers.h"
 #include "safe_macros.h"
-#include "tst_fs_type.h"
 
 static void setup(void);
 static void cleanup(void);

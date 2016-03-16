@@ -220,7 +220,7 @@ static void cleanup(void)
 		tst_resm(TWARN | TERRNO, "umount(2) failed");
 
 	if (block_dev)
-		tst_release_device(NULL, block_dev);
+		tst_release_device(block_dev);
 
 	tst_rmdir();
 }

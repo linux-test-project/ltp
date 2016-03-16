@@ -1,23 +1,23 @@
 /*
- * Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2013-2016 Cyril Hrubis <chrubis@suse.cz>
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it would be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software Foundation,
- * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "test.h"
 #include "ltp_priv.h"
+#include "tst_mkfs.h"
 
 #define OPTS_MAX 32
 
@@ -78,4 +78,15 @@ const char *tst_dev_fs_type(void)
 		return fs_type;
 
 	return DEFAULT_FS_TYPE;
+}
+
+void safe_mkfs(const int lineno, const char *fname, const char *dev,
+               const char *fs_type, const char *const fs_opts[],
+               const char *extra_opt)
+{
+	/* ignore for now, will fix once all tst_mkfs() users are converted */
+	(void)lineno;
+	(void)fname;
+
+	tst_mkfs(NULL, dev, fs_type, fs_opts, extra_opt);
 }

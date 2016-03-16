@@ -148,11 +148,15 @@ static void attach_device(void (*cleanup_fn)(void),
 	close(file_fd);
 }
 
-static void detach_device(void (*cleanup_fn)(void), const char *dev)
+static void detach_device(const char *dev)
 {
 	int dev_fd, ret, i;
 
-	dev_fd = SAFE_OPEN(cleanup_fn, dev, O_RDONLY);
+	dev_fd = open(dev, O_RDONLY);
+	if (dev_fd < 0) {
+		tst_resm(TWARN | TERRNO, "open(%s) failed", dev);
+		return;
+	}
 
 	/* keep trying to clear LOOPDEV until we get ENXIO, a quick succession
 	 * of attach/detach might not give udev enough time to complete */
@@ -174,7 +178,7 @@ static void detach_device(void (*cleanup_fn)(void), const char *dev)
 	}
 
 	close(dev_fd);
-	tst_brkm(TBROK, cleanup_fn,
+	tst_resm(TWARN,
 		"ioctl(%s, LOOP_CLR_FD, 0) no ENXIO for too long", dev);
 }
 
@@ -227,7 +231,7 @@ const char *tst_acquire_device(void (cleanup_fn)(void))
 	return dev_path;
 }
 
-void tst_release_device(void (cleanup_fn)(void), const char *dev)
+void tst_release_device(const char *dev)
 {
 	if (getenv("LTP_DEV"))
 		return;
@@ -237,7 +241,7 @@ void tst_release_device(void (cleanup_fn)(void), const char *dev)
 	 *
 	 * The file image is deleted in tst_rmdir();
 	 */
-	detach_device(cleanup_fn, dev);
+	detach_device(dev);
 
 	device_acquired = 0;
 }

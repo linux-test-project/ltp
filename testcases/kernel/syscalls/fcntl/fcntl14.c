@@ -48,7 +48,6 @@
 #include <sys/wait.h>
 #include <inttypes.h>
 #include "test.h"
-#include "tst_fs_type.h"
 
 #define SKIP 0x0c00
 #if SKIP == F_RDLCK || SKIP== F_WRLCK

@@ -20,7 +20,6 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "safe_file_ops.h"
 #include "mem.h"
 #include "numa_helper.h"
 

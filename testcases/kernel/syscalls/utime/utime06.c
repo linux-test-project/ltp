@@ -171,7 +171,7 @@ static void cleanup(void)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", dev);
 
 	if (dev)
-		tst_release_device(NULL, dev);
+		tst_release_device(dev);
 
 	tst_rmdir();
 }

@@ -39,7 +39,6 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "safe_file_ops.h"
 
 char *TCID = "llistxattr02";
 

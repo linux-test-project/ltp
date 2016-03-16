@@ -25,7 +25,7 @@
 #include "test.h"
 #include "safe_macros.h"
 
-int tst_dir_is_empty(void (cleanup_fn)(void), const char *name, int verbose)
+int tst_dir_is_empty_(void (cleanup_fn)(void), const char *name, int verbose)
 {
 	struct dirent *entry;
 	DIR *dir = SAFE_OPENDIR(cleanup_fn, name);

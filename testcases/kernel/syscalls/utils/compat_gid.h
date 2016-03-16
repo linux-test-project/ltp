@@ -23,7 +23,7 @@
 #define __COMPAT_GID_16_H__
 
 #include <asm/posix_types.h>
-#include "compiler.h"
+#include "tst_common.h"
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 typedef __kernel_old_gid_t GID_T;

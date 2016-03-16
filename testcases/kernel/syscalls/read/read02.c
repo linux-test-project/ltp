@@ -48,7 +48,6 @@
 #include <sys/mman.h>
 #include "test.h"
 #include "safe_macros.h"
-#include "tst_fs_type.h"
 
 char *TCID = "read02";
 

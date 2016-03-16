@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include "test.h"
 #include "linux_syscall_numbers.h"
-#include "tst_fs_type.h"
 #include "libswapon.h"
 
 static void setup(void);

@@ -31,7 +31,8 @@
 #include <unistd.h>
 #include <utime.h>
 
-#include "safe_file_ops.h"
+#include "test.h"
+#include "safe_file_ops_fn.h"
 
 /*
  * Count number of expected assigned conversions. Any conversion starts with '%'.

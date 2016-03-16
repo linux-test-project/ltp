@@ -53,7 +53,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "tst_module.h"
+#include "old_module.h"
 
 #include "../tbio_kernel/tbio.h"
 

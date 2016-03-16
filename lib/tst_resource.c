@@ -22,7 +22,8 @@
  */
 
 #include <pthread.h>
-#include "tst_resource.h"
+#include "test.h"
+#include "old_resource.h"
 #include "ltp_priv.h"
 
 #ifndef PATH_MAX

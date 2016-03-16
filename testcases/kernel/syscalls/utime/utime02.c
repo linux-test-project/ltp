@@ -84,7 +84,6 @@
 #include <time.h>
 
 #include "test.h"
-#include "tst_fs_type.h"
 #include "safe_macros.h"
 
 #define TEMP_FILE	"tmp_file"

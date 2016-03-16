@@ -25,7 +25,6 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "tst_fs_type.h"
 
 static void setup(void);
 static void verify_fcntl(int);

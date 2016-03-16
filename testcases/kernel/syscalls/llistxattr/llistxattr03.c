@@ -32,7 +32,6 @@
 #endif
 
 #include "test.h"
-#include "safe_file_ops.h"
 
 char *TCID = "llistxattr03";
 

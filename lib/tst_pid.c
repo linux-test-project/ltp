@@ -22,11 +22,12 @@
 #include <limits.h>
 #include <sys/types.h>
 #include "test.h"
-#include "safe_file_ops.h"
+#include "tst_pid.h"
+#include "old_safe_file_ops.h"
 
 #define PID_MAX_PATH "/proc/sys/kernel/pid_max"
 
-pid_t tst_get_unused_pid(void (*cleanup_fn) (void))
+pid_t tst_get_unused_pid_(void (*cleanup_fn) (void))
 {
 	pid_t pid;
 
@@ -35,7 +36,7 @@ pid_t tst_get_unused_pid(void (*cleanup_fn) (void))
 	return pid;
 }
 
-int tst_get_free_pids(void (*cleanup_fn) (void))
+int tst_get_free_pids_(void (*cleanup_fn) (void))
 {
 	FILE *f;
 	int rc, used_pids, max_pids;

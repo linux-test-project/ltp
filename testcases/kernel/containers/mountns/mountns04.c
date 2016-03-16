@@ -35,7 +35,6 @@
 #include "test.h"
 #include "libclone.h"
 #include "safe_macros.h"
-#include "safe_file_ops.h"
 #include "mountns_helper.h"
 
 

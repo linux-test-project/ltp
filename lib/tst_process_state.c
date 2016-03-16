@@ -25,6 +25,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "test.h"
 #include "tst_process_state.h"
 
 void tst_process_state_wait(const char *file, const int lineno,

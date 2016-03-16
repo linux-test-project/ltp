@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "test.h"
-#include "safe_stdio.h"
+#include "safe_stdio_fn.h"
 
 FILE *safe_fopen(const char *file, const int lineno, void (cleanup_fn)(void),
                  const char *path, const char *mode)

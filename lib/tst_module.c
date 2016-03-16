@@ -26,7 +26,7 @@
 
 #include "test.h"
 #include "ltp_priv.h"
-#include "tst_module.h"
+#include "old_module.h"
 
 void tst_module_exists(void (cleanup_fn)(void),
 	const char *mod_name, char **mod_path)

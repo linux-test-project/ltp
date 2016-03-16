@@ -29,10 +29,10 @@
 
   */
 
-#ifndef TST_PROCESS_STATE
-#define TST_PROCESS_STATE
+#ifndef TST_PROCESS_STATE__
+#define TST_PROCESS_STATE__
 
-#include "test.h"
+#include <unistd.h>
 
 /*
  * Waits for process state change.
@@ -45,14 +45,12 @@
  * Z - zombie process
  * T - process is traced
  */
-#define TST_PROCESS_STATE_WAIT(cleanup_fn, pid, state) \
-	tst_process_state_wait(__FILE__, __LINE__, (cleanup_fn), \
+#ifdef TST_TEST_H__
+
+#define TST_PROCESS_STATE_WAIT(pid, state) \
+	tst_process_state_wait(__FILE__, __LINE__, NULL, \
 	                       (pid), (state))
-
-void tst_process_state_wait(const char *file, const int lineno,
-                            void (*cleanup_fn)(void),
-                            pid_t pid, const char state);
-
+#else
 /*
  * The same as above but does not use tst_brkm() interface.
  *
@@ -62,4 +60,13 @@ void tst_process_state_wait(const char *file, const int lineno,
  */
 int tst_process_state_wait2(pid_t pid, const char state);
 
-#endif /* TST_PROCESS_STATE */
+# define TST_PROCESS_STATE_WAIT(cleanup_fn, pid, state) \
+	 tst_process_state_wait(__FILE__, __LINE__, (cleanup_fn), \
+	                        (pid), (state))
+#endif
+
+void tst_process_state_wait(const char *file, const int lineno,
+                            void (*cleanup_fn)(void),
+                            pid_t pid, const char state);
+
+#endif /* TST_PROCESS_STATE__ */

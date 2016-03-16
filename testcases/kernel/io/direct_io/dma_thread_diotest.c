@@ -104,7 +104,6 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "tst_fs_type.h"
 
 #define FILESIZE	(12*1024*1024)
 #define READSIZE	(1024*1024)

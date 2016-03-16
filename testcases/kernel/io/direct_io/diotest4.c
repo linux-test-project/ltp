@@ -70,7 +70,6 @@
 #include "diotest_routines.h"
 
 #include "test.h"
-#include "tst_fs_type.h"
 
 char *TCID = "diotest4";	/* Test program identifier.    */
 int TST_TOTAL = 17;		/* Total number of test conditions */

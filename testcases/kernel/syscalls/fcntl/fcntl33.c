@@ -30,7 +30,6 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "tst_fs_type.h"
 
 /*
  * MIN_TIME_LIMIT is defined to 5 senconds as a minimal acceptable

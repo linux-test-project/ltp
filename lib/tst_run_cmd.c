@@ -31,7 +31,7 @@
 #define OPEN_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define OPEN_FLAGS	(O_WRONLY | O_APPEND | O_CREAT)
 
-int tst_run_cmd_fds(void (cleanup_fn)(void),
+int tst_run_cmd_fds_(void (cleanup_fn)(void),
 		const char *const argv[],
 		int stdout_fd,
 		int stderr_fd,
@@ -97,7 +97,7 @@ int tst_run_cmd_fds(void (cleanup_fn)(void),
 	return rc;
 }
 
-int tst_run_cmd(void (cleanup_fn)(void),
+int tst_run_cmd_(void (cleanup_fn)(void),
 		const char *const argv[],
 		const char *stdout_path,
 		const char *stderr_path,

@@ -50,7 +50,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "tst_fs_type.h"
 
 #define SKIPVAL 0x0f00
 //#define       SKIP    SKIPVAL, 0, 0L, 0L, IGNORED

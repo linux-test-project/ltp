@@ -22,9 +22,8 @@
 #include <stdlib.h>
 
 #include "test.h"
-#include "tst_module.h"
+#include "old_module.h"
 #include "safe_macros.h"
-#include "safe_stdio.h"
 
 #include "ltp_acpi.h"
 

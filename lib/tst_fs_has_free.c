@@ -24,9 +24,10 @@
 #include <stdint.h>
 #include <sys/vfs.h>
 #include "test.h"
+#include "tst_fs.h"
 
-int tst_fs_has_free(void (*cleanup)(void), const char *path,
-		    unsigned int size, unsigned int mult)
+int tst_fs_has_free_(void (*cleanup)(void), const char *path,
+		     unsigned int size, unsigned int mult)
 {
 	struct statfs sf;
 

@@ -22,11 +22,11 @@
  */
 
  /*
-  
+
    Small helper for preparing files the test needs to copy before the testing.
 
    We need to support two scenarios.
-   
+
    1. Test is executed in local directory and this is also the place
       we should look for files
 
@@ -38,8 +38,6 @@
 
 #ifndef TST_RESOURCE
 #define TST_RESOURCE
-
-#include "test.h"
 
 const char *tst_dataroot(void);
 

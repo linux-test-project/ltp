@@ -31,7 +31,7 @@ static const char *dev;
 static void cleanup(void)
 {
 	if (dev)
-		tst_release_device(NULL, dev);
+		tst_release_device(dev);
 
 	tst_rmdir();
 }

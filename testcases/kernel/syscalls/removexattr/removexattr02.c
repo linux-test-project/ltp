@@ -37,7 +37,7 @@
 #endif
 
 #include "test.h"
-#include "safe_file_ops.h"
+#include "safe_macros.h"
 
 char *TCID = "removexattr02";
 

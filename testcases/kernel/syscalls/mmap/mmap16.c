@@ -236,6 +236,6 @@ static void cleanup(void)
 	if (mount_flag && tst_umount(MNTPOINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
 	if (device)
-		tst_release_device(NULL, device);
+		tst_release_device(device);
 	tst_rmdir();
 }

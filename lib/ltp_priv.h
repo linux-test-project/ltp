@@ -22,6 +22,8 @@
 #ifndef __LTP_PRIV_H__
 #define __LTP_PRIV_H__
 
+#include <stdarg.h>
+
 /* declared in tst_tmpdir.c */
 const char *tst_get_startwd(void);
 
@@ -49,5 +51,27 @@ const char *tst_get_startwd(void);
 
 const char *parse_opts(int ac, char **av, const option_t *user_optarr, void
                        (*uhf)(void));
+
+/* Interface for rerouting to new lib calls from tst_res.c */
+extern void *tst_test;
+
+void tst_vbrk_(const char *file, const int lineno, int ttype,
+               const char *fmt, va_list va) __attribute__((noreturn));
+
+void tst_brk_(const char *file, const int lineno, int ttype,
+              const char *msg, ...) __attribute__((noreturn));
+
+void tst_vres_(const char *file, const int lineno, int ttype,
+               const char *fmt, va_list va);
+
+void tst_res_(const char *file, const int lineno, int ttype,
+              const char *msg, ...);
+
+
+#define NO_NEWLIB_ASSERT(file, lineno)                                \
+	if (tst_test) {                                               \
+		tst_brk_(file, lineno, TBROK,                         \
+			 "%s() executed from newlib!", __FUNCTION__); \
+	}
 
 #endif /* __LTP_PRIV_H__ */

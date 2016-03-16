@@ -34,7 +34,6 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "tst_fs_type.h"
 #include "lapi/splice.h"
 
 #define TEST_BLOCK_SIZE 1024

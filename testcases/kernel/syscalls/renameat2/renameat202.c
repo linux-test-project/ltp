@@ -24,7 +24,6 @@
 #define _GNU_SOURCE
 
 #include "test.h"
-#include "tst_fs_type.h"
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
 #include "renameat2.h"

@@ -30,7 +30,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "tst_module.h"
+#include "old_module.h"
 
 /* number of test firmware files */
 #define FW_FILES	5

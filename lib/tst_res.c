@@ -231,6 +231,8 @@ static void tst_condense(int tnum, int ttype, const char *tmesg)
 
 void tst_flush(void)
 {
+	NO_NEWLIB_ASSERT("Unknown", 0);
+
 	pthread_mutex_lock(&tmutex);
 
 	/*
@@ -365,6 +367,8 @@ static void check_env(void)
 
 void tst_exit(void)
 {
+	NO_NEWLIB_ASSERT("Unknown", 0);
+
 	pthread_mutex_lock(&tmutex);
 
 	tst_flush();
@@ -375,6 +379,8 @@ void tst_exit(void)
 pid_t tst_fork(void)
 {
 	pid_t child;
+
+	NO_NEWLIB_ASSERT("Unknown", 0);
 
 	tst_flush();
 
@@ -388,6 +394,8 @@ pid_t tst_fork(void)
 void tst_record_childstatus(void (*cleanup)(void), pid_t child)
 {
 	int status, ttype_result;
+
+	NO_NEWLIB_ASSERT("Unknown", 0);
 
 	if (waitpid(child, &status, 0) < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "waitpid(%d) failed", child);
@@ -418,6 +426,8 @@ void tst_record_childstatus(void (*cleanup)(void), pid_t child)
 
 pid_t tst_vfork(void)
 {
+	NO_NEWLIB_ASSERT("Unknown", 0);
+
 	tst_flush();
 	return vfork();
 }
@@ -484,12 +494,17 @@ void tst_resm_(const char *file, const int lineno, int ttype,
 
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
-	tst_res__(file, lineno, ttype, "%s", tmesg);
+	if (tst_test)
+		tst_res_(file, lineno, ttype, "%s", tmesg);
+	else
+		tst_res__(file, lineno, ttype, "%s", tmesg);
 }
 
 void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 	const void *buf, size_t size, const char *arg_fmt, ...)
 {
+	NO_NEWLIB_ASSERT(file, lineno);
+
 	pthread_mutex_lock(&tmutex);
 
 	char tmesg[USERMESG];
@@ -531,13 +546,25 @@ void tst_brkm_(const char *file, const int lineno, int ttype,
 
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
-	tst_brk__(file, lineno, ttype, func, "%s", tmesg);
+	if (tst_test) {
+		if (func) {
+			tst_brk_(file, lineno, TBROK,
+			         "Non-NULL cleanup in newlib!");
+		}
+
+		tst_brk_(file, lineno, ttype, "%s", tmesg);
+	} else {
+		tst_brk__(file, lineno, ttype, func, "%s", tmesg);
+	}
+
 	/* Shouldn't be reached, but fixes build time warnings about noreturn. */
 	abort();
 }
 
 void tst_require_root(void)
 {
+	NO_NEWLIB_ASSERT("Unknown", 0);
+
 	if (geteuid() != 0)
 		tst_brkm(TCONF, NULL, "Test needs to be run as root");
 }

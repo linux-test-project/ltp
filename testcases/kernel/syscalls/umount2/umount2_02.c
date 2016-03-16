@@ -173,7 +173,7 @@ static void cleanup(void)
 		tst_resm(TWARN | TERRNO, "Failed to unmount");
 
 	if (device)
-		tst_release_device(NULL, device);
+		tst_release_device(device);
 
 	tst_rmdir();
 }

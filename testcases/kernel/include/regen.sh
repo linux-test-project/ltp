@@ -47,9 +47,22 @@ cat << EOF > "${output_pid}"
 		tst_brkm(TCONF, CLEANUP, \\
 			"syscall(%d) " #NR " not supported on your arch", \\
 			NR); \\
-		errno = ENOSYS; \\
 	} \\
 	__ret; \\
+})
+
+#define tst_syscall(NR, ...) ({ \\
+	int tst_ret; \\
+	if (NR == __LTP__NR_INVALID_SYSCALL) { \\
+		errno = ENOSYS; \\
+		tst_ret = -1; \\
+	} else { \\
+		tst_ret = syscall(NR, ##__VA_ARGS__); \\
+	} \\
+	if (tst_ret == -1 && errno == ENOSYS) { \\
+		tst_brk(TCONF, "syscall(%d) " #NR "not supported", NR); \\
+	} \\
+	tst_ret; \\
 })
 
 EOF

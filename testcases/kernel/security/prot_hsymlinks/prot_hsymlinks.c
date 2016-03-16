@@ -44,7 +44,6 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "safe_file_ops.h"
 
 char *TCID = "prot_hsymlinks";
 int TST_TOTAL = 396;

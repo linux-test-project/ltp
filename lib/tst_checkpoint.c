@@ -34,12 +34,13 @@
 #define DEFAULT_MSEC_TIMEOUT 10000
 
 futex_t *tst_futexes;
-static int page_size;
+unsigned int tst_max_futexes;
 
 void tst_checkpoint_init(const char *file, const int lineno,
                          void (*cleanup_fn)(void))
 {
 	int fd;
+	unsigned int page_size;
 
 	if (tst_futexes) {
 		tst_brkm(TBROK, cleanup_fn,
@@ -74,6 +75,8 @@ void tst_checkpoint_init(const char *file, const int lineno,
 	tst_futexes = SAFE_MMAP(cleanup_fn, NULL, page_size,
 	                    PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
+	tst_max_futexes = page_size / sizeof(uint32_t);
+
 	SAFE_CLOSE(cleanup_fn, fd);
 }
 
@@ -81,7 +84,7 @@ int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout)
 {
 	struct timespec timeout;
 
-	if (id >= page_size / sizeof(uint32_t)) {
+	if (id >= tst_max_futexes) {
 		errno = EOVERFLOW;
 		return -1;
 	}
@@ -98,7 +101,7 @@ int tst_checkpoint_wake(unsigned int id, unsigned int nr_wake,
 {
 	unsigned int msecs = 0, waked = 0;
 
-	if (id >= page_size / sizeof(uint32_t)) {
+	if (id >= tst_max_futexes) {
 		errno = EOVERFLOW;
 		return -1;
 	}

@@ -24,7 +24,6 @@
 #include "test.h"
 #include "usctest.h"
 #include "safe_macros.h"
-#include "tst_fs_type.h"
 
 #define MAX_SANE_HARD_LINKS	65535
 
@@ -41,7 +40,7 @@ const long subdir_limit_whitelist[] = {
 	TST_F2FS_MAGIC,     TST_NILFS_MAGIC,  TST_EXOFS_MAGIC
 };
 
-int tst_fs_fill_hardlinks(void (*cleanup) (void), const char *dir)
+int tst_fs_fill_hardlinks_(void (*cleanup) (void), const char *dir)
 {
 	unsigned int i, j;
 	char base_filename[PATH_MAX], link_filename[PATH_MAX];
@@ -100,7 +99,7 @@ max_hardlinks_cleanup:
 	return 0;
 }
 
-int tst_fs_fill_subdirs(void (*cleanup) (void), const char *dir)
+int tst_fs_fill_subdirs_(void (*cleanup) (void), const char *dir)
 {
 	unsigned int i, j, whitelist_size;
 	char dirname[PATH_MAX];

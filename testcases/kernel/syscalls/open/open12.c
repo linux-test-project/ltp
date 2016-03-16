@@ -263,7 +263,7 @@ static void cleanup(void)
 		tst_brkm(TWARN | TERRNO, NULL, "umount(2) failed");
 
 	if (device)
-		tst_release_device(NULL, device);
+		tst_release_device(device);
 
 	tst_rmdir();
 }

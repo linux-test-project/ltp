@@ -5,7 +5,6 @@ This document describes LTP guidelines and LTP test interface and is intended
 for anybody who want to write or modify a LTP testcase. It's not a definitive
 guide and it's not, by any means, a substitute for common sense.
 
-
 1. General Rules
 ----------------
 
@@ -19,7 +18,7 @@ follow the UNIX philosophy. It's a good idea to make the test as
 self-contained as possible too (it should not depend on tools or libraries
 that are not widely available).
 
-Do not reinvent the wheel
+Do not reinvent the wheel!
 
 * Use LTP standard interface
 * Do not add custom PASS/FAIL reporting functions
@@ -58,8 +57,8 @@ NOTE: If checkpatch does not report any problems, the code still may be wrong
 1.3.2 Shell coding style
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-When writing testcases in shell write in portable shell only, it's a good idea
-to try to run the test using alternative shell (alternative to bash, for
+When writing testcases in shell write in *portable shell* only, it's a good
+idea to try to run the test using alternative shell (alternative to bash, for
 example dash) too.
 
 Here are some common sense style rules for shell
@@ -112,8 +111,8 @@ There are several types of checks we use:
 The *configure script* is usually used to detect availability of a function
 declarations in system headers. It's used to disable tests at compile time.
 
-The *tst_kvercmp()* which is runtime kernel version detection and comparison
-and is used to disable tests at runtime.
+We also have runtime kernel version detection that can be used to disable
+tests at runtime.
 
 Checking the *errno* value is another type of runtime check. Most of the
 syscalls returns either 'EINVAL' or 'ENOSYS' when syscall was not implemented
@@ -149,10 +148,9 @@ any later version).
 ~~~~~~~~~~~~~~~~~
 
 The structure of LTP is quite simple. Each test is a binary written either in
-portable shell (no bashism) or C. The test gets a configuration via
-environment variables and/or command line parameters, it prints additional
-information into the stdout and reports overall success/failure via the exit
-value.
+portable shell or C. The test gets a configuration via environment variables
+and/or command line parameters, it prints additional information into the
+stdout and reports overall success/failure via the exit value.
 
 Tests are generally placed under the 'testcases/' directory. Everything that
 is a syscall or (slightly confusingly) libc syscall wrapper goes under
@@ -212,7 +210,7 @@ See 'testcases/commands/ade/ldd/ldd01' for example.
 ^^^^^^^^^^^^^^^^^^^^
 
 If you test needs to execute a binary, place it in the same directory as the
-testcase and name the file starting with testname_ ('TCID_' see below).
+testcase and name the file starting with testname_ ('.tid' see below).
 Once the test is executed by the framework, the path to the directory with all
 LTP binaries is added to the '$PATH' and you can execute it just by its name.
 
@@ -225,7 +223,7 @@ TIP: If you need to execute such test from the LTP tree, you can add path to
 2.2.1 Basic test structure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Let's start with an example, following code is a simple test for a getenv().
+Let's start with an example, following code is a simple test for a 'getenv()'.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -233,114 +231,84 @@ Let's start with an example, following code is a simple test for a getenv().
  * This is test for basic functionality of getenv().
  *
  *  - create an env variable and verify that getenv() can get get it
- *
  *  - call getenv() with nonexisting variable name, check that it returns NULL
  */
 
-#include "test.h"
+#include "tst_test.h"
 
-char *TCID = "getenv01";
-int TST_TOTAL = 2;
-
-#define TEST_ENV "LTP_TEST_ENV"
-#define TEST_NE_ENV "LTP_TEST_THIS_DOES_NOT_EXIST"
-#define TEST_ENV_VAL "val"
+#define ENV1 "LTP_TEST_ENV"
+#define ENV2 "LTP_TEST_THIS_DOES_NOT_EXIST"
+#define ENV_VAL "val"
 
 static void setup(void)
 {
-	if (setenv(TEST_ENV, TEST_ENV_VAL, 1))
-		tst_brkm(TBROK | TERRNO, NULL, "setenv() failed");
+	if (setenv(ENV1, ENV_VAL, 1))
+		tst_brk(TBROK | TERRNO, "setenv() failed");
 }
 
 static void test(void)
 {
 	char *ret;
 
-	ret = getenv(TEST_ENV);
+	ret = getenv(ENV1);
 
-	if (ret) {
-		if (!strcmp(ret, TEST_ENV_VAL))
-			tst_resm(TPASS, "getenv(" TEST_ENV ") = '"
-			         TEST_ENV_VAL "'");
-		else
-			tst_resm(TFAIL, "getenv(" TEST_ENV ") = '%s', "
-			         "expected '" TEST_ENV_VAL "'", ret);
-	} else {
-		tst_resm(TFAIL, "getenv(" TEST_ENV ") = NULL");
+	if (!ret) {
+		tst_res(TFAIL, "getenv(" ENV1 ") = NULL");
+		goto next;
 	}
 
-	ret = getenv(TEST_NE_ENV);
+	if (!strcmp(ret, ENV_VAL)) {
+		tst_res(TPASS, "getenv(" ENV1 ") = '"ENV_VAL "'");
+	} else {
+		tst_res(TFAIL, "getenv(" ENV1 ") = '%s', expected '"
+		               ENV_VAL "'", ret);
+	}
+
+next:
+	ret = getenv(ENV2);
 
 	if (ret)
-		tst_resm(TFAIL, "getenv(" TEST_NE_ENV ") = '%s'", ret);
+		tst_res(TFAIL, "getenv(" ENV2 ") = '%s'", ret);
 	else
-		tst_resm(TPASS, "getenv(" TEST_NE_ENV ") = NULL");
+		tst_res(TPASS, "getenv(" ENV2 ") = NULL");
 }
 
-int main(int argc, char *argv[])
-{
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		test();
-
-	tst_exit();
-}
+static struct tst_test test = {
+	.tid = "getenv01",
+	.test_all = test,
+	.setup = setup,
+};
 -------------------------------------------------------------------------------
 
-Each test must define 'TCID' and 'TST_TOTAL'.
+Each test includes the 'tst_test.h' header and must define the 'struct
+tst_test test' structure.
 
-'TCID' defines test name (usually syscall/libcall name + number) and is used
-as a base for temporary directory name (if 'tst_tmpdir()' is used). In most of
-the cases the 'TCID' is the same as test filename (without the extension).
+The '.tid' defines test name (usually syscall/libcall name + number). The name
+is used in the test results as well as a base for temporary directory name if
+temporary directory is needed. In most of the cases it's the same as test
+filename without the extension.
 
-'TST_TOTAL' defines total number of tests.
+The overall test initialization is done in the 'setup()' function.
 
-NOTE: The test should report 'TST_TOTAL' PASSES/FAILS on each iteration.
+The overall cleanup is done in a 'cleanup()' function. Here 'cleanup()' is
+omitted as the test does not have anything to clean up. If cleanup is set in
+the test structure it's called on test exit just before the test library
+cleanup. That especially means that cleanup can be called at any point in a
+test execution. For example even when a test setup step has failed, therefore
+the 'cleanup()' function must be able to cope with unfinished initialization,
+and so on.
 
-The overall test initialization is usually done in a 'setup()' function and
-the overall cleanup is done in a 'cleanup()' function. Here 'cleanup()' is
-omitted as the test don't have to clean anything up. Usually it's called right
-before the 'tst_exit()' to do the cleanup and passed to library functions that
-can exit the test execution, for example 'tst_brkm()', so that the test can do
-a cleanup before it exits.
+The test itself is done in the 'test()' function. The test function must work
+fine if called in a loop.
 
-WARNING: Never pass a cleanup function to functions called from cleanup.
-         If you don't see why this is a problem you are not ready to write
-	 a testcase yet.
+There are two types of a test function pointers in the test structure. The
+first one is a '.test_all' pointer that is used when test is implemented as a
+single function. Then there is a '.test' function along with the number of
+tests '.tcnt' that allows for more detailed result reporting. If the '.test'
+pointer is set the function is called '.tcnt' times with an integer parameter
+in range of [0, '.tcnt' - 1].
 
-WARNING: Don't use 'tst_brkm()' in 'cleanup()' unless you really want to exit
-         the cleanup prematurely. See discussion below for further
-	 information.
-
-[source,c]
--------------------------------------------------------------------------------
-typedef struct {
-        char *option;   /* Valid option string (one option only) like "a:"  */
-        int  *flag;     /* Pointer to location to set true if option given  */
-        char **arg;     /* Pointer to location to place argument, if needed */
-} option_t;
-
-void tst_parse_opts(int argc, char *argv[], const option_t *user_optarg,
-                    void (*user_help)(void));
--------------------------------------------------------------------------------
-
-The 'tst_parse_opts()' parses the test command line arguments, it's important
-to use it even if the test has no (other than default) parameters.
-
-Test specific parameters can be passed to the function by the 'NULL' terminated
-'user_optarg' array as far as they don't conflict with the parameters used by
-the test library (these can be listed by passing '-h' to a LTP testcase).
-
-The last important thing is the 'TEST_LOOPING()' macro, each test has standard
-options so that it can be executed N times or for M seconds.
-
-NOTE: The 'test()' function must work correctly even if executed several times
-      from test main loop.
+IMPORTANT: Only one of '.test' and '.test_all' can be set at a time.
 
 A word about the cleanup() callback
 +++++++++++++++++++++++++++++++++++
@@ -348,81 +316,74 @@ A word about the cleanup() callback
 There are a few rules that needs to be followed in order to write correct
 cleanup() callback.
 
-1. Don't call callback() from within the callback().
-(This includes passing callback pointer to library 'tst_' functions.)
+1. Free only resources that were initialized. Keep in mind that callback can
+   be executed at any point in the test run.
 
 2. Make sure to free resources in the reverse order they were
    initialized. (Some of the steps may not depend on others and everything
    will work if there were swapped but let's keep it in order.)
 
-3. Free only resources that were initialized.
+3. Avoid using SAFE_MACROS() in cleanup if you want the cleanup to carry on
+   when a cleanup step has failed.
 
-The third rule needs a bit more detailed discussion. Consider, for example,
-test setup below which is example of a setup that prepares temporary
-directory, two file descriptors and allocates a buffer.
+The first rule may seem complicated at first however, on the contrary, it's
+quite easy. All you have to do is to keep track of what was already
+initialized. For example file descriptors needs to be closed only if they were
+assigned a valid file descriptor. For most of the things you need to create
+extra flag that is set right after successful initialization though. Consider,
+for example, test setup below.
 
 [source,c]
 -------------------------------------------------------------------------------
-static int fd0, fd1;
-static void *buf;
-#define BUFSIZE (1024 * 1024)
+static int fd0, fd1, mount_flag;
+
+#define MNTPOINT "mntpoint"
+#define FILE1 "mntpoint/file1"
+#define FILE2 "mntpoint/file2"
 
 static void setup(void)
 {
-	tst_require_root();
-	tst_tmpdir();
+	SAFE_MKDIR(MNTPOINT, 0777);
+	SAFE_MKFS(tst_device->dev, tst_device->fs_type, NULL, NULL);
+	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, 0);
+	mount_flag = 1;
 
-	fd0 = SAFE_OPEN(cleanup, "test_file1", O_CREAT | O_RDWR, 0666);
-	SAFE_UNLINK(cleanup, "test_file1");
-	fd1 = SAFE_OPEN(cleanup, "test_file2", O_CREAT | O_RDWR, 0666);
-	SAFE_UNLINK(cleanup, "test_file2");
-
-	buf = SAFE_MALLOC(cleanup, BUFSIZE);
+	fd0 = SAFE_OPEN(cleanup, FILE1, O_CREAT | O_RDWR, 0666);
+	fd1 = SAFE_OPEN(cleanup, FILE2, O_CREAT | O_RDWR, 0666);
 }
 -------------------------------------------------------------------------------
 
-In this case the 'cleanup()' function may be entered in five different states:
-
-* The first 'SAFE_OPEN()' has failed, temporary directory is created
-  no files are open and +fd0 == -1+, +fd1 == 0+ and +buf == NULL+.
-
-* The first 'SAFE_UNLINK()' has failed, +fd0+ holds file descriptor and
-  +fd1 == 0+.
-
-* The second 'SAFE_OPEN()' has failed, +fd0+ holds file descriptor and
-  +fd1 == -1+.
-
-* The second 'SAFE_UNLINK()' or 'SAFE_MALLOC()' has failed and both 'fd0' and
-  'fd1' holds file descriptors, +buf+ is still +NULL+.
-
-* The 'cleanup()' was called at the end of the test, all +fd0+, +fd1+ and
-  +buf+ are initialized.
-
-The 'cleanup()' functions should be able to cope with all scenarios. In this
-case following code will do:
+In this case the 'cleanup()' function may be invoked when any of the 'SAFE_*'
+macros has failed and therefore must be able to work with unfinished
+initialization as well. Since global variables are initialized to zero we can
+just check that fd > 0 before we attempt to close it. The mount function
+requires extra flag to be set after device was successfully mounted.
 
 [source,c]
 -------------------------------------------------------------------------------
 static void cleanup(void)
 {
-	free(buf);
+	if (fd1 > 0 && close(fd1))
+		tst_res(TWARN | TERRNO, "close(fd1)");
 
-	if (fd1 > 0)
-		close(fd1);
+	if (fd0 > 0 && close(fd0))
+		tst_res(TWARN | TERRNO, "close(fd0)");
 
-	if (fd0 > 0)
-		close(fd0);
-
-	tst_rmdir();
+	if (mount_flag && tst_umouont(MNTPOINT))
+		tst_res(TBROK | TERRNO, "umount(%s)", MNTPOINT);
 }
 -------------------------------------------------------------------------------
+
+NOTE: Creation and removal of the test temporary directory is handled in
+      the test library and the directory is removed recursively. Therefore
+      we do not have to remove files and directories in the test cleanup.
 
 2.2.2 Basic test interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
 -------------------------------------------------------------------------------
-void tst_resm(int ttype, char *arg_fmt, ...);
+void tst_res(int ttype, char *arg_fmt, ...);
 -------------------------------------------------------------------------------
 
 Printf-like function to report test result, it's mostly used with ttype:
@@ -438,40 +399,19 @@ The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
 
 [source,c]
 -------------------------------------------------------------------------------
-void tst_brkm(int ttype, void (*cleanup)(void), char *arg_fmt, ...);
+void tst_brk(int ttype, char *arg_fmt, ...);
 -------------------------------------------------------------------------------
 
 Printf-like function to report error and exit the test, it can be used with ttype:
 
 |============================================================
 | 'TBROK' | Something has failed in test preparation phase.
-| 'TCONF' | test is not appropriate for current configuration
+| 'TCONF' | Test is not appropriate for current configuration
             (syscall not implemented, unsupported arch, ...)
-| 'TFAIL' | test has failed
 |============================================================
 
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
 'errno', 'TEST_ERRNO' respectively.
-
-[source,c]
--------------------------------------------------------------------------------
-void tst_require_root(void);
--------------------------------------------------------------------------------
-
-Abort the test if it's not executed with root privileges. If needed this should
-be one of the first checks in the test 'setup()'.
-
-WARNING: The cleanup parameter is deprecated and should always be 'NULL'.
-
-
-[source,c]
--------------------------------------------------------------------------------
-void tst_exit(void);
--------------------------------------------------------------------------------
-
-Exits the tests, note that this function has no parameters, the PASSES/FAILS
-reported by the 'tst_resm()' interfaces were stored and are used for the exit
-value.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -480,43 +420,27 @@ const char *tst_strsig(int sig);
 
 Return the given signal number's corresponding string.
 
-
 [source,c]
 -------------------------------------------------------------------------------
 const char *tst_strerrno(int err);
 -------------------------------------------------------------------------------
 
-Return the given errno number's corresponding string.
+Return the given errno number's corresponding string. Using this function to
+translate 'errno' values to strings is preferred. You should not use the
+'strerror()' function in the testcases.
 
 
 2.2.3 Test temporary directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If the test needs to create files (which is common case) it must create a test
-temporary directory in LTP temp directory and work with files only inside of
-this directory. Happily there are easy to use library functions exactly for
-this purpose.
+If '.needs_tmpdir' is set to '1' in the 'struct tst_test' unique test
+temporary is created and it's set as the test working directory. Tests *MUST
+NOT* create temporary files outside that directory.
 
-[source,c]
--------------------------------------------------------------------------------
-void tst_tmpdir(void);
--------------------------------------------------------------------------------
-
-Creates a directory with a unique name (based on the test 'TCID') under the
-LTP temporary directory (defaults to '/tmp/') and changes the test working
-directory to it. It's usually called from the test 'setup()'.
-
-[source,c]
--------------------------------------------------------------------------------
-void tst_rmdir(void);
--------------------------------------------------------------------------------
-
-Removes the directory recursively. It's usually called from test 'cleanup()'.
-
-It's important to close all file descriptors (that point to files in test
-temporary directory, even the unlinked ones) before the test calls
-'tst_rmdir()' otherwise the test may break on NFS mounted temp dir (look for
-"NFS silly rename").
+IMPORTANT: Close all file descriptors (that point to files in test temporary
+           directory, even the unlinked ones) either in the 'test()' function
+	   or in the test 'cleanup()' otherwise the test may break temporary
+	   directory removal on NFS (look for "NFS silly rename").
 
 [[2.2.4]]
 2.2.4 Safe macros
@@ -524,12 +448,9 @@ temporary directory, even the unlinked ones) before the test calls
 
 Safe macros aim to simplify error checking in test preparation. Instead of
 calling system API functions, checking for their return value and aborting the
-test if the operation has failed, you just use corresponding safe macros.
+test if the operation has failed, you just use corresponding safe macro.
 
 Use them whenever it's possible.
-
-NOTE: Have a look at the the xref:2.2.7[doing real test in the child process]
-      if you want to use safe macros from within a child process.
 
 Instead of writing:
 
@@ -537,35 +458,61 @@ Instead of writing:
 -------------------------------------------------------------------------------
 	fd = open("/dev/null", O_RDONLY);
 	if (fd < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "opening /dev/null failed");
+		tst_brk(TBROK | TERRNO, "opening /dev/null failed");
 -------------------------------------------------------------------------------
 
 You write just:
 
 [source,c]
 -------------------------------------------------------------------------------
-	fd = SAFE_OPEN(cleanup, "/dev/null", O_RDONLY);
+	fd = SAFE_OPEN("/dev/null", O_RDONLY);
 -------------------------------------------------------------------------------
+
+IMPORTANT: The SAFE_CLOSE() function also sets the passed file descriptor to -1
+           after it's successfully closed.
 
 They can also simplify reading and writing of sysfs files, you can, for
 example, do:
 
 [source,c]
 -------------------------------------------------------------------------------
-	SAFE_FILE_SCANF(cleanup, "/proc/sys/kernel/pid_max", "%lu", &pid_max);
+	SAFE_FILE_SCANF("/proc/sys/kernel/pid_max", "%lu", &pid_max);
 -------------------------------------------------------------------------------
 
-See 'include/safe_macros.h', 'include/safe_stdio.h' and
-'include/safe_file_ops.h' for a complete list.
+See 'include/tst_safe_macros.h', 'include/tst_safe_stdio.h' and
+'include/tst_safe_file_ops.h' and 'include/tst_safe_net.h' for a complete list.
 
-NOTE: It's wise NOT to use safe macros in test cleanup(). This is because
-      all safe macros call tst_brkm(), which exits the test immediately, making
-      the cleanup() exit prematurely. (Actually, this is hacked around in
-      the test library at the moment so that the cleanup() will finish, but
-      the hack will be removed in the future).
+2.2.5 Test specific command line options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.2.5 Runtime kernel version detection
+[source,c]
+-------------------------------------------------------------------------------
+struct tst_option {
+        char *optstr;
+        char **arg;
+        char *help;
+};
+-------------------------------------------------------------------------------
+
+Test specific command line parameters can be passed with the 'NULL'-terminated
+array of 'struct tst_option'. The 'optstr' is the command line option i.e. "o"
+or "o:" if option has a parameter. Only short options are supported. The 'arg'
+is where 'optarg' is stored upon match. If option has no parameter it's set to
+non-'NULL' value if option was present. The 'help' is a short help string.
+
+NOTE: The test parameters must not collide with common test parameters defined
+      in the library the currently used ones are +-i+, +-I+, +-C+, and +-h+.
+
+2.2.6 Runtime kernel version detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Testcases for newly added kernel functionality require kernel newer than a
+certain version to run. All you need to skip a test on older kernels is to
+set the '.min_kver' string in the 'struct tst_test' to a minimal required
+kernel version, e.g. '.min_kver = "2.6.30"'.
+
+For more complicated operations such as skipping a test for a certain range
+of kernel versions, following functions could be used:
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -591,132 +538,123 @@ kernel versions as vendors typically backport fixes to their kernels and the
 test may be relevant even if the kernel version does not suggests so. See
 'testcases/kernel/syscalls/inotify/inotify04.c' for example usage.
 
-2.2.6 Fork()-ing
+2.2.7 Fork()-ing
 ^^^^^^^^^^^^^^^^
 
-Be wary that if the test forks and there were messages printed by the tst_*
-interfaces, the data may still be in kernel buffers and these are NOT flushed
-automatically.
+Be wary that if the test forks and there were messages printed by the
+'tst_*()' interfaces, the data may still be in libc/kernel buffers and these
+*ARE NOT* flushed automatically.
 
 This happens when 'stdout' gets redirected to a file. In this case, the
-'stdout' is not line buffered, but block buffered, and buffered messages will be
-printed by the parent and each of the children.
+'stdout' is not line buffered, but block buffered. Hence after a fork content
+of the buffers will be printed by the parent and each of the children.
 
-To avoid that, you should either call 'tst_flush()' right before the 'fork()',
-or even better - use 'tst_fork()' instead.
+To avoid that you should use 'tst_fork()'.
 
-[[2.2.7]]
-2.2.7 Doing real test in the child process
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IMPORTANT: You have to set the '.forks_child' flag in the test structure
+           if your testcase forks.
 
-If you have to do the test in a child process you have two possibilities:
+[[2.2.8]]
+2.2.8 Doing the test in the child process
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* You can use test interface ('tst_resm()', 'tst_brkm()', 'tst_exit()', ...)
-  but there are some rules to obey:
+Results reported by 'tst_res()' are propagated to the parent test process via
+block of shared memory.
 
-** If you use 'tst_resm()' to record test the results in child process, you
-   *MUST* use either 'tst_exit()' or 'tst_brkm()' to exit the child process.
+Calling 'tst_brk()' causes child process to exit with non-zero exit value.
+Which means that it's safe to use 'SAFE_*()' macros in the child processes as
+well.
 
-** If you use 'tst_brkm()' with a non-NULL cleanup argument in the child
-   process, you're strongly recommended to create a separate cleanup function
-   for child process that will only clean up what has been allocated in child
-   process. Otherwise the 'cleanup()' will be called both from the parent and
-   child and the test will likely fail (for example in 'tst_rmdir()' because
-   both parent and child will attempt to remove the directory and one of them
-   will fail).
+Children that outlive the 'test()' function execution are waited for in the
+test library. Unclean child exit (killed by signal, non-zero exit value, etc.)
+will cause the main test process to exit with 'tst_brk()', which especially
+means that 'TBROK' propagated from a child process will cause the whole test
+to exit with 'TBROK'.
 
-** The same applies to xref:2.2.4[safe macros] because they call 'tst_brkm()'
-   when anything goes wrong.
+If a test needs a child that segfaults or does anything else that cause it to
+exit uncleanly all you need to do is to wait for such children from the
+'test()' function so that it's reaped before the main test exits the 'test()'
+function.
 
-* Or you can stick to plain old 'exit()' with 'TPASS', 'TBROK', 'TFAIL' and
-  'TCONF' constants.
-
-Then you call 'tst_record_childstatus()' to records the result of the test
-(done in child process) which propagates the child result (child exit status)
-to the parent process correctly.
-
-[source,c]
--------------------------------------------------------------------------------
-#include "test.h"
-
-void tst_record_childstatus(void (*cleanup)(void), pid_t child);
--------------------------------------------------------------------------------
-
-This function does a 'waitpid()' on child process and record child process's
-return value into the overall test result.
-
-NOTE: As 'waitpid()' is used you may pass '-1' as the child pid if you
-      want to wait for any of the process children.
-
-2.2.8 Fork() and Parent-child synchronization
+2.2.9 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As LTP tests are written for Linux, most of the tests involve fork()-ing and
-parent-child process synchronization. To solve this problem LTP has checkpoint
-library that provides up to page_size / sizeof(uint32_t) wait/wake pairs. The
-checkpoint library expects all synchronized processes to run with the same
-working directory (it uses shared memory backed with a file for futex based
-synchronization).
+parent-child process synchronization. LTP includes a checkpoint library that
+provides wait/wake futex based functions.
 
-The library must be initialized with 'TST_CHECKPOINT_INIT()' function (which
-creates a page of shared memory to be used with futexes). The function takes a
-cleanup callback as a parameter which is used to remove the test temporary
-directory before the process exits if something went wrong.
-
-IMPORTANT: As the init function creates a file the 'tst_tmpdir()' must be
-           called beforehand to create a temporary directory.
+In order to use checkpoints the '.need_chekcpoints' flag in the 'struct
+tst_test' must be set to '1', this causes the test library to initialize
+checkpoints before the 'test()' function is called.
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-TST_SAFE_CHECKPOINT_WAIT(cleanup_fn, id)
+TST_CHECKPOINT_WAIT(id)
 
-TST_SAFE_CHECKPOINT_WAKE(cleanup_fn, id)
+TST_CHECKPOINT_WAKE(id)
 
-TST_SAFE_CHECKPOINT_WAKE2(cleanup_fn, id, nr_wake)
+TST_CHECKPOINT_WAKE2(id, nr_wake)
 
-TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup_fn, id)
+TST_CHECKPOINT_WAKE_AND_WAIT(id)
 -------------------------------------------------------------------------------
 
 The checkpoint interface provides pair of wake and wait functions. The 'id' is
-unsigned integer which specifies checkpoint to wake/wait for.
+unsigned integer which specifies checkpoint to wake/wait for. As a matter of
+fact it's an index to an array stored in a shared memory, so it starts on
+'0' and there should be enough room for at least of hundred of them.
 
-The 'TST_SAFE_CHECKPOINT_WAIT()' suspends process execution until it's woken
+The 'TST_CHECKPOINT_WAIT()' suspends process execution until it's woken
 up or until timeout is reached.
 
-The 'TST_SAFE_CHECKPOINT_WAKE()' wakes one process waiting on the checkpoint.
+The 'TST_CHECKPOINT_WAKE()' wakes one process waiting on the checkpoint.
 If no process is waiting the function retries until it success or until
 timeout is reached.
 
 If timeout has been reached process exits with appropriate error message (uses
-'tst_brkm()').
+'tst_brk()').
 
-The 'TST_SAFE_CHECKPOINT_WAKE2()' does the same as
-'TST_SAFE_CHECKPOINT_WAKE()' but can be used to wake precisely 'nr_wake'
-processes.
+The 'TST_CHECKPOINT_WAKE2()' does the same as 'TST_CHECKPOINT_WAKE()' but can
+be used to wake precisely 'nr_wake' processes.
 
-The 'TST_SAFE_CHECKPOINT_WAKE_AND_WAIT()' is a shorthand for doing wake and
-then immediately waiting on the same checkpoint.
+The 'TST_CHECKPOINT_WAKE_AND_WAIT()' is a shorthand for doing wake and then
+immediately waiting on the same checkpoint.
 
-Child processes created via fork() are ready to use the checkpoint
+Child processes created via 'tst_fork()' are ready to use the checkpoint
 synchronization functions, as they inherited the mapped page automatically.
 
-Child processes started via exec*, or any other processes must initialize the
-checkpoint by calling 'TST_CHECKPOINT_INIT()' before usage.
+Child processes started via 'exec()', or any other processes not forked from
+the test process must initialize the checkpoint by calling 'tst_reinit()'.
 
-IMPORTANT: The call to 'TST_CHECKPOINT_INIT()' from the child process must pass
-           'NULL' pointer as a cleanup callback.
+For the details of the interface, look into the 'include/tst_checkpoint.h'.
 
-For the details of the interface, look into the 'include/tst_checkpoint.h' and
-'lib/tests/tst_checkpoint_*'.
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
 
-There is also an interface that allows parent to wait until child is blocked
-in kernel (for example waits in 'pause()'), see 'include/tst_process_state.h'
-for more.
+/*
+ * Waits for process state change.
+ *
+ * The state is one of the following:
+ *
+ * R - process is running
+ * S - process is sleeping
+ * D - process sleeping uninterruptibly
+ * Z - zombie process
+ * T - process is traced
+ */
+TST_PROCESS_STATE_WAIT(pid, state)
+-------------------------------------------------------------------------------
 
-2.2.9 Signal handlers
-^^^^^^^^^^^^^^^^^^^^^
+The 'TST_PROCESS_STATE_WAIT()' waits until process 'pid' is in requested
+'state'. The call polls +/proc/pid/stat+ to get this information.
+
+It's mostly used with state 'S' which means that process is sleeping in kernel
+for example in 'pause()' or any other blocking syscall.
+
+2.2.10 Signal handlers
+^^^^^^^^^^^^^^^^^^^^^^
 
 If you need to use signal handlers, keep the code short and simple. Don't
 forget that the signal handler is called asynchronously and can interrupt the
@@ -729,7 +667,7 @@ code and signal handler, which will occasionally lead to:
   example, for any operations on 'FILE' objects.
 
 * Deadlock, this happens, for example, if you call 'malloc(2)', 'free(2)',
-  etc. from both the test code and the signal handler at the same time because
+  etc. from both the test code and the signal handler at the same time since
   'malloc' has global lock for it's internal data structures. (Be wary that
   'malloc(2)' is used by the libc functions internally too.)
 
@@ -742,13 +680,13 @@ exit a test immediately from a signal handler use '_exit(2)' instead.
 TIP: See 'man 7 signal' for the list of signal-async-safe functions.
 
 If a signal handler sets a variable, its declaration must be 'volatile',
-otherwise compiler may misoptimize the code, because the variable may not be
-changed in the code flow analysis. There is 'sig_atomic_t' type defined in C99
-but this one DOES NOT imply volatile (it's just a typedef to int). So the
-correct type for a flag that is changed from a signal handler is either
-'volatile int' or 'volatile sig_atomic_t'.
+otherwise compiler may misoptimize the code. This is because the variable may
+not be changed in the compiler code flow analysis. There is 'sig_atomic_t'
+type defined in C99 but this one *DOES NOT* imply 'volatile' (it's just a
+'typedef' to 'int'). So the correct type for a flag that is changed from a
+signal handler is either 'volatile int' or 'volatile sig_atomic_t'.
 
-2.2.10 Kernel Modules
+2.2.11 Kernel Modules
 ^^^^^^^^^^^^^^^^^^^^^
 
 There are certain cases where the test needs a kernel part and userspace part,
@@ -777,34 +715,33 @@ Aligns the x to be next multiple of a. The a must be power of 2.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests are known to fail on certain filesytems (you cannot swap on TMPFS,
-there are unimplemented fcntl() etc.).
+there are unimplemented 'fcntl()' etc.).
 
 If your test needs to be skipped on certain filesystems, use the interface
 below:
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "tst_fs_type.h"
+#include "tst_test.h"
 
 	/*
 	 * Unsupported only on NFS.
 	 */
-	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC) {
-		tst_brkm(TCONF, cleanup,
-		         "Test not supported on NFS filesystem");
-	}
+	if (tst_fs_type(".") == TST_NFS_MAGIC)
+		tst_brk(TCONF, "Test not supported on NFS filesystem");
+
 
 	/*
 	 * Unsupported on NFS, TMPFS and RAMFS
 	 */
 	long type;
 
-	switch ((type = tst_fs_type(cleanup, "."))) {
+	switch ((type = tst_fs_type("."))) {
 	case TST_NFS_MAGIC:
 	case TST_TMPFS_MAGIC:
 	case TST_RAMFS_MAGIC:
-		tst_brkm(TCONF, cleanup, "Test not supported on %s filesystem",
-		         tst_fs_type_name(type));
+		tst_brk(TCONF, "Test not supported on %s filesystem",
+		        tst_fs_type_name(type));
 	break;
 	}
 -------------------------------------------------------------------------------
@@ -812,109 +749,115 @@ below:
 2.2.13 Thread-safety in the LTP library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-It is safe to use library 'tst_' functions in multi-threaded tests.
-Synchronization mechanism is enabled only if the test is linked with pthread
-library, otherwise no-op stubs (defined in libc) are used.
+It is safe to use library 'tst_res()' function in multi-threaded tests.
 
-Also, LTP has a helper "TST_DECLARE_ONCE_FN" macro to declare a function which
-must be run only once (e.g. init or cleanup function), but might be called by
-multiple threads at the same time. See example below:
+Only the main thread must return from the 'test()' function to the test
+library and that must be done only after all threads that may call any library
+function has been terminated. That especially means that threads that may call
+'tst_brk()' must terminate before the execution of the 'test()' function
+returns to the library. This is usually done by the main thread joining all
+worker threads at the end of the 'test()' function. Note that the main thread
+will never get to the library code in a case that 'tst_brk()' was called from
+one of the threads since it will sleep at least in 'pthread_join()' on the
+thread that called the 'tst_brk()' till 'exit()' is called by 'tst_brk()'.
+
+The test-supplied cleanup function runs *concurrently* to the rest of the
+threads in a case that cleanup was entered from 'tst_brk()'. Subsequent
+threads entering 'tst_brk()' must be suspended or terminated at the start of
+the the user supplied cleanup function. It may be necessary to stop or exit
+the rest of the threads before the test cleans up as well. For example threads
+that create new files should be stopped before temporary directory is be
+removed.
+
+Following code example shows thread safe cleanup function example using atomic
+increment as a guard. The library calls its cleanup after the execution returns
+from the user supplied cleanup and expects that only one thread returns from
+the user supplied cleanup to the test library.
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-...
-
-void do_cleanup(void)
+static void cleanup(void)
 {
-	/* cleanup code */
+	static unsigned int flag;
+
+	if (tst_atomic_inc(&flag) != 1)
+		pthread_exit(NULL);
+
+	/* if needed stop the rest of the threads here */
+
 	...
-}
-TST_DECLARE_ONCE_FN(cleanup, do_cleanup);
 
-...
+	/* then do cleanup work */
 
-void test01(void)
-{
-	sfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sfd == -1)
-		tst_brkm(TBROK, cleanup, "Failed to create a socket");
+	...
+
+	/* only one thread returns to the library */
 }
 -------------------------------------------------------------------------------
 
-2.2.14 Acquiring a block device
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2.2.14 Testing with a block device
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests needs a block device (inotify tests, syscall 'EROFS' failures,
-etc.). For your convenience LTP library includes a function to acquire and
-release a testing device.
+etc.). LTP library contains a code to prepare a testing device.
+
+If '.needs_device' flag in the 'struct tst_test' is set the the 'tst_device'
+structure is initialized with a path to a test device and default filesystem
+to be used.
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-const char *tst_acquire_device(void (cleanup_fn)(void));
+struct tst_device {
+	const char *dev;
+	const char *fs_type;
+};
+
+extern struct tst_device *tst_device;
+
+int tst_umount(const char *path);
 -------------------------------------------------------------------------------
 
-This function returns a path to small block device suitable for formatting and
-mounting.
+In case that 'LTP_DEV' is passed to the test in an environment, the library
+checks that the file exists and that it's a block device. Otherwise a
+temporary file is created and attached to a free loop device.
 
-WARNING: You can acquire only one device, calling it for second time without
-         releasing the device first will abort the test.
+If there is no usable device and loop device couldn't be initialized the test
+exits with 'TCONF'.
 
-In case that 'LTP_DEV' is passed to the test in environment, the function just
-checks that the file exists and that it's a block device.
+The 'tst_umount()' function works exactly as 'umount(2)' but retries several
+times on 'EBUSY'. This is because various desktop daemons (gvfsd-trash is known
+for that) may be stupid enough to probe all newly mounted filesystem which
+results in 'umount(2)' failing with 'EBUSY'.
 
-Otherwise a temporary file is created and attached to a free loop device.
-
-In case that that there are no unused loop devices, 'NULL' is returned. The
-test should skip the particular part of the test that needs the device with
-'TCONF'.
-
-WARNING: Because 'tst_acquire_device()' may create temporary file, you must
-         call 'tst_tmpdir()' before you call 'tst_acquire_device()'
-
-[source,c]
--------------------------------------------------------------------------------
-#include "test.h"
-
-void tst_release_device(void (cleanup_fn)(void), const char *dev);
--------------------------------------------------------------------------------
-
-Releases the device acquired by 'tst_acquire_device()'.
+IMPORTANT: All testcases should use 'tst_umount()' instead of 'umount(2)' to
+           umount filesystems.
 
 2.2.15 Formatting a device with a filesystem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-const char *tst_dev_fs_type(void);
--------------------------------------------------------------------------------
-
-Returns name of filesystem that should be used for tests. Unless is your test
-designed to test specific filesystem you should use this function to select
-filesystem for the 'tst_mkfs()'.
-
-NOTE: The default filesytem is hardcoded to 'ext2' in the sources and can be
-      overridden by setting 'LTP_DEV_FS_TYPE' environment variable.
-
-[source,c]
--------------------------------------------------------------------------------
-#include "test.h"
-
-void tst_mkfs(void (cleanup_fn)(void), const char *dev,
-              const char *fs_type, const char *const fs_opts[]
-              const char *extra_opt);
+static void setup(void)
+{
+	...
+	SAFE_MKFS(tst_device->dev, tst_device->fs_type, NULL, NULL);
+	...
+}
 -------------------------------------------------------------------------------
 
 This function takes a path to a device, filesystem type and an array of extra
 options passed to mkfs.
 
 The fs options 'fs_opts' should either be 'NULL' if there are none, or a
-'NULL' terminated array of strings such as '{"-b", "1024", NULL}'.
+'NULL' terminated array of strings such as:
++const char *const opts[] = {"-b", "1024", NULL}+.
 
 The extra option 'extra_opt' should either be 'NULL' if there is none, or a
 string such as '"102400"'; 'extra_opt' will be passed after device name. e.g:
@@ -924,43 +867,38 @@ string such as '"102400"'; 'extra_opt' will be passed after device name. e.g:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests have size requirements for the filesystem's free space. If these
-requirements are not satisfied, the tests are not appropriate to run.
-Especially when you run runltp with "-z" option to specify a big block device,
-different tests have different requirements for the free space of this block
-device.
+requirements are not satisfied, the tests should be skipped.
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-int tst_fs_has_free(void (*cleanup)(void), const char *path,
-		    unsigned int size, unsigned int mult);
+int tst_fs_has_free(const char *path, unsigned int size, unsigned int mult);
 -------------------------------------------------------------------------------
 
 The 'tst_fs_has_free()' function returns 1 if there is enough space and 0 if
 there is not.
 
-The 'path' is the pathname of any directory/file within a filesystem you want to
-verify its free space of.
+The 'path' is the pathname of any directory/file within a filesystem.
 
 The 'mult' is a multiplier, one of 'TST_BYTES', 'TST_KB', 'TST_MB' or 'TST_GB'.
 
 The required free space is calculated by 'size * mult', e.g.
-'tst_fs_has_free(cleanup, "/tmp/testfile", 64, TST_MB)' will return 1 if the
+'tst_fs_has_free("/tmp/testfile", 64, TST_MB)' will return 1 if the
 filesystem, which '"/tmp/testfile"' is in, has 64MB free space at least, and 0
 if not.
 
-2.2.17 Getting the maximum number of links to a regular file or directory
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2.2.17 Files, directories and fs limits
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests need to know the maximum count of links to a regular file or
 directory, such as 'rename(2)' or 'linkat(2)' to test 'EMLINK' error.
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-int tst_fs_fill_hardlinks(void (*cleanup)(void), const char *dir);
+int tst_fs_fill_hardlinks(const char *dir);
 -------------------------------------------------------------------------------
 
 Try to get maximum count of hard links to a regular file inside the 'dir'.
@@ -976,9 +914,9 @@ created files are removed.
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-int tst_fs_fill_subdirs(void (*cleanup)(void), const char *dir);
+int tst_fs_fill_subdirs(const char *dir);
 -------------------------------------------------------------------------------
 
 Try to get maximum number of subdirectories in directory.
@@ -996,6 +934,17 @@ newly created dir has two links already - the '.' and the link from parent
 dir). If no limit is hit or if 'mkdir(2)' failed with 'ENOSPC' or 'EDQUOT',
 zero is returned and previously created directories are removed.
 
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+int tst_dir_is_empty(const char *dir, int verbose);
+-------------------------------------------------------------------------------
+
+Returns non-zero if directory is empty and zero otherwise.
+
+Directory is considered empty if it contains only '.' and '..'.
+
 2.2.18 Getting an unused PID number
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1005,43 +954,34 @@ it's passed such 'PID'.
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-pid_t tst_get_unused_pid(void (*cleanup)(void));
+pid_t tst_get_unused_pid(void);
 -------------------------------------------------------------------------------
 
 Return a 'PID' value not used by the OS or any process within it.
 
-2.2.19 Umounting devices
-^^^^^^^^^^^^^^^^^^^^^^^^
-
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-int tst_umount(const char *path);
+int tst_get_free_pids(void);
 -------------------------------------------------------------------------------
 
-Since various desktop deamons (gvfsd-trash is known for that) may be stupid
-enough to probe all newly mounted filesystem which results in 'umount(2)'
-failing with 'EBUSY' LTP library includes 'tst_umount()' function that behaves
-exactly as 'umount(2)' but retries several times on a failure.
-
-IMPORTANT: All testcases should use 'tst_umount()' instead of 'umount(2)' to
-           umount filesystems.
+Returns number of unused pids in the system. Note that this number may be
+different once the call returns and should be used only for rough estimates.
 
 2.2.20 Running executables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
-int tst_run_cmd(void (cleanup_fn)(void),
-               const char *const argv[],
-	       const char *stdout_path,
-	       const char *stderr_path,
-	       int pass_exit_val);
+int tst_run_cmd(const char *const argv[],
+	        const char *stdout_path,
+	        const char *stderr_path,
+	        int pass_exit_val);
 -------------------------------------------------------------------------------
 
 'tst_run_cmd' is a wrapper for 'vfork() + execvp()' which provides a way
@@ -1060,13 +1000,13 @@ stdout and stderr I/O streams.
 .Example
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
 const char *const cmd[] = { "ls", "-l", NULL };
 
 ...
 	/* Store output of 'ls -l' into log.txt */
-	tst_run_cmd(cleanup, cmd, "log.txt", NULL, 0);
+	tst_run_cmd(cmd, "log.txt", NULL, 0);
 ...
 -------------------------------------------------------------------------------
 
@@ -1075,7 +1015,7 @@ const char *const cmd[] = { "ls", "-l", NULL };
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "test.h"
+#include "tst_test.h"
 
 void tst_timer_check(clockid_t clk_id);
 
@@ -1144,6 +1084,44 @@ The 'tst_timespec_abs_diff*()' functions returns absolute value of difference
 between two times.
 
 NOTE: All conversions to ms and us rounds the value.
+
+2.2.22 Datafiles
+^^^^^^^^^^^^^^^^
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static const char *const res_files[] = {
+	"foo",
+	"bar",
+	NULL
+};
+
+static struct tst_test test = {
+	...
+	.resource_files = res_files,
+	...
+}
+-------------------------------------------------------------------------------
+
+If the test needs additional files to be copied to the test temporary
+directory all you need to do is to list their filenames in the
+'NULL'-terminated array '.resource_files' in the tst_test structure.
+
+When resource files is set test temporary directory is created automatically,
+there is need to set '.needs_tmpdir' as well.
+
+The test library looks for datafiles first, these are either stored in a
+directory called +datafiles+ in the +$PWD+ at the start of the test or in
++$LTPROOT/testcases/data/$tid+. If the file is not found the library looks
+into +$LTPROOT/testcases/bin/+ and to +$PWD+ at the start of the test. This
+ensures that the testcases can copy the file(s) effortlessly both when test is
+started from the directory it was compiled in as well as when LTP was
+installed.
+
+The file(s) are copied to the newly created test temporary directory which is
+set as the test working directory when the 'test()' functions is executed.
 
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1217,11 +1195,11 @@ tst_sleep
 Albeit there is a sleep command available basically everywhere not all
 implementations can support sleeping for less than one second. And most of the
 time sleeping for a second is too much. Therefore LTP includes 'tst_sleep'
-that can sleep for defined amount of seconds, miliseconds or microseconds.
+that can sleep for defined amount of seconds, milliseconds or microseconds.
 
 [source,sh]
 -------------------------------------------------------------------------------
-# sleep for 100 miliseconds
+# sleep for 100 milliseconds
 tst_sleep 100ms
 -------------------------------------------------------------------------------
 
@@ -1425,7 +1403,7 @@ have to use 'stat()', 'lstat()' or 'fstat()'.
 3.3 umount() EBUSY
 ~~~~~~~~~~~~~~~~~~
 
-Various desktop deamons (gvfsd-trash is known for that) may be stupid enough
+Various desktop daemons (gvfsd-trash is known for that) may be stupid enough
 to probe all newly mounted filesystem which results in 'umount(2)' failing
 with 'EBUSY'; use 'tst_umount()' described in 2.2.19 that retries in this case
 instead of plain 'umount(2)'.

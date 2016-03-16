@@ -205,7 +205,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (device)
-		tst_release_device(NULL, device);
+		tst_release_device(device);
 
 	tst_rmdir();
 }

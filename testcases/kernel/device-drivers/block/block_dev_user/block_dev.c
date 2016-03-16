@@ -28,7 +28,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "tst_module.h"
+#include "old_module.h"
 
 char *TCID = "block_dev";
 int TST_TOTAL = 9;

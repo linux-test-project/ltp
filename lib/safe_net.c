@@ -18,7 +18,7 @@
 
 #include <errno.h>
 #include "test.h"
-#include "safe_net.h"
+#include "safe_net_fn.h"
 
 char *tst_sock_addr(const struct sockaddr *sa, socklen_t salen, char *res,
 		    size_t len)
