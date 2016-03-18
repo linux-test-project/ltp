@@ -54,7 +54,7 @@ int TST_TOTAL = ARRAY_SIZE(testfunc);
 
 static volatile int sig_caught;
 static sigjmp_buf env;
-static int copy_sz;
+static unsigned int copy_sz;
 
 int main(int ac, char **av)
 {
@@ -189,6 +189,10 @@ static void *get_func(void *mem)
 	uintptr_t func_page_offset = (uintptr_t)&exec_func & (page_sz - 1);
 	void *func_copy_start = mem + func_page_offset;
 	void *page_to_copy = (void *)((uintptr_t)&exec_func & page_mask);
+#ifdef __powerpc__
+	void *mem_start = mem;
+	uintptr_t i;
+#endif
 
 	/* copy 1st page, if it's not present something is wrong */
 	if (!page_present(page_to_copy)) {
@@ -205,6 +209,12 @@ static void *get_func(void *mem)
 		memcpy(mem, page_to_copy, page_sz);
 	else
 		memset(mem, 0, page_sz);
+
+#ifdef __powerpc__
+	for (i = 0; i < copy_sz; i += 4)
+		__asm__ __volatile__("dcbst 0,%0; sync; icbi 0,%0; sync; isync"
+			:: "r"(mem_start + i));
+#endif
 
 	/* return pointer to area where copy of exec_func resides */
 	return func_copy_start;
