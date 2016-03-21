@@ -570,10 +570,7 @@ pause01 pause01
 pause02 pause02
 pause03 pause03
 
-#  The personality() system call is poorly documented
-#  and difficult to figure out how to use by looking
-#  at the different architecture specific kernel files.
-#personality01 personality01
+personality01 personality01
 
 pipe01 pipe01
 pipe02 pipe02

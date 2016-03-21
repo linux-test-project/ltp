@@ -1,157 +1,119 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  03/2001 - Written by Wayne Boyer
+ * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
- * NAME
- *	personality01.c
+ * Tries to set different personalities.
  *
- * DESCRIPTION
- *	personality01 - Check that we can set the personality for a process.
- *
- * CALLS
- *	personality()
- *
- * ALGORITHM
- *	loop if that option was specified
- *	issue the system call
- *	check the errno value
- *	  issue a PASS message if the return value is the previous personality
- *	  value
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	  break any remaining tests
- *	  call cleanup
- *
- * USAGE:  <for command-line>
- *  personality01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
+ * We set the personality in a child process since it's not guaranteed that we
+ * can set it back in some cases. I.e. PER_LINUX32 cannot be unset on some 64
+ * bit archs.
  */
 
 #include "test.h"
-
-#include <errno.h>
 #include <sys/personality.h>
-#undef personality
-
-extern int personality(unsigned long);
-
-void cleanup(void);
-void setup(void);
 
 char *TCID = "personality01";
-int TST_TOTAL = 13;
 
-int pers[] = { PER_LINUX, PER_LINUX_32BIT, PER_SVR4, PER_SVR3, PER_SCOSVR3,
-	PER_WYSEV386, PER_ISCR4, PER_BSD, PER_XENIX, PER_LINUX32,
-	PER_IRIX32, PER_IRIXN32, PER_IRIX64
+#define PAIR(id) {id, #id}
+
+struct personalities {
+	unsigned long int pers;
+	const char *name;
 };
+
+struct personalities pers[] = {
+	PAIR(PER_LINUX),
+	PAIR(PER_LINUX_32BIT),
+	PAIR(PER_SVR4),
+	PAIR(PER_SVR3),
+	PAIR(PER_SCOSVR3),
+	PAIR(PER_OSR5),
+	PAIR(PER_WYSEV386),
+	PAIR(PER_ISCR4),
+	PAIR(PER_BSD),
+	PAIR(PER_XENIX),
+	PAIR(PER_LINUX32),
+	PAIR(PER_IRIX32),
+	PAIR(PER_IRIXN32),
+	PAIR(PER_IRIX64),
+	PAIR(PER_RISCOS),
+	PAIR(PER_SOLARIS),
+	PAIR(PER_UW7),
+	PAIR(PER_OSF4),
+	PAIR(PER_HPUX),
+};
+
+int TST_TOTAL = ARRAY_SIZE(pers);
+
+static void do_child(unsigned int i)
+{
+	int ret;
+
+	ret = personality(pers[i].pers);
+	if (ret < 0) {
+		tst_resm(TFAIL | TERRNO, "personality(%s) failed", pers[i].name);
+		return;
+	}
+
+	ret = personality(0xffffffff);
+
+	if ((unsigned long)ret != pers[i].pers) {
+		tst_resm(TFAIL,
+			 "%s: wrong personality read back %d expected %lu",
+			 pers[i].name, ret, pers[i].pers);
+		return;
+	}
+
+	tst_resm(TPASS, "personality(%s)", pers[i].name);
+}
+
+static void verify_personality(unsigned int i)
+{
+	pid_t pid;
+
+	pid = tst_fork();
+	switch (pid) {
+	case 0:
+		do_child(i);
+		tst_exit();
+	break;
+	case -1:
+		tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
+	break;
+	default:
+		tst_record_childstatus(NULL, pid);
+	break;
+	}
+}
 
 int main(int ac, char **av)
 {
-	int lc;
-	int i, start_pers;
+	int i, lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
-	setup();		/* global setup */
-
-	start_pers = personality(PER_LINUX);
-	if (start_pers == -1) {
-		printf("personality01:  Test Failed\n");
-		exit(-1);
-	}
-
-	/* The following checks the looping state if -i option given */
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/*
-		 * Start looping through our series of personalities and
-		 * make sure that we can change to each one and the return
-		 * value is the previous one.
-		 */
 		for (i = 0; i < TST_TOTAL; i++) {
-
-			TEST(personality(pers[i]));
-
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL, "call failed - "
-					 "errno = %d - %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-				continue;
-			}
-
-			/*
-			 * check to make sure that the return value
-			 * is the previous personality in our list.
-			 *
-			 * i == 0 is a special case since the return
-			 * value should equal pers[0].
-			 */
-			if (TEST_RETURN == pers[i == 0 ? 0 : i - 1]) {
-				tst_resm(TPASS, "personality set "
-					 "correctly");
-			} else {
-				tst_resm(TFAIL, "returned persona "
-					 "was not expected");
-			}
-		}
-		/*
-		 * set our personality back to PER_LINUX
-		 */
-		if (personality(start_pers) == -1) {
-			tst_brkm(TBROK, cleanup, "failed personality reset");
+			verify_personality(i);
 		}
 	}
 
-	cleanup();
 	tst_exit();
-}
-
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
-{
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
-{
 }
