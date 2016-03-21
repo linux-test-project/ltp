@@ -755,7 +755,6 @@ pause03 pause03
 #  and difficult to figure out how to use by looking
 #  at the different architecture specific kernel files.
 #personality01 personality01
-#personality02 personality02
 
 pipe01 pipe01
 pipe02 pipe02
