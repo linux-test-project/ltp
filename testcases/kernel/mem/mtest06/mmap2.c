@@ -48,9 +48,9 @@
 /*									      */
 /* Description: Test the LINUX memory manager. The program is aimed at        */
 /*              stressing the memory manager by repeaded map/write/unmap of a */
-/*		of a large gb size file.				      */
+/*		large (by default 128MB) file.			              */
 /*									      */
-/*		Create a file of the specified size in gb, map the file,      */
+/*		Create a file of the specified size in mb, map the file,      */
 /*		change the contents of the file and unmap it. This is repeated*/
 /*		several times for the specified number of hours.	      */
 /*									      */
@@ -73,7 +73,7 @@
 #include <getopt.h>
 #include "test.h"
 
-#define GB 1000000000
+#define MB (1024 * 1024)
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -99,7 +99,7 @@ static int mkfile(int size)
 		fprintf(stdout, "creating tmp file and writing 'a' to it ");
 	}
 
-	while (index < (size * GB)) {
+	while (index < (size * MB)) {
 		index += 4096;
 		if (write(fd, buff, 4096) == -1) {
 			perror("mkfile(): write()");
@@ -136,16 +136,25 @@ static void usage(char *progname)
 		"\t -p set map_flag to MAP_PRIVATE.\tdefault:"
 		"MAP_SHARED\n"
 		"\t -s size of the file/memory to be mmaped.\tdefault:"
-		"1GB\n"
+		"128MB\n"
 		"\t -x time for which test is to be run.\tdefault:"
 		"24 Hrs\n", progname);
 	exit(-1);
 }
 
+unsigned long get_available_memory_mb(void)
+{
+	unsigned long ps, pn;
+
+	ps = sysconf(_SC_PAGESIZE);
+	pn = sysconf(_SC_AVPHYS_PAGES);
+	return (ps / 1024) * pn / 1024;
+}
+
 int main(int argc, char **argv)
 {
 	int fd;
-	int fsize = 1;
+	unsigned long fsize = 128;
 	float exec_time = 24;
 	int c;
 	int sig_ndx;
@@ -153,6 +162,7 @@ int main(int argc, char **argv)
 	int map_anon = FALSE;
 	int run_once = TRUE;
 	char *memptr;
+	unsigned long avail_memory_mb;
 	struct sigaction sigptr;
 
 	static struct signal_info {
@@ -188,7 +198,7 @@ int main(int argc, char **argv)
 			fsize = atoi(optarg);
 			if (fsize == 0)
 				fprintf(stderr, "Using default "
-					"fsize %d GB\n", fsize = 1);
+					"fsize %lu MB\n", fsize = 128);
 			break;
 		case 'x':
 			exec_time = atof(optarg);
@@ -205,7 +215,14 @@ int main(int argc, char **argv)
 
 	fprintf(stdout, "MM Stress test, map/write/unmap large file\n"
 		"\tTest scheduled to run for:       %f\n"
-		"\tSize of temp file in GB:         %d\n", exec_time, fsize);
+		"\tSize of temp file in MB:         %lu\n", exec_time, fsize);
+
+	avail_memory_mb = get_available_memory_mb();
+	fprintf(stdout, "Available memory: %ldMB\n", avail_memory_mb);
+	if (fsize > avail_memory_mb) {
+		fprintf(stdout, "Not enough memory to run this case\n");
+		exit(0);
+	}
 
 	alarm(exec_time * 3600.00);
 
@@ -235,7 +252,7 @@ int main(int argc, char **argv)
 			fd = -1;
 			map_flags = map_flags | MAP_ANONYMOUS;
 		}
-		memptr = mmap(0, (fsize * GB), PROT_READ | PROT_WRITE,
+		memptr = mmap(0, (fsize * MB), PROT_READ | PROT_WRITE,
 			      map_flags, fd, 0);
 		if (memptr == MAP_FAILED) {
 			perror("main(): mmap()");
@@ -244,15 +261,15 @@ int main(int argc, char **argv)
 			fprintf(stdout, "file mapped at %p\n"
 				"changing file content to 'A'\n", memptr);
 
-		memset(memptr, 'A', ((fsize * GB) / sizeof(char)));
+		memset(memptr, 'A', ((fsize * MB) / sizeof(char)));
 
-		if (msync(memptr, ((fsize * GB) / sizeof(char)),
+		if (msync(memptr, ((fsize * MB) / sizeof(char)),
 			  MS_SYNC | MS_INVALIDATE) == -1) {
 			perror("main(): msync()");
 			exit(-1);
 		}
 
-		if (munmap(memptr, (fsize * GB) / sizeof(char)) == -1) {
+		if (munmap(memptr, (fsize * MB) / sizeof(char)) == -1) {
 			perror("main(): munmap()");
 			exit(-1);
 		} else
