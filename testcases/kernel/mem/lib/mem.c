@@ -210,6 +210,8 @@ static void set_global_mempolicy(int mempolicy)
 
 void testoom(int mempolicy, int lite, int retcode, int allow_sigkill)
 {
+	int ksm_run_orig;
+
 	set_global_mempolicy(mempolicy);
 
 	tst_resm(TINFO, "start normal OOM testing.");
@@ -223,7 +225,10 @@ void testoom(int mempolicy, int lite, int retcode, int allow_sigkill)
 			 "skip OOM test for KSM pags");
 	} else {
 		tst_resm(TINFO, "start OOM testing for KSM pages.");
+		SAFE_FILE_SCANF(cleanup, PATH_KSM "run", "%d", &ksm_run_orig);
+		SAFE_FILE_PRINTF(cleanup, PATH_KSM "run", "1");
 		oom(KSM, lite, retcode, allow_sigkill);
+		SAFE_FILE_PRINTF(cleanup,PATH_KSM "run", "%d", ksm_run_orig);
 	}
 }
 
