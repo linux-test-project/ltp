@@ -105,6 +105,8 @@ void setup(void)
 	SAFE_FILE_SCANF(NULL, PATH_KSM "sleep_millisecs",
 			"%d", &sleep_millisecs);
 
+	save_max_page_sharing();
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 }
@@ -116,6 +118,8 @@ void cleanup(void)
 	FILE_PRINTF(PATH_KSM "sleep_millisecs",
 			 "%d", sleep_millisecs);
 	FILE_PRINTF(PATH_KSM "run", "%d", run);
+
+	restore_max_page_sharing();
 }
 
 static void usage(void)

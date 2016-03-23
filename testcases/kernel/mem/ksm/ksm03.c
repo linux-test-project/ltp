@@ -113,6 +113,8 @@ void setup(void)
 		SAFE_FILE_PRINTF(NULL, PATH_KSM "merge_across_nodes", "1");
 	}
 
+	save_max_page_sharing();
+
 	mount_mem("memcg", "cgroup", "memory", MEMCG_PATH, MEMCG_PATH_NEW);
 	tst_sig(FORK, DEF_HANDLER, NULL);
 	TEST_PAUSE;
@@ -123,6 +125,8 @@ void cleanup(void)
 	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0)
 		FILE_PRINTF(PATH_KSM "merge_across_nodes",
 				 "%d", merge_across_nodes);
+
+	restore_max_page_sharing();
 
 	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
 }

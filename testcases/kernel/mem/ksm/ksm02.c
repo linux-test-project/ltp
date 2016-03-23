@@ -125,6 +125,8 @@ void cleanup(void)
 		FILE_PRINTF(PATH_KSM "merge_across_nodes",
 				 "%d", merge_across_nodes);
 
+	restore_max_page_sharing();
+
 	umount_mem(CPATH, CPATH_NEW);
 }
 
@@ -136,6 +138,7 @@ void setup(void)
 		tst_brkm(TCONF, NULL, "2.6.32 or greater kernel required");
 	if (access(PATH_KSM, F_OK) == -1)
 		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
+	save_max_page_sharing();
 
 	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0) {
 		SAFE_FILE_SCANF(NULL, PATH_KSM "merge_across_nodes",

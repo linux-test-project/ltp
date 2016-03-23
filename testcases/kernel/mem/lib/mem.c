@@ -229,6 +229,22 @@ void testoom(int mempolicy, int lite, int retcode, int allow_sigkill)
 
 /* KSM */
 
+static int max_page_sharing;
+
+void save_max_page_sharing(void)
+{
+	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
+	        SAFE_FILE_SCANF(NULL, PATH_KSM "max_page_sharing",
+	                        "%d", &max_page_sharing);
+}
+
+void restore_max_page_sharing(void)
+{
+	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
+	        FILE_PRINTF(PATH_KSM "max_page_sharing",
+	                         "%d", max_page_sharing);
+}
+
 static void check(char *path, long int value)
 {
 	char fullpath[BUFSIZ];
@@ -501,9 +517,12 @@ void create_same_memory(int size, int num, int unit)
 	stop_ksm_children(child, num);
 
 	tst_resm(TINFO, "KSM merging...");
+	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
+		SAFE_FILE_PRINTF(cleanup, PATH_KSM "max_page_sharing",
+				"%ld", size * pages * num);
 	SAFE_FILE_PRINTF(cleanup, PATH_KSM "run", "1");
 	SAFE_FILE_PRINTF(cleanup, PATH_KSM "pages_to_scan", "%ld",
-			 size * pages *num);
+			 size * pages * num);
 	SAFE_FILE_PRINTF(cleanup, PATH_KSM "sleep_millisecs", "0");
 
 	resume_ksm_children(child, num);
@@ -594,6 +613,9 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 	SAFE_FILE_PRINTF(cleanup, PATH_KSM "sleep_millisecs", "0");
 	SAFE_FILE_PRINTF(cleanup, PATH_KSM "pages_to_scan", "%ld",
 			 nr_pages * num_nodes);
+	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
+		SAFE_FILE_PRINTF(cleanup, PATH_KSM "max_page_sharing",
+			"%ld", nr_pages * num_nodes);
 	/*
 	 * merge_across_nodes setting can be changed only when there
 	 * are no ksm shared pages in system, so set run 2 to unmerge

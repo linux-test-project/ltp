@@ -44,6 +44,8 @@ void testoom(int mempolicy, int lite, int retcode, int allow_sigkill);
 
 #define PATH_KSM		"/sys/kernel/mm/ksm/"
 
+void save_max_page_sharing(void);
+void restore_max_page_sharing(void);
 void test_ksm_merge_across_nodes(unsigned long nr_pages);
 
 /* THP */

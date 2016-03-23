@@ -106,6 +106,8 @@ void setup(void)
 	if (access(PATH_KSM, F_OK) == -1)
 		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
 
+	save_max_page_sharing();
+
 	/*
 	 * kernel commit 90bd6fd introduced a new KSM sysfs knob
 	 * /sys/kernel/mm/ksm/merge_across_nodes, setting it to '0'
@@ -128,4 +130,6 @@ void cleanup(void)
 	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0)
 		FILE_PRINTF(PATH_KSM "merge_across_nodes",
 				 "%d", merge_across_nodes);
+
+	restore_max_page_sharing();
 }
