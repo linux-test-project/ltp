@@ -236,8 +236,7 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 
 	if (do_readahead) {
 		for (i = 0; i < fsize; i += readahead_size) {
-			TEST(ltp_syscall(__NR_readahead, fd,
-				(off64_t) i, readahead_size));
+			TEST(readahead(fd, (off64_t) i, readahead_size));
 			if (TEST_RETURN != 0)
 				break;
 		}
