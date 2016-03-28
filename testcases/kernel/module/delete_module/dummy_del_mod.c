@@ -61,3 +61,4 @@ static void __exit dummy_exit(void)
 module_init(dummy_init);
 module_exit(dummy_exit);
 EXPORT_SYMBOL(dummy_func_test);
+MODULE_LICENSE("GPL");
