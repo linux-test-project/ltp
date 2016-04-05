@@ -33,7 +33,7 @@ ENV_POST_LOADED = 1
 vpath %.c $(abs_srcdir)
 
 # For config.h, et all.
-CPPFLAGS			+= -I$(top_srcdir)/include -I$(top_builddir)/include
+CPPFLAGS			+= -I$(top_srcdir)/include -I$(top_builddir)/include -I$(top_srcdir)/include/old/
 
 LDFLAGS				+= -L$(top_builddir)/lib
 
