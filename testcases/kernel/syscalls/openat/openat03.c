@@ -53,7 +53,7 @@ static void setup(void)
 	int fd = openat(AT_FDCWD, ".", O_TMPFILE | O_RDWR, 0600);
 
 	if (fd == -1) {
-		if (errno == EISDIR)
+		if (errno == EISDIR || errno == ENOTSUP)
 			tst_brkm(TCONF, cleanup, "O_TMPFILE not supported");
 
 		tst_brkm(TBROK | TERRNO, cleanup, "openat() failed");
