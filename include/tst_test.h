@@ -60,6 +60,7 @@ pid_t safe_fork(const char *filename, unsigned int lineno);
 #include "tst_safe_macros.h"
 #include "tst_safe_file_ops.h"
 #include "tst_safe_net.h"
+#include "tst_safe_pthread.h"
 
 struct tst_option {
 	char *optstr;
