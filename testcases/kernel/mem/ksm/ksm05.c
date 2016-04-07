@@ -78,7 +78,7 @@ static void sighandler(int sig);
 
 int main(int argc, char *argv[])
 {
-	int lc, status;
+	int lc, status, ret;
 	long ps;
 	pid_t pid;
 	void *ptr;
@@ -95,9 +95,11 @@ int main(int argc, char *argv[])
 		case -1:
 			tst_brkm(TBROK | TERRNO, cleanup, "fork");
 		case 0:
-			if (posix_memalign(&ptr, ps, ps) < 0)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "posix_memalign");
+			ret = posix_memalign(&ptr, ps, ps);
+			if (ret) {
+				tst_brkm(TBROK, cleanup, "posix_memalign(): %s",
+				         tst_strerrno(ret));
+			}
 			if (madvise(ptr, ps, MADV_MERGEABLE) < 0)
 				tst_brkm(TBROK | TERRNO, cleanup, "madvise");
 			*(char *)NULL = 0;	/* SIGSEGV occurs as expected. */
