@@ -755,6 +755,7 @@ void dochild(void)
 		switch (pid) {
 		case -1:
 			tst_resm(TFAIL, "Fork failed");
+			fail = 1;
 			break;
 		case 0:	/* child */
 #ifdef UCLINUX
@@ -872,8 +873,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 #endif
 		}
 		if (child < 0) {
-			tst_resm(TFAIL, "Fork failed");
-			cleanup();
+			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
 		}
 		/* parent process */
 		if ((thiscase->c_flag) == WILLBLOCK) {
@@ -1145,8 +1145,7 @@ int main(int ac, char **av)
 #endif
 		}
 		if (child < 0) {
-			tst_resm(TFAIL, "Fork failed");
-			cleanup();
+			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
 		}
 
 		/* parent process */
