@@ -18,6 +18,8 @@
 #ifndef TST_PID_H__
 #define TST_PID_H__
 
+#include <sys/types.h>
+
 /*
  * Get a pid value not used by the OS
  */
