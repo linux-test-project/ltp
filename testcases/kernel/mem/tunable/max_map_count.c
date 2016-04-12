@@ -59,6 +59,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/utsname.h>
 #include "test.h"
 #include "mem.h"
 
@@ -70,6 +71,7 @@ int TST_TOTAL = 1;
 
 static long old_max_map_count;
 static long old_overcommit;
+static struct utsname un;
 
 static long count_maps(pid_t pid);
 static void max_map_count_test(void);
@@ -104,6 +106,9 @@ void setup(void)
 	old_max_map_count = get_sys_tune("max_map_count");
 	old_overcommit = get_sys_tune("overcommit_memory");
 	set_sys_tune("overcommit_memory", 2, 1);
+
+	if (uname(&un) != 0)
+		tst_brkm(TBROK | TERRNO, NULL, "uname error");
 }
 
 void cleanup(void)
@@ -133,6 +138,10 @@ static bool filter_map(const char *line)
 	if (!strcmp(buf, "[vdso]"))
 		return true;
 #elif defined(__arm__)
+	/* Skip it when run it in aarch64 */
+	if (strcmp(un.machine, "aarch64"))
+		return false;
+
 	/* Older arm kernels didn't label their vdso maps */
 	if (!strncmp(line, "ffff0000-ffff1000", 17))
 		return true;
