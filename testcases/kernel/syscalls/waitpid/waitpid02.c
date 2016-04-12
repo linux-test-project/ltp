@@ -88,6 +88,9 @@ int main(int argc, char **argv)
 
 		pid = FORK_OR_VFORK();
 
+		if (pid < 0)
+			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+
 		if (pid == 0) {
 #ifdef UCLINUX
 			self_exec(argv[0], "");
