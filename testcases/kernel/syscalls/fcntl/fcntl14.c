@@ -539,7 +539,7 @@ static char tmpname[40];
 
 #define FILEDATA	"ten bytes!"
 
-void catch1(int sig);		/* signal catching subroutine */
+void catch1(int sig);
 void catch_alarm(int sig);
 
 char *TCID = "fcntl14";
@@ -547,25 +547,14 @@ int TST_TOTAL = 1;
 int NO_NFS = 1;
 
 #ifdef UCLINUX
-static char *argv0;		/* Set by main(), passed to self_exec() */
+static char *argv0;
 #endif
 
-/*
- * cleanup()
- *	performs all the ONE TIME cleanup for this test at completion or
- *	premature exit
- */
 void cleanup(void)
 {
-
 	tst_rmdir();
-
 }
 
-/*
- * setup
- *	performs all ONE TIME setup for this test
- */
 void setup(void)
 {
 	struct sigaction act;
@@ -574,10 +563,9 @@ void setup(void)
 	signal(SIGHUP, SIG_IGN);
 	umask(0);
 	TEST_PAUSE;
-	tst_tmpdir();		/* make temp dir and cd to it */
+	tst_tmpdir();
 	parent = getpid();
 
-	/* setup temporary file name */
 	sprintf(tmpname, "fcntl2.%d", parent);
 
 	/* setup signal handler for signal from child */
@@ -618,11 +606,10 @@ void do_usleep_child(void)
 }
 
 void dochild(void)
-{				/* child process */
+{
 	int rc;
 	pid_t pid;
 
-	/* Initialize the child lock structure */
 	flock.l_type = thiscase->c_type;
 	flock.l_whence = thiscase->c_whence;
 	flock.l_start = thiscase->c_start;
@@ -726,7 +713,6 @@ void dochild(void)
 	}
 
 	if ((thiscase->c_flag) == WILLBLOCK) {
-		/* Check for proper errno condition */
 		if (rc != -1 || (errno != EACCES && errno != EAGAIN)) {
 			tst_resm(TFAIL,
 				 "SETLK: rc = %d, errno = %d, -1/EAGAIN or EACCES "
@@ -757,7 +743,7 @@ void dochild(void)
 			tst_resm(TFAIL, "Fork failed");
 			fail = 1;
 			break;
-		case 0:	/* child */
+		case 0:
 #ifdef UCLINUX
 			if (self_exec(argv0, "nd", 1, parent) < 0) {
 				tst_resm(TFAIL, "self_exec failed");
@@ -791,30 +777,21 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 {
 	extern long time();
 
-	/* reset fail to 0 for each run_test call */
 	fail = 0;
 
-	/* loop thru all test cases */
 	for (test = start; test < end; test++) {
-		/* open a temp file to lock */
 		fd = open(tmpname, file_flag, file_mode);
-		if (fd < 0) {
+		if (fd < 0)
 			tst_brkm(TBROK, cleanup, "open() failed");
-		}
 
-		/* write some dummy data to the file */
-		if (write(fd, FILEDATA, 10) < 0) {
+		if (write(fd, FILEDATA, 10) < 0)
 			tst_brkm(TBROK, cleanup, "write() failed");
-		}
 
-		/* seek into file if indicated */
 		if (seek) {
-			if (lseek(fd, seek, 0) < 0) {
+			if (lseek(fd, seek, 0) < 0)
 				tst_brkm(TBROK, cleanup, "lseek() failed");
-			}
 		}
 
-		/* Initialize first parent lock structure */
 		thiscase = &testcases[test];
 		flock.l_type = thiscase->a_type;
 		flock.l_whence = thiscase->a_whence;
@@ -830,7 +807,6 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		}
 
 		if ((thiscase->b_type) != SKIP) {
-			/* Initialize second parent lock structure */
 			flock.l_type = thiscase->b_type;
 			flock.l_whence = thiscase->b_whence;
 			flock.l_start = thiscase->b_start;
@@ -845,20 +821,17 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 			}
 		}
 		if ((thiscase->c_type) == SKIP) {
-			/* close the temp file and move to next test case */
 			close(fd);
 			tst_resm(TINFO, "skipping test %d", test + 1);
-			continue;	/* continue to the next case */
+			continue;
 		}
-		/*
-		 * Mask SIG_USR1 before forking child, to avoid race
-		 */
+
+		/* Mask SIG_USR1 before forking child, to avoid race */
 		(void)sighold(SIGUSR1);
 
 		/* flush the stdout to avoid garbled output */
 		fflush(stdout);
 
-		/* spawn a child process */
 		if ((child = FORK_OR_VFORK()) == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
@@ -872,10 +845,9 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 			dochild();
 #endif
 		}
-		if (child < 0) {
+		if (child < 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
-		}
-		/* parent process */
+
 		if ((thiscase->c_flag) == WILLBLOCK) {
 			/*
 			 * Wait for a signal from the child then remove
@@ -890,7 +862,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 			if (got1 != 1)
 				tst_resm(TINFO, "Pause terminated without "
 					 "signal SIGUSR1 from child");
-			got1 = 0;	/* reset the flag */
+			got1 = 0;
 
 			/*
 			 * setup lock structure for parent to delete
@@ -923,11 +895,10 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 			fail = 1;
 		}
 		close(fd);
-		if (fail) {
+		if (fail)
 			tst_resm(TFAIL, "testcase:%d FAILED", test + 1);
-		} else {
+		else
 			tst_resm(TPASS, "testcase:%d PASSED", test + 1);
-		}
 	}
 	unlink(tmpname);
 }
@@ -948,7 +919,7 @@ void catch_alarm(int sig)
 }
 
 void catch1(int sig)
-{				/* invoked on catching SIGUSR1 */
+{
 	struct sigaction act;
 
 	/*
@@ -965,11 +936,10 @@ void catch1(int sig)
 
 static void testcheck_end(int check_fail, char *msg)
 {
-	if (check_fail) {
+	if (check_fail)
 		tst_resm(TFAIL, "%s FAILED", msg);
-	} else {
+	else
 		tst_resm(TPASS, "%s PASSED", msg);
-	}
 }
 
 int main(int ac, char **av)
@@ -989,15 +959,12 @@ int main(int ac, char **av)
 			&fd, &test, &parent);
 #endif
 
-	setup();		/* global setup */
+	setup();
 
-	/* Check if test on NFS or not*/
 	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC)
 		NO_NFS = 0;
 
-	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
 /* //block1: */
@@ -1037,9 +1004,11 @@ int main(int ac, char **av)
 			(void)run_test(O_CREAT | O_RDWR | O_TRUNC,
 				S_ENFMT | S_IRUSR | S_IWUSR, 5, 36, 45);
 			testcheck_end(fail, "Block 2, test 2");
-		} else
+		} else {
 			tst_resm(TCONF, "Skip block 2 as NFS does not"
 				" support mandatory locking");
+		}
+
 		tst_resm(TINFO, "Exit block 2");
 
 /* //block3: */
@@ -1050,24 +1019,18 @@ int main(int ac, char **av)
 		 * argument used for WHENCE (negative value)
 		 */
 
-		/* open a temporary file to lock */
 		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
-		if (fd < 0) {
+		if (fd < 0)
 			tst_brkm(TBROK, cleanup, "open failed");
-		}
 
-		/* Write some dummy data to the file */
-		if (write(fd, FILEDATA, 10) < 0) {
+		if (write(fd, FILEDATA, 10) < 0)
 			tst_brkm(TBROK, cleanup, "write failed");
-		}
 
-		/* Initialize lock structure */
 		flock.l_type = F_WRLCK;
 		flock.l_whence = -1;
 		flock.l_start = 0L;
 		flock.l_len = 0L;
 
-		/* Set the lock on the file */
 		if ((fcntl(fd, F_SETLK, &flock)) < 0) {
 			if (errno != EINVAL) {
 				tst_resm(TFAIL, "Expected %d got %d",
@@ -1080,7 +1043,6 @@ int main(int ac, char **av)
 			fail = 1;
 		}
 
-		/* Close and remove temp file */
 		close(fd);
 		unlink(tmpname);
 
@@ -1095,18 +1057,13 @@ int main(int ac, char **av)
 		 * additional data is appended to end of file and a new
 		 * process attempts to lock new data
 		 */
-		/* open a temp file to lock */
 		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
-		if (fd < 0) {
+		if (fd < 0)
 			tst_brkm(TBROK, cleanup, "open failed");
-		}
 
-		/* Write some dummy data to the file */
-		if (write(fd, FILEDATA, 10) < 0) {
+		if (write(fd, FILEDATA, 10) < 0)
 			tst_brkm(TBROK, cleanup, "write failed");
-		}
 
-		/* Initialize first parent lock structure */
 		thiscase = &testcases[58];
 		flock.l_type = thiscase->a_type;
 		flock.l_whence = thiscase->a_whence;
@@ -1121,16 +1078,13 @@ int main(int ac, char **av)
 		}
 
 		/* Write some additional data to end of file */
-		if (write(fd, FILEDATA, 10) < 0) {
+		if (write(fd, FILEDATA, 10) < 0)
 			tst_brkm(TBROK, cleanup, "write failed");
-		}
 
 		/* Mask signal to avoid race */
-		if (sighold(SIGUSR1) < 0) {
+		if (sighold(SIGUSR1) < 0)
 			tst_brkm(TBROK, cleanup, "sighold failed");
-		}
 
-		/* spawn a child process */
 		if ((child = FORK_OR_VFORK()) == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
@@ -1144,11 +1098,8 @@ int main(int ac, char **av)
 			dochild();
 #endif
 		}
-		if (child < 0) {
+		if (child < 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
-		}
-
-		/* parent process */
 
 		/*
 		 * Wait for a signal from the child then remove blocking lock.
@@ -1157,7 +1108,6 @@ int main(int ac, char **av)
 		 */
 		(void)alarm(TIME_OUT);
 
-		/* pause for the SIGUSR1 signal from child */
 		(void)sigpause(SIGUSR1);
 
 		/* turn off the alarm timer */
@@ -1166,7 +1116,7 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "Pause terminated without signal "
 				 "SIGUSR1 from child");
 		}
-		got1 = 0;	/* reset flag */
+		got1 = 0;
 
 		/*
 		 * Set up lock structure for parent to delete
@@ -1190,7 +1140,6 @@ int main(int ac, char **av)
 		 */
 		(void)alarm(TIME_OUT);
 
-		/* wait for the child to terminate and close the file */
 		waitpid(child, &status, 0);
 		if (WEXITSTATUS(status) != 0) {
 			fail = 1;
