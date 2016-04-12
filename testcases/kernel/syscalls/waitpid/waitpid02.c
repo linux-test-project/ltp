@@ -59,7 +59,6 @@
 
 static void do_child(void);
 static void setup(void);
-static void cleanup(void);
 
 char *TCID = "waitpid02";
 int TST_TOTAL = 1;
@@ -69,7 +68,7 @@ int main(int argc, char **argv)
 	int lc;
 
 	int pid, npid, sig, nsig;
-	int exno, nexno, status;
+	int nexno, status;
 
 	tst_parse_opts(argc, argv, NULL, NULL);
 #ifdef UCLINUX
@@ -78,18 +77,15 @@ int main(int argc, char **argv)
 
 	setup();
 
-	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		exno = 1;
 		sig = SIGFPE;
 
 		pid = FORK_OR_VFORK();
 
 		if (pid < 0)
-			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 
 		if (pid == 0) {
 #ifdef UCLINUX
@@ -145,7 +141,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	cleanup();
 	tst_exit();
 }
 
@@ -169,8 +164,4 @@ static void setup(void)
 	setrlimit(RLIMIT_CORE, &r);
 
 	TEST_PAUSE;
-}
-
-static void cleanup(void)
-{
 }
