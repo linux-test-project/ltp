@@ -38,6 +38,7 @@
 #include "safe_macros.h"
 #include "linux_syscall_numbers.h"
 #include "lapi/fcntl.h"
+#include "lapi/vmsplice.h"
 
 #define TESTFILE "testfile"
 

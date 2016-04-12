@@ -37,6 +37,8 @@
 #include "linux_syscall_numbers.h"
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
+#include "lapi/tee.h"
+#include "lapi/splice.h"
 
 static void tee_test(void);
 static void setup(void);
