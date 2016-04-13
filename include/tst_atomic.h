@@ -18,9 +18,21 @@
 #ifndef TST_ATOMIC_H__
 #define TST_ATOMIC_H__
 
+#include "config.h"
+
+#if HAVE_SYNC_ADD_AND_FETCH == 1
+static inline int tst_atomic_add_return(int i, int *v)
+{
+	return __sync_add_and_fetch(v, i);
+}
+#else
+# error Your compiler does not provide __sync_add_and_fetch and LTP\
+	implementation is missing for your architecture.
+#endif
+
 static inline int tst_atomic_inc(int *v)
 {
-	return __sync_add_and_fetch(v, 1);
+	return tst_atomic_add_return(1, v);
 }
 
 #endif	/* TST_ATOMIC_H__ */
