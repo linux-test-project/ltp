@@ -28,6 +28,8 @@
 
 char *TCID = "msgctl13";
 int TST_TOTAL = 1;
+static struct msqid_ds buf;
+
 static void msgctl_verify(void);
 
 int main(int argc, char *argv[])
@@ -72,8 +74,8 @@ static void msgctl_verify(void)
 		return;
 	}
 
-	TEST(msgget(msg_q, MSG_RW));
-	if (TEST_ERRNO == ENOENT)
+	TEST(msgctl(msg_q, IPC_STAT, &buf));
+	if (TEST_ERRNO == EINVAL)
 		tst_resm(TPASS, "msgctl() test IPC_RMID succeeded");
 	else
 		tst_resm(TFAIL, "msgctl() test IPC_RMID failed unexpectedly");
