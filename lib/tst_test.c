@@ -43,10 +43,10 @@ static float duration = -1;
 static pid_t main_pid;
 
 struct results {
-	unsigned int passed;
-	unsigned int skipped;
-	unsigned int failed;
-	unsigned int warnings;
+	int passed;
+	int skipped;
+	int failed;
+	int warnings;
 };
 
 static struct results *results;
@@ -442,10 +442,10 @@ static void do_exit(void)
 	int ret = 0;
 
 	printf("\nSummary:\n");
-	printf("passed   %u\n", results->passed);
-	printf("failed   %u\n", results->failed);
-	printf("skipped  %u\n", results->skipped);
-	printf("warnings %u\n", results->warnings);
+	printf("passed   %d\n", results->passed);
+	printf("failed   %d\n", results->failed);
+	printf("skipped  %d\n", results->skipped);
+	printf("warnings %d\n", results->warnings);
 
 	if (results->failed)
 		ret |= TFAIL;

@@ -18,7 +18,7 @@
 #ifndef TST_ATOMIC_H__
 #define TST_ATOMIC_H__
 
-static inline unsigned int tst_atomic_inc(unsigned int *v)
+static inline int tst_atomic_inc(int *v)
 {
 	return __sync_add_and_fetch(v, 1);
 }

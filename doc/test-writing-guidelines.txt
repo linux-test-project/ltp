@@ -780,7 +780,7 @@ the user supplied cleanup to the test library.
 
 static void cleanup(void)
 {
-	static unsigned int flag;
+	static int flag;
 
 	if (tst_atomic_inc(&flag) != 1)
 		pthread_exit(NULL);

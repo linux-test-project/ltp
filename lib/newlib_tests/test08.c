@@ -35,7 +35,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	static unsigned int flag;
+	static int flag;
 
 	/* Avoid subsequent threads to enter the cleanup */
 	if (tst_atomic_inc(&flag) != 1)
