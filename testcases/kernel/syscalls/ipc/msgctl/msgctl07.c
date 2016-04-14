@@ -68,7 +68,7 @@ struct my_msgbuf {
 	char text[BYTES];
 } p1_msgp, p2_msgp, p3_msgp, c1_msgp, c2_msgp, c3_msgp;
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	key_t key;
 	int pid, status;
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-sighandler_t alrm(int sig)
+sighandler_t alrm(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	ready++;
 	return 0;

@@ -63,7 +63,7 @@ struct msqid_ds buf;
 
 /*--------------------------------------------------------------*/
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	key_t key;
 	setup();

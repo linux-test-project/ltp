@@ -408,7 +408,7 @@ static int dotest(key_t key, int child_process)
 }
 
 /* ARGSUSED */
-static void term(int sig)
+static void term(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	int i;
 

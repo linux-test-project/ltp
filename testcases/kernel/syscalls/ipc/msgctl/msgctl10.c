@@ -288,7 +288,7 @@ static int dotest(key_t key, int child_process)
 	return PASS;
 }
 
-static void sig_handler(int signo)
+static void sig_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 
