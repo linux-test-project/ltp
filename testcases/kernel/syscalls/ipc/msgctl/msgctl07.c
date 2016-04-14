@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 		ready = 0;
 		alarm(SECS);
 		while (!ready)	/* make the child wait */
-			;
+			usleep(50000);
 		for (i = 0; i < BYTES; i++)
 			p1_msgp.text[i] = 'i';
 		p1_msgp.type = 1;
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 		ready = 0;
 		alarm(SECS);
 		while (!ready)	/* make the child wait */
-			;
+			usleep(50000);
 		for (i = 0; i < BYTES; i++)
 			p1_msgp.text[i] = 'i';
 		p1_msgp.type = 1;
