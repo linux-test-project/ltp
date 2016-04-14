@@ -130,6 +130,10 @@ int main(int ac, char **av)
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 			TEST(fork());
+			if (TEST_RETURN < 0)
+				tst_brkm(TBROK | TTERRNO, NULL,
+					"fork() failed");
+
 			if (TEST_RETURN == 0) {
 				exit(123);
 			} else {
@@ -143,6 +147,10 @@ int main(int ac, char **av)
 			}
 
 			TEST(fork());
+			if (TEST_RETURN < 0)
+				tst_brkm(TBROK | TTERRNO, NULL,
+					"fork() failed");
+
 			if (TEST_RETURN == 0) {
 				int a, b = 0;
 				a = 1 / b;
@@ -157,6 +165,10 @@ int main(int ac, char **av)
 			}
 
 			TEST(pid = fork());
+			if (TEST_RETURN < 0)
+				tst_brkm(TBROK | TTERRNO, NULL,
+					"fork() failed");
+
 			if (TEST_RETURN == 0) {
 				TEST(sleep(10));
 				tst_exit();
