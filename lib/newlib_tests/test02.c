@@ -22,6 +22,9 @@
 
 #include "tst_test.h"
 
+void tst_resm_(char *, int, int, char *);
+void tst_brkm_(char *, int, int, void (*)(void), char *);
+
 static void cleanup(void)
 {
 }
