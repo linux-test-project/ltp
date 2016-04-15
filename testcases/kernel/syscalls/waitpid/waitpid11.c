@@ -64,13 +64,14 @@ static void do_exit_uclinux(void);
 #endif
 
 static int fail;
+static int fork_kid_pid[MAXKIDS];
 
 int main(int ac, char **av)
 {
 	int kid_count, ret_val, status;
 	int i, j, k, found;
 	int group1, group2;
-	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
+	int wait_kid_pid[MAXKIDS];
 	int pid;
 
 	tst_parse_opts(ac, av, NULL, NULL);
@@ -100,7 +101,6 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "%s FAILED", TCID);
 		else
 			tst_resm(TPASS, "%s PASSED", TCID);
-		cleanup();
 		tst_exit();
 	} else if (pid < 0)
 		tst_brkm(TBROK, cleanup, "fork failed");
@@ -130,8 +130,8 @@ int main(int ac, char **av)
 		}
 
 		if (ret_val < 0)
-			tst_resm(TFAIL, "Fork kid %d failed. errno = "
-				 "%d", kid_count, errno);
+			tst_brkm(TBROK|TERRNO, cleanup, "Fork kid %d failed",
+				 kid_count);
 
 		/* parent */
 		fork_kid_pid[kid_count] = ret_val;
@@ -259,6 +259,9 @@ int main(int ac, char **av)
 			fail = 1;
 		}
 	}
+
+	memset(fork_kid_pid, 0, sizeof(fork_kid_pid));
+
 	if (kid_count != (MAXKIDS / 2)) {
 		tst_resm(TFAIL, "Wrong number of children waited on "
 			 "for pid = 0");
@@ -271,6 +274,7 @@ int main(int ac, char **av)
 	else
 		tst_resm(TPASS, "Test PASSED");
 
+	cleanup();
 	tst_exit();
 }
 
@@ -287,6 +291,12 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	int i;
+
+	for (i = 0; i < MAXKIDS; i++) {
+		if (fork_kid_pid[i] > 0)
+			kill(fork_kid_pid[i], SIGKILL);
+	}
 }
 
 static void inthandlr(void)
