@@ -53,7 +53,7 @@
  */
 
 #include <pwd.h>
-#include "hugetlb.h"
+#include "test.h"
 #include "safe_macros.h"
 #include "mem.h"
 #include "hugetlb.h"
