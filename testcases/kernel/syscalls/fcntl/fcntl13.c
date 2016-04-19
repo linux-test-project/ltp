@@ -43,9 +43,7 @@
 char *TCID = "fcntl13";
 int TST_TOTAL = 1;
 
-int fail;
 void setup(void);
-void cleanup(void);
 
 int main(int ac, char **av)
 {
@@ -57,144 +55,73 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-/* //block1: */
-		tst_resm(TINFO, "Enter block 1");
-		tst_resm(TINFO, "Test for errno EINVAL");
-		fail = 0;
-
-		if (fcntl(1, F_BADCMD, 1) != -1) {
+		if (fcntl(1, F_BADCMD, 1) != -1)
 			tst_resm(TFAIL, "fcntl(2) failed to FAIL");
-			fail = 1;
-		} else if (errno != EINVAL) {
+		else if (errno != EINVAL)
 			tst_resm(TFAIL, "Expected EINVAL got %d", errno);
-			fail = 1;
-		}
+		else
+			tst_resm(TPASS, "got EINVAL");
 
-		if (fail) {
-			tst_resm(TINFO, "block 1 FAILED");
-		} else {
-			tst_resm(TINFO, "block 1 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 1");
-
-/* //block2: */
 #ifndef UCLINUX
-		/* Skip since uClinux does not implement memory protection */
-		tst_resm(TINFO, "Enter block 2");
-		tst_resm(TINFO, "Test for errno EFAULT");
-		fail = 0;
-
-		/* case 1: F_SETLK */
 		if (fcntl(1, F_SETLK, (void *)-1) != -1) {
 			tst_resm(TFAIL, "F_SETLK: fcntl(2) failed to FAIL");
-			fail = 1;
 		} else if (errno != EFAULT) {
 			tst_resm(TFAIL, "F_SETLK: Expected EFAULT got %d",
 				 errno);
-			fail = 1;
+		} else {
+			tst_resm(TPASS, "F_SETLK: got EFAULT");
 		}
 
-		/* case 2: F_SETLKW */
 		if (fcntl(1, F_SETLKW, (void *)-1) != -1) {
 			tst_resm(TFAIL, "F_SETLKW: fcntl(2) failed to FAIL");
-			fail = 1;
 		} else if (errno != EFAULT) {
 			tst_resm(TFAIL, "F_SETLKW: Expected EFAULT got %d",
 				 errno);
-			fail = 1;
+		} else {
+			tst_resm(TPASS, "F_SETLKW: got EFAULT");
 		}
 
-		/* case 3: F_GETLK */
 		if (fcntl(1, F_GETLK, (void *)-1) != -1) {
 			tst_resm(TFAIL, "F_GETLK: fcntl(2) failed to FAIL");
-			fail = 1;
 		} else if (errno != EFAULT) {
 			tst_resm(TFAIL, "F_GETLK: Expected EFAULT got %d",
 				 errno);
-			fail = 1;
-		}
-
-		if (fail) {
-			tst_resm(TINFO, "blcok 2 FAILED");
 		} else {
-			tst_resm(TINFO, "block 2 PASSED");
+			tst_resm(TPASS, "F_GETLK: got EFAULT");
 		}
-		tst_resm(TINFO, "Exit block 2");
+
 #else
-		tst_resm(TINFO, "Skip block 2 on uClinux");
+		tst_resm(TCONF, "Skip EFAULT on uClinux");
 #endif
-
-/* //block3: */
-		tst_resm(TINFO, "Enter block 3");
-		tst_resm(TINFO, "Test for errno EINVAL");
-		fail = 0;
-
 		flock.l_whence = -1;
 		flock.l_type = F_WRLCK;
 		flock.l_start = 0L;
 		flock.l_len = 0L;
 
-		if (fcntl(1, F_SETLK, &flock) != -1) {
+		if (fcntl(1, F_SETLK, &flock) != -1)
 			tst_resm(TFAIL, "fcntl(2) failed to FAIL");
-			fail = 1;
-		} else if (errno != EINVAL) {
+		else if (errno != EINVAL)
 			tst_resm(TFAIL, "Expected EINVAL, got %d", errno);
-			fail = 1;
-		}
+		else
+			tst_resm(TPASS, "got EINVAL");
 
-		if (fail) {
-			tst_resm(TINFO, "block 3 FAILED");
-		} else {
-			tst_resm(TINFO, "block 3 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 3");
-
-/* //block4: */
-		tst_resm(TINFO, "Enter block 4");
-		tst_resm(TINFO, "Test for errno EBADF");
-		fail = 0;
-
-		if (fcntl(-1, F_GETLK, &flock) != -1) {
+		if (fcntl(-1, F_GETLK, &flock) != -1)
 			tst_resm(TFAIL, "fcntl(2) failed to FAIL");
-			fail = 1;
-		} else if (errno != EBADF) {
+		else if (errno != EBADF)
 			tst_resm(TFAIL, "Expected EBADF, got %d", errno);
-			fail = 1;
-		}
-
-		if (fail) {
-			tst_resm(TINFO, "block 4 FAILED");
-		} else {
-			tst_resm(TINFO, "block 4 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 4");
+		else
+			tst_resm(TPASS, "got EBADFD");
 	}
-	cleanup();
+
 	tst_exit();
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup(void)
 {
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(NOFORK, DEF_HANDLER, NULL);
 
 	TEST_PAUSE;
-}
-
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup(void)
-{
-
 }
