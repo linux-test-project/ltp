@@ -77,14 +77,6 @@ struct flock flock;
 static char *argv0;		/* set by main, passed to self_exec */
 #endif
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup(void)
-{
-
-}
 
 void alarm_sig(int sig)
 {
@@ -357,13 +349,9 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
 	exit(0);
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup(void)
 {
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, NULL);
 
 	TEST_PAUSE;
 }
@@ -538,8 +526,6 @@ int main(int ac, char **av)
 {
 	int lc;
 
-	int fail = 0;
-
 	tst_parse_opts(ac, av, NULL, NULL);
 #ifdef UCLINUX
 	maybe_run_child(&dochild1_uc, "nddds", 1, &uc_file_flag,
@@ -551,47 +537,28 @@ int main(int ac, char **av)
 
 	setup();
 
-	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		/* Set up to catch alarm signal */
 		if ((signal(SIGALRM, alarm_sig)) == SIG_ERR) {
 			perror("SIGALRM signal set up failed");
 			exit(1);
 		}
 
-/* //block1: */
-		tst_resm(TINFO, "Entering block 1");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, DUP)) {
-			tst_resm(TINFO, "Test 1: test with \"dup\" FAILED");
-			fail = 1;
-		} else {
-			tst_resm(TINFO, "Test 1: test with \"dup\" PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 1");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, DUP))
+			tst_resm(TFAIL, "Test 1: test with \"dup\" FAILED");
+		else
+			tst_resm(TPASS, "Test 1: test with \"dup\" PASSED");
 
-/* //block2: */
-		tst_resm(TINFO, "Entering block 2");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, OPEN)) {
-			tst_resm(TINFO, "Test 2: test with \"open\" FAILED");
-			fail = 1;
-		} else {
-			tst_resm(TINFO, "Test 2: test with \"open\" PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 2");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, OPEN))
+			tst_resm(TFAIL, "Test 2: test with \"open\" FAILED");
+		else
+			tst_resm(TPASS, "Test 2: test with \"open\" PASSED");
 
-/* //block3: */
-		tst_resm(TINFO, "Entering block 3");
-		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, FORK_)) {
-			tst_resm(TINFO, "Test 3: test with \"fork\" FAILED");
-			fail = 1;
-		} else {
-			tst_resm(TINFO, "Test 3: test with \"fork\" PASSED");
-		}
-		tst_resm(TINFO, "Exiting block 3");
+		if (run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, FORK_))
+			tst_resm(TFAIL, "Test 3: test with \"fork\" FAILED");
+		else
+			tst_resm(TPASS, "Test 3: test with \"fork\" PASSED");
 	}
-	cleanup();
 	tst_exit();
 }
