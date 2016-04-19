@@ -146,16 +146,17 @@ static void setup(void)
 
 static void do_test(int i)
 {
-	pid_t cpid;
+	fd = SAFE_OPEN(cleanup, "file", O_RDONLY);
 
-	cpid = tst_fork();
+	pid_t cpid = tst_fork();
+
 	if (cpid < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
 
-	if (cpid == 0)
+	if (cpid == 0) {
+		SAFE_CLOSE(NULL, fd);
 		do_child(i);
-
-	fd = SAFE_OPEN(cleanup, "file", O_RDONLY);
+	}
 
 	TEST(fcntl(fd, F_SETLEASE, test_cases[i].lease_type));
 	if (TEST_RETURN == -1) {
