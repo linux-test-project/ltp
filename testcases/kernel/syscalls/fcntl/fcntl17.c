@@ -616,9 +616,9 @@ int main(int ac, char **av)
 		stop_children();
 
 		if (fail) {
-			tst_resm(TINFO, "Block 1 FAILED");
+			tst_resm(TFAIL, "Block 1 FAILED");
 		} else {
-			tst_resm(TINFO, "Block 1 PASSED");
+			tst_resm(TPASS, "Block 1 PASSED");
 		}
 		tst_resm(TINFO, "Exit block 1");
 	}
