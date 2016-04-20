@@ -27,7 +27,6 @@ generate_locate_test_makefile() {
 	generate_makefiles make-gen.$maketype $*
 
 	rm -f make-gen.$maketype
-
 }
 
 generate_makefile() {
@@ -290,6 +289,8 @@ TOP_SRCDIR=${TOP_SRCDIR:=`dirname "$0"`/..}
 
 GLOBAL_BOILERPLATE="${TOP_SRCDIR}/.global_boilerplate"
 
+CONFIG_MK="../../include/mk/config-openposix.mk"
+
 rm -f "$GLOBAL_BOILERPLATE"
 
 for var in CFLAGS LDFLAGS LDLIBS; do
@@ -299,6 +300,10 @@ $var+=		`cat "$TOP_SRCDIR/$var"`
 EOF
 	fi
 done
+
+if [ -f "$CONFIG_MK" ]; then
+	cat "$CONFIG_MK" >> "$GLOBAL_BOILERPLATE"
+fi
 
 # For the generic cases.
 generate_locate_test_makefile buildonly '.test' '-c'

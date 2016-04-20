@@ -6,6 +6,7 @@ AC_CONFIG_HEADERS([include/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([ \
     include/mk/config.mk \
+    include/mk/config-openposix.mk \
     include/mk/features.mk \
     lib/ltp.pc \
     m4/Makefile \

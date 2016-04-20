@@ -32,6 +32,7 @@ autom4te.cache
 /README.ltp-devel
 /Version
 /include/mk/config.mk
+/include/mk/config-openposix.mk
 /include/mk/features.mk
 /m4/ltp-version.m4
 /lib/ltp.pc

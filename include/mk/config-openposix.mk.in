@@ -1,0 +1,5 @@
+# Parameters from the top level configure
+CC=		@CC@
+CFLAGS+=	@CFLAGS@
+LDLIBS+=	@LIBS@
+LDFLAGS+=	@LDFLAGS@
