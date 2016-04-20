@@ -68,7 +68,7 @@ void setup(void)
 	tst_tmpdir();
 }
 
-int main(int ac, char **av)
+int main(void)
 {
 	int status;
 	pid_t pid;
