@@ -158,7 +158,7 @@ int main(int ac, char **av)
 /*
  * sighandler() - handle the signals
  */
-void sighandler(int sig)
+void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 }
 

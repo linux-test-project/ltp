@@ -148,7 +148,7 @@ int main(int ac, char **av)
 /*
  * sighandler() - the test fails if we ever get here.
  */
-void sighandler(int sig)
+void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	fail = 1;
 }
