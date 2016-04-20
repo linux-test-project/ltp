@@ -52,7 +52,7 @@ int TST_TOTAL	= 2;
 
 #if defined(MS_SHARED) && defined(MS_PRIVATE) && defined(MS_REC)
 
-int child_func(void *arg)
+int child_func(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 
