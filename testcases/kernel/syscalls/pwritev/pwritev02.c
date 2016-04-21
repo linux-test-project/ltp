@@ -37,6 +37,7 @@
 */
 
 #include <sys/uio.h>
+#include <unistd.h>
 #include "tst_test.h"
 #include "pwritev.h"
 
@@ -55,6 +56,9 @@ static struct iovec wr_iovec1[] = {
 
 static struct iovec wr_iovec2[] = {
 	{buf, CHUNK},
+};
+
+static struct iovec wr_iovec3[] = {
 	{(char *)-1, CHUNK},
 };
 
@@ -68,7 +72,7 @@ static struct tcase {
 	{&fd1, wr_iovec1, 1, 0, EINVAL},
 	{&fd1, wr_iovec2, -1, 0, EINVAL},
 	{&fd1, wr_iovec2, 1, -1, EINVAL},
-	{&fd1, wr_iovec2, 2, 0, EFAULT},
+	{&fd1, wr_iovec3, 1, 0, EFAULT},
 	{&fd3, wr_iovec2, 1, 0, EBADF},
 	{&fd2, wr_iovec2, 1, 0, EBADF},
 	{&fd4[1], wr_iovec2, 1, 0, ESPIPE}
@@ -96,6 +100,7 @@ static void verify_pwritev(unsigned int n)
 static void setup(void)
 {
 	fd1 = SAFE_OPEN("file", O_RDWR | O_CREAT, 0644);
+	SAFE_FTRUNCATE(fd1, getpagesize());
 	fd2 = SAFE_OPEN("file", O_RDONLY | O_CREAT, 0644);
 	SAFE_PIPE(fd4);
 }

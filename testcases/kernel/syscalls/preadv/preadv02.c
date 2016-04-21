@@ -39,6 +39,7 @@
 */
 
 #include <sys/uio.h>
+#include <unistd.h>
 #include "tst_test.h"
 #include "preadv.h"
 
@@ -58,6 +59,9 @@ static struct iovec rd_iovec1[] = {
 
 static struct iovec rd_iovec2[] = {
 	{buf, CHUNK},
+};
+
+static struct iovec rd_iovec3[] = {
 	{(char *)-1, CHUNK},
 };
 
@@ -71,7 +75,7 @@ static struct tcase {
 	{&fd1, rd_iovec1, 1, 0, EINVAL},
 	{&fd1, rd_iovec2, -1, 0, EINVAL},
 	{&fd1, rd_iovec2, 1, -1, EINVAL},
-	{&fd1, rd_iovec2, 2, 0, EFAULT},
+	{&fd1, rd_iovec3, 1, 0, EFAULT},
 	{&fd3, rd_iovec2, 1, 0, EBADF},
 	{&fd2, rd_iovec2, 1, 0, EBADF},
 	{&fd4, rd_iovec2, 1, 0, EISDIR},
@@ -101,6 +105,7 @@ static void verify_preadv(unsigned int n)
 static void setup(void)
 {
 	fd1 = SAFE_OPEN("file1", O_RDWR | O_CREAT, 0644);
+	SAFE_FTRUNCATE(fd1, getpagesize());
 	fd2 = SAFE_OPEN("file2", O_WRONLY | O_CREAT, 0644);
 	fd4 = SAFE_OPEN(".", O_RDONLY);
 	SAFE_PIPE(fd5);
