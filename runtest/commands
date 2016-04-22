@@ -41,3 +41,4 @@ mkfs01_ntfs mkfs01.sh -f ntfs
 mkswap01 mkswap01.sh
 which01 which01.sh
 lsmod01 lsmod01.sh
+insmod01 insmod01.sh

@@ -113,6 +113,9 @@ tst_tmpdir()
 	TST_TMPDIR=$(mktemp -d "$TMPDIR/$TCID.XXXXXXXXXX")
 
 	chmod 777 "$TST_TMPDIR"
+
+	TST_STARTWD=$(pwd)
+
 	cd "$TST_TMPDIR"
 }
 
@@ -341,6 +344,34 @@ tst_umount()
 	done
 
 	tst_resm TWARN "Failed to umount($device) after 50 retries"
+}
+
+# Check a module file existence
+# Should be called after tst_tmpdir()
+tst_module_exists()
+{
+	local mod_name="$1"
+
+	if [ -f "$mod_name" ]; then
+		TST_MODPATH="$mod_name"
+		return
+	fi
+
+	local mod_path="$LTPROOT/testcases/bin/$mod_name"
+	if [ -f "$mod_path" ]; then
+		TST_MODPATH="$mod_path"
+		return
+	fi
+
+	if [ -n "$TST_TMPDIR" ]; then
+		mod_path="$TST_STARTWD/$mod_name"
+		if [ -f "$mod_path" ]; then
+			TST_MODPATH="$mod_path"
+			return
+		fi
+	fi
+
+	tst_brkm TCONF "Failed to find module '$mod_name'"
 }
 
 # Check that test name is set
