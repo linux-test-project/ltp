@@ -73,7 +73,8 @@
 
 char *TCID = "diotest4";	/* Test program identifier.    */
 int TST_TOTAL = 17;		/* Total number of test conditions */
-int NO_NFS = 1;			/* Test on NFS or not */
+
+static long fs_type;
 
 #ifdef O_DIRECT
 
@@ -268,12 +269,17 @@ int main(int argc, char *argv[])
 	if (write(fd, buf2, 4096) == -1) {
 		tst_resm(TFAIL, "can't write to file %d", ret);
 	}
-	if (NO_NFS) {
+	switch (fs_type) {
+	case TST_NFS_MAGIC:
+		tst_resm(TCONF, "%s supports odd count IO",
+			 tst_fs_type_name(fs_type));
+	break;
+	default:
 		ret = runtest_f(fd, buf2, offset, count, EINVAL, 3, "odd count");
 		testcheck_end(ret, &failed, &fail_count,
 					"Odd count of read and write");
-	} else
-		tst_resm(TCONF, "NFS support odd count IO");
+	}
+
 	total++;
 
 	/* Test-4: Read beyond the file size */
@@ -441,13 +447,18 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			 filename, strerror(errno));
 	}
-	if (NO_NFS) {
+	switch (fs_type) {
+	case TST_NFS_MAGIC:
+	case TST_BTRFS_MAGIC:
+		tst_resm(TCONF, "%s supports non-aligned buffer",
+			 tst_fs_type_name(fs_type));
+	break;
+	default:
 		ret = runtest_f(fd, buf2 + 1, offset, count, EINVAL, 14,
 					" nonaligned buf");
 		testcheck_end(ret, &failed, &fail_count,
 				"read, write with non-aligned buffer");
-	} else
-		tst_resm(TCONF, "NFS support read, write with non-aligned buffer");
+	}
 	close(fd);
 	total++;
 
@@ -560,9 +571,7 @@ static void setup(void)
 	}
 	close(fd1);
 
-	/* On NFS or not */
-	if (tst_fs_type(cleanup, ".") == TST_NFS_MAGIC)
-		NO_NFS = 0;
+	fs_type = tst_fs_type(cleanup, ".");
 }
 
 static void cleanup(void)
