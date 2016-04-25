@@ -506,6 +506,8 @@
 /madvise/madvise04
 /madvise/madvise05
 /madvise/madvise06
+/madvise/madvise07
+/madvise/madvise08
 /mallopt/mallopt01
 /mbind/mbind01
 /memcmp/memcmp01

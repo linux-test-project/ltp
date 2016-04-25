@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 Richard Palethorpe <richiejp@f-m.fm>
+ * Copyright (c) 2016 Richard Palethorpe <richiejp@f-m.fm>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,129 +18,78 @@
 /*
  * Check that accessing memory marked with MADV_HWPOISON results in SIGBUS.
  *
- * Test flow: map memory, 
- *	      create child process, 
+ * Test flow: create child process, 
+ *	      map memory, 
  *	      mark memory with MADV_HWPOISON inside child process,
  *	      access memory,
  *	      if SIGBUS is delivered to child the test passes else it fails
  */
 
 #include "tst_test.h"
+#include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
 
-#ifdef MADV_HWPOISON
+#define MAPTYPE(m) m == MAP_SHARED ? "MAP_SHARED" : "MAP_PRIVATE"
 
-struct test_case {
-	int fd;
-	char *fname;
-	char *fcontent;
-	void *fmem;
-	struct stat stat;
+static int maptypes[] = {
+	MAP_PRIVATE,
+	MAP_SHARED
 };
-static struct test_case cases[1];
 
-static void setup(void)
+static void run_child(int maptype)
 {
-	cases[0].fd = 0;
-	cases[0].fcontent = "abcdefghijklmnopqrstuvwxyz12345\n";
-	cases[0].fname = "mmf0";
-	cases[0].fmem = NULL;
-}
+	const size_t msize = 4096;
+	void *mem = NULL;
 
-static void cleanup(void)
-{
-	unsigned int i;
-	struct test_case c;
+	mem = SAFE_MMAP(NULL,
+			msize,
+			PROT_READ | PROT_WRITE,
+			MAP_ANONYMOUS | maptype,
+			-1,
+			0);
 
-	for (i = 0; i < ARRAY_SIZE(cases); i++) {
-		c = cases[i];
-		if (c.fmem != NULL && munmap(c.fmem, c.stat.st_size))
-			tst_brk(TBROK | TERRNO, "munmap(cases[%d].fmem)", i);
-
-		c.fmem = NULL;
-		if (c.fd > 0 && close(c.fd))
-			tst_brk(TBROK | TERRNO, "close(cases[%d].fd)", i);
+	if (madvise(mem, msize, MADV_HWPOISON) == -1) {
+		tst_res(TFAIL | TERRNO,
+			"madvise(%p, %ld, MADV_HWPOISON) = -1",
+			mem,
+			msize);
+		return;
 	}
-}
 
-static void on_sigbus(int s __attribute__((__unused__)))
-{
-	tst_res(TPASS, "Received SIGBUS from madvise with MADV_HWPOISON");
-	_exit(0);
+	*((char *)mem) = 'd';
+
+	tst_res(TFAIL,
+		"Did not receive SIGBUS after accessing %s memory marked "
+		"with MADV_HWPOISON",
+		MAPTYPE(maptype));
 }
 
 static void run(unsigned int n)
 {
-	int i, rval;
-	struct test_case c = cases[n];
-	struct sigaction sa;
+	int status;
 	pid_t pid;
 
-	c.fd = SAFE_OPEN(c.fname, O_CREAT | O_RDWR, 0667);
-	for (i = 0; i < 1280; i++)
-		SAFE_WRITE(1, c.fd, c.fcontent, strlen(c.fcontent));
-
-	SAFE_FSTAT(c.fd, &c.stat);
-	c.fmem = SAFE_MMAP(NULL,
-			   c.stat.st_size,
-			   PROT_READ | PROT_WRITE,
-			   MAP_SHARED,
-			   c.fd,
-			   0);
-
 	pid = SAFE_FORK();
-	if (pid > 0) {
-		SAFE_WAITPID(pid, NULL, 0);
+	if (pid == 0) {
+		run_child(maptypes[n]);
 		return;
 	}
 
-	rval = madvise(c.fmem, c.stat.st_size, MADV_HWPOISON);
-	if (rval == -1) {
-		tst_res(TFAIL | TERRNO,
-			"madvise(%p, %ld, MADV_HWPOISON) = -1",
-			c.fmem,
-			c.stat.st_size);
-		return;
-	}
-
-	sa.sa_handler = on_sigbus;
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGBUS, &sa, NULL);
-
-	*((char *)c.fmem) = 'd';
-
-	tst_res(TFAIL,
-		"Did not receive SIGBUS after accessing memory marked "
-		"with MADV_HWPOISON");
+	SAFE_WAITPID(pid, &status, 0);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGBUS)
+		tst_res(TPASS,
+			"madvise(..., MADV_HWPOISON) on %s memory",
+			MAPTYPE(maptypes[n]));
 }
 
 static struct tst_test test = {
 	.tid = "madvise07",
 	.test = run,
-	.tcnt = ARRAY_SIZE(cases),
-	.setup = setup,
-	.cleanup = cleanup,
+	.tcnt = ARRAY_SIZE(maptypes),
 	.min_kver = "2.6.31",
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1
 };
 
-#else
-
-static void run(void)
-{
-	tst_res(TCONF,
-		"MADV_HWPOISON is missing yet kernel is new enough to "
-		" support it");
-}
-
-static struct tst_test test = {
-	.tid = "madvise07",
-	.test_all = run,
-	.min_kver = "2.6.31"
-};
-
-#endif
