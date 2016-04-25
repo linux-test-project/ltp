@@ -949,6 +949,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode,
 		if (!quiet_mode)
 			write_test_start(active);
 
+	fflush(NULL);
+
 	if ((cpid = fork()) == -1) {
 		fprintf(stderr,
 			"pan(%s): fork failed (tag %s).  errno:%d  %s\n",
