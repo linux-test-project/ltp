@@ -549,7 +549,7 @@ This happens when 'stdout' gets redirected to a file. In this case, the
 'stdout' is not line buffered, but block buffered. Hence after a fork content
 of the buffers will be printed by the parent and each of the children.
 
-To avoid that you should use 'tst_fork()'.
+To avoid that you should use 'SAFE_FORK()'.
 
 IMPORTANT: You have to set the '.forks_child' flag in the test structure
            if your testcase forks.
@@ -621,7 +621,7 @@ be used to wake precisely 'nr_wake' processes.
 The 'TST_CHECKPOINT_WAKE_AND_WAIT()' is a shorthand for doing wake and then
 immediately waiting on the same checkpoint.
 
-Child processes created via 'tst_fork()' are ready to use the checkpoint
+Child processes created via 'SAFE_FORK()' are ready to use the checkpoint
 synchronization functions, as they inherited the mapped page automatically.
 
 Child processes started via 'exec()', or any other processes not forked from
@@ -1408,6 +1408,23 @@ to probe all newly mounted filesystem which results in 'umount(2)' failing
 with 'EBUSY'; use 'tst_umount()' described in 2.2.19 that retries in this case
 instead of plain 'umount(2)'.
 
+3.4 FILE buffers and fork()
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Be vary that if a process calls 'fork(2)' the child process inherits open
+descriptors as well as copy of the parent memory so especially if there are
+any open 'FILE' buffers with a data in them they may be written both by the
+parent and children resulting in corrupted/duplicated data in the resulting
+files.
+
+Also open 'FILE' streams are flushed and closed at 'exit(3)' so if your
+program works with 'FILE' streams, does 'fork(2)', and the child may end up
+calling 'exit(3)' you will likely end up with corrupted files.
+
+The solution to this problem is either simply call 'fflush(NULL)' that flushes
+all open output 'FILE' streams just before doing 'fork(2)'. You may also use
+'_exit(2)' in child processes which does not flush 'FILE' buffers and also
+skips 'atexit(3)' callbacks.
 
 4. Test Contribution Checklist
 ------------------------------
