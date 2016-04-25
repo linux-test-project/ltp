@@ -1023,7 +1023,7 @@ waitpid06 waitpid06
 waitpid07 waitpid07
 waitpid08 waitpid08
 waitpid09 waitpid09
-waitpid10 waitpid10 5
+waitpid10 waitpid10
 waitpid11 waitpid11
 waitpid12 waitpid12
 waitpid13 waitpid13
