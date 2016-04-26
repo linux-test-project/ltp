@@ -32,7 +32,7 @@ NO_CLEANUP=""
 
 usage()
 {
-	echo "USAGE: $0 <optional> -n -h -d [directory name]"
+	echo "USAGE: $0 <optional> -n -h"
 	exit
 }
 
@@ -45,18 +45,34 @@ cleanup()
 	fi
 }
 
+max_depth=3
+max_dirs=4
 
-COPY_DIR="/etc/"
+gen_fs_tree()
+{
+	local cur_path="$1"
+	local cur_depth="$2"
+
+	if [ "$cur_depth" -gt "$max_depth" ]; then
+		return
+	fi
+
+	for i in $(seq 1 $max_dirs); do
+		local new_path="$cur_path/subdir_$i"
+
+		mkdir -p "$new_path"
+
+		dd if=/dev/urandom of="$new_path/file" bs=1024 count=100 &> /dev/null
+
+		gen_fs_tree "$new_path" $((cur_depth + 1))
+	done
+}
 
 while getopts :hnd: arg; do
 	case $arg in
-	d)
-		COPY_DIR=$OPTARG
-		;;
 	h)
 		echo ""
 		echo "n - The directories created will not be removed"
-		echo "d - Specify a directory to copy into /tmp"
 		echo "h - Help options"
 		echo ""
 		usage
@@ -68,22 +84,20 @@ while getopts :hnd: arg; do
 	esac
 done
 
-if [ ! -e "$COPY_DIR" ]; then
-	tst_brkm TCONF "$COPY_DIR not found"
-fi
-
 tst_require_root
 
 tst_tmpdir
 TST_CLEANUP=cleanup
 
 MNT_POINT="$PWD/mnt"
-MAKE_FILE_SYS_DIR="$PWD/tmp/$COPY_DIR"
+MAKE_FILE_SYS_DIR="$PWD/files"
 
 mkdir -p -m 777 $MNT_POINT
 mkdir -p $MAKE_FILE_SYS_DIR
 
-cp -rf $COPY_DIR* $MAKE_FILE_SYS_DIR
+# Generated directories and files
+mkdir -p $MAKE_FILE_SYS_DIR
+gen_fs_tree "$MAKE_FILE_SYS_DIR" 1
 
 # Make ISO9660 file system with different options.
 # Mount the ISO9660 file system with different mount options.
