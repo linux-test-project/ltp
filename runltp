@@ -160,7 +160,7 @@ usage()
                       -t 45m = 45 minutes
                       -t 24h = 24 hours
                       -t 2d  = 2 days
-    -T REPETITION   Execute the testsuite for REPETITION no. of times
+    -I ITERATIONS   Execute the testsuite ITERATIONS times.
     -w CMDFILEADDR  Uses wget to get the user's list of testcases.
     -x INSTANCES    Run multiple instances of this testsuite.
     -b DEVICE       Some tests require an unmounted block device
@@ -218,7 +218,7 @@ main()
 
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:c:C:T:d:D:f:F:ehi:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B:z:Z: arg
+    while getopts a:c:C:T:d:D:f:F:ehi:I:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B:z:Z: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -424,7 +424,7 @@ main()
             # (2m = two minutes, 2h = two hours, etc)
             DURATION="-t $OPTARG" ;;
 
-        T)  # In case you want the testcases to runsequentially RUN_REPEATED times
+        I)  # In case you want the testcases to runsequentially RUN_REPEATED times
             RUN_REPEATED=$OPTARG;;
 
         w)  CMDFILEADDR=$OPTARG;;
