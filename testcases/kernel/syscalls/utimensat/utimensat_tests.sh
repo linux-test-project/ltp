@@ -303,6 +303,7 @@ if [ $? -ne 0 ] ; then
 	rm -rf $TEST_DIR
 	tst_brkm TCONF "chattr not supported"
 fi
+chattr -a $TEST_DIR/tmp_file
 
 cd $TEST_DIR
 chown root $LTPROOT/testcases/bin/$TEST_PROG
