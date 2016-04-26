@@ -144,7 +144,8 @@ EXIT:
 	fd = 0;
 
 	if (mount_flag) {
-		SAFE_UMOUNT(cleanup, MNTPOINT);
+		if (tst_umount(MNTPOINT))
+			tst_brkm(TBROK, cleanup, "umount() failed");
 		mount_flag = 0;
 	}
 }
