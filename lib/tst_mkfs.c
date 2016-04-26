@@ -25,8 +25,9 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
               const char *fs_type, const char *const fs_opts[],
               const char *extra_opt)
 {
-	int i, pos = 3;
-	const char *argv[OPTS_MAX] = {"mkfs", "-t", fs_type};
+	int i, pos = 1, ret;
+	char mkfs[64];
+	const char *argv[OPTS_MAX] = {mkfs};
 	char fs_opts_str[1024] = "";
 
 	if (!dev)
@@ -34,6 +35,8 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 
 	if (!fs_type)
 		tst_brkm(TBROK, cleanup_fn, "No fs_type specified");
+
+	snprintf(mkfs, sizeof(mkfs), "mkfs.%s", fs_type);
 
 	if (fs_opts) {
 		for (i = 0; fs_opts[i]; i++) {
@@ -65,7 +68,18 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 
 	tst_resm(TINFO, "Formatting %s with %s opts='%s' extra opts='%s'",
 	         dev, fs_type, fs_opts_str, extra_opt ? extra_opt : "");
-	tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL, 0);
+	ret = tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL, 1);
+
+	switch (ret) {
+	case 0:
+	break;
+	case 255:
+		tst_brkm(TCONF, cleanup_fn,
+			 "%s not found in $PATH", mkfs);
+	default:
+		tst_brkm(TBROK, cleanup_fn,
+			 "%s failed with %i", mkfs, ret);
+	}
 }
 
 const char *tst_dev_fs_type(void)
