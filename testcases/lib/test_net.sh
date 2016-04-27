@@ -314,3 +314,33 @@ tst_netload()
 
 	return $ret
 }
+
+# tst_ping [IFACE] [DST ADDR] [MESSAGE SIZE ARRAY]
+# Check icmp connectivity
+# IFACE: source interface name
+# DST ADDR: destination IPv4 or IPv6 address
+# MESSAGE SIZE ARRAY: message size array
+tst_ping()
+{
+	# The max number of ICMP echo request
+	PING_MAX=${PING_MAX:-"10"}
+
+	local src_iface=${1:-"$(tst_iface)"}
+	local dst_addr=${2:-"$(tst_ipaddr rhost)"}; shift 2
+	local msg_sizes=$@
+	local ret=0
+
+	# ping cmd use 56 as default message size
+	for size in ${msg_sizes:-"56"}; do
+		ping$TST_IPV6 -I $src_iface -c $PING_MAX $dst_addr \
+			-s $size > /dev/null 2>&1
+		ret=$?
+		if [ $ret -eq 0 ]; then
+			tst_resm TINFO "tst_ping IPv${TST_IPV6:-4} msg_size $size pass"
+		else
+			tst_resm TINFO "tst_ping IPv${TST_IPV6:-4} msg_size $size fail"
+			break
+		fi
+	done
+	return $ret
+}
