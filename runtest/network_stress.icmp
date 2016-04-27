@@ -2,21 +2,39 @@
 # Stress test for TCP/IP protocol stack (ICMP)
 #
 
-icmp4-uni-basic01 icmp4-uni-basic01
-icmp4-uni-basic02 icmp4-uni-basic02
-icmp4-uni-basic03 icmp4-uni-basic03
-icmp4-uni-basic04 icmp4-uni-basic04
-icmp4-uni-basic05 icmp4-uni-basic05
-icmp4-uni-basic06 icmp4-uni-basic06
-icmp4-uni-basic07 icmp4-uni-basic07
+# MAX_LENGTH(65535) - IP(20) - ICMP(8) = MAX_SIZE(65507)
+icmp4-uni-basic01 icmp-uni-basic.sh -s "10 100 1000 10000 65507"
+# MAX_LENGTH(65535) - IP(20) - AH(24) - ICMP(8) = MAX_SIZE(65483)
+icmp4-uni-basic02 icmp-uni-basic.sh -p ah -m transport -s "10 100 1000 10000 65483"
+# MAX_LENGTH(65535) - IP(20) - AH(24) - Tunnel(IPv4 20) - ICMP(8) = MAX_SIZE(65463)
+icmp4-uni-basic03 icmp-uni-basic.sh -p ah -m tunnel -s "10 100 1000 10000 65463"
+# MAX_LENGTH(65535) - IP(20) - ESP (37) - ICMP(8) = MAX_SIZE(65470)
+# ESP Header has pad payload, so the ESP length is variable
+icmp4-uni-basic04 icmp-uni-basic.sh -p esp -m transport -s "10 100 1000 10000 65470"
+# MAX_LENGTH(65535) - IP(20) - ESP (37) - Tunnel(20) - ICMP(8) = MAX_SIZE(65450)
+icmp4-uni-basic05 icmp-uni-basic.sh -p esp -m tunnel -s "10 100 1000 10000 65450"
+# Same message size but different content will result in different data size
+# after compression. So we just use a large enough message size(65000) for testing
+icmp4-uni-basic06 icmp-uni-basic.sh -p ipcomp -m transport -s "10 100 1000 10000 65000"
+icmp4-uni-basic07 icmp-uni-basic.sh -p ipcomp -m tunnel -s "10 100 1000 10000 65000"
 
-icmp6-uni-basic01 icmp6-uni-basic01
-icmp6-uni-basic02 icmp6-uni-basic02
-icmp6-uni-basic03 icmp6-uni-basic03
-icmp6-uni-basic04 icmp6-uni-basic04
-icmp6-uni-basic05 icmp6-uni-basic05
-icmp6-uni-basic06 icmp6-uni-basic06
-icmp6-uni-basic07 icmp6-uni-basic07
+# MAX_LENGTH(65535) - ICMP(8) = MAX_SIZE(65527)
+icmp6-uni-basic01 icmp-uni-basic.sh -6 -s "10 100 1000 10000 65527"
+# MAX_LENGTH(65535) - AH(24) - ICMP(8) = MAX_SIZE(65503)
+icmp6-uni-basic02 icmp-uni-basic.sh -6 -p ah -m transport -s "10 100 1000 10000 65503"
+# MAX_LENGTH(65535) - ICMP(8) = MAX_SIZE(65527)
+# When receive, we drop the tunnel header first and only leave the inside IPv6
+# Header and icmp message. That's why we can have so large message size.
+icmp6-uni-basic03 icmp-uni-basic.sh -6 -p ah -m tunnel -s "10 100 1000 10000 65527"
+# MAX_LENGTH(65535) - ESP (33) - ICMP(8) = MAX_SIZE(65494)
+# ESP Header has pad payload, so the ESP length is variable
+icmp6-uni-basic04 icmp-uni-basic.sh -6 -p esp -m transport -s "10 100 1000 10000 65494"
+# MAX_LENGTH(65535) - ICMP(8) = MAX_SIZE(65527)
+icmp6-uni-basic05 icmp-uni-basic.sh -6 -p esp -m tunnel -s "10 100 1000 10000 65527"
+# Same message size but different content will result in different data size
+# after compression. So we just use a large enough message size(65000) for testing
+icmp6-uni-basic06 icmp-uni-basic.sh -6 -p ipcomp -m transport -s "10 100 1000 10000 65000"
+icmp6-uni-basic07 icmp-uni-basic.sh -6 -p ipcomp -m tunnel -s "10 100 1000 10000 65000"
 
 icmp4-multi-diffip01 icmp4-multi-diffip01
 icmp4-multi-diffip02 icmp4-multi-diffip02
