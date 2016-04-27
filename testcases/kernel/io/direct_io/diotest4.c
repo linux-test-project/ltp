@@ -271,6 +271,7 @@ int main(int argc, char *argv[])
 	}
 	switch (fs_type) {
 	case TST_NFS_MAGIC:
+	case TST_BTRFS_MAGIC:
 		tst_resm(TCONF, "%s supports odd count IO",
 			 tst_fs_type_name(fs_type));
 	break;
