@@ -87,7 +87,8 @@ int main(int ac, char **av)
 			test_umount2(tc);
 
 		if (mount_flag) {
-			SAFE_UMOUNT(cleanup, MNTPOINT);
+			if (tst_umount(MNTPOINT))
+				tst_brkm(TBROK, cleanup, "umount() failed");
 			mount_flag = 0;
 		}
 	}
