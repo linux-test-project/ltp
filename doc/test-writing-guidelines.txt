@@ -992,7 +992,10 @@ which is followed by optional arguments.
 
 A non-zero 'pass_exit_val' makes 'tst_run_cmd' return the program exit code to
 the caller. A zero for 'pass_exit_val' makes 'tst_run_cmd' exit the tests
-on failure and call 'cleanup_fn' (if not NULL) beforehand.
+on failure.
+
+In case that 'execvp()' has failed and the 'pass_exit_val' flag was set, the
+return value is '255' if 'execvp()' failed with 'ENOENT' and '254' otherwise.
 
 'stdout_path' and 'stderr_path' determine where to redirect the program
 stdout and stderr I/O streams.

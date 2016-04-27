@@ -71,7 +71,11 @@ int tst_run_cmd_fds_(void (cleanup_fn)(void),
 			dup2(stderr_fd, STDERR_FILENO);
 		}
 
-		_exit(execvp(argv[0], (char *const *)argv));
+		if (execvp(argv[0], (char *const *)argv)) {
+			if (errno == ENOENT)
+				_exit(255);
+		}
+		_exit(254);
 	}
 
 	int ret = -1;
