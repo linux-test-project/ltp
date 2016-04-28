@@ -28,6 +28,8 @@
 #include "safe_macros.h"
 #include "lapi/mount.h"
 
+#include "umount2.h"
+
 #define DIR_MODE	(S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 #define MNTPOINT	"mntpoint"
 #define SYMLINK	"symlink"
@@ -110,7 +112,7 @@ static void test_umount2(int i)
 	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, NULL);
 	mount_flag = 1;
 
-	TEST(umount2(test_cases[i].mntpoint, UMOUNT_NOFOLLOW));
+	TEST(umount2_retry(test_cases[i].mntpoint, UMOUNT_NOFOLLOW));
 
 	if (test_cases[i].exp_errno != 0)
 		verify_failure(i);

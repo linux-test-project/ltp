@@ -33,6 +33,8 @@
 #include "safe_macros.h"
 #include "lapi/mount.h"
 
+#include "umount2.h"
+
 #define DIR_MODE	(S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 #define MNTPOINT	"mntpoint"
 
@@ -131,7 +133,7 @@ static void test_umount2(int i)
 			tst_brkm(TBROK | TERRNO, cleanup, "access(2) failed");
 	}
 
-	TEST(umount2(MNTPOINT, test_cases[i].flag));
+	TEST(umount2_retry(MNTPOINT, test_cases[i].flag));
 
 	if (test_cases[i].exp_errno != 0)
 		verify_failure(i);
