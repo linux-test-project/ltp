@@ -291,7 +291,7 @@ static int do_test(struct test_case *tc)
 	 */
 	TEST(rc = clock_gettime(tc->clk_id, &beftp));
 	if (rc < 0) {
-		tst_resm(TFAIL | TTERRNO, "iclock_gettime failed");
+		tst_resm(TFAIL | TTERRNO, "clock_gettime failed");
 		result = 1;
 		goto EXIT;
 	}
