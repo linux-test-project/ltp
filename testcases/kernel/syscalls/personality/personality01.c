@@ -49,7 +49,9 @@ struct personalities pers[] = {
 	PAIR(PER_ISCR4),
 	PAIR(PER_BSD),
 	PAIR(PER_XENIX),
+#if defined(__x86_64__)
 	PAIR(PER_LINUX32),
+#endif
 	PAIR(PER_IRIX32),
 	PAIR(PER_IRIXN32),
 	PAIR(PER_IRIX64),
