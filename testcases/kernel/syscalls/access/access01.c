@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *   AUTHOR		: William Roske
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -21,132 +22,49 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
 /*
- * Description:
- *   Basic test for access(2) using F_OK, R_OK, W_OK and X_OK on tmp file
- *   AUTHOR		: William Roske
+ * Basic test for access(2) using F_OK, R_OK, W_OK and X_OK
  */
-
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/fcntl.h>
 #include <errno.h>
-#include <signal.h>
-#include <sys/stat.h>
-#include "test.h"
+#include <unistd.h>
+#include "tst_test.h"
 
+#define FNAME "accessfile"
 
-char *TCID = "access01";
-
-char fname[255];
-
-static struct test_case_t {
-	char *file;
+static struct tcase {
 	int mode;
-	char *string;
-	int experrno;
-} test_cases[] = {
-	{fname, F_OK, "F_OK", 0},
-	{fname, X_OK, "X_OK", 0},
-	{fname, W_OK, "W_OK", 0},
-	{fname, R_OK, "R_OK", 0},
+	char *name;
+} tcases[] = {
+	{F_OK, "F_OK"},
+	{X_OK, "X_OK"},
+	{W_OK, "W_OK"},
+	{R_OK, "R_OK"},
 };
 
-int TST_TOTAL = sizeof(test_cases) / sizeof(struct test_case_t);
-
-static void setup(void);
-static void cleanup(void);
-
-int main(int ac, char **av)
+static void verify_access(unsigned int n)
 {
-	int lc;
-	int tc;
+	struct tcase *tc = tcases + n;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	TEST(access(FNAME, tc->mode));
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-		for (tc = 0; tc < TST_TOTAL; tc++) {
-			TEST(access(test_cases[tc].file, test_cases[tc].mode));
-
-			if (TEST_RETURN == -1 && test_cases[tc].experrno == 0) {
-				tst_resm(TFAIL | TTERRNO,
-					 "access(%s, %s) failed",
-					 test_cases[tc].file,
-					 test_cases[tc].string);
-
-			} else if (TEST_RETURN != -1
-				   && test_cases[tc].experrno != 0) {
-				tst_resm(TFAIL,
-					 "access(%s, %s) returned %ld, "
-					 "exp -1, errno:%d",
-					 test_cases[tc].file,
-					 test_cases[tc].string, TEST_RETURN,
-					 test_cases[tc].experrno);
-			} else {
-				tst_resm(TPASS,
-					 "access(%s, %s) returned %ld",
-					 test_cases[tc].file,
-					 test_cases[tc].string,
-					 TEST_RETURN);
-			}
-		}
-
+	if (TEST_RETURN == -1) {
+		tst_res(TFAIL | TTERRNO, "access(%s, %s) failed",
+		        FNAME, tc->name);
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	tst_res(TPASS, "access(%s, %s)", FNAME, tc->name);
 }
 
 static void setup(void)
 {
-	int fd;
-	struct stat stbuf;
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	umask(0);
-	TEST_PAUSE;
-	tst_tmpdir();
-
-	/*
-	 * Since files inherit group ids, make sure our dir has a valid grp
-	 * to us.
-	 */
-	if (chown(".", -1, getegid()) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "chown(\".\", -1, %d) failed", getegid());
-	}
-
-	snprintf(fname, sizeof(fname), "accessfile");
-
-	fd = open(fname, O_RDWR | O_CREAT, 06777);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 06777) failed", fname);
-	else if (close(fd) == -1)
-		tst_resm(TINFO | TERRNO, "close(%s) failed", fname);
-
-	/*
-	 * force the mode to be set to 6777
-	 */
-	if (chmod(fname, 06777) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, 06777) failed",
-			 fname);
-
-	stat(fname, &stbuf);
-
-	if ((stbuf.st_mode & 06777) != 06777) {
-		tst_brkm(TBROK, cleanup, "'%s' can't be properly setup",
-			 fname);
-	}
+	SAFE_TOUCH(FNAME, 06777, NULL);
 }
 
-static void cleanup(void)
-{
-	tst_rmdir();
-}
+static struct tst_test test = {
+	.tid = "access01",
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.test = verify_access,
+	.tcnt = ARRAY_SIZE(tcases),
+};
