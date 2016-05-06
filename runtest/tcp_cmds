@@ -21,3 +21,6 @@ telnet telnet01
 iptables iptables_tests.sh
 dhcpd dhcpd_tests.sh
 dnsmasq dnsmasq_tests.sh
+iproute ip_tests.sh
+traceroute traceroute_tests.sh
+xinetd xinetd_tests.sh
