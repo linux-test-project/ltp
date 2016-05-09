@@ -140,12 +140,12 @@ static void test(void)
 	}
 
 	/* creates TAP network interface dummy0 */
-	if (WEXITSTATUS(system("ip tuntap add dev dummy0 mode tap")) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "system failed");
+	if (WEXITSTATUS(system("ip tuntap add dev dummy0 mode tap")))
+		tst_brkm(TBROK, cleanup, "system() failed");
 
 	/* removes previously created dummy0 device */
-	if (WEXITSTATUS(system("ip tuntap del mode tap dummy0")) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "system failed");
+	if (WEXITSTATUS(system("ip tuntap del mode tap dummy0")))
+		tst_brkm(TBROK, cleanup, "system() failed");
 
 	/* allow child to continue */
 	TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
