@@ -15,19 +15,8 @@
 
 LOOP=400
 
-if [ ! -e /proc/sys/kernel/stack_tracer_enabled ]; then
-	should_skip=1
-else
-	should_skip=0
-fi
-
 for ((; ;))
 {
-	if [ $should_skip -eq 1 ]; then
-		sleep 2
-		continue
-	fi
-
 	for ((i = 0; i < $LOOP; i++))
 	{
 		cat "$TRACING_PATH"/stack_trace > /dev/null
@@ -43,4 +32,3 @@ for ((; ;))
 
 	sleep 1
 }
-

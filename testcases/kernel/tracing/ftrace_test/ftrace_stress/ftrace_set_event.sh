@@ -36,9 +36,12 @@ for ((; ;))
 
 	for event in `cat $TRACING_PATH/available_events`;
 	do
+		# ftrace event sys is special, skip it
+		if echo "$event" | grep "ftrace:*"; then
+			continue
+		fi
 		echo $event >> "$TRACING_PATH"/set_event
 	done
 
 	sleep 1
 }
-

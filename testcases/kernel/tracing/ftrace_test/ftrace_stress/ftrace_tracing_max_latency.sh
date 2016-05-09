@@ -15,19 +15,8 @@
 
 MAX_LATENCY=100000
 
-if [ ! -e "$TRACING_PATH"/tracing_max_latency ]; then
-        should_skip=1
-else
-        should_skip=0
-fi
-
 for ((; ;))
 {
-        if [ $should_skip -eq 1 ]; then
-                sleep 2
-                continue
-        fi
-
 	for ((i = 0; i < $MAX_LATENCY; i += 400))
 	{
 		echo $i > "$TRACING_PATH"/tracing_max_latency
@@ -35,4 +24,3 @@ for ((; ;))
 
 	sleep 1
 }
-

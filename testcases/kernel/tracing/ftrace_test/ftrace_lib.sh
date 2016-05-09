@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 ###########################################################################
 ##                                                                       ##
@@ -21,16 +21,38 @@
 ##                                                                       ##
 ###########################################################################
 
-cd $LTPROOT/testcases/bin
-
-export TPATH="$PWD"
-export DEBUGFS_PATH="$PWD/debugfs"
-export TRACING_PATH="$PWD/debugfs/tracing"
-export FPATH="$TPATH/ftrace_function"
-export RPATH="$TPATH/ftrace_regression"
-export SPATH="$TPATH/ftrace_stress"
-
 . test.sh
+
+ftrace_test_init()
+{
+	export TPATH="$PWD"
+	export SPATH="$TPATH/ftrace_stress"
+
+	if grep -q debugfs /proc/mounts; then
+		export DEBUGFS_PATH=/sys/kernel/debug/
+		export TRACING_PATH="$DEBUGFS_PATH/tracing"
+		debugfs_def_mounted=1
+	else
+		tst_tmpdir
+		export DEBUGFS_PATH="$PWD/debugfs"
+		export TRACING_PATH="$PWD/debugfs/tracing"
+		mkdir $DEBUGFS_PATH
+		mount -t debugfs xxx $DEBUGFS_PATH
+	fi
+
+	TST_CLEANUP=clean_up
+
+	trap clean_up_exit INT
+
+	tst_require_root
+
+	# Check to see tracing feature is supported or not
+	if [ ! -d $TRACING_PATH ]; then
+		tst_brkm TCONF "Tracing is not supported. Skip the test..."
+	fi
+
+	save_old_setting
+}
 
 test_interval=$1
 
@@ -40,8 +62,11 @@ save_old_setting()
 
 	old_trace_options=( `cat trace_options` )
 	old_tracing_on=`cat tracing_on`
-	old_tracing_enabled=`cat tracing_enabled`
 	old_buffer_size=`cat buffer_size_kb`
+
+	if [ -e tracing_enabled ]; then
+		old_tracing_enabled=`cat tracing_enabled`
+	fi
 
 	if [ -e stack_max_size ]; then
 		old_stack_tracer_enabled=`cat /proc/sys/kernel/stack_tracer_enabled`
@@ -55,11 +80,17 @@ save_old_setting()
 		old_profile_enabled=`cat function_profile_enabled`
 	fi
 
+	setting_saved=1
+
 	cd - > /dev/null
 }
 
 restore_old_setting()
 {
+	if [ ! "$setting_saved" = 1 ]; then
+		return
+	fi
+
 	cd $TRACING_PATH
 
 	echo nop > current_tracer
@@ -85,7 +116,10 @@ restore_old_setting()
 
 	echo $old_buffer_size > buffer_size_kb
 	echo $old_tracing_on > tracing_on
-	echo $old_tracing_enabled > tracing_enabled
+
+	if [ -e tracing_enabled ];then
+		echo $old_tracing_enabled > tracing_enabled
+	fi
 
 	for option in $old_trace_options
 	do
@@ -97,17 +131,24 @@ restore_old_setting()
 	cd - > /dev/null
 }
 
+clean_up_mount()
+{
+	if [ ! "$debugfs_def_mounted" = "1" ]; then
+		umount $DEBUGFS_PATH
+		rmdir $DEBUGFS_PATH
+	fi
+}
+
 clean_up()
 {
 	restore_old_setting
-
-	umount $DEBUGFS_PATH
-	rmdir $DEBUGFS_PATH
+	clean_up_mount
 }
 
 clean_up_exit()
 {
-	clean_up
+	restore_old_setting
+	clean_up_mount
 	exit 1
 }
 
@@ -118,39 +159,8 @@ test_begin()
 
 test_wait()
 {
-	for ((; ;))
-	{
-		sleep 2
-
-		cur_time=`date +%s`
-		elapsed=$(( $cur_time - $start_time ))
-
-		# run the test for $test_interval secs
-		if [ $elapsed -ge $test_interval ]; then
-			break
-		fi
-	}
+	# run the test for $test_interval secs
+	tst_sleep ${test_interval}s
 }
 
-trap clean_up_exit INT
-
-tst_require_root
-
-# Don't run the test on kernels older than 2.6.34, otherwise
-# it can crash the system if the kernel is not latest-stable
-tst_kvercmp 2 6 34
-if [ $? -eq 0 ]; then
-	tst_brkm TCONF ignored "The test should be run in kernels >= 2.6.34. Skip the test..."
-	exit 0
-fi
-
-mkdir $DEBUGFS_PATH
-mount -t debugfs xxx $DEBUGFS_PATH
-
-# Check to see tracing feature is supported or not
-if [ ! -d $TRACING_PATH ]; then
-	tst_brkm TCONF ignored "Tracing is not supported. Skip the test..."
-	umount $DEBUGFS_PATH
-	rmdir $DEBUGFS_PATH
-	exit 0
-fi
+ftrace_test_init
