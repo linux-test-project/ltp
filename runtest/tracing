@@ -1,3 +1,4 @@
 #DESCRIPTION:Tracing testing
 ftrace_regression01	ftrace_regression01.sh
+ftrace_regression02	ftrace_regression02.sh
 ftrace-stress-test	ftrace_stress_test.sh 90
