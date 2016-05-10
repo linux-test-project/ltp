@@ -29,36 +29,100 @@
 #include <unistd.h>
 #include "tst_test.h"
 
-#define FNAME "accessfile"
+#define FNAME_RWX "accessfile_rwx"
+#define FNAME_R   "accesfile_r"
+#define FNAME_W   "accesfile_w"
+#define FNAME_X   "accesfile_x"
 
 static struct tcase {
+	const char *fname;
 	int mode;
 	char *name;
+	int exp_errno;
 } tcases[] = {
-	{F_OK, "F_OK"},
-	{X_OK, "X_OK"},
-	{W_OK, "W_OK"},
-	{R_OK, "R_OK"},
+	{FNAME_RWX, F_OK, "F_OK", 0},
+	{FNAME_RWX, X_OK, "X_OK", 0},
+	{FNAME_RWX, W_OK, "W_OK", 0},
+	{FNAME_RWX, R_OK, "R_OK", 0},
+
+	{FNAME_RWX, R_OK|W_OK, "R_OK|W_OK", 0},
+	{FNAME_RWX, R_OK|X_OK, "R_OK|X_OK", 0},
+	{FNAME_RWX, W_OK|X_OK, "W_OK|X_OK", 0},
+	{FNAME_RWX, R_OK|W_OK|X_OK, "R_OK|W_OK|X_OK", 0},
+
+	{FNAME_X, X_OK, "X_OK", 0},
+	{FNAME_W, W_OK, "W_OK", 0},
+	{FNAME_R, R_OK, "R_OK", 0},
+
+	{FNAME_R, X_OK, "X_OK", EACCES},
+	{FNAME_R, W_OK, "W_OK", EACCES},
+	{FNAME_W, R_OK, "R_OK", EACCES},
+	{FNAME_W, X_OK, "X_OK", EACCES},
+	{FNAME_X, R_OK, "R_OK", EACCES},
+	{FNAME_X, W_OK, "W_OK", EACCES},
+
+	{FNAME_R, W_OK|X_OK, "W_OK|X_OK", EACCES},
+	{FNAME_R, R_OK|X_OK, "R_OK|X_OK", EACCES},
+	{FNAME_R, R_OK|W_OK, "R_OK|W_OK", EACCES},
+	{FNAME_R, R_OK|W_OK|X_OK, "R_OK|W_OK|X_OK", EACCES},
+
+	{FNAME_W, W_OK|X_OK, "W_OK|X_OK", EACCES},
+	{FNAME_W, R_OK|X_OK, "R_OK|X_OK", EACCES},
+	{FNAME_W, R_OK|W_OK, "R_OK|W_OK", EACCES},
+	{FNAME_W, R_OK|W_OK|X_OK, "R_OK|W_OK|X_OK", EACCES},
+
+	{FNAME_X, W_OK|X_OK, "W_OK|X_OK", EACCES},
+	{FNAME_X, R_OK|X_OK, "R_OK|X_OK", EACCES},
+	{FNAME_X, R_OK|W_OK, "R_OK|W_OK", EACCES},
+	{FNAME_X, R_OK|W_OK|X_OK, "R_OK|W_OK|X_OK", EACCES},
 };
+
+static void verify_success(struct tcase *tc)
+{
+	if (TEST_RETURN == -1) {
+		tst_res(TFAIL | TTERRNO, "access(%s, %s) failed unexpectedly",
+		        tc->fname, tc->name);
+		return;
+	}
+
+	tst_res(TPASS, "access(%s, %s)", tc->fname, tc->name);
+}
+
+static void verify_failure(struct tcase *tc)
+{
+	if (TEST_RETURN != -1) {
+		tst_res(TFAIL, "access(%s, %s) succeded unexpectedly",
+		        tc->fname, tc->name);
+		return;
+	}
+
+	if (TEST_ERRNO != tc->exp_errno) {
+		tst_res(TFAIL | TTERRNO, "access(%s, %s) should fail with %s",
+		        tc->fname, tc->name, tst_strerrno(tc->exp_errno));
+		return;
+	}
+
+	tst_res(TPASS | TTERRNO, "access(%s, %s)", tc->fname, tc->name);
+}
 
 static void verify_access(unsigned int n)
 {
 	struct tcase *tc = tcases + n;
 
-	TEST(access(FNAME, tc->mode));
+	TEST(access(tc->fname, tc->mode));
 
-	if (TEST_RETURN == -1) {
-		tst_res(TFAIL | TTERRNO, "access(%s, %s) failed",
-		        FNAME, tc->name);
-		return;
-	}
-
-	tst_res(TPASS, "access(%s, %s)", FNAME, tc->name);
+	if (tc->exp_errno)
+		verify_failure(tc);
+	else
+		verify_success(tc);
 }
 
 static void setup(void)
 {
-	SAFE_TOUCH(FNAME, 06777, NULL);
+	SAFE_TOUCH(FNAME_RWX, 0777, NULL);
+	SAFE_TOUCH(FNAME_R, 0444, NULL);
+	SAFE_TOUCH(FNAME_W, 0222, NULL);
+	SAFE_TOUCH(FNAME_X, 0111, NULL);
 }
 
 static struct tst_test test = {
