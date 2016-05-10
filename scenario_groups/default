@@ -30,5 +30,5 @@ fs_ext4
 pipes
 can
 cpuhotplug
-ipv6_lib
+net.ipv6_lib
 input

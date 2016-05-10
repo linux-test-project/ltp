@@ -25,31 +25,61 @@ export PATH="${PATH}:${LTPROOT}/testcases/bin"
 export TCID=
 export TST_LIB_LOADED=
 
+usage()
+{
+	echo "Usage: $0 OPTIONS"
+	echo "  -6    IPv6 tests"
+	echo "  -m    multicast tests"
+	echo "  -n    NFS tests"
+	echo "  -r    RPC tests"
+	echo "  -s    SCTP tests"
+	echo "  -t    TCP/IP command tests"
+	echo "  -a    Application tests (HTTP, SSH, DNS)"
+	echo "  -e    Interface stress tests"
+	echo "  -b    Stress tests with malformed ICMP packets"
+	echo "  -i    IPsec ICMP stress tests"
+	echo "  -T    IPsec TCP stress tests"
+	echo "  -U    IPsec UDP stress tests"
+	echo "  -R    route stress tests"
+	echo "  -M    multicast stress tests"
+	echo "  -F    network features tests (TFO, vxlan, etc.)"
+	echo "  -f x  where x is a runtest file"
+	echo "  -V|v  verbose"
+	echo "  -h    print this help"
+}
+
 TEST_CASES=
 
-while getopts 6mnrstaebiTURMFf:Vv OPTION
+while getopts 6mnrstaebiTURMFf:Vvh OPTION
 do
 	case $OPTION in
-	6) TEST_CASES="$TEST_CASES ipv6 ipv6_lib";;
-	m) TEST_CASES="$TEST_CASES multicast" ;;
-	n) TEST_CASES="$TEST_CASES nfs" ;;
-	r) TEST_CASES="$TEST_CASES rpc" ;;
-	s) TEST_CASES="$TEST_CASES sctp" ;;
-	t) TEST_CASES="$TEST_CASES tcp_cmds" ;;
-	a) TEST_CASES="$TEST_CASES network_stress.appl";;
-	e) TEST_CASES="$TEST_CASES network_stress.interface";;
-	b) TEST_CASES="$TEST_CASES network_stress.broken_ip";;
-	i) TEST_CASES="$TEST_CASES network_stress.icmp";;
-	T) TEST_CASES="$TEST_CASES network_stress.tcp";;
-	U) TEST_CASES="$TEST_CASES network_stress.udp";;
-	R) TEST_CASES="$TEST_CASES network_stress.route";;
-	M) TEST_CASES="$TEST_CASES network_stress.multicast";;
-	F) TEST_CASES="$TEST_CASES network_stress.features";;
+	6) TEST_CASES="$TEST_CASES net.ipv6 net.ipv6_lib";;
+	m) TEST_CASES="$TEST_CASES net.multicast" ;;
+	n) TEST_CASES="$TEST_CASES net.nfs" ;;
+	r) TEST_CASES="$TEST_CASES net.rpc" ;;
+	s) TEST_CASES="$TEST_CASES net.sctp" ;;
+	t) TEST_CASES="$TEST_CASES net.tcp_cmds" ;;
+	a) TEST_CASES="$TEST_CASES net_stress.appl";;
+	e) TEST_CASES="$TEST_CASES net_stress.interface";;
+	b) TEST_CASES="$TEST_CASES net_stress.broken_ip";;
+	i) TEST_CASES="$TEST_CASES net_stress.ipsec_icmp";;
+	T) TEST_CASES="$TEST_CASES net_stress.ipsec_tcp";;
+	U) TEST_CASES="$TEST_CASES net_stress.ipsec_udp";;
+	R) TEST_CASES="$TEST_CASES net_stress.route";;
+	M) TEST_CASES="$TEST_CASES net_stress.multicast";;
+	F) TEST_CASES="$TEST_CASES net.features";;
 	f) TEST_CASES=${OPTARG} ;;
 	V|v) VERBOSE="yes";;
-	*) echo "Error: invalid option..."; exit 1 ;;
+	h) usage; exit 0 ;;
+	*) echo "Error: invalid option..."; usage; exit 1 ;;
 	esac
 done
+
+if [ "$OPTIND" -eq 1 ]; then
+	echo "Error: option is required"
+	usage
+	exit 1
+fi
 
 rm -f $CMDFILE
 
