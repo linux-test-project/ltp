@@ -1,95 +1,68 @@
 /*
- * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- *    AUTHOR		: William Roske
- *    CO-PILOT		: Dave Fenner
+ * Copyright (c) 2016 Linux Test Project
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This program is distributed in the hope that it would be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
- * Mountain View, CA  94043, or:
- *
- * http://www.sgi.com
- *
- * For further information regarding this notice, see:
- *
- * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- */
-/*
- * Setup alarm() signal, wait in pause() expect to be woken up.
+ * Check that pause() returns on signal with errno == EINTR.
  */
 #include <errno.h>
 #include <signal.h>
-#include "test.h"
+#include <stdlib.h>
+#include "tst_test.h"
 
-char *TCID = "pause01";
-int TST_TOTAL = 1;
-
-static void setup(void);
-
-int main(int ac, char **av)
+static void sig_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
-	int lc;
-	struct itimerval it = {
-		.it_interval = {.tv_sec = 0, .tv_usec = 0},
-		.it_value = {.tv_sec = 0, .tv_usec = 1000},
-	};
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		if (setitimer(ITIMER_REAL, &it, NULL))
-			tst_brkm(TBROK | TERRNO, NULL, "setitimer() failed");
-
-		TEST(pause());
-
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL,
-				 "pause() returned WITHOUT an error return code : %d",
-				 TEST_ERRNO);
-		} else {
-			if (TEST_ERRNO == EINTR)
-				tst_resm(TPASS, "pause() returned %ld",
-					 TEST_RETURN);
-			else
-				tst_resm(TFAIL,
-					 "pause() returned %ld. Expected %d (EINTR)",
-					 TEST_RETURN, EINTR);
-		}
-	}
-
-	tst_exit();
 }
 
-static void go(int sig)
+static void do_child(void)
 {
-	(void)sig;
+	SAFE_SIGNAL(SIGINT, sig_handler);
+
+	TST_CHECKPOINT_WAKE(0);
+
+	TEST(pause());
+	if (TEST_RETURN != -1)
+		tst_res(TFAIL, "pause() succeeded unexpectedly");
+	else if (TEST_ERRNO == EINTR)
+		tst_res(TPASS, "pause() interrupted with EINTR");
+	else
+		tst_res(TFAIL | TTERRNO, "pause() unexpected errno");
+
+	TST_CHECKPOINT_WAKE(0);
+	exit(0);
 }
 
-void setup(void)
+static void do_test(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, NULL);
-	(void)signal(SIGALRM, go);
+	int pid, status;
 
-	TEST_PAUSE;
+	pid = SAFE_FORK();
+	if (pid == 0)
+		do_child();
+
+	TST_CHECKPOINT_WAIT(0);
+	TST_PROCESS_STATE_WAIT(pid, 'S');
+	kill(pid, SIGINT);
+
+	/*
+	 * TST_CHECKPOINT_WAIT has built-in timeout, if pause() doesn't return,
+	 * this checkpoint call will reliably end the test.
+	 */
+	TST_CHECKPOINT_WAIT(0);
+	SAFE_WAIT(&status);
 }
+
+static struct tst_test test = {
+	.tid = "pause01",
+	.forks_child = 1,
+	.needs_checkpoints = 1,
+	.test_all = do_test,
+};
