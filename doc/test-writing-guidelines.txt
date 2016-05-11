@@ -1206,6 +1206,17 @@ that can sleep for defined amount of seconds, milliseconds or microseconds.
 tst_sleep 100ms
 -------------------------------------------------------------------------------
 
+tst_random
++++++++++
+
+There is no $RANDOM in portable shell, use tst_random instead.
+
+[source,sh]
+-------------------------------------------------------------------------------
+# get random integer between 0 and 1000 (including 0 and 1000)
+tst_random 0 1000
+-------------------------------------------------------------------------------
+
 ROD and ROD_SILENT
 ++++++++++++++++++
 
