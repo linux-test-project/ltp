@@ -106,9 +106,13 @@ int tst_checkpoint_wake(unsigned int id, unsigned int nr_wake,
 		return -1;
 	}
 
-	do {
+	for (;;) {
 		waked += syscall(SYS_futex, &tst_futexes[id], FUTEX_WAKE,
 				 INT_MAX, NULL);
+
+		if (waked == nr_wake)
+			break;
+
 		usleep(1000);
 		msecs++;
 
@@ -116,8 +120,7 @@ int tst_checkpoint_wake(unsigned int id, unsigned int nr_wake,
 			errno = ETIMEDOUT;
 			return -1;
 		}
-
-	} while (waked != nr_wake);
+	}
 
 	return 0;
 }
