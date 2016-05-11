@@ -16,6 +16,7 @@
 LOOP=200
 
 should_skip=0
+nr_cpus=`tst_ncpus`
 
 if [ ! -e "$TRACING_PATH"/function_profile_enabled ]; then
         should_skip=1
@@ -28,18 +29,17 @@ if [ $? -eq 0 ]; then
 	should_skip=1
 fi
 
-for ((; ;))
-{
+while true; do
 	if [ $should_skip -eq 1 ]; then
 		sleep 2
 		continue
 	fi
-
-	for ((i = 0; i < $LOOP; i++))
-	{
-		cat "$TRACING_PATH"/trace_stat/function0 > /dev/null 2>&1
-	}
+	cpu=$(tst_random 0 $((nr_cpus - 1)))
+	i=0;
+	while [ $i -lt $LOOP ]; do
+		cat "$TRACING_PATH"/trace_stat/function${cpu} > /dev/null 2>&1
+		i=$((i + 1))
+	done
 
 	sleep 1
-}
-
+done

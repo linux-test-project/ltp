@@ -13,18 +13,9 @@
 #                                                                             #
 ###############################################################################
 
-ftrace_sleep()
-{
-	# usleep is not a standard command?
-	usleep 200000 2> /dev/null
-	if [ $? -ne 0 ]; then
-		sleep 1
-	fi
-}
-
 kill_this_pid()
 {
-	/bin/kill -SIGKILL $this_pid
+	kill -KILL $this_pid
 	wait $this_pid
 	exit 0
 }
@@ -33,20 +24,22 @@ trap kill_this_pid SIGUSR1
 
 LOOP=20
 
-for ((; ;))
-{
-	for ((i = 0; i < $LOOP; i++))
-	{
+while true; do
+	i=0
+	while [ $i -lt $LOOP ]; do
 		cat "$TRACING_PATH"/trace_pipe > /dev/null &
-
 		this_pid=$!
-		ftrace_sleep
-		/bin/kill -SIGINT $this_pid
+
+		tst_sleep 200000us
+
+		kill -INT $this_pid
 		wait $this_pid
+
 		this_pid=0
-		ftrace_sleep
-	}
 
+		tst_sleep 200000us
+
+		i=$((i + 1))
+	done
 	sleep 2
-}
-
+done

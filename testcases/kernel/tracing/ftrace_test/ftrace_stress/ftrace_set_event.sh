@@ -13,29 +13,28 @@
 #                                                                             #
 ###############################################################################
 
-for ((; ;))
-{
-	for ((i = 0; i < 100; i++))
-	{
+while true; do
+	i=0
+	while [ $i -lt 100 ]; do
 		echo 1 > "$TRACING_PATH"/events/enable
 		echo 0 > "$TRACING_PATH"/events/enable
-	}
+		i=$((i + 1))
+	done
 
-	for dir in `ls $TRACING_PATH/events/`
-	do
+	for dir in `ls $TRACING_PATH/events/`; do
 		if [ ! -d $dir -o "$dir" = ftrace ]; then
 			continue;
 		fi
 
-		for ((i = 0; i < 20; i++))
-		{
+		i=0
+		while [ $i -lt 20 ]; do
 			echo 1 > "$TRACING_PATH"/events/$dir/enable
 			echo 0 > "$TRACING_PATH"/events/$dir/enable
-		}
+			i=$((i + 1))
+		done
 	done
 
-	for event in `cat $TRACING_PATH/available_events`;
-	do
+	for event in `cat $TRACING_PATH/available_events`; do
 		# ftrace event sys is special, skip it
 		if echo "$event" | grep "ftrace:*"; then
 			continue
@@ -44,4 +43,4 @@ for ((; ;))
 	done
 
 	sleep 1
-}
+done

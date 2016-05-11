@@ -15,13 +15,11 @@
 
 LOOP=200
 
-for ((; ;))
-{
-	for ((i = 0; i < $LOOP; i++))
-	{
+i=0;
+while true; do
+	while [ $i -lt $LOOP ]; do
 		cat "$TRACING_PATH"/trace > /dev/null
-	}
-
+		i=$((i + 1))
+	done
 	sleep 1
-}
-
+done

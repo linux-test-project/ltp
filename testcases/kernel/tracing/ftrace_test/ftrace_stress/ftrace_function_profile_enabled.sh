@@ -16,26 +16,15 @@
 MAX_LOOP=1500
 count=0
 
-if [ ! -e "$TRACING_PATH"/function_profile_enabled ]; then
-	should_skip=1
-else
-	should_skip=0
-fi
 
-for ((; ;))
-{
-	if [ $should_skip -eq 1 ]; then
-		sleep 2
-		continue
-	fi
-
+while true; do
 	count=$(( $count + 1 ))
-
-	for ((i = 0; i < $MAX_LOOP; i++))
-	{
+	i=0
+	while [ $i -lt $MAX_LOOP ]; do
 		echo 0 > "$TRACING_PATH"/function_profile_enabled 2> /dev/null
 		echo 1 > "$TRACING_PATH"/function_profile_enabled 2> /dev/null
-	}
+		i=$((i + 1))
+	done
 
 	enable=$(( $count % 3 ))
 
@@ -46,5 +35,4 @@ for ((; ;))
 	fi
 
 	sleep 1
-}
-
+done

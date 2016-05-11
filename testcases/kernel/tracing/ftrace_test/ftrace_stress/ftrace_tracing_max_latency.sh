@@ -15,12 +15,13 @@
 
 MAX_LATENCY=100000
 
-for ((; ;))
-{
-	for ((i = 0; i < $MAX_LATENCY; i += 400))
-	{
+while true; do
+	i=0
+	while [ $i -lt $MAX_LATENCY ]; do
 		echo $i > "$TRACING_PATH"/tracing_max_latency
-	}
+		i=$((i + 400))
+	done
 
 	sleep 1
-}
+
+done

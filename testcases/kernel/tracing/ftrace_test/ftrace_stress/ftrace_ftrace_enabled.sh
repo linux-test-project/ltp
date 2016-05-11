@@ -16,15 +16,14 @@
 MAX_LOOP=1500
 count=0
 
-for ((; ;))
-{
+while true; do
 	count=$(( $count + 1 ))
-
-	for ((i = 0; i < $MAX_LOOP; i++))
-	{
+	i=0
+	while [ $i -lt $MAX_LOOP ]; do
 		echo 0 > /proc/sys/kernel/ftrace_enabled
 		echo 1 > /proc/sys/kernel/ftrace_enabled
-	}
+		i=$((i + 1))
+	done
 
 	enable=$(( $count % 3 ))
 
@@ -35,5 +34,5 @@ for ((; ;))
 	fi
 
 	sleep 1
-}
+done
 

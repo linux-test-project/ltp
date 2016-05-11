@@ -26,20 +26,20 @@ if [ $step -eq 0 ]; then
 	LOOP=50
 fi
 
-for ((; ;))
-{
+while true; do
 	new_size=1
-	for ((i = 0; i < $LOOP; i++))
-	{
+	i=0
+	while [ $i -lt $LOOP ]; do
 		echo $new_size > "$TRACING_PATH"/buffer_size_kb
 		new_size=$(( $new_size + $step ))
-	}
+		i=$((i + 1))
+	done
 
-	for ((i = 0; i < $LOOP; i++))
-	{
+	i=0
+	while [ $i -lt $LOOP ]; do
 		new_size=$(( $new_size - $step ))
 		echo $new_size > "$TRACING_PATH"/buffer_size_kb
-	}
-
+		i=$((i + 1))
+	done
 	sleep 1
-}
+done

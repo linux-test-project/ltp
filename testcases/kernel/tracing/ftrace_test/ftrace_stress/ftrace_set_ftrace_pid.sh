@@ -15,16 +15,15 @@
 
 LOOP=300
 
-
-for ((; ; ))
-{
-	for ((j = 0; j < $LOOP; j++))
-	{
-		for ((k = 1; k <= NR_PIDS; k++))
-		{
+while true; do
+	j=0
+	while [ $j -lt $LOOP ]; do
+		k=1
+		while [ $k -le $NR_PIDS ]; do
 			str="\$pid$k"
 			eval echo $str >> "$TRACING_PATH"/set_ftrace_pid
-		}
+			k=$((k + 1))
+		done
 
 		if ! echo > "$TRACING_PATH"/set_ftrace_pid >/dev/null 2>&1; then
 			if ! echo -1 > "$TRACING_PATH"/set_ftrace_pid >/dev/null 2>&1; then
@@ -32,7 +31,7 @@ for ((; ; ))
 				exit 1
 			fi
 		fi
-	}
-
+		j=$((j + 1))
+	done
 	sleep 1
-}
+done

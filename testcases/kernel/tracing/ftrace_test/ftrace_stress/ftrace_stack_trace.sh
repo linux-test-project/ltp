@@ -15,20 +15,21 @@
 
 LOOP=400
 
-for ((; ;))
-{
-	for ((i = 0; i < $LOOP; i++))
-	{
+while true; do
+	i=0
+	while [ $i -lt $LOOP ]; do
 		cat "$TRACING_PATH"/stack_trace > /dev/null
-	}
+		i=$((i + 1))
+	done
 
 	sleep 1
 
-	for ((i = 0; i < $LOOP; i++))
-	{
+	i=0
+	while [ $i -lt $LOOP ]; do
 		echo 0 > /proc/sys/kernel/stack_tracer_enabled
 		echo 1 > /proc/sys/kernel/stack_tracer_enabled
-	}
+		i=$((i + 1))
+	done
 
 	sleep 1
-}
+done

@@ -18,7 +18,7 @@
 LOOP=200
 
 while true; do
-	j=0;
+	j=0
 	while [ $j -lt $LOOP ]; do
 		trace_options="$(ls $TRACING_PATH/options/)"
 		# enable the nop_test_refuse can cause an

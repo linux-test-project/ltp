@@ -24,23 +24,23 @@ else
         old_kernel=0
 fi
 
-for ((; ;))
-{
-	if [ $old_kernel -eq 1 ];
-	then
-		for ((i = 0; i < $LOOP; i++))
-		{
+while true; do
+	i=0
+	if [ $old_kernel -eq 1 ]; then
+		while [ $i -lt $LOOP ]; do
 			echo 1 > "$TRACING_PATH"/options/global-clock
 			echo 0 > "$TRACING_PATH"/options/global-clock
-		}
+			i=$((i + 1))
+		done
 	else
-		for ((i = 0; i < $LOOP; i++))
-		{
+		while [ $i -lt $LOOP ]; do
 			echo local > "$TRACING_PATH"/trace_clock
 			echo global > "$TRACING_PATH"/trace_clock
-		}
+			i=$((i + 1))
+		done
+
 	fi
 
 	sleep 1
-}
+done
 
