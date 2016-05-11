@@ -31,7 +31,8 @@ test_targets=" \
 trace_pipe current_tracer ftrace_enabled function_profile_enabled \
 set_event set_ftrace_pid stack_max_size stack_trace trace trace_clock \
 trace_options trace_stat tracing_enabled tracing_max_latency \
-tracing_on function_profile_enabled buffer_size_kb"
+tracing_on function_profile_enabled buffer_size_kb tracing_cpumask \
+set_ftrace_filter"
 
 get_skip_targets()
 {

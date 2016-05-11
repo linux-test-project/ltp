@@ -63,6 +63,11 @@ save_old_setting()
 	old_trace_options=( `cat trace_options` )
 	old_tracing_on=`cat tracing_on`
 	old_buffer_size=`cat buffer_size_kb`
+	old_tracing_cpumask=`cat tracing_cpumask`
+
+	if [ -e tracing_cpumask ]; then
+		old_tracing_cpumask=`cat tracing_cpumask`
+	fi
 
 	if [ -e tracing_enabled ]; then
 		old_tracing_enabled=`cat tracing_enabled`
@@ -97,6 +102,10 @@ restore_old_setting()
 	echo 0 > events/enable
 	echo 0 > tracing_max_latency 2> /dev/null
 
+	if [ -e tracing_cpumask ]; then
+		echo $old_tracing_cpumask > tracing_cpumask
+	fi
+
 	if [ -e trace_clock ]; then
 		echo local > trace_clock
 	fi
@@ -127,6 +136,10 @@ restore_old_setting()
 	done
 
 	echo > trace
+
+	if [ -f set_ftrace_filter ]; then
+		echo  > set_ftrace_filter
+	fi
 
 	cd - > /dev/null
 }
