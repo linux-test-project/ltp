@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -357,5 +358,25 @@ static inline int safe_setrlimit(const char *file, const int lineno,
 }
 #define SAFE_SETRLIMIT(resource, rlim) \
 	safe_setrlimit(__FILE__, __LINE__, (resource), (rlim))
+
+typedef void (*sighandler_t)(int);
+static inline sighandler_t safe_signal(const char *file, const int lineno,
+				       int signum, sighandler_t handler)
+{
+	sighandler_t rval;
+
+	rval = signal(signum, handler);
+
+	if (rval == SIG_ERR) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"signal(%d,%p) failed",
+			signum, handler);
+	}
+
+	return rval;
+}
+
+#define SAFE_SIGNAL(signum, handler) \
+	safe_signal(__FILE__, __LINE__, (signum), (handler))
 
 #endif /* SAFE_MACROS_H__ */
