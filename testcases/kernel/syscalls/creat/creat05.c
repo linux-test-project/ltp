@@ -22,6 +22,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -32,7 +33,7 @@
 #include <unistd.h>
 #include "tst_test.h"
 
-static int first_fd, last_fd;
+static int *opened_fds, num_opened_fds;
 
 static void verify_creat(void)
 {
@@ -56,34 +57,33 @@ static void setup(void)
 	int fd;
 	char fname[PATH_MAX];
 
-	/* create a file to get the first file descriptor available */
-	first_fd = fd = SAFE_CREAT("fname", 0666);
-	SAFE_CLOSE(fd);
-	SAFE_UNLINK("fname");
-	tst_res(TINFO, "first fd is #%d", first_fd);
-
 	/* get the maximum number of files that we can open */
 	max_open = getdtablesize();
 	tst_res(TINFO, "getdtablesize() = %d", max_open);
+	opened_fds = SAFE_MALLOC(max_open * sizeof(int));
 
 	/* now open as many files as we can up to max_open */
-	for (fd = first_fd; fd < max_open; fd++) {
-		snprintf(fname, sizeof(fname), "creat05_%d", fd);
-		last_fd = SAFE_CREAT(fname, 0666);
-	}
+	do {
+		snprintf(fname, sizeof(fname), "creat05_%d", num_opened_fds);
+		fd = SAFE_CREAT(fname, 0666);
+		opened_fds[num_opened_fds++] = fd;
+	} while (fd < max_open - 1);
+
+	tst_res(TINFO, "Opened additional #%d fds", num_opened_fds);
 }
 
 static void cleanup(void)
 {
-	int fd;
+	int i;
 
-	if (last_fd <= 0)
-		return;
-
-	for (fd = first_fd + 1; fd <= last_fd; fd++) {
-		if (close(fd))
-			tst_res(TWARN | TERRNO, "close(%i) failed", fd);
+	for (i = 0; i < num_opened_fds; i++) {
+		if (close(opened_fds[i])) {
+			tst_res(TWARN | TERRNO, "close(%i) failed",
+				opened_fds[i]);
+		}
 	}
+
+	free(opened_fds);
 }
 
 static struct tst_test test = {
