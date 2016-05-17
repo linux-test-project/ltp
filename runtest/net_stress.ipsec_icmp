@@ -35,35 +35,3 @@ icmp6-uni-basic05 icmp-uni-basic.sh -6 -p esp -m tunnel -s "10 100 1000 10000 65
 # after compression. So we just use a large enough message size(65000) for testing
 icmp6-uni-basic06 icmp-uni-basic.sh -6 -p ipcomp -m transport -s "10 100 1000 10000 65000"
 icmp6-uni-basic07 icmp-uni-basic.sh -6 -p ipcomp -m tunnel -s "10 100 1000 10000 65000"
-
-icmp4-multi-diffip01 icmp4-multi-diffip01
-icmp4-multi-diffip02 icmp4-multi-diffip02
-icmp4-multi-diffip03 icmp4-multi-diffip03
-icmp4-multi-diffip04 icmp4-multi-diffip04
-icmp4-multi-diffip05 icmp4-multi-diffip05
-icmp4-multi-diffip06 icmp4-multi-diffip06
-icmp4-multi-diffip07 icmp4-multi-diffip07
-
-icmp6-multi-diffip01 icmp6-multi-diffip01
-icmp6-multi-diffip02 icmp6-multi-diffip02
-icmp6-multi-diffip03 icmp6-multi-diffip03
-icmp6-multi-diffip04 icmp6-multi-diffip04
-icmp6-multi-diffip05 icmp6-multi-diffip05
-icmp6-multi-diffip06 icmp6-multi-diffip06
-icmp6-multi-diffip07 icmp6-multi-diffip07
-
-icmp4-multi-diffnic01 icmp4-multi-diffnic01
-icmp4-multi-diffnic02 icmp4-multi-diffnic02
-icmp4-multi-diffnic03 icmp4-multi-diffnic03
-icmp4-multi-diffnic04 icmp4-multi-diffnic04
-icmp4-multi-diffnic05 icmp4-multi-diffnic05
-icmp4-multi-diffnic06 icmp4-multi-diffnic06
-icmp4-multi-diffnic07 icmp4-multi-diffnic07
-
-icmp6-multi-diffnic01 icmp6-multi-diffnic01
-icmp6-multi-diffnic02 icmp6-multi-diffnic02
-icmp6-multi-diffnic03 icmp6-multi-diffnic03
-icmp6-multi-diffnic04 icmp6-multi-diffnic04
-icmp6-multi-diffnic05 icmp6-multi-diffnic05
-icmp6-multi-diffnic06 icmp6-multi-diffnic06
-icmp6-multi-diffnic07 icmp6-multi-diffnic07
