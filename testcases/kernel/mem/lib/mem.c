@@ -127,6 +127,10 @@ void oom(int testcase, int lite, int retcode, int allow_sigkill)
 
 	switch (pid = fork()) {
 	case -1:
+		if (errno == retcode) {
+			tst_resm(TPASS | TERRNO, "fork");
+			return;
+		}
 		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
 		threads = MAX(1, tst_ncpus() - 1);
