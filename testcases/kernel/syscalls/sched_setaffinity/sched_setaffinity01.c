@@ -84,7 +84,7 @@ static void cleanup(void)
 
 	SAFE_SETEUID(NULL, uid);
 
-	if (privileged_pid != 0) {
+	if (privileged_pid > 0) {
 		kill(privileged_pid, SIGKILL);
 		waitpid(privileged_pid, NULL, 0);
 		privileged_pid = 0;
