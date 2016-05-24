@@ -60,17 +60,7 @@ static void verify_pipe(void)
 	tst_res(TPASS, "pipe() functionality is correct");
 }
 
-static void cleanup(void)
-{
-	if (fds[0] > 0 && close(fds[0]))
-		tst_res(TWARN | TERRNO, "Failed to close file");
-
-	if (fds[1] > 0 && close(fds[1]))
-		tst_res(TWARN | TERRNO, "Failed to close file");
-}
-
 static struct tst_test test = {
 	.tid = "pipe01",
-	.cleanup = cleanup,
 	.test_all = verify_pipe,
 };
