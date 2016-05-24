@@ -198,6 +198,10 @@ for fstype in $FSTYPES; do
 		opts="-f --journal-size 513 -q"
 	elif echo "$fstype" | grep -q "ext"; then
 		opts="-F"
+	elif [ "$fstype" = "xfs" ]; then
+		opts="-f"
+	elif [ "$fstype" = "btrfs" ]; then
+		opts="-f"
 	fi
 
 	if [ "$fstype" != "ramfs" ]; then
