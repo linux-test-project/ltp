@@ -16,11 +16,55 @@
  * along with this program.
  */
 
-#ifndef __LAPI_MMAP_H__
-#define __LAPI_MMAP_H__
+#ifndef LAPI_MMAP_H__
+#define LAPI_MMAP_H__
 
 #ifndef MAP_HUGETLB
-#define MAP_HUGETLB 0x40000
+# define MAP_HUGETLB 0x40000
 #endif
 
-#endif /* __LAPI_MMAP_H__ */
+#ifndef MADV_REMOVE
+# define MADV_REMOVE 9
+#endif
+
+#ifndef MADV_DONTFORK
+# define MADV_DONTFORK 10
+#endif
+
+#ifndef MADV_DOFORK
+# define MADV_DOFORK   11
+#endif
+
+#ifndef MADV_HWPOISON
+# define MADV_HWPOISON 100
+#endif
+
+#ifndef MADV_SOFT_OFFLINE
+# define MADV_SOFT_OFFLINE 101
+#endif
+
+#ifndef MADV_MERGEABLE
+# define MADV_MERGEABLE   12
+#endif
+
+#ifndef MADV_UNMERGEABLE
+# define MADV_UNMERGEABLE 13
+#endif
+
+#ifndef MADV_HUGEPAGE
+# define MADV_HUGEPAGE   14
+#endif
+
+#ifndef MADV_NOHUGEPAGE
+# define MADV_NOHUGEPAGE 15
+#endif
+
+#ifndef MADV_DONTDUMP
+# define MADV_DONTDUMP 16
+#endif
+
+#ifndef MADV_DODUMP
+# define MADV_DODUMP   17
+#endif
+
+#endif /* LAPI_MMAP_H__ */
