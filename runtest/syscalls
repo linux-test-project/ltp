@@ -741,8 +741,6 @@ mincore02 mincore02
 
 madvise01 madvise01
 madvise02 madvise02
-madvise03 madvise03
-madvise04 madvise04
 madvise05 madvise05
 madvise06 madvise06
 

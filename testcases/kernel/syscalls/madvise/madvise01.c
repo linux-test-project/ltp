@@ -1,20 +1,16 @@
 /*
  *  Copyright (c) International Business Machines  Corp., 2004
- *  Copyright (c) Linux Test Project, 2013
+ *  Copyright (c) Linux Test Project, 2013-2016
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Library General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  */
 
 /*
@@ -26,113 +22,110 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/mount.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "test.h"
+#include "tst_test.h"
+#include "tst_kvercmp.h"
+#include "lapi/mmap.h"
 
-static void setup(void);
-static void cleanup(void);
-static void check_and_print(char *advice);
+#define TMP_DIR "tmp_madvise"
+#define TEST_FILE TMP_DIR"/testfile"
+#define KSM_SYS_DIR "/sys/kernel/mm/ksm"
+#define STR "abcdefghijklmnopqrstuvwxyz12345\n"
 
-char *TCID = "madvise01";
-int TST_TOTAL = 5;
+static char *sfile;
+static char *pfile;
+static struct stat st;
 
-int main(int argc, char *argv[])
-{
-	int lc, fd;
-	int i = 0;
-	char *file = NULL;
-	struct stat stat;
-	char filename[64];
-	char *progname = NULL;
-	char *str_for_file = "abcdefghijklmnopqrstuvwxyz12345\n";
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	progname = *argv;
-	sprintf(filename, "%s-out.%d", progname, getpid());
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		fd = open(filename, O_RDWR | O_CREAT, 0664);
-		if (fd < 0)
-			tst_brkm(TBROK | TERRNO, cleanup, "open failed");
-#ifdef DEBUG
-		tst_resm(TINFO, "filename = %s opened successfully", filename);
-#endif
-
-		/* Writing 40 KB of random data into this file
-		   [32 * 1280 = 40960] */
-		for (i = 0; i < 1280; i++)
-			if (write(fd, str_for_file, strlen(str_for_file)) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "write failed");
-
-		if (fstat(fd, &stat) == -1)
-			tst_brkm(TBROK, cleanup, "fstat failed");
-
-		/* Map the input file into memory */
-		file = mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
-		if (file == MAP_FAILED)
-			tst_brkm(TBROK, cleanup, "mmap failed");
-
-		/* (1) Test case for MADV_NORMAL */
-		TEST(madvise(file, stat.st_size, MADV_NORMAL));
-		check_and_print("MADV_NORMAL");
-
-		/* (2) Test case for MADV_RANDOM */
-		TEST(madvise(file, stat.st_size, MADV_RANDOM));
-		check_and_print("MADV_RANDOM");
-
-		/* (3) Test case for MADV_SEQUENTIAL */
-		TEST(madvise(file, stat.st_size, MADV_SEQUENTIAL));
-		check_and_print("MADV_SEQUENTIAL");
-
-		/* (4) Test case for MADV_WILLNEED */
-		TEST(madvise(file, stat.st_size, MADV_WILLNEED));
-		check_and_print("MADV_WILLNEED");
-
-		/* (5) Test case for MADV_DONTNEED */
-		TEST(madvise(file, stat.st_size, MADV_DONTNEED));
-		check_and_print("MADV_DONTNEED");
-
-		if (munmap(file, stat.st_size) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "munmap failed");
-
-		close(fd);
-	}
-
-	cleanup();
-	tst_exit();
-}
+static struct tcase {
+	int advice;
+	char *name;
+	char **addr;
+} tcases[] = {
+	{MADV_NORMAL,      "MADV_NORMAL",      &sfile},
+	{MADV_RANDOM,      "MADV_RANDOM",      &sfile},
+	{MADV_SEQUENTIAL,  "MADV_SEQUENTIAL",  &sfile},
+	{MADV_WILLNEED,    "MADV_WILLNEED",    &sfile},
+	{MADV_DONTNEED,    "MADV_DONTNEED",    &sfile},
+	{MADV_REMOVE,      "MADV_REMOVE",      &sfile}, /* since Linux 2.6.16 */
+	{MADV_DONTFORK,    "MADV_DONTFORK",    &sfile}, /* since Linux 2.6.16 */
+	{MADV_DOFORK,      "MADV_DOFORK",      &sfile}, /* since Linux 2.6.16 */
+	{MADV_HWPOISON,    "MADV_HWPOISON",    &sfile}, /* since Linux 2.6.32 */
+	{MADV_MERGEABLE,   "MADV_MERGEABLE",   &sfile}, /* since Linux 2.6.32 */
+	{MADV_UNMERGEABLE, "MADV_UNMERGEABLE", &sfile}, /* since Linux 2.6.32 */
+	{MADV_HUGEPAGE,    "MADV_HUGEPAGE",    &pfile}, /* since Linux 2.6.38 */
+	{MADV_NOHUGEPAGE,  "MADV_NOHUGEPAGE",  &pfile}, /* since Linux 2.6.38 */
+	{MADV_DONTDUMP,    "MADV_DONTDUMP",    &sfile}, /* since Linux 3.4 */
+	{MADV_DODUMP,      "MADV_DODUMP",      &sfile}  /* since Linux 3.4 */
+};
 
 static void setup(void)
 {
+	unsigned int i;
+	int fd;
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	SAFE_MKDIR(TMP_DIR, 0664);
+	SAFE_MOUNT(TMP_DIR, TMP_DIR, "tmpfs", 0, NULL);
 
-	TEST_PAUSE;
+	fd = SAFE_OPEN(TEST_FILE, O_RDWR | O_CREAT, 0664);
 
-	tst_tmpdir();
+	/* Writing 40 KB of random data into this file [32 * 1280 = 40960] */
+	for (i = 0; i < 1280; i++)
+		SAFE_WRITE(1, fd, STR, strlen(STR));
+
+	SAFE_FSTAT(fd, &st);
+
+	/* Map the input file into shared memory */
+	sfile = SAFE_MMAP(NULL, st.st_size,
+			PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	/* Map the input file into private memory. MADV_HUGEPAGE only works
+	 * with private anonymous pages */
+	pfile = SAFE_MMAP(NULL, st.st_size,
+			PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd, 0);
+
+	SAFE_CLOSE(fd);
 }
 
 static void cleanup(void)
 {
-	tst_rmdir();
-
+	munmap(sfile, st.st_size);
+	munmap(pfile, st.st_size);
+	umount(TMP_DIR);
+	rmdir(TMP_DIR);
 }
 
-static void check_and_print(char *advice)
+static void verify_madvise(unsigned int i)
 {
-	if (TEST_RETURN == -1)
-		tst_resm(TFAIL | TTERRNO, "madvise test for %s failed", advice);
-	else
-		tst_resm(TPASS, "madvise test for %s PASSED", advice);
+	struct tcase *tc = &tcases[i];
+
+	TEST(madvise(*(tc->addr), st.st_size, tc->advice));
+
+	if (TEST_RETURN == -1) {
+		if (TEST_ERRNO == EINVAL) {
+			tst_res(TCONF, "%s is not supported", tc->name);
+		} else {
+			tst_res(TFAIL, "madvise test for %s failed with "
+					"return = %ld, errno = %d : %s",
+					tc->name, TEST_RETURN, TEST_ERRNO,
+					tst_strerrno(TFAIL | TTERRNO));
+		}
+	} else {
+		tst_res(TPASS, "madvise test for %s PASSED", tc->name);
+	}
 }
+
+static struct tst_test test = {
+	.tid = "madvise01",
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_madvise,
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+};
