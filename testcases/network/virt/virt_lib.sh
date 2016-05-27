@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2016 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -42,7 +42,9 @@ clients_num=2
 client_requests=500000
 max_requests=3
 net_load="TFO"
-virt_threshold=80
+
+# Max performance loss (%) for virtual devices during network load
+VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-80}
 vxlan_dstport=0
 
 while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
@@ -76,7 +78,7 @@ while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
 		ip_virt_remote="192.168.${OPTARG}.2"
 	;;
 	l) net_load=$OPTARG ;;
-	t) virt_threshold=$OPTARG ;;
+	t) VIRT_PERF_THRESHOLD=$OPTARG ;;
 	d) vxlan_dst_addr=$OPTARG ;;
 	6) # skip, test_net library already processed it
 	;;
@@ -290,11 +292,11 @@ virt_compare_netperf()
 		tst_resm TINFO "IPv6 $virt_type slower by $per6 %"
 	esac
 
-	if [ "$per" -ge "$virt_threshold" -o \
-	     "$per6" -ge "$virt_threshold" ]; then
-		tst_resm TFAIL "Test failed"
+	if [ "$per" -ge "$VIRT_PERF_THRESHOLD" -o \
+	     "$per6" -ge "$VIRT_PERF_THRESHOLD" ]; then
+		tst_resm TFAIL "Test failed, threshold: $VIRT_PERF_THRESHOLD %"
 	else
-		tst_resm TPASS "Test passed"
+		tst_resm TPASS "Test passed, threshold: $VIRT_PERF_THRESHOLD %"
 	fi
 }
 

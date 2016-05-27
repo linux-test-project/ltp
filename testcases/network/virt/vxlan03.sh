@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2016 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -39,7 +39,8 @@ vxlan_dst_addr="uni"
 # by 10-30%. If hosts are too close to each other, e.g. connected to the same
 # switch, VxLAN can be much slower when comparing to the performance without
 # any encapsulation.
-virt_threshold=160
+VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-160}
+[ "$VIRT_PERF_THRESHOLD" -lt 160 ] && VIRT_PERF_THRESHOLD=160
 
 cleanup()
 {
