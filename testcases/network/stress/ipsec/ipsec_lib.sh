@@ -23,9 +23,9 @@
 # tst_ipsec_cleanup: flush ipsec state and policy rules
 tst_ipsec_cleanup()
 {
-	ROD ip xfrm state flush
-	ROD ip xfrm policy flush
-	tst_rhost_run -s -c "ip xfrm state flush && ip xfrm policy flush"
+	ip xfrm state flush
+	ip xfrm policy flush
+	tst_rhost_run -c "ip xfrm state flush && ip xfrm policy flush"
 }
 
 # tst_ipsec target protocol mode spi src_addr dst_addr: config ipsec with
