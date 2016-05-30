@@ -104,7 +104,7 @@ do_cleanup() {
 	userdel $TEST_USER1 > /dev/null 2>&1
 	rm -f $FILE_ACL > /dev/null 2>&1
 	rm -f $FILE_ACL_LINK > /dev/null 2>&1
-	mount | grep "$TMP/tacl/mount-ext3" && umount -d $TMP/tacl/mount-ext3
+	mount | grep -q "$TMP/tacl/mount-ext3" && umount -d $TMP/tacl/mount-ext3
 	[ "x$LOOP_DEV" != x ] && losetup -d $LOOP_DEV
 	rm -rf $TMP/tacl
 
@@ -129,8 +129,6 @@ else
 	if ! ( test -d $TMP/tacl || mkdir -m 777 $TMP/tacl) ; then
 		tst_brkm TBROK "Failed to create $TMP/tacl directory."
 	fi
-
-	trap do_cleanup EXIT
 
 	#	The  following  commands  can  be  used as an example of using
 	#	a loopback device.
@@ -206,6 +204,8 @@ then
 	fi
 else
 	do_setup
+	TST_CLEANUP=do_cleanup
+
 	echo ""
 	echo "TESTING ACLS FOR USER $iam"
 
@@ -239,7 +239,6 @@ else
 
 	su $TEST_USER1 -c "$0"
 	echo ""
-	do_cleanup
 fi
 
 tst_exit
