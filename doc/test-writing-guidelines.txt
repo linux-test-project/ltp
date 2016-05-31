@@ -1377,6 +1377,28 @@ restart_daemon $CROND_DAEMON
 tst_exit
 -------------------------------------------------------------------------------
 
+2.3.5 $PATH and su
+~~~~~~~~~~~~~~~~~~
+
+While some distributions retain paths added to +$PATH+ when doing
++su user -c "command"+ this does not work at least in Debian. If you want to
+run LTP binaries as a different user you must use 'tst_su' instead which sets
+up +$PATH+ and the runs the command.
+
+.Run test child binary as a test user
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+TCID=foo01
+. test.sh
+
+tst_su testusr foo01_child
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "foo failed"
+else
+	tst_resm TPASS "foo passed"
+fi
+-------------------------------------------------------------------------------
 
 3. Common problems
 ------------------
