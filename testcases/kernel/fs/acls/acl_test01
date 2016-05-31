@@ -65,8 +65,44 @@ do_setup()
 {
 	tst_require_root
 
-	rm -f $FILE_ACL
-	rm -f $FILE_ACL_LINK
+	if ! ( test -d $TMP/tacl || mkdir -m 777 $TMP/tacl) ; then
+		tst_brkm TBROK "Failed to create $TMP/tacl directory."
+	fi
+
+	dd if=/dev/zero of=$TMP/tacl/blkext3 bs=1k count=10240 && chmod 777 $TMP/tacl/blkext3
+	if [ $? -ne 0 ] ; then
+		tst_brkm TBROK "Failed to create $TMP/tacl/blkext3"
+	fi
+
+	if ! LOOP_DEV=$(losetup -f) || [ "x$LOOP_DEV" = x ]; then
+		tst_brkm TCONF "[ losetup.1 ] Failed to find an available loopback device -- is the required support compiled in your kernel?"
+	fi
+
+	if ! losetup $LOOP_DEV $TMP/tacl/blkext3 2>&1 > /dev/null; then
+		echo ""
+		tst_brkm TCONF "[ losetup.2 ] Failed to setup the device."
+	fi
+
+	mount | grep ext2
+	if [ $? -ne 0 ]; then
+		mkfs -t ext3 $LOOP_DEV #> /dev/null 2>&1
+		mkdir  -m 777 $TMP/tacl/mount-ext3
+		mount -t ext3 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
+		if [ $? -ne 0 ]; then
+			tst_resm TCONF "[ mount ] Make sure that ACL (Access Control List)"
+			tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
+			tst_brkm TCONF "\t Can not mount ext3 file system with acl and user_xattr options\n"
+		fi
+	else
+		mkfs -t ext2 $LOOP_DEV
+		mkdir  -m 777 $TMP/tacl/mount-ext3
+		mount -t ext2 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
+		if [ $? -ne 0 ]; then
+			tst_resm TCONF "FAILED: [ mount ] Make sure that ACL (Access Control List)"
+			tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
+			tst_brkm TCONF "\t Can not mount ext2 file system with acl and user_xattr options\n"
+		fi
+	fi
 
 	# We couldn't consider whether the SElinux is Disable or Permissive.
 	# We only set it to Permissive when it it Enforcing.
@@ -75,30 +111,18 @@ do_setup()
 		setenforce 0
 	fi
 
-	if [ "x$TEST_USER1_HOMEDIR" = "x" ]; then
-		tst_brkm TBROK "Could not find user $TEST_USER1's home directory."
-	fi
-
-	# XXX (garrcoop): why is cleanup junk being done in setup??? Bad test!!!
-	rm -rf $TEST_USER1_HOMEDIR
-	userdel $TEST_USER1 > /dev/null 2>&1
-	sleep 1
 	useradd -d $TEST_USER1_HOMEDIR -m -g $TEST_USER1_GROUP $TEST_USER1 -s /bin/sh
-
 	if [ $? -ne 0 ]; then
 		tst_brkm TBROK "Could not add test user $TEST_USER1."
 	fi
-
 }
 
 do_cleanup()
 {
-	rm -rf $TEST_USER1_HOMEDIR
 	userdel $TEST_USER1 > /dev/null 2>&1
 	rm -f $FILE_ACL > /dev/null 2>&1
 	rm -f $FILE_ACL_LINK > /dev/null 2>&1
 	mount | grep -q "$TMP/tacl/mount-ext3" && umount -d $TMP/tacl/mount-ext3
-	[ "x$LOOP_DEV" != x ] && losetup -d $LOOP_DEV
 	rm -rf $TMP/tacl
 
 	# We set it back to Enforcing.
@@ -107,56 +131,6 @@ do_cleanup()
 		setenforce 1
 	fi
 }
-
-tst_require_root
-
-if ! ( test -d $TMP/tacl || mkdir -m 777 $TMP/tacl) ; then
-	tst_brkm TBROK "Failed to create $TMP/tacl directory."
-fi
-
-#	The  following  commands  can  be  used as an example of using
-#	a loopback device.
-
-dd if=/dev/zero of=$TMP/tacl/blkext3 bs=1k count=10240 && chmod 777 $TMP/tacl/blkext3
-if [ $? -ne 0 ] ; then
-	tst_brkm TBROK "Failed to create $TMP/tacl/blkext3"
-fi
-
-# Avoid hardcoded loopback device values (-f tries to find the first
-# available loopback device name)!
-if ! LOOP_DEV=$(losetup -f) || [ "x$LOOP_DEV" = x ]; then
-	tst_brkm TCONF "[ losetup.1 ] Failed to find an available loopback device -- is the required support compiled in your kernel?"
-fi
-
-if ! losetup $LOOP_DEV $TMP/tacl/blkext3 2>&1 > /dev/null; then
-	echo ""
-	tst_brkm TCONF "[ losetup.2 ] Failed to setup the device."
-fi
-
-mount | grep ext2
-if [ $? -ne 0 ]; then
-	mkfs -t ext3 $LOOP_DEV #> /dev/null 2>&1
-	mkdir  -m 777 $TMP/tacl/mount-ext3
-	mount -t ext3 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
-	if [ $? -ne 0 ]
-	then
-		tst_resm TCONF "[ mount ] Make sure that ACL (Access Control List)"
-		tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
-		tst_brkm TCONF "\t Can not mount ext3 file system with acl and user_xattr options\n"
-	fi
-else
-
-	mkfs -t ext2 $LOOP_DEV
-	mkdir  -m 777 $TMP/tacl/mount-ext3
-	mount -t ext2 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
-	if [ $? -ne 0 ]
-	then
-		tst_resm TCONF "FAILED: [ mount ] Make sure that ACL (Access Control List)"
-		tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
-		tst_brkm TCONF "\t Can not mount ext2 file system with acl and user_xattr options\n"
-	fi
-
-fi
 
 do_setup
 TST_CLEANUP=do_cleanup
