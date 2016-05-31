@@ -61,12 +61,8 @@ else
 	SELINUX=""
 fi
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_setup
-#-----------------------------------------------------------------------
-
-do_setup(){
-
+do_setup()
+{
 	tst_require_root
 
 	rm -f $FILE_ACL
@@ -95,11 +91,8 @@ do_setup(){
 
 }
 
-#-----------------------------------------------------------------------
-# FUNCTION:  do_cleanup
-#-----------------------------------------------------------------------
-
-do_cleanup() {
+do_cleanup()
+{
 	rm -rf $TEST_USER1_HOMEDIR
 	userdel $TEST_USER1 > /dev/null 2>&1
 	rm -f $FILE_ACL > /dev/null 2>&1
@@ -115,130 +108,103 @@ do_cleanup() {
 	fi
 }
 
-#-----------------------------------------------------------------------
-# FUNCTION:  MAIN
-#-----------------------------------------------------------------------
+tst_require_root
 
-iam=`whoami`
-if [ "z$iam" = "z$TEST_USER1" ]
-then
+if ! ( test -d $TMP/tacl || mkdir -m 777 $TMP/tacl) ; then
+	tst_brkm TBROK "Failed to create $TMP/tacl directory."
+fi
+
+#	The  following  commands  can  be  used as an example of using
+#	a loopback device.
+
+dd if=/dev/zero of=$TMP/tacl/blkext3 bs=1k count=10240 && chmod 777 $TMP/tacl/blkext3
+if [ $? -ne 0 ] ; then
+	tst_brkm TBROK "Failed to create $TMP/tacl/blkext3"
+fi
+
+# Avoid hardcoded loopback device values (-f tries to find the first
+# available loopback device name)!
+if ! LOOP_DEV=$(losetup -f) || [ "x$LOOP_DEV" = x ]; then
+	tst_brkm TCONF "[ losetup.1 ] Failed to find an available loopback device -- is the required support compiled in your kernel?"
+fi
+
+if ! losetup $LOOP_DEV $TMP/tacl/blkext3 2>&1 > /dev/null; then
 	echo ""
+	tst_brkm TCONF "[ losetup.2 ] Failed to setup the device."
+fi
+
+mount | grep ext2
+if [ $? -ne 0 ]; then
+	mkfs -t ext3 $LOOP_DEV #> /dev/null 2>&1
+	mkdir  -m 777 $TMP/tacl/mount-ext3
+	mount -t ext3 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
+	if [ $? -ne 0 ]
+	then
+		tst_resm TCONF "[ mount ] Make sure that ACL (Access Control List)"
+		tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
+		tst_brkm TCONF "\t Can not mount ext3 file system with acl and user_xattr options\n"
+	fi
 else
-	tst_require_root
 
-	if ! ( test -d $TMP/tacl || mkdir -m 777 $TMP/tacl) ; then
-		tst_brkm TBROK "Failed to create $TMP/tacl directory."
-	fi
-
-	#	The  following  commands  can  be  used as an example of using
-	#	a loopback device.
-
-	dd if=/dev/zero of=$TMP/tacl/blkext3 bs=1k count=10240 && chmod 777 $TMP/tacl/blkext3
-	if [ $? -ne 0 ] ; then
-		tst_brkm TBROK "Failed to create $TMP/tacl/blkext3"
-	fi
-
-	# Avoid hardcoded loopback device values (-f tries to find the first
-	# available loopback device name)!
-	if ! LOOP_DEV=$(losetup -f) || [ "x$LOOP_DEV" = x ]; then
-		tst_brkm TCONF "[ losetup.1 ] Failed to find an available loopback device -- is the required support compiled in your kernel?"
-	fi
-
-	if ! losetup $LOOP_DEV $TMP/tacl/blkext3 2>&1 > /dev/null; then
-		echo ""
-		tst_brkm TCONF "[ losetup.2 ] Failed to setup the device."
-	fi
-
-	mount | grep ext2
-	if [ $? -ne 0 ]; then
-		mkfs -t ext3 $LOOP_DEV #> /dev/null 2>&1
-		mkdir  -m 777 $TMP/tacl/mount-ext3
-		mount -t ext3 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
-		if [ $? -ne 0 ]
-		then
-			tst_resm TCONF "[ mount ] Make sure that ACL (Access Control List)"
-			tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
-			tst_brkm TCONF "\t Can not mount ext3 file system with acl and user_xattr options\n"
-		fi
-	else
-
-		mkfs -t ext2 $LOOP_DEV
-		mkdir  -m 777 $TMP/tacl/mount-ext3
-		mount -t ext2 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
-		if [ $? -ne 0 ]
-		then
-			tst_resm TCONF "FAILED: [ mount ] Make sure that ACL (Access Control List)"
-			tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
-			tst_brkm TCONF "\t Can not mount ext2 file system with acl and user_xattr options\n"
-		fi
-
+	mkfs -t ext2 $LOOP_DEV
+	mkdir  -m 777 $TMP/tacl/mount-ext3
+	mount -t ext2 -o defaults,acl,user_xattr $LOOP_DEV $TMP/tacl/mount-ext3
+	if [ $? -ne 0 ]
+	then
+		tst_resm TCONF "FAILED: [ mount ] Make sure that ACL (Access Control List)"
+		tst_resm TCONF "\t and Extended Attribute are built into the kernel\n"
+		tst_brkm TCONF "\t Can not mount ext2 file system with acl and user_xattr options\n"
 	fi
 
 fi
 
-if [ "z$iam" = "z$TEST_USER1" ]
-then
-	echo ""
-	echo "TESTING ACLS FOR 2ND USER $iam"
+do_setup
+TST_CLEANUP=do_cleanup
 
-	#setup files for extended attributes
-	setfacl -m u:$TEST_USER1:r $FILE_ACL_LINK
-	setfacl -m u:$TEST_USER1:r $FILE_ACL
+tst_resm TINFO "Testing ACL for root"
 
-	echo "Trying extended acls for files"
-	${TCbin}/acl_file_test $FILE_ACL
-	if [ $? -ne 0 ]
-	then
-		tst_resm TFAIL "Extended acls for files."
-	else
-		tst_resm TPASS "Extended acls for files."
-	fi
+touch $FILE_ACL
+touch $FILE_ACL_LINK
 
-	echo "Trying extended acls for file links"
-	${TCbin}/acl_link_test $FILE_ACL_LINK
-	if [ $? -ne 0 ]
-	then
-		tst_resm TFAIL "Extended acls for links."
-	else
-		tst_resm TPASS "Extended acls for links."
-	fi
+#setup files for extended attributes
+setfacl -mu:root:r $FILE_ACL_LINK
+setfacl -mu:root:r $FILE_ACL
+
+acl_file_test $FILE_ACL
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Extended acls for files."
 else
-	do_setup
-	TST_CLEANUP=do_cleanup
+	tst_resm TPASS "Extended acls for files."
+fi
 
-	echo ""
-	echo "TESTING ACLS FOR USER $iam"
+acl_link_test $FILE_ACL_LINK
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Extended acls for links."
+else
+	tst_resm TPASS "Extended acls for links."
+fi
 
-	touch $FILE_ACL
-	touch $FILE_ACL_LINK
+chown $TEST_USER1 $FILE_ACL
+chown $TEST_USER1 $FILE_ACL_LINK
 
-	#setup files for extended attributes
-	setfacl -mu:root:r $FILE_ACL_LINK
-	setfacl -mu:root:r $FILE_ACL
+tst_resm TINFO "Testing ACL for $TEST_USER1"
 
-	echo "Trying extended acls for files"
-	${TCbin}/acl_file_test $FILE_ACL
-	if [ $? -ne 0 ]
-	then
-		tst_resm TFAIL "Extended acls for files."
-	else
-		tst_resm TPASS "Extended acls for files."
-	fi
+#setup files for extended attributes
+setfacl -m u:$TEST_USER1:r $FILE_ACL_LINK
+setfacl -m u:$TEST_USER1:r $FILE_ACL
 
-	echo "Trying extended acls for file links"
-	${TCbin}/acl_link_test $FILE_ACL_LINK
-	if [ $? -ne 0 ]
-	then
-		tst_resm TFAIL "Extended acls for links."
-	else
-		tst_resm TPASS "Extended acls for links."
-	fi
+tst_su $TEST_USER1 "acl_file_test $FILE_ACL"
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Extended acls for files."
+else
+	tst_resm TPASS "Extended acls for files."
+fi
 
-	chown $TEST_USER1 $FILE_ACL
-	chown $TEST_USER1 $FILE_ACL_LINK
-
-	su $TEST_USER1 -c "$0"
-	echo ""
+tst_su $TEST_USER1 "acl_link_test $FILE_ACL_LINK"
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "Extended acls for links."
+else
+	tst_resm TPASS "Extended acls for links."
 fi
 
 tst_exit
