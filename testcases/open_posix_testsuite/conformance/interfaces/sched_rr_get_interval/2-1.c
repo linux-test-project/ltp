@@ -10,16 +10,25 @@
  *
  * sched_rr_get_interval() returns 0 on success.
  */
-#include <stdio.h>
-#include <sched.h>
 #include <errno.h>
-#include "posixtest.h"
+#include <sched.h>
+#include <stdio.h>
+#include <string.h>
 #include <time.h>
+#include "posixtest.h"
 
 int main(void)
 {
 	struct timespec interval;
 	int result = -2;
+	struct sched_param param;
+
+	param.sched_priority = sched_get_priority_min(SCHED_RR);
+	if (sched_setscheduler(0, SCHED_RR, &param) == -1) {
+		printf("sched_setscheduler failed: %d (%s)\n",
+			errno, strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
 	interval.tv_sec = -1;
 	interval.tv_nsec = -1;

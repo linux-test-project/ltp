@@ -13,20 +13,28 @@
  * The test create a child process which exit immediately and call
  * sched_rr_get_interval with the pid of defunct child.
  */
-#include <stdio.h>
-#include <sched.h>
 #include <errno.h>
-#include <unistd.h>
+#include <sched.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 #include <sys/wait.h>
 #include "posixtest.h"
-#include <time.h>
 
 int main(void)
 {
-
 	struct timespec interval;
 	int result = -2, child_pid, stat_loc;
+	struct sched_param param;
+
+	param.sched_priority = sched_get_priority_min(SCHED_RR);
+	if (sched_setscheduler(0, SCHED_RR, &param) == -1) {
+		printf("sched_setscheduler failed: %d (%s)\n",
+			errno, strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
 	/* Create a child process which exit immediately */
 	child_pid = fork();

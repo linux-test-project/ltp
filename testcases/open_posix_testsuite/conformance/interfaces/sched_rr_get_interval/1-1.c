@@ -11,12 +11,13 @@
  * Test that the current execution time limit is returned for the calling
  * process when pid = 0.
  */
-#include <stdio.h>
-#include <sched.h>
 #include <errno.h>
+#include <sched.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include "posixtest.h"
-#include <time.h>
 
 int main(void)
 {
@@ -25,6 +26,14 @@ int main(void)
 	struct timespec interval1;
 	int result0 = -1;
 	int result1 = -1;
+	struct sched_param param;
+
+	param.sched_priority = sched_get_priority_min(SCHED_RR);
+	if (sched_setscheduler(0, SCHED_RR, &param) == -1) {
+		printf("sched_setscheduler failed: %d (%s)\n",
+			errno, strerror(errno));
+		return PTS_UNRESOLVED;
+	}
 
 	interval0.tv_sec = -1;
 	interval0.tv_nsec = -1;
