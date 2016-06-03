@@ -101,6 +101,7 @@ dup204 dup204
 dup205 dup205
 
 epoll_ctl01 epoll_ctl01
+epoll_ctl02 epoll_ctl02
 
 epoll_wait01 epoll_wait01
 epoll_wait02 epoll_wait02
