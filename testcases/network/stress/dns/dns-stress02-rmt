@@ -22,7 +22,7 @@
 TCID=dns-stress02-rmt
 TST_TOTAL=1
 
-. test_net.sh
+. test.sh
 
 if [ $# -ne 7 ]; then
 	tst_brkm TBROK "Usage: $0 ip_ver srv_ipaddr port net \

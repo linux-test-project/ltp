@@ -23,7 +23,7 @@ TCID=ftp-upload-stress02-rmt
 TST_TOTAL=1
 TST_CLEANUP="cleanup"
 
-. test_net.sh
+. test.sh
 
 tst_check_cmds killall
 

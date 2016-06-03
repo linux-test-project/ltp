@@ -22,7 +22,7 @@
 TCID=dns-stress01-rmt
 TST_TOTAL=1
 
-. test_net.sh
+. test.sh
 
 # Check the arguments
 if [ $# -ne 7 ]; then

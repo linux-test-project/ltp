@@ -22,7 +22,7 @@
 TCID=ftp-download-stress01-rmt
 TST_TOTAL=1
 
-. test_net.sh
+. test.sh
 
 server_ipaddr="$1"
 filename="$2"

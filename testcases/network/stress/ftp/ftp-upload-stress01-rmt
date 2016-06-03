@@ -23,7 +23,7 @@ TCID=ftp-upload-stress01-rmt
 TST_TOTAL=1
 TST_CLEANUP="cleanup"
 
-. test_net.sh
+. test.sh
 
 server_ipaddr="$1"
 urldir="$2"
