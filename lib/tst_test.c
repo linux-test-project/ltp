@@ -660,7 +660,7 @@ static unsigned int timeout = 300;
 
 static void alarm_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
-	kill(test_pid, SIGKILL);
+	kill(-test_pid, SIGKILL);
 }
 
 static void heartbeat_handler(int sig LTP_ATTRIBUTE_UNUSED)
@@ -702,8 +702,10 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	if (test_pid < 0)
 		tst_brk(TBROK | TERRNO, "fork()");
 
-	if (!test_pid)
+	if (!test_pid) {
+		SAFE_SETPGID(0, 0);
 		testrun();
+	}
 
 	SAFE_WAITPID(test_pid, &status, 0);
 
