@@ -61,6 +61,15 @@ When writing testcases in shell write in *portable shell* only, it's a good
 idea to try to run the test using alternative shell (alternative to bash, for
 example dash) too.
 
+You can either try to run the testcases on Debian which has '/bin/sh' pointing
+to 'dash' by default or install 'dash' on your favorite distribution and use
+it to run the tests. If your distribution lacks 'dash' package you can always
+compile it from http://gondor.apana.org.au/~herbert/dash/files/[source].
+
+Debian also has nice devscript
+https://anonscm.debian.org/cgit/collab-maint/devscripts.git/tree/scripts/checkbashisms.pl[checkbashism.pl]
+that can be used to check for non-portable shell code.
+
 Here are some common sense style rules for shell
 
 * Keep lines under 80 chars
