@@ -103,6 +103,22 @@
 #define SAFE_GETRESGID(rgid, egid, sgid) \
 	safe_getresgid(__FILE__, __LINE__, NULL, (rgid), (egid), (sgid))
 
+static inline int safe_setpgid(const char *file, const int lineno,
+                               pid_t pid, pid_t pgid)
+{
+	int rval;
+
+	rval = setpgid(pid, pgid);
+	if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+		         "setpgid(%i, %i) failed", pid, pgid);
+	}
+
+	return rval;
+}
+#define SAFE_SETPGID(pid, pgid) \
+	safe_setpgid(__FILE__, __LINE__, (pid), (pgid));
+
 #define SAFE_UNLINK(pathname) \
 	safe_unlink(__FILE__, __LINE__, NULL, (pathname))
 
