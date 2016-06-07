@@ -220,17 +220,19 @@ void tst_vres_(const char *file, const int lineno, int ttype,
 void tst_vbrk_(const char *file, const int lineno, int ttype,
                const char *fmt, va_list va) __attribute__((noreturn));
 
-static void do_cleanup(void);
+static void do_test_cleanup(void)
+{
+	if (tst_test->cleanup)
+		tst_test->cleanup();
+}
 
 void tst_vbrk_(const char *file, const int lineno, int ttype,
                const char *fmt, va_list va)
 {
 	print_result(file, lineno, ttype, fmt, va);
 
-	if (getpid() == main_pid) {
-		do_cleanup();
-		cleanup_ipc();
-	}
+	if (getpid() == main_pid)
+		do_test_cleanup();
 
 	exit(TTYPE_RESULT(ttype));
 }
@@ -550,7 +552,10 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->resource_files)
 		copy_resources();
+}
 
+static void do_test_setup(void)
+{
 	main_pid = getpid();
 
 	if (tst_test->setup)
@@ -562,9 +567,6 @@ static void do_setup(int argc, char *argv[])
 
 static void do_cleanup(void)
 {
-	if (tst_test->cleanup)
-		tst_test->cleanup();
-
 	if (tst_test->needs_device && tdev.dev)
 		tst_release_device(tdev.dev);
 
@@ -619,16 +621,13 @@ static unsigned long long get_time_ms(void)
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
-void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
+static void testrun(void)
 {
 	unsigned int i = 0;
 	unsigned long long stop_time = 0;
 	int cont = 1;
 
-	tst_test = self;
-	TCID = tst_test->tid;
-
-	do_setup(argc, argv);
+	do_test_setup();
 
 	if (duration > 0)
 		stop_time = get_time_ms() + (unsigned long long)(duration * 1000);
@@ -648,8 +647,81 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 			break;
 
 		run_tests();
+
+		kill(getppid(), SIGUSR1);
 	}
 
+	do_test_cleanup();
+	exit(0);
+}
+
+static pid_t test_pid;
+static unsigned int timeout = 300;
+
+static void alarm_handler(int sig LTP_ATTRIBUTE_UNUSED)
+{
+	kill(test_pid, SIGKILL);
+}
+
+static void heartbeat_handler(int sig LTP_ATTRIBUTE_UNUSED)
+{
+	alarm(timeout);
+}
+
+void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
+{
+	int status;
+	char *mul;
+
+	tst_test = self;
+	TCID = tst_test->tid;
+
+	do_setup(argc, argv);
+
+	if (tst_test->timeout)
+		timeout = tst_test->timeout;
+
+	mul = getenv("LTP_TIMEOUT_MUL");
+	if (mul) {
+		float m = atof(mul);
+
+		if (m < 1)
+			tst_brk(TBROK, "Invalid timeout multiplier '%s'", mul);
+
+		timeout = timeout * m + 0.5;
+	}
+
+	tst_res(TINFO, "Timeout per run is %us", timeout);
+
+	SAFE_SIGNAL(SIGALRM, alarm_handler);
+	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
+
+	alarm(timeout);
+
+	test_pid = fork();
+	if (test_pid < 0)
+		tst_brk(TBROK | TERRNO, "fork()");
+
+	if (!test_pid)
+		testrun();
+
+	SAFE_WAITPID(test_pid, &status, 0);
+
+	alarm(0);
+
 	do_cleanup();
+
+	if (WIFEXITED(status) && WEXITSTATUS(status))
+		exit(WEXITSTATUS(status));
+
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL) {
+		tst_res(TINFO, "If you are running on slow machine, "
+			       "try exporting LTP_TIMEOUT_MUL > 1");
+		tst_brk(TBROK, "Test killed! (timeout?)");
+	}
+
+	if (WIFSIGNALED(status))
+		tst_brk(TBROK, "Test killed by %s!", tst_strsig(WTERMSIG(status)));
+
 	do_exit();
 }

@@ -84,6 +84,9 @@ struct tst_test {
 	int needs_device:1;
 	int needs_checkpoints:1;
 
+	/* override default timeout per test run */
+	unsigned int timeout;
+
 	void (*setup)(void);
 	void (*cleanup)(void);
 
