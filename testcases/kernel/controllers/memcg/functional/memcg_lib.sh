@@ -229,8 +229,11 @@ test_proc_kill()
 	ps -p $pid > /dev/null 2> /dev/null
 	if [ $? -ne 0 ]; then
 		wait $pid
-		if [ $? -eq 1 ]; then
+		ret=$?
+		if [ $ret -eq 1 ]; then
 			result $FAIL "process $pid is killed by error"
+		elif [ $ret -eq 2 ]; then
+			result $PASS "Failed to lock memory"
 		else
 			result $PASS "process $pid is killed"
 		fi

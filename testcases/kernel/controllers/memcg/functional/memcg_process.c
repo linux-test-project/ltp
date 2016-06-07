@@ -203,8 +203,12 @@ void mmap_lock2()
 		if (p == MAP_FAILED)
 			err(1, "mmap failed");
 
-		if (mlock(p, memsize) == -1)
-			err(1, "mlock failed");
+		if (mlock(p, memsize) == -1) {
+			if (errno == EAGAIN)
+				exit(2);
+			else
+				err(1, "mlock failed");
+		}
 	} else {
 		if (munmap(p, memsize) == -1)
 			err(1, "munmap failed");
