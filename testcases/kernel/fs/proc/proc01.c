@@ -108,6 +108,9 @@ static const struct mapping known_issues[] = {
 	{"read", "/proc/fs/nfsd/.getfd", EINVAL},
 	{"read", "/proc/self/net/rpc/use-gss-proxy", EAGAIN},
 	{"read", "/proc/sys/net/ipv6/conf/*/stable_secret", EIO},
+	{"read", "/proc/sys/vm/nr_hugepages", EOPNOTSUPP},
+	{"read", "/proc/sys/vm/nr_overcommit_hugepages", EOPNOTSUPP},
+	{"read", "/proc/sys/vm/nr_hugepages_mempolicy", EOPNOTSUPP},
 	{"", "", 0}
 };
 
