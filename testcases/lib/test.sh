@@ -100,6 +100,10 @@ tst_exit()
 		$TST_CLEANUP
 	fi
 
+	if [ -n "$LTP_IPC_PATH" -a -f "$LTP_IPC_PATH" ]; then
+		rm -f "$LTP_IPC_PATH"
+	fi
+
 	# Mask out TINFO
 	exit $((LTP_RET_VAL & ~16))
 }
@@ -383,6 +387,27 @@ tst_su()
 	su "$usr" -c "PATH=\$PATH:$LTPROOT/testcases/bin/ $@"
 }
 
+TST_CHECKPOINT_WAIT()
+{
+	ROD tst_checkpoint wait 10000 "$1"
+}
+
+TST_CHECKPOINT_WAKE()
+{
+	ROD tst_checkpoint wake 10000 "$1" 1
+}
+
+TST_CHECKPOINT_WAKE2()
+{
+	ROD tst_checkpoint wake 10000 "$1" "$2"
+}
+
+TST_CHECKPOINT_WAKE_AND_WAIT()
+{
+	TST_CHECKPOINT_WAKE
+	TST_CHECKPOINT_WAIT
+}
+
 # Check that test name is set
 if [ -z "$TCID" ]; then
 	tst_brkm TBROK "TCID is not defined"
@@ -401,4 +426,17 @@ if [ -z "$LTPROOT" ]; then
 	export LTP_DATAROOT="$LTPROOT/datafiles"
 else
 	export LTP_DATAROOT="$LTPROOT/testcases/data/$TCID"
+fi
+
+if [ "$TST_NEEDS_CHECKPOINTS" = "1" ]; then
+	LTP_IPC_PATH="/dev/shm/ltp_${TCID}_$$"
+
+	LTP_IPC_SIZE=$(getconf PAGESIZE)
+	if [ $? -ne 0 ]; then
+		tst_brkm TBROK "getconf PAGESIZE failed"
+	fi
+
+	ROD_SILENT dd if=/dev/zero of="$LTP_IPC_PATH" bs="$LTP_IPC_SIZE" count=1
+	ROD_SILENT chmod 600 "$LTP_IPC_PATH"
+	export LTP_IPC_PATH
 fi

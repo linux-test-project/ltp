@@ -592,7 +592,7 @@ As LTP tests are written for Linux, most of the tests involve fork()-ing and
 parent-child process synchronization. LTP includes a checkpoint library that
 provides wait/wake futex based functions.
 
-In order to use checkpoints the '.need_chekcpoints' flag in the 'struct
+In order to use checkpoints the '.needs_checkpoints' flag in the 'struct
 tst_test' must be set to '1', this causes the test library to initialize
 checkpoints before the 'test()' function is called.
 
@@ -1419,6 +1419,27 @@ else
 	tst_resm TPASS "foo passed"
 fi
 -------------------------------------------------------------------------------
+
+2.3.6 Access to the checkpoint interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The shell library provides an implementation of the checkpoint interface
+compatible with the C version. All TST_CHECKPOINT_* functions are available.
+
+In order to initialize checkpoints '$TST_NEEDS_CHECKPOINTS' must be set to '1'
+before the inclusion of 'test.sh':
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+
+TST_NEEDS_CHECKPOINTS=1
+. test.sh
+-------------------------------------------------------------------------------
+
+Since both the implementations are compatible, it's also possible to start
+a child binary process from a shell test and synchronize with it. This process
+must have checkpoints initialized by calling tst_reinit()'.
 
 3. Common problems
 ------------------

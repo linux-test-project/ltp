@@ -22,10 +22,10 @@
 
 top_srcdir		?= ../..
 
-include $(top_srcdir)/include/mk/env_pre.mk
+include $(top_srcdir)/include/mk/testcases.mk
 
-INSTALL_TARGETS		:= *.sh tst_sleep tst_random
+INSTALL_TARGETS		:= *.sh
 
-MAKE_TARGETS		:= tst_sleep tst_random
+MAKE_TARGETS		:= tst_sleep tst_random tst_checkpoint
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
