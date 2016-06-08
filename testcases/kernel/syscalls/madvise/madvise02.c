@@ -142,7 +142,7 @@ static void setup(void)
 	nonalign = file1 + 100;
 
 	ptr_addr = SAFE_MALLOC(st.st_size);
-	tmp_addr = (void*)LTP_ALIGN((long)tmp_addr, pagesize);
+	tmp_addr = (void*)LTP_ALIGN((long)ptr_addr, pagesize);
 
 	SAFE_CLOSE(fd);
 
