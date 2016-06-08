@@ -40,7 +40,7 @@ struct tst_test *tst_test;
 static char tmpdir_created;
 static int iterations = 1;
 static float duration = -1;
-static pid_t main_pid;
+static pid_t main_pid, lib_pid;
 
 struct results {
 	int passed;
@@ -63,6 +63,8 @@ const char *tst_ipc_path = ipc_path;
 char *const tst_ipc_envp[] = {ipc_path, NULL};
 
 static char shm_path[1024];
+
+static void do_exit(void) __attribute__ ((noreturn));
 
 static void setup_ipc(void)
 {
@@ -233,6 +235,9 @@ void tst_vbrk_(const char *file, const int lineno, int ttype,
 
 	if (getpid() == main_pid)
 		do_test_cleanup();
+
+	if (getpid() == lib_pid)
+		do_exit();
 
 	exit(TTYPE_RESULT(ttype));
 }
@@ -437,7 +442,6 @@ static void parse_opts(int argc, char *argv[])
 	}
 }
 
-static void do_exit(void) __attribute__ ((noreturn));
 
 static void do_exit(void)
 {
@@ -673,6 +677,7 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	int status;
 	char *mul;
 
+	lib_pid = getpid();
 	tst_test = self;
 	TCID = tst_test->tid;
 
