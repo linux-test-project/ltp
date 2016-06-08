@@ -64,6 +64,7 @@ char *const tst_ipc_envp[] = {ipc_path, NULL};
 
 static char shm_path[1024];
 
+static void do_cleanup(void);
 static void do_exit(int ret) __attribute__ ((noreturn));
 
 static void setup_ipc(void)
@@ -460,7 +461,7 @@ static void do_exit(int ret)
 	if (results->warnings)
 		ret |= TWARN;
 
-	cleanup_ipc();
+	do_cleanup();
 
 	exit(ret);
 }
@@ -577,6 +578,8 @@ static void do_cleanup(void)
 		tst_futexes = NULL;
 		tst_rmdir();
 	}
+
+	cleanup_ipc();
 }
 
 static void run_tests(void)
@@ -713,8 +716,6 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	SAFE_WAITPID(test_pid, &status, 0);
 
 	alarm(0);
-
-	do_cleanup();
 
 	if (WIFEXITED(status) && WEXITSTATUS(status))
 		do_exit(WEXITSTATUS(status));
