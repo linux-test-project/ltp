@@ -64,7 +64,7 @@ char *const tst_ipc_envp[] = {ipc_path, NULL};
 
 static char shm_path[1024];
 
-static void do_exit(void) __attribute__ ((noreturn));
+static void do_exit(int ret) __attribute__ ((noreturn));
 
 static void setup_ipc(void)
 {
@@ -237,7 +237,7 @@ void tst_vbrk_(const char *file, const int lineno, int ttype,
 		do_test_cleanup();
 
 	if (getpid() == lib_pid)
-		do_exit();
+		do_exit(TTYPE_RESULT(ttype));
 
 	exit(TTYPE_RESULT(ttype));
 }
@@ -443,10 +443,8 @@ static void parse_opts(int argc, char *argv[])
 }
 
 
-static void do_exit(void)
+static void do_exit(int ret)
 {
-	int ret = 0;
-
 	printf("\nSummary:\n");
 	printf("passed   %d\n", results->passed);
 	printf("failed   %d\n", results->failed);
@@ -719,7 +717,7 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	do_cleanup();
 
 	if (WIFEXITED(status) && WEXITSTATUS(status))
-		exit(WEXITSTATUS(status));
+		do_exit(WEXITSTATUS(status));
 
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL) {
 		tst_res(TINFO, "If you are running on slow machine, "
@@ -730,5 +728,5 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	if (WIFSIGNALED(status))
 		tst_brk(TBROK, "Test killed by %s!", tst_strsig(WTERMSIG(status)));
 
-	do_exit();
+	do_exit(0);
 }
