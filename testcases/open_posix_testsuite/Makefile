@@ -6,13 +6,7 @@
 
 # Makefiles that are considered critical to execution; if they don't exist
 # all of the Makefiles will be rebuilt by default.
-CRITICAL_CONFORMANCE_MAKEFILE=	conformance/interfaces/timer_settime/Makefile
-CRITICAL_FUNCTIONAL_MAKEFILE=	functional/threads/pi_test/Makefile
-CRITICAL_SECTION_MAKEFILE=	stress/threads/sem_open/Makefile
-
-CRITICAL_MAKEFILES=	$(CRITICAL_CONFORMANCE_MAKEFILE) \
-			$(CRITICAL_FUNCTIONAL_MAKEFILE) \
-			$(CRITICAL_SECTION_MAKEFILE)
+CRITICAL_MAKEFILE=	conformance/interfaces/timer_settime/Makefile
 
 # The default logfile for the tests.
 LOGFILE?=		logfile
@@ -44,7 +38,7 @@ ifeq ($(shell uname -s), Linux)
 include Makefile.linux
 endif
 
-clean: $(CRITICAL_MAKEFILES)
+clean: $(CRITICAL_MAKEFILE)
 	@rm -f $(LOGFILE)*
 	@for dir in $(SUBDIRS) tools; do \
 	    $(MAKE) -C $$dir clean >/dev/null; \
@@ -67,7 +61,7 @@ install: bin-install conformance-install functional-install stress-install
 test: conformance-test functional-test stress-test
 
 # Test build and execution targets.
-conformance-all: $(CRITICAL_CONFORMANCE_MAKEFILE)
+conformance-all: $(CRITICAL_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 	@$(BUILD_MAKE) -C conformance -j1 all
 
@@ -78,7 +72,7 @@ conformance-test:
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 	@$(TEST_MAKE) -C conformance test
 
-functional-all: $(CRITICAL_FUNCTIONAL_MAKEFILE)
+functional-all: $(CRITICAL_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 	@$(BUILD_MAKE) -C functional -j1 all
 
@@ -89,7 +83,7 @@ functional-test:
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 	@$(TEST_MAKE) -C functional test
 
-stress-all: $(CRITICAL_STRESS_MAKEFILE)
+stress-all: $(CRITICAL_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 	@$(BUILD_MAKE) -C stress -j1 all
 
@@ -107,12 +101,9 @@ bin-install:
 tools-all:
 	@$(MAKE) -C tools all
 
-$(CRITICAL_MAKEFILES): \
+$(CRITICAL_MAKEFILE): \
     $(top_srcdir)/scripts/generate-makefiles.sh	\
     $(top_srcdir)/CFLAGS			\
     $(top_srcdir)/LDFLAGS			\
     $(top_srcdir)/LDLIBS
 	@$(MAKE) generate-makefiles
-
-#tests-pretty:
-#	$(MAKE) all | column -t -s:
