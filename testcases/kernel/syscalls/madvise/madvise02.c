@@ -48,7 +48,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "tst_kvercmp.h"
 #include "tst_test.h"
 #include "lapi/mmap.h"
 

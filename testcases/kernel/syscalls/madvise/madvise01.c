@@ -30,7 +30,6 @@
 #include <unistd.h>
 
 #include "tst_test.h"
-#include "tst_kvercmp.h"
 #include "lapi/mmap.h"
 
 #define TMP_DIR "tmp_madvise"

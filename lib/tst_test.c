@@ -27,7 +27,6 @@
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
-#include "tst_kvercmp.h"
 #include "tst_device.h"
 #include "lapi/futex.h"
 
