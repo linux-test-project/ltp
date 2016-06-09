@@ -240,10 +240,23 @@ static void setup(void)
 	if (!device)
 		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
 
-	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
+	/* the kernel returns EPERM when CONFIG_MANDATORY_FILE_LOCKING is not
+	 * supported - to avoid false negatives, mount the fs first without
+	 * flags and then remount it as MS_MANDLOCK */
 
-	SAFE_MOUNT(NULL, device, MOUNT_DIR, fs_type, MS_MANDLOCK, NULL);
+	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
+	SAFE_MOUNT(cleanup, device, MOUNT_DIR, fs_type, 0, NULL);
 	mount_flag = 1;
+
+	if (mount(NULL, MOUNT_DIR, NULL, MS_REMOUNT|MS_MANDLOCK, NULL) == -1) {
+		if (errno == EPERM) {
+			tst_brkm(TCONF, cleanup, "Mandatory locking (likely) "
+				 "not supported by this system");
+		} else {
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "Remount with MS_MANDLOCK failed");
+		}
+	}
 }
 
 static void cleanup(void)
