@@ -25,7 +25,8 @@
 TCID="netns_sysfs"
 TST_TOTAL=3
 NS_TYPE="net,mnt"
-DUMMYDEV="dummy_test0"
+DUMMYDEV_HOST="dummy_test0"
+DUMMYDEV="dummy_test1"
 . test.sh
 
 setns_check
@@ -36,6 +37,7 @@ fi
 cleanup()
 {
 	tst_rmdir
+	ip link del $DUMMYDEV_HOST 2>/dev/null
 	ip link del $DUMMYDEV 2>/dev/null
 	kill -9 $NS_HANDLE 2>/dev/null
 }
@@ -48,9 +50,8 @@ if [ $? -eq 1 ]; then
 fi
 TST_CLEANUP=cleanup
 
-# exclude dummy0 (dummy1, etc.) from comparison as it gets automatically created
-# by the dummy device driver upon insmod/modprobe (during ip link add)
-ls /sys/class/net | grep -v 'dummy[0-9]\+' >sysfs_before
+ip link add $DUMMYDEV_HOST type dummy || \
+	tst_brkm TBROK "failed to add a new (host) dummy device"
 
 ns_exec $NS_HANDLE $NS_TYPE mount --make-rprivate /sys
 ns_exec $NS_HANDLE $NS_TYPE ip link add $DUMMYDEV type dummy || \
@@ -59,7 +60,7 @@ ns_exec $NS_HANDLE $NS_TYPE mount -t sysfs none /sys 2>/dev/null
 
 
 # TEST CASE #1
-ns_exec $NS_HANDLE $NS_TYPE test -d /sys/class/net/$DUMMYDEV
+ns_exec $NS_HANDLE $NS_TYPE test -e /sys/class/net/$DUMMYDEV
 if [ $? -eq 0 ]; then
 	tst_resm TPASS "sysfs in new namespace has $DUMMYDEV interface"
 else
@@ -68,28 +69,17 @@ fi
 
 
 # TEST CASE #2
-res=0
-for d in $(ns_exec $NS_HANDLE $NS_TYPE ls /sys/class/net/); do
-	case "$d" in
-		lo|$DUMMYDEV)
-			;;
-		*)
-			tst_resm TINFO "sysfs in new namespace should not contain: $d"
-			res=1
-			;;
-	esac
-done
-if [ $res -eq 0 ]; then
-	tst_resm TPASS "sysfs in new namespace has only lo and $DUMMYDEV interfaces"
+ns_exec $NS_HANDLE $NS_TYPE test -e /sys/class/net/$DUMMYDEV_HOST
+if [ $? -ne 0 ]; then
+	tst_resm TPASS "sysfs in new namespace does not have $DUMMYDEV_HOST interface"
 else
-	tst_resm TFAIL "sysfs in new namespace has more than lo and $DUMMYDEV interfaces"
+	tst_resm TFAIL "sysfs in new namespace contains $DUMMYDEV_HOST interface"
 fi
 
 
 # TEST CASE #3
-ls /sys/class/net | grep -v 'dummy[0-9]\+' >sysfs_after
-diff sysfs_before sysfs_after
-if [ $? -eq 0 ]; then
+test -e /sys/class/net/$DUMMYDEV
+if [ $? -ne 0 ]; then
 	tst_resm TPASS "sysfs not affected by a separate namespace"
 else
 	tst_resm TFAIL "sysfs affected by a separate namespace"
