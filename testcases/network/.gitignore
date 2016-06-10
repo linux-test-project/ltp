@@ -40,8 +40,6 @@
 /tcp_cmds/echo/createfile
 /tcp_cmds/echo/echoes
 /tcp_cmds/echo/echoes6
-/tcp_cmds/perf_lan/pingpong
-/tcp_cmds/perf_lan/pingpong6
 /tcp_cmds/sendfile/testsf_c
 /tcp_cmds/sendfile/testsf_c6
 /tcp_cmds/sendfile/testsf_s

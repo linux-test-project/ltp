@@ -916,5 +916,3 @@ hangup01 hangup01
 mc_cmds mc_cmds
 mc_opts export TCsrc=$LTPROOT/testcases/network/multicast/mc_opts; mc_opts
 rpc01 rpc01
-perf_lan perf_lan
-

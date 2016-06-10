@@ -8,7 +8,6 @@ finger finger01
 ftp export TCbin=$LTPROOT/testcases/network/tcp_cmds/ftp; ftp01
 host host01
 netstat netstat01
-perf_lan export TCbin=$LTPROOT/testcases/network/tcp_cmds/perf_lan; perf_lan
 ping export LTPROOT; ping01
 rcp export TCbin=$LTPROOT/testcases/network/tcp_cmds/rcp; rcp01
 rdist export TCbin=$LTPROOT/testcases/network/tcp_cmds/rdist; rdist01
