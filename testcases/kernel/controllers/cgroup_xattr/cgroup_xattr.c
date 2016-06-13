@@ -64,9 +64,9 @@ struct tst_key {
 
 /* only security.* & trusted.* are valid key names */
 static struct tst_key tkeys[] = {
-	{ .name = "security.",		.good = 1,	},
+	{ .name = "security.",		.good = 0,	},  /* see setup() */
 	{ .name = "trusted.test",	.good = 1,	},
-	{ .name = "trusted.",		.good = 1,	},
+	{ .name = "trusted.",		.good = 0,	},  /* see setup() */
 	{ .name = "user.",		.good = 0,	},
 	{ .name = "system.",		.good = 0,	},
 };
@@ -141,6 +141,8 @@ static void help(void)
 
 void setup(int argc, char *argv[])
 {
+	unsigned int i;
+
 	tst_parse_opts(argc, argv, options, help);
 
 	tst_require_root();
@@ -153,17 +155,11 @@ void setup(int argc, char *argv[])
 			"Test must be run with kernel 3.7 or newer");
 	}
 
-	if (tst_kvercmp(3, 15, 0) >= 0) {
-		/* In kernel v3.15 cgroup was converted to kernfs
-		 * that doesn't provide simple security namespace handlers.
-		 * Setting just 'security.' should return EOPNOTSUPP.
-		 */
-		unsigned int i;
-		for (i = 0; i < ARRAY_SIZE(tkeys); ++i) {
-			if (!strcmp(tkeys[i].name, "security.")) {
-				tkeys[i].good = 0;
-				break;
-			}
+	for (i = 0; i < ARRAY_SIZE(tkeys); ++i) {
+		if (!strcmp(tkeys[i].name, "security.")) {
+			tkeys[i].good = tst_kvercmp(3, 15, 0) < 0;
+		} else if (!strcmp(tkeys[i].name, "trusted.")) {
+			tkeys[i].good = tst_kvercmp(4, 5, 0) < 0;
 		}
 	}
 
