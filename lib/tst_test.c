@@ -445,20 +445,22 @@ static void parse_opts(int argc, char *argv[])
 
 static void do_exit(int ret)
 {
-	printf("\nSummary:\n");
-	printf("passed   %d\n", results->passed);
-	printf("failed   %d\n", results->failed);
-	printf("skipped  %d\n", results->skipped);
-	printf("warnings %d\n", results->warnings);
+	if (results) {
+		printf("\nSummary:\n");
+		printf("passed   %d\n", results->passed);
+		printf("failed   %d\n", results->failed);
+		printf("skipped  %d\n", results->skipped);
+		printf("warnings %d\n", results->warnings);
 
-	if (results->failed)
-		ret |= TFAIL;
+		if (results->failed)
+			ret |= TFAIL;
 
-	if (results->skipped)
-		ret |= TCONF;
+		if (results->skipped)
+			ret |= TCONF;
 
-	if (results->warnings)
-		ret |= TWARN;
+		if (results->warnings)
+			ret |= TWARN;
+	}
 
 	do_cleanup();
 
