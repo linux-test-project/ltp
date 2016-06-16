@@ -43,4 +43,7 @@
 	safe_getsockname(__FILE__, __LINE__, NULL, sockfd, addr, \
 			 addrlen)
 
+#define SAFE_GETHOSTNAME(name, size) \
+	safe_gethostname(__FILE__, __LINE__, name, size)
+
 #endif /* TST_SAFE_NET_H__ */

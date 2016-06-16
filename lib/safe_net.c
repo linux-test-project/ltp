@@ -183,3 +183,17 @@ int safe_getsockname(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_gethostname(const char *file, const int lineno,
+		     char *name, size_t size)
+{
+	int rval = gethostname(name, size);
+
+	if (rval < 0) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "%s:%d: gethostname(%p, %zu) failed",
+			 file, lineno, name, size);
+	}
+
+	return rval;
+}

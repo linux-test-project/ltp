@@ -45,4 +45,7 @@ int safe_getsockname(const char *file, const int lineno,
 		     void (cleanup_fn)(void), int sockfd, struct sockaddr *addr,
 		     socklen_t *addrlen);
 
+int safe_gethostname(const char *file, const int lineno,
+		     char *name, size_t size);
+
 #endif /* SAFE_NET_FN_H__ */
