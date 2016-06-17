@@ -1,261 +1,122 @@
-#! /bin/sh
+#!/bin/sh
+# Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) International Business Machines  Corp., 2001
 #
-#   Copyright (c) International Business Machines  Corp., 2001
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-#   This program is free software;  you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY;  without even the implie; warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
-#   the GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with this program;  if not, write to the Free Software
-#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-#
-#  FILE   : nfsstat
-#
-#  PURPOSE: Tests the 'nfsstat' command.  This test runs locally, so no
-#           actual network connection is needed.
-#
-#  SETUP: The nfs server/client daemons must be active.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #
-#  HISTORY:
-#    07/30/01 Robbie Williamson (robbiew@us.ibm.com)
-#      -Written
-#
-#**********************************************************************
 
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
+TCID=nfsstat01
+TST_TOTAL=4
+TST_CLEANUP="nfs_cleanup"
 
-$trace_logic
+. nfs_lib.sh
+. test_net.sh
 
-#-----------------------------------------------------------------------
-# Initialize local variables
-#-----------------------------------------------------------------------
-
-PID=$$
-
-TC=nfsstat01
-TCbin=${TCbin:=`pwd`}
-EXPORTDIR=${EXPORTDIR:=/tmp/$TC$PID}
-HOST=`hostname`
-CLEANUP=${CLEANUP:="ON"}
-VERSION=${VERSION:=3}
-TESTDIR=${TESTDIR:=/tmp/$TC$PID.testdir}
-NFS_TYPE=${NFS_TYPE:=nfs}
-export TCID=$TC
-export TST_TOTAL=1
-export TST_COUNT=1
-
-if [ "x$NFS_TYPE" != "xnfs4" ]; then
-    OPTS=${OPTS:="-o vers=$VERSION "}
-fi
-
-#---------------------------------------------------------------------#
-# FUNCTION: do_setup
-# PURPOSE:  To create the necessary files to carry out the test
-# INPUT:    None.
-# OUTPUT:   None.
-#---------------------------------------------------------------------#
-do_setup()
+setup()
 {
-$trace_logic
-
-   echo "do_setup $TC"
-
-   echo "This test runs LOCALLY."
-
-   IAM=${IAM:=`whoami`}
-   [ $IAM = "root" ] || end_testcase "Must be root user"
-
-   #Check for mountd.
-   rpcinfo -p | grep mountd
-   [ $? -eq 0 ] || end_testcase "Mountd is NOT running"
-
-   #Check for nfsd.
-   rpcinfo -p | grep nfs
-   [ $? -eq 0 ] || end_testcase "NFS server daemon (nfsd) is NOT running"
-
-   #Create export directory
-   mkdir -p $EXPORTDIR
-   [ $? -eq 0 ] || end_testcase "Could not create $EXPORTDIR"
-
-   #Export the data directory on HOST
-   if [ "x$NFS_TYPE" = "xnfs4" ]; then
-        mkdir -p /export$EXPORTDIR
-        [ $? = 0 ] || end_testcase "Could not create /export$EXPORTDIR locally"
-        mount --bind $EXPORTDIR /export$EXPORTDIR
-        [ $? = 0 ] || end_testcase "Could not bind $EXPORTDIR to /export"
-        /usr/sbin/exportfs -o no_root_squash,rw,nohide,insecure,no_subtree_check $HOST:$EXPORTDIR > /dev/null
-        [ $? = 0 ] || end_testcase "Could not export $EXPORTDIR on $HOST"
-    else
-       /usr/sbin/exportfs -i -o rw,no_root_squash $HOST:/$EXPORTDIR > /dev/null
-       [ $? -eq 0 ] || end_testcase "Could not export $EXPORTDIR on $HOST"
-   fi
-
-   #Verify export
-   showmount -e $HOST | grep $EXPORTDIR > /dev/null
-   [ $? -eq 0 ] || end_testcase "$EXPORTDIR not exported"
-
-   #Create mount point
-   mkdir -p $TESTDIR
-   [ $? -eq 0 ] || end_testcase "Could not create $TESTDIR"
-
-   #Mount from HOST.
-   mount -t $NFS_TYPE $OPTS $HOST:$EXPORTDIR $TESTDIR
-   [ $? -eq 0 ] || end_testcase "Could not mount from $HOST"
-
+	tst_check_cmds nfsstat
+	nfs_setup
 }
 
+get_calls()
+{
+	local name=$1
+	local field=$2
+	local nfs_f=$3
+	local calls=
+	local opt=
+	[ "$name" = "rpc" ] && opt="r" || opt="n"
 
-#---------------------------------------------------------------------#
-# FUNCTION: do_test
+	if [ "$nfs_f" = "nfs" ]; then
+		calls="$(grep $name /proc/net/rpc/$nfs_f | cut -d' ' -f$field)"
+		ROD nfsstat -c$opt | grep -q "$calls"
+		echo "$calls"
+		return
+	fi
+
+	calls=$(tst_rhost_run -c "grep $name /proc/net/rpc/$nfs_f" | \
+		cut -d' ' -f$field)
+	tst_rhost_run -s -c "nfsstat -s$opt" | grep -q "$calls"
+	echo "$calls"
+}
+
 # PURPOSE:  Performs simple copies and removes to verify statistic
 #           tracking using the 'nfsstat' command and /proc/net/rpc
-#---------------------------------------------------------------------#
 do_test()
 {
-$trace_logic
-  echo "do_test $TC"
+	tst_resm TINFO "checking RPC calls for server/client"
 
-  echo "Checking RPC calls for server and client"
+	local server_calls="$(get_calls rpc 2 nfsd)"
+	local client_calls="$(get_calls rpc 2 nfs)"
 
-  # Server
-  SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep rpc | awk '{print $2}'`
-  nfsstat -sr | grep $SERVER_CALLS
-  [ $? -eq 0 ] || end_testcase "Check of server RPC calls failed"
+	tst_resm TINFO "calls $server_calls/$client_calls"
 
-  # Client
-  CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep rpc | awk '{print $2}'`
-  nfsstat -cr | grep $CLIENT_CALLS
-  [ $? -eq 0 ] || end_testcase "Check of client RPC calls failed"
+	tst_resm TINFO "Checking for tracking of RPC calls for server/client"
+	cat /proc/cpuinfo > nfsstat01.tmp
 
+	local new_server_calls="$(get_calls rpc 2 nfsd)"
+	local new_client_calls="$(get_calls rpc 2 nfs)"
+	tst_resm TINFO "new calls $new_server_calls/$new_client_calls"
 
-  echo "Checking for tracking of RPC calls for server and client"
-  cat /proc/cpuinfo > $TESTDIR/nfsstat01.tmp
-  NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep rpc | awk '{print $2}'`
-  [ $NEW_SERVER_CALLS -gt $SERVER_CALLS ] || end_testcase "Server RPC calls not increased"
-  NEW_CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep rpc | awk '{print $2}'`
-  [ $NEW_CLIENT_CALLS -gt $CLIENT_CALLS ] || end_testcase "Client RPC calls not increased"
+	if [ "$new_server_calls" -le "$server_calls" ]; then
+		tst_resm TFAIL "server RPC calls not increased"
+	else
+		tst_resm TPASS "server RPC calls increased"
+	fi
 
-  nfsstat -sr | grep $NEW_SERVER_CALLS
-  [ $? -eq 0 ] || end_testcase "nfsstat not reporting change in server RPC calls"
-  nfsstat -cr | grep $NEW_CLIENT_CALLS
-  [ $? -eq 0 ] || end_testcase "nfsstat not reporting change in client RPC calls"
+	if [ "$new_client_calls" -le "$client_calls" ]; then
+		tst_resm TFAIL "client RPC calls not increased"
+	else
+		tst_resm TPASS "client RPC calls increased"
+	fi
 
+	tst_resm TINFO "checking NFS calls for server/client"
+	local field=
+	case $VERSION in
+	2) field=13
+	;;
+	*) field=15
+	;;
+	esac
 
-  echo "Checking NFS calls for server and client"
+	server_calls="$(get_calls proc$VERSION $field nfsd)"
+	client_calls="$(get_calls proc$VERSION $field nfs)"
+	tst_resm TINFO "calls $server_calls/$client_calls"
 
-  # Server
-  if [ "$VERSION" = "2" ]; then
-   SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc2 | awk '{print $13}'`
-  else
-   SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc3 | awk '{print $15}'`
-  fi
-  nfsstat -sn | grep $SERVER_CALLS
-  [ $? -eq 0 ] || end_testcase "Check of server NFS calls failed"
+	tst_resm TINFO "Checking for tracking of NFS calls for server/client"
+	rm -f nfsstat01.tmp
 
-  # Client
-  if [ "$VERSION" = "2" ]; then
-    CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep proc2 | awk '{print $13}'`
-  else
-    CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep proc3 | awk '{print $15}'`
-  fi
-  nfsstat -cn | grep $CLIENT_CALLS
-  [ $? -eq 0 ] || end_testcase "Check of client NFS calls failed"
+	new_server_calls="$(get_calls proc$VERSION $field nfsd)"
+	new_client_calls="$(get_calls proc$VERSION $field nfs)"
+	tst_resm TINFO "new calls $new_server_calls/$new_client_calls"
 
+	if [ "$new_server_calls" -le "$server_calls" ]; then
+		tst_resm TFAIL "server NFS calls not increased"
+	else
+		tst_resm TPASS "server NFS calls increased"
+	fi
 
-  echo "Checking for tracking of NFS calls for server and client"
-
-  rm -f $TESTDIR/nfsstat01.tmp
-  if [ "$VERSION" = "2" ]; then
-   NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc2 | awk '{print $13}'`
-  else
-   NEW_SERVER_CALLS=`cat /proc/net/rpc/nfsd | grep proc3 | awk '{print $15}'`
-  fi
-  [ $NEW_SERVER_CALLS -gt $SERVER_CALLS ] || end_testcase "Server NFS calls not increased"
-
-  if [ "$VERSION" = "2" ]; then
-    NEW_CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep proc2 | awk '{print $13}'`
-  else
-    NEW_CLIENT_CALLS=`cat /proc/net/rpc/nfs | grep proc3 | awk '{print $15}'`
-  fi
-  [ $NEW_CLIENT_CALLS -gt $CLIENT_CALLS ] || end_testcase "Client NFS calls not increased"
-
-  nfsstat -sn | grep $NEW_SERVER_CALLS
-  [ $? -eq 0 ] || end_testcase "nfsstat not reporting change in server NFS calls"
-  nfsstat -cn | grep $NEW_CLIENT_CALLS
-  [ $? -eq 0 ] || end_testcase "nfsstat not reporting change in client NFS calls"
-
-
+	if [ "$new_client_calls" -le "$client_calls" ]; then
+		tst_resm TFAIL "client NFS calls not increased"
+	else
+		tst_resm TPASS "client NFS calls increased"
+	fi
 }
 
-#---------------------------------------------------------------------#
-# FUNCTION: do_cleanup
-# PURPOSE:  To delete all the files created to run this test.
-# INPUT:    None.
-# OUTPUT:   None.
-#---------------------------------------------------------------------#
-do_cleanup()
-{
-$trace_logic
-   echo "do_cleanup $TC "
+setup
 
-   echo "Unmounting TESTDIR"
-   umount $TESTDIR
-   sleep 3
-   rm -rf $TESTDIR
-   sleep 3
-
-   echo "Unmounting EXPORTDIR"
-   /usr/sbin/exportfs -u $HOST:$EXPORTDIR
-
-   if [ "x$NFS_TYPE" = "xnfs4" ]; then
-       umount $EXPORTDIR
-       sleep 3
-       rm -rf /export$EXPORTDIR
-   fi
-
-   rm -rf $EXPORTDIR
-
-}
-
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           None.
-#
-# RETURNS:              None.
-#=============================================================================
-end_testcase()
-{
-$trace_logic
-    if [ "$CLEANUP" = "ON" ]; then
-       do_cleanup
-    fi
-
-    [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-    tst_resm TFAIL "Test Failed: $@"
-    exit 1
-}
-
-#=============================================================================
-#---------------------------------------------------------------------#
-# FUNCTION: MAIN
-# PURPOSE:  To invoke the functions to perform the tasks described in
-#           the prologue.
-# INPUT:    None.
-# OUTPUT:   A testcase run log with the results of the execution of this
-#           test.
-#---------------------------------------------------------------------#
-do_setup
 do_test
-end_testcase
+
+tst_exit
