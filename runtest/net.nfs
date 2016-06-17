@@ -50,4 +50,12 @@ nfs42_ipv6_05 nfs05 -6 -v 4.2 -t tcp
 nfslock01 export VERSION; TCbin=$LTPROOT/testcases/bin nfslock01
 
 nfsstat01 export VERSION; TCbin=$LTPROOT/testcases/bin nfsstat01
-nfsx-linux export VERSION SOCKET_TYPE; TCbin=$LTPROOT/testcases/bin fsx.sh
+
+nfsx3 fsx.sh -v 3 -t udp
+nfsx4 fsx.sh -v 4 -t tcp
+nfsx41 fsx.sh -v 4.1 -t tcp
+nfsx42 fsx.sh -v 4.2 -t tcp
+nfsx3_ipv6 fsx.sh -6 -v 3 -t udp
+nfsx4_ipv6 fsx.sh -6 -v 4 -t tcp
+nfsx41_ipv6 fsx.sh -6 -v 4.1 -t tcp
+nfsx42_ipv6 fsx.sh -6 -v 4.2 -t tcp
