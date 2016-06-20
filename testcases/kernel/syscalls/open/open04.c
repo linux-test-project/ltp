@@ -126,6 +126,8 @@ static void cleanup(void)
 		unlink(fname);
 	}
 
+	free(buf);
+
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 }
