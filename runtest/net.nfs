@@ -47,7 +47,14 @@ nfs4_ipv6_05 nfs05 -6 -v 4 -t tcp
 nfs41_ipv6_05 nfs05 -6 -v 4.1 -t tcp
 nfs42_ipv6_05 nfs05 -6 -v 4.2 -t tcp
 
-nfslock01 export VERSION; TCbin=$LTPROOT/testcases/bin nfslock01
+nfslock3_01 nfslock01 -v 3 -t udp
+nfslock4_01 nfslock01 -v 4 -t tcp
+nfslock41_01 nfslock01 -v 4.1 -t tcp
+nfslock42_01 nfslock01 -v 4.2 -t tcp
+nfslock3_ipv6_01 nfslock01 -6 -v 3 -t udp
+nfslock4_ipv6_01 nfslock01 -6 -v 4 -t tcp
+nfslock41_ipv6_01 nfslock01 -6 -v 4.1 -t tcp
+nfslock42_ipv6_01 nfslock01 -6 -v 4.2 -t tcp
 
 nfsstat3_01 nfsstat01
 

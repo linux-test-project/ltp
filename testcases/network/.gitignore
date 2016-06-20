@@ -19,7 +19,6 @@
 /nfs/nfs_fsstress/fsstress
 /nfs/nfslock01/nfs_flock
 /nfs/nfslock01/nfs_flock_dgen
-/nfs/nfslock01/nfs_flock_frk
 /nfsv4/acl/acl1
 /nfsv4/locks/locktests
 /rpc/basic_tests/rpc01/rpc1
