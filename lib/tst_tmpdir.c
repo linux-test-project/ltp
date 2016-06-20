@@ -87,11 +87,6 @@
 #endif
 
 /*
- * Define function prototypes.
- */
-static void tmpdir_cleanup(void);
-
-/*
  * Define global variables.
  */
 extern char *TCID;		/* defined/initialized in main() */
@@ -140,9 +135,8 @@ void tst_tmpdir(void)
 		 * greatly simplify code in tst_rmdir().
 		 */
 		if (c != env_tmpdir) {
-			tst_brkm(TBROK, tmpdir_cleanup, "You must specify "
-				 "an absolute pathname for environment "
-				 "variable TMPDIR");
+			tst_brkm(TBROK, NULL, "You must specify an absolute "
+				 "pathname for environment variable TMPDIR");
 		}
 		snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", env_tmpdir, TCID);
 	} else {
@@ -151,17 +145,17 @@ void tst_tmpdir(void)
 
 	/* Make the temporary directory in one shot using mkdtemp. */
 	if (mkdtemp(template) == NULL)
-		tst_brkm(TBROK | TERRNO, tmpdir_cleanup,
+		tst_brkm(TBROK | TERRNO, NULL,
 			 "%s: mkdtemp(%s) failed", __func__, template);
 	if ((TESTDIR = strdup(template)) == NULL)
-		tst_brkm(TBROK | TERRNO, tmpdir_cleanup,
+		tst_brkm(TBROK | TERRNO, NULL,
 			 "%s: strdup(%s) failed", __func__, template);
 
 	if (chown(TESTDIR, -1, getgid()) == -1)
-		tst_brkm(TBROK | TERRNO, tmpdir_cleanup,
+		tst_brkm(TBROK | TERRNO, NULL,
 			 "chown(%s, -1, %d) failed", TESTDIR, getgid());
 	if (chmod(TESTDIR, DIR_MODE) == -1)
-		tst_brkm(TBROK | TERRNO, tmpdir_cleanup,
+		tst_brkm(TBROK | TERRNO, NULL,
 			 "chmod(%s, %#o) failed", TESTDIR, DIR_MODE);
 
 	if (getcwd(test_start_work_dir, sizeof(test_start_work_dir)) == NULL) {
@@ -218,17 +212,4 @@ void tst_rmdir(void)
 		tst_resm(TWARN, "%s: rmobj(%s) failed: %s",
 			 __func__, TESTDIR, errmsg);
 	}
-}
-
-/*
- * tmpdir_cleanup(void) - This function is used when tst_tmpdir()
- *			  encounters an error, and must cleanup and exit.
- *			  It prints a warning message via tst_resm(), and
- *			  then calls tst_exit().
- */
-static void tmpdir_cleanup(void)
-{
-	tst_resm(TWARN,
-		 "%s: no user cleanup function called before exiting",
-		 __func__);
 }
