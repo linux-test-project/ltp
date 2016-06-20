@@ -1,31 +1,51 @@
 #DESCRIPTION:Network filesystem stress
 #
-# PLEASE READ THE README FILE IN /nfs BEFORE RUNNING THESE.
+# PLEASE READ THE README FILE network/README.md BEFORE RUNNING THESE.
 #
-nfs3_01 export VERSION=3 SOCKET_TYPE=udp; nfs01
-nfs4_01 export VERSION=4 SOCKET_TYPE=tcp; nfs01
-nfs3_ipv6_01 export VERSION=3 SOCKET_TYPE=udp; nfs01 -6
-nfs4_ipv6_01 export VERSION=4 SOCKET_TYPE=tcp; nfs01 -6
+nfs3_01 nfs01 -v 3 -t udp
+nfs4_01 nfs01 -v 3 -t tcp
+nfs41_01 nfs01 -v 4.1 -t tcp
+nfs42_01 nfs01 -v 4.2 -t tcp
+nfs3_ipv6_01 nfs01 -6 -v 3 -t udp
+nfs4_ipv6_01 nfs01 -6 -v 4 -t tcp
+nfs41_ipv6_01 nfs01 -6 -v 4.1 -t tcp
+nfs42_ipv6_01 nfs01 -6 -v 4.2 -t tcp
 
-nfs3_02 export VERSION=3 SOCKET_TYPE=udp; nfs02
-nfs4_02 export VERSION=4 SOCKET_TYPE=tcp; nfs02
-nfs3_ipv6_02 export VERSION=3 SOCKET_TYPE=udp; nfs02 -6
-nfs4_ipv6_02 export VERSION=4 SOCKET_TYPE=tcp; nfs02 -6
+nfs3_02 nfs02 -v 3 -t udp
+nfs4_02 nfs02 -v 3 -t tcp
+nfs41_02 nfs02 -v 4.1 -t tcp
+nfs42_02 nfs02 -v 4.2 -t tcp
+nfs3_ipv6_02 nfs02 -6 -v 3 -t udp
+nfs4_ipv6_02 nfs02 -6 -v 4 -t tcp
+nfs41_ipv6_02 nfs02 -6 -v 4.1 -t tcp
+nfs42_ipv6_02 nfs02 -6 -v 4.2 -t tcp
 
-nfs3_03 export VERSION=3 SOCKET_TYPE=udp; nfs03
-nfs4_03 export VERSION=4 SOCKET_TYPE=tcp; nfs03
-nfs3_ipv6_03 export VERSION=3 SOCKET_TYPE=udp; nfs03 -6
-nfs4_ipv6_03 export VERSION=4 SOCKET_TYPE=tcp; nfs03 -6
+nfs3_03 nfs03 -v 3 -t udp
+nfs4_03 nfs03 -v 3 -t tcp
+nfs41_03 nfs03 -v 4.1 -t tcp
+nfs42_03 nfs03 -v 4.2 -t tcp
+nfs3_ipv6_03 nfs03 -6 -v 3 -t udp
+nfs4_ipv6_03 nfs03 -6 -v 4 -t tcp
+nfs41_ipv6_03 nfs03 -6 -v 4.1 -t tcp
+nfs42_ipv6_03 nfs03 -6 -v 4.2 -t tcp
 
-nfs3_04 export VERSION=3 SOCKET_TYPE=udp; nfs04
-nfs4_04 export VERSION=4 SOCKET_TYPE=tcp; nfs04
-nfs3_ipv6_04 export VERSION=3 SOCKET_TYPE=udp; nfs04 -6
-nfs4_ipv6_04 export VERSION=4 SOCKET_TYPE=tcp; nfs04 -6
+nfs3_04 nfs04 -v 3 -t udp
+nfs4_04 nfs04 -v 3 -t tcp
+nfs41_04 nfs04 -v 4.1 -t tcp
+nfs42_04 nfs04 -v 4.2 -t tcp
+nfs3_ipv6_04 nfs04 -6 -v 3 -t udp
+nfs4_ipv6_04 nfs04 -6 -v 4 -t tcp
+nfs41_ipv6_04 nfs04 -6 -v 4.1 -t tcp
+nfs42_ipv6_04 nfs04 -6 -v 4.2 -t tcp
 
-nfs3_05 export VERSION=3 SOCKET_TYPE=udp; nfs05
-nfs4_05 export VERSION=4 SOCKET_TYPE=tcp; nfs05
-nfs3_ipv6_05 export VERSION=3 SOCKET_TYPE=udp; nfs05 -6
-nfs4_ipv6_05 export VERSION=4 SOCKET_TYPE=tcp; nfs05 -6
+nfs3_05 nfs05 -v 3 -t udp
+nfs4_05 nfs05 -v 4 -t tcp
+nfs41_05 nfs05 -v 4.1 -t tcp
+nfs42_05 nfs05 -v 4.2 -t tcp
+nfs3_ipv6_05 nfs05 -6 -v 3 -t udp
+nfs4_ipv6_05 nfs05 -6 -v 4 -t tcp
+nfs41_ipv6_05 nfs05 -6 -v 4.1 -t tcp
+nfs42_ipv6_05 nfs05 -6 -v 4.2 -t tcp
 
 nfslock01 export VERSION; TCbin=$LTPROOT/testcases/bin nfslock01
 

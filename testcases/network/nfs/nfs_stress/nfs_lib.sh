@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 #
 # This program is free software; you can redistribute it and/or
@@ -14,12 +14,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+VERSION=${VERSION:=3}
+NFILES=${NFILES:=1000}
+SOCKET_TYPE="${SOCKET_TYPE:-udp}"
+NFS_TYPE=${NFS_TYPE:=nfs}
+
+while getopts :ht:v:6 opt; do
+	case "$opt" in
+	h)
+		echo "Usage:"
+		echo "h        help"
+		echo "t x      socket type, tcp or udp, default is udp"
+		echo "v x      NFS version, default is '3'"
+		echo "6        run over IPv6"
+		exit 0
+	;;
+	v) VERSION=$OPTARG ;;
+	t) SOCKET_TYPE=$OPTARG ;;
+	6) # skip, test_net library already processed it
+	;;
+	*)
+		tst_brkm TBROK "unknown option: $opt"
+	;;
+	esac
+done
+
 nfs_setup()
 {
-	VERSION=${VERSION:=3}
-	NFILES=${NFILES:=1000}
-	SOCKET_TYPE="${SOCKET_TYPE:=udp}${TST_IPV6}"
-	NFS_TYPE=${NFS_TYPE:=nfs}
+	SOCKET_TYPE="${SOCKET_TYPE}${TST_IPV6}"
 
 	tst_check_cmds mount exportfs
 
