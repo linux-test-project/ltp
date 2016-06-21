@@ -224,8 +224,12 @@ void testoom(int mempolicy, int lite, int retcode, int allow_sigkill)
 	tst_resm(TINFO, "start OOM testing for mlocked pages.");
 	oom(MLOCK, lite, retcode, allow_sigkill);
 
-	if (access(PATH_KSM, F_OK) == -1) {
-		tst_resm(TINFO, "KSM configuration is not enabled, "
+	/*
+	 * Skip oom(KSM) if lite == 1, since limit_in_bytes may vary from
+	 * run to run, which isn't reliable for oom03 cgroup test.
+	 */
+	if (access(PATH_KSM, F_OK) == -1 || lite == 1) {
+		tst_resm(TINFO, "KSM is not configed or lite == 1, "
 			 "skip OOM test for KSM pags");
 	} else {
 		tst_resm(TINFO, "start OOM testing for KSM pages.");
