@@ -35,7 +35,7 @@
 #include "fallocate.h"
 
 char *TCID = "fallocate04";
-int TST_TOTAL = 4;
+int TST_TOTAL = 5;
 
 static int fd;
 static const char fname[] = "fallocate04.txt";
@@ -266,10 +266,49 @@ static void test04(void)
 	fill_tst_buf(tmp_buf);
 
 	memcpy(exp_buf, tmp_buf, block_size);
-	memcpy(exp_buf + block_size, tmp_buf + size, block_size);
+	memcpy(exp_buf + block_size, tmp_buf + 2 * block_size,
+	       buf_size - block_size * 2);
 
 	exp_buf[block_size - 1] = exp_buf[block_size] = '\0';
 	check_file_data(exp_buf, size);
+
+	tst_resm(TPASS, "test-case succeeded");
+}
+
+static void test05(void)
+{
+	tst_resm(TINFO, "inserting space with FALLOC_FL_INSERT_RANGE");
+
+	size_t alloc_size0 = get_allocsize();
+
+	tst_resm(TINFO, "read current allocated file size '%zu'", alloc_size0);
+
+	if (fallocate(fd, FALLOC_FL_INSERT_RANGE, block_size,
+	    block_size) == -1) {
+		if (errno == EOPNOTSUPP) {
+			tst_brkm(TCONF, cleanup,
+				 "FALLOC_FL_INSERT_RANGE not supported");
+		}
+		tst_brkm(TFAIL | TERRNO, cleanup, "fallocate failed");
+	}
+
+	/* allocate space and ensure that it filled with zeroes */
+	if (fallocate(fd, FALLOC_FL_ZERO_RANGE, block_size, block_size) == -1)
+		tst_brkm(TFAIL | TERRNO, cleanup, "fallocate failed");
+
+	size_t alloc_size1 = get_allocsize();
+
+	tst_resm(TINFO, "allocated file size before '%zu' and after '%zu'",
+		 alloc_size0, alloc_size1);
+	if ((alloc_size0 + block_size) != alloc_size1)
+		tst_brkm(TFAIL, cleanup, "not expected allocated size");
+
+	char exp_buf[buf_size];
+
+	fill_tst_buf(exp_buf);
+	memset(exp_buf + block_size - 1, 0, block_size + 2);
+
+	check_file_data(exp_buf, buf_size);
 
 	tst_resm(TPASS, "test-case succeeded");
 }
@@ -287,6 +326,7 @@ int main(int argc, char *argv[])
 		test02();
 		test03();
 		test04();
+		test05();
 	}
 
 	cleanup();
