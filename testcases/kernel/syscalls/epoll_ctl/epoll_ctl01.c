@@ -59,9 +59,14 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_CLOSE(epfd);
-	SAFE_CLOSE(fd[0]);
-	SAFE_CLOSE(fd[1]);
+	if (epfd > 0 && close(epfd))
+		tst_res(TWARN | TERRNO, "failed to close epoll instance");
+
+	if (fd[0] > 0 && close(fd[0]))
+		tst_res(TWARN | TERRNO, "failed to close pipe");
+
+	if (fd[1] > 0 && close(fd[1]))
+		tst_res(TWARN | TERRNO, "failed to close pipe");
 }
 
 static int has_event(struct epoll_event *epvs, int len,
@@ -85,8 +90,8 @@ static void check_epoll_ctl(int opt, int exp_num)
 	char read_buf[sizeof(write_buf)];
 
 	struct epoll_event res_evs[2] = {
-	{.events = 0, .data.fd = 0},
-	{.events = 0, .data.fd = 0}
+		{.events = 0, .data.fd = 0},
+		{.events = 0, .data.fd = 0}
 	};
 
 	SAFE_WRITE(1, fd[1], write_buf, sizeof(write_buf));

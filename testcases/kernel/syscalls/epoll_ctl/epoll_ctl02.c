@@ -87,9 +87,14 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_CLOSE(epfd);
-	SAFE_CLOSE(fd[0]);
-	SAFE_CLOSE(fd[1]);
+	if (epfd > 0 && close(epfd))
+		tst_res(TWARN | TERRNO, "failed to close epoll instance");
+
+	if (fd[0] > 0 && close(fd[0]))
+		tst_res(TWARN | TERRNO, "failed to close pipe");
+
+	if (fd[1] > 0 && close(fd[1]))
+		tst_res(TWARN | TERRNO, "failed to close pipe");
 }
 
 static void verify_epoll_ctl(unsigned int n)
