@@ -679,6 +679,7 @@ rmdir05 rmdir05
 
 sbrk01 sbrk01
 sbrk02 sbrk02
+sbrk03 sbrk03
 
 sched_get_priority_max01 sched_get_priority_max01
 sched_get_priority_max02 sched_get_priority_max02

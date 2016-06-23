@@ -761,6 +761,7 @@
 /rt_sigtimedwait/rt_sigtimedwait01
 /sbrk/sbrk01
 /sbrk/sbrk02
+/sbrk/sbrk03
 /sched_get_priority_max/sched_get_priority_max01
 /sched_get_priority_max/sched_get_priority_max02
 /sched_get_priority_min/sched_get_priority_min01
