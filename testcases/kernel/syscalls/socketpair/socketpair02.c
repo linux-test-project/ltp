@@ -1,50 +1,30 @@
-/******************************************************************************/
-/*                                                                            */
-/* Copyright (c) Ulrich Drepper <drepper@redhat.com>                          */
-/* Copyright (c) International Business Machines  Corp., 2009                 */
-/*                                                                            */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.                                        */
-/*                                                                            */
-/* This program is distributed in the hope that it will be useful,            */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
-/* the GNU General Public License for more details.                           */
-/*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
-/*                                                                            */
-/******************************************************************************/
-/******************************************************************************/
-/*                                                                            */
-/* File:        socketpair02.c                                                */
-/*                                                                            */
-/* Description: This Program tests the new system call introduced in 2.6.27.  */
-/*              Ulrich´s comment as in:                                       */
-/* http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=77d2720059618b9b6e827a8b73831eb6c6fad63c */
-/*                                                                            */
-/* Usage:  <for command-line>                                                 */
-/* socketpair02 [-c n] [-e][-i n] [-I x] [-p x] [-t]                          */
-/*      where,  -c n : Run n copies concurrently.                             */
-/*              -e   : Turn on errno logging.                                 */
-/*              -i n : Execute test n times.                                  */
-/*              -I x : Execute test for x seconds.                            */
-/*              -P x : Pause for x seconds between iterations.                */
-/*              -t   : Turn on syscall timing.                                */
-/*                                                                            */
-/* Total Tests: 1                                                             */
-/*                                                                            */
-/* Test Name:   socketpair02                                                  */
-/*                                                                            */
-/* Author:      Ulrich Drepper <drepper@redhat.com>                           */
-/*                                                                            */
-/* History:     Created - Jan 13 2009 - Ulrich Drepper <drepper@redhat.com>   */
-/*              Ported to LTP                                                 */
-/*                      - Jan 13 2009 - Subrata <subrata@linux.vnet.ibm.com>  */
-/******************************************************************************/
+/*
+* Copyright (c) Ulrich Drepper <drepper@redhat.com>
+* Copyright (c) International Business Machines  Corp., 2009
+*
+* This program is free software;  you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY;  without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+* the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.
+*/
+
+/*
+* Test Name:	socketpair02
+*
+* Description:
+* This Program tests the new flag SOCK_CLOEXEC and SOCK_NONBLOCK introduced
+* in socketpair() in kernel 2.6.27.
+*/
+
+#include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -52,108 +32,69 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
+#include "lapi/fcntl.h"
+#include "tst_test.h"
 
-#include "test.h"
+static int fds[2];
 
-#ifndef SOCK_NONBLOCK
-#define SOCK_NONBLOCK O_NONBLOCK
-#endif
+static struct tcase {
+	int type;
+	int flag;
+	int fl_flag;
+	char *des;
+} tcases[] = {
+	{SOCK_STREAM, 0, F_GETFD, "no close-on-exec"},
+	{SOCK_STREAM | SOCK_CLOEXEC, FD_CLOEXEC, F_GETFD, "close-on-exec"},
+	{SOCK_STREAM, 0, F_GETFL, "no non-blocking"},
+	{SOCK_STREAM | SOCK_NONBLOCK, O_NONBLOCK, F_GETFL, "non-blocking"}
+};
 
-int TST_TOTAL = 2;
-char *TCID = "socketpair02";
-
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-void cleanup(void)
+static void verify_socketpair(unsigned int n)
 {
+	int res, i;
+	struct tcase *tc = &tcases[n];
 
-	tst_rmdir();
+	TEST(socketpair(PF_UNIX, tc->type, 0, fds));
+
+	if (TEST_RETURN == -1)
+		tst_brk(TFAIL | TTERRNO, "socketpair() failed");
+
+	for (i = 0; i < 2; i++) {
+		res = SAFE_FCNTL(fds[i], tc->fl_flag);
+
+		if (tc->flag != 0 && (res & tc->flag) == 0) {
+			tst_res(TFAIL, "socketpair() failed to set %s flag for fds[%d]",
+				tc->des, i);
+			goto ret;
+		}
+
+		if (tc->flag == 0 && (res & tc->flag) != 0) {
+			tst_res(TFAIL, "socketpair() failed to set %s flag for fds[%d]",
+				tc->des, i);
+			goto ret;
+		}
+	}
+
+	tst_res(TPASS, "socketpair() passed to set %s flag", tc->des);
+
+ret:
+	SAFE_CLOSE(fds[0]);
+	SAFE_CLOSE(fds[1]);
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
-void setup(void)
+static void cleanup(void)
 {
-	/* Capture signals if any */
-	/* Create temporary directories */
-	TEST_PAUSE;
-	tst_tmpdir();
+	if (fds[0] > 0 && close(fds[0]))
+		tst_res(TWARN | TERRNO, "failed to close file");
+
+	if (fds[1] > 0 && close(fds[1]))
+		tst_res(TWARN | TERRNO, "failed to close file");
 }
 
-int main(int argc, char *argv[])
-{
-	int fds[2], fl, i;
-
-	if ((tst_kvercmp(2, 6, 27)) < 0) {
-		tst_brkm(TCONF, NULL,
-			 "This test can only run on kernels that are 2.6.27 and higher");
-	}
-	setup();
-
-	if (socketpair(PF_UNIX, SOCK_STREAM, 0, fds) == -1) {
-		tst_brkm(TFAIL, cleanup, "socketpair(0) failed");
-	}
-	for (i = 0; i < ARRAY_SIZE(fds); i++) {
-		fl = fcntl(fds[i], F_GETFL);
-		if (fl == -1) {
-			tst_brkm(TBROK, cleanup, "fcntl failed");
-		}
-		if (fl & O_NONBLOCK) {
-			tst_brkm(TFAIL, cleanup,
-				 "socketpair(0) set non-blocking mode for fds[%d]",
-				 i);
-		}
-		close(fds[i]);
-	}
-
-	if (socketpair(PF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0, fds) == -1) {
-		tst_brkm(TFAIL, cleanup, "socketpair(SOCK_NONBLOCK) failed");
-	}
-	for (i = 0; i < ARRAY_SIZE(fds); i++) {
-		fl = fcntl(fds[i], F_GETFL);
-		if (fl == -1) {
-			tst_brkm(TBROK, cleanup, "fcntl failed");
-		}
-		if ((fl & O_NONBLOCK) == 0) {
-			tst_brkm(TFAIL, cleanup,
-				 "socketpair(SOCK_NONBLOCK) didn't set non-blocking "
-				 "mode for fds[%d]", i);
-		}
-		close(fds[i]);
-	}
-	tst_resm(TPASS, "socketpair(SOCK_NONBLOCK) PASSED");
-	cleanup();
-	tst_exit();
-}
+static struct tst_test test = {
+	.tid = "socketpair02",
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_socketpair,
+	.min_kver = "2.6.27",
+	.cleanup = cleanup
+};
