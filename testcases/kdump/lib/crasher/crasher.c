@@ -46,7 +46,7 @@ static int crasher_read(char *buf, char **start, off_t offset, int len,
 }
 
 static int crasher_write(struct file *file, const char *buffer,
-			 unsigned long count, void *data)
+			unsigned long count, void *data)
 {
 	char value, *a;
 	DEFINE_SPINLOCK(mylock);
@@ -82,6 +82,10 @@ static int crasher_write(struct file *file, const char *buffer,
 				   somtimes white lies are ok */
 }
 
+struct file_operations proc_fops = {
+	.write = crasher_write
+};
+
 /* create a directory in /proc and a debug file in the new directory */
 
 int crasher_init(void)
@@ -89,7 +93,7 @@ int crasher_init(void)
 	struct proc_dir_entry *crasher_proc;
 
 	printk("loaded crasher module\n");
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0)
 	/* build a crasher file that can be set */
 	if ((crasher_proc = create_proc_entry(CRASH, 0, NULL)) == NULL) {
 		return -ENOMEM;
@@ -99,6 +103,9 @@ int crasher_init(void)
 #endif
 	crasher_proc->read_proc = crasher_read;
 	crasher_proc->write_proc = crasher_write;
+#else
+	proc_create(CRASH, 0, NULL, &proc_fops);
+#endif
 	return 0;
 }
 

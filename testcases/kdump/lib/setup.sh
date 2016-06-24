@@ -35,13 +35,15 @@ if [ "${error}" ]; then
     echo "Fail: kernel version ${kver} is less than 2.6.16."
 fi
 
-
 echo "Verify user is root."
 if [ $(id -u) != 0 ]; then
     echo "Fail: root is required."
     error=1
 fi
 
+if [ -f /etc/os-release ]; then
+    dvar=`cut -d'"' -f2 /etc/os-release | head -1`
+fi
 
 echo "Verify prerequisite."
 if [ ! -x "/sbin/kexec" ]; then
@@ -62,6 +64,13 @@ if [ "${CRASH}" ] && [ "${CRASH}" -eq 1 ]; then
 
     if [ ! -f "${VMLINUX}" ]; then
         echo "Fail: kernel-debuginfo not found."
+        error=1
+    fi
+fi
+
+if [ "$dvar" = "Ubuntu" ]; then
+    if [ ! -f /etc/default/kdump-tools ]; then
+        echo "Fail: install package linux-crashdump."
         error=1
     fi
 fi
@@ -96,6 +105,12 @@ fi
 if [ -x "/sbin/grubby" ]; then
     /sbin/grubby --default-kernel |
      xargs /sbin/grubby --args="${args}" --update-kernel
+
+elif [ "$dvar" = "Ubuntu" ]; then
+    args="crashkernel=2G-4G:320M,4G-32G:512M,32G-64G:1024M,64G-128G:2048M,128G-:4096M"
+    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"\$GRUB_CMDLINE_LINUX_DEFAULT $args\"" > /etc/default/grub.d/kexec-tools.cfg
+    update-grub
+    sed -i 's/USE_KDUMP=0/USE_KDUMP=1/g' /etc/default/kdump-tools
 
 else
     echo "Warn: please make sure the following arguments are in Boot\
