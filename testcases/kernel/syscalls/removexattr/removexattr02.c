@@ -85,6 +85,11 @@ static void verify_removexattr(struct test_case *tc)
 {
 
 	TEST(removexattr(tc->path, tc->name));
+	if (TEST_RETURN == -1 && TEST_ERRNO == ENOTSUP) {
+		tst_brkm(TCONF, cleanup, "No xattr support in fs or "
+			 "mount without user_xattr option");
+	}
+
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "removexattr() succeeded unexpectedly");
 		return;
