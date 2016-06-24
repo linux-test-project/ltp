@@ -953,7 +953,6 @@
 /sigwaitinfo/sigwaitinfo01
 /socket/socket01
 /socket/socket02
-/socket/socket03
 /socketcall/socketcall01
 /socketcall/socketcall02
 /socketcall/socketcall03

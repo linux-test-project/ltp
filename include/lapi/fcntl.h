@@ -23,6 +23,14 @@
 # define O_CLOEXEC 02000000
 #endif
 
+#ifndef SOCK_CLOEXEC
+# define SOCK_CLOEXEC O_CLOEXEC
+#endif
+
+#ifndef SOCK_NONBLOCK
+# define SOCK_NONBLOCK O_NONBLOCK
+#endif
+
 #ifndef O_TMPFILE
 # define O_TMPFILE (020000000 | O_DIRECTORY)
 #endif
