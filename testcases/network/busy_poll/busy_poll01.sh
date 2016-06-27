@@ -21,9 +21,11 @@
 TST_TOTAL=1
 TCID="busy_poll01"
 
+# tst_netload() parameters
 clients_num=2
 client_requests=500000
-max_requests=3
+# num of requests after which TCP connection is closed
+max_requests=500000
 
 . test_net.sh
 
