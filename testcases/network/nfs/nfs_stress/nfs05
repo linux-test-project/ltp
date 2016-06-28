@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 #
 # This program is free software; you can redistribute it and/or
@@ -30,6 +30,8 @@ THREAD_NUM=${THREAD_NUM:-"8"}
 
 . nfs_lib.sh
 . test_net.sh
+
+tst_check_cmds make gcc
 
 nfs_setup
 
