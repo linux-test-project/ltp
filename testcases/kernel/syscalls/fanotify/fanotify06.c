@@ -42,6 +42,7 @@
 #include <sys/fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/mount.h>
 #include <sys/syscall.h>
 #include "test.h"
 #include "linux_syscall_numbers.h"
@@ -79,6 +80,9 @@ static int fd;
 static int fd_notify[FANOTIFY_PRIORITIES][GROUPS_PER_PRIO];
 
 static char event_buf[EVENT_BUF_LEN];
+
+#define MOUNT_NAME "mntpoint"
+static int mount_created;
 
 static void create_fanotify_groups(void)
 {
@@ -245,7 +249,13 @@ static void setup(void)
 
 	TEST_PAUSE;
 
+	tst_require_root();
 	tst_tmpdir();
+
+	SAFE_MKDIR(cleanup, MOUNT_NAME, 0755);
+	SAFE_MOUNT(cleanup, MOUNT_NAME, MOUNT_NAME, NULL, MS_BIND, NULL);
+	mount_created = 1;
+	SAFE_CHDIR(cleanup, MOUNT_NAME);
 
 	sprintf(fname, "tfile_%d", getpid());
 	fd = SAFE_OPEN(cleanup, fname, O_RDWR | O_CREAT, 0700);
@@ -258,6 +268,13 @@ static void setup(void)
 static void cleanup(void)
 {
 	cleanup_fanotify_groups();
+
+	if (chdir(tst_get_tmpdir()) < 0)
+		tst_brkm(TBROK, NULL, "chdir(tmpdir) failed");
+
+	if (mount_created && tst_umount(MOUNT_NAME) < 0)
+		tst_brkm(TBROK | TERRNO, NULL, "umount failed");
+
 	tst_rmdir();
 }
 
