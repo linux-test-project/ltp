@@ -132,6 +132,7 @@ int test_rwflag(int i, int cnt)
 	time_t atime;
 	struct passwd *ltpuser;
 	struct stat file_stat;
+	char readbuf[20];
 
 	switch (i) {
 	case 0:
@@ -319,7 +320,7 @@ int test_rwflag(int i, int cnt)
 
 		sleep(1);
 
-		if (read(fd, NULL, 20) == -1) {
+		if (read(fd, readbuf, sizeof(readbuf)) == -1) {
 			tst_resm(TWARN | TERRNO, "read %s failed", file);
 			return 1;
 		}
