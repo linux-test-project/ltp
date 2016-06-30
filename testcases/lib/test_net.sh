@@ -291,7 +291,7 @@ tst_netload()
 		# check that tcp_fastopen on rhost in 'Listening' state
 		local sec_waited=
 		for sec_waited in $(seq 1 60); do
-			tst_rhost_run -c "ss -ltn | grep -q $port" && break
+			tst_rhost_run -c "ss -lutn | grep -q $port" && break
 			if [ $sec_waited -eq 60 ]; then
 				tst_resm TINFO "rhost not in LISTEN state"
 				return 1

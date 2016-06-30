@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -18,6 +18,7 @@ top_srcdir		?= ../../..
 include $(top_srcdir)/include/mk/testcases.mk
 
 INSTALL_TARGETS		:= busy_poll01.sh \
-			   busy_poll02.sh
+			   busy_poll02.sh \
+			   busy_poll03.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
