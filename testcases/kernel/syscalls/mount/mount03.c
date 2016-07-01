@@ -308,11 +308,13 @@ int test_rwflag(int i, int cnt)
 
 		if (write(fd, "TEST_MS_NOATIME", 15) != 15) {
 			tst_resm(TWARN | TERRNO, "write %s failed", file);
+			close(fd);
 			return 1;
 		}
 
 		if (fstat(fd, &file_stat) == -1) {
 			tst_resm(TWARN | TERRNO, "stat %s failed #1", file);
+			close(fd);
 			return 1;
 		}
 
@@ -322,11 +324,13 @@ int test_rwflag(int i, int cnt)
 
 		if (read(fd, readbuf, sizeof(readbuf)) == -1) {
 			tst_resm(TWARN | TERRNO, "read %s failed", file);
+			close(fd);
 			return 1;
 		}
 
 		if (fstat(fd, &file_stat) == -1) {
 			tst_resm(TWARN | TERRNO, "stat %s failed #2", file);
+			close(fd);
 			return 1;
 		}
 		close(fd);
