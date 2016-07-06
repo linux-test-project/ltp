@@ -50,6 +50,22 @@
 #define SAFE_DIRNAME(path) \
 	safe_dirname(__FILE__, __LINE__, NULL, (path))
 
+static inline int safe_dup(const char *file, const int lineno,
+			   int oldfd)
+{
+	int rval;
+
+	rval = dup(oldfd);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "dup(%i) failed", oldfd);
+	}
+
+	return rval;
+}
+#define SAFE_DUP(oldfd) \
+	safe_dup(__FILE__, __LINE__, (oldfd))
+
 #define	SAFE_GETCWD(buf, size) \
 	safe_getcwd(__FILE__, __LINE__, NULL, (buf), (size))
 
