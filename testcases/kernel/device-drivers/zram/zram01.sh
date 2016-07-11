@@ -39,8 +39,8 @@ zram_max_streams="2 3 5 8"
 # not support mem suffixes, in some newer kernels, they use
 # memparse() which supports mem suffixes. So here we just use
 # bytes to make sure everything works correctly.
-zram_sizes="26214400 26214400 26214400 26214400" # 25MB
-zram_mem_limits="25M 25M 25M 25M"
+zram_sizes="26214400 26214400 26214400 41943040" # 25MB, 40MB for btrfs
+zram_mem_limits="25M 25M 25M 40M"
 zram_filesystems="ext3 ext4 xfs btrfs"
 zram_algs="lzo lzo lzo lzo"
 
