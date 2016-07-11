@@ -122,7 +122,6 @@ static void do_test(void)
 			}
 		}
 		SAFE_CLOSE(cleanup, parentfd);
-		parentfd = -1;
 		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 	}
 
