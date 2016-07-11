@@ -26,8 +26,11 @@
 #define SAFE_CHDIR(cleanup_fn, path)	\
 	safe_chdir(__FILE__, __LINE__, (cleanup_fn), (path))
 
-#define SAFE_CLOSE(cleanup_fn, fildes)	\
-	safe_close(__FILE__, __LINE__, (cleanup_fn), (fildes))
+#define SAFE_CLOSE(cleanup_fn, fd) ({ \
+		int ret = safe_close(__FILE__, __LINE__, (cleanup_fn), (fd)); \
+		fd = -1; \
+		ret; \
+	})
 
 #define SAFE_CREAT(cleanup_fn, pathname, mode)	\
 	safe_creat(__FILE__, __LINE__, cleanup_fn, (pathname), (mode))
