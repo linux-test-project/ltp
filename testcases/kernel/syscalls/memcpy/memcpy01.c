@@ -28,14 +28,12 @@
  *	memcpy1(3)
  *
  * ALGORITHM
- *	There are 4 cases for copies:  S = Source, D = Destination
+ *	There are 2 cases for copies:  S = Source, D = Destination
  *
  *	  1 - S < D no overlap
  *	  2 - D < S no overlap
- *	  3 - S < D with overlap
- *	  4 - D < S with overlap
  *
- *	We try all four cases.  Check buffer boundaries.
+ *	We try both cases.  Check buffer boundaries.
  *
  * RESTRICTIONS
  */
@@ -132,60 +130,6 @@ int main(int argc, char *argv[])
 	}
 
 	if (q[-1] || q[LEN]) {
-		fprintf(temp, "\tcopy failed - 'from' bounds\n");
-		local_flag = FAILED;
-	}
-
-	blexit();
-/*--------------------------------------------------------------*/
-	blenter();
-
-	clearit();
-
-	p = &buf[800];
-
-	fill(p);
-	q = &buf[850];
-	memcpy(q, p, LEN);
-
-	if (checkit(q)) {
-		fprintf(temp, "\tcopy failed - missed data\n");
-		local_flag = FAILED;
-	}
-
-	if (p[-1]) {
-		fprintf(temp, "\tcopy failed - 'to' bounds\n");
-		local_flag = FAILED;
-	}
-
-	if (q[LEN]) {
-		fprintf(temp, "\tcopy failed - 'from' bounds\n");
-		local_flag = FAILED;
-	}
-
-	blexit();
-/*--------------------------------------------------------------*/
-	blenter();
-
-	clearit();
-
-	p = &buf[850];
-
-	fill(p);
-	q = &buf[800];
-	memcpy(q, p, LEN);
-
-	if (checkit(q)) {
-		fprintf(temp, "\tcopy failed - missed data\n");
-		local_flag = FAILED;
-	}
-
-	if (p[LEN]) {
-		fprintf(temp, "\tcopy failed - 'to' bounds\n");
-		local_flag = FAILED;
-	}
-
-	if (q[-1]) {
 		fprintf(temp, "\tcopy failed - 'from' bounds\n");
 		local_flag = FAILED;
 	}
