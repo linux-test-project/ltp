@@ -69,8 +69,13 @@ create_subgroup()
     # cpuset.cpus and cpuset.mems must be initialized with suitable value
     # before any pids are attached
     if [ "$subsystem" == "cpuset" ]; then
-        ROD cat "$mount_point/cpuset.cpus" \> "$path/cpuset.cpus"
-        ROD cat "$mount_point/cpuset.mems" \> "$path/cpuset.mems"
+        if [ -e "$mount_point/cpus" ]; then
+            ROD cat "$mount_point/cpus" \> "$path/cpus"
+            ROD cat "$mount_point/mems" \> "$path/mems"
+        else
+            ROD cat "$mount_point/cpuset.cpus" \> "$path/cpuset.cpus"
+            ROD cat "$mount_point/cpuset.mems" \> "$path/cpuset.mems"
+        fi
     fi
 }
 
