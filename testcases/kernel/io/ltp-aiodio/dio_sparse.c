@@ -54,7 +54,7 @@ int TST_TOTAL = 1;
 /*
  * Write zeroes using O_DIRECT into sparse file.
  */
-int dio_sparse(char *filename, int align, int writesize, int filesize)
+int dio_sparse(char *filename, int align, int writesize, int filesize, int offset)
 {
 	int fd;
 	void *bufptr;
@@ -77,7 +77,8 @@ int dio_sparse(char *filename, int align, int writesize, int filesize)
 	}
 
 	memset(bufptr, 0, writesize);
-	for (i = 0; i < filesize;) {
+	lseek(fd, offset, SEEK_SET);
+	for (i = offset; i < filesize;) {
 		if ((w = write(fd, bufptr, writesize)) != writesize) {
 			tst_resm(TBROK | TERRNO, "write() returned %d", w);
 			close(fd);
@@ -96,7 +97,7 @@ int dio_sparse(char *filename, int align, int writesize, int filesize)
 void usage(void)
 {
 	fprintf(stderr, "usage: dio_sparse [-d] [-n children] [-s filesize]"
-		" [-w writesize]\n");
+		" [-w writesize] [-o offset]]\n");
 	exit(1);
 }
 
@@ -109,11 +110,12 @@ int main(int argc, char **argv)
 	long alignment = 512;
 	int writesize = 65536;
 	int filesize = 100 * 1024 * 1024;
+	int offset = 0;
 	int c;
 	int children_errors = 0;
 	int ret;
 
-	while ((c = getopt(argc, argv, "dw:n:a:s:")) != -1) {
+	while ((c = getopt(argc, argv, "dw:n:a:s:o:")) != -1) {
 		char *endp;
 		switch (c) {
 		case 'd':
@@ -130,6 +132,10 @@ int main(int argc, char **argv)
 		case 's':
 			filesize = strtol(optarg, &endp, 0);
 			filesize = scale_by_kmg(filesize, *endp);
+			break;
+		case 'o':
+			offset = strtol(optarg, &endp, 0);
+			offset = scale_by_kmg(offset, *endp);
 			break;
 		case 'n':
 			num_children = atoi(optarg);
@@ -168,7 +174,7 @@ int main(int argc, char **argv)
 	}
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	ret = dio_sparse(filename, alignment, writesize, filesize);
+	ret = dio_sparse(filename, alignment, writesize, filesize, offset);
 
 	tst_resm(TINFO, "Killing childrens(s)");
 
