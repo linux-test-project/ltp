@@ -30,12 +30,15 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <memory.h>
 #include <string.h>
 #include <limits.h>
+
+#include "test.h"
 
 #define NUM_CHILDREN 8
 
@@ -68,8 +71,9 @@ int dio_read(char *filename)
 	int r;
 	void *bufptr;
 
-	if (posix_memalign(&bufptr, 4096, 64 * 1024)) {
-		perror("cannot malloc aligned memory");
+	TEST(posix_memalign(&bufptr, 4096, 64 * 1024));
+	if (TEST_RETURN) {
+		tst_resm(TBROK | TRERRNO, "cannot malloc aligned memory");
 		return -1;
 	}
 
@@ -112,8 +116,10 @@ void dio_append(char *filename, int fill)
 		return;
 	}
 
-	if (posix_memalign(&bufptr, 4096, 64 * 1024)) {
-		perror("cannot malloc aligned memory");
+	TEST(posix_memalign(&bufptr, 4096, 64 * 1024));
+	if (TEST_RETURN) {
+		tst_resm(TBROK | TRERRNO, "cannot malloc aligned memory");
+		close(fd);
 		return;
 	}
 

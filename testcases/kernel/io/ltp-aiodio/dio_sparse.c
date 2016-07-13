@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -68,9 +69,10 @@ int dio_sparse(char *filename, int align, int writesize, int filesize)
 
 	SAFE_FTRUNCATE(cleanup, fd, filesize);
 
-	if (posix_memalign(&bufptr, align, writesize)) {
+	TEST(posix_memalign(&bufptr, align, writesize));
+	if (TEST_RETURN) {
+		tst_resm(TBROK | TRERRNO, "cannot allocate aligned memory");
 		close(fd);
-		tst_resm(TBROK | TERRNO, "posix_memalign()");
 		return 1;
 	}
 

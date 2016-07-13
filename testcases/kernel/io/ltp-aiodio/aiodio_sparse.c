@@ -97,8 +97,9 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize,
 	for (i = 0; i < num_aio; i++) {
 		void *bufptr;
 
-		if (posix_memalign(&bufptr, align, writesize)) {
-			tst_resm(TBROK | TERRNO, "posix_memalign()");
+		TEST(posix_memalign(&bufptr, align, writesize));
+		if (TEST_RETURN) {
+			tst_resm(TBROK | TRERRNO, "cannot allocate aligned memory");
 			close(fd);
 			unlink(filename);
 			return 1;

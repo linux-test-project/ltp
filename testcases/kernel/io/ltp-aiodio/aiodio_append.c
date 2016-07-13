@@ -28,10 +28,13 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 
 #include <libaio.h>
+
+#include "test.h"
 
 #define NUM_CHILDREN 8
 
@@ -115,8 +118,9 @@ void aiodio_append(char *filename)
 	io_queue_init(NUM_AIO, &myctx);
 
 	for (i = 0; i < NUM_AIO; i++) {
-		if (posix_memalign(&bufptr, 4096, AIO_SIZE)) {
-			perror("cannot malloc aligned memory");
+		TEST(posix_memalign(&bufptr, 4096, AIO_SIZE));
+		if (TEST_RETURN) {
+			tst_resm(TBROK | TRERRNO, "cannot malloc aligned memory");
 			return;
 		}
 		memset(bufptr, 0, AIO_SIZE);
