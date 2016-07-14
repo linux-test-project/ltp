@@ -89,6 +89,7 @@ usage()
     -p              Human readable format logfiles.
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
+    -S SKIPFILE     Skip tests specified in SKIPFILE.
     -b DEVICE       Some tests require an unmounted block device to run
                     correctly.
     -B LTP_DEV_FS_TYPE  The file system of test block devices.
@@ -121,7 +122,7 @@ main()
 
     local scenfile=""
 
-    while getopts c:d:hi:l:m:No:pqr:b:B: arg
+    while getopts c:d:hi:l:m:No:pqrS:b:B: arg
     do  case $arg in
         c)
 	    NUM_PROCS=$(($OPTARG))
@@ -177,6 +178,13 @@ main()
         q)  QUIET_MODE=" -q ";;
 
         r)  LTPROOT=$OPTARG;;
+
+        S)  case $OPTARG in
+                /*)
+                    SKIPFILE=$OPTARG;;
+                *)
+                    SKIPFILE="$LTPROOT/$OPTARG";;
+            esac ;;
 
         b)  DEVICE=$OPTARG;;
 
@@ -306,6 +314,14 @@ main()
             }
         done
     }
+
+    # Blacklist or skip tests if a SKIPFILE was specified with -S
+    if [ -n "$SKIPFILE" ]
+    then
+        for file in $( cat $SKIPFILE ); do
+            sed -i "/^$file[ \t]/d" ${TMP}/alltests
+        done
+    fi
 
     # display versions of installed software
     [ -z "$QUIET_MODE" ] && \
