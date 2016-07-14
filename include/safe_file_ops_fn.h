@@ -35,6 +35,11 @@ void safe_file_scanf(const char *file, const int lineno,
 		     const char *path, const char *fmt, ...)
 		     __attribute__ ((format (scanf, 5, 6)));
 
+int file_lines_scanf(const char *file, const int lineno,
+		     void (*cleanup_fn)(void), int strict,
+		     const char *path, const char *fmt, ...)
+		     __attribute__ ((format (scanf, 6, 7)));
+
 /*
  * All-in-one function that lets you printf directly into a file.
  */

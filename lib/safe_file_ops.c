@@ -169,6 +169,53 @@ void safe_file_scanf(const char *file, const int lineno,
 	}
 }
 
+
+/*
+ * Try to parse each line from file specified by 'path' according
+ * to scanf format 'fmt'. If all fields could be parsed, stop and
+ * return 0, otherwise continue or return 1 if EOF is reached.
+ */
+int file_lines_scanf(const char *file, const int lineno,
+		     void (*cleanup_fn)(void), int strict,
+		     const char *path, const char *fmt, ...)
+{
+	FILE *fp;
+	int ret = 0;
+	int arg_count = 0;
+	char line[BUFSIZ];
+	va_list ap;
+
+	if (!fmt) {
+		tst_brkm(TBROK, cleanup_fn, "pattern is NULL, %s:%d",
+			file, lineno);
+	}
+
+	fp = fopen(path, "r");
+	if (fp == NULL) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			"Failed to open FILE '%s' for reading at %s:%d",
+			path, file, lineno);
+	}
+
+	arg_count = count_scanf_conversions(fmt);
+
+	while (fgets(line, BUFSIZ, fp) != NULL) {
+		va_start(ap, fmt);
+		ret = vsscanf(line, fmt, ap);
+		va_end(ap);
+
+		if (ret == arg_count)
+			break;
+	}
+	fclose(fp);
+
+	if (strict && ret != arg_count)
+		tst_brkm(TBROK, cleanup_fn, "Expected %i conversions got %i"
+			" at %s:%d", arg_count, ret, file, lineno);
+
+	return !(ret == arg_count);
+}
+
 int file_printf(const char *file, const int lineno,
 		      const char *path, const char *fmt, ...)
 {
