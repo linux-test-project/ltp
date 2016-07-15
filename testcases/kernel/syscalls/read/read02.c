@@ -54,6 +54,7 @@ char *TCID = "read02";
 static int badfd = -1;
 static int fd2, fd3, fd4 = -1;
 static char buf[BUFSIZ];
+static void *bufaddr = buf;
 static void *outside_buf = (void *)-1;
 static void *addr4;
 static void *addr5;
@@ -66,8 +67,8 @@ static struct test_case_t {
 	size_t count;
 	int exp_error;
 } TC[] = {
-	{&badfd, (void **)&buf, 1, EBADF},
-	{&fd2, (void **)&buf, 1, EISDIR},
+	{&badfd, &bufaddr, 1, EBADF},
+	{&fd2, &bufaddr, 1, EISDIR},
 #ifndef UCLINUX
 	{&fd3, &outside_buf, 1, EFAULT},
 #endif
