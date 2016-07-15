@@ -505,6 +505,8 @@ lchown03  lchown03
 lchown02_16 lchown02_16
 lchown03_16 lchown03_16
 
+lgetxattr01 lgetxattr01
+
 link01 symlink01 -T link01
 link02 link02
 link03 link03
