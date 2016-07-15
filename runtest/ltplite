@@ -386,6 +386,7 @@ lchown02 lchown02
 lchown03 lchown03
 
 lgetxattr01 lgetxattr01
+lgetxattr02 lgetxattr02
 
 link01 symlink01 -T link01
 link02 link02

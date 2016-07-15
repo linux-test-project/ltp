@@ -471,6 +471,7 @@
 /lchown/lchown03
 /lchown/lchown03_16
 /lgetxattr/lgetxattr01
+/lgetxattr/lgetxattr02
 /link/link02
 /link/link03
 /link/link04
