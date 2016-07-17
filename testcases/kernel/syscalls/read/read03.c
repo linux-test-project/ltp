@@ -90,7 +90,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "read set bad errno, expected "
 				 "EAGAIN, got %d", TEST_ERRNO);
 		} else {
-			tst_resm(TINFO, "read() succeded in setting errno to "
+			tst_resm(TPASS, "read() succeded in setting errno to "
 				 "EAGAIN");
 		}
 	}
