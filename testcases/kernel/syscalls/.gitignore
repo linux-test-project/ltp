@@ -786,6 +786,7 @@
 /sched_setparam/sched_setparam05
 /sched_setscheduler/sched_setscheduler01
 /sched_setscheduler/sched_setscheduler02
+/sched_setscheduler/sched_setscheduler03
 /sched_yield/sched_yield01
 /select/select01
 /select/select02
