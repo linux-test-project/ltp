@@ -129,7 +129,7 @@ static int perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
 }
 
 /* do_work() is copied form performance_counter02.c */
-#define LOOPS	1000000000
+#define LOOPS	100000000
 
 static void do_work(void)
 {

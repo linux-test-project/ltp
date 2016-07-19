@@ -79,7 +79,7 @@ int TST_TOTAL = 1;
 #if HAVE_PERF_EVENT_ATTR
 
 #define MAX_CTRS	1000
-#define LOOPS		1000000000
+#define LOOPS		100000000
 
 static int count_hardware_counters(void);
 static void setup(void);
@@ -328,7 +328,7 @@ static void verify(void)
 	}
 
 	ratio = (double)vtsum / vt0;
-	tst_resm(TINFO, "ratio: %.2f", ratio);
+	tst_resm(TINFO, "ratio: %lf", ratio);
 	if (ratio > nhw + 0.0001) {
 		tst_resm(TFAIL, "test failed (ratio was greater than )");
 	} else {
