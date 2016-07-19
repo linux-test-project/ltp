@@ -338,7 +338,7 @@ static void verify(void)
 
 static void help(void)
 {
-	printf("-v  print verbose infomation\n");
+	printf("  -v      Print verbose information\n");
 }
 
 #else
