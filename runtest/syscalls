@@ -484,6 +484,7 @@ keyctl01 keyctl01
 
 kcmp01 kcmp01
 kcmp02 kcmp02
+kcmp03 kcmp03
 
 kill01 kill01
 kill02 kill02
