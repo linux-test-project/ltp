@@ -32,6 +32,7 @@
 #include "tst_process_state.h"
 #include "tst_atomic.h"
 #include "tst_kvercmp.h"
+#include "tst_clone.h"
 
 /*
  * Reports testcase result.

@@ -55,6 +55,7 @@
 #include "tst_pid.h"
 #include "tst_cmd.h"
 #include "tst_cpu.h"
+#include "tst_clone.h"
 #include "old_device.h"
 #include "old_tmpdir.h"
 
@@ -192,18 +193,6 @@ char *get_high_address(void);
 /* lib/self_exec.c */
 void maybe_run_child(void (*child)(), const char *fmt, ...);
 int self_exec(const char *argv0, const char *fmt, ...);
-
-/* Functions from lib/cloner.c */
-int ltp_clone(unsigned long flags, int (*fn)(void *arg), void *arg,
-		size_t stack_size, void *stack);
-int ltp_clone7(unsigned long flags, int (*fn)(void *arg), void *arg,
-		size_t stack_size, void *stack, ...);
-int ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg),
-		void *arg, size_t stacksize);
-int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
-		void *arg);
-#define clone(...) use_the_ltp_clone_functions,do_not_use_clone
-
 
 /* lib/tst_mkfs.c
  *
