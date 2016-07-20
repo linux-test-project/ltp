@@ -23,101 +23,81 @@
  */
 
 /*
- * access(2) test for errno(s) EFAULT.
+ * access(2) test for errno(s) EFAULT as root and nobody respectively.
  */
 
 #include <errno.h>
-#include <string.h>
-#include <signal.h>
-
 #include <unistd.h>
-#include <sys/mman.h>
-#include "test.h"
+#include <sys/types.h>
+#include <pwd.h>
+#include "tst_test.h"
 
-static void setup(void);
-static void cleanup(void);
+static uid_t uid;
 
-char *TCID = "access03";
-int TST_TOTAL = 8;
+static struct tcase {
+	void *addr;
+	int mode;
+	char *name;
+} tcases[] = {
+	{(void *)-1, F_OK, "F_OK"},
+	{(void *)-1, R_OK, "R_OK"},
+	{(void *)-1, W_OK, "W_OK"},
+	{(void *)-1, X_OK, "X_OK"},
+};
 
-/* XXX (garrcoop): uh, this isn't a bad address yo. */
-static void *low_addr;
-static void *high_addr;
-
-#if !defined(UCLINUX)
-
-int main(int ac, char **av)
+static void access_test(struct tcase *tc, const char *user)
 {
-	int lc;
+	TEST(access(tc->addr, tc->mode));
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-#define TEST_ACCESS(addr, mode) \
-{ \
-	if (access(low_addr, mode) == -1) { \
-		if (errno == EFAULT) { \
-			tst_resm(TPASS, \
-			    "access(%p, %s) failed as expected with EFAULT", \
-			    addr, #mode); \
-		} else { \
-			tst_resm(TFAIL|TERRNO, \
-			    "access(%p, %s) failed unexpectedly; " \
-			    "expected (EFAULT)", addr, #mode); \
-		} \
-	} else { \
-		tst_resm(TFAIL, \
-		    "access(%p, %s) succeeded unexpectedly", addr, #mode); \
-	} \
-}
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		TEST_ACCESS(low_addr, R_OK);
-		TEST_ACCESS(low_addr, W_OK);
-		TEST_ACCESS(low_addr, X_OK);
-		TEST_ACCESS(low_addr, F_OK);
-
-		TEST_ACCESS(high_addr, R_OK);
-		TEST_ACCESS(high_addr, W_OK);
-		TEST_ACCESS(high_addr, X_OK);
-		TEST_ACCESS(high_addr, F_OK);
+	if (TEST_RETURN != -1) {
+		tst_res(TFAIL, "access(%p, %s) as %s succeeded unexpectedly",
+			tc->addr, tc->name, user);
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	if (TEST_ERRNO != EFAULT) {
+		tst_res(TFAIL | TTERRNO,
+			"access(%p, %s) as %s should fail with EFAULT",
+			tc->addr, tc->name, user);
+		return;
+	}
+
+	tst_res(TPASS | TTERRNO, "access(%p, %s) as %s",
+		tc->addr, tc->name, user);
+}
+
+static void verify_access(unsigned int n)
+{
+	struct tcase *tc = &tcases[n];
+	pid_t pid;
+
+	/* test as root */
+	access_test(tc, "root");
+
+	/* test as nobody */
+	pid = SAFE_FORK();
+	if (pid) {
+		SAFE_WAITPID(pid, NULL, 0);
+	} else {
+		SAFE_SETUID(uid);
+		access_test(tc, "nobody");
+	}
 }
 
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	TEST_PAUSE;
+	struct passwd *pw;
 
-	low_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (low_addr == MAP_FAILED)
-		tst_brkm(TBROK | TERRNO, NULL, "mmap failed");
+	pw = SAFE_GETPWNAM("nobody");
 
-	high_addr = get_high_address();
-	if (high_addr == NULL)
-		tst_brkm(TBROK | TERRNO, NULL, "get_high_address failed");
-	high_addr++;
-
-	tst_tmpdir();
+	uid = pw->pw_uid;
 }
 
-static void cleanup(void)
-{
-	tst_rmdir();
-}
-
-#else
-
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "test not available on UCLINUX");
-}
-
-#endif /* if !defined(UCLINUX) */
+static struct tst_test test = {
+	.tid = "access03",
+	.tcnt = ARRAY_SIZE(tcases),
+	.needs_root = 1,
+	.forks_child = 1,
+	.setup = setup,
+	.test = verify_access,
+};
