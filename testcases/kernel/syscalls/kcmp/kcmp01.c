@@ -26,22 +26,18 @@
 
 #define _GNU_SOURCE
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 #include "lapi/fcntl.h"
 #include "kcmp.h"
 
 #define TEST_FILE "test_file"
 #define TEST_FILE2 "test_file2"
 
-
 static int fd1;
 static int fd2;
 static int fd3;
 static int pid1;
 static int pid2;
-
-char *TCID = "kcmp01";
 
 static struct test_case {
 	int *pid1;
@@ -58,92 +54,69 @@ static struct test_case {
 	{&pid1, &pid2, KCMP_FILE, &fd1, &fd3, 1},
 };
 
-int TST_TOTAL = ARRAY_SIZE(test_cases);
-
-static void cleanup(void);
-static void setup(void);
-static void do_child(const struct test_case *test);
-static void cleanup_child(void);
-
-int main(int ac, char **av)
-{
-	int lc;
-	int i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; ++i) {
-			pid2 = tst_fork();
-
-			if (pid2 == -1)
-				tst_brkm(TBROK, cleanup, "fork failed");
-
-			if (!pid2)
-				do_child(&test_cases[i]);
-			else
-				tst_record_childstatus(cleanup, pid2);
-			tst_count++;
-		}
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-static void do_child(const struct test_case *test)
-{
-	pid2 = getpid();
-	fd2 = dup(fd1);
-	fd3 = SAFE_OPEN(cleanup_child, TEST_FILE2, O_CREAT | O_RDWR, 0666);
-
-	TEST(kcmp(*(test->pid1), *(test->pid2), test->type,
-			  *(test->fd1), *(test->fd2)));
-
-	if (TEST_RETURN == -1)
-		tst_resm(TFAIL | TTERRNO, "kcmp() failed unexpectedly");
-
-	if ((test->exp_different && TEST_RETURN == 0)
-		|| (test->exp_different == 0 && TEST_RETURN))
-		tst_resm(TFAIL, "kcmp() returned %lu instead of %d",
-				TEST_RETURN, test->exp_different);
-
-	if ((test->exp_different == 0 && TEST_RETURN == 0)
-		|| (test->exp_different && TEST_RETURN))
-		tst_resm(TPASS, "kcmp() returned the expected value");
-
-	tst_exit();
-}
-
-static void cleanup_child(void)
-{
-	if (fd2 > 0 && close(fd2) < 0)
-		tst_resm(TWARN | TERRNO, "close fd2 failed");
-	fd2 = 0;
-	if (fd3 > 0 && close(fd3) < 0)
-		tst_resm(TWARN | TERRNO, "close fd3 failed");
-	fd3 = 0;
-}
-
 static void setup(void)
 {
-	if ((tst_kvercmp(3, 5, 0)) < 0) {
-		tst_brkm(TCONF, NULL,
-			"This test can only run on kernels that are 3.5. and higher");
-	}
-
-	tst_tmpdir();
-
-	pid1 = getpid();
-	fd1 = SAFE_OPEN(cleanup, TEST_FILE, O_CREAT | O_RDWR | O_TRUNC);
+	fd1 = SAFE_OPEN(TEST_FILE, O_CREAT | O_RDWR | O_TRUNC);
 }
 
 static void cleanup(void)
 {
 	if (fd1 > 0 && close(fd1) < 0)
-		tst_resm(TWARN | TERRNO, "close fd1 failed");
-	tst_rmdir();
+		tst_res(TWARN | TERRNO, "close fd1 failed");
 }
+
+static void do_child(const struct test_case *test)
+{
+	pid2 = getpid();
+
+	fd3 = SAFE_OPEN(TEST_FILE2, O_CREAT | O_RDWR, 0666);
+
+	fd2 = dup(fd1);
+	if (fd2 == -1) {
+		tst_res(TFAIL | TERRNO, "dup() failed unexpectedly");
+		SAFE_CLOSE(fd3);
+		return;
+	}
+
+	TEST(kcmp(*(test->pid1), *(test->pid2), test->type,
+		  *(test->fd1), *(test->fd2)));
+
+	SAFE_CLOSE(fd2);
+	SAFE_CLOSE(fd3);
+
+	if (TEST_RETURN == -1) {
+		tst_res(TFAIL | TTERRNO, "kcmp() failed unexpectedly");
+		return;
+	}
+
+	if ((test->exp_different && TEST_RETURN == 0)
+		|| (test->exp_different == 0 && TEST_RETURN)) {
+		tst_res(TFAIL, "kcmp() returned %lu instead of %d",
+			TEST_RETURN, test->exp_different);
+		return;
+	}
+
+	tst_res(TPASS, "kcmp() returned the expected value");
+}
+
+static void verify_kcmp(unsigned int n)
+{
+	struct test_case *tc = &test_cases[n];
+
+	pid1 = getpid();
+
+	pid2 = SAFE_FORK();
+	if (!pid2)
+		do_child(tc);
+}
+
+static struct tst_test test = {
+	.tid = "kcmp01",
+	.tcnt = ARRAY_SIZE(test_cases),
+	.setup = setup,
+	.cleanup = cleanup,
+	.forks_child = 1,
+	.test = verify_kcmp,
+	.min_kver = "3.5.0",
+	.needs_tmpdir = 1,
+};

@@ -28,8 +28,7 @@
 
 #define _GNU_SOURCE
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 #include "lapi/fcntl.h"
 #include "kcmp.h"
 
@@ -43,10 +42,9 @@ static int pid1;
 static int pid_unused;
 static int fd_fake = -1;
 
-char *TCID = "kcmp02";
-
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <limits.h>
 
 static struct test_case {
 	int *pid1;
@@ -64,75 +62,52 @@ static struct test_case {
 	{&pid1, &pid1, KCMP_FILE, &fd1, &fd_fake, EBADF}
 };
 
-int TST_TOTAL = ARRAY_SIZE(test_cases);
-
-static void cleanup(void);
-static void setup(void);
-static void kcmp_verify(const struct test_case *test);
-
-int main(int ac, char **av)
-{
-	int lc;
-	int i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++)
-			kcmp_verify(&test_cases[i]);
-
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-static void kcmp_verify(const struct test_case *test)
-{
-	TEST(kcmp(*(test->pid1), *(test->pid2), test->type,
-			  *(test->fd1), *(test->fd2)));
-
-	if (TEST_RETURN != -1) {
-		tst_resm(TFAIL, "kcmp() succeeded unexpectedly");
-		return;
-	}
-
-	if (test->exp_errno == TEST_ERRNO) {
-		tst_resm(TPASS | TTERRNO, "kcmp() returned the expected value");
-		return;
-	}
-
-	tst_resm(TFAIL | TTERRNO,
-		"kcmp() got unexpected return value: expected: %d - %s",
-			test->exp_errno, tst_strerrno(test->exp_errno));
-}
-
 static void setup(void)
 {
-	if ((tst_kvercmp(3, 5, 0)) < 0) {
-		tst_brkm(TCONF, NULL,
-			"This test can only run on kernels that are 3.5. and higher");
-	}
-
-	tst_tmpdir();
-
 	pid1 = getpid();
-	pid_unused = tst_get_unused_pid(cleanup);
-	fd1 = SAFE_OPEN(cleanup, TEST_FILE, O_CREAT | O_RDWR | O_TRUNC);
-	fd2 = SAFE_OPEN(cleanup, TEST_FILE2, O_CREAT | O_RDWR | O_TRUNC);
+	pid_unused = tst_get_unused_pid();
 
+	fd1 = SAFE_OPEN(TEST_FILE, O_CREAT | O_RDWR | O_TRUNC);
+	fd2 = SAFE_OPEN(TEST_FILE2, O_CREAT | O_RDWR | O_TRUNC);
 }
 
 static void cleanup(void)
 {
 	if (fd1 > 0 && close(fd1) < 0)
-		tst_resm(TWARN | TERRNO, "close fd1 failed");
+		tst_res(TWARN | TERRNO, "close fd1 failed");
 
 	if (fd2 > 0 && close(fd2) < 0)
-		tst_resm(TWARN | TERRNO, "close fd2 failed");
-	tst_rmdir();
-
+		tst_res(TWARN | TERRNO, "close fd2 failed");
 }
+
+static void verify_kcmp(unsigned int n)
+{
+	struct test_case *test = &test_cases[n];
+
+	TEST(kcmp(*(test->pid1), *(test->pid2), test->type,
+		  *(test->fd1), *(test->fd2)));
+
+	if (TEST_RETURN != -1) {
+		tst_res(TFAIL, "kcmp() succeeded unexpectedly");
+		return;
+	}
+
+	if (test->exp_errno == TEST_ERRNO) {
+		tst_res(TPASS | TTERRNO, "kcmp() returned the expected value");
+		return;
+	}
+
+	tst_res(TFAIL | TTERRNO,
+		"kcmp() got unexpected return value: expected: %d - %s",
+			test->exp_errno, tst_strerrno(test->exp_errno));
+}
+
+static struct tst_test test = {
+	.tid = "kcmp02",
+	.tcnt = ARRAY_SIZE(test_cases),
+	.setup = setup,
+	.cleanup = cleanup,
+	.test = verify_kcmp,
+	.min_kver = "3.5.0",
+	.needs_tmpdir = 1
+};

@@ -46,7 +46,7 @@ enum kcmp_type {
 
 int kcmp(int pid1, int pid2, int type, int fd1, int fd2)
 {
-	return ltp_syscall(__NR_kcmp, pid1, pid2, type, fd1, fd2);
+	return tst_syscall(__NR_kcmp, pid1, pid2, type, fd1, fd2);
 }
 
 #endif
