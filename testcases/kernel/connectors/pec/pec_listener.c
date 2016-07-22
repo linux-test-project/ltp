@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 	struct sockaddr_nl src_addr;
 	struct pollfd pfd;
 
-	sigint_action.sa_flags = SA_ONESHOT;
+	sigint_action.sa_flags = SA_RESETHAND;
 	sigint_action.sa_handler = &sigint_handler;
 	sigaction(SIGINT, &sigint_action, NULL);
 
