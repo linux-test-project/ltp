@@ -22,18 +22,18 @@
 
 void child_proc()
 {
-	sigset_t sigset;
+	sigset_t signalset;
 	int sig;
 
-	if (sigemptyset(&sigset) != 0) {
+	if (sigemptyset(&signalset) != 0) {
 		perror("An error occurs when calling sigemptyset()");
 		exit(1);
 	}
-	if (sigaddset(&sigset, SIGUSR1) != 0) {
+	if (sigaddset(&signalset, SIGUSR1) != 0) {
 		perror("An error occurs when calling sigaddset()");
 		exit(1);
 	}
-	if (sigwait(&sigset, &sig) != 0) {
+	if (sigwait(&signalset, &sig) != 0) {
 		perror("An error occurs when calling sigwait()");
 		exit(1);
 	}

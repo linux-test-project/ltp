@@ -4743,7 +4743,7 @@ int aio_wait(int aio_id)
 #ifdef RECALL_SIZEOF
 	long mask[RECALL_SIZEOF];
 #endif
-	sigset_t sigset;
+	sigset_t signalset;
 	struct aio_info *aiop;
 #ifdef CRAY
 	struct iosw *ioswlist[1];
@@ -4762,11 +4762,11 @@ int aio_wait(int aio_id)
 		break;
 
 	case A_SIGNAL:
-		sigemptyset(&sigset);
+		sigemptyset(&signalset);
 		sighold(aiop->sig);
 
 		while (!aiop->signalled || !aiop->done) {
-			sigsuspend(&sigset);
+			sigsuspend(&signalset);
 			sighold(aiop->sig);
 		}
 		break;

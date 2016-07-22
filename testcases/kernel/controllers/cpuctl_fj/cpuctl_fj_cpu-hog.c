@@ -43,7 +43,7 @@ void sighandler(UNUSED int signo)
 
 int main(void)
 {
-	sigset_t sigset;
+	sigset_t signalset;
 	struct sigaction sa;
 
 	sa.sa_handler = sighandler;
@@ -54,10 +54,10 @@ int main(void)
 	if (sigaction(SIGUSR1, &sa, NULL) < 0)
 		err(1, "sigaction()");
 
-	if (sigemptyset(&sigset) < 0)
+	if (sigemptyset(&signalset) < 0)
 		err(1, "sigemptyset()");
 
-	sigsuspend(&sigset);
+	sigsuspend(&signalset);
 	if (errno != EINTR)
 		err(1, "sigsuspend()");
 

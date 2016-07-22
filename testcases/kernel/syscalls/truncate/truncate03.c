@@ -119,7 +119,7 @@ void setup(void)
 	struct passwd *ltpuser;
 	char *bad_addr;
 	struct rlimit rlim;
-	sigset_t sigset;
+	sigset_t signalset;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -157,9 +157,9 @@ void setup(void)
 	rlim.rlim_max = MAX_FSIZE;
 	SAFE_SETRLIMIT(cleanup, RLIMIT_FSIZE, &rlim);
 
-	sigemptyset(&sigset);
-	sigaddset(&sigset, SIGXFSZ);
-	TEST(sigprocmask(SIG_BLOCK, &sigset, NULL));
+	sigemptyset(&signalset);
+	sigaddset(&signalset, SIGXFSZ);
+	TEST(sigprocmask(SIG_BLOCK, &signalset, NULL));
 	if (TEST_RETURN != 0)
 		tst_brkm(TBROK | TTERRNO, cleanup, "sigprocmask");
 }

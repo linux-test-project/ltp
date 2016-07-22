@@ -41,7 +41,7 @@ char *TCID = "epoll_pwait01";
 int TST_TOTAL = 2;
 
 static int epfd, fds[2];
-static sigset_t sigset;
+static sigset_t signalset;
 static struct epoll_event epevs;
 static struct sigaction sa;
 
@@ -64,7 +64,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		do_test(&sigset);
+		do_test(&signalset);
 		do_test(NULL);
 	}
 
@@ -83,10 +83,10 @@ static void setup(void)
 
 	TEST_PAUSE;
 
-	if (sigemptyset(&sigset) == -1)
+	if (sigemptyset(&signalset) == -1)
 		tst_brkm(TFAIL | TERRNO, NULL, "sigemptyset() failed");
 
-	if (sigaddset(&sigset, SIGUSR1) == -1)
+	if (sigaddset(&signalset, SIGUSR1) == -1)
 		tst_brkm(TFAIL | TERRNO, NULL, "sigaddset() failed");
 
 	sa.sa_flags = 0;

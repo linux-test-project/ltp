@@ -161,7 +161,7 @@ void checkopt(int argc, char **argv)
 int cpu_hog(void)
 {
 	double f = 2744545.34456455;
-	sigset_t sigset;
+	sigset_t signalset;
 	struct cpuset *cp = NULL;
 	struct bitmask *cpumask = NULL;
 	int cpu;
@@ -180,12 +180,12 @@ int cpu_hog(void)
 		goto err1;
 	}
 
-	if (sigemptyset(&sigset) < 0) {
+	if (sigemptyset(&signalset) < 0) {
 		ret = -1;
 		goto err2;
 	}
 
-	sigsuspend(&sigset);
+	sigsuspend(&signalset);
 
 	if (cpuset_cpusetofpid(cp, 0) < 0) {
 		ret = -1;
@@ -249,7 +249,7 @@ int main(int argc, char **argv)
 	int i = 0;
 	pid_t pid;
 	pid_t *childpids = NULL;
-	sigset_t sigset;
+	sigset_t signalset;
 	int status = 0;
 	int ret = 0;
 
@@ -260,7 +260,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	if (sigemptyset(&sigset) < 0) {
+	if (sigemptyset(&signalset) < 0) {
 		warn("sigemptyset failed");
 		report_result("2\n");
 		exit(EXIT_FAILURE);
@@ -275,7 +275,7 @@ int main(int argc, char **argv)
 	memset(childpids, 0, (nprocs) * sizeof(pid_t));
 
 	report_result("0\n");
-	sigsuspend(&sigset);
+	sigsuspend(&signalset);
 	for (; i < nprocs; i++) {
 		pid = fork();
 		if (pid == -1) {
@@ -294,10 +294,10 @@ int main(int argc, char **argv)
 	report_result("0\n");
 
 	while (!end) {
-		if (sigemptyset(&sigset) < 0)
+		if (sigemptyset(&signalset) < 0)
 			ret = -1;
 		else
-			sigsuspend(&sigset);
+			sigsuspend(&signalset);
 
 		if (ret || end) {
 			for (i = 0; i < nprocs; i++) {

@@ -40,7 +40,7 @@ void sighandler(UNUSED int signo)
 
 int main(void)
 {
-	sigset_t sigset;
+	sigset_t signalset;
 	struct sigaction sa;
 	pid_t pid;
 	int status;
@@ -54,11 +54,11 @@ int main(void)
 	if (sigaction(SIGUSR1, &sa, NULL) < 0)
 		err(1, "sigaction()");
 
-	if (sigemptyset(&sigset) < 0)
+	if (sigemptyset(&signalset) < 0)
 		err(1, "sigemptyset()");
 
 	/* wait for the signal SIGUSR1 to start testing */
-	sigsuspend(&sigset);
+	sigsuspend(&signalset);
 	if (errno != EINTR)
 		err(1, "sigsuspend()");
 

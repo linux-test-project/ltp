@@ -71,13 +71,13 @@ int page_cache_hog(void)
 
 int mem_hog(void)
 {
-	sigset_t sigset;
+	sigset_t signalset;
 	int fd;
 	int ret = 0;
 
-	if (sigemptyset(&sigset) < 0)
+	if (sigemptyset(&signalset) < 0)
 		err(1, "sigemptyset()");
-	sigsuspend(&sigset);
+	sigsuspend(&signalset);
 
 	while (!end) {
 		ret = page_cache_hog();
@@ -96,7 +96,7 @@ int mem_hog(void)
 
 		close(fd);
 
-		sigsuspend(&sigset);
+		sigsuspend(&signalset);
 	}
 
 	return ret;
