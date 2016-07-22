@@ -122,10 +122,10 @@ int main(int argc, char *argv[])
 
 	}
 
-	/* Set up to catch SIGCLD signal */
-	if (signal(SIGCLD, chld) == SIG_ERR) {
+	/* Set up to catch SIGCHLD signal */
+	if (signal(SIGCHLD, chld) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
-			 "Error setting up SIGCLD signal, ERRNO = %d", errno);
+			 "Error setting up SIGCHLD signal, ERRNO = %d", errno);
 
 	}
 
@@ -236,9 +236,9 @@ int runtest(void)
 		tst_brkm(TFAIL, cleanup,
 			 "Error resetting SIGTERM signal, ERRNO = %d", errno);
 	}
-	if (signal(SIGCLD, SIG_DFL) == SIG_ERR) {
+	if (signal(SIGCHLD, SIG_DFL) == SIG_ERR) {
 		tst_brkm(TFAIL, cleanup,
-			 "Error resetting SIGCLD signal, ERRNO = %d", errno);
+			 "Error resetting SIGCHLD signal, ERRNO = %d", errno);
 	}
 
 	if (test_time) {
@@ -372,7 +372,7 @@ void term(int sig)
 
 void chld(int sig)
 {
-	/* Routine to handle SIGCLD signal. */
+	/* Routine to handle SIGCHLD signal. */
 
 	sigchld++;
 	if (jump) {

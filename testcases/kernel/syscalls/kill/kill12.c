@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
 	exno = 1;
 
-	if (sigset(SIGCLD, chsig) == SIG_ERR) {
+	if (sigset(SIGCHLD, chsig) == SIG_ERR) {
 		fprintf(temp, "\tsigset failed, errno = %d\n", errno);
 		fail_exit();
 	}
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 				sleep(1);
 
 			kill(pid, sig);	/* child should ignroe this sig */
-			kill(pid, SIGCLD);	/* child should exit */
+			kill(pid, SIGCHLD);	/* child should exit */
 
 #ifdef BCS
 			while ((npid = wait(&status)) != pid
@@ -222,14 +222,14 @@ void do_child(void)
 	int exno = 1;
 
 #ifdef UCLINUX
-	if (sigset(SIGCLD, chsig) == SIG_ERR) {
+	if (sigset(SIGCHLD, chsig) == SIG_ERR) {
 		fprintf(temp, "\tsigset failed, errno = %d\n", errno);
 		fail_exit();
 	}
 #endif
 
 	sigset(sig, SIG_IGN);	/* set to ignore signal */
-	kill(getppid(), SIGCLD);	/* tell parent we are ready */
+	kill(getppid(), SIGCHLD);	/* tell parent we are ready */
 	while (!chflag)
 		sleep(1);	/* wait for parent */
 

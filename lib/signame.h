@@ -50,13 +50,7 @@ const char *tst_strsig(int sig)
 	#ifdef SIGSTKFLT
 		PAIR(SIGSTKFLT)
 	#endif
-
-	#ifdef SIGCLD
-		/* SIGCLD same as SIGCHLD */
-		STRPAIR(SIGCHLD, "SIGCHLD/SIGCLD")
-	#else
 		PAIR(SIGCHLD)
-	#endif
 		PAIR(SIGCONT)
 		PAIR(SIGSTOP)
 		PAIR(SIGTSTP)

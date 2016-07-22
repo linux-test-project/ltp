@@ -55,18 +55,18 @@ of exiting following an unexpected interruption by a signal.
 program.
 .P
 The \fIfork_flag\fR parameter is used to tell \fItst_sig\fR
-whether or not to ignore the SIGCLD signal caused by the death of a
+whether or not to ignore the SIGCHLD signal caused by the death of a
 child process that had previously been created by the
 \fIfork\fR(2) system call (see \fIsignal\fR(2) for more
-information on the SIGCLD signal).
+information on the SIGCHLD signal).
 .P
 Setting \fIfork_flag\fR to FORK will cause \fItst_sig\fR to
-ignore the SIGCLD signal.  This option should be set if the
+ignore the SIGCHLD signal.  This option should be set if the
 test program directly (eg. call \fIfork\fR(2)) or indirectly
 (eg. call \fIsystem\fR(3S)) creates a child process.
 .P
 Setting \fIfork_flag\fR to NOFORK will cause \fItst_sig\fR to
-treat the SIGCLD signal just as any other unexpected
+treat the SIGCHLD signal just as any other unexpected
 signal (ie. the \fIhandler\fR will be called).
 This option should be set by any test program which does not
 directly or indirectly create any child processes.

@@ -38,8 +38,7 @@ char * signames [] =
  "SIGALRM", //         14      // Alarm clock (POSIX).
  "SIGTERM", //         15      // Termination (ANSI).
  "SIGSTKFLT", //       16      // Stack fault.
- "SIGCLD/SIGCHLD", //  SIGCHLD // Same as SIGCHLD (System V).
- //"SIGCHLD", //       17      // Child status has changed (POSIX).
+ "SIGCHLD", //         17      // Child status has changed (POSIX).
  "SIGCONT", //         18      // Continue (POSIX).
  "SIGSTOP", //         19      // Stop, unblockable (POSIX).
  "SIGTSTP", //         20      // Keyboard stop (POSIX).

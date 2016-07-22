@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 	 * stop upon receiving the signal).
 	 *
 	 * Wait for the child process to receive the SIGSTOP signal
-	 * and send a corresponding SIGCLD interrupt to the parent.
+	 * and send a corresponding SIGCHLD interrupt to the parent.
 	 *
 	 * Send SIGKILL signal to child process (child process
 	 * will exit upon receiving the signal).

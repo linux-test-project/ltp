@@ -49,7 +49,7 @@
 		fork_flag - set to FORK or NOFORK depending upon whether the
 			calling program executes a fork() system call.  It
 			is normally the case that the calling program treats
-			SIGCLD as an expected signal if fork() is being used.
+			SIGCHLD as an expected signal if fork() is being used.
 
 		handler - a pointer to the unexpected signal handler to
 			be executed after an unexpected signal has been
@@ -82,7 +82,7 @@ static void (*tst_setup_signal(int, void (*)(int))) (int);
 
 /****************************************************************************
  * tst_sig() : set-up to catch unexpected signals.  fork_flag is set to NOFORK
- *    if SIGCLD is to be an "unexpected signal", otherwise it is set to
+ *    if SIGCHLD is to be an "unexpected signal", otherwise it is set to
  *    FORK.  cleanup points to a cleanup routine to be executed before
  *    tst_exit is called (cleanup is set to NULL if no cleanup is desired).
  *    handler is a pointer to the signal handling routine (if handler is
@@ -117,7 +117,7 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 	for (sig = 1; sig < NSIG; sig++) {
 		/*
 		 * SIGKILL is never unexpected.
-		 * SIGCLD is only unexpected when
+		 * SIGCHLD is only unexpected when
 		 *    no forking is being done.
 		 * SIGINFO is used for file quotas and should be expected
 		 */
@@ -205,7 +205,7 @@ void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 #endif
 			break;
 
-		case SIGCLD:
+		case SIGCHLD:
 			if (fork_flag == FORK)
 				continue;
 

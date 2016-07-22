@@ -150,9 +150,9 @@ int setup(void)
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = catch_child;
 	sigemptyset(&act.sa_mask);
-	sigaddset(&act.sa_mask, SIGCLD);
-	if (sigaction(SIGCLD, &act, NULL) < 0) {
-		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d", errno);
+	sigaddset(&act.sa_mask, SIGCHLD);
+	if (sigaction(SIGCHLD, &act, NULL) < 0) {
+		tst_resm(TFAIL, "SIGCHLD signal setup failed, errno: %d", errno);
 		return 1;
 	}
 	return 0;
@@ -390,7 +390,7 @@ void stop_children(void)
 {
 	int arg;
 
-	signal(SIGCLD, SIG_DFL);
+	signal(SIGCHLD, SIG_DFL);
 	arg = STOP;
 	child_free(child_pipe1[1], arg);
 	child_free(child_pipe2[1], arg);

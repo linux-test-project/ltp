@@ -77,7 +77,7 @@ static int sigs_map[NUMSIGS];
 static int skip_sig(int sig)
 {
 	switch (sig) {
-	case SIGCLD:
+	case SIGCHLD:
 	case SIGKILL:
 	case SIGALRM:
 	case SIGSTOP:

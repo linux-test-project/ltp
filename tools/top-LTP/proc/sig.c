@@ -23,7 +23,7 @@
  * You get SIGSTKFLT and SIGUNUSED instead on i386, m68k, ppc, and arm.
  * (this is a Linux & libc bug -- both must be fixed)
  *
- * Total garbage: SIGIO SIGINFO SIGIOT SIGLOST SIGCLD
+ * Total garbage: SIGIO SIGINFO SIGIOT SIGLOST SIGCHLD
  *                 (popular ones are handled as aliases)
  * Nearly garbage: SIGSTKFLT SIGUNUSED (nothing else to fill slots)
  */

@@ -61,7 +61,7 @@ to \fBtst_tmpdir()\fR and should be called immediately prior to the test
 exiting via \fBtst_exit()\fR.
 .P
 \fBtst_rmdir()\fR uses the \fBsystem\fR(3S) library routine (which in turn
-calls \fBfork\fR(2)), so tests that use it \fBcannot\fR treat SIGCLD as an
+calls \fBfork\fR(2)), so tests that use it \fBcannot\fR treat SIGCHLD as an
 unexpected signal.
 .P
 Users may gain access to the name of the temporary directory by declaring the

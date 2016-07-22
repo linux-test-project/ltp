@@ -701,7 +701,7 @@ void setup(void)
 
 	/*
 	 *  Set to catch unexpected signals.
-	 *  SIGCLD is set to be ignored because we do not wait for termination status.
+	 *  SIGCHLD is set to be ignored because we do not wait for termination status.
 	 *  SIGUSR1 is set to be ignored because this is the signal we are using for
 	 *  the test and we are not concerned with the parent getting it.
 	 */
@@ -713,9 +713,9 @@ void setup(void)
 			 "signal(SIGUSR1, SIG_IGN) failed");
 	}
 
-	if (signal(SIGCLD, SIG_IGN) == SIG_ERR) {
+	if (signal(SIGCHLD, SIG_IGN) == SIG_ERR) {
 		tst_brkm(TBROK | TERRNO, NULL,
-			 "signal(SIGCLD, SIG_IGN) failed");
+			 "signal(SIGCHLD, SIG_IGN) failed");
 	}
 
 	TEST_PAUSE;

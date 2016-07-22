@@ -1640,7 +1640,7 @@ int set_sig(void)
 #ifdef SIGRESTART
 		case SIGRESTART:
 #endif /* SIGRESTART */
-		case SIGCLD:
+		case SIGCHLD:
 			break;
 
 		default:

@@ -573,7 +573,7 @@ int main(int argc, char **argv)
 		case SIGTSTP:
 		case SIGSTOP:
 		case SIGCONT:
-		case SIGCLD:
+		case SIGCHLD:
 		case SIGBUS:
 		case SIGSEGV:
 		case SIGQUIT:
@@ -615,7 +615,7 @@ int main(int argc, char **argv)
 	}
 
 	sigemptyset(&block_mask);
-	sigaddset(&block_mask, SIGCLD);
+	sigaddset(&block_mask, SIGCHLD);
 	sigprocmask(SIG_BLOCK, &block_mask, &omask);
 
 	/*

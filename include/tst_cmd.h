@@ -92,7 +92,7 @@ static inline int tst_run_cmd(void (cleanup_fn)(void),
 }
 #endif
 
-/* Wrapper function for system(3), ignorcing SIGCLD signal.
+/* Wrapper function for system(3), ignorcing SIGCHLD signal.
  * @command: the command to be run.
  */
 int tst_system(const char *command);

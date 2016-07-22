@@ -109,9 +109,9 @@ void setup(void)
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = catch_child;
 	sigemptyset(&act.sa_mask);
-	sigaddset(&act.sa_mask, SIGCLD);
-	if (sigaction(SIGCLD, &act, NULL) == -1)
-		tst_brkm(TFAIL | TERRNO, cleanup, "SIGCLD signal setup failed");
+	sigaddset(&act.sa_mask, SIGCHLD);
+	if (sigaction(SIGCHLD, &act, NULL) == -1)
+		tst_brkm(TFAIL | TERRNO, cleanup, "SIGCHLD signal setup failed");
 }
 
 void cleanup(void)
@@ -264,7 +264,7 @@ void stop_child(void)
 {
 	struct flock fl;
 
-	signal(SIGCLD, SIG_DFL);
+	signal(SIGCHLD, SIG_DFL);
 	fl.l_type = STOP;
 	parent_put(&fl);
 	wait(0);
