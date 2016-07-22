@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <sched.h>
 
 #include "lapi/fcntl.h"
 #include "tst_test.h"
@@ -84,7 +85,7 @@ void *thread_fn_01(void *arg)
 		if (fcntl(fd, F_OFD_SETLKW, &lck) == -1)
 			tst_brk(TBROK | TERRNO, "fcntl() failed");
 
-		pthread_yield();
+		sched_yield();
 	}
 
 	SAFE_CLOSE(fd);
