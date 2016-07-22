@@ -96,7 +96,6 @@
 #include <fcntl.h>
 #include <sys/syscall.h>
 #include <unistd.h>
-#include <error.h>
 #include <inttypes.h>
 #include <sys/utsname.h>
 

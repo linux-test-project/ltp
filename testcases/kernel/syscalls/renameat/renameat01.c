@@ -42,7 +42,6 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <fcntl.h>
-#include <error.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
