@@ -421,8 +421,8 @@ int main(int argc,		/* number of input parameters.                        */
 		} else {
 			if (status == (thread_sched_t *) - 1) {
 				fprintf(stderr,
-					"thread [%d] - process exited with errors %d\n",
-					thrd_ndx, WEXITSTATUS(status));
+					"thread [%d] - process exited with exit code -1\n",
+					thrd_ndx);
 				exit(-1);
 			} else {
 				exp_prio[thrd_ndx] = status->exp_prio;
