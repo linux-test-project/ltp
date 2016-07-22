@@ -102,7 +102,11 @@ int main(void)
 	test_sysconf(_SC_ATEXIT_MAX);
 	test_sysconf(_SC_2_C_BIND);
 	test_sysconf(_SC_2_C_DEV);
+#ifdef _SC_2_C_VERSION
 	test_sysconf(_SC_2_C_VERSION);
+#else
+	tst_resm(TCONF, "_SC_2_C_VERSION not defined");
+#endif
 	/* 21 - 25 */
 	test_sysconf(_SC_2_CHAR_TERM);
 	test_sysconf(_SC_2_FORT_DEV);
