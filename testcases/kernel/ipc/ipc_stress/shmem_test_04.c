@@ -116,7 +116,7 @@ typedef unsigned long ulong_t;
  * sys_error (): System error message function
  * error (): Error message function
  */
-static int mkemptyfile(uint);
+static int mkemptyfile(unsigned int);
 static void parse_args(int, char **);
 static void cleanup(int);
 static void setup_signal_handlers();
@@ -476,7 +476,7 @@ static void int_handler(int sig)
  *
  * Make an empty temporary file of a given size and return its descriptor.
  */
-static int mkemptyfile(uint size)
+static int mkemptyfile(unsigned int size)
 {
 #ifdef _LINUX_
 
