@@ -25,7 +25,7 @@ int main(argc, argv)
 int argc;
 char **argv;
 {
-	u_char b_addr[IN6ADDRSZ];
+	unsigned char b_addr[IN6ADDRSZ];
 	struct hostent *host;
 	char **ap, **cp, *arg;
 	const char *prog = "amnesia";
