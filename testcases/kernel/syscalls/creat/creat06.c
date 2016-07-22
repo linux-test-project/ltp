@@ -51,6 +51,7 @@
 
 #include <errno.h>
 #include <string.h>
+#include <limits.h>
 #include <pwd.h>
 #include <sys/mman.h>
 #include <sys/types.h>
