@@ -34,29 +34,82 @@
  */
 
 #include <errno.h>
+#include <stdio.h>
+#include <sys/mount.h>
 #include <sys/sysinfo.h>
 #include "tst_test.h"
 
-#define GB_SZ  (1024*1024*1024)
+#define CHUNK_SZ (400*1024*1024L)
+#define CHUNK_PAGES (CHUNK_SZ / pg_sz)
+#define PASS_THRESHOLD (CHUNK_SZ / 4)
 
-static long dst_max;
+#define MNT_NAME "memory"
+#define GROUP_NAME "madvise06"
+
+static const char drop_caches_fname[] = "/proc/sys/vm/drop_caches";
 static int pg_sz;
+
+static void check_path(const char *path)
+{
+	if (access(path, R_OK | W_OK))
+		tst_brk(TCONF, "file needed: %s\n", path);
+}
 
 static void setup(void)
 {
-	struct sysinfo sys_buf;
-
-	sysinfo(&sys_buf);
-
-	if (sys_buf.totalram < 2L * GB_SZ)
-		tst_brk(TCONF, "Test requires more than 2GB of RAM");
-	if (sys_buf.totalram > 100L * GB_SZ)
-		tst_brk(TCONF, "System RAM is too large, skip test");
-
-	dst_max = sys_buf.totalram / GB_SZ;
-	tst_res(TINFO, "dst_max = %ld", dst_max);
+	struct sysinfo sys_buf_start;
 
 	pg_sz = getpagesize();
+
+	check_path(drop_caches_fname);
+	tst_res(TINFO, "dropping caches");
+	sync();
+	SAFE_FILE_PRINTF(drop_caches_fname, "3");
+
+	sysinfo(&sys_buf_start);
+	if (sys_buf_start.freeram < 2 * CHUNK_SZ)
+		tst_brk(TCONF, "System RAM is too small, skip test");
+	if (sys_buf_start.freeswap < 2 * CHUNK_SZ)
+		tst_brk(TCONF, "System swap is too small");
+
+	SAFE_MKDIR(MNT_NAME, 0700);
+	if (mount("memory", MNT_NAME, "cgroup", 0, "memory") == -1) {
+		if (errno == ENODEV || errno == ENOENT)
+			tst_brk(TCONF, "memory cgroup needed");
+	}
+	SAFE_MKDIR(MNT_NAME"/"GROUP_NAME, 0700);
+
+	check_path("/proc/self/oom_score_adj");
+	check_path(MNT_NAME"/"GROUP_NAME"/memory.limit_in_bytes");
+	check_path(MNT_NAME"/"GROUP_NAME"/memory.swappiness");
+	check_path(MNT_NAME"/"GROUP_NAME"/tasks");
+
+	SAFE_FILE_PRINTF("/proc/self/oom_score_adj", "%d", -1000);
+	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.limit_in_bytes", "%ld\n",
+		PASS_THRESHOLD);
+	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.swappiness", "60");
+	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/tasks", "%d\n", getpid());
+}
+
+static void cleanup(void)
+{
+	FILE *f = fopen(MNT_NAME"/tasks", "w");
+
+	if (f) {
+		fprintf(f, "%d\n", getpid());
+		fclose(f);
+	}
+	rmdir(MNT_NAME"/"GROUP_NAME);
+	umount(MNT_NAME);
+}
+
+static void dirty_pages(char *ptr, long size)
+{
+	long i;
+	long pages = size / pg_sz;
+
+	for (i = 0; i < pages; i++)
+		ptr[i * pg_sz] = 'x';
 }
 
 static int get_page_fault_num(void)
@@ -66,46 +119,52 @@ static int get_page_fault_num(void)
 	SAFE_FILE_SCANF("/proc/self/stat",
 			"%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %d",
 			&pg);
-
 	return pg;
 }
 
 static void test_advice_willneed(void)
 {
-	int i;
-	char *src;
-	char *dst[100];
-	int page_fault_num_1;
-	int page_fault_num_2;
+	int loops = 50;
+	char *target;
+	long swapcached_start, swapcached;
+	int page_fault_num_1, page_fault_num_2;
 
-	/* allocate source memory (1GB only) */
-	src = SAFE_MMAP(NULL, 1 * GB_SZ, PROT_READ | PROT_WRITE,
+	target = SAFE_MMAP(NULL, CHUNK_SZ, PROT_READ | PROT_WRITE,
 			MAP_SHARED | MAP_ANONYMOUS,
 			-1, 0);
+	dirty_pages(target, CHUNK_SZ);
 
-	/* allocate destination memory (array) */
-	for (i = 0; i < dst_max; ++i)
-		dst[i] = SAFE_MMAP(NULL, 1 * GB_SZ,
-				PROT_READ | PROT_WRITE,
-				MAP_SHARED | MAP_ANONYMOUS,
-				-1, 0);
+	SAFE_FILE_LINES_SCANF("/proc/meminfo", "SwapCached: %ld",
+		&swapcached_start);
+	tst_res(TINFO, "SwapCached (before madvise): %ld", swapcached_start);
 
-	/* memmove source to each destination memories (for SWAP-OUT) */
-	for (i = 0; i < dst_max; ++i)
-		memmove(dst[i], src, 1 * GB_SZ);
-
-	tst_res(TINFO, "PageFault(no madvice): %d", get_page_fault_num());
-
-	/* Do madvice() to dst[0] */
-	TEST(madvise(dst[0], pg_sz, MADV_WILLNEED));
+	TEST(madvise(target, CHUNK_SZ, MADV_WILLNEED));
 	if (TEST_RETURN == -1)
 		tst_brk(TBROK | TERRNO, "madvise failed");
 
+	do {
+		loops--;
+		usleep(100000);
+		SAFE_FILE_LINES_SCANF("/proc/meminfo", "SwapCached: %ld",
+			&swapcached);
+	} while (swapcached < swapcached_start + PASS_THRESHOLD / 1024
+		&& loops > 0);
+
+	tst_res(TINFO, "SwapCached (after madvise): %ld", swapcached);
+	if (swapcached > swapcached_start + PASS_THRESHOLD / 1024) {
+		tst_res(TPASS, "Regression test pass");
+		SAFE_MUNMAP(target, CHUNK_SZ);
+		return;
+	}
+
+	/*
+	 * We may have hit a bug or we just have slow I/O,
+	 * try accessing first page.
+	 */
 	page_fault_num_1 = get_page_fault_num();
 	tst_res(TINFO, "PageFault(madvice / no mem access): %d",
 			page_fault_num_1);
-
-	*dst[0] = 'a';
+	target[0] = 'a';
 	page_fault_num_2 = get_page_fault_num();
 	tst_res(TINFO, "PageFault(madvice / mem access): %d",
 			page_fault_num_2);
@@ -115,13 +174,14 @@ static void test_advice_willneed(void)
 	else
 		tst_res(TPASS, "Regression test pass");
 
-	SAFE_MUNMAP(src, 1 * GB_SZ);
-	for (i = 0; i < dst_max; ++i)
-		SAFE_MUNMAP(dst[i], 1 * GB_SZ);
+	SAFE_MUNMAP(target, CHUNK_SZ);
 }
 
 static struct tst_test test = {
-	.tid = "madvice06",
+	.tid = "madvise06",
 	.test_all = test_advice_willneed,
 	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1,
+	.needs_root = 1,
 };
