@@ -85,7 +85,12 @@ int main(int argc, char *argv[])
 		if (fd == -1)
 			tst_brkm(TBROK | TERRNO, NULL, "open %s", TESTFILE);
 
-		pgoff = ULONG_MAX - 1;
+		/*
+		 * The pgoff is counted in 4K units and must be page-aligned,
+		 * hence we must align it down to page_size/4096 in a case that
+		 * the system has page_size > 4K.
+		 */
+		pgoff = (ULONG_MAX - 1)&(~((pgsz-1)>>12));
 		map = mmap2(NULL, pgsz, PROT_READ | PROT_WRITE, MAP_PRIVATE,
 			    fd, pgoff);
 		if (map == MAP_FAILED)
