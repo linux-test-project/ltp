@@ -477,7 +477,7 @@ static int rm_file_dir(int numsdir,	/* how many subdirs to remove         */
 static void *crte_mk_rm(void *args)
 {
 	int dircnt;		/* index to the number of subdirectories      */
-	int fd;			/* file discriptor of the files genetated     */
+	int fd;			/* file descriptor of the files genetated     */
 	int filecnt;		/* index to the number of ".c" files created  */
 	int numchar[2];		/* number of characters written to buffer     */
 	char *dirname;		/* name of the directory/idirectory tree      */

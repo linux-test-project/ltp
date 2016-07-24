@@ -307,7 +307,7 @@ static int do_test(struct test_case *tc)
 	unsigned prio;
 
 	/*
-	 * When test ended with SIGTERM etc, mq discriptor is left remains.
+	 * When test ended with SIGTERM etc, mq descriptor is left remains.
 	 * So we delete it first.
 	 */
 	TEST(mq_unlink(QUEUE_NAME));

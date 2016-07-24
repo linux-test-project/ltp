@@ -226,7 +226,7 @@ int main(int argc, char **argv)
 
 		tst_resm(TINFO, "Exit block 3");
 
-//block4: /* given bad file discriptor, writev return EBADF. */
+//block4: /* given bad file descriptor, writev return EBADF. */
 		tst_resm(TPASS, "Enter block 4");
 
 		TEST(writev(fd[1], (wr_iovec + 9), 1));
