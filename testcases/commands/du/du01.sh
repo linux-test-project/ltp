@@ -31,6 +31,9 @@ setup()
 	tst_tmpdir
 	TST_CLEANUP=cleanup
 
+	ROD_SILENT mkdir basedir
+	ROD_SILENT cd basedir
+
 	ROD_SILENT dd if=/dev/zero of=testfile bs=1M count=10
 
 	ROD_SILENT mkdir -p testdir
@@ -53,11 +56,11 @@ du_test()
 {
 	local test_return
 
-	$1 > temp 2>&1
+	$1 > ../temp 2>&1
 	test_return=$?
 
 	if [ ${test_return} -ne 0 ]; then
-		grep -q -E "unrecognized option|invalid option" temp
+		grep -q -E "unrecognized option|invalid option" ../temp
 		if [ $? -eq 0 ]; then
 			tst_resm TCONF "'$1' not supported"
 		else
@@ -66,13 +69,13 @@ du_test()
 		return
 	fi
 
-	grep -q $2 temp
+	grep -q $2 ../temp
 	if [ $? -eq 0 ]; then
 		tst_resm TPASS "'$1' passed"
 	else
 		tst_resm TFAIL "'$1' failed"
 		tst_resm TINFO "Looking for '$2' in:"
-		cat temp
+		cat ../temp
 	fi
 }
 
