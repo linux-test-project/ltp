@@ -45,9 +45,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "test.h"
-#include <libclone.h>
 #include "pidns_helper.h"
+#include "test.h"
 
 char *TCID = "pidns13";
 int TST_TOTAL = 1;

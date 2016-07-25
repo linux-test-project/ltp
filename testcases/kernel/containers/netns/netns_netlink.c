@@ -40,10 +40,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include "netns_helper.h"
 #include "test.h"
 #include "safe_macros.h"
-#include "netns_helper.h"
-
 
 #define MAX_TRIES 1000
 #define IP_TUNTAP_MIN_VER 100519

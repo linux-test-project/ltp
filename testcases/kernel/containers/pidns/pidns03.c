@@ -31,10 +31,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include "pidns_helper.h"
 #include "test.h"
 #include "safe_macros.h"
-#include "libclone.h"
-#include "pidns_helper.h"
 
 #define PROCDIR "proc"
 char *TCID = "pidns03";

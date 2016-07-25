@@ -56,10 +56,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include "test.h"
 #define CLEANUP cleanup
-#include "libclone.h"
 #include "pidns_helper.h"
+#include "test.h"
 
 #define INIT_PID	1
 #define CHILD_PID       1

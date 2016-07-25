@@ -52,8 +52,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include "libclone.h"
 #include "test.h"
-#include <libclone.h>
 #include "safe_macros.h"
 
 char *TCID = "uts_namespace";

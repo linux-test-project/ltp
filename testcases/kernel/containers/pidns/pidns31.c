@@ -53,10 +53,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <mqueue.h>
-#include "test.h"
 #include "linux_syscall_numbers.h"
-#include "libclone.h"
 #include "pidns_helper.h"
+#include "test.h"
 
 char *TCID = "pidns31";
 int TST_TOTAL = 1;

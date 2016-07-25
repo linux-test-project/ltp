@@ -46,9 +46,8 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
-#include "test.h"
-#include <libclone.h>
 #include "pidns_helper.h"
+#include "test.h"
 
 #define CHILD_PID	1
 #define PARENT_PID	0

@@ -24,8 +24,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include "test.h"
 #include "pidns_helper.h"
+#include "test.h"
 
 #define MAXNEST 32
 

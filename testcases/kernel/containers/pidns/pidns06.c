@@ -41,10 +41,9 @@
 #include <assert.h>
 #include <unistd.h>
 #include <errno.h>
-#include "test.h"
-#include <libclone.h>
 #include <signal.h>
 #include "pidns_helper.h"
+#include "test.h"
 
 #define CINIT_PID       1
 #define PARENT_PID      0

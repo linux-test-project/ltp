@@ -47,9 +47,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include "test.h"
-#include "libclone.h"
 #include "userns_helper.h"
+#include "test.h"
 
 #define CHILD1UID 0
 #define CHILD1GID 0

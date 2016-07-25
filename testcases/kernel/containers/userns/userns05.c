@@ -29,8 +29,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include "test.h"
 #include "userns_helper.h"
+#include "test.h"
 
 char *TCID = "user_namespace5";
 int TST_TOTAL = 1;

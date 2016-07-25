@@ -27,8 +27,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include "test.h"
 #include "libclone.h"
+#include "test.h"
 #include "config.h"
 #if HAVE_SYS_CAPABILITY_H
 #include <sys/capability.h>

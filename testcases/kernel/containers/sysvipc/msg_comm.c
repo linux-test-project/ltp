@@ -33,11 +33,9 @@
 #include <sys/wait.h>
 #include <stdio.h>
 #include <errno.h>
+#include "ipcns_helper.h"
 #include "test.h"
 #include "safe_macros.h"
-#include "libclone.h"
-#include "ipcns_helper.h"
-
 
 #define TESTKEY 124426L
 #define MSGSIZE 50

@@ -43,7 +43,6 @@
 #include <time.h>
 #include <unistd.h>
 #include <utime.h>
-#include "test.h"
 #include <sched.h>
 #include <stdarg.h>
 #include <sys/mount.h>
@@ -51,6 +50,7 @@
 #include <net/if.h>
 #include <linux/ip.h>
 #include <err.h>
+#include "test.h"
 
 /*
  * Some architectures like mips n32 don't have __NR_uselib defined in the

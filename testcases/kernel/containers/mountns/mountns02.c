@@ -40,15 +40,12 @@
 #include <sys/mount.h>
 #include <stdio.h>
 #include <errno.h>
-#include "test.h"
-#include "libclone.h"
-#include "safe_macros.h"
 #include "mountns_helper.h"
-
+#include "test.h"
+#include "safe_macros.h"
 
 char *TCID	= "mountns02";
 int TST_TOTAL	= 2;
-
 
 #if defined(MS_SHARED) && defined(MS_PRIVATE) && defined(MS_REC)
 
