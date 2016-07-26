@@ -19,6 +19,9 @@
 #ifndef __LAPI_FCNTL_H__
 #define __LAPI_FCNTL_H__
 
+#include <fcntl.h>
+#include <sys/socket.h>
+
 #ifndef O_CLOEXEC
 # define O_CLOEXEC 02000000
 #endif
