@@ -24,6 +24,7 @@
  *      'prot' is set to PROT_EXEC.
  */
 
+#include "config.h"
 #include <signal.h>
 #include <setjmp.h>
 #include <sys/types.h>
@@ -178,6 +179,16 @@ static int page_present(void *p)
 	return 0;
 }
 
+static void clear_cache(void *start, int len)
+{
+#if HAVE_BUILTIN_CLEAR_CACHE == 1
+	__builtin___clear_cache(start, start + len);
+#else
+	tst_brkm(TCONF, cleanup,
+		"compiler doesn't have __builtin___clear_cache()");
+#endif
+}
+
 /*
  * Copy page where &exec_func resides. Also try to copy subsequent page
  * in case exec_func is close to page boundary.
@@ -189,10 +200,7 @@ static void *get_func(void *mem)
 	uintptr_t func_page_offset = (uintptr_t)&exec_func & (page_sz - 1);
 	void *func_copy_start = mem + func_page_offset;
 	void *page_to_copy = (void *)((uintptr_t)&exec_func & page_mask);
-#ifdef __powerpc__
 	void *mem_start = mem;
-	uintptr_t i;
-#endif
 
 	/* copy 1st page, if it's not present something is wrong */
 	if (!page_present(page_to_copy)) {
@@ -210,11 +218,7 @@ static void *get_func(void *mem)
 	else
 		memset(mem, 0, page_sz);
 
-#ifdef __powerpc__
-	for (i = 0; i < copy_sz; i += 4)
-		__asm__ __volatile__("dcbst 0,%0; sync; icbi 0,%0; sync; isync"
-			:: "r"(mem_start + i));
-#endif
+	clear_cache(mem_start, copy_sz);
 
 	/* return pointer to area where copy of exec_func resides */
 	return func_copy_start;
