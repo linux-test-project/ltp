@@ -41,7 +41,6 @@
  *      -ported to LTP
  *
  */
-#include "test.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,6 +51,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include "lapi/semun.h"
+#include "test.h"
 
 #define KEY IPC_PRIVATE
 

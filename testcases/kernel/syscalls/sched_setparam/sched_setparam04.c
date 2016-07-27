@@ -73,11 +73,10 @@
  *
  *********************************************************************/
 
-#include "test.h"
-
 #include <errno.h>
 #include <sched.h>
 #include <pwd.h>
+#include "test.h"
 
 static void cleanup(void);
 static void setup(void);
