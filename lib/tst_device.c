@@ -215,7 +215,7 @@ const char *tst_acquire_device(void (cleanup_fn)(void))
 		return dev;
 	}
 
-	if (tst_fill_file(DEV_FILE, 0, 1024, 102400)) {
+	if (tst_fill_file(DEV_FILE, 0, 1024, 153600)) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 		         "Failed to create " DEV_FILE);
 
