@@ -122,7 +122,7 @@ main()
 
     local scenfile=""
 
-    while getopts c:d:hi:l:m:No:pqrS:b:B: arg
+    while getopts c:d:hi:l:m:No:pqr:S:b:B: arg
     do  case $arg in
         c)
 	    NUM_PROCS=$(($OPTARG))
