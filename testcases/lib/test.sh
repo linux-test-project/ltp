@@ -134,6 +134,7 @@ tst_rmdir()
 #
 tst_check_cmds()
 {
+	local cmd
 	for cmd in $*; do
 		if ! command -v $cmd > /dev/null 2>&1; then
 			tst_brkm TCONF "'$cmd' not found"
