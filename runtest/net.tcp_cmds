@@ -4,6 +4,7 @@
 #
 arp arp01
 arping01 arping01.sh
+clockdiff01 clockdiff01.sh
 echo export TCbin=$LTPROOT/testcases/network/tcp_cmds/echo; echo01
 finger finger01
 ftp export TCbin=$LTPROOT/testcases/network/tcp_cmds/ftp; ftp01
