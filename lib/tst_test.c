@@ -393,7 +393,7 @@ static void parse_topt(unsigned int topts_len, int opt, char *optarg)
 	if (i >= topts_len)
 		tst_brk(TBROK, "Invalid option '%c' (should not happen)", opt);
 
-	*(toptions[i].arg) = optarg;
+	*(toptions[i].arg) = optarg ? optarg : "";
 }
 
 /* see self_exec.c */
