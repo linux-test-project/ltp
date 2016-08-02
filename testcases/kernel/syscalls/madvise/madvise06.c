@@ -182,6 +182,7 @@ static struct tst_test test = {
 	.test_all = test_advice_willneed,
 	.setup = setup,
 	.cleanup = cleanup,
+	.min_kver = "3.10.0",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 };
