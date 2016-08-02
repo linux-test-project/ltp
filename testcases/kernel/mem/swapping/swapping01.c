@@ -68,7 +68,7 @@ static void init_meminfo(void);
 static void do_alloc(void);
 static void check_swapping(void);
 
-static long mem_free_init;
+static long mem_available_init;
 static long swap_free_init;
 static long mem_over;
 static long mem_over_max;
@@ -108,18 +108,19 @@ int main(int argc, char *argv[])
 static void init_meminfo(void)
 {
 	swap_free_init = read_meminfo("SwapFree:");
-	mem_free_init = read_meminfo("MemFree:");
-	mem_over = mem_free_init * COE_SLIGHT_OVER;
-	mem_over_max = mem_free_init * COE_DELTA;
-
-	/* at least 10MB free physical memory needed */
-	if (mem_free_init < 10240) {
-		sleep(5);
-		if (mem_free_init < 10240)
-			tst_brkm(TCONF, cleanup,
-				 "Not enough free memory to test.");
+	if (FILE_LINES_SCANF(cleanup, "/proc/meminfo", "MemAvailable: %ld",
+		&mem_available_init)) {
+		mem_available_init = read_meminfo("MemFree:")
+			+ read_meminfo("Cached:");
 	}
-	if (swap_free_init < mem_over)
+	mem_over = mem_available_init * COE_SLIGHT_OVER;
+	mem_over_max = mem_available_init * COE_DELTA;
+
+	/* at least 10MB available physical memory needed */
+	if (mem_available_init < 10240)
+		tst_brkm(TCONF, cleanup, "Not enough available mem to test.");
+
+	if (swap_free_init < mem_over_max)
 		tst_brkm(TCONF, cleanup, "Not enough swap space to test.");
 }
 
@@ -128,8 +129,9 @@ static void do_alloc(void)
 	long mem_count;
 	void *s;
 
-	tst_resm(TINFO, "free physical memory: %ld MB", mem_free_init / 1024);
-	mem_count = mem_free_init + mem_over;
+	tst_resm(TINFO, "available physical memory: %ld MB",
+		mem_available_init / 1024);
+	mem_count = mem_available_init + mem_over;
 	tst_resm(TINFO, "try to allocate: %ld MB", mem_count / 1024);
 	s = malloc(mem_count * 1024);
 	if (s == NULL)
@@ -144,7 +146,7 @@ static void do_alloc(void)
 static void check_swapping(void)
 {
 	int status, i;
-	long swapped;
+	long swap_free_now, swapped;
 
 	/* wait child stop */
 	if (waitpid(pid, &status, WUNTRACED) == -1)
@@ -153,15 +155,24 @@ static void check_swapping(void)
 		tst_brkm(TBROK, cleanup, "child was not stopped.");
 
 	/* Still occupying memory, loop for a while */
-	for (i = 0; i < 10; i++) {
-		swapped = swap_free_init - read_meminfo("SwapFree:");
-		if (swapped > mem_over_max) {
-			kill(pid, SIGCONT);
-			tst_brkm(TFAIL, cleanup, "heavy swapping detected: "
-				 "%ld MB swapped.", swapped / 1024);
-		}
+	i = 0;
+	while (i < 10) {
+		swap_free_now = read_meminfo("SwapFree:");
 		sleep(1);
+		if (abs(swap_free_now - read_meminfo("SwapFree:")) < 512)
+			break;
+
+		i++;
 	}
+
+	swap_free_now = read_meminfo("SwapFree:");
+	swapped = swap_free_init - swap_free_now;
+	if (swapped > mem_over_max) {
+		kill(pid, SIGCONT);
+		tst_brkm(TFAIL, cleanup, "heavy swapping detected: "
+				"%ld MB swapped.", swapped / 1024);
+	}
+
 	tst_resm(TPASS, "no heavy swapping detected, %ld MB swapped.",
 		 swapped / 1024);
 	kill(pid, SIGCONT);
