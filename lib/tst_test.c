@@ -330,10 +330,10 @@ static struct option {
 	char *optstr;
 	char *help;
 } options[] = {
-	{"h",  "-h      Prints this help"},
-	{"i:", "-i n    Execute test n times"},
-	{"I:", "-I x    Execute test for n seconds"},
-	{"C:", "-C ARG  Run child process with ARG arguments (used internally)"},
+	{"h",  "-h       Prints this help"},
+	{"i:", "-i n     Execute test n times"},
+	{"I:", "-I x     Execute test for n seconds"},
+	{"C:", "-C ARG   Run child process with ARG arguments (used internally)"},
 };
 
 static void print_help(void)
@@ -347,7 +347,7 @@ static void print_help(void)
 		return;
 
 	for (i = 0; tst_test->options[i].optstr; i++)
-		fprintf(stderr, "%s", tst_test->options[i].help);
+		fprintf(stderr, "%s\n", tst_test->options[i].help);
 }
 
 static void check_option_collision(void)
