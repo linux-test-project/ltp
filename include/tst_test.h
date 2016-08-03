@@ -70,6 +70,16 @@ struct tst_option {
 	char *help;
 };
 
+/*
+ * Options parsing helpers.
+ *
+ * If str is NULL these are No-op.
+ *
+ * On failure non-zero (errno) is returned.
+ */
+int tst_parse_int(const char *str, int *val, int min, int max);
+int tst_parse_float(const char *str, float *val, float min, float max);
+
 struct tst_test {
 	/* test id usually the same as test filename without file suffix */
 	const char *tid;

@@ -523,6 +523,63 @@ non-'NULL' value if option was present. The 'help' is a short help string.
 NOTE: The test parameters must not collide with common test parameters defined
       in the library the currently used ones are +-i+, +-I+, +-C+, and +-h+.
 
+[source,c]
+-------------------------------------------------------------------------------
+int tst_parse_int(const char *str, int *val, int min, int max);
+int tst_parse_float(const char *str, float *val, float min, float max);
+-------------------------------------------------------------------------------
+
+Helpers for parsing the the strings returned in the 'struct tst_option'.
+
+Both return zero on success and 'errno', mostly 'EINVAL' or 'ERANGE', on
+failure.
+
+Both functions are no-op if 'str' is 'NULL'.
+
+The valid range for result includes both 'min' and 'max'.
+
+.Example Usage
+[source,c]
+-------------------------------------------------------------------------------
+#include <limits.h>
+#include "tst_test.h"
+
+static char *str_threads;
+static int threads = 10;
+
+static struct tst_option options[] = {
+	{"t:", &str_threads, "Number of threads (default 10)"},
+	...
+	{NULL, NULL, NULL}
+};
+
+static void setup(void)
+{
+	if (tst_parse_int(str_threads, &threads, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid number of threads '%s'", str_threads);
+
+	...
+}
+
+static void test_threads(void)
+{
+	...
+
+	for (i = 0; i < threads; i++) {
+		...
+	}
+
+	...
+}
+
+static struct tst_test test = {
+	...
+	.options = options,
+	...
+};
+-------------------------------------------------------------------------------
+
+
 2.2.6 Runtime kernel version detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

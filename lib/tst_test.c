@@ -443,6 +443,53 @@ static void parse_opts(int argc, char *argv[])
 	}
 }
 
+int tst_parse_int(const char *str, int *val, int min, int max)
+{
+	long rval;
+	char *end;
+
+	if (!str)
+		return 0;
+
+	errno = 0;
+	rval = strtol(str, &end, 10);
+
+	if (str == end || *end != '\0')
+		return EINVAL;
+
+	if (errno)
+		return errno;
+
+	if (rval > (long)max || rval < (long)min)
+		return ERANGE;
+
+	*val = (int)rval;
+	return 0;
+}
+
+int tst_parse_float(const char *str, float *val, float min, float max)
+{
+	double rval;
+	char *end;
+
+	if (!str)
+		return 0;
+
+	errno = 0;
+	rval = strtod(str, &end);
+
+	if (str == end || *end != '\0')
+		return EINVAL;
+
+	if (errno)
+		return errno;
+
+	if (rval > (double)max || rval < (double)min)
+		return ERANGE;
+
+	*val = (float)rval;
+	return 0;
+}
 
 static void do_exit(int ret)
 {
