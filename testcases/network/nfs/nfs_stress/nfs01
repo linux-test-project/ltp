@@ -31,9 +31,6 @@ do_test()
 {
 	tst_resm TINFO "starting 'nfs01_open_files $NFILES'"
 	ROD nfs01_open_files $NFILES
-
-	cd $LTPROOT
-	ROD umount $TST_TMPDIR
 	tst_resm TPASS "test finished successfully"
 }
 
