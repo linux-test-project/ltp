@@ -46,6 +46,7 @@ struct results {
 	int skipped;
 	int failed;
 	int warnings;
+	unsigned int timeout;
 };
 
 static struct results *results;
@@ -662,7 +663,6 @@ static void testrun(void)
 }
 
 static pid_t test_pid;
-static unsigned int timeout = 300;
 
 static void alarm_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
@@ -671,13 +671,37 @@ static void alarm_handler(int sig LTP_ATTRIBUTE_UNUSED)
 
 static void heartbeat_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
-	alarm(timeout);
+	alarm(results->timeout);
+}
+
+void tst_set_timeout(unsigned int timeout)
+{
+	char *mul = getenv("LTP_TIMEOUT_MUL");
+
+	results->timeout = timeout;
+
+	if (mul) {
+		float m = atof(mul);
+
+		if (m < 1)
+			tst_brk(TBROK, "Invalid timeout multiplier '%s'", mul);
+
+		results->timeout = results->timeout * m + 0.5;
+	}
+
+	tst_res(TINFO, "Timeout per run is %uh %02um %02us",
+		results->timeout/3600, (results->timeout%3600)/60,
+		results->timeout % 60);
+
+	if (getpid() == lib_pid)
+		alarm(results->timeout);
+	else
+		kill(getppid(), SIGUSR1);
 }
 
 void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 {
 	int status;
-	char *mul;
 
 	lib_pid = getpid();
 	tst_test = self;
@@ -685,25 +709,13 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 
 	do_setup(argc, argv);
 
-	if (tst_test->timeout)
-		timeout = tst_test->timeout;
-
-	mul = getenv("LTP_TIMEOUT_MUL");
-	if (mul) {
-		float m = atof(mul);
-
-		if (m < 1)
-			tst_brk(TBROK, "Invalid timeout multiplier '%s'", mul);
-
-		timeout = timeout * m + 0.5;
-	}
-
-	tst_res(TINFO, "Timeout per run is %us", timeout);
-
 	SAFE_SIGNAL(SIGALRM, alarm_handler);
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
 
-	alarm(timeout);
+	if (tst_test->timeout)
+		tst_set_timeout(tst_test->timeout);
+	else
+		tst_set_timeout(300);
 
 	test_pid = fork();
 	if (test_pid < 0)

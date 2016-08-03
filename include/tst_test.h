@@ -133,6 +133,8 @@ const char *tst_strsig(int sig);
 
 static struct tst_test test;
 
+void tst_set_timeout(unsigned int timeout);
+
 int main(int argc, char *argv[])
 {
 	tst_run_tcases(argc, argv, &test);

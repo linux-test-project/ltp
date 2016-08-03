@@ -319,6 +319,10 @@ in range of [0, '.tcnt' - 1].
 
 IMPORTANT: Only one of '.test' and '.test_all' can be set at a time.
 
+Each test has a default timeout set to 300s. The default timeout can be
+overriden by setting '.timeout' in the test structure or by calling
+'tst_set_timeout()' in the test 'setup()'.
+
 A word about the cleanup() callback
 +++++++++++++++++++++++++++++++++++
 
@@ -438,6 +442,13 @@ Return the given errno number's corresponding string. Using this function to
 translate 'errno' values to strings is preferred. You should not use the
 'strerror()' function in the testcases.
 
+[source,c]
+-------------------------------------------------------------------------------
+void tst_set_timeout(unsigned int timeout);
+-------------------------------------------------------------------------------
+
+Allows for setting timeout per test iteration dymanically in the test setup(),
+the timeout is specified in seconds.
 
 2.2.3 Test temporary directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
