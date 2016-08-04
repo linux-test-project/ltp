@@ -565,6 +565,9 @@ static void do_setup(int argc, char *argv[])
 	if (!tst_test)
 		tst_brk(TBROK, "No tests to run");
 
+	if (!tst_test->tid)
+		tst_brk(TBROK, "No tid set in test structure");
+
 	if (!tst_test->test && !tst_test->test_all)
 		tst_brk(TBROK, "No test function speficied");
 
