@@ -653,6 +653,17 @@ exit uncleanly all you need to do is to wait for such children from the
 'test()' function so that it's reaped before the main test exits the 'test()'
 function.
 
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+void tst_reap_children(void);
+-------------------------------------------------------------------------------
+
+The 'tst_reap_children()' function makes the process wait for all of its
+children and exits with 'tst_brk(TBROK, ...)' if any of them returned
+a non zero exit code.
+
 2.2.9 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

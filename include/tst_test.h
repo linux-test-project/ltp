@@ -64,6 +64,12 @@ pid_t safe_fork(const char *filename, unsigned int lineno);
 #include "tst_safe_net.h"
 #include "tst_safe_pthread.h"
 
+/*
+ * Wait for all children and exit with TBROK if
+ * any of them returned a non-zero exit status.
+ */
+void tst_reap_children(void);
+
 struct tst_option {
 	char *optstr;
 	char **arg;

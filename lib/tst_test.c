@@ -287,7 +287,7 @@ static void check_child_status(pid_t pid, int status)
 	}
 }
 
-static void reap_children(void)
+void tst_reap_children(void)
 {
 	int status;
 	pid_t pid;
@@ -647,7 +647,7 @@ static void run_tests(void)
 			exit(0);
 		}
 
-		reap_children();
+		tst_reap_children();
 
 		if (results_equal(&saved_results, results))
 			tst_brk(TBROK, "Test haven't reported results!");
@@ -662,7 +662,7 @@ static void run_tests(void)
 			exit(0);
 		}
 
-		reap_children();
+		tst_reap_children();
 
 		if (results_equal(&saved_results, results))
 			tst_brk(TBROK, "Test %i haven't reported results!", i);
