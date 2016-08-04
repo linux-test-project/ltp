@@ -2,6 +2,7 @@
  *									      *
  * Copyright (c) International Business Machines  Corp., 2001		      *
  *  2001 Created by Manoj Iyer, IBM Austin TX <manjo@austin.ibm.com>          *
+ * Copyright (C) 2016 Cyril Hrubis <chrubis@suse.cz>                          *
  *									      *
  * This program is free software;  you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License as published by       *
@@ -30,227 +31,183 @@
  */
 
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <sched.h>
 #include <stdlib.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <sys/wait.h>
+#include <limits.h>
 #include <pthread.h>
-#include <signal.h>
-#include <string.h>
-#include "test.h"
+#include "tst_test.h"
+
+static char *str_loops;
+static char *str_threads;
+static char *map_private;
+static char *str_exec_time;
+
+static int loops = 1000;
+static int threads = 40;
+static float exec_time = 24;
+
+static volatile int sig_caught;
+static int threads_running;
 
 static int mkfile(int *size)
 {
 	int fd;
 	int index = 0;
-	char buff[4096];
+	char buf[4096];
 	char template[PATH_MAX];
 
-	memset(buff, 'a', 4096);
+	memset(buf, 'a', 4096);
 	snprintf(template, PATH_MAX, "ashfileXXXXXX");
-	if ((fd = mkstemp(template)) == -1) {
-		perror("mkfile(): mkstemp()");
-		return -1;
-	}
+	if ((fd = mkstemp(template)) == -1)
+		tst_brk(TBROK | TERRNO, "mkstemp()");
 	unlink(template);
 
-	srand(time(NULL) % 100);
 	*size = (1 + (int)(1000.0 * rand() / (RAND_MAX + 1.0))) * 4096;
 
 	while (index < *size) {
-		index += 4096;
-		if (write(fd, buff, 4096) == -1) {
-			perror("mkfile(): write()");
-			return -1;
-		}
+		index += sizeof(buf);
+		SAFE_WRITE(1, fd, buf, sizeof(buf));
 	}
 
-	if (fsync(fd) == -1) {
-		perror("mkfile(): fsync()");
-		return -1;
-	}
+	fsync(fd);
 
 	return fd;
 }
 
-static void sig_handler(int signal)
-{
-	if (signal != SIGALRM) {
-		fprintf(stderr,
-			"sig_handlder(): unexpected signal caught [%d]\n",
-			signal);
-		exit(-1);
-	} else
-		fprintf(stdout, "Test ended, success\n");
-	exit(0);
-}
+static void exit_thread(void) __attribute__ ((noreturn));
 
-static void usage(char *progname)
+static void exit_thread(void)
 {
-	fprintf(stderr,
-		"Usage: %s -h -l -n -p -x\n"
-		"\t -h help, usage message.\n"
-		"\t -l number of map - write - unmap.    default: 1000\n"
-		"\t -n number of LWP's to create.        default: 20\n"
-		"\t -p set mapping to MAP_PRIVATE.       default: MAP_SHARED\n"
-		"\t -x time for which test is to be run. default: 24 Hrs\n",
-		progname);
-	exit(-1);
+	tst_atomic_dec(&threads_running);
+	pthread_exit(NULL);
 }
 
 void *map_write_unmap(void *args)
 {
 	int fsize;
 	int fd;
-	int mwu_ndx = 0;
-	caddr_t *map_address;
-	int map_type;
-	long *mwuargs = args;
+	int i;
+	void *addr;
+	long tid = (long)args;
 
-	while (mwu_ndx++ < mwuargs[0]) {
-		if ((fd = mkfile(&fsize)) == -1) {
-			fprintf(stderr,
-				"main(): mkfile(): Failed to create temp file.\n");
-			pthread_exit((void *)-1);
-		}
+	tst_atomic_inc(&threads_running);
 
-		if (mwuargs[1])
-			map_type = MAP_PRIVATE;
-		else
-			map_type = MAP_SHARED;
+	for (i = 0; i < loops; i++) {
+		if (sig_caught)
+			exit_thread();
 
-		map_address = mmap(NULL, fsize, PROT_WRITE | PROT_READ, map_type, fd, 0);
-		if (map_address == MAP_FAILED) {
-			perror("map_write_unmap(): mmap()");
-			pthread_exit((void *)-1);
-		}
+		if ((fd = mkfile(&fsize)) == -1)
+			exit_thread();
 
-		memset(map_address, 'A', fsize);
+		addr = SAFE_MMAP(NULL, fsize, PROT_WRITE | PROT_READ,
+				 map_private ? MAP_PRIVATE : MAP_SHARED, fd, 0);
 
-		fprintf(stdout,
-			"Map address = %p\nNum iter: [%d]\nTotal Num Iter: [%ld]",
-			map_address, mwu_ndx, mwuargs[0]);
+		memset(addr, 'A', fsize);
+
+		tst_res(TINFO, "Thread %4li, addr [%p], size %4ikB, iter %4d",
+			tid, addr, fsize/1024, i);
+
 		usleep(1);
-		if (munmap(map_address, fsize) == -1) {
-			perror("map_write_unmap(): mmap()");
-			pthread_exit((void *)-1);
-		}
-		close(fd);
+
+		SAFE_MUNMAP(addr, fsize);
+		SAFE_CLOSE(fd);
 	}
-	pthread_exit(NULL);
+
+	exit_thread();
 }
 
-int main(int argc, char **argv)
+static void sig_handler(int signal)
 {
-	int c;
-	int num_iter = 1000;
-	int num_thrd = 40;
-	int i;
-	float exec_time = 24;
-	void *status;
-	int sig_ndx;
-	pthread_t thid[1000];
-	long pargs[3];
-	struct sigaction sigptr;
-	int map_private = 0;
+	sig_caught = signal;
+}
 
-	static struct signal_info {
-		int signum;
-		char *signame;
-	} sig_info[] = {
-		{SIGHUP, "SIGHUP"},
-		{SIGINT, "SIGINT"},
-		{SIGQUIT, "SIGQUIT"},
-		{SIGABRT, "SIGABRT"},
-		{SIGBUS, "SIGBUS"},
-		{SIGSEGV, "SIGSEGV"},
-		{SIGALRM, "SIGALRM"},
-		{SIGUSR1, "SIGUSR1"},
-		{SIGUSR2, "SIGUSR2"},
-		{-1, "ENDSIG"}
-	};
+static void test_mmap(void)
+{
+	long i;
+	pthread_t thids[threads];
 
-	while ((c = getopt(argc, argv, "h:l:n:px:")) != -1) {
-		switch (c) {
-		case 'h':
-			usage(argv[0]);
-			break;
-		case 'l':
-			if ((num_iter = atoi(optarg)) == 0)
-				num_iter = 1000;
-			break;
-		case 'n':
-			if ((num_thrd = atoi(optarg)) == 0)
-				num_thrd = 20;
-			break;
-		case 'p':
-			map_private = 1;
-			break;
-		case 'x':
-			if ((exec_time = atof(optarg)) == 0)
-				exec_time = 24;
-			break;
-		default:
-			usage(argv[0]);
-			break;
-		}
-	}
+	alarm(exec_time * 3600);
 
-	sigptr.sa_handler = sig_handler;
-	sigfillset(&sigptr.sa_mask);
-	sigptr.sa_flags = SA_SIGINFO;
-	for (sig_ndx = 0; sig_info[sig_ndx].signum != -1; sig_ndx++) {
-		sigaddset(&sigptr.sa_mask, sig_info[sig_ndx].signum);
-		if (sigaction(sig_info[sig_ndx].signum, &sigptr,
-			      NULL) == -1) {
-			perror("man(): sigaction()");
-			fprintf(stderr,
-				"could not set handler for SIGALRM, errno = %d\n",
-				errno);
-			exit(-1);
-		}
-	}
-	pargs[0] = num_iter;
-	pargs[1] = map_private;
-	alarm(exec_time * 3600.00);
-
-	fprintf(stdout,
-		"\n\n\nTest is set to run with the following parameters:\n"
-		"\tDuration of test: [%f]hrs\n"
-		"\tNumber of threads created: [%d]\n"
-		"\tnumber of map-write-unmaps: [%d]\n"
-		"\tmap_private?(T=1 F=0): [%d]\n\n\n\n", exec_time, num_thrd,
-		num_iter, map_private);
-
-	for (;;) {
-		for (i = 0; i < num_thrd; i++) {
-			if (pthread_create(&thid[i], NULL, map_write_unmap, pargs)) {
-				perror("main(): pthread_create()");
-				exit(-1);
-			}
+	while (!sig_caught) {
+		for (i = 0; i < threads; i++) {
+			SAFE_PTHREAD_CREATE(&thids[i], NULL,
+			                    map_write_unmap, (void*)i);
 			sched_yield();
 		}
 
-		for (i = 0; i < num_thrd; i++) {
-			if (pthread_join(thid[i], &status)) {
-				perror("main(): pthread_create()");
-				exit(-1);
-			} else {
-				if (status) {
-					fprintf(stderr,
-						"thread [%d] - process exited with errors\n",
-						i);
-					exit(-1);
-				}
-			}
-		}
+		for (i = 0; i < threads; i++)
+			SAFE_PTHREAD_JOIN(thids[i], NULL);
 	}
-	exit(0);
+
+	if (sig_caught == SIGALRM) {
+		tst_res(TPASS, "Test passed");
+	} else {
+		tst_res(TFAIL, "Unexpected signal caught %s",
+		        tst_strsig(sig_caught));
+	}
 }
+
+static void setup(void)
+{
+	if (tst_parse_int(str_loops, &loops, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid number of loops '%s'", str_loops);
+
+	if (tst_parse_int(str_threads, &threads, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid number of threads '%s'", str_threads);
+
+	if (tst_parse_float(str_exec_time, &exec_time, 0.0005, 9000))
+		tst_brk(TBROK, "Invalid execution time '%s'", str_exec_time);
+
+	tst_set_timeout(exec_time * 3600 + 300);
+
+	SAFE_SIGNAL(SIGALRM, sig_handler);
+	SAFE_SIGNAL(SIGBUS, sig_handler);
+	SAFE_SIGNAL(SIGSEGV, sig_handler);
+
+	unsigned int seed = time(NULL) % 100;
+
+	srand(seed);
+
+	tst_res(TINFO, "Seed %u", seed);
+	tst_res(TINFO, "Number of loops %i", loops);
+	tst_res(TINFO, "Number of threads %i", threads);
+	tst_res(TINFO, "MAP_PRIVATE = %i", map_private ? 1 : 0);
+	tst_res(TINFO, "Execution time %fH", exec_time);
+}
+
+static void cleanup(void)
+{
+	static int flag;
+
+	if (tst_atomic_inc(&flag) != 1)
+		exit_thread();
+
+	if (!threads_running)
+		return;
+
+	tst_res(TINFO, "Waiting for %i threads to terminate", threads_running);
+
+	sig_caught = 1;
+
+	while ((volatile int)threads_running > 1) {
+		tst_res(TINFO, "Running threads %i",
+		        (volatile int)threads_running);
+		usleep(500000);
+	}
+}
+
+static struct tst_option options[] = {
+	{"l:", &str_loops, "-l uint  Number of map-write-unmap loops"},
+	{"n:", &str_threads, "-n uint  Number of worker threads"},
+	{"p", &map_private, "-p       Turns on MAP_PRIVATE (default MAP_SHARED)"},
+	{"x:", &str_exec_time, "-x float Execution time in hours (default 24H)"},
+	{NULL, NULL, NULL}
+};
+
+static struct tst_test test = {
+	.tid = "mmap3",
+	.options = options,
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = test_mmap,
+};
