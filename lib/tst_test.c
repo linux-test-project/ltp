@@ -724,6 +724,18 @@ static void heartbeat_handler(int sig LTP_ATTRIBUTE_UNUSED)
 	alarm(results->timeout);
 }
 
+#define SIGINT_MSG "Sending SIGKILL to test process...\n"
+
+static void sigint_handler(int sig LTP_ATTRIBUTE_UNUSED)
+{
+	if (test_pid > 0) {
+		if (write(2, SIGINT_MSG, sizeof(SIGINT_MSG) - 1)) {
+			/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425 */
+		}
+		kill(-test_pid, SIGKILL);
+	}
+}
+
 void tst_set_timeout(unsigned int timeout)
 {
 	char *mul = getenv("LTP_TIMEOUT_MUL");
@@ -767,18 +779,23 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	else
 		tst_set_timeout(300);
 
+	SAFE_SIGNAL(SIGINT, sigint_handler);
+
 	test_pid = fork();
 	if (test_pid < 0)
 		tst_brk(TBROK | TERRNO, "fork()");
 
 	if (!test_pid) {
+		SAFE_SIGNAL(SIGALRM, SIG_DFL);
+		SAFE_SIGNAL(SIGUSR1, SIG_DFL);
+		SAFE_SIGNAL(SIGINT, SIG_DFL);
 		SAFE_SETPGID(0, 0);
 		testrun();
 	}
 
 	SAFE_WAITPID(test_pid, &status, 0);
-
 	alarm(0);
+	SAFE_SIGNAL(SIGINT, SIG_DFL);
 
 	if (WIFEXITED(status) && WEXITSTATUS(status))
 		do_exit(WEXITSTATUS(status));
