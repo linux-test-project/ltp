@@ -135,6 +135,22 @@ static inline int safe_setpgid(const char *file, const int lineno,
 #define SAFE_SETPGID(pid, pgid) \
 	safe_setpgid(__FILE__, __LINE__, (pid), (pgid));
 
+static inline pid_t safe_getpgid(const char *file, const int lineno,
+				 pid_t pid)
+{
+	pid_t pgid;
+
+	pgid = getpgid(pid);
+	if (pgid == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "getpgid(%i) failed", pid);
+	}
+
+	return pgid;
+}
+#define SAFE_GETPGID(pid) \
+	safe_getpgid(__FILE__, __LINE__, (pid))
+
 #define SAFE_UNLINK(pathname) \
 	safe_unlink(__FILE__, __LINE__, NULL, (pathname))
 
