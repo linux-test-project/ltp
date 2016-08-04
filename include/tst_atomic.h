@@ -111,4 +111,9 @@ static inline int tst_atomic_inc(int *v)
 	return tst_atomic_add_return(1, v);
 }
 
+static inline int tst_atomic_dec(int *v)
+{
+	return tst_atomic_add_return(-1, v);
+}
+
 #endif	/* TST_ATOMIC_H__ */
