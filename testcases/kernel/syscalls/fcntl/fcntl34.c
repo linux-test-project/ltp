@@ -67,7 +67,7 @@ void *thread_fn_01(void *arg)
 
 	memset(buf, (intptr_t)arg, write_size);
 
-	struct flock lck = {
+	struct flock64 lck = {
 		.l_whence = SEEK_SET,
 		.l_start  = 0,
 		.l_len    = 1,
