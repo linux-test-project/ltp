@@ -1206,7 +1206,7 @@ socketpair02 socketpair02
 sockioctl01 sockioctl01
 
 splice01 splice01
-splice02 seq 1 10000000 | splice02 splice02-temp
+splice02 seq 1 20000 | splice02 splice02-temp
 splice03 splice03
 
 tee01 tee01
