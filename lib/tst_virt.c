@@ -64,8 +64,51 @@ static int is_xen(void)
 	return 0;
 }
 
+static int try_systemd_detect_virt(void)
+{
+	FILE *f;
+	char virt_type[64];
+	int ret;
+
+	/* See tst_run_cmd.c */
+	void *old_handler = signal(SIGCHLD, SIG_DFL);
+
+	f = popen("systemd-detect-virt", "r");
+	if (!f) {
+		signal(SIGCHLD, old_handler);
+		return 0;
+	}
+
+	if (!fgets(virt_type, sizeof(virt_type), f))
+		virt_type[0] = '\0';
+
+	ret = pclose(f);
+
+	signal(SIGCHLD, old_handler);
+
+	/*
+	 * systemd-detect-virt not found by shell or no virtualization detected
+	 * (systemd-detect-virt returns non-zero)
+         */
+	if (ret)
+		return 0;
+
+	if (strncmp("kvm", virt_type, 3))
+		return VIRT_KVM;
+
+	if (strncmp("xen", virt_type, 3))
+		return VIRT_XEN;
+
+	return 0;
+}
+
 int tst_is_virt(int virt_type)
 {
+	int ret = try_systemd_detect_virt();
+
+	if (ret)
+		return ret == virt_type;
+
 	switch (virt_type) {
 	case VIRT_XEN:
 		return is_xen();
