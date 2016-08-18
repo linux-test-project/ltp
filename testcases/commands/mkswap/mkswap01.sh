@@ -34,9 +34,12 @@ setup()
 
 	UUID=`uuidgen`
 
-	DEVICE_SIZE=$((`blockdev --getsize64 $TST_DEVICE`/1024))
-
 	PAGE_SIZE=`getconf PAGE_SIZE`
+
+	# Here get the size of the device and align it down to be the
+	# multiple of $PAGE_SIZE and use that as the size for testing.
+	real_size=`blockdev --getsize64 $TST_DEVICE`
+	DEVICE_SIZE=$((($real_size/$PAGE_SIZE * $PAGE_SIZE)/1024))
 }
 
 cleanup()
@@ -169,8 +172,8 @@ mkswap_test()
 setup
 
 mkswap_test "" "" "$TST_DEVICE"
-mkswap_test "" "" "$TST_DEVICE" "$((DEVICE_SIZE-10000))"
-mkswap_test "-f" "" "$TST_DEVICE" "$((DEVICE_SIZE+10000))"
+mkswap_test "" "" "$TST_DEVICE" "$((DEVICE_SIZE-PAGE_SIZE/1024))"
+mkswap_test "-f" "" "$TST_DEVICE" "$((DEVICE_SIZE+PAGE_SIZE/1024))"
 mkswap_test "-c" "" "$TST_DEVICE"
 mkswap_test "-p" "2048" "$TST_DEVICE"
 mkswap_test "-L" "ltp_testswap" "-L ltp_testswap" "" "/dev/disk/by-label/ltp_testswap"
