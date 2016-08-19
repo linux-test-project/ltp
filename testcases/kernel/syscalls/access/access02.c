@@ -19,17 +19,17 @@
 
 /*
  * Test Description:
- *  Verify that access() succeeds to check the read/write/execute permissions
- *  on a file if the mode argument passed was R_OK/W_OK/X_OK.
+ *  Verify that access() succeeds to check the existence or read/write/execute
+ *  permissions on a file if the mode argument passed was F_OK/R_OK/W_OK/X_OK.
  *
  *  Also verify that, access() succeeds to test the accessibility of the file
  *  referred to by symbolic link if the pathname points to a symbolic link.
  *
- *  As well as verify that, these test files can be read/written/executed
- *  indeed as root and nobody respectively.
+ *  As well as verify that, these test files can be
+ *  stat/read/written/executed indeed as root and nobody respectively.
  *
  *	07/2001 Ported by Wayne Boyera
- *	06/2016 modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+ *	06/2016 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  */
 
 #include <sys/types.h>
@@ -40,9 +40,11 @@
 #include <stdlib.h>
 #include "tst_test.h"
 
+#define FNAME_F	"file_f"
 #define FNAME_R	"file_r"
 #define FNAME_W	"file_w"
 #define FNAME_X	"file_x"
+#define SNAME_F	"symlink_f"
 #define SNAME_R	"symlink_r"
 #define SNAME_W	"symlink_w"
 #define SNAME_X	"symlink_x"
@@ -55,9 +57,11 @@ static struct tcase {
 	char *name;
 	const char *targetname;
 } tcases[] = {
+	{FNAME_F, F_OK, "F_OK", FNAME_F},
 	{FNAME_R, R_OK, "R_OK", FNAME_R},
 	{FNAME_W, W_OK, "W_OK", FNAME_W},
 	{FNAME_X, X_OK, "X_OK", FNAME_X},
+	{SNAME_F, F_OK, "F_OK", FNAME_F},
 	{SNAME_R, R_OK, "R_OK", FNAME_R},
 	{SNAME_W, W_OK, "W_OK", FNAME_W},
 	{SNAME_X, X_OK, "X_OK", FNAME_X}
@@ -65,6 +69,7 @@ static struct tcase {
 
 static void access_test(struct tcase *tc, const char *user)
 {
+	struct stat stat_buf;
 	char command[64];
 
 	TEST(access(tc->pathname, tc->mode));
@@ -76,6 +81,21 @@ static void access_test(struct tcase *tc, const char *user)
 	}
 
 	switch (tc->mode) {
+	case F_OK:
+		/*
+		 * The specified file(or pointed to by symbolic link)
+		 * exists, attempt to get its status, if successful,
+		 * access() behaviour is correct.
+		 */
+		TEST(stat(tc->targetname, &stat_buf));
+
+		if (TEST_RETURN == -1) {
+			tst_res(TFAIL | TTERRNO, "stat(%s) as %s failed",
+				tc->targetname, user);
+			return;
+		}
+
+		break;
 	case R_OK:
 		/*
 		 * The specified file(or pointed to by symbolic link)
@@ -163,10 +183,12 @@ static void setup(void)
 
 	uid = pw->pw_uid;
 
+	SAFE_TOUCH(FNAME_F, 0000, NULL);
 	SAFE_TOUCH(FNAME_R, 0444, NULL);
 	SAFE_TOUCH(FNAME_W, 0222, NULL);
 	SAFE_TOUCH(FNAME_X, 0555, NULL);
 
+	SAFE_SYMLINK(FNAME_F, SNAME_F);
 	SAFE_SYMLINK(FNAME_R, SNAME_R);
 	SAFE_SYMLINK(FNAME_W, SNAME_W);
 	SAFE_SYMLINK(FNAME_X, SNAME_X);
