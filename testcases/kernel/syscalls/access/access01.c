@@ -32,9 +32,16 @@
 #include "tst_test.h"
 
 #define FNAME_RWX "accessfile_rwx"
-#define FNAME_R   "accesfile_r"
-#define FNAME_W   "accesfile_w"
-#define FNAME_X   "accesfile_x"
+#define FNAME_R   "accessfile_r"
+#define FNAME_W   "accessfile_w"
+#define FNAME_X   "accessfile_x"
+
+#define DNAME_R   "accessdir_r"
+#define DNAME_W   "accessdir_w"
+#define DNAME_X   "accessdir_x"
+#define DNAME_RW  "accessdir_rw"
+#define DNAME_RX  "accessdir_rx"
+#define DNAME_WX  "accessdir_wx"
 
 static uid_t uid;
 
@@ -90,7 +97,157 @@ static struct tcase {
 
 	{FNAME_X, R_OK, "R_OK", 0, 2},
 	{FNAME_X, W_OK, "W_OK", 0, 2},
-	{FNAME_X, R_OK|W_OK, "R_OK|W_OK", 0, 2}
+	{FNAME_X, R_OK|W_OK, "R_OK|W_OK", 0, 2},
+
+	{DNAME_R"/"FNAME_R, F_OK, "F_OK", 0, 2},
+	{DNAME_R"/"FNAME_R, R_OK, "R_OK", 0, 2},
+	{DNAME_R"/"FNAME_R, W_OK, "W_OK", 0, 2},
+
+	{DNAME_R"/"FNAME_W, F_OK, "F_OK", 0, 2},
+	{DNAME_R"/"FNAME_W, R_OK, "R_OK", 0, 2},
+	{DNAME_R"/"FNAME_W, W_OK, "W_OK", 0, 2},
+
+	{DNAME_R"/"FNAME_X, F_OK, "F_OK", 0, 2},
+	{DNAME_R"/"FNAME_X, R_OK, "R_OK", 0, 2},
+	{DNAME_R"/"FNAME_X, W_OK, "W_OK", 0, 2},
+	{DNAME_R"/"FNAME_X, X_OK, "X_OK", 0, 2},
+
+	{DNAME_W"/"FNAME_R, F_OK, "F_OK", 0, 2},
+	{DNAME_W"/"FNAME_R, R_OK, "R_OK", 0, 2},
+	{DNAME_W"/"FNAME_R, W_OK, "W_OK", 0, 2},
+
+	{DNAME_W"/"FNAME_W, F_OK, "F_OK", 0, 2},
+	{DNAME_W"/"FNAME_W, R_OK, "R_OK", 0, 2},
+	{DNAME_W"/"FNAME_W, W_OK, "W_OK", 0, 2},
+
+	{DNAME_W"/"FNAME_X, F_OK, "F_OK", 0, 2},
+	{DNAME_W"/"FNAME_X, R_OK, "R_OK", 0, 2},
+	{DNAME_W"/"FNAME_X, W_OK, "W_OK", 0, 2},
+	{DNAME_W"/"FNAME_X, X_OK, "X_OK", 0, 2},
+
+	{DNAME_X"/"FNAME_R, F_OK, "F_OK", 0, 3},
+	{DNAME_X"/"FNAME_R, R_OK, "R_OK", 0, 3},
+	{DNAME_X"/"FNAME_R, W_OK, "W_OK", 0, 2},
+
+	{DNAME_X"/"FNAME_W, F_OK, "F_OK", 0, 3},
+	{DNAME_X"/"FNAME_W, R_OK, "R_OK", 0, 2},
+	{DNAME_X"/"FNAME_W, W_OK, "W_OK", 0, 3},
+
+	{DNAME_X"/"FNAME_X, F_OK, "F_OK", 0, 3},
+	{DNAME_X"/"FNAME_X, R_OK, "R_OK", 0, 2},
+	{DNAME_X"/"FNAME_X, W_OK, "W_OK", 0, 2},
+	{DNAME_X"/"FNAME_X, X_OK, "X_OK", 0, 3},
+
+	{DNAME_RW"/"FNAME_R, F_OK, "F_OK", 0, 2},
+	{DNAME_RW"/"FNAME_R, R_OK, "R_OK", 0, 2},
+	{DNAME_RW"/"FNAME_R, W_OK, "W_OK", 0, 2},
+
+	{DNAME_RW"/"FNAME_W, F_OK, "F_OK", 0, 2},
+	{DNAME_RW"/"FNAME_W, R_OK, "R_OK", 0, 2},
+	{DNAME_RW"/"FNAME_W, W_OK, "W_OK", 0, 2},
+
+	{DNAME_RW"/"FNAME_X, F_OK, "F_OK", 0, 2},
+	{DNAME_RW"/"FNAME_X, R_OK, "R_OK", 0, 2},
+	{DNAME_RW"/"FNAME_X, W_OK, "W_OK", 0, 2},
+	{DNAME_RW"/"FNAME_X, X_OK, "X_OK", 0, 2},
+
+	{DNAME_RX"/"FNAME_R, F_OK, "F_OK", 0, 3},
+	{DNAME_RX"/"FNAME_R, R_OK, "R_OK", 0, 3},
+	{DNAME_RX"/"FNAME_R, W_OK, "W_OK", 0, 2},
+
+	{DNAME_RX"/"FNAME_W, F_OK, "F_OK", 0, 3},
+	{DNAME_RX"/"FNAME_W, R_OK, "R_OK", 0, 2},
+	{DNAME_RX"/"FNAME_W, W_OK, "W_OK", 0, 3},
+
+	{DNAME_RX"/"FNAME_X, F_OK, "F_OK", 0, 3},
+	{DNAME_RX"/"FNAME_X, R_OK, "R_OK", 0, 2},
+	{DNAME_RX"/"FNAME_X, W_OK, "W_OK", 0, 2},
+	{DNAME_RX"/"FNAME_X, X_OK, "X_OK", 0, 3},
+
+	{DNAME_WX"/"FNAME_R, F_OK, "F_OK", 0, 3},
+	{DNAME_WX"/"FNAME_R, R_OK, "R_OK", 0, 3},
+	{DNAME_WX"/"FNAME_R, W_OK, "W_OK", 0, 2},
+
+	{DNAME_WX"/"FNAME_W, F_OK, "F_OK", 0, 3},
+	{DNAME_WX"/"FNAME_W, R_OK, "R_OK", 0, 2},
+	{DNAME_WX"/"FNAME_W, W_OK, "W_OK", 0, 3},
+
+	{DNAME_WX"/"FNAME_X, F_OK, "F_OK", 0, 3},
+	{DNAME_WX"/"FNAME_X, R_OK, "R_OK", 0, 2},
+	{DNAME_WX"/"FNAME_X, W_OK, "W_OK", 0, 2},
+	{DNAME_WX"/"FNAME_X, X_OK, "X_OK", 0, 3},
+
+	{DNAME_R"/"FNAME_R, F_OK, "F_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_R, R_OK, "R_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_R, W_OK, "W_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_R, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_R"/"FNAME_W, F_OK, "F_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_W, R_OK, "R_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_W, W_OK, "W_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_W, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_R"/"FNAME_X, F_OK, "F_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_X, R_OK, "R_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_X, W_OK, "W_OK", EACCES, 1},
+	{DNAME_R"/"FNAME_X, X_OK, "X_OK", EACCES, 1},
+
+	{DNAME_W"/"FNAME_R, F_OK, "F_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_R, R_OK, "R_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_R, W_OK, "W_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_R, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_W"/"FNAME_W, F_OK, "F_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_W, R_OK, "R_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_W, W_OK, "W_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_W, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_W"/"FNAME_X, F_OK, "F_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_X, R_OK, "R_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_X, W_OK, "W_OK", EACCES, 1},
+	{DNAME_W"/"FNAME_X, X_OK, "X_OK", EACCES, 1},
+
+	{DNAME_X"/"FNAME_R, W_OK, "W_OK", EACCES, 1},
+	{DNAME_X"/"FNAME_R, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_X"/"FNAME_W, R_OK, "R_OK", EACCES, 1},
+	{DNAME_X"/"FNAME_W, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_X"/"FNAME_X, R_OK, "R_OK", EACCES, 1},
+	{DNAME_X"/"FNAME_X, W_OK, "W_OK", EACCES, 1},
+
+	{DNAME_RW"/"FNAME_R, F_OK, "F_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_R, R_OK, "R_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_R, W_OK, "W_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_R, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_RW"/"FNAME_W, F_OK, "F_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_W, R_OK, "R_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_W, W_OK, "W_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_W, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_RW"/"FNAME_X, F_OK, "F_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_X, R_OK, "R_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_X, W_OK, "W_OK", EACCES, 1},
+	{DNAME_RW"/"FNAME_X, X_OK, "X_OK", EACCES, 1},
+
+	{DNAME_RX"/"FNAME_R, W_OK, "W_OK", EACCES, 1},
+	{DNAME_RX"/"FNAME_R, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_RX"/"FNAME_W, R_OK, "R_OK", EACCES, 1},
+	{DNAME_RX"/"FNAME_W, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_RX"/"FNAME_X, R_OK, "R_OK", EACCES, 1},
+	{DNAME_RX"/"FNAME_X, W_OK, "W_OK", EACCES, 1},
+
+	{DNAME_WX"/"FNAME_R, W_OK, "W_OK", EACCES, 1},
+	{DNAME_WX"/"FNAME_R, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_WX"/"FNAME_W, R_OK, "R_OK", EACCES, 1},
+	{DNAME_WX"/"FNAME_W, X_OK, "X_OK", EACCES, 3},
+
+	{DNAME_WX"/"FNAME_X, R_OK, "R_OK", EACCES, 1},
+	{DNAME_WX"/"FNAME_X, W_OK, "W_OK", EACCES, 1}
 };
 
 static void verify_success(struct tcase *tc, const char *user)
@@ -166,6 +323,37 @@ static void setup(void)
 	SAFE_TOUCH(FNAME_R, 0444, NULL);
 	SAFE_TOUCH(FNAME_W, 0222, NULL);
 	SAFE_TOUCH(FNAME_X, 0111, NULL);
+
+	SAFE_MKDIR(DNAME_R, 0444);
+	SAFE_MKDIR(DNAME_W, 0222);
+	SAFE_MKDIR(DNAME_X, 0111);
+	SAFE_MKDIR(DNAME_RW, 0666);
+	SAFE_MKDIR(DNAME_RX, 0555);
+	SAFE_MKDIR(DNAME_WX, 0333);
+
+	SAFE_TOUCH(DNAME_R"/"FNAME_R, 0444, NULL);
+	SAFE_TOUCH(DNAME_R"/"FNAME_W, 0222, NULL);
+	SAFE_TOUCH(DNAME_R"/"FNAME_X, 0111, NULL);
+
+	SAFE_TOUCH(DNAME_W"/"FNAME_R, 0444, NULL);
+	SAFE_TOUCH(DNAME_W"/"FNAME_W, 0222, NULL);
+	SAFE_TOUCH(DNAME_W"/"FNAME_X, 0111, NULL);
+
+	SAFE_TOUCH(DNAME_X"/"FNAME_R, 0444, NULL);
+	SAFE_TOUCH(DNAME_X"/"FNAME_W, 0222, NULL);
+	SAFE_TOUCH(DNAME_X"/"FNAME_X, 0111, NULL);
+
+	SAFE_TOUCH(DNAME_RW"/"FNAME_R, 0444, NULL);
+	SAFE_TOUCH(DNAME_RW"/"FNAME_W, 0222, NULL);
+	SAFE_TOUCH(DNAME_RW"/"FNAME_X, 0111, NULL);
+
+	SAFE_TOUCH(DNAME_RX"/"FNAME_R, 0444, NULL);
+	SAFE_TOUCH(DNAME_RX"/"FNAME_W, 0222, NULL);
+	SAFE_TOUCH(DNAME_RX"/"FNAME_X, 0111, NULL);
+
+	SAFE_TOUCH(DNAME_WX"/"FNAME_R, 0444, NULL);
+	SAFE_TOUCH(DNAME_WX"/"FNAME_W, 0222, NULL);
+	SAFE_TOUCH(DNAME_WX"/"FNAME_X, 0111, NULL);
 }
 
 static struct tst_test test = {
