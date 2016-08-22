@@ -1352,6 +1352,21 @@ Note the '>' is escaped with '\', this causes that the '>' and filename are
 passed to the 'ROD' function as parameters and the 'ROD' function contains
 code to split '$@' on '>' and redirects the output to the file.
 
+EXPECT_PASS and EXPECT_FAIL
++++++++++++++++++++++++++++
+
+[source,sh]
+-------------------------------------------------------------------------------
+EXPECT_PASS command arg1 arg2 ... [ \> file ]
+EXPECT_FAIL command arg1 arg2 ... [ \> file ]
+-------------------------------------------------------------------------------
+
+'EXPECT_PASS' calls 'tst_resm TPASS' if the command exited with 0 exit code,
+and 'tst_resm TFAIL' otherwise. 'EXPECT_FAIL' does vice versa.
+
+Output redirection rules are the same as for the 'ROD' function. In addition
+to that, 'EXPECT_FAIL' always redirects the command's stderr to '/dev/null'.
+
 .tst_fs_has_free
 [source,sh]
 -------------------------------------------------------------------------------

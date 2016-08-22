@@ -220,7 +220,7 @@ ROD_SILENT()
 	fi
 }
 
-ROD()
+ROD_BASE()
 {
 	local cmd
 	local arg
@@ -250,9 +250,34 @@ ROD()
 	else
 		$@
 	fi
+}
 
+ROD()
+{
+	ROD_BASE "$@"
 	if [ $? -ne 0 ]; then
 		tst_brkm TBROK "$@ failed"
+	fi
+}
+
+EXPECT_PASS()
+{
+	ROD_BASE "$@"
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "$@ passed as expected"
+	else
+		tst_resm TFAIL "$@ failed unexpectedly"
+	fi
+}
+
+EXPECT_FAIL()
+{
+	# redirect stderr since we expect the command to fail
+	ROD_BASE "$@" 2> /dev/null
+	if [ $? -ne 0 ]; then
+		tst_resm TPASS "$@ failed as expected"
+	else
+		tst_resm TFAIL "$@ passed unexpectedly"
 	fi
 }
 
