@@ -231,10 +231,19 @@ test_proc_kill()
 	echo $pid > tasks
 
 	kill -s USR1 $pid 2> /dev/null
-	sleep 1
 
-	ps -p $pid > /dev/null 2> /dev/null
-	if [ $? -ne 0 ]; then
+	tpk_pid_exists=1
+	for tpk_iter in $(seq 20); do
+		if [ ! -d "/proc/$pid" ] ||
+			grep -q 'Z (zombie)' "/proc/$pid/status"; then
+			tpk_pid_exists=0
+			break
+		fi
+
+		tst_sleep 250ms
+	done
+
+	if [ $tpk_pid_exists -eq 0 ]; then
 		wait $pid
 		ret=$?
 		if [ $ret -eq 1 ]; then
