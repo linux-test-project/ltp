@@ -214,6 +214,7 @@
 #include <sys/param.h>
 #include <sys/stat.h>		/* stat(2) and lstat(2) system calls */
 #include <stdint.h>
+#include <unistd.h>
 
 #include "test.h"
 
@@ -795,7 +796,7 @@ int ck_both(char *path1, char *path2, char *path3)
 int creat_path_max(char *path1, char *path2, char *path3)
 {
 	int ctr, to_go, size, whole_chunks;
-	char *cwd, *getcwd();
+	char *cwd;
 
 	if ((cwd = getcwd(NULL, 0)) == NULL) {
 		TEST_RESULT = TBROK;
@@ -1490,7 +1491,7 @@ void do_chdir(struct all_test_cases *tc_ptr)
 				 "symbolic link which which pointed at object");
 		else {
 
-			char *cwd, *getcwd();
+			char *cwd;
 			char expected_location[PATH_MAX];
 			/*
 			 *  Build expected current directory position
