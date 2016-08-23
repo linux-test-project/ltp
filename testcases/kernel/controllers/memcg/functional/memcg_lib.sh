@@ -22,6 +22,7 @@
 ##                                                                            ##
 ################################################################################
 
+TST_NEEDS_CHECKPOINTS=1
 . test.sh
 
 if [ "x$(grep -w memory /proc/cgroups | cut -f4)" != "x1" ]; then
@@ -119,7 +120,7 @@ test_mem_stat()
 {
 	tst_resm TINFO "Running memcg_process $1 -s $2"
 	memcg_process $1 -s $2 &
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 
 	warmup $!
 	if [ $? -ne 0 ]; then
@@ -152,7 +153,7 @@ test_max_usage_in_bytes()
 {
 	tst_resm TINFO "Running memcg_process $1 -s $2"
 	memcg_process $1 -s $2 &
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 
 	warmup $!
 	if [ $? -ne 0 ]; then
@@ -183,7 +184,7 @@ malloc_free_memory()
 {
 	tst_resm TINFO "Running memcg_process $1 -s $2"
 	memcg_process $1 -s $2 &
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 
 	echo $! > tasks
 	kill -s USR1 $! 2> /dev/null
@@ -226,7 +227,7 @@ test_proc_kill()
 
 	memcg_process $2 -s $3 &
 	pid=$!
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 	echo $pid > tasks
 
 	kill -s USR1 $pid 2> /dev/null
@@ -295,7 +296,7 @@ test_hugepage()
 	echo $1 > /proc/sys/vm/nr_hugepages
 
 	memcg_process $2 --hugepage -s $3 > $TMP_FILE 2>&1 &
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 
 	kill -s USR1 $! 2> /dev/null
 	sleep 1
@@ -343,7 +344,7 @@ test_subgroup()
 
 	tst_resm TINFO "Running memcg_process --mmap-anon -s $PAGESIZE"
 	memcg_process --mmap-anon -s $PAGESIZE &
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 
 	warmup $!
 	if [ $? -ne 0 ]; then
@@ -379,7 +380,7 @@ test_move_charge()
 
 	tst_resm TINFO "Running memcg_process $1 -s $2"
 	memcg_process $1 -s $2 &
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 	warmup $!
 	if [ $? -ne 0 ]; then
 		rmdir subgroup_a

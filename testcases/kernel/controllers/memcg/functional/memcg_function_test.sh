@@ -209,7 +209,7 @@ testcase_29()
 {
 	memcg_process --mmap-anon -s $PAGESIZE &
 	pid=$!
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 	echo $pid > tasks
 	kill -s USR1 $pid 2> /dev/null
 	sleep 1
@@ -225,7 +225,7 @@ testcase_30()
 {
 	memcg_process --mmap-lock2 -s $PAGESIZE &
 	pid=$!
-	sleep 1
+	TST_CHECKPOINT_WAIT 0
 	echo $pid > tasks
 	kill -s USR1 $pid 2> /dev/null
 	sleep 1

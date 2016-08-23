@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#define TST_NO_DEFAULT_MAIN
+#include "tst_test.h"
 
 static int fd;
 
@@ -314,6 +316,10 @@ int main(int argc, char *argv[])
 		err(1, "sigaction(SIGUSR1)");
 
 	process_options(argc, argv);
+
+	tst_reinit();
+
+	TST_CHECKPOINT_WAKE(0);
 
 	while (!flag_exit)
 		sleep(1);
