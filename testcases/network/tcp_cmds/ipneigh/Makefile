@@ -24,7 +24,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= arp01
+INSTALL_TARGETS		:= ipneigh01.sh
 
 MAKE_TARGETS		:=
 

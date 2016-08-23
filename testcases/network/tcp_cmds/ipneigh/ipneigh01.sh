@@ -16,7 +16,7 @@
 #
 # Test basic functionality of 'arp' and 'ip neigh'.
 
-TCID=arp01
+TCID=ipneigh01
 NUMLOOPS=${NUMLOOPS:-50}
 TST_TOTAL=2
 . test_net.sh
