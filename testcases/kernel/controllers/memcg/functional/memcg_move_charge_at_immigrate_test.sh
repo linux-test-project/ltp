@@ -26,11 +26,10 @@
 # History:      2012/01/16 - Created.
 #
 
-export TCID="memcg_move_charge_at_immigrate_test"
-export TST_TOTAL=4
-export TST_COUNT=0
+TCID="memcg_move_charge_at_immigrate_test"
+TST_TOTAL=4
 
-. memcg_lib.sh || exit 1
+. memcg_lib.sh
 
 # Test disable moving charges
 testcase_1()
@@ -58,35 +57,6 @@ testcase_4()
 	test_move_charge "--mmap-anon --shm" $PAGESIZE 3 $PAGESIZE $PAGESIZE 0 0
 }
 
-# Run all the test cases
-for i in $(seq 1 $TST_TOTAL)
-do
-	export TST_COUNT=$(( $TST_COUNT + 1 ))
-	cur_id=$i
+run_tests
 
-	do_mount
-	if [ $? -ne 0 ]; then
-		echo "Cannot create memcg"
-		exit 1
-	fi
-
-	# prepare
-	mkdir /dev/memcg/$i 2> /dev/null
-	cd /dev/memcg/$i
-
-	# run the case
-	testcase_$i
-
-	# clean up
-	sleep 1
-	cd $TEST_PATH
-	rmdir /dev/memcg/$i
-
-	cleanup
-done
-
-if [ $failed -ne 0 ]; then
-	exit $failed
-else
-	exit 0
-fi
+tst_exit

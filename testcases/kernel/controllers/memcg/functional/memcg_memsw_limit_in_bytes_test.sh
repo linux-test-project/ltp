@@ -26,13 +26,10 @@
 # History:      2012/01/3 - Created.
 #
 
-export TCID="memcg_memsw_limit_in_bytes_test"
-export TST_TOTAL=12
-export TST_COUNT=0
+TCID="memcg_memsw_limit_in_bytes_test"
+TST_TOTAL=12
 
-. memcg_lib.sh || exit 1
-
-MEM_SWAP_FLAG=0
+. memcg_lib.sh
 
 testcase_1()
 {
@@ -76,91 +73,54 @@ testcase_8()
 
 testcase_9()
 {
-	if [ $MEM_SWAP_FLAG -eq 0 ]; then
+	if [ "$MEMSW_LIMIT_FLAG" -eq 0 ]; then
 		tst_resm TCONF "mem+swap is not enabled"
 		return
 	fi
 
 	echo 10M > memory.limit_in_bytes
-	echo -1 > memory.memsw.limit_in_bytes 2> /dev/null
-	ret=$?
+
 	tst_kvercmp 2 6 31
 	if [ $? -eq 0 ]; then
-		result $(( !($ret != 0) ))  "return value is $ret"
+		EXPECT_FAIL echo -1 \> memory.memsw.limit_in_bytes
 	else
-		result $(( !($ret == 0) ))  "return value is $ret"
+		EXPECT_PASS echo -1 \> memory.memsw.limit_in_bytes
 	fi
 }
 
 testcase_10()
 {
-	if [ $MEM_SWAP_FLAG -eq 0 ]; then
+	if [ "$MEMSW_LIMIT_FLAG" -eq 0 ]; then
 		tst_resm TCONF "mem+swap is not enabled"
 		return
 	fi
 
 	echo 10M > memory.limit_in_bytes
-	echo 1.0 > memory.memsw.limit_in_bytes 2> /dev/null
-	result $(( !($? != 0) )) "return value is $?"
+	EXPECT_FAIL echo 1.0 \> memory.memsw.limit_in_bytes
 }
 
 testcase_11()
 {
-	if [ $MEM_SWAP_FLAG -eq 0 ]; then
+	if [ "$MEMSW_LIMIT_FLAG" -eq 0 ]; then
 		tst_resm TCONF "mem+swap is not enabled"
 		return
 	fi
 
 	echo 10M > memory.limit_in_bytes
-	echo 1xx > memory.memsw.limit_in_bytes 2> /dev/null
-	result $(( !($? != 0) )) "return value is $?"
+	EXPECT_FAIL echo 1xx \> memory.memsw.limit_in_bytes
 }
 
 testcase_12()
 {
-	if [ $MEM_SWAP_FLAG -eq 0 ]; then
+	if [ "$MEMSW_LIMIT_FLAG" -eq 0 ]; then
 		tst_resm TCONF "mem+swap is not enabled"
 		return
 	fi
 
 	echo 10M > memory.limit_in_bytes
-	echo xx > memory.memsw.limit_in_bytes 2> /dev/null
-	result $(( !($? != 0) )) "return value is $?"
+	EXPECT_FAIL echo xx \> memory.memsw.limit_in_bytes
 }
 
-# Run all the test cases
-for i in $(seq 1 $TST_TOTAL)
-do
-	export TST_COUNT=$(( $TST_COUNT + 1 ))
-	cur_id=$i
+run_tests
 
-	do_mount
-	if [ $? -ne 0 ]; then
-		echo "Cannot create memcg"
-		exit 1
-	fi
-
-	# prepare
-	mkdir /dev/memcg/$i 2> /dev/null
-	cd /dev/memcg/$i
-
-	if [ -e memory.memsw.limit_in_bytes ]; then
-		MEM_SWAP_FLAG=1
-	fi
-
-	# run the case
-	testcase_$i
-
-	# clean up
-	sleep 1
-	cd $TEST_PATH
-	rmdir /dev/memcg/$i
-
-	cleanup
-done
-
-if [ $failed -ne 0 ]; then
-	exit $failed
-else
-	exit 0
-fi
+tst_exit

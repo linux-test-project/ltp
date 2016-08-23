@@ -25,11 +25,18 @@
 ##                                                                            ##
 ################################################################################
 
-export TCID="memcg_function_test"
-export TST_TOTAL=38
-export TST_COUNT=0
+TCID="memcg_function_test"
+TST_TOTAL=38
 
-. memcg_lib.sh || exit 1
+shmmax_cleanup()
+{
+	if [ -n "$shmmax" ]; then
+		echo "$shmmax" > /proc/sys/kernel/shmmax
+	fi
+}
+LOCAL_CLEANUP=shmmax_cleanup
+
+. memcg_lib.sh
 
 # Case 1 - 10: Test the management and counting of memory
 testcase_1()
@@ -174,38 +181,33 @@ testcase_24()
 # Case 25 - 28: Test invaild memory.limit_in_bytes
 testcase_25()
 {
-	echo -1 > memory.limit_in_bytes 2> /dev/null
-	ret=$?
 	tst_kvercmp 2 6 31
 	if [ $? -eq 0 ]; then
-		result $(( !($ret != 0) ))  "return value is $ret"
+		EXPECT_FAIL echo -1 \> memory.limit_in_bytes
 	else
-		result $(( !($ret == 0) ))  "return value is $ret"
+		EXPECT_PASS echo -1 \> memory.limit_in_bytes
 	fi
 }
 
 testcase_26()
 {
-	echo 1.0 > memory.limit_in_bytes 2> /dev/null
-	result $(( !($? != 0) )) "return value is $?"
+	EXPECT_FAIL echo 1.0 \> memory.limit_in_bytes
 }
 
 testcase_27()
 {
-	echo 1xx > memory.limit_in_bytes 2> /dev/null
-	result $(( !($? != 0) )) "return value is $?"
+	EXPECT_FAIL echo 1xx \> memory.limit_in_bytes
 }
 
 testcase_28()
 {
-	echo xx > memory.limit_in_bytes 2> /dev/null
-	result $(( !($? != 0) )) "return value is $?"
+	EXPECT_FAIL echo xx \> memory.limit_in_bytes
 }
 
 # Case 29 - 35: Test memory.force_empty
 testcase_29()
 {
-	$TEST_PATH/memcg_process --mmap-anon -s $PAGESIZE &
+	memcg_process --mmap-anon -s $PAGESIZE &
 	pid=$!
 	sleep 1
 	echo $pid > tasks
@@ -214,65 +216,50 @@ testcase_29()
 	echo $pid > ../tasks
 
 	# This expects that there is swap configured
-	echo 1 > memory.force_empty
-	if [ $? -eq 0 ]; then
-		result $PASS "force memory succeeded"
-	else
-		result $FAIL "force memory failed"
-	fi
+	EXPECT_PASS echo 1 \> memory.force_empty
 
 	kill -s INT $pid 2> /dev/null
 }
 
 testcase_30()
 {
-	$TEST_PATH/memcg_process --mmap-lock2 -s $PAGESIZE &
+	memcg_process --mmap-lock2 -s $PAGESIZE &
 	pid=$!
 	sleep 1
 	echo $pid > tasks
 	kill -s USR1 $pid 2> /dev/null
 	sleep 1
 
-	echo 1 > memory.force_empty 2> /dev/null
-	if [ $? -ne 0 ]; then
-		result $PASS "force memory failed as expected"
-	else
-		result $FAIL "force memory should fail"
-	fi
+	EXPECT_FAIL echo 1 \> memory.force_empty
 
 	kill -s INT $pid 2> /dev/null
 }
 
 testcase_31()
 {
-	echo 0 > memory.force_empty 2> /dev/null
-	result $? "return value is $?"
+	EXPECT_PASS echo 0 \> memory.force_empty
 }
 
 testcase_32()
 {
-	echo 1.0 > memory.force_empty 2> /dev/null
-	result $? "return value is $?"
+	EXPECT_PASS echo 1.0 \> memory.force_empty
 }
 
 testcase_33()
 {
-	echo 1xx > memory.force_empty 2> /dev/null
-	result $? "return value is $?"
+	EXPECT_PASS echo 1xx \> memory.force_empty
 }
 
 testcase_34()
 {
-	echo xx > memory.force_empty 2> /dev/null
-	result $? "return value is $?"
+	EXPECT_PASS echo xx \> memory.force_empty
 }
 
 testcase_35()
 {
 	# writing to non-empty top mem cgroup's force_empty
 	# should return failure
-	echo 1 > /dev/memcg/memory.force_empty 2> /dev/null
-	result $(( !$? )) "return value is $?"
+	EXPECT_FAIL echo 1 \> /dev/memcg/memory.force_empty
 }
 
 # Case 36 - 38: Test that group and subgroup have no relationship
@@ -293,40 +280,9 @@ testcase_38()
 
 shmmax=`cat /proc/sys/kernel/shmmax`
 if [ $shmmax -lt $HUGEPAGESIZE ]; then
-	echo $(($HUGEPAGESIZE)) > /proc/sys/kernel/shmmax
+	ROD echo "$HUGEPAGESIZE" \> /proc/sys/kernel/shmmax
 fi
 
-# Run all the test cases
-for i in $(seq 1 $TST_TOTAL)
-do
-	export TST_COUNT=$(( $TST_COUNT + 1 ))
-	cur_id=$i
+run_tests
 
-	do_mount
-	if [ $? -ne 0 ]; then
-		echo "Cannot create memcg"
-		exit 1
-	fi
-
-	# prepare
-	mkdir /dev/memcg/$i 2> /dev/null
-	cd /dev/memcg/$i
-
-	# run the case
-	testcase_$i
-
-	# clean up
-	sleep 1
-	cd $TEST_PATH
-	rmdir /dev/memcg/$i
-
-	cleanup
-done
-
-echo $shmmax > /proc/sys/kernel/shmmax
-
-if [ $failed -ne 0 ]; then
-	exit $failed
-else
-	exit 0
-fi
+tst_exit

@@ -1,5 +1,4 @@
 /control/mem_process
-/functional/memcg_getpagesize
 /functional/memcg_process
 /regression/memcg_test_1
 /regression/memcg_test_2

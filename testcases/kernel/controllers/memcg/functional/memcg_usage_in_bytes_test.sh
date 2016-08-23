@@ -26,13 +26,10 @@
 # History:      2012/01/16 - Created.
 #
 
-export TCID="memcg_usage_in_bytes_test"
-export TST_TOTAL=2
-export TST_COUNT=0
+TCID="memcg_usage_in_bytes_test"
+TST_TOTAL=2
 
-. memcg_lib.sh || exit 1
-
-MEM_SWAP_FLAG=0
+. memcg_lib.sh
 
 # Test memory.usage_in_bytes
 testcase_1()
@@ -44,7 +41,7 @@ testcase_1()
 # Test memory.memsw.usage_in_bytes
 testcase_2()
 {
-	if [ $MEM_SWAP_FLAG -eq 0 ]; then
+	if [ "$MEMSW_USAGE_FLAG" -eq 0 ]; then
 		tst_resm TCONF "mem+swap is not enabled"
 		return
 	fi
@@ -55,39 +52,7 @@ testcase_2()
 		"memory.memsw.usage_in_bytes" $((PAGESIZE*1024)) 0
 }
 
-# Run all the test cases
-for i in $(seq 1 $TST_TOTAL)
-do
-	export TST_COUNT=$(( $TST_COUNT + 1 ))
-	cur_id=$i
+run_tests
 
-	do_mount
-	if [ $? -ne 0 ]; then
-		echo "Cannot create memcg"
-		exit 1
-	fi
+tst_exit
 
-	# prepare
-	mkdir /dev/memcg/$i 2> /dev/null
-	cd /dev/memcg/$i
-
-	if [ -e memory.memsw.usage_in_bytes ]; then
-		MEM_SWAP_FLAG=1
-	fi
-
-	# run the case
-	testcase_$i
-
-	# clean up
-	sleep 1
-	cd $TEST_PATH
-	rmdir /dev/memcg/$i
-
-	cleanup
-done
-
-if [ $failed -ne 0 ]; then
-	exit $failed
-else
-	exit 0
-fi

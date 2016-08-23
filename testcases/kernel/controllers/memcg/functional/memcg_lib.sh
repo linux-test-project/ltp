@@ -22,42 +22,51 @@
 ##                                                                            ##
 ################################################################################
 
+. test.sh
+
 if [ "x$(grep -w memory /proc/cgroups | cut -f4)" != "x1" ]; then
-	echo "WARNING:";
-	echo "Either Kernel does not support for memory resource controller or feature not enabled";
-	echo "Skipping all memcgroup testcases....";
-	exit 0
+	tst_brkm TCONF "Kernel does not support the memory resource controller"
 fi
 
-cd $LTPROOT/testcases/bin
+PAGESIZE=$(getconf PAGESIZE)
+if [ $? -ne 0 ]; then
+	tst_brkm TBROK "getconf PAGESIZE failed"
+fi
 
-TEST_PATH=$PWD
-PAGESIZE=`./memcg_getpagesize`
-HUGEPAGESIZE=`grep Hugepagesize /proc/meminfo | awk '{ print $2 }'`
+HUGEPAGESIZE=$(awk '/Hugepagesize/ {print $2}' /proc/meminfo)
 [ -z $HUGEPAGESIZE ] && HUGEPAGESIZE=0
 HUGEPAGESIZE=$(( $HUGEPAGESIZE * 1024 ))
-PASS=0
-FAIL=1
 orig_memory_use_hierarchy=""
 
-cur_id=0
-failed=0
+MEMSW_USAGE_FLAG=0
+MEMSW_LIMIT_FLAG=0
 
-# Record the test result of a test case
-# $1 - The result of the test case, $PASS or $FAIL
-# $2 - The output information
-result()
+tst_tmpdir
+TMP_DIR="$PWD"
+
+cleanup()
 {
-	local pass=$1
-	local info="$2"
-
-	if [ $pass -eq $PASS ]; then
-		tst_resm TPASS "$info"
-	else
-		tst_resm TFAIL "$info"
-		: $(( failed += 1 ))
+	if [ -n "$LOCAL_CLEANUP" ]; then
+		$LOCAL_CLEANUP
 	fi
+
+	killall -9 memcg_process 2> /dev/null
+	wait
+
+	cd "$TMP_DIR"
+
+	if [ -n "$TEST_ID" -a -d "/dev/memcg/$TEST_ID" ]; then
+		rmdir "/dev/memcg/$TEST_ID"
+	fi
+
+	if [ -d "/dev/memcg" ]; then
+		umount /dev/memcg
+		rmdir /dev/memcg
+	fi
+
+	tst_rmdir
 }
+TST_CLEANUP=cleanup
 
 # Check size in memcg
 # $1 - Item name
@@ -71,19 +80,17 @@ check_mem_stat()
 	fi
 
 	if [ "$2" = "$item_size" ]; then
-		pass=$PASS
+		tst_resm TPASS "$1 is $2 as expected"
 	else
-		pass=$FAIL
+		tst_resm TFAIL "$1 is $item_size, $2 expected"
 	fi
-
-	result $pass "$1=$item_size/$2"
 }
 
 warmup()
 {
 	pid=$1
 
-	echo "Warming up for test: $cur_id, pid: $pid"
+	tst_resm TINFO "Warming up pid: $pid"
 	kill -s USR1 $pid 2> /dev/null
 	sleep 1
 	kill -s USR1 $pid 2> /dev/null
@@ -91,10 +98,11 @@ warmup()
 
 	kill -0 $pid
 	if [ $? -ne 0 ]; then
-		result $FAIL "cur_id=$cur_id"
+		wait $pid
+		tst_resm TFAIL "Process $pid exited with $? after warm up"
 		return 1
 	else
-		echo "Process is still here after warm up: $pid"
+		tst_resm TINFO "Process is still here after warm up: $pid"
 	fi
 
 	return 0
@@ -109,8 +117,8 @@ warmup()
 # $5 - check after free ?
 test_mem_stat()
 {
-	echo "Running $TEST_PATH/memcg_process $1 -s $2"
-	$TEST_PATH/memcg_process $1 -s $2 &
+	tst_resm TINFO "Running memcg_process $1 -s $2"
+	memcg_process $1 -s $2 &
 	sleep 1
 
 	warmup $!
@@ -142,8 +150,8 @@ test_mem_stat()
 # $5 - check after free ?
 test_max_usage_in_bytes()
 {
-	echo "Running $TEST_PATH/memcg_process $1 -s $2"
-	$TEST_PATH/memcg_process $1 -s $2 &
+	tst_resm TINFO "Running memcg_process $1 -s $2"
+	memcg_process $1 -s $2 &
 	sleep 1
 
 	warmup $!
@@ -173,8 +181,8 @@ test_max_usage_in_bytes()
 # $2 - the -s parameter of 'process', such as 4096
 malloc_free_memory()
 {
-	echo "Running $TEST_PATH/memcg_process $1 -s $2"
-	$TEST_PATH/memcg_process $1 -s $2 &
+	tst_resm TINFO "Running memcg_process $1 -s $2"
+	memcg_process $1 -s $2 &
 	sleep 1
 
 	echo $! > tasks
@@ -193,12 +201,10 @@ test_failcnt()
 {
 	failcnt=`cat $1`
 	if [ $failcnt -gt 0 ]; then
-		pass=$PASS
+		tst_resm TPASS "$1 is $failcnt, > 0 as expected"
 	else
-		pass=$FAIL
+		tst_resm TFAIL "$1 is $failcnt, <= 0 expected"
 	fi
-
-	result $pass "$1=$failcnt"
 }
 
 # Test process will be killed due to exceed memory limit
@@ -218,7 +224,7 @@ test_proc_kill()
 		fi
 	fi
 
-	$TEST_PATH/memcg_process $2 -s $3 &
+	memcg_process $2 -s $3 &
 	pid=$!
 	sleep 1
 	echo $pid > tasks
@@ -231,15 +237,15 @@ test_proc_kill()
 		wait $pid
 		ret=$?
 		if [ $ret -eq 1 ]; then
-			result $FAIL "process $pid is killed by error"
+			tst_resm TFAIL "process $pid is killed by error"
 		elif [ $ret -eq 2 ]; then
-			result $PASS "Failed to lock memory"
+			tst_resm TFAIL "Failed to lock memory"
 		else
-			result $PASS "process $pid is killed"
+			tst_resm TPASS "process $pid is killed"
 		fi
 	else
 		kill -s INT $pid 2> /dev/null
-		result $FAIL "process $pid is not killed"
+		tst_resm TFAIL "process $pid is not killed"
 	fi
 }
 
@@ -265,12 +271,14 @@ test_limit_in_bytes()
 	# are rounding down
 	if [ \( $(($PAGESIZE*($1/$PAGESIZE))) -eq $limit \) \
 	    -o \( $(($PAGESIZE*(($1+$PAGESIZE-1)/$PAGESIZE))) -eq $limit \) ]; then
-		result $PASS "input=$1, limit_in_bytes=$limit"
+		tst_resm TPASS "input=$1, limit_in_bytes=$limit"
 	else
-		result $FAIL "input=$1, limit_in_bytes=$limit"
+		tst_resm TFAIL "input=$1, limit_in_bytes=$limit"
 	fi
 }
 
+# Never used, so untested
+#
 # Test memory controller doesn't charge hugepage
 # $1 - the value of /proc/sys/vm/nr_hugepages
 # $2 - the parameters of 'process', --mmap-file or --shm
@@ -278,7 +286,7 @@ test_limit_in_bytes()
 # $4 - 0: expected failure, 1: expected success
 test_hugepage()
 {
-	TMP_FILE=$TEST_PATH/tmp
+	TMP_FILE="$TMP_DIR/tmp"
 	nr_hugepages=`cat /proc/sys/vm/nr_hugepages`
 
 	mkdir /hugetlb
@@ -286,7 +294,7 @@ test_hugepage()
 
 	echo $1 > /proc/sys/vm/nr_hugepages
 
-	$TEST_PATH/memcg_process $2 --hugepage -s $3 > $TMP_FILE 2>&1 &
+	memcg_process $2 --hugepage -s $3 > $TMP_FILE 2>&1 &
 	sleep 1
 
 	kill -s USR1 $! 2> /dev/null
@@ -300,20 +308,20 @@ test_hugepage()
 	if [ $4 -eq 0 ]; then
 		test -s $TMP_FILE
 		if [ $? -eq 0 ]; then
-			result $PASS "allocate hugepage failed as expected"
+			tst_resm TPASS "allocate hugepage failed as expected"
 		else
 			kill -s USR1 $! 2> /dev/null
 			kill -s INT $! 2> /dev/null
-			result $FAIL "allocate hugepage shoud fail"
+			tst_resm TFAIL "allocate hugepage should fail"
 		fi
 	else
 		test ! -s $TMP_FILE
 		if [ $? -eq 0 ]; then
 			kill -s USR1 $! 2> /dev/null
 			kill -s INT $! 2> /dev/null
-			result $PASS "allocate hugepage succeeded"
+			tst_resm TPASS "allocate hugepage succeeded"
 		else
-			result $FAIL "allocate hugepage failed"
+			tst_resm TFAIL "allocate hugepage failed"
 		fi
 	fi
 
@@ -333,8 +341,8 @@ test_subgroup()
 	echo $1 > memory.limit_in_bytes
 	echo $2 > subgroup/memory.limit_in_bytes
 
-	echo "Running $TEST_PATH/memcg_process --mmap-anon -s $PAGESIZE"
-	$TEST_PATH/memcg_process --mmap-anon -s $PAGESIZE &
+	tst_resm TINFO "Running memcg_process --mmap-anon -s $PAGESIZE"
+	memcg_process --mmap-anon -s $PAGESIZE &
 	sleep 1
 
 	warmup $!
@@ -369,7 +377,8 @@ test_move_charge()
 {
 	mkdir subgroup_a
 
-	$TEST_PATH/memcg_process $1 -s $2 &
+	tst_resm TINFO "Running memcg_process $1 -s $2"
+	memcg_process $1 -s $2 &
 	sleep 1
 	warmup $!
 	if [ $? -ne 0 ]; then
@@ -400,8 +409,10 @@ test_move_charge()
 	rmdir subgroup_a subgroup_b
 }
 
-cleanup()
+cleanup_test()
 {
+	TEST_ID="$1"
+
 	if [ -n "$orig_memory_use_hierarchy" ];then
 		echo $orig_memory_use_hierarchy > \
 		     /dev/memcg/memory.use_hierarchy
@@ -413,18 +424,22 @@ cleanup()
 	fi
 
 	killall -9 memcg_process 2>/dev/null
-	if [ -e /dev/memcg ]; then
-		umount /dev/memcg 2>/dev/null
-		rmdir /dev/memcg 2>/dev/null
-	fi
+	wait
+
+	ROD cd "$TMP_DIR"
+
+	ROD rmdir "/dev/memcg/$TEST_ID"
+	TEST_ID=""
+	ROD umount /dev/memcg
+	ROD rmdir /dev/memcg
 }
 
-do_mount()
+setup_test()
 {
-	cleanup
+	TEST_ID="$1"
 
-	mkdir /dev/memcg 2> /dev/null
-	mount -t cgroup -omemory memcg /dev/memcg
+	ROD mkdir /dev/memcg
+	ROD mount -t cgroup -omemory memcg /dev/memcg
 
 	# The default value for memory.use_hierarchy is 0 and some of tests
 	# (memcg_stat_test.sh and memcg_use_hierarchy_test.sh) expect it so
@@ -442,4 +457,27 @@ do_mount()
 				"to 0 failed"
 		fi
 	fi
+
+	ROD mkdir "/dev/memcg/$TEST_ID"
+	ROD cd "/dev/memcg/$TEST_ID"
+}
+
+# Run all the test cases
+run_tests()
+{
+	for i in $(seq 1 $TST_TOTAL); do
+		setup_test $i
+
+		if [ -e memory.memsw.limit_in_bytes ]; then
+			MEMSW_LIMIT_FLAG=1
+		fi
+
+		if [ -e memory.memsw.max_usage_in_bytes ]; then
+			MEMSW_USAGE_FLAG=1
+		fi
+
+		testcase_$i
+
+		cleanup_test $i
+	done
 }
