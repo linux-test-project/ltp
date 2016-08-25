@@ -1226,6 +1226,51 @@ the rest of the LTP test binaries.
 WARNING: All identifiers starting with TST_ or tst_ are reserved for the
          'test.sh' library.
 
+2.2.22 Code path tracing
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+'tst_res' is a macro, so on when you define a function in one file:
+
+[source,c]
+-------------------------------------------------------------------------------
+int do_action(int arg)
+{
+	...
+
+	if (ok) {
+		tst_res(TPASS, "check passed");
+		return 0;
+	} else {
+		tst_res(TFAIL, "check failed");
+		return -1;
+	}
+}
+-------------------------------------------------------------------------------
+
+and call it from another file, the file and line reported by 'tst_res' in this
+function will be from the former file.
+
+'TST_TRACE' can make the analysis of such situations easier. It's a macro which
+inserts a call to 'tst_res(TINFO, ...)' in case its argument evaluates to
+non-zero. In this call to 'tst_res(TINFO, ...)' the file and line will be
+expanded using the actual location of 'TST_TRACE'.
+
+For example, if this another file contains:
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+if (TST_TRACE(do_action(arg))) {
+	...
+}
+-------------------------------------------------------------------------------
+
+the generated output may look similar to:
+
+  common.h:9: FAIL: check failed
+  test.c:8: INFO: do_action(arg) failed
+
 2.3.1 Basic shell test structure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

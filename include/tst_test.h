@@ -59,6 +59,10 @@ pid_t safe_fork(const char *filename, unsigned int lineno);
 #define SAFE_FORK() \
 	safe_fork(__FILE__, __LINE__)
 
+#define TST_TRACE(expr)	                                            \
+	({int ret = expr;                                           \
+	  ret != 0 ? tst_res(TINFO, #expr " failed"), ret : ret; }) \
+
 #include "tst_safe_macros.h"
 #include "tst_safe_file_ops.h"
 #include "tst_safe_net.h"
