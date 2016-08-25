@@ -75,6 +75,8 @@ static size_t get_allocsize(void)
 {
 	struct stat file_stat;
 
+	fsync(fd);
+
 	SAFE_FSTAT(cleanup, fd, &file_stat);
 
 	return file_stat.st_blocks * 512;
