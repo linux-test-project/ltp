@@ -117,6 +117,9 @@ static int reap_children(pid_t wp_pid, int wp_opts, pid_t *children, int len)
 			if (errno == EINTR)
 				continue;
 
+			if (waitpid_errno_check(errno, ECHILD))
+				return -1;
+
 			break;
 		}
 
