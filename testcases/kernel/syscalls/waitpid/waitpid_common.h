@@ -75,6 +75,35 @@ static void do_exit(int stop)
 	exit(3);
 }
 
+static int waitpid_errno_check(int err, int exp_err)
+{
+	if (err != exp_err) {
+		tst_res(TFAIL, "waitpid() set errno to %s, expected %s",
+			tst_strerrno(err), tst_strerrno(exp_err));
+		return -1;
+	}
+
+	return 0;
+}
+
+int waitpid_ret_test(pid_t wp_pid, int *wp_status, int wp_opts,
+		     pid_t wp_ret, int wp_errno)
+{
+	pid_t ret;
+
+	ret = waitpid(wp_pid, wp_status, wp_opts);
+	if (ret != wp_ret) {
+		tst_res(TFAIL, "waitpid() returned %d, expected %d",
+			ret, wp_ret);
+		return -1;
+	}
+
+	if ((ret == -1) && waitpid_errno_check(errno, wp_errno))
+		return -1;
+
+	return 0;
+}
+
 static int reap_children(pid_t wp_pid, int wp_opts, pid_t *children, int len)
 {
 	pid_t pid;

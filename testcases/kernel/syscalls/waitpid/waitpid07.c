@@ -48,12 +48,8 @@ static void do_child_1(void)
 	}
 
 	/* Check that waitpid with WNOHANG returns zero */
-	pid = waitpid(-1, &status, WNOHANG);
-	if (pid != 0) {
-		tst_res(TFAIL, "waitpid() returned %d, expected 0",
-			pid);
+	if (TST_TRACE(waitpid_ret_test(-1, &status, WNOHANG, 0, 0)))
 		return;
-	}
 
 	TST_CHECKPOINT_WAKE2(0, MAXKIDS);
 

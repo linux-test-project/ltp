@@ -51,35 +51,13 @@ static void do_child_1(void)
 	/* Check that waitpid with WNOHANG|WUNTRACED returns
 	 * zero
 	 */
-	pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
-	if (pid != 0) {
-		tst_res(TFAIL,
-			"waitpid(WNOHANG | WUNTRACED) returned %d, expected 0",
-			pid);
+	if (TST_TRACE(waitpid_ret_test(-1, &status, WNOHANG | WUNTRACED, 0, 0)))
 		return;
-	}
 
 	TST_CHECKPOINT_WAKE2(0, MAXKIDS);
 
 	if (TST_TRACE(reap_children(-1, WUNTRACED, fork_kid_pid, MAXKIDS)))
 		return;
-
-	/*
-	 * Check that waitpid(WUNTRACED) returns -1 when no
-	 * stopped children
-	 */
-	pid = waitpid(-1, &status, WUNTRACED);
-	if (pid != -1) {
-		tst_res(TFAIL, "waitpid(WUNTRACED) returned %d, expected -1",
-			pid);
-		return;
-	}
-
-	if (errno != ECHILD) {
-		tst_res(TFAIL, "waitpid(WUNTRACED) set errno %s, expected %s",
-			tst_strerrno(errno), tst_strerrno(ECHILD));
-		return;
-	}
 
 	tst_res(TPASS, "Test PASSED");
 }
