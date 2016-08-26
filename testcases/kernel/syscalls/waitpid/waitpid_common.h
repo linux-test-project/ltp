@@ -131,6 +131,25 @@ static int reap_children(pid_t wp_pid, int wp_opts, pid_t *children, int len)
 			return -1;
 		}
 
+		if (WIFSTOPPED(status)) {
+			if (WSTOPSIG(status) != SIGSTOP) {
+				tst_res(TFAIL,
+					"Pid %d: expected SIGSTOP, got %d",
+					pid, WSTOPSIG(status));
+				return -1;
+			}
+
+			tst_res(TINFO, "Sending SIGCONT to %d", pid);
+
+			if (kill(pid, SIGCONT) < 0) {
+				tst_res(TFAIL | TERRNO,
+					"kill(%d, SIGCONT) failed", pid);
+				return -1;
+			}
+
+			continue;
+		}
+
 		for (i = 0; i < len; i++) {
 			if (pid == children[i]) {
 				children[i] = 0;
