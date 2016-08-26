@@ -25,7 +25,7 @@
  *	Tests to see if pids returned from fork and waitpid are same
  *
  * ALGORITHM
- * 	Check proper functioning of waitpid with pid = -1 and arg = 0
+ *	Check proper functioning of waitpid with pid = 0 and < -1 with arg 0
  */
 
 #include "waitpid_common.h"
