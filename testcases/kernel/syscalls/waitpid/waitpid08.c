@@ -43,7 +43,7 @@ static void do_child_1(void)
 
 		pid = SAFE_FORK();
 		if (pid == 0)
-			do_exit(0);
+			do_exit(1);
 
 		fork_kid_pid[i] = pid;
 	}
