@@ -50,11 +50,11 @@ static void do_child_1(void)
 
 	TST_CHECKPOINT_WAKE2(0, MAXKIDS);
 
-	if (reap_children(0, 0, fork_kid_pid + (MAXKIDS / 2), MAXKIDS / 2))
+	if (TST_TRACE(reap_children(0, 0, fork_kid_pid + MAXKIDS/2, MAXKIDS/2)))
 		return;
 
 	/* Make sure can pickup children in a diff. process group */
-	if (reap_children(-group, 0, fork_kid_pid, MAXKIDS / 2))
+	if (TST_TRACE(reap_children(-group, 0, fork_kid_pid, MAXKIDS / 2)))
 		return;
 
 	tst_res(TPASS, "Test PASSED");

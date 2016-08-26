@@ -56,7 +56,7 @@ static void do_child_1(void)
 
 	TST_CHECKPOINT_WAKE2(0, MAXKIDS);
 
-	if (reap_children(0, 0, fork_kid_pid, MAXKIDS))
+	if (TST_TRACE(reap_children(0, 0, fork_kid_pid, MAXKIDS)))
 		return;
 
 	tst_res(TPASS, "Test PASSED");
@@ -94,7 +94,7 @@ static void do_fork(void)
 		if (fork_pid == 0)
 			exit(3);
 
-		if (reap_children(fork_pid, 0, &fork_pid, 1))
+		if (TST_TRACE(reap_children(fork_pid, 0, &fork_pid, 1)))
 			break;
 	}
 

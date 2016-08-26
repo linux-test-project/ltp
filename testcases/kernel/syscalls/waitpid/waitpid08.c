@@ -61,7 +61,7 @@ static void do_child_1(void)
 
 	TST_CHECKPOINT_WAKE2(0, MAXKIDS);
 
-	if (reap_children(-1, WUNTRACED, fork_kid_pid, MAXKIDS))
+	if (TST_TRACE(reap_children(-1, WUNTRACED, fork_kid_pid, MAXKIDS)))
 		return;
 
 	/*
