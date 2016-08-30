@@ -29,6 +29,11 @@ DUMMYDEV_HOST="dummy_test0"
 DUMMYDEV="dummy_test1"
 . test.sh
 
+tst_kvercmp 2 6 35
+if [ $? -eq 0 ]; then
+	tst_brkm TCONF "sysfs is not mount namespace aware for kernels older than 2.6.35"
+fi
+
 setns_check
 if [ $? -eq 32 ]; then
 	tst_brkm TCONF "setns not supported"
