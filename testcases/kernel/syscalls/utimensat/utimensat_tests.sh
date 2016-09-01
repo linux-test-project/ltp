@@ -30,6 +30,15 @@ if tst_kvercmp 2 6 22 ; then
 	tst_brkm TCONF "System kernel version is less than 2.6.22,cannot execute test"
 fi
 
+# Starting with 4.8.0 operations on immutable files return EPERM instead of
+# EACCES.
+if tst_kvercmp 4 8 0; then
+	imaccess=EACCES
+else
+	imaccess=EPERM
+fi
+
+
 RESULT_FILE=$TMPDIR/utimensat.result
 
 TEST_DIR=$TMPDIR/utimensat_tests
@@ -415,10 +424,10 @@ echo "Testing immutable file, owned by self"
 echo
 
 echo "***** Testing times==NULL case *****"
-run_test -W "" 600 "+i" "" EACCES
+run_test -W "" 600 "+i" "" $imaccess
 
 echo "***** Testing times=={ UTIME_NOW, UTIME_NOW } case *****"
-run_test -W "" 600 "+i" "0 n 0 n" EACCES
+run_test -W "" 600 "+i" "0 n 0 n" $imaccess
 
 echo "***** Testing times=={ UTIME_OMIT, UTIME_OMIT } case *****"
 run_test -W "" 600 "+i" "0 o 0 o" SUCCESS n n
@@ -441,10 +450,10 @@ echo "Testing immutable append-only file, owned by self"
 echo
 
 echo "***** Testing times==NULL case *****"
-run_test -W "" 600 "+ai" "" EACCES
+run_test -W "" 600 "+ai" "" $imaccess
 
 echo "***** Testing times=={ UTIME_NOW, UTIME_NOW } case *****"
-run_test -W "" 600 "+ai" "0 n 0 n" EACCES
+run_test -W "" 600 "+ai" "0 n 0 n" $imaccess
 
 echo "***** Testing times=={ UTIME_OMIT, UTIME_OMIT } case *****"
 run_test -W "" 600 "+ai" "0 o 0 o" SUCCESS n n
