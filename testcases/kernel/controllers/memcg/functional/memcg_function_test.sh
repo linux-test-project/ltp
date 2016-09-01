@@ -211,14 +211,13 @@ testcase_29()
 	pid=$!
 	TST_CHECKPOINT_WAIT 0
 	echo $pid > tasks
-	kill -s USR1 $pid 2> /dev/null
-	sleep 1
+	signal_memcg_process $pid
 	echo $pid > ../tasks
 
 	# This expects that there is swap configured
 	EXPECT_PASS echo 1 \> memory.force_empty
 
-	kill -s INT $pid 2> /dev/null
+	stop_memcg_process $pid
 }
 
 testcase_30()
@@ -227,12 +226,11 @@ testcase_30()
 	pid=$!
 	TST_CHECKPOINT_WAIT 0
 	echo $pid > tasks
-	kill -s USR1 $pid 2> /dev/null
-	sleep 1
+	signal_memcg_process $pid
 
 	EXPECT_FAIL echo 1 \> memory.force_empty
 
-	kill -s INT $pid 2> /dev/null
+	stop_memcg_process $pid
 }
 
 testcase_31()
