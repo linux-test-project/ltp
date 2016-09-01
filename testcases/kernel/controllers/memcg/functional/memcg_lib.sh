@@ -476,6 +476,9 @@ setup_test()
 run_tests()
 {
 	for i in $(seq 1 $TST_TOTAL); do
+
+		tst_resm TINFO "Starting test $i"
+
 		setup_test $i
 
 		if [ -e memory.memsw.limit_in_bytes ]; then
