@@ -69,6 +69,21 @@ cleanup()
 }
 TST_CLEANUP=cleanup
 
+shmmax_setup()
+{
+	shmmax=`cat /proc/sys/kernel/shmmax`
+	if [ $shmmax -lt $HUGEPAGESIZE ]; then
+		ROD echo "$HUGEPAGESIZE" \> /proc/sys/kernel/shmmax
+	fi
+}
+
+shmmax_cleanup()
+{
+	if [ -n "$shmmax" ]; then
+		echo "$shmmax" > /proc/sys/kernel/shmmax
+	fi
+}
+
 # Check size in memcg
 # $1 - Item name
 # $2 - Expected size
