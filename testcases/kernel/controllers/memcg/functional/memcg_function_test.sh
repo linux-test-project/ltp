@@ -41,54 +41,54 @@ LOCAL_CLEANUP=shmmax_cleanup
 # Case 1 - 10: Test the management and counting of memory
 testcase_1()
 {
-	test_mem_stat "--mmap-anon" $PAGESIZE "rss" $PAGESIZE 0
+	test_mem_stat "--mmap-anon" $PAGESIZE $PAGESIZE "rss" $PAGESIZE false
 }
 
 testcase_2()
 {
-	test_mem_stat "--mmap-file" $PAGESIZE "rss" 0 0
+	test_mem_stat "--mmap-file" $PAGESIZE $PAGESIZE "rss" 0 false
 }
 
 testcase_3()
 {
-	test_mem_stat "--shm -k 3" $PAGESIZE "rss" 0 0
+	test_mem_stat "--shm -k 3" $PAGESIZE $PAGESIZE "rss" 0 false
 }
 
 testcase_4()
 {
-	test_mem_stat "--mmap-anon --mmap-file --shm" $PAGESIZE "rss" \
-		$PAGESIZE 0
+	test_mem_stat "--mmap-anon --mmap-file --shm" \
+		$PAGESIZE $((PAGESIZE*3)) "rss" $PAGESIZE false
 }
 
 testcase_5()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZE "rss" $PAGESIZE 0
+	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE "rss" $PAGESIZE false
 }
 
 testcase_6()
 {
-	test_mem_stat "--mmap-anon" $PAGESIZE "rss" $PAGESIZE 1
+	test_mem_stat "--mmap-anon" $PAGESIZE $PAGESIZE "rss" $PAGESIZE true
 }
 
 testcase_7()
 {
-	test_mem_stat "--mmap-file" $PAGESIZE "rss" 0 1
+	test_mem_stat "--mmap-file" $PAGESIZE $PAGESIZE "rss" 0 true
 }
 
 testcase_8()
 {
-	test_mem_stat "--shm -k 8" $PAGESIZE "rss" 0 1
+	test_mem_stat "--shm -k 8" $PAGESIZE $PAGESIZE "rss" 0 true
 }
 
 testcase_9()
 {
-	test_mem_stat "--mmap-anon --mmap-file --shm" $PAGESIZE "rss" \
-		$PAGESIZE 1
+	test_mem_stat "--mmap-anon --mmap-file --shm" \
+		$PAGESIZE $((PAGESIZE*3)) "rss" $PAGESIZE true
 }
 
 testcase_10()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZE "rss" $PAGESIZE 1
+	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE "rss" $PAGESIZE true
 }
 
 # Case 11 - 13: Test memory.failcnt
@@ -211,7 +211,7 @@ testcase_29()
 	pid=$!
 	TST_CHECKPOINT_WAIT 0
 	echo $pid > tasks
-	signal_memcg_process $pid
+	signal_memcg_process $pid $PAGESIZE
 	echo $pid > ../tasks
 
 	# This expects that there is swap configured
@@ -226,7 +226,7 @@ testcase_30()
 	pid=$!
 	TST_CHECKPOINT_WAIT 0
 	echo $pid > tasks
-	signal_memcg_process $pid
+	signal_memcg_process $pid $PAGESIZE
 
 	EXPECT_FAIL echo 1 \> memory.force_empty
 

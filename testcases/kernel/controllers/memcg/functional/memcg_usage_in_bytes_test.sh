@@ -34,8 +34,8 @@ TST_TOTAL=2
 # Test memory.usage_in_bytes
 testcase_1()
 {
-	test_mem_stat "--mmap-anon" $((PAGESIZE*1024)) \
-		"memory.usage_in_bytes" $((PAGESIZE*1024)) 0
+	test_mem_stat "--mmap-anon" $((PAGESIZE*1024)) $((PAGESIZE*1024)) \
+		"memory.usage_in_bytes" $((PAGESIZE*1024)) false
 }
 
 # Test memory.memsw.usage_in_bytes
@@ -48,8 +48,8 @@ testcase_2()
 
 	echo $((PAGESIZE*2048)) > memory.limit_in_bytes
 	echo $((PAGESIZE*2048)) > memory.memsw.limit_in_bytes
-	test_mem_stat "--mmap-anon" $((PAGESIZE*1024)) \
-		"memory.memsw.usage_in_bytes" $((PAGESIZE*1024)) 0
+	test_mem_stat "--mmap-anon" $((PAGESIZE*1024)) $((PAGESIZE*1024)) \
+		"memory.memsw.usage_in_bytes" $((PAGESIZE*1024)) false
 }
 
 run_tests

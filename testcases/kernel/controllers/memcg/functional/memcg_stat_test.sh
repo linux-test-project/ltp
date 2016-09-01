@@ -34,25 +34,28 @@ TST_TOTAL=8
 # Test cache
 testcase_1()
 {
-	test_mem_stat "--shm -k 3" $PAGESIZE "cache" $PAGESIZE 0
+	test_mem_stat "--shm -k 3" $PAGESIZE $PAGESIZE "cache" $PAGESIZE false
 }
 
 # Test mapped_file
 testcase_2()
 {
-	test_mem_stat "--mmap-file" $PAGESIZE "mapped_file" $PAGESIZE 0
+	test_mem_stat "--mmap-file" $PAGESIZE $PAGESIZE \
+		"mapped_file" $PAGESIZE false
 }
 
 # Test unevictable with MAP_LOCKED
 testcase_3()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZE "unevictable" $PAGESIZE 0
+	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE \
+		"unevictable" $PAGESIZE false
 }
 
 # Test unevictable with mlock
 testcase_4()
 {
-	test_mem_stat "--mmap-lock2" $PAGESIZE "unevictable" $PAGESIZE 0
+	test_mem_stat "--mmap-lock2" $PAGESIZE $PAGESIZE \
+		"unevictable" $PAGESIZE false
 }
 
 # Test hierarchical_memory_limit with enabling hierarchical accounting

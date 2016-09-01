@@ -89,25 +89,52 @@ check_mem_stat()
 
 signal_memcg_process()
 {
-	pid=$1
+	local pid=$1
+	local size=$2
+	local path=$3
+	local usage_start=$(cat ${path}memory.usage_in_bytes)
+
 	kill -s USR1 $pid 2> /dev/null
-	sleep 1
+
+	if [ -z "$size" ]; then
+		return
+	fi
+
+	local loops=100
+
+	while kill -0 $pid 2> /dev/null; do
+		local usage=$(cat ${path}memory.usage_in_bytes)
+		local diff_a=$((usage_start - usage))
+		local diff_b=$((usage - usage_start))
+
+		if [ "$diff_a" -ge "$size" -o "$diff_b" -ge "$size" ]; then
+			return
+		fi
+
+		tst_sleep 100ms
+
+		loops=$((loops - 1))
+		if [ $loops -le 0 ]; then
+			tst_brkm TBROK "timeouted on memory.usage_in_bytes"
+		fi
+	done
 }
 
 stop_memcg_process()
 {
-	pid=$1
+	local pid=$1
 	kill -s INT $pid 2> /dev/null
 	wait $pid
 }
 
 warmup()
 {
-	pid=$1
+	local pid=$1
 
 	tst_resm TINFO "Warming up pid: $pid"
 	signal_memcg_process $pid
 	signal_memcg_process $pid
+	sleep 1
 
 	kill -0 $pid
 	if [ $? -ne 0 ]; then
@@ -123,15 +150,17 @@ warmup()
 
 # Run test cases which checks memory.stat after make
 # some memory allocation
-# $1 - the parameters of 'process', such as --shm
-# $2 - the -s parameter of 'process', such as 4096
-# $3 - item name in memory.stat
-# $4 - the expected size
-# $5 - check after free ?
 test_mem_stat()
 {
-	tst_resm TINFO "Running memcg_process $1 -s $2"
-	memcg_process $1 -s $2 &
+	local memtypes="$1"
+	local size=$2
+	local total_size=$3
+	local stat_name=$4
+	local exp_stat_size=$5
+	local check_after_free=$6
+
+	tst_resm TINFO "Running memcg_process $memtypes -s $size"
+	memcg_process $memtypes -s $size &
 	TST_CHECKPOINT_WAIT 0
 
 	warmup $!
@@ -140,13 +169,13 @@ test_mem_stat()
 	fi
 
 	echo $! > tasks
-	signal_memcg_process $!
+	signal_memcg_process $! $size
 
-	check_mem_stat $3 $4
+	check_mem_stat $stat_name $exp_stat_size
 
-	signal_memcg_process $!
-	if [ $5 -eq 1 ]; then
-		check_mem_stat $3 0
+	signal_memcg_process $! $size
+	if $check_after_free; then
+		check_mem_stat $stat_name 0
 	fi
 
 	stop_memcg_process $!
@@ -171,8 +200,8 @@ test_max_usage_in_bytes()
 	fi
 
 	echo $! > tasks
-	signal_memcg_process $!
-	signal_memcg_process $!
+	signal_memcg_process $! $2
+	signal_memcg_process $! $2
 
 	check_mem_stat $3 $4
 
@@ -194,8 +223,8 @@ malloc_free_memory()
 	TST_CHECKPOINT_WAIT 0
 
 	echo $! > tasks
-	signal_memcg_process $!
-	signal_memcg_process $!
+	signal_memcg_process $! $2
+	signal_memcg_process $! $2
 
 	stop_memcg_process $!
 }
@@ -234,7 +263,7 @@ test_proc_kill()
 	TST_CHECKPOINT_WAIT 0
 	echo $pid > tasks
 
-	signal_memcg_process $pid
+	signal_memcg_process $pid $3
 
 	tpk_pid_exists=1
 	for tpk_iter in $(seq 20); do
@@ -311,7 +340,7 @@ test_hugepage()
 	memcg_process $2 --hugepage -s $3 > $TMP_FILE 2>&1 &
 	TST_CHECKPOINT_WAIT 0
 
-	signal_memcg_process $!
+	signal_memcg_process $! $3
 
 	check_mem_stat "rss" 0
 
@@ -323,14 +352,14 @@ test_hugepage()
 		if [ $? -eq 0 ]; then
 			tst_resm TPASS "allocate hugepage failed as expected"
 		else
-			signal_memcg_process $!
+			signal_memcg_process $! $3
 			stop_memcg_process $!
 			tst_resm TFAIL "allocate hugepage should fail"
 		fi
 	else
 		test ! -s $TMP_FILE
 		if [ $? -eq 0 ]; then
-			signal_memcg_process $!
+			signal_memcg_process $! $3
 			stop_memcg_process $!
 			tst_resm TPASS "allocate hugepage succeeded"
 		else
@@ -358,13 +387,13 @@ test_subgroup()
 	memcg_process --mmap-anon -s $PAGESIZE &
 	TST_CHECKPOINT_WAIT 0
 
-	warmup $!
+	warmup $! $PAGESIZE
 	if [ $? -ne 0 ]; then
 		return
 	fi
 
 	echo $! > tasks
-	signal_memcg_process $!
+	signal_memcg_process $! $PAGESIZE
 	check_mem_stat "rss" $PAGESIZE
 
 	cd subgroup
@@ -379,17 +408,21 @@ test_subgroup()
 }
 
 # Run test cases which test memory.move_charge_at_immigrate
-# $1 - the parameters of 'process', such as --shm
-# $2 - the -s parameter of 'process', such as 4096
-# $3 - some positive value, such as 1
-# $4 - the expected size
-# $5 - the expected size
 test_move_charge()
 {
+	local memtypes="$1"
+	local size=$2
+	local total_size=$3
+	local move_charge_mask=$4
+	local b_rss=$5
+	local b_cache=$6
+	local a_rss=$7
+	local a_cache=$8
+
 	mkdir subgroup_a
 
-	tst_resm TINFO "Running memcg_process $1 -s $2"
-	memcg_process $1 -s $2 &
+	tst_resm TINFO "Running memcg_process $memtypes -s $size"
+	memcg_process $memtypes -s $size &
 	TST_CHECKPOINT_WAIT 0
 	warmup $!
 	if [ $? -ne 0 ]; then
@@ -398,22 +431,19 @@ test_move_charge()
 	fi
 
 	echo $! > subgroup_a/tasks
-	signal_memcg_process $!
+	signal_memcg_process $! $total_size "subgroup_a/"
 
 	mkdir subgroup_b
-	echo $3 > subgroup_b/memory.move_charge_at_immigrate
+	echo $move_charge_mask > subgroup_b/memory.move_charge_at_immigrate
 	echo $! > subgroup_b/tasks
 
 	cd subgroup_b
-	check_mem_stat "rss" $4
-	check_mem_stat "cache" $5
+	check_mem_stat "rss" $b_rss
+	check_mem_stat "cache" $b_cache
 	cd ../subgroup_a
-	check_mem_stat "rss" $6
-	check_mem_stat "cache" $7
-
+	check_mem_stat "rss" $a_rss
+	check_mem_stat "cache" $a_cache
 	cd ..
-	echo $! > tasks
-	signal_memcg_process $!
 	stop_memcg_process $!
 	rmdir subgroup_a subgroup_b
 }
