@@ -249,7 +249,7 @@ test_proc_kill()
 		if [ $ret -eq 1 ]; then
 			tst_resm TFAIL "process $pid is killed by error"
 		elif [ $ret -eq 2 ]; then
-			tst_resm TFAIL "Failed to lock memory"
+			tst_resm TPASS "Failed to lock memory"
 		else
 			tst_resm TPASS "process $pid is killed"
 		fi
