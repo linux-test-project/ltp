@@ -25,11 +25,19 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
 #include <stdlib.h>
+#include <string.h>
+
+static void sig_handler(int signo)
+{
+	_exit(0);
+}
 
 int main(int argc, char **argv)
 {
 	FILE *f;
+	struct sigaction sa;
 
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s /cgroup/.../tasks\n", argv[0]);
@@ -44,6 +52,16 @@ int main(int argc, char **argv)
 
 	fprintf(f, "%i\n", getpid());
 	fclose(f);
+
+	memset(&sa, 0, sizeof(sa));
+	sigemptyset(&sa.sa_mask);
+	sa.sa_handler = sig_handler;
+
+	if (sigaction(SIGVTALRM, &sa, NULL)) {
+		perror("sigaction failed");
+		return 1;
+	}
+
 	struct itimerval it = {.it_value = {.tv_sec = 0, .tv_usec = 10000}};
 
 	setitimer(ITIMER_VIRTUAL, &it, NULL);
