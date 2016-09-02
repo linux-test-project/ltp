@@ -237,23 +237,20 @@ static void shm(void)
 		shmid = shmget(key, memsize, flag);
 		if (shmid == -1)
 			err(1, "shmget() failed");
-		shmctl(shmid, IPC_RMID, NULL);
-
-		shmid = shmget(key, memsize, flag);
-		if (shmid == -1)
-			err(1, "shmget() failed");
 
 		p = shmat(shmid, NULL, 0);
 		if (p == (void *)-1) {
 			shmctl(shmid, IPC_RMID, NULL);
 			err(1, "shmat() failed");
 		}
+
+		if (shmctl(shmid, IPC_RMID, NULL) == -1)
+			err(1, "shmctl() failed");
+
 		touch_memory(p, memsize);
 	} else {
 		if (shmdt(p) == -1)
 			err(1, "shmdt() failed");
-		if (shmctl(shmid, IPC_RMID, NULL) == -1)
-			err(1, "shmctl() failed");
 	}
 }
 
