@@ -274,7 +274,7 @@ static void update_mem(void)
 		commit_left = commit_limit - committed;
 
 		if (commit_left < 0) {
-			tst_resm(TINFO, "CommmitLimit is %ld, Committed_AS"
+			tst_resm(TINFO, "CommitLimit is %ld, Committed_AS"
 				 " is %ld", commit_limit, committed);
 			tst_brkm(TBROK, cleanup, "Unexpected error: "
 				 "CommitLimit < Committed_AS");
