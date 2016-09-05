@@ -63,7 +63,7 @@
 #include "test.h"
 #include "mem.h"
 
-#define MAP_COUNT_DEFAULT	64
+#define MAP_COUNT_DEFAULT	1024
 #define MAX_MAP_COUNT		65536L
 
 char *TCID = "max_map_count";
@@ -247,6 +247,6 @@ static void max_map_count_test(void)
 		if (waitpid(pid, &status, 0) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
 
-		max_maps = max_maps << 2;
+		max_maps = max_maps << 1;
 	}
 }
