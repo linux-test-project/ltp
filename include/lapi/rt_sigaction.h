@@ -33,15 +33,23 @@
 
 #define INVAL_SA_PTR ((void *)-1)
 
+#if defined(__mips__)
+struct kernel_sigaction {
+	unsigned int sa_flags;
+	__sighandler_t k_sa_handler;
+	sigset_t sa_mask;
+};
+#else
 struct kernel_sigaction {
 	__sighandler_t k_sa_handler;
 	unsigned long sa_flags;
 	void (*sa_restorer) (void);
 	sigset_t sa_mask;
 };
+#endif
 
 /* This macro marks if (struct sigaction) has .sa_restorer member */
-#if !defined(__ia64__) && !defined(__alpha__) && !defined(__hppa__)
+#if !defined(__ia64__) && !defined(__alpha__) && !defined(__hppa__) && !defined(__mips__)
 # define HAVE_SA_RESTORER
 #endif
 
@@ -190,8 +198,9 @@ static int ltp_rt_sigaction(int signum, const struct sigaction *act,
 		kact.k_sa_handler = act->sa_handler;
 		memcpy(&kact.sa_mask, &act->sa_mask, sizeof(sigset_t));
 		kact.sa_flags = act->sa_flags;
+#ifndef __mips__
 		kact.sa_restorer = NULL;
-
+#endif
 		kact_p = &kact;
 	}
 
