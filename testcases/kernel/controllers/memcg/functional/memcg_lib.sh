@@ -57,6 +57,12 @@ cleanup()
 	cd "$TMP_DIR"
 
 	if [ -n "$TEST_ID" -a -d "/dev/memcg/$TEST_ID" ]; then
+		for i in "/dev/memcg/$TEST_ID/"*; do
+			if [ -d "$i" ]; then
+				rmdir "$i"
+			fi
+		done
+
 		rmdir "/dev/memcg/$TEST_ID"
 	fi
 
