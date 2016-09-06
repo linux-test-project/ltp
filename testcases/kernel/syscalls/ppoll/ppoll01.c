@@ -243,6 +243,7 @@ static void do_test(unsigned int i)
 	}
 
 	/* test */
+	errno = 0;
 	sys_ret = tst_syscall(__NR_ppoll, tc->fds, tc->nfds, tc->ts,
 		tc->sigmask, SIGSETSIZE);
 	sys_errno = errno;
@@ -272,7 +273,7 @@ static void do_test(unsigned int i)
 			tst_strerrno(sys_errno), sys_errno);
 	} else {
 		tst_res(TFAIL, "ret: %d, exp: %d, ret_errno: %s (%d),"
-			" exp_errno: %s (%d)", tc->ret, sys_ret,
+			" exp_errno: %s (%d)", sys_ret, tc->ret,
 			tst_strerrno(sys_errno), sys_errno,
 			tst_strerrno(tc->err), tc->err);
 	}
