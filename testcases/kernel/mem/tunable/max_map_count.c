@@ -11,9 +11,9 @@
  * indicates a map entry, so it can caculate the amount of maps by reading
  * the file lines' number to check the tunable performance.
  *
- * The program trys to invoke mmap() endless until triggering MAP_FAILED,
- * then read the process's maps file /proc/[pid]/maps, save the line number
- * to map_count variable, and compare it with /proc/sys/vm/max_map_count,
+ * The program tries to invoke mmap() endlessly until it triggers MAP_FAILED,
+ * then reads the process's maps file /proc/[pid]/maps, save the line number to
+ * map_count variable, and compare it with /proc/sys/vm/max_map_count,
  * map_count should be greater than max_map_count by 1;
  *
  * Note: On some architectures there is a special vma VSYSCALL, which
