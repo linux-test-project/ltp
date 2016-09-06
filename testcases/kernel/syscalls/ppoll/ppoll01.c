@@ -229,6 +229,12 @@ static void do_test(unsigned int i)
 	pid_t pid = 0;
 	int sys_ret, sys_errno = 0, dummy;
 	struct test_case *tc = &tcase[i];
+	struct timespec ts, *tsp = NULL;
+
+	if (tc->ts) {
+		memcpy(&ts, tc->ts, sizeof(ts));
+		tsp = &ts;
+	}
 
 	tst_res(TINFO, "case %s", tc->desc);
 
@@ -244,7 +250,7 @@ static void do_test(unsigned int i)
 
 	/* test */
 	errno = 0;
-	sys_ret = tst_syscall(__NR_ppoll, tc->fds, tc->nfds, tc->ts,
+	sys_ret = tst_syscall(__NR_ppoll, tc->fds, tc->nfds, tsp,
 		tc->sigmask, SIGSETSIZE);
 	sys_errno = errno;
 
