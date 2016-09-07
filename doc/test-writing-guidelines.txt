@@ -61,6 +61,11 @@ When writing testcases in shell write in *portable shell* only, it's a good
 idea to try to run the test using alternative shell (alternative to bash, for
 example dash) too.
 
+*Portable shell* means Shell Command Language as defined by POSIX with a
+exception of few widely used extensions, namely 'local' keyword used inside of
+functions and '-o' and '-a' test parameters (that are marked as obsolete in
+POSIX).
+
 You can either try to run the testcases on Debian which has '/bin/sh' pointing
 to 'dash' by default or install 'dash' on your favorite distribution and use
 it to run the tests. If your distribution lacks 'dash' package you can always
