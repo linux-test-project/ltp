@@ -1,5 +1,5 @@
 #DESCRIPTION:IPV6 related tests
-ping601 ping01 -6
+ping601 ping01.sh -6
 sendfile601 sendfile01 -6
 tcpdump601 tcpdump01 -6
 tracepath601 tracepath01.sh -6

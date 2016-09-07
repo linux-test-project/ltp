@@ -10,7 +10,7 @@ finger finger01
 ftp export TCbin=$LTPROOT/testcases/network/tcp_cmds/ftp; ftp01
 host host01
 netstat netstat01
-ping export LTPROOT; ping01
+ping01 ping01.sh
 rcp export TCbin=$LTPROOT/testcases/network/tcp_cmds/rcp; rcp01
 rdist export TCbin=$LTPROOT/testcases/network/tcp_cmds/rdist; rdist01
 rlogin rlogin01
