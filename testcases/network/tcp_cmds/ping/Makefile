@@ -24,7 +24,8 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= ping01.sh
+INSTALL_TARGETS		:= ping01.sh \
+			   ping02.sh
 
 MAKE_TARGETS		:=
 
