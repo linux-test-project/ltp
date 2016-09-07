@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2016 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2000
 #
 # This program is free software; you can redistribute it and/or
@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #  PURPOSE: To test the basic functionality of the `ping` command.
 #
@@ -26,7 +25,7 @@
 #    03/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Ported
 
-TST_TOTAL=1
+TST_TOTAL=10
 TCID="ping01"
 
 . test_net.sh
@@ -46,12 +45,7 @@ do_test()
 	tst_resm TINFO "$PING_CMD with $PACKETSIZES ICMP packets"
 	local ipaddr=$(tst_ipaddr rhost)
 	for packetsize in $PACKETSIZES; do
-		tst_resm TINFO "call $PING_CMD with packet size = $packetsize"
-		$PING_CMD -c $COUNT -s $packetsize $ipaddr > /dev/null 2>&1
-		if [ $? -ne 0 ]; then
-			tst_resm TFAIL "$PING_CMD -c $COUNT -s $packetsize $ipaddr"
-			return
-		fi
+		EXPECT_PASS $PING_CMD -c $COUNT -s $packetsize $ipaddr \>/dev/null
 	done
 }
 
