@@ -19,6 +19,7 @@ top_srcdir		?= ../../..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= ipvlan01.sh \
+			   geneve01.sh \
 			   gre01.sh \
 			   macvlan01.sh \
 			   macvtap01.sh \

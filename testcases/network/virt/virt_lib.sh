@@ -111,6 +111,9 @@ virt_add()
 		[ -z "$opt" ] && opt="id 4094"
 		[ "$vxlan_dstport" -eq 1 ] && opt="dstport 0 $opt"
 	;;
+	geneve)
+		[ -z "$opt" ] && opt="id 4094 remote $(tst_ipaddr rhost)"
+	;;
 	gre|ip6gre)
 		[ -z "$opt" ] && \
 			opt="remote $(tst_ipaddr rhost) dev $(tst_iface)"
@@ -118,7 +121,7 @@ virt_add()
 	esac
 
 	case $virt_type in
-	vxlan)
+	vxlan|geneve)
 		ip li add $vname type $virt_type $opt
 	;;
 	gre|ip6gre)
@@ -134,7 +137,7 @@ virt_add_rhost()
 {
 	local opt=""
 	case $virt_type in
-	vxlan)
+	vxlan|geneve)
 		[ "$vxlan_dstport" -eq 1 ] && opt="dstport 0"
 		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@ $opt"
 	;;
@@ -221,7 +224,7 @@ vxlan_setup_subnet_uni()
 		tst_brkm TCONF "test must be run with kernel 3.10 or newer"
 	fi
 
-	[ "$(ip li add type vxlan help 2>&1 | grep remote)" ] || \
+	[ "$(ip li add type $virt_type help 2>&1 | grep remote)" ] || \
 		tst_brkm TCONF "iproute doesn't support remote unicast address"
 
 	local opt="$1 remote $(tst_ipaddr rhost)"
@@ -285,13 +288,13 @@ virt_compare_netperf()
 	per6=$(( $vt6 * 100 / $lt - 100 ))
 
 	case "$virt_type" in
-	vxlan)
-		tst_resm TINFO "IPv4 VxLAN over IPv$ipver slower by $per %"
-		tst_resm TINFO "IPv6 VxLAN over IPv$ipver slower by $per6 %"
+	vxlan|geneve)
+		tst_resm TINFO "IP4 $virt_type over IP$ipver slower by $per %"
+		tst_resm TINFO "IP6 $virt_type over IP$ipver slower by $per6 %"
 	;;
 	*)
-		tst_resm TINFO "IPv4 $virt_type slower by $per %"
-		tst_resm TINFO "IPv6 $virt_type slower by $per6 %"
+		tst_resm TINFO "IP4 $virt_type slower by $per %"
+		tst_resm TINFO "IP6 $virt_type slower by $per6 %"
 	esac
 
 	if [ "$per" -ge "$VIRT_PERF_THRESHOLD" -o \
@@ -372,7 +375,7 @@ virt_test_02()
 tst_require_root
 
 case "$virt_type" in
-vxlan)
+vxlan|geneve)
 	if tst_kvcmp -lt "3.8"; then
 		tst_brkm TCONF "test must be run with kernel 3.8 or newer"
 	fi
