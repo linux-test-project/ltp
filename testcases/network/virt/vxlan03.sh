@@ -45,7 +45,7 @@ VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-160}
 cleanup()
 {
 	cleanup_vifaces
-	tst_rhost_run -c "ip link delete ltp_v0"
+	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
 	if [ "$net_load" = "TFO" ]; then
 		tst_rhost_run -c "pkill -9 tcp_fastopen\$"
 		pkill -9 "tcp_fastopen\$"
