@@ -194,6 +194,12 @@ static long get_device_readahead(const char *fname)
 		tst_brkm(TBROK | TERRNO, cleanup, "stat");
 	snprintf(buf, sizeof(buf), "/sys/dev/block/%d:%d/queue/read_ahead_kb",
 		 major(st.st_dev), minor(st.st_dev));
+	if (access(buf, F_OK)) {
+		snprintf(buf, sizeof(buf),
+			"/sys/dev/block/%d:%d/../queue/read_ahead_kb",
+			major(st.st_dev), minor(st.st_dev));
+	}
+	tst_resm(TINFO, "Reading %s", buf);
 	SAFE_FILE_SCANF(cleanup, buf, "%ld", &ra_kb);
 
 	return ra_kb * 1024;
