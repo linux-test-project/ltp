@@ -26,7 +26,7 @@
 ################################################################################
 
 TCID="memcg_force_empty"
-TST_TOTAL=7
+TST_TOTAL=6
 
 . memcg_lib.sh
 
@@ -48,38 +48,25 @@ testcase_1()
 
 testcase_2()
 {
-	memcg_process --mmap-lock2 -s $PAGESIZE &
-	pid=$!
-	TST_CHECKPOINT_WAIT 0
-	echo $pid > tasks
-	signal_memcg_process $pid $PAGESIZE
-
-	EXPECT_FAIL echo 1 \> memory.force_empty
-
-	stop_memcg_process $pid
+	EXPECT_PASS echo 0 \> memory.force_empty
 }
 
 testcase_3()
 {
-	EXPECT_PASS echo 0 \> memory.force_empty
+	EXPECT_PASS echo 1.0 \> memory.force_empty
 }
 
 testcase_4()
 {
-	EXPECT_PASS echo 1.0 \> memory.force_empty
+	EXPECT_PASS echo 1xx \> memory.force_empty
 }
 
 testcase_5()
 {
-	EXPECT_PASS echo 1xx \> memory.force_empty
-}
-
-testcase_6()
-{
 	EXPECT_PASS echo xx \> memory.force_empty
 }
 
-testcase_7()
+testcase_6()
 {
 	# writing to non-empty top mem cgroup's force_empty
 	# should return failure
