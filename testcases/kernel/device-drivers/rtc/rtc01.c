@@ -69,7 +69,7 @@ void read_alarm_test(void)
 	/*Read RTC Time */
 	ret = ioctl(rtc_fd, RTC_RD_TIME, &rtc_tm);
 	if (ret == -1) {
-		tst_resm(TFAIL, "RTC_RD_TIME ioctl failed");
+		tst_resm(TFAIL | TERRNO, "RTC_RD_TIME ioctl failed");
 		return;
 	}
 
@@ -101,14 +101,14 @@ void read_alarm_test(void)
 		if (errno == EINVAL)
 			tst_resm(TCONF | TERRNO, "RTC_ALM_SET not supported");
 		else
-			tst_resm(TFAIL | TERRNO , "RTC_ALM_SET ioctl failed");
+			tst_resm(TFAIL | TERRNO, "RTC_ALM_SET ioctl failed");
 		return;
 	}
 
 	/*Read current alarm time */
 	ret = ioctl(rtc_fd, RTC_ALM_READ, &rtc_tm);
 	if (ret == -1) {
-		tst_resm(TFAIL, "RTC_ALM_READ ioctl failed");
+		tst_resm(TFAIL | TERRNO, "RTC_ALM_READ ioctl failed");
 		return;
 	}
 
@@ -117,7 +117,7 @@ void read_alarm_test(void)
 	/* Enable alarm interrupts */
 	ret = ioctl(rtc_fd, RTC_AIE_ON, 0);
 	if (ret == -1) {
-		tst_resm(TINFO, "RTC_AIE_ON ioctl failed");
+		tst_resm(TINFO | TERRNO, "RTC_AIE_ON ioctl failed");
 		return;
 	}
 
@@ -132,12 +132,12 @@ void read_alarm_test(void)
 	ret = select(rtc_fd + 1, &rfds, NULL, NULL, &tv);	/*wait for alarm */
 
 	if (ret == -1) {
-		tst_resm(TFAIL, "select failed");
+		tst_resm(TFAIL | TERRNO, "select failed");
 		return;
 	} else if (ret) {
 		ret = read(rtc_fd, &data, sizeof(unsigned long));
 		if (ret == -1) {
-			tst_resm(TFAIL, "read failed");
+			tst_resm(TFAIL | TERRNO, "read failed");
 			return;
 		}
 		tst_resm(TINFO, "Alarm rang.");
@@ -149,7 +149,7 @@ void read_alarm_test(void)
 	/* Disable alarm interrupts */
 	ret = ioctl(rtc_fd, RTC_AIE_OFF, 0);
 	if (ret == -1) {
-		tst_resm(TFAIL, "RTC_AIE_OFF ioctl failed");
+		tst_resm(TFAIL | TERRNO, "RTC_AIE_OFF ioctl failed");
 		return;
 	}
 	tst_resm(TPASS, "RTC ALARM TEST Passed");
@@ -189,12 +189,12 @@ void update_interrupts_test(void)
 
 		ret = select(rtc_fd + 1, &rfds, NULL, NULL, &tv);
 		if (ret == -1) {
-			tst_resm(TFAIL, "select failed");
+			tst_resm(TFAIL | TERRNO, "select failed");
 			return;
 		} else if (ret) {
 			ret = read(rtc_fd, &data, sizeof(unsigned long));
 			if (ret == -1) {
-				tst_resm(TFAIL, "read failed");
+				tst_resm(TFAIL | TERRNO, "read failed");
 				return;
 			}
 			tst_resm(TINFO, "Update interrupt %d", i);
@@ -208,7 +208,7 @@ void update_interrupts_test(void)
 	/* Turn off update interrupts */
 	ret = ioctl(rtc_fd, RTC_UIE_OFF, 0);
 	if (ret == -1) {
-		tst_resm(TFAIL, "RTC_UIE_OFF ioctl failed");
+		tst_resm(TFAIL | TERRNO, "RTC_UIE_OFF ioctl failed");
 		return;
 	}
 	tst_resm(TPASS, "RTC UPDATE INTERRUPTS TEST Passed");
