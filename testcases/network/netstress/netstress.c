@@ -36,7 +36,7 @@
 
 char *TCID = "netstress";
 
-static const int max_msg_len = 1500;
+static const int max_msg_len = (1 << 16) - 1;
 
 /* TCP server requiers */
 #ifndef TCP_FASTOPEN
