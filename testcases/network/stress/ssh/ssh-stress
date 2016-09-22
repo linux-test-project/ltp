@@ -34,7 +34,7 @@ cleanup()
 {
 	# Stop the ssh daemon
 	test -s sshd.pid && kill $(cat sshd.pid)
-	pkill 'tcp_fastopen$'
+	pkill 'netstress$'
 	tst_rmdir
 	[ "$rtmpdir" ] && tst_rhost_run -c "rm -rf $rtmpdir"
 	TMPDIR=
@@ -131,7 +131,7 @@ test03()
 	# Run a TCP traffic server
 	port=$(tst_get_unused_port ipv${ipver} stream)
 
-	tcp_fastopen -R 3 -g $port > tcp_server.log 2>&1 &
+	netstress -R 3 -g $port > tcp_server.log 2>&1 &
 
 	tst_rhost_run -s -c "ssh-stress03-rmt $ipver $(tst_ipaddr) \
 		$rconfig $port $NS_TIMES"

@@ -35,16 +35,16 @@ setup()
 cleanup()
 {
 	# Stop the background TCP traffic
-	pkill -13 -x tcp_fastopen
-	tst_rhost_run -c "pkill -13 -x tcp_fastopen"
+	pkill -13 -x netstress
+	tst_rhost_run -c "pkill -13 -x netstress"
 	tst_restore_ipaddr
 }
 
 make_background_tcp_traffic()
 {
 	port=$(tst_get_unused_port ipv${ipver} stream)
-	tcp_fastopen -R 3 -g $port > /dev/null 2>&1 &
-	tst_rhost_run -b -c "tcp_fastopen -l -H $(tst_ipaddr) -g $port"
+	netstress -R 3 -g $port > /dev/null 2>&1 &
+	tst_rhost_run -b -c "netstress -l -H $(tst_ipaddr) -g $port"
 }
 
 check_connectivity()

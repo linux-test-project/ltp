@@ -18,7 +18,7 @@
 #
 # It requires remote host. Test will setup IPv4 and IPv6 virtual
 # tunnel between two hosts, then will compare TCP performance
-# with and without GRE using ping or tcp_fastopen test.
+# with and without GRE using ping or netstress test.
 
 TCID=gre01
 TST_TOTAL=1
@@ -35,14 +35,14 @@ cleanup()
 	cleanup_vifaces
 	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
 	if [ "$net_load" = "TFO" ]; then
-		tst_rhost_run -c "pkill -9 tcp_fastopen\$"
-		pkill -9 "tcp_fastopen\$"
+		tst_rhost_run -c "pkill -9 netstress\$"
+		pkill -9 "netstress\$"
 	fi
 }
 TST_CLEANUP="cleanup"
 
 if [ "$net_load" = "TFO" ]; then
-	tst_check_cmds "tcp_fastopen"
+	tst_check_cmds "netstress"
 fi
 
 if [ -z $ip_local -o -z $ip_remote ]; then

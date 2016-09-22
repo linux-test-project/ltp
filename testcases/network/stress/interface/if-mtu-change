@@ -75,7 +75,7 @@ test_body()
 		check_connectivity $cnt || return
 
 		# Check the background TCP traffic
-		pgrep -x tcp_fastopen > /dev/null || make_background_tcp_traffic
+		pgrep -x netstress > /dev/null || make_background_tcp_traffic
 	done
 
 	tst_resm TINFO "check connectivity through $iface"

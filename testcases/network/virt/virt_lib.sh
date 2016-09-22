@@ -60,7 +60,7 @@ while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
 		echo "R n      num of reqs, after which conn.closed in TCP perf"
 		echo "p x      x and x + 1 are ports in TCP perf"
 		echo "n x      virtual network 192.168.x"
-		echo "l x      network load: x is PING or TFO(tcp_fastopen)"
+		echo "l x      network load: x is PING or TFO(netstress)"
 		echo "t x      performance threshold, default is 60%"
 		echo "d x      VxLAN destination address, 'uni' or 'multi'"
 		echo "6        run over IPv6"

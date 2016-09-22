@@ -83,7 +83,7 @@ test_body()
 		cnt=$(($cnt + 1))
 
 		# Check the background TCP traffic
-		pgrep -x tcp_fastopen > /dev/null || make_background_tcp_traffic
+		pgrep -x netstress > /dev/null || make_background_tcp_traffic
 
 		case $cmd_type in
 		if_cmd)

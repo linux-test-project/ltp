@@ -34,7 +34,7 @@
 #include "lapi/posix_clocks.h"
 #include "safe_macros.h"
 
-char *TCID = "tcp_fastopen";
+char *TCID = "netstress";
 
 static const int max_msg_len = 1500;
 

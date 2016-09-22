@@ -31,7 +31,7 @@ max_requests=500000
 
 cleanup()
 {
-	tst_rhost_run -c "pkill -9 tcp_fastopen\$"
+	tst_rhost_run -c "pkill -9 netstress\$"
 	tst_rmdir
 
 	sysctl -q -w net.core.busy_poll=$busy_poll_old

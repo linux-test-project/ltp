@@ -57,7 +57,7 @@ case $ip_ver in
 esac
 
 # Start the TCP traffic clients
-tcp_fastopen -r $requests -l -H $localhost -g $lport > /dev/null
+netstress -r $requests -l -H $localhost -g $lport > /dev/null
 ret=$?
 
 # Stop the ssh port forwarding

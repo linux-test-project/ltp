@@ -61,7 +61,7 @@ done
 cleanup()
 {
 	tst_resm TINFO "cleanup..."
-	tst_rhost_run -c "pkill -9 tcp_fastopen\$"
+	tst_rhost_run -c "pkill -9 netstress\$"
 	rm -f $tfo_result
 }
 
@@ -84,17 +84,17 @@ read_result_file()
 run_client_server()
 {
 	# kill tcp server on remote machine
-	tst_rhost_run -c "pkill -9 tcp_fastopen\$"
+	tst_rhost_run -c "pkill -9 netstress\$"
 
 	port=$(tst_rhost_run -c "tst_get_unused_port ipv6 stream")
 	[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
 
 	# run tcp server on remote machine
-	tst_rhost_run -s -b -c "tcp_fastopen -R $max_requests $1 -g $port"
+	tst_rhost_run -s -b -c "netstress -R $max_requests $1 -g $port"
 	sleep $bind_timeout
 
 	# run local tcp client
-	tcp_fastopen -a $clients_num -r $client_requests -l \
+	netstress -a $clients_num -r $client_requests -l \
 		-H $(tst_ipaddr rhost) $1 -g $port -d $tfo_result
 	[ "$?" -ne 0 ] && tst_brkm TBROK "Last test has failed"
 
