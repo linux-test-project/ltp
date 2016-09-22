@@ -1,5 +1,5 @@
 #
-# Stress test for TCP/IP protocol stack (ICMP)
+# Stress test for IPsec with ICMP messages
 #
 
 # MAX_LENGTH(65535) - IP(20) - ICMP(8) = MAX_SIZE(65507)
@@ -35,3 +35,19 @@ icmp6-uni-basic05 icmp-uni-basic.sh -6 -p esp -m tunnel -s "10 100 1000 10000 65
 # after compression. So we just use a large enough message size(65000) for testing
 icmp6-uni-basic06 icmp-uni-basic.sh -6 -p comp -m transport -s "10 100 1000 10000 65000"
 icmp6-uni-basic07 icmp-uni-basic.sh -6 -p comp -m tunnel -s "10 100 1000 10000 65000"
+
+icmp4-uni-vti01 icmp-uni-vti.sh -p ah -a sha256 -m tunnel -S fffffffe -k 1 -s "10 100 1000 10000 65463"
+icmp4-uni-vti02 icmp-uni-vti.sh -p esp -a sha512 -e des -m tunnel -S fffffffe -k 2 -s "10 100 1000 10000 65450"
+icmp4-uni-vti03 icmp-uni-vti.sh -p esp -a rmd160 -e cast5 -m tunnel -S fffffffe -k 0xffffffff -s "10 100 1000 10000 65463"
+icmp4-uni-vti04 icmp-uni-vti.sh -p esp -e blowfish -m tunnel -S fffffffe -k 3 -s "10 100 1000 10000 65463"
+icmp4-uni-vti05 icmp-uni-vti.sh -p esp -a sha512 -e twofish -m tunnel -S fffffffe -k 0x7fffffff -s "10 100 1000 10000 65463"
+icmp4-uni-vti06 icmp-uni-vti.sh -p esp -a sha384 -e camellia -m tunnel -S fffffffe -k 0x80000000 -s "10 100 1000 10000 65463"
+icmp4-uni-vti07 icmp-uni-vti.sh -p esp -a sha512 -e serpent -m tunnel -S fffffffe -k 0xffff -s "10 100 1000 10000 65463"
+
+icmp6-uni-vti01 icmp-uni-vti.sh -6 -p ah -m tunnel -S fffffffe -k 0xffffffff -s "10 100 1000 10000 65527"
+icmp6-uni-vti02 icmp-uni-vti.sh -6 -p esp -a sha256 -e des3_ede -m tunnel -S fffffffe -k 0xffffffff -s "10 100 1000 10000 65527"
+icmp6-uni-vti03 icmp-uni-vti.sh -6 -p esp -a sha512 -e cast5 -m tunnel -S fffffffe -k 1 -s "10 100 1000 10000 65527"
+icmp6-uni-vti04 icmp-uni-vti.sh -6 -p esp -a rmd160 -e blowfish -m tunnel -S fffffffe -k 0x80000000 -s "10 100 1000 10000 65527"
+icmp6-uni-vti05 icmp-uni-vti.sh -6 -p esp -e twofish -m tunnel -S fffffffe -k 0xffff -s "10 100 1000 10000 65527"
+icmp6-uni-vti06 icmp-uni-vti.sh -6 -p esp -a sha512 -e camellia -m tunnel -S fffffffe -k 0x7fffffff -s "10 100 1000 10000 65527"
+icmp6-uni-vti07 icmp-uni-vti.sh -6 -p esp -a sha384 -e serpent -m tunnel -S ffffffff -k 0x11111111 -s "10 100 1000 10000 65527"
