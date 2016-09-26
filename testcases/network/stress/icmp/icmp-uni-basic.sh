@@ -25,31 +25,6 @@ TST_CLEANUP="tst_ipsec_cleanup"
 
 . ipsec_lib.sh
 
-while getopts "hl:m:p:s:S:6" opt; do
-	case "$opt" in
-	h)
-		echo "Usage:"
-		echo "h        help"
-		echo "l n      n is the number of test link when tests run"
-		echo "m x      x is ipsec mode, could be transport / tunnel"
-		echo "p x      x is ipsec protocol, could be ah / esp / ipcomp"
-		echo "s x      x is icmp messge size array"
-		echo "S n      n is IPsec SPI value"
-		echo "6        run over IPv6"
-		exit 0
-	;;
-	l) LINK_NUM=$OPTARG ;;
-	m) IPSEC_MODE=$OPTARG ;;
-	p) IPSEC_PROTO=$OPTARG ;;
-	s) ICMP_SIZE_ARRAY=$OPTARG ;;
-	S) SPI=$OPTARG ;;
-	6) # skip, test_net library already processed it
-	;;
-	*) tst_brkm TBROK "unknown option: $opt" ;;
-	esac
-done
-
-SPI=${SPI:-1000}
 LINK_NUM=${LINK_NUM:-0}
 DO_IPSEC=${DO_IPSEC:-false}
 ICMP_SIZE_ARRAY=${ICMP_SIZE_ARRAY:-"10 100 1000 10000 65507"}
@@ -77,8 +52,8 @@ rhost_addr=$(tst_ipaddr rhost)
 
 # Configure SAD/SPD
 if $DO_IPSEC ; then
-	tst_ipsec lhost $IPSEC_PROTO $IPSEC_MODE $SPI $lhost_addr $rhost_addr
-	tst_ipsec rhost $IPSEC_PROTO $IPSEC_MODE $SPI $rhost_addr $lhost_addr
+	tst_ipsec lhost $lhost_addr $rhost_addr
+	tst_ipsec rhost $rhost_addr $lhost_addr
 fi
 
 tst_ping $lhost_ifname $rhost_addr $ICMP_SIZE_ARRAY
