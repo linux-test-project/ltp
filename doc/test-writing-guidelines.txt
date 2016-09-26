@@ -197,8 +197,8 @@ named 'datafiles' and installed into the 'testcases/data/$TCID' directory (to
 do that you have to add 'INSTALL_DIR := testcases/data/TCID' into the
 'datafiles/Makefile').
 
-You can obtain path to datafiles via $LTP_DATAROOT provided by test.sh
-'$LTP_DATAROOT/...'
+You can obtain path to datafiles via $TST_DATAROOT provided by test.sh
+'$TST_DATAROOT/...'
 or via C function 'tst_dataroot()' provided by libltp:
 
 [source,c]
@@ -207,7 +207,7 @@ const char *dataroot = tst_dataroot();
 -------------------------------------------------------------------------------
 
 Datafiles can also be accessed as '$LTPROOT/testcases/data/$TCID/...',
-but '$LTP_DATAROOT' and 'tst_dataroot()' are preferred as these can be used
+but '$TST_DATAROOT' and 'tst_dataroot()' are preferred as these can be used
 when running testcases directly in git tree as well as from install
 location.
 
@@ -218,7 +218,7 @@ The path is constructed according to these rules:
    (where '$STARTWD' is initial working directory as recorded by 'tst_tmdir()')
 3. else return '$CWD/datafiles'
 
-See 'testcases/commands/ade/ldd/ldd01' for example.
+See 'testcases/commands/file/' for example.
 
 2.1.3 Subexecutables
 ^^^^^^^^^^^^^^^^^^^^
@@ -1280,15 +1280,14 @@ test.c:8: INFO: do_action(arg) failed
 
 LTP supports testcases to be written in a portable shell too.
 
-There is a shell library modeled closely to the C interface (the source is
-located at 'testcases/lib/test.sh') and is installed to the same directory as
-the rest of the LTP test binaries.
+There is a shell library modeled closely to the C interface at
+'testcases/lib/tst_test.sh'.
 
 WARNING: All identifiers starting with TST_ or tst_ are reserved for the
-         'test.sh' library.
+         test library.
 
-2.3.1 Basic shell test structure
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2.3.1 Basic test interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [source,sh]
 -------------------------------------------------------------------------------
@@ -1297,66 +1296,252 @@ WARNING: All identifiers starting with TST_ or tst_ are reserved for the
 # This is a basic test for true shell buildin
 #
 
-TCID=true01
-TST_TOTAL=1
-. test.sh
+TST_ID="true01"
+TST_TESTFUNC=do_test
+. tst_test.sh
 
-true
-ret=$?
+do_test()
+{
+	true
+	ret=$?
 
-if [ $ret -eq 0 ]; then
-	tst_resm TPASS "true returned 0"
-else
-	tst_resm TFAIL "true returned $ret"
-fi
+	if [ $ret -eq 0 ]; then
+		tst_res TPASS "true returned 0"
+	else
+		tst_res TFAIL "true returned $ret"
+	fi
+}
 
-tst_exit
+tst_run
 -------------------------------------------------------------------------------
 
-TIP: To execute this test the 'test.sh' library must be in '$PATH'. If you are
-     executing the test from a git checkout you can run it as
+TIP: To execute this test the 'tst_test.sh' library must be in '$PATH'. If you
+     are executing the test from a git checkout you can run it as
      'PATH="$PATH:../../lib" ./foo01.sh'
 
-WARNING: Do not forget to add the 'tst_exit' at the end of the test,
-         otherwise the test return value would be the return value of last
-	 executed command.
+The shell library expects test setup, cleanup and the test function executing
+the test in the '$TST_SETUP', '$TST_CLEANUP' and '$TST_TESTFUNC' variables.
 
-2.3.2 Basic test interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Both '$TST_SETUP' and '$TST_CLEANUP' are optional.
 
-Following functions similar to the LTP C interface are available.
+The '$TST_TESTFUNC' may be called several times if more than one test
+iteration was requested by passing right command line options to the test.
 
-* tst_resm()
-* tst_brkm()
-* tst_exit()
-* tst_require_root()
-* tst_tmpdir()
-* tst_rmdir()
-* tst_fs_has_free()
-* tst_mkfs()
-* tst_release_device()
+The '$TST_CLEANUP' may be called even in the middle of the setup and must be
+able to clean up correctly even in this situation. The easiest solution for
+this is to keep track of what was initialized and act accordingly in the
+cleanup.
 
-tst_check_cmds
-++++++++++++++
+Notice also the 'tst_run' function called at the end of the test that actually
+starts the test.
 
-The 'tst_check_cmds()' function that gets unspecified number of parameters and
-asserts that each parameter is a name of an executable in '$PATH' and exits
-the test with 'TCONF' on first missing.
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# Example test with tests in separate functions
+#
 
-tst_acquire_device
-++++++++++++++++++
+TST_ID="example01"
+TST_TESTFUNC=test
+TST_CNT=2
+. tst_test.sh
 
-The 'tst_acquire_device()' can be used to obtain a block device for testing,
-the function takes optional parameter which can be used to request device
-minimal size in megabytes.
+test1()
+{
+	tst_res TPASS "Test 1 passed"
+}
 
-The function returns device passed in 'LTP_DEV' environment variable if it's
-set, points to a block device, and if size requirements are met. If 'LTP_DEV'
-is not set or found suitable a temporary file is created and attached to a
-free loop device.
+test2()
+{
+	tst_res TPASS "Test 2 passed"
+}
 
-tst_sleep
-+++++++++
+tst_run
+-------------------------------------------------------------------------------
+
+If '$TST_CNT' is set, the test library looks if there are functions named
+'$\{TST_TESTFUNC\}1', ..., '$\{TST_TESTFUNC\}$\{TST_CNT\}' and if these are
+found they are executed one by one.
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# Example test with tests in a single function
+#
+
+TST_ID="example02"
+TST_TESTFUNC=do_test
+TST_CNT=2
+. tst_test.sh
+
+do_test()
+{
+	case $1 in
+	1) tst_res TPASS "Test 1 passed";;
+	2) tst_res TPASS "Test 2 passed";;
+	esac
+}
+
+tst_run
+-------------------------------------------------------------------------------
+
+Otherwise, if '$TST_CNT' is set but there is no '$\{TST_TESTFUNC\}1', etc.,
+the '$TST_TESTFUNC' is executed '$TST_CNT' times and the test number is passed
+to it in the '$1'.
+
+2.3.2 Library variables
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Similarily to the C library various checks and preparations can be requested
+simply by setting right '$TST_NEEDS_FOO'.
+
+[options="header"]
+|=============================================================================
+| Variable name      | Action done
+| 'TST_NEEDS_ROOT'   | Exit the test with 'TCONF' unless executed under root
+| 'TST_NEEDS_TMPDIR' | Create test temporary directory and cd into it.
+| 'TST_NEEDS_DEVICE' | Prepare test temporary device, the path to testing
+                       device is stored in '$TST_DEVICE' variable.
+| 'TST_NEEDS_CMDS'   | String with command names that has to be present for
+                       the test (see below).
+| 'TST_NEEDS_MODULE' | Test module name needed for the test (see below).
+|=============================================================================
+
+Checking for presence of commands
++++++++++++++++++++++++++++++++++
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+
+...
+
+TST_NEEDS_CMDS="modinfo modprobe"
+. tst_test.sh
+
+...
+
+-------------------------------------------------------------------------------
+
+Setting '$TST_NEEDS_CMDS' to a string listing required commands will check for
+existence each of them and exits the test with 'TCONF' on first misssing.
+
+Alternatively the 'tst_check_cmds()' function can be used to do the same on
+runtime, since sometimes we need to the check at runtime too.
+
+Locating kernel modules
++++++++++++++++++++++++
+
+The LTP build system can build kernel modules as well, setting
+'$TST_NEEDS_MODULE' to module name will cause to library to look for the
+module in a few possible paths.
+
+If module was found the path to it will be stored into '$TST_MODPATH'
+variable, if module wasn't found the test will exit with 'TCONF'.
+
+2.3.3 Optional command line parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# Optional test command line parameters
+#
+
+TST_ID="example03"
+TST_OPTS="af:"
+TST_USAGE=usage
+TST_PARSE_ARGS=parse_args
+TST_TESTFUNC=do_test
+
+. tst_test.sh
+
+ALTERNATIVE=0
+MODE="foo"
+
+usage()
+{
+	cat << EOF
+usage: $0 [-a] [-f <foo|bar>]
+
+OPTIONS
+-a     Enable support for alternative foo
+-f     Specify foo or bar mode
+EOF
+}
+
+parse_args()
+{
+	case $1 in
+	a) ALTERNATIVE=1
+	f) MODE="$2"
+	esac
+}
+
+do_test()
+{
+	...
+}
+
+tst_run
+-------------------------------------------------------------------------------
+
+The 'getopts' string for optional parameters is passed in the '$TST_OPTS'
+variable. There are a few default parameters that cannot be used by a test,
+these can be listed with passing help '-h' option to any test.
+
+The function that prints the usage is passed in '$TST_USAGE', the help for
+the options implemented in the library is appended when usage is printed.
+
+Lastly the fucntion '$PARSE_ARGS' is called with the option name in '$1' and,
+if option has argument, its value in '$2'.
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# Optional test positional paramters
+#
+
+TST_ID="example04"
+TST_POS_ARGS=3
+TST_USAGE=usage
+TST_TESTFUNC=do_test
+
+. tst_test.sh
+
+usage()
+{
+	cat << EOF
+usage: $0 [min] [max] [size]
+
+EOF
+}
+
+min="$1"
+max="$2"
+size="$3"
+
+do_test()
+{
+	...
+}
+
+tst_run
+-------------------------------------------------------------------------------
+
+You can also request a number of positional parameters by setting the
+'$TST_POS_ARGS' variable. If you do, these will be available as they were
+passed directly to the script in '$1', '$2', ..., '$n'.
+
+2.3.4 Usefull library functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sleeping for subsecond intervals
+++++++++++++++++++++++++++++++++
 
 Albeit there is a sleep command available basically everywhere not all
 implementations can support sleeping for less than one second. And most of the
@@ -1369,10 +1554,19 @@ that can sleep for defined amount of seconds, milliseconds or microseconds.
 tst_sleep 100ms
 -------------------------------------------------------------------------------
 
-tst_random
-++++++++++
+Checking for integers
++++++++++++++++++++++
 
-There is no $RANDOM in portable shell, use tst_random instead.
+[source,sh]
+-------------------------------------------------------------------------------
+# returns zero if passed an integer parameter, non-zero otherwise
+tst_is_int "$FOO"
+-------------------------------------------------------------------------------
+
+Obtaining random numbers
+++++++++++++++++++++++++
+
+There is no '$RANDOM' in portable shell, use 'tst_random' instead.
 
 [source,sh]
 -------------------------------------------------------------------------------
@@ -1380,20 +1574,52 @@ There is no $RANDOM in portable shell, use tst_random instead.
 tst_random 0 1000
 -------------------------------------------------------------------------------
 
-tst_kvercmp
-+++++++++++
+Formatting device with a filesystem
++++++++++++++++++++++++++++++++++++
 
-This command takes the kernel version as a parameter and compares the it with
-the currently running kernel. It works mostly as the C function but the result
-is mapped into the exit value as follows:
+The 'tst_mkfs' helper will format device with the filesystem.
 
-[options="header"]
-|=======================================================================
-| C function return | Shell command exit value | Explanation
-| < 0               | 0                        | Kernel is older
-| 0                 | 1                        | Kernel version is equal
-| > 0               | 2                        | Kernel is newer
-|=======================================================================
+[source,sh]
+-------------------------------------------------------------------------------
+# format test device with ext2
+tst_mkfs ext2 $TST_DEVICE
+-------------------------------------------------------------------------------
+
+Umounting filesystems
++++++++++++++++++++++
+
+The 'tst_umount' helper is a safe way to umount a filesystem.
+
+If the path passed to the function is not mounted (present in '/proc/mounts')
+it's noop.
+
+Otherwise it retries to umount the filesystem a few times on a failure, which
+is a workaround since there are a daemons dumb enough to probe all newly
+mounted filesystems, which prevents them from umounting shortly after they
+were mounted.
+
+Running commands as different user with 'su'
+++++++++++++++++++++++++++++++++++++++++++++
+
+While some distributions retain paths added to +$PATH+ when doing
++su user -c "command"+ this does not work at least in Debian. If you want to
+run LTP binaries as a different user you must use 'tst_su' instead which sets
+up +$PATH+ and the runs the command.
+
+.Run test child binary as a test user
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+TCID=foo01
+. test.sh
+
+tst_su testusr foo01_child
+if [ $? -ne 0 ]; then
+	tst_resm TFAIL "foo failed"
+else
+	tst_resm TPASS "foo passed"
+fi
+-------------------------------------------------------------------------------
 
 ROD and ROD_SILENT
 ++++++++++++++++++
@@ -1411,7 +1637,6 @@ command arg1 arg2 ... > /dev/null 2>&1
 if [ $? -ne 0 ]; then
         tst_brkm TBROK "..."
 fi
-
 
 
 ROD command arg1 arg2 ...
@@ -1457,6 +1682,21 @@ and 'tst_resm TFAIL' otherwise. 'EXPECT_FAIL' does vice versa.
 Output redirection rules are the same as for the 'ROD' function. In addition
 to that, 'EXPECT_FAIL' always redirects the command's stderr to '/dev/null'.
 
+tst_kvercmp
++++++++++++
+
+This command takes the kernel version as a parameter and compares the it with
+the currently running kernel. It works mostly as the C function but the result
+is mapped into the exit value as follows:
+
+[options="header"]
+|=======================================================================
+| C function return | Shell command exit value | Explanation
+| < 0               | 0                        | Kernel is older
+| 0                 | 1                        | Kernel version is equal
+| > 0               | 2                        | Kernel is newer
+|=======================================================================
+
 .tst_fs_has_free
 [source,sh]
 -------------------------------------------------------------------------------
@@ -1500,38 +1740,7 @@ The 'tst_retry' function allows you to retry a command after waiting small
 amount of time until it succeeds or until given amount of retries has been
 reached (default is three attempts).
 
-2.3.3 Cleanup
-^^^^^^^^^^^^^
-
-Due to differences between C and shell, the cleanup callback is done using a
-'TST_CLEANUP' shell variable that, if not empty, is evaluated before the test
-exits (either after calling 'tst_exit()' or 'tst_brkm()'). See example below.
-
-[source,sh]
--------------------------------------------------------------------------------
-#!/bin/sh
-#
-# Test cleanup example
-#
-
-TCID=true01
-TST_TOTAL=1
-. test.sh
-
-cleanup()
-{
-	tst_rmdir
-}
-
-tst_tmpdir
-TST_CLEANUP=cleanup
-
-# Do the test here
-
-tst_exit
--------------------------------------------------------------------------------
-
-2.3.4 Restarting daemons
+2.3.5 Restarting daemons
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Restarting system daemons is a complicated task for two reasons.
@@ -1581,31 +1790,8 @@ restart_daemon $CROND_DAEMON
 tst_exit
 -------------------------------------------------------------------------------
 
-2.3.5 $PATH and su
-~~~~~~~~~~~~~~~~~~
-
-While some distributions retain paths added to +$PATH+ when doing
-+su user -c "command"+ this does not work at least in Debian. If you want to
-run LTP binaries as a different user you must use 'tst_su' instead which sets
-up +$PATH+ and the runs the command.
-
-.Run test child binary as a test user
-[source,sh]
--------------------------------------------------------------------------------
-#!/bin/sh
-TCID=foo01
-. test.sh
-
-tst_su testusr foo01_child
-if [ $? -ne 0 ]; then
-	tst_resm TFAIL "foo failed"
-else
-	tst_resm TPASS "foo passed"
-fi
--------------------------------------------------------------------------------
-
 2.3.6 Access to the checkpoint interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The shell library provides an implementation of the checkpoint interface
 compatible with the C version. All TST_CHECKPOINT_* functions are available.
