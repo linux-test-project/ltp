@@ -620,6 +620,9 @@ kernel versions as vendors typically backport fixes to their kernels and the
 test may be relevant even if the kernel version does not suggests so. See
 'testcases/kernel/syscalls/inotify/inotify04.c' for example usage.
 
+WARNING: The shell 'tst_kvercmp' maps the result into unsigned integer - the
+         process exit value.
+
 2.2.7 Fork()-ing
 ^^^^^^^^^^^^^^^^
 
@@ -1347,7 +1350,7 @@ tst_sleep 100ms
 -------------------------------------------------------------------------------
 
 tst_random
-+++++++++
+++++++++++
 
 There is no $RANDOM in portable shell, use tst_random instead.
 
@@ -1356,6 +1359,21 @@ There is no $RANDOM in portable shell, use tst_random instead.
 # get random integer between 0 and 1000 (including 0 and 1000)
 tst_random 0 1000
 -------------------------------------------------------------------------------
+
+tst_kvercmp
++++++++++++
+
+This command takes the kernel version as a parameter and compares the it with
+the currently running kernel. It works mostly as the C function but the result
+is mapped into the exit value as follows:
+
+[options="header"]
+|=======================================================================
+| C function return | Shell command exit value | Explanation
+| < 0               | 0                        | Kernel is older
+| 0                 | 1                        | Kernel version is equal
+| > 0               | 2                        | Kernel is newer
+|=======================================================================
 
 ROD and ROD_SILENT
 ++++++++++++++++++
