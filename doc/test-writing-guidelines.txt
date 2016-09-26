@@ -1219,19 +1219,7 @@ installed.
 The file(s) are copied to the newly created test temporary directory which is
 set as the test working directory when the 'test()' functions is executed.
 
-2.3 Writing a testcase in shell
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-LTP supports testcases to be written in a portable shell too.
-
-There is a shell library modeled closely to the C interface (the source is
-located at 'testcases/lib/test.sh') and is installed to the same directory as
-the rest of the LTP test binaries.
-
-WARNING: All identifiers starting with TST_ or tst_ are reserved for the
-         'test.sh' library.
-
-2.2.22 Code path tracing
+2.2.23 Code path tracing
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 'tst_res' is a macro, so on when you define a function in one file:
@@ -1273,8 +1261,22 @@ if (TST_TRACE(do_action(arg))) {
 
 the generated output may look similar to:
 
-  common.h:9: FAIL: check failed
-  test.c:8: INFO: do_action(arg) failed
+-------------------------------------------------------------------------------
+common.h:9: FAIL: check failed
+test.c:8: INFO: do_action(arg) failed
+-------------------------------------------------------------------------------
+
+2.3 Writing a testcase in shell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LTP supports testcases to be written in a portable shell too.
+
+There is a shell library modeled closely to the C interface (the source is
+located at 'testcases/lib/test.sh') and is installed to the same directory as
+the rest of the LTP test binaries.
+
+WARNING: All identifiers starting with TST_ or tst_ are reserved for the
+         'test.sh' library.
 
 2.3.1 Basic shell test structure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
