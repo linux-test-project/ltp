@@ -153,6 +153,7 @@ usage()
     -p              Human readable format logfiles.
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
+    -R              Randomize test order.
     -s PATTERN      Only run test cases which match PATTERN.
     -S SKIPFILE     Skip tests specified in SKIPFILE
     -t DURATION     Execute the testsuite for given duration. Examples:
@@ -213,12 +214,13 @@ main()
     local EMAIL_TO=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
+    local RANDOMRUN=0
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%m_%d-%Hh_%Mm_%Ss"`
     local scenfile=
 
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:c:C:T:d:D:f:F:ehi:I:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B:z:Z: arg
+    while getopts a:c:C:T:d:D:f:F:ehi:I:K:g:l:m:M:Nno:pqr:Rs:S:t:T:w:x:b:B:z:Z: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -409,6 +411,8 @@ main()
         q)  QUIET_MODE=" -q ";;
 
         r)  LTPROOT=$OPTARG;;
+
+        R)  RANDOMRUN=1;;
 
         s)  TAG_RESTRICT_STRING=$OPTARG;;
 
@@ -738,6 +742,10 @@ main()
                inc=`expr $inc + 1`
                sed 's/^[0-9,a-z,A-Z]*/'"$inc"'_ITERATION_&/' < ${TMP}/alltests.temp >> ${TMP}/alltests #Keep appending with Iteration No.s
          done
+    fi
+
+    if [ "$RANDOMRUN" != "0" ]; then
+        sort -R ${TMP}/alltests -o ${TMP}/alltests
     fi
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
