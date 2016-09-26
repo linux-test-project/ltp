@@ -93,7 +93,7 @@ tst_ipsec()
 		algo_line="enc $EALGO $EALGO_KEY auth $AALGO $AALGO_KEY"
 		proto="esp"
 		;;
-	ipcomp)
+	comp)
 		algo_line="comp $CALGO"
 		proto="comp"
 		;;

@@ -39,7 +39,7 @@ if $DO_IPSEC; then
 	case $IPSEC_PROTO in
 	ah)	tst_resm TINFO "- IPsec [ AH / $IPSEC_MODE ]" ;;
 	esp)	tst_resm TINFO "- IPsec [ ESP / $IPSEC_MODE ]" ;;
-	ipcomp)	tst_resm TINFO "- IPcomp [ $IPSEC_MODE ]" ;;
+	comp)	tst_resm TINFO "- IPcomp [ $IPSEC_MODE ]" ;;
 	esac
 fi
 
