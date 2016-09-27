@@ -16,22 +16,40 @@
 # Test df command with some basic options.
 #
 
-TCID=df01
-TST_TOTAL=12
-. test.sh
+TST_ID="df01"
+TST_CNT=12
+TST_SETUP=setup
+TST_CLEANUP=cleanup
+TST_TESTFUNC=test
+TST_OPTS="f:"
+TST_USAGE=usage
+TST_PARSE_ARGS=parse_args
+TST_NEEDS_ROOT=1
+TST_NEEDS_TMPDIR=1
+TST_NEEDS_DEVICE=1
+. tst_test.sh
+
+usage()
+{
+	cat << EOF
+usage: $0 [-f <ext2|ext3|ext4|vfat|...>]
+
+OPTIONS
+-f	Specify the type of filesystem to be built.  If not
+	specified, the default filesystem type (currently ext2)
+	is used.
+EOF
+}
+
+FS_TYPE=ext2
+
+parse_args()
+{
+	FS_TYPE="$2"
+}
 
 setup()
 {
-	tst_require_root
-
-	tst_check_cmds df mkfs.${FS_TYPE} stat
-
-	tst_tmpdir
-
-	TST_CLEANUP="cleanup"
-
-	tst_acquire_device
-
 	tst_mkfs ${FS_TYPE} ${TST_DEVICE}
 
 	ROD_SILENT mkdir -p mntpoint
@@ -39,11 +57,11 @@ setup()
 	mount ${TST_DEVICE} mntpoint
 	ret=$?
 	if [ $ret -eq 32 ]; then
-		tst_brkm TCONF "Cannot mount ${FS_TYPE}, missing driver?"
+		tst_brk TCONF "Cannot mount ${FS_TYPE}, missing driver?"
 	fi
 
 	if [ $ret -ne 0 ]; then
-		tst_brkm TBROK "Failed to mount device: mount exit = $ret"
+		tst_brk TBROK "Failed to mount device: mount exit = $ret"
 	fi
 
 	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk '{print $5}')
@@ -52,25 +70,6 @@ setup()
 cleanup()
 {
 	tst_umount ${TST_DEVICE}
-
-	tst_release_device
-
-	tst_rmdir
-}
-
-usage()
-{
-	cat << EOF
-	usage: $0 [-f <ext2|ext3|ext4|vfat|...>]
-
-	OPTIONS
-		-f	Specify the type of filesystem to be built.  If not
-			specified, the default filesystem type (currently ext2)
-			is used.
-		-h	Display help text and exit.
-
-EOF
-	tst_brkm TCONF "Display help text or unknown options"
 }
 
 df_test()
@@ -84,7 +83,7 @@ df_test()
 
 	df_check $cmd
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'$cmd' failed, not expected."
+		tst_res TFAIL "'$cmd' failed, not expected."
 		return
 	fi
 
@@ -94,9 +93,9 @@ df_test()
 
 	df_check $cmd
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "'$cmd' passed."
+		tst_res TPASS "'$cmd' passed."
 	else
-		tst_resm TFAIL "'$cmd' failed."
+		tst_res TFAIL "'$cmd' failed."
 	fi
 
 	ROD_SILENT rm -rf mntpoint/testimg
@@ -111,10 +110,10 @@ df_verify()
 	if [ $? -ne 0 ]; then
 		grep -q -E "unrecognized option | invalid option" output
 		if [ $? -eq 0 ]; then
-			tst_resm TCONF "'$1' not supported."
+			tst_res TCONF "'$1' not supported."
 			return 32
 		else
-			tst_resm TFAIL "'$1' failed."
+			tst_res TFAIL "'$1' failed."
 			cat output
 			return 1
 		fi
@@ -181,7 +180,7 @@ test8()
 {
 	df_verify "df -h"
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "'df -h' passed."
+		tst_res TPASS "'df -h' passed."
 	fi
 }
 
@@ -189,7 +188,7 @@ test9()
 {
 	df_verify "df -H"
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "'df -H' passed."
+		tst_res TPASS "'df -H' passed."
 	fi
 }
 
@@ -197,7 +196,7 @@ test10()
 {
 	df_verify "df -m"
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "'df -m' passed."
+		tst_res TPASS "'df -m' passed."
 	fi
 }
 
@@ -205,7 +204,7 @@ test11()
 {
 	df_verify "df --version"
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "'df --version' passed."
+		tst_res TPASS "'df --version' passed."
 	fi
 }
 
@@ -220,29 +219,10 @@ test12()
 
 	grep ${TST_DEVICE} output | grep -q mntpoint
 	if [ $? -ne 0 ]; then
-		tst_resm TPASS "'$cmd' passed."
+		tst_res TPASS "'$cmd' passed."
 	else
-		tst_resm TFAIL "'$cmd' failed."
+		tst_res TFAIL "'$cmd' failed."
 	fi
 }
 
-FS_TYPE=ext2
-while getopts f:h: OPTION; do
-	case $OPTION in
-	f)
-		FS_TYPE=$OPTARG;;
-	h)
-		usage;;
-	?)
-		usage;;
-	esac
-done
-
-setup
-
-for i in $(seq 1 ${TST_TOTAL})
-do
-	test$i
-done
-
-tst_exit
+tst_run
