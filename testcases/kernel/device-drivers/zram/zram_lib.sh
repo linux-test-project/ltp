@@ -62,6 +62,14 @@ zram_load()
 
 zram_max_streams()
 {
+	tst_kvercmp 4 7 0
+	if [ $? -gt 0 ]; then
+		tst_resm TCONF "device attribute max_comp_streams is"\
+			"depriciated since kernel v4.7, the running kernel"\
+			"does not support it"
+		return
+	fi
+
 	tst_kvercmp 3 15 0
 	if [ $? -eq 0 ]; then
 		tst_resm TCONF "device attribute max_comp_streams is"\
