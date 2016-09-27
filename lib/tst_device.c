@@ -29,6 +29,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <linux/loop.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include "test.h"
 #include "safe_macros.h"
 
@@ -182,10 +184,15 @@ static void detach_device(const char *dev)
 		"ioctl(%s, LOOP_CLR_FD, 0) no ENXIO for too long", dev);
 }
 
-const char *tst_acquire_device(void (cleanup_fn)(void))
+const char *tst_acquire_device_(void (cleanup_fn)(void), unsigned int size)
 {
+	int fd;
 	char *dev;
 	struct stat st;
+	unsigned int acq_dev_size;
+	uint64_t ltp_dev_size;
+
+	acq_dev_size = size > 150 ? size : 150;
 
 	if (device_acquired)
 		tst_brkm(TBROK, cleanup_fn, "Device allready acquired");
@@ -207,15 +214,25 @@ const char *tst_acquire_device(void (cleanup_fn)(void))
 			         "%s is not a block device", dev);
 		}
 
-		if (tst_fill_file(dev, 0, 1024, 512)) {
-			tst_brkm(TBROK | TERRNO, cleanup_fn,
-				 "Failed to clear the first 512k of %s", dev);
+		fd = SAFE_OPEN(cleanup_fn, dev, O_RDONLY);
+		SAFE_IOCTL(cleanup_fn, fd, BLKGETSIZE64, &ltp_dev_size);
+		SAFE_CLOSE(cleanup_fn, fd);
+		ltp_dev_size = ltp_dev_size/1024/1024;
+
+		if (acq_dev_size <= ltp_dev_size) {
+			if (tst_fill_file(dev, 0, 1024, 512)) {
+				tst_brkm(TBROK | TERRNO, cleanup_fn,
+					"Failed to clear the first 512k of %s", dev);
+			}
+
+			return dev;
 		}
 
-		return dev;
+		tst_resm(TINFO, "Skipping $LTP_DEV size %"PRIu64"MB, requested size %uMB",
+				ltp_dev_size, acq_dev_size);
 	}
 
-	if (tst_fill_file(DEV_FILE, 0, 1024, 153600)) {
+	if (tst_fill_file(DEV_FILE, 0, 1024, 1024 * acq_dev_size)) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 		         "Failed to create " DEV_FILE);
 

@@ -596,7 +596,7 @@ static void do_setup(int argc, char *argv[])
 	}
 
 	if (tst_test->needs_device) {
-		tdev.dev = tst_acquire_device(NULL);
+		tdev.dev = tst_acquire_device_(NULL, tst_test->device_min_size);
 		tdev.fs_type = tst_dev_fs_type();
 
 		if (!tdev.dev)

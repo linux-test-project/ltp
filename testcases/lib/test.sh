@@ -283,11 +283,15 @@ EXPECT_FAIL()
 
 tst_acquire_device()
 {
+	local acq_dev_size=${1:-150}
+
 	if [ -z ${TST_TMPDIR} ]; then
 		tst_brkm "Use 'tst_tmpdir' before 'tst_acquire_device'"
 	fi
 
-	if [ -n "${LTP_DEV}" ]; then
+	ltp_dev_size=$((`blockdev --getsize64 $LTP_DEV`/1024/1024))
+
+	if [ -n "${LTP_DEV}" ] && [ ${acq_dev_size} -le ${ltp_dev_size} ]; then
 		tst_resm TINFO "Using test device LTP_DEV='${LTP_DEV}'"
 		if [ ! -b ${LTP_DEV} ]; then
 			tst_brkm TBROK "${LTP_DEV} is not a block device"
@@ -300,7 +304,7 @@ tst_acquire_device()
 		return
 	fi
 
-	ROD_SILENT dd if=/dev/zero of=test_dev.img bs=1024 count=153600
+	ROD_SILENT dd if=/dev/zero of=test_dev.img bs=1024 count=$((1024*$acq_dev_size))
 
 	TST_DEVICE=$(losetup -f)
 	if [ $? -ne 0 ]; then

@@ -904,6 +904,10 @@ If '.needs_device' flag in the 'struct tst_test' is set the the 'tst_device'
 structure is initialized with a path to a test device and default filesystem
 to be used.
 
+You can also request minimal device size in megabytes by setting
+'.device_min_size' in the 'struct tst_test' structure. The device is
+guaranteed to have at least the requested size then.
+
 [source,c]
 -------------------------------------------------------------------------------
 #include "tst_test.h"
@@ -919,8 +923,10 @@ int tst_umount(const char *path);
 -------------------------------------------------------------------------------
 
 In case that 'LTP_DEV' is passed to the test in an environment, the library
-checks that the file exists and that it's a block device. Otherwise a
-temporary file is created and attached to a free loop device.
+checks that the file exists and that it's a block device, if
+'.device_min_size' is set the device size is checked as well. If 'LTP_DEV'
+wasn't set or if size requirements were not met a temporary file is created
+and attached to a free loop device.
 
 If there is no usable device and loop device couldn't be initialized the test
 exits with 'TCONF'.
@@ -1328,12 +1334,26 @@ Following functions similar to the LTP C interface are available.
 * tst_rmdir()
 * tst_fs_has_free()
 * tst_mkfs()
-* tst_acquire_device()
 * tst_release_device()
 
-There is one more function called 'tst_check_cmds()' that gets unspecified
-number of parameters and asserts that each parameter is a name of an
-executable in '$PATH' and exits the test with 'TCONF' on first missing.
+tst_check_cmds
+++++++++++++++
+
+The 'tst_check_cmds()' function that gets unspecified number of parameters and
+asserts that each parameter is a name of an executable in '$PATH' and exits
+the test with 'TCONF' on first missing.
+
+tst_acquire_device
+++++++++++++++++++
+
+The 'tst_acquire_device()' can be used to obtain a block device for testing,
+the function takes optional parameter which can be used to request device
+minimal size in megabytes.
+
+The function returns device passed in 'LTP_DEV' environment variable if it's
+set, points to a block device, and if size requirements are met. If 'LTP_DEV'
+is not set or found suitable a temporary file is created and attached to a
+free loop device.
 
 tst_sleep
 +++++++++
