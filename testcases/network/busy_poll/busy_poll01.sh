@@ -1,6 +1,5 @@
 #!/bin/sh
-
-# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -28,6 +27,7 @@ client_requests=500000
 max_requests=500000
 
 . test_net.sh
+. busy_poll_lib.sh
 
 cleanup()
 {
@@ -41,17 +41,6 @@ cleanup()
 	tst_rhost_run -c "sysctl -q -w net.core.busy_poll=$rbusy_poll_old"
 }
 
-
-tst_require_root
-
-tst_kvercmp 3 11 0
-[ $? -eq 0 ] && tst_brkm TCONF "test must be run with kernel 3.11 or newer"
-
-if [ ! -f "/proc/sys/net/core/busy_read" -a \
-     ! -f "/proc/sys/net/core/busy_poll" ]; then
-	tst_brkm TCONF "busy poll not configured, CONFIG_NET_RX_BUSY_POLL"
-fi
-
 set_busy_poll()
 {
 	local value=${1:-"0"}
@@ -61,8 +50,6 @@ set_busy_poll()
 	tst_rhost_run -s -c "sysctl -q -w net.core.busy_read=$value"
 	tst_rhost_run -s -c "sysctl -q -w net.core.busy_poll=$value"
 }
-
-tst_check_cmds pkill sysctl
 
 tst_tmpdir
 

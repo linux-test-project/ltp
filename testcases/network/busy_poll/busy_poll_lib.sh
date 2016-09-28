@@ -1,4 +1,5 @@
-# Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
+#!/bin/sh
+# Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -13,13 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-top_srcdir		?= ../../..
+tst_kvercmp 3 11 0
+[ $? -eq 0 ] && tst_brkm TCONF "test must be run with kernel 3.11 or newer"
 
-include $(top_srcdir)/include/mk/testcases.mk
+if [ ! -f "/proc/sys/net/core/busy_read" -a \
+     ! -f "/proc/sys/net/core/busy_poll" ]; then
+	tst_brkm TCONF "busy poll not configured, CONFIG_NET_RX_BUSY_POLL"
+fi
 
-INSTALL_TARGETS		:= busy_poll01.sh \
-			   busy_poll02.sh \
-			   busy_poll03.sh \
-			   busy_poll_lib.sh
+tst_check_cmds pkill sysctl ethtool
 
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+ethtool --show-features $(tst_iface) | grep -q 'busy-poll.*on' || \
+	tst_brkm TCONF "busy poll not supported by driver"
+
+tst_require_root
