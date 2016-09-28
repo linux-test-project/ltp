@@ -102,7 +102,7 @@ nfs03_setup()
 	nfs_setup
 
 	tst_resm TINFO "Setting server side nfsd count to $THREAD_NUM"
-	ORIG_NFSD=$(tst_rhost_run -s -c 'ps -ef | grep nfsd | grep -v grep | wc -l')
+	ORIG_NFSD=$(tst_rhost_run -s -c 'ps -ef | grep -w nfsd | grep -v grep | wc -l')
 	tst_rhost_run -s -c "rpc.nfsd $THREAD_NUM"
 }
 
