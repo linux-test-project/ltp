@@ -19,7 +19,6 @@ memory object.
 15  		NO ** May assertion
 16		YES
 17		YES
-18  		YES
 19  		YES
 20		YES
 21		YES

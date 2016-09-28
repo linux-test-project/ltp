@@ -134,12 +134,6 @@ or fildes is not open for write and PROT_WRITE was specified for a
 MAP_SHARED type mapping.
 	  </assertion>
 
-      <assertion id="18" tag="ref:XSH6:25310:25315">
-The mmap( ) function shall fail if:
-ML [EAGAIN] The mapping could not be locked in memory, if required by mlockall ( ), due to
-a lack of resources.
-      </assertion>
-
       <assertion id="19" tag="ref:XSH6:25310:25342">
 The mmap( ) function shall fail if:
 [EBADF] The fildes argument is not a valid open file descriptor.
