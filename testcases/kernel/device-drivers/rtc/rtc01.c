@@ -108,12 +108,17 @@ void read_alarm_test(void)
 	/*Read current alarm time */
 	ret = ioctl(rtc_fd, RTC_ALM_READ, &rtc_tm);
 	if (ret == -1) {
-		tst_resm(TFAIL | TERRNO, "RTC_ALM_READ ioctl failed");
-		return;
+		if (errno == EINVAL) {
+			tst_resm(TCONF | TERRNO, "RTC_ALM_READ not suported");
+		} else {
+			tst_resm(TFAIL | TERRNO, "RTC_ALM_READ ioctl failed");
+			return;
+		}
+	} else {
+		tst_resm(TINFO, "Alarm time set to %02d:%02d:%02d.",
+			 rtc_tm.tm_hour, rtc_tm.tm_min, rtc_tm.tm_sec);
 	}
 
-	tst_resm(TINFO, "Alarm time set to %02d:%02d:%02d.",
-		 rtc_tm.tm_hour, rtc_tm.tm_min, rtc_tm.tm_sec);
 	/* Enable alarm interrupts */
 	ret = ioctl(rtc_fd, RTC_AIE_ON, 0);
 	if (ret == -1) {
