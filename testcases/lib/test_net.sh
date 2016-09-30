@@ -323,7 +323,7 @@ tst_netload()
 tst_ping()
 {
 	# The max number of ICMP echo request
-	PING_MAX=${PING_MAX:-"10"}
+	PING_MAX=${PING_MAX:-"500"}
 
 	local src_iface=${1:-"$(tst_iface)"}
 	local dst_addr=${2:-"$(tst_ipaddr rhost)"}; shift 2
@@ -333,7 +333,7 @@ tst_ping()
 	# ping cmd use 56 as default message size
 	for size in ${msg_sizes:-"56"}; do
 		ping$TST_IPV6 -I $src_iface -c $PING_MAX $dst_addr \
-			-s $size > /dev/null 2>&1
+			-s $size -i 0 > /dev/null 2>&1
 		ret=$?
 		if [ $ret -eq 0 ]; then
 			tst_resm TINFO "tst_ping IPv${TST_IPV6:-4} msg_size $size pass"
