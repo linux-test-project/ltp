@@ -216,6 +216,11 @@ static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes,
 	return ltp_syscall(__NR_sync_file_range, fd, (int)(offset >> 32),
 		(int)offset, (int)(nbytes >> 32), (int)nbytes, flags);
 
+/* mips */
+#elif defined(__mips__) && __WORDSIZE == 32
+	return ltp_syscall(__NR_sync_file_range, fd, 0, (int)(offset >> 32),
+		(int)offset, (int)(nbytes >> 32), (int)nbytes, flags);
+
 /* other */
 #else
 	return ltp_syscall(__NR_sync_file_range, fd, offset, nbytes, flags);
