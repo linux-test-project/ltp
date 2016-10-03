@@ -16,22 +16,18 @@
 # Test mkswap command with some basic options.
 #
 
-TCID=mkswap01
-TST_TOTAL=10
-. test.sh
+TST_ID="mkswap01"
+TST_CNT=10
+TST_SETUP=setup
+TST_TESTFUNC=do_test
+TST_NEEDS_ROOT=1
+TST_NEEDS_TMPDIR=1
+TST_NEEDS_DEVICE=1
+TST_NEEDS_CMDS="uuidgen blkid blockdev mkswap"
+. tst_test.sh
 
 setup()
 {
-	tst_require_root
-
-	tst_check_cmds uuidgen blkid blockdev mkswap
-
-	tst_tmpdir
-
-	TST_CLEANUP=cleanup
-
-	tst_acquire_device
-
 	UUID=`uuidgen`
 
 	PAGE_SIZE=`getconf PAGE_SIZE`
@@ -40,13 +36,6 @@ setup()
 	# multiple of $PAGE_SIZE and use that as the size for testing.
 	real_size=`blockdev --getsize64 $TST_DEVICE`
 	DEVICE_SIZE=$((($real_size/$PAGE_SIZE * $PAGE_SIZE)/1024))
-}
-
-cleanup()
-{
-	tst_release_device
-
-	tst_rmdir
 }
 
 wait_for_file()
@@ -62,12 +51,12 @@ wait_for_file()
 		if [ -e "$path" ]; then
 			return
 		fi
-		tst_resm TINFO "Waiting for $path to appear"
+		tst_res TINFO "Waiting for $path to appear"
 		retries=$((retries - 1))
 		tst_sleep 10ms
 	done
 
-	tst_resm TINFO "The file $path haven't appeared"
+	tst_res TINFO "The file $path haven't appeared"
 }
 
 mkswap_verify()
@@ -92,22 +81,22 @@ mkswap_verify()
 	swapon $swapfile 2>/dev/null
 
 	if [ $? -ne 0 ]; then
-		tst_resm TINFO "Can not do swapon on $swapfile."
+		tst_res TINFO "Can not do swapon on $swapfile."
 		if [ $pagesize -ne $PAGE_SIZE ]; then
-			tst_resm TINFO "Page size specified by 'mkswap -p' \
+			tst_res TINFO "Page size specified by 'mkswap -p' \
 is not equal to system's page size."
-			tst_resm TINFO "Swapon failed expectedly."
+			tst_res TINFO "Swapon failed expectedly."
 			return 0
 		fi
 
 		if [ $swapsize -gt $DEVICE_SIZE ]; then
-			tst_resm TINFO "Device size specified by 'mkswap' \
+			tst_res TINFO "Device size specified by 'mkswap' \
 greater than real size."
-			tst_resm TINFO "Swapon failed expectedly."
+			tst_res TINFO "Swapon failed expectedly."
 			return 0
 		fi
 
-		tst_resm TINFO "Swapon failed unexpectedly."
+		tst_res TINFO "Swapon failed unexpectedly."
 		return 1
 	fi
 
@@ -129,7 +118,7 @@ greater than real size."
 
 	swapoff $swapfile 2>/dev/null
 	if [ $? -ne 0 ]; then
-		tst_resm TWARN "Can not do swapoff on $swapfile."
+		tst_res TWARN "Can not do swapoff on $swapfile."
 	fi
 
 	return $ret
@@ -149,11 +138,11 @@ mkswap_test()
 	if [ $? -ne 0 ]; then
 		grep -q -E "unknown option|invalid option|Usage" temp
 		if [ $? -eq 0 ]; then
-			tst_resm TCONF "'${mkswap_cmd}' not supported."
+			tst_res TCONF "'${mkswap_cmd}' not supported."
 			return
 		fi
 
-		tst_resm TFAIL "'${mkswap_cmd}' failed."
+		tst_res TFAIL "'${mkswap_cmd}' failed."
 		cat temp
 		return
 	fi
@@ -161,25 +150,28 @@ mkswap_test()
 	if [ -n "$device" ]; then
 		mkswap_verify "$mkswap_op" "$op_arg" "$device" "$size" "$dev_file"
 		if [ $? -ne 0 ]; then
-			tst_resm TFAIL "'${mkswap_cmd}' failed, not expected."
+			tst_res TFAIL "'${mkswap_cmd}' failed, not expected."
 			return
 		fi
 	fi
 
-	tst_resm TPASS "'${mkswap_cmd}' passed."
+	tst_res TPASS "'${mkswap_cmd}' passed."
 }
 
-setup
+do_test()
+{
+	case $1 in
+	1) mkswap_test "" "" "$TST_DEVICE";;
+	2) mkswap_test "" "" "$TST_DEVICE" "$((DEVICE_SIZE-PAGE_SIZE/1024))";;
+	3) mkswap_test "-f" "" "$TST_DEVICE" "$((DEVICE_SIZE+PAGE_SIZE/1024))";;
+	4) mkswap_test "-c" "" "$TST_DEVICE";;
+	5) mkswap_test "-p" "2048" "$TST_DEVICE";;
+	6) mkswap_test "-L" "ltp_testswap" "-L ltp_testswap" "" "/dev/disk/by-label/ltp_testswap";;
+	7) mkswap_test "-v1" "" "$TST_DEVICE";;
+	8) mkswap_test "-U" "$UUID" "-U $UUID" "" "/dev/disk/by-uuid/$UUID";;
+	9) mkswap_test "-V";;
+	10) mkswap_test "-h";;
+	esac
+}
 
-mkswap_test "" "" "$TST_DEVICE"
-mkswap_test "" "" "$TST_DEVICE" "$((DEVICE_SIZE-PAGE_SIZE/1024))"
-mkswap_test "-f" "" "$TST_DEVICE" "$((DEVICE_SIZE+PAGE_SIZE/1024))"
-mkswap_test "-c" "" "$TST_DEVICE"
-mkswap_test "-p" "2048" "$TST_DEVICE"
-mkswap_test "-L" "ltp_testswap" "-L ltp_testswap" "" "/dev/disk/by-label/ltp_testswap"
-mkswap_test "-v1" "" "$TST_DEVICE"
-mkswap_test "-U" "$UUID" "-U $UUID" "" "/dev/disk/by-uuid/$UUID"
-mkswap_test "-V"
-mkswap_test "-h"
-
-tst_exit
+tst_run
