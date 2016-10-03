@@ -27,24 +27,16 @@
 #		  move file1 to file2 and backup the file2.
 #
 
-TCID=mv01
-TST_TOTAL=2
-. test.sh
+TST_ID=mv01
+TST_CNT=2
+TST_SETUP=setup
+TST_TESTFUNC=test
+TST_NEEDS_TMPDIR=1
+. tst_test.sh
 
 setup()
 {
-	tst_check_cmds mv
-
-	tst_tmpdir
-
-	tst_resm TINFO "INIT: Inititalizing tests."
-
 	ROD_SILENT mkdir -p tst_mv.old
-}
-
-cleanup()
-{
-	tst_rmdir
 }
 
 creat_dirnfiles()
@@ -55,8 +47,8 @@ creat_dirnfiles()
 	local dircnt=0
 	local fcnt=0
 
-	tst_resm TINFO "Test #$1: Creating $numdirs directories."
-	tst_resm TINFO "Test #$1: filling each dir with $numfiles files."
+	tst_res TINFO "Test #$1: Creating $numdirs directories."
+	tst_res TINFO "Test #$1: filling each dir with $numfiles files."
 	while [ $dircnt -lt $numdirs ]
 	do
 		dirname=$dirname/d.$dircnt
@@ -101,14 +93,14 @@ creat_expout()
 	done
 }
 
-test01()
+test1()
 {
 	numdirs=10
 	numfiles=10
 	dircnt=0
 	fcnt=0
 
-	tst_resm TINFO "Test #1: mv <dir1> <dir2> will move dir1 to dir2 and" \
+	tst_res TINFO "Test #1: mv <dir1> <dir2> will move dir1 to dir2 and" \
 		       "all its contents"
 
 	creat_dirnfiles 1 $numdirs $numfiles tst_mv.old
@@ -116,70 +108,64 @@ test01()
 	mv tst_mv.old tst_mv.new > tst_mv.err 2>&1
 	if [ $? -ne 0 ]; then
 		cat tst_mv.err
-		tst_brkm TFAIL "Test #1: 'mv tst_mv.old tst_mv.new' failed"
+		tst_brk TFAIL "Test #1: 'mv tst_mv.old tst_mv.new' failed"
 	fi
 
-	tst_resm TINFO "Test #1: creating output file"
+	tst_res TINFO "Test #1: creating output file"
 	ls -R tst_mv.new > tst_mv.out 2>&1
 
-	tst_resm TINFO "Test #1: creating expected output file"
+	tst_res TINFO "Test #1: creating expected output file"
 	creat_expout $numdirs $numfiles tst_mv.new
 
-	tst_resm TINFO "Test #1: comparing expected out and actual output file"
+	tst_res TINFO "Test #1: comparing expected out and actual output file"
 	diff -w -B -q tst_mv.out tst_mv.exp > tst_mv.err 2>&1
 	if [ $? -ne 0 ]; then
 		cat tst_mv.err
-		tst_resm TFAIL "Test #1: mv failed."
+		tst_res TFAIL "Test #1: mv failed."
 	else
-		tst_resm TINFO "Test #1: expected same as actual"
+		tst_res TINFO "Test #1: expected same as actual"
 		if [ -f tst_mv.old ]; then
-			tst_resm TFAIL "Test #1: mv did not delete old" \
+			tst_res TFAIL "Test #1: mv did not delete old" \
 				       "directory"
 		else
-			tst_resm TPASS "Test #1: mv success"
+			tst_res TPASS "Test #1: mv success"
 		fi
 	fi
 }
 
-test02()
+test2()
 {
-	tst_resm TINFO "Test #2: mv -b <file1> <file2> will move dir1 to dir2"
+	tst_res TINFO "Test #2: mv -b <file1> <file2> will move dir1 to dir2"
 
 	ROD_SILENT touch tmpfile1 tmpfile2
 
 	MD5_old=$(md5sum tmpfile2 | awk '{print $1}')
 	if [ $? -ne 0 ]; then
-		tst_brkm TBROK "Test #2: can't get the MD5 message of file2."
+		tst_brk TBROK "Test #2: can't get the MD5 message of file2."
 	fi
 
 	if [ -f "tmpfile2~" ]; then
-		tst_brkm TBROK "Test #2: file tmpfile2~ should not exists."
+		tst_brk TBROK "Test #2: file tmpfile2~ should not exists."
 	fi
 
 	mv -b tmpfile1 tmpfile2
 	if [ $? -ne 0 ]; then
-		tst_brkm TBROK "Test #2: 'mv -b tmpfile1 tmpfile2' failed."
+		tst_brk TBROK "Test #2: 'mv -b tmpfile1 tmpfile2' failed."
 	fi
 
 	# if 'mv -b file1 file2' succeed, there will be "tmpfile2~" file.
 
 	MD5_backup=$(md5sum tmpfile2 | awk '{print $1}')
 	if [ $? -ne 0 ]; then
-		tst_brkm TBROK "Test #2: can not get the MD5 message of" \
+		tst_brk TBROK "Test #2: can not get the MD5 message of" \
 			       "backup file2."
 	fi
 
-	if [ "$MD5_old" == "$MD5_backup" -a -f "tmpfile2~" ]; then
-		tst_resm TPASS "Test #2: mv -b success"
+	if [ "$MD5_old" = "$MD5_backup" -a -f "tmpfile2~" ]; then
+		tst_res TPASS "Test #2: mv -b success"
 	else
-		tst_resm TFAIL "Test #2: mv -b failed"
+		tst_res TFAIL "Test #2: mv -b failed"
 	fi
 }
 
-setup
-TST_CLEANUP=cleanup
-
-test01
-test02
-
-tst_exit
+tst_run
