@@ -23,7 +23,7 @@
 * 3) removexattr(2) fails when attempted to read from a invalid address.
 *
 * Expected Result:
-* 1) removexattr(2) should return -1 and set errno to ENOATTR.
+* 1) removexattr(2) should return -1 and set errno to ENODATA.
 * 2) removcxattr(2) should return -1 and set errno to ENOENT.
 * 3) removexattr(2) should return -1 and set errno to EFAULT.
 */
@@ -32,8 +32,8 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#ifdef HAVE_ATTR_XATTR_H
-#include <attr/xattr.h>
+#ifdef HAVE_SYS_XATTR_H
+# include <sys/xattr.h>
 #endif
 
 #include "test.h"
@@ -41,7 +41,7 @@
 
 char *TCID = "removexattr02";
 
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 
 static struct test_case {
 	const char *path;
@@ -49,7 +49,7 @@ static struct test_case {
 	int exp_err;
 } tc[] = {
 	/* test1 */
-	{"testfile", "user.test", ENOATTR},
+	{"testfile", "user.test", ENODATA},
 	/* test2 */
 	{"", "user.test", ENOENT},
 	/* test3 */
@@ -120,9 +120,9 @@ static void cleanup(void)
 	tst_rmdir();
 }
 
-#else /* HAVE_ATTR_XATTR_H */
+#else /* HAVE_SYS_XATTR_H */
 int main(int ac, char **av)
 {
-	tst_brkm(TCONF, NULL, "<attr/xattr.h> does not exist.");
+	tst_brkm(TCONF, NULL, "<sys/xattr.h> does not exist.");
 }
 #endif

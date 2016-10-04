@@ -44,8 +44,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_ATTR_XATTR_H
-#include <attr/xattr.h>
+#ifdef HAVE_SYS_XATTR_H
+# include <sys/xattr.h>
 #endif
 #include <linux/fs.h>
 
@@ -53,7 +53,7 @@
 
 char *TCID = "setxattr03";
 
-#if defined HAVE_ATTR_XATTR_H && defined HAVE_FS_IOC_FLAGS
+#if defined HAVE_SYS_XATTR_H && defined HAVE_FS_IOC_FLAGS
 #define XATTR_TEST_KEY "user.testkey"
 #define XATTR_TEST_VALUE "this is a test value"
 #define XATTR_TEST_VALUE_SIZE (sizeof(XATTR_TEST_VALUE) - 1)
@@ -213,7 +213,7 @@ static void cleanup(void)
 #else
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "<attr/xattr.h> not present or FS_IOC_FLAGS "
+	tst_brkm(TCONF, NULL, "<sys/xattr.h> not present or FS_IOC_FLAGS "
 		 "missing in <linux/fs.h>");
 }
-#endif /* defined HAVE_ATTR_XATTR_H && defined HAVE_FS_IOC_FLAGS */
+#endif /* defined HAVE_SYS_XATTR_H && defined HAVE_FS_IOC_FLAGS */

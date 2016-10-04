@@ -18,8 +18,8 @@
 /* Define to 1 if you have the <asm/ldt.h> header file. */
 #undef HAVE_ASM_LDT_H
 
-/* Define to 1 if you have the <attr/xattr.h> header file. */
-#undef HAVE_ATTR_XATTR_H
+/* Define to 1 if you have the <sys/xattr.h> header file. */
+#undef HAVE_SYS_XATTR_H
 
 /* Define to 1 if you have the declaration of `CAP_BSET_DROP', and to 0 if you
    don't. */

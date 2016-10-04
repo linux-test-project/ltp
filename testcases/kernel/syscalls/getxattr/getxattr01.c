@@ -28,7 +28,7 @@
  *
  * There are 4 test cases:
  * 1. Get an non-existing attribute,
- *    getxattr(2) should return -1 and set errno to ENOATTR
+ *    getxattr(2) should return -1 and set errno to ENODATA
  * 2. Buffer size is smaller than attribute value size,
  *    getxattr(2) should return -1 and set errno to ERANGE
  * 3. Get attribute, getxattr(2) should succeed
@@ -44,14 +44,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_ATTR_XATTR_H
-#include <attr/xattr.h>
+#ifdef HAVE_SYS_XATTR_H
+# include <sys/xattr.h>
 #endif
 #include "test.h"
 
 char *TCID = "getxattr01";
 
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 #define XATTR_TEST_KEY "user.testkey"
 #define XATTR_TEST_VALUE "this is a test value"
 #define XATTR_TEST_VALUE_SIZE 20
@@ -75,7 +75,7 @@ struct test_case tc[] = {
 	 .key = "user.nosuchkey",
 	 .value = NULL,
 	 .size = BUFFSIZE - 1,
-	 .exp_err = ENOATTR,
+	 .exp_err = ENODATA,
 	 },
 	{			/* case 01, small value buffer */
 	 .fname = filename,
@@ -171,9 +171,9 @@ static void cleanup(void)
 {
 	tst_rmdir();
 }
-#else /* HAVE_ATTR_XATTR_H */
+#else /* HAVE_SYS_XATTR_H */
 int main(int argc, char *argv[])
 {
-	tst_brkm(TCONF, NULL, "<attr/xattr.h> does not exist.");
+	tst_brkm(TCONF, NULL, "<sys/xattr.h> does not exist.");
 }
 #endif

@@ -25,7 +25,7 @@
 * 3) lgetxattr(2) fails when attemptes to read from a invalid address.
 *
 * Expected Result:
-* 1) lgetxattr(2) should return -1 and set errno to ENOATTR.
+* 1) lgetxattr(2) should return -1 and set errno to ENODATA.
 * 2) lgetxattr(2) should return -1 and set errno to ERANGE.
 * 3) lgetxattr(2) should return -1 and set errno to EFAULT.
 */
@@ -35,13 +35,13 @@
 #include <sys/types.h>
 #include <string.h>
 
-#ifdef HAVE_ATTR_XATTR_H
-# include <attr/xattr.h>
+#ifdef HAVE_SYS_XATTR_H
+# include <sys/xattr.h>
 #endif
 
 #include "tst_test.h"
 
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 
 #define SECURITY_KEY	"security.ltptest"
 #define VALUE	"this is a test value"
@@ -51,7 +51,7 @@ static struct test_case {
 	size_t size;
 	int exp_err;
 } tcase[] = {
-	{"testfile", sizeof(VALUE), ENOATTR},
+	{"testfile", sizeof(VALUE), ENODATA},
 	{"symlink", 1, ERANGE},
 	{(char *)-1, sizeof(VALUE), EFAULT}
 };
@@ -103,6 +103,6 @@ static struct tst_test test = {
 	.setup = setup
 };
 
-#else /* HAVE_ATTR_XATTR_H */
-	TST_TEST_TCONF("<attr/xattr.h> does not exist.");
+#else /* HAVE_SYS_XATTR_H */
+	TST_TEST_TCONF("<sys/xattr.h> does not exist.");
 #endif

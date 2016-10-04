@@ -27,8 +27,8 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#ifdef HAVE_ATTR_XATTR_H
-#include <attr/xattr.h>
+#ifdef HAVE_SYS_XATTR_H
+# include <sys/xattr.h>
 #endif
 
 #include "test.h"
@@ -36,7 +36,7 @@
 
 char *TCID = "removexattr01";
 
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 #define USER_KEY	"user.test"
 #define VALUE	"test"
 #define VALUE_SIZE	(sizeof(VALUE) - 1)
@@ -93,7 +93,7 @@ static void verify_removexattr(void)
 		return;
 	}
 
-	if (errno != ENOATTR) {
+	if (errno != ENODATA) {
 		tst_resm(TFAIL | TTERRNO, "getxattr() failed unexpectedly");
 	} else {
 		tst_resm(TPASS, "removexattr() succeeded");
@@ -116,9 +116,9 @@ static void cleanup(void)
 	tst_rmdir();
 }
 
-#else /* HAVE_ATTR_XATTR_H */
+#else /* HAVE_SYS_XATTR_H */
 int main(int ac, char **av)
 {
-	tst_brkm(TCONF, NULL, "<attr/xattr.h> does not exist.");
+	tst_brkm(TCONF, NULL, "<sys/xattr.h> does not exist.");
 }
 #endif

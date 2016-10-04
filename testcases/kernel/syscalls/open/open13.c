@@ -30,9 +30,9 @@
 #include "config.h"
 
 #include <errno.h>
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 #include <sys/types.h>
-#include <attr/xattr.h>
+#include <sys/xattr.h>
 #endif
 
 #include "test.h"
@@ -47,7 +47,7 @@ static void verify_read(void);
 static void verify_write(void);
 static void verify_fchmod(void);
 static void verify_fchown(void);
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 static void verify_fgetxattr(void);
 #endif
 static void check_result(const char *call_name);
@@ -60,7 +60,7 @@ static void (*test_func[])(void) = {
 	verify_write,
 	verify_fchmod,
 	verify_fchown,
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 	verify_fgetxattr
 #endif
 };
@@ -135,7 +135,7 @@ static void verify_fchown(void)
 	check_result("fchown(2)");
 }
 
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 static void verify_fgetxattr(void)
 {
 	TEST(fgetxattr(fd, "tkey", NULL, 1));

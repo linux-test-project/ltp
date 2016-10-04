@@ -33,13 +33,13 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#ifdef HAVE_ATTR_XATTR_H
-# include <attr/xattr.h>
+#ifdef HAVE_SYS_XATTR_H
+# include <sys/xattr.h>
 #endif
 
 #include "tst_test.h"
 
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 
 #define SECURITY_KEY	"security.ltptest"
 #define VALUE	"test"
@@ -106,6 +106,6 @@ static struct tst_test test = {
 	.setup = setup,
 };
 
-#else /* HAVE_ATTR_XATTR_H */
-	TST_TEST_TCONF("<attr/xattr.h> does not exist.");
+#else /* HAVE_SYS_XATTR_H */
+	TST_TEST_TCONF("<sys/xattr.h> does not exist.");
 #endif

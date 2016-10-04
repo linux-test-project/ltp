@@ -29,13 +29,13 @@
 #include <sys/types.h>
 #include <string.h>
 
-#ifdef HAVE_ATTR_XATTR_H
-# include <attr/xattr.h>
+#ifdef HAVE_SYS_XATTR_H
+# include <sys/xattr.h>
 #endif
 
 #include "tst_test.h"
 
-#ifdef HAVE_ATTR_XATTR_H
+#ifdef HAVE_SYS_XATTR_H
 
 #define SECURITY_KEY1	"security.ltptest1"
 #define SECURITY_KEY2	"security.ltptest2"
@@ -120,6 +120,6 @@ static struct tst_test test = {
 };
 
 #else
-	TST_TEST_TCONF("<attr/xattr.h> does not exist.");
-#endif /* HAVE_ATTR_XATTR_H */
+	TST_TEST_TCONF("<sys/xattr.h> does not exist.");
+#endif /* HAVE_SYS_XATTR_H */
 
