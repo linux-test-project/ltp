@@ -1047,6 +1047,7 @@ writev03 writev03
 writev04 writev04
 writev05 writev05
 writev06 writev06
+writev07 writev07
 
 #DESCRIPTION:Memory Mgmt tests
 mm01 mmap001 -m 10000

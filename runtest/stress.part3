@@ -908,6 +908,7 @@ writev03 writev03
 writev04 writev04
 writev05 writev05
 writev06 writev06
+writev07 writev07
 
 pty01 pty01
 hangup01 hangup01
