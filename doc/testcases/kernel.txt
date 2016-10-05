@@ -6897,29 +6897,6 @@
 		ltp/testcases/kernel/syscalls/writev/writev02.c
 	<\test_location>
 <\testname>
-<testname=writev03>
-	<description>
-		The testcases are written calling writev() with partially valid data
-		to overwrite the contents, to write in the beginning and to write in
-		the end of the file.
-
-	<\description>
-	<test_location>
-		ltp/testcases/kernel/syscalls/writev/writev03.c
-	<\test_location>
-<\testname>
-<testname=writev04>
-	<description>
-		The testcases are written calling writev() with partially valid data
-		to overwrite the contents, to write in the beginning and to write in
-		the end of the file. This is same as writev03, but the length of
-		buffer used here is 8192 bytes.
-
-	<\description>
-	<test_location>
-		ltp/testcases/kernel/syscalls/writev/writev04.c
-	<\test_location>
-<\testname>
 <testname=writev05>
 	<description>
 		These testcases are written to test writev() on sparse files. This
