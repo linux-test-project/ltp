@@ -44,6 +44,14 @@ void tst_res_(const char *file, const int lineno, int ttype,
 #define tst_res(ttype, arg_fmt, ...) \
 	tst_res_(__FILE__, __LINE__, (ttype), (arg_fmt), ##__VA_ARGS__)
 
+void tst_resm_hexd_(const char *file, const int lineno, int ttype,
+	const void *buf, size_t size, const char *arg_fmt, ...)
+	__attribute__ ((format (printf, 6, 7)));
+
+#define tst_res_hexd(ttype, buf, size, arg_fmt, ...) \
+	tst_resm_hexd_(__FILE__, __LINE__, (ttype), (buf), (size), \
+			(arg_fmt), ##__VA_ARGS__)
+
 /*
  * Reports result and exits a test.
  */

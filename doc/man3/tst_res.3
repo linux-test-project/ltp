@@ -304,6 +304,9 @@ If there are any problems opening/reading/writing the contents of \fIfname\fR.
 If \fIfname\fR is NULL and \fItmesg\fR is NULL or empty, the result message
 will be empty.  This allows a test to not print a message for a result, but
 it is not advised.
+.SH NOTES
+In multithreaded environment, output of \fBtst_resm_hexd()\fR may be interleaved
+with messages produced by other threads.
 .SH BUGS
 .P
 The programmer is free to alter the value of \fBtst_count\fR causing possible

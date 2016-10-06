@@ -500,29 +500,33 @@ void tst_resm_(const char *file, const int lineno, int ttype,
 		tst_res__(file, lineno, ttype, "%s", tmesg);
 }
 
+typedef void (*tst_res_func_t)(const char *file, const int lineno,
+		int ttype, const char *fmt, ...);
+
 void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 	const void *buf, size_t size, const char *arg_fmt, ...)
 {
-	NO_NEWLIB_ASSERT(file, lineno);
-
-	pthread_mutex_lock(&tmutex);
-
 	char tmesg[USERMESG];
-
-	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
-
 	static const size_t symb_num	= 2; /* xx */
 	static const size_t size_max	= 16;
 	size_t offset = strlen(tmesg);
+	size_t i;
 	char *pmesg = tmesg;
+	tst_res_func_t res_func;
+
+	if (tst_test)
+		res_func = tst_res_;
+	else
+		res_func = tst_res__;
+
+	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	if (size > size_max || size == 0 ||
 		(offset + size * (symb_num + 1)) >= USERMESG)
-		tst_res__(file, lineno, ttype, "%s", tmesg);
+		res_func(file, lineno, ttype, "%s", tmesg);
 	else
 		pmesg += offset;
 
-	size_t i;
 	for (i = 0; i < size; ++i) {
 		/* add space before byte except first one */
 		if (pmesg != tmesg)
@@ -531,12 +535,10 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 		sprintf(pmesg, "%02x", ((unsigned char *)buf)[i]);
 		pmesg += symb_num;
 		if ((i + 1) % size_max == 0 || i + 1 == size) {
-			tst_res__(file, lineno, ttype, "%s", tmesg);
+			res_func(file, lineno, ttype, "%s", tmesg);
 			pmesg = tmesg;
 		}
 	}
-
-	pthread_mutex_unlock(&tmutex);
 }
 
 void tst_brkm_(const char *file, const int lineno, int ttype,
