@@ -284,11 +284,11 @@ tst_netload()
 		port=$(tst_rhost_run -c 'tst_get_unused_port ipv6 stream')
 		[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
 
-		tst_resm TINFO "run tcp_fastopen with '$ip_addr', port '$port'"
-		tst_rhost_run -s -b -c "tcp_fastopen -R $max_requests \
+		tst_resm TINFO "run netstress with '$ip_addr', port '$port'"
+		tst_rhost_run -s -b -c "netstress -R $max_requests \
 			-g $port $addopts"
 
-		# check that tcp_fastopen on rhost in 'Listening' state
+		# check that netstress on rhost in 'Listening' state
 		local sec_waited=
 		for sec_waited in $(seq 1 60); do
 			tst_rhost_run -c "ss -lutn | grep -q $port" && break
@@ -300,14 +300,14 @@ tst_netload()
 		done
 
 		# run local tcp client
-		tcp_fastopen -a $clients_num -r $client_requests -l -H $ip_addr\
+		netstress -a $clients_num -r $client_requests -l -H $ip_addr\
 			 -g $port -d $rfile $addopts > /dev/null || ret=1
 
 		if [ $ret -eq 0 -a ! -f $rfile ]; then
 			tst_brkm TBROK "can't read $rfile"
 		fi
 
-		tst_rhost_run -c "pkill -9 tcp_fastopen\$"
+		tst_rhost_run -c "pkill -9 netstress\$"
 	;;
 	*) tst_brkm TBROK "invalid net_load type '$type'" ;;
 	esac
