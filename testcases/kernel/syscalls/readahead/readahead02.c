@@ -59,6 +59,8 @@ static int opt_fsize;
 static char *opt_fsizestr;
 static int pagesize;
 
+#define MIN_SANE_READAHEAD (4 * 1024)
+
 option_t options[] = {
 	{"s:", &opt_fsize, &opt_fsizestr},
 	{NULL, NULL, NULL}
@@ -184,26 +186,6 @@ static void create_testfile(void)
 	free(tmp);
 }
 
-static long get_device_readahead(const char *fname)
-{
-	struct stat st;
-	unsigned long ra_kb = 0;
-	char buf[256];
-
-	if (stat(fname, &st) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "stat");
-	snprintf(buf, sizeof(buf), "/sys/dev/block/%d:%d/queue/read_ahead_kb",
-		 major(st.st_dev), minor(st.st_dev));
-	if (access(buf, F_OK)) {
-		snprintf(buf, sizeof(buf),
-			"/sys/dev/block/%d:%d/../queue/read_ahead_kb",
-			major(st.st_dev), minor(st.st_dev));
-	}
-	tst_resm(TINFO, "Reading %s", buf);
-	SAFE_FILE_SCANF(cleanup, buf, "%ld", &ra_kb);
-
-	return ra_kb * 1024;
-}
 
 /* read_testfile - mmap testfile and read every page.
  * This functions measures how many I/O and time it takes to fully
@@ -221,32 +203,44 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 			  unsigned long *cached)
 {
 	int fd;
-	size_t i;
+	size_t i = 0;
 	long read_bytes_start;
 	unsigned char *p, tmp;
 	unsigned long time_start_usec, time_end_usec;
-	off_t offset;
+	unsigned long cached_start, max_ra_estimate = 0;
+	off_t offset = 0;
 	struct timeval now;
-	long readahead_size;
-
-	/* use bdi limit for 4.4 and older, otherwise default to 2M */
-	if ((tst_kvercmp(4, 4, 0)) >= 0)
-		readahead_size = get_device_readahead(fname);
-	else
-		readahead_size = 2 * 1024 * 1024;
-	tst_resm(TINFO, "max readahead size is: %ld", readahead_size);
 
 	fd = open(fname, O_RDONLY);
 	if (fd < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "Failed to open %s", fname);
 
 	if (do_readahead) {
-		for (i = 0; i < fsize; i += readahead_size) {
-			TEST(readahead(fd, (off64_t) i, readahead_size));
-			if (TEST_RETURN != 0)
+		cached_start = get_cached_size();
+		do {
+			TEST(readahead(fd, offset, fsize - offset));
+			if (TEST_RETURN != 0) {
+				check_ret(0);
 				break;
-		}
-		check_ret(0);
+			}
+
+			/* estimate max readahead size based on first call */
+			if (!max_ra_estimate) {
+				*cached = get_cached_size();
+				if (*cached > cached_start) {
+					max_ra_estimate = (1024 *
+						(*cached - cached_start));
+					tst_resm(TINFO, "max ra estimate: %lu",
+						max_ra_estimate);
+				}
+				max_ra_estimate = MAX(max_ra_estimate,
+					MIN_SANE_READAHEAD);
+			}
+
+			i++;
+			offset += max_ra_estimate;
+		} while ((size_t)offset < fsize);
+		tst_resm(TINFO, "readahead calls made: %zu", i);
 		*cached = get_cached_size();
 
 		/* offset of file shouldn't change after readahead */
