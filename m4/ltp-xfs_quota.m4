@@ -24,6 +24,7 @@ dnl
 AC_DEFUN([LTP_CHECK_XFS_QUOTACTL],[dnl
 	AC_MSG_CHECKING([for XFS quota (xfs/xqm.h)])
 	AC_LINK_IFELSE([AC_LANG_SOURCE([
+#define _GNU_SOURCE
 #include <xfs/xqm.h>
 #include <sys/quota.h>
 int main(void) {
