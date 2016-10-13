@@ -26,23 +26,40 @@
 # Usage
 # ./pids.sh caseno max
 #
+TST_ID="pids"
+TST_CLEANUP=cleanup
+TST_SETUP=setup
+TST_TESTFUNC=do_test
+TST_POS_ARGS=2
+TST_USAGE=usage
+TST_NEEDS_ROOT=1
+
+. tst_test.sh
 
 caseno=$1
 max=$2
-export TCID="pids_$1_$2"
-export TST_TOTAL=1
 mounted=1
 
-. test.sh
+usage()
+{
+	cat << EOF
+usage: $0 caseno max_processes
+
+caseno        - testcase number from interval 1-5
+max_processes - maximal number of processes to attach
+                (applicable to testcase 1-4)
+OPTIONS
+EOF
+}
 
 cleanup()
 {
 	killall -9 pids_task2 >/dev/null 2>&1
 
-	tst_resm TINFO "removing created directories"
+	tst_res TINFO "removing created directories"
 	rmdir $testpath
 	if [ "$mounted" -ne "1" ]; then
-		tst_resm TINFO "Umounting pids"
+		tst_res TINFO "Umounting pids"
 		umount $mount_point
 		rmdir $mount_point
 	fi
@@ -50,11 +67,9 @@ cleanup()
 
 setup()
 {
-	tst_require_root
-
 	exist=`grep -w pids /proc/cgroups | cut -f1`;
 	if [ "$exist" = "" ]; then
-		tst_brkm TCONF NULL "pids not supported"
+		tst_brk TCONF NULL "pids not supported"
 	fi
 
 	mount_point=`grep -w pids /proc/mounts | cut -f 2 | cut -d " " -f2`
@@ -63,8 +78,6 @@ setup()
 		mounted=0
 		mount_point=/dev/cgroup
 	fi
-
-	TST_CLEANUP=cleanup
 
 	testpath=$mount_point/ltp_$TCID
 
@@ -84,8 +97,16 @@ start_pids_tasks2()
 	done
 
 	if [ $(cat "$testpath/tasks" | wc -l) -ne $nb ]; then
-		tst_resm TBROK "failed to attach process"
+		tst_brk TBROK "failed to attach process"
 	fi
+}
+
+stop_pids_tasks()
+{
+	for i in `cat $testpath/tasks`; do
+		ROD kill -9 $i
+		wait $i
+	done
 }
 
 case1()
@@ -97,18 +118,20 @@ case1()
 	ret=$?
 
 	if [ "$ret" -eq "2" ]; then
-		tst_resm TFAIL "fork failed unexpectedly"
+		tst_res TFAIL "fork failed unexpectedly"
 	elif [ "$ret" -eq "0" ]; then
-		tst_resm TPASS "fork didn't fail"
+		tst_res TPASS "fork didn't fail"
 	else
-		tst_resm TBROK "pids_task1 failed"
+		tst_res TBROK "pids_task1 failed"
 	fi
+
+	stop_pids_tasks
 }
 
 case2()
 {
 	tmp=$((max - 1))
-	tst_resm TINFO "limit the number of pid to $max"
+	tst_res TINFO "limit the number of pid to $max"
 	ROD echo $max \> $testpath/pids.max
 
 	start_pids_tasks2 $tmp
@@ -118,18 +141,20 @@ case2()
 	ret=$?
 
 	if [ "$ret" -eq "2" ]; then
-		tst_resm TPASS "fork failed as expected"
+		tst_res TPASS "fork failed as expected"
 	elif [ "$ret" -eq "0" ]; then
-		tst_resm TFAIL "fork didn't fail despite the limit"
+		tst_res TFAIL "fork didn't fail despite the limit"
 	else
-		tst_resm TBROK "pids_task1 failed"
+		tst_res TBROK "pids_task1 failed"
 	fi
+
+	stop_pids_tasks
 }
 
 case3()
 {
 	lim=$((max + 2))
-	tst_resm TINFO "limit the number of avalaible pid to $lim"
+	tst_res TINFO "limit the number of avalaible pid to $lim"
 	ROD echo $lim \> $testpath/pids.max
 
 	start_pids_tasks2 $max
@@ -138,42 +163,44 @@ case3()
 	ret=$?
 
 	if [ "$ret" -eq "2" ]; then
-		tst_resm TFAIL "fork failed unexpectedly"
+		tst_res TFAIL "fork failed unexpectedly"
 	elif [ "$ret" -eq "0" ]; then
-		tst_resm TPASS "fork worked as expected"
+		tst_res TPASS "fork worked as expected"
 	else
-		tst_resm TBROK "pids_task1 failed"
+		tst_res TBROK "pids_task1 failed"
 	fi
+
+	stop_pids_tasks
 }
 
 case4()
 {
-	tst_resm TINFO "limit the number of avalaible pid to 0"
+	tst_res TINFO "limit the number of avalaible pid to 0"
 	ROD echo 0 \> $testpath/pids.max
 
 	start_pids_tasks2 $max
 
-	tst_resm TPASS "all process were attached"
+	tst_res TPASS "all process were attached"
+
+	stop_pids_tasks
 }
 
 case5()
 {
-	tst_resm TINFO "try to limit the number of avalaible pid to -1"
+	tst_res TINFO "try to limit the number of avalaible pid to -1"
 	echo -1 > $testpath/pids.max
 
 	if [ "$?" -eq "0" ]; then
-		tst_resm TFAIL "managed to set the limit to -1"
+		tst_res TFAIL "managed to set the limit to -1"
 	else
-		tst_resm TPASS "didn't manage to set the limit to -1"
+		tst_res TPASS "didn't manage to set the limit to -1"
 	fi
 }
 
-setup
-
-if [ "$#" -ne "2" ]; then
-	tst_resm TFAIL "invalid parameters, usage: ./pids01 caseno max"
-else
+do_test()
+{
+	tst_res TINFO "Running testcase $caseno with $max processes"
 	case$caseno
-fi
+}
 
-tst_exit
+tst_run
