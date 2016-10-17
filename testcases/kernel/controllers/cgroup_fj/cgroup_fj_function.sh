@@ -207,7 +207,8 @@ test7
 test8
 test9
 
-ROD rmdir "$start_path/ltp_1"
 ROD kill -9 $pid
+wait $pid
+ROD rmdir "$start_path/ltp_1"
 
 tst_exit
