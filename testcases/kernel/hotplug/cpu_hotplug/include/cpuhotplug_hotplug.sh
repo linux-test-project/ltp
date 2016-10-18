@@ -178,7 +178,7 @@ get_present_cpus_num()
 #
 get_hotplug_cpus()
 {
-    local present_cpus=$(get_present_cpus)
+    local present_cpus="$(get_present_cpus)"
     local hotplug_cpus=""
 
     for cpu in $present_cpus; do
