@@ -2,6 +2,8 @@
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
+##  Author: Manoj Iyer, manjo@mail.utexas.edu                                 ##
+## Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>                          ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -14,273 +16,138 @@
 ## for more details.                                                          ##
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software	              ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
+## along with this program;  if not, write to the Free Software Foundation,   ##
+## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           ##
 ##                                                                            ##
 ################################################################################
 #
-# File:        tar_test.sh
-#
-# Description: Tests tar command. These tests test the basic functioanlity of
-#              tape archive command.
-#
-# Author:      Manoj Iyer, manjo@mail.utexas.edu
-#
-# History:     Dec 17 2002 - Created - Manoj Iyer.
-#              Dec 18 2002 - Added code to read the LTPROOT and TMPBASE
-#              variables to set LTPBIN and LTPTMP variables
+# Creates, lists and extracts an plain, gzip and bzip tar archive.
 #
 
-export TST_TOTAL=1
+TST_ID="tar01"
+TST_CNT=6
+TST_TESTFUNC=do_test
+TST_NEEDS_TMPDIR=1
+. tst_test.sh
 
-if [ -z "$LTPTMP" -a -z "$TMPBASE" ]; then
-    LTPTMP=/tmp
-else
-    LTPTMP=$TMPBASE
-fi
+TAR_FILES="file1 file2 file3"
 
-if [ -z "$LTPBIN" -a -z "$LTPROOT" ]; then
-    LTPBIN=./bin
-else
-    LTPBIN=$LTPROOT/testcases/bin
-fi
+check_listing()
+{
+	local i
+	local verbose=$1
+	shift
 
-# set return code RC variable to 0, it will be set with a non-zero return code
-# in case of error. Set TFAILCNT to 0, increment if there occures a failure.
-#
-
-TFAILCNT=0
-RC=0
-RC1=0
-RC2=0
-RC3=0
-
-# Test #1
-# Test if tar command can create a tar file 'tar cvf <tar filename> <list of
-# files>'
-
-export TCID=tar01
-export TST_COUNT=1
-
-$LTPBIN/tst_resm TINFO \
-    "TEST #1: tar command with cvf options creates an archive file"
-
-touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
-
-tar cvf $LTPTMP/tar_tstf.tar $LTPTMP/tar_tstf1 \
-    $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-
-if [ $RC -eq 0 ]; then
-    if [ -f $LTPTMP/tar_tstf.tar ]; then
-	$LTPBIN/tst_resm TPASS "tar: cvf option created a tar file."
-    else
-	$LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
-	    "tar: cvf option failed to create archive.  Reason"
-	TFAILCNT=$(( $TFAILCNT+1 ))
-    fi
-else
-    $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
-	"tar: command failed. Reason:"
-    TFAILCNT=$(( $TFAILCNT+1 ))
-fi
-
-
-# Test #2
-# Test if tar command with tvf option will list all the files in the archive.
-
-export TCID=tar02
-export TST_COUNT=2
-
-$LTPBIN/tst_resm TINFO \
-    "TEST #2: tar command with tvf options lists all files in an archive file"
-
-if [ -f $LTPTMP/tar_tstf.tar ]; then
-    echo "$LTPTMP/tar_tstf.tar exists" > /dev/null 2>&1
-else
-    touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
-    tar cvf $LTPTMP/tar_tstf.tar $LTPTMP/tar_tstf1 \
-	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-
-    if [ $RC -eq 0 ]; then
-	if [ -f $LTPTMP/tar_tstf.tar ]; then
-	    echo "tar file created" > /dev/null 2>&1
-	else
-	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
-		"tar: cvf option failed to create archive.  Reason"
-	    TFAILCNT=$(( $TFAILCNT+1 ))
-	fi
-    else
-	$LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
-	    "tar: command failed. Reason:"
-	TFAILCNT=$(( $TFAILCNT+1 ))
-    fi
-fi
-
-tar -tvf $LTPTMP/tar_tstf.tar > /$LTPTMP/tar_tst.out 2>&1 || RC=$?
-
-if [ $RC -eq 0 ]; then
-    grep  "tar_tstf1" $LTPTMP/tar_tst.out > $LTPTMP/tar_tst2.out 2>&1 || RC1=$?
-    grep  "tar_tstf2" $LTPTMP/tar_tst.out 2>&1 1>>$LTPTMP/tar_tst2.out || RC2=$?
-    grep  "tar_tstf3" $LTPTMP/tar_tst.out 2>&1 1>>$LTPTMP/tar_tst2.out || RC3=$?
-
-    if [ $RC1 -eq 0 -a $RC2 -eq 0 -a $RC3 -eq 0 ]; then
-	$LTPBIN/tst_resm TPASS 	"tar: tvf option listed all its contents"
-    else
-	$LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
-	    "tar: failed to list all the files in the archive. Reason:"
-	TFAILCNT=$(( $TFAILCNT+1 ))
-    fi
-fi
-
-
-# Test #3
-# Test if tar command can create a compressed tar file 'tar cvf <tar filename>
-# <list of files>'
-
-export TCID=tar03
-export TST_COUNT=3
-
-$LTPBIN/tst_resm TINFO \
-    "TEST #3: tar command with zcvf options creates an compressed archive file"
-
-touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
-
-tar zcvf $LTPTMP/tar_tstf.tgz $LTPTMP/tar_tstf1 \
-    $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-
-if [ $RC -eq 0 ]; then
-    if [ -f $LTPTMP/tar_tstf.tgz ]; then
-	file $LTPTMP/tar_tstf.tgz | grep "gzip compressed data" \
-            > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-	if [ $RC -eq 0 ]; then
-	    $LTPBIN/tst_resm TPASS \
-		"tar: zcvf option created a compressed tar file."
-	else
-	    $LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
-		"tar: zcvf option failed to create a compressed tar file. Reason:"
-	    TFAILCNT=$(( $TFAILCNT+1 ))
-	fi
-    else
-	$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
-	    "tar: cvf option failed to create compressed archive.  Reason"
-	TFAILCNT=$(( $TFAILCNT+1 ))
-    fi
-else
-    $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
-	"tar: command failed while creating compressed archive. Reason:"
-    TFAILCNT=$(( $TFAILCNT+1 ))
-fi
-
-
-# Test #4
-# Test if tar command with xvf can untar an archive file created by tar.
-
-export TCID=tar04
-export TST_COUNT=4
-
-$LTPBIN/tst_resm TINFO \
-    "TEST #4: tar command with xvf options extracts files from an archive file"
-
-if [ -f $LTPTMP/tar_tstf.tar ]; then
-    echo "tar file exists" > /dev/null 2>&1
-else
-    touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
-
-    tar cvf $LTPTMP/tar_tstf.tar $LTPTMP/tar_tstf1 \
-	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-
-    if [ $RC -eq 0 ]; then
-	if [ -f $LTPTMP/tar_tstf.tar ];	then
-	    $LTPBIN/tst_resm TINFO "tar: cvf option created a tar file."
-	else
-	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
-		"tar: cvf option failed to create archive.  Reason"
-	    TFAILCNT=$(( $TFAILCNT+1 ))
-	fi
-    else
-	$LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
-	    "tar: command failed. Reason:"
-	TFAILCNT=$(( $TFAILCNT+1 ))
-    fi
-fi
-
-tar xvf $LTPTMP/tar_tstf.tar > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-
-if [ $? -eq 0 ]; then
-   if [ -d $LTPTMP -a -f $LTPTMP/tar_tstf1 -a -f $LTPTMP/tar_tstf2 -a -f $LTPTMP/tar_tstf3 ]; then
-       $LTPBIN/tst_resm TPASS "tar: xvf option extracted the archive file."
-   else
-       $LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
-	   "tar: xvf option failed to extract. Reason:"
-       TFAILCNT=$(( $TFAILCNT+1 ))
-   fi
-else
-    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
-	"tar: command failed while extracting files. Reason"
-    TFAILCNT=$(( $TFAILCNT+1 ))
-fi
-
-rm -f $LTPTMP/tar_tst*
-
-# Test #5
-# Test if tar command can extract a compressed tar file 'tar zxvf
-# <tar filename> <list of files>'
-
-export TCID=tar05
-export TST_COUNT=5
-
-$LTPBIN/tst_resm TINFO \
-	"TEST #5: tar command with zxvf options extracts a compressed archive file"
-
-if [ -f tar_tstf.tgz ]; then
-    echo "compressed archive file already exists" > /dev/null 2>&1
-else
-
-    touch $LTPTMP/tar_tstf1 $LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3
-    tar zcvf $LTPTMP/tar_tstf.tgz $LTPTMP/tar_tstf1 \
-	$LTPTMP/tar_tstf2 $LTPTMP/tar_tstf3 > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-
-	if [ $RC -eq 0 ]; then
-	    if [ -f $LTPTMP/tar_tstf.tgz ]; then
-		file $LTPTMP/tar_tstf.tgz | grep "gzip compressed data" \
-		    > $LTPTMP/tar_tst.out 2>&1 || RC=$?
-		if [ $RC -eq 0 ]; then
-		    $LTPBIN/tst_resm TINFO  \
-			"tar: zcvf option created a compressed tar file."
+	if [ -z "$verbose" ]; then
+		if [ -s tar.out ]; then
+			tst_res TFAIL "Tar produced unexpected output"
+			cat tar.out
 		else
-		    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
-			"tar: zcvf option failed to create a compressed tar file. Reason:"
-		    TFAILCNT=$(( $TFAILCNT+1 ))
+			tst_res TPASS "Tar produced no output"
 		fi
-	    else
-		$LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
-		    "tar: cvf option failed to create compressed archive.  Reason"
-		TFAILCNT=$(( $TFAILCNT+1 ))
-	    fi
-	else
-	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
-		"tar: command failed while creating compressed archive. Reason:"
-	    TFAILCNT=$(( $TFAILCNT+1 ))
+
+		return
 	fi
-fi
 
-tar zxvf $LTPTMP/tar_tstf.tgz > $LTPTMP/tar_tst.out 2>&1 || RC=$?
+	if [ $(wc -l < tar.out) != $# ]; then
+		tst_res TFAIL "Unexpected number of lines in tar.out"
+		cat tar.out
+		return
+	fi
 
-if [ $? -eq 0 ]; then
-    if [ -d $LTPTMP -a -f $LTPTMP/tar_tstf1 -a -f $LTPTMP/tar_tstf2 -a -f $LTPTMP/tar_tstf3 ]; then
-	$LTPBIN/tst_resm TPASS \
-	    "tar: zxvf option extracted the compressed archive file."
-    else
-	$LTPBIN/tst_res TFAIL $LTPTMP/tar_tst.out \
-	    "tar: zxvf option failed to extract compressed archive. Reason:"
-	TFAILCNT=$(( $TFAILCNT+1 ))
-    fi
-else
-    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
-	"tar: command failed while extracting compressed archive files. Reason"
-    TFAILCNT=$(( $TFAILCNT+1 ))
-fi
+	for i in $@; do
+		if ! grep -q $i tar.out; then
+			tst_res TFAIL "File $i missing in listing"
+			return
+		fi
+	done
 
-rm -f $LTPTMP/tar_tst*
+	tst_res TPASS "Listing in tar.out is correct"
+}
 
-exit $TFAILCNT
+check_content()
+{
+	local fname="$1"
+	local verbose="$2"
+	shift 2
+
+	EXPECT_PASS tar t${verbose}f "$fname" \> tar.out
+	check_listing v $@
+}
+
+check_files()
+{
+	for i in $@; do
+		if ! [ -f $i ]; then
+			tst_res TFAIL "Missing file $i in extracted archive"
+			cat tar.out
+			return
+		fi
+	done
+
+	tst_res TPASS "Files were uncompressed correctly"
+}
+
+check_extraction()
+{
+	local fname="$1"
+	local verbose="$2"
+	shift 2
+
+	EXPECT_PASS tar x${verbose}f $fname \> tar.out
+	check_listing "${verbose}" $@
+	check_files $@
+	ROD rm $@
+}
+
+test_tar()
+{
+	local comp="$1"
+	local verbose="$2"
+	local fname="$3"
+	local i
+
+	# Create archive
+	ROD touch $TAR_FILES
+	EXPECT_PASS tar c${verbose}f$comp $fname $TAR_FILES \> tar.out
+	check_listing "$verbose" $TAR_FILES
+
+	# Diff filesystem against the archive, should be the same at this point
+	EXPECT_PASS tar d${verbose}f $fname \> tar.out
+	check_listing "$verbose" $TAR_FILES
+
+	ROD rm $TAR_FILES
+
+	# Check content listing
+	check_content $fname "$verbose" $TAR_FILES
+
+	# Check decompression
+	check_extraction $fname "$verbose" $TAR_FILES
+
+	# Append to an archive, only possible for uncompressed archive
+	if [ -z "$comp" ]; then
+		ROD touch file4
+		EXPECT_PASS tar r${verbose}f $fname file4 \> tar.out
+		check_listing "$verbose" file4
+		check_content $fname "$verbose" $TAR_FILES file4
+		ROD rm file4
+
+		check_extraction $fname "$verbose" $TAR_FILES file4
+	fi
+
+	ROD rm $fname
+}
+
+do_test()
+{
+	case $1 in
+	1) test_tar ""  "v" "test.tar";;
+	2) test_tar "z" "v" "test.tar.gz";;
+	3) test_tar "j" "v" "test.tar.bz2";;
+	4) test_tar ""  ""  "test.tar";;
+	5) test_tar "z" ""  "test.tar.gz";;
+	6) test_tar "j" ""  "test.tar.bz2";;
+	esac
+}
+
+tst_run
