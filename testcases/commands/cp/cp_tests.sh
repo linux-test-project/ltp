@@ -2,6 +2,8 @@
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
+##  Author:       Manoj Iyer, manjo@mail.utexas.edu                           ##
+## Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>                          ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -14,243 +16,97 @@
 ## for more details.                                                          ##
 ##                                                                            ##
 ## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
+## along with this program;  if not, write to the Free Software Foundation,   ##
+## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           ##
 ##                                                                            ##
 ################################################################################
 #
-# File :        cp_test.sh
+# Tests basic cp functionality
 #
-# Description:  Test basic functionality of cp command
-#				- Test #1:  cp -R can do a recursive copy
-#
-# Author:       Manoj Iyer, manjo@mail.utexas.edu
-#
-# History:      Jan 30 2003 - Created - Manoj Iyer.
-#               Feb 03 2003 - Fixed expected output.
-#
-# Function:		init
-#
-# Description:	- Check if command cp is available.
-#               - Create temprary directory, and temporary files.
-#               - Initialize environment variables.
-#
-# Return		- zero on success
-#               - non zero on failure. return value from commands ($RC)
-init()
+TST_ID="ln01"
+TST_CNT=5
+TST_TESTFUNC=do_test
+TST_SETUP=setup
+TST_NEEDS_TMPDIR=1
+. tst_test.sh
+
+create_tree()
 {
+	local dirname=$1
+	local dircnt=$2
+	local filecnt=$3
 
-	RC=0				# Return code from commands.
-	export TST_TOTAL=1	# total numner of tests in this file.
-	export TCID=cp	# this is the init function.
-	export TST_COUNT=0	# init identifier,
+	tst_res TINFO "Creating $dircnt directories."
+	tst_res TINFO "Filling each dir with $filecnt files".
+	while [ $dircnt -gt 0 ]; do
+		dirname=$dirname/dir$dircnt
+	        ROD mkdir -p $dirname
 
-	if [ -z "$LTPTMP" ] && [ -z "$TMPBASE" ]
-	then
-		LTPTMP=/tmp
-	else
-		LTPTMP=$TMPBASE
-	fi
-	if [ -z "$LTPBIN" ] && [ -z "$LTPROOT" ]
-	then
-		LTPBIN=./
-	else
-		LTPBIN=$LTPROOT/testcases/bin
-	fi
-
-
-	$LTPBIN/tst_resm TINFO "INIT: Inititalizing tests."
-
-	which cp > $LTPTMP/tst_cp.err 2>&1 || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cp.err NULL \
-			"Test #1: cp command does not exist. Reason:"
-		return $RC
-	fi
-
-	mkdir -p $LTPTMP/tst_cp.tmp > $LTPTMP/tst_cp.err 2>&1 || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		$LTPBIN/tst_brk TBROK $LTPTMP/tst_cp.err NULL \
-			"Test #1: failed creating temp directory. Reason:"
-		return $RC
-	fi
-	return $RC
-}
-
-# Function:		creat_dirnfiles
-#
-# Description:	- create N directories and fill each with M files
-#
-# Input:		$1 - test number
-#				$2 - number of directories to create
-#				$3 - number of file to create in each directory
-#				$4 - name of the base directory
-#
-# Return		- zero on success
-#               - non zero on failure. return value ($RC) from commands
-creat_dirnfiles()
-{
-    numdirs=$2	# number of directories to create
-    numfiles=$3 # number of file to create in each directory
-    dirname=$4  # name of the base directory
-	dircnt=0    # index into number of dirs created in loop
-	fcnt=0      # index into number of files created in loop
-	RC=0        # return value from commands
-
-	$LTPBIN/tst_resm TINFO "Test #$1: Creating $numdirs directories."
-	$LTPBIN/tst_resm TINFO "Test #$1: filling each dir with $numfiles files".
-	while [ $dircnt -lt $numdirs ]
-	do
-		dirname=$dirname/d.$dircnt
-        mkdir -p $dirname  > $LTPTMP/tst_cp.err 2>&1 || RC=$?
-		if [ $RC -ne 0 ]
-		then
-			$LTPBIN/tst_brk TBROK $LTPTMP/tst_cp.err NULL \
-			"Test #$1: while creating $numdirs dirs.  Reason"
-			return $RC
-		fi
-		fcnt=0
-        while [ $fcnt -lt $numfiles ]
-        do
-			touch $dirname/f.$fcnt
-			if [ $RC -ne 0 ]
-			then
-				$LTPBIN/tst_brk TBROK $LTPTMP/tst_cp.err NULL \
-				"Test #$1: while creating $numdirs dirs.  Reason"
-				return $RC
-			fi
-			fcnt=$(($fcnt+1))
+		local fcnt=0
+	        while [ $fcnt -lt $filecnt ]; do
+			ROD touch $dirname/file$fcnt
+			fcnt=$((fcnt+1))
 		done
-		dircnt=$(($dircnt+1))
-	done
-	return $RC
-}
-
-
-# Function:		creat_expout
-#
-# Description:	- create expected output
-#
-# Input:		$1 - number of directories to create
-#				$2 - number of file to create in each directory
-#				$3 - name of the base directory
-#
-# Return		- zero on success
-#               - non zero on failure. return value ($RC) from commands
-creat_expout()
-{
-	numdir=$1	# number of directories to create
-	numfile=$2  # number of file to create in each directory
-	dirname=$3  # name of the base directory
-    dircnt=0    # index into dir created in loop
-    fcnt=0      # index into files created in loop
-	RC=0        # return code from commands
-
-	echo "$dirname:"  1>>$LTPTMP/tst_cp.exp
-	echo "d.$dircnt"  1>>$LTPTMP/tst_cp.exp
-	while [ $dircnt -lt $numdirs ]
-	do
-		dirname=$dirname/d.$dircnt
-		dircnt=$(($dircnt+1))
-		echo "$dirname:"  1>>$LTPTMP/tst_cp.exp
-		if [ $dircnt -lt $numdirs ]
-		then
-			echo "d.$dircnt"  1>>$LTPTMP/tst_cp.exp
-		fi
-		fcnt=0
-        while [ $fcnt -lt $numfiles ]
-        do
-			echo "f.$fcnt " 1>>$LTPTMP/tst_cp.exp
-			fcnt=$(($fcnt+1))
-		done
-		printf "\n\n" 1>>$LTPTMP/tst_cp.exp
+		dircnt=$((dircnt-1))
 	done
 }
 
-# Function:		test01
-#
-# Description	- Test #1: Test that cp -R will copy will copy directories
-#                 recursively.
-#               - create N directories and fill each with M files.
-#               - cp -R dir1 to dir2
-#               - list contents of dir2 and save it to file - actual output
-#               - create expected output
-#               - compare expected output with actual output.
-#
-# Return		- zero on success
-#               - non zero on failure. return value from commands ($RC)
-
-test01()
+setup()
 {
-	RC=0				# Return value from commands.
-	export TCID=cp01	# Name of the test case.
-	export TST_COUNT=1	# Test number.
-	numdirs=10
-	numfiles=10
-	dircnt=0
-    fcnt=0
-
-	$LTPBIN/tst_resm TINFO \
-		"Test #1: cp -R will recursively cp contents of directory"
-
-	creat_dirnfiles 1 $numdirs $numfiles $LTPTMP/tst_cp.tmp || RC=$?
-    if [ $RC -ne 0 ]
-	then
-		return $RC
-	fi
-
-	cp -R $LTPTMP/tst_cp.tmp $LTPTMP/tst_cp.tmp1 > $LTPTMP/tst_cp.err 2>&1 || RC=$?
-    if [ $RC -ne 0 ]
-	then
-		$LTPBIN/tst_res TFAIL $LTPTMP/tst_cp.err \
-		"Test #1: cp -R failed, cp command  returned $RC. Reason:"
-		return $RC
-	fi
-
-	$LTPBIN/tst_resm TINFO "Test #1: creating output file"
-	ls -R $LTPTMP/tst_cp.tmp1 > $LTPTMP/tst_cp.out 2>&1
-
-	$LTPBIN/tst_resm TINFO "Test #1: creating expected output file"
-	creat_expout $numdirs $numfiles $LTPTMP/tst_cp.tmp1
-
-	$LTPBIN/tst_resm TINFO \
-	    "Test #1: comparing expected out and actual output file"
-	diff -w -B -q $LTPTMP/tst_cp.out $LTPTMP/tst_cp.exp > $LTPTMP/tst_cp.err 2>&1 \
-		|| RC=$?
-	if [ $RC -ne 0 ]
-	then
-		$LTPBIN/tst_res TFAIL $LTPTMP/tst_cp.err \
-			"Test #1: cp -R failed. Reason:"
-	else
-		$LTPBIN/tst_resm TINFO "Test #1: expected same as actual"
-		$LTPBIN/tst_resm TPASS "Test #1: cp -R success"
-	fi
-	return $RC
+	create_tree "dir" 10 10
+	ROD echo LTP > file
 }
 
+compare_dirs()
+{
+	local src="$1"
+	local dst="$2"
 
-# Function:		main
-#
-# Description:	- Execute all tests, report results.
-#
-# Exit:			- zero on success
-# 				- non-zero on failure.
+	if diff -r $src $dst; then
+		tst_res TPASS "Directories $src and $dst are equal"
+	else
+		tst_res TFAIL "Directories $src and $dst differs"
+		ls -R $src
+		echo
+		ls -R $dst
+	fi
+}
 
+compare_files()
+{
+	local src="$1"
+	local dst="$2"
 
-TFAILCNT=0			# Set TFAILCNT to 0, increment on failure.
-RC=0				# Return code from tests.
+	if diff $src $dst; then
+		tst_res TPASS "Files $src and $dst are equal"
+	else
+		tst_res TFAIL "Files $src and $dst differs"
+	fi
+}
 
-init || return $RC	# Exit if initializing testcases fails.
+cp_test()
+{
+	local args="$1"
+	local src="$2"
+	local dst="$3"
+	EXPECT_PASS cp $args $src $dst
+	if [ -f $src ]; then
+		compare_files $src $dst
+	else
+		compare_dirs $src $dst
+	fi
+	ROD rm -r $dst
+}
 
-test01 || RC=$?
-if [ $RC -ne 0 ]
-then
-	TFAILCNT=$(($TFAILCNT+1))
-fi
+do_test()
+{
+	case $1 in
+	1) cp_test ""  "file" "file_copy";;
+	2) cp_test -l  "file" "file_copy";;
+	3) cp_test -s  "file" "file_copy";;
+	4) cp_test -R  "dir"  "dir_copy";;
+	5) cp_test -lR "dir"  "dir_copy";;
+	esac
+}
 
-
-rm -fr $LTPTMP/tst_cp.*
-
-exit $TFAILCNT
+tst_run
