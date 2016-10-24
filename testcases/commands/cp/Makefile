@@ -1,5 +1,5 @@
 #
-#    commands/fileutils/mv testcases Makefile.
+#    commands/fileutils/cp testcases Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -20,11 +20,11 @@
 # Garrett Cooper, July 2009
 #
 
-top_srcdir		?= ../../../..
+top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= mv_tests.sh
+INSTALL_TARGETS		:= cp_tests.sh
 
 MAKE_TARGETS		:=
 

@@ -1,5 +1,5 @@
 #
-#    commands/fileutils test suite Makefile.
+#    commands/fileutils/mv testcases Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -24,4 +24,8 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+INSTALL_TARGETS		:= mv_tests.sh
+
+MAKE_TARGETS		:=
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
