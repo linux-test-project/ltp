@@ -1,5 +1,5 @@
 #
-#    commands/ade/objdump testcases Makefile.
+#    commands/ade/size testcases Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -20,24 +20,10 @@
 # Garrett Cooper, July 2009
 #
 
-top_srcdir		?= ../../../..
+top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CFLAGS			+= -g
-
-test_arch.obj: test_arch.o
-	cp $< $@
-
-test_arch_debug: test_arch.o
-	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
-
-test_arch_stripped: test_arch.o
-	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
-	$(STRIP) $@
-
-INSTALL_TARGETS		:= objdump01
-
-MAKE_TARGETS		:= test_arch_debug test_arch_stripped test_arch.obj
+INSTALL_TARGETS		:= size01
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

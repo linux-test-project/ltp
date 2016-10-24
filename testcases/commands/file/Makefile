@@ -1,5 +1,5 @@
 #
-#    commands/ade/nm testcases Makefile.
+#    commands/ade/file testcases Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -20,15 +20,12 @@
 # Garrett Cooper, July 2009
 #
 
-top_srcdir		?= ../../../..
+top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= nm01 *.c
+INSTALL_TARGETS		:= file_test.sh
 
-MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%.obj,$(wildcard $(abs_srcdir)/*.c))
-
-$(MAKE_TARGETS): %.obj: %.o
-	mv $^ $@
+MAKE_TARGETS		:=
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

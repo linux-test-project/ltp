@@ -1,5 +1,5 @@
 #
-#    commands/ade/ldd testcases Makefile.
+#    commands/ade/ld testcases Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -13,13 +13,24 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
 # Garrett Cooper, July 2009
 #
 
-top_srcdir		?= ../../../..
+top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= ldd01
+CPPFLAGS		+= -fPIC
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+INSTALL_TARGETS		:= ld01
+
+MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%.obj,$(wildcard $(abs_srcdir)/*.c))
+
+$(MAKE_TARGETS): %.obj: %.o
+	mv $^ $@
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

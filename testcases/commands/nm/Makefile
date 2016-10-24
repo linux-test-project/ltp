@@ -1,7 +1,7 @@
 #
-#    commands/ade/ldd/datafiles testcases Makefile.
+#    commands/ade/nm testcases Makefile.
 #
-#    Copyright (C) 2014, Linux Test Project.
+#    Copyright (C) 2009, Cisco Systems Inc.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -12,26 +12,23 @@
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-top_srcdir		?= ../../../../..
+top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CPPFLAGS		+= -fpic
+INSTALL_TARGETS		:= nm01 *.c
 
-INSTALL_TARGETS		:= ldd*.so lddfile.out
+MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%.obj,$(wildcard $(abs_srcdir)/*.c))
 
-LDD_C_FILES		:= $(wildcard $(abs_srcdir)/lddfile*.c)
-LDD_SO_FILES		:= $(patsubst $(abs_srcdir)/%.c,%.obj.so,$(LDD_C_FILES))
-MAKE_TARGETS		:= lddfile.out
-CLEAN_TARGETS		+= *.obj $(LDD_SO_FILES)
-
-%.obj.so: %.o
-	$(CC) $(CFLAGS) -shared -o $@ $^
-
-lddfile.out: main.o $(LDD_SO_FILES)
-	$(CC) $(CFLAGS) -O -o $@ $?
-
-INSTALL_DIR		:= testcases/data/ldd01
+$(MAKE_TARGETS): %.obj: %.o
+	mv $^ $@
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
