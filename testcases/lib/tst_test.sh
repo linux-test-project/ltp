@@ -112,47 +112,15 @@ tst_brk()
 
 ROD_SILENT()
 {
-	$@ > /dev/null 2>&1
+	tst_rod $@ > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_brk TBROK "$@ failed"
 	fi
 }
 
-ROD_BASE()
-{
-	local cmd
-	local arg
-	local file
-	local flag
-
-	for arg; do
-		file="${arg#\>}"
-		if [ "$file" != "$arg" ]; then
-			flag=1
-			if [ -n "$file" ]; then
-				break
-			fi
-			continue
-		fi
-
-		if [ -n "$flag" ]; then
-			file="$arg"
-			break
-		fi
-
-		cmd="$cmd $arg"
-	done
-
-	if [ -n "$flag" ]; then
-		$cmd > $file
-	else
-		$@
-	fi
-}
-
 ROD()
 {
-	ROD_BASE "$@"
+	tst_rod "$@"
 	if [ $? -ne 0 ]; then
 		tst_brk TBROK "$@ failed"
 	fi
@@ -160,7 +128,7 @@ ROD()
 
 EXPECT_PASS()
 {
-	ROD_BASE "$@"
+	tst_rod "$@"
 	if [ $? -eq 0 ]; then
 		tst_res TPASS "$@ passed as expected"
 	else
@@ -171,7 +139,7 @@ EXPECT_PASS()
 EXPECT_FAIL()
 {
 	# redirect stderr since we expect the command to fail
-	ROD_BASE "$@" 2> /dev/null
+	tst_rod "$@" 2> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_res TPASS "$@ failed as expected"
 	else
