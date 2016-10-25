@@ -1,7 +1,5 @@
 /ldd/datafiles/lddfile.out
 /ldd/datafiles/*.obj.so
-/objdump/test_arch_debug
-/objdump/test_arch_stripped
 /size/test
 /cron/cron_dirs_check
 /eject/eject_check_tray
