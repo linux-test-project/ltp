@@ -876,8 +876,8 @@ main()
 
     if [ "$ALT_HTML_OUT" -eq 1 ] ; then        #User wants the HTML output to be created, it then needs to be generated
        export LTP_VERSION=$version_date
-       export TEST_START_TIME=$test_start_time
-       export TEST_END_TIME=$(date)
+       export TEST_START_TIME="$test_start_time"
+       export TEST_END_TIME="$(date)"
        OUTPUT_DIRECTORY=`echo $OUTPUTFILE | cut -c4-`
        LOGS_DIRECTORY="$LTPROOT/results"
        export TEST_OUTPUT_DIRECTORY="$LTPROOT/output"
