@@ -1,7 +1,5 @@
 #
-#    commands/ade/ld testcases Makefile.
-#
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (C) 2016, Linux Test Project.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -12,18 +10,14 @@
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License along
-#    with this program; if not, write to the Free Software Foundation, Inc.,
-#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Garrett Cooper, July 2009
-#
 
-top_srcdir		?= ../../..
+top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= ld01
+INSTALL_DIR		:= testcases/data/ld01
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+CPPFLAGS		+= -fPIC
+MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%.o,$(wildcard $(abs_srcdir)/*.c))
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
