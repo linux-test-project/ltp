@@ -118,13 +118,13 @@ void setup(void)
 	tst_tmpdir();
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
-	set_sys_tune("nr_hugepages", hugepages, 1);
-	hpage_size = read_meminfo("Hugepagesize:") * 1024;
-
-	shm_size = hpage_size;
-
 	SAFE_FILE_SCANF(NULL, PATH_SHMMNI, "%ld", &orig_shmmni);
+
+	set_sys_tune("nr_hugepages", hugepages, 1);
 	SAFE_FILE_PRINTF(NULL, PATH_SHMMNI, "%ld", hugepages / 2);
+
+	hpage_size = read_meminfo("Hugepagesize:") * 1024;
+	shm_size = hpage_size;
 
 	/*
 	 * Use a while loop to create the maximum number of memory segments.
