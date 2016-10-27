@@ -432,6 +432,7 @@ run_test()
 	mount --make-private "${sandbox}" >& /dev/null || do_break=1
 
 	if [ $do_break -eq 1 ]; then
+		umount -l "${sandbox}" >& /dev/null
 		tst_brkm TBROK true "$tname: failed to save pre-test state of \"${sandbox}\""
 		return 2
 	fi
