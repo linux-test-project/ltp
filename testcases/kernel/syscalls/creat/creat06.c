@@ -80,7 +80,6 @@ static void bad_addr_setup(int);
 
 static struct passwd *ltpuser;
 static char long_name[PATH_MAX+2];
-static const char *device;
 static int mount_flag;
 
 static struct test_case_t {
@@ -173,8 +172,10 @@ static void test6_cleanup(void)
 
 static void cleanup(void)
 {
-	if (mount_flag && tst_umount("mntpoint") < 0)
-		tst_brk(TBROK | TERRNO, "umount device:%s failed", device);
+	if (mount_flag && tst_umount("mntpoint") < 0) {
+		tst_brk(TBROK | TERRNO, "umount device:%s failed",
+			tst_device->dev);
+	}
 }
 
 static struct tst_test test = {
