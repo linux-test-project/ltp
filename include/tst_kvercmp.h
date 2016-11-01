@@ -39,7 +39,7 @@
  *
  * If version has only two numbers, i.e. 2.4 the third integer is set to zero.
  */
-void tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3);
+int tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3);
 
 /*
  * Compare given kernel version with currently running kernel.

@@ -26,6 +26,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 INSTALL_TARGETS		:= *.sh
 
-MAKE_TARGETS		:= tst_sleep tst_random tst_checkpoint tst_rod
+MAKE_TARGETS		:= tst_sleep tst_random tst_checkpoint tst_rod tst_kvcmp
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

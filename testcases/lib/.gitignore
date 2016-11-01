@@ -2,3 +2,4 @@ tst_sleep
 tst_random
 tst_checkpoint
 tst_rod
+tst_kvcmp

@@ -1682,20 +1682,40 @@ and 'tst_resm TFAIL' otherwise. 'EXPECT_FAIL' does vice versa.
 Output redirection rules are the same as for the 'ROD' function. In addition
 to that, 'EXPECT_FAIL' always redirects the command's stderr to '/dev/null'.
 
-tst_kvercmp
-+++++++++++
+tst_kvcmp
++++++++++
 
-This command takes the kernel version as a parameter and compares the it with
-the currently running kernel. It works mostly as the C function but the result
-is mapped into the exit value as follows:
+This command compares the currently running kernel version given conditions
+with syntax similar to the shell test command.
+
+[source,sh]
+-------------------------------------------------------------------------------
+# Exit the test if kernel version is older or equal to 2.6.8
+if tst_kvcmp -le 2.6.8; then
+	tst_brk TCONF "Kernel newer than 2.6.8 is needed"
+fi
+
+# Exit the test if kernel is newer than 3.8 and older than 4.0.1
+if tst_kvcmp -gt 3.8 -a -lt 4.0.1; then
+	tst_brk TCONF "Kernel must be older than 3.8 or newer than 4.0.1"
+fi
+-------------------------------------------------------------------------------
 
 [options="header"]
 |=======================================================================
-| C function return | Shell command exit value | Explanation
-| < 0               | 0                        | Kernel is older
-| 0                 | 1                        | Kernel version is equal
-| > 0               | 2                        | Kernel is newer
+| expression | description
+| -eq kver   | Returns true if kernel version is equal
+| -ne kver   | Returns true if kernel version is not equal
+| -gt kver   | Returns true if kernel version is greater
+| -ge kver   | Returns true if kernel version is greater or equal
+| -lt kver   | Returns true if kernel version is lesser
+| -le kver   | Returns true if kernel version is lesser or equal
+| -a         | Does logical and between two expressions
+| -o         | Does logical or between two expressions
 |=======================================================================
+
+The format for kernel version has to either be with one dot e.g. '2.6' or with
+two dots e.g. '4.8.1'.
 
 .tst_fs_has_free
 [source,sh]
