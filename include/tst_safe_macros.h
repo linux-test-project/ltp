@@ -427,4 +427,10 @@ static inline sighandler_t safe_signal(const char *file, const int lineno,
 #define SAFE_SIGNAL(signum, handler) \
 	safe_signal(__FILE__, __LINE__, (signum), (handler))
 
+#define SAFE_EXECLP(file, arg, ...) do {                   \
+	execlp((file), (arg), ##__VA_ARGS__);              \
+	tst_brk_(__FILE__, __LINE__, TBROK | TERRNO,       \
+	         "execlp(%s, %s, ...) failed", file, arg); \
+	} while (0)
+
 #endif /* SAFE_MACROS_H__ */
