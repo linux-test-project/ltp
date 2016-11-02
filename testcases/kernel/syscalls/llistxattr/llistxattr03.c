@@ -59,7 +59,7 @@ static void verify_llistxattr(unsigned int n)
 
 	TEST(llistxattr(name, NULL, 0));
 	if (TEST_RETURN == -1) {
-		tst_res(TFAIL | TERRNO, "llistxattr() failed");
+		tst_res(TFAIL | TTERRNO, "llistxattr() failed");
 		return;
 	}
 

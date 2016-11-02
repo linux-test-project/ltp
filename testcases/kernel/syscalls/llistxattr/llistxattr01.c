@@ -82,7 +82,7 @@ static void verify_llistxattr(void)
 
 	TEST(llistxattr("symlink", buf, size));
 	if (TEST_RETURN == -1) {
-		tst_res(TFAIL | TERRNO, "llistxattr() failed");
+		tst_res(TFAIL | TTERRNO, "llistxattr() failed");
 		return;
 	}
 

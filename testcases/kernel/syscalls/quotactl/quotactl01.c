@@ -189,12 +189,12 @@ static void verify_quota(unsigned int n)
 
 	TEST(quotactl(tc->cmd, tst_device->dev, *tc->id, tc->addr));
 	if (TEST_RETURN == -1) {
-		tst_res(TFAIL | TERRNO, "quotactl failed to %s", tc->des);
+		tst_res(TFAIL | TTERRNO, "quotactl failed to %s", tc->des);
 		return;
 	}
 
 	if (*tc->set_data != *tc->res_data) {
-		tst_res(TFAIL | TERRNO, "quotactl got unexpected info %lu, "
+		tst_res(TFAIL, "quotactl got unexpected info %lu, "
 			"expected %lu", *tc->res_data, *tc->set_data);
 		return;
 	}
