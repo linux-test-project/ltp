@@ -1,5 +1,7 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ *    AUTHOR : sowmya adiga<sowmya.adiga@wipro.com>
+ * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -14,157 +16,59 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-/**************************************************************************
- *
- *    TEST IDENTIFIER	: socketcall01
- *
- *    EXECUTED BY	: All user
- *
- *    TEST TITLE	: Basic test for socketcall(2) for socket(2)
- *
- *    TEST CASE TOTAL	: 4
- *
- *    AUTHOR		: sowmya adiga<sowmya.adiga@wipro.com>
- *
- *    SIGNALS
- *	Uses SIGUSR1 to pause before test if option set.
- *	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *	This is a phase I test for the socketcall(2) system call.
- *	It is intended to provide a limited exposure of the system call.
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- *	Test:
- *	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *	  Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- *	Cleanup:
- *	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- *  socketcall01 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
- *		where,		-c n : Run n copies concurrently
- *				-e   : Turn on errno logging.
- *				-h   : Show this help screen
- *				-i n : Execute test n times.
- *				-I x : Execute test for x seconds.
- *				-p   : Pause for SIGUSR1 before starting
- *				-P x : Pause for x seconds between iterations.
- *				 t   : Turn on syscall timing.
- *
- * RESTRICTIONS
- * None
- *****************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/syscall.h>
+/*
+ * This is a basic test for the socketcall(2) system call.
+ */
 #include <unistd.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/syscall.h>
 #include <linux/net.h>
 #include <sys/un.h>
 #include <netinet/in.h>
 
-#include "test.h"
-
-char *TCID = "socketcall01";
+#include "tst_test.h"
 
 #ifdef __NR_socketcall
 
 #define socketcall(call, args) syscall(__NR_socketcall, call, args)
-
-void setup();
-void cleanup();
 
 struct test_case_t {
 	int call;
 	unsigned long args[3];
 	char *desc;
 } TC[] = {
-	{
-		SYS_SOCKET, {
-	PF_INET, SOCK_STREAM, 0}, "TCP stream"}, {
-		SYS_SOCKET, {
-	PF_UNIX, SOCK_DGRAM, 0}, "unix domain dgram"}, {
-		SYS_SOCKET, {
-	AF_INET, SOCK_RAW, 6}, "Raw socket"}, {
-		SYS_SOCKET, {
-	PF_INET, SOCK_DGRAM, 17}, "UDP dgram"}
+	{SYS_SOCKET, {PF_INET, SOCK_STREAM, 0}, "TCP stream"},
+	{SYS_SOCKET, {PF_UNIX, SOCK_DGRAM, 0}, "unix domain dgram"},
+	{SYS_SOCKET, {AF_INET, SOCK_RAW, 6}, "Raw socket"},
+	{SYS_SOCKET, {PF_INET, SOCK_DGRAM, 17}, "UDP dgram"}
 };
 
-int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
-
-int main(int ac, char **av)
+void verify_socketcall(unsigned int i)
 {
-	int lc;
-	int i;			/* s is socket descriptor */
+	TEST(socketcall(TC[i].call, TC[i].args));
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	/* check looping state */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-
-			TEST(socketcall(TC[i].call, TC[i].args));
-
-			/* check return code */
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL | TTERRNO,
-					 "socketcall() Failed with"
-					 " return=%ld", TEST_RETURN);
-			} else {
-				tst_resm(TPASS, "socketcall() passed for"
-					 " :%s with return=%ld ",
-					 TC[i].desc, TEST_RETURN);
-				close(TEST_RETURN);
-			}
-		}
+	if (TEST_RETURN < 0) {
+		tst_res(TFAIL | TTERRNO, "socketcall() for %s failed with %li",
+			TC[i].desc, TEST_RETURN);
+		return;
 	}
 
-	/* cleanup and exit */
-	cleanup();
+	tst_res(TPASS, "socketcall() for %s", TC[i].desc);
 
-	tst_exit();
+	SAFE_CLOSE(TEST_RETURN);
 }
 
-/* setup() - performs all ONE TIME setup for this test. */
-void setup(void)
-{
-	tst_require_root();
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
-void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.tid = "socketcall01",
+	.test = verify_socketcall,
+	.tcnt = ARRAY_SIZE(TC),
+	.needs_root = 1,
+};
 
 #else
 
-int TST_TOTAL = 0;
-
-int main(void)
-{
-	tst_resm(TPASS, "socket call test on this architecture disabled.");
-	tst_exit();
-}
+TST_TEST_TCONF("The socketcall() syscall is not supported");
 
 #endif
