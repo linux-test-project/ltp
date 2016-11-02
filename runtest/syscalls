@@ -1006,6 +1006,7 @@ sendmsg01 sendmsg01
 sendmsg02 sendmsg02
 
 sendto01 sendto01
+sendto02 sendto02
 
 setdomainname01	setdomainname01
 setdomainname02	setdomainname02

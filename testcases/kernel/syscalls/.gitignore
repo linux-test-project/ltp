@@ -814,6 +814,7 @@
 /sendmsg/sendmsg01
 /sendmsg/sendmsg02
 /sendto/sendto01
+/sendto/sendto02
 /set_robust_list/set_robust_list01
 /set_thread_area/set_thread_area01
 /set_thread_area/set_thread_area02
