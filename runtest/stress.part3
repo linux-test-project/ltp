@@ -849,8 +849,6 @@ truncate03 truncate03
 # ulimit01 ulimit01
 
 umask01 umask01
-umask02 umask02
-umask03 umask03
 
 uname01 uname01
 uname02 uname02

@@ -1,153 +1,77 @@
 /*
- * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by John George
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This program is distributed in the hope that it would be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
- * Mountain View, CA  94043, or:
- *
- * http://www.sgi.com
- *
- * For further information regarding this notice, see:
- *
- * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-/* $Id: umask01.c,v 1.6 2009/11/02 13:57:19 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: umask01
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for umask(2)
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 1
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: William Roske
- *
- *    CO-PILOT		: Dave Fenner
- *
- *    DATE STARTED	: 03/30/92
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- *	1.) umask(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- *	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *
- *    DURATION
- *	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- *	Uses SIGUSR1 to pause before test if option set.
- *	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- *	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- *	None
- *
- *    INTERCASE DEPENDENCIES
- *	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the umask(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	umask(2).
- *
- *	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- *	Test:
- *	 Loop if the proper options are given.
- *	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- *	Cleanup:
- *	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+
+/*
+ * umask(2) sets the mask from 0000 to 0777 while we create files,
+ * the previous value of the mask should be returned correctly,
+ * and the file mode should be correct for each creation mask.
+ */
 
 #include <errno.h>
-#include <string.h>
-#include <signal.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "test.h"
+#include "tst_test.h"
 
-void setup();
-void cleanup();
-
-char *TCID = "umask01";
-int TST_TOTAL = 1;
-
-int main(int ac, char **av)
+static void verify_umask(void)
 {
-	int lc;
+	struct stat statbuf;
+	int mskval;
+	int fd;
+	int failflag = 0;
+	unsigned low9mode;
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		TEST(umask(022));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "umask(022) Failed, errno=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-		} else {
-			tst_resm(TPASS, "umask(022) returned %ld",
-				 TEST_RETURN);
+	for (mskval = 0000; mskval < 01000; mskval++) {
+		TEST(umask(mskval));
+		if (TEST_RETURN < 0 || TEST_RETURN > 0777) {
+			tst_brk(TFAIL, "umask(%o) result outside range %ld",
+				mskval, TEST_RETURN);
 		}
+
+		if (mskval > 0000 && TEST_RETURN != mskval - 1) {
+			failflag = 1;
+			tst_res(TFAIL, "umask(%o) returned %ld, expected %d",
+				mskval, TEST_RETURN, mskval - 1);
+		}
+
+		fd = SAFE_CREAT("testfile", 0777);
+		SAFE_CLOSE(fd);
+
+		SAFE_STAT("testfile", &statbuf);
+
+		low9mode = statbuf.st_mode & 0777;
+
+		if (low9mode != (~mskval & 0777)) {
+			failflag = 1;
+			tst_res(TFAIL, "File mode got %o, expected %o",
+				low9mode, ~mskval & 0777);
+		}
+
+		SAFE_UNLINK("testfile");
 	}
-	tst_exit();
+
+	if (!failflag)
+		tst_res(TPASS, "All files created with correct mode");
 }
 
-void setup(void)
-{
-	TEST_PAUSE;
-}
+static struct tst_test test = {
+	.tid = "umask01",
+	.test_all = verify_umask,
+	.needs_tmpdir = 1,
+};
