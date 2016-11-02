@@ -142,6 +142,7 @@ int main(int ac, char **av)
 /* setup() - performs all ONE TIME setup for this test */
 void setup(void)
 {
+	tst_require_root();
 	/*
 	 * Initialize scheduling parameter structure to use with
 	 * sched_setscheduler()

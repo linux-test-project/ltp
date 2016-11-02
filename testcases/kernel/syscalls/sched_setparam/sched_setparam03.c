@@ -152,6 +152,8 @@ void setup(void)
 {
 	struct sched_param p = { 1 };
 
+	tst_require_root();
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;

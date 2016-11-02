@@ -145,6 +145,7 @@ int main(int ac, char **av)
 /* setup() - performs all ONE TIME setup for this test */
 void setup(void)
 {
+	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
