@@ -172,10 +172,8 @@ static void test6_cleanup(void)
 
 static void cleanup(void)
 {
-	if (mount_flag && tst_umount("mntpoint") < 0) {
-		tst_brk(TBROK | TERRNO, "umount device:%s failed",
-			tst_device->dev);
-	}
+	if (mount_flag)
+		tst_umount("mntpoint");
 }
 
 static struct tst_test test = {
