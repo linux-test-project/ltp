@@ -734,6 +734,7 @@
 /recvfrom/recvfrom01
 /recvmsg/recvmsg01
 /recvmsg/recvmsg02
+/recvmsg/recvmsg03
 /remap_file_pages/remap_file_pages01
 /remap_file_pages/remap_file_pages02
 /removexattr/removexattr01
