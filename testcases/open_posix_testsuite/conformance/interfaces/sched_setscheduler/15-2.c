@@ -63,7 +63,7 @@ int main(void)
 	}
 
 	param.sched_priority = new_priority;
-	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
+	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
 		if (errno == EPERM) {
 			printf
 			    ("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
