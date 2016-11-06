@@ -38,7 +38,7 @@ int main(void)
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	} else if (policy != SCHED_SPORADIC) {
-		if (sched_setscheduler(0, SCHED_SPORADIC, &param) != 0) {
+		if (sched_setscheduler(0, SCHED_SPORADIC, &param) == -1) {
 			perror("An error occurs when calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}

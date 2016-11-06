@@ -140,7 +140,7 @@ int main(void)
 	*shmptr = 0;
 
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO);
-	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
+	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
 		if (errno == EPERM) {
 			printf("This process does not have the permission"
 			       " to set its own scheduling parameter.\n"

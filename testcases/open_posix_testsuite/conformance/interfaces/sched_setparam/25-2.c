@@ -39,7 +39,7 @@ int main(void)
 			return PTS_UNRESOLVED;
 		}
 
-		if (sched_setscheduler(0, SCHED_SPORADIC, &param) != 0) {
+		if (sched_setscheduler(0, SCHED_SPORADIC, &param) == -1) {
 			perror("An error occurs when calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}
