@@ -433,4 +433,8 @@ static inline sighandler_t safe_signal(const char *file, const int lineno,
 	         "execlp(%s, %s, ...) failed", file, arg); \
 	} while (0)
 
+int safe_getpriority(const char *file, const int lineno, int which, id_t who);
+#define SAFE_GETPRIORITY(which, who) \
+	safe_getpriority(__FILE__, __LINE__, (which), (who))
+
 #endif /* SAFE_MACROS_H__ */

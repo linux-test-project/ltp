@@ -794,3 +794,19 @@ struct dirent *safe_readdir(const char *file, const int lineno, void (cleanup_fn
 	errno = err;
 	return rval;
 }
+
+int safe_getpriority(const char *file, const int lineno, int which, id_t who)
+{
+	int rval, err = errno;
+
+	errno = 0;
+	rval = getpriority(which, who);
+	if (errno) {
+		tst_brkm(TBROK | TERRNO, NULL,
+		         "%s:%d getpriority(%i, %i) failed",
+			 file, lineno, which, who);
+	}
+
+	errno = err;
+	return rval;
+}
