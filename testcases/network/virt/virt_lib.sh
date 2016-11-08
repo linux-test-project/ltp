@@ -103,7 +103,8 @@ trap "tst_brkm TBROK 'test interrupted'" INT
 virt_add()
 {
 	local vname=$1
-	local opt="${@:2}"
+	shift
+	local opt="$*"
 
 	case $virt_type in
 	vlan|vxlan)

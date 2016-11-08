@@ -54,10 +54,10 @@ echo "Starting UDP, TCP and Multicast tests..."
 echo "Starting ltpServer..."
 
 ./ltpServer $hostname1 &
-sleep 5s
+sleep 5
 echo "Starting ltpClient..."
 ./ltpClient $hostname1 $hostname1 $testdata
-sleep 1s
+sleep 1
 killall -9 ltpServer
 killall -9 ltpClient
 
