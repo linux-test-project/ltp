@@ -26,12 +26,12 @@ stop_dhcp()
 	while [ $count -le 10 ]; do
 		pkill -x $dhcp_name
 		[ "$(pgrep -x $dhcp_name)" ] || return 0
-		usleep 100000
+		tst_sleep 100ms
 		count=$((count + 1))
 	done
 
 	pkill -9 -x $dhcp_name
-	usleep 100000
+	tst_sleep 100ms
 	[ "$(pgrep -x $dhcp_name)" ] && return 1 || return 0
 }
 

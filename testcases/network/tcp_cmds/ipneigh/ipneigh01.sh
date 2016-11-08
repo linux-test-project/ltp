@@ -52,7 +52,7 @@ do_test()
 				ret=0
 				break;
 			fi
-			usleep 100
+			tst_sleep 100ms
 		done
 
 		[ "$ret" -ne 0 ] && \
