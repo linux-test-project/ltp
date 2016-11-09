@@ -1,8 +1,5 @@
 #!/bin/sh
 
-TST_TOTAL=1
-TCID="network_settings"
-
 cd $(dirname $0)
 export LTPROOT=${LTPROOT:-"$PWD"}
 echo $LTPROOT | grep -q testscripts
@@ -11,19 +8,12 @@ if [ $? -eq 0 ]; then
 	export LTPROOT=${PWD}
 fi
 
-. test_net.sh
-
 export TMPDIR=/tmp/netpan-$$
 mkdir -p $TMPDIR
 CMDFILE=${TMPDIR}/network.tests
 VERBOSE="no"
 
 export PATH="${PATH}:${LTPROOT}/testcases/bin"
-
-# Reset variables.
-# Don't break the tests which are using 'testcases/lib/cmdlib.sh'
-export TCID=
-export TST_LIB_LOADED=
 
 usage()
 {
@@ -80,6 +70,16 @@ if [ "$OPTIND" -eq 1 ]; then
 	usage
 	exit 1
 fi
+
+TST_TOTAL=1
+TCID="network_settings"
+
+. test_net.sh
+
+# Reset variables.
+# Don't break the tests which are using 'testcases/lib/cmdlib.sh'
+export TCID=
+export TST_LIB_LOADED=
 
 rm -f $CMDFILE
 
