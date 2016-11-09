@@ -36,21 +36,25 @@ cleanup()
 
 lsmod_test()
 {
-	lsmod >temp 2>&1
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'lsmod' failed."
-		cat temp
+	lsmod_output=$(lsmod | awk '!/Module/{print $1, $2, $3}' | sort)
+	if [ -z "$lsmod_output" ]; then
+		tst_resm TFAIL "Failed to parse the output from lsmod"
 		return
 	fi
 
-	awk '!/Module/{print $1, $2, $3}' temp |sort >temp1
+	modules_output=$(awk '{print $1, $2, $3}' /proc/modules | sort)
+	if [ -z "$modules_output" ]; then
+		tst_resm TFAIL "Failed to parse /proc/modules"
+		return
+	fi
 
-	awk '{print $1, $2, $3}' /proc/modules |sort >temp2
-
-	diff temp1 temp2 >temp3
-	if [ $? -ne 0 ]; then
+	if [ "$lsmod_output" != "$modules_output" ]; then
 		tst_resm TFAIL "lsmod output different from /proc/modules."
-		cat temp3
+
+		echo "$lsmod_output" > temp1
+		echo "$modules_output" > temp2
+		diff temp1 temp2
+
 		return
 	fi
 
