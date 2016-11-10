@@ -51,7 +51,7 @@ do_test()
 		tst_brkm TFAIL "Multicast not listed for $(tst_iface)"
 
 	ip maddr show $(tst_iface) | grep -q '224.0.0.1' || \
-		tst_brkm TFAIL "all-host-group for $IFNAME not joined"
+		tst_brkm TFAIL "all-host-group for $(tst_iface) not joined"
 
 	# Do the ping tests: Execute ping 224.0.0.1 - Verify that the proper
 	# number of responses are returned.
