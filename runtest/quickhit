@@ -188,8 +188,6 @@ mkdir08 mkdir08
 # Basic test for mkdir(2)
 qmm01 mmap001 -m 1
 # Basic mmap() test.
-nice05 nice05
-# Basic test for nice(2)
 open03 open03
 # Basic test for open(2)
 pathconf01 pathconf01
