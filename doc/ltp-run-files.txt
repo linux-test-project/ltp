@@ -27,7 +27,7 @@ Device Mapper tests
  - ltpdmmapper.sh
 
 Network tests
- - networktests.sh
+ - network.sh
  - testcases/network/sockets/ltpSockets.sh
 
 other filesystem or disk type tests

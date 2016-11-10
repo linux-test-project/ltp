@@ -196,8 +196,8 @@ contributions are welcome.
    in the CD-ROM drive.  The corresponding tests will fail if either disk is
    missing.
 
-6. The network tests are executed by running the networktests.sh script. The
-   network tests require some configuration for them to work correctly:
+6. The network tests are executed by running the network.sh script. The network
+   tests require some configuration for them to work correctly:
 
      i) First, there MUST be another test machine setup to act as the server
 	to these client side tests.  This machine MUST have the LTP installed
@@ -231,24 +231,18 @@ contributions are welcome.
 	 Also, because certain RPC programs are tested, the "portmapper" daemon
 	 MUST be started, as well as NFS server AND lock services.
 
-    iv) Finally, before running the networktests.sh script, two variables must
-	be set within the script file.  The "RHOST" variable should be set to
-	the hostname of the server.  The "PASSWD" variable should be set to
-	root's password on the server machine.  This is necessary for tests
-	such as telnet01 and ftp01.
+    iv) Finally, before running the network.sh script, two variables must be
+	set: The "RHOST" variable should be set to the hostname of the server.
+	The "PASSWD" variable should be set to root's password on the server
+	machine. This is necessary for tests such as telnet01 and ftp01.
 
-   You can now successfully execute the networktests.sh script.
-   When you would like to run the whole network tests, specify -w option:
-	# ./networktests.sh -w
-
-   When you would like to run the same tests which networktests.sh ran till
-   2008, specify no option or -d option:
-	# ./networktests.sh
+   You can now successfully execute the network.sh script.
 
    You can run the test category which you are interested in, -h option shows
    the list of the test category:
-	# ./netwoktests.sh -h
+       # ./network.sh -h
 
+   For more info about howto run network.sh see testcases/network/README.md.
 
 Cross compiling
 ---------------
