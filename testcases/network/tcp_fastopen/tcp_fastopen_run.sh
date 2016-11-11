@@ -1,6 +1,5 @@
 #!/bin/sh
-
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2016 Oracle and/or its affiliates. All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -31,8 +30,7 @@ TCID="tcp_fastopen"
 
 . test_net.sh
 
-bind_timeout=5
-tfo_result="${TMPDIR}/tfo_result"
+tfo_result="netload.res"
 
 while getopts :hu:sr:p:n:R:6 opt; do
 	case "$opt" in
@@ -62,11 +60,8 @@ cleanup()
 {
 	tst_resm TINFO "cleanup..."
 	tst_rhost_run -c "pkill -9 netstress\$"
-	rm -f $tfo_result
+	tst_rmdir
 }
-
-TST_CLEANUP="cleanup"
-trap "tst_brkm TBROK 'test interrupted'" INT
 
 read_result_file()
 {
@@ -81,29 +76,6 @@ read_result_file()
 	fi
 }
 
-run_client_server()
-{
-	# kill tcp server on remote machine
-	tst_rhost_run -c "pkill -9 netstress\$"
-
-	port=$(tst_rhost_run -c "tst_get_unused_port ipv6 stream")
-	[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
-
-	# run tcp server on remote machine
-	tst_rhost_run -s -b -c "netstress -R $max_requests $1 -g $port"
-	sleep $bind_timeout
-
-	# run local tcp client
-	netstress -a $clients_num -r $client_requests -l \
-		-H $(tst_ipaddr rhost) $1 -g $port -d $tfo_result
-	[ "$?" -ne 0 ] && tst_brkm TBROK "Last test has failed"
-
-	run_time=$(read_result_file)
-
-	[ -z "$run_time" -o "$run_time" -eq 0 ] && \
-		tst_brkm TBROK "Last test result isn't valid: $run_time"
-}
-
 tst_require_root
 
 tst_kvercmp 3 7 0
@@ -113,11 +85,17 @@ tst_kvercmp 3 16 0
 [ $? -eq 0 -a "$TST_IPV6" ] && \
 	tst_brkm TCONF "test must be run with kernel 3.16 or newer"
 
-run_client_server "-o -O"
-time_tfo_off=$run_time
+trap "tst_brkm TBROK 'test interrupted'" INT
+TST_CLEANUP="cleanup"
+tst_tmpdir
 
-run_client_server
-time_tfo_on=$run_time
+tst_resm TINFO "using old TCP API"
+tst_netload $(tst_ipaddr rhost) $tfo_result TFO -o -O
+time_tfo_off=$(read_result_file)
+
+tst_resm TINFO "using new TCP API"
+tst_netload $(tst_ipaddr rhost) $tfo_result TFO
+time_tfo_on=$(read_result_file)
 
 tfo_cmp=$(( 100 - ($time_tfo_on * 100) / $time_tfo_off ))
 
