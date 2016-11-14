@@ -1,143 +1,130 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  03/2001 Written by Wayne Boyer
+ *  11/2016 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
- * NAME
- *	setpriority02.c
- *
- * DESCRIPTION
- *	setpriority02 - test for an expected failure by trying to raise
- *			the priority for the test process while not having
- *			permissions to do so.
- *
- * ALGORITHM
- *	loop if that option was specified
- *	issue the system call
- *	check the errno value
- *	  issue a PASS message if we get EACCESS - errno 13
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	  break any remaining tests
- *	  call cleanup
- *
- * USAGE:  <for command-line>
- *  setpriority02 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
+ * Verify that,
+ *  1) setpriority(2) fails with -1 and sets errno to EINVAL if 'which'
+ *     argument was not one of PRIO_PROCESS, PRIO_PGRP, or PRIO_USER.
+ *  2) setpriority(2) fails with -1 and sets errno to ESRCH if no
+ *     process was located for 'which' and 'who' arguments.
+ *  3) setpriority(2) fails with -1 and sets errno to EACCES if an
+ *     unprivileged user attempted to lower a process priority.
+ *  4) setpriority(2) fails with -1 and sets errno to EPERM if an
+ *     unprivileged user attempted to change a process which ID is
+ *     different from the test process.
  */
-
-#include "test.h"
 
 #include <errno.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <pwd.h>
+#include <stdlib.h>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include "tst_test.h"
 
-void cleanup(void);
-void setup(void);
+#define NEW_PRIO	-2
+#define INVAL_FLAG	-1
+#define INVAL_ID	-1
+#define INIT_PID	1
 
-char *TCID = "setpriority02";
-int TST_TOTAL = 1;
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
+static uid_t uid;
 
-int main(int ac, char **av)
+static struct tcase {
+	int which;
+	int who;
+	int prio;
+	int exp_errno;
+	int unprivil;
+} tcases[] = {
+	{INVAL_FLAG, 0, NEW_PRIO, EINVAL, 0},
+
+	{PRIO_PROCESS, INVAL_ID, NEW_PRIO, ESRCH, 0},
+	{PRIO_PGRP, INVAL_ID, NEW_PRIO, ESRCH, 0},
+	{PRIO_USER, INVAL_ID, NEW_PRIO, ESRCH, 0},
+
+	{PRIO_PROCESS, 0, NEW_PRIO, EACCES, 1},
+	{PRIO_PGRP, 0, NEW_PRIO, EACCES, 1},
+
+	{PRIO_PROCESS, INIT_PID, NEW_PRIO, EPERM, 1}
+};
+
+static void setpriority_test(struct tcase *tc)
 {
-	int lc;
-	int new_val = -2;
+	char *desc = "";
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	if (tc->unprivil)
+		desc = "as unprivileged user ";
 
-	setup();		/* global setup */
+	TEST(setpriority(tc->which, tc->who, tc->prio));
 
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/*
-		 * Try to raise the priority of this process from a default of
-		 * 0 to a new value of -2.  This should give an EACCES error.
-		 */
-
-		/* call the system call with the TEST() macro */
-		TEST(setpriority(PRIO_PROCESS, 0, new_val));
-
-		if (TEST_RETURN == 0) {
-			tst_resm(TFAIL, "call failed to produce expected error "
-				 "- errno = %d - %s", TEST_ERRNO,
-				 strerror(TEST_ERRNO));
-			continue;
-		}
-
-		switch (TEST_ERRNO) {
-		case EACCES:
-			tst_resm(TPASS, "expected failure - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		default:
-			tst_resm(TFAIL, "call failed to produce expected error "
-				 "- errno = %d - %s", TEST_ERRNO,
-				 strerror(TEST_ERRNO));
-		}
-	}
-	cleanup();
-	tst_exit();
-
-}
-
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
-{
-	tst_require_root();
-
-	/* Switch to nobody user for correct error code collection */
-	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setreuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setreuid");
+	if (TEST_RETURN != -1) {
+		tst_res(TFAIL,
+			"setpriority(%d, %d, %d) %ssucceeds unexpectedly "
+			"returned %ld", tc->which, tc->who, tc->prio, desc,
+			TEST_RETURN);
+		return;
 	}
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	if (TEST_ERRNO != tc->exp_errno) {
+		tst_res(TFAIL | TTERRNO,
+			"setpriority(%d, %d, %d) %sshould fail with %s",
+			tc->which, tc->who, tc->prio, desc,
+			tst_strerrno(tc->exp_errno));
+		return;
+	}
 
-	TEST_PAUSE;
+	tst_res(TPASS | TTERRNO,
+		"setpriority(%d, %d, %d) %sfails as expected",
+		tc->which, tc->who, tc->prio, desc);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- *	       or premature exit.
- */
-void cleanup(void)
+static void verify_setpriority(unsigned int n)
 {
+	struct tcase *tc = &tcases[n];
 
+	if (tc->unprivil) {
+		if (!SAFE_FORK()) {
+			SAFE_SETUID(uid);
+			SAFE_SETPGID(0, 0);
+			setpriority_test(tc);
+			exit(0);
+		}
+
+		tst_reap_children();
+	} else {
+		setpriority_test(tc);
+	}
 }
+
+static void setup(void)
+{
+	struct passwd *ltpuser;
+
+	ltpuser = SAFE_GETPWNAM("nobody");
+	uid = ltpuser->pw_uid;
+}
+
+static struct tst_test test = {
+	.tid = "setpriority02",
+	.tcnt = ARRAY_SIZE(tcases),
+	.needs_root = 1,
+	.forks_child = 1,
+	.setup = setup,
+	.test = verify_setpriority,
+};

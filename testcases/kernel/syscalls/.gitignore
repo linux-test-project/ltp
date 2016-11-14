@@ -867,9 +867,6 @@
 /setpgrp/setpgrp02
 /setpriority/setpriority01
 /setpriority/setpriority02
-/setpriority/setpriority03
-/setpriority/setpriority04
-/setpriority/setpriority05
 /setregid/setregid01
 /setregid/setregid01_16
 /setregid/setregid02

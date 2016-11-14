@@ -787,9 +787,6 @@ setpgrp02 setpgrp02
 
 setpriority01 setpriority01
 setpriority02 setpriority02
-setpriority03 setpriority03
-setpriority04 setpriority04
-setpriority05 setpriority05
 
 setregid01 setregid01
 setregid02 setregid02
