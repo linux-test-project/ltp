@@ -217,8 +217,9 @@ virt_setup()
 
 vxlan_setup_subnet_uni()
 {
-	tst_kvercmp 3 10 0 && \
+	if tst_kvcmp -lt "3.10"; then
 		tst_brkm TCONF "test must be run with kernel 3.10 or newer"
+	fi
 
 	[ "$(ip li add type vxlan help 2>&1 | grep remote)" ] || \
 		tst_brkm TCONF "iproute doesn't support remote unicast address"
@@ -372,12 +373,12 @@ tst_require_root
 
 case "$virt_type" in
 vxlan)
-	tst_kvercmp 3 8 0 && \
+	if tst_kvcmp -lt "3.8"; then
 		tst_brkm TCONF "test must be run with kernel 3.8 or newer"
+	fi
 
-	if [ "$TST_IPV6" ]; then
-		tst_kvercmp 3 12 0 && \
-			tst_brkm TCONF "test must be run with kernels >= 3.12"
+	if [ "$TST_IPV6" ] && tst_kvcmp -lt "3.12"; then
+		tst_brkm TCONF "test must be run with kernels >= 3.12"
 	fi
 
 	# newer versions of 'ip' complain if this option not set
