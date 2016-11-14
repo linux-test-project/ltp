@@ -47,11 +47,10 @@ then
 fi
 MNTDIR=$TMPDIR/mnt
 
-tst_kvercmp 2 6 26
-if [ $? -eq 0 ]; then
+if tst_kvcmp -lt "2.6.25"; then
         tst_resm TCONF "Remounting with quotas enabled is not supported!"
         tst_resm TCONF "You should have kernel 2.6.26 and above running....."
-        exit 0
+        exit 32
 fi
 
 if [ ! -d /proc/sys/fs/quota ]; then
