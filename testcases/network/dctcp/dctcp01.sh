@@ -46,8 +46,9 @@ cleanup()
 
 setup()
 {
-	tst_kvercmp 3 18 0
-	[ $? -eq 0 ] && tst_brkm TCONF "test requires kernel 3.18 or newer"
+	if tst_kvcmp -lt "3.18"; then
+		tst_brkm TCONF "test requires kernel 3.18 or newer"
+	fi
 
 	tst_require_root
 	tst_check_cmds ip sysctl tc
