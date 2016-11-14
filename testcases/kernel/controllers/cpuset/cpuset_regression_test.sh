@@ -30,8 +30,7 @@ setup()
 {
 	tst_require_root
 
-	tst_kvercmp 3 18 0
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "3.18"; then
 		tst_brkm TCONF "Test must be run with kernel 3.18.0 or newer"
 	fi
 

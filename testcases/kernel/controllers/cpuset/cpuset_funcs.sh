@@ -58,8 +58,7 @@ cpuset_log_error()
 
 version_check()
 {
-	tst_kvercmp 2 6 28
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "2.6.28"; then
 		tst_brkm TCONF "kernel is below 2.6.28"
 	fi
 }
