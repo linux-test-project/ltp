@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-tst_kvercmp 3 11 0
-[ $? -eq 0 ] && tst_brkm TCONF "test must be run with kernel 3.11 or newer"
+if tst_kvcmp -lt "3.11"; then
+	tst_brkm TCONF "test must be run with kernel 3.11 or newer"
+fi
 
 if [ ! -f "/proc/sys/net/core/busy_read" -a \
      ! -f "/proc/sys/net/core/busy_poll" ]; then
