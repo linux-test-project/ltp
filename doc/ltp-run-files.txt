@@ -1,7 +1,5 @@
 List of scripts or executables that need to be run for complete LTP execution.
-The tests listed are NOT executed with the runalltests.sh script
 
-runalltests.sh
  - syscalls  (except epoll, see below)
  - fs
  - fsx
