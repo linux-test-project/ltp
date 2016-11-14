@@ -52,8 +52,9 @@ cleanup()
 	rmmod locktorture > /dev/null 2>&1
 }
 
-tst_kvercmp 3 18 0 && \
+if tst_kvcmp -lt "3.18"; then
 	tst_brkm TCONF "test must be run with kernel 3.18 or newer"
+fi
 
 tst_require_root
 
