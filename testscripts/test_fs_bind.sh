@@ -20,12 +20,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-if tst_kvercmp 2 6 15 ; then
+if tst_kvcmp -lt "2.6.15"; then
        tst_resm TCONF "System kernel version is less than 2.6.15"
        tst_resm TCONF "Cannot execute test"
        exit 0
 fi
-
 
 test_setup()
 {
@@ -152,12 +151,7 @@ test_prereqs()
 		exit 1
 	fi
 
-	tst_kvercmp 2 6 15
-	X=$?
-	if [ $X -lt 0 ]; then
-		tst_brkm TBROK "$0: failed to get the running kernel version"
-		exit 1
-	elif [ $X -lt 1 ]; then
+	if tst_kvcmp -lt "2.6.15"; then
 		tst_resm TWARN "$0: the remaining tests require 2.6.15 or later"
 		tst_exit 0
 		exit
