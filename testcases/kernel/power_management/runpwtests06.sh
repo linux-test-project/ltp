@@ -47,8 +47,7 @@ test_timer_migration() {
 # Checking test environment
 check_kervel_arch
 
-tst_kvercmp 2 6 31; rc=$?
-if [ $rc -eq 1 -o $rc -eq 2 ] ; then
+if tst_kvcmp -ge "2.6.31"; then
 	timer_migr_support_compatible=0
 else
 	timer_migr_support_compatible=1

@@ -17,8 +17,7 @@ cleanup() {
 
 check_kervel_arch() {
 	# Checking required kernel version and architecture
-	tst_kvercmp 2 6 21; rc=$?
-	if [ $rc -ne 1 -a $rc -ne 2 ] ; then
+	if tst_kvcmp -lt "2.6.21"; then
 		tst_brkm TCONF "Kernel version not supported; not " \
 			"running testcases"
 	else
