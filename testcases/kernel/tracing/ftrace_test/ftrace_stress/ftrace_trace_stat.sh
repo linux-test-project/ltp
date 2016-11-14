@@ -24,8 +24,7 @@ fi
 
 # For kernels older than 2.6.36, this testcase can result in
 # divide-by-zero kernel bug
-tst_kvercmp 2 6 36
-if [ $? -eq 0 ]; then
+if tst_kvcmp -lt "2.6.36"; then
 	should_skip=1
 fi
 

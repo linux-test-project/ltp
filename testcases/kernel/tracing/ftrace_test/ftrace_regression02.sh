@@ -54,8 +54,7 @@ ftrace_signal_test()
 	fi
 }
 
-tst_kvercmp 3 2 0
-if [ $? -eq 0 ]; then
+if tst_kvcmp -lt "3.2"; then
 	tst_brkm TCONF "The test should be run in kernels >= 3.2.0 Skip the test..."
 fi
 
