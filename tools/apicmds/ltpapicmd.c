@@ -45,16 +45,6 @@
  *               0   - on success
  *              -1  - on failure
  *
- * Description: Unlike the above commands tst_kvercmp, tst_kvercmp2 have an unusual
- *              exit status
- *              tst_kvercmp  - Compare running kernel to specified version
- *              tst_kvercmp2 - Compare running kernel to specified vanilla version
- *                             or distribution specific version
- * Exit:
- *               2 - running newer kernel
- *               1 - running same age kernel
- *               0 - running older kernel
- *              -1 - on failure
  * History
  * Dec 10 2002 - Created - Manoj Iyer manjo@mail.utexas.edu
  * Dec 12 2002 - Modified - Code that checked if the environment variables
@@ -200,105 +190,6 @@ void apicmd_resm(int argc, char *argv[])
 	tst_resm(trestype, "%s", *argv);
 }
 
-void apicmd_kvercmp(int argc, char *argv[])
-{
-	int exit_value;
-
-	if (argc < 4) {
-		fprintf(stderr, "Usage: %s NUM NUM NUM\n"
-			"Compares to the running kernel version.\n\n"
-			"\tNUM - A positive integer.\n"
-			"\tThe first NUM is the kernel VERSION\n"
-			"\tThe second NUM is the kernel PATCHLEVEL\n"
-			"\tThe third NUM is the kernel SUBLEVEL\n\n"
-			"\tExit status is 0 if the running kernel is older than the\n"
-			"\t\tkernel specified by NUM NUM NUM.\n"
-			"\tExit status is 1 for kernels of the same age.\n"
-			"\tExit status is 2 if the running kernel is newer.\n",
-			cmd_name);
-		exit(1);
-	}
-	exit_value = tst_kvercmp(atoi(argv[0]), atoi(argv[1]),
-				atoi(argv[2]));
-	if (exit_value < 0)
-		exit_value = 0;
-	else if (exit_value == 0)
-		exit_value = 1;
-	else if (exit_value > 0)
-		exit_value = 2;
-	exit(exit_value);
-}
-
-void apicmd_kvercmp2(int argc, char *argv[])
-{
-	int exit_value;
-
-	struct tst_kern_exv vers[100];
-	unsigned int count;
-
-	char *saveptr1 = NULL;
-	char *saveptr2 = NULL;
-	char *token1;
-
-	if (TCID == NULL)
-		TCID = "outoftest";
-	if (tst_cntstr == NULL)
-		tst_count = 0;
-
-	if (argc < 5) {
-		fprintf(stderr, "Usage: %s NUM NUM NUM KVERS\n"
-			"Compares to the running kernel version\n"
-			"based on vanilla kernel version NUM NUM NUM\n"
-			"or distribution specific kernel version KVERS\n\n"
-			"\tNUM - A positive integer.\n"
-			"\tThe first NUM is the kernel VERSION\n"
-			"\tThe second NUM is the kernel PATCHLEVEL\n"
-			"\tThe third NUM is the kernel SUBLEVEL\n\n"
-			"\tKVERS is a string of the form "
-			"\"DISTR1:VERS1 DISTR2:VERS2\",\n"
-			"\twhere DISTR1 is a distribution name\n"
-			"\tand VERS1 is the corresponding kernel version.\n"
-			"\tExample: \"RHEL6:2.6.39-400.208\"\n\n"
-			"\tIf running kernel matches a distribution in KVERS then\n"
-			"\tcomparison is performed based on version in KVERS,\n"
-			"\totherwise - based on NUM NUM NUM.\n\n"
-			"\tExit status is 0 if the running kernel is older.\n"
-			"\tExit status is 1 for kernels of the same age.\n"
-			"\tExit status is 2 if the running kernel is newer.\n",
-			cmd_name);
-		exit(3);
-	}
-
-	count = 0;
-	token1 = strtok_r(argv[3], " ", &saveptr1);
-	while ((token1 != NULL) && (count < 99)) {
-		vers[count].dist_name = strtok_r(token1, ":", &saveptr2);
-		vers[count].extra_ver = strtok_r(NULL, ":", &saveptr2);
-
-		if (vers[count].extra_ver == NULL) {
-			fprintf(stderr, "Incorrect KVERS format\n");
-			exit(3);
-		}
-
-		count++;
-
-		token1 = strtok_r(NULL, " ", &saveptr1);
-	}
-	vers[count].dist_name = NULL;
-	vers[count].extra_ver = NULL;
-
-	exit_value = tst_kvercmp2(atoi(argv[0]), atoi(argv[1]),
-				atoi(argv[2]), vers);
-
-	if (exit_value < 0)
-		exit_value = 0;
-	else if (exit_value == 0)
-		exit_value = 1;
-	else if (exit_value > 0)
-		exit_value = 2;
-	exit(exit_value);
-}
-
 struct param_pair {
 	char *cmd;
 	int value;
@@ -402,9 +293,7 @@ int main(int argc, char *argv[])
 	tst_total = getenv("TST_TOTAL");
 	tst_cntstr = getenv("TST_COUNT");
 	if (TCID == NULL || tst_total == NULL || tst_cntstr == NULL) {
-		if (!strcmp(cmd_name, "tst_kvercmp") &&
-		    !strcmp(cmd_name, "tst_kvercmp2") &&
-		    !strcmp(cmd_name, "tst_fs_has_free") &&
+		 if(!strcmp(cmd_name, "tst_fs_has_free") &&
 		    !strcmp(cmd_name, "tst_get_unused_port")) {
 			fprintf(stderr,
 				"\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
@@ -445,10 +334,6 @@ int main(int argc, char *argv[])
 		tst_exit();
 	} else if (strcmp(cmd_name, "tst_flush") == 0) {
 		tst_flush();
-	} else if (strcmp(cmd_name, "tst_kvercmp") == 0) {
-		apicmd_kvercmp(argc, argv);
-	} else if (strcmp(cmd_name, "tst_kvercmp2") == 0) {
-		apicmd_kvercmp2(argc, argv);
 	} else if (strcmp(cmd_name, "tst_ncpus") == 0) {
 		printf("%li\n", tst_ncpus());
 	} else if (strcmp(cmd_name, "tst_ncpus_conf") == 0) {
