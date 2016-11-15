@@ -22,11 +22,13 @@
 * to hold the result.
 * 2) llistxattr(2) fails if path is an empty string.
 * 3) llistxattr(2) fails when attempted to read from a invalid address.
+* 4) llistxattr(2) fails if path is longer than allowed.
 *
 * Expected Result:
 * 1) llistxattr(2) should return -1 and set errno to ERANGE.
 * 2) llistxattr(2) should return -1 and set errno to ENOENT.
 * 3) llistxattr(2) should return -1 and set errno to EFAULT.
+* 4) llistxattr(2) should return -1 and set errno to ENAMETOOLONG.
 */
 
 #include "config.h"
@@ -47,6 +49,8 @@
 #define TESTFILE        "testfile"
 #define SYMLINK         "symlink"
 
+static char longpathname[PATH_MAX + 2];
+
 static struct test_case {
 	const char *path;
 	size_t size;
@@ -54,7 +58,8 @@ static struct test_case {
 } tc[] = {
 	{SYMLINK, 1, ERANGE},
 	{"", 20, ENOENT},
-	{(char *)-1, 20, EFAULT}
+	{(char *)-1, 20, EFAULT},
+	{longpathname, 20, ENAMETOOLONG}
 };
 
 static void verify_llistxattr(unsigned int n)
@@ -87,6 +92,8 @@ static void setup(void)
 	SAFE_SYMLINK(TESTFILE, SYMLINK);
 
 	SAFE_LSETXATTR(SYMLINK, SECURITY_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
+
+	memset(longpathname, 'a', sizeof(longpathname) - 1);
 }
 
 static struct tst_test test = {
