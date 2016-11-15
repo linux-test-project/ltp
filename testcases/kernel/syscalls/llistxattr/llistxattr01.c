@@ -37,11 +37,14 @@
 
 #ifdef HAVE_SYS_XATTR_H
 
-#define SECURITY_KEY1	"security.ltptest1"
-#define SECURITY_KEY2	"security.ltptest2"
-#define VALUE	"test"
-#define VALUE_SIZE	4
-#define KEY_SIZE    17
+#define SECURITY_KEY1   "security.ltptest1"
+#define SECURITY_KEY2   "security.ltptest2"
+#define VALUE           "test"
+#define VALUE_SIZE      (sizeof(VALUE) - 1)
+#define KEY_SIZE        (sizeof(SECURITY_KEY1) - 1)
+#define TESTFILE        "testfile"
+#define SYMLINK         "symlink"
+
 
 static int has_attribute(const char *list, int llen, const char *attr)
 {
@@ -56,22 +59,21 @@ static int has_attribute(const char *list, int llen, const char *attr)
 
 static void verify_llistxattr(void)
 {
-	int size = 64;
-	char buf[size];
+	char buf[64];
 
-	TEST(llistxattr("symlink", buf, size));
+	TEST(llistxattr(SYMLINK, buf, sizeof(buf)));
 	if (TEST_RETURN == -1) {
 		tst_res(TFAIL | TTERRNO, "llistxattr() failed");
 		return;
 	}
 
-	if (has_attribute(buf, size, SECURITY_KEY1)) {
+	if (has_attribute(buf, sizeof(buf), SECURITY_KEY1)) {
 		tst_res(TFAIL, "get file attribute %s unexpectlly",
 			 SECURITY_KEY1);
 		return;
 	}
 
-	if (!has_attribute(buf, size, SECURITY_KEY2)) {
+	if (!has_attribute(buf, sizeof(buf), SECURITY_KEY2)) {
 		tst_res(TFAIL, "missing attribute %s", SECURITY_KEY2);
 		return;
 	}
@@ -81,13 +83,13 @@ static void verify_llistxattr(void)
 
 static void setup(void)
 {
-	SAFE_TOUCH("testfile", 0644, NULL);
+	SAFE_TOUCH(TESTFILE, 0644, NULL);
 
-	SAFE_SYMLINK("testfile", "symlink");
+	SAFE_SYMLINK(TESTFILE, SYMLINK);
 
-	SAFE_LSETXATTR("testfile", SECURITY_KEY1, VALUE, VALUE_SIZE, XATTR_CREATE);
+	SAFE_LSETXATTR(TESTFILE, SECURITY_KEY1, VALUE, VALUE_SIZE, XATTR_CREATE);
 
-	SAFE_LSETXATTR("symlink", SECURITY_KEY2, VALUE, VALUE_SIZE, XATTR_CREATE);
+	SAFE_LSETXATTR(SYMLINK, SECURITY_KEY2, VALUE, VALUE_SIZE, XATTR_CREATE);
 }
 
 static struct tst_test test = {

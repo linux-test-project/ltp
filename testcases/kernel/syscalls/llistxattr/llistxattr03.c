@@ -36,8 +36,8 @@
 #ifdef HAVE_SYS_XATTR_H
 
 #define SECURITY_KEY	"security.ltptest"
-#define VALUE	"test"
-#define VALUE_SIZE	4
+#define VALUE           "test"
+#define VALUE_SIZE      (sizeof(VALUE) - 1)
 
 static const char *filename[] = {"testfile1", "testfile2"};
 
@@ -46,11 +46,9 @@ static int check_suitable_buf(const char *name, long size)
 	int n;
 	char buf[size];
 
-	n = llistxattr(name, buf, size);
-	if (n == -1)
-		return 0;
-	else
-		return 1;
+	n = llistxattr(name, buf, sizeof(buf));
+
+	return n != -1;
 }
 
 static void verify_llistxattr(unsigned int n)
