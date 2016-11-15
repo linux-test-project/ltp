@@ -80,21 +80,11 @@ static void verify_llistxattr(unsigned int n)
 
 static void setup(void)
 {
-	int n;
-
 	SAFE_TOUCH("testfile", 0644, NULL);
 
 	SAFE_SYMLINK("testfile", "symlink");
 
-	n = lsetxattr("symlink", SECURITY_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
-	if (n == -1) {
-		if (errno == ENOTSUP) {
-			tst_brk(TCONF, "no xattr support in fs or "
-				 "mounted without user_xattr option");
-		} else {
-			tst_brk(TBROK | TERRNO, "lsetxattr() failed");
-		}
-	}
+	SAFE_LSETXATTR("symlink", SECURITY_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
 }
 
 static struct tst_test test = {

@@ -43,27 +43,6 @@
 #define VALUE_SIZE	4
 #define KEY_SIZE    17
 
-static void set_xattr(const char *path, const char *key)
-{
-	int n;
-
-	n = lsetxattr(path, key, VALUE, VALUE_SIZE, XATTR_CREATE);
-	if (n == -1) {
-		if (errno == ENOTSUP) {
-			tst_brk(TCONF,
-				 "no xattr support in fs or mounted "
-				 "without user_xattr option");
-		}
-
-		if (errno == EEXIST) {
-			tst_brk(TBROK, "exist attribute %s", key);
-		} else {
-			tst_brk(TBROK | TERRNO,
-				 "lsetxattr() failed");
-		}
-	}
-}
-
 static int has_attribute(const char *list, int llen, const char *attr)
 {
 	int i;
@@ -106,9 +85,9 @@ static void setup(void)
 
 	SAFE_SYMLINK("testfile", "symlink");
 
-	set_xattr("testfile", SECURITY_KEY1);
+	SAFE_LSETXATTR("testfile", SECURITY_KEY1, VALUE, VALUE_SIZE, XATTR_CREATE);
 
-	set_xattr("symlink", SECURITY_KEY2);
+	SAFE_LSETXATTR("symlink", SECURITY_KEY2, VALUE, VALUE_SIZE, XATTR_CREATE);
 }
 
 static struct tst_test test = {

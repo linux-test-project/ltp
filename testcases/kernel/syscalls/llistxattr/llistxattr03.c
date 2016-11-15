@@ -71,21 +71,11 @@ static void verify_llistxattr(unsigned int n)
 
 static void setup(void)
 {
-	int ret;
-
 	SAFE_TOUCH(filename[0], 0644, NULL);
 
 	SAFE_TOUCH(filename[1], 0644, NULL);
 
-	ret = lsetxattr(filename[1], SECURITY_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
-	if (ret == -1) {
-		if (errno == ENOTSUP) {
-			tst_brk(TCONF, "no xattr support in fs or "
-				 "mounted without user_xattr option");
-		} else {
-			tst_brk(TBROK | TERRNO, "lsetxattr() failed");
-		}
-	}
+	SAFE_LSETXATTR(filename[1], SECURITY_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
 }
 
 static struct tst_test test = {
