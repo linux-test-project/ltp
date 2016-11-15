@@ -233,6 +233,9 @@
 /fcntl/fcntl34_64
 /fdatasync/fdatasync01
 /fdatasync/fdatasync02
+/flistxattr/flistxattr01
+/flistxattr/flistxattr02
+/flistxattr/flistxattr03
 /flock/flock01
 /flock/flock02
 /flock/flock03
@@ -482,6 +485,9 @@
 /linkat/linkat01
 /linkat/linkat02
 /listen/listen01
+/listxattr/listxattr01
+/listxattr/listxattr02
+/listxattr/listxattr03
 /llistxattr/llistxattr01
 /llistxattr/llistxattr02
 /llistxattr/llistxattr03

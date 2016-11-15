@@ -272,6 +272,10 @@ fcntl34_64 fcntl34_64
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
 
+flistxattr01 flistxattr01
+flistxattr02 flistxattr02
+flistxattr03 flistxattr03
+
 flock01 flock01
 flock02 flock02
 flock03 flock03
@@ -522,6 +526,10 @@ linkat01 linkat01
 linkat02 linkat02
 
 listen01 listen01
+
+listxattr01 listxattr01
+listxattr02 listxattr02
+listxattr03 listxattr03
 
 llistxattr01 llistxattr01
 llistxattr02 llistxattr02
