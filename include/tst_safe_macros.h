@@ -471,4 +471,19 @@ int safe_getpriority(const char *file, const int lineno, int which, id_t who);
 #define SAFE_GETPRIORITY(which, who) \
 	safe_getpriority(__FILE__, __LINE__, (which), (who))
 
+int safe_setxattr(const char *file, const int lineno, const char *path,
+            const char *name, const void *value, size_t size, int flags);
+#define SAFE_SETXATTR(path, name, value, size, flags) \
+	safe_setxattr(__FILE__, __LINE__, (path), (name), (value), (size), (flags))
+
+int safe_lsetxattr(const char *file, const int lineno, const char *path,
+            const char *name, const void *value, size_t size, int flags);
+#define SAFE_LSETXATTR(path, name, value, size, flags) \
+	safe_lsetxattr(__FILE__, __LINE__, (path), (name), (value), (size), (flags))
+
+int safe_fsetxattr(const char *file, const int lineno, int fd, const char *name,
+            const void *value, size_t size, int flags);
+#define SAFE_FSETXATTR(fd, name, value, size, flags) \
+	safe_fsetxattr(__FILE__, __LINE__, (fd), (name), (value), (size), (flags))
+
 #endif /* SAFE_MACROS_H__ */

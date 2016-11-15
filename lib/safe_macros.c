@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/mount.h>
+#include <sys/xattr.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
@@ -776,5 +777,68 @@ int safe_getpriority(const char *file, const int lineno, int which, id_t who)
 	}
 
 	errno = err;
+	return rval;
+}
+
+int safe_setxattr(const char *file, const int lineno, const char *path,
+		  const char *name, const void *value, size_t size, int flags)
+{
+	int rval;
+
+	rval = setxattr(path, name, value, size, flags);
+
+	if (rval) {
+		if (errno == ENOTSUP) {
+			tst_brkm(TCONF, NULL,
+				 "%s:%d: no xattr support in fs or mounted "
+				 "without user_xattr option", file, lineno);
+		}
+
+		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: setxattr() failed",
+			     file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_lsetxattr(const char *file, const int lineno, const char *path,
+		   const char *name, const void *value, size_t size, int flags)
+{
+	int rval;
+
+	rval = lsetxattr(path, name, value, size, flags);
+
+	if (rval) {
+		if (errno == ENOTSUP) {
+			tst_brkm(TCONF, NULL,
+				 "%s:%d: no xattr support in fs or mounted "
+				 "without user_xattr option", file, lineno);
+		}
+
+		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: lsetxattr() failed",
+			     file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_fsetxattr(const char *file, const int lineno, int fd, const char *name,
+		   const void *value, size_t size, int flags)
+{
+	int rval;
+
+	rval = fsetxattr(fd, name, value, size, flags);
+
+	if (rval) {
+		if (errno == ENOTSUP) {
+			tst_brkm(TCONF, NULL,
+				 "%s:%d: no xattr support in fs or mounted "
+				 "without user_xattr option", file, lineno);
+		}
+
+		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: fsetxattr() failed",
+			     file, lineno);
+	}
+
 	return rval;
 }
