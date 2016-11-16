@@ -31,8 +31,8 @@
  * 		Date:   Tue Sep 2 19:57:17 2014 +0200
  *
  *      commit 66463db4fc5605d51c7bb81d009d5bf30a783a2c
- *               Author: Oleg Nesterov <oleg@redhat.com>
- *               Date:   Tue Sep 2 19:57:13 2014 +0200
+ *              Author: Oleg Nesterov <oleg@redhat.com>
+ *              Date:   Tue Sep 2 19:57:13 2014 +0200
  *
  * Reproduce:
  *	Test-case (needs -O2).
@@ -55,20 +55,21 @@ int TST_TOTAL = 5;
 
 #if __x86_64__
 
-#define LOOPS 10000
+#define LOOPS 30000
+#define VALUE 123.456
 
 volatile double D;
 volatile int FLAGE;
 
 char altstack[4096 * 10] __attribute__((aligned(4096)));
 
-void test(double d)
+void test(void)
 {
 	int loop = 0;
 	int pid = getpid();
 
-	D = d;
-	while (D == d && loop < LOOPS) {
+	D = VALUE;
+	while (D == VALUE && loop < LOOPS) {
 		/* sys_tkill(pid, SIGHUP); asm to avoid save/reload
 		 * fp regs around c call */
 		asm ("" : : "a"(__NR_tkill), "D"(pid), "S"(SIGHUP));
@@ -94,12 +95,16 @@ void sigh(int sig LTP_ATTRIBUTE_UNUSED)
 
 void *tfunc(void *arg LTP_ATTRIBUTE_UNUSED)
 {
-	for (; ;) {
-		TEST(mprotect(altstack, sizeof(altstack), PROT_READ));
-		if (TEST_RETURN == -1)
-			tst_brkm(TBROK | TTERRNO, NULL, "mprotect failed");
+	int i;
 
-		TEST(mprotect(altstack, sizeof(altstack), PROT_READ|PROT_WRITE));
+	for (i = -1; ; i *= -1) {
+		if (i == -1) {
+			TEST(mprotect(altstack, sizeof(altstack), PROT_READ));
+			if (TEST_RETURN == -1)
+				tst_brkm(TBROK | TTERRNO, NULL, "mprotect failed");
+		}
+
+		TEST(mprotect(altstack, sizeof(altstack), PROT_READ | PROT_WRITE));
 		if (TEST_RETURN == -1)
 			tst_brkm(TBROK | TTERRNO, NULL, "mprotect failed");
 
@@ -148,7 +153,7 @@ int main(int ac, char **av)
 				tst_brkm(TBROK | TRERRNO, NULL,
 						"pthread_create failed");
 
-			test(123.456);
+			test();
 
 			TEST(pthread_join(pt, NULL));
 			if (TEST_RETURN)
