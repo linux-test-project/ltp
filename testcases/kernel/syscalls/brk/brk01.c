@@ -54,8 +54,8 @@ void cleanup();
 char *TCID = "brk01";
 int TST_TOTAL = 1;
 
-long Max_brk_byte_size;
-long Beg_brk_val;
+unsigned long Max_brk_byte_size;
+unsigned long Beg_brk_val;
 
 #if !defined(UCLINUX)
 
@@ -64,8 +64,8 @@ int main(int ac, char **av)
 	int lc;
 	int incr;
 	long nbrkpt;		/* new brk point value */
-	long cur_brk_val;	/* current size returned by sbrk */
-	long aft_brk_val;	/* current size returned by sbrk */
+	unsigned long cur_brk_val;	/* current size returned by sbrk */
+	unsigned long aft_brk_val;	/* current size returned by sbrk */
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
@@ -90,7 +90,7 @@ int main(int ac, char **av)
 		 * every odd lc value, strink by one incr.
 		 * If lc is equal to 3, no change, special case.
 		 */
-		cur_brk_val = (long)sbrk(0);
+		cur_brk_val = (unsigned long)sbrk(0);
 		if (lc == 3) {
 			nbrkpt = cur_brk_val;	/* no change, special one time case */
 		} else if ((lc % 2) == 0) {
@@ -118,13 +118,13 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 
-			aft_brk_val = (long)sbrk(0);
+			aft_brk_val = (unsigned long)sbrk(0);
 			tst_resm(TFAIL | TTERRNO,
 				 "brk(%ld) failed (size before %ld, after %ld)",
 				 nbrkpt, cur_brk_val, aft_brk_val);
 
 		} else {
-			aft_brk_val = (long)sbrk(0);
+			aft_brk_val = (unsigned long)sbrk(0);
 			if (aft_brk_val == nbrkpt) {
 
 				tst_resm(TPASS,
@@ -187,7 +187,7 @@ void setup(void)
 	if (max_size > (usr_mem_sz / 4))
 		max_size = usr_mem_sz / 4;	/* only fourth mem by single test */
 
-	Beg_brk_val = (long)sbrk(0);
+	Beg_brk_val = (unsigned long)sbrk(0);
 
 	/*
 	 * allow at least 4 times a big as current.
