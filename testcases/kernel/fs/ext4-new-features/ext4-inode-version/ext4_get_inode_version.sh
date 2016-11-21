@@ -33,7 +33,7 @@ inode_version=`echo $inode_version | sed 's/://'`
 
 inode_version=$(( $inode_version ))
 
-if [ "$2" == "1" ]; then
+if [ "$2" = "1" ]; then
 	exit $inode_version
 else
 	echo $inode_version

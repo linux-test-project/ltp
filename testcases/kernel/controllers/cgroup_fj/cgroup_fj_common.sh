@@ -34,7 +34,7 @@ exist_subsystem()
     local subsystem="$1"
     local exist=`grep -w $subsystem /proc/cgroups | cut -f1`
 
-    if [ "$exist" = "" ]; then
+    if [ -z "$exist" ]; then
         tst_brkm TCONF "Subsystem $subsystem not supported"
     fi
 }
@@ -68,7 +68,7 @@ create_subgroup()
 
     # cpuset.cpus and cpuset.mems must be initialized with suitable value
     # before any pids are attached
-    if [ "$subsystem" == "cpuset" ]; then
+    if [ "$subsystem" = "cpuset" ]; then
         if [ -e "$mount_point/cpus" ]; then
             ROD cat "$mount_point/cpus" \> "$path/cpus"
             ROD cat "$mount_point/mems" \> "$path/mems"
@@ -95,7 +95,7 @@ setup()
 
     mount_point=`grep -w $subsystem /proc/mounts | cut -f 2 | cut -d " " -f2`
 
-    if [ "$mount_point" == "" ]; then
+    if [ -z "$mount_point" ]; then
         try_umount=1
         mount_point="/dev/cgroup"
 	tst_resm TINFO "Subsystem $subsystem is not mounted, mounting it at $mount_point"

@@ -40,12 +40,12 @@ ext4_test_journal_checksum()
 	local checksum=
 	local async_commit=
 
-	if [ "$3" == "" ]; then
+	if [ -z "$3" ]; then
 		checksum="No use"
 	else
 		checksum="Used"
 	fi
-	if [ "$4" == "" ]; then
+	if [ -z "$4" ]; then
 		async_commit="No use"
 	else
 		async_commit="Used"
