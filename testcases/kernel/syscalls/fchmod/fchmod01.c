@@ -163,7 +163,7 @@ void setup(void)
 	sprintf(fname, "tfile_%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
-	else if (write(fd, &buf, strlen(buf)) == -1)
+	else if (write(fd, buf, strlen(buf)) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 }
 
