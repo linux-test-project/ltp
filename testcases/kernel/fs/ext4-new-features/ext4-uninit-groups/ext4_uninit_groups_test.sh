@@ -72,7 +72,7 @@ ext4_test_uninit_groups()
 		return
 	fi
 
-	if [ "$3" = "no_flex_bg" ]; then
+	if [ $3 == "no_flex_bg" ]; then
 		flag=""
 	else
 		flag=$3

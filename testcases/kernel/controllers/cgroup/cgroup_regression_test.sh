@@ -280,7 +280,7 @@ test_5()
 
 	mkdir cgroup/0
 	# Otherwise we can't attach task
-	if [ "$subsys1" = cpuset -o "$subsys2" = cpuset ]; then
+	if [ "$subsys1" == cpuset -o "$subsys2" == cpuset ]; then
 		echo 0 > cgroup/0/cpuset.cpus 2> /dev/null
 		echo 0 > cgroup/0/cpuset.mems 2> /dev/null
 	fi
