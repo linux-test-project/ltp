@@ -139,7 +139,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		if (write(fd, &buf, strlen(buf)) == -1)
+		if (write(fd, buf, strlen(buf)) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "write failed");
 		TEST(fsync(fd));
 
