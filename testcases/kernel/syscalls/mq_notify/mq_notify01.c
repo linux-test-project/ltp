@@ -16,15 +16,10 @@
  * the GNU General Public License for more details.
  */
 #define _XOPEN_SOURCE 600
-#include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/uio.h>
-#include <getopt.h>
-#include <libgen.h>
 #include <limits.h>
 #include <errno.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <mqueue.h>
@@ -32,14 +27,18 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-#include "linux_syscall_numbers.h"
 #include "tst_test.h"
 
-static char *str_debug;
-static int opt_debug;
+#define MAX_MSGSIZE     8192
+#define MSG_SIZE	16
+#define USER_DATA       0x12345678
+#define QUEUE_NAME	"/test_mqueue"
 
-static int notified;
-static int cmp_ok;
+static char *str_debug;
+static char smsg[MAX_MSGSIZE];
+
+static volatile sig_atomic_t notified, cmp_ok;
+static siginfo_t info;
 
 enum test_type {
 	NORMAL,
@@ -52,83 +51,74 @@ enum test_type {
 struct test_case {
 	int notify;
 	int ttype;
-	const char *desc;	   /* test description (name) */
+	const char *desc;
 	int ret;
 	int err;
 };
 
-#define MAX_MSGSIZE     8192
-#define MSG_SIZE	16
-#define USER_DATA       0x12345678
-#define QUEUE_NAME	"/test_mqueue"
-
-
 #define TYPE_NAME(x) .ttype = x, .desc = #x
-
 static struct test_case tcase[] = {
 	{
-	 TYPE_NAME(NORMAL),
-	 .notify = SIGEV_NONE,
-	 .ret = 0,
-	 .err = 0,
-	 },
+		TYPE_NAME(NORMAL),
+		.notify = SIGEV_NONE,
+		.ret = 0,
+		.err = 0,
+	},
 	{
-	 TYPE_NAME(NORMAL),
-	 .notify = SIGEV_SIGNAL,
-	 .ret = 0,
-	 .err = 0,
-	 },
+		TYPE_NAME(NORMAL),
+		.notify = SIGEV_SIGNAL,
+		.ret = 0,
+		.err = 0,
+	},
 	{
-	 TYPE_NAME(NORMAL),
-	 .notify = SIGEV_THREAD,
-	 .ret = 0,
-	 .err = 0,
-	 },
+		TYPE_NAME(NORMAL),
+		.notify = SIGEV_THREAD,
+		.ret = 0,
+		.err = 0,
+	},
 	{
-	 TYPE_NAME(FD_NONE),
-	 .notify = SIGEV_NONE,
-	 .ret = -1,
-	 .err = EBADF,
-	 },
+		TYPE_NAME(FD_NONE),
+		.notify = SIGEV_NONE,
+		.ret = -1,
+		.err = EBADF,
+	},
 	{
-	 TYPE_NAME(FD_NOT_EXIST),
-	 .notify = SIGEV_NONE,
-	 .ret = -1,
-	 .err = EBADF,
-	 },
+		TYPE_NAME(FD_NOT_EXIST),
+		.notify = SIGEV_NONE,
+		.ret = -1,
+		.err = EBADF,
+	},
 	{
-	 TYPE_NAME(FD_FILE),
-	 .notify = SIGEV_NONE,
-	 .ret = -1,
-	 .err = EBADF,
-	 },
+		TYPE_NAME(FD_FILE),
+		.notify = SIGEV_NONE,
+		.ret = -1,
+		.err = EBADF,
+	},
 	{
-	 TYPE_NAME(ALREADY_REGISTERED),
-	 .notify = SIGEV_NONE,
-	 .ret = -1,
-	 .err = EBUSY,
-	 },
+		TYPE_NAME(ALREADY_REGISTERED),
+		.notify = SIGEV_NONE,
+		.ret = -1,
+		.err = EBUSY,
+	},
 };
 
 static void setup(void)
 {
-	opt_debug = str_debug ? 1 : 0;
-}
+	int i;
 
-static void sigfunc(int signo, siginfo_t * info, void *data)
+	for (i = 0; i < MSG_SIZE; i++)
+		smsg[i] = i;
+}
+static void sigfunc(int signo LTP_ATTRIBUTE_UNUSED, siginfo_t *si,
+	void *data LTP_ATTRIBUTE_UNUSED)
 {
-	if (opt_debug) {
-		tst_res(TINFO, "si_code  E:%d,\tR:%d", info->si_code, SI_MESGQ);
-		tst_res(TINFO, "si_signo E:%d,\tR:%d", info->si_signo, SIGUSR1);
-		tst_res(TINFO, "si_value E:0x%x,\tR:0x%x",
-			 info->si_value.sival_int, USER_DATA);
-		tst_res(TINFO, "si_pid   E:%d,\tR:%d", info->si_pid, getpid());
-		tst_res(TINFO, "si_uid   E:%d,\tR:%d", info->si_uid, getuid());
-	}
-	cmp_ok = info->si_code == SI_MESGQ &&
-	    info->si_signo == SIGUSR1 &&
-	    info->si_value.sival_int == USER_DATA &&
-	    info->si_pid == getpid() && info->si_uid == getuid();
+	if (str_debug)
+		memcpy(&info, si, sizeof(info));
+
+	cmp_ok = si->si_code == SI_MESGQ &&
+	    si->si_signo == SIGUSR1 &&
+	    si->si_value.sival_int == USER_DATA &&
+	    si->si_pid == getpid() && si->si_uid == getuid();
 	notified = 1;
 }
 
@@ -140,13 +130,10 @@ static void tfunc(union sigval sv)
 
 static void do_test(unsigned int i)
 {
-	int sys_ret;
-	int sys_errno;
-	int rc, j, fd = -1;
+	int rc, fd = -1;
 	struct sigevent ev;
 	struct sigaction sigact;
 	struct timespec abs_timeout;
-	char smsg[MAX_MSGSIZE];
 	struct test_case *tc = &tcase[i];
 
 	notified = cmp_ok = 1;
@@ -162,24 +149,22 @@ static void do_test(unsigned int i)
 	mq_unlink(QUEUE_NAME);
 
 	switch (tc->ttype) {
-	case FD_NOT_EXIST:
-		fd = INT_MAX - 1;
-		/* fallthrough */
 	case FD_NONE:
 		break;
+	case FD_NOT_EXIST:
+		fd = INT_MAX - 1;
+		break;
 	case FD_FILE:
-		TEST(fd = open("/", O_RDONLY));
-		if (TEST_RETURN < 0) {
-			tst_res(TFAIL, "can't open \"/\".");
+		fd = open("/", O_RDONLY);
+		if (fd < 0) {
+			tst_res(TBROK | TERRNO, "can't open \"/\".");
 			goto CLEANUP;
 		}
 		break;
 	default:
-		TEST(fd =
-		     mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU,
-			     NULL));
-		if (TEST_RETURN < 0) {
-			tst_res(TFAIL | TTERRNO, "mq_open failed");
+		fd = mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
+		if (fd < 0) {
+			tst_res(TBROK | TERRNO, "mq_open failed");
 			goto CLEANUP;
 		}
 	}
@@ -195,7 +180,7 @@ static void do_test(unsigned int i)
 		memset(&sigact, 0, sizeof(sigact));
 		sigact.sa_sigaction = sigfunc;
 		sigact.sa_flags = SA_SIGINFO;
-		TEST(rc = sigaction(SIGUSR1, &sigact, NULL));
+		rc = sigaction(SIGUSR1, &sigact, NULL);
 		break;
 	case SIGEV_THREAD:
 		notified = cmp_ok = 0;
@@ -206,26 +191,17 @@ static void do_test(unsigned int i)
 	}
 
 	if (tc->ttype == ALREADY_REGISTERED) {
-		TEST(rc = mq_notify(fd, &ev));
-		if (TEST_RETURN < 0) {
-			tst_res(TFAIL | TTERRNO, "mq_notify failed");
+		rc = mq_notify(fd, &ev);
+		if (rc < 0) {
+			tst_res(TBROK | TERRNO, "mq_notify failed");
 			goto CLEANUP;
 		}
 	}
 
-	/*
-	 * Execute system call
-	 */
-	errno = 0;
-	sys_ret = mq_notify(fd, &ev);
-	sys_errno = errno;
-	if (sys_ret >= 0) {
-		/*
-		 * Prepare send message
-		 */
-		for (j = 0; j < MSG_SIZE; j++)
-			smsg[j] = j;
-		TEST(rc = mq_timedsend(fd, smsg, MSG_SIZE, 0, &abs_timeout));
+	/* test */
+	TEST(mq_notify(fd, &ev));
+	if (TEST_RETURN >= 0) {
+		rc = mq_timedsend(fd, smsg, MSG_SIZE, 0, &abs_timeout);
 		if (rc < 0) {
 			tst_res(TFAIL | TTERRNO, "mq_timedsend failed");
 			goto CLEANUP;
@@ -233,15 +209,28 @@ static void do_test(unsigned int i)
 
 		while (!notified)
 			usleep(10000);
+
+		if (str_debug && tc->notify == SIGEV_SIGNAL) {
+			tst_res(TINFO, "si_code  E:%d,\tR:%d",
+				info.si_code, SI_MESGQ);
+			tst_res(TINFO, "si_signo E:%d,\tR:%d",
+				info.si_signo, SIGUSR1);
+			tst_res(TINFO, "si_value E:0x%x,\tR:0x%x",
+				info.si_value.sival_int, USER_DATA);
+			tst_res(TINFO, "si_pid   E:%d,\tR:%d",
+				info.si_pid, getpid());
+			tst_res(TINFO, "si_uid   E:%d,\tR:%d",
+				info.si_uid, getuid());
+		}
 	}
 
-	if ((sys_ret != 0 && sys_errno != tc->err) || !cmp_ok) {
-		tst_res(TFAIL, "%s r/w check returned: %d, expected: %d,"
-			" returned errno: %s (%d), expected errno: %s (%d)",
-			tc->desc, sys_ret, tc->ret, tst_strerrno(sys_errno),
-			sys_errno, tst_strerrno(tc->err), tc->err);
+	if ((TEST_RETURN != 0 && TEST_ERRNO != tc->err) || !cmp_ok) {
+		tst_res(TFAIL | TTERRNO, "%s r/w check returned: %ld, "
+			"expected: %d, expected errno: %s (%d)", tc->desc,
+			TEST_RETURN, tc->ret, tst_strerrno(tc->err), tc->err);
 	} else {
-		tst_res(TPASS, "%s returned: %d", tc->desc, sys_ret);
+		tst_res(TPASS | TTERRNO, "%s returned: %ld",
+			tc->desc, TEST_RETURN);
 	}
 
 CLEANUP:
@@ -261,6 +250,5 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcase),
 	.test = do_test,
 	.options = options,
-	.needs_tmpdir = 1,
 	.setup = setup,
 };
