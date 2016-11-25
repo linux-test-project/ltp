@@ -20,6 +20,7 @@
  * the GNU General Public License for more details.
  */
 
+#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -32,9 +33,27 @@
 
 static void verify_oom(void)
 {
+	struct stat sb;
+	char *tmpdir;
+	char *skipfile;
+
 #ifdef TST_ABI32
 	tst_brk(TCONF, "test is not designed for 32-bit system.");
 #endif
+	tmpdir = getenv("TMPDIR");
+	if (tmpdir) {
+		if (asprintf(&skipfile, "%s/%s", tmpdir, "skip_oom01") < 0) {
+			fprintf(stderr, "Failed to allocate string for filename\n");
+			exit(-1);
+		};
+
+		if (stat(skipfile, &sb))
+			creat(skipfile, O_RDWR);
+		else
+			tst_brk(TCONF, "test is configured run only once.");
+
+		free(skipfile);
+	}
 
 	/* we expect mmap to fail before OOM is hit */
 	set_sys_tune("overcommit_memory", 2, 1);
