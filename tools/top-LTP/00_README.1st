@@ -1,2 +1,0 @@
-You must make and install this version of 'top' and libproc if you intend on using the "-T" option
-in ltpstress.sh.

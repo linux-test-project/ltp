@@ -30,16 +30,19 @@ export TST_COUNT=1
 
 failed=0
 
-tst_kvercmp 2 6 29
-if [ $? -eq 0 ]; then
+if tst_kvcmp -lt "2.6.29"; then
 	tst_brkm TCONF ignored "test must be run with kernel 2.6.29 or newer"
-	exit 0
-elif [ ! -f /proc/cgroups ]; then
+	exit 32
+fi
+
+if [ ! -f /proc/cgroups ]; then
 	tst_brkm TCONF ignored "Kernel does not support for control groups; skipping testcases";
-	exit 0
-elif [ "x$(id -ru)" != x0 ]; then
+	exit 32
+fi
+
+if [ "x$(id -ru)" != x0 ]; then
 	tst_brkm TCONF ignored "Test must be run as root"
-	exit 0
+	exit 32
 fi
 
 dmesg -c > /dev/null
@@ -277,7 +280,7 @@ test_5()
 
 	mkdir cgroup/0
 	# Otherwise we can't attach task
-	if [ "$subsys1" == cpuset -o "$subsys2" == cpuset ]; then
+	if [ "$subsys1" = cpuset -o "$subsys2" = cpuset ]; then
 		echo 0 > cgroup/0/cpuset.cpus 2> /dev/null
 		echo 0 > cgroup/0/cpuset.mems 2> /dev/null
 	fi

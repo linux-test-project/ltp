@@ -1,2 +1,0 @@
-test01
-	 cp -R can do a recursive copy

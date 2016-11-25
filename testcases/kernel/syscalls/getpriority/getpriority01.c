@@ -19,7 +19,9 @@
 
 /*
  * Verify that getpriority(2) succeeds get the scheduling priority of
- * the current process, process group or user.
+ * the current process, process group or user, and the priority values
+ * are in the ranges of [0, 0], [0, 0] and [-20, 0] by default for the
+ * flags PRIO_PROCESS, PRIO_PGRP and PRIO_USER respectively.
  */
 
 #include <errno.h>
@@ -29,10 +31,12 @@
 
 static struct tcase {
 	int which;
+	int min;
+	int max;
 } tcases[] = {
-	{PRIO_PROCESS},
-	{PRIO_PGRP},
-	{PRIO_USER}
+	{PRIO_PROCESS, 0, 0},
+	{PRIO_PGRP, 0, 0},
+	{PRIO_USER, -20, 0}
 };
 
 static void verify_getpriority(unsigned int n)
@@ -41,9 +45,16 @@ static void verify_getpriority(unsigned int n)
 
 	TEST(getpriority(tc->which, 0));
 
-	if (TEST_RETURN != 0 || TEST_ERRNO != 0) {
-		tst_res(TFAIL | TTERRNO, "getpriority(%d, 0) returned %ld",
-			tc->which, TEST_RETURN);
+	if (TEST_ERRNO != 0) {
+		tst_res(TFAIL | TTERRNO, "getpriority(%d, 0) failed",
+			tc->which);
+		return;
+	}
+
+	if (TEST_RETURN < tc->min || TEST_RETURN > tc->max) {
+		tst_res(TFAIL, "getpriority(%d, 0) returned %ld, "
+			"expected in the range of [%d, %d]",
+			tc->which, TEST_RETURN, tc->min, tc->max);
 		return;
 	}
 

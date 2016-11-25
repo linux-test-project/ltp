@@ -24,35 +24,6 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-# Only build and install if we have the zip command.
-HAVE_ZIPTOOLS		:= $(shell if which zip >/dev/null; then echo yes; else echo no; fi)
-
-DIR			:= tst_unzip.dir
-
-RM			+= -r
-
-TESTCASES_DATA_DIR	:= $(DESTDIR)/$(prefix)/testcases/data
-
-ZIPFILE			:= $(TESTCASES_DATA_DIR)/tst_unzip_file.zip
-
-ifeq ($(HAVE_ZIPTOOLS),yes)
-CLEAN_TARGETS		:= $(DIR) $(ZIPFILE)
 INSTALL_TARGETS		:= unzip_tests.sh
-endif
 
-INSTALL_DEPS		+= $(ZIPFILE)
-
-$(TESTCASES_DATA_DIR):
-	mkdir -p "$@"
-
-$(ZIPFILE): | $(TESTCASES_DATA_DIR) $(DIR)
-	zip -r "$@" $(DIR)
-	chmod 00644 "$@"
-
-# This target should be auto-removed by Make
-$(DIR): $(abs_srcdir)/unzip_genfile.sh
-	$(SHELL) "$^" $(DIR)
-
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
-
-INSTALL_TARGETS		:= $(ZIPFILE)
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

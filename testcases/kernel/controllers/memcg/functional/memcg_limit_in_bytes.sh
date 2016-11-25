@@ -98,8 +98,7 @@ testcase_11()
 # Test invalid memory.limit_in_bytes
 testcase_12()
 {
-	tst_kvercmp 2 6 31
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "2.6.31"; then
 		EXPECT_FAIL echo -1 \> memory.limit_in_bytes
 	else
 		EXPECT_PASS echo -1 \> memory.limit_in_bytes

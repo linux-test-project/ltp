@@ -16,34 +16,43 @@
 # Test mkfs command with some basic options.
 #
 
-TCID=mkfs01
-TST_TOTAL=5
-. test.sh
+TST_ID="mkfs01"
+TST_CNT=5
+TST_SETUP=setup
+TST_TESTFUNC=test
+TST_OPTS="f:"
+TST_USAGE=usage
+TST_PARSE_ARGS=parse_args
+TST_NEEDS_ROOT=1
+TST_NEEDS_TMPDIR=1
+TST_NEEDS_DEVICE=1
+TST_NEEDS_CMDS="blkid df"
+. tst_test.sh
+
+usage()
+{
+	cat << EOF
+usage: $0 [-f <ext2|ext3|ext4|vfat|...>]
+
+OPTIONS
+-f	Specify the type of filesystem to be built.  If not
+	specified, the default filesystem type (currently ext2)
+	is used.
+EOF
+}
+
+parse_args()
+{
+	FS_TYPE="$2"
+}
 
 setup()
 {
-	tst_require_root
-
-	tst_check_cmds blkid df
-
 	if [ -n "$FS_TYPE" ]; then
 		tst_check_cmds mkfs.${FS_TYPE}
 	fi
 
-	tst_tmpdir
-
-	tst_acquire_device
-
-	TST_CLEANUP="cleanup"
-
 	ROD_SILENT mkdir -p mntpoint
-}
-
-cleanup()
-{
-	tst_release_device
-
-	tst_rmdir
 }
 
 mkfs_mount()
@@ -51,27 +60,12 @@ mkfs_mount()
 	mount ${TST_DEVICE} mntpoint
 	local ret=$?
 	if [ $ret -eq 32 ]; then
-		tst_brkm TCONF "Cannot mount ${FS_TYPE}, missing driver?"
+		tst_brk TCONF "Cannot mount ${FS_TYPE}, missing driver?"
 	fi
 
 	if [ $ret -ne 0 ]; then
-		tst_brkm TBROK "Failed to mount device: mount exit = $ret"
+		tst_brk TBROK "Failed to mount device: mount exit = $ret"
 	fi
-}
-
-usage()
-{
-	cat << EOF
-	usage: $0 [-f <ext2|ext3|ext4|vfat|...>]
-
-	OPTIONS
-		-f	Specify the type of filesystem to be built. If not
-			specified, the default filesystem type (currently ext2)
-			is used.
-		-h	Display help text and exit.
-
-EOF
-	tst_brkm TWARN "Display help text or unknown options"
 }
 
 mkfs_verify_type()
@@ -133,13 +127,13 @@ mkfs_test()
 
 	echo ${fs_op} | grep -q "\-c"
 	if [ $? -eq 0 ] && [ "$fs_type" = "ntfs" ]; then
-		tst_resm TCONF "'${mkfs_cmd}' not supported."
+		tst_res TCONF "'${mkfs_cmd}' not supported."
 		return
 	fi
 
 	if [ -n "$size" ]; then
 		if [ "$fs_type" = "xfs" ] || [ "$fs_type" = "btrfs" ]; then
-			tst_resm TCONF "'${mkfs_cmd}' not supported."
+			tst_res TCONF "'${mkfs_cmd}' not supported."
 			return
 		fi
 	fi
@@ -148,10 +142,10 @@ mkfs_test()
 	if [ $? -ne 0 ]; then
 		grep -q -E "unknown option | invalid option" temp
 		if [ $? -eq 0 ]; then
-			tst_resm TCONF "'${mkfs_cmd}' not supported."
+			tst_res TCONF "'${mkfs_cmd}' not supported."
 			return
 		else
-			tst_resm TFAIL "'${mkfs_cmd}' failed."
+			tst_res TFAIL "'${mkfs_cmd}' failed."
 			cat temp
 			return
 		fi
@@ -160,7 +154,7 @@ mkfs_test()
 	if [ -n "$device" ]; then
 		mkfs_verify_type "$fs_type" "$device"
 		if [ $? -ne 0 ]; then
-			tst_resm TFAIL "'${mkfs_cmd}' failed, not expected."
+			tst_res TFAIL "'${mkfs_cmd}' failed, not expected."
 			return
 		fi
 	fi
@@ -168,12 +162,12 @@ mkfs_test()
 	if [ -n "$size" ]; then
 		mkfs_verify_size "$fs_type" "$size"
 		if [ $? -ne 0 ]; then
-			tst_resm TFAIL "'${mkfs_cmd}' failed, not expected."
+			tst_res TFAIL "'${mkfs_cmd}' failed, not expected."
 			return
 		fi
 	fi
 
-	tst_resm TPASS "'${mkfs_cmd}' passed."
+	tst_res TPASS "'${mkfs_cmd}' passed."
 }
 
 test1()
@@ -201,23 +195,4 @@ test5()
 	mkfs_test "-h"
 }
 
-FS_TYPE=""
-
-while getopts f:h OPTION; do
-	case $OPTION in
-	f)
-		FS_TYPE=$OPTARG;;
-	h)
-		usage;;
-	?)
-		usage;;
-	esac
-done
-
-setup
-for i in $(seq 1 ${TST_TOTAL})
-do
-	test$i
-done
-
-tst_exit
+tst_run

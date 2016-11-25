@@ -35,95 +35,115 @@
 # 2) Check that sum ltp_test/subgroup*/cpuacct.usage = ltp_test/cpuacct.usage
 #
 
+TST_ID="cpuacct"
+TST_SETUP=setup
+TST_CLEANUP=cleanup
+TST_TESTFUNC=do_test
+TST_POS_ARGS=2
+TST_USAGE=usage
+TST_NEEDS_ROOT=1
+
+. tst_test.sh
+
 mounted=1
 max=$1
 nbprocess=$2
 
-export TCID="cpuacct_$1_$2"
-export TST_TOTAL=2
+usage()
+{
+	cat << EOF
+usage: $0 nsubgroup nprocess
 
-. test.sh
+nsubgroup - number of subgroups to create
+nprocess  - number of processes to attach to each subgroup
+
+OPTIONS
+EOF
+}
 
 setup()
 {
-	tst_require_root
-
-	grep -q -w cpuacct /proc/cgroups
-	if [ $? -ne 0 ]; then
-		tst_brkm TCONF "cpuacct not supported on this system"
+	if ! grep -q -w cpuacct /proc/cgroups; then
+		tst_brk TCONF "cpuacct not supported on this system"
 	fi
 
 	mount_point=`grep -w cpuacct /proc/mounts | cut -f 2 | cut -d " " -f2`
-	tst_resm TINFO "cpuacct: $mount_point"
+	tst_res TINFO "cpuacct: $mount_point"
 	if [ "$mount_point" = "" ]; then
 		mounted=0
 		mount_point=/dev/cgroup
 	fi
 
-	TST_CLEANUP=cleanup
-
-	testpath=$mount_point/ltp_$TCID
+	testpath=$mount_point/ltp_$TST_ID
 
 	if [ "$mounted" -eq "0" ]; then
 		ROD mkdir -p $mount_point
 		ROD mount -t cgroup -o cpuacct none $mount_point
 	fi
+
 	ROD mkdir $testpath
+
+	# create subgroups
+	for i in `seq 1 $max`; do
+		ROD mkdir $testpath/subgroup_$i
+	done
+
 }
 
 cleanup()
 {
-	tst_resm TINFO "removing created directories"
-	rmdir $testpath/subgroup_*
+	tst_res TINFO "removing created directories"
+
+	if [ -d "$testpath/subgroup_1" ]; then
+		rmdir $testpath/subgroup_*
+	fi
+
 	rmdir $testpath
+
 	if [ "$mounted" -ne 1 ]; then
-		tst_resm TINFO "Umounting cpuacct"
+		tst_res TINFO "Umounting cpuacct"
 		umount $mount_point
 		rmdir $mount_point
 	fi
 }
 
-setup;
+do_test()
+{
+	tst_res TINFO "Creating $max subgroups each with $nbprocess processes"
 
-# create subgroups
-for i in `seq 1 $max`; do
-	ROD mkdir -p $testpath/subgroup_$i
-done
-
-# create and attach process to subgroups
-for i in `seq 1 $max`; do
-	for j in `seq 1 $nbprocess`; do
-		cpuacct_task $testpath/subgroup_$i/tasks &
+	# create and attach process to subgroups
+	for i in `seq 1 $max`; do
+		for j in `seq 1 $nbprocess`; do
+			cpuacct_task $testpath/subgroup_$i/tasks &
+		done
 	done
-done
 
-for job in `jobs -p`; do
-	wait $job
-done
+	wait
 
-acc=0
-fails=0
-for i in `seq 1 $max`; do
-	tmp=`cat $testpath/subgroup_$i/cpuacct.usage`
-	if [ "$tmp" -eq "0" ]; then
-		fails=$((fails + 1))
+	acc=0
+	fails=0
+	for i in `seq 1 $max`; do
+		tmp=`cat $testpath/subgroup_$i/cpuacct.usage`
+		if [ "$tmp" -eq "0" ]; then
+			fails=$((fails + 1))
+		fi
+		acc=$((acc + tmp))
+	done
+
+	## check that cpuacct.usage != 0 for every subgroup
+	if [ "$fails" -gt "0" ]; then
+		tst_res TFAIL "cpuacct.usage is not equal to 0 for $fails subgroups"
+	else
+		tst_res TPASS "cpuacct.usage is not equal to 0 for every subgroup"
 	fi
-	acc=$((acc + tmp))
-done
 
-## check that cpuacct.usage != 0 for every subgroup
-if [ "$fails" -eq "1" ]; then
-	tst_resm TFAIL "cpuacct.usage is not equal to 0 for $fails subgroups"
-else
-	tst_resm TPASS "cpuacct.usage is not equal to 0 for every subgroup"
-fi
+	## check that ltp_subgroup/cpuacct.usage == sum ltp_subgroup/subgroup*/cpuacct.usage
+	ref=`cat $testpath/cpuacct.usage`
+	if [ "$ref" -ne "$acc" ]; then
+		tst_res TFAIL "cpuacct.usage $ref not equal to subgroup*/cpuacct.usage $acc"
+	else
+		tst_res TPASS "cpuacct.usage equal to subgroup*/cpuacct.usage"
+	fi
+}
 
-## check that ltp_subgroup/cpuacct.usage == sum ltp_subgroup/subgroup*/cpuacct.usage
-ref=`cat $testpath/cpuacct.usage`
-if [ "$ref" != "$acc" ]; then
-	tst_resm TFAIL "ltp_test/cpuacct.usage not equal to ltp_test/subgroup*/cpuacct.usage"
-else
-	tst_resm TPASS "ltp_test/cpuacct.usage equal to ltp_test/subgroup*/cpuacct.usage"
-fi
-
-tst_exit
+tst_run

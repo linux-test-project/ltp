@@ -667,11 +667,11 @@ USER_PERMISSION=`echo $CONTENT | awk '{print \$10}'`
 GROUP_PERMISSION=`echo $CONTENT | awk '{print \$12}'`
 OTHER_PERMISSION=`echo $CONTENT | awk '{print \$15}'`
 
-if [ $USER_PERMISSION == "user::rwx" ]
+if [ $USER_PERMISSION = "user::rwx" ]
 then
-	if [ $GROUP_PERMISSION == "group::rwx" ]
+	if [ $GROUP_PERMISSION = "group::rwx" ]
 	then
-		if [ $OTHER_PERMISSION == "other::rwx" ]
+		if [ $OTHER_PERMISSION = "other::rwx" ]
 		then
 			echo ""
 			echo "SUCCESS: Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are correct"
@@ -702,9 +702,9 @@ CONTENT=`getfacl tacl/mount-ext2/shared/team1/newfile2`
 ITEM_OWNER=`echo $CONTENT | awk '{print \$6}'`
 ITEM_GROUP=`echo $CONTENT | awk '{print \$9}'`
 
-if [ $ITEM_OWNER == "tacluser2" ]
+if [ $ITEM_OWNER = "tacluser2" ]
 then
-	if [ $ITEM_GROUP == "tacluser2" ]
+	if [ $ITEM_GROUP = "tacluser2" ]
 	then
 		echo ""
 		echo "SUCCESS: Chown correct"

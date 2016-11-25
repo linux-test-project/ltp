@@ -62,23 +62,13 @@ zram_load()
 
 zram_max_streams()
 {
-	tst_kvercmp 4 7 0
-	if [ $? -gt 0 ]; then
-		tst_resm TCONF "device attribute max_comp_streams is"\
-			"depriciated since kernel v4.7, the running kernel"\
-			"does not support it"
+	if tst_kvcmp -lt "3.15" -o -ge "4.7"; then
+		tst_resm TCONF "The device attribute max_comp_streams was"\
+		               "introduced in kernel 3.15 and deprecated in 4.7"
 		return
 	fi
 
-	tst_kvercmp 3 15 0
-	if [ $? -eq 0 ]; then
-		tst_resm TCONF "device attribute max_comp_streams is"\
-			"introduced since kernel v3.15, the running kernel"\
-			"does not support it"
-		return
-	else
-		tst_resm TINFO "set max_comp_streams to zram device(s)"
-	fi
+	tst_resm TINFO "set max_comp_streams to zram device(s)"
 
 	local i=0
 	for max_s in $zram_max_streams; do
@@ -99,15 +89,14 @@ zram_max_streams()
 
 zram_compress_alg()
 {
-	tst_kvercmp 3 15 0
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "3.15"; then
 		tst_resm TCONF "device attribute comp_algorithm is"\
 			"introduced since kernel v3.15, the running kernel"\
 			"does not support it"
 		return
-	else
-		tst_resm TINFO "test that we can set compression algorithm"
 	fi
+
+	tst_resm TINFO "test that we can set compression algorithm"
 
 	local algs=$(cat /sys/block/zram0/comp_algorithm)
 	tst_resm TINFO "supported algs: $algs"
@@ -141,15 +130,14 @@ zram_set_disksizes()
 
 zram_set_memlimit()
 {
-	tst_kvercmp 3 18 0
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "3.18"; then
 		tst_resm TCONF "device attribute mem_limit is"\
 			"introduced since kernel v3.18, the running kernel"\
 			"does not support it"
 		return
-	else
-		tst_resm TINFO "set memory limit to zram device(s)"
 	fi
+
+	tst_resm TINFO "set memory limit to zram device(s)"
 
 	local i=0
 	for ds in $zram_mem_limits; do

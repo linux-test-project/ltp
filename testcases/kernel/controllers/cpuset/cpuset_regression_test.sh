@@ -30,8 +30,7 @@ setup()
 {
 	tst_require_root
 
-	tst_kvercmp 3 18 0
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "3.18"; then
 		tst_brkm TCONF "Test must be run with kernel 3.18.0 or newer"
 	fi
 
@@ -96,7 +95,7 @@ cleanup()
 		     ${root_cpuset_dir}/${cpu_exclusive}
 	fi
 
-	if [ "${mount_flag}" == "1" ]; then
+	if [ "${mount_flag}" = "1" ]; then
 		umount ${root_cpuset_dir}
 		if [ $? -ne 0 ]; then
 			tst_resm TWARN "'umount ${root_cpuset_dir}' failed"

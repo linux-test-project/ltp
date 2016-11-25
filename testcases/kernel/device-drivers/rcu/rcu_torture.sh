@@ -67,13 +67,11 @@ trap cleanup INT
 
 rcu_type="rcu rcu_bh srcu sched"
 
-tst_kvercmp 3 12 0
-if [ $? -eq 0 ]; then
+if tst_kvcmp -lt "3.12"; then
 	rcu_type="$rcu_type rcu_sync rcu_expedited rcu_bh_sync rcu_bh_expedited \
 	          srcu_sync srcu_expedited sched_sync sched_expedited"
 
-	tst_kvercmp 3 11 0
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "3.11"; then
 		rcu_type="$rcu_type srcu_raw srcu_raw_sync"
 	fi
 fi

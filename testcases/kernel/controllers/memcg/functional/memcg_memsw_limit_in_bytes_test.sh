@@ -80,8 +80,7 @@ testcase_9()
 
 	echo 10M > memory.limit_in_bytes
 
-	tst_kvercmp 2 6 31
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "2.6.31"; then
 		EXPECT_FAIL echo -1 \> memory.memsw.limit_in_bytes
 	else
 		EXPECT_PASS echo -1 \> memory.memsw.limit_in_bytes

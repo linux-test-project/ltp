@@ -86,6 +86,7 @@ call_exit()
     killall fs_racer_file_symlink.sh
     killall fs_racer_file_list.sh
     killall fs_racer_file_concat.sh
+    rm -rf $DIR
     exit 0
 }
 

@@ -16,18 +16,16 @@
 # Test which command with some basic options.
 #
 
-TCID=which01
-TST_TOTAL=10
-. test.sh
+TST_ID="which01"
+TST_CNT=10
+TST_SETUP=setup
+TST_TESTFUNC=do_test
+TST_NEEDS_TMPDIR=1
+TST_NEEDS_CMDS="which"
+. tst_test.sh
 
 setup()
 {
-	tst_check_cmds which
-
-	tst_tmpdir
-
-	TST_CLEANUP="cleanup"
-
 	touch pname
 	chmod +x pname
 	PATH=$PATH:.
@@ -38,11 +36,6 @@ setup()
 	PATH=$PATH:./bin
 
 	alias pname='pname -i'
-}
-
-cleanup()
-{
-	tst_rmdir
 }
 
 which_verify()
@@ -76,11 +69,11 @@ which_test()
 	if [ $? -ne 0 ]; then
 		grep -q -E "unknown option|invalid option|Usage" temp
 		if [ $? -eq 0 ]; then
-			tst_resm TCONF "'${which_cmd}' not supported."
+			tst_res TCONF "'${which_cmd}' not supported."
 			return
 		fi
 
-		tst_resm TFAIL "'${which_cmd}' failed."
+		tst_res TFAIL "'${which_cmd}' failed."
 		cat temp
 		return
 	fi
@@ -89,28 +82,30 @@ which_test()
 		shift 2
 		which_verify "$@"
 		if [ $? -ne 0 ]; then
-			tst_resm TFAIL "'${which_cmd}' failed, not expected."
+			tst_res TFAIL "'${which_cmd}' failed, not expected."
 			return
 		fi
 	fi
 
-	tst_resm TPASS "'${which_cmd}' passed."
+	tst_res TPASS "'${which_cmd}' passed."
 }
 
-setup
+do_test()
+{
+	case $1 in
+	1) which_test "" "pname" "$PWD/pname";;
+	2) which_test "--all" "pname" "$PWD/bin/pname" "$PWD/pname";;
+	3) which_test "-a" "pname" "$PWD/bin/pname" "$PWD/pname";;
+	4) which_test "--read-alias" "pname" "pname='pname -i'" "$PWD/pname";;
+	5) which_test "-i" "pname" "pname='pname -i'" "$PWD/pname";;
+	6) alias which='which --read-alias';
+	   which_test "--skip-alias" "pname" "$PWD/pname";
+	   unalias which;;
+	7) which_test "--version";;
+	8) which_test "-v";;
+	9) which_test "-V";;
+	10) which_test "--help";;
+	esac
+}
 
-which_test "" "pname" "$PWD/pname"
-which_test "--all" "pname" "$PWD/bin/pname" "$PWD/pname"
-which_test "-a" "pname" "$PWD/bin/pname" "$PWD/pname"
-which_test "--read-alias" "pname" "pname='pname -i'" "$PWD/pname"
-which_test "-i" "pname" "pname='pname -i'" "$PWD/pname"
-
-alias which='which --read-alias'
-which_test "--skip-alias" "pname" "$PWD/pname"
-
-which_test "--version"
-which_test "-v"
-which_test "-V"
-which_test "--help"
-
-tst_exit
+tst_run

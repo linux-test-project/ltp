@@ -41,8 +41,7 @@ if [ "x$(grep -w memory /proc/cgroups | cut -f4)" != "x1" ]; then
         exit 0
 fi
 
-tst_kvercmp 2 6 30
-if [ $? -eq 0 ]; then
+if tst_kvcmp -lt "2.6.30"; then
 	tst_brkm TBROK ignored "Test should be run with kernel 2.6.30 or newer"
 	exit 0
 fi

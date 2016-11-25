@@ -39,13 +39,10 @@ static char *parse_digit(const char *str, int *d)
 
 	*d = v;
 
-	if (*end != '.')
-		return NULL;
-
-	return end + 1;
+	return end;
 }
 
-void tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3)
+int tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3)
 {
 	const char *str = str_kver;
 
@@ -54,21 +51,31 @@ void tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3)
 	*v3 = 0;
 
 	if (!(str = parse_digit(str, v1)))
-		goto err;
+		return 1;
+
+	if (*(str++) != '.')
+		return 1;
 
 	if (!(str = parse_digit(str, v2)))
-		goto err;
+		return 1;
 
 	/*
-	 * We ignore all errors here in order not to fail with versions as
-	 * "2.4" or "2.6.18".
+	 * Check for a short version e.g '2.4'
 	 */
-	parse_digit(str, v3);
+	if (*str == ' ' || *str == '\0')
+		return 0;
 
-	return;
-err:
-	tst_resm(TWARN,
-		 "Invalid kernel version %s, expected %%d.%%d.%%d", str_kver);
+	if (*(str++) != '.')
+		return 1;
+
+	/*
+	 * Ignore rest of the string in order not to break on versions as
+	 * 4.8.1-52-default.
+	 */
+	if (!parse_digit(str, v3))
+		return 1;
+
+	return 0;
 }
 
 int tst_kvercmp(int r1, int r2, int r3)
@@ -78,7 +85,11 @@ int tst_kvercmp(int r1, int r2, int r3)
 	struct utsname uval;
 
 	uname(&uval);
-	tst_parse_kver(uval.release, &a1, &a2, &a3);
+	if (tst_parse_kver(uval.release, &a1, &a2, &a3)) {
+		tst_resm(TWARN,
+			 "Invalid kernel version %s, expected %%d.%%d.%%d",
+		         uval.release);
+	}
 
 	testver = (r1 << 16) + (r2 << 8) + r3;
 	currver = (a1 << 16) + (a2 << 8) + a3;

@@ -519,7 +519,11 @@ void check_kver(void)
 {
 	int v1, v2, v3;
 
-	tst_parse_kver(tst_test->min_kver, &v1, &v2, &v3);
+	if (tst_parse_kver(tst_test->min_kver, &v1, &v2, &v3)) {
+		tst_res(TWARN,
+		        "Invalid kernel version %s, expected %%d.%%d.%%d",
+		        tst_test->min_kver);
+	}
 
 	if (tst_kvercmp(v1, v2, v3) < 0) {
 		tst_brk(TCONF, "The test requires kernel %s or newer",

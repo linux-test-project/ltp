@@ -27,8 +27,7 @@
 
 ext4_setup()
 {
-	tst_kvercmp 2 6 31
-	if [ $? -eq 0 ]; then
+	if tst_kvcmp -lt "2.6.31"; then
 		tst_brkm TCONF "kernel is below 2.6.31"
 	fi
 

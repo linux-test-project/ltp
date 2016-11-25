@@ -27,8 +27,7 @@ export TST_TOTAL=1
 # Checking test environment
 check_kervel_arch
 
-tst_kvercmp 2 6 29; rc=$?
-if [ $rc -eq 2 ] ; then
+if tst_kvcmp -gt "2.6.29"; then
 	max_sched_smt=2
 else
 	max_sched_smt=1

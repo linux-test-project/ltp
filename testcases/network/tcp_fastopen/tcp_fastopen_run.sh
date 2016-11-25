@@ -78,12 +78,13 @@ read_result_file()
 
 tst_require_root
 
-tst_kvercmp 3 7 0
-[ $? -eq 0 ] && tst_brkm TCONF "test must be run with kernel 3.7 or newer"
+if tst_kvcmp -lt "3.7"; then
+	tst_brkm TCONF "test must be run with kernel 3.7 or newer"
+fi
 
-tst_kvercmp 3 16 0
-[ $? -eq 0 -a "$TST_IPV6" ] && \
+if tst_kvcmp -lt "3.16" && [ "$TST_IPV6" ]; then
 	tst_brkm TCONF "test must be run with kernel 3.16 or newer"
+fi
 
 trap "tst_brkm TBROK 'test interrupted'" INT
 TST_CLEANUP="cleanup"
