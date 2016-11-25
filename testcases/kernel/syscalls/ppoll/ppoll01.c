@@ -28,6 +28,7 @@
 #include <sys/wait.h>
 #include "linux_syscall_numbers.h"
 #include "ltp_signal.h"
+#include "tst_sig_proc.h"
 #include "tst_test.h"
 
 /* Older versions of glibc don't publish this constant's value. */
@@ -203,25 +204,6 @@ static void cleanup(void)
 {
 	if (fd1 != -1)
 		close(fd1);
-}
-
-static pid_t create_sig_proc(int sig, int count, unsigned int usec)
-{
-	pid_t pid, cpid;
-
-	pid = getpid();
-	cpid = SAFE_FORK();
-
-	if (cpid == 0) {
-		while (count-- > 0) {
-			usleep(usec);
-			if (kill(pid, sig) == -1)
-				break;
-		}
-		exit(0);
-	}
-
-	return cpid;
 }
 
 static void do_test(unsigned int i)
