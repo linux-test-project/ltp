@@ -71,10 +71,6 @@ ssize_t	safe_read(const char *file, const int lineno,
                   void (*cleanup_fn)(void), char len_strict, int fildes,
                   void *buf, size_t nbyte);
 
-ssize_t safe_pread(const char *file, const int lineno,
-                   void (*cleanup_fn)(void), char len_strict,
-                   int fildes, void *buf, size_t nbyte, off_t offset);
-
 int safe_setegid(const char *file, const int lineno,
                  void (*cleanup_fn)(void), gid_t egid);
 
@@ -117,10 +113,6 @@ int safe_symlink(const char *file, const int lineno,
 ssize_t	safe_write(const char *file, const int lineno,
                    void (cleanup_fn)(void), char len_strict, int fildes,
                    const void *buf, size_t nbyte);
-
-ssize_t safe_pwrite(const char *file, const int lineno,
-                    void (cleanup_fn)(void), char len_strict, int fildes,
-		    const void *buf, size_t nbyte, off_t offset);
 
 long safe_strtol(const char *file, const int lineno,
                  void (cleanup_fn)(void), char *str, long min, long max);
