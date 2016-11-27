@@ -325,7 +325,7 @@ ftruncate02_64 ftruncate02_64
 ftruncate03 ftruncate03
 ftruncate03_64 ftruncate03_64
 ftruncate04 ftruncate04
-ftruncate04_64 ftruncate04
+ftruncate04_64 ftruncate04_64
 
 #futimesat test cases
 futimesat01 futimesat01
