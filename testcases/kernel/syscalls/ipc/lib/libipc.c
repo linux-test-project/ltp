@@ -39,7 +39,6 @@
 #include "ipcsem.h"
 
 #include <pwd.h>
-#include <sys/timeb.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
