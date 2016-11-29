@@ -3,7 +3,7 @@
 # PLEASE READ THE README FILE network/README.md BEFORE RUNNING THESE.
 #
 nfs3_01 nfs01 -v 3 -t udp
-nfs4_01 nfs01 -v 3 -t tcp
+nfs4_01 nfs01 -v 4 -t tcp
 nfs41_01 nfs01 -v 4.1 -t tcp
 nfs42_01 nfs01 -v 4.2 -t tcp
 nfs3_ipv6_01 nfs01 -6 -v 3 -t udp
