@@ -121,7 +121,7 @@ int main(int argc, char *argv[], char *env[])
 					kill(echo_struc[k].pid, 9);
 				}
 			}
-
+			break;
 		}
 
 	}
