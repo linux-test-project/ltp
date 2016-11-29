@@ -60,7 +60,7 @@ chk_ifexists()
 {
     RC=0
 
-    which $2 &>$LTPTMP/tst_numa.err || RC=$?
+    which $2 >$LTPTMP/tst_numa.err 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
         tst_brkm TBROK NULL "$1: command $2 not found."
@@ -171,7 +171,7 @@ init()
         LTPTMP=$TMP/tst_numa.$$
     fi
 
-    mkdir -p $LTPTMP &>/dev/null || RC=$?
+    mkdir -p $LTPTMP >/dev/null 2>&1 || RC=$?
     if [ $RC -ne 0 ]
     then
          tst_brkm TBROK NULL "INIT: Unable to create temporary directory"

@@ -55,13 +55,13 @@ ext4_test_journal_checksum()
 		"journal_checksum: $checksum, " \
 		"journal_async_commit: $async_commit, barrier: $5"
 
-	mkfs.ext4 -I 256 $EXT4_DEV &> /dev/null
+	mkfs.ext4 -I 256 $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return
 	fi
 
-	tune2fs -O extents $EXT4_DEV &> /dev/null
+	tune2fs -O extents $EXT4_DEV >/dev/null 2>&1
 
 	mount -t ext4 -o data=$1,commit=$2,$3,$4,barrier=$5 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
@@ -82,7 +82,7 @@ ext4_test_journal_checksum()
 		return
 	fi
 
-	e2fsck -p $EXT4_DEV &> /dev/null
+	e2fsck -p $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return

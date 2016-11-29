@@ -62,7 +62,7 @@ gen_fs_tree()
 
 		mkdir -p "$new_path"
 
-		dd if=/dev/urandom of="$new_path/file" bs=1024 count=100 &> /dev/null
+		dd if=/dev/urandom of="$new_path/file" bs=1024 count=100 >/dev/null 2>&1
 
 		gen_fs_tree "$new_path" $((cur_depth + 1))
 	done

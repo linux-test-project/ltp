@@ -295,7 +295,7 @@ main()
     }
 
     # check for required users and groups
-    ${LTPROOT}/IDcheck.sh &>/dev/null || \
+    ${LTPROOT}/IDcheck.sh >/dev/null 2>&1 || \
     {
         echo "WARNING: required users and groups not present"
         echo "WARNING: some test cases may fail"

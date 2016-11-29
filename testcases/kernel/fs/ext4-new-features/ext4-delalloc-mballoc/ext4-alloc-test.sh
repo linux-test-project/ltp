@@ -28,7 +28,7 @@ export TST_TOTAL=17
 # Case 17: mount ext4 partition to ext3
 ext4_test_remount()
 {
-	mkfs.ext3 -I 256 -b 1024 $EXT4_DEV &> /dev/null
+	mkfs.ext3 -I 256 -b 1024 $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return
@@ -60,7 +60,7 @@ ext4_test_remount()
 	fi
 	umount mnt_point
 
-	fsck -p $EXT4_DEV &> /dev/null
+	fsck -p $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return
@@ -78,13 +78,13 @@ ext4_test_delalloc_mballoc()
 {
 	tst_resm TINFO "isDelalloc: $1, isDirectIO: $2, Blocksize: $3, isAuto_da_alloc: $4"
 
-	mkfs.ext4 -I 256 -b $3 /$EXT4_DEV &> /dev/null
+	mkfs.ext4 -I 256 -b $3 /$EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return
 	fi
 
-	tune2fs -O extents $EXT4_DEV &> /dev/null
+	tune2fs -O extents $EXT4_DEV >/dev/null 2>&1
 
 	mount -t ext4 -o $1,$4 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
@@ -105,7 +105,7 @@ ext4_test_delalloc_mballoc()
 		return
 	fi
 
-	fsck -p $EXT4_DEV &> /dev/null
+	fsck -p $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return

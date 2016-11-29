@@ -87,7 +87,7 @@ echo setuid test
 echo
 
 tmpscript=cron_neg01_test
-rm -rf $tmpscript.out &> /dev/null
+rm -rf $tmpscript.out >/dev/null 2>&1
 
 
 cat > /tmp/$tmpscript << EOF
@@ -127,7 +127,7 @@ else
 fi
 echo
 
-rm /tmp/$tmpscript* &> /dev/null
+rm /tmp/$tmpscript* >/dev/null 2>&1
 crontab -r
 
 # Restore crontab

@@ -66,7 +66,7 @@ ext4_test_uninit_groups()
 {
 	echo "Test $TST_COUNT" >> ext4_uninit_groups_result.txt
 
-	mkfs.ext4 -I 256 -m 0 $EXT4_DEV &> /dev/null
+	mkfs.ext4 -I 256 -m 0 $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return
@@ -78,10 +78,10 @@ ext4_test_uninit_groups()
 		flag=$3
 	fi
 
-	tune2fs -O extents,uninit_groups,$flag $EXT4_DEV &> /dev/null
+	tune2fs -O extents,uninit_groups,$flag $EXT4_DEV >/dev/null 2>&1
 
 	# Must run fsck after setting uninit_groups
-	fsck -p $EXT4_DEV &> /dev/null
+	fsck -p $EXT4_DEV >/dev/null 2>&1
 
 	mount -t ext4 -o $1,$2 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
@@ -102,7 +102,7 @@ ext4_test_uninit_groups()
 		return
 	fi
 
-	fsck -p $EXT4_DEV &> /dev/null
+	fsck -p $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return

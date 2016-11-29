@@ -59,14 +59,14 @@ ext4_run_case()
 	# only mkfs if block size has been changed,
 	# or previous case failed
 	if [ $prev_result -ne $PASS -o $4 -ne $prev_block_size ]; then
-		mkfs.ext4 -b $4 -I 256 $EXT4_DEV &> /dev/null
+		mkfs.ext4 -b $4 -I 256 $EXT4_DEV >/dev/null 2>&1
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL "failed to create ext4 filesystem"
 			return
 		fi
 		prev_block_size=$4
 
-		tune2fs -O extents $EXT4_DEV &> /dev/null
+		tune2fs -O extents $EXT4_DEV >/dev/null 2>&1
 	fi
 
 	prev_result=$FAIL
@@ -113,7 +113,7 @@ ext4_run_case()
 	fi
 
 	# run fsck to make sure the filesystem has no errors
-	e2fsck -p $EXT4_DEV &> /dev/null
+	e2fsck -p $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck: the filesystem has errors"
 		return

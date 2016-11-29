@@ -112,7 +112,7 @@ compile_ltp()
         0) \
             for cmd in cc make lex ;
             do \
-                which $cmd &>/tmp/runltp.err.$$ ;
+                which $cmd >/tmp/runltp.err.$$ 2>&1 ;
                 if [ $? -ne 0 ] ;
                     then \
                         display_info_msg "Compiling LTP testsuite" \

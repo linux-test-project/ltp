@@ -57,14 +57,14 @@ assign_password()
 		echo "*** Passwords do not match."
 		exit 1
 	fi
-	if ! keyctl instantiate $1 "$newpasswd" $2 &>/dev/null; then
+	if ! keyctl instantiate $1 "$newpasswd" $2 >/dev/null 2>&1; then
 		echo "*** Error while assigning new password"
 		exit 1
 	fi
 	echo "Password assigned."
 
 	exit 0
-	} &> $USER_CONSOLE < $USER_CONSOLE
+	} >$USER_CONSOLE 2>&1 < $USER_CONSOLE
 }
 
 assign_password || exit $RC

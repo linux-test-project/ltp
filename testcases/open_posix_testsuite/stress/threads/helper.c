@@ -29,7 +29,7 @@
 #!/bin/sh
 
 #monitor the system
-vmstat -n 120 180 &> monitor.txt &
+vmstat -n 120 180 >monitor.txt 2>&1 &
 
 #run the tests
 for TS in `ls -1 *.c`;

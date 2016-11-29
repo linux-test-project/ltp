@@ -32,7 +32,7 @@ export TST_TOTAL=2
 # $1: 1024 or 4096
 ext4_test_persist_prealloc()
 {
-	mkfs.ext4 -I 256 -b $1 $EXT4_DEV &> /dev/null
+	mkfs.ext4 -I 256 -b $1 $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return
@@ -72,7 +72,7 @@ ext4_test_persist_prealloc()
 		return
 	fi
 
-	e2fsck -p $EXT4_DEV &> /dev/null
+	e2fsck -p $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return

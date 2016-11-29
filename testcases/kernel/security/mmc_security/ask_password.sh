@@ -52,14 +52,14 @@ ask_password()
 		while [ -z "$passwd" ]; do
 			read -s -p "MMC password: " passwd; echo
 		done
-		if ! keyctl instantiate $1 "$passwd" $2 &>/dev/null; then
+		if ! keyctl instantiate $1 "$passwd" $2 >/dev/null 2>&1; then
 			echo "*** Wrong password! The card was not unlocked."
 			exit 1
 		fi
 		echo "Password accepted."
 
 		exit 0
-	} &> $USER_CONSOLE < $USER_CONSOLE
+	} >$USER_CONSOLE 2>&1 < $USER_CONSOLE
 }
 
 ask_password || exit $RC

@@ -22,10 +22,10 @@ if [ $iam = "root" ]; then
 		exit 1
 	fi
 
-	mv $CRON_ALLOW $CRON_ALLOW.old &> /dev/null
+	mv $CRON_ALLOW $CRON_ALLOW.old >/dev/null 2>&1
 	su $1 -c "$0 $*"
         RC=$?
-	mv $CRON_ALLOW.old $CRON_ALLOW &> /dev/null
+	mv $CRON_ALLOW.old $CRON_ALLOW >/dev/null 2>&1
 	exit $RC
 fi
 
@@ -53,7 +53,7 @@ fi
 
 # 1. Add new job
 
-rm -rf /tmp/crontest &> /dev/null
+rm -rf /tmp/crontest >/dev/null 2>&1
 mkdir -p /tmp/crontest
 
 cat > /tmp/crontest/testjob_cron01 << EOF
