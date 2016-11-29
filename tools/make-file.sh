@@ -35,10 +35,6 @@ fi
 
 [ -e "$file" ] && exit 0
 
-if ! perl -e "print 'A' x $size" > "$file" 2> /dev/null ; then
-	if ! awk 'BEGIN { cnt='$size'; while (cnt--) printf "A" }' > "$file" 2> /dev/null ; then
-		( while ((size--)) ; do echo -n A ; done ) > "$file"
-	fi
-fi
+while [ $((size=size-1)) -ge 0 ]; do printf "A" ; done > "$file"
 
 chmod 666 $file
