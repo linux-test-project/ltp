@@ -71,9 +71,9 @@ list_tests()
 	pushd $TESTS_DIR >/dev/null
 	for file in `find -name run_auto.sh`
 	do
-		echo -e " `dirname  $file `"
+		echo " `dirname  $file `"
 	done
-		echo -e " \n"
+		printf " \n\n"
 }
 
 run_test()
@@ -103,7 +103,7 @@ run_test()
 		fi
 		pushd $TESTS_DIR >/dev/null
 	else
-		echo -e "\n $test is not a valid test subdirectory "
+		printf "\n $test is not a valid test subdirectory \n"
 		usage
 		exit 1
 	fi

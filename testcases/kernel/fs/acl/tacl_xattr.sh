@@ -83,9 +83,8 @@ chmod 777 tacl/blkext2
 losetup /dev/loop0 tacl/blkext2 >/dev/null 2>&1
 if [ $? != 0 ]
 then
-	echo ""
-	echo "FAILED:  [ losetup ] Must have loop device support by kernel"
-	echo -e "\t to execute this script"
+	printf "\nFAILED:  [ losetup ] Must have loop device support by kernel\n"
+	printf "\t to execute this script\n"
 	exit 1
 fi
 
@@ -97,10 +96,9 @@ then
 	mount -t ext3 -o defaults,acl,user_xattr /dev/loop0 tacl/mount-ext2
 	if [ $? != 0 ]
 	then
-		echo ""
-		echo "FAILED:  [ mount ] Make sure that ACL (Access Control List)"
-		echo -e "\t and Extended Attribute are built into the kernel"
-		echo -e "\t Can not mount ext2 file system with acl and user_xattr options"
+		printf "\nFAILED:  [ mount ] Make sure that ACL (Access Control List)\n"
+		printf "\t and Extended Attribute are built into the kernel\n"
+		printf "\t Can not mount ext2 file system with acl and user_xattr options\n"
 		exit 1
 	fi
 
@@ -110,10 +108,9 @@ else
 	mount -t ext2 -o defaults,acl,user_xattr /dev/loop0 tacl/mount-ext2
 	if [ $? != 0 ]
 	then
-		echo ""
-		echo "FAILED:  [ mount ] Make sure that ACL (Access Control List)"
-		echo -e "\t and Extended Attribute are built into the kernel"
-		echo -e "\t Can not mount ext2 file system with acl and user_xattr options"
+		printf "\nFAILED:  [ mount ] Make sure that ACL (Access Control List)\n"
+		printf "\t and Extended Attribute are built into the kernel\n"
+		printf "\t Can not mount ext2 file system with acl and user_xattr options\n"
 		exit 1
 	fi
 fi
@@ -179,23 +176,19 @@ su - tacluser1 << TACL_USER1
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfil1 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile1 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] Create file must be denied by file permission bits"
-		echo -e "\t [ Physical Directory ]"
+		printf "\nFAILED:  [ touch ] Create file must be denied by file permission bits\n"
+		printf "\t [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: Create file denied by file permission bits [ Physical directory ]"
+		printf "\nSUCCESS: Create file denied by file permission bits [ Physical directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfil2 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile2 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] Create file must be denied by file permission bits"
-		echo -e "\t [ Symlink Directory ]"
+		printf "\nFAILED:  [ touch ] Create file must be denied by file permission bits\n"
+		printf "\t [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: Create file denied by file permission bits [ Symlink directory ]"
+		printf "\nSUCCESS: Create file denied by file permission bits [ Symlink directory ]\n"
 	fi
 
 TACL_USER1
@@ -216,25 +209,21 @@ su - tacluser1 << TACL_USER1
 	cd $CUR_PATH/tacl/mount-ext2/shared/team1/ 2> /dev/null
 	if [ $? != 0 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_USER_OBJ  entry already contains the owner execute"
-		echo -e "\t permissions, but operation failed [ Physical Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_USER_OBJ  entry already contains the owner execute\n"
+		printf "\t permissions, but operation failed [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_USER_OBJ  entry contains the owner execute permissions, "
-		echo -e "\t operation success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_USER_OBJ  entry contains the owner execute permissions,\n"
+		printf "\t operation success [ Physical Directory ]\n"
 	fi
 
 	cd $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/ 2> /dev/null
 	if [ $? != 0 ]
 	then
-		echo ""
-		echo "FAILED: [ touch ] ACL_USER_OBJ  entry already contains the owner execute"
-		echo -e "\t permissions, but operation failed [ Symlink Directory ]"
+		printf "\nFAILED: [ touch ] ACL_USER_OBJ  entry already contains the owner execute\n"
+		printf "\t permissions, but operation failed [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_USER_OBJ  entry contains the owner execute permissions,"
-		echo -e "\t operation success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_USER_OBJ  entry contains the owner execute permissions,\n"
+		printf "\t operation success [ Symlink Directory ]\n"
 	fi
 
 TACL_USER1
@@ -246,25 +235,21 @@ su - tacluser1 << TACL_USER1
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfil1 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile1 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_USER_OBJ  entry already contains the owner write "
-		echo -e "\t permissions, but operation failed [ Physical Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_USER_OBJ  entry already contains the owner write \n"
+		printf "\t permissions, but operation failed [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_USER_OBJ  entry contains the owner write permissions,"
-		echo -e "\t operation success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_USER_OBJ  entry contains the owner write permissions,\n"
+		printf "\t operation success [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfil2 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile2 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_USER_OBJ  entry already contains the owner write "
-		echo -e "\t permissions, but operation failed [ Symlink Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_USER_OBJ  entry already contains the owner write \n"
+		printf "\t permissions, but operation failed [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_USER_OBJ  entry contains the owner write permissions,"
-		echo -e "\t operation success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_USER_OBJ  entry contains the owner write permissions,\n"
+		printf "\t operation success [ Symlink Directory ]\n"
 	fi
 
 TACL_USER1
@@ -286,25 +271,21 @@ su - tacluser3 << TACL_USER3
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfile3 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile3 ]
 	then
-		echo ""
-		echo "SUCCESS: ACL_USER entry contains the user permissions, "
-		echo -e "\t operation success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_USER entry contains the user permissions,\n"
+		printf "\t operation success [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  ACL_USER entry contains the user permissions,"
-		echo -e "\t but operation denied [ Physical Directory ]"
+		printf "\nFAILED:  ACL_USER entry contains the user permissions,\n"
+		printf "\t but operation denied [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile4 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile4 ]
 	then
-		echo ""
-		echo "SUCCESS: ACL_USER entry contains the user permissions, "
-		echo -e "\t operation success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_USER entry contains the user permissions,\n"
+		printf "\t operation success [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  ACL_USER entry contains the user permissions,"
-		echo -e "\t but operation denied [ Symlink Directory ]"
+		printf "\nFAILED:  ACL_USER entry contains the user permissions,\n"
+		printf "\t but operation denied [ Symlink Directory ]\n"
 	fi
 
 TACL_USER3
@@ -316,29 +297,25 @@ su - tacluser3 << TACL_USER3
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfile5 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile5 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_USER entry contains the user permissions"
-		echo -e "\t but ACL_MASK are set --- , "
-		echo -e "\t operation must be denied [ Physical Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_USER entry contains the user permissions\n"
+		printf "\t but ACL_MASK are set --- ,\n"
+		printf "\t operation must be denied [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_USER entry contains the user permissions,"
-		echo -e "\t but ACL_MASK are set ___ ,"
-		echo -e "\t operation success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_USER entry contains the user permissions,\n"
+		printf "\t but ACL_MASK are set ___ ,\n"
+		printf "\t operation success [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile6 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile6 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_USER entry contains the user permissions"
-		echo -e "\t but ACL_MASK are set --- ,"
-		echo -e "\t operation must be denied [ Symlink Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_USER entry contains the user permissions\n"
+		printf "\t but ACL_MASK are set --- ,\n"
+		printf "\t operation must be denied [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_USER entry contains the user permissions,"
-		echo -e "\t but ACL_MASK are set ___ ,"
-		echo -e "\t operation success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_USER entry contains the user permissions,\n"
+		printf "\t but ACL_MASK are set ___ ,\n"
+		printf "\t operation success [ Symlink Directory ]\n"
 	fi
 
 TACL_USER3
@@ -370,25 +347,21 @@ su - tacluser2 << TACL_USER2
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfile7 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile7 ]
 	then
-		echo ""
-		echo "SUCCESS: ACL_GROUP entry contains the group permissions,"
-		echo -e "\t option success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_GROUP entry contains the group permissions,\n"
+		printf "\t option success [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  [ touch ] ACL_GROUP entry already contains the group permissions,"
-		echo -e "\t but option success [ Physical Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_GROUP entry already contains the group permissions,\n"
+		printf "\t but option success [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile8 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile8 ]
 	then
-		echo ""
-		echo "SUCCESS: ACL_GROUP entry contains the group permissions,"
-		echo -e "\t option success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_GROUP entry contains the group permissions,\n"
+		printf "\t option success [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  [ touch ] ACL_GROUP entry already contains the group permissions,"
-		echo -e "\t but option success [ Symlink Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_GROUP entry already contains the group permissions,\n"
+		printf "\t but option success [ Symlink Directory ]\n"
 	fi
 
 TACL_USER2
@@ -399,29 +372,25 @@ su - tacluser2 << TACL_USER2
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfile9 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile9 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_GROUP entry contains the group permissions"
-		echo -e "\t and ACL_MASK entry are set ---,"
-		echo -e "\t option must no be success [ Physical Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_GROUP entry contains the group permissions\n"
+		printf "\t and ACL_MASK entry are set ---,\n"
+		printf "\t option must no be success [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_GROUP entry already contains the group permissions"
-		echo -e "\t and ACL_MASK entry are set ---,"
-		echo -e "\t option success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_GROUP entry already contains the group permissions\n"
+		printf "\t and ACL_MASK entry are set ---,\n"
+		printf "\t option success [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile10 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile10 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_GROUP entry contains the group permissions"
-		echo -e "\t and ACL_MASK entry are set ---, "
-		echo -e "\t option must no be success [ Symlink Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_GROUP entry contains the group permissions\n"
+		printf "\t and ACL_MASK entry are set ---,\n"
+		printf "\t option must no be success [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_GROUP entry already contains the group permissions"
-		echo -e "\t and ACL_MASK entry are set ---,"
-		echo -e "\t option success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_GROUP entry already contains the group permissions\n"
+		printf "\t and ACL_MASK entry are set ---,\n"
+		printf "\t option success [ Symlink Directory ]\n"
 	fi
 
 TACL_USER2
@@ -434,25 +403,21 @@ su - tacluser2 << TACL_USER2
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfile11 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile11 ]
 	then
-		echo ""
-		echo "SUCCESS: ACL_GROUP_OBJ entry contains the group owner permissions,"
-		echo -e "\t option success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_GROUP_OBJ entry contains the group owner permissions,\n"
+		printf "\t option success [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  [ touch ] ACL_GROUP_OBJ entry already contains the group owner,"
-		echo -e "\t but option denied [ Physical Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_GROUP_OBJ entry already contains the group owner,\n"
+		printf "\t but option denied [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile12 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile12 ]
 	then
-		echo ""
-		echo "SUCCESS: ACL_GROUP_OBJ entry contains the group owner permissions,"
-		echo -e "\t option success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_GROUP_OBJ entry contains the group owner permissions,\n"
+		printf "\t option success [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  [ touch ] ACL_GROUP_OBJ entry already contains the group owner,"
-		echo -e "\t but option denied [ Symlink Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_GROUP_OBJ entry already contains the group owner,\n"
+		printf "\t but option denied [ Symlink Directory ]\n"
 	fi
 
 TACL_USER2
@@ -463,29 +428,25 @@ su - tacluser2 << TACL_USER2
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfile13 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile13 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_GROUP_OBJ entry contains the group owner permissions"
-		echo -e "\t and ACL_MASK entry are set ---,"
-		echo -e "\t option must no be success [ Physical Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_GROUP_OBJ entry contains the group owner permissions\n"
+		printf "\t and ACL_MASK entry are set ---,\n"
+		printf "\t option must no be success [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_GROUP_OBJ entry already contains the group owner permissions"
-		echo -e "\t and ACL_MASK entry are set ---,"
-		echo -e "\t option success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_GROUP_OBJ entry already contains the group owner permissions\n"
+		printf "\t and ACL_MASK entry are set ---,\n"
+		printf "\t option success [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile14 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile14 ]
 	then
-		echo ""
-		echo "FAILED:  [ touch ] ACL_GROUP_OBJ entry contains the group owner permissions"
-		echo -e "\t and ACL_MASK entry are set ---,"
-		echo -e "\t option must no be success [ Symlink Directory ]"
+		printf "\nFAILED:  [ touch ] ACL_GROUP_OBJ entry contains the group owner permissions\n"
+		printf "\t and ACL_MASK entry are set ---,\n"
+		printf "\t option must no be success [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "SUCCESS: ACL_GROUP_OBJ entry already contains the group owner permissions"
-		echo -e "\t and ACL_MASK entry are set ---, "
-		echo -e "\t option success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_GROUP_OBJ entry already contains the group owner permissions\n"
+		printf "\t and ACL_MASK entry are set ---,\n"
+		printf "\t option success [ Symlink Directory ]\n"
 	fi
 
 TACL_USER2
@@ -505,25 +466,21 @@ su - tacluser4 << TACL_USER4
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfile15 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile15 ]
 	then
-		echo ""
-		echo "SUCCESS: ACL_OTHER entry contains the user permissions,"
-		echo -e "\t operation success [ Physical Directory ]"
+		printf "\nSUCCESS: ACL_OTHER entry contains the user permissions,\n"
+		printf "\t operation success [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  ACL_OTHER entry contains the user permissions,"
-		echo -e "\t but operation denied [ Physical Directory ]"
+		printf "\nFAILED:  ACL_OTHER entry contains the user permissions,\n"
+		printf "\t but operation denied [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile16 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile16 ]
 	then
-		echo ""
-		echo "SUCCESS: ACL_OTHER entry contains the user permissions,"
-		echo -e "\t operation success [ Symlink Directory ]"
+		printf "\nSUCCESS: ACL_OTHER entry contains the user permissions,\n"
+		printf "\t operation success [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  ACL_OTHER entry contains the user permissions,"
-		echo -e "\t but operation denied [ Symlink Directory ]"
+		printf "\nFAILED:  ACL_OTHER entry contains the user permissions,\n"
+		printf "\t but operation denied [ Symlink Directory ]\n"
 	fi
 
 TACL_USER4
@@ -535,21 +492,17 @@ su - tacluser4 << TACL_USER4
 	touch $CUR_PATH/tacl/mount-ext2/shared/team1/newfile17 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile17 ]
 	then
-		echo ""
-		echo "SUCCESS: [ touch ] ACL_OTHER do not strick by ACL_MASK [ Physical Directory ]"
+		printf "\nSUCCESS: [ touch ] ACL_OTHER do not strick by ACL_MASK [ Physical Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  ACL_OTHER do not strick by ACL_MASK [ Physical Directory ]"
+		printf "\nFAILED:  ACL_OTHER do not strick by ACL_MASK [ Physical Directory ]\n"
 	fi
 
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile18 2> /dev/null
 	if [ -e $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfile18 ]
 	then
-		echo ""
-		echo "SUCCESS: [ touch ] ACL_OTHER do not strick by ACL_MASK [ Symlink Directory ]"
+		printf "\nSUCCESS: [ touch ] ACL_OTHER do not strick by ACL_MASK [ Symlink Directory ]\n"
 	else
-		echo ""
-		echo "FAILED:  ACL_OTHER do not strick by ACL_MASK [ Symlink Directory ]"
+		printf "\nFAILED:  ACL_OTHER do not strick by ACL_MASK [ Symlink Directory ]\n"
 	fi
 
 TACL_USER4
@@ -583,11 +536,9 @@ RES=`echo $CONTENT | grep ".r--r--r--" | awk '{print $1}'`
 
 if [ $RES != "" ]
 then
-	echo ""
-	echo "SUCCESS: With default ACLs set , new file permission set correct."
+	printf "\nSUCCESS: With default ACLs set, new file permission set correct.\n"
 else
-	echo ""
-	echo "FAILED:  With default ACLs set , new file permission set not correct"
+	printf "\nFAILED:  With default ACLs set, new file permission set not correct\n"
 fi
 
 
@@ -611,11 +562,9 @@ RES=`echo $CONTENT | grep ".r--rw-r--" | awk '{print $1}'`
 
 if [ $RES != "" ]
 then
-	echo ""
-	echo "SUCCESS: With default ACLs set , new file permission set correct."
+	printf "\nSUCCESS: With default ACLs set, new file permission set correct.\n"
 else
-	echo ""
-	echo "FAILED:  With default ACLs set , new file permission set not correct"
+	printf "\nFAILED:  With default ACLs set, new file permission set not correct\n"
 fi
 
 #
@@ -638,11 +587,9 @@ RES=`echo $CONTENT | grep ".rw-rw-rw-" | awk '{print \$1}'`
 
 if [ $RES != "" ]
 then
-	echo ""
-	echo "SUCCESS: With default ACLs set , new file permission set correct."
+	printf "\nSUCCESS: With default ACLs set, new file permission set correct.\n"
 else
-	echo ""
-	echo "FAILED:  With default ACLs set , new file permission set not correct"
+	printf "\nFAILED:  With default ACLs set, new file permission set not correct\n"
 fi
 
 
@@ -673,19 +620,15 @@ then
 	then
 		if [ $OTHER_PERMISSION = "other::rwx" ]
 		then
-			echo ""
-			echo "SUCCESS: Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are correct"
+			printf "\nSUCCESS: Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are correct\n"
 		else
-			echo ""
-			echo "FAILED:  Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are not correct"
+			printf "\nFAILED:  Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are not correct\n"
 		fi
 	else
-		echo ""
-		echo "FAILED:  Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are not correct"
+		printf "\nFAILED:  Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are not correct\n"
 	fi
 else
-	echo ""
-	echo "FAILED:  Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are not correct"
+	printf "\nFAILED:  Chmod with ACL_USER_OBJ ACL_GROUP_OBJ and ACL_OTHER are not correct\n"
 fi
 
 
@@ -706,11 +649,9 @@ if [ $ITEM_OWNER = "tacluser2" ]
 then
 	if [ $ITEM_GROUP = "tacluser2" ]
 	then
-		echo ""
-		echo "SUCCESS: Chown correct"
+		printf "\nSUCCESS: Chown correct\n"
 	else
-		echo ""
-		echo "FAILED:  Chown are not correct"
+		printf "\nFAILED:  Chown are not correct\n"
 	fi
 else
 	echo "FAILED:  Chown are not correct"
@@ -729,15 +670,12 @@ getfacl -RL tacl/mount-ext2/ > tacl/tmp2
 
 if [ `diff tacl/tmp1 tacl/tmp2` ]
 then
-	echo ""
-	echo "FAILED:  ACLs backup and restore are not correct"
+	printf "\nFAILED:  ACLs backup and restore are not correct\n"
 else
-	echo ""
-	echo "SUCCESS: ACLs backup and restore are correct"
+	printf "\nSUCCESS: ACLs backup and restore are correct\n"
 fi
 
-echo ""
-echo -e "\tEnd ACLs Test"
+printf "\n\tEnd ACLs Test\n"
 
 #####################################################
 #
@@ -745,13 +683,10 @@ echo -e "\tEnd ACLs Test"
 #
 #####################################################
 
-echo
-echo "Now begin Extend Attribute Test"
+printf "\nNow begin Extend Attribute Test\n"
 
 # dir
-echo
-echo "Attach name:value pair to object dir "
-echo ""
+printf "\nAttach name:value pair to object dir\n\n"
 attr -s attrname1 -V attrvalue1 tacl/mount-ext2/shared/team2
 if [ $? != 0 ]
 then
@@ -849,15 +784,12 @@ setfattr -h --restore=tacl/backup.ea
 getfattr -dhR -m- -e hex tacl/mount-ext2 > tacl/backup.ea1
 if [ `diff  tacl/backup.ea1  tacl/backup.ea` ]
 then
-        echo ""
-        echo "FAILED:  EAs backup and restore are not correct"
+        printf "\nFAILED:  EAs backup and restore are not correct\n"
 else
-        echo ""
-        echo "SUCCESS: EAs backup and restore are correct"
+        printf "\nSUCCESS: EAs backup and restore are correct\n"
 fi
 
-echo ""
-echo -e "\tEnd EAs Test"
+printf "\n\tEnd EAs Test\n"
 
 
 

@@ -8,9 +8,9 @@ fi
 source $SCRIPTS_DIR/setenv.sh
 LOG_FILE="$LOG_DIR/$LOG_FORMAT-pthread_cond_many.log"
 
-echo -e "Logging to: " | tee -a $LOG_FILE
-echo -e "$LOG_FILE " | tee -a $LOG_FILE
-echo -e "and to local individual .out files " | tee -a $LOG_FILE
+echo "Logging to: " | tee -a $LOG_FILE
+echo "$LOG_FILE " | tee -a $LOG_FILE
+echo "and to local individual .out files " | tee -a $LOG_FILE
 
 #
 # make will eventually go away from here, as will the above echoes
@@ -26,10 +26,10 @@ nthread=5000
 iter=400
 nproc=5
 
-echo -e "pthread_cond_many configuration:" | tee -a $LOG_FILE
-echo -e "number of threads = $nthread " | tee -a $LOG_FILE
-echo -e "number of iterations = $iter " | tee -a $LOG_FILE
-echo -e "number of processes = $nproc " | tee -a $LOG_FILE
+echo "pthread_cond_many configuration:" | tee -a $LOG_FILE
+echo "number of threads = $nthread " | tee -a $LOG_FILE
+echo "number of iterations = $iter " | tee -a $LOG_FILE
+echo "number of processes = $nproc " | tee -a $LOG_FILE
 
 # Remove any existing local log files
 rm -f $nthread.$iter.$nproc.*.out

@@ -41,38 +41,39 @@ fi
 
 function usage()
 {
-	echo -e "\nUsage: test_realtime.sh  -t test-argument [-l loop num_of_iterations] [-t test-argument1 [-l loop ...]] ..."
-	echo -e "\nWhere test-argument = func | stress | perf | all | list | clean | test_name"
-	echo -e "\nand:\n"
-	echo -e " func = 	all functional tests will be run "
-	echo -e " stress = 	all stress tests will be run "
-	echo -e " perf = 	all perf tests will be run "
-	echo -e " all =		all tests will be run "
-	echo -e " list = 	all available tests will be listed "
-	echo -e " clean = 	all logs deleted, make clean performed "
-	echo -e " test_name = 	only test_name subdir will be run (e.g: func/pi-tests) "
-	echo -e "\n"
+	cat <<EOF
+Usage: test_realtime.sh  -t test-argument [-l loop num_of_iterations] [-t test-argument1 [-l loop ...]] ...
+
+ test-argument: func | stress | perf | all | list | clean | test_name
+ func:	 	all functional tests will be run
+ stress: 	all stress tests will be run
+ perf:		all perf tests will be run
+ all:		all tests will be run
+ list:	 	all available tests will be listed
+ clean: 	all logs deleted, make clean performed
+ test_name:	only test_name subdir will be run (e.g: func/pi-tests)
+EOF
 	exit 1;
 }
 
 function check_error()
 {
         if [ $? -gt 0 ]; then
-        echo -e "\n $1 Failed\n"
+        printf "\n $1 Failed\n\n"
         exit 1
         fi
 }
 
 list_tests()
 {
-	echo -e "\nAvailable tests are:\n"
+	printf "\nAvailable tests are:\n\n"
 
 	cd $TESTS_DIR
 	for file in `find -name run_auto.sh`
 	do
-		echo -e " `dirname  $file `"
+		printf " `dirname  $file `\n"
 	done
-		echo -e " \n"
+		printf " \n\n"
 }
 
 function run_test()
@@ -97,11 +98,11 @@ function run_test()
                 ./run_auto.sh
                 done
             else
-                echo -e "\n Failed to find run script in $test \n"
+                printf "\n Failed to find run script in $test \n\n"
             fi
             pushd $TESTS_DIR >/dev/null
         else
-                echo -e "\n $test is not a valid test subdirectory "
+                printf "\n $test is not a valid test subdirectory \n"
                 usage
                 exit 1
         fi
@@ -156,7 +157,7 @@ find_test()
             done
                 pushd $TESTS_DIR >/dev/null
         else
-            echo -e "\n $subdir not found; check name/path with run.sh list "
+            printf "\n $subdir not found; check name/path with run.sh list \n"
         fi
     done
 

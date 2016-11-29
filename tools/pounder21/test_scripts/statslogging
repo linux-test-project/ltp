@@ -38,13 +38,13 @@ INFOFILE=info
 #generic system info
 function sysinfo() {
 	uname -a >> $INFOFILE
-	echo -e "\n[cpuinfo]=================" >>$INFOFILE
+	printf "\n[cpuinfo]=================\n" >>$INFOFILE
 	cat /proc/cpuinfo >> $INFOFILE
-	echo -e "\n[meminfo]=================" >>$INFOFILE
+	printf "\n[meminfo]=================\n" >>$INFOFILE
 	cat /proc/meminfo >> $INFOFILE
-	echo -e "\n[ifinfo]=================" >>$INFOFILE
+	printf "\n[ifinfo]=================\n" >>$INFOFILE
 	/sbin/ifconfig >> $INFOFILE
-	echo -e "\n[sysctl]=================" >>$INFOFILE
+	printf "\n[sysctl]=================\n" >>$INFOFILE
 	sysctl -a >> $INFOFILE
 }
 
@@ -55,7 +55,7 @@ function procinfo() {
 	for i in $PROC_ENTRIES
 	do
 		logfile=`basename $i`
-		echo -e "\n$NOW" >> $logfile.log
+		printf "\n$NOW\n" >> $logfile.log
 		cat /proc/$i >> $logfile.log
 		sleep 1
 	done
@@ -73,7 +73,7 @@ function singleshots(){
 	while true; do
 		vmstat $DELAY $COUNT >> vmstat.log
 		NOW=`date`
-		echo -e "\n$NOW\n" >> vmstat.log
+		printf "\n$NOW\n\n" >> vmstat.log
 	done &
 
 	IOSTAT=`which iostat 2> /dev/null`
@@ -81,7 +81,7 @@ function singleshots(){
 		while true; do
 			iostat -x $DELAY $COUNT >> iostat.log
 			NOW=`date`
-			echo -e "\n$NOW\n" >> iostat.log
+			printf "\n$NOW\n\n" >> iostat.log
 		done &
 	fi
 }

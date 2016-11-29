@@ -226,7 +226,7 @@ else
     RET=1
 fi
 
-echo -e "\nTest complete, see logs pcl-\$CONCURRENTx-t\$THREAD-\$NUM.log for detailed results."
+printf "\nTest complete, see logs pcl-\$CONCURRENTx-t\$THREAD-\$NUM.log for detailed results.\n"
 echo "Criteria: < 10% Difference in average runs"
 echo "Result: $RESULT"
 

@@ -115,11 +115,11 @@ do
   COOL="1"
   if [ "$SLAY_BUTTHEAD" = "on" ]
   then
-    echo "${ME}: $SIGSHOW is kicking $1's butt!"
-    echo -e "\\n\\n\\nI'm kicking your butt.\\n\\n\\n" | write $1 2>/dev/null
+    printf "${ME}: $SIGSHOW is kicking $1's butt!\n"
+    printf "\\n\\n\\nI'm kicking your butt.\\n\\n\\n\n" | write $1 2>/dev/null
   else
-    echo "${ME}: Sending $SIGSHOW signal to $1's process(es)..."
-    echo -e "\\n\\n\\nYour current session has been terminated.\\n\\n\\n" | \
+    printf "${ME}: Sending $SIGSHOW signal to $1's process(es)...\n"
+    printf "\\n\\n\\nYour current session has been terminated.\\n\\n\\n\n" | \
     	write $1 2>/dev/null
   fi
   if [ "$SIGNAL" = "-clean" ]
