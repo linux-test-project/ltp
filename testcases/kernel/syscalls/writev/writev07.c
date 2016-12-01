@@ -101,7 +101,7 @@ static void test_partially_valid_iovec(int initial_file_offset)
 
 	/* writev() wrote more bytes than bytes preceding invalid iovec */
 	tst_res(TINFO, "writev() has written %ld bytes", TEST_RETURN);
-	if (TEST_RETURN > (long) wr_iovec[0].iov_base) {
+	if (TEST_RETURN > (long) wr_iovec[0].iov_len) {
 		tst_res(TFAIL, "writev wrote more than expected");
 		SAFE_CLOSE(fd);
 		return;
