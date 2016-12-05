@@ -52,7 +52,6 @@ do_setup()
 
     TC=sine
     RHOST=${RHOST:-`hostname`}
-    TCtmp=${TCtmp:-$LTPROOT/testcases/bin/echo$$}
     CLEANUP=${CLEANUP:-ON}
     CREATEFILE=createfile
     ECHOES=echoes${EXEC_SUFFIX}
@@ -75,7 +74,6 @@ do_setup()
 
 do_test()
 {
-    mkdir $TCtmp
     echo  "Creating echo file $ECHOFILE"
     if ! "$LTPROOT/testcases/bin/$CREATEFILE" $ECHOSIZE "$TCtmp/$ECHOFILE"; then
         end_testcase "$ECHOFILE not created"
