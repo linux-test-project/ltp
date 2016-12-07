@@ -12,6 +12,8 @@
 #include "test.h"
 
 #define PROTOCOL                PTHREAD_PRIO_INHERIT
+#define MIN(x, y)               (((x) < (y)) ? (x) : (y))
+#define MAX_CPU                 6
 
 static inline
 double seconds_read(void)

@@ -236,7 +236,7 @@ void *thread_tb2(void *arg)
 
 int main(int argc, char **argv)
 {
-	cpus = sysconf(_SC_NPROCESSORS_ONLN);
+	cpus = MIN(sysconf(_SC_NPROCESSORS_ONLN), MAX_CPU);
 	pthread_mutexattr_t mutex_attr;
 	pthread_attr_t threadattr;
 	pthread_t threads[cpus - 1];
