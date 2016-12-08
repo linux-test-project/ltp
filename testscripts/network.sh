@@ -94,7 +94,7 @@ if [ ${VERBOSE} = "yes" ]; then
 	echo " - ${LHOST_IFACES} local interface (MAC address: ${LHOST_HWADDRS})"
 	echo " - ${RHOST_IFACES} remote interface (MAC address: ${RHOST_HWADDRS})"
 
-	cat $TMPDIR/network_stress.tests
+	cat $CMDFILE
 	${LTPROOT}/ver_linux
 	echo ""
 	echo ${LTPROOT}/bin/ltp-pan -e -l /tmp/netpan.log -S -a ltpnet -n ltpnet -f $CMDFILE
