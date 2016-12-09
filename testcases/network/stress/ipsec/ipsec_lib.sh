@@ -21,6 +21,8 @@
 
 . test_net.sh
 
+# Authenticated encryption with associated data
+AEALGO="rfc4106_128"
 # Encryption algorithm
 EALGO="des3_ede"
 # Authentication algorithm
@@ -28,7 +30,7 @@ AALGO="sha1"
 # Compression algorithm
 CALGO="deflate"
 
-while getopts "hl:m:p:s:S:k:e:a:c:6" opt; do
+while getopts "hl:m:p:s:S:k:A:e:a:c:6" opt; do
 	case "$opt" in
 	h)
 		echo "Usage:"
@@ -39,6 +41,7 @@ while getopts "hl:m:p:s:S:k:e:a:c:6" opt; do
 		echo "s x      x is icmp messge size array"
 		echo "S n      n is IPsec SPI value"
 		echo "k x      key for vti interface"
+		echo "A x      Authenticated encryption with associated data algorithm"
 		echo "e x      Encryption algorithm"
 		echo "a x      Authentication algorithm"
 		echo "c x      Compression algorithm"
@@ -51,6 +54,7 @@ while getopts "hl:m:p:s:S:k:e:a:c:6" opt; do
 	s) ICMP_SIZE_ARRAY=$OPTARG ;;
 	S) SPI=$OPTARG ;;
 	k) VTI_KEY=$OPTARG ;;
+	A) AEALGO=$OPTARG ;;
 	e) EALGO=$OPTARG ;;
 	a) AALGO=$OPTARG ;;
 	c) CALGO=$OPTARG ;;
@@ -66,6 +70,15 @@ get_key()
 	local xdg_num=$(( $bits / 4 ))
 	echo "0x$(tr -dc "[:xdigit:]" < /dev/urandom | head -c$xdg_num)"
 }
+
+case $AEALGO in
+rfc4106_128|rfc4543_128) AEALGO_KEY=$(get_key 160) ;;
+rfc4106_192|rfc4543_192) AEALGO_KEY=$(get_key 224) ;;
+rfc4106_256|rfc4543_256) AEALGO_KEY=$(get_key 288) ;;
+rfc4309_128) AEALGO_KEY=$(get_key 152) ;;
+rfc4309_192) AEALGO_KEY=$(get_key 216) ;;
+rfc4309_256) AEALGO_KEY=$(get_key 280) ;;
+esac
 
 case $EALGO in
 des) EALGO_KEY=$(get_key 64) ;;
@@ -114,6 +127,22 @@ ipsec_set_algoline()
 		ALG="enc $EALGO $EALGO_KEY auth "'hmac('$AALGO') '$AALGO_KEY
 		ALGR="enc $EALGO $EALGO_KEY auth "'hmac\('$AALGO'\) '$AALGO_KEY
 		;;
+	esp_aead)
+		case $AEALGO in
+		rfc4106_128|rfc4106_192|rfc4106_256)
+			ALG="aead "'rfc4106(gcm(aes))'" $AEALGO_KEY 128"
+			ALGR="aead "'rfc4106\(gcm\(aes\)\)'" $AEALGO_KEY 128"
+			;;
+		rfc4309_128|rfc4309_192|rfc4309_256)
+			ALG="aead "'rfc4309(ccm(aes))'" $AEALGO_KEY 128"
+			ALGR="aead "'rfc4309\(ccm\(aes\)\)'" $AEALGO_KEY 128"
+			;;
+		rfc4543_128|rfc4543_192|rfc4543_256)
+			ALG="aead "'rfc4543(gcm(aes))'" $AEALGO_KEY 128"
+			ALGR="aead "'rfc4543\(gcm\(aes\)\)'" $AEALGO_KEY 128"
+			;;
+		esac
+		;;
 	comp)
 		ALG="comp $CALGO"
 		ALGR=$ALG
@@ -139,7 +168,8 @@ tst_ipsec()
 	local src=$2
 	local dst=$3
 	local mode=$IPSEC_MODE
-	local proto=$IPSEC_PROTO
+	local p="proto $IPSEC_PROTO"
+	[ "$IPSEC_PROTO" = "esp_aead" ] && p="proto esp"
 
 	ipsec_set_algoline
 
@@ -147,29 +177,26 @@ tst_ipsec()
 		local spi_1="0x$SPI"
 		local spi_2="0x$(( $SPI + 1 ))"
 		ROD ip xfrm state add src $src dst $dst spi $spi_1 \
-			proto $proto $ALG mode $mode sel src $src dst $dst
+			$p $ALG mode $mode sel src $src dst $dst
 		ROD ip xfrm state add src $dst dst $src spi $spi_2 \
-			proto $proto $ALG mode $mode sel src $dst dst $src
+			$p $ALG mode $mode sel src $dst dst $src
 
 		ROD ip xfrm policy add src $src dst $dst dir out tmpl src $src \
-			dst $dst proto $proto mode $mode
+			dst $dst $p mode $mode
 		ROD ip xfrm policy add src $dst dst $src dir in tmpl src $dst \
-			dst $src proto $proto mode $mode level use
+			dst $src $p mode $mode level use
 	elif [ $target = rhost ]; then
 		local spi_1="0x$(( $SPI + 1 ))"
 		local spi_2="0x$SPI"
 		tst_rhost_run -s -c "ip xfrm state add src $src dst $dst \
-			spi $spi_1 proto $proto $ALGR mode $mode sel \
-			src $src dst $dst"
+			spi $spi_1 $p $ALGR mode $mode sel src $src dst $dst"
 		tst_rhost_run -s -c "ip xfrm state add src $dst dst $src \
-			spi $spi_2 proto $proto $ALGR mode $mode sel \
-			src $dst dst $src"
+			spi $spi_2 $p $ALGR mode $mode sel src $dst dst $src"
 
 		tst_rhost_run -s -c "ip xfrm policy add src $src dst $dst \
-			dir out tmpl src $src dst $dst proto $proto mode $mode"
+			dir out tmpl src $src dst $dst $p mode $mode"
 		tst_rhost_run -s -c "ip xfrm policy add src $dst dst $src dir \
-			in tmpl src $dst dst $src proto $proto \
-			mode $mode level use"
+			in tmpl src $dst dst $src $p mode $mode level use"
 	fi
 }
 
@@ -191,6 +218,8 @@ tst_ipsec_vti()
 	local vti=$4
 	local m="mode $IPSEC_MODE"
 	local p="proto $IPSEC_PROTO"
+	[ "$IPSEC_PROTO" = "esp_aead" ] && p="proto esp"
+
 	local key="key $VTI_KEY"
 	local mrk="mark $VTI_KEY"
 	local type="type vti$TST_IPV6"
