@@ -61,7 +61,6 @@ int TST_TOTAL = 1;
 char *mqname = "mq1";
 int result = TFAIL;
 
-int errno;
 int father_to_child[2];
 int child_to_father[2];
 

@@ -47,7 +47,6 @@
 
 char *TCID = "pidns12";
 int TST_TOTAL = 1;
-int errno;
 int pipefd[2];
 
 #define CHILD_PID       1

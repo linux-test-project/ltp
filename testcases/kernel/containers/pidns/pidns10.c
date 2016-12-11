@@ -46,7 +46,6 @@
 
 char *TCID = "pidns10";
 int TST_TOTAL = 1;
-int errno;
 
 int child_fn(void *);
 

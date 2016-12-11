@@ -52,7 +52,6 @@
 char *TCID = "pidns20";
 int TST_TOTAL = 1;
 
-int errno;
 int parent_cinit[2];
 int cinit_parent[2];
 int broken = 1;			/* broken should be 0 when test completes properly */

@@ -47,7 +47,6 @@ char *TCID = "nextafter01";
 
 int local_flag = PASSED;
 int block_number;
-int errno;
 FILE *temp;
 int TST_TOTAL = 1;
 
