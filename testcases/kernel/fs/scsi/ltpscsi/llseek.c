@@ -13,7 +13,7 @@
 
 #include <errno.h>
 #include <unistd.h>
-#include <syscall.h>
+#include <sys/syscall.h>
 #include <linux/unistd.h>	/* for __NR_llseek */
 
 #if defined(__GNUC__) || defined(HAS_LONG_LONG)

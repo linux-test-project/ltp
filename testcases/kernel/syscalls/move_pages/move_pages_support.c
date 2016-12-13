@@ -17,7 +17,7 @@
  */
 
 #include <sys/mman.h>
-#include <syscall.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 #include <semaphore.h>
 #include "test.h"

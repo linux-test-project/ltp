@@ -74,7 +74,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
-#include <syscall.h>
+#include <sys/syscall.h>
 #include <linux/unistd.h>
 
 #include "test.h"		/*LTP Specific Include File */

@@ -69,7 +69,7 @@
  *****************************************************************************/
 
 #include <errno.h>
-#include  <syscall.h>
+#include  <sys/syscall.h>
 #include "test.h"
 #include "linux_syscall_numbers.h"
 

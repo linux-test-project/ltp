@@ -22,7 +22,7 @@
 
 #include <time.h>
 #include <signal.h>
-#include <syscall.h>
+#include <sys/syscall.h>
 #include <stdio.h>
 #include <errno.h>
 

@@ -34,7 +34,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/shm.h>
-#include <syscall.h>
+#include <sys/syscall.h>
 #include <pthread.h>
 
 char *TCID = "cpuset_memory_test";
