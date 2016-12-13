@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 #include "test.h"
 

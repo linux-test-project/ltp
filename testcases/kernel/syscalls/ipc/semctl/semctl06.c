@@ -57,7 +57,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "test.h"
-#include <wait.h>
+#include <sys/wait.h>
 #include "ipcsem.h"
 
 int local_flag = 1;

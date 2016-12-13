@@ -44,7 +44,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <stdio.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include "ipcsem.h"
 #include "test.h"
 

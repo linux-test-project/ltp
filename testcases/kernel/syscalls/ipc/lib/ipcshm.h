@@ -25,7 +25,7 @@
 #define __IPCSHM_H
 
 #include <errno.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 

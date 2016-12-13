@@ -30,7 +30,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <time.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <sys/time.h>
 #include <stdint.h>
 #include <inttypes.h>

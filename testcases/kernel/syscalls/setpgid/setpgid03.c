@@ -28,7 +28,7 @@
  *            has performed exec()
  */
 
-#include <wait.h>
+#include <sys/wait.h>
 #include <limits.h>
 #include <signal.h>
 #include <errno.h>

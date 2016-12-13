@@ -57,7 +57,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <sys/mman.h>
 #include "test.h"
 

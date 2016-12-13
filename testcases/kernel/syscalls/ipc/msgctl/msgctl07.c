@@ -39,7 +39,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <signal.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include "test.h"
 #include "ipcmsg.h"

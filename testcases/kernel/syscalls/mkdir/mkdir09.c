@@ -42,7 +42,7 @@
  */
 
 #include <stdio.h>		/* needed by testhead.h         */
-#include <wait.h>		/* needed by testhead.h         */
+#include <sys/wait.h>		/* needed by testhead.h         */
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/stat.h>

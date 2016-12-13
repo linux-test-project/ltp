@@ -22,7 +22,7 @@
  * Test that EPERM is set when setreuid is given an invalid user id.
  */
 
-#include <wait.h>
+#include <sys/wait.h>
 #include <limits.h>
 #include <signal.h>
 #include <errno.h>

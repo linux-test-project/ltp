@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <pwd.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 #include "test.h"
 #include "safe_macros.h"

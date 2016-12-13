@@ -48,7 +48,7 @@
 #include <sys/types.h>
 #include <sys/times.h>
 #include <errno.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <time.h>
 #include "test.h"
 #include <signal.h>

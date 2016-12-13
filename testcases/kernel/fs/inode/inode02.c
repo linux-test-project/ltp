@@ -58,7 +58,7 @@ CALLS:	mkdir, stat, open
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 #ifdef LINUX
 #include <stdlib.h>

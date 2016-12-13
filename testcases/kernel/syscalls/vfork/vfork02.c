@@ -75,7 +75,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 #include "test.h"
 

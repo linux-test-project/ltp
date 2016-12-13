@@ -27,7 +27,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <errno.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include "test.h"
 
 #define SHM_RD	0400

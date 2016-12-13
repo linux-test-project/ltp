@@ -48,7 +48,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdarg.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <sys/types.h>
 #include "test.h"
 

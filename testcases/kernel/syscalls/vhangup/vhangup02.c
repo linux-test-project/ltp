@@ -44,7 +44,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <pwd.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include "test.h"
 
 void setup(void);

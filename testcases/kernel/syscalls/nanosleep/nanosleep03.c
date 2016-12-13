@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 #include "test.h"
 

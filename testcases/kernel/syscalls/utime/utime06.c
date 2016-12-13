@@ -44,7 +44,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <utime.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/mount.h>

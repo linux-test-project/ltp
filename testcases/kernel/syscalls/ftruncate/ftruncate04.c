@@ -38,7 +38,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
