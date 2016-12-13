@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <signal.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/poll.h>
 

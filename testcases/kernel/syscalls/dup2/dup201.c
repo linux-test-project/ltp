@@ -57,7 +57,7 @@
  */
 
 #include <sys/types.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/resource.h>

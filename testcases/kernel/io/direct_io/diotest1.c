@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <errno.h>
 
 #include "diotest_routines.h"

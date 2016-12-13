@@ -113,7 +113,7 @@
 #define _GNU_SOURCE
 #endif
 #include <sys/types.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>

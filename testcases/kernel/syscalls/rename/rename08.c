@@ -65,7 +65,7 @@
  *	None.
  */
 #include <sys/types.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <errno.h>

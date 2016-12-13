@@ -41,7 +41,7 @@
  */
 #include <sys/types.h>
 #include <sys/uio.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/mman.h>
 #include <memory.h>
 #include <errno.h>

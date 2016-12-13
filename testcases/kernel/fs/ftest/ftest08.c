@@ -47,7 +47,7 @@
 #include <sys/param.h>
 #include <sys/wait.h>
 #include <sys/file.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/uio.h>
 #include <errno.h>

@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <termio.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/poll.h>
 #include <sys/types.h>

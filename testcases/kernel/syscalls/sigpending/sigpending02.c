@@ -47,7 +47,7 @@
  * 	None
  */
 #include <sys/types.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <string.h>

@@ -60,7 +60,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/file.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/syscall.h>

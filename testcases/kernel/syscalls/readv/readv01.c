@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/uio.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <memory.h>
 #include <errno.h>
 

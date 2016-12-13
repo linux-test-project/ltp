@@ -41,7 +41,7 @@
 #include <sys/mount.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include "test.h"
 #include "safe_macros.h"
 
