@@ -12,7 +12,7 @@ to either decrease the memory latencies or increase the memory bandwidth by prop
 Please refer http://lse.sourceforge.net/numa/ to know the basics of numa and refer
 http://www.novell.com/collateral/4621437/4621437.pdf to understand the usage of numactl and numa libraries.
 
-We can always get the latest package from ftp://ftp.suse.com/pub/people/ak/numa.
+We can always get the latest package from http://oss.sgi.com/projects/libnuma/.
 
 Testcase Description:
 ====================================================================================================================
@@ -41,28 +41,22 @@ Verifies the memory interleaving policy on the shared memory which will interlea
 all nodes equally. Here, the testcase use touch command instead of running a seperate process to verify
 the policy applied.
 
+TestCase7:
+Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
+testcase will use the numademo for the verfication.
+
+TestCase8:
+Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
+testcase will use memhog for the verfication.
+
+TestCase9:
+Verifies the numa_node_size api with hardware checking.
+
+TestCase10:
+Verifieds the NUMA migratepages policy.
+
+
 Pre-requisites
 ====================================================================================================================
  * libnuma should be installed on the NUMA machine before executing theses testcases
- * Testcases can also be executed on non-numa machines, but they will fail,
-
-Building the Tescases
-====================================================================================================================
-From LTP-Root, use <make> to build the testcases
-ltp-full-20070731]$ make
-or, from
-ltp-full-20070731_numa/testcases/kernel/numa]# make
-
-Installing the Testcases
-====================================================================================================================
-From LTP-Root, use <make> to install the testcases
-ltp-full-20070731]$ make install
-or, from
-ltp-full-20070731_numa/testcases/kernel/numa]# make install
-
-Running the Tescases
-====================================================================================================================
-From LTP-Root, invoke ./runltp
-ltp-full-20070731]$ ./runltp -p -l <logfile> -f numa
-
- * NUMA testcases will not run by default in LTP-runall
+ * Testcases will not run by default in LTP-runall, they also skip on non-numa machines
