@@ -64,19 +64,16 @@ int main(int argc, char *argv[])
 	struct sigaction sa;
 
 	if (argc != 2) {
-		fprintf(stderr, "Here expect only one number(i.e. 2) as the parameter.\n");
+		fprintf(stderr, "Here expect only one number(i.e. 2) as the parameter\n");
 		exit(1);
 	}
 
 	switch (atoi(argv[1])) {
 	case 1:
-		printf("%d", PAGE_SIZE);
-		return 0;
-	case 2:
 		buf = malloc(MB);
 		if (!buf) {
 			fprintf(stderr, "Memory is not available\n");
-			exit(2);
+			exit(1);
 		}
 		for (i = 0; i < MB; i += PAGE_SIZE) {
 			buf[i] = 'a';
@@ -84,14 +81,14 @@ int main(int argc, char *argv[])
 		}
 		free(buf);
 		return 0;
-	case 3:
+	case 2:
 		/* Trap SIGINT */
 		sa.sa_handler = sigfunc;
 		sa.sa_flags = SA_RESTART;
 		sigemptyset(&sa.sa_mask);
 		if (sigaction(SIGINT, &sa, 0) < 0) {
 			fprintf(stderr, "Sigaction SIGINT failed\n");
-			exit(3);
+			exit(2);
 		}
 		/* wait for signat Int */
 		pause();
