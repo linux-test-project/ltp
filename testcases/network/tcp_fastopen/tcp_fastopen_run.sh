@@ -65,15 +65,8 @@ cleanup()
 
 read_result_file()
 {
-	if [ -f $tfo_result ]; then
-		if [ -r $tfo_result ]; then
-			cat $tfo_result
-		else
-			tst_brkm TBROK "Failed to read result file"
-		fi
-	else
-		tst_brkm TBROK "Failed to find result file"
-	fi
+	[ ! -f $tfo_result ] && echo "-1"
+	[ -r $tfo_result ] && cat $tfo_result || echo "-1"
 }
 
 tst_require_root
@@ -91,12 +84,14 @@ TST_CLEANUP="cleanup"
 tst_tmpdir
 
 tst_resm TINFO "using old TCP API"
-tst_netload $(tst_ipaddr rhost) $tfo_result TFO -o -O
+tst_netload $(tst_ipaddr rhost) $tfo_result TFO
 time_tfo_off=$(read_result_file)
+[ "$time_tfo_off" = "-1" ] && tst_brkm TFAIL "failed to find result file"
 
 tst_resm TINFO "using new TCP API"
-tst_netload $(tst_ipaddr rhost) $tfo_result TFO
+tst_netload $(tst_ipaddr rhost) $tfo_result TFO -f -t 3
 time_tfo_on=$(read_result_file)
+[ "$time_tfo_on" = "-1" ] && tst_brkm TFAIL "failed to find result file"
 
 tfo_cmp=$(( 100 - ($time_tfo_on * 100) / $time_tfo_off ))
 
