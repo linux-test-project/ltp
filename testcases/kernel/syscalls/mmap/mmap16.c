@@ -189,7 +189,7 @@ static void do_child(void)
 
 	memset(buf, 'a', FS_BLOCKSIZE);
 	fd = SAFE_OPEN(NULL, "testfilec", O_RDWR);
-	SAFE_PWRITE(NULL, 1, fd, buf, FS_BLOCKSIZE, 0);
+	SAFE_WRITE(NULL, 1, fd, buf, FS_BLOCKSIZE);
 
 	/*
 	 * In case mremap() may fail because that memory area can not be

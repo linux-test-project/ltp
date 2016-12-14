@@ -108,29 +108,6 @@
 	safe_write(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
 	    (buf), (nbyte))
 
-/*
- * inline function that uses off_t since sizeof(off_t) depends on compile flags
- */
-static inline ssize_t safe_pwrite(const char *file, const int lineno,
-		void (*cleanup_fn)(void), char len_strict,
-		int fildes, const void *buf, size_t nbyte, off_t offset)
-{
-	ssize_t rval;
-
-	rval = pwrite(fildes, buf, nbyte, offset);
-	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
-			 "%s:%d: pwrite(%d,%p,%zu,%lld) failed, returned %zd",
-			 file, lineno, fildes, buf, nbyte, (long long)offset,
-			 rval);
-	}
-
-	return rval;
-}
-#define SAFE_PWRITE(cleanup_fn, len_strict, fildes, buf, nbyte, offset) \
-	safe_pwrite(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
-	    (buf), (nbyte), (offset))
-
 #define SAFE_STRTOL(cleanup_fn, str, min, max) \
 	safe_strtol(__FILE__, __LINE__, cleanup_fn, (str), (min), (max))
 
