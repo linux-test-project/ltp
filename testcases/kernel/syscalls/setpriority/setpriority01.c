@@ -23,36 +23,55 @@
  */
 
 #include <errno.h>
+#include <pwd.h>
+#include <stdlib.h>
 #include <sys/resource.h>
-#include <sys/time.h>
+
 #include "tst_test.h"
+
+static const char *username = "ltp_setpriority01";
+static int pid, uid;
 
 static struct tcase {
 	int which;
+	int *who;
 } tcases[] = {
-	{PRIO_PROCESS},
-	{PRIO_PGRP},
-	{PRIO_USER}
+	{PRIO_PROCESS, &pid},
+	{PRIO_PGRP, &pid},
+	{PRIO_USER, &uid}
 };
 
-static void verify_setpriority(unsigned int n)
+static const char *str_which(int which)
 {
-	struct tcase *tc = &tcases[n];
+	switch (which) {
+	case PRIO_PROCESS:
+		return "PRIO_PROCESS";
+	case PRIO_PGRP:
+		return "PRIO_PGRP";
+	case PRIO_USER:
+		return "PRIO_USER";
+	default:
+		return "???";
+	}
+}
+
+static void setpriority_test(struct tcase *tc)
+{
 	int new_prio, cur_prio;
 	int failflag = 0;
 
 	for (new_prio = -20; new_prio < 20; new_prio++) {
-		TEST(setpriority(tc->which, 0, new_prio));
+		TEST(setpriority(tc->which, *tc->who, new_prio));
 
 		if (TEST_RETURN != 0) {
 			tst_res(TFAIL | TTERRNO,
-				"setpriority(%d, 0, %d) failed",
-				tc->which, new_prio);
+				"setpriority(%d, %d, %d) failed",
+				tc->which, *tc->who, new_prio);
 			failflag = 1;
 			continue;
 		}
 
-		cur_prio = SAFE_GETPRIORITY(tc->which, 0);
+		cur_prio = SAFE_GETPRIORITY(tc->which, *tc->who);
 
 		if (cur_prio != new_prio) {
 			tst_res(TFAIL, "current priority(%d) and "
@@ -63,14 +82,60 @@ static void verify_setpriority(unsigned int n)
 	}
 
 	if (!failflag) {
-		tst_res(TPASS, "setpriority(%d, 0, -20..19) succeeded",
-			tc->which);
+		tst_res(TPASS, "setpriority(%s(%d), %d, -20..19) succeeded",
+			str_which(tc->which), tc->which, *tc->who);
 	}
+}
+
+static void verify_setpriority(unsigned int n)
+{
+	struct tcase *tc = &tcases[n];
+
+	pid = SAFE_FORK();
+	if (pid == 0) {
+		SAFE_SETUID(uid);
+		SAFE_SETPGID(0, 0);
+
+		TST_CHECKPOINT_WAKE_AND_WAIT(0);
+
+		exit(0);
+	}
+
+	TST_CHECKPOINT_WAIT(0);
+
+	setpriority_test(tc);
+
+	TST_CHECKPOINT_WAKE(0);
+
+	tst_reap_children();
+}
+
+static void setup(void)
+{
+	const char *const cmd_useradd[] = {"useradd", username, NULL};
+	struct passwd *ltpuser;
+
+	tst_run_cmd(cmd_useradd, NULL, NULL, 0);
+
+	ltpuser = SAFE_GETPWNAM(username);
+	uid = ltpuser->pw_uid;
+}
+
+static void cleanup(void)
+{
+	const char *const cmd_userdel[] = {"userdel", "-r", username, NULL};
+
+	if (tst_run_cmd(cmd_userdel, NULL, NULL, 1))
+		tst_res(TWARN | TERRNO, "'userdel -r %s' failed", username);
 }
 
 static struct tst_test test = {
 	.tid = "setpriority01",
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
+	.forks_child = 1,
+	.needs_checkpoints = 1,
+	.setup = setup,
+	.cleanup = cleanup,
 	.test = verify_setpriority,
 };
