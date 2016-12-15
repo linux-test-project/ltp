@@ -210,7 +210,12 @@ int safe_open(const char *file, const int lineno, void (*cleanup_fn) (void),
 	mode_t mode;
 
 	va_start(ap, oflags);
-	mode = va_arg(ap, mode_t);
+
+	/* Android's NDK's mode_t is smaller than an int, which results in
+	 * SIGILL here when passing the mode_t type.
+	 */
+	mode = va_arg(ap, int);
+
 	va_end(ap);
 
 	rval = open(pathname, oflags, mode);
