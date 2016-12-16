@@ -86,7 +86,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
 #Create 1st test user
     #erase user if he may exist , so we can have a clean en
         rm -rf /home/$TEST_USER1
-        userdel $TEST_USER1
+        getent passwd $TEST_USER1 > /dev/null 2>&1 && userdel $TEST_USER1
 	sleep 1
 
         useradd -m -g users $TEST_USER1
@@ -105,7 +105,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
 	then {
           USER_UID=`id -u $TEST_USER1`
           USER_GID=`id -g $TEST_USER1`
-          mkdir $TEST_USER1_HOMEDIR
+          mkdir -p $TEST_USER1_HOMEDIR
           chown -R $USER_UID.$USER_GID $TEST_USER1_HOMEDIR
 	}
 	fi
@@ -121,7 +121,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
 #Create 2nd test user
 	#erase user if he may exist , so we can have a clean en
         rm -rf /home/$TEST_USER2
-        userdel $TEST_USER2
+        getent passwd $TEST_USER2 > /dev/null 2>&1 && userdel $TEST_USER2
 	sleep 1
 
         useradd -m -g users $TEST_USER2
@@ -141,7 +141,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
         then {
           USER_UID=`id -u $TEST_USER2`
           USER_GID=`id -g $TEST_USER2`
-          mkdir $TEST_USER2_HOMEDIR
+          mkdir -p $TEST_USER2_HOMEDIR
           chown -R $USER_UID.$USER_GID $TEST_USER2_HOMEDIR
 	}
 	fi
