@@ -58,17 +58,14 @@ tst_rhost_run()
 
 	while getopts :bsc:u: opt; do
 		case "$opt" in
-		b)
-			pre_cmd="nohup"
-			post_cmd=" > /dev/null 2>&1 &"
-			out="1> /dev/null"
+		b) [ "$TST_USE_NETNS" ] && pre_cmd="" || pre_cmd="nohup"
+		   post_cmd=" > /dev/null 2>&1 &"
+		   out="1> /dev/null"
 		;;
 		s) safe=1 ;;
 		c) cmd="$OPTARG" ;;
 		u) user="$OPTARG" ;;
-		*)
-			tst_brkm TBROK "tst_rhost_run: unknown option: $OPTARG"
-		;;
+		*) tst_brkm TBROK "tst_rhost_run: unknown option: $OPTARG" ;;
 		esac
 	done
 
@@ -323,7 +320,7 @@ tst_netload()
 
 		# run local tcp client
 		netstress -a $clients_num -r $client_requests -l -H $ip_addr\
-			 -g $port -d $rfile $addopts > /dev/null || ret=1
+			 -g $port -d $rfile $addopts || ret=1
 
 		if [ $ret -eq 0 -a ! -f $rfile ]; then
 			tst_brkm TBROK "can't read $rfile"
