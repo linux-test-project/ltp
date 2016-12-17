@@ -96,6 +96,7 @@ struct tst_option {
  * On failure non-zero (errno) is returned.
  */
 int tst_parse_int(const char *str, int *val, int min, int max);
+int tst_parse_long(const char *str, long *val, long min, long max);
 int tst_parse_float(const char *str, float *val, float min, float max);
 
 struct tst_test {

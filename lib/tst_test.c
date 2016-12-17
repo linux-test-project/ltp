@@ -446,6 +446,22 @@ static void parse_opts(int argc, char *argv[])
 int tst_parse_int(const char *str, int *val, int min, int max)
 {
 	long rval;
+
+	if (!str)
+		return 0;
+
+	int ret = tst_parse_long(str, &rval, min, max);
+
+	if (ret)
+		return ret;
+
+	*val = (int)rval;
+	return 0;
+}
+
+int tst_parse_long(const char *str, long *val, long min, long max)
+{
+	long rval;
 	char *end;
 
 	if (!str)
@@ -460,10 +476,10 @@ int tst_parse_int(const char *str, int *val, int min, int max)
 	if (errno)
 		return errno;
 
-	if (rval > (long)max || rval < (long)min)
+	if (rval > max || rval < min)
 		return ERANGE;
 
-	*val = (int)rval;
+	*val = rval;
 	return 0;
 }
 
