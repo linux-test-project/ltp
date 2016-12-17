@@ -139,7 +139,8 @@ static bool filter_map(const char *line)
 		return true;
 #elif defined(__arm__)
 	/* Skip it when run it in aarch64 */
-	if (strcmp(un.machine, "aarch64"))
+	if ((!strcmp(un.machine, "aarch64"))
+	|| (!strcmp(un.machine, "aarch64_be")))
 		return false;
 
 	/* Older arm kernels didn't label their vdso maps */
