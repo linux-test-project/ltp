@@ -96,7 +96,7 @@ tst_require_root()
 
 tst_exit()
 {
-	if [ -n "$TST_CLEANUP" ]; then
+	if [ -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
 		$TST_CLEANUP
 	fi
 
