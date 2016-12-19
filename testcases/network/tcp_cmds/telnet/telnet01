@@ -24,7 +24,7 @@ TST_TOTAL=1
 
 setup()
 {
-	tst_check_cmds telnet expect rsh
+	tst_check_cmds telnet expect
 
 	if [ -z $RUSER ]; then
 		RUSER=root

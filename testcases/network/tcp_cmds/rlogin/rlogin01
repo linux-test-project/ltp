@@ -24,7 +24,7 @@ TST_TOTAL=1
 
 setup()
 {
-	tst_check_cmds rlogin expect rsh
+	tst_check_cmds rlogin expect
 
 	if [ -z $RUSER ]; then
 		RUSER=root
