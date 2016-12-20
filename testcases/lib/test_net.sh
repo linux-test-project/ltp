@@ -26,6 +26,7 @@ init_ltp_netspace()
 		ROD ip net add ltp_ns
 		ROD ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
 		ROD ip li set dev ltp_ns_veth1 netns ltp_ns
+		ROD ip netns exec ltp_ns ip li set lo up
 	fi
 
 	LHOST_IFACES=${LHOST_IFACES:-"ltp_ns_veth2"}
