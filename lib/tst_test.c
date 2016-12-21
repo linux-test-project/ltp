@@ -37,7 +37,6 @@
 
 struct tst_test *tst_test;
 
-static char tmpdir_created;
 static int iterations = 1;
 static float duration = -1;
 static pid_t main_pid, lib_pid;
@@ -72,9 +71,20 @@ static void setup_ipc(void)
 {
 	size_t size = getpagesize();
 
-	//TODO: Fallback to tst_tmpdir() if /dev/shm does not exits?
-	snprintf(shm_path, sizeof(shm_path), "/dev/shm/ltp_%s_%d",
-	         tst_test->tid, getpid());
+	if (access("/dev/shm", F_OK) == 0) {
+		snprintf(shm_path, sizeof(shm_path), "/dev/shm/ltp_%s_%d",
+		         tst_test->tid, getpid());
+	} else {
+		char *tmpdir;
+
+		if (!tst_tmpdir_created())
+			tst_tmpdir();
+
+		tmpdir = tst_get_tmpdir();
+		snprintf(shm_path, sizeof(shm_path), "%s/ltp_%s_%d",
+		         tmpdir, tst_test->tid, getpid());
+		free(tmpdir);
+	}
 
 	ipc_fd = open(shm_path, O_CREAT | O_EXCL | O_RDWR, 0600);
 	if (ipc_fd < 0)
@@ -620,10 +630,8 @@ static void do_setup(int argc, char *argv[])
 
 	setup_ipc();
 
-	if (needs_tmpdir()) {
+	if (needs_tmpdir() && !tst_tmpdir_created())
 		tst_tmpdir();
-		tmpdir_created = 1;
-	}
 
 	if (tst_test->needs_device) {
 		tdev.dev = tst_acquire_device_(NULL, tst_test->device_min_size);
@@ -655,7 +663,7 @@ static void do_cleanup(void)
 	if (tst_test->needs_device && tdev.dev)
 		tst_release_device(tdev.dev);
 
-	if (needs_tmpdir() && tmpdir_created) {
+	if (tst_tmpdir_created()) {
 		/* avoid munmap() on wrong pointer in tst_rmdir() */
 		tst_futexes = NULL;
 		tst_rmdir();
