@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	libmsg.c
+ *	libipc.c
  *
  * DESCRIPTION
  *	common routines for the IPC system call tests.
@@ -31,6 +31,7 @@
  *	init_buf()
  *	rm_sema()
  *	getuserid()
+ *	get_shm()
  *	rm_shm()
  */
 
@@ -149,6 +150,34 @@ int getuserid(char *user)
 	}
 
 	return (ent->pw_uid);
+}
+/*
+ *get_shm() - get a shared memory segment
+ */
+int get_shm(size_t size,int shmflg,int * shmid,void** shmaddr)
+{
+    int shmid_tmp;
+    key_t shmkey;
+
+    shmkey = getipckey();
+    if(shmkey < 0){
+        tst_brkm(TBROK,NULL,"getipckey() Failed to get a ipc key"
+                "key,error:%d",errno);
+    }
+    shmid_tmp = shmget(shmkey,size,shmflg);
+    if(shmid_tmp == -1){
+        tst_brkm(TBROK,NULL,"shmget() Failed to create a shared"
+                "memory,error:%d",errno);
+    }
+    *shmid = shmid_tmp;
+    *shmaddr = shmat(shmid_tmp,NULL,0);
+    if(*shmaddr == (void *) -1){
+        tst_brkm(TBROK,cleanup,"shmat() Failed to attach shared"
+                "memory,error:%d",errno);
+    }
+
+    return 0;
+
 }
 
 /*
