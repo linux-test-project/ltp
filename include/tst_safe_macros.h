@@ -97,29 +97,6 @@ static inline int safe_dup(const char *file, const int lineno,
 #define SAFE_READ(len_strict, fildes, buf, nbyte) \
 	safe_read(__FILE__, __LINE__, NULL, (len_strict), (fildes), (buf), (nbyte))
 
-/*
- * inline function that uses off_t since sizeof(off_t) depends on compile flags
- */
-static inline ssize_t safe_pread(const char *file, const int lineno,
-		char len_strict, int fildes, void *buf, size_t nbyte,
-		off_t offset)
-{
-	ssize_t rval;
-
-	rval = pread(fildes, buf, nbyte, offset);
-
-	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "pread(%d,%p,%zu,%lld) failed",
-			 fildes, buf, nbyte, (long long)offset);
-	}
-
-	return rval;
-}
-#define SAFE_PREAD(len_strict, fildes, buf, nbyte, offset) \
-	safe_pread(__FILE__, __LINE__, (len_strict), (fildes), \
-	           (buf), (nbyte), (offset))
-
 #define SAFE_SETEGID(egid) \
 	safe_setegid(__FILE__, __LINE__, NULL, (egid))
 
@@ -166,25 +143,6 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 
 #define SAFE_WRITE(len_strict, fildes, buf, nbyte) \
 	safe_write(__FILE__, __LINE__, NULL, (len_strict), (fildes), (buf), (nbyte))
-
-static inline ssize_t safe_pwrite(const char *file, const int lineno,
-		char len_strict, int fildes, const void *buf, size_t nbyte,
-		off_t offset)
-{
-	ssize_t rval;
-
-	rval = pwrite(fildes, buf, nbyte, offset);
-	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "pwrite(%d,%p,%zu,%lld) failed",
-			 fildes, buf, nbyte, (long long)offset);
-	}
-
-	return rval;
-}
-#define SAFE_PWRITE(len_strict, fildes, buf, nbyte, offset) \
-	safe_pwrite(__FILE__, __LINE__, (len_strict), (fildes), \
-	            (buf), (nbyte), (offset))
 
 #define SAFE_STRTOL(str, min, max) \
 	safe_strtol(__FILE__, __LINE__, NULL, (str), (min), (max))
