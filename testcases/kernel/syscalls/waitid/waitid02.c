@@ -38,6 +38,7 @@
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
 
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
