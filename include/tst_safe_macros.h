@@ -138,35 +138,13 @@ static inline ssize_t safe_pread(const char *file, const int lineno,
 #define SAFE_GETRESGID(rgid, egid, sgid) \
 	safe_getresgid(__FILE__, __LINE__, NULL, (rgid), (egid), (sgid))
 
-static inline int safe_setpgid(const char *file, const int lineno,
-                               pid_t pid, pid_t pgid)
-{
-	int rval;
+int safe_setpgid(const char *file, const int lineno, pid_t pid, pid_t pgid);
 
-	rval = setpgid(pid, pgid);
-	if (rval) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
-		         "setpgid(%i, %i) failed", pid, pgid);
-	}
-
-	return rval;
-}
 #define SAFE_SETPGID(pid, pgid) \
 	safe_setpgid(__FILE__, __LINE__, (pid), (pgid));
 
-static inline pid_t safe_getpgid(const char *file, const int lineno,
-				 pid_t pid)
-{
-	pid_t pgid;
+pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 
-	pgid = getpgid(pid);
-	if (pgid == -1) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "getpgid(%i) failed", pid);
-	}
-
-	return pgid;
-}
 #define SAFE_GETPGID(pid) \
 	safe_getpgid(__FILE__, __LINE__, (pid))
 
