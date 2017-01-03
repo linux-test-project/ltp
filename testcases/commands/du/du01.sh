@@ -39,12 +39,6 @@ setup()
 
 	ROD_SILENT ln -s ../testfile testdir/testsymlink
 
-	page_size=$(getconf PAGESIZE)
-	if [ "$page_size" -lt 1024 ]; then
-		tst_brk TBROK "Page size < 1024"
-	fi
-	page_size=$(( page_size / 1024 ))
-
 	# Display values are in units of the first available SIZE
 	# from --block-size, and the DU_BLOCK_SIZE, BLOCK_SIZE and
 	# BLOCKSIZE environment variables. Here we need to
@@ -80,6 +74,11 @@ du_test()
 }
 
 block_size=512
+page_size=$(getconf PAGESIZE)
+if [ "$page_size" -lt 1024 ]; then
+	tst_brk TBROK "Page size < 1024"
+fi
+page_size=$((page_size / 1024))
 
 # The output could be different in some systems, if we use du to
 # estimate file space usage with the same filesystem and the same size.
