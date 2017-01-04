@@ -34,6 +34,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/utsname.h>
 #include "posixtest.h"
 
 int main(void)
@@ -50,6 +51,18 @@ int main(void)
 		printf("USUPPORTED: Cannot be tested on 64 bit architecture\n");
 		return PTS_UNSUPPORTED;
 	}
+
+	/* The overflow does not happen when 32bit binary runs on 64bit kernel */
+#ifdef __linux__
+	struct utsname buf;
+
+	if (!uname(&buf) && strstr(buf.machine, "64")) {
+		printf("UNSUPPORTED: Looks like we run on 64bit kernel (%s)\n",
+		       buf.machine);
+		return PTS_UNSUPPORTED;
+	}
+
+#endif /* __linux__ */
 
 	long page_size = sysconf(_SC_PAGE_SIZE);
 
