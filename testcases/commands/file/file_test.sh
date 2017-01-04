@@ -77,12 +77,14 @@ do_test()
 	 2) file_test in.bash "Bourne-Again shell script";;
 	 3) file_test in.sh "POSIX shell script, ASCII text executable" \
 			    "POSIX shell script text executable" \
+			    "POSIX shell script text" \
 			    "Bourne shell script text executable";;
 	 4) file_test in.ksh "Korn shell script";;
 	 5) file_test in.csh "C shell script";;
 	 6) file_test in.c "ASCII C program text" "C source, ASCII text";;
 	 7) file_test in.pl "[pP]erl script, ASCII text executable" \
-			    "[pP]erl script text executable";;
+			    "[pP]erl script text executable" \
+			    "a /usr/bin/perl script text";;
 	 8) file_test in.py "[pP]ython script, ASCII text executable" \
 			    "[pP]ython script text executable";;
 	 9) file_test in.m4 "M4 macro processor script, ASCII text" \
