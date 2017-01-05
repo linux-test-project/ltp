@@ -28,9 +28,17 @@ LD=${LD:=ld}
 TST_ID="ld01"
 TST_CNT=5
 TST_TESTFUNC=test
+TST_SETUP=setup
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="$CC $LD"
 . tst_test.sh
+
+setup()
+{
+	for i in rf1 f1 rd1 d1 main; do
+		ROD $CC -fPIC -c -o ${i}.o $TST_DATAROOT/${i}.c
+	done
+}
 
 test1()
 {
@@ -58,7 +66,7 @@ test2()
 
 test3()
 {
-	EXPECT_PASS $LD -shared $TST_DATAROOT/f1.o $TST_DATAROOT/d1.o -o test.so
+	EXPECT_PASS $LD -shared f1.o d1.o -o test.so
 
 	if file test.so |grep -q shared; then
 		tst_res TPASS "Shared library could be build"
@@ -69,14 +77,14 @@ test3()
 
 test4()
 {
-	EXPECT_PASS $LD -Bdynamic -shared $TST_DATAROOT/f1.o $TST_DATAROOT/d1.o -o test.so
-	EXPECT_FAIL $LD -Bstatic -L. $TST_DATAROOT/main.o $TST_DATAROOT/rd1.o test.so -o a.out
+	EXPECT_PASS $LD -Bdynamic -shared f1.o d1.o -o test.so
+	EXPECT_FAIL $LD -Bstatic -L. main.o rd1.o test.so -o a.out
 }
 
 test5()
 {
-	EXPECT_PASS $LD -Bdynamic -shared $TST_DATAROOT/main.o $TST_DATAROOT/f1.o $TST_DATAROOT/rf1.o -o test.so -L/usr/lib/
-	EXPECT_FAIL $LD -Bstatic -r $TST_DATAROOT/main.o $TST_DATAROOT/f1.o $TST_DATAROOT/rf1.o test.so -L/usr/lib/ 2\> ld.out
+	EXPECT_PASS $LD -Bdynamic -shared main.o f1.o rf1.o -o test.so -L/usr/lib/
+	EXPECT_FAIL $LD -Bstatic -r main.o f1.o rf1.o test.so -L/usr/lib/ 2\> ld.out
 	cat ld.out
 
 	if grep -q "$LD: attempted static link of dynamic object" ld.out; then

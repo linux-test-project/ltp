@@ -16,8 +16,7 @@ top_srcdir		?= ../../../..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_DIR		:= testcases/data/ld01
-
-CPPFLAGS		+= -fPIC
-MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%.o,$(wildcard $(abs_srcdir)/*.c))
+MAKE_TARGETS		:=
+INSTALL_TARGETS		:= $(wildcard *.c)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
