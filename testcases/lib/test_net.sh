@@ -38,8 +38,8 @@ init_ltp_netspace()
 	tst_init_iface
 	tst_init_iface rhost
 
-	tst_add_ipaddr
-	tst_add_ipaddr rhost
+	TST_IPV6= tst_add_ipaddr
+	TST_IPV6= tst_add_ipaddr rhost
 
 	TST_IPV6=6 tst_add_ipaddr
 	TST_IPV6=6 tst_add_ipaddr rhost
