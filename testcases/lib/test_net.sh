@@ -37,6 +37,8 @@ init_ltp_netspace()
 
 	tst_restore_ipaddr
 	tst_restore_ipaddr rhost
+
+	tst_wait_ipv6_dad
 }
 
 # Run command on remote host.
@@ -268,6 +270,30 @@ tst_restore_ipaddr()
 	TST_IPV6=$backup_tst_ipv6
 
 	return $ret
+}
+
+# tst_wait_ipv6_dad [LHOST_IFACE] [RHOST_IFACE]
+# wait for IPv6 DAD completion
+tst_wait_ipv6_dad()
+{
+	local ret=
+	local i=
+	local iface_loc=${1:-$(tst_iface)}
+	local iface_rmt=${2:-$(tst_iface rhost)}
+
+	for i in $(seq 1 50); do
+		ip a sh $iface_loc | grep -q tentative
+		ret=$?
+
+		tst_rhost_run -c "ip a sh $iface_rmt | grep -q tentative"
+
+		[ $ret -ne 0 -a $? -ne 0 ] && return
+
+		[ $(($i % 10)) -eq 0 ] && \
+			tst_resm TINFO "wait for IPv6 DAD completion $((i / 10))/5 sec"
+
+		tst_sleep 100ms
+	done
 }
 
 # tst_netload ADDR [FILE] [TYPE] [OPTS]
