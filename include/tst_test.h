@@ -33,6 +33,7 @@
 #include "tst_atomic.h"
 #include "tst_kvercmp.h"
 #include "tst_clone.h"
+#include "tst_kernel.h"
 
 /*
  * Reports testcase result.
