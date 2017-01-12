@@ -68,7 +68,7 @@ int bad_q = -1;			/* a value to use as a bad queue ID */
 struct test_case_t {
 	int *queue_id;
 	MSGBUF *buffer;
-	long mtype;
+	__syscall_slong_t mtype;
 	int msg_size;
 	int error;
 } TC[] = {

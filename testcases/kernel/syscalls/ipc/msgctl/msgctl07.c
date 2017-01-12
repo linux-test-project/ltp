@@ -64,7 +64,7 @@ int TST_TOTAL = 1;
 /* Used by main() and do_child_1(): */
 static int msqid;
 struct my_msgbuf {
-	long type;
+	__syscall_slong_t type;
 	char text[BYTES];
 } p1_msgp, p2_msgp, p3_msgp, c1_msgp, c2_msgp, c3_msgp;
 
