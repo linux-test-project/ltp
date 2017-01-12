@@ -43,8 +43,10 @@
 #include <unistd.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "test.h"
+#include "tst_kernel.h"
 
 char *TCID = "mmapstress03";
 FILE *temp;
@@ -61,7 +63,6 @@ void ok_exit();
 #define ERROR(M) (void)fprintf(stderr, "%s: errno = %d: " M "\n", TCID, \
 			errno)
 #define NEG1	(char *)-1
-#define POINTER_SIZE	(sizeof(void *) << 3)
 
 static void do_test(void* brk_max, long pagesize);
 
@@ -69,6 +70,7 @@ int main(void)
 {
 	char *brk_max_addr, *hole_addr, *brk_start, *hole_start;
 	size_t pagesize = (size_t) sysconf(_SC_PAGE_SIZE);
+	int kernel_bits = tst_kernel_bits();
 
 	if ((brk_start = sbrk(0)) == NEG1) {
 		ERROR("initial sbrk failed");
@@ -137,9 +139,10 @@ int main(void)
 		ERROR("failed to fiddle with brk at the end");
 		anyfail();
 	}
+
 	/* Ask for a ridiculously large mmap region at a high address */
-	if (mmap((void*) (1UL << (POINTER_SIZE - 1)) - pagesize,
-		 (size_t) ((1UL << (POINTER_SIZE - 1)) - pagesize),
+	if (mmap((void*) (((uintptr_t)1) << ((sizeof(void*)<<3) - 1)) - pagesize,
+		 (size_t) ((1ULL << (kernel_bits - 1)) - pagesize),
 		 PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_FIXED | MAP_SHARED,
 		 0, 0)
 	    != (void*) - 1) {
