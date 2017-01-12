@@ -4,12 +4,13 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * If there are no
- * mappings in the specified address range, then munmap() has no effect.
+ * If there are no mappings in the specified address range, then munmap() has
+ * no effect. To get a valid address range which is safe to call munmap() on
+ * we first map some arbitrary memory allowing the OS to select the address
+ * then unmap it. We then call munmap() on the same address again to perform
+ * the test.
  *
  */
-
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdio.h>
@@ -28,32 +29,46 @@
 
 int main(void)
 {
-	int rc;
+	int rc, fd, map_size;
+	void *map_addr;
 
-	int page_size;
-	void *buffer = NULL, *new_addr = NULL;
-
-	page_size = sysconf(_SC_PAGE_SIZE);
-	buffer = malloc(page_size * 2);
-	if (buffer == NULL) {
-		printf("Error at malloc\n");
-		exit(PTS_UNRESOLVED);
+	map_size = sysconf(_SC_PAGESIZE);
+	fd = open("/dev/zero", O_RDWR);
+	if (fd == -1) {
+		printf("Failed to open /dev/zero: %s (%d)\n",
+		       strerror(errno),
+		       errno);
+		return PTS_UNRESOLVED;
 	}
 
-	/* Make new_addr is a multiple of page_size, while
-	 * [new_addr, new_addr + page_size] is a valid memory range
-	 */
-	new_addr = buffer + (page_size - (unsigned long)buffer % page_size);
-
-	rc = munmap(new_addr, page_size);
-	if (rc == -1) {
-		printf("Test FAILED " TNAME " Error at munmap(): %s\n",
-		       strerror(errno));
-		free(buffer);
-		exit(PTS_FAIL);
+	map_addr = mmap(NULL, map_size, PROT_NONE, MAP_PRIVATE, fd, 0);
+	if (map_addr == MAP_FAILED) {
+		printf("Failed to map memory: %s (%d)\n",
+		       strerror(errno),
+		       errno);
+		close(fd);
+		return PTS_UNRESOLVED;
 	}
 
-	free(buffer);
+	close(fd);
+
+	rc = munmap(map_addr, map_size);
+	if (rc != 0) {
+		printf("Failed to unmap memory: %s (%d)\n",
+		       strerror(errno),
+		       errno);
+		close(fd);
+		return PTS_UNRESOLVED;
+	}
+
+	rc = munmap(map_addr, map_size);
+	if (rc != 0) {
+		printf("Test FAILED " TNAME " Error at munmap(): %s (%d)\n",
+		       strerror(errno),
+		       errno);
+		return PTS_FAIL;
+	}
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
