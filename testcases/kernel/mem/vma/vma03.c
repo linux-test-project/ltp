@@ -49,6 +49,7 @@
 #include <unistd.h>
 
 #include "test.h"
+#include "tst_kernel.h"
 
 char *TCID = "vma03";
 int TST_TOTAL = 1;
@@ -70,9 +71,11 @@ int main(int argc, char *argv[])
 	void *map, *remap;
 	off_t pgoff;
 
-#if __WORDSIZE != 32
-	tst_brkm(TCONF, NULL, "test is designed for 32-bit system only.");
-#endif
+	if (__WORDSIZE != 32 || tst_kernel_bits() != 32) {
+		tst_brkm(TCONF, NULL,
+			 "test is designed for 32-bit system only.");
+	}
+
 	tst_parse_opts(argc, argv, NULL, NULL);
 
 	pgsz = sysconf(_SC_PAGE_SIZE);
