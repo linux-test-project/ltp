@@ -509,7 +509,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 	char tmesg[USERMESG];
 	static const size_t symb_num	= 2; /* xx */
 	static const size_t size_max	= 16;
-	size_t offset = strlen(tmesg);
+	size_t offset;
 	size_t i;
 	char *pmesg = tmesg;
 	tst_res_func_t res_func;
@@ -520,6 +520,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 		res_func = tst_res__;
 
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
+	offset = strlen(tmesg);
 
 	if (size > size_max || size == 0 ||
 		(offset + size * (symb_num + 1)) >= USERMESG)
