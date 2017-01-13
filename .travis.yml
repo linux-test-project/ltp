@@ -1,9 +1,75 @@
-sudo: required
-
 language: c
+
+matrix:
+    include:
+        - os: linux
+          compiler: gcc-4.6
+          addons:
+              apt:
+                  sources: ['ubuntu-toolchain-r-test']
+                  packages: ['gcc-4.6']
+
+        - os: linux
+          compiler: gcc-4.7
+          addons:
+              apt:
+                  sources: ['ubuntu-toolchain-r-test']
+                  packages: ['gcc-4.7']
+
+        - os: linux
+          compiler: gcc-4.8
+          addons:
+              apt:
+                  sources: ['ubuntu-toolchain-r-test']
+                  packages: ['gcc-4.8']
+
+        - os: linux
+          compiler: gcc-4.9
+          addons:
+              apt:
+                  sources: ['ubuntu-toolchain-r-test']
+                  packages: ['gcc-4.9']
+
+        - os: linux
+          compiler: gcc-5
+          addons:
+              apt:
+                  sources: ['ubuntu-toolchain-r-test']
+                  packages: ['gcc-5']
+
+        - os: linux
+          compiler: gcc-6
+          addons:
+              apt:
+                  sources: ['ubuntu-toolchain-r-test']
+                  packages: ['gcc-6']
+
+        - os: linux
+          compiler: clang-3.5
+          addons:
+              apt:
+                  sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5']
+                  packages: ['clang-3.5']
+
+        - os: linux
+          compiler: clang-3.8
+          addons:
+              apt:
+                  sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
+                  packages: ['clang-3.8']
+
+        - os: linux
+          compiler: clang-3.9
+          addons:
+              apt:
+                  sources:
+                      - sourceline: "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.9 main"
+                        key_url: "http://apt.llvm.org/llvm-snapshot.gpg.key"
+                      - 'ubuntu-toolchain-r-test'
+                  packages: ['clang-3.9']
 
 notifications:
     email:
         - ltp@lists.linux.it
 
-script: make autotools && ./configure --with-open-posix-testsuite --with-realtime-testsuite && make -j$(getconf _NPROCESSORS_ONLN) && make -j$(getconf _NPROCESSORS_ONLN) install
+script: make autotools && ./configure --prefix $HOME/ltp --with-open-posix-testsuite --with-realtime-testsuite && make -j$(getconf _NPROCESSORS_ONLN) && make -j$(getconf _NPROCESSORS_ONLN) install
