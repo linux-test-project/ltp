@@ -24,7 +24,7 @@
 
 #include <errno.h>
 #include <grp.h>
-#ifdef __GLIBC__
+#if defined(__GLIBC__) || defined(__ANDROID__)
 #include <sys/fsuid.h>
 #endif
 #include <sys/types.h>
