@@ -55,6 +55,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <libgen.h>
 #include "test.h"
 #include <stdlib.h>
 #include <sys/stat.h>
