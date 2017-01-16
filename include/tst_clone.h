@@ -34,6 +34,6 @@ int ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg),
 int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
 		void *arg);
 
-#define clone(...) (use_the_ltp_clone_functions, do_not_use_clone)
+#define clone(...) (use_the_ltp_clone_functions__do_not_use_clone)
 
 #endif	/* TST_CLONE_H__ */
