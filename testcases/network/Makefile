@@ -35,6 +35,10 @@ INSTALL_TARGETS		+= $(addprefix $(DIR)/bin.,sm med lg jmb)
 
 RM			+= -r
 
+ifeq ($(ANDROID),1)
+FILTER_OUT_DIRS		+= lib6 rpc sockets
+endif
+
 $(INSTALL_TARGETS): | generate
 
 .PHONY: generate

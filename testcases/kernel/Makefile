@@ -61,6 +61,11 @@ endif
 
 endif
 
+ifeq ($(ANDROID),1)
+FILTER_OUT_DIRS		+= containers controllers device-drivers fs io ipc mem \
+				sched security timers
+endif
+
 MAKE_DEPS		:= include/linux_syscall_numbers.h
 
 include:

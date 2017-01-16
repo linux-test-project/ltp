@@ -20,4 +20,8 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
+ifeq ($(ANDROID),1)
+FILTER_OUT_MAKE_TARGETS	+= setrlimit01
+endif
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -22,4 +22,8 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 INSTALL_TARGETS		+= test_ioctl
 
+ifeq ($(ANDROID),1)
+FILTER_OUT_MAKE_TARGETS	+= ioctl02
+endif
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
