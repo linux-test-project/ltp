@@ -26,13 +26,13 @@ export TST_TOTAL=99
 export TST_COUNT=0
 . test.sh
 
-if tst_kvcmp -lt "2.6.22"; then
+if tst_kvercmp 2 6 22 ; then
 	tst_brkm TCONF "System kernel version is less than 2.6.22,cannot execute test"
 fi
 
 # Starting with 4.8.0 operations on immutable files return EPERM instead of
 # EACCES.
-if tst_kvcmp -lt "4.8"; then
+if tst_kvercmp 4 8 0; then
 	imaccess=EACCES
 else
 	imaccess=EPERM
