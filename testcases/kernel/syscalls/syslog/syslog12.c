@@ -79,6 +79,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <linux/unistd.h>
+#include <sys/syscall.h>
 #include "test.h"
 
 #define EXP_RET_VAL	-1

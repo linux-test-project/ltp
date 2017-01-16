@@ -69,6 +69,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <linux/unistd.h>
+#include <sys/syscall.h>
 #include "test.h"
 
 #define UNEXP_RET_VAL	-1
