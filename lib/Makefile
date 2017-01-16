@@ -26,6 +26,12 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 CFLAGS			+= -I.
 
+ifneq ($(ANDROID),1)
+FILTER_OUT_DIRS		+= android_libpthread android_librt
+else
+FILTER_OUT_LIBSRCS	+= tlibio.c tst_path_has_mnt_flags.c
+endif
+
 LIB			:= libltp.a
 
 pc_file			:= $(DESTDIR)/$(datarootdir)/pkgconfig/ltp.pc

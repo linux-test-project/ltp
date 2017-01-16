@@ -80,6 +80,10 @@ int TEST_ERRNO;
 	assert(strlen(buf) > 0);		\
 } while (0)
 
+#if defined(__ANDROID__) && !defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP)
+#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+#endif
+
 static pthread_mutex_t tmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 static void check_env(void);

@@ -22,6 +22,10 @@
 
 top_srcdir		?= ../../..
 
+ifeq ($(ANDROID),1)
+FILTER_OUT_DIRS		:= abs float
+endif
+
 include $(top_srcdir)/include/mk/env_pre.mk
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
