@@ -24,6 +24,6 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= traceroute_tests.sh
+INSTALL_TARGETS		:= traceroute01.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
