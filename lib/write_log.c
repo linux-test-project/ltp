@@ -77,7 +77,8 @@
 #ifdef DEV_BSIZE
 #define BSIZE DEV_BSIZE
 #else
-#define BSIZE BBSIZE
+#warning DEV_BSIZE isn't defined, defaulting to 512
+#define BSIZE 512
 #endif
 #endif
 

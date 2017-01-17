@@ -58,14 +58,11 @@
  *
  ****************************************************************************/
 
-#if CRAY
-#define B_MULT	BSIZE		/* block size */
-#elif sgi
-#define B_MULT	BBSIZE		/* block size */
-#elif defined(__linux__) || defined(__sun) || defined(__hpux)
+#ifdef DEV_BSIZE
 #define B_MULT	DEV_BSIZE	/* block size */
-#elif defined(_AIX)
-#define B_MULT UBSIZE
+#else
+#warning DEV_BSIZE isn't defined, defaulting to 512
+#define B_MULT	512
 #endif
 
 #define K_MULT	1024		/* Kilo or 2^10 */

@@ -120,10 +120,11 @@
 /*
  * Set READ_BLOCK_SIZE to the block size of the system.
  */
-#ifdef __linux__
+#ifdef DEV_BSIZE
 #define READ_BLOCK_SIZE DEV_BSIZE
 #else
-#define READ_BLOCK_SIZE BSIZE
+#warning DEV_BSIZE isn't defined, defaulting to 512
+#define READ_BLOCK_SIZE 512
 #endif
 
 void setup();
