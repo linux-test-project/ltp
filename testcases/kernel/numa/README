@@ -26,24 +26,23 @@ Verifies the preferred node memory policy which will allocate memory from the no
 testcase will use the support_numa process for the verfication.
 
 TestCase3:
-Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
+Verifies the preferred node memory policy which will allocate shared memory from the node we specify. This
 testcase will use the support_numa process for the verfication.
 
 TestCase4:
-Verifies the physical cpu affinity which runs the process support_numa on the specified physical cpu number.
+Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
+testcase will use the support_numa process for the verfication.
 
 TestCase5:
-Verifies the local allocation policy which always allocates memory from the local node. This testcase
-will use the support_numa process for the verfication.
+Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
+testcase will use the support_numa process for the verfication.
 
 TestCase6:
-Verifies the memory interleaving policy on the shared memory which will interleave the shared memory on
-all nodes equally. Here, the testcase use touch command instead of running a seperate process to verify
-the policy applied.
+Verifies the physical cpu affinity which runs the process support_numa on the specified physical cpu number.
 
 TestCase7:
-Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
-testcase will use the numademo for the verfication.
+Verifies the local allocation policy which always allocates memory from the local node. This testcase
+will use the support_numa process for the verfication.
 
 TestCase8:
 Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
