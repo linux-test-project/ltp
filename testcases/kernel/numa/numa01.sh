@@ -44,12 +44,11 @@ TST_NEEDS_CMDS="numactl numastat awk"
 
 . tst_test.sh
 
-# Function:     extract_numastat_p
 #
-# Description:  - extract the value of given numa node from the `numastat -p` output.
+# Extracts the value of given numa node from the `numastat -p` output.
 #
-# Input:        - $1 - Pid number.
-#               - $2 - Node number.
+# $1 - Pid number.
+# $2 - Node number.
 #
 extract_numastat_p()
 {
@@ -59,10 +58,6 @@ extract_numastat_p()
 	echo $(numastat -p $pid |grep '^Total' |awk '{print $'$node'}')
 }
 
-# Function: setup
-#
-# Description:  - Initialize global variables.
-#
 setup()
 {
 	export MB=$((1024*1024))
@@ -73,8 +68,8 @@ setup()
 	SHARE_1MB=2
 	PAUSE=3
 
-	total_nodes=0       # total no. of numa nodes
-	# all availiable nodes id list
+	total_nodes=0
+
 	nodes_list=$(numactl --show | grep nodebind | cut -d ':' -f 2)
 	for node in $nodes_list; do
 		total_nodes=$((total_nodes+1))
@@ -87,10 +82,7 @@ setup()
 	fi
 }
 
-# Function:     test1
-#
-# Description:  - Verification of memory allocated on a node
-#
+# Verification of memory allocated on a node
 test1()
 {
 	Mem_curr=0
@@ -109,16 +101,13 @@ test1()
 			return
 		fi
 
-		kill -18 $pid 2>&1 >/dev/null
+		kill -18 $pid >/dev/null 2>&1
 	done
 
-	tst_res TPASS "NUMA local node and memory affinity -TEST01 PASSED !!"
+	tst_res TPASS "NUMA local node and memory affinity"
 }
 
-# Function:     test2
-#
-# Description:  - Verification of memory allocated on preferred node
-#
+# Verification of memory allocated on preferred node
 test2()
 {
 	Mem_curr=0
@@ -145,16 +134,13 @@ test2()
 		fi
 
 		COUNTER=$((COUNTER+1))
-		kill -18 $pid 2>&1 >/dev/null
+		kill -18 $pid >/dev/null 2>&1
 	done
 
-	tst_res TPASS "NUMA preferred node policy -TEST02 PASSED !!"
+	tst_res TPASS "NUMA preferred node policy"
 }
 
-# Function:     test3
-#
-# Description:  - Verification of share memory allocated on preferred node
-#
+# Verification of share memory allocated on preferred node
 test3()
 {
 	Mem_curr=0
@@ -182,16 +168,13 @@ test3()
 		fi
 
 		COUNTER=$((COUNTER+1))
-		kill -18 $pid 2>&1 >/dev/null
+		kill -18 $pid >/dev/null 2>&1
 	done
 
-	tst_res TPASS "NUMA share memory allocated in preferred node -TEST03 PASSED !!"
+	tst_res TPASS "NUMA share memory allocated in preferred node"
 }
 
-# Function:     test4
-#
-# Description:  - Verification of memory interleaved on all nodes
-#
+# Verification of memory interleaved on all nodes
 test4()
 {
 	Mem_curr=0
@@ -212,14 +195,11 @@ test4()
 		fi
 	done
 
-	kill -18 $pid 2>&1 >/dev/null
-	tst_res TPASS "NUMA interleave policy -TEST04 PASSED !!"
+	kill -18 $pid >/dev/null 2>&1
+	tst_res TPASS "NUMA interleave policy"
 }
 
-# Function:     test5
-#
-# Description:  - Verification of shared memory interleaved on all nodes
-#
+# Verification of shared memory interleaved on all nodes
 test5()
 {
 	Mem_curr=0
@@ -240,15 +220,12 @@ test5()
 		fi
 	done
 
-	kill -18 $pid 2>&1 >/dev/null
+	kill -18 $pid >/dev/null 2>&1
 
-	tst_res TPASS "NUMA interleave policy on shared memory -TEST05 PASSED !!"
+	tst_res TPASS "NUMA interleave policy on shared memory"
 }
 
-# Function:     test6
-#
-# Description:  - Verification of physical cpu bind
-#
+# Verification of physical cpu bind
 test6()
 {
 	no_of_cpus=0	#no. of cpu's exist
@@ -279,13 +256,10 @@ test6()
 		tst_brk TBROK "Kill on process $pid fails"
 	fi
 
-	tst_res TPASS "NUMA phycpubind policy -TEST06 PASSED !!"
+	tst_res TPASS "NUMA phycpubind policy"
 }
 
-# Function:     test7
-#
-# Description:  - Verification of local node allocation
-#
+# Verification of local node allocation
 test7()
 {
 	Mem_curr=0
@@ -302,17 +276,14 @@ test7()
 			return
 		fi
 
-		kill -18 $pid 2>&1 >/dev/null
+		kill -18 $pid >/dev/null 2>&1
 	done
 
-	tst_res TPASS "NUMA local node allocation -TEST07 PASSED !!"
+	tst_res TPASS "NUMA local node allocation"
 }
 
 
-# Function:     test8
-#
-# Description:  - Verification of memhog with interleave policy
-#
+# Verification of memhog with interleave policy
 test8()
 {
 	Mem_curr=0
@@ -333,8 +304,8 @@ test8()
 		fi
 	done
 
-	kill -9 $pid 2>&1 >/dev/null
-	tst_res TPASS "NUMA MEMHOG policy -TEST08 PASSED !!"
+	kill -9 $pid >/dev/null 2>&1
+	tst_res TPASS "NUMA MEMHOG policy"
 }
 
 # Function:     hardware cheking with numa_node_size api
@@ -355,7 +326,7 @@ test8()
 #
 test9()
 {
-	RC=0                # Return value from commands.
+	RC=0
 
 	numactl --hardware > gavail_nodes
 	RC=$(awk '{ if ( NR == 1 ) {print $1;} }' gavail_nodes)
@@ -363,7 +334,7 @@ test9()
 		RC=$(awk '{ if ( NR == 1 ) {print $3;} }' gavail_nodes)
 		if [ $RC = "nodes" ]; then
 			RC=$(awk '{ if ( NR == 1 ) {print $2;} }' gavail_nodes)
-			tst_res TPASS "NUMA policy on lib NUMA_NODE_SIZE API -TEST09 PASSED !!"
+			tst_res TPASS "NUMA policy on lib NUMA_NODE_SIZE API"
 		else
 			tst_res TFAIL "Failed with numa policy"
 		fi
@@ -372,10 +343,7 @@ test9()
 	fi
 }
 
-# Function:     test10
-#
-# Description:  - Verification of migratepages
-#
+# Verification of migratepages
 test10()
 {
 	Mem_curr=0
@@ -403,10 +371,10 @@ test10()
 		fi
 
 		COUNTER=$((COUNTER+1))
-		kill -18 $pid 2>&1 >/dev/null
+		kill -18 $pid >/dev/null 2>&1
 	done
 
-	tst_res TPASS "NUMA MIGRATEPAGES policy -TEST10 PASSED !!"
+	tst_res TPASS "NUMA MIGRATEPAGES policy"
 }
 
 tst_run
