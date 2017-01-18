@@ -52,10 +52,31 @@ TST_NEEDS_CMDS="numactl numastat awk"
 #
 extract_numastat_p()
 {
-	local 	pid=$1
-	local 	node=$(($2 + 2))
+	local pid=$1
+	local node=$(($2 + 2))
 
 	echo $(numastat -p $pid |grep '^Total' |awk '{print $'$node'}')
+}
+
+wait_for_support_numa()
+{
+	local pid=$1
+	local retries=20
+
+	while [ $retries -gt 0 ]; do
+		local state=$(awk '{print $3}' /proc/$pid/stat)
+
+		if [ $state = 'T' ]; then
+			break
+		fi
+
+		retries=$((retries-1))
+		tst_sleep 50ms
+	done
+
+	if [ $retries -le 0 ]; then
+		tst_brk TBROK "Timeouted while waiting for support_numa ($pid)"
+	fi
 }
 
 setup()
@@ -91,8 +112,7 @@ test1()
 		numactl --cpunodebind=$node --membind=$node support_numa $ALLOC_1MB &
 		pid=$!
 
-		# Wait a little msec for memory allocating in background
-		tst_sleep 100ms
+		wait_for_support_numa $pid
 
 		Mem_curr=$(echo "$(extract_numastat_p $pid $node) * $MB" |bc)
 		if [ $(echo "$Mem_curr < $MB" | bc) -eq 1 ]; then
@@ -101,7 +121,7 @@ test1()
 			return
 		fi
 
-		kill -18 $pid >/dev/null 2>&1
+		kill -CONT $pid >/dev/null 2>&1
 	done
 
 	tst_res TPASS "NUMA local node and memory affinity"
@@ -124,7 +144,8 @@ test2()
 
 		numactl --cpunodebind=$node --preferred=$Preferred_node support_numa $ALLOC_1MB &
 		pid=$!
-		tst_sleep 100ms
+
+		wait_for_support_numa $pid
 
 		Mem_curr=$(echo "$(extract_numastat_p $pid $Preferred_node) * $MB" |bc)
 		if [ $(echo "$Mem_curr < $MB" |bc ) -eq 1 ]; then
@@ -134,7 +155,7 @@ test2()
 		fi
 
 		COUNTER=$((COUNTER+1))
-		kill -18 $pid >/dev/null 2>&1
+		kill -CONT $pid >/dev/null 2>&1
 	done
 
 	tst_res TPASS "NUMA preferred node policy"
@@ -158,7 +179,8 @@ test3()
 
 		numactl --cpunodebind=$node --preferred=$Preferred_node support_numa $SHARE_1MB &
 		pid=$!
-		tst_sleep 100ms
+
+		wait_for_support_numa $pid
 
 		Mem_curr=$(echo "$(extract_numastat_p $pid $Preferred_node) * $MB" |bc)
 		if [ $(echo "$Mem_curr < $MB" |bc ) -eq 1 ]; then
@@ -168,7 +190,7 @@ test3()
 		fi
 
 		COUNTER=$((COUNTER+1))
-		kill -18 $pid >/dev/null 2>&1
+		kill -CONT $pid >/dev/null 2>&1
 	done
 
 	tst_res TPASS "NUMA share memory allocated in preferred node"
@@ -183,7 +205,8 @@ test4()
 
 	numactl --interleave=all support_numa $ALLOC_1MB &
 	pid=$!
-	tst_sleep 100ms
+
+	wait_for_support_numa $pid
 
 	for node in $nodes_list; do
 		Mem_curr=$(echo "$(extract_numastat_p $pid $node) * $MB" |bc)
@@ -195,7 +218,7 @@ test4()
 		fi
 	done
 
-	kill -18 $pid >/dev/null 2>&1
+	kill -CONT $pid >/dev/null 2>&1
 	tst_res TPASS "NUMA interleave policy"
 }
 
@@ -208,7 +231,8 @@ test5()
 
 	numactl --interleave=all support_numa $SHARE_1MB &
 	pid=$!
-	tst_sleep 100ms
+
+	wait_for_support_numa $pid
 
 	for node in $nodes_list; do
 		Mem_curr=$(echo "$(extract_numastat_p $pid $node) * $MB" |bc)
@@ -220,7 +244,7 @@ test5()
 		fi
 	done
 
-	kill -18 $pid >/dev/null 2>&1
+	kill -CONT $pid >/dev/null 2>&1
 
 	tst_res TPASS "NUMA interleave policy on shared memory"
 }
@@ -248,13 +272,11 @@ test6()
 	if [ $running_on_cpu -ne $run_on_cpu ]; then
 		tst_res TFAIL \
 			"Process running on cpu$running_on_cpu but expected to run on cpu$run_on_cpu"
+		ROD kill -INT $pid
 		return
 	fi
-	RC=0
-	kill -9 $pid || RC=$?
-	if [ $RC -ne 0 ]; then
-		tst_brk TBROK "Kill on process $pid fails"
-	fi
+
+	ROD kill -INT $pid
 
 	tst_res TPASS "NUMA phycpubind policy"
 }
@@ -267,7 +289,8 @@ test7()
 	for node in $nodes_list; do
 		numactl --cpunodebind=$node --localalloc support_numa $ALLOC_1MB &
 		pid=$!
-		tst_sleep 100ms
+
+		wait_for_support_numa $pid
 
 		Mem_curr=$(echo "$(extract_numastat_p $pid $node) * $MB" |bc)
 		if [ $(echo "$Mem_curr < $MB" |bc ) -eq 1 ]; then
@@ -276,12 +299,11 @@ test7()
 			return
 		fi
 
-		kill -18 $pid >/dev/null 2>&1
+		kill -CONT $pid >/dev/null 2>&1
 	done
 
 	tst_res TPASS "NUMA local node allocation"
 }
-
 
 # Verification of memhog with interleave policy
 test8()
@@ -290,9 +312,8 @@ test8()
 	# Memory will be allocated using round robin on nodes.
 	Exp_incr=$(echo "$MB / $total_nodes" |bc)
 
-	numactl --interleave=all memhog -r1000000 1MB 2>&1 >/dev/null  &
+	numactl --interleave=all memhog -r1000000 1MB 2>&1 >/dev/null &
 	pid=$!
-	tst_sleep 100ms
 
 	for node in $nodes_list; do
 		Mem_curr=$(echo "$(extract_numastat_p $pid $node) * $MB" |bc)
@@ -359,7 +380,8 @@ test10()
 
 		numactl --preferred=$node support_numa $ALLOC_1MB &
 		pid=$!
-		tst_sleep 100ms
+
+		wait_for_support_numa $pid
 
 		migratepages $pid $node $Preferred_node
 
@@ -371,7 +393,7 @@ test10()
 		fi
 
 		COUNTER=$((COUNTER+1))
-		kill -18 $pid >/dev/null 2>&1
+		kill -CONT $pid >/dev/null 2>&1
 	done
 
 	tst_res TPASS "NUMA MIGRATEPAGES policy"

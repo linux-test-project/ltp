@@ -47,10 +47,6 @@
 #define TEST_SFILE "ltp_numa_testfile"
 #define STR "abcdefghijklmnopqrstuvwxyz12345\n"
 
-static void sigfunc(__attribute__ ((unused)) int sig)
-{
-}
-
 static void help(void)
 {
 	printf("Input:	Describe input arguments to this program\n");
@@ -68,7 +64,6 @@ int main(int argc, char *argv[])
 	int i, fd, rc;
 	char *buf = NULL;
 	struct stat sb;
-	struct sigaction sa;
 
 	if (argc != 2) {
 		fprintf(stderr, "Here expect only one number(i.e. 2) as the parameter\n");
@@ -119,16 +114,7 @@ int main(int argc, char *argv[])
 		remove(TEST_SFILE);
 		break;
 	case 3:
-		/* Trap SIGINT */
-		sa.sa_handler = sigfunc;
-		sa.sa_flags = SA_RESTART;
-		sigemptyset(&sa.sa_mask);
-		if (sigaction(SIGINT, &sa, 0) < 0) {
-			fprintf(stderr, "Sigaction SIGINT failed\n");
-			exit(2);
-		}
-		/* wait for signat Int */
-		pause();
+		raise(SIGSTOP);
 		break;
 	default:
 		help();
