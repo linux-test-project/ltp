@@ -50,8 +50,12 @@ do_test()
 	ip addr show $(tst_iface) | grep -q 'MULTICAST' || \
 		tst_brkm TFAIL "Multicast not listed for $(tst_iface)"
 
-	ip maddr show $(tst_iface) | grep -q '224.0.0.1' || \
-		tst_brkm TFAIL "all-host-group for $(tst_iface) not joined"
+	ip maddr show $(tst_iface) | grep -q '224.0.0.1'
+	if [ $? -ne 0 ]; then
+		tst_resm TWARN "ip failed to detect multicast, parsing /proc/net/igmp"
+		grep "$(tst_iface)\s*:" -A 1 /proc/net/igmp | grep -q '\s010000E0\s' || \
+			tst_brkm TFAIL "all-host-group for $(tst_iface) not joined"
+	fi
 
 	# Do the ping tests: Execute ping 224.0.0.1 - Verify that the proper
 	# number of responses are returned.
