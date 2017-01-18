@@ -4,6 +4,7 @@ ping602 ping02.sh -6
 sendfile601 sendfile01 -6
 tcpdump601 tcpdump01 -6
 tracepath601 tracepath01.sh -6
+traceroute601 traceroute01.sh -6
 dhcpd6 dhcpd_tests.sh -6
 dnsmasq6 dnsmasq_tests.sh -6
 ipneigh601 ipneigh01.sh -6
