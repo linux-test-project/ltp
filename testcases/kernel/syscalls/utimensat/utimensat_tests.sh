@@ -26,7 +26,7 @@ export TST_TOTAL=99
 export TST_COUNT=0
 . test.sh
 
-if tst_kvercmp 2 6 22 ; then
+if tst_kvcmp -lt "2.6.22"; then
 	tst_brkm TCONF "System kernel version is less than 2.6.22,cannot execute test"
 fi
 
