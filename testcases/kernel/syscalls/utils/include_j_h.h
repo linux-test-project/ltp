@@ -135,12 +135,6 @@ int cleanup_file(char *path);
 int setup_swapfile(char *testdir, char *fname, char *path, size_t size);
 int cleanup_swapfile(char *path);
 
-int setup_ulimit_fnum(rlim_t newlim, rlim_t *oldlim);
-int cleanup_ulimit_fnum(rlim_t oldlim);
-
-int setup_proc_fs(char *path, int newval, int *oldval);
-int cleanup_proc_fs(char *path, int oldval);
-
 #define QUEUE_NAME	"/test_mqueue"
 pid_t create_echo_msg_proc(void);
 
