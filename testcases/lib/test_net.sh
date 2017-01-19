@@ -35,15 +35,8 @@ init_ltp_netspace()
 	export TST_INIT_NETNS="no"
 	export LTP_NETNS=${LTP_NETNS:-"ip netns exec ltp_ns"}
 
-	tst_init_iface
-	tst_init_iface rhost
-
-	TST_IPV6= tst_add_ipaddr
-	TST_IPV6= tst_add_ipaddr rhost
-
-	TST_IPV6=6 tst_add_ipaddr
-	TST_IPV6=6 tst_add_ipaddr rhost
-
+	tst_restore_ipaddr
+	tst_restore_ipaddr rhost
 }
 
 # Run command on remote host.
