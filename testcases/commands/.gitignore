@@ -1,5 +1,5 @@
 /ldd/datafiles/lddfile.out
 /ldd/datafiles/*.obj.so
-/size/test
 /cron/cron_dirs_check
 /eject/eject_check_tray
+/insmod/ltp_insmod01.ko
