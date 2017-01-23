@@ -28,6 +28,7 @@
 #include <sys/msg.h>
 
 #include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
 
 static int queue_id = -1;
@@ -48,11 +49,9 @@ static void verify_msgget(void)
 
 	queue_id = TEST_RETURN;
 
-	if (msgsnd(queue_id, &snd_buf, MSGSIZE, 0) == -1)
-		tst_brk(TBROK | TERRNO, "msgsnd() failed");
+	SAFE_MSGSND(queue_id, &snd_buf, MSGSIZE, 0);
 
-	if (msgrcv(queue_id, &rcv_buf, MSGSIZE, MSGTYPE, IPC_NOWAIT) == -1)
-		tst_brk(TBROK | TERRNO, "msgrcv() failed");
+	SAFE_MSGRCV(queue_id, &rcv_buf, MSGSIZE, MSGTYPE, IPC_NOWAIT);
 
 	if (strcmp(snd_buf.text, rcv_buf.text) == 0)
 		tst_res(TPASS, "message received = message sent");

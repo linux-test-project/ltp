@@ -34,6 +34,7 @@
 #include <pwd.h>
 
 #include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
 
 static key_t msgkey, msgkey1;
@@ -96,9 +97,7 @@ static void setup(void)
 	msgkey = GETIPCKEY();
 	msgkey1 = GETIPCKEY();
 
-	queue_id = msgget(msgkey, IPC_CREAT | IPC_EXCL);
-	if (queue_id == -1)
-		tst_brk(TBROK | TERRNO, "can't create message queue");
+	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL);
 
 	pw = SAFE_GETPWNAM("nobody");
 }
