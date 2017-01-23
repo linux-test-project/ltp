@@ -34,7 +34,9 @@ ssize_t safe_msgrcv(const char *file, const int lineno, int msqid, void *msgp,
 
 int safe_msgctl(const char *file, const int lineno, int msqid, int cmd,
 		struct msqid_ds *buf);
-#define SAFE_MSGCTL(msqid, cmd, buf) \
-	safe_msgctl(__FILE__, __LINE__, (msqid), (cmd), (buf))
+#define SAFE_MSGCTL(msqid, cmd, buf) do { \
+	safe_msgctl(__FILE__, __LINE__, (msqid), (cmd), (buf)); \
+	(msqid) = ((cmd) == IPC_RMID ? -1 : (msqid)); \
+	} while (0)
 
 #endif /* TST_SAFE_SYSV_IPC_H__ */
