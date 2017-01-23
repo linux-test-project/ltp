@@ -1,169 +1,80 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program.
  */
 
 /*
- * NAME
- *	msgsnd01.c
- *
  * DESCRIPTION
- *	msgsnd01 - test that msgsnd() enqueues a message correctly
- *
- * ALGORITHM
- *	create a message queue
- *	initialize a message buffer with a known message and type
- *	loop if that option was specified
- *	enqueue the message
- *	check the return code
- *	  if failure, issue a FAIL message.
- *	otherwise,
- *	  if doing functionality testing
- *		stat the message queue
- *		check for # of bytes = MSGSIZE and # of messages = 1
- *	  	if correct,
- *			issue a PASS message
- *		otherwise
- *			issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  msgsnd01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	None
+ * test that msgsnd() enqueues a message correctly.
  */
 
-#include "test.h"
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
-#include "ipcmsg.h"
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
 
-void cleanup(void);
-void setup(void);
+static key_t msgkey;
+static int queue_id = -1;
+static struct buf {
+	long type;
+	char text[MSGSIZE];
+} rcv_buf, snd_buf = {MSGTYPE, "hello"};
 
-char *TCID = "msgsnd01";
-int TST_TOTAL = 1;
-
-int msg_q_1;
-MSGBUF msg_buf, rd_buf;
-
-struct msqid_ds qs_buf;
-
-int main(int ac, char **av)
+static void verify_msgsnd(void)
 {
-	int lc;
+	struct msqid_ds qs_buf;
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/*
-		 * Use TEST macro to make the call
-		 */
-
-		TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
-				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-			continue;
-		}
-
-		/* get the queue status */
-		if (msgctl(msg_q_1, IPC_STAT, &qs_buf) == -1) {
-			tst_brkm(TBROK, cleanup, "Could not "
-				 "get queue status");
-		}
-
-		if (qs_buf.msg_cbytes != MSGSIZE) {
-			tst_resm(TFAIL, "queue bytes != MSGSIZE");
-		}
-
-		if (qs_buf.msg_qnum != 1) {
-			tst_resm(TFAIL, "queue message != 1");
-		}
-
-		tst_resm(TPASS, "queue bytes = MSGSIZE and "
-			 "queue messages = 1");
-
-		/*
-		 * remove the message by reading from the queue
-		 */
-		if (msgrcv(msg_q_1, &rd_buf, MSGSIZE, 1, 0) == -1) {
-			tst_brkm(TBROK, cleanup, "Could not read from queue");
-		}
+	TEST(msgsnd(queue_id, &snd_buf, MSGSIZE, 0));
+	if (TEST_RETURN == -1) {
+		tst_res(TFAIL | TTERRNO, "msgsnd() failed");
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	SAFE_MSGCTL(queue_id, IPC_STAT, &qs_buf);
+
+	if (qs_buf.msg_cbytes == MSGSIZE && qs_buf.msg_qnum == 1)
+		tst_res(TPASS, "queue bytes and number of queues matched");
+	else
+		tst_res(TFAIL, "queue bytes or number of queues mismatched");
+
+	SAFE_MSGRCV(queue_id, &rcv_buf, MSGSIZE, 1, 0);
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
+	msgkey = GETIPCKEY();
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW);
+}
 
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
-	tst_tmpdir();
-
-	msgkey = getipckey();
-
-	/* create a message queue with read/write permissions */
-	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue");
+static void cleanup(void)
+{
+	if (queue_id != -1 && msgctl(queue_id, IPC_RMID, NULL)) {
+		tst_res(TWARN | TERRNO, "failed to delete message queue %i",
+			queue_id);
 	}
-
-	/* initialize the message buffer */
-	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
-{
-	/* if it exists, remove the message queue if it exists */
-	rm_queue(msg_q_1);
-
-	tst_rmdir();
-
-}
+static struct tst_test test = {
+	.tid = "msgsnd01",
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_msgsnd,
+	.needs_tmpdir = 1
+};

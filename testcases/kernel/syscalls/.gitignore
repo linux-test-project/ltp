@@ -414,8 +414,6 @@
 /ipc/msgrcv/msgrcv08
 /ipc/msgsnd/msgsnd01
 /ipc/msgsnd/msgsnd02
-/ipc/msgsnd/msgsnd03
-/ipc/msgsnd/msgsnd04
 /ipc/msgsnd/msgsnd05
 /ipc/msgsnd/msgsnd06
 /ipc/semctl/semctl01

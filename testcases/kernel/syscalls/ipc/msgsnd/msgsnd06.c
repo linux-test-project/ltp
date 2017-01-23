@@ -1,222 +1,100 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program.
  */
 
 /*
- * NAME
- *	msgsnd06.c
- *
  * DESCRIPTION
- *	msgsnd06 - test for EIDRM error
- *
- * ALGORITHM
- *	loop if that option was specified
- *	create a message queue with read/write permissions
- *	initialize a message buffer with a known message and type
- *	enqueue messages in a loop until the queue is full
- *	fork a child process
- *	child attempts to enqueue a message to the full queue and sleeps
- *	parent removes the queue and then exits
- *	child get a return from msgsnd()
- *	check the errno value
- *	  issue a PASS message if we get EIDRM
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  msgsnd06 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *      14/03/2008 Matthieu Fertré (Matthieu.Fertre@irisa.fr)
- *      - Fix concurrency issue. Due to the use of usleep function to
- *        synchronize processes, synchronization issues can occur on a loaded
- *        system. Fix this by using pipes to synchronize processes.
- *
- * RESTRICTIONS
- *	none
+ * Tests if EIDRM is returned when message queue was removed while
+ * msgsnd() was trying to send a message.
  */
 
-#include <sys/wait.h>
-#include "test.h"
+#include <errno.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
-#include "ipcmsg.h"
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
 
-void cleanup(void);
-void setup(void);
-void do_child(void);
+static key_t msgkey;
+static int queue_id = -1;
+static struct buf {
+	long type;
+	char text[MSGSIZE];
+} snd_buf = {1, "hello"};
 
-char *TCID = "msgsnd06";
-int TST_TOTAL = 1;
-
-int msg_q_1 = -1;		/* The message queue id created in setup */
-
-MSGBUF msg_buf;
-
-int main(int ac, char **av)
+static void verify_msgsnd(void)
 {
-	int lc;
-	pid_t c_pid;
-	int status, e_code;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-#ifdef UCLINUX
-#define PIPE_NAME	"msgsnd06"
-	maybe_run_child(&do_child, "d", &msg_q_1);
-#endif
-
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		msgkey = getipckey();
-
-		/* create a message queue with read/write permission */
-		if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW))
-		    == -1) {
-			tst_brkm(TBROK, cleanup, "Can't create message queue");
-		}
-
-		/* initialize the message buffer */
-		init_buf(&msg_buf, MSGTYPE, MSGSIZE);
-
-		/* write messages to the queue until it is full */
-		while (msgsnd(msg_q_1, &msg_buf, MSGSIZE, IPC_NOWAIT) != -1) {
-			msg_buf.mtype += 1;
-		}
-
-		/*
-		 * fork a child that will attempt to write a message
-		 * to the queue without IPC_NOWAIT
-		 */
-		if ((c_pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "could not fork");
-		}
-
-		if (c_pid == 0) {	/* child */
-
-#ifdef UCLINUX
-			if (self_exec(av[0], "d", msg_q_1) < 0) {
-				tst_brkm(TBROK, cleanup, "could not self_exec");
-			}
-#else
-			do_child();
-#endif
-		} else {
-			TST_PROCESS_STATE_WAIT(cleanup, c_pid, 'S');
-
-			/* remove the queue */
-			rm_queue(msg_q_1);
-
-			/* wait for the child to finish */
-			wait(&status);
-			/* make sure the child returned a good exit status */
-			e_code = status >> 8;
-			if (e_code != 0) {
-				tst_resm(TFAIL, "Failures reported above");
-			}
-		}
-	}
-
-	cleanup();
-
-	tst_exit();
-}
-
-/*
- * do_child()
- */
-void do_child(void)
-{
-	int retval = 0;
-
-#ifdef UCLINUX
-	/* initialize the message buffer */
-	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
-
-#endif
-	/*
-	 * Attempt to write another message to the full queue.
-	 * Without the IPC_NOWAIT flag, the child sleeps
-	 */
-	TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
-
+	TEST(msgsnd(queue_id, &snd_buf, MSGSIZE, 0));
 	if (TEST_RETURN != -1) {
-		retval = 1;
-		tst_resm(TFAIL, "call succeeded when error expected");
-		exit(retval);
+		tst_res(TFAIL, "msgsnd() succeeded unexpectedly");
+		return;
 	}
 
-	switch (TEST_ERRNO) {
-	case EIDRM:
-		tst_resm(TPASS, "expected failure - errno = %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-
-		/* mark the queue as invalid as it was removed */
-		msg_q_1 = -1;
-		break;
-	default:
-		retval = 1;
-		tst_resm(TFAIL,
-			 "call failed with an unexpected error - %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-		break;
+	if (TEST_ERRNO == EIDRM) {
+		tst_res(TPASS | TTERRNO, "msgsnd() failed as expected");
+	} else {
+		tst_res(TFAIL | TTERRNO,
+			"msgsnd() failed unexpectedly, expected EIDRM");
 	}
-	exit(retval);
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void do_test(void)
 {
+	pid_t pid;
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW);
 
-	TEST_PAUSE;
+	while (msgsnd(queue_id, &snd_buf, MSGSIZE, IPC_NOWAIT) != -1)
+		snd_buf.type += 1;
 
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
-	tst_tmpdir();
+	pid = SAFE_FORK();
+	if (!pid) {
+		verify_msgsnd();
+		_exit(0);
+	}
+
+	TST_PROCESS_STATE_WAIT(pid, 'S');
+
+	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
+
+	tst_reap_children();
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
+static void setup(void)
 {
-
-	tst_rmdir();
-
+	msgkey = GETIPCKEY();
 }
+
+static void cleanup(void)
+{
+	if (queue_id != -1 && msgctl(queue_id, IPC_RMID, NULL)) {
+		tst_res(TWARN | TERRNO, "failed to delete message queue %i",
+			queue_id);
+	}
+}
+
+static struct tst_test test = {
+	.tid = "msgsnd06",
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.forks_child = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = do_test
+};

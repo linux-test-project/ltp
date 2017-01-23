@@ -1,234 +1,127 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program.
  */
 
 /*
- * NAME
- *	msgsnd05.c
- *
  * DESCRIPTION
- *	msgsnd05 - test for EINTR error
- *
- * ALGORITHM
- *	create a message queue with read/write permissions
- *	initialize a message buffer with a known message and type
- *	enqueue the message in a loop until the queue is full
- *	loop if that option was specified
- *	fork a child process
- *	child attempts to enqueue a message to the full queue and sleeps
- *	parent sends a SIGHUP to the child then waits for the child to complete
- *	child get a return from msgsnd()
- *	check the errno value
- *	  issue a PASS message if we get EINTR
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	child exits, parent calls cleanup
- *
- * USAGE:  <for command-line>
- *  msgsnd05 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *      14/03/2008 Matthieu Fertré (Matthieu.Fertre@irisa.fr)
- *      - Fix concurrency issue. Due to the use of usleep function to
- *        synchronize processes, synchronization issues can occur on a loaded
- *        system. Fix this by using pipes to synchronize processes.
- *
- * RESTRICTIONS
- *	none
+ * 1) msgsnd(2) fails and sets errno to EAGAIN if the message can't be
+ *    sent due to the msg_qbytes limit for the queue and IPC_NOWAIT is
+ *    specified.
+ * 2) msgsnd(2) fails and sets errno to EINTR if msgsnd(2) sleeps on a
+ *    full message queue condition and the process catches a signal.
  */
 
-#include "test.h"
-
-#include "ipcmsg.h"
-
+#include <errno.h>
+#include <unistd.h>
 #include <sys/types.h>
-#include <sys/wait.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
-void do_child(void);
-void cleanup(void);
-void setup(void);
-#ifdef UCLINUX
-#define PIPE_NAME	"msgsnd05"
-void do_child_uclinux(void);
-#endif
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
 
-char *TCID = "msgsnd05";
-int TST_TOTAL = 1;
+static key_t msgkey;
+static int queue_id = -1;
+static struct buf {
+	long type;
+	char text[MSGSIZE];
+} snd_buf = {1, "hello"};
 
-int msg_q_1 = -1;		/* The message queue id created in setup */
+static struct tcase {
+	int flag;
+	int exp_err;
+	/*1: nobody expected  0: root expected */
+	int exp_user;
+} tcases[] = {
+	{IPC_NOWAIT, EAGAIN, 0},
+	{0, EINTR, 1}
+};
 
-MSGBUF msg_buf;
-
-int main(int ac, char **av)
+static void verify_msgsnd(struct tcase *tc)
 {
-	int lc;
-	pid_t c_pid;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-#ifdef UCLINUX
-	maybe_run_child(&do_child_uclinux, "d", &msg_q_1);
-#endif
-
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/*
-		 * fork a child that will attempt to write a message
-		 * to the queue without IPC_NOWAIT
-		 */
-		if ((c_pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "could not fork");
-		}
-
-		if (c_pid == 0) {	/* child */
-			/*
-			 * Attempt to write another message to the full queue.
-			 * Without the IPC_NOWAIT flag, the child sleeps
-			 */
-
-#ifdef UCLINUX
-			if (self_exec(av[0], "d", msg_q_1) < 0) {
-				tst_brkm(TBROK, cleanup, "could not self_exec");
-			}
-#else
-			do_child();
-#endif
-		} else {
-			TST_PROCESS_STATE_WAIT(cleanup, c_pid, 'S');
-
-			/* send a signal that must be caught to the child */
-			if (kill(c_pid, SIGHUP) == -1)
-				tst_brkm(TBROK, cleanup, "kill failed");
-
-			waitpid(c_pid, NULL, 0);
-		}
-	}
-
-	cleanup();
-
-	tst_exit();
-}
-
-/*
- * do_child()
- */
-void do_child(void)
-{
-	TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
-
+	TEST(msgsnd(queue_id, &snd_buf, MSGSIZE, tc->flag));
 	if (TEST_RETURN != -1) {
-		tst_resm(TFAIL, "call succeeded when error expected");
-		exit(-1);
+		tst_res(TFAIL, "msgsnd() succeeded unexpectedly");
+		return;
 	}
 
-	switch (TEST_ERRNO) {
-	case EINTR:
-		tst_resm(TPASS, "expected failure - errno = %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-		break;
-	default:
-		tst_resm(TFAIL,
-			 "call failed with an unexpected error - %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-		break;
+	if (TEST_ERRNO == tc->exp_err) {
+		tst_res(TPASS | TTERRNO, "msgsnd() failed as expected");
+	} else {
+		tst_res(TFAIL | TTERRNO, "msgsnd() failed unexpectedly,"
+			" expected %s", tst_strerrno(tc->exp_err));
 	}
-
-	exit(0);
 }
 
-void sighandler(int sig)
+static void sighandler(int sig)
 {
 	if (sig == SIGHUP)
 		return;
 	else
-		tst_brkm(TBROK, NULL, "received unexpected signal %d", sig);
+		_exit(TBROK);
 }
 
-#ifdef UCLINUX
-/*
- * do_child_uclinux() - capture signals, initialize buffer, then run do_child()
- */
-void do_child_uclinux(void)
+static void do_test(unsigned int n)
 {
-	/* initialize the message buffer */
-	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
+	pid_t pid;
+	struct tcase *tc = &tcases[n];
 
-	tst_sig(FORK, sighandler, cleanup);
-
-	do_child();
-}
-#endif
-
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
-{
-	/* capture signals in our own handler */
-	tst_sig(FORK, sighandler, cleanup);
-
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
-	tst_tmpdir();
-
-	msgkey = getipckey();
-
-	/* create a message queue with read/write permission */
-	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue");
+	if (tc->exp_user == 0) {
+		verify_msgsnd(tc);
+		return;
 	}
 
-	/* initialize the message buffer */
-	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
+	pid = SAFE_FORK();
+	if (!pid) {
+		SAFE_SIGNAL(SIGHUP, sighandler);
+		verify_msgsnd(tc);
+		_exit(0);
+	}
 
-	/* write messages to the queue until it is full */
-	while (msgsnd(msg_q_1, &msg_buf, MSGSIZE, IPC_NOWAIT) != -1) {
-		msg_buf.mtype += 1;
+	TST_PROCESS_STATE_WAIT(pid, 'S');
+	SAFE_KILL(pid, SIGHUP);
+	tst_reap_children();
+}
+
+static void setup(void)
+{
+	msgkey = GETIPCKEY();
+
+	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW);
+
+	while (msgsnd(queue_id, &snd_buf, MSGSIZE, IPC_NOWAIT) != -1)
+		snd_buf.type += 1;
+}
+
+static void cleanup(void)
+{
+	if (queue_id != -1 && msgctl(queue_id, IPC_RMID, NULL)) {
+		tst_res(TWARN | TERRNO, "failed to delete message queue %i",
+			queue_id);
 	}
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
-{
-	/* if it exists, remove the message queue that was created */
-	rm_queue(msg_q_1);
-
-	tst_rmdir();
-
-}
+static struct tst_test test = {
+	.tid = "msgsnd05",
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.forks_child = 1,
+	.tcnt = ARRAY_SIZE(tcases),
+	.setup = setup,
+	.cleanup = cleanup,
+	.test = do_test
+};
