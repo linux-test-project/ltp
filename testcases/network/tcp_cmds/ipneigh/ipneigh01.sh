@@ -29,8 +29,8 @@ do_setup()
 
 do_test()
 {
-	local arp_show_cmd=$1
-	local arp_del_cmd=$2
+	local arp_show_cmd="$1"
+	local arp_del_cmd="$2"
 
 	local entry_name
 	[ "$TST_IPV6" ] && entry_name="NDISC" || entry_name="ARP"
