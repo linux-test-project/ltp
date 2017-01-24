@@ -29,6 +29,7 @@
 #include "tst_test.h"
 #include "tst_device.h"
 #include "lapi/futex.h"
+#include "tst_ansi_colors.h"
 
 #include "old_resource.h"
 #include "old_device.h"
@@ -194,20 +195,29 @@ static void print_result(const char *file, const int lineno, int ttype,
 	if (ttype & TTERRNO)
 		str_errno = tst_strerrno(TEST_ERRNO);
 
-	ret = snprintf(str, size, "%s:%i: %s: ", file, lineno, res);
+	ret = snprintf(str, size, "%s:%i: ", file, lineno);
+	str += ret;
+	size -= ret;
 
+	if (tst_color_enabled())
+		ret = snprintf(str, size, "%s%s: %s", tst_ttype2color(ttype),
+			       res, ANSI_COLOR_RESET);
+	else
+		ret = snprintf(str, size, "%s: ", res);
 	str += ret;
 	size -= ret;
 
 	ret = vsnprintf(str, size, fmt, va);
-
 	str += ret;
 	size -= ret;
 
-	if (str_errno)
-		snprintf(str, size, ": %s\n", str_errno);
-	else
-		snprintf(str, size, "\n");
+	if (str_errno) {
+		ret = snprintf(str, size, ": %s", str_errno);
+		str += ret;
+		size -= ret;
+	}
+
+	snprintf(str, size, "\n");
 
 	fputs(buf, stderr);
 }

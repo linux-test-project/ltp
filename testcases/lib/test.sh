@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) Linux Test Project, 2014
+# Copyright (c) Linux Test Project, 2014-2017
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ export LTP_RET_VAL=0
 export TST_COUNT=1
 export TST_LIB_LOADED=1
 
+. tst_ansi_color.sh
+
 # Exit values map
 tst_flag2mask()
 {
@@ -41,13 +43,18 @@ tst_flag2mask()
 
 tst_resm()
 {
-	tst_flag2mask "$1"
+	local ttype="$1"
+
+	tst_flag2mask "$ttype"
 	local mask=$?
 	LTP_RET_VAL=$((LTP_RET_VAL|mask))
 
 	local ret=$1
 	shift
-	echo "$TCID $TST_COUNT $ret : $@"
+
+	printf "$TCID $TST_COUNT "
+	tst_print_colored $ret "$ret:"
+	echo " $@"
 
 	case "$ret" in
 	TPASS|TFAIL)

@@ -50,6 +50,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "ltp_priv.h"
+#include "tst_ansi_colors.h"
 
 long TEST_RETURN;
 int TEST_ERRNO;
@@ -254,7 +255,7 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 	const char *type;
 	int ttype_result = TTYPE_RESULT(ttype);
 	char message[USERMESG];
-	size_t size;
+	size_t size = 0;
 
 	/*
 	 * Save the test result type by ORing ttype into the current exit value
@@ -280,14 +281,26 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 	 * Build the result line and print it.
 	 */
 	type = strttype(ttype);
+
 	if (T_mode == VERBOSE) {
-		size = snprintf(message, sizeof(message),
-				"%-8s %4d  %s  :  %s", tcid, tnum, type, tmesg);
+		size += snprintf(message + size, sizeof(message) - size,
+				"%-8s %4d  ", tcid, tnum);
 	} else {
-		size = snprintf(message, sizeof(message),
-				"%-8s %4d       %s  :  %s",
-				tcid, tnum, type, tmesg);
+		size += snprintf(message + size, sizeof(message) - size,
+				"%-8s %4d       ", tcid, tnum);
 	}
+
+	if (size >= sizeof(message)) {
+		printf("%s: %i: line too long\n", __func__, __LINE__);
+		abort();
+	}
+
+	if (tst_color_enabled())
+		size += snprintf(message + size, sizeof(message) - size,
+		"%s%s%s  :  %s", tst_ttype2color(ttype), type, ANSI_COLOR_RESET, tmesg);
+	else
+		size += snprintf(message + size, sizeof(message) - size,
+		"%s  :  %s", type, tmesg);
 
 	if (size >= sizeof(message)) {
 		printf("%s: %i: line too long\n", __func__, __LINE__);

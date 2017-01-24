@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) Linux Test Project, 2014-2016
+# Copyright (c) Linux Test Project, 2014-2017
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ export TST_WARN=0
 export TST_CONF=0
 export TST_COUNT=1
 export TST_ITERATIONS=1
+
+. tst_ansi_color.sh
 
 tst_do_exit()
 {
@@ -97,9 +99,14 @@ tst_res()
 	local res=$1
 	shift
 
+	tst_color_enabled
+	local color=$?
+
 	tst_inc_res "$res"
 
-	echo "$TST_ID $TST_COUNT $res : $@"
+	printf "$TCID $TST_COUNT "
+	tst_print_colored $res "$res: "
+	echo "$@"
 }
 
 tst_brk()

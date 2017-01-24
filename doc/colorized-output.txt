@@ -1,0 +1,10 @@
+Colorized output
+================
+
+1. Usage
+--------
+By default LTP colorizes it's output unless using pipe or redirect to file.
+
+It's possible to force behaviour with LTP_COLORIZE_OUTPUT environment variable:
+y or 1: always colorize
+n or 0: never colorize
