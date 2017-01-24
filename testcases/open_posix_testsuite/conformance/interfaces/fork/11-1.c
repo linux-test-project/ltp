@@ -1,132 +1,110 @@
 /*
-* Copyright (c) 2004, Bull S.A..  All rights reserved.
-* Created by: Sebastien Decugis
-* Copyright (c) 2015 Cyril Hrubis <chrubis@suse.cz>
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it would be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program; if not, write the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * Copyright © 2017 SUSE LLC
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Tests that file locks are not inherited by the child process after a fork.
+ */
 
-* This sample test aims to check the following assertion:
-*
-* The file locks are not inherited by the child process.
-
-* The steps are:
-* -> lock stdout
-* -> fork
-* -> child creates a thread
-* -> child thread trylock stdout
-* -> join the child
-
-* The test fails if the child thread cannot lock the file
-* -- this would mean the child process got stdout file lock ownership.
-
-*/
-
-/* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
-
-#include <pthread.h>
-#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <string.h>
 
 #include "posixtest.h"
 
-static void *threaded(void *arg)
+static int child(int fd)
 {
-	int ret;
-	long res;
+	struct flock fl = {
+		.l_type = F_WRLCK,
+		.l_whence = SEEK_SET,
+		.l_start = 1,
+		.l_len = 99
+	};
 
-	(void) arg;
-
-	ret = ftrylockfile(stdout);
-
-	if (ret) {
-		res = PTS_FAIL;
-		printf("FAIL: The child process inherited the lock\n");
-	} else {
-		res = PTS_PASS;
+	if (fcntl(fd, F_GETLK, &fl) == -1) {
+		printf("Could not get lock: %s (%d)\n",
+		       strerror(errno), errno);
+		return PTS_UNRESOLVED;
 	}
 
-	funlockfile(stdout);
+	if (fl.l_type == F_UNLCK) {
+		printf("Child found lock is F_UNLCK, should be F_WRLCK\n");
+		return PTS_FAIL;
+	}
 
-	return (void*)res;
+	if (fcntl(fd, F_SETLK, &fl) == -1) {
+		if (errno == EACCES || errno == EAGAIN) {
+			printf("PASSED: child did not inherit the lock\n");
+			return PTS_PASS;
+		}
+
+		printf("Unexpected fcntl error: %s (%d)\n",
+		       strerror(errno), errno);
+		return PTS_UNRESOLVED;
+	}
+
+	printf("Child locked file already locked by parent\n");
+	return PTS_FAIL;
 }
 
 int main(void)
 {
-	int ret, status;
-	pid_t child, ctl;
-	pthread_t ch;
-	long res;
+	char path_template[] = "/tmp/fork-11-1-XXXXXX";
+	int fd, child_stat, result = PTS_UNRESOLVED;
+	pid_t child_pid;
+	struct flock fl = {
+		.l_type = F_WRLCK,
+		.l_whence = SEEK_SET,
+		.l_start = 0,
+		.l_len = 100,
+	};
 
-	/* lock the stdout file */
-	flockfile(stdout);
-
-	child = fork();
-
-	if (child == -1) {
-		funlockfile(stdout);
-		perror("fork");
-		return PTS_UNRESOLVED;
+	fd = mkstemp(path_template);
+	if (fd == -1) {
+		printf("Could not open temporary file: %s (%d)\n",
+		       strerror(errno), errno);
+		return result;
 	}
 
-	if (child == 0) {
-		/* Setup timeout in case the thread hangs in the lock */
-		alarm(1);
-
-		/*
-		 * We have to try to acquire the lock from different thread
-		 * because the file locks are recursive.
-		 */
-		ret = pthread_create(&ch, NULL, threaded, NULL);
-
-		if (ret != 0) {
-			printf("pthread_create: %s\n", strerror(ret));
-			exit(PTS_UNRESOLVED);
-		}
-
-		ret = pthread_join(ch, (void*)&res);
-
-		if (ret != 0) {
-			printf("pthread_join: %s\n", strerror(ret));
-			exit(PTS_UNRESOLVED);
-		}
-
-		exit(res);
+	if (fcntl(fd, F_SETLK, &fl) == -1) {
+		printf("Could not set initial lock: %s (%d)\n",
+		       strerror(errno), errno);
+		goto cleanup;
 	}
 
-	funlockfile(stdout);
-
-	ctl = waitpid(child, &status, 0);
-
-	if (ctl != child) {
-		printf("Waitpid returned the wrong PID\n");
-		return PTS_UNRESOLVED;
+	child_pid = fork();
+	if (child_pid == -1) {
+		printf("Fork failed: %s (%d)\n", strerror(errno), errno);
+		goto cleanup;
 	}
 
-	if (!WIFEXITED(status)) {
-		printf("FAIL: Child exited abnormaly, timeout?\n");
-		return PTS_FAIL;
+	if (child_pid == 0)
+		exit(child(fd));
+
+	if (waitpid(child_pid, &child_stat, 0) == -1) {
+		printf("Wait failed: %s (%d)\n", strerror(errno), errno);
+		goto cleanup;
 	}
 
-	if (WEXITSTATUS(status) != PTS_PASS)
-		return WEXITSTATUS(status);
+	if (WIFEXITED(child_stat))
+		result = WEXITSTATUS(child_stat);
+	else
+		printf("Child terminated abnormally!\n");
 
-	printf("Test PASSED\n");
-	return PTS_PASS;
+cleanup:
+	close(fd);
+	return result;
 }
