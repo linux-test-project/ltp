@@ -26,8 +26,6 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 CFLAGS			+= -I.
 
-FILTER_OUT_LIBSRCS	:= mount_utils.c
-
 LIB			:= libltp.a
 
 pc_file			:= $(DESTDIR)/$(datarootdir)/pkgconfig/ltp.pc
