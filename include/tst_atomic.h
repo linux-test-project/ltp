@@ -131,6 +131,27 @@ static inline int tst_atomic_add_return(int i, int *v)
 
 	return val;
 }
+
+#elif defined (__aarch64__)
+static inline int tst_atomic_add_return(int i, int *v)
+{
+	unsigned long tmp;
+	int result;
+
+	__asm__ __volatile__(
+"       prfm    pstl1strm, %2	\n"
+"1:     ldxr 	%w0, %2		\n"
+"       add	%w0, %w0, %w3	\n"
+"       stlxr	%w1, %w0, %2	\n"
+"       cbnz	%w1, 1b		\n"
+"       dmb ish			\n"
+	: "=&r" (result), "=&r" (tmp), "+Q" (*v)
+	: "Ir" (i)
+	: "memory");
+
+	return result;
+}
+
 #else /* HAVE_SYNC_ADD_AND_FETCH == 1 */
 # error Your compiler does not provide __sync_add_and_fetch and LTP\
 	implementation is missing for your architecture.
