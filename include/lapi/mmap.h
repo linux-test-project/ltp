@@ -67,4 +67,8 @@
 # define MADV_DODUMP   17
 #endif
 
+#ifndef MADV_FREE
+# define MADV_FREE	8
+#endif
+
 #endif /* LAPI_MMAP_H__ */

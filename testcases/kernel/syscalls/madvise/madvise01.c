@@ -60,7 +60,8 @@ static struct tcase {
 	{MADV_HUGEPAGE,    "MADV_HUGEPAGE",    &pfile}, /* since Linux 2.6.38 */
 	{MADV_NOHUGEPAGE,  "MADV_NOHUGEPAGE",  &pfile}, /* since Linux 2.6.38 */
 	{MADV_DONTDUMP,    "MADV_DONTDUMP",    &sfile}, /* since Linux 3.4 */
-	{MADV_DODUMP,      "MADV_DODUMP",      &sfile}  /* since Linux 3.4 */
+	{MADV_DODUMP,      "MADV_DODUMP",      &sfile}, /* since Linux 3.4 */
+	{MADV_FREE,        "MADV_FREE",        &sfile}, /* since Linux 4.5 */
 };
 
 static void setup(void)
