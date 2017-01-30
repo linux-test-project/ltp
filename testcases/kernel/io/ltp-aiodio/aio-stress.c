@@ -1453,6 +1453,7 @@ int main(int ac, char **av)
 		perror("malloc");
 		exit(1);
 	}
+	memset(t, 0, num_threads * sizeof(*t));
 	global_thread_info = t;
 
 	/* by default, allow a huge number of iocbs to be sent towards
