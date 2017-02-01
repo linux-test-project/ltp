@@ -38,7 +38,7 @@
 #define STR "abcdefghijklmnopqrstuvwxyz12345\n"
 
 static char *sfile;
-static char *pfile;
+static char *amem;
 static struct stat st;
 
 static struct tcase {
@@ -57,11 +57,11 @@ static struct tcase {
 	{MADV_HWPOISON,    "MADV_HWPOISON",    &sfile}, /* since Linux 2.6.32 */
 	{MADV_MERGEABLE,   "MADV_MERGEABLE",   &sfile}, /* since Linux 2.6.32 */
 	{MADV_UNMERGEABLE, "MADV_UNMERGEABLE", &sfile}, /* since Linux 2.6.32 */
-	{MADV_HUGEPAGE,    "MADV_HUGEPAGE",    &pfile}, /* since Linux 2.6.38 */
-	{MADV_NOHUGEPAGE,  "MADV_NOHUGEPAGE",  &pfile}, /* since Linux 2.6.38 */
+	{MADV_HUGEPAGE,    "MADV_HUGEPAGE",    &amem},  /* since Linux 2.6.38 */
+	{MADV_NOHUGEPAGE,  "MADV_NOHUGEPAGE",  &amem},  /* since Linux 2.6.38 */
 	{MADV_DONTDUMP,    "MADV_DONTDUMP",    &sfile}, /* since Linux 3.4 */
 	{MADV_DODUMP,      "MADV_DODUMP",      &sfile}, /* since Linux 3.4 */
-	{MADV_FREE,        "MADV_FREE",        &sfile}, /* since Linux 4.5 */
+	{MADV_FREE,        "MADV_FREE",        &amem},  /* since Linux 4.5 */
 };
 
 static void setup(void)
@@ -86,8 +86,8 @@ static void setup(void)
 
 	/* Map the input file into private memory. MADV_HUGEPAGE only works
 	 * with private anonymous pages */
-	pfile = SAFE_MMAP(NULL, st.st_size,
-			PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd, 0);
+	amem = SAFE_MMAP(NULL, st.st_size,
+			PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
 	SAFE_CLOSE(fd);
 }
@@ -95,7 +95,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	munmap(sfile, st.st_size);
-	munmap(pfile, st.st_size);
+	munmap(amem, st.st_size);
 	umount(TMP_DIR);
 	rmdir(TMP_DIR);
 }
