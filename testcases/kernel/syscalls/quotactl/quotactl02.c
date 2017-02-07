@@ -52,7 +52,7 @@ static struct fs_disk_quota set_dquota = {
 	.d_rtb_softlimit = 1000,
 	.d_fieldmask = FS_DQ_RTBSOFT
 };
-static unsigned short qflag = XFS_QUOTA_UDQ_ENFD;
+static uint32_t qflag = XFS_QUOTA_UDQ_ENFD;
 static const char mntpoint[] = "mnt_point";
 
 static struct t_case {
