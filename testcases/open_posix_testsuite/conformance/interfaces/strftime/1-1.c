@@ -26,7 +26,7 @@ int main(void)
 	char text[256];
 	int result;
 
-	setlocale(LC_TIME, "");
+	setlocale(LC_TIME, "C");
 	strftime(text, sizeof(text), nl_langinfo(D_T_FMT), local_t);
 	printf("STRING IS:   %s\n\n", text);
 
