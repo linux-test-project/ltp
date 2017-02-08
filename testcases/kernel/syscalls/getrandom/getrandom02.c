@@ -83,7 +83,7 @@ static int check_content(int nb)
 
 	memset(table, 0, sizeof(table));
 
-	max = nb * 0.10;
+	max = 6 + nb * 0.2;
 
 	for (i = 0; i < nb; i++) {
 		index = buf[i];
