@@ -28,33 +28,25 @@
 
 #include "lapi/getrandom.h"
 #include "linux_syscall_numbers.h"
-#include "test.h"
+#include "tst_test.h"
 
-char *TCID = "getrandom01";
-static int modes[] = { 0, GRND_RANDOM, GRND_NONBLOCK,
-		       GRND_RANDOM | GRND_NONBLOCK };
+static int modes[] = {0, GRND_RANDOM, GRND_NONBLOCK,
+		      GRND_RANDOM | GRND_NONBLOCK};
 
-int TST_TOTAL = ARRAY_SIZE(modes);
-
-int main(int ac, char **av)
+static void verify_getrandom(unsigned int n)
 {
-	int lc, i;
+	TEST(tst_syscall(__NR_getrandom, NULL, 100, modes[n]));
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(ltp_syscall(__NR_getrandom, NULL, 100, modes[i]));
-			if (TEST_RETURN == -1) {
-				tst_resm(TPASS, "getrandom returned %ld",
-						TEST_RETURN);
-			} else {
-				tst_resm(TFAIL | TTERRNO, "getrandom failed");
-			}
-		}
+	if (TEST_RETURN == -1) {
+		tst_res(TPASS | TTERRNO, "getrandom returned %ld",
+			TEST_RETURN);
+	} else {
+		tst_res(TFAIL | TTERRNO, "getrandom failed");
 	}
-	tst_exit();
 }
+
+static struct tst_test test = {
+	.tid = "getrandom01",
+	.tcnt = ARRAY_SIZE(modes),
+	.test = verify_getrandom,
+};
