@@ -33,30 +33,28 @@
 #include <sys/resource.h>
 #include "lapi/getrandom.h"
 #include "linux_syscall_numbers.h"
-#include "test.h"
+#include "tst_test.h"
 
-char *TCID = "getrandom04";
-int TST_TOTAL = 1;
-static char buf[128];
-
-int main(int ac, char **av)
+static void verify_getrandom(void)
 {
-	tst_parse_opts(ac, av, NULL, NULL);
+	char buf[128];
+	struct rlimit lold, lnew;
 
-	int r;
+	SAFE_GETRLIMIT(RLIMIT_NOFILE, &lold);
+	lnew.rlim_max = lold.rlim_max;
+	lnew.rlim_cur = 3;
+	SAFE_SETRLIMIT(RLIMIT_NOFILE, &lnew);
 
-	struct rlimit lim = {3, 3};
-
-	r = setrlimit(RLIMIT_NOFILE, &lim);
-
-	if (r == -1)
-		tst_brkm(TBROK | TTERRNO, NULL, "setrlimit failed");
-
-	TEST(ltp_syscall(__NR_getrandom, buf, 100, 0));
+	TEST(tst_syscall(__NR_getrandom, buf, 100, 0));
 	if (TEST_RETURN == -1)
-		tst_resm(TFAIL | TTERRNO, "getrandom failed");
+		tst_res(TFAIL | TTERRNO, "getrandom failed");
 	else
-		tst_resm(TPASS, "getrandom returned %ld", TEST_RETURN);
+		tst_res(TPASS, "getrandom returned %ld", TEST_RETURN);
 
-	tst_exit();
+	SAFE_SETRLIMIT(RLIMIT_NOFILE, &lold);
 }
+
+static struct tst_test test = {
+	.tid = "getrandom04",
+	.test_all = verify_getrandom,
+};
