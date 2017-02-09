@@ -44,6 +44,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#ifndef __GLIBC__
+#include <bits/reg.h>
+#endif
 
 #include "usctest.h"
 
