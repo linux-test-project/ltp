@@ -536,6 +536,7 @@ out:
 	free(send_msg);
 	SAFE_CLOSE(client_fd);
 	tst_brk(TBROK, "Server closed");
+	return NULL;
 }
 
 static pthread_t server_thread_add(intptr_t client_fd)

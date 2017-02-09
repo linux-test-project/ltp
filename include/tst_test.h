@@ -62,8 +62,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
  */
 void tst_brk_(const char *file, const int lineno, int ttype,
               const char *fmt, ...)
-              __attribute__ ((format (printf, 4, 5)))
-              __attribute__ ((noreturn));
+              __attribute__ ((format (printf, 4, 5)));
 
 #define tst_brk(ttype, arg_fmt, ...) \
 	tst_brk_(__FILE__, __LINE__, (ttype), (arg_fmt), ##__VA_ARGS__)

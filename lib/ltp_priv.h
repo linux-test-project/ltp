@@ -59,7 +59,7 @@ void tst_vbrk_(const char *file, const int lineno, int ttype,
                const char *fmt, va_list va) __attribute__((noreturn));
 
 void tst_brk_(const char *file, const int lineno, int ttype,
-              const char *msg, ...) __attribute__((noreturn));
+              const char *msg, ...);
 
 void tst_vres_(const char *file, const int lineno, int ttype,
                const char *fmt, va_list va);

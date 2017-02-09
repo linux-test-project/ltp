@@ -341,9 +341,6 @@ cleanup() callback.
    initialized. (Some of the steps may not depend on others and everything
    will work if there were swapped but let's keep it in order.)
 
-3. Avoid using SAFE_MACROS() in cleanup if you want the cleanup to carry on
-   when a cleanup step has failed.
-
 The first rule may seem complicated at first however, on the contrary, it's
 quite easy. All you have to do is to keep track of what was already
 initialized. For example file descriptors needs to be closed only if they were
@@ -381,16 +378,23 @@ requires extra flag to be set after device was successfully mounted.
 -------------------------------------------------------------------------------
 static void cleanup(void)
 {
-	if (fd1 > 0 && close(fd1))
-		tst_res(TWARN | TERRNO, "close(fd1)");
+	if (fd1 > 0)
+		SAFE_CLOSE(fd1);
 
-	if (fd0 > 0 && close(fd0))
-		tst_res(TWARN | TERRNO, "close(fd0)");
+	if (fd0 > 0)
+		SAFE_CLOSE(fd0);
 
 	if (mount_flag && tst_umouont(MNTPOINT))
-		tst_res(TBROK | TERRNO, "umount(%s)", MNTPOINT);
+		tst_res(TWARN | TERRNO, "umount(%s)", MNTPOINT);
 }
 -------------------------------------------------------------------------------
+
+IMPORTANT: 'SAFE_MACROS()' used in cleanup *do not* exit the test. Failure
+           only produces a warning and the 'cleanup()' carries on. This is
+	   intentional as we want to execute as much 'cleanup()' as possible.
+
+WARNING: Calling tst_brk() in test 'cleanup()' does not exit the test as well
+         and 'TBROK' is converted to 'TWARN'.
 
 NOTE: Creation and removal of the test temporary directory is handled in
       the test library and the directory is removed recursively. Therefore

@@ -195,6 +195,7 @@ static void print_result(const char *file, const int lineno, int ttype,
 	break;
 	default:
 		tst_brk(TBROK, "Invalid ttype value %i", ttype);
+		abort();
 	}
 
 	if (ttype & TERRNO)
@@ -239,12 +240,31 @@ void tst_vres_(const char *file, const int lineno, int ttype,
 }
 
 void tst_vbrk_(const char *file, const int lineno, int ttype,
-               const char *fmt, va_list va) __attribute__((noreturn));
+               const char *fmt, va_list va);
+
+static void (*tst_brk_handler)(const char *file, const int lineno, int ttype,
+			       const char *fmt, va_list va) = tst_vbrk_;
+
+static void tst_cvres(const char *file, const int lineno, int ttype,
+		      const char *fmt, va_list va)
+{
+	if (TTYPE_RESULT(ttype) == TBROK) {
+		ttype &= ~TTYPE_MASK;
+		ttype |= TWARN;
+	}
+
+	print_result(file, lineno, ttype, fmt, va);
+	update_results(TTYPE_RESULT(ttype));
+}
 
 static void do_test_cleanup(void)
 {
+	tst_brk_handler = tst_cvres;
+
 	if (tst_test->cleanup)
 		tst_test->cleanup();
+
+	tst_brk_handler = tst_vbrk_;
 }
 
 void tst_vbrk_(const char *file, const int lineno, int ttype,
@@ -277,7 +297,7 @@ void tst_brk_(const char *file, const int lineno, int ttype,
 	va_list va;
 
 	va_start(va, fmt);
-	tst_vbrk_(file, lineno, ttype, fmt, va);
+	tst_brk_handler(file, lineno, ttype, fmt, va);
 	va_end(va);
 }
 
