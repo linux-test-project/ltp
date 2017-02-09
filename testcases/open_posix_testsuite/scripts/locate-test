@@ -85,7 +85,7 @@ fi
 
 case "$mode" in
 buildonly)
-	find "$WHERE" -type f -name "*.c" | grep buildonly
+	find "$WHERE" -type f -name '*.c' | grep buildonly
 	;;
 runnable)
 	# XXX (garrcoop): the tools part is a hack to ensure that we don't

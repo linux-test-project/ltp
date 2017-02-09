@@ -8,7 +8,7 @@ cmd_disable = @set -e; \
 
 BROKEN :=
 
-kver_cmp = $(shell $(top_srcdir)/scripts/tst_kvercmp.sh 2 6 22)
+kver_cmp = $(shell $(srcdir)/scripts/tst_kvercmp.sh 2 6 22)
 ifeq ($(kver_cmp), 1)
 BROKEN += t_sigaction_16-1
 endif

@@ -4,9 +4,9 @@
 # Garrett Cooper, June 2010
 #
 
-top_srcdir?=	..
+top_srcdir?=	$(abspath ../../..)
 
-srcdir=		$(top_srcdir)/tools
+srcdir=		$(top_srcdir)/testcases/open_posix_testsuite/tools
 
 all: ../bin/t0
 
