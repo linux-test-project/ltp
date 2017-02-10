@@ -203,13 +203,17 @@ do
 	case "$option" in
 
 	t )
+		LOOP=1
 		if [ $ISLOOP -eq 1 ]; then
-			LOOP=1
 			tests[$index]=$LOOP
 			: $(( index += 1 ))
 		fi
 
 		tests[$index]="$OPTARG"
+		if [ $index -eq 0 ]; then
+			tests[$index + 1]=$LOOP
+		fi
+
 		: $((index += 1 ))
 		TESTCASE="$OPTARG"
 		ISLOOP=1
