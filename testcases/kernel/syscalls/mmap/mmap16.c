@@ -220,7 +220,7 @@ static void do_child(void)
 	 * kernel writepage is called, that means data corruption.
 	 */
 	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
-	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
+	TST_SAFE_CHECKPOINT_WAIT2(NULL, 0, 60*1000);
 
 	for (offset = FS_BLOCKSIZE; offset < page_size; offset += FS_BLOCKSIZE)
 		addr[offset] = 'a';
