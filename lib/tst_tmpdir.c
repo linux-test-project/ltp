@@ -67,9 +67,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <dirent.h>
+#include <fcntl.h>
 
 #include "test.h"
-#include "rmobj.h"
 #include "ltp_priv.h"
 #include "lapi/futex.h"
 
@@ -113,6 +114,116 @@ char *tst_get_tmpdir(void)
 const char *tst_get_startwd(void)
 {
 	return test_start_work_dir;
+}
+
+static int rmobj(char *obj, char **errmsg)
+{
+	int ret_val = 0;
+	DIR *dir;
+	struct dirent *dir_ent;
+	char dirobj[PATH_MAX];
+	struct stat statbuf;
+	static char err_msg[1024];
+	int fd;
+
+	fd = open(obj, O_DIRECTORY | O_NOFOLLOW);
+	if (fd != -1) {
+		close(fd);
+
+		/* Do NOT perform the request if the directory is "/" */
+		if (!strcmp(obj, "/")) {
+			if (errmsg != NULL) {
+				sprintf(err_msg, "Cannot remove /");
+				*errmsg = err_msg;
+			}
+			return -1;
+		}
+
+		/* Open the directory to get access to what is in it */
+		if ((dir = opendir(obj)) == NULL) {
+			if (rmdir(obj) != 0) {
+				if (errmsg != NULL) {
+					sprintf(err_msg,
+						"rmdir(%s) failed; errno=%d: %s",
+						obj, errno, tst_strerrno(errno));
+					*errmsg = err_msg;
+				}
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+
+		/* Loop through the entries in the directory, removing each one */
+		for (dir_ent = (struct dirent *)readdir(dir);
+		     dir_ent != NULL; dir_ent = (struct dirent *)readdir(dir)) {
+
+			/* Don't remove "." or ".." */
+			if (!strcmp(dir_ent->d_name, ".")
+			    || !strcmp(dir_ent->d_name, ".."))
+				continue;
+
+			/* Recursively call this routine to remove the current entry */
+			sprintf(dirobj, "%s/%s", obj, dir_ent->d_name);
+			if (rmobj(dirobj, errmsg) != 0)
+				ret_val = -1;
+		}
+
+		closedir(dir);
+
+		/* If there were problems removing an entry, don't attempt to
+		   remove the directory itself */
+		if (ret_val == -1)
+			return -1;
+
+		/* Get the link count, now that all the entries have been removed */
+		if (lstat(obj, &statbuf) < 0) {
+			if (errmsg != NULL) {
+				sprintf(err_msg,
+					"lstat(%s) failed; errno=%d: %s", obj,
+					errno, tst_strerrno(errno));
+				*errmsg = err_msg;
+			}
+			return -1;
+		}
+
+		/* Remove the directory itself */
+		if (statbuf.st_nlink >= 3) {
+			/* The directory is linked; unlink() must be used */
+			if (unlink(obj) < 0) {
+				if (errmsg != NULL) {
+					sprintf(err_msg,
+						"unlink(%s) failed; errno=%d: %s",
+						obj, errno, tst_strerrno(errno));
+					*errmsg = err_msg;
+				}
+				return -1;
+			}
+		} else {
+			/* The directory is not linked; remove() can be used */
+			if (remove(obj) < 0) {
+				if (errmsg != NULL) {
+					sprintf(err_msg,
+						"remove(%s) failed; errno=%d: %s",
+						obj, errno, tst_strerrno(errno));
+					*errmsg = err_msg;
+				}
+				return -1;
+			}
+		}
+	} else {
+		if (unlink(obj) < 0) {
+			if (errmsg != NULL) {
+				sprintf(err_msg,
+					"unlink(%s) failed; errno=%d: %s", obj,
+					errno, tst_strerrno(errno));
+				*errmsg = err_msg;
+			}
+			return -1;
+		}
+	}
+
+	return 0;
 }
 
 void tst_tmpdir(void)
