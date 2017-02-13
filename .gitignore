@@ -55,7 +55,6 @@ patches/
 logfile.*
 
 /utils/benchmark/ebizzy-0.3/ebizzy
-/lib/tests/bytes_by_prefix_test
 /lib/tests/tst_tmpdir_test
 /lib/tests/tst_checkpoint
 /lib/tests/tst_checkpoint_wait_timeout
