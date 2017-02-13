@@ -274,9 +274,9 @@ fi
 if [ $NO_NETWORK -eq 0 ];then
  netpipe.sh >/dev/null 2>/dev/null &
 fi
-${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/stress.part1 > ${TMP}/stress.part1
-${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/stress.part2 > ${TMP}/stress.part2
-${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/stress.part3 > ${TMP}/stress.part3
+sort -R ${LTPROOT}/runtest/stress.part1 -o ${TMP}/stress.part1
+sort -R ${LTPROOT}/runtest/stress.part2 -o ${TMP}/stress.part2
+sort -R ${LTPROOT}/runtest/stress.part3 -o ${TMP}/stress.part3
 
 sleep 2
 

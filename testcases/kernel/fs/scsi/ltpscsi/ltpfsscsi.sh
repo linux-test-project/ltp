@@ -96,7 +96,7 @@ modprobe scsi_debug max_luns=2 num_tgts=7 add_host=10
 cd ${LTPROOT}
 
 echo "************ Running tests "
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/scsi.part1 > ${TMPBASE}/scsi.part1
+sort -R ${LTPROOT}/runtest/scsi.part1 -o ${TMPBASE}/scsi.part1
 
 ${LTPROOT}/pan/pan -e -S -a scsipart1 -n scsipart1 -l scsilogfile -f ${TMPBASE}/scsi.part1 &
 

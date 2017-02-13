@@ -204,7 +204,7 @@ mount /dev/$part4 /test/growfiles/msdos
 
 echo "----- Running tests ----- "
 echo "The test may take about 2 hours to finish..."
-${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/scsi_debug.part1 > ${TMPBASE}/scsi_debug
+sort -R ${LTPROOT}/runtest/scsi_debug.part1 -o ${TMPBASE}/scsi_debug
 
 ${LTPROOT}/bin/ltp-pan -e -S -a scsi_debug -n scsi_debug -l ${TMPBASE}/fs-scsi_debug.log -o ${TMPBASE}/fs-scsi_debug.out -f ${TMPBASE}/scsi_debug
 
