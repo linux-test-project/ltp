@@ -48,7 +48,7 @@ char* tst_ttype2color(int ttype)
 	}
 }
 
-int tst_color_enabled(void)
+int tst_color_enabled(int fd)
 {
 	static int color;
 
@@ -67,7 +67,7 @@ int tst_color_enabled(void)
 		return color - 1;
 	}
 
-	if (isatty(STDOUT_FILENO) == 0)
+	if (isatty(fd) == 0)
 		color = 1;
 	else
 		color = 2;

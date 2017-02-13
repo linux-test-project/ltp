@@ -299,7 +299,7 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 		abort();
 	}
 
-	if (tst_color_enabled())
+	if (tst_color_enabled(STDOUT_FILENO))
 		size += snprintf(message + size, sizeof(message) - size,
 		"%s%s%s  :  %s", tst_ttype2color(ttype), type, ANSI_COLOR_RESET, tmesg);
 	else

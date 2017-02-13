@@ -30,6 +30,6 @@
 #define ANSI_COLOR_RESET	"\e[00m"
 
 char* tst_ttype2color(int ttype);
-int tst_color_enabled(void);
+int tst_color_enabled(int fd);
 
 #endif	/* TST_ANSI_COLORS_H__ */

@@ -209,7 +209,7 @@ static void print_result(const char *file, const int lineno, int ttype,
 	str += ret;
 	size -= ret;
 
-	if (tst_color_enabled())
+	if (tst_color_enabled(STDERR_FILENO))
 		ret = snprintf(str, size, "%s%s: %s", tst_ttype2color(ttype),
 			       res, ANSI_COLOR_RESET);
 	else
