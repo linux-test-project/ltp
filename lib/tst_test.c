@@ -146,10 +146,8 @@ void tst_reinit(void)
 
 static void update_results(const char *file, unsigned int lineno, int ttype)
 {
-	if (!results) {
-		tst_brk(TBROK,
-		        "%s: %d: Results IPC not initialized!", file, lineno);
-	}
+	if (!results)
+		return;
 
 	switch (ttype) {
 	case TCONF:
