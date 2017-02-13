@@ -201,9 +201,12 @@ int self_exec(const char *argv0, const char *fmt, ...);
  * @fs_opts: NULL or NULL terminated array of mkfs options
  * @extra_opt: extra mkfs option which is passed after the device name
  */
-void tst_mkfs(void (cleanup_fn)(void), const char *dev,
-              const char *fs_type, const char *const fs_opts[],
-              const char *extra_opt);
+#define tst_mkfs(cleanup, dev, fs_type, fs_opts, extra_opt) \
+	tst_mkfs_(__FILE__, __LINE__, cleanup, dev, fs_type, \
+		  fs_opts, extra_opt)
+void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
+	       const char *dev, const char *fs_type,
+	       const char *const fs_opts[], const char *extra_opt);
 
 /* lib/tst_net.c
  *

@@ -21,20 +21,24 @@
 
 #define OPTS_MAX 32
 
-void tst_mkfs(void (cleanup_fn)(void), const char *dev,
-              const char *fs_type, const char *const fs_opts[],
-              const char *extra_opt)
+void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
+	       const char *dev, const char *fs_type,
+	       const char *const fs_opts[], const char *extra_opt)
 {
 	int i, pos = 1, ret;
 	char mkfs[64];
 	const char *argv[OPTS_MAX] = {mkfs};
 	char fs_opts_str[1024] = "";
 
-	if (!dev)
-		tst_brkm(TBROK, cleanup_fn, "No device specified");
+	if (!dev) {
+		tst_brkm(TBROK, cleanup_fn,
+			 "%s:%d: No device specified", file, lineno);
+	}
 
-	if (!fs_type)
-		tst_brkm(TBROK, cleanup_fn, "No fs_type specified");
+	if (!fs_type) {
+		tst_brkm(TBROK, cleanup_fn,
+			 "%s:%d: No fs_type specified", file, lineno);
+	}
 
 	snprintf(mkfs, sizeof(mkfs), "mkfs.%s", fs_type);
 
@@ -44,7 +48,8 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 
 			if (pos + 2 > OPTS_MAX) {
 				tst_brkm(TBROK, cleanup_fn,
-				         "Too much mkfs options");
+				         "%s:%d: Too much mkfs options",
+					 file, lineno);
 			}
 
 			if (i)
@@ -60,7 +65,7 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 
 		if (pos + 1 > OPTS_MAX) {
 			tst_brkm(TBROK, cleanup_fn,
-			         "Too much mkfs options");
+			         "%s:%d: Too much mkfs options", file, lineno);
 		}
 	}
 
@@ -75,10 +80,10 @@ void tst_mkfs(void (cleanup_fn)(void), const char *dev,
 	break;
 	case 255:
 		tst_brkm(TCONF, cleanup_fn,
-			 "%s not found in $PATH", mkfs);
+			 "%s:%d: %s not found in $PATH", mkfs, file, lineno);
 	default:
 		tst_brkm(TBROK, cleanup_fn,
-			 "%s failed with %i", mkfs, ret);
+			 "%s:%d: %s failed with %i", mkfs, ret, file, lineno);
 	}
 }
 
@@ -92,15 +97,4 @@ const char *tst_dev_fs_type(void)
 		return fs_type;
 
 	return DEFAULT_FS_TYPE;
-}
-
-void safe_mkfs(const int lineno, const char *fname, const char *dev,
-               const char *fs_type, const char *const fs_opts[],
-               const char *extra_opt)
-{
-	/* ignore for now, will fix once all tst_mkfs() users are converted */
-	(void)lineno;
-	(void)fname;
-
-	tst_mkfs(NULL, dev, fs_type, fs_opts, extra_opt);
 }

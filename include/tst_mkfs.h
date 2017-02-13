@@ -23,10 +23,12 @@
  * @fs_type: filesystem type
  * @fs_opts: NULL or NULL terminated array of extra mkfs options
  */
-void safe_mkfs(const int lineno, const char *fname, const char *dev,
-               const char *fs_type, const char *const fs_opts[],
-	       const char *extra_opt);
+void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
+	       const char *dev, const char *fs_type,
+	       const char *const fs_opts[], const char *extra_opt);
+
 #define SAFE_MKFS(device, fs_type, fs_opts, extra_opt) \
-	safe_mkfs(__LINE__, __FILE__, device, fs_type, fs_opts, extra_opt)
+	tst_mkfs_(__LINE__, __FILE__, NULL, device, fs_type, \
+		  fs_opts, extra_opt)
 
 #endif	/* TST_MKFS_H__ */
