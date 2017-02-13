@@ -123,7 +123,7 @@
 #ifdef DEV_BSIZE
 #define READ_BLOCK_SIZE DEV_BSIZE
 #else
-#warning DEV_BSIZE isn't defined, defaulting to 512
+#warning DEV_BSIZE is not defined, defaulting to 512
 #define READ_BLOCK_SIZE 512
 #endif
 

@@ -61,7 +61,7 @@
 #ifdef DEV_BSIZE
 #define B_MULT	DEV_BSIZE	/* block size */
 #else
-#warning DEV_BSIZE isn't defined, defaulting to 512
+#warning DEV_BSIZE is not defined, defaulting to 512
 #define B_MULT	512
 #endif
 
