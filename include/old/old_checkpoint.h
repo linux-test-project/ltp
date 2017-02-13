@@ -41,7 +41,10 @@
 	tst_checkpoint_init(__FILE__, __LINE__, cleanup_fn)
 
 #define TST_SAFE_CHECKPOINT_WAIT(cleanup_fn, id) \
-        tst_safe_checkpoint_wait(__FILE__, __LINE__, cleanup_fn, id);
+        tst_safe_checkpoint_wait(__FILE__, __LINE__, cleanup_fn, id, 0);
+
+#define TST_SAFE_CHECKPOINT_WAIT2(cleanup_fn, id, msec_timeout) \
+        tst_safe_checkpoint_wait(__FILE__, __LINE__, cleanup_fn, id, msec_timeout);
 
 #define TST_SAFE_CHECKPOINT_WAKE(cleanup_fn, id) \
         tst_safe_checkpoint_wake(__FILE__, __LINE__, cleanup_fn, id, 1);
@@ -51,6 +54,6 @@
 
 #define TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(cleanup_fn, id) \
         tst_safe_checkpoint_wake(__FILE__, __LINE__, cleanup_fn, id, 1); \
-        tst_safe_checkpoint_wait(__FILE__, __LINE__, cleanup_fn, id);
+        tst_safe_checkpoint_wait(__FILE__, __LINE__, cleanup_fn, id, 0);
 
 #endif /* OLD_CHECKPOINT__ */

@@ -689,6 +689,8 @@ checkpoints before the 'test()' function is called.
 
 TST_CHECKPOINT_WAIT(id)
 
+TST_CHECKPOINT_WAIT2(id, msec_timeout)
+
 TST_CHECKPOINT_WAKE(id)
 
 TST_CHECKPOINT_WAKE2(id, nr_wake)
@@ -701,8 +703,8 @@ unsigned integer which specifies checkpoint to wake/wait for. As a matter of
 fact it's an index to an array stored in a shared memory, so it starts on
 '0' and there should be enough room for at least of hundred of them.
 
-The 'TST_CHECKPOINT_WAIT()' suspends process execution until it's woken
-up or until timeout is reached.
+The 'TST_CHECKPOINT_WAIT()' and 'TST_CHECKPOINT_WAIT2()' suspends process
+execution until it's woken up or until timeout is reached.
 
 The 'TST_CHECKPOINT_WAKE()' wakes one process waiting on the checkpoint.
 If no process is waiting the function retries until it success or until

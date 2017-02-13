@@ -45,7 +45,8 @@ int tst_checkpoint_wake(unsigned int id, unsigned int nr_wake,
                         unsigned int msec_timeout);
 
 void tst_safe_checkpoint_wait(const char *file, const int lineno,
-                              void (*cleanup_fn)(void), unsigned int id);
+                              void (*cleanup_fn)(void), unsigned int id,
+			      unsigned int msec_timeout);
 
 void tst_safe_checkpoint_wake(const char *file, const int lineno,
                               void (*cleanup_fn)(void), unsigned int id,
