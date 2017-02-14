@@ -47,7 +47,6 @@ static void check_qon(char *);
 static void check_qlim(char *);
 
 static int test_id;
-static int mount_flag;
 static struct fs_disk_quota set_dquota = {
 	.d_rtb_softlimit = 1000,
 	.d_fieldmask = FS_DQ_RTBSOFT
@@ -138,20 +137,7 @@ static void check_qlim(char *desp)
 
 static void setup(void)
 {
-	SAFE_MKDIR(mntpoint, 0755);
-
-	SAFE_MKFS(tst_device->dev, "xfs", NULL, NULL);
-
-	SAFE_MOUNT(tst_device->dev, mntpoint, "xfs", 0, "usrquota");
-	mount_flag = 1;
-
 	test_id = geteuid();
-}
-
-static void cleanup(void)
-{
-	if (mount_flag && tst_umount(mntpoint) < 0)
-		tst_res(TWARN | TERRNO, "umount() failed");
 }
 
 static void verify_quota(unsigned int n)
@@ -173,9 +159,11 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.test = verify_quota,
 	.tcnt = ARRAY_SIZE(tcases),
-	.needs_device = 1,
+	.mount_device = 1,
+	.dev_fs_type = "xfs",
+	.mntpoint = mntpoint,
+	.mnt_data = "usrquota",
 	.setup = setup,
-	.cleanup = cleanup
 };
 #else
 	TST_TEST_TCONF("This system didn't support quota or xfs quota");

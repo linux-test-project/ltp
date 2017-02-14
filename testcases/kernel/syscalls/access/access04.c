@@ -54,7 +54,6 @@
 
 static uid_t uid;
 static char longpathname[PATH_MAX + 2];
-int mount_flag;
 
 static struct tcase {
 	const char *pathname;
@@ -119,18 +118,6 @@ static void setup(void)
 
 	SAFE_SYMLINK(SNAME1, SNAME2);
 	SAFE_SYMLINK(SNAME2, SNAME1);
-
-	SAFE_MKFS(tst_device->dev, tst_device->fs_type, NULL, NULL);
-	SAFE_MKDIR(MNT_POINT, 0755);
-	SAFE_MOUNT(tst_device->dev, MNT_POINT, tst_device->fs_type,
-		MS_RDONLY, NULL);
-	mount_flag = 1;
-}
-
-static void cleanup(void)
-{
-	if (mount_flag)
-		tst_umount(MNT_POINT);
 }
 
 static struct tst_test test = {
@@ -138,9 +125,10 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_tmpdir = 1,
 	.needs_root = 1,
-	.needs_device = 1,
 	.forks_child = 1,
+	.mount_device = 1,
+	.mntpoint = MNT_POINT,
+	.mnt_flags = MS_RDONLY,
 	.setup = setup,
-	.cleanup = cleanup,
 	.test = verify_access,
 };

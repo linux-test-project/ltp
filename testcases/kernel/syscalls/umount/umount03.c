@@ -52,7 +52,6 @@ static void setup(void)
 {
 	struct passwd *pw;
 
-	SAFE_MKFS(tst_device->dev, tst_device->fs_type, NULL, NULL);
 	SAFE_MKDIR(MNTPOINT, 0775);
 	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
 	mount_flag = 1;
@@ -74,7 +73,7 @@ static struct tst_test test = {
 	.tid = "umount03",
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.needs_device = 1,
+	.format_device = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_umount,
