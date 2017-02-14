@@ -34,6 +34,10 @@
 #ifndef __TEST_H__
 #define __TEST_H__
 
+#ifdef TST_TEST_H__
+# error Newlib tst_test.h already included
+#endif /* TST_TEST_H__ */
+
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>

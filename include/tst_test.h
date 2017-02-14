@@ -18,6 +18,10 @@
 #ifndef TST_TEST_H__
 #define TST_TEST_H__
 
+#ifdef __TEST_H__
+# error Oldlib test.h already included
+#endif /* __TEST_H__ */
+
 #include <unistd.h>
 
 #include "tst_common.h"
