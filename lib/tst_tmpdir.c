@@ -56,7 +56,7 @@
  *		Neither tst_tmpdir() or tst_rmdir() has a return value.
  *
  *********************************************************/
-
+#define _GNU_SOURCE
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
