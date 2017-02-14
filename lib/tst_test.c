@@ -144,7 +144,7 @@ void tst_reinit(void)
 	SAFE_CLOSE(fd);
 }
 
-static void update_results(const char *file, unsigned int lineno, int ttype)
+static void update_results(int ttype)
 {
 	if (!results)
 		return;
@@ -235,7 +235,7 @@ void tst_vres_(const char *file, const int lineno, int ttype,
 {
 	print_result(file, lineno, ttype, fmt, va);
 
-	update_results(file, lineno, TTYPE_RESULT(ttype));
+	update_results(TTYPE_RESULT(ttype));
 }
 
 void tst_vbrk_(const char *file, const int lineno, int ttype,
