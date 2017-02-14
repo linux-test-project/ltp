@@ -37,7 +37,7 @@ static void do_test(void)
 	SAFE_IOCTL(fd, BLKGETSIZE64, &ltp_dev_size);
 	SAFE_CLOSE(fd);
 
-	if (ltp_dev_size/1024/1024 == 160)
+	if (ltp_dev_size/1024/1024 == 300)
 		tst_res(TPASS, "Got expected device size");
 	else
 		tst_res(TFAIL, "Got unexpected device size");
@@ -47,6 +47,6 @@ static struct tst_test test = {
 	.tid = "tst_device",
 	.needs_tmpdir = 1,
 	.needs_device = 1,
-	.device_min_size = 160,
+	.dev_min_size = 300,
 	.test_all = do_test,
 };

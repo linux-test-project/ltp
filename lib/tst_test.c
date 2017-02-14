@@ -40,6 +40,7 @@ struct tst_test *tst_test;
 static int iterations = 1;
 static float duration = -1;
 static pid_t main_pid, lib_pid;
+static int device_mounted;
 
 struct results {
 	int passed;
@@ -644,6 +645,14 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->min_kver)
 		check_kver();
 
+	if (tst_test->format_device)
+		tst_test->needs_device = 1;
+
+	if (tst_test->mount_device) {
+		tst_test->needs_device = 1;
+		tst_test->format_device = 1;
+	}
+
 	parse_opts(argc, argv);
 
 	setup_ipc();
@@ -652,13 +661,36 @@ static void do_setup(int argc, char *argv[])
 		tst_tmpdir();
 
 	if (tst_test->needs_device) {
-		tdev.dev = tst_acquire_device_(NULL, tst_test->device_min_size);
-		tdev.fs_type = tst_dev_fs_type();
+		tdev.dev = tst_acquire_device_(NULL, tst_test->dev_min_size);
 
 		if (!tdev.dev)
 			tst_brk(TCONF, "Failed to acquire device");
 
 		tst_device = &tdev;
+
+		if (tst_test->dev_fs_type)
+			tdev.fs_type = tst_test->dev_fs_type;
+		else
+			tdev.fs_type = tst_dev_fs_type();
+
+		if (tst_test->format_device) {
+			SAFE_MKFS(tdev.dev, tdev.fs_type,
+			          tst_test->dev_fs_opts,
+				  tst_test->dev_extra_opt);
+		}
+
+		if (tst_test->mount_device) {
+
+			if (!tst_test->mntpoint) {
+				tst_brk(TBROK,
+					"tst_test->mntpoint must be set!");
+			}
+
+			SAFE_MKDIR(tst_test->mntpoint, 0777);
+			SAFE_MOUNT(tdev.dev, tst_test->mntpoint, tdev.fs_type,
+				   tst_test->mnt_flags, tst_test->mnt_data);
+			device_mounted = 1;
+		}
 	}
 
 	if (tst_test->resource_files)
@@ -678,6 +710,9 @@ static void do_test_setup(void)
 
 static void do_cleanup(void)
 {
+	if (device_mounted)
+		tst_umount(tst_test->mntpoint);
+
 	if (tst_test->needs_device && tdev.dev)
 		tst_release_device(tdev.dev);
 

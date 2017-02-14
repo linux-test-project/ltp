@@ -911,8 +911,18 @@ structure is initialized with a path to a test device and default filesystem
 to be used.
 
 You can also request minimal device size in megabytes by setting
-'.device_min_size' in the 'struct tst_test' structure. The device is
-guaranteed to have at least the requested size then.
+'.dev_min_size' the device is guaranteed to have at least the requested size
+then.
+
+If '.format_device' flag is set the device is formatted with a filesystem as
+well. You can use '.dev_fs_type' to override the default filesystem type if
+needed and pass additional options to mkfs via '.dev_fs_opts' and
+'.dev_extra_opt' pointers.
+
+If '.mount_device' is set, the device is mounted at '.mntpoint' which is used
+to pass a directory name that will be created and used as mount destination.
+You can pass additional flags and data to the mount command via '.mnt_flags'
+and '.mnt_data' pointers.
 
 [source,c]
 -------------------------------------------------------------------------------

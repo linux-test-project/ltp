@@ -117,8 +117,23 @@ struct tst_test {
 	int forks_child:1;
 	int needs_device:1;
 	int needs_checkpoints:1;
+	int format_device:1;
+	int mount_device:1;
 
-	unsigned int device_min_size;
+	/* Minimal device size in megabytes */
+	unsigned int dev_min_size;
+
+	/* Device filesystem type override NULL == default */
+	const char *dev_fs_type;
+
+	/* Options passed to SAFE_MKFS() when format_device is set */
+	const char *const *dev_fs_opts;
+	const char *dev_extra_opt;
+
+	/* Device mount options, used if mount_device is set */
+	const char *mntpoint;
+	unsigned int mnt_flags;
+	void *mnt_data;
 
 	/* override default timeout per test run */
 	unsigned int timeout;
