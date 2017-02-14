@@ -87,8 +87,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (fd1 > 0 && close(fd1))
-		tst_res(TWARN | TERRNO, "failed to close file");
+	if (fd1 > 0)
+		SAFE_CLOSE(fd1);
 }
 
 static struct tst_test test = {

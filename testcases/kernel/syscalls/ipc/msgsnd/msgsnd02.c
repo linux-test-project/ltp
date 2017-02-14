@@ -117,10 +117,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (queue_id != -1 && msgctl(queue_id, IPC_RMID, NULL)) {
-		tst_res(TWARN | TERRNO, "failed to delete message queue %i",
-			queue_id);
-	}
+	if (queue_id != -1)
+		SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
 }
 
 static struct tst_test test = {

@@ -29,6 +29,7 @@
 #include <stdlib.h>
 
 #include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
 
 static int maxmsgs;
@@ -79,11 +80,8 @@ static void cleanup(void)
 		return;
 
 	for (num = 0; num < maxmsgs; num++) {
-		if (queues[num] != -1 && msgctl(queues[num], IPC_RMID, NULL)) {
-			tst_res(TWARN | TERRNO,
-				"failed to delete message queue %i",
-				queues[num]);
-		}
+		if (queues[num] != -1)
+			SAFE_MSGCTL(queues[num], IPC_RMID, NULL);
 	}
 
 	free(queues);

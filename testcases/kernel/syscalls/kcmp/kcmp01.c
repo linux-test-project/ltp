@@ -61,8 +61,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (fd1 > 0 && close(fd1) < 0)
-		tst_res(TWARN | TERRNO, "close fd1 failed");
+	if (fd1 > 0)
+		SAFE_CLOSE(fd1);
 }
 
 static void do_child(const struct test_case *test)

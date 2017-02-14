@@ -98,11 +98,11 @@ static void verify_recvmsg(void)
 
 static void cleanup(void)
 {
-	if (sdw > 0 && close(sdw))
-		tst_res(TWARN | TERRNO, "close(sdw) failed");
+	if (sdw > 0)
+		SAFE_CLOSE(sdw);
 
-	if (sdr > 0 && close(sdr))
-		tst_res(TWARN | TERRNO, "close(sdr) failed");
+	if (sdr > 0)
+		SAFE_CLOSE(sdr);
 }
 
 static struct tst_test test = {

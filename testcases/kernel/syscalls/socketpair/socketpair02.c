@@ -84,11 +84,11 @@ ret:
 
 static void cleanup(void)
 {
-	if (fds[0] > 0 && close(fds[0]))
-		tst_res(TWARN | TERRNO, "failed to close file");
+	if (fds[0] > 0)
+		SAFE_CLOSE(fds[0]);
 
-	if (fds[1] > 0 && close(fds[1]))
-		tst_res(TWARN | TERRNO, "failed to close file");
+	if (fds[1] > 0)
+		SAFE_CLOSE(fds[1]);
 }
 
 static struct tst_test test = {

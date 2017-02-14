@@ -108,19 +108,16 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (cpattern) {
-		if (FILE_PRINTF(CORE_PATTERN, "%s", cpattern))
-			tst_res(TWARN,
-				"COULD NOT RESTORE " CORE_PATTERN "! It used to be '%s'",
-				cpattern);
-		free(cpattern);
-	}
+	if (cpattern)
+		SAFE_FILE_PRINTF(CORE_PATTERN, "%s", cpattern);
 
-	if (fmem && munmap(fmem, FMEMSIZE))
-		tst_res(TWARN | TERRNO, "munmap(fmem)");
+	free(cpattern);
 
-	if (dfd > 0 && close(dfd))
-		tst_res(TWARN | TERRNO, "close(dfd)");
+	if (fmem)
+		SAFE_MUNMAP(fmem, FMEMSIZE);
+
+	if (dfd > 0)
+		SAFE_CLOSE(dfd);
 }
 
 static int find_sequence(int pid)

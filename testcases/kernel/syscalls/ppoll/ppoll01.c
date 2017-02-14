@@ -203,7 +203,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (fd1 != -1)
-		close(fd1);
+		SAFE_CLOSE(fd1);
 }
 
 static void do_test(unsigned int i)

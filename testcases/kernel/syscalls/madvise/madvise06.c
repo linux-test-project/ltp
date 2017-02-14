@@ -93,14 +93,9 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	FILE *f = fopen(MNT_NAME"/tasks", "w");
-
-	if (f) {
-		fprintf(f, "%d\n", getpid());
-		fclose(f);
-	}
-	rmdir(MNT_NAME"/"GROUP_NAME);
-	umount(MNT_NAME);
+	SAFE_FILE_PRINTF(MNT_NAME"/tasks", "%d\n", getpid());
+	SAFE_RMDIR(MNT_NAME"/"GROUP_NAME);
+	SAFE_UMOUNT(MNT_NAME);
 }
 
 static void dirty_pages(char *ptr, long size)

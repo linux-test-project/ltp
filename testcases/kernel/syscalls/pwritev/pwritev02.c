@@ -107,17 +107,17 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (fd1 > 0 && close(fd1))
-		tst_res(TWARN | TERRNO, "failed to close file");
+	if (fd1 > 0)
+		SAFE_CLOSE(fd1);
 
-	if (fd2 > 0 && close(fd2))
-		tst_res(TWARN | TERRNO, "failed to close file");
+	if (fd2 > 0)
+		SAFE_CLOSE(fd2);
 
-	if (fd4[0] > 0 && close(fd4[0]))
-		tst_res(TWARN | TERRNO, "failed to close file");
+	if (fd4[0] > 0)
+		SAFE_CLOSE(fd4[0]);
 
-	if (fd4[1] > 0 && close(fd4[1]))
-		tst_res(TWARN | TERRNO, "failed to close file");
+	if (fd4[1] > 0)
+		SAFE_CLOSE(fd4[1]);
 }
 
 static struct tst_test test = {

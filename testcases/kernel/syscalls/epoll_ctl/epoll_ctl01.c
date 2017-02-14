@@ -59,14 +59,14 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (epfd > 0 && close(epfd))
-		tst_res(TWARN | TERRNO, "failed to close epoll instance");
+	if (epfd > 0)
+		SAFE_CLOSE(epfd);
 
-	if (fd[0] > 0 && close(fd[0]))
-		tst_res(TWARN | TERRNO, "failed to close pipe");
+	if (fd[0] > 0)
+		SAFE_CLOSE(fd[0]);
 
-	if (fd[1] > 0 && close(fd[1]))
-		tst_res(TWARN | TERRNO, "failed to close pipe");
+	if (fd[1] > 0)
+		SAFE_CLOSE(fd[1]);
 }
 
 static int has_event(struct epoll_event *epvs, int len,

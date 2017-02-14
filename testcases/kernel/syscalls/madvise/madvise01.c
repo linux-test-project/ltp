@@ -94,10 +94,9 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	munmap(sfile, st.st_size);
-	munmap(amem, st.st_size);
-	umount(TMP_DIR);
-	rmdir(TMP_DIR);
+	SAFE_MUNMAP(sfile, st.st_size);
+	SAFE_MUNMAP(amem, st.st_size);
+	SAFE_UMOUNT(TMP_DIR);
 }
 
 static void verify_madvise(unsigned int i)
