@@ -34,6 +34,7 @@ int tst_fs_has_free_(void (*cleanup)(void), const char *path,
 	if (statfs(path, &sf)) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "tst_fs_has_free: failed to statfs(%s)", path);
+		return 0;
 	}
 
 	if ((uint64_t)sf.f_bavail * sf.f_bsize >= (uint64_t)size * mult)

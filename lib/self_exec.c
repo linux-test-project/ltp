@@ -87,6 +87,7 @@ void maybe_run_child(void (*child) (), const char *fmt, ...)
 		if (strlen(child_dir) == 0) {
 			tst_brkm(TBROK, NULL,
 				 "Could not get directory from -C option");
+			return;
 		}
 
 		va_start(ap, fmt);
@@ -96,6 +97,7 @@ void maybe_run_child(void (*child) (), const char *fmt, ...)
 			if (!tok || strlen(tok) == 0) {
 				tst_brkm(TBROK, NULL,
 					 "Invalid argument to -C option");
+				return;
 			}
 
 			switch (*p) {
@@ -105,6 +107,7 @@ void maybe_run_child(void (*child) (), const char *fmt, ...)
 				if (*endptr != '\0') {
 					tst_brkm(TBROK, NULL,
 						 "Invalid argument to -C option");
+					return;
 				}
 				*iptr = i;
 				break;
@@ -114,6 +117,7 @@ void maybe_run_child(void (*child) (), const char *fmt, ...)
 				if (*endptr != '\0') {
 					tst_brkm(TBROK, NULL,
 						 "Invalid argument to -C option");
+					return;
 				}
 				if (j != i) {
 					va_end(ap);
@@ -126,6 +130,7 @@ void maybe_run_child(void (*child) (), const char *fmt, ...)
 				if (!strncpy(s, tok, strlen(tok) + 1)) {
 					tst_brkm(TBROK, NULL,
 						 "Could not strncpy for -C option");
+					return;
 				}
 				break;
 			case 'S':
@@ -134,21 +139,24 @@ void maybe_run_child(void (*child) (), const char *fmt, ...)
 				if (!*sptr) {
 					tst_brkm(TBROK, NULL,
 						 "Could not strdup for -C option");
+					return;
 				}
 				break;
 			default:
 				tst_brkm(TBROK, NULL,
 					 "Format string option %c not implemented",
 					 *p);
-				break;
+				return;
 			}
 		}
 
 		va_end(ap);
 		free(args);
-		if (chdir(child_dir) < 0)
+		if (chdir(child_dir) < 0) {
 			tst_brkm(TBROK, NULL,
 				 "Could not change to %s for child", child_dir);
+			return;
+		}
 
 		(*child) ();
 		tst_resm(TWARN, "Child function returned unexpectedly");

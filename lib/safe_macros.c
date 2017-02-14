@@ -461,17 +461,20 @@ long safe_strtol(const char *file, const int lineno,
 	    || (errno != 0 && rval == 0)) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: strtol(%s) failed", file, lineno, str);
+		return rval;
 	}
 
 	if (endptr == str || (*endptr != '\0' && *endptr != '\n')) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "%s:%d: strtol(%s): Invalid value", file, lineno, str);
+		return 0;
 	}
 
 	if (rval > max || rval < min) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "%s:%d: strtol(%s): %ld is out of range %ld - %ld",
 			 file, lineno, str, rval, min, max);
+		return 0;
 	}
 
 	return rval;
@@ -491,17 +494,20 @@ unsigned long safe_strtoul(const char *file, const int lineno,
 	    || (errno != 0 && rval == 0)) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: strtoul(%s) failed", file, lineno, str);
+		return rval;
 	}
 
 	if (rval > max || rval < min) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "%s:%d: strtoul(%s): %lu is out of range %lu - %lu",
 			 file, lineno, str, rval, min, max);
+		return 0;
 	}
 
 	if (endptr == str || (*endptr != '\0' && *endptr != '\n')) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "Invalid value: '%s' at %s:%d", str, file, lineno);
+		return 0;
 	}
 
 	return rval;
@@ -797,6 +803,7 @@ int safe_setxattr(const char *file, const int lineno, const char *path,
 			tst_brkm(TCONF, NULL,
 				 "%s:%d: no xattr support in fs or mounted "
 				 "without user_xattr option", file, lineno);
+			return rval;
 		}
 
 		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: setxattr() failed",
@@ -818,6 +825,7 @@ int safe_lsetxattr(const char *file, const int lineno, const char *path,
 			tst_brkm(TCONF, NULL,
 				 "%s:%d: no xattr support in fs or mounted "
 				 "without user_xattr option", file, lineno);
+			return rval;
 		}
 
 		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: lsetxattr() failed",
@@ -839,6 +847,7 @@ int safe_fsetxattr(const char *file, const int lineno, int fd, const char *name,
 			tst_brkm(TCONF, NULL,
 				 "%s:%d: no xattr support in fs or mounted "
 				 "without user_xattr option", file, lineno);
+			return rval;
 		}
 
 		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: fsetxattr() failed",

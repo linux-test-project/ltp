@@ -142,6 +142,7 @@ void safe_file_scanf(const char *file, const int lineno,
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "Failed to open FILE '%s' for reading at %s:%d",
 			 path, file, lineno);
+		return;
 	}
 
 	exp_convs = count_scanf_conversions(fmt);
@@ -154,18 +155,21 @@ void safe_file_scanf(const char *file, const int lineno,
 		tst_brkm(TBROK, cleanup_fn,
 			 "The FILE '%s' ended prematurely at %s:%d",
 			 path, file, lineno);
+		return;
 	}
 
 	if (ret != exp_convs) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "Expected %i conversions got %i FILE '%s' at %s:%d",
 			 exp_convs, ret, path, file, lineno);
+		return;
 	}
 
 	if (fclose(f)) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "Failed to close FILE '%s' at %s:%d",
 			 path, file, lineno);
+		return;
 	}
 }
 
@@ -188,6 +192,7 @@ int file_lines_scanf(const char *file, const int lineno,
 	if (!fmt) {
 		tst_brkm(TBROK, cleanup_fn, "pattern is NULL, %s:%d",
 			file, lineno);
+		return 1;
 	}
 
 	fp = fopen(path, "r");
@@ -195,6 +200,7 @@ int file_lines_scanf(const char *file, const int lineno,
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			"Failed to open FILE '%s' for reading at %s:%d",
 			path, file, lineno);
+		return 1;
 	}
 
 	arg_count = count_scanf_conversions(fmt);
@@ -209,9 +215,11 @@ int file_lines_scanf(const char *file, const int lineno,
 	}
 	fclose(fp);
 
-	if (strict && ret != arg_count)
+	if (strict && ret != arg_count) {
 		tst_brkm(TBROK, cleanup_fn, "Expected %i conversions got %i"
 			" at %s:%d", arg_count, ret, file, lineno);
+		return 1;
+	}
 
 	return !(ret == arg_count);
 }
@@ -273,6 +281,7 @@ void safe_file_printf(const char *file, const int lineno,
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "Failed to open FILE '%s' for writing at %s:%d",
 			 path, file, lineno);
+		return;
 	}
 
 	va_start(va, fmt);
@@ -281,6 +290,7 @@ void safe_file_printf(const char *file, const int lineno,
 		tst_brkm(TBROK, cleanup_fn,
 			 "Failed to print to FILE '%s' at %s:%d",
 			 path, file, lineno);
+		return;
 	}
 
 	va_end(va);
@@ -289,6 +299,7 @@ void safe_file_printf(const char *file, const int lineno,
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "Failed to close FILE '%s' at %s:%d",
 			 path, file, lineno);
+		return;
 	}
 }
 
@@ -342,23 +353,29 @@ void safe_touch(const char *file, const int lineno,
 	defmode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
 
 	ret = open(pathname, O_CREAT | O_WRONLY, defmode);
-	if (ret == -1)
+	if (ret == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			"Failed to open file '%s' at %s:%d",
 			pathname, file, lineno);
+		return;
+	}
 
 	ret = close(ret);
-	if (ret == -1)
+	if (ret == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			"Failed to close file '%s' at %s:%d",
 			pathname, file, lineno);
+		return;
+	}
 
 	if (mode != 0) {
 		ret = chmod(pathname, mode);
-		if (ret == -1)
+		if (ret == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup_fn,
 				"Failed to chmod file '%s' at %s:%d",
 				pathname, file, lineno);
+			return;
+		}
 	}
 
 
@@ -372,16 +389,21 @@ void safe_touch(const char *file, const int lineno,
 		struct timeval cotimes[2];
 
 		ret = stat(pathname, &sb);
-		if (ret == -1)
+		if (ret == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup_fn,
 				"Failed to stat file '%s' at %s:%d",
 				pathname, file, lineno);
+			return;
+		}
 
 		ret = gettimeofday(cotimes, NULL);
-		if (ret == -1)
+		if (ret == -1) {
 			tst_brkm(TBROK | TERRNO, cleanup_fn,
 				"Failed to gettimeofday() at %s:%d",
 				file, lineno);
+			return;
+		}
+
 		cotimes[1] = cotimes[0];
 
 		set_time(cotimes, times,

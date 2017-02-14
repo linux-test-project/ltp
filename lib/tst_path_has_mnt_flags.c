@@ -44,12 +44,14 @@ int tst_path_has_mnt_flags(void (cleanup_fn)(void),
 	if (access(path, F_OK) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			"tst_path_has_mnt_flags: path %s doesn't exist", path);
+		return -1;
 	}
 
 	f = setmntent("/proc/mounts", "r");
 	if (f == NULL) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			"tst_path_has_mnt_flags: failed to open /proc/mounts");
+		return -1;
 	}
 
 	while ((mnt = getmntent(f))) {

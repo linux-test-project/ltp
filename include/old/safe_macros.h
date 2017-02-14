@@ -329,12 +329,12 @@ static inline int safe_setrlimit(const char *file, const int lineno,
 	safe_readdir(__FILE__, __LINE__, (cleanup_fn), (dirp))
 
 
-#define SAFE_IOCTL(cleanup_fn, fd, request, ...)             \
-	({int ret = ioctl(fd, request, __VA_ARGS__);         \
-	  ret < 0 ?                                          \
-	   tst_brkm(TBROK | TERRNO, cleanup_fn,              \
-	            "ioctl(%i,%s,...) failed", fd, #request) \
-	 : ret;})
+#define SAFE_IOCTL(cleanup_fn, fd, request, ...)                   \
+	({int ret = ioctl(fd, request, __VA_ARGS__);               \
+	  if (ret < 0)                                             \
+		tst_brkm(TBROK | TERRNO, cleanup_fn,               \
+		         "ioctl(%i,%s,...) failed", fd, #request); \
+	  ret;})
 
 #endif /* __SAFE_MACROS_H__ */
 #endif /* __TEST_H__ */

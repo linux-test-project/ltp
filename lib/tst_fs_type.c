@@ -37,6 +37,7 @@ long tst_fs_type_(void (*cleanup)(void), const char *path)
 	if (statfs(path, &sbuf)) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 		         "tst_fs_type: Failed to statfs(%s)", path);
+		return 0;
 	}
 
 	return sbuf.f_type;

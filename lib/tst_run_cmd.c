@@ -42,6 +42,7 @@ int tst_run_cmd_fds_(void (cleanup_fn)(void),
 	if (argv == NULL || argv[0] == NULL) {
 		tst_brkm(TBROK, cleanup_fn,
 			"argument list is empty at %s:%d", __FILE__, __LINE__);
+		return -1;
 	}
 
 	/*
@@ -58,6 +59,7 @@ int tst_run_cmd_fds_(void (cleanup_fn)(void),
 	if (pid == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "vfork failed at %s:%d",
 			__FILE__, __LINE__);
+		return -1;
 	}
 	if (!pid) {
 		/* redirecting stdout and stderr if needed */
@@ -82,6 +84,7 @@ int tst_run_cmd_fds_(void (cleanup_fn)(void),
 	if (waitpid(pid, &ret, 0) != pid) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "waitpid failed at %s:%d",
 			__FILE__, __LINE__);
+		return -1;
 	}
 
 	signal(SIGCHLD, old_handler);
@@ -89,14 +92,17 @@ int tst_run_cmd_fds_(void (cleanup_fn)(void),
 	if (!WIFEXITED(ret)) {
 		tst_brkm(TBROK, cleanup_fn, "failed to exec cmd '%s' at %s:%d",
 			argv[0], __FILE__, __LINE__);
+		return -1;
 	}
 
 	rc = WEXITSTATUS(ret);
 
-	if ((!pass_exit_val) && rc)
+	if ((!pass_exit_val) && rc) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "'%s' exited with a non-zero code %d at %s:%d",
 			 argv[0], rc, __FILE__, __LINE__);
+		return -1;
+	}
 
 	return rc;
 }

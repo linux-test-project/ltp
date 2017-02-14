@@ -46,6 +46,7 @@ void tst_checkpoint_init(const char *file, const int lineno,
 		tst_brkm(TBROK, cleanup_fn,
 		         "%s: %d checkopoints allready initialized",
 		         file, lineno);
+		return;
 	}
 
 	/*
@@ -63,6 +64,7 @@ void tst_checkpoint_init(const char *file, const int lineno,
 		tst_brkm(TBROK, cleanup_fn,
 		         "%s:%d You have to create test temporary directory "
 		         "first (call tst_tmpdir())", file, lineno);
+		return;
 	}
 
 	page_size = getpagesize();

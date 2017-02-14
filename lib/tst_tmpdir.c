@@ -105,9 +105,11 @@ int tst_tmpdir_created(void)
 
 char *tst_get_tmpdir(void)
 {
-	/* Smack the user for calling things out of order. */
-	if (TESTDIR == NULL)
+	if (TESTDIR == NULL) {
 		tst_brkm(TBROK, NULL, "you must call tst_tmpdir() first");
+		return NULL;
+	}
+
 	return strdup(TESTDIR);
 }
 
@@ -248,6 +250,7 @@ void tst_tmpdir(void)
 		if (c != env_tmpdir) {
 			tst_brkm(TBROK, NULL, "You must specify an absolute "
 				 "pathname for environment variable TMPDIR");
+			return;
 		}
 		snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", env_tmpdir, TCID);
 	} else {
@@ -255,19 +258,29 @@ void tst_tmpdir(void)
 	}
 
 	/* Make the temporary directory in one shot using mkdtemp. */
-	if (mkdtemp(template) == NULL)
+	if (mkdtemp(template) == NULL) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "%s: mkdtemp(%s) failed", __func__, template);
-	if ((TESTDIR = strdup(template)) == NULL)
+		return;
+	}
+
+	if ((TESTDIR = strdup(template)) == NULL) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "%s: strdup(%s) failed", __func__, template);
+		return;
+	}
 
-	if (chown(TESTDIR, -1, getgid()) == -1)
+	if (chown(TESTDIR, -1, getgid()) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "chown(%s, -1, %d) failed", TESTDIR, getgid());
-	if (chmod(TESTDIR, DIR_MODE) == -1)
+		return;
+	}
+
+	if (chmod(TESTDIR, DIR_MODE) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "chmod(%s, %#o) failed", TESTDIR, DIR_MODE);
+		return;
+	}
 
 	if (getcwd(test_start_work_dir, sizeof(test_start_work_dir)) == NULL) {
 		tst_resm(TINFO, "Failed to record test working dir");

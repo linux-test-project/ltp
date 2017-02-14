@@ -278,18 +278,23 @@ const char *tst_acquire_device_(void (cleanup_fn)(void), unsigned int size)
 {
 	const char *device;
 
-	if (device_acquired)
+	if (device_acquired) {
 		tst_brkm(TBROK, cleanup_fn, "Device allready acquired");
+		return NULL;
+	}
 
 	if (!tst_tmpdir_created()) {
 		tst_brkm(TBROK, cleanup_fn,
 		         "Cannot acquire device without tmpdir() created");
+		return NULL;
 	}
 
 	device = tst_acquire_device__(size);
 
-	if (!device)
+	if (!device) {
 		tst_brkm(TBROK, cleanup_fn, "Failed to acquire device");
+		return NULL;
+	}
 
 	return device;
 }

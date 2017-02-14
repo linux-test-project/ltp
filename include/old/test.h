@@ -157,9 +157,20 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 void tst_brkm_(const char *file, const int lineno, int ttype,
 	void (*func)(void), const char *arg_fmt, ...)
 	__attribute__ ((format (printf, 5, 6))) LTP_ATTRIBUTE_NORETURN;
-#define tst_brkm(ttype, func, arg_fmt, ...) \
-	tst_brkm_(__FILE__, __LINE__, (ttype), (func), \
-		  (arg_fmt), ##__VA_ARGS__)
+
+#ifdef LTPLIB
+# include "ltp_priv.h"
+# define tst_brkm(flags, cleanup, fmt, ...) do { \
+	if (tst_test) \
+		tst_brk_(__FILE__, __LINE__, flags, fmt, ##__VA_ARGS__); \
+	else \
+		tst_brkm_(__FILE__, __LINE__, flags, cleanup, fmt, ##__VA_ARGS__); \
+	} while (0)
+#else
+# define tst_brkm(flags, cleanup, fmt, ...) do { \
+		tst_brkm_(__FILE__, __LINE__, flags, cleanup, fmt, ##__VA_ARGS__); \
+	} while (0)
+#endif
 
 void tst_require_root(void);
 void tst_exit(void) LTP_ATTRIBUTE_NORETURN;

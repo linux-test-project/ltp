@@ -114,6 +114,7 @@ int safe_bind(const char *file, const int lineno, void (cleanup_fn)(void),
 				 socket, tst_sock_addr(address, address_len,
 						       buf, sizeof(buf)),
 				 address_len);
+			return -1;
 		}
 
 		if ((i + 1) % 10 == 0) {
@@ -129,6 +130,7 @@ int safe_bind(const char *file, const int lineno, void (cleanup_fn)(void),
 		 lineno, socket,
 		 tst_sock_addr(address, address_len, buf, sizeof(buf)),
 		 address_len);
+	return -1;
 }
 
 int safe_listen(const char *file, const int lineno, void (cleanup_fn)(void),

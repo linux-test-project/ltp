@@ -24,8 +24,10 @@ int tst_kernel_bits(void)
 	struct utsname buf;
 	int kernel_bits;
 
-	if (uname(&buf))
+	if (uname(&buf)) {
 		tst_brkm(TBROK | TERRNO, NULL, "uname()");
+		return -1;
+	}
 
 	kernel_bits = strstr(buf.machine, "64") ? 64 : 32;
 

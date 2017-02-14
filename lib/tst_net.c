@@ -54,20 +54,29 @@ unsigned short tst_get_unused_port(void (cleanup_fn)(void),
 	default:
 		tst_brkm(TBROK, cleanup_fn,
 			"tst_get_unused_port unknown family");
+		return -1;
 	}
 
 	sock = socket(addr->sa_family, type, 0);
-	if (sock < 0)
+	if (sock < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "socket failed");
+		return -1;
+	}
 
-	if (bind(sock, addr, slen) < 0)
+	if (bind(sock, addr, slen) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "bind failed");
+		return -1;
+	}
 
-	if (getsockname(sock, addr, &slen) == -1)
+	if (getsockname(sock, addr, &slen) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "getsockname failed");
+		return -1;
+	}
 
-	if (close(sock) == -1)
+	if (close(sock) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "close failed");
+		return -1;
+	}
 
 	switch (family) {
 	case AF_INET:

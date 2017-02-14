@@ -54,9 +54,11 @@ static void tst_dataroot_init(void)
 	} else {
 		startdir = tst_get_startwd();
 		if (startdir[0] == 0) {
-			if (getcwd(curdir, PATH_MAX) == NULL)
+			if (getcwd(curdir, PATH_MAX) == NULL) {
 				tst_brkm(TBROK | TERRNO, NULL,
 					"tst_dataroot getcwd");
+				return;
+			}
 			startdir = curdir;
 		}
 		ret = snprintf(dataroot, PATH_MAX, "%s/datafiles", startdir);
@@ -103,6 +105,7 @@ void tst_resource_copy(const char *file, const int lineno,
 		tst_brkm(TBROK, cleanup_fn,
 		         "Temporary directory doesn't exist at %s:%d",
 		         file, lineno);
+		return;
 	}
 
 	if (dest == NULL)

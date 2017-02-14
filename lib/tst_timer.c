@@ -61,6 +61,7 @@ void tst_timer_check(clockid_t clk_id)
 			tst_brkm(TCONF, NULL,
 			         "Clock id %s(%u) not supported by kernel",
 				 clock_name(clk_id), clk_id);
+			return;
 		}
 
 		tst_brkm(TBROK | TERRNO, NULL, "clock_gettime() failed");

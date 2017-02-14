@@ -24,7 +24,7 @@ top_srcdir		?= ..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CFLAGS			+= -I.
+CFLAGS			+= -I. -DLTPLIB
 
 ifneq ($(ANDROID),1)
 FILTER_OUT_DIRS		+= android_libpthread android_librt

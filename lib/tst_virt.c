@@ -115,5 +115,7 @@ int tst_is_virt(int virt_type)
 	case VIRT_KVM:
 		return is_kvm();
 	}
+
 	tst_brkm(TBROK, NULL, "invalid virt_type flag: %d", virt_type);
+	return -1;
 }

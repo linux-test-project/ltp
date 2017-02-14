@@ -33,11 +33,13 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 	if (!dev) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "%s:%d: No device specified", file, lineno);
+		return;
 	}
 
 	if (!fs_type) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "%s:%d: No fs_type specified", file, lineno);
+		return;
 	}
 
 	snprintf(mkfs, sizeof(mkfs), "mkfs.%s", fs_type);
@@ -50,6 +52,7 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 				tst_brkm(TBROK, cleanup_fn,
 				         "%s:%d: Too much mkfs options",
 					 file, lineno);
+				return;
 			}
 
 			if (i)
@@ -66,6 +69,7 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 		if (pos + 1 > OPTS_MAX) {
 			tst_brkm(TBROK, cleanup_fn,
 			         "%s:%d: Too much mkfs options", file, lineno);
+			return;
 		}
 	}
 
