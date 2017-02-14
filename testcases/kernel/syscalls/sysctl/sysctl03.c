@@ -39,11 +39,10 @@
  *
  * The documentation bug is filed as:
  * https://bugzilla.kernel.org/show_bug.cgi?id=15446 . If you want the message
- * removed, please ask your fellow kernel maintainer to fix his/her
- * documentation.
+ * removed, please ask your fellow kernel maintainer to fix their documentation.
  *
  * Thanks!
- * -Garrett
+ * -Ngie
  *
  * USAGE:  <for command-line>
  *  sysctl03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
