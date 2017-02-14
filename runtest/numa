@@ -10,3 +10,4 @@ move_pages08 move_pages.sh 08
 move_pages09 move_pages.sh 09
 move_pages10 move_pages.sh 10
 move_pages11 cd $LTPROOT/testcases/bin && chown root move_pages11 && chmod 04755 move_pages11 && move_pages.sh 11
+move_pages12 move_pages12
