@@ -28,7 +28,7 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 	       const char *const fs_opts[], const char *extra_opt);
 
 #define SAFE_MKFS(device, fs_type, fs_opts, extra_opt) \
-	tst_mkfs_(__LINE__, __FILE__, NULL, device, fs_type, \
+	tst_mkfs_(__FILE__, __LINE__, NULL, device, fs_type, \
 		  fs_opts, extra_opt)
 
 #endif	/* TST_MKFS_H__ */
