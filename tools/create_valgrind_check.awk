@@ -18,7 +18,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, April 2012
+# Ngie Cooper, April 2012
 #
 
 # XXX: this script doesn't handle items that would be executed via pan with

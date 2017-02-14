@@ -7,7 +7,7 @@ the new and improved Makefile system.
 
 Changelog:
 
- * Initial version: Garrett Cooper <yanegomi@gmail.com>
+ * Initial version: Ngie Cooper <yaneurabeya@gmail.com>
  * Reformated for asciidoc: Cyril Hrubis <chrubis@suse.cz>
 ******************************************************************************
 

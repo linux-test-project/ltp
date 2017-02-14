@@ -52,7 +52,7 @@
 # the tests into dummy apps which print out TCONF messages due to
 # lack-of-build support.
 #
-# Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+# Signed-off-by: Ngie Cooper <yaneurabeya@gmail.com>
 #
 # Revision 1.11  2008/02/14 08:22:22  subrata_modak
 # Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>

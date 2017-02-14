@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Garrett Cooper.
+ * Copyright (c) 2010, Ngie Cooper.
  *
  * Test that pthread_mutex_getprioceiling() fails because:
  *

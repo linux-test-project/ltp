@@ -4,7 +4,7 @@
  *   ptrace05 - an app which ptraces itself as per arbitrarily specified signals,
  *   over a user specified range.
  *
- *   Copyright (C) 2009, Garrett Cooper
+ *   Copyright (C) 2009, Ngie Cooper
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by

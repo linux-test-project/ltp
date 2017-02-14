@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Garrett Cooper.
+ * Copyright (c) 2010, Ngie Cooper.
  *
  * The clock_getcpuclockid() function shall fail and return EPERM if the
  * requesting process does not have permission to access the CPU-time clock for

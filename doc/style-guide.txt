@@ -12,7 +12,7 @@ in this document.
 
 Changelog:
 
- * Initial version: Garrett Cooper <yanegomi@gmail.com>
+ * Initial version: Ngie Cooper <yaneurabeya@gmail.com>
  * Reformatted for asciidoc: Cyril Hrubis <chrubis@suse.cz>
 **********************************************************************
 

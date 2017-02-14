@@ -1,7 +1,7 @@
 #
 # Read COPYING for licensing details.
 #
-# Garrett Cooper, July 2010
+# Ngie Cooper, July 2010
 #
 
 top_srcdir?=		..

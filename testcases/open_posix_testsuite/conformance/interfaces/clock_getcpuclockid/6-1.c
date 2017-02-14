@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Garrett Cooper.
+ * Copyright (c) 2010, Ngie Cooper.
  *
  * The clock_getcpuclockid() function may fail and return ESRCH if no process
  * can be found corresponding to the process specified by pid.

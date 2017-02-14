@@ -17,7 +17,7 @@
 #
 
 # Author: Masatake YAMATO <yamato@redhat.com>
-# Technique used here is suggested by Garrett Cooper <yanegomi@gmail.com>
+# Technique used here is suggested by Ngie Cooper <yaneurabeya@gmail.com>
 
 # This file does the same things on foo64 system call
 # as compat_16.mk does on foo16. See both compat_16.mk

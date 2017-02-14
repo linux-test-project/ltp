@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Copyright (C) 2009, Cisco Systems Inc.
-#  Garrett Cooper, August 2009
+#  Ngie Cooper, August 2009
 # Copyright (C) 2012-2014 Linux Test Project
 #
 # This program is free software; you can redistribute it and/or modify

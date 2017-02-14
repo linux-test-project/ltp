@@ -23,7 +23,7 @@
 # been added to the build tests that should be run before each release to avoid
 # build regressions).
 #
-# Garrett Cooper, February 2010
+# Ngie Cooper, February 2010
 #
 
 . "${0%/*}/lib/file_functions.sh"

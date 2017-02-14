@@ -181,4 +181,4 @@ Maintainers:	Julie Fleischer
 		Adam Li
 Contributors:	Jerome Marchand
 		Ulrich Drepper
-		Garrett Cooper
+		Ngie Cooper

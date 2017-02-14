@@ -22,7 +22,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Author: Liu Bo <liubo2009@cn.fujitsu.com>
- * Author: Garrett Cooper <yanegomi@gmail.com>
+ * Author: Ngie Cooper <yaneurabeya@gmail.com>
  *
  */
 

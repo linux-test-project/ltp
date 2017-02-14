@@ -17,7 +17,7 @@
 #
 
 # Author: Masatake YAMATO <yamato@redhat.com>
-# Technique used here is suggested by Garrett Cooper <yanegomi@gmail.com>
+# Technique used here is suggested by Ngie Cooper <yaneurabeya@gmail.com>
 
 # Usage:
 #

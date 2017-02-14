@@ -21,7 +21,7 @@
 #  FILE(s)     : linktest.sh README
 #  DESCRIPTION : Regression test for max links per file
 #  USE         : linktest.sh <number of symlinks> <number of hardlinks>
-#  AUTHOR      : Garrett Cooper (yanegomi@gmail.com)
+#  AUTHOR      : Ngie Cooper (yaneurabeya@gmail.com)
 #  HISTORY     :
 #	A rewrite of testcases/kernel/fs/linktest.pl
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
  * Copyright (c) 2013 Stanislav Kholmanskikh <stanislav.kholmanskikh@oracle.com>
- * Copyright (c) 2010 Garrett Cooper <yanegomi@gmail.com>
+ * Copyright (c) 2010 Ngie Cooper <yaneurabeya@gmail.com>
  * Copyright (c) 2008 Mike Frysinger <vapier@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify

@@ -1,7 +1,7 @@
 #
 # Read COPYING for licensing details.
 #
-# Garrett Cooper, June 2010
+# Ngie Cooper, June 2010
 #
 
 # Makefiles that are considered critical to execution; if they don't exist

@@ -1,5 +1,5 @@
 /*
- * Garrett Cooper, August 2010
+ * Ngie Cooper, August 2010
  *
  * Verify that mq_flags, mq_maxmsg, mq_msgsize, and mq_curmsgs exist in the
  * struct mq_attr structure and are long integers as per the

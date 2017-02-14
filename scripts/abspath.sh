@@ -18,7 +18,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, January 2010
+# Ngie Cooper, January 2010
 #
 
 . "${0%/*}/lib/file_functions.sh"

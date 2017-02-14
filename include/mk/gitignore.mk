@@ -17,7 +17,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, January 2011
+# Ngie Cooper, January 2011
 #
 
 CLEAN_TARGETS+=		gitignore_clean

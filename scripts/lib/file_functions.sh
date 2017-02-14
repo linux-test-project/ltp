@@ -18,7 +18,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, January 2010
+# Ngie Cooper, January 2010
 #
 # POSIX compliant bourne shell functions for performing make 3.81
 # compliancy in 3.80 with a minimal set of external commands

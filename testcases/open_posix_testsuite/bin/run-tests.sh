@@ -5,7 +5,7 @@
 #
 # run_test contains logic moved out of Makefile.
 #
-# Garrett Cooper, June 2010
+# Ngie Cooper, June 2010
 #
 
 LOGFILE=${LOGFILE:=logfile}

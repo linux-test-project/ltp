@@ -6,7 +6,7 @@
     complain about complexity involved with trying to use LTP in my
     organization -_-.
 
-    Copyright (C) 2009-2012, Garrett Cooper
+    Copyright (C) 2009-2012, Ngie Cooper
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -279,7 +279,7 @@ def main():
 
     group = OptionGroup(parser, 'Copyright',
                         '%(prog)s version %(version)s, Copyright (C) '
-                        '2009-2012, Garrett Cooper %(prog)s comes with '
+                        '2009-2012, Ngie Cooper %(prog)s comes with '
                         'ABSOLUTELY NO WARRANTY; '
                         'This is free software, and you are welcome to '
                         'redistribute it under certain conditions (See the '
