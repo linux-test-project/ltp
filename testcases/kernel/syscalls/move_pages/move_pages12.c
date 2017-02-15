@@ -168,5 +168,5 @@ static struct tst_test test = {
 };
 
 #else
-	tst_res(TCONF, "move_pages support not found");
+	TST_TEST_TCONF("move_pages support not found");
 #endif
