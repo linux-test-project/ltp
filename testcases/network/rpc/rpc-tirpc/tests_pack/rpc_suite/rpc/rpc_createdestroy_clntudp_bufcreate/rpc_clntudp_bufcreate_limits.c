@@ -30,7 +30,6 @@
 #include <time.h>
 #include <rpc/rpc.h>
 #include <sys/socket.h>
-#include <rpcsvc/rusers.h>
 #include <utmp.h>
 #include <sys/time.h>
 #include <netdb.h>
