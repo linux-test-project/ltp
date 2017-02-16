@@ -44,8 +44,8 @@ The sources here are modified a bit to use the LTP wrapper - rpc_test.sh -
 instead of a bunch of scripts from the above web page.
 
 The basic group of test cases can be executed from
- * runtest/rpc_tests - for TS-RPC testing
- * runtest/tirpc_tests - for TI-RPC testing
+ * runtest/net.rpc_tests - for TS-RPC testing
+ * runtest/net.tirpc_tests - for TI-RPC testing
 using the LTP framework (ltp-pan, runltp and etc).
 
 Additional test cases (like stress, complex and etc) are to be integrated.
