@@ -24,6 +24,8 @@ usage()
 	echo "  -r    RPC tests"
 	echo "  -s    SCTP tests"
 	echo "  -t    TCP/IP command tests"
+	echo "  -c    TI-RPC tests"
+	echo "  -d    TS-RPC tests"
 	echo "  -a    Application tests (HTTP, SSH, DNS)"
 	echo "  -e    Interface stress tests"
 	echo "  -b    Stress tests with malformed ICMP packets"
@@ -40,7 +42,7 @@ usage()
 
 TEST_CASES=
 
-while getopts 6mnrstaebiTURMFf:Vvh OPTION
+while getopts 6mnrstaebcdiTURMFf:Vvh OPTION
 do
 	case $OPTION in
 	6) TEST_CASES="$TEST_CASES net.ipv6 net.ipv6_lib";;
@@ -49,6 +51,8 @@ do
 	r) TEST_CASES="$TEST_CASES net.rpc" ;;
 	s) TEST_CASES="$TEST_CASES net.sctp" ;;
 	t) TEST_CASES="$TEST_CASES net.tcp_cmds" ;;
+	c) TEST_CASES="$TEST_CASES net.rpc_tests";;
+	d) TEST_CASES="$TEST_CASES net.tirpc_tests";;
 	a) TEST_CASES="$TEST_CASES net_stress.appl";;
 	e) TEST_CASES="$TEST_CASES net_stress.interface";;
 	b) TEST_CASES="$TEST_CASES net_stress.broken_ip";;
