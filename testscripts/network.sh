@@ -26,7 +26,7 @@ usage()
 	echo "  -t    TCP/IP command tests"
 	echo "  -c    TI-RPC tests"
 	echo "  -d    TS-RPC tests"
-	echo "  -a    Application tests (HTTP, SSH, DNS)"
+	echo "  -a    Application stress tests (HTTP, SSH, DNS)"
 	echo "  -e    Interface stress tests"
 	echo "  -b    Stress tests with malformed ICMP packets"
 	echo "  -i    IPsec ICMP stress tests"
@@ -46,11 +46,11 @@ while getopts 6mnrstaebcdiTURMFf:Vvh OPTION
 do
 	case $OPTION in
 	6) TEST_CASES="$TEST_CASES net.ipv6 net.ipv6_lib";;
-	m) TEST_CASES="$TEST_CASES net.multicast" ;;
-	n) TEST_CASES="$TEST_CASES net.nfs" ;;
-	r) TEST_CASES="$TEST_CASES net.rpc" ;;
-	s) TEST_CASES="$TEST_CASES net.sctp" ;;
-	t) TEST_CASES="$TEST_CASES net.tcp_cmds" ;;
+	m) TEST_CASES="$TEST_CASES net.multicast";;
+	n) TEST_CASES="$TEST_CASES net.nfs";;
+	r) TEST_CASES="$TEST_CASES net.rpc";;
+	s) TEST_CASES="$TEST_CASES net.sctp";;
+	t) TEST_CASES="$TEST_CASES net.tcp_cmds";;
 	c) TEST_CASES="$TEST_CASES net.rpc_tests";;
 	d) TEST_CASES="$TEST_CASES net.tirpc_tests";;
 	a) TEST_CASES="$TEST_CASES net_stress.appl";;
@@ -62,10 +62,10 @@ do
 	R) TEST_CASES="$TEST_CASES net_stress.route";;
 	M) TEST_CASES="$TEST_CASES net_stress.multicast";;
 	F) TEST_CASES="$TEST_CASES net.features";;
-	f) TEST_CASES=${OPTARG} ;;
+	f) TEST_CASES=${OPTARG};;
 	V|v) VERBOSE="yes";;
-	h) usage; exit 0 ;;
-	*) echo "Error: invalid option..."; usage; exit 1 ;;
+	h) usage; exit 0;;
+	*) echo "Error: invalid option..."; usage; exit 1;;
 	esac
 done
 
