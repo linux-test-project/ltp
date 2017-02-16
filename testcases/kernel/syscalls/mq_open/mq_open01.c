@@ -28,6 +28,7 @@
 #include "tst_test.h"
 
 #define QUEUE_NAME	"/test_mqueue"
+#define QUEUE_INIT	"/init_mqueue"
 
 static uid_t euid;
 static struct passwd *pw;
@@ -35,6 +36,7 @@ static char *qname;
 static struct rlimit rlim;
 
 static mqd_t fd, fd2;
+static mqd_t fd3 = -1;
 static int max_queues;
 
 struct test_case {
@@ -174,7 +176,7 @@ static void unlink_queue(void)
 static void set_max_queues(void)
 {
 	SAFE_FILE_SCANF(PROC_MAX_QUEUES, "%d", &max_queues);
-	SAFE_FILE_PRINTF(PROC_MAX_QUEUES, "%d", 0);
+	SAFE_FILE_PRINTF(PROC_MAX_QUEUES, "%d", 1);
 
 	SAFE_SETEUID(pw->pw_uid);
 }
@@ -206,6 +208,10 @@ static void setup(void)
 	euid = geteuid();
 	pw = SAFE_GETPWNAM("nobody");
 	SAFE_GETRLIMIT(RLIMIT_NOFILE, &rlim);
+
+	fd3 = mq_open(QUEUE_INIT, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
+	if (fd3 == -1)
+		tst_brk(TBROK | TERRNO, "mq_open(%s) failed", QUEUE_INIT);
 }
 
 static void cleanup(void)
@@ -215,6 +221,12 @@ static void cleanup(void)
 
 	if (fd2 > 0)
 		mq_close(fd2);
+
+	if (fd3 > 0 && mq_close(fd3))
+		tst_res(TWARN | TERRNO, "mq_close(%s) failed", QUEUE_INIT);
+
+	if (mq_unlink(QUEUE_INIT))
+		tst_res(TWARN | TERRNO, "mq_unlink(%s) failed", QUEUE_INIT);
 
 	mq_unlink(qname);
 }
