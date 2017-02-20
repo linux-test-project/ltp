@@ -35,6 +35,7 @@
 
 #include <errno.h>
 #include <unistd.h>
+#include <limits.h>
 #include "tst_test.h"
 
 static char buffer[5];
@@ -44,7 +45,7 @@ static struct t_case {
 	size_t size;
 	int exp_err;
 } tcases[] = {
-	{(void *)-1, 10, EFAULT},
+	{(void *)-1, PATH_MAX, EFAULT},
 	{NULL, (size_t)-1, ENOMEM},
 	{buffer, 0, EINVAL},
 	{buffer, 1, ERANGE},
