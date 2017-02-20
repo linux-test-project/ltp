@@ -51,9 +51,11 @@ do_test()
 
 	ip maddr show $(tst_iface) | grep -q '224.0.0.1'
 	if [ $? -ne 0 ]; then
-		tst_resm TWARN "ip failed to detect multicast, parsing /proc/net/igmp"
-		grep "$(tst_iface)\s*:" -A 1 /proc/net/igmp | grep -q '\s010000E0\s' || \
-			tst_brkm TFAIL "all-host-group for $(tst_iface) not joined"
+		tst_resm TWARN "'ip maddr show $(tst_iface)' failed," \
+			       " parsing 'ip maddr show'"
+		ip maddr show | sed -ne "/\s$(tst_iface)/,/^[0-9]/p" | \
+			grep -q 224.0.0.1 || \
+			tst_brkm TFAIL "$(tst_iface) not joined 224.0.0.1"
 	fi
 
 	tst_resm TINFO "Ping all-host-groups over specified interface"
