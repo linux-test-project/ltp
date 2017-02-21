@@ -39,6 +39,7 @@
 
 #include "tst_test.h"
 #include "move_pages_support.h"
+#include "lapi/mmap.h"
 
 #if HAVE_NUMA_MOVE_PAGES
 
