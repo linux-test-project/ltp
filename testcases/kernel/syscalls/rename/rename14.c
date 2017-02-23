@@ -53,7 +53,7 @@ int local_flag = PASSED;
 char *TCID = "rename14";
 int TST_TOTAL = 1;
 
-#define RUNTIME	45
+#define RUNTIME	5
 
 int kidpid[2];
 int parent_pid;
