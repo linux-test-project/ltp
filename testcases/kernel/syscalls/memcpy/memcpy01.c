@@ -44,41 +44,37 @@
 #include <string.h>
 #include <errno.h>
 
-/*****	LTP Port	*****/
 #include "test.h"
 
 char *TCID = "memcpy1";
-/*****	**	**	*****/
+
 #undef  BSIZE
 #define BSIZE	4096
 #define LEN	100
 #define FAILED 0
 #define PASSED 1
 
-/*****	LTP Port	*****/
 int local_flag = PASSED;
 int block_number;
 FILE *temp;
 int TST_TOTAL = 1;
-/*****	**	**	*****/
 char buf[BSIZE];
 
-/*****	LTP Port	*****/
 
 int anyfail();
 int blenter();
 int blexit();
 
 void setup();
-/*****	**	**	*****/
 void clearit();
 void fill(char *str);
 int checkit(char *str);
 
-/*--------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
 	char *p, *q;
+
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();		/* temp file is now open        */
 /*--------------------------------------------------------------*/
@@ -135,15 +131,10 @@ int main(int argc, char *argv[])
 	}
 
 	blexit();
-/*--------------------------------------------------------------*/
-/* Clean up any files created by test before call to anyfail.	*/
 
-	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
+	anyfail();
 	tst_exit();
 }
-
-/*--------------------------------------------------------------*/
-/* FUNCTIONS GO HERE */
 
 void clearit(void)
 {
