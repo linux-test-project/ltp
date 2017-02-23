@@ -200,14 +200,30 @@ static int create_listening_socket(int port_num)
 	return lfd;
 }
 
+static char *opt_port;
+
+static option_t options[] = {
+	{"p:", NULL, &opt_port},
+	{NULL, NULL, NULL}
+};
+
+static void usage(void)
+{
+	printf("  -p      Port\n");
+}
+
 int main(int argc, char *argv[])
 {
 	struct sockaddr_in conn_addr;
 	int lfd;
-	int port_num;
+	int port_num = PORT_NUM;
+
+	tst_parse_opts(argc, argv, options, usage);
+
+	if (opt_port)
+		port_num = atoi(opt_port);
 
 	setup();
-	port_num = (argc > 1) ? atoi(argv[1]) : PORT_NUM;
 
 	memset(&conn_addr, 0, sizeof(struct sockaddr_in));
 	conn_addr.sin_family = AF_INET;
@@ -220,7 +236,7 @@ int main(int argc, char *argv[])
 	do_test(lfd, &conn_addr, SOCK_CLOEXEC, 0);
 	do_test(lfd, &conn_addr, 0, SOCK_NONBLOCK);
 	do_test(lfd, &conn_addr, SOCK_CLOEXEC, SOCK_NONBLOCK);
-	
+
 	close(lfd);
 	cleanup();
 	tst_exit();
