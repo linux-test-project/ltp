@@ -70,6 +70,8 @@ int main(int argc, char *argv[])
 {
 	char *buf;
 
+	tst_parse_opts(argc, argv, NULL, NULL);
+
 	tst_tmpdir();
 
 	buf = SAFE_MALLOC(NULL, 20480);
