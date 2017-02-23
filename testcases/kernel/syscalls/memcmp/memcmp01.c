@@ -39,7 +39,6 @@
 #include <string.h>
 #include <errno.h>
 
-/*****	LTP Port	*****/
 #include "test.h"
 
 char *TCID = "memcmp1";
@@ -49,11 +48,9 @@ char *TCID = "memcmp1";
 #define LEN	100
 #define FAILED 0
 #define PASSED 1
-/*****	**	**	*****/
 
 char buf[BSIZE];
 
-/*****	LTP Port	*****/
 int local_flag = PASSED;
 int block_number;
 FILE *temp;
@@ -64,19 +61,18 @@ int blexit();
 int instress();
 
 void setup();
-/*****	**	**	*****/
 
 void clearit();
 void fill(char *str);
 int checkit(char *str);
 
-/*--------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
 	char *p, *q;
 
-	setup();		/* temp file is now open        */
-/*--------------------------------------------------------------*/
+	tst_parse_opts(argc, argv, NULL, NULL);
+
+	setup();
 	blenter();
 
 	clearit();
@@ -186,15 +182,10 @@ int main(int argc, char *argv[])
 	}
 
 	blexit();
-/*--------------------------------------------------------------*/
-/* Clean up any files created by test before call to anyfail.	*/
 
-	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
+	anyfail();
 	tst_exit();
 }
-
-/*--------------------------------------------------------------*/
-/* FUNCTIONS GO HERE */
 
 void clearit(void)
 {
