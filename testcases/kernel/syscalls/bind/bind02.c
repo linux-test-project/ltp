@@ -69,7 +69,6 @@ struct group *gr;
 
 uid_t uid;
 gid_t gid;
-char nobody_uid[] = "nobody";
 
 int rc;
 
@@ -122,20 +121,11 @@ void try_bind(void)
 
 int main(int argc, char *argv[])
 {
+	char *username = "nobody";
 
-	/* FreeBSD has set limits for user login name -- MAXLOGNAME, but
-	 * Linux doesn't have that limitation apparently. */
-	char *username = NULL;
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	tst_require_root();
-
-	if (argc != 2) {
-		tst_resm(TINFO, "Defaulting to user nobody");
-		username = strdup(nobody_uid);
-	} else {
-		/* Get test user uid/gid. */
-		username = argv[1];
-	}
 
 	if ((pw = getpwnam(username)) == NULL) {
 		tst_brkm(TBROK, 0, "Username - %s - not found", username);
