@@ -43,7 +43,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-/** LTP Port **/
 #include "test.h"
 
 #define FAILED 0
@@ -53,30 +52,25 @@ int local_flag = PASSED;
 
 char *TCID = "rename14";
 int TST_TOTAL = 1;
-/**************/
 
 #define RUNTIME	45
 
 int kidpid[2];
 int parent_pid;
 
+int term(void);
+int al(void);
+void dochild1(void);
+void dochild2(void);
+
 int main(int argc, char *argv[])
 {
 	int pid;
 	sigset_t set;
 	struct sigaction act, oact;
-	int term();
-	int al();
-	void dochild1();
-	void dochild2();
-
-#ifdef UCLINUX
 
 	tst_parse_opts(argc, argv, NULL, NULL);
 
-	maybe_run_child(&dochild1, "n", 1);
-	maybe_run_child(&dochild2, "n", 2);
-#endif
 	sigemptyset(&set);
 	act.sa_handler = (void (*)())term;
 	act.sa_mask = set;
@@ -94,21 +88,13 @@ int main(int argc, char *argv[])
 	}
 	parent_pid = getpid();
 	tst_tmpdir();
-/*--------------------------------------------------------------*/
 
 	pid = FORK_OR_VFORK();
-	if (pid < 0) {
+	if (pid < 0)
 		tst_brkm(TBROK, NULL, "fork() returned %d", pid);
-	}
-	if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(argv[0], "n", 1) < 0) {
-			tst_resm(TBROK, "self_exec failed");
-		}
-#else
+	if (pid == 0)
 		dochild1();
-#endif
-	}
+
 	kidpid[0] = pid;
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
@@ -116,15 +102,9 @@ int main(int argc, char *argv[])
 		(void)unlink("./rename14");
 		tst_brkm(TBROK, NULL, "fork() returned %d", pid);
 	}
-	if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(argv[0], "n", 1) < 0) {
-			tst_resm(TBROK, "self_exec failed");
-		}
-#else
+	if (pid == 0)
 		dochild2();
-#endif
-	}
+
 	kidpid[1] = pid;
 
 	alarm(RUNTIME);
@@ -147,8 +127,6 @@ int main(int argc, char *argv[])
 	tst_rmdir();
 	tst_exit();
 }
-
-/* FUNCTIONS GO HERE */
 
 int term(void)
 {
@@ -183,7 +161,6 @@ void dochild1(void)
 
 void dochild2(void)
 {
-	for (;;) {
+	for (;;)
 		rename("./rename14", "./rename14xyz");
-	}
 }
