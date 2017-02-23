@@ -39,12 +39,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
-/*****	LTP Port *****/
 #include "test.h"
 
 char *TCID = "memset01";
 
-/*****	**	**	*****/
 #undef BSIZE
 #define BSIZE	4096
 #define LEN	100
@@ -53,26 +51,20 @@ char *TCID = "memset01";
 
 char buf[BSIZE];
 
-/*****	LTP Port	*****/
 int local_flag = PASSED;
 int block_number;
 int TST_TOTAL = 1;
 
-int anyfail();
-void setup();
-int blenter();
-/*****	**	**	*****/
-
-void fill();
+void fill(void);
 int checkit(char *str);
 
-/*--------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
 	register int i, j;
 	char *p;
 
-/*--------------------------------------------------------------*/
+	tst_parse_opts(argc, argv, NULL, NULL);
+
 	local_flag = PASSED;
 
 	fill();
@@ -99,17 +91,11 @@ int main(int argc, char *argv[])
 	(local_flag == FAILED) ? tst_resm(TFAIL,
 					  "Test failed") : tst_resm(TPASS,
 								    "Test passed");
-/*--------------------------------------------------------------*/
-/* Clean up any files created by test before call to anyfail.	*/
-
 	(local_flag == FAILED) ? tst_resm(TFAIL,
 					  "Test failed") : tst_resm(TPASS,
 								    "Test passed");
 	tst_exit();
 }
-
-/*--------------------------------------------------------------*/
-/* FUNCTIONS GO HERE */
 
 void fill(void)
 {
