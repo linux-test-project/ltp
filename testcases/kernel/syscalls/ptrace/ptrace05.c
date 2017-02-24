@@ -60,32 +60,7 @@ int main(int argc, char **argv)
 
 	pid_t child;
 
-	/* Parse the CLI args appropriately. */
-	switch (argc) {
-	case 3:
-		end_signum = (int)strtol((const char *)*(argv + 2), NULL, 10);
-		/* Parse the signal value. */
-		if (end_signum == 0 && errno != 0) {
-			tst_brkm(TBROK, NULL,
-				 "argument (%s) isn't a valid number.\n",
-				 *(argv + 2));
-		}
-		/* FALLTHROUGH */
-	case 2:
-		start_signum = (int)strtol((const char *)*(argv + 1), NULL, 10);
-		/* Parse the signal value. */
-		if (end_signum == 0 && errno != 0) {
-			tst_brkm(TBROK, NULL,
-				 "argument (%s) isn't a valid number.\n",
-				 *(argv + 1));
-		}
-		break;
-	case 1:
-		/* Do nothing. */
-		break;
-	default:
-		return usage(basename(*argv));
-	}
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	if (start_signum == -1) {
 		start_signum = 0;

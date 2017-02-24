@@ -99,10 +99,10 @@ void compare_registers(unsigned char poison)
 
 int main(int argc, char *argv[])
 {
+	tst_parse_opts(argc, argv, NULL, NULL);
+
 	if (ARRAY_SIZE(regs) == 0)
 		tst_brkm(TCONF, NULL, "test not supported for your arch (yet)");
-
-	tst_parse_opts(argc, argv, NULL, NULL);
 
 	make_a_baby(argc, argv);
 
