@@ -87,10 +87,9 @@ void cleanup();			/* cleanup function for the test */
 
 int main(int ac, char **av)
 {
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
-
-	tst_count = 0;
 
 	TEST(msync(addr, page_sz, MS_INVALIDATE));
 
@@ -102,7 +101,6 @@ int main(int ac, char **av)
 		tst_resm(TPASS, "Functionality of msync successful");
 
 	cleanup();
-
 	tst_exit();
 }
 
