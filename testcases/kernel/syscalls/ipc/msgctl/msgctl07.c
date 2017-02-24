@@ -68,21 +68,14 @@ struct my_msgbuf {
 	char text[BYTES];
 } p1_msgp, p2_msgp, p3_msgp, c1_msgp, c2_msgp, c3_msgp;
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	key_t key;
 	int pid, status;
 	int i, j, k;
 	sighandler_t alrm();
 
-#ifdef UCLINUX
-
 	tst_parse_opts(argc, argv, NULL, NULL);
-
-	maybe_run_child(&do_child_1, "ndd", 1, &msqid, &c1_msgp.type);
-	maybe_run_child(&do_child_2, "ndddd", 2, &msqid, &c1_msgp.type,
-			&c2_msgp.type, &c3_msgp.type);
-#endif
 
 	setup();
 
@@ -98,13 +91,7 @@ int main(void)
 		tst_brkm(TFAIL, NULL,
 			 "\tFork failed (may be OK if under stress)");
 	} else if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(argv[0], "ndd", 1, msqid, c1_msgp.type) < 0) {
-			tst_brkm(TFAIL, NULL, "\tself_exec failed");
-		}
-#else
 		do_child_1();
-#endif
 	} else {
 		struct sigaction act;
 
@@ -144,14 +131,7 @@ int main(void)
 		tst_brkm(TFAIL, NULL,
 			 "\tFork failed (may be OK if under stress)");
 	} else if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(argv[0], "ndddd", 1, msqid, c1_msgp.type,
-			      c2_msgp.type, c3_msgp.type) < 0) {
-			tst_brkm(TFAIL, NULL, "\tself_exec failed");
-		}
-#else
 		do_child_2();
-#endif
 	} else {
 		struct sigaction act;
 

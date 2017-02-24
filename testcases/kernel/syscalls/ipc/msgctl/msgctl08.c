@@ -64,16 +64,20 @@ void cleanup(void);
 static int dotest(key_t key, int child_process);
 static void sig_handler();
 
-#ifdef UCLINUX
-static char *argv0;
-static key_t key_uclinux;
-static int i_uclinux;
-static int id_uclinux;
-static int child_process_uclinux;
+static char *opt_nprocs;
+static char *opt_nreps;
 
-static void do_child_1_uclinux(void);
-static void do_child_2_uclinux(void);
-#endif
+static option_t options[] = {
+	{"n:", NULL, &opt_nprocs},
+	{"l:", NULL, &opt_nreps},
+	{NULL, NULL, NULL},
+};
+
+static void usage(void)
+{
+	printf("  -n      Number of processes\n");
+	printf("  -l      Number of iterations\n");
+}
 
 int main(int argc, char **argv)
 {
@@ -81,46 +85,31 @@ int main(int argc, char **argv)
 	int count, status;
 	struct sigaction act;
 
-#ifdef UCLINUX
-
-	argv0 = argv[0];
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux,
-			&i_uclinux);
-	maybe_run_child(&do_child_2_uclinux, "nddd", 2, &id_uclinux,
-			&key_uclinux, &child_process_uclinux);
-#endif
+	tst_parse_opts(argc, argv, options, usage);
 
 	setup();
 
-	if (argc == 1) {
-		/* Set default parameters */
-		nreps = MAXNREPS;
-		nprocs = MSGMNI;
-	} else if (argc == 3) {
-		if (atoi(argv[1]) > MAXNREPS) {
-			tst_resm(TCONF,
-				 "Requested number of iterations too large, setting to Max. of %d",
-				 MAXNREPS);
+	nreps = MAXNREPS;
+	nprocs = MSGMNI;
+
+	if (opt_nreps) {
+		nreps = atoi(opt_nreps);
+		if (nreps > MAXNREPS) {
+			tst_resm(TINFO,
+				 "Requested number of iterations too large, "
+				 "setting to Max. of %d", MAXNREPS);
 			nreps = MAXNREPS;
-		} else {
-			nreps = atoi(argv[1]);
 		}
-		if (atoi(argv[2]) > MSGMNI) {
-			tst_resm(TCONF,
-				 "Requested number of processes too large, setting to Max. of %d",
-				 MSGMNI);
+	}
+
+	if (opt_nprocs) {
+		nprocs = atoi(opt_nprocs);
+		if (nprocs > MSGMNI) {
+			tst_resm(TINFO,
+				 "Requested number of processes too large, "
+				 "setting to Max. of %d", MSGMNI);
 			nprocs = MSGMNI;
-		} else {
-			nprocs = atoi(argv[2]);
 		}
-	} else {
-		tst_brkm(TCONF,
-			 NULL,
-			 " Usage: %s [ number of iterations  number of processes ]",
-			 argv[0]);
 	}
 
 	srand(getpid());
@@ -172,14 +161,8 @@ int main(int argc, char **argv)
 		}
 		/* Child does this */
 		if (pid == 0) {
-#ifdef UCLINUX
-			if (self_exec(argv[0], "ndd", 1, keyarray[i], i) < 0) {
-				tst_brkm(TFAIL, NULL, "\tself_exec failed");
-			}
-#else
 			procstat = 1;
 			exit(dotest(keyarray[i], i));
-#endif
 		}
 		pidarray[i] = pid;
 	}
@@ -216,20 +199,6 @@ int main(int argc, char **argv)
 	tst_exit();
 }
 
-#ifdef UCLINUX
-static void do_child_1_uclinux(void)
-{
-	procstat = 1;
-	exit(dotest(key_uclinux, i_uclinux));
-}
-
-static void do_child_2_uclinux(void)
-{
-	exit(doreader(key_uclinux, id_uclinux, 1,
-			child_process_uclinux, nreps));
-}
-#endif
-
 static int dotest(key_t key, int child_process)
 {
 	int id, pid;
@@ -257,21 +226,8 @@ static int dotest(key_t key, int child_process)
 		return FAIL;
 	}
 	/* Child does this */
-	if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(argv0, "nddd", 2, id, key, child_process) < 0) {
-			printf("self_exec failed\n");
-			TEST(msgctl(tid, IPC_RMID, 0));
-			if (TEST_RETURN < 0) {
-				printf("msgctl() error in cleanup: %s\n",
-					strerror(errno));
-			}
-			return FAIL;
-		}
-#else
+	if (pid == 0)
 		exit(doreader(key, id, 1, child_process, nreps));
-#endif
-	}
 	/* Parent does this */
 	mykid = pid;
 	procstat = 2;
@@ -334,15 +290,12 @@ void cleanup(void)
 #ifdef DEBUG
 	tst_resm(TINFO, "Removing the message queue");
 #endif
-	fflush(stdout);
 	(void)msgctl(tid, IPC_RMID, NULL);
 	if ((status = msgctl(tid, IPC_STAT, NULL)) != -1) {
 		(void)msgctl(tid, IPC_RMID, NULL);
 		tst_resm(TFAIL, "msgctl(tid, IPC_RMID) failed");
 
 	}
-
-	fflush(stdout);
 
 	tst_rmdir();
 }

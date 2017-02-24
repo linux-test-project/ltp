@@ -70,71 +70,65 @@ static int dotest(key_t, int);
 static void dotest_iteration(int off);
 static void cleanup_msgqueue(int i, int tid);
 
-#ifdef UCLINUX
-static char *argv0;
-static key_t key_uclinux;
-static int i_uclinux;
-static int pid_uclinux;
-static int child_process_uclinux;
-static int rkid_uclinux;
+static char *opt_maxnprocs;
+static char *opt_nkids;
+static char *opt_nreps;
 
-static void do_child_1_uclinux(void);
-static void do_child_2_uclinux(void);
-static void do_child_3_uclinux(void);
-#endif
+static option_t options[] = {
+	{"n:", NULL, &opt_maxnprocs},
+	{"c:", NULL, &opt_nkids},
+	{"l:", NULL, &opt_nreps},
+	{NULL, NULL, NULL},
+};
+
+static void usage(void)
+{
+	printf("  -n      Number of processes\n");
+	printf("  -c      Number of read/write child pairs\n");
+	printf("  -l      Number of iterations\n");
+}
+
 
 int main(int argc, char **argv)
 {
 	int i, j, ok;
 
-#ifdef UCLINUX
-
-	argv0 = argv[0];
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux,
-			&i_uclinux);
-	maybe_run_child(&do_child_2_uclinux, "nddd", 2, &key_uclinux,
-			&pid_uclinux, &child_process_uclinux);
-	maybe_run_child(&do_child_3_uclinux, "nddd", 3, &key_uclinux,
-			&rkid_uclinux, &child_process_uclinux);
-#endif
+	tst_parse_opts(argc, argv, options, usage);
 
 	setup();
 
-	if (argc == 1) {
-		/* Set default parameters */
-		nreps = MAXNREPS;
-		nkids = DEFNKIDS;
-	} else if (argc == 4) {
-		if (atoi(argv[1]) > MAXNREPS) {
+	nreps = MAXNREPS;
+	nkids = MAXNKIDS;
+
+	if (opt_nreps) {
+		nreps = atoi(opt_nreps);
+		if (nreps > MAXNREPS) {
 			tst_resm(TINFO,
-				 "Requested number of iterations too large, setting to Max. of %d",
-				 MAXNREPS);
+				 "Requested number of iterations too large, "
+				 "setting to Max. of %d", MAXNREPS);
 			nreps = MAXNREPS;
-		} else {
-			nreps = atoi(argv[1]);
 		}
-		if (atoi(argv[2]) > maxnprocs) {
+	}
+
+	if (opt_nkids) {
+		nkids = atoi(opt_nkids);
+		if (nkids > MAXNKIDS) {
 			tst_resm(TINFO,
-				 "Requested number of processes too large, setting to Max. of %d",
-				 maxnprocs);
-		} else {
-			maxnprocs = atoi(argv[2]);
+				 "Requested number of read/write pairs too "
+				 "large, setting to Max. of %d", MAXNKIDS);
+			nkids = MAXNKIDS;
 		}
-		if (atoi(argv[3]) > maxnkids) {
+	}
+
+
+	if (opt_maxnprocs) {
+		if (atoi(opt_maxnprocs) > maxnprocs) {
 			tst_resm(TINFO,
-				 "Requested number of read/write pairs too large; setting to Max. of %d",
-				 maxnkids);
-			nkids = maxnkids;
+				 "Requested number of processes too large, "
+				 "setting to Max. of %d", MSGMNI);
 		} else {
-			nkids = atoi(argv[3]);
+			maxnprocs = atoi(opt_maxnprocs);
 		}
-	} else {
-		tst_brkm(TCONF, cleanup,
-			 " Usage: %s [ number of iterations  number of processes number of read/write pairs ]",
-			 argv[0]);
 	}
 
 	procstat = 0;
@@ -212,15 +206,8 @@ static void dotest_iteration(int off)
 
 		/* Child does this */
 		if (pid == 0) {
-#ifdef UCLINUX
-			if (self_exec(argv0, "ndd", 1, key, i) < 0) {
-				printf("\tself_exec failed\n");
-				exit(FAIL);
-			}
-#else
 			procstat = 1;
 			exit(dotest(key, i));
-#endif
 		}
 		pidarray[i] = pid;
 	}
@@ -247,28 +234,6 @@ static void dotest_iteration(int off)
 			 "Wrong number of children exited, Saw %d, Expected %d",
 			 count, nprocs);
 }
-
-#ifdef UCLINUX
-static void do_child_1_uclinux(void)
-{
-	procstat = 1;
-	exit(dotest(key_uclinux, i_uclinux));
-}
-
-static void do_child_2_uclinux(void)
-{
-	procstat = 2;
-	exit(doreader(key_uclinux, tid, pid_uclinux,
-			child_process_uclinux, nreps));
-}
-
-static void do_child_3_uclinux(void)
-{
-	procstat = 2;
-	exit(dowriter(key_uclinux, tid, rkid_uclinux,
-			child_process_uclinux, nreps));
-}
-#endif
 
 static void cleanup_msgqueue(int i, int tid)
 {
@@ -318,18 +283,9 @@ static int dotest(key_t key, int child_process)
 		}
 		/* First child does this */
 		if (pid == 0) {
-#ifdef UCLINUX
-			if (self_exec(argv0, "nddd", 2, key, getpid(),
-				      child_process) < 0) {
-				printf("self_exec failed\n");
-				cleanup_msgqueue(i, tid);
-				return FAIL;
-			}
-#else
 			procstat = 2;
 			exit(doreader(key, tid, getpid(),
 					child_process, nreps));
-#endif
 		}
 		rkidarray[i] = pid;
 		if ((pid = FORK_OR_VFORK()) < 0) {
@@ -345,24 +301,9 @@ static int dotest(key_t key, int child_process)
 		}
 		/* Second child does this */
 		if (pid == 0) {
-#ifdef UCLINUX
-			if (self_exec(argv0, "nddd", 3, key, rkidarray[i],
-				      child_process) < 0) {
-				printf("\tFork failure in the first child of child group %d\n",
-					child_process);
-				/*
-				 * Kill the reader child process
-				 */
-				(void)kill(rkidarray[i], SIGKILL);
-
-				cleanup_msgqueue(i, tid);
-				return FAIL;
-			}
-#else
 			procstat = 2;
 			exit(dowriter(key, tid, rkidarray[i],
 					child_process, nreps));
-#endif
 		}
 		wkidarray[i] = pid;
 	}
