@@ -39,7 +39,6 @@
 #include <sys/types.h>
 #include <string.h>
 
-/*****	LTP Port	*****/
 #include <errno.h>
 #include <stdlib.h>
 #include "test.h"
@@ -72,9 +71,6 @@ char dst0[LONGSTR + 1];		/* place holders for various tests */
 char dst1[LONGSTR + 1];
 char dst2[LONGSTR + 1];
 
-/*
- *	Data structures for testing.
- */
 
 /*	Strlen	(strlen( s ) == e_res)		*/
 struct t_strlen {
@@ -236,7 +232,6 @@ struct t_strncpy {
 	NULL, NULL, 0, NULL, 0}
 };
 
-/*****	LTP Port	*****/
 void setup();
 int blenter();
 int blexit();
@@ -266,14 +261,12 @@ int anyfail(void)
 	tst_exit();
 }
 
-/*****	**	**	*****/
-
-/*--------------------------------------------------------------*/
-
 int main(int argc, char *argv[])
 {
 	register int n, i;
 	char *s, *pr;
+
+	tst_parse_opts(argc, argv, NULL, NULL);
 
 	/*
 	 * Init longstr
