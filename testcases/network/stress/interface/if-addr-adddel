@@ -22,8 +22,16 @@ TCID=if-addr-adddel
 
 . if-lib.sh
 
-# The interval of the check interface activity (check ten times)
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 100))}
+TST_CLEANUP="do_cleanup"
+
+# The interval of the check interface activity
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
+
+do_cleanup()
+{
+	cleanup
+	restore_ipaddr
+}
 
 test_body()
 {
@@ -35,7 +43,7 @@ test_body()
 	*) tst_brkm TBROK "Unknown test parameter '$cmd_type'"
 	esac
 
-	local num=$(($(od -A n -d -N 1 /dev/random) * 253 / 255 + 2 ))
+	local num=$(($(od -A n -t u1 -N 1 /dev/random) * 253 / 255 + 2 ))
 	local iface=$(tst_iface)
 	if [ "$TST_IPV6" ]; then
 		local new_ip=${IPV6_NET32_UNUSED}::$num
@@ -47,8 +55,10 @@ test_body()
 
 	tst_resm TINFO "'$cmd_name' add/del IPv$ipver '$new_ip' $NS_TIMES times"
 
-	tst_restore_ipaddr || \
+	if ! restore_ipaddr; then
 		tst_resm TBROK "Failed to set default IP addresses"
+		return
+	fi
 
 	make_background_tcp_traffic
 

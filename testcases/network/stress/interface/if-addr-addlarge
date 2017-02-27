@@ -22,8 +22,16 @@ TCID=if-addr-addlarge
 
 . if-lib.sh
 
-# The interval of the check interface activity (check ten times)
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IP_TOTAL / 100))}
+TST_CLEANUP="do_cleanup"
+
+# The interval of the check interface activity
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IP_TOTAL / 20))}
+
+do_cleanup()
+{
+	cleanup
+	restore_ipaddr
+}
 
 test_body()
 {
@@ -41,8 +49,10 @@ test_body()
 	tst_resm TINFO "'$cmd_name' add $IP_TOTAL IPv$ipver addresses"
 	tst_resm TINFO "check interval that $iface is working: $CHECK_INTERVAL"
 
-	tst_restore_ipaddr || \
+	if ! restore_ipaddr; then
 		tst_resm TBROK "Failed to set default IP addresses"
+		return
+	fi
 
 	make_background_tcp_traffic
 
@@ -66,8 +76,6 @@ test_body()
 		else
 			local new_ip=${IPV4_NET16_UNUSED}.$x.$y
 		fi
-
-		tst_resm TINFO "set new ip $new_ip"
 
 		case $cmd_type in
 		if_cmd)

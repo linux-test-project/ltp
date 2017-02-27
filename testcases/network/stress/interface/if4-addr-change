@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2005
 #
 # This program is free software; you can redistribute it and/or
@@ -19,14 +19,19 @@
 
 TST_TOTAL=1
 TCID=if4-addr-change
-TST_CLEANUP="tst_restore_ipaddr"
+TST_CLEANUP="do_cleanup"
 
 . test_net.sh
 
-# Broadcast address of the tested network
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 100))}
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
 # Maximum host portion of the IPv4 address on the local host
 LHOST_IPV4_HOST_MAX="254"
+
+do_cleanup()
+{
+	tst_restore_ipaddr
+	tst_wait_ipv6_dad
+}
 
 trap "tst_brkm TBROK 'test interrupted'" INT
 
@@ -34,12 +39,7 @@ tst_check_cmds ifconfig
 
 tst_resm TINFO "ifconfig changes IPv4 address $NS_TIMES times"
 
-tst_restore_ipaddr
-
-check_icmpv4_connectivity $(tst_iface) $(tst_ipaddr rhost) || \
-	tst_brkm TBROK "Failed to ping to $(tst_ipaddr rhost)"
-
-local cnt=0
+cnt=0
 num=1
 while [ $cnt -lt $NS_TIMES ]; do
 	# Define the network portion
@@ -60,15 +60,10 @@ while [ $cnt -lt $NS_TIMES ]; do
 	[ $CHECK_INTERVAL -eq 0 ] && continue
 	[ $(($cnt % $CHECK_INTERVAL)) -ne 0 ] && continue
 
-	tst_resm TINFO "ping from $lhost_ipv4addr to $(tst_ipaddr rhost)"
-	check_icmpv4_connectivity $(tst_iface) $(tst_ipaddr rhost) || \
-		tst_brkm TFAIL "$(tst_iface) link broken after ${cnt} times"
+	tst_resm TINFO "ping $(tst_ipaddr):$(tst_ipaddr rhost) ${cnt}/$NS_TIMES"
+	EXPECT_PASS tst_ping
 done
 
-tst_resm TINFO "ping from $lhost_ipv4addr to $(tst_ipaddr rhost)"
-check_icmpv4_connectivity $(tst_iface) $(tst_ipaddr rhost) || \
-	tst_brkm TFAIL "$(tst_iface) is broken"
-
-tst_resm TPASS "Test is finished successfully"
+EXPECT_PASS tst_ping
 
 tst_exit

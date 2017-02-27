@@ -19,11 +19,18 @@
 
 TST_TOTAL=2
 TCID=if-route-addlarge
-TST_CLEANUP="cleanup"
 
 . if-lib.sh
 
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($ROUTE_TOTAL / 100))}
+TST_CLEANUP="do_cleanup"
+
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($ROUTE_TOTAL / 20))}
+
+do_cleanup()
+{
+	cleanup
+	restore_ipaddr
+}
 
 test_body()
 {
@@ -49,8 +56,10 @@ test_body()
 
 	tst_resm TINFO "'$cmd_name' add IPv$ipver $ROUTE_TOTAL routes"
 
-	tst_restore_ipaddr || \
+	if ! restore_ipaddr; then
 		tst_resm TBROK "Failed to set default IP addresses"
+		return
+	fi
 
 	make_background_tcp_traffic
 

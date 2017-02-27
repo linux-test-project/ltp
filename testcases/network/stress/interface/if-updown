@@ -22,7 +22,7 @@ TCID=if-updown
 
 . if-lib.sh
 
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IF_UPDOWN_TIMES / 100))}
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IF_UPDOWN_TIMES / 20))}
 
 test_body()
 {
@@ -38,8 +38,6 @@ test_body()
 
 	tst_resm TINFO "'$cmd_name ups/downs $iface $IF_UPDOWN_TIMES times"
 	tst_resm TINFO "check connectivity interval is $CHECK_INTERVAL"
-	tst_restore_ipaddr || \
-		tst_resm TBROK "Failed to set default IP addresses"
 
 	local cnt=1
 	while [ $cnt -le $IF_UPDOWN_TIMES ]; do
@@ -61,7 +59,7 @@ test_body()
 			return
 		fi
 
-		check_connectivity $cnt || return
+		check_connectivity $cnt restore_ip || return
 
 		cnt=$(($cnt + 1))
 	done
