@@ -417,6 +417,48 @@ tst_ping()
 	return $ret
 }
 
+# tst_icmp -t TIMEOUT -s MESSAGE_SIZE_ARRAY OPTS
+# TIMEOUT: total time for the test in seconds
+# OPTS: additional options for ns-icmpv4|6-sender tool
+tst_icmp()
+{
+	local timeout=1
+	local msg_sizes=56
+	local opts=
+	local num=
+	local ret=0
+	local ver="${TST_IPV6:-4}"
+
+	OPTIND=0
+	while getopts :t:s: opt; do
+		case "$opt" in
+		t) timeout="$OPTARG" ;;
+		s) msg_sizes="$OPTARG" ;;
+		*) opts="-$OPTARG $opts" ;;
+		esac
+	done
+	OPTIND=0
+
+	local num=$(echo "$msg_sizes" | wc -w)
+	timeout="$(($timeout / $num))"
+	[ "$timeout" -eq 0 ] && timeout=1
+
+	opts="${opts}-I $(tst_iface) -S $(tst_ipaddr) -D $(tst_ipaddr rhost) "
+	opts="${opts}-M $(tst_hwaddr rhost) -t $timeout"
+
+	for size in $msg_sizes; do
+		ns-icmpv${ver}_sender -s $size $opts
+		ret=$?
+		if [ $ret -eq 0 ]; then
+			tst_resm TPASS "'ns-icmpv${ver}_sender -s $size $opts' pass"
+		else
+			tst_resm TFAIL "'ns-icmpv${ver}_sender -s $size $opts' fail"
+			break
+		fi
+	done
+	return $ret
+}
+
 # tst_set_sysctl NAME VALUE [safe]
 # It can handle netns case when sysctl not namespaceified.
 tst_set_sysctl()
