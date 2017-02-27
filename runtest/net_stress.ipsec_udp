@@ -1,67 +1,71 @@
-#
-# Stress test for TCP/IP protocol stack (UDP)
-#
+udp4_ipsec01 udp_ipsec.sh -s "100 1000 65507"
+udp4_ipsec02 udp_ipsec.sh -p ah -m transport -s "100 1000 65483"
+udp4_ipsec03 udp_ipsec.sh -p ah -m tunnel -s "100 1000 65463"
+udp4_ipsec04 udp_ipsec.sh -p esp -m transport -s "100 1000 65470"
+udp4_ipsec05 udp_ipsec.sh -p esp -m tunnel -s "100 1000 65450"
+udp4_ipsec06 udp_ipsec.sh -p comp -m transport -s "100 1000 65000"
+udp4_ipsec07 udp_ipsec.sh -p comp -m tunnel -s "100 1000 65000"
+udp4_ipsec08 udp_ipsec.sh -A rfc4106_128 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec09 udp_ipsec.sh -A rfc4106_128 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec10 udp_ipsec.sh -A rfc4106_192 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec11 udp_ipsec.sh -A rfc4106_192 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec12 udp_ipsec.sh -A rfc4106_256 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec13 udp_ipsec.sh -A rfc4106_256 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec14 udp_ipsec.sh -A rfc4309_128 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec15 udp_ipsec.sh -A rfc4309_128 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec16 udp_ipsec.sh -A rfc4309_192 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec17 udp_ipsec.sh -A rfc4309_192 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec18 udp_ipsec.sh -A rfc4309_256 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec19 udp_ipsec.sh -A rfc4309_256 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec20 udp_ipsec.sh -A rfc4543_128 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec21 udp_ipsec.sh -A rfc4543_128 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec22 udp_ipsec.sh -A rfc4543_192 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec23 udp_ipsec.sh -A rfc4543_192 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec24 udp_ipsec.sh -A rfc4543_256 -p esp_aead -m transport -s "100 1000 65470"
+udp4_ipsec25 udp_ipsec.sh -A rfc4543_256 -p esp_aead -m tunnel -s "100 1000 65450"
+udp4_ipsec26 udp_ipsec.sh -p esp -a sha1 -e cast5 -m transport -s "100 1000 65470"
+udp4_ipsec27 udp_ipsec.sh -p esp -a sha1 -e cast5 -m tunnel -s "100 1000 65450"
+udp4_ipsec28 udp_ipsec.sh -p esp -a sha256 -e blowfish -m transport -s "100 1000 65470"
+udp4_ipsec29 udp_ipsec.sh -p esp -a sha256 -e blowfish -m tunnel -s "100 1000 65426"
+udp4_ipsec30 udp_ipsec.sh -p esp -a sha384 -e twofish -m transport -s "100 1000 65446"
+udp4_ipsec31 udp_ipsec.sh -p esp -a sha384 -e twofish -m tunnel -s "100 1000 65426"
+udp4_ipsec32 udp_ipsec.sh -p esp -a sha512 -e camellia -m transport -s "100 1000 65446"
+udp4_ipsec33 udp_ipsec.sh -p esp -a sha512 -e camellia -m tunnel -s "100 1000 65426"
+udp4_ipsec34 udp_ipsec.sh -p esp -a rmd160 -e serpent -m transport -s "100 1000 65446"
+udp4_ipsec35 udp_ipsec.sh -p esp -a rmd160 -e serpent -m tunnel -s "100 1000 65426"
 
-udp4-uni-basic01 udp4-uni-basic01
-udp4-uni-basic02 udp4-uni-basic02
-udp4-uni-basic03 udp4-uni-basic03
-udp4-uni-basic04 udp4-uni-basic04
-udp4-uni-basic05 udp4-uni-basic05
-udp4-uni-basic06 udp4-uni-basic06
-udp4-uni-basic07 udp4-uni-basic07
-
-udp6-uni-basic01 udp6-uni-basic01
-udp6-uni-basic02 udp6-uni-basic02
-udp6-uni-basic03 udp6-uni-basic03
-udp6-uni-basic04 udp6-uni-basic04
-udp6-uni-basic05 udp6-uni-basic05
-udp6-uni-basic06 udp6-uni-basic06
-udp6-uni-basic07 udp6-uni-basic07
-
-udp4-multi-diffport01 udp4-multi-diffport01
-udp4-multi-diffport02 udp4-multi-diffport02
-udp4-multi-diffport03 udp4-multi-diffport03
-udp4-multi-diffport04 udp4-multi-diffport04
-udp4-multi-diffport05 udp4-multi-diffport05
-udp4-multi-diffport06 udp4-multi-diffport06
-udp4-multi-diffport07 udp4-multi-diffport07
-
-udp6-multi-diffport01 udp6-multi-diffport01
-udp6-multi-diffport02 udp6-multi-diffport02
-udp6-multi-diffport03 udp6-multi-diffport03
-udp6-multi-diffport04 udp6-multi-diffport04
-udp6-multi-diffport05 udp6-multi-diffport05
-udp6-multi-diffport06 udp6-multi-diffport06
-udp6-multi-diffport07 udp6-multi-diffport07
-
-udp4-multi-diffip01 udp4-multi-diffip01
-udp4-multi-diffip02 udp4-multi-diffip02
-udp4-multi-diffip03 udp4-multi-diffip03
-udp4-multi-diffip04 udp4-multi-diffip04
-udp4-multi-diffip05 udp4-multi-diffip05
-udp4-multi-diffip06 udp4-multi-diffip06
-udp4-multi-diffip07 udp4-multi-diffip07
-
-udp6-multi-diffip01 udp6-multi-diffip01
-udp6-multi-diffip02 udp6-multi-diffip02
-udp6-multi-diffip03 udp6-multi-diffip03
-udp6-multi-diffip04 udp6-multi-diffip04
-udp6-multi-diffip05 udp6-multi-diffip05
-udp6-multi-diffip06 udp6-multi-diffip06
-udp6-multi-diffip07 udp6-multi-diffip07
-
-udp4-multi-diffnic01 udp4-multi-diffnic01
-udp4-multi-diffnic02 udp4-multi-diffnic02
-udp4-multi-diffnic03 udp4-multi-diffnic03
-udp4-multi-diffnic04 udp4-multi-diffnic04
-udp4-multi-diffnic05 udp4-multi-diffnic05
-udp4-multi-diffnic06 udp4-multi-diffnic06
-udp4-multi-diffnic07 udp4-multi-diffnic07
-
-udp6-multi-diffnic01 udp6-multi-diffnic01
-udp6-multi-diffnic02 udp6-multi-diffnic02
-udp6-multi-diffnic03 udp6-multi-diffnic03
-udp6-multi-diffnic04 udp6-multi-diffnic04
-udp6-multi-diffnic05 udp6-multi-diffnic05
-udp6-multi-diffnic06 udp6-multi-diffnic06
-udp6-multi-diffnic07 udp6-multi-diffnic07
+udp6_ipsec01 udp_ipsec.sh -6 -s "100 1000 65527"
+udp6_ipsec02 udp_ipsec.sh -6 -p ah -m transport -s "100 1000 65503"
+udp6_ipsec03 udp_ipsec.sh -6 -p ah -m tunnel -s "100 1000 65527"
+udp6_ipsec04 udp_ipsec.sh -6 -p esp -m transport -s "100 1000 65490"
+udp6_ipsec05 udp_ipsec.sh -6 -p esp -m tunnel -s "100 1000 65527"
+udp6_ipsec06 udp_ipsec.sh -6 -p comp -m transport -s "100 1000 65000"
+udp6_ipsec07 udp_ipsec.sh -6 -p comp -m tunnel -s "100 1000 65000"
+udp6_ipsec08 udp_ipsec.sh -6 -A rfc4106_128 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec09 udp_ipsec.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec10 udp_ipsec.sh -6 -A rfc4106_192 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec11 udp_ipsec.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec12 udp_ipsec.sh -6 -A rfc4106_256 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec13 udp_ipsec.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec14 udp_ipsec.sh -6 -A rfc4309_128 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec15 udp_ipsec.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec16 udp_ipsec.sh -6 -A rfc4309_192 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec17 udp_ipsec.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec18 udp_ipsec.sh -6 -A rfc4309_256 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec19 udp_ipsec.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec20 udp_ipsec.sh -6 -A rfc4543_128 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec21 udp_ipsec.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec22 udp_ipsec.sh -6 -A rfc4543_192 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec23 udp_ipsec.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec24 udp_ipsec.sh -6 -A rfc4543_256 -p esp_aead -m transport -s "100 1000 65490"
+udp6_ipsec25 udp_ipsec.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s "100 1000 65527"
+udp6_ipsec26 udp_ipsec.sh -6 -p esp -a sha1 -e cast5 -m transport -s "100 1000 65490"
+udp6_ipsec27 udp_ipsec.sh -6 -p esp -a sha1 -e cast5 -m tunnel -s "100 1000 65527"
+udp6_ipsec28 udp_ipsec.sh -6 -p esp -a sha256 -e blowfish -m transport -s "100 1000 65490"
+udp6_ipsec29 udp_ipsec.sh -6 -p esp -a sha256 -e blowfish -m tunnel -s "100 1000 65527"
+udp6_ipsec30 udp_ipsec.sh -6 -p esp -a sha384 -e twofish -m transport -s "100 1000 65462"
+udp6_ipsec31 udp_ipsec.sh -6 -p esp -a sha384 -e twofish -m tunnel -s "100 1000 65527"
+udp6_ipsec32 udp_ipsec.sh -6 -p esp -a sha512 -e camellia -m transport -s "100 1000 65462"
+udp6_ipsec33 udp_ipsec.sh -6 -p esp -a sha512 -e camellia -m tunnel -s "100 1000 65527"
+udp6_ipsec34 udp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m transport -s "100 1000 65478"
+udp6_ipsec35 udp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m tunnel -s "100 1000 65527"
