@@ -132,7 +132,8 @@ int TST_TOTAL = 3;
 
 int main(int ac, char **av)
 {
-	int i, tfd;
+	int tfd;
+	unsigned int i;
 	long ticks;
 	unsigned long long tnow, ttmr;
 	u_int64_t uticks;
@@ -141,6 +142,8 @@ int main(int ac, char **av)
 		{CLOCK_MONOTONIC, "CLOCK MONOTONIC"},
 		{CLOCK_REALTIME, "CLOCK REALTIME"},
 	};
+
+	tst_parse_opts(ac, av, NULL, NULL);
 
 	if ((tst_kvercmp(2, 6, 25)) < 0) {
 		tst_resm(TCONF, "This test can only run on kernels that are ");
