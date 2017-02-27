@@ -417,6 +417,27 @@ tst_ping()
 	return $ret
 }
 
+# tst_set_sysctl NAME VALUE [safe]
+# It can handle netns case when sysctl not namespaceified.
+tst_set_sysctl()
+{
+	local name="$1"
+	local value="$2"
+	local safe=
+	[ "$3" = "safe" ] && safe="-s"
+
+	local add_opt=
+	[ "$TST_USE_NETNS" = "yes" ] && add_opt="-e"
+
+	if [ "$safe" ]; then
+		ROD sysctl -qw $name=$value
+	else
+		sysctl -qw $name=$value
+	fi
+
+	tst_rhost_run $safe -c "sysctl -qw $add_opt $name=$value"
+}
+
 # Management Link
 [ -z "$RHOST" ] && TST_USE_NETNS="yes"
 export RHOST="$RHOST"
