@@ -29,16 +29,13 @@ set_cong_alg()
 	local alg=$1
 	tst_resm TINFO "setting $alg"
 
-	ROD sysctl -q -w net.ipv4.tcp_congestion_control=$alg
-	tst_rhost_run -s -c "sysctl -q -w net.ipv4.tcp_congestion_control=$alg"
+	tst_set_sysctl net.ipv4.tcp_congestion_control $alg safe
 }
 
 cleanup()
 {
 	if [ "$prev_cong_ctl" ]; then
-		sysctl -q -w net.ipv4.tcp_congestion_control=$prev_alg
-		tst_rhost_run -c \
-			"sysctl -q -w net.ipv4.tcp_congestion_control=$prev_alg"
+		tst_set_sysctl net.ipv4.tcp_congestion_control $prev_alg
 	fi
 	tst_rmdir
 	tc qdisc del dev $(tst_iface) root netem loss 0.03% ecn
@@ -61,7 +58,7 @@ setup()
 
 	tst_tmpdir
 
-	prev_alg="$(cat /proc/sys/net/ipv4/tcp_congestion_control)"
+	prev_alg="$(sysctl -n net.ipv4.tcp_congestion_control)"
 }
 
 test_run()
