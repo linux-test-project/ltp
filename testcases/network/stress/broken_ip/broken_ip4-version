@@ -1,6 +1,5 @@
 #!/bin/sh
-
-# Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2006
 #
 # This program is free software; you can redistribute it and/or
@@ -22,14 +21,12 @@
 TCID=broken_ip4-version01
 TST_TOTAL=1
 
-. broken_ip4_lib.sh
+. test_net.sh
 
-tst_resm TINFO "Verify that the kernel is not crashed with receiving \
-a large number of IPv4 packets that have wrong value in version field."
+tst_resm TINFO "Sending ICMPv4 with wrong version field for $NS_DURATION sec"
 
-tst_rhost_run -s -c "ns-icmpv4_sender -I $(tst_iface rhost) -S $rhost_addr \
-	-M $(tst_hwaddr lhost) -D $lhost_addr -s 56 -t $NS_DURATION -v"
+tst_icmp -t $NS_DURATION -s "0 100 500 1000 1472" -v
 
-tst_resm TPASS "Test is finished successfully."
+EXPECT_PASS tst_ping
 
 tst_exit

@@ -11,7 +11,7 @@ broken_ip4-protcol broken_ip4-protcol
 broken_ip4-checksum broken_ip4-checksum
 broken_ip4-dstaddr broken_ip4-dstaddr
 
-broken_ip6-dstaddr broken_ip6-dstaddr
-broken_ip6-nexthdr broken_ip6-nexthdr
-broken_ip6-plen broken_ip6-plen
-broken_ip6-version broken_ip6-version
+broken_ip6-dstaddr broken_ip6-dstaddr -6
+broken_ip6-nexthdr broken_ip6-nexthdr -6
+broken_ip6-plen broken_ip6-plen -6
+broken_ip6-version broken_ip6-version -6
