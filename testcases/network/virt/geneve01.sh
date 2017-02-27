@@ -36,10 +36,6 @@ cleanup()
 {
 	cleanup_vifaces
 	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
-	if [ "$net_load" = "TFO" ]; then
-		tst_rhost_run -c "pkill -9 netstress\$"
-		pkill -9 "netstress\$"
-	fi
 }
 TST_CLEANUP="cleanup"
 

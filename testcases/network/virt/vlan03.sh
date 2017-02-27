@@ -35,16 +35,8 @@ cleanup()
 {
 	cleanup_vifaces
 	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
-	if [ "$net_load" = "TFO" ]; then
-		tst_rhost_run -c "pkill -9 netstress\$"
-		pkill -9 "netstress\$"
-	fi
 }
 TST_CLEANUP="cleanup"
-
-if [ "$net_load" = "TFO" ]; then
-	tst_check_cmds "netstress"
-fi
 
 if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"

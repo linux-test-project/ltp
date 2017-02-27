@@ -38,16 +38,15 @@ ip_virt_remote="192.168.124.2"
 ip6_virt_remote="fe80::381c:c0ff:fea8:7c02"
 mac_virt_remote="3A:1C:C0:A8:7C:02"
 
-clients_num=2
-client_requests=500000
-max_requests=3
-net_load="TFO"
-
 # Max performance loss (%) for virtual devices during network load
 VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-80}
 vxlan_dstport=0
 
-while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
+clients_num=2
+client_requests=500000
+max_requests=20
+
+while getopts :hsx:i:r:c:R:p:n:t:d:6 opt; do
 	case "$opt" in
 	h)
 		echo "Usage:"
@@ -60,7 +59,6 @@ while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
 		echo "R n      num of reqs, after which conn.closed in TCP perf"
 		echo "p x      x and x + 1 are ports in TCP perf"
 		echo "n x      virtual network 192.168.x"
-		echo "l x      network load: x is PING or TFO(netstress)"
 		echo "t x      performance threshold, default is 60%"
 		echo "d x      VxLAN destination address, 'uni' or 'multi'"
 		echo "6        run over IPv6"
@@ -77,7 +75,6 @@ while getopts :hsx:i:r:c:R:p:n:l:t:d:6 opt; do
 		ip_virt_local="192.168.${OPTARG}.1"
 		ip_virt_remote="192.168.${OPTARG}.2"
 	;;
-	l) net_load=$OPTARG ;;
 	t) VIRT_PERF_THRESHOLD=$OPTARG ;;
 	d) vxlan_dst_addr=$OPTARG ;;
 	6) # skip, test_net library already processed it
@@ -255,31 +252,27 @@ vxlan_setup_subnet_multi()
 
 virt_compare_netperf()
 {
-	local ret=0
-	local expected_result=${1:-"pass"}
+	local ret1="pass"
+	local ret2="pass"
+	local expect_res="${1:-pass}"
 
-	tst_netload $ip_virt_remote res_ipv4 $net_load || ret=1
-	tst_netload ${ip6_virt_remote}%ltp_v0 res_ipv6 $net_load || ret=1
+	tst_netload -H $ip_virt_remote -a $clients_num -R $max_requests \
+		-r $client_requests -d res_ipv4 -e $expect_res || ret1="fail"
+
+	tst_netload -H ${ip6_virt_remote}%ltp_v0 -a $clients_num \
+		-R $max_requests -r $client_requests -d res_ipv6 \
+		-e $expect_res || ret2="fail"
 
 	ROD_SILENT "ip link delete ltp_v0"
 	tst_rhost_run -s -c "ip link delete ltp_v0"
 
-	if [ "$ret" -eq 1 ]; then
-		if [ "$expected_result" = "pass" ]; then
-			tst_resm TFAIL "Test with virtual iface failed"
-		else
-			tst_resm TPASS "Test failed as expected"
-		fi
-		return
-	fi
+	[ "$ret1" = "fail" -o "$ret2" = "fail" ] && return
+
 	local vt="$(cat res_ipv4)"
 	local vt6="$(cat res_ipv6)"
 
-	tst_netload $ip_remote res_ipv4 $net_load
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "Test with $ip_remote failed"
-		return
-	fi
+	tst_netload -H $ip_remote -a $clients_num -R $max_requests \
+		-r $client_requests -d res_ipv4
 
 	local lt="$(cat res_ipv4)"
 	tst_resm TINFO "time lan($lt) $virt_type IPv4($vt) and IPv6($vt6) ms"

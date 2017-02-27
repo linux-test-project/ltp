@@ -70,23 +70,13 @@ test_run()
 
 	set_cong_alg "$def_alg"
 
-	tst_netload $(tst_ipaddr rhost) tfo_res TFO
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "test with '$def_alg' has failed"
-		return
-	fi
-	local res0="$(cat tfo_res)"
-	tst_resm TINFO "$def_alg time '$res0' ms"
+	tst_netload -H $(tst_ipaddr rhost)
+	local res0="$(cat tst_netload.res)"
 
 	set_cong_alg "dctcp"
 
-	tst_netload $(tst_ipaddr rhost) tfo_res TFO
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "test with 'dctcp' has failed"
-		return
-	fi
-	local res1="$(cat tfo_res)"
-	tst_resm TINFO "dctcp time '$res1' ms"
+	tst_netload -H $(tst_ipaddr rhost)
+	local res1="$(cat tst_netload.res)"
 
 	local per=$(( $res0 * 100 / $res1 - 100 ))
 

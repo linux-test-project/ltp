@@ -20,18 +20,11 @@
 TST_TOTAL=1
 TCID="busy_poll02"
 
-# tst_netload() parameters
-clients_num=2
-client_requests=500000
-# num of requests after which TCP connection is closed
-max_requests=500000
-
 . test_net.sh
 . busy_poll_lib.sh
 
 cleanup()
 {
-	tst_rhost_run -c "pkill -9 netstress\$"
 	tst_rmdir
 
 	sysctl -q -w net.core.busy_poll=$busy_poll_old
@@ -56,9 +49,7 @@ trap "tst_brkm TBROK 'test interrupted'" INT
 for x in 50 0; do
 	tst_resm TINFO "set low latency busy poll to $x per socket"
 	set_busy_poll $x
-	tst_netload $(tst_ipaddr rhost) res_$x TFO -b $x || \
-		tst_brkm TBROK "netload() failed"
-	tst_resm TINFO "time spent is '$(cat res_$x)' ms"
+	tst_netload -H $(tst_ipaddr rhost) -d res_$x -b $x
 done
 
 poll_cmp=$(( 100 - ($(cat res_50) * 100) / $(cat res_0) ))

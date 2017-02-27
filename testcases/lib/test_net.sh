@@ -301,66 +301,88 @@ tst_wait_ipv6_dad()
 	done
 }
 
-# tst_netload ADDR [FILE] [TYPE] [OPTS]
-# Run network load test
-# ADDR: IP address
-# FILE: file with result time
-# TYPE: PING or TFO (TCP traffic)
-# OPTS: additional options
+# Run network load test, see 'netstress -h' for option description
 tst_netload()
 {
-	local ip_addr="$1"
-	local rfile="${2:-netload.res}"
-	local type="${3:-TFO}"
-	local addopts="${@:4}"
+	local rfile="tst_netload.res"
+	local expect_res="pass"
 	local ret=0
-	clients_num="${clients_num:-2}"
-	client_requests="${client_requests:-500000}"
-	max_requests="${max_requests:-3}"
 
-	case "$type" in
-	PING)
-		local ipv6=
-		echo "$ip_addr" | grep ":" > /dev/null
-		[ $? -eq 0 ] && ipv6=6
-		tst_resm TINFO "run ping${ipv6} test with rhost '$ip_addr'..."
-		local res=
-		res=$(ping${ipv6} -f -c $client_requests $ip_addr -w 600 2>&1)
-		[ $? -ne 0 ] && return 1
-		echo $res | sed -nE 's/.*time ([0-9]+)ms.*/\1/p' > $rfile
-	;;
-	TFO)
-		local port=
-		port="$(tst_rhost_run -c 'tst_get_unused_port ipv6 stream')"
-		[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
+	# common options for client and server
+	local cs_opts=
 
-		tst_resm TINFO "run netstress with '$ip_addr', port '$port'"
-		tst_rhost_run -s -b -c "netstress -R $max_requests \
-			-g $port $addopts"
+	local c_num="${TST_NETLOAD_CLN_NUMBER:-2}"
+	local c_requests="${TST_NETLOAD_CLN_REQUESTS:-500000}"
+	local c_opts=
 
-		# check that netstress on rhost in 'Listening' state
-		local sec_waited=
-		for sec_waited in $(seq 1 60); do
-			tst_rhost_run -c "ss -lutn | grep -q $port" && break
-			if [ $sec_waited -eq 60 ]; then
-				tst_resm TINFO "rhost not in LISTEN state"
-				return 1
-			fi
-			sleep 1
-		done
+	# number of server replies after which TCP connection is closed
+	local s_replies="${TST_NETLOAD_MAX_SRV_REPLIES:-500000}"
+	local s_opts=
 
-		# run local tcp client
-		netstress -a $clients_num -r $client_requests -l -H $ip_addr\
-			 -g $port -d $rfile $addopts || ret=1
+	OPTIND=0
+	while getopts :a:H:d:n:N:r:R:b:t:Ufe: opt; do
+		case "$opt" in
+		a) c_num="$OPTARG" ;;
+		H) c_opts="${c_opts}-H $OPTARG " ;;
+		d) rfile="$OPTARG" ;;
+		n) c_opts="${c_opts}-n $OPTARG " ;;
+		N) c_opts="${c_opts}-N $OPTARG " ;;
+		r) c_requests="$OPTARG" ;;
+		R) s_replies="$OPTARG" ;;
+		b) cs_opts="${cs_opts}-b $OPTARG " ;;
+		t) cs_opts="${cs_opts}-t $OPTARG " ;;
+		U) cs_opts="${cs_opts}-U " ;;
+		f) cs_opts="${cs_opts}-f " ;;
 
-		if [ $ret -eq 0 -a ! -f $rfile ]; then
-			tst_brkm TBROK "can't read $rfile"
+		e) expect_res="$OPTARG" ;;
+		*) tst_brkm TBROK "tst_netload: unknown option: $OPTARG" ;;
+		esac
+	done
+	OPTIND=0
+
+	local expect_ret=0
+	[ "$expect_res" != "pass" ] && expect_ret=1
+
+	local port="$(tst_rhost_run -c 'tst_get_unused_port ipv6 stream')"
+	[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
+
+	tst_rhost_run -c "pkill -9 netstress\$"
+
+	c_opts="${cs_opts}${c_opts}-a $c_num -r $c_requests -d $rfile -g $port"
+	s_opts="${cs_opts}${s_opts}-R $s_replies -g $port"
+
+	tst_resm TINFO "run server 'netstress $s_opts'"
+	tst_rhost_run -s -b -c "netstress $s_opts"
+
+	tst_resm TINFO "check that server port in 'LISTEN' state"
+	local sec_waited=
+	for sec_waited in $(seq 1 600); do
+		tst_rhost_run -c "ss -lutn | grep -q $port" && break
+		if [ $sec_waited -eq 600 ]; then
+			tst_rhost_run -c "ss -utnp | grep $port"
+			tst_brkm TFAIL "server not in LISTEN state"
 		fi
+		tst_sleep 100ms
+	done
 
-		tst_rhost_run -c "pkill -9 netstress\$"
-	;;
-	*) tst_brkm TBROK "invalid net_load type '$type'" ;;
-	esac
+	tst_resm TINFO "run client 'netstress -l $c_opts'"
+	netstress -l $c_opts > tst_netload.log 2>&1 || ret=1
+	tst_rhost_run -c "pkill -9 netstress\$"
+
+	if [ "$expect_ret" -ne "$ret" ]; then
+		cat tst_netload.log
+		tst_brkm TFAIL "expected '$expect_res' but ret: '$ret'"
+	fi
+
+	if [ "$ret" -eq 0 ]; then
+		if [ ! -f $rfile ]; then
+			cat tst_netload.log
+			tst_brkm TFAIL "can't read $rfile"
+		fi
+		tst_resm TPASS "netstress passed, time spent '$(cat $rfile)' ms"
+	else
+		tst_resm TPASS "netstress failed as expected"
+	fi
 
 	return $ret
 }
