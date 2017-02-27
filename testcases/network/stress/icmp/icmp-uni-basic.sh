@@ -27,13 +27,13 @@ TST_CLEANUP="tst_ipsec_cleanup"
 
 LINK_NUM=${LINK_NUM:-0}
 DO_IPSEC=${DO_IPSEC:-false}
-ICMP_SIZE_ARRAY=${ICMP_SIZE_ARRAY:-"10 100 1000 10000 65507"}
+IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-10 100 1000 10000 65507}"
 [ -n "$IPSEC_MODE" -a -n "$IPSEC_PROTO" ] && DO_IPSEC=true || DO_IPSEC=false
 
 # Test description
 tst_resm TINFO "Sending ICMP messages with the following conditions"
 tst_resm TINFO "- Version of IP is IPv${TST_IPV6:-4}"
-tst_resm TINFO "- Size of packets are ( $ICMP_SIZE_ARRAY )"
+tst_resm TINFO "- Size of packets are ( $IPSEC_SIZE_ARRAY )"
 
 if $DO_IPSEC; then
 	case $IPSEC_PROTO in
@@ -56,7 +56,7 @@ if $DO_IPSEC ; then
 	tst_ipsec rhost $rhost_addr $lhost_addr
 fi
 
-tst_ping $lhost_ifname $rhost_addr $ICMP_SIZE_ARRAY
+tst_ping $lhost_ifname $rhost_addr $IPSEC_SIZE_ARRAY
 if [ $? -ne 0 ]; then
 	tst_resm TFAIL "Checked IPv${TST_IPV6:-4} $IPSEC_PROTO $IPSEC_MODE"
 else

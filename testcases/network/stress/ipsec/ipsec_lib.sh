@@ -51,7 +51,7 @@ while getopts "hl:m:p:s:S:k:A:e:a:c:6" opt; do
 	l) LINK_NUM=$OPTARG ;;
 	m) IPSEC_MODE=$OPTARG ;;
 	p) IPSEC_PROTO=$OPTARG ;;
-	s) ICMP_SIZE_ARRAY=$OPTARG ;;
+	s) IPSEC_SIZE_ARRAY="$OPTARG" ;;
 	S) SPI=$OPTARG ;;
 	k) VTI_KEY=$OPTARG ;;
 	A) AEALGO=$OPTARG ;;

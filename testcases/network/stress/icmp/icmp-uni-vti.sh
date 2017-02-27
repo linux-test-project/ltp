@@ -24,7 +24,7 @@ TST_CLEANUP="tst_ipsec_cleanup"
 
 do_setup()
 {
-	ICMP_SIZE_ARRAY=${ICMP_SIZE_ARRAY:-"10 100 1000 10000 65507"}
+	IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-10 100 1000 10000 65507}"
 
 	if_loc=$(tst_iface)
 	if_rmt=$(tst_iface rhost)
@@ -62,7 +62,7 @@ do_setup()
 do_test()
 {
 	tst_resm TINFO "Sending ICMP messages..."
-	EXPECT_PASS tst_ping $tst_vti $ip_rmt_tun $ICMP_SIZE_ARRAY
+	EXPECT_PASS tst_ping $tst_vti $ip_rmt_tun $IPSEC_SIZE_ARRAY
 }
 
 do_setup
