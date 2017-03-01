@@ -775,8 +775,6 @@ void dochild(void)
 
 void run_test(int file_flag, int file_mode, int seek, int start, int end)
 {
-	extern long time();
-
 	fail = 0;
 
 	for (test = start; test < end; test++) {
