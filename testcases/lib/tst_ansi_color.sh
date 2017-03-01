@@ -21,11 +21,11 @@
 tst_flag2color()
 {
 	# NOTE: these colors should match colors defined in include/tst_ansi_color.h
-	local ansi_color_blue='\e[1;34m'
-	local ansi_color_green='\e[1;32m'
-	local ansi_color_magenta='\e[1;35m'
-	local ansi_color_red='\e[1;31m'
-	local ansi_color_yellow='\e[1;33m'
+	local ansi_color_blue='\033[1;34m'
+	local ansi_color_green='\033[1;32m'
+	local ansi_color_magenta='\033[1;35m'
+	local ansi_color_red='\033[1;31m'
+	local ansi_color_yellow='\033[1;33m'
 
 	case "$1" in
 	TPASS) printf $ansi_color_green;;
@@ -52,5 +52,5 @@ tst_print_colored()
 
 	[ "$color" = "1" ] && tst_flag2color "$1"
 	printf "$2"
-	[ "$color" = "1" ] && printf '\e[00m'
+	[ "$color" = "1" ] && printf '\033[0m'
 }
