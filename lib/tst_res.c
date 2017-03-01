@@ -50,7 +50,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "ltp_priv.h"
-#include "tst_ansi_colors.h"
+#include "tst_ansi_color.h"
 
 long TEST_RETURN;
 int TEST_ERRNO;

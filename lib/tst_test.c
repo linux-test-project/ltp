@@ -29,7 +29,7 @@
 #include "tst_test.h"
 #include "tst_device.h"
 #include "lapi/futex.h"
-#include "tst_ansi_colors.h"
+#include "tst_ansi_color.h"
 
 #include "old_resource.h"
 #include "old_device.h"

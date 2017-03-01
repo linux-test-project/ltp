@@ -15,11 +15,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TST_ANSI_COLORS_H__
-#define TST_ANSI_COLORS_H__
+#ifndef TST_ANSI_COLOR_H__
+#define TST_ANSI_COLOR_H__
 /*
  * NOTE: these colors should match colors defined in tst_flag2color() in
- * testcases/lib/tst_ansi_colors.sh
+ * testcases/lib/tst_ansi_color.sh
  */
 #define ANSI_COLOR_BLUE		"\e[1;34m"
 #define ANSI_COLOR_GREEN	"\e[1;32m"
@@ -32,4 +32,4 @@
 char* tst_ttype2color(int ttype);
 int tst_color_enabled(int fd);
 
-#endif	/* TST_ANSI_COLORS_H__ */
+#endif	/* TST_ANSI_COLOR_H__ */

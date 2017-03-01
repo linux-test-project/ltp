@@ -20,7 +20,7 @@
 #include <string.h>
 
 #include "tst_res_flags.h"
-#include "tst_ansi_colors.h"
+#include "tst_ansi_color.h"
 
 char* tst_ttype2color(int ttype)
 {

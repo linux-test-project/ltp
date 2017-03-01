@@ -20,7 +20,7 @@
 
 tst_flag2color()
 {
-	# NOTE: these colors should match colors defined in include/tst_ansi_colors.h
+	# NOTE: these colors should match colors defined in include/tst_ansi_color.h
 	local ansi_color_blue='\e[1;34m'
 	local ansi_color_green='\e[1;32m'
 	local ansi_color_magenta='\e[1;35m'
