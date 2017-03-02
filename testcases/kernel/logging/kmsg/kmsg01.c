@@ -393,8 +393,8 @@ static void test_read_returns_first_message(void)
 		else
 			tst_resm(TFAIL|TTERRNO, "read failed");
 
-		/* give a second to whoever overwrote first message to finish */
-		sleep(1);
+		/* give a moment to whoever overwrote first message to finish */
+		usleep(100000);
 		j--;
 	}
 
@@ -473,63 +473,90 @@ static void test_messages_overwritten(void)
 	SAFE_CLOSE(cleanup, fd);
 }
 
+static int read_msg_seqno(int fd, unsigned long *seqno)
+{
+	char msg[MAX_MSGSIZE];
+
+	TEST(read(fd, msg, sizeof(msg)));
+	if (TEST_RETURN == -1 && TEST_ERRNO != EPIPE) {
+		tst_brkm(TBROK|TTERRNO, cleanup,
+			"failed to read /dev/kmsg");
+	}
+
+	if (TEST_ERRNO == EPIPE)
+		return -1;
+
+	if (get_msg_fields(msg, NULL, seqno) != 0) {
+		tst_resm(TFAIL, "failed to parse seqid: %s", msg);
+		return -1;
+	}
+
+	return 0;
+}
+
 static void test_seek(void)
 {
-	int k, j = NUM_READ_RETRY, fd;
+	int j, fd, fd2;
 	char msg[MAX_MSGSIZE];
-	unsigned long seqno[2];
+	unsigned long seqno[2], tmp;
+	int ret = 0;
 
 	/* 1. read() after SEEK_SET 0 returns same (first) message */
 	tst_resm(TINFO, "TEST: seek SEEK_SET 0");
 
-	fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
-	if (fd < 0)
-		tst_brkm(TBROK|TERRNO, cleanup,	"failed to open /dev/kmsg");
+	for (j = 0; j < NUM_READ_RETRY && !ret; j++) {
+		/*
+		 * j > 0 means we are trying again, because we most likely
+		 * failed on read returning EPIPE - first message in buffer
+		 * has been overwrittern. Give a moment to whoever overwrote
+		 * first message to finish.
+		 */
+		if (j)
+			usleep(100000);
 
-	while (j) {
-		for (k = 0; k < 2; k++) {
-			TEST(read(fd, msg, sizeof(msg)));
-			if (TEST_RETURN == -1) {
-				if (errno == EPIPE)
-					break;
-				else
-					tst_brkm(TBROK|TTERRNO, cleanup,
-						"failed to read /dev/kmsg");
-			}
-			if (get_msg_fields(msg, NULL, &seqno[k]) != 0)
-				tst_resm(TFAIL, "failed to parse seqid: %s",
-					msg);
-			if (k == 0)
-				if (lseek(fd, 0, SEEK_SET) == -1)
-					tst_resm(TFAIL|TERRNO,
-						"SEEK_SET 0 failed");
+		/*
+		 * Open 2 fds. Use fd1 to read seqno1, then seek to
+		 * begininng and read seqno2. Use fd2 to check if
+		 * first entry in buffer got overwritten. If so,
+		 * we'll have to repeat the test.
+		 */
+		fd = SAFE_OPEN(cleanup, "/dev/kmsg", O_RDONLY | O_NONBLOCK);
+		fd2 = SAFE_OPEN(cleanup, "/dev/kmsg", O_RDONLY | O_NONBLOCK);
+
+		if (read_msg_seqno(fd, &seqno[0]))
+			goto close_fds;
+
+		if (lseek(fd, 0, SEEK_SET) == -1) {
+			tst_resm(TFAIL|TERRNO, "SEEK_SET 0 failed");
+			ret = -1;
+			goto close_fds;
 		}
 
-		if (TEST_RETURN != -1)
-			break;
+		if (read_msg_seqno(fd, &seqno[1]))
+			goto close_fds;
 
-		/* give a second to whoever overwrote first message to finish */
-		sleep(1);
-		j--;
+		if (read_msg_seqno(fd2, &tmp))
+			goto close_fds;
 
-		/* read above has returned EPIPE, reopen fd and try again */
+		ret = 1;
+close_fds:
 		SAFE_CLOSE(cleanup, fd);
-		fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
-		if (fd < 0)
-			tst_brkm(TBROK|TERRNO, cleanup,
-				"failed to open /dev/kmsg");
+		SAFE_CLOSE(cleanup, fd2);
 	}
 
-	if (!j) {
+	if (j == NUM_READ_RETRY) {
 		tst_resm(TWARN, "exceeded: %d attempts", NUM_READ_RETRY);
-	} else {
-		if (seqno[0] != seqno[1])
-			tst_resm(TFAIL, "SEEK_SET 0");
-		else
+	} else if (ret > 0) {
+		if (seqno[0] != seqno[1]) {
+			tst_resm(TFAIL, "SEEK_SET 0, %lu != %lu",
+				seqno[0], seqno[1]);
+		} else {
 			tst_resm(TPASS, "SEEK_SET 0");
+		}
 	}
 
 	/* 2. messages after SEEK_END 0 shouldn't contain MSG_PREFIX */
+	fd = SAFE_OPEN(cleanup, "/dev/kmsg", O_RDONLY | O_NONBLOCK);
 	tst_resm(TINFO, "TEST: seek SEEK_END 0");
 	if (lseek(fd, 0, SEEK_END) == -1)
 		tst_resm(TFAIL|TERRNO, "lseek SEEK_END 0 failed");
