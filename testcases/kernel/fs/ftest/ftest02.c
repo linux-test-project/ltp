@@ -268,7 +268,7 @@ static void crfile(int me, int count)
 	val = write(fd, crmsg, sizeof(crmsg) - 1);
 	warn(val, "write", 0);
 
-	val = lseek(fd, -(sizeof(crmsg) - 1), 1);
+	val = lseek(fd, -((off_t) sizeof(crmsg) - 1), 1);
 	warn(val, "lseek", 0);
 
 	val = read(fd, buf, sizeof(crmsg) - 1);
