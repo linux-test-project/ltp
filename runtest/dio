@@ -40,8 +40,8 @@ dio27 diotest6 -b 8192 -o 1024000 -i 1000 -v 100
 dio28 diotest6 -b 8192 -o 1024000 -i 1000 -v 200
 
 ### Run the tests with more children
-#dio29 diotest3 -b 65536 -n 100 -i 1000 -o 1024000
-#dio30 diotest6 -b 65536 -n 100 -i 1000 -o 1024000
+dio29 diotest3 -b 65536 -n 100 -i 1000 -o 1024000
+dio30 diotest6 -b 65536 -n 100 -i 1000 -o 1024000
 #
 # RAW DEVICE TEST SECTION
 #   DEV1 and DEV2 should be exported prior to execution or
