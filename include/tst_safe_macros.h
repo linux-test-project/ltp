@@ -422,4 +422,9 @@ int safe_fsetxattr(const char *file, const int lineno, int fd, const char *name,
 #define SAFE_FSETXATTR(fd, name, value, size, flags) \
 	safe_fsetxattr(__FILE__, __LINE__, (fd), (name), (value), (size), (flags))
 
+int safe_removexattr(const char *file, const int lineno, const char *path,
+		const char *name);
+#define SAFE_REMOVEXATTR(path, name) \
+	safe_removexattr(__FILE__, __LINE__, (path), (name))
+
 #endif /* SAFE_MACROS_H__ */

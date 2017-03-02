@@ -853,3 +853,24 @@ int safe_fsetxattr(const char *file, const int lineno, int fd, const char *name,
 
 	return rval;
 }
+
+int safe_removexattr(const char *file, const int lineno, const char *path,
+		const char *name)
+{
+	int rval;
+
+	rval = removexattr(path, name);
+
+	if (rval) {
+		if (errno == ENOTSUP) {
+			tst_brkm(TCONF, NULL,
+				"%s:%d: no xattr support in fs or mounted "
+				"without user_xattr option", file, lineno);
+		}
+
+		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: removexattr() failed",
+			file, lineno);
+	}
+
+	return rval;
+}
