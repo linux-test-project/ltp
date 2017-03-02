@@ -803,7 +803,6 @@ int safe_setxattr(const char *file, const int lineno, const char *path,
 			tst_brkm(TCONF, NULL,
 				 "%s:%d: no xattr support in fs or mounted "
 				 "without user_xattr option", file, lineno);
-			return rval;
 		}
 
 		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: setxattr() failed",
@@ -825,7 +824,6 @@ int safe_lsetxattr(const char *file, const int lineno, const char *path,
 			tst_brkm(TCONF, NULL,
 				 "%s:%d: no xattr support in fs or mounted "
 				 "without user_xattr option", file, lineno);
-			return rval;
 		}
 
 		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: lsetxattr() failed",
@@ -847,7 +845,6 @@ int safe_fsetxattr(const char *file, const int lineno, int fd, const char *name,
 			tst_brkm(TCONF, NULL,
 				 "%s:%d: no xattr support in fs or mounted "
 				 "without user_xattr option", file, lineno);
-			return rval;
 		}
 
 		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: fsetxattr() failed",
