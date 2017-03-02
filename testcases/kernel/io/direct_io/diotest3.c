@@ -96,7 +96,6 @@ int runtest(int fd_r, int fd_w, int childnum, int action)
 	char *buf1;
 	char *buf2;
 	off_t seekoff;
-	int bufsize = BUFSIZE;
 	int i;
 
 	/* Allocate for buffers */

@@ -224,19 +224,19 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, cleanup, "open failed for %s: %s",
 			 filename, strerror(errno));
 	}
-	if ((buf0 = valloc(BUFSIZE)) == NULL) {
+	if ((buf0 = valloc(bufsize)) == NULL) {
 		tst_brkm(TBROK, cleanup, "valloc() buf0 failed: %s",
 			 strerror(errno));
 	}
 	for (i = 1; i < fblocks; i++) {
-		fillbuf(buf0, BUFSIZE, (char)i);
-		if (write(fd, buf0, BUFSIZE) < 0) {
+		fillbuf(buf0, bufsize, (char)i);
+		if (write(fd, buf0, bufsize) < 0) {
 			tst_brkm(TBROK, cleanup, "write failed for %s: %s",
 				 filename, strerror(errno));
 		}
 	}
 	close(fd);
-	if ((buf2 = valloc(BUFSIZE)) == NULL) {
+	if ((buf2 = valloc(bufsize)) == NULL) {
 		tst_brkm(TBROK, cleanup, "valloc() buf2 failed: %s",
 			 strerror(errno));
 	}
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
 	total++;
 
 	/* Test-4: Read beyond the file size */
-	offset = BUFSIZE * (fblocks + 10);
+	offset = bufsize * (fblocks + 10);
 	count = bufsize;
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek failed: %s", strerror(errno));

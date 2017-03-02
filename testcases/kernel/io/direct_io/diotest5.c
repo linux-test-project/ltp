@@ -84,7 +84,7 @@ static int fd1 = -1;
 */
 int runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 {
-	int i, bufsize = BUFSIZE;
+	int i;
 	struct iovec *iov1, *iov2, *iovp;
 
 	/* Allocate for buffers and data pointers */

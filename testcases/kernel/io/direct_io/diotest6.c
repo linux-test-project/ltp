@@ -85,11 +85,11 @@ static void prg_usage(void)
 int runtest(int fd_r, int fd_w, int childnum, int action)
 {
 	off64_t seekoff;
-	int i, bufsize = BUFSIZE;
+	int i;
 	char *buf1, *buf2;
 
-	buf1 = valloc(BUFSIZE);
-	buf2 = valloc(BUFSIZE);
+	buf1 = valloc(bufsize);
+	buf2 = valloc(bufsize);
 
 	if (!buf1 || !buf2) {
 		tst_resm(TBROK | TERRNO, "valloc() failed");
