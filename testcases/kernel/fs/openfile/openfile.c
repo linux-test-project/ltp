@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	/* Check if numthreads is less than MAXFILES */
+	/* Check if numfiles is less than MAXFILES */
 	if (numfiles > MAXFILES) {
 		sprintf(msg, "%s\nCannot use %d files", msg, numfiles);
 		sprintf(msg, "%s, used %d files instead\n", msg, MAXFILES);
