@@ -18,7 +18,7 @@
 
 top_srcdir		?= ../../../..
 
-keyctl02: LDLIBS	+=-lpthread -lkeyutils
+keyctl02: LDLIBS	+=-lpthread $(KEYUTILS_LIBS)
 
 include $(top_srcdir)/include/mk/testcases.mk
 
