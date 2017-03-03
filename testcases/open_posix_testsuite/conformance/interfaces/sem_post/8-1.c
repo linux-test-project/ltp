@@ -44,6 +44,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include "proc.h"
 
 #define TEST "sem_post_8-1"
 
@@ -184,7 +185,8 @@ int main(void)
 		usleep(100);
 		sem_getvalue(sem_1, &val);
 	} while (val != 1);
-	usleep(100);
+	tst_process_state_wait3(c_1, 'S', 2000);
+	tst_process_state_wait3(c_2, 'S', 2000);
 
 	c_3 = fork();
 	switch (c_3) {
@@ -204,7 +206,7 @@ int main(void)
 		usleep(100);
 		sem_getvalue(sem_1, &val);
 	} while (val != 0);
-	usleep(100);
+	tst_process_state_wait3(c_3, 'S', 2000);
 
 	/* Ok, let's release the lock */
 	fprintf(stderr, "P: release lock\n");
