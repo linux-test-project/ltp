@@ -239,6 +239,11 @@ static void sighandler(int signo LTP_ATTRIBUTE_UNUSED)
 void setup(void)
 {
 	tst_require_root();
+	if (get_sys_tune("panic_on_oom")) {
+		tst_brkm(TCONF, NULL,
+			"panic_on_oom is set, disable it to run these testcases");
+	}
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
