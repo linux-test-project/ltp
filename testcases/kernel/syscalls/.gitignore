@@ -368,6 +368,7 @@
 /getxattr/getxattr01
 /getxattr/getxattr02
 /getxattr/getxattr03
+/getxattr/getxattr04
 /inotify/inotify01
 /inotify/inotify02
 /inotify/inotify03
