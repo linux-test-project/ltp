@@ -29,8 +29,10 @@
 #include <string.h>
 #include "tst_test.h"
 
-static const char *exp_buf = "/tmp";
-static char buffer[5];
+#define TMPDIR "/tmp"
+
+static char exp_buf[PATH_MAX];
+static char buffer[PATH_MAX];
 
 static struct t_case {
 	char *buf;
@@ -38,7 +40,7 @@ static struct t_case {
 } tcases[] = {
 	{buffer, sizeof(buffer)},
 	{NULL, 0},
-	{NULL, 5}
+	{NULL, PATH_MAX}
 };
 
 static void verify_getcwd(unsigned int n)
@@ -69,7 +71,12 @@ end:
 
 static void setup(void)
 {
-	SAFE_CHDIR("/tmp");
+	SAFE_CHDIR(TMPDIR);
+
+	if (!realpath(TMPDIR, exp_buf))
+		tst_brk(TBROK | TERRNO, "realpath() failed");
+
+	tst_res(TINFO, "Expected path '%s'", exp_buf);
 }
 
 static struct tst_test test = {
