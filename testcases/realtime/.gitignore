@@ -9,3 +9,5 @@
 /include/realtime_config.h.in
 
 /m4/Makefile.in
+/config.log
+/config.status
