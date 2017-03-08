@@ -25,6 +25,7 @@
 #include <mqueue.h>
 
 #include "tst_sig_proc.h"
+#include "tst_safe_posix_ipc.h"
 #include "tst_test.h"
 
 static struct sigaction act;
@@ -191,17 +192,13 @@ static void cleanup(void)
 
 static void create_queue(void)
 {
-	fd = mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
-	if (fd == -1)
-		tst_brk(TBROK | TERRNO, "mq_open(" QUEUE_NAME ") failed");
+	fd = SAFE_MQ_OPEN(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
 }
 
 static void create_queue_nonblock(void)
 {
-	fd = mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR | O_NONBLOCK, S_IRWXU,
-		     NULL);
-	if (fd == -1)
-		tst_brk(TBROK | TERRNO, "mq_open(" QUEUE_NAME ") failed");
+	fd = SAFE_MQ_OPEN(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR | O_NONBLOCK,
+		S_IRWXU, NULL);
 }
 
 static void create_queue_sig(void)

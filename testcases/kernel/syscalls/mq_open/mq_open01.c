@@ -25,6 +25,7 @@
 #include <pwd.h>
 
 #include "tst_safe_file_ops.h"
+#include "tst_safe_posix_ipc.h"
 #include "tst_test.h"
 
 #define QUEUE_NAME	"/test_mqueue"
@@ -155,9 +156,7 @@ static struct test_case tcase[] = {
 
 static void create_queue(void)
 {
-	fd2 = mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
-	if (fd2 == -1)
-		tst_brk(TBROK | TERRNO, "mq_open(" QUEUE_NAME ") failed");
+	fd2 = SAFE_MQ_OPEN(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
 
 	SAFE_SETEUID(pw->pw_uid);
 }
@@ -209,9 +208,7 @@ static void setup(void)
 	pw = SAFE_GETPWNAM("nobody");
 	SAFE_GETRLIMIT(RLIMIT_NOFILE, &rlim);
 
-	fd3 = mq_open(QUEUE_INIT, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
-	if (fd3 == -1)
-		tst_brk(TBROK | TERRNO, "mq_open(%s) failed", QUEUE_INIT);
+	fd3 = SAFE_MQ_OPEN(QUEUE_INIT, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
 }
 
 static void cleanup(void)

@@ -25,6 +25,7 @@
 #include <mqueue.h>
 
 #include "tst_test.h"
+#include "tst_safe_posix_ipc.h"
 
 #define QUEUE_NAME	"/test_mqueue"
 
@@ -94,11 +95,7 @@ static void do_test(unsigned int i)
 	mq_unlink(QUEUE_NAME);
 
 	/* prepare */
-	fd = mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
-	if (fd == -1) {
-		tst_res(TBROK | TERRNO, "mq_open failed");
-		goto EXIT;
-	}
+	fd = SAFE_MQ_OPEN(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
 
 	if (tc->as_nobody && seteuid(pw->pw_uid)) {
 		tst_res(TBROK | TERRNO, "seteuid failed");

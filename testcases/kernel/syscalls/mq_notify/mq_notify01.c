@@ -28,6 +28,7 @@
 #include <fcntl.h>
 
 #include "tst_test.h"
+#include "tst_safe_posix_ipc.h"
 
 #define MAX_MSGSIZE     8192
 #define MSG_SIZE	16
@@ -162,11 +163,7 @@ static void do_test(unsigned int i)
 		}
 		break;
 	default:
-		fd = mq_open(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
-		if (fd < 0) {
-			tst_res(TBROK | TERRNO, "mq_open failed");
-			goto CLEANUP;
-		}
+		fd = SAFE_MQ_OPEN(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
 	}
 
 	ev.sigev_notify = tc->notify;
