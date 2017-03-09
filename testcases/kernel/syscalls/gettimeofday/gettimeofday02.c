@@ -40,7 +40,7 @@
 
 static volatile sig_atomic_t done;
 static char *str_rtime;
-static int rtime = 30;
+static int rtime = 10;
 
 static struct tst_option options[] = {
 	{"T:", &str_rtime, "-T len   Test iteration runtime in seconds"},
