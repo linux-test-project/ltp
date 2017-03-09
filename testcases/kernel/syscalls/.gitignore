@@ -453,6 +453,7 @@
 /ipc/shmget/shmget05
 /keyctl/keyctl01
 /keyctl/keyctl02
+/keyctl/keyctl03
 /kcmp/kcmp01
 /kcmp/kcmp02
 /kcmp/kcmp03
