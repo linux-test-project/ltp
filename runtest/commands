@@ -5,7 +5,7 @@ ldd01 ldd01
 nm01 nm01
 file01 file_test.sh
 tar01  tar_tests.sh
-cron export TCdat=$LTPROOT/testcases/bin; cron_tests.sh
+cron cron_tests.sh
 logrotate export TCdat=$LTPROOT/testcases/bin; logrotate_tests.sh
 mail export TCdat=$LTPROOT/testcases/bin; mail_tests.sh
 cpio01 cpio_tests.sh
