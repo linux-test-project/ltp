@@ -56,23 +56,23 @@ static void verify_alarm(void)
 {
 	int ret;
 
-	alarm(10);
-	sleep(5);
+	alarm(2);
+	sleep(1);
 
 	ret = alarm(0);
 
 	/* Wait for signal SIGALRM */
-	sleep(10);
+	sleep(2);
 
 	if (alarms_received)
 		tst_res(TFAIL, "Received %i alarms", alarms_received);
 	else
 		tst_res(TPASS, "Received 0 alarms");
 
-	if (ret == 5)
-		tst_res(TPASS, "alarm(0) returned 5");
+	if (ret == 1)
+		tst_res(TPASS, "alarm(0) returned 1");
 	else
-		tst_res(TFAIL, "alarm(0) returned %i, expected 5", ret);
+		tst_res(TFAIL, "alarm(0) returned %i, expected 1", ret);
 }
 
 static struct tst_test test = {
