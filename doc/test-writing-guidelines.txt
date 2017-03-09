@@ -1796,7 +1796,7 @@ correct daemon name.
 | start_daemon()   | Starts daemon, name is passed as first parameter.
 | stop_daemon()    | Stops daemon, name is passed as first parameter.
 | restart_daemon() | Restarts daemon, name is passed as first parameter.
-| status_daemon()  | Returns daemon status, TODO: what is return value?
+| status_daemon()  | Detect daemon status (exit code: 0: running, 1: not running).
 |==============================================================================
 
 .Variables with detected names
