@@ -30,6 +30,7 @@ autom4te.cache
 /execltp
 /ltp-devel.spec
 /README.ltp-devel
+/tags
 /Version
 /include/mk/config.mk
 /include/mk/config-openposix.mk
