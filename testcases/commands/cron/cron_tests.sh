@@ -38,18 +38,25 @@ grep_logs()
 	local pattern="$1"
 	local fail_msg="$2"
 	local pass_msg="${3:-}"
+	local n="${4:-10}"
 
 	local lines=10
 	local out=out.$$
 	local err=err.$$
+	local i ret
 
-	if [ "$LOGS" ]; then
-		tail -n $lines $LOGS | grep "$pattern" > $out 2> $err
-	else
-		journalctl -n $lines | grep "$pattern" > $out 2> $err
-	fi
+	for i in $(seq 1 $n); do
+		if [ "$LOGS" ]; then
+			tail -n $lines $LOGS | grep "$pattern" > $out 2> $err
+		else
+			journalctl -n $lines | grep "$pattern" > $out 2> $err
+		fi
+		ret=$?
+		[ $ret -eq 0 ] && break
+		sleep 1
+	done
 
-	if [ $? -ne 0 ]; then
+	if [ $ret -ne 0 ]; then
 		tst_res TFAIL "$fail_msg: `cat $err`"
 	else
 		[ "$pass_msg" ] && tst_res TPASS "$pass_msg"
@@ -127,8 +134,6 @@ EOF
 		tst_res TINFO "cron job installed successfully"
 	fi
 
-	sleep 10
-
 	grep_logs 'crontab.*REPLACE' \
 		"cron activity not recorded" \
 		"cron activity logged"
@@ -179,7 +184,7 @@ EOF
 	if [ ! "$fail" ]; then
 		grep_logs "CMD ($script)" \
 			"failed to install cron job installed and execute it" \
-			"cron job installed and executed"
+			"cron job installed and executed" 1
 	fi
 
 	remove_crontab
@@ -194,14 +199,12 @@ remove_cron_job_test()
 	create_hello_script $script
 	create_crontab $script
 
-	sleep 10
-
 	grep_logs 'crontab.*REPLACE' \
 		"crontab activity not recorded"
 
 	remove_crontab && grep_logs DELETE \
 		"crontab activity not recorded" \
-		"crontab removed the cron job"
+		"crontab removed the cron job" 1
 }
 
 list_cron_jobs_test()
