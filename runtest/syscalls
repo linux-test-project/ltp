@@ -455,7 +455,7 @@ ioctl01_02   test_ioctl
 ioctl03      ioctl03
 ioctl04      ioctl04
 ioctl05      ioctl05
-ioctl05      ioctl06
+ioctl06      ioctl06
 
 inotify_init1_01 inotify_init1_01
 inotify_init1_02 inotify_init1_02
