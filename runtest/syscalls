@@ -822,6 +822,8 @@ pselect01 pselect01
 pselect01_64 pselect01_64
 pselect02 pselect02
 pselect02_64 pselect02_64
+pselect03 pselect03
+pselect03_64 pselect03_64
 
 ptrace01 ptrace01
 ptrace02 ptrace02

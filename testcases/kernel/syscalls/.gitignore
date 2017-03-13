@@ -690,6 +690,8 @@
 /pselect/pselect01_64
 /pselect/pselect02
 /pselect/pselect02_64
+/pselect/pselect03
+/pselect/pselect03_64
 /ptrace/_syscalls.h
 /ptrace/ptrace01
 /ptrace/ptrace02

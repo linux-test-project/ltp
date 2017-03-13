@@ -32,133 +32,71 @@
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
-#include <stdint.h>
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
+#include "tst_timer.h"
 
-static void setup(void);
-static void cleanup(void);
+struct tcase {
+	struct timespec tv;
+	unsigned int iterations;
+};
 
-TCID_DEFINE(pselect01);
-int TST_TOTAL = 9;
+static struct tcase tcases[] = {
+	{{1, 0},         1},
+	{{0, 1000000}, 100},
+	{{0, 2000000}, 100},
+	{{0, 10000000}, 10},
+	{{0, 100000000}, 1},
+};
 
-#define FILENAME "pselect01_test"
-#define LOOP_COUNT 4
-
-static int fd;
-
-static void pselect_verify(void)
+static void verify_pselect(unsigned int n)
 {
 	fd_set readfds;
-	struct timespec tv, tv_start, tv_end;
-	long real_nsec, total_nsec;
-	double real_sec;
-	int total_sec, retval;
-	FD_ZERO(&readfds);
-	FD_SET(fd, &readfds);
-	tv.tv_sec = 0;
-	tv.tv_nsec = 0;
+	struct timespec tv;
+	long long requested_us, slept_us = 0;
+	unsigned int i;
+	int threshold;
+	struct tcase *t = &tcases[n];
 
-	retval = pselect(fd, &readfds, 0, 0, &tv, NULL);
-	if (retval >= 0)
-		tst_resm(TPASS, "pselect() succeeded retval=%i", retval);
-	else
-		tst_resm(TFAIL | TERRNO, "pselect() failed unexpectedly");
+	tst_res(TINFO, "pselect() sleeping for %li secs %li nsec %i iterations",
+			t->tv.tv_sec, t->tv.tv_nsec, t->iterations);
 
-	for (total_sec = 1; total_sec <= LOOP_COUNT; total_sec++) {
+	for (i = 0; i < t->iterations; i++) {
 		FD_ZERO(&readfds);
 		FD_SET(0, &readfds);
 
-		tv.tv_sec = total_sec;
-		tv.tv_nsec = 0;
+		tv = t->tv;
 
-		tst_resm(TINFO,
-			 "Testing basic pselect sanity,Sleeping for %jd secs",
-			 (intmax_t) tv.tv_sec);
-		clock_gettime(CLOCK_MONOTONIC, &tv_start);
+		tst_timer_start(CLOCK_MONOTONIC);
 		pselect(0, &readfds, NULL, NULL, &tv, NULL);
-		clock_gettime(CLOCK_MONOTONIC, &tv_end);
+		tst_timer_stop();
 
-		real_sec = (0.5 + (tv_end.tv_sec - tv_start.tv_sec +
-				   1e-9 * (tv_end.tv_nsec - tv_start.tv_nsec)));
-		if (abs(real_sec - total_sec) < 0.2 * total_sec)
-			tst_resm(TPASS, "Sleep time was correct "
-				 "(%lf/%d < 20 %%)", real_sec, total_sec);
-		else
-			tst_resm(TFAIL, "Sleep time was incorrect (%d/%lf "
-				 ">= 20%%)", total_sec, real_sec);
+		slept_us += tst_timer_elapsed_us();
 	}
 
-#ifdef DEBUG
-	tst_resm(TINFO, "Now checking nsec sleep precision");
-#endif
-	for (total_nsec = 1e8; total_nsec <= LOOP_COUNT * 1e8;
-	     total_nsec += 1e8) {
-		FD_ZERO(&readfds);
-		FD_SET(0, &readfds);
+	requested_us = tst_timespec_to_us(t->tv) * t->iterations;
+	threshold = requested_us / 100 + 200 * t->iterations;
 
-		tv.tv_sec = 0;
-		tv.tv_nsec = total_nsec;
-
-		tst_resm(TINFO,
-			 "Testing basic pselect sanity,Sleeping for %ld nano secs",
-			 tv.tv_nsec);
-		clock_gettime(CLOCK_MONOTONIC, &tv_start);
-		pselect(0, &readfds, NULL, NULL, &tv, NULL);
-		clock_gettime(CLOCK_MONOTONIC, &tv_end);
-
-		real_nsec = (tv_end.tv_sec - tv_start.tv_sec) * 1e9 +
-		    tv_end.tv_nsec - tv_start.tv_nsec;
-
-		/* allow 20% error */
-		if (abs(real_nsec - tv.tv_nsec) < 0.2 * total_nsec) {
-			tst_resm(TPASS, "Sleep time was correct");
-		} else {
-			tst_resm(TWARN,
-				 "This test could fail if the system was under load");
-			tst_resm(TWARN,
-				 "due to the limitation of the way it calculates the");
-			tst_resm(TWARN, "system call execution time.");
-			tst_resm(TFAIL,
-				 "Sleep time was incorrect:%ld nsec vs expected %ld nsec",
-				 real_nsec, total_nsec);
-		}
-	}
-}
-
-int main(int argc, char *argv[])
-{
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-		pselect_verify();
+	if (slept_us < requested_us) {
+		tst_res(TFAIL,
+			"pselect() woken up too early %llius, expected %llius",
+			slept_us, requested_us);
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	if (slept_us - requested_us > threshold) {
+		tst_res(TFAIL,
+			"pselect() slept for too long %llius, expected %llius, threshold %i",
+			slept_us, requested_us, threshold);
+		return;
+	}
+
+	tst_res(TPASS, "pselect() slept for %llius, requested %llius, treshold %i",
+		slept_us, requested_us, threshold);
 }
 
-static void setup(void)
-{
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	tst_timer_check(CLOCK_MONOTONIC);
-	tst_tmpdir();
-
-	fd = SAFE_OPEN(cleanup, FILENAME, O_CREAT | O_RDWR, 0777);
-
-	TEST_PAUSE;
-}
-
-static void cleanup(void)
-{
-	if (fd && close(fd))
-		tst_resm(TWARN | TERRNO, "close() failed");
-
-	tst_rmdir();
-}
+static struct tst_test test = {
+	.tid = "pselect01",
+	.test = verify_pselect,
+	.tcnt = ARRAY_SIZE(tcases),
+};
