@@ -226,7 +226,6 @@ static void do_test(void)
 }
 
 static struct tst_test test = {
-	.tid = "nfs05_make_tree",
 	.options = opts,
 	.test_all = do_test,
 	.setup = setup,

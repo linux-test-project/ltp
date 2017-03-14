@@ -61,6 +61,5 @@ static void verify_pipe(void)
 }
 
 static struct tst_test test = {
-	.tid = "pipe01",
 	.test_all = verify_pipe,
 };

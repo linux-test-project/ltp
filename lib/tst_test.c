@@ -616,6 +616,22 @@ static void copy_resources(void)
 		TST_RESOURCE_COPY(NULL, tst_test->resource_files[i], NULL);
 }
 
+static const char *get_tid(char *argv[])
+{
+	char *p;
+
+	if (!argv[0] || !argv[0][0]) {
+		tst_res(TINFO, "argv[0] is empty!");
+		return "ltp_empty_argv";
+	}
+
+	p = strrchr(argv[0], '/');
+	if (p)
+		return p+1;
+
+	return argv[0];
+}
+
 static struct tst_device tdev;
 struct tst_device *tst_device;
 
@@ -625,7 +641,7 @@ static void do_setup(int argc, char *argv[])
 		tst_brk(TBROK, "No tests to run");
 
 	if (!tst_test->tid)
-		tst_brk(TBROK, "No tid set in test structure");
+		tst_test->tid = get_tid(argv);
 
 	if (!tst_test->test && !tst_test->test_all)
 		tst_brk(TBROK, "No test function speficied");
@@ -873,9 +889,10 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 
 	lib_pid = getpid();
 	tst_test = self;
-	TCID = tst_test->tid;
 
 	do_setup(argc, argv);
+
+	TCID = tst_test->tid;
 
 	SAFE_SIGNAL(SIGALRM, alarm_handler);
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);

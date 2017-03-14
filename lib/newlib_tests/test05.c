@@ -47,7 +47,6 @@ static void do_test(void)
 }
 
 static struct tst_test test = {
-	.tid = "test05",
 	.test_all = do_test,
 	.setup = setup,
 	.cleanup = cleanup,

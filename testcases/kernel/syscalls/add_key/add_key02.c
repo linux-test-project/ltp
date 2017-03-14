@@ -69,7 +69,6 @@ static void verify_add_key(unsigned int i)
 }
 
 static struct tst_test test = {
-	.tid = "add_key02",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_add_key,
 };

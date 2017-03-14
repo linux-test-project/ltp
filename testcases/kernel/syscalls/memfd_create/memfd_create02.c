@@ -87,7 +87,6 @@ static void verify_memfd_create_errno(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid = "memfd_create02",
 	.test = verify_memfd_create_errno,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,

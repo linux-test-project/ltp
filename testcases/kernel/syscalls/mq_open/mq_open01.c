@@ -298,7 +298,6 @@ CLEANUP:
 }
 
 static struct tst_test test = {
-	.tid = "mq_open01",
 	.tcnt = ARRAY_SIZE(tcase),
 	.test = do_test,
 	.needs_root = 1,

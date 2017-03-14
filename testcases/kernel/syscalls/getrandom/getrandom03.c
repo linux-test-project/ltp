@@ -63,7 +63,6 @@ static void verify_getrandom(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid = "getrandom03",
 	.tcnt = ARRAY_SIZE(sizes),
 	.test = verify_getrandom,
 };

@@ -752,7 +752,6 @@ static struct tst_option options[] = {
 };
 
 static struct tst_test test = {
-	.tid = "netstress",
 	.test_all = do_test,
 	.setup = setup,
 	.cleanup = cleanup,

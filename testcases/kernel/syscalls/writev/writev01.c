@@ -145,7 +145,6 @@ static void test_writev(unsigned int i)
 }
 
 static struct tst_test test = {
-	.tid = "writev01",
 	.needs_tmpdir = 1,
 	.setup = setup,
 	.test = test_writev,

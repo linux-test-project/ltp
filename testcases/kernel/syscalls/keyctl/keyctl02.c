@@ -114,7 +114,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "keyctl02",
 	.needs_root = 1,
 	.setup = setup,
 	.cleanup = cleanup,

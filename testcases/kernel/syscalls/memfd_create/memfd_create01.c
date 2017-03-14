@@ -263,7 +263,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "memfd_create01",
 	.test = verify_memfd_create,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,

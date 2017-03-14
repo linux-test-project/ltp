@@ -98,7 +98,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "getcwd03",
 	.needs_tmpdir = 1,
 	.setup = setup,
 	.test_all = verify_getcwd

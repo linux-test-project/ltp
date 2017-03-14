@@ -61,7 +61,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "request_key01",
 	.setup = setup,
 	.test_all = verify_request_key,
 };

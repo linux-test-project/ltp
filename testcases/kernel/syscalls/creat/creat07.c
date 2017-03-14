@@ -68,7 +68,6 @@ static const char *const resource_files[] = {
 };
 
 static struct tst_test test = {
-	.tid = "creat07",
 	.test_all = verify_creat,
 	.needs_checkpoints = 1,
 	.forks_child = 1,

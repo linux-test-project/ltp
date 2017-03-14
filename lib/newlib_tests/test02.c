@@ -43,7 +43,6 @@ static void do_test(unsigned int i)
 }
 
 static struct tst_test test = {
-	.tid = "test02",
 	.tcnt = 2,
 	.test = do_test,
 };

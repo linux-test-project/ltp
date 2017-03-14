@@ -179,7 +179,6 @@ static void test_advice_willneed(void)
 }
 
 static struct tst_test test = {
-	.tid = "madvise06",
 	.test_all = test_advice_willneed,
 	.setup = setup,
 	.cleanup = cleanup,

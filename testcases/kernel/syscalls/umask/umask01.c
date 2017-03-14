@@ -71,7 +71,6 @@ static void verify_umask(void)
 }
 
 static struct tst_test test = {
-	.tid = "umask01",
 	.test_all = verify_umask,
 	.needs_tmpdir = 1,
 };

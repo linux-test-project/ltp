@@ -180,7 +180,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "madvise02",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = advice_test,
 	.needs_tmpdir = 1,

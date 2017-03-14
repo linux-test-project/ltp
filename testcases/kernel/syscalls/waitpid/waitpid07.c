@@ -60,7 +60,6 @@ static void do_child_1(void)
 }
 
 static struct tst_test test = {
-	.tid = "waitpid07",
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.setup = waitpid_setup,

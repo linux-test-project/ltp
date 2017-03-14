@@ -312,7 +312,6 @@ static void do_test(unsigned int i)
 }
 
 static struct tst_test test = {
-	.tid = "mq_timedreceive01",
 	.tcnt = ARRAY_SIZE(tcase),
 	.test = do_test,
 	.setup = setup,

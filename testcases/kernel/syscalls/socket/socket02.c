@@ -79,7 +79,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "socket02",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_socket,
 	.min_kver = "2.6.27",

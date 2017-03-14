@@ -61,7 +61,6 @@ void verify_socketcall(unsigned int i)
 }
 
 static struct tst_test test = {
-	.tid = "socketcall01",
 	.test = verify_socketcall,
 	.tcnt = ARRAY_SIZE(TC),
 	.needs_root = 1,

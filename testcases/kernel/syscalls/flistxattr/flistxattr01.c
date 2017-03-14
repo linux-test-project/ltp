@@ -90,7 +90,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "flistxattr01",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.test_all = verify_flistxattr,

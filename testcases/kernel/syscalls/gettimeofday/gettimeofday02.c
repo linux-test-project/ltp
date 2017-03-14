@@ -103,7 +103,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "gettimeofday02",
 	.setup = setup,
 	.options = options,
 	.test_all = verify_gettimeofday,

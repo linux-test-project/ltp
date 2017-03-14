@@ -148,7 +148,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "pselect01",
 	.test = verify_pselect,
 	.setup = setup,
 	.tcnt = ARRAY_SIZE(tcases),

@@ -82,7 +82,6 @@ void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "creat04",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_creat,
 	.needs_tmpdir = 1,

@@ -78,7 +78,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "ioctl05",
 	.needs_device = 1,
 	.needs_root = 1,
 	.cleanup = cleanup,

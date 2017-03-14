@@ -88,7 +88,6 @@ static void verify_syscall(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid = "syscall01",
 	.test = verify_syscall,
 	.tcnt = ARRAY_SIZE(tcases),
 };

@@ -212,7 +212,6 @@ static void copy_file_range_verify(void)
 }
 
 static struct tst_test test = {
-	.tid = "copy_file_range01",
 	.setup = setup,
 	.needs_tmpdir = 1,
 	.test_all = copy_file_range_verify,

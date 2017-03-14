@@ -57,7 +57,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "pselect03",
 	.needs_tmpdir = 1,
 	.setup = setup,
 	.cleanup = cleanup,

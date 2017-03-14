@@ -61,7 +61,6 @@ static void do_test(void)
 }
 
 static struct tst_test test = {
-	.tid = "pause01",
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.test_all = do_test,

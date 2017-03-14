@@ -107,7 +107,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "request_key02",
 	.setup = setup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_request_key,

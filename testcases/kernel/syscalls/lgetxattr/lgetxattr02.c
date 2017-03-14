@@ -95,7 +95,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "lgetxattr02",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.test = verify_lgetxattr,

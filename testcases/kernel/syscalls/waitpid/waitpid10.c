@@ -112,7 +112,6 @@ static void do_sleep(void)
 }
 
 static struct tst_test test = {
-	.tid = "waitpid10",
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.setup = waitpid_setup,

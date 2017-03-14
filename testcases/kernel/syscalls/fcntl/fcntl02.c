@@ -85,7 +85,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "fcntl02",
 	.needs_tmpdir = 1,
 	.test = verify_fcntl,
 	.tcnt = ARRAY_SIZE(min_fds),

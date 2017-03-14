@@ -85,7 +85,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "creat01",
 	.tcnt = 2,
 	.test = verify_creat,
 	.needs_tmpdir = 1,

@@ -62,7 +62,6 @@ static void verify_epoll_create1(void)
 }
 
 static struct tst_test test = {
-	.tid = "epoll_create1_01",
 	.min_kver = "2.6.27",
 	.test_all = verify_epoll_create1,
 };

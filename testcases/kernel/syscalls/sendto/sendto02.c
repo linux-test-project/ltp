@@ -84,7 +84,6 @@ static void verify_sendto(void)
 }
 
 static struct tst_test test = {
-	.tid = "sendto02",
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_sendto,

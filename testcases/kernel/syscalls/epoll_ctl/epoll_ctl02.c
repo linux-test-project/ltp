@@ -117,7 +117,6 @@ static void verify_epoll_ctl(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid = "epoll_ctl02",
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,

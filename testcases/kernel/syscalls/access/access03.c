@@ -94,7 +94,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "access03",
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
 	.forks_child = 1,

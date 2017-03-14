@@ -113,7 +113,6 @@ void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "preadv01",
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,

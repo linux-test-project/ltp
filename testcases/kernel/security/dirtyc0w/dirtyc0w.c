@@ -103,7 +103,6 @@ void dirtyc0w_test(void)
 }
 
 static struct tst_test test = {
-	.tid = "dirtyc0w",
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.needs_root = 1,

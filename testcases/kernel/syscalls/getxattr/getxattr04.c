@@ -118,7 +118,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "getxattr04",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.mount_device = 1,

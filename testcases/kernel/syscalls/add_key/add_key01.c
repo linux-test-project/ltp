@@ -49,6 +49,5 @@ static void verify_add_key(void)
 }
 
 static struct tst_test test = {
-	.tid = "add_key01",
 	.test_all = verify_add_key,
 };

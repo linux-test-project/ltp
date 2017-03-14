@@ -229,7 +229,6 @@ static void test_lseek(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid          = "lseek11",
 	.tcnt         = ARRAY_SIZE(tparams),
 	.test         = test_lseek,
 	.setup        = setup,

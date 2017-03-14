@@ -243,7 +243,6 @@ static struct tst_option options[] = {
 };
 
 static struct tst_test test = {
-	.tid = "mq_notify01",
 	.tcnt = ARRAY_SIZE(tcase),
 	.test = do_test,
 	.options = options,

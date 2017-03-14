@@ -207,7 +207,6 @@ static void verify_quota(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid = "quotactl01",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.test = verify_quota,

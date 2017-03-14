@@ -120,7 +120,6 @@ static void verify_madvise(unsigned int i)
 }
 
 static struct tst_test test = {
-	.tid = "madvise01",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_madvise,
 	.needs_tmpdir = 1,

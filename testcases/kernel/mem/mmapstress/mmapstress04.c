@@ -120,7 +120,6 @@ done:
 }
 
 static struct tst_test test = {
-	.tid = "mmapstress04",
 	.needs_tmpdir = 1,
 	.test_all = mmapstress04,
 	.setup = setup,

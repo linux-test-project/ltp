@@ -224,9 +224,9 @@ See 'testcases/commands/file/' for example.
 ^^^^^^^^^^^^^^^^^^^^
 
 If you test needs to execute a binary, place it in the same directory as the
-testcase and name the file starting with testname_ ('.tid' see below).
-Once the test is executed by the framework, the path to the directory with all
-LTP binaries is added to the '$PATH' and you can execute it just by its name.
+testcase and name the file starting with '${test_binary_name}_'.  Once the
+test is executed by the framework, the path to the directory with all LTP
+binaries is added to the '$PATH' and you can execute it just by its name.
 
 TIP: If you need to execute such test from the LTP tree, you can add path to
      current directory to '$PATH' manually with: 'PATH="$PATH:$PWD" ./foo01'.
@@ -288,7 +288,6 @@ next:
 }
 
 static struct tst_test test = {
-	.tid = "getenv01",
 	.test_all = test,
 	.setup = setup,
 };
@@ -296,11 +295,6 @@ static struct tst_test test = {
 
 Each test includes the 'tst_test.h' header and must define the 'struct
 tst_test test' structure.
-
-The '.tid' defines test name (usually syscall/libcall name + number). The name
-is used in the test results as well as a base for temporary directory name if
-temporary directory is needed. In most of the cases it's the same as test
-filename without the extension.
 
 The overall test initialization is done in the 'setup()' function.
 
@@ -1235,11 +1229,11 @@ there is need to set '.needs_tmpdir' as well.
 
 The test library looks for datafiles first, these are either stored in a
 directory called +datafiles+ in the +$PWD+ at the start of the test or in
-+$LTPROOT/testcases/data/$tid+. If the file is not found the library looks
-into +$LTPROOT/testcases/bin/+ and to +$PWD+ at the start of the test. This
-ensures that the testcases can copy the file(s) effortlessly both when test is
-started from the directory it was compiled in as well as when LTP was
-installed.
++$LTPROOT/testcases/data/${test_binary_name}+. If the file is not found the
+library looks into +$LTPROOT/testcases/bin/+ and to +$PWD+ at the start of the
+test. This ensures that the testcases can copy the file(s) effortlessly both
+when test is started from the directory it was compiled in as well as when LTP
+was installed.
 
 The file(s) are copied to the newly created test temporary directory which is
 set as the test working directory when the 'test()' functions is executed.

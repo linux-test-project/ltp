@@ -98,7 +98,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "socket01",
 	.tcnt = ARRAY_SIZE(tdat),
 	.setup = setup,
 	.test = verify_socket

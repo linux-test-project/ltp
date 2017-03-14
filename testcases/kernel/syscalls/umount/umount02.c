@@ -93,7 +93,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "umount02",
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
 	.needs_tmpdir = 1,

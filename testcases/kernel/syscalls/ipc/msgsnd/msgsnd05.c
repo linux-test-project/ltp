@@ -114,7 +114,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "msgsnd05",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,

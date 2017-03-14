@@ -127,7 +127,6 @@ static void run(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid = "madvise07",
 	.test = run,
 	.tcnt = ARRAY_SIZE(maptypes),
 	.min_kver = "2.6.31",

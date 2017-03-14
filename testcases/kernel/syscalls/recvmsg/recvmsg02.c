@@ -106,7 +106,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "recvmsg02",
 	.min_kver = "2.6.27",
 	.test_all = verify_recvmsg,
 	.cleanup = cleanup,

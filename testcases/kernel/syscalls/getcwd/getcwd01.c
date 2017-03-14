@@ -80,7 +80,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "getcwd01",
 	.setup = setup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_getcwd

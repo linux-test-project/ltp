@@ -207,7 +207,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "times03",
 	.setup = setup,
 	.forks_child = 1,
 	.test_all = do_test,

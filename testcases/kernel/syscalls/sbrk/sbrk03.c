@@ -76,6 +76,5 @@ static void sbrk_test(void)
 }
 
 static struct tst_test test = {
-	.tid = "sbrk03",
 	.test_all = sbrk_test,
 };

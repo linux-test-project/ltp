@@ -162,7 +162,6 @@ static void test6_cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "creat06",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_creat,
 	.needs_root = 1,

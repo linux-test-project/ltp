@@ -331,7 +331,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "madvise09",
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = run,

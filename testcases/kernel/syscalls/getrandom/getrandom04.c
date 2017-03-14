@@ -55,6 +55,5 @@ static void verify_getrandom(void)
 }
 
 static struct tst_test test = {
-	.tid = "getrandom04",
 	.test_all = verify_getrandom,
 };

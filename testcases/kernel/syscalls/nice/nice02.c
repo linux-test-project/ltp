@@ -64,6 +64,5 @@ static void verify_nice(void)
 }
 
 static struct tst_test test = {
-	.tid = "nice02",
 	.test_all = verify_nice,
 };

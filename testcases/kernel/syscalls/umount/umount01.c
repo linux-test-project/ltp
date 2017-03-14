@@ -65,7 +65,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "umount01",
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.format_device = 1,

@@ -155,7 +155,6 @@ static void verify_recvmsg(void)
 }
 
 static struct tst_test test = {
-	.tid = "recvmsg03",
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.setup = setup,

@@ -107,7 +107,6 @@ static void do_child(void)
 }
 
 static struct tst_test test = {
-	.tid = "getcwd04",
 	.setup = setup,
 	.test_all = verify_getcwd,
 	.needs_tmpdir = 1,

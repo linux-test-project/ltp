@@ -80,7 +80,6 @@ static void do_test(unsigned int i)
 }
 
 static struct tst_test test = {
-	.tid = "clock_getres01",
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(tcase),
 };

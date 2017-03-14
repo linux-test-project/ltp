@@ -170,7 +170,6 @@ static void waitpid09_test(unsigned int id)
 }
 
 static struct tst_test test = {
-	.tid = "waitpid09",
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.test = waitpid09_test,

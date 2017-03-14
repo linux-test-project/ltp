@@ -35,6 +35,5 @@ static void do_test(void)
 }
 
 static struct tst_test test = {
-	.tid = "tst_safe_fileops",
 	.test_all = do_test,
 };

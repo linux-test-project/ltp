@@ -55,7 +55,6 @@ static void verify_madvise(void)
 }
 
 static struct tst_test test = {
-	.tid = "madvise05",
 	.min_kver = "3.9.0",
 	.test_all = verify_madvise,
 };

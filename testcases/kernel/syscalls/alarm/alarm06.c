@@ -76,7 +76,6 @@ static void verify_alarm(void)
 }
 
 static struct tst_test test = {
-	.tid = "alarm06",
 	.setup = setup,
 	.test_all = verify_alarm,
 };

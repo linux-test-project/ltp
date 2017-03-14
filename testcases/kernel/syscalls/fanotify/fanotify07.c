@@ -231,7 +231,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "fanotify07",
 	.test_all = test_fanotify,
 	.setup = setup,
 	.cleanup = cleanup,

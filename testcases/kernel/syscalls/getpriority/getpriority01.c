@@ -63,7 +63,6 @@ static void verify_getpriority(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid = "getpriority01",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_getpriority,
 };

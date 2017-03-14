@@ -225,7 +225,6 @@ static void run(unsigned int test_nr)
 }
 
 static struct tst_test test = {
-	.tid = "madvise08",
 	.test = run,
 	.tcnt = 2,
 	.setup = setup,

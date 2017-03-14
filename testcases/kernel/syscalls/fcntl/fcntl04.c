@@ -80,7 +80,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "fcntl04",
 	.needs_tmpdir = 1,
 	.test_all = verify_fcntl,
 	.setup = setup,

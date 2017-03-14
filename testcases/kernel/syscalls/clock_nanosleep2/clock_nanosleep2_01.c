@@ -57,6 +57,5 @@ static void verify_clock_nanosleep2(void)
 }
 
 static struct tst_test test = {
-	.tid = "clock_nanosleep2_01",
 	.test_all = verify_clock_nanosleep2,
 };

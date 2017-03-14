@@ -95,7 +95,6 @@ static void verify_kcmp(unsigned int n)
 }
 
 static struct tst_test test = {
-	.tid = "kcmp03",
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,
