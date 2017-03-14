@@ -41,6 +41,9 @@ autom4te.cache
 /pan/ltp-pan
 /pan/ltp-scanner
 
+cscope.*
+ncscope.*
+
 .dep_modules
 .gitattributes
 .pc/
