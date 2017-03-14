@@ -67,10 +67,14 @@ static void setup(void)
 	SAFE_FILE_PRINTF(drop_caches_fname, "3");
 
 	sysinfo(&sys_buf_start);
-	if (sys_buf_start.freeram < 2 * CHUNK_SZ)
-		tst_brk(TCONF, "System RAM is too small, skip test");
-	if (sys_buf_start.freeswap < 2 * CHUNK_SZ)
-		tst_brk(TCONF, "System swap is too small");
+	if (sys_buf_start.freeram < 2 * CHUNK_SZ) {
+		tst_brk(TCONF, "System RAM is too small (%li bytes needed)",
+			2 * CHUNK_SZ);
+	}
+	if (sys_buf_start.freeswap < 2 * CHUNK_SZ) {
+		tst_brk(TCONF, "System swap is too small (%li bytes needed)",
+			2 * CHUNK_SZ);
+	}
 
 	SAFE_MKDIR(MNT_NAME, 0700);
 	if (mount("memory", MNT_NAME, "cgroup", 0, "memory") == -1) {
@@ -93,9 +97,11 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_FILE_PRINTF(MNT_NAME"/tasks", "%d\n", getpid());
-	SAFE_RMDIR(MNT_NAME"/"GROUP_NAME);
-	SAFE_UMOUNT(MNT_NAME);
+	if (!access(MNT_NAME"/tasks", F_OK)) {
+		SAFE_FILE_PRINTF(MNT_NAME"/tasks", "%d\n", getpid());
+		SAFE_RMDIR(MNT_NAME"/"GROUP_NAME);
+		SAFE_UMOUNT(MNT_NAME);
+	}
 }
 
 static void dirty_pages(char *ptr, long size)
