@@ -12,7 +12,7 @@ nfs41_ipv6_01 nfs01 -6 -v 4.1 -t tcp
 nfs42_ipv6_01 nfs01 -6 -v 4.2 -t tcp
 
 nfs3_02 nfs02 -v 3 -t udp
-nfs4_02 nfs02 -v 3 -t tcp
+nfs4_02 nfs02 -v 4 -t tcp
 nfs41_02 nfs02 -v 4.1 -t tcp
 nfs42_02 nfs02 -v 4.2 -t tcp
 nfs3_ipv6_02 nfs02 -6 -v 3 -t udp
@@ -21,7 +21,7 @@ nfs41_ipv6_02 nfs02 -6 -v 4.1 -t tcp
 nfs42_ipv6_02 nfs02 -6 -v 4.2 -t tcp
 
 nfs3_03 nfs03 -v 3 -t udp
-nfs4_03 nfs03 -v 3 -t tcp
+nfs4_03 nfs03 -v 4 -t tcp
 nfs41_03 nfs03 -v 4.1 -t tcp
 nfs42_03 nfs03 -v 4.2 -t tcp
 nfs3_ipv6_03 nfs03 -6 -v 3 -t udp
@@ -30,7 +30,7 @@ nfs41_ipv6_03 nfs03 -6 -v 4.1 -t tcp
 nfs42_ipv6_03 nfs03 -6 -v 4.2 -t tcp
 
 nfs3_04 nfs04 -v 3 -t udp
-nfs4_04 nfs04 -v 3 -t tcp
+nfs4_04 nfs04 -v 4 -t tcp
 nfs41_04 nfs04 -v 4.1 -t tcp
 nfs42_04 nfs04 -v 4.2 -t tcp
 nfs3_ipv6_04 nfs04 -6 -v 3 -t udp
