@@ -123,10 +123,7 @@ int runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 	return 0;
 }
 
-/*
- * prg_usage: display the program usage.
-*/
-void prg_usage()
+static void prg_usage(void)
 {
 	fprintf(stderr,
 		"Usage: diotest2 [-b bufsize] [-o offset] [-i iterations] [-f filename]\n");

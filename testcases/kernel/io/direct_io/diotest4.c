@@ -165,10 +165,7 @@ int runtest_s(int fd, char *buf, int offset, int count, int testnum, char *msg)
 	return (l_fail);
 }
 
-/*
- * prg_usage - Display the program usage
-*/
-void prg_usage()
+static void prg_usage(void)
 {
 	fprintf(stderr, "Usage: diotest4 [-b filesize_in_blocks]\n");
 	exit(1);
