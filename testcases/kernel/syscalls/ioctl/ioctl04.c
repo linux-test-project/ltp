@@ -96,6 +96,7 @@ static struct tst_test test = {
 	.tid = "ioctl04",
 	.needs_tmpdir = 1,
 	.format_device = 1,
+	.needs_root = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_ioctl,
