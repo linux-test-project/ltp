@@ -78,7 +78,7 @@ static void do_test(void)
 		key = add_key("user", "ltptestkey", "foo", 3,
 			KEY_SPEC_PROCESS_KEYRING);
 		if (key == -1)
-			tst_brk(TBROK, "Failed to add key");
+			tst_brk(TBROK | TERRNO, "Failed to add key");
 
 		SAFE_PTHREAD_CREATE(&pth[0], NULL, do_read,
 			(void *)(unsigned long)key);
@@ -100,6 +100,7 @@ static void do_test(void)
 
 static struct tst_test test = {
 	.tid = "keyctl02",
+	.needs_root = 1,
 	.test_all = do_test,
 };
 
