@@ -45,6 +45,7 @@ static void setup(void);
 static void cleanup(void);
 static void usage(void);
 static int debug = 0;
+static int fd;
 
 char *TCID = "dio_sparse";
 int TST_TOTAL = 1;
@@ -54,25 +55,14 @@ int TST_TOTAL = 1;
 /*
  * Write zeroes using O_DIRECT into sparse file.
  */
-int dio_sparse(char *filename, int align, int writesize, int filesize, int offset)
+int dio_sparse(int fd, int align, int writesize, int filesize, int offset)
 {
-	int fd;
 	void *bufptr;
 	int i, w;
-
-	fd = open(filename, O_DIRECT | O_WRONLY | O_CREAT | O_EXCL, 0600);
-
-	if (fd < 0) {
-		tst_resm(TBROK | TERRNO, "open()");
-		return 1;
-	}
-
-	SAFE_FTRUNCATE(cleanup, fd, filesize);
 
 	TEST(posix_memalign(&bufptr, align, writesize));
 	if (TEST_RETURN) {
 		tst_resm(TBROK | TRERRNO, "cannot allocate aligned memory");
-		close(fd);
 		return 1;
 	}
 
@@ -81,15 +71,11 @@ int dio_sparse(char *filename, int align, int writesize, int filesize, int offse
 	for (i = offset; i < filesize;) {
 		if ((w = write(fd, bufptr, writesize)) != writesize) {
 			tst_resm(TBROK | TERRNO, "write() returned %d", w);
-			close(fd);
 			return 1;
 		}
 
 		i += w;
 	}
-
-	close(fd);
-	unlink(filename);
 
 	return 0;
 }
@@ -156,11 +142,16 @@ int main(int argc, char **argv)
 	tst_resm(TINFO, "Dirtying free blocks");
 	dirty_freeblocks(filesize);
 
+	fd = SAFE_OPEN(cleanup, filename,
+		O_DIRECT | O_WRONLY | O_CREAT | O_EXCL, 0600);
+	SAFE_FTRUNCATE(cleanup, fd, filesize);
+
 	tst_resm(TINFO, "Starting I/O tests");
 	signal(SIGTERM, SIG_DFL);
 	for (i = 0; i < num_children; i++) {
 		switch (pid[i] = fork()) {
 		case 0:
+			SAFE_CLOSE(NULL, fd);
 			read_sparse(filename, filesize);
 			break;
 		case -1:
@@ -174,7 +165,7 @@ int main(int argc, char **argv)
 	}
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	ret = dio_sparse(filename, alignment, writesize, filesize, offset);
+	ret = dio_sparse(fd, alignment, writesize, filesize, offset);
 
 	tst_resm(TINFO, "Killing childrens(s)");
 
@@ -213,5 +204,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	if (fd > 0 && close(fd))
+		tst_resm(TWARN | TERRNO, "Failed to close file");
+
 	tst_rmdir();
 }

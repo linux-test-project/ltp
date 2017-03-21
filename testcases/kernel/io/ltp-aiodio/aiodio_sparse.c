@@ -43,6 +43,7 @@
 #define NUM_CHILDREN 1000
 
 int debug;
+int fd;
 
 static void setup(void);
 static void cleanup(void);
@@ -56,10 +57,8 @@ int TST_TOTAL = 1;
 /*
  * do async DIO writes to a sparse file
  */
-int aiodio_sparse(char *filename, int align, int writesize, int filesize,
-		  int num_aio)
+int aiodio_sparse(int fd, int align, int writesize, int filesize, int num_aio)
 {
-	int fd;
 	int i, w;
 	struct iocb **iocbs;
 	off_t offset;
@@ -81,15 +80,6 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize,
 		}
 	}
 
-	fd = open(filename, O_DIRECT | O_WRONLY | O_CREAT | O_EXCL, 0600);
-
-	if (fd < 0) {
-		tst_resm(TBROK | TERRNO, "open()");
-		return 1;
-	}
-
-	SAFE_FTRUNCATE(cleanup, fd, filesize);
-
 	/*
 	 * allocate the iocbs array and iocbs with buffers
 	 */
@@ -100,8 +90,6 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize,
 		TEST(posix_memalign(&bufptr, align, writesize));
 		if (TEST_RETURN) {
 			tst_resm(TBROK | TRERRNO, "cannot allocate aligned memory");
-			close(fd);
-			unlink(filename);
 			return 1;
 		}
 		memset(bufptr, 0, writesize);
@@ -114,8 +102,6 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize,
 	 */
 	if ((w = io_submit(myctx, num_aio, iocbs)) < 0) {
 		tst_resm(TBROK, "io_submit() returned %i", w);
-		close(fd);
-		unlink(filename);
 		return 1;
 	}
 
@@ -205,9 +191,6 @@ int aiodio_sparse(char *filename, int align, int writesize, int filesize,
 		}
 	}
 
-	close(fd);
-	unlink(filename);
-
 	return 0;
 }
 
@@ -275,11 +258,16 @@ int main(int argc, char **argv)
 	tst_resm(TINFO, "Dirtying free blocks");
 	dirty_freeblocks(filesize);
 
+	fd = SAFE_OPEN(cleanup, filename,
+		O_DIRECT | O_WRONLY | O_CREAT | O_EXCL, 0600);
+	SAFE_FTRUNCATE(cleanup, fd, filesize);
+
 	tst_resm(TINFO, "Starting I/O tests");
 	signal(SIGTERM, SIG_DFL);
 	for (i = 0; i < num_children; i++) {
 		switch (pid[i] = fork()) {
 		case 0:
+			SAFE_CLOSE(NULL, fd);
 			read_sparse(filename, filesize);
 			break;
 		case -1:
@@ -293,7 +281,7 @@ int main(int argc, char **argv)
 	}
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	ret = aiodio_sparse(filename, alignment, writesize, filesize, num_aio);
+	ret = aiodio_sparse(fd, alignment, writesize, filesize, num_aio);
 
 	tst_resm(TINFO, "Killing childrens(s)");
 
@@ -332,6 +320,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	if (fd > 0 && close(fd))
+		tst_resm(TWARN | TERRNO, "Failed to close file");
+
 	tst_rmdir();
-	tst_exit();
 }

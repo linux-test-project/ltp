@@ -110,22 +110,7 @@ static void read_sparse(char *filename, int filesize)
 	int  i, j, r;
 	char buf[4096];
 
-	/*
-	 * Wait for the file to appear.
-	 */
-	for (i = 0; i < 10000; i++) {
-		fd = open(filename, O_RDONLY);
-
-		if (fd != -1)
-			break;
-
-		if (debug)
-			fprintf(stderr, "Child %i waits for '%s' to appear\n",
-			        getpid(), filename);
-
-		usleep(100000);
-	}
-
+	fd = open(filename, O_RDONLY);
 	if (fd == -1) {
 		if (debug)
 			fprintf(stderr, "Child %i failed to open '%s'\n",
