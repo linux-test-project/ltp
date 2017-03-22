@@ -4,6 +4,8 @@
 # Ngie Cooper, June 2010
 #
 
+-include ../../../include/mk/config-openposix.mk
+
 top_srcdir?=	..
 
 srcdir=		$(top_srcdir)/tools
