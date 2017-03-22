@@ -19,6 +19,8 @@
 #ifndef LTP_AIODIO_COMMON_SPARSE
 #define LTP_AIODIO_COMMON_SPARSE
 
+#include "common_checkzero.h"
+
 /*
  * This code tries to create dirty free blocks on
  * the HDD so there is a chance that blocks to be allocated
@@ -77,28 +79,6 @@ long long scale_by_kmg(long long value, char scale)
 	return value;
 }
 
-char *check_zero(char *buf, int size)
-{
-	char *p;
-
-	p = buf;
-
-	while (size > 0) {
-		if (*buf != 0) {
-			fprintf(stderr, "non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
-				buf - p, (unsigned int)buf[0],
-				size > 1 ? (unsigned int)buf[1] : 0,
-				size > 2 ? (unsigned int)buf[2] : 0,
-				size > 3 ? (unsigned int)buf[3] : 0);
-			return buf;
-		}
-		buf++;
-		size--;
-	}
-
-	return NULL;
-}
-
 /*
  * Make sure we read only zeroes,
  * either there is a hole in the file,
@@ -134,8 +114,8 @@ static void read_sparse(char *filename, int filesize)
 			r = read(fd, buf, sizeof(buf));
 			if (r > 0) {
 				if ((badbuf = check_zero(buf, r))) {
-					fprintf(stderr, "non-zero read at offset %d\n",
-						offset + badbuf - buf);
+					fprintf(stderr, "non-zero read at offset %u\n",
+						(unsigned int)(offset + badbuf - buf));
 					exit(10);
 				}
 			}
