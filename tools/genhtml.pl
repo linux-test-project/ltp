@@ -155,6 +155,33 @@ foreach my $file (@ARGV) {
                                   @termination_type_value = split(/=/, $variable_value_pair[1]);
                                   @termination_id_value   = split(/=/, $variable_value_pair[2]);
                                   @corefile_value         = split(/=/, $variable_value_pair[3]);
+
+                                  # determine a category exclusively not to get duplicates - FAIL > BROK > WARN > CONF > PASS
+                             	  if ($failed_test_counter_flag == 1) {
+                             	      # ignore any BROK, WARN, or CONF event which has lower impact than FAIL
+                                      $brok_test_counter -= $brok_test_counter_flag;
+                                      $warn_test_counter -= $warn_test_counter_flag;
+                                      $conf_test_counter -= $conf_test_counter_flag;
+                             	  } elsif ($brok_test_counter_flag == 1) {
+                             	      # ignore any WARN or CONF event which has lower impact than BROK
+                                      $warn_test_counter -= $warn_test_counter_flag;
+                                      $conf_test_counter -= $conf_test_counter_flag;
+                                  } elsif ($warn_test_counter_flag == 1) {
+                                      # ignore any CONF event which has lower impact than WARN
+                                      $conf_test_counter -= $conf_test_counter_flag;
+                                  } elsif ($conf_test_counter_flag == 0) {
+                                      # none of event was selected yet
+                                      if ($termination_id_value[1] == 0) {
+                                          # exit with 0, so consider as pass
+                                          $detected_pass = 1;
+                               	      } else {
+                                          # exit with nonzero, so consider as fail
+                                       	  $failed_test_counter++;
+                                          $failed_test_counter_flag = 1;
+                                          $detected_fail = 1;
+                                      }
+				  }
+
                                   $background_colour = get_background_colour_column();
                                   $row_line = $row_line . "<td><p><strong>$duration_value[1]</strong></p></td>\n"     .
                                               "<td><p><strong>$termination_type_value[1]<strong></p></td>\n" .
@@ -179,33 +206,35 @@ foreach my $file (@ARGV) {
                         }
                         if ( $flag2 == 1 ) {
 			    $row_line = $row_line . "$line \n";
-			    if ($line =~ /\ TFAIL\ / ) {
+
+			    # some of tests do not return TFAIL/TWARN/TCONF/TPASS, but FAIL/BROK/WARN/CONF
+			    # so change the conditional values to cover all the variations
+			    if ($line =~ /FAIL/ ) {
 				$detected_fail = 1;
 				if ( $failed_test_counter_flag == 0 ) {
 				    $failed_test_counter++;
 				    $failed_test_counter_flag=1;
 				}
-			    } elsif ($line =~ /\ TBROK\ / ) {
+			    } elsif ($line =~ /BROK/ ) {
 				$detected_brok = 1;
 				if ( $brok_test_counter_flag == 0 ) {
 				    $brok_test_counter++;
 				    $brok_test_counter_flag=1;
 				}
-			    } elsif ($line =~ /\ TWARN\ / ) {
+			    } elsif ($line =~ /WARN/ ) {
 				$detected_warn = 1;
 				if ( $warn_test_counter_flag == 0 ) {
 				    $warn_test_counter++;
 				    $warn_test_counter_flag=1;
 				}
-			    } elsif ($line =~ /\ TCONF\ / ) {
+			    } elsif ($line =~ /CONF/ ) {
 				$detected_conf = 1;
 				if ( $conf_test_counter_flag == 0 ) {
 				    $conf_test_counter++;
 				    $conf_test_counter_flag=1;
 				}
-                             } else {
-                                 $detected_pass = 1;
-                             }
+                            } 
+			    # remove else statement for $detected_pass=1 since PASS or FAILL will be determined by return value later
                         }
                         if ( $line =~ /$output_tag/ ) {
                              $flag2 = 1;
