@@ -1121,3 +1121,4 @@
 /perf_event_open/perf_event_open01
 /perf_event_open/perf_event_open02
 /memfd_create/memfd_create01
+/memfd_create/memfd_create02

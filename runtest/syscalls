@@ -1454,3 +1454,4 @@ futex_wait_bitset01 futex_wait_bitset01
 futex_wait_bitset02 futex_wait_bitset02
 
 memfd_create01 memfd_create01
+memfd_create02 memfd_create02
