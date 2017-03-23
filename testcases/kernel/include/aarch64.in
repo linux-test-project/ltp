@@ -255,3 +255,4 @@ setns 268
 sendmmsg 269
 kcmp 272
 getrandom 278
+memfd_create 279

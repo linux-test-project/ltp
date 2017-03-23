@@ -15,3 +15,4 @@ faccessat (__NR_openat + 12)
 splice 291
 tee 293
 vmsplice 294
+memfd_create 340

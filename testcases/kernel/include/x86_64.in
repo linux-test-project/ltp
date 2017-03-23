@@ -305,3 +305,4 @@ sched_setattr 314
 sched_getattr 315
 renameat2 316
 getrandom 318
+memfd_create 319

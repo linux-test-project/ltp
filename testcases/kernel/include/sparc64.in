@@ -310,3 +310,4 @@ prlimit64 331
 kcmp 341
 renameat2 345
 getrandom 347
+memfd_create 348
