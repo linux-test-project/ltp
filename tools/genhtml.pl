@@ -35,6 +35,7 @@
 
 my $process_line  = 0;
 my $row_line      = "";
+my $test_result	  = "";
 my $flag          = 0;
 my $flag2         = 0;
 my $flag3         = 0;
@@ -72,16 +73,22 @@ sub syntax() {
 
 sub get_background_colour_column() {
     if ( $detected_fail == 1 ) {
+      $test_result = "FAIL";
       return "#ff0000";
     } elsif ( $detected_brok == 1 ) {
+      $test_result = "BROK";
       return Yellow;
     } elsif ( $detected_warn == 1 ) {
+      $test_result = "WARN";
       return Fuchsia;
     } elsif ( $detected_retr == 1 ) {
+      $test_result = "RETR";
       return "#8dc997";
     } elsif ( $detected_conf == 1 ) {
+      $test_result = "CONF";
       return Aqua;
     } else {
+      $test_result = "PASS";
       return "#66ff66";
     }
 }
@@ -115,6 +122,7 @@ foreach my $file (@ARGV) {
 		if ($line =~ /$end_tag/) {
                         print "$row_line";
 			$process_line  = 0;
+			$test_result = "";
                         $flag  = 0;             $flag2 = 0;            $flag3 = 0;            $flag4 = 0;
                         $detected_fail = 0;     $detected_pass = 0;    $detected_warn = 0;    $detected_brok = 0;    $detected_retr = 0;    $detected_conf = 0;
                         $background_colour = 0; $failed_test_counter_flag = 0; $brok_test_counter_flag = 0; $warn_test_counter_flag = 0; $retr_test_counter_flag = 0; $conf_test_counter_flag = 0;  $row_line= "";
@@ -185,6 +193,7 @@ foreach my $file (@ARGV) {
                                   $background_colour = get_background_colour_column();
                                   $row_line = $row_line . "<td><p><strong>$duration_value[1]</strong></p></td>\n"     .
                                               "<td><p><strong>$termination_type_value[1]<strong></p></td>\n" .
+					      "<td><p><strong>$test_result</strong></p></td>\n"  .
                                               "<td><p><strong>$termination_id_value[1]</strong></p></td>\n"  .
                                               "<td><p><strong>$corefile_value[1]</strong></p></td>\n";
                                   $row_line =~ s/<tr>/<tr\ bgcolor=$background_colour>/;
