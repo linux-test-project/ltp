@@ -96,7 +96,7 @@
 #include <sys/utsname.h>
 
 #include "test.h"
-#include "fallocate.h"
+#include "lapi/fallocate.h"
 
 #define BLOCKS_WRITTEN 12
 #define HOLE_SIZE_IN_BLOCKS 12

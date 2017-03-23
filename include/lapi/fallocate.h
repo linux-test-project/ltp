@@ -12,10 +12,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
  */
 
 #ifndef FALLOCATE_H
@@ -28,27 +24,27 @@
 #include "linux_syscall_numbers.h"
 
 #ifndef SEEK_HOLE
-#define SEEK_HOLE 4
+# define SEEK_HOLE 4
 #endif
 
 #ifndef FALLOC_FL_KEEP_SIZE
-#define FALLOC_FL_KEEP_SIZE 0x01
+# define FALLOC_FL_KEEP_SIZE 0x01
 #endif
 
 #ifndef FALLOC_FL_PUNCH_HOLE
-#define FALLOC_FL_PUNCH_HOLE 0x02
+# define FALLOC_FL_PUNCH_HOLE 0x02
 #endif
 
 #ifndef FALLOC_FL_COLLAPSE_RANGE
-#define FALLOC_FL_COLLAPSE_RANGE 0x08
+# define FALLOC_FL_COLLAPSE_RANGE 0x08
 #endif
 
 #ifndef FALLOC_FL_ZERO_RANGE
-#define FALLOC_FL_ZERO_RANGE 0x10
+# define FALLOC_FL_ZERO_RANGE 0x10
 #endif
 
 #ifndef FALLOC_FL_INSERT_RANGE
-#define FALLOC_FL_INSERT_RANGE 0x20
+# define FALLOC_FL_INSERT_RANGE 0x20
 #endif
 
 #if !defined(HAVE_FALLOCATE)

@@ -32,7 +32,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "fallocate.h"
+#include "lapi/fallocate.h"
 
 char *TCID = "fallocate04";
 int TST_TOTAL = 5;

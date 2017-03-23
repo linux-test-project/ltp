@@ -39,7 +39,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "fallocate.h"
+#include "lapi/fallocate.h"
 
 #define BLOCKS_WRITTEN		12
 #ifdef TEST_DEFAULT
