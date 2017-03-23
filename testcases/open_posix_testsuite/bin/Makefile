@@ -4,11 +4,11 @@
 # Ngie Cooper, July 2010
 #
 
-top_srcdir?=		..
+top_srcdir?=		$(abspath ../../..)
 
-srcdir=			$(top_srcdir)/bin
+srcdir=			$(top_srcdir)/testcases/open_posix_testsuite/bin
 
-prefix?=		`$(top_srcdir)/scripts/print-prefix.sh`
+prefix?=		`$(top_srcdir)/testcases/open_posix_testsuite/scripts/print-prefix.sh`
 
 bindir?=		$(prefix)/bin
 

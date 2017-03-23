@@ -22,9 +22,9 @@ generate_locate_test_makefile() {
 
 	echo "Generating $maketype Makefiles"
 
-	locate-test --$maketype | sed -e 's,^./,,g' > make-gen.$maketype
+	locate-test --$maketype $top_srcdir/testcases/open_posix_testsuite | sed -e "s,^$top_srcdir/,,g" > make-gen.$maketype
 
-	generate_makefiles make-gen.$maketype $*
+	generate_makefiles make-gen.$maketype $@
 
 	rm -f make-gen.$maketype
 }
@@ -42,7 +42,7 @@ generate_makefile() {
 	local compiler_args=$3
 	shift 3
 
-	prereq_cache=$*
+	prereq_cache=$@
 
 	test_prefix=$(basename "$prereq_dir")
 
@@ -55,7 +55,7 @@ generate_makefile() {
 	# Add all source files to $make_target_prereq_cache.
 	for prereq in $prereq_cache; do
 		# Stuff that needs to be tested.
-		if echo "$prereq" | grep -Eq '\.(run-test|sh)'; then
+		if echo "$top_srcdir/$prereq" | grep -Eq '\.(run-test|sh)'; then
 			if [ "$tests" != "" ]; then
 				tests="$tests "
 			fi
@@ -64,7 +64,7 @@ generate_makefile() {
 		fi
 
 		# Stuff that needs to be compiled.
-		if echo "$prereq" | grep -Eq '\.(run-test|sh|test)'; then
+		if echo "$top_srcdir/$prereq" | grep -Eq '\.(run-test|sh|test)'; then
 			if [ "$targets" != "" ]; then
 				targets="$targets "
 			fi
@@ -91,6 +91,8 @@ generate_makefile() {
 		esac
 	done
 
+	mkdir -p $prereq_dir
+
 	if [ ! -f "$makefile.1" ]; then
 
 		cat > "$makefile.1" <<EOF
@@ -104,7 +106,7 @@ generate_makefile() {
 #
 
 # Path variables.
-top_srcdir?=		`echo "$prereq_dir" | awk '{ gsub(/[^\/]+/, "..", $0); print }'`
+top_srcdir?=		`readlink -f $top_srcdir`
 subdir=			$prereq_cache_dir
 srcdir=			\$(top_srcdir)/\$(subdir)
 
@@ -203,10 +205,10 @@ EOF
 
 		case "$suffix" in
 		.run-test)
-			grep -q 'main' "$prereq_dir/$c_file" || echo >&2 "$prereq_dir/$c_file should be test."
+			grep -q 'main' "$top_srcdir/$prereq_dir/$c_file" || echo >&2 "$top_srcdir/$prereq_dir/$c_file should be test."
 			;;
 		.test)
-			grep -q 'main' "$prereq_dir/$c_file" && echo >&2 "$prereq_dir/$c_file should be run-test."
+			grep -q 'main' "$top_srcdir/$prereq_dir/$c_file" && echo >&2 "$top_srcdir/$prereq_dir/$c_file should be run-test."
 			;;
 		esac
 
@@ -230,7 +232,7 @@ EOF
 
 	# Produce copy rules for .sh scripts.
 	for prereq in ${make_copy_prereq_cache}; do
-		src="$prereq"
+		src="$top_srcdir/$prereq"
 		dst="${test_prefix}_$prereq"
 
 		cat >> "$makefile.3" <<EOF
@@ -276,7 +278,7 @@ generate_makefiles() {
 	done < $make_gen_list
 
 	# Dump the last Makefile data cached up.
-	generate_makefile "$prereq_cache_dir/Makefile" $prereq_cache_dir "$compiler_args" $prereq_cache
+	generate_makefile "$prereq_cache_dir/Makefile" "$prereq_cache_dir" "$compiler_args" $prereq_cache
 
 }
 
