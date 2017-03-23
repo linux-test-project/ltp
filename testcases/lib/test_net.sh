@@ -398,8 +398,8 @@ tst_ping()
 	PING_MAX="${PING_MAX:-500}"
 
 	local src_iface="${1:-$(tst_iface)}"
-	local dst_addr="${2:-$(tst_ipaddr rhost)}"; shift 2
-	local msg_sizes="$@"
+	local dst_addr="${2:-$(tst_ipaddr rhost)}"; shift $(( $# >= 2 ? 2 : 0 ))
+	local msg_sizes="$*"
 	local ret=0
 
 	# ping cmd use 56 as default message size
