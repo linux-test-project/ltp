@@ -1,7 +1,7 @@
 locktest.py script aims to help deploying and running locktests over multiple NFS
 clients accessing the same server.
 
-The source code of NFS client test is in ./deploy/locktests-2.tar.gz
+The source code of NFS client test is in ./deploy/locktests.tar.gz
 
 Setting up lock test with several test machines.
 ================================================

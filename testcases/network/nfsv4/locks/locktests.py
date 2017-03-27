@@ -19,7 +19,7 @@ TEST_HOME="/home/vincent/locks/"
 testfile=NFS4_PATH+"/testfile"
 
 app="locktests"
-SRC="locktests-2.tar.gz"
+SRC="locktests.tar.gz"
 SRC_PATH="deploy"
 install="'tar xzf "+SRC+"; cd locks;  make `"
 user="root"
