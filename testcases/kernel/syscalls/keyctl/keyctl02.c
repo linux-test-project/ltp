@@ -48,6 +48,9 @@
 #ifdef HAVE_KEYUTILS_H
 
 #define LOOPS	20000
+#define PATH_KEY_COUNT_QUOTA	"/proc/sys/kernel/keys/root_maxkeys"
+
+static int orig_maxkeys;
 
 static void *do_read(void *arg)
 {
@@ -98,9 +101,23 @@ static void do_test(void)
 	tst_res(TPASS, "Bug not reproduced");
 }
 
+static void setup(void)
+{
+	SAFE_FILE_SCANF(PATH_KEY_COUNT_QUOTA, "%d", &orig_maxkeys);
+	SAFE_FILE_PRINTF(PATH_KEY_COUNT_QUOTA, "%d", orig_maxkeys + LOOPS);
+}
+
+static void cleanup(void)
+{
+	if (orig_maxkeys > 0)
+		SAFE_FILE_PRINTF(PATH_KEY_COUNT_QUOTA, "%d", orig_maxkeys);
+}
+
 static struct tst_test test = {
 	.tid = "keyctl02",
 	.needs_root = 1,
+	.setup = setup,
+	.cleanup = cleanup,
 	.test_all = do_test,
 };
 
