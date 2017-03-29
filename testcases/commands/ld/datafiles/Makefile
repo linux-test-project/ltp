@@ -17,6 +17,6 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_DIR		:= testcases/data/ld01
 MAKE_TARGETS		:=
-INSTALL_TARGETS		:= $(wildcard *.c)
+INSTALL_TARGETS		:= *.c
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -15,5 +15,5 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 INSTALL_DIR		:= testcases/data/file01
-INSTALL_TARGETS		:= $(wildcard in*)
+INSTALL_TARGETS		:= in*
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
