@@ -25,7 +25,9 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CFLAGS			+= -D_GNU_SOURCE -I../include/
+CFLAGS			+= -D_GNU_SOURCE\
+			   -I$(top_srcdir)/testcases/realtime/include/\
+			   -I$(top_builddir)/testcases/realtime/include/
 
 LDLIBS			+= -lpthread -lrt -lm
 
