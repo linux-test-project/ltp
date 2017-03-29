@@ -35,6 +35,6 @@ fi
 
 [ -e "$file" ] && exit 0
 
-while [ $((size=size-1)) -ge 0 ]; do printf "A" ; done > "$file"
+dd if=/dev/zero bs=1 count="$size" 2>/dev/null | tr "\0" "A" > "$file"
 
 chmod 666 $file
