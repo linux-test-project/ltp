@@ -35,5 +35,5 @@ trunk-clean:: | lib-clean
 lib-clean:: $(LIBDIR)
 	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
 
-include ./Makefile.inc
+include $(abs_srcdir)/Makefile.inc
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

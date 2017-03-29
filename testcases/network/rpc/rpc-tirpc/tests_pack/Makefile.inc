@@ -21,7 +21,7 @@ LIBDIR		:= $(abs_top_builddir)/$(LIBRELDIR)
 LIBSRCDIR	:= $(abs_top_srcdir)/$(LIBRELDIR)
 LIBRPC-TIRPC	:= $(LIBDIR)/librpc-tirpc.a
 
-$(LIBDDIR):
+$(LIBDIR):
 	mkdir -p "$@"
 
 $(LIBRPC-TIRPC): $(LIBDIR)
