@@ -41,3 +41,4 @@ which01 which01.sh
 lsmod01 lsmod01.sh
 insmod01 insmod01.sh
 wc01 wc01.sh
+keyctl01 keyctl01.sh
