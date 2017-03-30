@@ -18,9 +18,6 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <sys/uio.h>
-#include <lapi/fallocate.h>
-#include <lapi/fcntl.h>
-#include <lapi/memfd.h>
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
@@ -28,7 +25,10 @@
 #include <unistd.h>
 
 #define TST_NO_DEFAULT_MAIN
-#include <tst_test.h>
+#include "tst_test.h"
+#include "lapi/fallocate.h"
+#include "lapi/fcntl.h"
+#include "lapi/memfd.h"
 
 #include "linux_syscall_numbers.h"
 
