@@ -72,7 +72,7 @@ syslog_case2()
 		if [ -e "$MAILLOG" ]; then
 			oldvalue=`grep -c "syslogtst: mail $level test\." $MAILLOG`
 		else
-			oldvalue1=0
+			oldvalue=0
 		fi
 
 		# syslogtst has to be called with additional level argument(0-7)
