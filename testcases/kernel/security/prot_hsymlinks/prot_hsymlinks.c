@@ -197,6 +197,11 @@ static void setup(int argc, char *argv[])
 		tst_brkm(TCONF, NULL,
 			"Test must be run with kernel 3.7 or newer");
 
+	if (eaccess("/etc/passwd", W_OK)) {
+		tst_brkm(TCONF, NULL,
+			"/etc/passwd is not accessible");
+	}
+
 	/* initialize user names */
 	strcpy(users[ROOT].name, "root");
 
