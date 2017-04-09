@@ -22,6 +22,7 @@
  * the current process, process group or user.
  */
 
+#define _GNU_SOURCE
 #include <errno.h>
 #include <pwd.h>
 #include <stdlib.h>
@@ -114,6 +115,9 @@ static void setup(void)
 {
 	const char *const cmd_useradd[] = {"useradd", username, NULL};
 	struct passwd *ltpuser;
+
+	if (eaccess("/etc/passwd", W_OK))
+		tst_brk(TCONF, "/etc/passwd is not accessible");
 
 	tst_run_cmd(cmd_useradd, NULL, NULL, 0);
 
