@@ -24,9 +24,9 @@
 #include <limits.h>
 #include <mqueue.h>
 
+#include "tst_test.h"
 #include "tst_sig_proc.h"
 #include "tst_safe_posix_ipc.h"
-#include "tst_test.h"
 
 static struct sigaction act;
 static pid_t pid;
