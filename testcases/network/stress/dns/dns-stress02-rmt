@@ -1,6 +1,5 @@
 #!/bin/sh
-
-# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015-2017 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2006
 #
 # This program is free software; you can redistribute it and/or
@@ -22,7 +21,7 @@
 TCID=dns-stress02-rmt
 TST_TOTAL=1
 
-. test.sh
+. dns-stress-lib.sh
 
 if [ $# -ne 7 ]; then
 	tst_brkm TBROK "Usage: $0 ip_ver srv_ipaddr port net \
@@ -52,21 +51,28 @@ case $ip_ver in
 esac
 
 # Check the connectivity first
-dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${min_id} $record > /dev/null || \
+dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${min_id} $record \
+	> ans.log 2>&1 || \
 	tst_brkm TBROK "Failed to connect $srv_ipaddr"
+dns_check_answer ans.log
 
 # Loop for a large number of reverse name lookup queries
 num=0
 id=$min_id
 while [ $num -lt $connect_quantity ]; do
-	dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${id} $record > /dev/null
+	dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${id} $record \
+		> /dev/null || break
 	id=$(($id + 1))
 	[ $id -gt $max_id ] && id=$min_id
 	num=$(($num + 1))
 done
 
 # Check the connectivity again
-dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${min_id} $record > /dev/null || \
-	tst_brkm TBROK "Failed to connect $srv_ipaddr. dns server seems down."
+dig @$srv_ipaddr $opt -p $port -x ${net}${sep}${min_id} $record \
+	> ans.log 2>&1 || \
+	tst_brkm TBROK "Failed to connect $srv_ipaddr"
+dns_check_answer ans.log
+
+dns_check_send_requests
 
 tst_exit
