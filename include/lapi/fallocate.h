@@ -21,11 +21,8 @@
 #include <endian.h>
 #include "config.h"
 #include "lapi/abisize.h"
+#include "lapi/seek.h"
 #include "linux_syscall_numbers.h"
-
-#ifndef SEEK_HOLE
-# define SEEK_HOLE 4
-#endif
 
 #ifndef FALLOC_FL_KEEP_SIZE
 # define FALLOC_FL_KEEP_SIZE 0x01
