@@ -502,12 +502,6 @@ export IPV6_NETWORK="${IPV6_NETWORK:-fd00:1:1:1}"
 export LHOST_IPV6_HOST="${LHOST_IPV6_HOST:-:2}"
 # Set remote host last octet, default is '1'
 export RHOST_IPV6_HOST="${RHOST_IPV6_HOST:-:1}"
-# Reverse network portion of the IPv6 address
-export IPV6_NET_REV="${IPV6_NET_REV:-1.0.0.0.1.0.0.0.1.0.0.0.0.0.d.f}"
-# Reverse host portion of the IPv6 address of the local host
-export LHOST_IPV6_REV="${LHOST_IPV6_REV:-2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0}"
-# Reverse host portion of the IPv6 address of the remote host
-export RHOST_IPV6_REV="${RHOST_IPV6_REV:-1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0}"
 
 # Networks that aren't reachable through the test links
 export IPV4_NET16_UNUSED="${IPV4_NET16_UNUSED:-10.23}"
