@@ -37,7 +37,7 @@ if [ "x$(grep -w memory /proc/cgroups | cut -f4)" != "x1" ]; then
         exit 0
 fi
 
-RUN_TIME=$(( 60 * 60 ))
+RUN_TIME=$(( 15 * 60 ))
 
 cleanup()
 {
@@ -96,14 +96,14 @@ run_stress()
 
 testcase_1()
 {
-	run_stress 150 $(( ($mem-150) / 150 )) 10 $RUN_TIME
+	run_stress 150 $(( ($mem-150) / 150 )) 5 $RUN_TIME
 
 	tst_resm TPASS "stress test 1 passed"
 }
 
 testcase_2()
 {
-	run_stress 1 $mem 10 $RUN_TIME
+	run_stress 1 $mem 5 $RUN_TIME
 
 	tst_resm TPASS "stress test 2 passed"
 }
