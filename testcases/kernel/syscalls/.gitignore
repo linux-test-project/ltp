@@ -714,6 +714,7 @@
 /pwritev/pwritev02_64
 /quotactl/quotactl01
 /quotactl/quotactl02
+/quotactl/quotactl03
 /read/read01
 /read/read02
 /read/read03

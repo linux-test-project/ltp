@@ -850,6 +850,7 @@ pwritev02_64 pwritev02_64
 
 quotactl01 quotactl01
 quotactl02 quotactl02
+quotactl03 quotactl03
 
 read01 read01
 read02 read02
