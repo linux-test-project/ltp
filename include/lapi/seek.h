@@ -20,8 +20,8 @@
 
 #include <unistd.h>
 
-#ifndef DATA_HOLE
-# define DATA_HOLE 4
+#ifndef SEEK_DATA
+# define SEEK_DATA 3
 #endif
 
 #ifndef SEEK_HOLE
