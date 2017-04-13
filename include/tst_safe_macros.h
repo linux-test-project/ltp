@@ -427,4 +427,7 @@ int safe_removexattr(const char *file, const int lineno, const char *path,
 #define SAFE_REMOVEXATTR(path, name) \
 	safe_removexattr(__FILE__, __LINE__, (path), (name))
 
+int safe_fsync(const char *file, const int lineno, int fd);
+#define SAFE_FSYNC(fd) safe_fsync(__FILE__, __LINE__, (fd))
+
 #endif /* SAFE_MACROS_H__ */

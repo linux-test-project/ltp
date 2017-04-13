@@ -116,8 +116,15 @@ static void get_blocksize(void)
 		offset <<= 1;
 		SAFE_FTRUNCATE(fd, 0);
 		SAFE_PWRITE(1, fd, "a", 1, offset);
-		syncfs(fd);
-		pos = SAFE_LSEEK(fd, 0, SEEK_DATA);
+		SAFE_FSYNC(fd);
+		pos = lseek(fd, 0, SEEK_DATA);
+		if (pos == -1) {
+			if (errno == EINVAL) {
+				tst_brk(TCONF | TERRNO, "SEEK_DATA "
+					"and SEEK_HOLE not implemented");
+			}
+			tst_brk(TBROK | TERRNO, "SEEK_DATA failed");
+		}
 	}
 
 	/* bisect for double check */
@@ -125,7 +132,7 @@ static void get_blocksize(void)
 	while (shift && offset < (st.st_blksize * 2)) {
 		SAFE_FTRUNCATE(fd, 0);
 		SAFE_PWRITE(1, fd, "a", 1, offset);
-		syncfs(fd);
+		SAFE_FSYNC(fd);
 		pos = SAFE_LSEEK(fd, 0, SEEK_DATA);
 		offset += pos ? -shift : shift;
 		shift >>= 1;
@@ -175,13 +182,7 @@ static void setup(void)
 	 */
 	SAFE_FTRUNCATE(fd, FILE_BLOCKS * block_size);
 
-	if (lseek(fd, 0, SEEK_HOLE) < 0) {
-		if (errno == EINVAL) {
-			tst_brk(TCONF | TERRNO,
-				"SEEK_DATA and SEEK_HOLE not implemented");
-		}
-		tst_brk(TBROK | TERRNO, "SEEK_HOLE failed");
-	}
+	SAFE_LSEEK(fd, 0, SEEK_HOLE);
 
 	for (i = 0; i < UNIT_COUNT; i++) {
 		offset = UNIT_BLOCKS * block_size * i;
@@ -192,7 +193,7 @@ static void setup(void)
 	SAFE_LSEEK(fd, -128, SEEK_END);
 	write_data(fd, i + 1);
 
-	syncfs(fd);
+	SAFE_FSYNC(fd);
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 }
 

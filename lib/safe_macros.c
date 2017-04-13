@@ -874,3 +874,17 @@ int safe_removexattr(const char *file, const int lineno, const char *path,
 
 	return rval;
 }
+
+int safe_fsync(const char *file, const int lineno, int fd)
+{
+	int rval;
+
+	rval = fsync(fd);
+
+	if (rval) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			"%s:%d: fsync(%i) failed", file, lineno, fd);
+	}
+
+	return rval;
+}
