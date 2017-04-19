@@ -164,6 +164,7 @@ test01()
 	compress
 
 	/var/log/tst_logfile {
+		su root syslog
 		rotate 5
 		weekly
 	}
