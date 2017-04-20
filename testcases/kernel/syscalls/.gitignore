@@ -1126,3 +1126,4 @@
 /perf_event_open/perf_event_open02
 /memfd_create/memfd_create01
 /memfd_create/memfd_create02
+/copy_file_range/copy_file_range01
