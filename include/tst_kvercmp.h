@@ -35,11 +35,25 @@
 #define TST_KVERCMP_H__
 
 /*
- * Parse string kernel version into three integers.
- *
- * If version has only two numbers, i.e. 2.4 the third integer is set to zero.
+ * The same as tst_kvercmp() but running kernel version is passed as parameter
+ * instead of utilizing uname().
+ */
+int tst_kvcmp(const char *cur_kver, int r1, int r2, int r3);
+
+/*
+ * Parsers string into three integer version.
  */
 int tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3);
+
+/*
+ * Returns distribution name parsed from kernel version string or NULL.
+ */
+const char *tst_kvcmp_distname(const char *cur_kver);
+
+/*
+ * Compares versions up to five version numbers long.
+ */
+int tst_kvexcmp(const char *tst_exv, const char *cur_kver);
 
 /*
  * Compare given kernel version with currently running kernel.

@@ -19,6 +19,7 @@
 #define TST_NO_DEFAULT_MAIN
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/utsname.h>
 #include <tst_test.h>
 
 enum op {
@@ -73,25 +74,64 @@ static void help(const char *fname)
 	printf("-le kver\tReturns true if kernel version is lesser or equal\n");
 	printf("-a  \t\tDoes logical and between two expressions\n");
 	printf("-o  \t\tDoes logical or between two expressions\n\n");
-	printf("Kernel version format has either one or two dots: ");
-	printf("'2.6' or '4.8.1'\n");
+	printf("Kernel version format has either one or two dots:\n\n");
+	printf("'2.6' or '4.8.1'\n\n");
+	printf("Kernel version can also be followed by a space separated list\n");
+	printf("of extra versions prefixed by distribution which when matched\n");
+	printf("take precedence:\n\n'3.0 RHEL6:2.6.18'\n\n");
+}
+
+static int compare_kver(const char *cur_kver, char *kver)
+{
+	const char *ver, *exver;
+	const char *distname = tst_kvcmp_distname(cur_kver);
+	int v1, v2, v3;
+
+	ver = strtok(kver, " ");
+
+	while ((exver = strtok(NULL, " "))) {
+		char *exkver = strchr(exver, ':');
+
+		if (!exkver) {
+			fprintf(stderr, "Invalid extra version '%s'\n", exver);
+			exit(2);
+		}
+
+		*(exkver++) = '\0';
+
+		if (!distname || strcmp(distname, exver))
+			continue;
+
+		return tst_kvexcmp(exkver, cur_kver);
+	}
+
+	if (tst_parse_kver(ver, &v1, &v2, &v3)) {
+		fprintf(stderr,
+			"Invalid kernel version '%s'\n",
+			ver);
+		return 2;
+	}
+
+	return tst_kvcmp(cur_kver, v1, v2, v3);
 }
 
 int main(int argc, char *argv[])
 {
 	int i = 1;
 	int ret = -1;
-	int v1, v2, v3;
 	enum op prev_op = ERR;
+	struct utsname buf;
 
 	if (argc <= 1 || !strcmp(argv[1], "-h")) {
 		help(argv[0]);
 		return 0;
 	}
 
+	uname(&buf);
+
 	while (i < argc) {
 		const char *strop = argv[i++];
-		const char *strkver;
+		char *strkver;
 		int res;
 
 		enum op op = strtop(strop);
@@ -116,13 +156,6 @@ int main(int argc, char *argv[])
 			}
 
 			strkver = argv[i++];
-
-			if (tst_parse_kver(strkver, &v1, &v2, &v3)) {
-				fprintf(stderr,
-					"Invalid kernel version '%s'\n",
-					strkver);
-				return 2;
-			}
 		break;
 		case AND:
 		case OR:
@@ -140,7 +173,7 @@ int main(int argc, char *argv[])
 			return 2;
 		}
 
-		res = tst_kvercmp(v1, v2, v3);
+		res = compare_kver(buf.release, strkver);
 
 		switch (op) {
 		case EQ:

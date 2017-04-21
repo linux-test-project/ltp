@@ -78,17 +78,15 @@ int tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3)
 	return 0;
 }
 
-int tst_kvercmp(int r1, int r2, int r3)
+int tst_kvcmp(const char *cur_kver, int r1, int r2, int r3)
 {
 	int a1, a2, a3;
 	int testver, currver;
-	struct utsname uval;
 
-	uname(&uval);
-	if (tst_parse_kver(uval.release, &a1, &a2, &a3)) {
+	if (tst_parse_kver(cur_kver, &a1, &a2, &a3)) {
 		tst_resm(TWARN,
 			 "Invalid kernel version %s, expected %%d.%%d.%%d",
-		         uval.release);
+		         cur_kver);
 	}
 
 	testver = (r1 << 16) + (r2 << 8) + r3;
@@ -97,7 +95,16 @@ int tst_kvercmp(int r1, int r2, int r3)
 	return currver - testver;
 }
 
-static int tst_kexvcmp(char *tst_exv, char *cur_ver)
+int tst_kvercmp(int r1, int r2, int r3)
+{
+	struct utsname uval;
+
+	uname(&uval);
+
+	return tst_kvcmp(uval.release, r1, r2, r3);
+}
+
+int tst_kvexcmp(const char *tst_exv, const char *cur_ver)
 {
 	int c1 = 0, c2 = 0, c3 = 0, c4 = 0, c5 = 0;
 	int t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
@@ -118,24 +125,33 @@ static int tst_kexvcmp(char *tst_exv, char *cur_ver)
 	return c5 - t5;
 }
 
+const char *tst_kvcmp_distname(const char *kver)
+{
+	if (strstr(kver, ".el5uek"))
+		return "OL5UEK";
+
+	if (strstr(kver, ".el5"))
+		return "RHEL5";
+
+	if (strstr(kver, ".el6uek"))
+		return "OL6UEK";
+
+	if (strstr(kver, ".el6"))
+		return "RHEL6";
+
+	return NULL;
+}
+
 int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers)
 {
 	int i;
+	const char *kver;
 	struct utsname uval;
-	char *kver;
-	const char *cur_dist_name = NULL;
+	const char *cur_dist_name;
 
 	uname(&uval);
 	kver = uval.release;
-	if (strstr(kver, ".el5uek")) {
-		cur_dist_name = "OL5UEK";
-	} else if (strstr(kver, ".el5")) {
-		cur_dist_name = "RHEL5";
-	} else if (strstr(kver, ".el6uek")) {
-		cur_dist_name = "OL6UEK";
-	} else if (strstr(kver, ".el6")) {
-		cur_dist_name = "RHEL6";
-	}
+	cur_dist_name = tst_kvcmp_distname(kver);
 
 	if (cur_dist_name == NULL)
 		return tst_kvercmp(r1, r2, r3);
@@ -144,9 +160,9 @@ int tst_kvercmp2(int r1, int r2, int r3, struct tst_kern_exv *vers)
 		if (!strcmp(vers[i].dist_name, cur_dist_name)) {
 			tst_resm(TINFO, "Detected %s using kernel version %s",
 				 cur_dist_name, kver);
-			return tst_kexvcmp(vers[i].extra_ver, kver);
+			return tst_kvexcmp(vers[i].extra_ver, kver);
 		}
 	}
 
-	return tst_kvercmp(r1, r2, r3);
+	return tst_kvcmp(kver, r1, r2, r3);
 }
