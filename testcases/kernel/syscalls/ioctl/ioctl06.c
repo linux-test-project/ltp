@@ -36,7 +36,7 @@ static void verify_ioctl(void)
 
 	tst_res(TINFO, "BLKRAGET original value %lu", rao);
 
-	for (ra = 0; ra <= 512; ra += 64) {
+	for (ra = 0; ra <= 4096; ra += 512) {
 		SAFE_IOCTL(fd, BLKRASET, ra);
 		SAFE_IOCTL(fd, BLKRAGET, &rab);
 
