@@ -15,11 +15,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Basic test for the BLKROSET and BLKROGET ioctls.
+ * Basic test for the BLKRASET and BLKRAGET ioctls.
  *
- * - Set the device read only, read the value back.
- * - Try to mount the device read write, expect failure.
- * - Try to mount the device read only, expect success.
+ * Sets device read-ahead, reads it back and compares the values.
+ *
+ * The read-ahead value was choosen to be multiple of 512, since it's rounded
+ * based on page size on BLKRASET and 512 should be safe enough for everyone.
  */
 
 #include <errno.h>
