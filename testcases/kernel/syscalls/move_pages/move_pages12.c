@@ -36,6 +36,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 
 #include "tst_test.h"
 #include "move_pages_support.h"
