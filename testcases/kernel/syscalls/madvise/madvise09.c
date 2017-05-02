@@ -67,6 +67,8 @@ static char memsw_limit_in_bytes_path[PATH_MAX];
 static size_t page_size;
 static int sleep_between_faults;
 
+static int swap_accounting_enabled;
+
 #define PAGES 32
 #define TOUCHED_PAGE1 0
 #define TOUCHED_PAGE2 10
@@ -84,6 +86,17 @@ static void memory_pressure_child(void)
 			ptr[i * page_size] = i % 100;
 			usleep(sleep_between_faults);
 		}
+
+		/* If swap accounting is disabled exit after process swapped out 100MB */
+		if (!swap_accounting_enabled) {
+			int swapped;
+
+			SAFE_FILE_LINES_SCANF("/proc/self/status", "VmSwap: %d", &swapped);
+
+			if (swapped > 100 * 1024)
+				exit(0);
+		}
+
 	}
 
 	abort();
@@ -187,9 +200,14 @@ static void child(void)
 	tst_res(TINFO, "Setting memory limits to %u %u", usage, 2 * usage);
 
 	SAFE_FILE_SCANF(limit_in_bytes_path, "%u", &old_limit);
-	SAFE_FILE_SCANF(memsw_limit_in_bytes_path, "%u", &old_memsw_limit);
+
+	if (swap_accounting_enabled)
+		SAFE_FILE_SCANF(memsw_limit_in_bytes_path, "%u", &old_memsw_limit);
+
 	SAFE_FILE_PRINTF(limit_in_bytes_path, "%u", usage);
-	SAFE_FILE_PRINTF(memsw_limit_in_bytes_path, "%u", 2 * usage);
+
+	if (swap_accounting_enabled)
+		SAFE_FILE_PRINTF(memsw_limit_in_bytes_path, "%u", 2 * usage);
 
 	do {
 		sleep_between_faults++;
@@ -245,7 +263,9 @@ static void child(void)
 	else
 		tst_res(TPASS, "All pages have expected content");
 
-	SAFE_FILE_PRINTF(memsw_limit_in_bytes_path, "%u", old_memsw_limit);
+	if (swap_accounting_enabled)
+		SAFE_FILE_PRINTF(memsw_limit_in_bytes_path, "%u", old_memsw_limit);
+
 	SAFE_FILE_PRINTF(limit_in_bytes_path, "%u", old_limit);
 
 	SAFE_MUNMAP(ptr, PAGES);
@@ -297,6 +317,11 @@ static void setup(void)
 		tst_brk(TCONF, "'" MEMCG_PATH
 			"' not present, CONFIG_MEMCG missing?");
 	}
+
+	if (!access(MEMCG_PATH "memory.memsw.limit_in_bytes", F_OK))
+		swap_accounting_enabled = 1;
+	else
+		tst_res(TINFO, "Swap accounting is disabled");
 
 	SAFE_FILE_LINES_SCANF("/proc/meminfo", "SwapTotal: %ld", &swap_total);
 	if (swap_total <= 0)
