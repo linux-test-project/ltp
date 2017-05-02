@@ -86,8 +86,8 @@ EOF
 )
 		fi
 	else
-		tst_resm TBROK "Couldn't find syslogd, syslog-ng or rsyslogd"
-		cleanup 1
+		tst_resm TCONF "Couldn't find syslogd, syslog-ng or rsyslogd"
+		cleanup 32
 	fi
 
 	# Back up configuration file
