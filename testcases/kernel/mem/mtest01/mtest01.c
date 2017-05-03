@@ -152,7 +152,8 @@ int main(int argc, char *argv[])
 	total_free = sstats.freeram + sstats.freeswap;
 	/* Total Free Pre-Test RAM */
 	pre_mem = sstats.mem_unit * total_free;
-	max_pids = total_ram / (unsigned long)FIVE_HUNDRED_MB + 10;
+	max_pids = total_ram * sstats.mem_unit
+		/ (unsigned long)FIVE_HUNDRED_MB + 10;
 
 	if ((pid_list = malloc(max_pids * sizeof(pid_t))) == NULL)
 		tst_brkm(TBROK | TERRNO, NULL, "malloc failed.");
