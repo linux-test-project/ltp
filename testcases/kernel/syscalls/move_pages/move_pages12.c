@@ -139,12 +139,14 @@ static void setup(void)
 
 	pgsz = (int)get_page_size();
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "Hugepagesize: %d", &hpsz);
-	hpsz *= 1024;
 
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "MemFree: %d", &memfree);
-	memfree *= 1024;
+	tst_res(TINFO, "Free RAM %d kB", memfree);
+
 	if (4 * hpsz > memfree)
 		tst_brk(TBROK, "Not enough free RAM");
+
+	hpsz *= 1024;
 
 	SAFE_FILE_SCANF(PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
 	SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages + 4);
