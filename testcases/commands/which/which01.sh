@@ -42,8 +42,13 @@ which_verify()
 {
 	until [ -z "$1" ]
 	do
-		grep -q "$1" temp
-		if [ $? -ne 0 ]; then
+		found="no"
+		for i in $1; do
+			if grep -q "$i" temp; then
+				found="yes"
+			fi
+		done
+		if [ "$found" != "yes" ]; then
 			echo "'$1' not found in:"
 			cat temp
 			echo
@@ -93,9 +98,9 @@ which_test()
 do_test()
 {
 	case $1 in
-	1) which_test "" "pname" "$PWD/pname";;
+	1) which_test "" "pname" "$PWD/pname ./pname";;
 	2) which_test "--all" "pname" "$PWD/bin/pname" "$PWD/pname";;
-	3) which_test "-a" "pname" "$PWD/bin/pname" "$PWD/pname";;
+	3) which_test "-a" "pname" "$PWD/bin/pname ./bin/pname" "$PWD/pname ./pname";;
 	4) which_test "--read-alias" "pname" "pname='pname -i'" "$PWD/pname";;
 	5) which_test "-i" "pname" "pname='pname -i'" "$PWD/pname";;
 	6) alias which='which --read-alias';
