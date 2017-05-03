@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2014-2016 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) 2016-2017 Petr Vorel <pvorel@suse.cz>
 #
 # This program is free software; you can redistribute it and/or
@@ -23,18 +23,26 @@
 
 init_ltp_netspace()
 {
+	local pid=
+
 	if [ ! -f /var/run/netns/ltp_ns ]; then
-		ROD ip net add ltp_ns
 		ROD ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
-		ROD ip li set dev ltp_ns_veth1 netns ltp_ns
-		ROD ip netns exec ltp_ns ip li set lo up
+		pid="$(ROD ns_create net,mnt)"
+		mkdir -p /var/run/netns
+		ROD ln -s /proc/$pid/ns/net /var/run/netns/ltp_ns
+		ROD ns_exec $pid net,mnt mount --make-rprivate /sys
+		ROD ns_exec $pid net,mnt mount -t sysfs none /sys
+		ROD ns_ifmove ltp_ns_veth1 $pid
+		ROD ns_exec $pid net,mnt ip li set lo up
 	fi
 
 	LHOST_IFACES="${LHOST_IFACES:-ltp_ns_veth2}"
 	RHOST_IFACES="${RHOST_IFACES:-ltp_ns_veth1}"
 
 	export TST_INIT_NETNS="no"
-	export LTP_NETNS="${LTP_NETNS:-ip netns exec ltp_ns}"
+
+	pid="$(echo $(readlink /var/run/netns/ltp_ns) | cut -f3 -d'/')"
+	export LTP_NETNS="${LTP_NETNS:-ns_exec $pid net,mnt}"
 
 	tst_restore_ipaddr
 	tst_restore_ipaddr rhost
