@@ -3,46 +3,56 @@
 # PLEASE READ THE README FILE network/README.md BEFORE RUNNING THESE.
 #
 nfs3_01 nfs01 -v 3 -t udp
+nfs3t_01 nfs01 -v 3 -t tcp
 nfs4_01 nfs01 -v 4 -t tcp
 nfs41_01 nfs01 -v 4.1 -t tcp
 nfs42_01 nfs01 -v 4.2 -t tcp
 nfs3_ipv6_01 nfs01 -6 -v 3 -t udp
+nfs3t_ipv6_01 nfs01 -6 -v 3 -t tcp
 nfs4_ipv6_01 nfs01 -6 -v 4 -t tcp
 nfs41_ipv6_01 nfs01 -6 -v 4.1 -t tcp
 nfs42_ipv6_01 nfs01 -6 -v 4.2 -t tcp
 
 nfs3_02 nfs02 -v 3 -t udp
+nfs3t_02 nfs02 -v 3 -t tcp
 nfs4_02 nfs02 -v 4 -t tcp
 nfs41_02 nfs02 -v 4.1 -t tcp
 nfs42_02 nfs02 -v 4.2 -t tcp
 nfs3_ipv6_02 nfs02 -6 -v 3 -t udp
+nfs3t_ipv6_02 nfs02 -6 -v 3 -t tcp
 nfs4_ipv6_02 nfs02 -6 -v 4 -t tcp
 nfs41_ipv6_02 nfs02 -6 -v 4.1 -t tcp
 nfs42_ipv6_02 nfs02 -6 -v 4.2 -t tcp
 
 nfs3_03 nfs03 -v 3 -t udp
+nfs3t_03 nfs03 -v 3 -t tcp
 nfs4_03 nfs03 -v 4 -t tcp
 nfs41_03 nfs03 -v 4.1 -t tcp
 nfs42_03 nfs03 -v 4.2 -t tcp
 nfs3_ipv6_03 nfs03 -6 -v 3 -t udp
+nfs3t_ipv6_03 nfs03 -6 -v 3 -t tcp
 nfs4_ipv6_03 nfs03 -6 -v 4 -t tcp
 nfs41_ipv6_03 nfs03 -6 -v 4.1 -t tcp
 nfs42_ipv6_03 nfs03 -6 -v 4.2 -t tcp
 
 nfs3_04 nfs04 -v 3 -t udp
+nfs3t_04 nfs04 -v 3 -t tcp
 nfs4_04 nfs04 -v 4 -t tcp
 nfs41_04 nfs04 -v 4.1 -t tcp
 nfs42_04 nfs04 -v 4.2 -t tcp
 nfs3_ipv6_04 nfs04 -6 -v 3 -t udp
+nfs3t_ipv6_04 nfs04 -6 -v 3 -t tcp
 nfs4_ipv6_04 nfs04 -6 -v 4 -t tcp
 nfs41_ipv6_04 nfs04 -6 -v 4.1 -t tcp
 nfs42_ipv6_04 nfs04 -6 -v 4.2 -t tcp
 
 nfs3_05 nfs05 -v 3 -t udp
+nfs3t_05 nfs05 -v 3 -t tcp
 nfs4_05 nfs05 -v 4 -t tcp
 nfs41_05 nfs05 -v 4.1 -t tcp
 nfs42_05 nfs05 -v 4.2 -t tcp
 nfs3_ipv6_05 nfs05 -6 -v 3 -t udp
+nfs3t_ipv6_05 nfs05 -6 -v 3 -t tcp
 nfs4_ipv6_05 nfs05 -6 -v 4 -t tcp
 nfs41_ipv6_05 nfs05 -6 -v 4.1 -t tcp
 nfs42_ipv6_05 nfs05 -6 -v 4.2 -t tcp
@@ -52,10 +62,12 @@ nfs02_06 nfs06 -v "3 4 4.1 4.2 4.2 4.2" -t "udp tcp tcp tcp tcp tcp"
 nfs03_ipv6_06 nfs06 -6 -v "4 4.1 4.1 4.2 4.2 4.2" -t "tcp tcp tcp tcp tcp tcp"
 
 nfslock3_01 nfslock01 -v 3 -t udp
+nfslock3t_01 nfslock01 -v 3 -t tcp
 nfslock4_01 nfslock01 -v 4 -t tcp
 nfslock41_01 nfslock01 -v 4.1 -t tcp
 nfslock42_01 nfslock01 -v 4.2 -t tcp
 nfslock3_ipv6_01 nfslock01 -6 -v 3 -t udp
+nfslock3t_ipv6_01 nfslock01 -6 -v 3 -t tcp
 nfslock4_ipv6_01 nfslock01 -6 -v 4 -t tcp
 nfslock41_ipv6_01 nfslock01 -6 -v 4.1 -t tcp
 nfslock42_ipv6_01 nfslock01 -6 -v 4.2 -t tcp
@@ -63,10 +75,12 @@ nfslock42_ipv6_01 nfslock01 -6 -v 4.2 -t tcp
 nfsstat3_01 nfsstat01
 
 nfsx3 fsx.sh -v 3 -t udp
+nfsx3t fsx.sh -v 3 -t tcp
 nfsx4 fsx.sh -v 4 -t tcp
 nfsx41 fsx.sh -v 4.1 -t tcp
 nfsx42 fsx.sh -v 4.2 -t tcp
 nfsx3_ipv6 fsx.sh -6 -v 3 -t udp
+nfsx3t_ipv6 fsx.sh -6 -v 3 -t tcp
 nfsx4_ipv6 fsx.sh -6 -v 4 -t tcp
 nfsx41_ipv6 fsx.sh -6 -v 4.1 -t tcp
 nfsx42_ipv6 fsx.sh -6 -v 4.2 -t tcp
