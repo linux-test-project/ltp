@@ -31,7 +31,7 @@
 #include "tst_test.h"
 
 static const char *username = "ltp_setpriority01";
-static int pid, uid;
+static int pid, uid, user_added;
 
 static struct tcase {
 	int which;
@@ -120,6 +120,7 @@ static void setup(void)
 		tst_brk(TCONF, "/etc/passwd is not accessible");
 
 	tst_run_cmd(cmd_useradd, NULL, NULL, 0);
+	user_added = 1;
 
 	ltpuser = SAFE_GETPWNAM(username);
 	uid = ltpuser->pw_uid;
@@ -127,6 +128,9 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	if (!user_added)
+		return;
+
 	const char *const cmd_userdel[] = {"userdel", "-r", username, NULL};
 
 	if (tst_run_cmd(cmd_userdel, NULL, NULL, 1))
