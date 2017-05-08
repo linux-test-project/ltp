@@ -158,7 +158,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
+	if (!access(PATH_HUGEPAGES, F_OK))
+		SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
 }
 
 static struct tst_test test = {
