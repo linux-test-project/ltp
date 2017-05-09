@@ -1142,7 +1142,9 @@ int readlink_path(pathname_t * name, char *lbuf, size_t lbufsiz)
 	pathname_t newname;
 	int rval;
 
-	rval = readlink(name->path, lbuf, lbufsiz);
+	rval = readlink(name->path, lbuf, lbufsiz-1);
+	if (rval >= 0)
+		lbuf[rval] = '\0';
 	if (rval >= 0 || errno != ENAMETOOLONG)
 		return rval;
 	separate_pathname(name, buf, &newname);

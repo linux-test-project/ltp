@@ -55,6 +55,7 @@ static void setup(void)
 
 int child_func(void *arg)
 {
+	ssize_t r;
 	char buf[10];
 
 	if (mount("none", PROCDIR, "proc", MS_RDONLY, NULL) == -1) {
@@ -63,11 +64,14 @@ int child_func(void *arg)
 	}
 
 	/* self is symlink to directory named after current pid number */
-	if (readlink(PROCDIR"/self", buf, sizeof(buf)) == -1) {
+	r = readlink(PROCDIR"/self", buf, sizeof(buf)-1);
+	if (r == -1) {
 		perror("readlink");
 		umount(PROCDIR);
 		return 1;
 	}
+
+	buf[r] = '\0';
 
 	umount(PROCDIR);
 
