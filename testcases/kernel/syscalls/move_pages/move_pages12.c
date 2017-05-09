@@ -35,6 +35,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -52,7 +53,11 @@
 #define TEST_NODES	2
 
 static int pgsz, hpsz;
-static long orig_hugepages;
+static long orig_hugepages = -1;
+static char path_hugepages_node1[PATH_MAX];
+static char path_hugepages_node2[PATH_MAX];
+static long orig_hugepages_node1 = -1;
+static long orig_hugepages_node2 = -1;
 static unsigned int node1, node2;
 static void *addr;
 
@@ -128,6 +133,45 @@ static void do_test(void)
 	}
 }
 
+static void alloc_free_huge_on_node(unsigned int node, size_t size)
+{
+	char *mem;
+	long ret;
+	struct bitmask *bm;
+
+	tst_res(TINFO, "Allocating and freeing %zu hugepages on node %u",
+		size / hpsz, node);
+
+	mem = mmap(NULL, size, PROT_READ | PROT_WRITE,
+		   MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
+	if (mem == MAP_FAILED) {
+		if (errno == ENOMEM)
+			tst_brk(TCONF, "Cannot allocate huge pages");
+
+		tst_brk(TBROK | TERRNO, "mmap(..., MAP_HUGETLB, ...) failed");
+	}
+
+	bm = numa_bitmask_alloc(numa_max_possible_node() + 1);
+	if (!bm)
+		tst_brk(TBROK | TERRNO, "numa_bitmask_alloc() failed");
+
+	numa_bitmask_setbit(bm, node);
+
+	ret = mbind(mem, size, MPOL_BIND, bm->maskp, bm->size + 1, 0);
+	if (ret) {
+		if (errno == ENOMEM)
+			tst_brk(TCONF, "Cannot mbind huge pages");
+
+		tst_brk(TBROK | TERRNO, "mbind() failed");
+	}
+
+	numa_bitmask_free(bm);
+
+	memset(mem, 0, size);
+
+	SAFE_MUNMAP(mem, size);
+}
+
 static void setup(void)
 {
 	int memfree, ret;
@@ -136,6 +180,10 @@ static void setup(void)
 
 	if (access(PATH_HUGEPAGES, F_OK))
 		tst_brk(TCONF, "Huge page not supported");
+
+	ret = get_allowed_nodes(NH_MEMS, TEST_NODES, &node1, &node2);
+	if (ret < 0)
+		tst_brk(TBROK | TERRNO, "get_allowed_nodes: %d", ret);
 
 	pgsz = (int)get_page_size();
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "Hugepagesize: %d", &hpsz);
@@ -146,20 +194,61 @@ static void setup(void)
 	if (4 * hpsz > memfree)
 		tst_brk(TBROK, "Not enough free RAM");
 
+	snprintf(path_hugepages_node1, sizeof(path_hugepages_node1),
+		 "/sys/devices/system/node/node%u/hugepages/hugepages-%dkB/nr_hugepages",
+		 node1, hpsz);
+
+	snprintf(path_hugepages_node2, sizeof(path_hugepages_node2),
+		 "/sys/devices/system/node/node%u/hugepages/hugepages-%dkB/nr_hugepages",
+		 node2, hpsz);
+
+	if (!access(path_hugepages_node1, F_OK)) {
+		SAFE_FILE_SCANF(path_hugepages_node1,
+				"%ld", &orig_hugepages_node1);
+		tst_res(TINFO,
+			"Increasing %dkB hugepages pool on node %u to %ld",
+			hpsz, node1, orig_hugepages_node1 + 4);
+		SAFE_FILE_PRINTF(path_hugepages_node1,
+				 "%ld", orig_hugepages_node1 + 4);
+	}
+
+	if (!access(path_hugepages_node2, F_OK)) {
+		SAFE_FILE_SCANF(path_hugepages_node2,
+				"%ld", &orig_hugepages_node2);
+		tst_res(TINFO,
+			"Increasing %dkB hugepages pool on node %u to %ld",
+			hpsz, node2, orig_hugepages_node2 + 4);
+		SAFE_FILE_PRINTF(path_hugepages_node2,
+				 "%ld", orig_hugepages_node2 + 4);
+	}
+
 	hpsz *= 1024;
 
-	SAFE_FILE_SCANF(PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
-	SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages + 4);
+	if (orig_hugepages_node1 == -1 || orig_hugepages_node2 == -1) {
+		SAFE_FILE_SCANF(PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
+		tst_res(TINFO, "Increasing global hugepages pool to %ld",
+			orig_hugepages + 8);
+		SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages + 8);
+	}
 
-	ret = get_allowed_nodes(NH_MEMS, TEST_NODES, &node1, &node2);
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "get_allowed_nodes: %d", ret);
+	alloc_free_huge_on_node(node1, 4 * hpsz);
+	alloc_free_huge_on_node(node2, 4 * hpsz);
 }
 
 static void cleanup(void)
 {
-	if (!access(PATH_HUGEPAGES, F_OK))
+	if (orig_hugepages != -1)
 		SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
+
+	if (orig_hugepages_node1 != -1) {
+		SAFE_FILE_PRINTF(path_hugepages_node1,
+				 "%ld", orig_hugepages_node1);
+	}
+
+	if (orig_hugepages_node2 != -1) {
+		SAFE_FILE_PRINTF(path_hugepages_node2,
+				 "%ld", orig_hugepages_node2);
+	}
 }
 
 static struct tst_test test = {
