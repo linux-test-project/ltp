@@ -411,6 +411,13 @@ ssize_t safe_readlink(const char *file, const int lineno,
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
 			 "%s:%d: readlink(%s,%p,%zu) failed",
 			 file, lineno, path, buf, bufsize);
+	} else {
+		/* readlink does not append a NUL byte to the buffer.
+		 * Add it now. */
+		if ((size_t) rval < bufsize)
+			buf[rval] = '\0';
+		else
+			buf[bufsize-1] = '\0';
 	}
 
 	return rval;
