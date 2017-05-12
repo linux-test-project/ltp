@@ -112,7 +112,7 @@ static void setup(void)
 	check_newpid();
 }
 
-int main()
+int main(void)
 {
 	int status;
 
