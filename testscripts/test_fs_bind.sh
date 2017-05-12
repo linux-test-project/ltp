@@ -493,6 +493,7 @@ main()
 			((TST_COUNT++))
 		done
 	done
+	rm -rf "${resdir}"
 	rm -rf "${sandbox}"
 	return 0
 

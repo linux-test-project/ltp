@@ -118,7 +118,7 @@ result()
 cleanup()
 {
 	if [ -e $TST_PATH/mnt ]; then
-		umount $TST_PATH/mnt 2> /dev/null
+		umount -l $TST_PATH/mnt 2> /dev/null
 		rm -rf $TST_PATH/mnt
 	fi
 }
