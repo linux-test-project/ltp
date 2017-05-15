@@ -81,7 +81,7 @@ static int check_ret(long expected_ret)
 			 "returned value = %ld", TEST_RETURN);
 		return 0;
 	}
-	tst_resm(TFAIL, "unexpected failure - "
+	tst_resm(TFAIL | TTERRNO, "unexpected failure - "
 		 "returned value = %ld, expected: %ld",
 		 TEST_RETURN, expected_ret);
 	return 1;
