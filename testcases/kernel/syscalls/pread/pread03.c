@@ -88,7 +88,6 @@ char *TCID = "pread03";
 int TST_TOTAL = 1;
 
 char *read_buf[NBUFS];		/* buffer to hold data read from file */
-char test_dir[100];
 int fd1;
 
 void setup();			/* Main setup function of test */
@@ -149,8 +148,6 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	char *cur_dir = NULL;
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
@@ -159,13 +156,6 @@ void setup(void)
 	init_buffers();
 
 	tst_tmpdir();
-
-	/* get the currect directory name */
-	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
-	}
-
-	sprintf(test_dir, "%s.%d", cur_dir, getpid());
 
 	/*
 	 * create a temporary directory
@@ -181,7 +171,6 @@ void setup(void)
 		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
 			 PREAD_TEMPDIR, errno, strerror(errno));
 	}
-
 }
 
 /*
