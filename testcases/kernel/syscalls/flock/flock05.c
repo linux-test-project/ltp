@@ -182,7 +182,7 @@ void setup(void)
 	sprintf(filename, "flock05.%d", getpid());
 
 	/* creating temporary file */
-	fd = creat(filename, 0666);
+	fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0666);
 	if (fd == -1) {
 		tst_resm(TFAIL, "creating a new file failed");
 

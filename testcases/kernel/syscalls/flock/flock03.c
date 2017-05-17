@@ -181,7 +181,7 @@ static void setup(void)
 
 	TST_CHECKPOINT_INIT(tst_rmdir);
 
-	fd = creat(FILE_NAME, 0666);
+	fd = open(FILE_NAME, O_CREAT | O_TRUNC | O_RDWR, 0666);
 	if (fd < 0) {
 		tst_resm(TBROK, "creating a new file failed");
 		cleanup();

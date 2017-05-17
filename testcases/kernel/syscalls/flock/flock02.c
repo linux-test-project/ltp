@@ -150,7 +150,7 @@ void setup(void)
 
 	sprintf(filename, "flock02.%d", getpid());
 
-	fd = creat(filename, 0666);
+	fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0666);
 	if (fd < 0)
 		tst_brkm(TFAIL | TERRNO, cleanup, "creat failed");
 }

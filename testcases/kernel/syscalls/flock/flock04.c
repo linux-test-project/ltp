@@ -164,7 +164,7 @@ void setup(void)
 
 	sprintf(filename, "flock04.%d", getpid());
 
-	fd = creat(filename, 0666);
+	fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0666);
 	if (fd == -1)
 		tst_brkm(TFAIL, cleanup, "creating a new file failed");
 }
