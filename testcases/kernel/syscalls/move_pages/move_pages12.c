@@ -231,8 +231,8 @@ static void setup(void)
 		SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages + 8);
 	}
 
-	alloc_free_huge_on_node(node1, 4 * hpsz);
-	alloc_free_huge_on_node(node2, 4 * hpsz);
+	alloc_free_huge_on_node(node1, 4L * hpsz);
+	alloc_free_huge_on_node(node2, 4L * hpsz);
 }
 
 static void cleanup(void)
