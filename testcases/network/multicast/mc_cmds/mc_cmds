@@ -46,13 +46,19 @@ setup()
 
 do_test()
 {
+	local ip_fixed_version=170220
+
 	ip addr show $(tst_iface) | grep -q 'MULTICAST' || \
 		tst_brkm TFAIL "Multicast not listed for $(tst_iface)"
 
 	ip maddr show $(tst_iface) | grep -q '224.0.0.1'
 	if [ $? -ne 0 ]; then
-		tst_resm TWARN "'ip maddr show $(tst_iface)' failed," \
-			       " parsing 'ip maddr show'"
+		[ `ip -V | cut -d's' -f3` -lt $ip_fixed_version ] && \
+			tst_resm TINFO "'ip maddr show $(tst_iface)' failed"\
+					"(caused by old ip version, fixed in"\
+					"$ip_fixed_version)" || \
+			tst_resm TWARN "'ip maddr show $(tst_iface)' failed"
+		tst_resm TINFO "parsing 'ip maddr show' command"
 		ip maddr show | sed -ne "/\s$(tst_iface)/,/^[0-9]/p" | \
 			grep -q 224.0.0.1 || \
 			tst_brkm TFAIL "$(tst_iface) not joined 224.0.0.1"
