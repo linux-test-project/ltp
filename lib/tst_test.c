@@ -805,24 +805,39 @@ static void testrun(void)
 
 static pid_t test_pid;
 
+
+static volatile sig_atomic_t sigkill_retries;
+
+#define WRITE_MSG(msg) do { \
+	if (write(2, msg, sizeof(msg) - 1)) { \
+		/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425 */ \
+	} \
+} while (0)
+
 static void alarm_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
+	WRITE_MSG("Test timeouted, sending SIGKILL!\n");
 	kill(-test_pid, SIGKILL);
+	alarm(5);
+
+	if (++sigkill_retries > 10) {
+		WRITE_MSG("Cannot kill test processes!\n");
+		WRITE_MSG("Congratulation, likely test hit a kernel bug.\n");
+		WRITE_MSG("Exitting uncleanly...\n");
+		_exit(TFAIL);
+	}
 }
 
 static void heartbeat_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	alarm(results->timeout);
+	sigkill_retries = 0;
 }
-
-#define SIGINT_MSG "Sending SIGKILL to test process...\n"
 
 static void sigint_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	if (test_pid > 0) {
-		if (write(2, SIGINT_MSG, sizeof(SIGINT_MSG) - 1)) {
-			/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425 */
-		}
+		WRITE_MSG("Sending SIGKILL to test process...\n");
 		kill(-test_pid, SIGKILL);
 	}
 }
