@@ -116,7 +116,7 @@ static uint64_t size64_convert(char *buf)
 	goto do_multiplier;
 
 try_single:
-	memcpy(unit, "\0", 3);
+	memset(unit, 0, sizeof(unit));
 	strcpy(unit, buf + (buf_size - 1));
 	if (isdigit(unit[0])) {
 		unit[0] = 0;
