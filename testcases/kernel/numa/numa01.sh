@@ -31,11 +31,12 @@
 #               Test #8: Verifies memhog                                     #
 #               Test #9: Verifies numa_node_size api                         #
 #               Test #10:Verifies Migratepages                               #
+#               Test #11:Verifies hugepage alloacted on specified node       #
 #                                                                            #
 ##############################################################################
 
 TST_ID="numa01"
-TST_CNT=10
+TST_CNT=11
 TST_SETUP=setup
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
@@ -83,11 +84,13 @@ setup()
 {
 	export MB=$((1024*1024))
 	export PAGE_SIZE=$(getconf PAGE_SIZE)
+	export HPAGE_SIZE=$(awk '/Hugepagesize:/ {print $2}' /proc/meminfo)
 
 	# arguments to memory exercise program support_numa.c
 	ALLOC_1MB=1
 	SHARE_1MB=2
-	PAUSE=3
+	HUGE_PAGE=3
+	PAUSE=4
 
 	total_nodes=0
 
@@ -397,6 +400,50 @@ test10()
 	done
 
 	tst_res TPASS "NUMA MIGRATEPAGES policy"
+}
+
+# Verification of hugepage memory allocated on a node
+test11()
+{
+	Mem_huge=0
+	Sys_node=/sys/devices/system/node
+
+	if [ ! -d "/sys/kernel/mm/hugepages/" ]; then
+		tst_res TCONF "hugepage is not supported"
+		return
+	fi
+
+	for node in $nodes_list; do
+		Ori_hpgs=$(cat ${Sys_node}/node${node}/hugepages/hugepages-${HPAGE_SIZE}kB/nr_hugepages)
+		New_hpgs=$((Ori_hpgs + 1))
+		echo $New_hpgs >${Sys_node}/node${node}/hugepages/hugepages-${HPAGE_SIZE}kB/nr_hugepages
+
+		Chk_hpgs=$(cat ${Sys_node}/node${node}/hugepages/hugepages-${HPAGE_SIZE}kB/nr_hugepages)
+		if [ "$Chk_hpgs" -ne "$New_hpgs" ]; then
+			tst_res TCONF "hugepage is not enough to test"
+			return
+		fi
+
+		numactl --cpunodebind=$node --membind=$node support_numa $HUGE_PAGE &
+		pid=$!
+		wait_for_support_numa $pid
+
+		Mem_huge=$(echo $(numastat -p $pid |awk '/Huge/ {print $'$((node+2))'}'))
+		Mem_huge=$((${Mem_huge%.*} * 1024))
+
+		if [ "$Mem_huge" -lt "$HPAGE_SIZE" ]; then
+			tst_res TFAIL \
+				"NUMA memory allocated in node$node is less than expected"
+			kill -CONT $pid >/dev/null 2>&1
+			echo $Ori_hpgs >${Sys_node}/node${node}/hugepages/hugepages-${HPAGE_SIZE}kB/nr_hugepages
+			return
+		fi
+
+		kill -CONT $pid >/dev/null 2>&1
+		echo $Ori_hpgs >${Sys_node}/node${node}/hugepages/hugepages-${HPAGE_SIZE}kB/nr_hugepages
+	done
+
+	tst_res TPASS "NUMA local node hugepage memory allocated"
 }
 
 tst_run
