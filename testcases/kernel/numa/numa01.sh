@@ -86,12 +86,6 @@ setup()
 	export PAGE_SIZE=$(getconf PAGE_SIZE)
 	export HPAGE_SIZE=$(awk '/Hugepagesize:/ {print $2}' /proc/meminfo)
 
-	# arguments to memory exercise program support_numa.c
-	ALLOC_1MB=1
-	SHARE_1MB=2
-	HUGE_PAGE=3
-	PAUSE=4
-
 	total_nodes=0
 
 	nodes_list=$(numactl --show | grep nodebind | cut -d ':' -f 2)
@@ -112,7 +106,7 @@ test1()
 	Mem_curr=0
 
 	for node in $nodes_list; do
-		numactl --cpunodebind=$node --membind=$node support_numa $ALLOC_1MB &
+		numactl --cpunodebind=$node --membind=$node support_numa alloc_1MB &
 		pid=$!
 
 		wait_for_support_numa $pid
@@ -146,7 +140,7 @@ test2()
 			Preferred_node=$(echo $nodes_list | cut -d ' ' -f $((COUNTER+1)))
 		fi
 
-		numactl --cpunodebind=$node --preferred=$Preferred_node support_numa $ALLOC_1MB &
+		numactl --cpunodebind=$node --preferred=$Preferred_node support_numa alloc_1MB &
 		pid=$!
 
 		wait_for_support_numa $pid
@@ -182,7 +176,7 @@ test3()
 			Preferred_node=$(echo $nodes_list | cut -d ' ' -f $((COUNTER+1)))
 		fi
 
-		numactl --cpunodebind=$node --preferred=$Preferred_node support_numa $SHARE_1MB &
+		numactl --cpunodebind=$node --preferred=$Preferred_node support_numa alloc_1MB_shared &
 		pid=$!
 
 		wait_for_support_numa $pid
@@ -209,7 +203,7 @@ test4()
 	# Memory will be allocated using round robin on nodes.
 	Exp_incr=$(echo "$MB / $total_nodes" |bc)
 
-	numactl --interleave=all support_numa $ALLOC_1MB &
+	numactl --interleave=all support_numa alloc_1MB &
 	pid=$!
 
 	wait_for_support_numa $pid
@@ -236,7 +230,7 @@ test5()
 	# Memory will be allocated using round robin on nodes.
 	Exp_incr=$(echo "$MB / $total_nodes" |bc)
 
-	numactl --interleave=all support_numa $SHARE_1MB &
+	numactl --interleave=all support_numa alloc_1MB_shared &
 	pid=$!
 
 	wait_for_support_numa $pid
@@ -267,7 +261,7 @@ test6()
 	no_of_cpus=$(tst_ncpus)
 	# not sure whether cpu's can't be in odd number
 	run_on_cpu=$(($((no_of_cpus+1))/2))
-	numactl --physcpubind=$run_on_cpu support_numa $PAUSE & #just waits for sigint
+	numactl --physcpubind=$run_on_cpu support_numa pause & #just waits for sigint
 	pid=$!
 	var=`awk '{ print $2 }' /proc/$pid/stat`
 	while [ $var = '(numactl)' ]; do
@@ -295,7 +289,7 @@ test7()
 	Mem_curr=0
 
 	for node in $nodes_list; do
-		numactl --cpunodebind=$node --localalloc support_numa $ALLOC_1MB &
+		numactl --cpunodebind=$node --localalloc support_numa alloc_1MB &
 		pid=$!
 
 		wait_for_support_numa $pid
@@ -388,7 +382,7 @@ test10()
 			Preferred_node=$(echo $nodes_list | cut -d ' ' -f $((COUNTER+1)))
 		fi
 
-		numactl --preferred=$node support_numa $ALLOC_1MB &
+		numactl --preferred=$node support_numa alloc_1MB &
 		pid=$!
 
 		wait_for_support_numa $pid
@@ -432,7 +426,7 @@ test11()
 			return
 		fi
 
-		numactl --cpunodebind=$node --membind=$node support_numa $HUGE_PAGE &
+		numactl --cpunodebind=$node --membind=$node support_numa alloc_1huge_page &
 		pid=$!
 		wait_for_support_numa $pid
 

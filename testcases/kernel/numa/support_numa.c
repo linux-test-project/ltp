@@ -50,10 +50,10 @@
 static void help(void)
 {
 	printf("Input:	Describe input arguments to this program\n");
-	printf("	argv[1] == 1 then allocate 1MB of memory\n");
-	printf("	argv[1] == 2 then allocate 1MB of share memory\n");
-	printf("        argv[1] == 3 then allocate 1HUGE PAGE SIZE of memory\n");
-	printf("        argv[1] == 4 then pause the program to catch sigint\n");
+	printf("	argv[1] == \"alloc_1MB\" then allocate 1MB of memory\n");
+	printf("	argv[1] == \"alloc_1MB_shared\" then allocate 1MB of share memory\n");
+	printf("        argv[1] == \"alloc_1huge_page\" then allocate 1HUGE PAGE SIZE of memory\n");
+	printf("        argv[1] == \"pause\" then pause the program to catch sigint\n");
 	printf("Exit:	On failure - Exits with non-zero value\n");
 	printf("	On success - exits with 0 exit value\n");
 
@@ -97,8 +97,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	switch (atoi(argv[1])) {
-	case 1:
+	if (!strcmp(argv[1], "alloc_1MB")) {
 		buf = malloc(MB);
 		if (!buf) {
 			fprintf(stderr, "Memory is not available\n");
@@ -112,8 +111,7 @@ int main(int argc, char *argv[])
 		raise(SIGSTOP);
 
 		free(buf);
-		break;
-	case 2:
+	} else if (!strcmp(argv[1], "alloc_1MB_shared")) {
 		fd = open(TEST_SFILE, O_RDWR | O_CREAT, 0666);
 		/* Writing 1MB of random data into this file [32 * 32768 = 1024 * 1024] */
 		for (i = 0; i < 32768; i++){
@@ -139,8 +137,7 @@ int main(int argc, char *argv[])
 		munmap(buf, sb.st_size);
 		close(fd);
 		remove(TEST_SFILE);
-		break;
-	case 3:
+	} else if (!strcmp(argv[1], "alloc_1huge_page")) {
 		hpsz = read_hugepagesize();
 		if (hpsz == 0)
 			exit(1);
@@ -159,11 +156,9 @@ int main(int argc, char *argv[])
 		raise(SIGSTOP);
 
 		munmap(buf, hpsz);
-		break;
-	case 4:
+	} else if (!strcmp(argv[1], "pause")) {
 		raise(SIGSTOP);
-		break;
-	default:
+	} else {
 		help();
 	}
 
