@@ -494,7 +494,7 @@ static void cleanup(void)
 	semctl(sem_id, 0, IPC_RMID);
 
 	if (!unpipe)
-		SAFE_UNLINK(NULL, pname);
+		unlink(pname);
 
 	tst_rmdir();
 }
