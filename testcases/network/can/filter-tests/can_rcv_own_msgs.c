@@ -53,13 +53,12 @@
 #include <net/if.h>
 #include "config.h"
 #include "tst_res_flags.h"
+#include "tst_minmax.h"
 
 #ifdef HAVE_LINUX_CAN_H
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
-
-#define max(a, b) ((a) > (b) ? (a) : (b))
 
 struct rxs {
 	int s;
@@ -70,7 +69,7 @@ struct rxs test_sockets(int s, int t, canid_t can_id)
 {
 	fd_set rdfs;
 	struct timeval tv;
-	int m = max(s, t) + 1;
+	int m = MAX(s, t) + 1;
 	int have_rx = 1;
 	struct can_frame frame;
 	struct rxs rx;

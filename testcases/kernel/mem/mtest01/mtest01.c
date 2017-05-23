@@ -250,10 +250,7 @@ int main(int argc, char *argv[])
 			pid_list[i] = pid;
 		}
 	}
-	if (maxbytes > THREE_GB)
-		alloc_bytes = THREE_GB;
-	else
-		alloc_bytes = maxbytes;
+	alloc_bytes = MIN(THREE_GB, maxbytes);
 #endif
 
 	if (pid == 0) {

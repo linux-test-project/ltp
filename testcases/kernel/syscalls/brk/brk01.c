@@ -179,10 +179,7 @@ void setup(void)
 	 * never attempt to take more than a * 1/4 of memory (by single test)
 	 */
 
-	if (ulim_sz < usr_mem_sz)
-		max_size = ulim_sz;
-	else
-		max_size = usr_mem_sz;
+	max_size = MIN(ulim_sz, usr_mem_sz);
 
 	max_size = max_size / (2 * ncpus);
 

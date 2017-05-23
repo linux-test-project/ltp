@@ -138,9 +138,6 @@ static const char *mapfile = "/var/run/cpunodemap";
 /* The primary source for the cpunodemap[] is available below here. */
 static const char *sysdevices = "/sys/devices/system";
 
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#define min(a,b) ((a) < (b) ? (a) : (b))
-
 /* small buffer size - for reading boolean flags or map file (1 or 2 ints) */
 #define SMALL_BUFSZ 16
 
@@ -2499,7 +2496,7 @@ int cpuset_nuke(const char *relpath, unsigned int seconds)
 		if (secs_loop < 10)
 			secs_loop++;
 
-		secs_loop = min(secs_left, secs_loop);
+		secs_loop = MIN(secs_left, secs_loop);
 	}
 
 took_too_long:
@@ -3484,39 +3481,39 @@ int cpuset_export(const struct cpuset *cp, char *buf, int buflen)
 	int n = 0;
 
 	if (cp->cpu_exclusive)
-		n += snprintf(buf + n, max(buflen - n, 0), "cpu_exclusive\n");
+		n += snprintf(buf + n, MAX(buflen - n, 0), "cpu_exclusive\n");
 
 	if (cp->mem_exclusive)
-		n += snprintf(buf + n, max(buflen - n, 0), "mem_exclusive\n");
+		n += snprintf(buf + n, MAX(buflen - n, 0), "mem_exclusive\n");
 
 	if (cp->notify_on_release)
-		n += snprintf(buf + n, max(buflen - n, 0),
+		n += snprintf(buf + n, MAX(buflen - n, 0),
 			      "notify_on_release\n");
 
 	if (cp->memory_pressure_enabled)
-		n += snprintf(buf + n, max(buflen - n, 0),
+		n += snprintf(buf + n, MAX(buflen - n, 0),
 			      "memory_pressure_enabled\n");
 
 	if (cp->memory_migrate)
-		n += snprintf(buf + n, max(buflen - n, 0), "memory_migrate\n");
+		n += snprintf(buf + n, MAX(buflen - n, 0), "memory_migrate\n");
 
 	if (cp->memory_spread_page)
-		n += snprintf(buf + n, max(buflen - n, 0),
+		n += snprintf(buf + n, MAX(buflen - n, 0),
 			      "memory_spread_page\n");
 
 	if (cp->memory_spread_slab)
-		n += snprintf(buf + n, max(buflen - n, 0),
+		n += snprintf(buf + n, MAX(buflen - n, 0),
 			      "memory_spread_slab\n");
 
 	if ((tmp = sprint_mask_buf(cp->cpus)) == NULL)
 		return -1;
-	n += snprintf(buf + n, max(buflen - n, 0), "cpus %s\n", tmp);
+	n += snprintf(buf + n, MAX(buflen - n, 0), "cpus %s\n", tmp);
 	free(tmp);
 	tmp = NULL;
 
 	if ((tmp = sprint_mask_buf(cp->mems)) == NULL)
 		return -1;
-	n += snprintf(buf + n, max(buflen - n, 0), "mems %s\n", tmp);
+	n += snprintf(buf + n, MAX(buflen - n, 0), "mems %s\n", tmp);
 	free(tmp);
 	tmp = NULL;
 

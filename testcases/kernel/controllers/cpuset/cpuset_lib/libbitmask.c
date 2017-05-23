@@ -28,6 +28,7 @@
 #include <stdint.h>
 
 #include "bitmask.h"
+#include "tst_minmax.h"
 
 struct bitmask {
 	unsigned int size;
@@ -112,7 +113,6 @@ void bitmask_free(struct bitmask *bmp)
 
 #define HEXCHUNKSZ 32		/* hex binary format shows 32 bits per chunk */
 #define HEXCHARSZ 8		/* hex ascii format has up to 8 chars per chunk */
-#define max(a,b) ((a) > (b) ? (a) : (b))
 
 /*
  * Write hex word representation of bmp to buf, 32 bits per
@@ -139,7 +139,7 @@ int bitmask_displayhex(char *buf, int buflen, const struct bitmask *bmp)
 
 		for (bit = HEXCHUNKSZ - 1; bit >= 0; bit--)
 			val = val << 1 | _getbit(bmp, chunk * HEXCHUNKSZ + bit);
-		cnt += snprintf(buf + cnt, max(buflen - cnt, 0), "%s%0*x",
+		cnt += snprintf(buf + cnt, MAX(buflen - cnt, 0), "%s%0*x",
 				sep, HEXCHARSZ, val);
 		sep = ",";
 	}
@@ -158,12 +158,12 @@ int bitmask_displayhex(char *buf, int buflen, const struct bitmask *bmp)
 static inline int emit(char *buf, int buflen, int rbot, int rtop, int len)
 {
 	if (len > 0)
-		len += snprintf(buf + len, max(buflen - len, 0), ",");
+		len += snprintf(buf + len, MAX(buflen - len, 0), ",");
 	if (rbot == rtop)
-		len += snprintf(buf + len, max(buflen - len, 0), "%d", rbot);
+		len += snprintf(buf + len, MAX(buflen - len, 0), "%d", rbot);
 	else
 		len +=
-		    snprintf(buf + len, max(buflen - len, 0), "%d-%d", rbot,
+		    snprintf(buf + len, MAX(buflen - len, 0), "%d-%d", rbot,
 			     rtop);
 	return len;
 }

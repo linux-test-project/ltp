@@ -41,7 +41,7 @@
 #define LOOP_CONTROL_FILE "/dev/loop-control"
 
 #define DEV_FILE "test_dev.img"
-#define DEV_SIZE_MB 256
+#define DEV_SIZE_MB 256u
 
 static char dev_path[1024];
 static int device_acquired;
@@ -205,7 +205,7 @@ const char *tst_acquire_device__(unsigned int size)
 	unsigned int acq_dev_size;
 	uint64_t ltp_dev_size;
 
-	acq_dev_size = size > DEV_SIZE_MB ? size : DEV_SIZE_MB;
+	acq_dev_size = MAX(size, DEV_SIZE_MB);
 
 	dev = getenv("LTP_DEV");
 

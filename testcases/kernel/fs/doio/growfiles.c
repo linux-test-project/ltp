@@ -2756,10 +2756,7 @@ int check_file(int fd, int cf_inter, char *filename, int no_file_check)
 
 		rd_cnt = 0;
 		while (rd_cnt < fsize) {
-			if (fsize - rd_cnt > MAX_FC_READ)
-				rd_size = MAX_FC_READ;
-			else
-				rd_size = fsize - rd_cnt;
+			rd_size = MIN(MAX_FC_READ, fsize - rd_cnt);
 
 #if NEWIO
 			ret = lio_read_buffer(fd, io_type, buf, rd_size,

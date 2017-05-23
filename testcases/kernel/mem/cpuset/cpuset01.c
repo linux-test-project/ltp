@@ -109,7 +109,7 @@ static void testcpuset(void)
 		}
 		if (set_mempolicy(MPOL_BIND, nmask, MAXNODES) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "set_mempolicy");
-		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));
+		exit(mem_hog_cpuset(MAX(ncpus, 1)));
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
