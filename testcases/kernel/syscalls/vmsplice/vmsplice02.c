@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/uio.h>
+#include <limits.h>
 
 #include "test.h"
 #include "safe_macros.h"

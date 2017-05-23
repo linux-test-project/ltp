@@ -373,10 +373,6 @@ static void isocketpair(int pf, int type, int proto, int fd[2])
 	fd[1] = connect_fd;
 }
 
-#ifndef MAX
-#define MAX(a, b) ((a) >= (b) ? (a) : (b))
-#endif /* MAX */
-
 static void csum_test(void)
 {
 	fd_set rset, rset_save;

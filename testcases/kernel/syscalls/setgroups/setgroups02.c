@@ -69,6 +69,7 @@
 #include <errno.h>
 #include <pwd.h>
 #include <grp.h>
+#include <sys/param.h>
 
 #include "test.h"
 

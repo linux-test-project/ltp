@@ -38,6 +38,7 @@
 #include "tst_kvercmp.h"
 #include "tst_clone.h"
 #include "tst_kernel.h"
+#include "tst_minmax.h"
 
 /*
  * Reports testcase result.

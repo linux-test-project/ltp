@@ -51,8 +51,6 @@ static struct tcase tcases[] = {
 	{{1, 0},          1},
 };
 
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-
 /*
  * The threshold per one syscall is computed as a sum of:
  *

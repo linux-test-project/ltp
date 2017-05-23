@@ -38,6 +38,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/syscall.h>
+#include <limits.h>
 #include "test.h"
 #include "linux_syscall_numbers.h"
 #include "inotify.h"

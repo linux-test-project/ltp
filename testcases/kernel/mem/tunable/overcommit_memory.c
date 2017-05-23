@@ -79,6 +79,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "test.h"
 #include "safe_macros.h"
 #include "mem.h"

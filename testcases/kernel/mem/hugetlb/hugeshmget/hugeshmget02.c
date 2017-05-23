@@ -50,7 +50,7 @@
  * RESTRICTIONS
  *	none
  */
-
+#include <limits.h>
 #include "hugetlb.h"
 #include "safe_macros.h"
 #include "mem.h"

@@ -43,6 +43,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <limits.h>
 #include "numa_helper.h"
 #include "test.h"
 #include "safe_macros.h"

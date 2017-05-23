@@ -41,6 +41,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <signal.h>
+#include <limits.h>
 #include "config.h"
 #include "test.h"
 #include "safe_macros.h"

@@ -59,6 +59,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
+#include <sys/param.h>
 
 #include "test.h"
 #include "safe_macros.h"

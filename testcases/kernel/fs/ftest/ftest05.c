@@ -61,6 +61,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <sys/param.h>
 #include "test.h"
 #include "libftest.h"
 

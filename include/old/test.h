@@ -62,6 +62,7 @@
 #include "tst_clone.h"
 #include "old_device.h"
 #include "old_tmpdir.h"
+#include "tst_minmax.h"
 
 /*
  * Ensure that NUMSIGS is defined.

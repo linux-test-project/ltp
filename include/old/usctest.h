@@ -34,8 +34,6 @@
 #ifndef __USCTEST_H__
 #define __USCTEST_H__
 
-#include <sys/param.h>
-
 /*
  * Ensure that PATH_MAX is defined
  */
