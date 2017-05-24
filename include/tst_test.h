@@ -192,9 +192,9 @@ int main(int argc, char *argv[])
 
 #endif /* TST_NO_DEFAULT_MAIN */
 
-#define TST_TEST_TCONF(message)                                              \
-        static void tst_do_test(void) { tst_brk(TCONF, "%s", message); };    \
-        static struct tst_test test = { .test_all = tst_do_test, .tid = "" } \
+#define TST_TEST_TCONF(message)                                           \
+        static void tst_do_test(void) { tst_brk(TCONF, "%s", message); }; \
+        static struct tst_test test = { .test_all = tst_do_test }         \
 /*
  * This is a hack to make the testcases link without defining TCID
  */
