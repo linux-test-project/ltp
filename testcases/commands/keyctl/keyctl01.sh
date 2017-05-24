@@ -26,7 +26,6 @@
 #   KEYS: potential uninitialized variable
 #
 
-TST_ID="keyctl01"
 TST_SETUP=setup
 TST_CLEANUP=cleanup
 TST_TESTFUNC=do_test

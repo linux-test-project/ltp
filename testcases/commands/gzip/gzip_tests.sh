@@ -28,7 +28,6 @@
 #			    uncompress all the files available.
 #
 
-TST_ID="gzip"
 TST_CNT=2
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1

@@ -16,7 +16,6 @@
 # Test wc command with some basic options.
 #
 
-TST_ID="wc01"
 TST_CNT=12
 TST_SETUP=setup
 TST_TESTFUNC=do_test

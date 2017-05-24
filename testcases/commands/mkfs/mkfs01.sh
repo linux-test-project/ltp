@@ -16,7 +16,6 @@
 # Test mkfs command with some basic options.
 #
 
-TST_ID="mkfs01"
 TST_CNT=5
 TST_SETUP=setup
 TST_TESTFUNC=test

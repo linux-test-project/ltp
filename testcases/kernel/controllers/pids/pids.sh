@@ -26,7 +26,6 @@
 # Usage
 # ./pids.sh caseno max
 #
-TST_ID="pids"
 TST_CLEANUP=cleanup
 TST_SETUP=setup
 TST_TESTFUNC=do_test

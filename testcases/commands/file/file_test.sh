@@ -24,7 +24,6 @@
 # testing if the file command can recognize some of the commonly
 # used file formats like, tar, tar.gz, rpm, C, ASCII, ELF etc.
 #
-TST_ID="file01"
 TST_CNT=20
 TST_SETUP=setup
 TST_TESTFUNC=do_test

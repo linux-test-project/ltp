@@ -1306,7 +1306,6 @@ WARNING: All identifiers starting with TST_ or tst_ are reserved for the
 # This is a basic test for true shell buildin
 #
 
-TST_ID="true01"
 TST_TESTFUNC=do_test
 . tst_test.sh
 
@@ -1352,7 +1351,6 @@ starts the test.
 # Example test with tests in separate functions
 #
 
-TST_ID="example01"
 TST_TESTFUNC=test
 TST_CNT=2
 . tst_test.sh
@@ -1381,7 +1379,6 @@ found they are executed one by one.
 # Example test with tests in a single function
 #
 
-TST_ID="example02"
 TST_TESTFUNC=do_test
 TST_CNT=2
 . tst_test.sh
@@ -1461,7 +1458,6 @@ variable, if module wasn't found the test will exit with 'TCONF'.
 # Optional test command line parameters
 #
 
-TST_ID="example03"
 TST_OPTS="af:"
 TST_USAGE=usage
 TST_PARSE_ARGS=parse_args
@@ -1516,7 +1512,6 @@ if option has argument, its value in '$2'.
 # Optional test positional paramters
 #
 
-TST_ID="example04"
 TST_POS_ARGS=3
 TST_USAGE=usage
 TST_TESTFUNC=do_test

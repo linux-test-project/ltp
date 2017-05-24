@@ -20,7 +20,6 @@
 # Test du command with some basic options.
 #
 
-TST_ID="du01"
 TST_CNT=23
 TST_SETUP=setup
 TST_TESTFUNC=do_test

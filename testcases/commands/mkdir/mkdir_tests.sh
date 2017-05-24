@@ -22,7 +22,6 @@
 #
 # Basic mkdir tests
 #
-TST_ID="mkdir01"
 TST_CNT=3
 TST_SETUP=setup
 TST_TESTFUNC=test

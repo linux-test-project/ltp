@@ -23,7 +23,6 @@
 #
 # Tests basic cp functionality
 #
-TST_ID="ln01"
 TST_CNT=5
 TST_TESTFUNC=do_test
 TST_SETUP=setup

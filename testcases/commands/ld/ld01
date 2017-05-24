@@ -25,7 +25,6 @@
 CC=${CC:=gcc}
 LD=${LD:=ld}
 
-TST_ID="ld01"
 TST_CNT=5
 TST_TESTFUNC=test
 TST_SETUP=setup

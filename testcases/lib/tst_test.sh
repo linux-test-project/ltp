@@ -374,7 +374,8 @@ if TST_TEST_PATH=$(which $0) 2>/dev/null; then
 fi
 
 if [ -z "$TST_ID" ]; then
-	tst_brk TBROK "TST_ID is not defined"
+	filename=$(basename $0)
+	TST_ID=${filename%%.*}
 fi
 export TST_ID="$TST_ID"
 

@@ -23,7 +23,6 @@
 #
 # Test basic functionality of cpio command
 #
-TST_ID="cpio01"
 TST_TESTFUNC=cpio_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="cpio"

@@ -19,7 +19,6 @@
 #
 # Author: Manoj Iyer <manjo@mail.utexas.edu>
 
-TST_ID="cron_tests01"
 TST_CNT=3
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1

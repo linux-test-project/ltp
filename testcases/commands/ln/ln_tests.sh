@@ -23,7 +23,6 @@
 #
 # Basic test for ln
 #
-TST_ID="ln01"
 TST_CNT=6
 TST_TESTFUNC=do_test
 TST_SETUP=setup

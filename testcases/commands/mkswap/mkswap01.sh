@@ -16,7 +16,6 @@
 # Test mkswap command with some basic options.
 #
 
-TST_ID="mkswap01"
 TST_CNT=10
 TST_SETUP=setup
 TST_TESTFUNC=do_test

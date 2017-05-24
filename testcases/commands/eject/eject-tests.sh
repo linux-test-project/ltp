@@ -24,7 +24,6 @@
 # Tests basic functionality of eject command.
 #
 
-TST_ID="eject01"
 TST_CNT=4
 TST_SETUP=setup
 TST_CLEANUP=cleanup

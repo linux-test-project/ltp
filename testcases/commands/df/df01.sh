@@ -16,7 +16,6 @@
 # Test df command with some basic options.
 #
 
-TST_ID="df01"
 TST_CNT=12
 TST_SETUP=setup
 TST_CLEANUP=cleanup

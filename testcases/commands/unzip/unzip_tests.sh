@@ -24,7 +24,6 @@
 # Tests basic functionality of unzip command.
 #
 
-TST_ID="unzip01"
 TST_SETUP=setup
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1

@@ -24,7 +24,6 @@
 # Creates, lists and extracts an plain, gzip and bzip tar archive.
 #
 
-TST_ID="tar01"
 TST_CNT=6
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1

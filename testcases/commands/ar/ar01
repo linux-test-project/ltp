@@ -22,7 +22,6 @@
 #
 # This is a basic ar command test.
 #
-TST_ID="ar01"
 TST_CNT=17
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1

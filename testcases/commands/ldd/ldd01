@@ -27,7 +27,6 @@
 #     -Ported
 #---------------------------------------------------------------------------
 
-TST_ID=ldd01
 TST_CNT=2
 TST_SETUP=setup
 TST_TESTFUNC=test

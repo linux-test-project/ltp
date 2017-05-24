@@ -15,7 +15,6 @@
 #
 # Test the basic functionality of lsmod command.
 #
-TST_ID="lsmod01"
 TST_TESTFUNC=lsmod_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="lsmod"

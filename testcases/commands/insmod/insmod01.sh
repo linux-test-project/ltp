@@ -16,7 +16,6 @@
 # Test the basic functionality of insmod command.
 #
 
-TST_ID="insmod01"
 TST_CLEANUP=cleanup
 TST_TESTFUNC=do_test
 TST_NEEDS_ROOT=1

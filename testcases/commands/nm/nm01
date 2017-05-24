@@ -24,7 +24,6 @@
 #
 NM=${NM:=nm}
 
-TST_ID="nm01"
 TST_CNT=7
 TST_TESTFUNC=test
 TST_SETUP=setup

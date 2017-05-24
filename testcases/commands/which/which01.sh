@@ -16,7 +16,6 @@
 # Test which command with some basic options.
 #
 
-TST_ID="which01"
 TST_CNT=10
 TST_SETUP=setup
 TST_TESTFUNC=do_test

@@ -27,7 +27,6 @@
 #		  move file1 to file2 and backup the file2.
 #
 
-TST_ID=mv01
 TST_CNT=2
 TST_SETUP=setup
 TST_TESTFUNC=test

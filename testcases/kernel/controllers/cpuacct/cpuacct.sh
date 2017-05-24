@@ -35,7 +35,6 @@
 # 2) Check that sum ltp_test/subgroup*/cpuacct.usage = ltp_test/cpuacct.usage
 #
 
-TST_ID="cpuacct"
 TST_SETUP=setup
 TST_CLEANUP=cleanup
 TST_TESTFUNC=do_test
