@@ -23,10 +23,4 @@
 top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
-
-# XXX (garrcoop): Need to add autoconf checks for JFS.
-# ext4-new-features: This test need to be configured be user.
-# Please read $LTPROOT/README to see the detail information
-FILTER_OUT_DIRS		:= dmapi
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
