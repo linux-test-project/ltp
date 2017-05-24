@@ -315,8 +315,19 @@ test8()
 	# Memory will be allocated using round robin on nodes.
 	Exp_incr=$(echo "$MB / $total_nodes" |bc)
 
-	numactl --interleave=all memhog -r1000000 1MB 2>&1 >/dev/null &
+	numactl --interleave=all memhog -r1000000 1MB 2>&1 >ltp_numa_test8.log &
 	pid=$!
+
+	local retries=20
+	while [ $retries -gt 0 ]; do
+
+		if grep -m1 -q '.' ltp_numa_test8.log; then
+			break
+		fi
+
+		retries=$((retries-1))
+		tst_sleep 50ms
+	done
 
 	for node in $nodes_list; do
 		Mem_curr=$(echo "$(extract_numastat_p $pid $node) * $MB" |bc)
