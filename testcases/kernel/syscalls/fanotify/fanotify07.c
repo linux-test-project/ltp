@@ -240,10 +240,5 @@ static struct tst_test test = {
 };
 
 #else
-
-int main(void)
-{
-	tst_brk(TCONF, "system doesn't have required fanotify support");
-}
-
+	TST_TEST_TCONF("system doesn't have required fanotify support");
 #endif
