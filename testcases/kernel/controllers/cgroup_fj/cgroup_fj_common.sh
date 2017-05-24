@@ -93,7 +93,8 @@ setup()
     tst_tmpdir
     TST_CLEANUP=cleanup
 
-    mount_point=`grep -w $subsystem /proc/mounts | cut -f 2 | cut -d " " -f2`
+    mount_point=`grep -w $subsystem /proc/mounts | grep -w "cgroup" | \
+	cut -f 2 | cut -d " " -f2`
 
     if [ -z "$mount_point" ]; then
         try_umount=1
