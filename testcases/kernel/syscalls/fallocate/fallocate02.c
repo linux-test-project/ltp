@@ -36,6 +36,7 @@
 #include <fcntl.h>
 #include <inttypes.h>
 #include <sys/utsname.h>
+#include <limits.h>
 
 #include "test.h"
 #include "safe_macros.h"
