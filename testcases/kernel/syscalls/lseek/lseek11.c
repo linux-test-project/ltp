@@ -119,7 +119,7 @@ static void get_blocksize(void)
 		SAFE_FSYNC(fd);
 		pos = lseek(fd, 0, SEEK_DATA);
 		if (pos == -1) {
-			if (errno == EINVAL) {
+			if (errno == EINVAL || errno == EOPNOTSUPP) {
 				tst_brk(TCONF | TERRNO, "SEEK_DATA "
 					"and SEEK_HOLE not implemented");
 			}
