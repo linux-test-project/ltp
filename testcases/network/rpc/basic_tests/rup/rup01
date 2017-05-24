@@ -94,7 +94,7 @@ echo "Test rusers with options set...please be patient"
 # Go through matrix of rup options:
 
 echo "rup $RHOST"
-rup $RHOST | grep $RHOST
+rup $RHOST
 [ $? -eq 0 ] || end_testcase "rup $RHOST - failed"
 
 echo "rup -d"
