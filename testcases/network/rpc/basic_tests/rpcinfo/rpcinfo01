@@ -125,16 +125,6 @@ UVNUM=`grep udp $TCtmp/rpc_out | awk '{print $2}'`
 UDPNAME=`grep udp $TCtmp/rpc_out | awk '{print $5}'`
 
 # Go through the matrix of remaining rpcinfo options
-
-# -b option
-echo "rpcinfo -b <prog num> <ver num>"
-rpcinfo -b $UPNUM $UVNUM &
-sleep 5
-[ $? -eq 0 ] || end_testcase "rpcinfo -b <prog num> <ver num> - failed"
-PID=$!
-kill -9 $PID > /dev/null 2>&1
-PID=0
-
 # -d option
 ps -ewf | grep rusersd | grep -v grep
 if [ $? = 1 ]; then
