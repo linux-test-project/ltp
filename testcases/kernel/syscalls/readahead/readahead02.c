@@ -59,7 +59,7 @@ static int opt_fsize;
 static char *opt_fsizestr;
 static int pagesize;
 
-#define MIN_SANE_READAHEAD (4 * 1024)
+#define MIN_SANE_READAHEAD (4u * 1024u)
 
 option_t options[] = {
 	{"s:", &opt_fsize, &opt_fsizestr},
@@ -161,7 +161,7 @@ static void create_testfile(void)
 	char *tmp;
 	size_t i;
 
-	tst_resm(TINFO, "creating test file of size: %ld", testfile_size);
+	tst_resm(TINFO, "creating test file of size: %zu", testfile_size);
 	tmp = SAFE_MALLOC(cleanup, pagesize);
 
 	/* round to page size */
