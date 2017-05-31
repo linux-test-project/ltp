@@ -165,9 +165,15 @@ static void alloc_free_huge_on_node(unsigned int node, size_t size)
 		tst_brk(TBROK | TERRNO, "mbind() failed");
 	}
 
-	numa_bitmask_free(bm);
+	TEST(mlock(mem, size));
+	if (TEST_RETURN) {
+		SAFE_MUNMAP(mem, size);
+		if (TEST_ERRNO == ENOMEM || TEST_ERRNO == EAGAIN)
+			tst_brk(TCONF, "Cannot lock huge pages");
+		tst_brk(TBROK | TTERRNO, "mlock failed");
+	}
 
-	memset(mem, 0, size);
+	numa_bitmask_free(bm);
 
 	SAFE_MUNMAP(mem, size);
 }
