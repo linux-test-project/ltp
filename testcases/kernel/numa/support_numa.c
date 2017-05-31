@@ -39,6 +39,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include "lapi/mmap.h"
 
 /* Global Variables */
 #define MB (1<<20)
