@@ -113,6 +113,26 @@ tst_rhost_run()
 	return $ret
 }
 
+EXPECT_RHOST_PASS()
+{
+	tst_rhost_run -c "$*" > /dev/null
+	if [ $? -eq 0 ]; then
+		tst_resm TPASS "$* passed as expected"
+	else
+		tst_resm TFAIL "$* failed unexpectedly"
+	fi
+}
+
+EXPECT_RHOST_FAIL()
+{
+	tst_rhost_run -c "$* 2> /dev/null"
+	if [ $? -ne 0 ]; then
+		tst_resm TPASS "$* failed as expected"
+	else
+		tst_resm TFAIL "$* passed unexpectedly"
+	fi
+}
+
 # Get test interface names for local/remote host.
 # tst_get_ifaces [TYPE]
 # TYPE: { lhost | rhost }; Default value is 'lhost'.
