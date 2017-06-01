@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/shm.h>
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
@@ -68,12 +69,67 @@ ssize_t safe_msgrcv(const char *file, const int lineno, int msqid, void *msgp,
 int safe_msgctl(const char *file, const int lineno, int msqid, int cmd,
 		struct msqid_ds *buf)
 {
-	int  rval;
+	int rval;
 
 	rval = msgctl(msqid, cmd, buf);
 	if (rval == -1) {
 		tst_brk(TBROK | TERRNO, "%s:%d: msgctl(%i, %i, %p) failed",
 			file, lineno, msqid, cmd, buf);
+	}
+
+	return rval;
+}
+
+int safe_shmget(const char *file, const int lineno, key_t key, size_t size,
+		int shmflg)
+{
+	int rval;
+
+	rval = shmget(key, size, shmflg);
+	if (rval == -1) {
+		tst_brk(TBROK | TERRNO, "%s:%d: shmget(%i, %li, %x) failed",
+			file, lineno, (int)key, size, shmflg);
+	}
+
+	return rval;
+}
+
+void *safe_shmat(const char *file, const int lineno, int shmid,
+		const void *shmaddr, int shmflg)
+{
+	void *rval;
+
+	rval = shmat(shmid, shmaddr, shmflg);
+	if (rval == (void *)-1) {
+		tst_brk(TBROK | TERRNO, "%s:%d: shmat(%i, %p, %x) failed",
+			file, lineno, shmid, shmaddr, shmflg);
+	}
+
+	return rval;
+}
+
+int safe_shmdt(const char *file, const int lineno, const void *shmaddr)
+{
+	int rval;
+
+	rval = shmdt(shmaddr);
+	if (rval == -1) {
+		tst_brk(TBROK | TERRNO, "%s:%d: shmdt(%p) failed",
+			file, lineno, shmaddr);
+	}
+
+	return rval;
+}
+
+int safe_shmctl(const char *file, const int lineno, int shmid, int cmd,
+		struct shmid_ds *buf)
+{
+	int rval;
+
+	rval = shmctl(shmid, cmd, buf);
+	if (rval == -1) {
+		tst_brk(TBROK | TERRNO, "%s:%d: shmctl(%i, %i, %p) failed",
+			file, lineno, shmid, cmd, buf);
 	}
 
 	return rval;
