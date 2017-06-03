@@ -23,7 +23,7 @@ control link is never changed.
 
 Test Links are the place where the stress tests run. For example, test packets
 flow those links. The number of test links must be at least 1. The setting of
-the interfaces connectted to the test links would be changed by the tests.
+the interfaces connected to the test links would be changed by the tests.
 Therefore, each test link should not belong to any external network. It is
 recommended to connect each pair of interfaces with the ether cross cables.
 
@@ -136,13 +136,13 @@ Required environment variables
 
  o LHOST_HWADDRS
    The blank-separated hardware address list of the interfaces which are
-   connectted to a test link at the local host.
+   connected to a test link at the local host.
    This value have to have at least one address. The sequence of the hardware
    address have to be same to the test link sequence.
 
  o RHOST_HWADDRS
    The blank-separated hardware address list of the interfaces which are
-   connectted to a test link at the remote host.
+   connected to a test link at the remote host.
    This value have to have at least one address. The sequence of the hardware
    address have to be same to the test link sequence.
 

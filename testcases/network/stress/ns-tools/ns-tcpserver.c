@@ -276,7 +276,7 @@ void create_listen_socket(struct server_info *info_p)
  * Function: communicate_client()
  *
  * Descripton:
- *  Communicate with the connectted client.
+ *  Communicate with the connected client.
  *  Currently, this function sends tcp segment in the specified second
  *  or recevie SIGHUP
  *
