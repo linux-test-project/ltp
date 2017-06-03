@@ -177,7 +177,7 @@ while [ $ipaddr_pair_num -lt $IP_TOTAL_FOR_TCPIP ]; do
     x=`expr $ipaddr_pair_num \/ 255 % 255`
     y=`expr $ipaddr_pair_num % 255`
     if [ $x -ge 255 ]; then
-	tst_info TINFO "This script cannot add more than $ipaddr_pair_num addresses"
+	tst_resm TINFO "This script cannot add more than $ipaddr_pair_num addresses"
 	break
     fi
 
