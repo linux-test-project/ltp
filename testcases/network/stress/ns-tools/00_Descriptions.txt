@@ -37,9 +37,6 @@ create_file
 find_portbundle
 	Find a bundle of consecutive ports
 
-bg_tcp_traffic
-	Control the background TCP traffic
-
 killall_icmp_traffic
 	Kill all of the icmp traffic utilities (ping or ping6)
 
