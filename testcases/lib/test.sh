@@ -103,11 +103,11 @@ tst_require_root()
 
 tst_exit()
 {
-	if [ -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
+	if [ -n "${TST_CLEANUP:-}" -a -z "${TST_NO_CLEANUP:-}" ]; then
 		$TST_CLEANUP
 	fi
 
-	if [ -n "$LTP_IPC_PATH" -a -f "$LTP_IPC_PATH" ]; then
+	if [ -n "${LTP_IPC_PATH:-}" -a -f "${LTP_IPC_PATH:-}" ]; then
 		rm -f "$LTP_IPC_PATH"
 	fi
 

@@ -91,7 +91,7 @@ tst_rhost_run()
 
 	local output=
 	local ret=0
-	if [ -n "$TST_USE_SSH" ]; then
+	if [ -n "${TST_USE_SSH:-}" ]; then
 		output=`ssh -n -q $user@$RHOST "sh -c \
 			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'RTERR'`
 	elif [ -n "$TST_USE_NETNS" ]; then
