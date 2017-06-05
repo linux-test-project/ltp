@@ -181,7 +181,6 @@ test_flags()
 		do
 			base_op_test "$CPUSET/$filename" "$flags" "$result"
 		done <<- EOF
-			NULL	0
 			0	0
 			1	1
 			-1	WRITE_ERROR
