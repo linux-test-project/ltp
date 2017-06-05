@@ -26,7 +26,6 @@ CLIENT_EXTRA_OPTS=""
 CLEANER=""
 # Program number to register the services to rpcbind
 PROGNUMNOSVC=536875000
-SERVER_STARTUP_SLEEP=1
 
 cleanup()
 {
@@ -57,7 +56,7 @@ EOF
 
 while getopts s:c:e:h arg; do
 	case $arg in
-		s) SERVER="$LTPROOT/testcases/bin/$OPTARG" ;;
+		s) SERVER="$OPTARG" ;;
 		c) CLIENT="$OPTARG" ;;
 		e) CLIENT_EXTRA_OPTS="$OPTARG" ;;
 		h) usage ;;
@@ -66,9 +65,9 @@ done
 
 if [ ! -z "$SERVER" ]; then
 	if `echo "$SERVER" | grep -e '^tirpc'`; then
-		CLEANER="$LTPROOT/testcases/bin/tirpc_cleaner"
+		CLEANER="tirpc_cleaner"
 	else
-		CLEANER="$LTPROOT/testcases/bin/rpc_cleaner"
+		CLEANER="rpc_cleaner"
 	fi
 fi
 
@@ -87,11 +86,14 @@ TST_CLEANUP=cleanup
 
 if [ ! -z "$SERVER" ]; then
 	$SERVER $PROGNUMNOSVC &
-	sleep "$SERVER_STARTUP_SLEEP"
+
+	for i in $(seq 1 10); do
+		rpcinfo -p localhost | grep -q $PROGNUMNOSVC && break
+		[ "$i" -eq 30 ] && tst_brkm TBROK "server not registered"
+		tst_sleep 100ms
+	done
 fi
 
-tst_rhost_run -sc "$CLIENT $(tst_ipaddr) $PROGNUMNOSVC $CLIENT_EXTRA_OPTS"
-
-tst_resm TPASS "Test passed"
+EXPECT_RHOST_PASS $CLIENT $(tst_ipaddr) $PROGNUMNOSVC $CLIENT_EXTRA_OPTS
 
 tst_exit
