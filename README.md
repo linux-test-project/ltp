@@ -38,7 +38,7 @@ If you have git, autoconf, automake, m4, the linux headers and the common
 developer packages installed, the chances are the following will work.
 
 ```
-$ git clone https://github.com/the-linux-test-project/ltp.git
+$ git clone https://github.com/linux-test-project/ltp.git
 $ cd ltp
 $ make autotools
 $ ./configure
