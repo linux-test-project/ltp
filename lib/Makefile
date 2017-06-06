@@ -32,6 +32,12 @@ else
 FILTER_OUT_LIBSRCS	+= tlibio.c tst_path_has_mnt_flags.c tst_safe_sysv_ipc.c
 endif
 
+ifneq ($(ANDROID),1)
+FILTER_OUT_DIRS		+= android_libpthread android_librt
+else
+FILTER_OUT_LIBSRCS	+= tlibio.c tst_path_has_mnt_flags.c
+endif
+
 LIB			:= libltp.a
 
 pc_file			:= $(DESTDIR)/$(datarootdir)/pkgconfig/ltp.pc
