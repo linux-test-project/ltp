@@ -20,10 +20,17 @@
 #include <lapi/fcntl.h>
 #include <lapi/memfd.h>
 
+/* change macros accordingly if any flags need to be added in the future */
+#define FLAGS_ALL_ARRAY_INITIALIZER {MFD_CLOEXEC, MFD_ALLOW_SEALING}
+#define FLAGS_ALL_MASK              (MFD_CLOEXEC | MFD_ALLOW_SEALING)
+
 #define MFD_DEF_SIZE 8192
 
-#define ASSERT_HAVE_MEMFD_CREATE() \
-	assert_have_memfd_create(__FILE__, __LINE__)
+#define GET_MFD_ALL_AVAILABLE_FLAGS() \
+	get_mfd_all_available_flags(__FILE__, __LINE__)
+
+#define MFD_FLAGS_AVAILABLE(flags) \
+	mfd_flags_available(__FILE__, __LINE__, (flags))
 
 #define CHECK_MFD_NEW(name, sz, flags) \
 	check_mfd_new(__FILE__, __LINE__, (name), (sz), (flags))
@@ -89,7 +96,11 @@
 #define CHECK_MFD_NON_GROWABLE_BY_WRITE(fd) \
 	check_mfd_non_growable_by_write(__FILE__, __LINE__, (fd))
 
-void assert_have_memfd_create(const char *filename, const int lineno);
+int mfd_flags_available(const char *filename, const int lineno,
+		unsigned int flags);
+
+int get_mfd_all_available_flags(const char *filename, const int lineno);
+
 int sys_memfd_create(const char *name, unsigned int flags);
 
 int check_fallocate(const char *filename, const int lineno, int fd,

@@ -31,6 +31,8 @@
 static char buf[2048];
 static char term_buf[2048];
 
+static int available_flags;
+
 static const struct tcase {
 	char *descr;
 	char *memfd_name;
@@ -62,7 +64,8 @@ static const struct tcase {
 
 static void setup(void)
 {
-	ASSERT_HAVE_MEMFD_CREATE();
+
+	available_flags = GET_MFD_ALL_AVAILABLE_FLAGS();
 
 	memset(buf, 0xff, sizeof(buf));
 
@@ -73,8 +76,16 @@ static void setup(void)
 static void verify_memfd_create_errno(unsigned int n)
 {
 	const struct tcase *tc;
+	int needed_flags;
 
 	tc = &tcases[n];
+	needed_flags = tc->flags & FLAGS_ALL_MASK;
+
+	if ((available_flags & needed_flags) != needed_flags) {
+		tst_res(TCONF, "test '%s' skipped, flag not implemented",
+					tc->descr);
+		return;
+	}
 
 	TEST(sys_memfd_create(tc->memfd_name, tc->flags));
 	if (TEST_ERRNO != tc->memfd_create_exp_err)

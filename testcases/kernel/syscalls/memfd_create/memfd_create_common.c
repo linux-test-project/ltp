@@ -103,20 +103,44 @@ void check_ftruncate_fail(const char *filename, const int lineno,
 		"ftruncate(%d, %ld) failed as expected", fd, length);
 }
 
-void assert_have_memfd_create(const char *filename, const int lineno)
+int get_mfd_all_available_flags(const char *filename, const int lineno)
 {
-	TEST(sys_memfd_create("dummy_call", 0));
+	unsigned int i;
+	int flag;
+	int flags2test[] = FLAGS_ALL_ARRAY_INITIALIZER;
+	int flags_available = 0;
+
+	if (!MFD_FLAGS_AVAILABLE(0)) {
+		tst_brk_(filename, lineno, TCONF,
+				"memfd_create(0) not implemented");
+	}
+
+	for (i = 0; i < ARRAY_SIZE(flags2test); i++) {
+		flag = flags2test[i];
+
+		if (MFD_FLAGS_AVAILABLE(flag))
+			flags_available |= flag;
+	}
+
+	return flags_available;
+}
+
+int mfd_flags_available(const char *filename, const int lineno,
+		unsigned int flags)
+{
+	TEST(sys_memfd_create("dummy_call", flags));
 	if (TEST_RETURN < 0) {
-		if (TEST_ERRNO == EINVAL) {
-			tst_brk_(filename, lineno, TCONF | TTERRNO,
-				"memfd_create() not implemented");
+		if (TEST_ERRNO != EINVAL) {
+			tst_brk_(filename, lineno, TBROK | TTERRNO,
+					"memfd_create() failed");
 		}
 
-		tst_brk_(filename, lineno, TBROK | TTERRNO,
-			"memfd_create() failed");
+		return 0;
 	}
 
 	SAFE_CLOSE(TEST_RETURN);
+
+	return 1;
 }
 
 int check_mfd_new(const char *filename, const int lineno,

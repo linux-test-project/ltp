@@ -22,6 +22,7 @@
 
 #define _GNU_SOURCE
 
+#include <errno.h>
 #include "tst_test.h"
 #include "memfd_create_common.h"
 
@@ -259,7 +260,16 @@ static void verify_memfd_create(unsigned int n)
 
 static void setup(void)
 {
-	ASSERT_HAVE_MEMFD_CREATE();
+	/*
+	 * For now, all tests in this file require MFD_ALLOW_SEALING flag
+	 * to be implemented, even though that flag isn't always set when
+	 * memfd is created. So don't check anything else and TCONF right away
+	 * is this flag is missing.
+	 */
+	if (!MFD_FLAGS_AVAILABLE(MFD_ALLOW_SEALING)) {
+		tst_brk(TCONF | TTERRNO,
+			"memfd_create(%u) not implemented", MFD_ALLOW_SEALING);
+	}
 }
 
 static struct tst_test test = {
