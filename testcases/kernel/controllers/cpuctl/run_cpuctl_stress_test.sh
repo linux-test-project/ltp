@@ -16,7 +16,7 @@
 #                                                                               #
 #  You should have received a copy of the GNU General Public License            #
 #  along with this program;  if not, write to the Free Software                 #
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA      #
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA #
 #                                                                               #
 #################################################################################
 # Name Of File: run_cpuctl_stress_test.sh                                       #
@@ -55,13 +55,13 @@ export TST_COUNT=1;	# how to tell here ??
 RC=0;			# return code from functions
 NUM_CPUS=1;		# at least 1 cpu is there
 NUM_GROUPS=2;		# min number of groups
-TEST_NUM=$1;            # To run the desired test (1 or 2)
+TEST_NUM=$1;		# To run the desired test (1 or 2)
 TASK_NUM=0;		# The serial number of a task
 TOTAL_TASKS=0;		# Total num of tasks in any test
 TASKS_IN_GROUP=0;	# Total num of tasks in a group
 NICEVALUE=0;
 SCRIPT_PID=$$;
-FILE="stress-678";		# suffix for results file
+FILE="stress-678";	# suffix for results file
 TEST_NAME="CPUCTL NUM_GROUPS vs NUM_TASKS TEST:";
 
 NUM_CPUS=`tst_ncpus`
@@ -75,13 +75,13 @@ cd $LTPROOT/testcases/bin/
 
 usage ()
 {
-  	echo "Could not start cpu controller stress test";
+	echo "Could not start cpu controller stress test";
 	echo "Check entry in file $LTPROOT/testcases/kernel/controllers/test_controllers.sh";
 	echo "usage: run_cpuctl_stress_test.sh test_num";
 	echo "Skipping the test...";
 	exit -1;
 }
-##########################  main   #######################
+##########################  main  #######################
 		# For testcase 1, 2 & 3 N--> $NUM_CPUS
 		# 1,2 & 3 are not heavy stress test
 
@@ -96,7 +96,7 @@ usage ()
 		TASKS_IN_GROUP=$M;
 		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		;;
-	"7" )   # N*M X 1 (N*M groups with 1 task each)
+	"7" )		# N*M X 1 (N*M groups with 1 task each)
 		if [ $N -eq 1 ]
 		then
 			N=2;	# To keep total tasks same as in case 1
@@ -126,7 +126,7 @@ usage ()
 		TEST_NAME="LIGHT GRP vs HEAVY GRP TEST:";
 		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		;;
-	  * )
+		* )
 		usage;
 		;;
 	esac
@@ -148,34 +148,34 @@ usage ()
 
 		if [ -f cpuctl_test03 ]
 		then
-		echo TEST NAME:- $TEST_NAME: $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo Test $TEST_NUM: NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo Test $TEST_NUM: TASKS PER GROUP=$TASKS_IN_GROUP >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo "==========================================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		for i in $(seq 1 $NUM_GROUPS)
-		do
-			MYGROUP=/dev/cpuctl/group_$i
-			for j in $(seq 1 $TASKS_IN_GROUP)
+			echo TEST NAME:- $TEST_NAME: $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo Test $TEST_NUM: NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo Test $TEST_NUM: TASKS PER GROUP=$TASKS_IN_GROUP >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo "==========================================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			for i in $(seq 1 $NUM_GROUPS)
 			do
-			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test03 cpuctl_task_$TASK_NUM ;
-			chmod +x cpuctl_task_$TASK_NUM;
+				MYGROUP=/dev/cpuctl/group_$i
+				for j in $(seq 1 $TASKS_IN_GROUP)
+				do
+				TASK_NUM=`expr $TASK_NUM + 1`;
+				cp cpuctl_test03 cpuctl_task_$TASK_NUM ;
+				chmod +x cpuctl_task_$TASK_NUM;
 
-			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
-			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
-			if [ $? -ne 0 ]
-			then
-				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
-				cleanup;
-				exit -1;
-			else
-				PID[$TASK_NUM]=$!;
-			fi;
-			j=`expr $j + 1`
-			done;		# end j loop
-			i=`expr $i + 1`
-		done;			# end i loop
+				GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+				TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
+				>>$LTPROOT/output/cpuctl_results_$FILE.txt &
+				if [ $? -ne 0 ]
+				then
+					echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+					cleanup;
+					exit -1;
+				else
+					PID[$TASK_NUM]=$!;
+				fi;
+				j=`expr $j + 1`
+				done;		# end j loop
+				i=`expr $i + 1`
+			done;			# end i loop
 		else
 			echo "Source file not compiled..Plz check Makefile...Exiting test"
 			cleanup;
@@ -207,53 +207,53 @@ usage ()
 
 		if [ -f cpuctl_test04 ]
 		then
-		echo TEST NAME:- $TEST_NAME: $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo TASKS PER GROUP=$TASKS_IN_GROUP >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo "===============================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo TEST NAME:- $TEST_NAME: $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo TASKS PER GROUP=$TASKS_IN_GROUP >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo "===============================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 
-		# Create 4 priority windows
-		RANGE1=`expr $NUM_GROUPS / 4`;
-		RANGE2=`expr $RANGE1 + $RANGE1`;
-		RANGE3=`expr $RANGE2 + $RANGE1`;
-		for i in $(seq 1 $NUM_GROUPS)
-		do
-			MYGROUP=/dev/cpuctl/group_$i
-			for j in $(seq 1 $TASKS_IN_GROUP)
+			# Create 4 priority windows
+			RANGE1=`expr $NUM_GROUPS / 4`;
+			RANGE2=`expr $RANGE1 + $RANGE1`;
+			RANGE3=`expr $RANGE2 + $RANGE1`;
+			for i in $(seq 1 $NUM_GROUPS)
 			do
-			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test04 cpuctl_task_$TASK_NUM ;
-			chmod +x cpuctl_task_$TASK_NUM;
+				MYGROUP=/dev/cpuctl/group_$i
+				for j in $(seq 1 $TASKS_IN_GROUP)
+				do
+					TASK_NUM=`expr $TASK_NUM + 1`;
+					cp cpuctl_test04 cpuctl_task_$TASK_NUM ;
+					chmod +x cpuctl_task_$TASK_NUM;
 
-			# Per group nice value change must not affect group/task fairness
-			if [ $i -le $RANGE1 ]
-			then
-				NICEVALUE=-16;
-			elif [ $i -gt $RANGE1 ] && [ $i -le $RANGE2 ]
-			then
-				NICEVALUE=-17;
-			elif [ $i -gt $RANGE2 ] && [ $i -le $RANGE3 ]
-			then
-				NICEVALUE=-18;
-			else
-				NICEVALUE=-19;
-			fi
+					# Per group nice value change must not affect group/task fairness
+					if [ $i -le $RANGE1 ]
+					then
+						NICEVALUE=-16;
+					elif [ $i -gt $RANGE1 ] && [ $i -le $RANGE2 ]
+					then
+						NICEVALUE=-17;
+					elif [ $i -gt $RANGE2 ] && [ $i -le $RANGE3 ]
+					then
+						NICEVALUE=-18;
+					else
+						NICEVALUE=-19;
+					fi
 
-			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
-			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICEVALUE ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
-			if [ $? -ne 0 ]
-			then
-				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
-				cleanup;
-				exit -1;
-			else
-				PID[$TASK_NUM]=$!;
-			fi;
-			j=`expr $j + 1`
-			done;		# end j loop
-			i=`expr $i + 1`
-		done;			# end i loop
+					GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+					TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICEVALUE ./cpuctl_task_$TASK_NUM \
+					>>$LTPROOT/output/cpuctl_results_$FILE.txt &
+					if [ $? -ne 0 ]
+					then
+						echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+						cleanup;
+						exit -1;
+					else
+						PID[$TASK_NUM]=$!;
+					fi;
+					j=`expr $j + 1`
+				done;		# end j loop
+				i=`expr $i + 1`
+			done;			# end i loop
 		else
 			echo "Source file not compiled..Plz check Makefile...Exiting test"
 			cleanup;
@@ -286,41 +286,41 @@ usage ()
 
 		if [ -f cpuctl_test04 ]
 		then
-		echo TEST NAME:- $TEST_NAME: $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo TASKS PER GROUP=VARIABLE >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo "===============================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo TEST NAME:- $TEST_NAME: $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo TASKS PER GROUP=VARIABLE >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo "===============================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 
-		for i in $(seq 1 $NUM_GROUPS)
-		do
-			MYGROUP=/dev/cpuctl/group_$i;
-			if [ $i -eq 1 ]
-			then
-				TASKS_IN_GROUP=$N;
-			else
-				TASKS_IN_GROUP=$M;
-			fi;
-			for j in $(seq 1 $TASKS_IN_GROUP)
+			for i in $(seq 1 $NUM_GROUPS)
 			do
-			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test04 cpuctl_task_$TASK_NUM ;
-			chmod +x cpuctl_task_$TASK_NUM;
+				MYGROUP=/dev/cpuctl/group_$i;
+				if [ $i -eq 1 ]
+				then
+					TASKS_IN_GROUP=$N;
+				else
+					TASKS_IN_GROUP=$M;
+				fi;
+				for j in $(seq 1 $TASKS_IN_GROUP)
+				do
+					TASK_NUM=`expr $TASK_NUM + 1`;
+					cp cpuctl_test04 cpuctl_task_$TASK_NUM ;
+					chmod +x cpuctl_task_$TASK_NUM;
 
-			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
-			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
-			if [ $? -ne 0 ]
-			then
-				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
-				cleanup;
-				exit -1;
-			else
-				PID[$TASK_NUM]=$!;
-			fi;
-			j=`expr $j + 1`
-			done;		# end j loop
-			i=`expr $i + 1`
-		done;			# end i loop
+					GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+					TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
+					>>$LTPROOT/output/cpuctl_results_$FILE.txt &
+					if [ $? -ne 0 ]
+					then
+						echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+						cleanup;
+						exit -1;
+					else
+						PID[$TASK_NUM]=$!;
+					fi;
+					j=`expr $j + 1`
+				done;		# end j loop
+				i=`expr $i + 1`
+			done;			# end i loop
 		else
 			echo "Source file not compiled..Plz check Makefile...Exiting test"
 			cleanup;
@@ -349,7 +349,7 @@ usage ()
 			echo "Succesfully launched def task $! too";
 		fi
 		;;
-	  * )
+		* )
 		usage;
 		;;
 	esac

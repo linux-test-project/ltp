@@ -16,7 +16,7 @@
 #                                                                               #
 #  You should have received a copy of the GNU General Public License            #
 #  along with this program;  if not, write to the Free Software                 #
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA      #
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA #
 #                                                                               #
 #################################################################################
 # Name Of File: run_cpuctl_test.sh                                              #
@@ -51,7 +51,7 @@ export TST_COUNT=1;
 RC=0;			# return code from functions
 NUM_CPUS=1;		# at least 1 cpu is there
 NUM_GROUPS=2;		# min number of groups
-TEST_NUM=$1;            # To run the desired test (1 or 2)
+TEST_NUM=$1;		# To run the desired test (1 or 2)
 TASK_NUM=0;		# The serial number of a task
 TOTAL_TASKS=0;		# Total num of tasks in any test
 TASKS_IN_GROUP=0	# Total num of tasks in a group
@@ -69,19 +69,19 @@ NUM_CPUS=`tst_ncpus`
 		TEST_NAME="FAIRNESS TEST:"
 		FILE="12";
 		;;
-	"3" )   NUM_GROUPS=`expr 2 \* $NUM_CPUS`;
+	"3" )	NUM_GROUPS=`expr 2 \* $NUM_CPUS`;
 		TEST_NAME="GRANULARITY TEST:";
 		FILE=$TEST_NUM;
 		;;
-	"4" )   NUM_GROUPS=$NUM_CPUS;
+	"4" )	NUM_GROUPS=$NUM_CPUS;
 		TEST_NAME="NICE VALUE TEST:";
 		FILE=$TEST_NUM;
 		;;
-	"5" )   NUM_GROUPS=$NUM_CPUS;
+	"5" )	NUM_GROUPS=$NUM_CPUS;
 		TEST_NAME=" TASK MIGRATION TEST:";
 		FILE=$TEST_NUM;
 		;;
-	 *  )  	echo "Could not start cpu controller test";
+	 *  )	echo "Could not start cpu controller test";
 		echo "usage: run_cpuctl_test.sh test_num";
 		echo "Skipping the test...";
 		exit -1;;
@@ -101,25 +101,25 @@ NUM_CPUS=`tst_ncpus`
 	"1" | "3" )
 		if [ -f cpuctl_test01 ]
 		then
-		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo TEST:- $TEST_NAME $TEST_NUM:  >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo NUM_GROUPS=$NUM_GROUPS + 1\(DEF\) >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		for i in $(seq 1 $NUM_GROUPS)
-		do
-			cp cpuctl_test01 cpuctl_task_$i ;
-			chmod +x cpuctl_task_$i;
-			./cpuctl_task_$i $i /dev/cpuctl/group_$i $$ $NUM_CPUS $TEST_NUM \
-			 >>$LTPROOT/output/cpuctl_results_$FILE.txt &
-			if [ $? -ne 0 ]
-			then
-				echo "Error: Could not run ./cpuctl_task_$i"
-				cleanup;
-				exit -1;
-			else
-				PID[$i]=$!;
-			fi
-		done
+			echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo TEST:- $TEST_NAME $TEST_NUM:  >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo NUM_GROUPS=$NUM_GROUPS + 1\(DEF\) >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			for i in $(seq 1 $NUM_GROUPS)
+			do
+				cp cpuctl_test01 cpuctl_task_$i ;
+				chmod +x cpuctl_task_$i;
+				./cpuctl_task_$i $i /dev/cpuctl/group_$i $$ $NUM_CPUS $TEST_NUM \
+				 >>$LTPROOT/output/cpuctl_results_$FILE.txt &
+				if [ $? -ne 0 ]
+				then
+					echo "Error: Could not run ./cpuctl_task_$i"
+					cleanup;
+					exit -1;
+				else
+					PID[$i]=$!;
+				fi
+			done
 		else
 			echo "Source file not compiled..Plz check Makefile...Exiting test"
 			cleanup;
@@ -150,41 +150,41 @@ NUM_CPUS=`tst_ncpus`
 	"4" )
 		if [ -f cpuctl_test02 ]
 		then
-		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo TEST:- $TEST_NAME $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo NUM_GROUPS=$NUM_GROUPS +1 \(DEF\) >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		for i in $(seq 1 $NUM_GROUPS)
-		do
-			MYGROUP=/dev/cpuctl/group_$i
-			TASKS_IN_GROUP=`expr $i \* 2`;
-			for j in $(seq 1 $TASKS_IN_GROUP)
+			echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo TEST:- $TEST_NAME $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo NUM_GROUPS=$NUM_GROUPS +1 \(DEF\) >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			for i in $(seq 1 $NUM_GROUPS)
 			do
-			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test02 cpuctl_task_$TASK_NUM ;
-			chmod +x cpuctl_task_$TASK_NUM;
-			if [ $i -eq 1 ]	# Renice all tasks of group 1
-			then
-				NICELEVEL=$NICEVALUE;
-			else
-				NICELEVEL=0;
-			fi;
+				MYGROUP=/dev/cpuctl/group_$i
+				TASKS_IN_GROUP=`expr $i \* 2`;
+				for j in $(seq 1 $TASKS_IN_GROUP)
+				do
+					TASK_NUM=`expr $TASK_NUM + 1`;
+					cp cpuctl_test02 cpuctl_task_$TASK_NUM ;
+					chmod +x cpuctl_task_$TASK_NUM;
+					if [ $i -eq 1 ]	# Renice all tasks of group 1
+					then
+						NICELEVEL=$NICEVALUE;
+					else
+						NICELEVEL=0;
+					fi;
 
-			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
-			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
-			if [ $? -ne 0 ]
-			then
-				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
-				cleanup;
-				exit -1;
-			else
-				PID[$TASK_NUM]=$!;
-			fi;
-			j=`expr $j + 1`
-			done;		# end j loop
-			i=`expr $i + 1`
-		done;			# end i loop
+					GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+					TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM \
+					>>$LTPROOT/output/cpuctl_results_$FILE.txt &
+					if [ $? -ne 0 ]
+					then
+						echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+						cleanup;
+						exit -1;
+					else
+						PID[$TASK_NUM]=$!;
+					fi;
+					j=`expr $j + 1`
+				done;		# end j loop
+				i=`expr $i + 1`
+			done;			# end i loop
 		else
 			echo "Source file not compiled..Plz check Makefile...Exiting test"
 			cleanup;
@@ -216,35 +216,35 @@ NUM_CPUS=`tst_ncpus`
 	"5" )
 		if [ -f cpuctl_test02 ]
 		then
-		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo TEST:- $TEST_NAME $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		TASKS_IN_GROUP=3;
-		for i in $(seq 1 $NUM_GROUPS)
-		do
-			MYGROUP=/dev/cpuctl/group_$i
-			for j in $(seq 1 $TASKS_IN_GROUP)
+			echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo TEST:- $TEST_NAME $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			echo NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
+			TASKS_IN_GROUP=3;
+			for i in $(seq 1 $NUM_GROUPS)
 			do
-			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test02 cpuctl_task_$TASK_NUM ;
-			chmod +x cpuctl_task_$TASK_NUM;
+				MYGROUP=/dev/cpuctl/group_$i
+				for j in $(seq 1 $TASKS_IN_GROUP)
+				do
+					TASK_NUM=`expr $TASK_NUM + 1`;
+					cp cpuctl_test02 cpuctl_task_$TASK_NUM ;
+					chmod +x cpuctl_task_$TASK_NUM;
 
-			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
-			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
-			if [ $? -ne 0 ]
-			then
-				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
-				cleanup;
-				exit -1;
-			else
-				PID[$TASK_NUM]=$!;
-			fi;
-			j=`expr $j + 1`
-			done;		# end j loop
-			i=`expr $i + 1`
-		done;			# end i loop
+					GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
+					TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
+					>>$LTPROOT/output/cpuctl_results_$FILE.txt &
+					if [ $? -ne 0 ]
+					then
+						echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
+						cleanup;
+						exit -1;
+					else
+						PID[$TASK_NUM]=$!;
+					fi;
+					j=`expr $j + 1`
+				done;		# end j loop
+				i=`expr $i + 1`
+			done;			# end i loop
 		else
 			echo "Source file not compiled..Plz check Makefile...Exiting test"
 			cleanup;
