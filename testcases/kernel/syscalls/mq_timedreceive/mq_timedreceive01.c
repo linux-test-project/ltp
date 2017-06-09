@@ -28,6 +28,10 @@
 #include "tst_sig_proc.h"
 #include "tst_safe_posix_ipc.h"
 
+#define MAX_MSGSIZE     8192
+#define QUEUE_NAME	"/test_mqueue"
+
+static char smsg[MAX_MSGSIZE];
 static struct sigaction act;
 static pid_t pid;
 static int fd, fd_root;
@@ -35,7 +39,7 @@ static struct timespec timeout_ts;
 static struct timespec eintr_ts;
 
 struct test_case {
-	int len;
+	unsigned int len;
 	unsigned prio;
 	struct timespec *rq;
 	int fd;
@@ -46,10 +50,6 @@ struct test_case {
 	void (*setup)(void);
 	void (*cleanup)(void);
 };
-
-#define MAX_MSGSIZE     8192
-
-#define QUEUE_NAME	"/test_mqueue"
 
 static void create_queue(void);
 static void create_queue_nonblock(void);
@@ -175,10 +175,15 @@ static void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 
 static void setup(void)
 {
+	unsigned int i;
+
 	act.sa_handler = sighandler;
 	sigaction(SIGINT, &act, NULL);
 
 	fd_root = SAFE_OPEN("/", O_RDONLY);
+
+	for (i = 0; i < MAX_MSGSIZE; i++)
+		smsg[i] = i;
 }
 
 static void cleanup(void)
@@ -227,12 +232,6 @@ static void open_fd(void)
 
 static void send_msg(int fd, int len, int prio)
 {
-	char smsg[MAX_MSGSIZE];
-	int i;
-
-	for (i = 0; i < len; i++)
-		smsg[i] = i;
-
 	if (mq_timedsend(fd, smsg, len, prio,
 		&((struct timespec){0})) < 0)
 		tst_brk(TBROK | TERRNO, "mq_timedsend failed");
@@ -256,9 +255,10 @@ static void unlink_queue_sig(void)
 
 static void do_test(unsigned int i)
 {
+	unsigned int j;
 	const struct test_case *tc = &tcase[i];
 	char rmsg[MAX_MSGSIZE];
-	unsigned prio;
+	unsigned int prio;
 	size_t msg_len = MAX_MSGSIZE;
 
 	/*
@@ -303,9 +303,17 @@ static void do_test(unsigned int i)
 	}
 
 	if (tc->prio != prio) {
-		tst_res(TFAIL | TTERRNO, "mq_timedreceive wrong prio returned %d, expected %d",
+		tst_res(TFAIL, "mq_timedreceive wrong prio returned %d, expected %d",
 			prio, tc->prio);
 		return;
+	}
+
+	for (j = 0; j < tc->len; j++) {
+		if (rmsg[j] != smsg[j]) {
+			tst_res(TFAIL, "mq_timedreceive wrong data in loop %d returned %d, expected %d",
+			i, rmsg[j], smsg[j]);
+			return;
+		}
 	}
 
 	tst_res(TPASS, "mq_timedreceive returned %ld prio %u", TEST_RETURN, prio);
