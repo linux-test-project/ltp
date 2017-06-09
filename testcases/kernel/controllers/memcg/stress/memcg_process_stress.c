@@ -92,13 +92,16 @@ int main(int argc, char *argv[])
 		interval = 1;
 
 	/* TODO (garrcoop): add error handling. */
+	/* TODO(mw): consider DRYing it */
 	memset(&sigint_action, 0, sizeof(sigint_action));
 	sigint_action.sa_handler = &sigint_handler;
-	sigaction(SIGINT, &sigint_action, NULL);
+	if (sigaction(SIGINT, &sigint_action, NULL) != 0)
+		errx(1, "sigint_action");
 
 	memset(&sigusr_action, 0, sizeof(sigusr_action));
 	sigusr_action.sa_handler = &sigusr_handler;
-	sigaction(SIGUSR1, &sigusr_action, NULL);
+	if (sigaction(SIGUSR1, &sigusr_action, NULL) != 0)
+		errx(1, "sigusr_action");
 
 	while (!flag_exit) {
 		sleep(interval);
