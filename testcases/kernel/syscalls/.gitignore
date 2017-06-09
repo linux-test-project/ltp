@@ -230,6 +230,8 @@
 /fcntl/fcntl33_64
 /fcntl/fcntl34
 /fcntl/fcntl34_64
+/fcntl/fcntl35
+/fcntl/fcntl35_64
 /fdatasync/fdatasync01
 /fdatasync/fdatasync02
 /flistxattr/flistxattr01
