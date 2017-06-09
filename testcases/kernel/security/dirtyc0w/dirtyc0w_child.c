@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <pwd.h>
 
 #include "tst_safe_pthread.h"
