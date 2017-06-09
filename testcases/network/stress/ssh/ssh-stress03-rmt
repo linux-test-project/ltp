@@ -51,7 +51,7 @@ case $ip_ver in
 ;;
 6)
 	localhost="::1"
-	ssh -6 -f -N -L $lport/[$server_ipaddr]/$rport \
+	ssh -6 -f -N -L $lport:[$server_ipaddr]:$rport \
 		root@$server_ipaddr -F $ssh_config
 ;;
 esac
