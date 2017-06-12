@@ -1,5 +1,6 @@
 /******************************************************************************
  * Copyright (c) Crackerjack Project., 2007				      *
+ * Copyright (c) 2017 Google, Inc.                                            *
  *									      *
  * This program is free software;  you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License as published by       *
@@ -18,10 +19,17 @@
  ******************************************************************************/
 
 /*
- * Basic test for the add_key() syscall.
+ * Test that the add_key() syscall correctly handles a NULL payload with nonzero
+ * length.  Specifically, it should fail with EFAULT rather than oopsing the
+ * kernel with a NULL pointer dereference or failing with EINVAL, as it did
+ * before (depending on the key type).  This is a regression test for commit
+ * 5649645d725c ("KEYS: fix dereferencing NULL payload with nonzero length").
  *
- * History:   Porting from Crackerjack to LTP is done by
- *	      Manas Kumar Nayak maknayak@in.ibm.com>
+ * Note that none of the key types that exhibited the NULL pointer dereference
+ * are guaranteed to be built into the kernel, so we just test as many as we
+ * can, in the hope of catching one.  We also test with the "user" key type for
+ * good measure, although it was one of the types that failed with EINVAL rather
+ * than dereferencing NULL.
  */
 
 #include "config.h"
@@ -33,36 +41,61 @@
 
 #ifdef HAVE_LINUX_KEYCTL_H
 struct tcase {
-	char *type;
-	char *desc;
-	void *payload;
-	int plen;
-	int exp_errno;
+	const char *type;
+	size_t plen;
 } tcases[] = {
-	{"user", "firstkey", NULL, 1, EINVAL}
+	/*
+	 * The payload length we test for each key type needs to pass initial
+	 * validation but is otherwise arbitrary.  Note: the "rxrpc_s" key type
+	 * requires a payload of exactly 8 bytes.
+	 */
+	{ "asymmetric",		64 },
+	{ "cifs.idmap",		64 },
+	{ "cifs.spnego",	64 },
+	{ "pkcs7_test",		64 },
+	{ "rxrpc",		64 },
+	{ "rxrpc_s",		 8 },
+	{ "user",		64 },
 };
 #endif /* HAVE_LINUX_KEYCTL_H */
 
 static void verify_add_key(unsigned int i)
 {
 #ifdef HAVE_LINUX_KEYCTL_H
-	TEST(tst_syscall(__NR_add_key, tcases[i].type, tcases[i].desc,
-	                 tcases[i].payload, tcases[i].plen,
-	                 KEY_SPEC_USER_KEYRING));
+	TEST(tst_syscall(__NR_add_key, tcases[i].type, "abc:def",
+			 NULL, tcases[i].plen, KEY_SPEC_PROCESS_KEYRING));
 
 	if (TEST_RETURN != -1) {
-		tst_res(TFAIL, "add_key() passed unexpectedly");
+		tst_res(TFAIL,
+			"add_key() with key type '%s' unexpectedly succeeded",
+			tcases[i].type);
 		return;
 	}
 
-	if (TEST_ERRNO == tcases[i].exp_errno) {
-		tst_res(TPASS | TTERRNO, "add_key() failed expectedly");
+	if (TEST_ERRNO == EFAULT) {
+		tst_res(TPASS, "received expected EFAULT with key type '%s'",
+			tcases[i].type);
 		return;
 	}
 
-	tst_res(TFAIL | TTERRNO,
-	        "add_key() failed unexpectedly, expected %s",
-	        tst_strerrno(tcases[i].exp_errno));
+	if (TEST_ERRNO == ENODEV) {
+		tst_res(TCONF, "kernel doesn't support key type '%s'",
+			tcases[i].type);
+		return;
+	}
+
+	/*
+	 * It's possible for the "asymmetric" key type to be supported, but with
+	 * no asymmetric key parsers registered.  In that case, attempting to
+	 * add a key of type asymmetric will fail with EBADMSG.
+	 */
+	if (TEST_ERRNO == EBADMSG && !strcmp(tcases[i].type, "asymmetric")) {
+		tst_res(TCONF, "no asymmetric key parsers are registered");
+		return;
+	}
+
+	tst_res(TFAIL | TTERRNO, "unexpected error with key type '%s'",
+		tcases[i].type);
 #else
 	tst_brk(TCONF, "linux/keyctl.h was missing upon compilation.");
 #endif /* HAVE_LINUX_KEYCTL_H */
