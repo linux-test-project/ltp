@@ -90,6 +90,8 @@ static void client(void)
 			"sendmsg() failed to send data to server");
 	}
 
+	TST_CHECKPOINT_WAIT(1);
+
 	SAFE_CLOSE(sock_fd1);
 }
 
@@ -136,6 +138,8 @@ static void server(void)
 		tst_res(TPASS, "msg_namelen was set to %u correctly",
 			msg.msg_namelen);
 	}
+
+	TST_CHECKPOINT_WAKE(1);
 
 	SAFE_CLOSE(sock_fd2);
 }
