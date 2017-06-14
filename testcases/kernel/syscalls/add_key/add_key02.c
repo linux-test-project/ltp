@@ -56,6 +56,7 @@ struct tcase {
 	{ "rxrpc",		64 },
 	{ "rxrpc_s",		 8 },
 	{ "user",		64 },
+	{ "logon",              64 },
 };
 #endif /* HAVE_LINUX_KEYCTL_H */
 
