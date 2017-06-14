@@ -97,7 +97,6 @@ exit:
 }
 
 static struct tst_test test = {
-	.tid = "splice04",
 	.test_all = pipe_pipe,
 	.setup = setup,
 	.cleanup = cleanup,

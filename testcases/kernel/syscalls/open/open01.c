@@ -88,7 +88,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "open01",
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_tmpdir = 1,
 	.setup = setup,
