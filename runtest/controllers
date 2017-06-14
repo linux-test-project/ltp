@@ -1,6 +1,7 @@
 #DESCRIPTION:Resource Management testing
 cgroup		cgroup_regression_test.sh
 memcg_regression	memcg_regression_test.sh
+memcg_test_3	memcg_test_3
 memcg_failcnt memcg_failcnt.sh
 memcg_force_empty memcg_force_empty.sh
 memcg_limit_in_bytes memcg_limit_in_bytes.sh
