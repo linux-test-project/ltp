@@ -176,7 +176,7 @@ static void setup(void)
 int main(int argc, char *argv[])
 {
 	int status;
-	int *cinit_no = malloc(sizeof(int));
+	int *cinit_no = malloc(sizeof(int) * 2);
 	pid_t cpid1, cpid2;
 
 	setup();
@@ -192,12 +192,12 @@ int main(int argc, char *argv[])
 	}
 
 	/* Create container 1 */
-	*cinit_no = 1;
-	cpid1 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, cinit_no);
+	cinit_no[0] = 1;
+	cpid1 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, &cinit_no[0]);
 
 	/* Create container 2 */
-	*cinit_no = 2;
-	cpid2 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, cinit_no);
+	cinit_no[1] = 2;
+	cpid2 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, &cinit_no[1]);
 	if (cpid1 < 0 || cpid2 < 0) {
 		tst_resm(TBROK, "parent: clone() failed.");
 	}
