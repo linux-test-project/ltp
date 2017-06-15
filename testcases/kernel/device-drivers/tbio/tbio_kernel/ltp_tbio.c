@@ -117,11 +117,9 @@ out_request:
 
 static int tbio_io(struct block_device *bdev, struct tbio_interface *uptr)
 {
-	int ret;
 	tbio_interface_t inter;
 	struct bio *bio = NULL;
 	int reading = 0, writing = 0;
-	void *buf = NULL;
 	struct request_queue *q = bdev_get_queue(bdev);
 
 	if (copy_from_user(&inter, uptr, sizeof(tbio_interface_t))) {
@@ -150,21 +148,10 @@ static int tbio_io(struct block_device *bdev, struct tbio_interface *uptr)
 		bio = bio_map_user(q, bdev, (unsigned long)inter.data,
 			inter.data_len, reading, GFP_KERNEL);
 
-		if (!bio) {
+		if (IS_ERR(bio)) {
 			prk_err("bio_map_user failed");
-			buf = kmalloc(inter.data_len, q->bounce_gfp | GFP_USER);
-			if (!buf) {
-				prk_err("buffer no memory");
-				return -1;
-			}
-			ret = copy_from_user(buf, inter.data, inter.data_len);
-			if (ret)
-				prk_err("copy_from_user() failed");
-
-			prk_info("buffer %s\n, copy_from_user returns '%d'",
-				(char *)buf, ret);
+			return -1;
 		}
-
 	}
 
 	send_request(q, bio, bdev, &inter, writing);
@@ -283,12 +270,10 @@ static int test_bio_alloc(void)
 static int test_bio_split(struct block_device *bdev,
 			  struct tbio_interface *uptr)
 {
-	int ret;
 	tbio_interface_t inter;
 	struct bio *bio = NULL;
 	struct bio_pair *bio_pairp = NULL;
 	int reading = 0, writing = 0;
-	void *buf = NULL;
 	struct request_queue *q = bdev_get_queue(bdev);
 	if (!q) {
 		prk_err("bdev_get_queue() failed");
@@ -324,18 +309,9 @@ static int test_bio_split(struct block_device *bdev,
 		bio = bio_map_user(q, bdev, (unsigned long)inter.data,
 			inter.data_len, reading, GFP_KERNEL);
 
-		if (!bio) {
+		if (IS_ERR(bio)) {
 			prk_err("bio_map_user failed");
-			buf = kmalloc(inter.data_len, q->bounce_gfp | GFP_USER);
-			if (!buf) {
-				prk_err("buffer no memory");
-				return -1;
-			}
-			ret = copy_from_user(buf, inter.data, inter.data_len);
-			if (ret)
-				prk_err("copy_from_user() failed");
-
-			prk_info("buffer %s", (char *)buf);
+			return -1;
 		} else {
 			bio_pairp = bio_split(bio, 2);
 

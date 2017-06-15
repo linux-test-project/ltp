@@ -56,7 +56,7 @@ int main(int ac, char **av)
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
-		child_stack = malloc(CHILD_STACK_SIZE);
+		child_stack = stack_malloc(CHILD_STACK_SIZE);
 		if (child_stack == NULL)
 			tst_brkm(TBROK, NULL,
 				 "Cannot allocate stack for child");
