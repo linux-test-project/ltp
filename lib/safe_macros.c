@@ -895,3 +895,16 @@ int safe_fsync(const char *file, const int lineno, int fd)
 
 	return rval;
 }
+
+pid_t safe_setsid(const char *file, const int lineno)
+{
+	pid_t rval;
+
+	rval = setsid();
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "%s:%d: setsid() failed", file, lineno);
+	}
+
+	return rval;
+}

@@ -430,4 +430,7 @@ int safe_removexattr(const char *file, const int lineno, const char *path,
 int safe_fsync(const char *file, const int lineno, int fd);
 #define SAFE_FSYNC(fd) safe_fsync(__FILE__, __LINE__, (fd))
 
+int safe_setsid(const char *file, const int lineno);
+#define SAFE_SETSID() safe_setsid(__FILE__, __LINE__)
+
 #endif /* SAFE_MACROS_H__ */
