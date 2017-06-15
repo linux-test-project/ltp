@@ -99,7 +99,7 @@ static void setup(void)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
-	child_stack = malloc(CHILD_STACK_SIZE);
+	child_stack = stack_malloc(CHILD_STACK_SIZE);
 }
 
 static void cleanup(void)

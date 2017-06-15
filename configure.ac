@@ -132,6 +132,15 @@ fi
 
 AC_CONFIG_SUBDIRS([utils/ffsb-6.0-rc2])
 
+AC_ARG_WITH([dmx],
+  [AC_HELP_STRING([--with-dmx],
+    [Have Diablo DMX Memory (default=no)])],
+  [with_dmx=yes],
+)
+if test "x$with_dmx" = xyes; then
+    AC_DEFINE(WITH_DMX, 1, [Define to 1 if you have DMX Memory])
+fi
+
 # END testsuites knobs
 LTP_CHECK_FORTIFY_SOURCE
 LTP_CHECK_CC_WARN_OLDSTYLE

@@ -121,7 +121,7 @@ int main(int ac, char **av)
 
 	setup();
 
-	child_stack = malloc(CHILD_STACK_SIZE);
+	child_stack = stack_malloc(CHILD_STACK_SIZE);
 	if (child_stack == NULL)
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 

@@ -36,4 +36,19 @@ int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
 
 #define clone(...) (use_the_ltp_clone_functions__do_not_use_clone)
 
+#ifdef WITH_DMX
+#include <sys/mman.h>
+
+#ifdef MAP_STACK
+static inline void *stack_malloc(size_t size)
+{
+	void *stack = mmap(NULL, size, PROT_READ | PROT_WRITE,
+					   MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
+	return stack == MAP_FAILED ? NULL : stack;
+}
+#endif
+#else
+#define stack_malloc malloc
+#endif
+
 #endif	/* TST_CLONE_H__ */
