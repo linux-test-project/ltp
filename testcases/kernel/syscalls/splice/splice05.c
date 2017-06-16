@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "tst_test.h"
+#include "splice.h"
 
 #define PIPE_MAX (64*1024)
 
@@ -46,10 +47,9 @@ static struct tst_option options[] = {
 
 static void setup(void)
 {
-	int i, pipe_max_unpriv, pipe_limit;
+	int i, pipe_limit;
 
-	SAFE_FILE_SCANF("/proc/sys/fs/pipe-max-size", "%d", &pipe_max_unpriv);
-	pipe_limit = MIN(pipe_max_unpriv, num_len_data);
+	pipe_limit = get_max_limit(num_len_data);
 	num_len_data = pipe_limit;
 
 	if (tst_parse_int(str_len_data, &num_len_data, 1, pipe_limit)) {
