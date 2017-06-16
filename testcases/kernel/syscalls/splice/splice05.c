@@ -24,6 +24,7 @@
  */
 
 #define _GNU_SOURCE
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -90,7 +91,12 @@ static void pipe_socket(void)
 	for (i = num_len_data; i > 0; i = i - ret) {
 		ret = splice(sv[1], 0, pp2[1], NULL, i, 0);
 		if (ret == -1) {
-			tst_res(TFAIL | TERRNO, "splice error");
+			if (errno == EINVAL) {
+				tst_res(TCONF, "splice does not support "
+					"af_unix sockets");
+			} else {
+				tst_res(TFAIL | TERRNO, "splice error");
+			}
 			goto exit;
 		}
 		SAFE_READ(1, pp2[0], arr_out + num_len_data - i, ret);
