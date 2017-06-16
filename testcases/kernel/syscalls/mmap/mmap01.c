@@ -80,8 +80,8 @@ int main(int ac, char **av)
 		 * with write access.
 		 */
 		errno = 0;
-		addr = mmap(addr, page_sz, PROT_READ | PROT_WRITE,
-			    MAP_FILE | MAP_SHARED | MAP_FIXED, fildes, 0);
+		addr = mmap(NULL, page_sz, PROT_READ | PROT_WRITE,
+			    MAP_FILE | MAP_SHARED, fildes, 0);
 
 		/* Check for the return value of mmap() */
 		if (addr == MAP_FAILED) {
@@ -181,23 +181,6 @@ static void setup(void)
 	if ((dummy = calloc(page_sz, sizeof(char))) == NULL) {
 		tst_brkm(TFAIL, cleanup, "calloc failed (dummy)");
 	}
-
-	/*
-	 * Initialize addr to align with the first segment boundary address
-	 * above the break address of the process.
-	 */
-	addr = (void *)(((intptr_t) sbrk(0) + (SHMLBA - 1)) & ~(SHMLBA - 1));
-
-	/* Set the break address of the process to the addr plus one
-	 * page size.
-	 */
-	if ((intptr_t) sbrk(SHMLBA + page_sz) == -1) {
-		tst_brkm(TFAIL | TERRNO, cleanup,
-			 "sbrk(SHMLBA + page_sz) failed");
-	}
-
-	/* Initialize one page region from addr with 'A' */
-	memset(addr, 'A', page_sz);
 
 	/* Create the command which will be executed in the test */
 	sprintf(cmd_buffer, "grep XYZ %s/%s > /dev/null", Path_name, TEMPFILE);
