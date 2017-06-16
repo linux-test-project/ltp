@@ -46,7 +46,7 @@
 
 static int pipe_max_unpriv;
 static int test_max_unpriv = 4096;
-struct passwd *pw;
+static struct passwd *pw;
 static struct tcase {
 	int exp_sz;
 	int exp_usr;
@@ -78,7 +78,7 @@ static void cleanup(void)
 static int verify_pipe_size(int exp_pip_sz, char *desp)
 {
 	int get_size;
-	int fds[0];
+	int fds[2];
 
 	SAFE_PIPE(fds);
 
@@ -109,11 +109,9 @@ end:
 
 static void do_test(unsigned int n)
 {
-	pid_t pid;
 	struct tcase *tc = &tcases[n];
 
-	pid = SAFE_FORK();
-	if (!pid) {
+	if (!SAFE_FORK()) {
 		if (tc->exp_usr)
 			SAFE_SETUID(pw->pw_uid);
 
