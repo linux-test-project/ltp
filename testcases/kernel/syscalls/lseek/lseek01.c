@@ -1,219 +1,100 @@
 /*
- * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * Copyright (c) International Business Machines  Corp., 2001
+ * 06/2017 modified by Xiao Yang <yangx.jy@cn.fujitsu.com>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
- * Mountain View, CA  94043, or:
- *
- * http://www.sgi.com
- *
- * For further information regarding this notice, see:
- *
- * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- *
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, see <http://www.gnu.org/licenses/>.
  */
-/* $Id: lseek01.c,v 1.5 2009/11/02 13:57:17 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: lseek01
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for lseek(2)
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 3
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: William Roske
- *
- *    CO-PILOT		: Dave Fenner
- *
- *    DATE STARTED	: 03/30/92
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- * 	1.) lseek(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *$
- *    DURATION
- * 	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- * 	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
- *
- *    INTERCASE DEPENDENCIES
- * 	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the lseek(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	lseek(2).
- *
- * 	Setup:
- * 	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- * 	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
-#include <sys/types.h>
-#include <fcntl.h>
+/*
+ * Description:
+ *  lseek() succeeds to set the specified offset according to whence
+ *  and read valid data from this location.
+ */
+
 #include <errno.h>
 #include <string.h>
-#include <signal.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include "test.h"
+#include "tst_test.h"
 
-void setup();
-void cleanup();
+#define WRITE_STR "abcdefg"
+#define TFILE "tfile"
 
-char *TCID = "lseek01";
-int TST_TOTAL = 3;
+static int fd;
+static struct tcase {
+	off_t off;
+	int whence;
+	char *wname;
+	off_t exp_off;
+	char *exp_data;
+} tcases[] = {
+	{4, SEEK_SET, "SEEK_SET", 4, "efg"},
+	{-2, SEEK_CUR, "SEEK_CUR", 5, "fg"},
+	{-4, SEEK_END, "SEEK_END", 3, "defg"},
+};
 
-char Fname[255];
-int Fd;
-
-int Whence[] = { SEEK_SET, SEEK_CUR, SEEK_END, -1 };
-
-int main(int ac, char **av)
+static void verify_lseek(unsigned int n)
 {
-	int lc;
+	char read_buf[64];
+	struct tcase *tc = &tcases[n];
 
-	int ind;
-	int offset;
+	// reset the offset to end of file
+	SAFE_READ(0, fd, read_buf, sizeof(read_buf));
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	tst_parse_opts(ac, av, NULL, NULL);
+	memset(read_buf, 0, sizeof(read_buf));
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
-	setup();
-
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		offset = (lc % 100) * 4096;	/* max size is 100 blocks */
-
-		for (ind = 0; Whence[ind] >= 0; ind++) {
-
-			/*
-			 *  Call lseek(2)
-			 */
-			TEST(lseek(Fd, (long)offset, Whence[ind]));
-
-			/* check return code */
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL,
-					 "lseek(%s, %d, 0) Failed, errno=%d : %s",
-					 Fname, offset, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TPASS,
-					 "lseek(%s, %d, %d) returned %ld",
-					 Fname, offset, Whence[ind],
-					 TEST_RETURN);
-			}
-		}
-
+	TEST(lseek(fd, tc->off, tc->whence));
+	if (TEST_RETURN == (off_t) -1) {
+		tst_res(TFAIL | TTERRNO, "lseek(%s, %ld, %s) failed", TFILE,
+			tc->off, tc->wname);
+		return;
 	}
 
-	cleanup();
-	tst_exit();
-}
+	if (TEST_RETURN != tc->exp_off) {
+		tst_res(TFAIL, "lseek(%s, %ld, %s) returned %ld, expected %ld",
+			TFILE, tc->off, tc->wname, TEST_RETURN, tc->exp_off);
+		return;
+	}
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup(void)
-{
+	SAFE_READ(0, fd, read_buf, sizeof(read_buf));
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
-	sprintf(Fname, "tfile_%d", getpid());
-	if ((Fd = open(Fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 Fname, errno, strerror(errno));
+	if (strcmp(read_buf, tc->exp_data)) {
+		tst_res(TFAIL, "lseek(%s, %ld, %s) read incorrect data",
+			TFILE, tc->off, tc->wname);
+	} else {
+		tst_res(TPASS, "lseek(%s, %ld, %s) read correct data",
+			TFILE, tc->off, tc->wname);
 	}
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup(void)
+static void setup(void)
 {
+	fd = SAFE_OPEN(TFILE, O_RDWR | O_CREAT, 0644);
 
-	/* close the file we have open */
-	if (close(Fd) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", Fname, errno,
-			 strerror(errno));
-	}
-
-	tst_rmdir();
-
+	SAFE_WRITE(1, fd, WRITE_STR, sizeof(WRITE_STR) - 1);
 }
+
+static void cleanup(void)
+{
+	if (fd > 0)
+		SAFE_CLOSE(fd);
+}
+
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_lseek,
+	.needs_tmpdir = 1,
+};
