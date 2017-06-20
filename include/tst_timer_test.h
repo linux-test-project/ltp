@@ -14,36 +14,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#include <sys/select.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <errno.h>
 
-#include "tst_timer_test.h"
+ /*
 
-int sample_fn(int clk_id, long long usec)
-{
-	fd_set readfds;
-	struct timespec tv = tst_us_to_timespec(usec);
+    Timer measuring library.
 
-	FD_ZERO(&readfds);
-	FD_SET(0, &readfds);
+    The test is supposed to define sampling function and set it in the tst_test
+    structure the rest of the work is then done by the library.
+
+    int sample(int clk_id, long long usec)
+    {
+	// Any setup done here
 
 	tst_timer_start(clk_id);
-	TEST(pselect(0, &readfds, NULL, NULL, &tv, NULL));
+	// Call that is being measured sleeps for usec
 	tst_timer_stop();
 	tst_timer_sample();
 
-	if (TEST_RETURN != 0) {
-		tst_res(TFAIL | TTERRNO,
-			"pselect() returned %li on timeout", TEST_RETURN);
-		return 1;
-	}
+	// Any cleanup done here
 
-	return 0;
-}
+	// Non-zero return exits the test
+    }
 
-static struct tst_test test = {
-	.tid = "pselect()",
-	.sample = sample_fn,
-};
+    struct tst_test test = {
+	.tid = "syscall_name()",
+	.sample = sample,
+    };
+
+  */
+
+#ifndef TST_TIMER_TEST__
+#define TST_TIMER_TEST__
+
+#include "tst_test.h"
+#include "tst_timer.h"
+
+void tst_timer_sample(void);
+
+# ifdef TST_NO_DEFAULT_MAIN
+struct tst_test *tst_timer_test_setup(struct tst_test *test);
+# endif /* TST_NO_DEFAULT_MAIN */
+#endif /* TST_TIMER_TEST__ */

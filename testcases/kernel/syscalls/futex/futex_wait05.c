@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (C) 2015-2017 Cyril Hrubis <chrubis@suse.cz>
  *
  * Licensed under the GNU GPLv2 or later.
  * This program is free software;  you can redistribute it and/or modify
@@ -23,64 +23,35 @@
 
 #include <errno.h>
 
-#include "test.h"
+#include "tst_timer_test.h"
 #include "futextest.h"
 
-#define TRESHOLD_US 100000
-
-const char *TCID="futex_wait05";
-const int TST_TOTAL=1;
-
-static void verify_futex_wait(clock_t clk_id, int fflags)
+int sample_fn(int clk_id, long long usec)
 {
-	struct timespec to = {.tv_sec = 0, .tv_nsec = 100010000};
+	struct timespec to = tst_us_to_timespec(usec);
 	futex_t futex = FUTEX_INITIALIZER;
 
 	tst_timer_start(clk_id);
-	TEST(futex_wait(&futex, futex, &to, fflags));
+	TEST(futex_wait(&futex, futex, &to, 0));
 	tst_timer_stop();
+	tst_timer_sample();
 
 	if (TEST_RETURN != -1) {
-		tst_resm(TFAIL, "futex_wait() returned %li, expected -1",
+		tst_res(TFAIL, "futex_wait() returned %li, expected -1",
 		         TEST_RETURN);
-		return;
+		return 1;
 	}
 
 	if (TEST_ERRNO != ETIMEDOUT) {
-
-		tst_resm(TFAIL | TTERRNO, "expected errno=%s",
-		         tst_strerrno(ETIMEDOUT));
-		return;
+		tst_res(TFAIL | TTERRNO, "expected errno=%s",
+		        tst_strerrno(ETIMEDOUT));
+		return 1;
 	}
 
-	if (tst_timespec_lt(tst_timer_elapsed(), to)) {
-		tst_resm(TFAIL,
-		         "futex_wait() woken up prematurely %llius, expected %llius",
-			 tst_timer_elapsed_us(), tst_timespec_to_us(to));
-		return;
-	}
-
-	if (tst_timespec_diff_us(tst_timer_elapsed(), to) > TRESHOLD_US) {
-		tst_resm(TFAIL,
-		         "futex_wait() waited too long %llius, expected %llius",
-			 tst_timer_elapsed_us(), tst_timespec_to_us(to));
-		return;
-	}
-
-	tst_resm(TPASS, "futex_wait() waited %llius, expected %llius",
-	         tst_timer_elapsed_us(), tst_timespec_to_us(to));
+	return 0;
 }
 
-int main(int argc, char *argv[])
-{
-	int lc;
-
-	tst_timer_check(CLOCK_MONOTONIC);
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		verify_futex_wait(CLOCK_MONOTONIC, 0);
-
-	tst_exit();
-}
+static struct tst_test test = {
+	.tid = "futex_wait()",
+	.sample = sample_fn,
+};

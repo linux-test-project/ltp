@@ -1,7 +1,7 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  *  07/2001 Ported by Wayne Boyer
- * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (C) 2015-2017 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,56 +19,34 @@
  */
 
 /*
- * Test Name: nanosleep01
- *
  * Test Description:
  *  nanosleep() should return with value 0 and the process should be
  *  suspended for time specified by timespec structure.
  */
 
 #include <errno.h>
-#include "test.h"
 
-char *TCID = "nanosleep01";
-int TST_TOTAL = 1;
+#include "tst_timer_test.h"
 
-static void setup(void);
-
-int main(int ac, char **av)
+int sample_fn(int clk_id, long long usec)
 {
-	int lc;
-	struct timespec timereq = {.tv_sec = 2, .tv_nsec = 9999};
+	struct timespec t = tst_us_to_timespec(usec);
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	tst_timer_start(clk_id);
+	TEST(nanosleep(&t, NULL));
+	tst_timer_stop();
+	tst_timer_sample();
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_timer_start(CLOCK_MONOTONIC);
-		TEST(nanosleep(&timereq, NULL));
-		tst_timer_stop();
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TERRNO, "nanosleep() failed");
-			continue;
-		}
-
-		if (tst_timespec_lt(tst_timer_elapsed(), timereq)) {
-			tst_resm(TFAIL,
-			         "nanosleep() suspended for %lli us, expected %lli",
-				 tst_timer_elapsed_us(), tst_timespec_to_us(timereq));
-		} else {
-			tst_resm(TPASS, "nanosleep() suspended for %lli us",
-			         tst_timer_elapsed_us());
-		}
+	if (TEST_RETURN != 0) {
+		tst_res(TFAIL | TERRNO,
+			"nanosleep() returned %li", TEST_RETURN);
+		return 1;
 	}
 
-	tst_exit();
+	return 0;
 }
 
-static void setup(void)
-{
-	tst_sig(FORK, DEF_HANDLER, NULL);
-	tst_timer_check(CLOCK_MONOTONIC);
-	TEST_PAUSE;
-}
+static struct tst_test test = {
+	.tid = "nanosleep()",
+	.sample = sample_fn,
+};

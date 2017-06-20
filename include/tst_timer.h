@@ -93,6 +93,32 @@ static inline struct timeval tst_us_to_timeval(long long us)
 }
 
 /*
+ * Converts ms to struct timespec
+ */
+static inline struct timespec tst_ms_to_timespec(long long us)
+{
+	struct timespec ret;
+
+	ret.tv_sec = us / 1000;
+	ret.tv_nsec = (us % 1000) * 1000000;
+
+	return ret;
+}
+
+/*
+ * Converts us to struct timespec
+ */
+static inline struct timespec tst_us_to_timespec(long long us)
+{
+	struct timespec ret;
+
+	ret.tv_sec = us / 1000000;
+	ret.tv_nsec = (us % 1000000) * 1000;
+
+	return ret;
+}
+
+/*
  * Comparsions
  */
 static inline int tst_timespec_lt(struct timespec t1, struct timespec t2)

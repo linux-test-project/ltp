@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2016 Fujitsu Ltd.
- * Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+ *  Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+ * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +18,6 @@
  */
 
 /*
- * Description:
  *  Check that epoll_wait(2) timeouts correctly.
  */
 
@@ -25,121 +25,60 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "test.h"
-#include "safe_macros.h"
-
-char *TCID = "epoll_wait02";
-int TST_TOTAL = 1;
+#include "tst_timer_test.h"
 
 static int epfd, fds[2];
-static char *opt_sleep_ms;
 static struct epoll_event epevs[1] = {
-	{.events = EPOLLIN}
+       {.events = EPOLLIN}
 };
 
-static option_t opts[] = {
-	{"s:", NULL, &opt_sleep_ms},
-	{NULL, NULL, NULL}
-};
-
-static void setup(void);
-static void cleanup(void);
-static void help(void);
-
-int main(int ac, char **av)
+int sample_fn(int clk_id, long long usec)
 {
-	int lc, threshold;
-	long long elapsed_ms, sleep_ms = 100;
+	unsigned int sleep_ms = usec / 1000;
 
-	tst_parse_opts(ac, av, opts, help);
+	tst_timer_start(clk_id);
+	TEST(epoll_wait(epfd, epevs, 1, sleep_ms));
+	tst_timer_stop();
+	tst_timer_sample();
 
-	if (opt_sleep_ms) {
-		sleep_ms = atoll(opt_sleep_ms);
-
-		if (sleep_ms == 0) {
-			tst_brkm(TBROK, NULL,
-				 "Invalid timeout '%s'", opt_sleep_ms);
-		}
+	if (TEST_RETURN != 0) {
+		tst_res(TFAIL | TTERRNO,
+			"epoll_wait() returned %li", TEST_RETURN);
+		return 1;
 	}
 
-	threshold = sleep_ms / 100 + 10;
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		tst_timer_start(CLOCK_MONOTONIC);
-		TEST(epoll_wait(epfd, epevs, 1, sleep_ms));
-		tst_timer_stop();
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "epoll_wait() failed");
-			continue;
-		}
-
-		if (TEST_RETURN != 0) {
-			tst_resm(TFAIL, "epoll_wait() returned %li, expected 0",
-				 TEST_RETURN);
-			continue;
-		}
-
-		elapsed_ms = tst_timer_elapsed_ms();
-
-		if (elapsed_ms < sleep_ms) {
-			tst_resm(TFAIL, "epoll_wait() woken up too early %llims, "
-				 "expected %llims", elapsed_ms, sleep_ms);
-			continue;
-		}
-
-		if (elapsed_ms - sleep_ms > threshold) {
-			tst_resm(TFAIL, "epoll_wait() slept too long %llims, "
-				 "expected %llims, threshold %i",
-				 elapsed_ms, sleep_ms, threshold);
-			continue;
-		}
-
-		tst_resm(TPASS, "epoll_wait() slept %llims, expected %llims, "
-			 "threshold %i", elapsed_ms, sleep_ms, threshold);
-	}
-
-	cleanup();
-	tst_exit();
+	return 0;
 }
 
 static void setup(void)
 {
-	tst_timer_check(CLOCK_MONOTONIC);
-
-	SAFE_PIPE(NULL, fds);
+	SAFE_PIPE(fds);
 
 	epfd = epoll_create(1);
-	if (epfd == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "failed to create epoll instance");
-	}
+	if (epfd == -1)
+		tst_brk(TBROK | TERRNO, "epoll_create()");
 
 	epevs[0].data.fd = fds[0];
 
-	if (epoll_ctl(epfd, EPOLL_CTL_ADD, fds[0], &epevs[0])) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "failed to register epoll target");
-	}
+	if (epoll_ctl(epfd, EPOLL_CTL_ADD, fds[0], &epevs[0]))
+		tst_brk(TBROK | TERRNO, "epoll_clt(..., EPOLL_CTL_ADD, ...)");
 }
 
 static void cleanup(void)
 {
-	if (epfd > 0 && close(epfd))
-		tst_resm(TWARN | TERRNO, "failed to close epfd");
+	if (epfd > 0)
+		SAFE_CLOSE(epfd);
 
-	if (close(fds[0]))
-		tst_resm(TWARN | TERRNO, "close(fds[0]) failed");
+	if (fds[0] > 0)
+		SAFE_CLOSE(fds[0]);
 
-	if (close(fds[1]))
-		tst_resm(TWARN | TERRNO, "close(fds[1]) failed");
+	if (fds[1] > 0)
+		SAFE_CLOSE(fds[1]);
 }
 
-static void help(void)
-{
-	printf("  -s      epoll_wait() timeout length in ms\n");
-}
+static struct tst_test test = {
+	.tid = "epoll_wait()",
+	.sample = sample_fn,
+	.setup = setup,
+	.cleanup = cleanup,
+};

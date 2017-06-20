@@ -53,6 +53,7 @@
 /chroot/chroot04
 /clock_getres/clock_getres01
 /clock_nanosleep/clock_nanosleep01
+/clock_nanosleep/clock_nanosleep02
 /clock_nanosleep2/clock_nanosleep2_01
 /clone/clone01
 /clone/clone02

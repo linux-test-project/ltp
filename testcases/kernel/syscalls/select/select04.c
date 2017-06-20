@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (C) 2015-2017 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,104 +25,49 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-#include "test.h"
-#include "safe_macros.h"
-
-char *TCID = "select04";
-int TST_TOTAL = 1;
-
-static char *opt_sleep_us;
-
-static option_t opts[] = {
-	{"s:", NULL, &opt_sleep_us},
-	{NULL, NULL, NULL},
-};
-
-static void help(void);
-static void setup(void);
-static void cleanup(void);
+#include "tst_timer_test.h"
 
 static int fds[2];
 
-int main(int ac, char **av)
+static int sample_fn(int clk_id, long long usec)
 {
-	int lc, treshold;
-	long long elapsed_us, sleep_us = 100000;
-	struct timeval timeout;
+	struct timeval timeout = tst_us_to_timeval(usec);
 	fd_set sfds;
-
-	tst_parse_opts(ac, av, opts, help);
-
-	if (opt_sleep_us) {
-		sleep_us = atoll(opt_sleep_us);
-
-		if (sleep_us == 0) {
-			tst_brkm(TBROK, NULL, "Invalid timeout '%s'",
-			         opt_sleep_us);
-		}
-	}
-
-	treshold = sleep_us / 100 + 20000;
-
-	setup();
 
 	FD_ZERO(&sfds);
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		FD_SET(fds[0], &sfds);
-		timeout = tst_us_to_timeval(sleep_us);
+	FD_SET(fds[0], &sfds);
 
-		tst_timer_start(CLOCK_MONOTONIC);
-		TEST(select(1, &sfds, NULL, NULL, &timeout));
-		tst_timer_stop();
+	tst_timer_start(clk_id);
+	TEST(select(1, &sfds, NULL, NULL, &timeout));
+	tst_timer_stop();
+	tst_timer_sample();
 
-		if (TEST_RETURN != 0) {
-			tst_resm(TFAIL, "select() haven't timeouted ret=%li",
-				 TEST_RETURN);
-			continue;
-		}
-
-		elapsed_us = tst_timer_elapsed_us();
-
-		if (elapsed_us < sleep_us) {
-			tst_resm(TFAIL,
-			         "select() woken up too early %llius, expected %llius",
-				 elapsed_us, sleep_us);
-			continue;
-		}
-
-		if (elapsed_us - sleep_us > treshold) {
-			tst_resm(TFAIL,
-			         "select() slept too long %llius, expected %llius, threshold %i",
-				 elapsed_us, sleep_us, treshold);
-			continue;
-		}
-
-		tst_resm(TPASS, "select() slept %llius, expected %llius, treshold %i",
-		         elapsed_us, sleep_us, treshold);
+	if (TEST_RETURN != 0) {
+		tst_res(TFAIL | TTERRNO, "select() returned %li", TEST_RETURN);
+		return 1;
 	}
 
-	cleanup();
-	tst_exit();
+	return 0;
 }
 
 static void setup(void)
 {
-	tst_timer_check(CLOCK_MONOTONIC);
-
-	SAFE_PIPE(NULL, fds);
+	SAFE_PIPE(fds);
 }
 
 static void cleanup(void)
 {
-	if (close(fds[0]))
-		tst_resm(TWARN | TERRNO, "close(fds[0]) failed");
+	if (fds[0] > 0)
+		SAFE_CLOSE(fds[0]);
 
-	if (close(fds[1]))
-		tst_resm(TWARN | TERRNO, "close(fds[1]) failed");
+	if (fds[1] > 0)
+		SAFE_CLOSE(fds[1]);
 }
 
-static void help(void)
-{
-	printf("  -s      select() timeout lenght in us\n");
-}
+static struct tst_test test = {
+	.tid = "select()",
+	.sample = sample_fn,
+	.setup = setup,
+	.cleanup = cleanup,
+};

@@ -145,6 +145,9 @@ struct tst_test {
 	void (*test)(unsigned int test_nr);
 	void (*test_all)(void);
 
+	/* Sampling function for timer measurement testcases */
+	int (*sample)(int clk_id, long long usec);
+
 	/* NULL terminated array of resource file names */
 	const char *const *resource_files;
 };
@@ -179,11 +182,11 @@ extern int TEST_ERRNO;
 const char *tst_strerrno(int err);
 const char *tst_strsig(int sig);
 
+void tst_set_timeout(unsigned int timeout);
+
 #ifndef TST_NO_DEFAULT_MAIN
 
 static struct tst_test test;
-
-void tst_set_timeout(unsigned int timeout);
 
 int main(int argc, char *argv[])
 {

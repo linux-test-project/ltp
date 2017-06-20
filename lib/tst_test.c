@@ -30,6 +30,7 @@
 #include "tst_device.h"
 #include "lapi/futex.h"
 #include "tst_ansi_color.h"
+#include "tst_timer_test.h"
 
 #include "old_resource.h"
 #include "old_device.h"
@@ -635,25 +636,44 @@ static const char *get_tid(char *argv[])
 static struct tst_device tdev;
 struct tst_device *tst_device;
 
+static void assert_test_fn(void)
+{
+	int cnt = 0;
+
+	if (tst_test->test)
+		cnt++;
+
+	if (tst_test->test_all)
+		cnt++;
+
+	if (tst_test->sample)
+		cnt++;
+
+	if (!cnt)
+		tst_brk(TBROK, "No test function speficied");
+
+	if (cnt != 1)
+		tst_brk(TBROK, "You can define only one test function");
+
+	if (tst_test->test && !tst_test->tcnt)
+		tst_brk(TBROK, "Number of tests (tcnt) must not be > 0");
+
+	if (!tst_test->test && tst_test->tcnt)
+		tst_brk(TBROK, "You can define tcnt only for test()");
+}
+
 static void do_setup(int argc, char *argv[])
 {
 	if (!tst_test)
 		tst_brk(TBROK, "No tests to run");
 
+	assert_test_fn();
+
+	if (tst_test->sample)
+		tst_test = tst_timer_test_setup(tst_test);
+
 	if (!tst_test->tid)
 		tst_test->tid = get_tid(argv);
-
-	if (!tst_test->test && !tst_test->test_all)
-		tst_brk(TBROK, "No test function speficied");
-
-	if (tst_test->test && tst_test->test_all)
-		tst_brk(TBROK, "You can define either test() or test_all()");
-
-	if (tst_test->test && !tst_test->tcnt)
-		tst_brk(TBROK, "Number of tests (tcnt) must not be > 0");
-
-	if (tst_test->test_all && tst_test->tcnt)
-		tst_brk(TBROK, "You can't define tcnt for test_all()");
 
 	if (tst_test->needs_root && geteuid() != 0)
 		tst_brk(TCONF, "Test needs to be run as root");

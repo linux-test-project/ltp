@@ -27,8 +27,6 @@
 #include "tst_timer.h"
 #include "tst_test.h"
 
-#define MAX_MSEC_DIFF   20
-
 static void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 }
@@ -57,22 +55,6 @@ struct test_case {
  */
 
 static struct test_case tcase[] = {
-	{
-		.clk_id = CLOCK_REALTIME,
-		TYPE_NAME(NORMAL),
-		.flags = 0,
-		.rq = (struct timespec) {.tv_sec = 0, .tv_nsec = 500000000},
-		.exp_ret = 0,
-		.exp_err = 0,
-	},
-	{
-		.clk_id = CLOCK_MONOTONIC,
-		TYPE_NAME(NORMAL),
-		.flags = 0,
-		.rq = (struct timespec) {.tv_sec = 0, .tv_nsec = 500000000},
-		.exp_ret = 0,
-		.exp_err = 0,
-	},
 	{
 		TYPE_NAME(NORMAL),
 		.clk_id = CLOCK_REALTIME,
@@ -110,60 +92,45 @@ static struct test_case tcase[] = {
 void setup(void)
 {
 	SAFE_SIGNAL(SIGINT, sighandler);
-	tst_timer_check(CLOCK_MONOTONIC);
 }
 
 static void do_test(unsigned int i)
 {
 	struct test_case *tc = &tcase[i];
 	struct timespec rm = {0};
-	long long elapsed_ms, expect_ms, remain_ms = 0;
 	pid_t pid = 0;
 
 	tst_res(TINFO, "case %s", tc->desc);
 
-	/* setup */
 	if (tc->ttype == SEND_SIGINT)
 		pid = create_sig_proc(SIGINT, 40, 500000);
 
-	/* test */
-	tst_timer_start(CLOCK_MONOTONIC);
 	TEST(clock_nanosleep(tc->clk_id, tc->flags, &tc->rq, &rm));
-	tst_timer_stop();
-	elapsed_ms = tst_timer_elapsed_ms();
-	expect_ms = tst_timespec_to_ms(tc->rq);
 
-	if (tc->ttype == SEND_SIGINT) {
-		tst_res(TINFO, "remain time: %lds %ldns", rm.tv_sec, rm.tv_nsec);
-		remain_ms = tst_timespec_to_ms(rm);
-	}
-
-	/* cleanup */
 	if (pid) {
 		SAFE_KILL(pid, SIGTERM);
 		SAFE_WAIT(NULL);
 	}
 
-	/* result check */
-	if (!TEST_RETURN && (elapsed_ms < expect_ms - MAX_MSEC_DIFF
-		|| elapsed_ms > expect_ms + MAX_MSEC_DIFF)) {
+	if (tc->ttype == SEND_SIGINT) {
+		long long expect_ms = tst_timespec_to_ms(tc->rq);
+		long long remain_ms = tst_timespec_to_ms(rm);
 
-		tst_res(TFAIL| TTERRNO, "The clock_nanosleep() haven't slept correctly,"
-			" measured %lldms, expected %lldms +- %d",
-			elapsed_ms, expect_ms, MAX_MSEC_DIFF);
-		return;
-	}
+		tst_res(TINFO, "remain time: %lds %ldns", rm.tv_sec, rm.tv_nsec);
 
-	if (tc->ttype == SEND_SIGINT && !rm.tv_sec && !rm.tv_nsec) {
-		tst_res(TFAIL | TTERRNO, "The clock_nanosleep() haven't updated"
-			" timestamp with remaining time");
-		return;
-	}
+		if (!rm.tv_sec && !rm.tv_nsec) {
+			tst_res(TFAIL | TTERRNO,
+				"The clock_nanosleep() haven't updated"
+				" timestamp with remaining time");
+			return;
+		}
 
-	if (tc->ttype == SEND_SIGINT && remain_ms > expect_ms) {
-		tst_res(TFAIL| TTERRNO, "remaining time > requested time (%lld > %lld)",
-			remain_ms, expect_ms);
-		return;
+		if (remain_ms > expect_ms) {
+			tst_res(TFAIL| TTERRNO,
+				"remaining time > requested time (%lld > %lld)",
+				remain_ms, expect_ms);
+			return;
+		}
 	}
 
 	if (TEST_RETURN != tc->exp_ret) {

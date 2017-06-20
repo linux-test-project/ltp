@@ -74,6 +74,7 @@ chroot04 chroot04
 
 clock_getres01 clock_getres01
 clock_nanosleep01 clock_nanosleep01
+clock_nanosleep02 clock_nanosleep02
 clock_nanosleep2_01 clock_nanosleep2_01
 
 clone01 clone01
