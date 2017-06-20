@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * 06/2017 modified by Xiao Yang <yangx.jy@cn.fujitsu.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -17,189 +18,97 @@
  * other software, or any other product whatsoever.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
- * Mountain View, CA  94043, or:
- *
- * http://www.sgi.com
- *
- * For further information regarding this notice, see:
- *
- * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
- *
+ * with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-/* $Id: lseek02.c,v 1.5 2009/10/26 14:55:48 subrata_modak Exp $ */
-/**********************************************************
- *
- *    OS Test - Silicon Graphics, Inc.
- *
- *    TEST IDENTIFIER	: lseek02
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Negative test for lseek(2)
- *
- *    PARENT DOCUMENT	: usctpl01
- *
- *    TEST CASE TOTAL	: 1
- *
- *    WALL CLOCK TIME	: 1
- *
- *    CPU TYPES		: ALL
- *
- *    AUTHOR		: Richard Logan
- *
- *    CO-PILOT		: William Roske
- *
- *    DATE STARTED	: 04/25/94
- *
- *    INITIAL RELEASE	: UNICOS 7.0
- *
- *    TEST CASES
- *
- * 	1.) lseek(2) returns...(See Description)
- *
- *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
- *	(See the parse_opts(3) man page).
- *
- *    OUTPUT SPECIFICATIONS
- *$
- *    DURATION
- * 	Terminates - with frequency and infinite modes.
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    RESOURCES
- * 	None
- *
- *    ENVIRONMENTAL NEEDS
- *      No run-time environmental needs.
- *
- *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
- *
- *    INTERCASE DEPENDENCIES
- * 	None
- *
- *    DETAILED DESCRIPTION
- *	This is a Phase I test for the lseek(2) system call.  It is intended
- *	to provide a limited exposure of the system call, for now.  It
- *	should/will be extended when full functional tests are written for
- *	lseek(2).
- *
- * 	Setup:
- * 	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- * 	  Execute system call
- *	  Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- *
- *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
-#include <sys/types.h>
-#include <fcntl.h>
+/*
+ * DESCRIPTION
+ * 1) lseek(2) fails and sets errno to EBADF when fd is invalid.
+ * 2) lseek(2) fails ans sets errno to EINVAL when whence is invalid.
+ * 3) lseek(2) fails and sets errno to ESPIPE when fd is associated
+ *    with a pipe or FIFO.
+ */
+
 #include <errno.h>
-#include <string.h>
-#include <signal.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include "test.h"
+#include <stdio.h>
+#include "tst_test.h"
 
-void setup();
-void cleanup();
+#define TFILE "tfile"
+#define TFIFO "tfifo"
 
-char *TCID = "lseek02";
-int TST_TOTAL = 1;
+static int bad_fd = -1;
+static int fd, pfd;
+static int pfds[2];
 
-char fname[255];
-int fd;
+static struct tcase {
+	int *fd;
+	int whence;
+	int exp_err;
+} tcases[] = {
+	{&bad_fd, SEEK_SET, EBADF},
+	{&bad_fd, SEEK_CUR, EBADF},
+	{&bad_fd, SEEK_END, EBADF},
+	{&fd, 5, EINVAL},
+	{&fd, -1, EINVAL},
+	{&fd, 7, EINVAL},
+	{&pfd, SEEK_SET, ESPIPE},
+	{&pfd, SEEK_CUR, ESPIPE},
+	{&pfd, SEEK_END, ESPIPE},
+	{&pfds[0], SEEK_SET, ESPIPE},
+	{&pfds[0], SEEK_CUR, ESPIPE},
+	{&pfds[0], SEEK_END, ESPIPE},
+};
 
-int Whence[] = { SEEK_SET, SEEK_CUR, SEEK_END, -1 };
-
-int main(int ac, char **av)
+static void verify_lseek(unsigned int n)
 {
-	int lc;
+	struct tcase *tc = &tcases[n];
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	tst_parse_opts(ac, av, NULL, NULL);
-
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
-	setup();
-
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		/*
-		 *  Call lseek(2)
-		 */
-		TEST(lseek(-1, (long)1, SEEK_SET));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			if (TEST_ERRNO == EBADF)
-
-				tst_resm(TPASS,
-					 "lseek(-1, 1, SEEK_SET) Failed, errno=%d : %s",
-					 TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			else
-				tst_resm(TFAIL,
-					 "lseek(-1, 1, SEEK_SET) Failed, errno=%d : %s, expected %d(EBADF)",
-					 TEST_ERRNO,
-					 strerror(TEST_ERRNO), EBADF);
-		} else {
-
-			tst_resm(TFAIL, "lseek(-1, 1, SEEK_SET) returned %ld",
-				 TEST_RETURN);
-		}
-
+	TEST(lseek(*tc->fd, (off_t) 1, tc->whence));
+	if (TEST_RETURN != (off_t) -1) {
+		tst_res(TFAIL, "lseek(%d, 1, %d) succeeded unexpectedly",
+			*tc->fd, tc->whence);
+			return;
 	}
 
-	cleanup();
-	tst_exit();
+	if (TEST_ERRNO == tc->exp_err) {
+		tst_res(TPASS | TTERRNO, "lseek(%d, 1, %d) failed as expected",
+			*tc->fd, tc->whence);
+	} else {
+		tst_res(TFAIL | TTERRNO, "lseek(%d, 1, %d) failed "
+			"unexpectedly, expected %s", *tc->fd, tc->whence,
+			tst_strerrno(tc->exp_err));
+	}
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
+	fd = SAFE_OPEN(TFILE, O_RDWR | O_CREAT, 0777);
+	SAFE_MKFIFO(TFIFO, 0777);
+	pfd = SAFE_OPEN(TFIFO, O_RDWR, 0777);
+	SAFE_PIPE(pfds);
 }
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
-void cleanup(void)
+static void cleanup(void)
 {
+	if (fd > 0)
+		SAFE_CLOSE(fd);
 
-	tst_rmdir();
+	if (pfd > 0)
+		SAFE_CLOSE(pfd);
 
+	if (pfds[0] > 0)
+		SAFE_CLOSE(pfds[0]);
+
+	if (pfds[1] > 0)
+		SAFE_CLOSE(pfds[1]);
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_lseek,
+	.needs_tmpdir = 1,
+};
