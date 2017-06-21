@@ -37,11 +37,13 @@ static struct tcase {
 	int whence;
 	char *wname;
 	off_t exp_off;
+	ssize_t exp_size;
 	char *exp_data;
 } tcases[] = {
-	{4, SEEK_SET, "SEEK_SET", 4, "efg"},
-	{-2, SEEK_CUR, "SEEK_CUR", 5, "fg"},
-	{-4, SEEK_END, "SEEK_END", 3, "defg"},
+	{4, SEEK_SET, "SEEK_SET", 4, 3, "efg"},
+	{-2, SEEK_CUR, "SEEK_CUR", 5, 2, "fg"},
+	{-4, SEEK_END, "SEEK_END", 3, 4, "defg"},
+	{0, SEEK_END, "SEEK_END", 7, 0, NULL},
 };
 
 static void verify_lseek(unsigned int n)
@@ -67,9 +69,9 @@ static void verify_lseek(unsigned int n)
 		return;
 	}
 
-	SAFE_READ(0, fd, read_buf, sizeof(read_buf));
+	SAFE_READ(1, fd, read_buf, tc->exp_size);
 
-	if (strcmp(read_buf, tc->exp_data)) {
+	if (tc->exp_data && strcmp(read_buf, tc->exp_data)) {
 		tst_res(TFAIL, "lseek(%s, %ld, %s) read incorrect data",
 			TFILE, tc->off, tc->wname);
 	} else {
