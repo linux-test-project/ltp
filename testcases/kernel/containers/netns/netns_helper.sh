@@ -63,8 +63,8 @@ IFCONF_IN6_ARG=""
 
 tst_check_iproute()
 {
-	local cur_ipver=`ip -V`
-	local spe_ipver=$1
+	local cur_ipver="$(ip -V)"
+	local spe_ipver="$1"
 
 	cur_ipver=${cur_ipver##*s}
 
