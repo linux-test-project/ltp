@@ -908,3 +908,17 @@ pid_t safe_setsid(const char *file, const int lineno)
 
 	return rval;
 }
+
+int safe_mknod(const char *file, const int lineno, const char *pathname,
+	mode_t mode, dev_t dev)
+{
+	int rval;
+
+	rval = mknod(pathname, mode, dev);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "%s:%d: mknod() failed", file, lineno);
+	}
+
+	return rval;
+}

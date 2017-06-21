@@ -334,7 +334,6 @@ llseek03 llseek03
 lseek01 lseek01
 lseek02 lseek02
 lseek07 lseek07
-lseek10 lseek10
 lseek11 lseek11
 
 lstat01A symlink01 -T lstat01

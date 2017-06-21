@@ -433,4 +433,9 @@ int safe_fsync(const char *file, const int lineno, int fd);
 int safe_setsid(const char *file, const int lineno);
 #define SAFE_SETSID() safe_setsid(__FILE__, __LINE__)
 
+int safe_mknod(const char *file, const int lineno, const char *pathname,
+	mode_t mode, dev_t dev);
+#define SAFE_MKNOD(pathname, mode, dev) \
+	safe_mknod(__FILE__, __LINE__, (pathname), (mode), (dev))
+
 #endif /* SAFE_MACROS_H__ */

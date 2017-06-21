@@ -33,13 +33,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "tst_test.h"
 
 #define TFILE "tfile"
-#define TFIFO "tfifo"
+#define TFIFO1 "tfifo1"
+#define TFIFO2 "tfifo2"
 
 static int bad_fd = -1;
-static int fd, pfd;
+static int fd, pfd1, pfd2;
 static int pfds[2];
 
 static struct tcase {
@@ -53,12 +55,15 @@ static struct tcase {
 	{&fd, 5, EINVAL},
 	{&fd, -1, EINVAL},
 	{&fd, 7, EINVAL},
-	{&pfd, SEEK_SET, ESPIPE},
-	{&pfd, SEEK_CUR, ESPIPE},
-	{&pfd, SEEK_END, ESPIPE},
+	{&pfd1, SEEK_SET, ESPIPE},
+	{&pfd1, SEEK_CUR, ESPIPE},
+	{&pfd1, SEEK_END, ESPIPE},
 	{&pfds[0], SEEK_SET, ESPIPE},
 	{&pfds[0], SEEK_CUR, ESPIPE},
 	{&pfds[0], SEEK_END, ESPIPE},
+	{&pfd2, SEEK_SET, ESPIPE},
+	{&pfd2, SEEK_CUR, ESPIPE},
+	{&pfd2, SEEK_END, ESPIPE},
 };
 
 static void verify_lseek(unsigned int n)
@@ -85,9 +90,11 @@ static void verify_lseek(unsigned int n)
 static void setup(void)
 {
 	fd = SAFE_OPEN(TFILE, O_RDWR | O_CREAT, 0777);
-	SAFE_MKFIFO(TFIFO, 0777);
-	pfd = SAFE_OPEN(TFIFO, O_RDWR, 0777);
+	SAFE_MKFIFO(TFIFO1, 0777);
+	pfd1 = SAFE_OPEN(TFIFO1, O_RDWR, 0777);
 	SAFE_PIPE(pfds);
+	SAFE_MKNOD(TFIFO2, S_IFIFO | 0777, 0);
+	pfd2 = SAFE_OPEN(TFIFO2, O_RDWR, 0777);
 }
 
 static void cleanup(void)
@@ -95,14 +102,17 @@ static void cleanup(void)
 	if (fd > 0)
 		SAFE_CLOSE(fd);
 
-	if (pfd > 0)
-		SAFE_CLOSE(pfd);
+	if (pfd1 > 0)
+		SAFE_CLOSE(pfd1);
 
 	if (pfds[0] > 0)
 		SAFE_CLOSE(pfds[0]);
 
 	if (pfds[1] > 0)
 		SAFE_CLOSE(pfds[1]);
+
+	if (pfd2 > 0)
+		SAFE_CLOSE(pfd2);
 }
 
 static struct tst_test test = {
