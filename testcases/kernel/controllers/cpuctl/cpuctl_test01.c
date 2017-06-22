@@ -91,8 +91,8 @@ int main(int argc, char *argv[])
 	pid_t pid;
 	gid_t my_group_num;	/* A number attached with a group */
 	int fd;			/* A descriptor to open a fifo for synchronized start */
-	int first_counter = 0;	/* To take n number of readings */
-	int second_counter = 0;	/* To track number of times the base value of shares has been changed */
+	int interval_cnt = 0;	/* To take n number of readings */
+	int test_set_cnt = 0;	/* To track number of times the base value of shares has been changed */
 	double total_cpu_time,	/* Accumulated cpu time */
 	 delta_cpu_time,	/* Time the task could run on cpu(s) (in an interval) */
 	 prev_cpu_time = 0;
@@ -209,12 +209,12 @@ int main(int argc, char *argv[])
 		fprintf(stdout, "task-%d:CPU TIME{calc:-%6.2f(s)i.e. %6.2f(%%) exp:-%6.2f(%%)}\
 with %lu(shares) in %lu (s) INTERVAL\n", my_group_num, delta_cpu_time, mytime,
 			exp_cpu_time, myshares, delta_time);
-		first_counter++;
+		interval_cnt++;
 
-		if (first_counter >= NUM_INTERVALS) {	/* Take n sets of readings for each shares value */
-			first_counter = 0;
-			second_counter++;
-			if (second_counter >= NUM_SETS)
+		if (interval_cnt >= NUM_INTERVALS) {	/* Take n sets of readings for each shares value */
+			interval_cnt = 0;
+			test_set_cnt++;
+			if (test_set_cnt >= NUM_SETS)
 				exit(0);	/* This task is done with its job */
 
 			/* Change share values depending on the test_num */
