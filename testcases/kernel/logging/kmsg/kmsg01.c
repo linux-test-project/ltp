@@ -43,8 +43,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "config.h"
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 #include "linux_syscall_numbers.h"
 
 #define MSG_PREFIX "LTP kmsg01 "
@@ -54,9 +53,6 @@
 #define NUM_OVERWRITE_MSGS 1024
 #define READ_TIMEOUT 5
 
-char *TCID = "kmsg01";
-static void setup(void);
-static void cleanup(void);
 
 /*
  * inject_msg - write message to /dev/kmsg
@@ -71,9 +67,9 @@ static int inject_msg(const char *msg)
 	int f;
 	f = open("/dev/kmsg", O_WRONLY);
 	if (f < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "failed to open /dev/kmsg");
+		tst_brk(TBROK | TERRNO, "failed to open /dev/kmsg");
 	TEST(write(f, msg, strlen(msg)));
-	SAFE_CLOSE(cleanup, f);
+	SAFE_CLOSE(f);
 	errno = TEST_ERRNO;
 	return TEST_RETURN;
 }
@@ -99,7 +95,7 @@ static int find_msg(int fd, const char *text_to_find, char *buf, int bufsize,
 	if (fd < 0) {
 		f = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 		if (f < 0)
-			tst_brkm(TBROK, cleanup, "failed to open /dev/kmsg");
+			tst_brk(TBROK, "failed to open /dev/kmsg");
 	} else {
 		f = fd;
 	}
@@ -114,8 +110,7 @@ static int find_msg(int fd, const char *text_to_find, char *buf, int bufsize,
 				/* current message was overwritten */
 				continue;
 			else
-				tst_brkm(TBROK|TTERRNO, cleanup,
-					"failed to read /dev/kmsg");
+				tst_brk(TBROK|TTERRNO, "err reading /dev/kmsg");
 		} else if (TEST_RETURN < bufsize) {
 			/* lines from kmsg are not NULL terminated */
 			msg[TEST_RETURN] = '\0';
@@ -128,7 +123,7 @@ static int find_msg(int fd, const char *text_to_find, char *buf, int bufsize,
 		}
 	}
 	if (fd < 0)
-		SAFE_CLOSE(cleanup, f);
+		SAFE_CLOSE(f);
 
 	if (msg_found)
 		return 0;
@@ -175,7 +170,7 @@ static int timed_read(int fd, int timeout_sec)
 	ret = select(fd + 1, &read_fds, 0, 0, &timeout);
 	switch (ret) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "select failed");
+		tst_brk(TBROK|TERRNO, "select failed");
 	case 0:
 		/* select timed out */
 		return -2;
@@ -203,19 +198,19 @@ static int timed_read_kmsg(int fd, int timeout_sec)
 	char msg[MAX_MSGSIZE];
 
 	if (pipe(pipefd) != 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "pipe failed");
+		tst_brk(TBROK|TERRNO, "pipe failed");
 
 	child = fork();
 	switch (child) {
 	case -1:
-		tst_brkm(TBROK|TERRNO, cleanup, "failed to fork");
+		tst_brk(TBROK|TERRNO, "failed to fork");
 	case 0:
 		/* child does all the reading and keeps writing to
 		 * pipe to let parent know that it didn't block */
 		close(pipefd[0]);
 		while (1) {
 			if (write(pipefd[1], "", 1) == -1)
-				tst_brkm(TBROK|TERRNO, NULL, "write to pipe");
+				tst_brk(TBROK|TERRNO, "write to pipe");
 			TEST(read(fd, msg, MAX_MSGSIZE));
 			if (TEST_RETURN == 0)
 				break;
@@ -228,19 +223,19 @@ static int timed_read_kmsg(int fd, int timeout_sec)
 		close(pipefd[1]);
 		exit(ret);
 	}
-	SAFE_CLOSE(cleanup, pipefd[1]);
+	SAFE_CLOSE(pipefd[1]);
 
 	/* parent reads pipe until it reaches eof or until read times out */
 	do {
 		TEST(timed_read(pipefd[0], timeout_sec));
 	} while (TEST_RETURN > 0);
-	SAFE_CLOSE(cleanup, pipefd[0]);
+	SAFE_CLOSE(pipefd[0]);
 
 	/* child is blocked, kill it */
 	if (TEST_RETURN == -2)
 		kill(child, SIGTERM);
 	if (waitpid(child, &status, 0) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		tst_brk(TBROK | TERRNO, "waitpid");
 	if (WIFEXITED(status)) {
 		if (WEXITSTATUS(status) == 0) {
 			return 0;
@@ -256,35 +251,35 @@ static void test_read_nonblock(void)
 {
 	int fd;
 
-	tst_resm(TINFO, "TEST: nonblock read");
+	tst_res(TINFO, "TEST: nonblock read");
 	fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 	if (fd < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "failed to open /dev/kmsg");
+		tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
 
 	TEST(timed_read_kmsg(fd, READ_TIMEOUT));
 	if (TEST_RETURN == -1 && TEST_ERRNO == EAGAIN)
-		tst_resm(TPASS, "non-block read returned EAGAIN");
+		tst_res(TPASS, "non-block read returned EAGAIN");
 	else
-		tst_resm(TFAIL|TTERRNO, "non-block read returned: %ld",
+		tst_res(TFAIL|TTERRNO, "non-block read returned: %ld",
 			TEST_RETURN);
-	SAFE_CLOSE(cleanup, fd);
+	SAFE_CLOSE(fd);
 }
 
 static void test_read_block(void)
 {
 	int fd;
 
-	tst_resm(TINFO, "TEST: blocking read");
+	tst_res(TINFO, "TEST: blocking read");
 	fd = open("/dev/kmsg", O_RDONLY);
 	if (fd < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "failed to open /dev/kmsg");
+		tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
 
 	TEST(timed_read_kmsg(fd, READ_TIMEOUT));
 	if (TEST_RETURN == -2)
-		tst_resm(TPASS, "read blocked");
+		tst_res(TPASS, "read blocked");
 	else
-		tst_resm(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
-	SAFE_CLOSE(cleanup, fd);
+		tst_res(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
+	SAFE_CLOSE(fd);
 }
 
 static void test_partial_read(void)
@@ -292,17 +287,17 @@ static void test_partial_read(void)
 	char msg[MAX_MSGSIZE];
 	int fd;
 
-	tst_resm(TINFO, "TEST: partial read");
+	tst_res(TINFO, "TEST: partial read");
 	fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 	if (fd < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "failed to open /dev/kmsg");
+		tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
 
 	TEST(read(fd, msg, 1));
 	if (TEST_RETURN < 0)
-		tst_resm(TPASS|TTERRNO, "read failed as expected");
+		tst_res(TPASS|TTERRNO, "read failed as expected");
 	else
-		tst_resm(TFAIL, "read returned: %ld", TEST_RETURN);
-	SAFE_CLOSE(cleanup, fd);
+		tst_res(TFAIL, "read returned: %ld", TEST_RETURN);
+	SAFE_CLOSE(fd);
 }
 
 static void test_inject(void)
@@ -312,8 +307,9 @@ static void test_inject(void)
 	unsigned long prefix, seqno, seqno_last = 0;
 	int i, facility, prio;
 
-	tst_resm(TINFO, "TEST: injected messages appear in /dev/kmsg");
+	tst_res(TINFO, "TEST: injected messages appear in /dev/kmsg");
 
+	srand(time(NULL));
 	/* test all combinations of prio 0-7, facility 0-15 */
 	for (i = 0; i < 127; i++) {
 		prio = (i & 7);
@@ -323,23 +319,23 @@ static void test_inject(void)
 		sprintf(imsg_prefixed, "<%d>%s", i, imsg);
 
 		if (inject_msg(imsg_prefixed) == -1) {
-			tst_resm(TFAIL|TERRNO, "inject failed");
+			tst_res(TFAIL|TERRNO, "inject failed");
 			return;
 		}
 
 		/* check that message appears in log */
 		if (find_msg(-1, imsg, tmp, sizeof(tmp), 0) == -1) {
-			tst_resm(TFAIL, "failed to find: %s", imsg);
+			tst_res(TFAIL, "failed to find: %s", imsg);
 			return;
 		}
 
 		/* check that facility is not 0 (LOG_KERN). */
 		if (get_msg_fields(tmp, &prefix, &seqno) != 0) {
-			tst_resm(TFAIL, "failed to parse seqid: %s", tmp);
+			tst_res(TFAIL, "failed to parse seqid: %s", tmp);
 			return;
 		}
 		if (prefix >> 3 == 0) {
-			tst_resm(TFAIL, "facility 0 found: %s", tmp);
+			tst_res(TFAIL, "facility 0 found: %s", tmp);
 			return;
 		}
 
@@ -347,14 +343,14 @@ static void test_inject(void)
 		if (seqno > seqno_last) {
 			seqno_last = seqno;
 		} else {
-			tst_resm(TFAIL, "seqno doesn't grow: %lu, "
+			tst_res(TFAIL, "seqno doesn't grow: %lu, "
 				"last: %lu", seqno, seqno_last);
 			return;
 		}
 	}
 
-	tst_resm(TPASS, "injected messages found in log");
-	tst_resm(TPASS, "sequence numbers grow as expected");
+	tst_res(TPASS, "injected messages found in log");
+	tst_res(TPASS, "sequence numbers grow as expected");
 }
 
 static void test_read_returns_first_message(void)
@@ -368,30 +364,29 @@ static void test_read_returns_first_message(void)
 	 * If this read fails with EPIPE, first message was overwritten and
 	 * we should retry the whole test. If it still fails after
 	 * NUM_READ_RETRY attempts, report TWARN */
-	tst_resm(TINFO, "TEST: mult. readers will get same first message");
+	tst_res(TINFO, "TEST: mult. readers will get same first message");
 	while (j) {
 		fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 		if (fd < 0)
-			tst_brkm(TBROK|TERRNO, cleanup,
-				"failed to open /dev/kmsg");
+			tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
 
 		for (i = 0; i < NUM_READ_MSGS; i++) {
 			if (find_msg(-1, "", msg, sizeof(msg), 1) != 0)
-				tst_resm(TFAIL, "failed to find any message");
+				tst_res(TFAIL, "failed to find any message");
 			if (get_msg_fields(msg, NULL, &seqno[i]) != 0)
-				tst_resm(TFAIL, "failed to parse seqid: %s",
+				tst_res(TFAIL, "failed to parse seqid: %s",
 					msg);
 		}
 
 		TEST(read(fd, msg, sizeof(msg)));
-		SAFE_CLOSE(cleanup, fd);
+		SAFE_CLOSE(fd);
 		if (TEST_RETURN != -1)
 			break;
 
 		if (TEST_ERRNO == EPIPE)
-			tst_resm(TINFO, "msg overwritten, retrying");
+			tst_res(TINFO, "msg overwritten, retrying");
 		else
-			tst_resm(TFAIL|TTERRNO, "read failed");
+			tst_res(TFAIL|TTERRNO, "read failed");
 
 		/* give a moment to whoever overwrote first message to finish */
 		usleep(100000);
@@ -399,7 +394,7 @@ static void test_read_returns_first_message(void)
 	}
 
 	if (!j) {
-		tst_resm(TWARN, "exceeded: %d attempts", NUM_READ_RETRY);
+		tst_res(TWARN, "exceeded: %d attempts", NUM_READ_RETRY);
 		return;
 	}
 
@@ -407,11 +402,11 @@ static void test_read_returns_first_message(void)
 		if (seqno[i] != seqno[i + 1])
 			msgs_match = 0;
 	if (msgs_match) {
-		tst_resm(TPASS, "all readers got same message on first read");
+		tst_res(TPASS, "all readers got same message on first read");
 	} else {
-		tst_resm(TFAIL, "readers got different messages");
+		tst_res(TFAIL, "readers got different messages");
 		for (i = 0; i < NUM_READ_MSGS; i++)
-			tst_resm(TINFO, "msg%d: %lu\n", i, seqno[i]);
+			tst_res(TINFO, "msg%d: %lu\n", i, seqno[i]);
 	}
 }
 
@@ -424,53 +419,52 @@ static void test_messages_overwritten(void)
 
 	/* Keep injecting messages until we overwrite first one.
 	 * We know first message is overwritten when its seqno changes */
-	tst_resm(TINFO, "TEST: read returns EPIPE when messages get "
+	tst_res(TINFO, "TEST: read returns EPIPE when messages get "
 		"overwritten");
 	fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 	if (fd < 0)
-		tst_brkm(TBROK|TERRNO, cleanup, "failed to open /dev/kmsg");
+		tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
 
 	if (find_msg(-1, "", msg, sizeof(msg), 1) == 0
 		&& get_msg_fields(msg, NULL, &first_seqno) == 0) {
-		tst_resm(TINFO, "first seqno: %lu", first_seqno);
+		tst_res(TINFO, "first seqno: %lu", first_seqno);
 	} else {
-		tst_brkm(TBROK, cleanup, "failed to get first seq. number");
+		tst_brk(TBROK, "failed to get first seq. number");
 	}
 
 	while (1) {
 		if (find_msg(-1, "", msg, sizeof(msg), 1) != 0
 				|| get_msg_fields(msg, NULL, &seqno) != 0) {
-			tst_resm(TFAIL, "failed to get first seq. number");
+			tst_res(TFAIL, "failed to get first seq. number");
 			break;
 		}
 		if (first_seqno != seqno) {
 			/* first message was overwritten */
-			tst_resm(TINFO, "first seqno now: %lu", seqno);
+			tst_res(TINFO, "first seqno now: %lu", seqno);
 			break;
 		}
 		for (i = 0; i < NUM_OVERWRITE_MSGS; i++) {
 			if (inject_msg(filler_str) == -1)
-				tst_brkm(TBROK|TERRNO, cleanup,
-					"failed write to /dev/kmsg");
+				tst_brk(TBROK|TERRNO, "err write to /dev/kmsg");
 		}
 	}
 
 	/* first message is overwritten, so this next read should fail */
 	TEST(read(fd, msg, sizeof(msg)));
 	if (TEST_RETURN == -1 && TEST_ERRNO == EPIPE)
-		tst_resm(TPASS, "read failed with EPIPE as expected");
+		tst_res(TPASS, "read failed with EPIPE as expected");
 	else
-		tst_resm(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
+		tst_res(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
 
 	/* seek position is updated to the next available record */
-	tst_resm(TINFO, "TEST: Subsequent reads() will return available "
+	tst_res(TINFO, "TEST: Subsequent reads() will return available "
 		"records again");
 	if (find_msg(fd, "", msg, sizeof(msg), 1) != 0)
-		tst_resm(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
+		tst_res(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
 	else
-		tst_resm(TPASS, "after EPIPE read returned next record");
+		tst_res(TPASS, "after EPIPE read returned next record");
 
-	SAFE_CLOSE(cleanup, fd);
+	SAFE_CLOSE(fd);
 }
 
 static int read_msg_seqno(int fd, unsigned long *seqno)
@@ -478,16 +472,14 @@ static int read_msg_seqno(int fd, unsigned long *seqno)
 	char msg[MAX_MSGSIZE];
 
 	TEST(read(fd, msg, sizeof(msg)));
-	if (TEST_RETURN == -1 && TEST_ERRNO != EPIPE) {
-		tst_brkm(TBROK|TTERRNO, cleanup,
-			"failed to read /dev/kmsg");
-	}
+	if (TEST_RETURN == -1 && TEST_ERRNO != EPIPE)
+		tst_brk(TBROK|TTERRNO, "failed to read /dev/kmsg");
 
 	if (TEST_ERRNO == EPIPE)
 		return -1;
 
 	if (get_msg_fields(msg, NULL, seqno) != 0) {
-		tst_resm(TFAIL, "failed to parse seqid: %s", msg);
+		tst_res(TFAIL, "failed to parse seqid: %s", msg);
 		return -1;
 	}
 
@@ -502,7 +494,7 @@ static void test_seek(void)
 	int ret = 0;
 
 	/* 1. read() after SEEK_SET 0 returns same (first) message */
-	tst_resm(TINFO, "TEST: seek SEEK_SET 0");
+	tst_res(TINFO, "TEST: seek SEEK_SET 0");
 
 	for (j = 0; j < NUM_READ_RETRY && !ret; j++) {
 		/*
@@ -520,14 +512,14 @@ static void test_seek(void)
 		 * first entry in buffer got overwritten. If so,
 		 * we'll have to repeat the test.
 		 */
-		fd = SAFE_OPEN(cleanup, "/dev/kmsg", O_RDONLY | O_NONBLOCK);
-		fd2 = SAFE_OPEN(cleanup, "/dev/kmsg", O_RDONLY | O_NONBLOCK);
+		fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
+		fd2 = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 
 		if (read_msg_seqno(fd, &seqno[0]))
 			goto close_fds;
 
 		if (lseek(fd, 0, SEEK_SET) == -1) {
-			tst_resm(TFAIL|TERRNO, "SEEK_SET 0 failed");
+			tst_res(TFAIL|TERRNO, "SEEK_SET 0 failed");
 			ret = -1;
 			goto close_fds;
 		}
@@ -540,79 +532,62 @@ static void test_seek(void)
 
 		ret = 1;
 close_fds:
-		SAFE_CLOSE(cleanup, fd);
-		SAFE_CLOSE(cleanup, fd2);
+		SAFE_CLOSE(fd);
+		SAFE_CLOSE(fd2);
 	}
 
 	if (j == NUM_READ_RETRY) {
-		tst_resm(TWARN, "exceeded: %d attempts", NUM_READ_RETRY);
+		tst_res(TWARN, "exceeded: %d attempts", NUM_READ_RETRY);
 	} else if (ret > 0) {
 		if (seqno[0] != seqno[1]) {
-			tst_resm(TFAIL, "SEEK_SET 0, %lu != %lu",
+			tst_res(TFAIL, "SEEK_SET 0, %lu != %lu",
 				seqno[0], seqno[1]);
 		} else {
-			tst_resm(TPASS, "SEEK_SET 0");
+			tst_res(TPASS, "SEEK_SET 0");
 		}
 	}
 
 	/* 2. messages after SEEK_END 0 shouldn't contain MSG_PREFIX */
-	fd = SAFE_OPEN(cleanup, "/dev/kmsg", O_RDONLY | O_NONBLOCK);
-	tst_resm(TINFO, "TEST: seek SEEK_END 0");
+	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
+	tst_res(TINFO, "TEST: seek SEEK_END 0");
 	if (lseek(fd, 0, SEEK_END) == -1)
-		tst_resm(TFAIL|TERRNO, "lseek SEEK_END 0 failed");
+		tst_res(TFAIL|TERRNO, "lseek SEEK_END 0 failed");
 	if (find_msg(fd, MSG_PREFIX, msg, sizeof(msg), 0) != 0)
-		tst_resm(TPASS, "SEEK_END 0");
+		tst_res(TPASS, "SEEK_END 0");
 	else
-		tst_resm(TFAIL, "SEEK_END 0 found: %s", msg);
+		tst_res(TFAIL, "SEEK_END 0 found: %s", msg);
 
 #ifdef SEEK_DATA
 	/* 3. messages after SEEK_DATA 0 shouldn't contain MSG_PREFIX */
-	tst_resm(TINFO, "TEST: seek SEEK_DATA 0");
+	tst_res(TINFO, "TEST: seek SEEK_DATA 0");
 
 	/* clear ring buffer */
-	if (ltp_syscall(__NR_syslog, 5, NULL, 0) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "syslog clear failed");
+	if (tst_syscall(__NR_syslog, 5, NULL, 0) == -1)
+		tst_brk(TBROK|TERRNO, "syslog clear failed");
 	if (lseek(fd, 0, SEEK_DATA) == -1)
-		tst_resm(TFAIL|TERRNO, "lseek SEEK_DATA 0 failed");
+		tst_res(TFAIL|TERRNO, "lseek SEEK_DATA 0 failed");
 	if (find_msg(fd, MSG_PREFIX, msg, sizeof(msg), 0) != 0)
-		tst_resm(TPASS, "SEEK_DATA 0");
+		tst_res(TPASS, "SEEK_DATA 0");
 	else
-		tst_resm(TFAIL, "SEEK_DATA 0 found: %s", msg);
+		tst_res(TFAIL, "SEEK_DATA 0 found: %s", msg);
 #endif
-	SAFE_CLOSE(cleanup, fd);
+	SAFE_CLOSE(fd);
 }
 
-int main(int argc, char *argv[])
+static void test_kmsg(void)
 {
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* run test_inject first so log isn't empty for other tests */
-		test_inject();
-		test_read_nonblock();
-		test_read_block();
-		test_partial_read();
-		test_read_returns_first_message();
-		test_messages_overwritten();
-		test_seek();
-	}
-	cleanup();
-	tst_exit();
+	/* run test_inject first so log isn't empty for other tests */
+	test_inject();
+	test_read_nonblock();
+	test_read_block();
+	test_partial_read();
+	test_read_returns_first_message();
+	test_messages_overwritten();
+	test_seek();
 }
 
-static void setup(void)
-{
-	tst_require_root();
-	if (tst_kvercmp(3, 5, 0) < 0)
-		tst_brkm(TCONF, NULL, "This test requires kernel"
-			" >= 3.5.0");
-	srand(getpid());
-	TEST_PAUSE;
-}
-
-static void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.needs_root = 1,
+	.test_all = test_kmsg,
+	.min_kver = "3.5.0"
+};
