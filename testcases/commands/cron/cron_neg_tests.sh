@@ -9,7 +9,7 @@
 #    12/03/04  Marty Ridgeway Pull RHEl4 tests out from script
 ########################################################
 
-iam=`whoami`
+. cron_common.sh
 
 if [ $iam = "root" ]; then
 	if [ $# -lt 1 ] ; then

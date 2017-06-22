@@ -2,18 +2,7 @@
 
 # Positive tests for cron, that means these tests have to pass
 
-iam=`whoami`
-
-tvar=${MACHTYPE%-*}
-tvar=${tvar#*-}
-
-if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ]
-then
-	CRON_ALLOW="/etc/cron.allow"
-else
-	CRON_ALLOW="/var/spool/cron/allow"
-fi
-
+. cron_common.sh
 
 if [ $iam = "root" ]; then
 	if [ $# -lt 1 ] ; then

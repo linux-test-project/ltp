@@ -26,19 +26,7 @@
 
 echo "This script contains bashism that needs to be fixed!"
 
-iam=`whoami`
-
-tvar=${MACHTYPE%-*}
-tvar=${tvar#*-}
-
-if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ]
-then
-CRON_DENY="/etc/cron.deny"
-CRON_ALLOW="/etc/cron.allow"
-else
-CRON_DENY="/var/spool/cron/deny"
-CRON_ALLOW="/var/spool/cron/allow"
-fi
+. cron_common.sh
 
 TEST_USER1="cd_user1"
 TEST_USER1_HOME="/home/$TEST_USER1"
