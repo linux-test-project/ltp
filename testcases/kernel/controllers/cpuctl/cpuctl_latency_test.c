@@ -64,13 +64,14 @@ int main(int argc, char *argv[])
 	char mytaskfile[FILENAME_MAX];
 	int test_num;
 
-	struct sigaction newaction, oldaction;
+	struct sigaction newaction;
 
 	/* TODO (garrcoop): add error handling. */
 	sigemptyset(&newaction.sa_mask);
 	sigaddset(&newaction.sa_mask, SIGUSR1);
 	newaction.sa_handler = &sighandler;
-	sigaction(SIGUSR1, &newaction, &oldaction);
+	if (sigaction(SIGUSR1, &newaction, NULL) != 0)
+		errx(1, "cpuctl_latency_test sigaction");
 
 	if (argc < 2 || argc > 3) {
 		errx(EINVAL, "TBROK\t Invalid #args received from script"

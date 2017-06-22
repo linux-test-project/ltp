@@ -46,6 +46,7 @@
 /******************************************************************************/
 
 #include <unistd.h>
+#include <err.h>
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
@@ -72,7 +73,10 @@ char *TCID = "cpuctl_test01";
 int TST_TOTAL = 1;
 pid_t scriptpid;
 char path[] = "/dev/cpuctl";
-extern void cleanup()
+unsigned int total_shares;
+unsigned int *shares_pointer;
+
+void cleanup(void)
 {
 	kill(scriptpid, SIGUSR1);	/* Inform the shell to do cleanup */
 	tst_exit();		/* Report exit status */
@@ -101,7 +105,7 @@ int main(int argc, char *argv[])
 	time_t current_time, prev_time, delta_time;
 	unsigned long int myshares = 2, baseshares = 1000;	/* Simply the base value to start with */
 	unsigned int fmyshares, num_tasks;	/* f-> from file. num_tasks is tasks in this group */
-	struct sigaction newaction, oldaction;
+	struct sigaction newaction;
 
 	my_group_num = -1;
 	num_cpus = 0;
@@ -111,7 +115,9 @@ int main(int argc, char *argv[])
 	sigemptyset(&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;
 	newaction.sa_flags = 0;
-	sigaction(SIGALRM, &newaction, &oldaction);
+	/* FIXME(mw) - would be nice to have a file basename macro */
+	if (sigaction(SIGALRM, &newaction, NULL) != 0)
+		errx(1, "cpuctl_test01 sigaction");
 
 	/* Check if all parameters passed are correct */
 	if ((argc < 5) || ((my_group_num = atoi(argv[1])) <= 0)

@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
 	unsigned int fmyshares, num_tasks;
-	struct sigaction newaction, oldaction;
+	struct sigaction newaction;
 
 	mygroup_num = -1;
 	num_cpus = 0;
@@ -113,7 +113,8 @@ int main(int argc, char *argv[])
 	sigemptyset(&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;
 	newaction.sa_flags = 0;
-	sigaction(SIGALRM, &newaction, &oldaction);
+	if (sigaction(SIGALRM, &newaction, NULL) != 0)
+		errx(1, "cpuctl_def_task02 sigaction");
 
 	/* Collect the parameters passed by the script */
 	group_num_p = getenv("GROUP_NUM");

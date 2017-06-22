@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 	time_t current_time, prev_time, delta_time;
 	unsigned long int myshares = 2, baseshares = 1000;
 	unsigned int fmyshares, num_tasks;
-	struct sigaction newaction, oldaction;
+	struct sigaction newaction;
 
 	num_cpus = 0;
 	test_num = 0;
@@ -111,7 +111,8 @@ int main(int argc, char *argv[])
 	sigemptyset(&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;
 	newaction.sa_flags = 0;
-	sigaction(SIGALRM, &newaction, &oldaction);
+	if (sigaction(SIGALRM, &newaction, NULL) != 0)
+		errx(1, "cpuctl_def_task01 sigaction");
 
 	/* Check if all parameters passed are correct */
 	if ((argc < 5) || ((my_group_num = atoi(argv[1])) <= 0) ||
