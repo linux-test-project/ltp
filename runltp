@@ -220,7 +220,7 @@ main()
 
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:c:C:T:d:D:f:F:ehi:I:K:g:l:m:M:Nno:pqr:Rs:S:t:T:w:x:b:B:z:Z: arg
+    while getopts a:c:C:T:d:D:f:F:ehi:I:K:g:l:m:M:No:pqr:Rs:S:t:T:w:x:b:B:z:Z: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -392,10 +392,6 @@ main()
 		VALGRIND_CHECK_TYPE="$OPTARG";;
 
         N)  RUN_NETEST=1;;
-
-        n)
-            $LTPROOT/testcases/bin/netpipe.sh
-            NETPIPE=1;;
 
         o)  OUTPUTFILE_NAME="$OPTARG"
             case $OPTARG in

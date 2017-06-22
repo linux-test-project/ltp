@@ -271,9 +271,6 @@ if [ $leftover_memsize -gt 0 ];then
   genload --vm 1 --vm-bytes $(($leftover_memsize * 1024)) >/dev/null 2>&1 &
 fi
 
-if [ $NO_NETWORK -eq 0 ];then
- netpipe.sh >/dev/null 2>/dev/null &
-fi
 sort -R ${LTPROOT}/runtest/stress.part1 -o ${TMP}/stress.part1
 sort -R ${LTPROOT}/runtest/stress.part2 -o ${TMP}/stress.part2
 sort -R ${LTPROOT}/runtest/stress.part3 -o ${TMP}/stress.part3
@@ -325,7 +322,6 @@ fi
 killall -9 ltp-pan >/dev/null 2>&1
 killall -9 genload >/dev/null 2>&1
 if [ $NO_NETWORK -eq 0 ];then
-  killall -9 netpipe.sh >/dev/null 2>&1
   killall -9 NPtcp >/dev/null 2>&1
 fi
 if [ $Iostat -eq 1 ];then

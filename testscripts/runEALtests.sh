@@ -81,7 +81,7 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
-while getopts cd:f:hi:l:m:Nnpqr:t:x arg
+while getopts cd:f:hi:l:m:Npqr:t:x arg
 do  case $arg in
     c)
             $LTPROOT/../testcases/bin/genload --cpu 1 >/dev/null 2>&1 &
@@ -129,9 +129,6 @@ do  case $arg in
 	    GenLoad=1;;
 
     N)	    run_netest=1;;
-
-    n)	    $LTPROOT/../testcases/bin/netpipe.sh
-	    NetPipe=1;;
 
     p)      pretty_prt=" -p ";;
 
