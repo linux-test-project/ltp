@@ -77,7 +77,7 @@ extern void cleanup()
 
 volatile int timer_expired = 0;
 
-int main(int argc, char *argv[])
+int main(void)
 {
 
 	int test_num;

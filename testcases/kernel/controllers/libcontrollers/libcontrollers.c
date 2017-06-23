@@ -207,7 +207,7 @@ int write_to_file(char *file, const char *mode, unsigned int value)
  * signal handler for the new action
  */
 
-void signal_handler_alarm(int signal)
+void signal_handler_alarm(int signal LTP_ATTRIBUTE_UNUSED)
 {
 	timer_expired = 1;
 }

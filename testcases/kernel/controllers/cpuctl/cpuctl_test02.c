@@ -79,7 +79,7 @@ extern void cleanup()
 int migrate_task();
 volatile int timer_expired = 0;
 
-int main(int argc, char *argv[])
+int main(int argc LTP_ATTRIBUTE_UNUSED, char *argv[] LTP_ATTRIBUTE_UNUSED)
 {
 
 	int test_num;

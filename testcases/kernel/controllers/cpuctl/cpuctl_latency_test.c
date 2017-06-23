@@ -50,11 +50,12 @@
 #include <unistd.h>
 
 #include "../libcontrollers/libcontrollers.h"
+#include "test.h"		/* LTP harness APIs */
 
 char *TCID = "cpu_controller_latency_tests";
 int TST_TOTAL = 2;
 
-void sighandler(int i)
+void sighandler(int i LTP_ATTRIBUTE_UNUSED)
 {
 	exit(0);
 }
