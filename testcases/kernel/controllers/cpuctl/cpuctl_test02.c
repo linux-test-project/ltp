@@ -69,8 +69,10 @@ char *TCID = "cpuctl_test02";
 int TST_TOTAL = 1;
 pid_t scriptpid;
 char path[] = "/dev/cpuctl";
+unsigned int total_shares;
+unsigned int *shares_pointer;
 
-extern void cleanup()
+void cleanup(void)
 {
 	kill(scriptpid, SIGUSR1);	/* Inform the shell to do cleanup */
 	tst_exit();		/* Report exit status */
@@ -276,7 +278,7 @@ with %u(shares) in %lu (s) INTERVAL\n", mygroup_num, task_num, delta_cpu_time,
 	}			/* end while */
 }				/* end main */
 
-int migrate_task()
+int migrate_task(void)
 {
 	char target[32] = "/dev/cpuctl/group_2/tasks";	/* Hard coding..Will try dynamic */
 	pid_t pid = getpid();

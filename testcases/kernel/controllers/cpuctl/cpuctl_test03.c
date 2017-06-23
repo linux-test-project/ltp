@@ -69,6 +69,9 @@ char *TCID = "cpuctl_test03";
 int TST_TOTAL = 3;
 pid_t scriptpid;
 char path[] = "/dev/cpuctl";
+unsigned int total_shares;
+unsigned int *shares_pointer;
+
 extern void cleanup(void)
 {
 	kill(scriptpid, SIGUSR1);	/* Inform the shell to do cleanup */

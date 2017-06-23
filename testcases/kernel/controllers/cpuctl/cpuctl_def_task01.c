@@ -73,6 +73,8 @@ char *TCID = "cpu_controller_tests";
 int TST_TOTAL = 1;
 pid_t scriptpid;
 char path[FILENAME_MAX] = "/dev/cpuctl";
+unsigned int total_shares;
+unsigned int *shares_pointer;
 
 extern void cleanup(void)
 {

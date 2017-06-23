@@ -34,6 +34,31 @@
 /******************************************************************************/
 
 #include "libcontrollers.h"
+#include "test.h"
+
+
+volatile int timer_expired;
+int FLAG; /* FIXME(mw) - what is the purpose of this variable being global? */
+#ifdef PATH_MAX
+char fullpath[PATH_MAX];
+#else
+char fullpath[1024]; /* Guess */
+#endif
+int retval;
+struct dirent	*dir_pointer;
+char target[LINE_MAX];
+
+/*
+ * Function: error_function()
+ * Prints error message and returns -1
+ */
+
+static void error_function(char *msg1, char *msg2)
+{
+	fprintf(stdout, "ERROR: %s ", msg1);
+	fprintf(stdout, "%s\n", msg2);
+}
+
 
 /*
  * Function: scan_shares_file()
@@ -151,17 +176,6 @@ int read_file(char *filepath, int action, unsigned int *value)
 		return -1;
 	}
 	return 0;
-}
-
-/*
- * Function: error_function()
- * Prints error message and returns -1
- */
-
-static inline void error_function(char *msg1, char *msg2)
-{
-	fprintf(stdout, "ERROR: %s ", msg1);
-	fprintf(stdout, "%s\n", msg2);
 }
 
 /* Function: read_shares_file()

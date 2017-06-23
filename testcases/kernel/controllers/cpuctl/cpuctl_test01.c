@@ -86,7 +86,6 @@ volatile int timer_expired = 0;
 
 int main(int argc, char *argv[])
 {
-
 	int num_cpus;
 	int test_num;
 	int len;		/* Total time = TIME_INTERVAL *num_cpus in the machine */
