@@ -1141,6 +1141,7 @@ set_tid_address01 set_tid_address01
 setsid01 setsid01
 
 setsockopt01 setsockopt01
+cve-2016-4997 cve-2016-4997
 
 settimeofday01 settimeofday01
 settimeofday02 settimeofday02
@@ -1353,6 +1354,7 @@ umask01 umask01
 uname01 uname01
 uname02 uname02
 uname03 uname03
+cve-2012-0957 cve-2012-0957
 
 unlink01 symlink01 -T unlink01
 unlink05 unlink05

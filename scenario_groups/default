@@ -32,3 +32,4 @@ can
 cpuhotplug
 net.ipv6_lib
 input
+cve
