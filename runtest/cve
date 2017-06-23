@@ -1,5 +1,6 @@
 # Tests which check for vulnerabilities by CVE number
 cve-2012-0957 cve-2012-0957
+cve-2014-0196 cve-2014-0196
 cve-2016-4997 cve-2016-4997
 cve-2016-5195 dirtyc0w
 cve-2016-7117 cve-2016-7117

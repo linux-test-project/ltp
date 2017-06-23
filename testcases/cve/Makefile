@@ -22,4 +22,7 @@ CFLAGS			+= -D_GNU_SOURCE
 cve-2016-7117:	CFLAGS += -pthread
 cve-2016-7117:	LDLIBS += -lrt
 
+cve-2014-0196:  CFLAGS += -pthread
+cve-2014-0196:  LDLIBS += -lrt -lutil
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
