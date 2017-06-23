@@ -917,6 +917,7 @@ renameat202 renameat202 -i 10
 
 request_key01 request_key01
 request_key02 request_key02
+cve-2017-6951 cve-2017-6951
 
 rmdir01 rmdir01
 rmdir02 rmdir02
