@@ -131,7 +131,6 @@ unsigned randloops = 0;
 unsigned dosync = 0;
 unsigned do_offset = 0;
 unsigned pattern = 0;
-char filename[64];
 
 int main(int argc, char *argv[])
 {
@@ -159,6 +158,7 @@ int main(int argc, char *argv[])
 #else /* LARGE_FILE */
 	off_t bytes_left;
 #endif /* LARGE_FILE */
+	const char *filename = "mmapstress01.out";
 
 	progname = *argv;
 	tst_tmpdir();
@@ -228,8 +228,7 @@ int main(int argc, char *argv[])
 	}
 
 	(void)time(&t);
-	//(void)printf("%s: Started %s", argv[0], ctime(&t)); LTP Port
-	(void)sprintf(filename, "%sout.%d", progname, getpid());
+
 	seed = initrand();
 	pattern = seed & 0xff;
 
