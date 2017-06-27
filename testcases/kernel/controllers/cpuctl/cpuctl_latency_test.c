@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	sigaddset(&newaction.sa_mask, SIGUSR1);
 	newaction.sa_handler = &sighandler;
 	if (sigaction(SIGUSR1, &newaction, NULL) != 0)
-		errx(1, "cpuctl_latency_test sigaction");
+		errx(1, "%s sigaction", TCID);
 
 	if (argc < 2 || argc > 3) {
 		errx(EINVAL, "TBROK\t Invalid #args received from script"

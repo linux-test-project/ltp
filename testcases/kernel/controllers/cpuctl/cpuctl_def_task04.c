@@ -116,7 +116,7 @@ int main(void)
 	newaction.sa_handler = signal_handler_alarm;
 	newaction.sa_flags = 0;
 	if (sigaction(SIGALRM, &newaction, NULL) != 0)
-		errx(1, "cpuctl_def_task04 sigaction");
+		errx(1, "%s sigaction", TCID);
 
 	/* Collect the parameters passed by the script */
 	group_num_p = getenv("GROUP_NUM");
