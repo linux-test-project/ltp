@@ -148,7 +148,7 @@ unsigned randloops = 0;
 unsigned dosync = 0;
 unsigned do_offset = 0;
 unsigned pattern = 0;
-char filename[64];
+static const char *filename = "mmapstress10.out";
 
 void clean_mapper(int sig);
 void clean_writer(int sig);
@@ -270,9 +270,7 @@ int main(int argc, char *argv[])
 		anyfail();
 	}
 	(void)time(&t);
-	//(void)printf("%s: Started %s", argv[0], ctime(&t)); LTP Port
 
-	(void)sprintf(filename, "%sout.%d", progname, getpid());
 	seed = initrand();
 	pattern = seed & 0xff;
 
