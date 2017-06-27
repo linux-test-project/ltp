@@ -69,7 +69,7 @@
 #define NUM_SETS	4	/* How many share values (with same ratio) */
 #define MULTIPLIER   	10	/* Rate at which share value gets multiplied */
 
-char *TCID = "cpu_controller_tests";
+char *TCID = "cpuctl_def_task01";
 int TST_TOTAL = 1;
 pid_t scriptpid;
 char path[FILENAME_MAX] = "/dev/cpuctl";

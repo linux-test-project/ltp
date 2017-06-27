@@ -52,7 +52,7 @@
 #include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs */
 
-char *TCID = "cpu_controller_latency_tests";
+char *TCID = "cpu_controller_latency_test";
 int TST_TOTAL = 2;
 
 void sighandler(int i LTP_ATTRIBUTE_UNUSED)
