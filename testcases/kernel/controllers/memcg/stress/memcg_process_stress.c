@@ -20,6 +20,13 @@
 /*                                                                            */
 /******************************************************************************/
 
+/*
+ * This test is supposed to stress the memory controller. In it's run, it
+ * allocates page mapping enough to map the memsize, and then continues to map
+ * the (whole) memory. It does that each time it receives a SIGUSR1, without
+ * cleaning any of already allocated memory. This is by design
+ */
+
 #include <sys/mman.h>
 #include <err.h>
 #include <math.h>
