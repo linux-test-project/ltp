@@ -442,7 +442,6 @@
 /ipc/semop/semop05
 /ipc/shmat/shmat01
 /ipc/shmat/shmat02
-/ipc/shmat/shmat03
 /ipc/shmctl/shmctl01
 /ipc/shmctl/shmctl02
 /ipc/shmctl/shmctl03

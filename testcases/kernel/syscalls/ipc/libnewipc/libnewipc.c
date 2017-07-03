@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/shm.h>
 
 #define	TST_NO_DEFAULT_MAIN
 
@@ -78,4 +80,31 @@ int get_used_queues(const char *file, const int lineno)
 	}
 
 	return used_queues;
+}
+
+void *probe_free_addr(const char *file, const int lineno)
+{
+	void *addr;
+	int shm_id = -1;
+	key_t probe_key = 0;
+
+	probe_key = GETIPCKEY();
+
+	shm_id = shmget(probe_key, SHMLBA * 2, SHM_RW | IPC_CREAT | IPC_EXCL);
+	if (shm_id == -1)
+		tst_brk(TBROK, "probe: shmget() failed at %s:%d", file, lineno);
+
+	addr = shmat(shm_id, NULL, 0);
+	if (addr == (void *) -1)
+		tst_brk(TBROK, "probe: shmat() failed at %s:%d", file, lineno);
+
+	if (shmdt(addr) == -1)
+		tst_brk(TBROK, "probe: shmdt() failed at %s:%d", file, lineno);
+
+	if (shmctl(shm_id, IPC_RMID, NULL) == -1)
+		tst_brk(TBROK, "probe: shmctl() failed at %s:%d", file, lineno);
+
+	addr = (void *)(((unsigned long)(addr) + (SHMLBA - 1)) & ~(SHMLBA - 1));
+
+	return addr;
 }

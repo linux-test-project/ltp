@@ -821,7 +821,6 @@ setuid04 setuid04
 
 shmat01 shmat01
 shmat02 shmat02
-shmat03 shmat03
 
 shmctl01 shmctl01
 shmctl02 shmctl02

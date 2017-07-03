@@ -50,4 +50,8 @@ int get_used_queues(const char *file, const int lineno);
 #define GET_USED_QUEUES() \
 	get_used_queues(__FILE__, __LINE__)
 
+void *probe_free_addr(const char *file, const int lineno);
+#define PROBE_FREE_ADDR() \
+	probe_free_addr(__FILE__, __LINE__)
+
 #endif /* newlibipc.h */
