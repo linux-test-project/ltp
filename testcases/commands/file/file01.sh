@@ -91,8 +91,8 @@ do_test()
 	10) file_test in "ELF .*-bit $TEST_ARCH executable, .*";;
 	11) file_test in.ar "current ar archive";;
 	12) file_test in.tar "tar archive";;
-    	13) file_test in.tar.gz "gzip compressed data, .*";;
-    	14) file_test in.tar.bz2 "bzip2 compressed data, .*";;
+	13) file_test in.tar.gz "gzip compressed data, .*";;
+	14) file_test in.tar.bz2 "bzip2 compressed data, .*";;
 	15) file_test in.src.rpm "RPM v3 src" "RPM v3.0 src";;
 	16) file_test in.jpg "JPEG image data";;
 	17) file_test in.png "PNG image data";;
