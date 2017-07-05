@@ -38,6 +38,11 @@ do_clean()
 	pid_is_valid ${SAR_PID} && kill_pid ${SAR_PID}
 }
 
+get_field()
+{
+	echo "$1" | awk "{print \$$2}"
+}
+
 while getopts c:l:d: OPTION; do
 	case $OPTION in
 	c)
@@ -77,6 +82,8 @@ fi
 
 TST_CLEANUP=do_clean
 
+LOG_FILE="$TMP/log_$$"
+
 until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 
 	# Start up SAR and give it a couple cycles to run
@@ -86,42 +93,48 @@ until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 	# after that use "sar 1" instead of. Use 'ps -C sar' to check.
 	if ps -C sar >/dev/null 2>&1; then
 		pkill sar
-		sar -P ALL 1 0 > $TMP/log_$$ &
+		sar -P "$CPU_TO_TEST" 1 0 > "$LOG_FILE" &
 	else
-		sar -P ALL 1 > $TMP/log_$$ &
+		sar -P "$CPU_TO_TEST" 1 > "$LOG_FILE" &
 	fi
 	sleep 2
 	SAR_PID=$!
 
-	# Verify that SAR has correctly listed the missing CPU
-	while ! awk '{print $8}' $TMP/log_$$ | grep -i "^0.00"; do
-		tst_brkm TBROK "CPU${CPU_TO_TEST} Not Found on SAR!"
-	done
-	time=`date +%X`
-	sleep .5
-
-	# Verify that at least some of the CPUs are offline
-	NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$ | awk '{print $8}' \
-		|grep -i "^0.00" | wc -l)
-	if [ ${NUMBER_CPU_OFF} -eq 0 ]; then
-		tst_brkm TBROK "no CPUs found offline"
+	# Since the CPU is offline, SAR should display all the 6 fields
+	# of CPU statistics as '0.00'
+	offline_status=$(tail -n 1 "$LOG_FILE")
+	if [ -z "$offline_status" ]; then
+		tst_brkm TBROK "SAR output file is empty"
 	fi
+
+	for i in $(seq 3 8); do
+		field=$(get_field "$offline_status" "$i")
+		if [ "$field" != "0.00" ]; then
+			tst_brkm TBROK "Field $i is '$field', '0.00' expected"
+		fi
+	done
 
 	# Online the CPU
 	if ! online_cpu ${CPU_TO_TEST}; then
-		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined line"
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined"
 	fi
 
 	sleep 2
-	time=$(date +%T)
-	sleep .5
 
 	# Check that SAR registered the change in CPU online/offline states
-	NEW_NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$|awk '{print $8}' \
-		| grep -i "^0.00"| wc -l)
-	NUMBER_CPU_OFF=$((NUMBER_CPU_OFF-1))
-	if [ "$NUMBER_CPU_OFF" != "$NEW_NUMBER_CPU_OFF" ]; then
-		tst_resm TFAIL "no change in number of offline CPUs was found."
+	online_status=$(tail -n 1 "$LOG_FILE")
+	check_passed=0
+	for i in $(seq 3 8); do
+		field_online=$(get_field "$online_status" "$i")
+
+		if [ "$field_online" != "0.0" ]; then
+			check_passed=1
+			break
+		fi
+	done
+
+	if [ $check_passed -eq 0 ]; then
+		tst_resm TFAIL "No change in the CPU statistics"
 		tst_exit
 	fi
 
@@ -132,6 +145,6 @@ until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 
 done
 
-tst_resm TPASS "CPU was found after turned on."
+tst_resm TPASS "SAR updated statistics after the CPU was turned on."
 
 tst_exit
