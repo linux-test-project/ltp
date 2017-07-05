@@ -23,6 +23,7 @@
 #endif /* __TEST_H__ */
 
 #include <unistd.h>
+#include <limits.h>
 
 #include "tst_common.h"
 #include "tst_res_flags.h"
