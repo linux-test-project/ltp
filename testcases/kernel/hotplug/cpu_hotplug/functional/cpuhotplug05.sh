@@ -36,6 +36,7 @@ EOF
 do_clean()
 {
 	pid_is_valid ${SAR_PID} && kill_pid ${SAR_PID}
+	online_cpu "$CPU_TO_TEST"
 }
 
 get_field()
