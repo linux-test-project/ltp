@@ -52,7 +52,7 @@ exist_subsystem()
 
 set_def_group() #default group spinning a task to create ideal scenario
 {
-	[ -d /dev/cpuctl/group_def ] || mkdir /dev/cpuctl/group_def;
+	[ -d $mount_point/group_def ] || mkdir $mount_point/group_def;
 	if [ $? -ne 0 ]
 	then
 		echo "ERROR: Can't create default group... "
@@ -62,9 +62,9 @@ set_def_group() #default group spinning a task to create ideal scenario
 	fi
 	# Migrate all the running tasks to this group
 	# rt tasks require a finite value to cpu.rt_runtime_us
-	echo 10000 > /dev/cpuctl/group_def/cpu.rt_runtime_us;
-	for task in `cat /dev/cpuctl/tasks`; do
-		echo $task > /dev/cpuctl/group_def/tasks 2>/dev/null 1>&2;
+	echo 10000 > $mount_point/group_def/cpu.rt_runtime_us;
+	for task in `cat $mount_point/tasks`; do
+		echo $task > $mount_point/group_def/tasks 2>/dev/null 1>&2;
 	done
 }
 
