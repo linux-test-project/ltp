@@ -40,6 +40,15 @@
 #                                                                               #
 #################################################################################
 
+exist_subsystem()
+{
+	local subsystem="$1"
+	local exist=`grep -w $subsystem /proc/cgroups | cut -f1`
+
+	if [ -z "$exist" ]; then
+		tst_brkm TCONF "Subsystem $subsystem not supported"
+	fi
+}
 
 set_def_group() #default group spinning a task to create ideal scenario
 {
@@ -73,12 +82,12 @@ cleanup ()
 	killall cpuctl_task_* 1>/dev/null 2>&1;
 	sleep 1
 	rm -f cpuctl_task_* 2>/dev/null
-	for task in `cat /dev/cpuctl/group_def/tasks`; do
-		echo $task > /dev/cpuctl/tasks 2>/dev/null 1>&2;
+	for task in `cat $mount_point/group_def/tasks`; do
+		echo $task > $mount_point/tasks 2>/dev/null 1>&2;
 	done
-	rmdir /dev/cpuctl/group* 2> /dev/null
-	umount /dev/cpuctl 2> /dev/null
-	rmdir /dev/cpuctl 2> /dev/null
+	rmdir $mount_point/group* 2> /dev/null
+	umount $mount_point 2> /dev/null
+	rmdir $mount_point 2> /dev/null
 	rm -f myfifo 2>/dev/null
 
 }
@@ -87,27 +96,31 @@ cleanup ()
 
 do_setup ()
 {
-	if [ -e /dev/cpuctl ]
-	then
-		echo "WARN:/dev/cpuctl already exist..overwriting"; # or a warning ?
-		cleanup;
-		mkdir /dev/cpuctl;
-	else
-		mkdir /dev/cpuctl
-	fi
-	mount -t cgroup -ocpu cgroup /dev/cpuctl 2> /dev/null
+	subsystem="cpu"
+	exist_subsystem "$subsystem"
+	mount_point=`grep -w $subsystem /proc/mounts | cut -f 2 | cut -d " " -f2`
+
+    if [ -z "$mount_point" ]; then
+        try_umount=1
+        mount_point="/dev/cgroup/$subsystem"
+		tst_resm TINFO "Subsystem $subsystem is not mounted, mounting it at $mount_point"
+        ROD mkdir -p $mount_point
+        ROD mount -t cgroup -o "$subsystem" "ltp_cgroup" "$mount_point"
+    else
+	tst_resm TINFO "Subsystem $subsystem is mounted at $mount_point"
+    fi
 	if [ $? -ne 0 ]
 	then
-		echo "ERROR: Could not mount cgroup filesystem on /dev/cpuctl..Exiting test";
+		echo "ERROR: Could not mount $subsystem subsystem on $mountpoint. Exiting test";
 		cleanup;
 		exit -1;
 	fi
 
 	# Group created earlier may again be visible if not cleaned properly...so clean them
-	groups=/dev/cpuctl/group*
+	groups="$mount_point"/group*
 	if [ -z "$groups" ]
 	then
-		rmdir /dev/cpuctl/group*
+		rmdir "$mount_point"/group*
 		echo "WARN: Earlier groups found and removed...";
 	fi
 
@@ -115,7 +128,7 @@ do_setup ()
 	mkfifo myfifo 2> /dev/null;
 	if [ $? -ne 0 ]
 	then
-		echo "ERROR: Can't create fifo...Check your permissions..Exiting test";
+		echo "ERROR: Can't create fifo. Check your permissions. Exiting test";
 		cleanup;
 		exit -1;
 	fi
@@ -124,7 +137,7 @@ do_setup ()
 	for i in $(seq 1 $NUM_GROUPS)
 	do
 		group=group_$i;
-		mkdir /dev/cpuctl/$group;# 2>/dev/null
+		mkdir $mount_point/$group;# 2>/dev/null
 		if [ $? -ne 0 ]
 		then
 			echo "ERROR: Can't create $group...Check your permissions..Exiting test";
