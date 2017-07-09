@@ -47,7 +47,7 @@ FILE=$TEST_DIR/utimensat.test_file
 TEST_PROG=utimensat01
 
 if [ ! -f $LTPROOT/testcases/bin/$TEST_PROG ]; then
-	tst_brkm TWARN "$LTPROOT/testcases/bin/$TEST_PROG is missing (please check install)"
+	tst_brkm TBROK "$LTPROOT/testcases/bin/$TEST_PROG is missing (please check install)"
 fi
 
 # Summary counters of all test results
