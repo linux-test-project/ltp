@@ -135,7 +135,6 @@ expect {
   }
 }
 
-catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -152,7 +151,6 @@ if { $i_am_root==1 } {
 		}
 	}
 	expect eof
-	catch close
 	wait
 
 	set test_env_var [exec cat $TEST_ENV_FILE]
@@ -198,7 +196,6 @@ expect {
   }
 }
 
-catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -237,7 +234,6 @@ expect {
   }
 }
 
-catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -292,7 +288,6 @@ expect {
   }
 }
 
-catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -325,7 +320,6 @@ expect {
   }
 }
 
-catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -384,7 +378,6 @@ expect {
   }
 }
 
-catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -447,7 +440,6 @@ expect {
   }
 }
 
-catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -481,7 +473,6 @@ expect {
   }
 }
 
-catch close
 } else {
 
 	send_user "TEST:  su to user1 with the user1 password expired. (FAILED),see more next line.\n"
