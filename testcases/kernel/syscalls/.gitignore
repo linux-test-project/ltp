@@ -929,6 +929,7 @@
 /setrlimit/setrlimit01
 /setrlimit/setrlimit02
 /setrlimit/setrlimit03
+/setrlimit/setrlimit04
 /setsid/setsid01
 /setsockopt/setsockopt01
 /settimeofday/settimeofday01

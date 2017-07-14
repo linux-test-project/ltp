@@ -1141,6 +1141,7 @@ setreuid07_16 setreuid07_16
 setrlimit01 setrlimit01
 setrlimit02 setrlimit02
 setrlimit03 setrlimit03
+setrlimit04 setrlimit04
 
 set_robust_list01 set_robust_list01
 set_thread_area01 set_thread_area01
