@@ -61,15 +61,17 @@ cleanup()
 
 do_test()
 {
+	local quota_excd=0
 	local maxkeysz=$((ORIG_KEYSZ + 100))
 
-	while true
+	while [ $maxkeysz -ge 0 ]
 	do
 		echo $maxkeysz >$PATH_KEYQUOTA
 
 		keyctl request2 user debug:fred negate @t >temp 2>&1
 		grep -q -E "quota exceeded" temp
 		if [ $? -eq 0 ]; then
+			quota_excd=1
 			break
 		fi
 
@@ -81,6 +83,10 @@ do_test()
 
 		((maxkeysz -= 4))
 	done
+
+	if [ $quota_excd -eq 0 ]; then
+		tst_res TWARN "Failed to trigger the quota excess"
+	fi
 
 	tst_res TPASS "Bug not reproduced"
 }
