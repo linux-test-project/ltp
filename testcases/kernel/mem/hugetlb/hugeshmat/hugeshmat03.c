@@ -1,26 +1,19 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2004
+ * Copyright (c) Linux Test Project, 2004-2017
  *
- *   Copyright (c) International Business Machines  Corp., 2004
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  */
 
 /*
- * NAME
- *	hugeshmat03.c
- *
  * DESCRIPTION
  *	hugeshmat03 - test for EACCES error
  *
@@ -40,15 +33,6 @@
  *	  wait for child to exit
  *	  remove the shared memory segment
  *
- * USAGE:  <for command-line>
- *  hugeshmat03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *	04/2004 - Updated by Robbie Williamson
@@ -59,11 +43,8 @@
 
 #include <limits.h>
 #include "hugetlb.h"
-#include "safe_macros.h"
 #include "mem.h"
-
-char *TCID = "hugeshmat03";
-int TST_TOTAL = 1;
+#include "hugetlb.h"
 
 static size_t shm_size;
 static int shm_id_1 = -1;
@@ -72,92 +53,75 @@ static uid_t ltp_uid;
 static char *ltp_user = "nobody";
 
 static long hugepages = 128;
-static option_t options[] = {
-	{"s:", &sflag, &nr_opt},
+
+static struct tst_option options[] = {
+	{"s:", &nr_opt, "-s   num  Set the number of the been allocated hugepages"},
 	{NULL, NULL, NULL}
 };
 
-static void do_child(void);
-
-int main(int ac, char **av)
+static void verify_hugeshmat(void)
 {
 	int status;
 	pid_t pid;
 
-	tst_parse_opts(ac, av, options, NULL);
-
-	if (sflag)
-		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
-
-	setup();
-
-	switch (pid = fork()) {
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "fork");
+	switch (pid = SAFE_FORK()) {
 	case 0:
 		if (setuid(ltp_uid) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "setuid");
-		do_child();
-		tst_exit();
-	default:
-		if (waitpid(pid, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
-	}
-	cleanup();
-	tst_exit();
-}
-
-static void do_child(void)
-{
-	int lc;
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
+			tst_brk(TBROK | TERRNO, "setuid");
 
 		addr = shmat(shm_id_1, NULL, 0);
 		if (addr != (void *)-1) {
-			tst_resm(TFAIL, "shmat succeeded unexpectedly");
-			continue;
+			tst_res(TFAIL, "shmat succeeded unexpectedly");
+			return;
 		}
-		if (errno == EACCES)
-			tst_resm(TPASS | TERRNO, "shmat failed as expected");
-		else
-			tst_resm(TFAIL | TERRNO, "shmat failed unexpectedly "
-				 "- expect errno=EACCES, got");
+		if (errno == EACCES) {
+			tst_res(TPASS | TERRNO, "shmat failed as expected");
+		} else {
+			tst_res(TFAIL | TERRNO, "shmat failed unexpectedly "
+					"- expect errno=EACCES, got");
+		}
+		break;
+	default:
+		if (waitpid(pid, &status, 0) == -1)
+			tst_brk(TBROK | TERRNO, "waitpid");
 	}
 }
 
-void setup(void)
+static void setup(void)
 {
 	long hpage_size;
 
-	tst_require_root();
 	check_hugepage();
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-	tst_tmpdir();
+	if (nr_opt)
+		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
-	hpage_size = read_meminfo("Hugepagesize:") * 1024;
+	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
 	shm_size = hpage_size * hugepages / 2;
 	update_shm_size(&shm_size);
-	shmkey = getipckey(cleanup);
+	shmkey = getipckey();
 	shm_id_1 = shmget(shmkey, shm_size,
 			  SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL);
 	if (shm_id_1 == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "shmget");
+		tst_brk(TBROK | TERRNO, "shmget");
 
-	ltp_uid = getuserid(cleanup, ltp_user);
-
-	TEST_PAUSE;
+	ltp_uid = getuserid(ltp_user);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	rm_shm(shm_id_1);
-
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
-
-	tst_rmdir();
 }
+
+static struct tst_test test = {
+	.needs_root = 1,
+	.forks_child = 1,
+	.needs_tmpdir = 1,
+	.options = options,
+	.test_all = verify_hugeshmat,
+	.setup = setup,
+	.cleanup = cleanup,
+};

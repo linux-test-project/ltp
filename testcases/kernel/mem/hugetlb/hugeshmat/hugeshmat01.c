@@ -1,26 +1,19 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) Linux Test Project, 2001-2017
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  */
 
 /*
- * NAME
- *	hugeshmat01.c
- *
  * DESCRIPTION
  *	hugeshmat01 - test that shmat() works correctly
  *
@@ -39,108 +32,75 @@
  *			issue a FAIL message
  *	call cleanup
  *
- * USAGE:  <for command-line>
- *  hugeshmat01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *	04/2004 - Updated by Robbie Williamson
- *
- * RESTRICTIONS
- *	none
  */
 
 #include <limits.h>
 #include "hugetlb.h"
-#include "safe_macros.h"
 #include "mem.h"
+#include "hugetlb.h"
 
-char *TCID = "hugeshmat01";
-int TST_TOTAL = 3;
-
-#define CASE0		10	/* values to write into the shared */
-#define CASE1		20	/* memory location.                */
+#define CASE0 10 /* values to write into the shared */
+#define CASE1 20 /* memory location.                */
 
 static size_t shm_size;
 static int shm_id_1 = -1;
 static void *addr;
 
 static long hugepages = 128;
-static option_t options[] = {
-	{"s:", &sflag, &nr_opt},
+
+static struct tst_option options[] = {
+	{"s:", &nr_opt, "-s   num  Set the number of the been allocated hugepages"},
 	{NULL, NULL, NULL}
 };
 
-struct test_case_t {
+static struct tcase {
 	int *shmid;
 	void *addr;
 	int flags;
-} TC[] = {
+} tcases[] = {
 	/* a straight forward read/write attach */
-	{
-	&shm_id_1, 0, 0},
-	    /*
-	     * an attach using non aligned memory
-	     * -1 will be replaced with an unaligned addr
-	     */
-	{
-	&shm_id_1, (void *)-1, SHM_RND},
-	    /* a read only attach */
-	{
-	&shm_id_1, 0, SHM_RDONLY}
+	{&shm_id_1, 0, 0},
+	/*
+	 * an attach using non aligned memory
+	 * -1 will be replaced with an unaligned addr
+	 */
+	{&shm_id_1, (void *)-1, SHM_RND},
+	/* a read only attach */
+	{&shm_id_1, 0, SHM_RDONLY}
 };
 
-static void check_functionality(int i);
+static void check_functionality(unsigned int i);
 
-int main(int ac, char **av)
+static void verify_hugeshmat(unsigned int i)
 {
-	int lc, i;
+	struct tcase *tc = &tcases[i];
 
-	tst_parse_opts(ac, av, options, NULL);
-
-	if (sflag)
-		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-			addr = shmat(*(TC[i].shmid), TC[i].addr, TC[i].flags);
-			if (addr == (void *)-1) {
-				tst_brkm(TFAIL | TERRNO, cleanup, "shmat");
-			} else {
-				check_functionality(i);
-			}
-
-			/*
-			 * addr in TC[0] will be used to generate an unaligned
-			 * address for TC[1]
-			 */
-			if (i == 0 && addr != (void *)-1)
-				TC[1].addr = (void *)(((unsigned long)addr &
-						       ~(SHMLBA - 1)) + SHMLBA -
-						      1);
-			if (shmdt(addr) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup, "shmdt");
-		}
+	addr = shmat(*(tc->shmid), tc->addr, tc->flags);
+	if (addr == (void *)-1) {
+		tst_brk(TFAIL | TERRNO, "shmat");
+	} else {
+		check_functionality(i);
 	}
-	cleanup();
-	tst_exit();
+
+	/*
+	 * addr in tcases[0] will be used to generate an unaligned
+	 * address for tcases[1]
+	 */
+	if (i == 0 && addr != (void *)-1)
+		tc[1].addr = (void *)(((unsigned long)addr &
+					~(SHMLBA - 1)) + SHMLBA - 1);
+	if (shmdt(addr) == -1)
+		tst_brk(TBROK | TERRNO, "shmdt");
 }
 
 /*
  * check_functionality - check various conditions to make sure they
  *			 are correct.
  */
-static void check_functionality(int i)
+static void check_functionality(unsigned int i)
 {
 	void *orig_add;
 	int *shared;
@@ -150,17 +110,17 @@ static void check_functionality(int i)
 
 	/* stat the shared memory ID */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "shmctl");
+		tst_brk(TBROK | TERRNO, "shmctl");
 
 	/* check the number of attaches */
 	if (buf.shm_nattch != 1) {
-		tst_resm(TFAIL, "# of attaches is incorrect");
+		tst_res(TFAIL, "# of attaches is incorrect");
 		return;
 	}
 
 	/* check the size of the segment */
 	if (buf.shm_segsz != shm_size) {
-		tst_resm(TFAIL, "segment size is incorrect");
+		tst_res(TFAIL, "segment size is incorrect");
 		return;
 	}
 
@@ -183,9 +143,9 @@ static void check_functionality(int i)
 		 * specified in the man page.
 		 */
 		*shared = CASE1;
-		orig_add = addr + ((unsigned long)TC[i].addr % SHMLBA);
-		if (orig_add != TC[i].addr) {
-			tst_resm(TFAIL, "shared memory address is not "
+		orig_add = addr + ((unsigned long)tcases[i].addr % SHMLBA);
+		if (orig_add != tcases[i].addr) {
+			tst_res(TFAIL, "shared memory address is not "
 				 "correct");
 			return;
 		}
@@ -197,43 +157,48 @@ static void check_functionality(int i)
 		 * because shared memory is persistent.
 		 */
 		if (*shared != CASE1) {
-			tst_resm(TFAIL, "shared memory value isn't correct");
+			tst_res(TFAIL, "shared memory value isn't correct");
 			return;
 		}
 		break;
 	}
-	tst_resm(TPASS, "conditions and functionality are correct");
+	tst_res(TPASS, "conditions and functionality are correct");
 }
 
-void setup(void)
+static void setup(void)
 {
 	long hpage_size;
 
-	tst_require_root();
 	check_hugepage();
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	tst_tmpdir();
+	if (nr_opt)
+		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
-	hpage_size = read_meminfo("Hugepagesize:") * 1024;
+	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
 	shm_size = hpage_size * hugepages / 2;
 	update_shm_size(&shm_size);
-	shmkey = getipckey(cleanup);
+	shmkey = getipckey();
 	shm_id_1 = shmget(shmkey++, shm_size,
 			  SHM_HUGETLB | SHM_RW | IPC_CREAT | IPC_EXCL);
 	if (shm_id_1 == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "shmget");
+		tst_brk(TBROK | TERRNO, "shmget");
 
-	TEST_PAUSE;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	rm_shm(shm_id_1);
-
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
-
-	tst_rmdir();
 }
+
+static struct tst_test test = {
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+	.options = options,
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_hugeshmat,
+	.setup = setup,
+	.cleanup = cleanup,
+};

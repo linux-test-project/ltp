@@ -1,18 +1,15 @@
 /*
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2017 Red Hat, Inc.
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  */
 
 /*
@@ -39,20 +36,8 @@
  *
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-
-#include "test.h"
 #include "mem.h"
 #include "hugetlb.h"
-
-char *TCID = "hugeshmat05";
-int TST_TOTAL = 1;
 
 static long page_size;
 static long hpage_size;
@@ -62,17 +47,13 @@ static long hugepages;
 
 void setup(void)
 {
-	tst_require_root();
 	check_hugepage();
-
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	page_size = getpagesize();
-	hpage_size = read_meminfo("Hugepagesize:") * 1024;
+	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
 	hugepages = N + 1;
 	set_sys_tune("nr_hugepages", hugepages, 1);
-
-	TEST_PAUSE;
 }
 
 void cleanup(void)
@@ -87,34 +68,29 @@ void shm_test(int size)
 
 	shmid = shmget(IPC_PRIVATE, size, 0600 | IPC_CREAT | SHM_HUGETLB);
 	if (shmid < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "shmget failed");
+		tst_brk(TBROK | TERRNO, "shmget failed");
 
 	shmaddr = shmat(shmid, 0, 0);
 	if (shmaddr == (char *)-1) {
 		shmctl(shmid, IPC_RMID, NULL);
-		tst_brkm(TFAIL | TERRNO, cleanup,
+		tst_brk(TFAIL | TERRNO,
 			 "Bug: shared memory attach failure.");
 	}
 
 	shmaddr[0] = 1;
-	tst_resm(TINFO, "allocated %d huge bytes", size);
+	tst_res(TINFO, "allocated %d huge bytes", size);
 
 	if (shmdt((const void *)shmaddr) != 0) {
 		shmctl(shmid, IPC_RMID, NULL);
-		tst_brkm(TFAIL | TERRNO, cleanup, "Detach failure.");
+		tst_brk(TFAIL | TERRNO, "Detach failure.");
 	}
 
 	shmctl(shmid, IPC_RMID, NULL);
 }
 
-int main(int ac, char **av)
+static void test_hugeshmat(void)
 {
-	int lc;
 	unsigned int i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
 
 	const int tst_sizes[] = {
 		N * hpage_size - page_size,
@@ -123,15 +99,16 @@ int main(int ac, char **av)
 		hpage_size + 1
 	};
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
+	for (i = 0; i < ARRAY_SIZE(tst_sizes); ++i)
+		shm_test(tst_sizes[i]);
 
-		for (i = 0; i < ARRAY_SIZE(tst_sizes); ++i)
-			shm_test(tst_sizes[i]);
-
-		tst_resm(TPASS, "No regression found.");
-	}
-
-	cleanup();
-	tst_exit();
+	tst_res(TPASS, "No regression found.");
 }
+
+static struct tst_test test = {
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+	.test_all = test_hugeshmat,
+	.setup = setup,
+	.cleanup = cleanup,
+};
