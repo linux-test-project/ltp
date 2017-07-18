@@ -1,20 +1,16 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2004
+ * Copyright (c) Linux Test Project, 2004-2017
  *
- *   Copyright (c) International Business Machines  Corp., 2004
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  */
 
 /*
@@ -39,183 +35,136 @@
  *  04/2004 Written by Robbie Williamson
  */
 
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <sys/mount.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <sys/mount.h>
 #include <limits.h>
 #include <sys/param.h>
 
-#include "test.h"
-#include "safe_macros.h"
 #include "mem.h"
 #include "hugetlb.h"
 
 #define LOW_ADDR       0x80000000
 #define LOW_ADDR2      0x90000000
 
+static struct tst_option options[] = {
+	{"H:", &Hopt,   "-H   /..  Location of hugetlbfs, i.e.  -H /var/hugetlbfs"},
+	{"s:", &nr_opt, "-s   num  Set the number of the been allocated hugepages"},
+	{NULL, NULL, NULL}
+};
+
 static char TEMPFILE[MAXPATHLEN];
 
-char *TCID = "hugemmap02";
-int TST_TOTAL = 1;
 static unsigned long *addr;
 static unsigned long *addr2;
 static unsigned long low_addr = LOW_ADDR;
 static unsigned long low_addr2 = LOW_ADDR2;
 static unsigned long *addrlist[5];
-static int i;
 static int fildes;
 static int nfildes;
-static char *Hopt;
 static long hugepages = 128;
 
-static void help(void);
-
-int main(int ac, char **av)
+static void test_hugemmap(void)
 {
-	int lc;
-	int Hflag = 0;
+	int i;
 	long page_sz, map_sz;
-	int sflag = 0;
-
-	option_t options[] = {
-		{"H:", &Hflag, &Hopt},
-		{"s:", &sflag, &nr_opt},
-		{NULL, NULL, NULL}
-	};
-
-	tst_parse_opts(ac, av, options, &help);
-
-	check_hugepage();
-
-	if (!Hflag) {
-		tst_tmpdir();
-		Hopt = tst_get_tmpdir();
-	}
-	if (sflag)
-		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
 
 	page_sz = getpagesize();
-	map_sz = read_meminfo("Hugepagesize:") * 1024 * 2;
+	map_sz = SAFE_READ_MEMINFO("Hugepagesize:") * 1024 * 2;
 
-	setup();
+	fildes = SAFE_OPEN(TEMPFILE, O_RDWR | O_CREAT, 0666);
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* Creat a temporary file used for huge mapping */
-		fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666);
-		if (fildes < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "opening %s failed", TEMPFILE);
+	nfildes = SAFE_OPEN("/dev/zero", O_RDONLY, 0666);
 
-		/* Creat a file used for normal mapping */
-		nfildes = open("/dev/zero", O_RDONLY, 0666);
-		if (nfildes < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "opening /dev/zero failed");
-
-		tst_count = 0;
-
-		/*
-		 * Call mmap on /dev/zero 5 times
-		 */
-		for (i = 0; i < 5; i++) {
-			addr = mmap(0, 256 * 1024 * 1024, PROT_READ,
-				    MAP_SHARED, nfildes, 0);
-			addrlist[i] = addr;
-		}
-
-		while (range_is_mapped(cleanup, low_addr, low_addr + map_sz) == 1) {
-			low_addr = low_addr + 0x10000000;
-
-			if (low_addr < LOW_ADDR)
-				tst_brkm(TBROK | TERRNO, cleanup,
-						"no empty region to use");
-		}
-		/* mmap using normal pages and a low memory address */
-		addr = mmap((void *)low_addr, page_sz, PROT_READ,
-			    MAP_SHARED | MAP_FIXED, nfildes, 0);
-		if (addr == MAP_FAILED)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "mmap failed on nfildes");
-
-		while (range_is_mapped(cleanup, low_addr2, low_addr2 + map_sz) == 1) {
-			low_addr2 = low_addr2 + 0x10000000;
-
-			if (low_addr2 < LOW_ADDR2)
-				tst_brkm(TBROK | TERRNO, cleanup,
-						"no empty region to use");
-		}
-		/* Attempt to mmap a huge page into a low memory address */
-		addr2 = mmap((void *)low_addr2, map_sz, PROT_READ | PROT_WRITE,
-			     MAP_SHARED, fildes, 0);
-#if __WORDSIZE == 64		/* 64-bit process */
-		if (addr2 == MAP_FAILED) {
-			tst_resm(TFAIL | TERRNO, "huge mmap failed unexpectedly"
-				 " with %s (64-bit)", TEMPFILE);
-		} else {
-			tst_resm(TPASS, "huge mmap succeeded (64-bit)");
-		}
-#else /* 32-bit process */
-		if (addr2 == MAP_FAILED)
-			tst_resm(TFAIL | TERRNO, "huge mmap failed unexpectedly"
-				 " with %s (32-bit)", TEMPFILE);
-		else if (addr2 > 0) {
-			tst_resm(TCONF,
-				 "huge mmap failed to test the scenario");
-		} else if (addr == 0)
-			tst_resm(TPASS, "huge mmap succeeded (32-bit)");
-#endif
-
-		/* Clean up things in case we are looping */
-		for (i = 0; i < 5; i++) {
-			if (munmap(addrlist[i], 256 * 1024 * 1024) == -1)
-				tst_resm(TBROK | TERRNO,
-					 "munmap of addrlist[%d] failed", i);
-		}
-
-		if (munmap(addr2, map_sz) == -1)
-			tst_brkm(TFAIL | TERRNO, NULL, "huge munmap failed");
-		if (munmap(addr, page_sz) == -1)
-			tst_brkm(TFAIL | TERRNO, NULL, "munmap failed");
-
-		close(nfildes);
-		close(fildes);
+	for (i = 0; i < 5; i++) {
+		addr = mmap(0, 256 * 1024 * 1024, PROT_READ,
+				MAP_SHARED, nfildes, 0);
+		addrlist[i] = addr;
 	}
 
-	cleanup();
-	tst_exit();
+	while (range_is_mapped(low_addr, low_addr + map_sz) == 1) {
+		low_addr = low_addr + 0x10000000;
+
+		if (low_addr < LOW_ADDR)
+			tst_brk(TBROK | TERRNO, "no empty region to use");
+	}
+	/* mmap using normal pages and a low memory address */
+	addr = mmap((void *)low_addr, page_sz, PROT_READ,
+			MAP_SHARED | MAP_FIXED, nfildes, 0);
+	if (addr == MAP_FAILED)
+		tst_brk(TBROK | TERRNO, "mmap failed on nfildes");
+
+	while (range_is_mapped(low_addr2, low_addr2 + map_sz) == 1) {
+		low_addr2 = low_addr2 + 0x10000000;
+
+		if (low_addr2 < LOW_ADDR2)
+			tst_brk(TBROK | TERRNO, "no empty region to use");
+	}
+	/* Attempt to mmap a huge page into a low memory address */
+	addr2 = mmap((void *)low_addr2, map_sz, PROT_READ | PROT_WRITE,
+			MAP_SHARED, fildes, 0);
+#if __WORDSIZE == 64 /* 64-bit process */
+	if (addr2 == MAP_FAILED) {
+		tst_res(TFAIL | TERRNO, "huge mmap failed unexpectedly"
+				" with %s (64-bit)", TEMPFILE);
+	} else {
+		tst_res(TPASS, "huge mmap succeeded (64-bit)");
+	}
+#else /* 32-bit process */
+	if (addr2 == MAP_FAILED)
+		tst_res(TFAIL | TERRNO, "huge mmap failed unexpectedly"
+				" with %s (32-bit)", TEMPFILE);
+	else if (addr2 > 0) {
+		tst_res(TCONF,
+				"huge mmap failed to test the scenario");
+	} else if (addr == 0)
+		tst_res(TPASS, "huge mmap succeeded (32-bit)");
+#endif
+
+	for (i = 0; i < 5; i++) {
+		if (munmap(addrlist[i], 256 * 1024 * 1024) == -1)
+			tst_res(TFAIL | TERRNO,
+					"munmap of addrlist[%d] failed", i);
+	}
+
+	if (munmap(addr2, map_sz) == -1)
+		tst_res(TFAIL | TERRNO, "huge munmap failed");
+	if (munmap(addr, page_sz) == -1)
+		tst_res(TFAIL | TERRNO, "munmap failed");
+
+	close(nfildes);
+	close(fildes);
 }
 
-void setup(void)
+static void setup(void)
 {
-	TEST_PAUSE;
-	tst_require_root();
-	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
-		tst_brkm(TBROK | TERRNO, NULL, "mount failed on %s", Hopt);
+	check_hugepage();
 	orig_hugepages = get_sys_tune("nr_hugepages");
+
+	if (!Hopt)
+		Hopt = tst_get_tmpdir();
+	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
+		tst_brk(TBROK | TERRNO, "mount failed on %s", Hopt);
+
+	if (nr_opt)
+		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
 	set_sys_tune("nr_hugepages", hugepages, 1);
+
 	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d", Hopt, getpid());
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	unlink(TEMPFILE);
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
 
 	umount(Hopt);
-	tst_rmdir();
 }
 
-static void help(void)
-{
-	printf("  -H /..  Location of hugetlbfs, i.e. -H /var/hugetlbfs\n");
-	printf("  -s num  Set the number of the been allocated hugepages\n");
-}
+static struct tst_test test = {
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+	.options = options,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = test_hugemmap,
+};

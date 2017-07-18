@@ -1,18 +1,15 @@
 /*
- *  Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2017 Red Hat, Inc.
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  */
 
 /*
@@ -36,21 +33,11 @@
  */
 
 #define _GNU_SOURCE
-#include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include "test.h"
 #include "mem.h"
 #include "hugetlb.h"
 #include "lapi/mmap.h"
-
-char *TCID = "hugemmap06";
-int TST_TOTAL = 5;
 
 static long hpage_size;
 static long hugepages;
@@ -61,37 +48,29 @@ struct mp {
 };
 
 #define ARSZ 50
+#define LOOP 5
 
-void setup(void)
+static void setup(void)
 {
-	tst_require_root();
 	check_hugepage();
 
-	/* MAP_HUGETLB check */
-	if ((tst_kvercmp(2, 6, 32)) < 0) {
-		tst_brkm(TCONF, NULL, "This test can only run on kernels "
-			"that are 2.6.32 or higher");
-	}
-
-	hpage_size = read_meminfo("Hugepagesize:") * 1024;
+	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 	orig_hugepages = get_sys_tune("nr_hugepages");
 
-	hugepages = (ARSZ + 1) * TST_TOTAL;
+	hugepages = (ARSZ + 1) * LOOP;
 
-	if (hugepages * read_meminfo("Hugepagesize:") > read_meminfo("MemTotal:"))
-		tst_brkm(TCONF, NULL, "System RAM is not enough to test.");
+	if (hugepages * SAFE_READ_MEMINFO("Hugepagesize:") > SAFE_READ_MEMINFO("MemTotal:"))
+		tst_brk(TCONF, "System RAM is not enough to test.");
 
 	set_sys_tune("nr_hugepages", hugepages, 1);
-
-	TEST_PAUSE;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
 }
 
-void *thr(void *arg)
+static void *thr(void *arg)
 {
 	struct mp *mmap_sz = arg;
 	int i, lim, a, b, c;
@@ -108,7 +87,7 @@ void *thr(void *arg)
 	return NULL;
 }
 
-void do_mmap(void)
+static void do_mmap(unsigned int j LTP_ATTRIBUTE_UNUSED)
 {
 	int i, sz = ARSZ + 1;
 	void *addr, *new_addr;
@@ -122,11 +101,11 @@ void do_mmap(void)
 
 	if (addr == MAP_FAILED) {
 		if (errno == ENOMEM) {
-			tst_brkm(TCONF, cleanup,
+			tst_brk(TCONF,
 				"Cannot allocate hugepage, memory too fragmented?");
 		}
 
-		tst_brkm(TBROK | TERRNO, cleanup, "Cannot allocate hugepage");
+		tst_brk(TBROK | TERRNO, "Cannot allocate hugepage");
 	}
 
 	for (i = 0; i < ARSZ; ++i, --sz) {
@@ -135,7 +114,7 @@ void do_mmap(void)
 
 		TEST(pthread_create(&tid[i], NULL, thr, &mmap_sz[i]));
 		if (TEST_RETURN)
-			tst_brkm(TBROK | TRERRNO, cleanup,
+			tst_brk(TBROK | TRERRNO,
 					"pthread_create failed");
 
 		new_addr = mmap(addr, (sz - 1) * hpage_size,
@@ -144,7 +123,7 @@ void do_mmap(void)
 				-1, 0);
 
 		if (new_addr == MAP_FAILED)
-			tst_brkm(TFAIL | TERRNO, cleanup, "mmap failed");
+			tst_brk(TFAIL | TERRNO, "mmap failed");
 
 		addr = new_addr;
 	}
@@ -152,31 +131,22 @@ void do_mmap(void)
 	for (i = 0; i < ARSZ; ++i) {
 		TEST(pthread_join(tid[i], NULL));
 		if (TEST_RETURN)
-			tst_brkm(TBROK | TRERRNO, cleanup,
+			tst_brk(TBROK | TRERRNO,
 					"pthread_join failed");
 	}
 
 	if (munmap(addr, sz * hpage_size) == -1)
-		tst_brkm(TFAIL | TERRNO, cleanup, "huge munmap failed");
+		tst_brk(TFAIL | TERRNO, "huge munmap failed");
+
+	tst_res(TPASS, "No regression found.");
 }
 
-int main(int ac, char **av)
-{
-	int lc, i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++)
-			do_mmap();
-
-		tst_resm(TPASS, "No regression found.");
-	}
-
-	cleanup();
-	tst_exit();
-}
+static struct tst_test test = {
+	.min_kver = "2.6.32",
+	.needs_root = 1,
+	.tcnt = LOOP,
+	.needs_tmpdir = 1,
+	.test = do_mmap,
+	.setup = setup,
+	.cleanup = cleanup,
+};

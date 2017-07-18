@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "tst_test.h"
+#include "old_tmpdir.h"
 
 #define SHM_RD	0400
 #define SHM_WR	0200

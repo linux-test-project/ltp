@@ -1,5 +1,18 @@
 /*
+ * Copyright (C) 2010-2017  Red Hat, Inc.
+ *
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  * overcommit hugetlbfs and check the statistics.
+ *
+ * Description:
  *
  * hugetlbfs allows to overcommit hugepages and there are tunables in
  * sysfs and procfs. The test here want to ensure it is possible to
@@ -11,44 +24,12 @@
  * Finally, it reads and writes every page. There are command options to
  * choose either to manage hugepages from sysfs or procfs, and reserve
  * them by mmap or shmget.
- *
- * Copyright (C) 2010  Red Hat, Inc.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it
- * is free of the rightful claim of any third person regarding
- * infringement or the like.  Any license provided herein, whether
- * implied or otherwise, applies only to this software file.  Patent
- * licenses, if any, provided herein do not apply to combinations of
- * this program with other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
  */
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+
 #include <sys/mount.h>
-#include <sys/shm.h>
-#include <sys/ipc.h>
-#include <unistd.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <ctype.h>
-#include "test.h"
+#include "mem.h"
 #include "hugetlb.h"
+#include "tst_safe_stdio.h"
 
 #define PROTECTION		(PROT_READ | PROT_WRITE)
 #define PATH_MEMINFO		"/proc/meminfo"
@@ -80,66 +61,32 @@ char path_sys_sz_huge[BUFSIZ];
 #define SHM_HUGETLB 04000
 #endif
 
-char *TCID = "hugemmap05";
-int TST_TOTAL = 1, tst_count;
 static char nr_hugepages[BUFSIZ], nr_overcommit_hugepages[BUFSIZ];
 static char buf[BUFSIZ], line[BUFSIZ], path[BUFSIZ], pathover[BUFSIZ];
 static char shmmax[BUFSIZ];
-static char *opt_allocstr;
 static int hugepagesize;	/* in Bytes */
-static int opt_sysfs, opt_alloc;
 static int shmid = -1;
 static int restore_shmmax;
 static size_t size = 128, length = 384;
-static option_t options[] = {
-	{"s", &opt_sysfs, NULL},
-	{"m", &shmid, NULL},
-	{"a:", &opt_alloc, &opt_allocstr},
+
+char *opt_sysfs;
+char *opt_alloc;
+char *opt_shmid;
+static struct tst_option options[] = {
+	{"s",  &opt_sysfs, "-s        Setup hugepages from sysfs"},
+	{"m",  &opt_shmid, "-m        Reserve hugepages by shmget"},
+	{"a:", &opt_alloc, "-a        Number of overcommint hugepages"},
 	{NULL, NULL, NULL}
 };
 
-static void setup(void);
-static void cleanup(void);
-static void overcommit(void);
 static void write_bytes(void *addr);
 static void read_bytes(void *addr);
 static int lookup(char *line, char *pattern);
-static void usage(void);
 static int checkproc(FILE * fp, char *string, int value);
 static int checksys(char *path, char *pattern, int value);
-static void init_hugepagesize(void);
 static void init_sys_sz_paths(void);
 
-int main(int argc, char *argv[])
-{
-	int lc;
-
-	init_hugepagesize();
-	init_sys_sz_paths();
-
-	tst_parse_opts(argc, argv, options, usage);
-	if (opt_sysfs) {
-		strncpy(path, path_sys_sz_huge, strlen(path_sys_sz_huge) + 1);
-		strncpy(pathover, path_sys_sz_over,
-			strlen(path_sys_sz_over) + 1);
-	} else {
-		strncpy(path, PATH_PROC_HUGE, strlen(PATH_PROC_HUGE) + 1);
-		strncpy(pathover, PATH_PROC_OVER, strlen(PATH_PROC_OVER) + 1);
-	}
-	if (opt_alloc) {
-		size = atoi(opt_allocstr);
-		length = (int)(size + size * 0.5) * 2;
-	}
-	setup();
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-		overcommit();
-	}
-	cleanup();
-	tst_exit();
-}
-
-static void overcommit(void)
+static void test_overcommit(void)
 {
 	void *addr = NULL, *shmaddr = NULL;
 	int fd = -1, key = -1;
@@ -150,27 +97,25 @@ static void overcommit(void)
 		/* Use /proc/meminfo to generate an IPC key. */
 		key = ftok(PATH_MEMINFO, strlen(PATH_MEMINFO));
 		if (key == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "ftok");
+			tst_brk(TBROK | TERRNO, "ftok");
 		shmid = shmget(key, (long)(length / 2 * hugepagesize),
 			       SHM_HUGETLB | IPC_CREAT | SHM_R | SHM_W);
 		if (shmid == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "shmget");
+			tst_brk(TBROK | TERRNO, "shmget");
 	} else {
 		/* XXX (garrcoop): memory leak. */
 		snprintf(s, BUFSIZ, "%s/hugemmap05/file", tst_get_tmpdir());
-		fd = open(s, O_CREAT | O_RDWR, 0755);
-		if (fd == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "open");
+		fd = SAFE_OPEN(s, O_CREAT | O_RDWR, 0755);
 		addr = mmap(ADDR, (long)(length / 2 * hugepagesize), PROTECTION,
 			    FLAGS, fd, 0);
 		if (addr == MAP_FAILED) {
 			close(fd);
-			tst_brkm(TBROK | TERRNO, cleanup, "mmap");
+			tst_brk(TBROK | TERRNO, "mmap");
 		}
 	}
 
 	if (opt_sysfs) {
-		tst_resm(TINFO, "check sysfs before allocation.");
+		tst_res(TINFO, "check sysfs before allocation.");
 		if (checksys(path_sys_sz_huge, "HugePages_Total",
 			     length / 2) != 0)
 			return;
@@ -184,10 +129,8 @@ static void overcommit(void)
 			     length / 2) != 0)
 			return;
 	} else {
-		tst_resm(TINFO, "check /proc/meminfo before allocation.");
-		fp = fopen(PATH_MEMINFO, "r");
-		if (fp == NULL)
-			tst_brkm(TBROK | TERRNO, cleanup, "fopen");
+		tst_res(TINFO, "check /proc/meminfo before allocation.");
+		fp = SAFE_FOPEN(PATH_MEMINFO, "r");
 		if (checkproc(fp, "HugePages_Total", length / 2) != 0)
 			return;
 		if (checkproc(fp, "HugePages_Free", length / 2) != 0)
@@ -199,10 +142,10 @@ static void overcommit(void)
 		fclose(fp);
 	}
 	if (shmid != -1) {
-		tst_resm(TINFO, "shmid: 0x%x", shmid);
+		tst_res(TINFO, "shmid: 0x%x", shmid);
 		shmaddr = shmat(shmid, ADDR, SHMAT_FLAGS);
 		if (shmaddr == (void *)-1)
-			tst_brkm(TBROK | TERRNO, cleanup, "shmat");
+			tst_brk(TBROK | TERRNO, "shmat");
 		write_bytes(shmaddr);
 		read_bytes(shmaddr);
 	} else {
@@ -210,7 +153,7 @@ static void overcommit(void)
 		read_bytes(addr);
 	}
 	if (opt_sysfs) {
-		tst_resm(TINFO, "check sysfs.");
+		tst_res(TINFO, "check sysfs.");
 		if (checksys(path_sys_sz_huge, "HugePages_Total",
 			     length / 2) != 0)
 			return;
@@ -224,10 +167,8 @@ static void overcommit(void)
 		    != 0)
 			return;
 	} else {
-		tst_resm(TINFO, "check /proc/meminfo.");
-		fp = fopen(PATH_MEMINFO, "r");
-		if (fp == NULL)
-			tst_brkm(TBROK | TERRNO, cleanup, "fopen");
+		tst_res(TINFO, "check /proc/meminfo.");
+		fp = SAFE_FOPEN(PATH_MEMINFO, "r");
 		if (checkproc(fp, "HugePages_Total", length / 2) != 0)
 			return;
 		if (checkproc(fp, "HugePages_Free", 0) != 0)
@@ -240,12 +181,14 @@ static void overcommit(void)
 	}
 	if (shmid != -1) {
 		if (shmdt(shmaddr) != 0)
-			tst_brkm(TBROK | TERRNO, cleanup, "shmdt");
+			tst_brk(TBROK | TERRNO, "shmdt");
 	} else {
 		munmap(addr, (long)(length / 2 * hugepagesize));
 		close(fd);
 		unlink(s);
 	}
+
+	tst_res(TPASS, "hugepages overcommit test pass");
 }
 
 static void cleanup(void)
@@ -255,39 +198,38 @@ static void cleanup(void)
 	if (restore_shmmax) {
 		fd = open(PATH_SHMMAX, O_WRONLY);
 		if (fd == -1)
-			tst_resm(TWARN | TERRNO, "open");
+			tst_res(TWARN | TERRNO, "open");
 		if (write(fd, shmmax, strlen(shmmax)) != (ssize_t)strlen(shmmax))
-			tst_resm(TWARN | TERRNO, "write");
+			tst_res(TWARN | TERRNO, "write");
 		close(fd);
 	}
 	fd = open(path, O_WRONLY);
 	if (fd == -1)
-		tst_resm(TWARN | TERRNO, "open");
-	tst_resm(TINFO, "restore nr_hugepages to %s.", nr_hugepages);
+		tst_res(TWARN | TERRNO, "open");
+	tst_res(TINFO, "restore nr_hugepages to %s.", nr_hugepages);
 	if (write(fd, nr_hugepages,
 		  strlen(nr_hugepages)) != (ssize_t)strlen(nr_hugepages))
-		tst_resm(TWARN | TERRNO, "write");
+		tst_res(TWARN | TERRNO, "write");
 	close(fd);
 
 	fd = open(pathover, O_WRONLY);
 	if (fd == -1)
-		tst_resm(TWARN | TERRNO, "open");
-	tst_resm(TINFO, "restore nr_overcommit_hugepages to %s.",
+		tst_res(TWARN | TERRNO, "open");
+	tst_res(TINFO, "restore nr_overcommit_hugepages to %s.",
 		 nr_overcommit_hugepages);
 	if (write(fd, nr_overcommit_hugepages, strlen(nr_overcommit_hugepages))
 	    != (ssize_t)strlen(nr_overcommit_hugepages))
-		tst_resm(TWARN | TERRNO, "write");
+		tst_res(TWARN | TERRNO, "write");
 	close(fd);
 
 	/* XXX (garrcoop): memory leak. */
 	snprintf(buf, BUFSIZ, "%s/hugemmap05", tst_get_tmpdir());
 	if (umount(buf) == -1)
-		tst_resm(TWARN | TERRNO, "umount");
+		tst_res(TWARN | TERRNO, "umount");
 	if (shmid != -1) {
-		tst_resm(TINFO, "shmdt cleaning");
+		tst_res(TINFO, "shmdt cleaning");
 		shmctl(shmid, IPC_RMID, NULL);
 	}
-	tst_rmdir();
 }
 
 static void setup(void)
@@ -296,93 +238,97 @@ static void setup(void)
 	int fd;
 	struct stat stat_buf;
 
-	tst_require_root();
+	hugepagesize = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
+	init_sys_sz_paths();
 
+	if (opt_shmid)
+		shmid = 0;
+
+	if (opt_sysfs) {
+		strncpy(path, path_sys_sz_huge, strlen(path_sys_sz_huge) + 1);
+		strncpy(pathover, path_sys_sz_over,
+			strlen(path_sys_sz_over) + 1);
+	} else {
+		strncpy(path, PATH_PROC_HUGE, strlen(PATH_PROC_HUGE) + 1);
+		strncpy(pathover, PATH_PROC_OVER, strlen(PATH_PROC_OVER) + 1);
+	}
+	if (opt_alloc) {
+		size = atoi(opt_alloc);
+		length = (int)(size + size * 0.5) * 2;
+	}
 	if (stat(pathover, &stat_buf) == -1) {
 		if (errno == ENOENT || errno == ENOTDIR)
-			tst_brkm(TCONF, NULL,
+			tst_brk(TCONF,
 				 "file %s does not exist in the system",
 				 pathover);
 	}
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-	TEST_PAUSE;
-	tst_tmpdir();
-
 	if (shmid != -1) {
 		fp = fopen(PATH_SHMMAX, "r");
 		if (fp == NULL)
-			tst_brkm(TBROK | TERRNO, cleanup, "fopen");
+			tst_brk(TBROK | TERRNO, "fopen");
 		if (fgets(shmmax, BUFSIZ, fp) == NULL)
-			tst_brkm(TBROK | TERRNO, cleanup, "fgets");
+			tst_brk(TBROK | TERRNO, "fgets");
 		fclose(fp);
 
 		if (atol(shmmax) < (long)(length / 2 * hugepagesize)) {
 			restore_shmmax = 1;
 			fd = open(PATH_SHMMAX, O_RDWR);
 			if (fd == -1)
-				tst_brkm(TBROK | TERRNO, cleanup, "open");
+				tst_brk(TBROK | TERRNO, "open");
 			snprintf(buf, BUFSIZ, "%ld",
 				 (long)(length / 2 * hugepagesize));
 			if (write(fd, buf, strlen(buf)) != (ssize_t)strlen(buf))
-				tst_brkm(TBROK | TERRNO, cleanup,
+				tst_brk(TBROK | TERRNO,
 					 "failed to change shmmax.");
 		}
 	}
-	fp = fopen(path, "r+");
-	if (fp == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fopen");
+	fp = SAFE_FOPEN(path, "r+");
 	if (fgets(nr_hugepages, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fgets");
+		tst_brk(TBROK | TERRNO, "fgets");
 	fclose(fp);
 	/* Remove trailing newline. */
 	nr_hugepages[strlen(nr_hugepages) - 1] = '\0';
-	tst_resm(TINFO, "original nr_hugepages is %s", nr_hugepages);
+	tst_res(TINFO, "original nr_hugepages is %s", nr_hugepages);
 
-	fd = open(path, O_RDWR);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open");
+	fd = SAFE_OPEN(path, O_RDWR);
 	/* Reset. */
-	if (write(fd, "0", 1) != 1)
-		tst_brkm(TBROK | TERRNO, cleanup, "write");
-	if (lseek(fd, 0, SEEK_SET) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "lseek");
+	SAFE_WRITE(1, fd, "0", 1);
+	SAFE_LSEEK(fd, 0, SEEK_SET);
 	snprintf(buf, BUFSIZ, "%zd", size);
 	if (write(fd, buf, strlen(buf)) != (ssize_t)strlen(buf))
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "failed to change nr_hugepages.");
+		tst_brk(TBROK | TERRNO,
+			"failed to change nr_hugepages.");
 	close(fd);
 
-	fp = fopen(pathover, "r+");
-	if (fp == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fopen");
+	fp = SAFE_FOPEN(pathover, "r+");
 	if (fgets(nr_overcommit_hugepages, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fgets");
+		tst_brk(TBROK | TERRNO, "fgets");
 	fclose(fp);
 	nr_overcommit_hugepages[strlen(nr_overcommit_hugepages) - 1] = '\0';
-	tst_resm(TINFO, "original nr_overcommit_hugepages is %s",
+	tst_res(TINFO, "original nr_overcommit_hugepages is %s",
 		 nr_overcommit_hugepages);
 
 	fd = open(pathover, O_RDWR);
 	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open");
+		tst_brk(TBROK | TERRNO, "open");
 	/* Reset. */
 	if (write(fd, "0", 1) != 1)
-		tst_brkm(TBROK | TERRNO, cleanup, "write");
+		tst_brk(TBROK | TERRNO, "write");
 	if (lseek(fd, 0, SEEK_SET) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "lseek");
+		tst_brk(TBROK | TERRNO, "lseek");
 	snprintf(buf, BUFSIZ, "%zd", size);
 	if (write(fd, buf, strlen(buf)) != (ssize_t)strlen(buf))
-		tst_brkm(TBROK | TERRNO, cleanup,
+		tst_brk(TBROK | TERRNO,
 			 "failed to change nr_hugepages.");
 	close(fd);
 
 	/* XXX (garrcoop): memory leak. */
 	snprintf(buf, BUFSIZ, "%s/hugemmap05", tst_get_tmpdir());
 	if (mkdir(buf, 0700) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "mkdir");
+		tst_brk(TBROK | TERRNO, "mkdir");
 	if (mount(NULL, buf, "hugetlbfs", 0, NULL) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "mount");
+		tst_brk(TBROK | TERRNO, "mount");
 }
 
 static void write_bytes(void *addr)
@@ -397,10 +343,10 @@ static void read_bytes(void *addr)
 {
 	long i;
 
-	tst_resm(TINFO, "First hex is %x", *((unsigned int *)addr));
+	tst_res(TINFO, "First hex is %x", *((unsigned int *)addr));
 	for (i = 0; i < (long)(length / 2 * hugepagesize); i++) {
 		if (((char *)addr)[i] != '\a') {
-			tst_resm(TFAIL, "mismatch at %ld", i);
+			tst_res(TFAIL, "mismatch at %ld", i);
 			break;
 		}
 	}
@@ -422,25 +368,16 @@ static int lookup(char *line, char *pattern)
 	return 1;
 }
 
-static void usage(void)
-{
-	printf("  -s      Setup hugepages from sysfs\n");
-	printf("  -m      Reserve hugepages by shmget\n");
-	printf("  -a      Number of overcommint hugepages\n");
-}
-
 static int checksys(char *path, char *string, int value)
 {
 	FILE *fp;
 
-	fp = fopen(path, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fopen");
+	fp = SAFE_FOPEN(path, "r");
 	if (fgets(buf, BUFSIZ, fp) == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fgets");
-	tst_resm(TINFO, "%s is %d.", string, atoi(buf));
+		tst_brk(TBROK | TERRNO, "fgets");
+	tst_res(TINFO, "%s is %d.", string, atoi(buf));
 	if (atoi(buf) != value) {
-		tst_resm(TFAIL, "%s is not %d but %d.", string, value,
+		tst_res(TFAIL, "%s is not %d but %d.", string, value,
 			 atoi(buf));
 		fclose(fp);
 		return 1;
@@ -457,39 +394,15 @@ static int checkproc(FILE * fp, char *pattern, int value)
 		if (lookup(line, pattern))
 			break;
 
-	tst_resm(TINFO, "%s is %d.", pattern, atoi(buf));
+	tst_res(TINFO, "%s is %d.", pattern, atoi(buf));
 	if (atoi(buf) != value) {
-		tst_resm(TFAIL, "%s is not %d but %d.", pattern, value,
+		tst_res(TFAIL, "%s is not %d but %d.", pattern, value,
 			 atoi(buf));
 		return 1;
 	}
 	return 0;
 }
 
-static void init_hugepagesize(void)
-{
-	FILE *fp;
-
-	check_hugepage();
-	memset(buf, -1, BUFSIZ);
-	fp = fopen(PATH_MEMINFO, "r");
-	if (fp == NULL)
-		tst_brkm(TBROK, NULL, "can't open %s", PATH_MEMINFO);
-	while (fgets(line, BUFSIZ, fp) != NULL) {
-		if (lookup(line, "Hugepagesize")) {
-			tst_resm(TINFO, "Hugepagesize is %s kB", buf);
-			hugepagesize = atoi(buf) * 1024;
-			fclose(fp);
-			return;
-		}
-	}
-	tst_brkm(TBROK, NULL, "get Hugepagesize failed.");
-}
-
-/*
- * It's not easy to #define tunable file paths via sysfs,
- * use function init_hugepagesize and global variable instead.
- */
 static void init_sys_sz_paths(void)
 {
 	sprintf(path_sys_sz, "/sys/kernel/mm/hugepages/hugepages-%dkB",
@@ -500,3 +413,12 @@ static void init_sys_sz_paths(void)
 	sprintf(path_sys_sz_surp, "%s/surplus_hugepages", path_sys_sz);
 	sprintf(path_sys_sz_huge, "%s/nr_hugepages", path_sys_sz);
 }
+
+static struct tst_test test = {
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+	.options = options,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = test_overcommit,
+};
