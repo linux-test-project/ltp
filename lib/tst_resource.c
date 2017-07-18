@@ -46,7 +46,7 @@ static void tst_dataroot_init(void)
 	int ret;
 
 	/* 1. if LTPROOT is set, use $LTPROOT/testcases/data/$TCID
-	 * 2. else if startwd is set by tst_tmdir(), use $STARWD/datafiles
+	 * 2. else if startwd is set by tst_tmpdir(), use $STARWD/datafiles
 	 * 3. else use $CWD/datafiles */
 	if (ltproot) {
 		ret = snprintf(dataroot, PATH_MAX, "%s/testcases/data/%s",

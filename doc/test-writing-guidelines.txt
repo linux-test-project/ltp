@@ -215,7 +215,7 @@ The path is constructed according to these rules:
 
 1. if '$LTPROOT' is set, return '$LTPROOT/testcases/data/$TCID'
 2. else if 'tst_tmpdir()' was called return '$STARTWD/datafiles'
-   (where '$STARTWD' is initial working directory as recorded by 'tst_tmdir()')
+   (where '$STARTWD' is initial working directory as recorded by 'tst_tmpdir()')
 3. else return '$CWD/datafiles'
 
 See 'testcases/commands/file/' for example.
