@@ -260,9 +260,10 @@ static void check(char *path, long int value)
 	snprintf(fullpath, BUFSIZ, PATH_KSM "%s", path);
 	SAFE_FILE_SCANF(fullpath, "%ld", &actual_val);
 
-	tst_res(TINFO, "%s is %ld.", path, actual_val);
 	if (actual_val != value)
 		tst_res(TFAIL, "%s is not %ld.", path, value);
+	else
+		tst_res(TPASS, "%s is %ld.", path, actual_val);
 }
 
 static void wait_ksmd_done(void)
@@ -630,12 +631,12 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 
 void check_ksm_options(int *size, int *num, int *unit)
 {
-	if (opt_size) {
+	if (opt_sizestr) {
 		*size = atoi(opt_sizestr);
 		if (*size < 1)
 			tst_brk(TBROK, "size cannot be less than 1.");
 	}
-	if (opt_unit) {
+	if (opt_unitstr) {
 		*unit = atoi(opt_unitstr);
 		if (*unit > *size)
 			tst_brk(TBROK,
@@ -645,19 +646,12 @@ void check_ksm_options(int *size, int *num, int *unit)
 				 "the remainder of division of size by unit is "
 				 "not zero.");
 	}
-	if (opt_num) {
+	if (opt_numstr) {
 		*num = atoi(opt_numstr);
 		if (*num < 3)
 			tst_brk(TBROK,
 				 "process number cannot be less 3.");
 	}
-}
-
-void ksm_usage(void)
-{
-	printf("  -n      Number of processes\n");
-	printf("  -s      Memory allocation size in MB\n");
-	printf("  -u      Memory allocation unit in MB\n");
 }
 
 /* THP */

@@ -1,4 +1,16 @@
 /*
+ * Copyright (C) 2011-2017  Red Hat, Inc.
+ *
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ *
  * KSM - NULL pointer dereference in ksm_do_scan() (CVE-2011-2183)
  *
  * This is a testcase from upstream commit:
@@ -29,94 +41,55 @@
  * *) ksm and ksmtuned daemons need to be disabled. Otherwise, it could
  *    distrub the testing as they also change some ksm tunables depends
  *    on current workloads.
- *
- * Copyright (C) 2011  Red Hat, Inc.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it
- * is free of the rightful claim of any third person regarding
- * infringement or the like.  Any license provided herein, whether
- * implied or otherwise, applies only to this software file.  Patent
- * licenses, if any, provided herein do not apply to combinations of
- * this program with other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
  */
 
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 #include <sys/wait.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <signal.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include "test.h"
+#include <errno.h>
+#include "tst_test.h"
 #include "mem.h"
-
-char *TCID = "ksm05";
-int TST_TOTAL = 1;
 
 #ifdef HAVE_MADV_MERGEABLE
 
 static int ksm_run_orig;
-
 static void sighandler(int sig);
 
-int main(int argc, char *argv[])
+static void test_ksm(void)
 {
-	int lc, status, ret;
+	int status, ret;
 	long ps;
 	pid_t pid;
 	void *ptr;
+	struct sigaction sa;
 
-	tst_parse_opts(argc, argv, NULL, NULL);
-
+	memset (&sa, '\0', sizeof(sa));
+	sa.sa_handler = sighandler;
+	sa.sa_flags = 0;
+	TEST(sigaction(SIGSEGV, &sa, NULL));
+	if (TEST_RETURN == -1)
+		tst_brk(TBROK | TRERRNO,
+				"SIGSEGV signal setup failed");
 	ps = sysconf(_SC_PAGESIZE);
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		switch (pid = fork()) {
-		case -1:
-			tst_brkm(TBROK | TERRNO, cleanup, "fork");
+	switch (pid = SAFE_FORK()) {
 		case 0:
 			ret = posix_memalign(&ptr, ps, ps);
 			if (ret) {
-				tst_brkm(TBROK, cleanup, "posix_memalign(): %s",
-				         tst_strerrno(ret));
+				tst_brk(TBROK, "posix_memalign(): %s",
+						tst_strerrno(ret));
 			}
 			if (madvise(ptr, ps, MADV_MERGEABLE) < 0)
-				tst_brkm(TBROK | TERRNO, cleanup, "madvise");
+				tst_brk(TBROK | TERRNO, "madvise");
 			*(char *)NULL = 0;	/* SIGSEGV occurs as expected. */
-			exit(0);
 		default:
 			break;
-		}
-		if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
-		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-			tst_brkm(TBROK, cleanup,
-				 "invalid signal received: %d", status);
 	}
+	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
+		tst_brk(TBROK | TERRNO, "waitpid");
+	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+		tst_brk(TBROK, "invalid signal received: %d", status);
 
-	tst_resm(TPASS, "still alive.");
-	cleanup();
-	tst_exit();
+	tst_res(TPASS, "still alive.");
 }
 
 static void sighandler(int sig)
@@ -124,35 +97,34 @@ static void sighandler(int sig)
 	_exit((sig == SIGSEGV) ? 0 : sig);
 }
 
-void setup(void)
+static void setup(void)
 {
-	tst_require_root();
-
-	if (tst_kvercmp(2, 6, 32) < 0)
-		tst_brkm(TCONF, NULL, "2.6.32 or greater kernel required.");
-
 	if (access(PATH_KSM, F_OK) == -1)
-		tst_brkm(TCONF, NULL, "KSM configuration is not enabled");
-
-	tst_sig(FORK, sighandler, cleanup);
-
-	TEST_PAUSE;
+		tst_brk(TCONF, "KSM configuration is not enabled");
 
 	/* save original /sys/kernel/mm/ksm/run value */
-	SAFE_FILE_SCANF(NULL, PATH_KSM "run", "%d", &ksm_run_orig);
+	SAFE_FILE_SCANF(PATH_KSM "run", "%d", &ksm_run_orig);
 
 	/* echo 1 > /sys/kernel/mm/ksm/run */
-	SAFE_FILE_PRINTF(NULL, PATH_KSM "run", "1");
+	SAFE_FILE_PRINTF(PATH_KSM "run", "1");
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	/* restore /sys/kernel/mm/ksm/run value */
 	FILE_PRINTF(PATH_KSM "run", "%d", ksm_run_orig);
 }
+
+static struct tst_test test = {
+	.tid = "ksm05",
+	.needs_root = 1,
+	.forks_child = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = test_ksm,
+	.min_kver = "2.6.32",
+};
+
 #else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "no MADV_MERGEABLE found.");
-}
+	TST_TEST_TCONF("no MADV_MERGEABLE found.");
 #endif

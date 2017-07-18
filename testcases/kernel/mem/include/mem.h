@@ -44,6 +44,10 @@ void testoom(int mempolicy, int lite, int retcode, int allow_sigkill);
 
 #define PATH_KSM		"/sys/kernel/mm/ksm/"
 
+char *opt_numstr, *opt_sizestr, *opt_unitstr;
+
+void create_same_memory(int size, int num, int unit);
+void check_ksm_options(int *size, int *num, int *unit);
 void save_max_page_sharing(void);
 void restore_max_page_sharing(void);
 void test_ksm_merge_across_nodes(unsigned long nr_pages);
@@ -58,11 +62,6 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages);
 #define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
 
 void write_memcg(void);
-void create_same_memory(int size, int num, int unit);
-int  opt_num, opt_size, opt_unit;
-char *opt_numstr, *opt_sizestr, *opt_unitstr;
-void check_ksm_options(int *size, int *num, int *unit);
-void ksm_usage(void);
 
 /* cpuset/memcg */
 
