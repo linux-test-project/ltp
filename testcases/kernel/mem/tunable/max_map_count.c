@@ -1,4 +1,18 @@
 /*
+ * Copyright (C) 2012-2017  Red Hat, Inc.
+ *
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ *
+ * Description:
+ *
  * The program is designed to test max_map_count tunable file
  *
  * The kernel Documentation say that:
@@ -24,35 +38,9 @@
  * ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0   [vsyscall]
  *
  * so we ignore this line during /proc/[pid]/maps reading.
- *
- * ********************************************************************
- * Copyright (C) 2012 Red Hat, Inc.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it
- * is free of the rightful claim of any third person regarding
- * infringement or the like.  Any license provided herein, whether
- * implied or otherwise, applies only to this software file.  Patent
- * licenses, if any, provided herein do not apply to combinations of
- * this program with other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- * ********************************************************************
  */
+
 #define _GNU_SOURCE
-#include <sys/types.h>
-#include <sys/mman.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -60,47 +48,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/utsname.h>
-#include "test.h"
 #include "mem.h"
 
 #define MAP_COUNT_DEFAULT	1024
 #define MAX_MAP_COUNT		65536L
 
-char *TCID = "max_map_count";
-int TST_TOTAL = 1;
-
 static long old_max_map_count;
 static long old_overcommit;
 static struct utsname un;
 
-static long count_maps(pid_t pid);
-static void max_map_count_test(void);
-
-int main(int argc, char *argv[])
+static void setup(void)
 {
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-		max_map_count_test();
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-void setup(void)
-{
-	tst_require_root();
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-	TEST_PAUSE;
-
 	if (access(PATH_SYSVM "max_map_count", F_OK) != 0)
-		tst_brkm(TBROK | TERRNO, NULL,
+		tst_brk(TBROK | TERRNO,
 			 "Can't support to test max_map_count");
 
 	old_max_map_count = get_sys_tune("max_map_count");
@@ -108,10 +68,10 @@ void setup(void)
 	set_sys_tune("overcommit_memory", 2, 1);
 
 	if (uname(&un) != 0)
-		tst_brkm(TBROK | TERRNO, NULL, "uname error");
+		tst_brk(TBROK | TERRNO, "uname error");
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	set_sys_tune("overcommit_memory", old_overcommit, 0);
 	set_sys_tune("max_map_count", old_max_map_count, 0);
@@ -162,7 +122,7 @@ static long count_maps(pid_t pid)
 	snprintf(buf, BUFSIZ, "/proc/%d/maps", pid);
 	fp = fopen(buf, "r");
 	if (fp == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fopen %s", buf);
+		tst_brk(TBROK | TERRNO, "fopen %s", buf);
 	while (getline(&line, &len, fp) != -1) {
 		/* exclude vdso and vsyscall */
 		if (filter_map(line))
@@ -200,7 +160,7 @@ static void max_map_count_test(void)
 	 *    step 1) will be used first.
 	 * Hope OOM-killer can be more stable oneday.
 	 */
-	memfree = read_meminfo("CommitLimit:") - read_meminfo("Committed_AS:");
+	memfree = SAFE_READ_MEMINFO("CommitLimit:") - SAFE_READ_MEMINFO("Committed_AS:");
 	/* 64 used as a bias to make sure no overflow happen */
 	max_iters = memfree / sysconf(_SC_PAGESIZE) * 1024 - 64;
 	if (max_iters > MAX_MAP_COUNT)
@@ -210,24 +170,21 @@ static void max_map_count_test(void)
 	while (max_maps <= max_iters) {
 		set_sys_tune("max_map_count", max_maps, 1);
 
-		switch (pid = tst_fork()) {
-		case -1:
-			tst_brkm(TBROK | TERRNO, cleanup, "fork");
+		switch (pid = SAFE_FORK()) {
 		case 0:
 			while (mmap(NULL, 1, PROT_READ,
 				    MAP_SHARED | MAP_ANONYMOUS, -1, 0)
 			       != MAP_FAILED) ;
 			if (raise(SIGSTOP) != 0)
-				tst_brkm(TBROK | TERRNO, tst_exit, "raise");
+				tst_brk(TBROK | TERRNO, "raise");
 			exit(0);
 		default:
 			break;
 		}
 		/* wait child done mmap and stop */
-		if (waitpid(pid, &status, WUNTRACED) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(pid, &status, WUNTRACED);
 		if (!WIFSTOPPED(status))
-			tst_brkm(TBROK, cleanup, "child did not stopped");
+			tst_brk(TBROK, "child did not stopped");
 
 		map_count = count_maps(pid);
 		/* Note max_maps will be exceeded by one for
@@ -236,18 +193,25 @@ static void max_map_count_test(void)
 		 * writing this COMMENT!
 		*/
 		if (map_count == (max_maps + 1))
-			tst_resm(TPASS, "%ld map entries in total "
+			tst_res(TPASS, "%ld map entries in total "
 				 "as expected.", max_maps);
 		else
-			tst_resm(TFAIL, "%ld map entries in total, but "
+			tst_res(TFAIL, "%ld map entries in total, but "
 				 "expected %ld entries", map_count, max_maps);
 
 		/* make child continue to exit */
-		if (kill(pid, SIGCONT) != 0)
-			tst_brkm(TBROK | TERRNO, cleanup, "kill");
-		if (waitpid(pid, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_KILL(pid, SIGCONT);
+		SAFE_WAITPID(pid, &status, 0);
 
 		max_maps = max_maps << 1;
 	}
 }
+
+static struct tst_test test = {
+	.tid = "max_map_count",
+	.needs_root = 1,
+	.forks_child = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = max_map_count_test,
+};
