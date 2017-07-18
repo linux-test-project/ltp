@@ -57,7 +57,7 @@ static void sighandler(int sig);
 
 static void test_ksm(void)
 {
-	int status, ret;
+	int status;
 	long ps;
 	pid_t pid;
 	void *ptr;
@@ -70,22 +70,17 @@ static void test_ksm(void)
 	if (TEST_RETURN == -1)
 		tst_brk(TBROK | TRERRNO,
 				"SIGSEGV signal setup failed");
+
 	ps = sysconf(_SC_PAGESIZE);
-	switch (pid = SAFE_FORK()) {
-		case 0:
-			ret = posix_memalign(&ptr, ps, ps);
-			if (ret) {
-				tst_brk(TBROK, "posix_memalign(): %s",
-						tst_strerrno(ret));
-			}
-			if (madvise(ptr, ps, MADV_MERGEABLE) < 0)
-				tst_brk(TBROK | TERRNO, "madvise");
-			*(char *)NULL = 0;	/* SIGSEGV occurs as expected. */
-		default:
-			break;
+
+	pid = SAFE_FORK();
+	if (pid == 0) {
+		ptr = SAFE_MEMALIGN(ps, ps);
+		if (madvise(ptr, ps, MADV_MERGEABLE) < 0)
+			tst_brk(TBROK | TERRNO, "madvise");
+		*(char *)NULL = 0;	/* SIGSEGV occurs as expected. */
 	}
-	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
-		tst_brk(TBROK | TERRNO, "waitpid");
+	SAFE_WAITPID(pid, &status, WUNTRACED | WCONTINUED);
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 		tst_brk(TBROK, "invalid signal received: %d", status);
 
@@ -116,7 +111,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "ksm05",
 	.needs_root = 1,
 	.forks_child = 1,
 	.setup = setup,

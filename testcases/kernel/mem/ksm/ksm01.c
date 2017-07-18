@@ -57,21 +57,10 @@
 #include <string.h>
 #include <unistd.h>
 #include "mem.h"
-
-static int merge_across_nodes;
-
-static struct tst_option ksm_options[] = {
-	{"n:", &opt_numstr,  "-n       Number of processes"},
-	{"s:", &opt_sizestr, "-s       Memory allocation size in MB"},
-	{"u:", &opt_unitstr, "-u       Memory allocation unit in MB"},
-	{NULL, NULL, NULL}
-};
+#include "ksm_common.h"
 
 static void verify_ksm(void)
 {
-	int size = 128, num = 3, unit = 1;
-
-	check_ksm_options(&size, &num, &unit);
 	create_same_memory(size, num, unit);
 }
 
@@ -81,6 +70,8 @@ static void setup(void)
 		tst_brk(TCONF, "KSM configuration is not enabled");
 
 	save_max_page_sharing();
+
+	parse_ksm_options(opt_sizestr, &size, opt_numstr, &num, opt_unitstr, &unit);
 
 	/*
 	 * kernel commit 90bd6fd introduced a new KSM sysfs knob
@@ -106,7 +97,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "ksm01",
 	.needs_root = 1,
 	.forks_child = 1,
 	.options = ksm_options,

@@ -629,31 +629,6 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 	wait_ksmd_done();
 }
 
-void check_ksm_options(int *size, int *num, int *unit)
-{
-	if (opt_sizestr) {
-		*size = atoi(opt_sizestr);
-		if (*size < 1)
-			tst_brk(TBROK, "size cannot be less than 1.");
-	}
-	if (opt_unitstr) {
-		*unit = atoi(opt_unitstr);
-		if (*unit > *size)
-			tst_brk(TBROK,
-				 "unit cannot be greater than size.");
-		if (*size % *unit != 0)
-			tst_brk(TBROK,
-				 "the remainder of division of size by unit is "
-				 "not zero.");
-	}
-	if (opt_numstr) {
-		*num = atoi(opt_numstr);
-		if (*num < 3)
-			tst_brk(TBROK,
-				 "process number cannot be less 3.");
-	}
-}
-
 /* THP */
 
 /* cpuset/memcg */

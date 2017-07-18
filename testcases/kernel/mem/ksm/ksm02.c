@@ -57,29 +57,18 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "mem.h"
+#include "ksm_common.h"
 
 #if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
 	&& HAVE_MPOL_CONSTANTS
 
-static int merge_across_nodes;
-
-static struct tst_option ksm_options[] = {
-	{"n:", &opt_numstr,  "-n       Number of processes"},
-	{"s:", &opt_sizestr, "-s       Memory allocation size in MB"},
-	{"u:", &opt_unitstr, "-u       Memory allocation unit in MB"},
-	{NULL, NULL, NULL}
-};
-
 static void verify_ksm(void)
 {
-	int size = 128, num = 3, unit = 1;
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 	unsigned int node;
 
 	node = get_a_numa_node();
 	set_node(nmask, node);
-
-	check_ksm_options(&size, &num, &unit);
 
 	if (set_mempolicy(MPOL_BIND, nmask, MAXNODES) == -1) {
 		if (errno != ENOSYS)
@@ -111,6 +100,8 @@ static void setup(void)
 		tst_brk(TCONF, "KSM configuration is not enabled");
 	save_max_page_sharing();
 
+	parse_ksm_options(opt_sizestr, &size, opt_numstr, &num, opt_unitstr, &unit);
+
 	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0) {
 		SAFE_FILE_SCANF(PATH_KSM "merge_across_nodes",
 				"%d", &merge_across_nodes);
@@ -121,7 +112,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.tid = "ksm02",
 	.needs_root = 1,
 	.forks_child = 1,
 	.options = ksm_options,
