@@ -1,26 +1,18 @@
 /*
- * Copyright (C) 2011  Red Hat, Inc.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * Copyright (C) 2011-2017  Red Hat, Inc.
  *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * Further, this software is distributed without any warranty that it
- * is free of the rightful claim of any third person regarding
- * infringement or the like.  Any license provided herein, whether
- * implied or otherwise, applies only to this software file.  Patent
- * licenses, if any, provided herein do not apply to combinations of
- * this program with other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- * thp02 - detect mremap bug when THP is enabled.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ */
+
+/* thp02 - detect mremap bug when THP is enabled.
  *
  * There was a bug in mremap THP support, sometimes crash happened
  * due to the following reason according to developers:
@@ -52,35 +44,10 @@
 #include <unistd.h>
 #include "mem.h"
 
-char *TCID = "thp02";
-int TST_TOTAL = 1;
-
 #ifdef HAVE_MREMAP_FIXED
 static int ps;
 static long hps, size;
 static void *p, *p2, *p3, *p4;
-
-static void do_mremap(void);
-
-int main(int argc, char **argv)
-{
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		do_mremap();
-	}
-	tst_resm(TPASS, "Still alive.");
-
-	cleanup();
-	tst_exit();
-
-}
 
 static void do_mremap(void)
 {
@@ -88,12 +55,9 @@ static void do_mremap(void)
 	void *old_addr, *new_addr;
 
 	for (i = 0; i < 4; i++) {
-		if (posix_memalign(&p, hps, size))
-			tst_brkm(TBROK | TERRNO, cleanup, "memalign p");
-		if (posix_memalign(&p2, hps, size))
-			tst_brkm(TBROK | TERRNO, cleanup, "memalign p2");
-		if (posix_memalign(&p3, hps, size))
-			tst_brkm(TBROK | TERRNO, cleanup, "memalign p3");
+		p = SAFE_MEMALIGN(hps, size);
+		p2 = SAFE_MEMALIGN(hps, size);
+		p3 = SAFE_MEMALIGN(hps, size);
 
 		memset(p, 0xff, size);
 		memset(p2, 0xff, size);
@@ -108,37 +72,35 @@ static void do_mremap(void)
 		 */
 		old_addr = p + ps * (i >> 1);
 		new_addr = p3 + ps * (i & 1);
-		tst_resm(TINFO, "mremap %p to %p", old_addr, new_addr);
+		tst_res(TINFO, "mremap %p to %p", old_addr, new_addr);
 
 		p4 = mremap(old_addr, size - ps, size - ps,
 			    MREMAP_FIXED | MREMAP_MAYMOVE, new_addr);
 		if (p4 == MAP_FAILED)
-			tst_brkm(TBROK | TERRNO, cleanup, "mremap");
+			tst_brk(TBROK | TERRNO, "mremap");
 		if (memcmp(p4, p2, size - ps))
-			tst_brkm(TBROK, cleanup, "mremap bug");
+			tst_brk(TBROK, "mremap bug");
 	}
+
+	tst_res(TPASS, "Still alive.");
 }
 
-void setup(void)
+static void setup(void)
 {
 	if (access(PATH_THP, F_OK) == -1)
-		tst_brkm(TCONF, NULL, "THP not enabled in kernel?");
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-	TEST_PAUSE;
+		tst_brk(TCONF, "THP not enabled in kernel?");
 
 	ps = sysconf(_SC_PAGESIZE);
-	hps = read_meminfo("Hugepagesize:") * 1024;
+	hps = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 	size = hps * 4;
 }
 
-void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.needs_root = 1,
+	.setup = setup,
+	.test_all = do_mremap,
+};
 
 #else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "MREMAP_FIXED not present in <sys/mman.h>");
-}
+	TST_TEST_TCONF("MREMAP_FIXED not present in <sys/mman.h>");
 #endif /* HAVE_MREMAP_FIXED */

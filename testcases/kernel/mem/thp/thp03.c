@@ -1,26 +1,18 @@
 /*
- * Copyright (C) 2012  Red Hat, Inc.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * Copyright (C) 2012-2017  Red Hat, Inc.
  *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * Further, this software is distributed without any warranty that it
- * is free of the rightful claim of any third person regarding
- * infringement or the like.  Any license provided herein, whether
- * implied or otherwise, applies only to this software file.  Patent
- * licenses, if any, provided herein do not apply to combinations of
- * this program with other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- * thp03 - Case for spliting unaligned memory.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ */
+
+/* thp03 - Case for spliting unaligned memory.
  *       - System will panic if failed.
  *
  * Modified form a reproducer for
@@ -46,13 +38,7 @@
 #include <string.h>
 #include <errno.h>
 #include "mem.h"
-#include "safe_macros.h"
-#include "test.h"
-
-char *TCID = "thp03";
-int TST_TOTAL = 1;
-
-#ifdef MADV_MERGEABLE
+#include "lapi/mmap.h"
 
 static void thp_test(void);
 
@@ -60,78 +46,50 @@ static long hugepage_size;
 static long unaligned_size;
 static long page_size;
 
-int main(int argc, char **argv)
-{
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		thp_test();
-	}
-	tst_resm(TPASS, "system didn't crash, pass.");
-	cleanup();
-	tst_exit();
-}
-
 static void thp_test(void)
 {
 	void *p;
 
-	p = mmap(NULL, unaligned_size, PROT_READ | PROT_WRITE,
+	p = SAFE_MMAP(NULL, unaligned_size, PROT_READ | PROT_WRITE,
 		 MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-	if (p == MAP_FAILED)
-		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 
 	memset(p, 0x00, unaligned_size);
 	if (mprotect(p, unaligned_size, PROT_NONE) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "mprotect");
+		tst_brk(TBROK | TERRNO, "mprotect");
 
 	if (madvise(p + hugepage_size, page_size, MADV_MERGEABLE) == -1) {
 		if (errno == EINVAL) {
-			tst_brkm(TCONF, cleanup,
+			tst_brk(TCONF,
 			         "MADV_MERGEABLE is not enabled/supported");
 		} else {
-			tst_brkm(TBROK | TERRNO, cleanup, "madvise");
+			tst_brk(TBROK | TERRNO, "madvise");
 		}
 	}
 
-	switch (fork()) {
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "fork");
+	switch (SAFE_FORK()) {
 	case 0:
 		exit(0);
 	default:
-		if (waitpid(-1, NULL, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(-1, NULL, 0);
 	}
+
+	tst_res(TPASS, "system didn't crash, pass.");
+	munmap(p, unaligned_size);
 }
 
-void setup(void)
+static void setup(void)
 {
 	if (access(PATH_THP, F_OK) == -1)
-		tst_brkm(TCONF, NULL, "THP not enabled in kernel?");
+		tst_brk(TCONF, "THP not enabled in kernel?");
 
-	hugepage_size = read_meminfo("Hugepagesize:") * KB;
+	hugepage_size = SAFE_READ_MEMINFO("Hugepagesize:") * KB;
 	unaligned_size = hugepage_size * 4 - 1;
-	page_size = SAFE_SYSCONF(NULL, _SC_PAGESIZE);
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-	TEST_PAUSE;
+	page_size = SAFE_SYSCONF(_SC_PAGESIZE);
 }
 
-void cleanup(void)
-{
-}
-
-#else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "Kernel doesn't support MADV_MERGEABLE"
-		 " or you need to update your glibc-headers");
-}
-#endif
+static struct tst_test test = {
+	.needs_root = 1,
+	.forks_child = 1,
+	.setup = setup,
+	.test_all = thp_test,
+};
