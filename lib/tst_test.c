@@ -880,9 +880,14 @@ static void sigint_handler(int sig LTP_ATTRIBUTE_UNUSED)
 	}
 }
 
-void tst_set_timeout(unsigned int timeout)
+void tst_set_timeout(int timeout)
 {
 	char *mul = getenv("LTP_TIMEOUT_MUL");
+
+	if (timeout == -1) {
+		tst_res(TINFO, "Timeout per run is disabled");
+		return;
+	}
 
 	results->timeout = timeout;
 

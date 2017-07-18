@@ -137,8 +137,8 @@ struct tst_test {
 	unsigned int mnt_flags;
 	void *mnt_data;
 
-	/* override default timeout per test run */
-	unsigned int timeout;
+	/* override default timeout per test run, disabled == -1 */
+	int timeout;
 
 	void (*setup)(void);
 	void (*cleanup)(void);
@@ -183,7 +183,7 @@ extern int TEST_ERRNO;
 const char *tst_strerrno(int err);
 const char *tst_strsig(int sig);
 
-void tst_set_timeout(unsigned int timeout);
+void tst_set_timeout(int timeout);
 
 #ifndef TST_NO_DEFAULT_MAIN
 

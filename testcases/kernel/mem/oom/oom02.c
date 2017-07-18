@@ -65,6 +65,7 @@ static void cleanup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
+	.timeout = -1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_oom,
