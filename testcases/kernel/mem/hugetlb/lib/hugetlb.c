@@ -32,6 +32,7 @@
  *	rm_shm()
  */
 
+#define TST_NO_DEFAULT_MAIN
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -42,14 +43,14 @@
 void check_hugepage(void)
 {
 	if (access(PATH_HUGEPAGES, F_OK))
-		tst_brkm(TCONF, NULL, "Huge page is not supported.");
+		tst_brk(TCONF, "Huge page is not supported.");
 }
 
 /*
  * getipckey() - generates and returns a message key used by the "get"
  *		 calls to create an IPC resource.
  */
-int getipckey(void (*cleanup_fn) (void))
+int getipckey(void)
 {
 	const char a = 'a';
 	int ascii_a = (int)a;
@@ -60,7 +61,7 @@ int getipckey(void (*cleanup_fn) (void))
 
 	curdir = getcwd(curdir, size);
 	if (curdir == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup_fn, "getcwd(curdir)");
+		tst_brk(TBROK | TERRNO, "getcwd(curdir)");
 
 	/*
 	 * Get a Sys V IPC key
@@ -79,7 +80,7 @@ int getipckey(void (*cleanup_fn) (void))
 
 	ipc_key = ftok(curdir, ascii_a + random() % 26);
 	if (ipc_key == -1)
-		tst_brkm(TBROK | TERRNO, cleanup_fn, "ftok");
+		tst_brk(TBROK | TERRNO, __func__);
 
 	return ipc_key;
 }
@@ -87,13 +88,13 @@ int getipckey(void (*cleanup_fn) (void))
 /*
  * getuserid() - return the integer value for the "user" id
  */
-int getuserid(void (*cleanup_fn) (void), char *user)
+int getuserid(char *user)
 {
 	struct passwd *ent;
 
 	ent = getpwnam(user);
 	if (ent == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup_fn, "getpwnam");
+		tst_brk(TBROK | TERRNO, "getpwnam");
 
 	return ent->pw_uid;
 }
@@ -110,8 +111,8 @@ void rm_shm(int shm_id)
 	 * check for # of attaches ?
 	 */
 	if (shmctl(shm_id, IPC_RMID, NULL) == -1) {
-		tst_resm(TINFO, "WARNING: shared memory deletion failed.");
-		tst_resm(TINFO, "This could lead to IPC resource problems.");
-		tst_resm(TINFO, "id = %d", shm_id);
+		tst_res(TINFO, "WARNING: shared memory deletion failed.");
+		tst_res(TINFO, "This could lead to IPC resource problems.");
+		tst_res(TINFO, "id = %d", shm_id);
 	}
 }
