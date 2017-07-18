@@ -76,6 +76,11 @@ do_test()
 		fi
 
 		local key=`keyctl show | awk '/debug:fred/ {print $1}'`
+		if [ -z "$key" ]; then
+			key=`keyctl show | \
+				awk -F ':' '/inaccessible/ {print $1}'`
+		fi
+
 		if [ -n "$key" ]; then
 			keyctl unlink $key @s >/dev/null
 			tst_sleep 50ms
