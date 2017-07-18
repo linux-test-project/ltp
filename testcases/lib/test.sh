@@ -132,8 +132,10 @@ tst_tmpdir()
 
 tst_rmdir()
 {
-	cd "$LTPROOT"
-	rm -r "$TST_TMPDIR"
+	if [ -n "$TST_TMPDIR" ]; then
+		cd "$LTPROOT"
+		rm -r "$TST_TMPDIR"
+	fi
 }
 
 #
